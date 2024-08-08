@@ -87,18 +87,28 @@ public class SkijaGC implements IGraphicsContext {
 			Paint bgPaint = new Paint().setColor(getBackground().getIntRGB());
 			bgc.drawRect(Rect.makeWH(r.width, r.height), bgPaint);
 			bgPaint.close();
-
-			bgSurface.draw(surface.getCanvas(), 0, 0, null);
-
-			// byte[] imageBytes = EncoderPNG.encode(im).getBytes();
-			//
-			// Image i = new Image(getDevice(), new
-			// ByteArrayInputStream(imageBytes));
-			// super.drawImage(i, 0, 0);
-
-			bgSurface = surface;
-
-		}
+//		if (this.background != null) {
+//
+//			Surface bgSurface = Surface
+//					.makeRaster(ImageInfo.makeN32Premul(r.width, r.height));
+//			//
+//			//
+//			Canvas bgc = bgSurface.getCanvas();
+//			Paint bgPaint = new Paint().setColor(convertSWTColorToSkijaColor(getBackground()));
+//			bgc.drawRect(Rect.makeWH(r.width, r.height), bgPaint);
+//
+//			bgSurface.draw(surface.getCanvas(), 0, 0, null);
+//			bgPaint.close();
+//
+//			// byte[] imageBytes = EncoderPNG.encode(im).getBytes();
+//			//
+//			// Image i = new Image(getDevice(), new
+//			// ByteArrayInputStream(imageBytes));
+//			// super.drawImage(i, 0, 0);
+//
+//			bgSurface = surface;
+//
+//		}
 
 		io.github.humbleui.skija.Image im = surface.makeImageSnapshot();
 		byte[] imageBytes = EncoderPNG.encode(im).getBytes();
@@ -210,7 +220,7 @@ public class SkijaGC implements IGraphicsContext {
 		Canvas c = surface.getCanvas();
 
 		Paint p = new Paint();
-		p.setColor(convertSWTColorToSkijaColor(getForeground()));
+		p.setColor( convertSWTColorToSkijaColor(getForeground())  );
 		c.drawLine(x1, y1, x2, y2, p);
 
 	}
@@ -236,10 +246,14 @@ public class SkijaGC implements IGraphicsContext {
 	@Override
 	public void drawText(String text, int x, int y, int flags) {
 
+
+
 		Canvas c = surface.getCanvas();
 
 		Paint p = new Paint();
 		p.setColor(convertSWTColorToSkijaColor(getForeground()));
+		// For some reason, here i have to set alpha, but at other positions this shouldn't be done.
+//		p.setAlpha(co.getAlpha());
 
 		// Schriftart und -größe
 		Typeface typeface = Typeface.makeDefault();
