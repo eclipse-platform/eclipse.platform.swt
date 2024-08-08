@@ -17,7 +17,10 @@ public class SnippetLabel {
 		Shell shell = new Shell (display);
 		shell.setText("SnippetLabel");
 
-		Label label = new Label (shell, SWT.BORDER);
+		Label label = new Label(shell, SWT.BORDER);
+
+		label.setBackground(display.getSystemColor(SWT.COLOR_CYAN));
+
 		label.setText("Test...");
 		Rectangle clientArea = shell.getClientArea ();
 		label.setLocation (clientArea.x, clientArea.y);

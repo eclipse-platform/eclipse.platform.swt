@@ -27,7 +27,7 @@ import org.eclipse.swt.internal.win32.*;
  * @see GC#getFontMetrics
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
-public final class FontMetrics {
+public final class FontMetrics implements IFontMetrics{
 
 	/**
 	 * On Windows, handle is a Win32 TEXTMETRIC struct
@@ -96,6 +96,7 @@ public boolean equals (Object object) {
  *
  * @return the ascent of the font
  */
+@Override
 public int getAscent() {
 	return DPIUtil.scaleDown(handle.tmAscent - handle.tmInternalLeading, getZoom());
 }
@@ -107,6 +108,7 @@ public int getAscent() {
  * @return the average character width of the font
  * @since 3.107
  */
+@Override
 public double getAverageCharacterWidth() {
 	return getAverageCharWidth();
 }
@@ -118,6 +120,7 @@ public double getAverageCharacterWidth() {
  * @return the average character width of the font
  * @deprecated Use getAverageCharacterWidth() instead
  */
+@Override
 @Deprecated
 public int getAverageCharWidth() {
 	return DPIUtil.scaleDown(handle.tmAveCharWidth, getZoom());
@@ -131,6 +134,7 @@ public int getAverageCharWidth() {
  *
  * @return the descent of the font
  */
+@Override
 public int getDescent() {
 	return DPIUtil.scaleDown(handle.tmDescent, getZoom());
 }
@@ -146,6 +150,7 @@ public int getDescent() {
  * @see #getDescent
  * @see #getLeading
  */
+@Override
 public int getHeight() {
 	return DPIUtil.scaleDown(handle.tmHeight, getZoom());
 }
@@ -157,6 +162,7 @@ public int getHeight() {
  *
  * @return the leading space of the font
  */
+@Override
 public int getLeading() {
 	/*
 	 * HiHPI rounding problem (bug 490743 comment 17):

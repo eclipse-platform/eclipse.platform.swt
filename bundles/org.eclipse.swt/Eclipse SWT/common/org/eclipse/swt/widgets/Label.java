@@ -18,6 +18,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.win32.*;
 
 /**
  * A Label which supports aligned text and/or an image and different border styles.
@@ -44,9 +45,12 @@ import org.eclipse.swt.graphics.*;
  *
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: CustomControlExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * @see Label#shortenText(GC, String, int)
+ * @see Label#shortenText(IGraphicsContext, String, int)
  */
+// for replacing Canvas with Control, it is necessary to handle the createWidget Method in Control differently
+// Idea: move Control to the common folder and create another class, that handles the OS dependent stuff.
 public class Label extends Canvas {
+
 
 	/** Gap between icon and text */
 	private static final int GAP = 5;
@@ -160,7 +164,7 @@ public Point computeSize(int wHint, int hHint, boolean changed) {
 /**
  * Draw a rectangle in the given colors.
  */
-private void drawBevelRect(GC gc, int x, int y, int w, int h, Color topleft, Color bottomright) {
+private void drawBevelRect(IGraphicsContext gc, int x, int y, int w, int h, Color topleft, Color bottomright) {
 	gc.setForeground(bottomright);
 	gc.drawLine(x+w, y,   x+w, y+h);
 	gc.drawLine(x,   y+h, x+w, y+h);
@@ -421,7 +425,7 @@ void onMnemonic(TraverseEvent event) {
 }
 
 void onPaint(PaintEvent event) {
-	Rectangle rect = getClientArea();
+	Rectangle rect = getBounds();
 	if (rect.width == 0 || rect.height == 0) return;
 
 	boolean shortenText = false;
@@ -437,8 +441,8 @@ void onPaint(PaintEvent event) {
 		}
 	}
 
-//	GC gc = event.gc;
-	GC gc = new SkijaGC(event.gc);
+//	IGraphicsContext gc = event.gc;
+	IGraphicsContext gc = new SkijaGC(event.gc);
 
 
 	String[] lines = text == null ? null : splitString(text);
@@ -620,7 +624,7 @@ void onPaint(PaintEvent event) {
 /**
  * Paint the Label's border.
  */
-private void paintBorder(GC gc, Rectangle r) {
+private void paintBorder(IGraphicsContext gc, Rectangle r) {
 	Display disp= getDisplay();
 
 	Color c1 = null;
@@ -990,7 +994,7 @@ public void setTopMargin(int topMargin) {
  * @param width the width to shorten the text to, in points
  * @return the shortened text
  */
-protected String shortenText(GC gc, String t, int width) {
+protected String shortenText(IGraphicsContext gc, String t, int width) {
 	if (t == null) return null;
 	int w = gc.textExtent(ELLIPSIS, DRAW_FLAGS).x;
 	if (width<=w) return t;
@@ -1043,6 +1047,16 @@ private String[] splitString(String text) {
 		}
 	} while (pos != -1);
 	return lines;
+}
+@Override
+TCHAR windowClass() {
+	// TODO Auto-generated method stub
+	return null;
+}
+@Override
+long windowProc() {
+	// TODO Auto-generated method stub
+	return 0;
 }
 }
 

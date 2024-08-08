@@ -1,20 +1,12 @@
-package org.eclipse.swt.widgets;
+package org.eclipse.swt.graphics;
 
 import java.io.*;
 
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Drawable;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Path;
-import org.eclipse.swt.graphics.Point;
-
 import io.github.humbleui.skija.*;
-import io.github.humbleui.skija.Canvas;
 import io.github.humbleui.skija.Font;
 import io.github.humbleui.types.*;
 
-public class SkijaGC extends GC {
+public class SkijaGC implements IGraphicsContext {
 
 	public final static int FONT_DEFAULT_SIZE = 12;
 
@@ -22,18 +14,45 @@ public class SkijaGC extends GC {
 	private Rectangle r;
 	private GC innerGC;
 
-	public SkijaGC(Drawable drawable, int style) {
-		super(drawable, style);
+	private Color background;
 
-		r = getClipping();
+	private Color foreground;
+	private int lineWidth;
+
+	private Typeface typeface = Typeface.makeDefault(); // Lädt die
+														// Standardschriftart
+	private Font font = new Font(typeface, 12); // Erstellt ein Font-Objekt mit
+												// einer Schriftgröße von 12
+	private io.github.humbleui.skija.FontMetrics metrics;
+
+	public SkijaGC(Drawable drawable, int style) {
+		innerGC = new GC(drawable, style);
+		init();
+	}
+
+	public SkijaGC(GC gc) {
+		innerGC = gc;
+		init();
+	}
+
+	private void init() {
+		r = innerGC.getClipping();
 		surface = Surface
 				.makeRaster(ImageInfo.makeN32Premul(r.width, r.height));
 
+		metrics = font.getMetrics();
+
 	}
 
-	public SkijaGC(GC innerGC) {
-		this(innerGC.getDevice(), innerGC.getStyle());
-		this.innerGC = innerGC;
+	@Override
+	public void dispose() {
+		this.innerGC.dispose();
+
+	}
+
+	@Override
+	public Color getBackground() {
+		return this.background;
 	}
 
 	private String[] splitString(String text) {
@@ -58,37 +77,41 @@ public class SkijaGC extends GC {
 
 	public void commit() {
 
-		// Surface bgSurface = Surface
-		// .makeRaster(ImageInfo.makeN32Premul(r.width, r.height));
-		//
-		//
-		// Canvas bgc = bgSurface.getCanvas();
-		// Paint bgPaint = new Paint().setColor(getBackground().handle);
-		// bgc.drawRect(Rect.makeWH(r.width, r.height), bgPaint);
-		// bgPaint.close();
-		//
-		// io.github.humbleui.skija.Image im = surface.makeImageSnapshot();
-		// // bgc.drawImage(im, 0, 0);
-		//
-		// byte[] imageBytes = EncoderPNG.encode(im).getBytes();
-		//
-		// Image i = new Image(getDevice(), new
-		// ByteArrayInputStream(imageBytes));
-		// super.drawImage(i, 0, 0);
+		if (this.background != null) {
+
+			Surface bgSurface = Surface
+					.makeRaster(ImageInfo.makeN32Premul(r.width, r.height));
+			//
+			//
+			Canvas bgc = bgSurface.getCanvas();
+			Paint bgPaint = new Paint().setColor(getBackground().handle);
+			bgc.drawRect(Rect.makeWH(r.width, r.height), bgPaint);
+			bgPaint.close();
+
+			bgSurface.draw(surface.getCanvas(), 0, 0, null);
+
+			// byte[] imageBytes = EncoderPNG.encode(im).getBytes();
+			//
+			// Image i = new Image(getDevice(), new
+			// ByteArrayInputStream(imageBytes));
+			// super.drawImage(i, 0, 0);
+
+			bgSurface = surface;
+
+		}
 
 		io.github.humbleui.skija.Image im = surface.makeImageSnapshot();
 		byte[] imageBytes = EncoderPNG.encode(im).getBytes();
 
-		Image i = new Image(getDevice(), new ByteArrayInputStream(imageBytes));
+		Image i = new Image(innerGC.getDevice(),
+				new ByteArrayInputStream(imageBytes));
 
-		if (innerGC != null)
-			innerGC.drawImage(i, 0, 0);
-		else
-			super.drawImage(i, 0, 0);
+		innerGC.drawImage(i, 0, 0);
+
+		i.dispose();
 
 	}
 
-	@Override
 	public Point textExtent(String string) {
 
 		Typeface typeface = Typeface.makeDefault();
@@ -102,16 +125,16 @@ public class SkijaGC extends GC {
 	@Override
 	public void setBackground(Color color) {
 
-		super.setBackground(color);
+		this.background = color;
 
-		// TODO we will need a trigger to ensure redraw
+		// TODO trigger necessary
 
 	}
 
 	@Override
 	public void setForeground(Color color) {
 
-		super.setForeground(color);
+		this.foreground = color;
 
 		// TODO i guess there we don't need a trigger for redraw
 
@@ -120,13 +143,17 @@ public class SkijaGC extends GC {
 	@Override
 	public void fillRectangle(Rectangle rect) {
 
-		Canvas canvas = surface.getCanvas();
-		Paint bgPaint = new Paint().setColor(getBackground().handle);
-		canvas.drawRRect(
-				new RRect(rect.x, rect.y, rect.width, rect.height, null),
-				bgPaint);
+		System.out.println("WARN: Not implemented yet: "
+				+ new Throwable().getStackTrace()[0]);
 
-		bgPaint.close();
+		 Canvas canvas = surface.getCanvas();
+		 Paint bgPaint = new Paint().setColor( convertSWTColorToSkijaColor(getBackground()) );
+		   Rect rectOutline = Rect.makeXYWH(rect.x, rect.y, rect.width , rect.height );
+           canvas.drawRect(rectOutline, bgPaint);
+		 bgPaint.close();
+
+
+
 	}
 
 	@Override
@@ -189,6 +216,11 @@ public class SkijaGC extends GC {
 	}
 
 	@Override
+	public Color getForeground() {
+		return this.foreground;
+	}
+
+	@Override
 	public void drawText(String string, int x, int y) {
 
 		drawText(string, x, y, 0);
@@ -221,12 +253,13 @@ public class SkijaGC extends GC {
 
 		float lineHeight = font.getMetrics().getHeight();
 
-		float fx = 0;
-		float fy = lineHeight;
+		// we actually have to set the first height to the text hight half. This
+		// is kind of irritating...
+		float fy = lineHeight ;
 
 		if (lines != null)
 			for (String line : lines) {
-				blobBuilder.appendRun(font, line, fx, fy);
+				blobBuilder.appendRun(font, line, 0, fy);
 				fy = fy + lineHeight;
 
 			}
@@ -250,7 +283,6 @@ public class SkijaGC extends GC {
 				+ new Throwable().getStackTrace()[0]);
 	}
 
-	@Override
 	public void drawFocus(int x, int y, int width, int height) {
 		System.out.println("WARN: Not implemented yet: "
 				+ new Throwable().getStackTrace()[0]);
@@ -291,7 +323,6 @@ public class SkijaGC extends GC {
 				+ new Throwable().getStackTrace()[0]);
 	}
 
-	@Override
 	public void drawPath(Path path) {
 		System.out.println("WARN: Not implemented yet: "
 				+ new Throwable().getStackTrace()[0]);
@@ -308,7 +339,6 @@ public class SkijaGC extends GC {
 				+ new Throwable().getStackTrace()[0]);
 	}
 
-	@Override
 	public void drawPolyline(int[] pointArray) {
 		System.out.println("WARN: Not implemented yet: "
 				+ new Throwable().getStackTrace()[0]);
@@ -320,7 +350,6 @@ public class SkijaGC extends GC {
 				+ new Throwable().getStackTrace()[0]);
 	}
 
-	@Override
 	public void drawRectangle(Rectangle rect) {
 		System.out.println("WARN: Not implemented yet: "
 				+ new Throwable().getStackTrace()[0]);
@@ -333,19 +362,16 @@ public class SkijaGC extends GC {
 				+ new Throwable().getStackTrace()[0]);
 	}
 
-	@Override
 	public void drawString(String string, int x, int y) {
 		System.out.println("WARN: Not implemented yet: "
 				+ new Throwable().getStackTrace()[0]);
 	}
 
-	@Override
 	public void drawString(String string, int x, int y, boolean isTransparent) {
 		System.out.println("WARN: Not implemented yet: "
 				+ new Throwable().getStackTrace()[0]);
 	}
 
-	@Override
 	public void fillArc(int x, int y, int width, int height, int startAngle,
 			int arcAngle) {
 		System.out.println("WARN: Not implemented yet: "
@@ -365,7 +391,6 @@ public class SkijaGC extends GC {
 				+ new Throwable().getStackTrace()[0]);
 	}
 
-	@Override
 	public void fillPath(Path path) {
 		System.out.println("WARN: Not implemented yet: "
 				+ new Throwable().getStackTrace()[0]);
@@ -388,5 +413,67 @@ public class SkijaGC extends GC {
 			int arcWidth, int arcHeight) {
 		System.out.println("WARN: Not implemented yet: "
 				+ new Throwable().getStackTrace()[0]);
+	}
+
+	@Override
+	public Point textExtent(String string, int dRAW_FLAGS) {
+		System.out.println("WARN: Not implemented yet: "
+				+ new Throwable().getStackTrace()[0]);
+		return null;
+	}
+
+	@Override
+	public void setFont(org.eclipse.swt.graphics.Font font) {
+		System.out.println("WARN: Not implemented yet: "
+				+ new Throwable().getStackTrace()[0]);
+	}
+
+	@Override
+	public org.eclipse.swt.graphics.Font getFont() {
+		System.out.println("WARN: Not implemented yet: "
+				+ new Throwable().getStackTrace()[0]);
+		return null;
+	}
+
+	@Override
+	public void setClipping(int x, int y, int width, int height) {
+		System.out.println("WARN: Not implemented yet: "
+				+ new Throwable().getStackTrace()[0]);
+
+	}
+
+	@Override
+	public void setTransform(Transform transform) {
+
+		System.out.println("WARN: Not implemented yet: "
+				+ new Throwable().getStackTrace()[0]);
+
+	}
+
+	@Override
+	public void setAlpha(int alpha) {
+		System.out.println("WARN: Not implemented yet: "
+				+ new Throwable().getStackTrace()[0]);
+
+	}
+
+	@Override
+	public int getAlpha() {
+		System.out.println("WARN: Not implemented yet: "
+				+ new Throwable().getStackTrace()[0]);
+		return 0;
+	}
+
+	@Override
+	public void setLineWidth(int i) {
+		this.lineWidth = i;
+
+	}
+
+	@Override
+	public IFontMetrics getFontMetrics() {
+
+		IFontMetrics fm = new SkijaFontMetrics(metrics);
+		return fm;
 	}
 }
