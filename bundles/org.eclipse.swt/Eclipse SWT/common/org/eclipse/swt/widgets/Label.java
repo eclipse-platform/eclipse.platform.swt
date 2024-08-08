@@ -18,7 +18,6 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.win32.*;
 
 /**
  * A Label which supports aligned text and/or an image and different border styles.
@@ -51,7 +50,7 @@ import org.eclipse.swt.internal.win32.*;
 // Idea: move Control to the common folder and create another class, that handles the OS dependent stuff.
 public class Label extends Canvas {
 
-
+	
 	/** Gap between icon and text */
 	private static final int GAP = 5;
 	/** Left and right margins */
@@ -1047,16 +1046,6 @@ private String[] splitString(String text) {
 		}
 	} while (pos != -1);
 	return lines;
-}
-@Override
-TCHAR windowClass() {
-	// TODO Auto-generated method stub
-	return null;
-}
-@Override
-long windowProc() {
-	// TODO Auto-generated method stub
-	return 0;
 }
 }
 
