@@ -55,23 +55,72 @@ public class CSimpleText extends Canvas {
 		}
 	}
 
+	public CSimpleText() {
+		// TODO DELETE ME
+	}
+
 	private void keyPressed(KeyEvent e) {
+		TextLocation caretLocation;
+
+		boolean updateSelection = (e.stateMask & SWT.SHIFT) != 0;
+
 		switch (e.keyCode) {
-        case SWT.ARROW_LEFT:
-            System.out.println("Left arrow key pressed");
-            caretOffset--;
-            break;
-        case SWT.ARROW_RIGHT:
-            System.out.println("Right arrow key pressed");
-            caretOffset++;
-            break;
-        default:
-    		StringBuilder sb = new StringBuilder(content.getText());
-    		sb.insert(caretOffset, e.character);
-    		content.setText(sb.toString());
-    		caretOffset++;
-    		selectionStart = selectionEnd = -1;
+		case SWT.ARROW_LEFT:
+			moveCaretTo(caretOffset - 1, updateSelection);
+			break;
+		case SWT.ARROW_RIGHT:
+			moveCaretTo(caretOffset + 1, updateSelection);
+			break;
+		case SWT.ARROW_UP:
+			caretLocation = content.getLocation(caretOffset);
+			if (caretLocation.line <= 0)
+				break;
+			caretLocation.line--;
+			moveCaretTo(content.getOffset(caretLocation), updateSelection);
+			break;
+		case SWT.ARROW_DOWN:
+			caretLocation = content.getLocation(caretOffset);
+			if (caretLocation.line > content.getLines().length - 1)
+				break;
+			caretLocation.line++;
+			moveCaretTo(content.getOffset(caretLocation), updateSelection);
+			break;
+		case SWT.BS:
+			content.removeCharacter(caretOffset - 1);
+			moveCaretTo(caretOffset - 1, false);
+			removeSelection();
+			break;
+		case SWT.DEL:
+			content.removeCharacter(caretOffset);
+			removeSelection();
+			break;
+		default:
+			content.append(e.character);
+			moveCaretTo(caretOffset + 1, false);
+			removeSelection();
 		}
+		redraw();
+	}
+
+	private int removeSelection() {
+		return selectionStart = selectionEnd = -1;
+	}
+
+	private void moveCaretTo(int newOffset, boolean updateSelection) {
+		if (newOffset < 0 || newOffset > content.getText().length())
+			return;
+
+		if (updateSelection) {
+			if (caretOffset == selectionEnd) {
+				selectionEnd = newOffset;
+			} else if (selectionStart < 0 && selectionEnd < 0) {
+				selectionStart = caretOffset;
+				selectionEnd = newOffset;
+			}
+		} else {
+			removeSelection();
+		}
+		caretOffset = newOffset;
 	}
 
 	protected void widgetDisposed(DisposeEvent e) {
@@ -89,26 +138,29 @@ public class CSimpleText extends Canvas {
 
 	private void drawSelection(PaintEvent e, Rectangle visibleArea) {
 		GC gc = e.gc;
+		int textLength = content.getText().length();
+		int start = Math.min(Math.max(Math.min(selectionStart, selectionEnd), 0), textLength);
+		int end = Math.min(Math.max(Math.max(selectionStart, selectionEnd), 0), textLength);
 
 		if (selectionStart >= 0) {
-			Point startLocationPixel = getLocationByOffset(selectionStart, gc);
-			Point startLocation = content.getLocation(selectionStart);
-			Point endLocation = content.getLocation(selectionEnd);
+			Point startLocationPixel = getLocationByOffset(start, gc);
+			TextLocation startLocation = content.getLocation(start);
+			TextLocation endLocation = content.getLocation(end);
 			String[] textLines = content.getLines();
 
 			Color oldBackground = gc.getBackground();
 			gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_GRAY));
 
 			int y = startLocationPixel.y;
-			for (int i = startLocation.y; i <= endLocation.y; i++) {
+			for (int i = startLocation.line; i <= endLocation.line; i++) {
 				int x = 0;
 				String text = textLines[i];
-				if (i == endLocation.y) {
-					text = text.substring(0, endLocation.x);
+				if (i == endLocation.line) {
+					text = text.substring(0, endLocation.column);
 				}
-				if (i == startLocation.y) {
+				if (i == startLocation.line) {
 					x = startLocationPixel.x;
-					text = text.substring(startLocation.x);
+					text = text.substring(startLocation.column);
 				}
 				gc.drawText(text, x - visibleArea.x, y - visibleArea.y, false);
 				y += LINE_HEIGTH;
@@ -190,10 +242,10 @@ public class CSimpleText extends Canvas {
 		selectionStart = start;
 		redraw();
 	}
-	public void setSelection (int start, int end) {
-		int textLength = content.getText().length();
-		selectionStart = Math.min (Math.max (Math.min (start, end), 0), textLength);
-		selectionEnd = Math.min (Math.max (Math.max (start, end), 0), textLength);
+
+	public void setSelection(int start, int end) {
+		selectionStart = start;
+		selectionEnd = end;
 		caretOffset = end;
 		redraw();
 	}
@@ -202,19 +254,21 @@ public class CSimpleText extends Canvas {
 		return new Point(0, 0);
 	}
 
-	public String getSelectionText () {
+	public String getSelectionText() {
 		return content.getText().substring(selectionStart, selectionEnd);
 	}
 
-	public int getTopIndex () {
-		if ((style & SWT.SINGLE) != 0) return 0;
+	public int getTopIndex() {
+		if ((style & SWT.SINGLE) != 0)
+			return 0;
 		Rectangle visibleArea = getVisibleArea();
 		return visibleArea.x / LINE_HEIGTH;
 	}
 
-	public void setTopIndex (int index) {
-		checkWidget ();
-		if ((style & SWT.SINGLE) != 0) return;
+	public void setTopIndex(int index) {
+		checkWidget();
+		if ((style & SWT.SINGLE) != 0)
+			return;
 		Rectangle visibleArea = getVisibleArea();
 
 		int y = index * LINE_HEIGTH;
@@ -240,11 +294,11 @@ public class CSimpleText extends Canvas {
 	}
 
 	public Point getLocationByOffset(int offset, GC gc) {
-		Point selectionLocation = content.getLocation(offset);
+		TextLocation selectionLocation = content.getLocation(offset);
 
-		String beforeSelection = content.getLines()[selectionLocation.y].substring(0, selectionLocation.x);
+		String beforeSelection = content.getLines()[selectionLocation.line].substring(0, selectionLocation.column);
 		int x = gc.textExtent(beforeSelection).x;
-		int y = selectionLocation.y * LINE_HEIGTH;
+		int y = selectionLocation.line * LINE_HEIGTH;
 		return new Point(x, y);
 	}
 
@@ -268,6 +322,21 @@ public class CSimpleText extends Canvas {
 		return selectionStart;
 	}
 
+	class TextLocation {
+		int line;
+		int column;
+
+		public TextLocation(int line, int column) {
+			this.line = line;
+			this.column = column;
+		}
+
+		@Override
+		public String toString() {
+			return "(" + line + ", " + column + ")";
+		}
+	}
+
 	class TextContent {
 		private String text = "";
 
@@ -275,15 +344,41 @@ public class CSimpleText extends Canvas {
 			return text;
 		}
 
+		public void removeCharacter(int offset) {
+			if (offset > text.length()) return;
+			StringBuilder sb = new StringBuilder(text.substring(0, offset));
+			if (offset + 1 < text.length()) {
+				sb.append(text.substring(offset + 1, text.length()));
+			}
+			text = sb.toString();
+
+		}
+
+		public void append(char character) {
+			StringBuilder sb = new StringBuilder(text);
+			sb.insert(caretOffset, character);
+			text = sb.toString();
+		}
+
+		public int getOffset(TextLocation location) {
+			String[] lines = getLines();
+			int offset = 0;
+			for (int i = 0; i < location.line; i++) {
+				offset += lines[i].length() + 1; // add 1 for line break
+			}
+			offset += Math.min(location.column, lines[location.line].length());
+			return offset;
+		}
+
 		public void setText(String text) {
 			if (text == null)
-				error(SWT.ERROR_NULL_ARGUMENT);
+				SWT.error(SWT.ERROR_NULL_ARGUMENT);
 			this.text = text;
 		}
 
 		public void append(String string) {
 			if (string == null)
-				error(SWT.ERROR_NULL_ARGUMENT);
+				SWT.error(SWT.ERROR_NULL_ARGUMENT);
 			text = text + string;
 		}
 
@@ -295,10 +390,29 @@ public class CSimpleText extends Canvas {
 			return getLines().length;
 		}
 
-		public Point getLocation(int offset) {
-			String beforeOffset = text.substring(0, offset);
-			String[] lines = getLinesOf(beforeOffset);
-			return lines.length > 0 ? new Point(lines[lines.length - 1].length(), (lines.length - 1)) : new Point(0, 0);
+		public TextLocation getLocation(int offset) {
+			if (offset < 0 || offset > text.length())
+				SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+
+			int line = 0;
+			int column = 0;
+
+			for (int i = 0; i < offset; i++) {
+				char c = text.charAt(i);
+				if (c == '\n') {
+					line++;
+					column = 0; // Reset column number after a new line
+				} else if (c == '\r') {
+					if (i + 1 < text.length() && text.charAt(i + 1) == '\n') {
+						i++; // Skip the '\n' in '\r\n' sequence
+					}
+					line++;
+					column = 0; // Reset column number after a new line
+				} else {
+					column++;
+				}
+			}
+			return new TextLocation(line, column);
 		}
 
 		private String[] getLinesOf(String string) {
