@@ -18,6 +18,7 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.custom.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
 
 /**
  * Instances of this class are controls that allow the user
@@ -153,6 +154,11 @@ public void addSegmentListener(SegmentListener listener) {
 public int getCaretPosition() {
 	System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	return -1;
+}
+
+public Point getCaretLocation() {
+	System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+	return null;
 }
 
 }
