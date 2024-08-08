@@ -10,9 +10,12 @@ public class CButton extends Canvas {
 
 	String text;
 
+	private Color oldBackground;
+
 	public CButton(Composite parent, int style) {
 		super(parent, style);
 
+		addMouseListener(MouseListener.mouseDownAdapter(this::onMouseDown));
 		addMouseListener(MouseListener.mouseUpAdapter(this::onMouseUp));
 		addKeyListener(KeyListener.keyReleasedAdapter(this::onKeyReleased));
 		addDisposeListener(this::onDispose);
@@ -92,7 +95,18 @@ public class CButton extends Canvas {
 	}
 
 	private void onMouseUp(MouseEvent e) {
+		setBackground(oldBackground);
+		redraw();
+
 		notifyListenersOfSelectionEvent();
+	}
+
+	private void onMouseDown(MouseEvent e) {
+		oldBackground = getBackground();
+		setBackground(new Color(0, 0, 0)); // black
+
+		// invert colors in a small area in the center
+		redraw();
 	}
 
 	private void onKeyReleased(KeyEvent e) {

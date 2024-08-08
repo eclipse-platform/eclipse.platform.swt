@@ -41,6 +41,8 @@ public static void main(String[] args) {
 //	button.addSelectionListener(widgetSelectedAdapter(e -> System.out.println("Received evt: " + e )));
 //	button.addSelectionListener(widgetSelectedAdapter(__ -> System.out.println("Another click")));
 	button.addListener(SWT.Selection, event -> System.out.println("Click!!!"));
+	button.setBackground(new Color(255, 0, 0));
+	button.setForeground(new Color(0, 0, 255));
 
 	// When the shell is active and the user presses ENTER, the button is pressed
 //	shell.setDefaultButton(button);
