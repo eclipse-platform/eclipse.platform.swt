@@ -90,7 +90,7 @@ public class Tree extends Composite {
 	int sortDirection;
 	boolean dragStarted, gestureCompleted, insertAfter, shrink, ignoreShrink;
 	boolean ignoreSelect, ignoreExpand, ignoreDeselect, ignoreResize;
-	boolean lockSelection, oldSelected, newSelected, ignoreColumnMove;
+	boolean lockSelection, oldSelected, newSelected, ignoreColumnMove, ignoreColumnResize;
 	boolean linesVisible, customDraw, painted, ignoreItemHeight;
 	boolean ignoreCustomDraw, ignoreDrawForeground, ignoreDrawBackground, ignoreDrawFocus;
 	boolean ignoreDrawSelection, ignoreDrawHot, ignoreFullSelection, explorerTheme;
@@ -8090,22 +8090,24 @@ LRESULT wmNotifyHeader (NMHDR hdr, long wParam, long lParam) {
 						int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
 						OS.RedrawWindow (handle, null, 0, flags);
 					}
-					TreeColumn column = columns [phdn.iItem];
-					if (column != null) {
-						column.updateToolTip (phdn.iItem);
-						column.sendEvent (SWT.Resize);
-						if (isDisposed ()) return LRESULT.ZERO;
-						TreeColumn [] newColumns = new TreeColumn [columnCount];
-						System.arraycopy (columns, 0, newColumns, 0, columnCount);
-						int [] order = getColumnOrder();
-						boolean moved = false;
-						for (int i=0; i<columnCount; i++) {
-							TreeColumn nextColumn = newColumns [order [i]];
-							if (moved && !nextColumn.isDisposed ()) {
-								nextColumn.updateToolTip (order [i]);
-								nextColumn.sendEvent (SWT.Move);
+					if (!ignoreColumnResize) {
+						TreeColumn column = columns [phdn.iItem];
+						if (column != null) {
+							column.updateToolTip (phdn.iItem);
+							column.sendEvent (SWT.Resize);
+							if (isDisposed ()) return LRESULT.ZERO;
+							TreeColumn [] newColumns = new TreeColumn [columnCount];
+							System.arraycopy (columns, 0, newColumns, 0, columnCount);
+							int [] order = getColumnOrder();
+							boolean moved = false;
+							for (int i=0; i<columnCount; i++) {
+								TreeColumn nextColumn = newColumns [order [i]];
+								if (moved && !nextColumn.isDisposed ()) {
+									nextColumn.updateToolTip (order [i]);
+									nextColumn.sendEvent (SWT.Move);
+								}
+								if (nextColumn == column) moved = true;
 							}
-							if (nextColumn == column) moved = true;
 						}
 					}
 				}

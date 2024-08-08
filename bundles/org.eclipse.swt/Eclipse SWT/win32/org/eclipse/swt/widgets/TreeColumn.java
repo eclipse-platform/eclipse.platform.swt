@@ -764,10 +764,16 @@ private static void handleDPIChange(Widget widget, int newZoom, float scalingFac
 	if (!(widget instanceof TreeColumn treeColumn)) {
 		return;
 	}
-	treeColumn.setWidth(Math.round(treeColumn.getWidth() * scalingFactor));
+	Tree tree = treeColumn.getParent();
+	boolean ignoreColumnResize = tree.ignoreColumnResize;
+	tree.ignoreColumnResize = true;
+	final int newColumnWidth = Math.round(treeColumn.getWidthInPixels() * scalingFactor);
+	treeColumn.setWidthInPixels(newColumnWidth);
+	tree.ignoreColumnResize = ignoreColumnResize;
+
 	Image image = treeColumn.image;
 	if (image != null) {
-		treeColumn.setImage (image);
+		treeColumn.setImage(image);
 	}
 }
 }
