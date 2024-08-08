@@ -177,6 +177,82 @@ public class SkijaGC implements IGraphicsContext {
 
 	}
 
+	private static ColorType getSkijaColorType(ImageData imageData) {
+		PaletteData palette = imageData.palette;
+
+		if (palette.isDirect) {
+			int redMask = palette.redMask;
+			int greenMask = palette.greenMask;
+			int blueMask = palette.blueMask;
+
+			String hexString = Integer.toHexString(redMask);
+			System.out.println("RED: " + hexString);
+
+			hexString = Integer.toHexString(greenMask);
+			System.out.println("GREEN: " + hexString);
+
+			hexString = Integer.toHexString(blueMask);
+			System.out.println("BLUE: " + hexString);
+
+			if (redMask == 0xFF0000 && greenMask == 0x00FF00
+					&& blueMask == 0x0000FF) {
+				return ColorType.RGBA_8888;
+			}
+
+			if (redMask == 0xF800 && greenMask == 0x07E0
+					&& blueMask == 0x001F) {
+				return ColorType.RGB_565;
+			}
+
+			if (redMask == 0xF000 && greenMask == 0x0F00
+					&& blueMask == 0x00F0) {
+				return ColorType.ARGB_4444;
+			}
+
+			if (redMask == 0x0000FF00 && greenMask == 0x00FF0000
+					&& blueMask == 0xFF000000) {
+				return ColorType.BGRA_8888;
+			}
+
+			if (redMask == 0x3FF00000 && greenMask == 0x000FFC00
+					&& blueMask == 0x000003FF) {
+				return ColorType.RGBA_1010102;
+			}
+
+			if (redMask == 0x000003FF && greenMask == 0x000FFC00
+					&& blueMask == 0x3FF00000) {
+				return ColorType.BGRA_1010102;
+			}
+		} else {
+			if (imageData.depth == 8 && palette.colors != null
+					&& palette.colors.length <= 256) {
+				return ColorType.ALPHA_8;
+			}
+
+			if (imageData.depth == 16) {
+				// 16-bit indexed images are not directly mappable to common
+				// ColorTypes
+				return ColorType.ARGB_4444; // Assume for indexed color images
+			}
+
+			if (imageData.depth == 24) {
+				// Assuming RGB with no alpha channel
+				return ColorType.RGB_888X;
+			}
+
+			if (imageData.depth == 32) {
+				// Assuming 32-bit color with alpha channel
+				return ColorType.RGBA_8888;
+			}
+		}
+
+		// Additional mappings for more complex or less common types
+		// You may need additional logic or assumptions here
+
+		// Fallback for unsupported or unknown types
+		throw new UnsupportedOperationException("Unsupported ColorType");
+	}
+
 	private static io.github.humbleui.skija.Image convertSWTImageToSkijaImage(
 			Image swtImage) {
 		ImageData imageData = swtImage.getImageData();
@@ -184,8 +260,16 @@ public class SkijaGC implements IGraphicsContext {
 		int width = imageData.width;
 		int height = imageData.height;
 
-		ImageInfo imageInfo = new ImageInfo(width, height, ColorType.BGRA_8888,
-				ColorAlphaType.PREMUL);
+		PaletteData palette = swtImage.getImageData().palette;
+
+		palette.getPixel(new RGB(1, 2, 3));
+
+		// ImageInfo imageInfo = new ImageInfo(width, height,
+		// ColorType.BGRA_8888,
+		// ColorAlphaType.PREMUL);
+
+		ImageInfo imageInfo = new ImageInfo(width, height,
+				getSkijaColorType(imageData), ColorAlphaType.PREMUL);
 
 		return io.github.humbleui.skija.Image.makeRasterFromBytes(imageInfo,
 				imageData.data, imageData.bytesPerLine);
