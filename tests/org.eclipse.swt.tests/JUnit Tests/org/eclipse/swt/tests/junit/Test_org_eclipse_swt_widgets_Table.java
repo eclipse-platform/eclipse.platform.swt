@@ -22,6 +22,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
@@ -1245,6 +1246,7 @@ public void test_selectII() {
 	assertArrayEquals(new int[]{0, 2, 7, 10, 14}, table.getSelectionIndices());
 
 	table.select(4, 10);
+	System.out.println(Arrays.toString(table.getSelectionIndices()));
 	assertArrayEquals(new int[]{0, 2, 4, 5, 6, 7, 8, 9, 10, 14}, table.getSelectionIndices());
 
 	table.select(4, 14);
