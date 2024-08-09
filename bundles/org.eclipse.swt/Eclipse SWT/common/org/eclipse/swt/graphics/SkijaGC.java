@@ -271,7 +271,7 @@ public class SkijaGC implements IGraphicsContext {
 		byte[] data = imageData.data;
 		byte[] convertedData = new byte[data.length];
 		for (int i = 0; i < data.length; i += 4) {
-			byte alpha = (byte) imageData.alpha;
+			byte alpha = (byte) imageData.alphaData[i / 4];
 			byte red = data[i + 1];
 			byte green = data[i + 2];
 			byte blue = data[i + 3];
