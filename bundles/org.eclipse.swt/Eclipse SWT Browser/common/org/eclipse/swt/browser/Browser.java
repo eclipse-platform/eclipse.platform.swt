@@ -13,6 +13,10 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
+import java.io.*;
+import java.net.*;
+import java.nio.file.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 
@@ -53,6 +57,26 @@ public class Browser extends Composite {
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.browser."; //$NON-NLS-1$
 	static final String PROPERTY_DEFAULTTYPE = "org.eclipse.swt.browser.DefaultType"; //$NON-NLS-1$
 
+	/**
+	 * The BASE_URI is the path to a temporary html file which is used
+	 * by modern browsers to navigate to for setting html content in the
+	 * DOM of the browser to enable them to load local resources.
+	 *
+	 * @since 3.127
+	 */
+	public static final URI BASE_URI;
+
+	static {
+		URI absolutePath;
+		try {
+			Path tempFile = Files.createTempFile("base", ".html");
+			absolutePath = tempFile.toUri();
+			tempFile.toFile().deleteOnExit();
+		} catch (IOException e) {
+			absolutePath = URI.create("about:blank");
+		}
+		BASE_URI = absolutePath;
+	}
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
