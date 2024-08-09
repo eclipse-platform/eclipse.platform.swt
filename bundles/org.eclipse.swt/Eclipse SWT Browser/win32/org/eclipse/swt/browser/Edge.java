@@ -64,6 +64,8 @@ class Edge extends WebBrowser {
 	boolean inNewWindow;
 	HashMap<Long, LocationEvent> navigations = new HashMap<>();
 
+	private String html;
+
 	static {
 		NativeClearSessions = () -> {
 			ICoreWebView2CookieManager manager = getCookieManager();
@@ -435,6 +437,8 @@ public void create(Composite parent, int style) {
 		handler.Release();
 	}
 
+	addProgressListener(ProgressListener.completedAdapter(__ -> writeToDefaultPathDOM()));
+
 	IUnknown hostDisp = newHostObject(this::handleCallJava);
 	long[] hostObj = { COM.VT_DISPATCH, hostDisp.getAddress(), 0 }; // VARIANT
 	webView.AddHostObjectToScript("swt\0".toCharArray(), hostObj);
@@ -539,7 +543,10 @@ String getJavaCallDeclaration() {
 
 @Override
 public String getText() {
-	return (String)evaluate("return document.documentElement.outerHTML;");
+	if (html == null) {
+		return (String)evaluate("return document.documentElement.outerHTML;");
+	}
+	return html;
 }
 
 @Override
@@ -846,15 +853,22 @@ public void stop() {
 	webView.Stop();
 }
 
-@Override
-public boolean setText(String html, boolean trusted) {
-	char[] data = new char[html.length() + 1];
-	html.getChars(0, html.length(), data, 0);
-	return webView.NavigateToString(data) == COM.S_OK;
+private void writeToDefaultPathDOM() {
+	if(html != null && URI.create(getUrl()).equals(Browser.BASE_URI)) {
+		boolean test = jsEnabled;
+		jsEnabled = true;
+		execute("document.open(); document.write(`" + html + "`); document.close();");
+		jsEnabled = test;
+		this.html = null;
+	}
 }
 
 @Override
-public boolean setUrl(String url, String postData, String[] headers) {
+public boolean setText(String html, boolean trusted) {
+	return setWebpageData(Browser.BASE_URI.toASCIIString(), null, null, html);
+}
+
+private boolean setWebpageData(String url, String postData, String[] headers, String html) {
 	// Feature in WebView2. Partial URLs like "www.example.com" are not accepted.
 	// Prepend the protocol if it's missing.
 	if (!url.matches("[a-z][a-z0-9+.-]*:.*")) {
@@ -862,6 +876,7 @@ public boolean setUrl(String url, String postData, String[] headers) {
 	}
 	int hr;
 	char[] pszUrl = stringToWstr(url);
+	this.html = html;
 	if (postData != null || headers != null) {
 		if (environment2 == null || webView_2 == null) {
 			SWT.error(SWT.ERROR_NOT_IMPLEMENTED, null, " [WebView2 version 88+ is required to set postData and headers]");
@@ -894,6 +909,11 @@ public boolean setUrl(String url, String postData, String[] headers) {
 		hr = webView.Navigate(pszUrl);
 	}
 	return hr == COM.S_OK;
+}
+
+@Override
+public boolean setUrl(String url, String postData, String[] headers) {
+	return setWebpageData(url, postData, headers, null);
 }
 
 }

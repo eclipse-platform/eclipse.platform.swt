@@ -1141,7 +1141,8 @@ private void validateTitleChanged(String expectedTitle, Runnable browserSetFunc)
 	shell.open();
 
 	boolean hasFinished = waitForPassCondition(() -> actualTitle.get().length() != 0
-			&& !actualTitle.get().contains("about:blank")); // Windows sometimes does 2 loads, one "about:blank", and one actual load.
+			&& !actualTitle.get().contains("about:blank") // Windows sometimes does 2 loads, one "about:blank", and one actual load.
+			&& !Browser.BASE_URI.toASCIIString().contains(actualTitle.get())); // Edge Browser does 2 loads on setText, one for navigating to BASE_URL, and one actual load.
 	boolean passed = hasFinished && actualTitle.get().equals(expectedTitle);
 	String errMsg = "";
 	if (!hasFinished)
