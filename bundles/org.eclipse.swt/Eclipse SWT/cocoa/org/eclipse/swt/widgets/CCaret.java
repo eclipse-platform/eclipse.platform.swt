@@ -108,6 +108,7 @@ boolean drawCaret () {
 		gc.drawImage(image, 0, 0, imageBounds.width, imageBounds.height, x, y, nWidth, nHeight);
 	}
 	gc.fillRectangle(x, y, nWidth, nHeight);
+	gc.dispose();
 	parent.redraw();
 	return true;
 }

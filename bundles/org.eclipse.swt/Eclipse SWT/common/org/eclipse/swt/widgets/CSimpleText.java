@@ -1,5 +1,6 @@
 package org.eclipse.swt.widgets;
 
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
@@ -19,6 +20,8 @@ public class CSimpleText extends Canvas {
 	private int caretOffset;
 
 	int textLimit = LIMIT;
+
+	private boolean mouseDown;
 
 	public CSimpleText(Composite parent, int style) {
 		super(parent, style);
@@ -75,11 +78,23 @@ public class CSimpleText extends Canvas {
 
 		});
 
+		addMouseMoveListener(e -> {
+			CSimpleText.this.onMouseMove(e);
+		});
+
 		setCursor(display.getSystemCursor(SWT.CURSOR_IBEAM));
 
 	}
 
-	protected void onMouseUp(MouseEvent e) {
+	private void onMouseMove(MouseEvent e) {
+		if (mouseDown) {
+			TextLocation location = getTextLocation(e.x, e.y);
+			selectionEnd = content.getOffset(location);
+			redraw();
+		}
+	}
+
+	private void onMouseUp(MouseEvent e) {
 		TextLocation location = getTextLocation(e.x, e.y);
 		selectionEnd = content.getOffset(location);
 		if (selectionStart == selectionEnd) {
@@ -87,13 +102,14 @@ public class CSimpleText extends Canvas {
 		} else {
 			caretOffset = selectionEnd;
 		}
-
 		redraw();
+		mouseDown = false;
 	}
 
-	protected void onMouseDown(MouseEvent e) {
+	private void onMouseDown(MouseEvent e) {
 		TextLocation location = getTextLocation(e.x, e.y);
 		caretOffset = selectionStart = selectionEnd = content.getOffset(location);
+		mouseDown = true;
 		redraw();
 	}
 
@@ -114,7 +130,11 @@ public class CSimpleText extends Canvas {
 			for (int i = 0; i < text.length(); i++) {
 				int textExtend = gc.textExtent(text.substring(0, i)).x;
 				if (textExtend >= x + 5) {
-					text = text.substring(0, i - 1);
+					if (i > 0) {
+						text = text.substring(0, i - 1);
+					} else {
+						text = "";
+					}
 					break;
 				}
 			}
@@ -161,11 +181,23 @@ public class CSimpleText extends Canvas {
 			removeSelection();
 			break;
 		default:
-			content.append(e.character);
-			moveCaretTo(caretOffset + 1, false);
+			if (isTextSelected()) {
+				content.replaceWith(e.character, selectionStart, selectionEnd);
+				moveCaretTo(Math.min(selectionStart, selectionEnd) + 1, false);
+			} else {
+				content.append(e.character);
+				moveCaretTo(caretOffset + 1, false);
+			}
 			removeSelection();
 		}
 		redraw();
+	}
+
+	private boolean isTextSelected() {
+		if (selectionStart >= 0 && selectionEnd > 0 && selectionStart != selectionEnd) {
+			return true;
+		}
+		return false;
 	}
 
 	private void removeSelection() {
@@ -254,7 +286,7 @@ public class CSimpleText extends Canvas {
 
 	private void drawBackground(PaintEvent e) {
 		GC gc = e.gc;
-		gc.setBackground(new Color(255, 255, 255, 128));
+		gc.setBackground(getBackgroundColor());
 		gc.fillRectangle(e.x, e.y, e.width - 1, e.height - 1);
 	}
 
@@ -410,6 +442,17 @@ public class CSimpleText extends Canvas {
 
 		public String getText() {
 			return text;
+		}
+
+		public void replaceWith(char character, int from, int to) {
+			int start = Math.min(from, to);
+			int end = Math.min(Math.max(from, to), text.length());
+
+			StringBuilder sb = new StringBuilder(text.substring(0, start));
+			sb.append(character);
+			sb.append(text.substring(end));
+
+			text = sb.toString();
 		}
 
 		public void removeCharacter(int offset) {
