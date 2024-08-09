@@ -110,14 +110,14 @@ long clientHandle () {
 }
 
 @Override
-Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
-	Point size = super.computeSizeInPixels(wHint, hHint, changed);
+public Point computeSize(int wHint, int hHint, boolean changed) {
+	Point size = super.computeSize(wHint, hHint, changed);
 	int width = computeNativeSize (handle, SWT.DEFAULT, SWT.DEFAULT, false).x;
 	size.x = Math.max (size.x, width);
 	return size;
 }
 @Override
-Rectangle computeTrimInPixels (int x, int y, int width, int height) {
+public Rectangle computeTrim(int x, int y, int width, int height) {
 	checkWidget();
 	forceResize ();
 	GtkAllocation allocation = new GtkAllocation();
@@ -132,8 +132,8 @@ Rectangle computeTrimInPixels (int x, int y, int width, int height) {
 }
 
 @Override
-Rectangle getClientAreaInPixels () {
-	Rectangle clientRectangle = super.getClientAreaInPixels ();
+public Rectangle getClientArea() {
+	Rectangle clientRectangle = super.getClientArea();
 	/*
 	* Bug 453827 Child position fix.
 	* SWT's calls to gtk_widget_size_allocate and gtk_widget_set_allocation
