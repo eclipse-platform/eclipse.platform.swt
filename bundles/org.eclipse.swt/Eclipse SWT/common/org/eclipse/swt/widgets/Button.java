@@ -58,8 +58,8 @@ public class Button extends Canvas {
 	static final char[] STRING_WITH_ZERO_CHAR = new char[] {'0'};
 	private int width;
 	private int height;
+	private Listener listener;
 
-	Listener listener;
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -148,6 +148,25 @@ public Button (Composite parent, int style) {
 
 }
 
+private void onDispose(DisposeEvent e) {
+	this.dispose();
+}
+
+
+
+private void onMouseUp(MouseEvent e) {
+	notifyListeners(SWT.Selection, new Event());
+}
+
+private void onKeyReleased(KeyEvent e) {
+	System.out.println("Key: " + e.keyCode + " - " + e.character);
+
+	int oneOf = e.keyCode & SWT.CR & SWT.LF & SWT.DEL & SWT.ESC & SWT.TAB;
+	System.out.println("Is one of: " + oneOf);
+
+	notifyListeners(SWT.Selection, new Event());
+}
+
 @Override
 void sendSelectionEvent(int type) {
 	System.out.println("YAAAAAY! " + new Throwable().getStackTrace()[0]);
@@ -181,8 +200,8 @@ private void onResize() {
 private void onPaint(Event event) {
 	System.out.println("Paint: GC=" + event.gc);
 	GC gc = event.gc;
-
 	doPaint(gc, getBackground(), getForeground());
+	gc.dispose();
 }
 
 private void onDispose(Event event) {
@@ -194,11 +213,14 @@ private void onMouseDown(Event e) {
 	GC gc = (e.gc != null) ? e.gc : new GC(this);
 	// switch fg and bg colors
 	doPaint(gc, getForeground(), getBackground());
+	gc.dispose();
 }
 
 private void onMouseUp(Event e) {
 	GC gc = (e.gc != null) ? e.gc : new GC(this);
 	doPaint(gc, getBackground(), getForeground());
+	gc.dispose();
+	notifyListeners(SWT.Selection, new Event());
 }
 
 private void doPaint(GC gc, Color bgColor, Color fgColor) {
