@@ -8,7 +8,7 @@ import io.github.humbleui.types.*;
 
 public class SkijaGC implements IGraphicsContext {
 
-	public final static int FONT_DEFAULT_SIZE = 12;
+	public final static int FONT_DEFAULT_SIZE = 18;
 
 	private Surface surface;
 	private Rectangle r;
@@ -353,7 +353,7 @@ public class SkijaGC implements IGraphicsContext {
 
 		// we actually have to set the first height to the text hight half. This
 		// is kind of irritating...
-		float fy = lineHeight;
+		float fy = lineHeight / 2;
 
 		if (lines != null)
 			for (String line : lines) {
