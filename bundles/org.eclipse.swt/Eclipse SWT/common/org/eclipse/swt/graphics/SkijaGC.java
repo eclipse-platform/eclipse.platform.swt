@@ -258,7 +258,7 @@ public class SkijaGC implements IGraphicsContext {
 		ColorType colType = getSkijaColorType(imageData);
 
 		if (colType.equals(ColorType.UNKNOWN)) {
-			imageData = convertFromARGBToRGBA(imageData);
+			imageData = convertARGBToRGBA(imageData);
 			colType = ColorType.RGBA_8888;
 		}
 
@@ -267,17 +267,24 @@ public class SkijaGC implements IGraphicsContext {
 		return io.github.humbleui.skija.Image.makeRasterFromBytes(imageInfo, imageData.data, imageData.bytesPerLine);
 	}
 
-	private static ImageData convertFromARGBToRGBA(ImageData imageData) {
+	private static ImageData convertARGBToRGBA(ImageData imageData) {
 		byte[] data = imageData.data;
 		byte[] convertedData = new byte[data.length];
-		System.arraycopy(data, 1, convertedData, 0, data.length - 1);
-		convertedData[data.length - 1] = 0;
-		for (int i = 3; i < convertedData.length; i += 4) {
-			convertedData[i] = (byte) 0xFF;
+		for (int i = 0; i < data.length; i += 4) {
+			byte alpha = (byte) imageData.alpha;
+			byte red = data[i + 1];
+			byte green = data[i + 2];
+			byte blue = data[i + 3];
+
+			convertedData[i] = red;
+			convertedData[i + 1] = green;
+			convertedData[i + 2] = blue;
+			convertedData[i + 3] = alpha;
 		}
 		imageData.data = convertedData;
 		return imageData;
 	}
+
 
 	// Funktion zur Konvertierung der Farbe
 	public static int convertSWTColorToSkijaColor(Color swtColor) {
@@ -477,7 +484,7 @@ public class SkijaGC implements IGraphicsContext {
 	@Override
 	public Point textExtent(String string, int dRAW_FLAGS) {
 		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
-		return null;
+		return new Point(10, 10);
 	}
 
 	@Override
