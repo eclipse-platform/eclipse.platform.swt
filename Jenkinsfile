@@ -15,37 +15,25 @@
  *     Hannes Wellmann - Streamline entire SWT build and replace ANT-scripts by Maven, Jenkins-Pipeline and single-source Java scripts
   *******************************************************************************/
 
-def nativeBuildAgent(String platform, Closure body) {
+def runOnNativeBuildAgent(String platform, Closure body) {
 	def final nativeBuildStageName = 'Build SWT-native binaries'
 	if (platform == 'gtk.linux.x86_64') {
-		return podTemplate(yaml: '''
-apiVersion: v1
-kind: Pod
-spec:
-  containers:
-  - name: "swtbuild"
-    image: "eclipse/platformreleng-centos-swt-build:8"
-    imagePullPolicy: "Always"
-    resources:
-      limits:
-        memory: "4096Mi"
-        cpu: "2000m"
-      requests:
-        memory: "512Mi"
-        cpu: "1000m"
-    command:
-    - cat
-    tty: true
-    volumeMounts:
-    - name: tools
-      mountPath: /opt/tools
-  volumes:
-  - name: tools
-    persistentVolumeClaim:
-      claimName: tools-claim-jiro-releng
-''') { node(POD_LABEL) { stage(nativeBuildStageName) { container('swtbuild') { body() } } } }
+		return podTemplate(inheritFrom: 'centos-8', containers: [
+			containerTemplate(name: 'swtbuild',
+				resourceRequestCpu:'1000m', resourceRequestMemory:'512Mi',
+				resourceLimitCpu:'2000m', resourceLimitMemory:'4096Mi'
+			)
+		]) { node(POD_LABEL) { stage(nativeBuildStageName) { container('swtbuild') {
+			sh '''
+				sudo apt-get update -qq 
+				sudo apt-get install -qq -y libgtk-3-dev freeglut3-dev webkit2gtk-driver
+			'''
+			body()
+		} } } }
 	} else {
-		return node('swt.natives-' + platform) { stage(nativeBuildStageName) { body() } }
+		// See the Definition of the eclipse.platform Jenkins instance in
+		// https://github.com/eclipse-cbi/jiro/tree/master/instances/eclipse.platform
+		return node('native.builder-' + platform) { stage(nativeBuildStageName) { body() } }
 	}
 }
 
@@ -99,7 +87,7 @@ pipeline {
 		PR_VALIDATION_BUILD = "true"
 	}
 	parameters {
-		booleanParam(name: 'forceNativeBuilds', defaultValue: false, description: 'Forces to run the native builds of swt\'s binaries. Will push the built binaries to the master branch, unless \'skipCommit\' is set. Useful in debugging.')
+		booleanParam(name: 'forceNativeBuilds', defaultValue: true, description: 'Forces to run the native builds of swt\'s binaries. Will push the built binaries to the master branch, unless \'skipCommit\' is set. Useful in debugging.')
 		booleanParam(name: 'skipCommit', defaultValue: false, description: 'Stops committing to swt and swt binaries repo at the end. Useful in debugging.')
 	}
 	stages {
@@ -197,7 +185,7 @@ pipeline {
 				axes {
 					axis {
 						name 'PLATFORM'
-						values 'cocoa.macosx.aarch64' , 'cocoa.macosx.x86_64', 'gtk.linux.aarch64', 'gtk.linux.ppc64le', 'gtk.linux.x86_64', 'win32.win32.aarch64', 'win32.win32.x86_64'
+						values 'cocoa.macosx.aarch64' , 'cocoa.macosx.x86_64', 'gtk.linux.aarch64', 'gtk.linux.ppc64le', 'gtk.linux.x86_64', 'win32.win32.x86_64'
 					}
 				}
 				stages {
@@ -214,7 +202,7 @@ pipeline {
 									stash name:"jdk.resources.${os}.${arch}", includes: "include/,lib/"
 									deleteDir()
 								}
-								nativeBuildAgent("${PLATFORM}") {
+								runOnNativeBuildAgent("${PLATFORM}") {
 									cleanWs() // Workspace is not cleaned up by default, so we do it explicitly
 									echo "OS: ${os}, ARCH: ${arch}"
 									unstash "swt.binaries.sources.${ws}"
