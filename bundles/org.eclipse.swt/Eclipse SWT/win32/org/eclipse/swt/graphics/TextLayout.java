@@ -42,7 +42,7 @@ import org.eclipse.swt.internal.win32.*;
  */
 public final class TextLayout extends Resource {
 	Font font;
-	String text, segmentsText;
+	String text, segmentsText, originalText;
 	int lineSpacingInPoints;
 	int ascent, descent;
 	int alignment;
@@ -309,7 +309,7 @@ public TextLayout (Device device) {
 	styles[0] = new StyleItem();
 	styles[1] = new StyleItem();
 	stylesCount = 2;
-	text = ""; //$NON-NLS-1$
+	text = originalText = ""; //$NON-NLS-1$
 	long[] ppv = new long[1];
 	OS.OleInitialize(0);
 	if (COM.CoCreateInstance(COM.CLSID_CMultiLanguage, 0, COM.CLSCTX_INPROC_SERVER, COM.IID_IMLangFontLink2, ppv) == OS.S_OK) {
@@ -2952,15 +2952,11 @@ StyleItem[] merge (long items, int itemCount) {
 			linkBefore = false;
 		}
 		char ch = segmentsText.charAt(start);
-		switch (ch) {
-			case '\r':
-			case '\n':
-				item.lineBreak = true;
-				break;
-			case '\t':
-				item.tab = true;
-				break;
+		if (ch == '\r' && start + 1 < end) {
+			ch = segmentsText.charAt(start + 1);
 		}
+		item.lineBreak = ch == '\n';
+		item.tab = ch == '\t';
 		if (itemLimit == -1) {
 			nextItemIndex = itemIndex + 1;
 			OS.MoveMemory(scriptItem, items + nextItemIndex * SCRIPT_ITEM.sizeof, SCRIPT_ITEM.sizeof);
@@ -3451,6 +3447,19 @@ public void setStyle (TextStyle style, int start, int end) {
 	int length = text.length();
 	if (length == 0) return;
 	if (start > end) return;
+
+	String startString = originalText.substring(0, start+1);
+	int stringLength = startString.length();
+
+	startString = startString.charAt(stringLength-1) == '\r' ? startString.substring(0,stringLength-1) : startString;
+	int startCount = (int) startString.chars().filter(ch -> ch == '\r').count();
+
+	String endString = originalText.substring(0, end+1);
+	int endCount = (int) endString.chars().filter(ch -> ch == '\r').count();
+
+	start = start == 0 ? start : start - startCount;
+	end = end - endCount;
+
 	start = Math.min(Math.max(0, start), length - 1);
 	end = Math.min(Math.max(0, end), length - 1);
 	int low = -1;
@@ -3564,6 +3573,8 @@ public void setTabs (int[] tabs) {
  */
 public void setText (String text) {
 	checkLayout();
+	this.originalText = text;
+	text = text.replace("\r", "");
 	if (text == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (text.equals(this.text)) return;
 	freeRuns();
