@@ -37,8 +37,7 @@ public class SkijaGC implements IGraphicsContext {
 
 	private void init() {
 		r = innerGC.getClipping();
-		surface = Surface
-				.makeRaster(ImageInfo.makeN32Premul(r.width, r.height));
+		surface = Surface.makeRaster(ImageInfo.makeN32Premul(r.width, r.height));
 
 		metrics = font.getMetrics();
 
@@ -64,8 +63,7 @@ public class SkijaGC implements IGraphicsContext {
 				lines[lines.length - 1] = text.substring(start);
 			} else {
 				boolean crlf = (pos > 0) && (text.charAt(pos - 1) == '\r');
-				lines[lines.length - 1] = text.substring(start,
-						pos - (crlf ? 1 : 0));
+				lines[lines.length - 1] = text.substring(start, pos - (crlf ? 1 : 0));
 				start = pos + 1;
 				String[] newLines = new String[lines.length + 1];
 				System.arraycopy(lines, 0, newLines, 0, lines.length);
@@ -76,7 +74,6 @@ public class SkijaGC implements IGraphicsContext {
 	}
 
 	public void commit() {
-
 
 //		if (this.background != null) {
 //
@@ -104,8 +101,7 @@ public class SkijaGC implements IGraphicsContext {
 		io.github.humbleui.skija.Image im = surface.makeImageSnapshot();
 		byte[] imageBytes = EncoderPNG.encode(im).getBytes();
 
-		Image i = new Image(innerGC.getDevice(),
-				new ByteArrayInputStream(imageBytes));
+		Image i = new Image(innerGC.getDevice(), new ByteArrayInputStream(imageBytes));
 
 		innerGC.drawImage(i, 0, 0);
 
@@ -144,16 +140,13 @@ public class SkijaGC implements IGraphicsContext {
 	@Override
 	public void fillRectangle(Rectangle rect) {
 
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
+		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 
-		 Canvas canvas = surface.getCanvas();
-		 Paint bgPaint = new Paint().setColor( convertSWTColorToSkijaColor(getBackground()) );
-		   Rect rectOutline = Rect.makeXYWH(rect.x, rect.y, rect.width , rect.height );
-           canvas.drawRect(rectOutline, bgPaint);
-		 bgPaint.close();
-
-
+		Canvas canvas = surface.getCanvas();
+		Paint bgPaint = new Paint().setColor(convertSWTColorToSkijaColor(getBackground()));
+		Rect rectOutline = Rect.makeXYWH(rect.x, rect.y, rect.width, rect.height);
+		canvas.drawRect(rectOutline, bgPaint);
+		bgPaint.close();
 
 	}
 
@@ -166,13 +159,11 @@ public class SkijaGC implements IGraphicsContext {
 	}
 
 	@Override
-	public void drawImage(Image image, int srcX, int srcY, int srcWidth,
-			int srcHeight, int destX, int destY, int destWidth,
-			int destHeight) {
+	public void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY,
+			int destWidth, int destHeight) {
 
 		Canvas canvas = surface.getCanvas();
-		canvas.drawImageRect(convertSWTImageToSkijaImage(image),
-				new Rect(srcX, srcY, srcWidth, srcHeight),
+		canvas.drawImageRect(convertSWTImageToSkijaImage(image), new Rect(srcX, srcY, srcWidth, srcHeight),
 				new Rect(destX, destY, destWidth, destHeight));
 
 	}
@@ -194,38 +185,35 @@ public class SkijaGC implements IGraphicsContext {
 			hexString = Integer.toHexString(blueMask);
 			System.out.println("BLUE: " + hexString);
 
-			if (redMask == 0xFF0000 && greenMask == 0x00FF00
-					&& blueMask == 0x0000FF) {
+			if (redMask == 0xFF0000 && greenMask == 0x00FF00 && blueMask == 0x0000FF) {
+				return ColorType.UNKNOWN;
+			}
+
+			if (redMask == 0xFF00000 && greenMask == 0x00FF0000 && blueMask == 0x0000FF00) {
 				return ColorType.RGBA_8888;
 			}
 
-			if (redMask == 0xF800 && greenMask == 0x07E0
-					&& blueMask == 0x001F) {
+			if (redMask == 0xF800 && greenMask == 0x07E0 && blueMask == 0x001F) {
 				return ColorType.RGB_565;
 			}
 
-			if (redMask == 0xF000 && greenMask == 0x0F00
-					&& blueMask == 0x00F0) {
+			if (redMask == 0xF000 && greenMask == 0x0F00 && blueMask == 0x00F0) {
 				return ColorType.ARGB_4444;
 			}
 
-			if (redMask == 0x0000FF00 && greenMask == 0x00FF0000
-					&& blueMask == 0xFF000000) {
+			if (redMask == 0x0000FF00 && greenMask == 0x00FF0000 && blueMask == 0xFF000000) {
 				return ColorType.BGRA_8888;
 			}
 
-			if (redMask == 0x3FF00000 && greenMask == 0x000FFC00
-					&& blueMask == 0x000003FF) {
+			if (redMask == 0x3FF00000 && greenMask == 0x000FFC00 && blueMask == 0x000003FF) {
 				return ColorType.RGBA_1010102;
 			}
 
-			if (redMask == 0x000003FF && greenMask == 0x000FFC00
-					&& blueMask == 0x3FF00000) {
+			if (redMask == 0x000003FF && greenMask == 0x000FFC00 && blueMask == 0x3FF00000) {
 				return ColorType.BGRA_1010102;
 			}
 		} else {
-			if (imageData.depth == 8 && palette.colors != null
-					&& palette.colors.length <= 256) {
+			if (imageData.depth == 8 && palette.colors != null && palette.colors.length <= 256) {
 				return ColorType.ALPHA_8;
 			}
 
@@ -253,8 +241,7 @@ public class SkijaGC implements IGraphicsContext {
 		throw new UnsupportedOperationException("Unsupported ColorType");
 	}
 
-	private static io.github.humbleui.skija.Image convertSWTImageToSkijaImage(
-			Image swtImage) {
+	private static io.github.humbleui.skija.Image convertSWTImageToSkijaImage(Image swtImage) {
 		ImageData imageData = swtImage.getImageData();
 
 		int width = imageData.width;
@@ -268,11 +255,28 @@ public class SkijaGC implements IGraphicsContext {
 		// ColorType.BGRA_8888,
 		// ColorAlphaType.PREMUL);
 
-		ImageInfo imageInfo = new ImageInfo(width, height,
-				getSkijaColorType(imageData), ColorAlphaType.PREMUL);
+		ColorType colType = getSkijaColorType(imageData);
 
-		return io.github.humbleui.skija.Image.makeRasterFromBytes(imageInfo,
-				imageData.data, imageData.bytesPerLine);
+		if (colType.equals(ColorType.UNKNOWN)) {
+			imageData = convertFromARGBToRGBA(imageData);
+			colType = ColorType.RGBA_8888;
+		}
+
+		ImageInfo imageInfo = new ImageInfo(width, height, colType, ColorAlphaType.UNPREMUL);
+
+		return io.github.humbleui.skija.Image.makeRasterFromBytes(imageInfo, imageData.data, imageData.bytesPerLine);
+	}
+
+	private static ImageData convertFromARGBToRGBA(ImageData imageData) {
+		byte[] data = imageData.data;
+		byte[] convertedData = new byte[data.length];
+		System.arraycopy(data, 1, convertedData, 0, data.length - 1);
+		convertedData[data.length - 1] = 0;
+		for (int i = 3; i < convertedData.length; i += 4) {
+			convertedData[i] = (byte) 0xFF;
+		}
+		imageData.data = convertedData;
+		return imageData;
 	}
 
 	// Funktion zur Konvertierung der Farbe
@@ -295,7 +299,7 @@ public class SkijaGC implements IGraphicsContext {
 		Canvas c = surface.getCanvas();
 
 		Paint p = new Paint();
-		p.setColor( convertSWTColorToSkijaColor(getForeground())  );
+		p.setColor(convertSWTColorToSkijaColor(getForeground()));
 		c.drawLine(x1, y1, x2, y2, p);
 
 	}
@@ -314,20 +318,18 @@ public class SkijaGC implements IGraphicsContext {
 
 	@Override
 	public void drawText(String string, int x, int y, boolean isTransparent) {
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
+		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	}
 
 	@Override
 	public void drawText(String text, int x, int y, int flags) {
 
-
-
 		Canvas c = surface.getCanvas();
 
 		Paint p = new Paint();
 		p.setColor(convertSWTColorToSkijaColor(getForeground()));
-		// For some reason, here i have to set alpha, but at other positions this shouldn't be done.
+		// For some reason, here i have to set alpha, but at other positions this
+		// shouldn't be done.
 //		p.setAlpha(co.getAlpha());
 
 		// Schriftart und -größe
@@ -344,7 +346,7 @@ public class SkijaGC implements IGraphicsContext {
 
 		// we actually have to set the first height to the text hight half. This
 		// is kind of irritating...
-		float fy = lineHeight ;
+		float fy = lineHeight;
 
 		if (lines != null)
 			for (String line : lines) {
@@ -366,190 +368,151 @@ public class SkijaGC implements IGraphicsContext {
 	}
 
 	@Override
-	public void drawArc(int x, int y, int width, int height, int startAngle,
-			int arcAngle) {
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
+	public void drawArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
+		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	}
 
 	public void drawFocus(int x, int y, int width, int height) {
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
+		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	}
 
-	void drawIcon(Image srcImage, int srcX, int srcY, int srcWidth,
-			int srcHeight, int destX, int destY, int destWidth, int destHeight,
-			boolean simple) {
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
+	void drawIcon(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth,
+			int destHeight, boolean simple) {
+		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	}
 
-	void drawBitmap(Image srcImage, int srcX, int srcY, int srcWidth,
-			int srcHeight, int destX, int destY, int destWidth, int destHeight,
-			boolean simple) {
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
+	void drawBitmap(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY,
+			int destWidth, int destHeight, boolean simple) {
+		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	}
 
-	void drawBitmapAlpha(Image srcImage, int srcX, int srcY, int srcWidth,
-			int srcHeight, int destX, int destY, int destWidth, int destHeight,
-			boolean simple) {
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
+	void drawBitmapAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY,
+			int destWidth, int destHeight, boolean simple) {
+		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	}
 
-	void drawBitmapTransparentByClipping(long srcHdc, long maskHdc, int srcX,
-			int srcY, int srcWidth, int srcHeight, int destX, int destY,
-			int destWidth, int destHeight, boolean simple, int imgWidth,
-			int imgHeight) {
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
+	void drawBitmapTransparentByClipping(long srcHdc, long maskHdc, int srcX, int srcY, int srcWidth, int srcHeight,
+			int destX, int destY, int destWidth, int destHeight, boolean simple, int imgWidth, int imgHeight) {
+		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	}
 
 	@Override
 	public void drawOval(int x, int y, int width, int height) {
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
+		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	}
 
 	public void drawPath(Path path) {
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
+		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	}
+
 	@Override
 	public void drawPoint(int x, int y) {
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
+		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	}
 
 	@Override
 	public void drawPolygon(int[] pointArray) {
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
+		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	}
 
 	public void drawPolyline(int[] pointArray) {
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
+		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	}
 
 	@Override
 	public void drawRectangle(int x, int y, int width, int height) {
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
+		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	}
 
 	public void drawRectangle(Rectangle rect) {
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
+		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	}
 
 	@Override
-	public void drawRoundRectangle(int x, int y, int width, int height,
-			int arcWidth, int arcHeight) {
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
+	public void drawRoundRectangle(int x, int y, int width, int height, int arcWidth, int arcHeight) {
+		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	}
 
 	public void drawString(String string, int x, int y) {
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
+		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	}
 
 	public void drawString(String string, int x, int y, boolean isTransparent) {
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
+		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	}
 
-	public void fillArc(int x, int y, int width, int height, int startAngle,
-			int arcAngle) {
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
+	public void fillArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
+		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	}
 
 	@Override
-	public void fillGradientRectangle(int x, int y, int width, int height,
-			boolean vertical) {
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
+	public void fillGradientRectangle(int x, int y, int width, int height, boolean vertical) {
+		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	}
 
 	@Override
 	public void fillOval(int x, int y, int width, int height) {
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
+		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	}
 
 	public void fillPath(Path path) {
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
+		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	}
 
 	@Override
 	public void fillPolygon(int[] pointArray) {
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
+		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	}
 
 	@Override
 	public void fillRectangle(int x, int y, int width, int height) {
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
+		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	}
 
 	@Override
-	public void fillRoundRectangle(int x, int y, int width, int height,
-			int arcWidth, int arcHeight) {
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
+	public void fillRoundRectangle(int x, int y, int width, int height, int arcWidth, int arcHeight) {
+		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	}
 
 	@Override
 	public Point textExtent(String string, int dRAW_FLAGS) {
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
+		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 		return null;
 	}
 
 	@Override
 	public void setFont(org.eclipse.swt.graphics.Font font) {
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
+		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	}
 
 	@Override
 	public org.eclipse.swt.graphics.Font getFont() {
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
+		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 		return null;
 	}
 
 	@Override
 	public void setClipping(int x, int y, int width, int height) {
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
+		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 
 	}
 
 	@Override
 	public void setTransform(Transform transform) {
 
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
+		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 
 	}
 
 	@Override
 	public void setAlpha(int alpha) {
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
+		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 
 	}
 
 	@Override
 	public int getAlpha() {
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
+		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 		return 0;
 	}
 
