@@ -553,11 +553,15 @@ public String toString () {
 }
 
 public int getIntRGB() {
-	int red = (int) (handle[0] * 255f);
-	int green = (int) (handle[1] * 255f);
-	int blue = (int) (handle[2] * 255f);
-	int alpha = (int) (handle[3] * 255f);
-	return (red & 0xFF << 24) | ((green & 0xFF) << 16) | ((blue & 0xFF) << 8) | ((alpha & 0xFF) << 0);
+	int red = (int) getRed();
+	int green = (int) getGreen();
+	int blue = (int) getBlue();
+
+	int intRGB = ((red & 0xFF)) | ((green & 0xFF) << 8) | ((blue & 0xFF) << 16);
+
+	System.out.println("red: " + red + ", green: " + green + ", blue: " + blue + " = (intRGB) " + intRGB);
+	return intRGB;
+
 }
 
 }
