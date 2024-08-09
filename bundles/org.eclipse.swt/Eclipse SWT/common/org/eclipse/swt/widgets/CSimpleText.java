@@ -6,6 +6,8 @@ import org.eclipse.swt.graphics.*;
 
 public class CSimpleText extends Canvas {
 
+	public static final int LIMIT = 0x7FFFFFFF;
+
 	public static final String DELIMITER = "\n";
 
 	private static final int LINE_HEIGTH = 16;
@@ -15,7 +17,8 @@ public class CSimpleText extends Canvas {
 
 	private int selectionStart, selectionEnd;
 	private int caretOffset;
-//	Caret caret;
+
+	int textLimit = LIMIT;
 
 	public CSimpleText(Composite parent, int style) {
 		super(parent, style);
@@ -29,6 +32,7 @@ public class CSimpleText extends Canvas {
 		addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
+				super.keyPressed(e);
 				CSimpleText.this.keyPressed(e);
 			}
 		});
@@ -39,6 +43,7 @@ public class CSimpleText extends Canvas {
 
 				@Override
 				public void widgetSelected(SelectionEvent e) {
+					super.widgetSelected(e);
 					CSimpleText.this.scrollBarSelectionChanged(e);
 				}
 			});
@@ -49,14 +54,75 @@ public class CSimpleText extends Canvas {
 
 				@Override
 				public void widgetSelected(SelectionEvent e) {
+					super.widgetSelected(e);
 					CSimpleText.this.scrollBarSelectionChanged(e);
 				}
 			});
 		}
+		addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseDown(MouseEvent e) {
+				super.mouseDown(e);
+				CSimpleText.this.onMouseDown(e);
+			}
+
+			@Override
+			public void mouseUp(MouseEvent e) {
+				super.mouseUp(e);
+				CSimpleText.this.onMouseUp(e);
+			}
+
+		});
+
+		setCursor(display.getSystemCursor(SWT.CURSOR_IBEAM));
+
 	}
 
-	public CSimpleText() {
-		// TODO DELETE ME
+	protected void onMouseUp(MouseEvent e) {
+		TextLocation location = getTextLocation(e.x, e.y);
+		selectionEnd = content.getOffset(location);
+		if (selectionStart == selectionEnd) {
+			removeSelection();
+		} else {
+			caretOffset = selectionEnd;
+		}
+
+		redraw();
+	}
+
+	protected void onMouseDown(MouseEvent e) {
+		TextLocation location = getTextLocation(e.x, e.y);
+		caretOffset = selectionStart = selectionEnd = content.getOffset(location);
+		redraw();
+	}
+
+	private TextLocation getTextLocation(int selectedX, int selectedY) {
+		Rectangle visibleArea = getVisibleArea();
+		int x = selectedX + visibleArea.x;
+		int y = selectedY + visibleArea.y;
+
+		String[] textLines = content.getLines();
+		int clickedLine = Math.round(y / LINE_HEIGTH);
+		int selectedLine = Math.min(clickedLine, textLines.length - 1);
+		String text = "";
+		GC gc = new GC(this);
+		if (clickedLine > selectedLine) {
+			text = textLines[selectedLine];
+		} else {
+			text = textLines[selectedLine];
+			for (int i = 0; i < text.length(); i++) {
+				int textExtend = gc.textExtent(text.substring(0, i)).x;
+				if (textExtend >= x + 5) {
+					text = text.substring(0, i - 1);
+					break;
+				}
+			}
+		}
+		gc.dispose();
+
+		TextLocation location = new TextLocation(clickedLine, text.length());
+		return location;
 	}
 
 	private void keyPressed(KeyEvent e) {
@@ -102,8 +168,8 @@ public class CSimpleText extends Canvas {
 		redraw();
 	}
 
-	private int removeSelection() {
-		return selectionStart = selectionEnd = -1;
+	private void removeSelection() {
+		selectionStart = selectionEnd = -1;
 	}
 
 	private void moveCaretTo(int newOffset, boolean updateSelection) {
@@ -132,7 +198,6 @@ public class CSimpleText extends Canvas {
 		Rectangle visibleArea = getVisibleArea();
 		drawText(e, visibleArea);
 		drawSelection(e, visibleArea);
-		drawFrame(e);
 		drawCaret(e, visibleArea);
 	}
 
@@ -180,13 +245,6 @@ public class CSimpleText extends Canvas {
 			int y = e.y + caretLocation.y - visibleArea.y;
 			caret.setBounds(x, y, 1, LINE_HEIGTH);
 		}
-
-	}
-
-	private void drawFrame(PaintEvent e) {
-		GC gc = e.gc;
-		gc.setForeground(getForeground());
-		gc.drawRectangle(e.x, e.y, e.width - 1, e.height - 1);
 	}
 
 	private void drawText(PaintEvent e, Rectangle visibleArea) {
@@ -248,6 +306,16 @@ public class CSimpleText extends Canvas {
 		selectionEnd = end;
 		caretOffset = end;
 		redraw();
+	}
+
+	public void setSelection(Point selection) {
+		if (selection == null)
+			error(SWT.ERROR_NULL_ARGUMENT);
+		setSelection(selection.x, selection.y);
+	}
+
+	public void selectAll() {
+		setSelection(0, content.getText().length());
 	}
 
 	public Point getSelection() {
@@ -423,4 +491,61 @@ public class CSimpleText extends Canvas {
 	private void scrollBarSelectionChanged(SelectionEvent e) {
 		redraw();
 	}
+
+	public void addSelectionListener(SelectionListener listener) {
+		addTypedListener(listener, SWT.Selection, SWT.DefaultSelection);
+	}
+
+	public void removeSelectionListener(SelectionListener listener) {
+		checkWidget();
+		if (listener == null)
+			error(SWT.ERROR_NULL_ARGUMENT);
+		if (eventTable == null)
+			return;
+		eventTable.unhook(SWT.Selection, listener);
+		eventTable.unhook(SWT.DefaultSelection, listener);
+	}
+
+	public void addModifyListener(ModifyListener listener) {
+		addTypedListener(listener, SWT.Modify);
+	}
+
+	public void removeModifyListener(ModifyListener listener) {
+		checkWidget();
+		if (listener == null)
+			error(SWT.ERROR_NULL_ARGUMENT);
+		if (eventTable == null)
+			return;
+		eventTable.unhook(SWT.Modify, listener);
+	}
+
+	public void setEditable(boolean editable) {
+		checkWidget();
+		if (editable) {
+			style &= ~SWT.READ_ONLY;
+		} else {
+			style |= SWT.READ_ONLY;
+		}
+		redraw();
+	}
+
+	public boolean getEditable() {
+		checkWidget();
+		return (style & SWT.READ_ONLY) == 0;
+	}
+
+	public int getTextLimit() {
+		checkWidget();
+		return textLimit;
+	}
+
+	public void setTextLimit(int limit) {
+		checkWidget();
+		if (limit == 0)
+			error(SWT.ERROR_CANNOT_BE_ZERO);
+		if (limit < 0)
+			return;
+		textLimit = limit;
+	}
+
 }
