@@ -425,7 +425,7 @@ void createHandle (int index) {
 	if ((style & SWT.ARROW) != 0) return;
 	// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,
 	// reset to default font to get the usual behavior
-	setFontDescription(defaultFont().handle);
+	setFontDescription(defaultFont().handle.pointer);
 	_setAlignment (style & (SWT.LEFT | SWT.CENTER | SWT.RIGHT));
 }
 
@@ -1290,7 +1290,7 @@ public void setText (String string) {
 	_setAlignment (style);
 	// Now that text has been added, set the font. This ensures
 	// the Button's size is correctly calculated/updated.
-	setFontDescription(font == null ? defaultFont().handle : font.handle);
+	setFontDescription(font == null ? defaultFont().handle.pointer : font.handle.pointer);
 }
 
 private void updateWidgetsVisibility() {

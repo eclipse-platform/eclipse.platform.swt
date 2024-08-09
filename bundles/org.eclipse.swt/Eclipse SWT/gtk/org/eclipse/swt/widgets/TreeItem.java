@@ -1293,7 +1293,7 @@ public void setFont (Font font){
 	if (oldFont == font) return;
 	this.font = font;
 	if (oldFont != null && oldFont.equals (font)) return;
-	long fontHandle = font != null ? font.handle : 0;
+	long fontHandle = font != null ? font.handle.pointer : 0;
 	GTK.gtk_tree_store_set (parent.modelHandle, handle, Tree.FONT_COLUMN, fontHandle, -1);
 	cached = true;
 }
@@ -1334,7 +1334,7 @@ public void setFont (int index, Font font) {
 	if (oldFont != null && oldFont.equals (font)) return;
 
 	int modelIndex = parent.columnCount == 0 ? Tree.FIRST_COLUMN : parent.columns [index].modelIndex;
-	long fontHandle  = font != null ? font.handle : 0;
+	long fontHandle  = font != null ? font.handle.pointer : 0;
 	GTK.gtk_tree_store_set (parent.modelHandle, handle, modelIndex + Tree.CELL_FONT, fontHandle, -1);
 	cached = true;
 
