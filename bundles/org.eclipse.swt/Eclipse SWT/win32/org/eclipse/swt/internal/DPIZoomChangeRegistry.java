@@ -16,6 +16,7 @@ package org.eclipse.swt.internal;
 import java.util.*;
 import java.util.Map.*;
 
+import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 
 public class DPIZoomChangeRegistry {
@@ -54,6 +55,12 @@ public class DPIZoomChangeRegistry {
 				handler.handleDPIChange(widget, newZoom, scalingFactor);
 			}
 		}
+		Event event = new Event();
+		event.type = SWT.ZoomChanged;
+		event.widget = widget;
+		event.detail = newZoom;
+		event.doit = true;
+		widget.notifyListeners(SWT.ZoomChanged, event);
 	}
 
 	public static void registerHandler(DPIZoomChangeHandler zoomChangeVisitor, Class<? extends Widget> clazzToRegisterFor) {

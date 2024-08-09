@@ -148,7 +148,7 @@ void _setImage (Image image) {
 			imageList.add (disabledImage);
 		}
 		BUTTON_IMAGELIST buttonImageList = new BUTTON_IMAGELIST ();
-		buttonImageList.himl = imageList.getHandle ();
+		buttonImageList.himl = imageList.getHandle(getZoom());
 		int oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE), newBits = oldBits;
 		newBits &= ~(OS.BS_LEFT | OS.BS_CENTER | OS.BS_RIGHT);
 		if ((style & SWT.LEFT) != 0) newBits |= OS.BS_LEFT;
@@ -189,7 +189,7 @@ void _setText (String text) {
 	if ((style & SWT.RIGHT) != 0) newBits |= OS.BS_RIGHT;
 	if (imageList != null) {
 		BUTTON_IMAGELIST buttonImageList = new BUTTON_IMAGELIST ();
-		buttonImageList.himl = imageList.getHandle ();
+		buttonImageList.himl = imageList.getHandle(getZoom());
 		if (text.length () == 0) {
 			if ((style & SWT.LEFT) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_LEFT;
 			if ((style & SWT.CENTER) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_CENTER;
@@ -296,7 +296,7 @@ int computeLeftMargin () {
 	if ((style & (SWT.PUSH | SWT.TOGGLE)) == 0) return MARGIN;
 	int margin = 0;
 	if (image != null && text.length () != 0) {
-		Rectangle bounds = DPIUtil.autoScaleBounds(image.getBounds(), this.getZoom(), 100);
+		Rectangle bounds = DPIUtil.scaleBounds(image.getBounds(), this.getZoom(), 100);
 		margin += bounds.width + MARGIN * 2;
 		long oldFont = 0;
 		long hDC = OS.GetDC (handle);
@@ -358,13 +358,13 @@ int computeLeftMargin () {
 			boolean hasImage = image != null, hasText = true;
 			if (hasImage) {
 				if (image != null) {
-					Rectangle rect = DPIUtil.autoScaleBounds(image.getBounds(), this.getZoom(), 100);
+					Rectangle rect = DPIUtil.scaleBounds(image.getBounds(), this.getZoom(), 100);
 					width = rect.width;
 					if (hasText && text.length () != 0) {
-						width += MARGIN * 2;
+						width += DPIUtil.scaleUp(MARGIN * 2, getZoom());;
 					}
 					height = rect.height;
-					extra = MARGIN * 2;
+					extra = DPIUtil.scaleUp(MARGIN * 2, getZoom());;
 				}
 			}
 			if (hasText) {
@@ -378,7 +378,7 @@ int computeLeftMargin () {
 				if (length == 0) {
 					height = Math.max (height, lptm.tmHeight);
 				} else {
-					extra = Math.max (MARGIN * 2, lptm.tmAveCharWidth);
+					extra = Math.max (DPIUtil.scaleUp(MARGIN * 2, getZoom()), lptm.tmAveCharWidth);
 					char [] buffer = text.toCharArray ();
 					RECT rect = new RECT ();
 					int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE;
@@ -779,7 +779,7 @@ public void setAlignment (int alignment) {
 	if ((style & SWT.RIGHT) != 0) newBits |= OS.BS_RIGHT;
 	if (imageList != null) {
 		BUTTON_IMAGELIST buttonImageList = new BUTTON_IMAGELIST ();
-		buttonImageList.himl = imageList.getHandle ();
+		buttonImageList.himl = imageList.getHandle(getZoom());
 		if (text.length () == 0) {
 			if ((style & SWT.LEFT) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_LEFT;
 			if ((style & SWT.CENTER) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_CENTER;
@@ -1042,7 +1042,7 @@ void updateImageList () {
 			disabledImage = new Image (display, image, SWT.IMAGE_DISABLE);
 			imageList.add (disabledImage);
 		}
-		buttonImageList.himl = imageList.getHandle ();
+		buttonImageList.himl = imageList.getHandle(getZoom());
 		OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, buttonImageList);
 		/*
 		* Bug in Windows.  Under certain cirumstances yet to be
@@ -1314,7 +1314,7 @@ private int getCheckboxTextOffset(long hdc) {
 		OS.GetThemePartSize(display.hButtonTheme(), hdc, OS.BP_CHECKBOX, OS.CBS_UNCHECKEDNORMAL, null, OS.TS_TRUE, size);
 		result += size.cx;
 	} else {
-		result += DPIUtil.autoScaleUpUsingNativeDPI(13);
+		result += DPIUtil.scaleUp(13, nativeZoom);
 	}
 
 	// Windows uses half width of '0' as checkbox-to-text distance.
@@ -1391,7 +1391,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 							GC gc = createNewGC(nmcd.hdc, data);
 
 							int margin = computeLeftMargin();
-							Rectangle imageBounds = DPIUtil.autoScaleBounds(image.getBounds(), this.getZoom(), 100);
+							Rectangle imageBounds = DPIUtil.scaleBounds(image.getBounds(), this.getZoom(), 100);
 							int imageWidth = imageBounds.width;
 							left += (imageWidth + (isRadioOrCheck() ? 2 * MARGIN : MARGIN)); // for SWT.RIGHT_TO_LEFT right and left are inverted
 

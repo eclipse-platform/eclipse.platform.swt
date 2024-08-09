@@ -440,7 +440,7 @@ public void pack () {
 				if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
 				if (isDisposed () || parent.isDisposed ()) break;
 				Rectangle bounds = event.getBounds();
-				columnWidth = Math.max (columnWidth, DPIUtil.autoScaleUp(bounds.x + bounds.width, getZoom()) - headerRect.left);
+				columnWidth = Math.max (columnWidth, DPIUtil.scaleUp(bounds.x + bounds.width, getZoom()) - headerRect.left);
 			}
 		}
 		if (newFont != 0) OS.SelectObject (hDC, oldFont);
@@ -854,7 +854,7 @@ public void setToolTipText (String string) {
  */
 public void setWidth (int width) {
 	checkWidget ();
-	setWidthInPixels(DPIUtil.autoScaleUp(width, getZoom()));
+	setWidthInPixels(DPIUtil.scaleUp(width, getZoom()));
 }
 
 void setWidthInPixels (int width) {

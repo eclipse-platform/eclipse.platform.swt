@@ -13,7 +13,8 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import org.eclipse.swt.internal.*;
 import org.junit.jupiter.api.*;
@@ -38,7 +39,26 @@ class TextLayoutWin32Tests extends Win32AutoscaleTestBase {
 		layout.draw(scaledGc, 10, 10);
 		Rectangle scaledBounds = layout.getBounds();
 
-		assertEquals("The public API for getBounds should give the same result for any zoom level", scaledBounds, unscaledBounds);
+		assertEquals(unscaledBounds, scaledBounds, "The public API for getBounds should give the same result for any zoom level");
+	}
+
+	@Test
+	public void testCalculateGetBoundsWithVerticalIndent() {
+		TextLayout layout = new TextLayout(display);
+		layout.setVerticalIndent(16);
+		layout.setText(text);
+		Rectangle unscaledBounds = layout.getBounds();
+
+		int scalingFactor = 2;
+		int newZoom = DPIUtil.getNativeDeviceZoom() * scalingFactor;
+		changeDPIZoom(newZoom);
+		TextLayout scaledLayout = new TextLayout(display);
+		scaledLayout.setVerticalIndent(16);
+		scaledLayout.setText(text);
+		Rectangle scaledBounds = scaledLayout.getBounds();
+
+		assertNotEquals(layout.nativeZoom, scaledLayout.nativeZoom, "The native zoom for the TextLayouts must differ");
+		assertEquals(unscaledBounds.height, scaledBounds.height, 1, "The public API for getBounds with vertical indent > 0 should give a similar result for any zoom level");
 	}
 
 }

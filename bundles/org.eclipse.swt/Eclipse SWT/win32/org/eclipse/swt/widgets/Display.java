@@ -138,6 +138,7 @@ public class Display extends Device implements Executor {
 	EventTable eventTable, filterTable;
 	boolean useOwnDC;
 	boolean externalEventLoop; // events are dispatched outside SWT, e.g. TrackPopupMenu or DoDragDrop
+	private boolean rescalingAtRuntime;
 
 	/* Widget Table */
 	private Map<Long, Control> controlByHandle;
@@ -582,6 +583,9 @@ public Display () {
  */
 public Display (DeviceData data) {
 	super (data);
+	if (DPIUtil.isAutoScaleOnRuntimeActive()) {
+		setRescalingAtRuntime(true);
+	}
 }
 
 Control _getFocusControl () {
@@ -2966,7 +2970,7 @@ public Point map (Control from, Control to, Point point) {
 	checkDevice ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int zoom = getZoomLevelForMapping(from, to);
-	point = DPIUtil.autoScaleUp(point, zoom);
+	point = DPIUtil.scaleUp(point, zoom);
 	return DPIUtil.scaleDown(mapInPixels(from, to, point), zoom);
 }
 
@@ -3013,8 +3017,8 @@ Point mapInPixels (Control from, Control to, Point point) {
 public Point map (Control from, Control to, int x, int y) {
 	checkDevice ();
 	int zoom = getZoomLevelForMapping(from, to);
-	x = DPIUtil.autoScaleUp(x, zoom);
-	y = DPIUtil.autoScaleUp(y, zoom);
+	x = DPIUtil.scaleUp(x, zoom);
+	y = DPIUtil.scaleUp(y, zoom);
 	return DPIUtil.scaleDown(mapInPixels(from, to, x, y), zoom);
 }
 
@@ -3080,7 +3084,7 @@ public Rectangle map (Control from, Control to, Rectangle rectangle) {
 	checkDevice ();
 	if (rectangle == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int zoom = getZoomLevelForMapping(from, to);
-	rectangle = DPIUtil.autoScaleUp(rectangle, zoom);
+	rectangle = DPIUtil.scaleUp(rectangle, zoom);
 	return DPIUtil.scaleDown(mapInPixels(from, to, rectangle), zoom);
 }
 
@@ -3129,10 +3133,10 @@ Rectangle mapInPixels (Control from, Control to, Rectangle rectangle) {
 public Rectangle map (Control from, Control to, int x, int y, int width, int height) {
 	checkDevice ();
 	int zoom = getZoomLevelForMapping(from, to);
-	x = DPIUtil.autoScaleUp(x, zoom);
-	y = DPIUtil.autoScaleUp(y, zoom);
-	width = DPIUtil.autoScaleUp(width, zoom);
-	height = DPIUtil.autoScaleUp(height, zoom);
+	x = DPIUtil.scaleUp(x, zoom);
+	y = DPIUtil.scaleUp(y, zoom);
+	width = DPIUtil.scaleUp(width, zoom);
+	height = DPIUtil.scaleUp(height, zoom);
 	return DPIUtil.scaleDown(mapInPixels(from, to, x, y, width, height), zoom);
 }
 
@@ -3601,7 +3605,7 @@ public boolean post (Event event) {
 					int y = OS.GetSystemMetrics (OS.SM_YVIRTUALSCREEN);
 					int width = OS.GetSystemMetrics (OS.SM_CXVIRTUALSCREEN);
 					int height = OS.GetSystemMetrics (OS.SM_CYVIRTUALSCREEN);
-					Point loc = DPIUtil.autoScaleUp(event.getLocation(), getDeviceZoom());
+					Point loc = DPIUtil.scaleUp(event.getLocation(), getDeviceZoom());
 					inputs.dx = ((loc.x - x) * 65535 + width - 2) / (width - 1);
 					inputs.dy = ((loc.y - y) * 65535 + height - 2) / (height - 1);
 				} else {
@@ -5244,4 +5248,66 @@ static char [] withCrLf (char [] string) {
 static boolean isActivateShellOnForceFocus() {
 	return "true".equals(System.getProperty("org.eclipse.swt.internal.activateShellOnForceFocus", "true")); //$NON-NLS-1$
 }
+
+/**
+ * {@return whether rescaling of shells at runtime when the DPI scaling of a
+ * shell's monitor changes is activated for this device}
+ * <p>
+ * <b>Note:</b> This functionality is only available on Windows. Calling this
+ * method on other operating system will always return false.
+ *
+ * @since 3.127
+ */
+public boolean isRescalingAtRuntime() {
+	return rescalingAtRuntime;
+}
+
+/**
+ * Activates or deactivates rescaling of shells at runtime whenever the DPI
+ * scaling of the shell's monitor changes. This is only safe to call as long as
+ * no shell has been created for this display. When changing the value after a
+ * shell has been created for this display, the effect is undefined.
+ * <p>
+ * <b>Note:</b> This functionality is only available on Windows. Calling this
+ * method on other operating system will have no effect.
+ *
+ * @param activate whether rescaling shall be activated or deactivated
+ * @return whether activating or deactivating the rescaling was successful
+ * @since 3.127
+ */
+public boolean setRescalingAtRuntime(boolean activate) {
+	int desiredApiAwareness = activate ? OS.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 : OS.DPI_AWARENESS_CONTEXT_SYSTEM_AWARE;
+	if (setDPIAwareness(desiredApiAwareness)) {
+		rescalingAtRuntime = activate;
+		// dispose a existing font registry for the default display
+		SWTFontProvider.disposeFontRegistry(this);
+		return true;
+	}
+	return false;
+}
+
+private boolean setDPIAwareness(int desiredDpiAwareness) {
+	if (OS.WIN32_BUILD < OS.WIN32_BUILD_WIN10_1607) {
+		System.err.println("***WARNING: the OS version does not support setting DPI awareness.");
+		return false;
+	}
+	if (desiredDpiAwareness == OS.GetThreadDpiAwarenessContext()) {
+		return true;
+	}
+	if (desiredDpiAwareness == OS.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2) {
+		// "Per Monitor V2" only available in more recent Windows version
+		boolean perMonitorV2Available = OS.WIN32_BUILD >= OS.WIN32_BUILD_WIN10_1809;
+		if (!perMonitorV2Available) {
+			System.err.println("***WARNING: the OS version does not support DPI awareness mode PerMonitorV2.");
+			return false;
+		}
+	}
+	long setDpiAwarenessResult = OS.SetThreadDpiAwarenessContext(desiredDpiAwareness);
+	if (setDpiAwarenessResult == 0L) {
+		System.err.println("***WARNING: setting DPI awareness failed.");
+		return false;
+	}
+	return true;
+}
+
 }

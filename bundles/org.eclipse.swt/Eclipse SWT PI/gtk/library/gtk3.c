@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2022 IBM Corporation and others.
+ * Copyright (c) 2000, 2024 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -913,6 +913,42 @@ JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1frame_1set_1shadow_1type)
 	GTK3_NATIVE_ENTER(env, that, gtk_1frame_1set_1shadow_1type_FUNC);
 	gtk_frame_set_shadow_type((GtkFrame *)arg0, (GtkShadowType)arg1);
 	GTK3_NATIVE_EXIT(env, that, gtk_1frame_1set_1shadow_1type_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1gesture_1drag_1new
+JNIEXPORT jlong JNICALL GTK3_NATIVE(gtk_1gesture_1drag_1new)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK3_NATIVE_ENTER(env, that, gtk_1gesture_1drag_1new_FUNC);
+	rc = (jlong)gtk_gesture_drag_new((GtkWidget *)arg0);
+	GTK3_NATIVE_EXIT(env, that, gtk_1gesture_1drag_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1gesture_1rotate_1new
+JNIEXPORT jlong JNICALL GTK3_NATIVE(gtk_1gesture_1rotate_1new)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK3_NATIVE_ENTER(env, that, gtk_1gesture_1rotate_1new_FUNC);
+	rc = (jlong)gtk_gesture_rotate_new((GtkWidget *)arg0);
+	GTK3_NATIVE_EXIT(env, that, gtk_1gesture_1rotate_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1gesture_1zoom_1new
+JNIEXPORT jlong JNICALL GTK3_NATIVE(gtk_1gesture_1zoom_1new)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK3_NATIVE_ENTER(env, that, gtk_1gesture_1zoom_1new_FUNC);
+	rc = (jlong)gtk_gesture_zoom_new((GtkWidget *)arg0);
+	GTK3_NATIVE_EXIT(env, that, gtk_1gesture_1zoom_1new_FUNC);
+	return rc;
 }
 #endif
 

@@ -121,10 +121,10 @@ long callWindowProc (long hwnd, int msg, long wParam, long lParam) {
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
 	int zoom = getZoom();
-	x = DPIUtil.autoScaleUp(x, zoom);
-	y = DPIUtil.autoScaleUp(y, zoom);
-	width = DPIUtil.autoScaleUp(width, zoom);
-	height = DPIUtil.autoScaleUp(height, zoom);
+	x = DPIUtil.scaleUp(x, zoom);
+	y = DPIUtil.scaleUp(y, zoom);
+	width = DPIUtil.scaleUp(width, zoom);
+	height = DPIUtil.scaleUp(height, zoom);
 	return DPIUtil.scaleDown(computeTrimInPixels(x, y, width, height), zoom);
 }
 

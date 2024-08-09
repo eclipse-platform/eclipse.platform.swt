@@ -233,19 +233,19 @@ Point getSizeInPixels () {
 }
 
 private int getWidthInPixels() {
-	return DPIUtil.autoScaleUp(width, getZoom());
+	return DPIUtil.scaleUp(width, getZoom());
 }
 
 private int getHeightInPixels() {
-	return DPIUtil.autoScaleUp(height, getZoom());
+	return DPIUtil.scaleUp(height, getZoom());
 }
 
 private int getXInPixels() {
-	return DPIUtil.autoScaleUp(x, getZoom());
+	return DPIUtil.scaleUp(x, getZoom());
 }
 
 private int getYInPixels() {
-	return DPIUtil.autoScaleUp(y, getZoom());
+	return DPIUtil.scaleUp(y, getZoom());
 }
 
 /**

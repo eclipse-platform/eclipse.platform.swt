@@ -490,7 +490,7 @@ public void setExpanded (boolean expanded) {
  */
 public void setHeight (int height) {
 	checkWidget ();
-	setHeightInPixels(DPIUtil.autoScaleUp(height, getZoom()));
+	setHeightInPixels(DPIUtil.scaleUp(height, getZoom()));
 }
 
 void setHeightInPixels (int height) {

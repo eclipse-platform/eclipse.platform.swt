@@ -198,10 +198,10 @@ long getHandle(int zoom) {
 
 private void initializeSize(int zoom) {
 	long handle;
-	float x1 = DPIUtil.autoScaleUp(this.baseX1, zoom);
-	float y1 = DPIUtil.autoScaleUp(this.baseY1, zoom);
-	float x2 = DPIUtil.autoScaleUp(this.baseX2, zoom);
-	float y2 = DPIUtil.autoScaleUp(this.baseY2, zoom);
+	float x1 = DPIUtil.scaleUp(this.baseX1, zoom);
+	float y1 = DPIUtil.scaleUp(this.baseY1, zoom);
+	float x2 = DPIUtil.scaleUp(this.baseX2, zoom);
+	float y2 = DPIUtil.scaleUp(this.baseY2, zoom);
 	if (color1 == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color1.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (color2 == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);

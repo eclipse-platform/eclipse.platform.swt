@@ -777,10 +777,6 @@ public class GTK extends OS {
 	 */
 	public static final native boolean gtk_gesture_is_recognized(long gesture);
 	/**
-	 * @param widget cast=(GtkWidget *)
-	 */
-	public static final native long gtk_gesture_drag_new(long widget);
-	/**
 	 * @param gesture cast=(GtkGesture *)
 	 */
 	public static final native long gtk_gesture_get_last_updated_sequence(long gesture);
@@ -807,14 +803,6 @@ public class GTK extends OS {
 	 * @param gesture cast=(GtkGestureRotate *)
 	 */
 	public static final native double gtk_gesture_rotate_get_angle_delta(long gesture);
-	/**
-	 * @param widget cast=(GtkWidget *)
-	 */
-	public static final native long gtk_gesture_rotate_new(long widget);
-	/**
-	 * @param widget cast=(GtkWidget *)
-	 */
-	public static final native long gtk_gesture_zoom_new(long widget);
 	/**
 	 * @param gesture cast=(GtkGestureZoom *)
 	 */

@@ -56,9 +56,6 @@ public abstract class Device implements Drawable {
 
 	volatile boolean disposed;
 
-	/* Auto-Scaling*/
-	boolean enableAutoScaling = true;
-
 	/*
 	* TEMPORARY CODE. When a graphics object is
 	* created and the device parameter is null,
@@ -410,7 +407,7 @@ long EnumFontFamProc (long lpelfe, long lpntme, long FontType, long lParam) {
  */
 public Rectangle getBounds() {
 	checkDevice ();
-	return DPIUtil.autoScaleDown(getBoundsInPixels());
+	return DPIUtil.scaleDown(getBoundsInPixels(), getDeviceZoom());
 }
 
 private Rectangle getBoundsInPixels () {
@@ -517,7 +514,7 @@ public Point getDPI () {
 	int dpiX = OS.GetDeviceCaps (hDC, OS.LOGPIXELSX);
 	int dpiY = OS.GetDeviceCaps (hDC, OS.LOGPIXELSY);
 	internal_dispose_GC (hDC, null);
-	return DPIUtil.autoScaleDown(new Point (dpiX, dpiY));
+	return DPIUtil.scaleDown(new Point (dpiX, dpiY), getDeviceZoom());
 }
 
 /**
@@ -937,14 +934,6 @@ protected void release () {
  */
 public void setWarnings (boolean warnings) {
 	checkDevice ();
-}
-
-boolean getEnableAutoScaling() {
-	return enableAutoScaling;
-}
-
-void setEnableAutoScaling(boolean value) {
-	enableAutoScaling = value;
 }
 
 /**

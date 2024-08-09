@@ -147,7 +147,7 @@ public class TableDragSourceEffect extends DragSourceEffect {
 					data.transparentPixel = shdi.crColorKey << 8;
 				}
 				Display display = control.getDisplay();
-				dragSourceImage = new Image(display, new AutoScaleImageDataProvider(display, data, DPIUtil.getDeviceZoom()));
+				dragSourceImage = new Image(display, new AutoScaleImageDataProvider(display, data, DPIUtil.getZoomForAutoscaleProperty(control.nativeZoom)));
 				OS.SelectObject (memHdc, oldMemBitmap);
 				OS.DeleteDC (memHdc);
 				OS.DeleteObject (memDib);

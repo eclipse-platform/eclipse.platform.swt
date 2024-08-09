@@ -50,10 +50,6 @@ public class ToolItem extends Item {
 	short cx;
 	int foreground = -1, background = -1;
 
-	static {
-		DPIZoomChangeRegistry.registerHandler(ToolItem::handleDPIChange, ToolItem.class);
-	}
-
 /**
  * Constructs a new instance of this class given its parent
  * (which must be a <code>ToolBar</code>) and a style value
@@ -1080,7 +1076,7 @@ public void setToolTipText (String string) {
  */
 public void setWidth (int width) {
 	checkWidget();
-	setWidthInPixels(DPIUtil.autoScaleUp(width, getZoom()));
+	setWidthInPixels(DPIUtil.scaleUp(width, getZoom()));
 }
 
 void setWidthInPixels (int width) {
@@ -1107,7 +1103,7 @@ void updateImages (boolean enabled) {
 	ImageList hotImageList = parent.getHotImageList ();
 	ImageList disabledImageList = parent.getDisabledImageList();
 	if (info.iImage == OS.I_IMAGENONE) {
-		Rectangle bounds = DPIUtil.autoScaleBounds(image.getBounds(), getParent().getZoom(), 100);
+		Rectangle bounds = DPIUtil.scaleBounds(image.getBounds(), getParent().getZoom(), 100);
 		int listStyle = parent.style & SWT.RIGHT_TO_LEFT;
 		if (imageList == null) {
 			imageList = display.getImageListToolBar (listStyle, bounds.width, bounds.height, getZoom());
@@ -1217,29 +1213,5 @@ LRESULT wmCommandChild (long wParam, long lParam) {
 	}
 	sendSelectionEvent (SWT.Selection);
 	return null;
-}
-
-private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
-	if (!(widget instanceof ToolItem item)) {
-		return;
-	}
-	Image image = item.getImage();
-	if (image != null) {
-		ToolBar parent = item.getParent();
-		Display display = item.getDisplay();
-		int listStyle = parent.style & SWT.RIGHT_TO_LEFT;
-
-		Rectangle bounds = DPIUtil.autoScaleBounds(image.getBounds(), newZoom, 100);
-		if (parent.getImageList() == null) {
-			parent.setImageList (display.getImageListToolBar (listStyle, bounds.width, bounds.height, item.getZoom()));
-		}
-		if (parent.getDisabledImageList() == null) {
-			parent.setDisabledImageList (display.getImageListToolBarDisabled (listStyle, bounds.width, bounds.height, item.getZoom()));
-		}
-		if (parent.getHotImageList() == null) {
-			parent.setHotImageList (display.getImageListToolBarHot (listStyle, bounds.width, bounds.height, item.getZoom()));
-		}
-	}
-	item.setWidthInPixels(0);
 }
 }

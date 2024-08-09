@@ -3368,6 +3368,18 @@ fail:
 }
 #endif
 
+#ifndef NO_GetThreadDpiAwarenessContext
+JNIEXPORT jlong JNICALL OS_NATIVE(GetThreadDpiAwarenessContext)
+	(JNIEnv *env, jclass that)
+{
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, GetThreadDpiAwarenessContext_FUNC);
+	rc = (jlong)GetThreadDpiAwarenessContext();
+	OS_NATIVE_EXIT(env, that, GetThreadDpiAwarenessContext_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetTouchInputInfo
 JNIEXPORT jboolean JNICALL OS_NATIVE(GetTouchInputInfo)
 	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jlong arg2, jint arg3)
@@ -4932,6 +4944,21 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(ModifyWorldTransform)
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseFloatArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, ModifyWorldTransform_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_MonitorFromRect
+JNIEXPORT jlong JNICALL OS_NATIVE(MonitorFromRect)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1)
+{
+	RECT _arg0, *lparg0=NULL;
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, MonitorFromRect_FUNC);
+	if (arg0) if ((lparg0 = getRECTFields(env, arg0, &_arg0)) == NULL) goto fail;
+	rc = (jlong)MonitorFromRect(lparg0, arg1);
+fail:
+	OS_NATIVE_EXIT(env, that, MonitorFromRect_FUNC);
 	return rc;
 }
 #endif
@@ -6577,6 +6604,22 @@ JNIEXPORT jlong JNICALL OS_NATIVE(OpenThemeData)
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, JNI_ABORT);
 	OS_NATIVE_EXIT(env, that, OpenThemeData_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_OpenThemeDataForDpi
+JNIEXPORT jlong JNICALL OS_NATIVE(OpenThemeDataForDpi)
+	(JNIEnv *env, jclass that, jlong arg0, jcharArray arg1, jint arg2)
+{
+	jchar *lparg1=NULL;
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, OpenThemeDataForDpi_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jlong)OpenThemeDataForDpi((HWND)arg0, (LPCWSTR)lparg1, arg2);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, JNI_ABORT);
+	OS_NATIVE_EXIT(env, that, OpenThemeDataForDpi_FUNC);
 	return rc;
 }
 #endif
@@ -8812,6 +8855,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(SetTextColor)
 	OS_NATIVE_ENTER(env, that, SetTextColor_FUNC);
 	rc = (jint)SetTextColor((HDC)arg0, (COLORREF)arg1);
 	OS_NATIVE_EXIT(env, that, SetTextColor_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_SetThreadDpiAwarenessContext
+JNIEXPORT jlong JNICALL OS_NATIVE(SetThreadDpiAwarenessContext)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, SetThreadDpiAwarenessContext_FUNC);
+	rc = (jlong)SetThreadDpiAwarenessContext((DPI_AWARENESS_CONTEXT)arg0);
+	OS_NATIVE_EXIT(env, that, SetThreadDpiAwarenessContext_FUNC);
 	return rc;
 }
 #endif

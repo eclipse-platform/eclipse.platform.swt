@@ -219,7 +219,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 			changed |= (state & LAYOUT_CHANGED) != 0;
 			state &= ~LAYOUT_CHANGED;
 			int zoom = getZoom();
-			size = DPIUtil.autoScaleUp(layout.computeSize (this, DPIUtil.scaleDown(wHint, zoom), DPIUtil.scaleDown(hHint, zoom), changed), zoom);
+			size = DPIUtil.scaleUp(layout.computeSize (this, DPIUtil.scaleDown(wHint, zoom), DPIUtil.scaleDown(hHint, zoom), changed), zoom);
 		} else {
 			size = new Point (wHint, hHint);
 		}
@@ -235,7 +235,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	 * call computeTrimInPixels directly.
 	 */
 	int zoom = getZoom();
-	Rectangle trim = DPIUtil.autoScaleUp(computeTrim (0, 0, DPIUtil.scaleDown(size.x, zoom), DPIUtil.scaleDown(size.y, zoom)), zoom);
+	Rectangle trim = DPIUtil.scaleUp(computeTrim (0, 0, DPIUtil.scaleDown(size.x, zoom), DPIUtil.scaleDown(size.y, zoom)), zoom);
 	return new Point (trim.width, trim.height);
 }
 
@@ -356,12 +356,12 @@ int applyThemeBackground () {
 public void drawBackground (GC gc, int x, int y, int width, int height, int offsetX, int offsetY) {
 	checkWidget ();
 	int zoom = getZoom();
-	x = DPIUtil.autoScaleUp(x, zoom);
-	y = DPIUtil.autoScaleUp(y, zoom);
-	width = DPIUtil.autoScaleUp(width, zoom);
-	height = DPIUtil.autoScaleUp(height, zoom);
-	offsetX = DPIUtil.autoScaleUp(offsetX, zoom);
-	offsetY = DPIUtil.autoScaleUp(offsetY, zoom);
+	x = DPIUtil.scaleUp(x, zoom);
+	y = DPIUtil.scaleUp(y, zoom);
+	width = DPIUtil.scaleUp(width, zoom);
+	height = DPIUtil.scaleUp(height, zoom);
+	offsetX = DPIUtil.scaleUp(offsetX, zoom);
+	offsetY = DPIUtil.scaleUp(offsetY, zoom);
 	drawBackgroundInPixels(gc, x, y, width, height, offsetX, offsetY);
 }
 
@@ -882,10 +882,10 @@ Point minimumSize (int wHint, int hHint, boolean changed) {
 	 * call getClientAreaInPixels directly.
 	 */
 	int zoom = getZoom();
-	Rectangle clientArea = DPIUtil.autoScaleUp(getClientArea (), zoom);
+	Rectangle clientArea = DPIUtil.scaleUp(getClientArea (), zoom);
 	int width = 0, height = 0;
 	for (Control element : _getChildren ()) {
-		Rectangle rect = DPIUtil.autoScaleUp(element.getBounds (), zoom);
+		Rectangle rect = DPIUtil.scaleUp(element.getBounds (), zoom);
 		width = Math.max (width, rect.x - clientArea.x + rect.width);
 		height = Math.max (height, rect.y - clientArea.y + rect.height);
 	}

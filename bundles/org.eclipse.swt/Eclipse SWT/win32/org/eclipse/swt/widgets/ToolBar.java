@@ -14,6 +14,8 @@
 package org.eclipse.swt.widgets;
 
 
+import java.util.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
@@ -568,7 +570,7 @@ public ToolItem getItem (int index) {
 public ToolItem getItem (Point point) {
 	checkWidget ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	return getItemInPixels(DPIUtil.autoScaleUp(point, getZoom()));
+	return getItemInPixels(DPIUtil.scaleUp(point, getZoom()));
 }
 
 ToolItem getItemInPixels (Point point) {
@@ -1046,10 +1048,12 @@ void setDropDownItems (boolean set) {
 }
 
 void setDisabledImageList (ImageList imageList) {
-	if (disabledImageList == imageList) return;
 	long hImageList = 0;
 	if ((disabledImageList = imageList) != null) {
-		hImageList = disabledImageList.getHandle ();
+		hImageList = OS.SendMessage(handle, OS.TB_GETDISABLEDIMAGELIST, 0, 0);
+		long newImageList = disabledImageList.getHandle(getZoom());
+		if (hImageList == newImageList) return;
+		hImageList = newImageList;
 	}
 	setDropDownItems (false);
 	OS.SendMessage (handle, OS.TB_SETDISABLEDIMAGELIST, 0, hImageList);
@@ -1083,10 +1087,12 @@ public void setFont (Font font) {
 }
 
 void setHotImageList (ImageList imageList) {
-	if (hotImageList == imageList) return;
 	long hImageList = 0;
 	if ((hotImageList = imageList) != null) {
-		hImageList = hotImageList.getHandle ();
+		hImageList = OS.SendMessage(handle, OS.TB_GETHOTIMAGELIST, 0, 0);
+		long newImageList = hotImageList.getHandle(getZoom());
+		if (hImageList == newImageList) return;
+		hImageList = newImageList;
 	}
 	setDropDownItems (false);
 	OS.SendMessage (handle, OS.TB_SETHOTIMAGELIST, 0, hImageList);
@@ -1094,10 +1100,12 @@ void setHotImageList (ImageList imageList) {
 }
 
 void setImageList (ImageList imageList) {
-	if (this.imageList == imageList) return;
 	long hImageList = 0;
 	if ((this.imageList = imageList) != null) {
-		hImageList = imageList.getHandle ();
+		hImageList = OS.SendMessage(handle, OS.TB_GETIMAGELIST, 0, 0);
+		long newImageList = imageList.getHandle(getZoom());
+		if (hImageList == newImageList) return;
+		hImageList = newImageList;
 	}
 	setDropDownItems (false);
 	OS.SendMessage (handle, OS.TB_SETIMAGELIST, 0, hImageList);
@@ -1293,9 +1301,9 @@ void updateOrientation () {
 		display.releaseToolImageList (imageList);
 		display.releaseToolHotImageList (hotImageList);
 		display.releaseToolDisabledImageList (disabledImageList);
-		OS.SendMessage (handle, OS.TB_SETIMAGELIST, 0, newImageList.getHandle ());
-		OS.SendMessage (handle, OS.TB_SETHOTIMAGELIST, 0, newHotImageList.getHandle ());
-		OS.SendMessage (handle, OS.TB_SETDISABLEDIMAGELIST, 0, newDisabledImageList.getHandle ());
+		OS.SendMessage (handle, OS.TB_SETIMAGELIST, 0, newImageList.getHandle(getZoom()));
+		OS.SendMessage (handle, OS.TB_SETHOTIMAGELIST, 0, newHotImageList.getHandle(getZoom()));
+		OS.SendMessage (handle, OS.TB_SETDISABLEDIMAGELIST, 0, newDisabledImageList.getHandle(getZoom()));
 		imageList = newImageList;
 		hotImageList = newHotImageList;
 		disabledImageList = newDisabledImageList;
@@ -1742,75 +1750,60 @@ private static void handleDPIChange(Widget widget, int newZoom, float scalingFac
 	if (!(widget instanceof ToolBar toolBar)) {
 		return;
 	}
-	ToolItem[] toolItems = toolBar._getItems ();
-	// Only Items with SWT.Sepreator Style have an own width assigned to them
-	var seperatorWidth  =  new int[toolItems.length];
-	var enabledState = new boolean[toolItems.length];
-	var selectedState = new boolean[toolItems.length];
-	for (int i = 0; i < toolItems.length; i++) {
+	ToolItem[] toolItems = toolBar._getItems();
+	var seperatorWidth = new int[toolItems.length];
+	int itemCount = toolItems.length;
+
+	if (itemCount == 0) {
+		return;
+	}
+
+	record ToolItemData(ToolItem toolItem, TBBUTTON button) {
+	}
+
+	// Remove and re-add all button the let Windows resize the tool bar
+	Stack<ToolItemData> buttondata = new Stack<>();
+	for (int i = itemCount - 1; i >= 0; i--) {
+		TBBUTTON lpButton = new TBBUTTON ();
+		OS.SendMessage (toolBar.handle, OS.TB_GETBUTTON, i, lpButton);
 		ToolItem item = toolItems[i];
-		if((item.style & SWT.SEPARATOR) != 0) {
-			// Take note of widths, so we can re-apply them later
+		if ((item.style & SWT.SEPARATOR) != 0 && item.getControl() != null) {
+			// Take note of widths of separators with control, so they can be resized
+			// at the end
 			seperatorWidth[i] = item.getWidth();
 		}
-		// Remember states of ToolItem to apply them later
-		enabledState[i] = item.getEnabled();
-		selectedState[i] = item.getSelection();
-
-	}
-	for (ToolItem item : toolItems) {
-		toolBar.destroyItem(item);
-		// Resize after, as zoom update changes references to imageLists
 		DPIZoomChangeRegistry.applyChange(item, newZoom, scalingFactor);
+		buttondata.push(new ToolItemData(item, lpButton));
+		OS.SendMessage(toolBar.handle, OS.TB_DELETEBUTTON, i, 0);
 	}
-
-	for (int i = 0; i < toolItems.length; i++) {
-		ToolItem toolItem = toolItems[i];
-
-		toolBar.createItem(toolItem, i);
-		String currentText =  toolItem.getText();
-		toolItem.setText(" ");
-		toolItem.setText(currentText);
-
-		// Refresh images (upscaling already performed by toolItem)
-		Image image = toolItem.getImage();
-		toolItem.setImage(null);
-		toolItem.setImage(image);
-
-		Image hotImage = toolItem.getHotImage();
-		toolItem.setHotImage(null);
-		toolItem.setHotImage(hotImage);
-
-		Image disabledImage = toolItem.getDisabledImage();
-		toolItem.setDisabledImage(null);
-		toolItem.setDisabledImage(disabledImage);
-
-		var content = toolItem.getControl();
-		toolItem.setControl(null);
-		toolItem.setControl(content);
-
-		// In SWT, Width can only be set for Separators
-		if ((toolItem.style & SWT.SEPARATOR) != 0) {
-			var width = (int)((seperatorWidth[i]) * scalingFactor);
-			toolItem.setWidth(width);
-			toolItem.resizeControl();
+	OS.SendMessage(toolBar.handle, OS.TB_BUTTONSTRUCTSIZE, TBBUTTON.sizeof, 0);
+	while (!buttondata.isEmpty()) {
+		ToolItemData itemData = buttondata.pop();
+		OS.SendMessage(toolBar.handle, OS.TB_ADDBUTTONS, 1, itemData.button);
+		ToolItem item = itemData.toolItem;
+		if (item != null) {
+			// The text is not retained correctly, so we need to reset it
+			String text = item.getText();
+			if (text != null) {
+				item.setText("");
+				item.setText(text);
+			}
 		}
-
-		toolItem.setEnabled(enabledState[i]);
-		toolItem.setSelection(selectedState[i]);
+	}
+	for (int i = 0; i < itemCount; i++) {
+		ToolItem item = toolItems[i];
+		// If the separator is used with a control, we must reset the size to the cached value,
+		// cause windows will treat the separator as normal separator and shrinks it accordingly
+		if ((item.style & SWT.SEPARATOR) != 0 && item.getControl() != null) {
+			item.setWidth(seperatorWidth[i]);
+		}
 	}
 
-	// Force a refresh of the toolbar by resetting the Font
-	toolBar.setDropDownItems(false);
-	long hFont = OS.SendMessage(toolBar.handle, OS.WM_GETFONT, 0, 0);
-	OS.SendMessage(toolBar.handle, OS.WM_SETFONT, hFont, 0);
-	if((toolBar.style & SWT.VERTICAL) != 0) {
-		// Reset row count to prevent wrapping of buttons
-		toolBar.setRowCount((int)OS.SendMessage (toolBar.handle, OS.TB_BUTTONCOUNT, 0, 0));
-	}
-	toolBar.setDropDownItems(true);
+	// Refresh the image lists so the image list for the correct zoom is used
+	toolBar.setImageList(toolBar.getImageList());
+	toolBar.setDisabledImageList(toolBar.getDisabledImageList());
+	toolBar.setHotImageList(toolBar.getHotImageList());
+	OS.SendMessage(toolBar.handle, OS.TB_AUTOSIZE, 0, 0);
 	toolBar.layout(true);
-	toolBar.sendResize();
-	toolBar.redraw();
 }
 }

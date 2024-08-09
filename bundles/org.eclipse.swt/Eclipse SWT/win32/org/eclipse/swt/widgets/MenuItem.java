@@ -1161,7 +1161,7 @@ LRESULT wmMeasureChild (long wParam, long lParam) {
 			 * NOTE: autoScaleUpUsingNativeDPI() is used to avoid problems
 			 * with applications that disable automatic scaling.
 			 */
-			struct.itemWidth = DPIUtil.autoScaleUpUsingNativeDPI(5);
+			struct.itemWidth = DPIUtil.scaleUp(5, nativeZoom);
 			OS.MoveMemory (lParam, struct, MEASUREITEMSTRUCT.sizeof);
 			return null;
 		}

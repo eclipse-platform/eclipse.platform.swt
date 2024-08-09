@@ -110,10 +110,8 @@ public class DPIUtil {
 			}
 		}
 
-		if ("win32".equals(SWT.getPlatform())) {
-			String updateOnRuntimeValue = System.getProperty (SWT_AUTOSCALE_UPDATE_ON_RUNTIME);
-			autoScaleOnRuntime = Boolean.parseBoolean(updateOnRuntimeValue);
-		}
+		String updateOnRuntimeValue = System.getProperty (SWT_AUTOSCALE_UPDATE_ON_RUNTIME);
+		autoScaleOnRuntime = Boolean.parseBoolean(updateOnRuntimeValue);
 	}
 
 /**
@@ -257,8 +255,8 @@ public static Rectangle autoScaleDown(Rectangle rect) {
 public static Rectangle scaleDown(Rectangle rect, int zoom) {
 	if (zoom == 100 || rect == null) return rect;
 	Rectangle scaledRect = new Rectangle (0,0,0,0);
-	Point scaledTopLeft = DPIUtil.scaleDown(new Point (rect.x, rect.y), zoom);
-	Point scaledBottomRight = DPIUtil.scaleDown(new Point (rect.x + rect.width, rect.y + rect.height), zoom);
+	Point scaledTopLeft = scaleDown(new Point (rect.x, rect.y), zoom);
+	Point scaledBottomRight = scaleDown(new Point (rect.x + rect.width, rect.y + rect.height), zoom);
 
 	scaledRect.x = scaledTopLeft.x;
 	scaledRect.y = scaledTopLeft.y;
@@ -282,15 +280,15 @@ public static Rectangle scaleDown(Drawable drawable, Rectangle rect, int zoom) {
 /**
  * Auto-scale image with ImageData
  */
-public static ImageData autoScaleImageData (Device device, final ImageData imageData, int targetZoom, int currentZoom) {
+public static ImageData scaleImageData (Device device, final ImageData imageData, int targetZoom, int currentZoom) {
 	if (imageData == null || targetZoom == currentZoom || (device != null && !device.isAutoScalable())) return imageData;
 	float scaleFactor = (float) targetZoom / (float) currentZoom;
 	return autoScaleImageData(device, imageData, scaleFactor);
 }
 
 
-public static ImageData autoScaleImageData (Device device, final ElementAtZoom<ImageData> elementAtZoom, int targetZoom) {
-	return autoScaleImageData(device, elementAtZoom.element(), targetZoom, elementAtZoom.zoom());
+public static ImageData scaleImageData (Device device, final ElementAtZoom<ImageData> elementAtZoom, int targetZoom) {
+	return scaleImageData(device, elementAtZoom.element(), targetZoom, elementAtZoom.zoom());
 }
 
 private static ImageData autoScaleImageData (Device device, final ImageData imageData, float scaleFactor) {
@@ -308,14 +306,14 @@ private static ImageData autoScaleImageData (Device device, final ImageData imag
 		Image resultImage = new Image (device, (ImageDataProvider) zoom -> resultData);
 		GC gc = new GC (resultImage);
 		gc.setAntialias (SWT.ON);
-		gc.drawImage (original, 0, 0, DPIUtil.autoScaleDown (width), DPIUtil.autoScaleDown (height),
+		gc.drawImage (original, 0, 0, autoScaleDown (width), autoScaleDown (height),
 				/* E.g. destWidth here is effectively DPIUtil.autoScaleDown (scaledWidth), but avoiding rounding errors.
 				 * Nevertheless, we still have some rounding errors due to the point-based API GC#drawImage(..).
 				 */
-				0, 0, Math.round (DPIUtil.autoScaleDown (width * scaleFactor)), Math.round (DPIUtil.autoScaleDown (height * scaleFactor)));
+				0, 0, Math.round (autoScaleDown (width * scaleFactor)), Math.round (autoScaleDown (height * scaleFactor)));
 		gc.dispose ();
 		original.dispose ();
-		ImageData result = resultImage.getImageData (DPIUtil.getDeviceZoom ());
+		ImageData result = resultImage.getImageData (getDeviceZoom ());
 		resultImage.dispose ();
 		yield result;
 	}
@@ -326,7 +324,7 @@ private static ImageData autoScaleImageData (Device device, final ImageData imag
 /**
  * Returns a new rectangle as per the scaleFactor.
  */
-public static Rectangle autoScaleBounds (Rectangle rect, int targetZoom, int currentZoom) {
+public static Rectangle scaleBounds (Rectangle rect, int targetZoom, int currentZoom) {
 	if (rect == null || targetZoom == currentZoom) return rect;
 	float scaleFactor = ((float)targetZoom) / (float)currentZoom;
 	Rectangle returnRect = new Rectangle (0,0,0,0);
@@ -358,10 +356,10 @@ public static ImageData autoScaleUp (Device device, final ElementAtZoom<ImageDat
 }
 
 public static int[] autoScaleUp(int[] pointArray) {
-	return autoScaleUp(pointArray, deviceZoom);
+	return scaleUp(pointArray, deviceZoom);
 }
 
-public static int[] autoScaleUp(int[] pointArray, int zoom) {
+public static int[] scaleUp(int[] pointArray, int zoom) {
 	if (zoom == 100 || pointArray == null) return pointArray;
 	float scaleFactor = getScalingFactor(zoom);
 	int[] returnArray = new int[pointArray.length];
@@ -372,77 +370,68 @@ public static int[] autoScaleUp(int[] pointArray, int zoom) {
 }
 
 public static int[] autoScaleUp(Drawable drawable, int[] pointArray) {
-	return autoScaleUp(drawable, pointArray, deviceZoom);
+	return scaleUp(drawable, pointArray, deviceZoom);
 }
 
-public static int[] autoScaleUp(Drawable drawable, int[] pointArray, int zoom) {
+public static int[] scaleUp(Drawable drawable, int[] pointArray, int zoom) {
 	if (drawable != null && !drawable.isAutoScalable()) return pointArray;
-	return autoScaleUp (pointArray, zoom);
+	return scaleUp (pointArray, zoom);
 }
 /**
  * Auto-scale up int dimensions.
  */
 public static int autoScaleUp(int size) {
-	return autoScaleUp(size, deviceZoom);
+	return scaleUp(size, deviceZoom);
 }
 
 /**
  * Auto-scale up int dimensions to match the given zoom level
  */
-public static int autoScaleUp(int size, int zoom) {
+public static int scaleUp(int size, int zoom) {
 	if (zoom == 100 || size == SWT.DEFAULT) return size;
 	float scaleFactor = getScalingFactor(zoom);
 	return Math.round (size * scaleFactor);
 }
 
 /**
- * Auto-scale up int dimensions using Native DPI
- */
-public static int autoScaleUpUsingNativeDPI (int size) {
-	if (nativeDeviceZoom == 100 || size == SWT.DEFAULT) return size;
-	float nativeScaleFactor = nativeDeviceZoom / 100f;
-	return Math.round (size * nativeScaleFactor);
-}
-
-/**
  * Auto-scale up int dimensions if enabled for Drawable class.
  */
 public static int autoScaleUp(Drawable drawable, int size) {
-	return autoScaleUp(drawable, size, deviceZoom);
+	return scaleUp(drawable, size, deviceZoom);
 }
 
-public static int autoScaleUp(Drawable drawable, int size, int zoom) {
+public static int scaleUp(Drawable drawable, int size, int zoom) {
 	if (drawable != null && !drawable.isAutoScalable()) return size;
-	return autoScaleUp (size, zoom);
+	return scaleUp (size, zoom);
 }
 
 public static float autoScaleUp(float size) {
-	return autoScaleUp(size, deviceZoom);
+	return scaleUp(size, deviceZoom);
 }
 
-public static float autoScaleUp(float size, int zoom) {
+public static float scaleUp(float size, int zoom) {
 	if (zoom == 100 || size == SWT.DEFAULT) return size;
 	float scaleFactor = getScalingFactor(zoom);
 	return (size * scaleFactor);
 }
 
 public static float autoScaleUp(Drawable drawable, float size) {
-	return autoScaleUp(drawable, size, deviceZoom);
+	return scaleUp(drawable, size, deviceZoom);
 }
 
-public static float autoScaleUp(Drawable drawable, float size, int zoom) {
+public static float scaleUp(Drawable drawable, float size, int zoom) {
 	if (drawable != null && !drawable.isAutoScalable()) return size;
-	return autoScaleUp (size, zoom);
+	return scaleUp (size, zoom);
 }
 
 /**
  * Returns a new scaled up Point.
  */
 public static Point autoScaleUp(Point point) {
-	return autoScaleUp(point, deviceZoom);
+	return scaleUp(point, deviceZoom);
 }
 
-public static Point autoScaleUp(Point point, int zoom) {
+public static Point scaleUp(Point point, int zoom) {
 	if (zoom == 100 || point == null) return point;
 	float scaleFactor = getScalingFactor(zoom);
 	Point scaledPoint = new Point(0,0);
@@ -455,26 +444,26 @@ public static Point autoScaleUp(Point point, int zoom) {
  * Returns a new scaled up Point if enabled for Drawable class.
  */
 public static Point autoScaleUp(Drawable drawable, Point point) {
-	return autoScaleUp (drawable, point, deviceZoom);
+	return scaleUp (drawable, point, deviceZoom);
 }
 
-public static Point autoScaleUp(Drawable drawable, Point point, int zoom) {
+public static Point scaleUp(Drawable drawable, Point point, int zoom) {
 	if (drawable != null && !drawable.isAutoScalable()) return point;
-	return autoScaleUp (point, zoom);
+	return scaleUp (point, zoom);
 }
 
 /**
  * Returns a new scaled up Rectangle.
  */
 public static Rectangle autoScaleUp(Rectangle rect) {
-	return autoScaleUp(rect, deviceZoom);
+	return scaleUp(rect, deviceZoom);
 }
 
-public static Rectangle autoScaleUp(Rectangle rect, int zoom) {
+public static Rectangle scaleUp(Rectangle rect, int zoom) {
 	if (zoom == 100 || rect == null) return rect;
 	Rectangle scaledRect = new Rectangle(0,0,0,0);
-	Point scaledTopLeft = DPIUtil.autoScaleUp (new Point(rect.x, rect.y), zoom);
-	Point scaledBottomRight = DPIUtil.autoScaleUp (new Point(rect.x + rect.width, rect.y + rect.height), zoom);
+	Point scaledTopLeft = scaleUp (new Point(rect.x, rect.y), zoom);
+	Point scaledBottomRight = scaleUp (new Point(rect.x + rect.width, rect.y + rect.height), zoom);
 
 	scaledRect.x = scaledTopLeft.x;
 	scaledRect.y = scaledTopLeft.y;
@@ -487,12 +476,12 @@ public static Rectangle autoScaleUp(Rectangle rect, int zoom) {
  * Returns a new scaled up Rectangle if enabled for Drawable class.
  */
 public static Rectangle autoScaleUp(Drawable drawable, Rectangle rect) {
-	return autoScaleUp(drawable, rect, deviceZoom);
+	return scaleUp(drawable, rect, deviceZoom);
 }
 
-public static Rectangle autoScaleUp(Drawable drawable, Rectangle rect, int zoom) {
+public static Rectangle scaleUp(Drawable drawable, Rectangle rect, int zoom) {
 	if (drawable != null && !drawable.isAutoScalable()) return rect;
-	return autoScaleUp (rect, zoom);
+	return scaleUp (rect, zoom);
 }
 
 /**
@@ -669,10 +658,6 @@ public static boolean isAutoScaleOnRuntimeActive() {
 	return autoScaleOnRuntime;
 }
 
-static boolean setAutoScaleOnRuntimeActive(boolean value) {
-	return autoScaleOnRuntime = value;
-}
-
 /**
  * AutoScale ImageDataProvider.
  */
@@ -687,7 +672,7 @@ public static final class AutoScaleImageDataProvider implements ImageDataProvide
 	}
 	@Override
 	public ImageData getImageData(int zoom) {
-		return DPIUtil.autoScaleImageData(device, imageData, zoom, currentZoom);
+		return DPIUtil.scaleImageData(device, imageData, zoom, currentZoom);
 	}
 }
 }

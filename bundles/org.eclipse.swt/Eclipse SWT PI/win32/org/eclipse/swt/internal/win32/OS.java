@@ -369,6 +369,10 @@ public class OS extends C {
 	public static final short DMDUP_SIMPLEX = 1;
 	public static final short DMDUP_VERTICAL = 2;
 	public static final short DMDUP_HORIZONTAL = 3;
+	public static final int DPI_AWARENESS_CONTEXT_UNAWARE = 24592;
+	public static final int DPI_AWARENESS_CONTEXT_SYSTEM_AWARE = 24593;
+	public static final int DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE = 18;
+	public static final int DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 = 34;
 	public static final int DSTINVERT = 0x550009;
 	public static final int DT_BOTTOM = 0x8;
 	public static final int DT_CALCRECT = 0x400;
@@ -1358,6 +1362,7 @@ public class OS extends C {
 	public static final int TBS_DOWNISLEFT = 0x0400;
 	public static final int TBS_HORZ = 0x0;
 	public static final int TBS_VERT = 0x2;
+	public static final int TB_ADDBUTTONS = 0x444;
 	public static final int TB_ADDSTRING = 0x44d;
 	public static final int TB_AUTOSIZE = 0x421;
 	public static final int TB_BUTTONCOUNT = 0x418;
@@ -3317,6 +3322,8 @@ public static final native int MessageBox (long hWnd, char [] lpText, char [] lp
 public static final native boolean ModifyWorldTransform(long hdc, float [] lpXform, int iMode);
 /** @param hwnd cast=(HWND) */
 public static final native long MonitorFromWindow (long hwnd, int dwFlags);
+/** @param lprc flags=no_out */
+public static final native long MonitorFromRect(RECT lprc, int dwFlags);
 /**
  * @param Destination cast=(PVOID),flags=no_in critical
  * @param SourcePtr cast=(CONST VOID *)
@@ -3772,6 +3779,11 @@ public static final native boolean OpenClipboard (long hWndNewOwner);
  * @param pszClassList cast=(LPCWSTR),flags=no_out
  */
 public static final native long OpenThemeData (long hwnd, char[] pszClassList);
+/**
+ * @param hwnd cast=(HWND)
+ * @param pszClassList cast=(LPCWSTR),flags=no_out
+ */
+public static final native long OpenThemeDataForDpi (long hwnd, char[] pszClassList, int dpi);
 /** @param hdc cast=(HDC) */
 public static final native boolean PatBlt (long hdc, int x1, int x2, int w, int h, int rop);
 /** @param szfile cast=(LPCWSTR) */
@@ -4338,6 +4350,9 @@ public static final native int SetPixel (long hdc, int X, int Y, int crColor);
 /** @param hdc cast=(HDC) */
 public static final native int SetPolyFillMode (long hdc, int iPolyFillMode);
 public static final native boolean SetProcessDPIAware ();
+/** @param dpiContext cast=(DPI_AWARENESS_CONTEXT) */
+public static final native long SetThreadDpiAwarenessContext (long dpiContext);
+public static final native long GetThreadDpiAwarenessContext ();
 /** @method flags=no_gen */
 public static final native int SetPreferredAppMode(int mode);
 /** @param lprc flags=no_in */

@@ -250,7 +250,7 @@ public static Frame new_Frame (final Composite parent) {
 
 	parent.getDisplay().asyncExec(() -> {
 		if (parent.isDisposed()) return;
-		final Rectangle clientArea = DPIUtil.autoScaleUp(parent.getClientArea()); // To Pixels
+		final Rectangle clientArea = DPIUtil.scaleUp(parent.getClientArea(), DPIUtil.getZoomForAutoscaleProperty(parent.nativeZoom)); // To Pixels
 		EventQueue.invokeLater(() -> {
 			frame.setSize (clientArea.width, clientArea.height);
 			frame.validate ();

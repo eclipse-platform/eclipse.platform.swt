@@ -4971,18 +4971,6 @@ fail:
 }
 #endif
 
-#ifndef NO_gtk_1gesture_1drag_1new
-JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1gesture_1drag_1new)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	jlong rc = 0;
-	GTK_NATIVE_ENTER(env, that, gtk_1gesture_1drag_1new_FUNC);
-	rc = (jlong)gtk_gesture_drag_new((GtkWidget *)arg0);
-	GTK_NATIVE_EXIT(env, that, gtk_1gesture_1drag_1new_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_gtk_1gesture_1get_1last_1updated_1sequence
 JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1gesture_1get_1last_1updated_1sequence)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -5038,18 +5026,6 @@ JNIEXPORT jdouble JNICALL GTK_NATIVE(gtk_1gesture_1rotate_1get_1angle_1delta)
 }
 #endif
 
-#ifndef NO_gtk_1gesture_1rotate_1new
-JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1gesture_1rotate_1new)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	jlong rc = 0;
-	GTK_NATIVE_ENTER(env, that, gtk_1gesture_1rotate_1new_FUNC);
-	rc = (jlong)gtk_gesture_rotate_new((GtkWidget *)arg0);
-	GTK_NATIVE_EXIT(env, that, gtk_1gesture_1rotate_1new_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_gtk_1gesture_1single_1get_1current_1button
 JNIEXPORT jint JNICALL GTK_NATIVE(gtk_1gesture_1single_1get_1current_1button)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -5099,18 +5075,6 @@ JNIEXPORT jdouble JNICALL GTK_NATIVE(gtk_1gesture_1zoom_1get_1scale_1delta)
 	GTK_NATIVE_ENTER(env, that, gtk_1gesture_1zoom_1get_1scale_1delta_FUNC);
 	rc = (jdouble)gtk_gesture_zoom_get_scale_delta((GtkGestureZoom *)arg0);
 	GTK_NATIVE_EXIT(env, that, gtk_1gesture_1zoom_1get_1scale_1delta_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_gtk_1gesture_1zoom_1new
-JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1gesture_1zoom_1new)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	jlong rc = 0;
-	GTK_NATIVE_ENTER(env, that, gtk_1gesture_1zoom_1new_FUNC);
-	rc = (jlong)gtk_gesture_zoom_new((GtkWidget *)arg0);
-	GTK_NATIVE_EXIT(env, that, gtk_1gesture_1zoom_1new_FUNC);
 	return rc;
 }
 #endif
