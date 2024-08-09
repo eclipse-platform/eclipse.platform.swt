@@ -2669,7 +2669,7 @@ int getSystemMetrics(int nIndex) {
 	 * DPI dependent metrics were introduced after 2016 version of windows 10
 	 */
 	if (OS.WIN32_BUILD >= OS.WIN32_BUILD_WIN10_1607) {
-		return OS.GetSystemMetricsForDpi(nIndex, DPIUtil.mapZoomToDPI(getZoom()));
+		return OS.GetSystemMetricsForDpi(nIndex, DPIUtil.mapZoomToDPI(nativeZoom));
 	}
 	return OS.GetSystemMetrics(nIndex);
 }
