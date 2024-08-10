@@ -92,7 +92,7 @@ pipeline {
 		label 'centos-latest'
 	}
 	tools {
-		jdk 'openjdk-jdk17-latest'
+		jdk 'temurin-jdk17-latest'
 		maven 'apache-maven-latest'
 	}
 	environment {
