@@ -42,7 +42,7 @@ import org.eclipse.swt.internal.win32.*;
  */
 public final class TextLayout extends Resource {
 	Font font;
-	String text, segmentsText;
+	String text, segmentsText, originalText;
 	int lineSpacingInPoints;
 	int ascent, descent;
 	int alignment;
@@ -309,7 +309,7 @@ public TextLayout (Device device) {
 	styles[0] = new StyleItem();
 	styles[1] = new StyleItem();
 	stylesCount = 2;
-	text = ""; //$NON-NLS-1$
+	text = originalText = ""; //$NON-NLS-1$
 	long[] ppv = new long[1];
 	OS.OleInitialize(0);
 	if (COM.CoCreateInstance(COM.CLSID_CMultiLanguage, 0, COM.CLSCTX_INPROC_SERVER, COM.IID_IMLangFontLink2, ppv) == OS.S_OK) {
@@ -2724,8 +2724,16 @@ private int getScaledVerticalIndent() {
  */
 public TextStyle getStyle (int offset) {
 	checkLayout();
-	int length = text.length();
+	int length = originalText.length();
 	if (!(0 <= offset && offset < length)) SWT.error(SWT.ERROR_INVALID_RANGE);
+	int crCount = 0, subStringLength = originalText.subSequence(0, offset+1).length();
+	for (int crIndex = 0; crIndex < subStringLength; crIndex++) {
+		if (originalText.charAt(crIndex) == '\r') {
+			crCount++;
+		}
+	}
+	offset = offset - crCount;
+
 	for (int i=1; i<stylesCount; i++) {
 		if (styles[i].start > offset) {
 			return styles[i - 1].style;
@@ -2956,15 +2964,11 @@ StyleItem[] merge (long items, int itemCount) {
 			linkBefore = false;
 		}
 		char ch = segmentsText.charAt(start);
-		switch (ch) {
-			case '\r':
-			case '\n':
-				item.lineBreak = true;
-				break;
-			case '\t':
-				item.tab = true;
-				break;
+		if (ch == '\r' && start + 1 < end) {
+			ch = segmentsText.charAt(start + 1);
 		}
+		item.lineBreak = ch == '\n';
+		item.tab = ch == '\t';
 		if (itemLimit == -1) {
 			nextItemIndex = itemIndex + 1;
 			OS.MoveMemory(scriptItem, items + nextItemIndex * SCRIPT_ITEM.sizeof, SCRIPT_ITEM.sizeof);
@@ -3455,6 +3459,22 @@ public void setStyle (TextStyle style, int start, int end) {
 	int length = text.length();
 	if (length == 0) return;
 	if (start > end) return;
+
+	int startCount = 0;
+	int endCount = 0;
+	for (int crIndex = originalText.indexOf('\r', 0); crIndex >= 0; crIndex = originalText.indexOf('\r', crIndex + 1)) {
+		if (crIndex < start) {
+			++startCount;
+		} else if (crIndex <= end) {
+			++endCount;
+		} else {
+			break;
+		}
+	}
+	endCount = endCount + startCount;
+	start -= startCount;
+	end -= endCount;
+
 	start = Math.min(Math.max(0, start), length - 1);
 	end = Math.min(Math.max(0, end), length - 1);
 	int low = -1;
@@ -3568,6 +3588,8 @@ public void setTabs (int[] tabs) {
  */
 public void setText (String text) {
 	checkLayout();
+	this.originalText = text;
+	text = text.replace("\r", "");
 	if (text == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (text.equals(this.text)) return;
 	freeRuns();
