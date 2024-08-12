@@ -5,7 +5,6 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.cocoa.*;
 
 public class CSimpleText extends Canvas {
 
@@ -616,7 +615,7 @@ public class CSimpleText extends Canvas {
 			}
 			height = (int) Math.ceil(size.y);
 
-			if (hasBorder()) {
+			if ((style & SWT.BORDER) != 0) {
 				width += 2;
 			}
 
@@ -655,15 +654,17 @@ public class CSimpleText extends Canvas {
 	public void copy () {
 		checkWidget ();
 		// if ((style & SWT.PASSWORD) != 0 || echoCharacter != '\0') return;
-		if ((style & SWT.SINGLE) != 0) {
-			Point selection = getSelection ();
-			if (selection.x == selection.y) return;
-			copyToClipboard(content.getText().substring(getSelectionStart(), getSelectionEnd()).toCharArray());
-		} else {
-			NSText text = (NSText) view;
-			if (text.selectedRange ().length == 0) return;
-			text.copy (null);
-		}
+		// if ((style & SWT.SINGLE) != 0) {
+		// Point selection = getSelection ();
+		// if (selection.x == selection.y) return;
+		// copyToClipboard(content.getText().substring(getSelectionStart(),
+		// getSelectionEnd()).toCharArray());
+		// }
+		// else {
+		// NSText text = (NSText) view;
+		// if (text.selectedRange ().length == 0) return;
+		// text.copy (null);
+		// }
 	}
 
 	public void cut() {
