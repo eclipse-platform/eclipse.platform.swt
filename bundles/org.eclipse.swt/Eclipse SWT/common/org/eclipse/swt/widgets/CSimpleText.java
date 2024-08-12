@@ -302,10 +302,6 @@ public class CSimpleText extends Canvas {
 		gc.fillRectangle(e.x, e.y, e.width - 1, e.height - 1);
 	}
 
-	private Color getBackgroundColor() {
-		return super.getBackground();
-	}
-
 	private Rectangle getVisibleArea() {
 		Rectangle clientArea = getClientArea();
 
