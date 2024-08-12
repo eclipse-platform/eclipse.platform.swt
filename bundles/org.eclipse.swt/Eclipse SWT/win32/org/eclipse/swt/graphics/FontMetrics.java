@@ -175,7 +175,7 @@ public int getLeading() {
 }
 
 private int getZoom() {
-	return DPIUtil.getZoomForAutoscaleProperty(nativeZoom);
+	return nativeZoom;
 }
 
 /**

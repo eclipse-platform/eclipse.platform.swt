@@ -776,11 +776,11 @@ private int getNativeZoom(GC gc) {
 }
 
 private int getZoom(GC gc){
-	return DPIUtil.getZoomForAutoscaleProperty(getNativeZoom(gc));
+	return getNativeZoom(gc);
 }
 
 private int getZoom() {
-	return DPIUtil.getZoomForAutoscaleProperty(nativeZoom);
+	return nativeZoom;
 }
 
 void drawInPixels (GC gc, int x, int y) {

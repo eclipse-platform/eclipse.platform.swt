@@ -2333,7 +2333,7 @@ public void setBackground(Color color) {
 }
 
 private int getZoom() {
-	return DPIUtil.getZoomForAutoscaleProperty(initialNativeZoom);
+	return initialNativeZoom;
 }
 /**
  * Returns a string containing a concise, human-readable

@@ -281,7 +281,7 @@ int DragEnter_64(long pDataObject, int grfKeyState, long pt, long pdwEffect) {
 }
 
 int DragEnter(long pDataObject, int grfKeyState, int pt_x, int pt_y, long pdwEffect) {
-	int zoom = DPIUtil.getZoomForAutoscaleProperty(nativeZoom);
+	int zoom = nativeZoom;
 	pt_x = DPIUtil.scaleDown(pt_x, zoom);// To Points
 	pt_y = DPIUtil.scaleDown(pt_y, zoom);// To Points
 	selectedDataType = null;
@@ -349,7 +349,7 @@ int DragOver_64(int grfKeyState, long pt, long pdwEffect) {
 }
 
 int DragOver(int grfKeyState, int pt_x, int pt_y, long pdwEffect) {
-	int zoom = DPIUtil.getZoomForAutoscaleProperty(nativeZoom);
+	int zoom = nativeZoom;
 	pt_x = DPIUtil.scaleDown(pt_x, zoom);// To Points
 	pt_y = DPIUtil.scaleDown(pt_y, zoom);// To Points
 	if (iDataObject == null) return COM.S_FALSE;
@@ -405,7 +405,7 @@ int Drop_64(long pDataObject, int grfKeyState, long pt, long pdwEffect) {
 
 int Drop(long pDataObject, int grfKeyState, int pt_x, int pt_y, long pdwEffect) {
 	try {
-		int zoom = DPIUtil.getZoomForAutoscaleProperty(nativeZoom);
+		int zoom = nativeZoom;
 		pt_x = DPIUtil.scaleDown(pt_x, zoom);// To Points
 		pt_y = DPIUtil.scaleDown(pt_y, zoom);// To Points
 		DNDEvent event = new DNDEvent();

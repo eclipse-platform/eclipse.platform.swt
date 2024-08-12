@@ -3932,7 +3932,7 @@ void init(Drawable drawable, GCData data, long hDC) {
 	}
 	Image image = data.image;
 	if (image != null) {
-		data.hNullBitmap = OS.SelectObject(hDC, Image.win32_getHandle(image, DPIUtil.getZoomForAutoscaleProperty(data.nativeZoom)));
+		data.hNullBitmap = OS.SelectObject(hDC, Image.win32_getHandle(image, data.nativeZoom));
 		image.memGC = this;
 	}
 	int layout = data.layout;
@@ -5160,7 +5160,7 @@ private static int sin(int angle, int length) {
 }
 
 private int getZoom() {
-	return DPIUtil.getZoomForAutoscaleProperty(data.nativeZoom);
+	return data.nativeZoom;
 }
 
 }
