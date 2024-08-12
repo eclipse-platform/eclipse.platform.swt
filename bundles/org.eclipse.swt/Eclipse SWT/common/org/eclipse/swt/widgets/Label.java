@@ -50,7 +50,6 @@ import org.eclipse.swt.graphics.*;
 // Idea: move Control to the common folder and create another class, that handles the OS dependent stuff.
 public class Label extends Canvas {
 
-	
 	/** Gap between icon and text */
 	private static final int GAP = 5;
 	/** Left and right margins */
@@ -588,7 +587,7 @@ void onPaint(PaintEvent event) {
 
 	// draw the text
 	// we draw the label at the top.
-	lineY = 0;
+	lineY = topMargin;
 
 	if(textHeight  < imageHeight ) {
 
