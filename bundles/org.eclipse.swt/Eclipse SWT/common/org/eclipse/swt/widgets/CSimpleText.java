@@ -5,9 +5,11 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.cocoa.*;
 
 public class CSimpleText extends Canvas {
 
+	private int tabs = 8;
 
 	public static final int LIMIT = 0x7FFFFFFF;
 
@@ -204,7 +206,7 @@ public class CSimpleText extends Canvas {
 	}
 
 	private boolean isTextSelected() {
-		if (selectionStart >= 0 && selectionEnd > 0 && selectionStart != selectionEnd) {
+		if (selectionStart >= 0 && selectionEnd >= 0 && selectionStart != selectionEnd) {
 			return true;
 		}
 		return false;
@@ -330,18 +332,43 @@ public class CSimpleText extends Canvas {
 		return content.getText();
 	}
 
+	public String getText (int start, int end) {
+		if (start > end) {
+			return "";
+		}
+		int textLength = getText().length();
+		return getText().substring(Math.min(Math.max(start, 0), textLength),
+				Math.min(Math.max(0, end + 1), textLength));
+	}
+
 	public void setText(String text) {
+		if (hooks(SWT.Verify) || filters(SWT.Verify)) {
+			text = verifyText(text, 0, getCharCount());
+			if (text == null)
+				return;
+		}
 		content.setText(text);
+		clearSelection();
+		sendEvent(SWT.Modify);
 		redraw();
 	}
 
 	public void append(String string) {
+		if (hooks(SWT.Verify) || filters(SWT.Verify)) {
+			string = verifyText(string, 0, getCharCount());
+			if (string == null)
+				return;
+		}
 		content.append(string);
+		caretOffset = getText().length();
+		if (string.length() != 0)
+			sendEvent(SWT.Modify);
 		redraw();
 	}
 
 	public void setSelection(int start) {
-		selectionStart = start;
+		start = Math.min(start, getText().length());
+		selectionStart = selectionEnd = caretOffset = start;
 		redraw();
 	}
 
@@ -363,18 +390,32 @@ public class CSimpleText extends Canvas {
 	}
 
 	public Point getSelection() {
-		return new Point(0, 0);
+		if (isTextSelected()) {
+			return new Point(getSelectionStart(), getSelectionEnd());
+		} else {
+			return new Point(caretOffset, caretOffset);
+		}
 	}
 
 	public String getSelectionText() {
-		return content.getText().substring(getSelectionStart(), getSelectionEnd());
+		if (!isTextSelected()) {
+			return "";
+		}
+		return getText(getSelectionStart(), getSelectionEnd() - 1);
 	}
 
 	public int getTopIndex() {
 		if ((style & SWT.SINGLE) != 0)
 			return 0;
 		Rectangle visibleArea = getVisibleArea();
-		return visibleArea.x / getLineHeight();
+		return visibleArea.y / getLineHeight();
+	}
+
+	public int getTopPixel() {
+		checkWidget();
+		if ((style & SWT.SINGLE) != 0)
+			return 0;
+		return getVisibleArea().y;
 	}
 
 	public void setTopIndex(int index) {
@@ -450,7 +491,7 @@ public class CSimpleText extends Canvas {
 	}
 
 	class TextContent {
-		private String text = "##";
+		private String text = "";
 
 		public String getText() {
 			return text;
@@ -507,7 +548,7 @@ public class CSimpleText extends Canvas {
 		public void setText(String text) {
 			if (text == null)
 				SWT.error(SWT.ERROR_NULL_ARGUMENT);
-			this.text = "##" + text;
+			this.text = text;
 		}
 
 		public void append(String string) {
@@ -521,6 +562,7 @@ public class CSimpleText extends Canvas {
 		}
 
 		public int getLineCount() {
+
 			return getLines().length;
 		}
 
@@ -551,6 +593,14 @@ public class CSimpleText extends Canvas {
 
 		private String[] getLinesOf(String string) {
 			return string.split(DELIMITER);
+		}
+
+		public void insert(String string, int offset) {
+			StringBuilder sb = new StringBuilder(text.substring(0, offset));
+			sb.append(string);
+			sb.append(text.substring(offset));
+
+			text = sb.toString();
 		}
 	}
 
@@ -689,15 +739,20 @@ public class CSimpleText extends Canvas {
 	}
 
 	public int getSelectionStart() {
-		return Math.min(selectionStart, selectionEnd);
+		return Math.max(0, Math.min(selectionStart, selectionEnd));
 	}
 
 	public int getSelectionEnd() {
-		return Math.max(selectionStart, selectionEnd);
+		return Math.max(0, Math.min(Math.max(selectionStart, selectionEnd), content.getText().length()));
 	}
 
 	public int getSelectionCount() {
 		return getSelectionEnd() - getSelectionStart();
+	}
+
+	public void showSelection() {
+		checkWidget();
+		setSelection(getSelection());
 	}
 
 	public void addVerifyListener(VerifyListener listener) {
@@ -730,10 +785,26 @@ public class CSimpleText extends Canvas {
 			if (string == null)
 				return;
 		}
-		content.replaceWith(string, getSelectionStart(), getSelectionEnd());
+		if (isTextSelected()) {
+			replaceSelectedText(string);
+		} else {
+			insertTextAtCaret(string);
+		}
+
 		if (string.length() != 0)
 			sendEvent(SWT.Modify);
 		redraw();
+	}
+
+	private void insertTextAtCaret(String string) {
+		content.insert(string, caretOffset);
+		caretOffset += string.length();
+	}
+
+	private void replaceSelectedText(String string) {
+		int start = getSelectionStart();
+		content.replaceWith(string, start, getSelectionEnd());
+		caretOffset = start + string.length();
 	}
 
 	String verifyText(String string, int start, int end) {
@@ -776,7 +847,11 @@ public class CSimpleText extends Canvas {
 		checkWidget();
 		if ((style & SWT.SINGLE) != 0)
 			return 1;
-		return content.getLineCount();
+		if (getText().endsWith(DELIMITER)) {
+			return content.getLineCount() + 1;
+		} else {
+			return content.getLineCount();
+		}
 	}
 
 	public String getLineDelimiter() {
@@ -793,6 +868,14 @@ public class CSimpleText extends Canvas {
 		if (listener == null)
 			error(SWT.ERROR_NULL_ARGUMENT);
 		eventTable.unhook(SWT.Segments, listener);
+	}
+
+	public int getTabs() {
+		return tabs;
+	}
+
+	public void setTabs(int tabs) {
+		this.tabs = tabs;
 	}
 
 }
