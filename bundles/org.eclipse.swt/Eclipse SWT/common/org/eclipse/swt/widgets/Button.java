@@ -65,6 +65,8 @@ public class Button extends Canvas {
 	private int height;
 	private Listener listener;
 	private boolean checked;
+	private boolean hasMouseEntered;
+
 
 	private static int DRAW_FLAGS = SWT.DRAW_MNEMONIC | SWT.DRAW_TAB
 			| SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER;
@@ -116,6 +118,8 @@ public class Button extends Canvas {
 	public Button(Composite parent, int style) {
 		super(parent, checkStyle(style));
 
+		setCapture(true);
+
 		listener = event -> {
 			switch (event.type) {
 				case SWT.Dispose :
@@ -160,6 +164,26 @@ public class Button extends Canvas {
 		addListener(SWT.FocusOut, listener);
 		addListener(SWT.Traverse, listener);
 		addListener(SWT.Selection, listener);
+
+		addMouseTrackListener(new MouseTrackAdapter() {
+
+			@Override
+			public void mouseEnter(MouseEvent e) {
+				if (!hasMouseEntered) {
+					System.out.println("Mouse entered");
+					hasMouseEntered = true;
+					onPaint(new Event());
+				}
+			}
+
+			@Override
+			public void mouseExit(MouseEvent e) {
+				hasMouseEntered = false;
+				System.out.println("Mouse left");
+				onPaint(new Event());
+			}
+
+		});
 
 	}
 
@@ -226,10 +250,12 @@ public class Button extends Canvas {
 		System.out.println("Paint: GC=" + event.gc);
 		GC gc = event.gc;
 
-		if (gc == null)
+		if (gc == null) {
 			gc = new GC(this);
+			event.gc = gc;
+		}
 
-		doPaint(gc, getBackground(), getForeground());
+		doPaint(event);
 		gc.dispose();
 	}
 
@@ -240,53 +266,52 @@ public class Button extends Canvas {
 	}
 
 	private void onMouseDown(Event e) {
-		GC gc = (e.gc != null) ? e.gc : new GC(this);
-		// switch fg and bg colors
-		doPaint(gc, getForeground(), getBackground());
-		gc.dispose();
+		onPaint(e);
 	}
 
 	private void onMouseUp(Event e) {
 		GC gc = (e.gc != null) ? e.gc : new GC(this);
-		doPaint(gc, getBackground(), getForeground());
+		onPaint(e);
 		gc.dispose();
-
 		notifyListeners(SWT.Selection, new Event());
 	}
 
 	private void drawBevelRect(IGraphicsContext gc, int x, int y, int w, int h,
-			Color topleft, Color bottomright) {
+			Color foregournd) {
 
 		gc.setBackground(getBackground());
 		gc.fillRoundRectangle(x, y, w, h, 10, 10);
 
-		gc.setForeground(bottomright);
+		gc.setForeground(foregournd);
 		gc.drawRoundRectangle(x, y, w, h, 10, 10);
-		// gc.drawLine(x + w, y, x + w, y + h);
-		// gc.drawLine(x, y + h, x + w, y + h);
 
-		// gc.setForeground(topleft);
-		// gc.drawLine(x, y, x + w - 1, y);
-		// gc.drawLine(x, y, x, y + h - 1);
+		gc.setForeground(getForeground());
 
 	}
 
-	private void doPaint(GC gc, Color bgColor, Color fgColor) {
+	private void doPaint(Event e) {
 		// draw background
+
+		GC gc = e.gc;
 
 		Rectangle r = getBounds();
 		// Rectangle r = getClientArea();
 
-		setBounds(r);
-
-		drawBevelRect(gc, 0, 0, r.width - 1, r.height - 1, getForeground(),
-				getForeground());
+		// this call is necessary in order to clear the button area, and then
+		// repaint the button.
+		gc.fillRectangle(0, 0, r.width, r.height);
 
 		int toRight = 0;
 
+		if (hasMouseEntered) {
+			gc.setForeground(
+					getDisplay().getSystemColor(SWT.COLOR_LINK_FOREGROUND));
+
+		}
 		if ((style & SWT.CHECK) == SWT.CHECK) {
 
 			toRight = 8;
+
 
 			gc.drawRectangle(new Rectangle(4, 10, 12, 12));
 
@@ -303,12 +328,23 @@ public class Button extends Canvas {
 
 			toRight = 8;
 
-			gc.drawOval(4, 8, 14, 14);
 			if (getSelection()) {
 				gc.setBackground(getForeground());
 				gc.fillOval(4, 8, 15, 15);
 				gc.setBackground(getBackground());
 			}
+			gc.drawOval(4, 8, 14, 14);
+
+		} else {
+
+			System.out.println("Draw Bevel...");
+
+			Color fg = getForeground();
+			if (hasMouseEntered) {
+				fg = getDisplay().getSystemColor(SWT.COLOR_LINK_FOREGROUND);
+			}
+
+			drawBevelRect(gc, 0, 0, r.width - 1, r.height - 1, fg);
 
 		}
 
@@ -328,6 +364,13 @@ public class Button extends Canvas {
 		int lineWidth = gc.textExtent(getText(), DRAW_FLAGS).x;
 		int lineX = Math.max(0, (r.width - lineWidth) / 2);
 
+
+		if (hasMouseEntered) {
+			gc.setForeground(
+					getDisplay().getSystemColor(SWT.COLOR_LINK_FOREGROUND));
+
+		}
+
 		gc.drawText(getText(), lineX + toRight, 2, DRAW_FLAGS);
 
 	}
@@ -340,7 +383,7 @@ public class Button extends Canvas {
 
 	@Override
 	public Color getForeground() {
-		return new Color(255, 0, 0); // red
+		return new Color(0, 0, 0);
 	}
 
 	private void refreshCheckSize(int nativeZoom) {
@@ -1223,7 +1266,6 @@ public class Button extends Canvas {
 		// if (selected && grayed) flags = OS.BST_INDETERMINATE;
 		// }
 		// updateSelection (flags);
-
 
 		this.checked = selected;
 
