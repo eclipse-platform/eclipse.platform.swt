@@ -1,17 +1,18 @@
 package org.eclipse.swt.widgets;
 
 
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.cocoa.*;
 
 public class CSimpleText extends Canvas {
+
 
 	public static final int LIMIT = 0x7FFFFFFF;
 
 	public static final String DELIMITER = "\n";
-
-	private static final int LINE_HEIGTH = 16;
 
 	private TextContent content;
 	private String message;
@@ -23,12 +24,17 @@ public class CSimpleText extends Canvas {
 
 	private boolean mouseDown;
 
+
 	public CSimpleText(Composite parent, int style) {
 		super(parent, style);
 		content = new TextContent();
 		message = "";
 
 		caret = new Caret(this, SWT.NONE);
+
+		setCursor(display.getSystemCursor(SWT.CURSOR_IBEAM));
+		setBackground(display.getSystemColor(SWT.COLOR_LIST_BACKGROUND));
+		setForeground(display.getSystemColor(SWT.COLOR_LIST_FOREGROUND));
 
 		addDisposeListener(e -> CSimpleText.this.widgetDisposed(e));
 		addPaintListener(e -> CSimpleText.this.paintControl(e));
@@ -82,7 +88,6 @@ public class CSimpleText extends Canvas {
 			CSimpleText.this.onMouseMove(e);
 		});
 
-		setCursor(display.getSystemCursor(SWT.CURSOR_IBEAM));
 
 	}
 
@@ -97,10 +102,10 @@ public class CSimpleText extends Canvas {
 	private void onMouseUp(MouseEvent e) {
 		TextLocation location = getTextLocation(e.x, e.y);
 		selectionEnd = content.getOffset(location);
-		if (selectionStart == selectionEnd) {
-			removeSelection();
-		} else {
+		if (isTextSelected()) {
 			caretOffset = selectionEnd;
+		} else {
+			clearSelection();
 		}
 		redraw();
 		mouseDown = false;
@@ -118,11 +123,11 @@ public class CSimpleText extends Canvas {
 		int x = selectedX + visibleArea.x;
 		int y = selectedY + visibleArea.y;
 
+		GC gc = new GC(this);
 		String[] textLines = content.getLines();
-		int clickedLine = Math.round(y / LINE_HEIGTH);
+		int clickedLine = Math.round(y / getLineHeight(gc));
 		int selectedLine = Math.min(clickedLine, textLines.length - 1);
 		String text = "";
-		GC gc = new GC(this);
 		if (clickedLine > selectedLine) {
 			text = textLines[selectedLine];
 		} else {
@@ -174,21 +179,21 @@ public class CSimpleText extends Canvas {
 		case SWT.BS:
 			content.removeCharacter(caretOffset - 1);
 			moveCaretTo(caretOffset - 1, false);
-			removeSelection();
+			clearSelection();
 			break;
 		case SWT.DEL:
 			content.removeCharacter(caretOffset);
-			removeSelection();
+			clearSelection();
 			break;
 		default:
 			if (isTextSelected()) {
-				content.replaceWith(e.character, selectionStart, selectionEnd);
-				moveCaretTo(Math.min(selectionStart, selectionEnd) + 1, false);
+				content.replaceWith(e.character, getSelectionStart(), getSelectionEnd());
+				moveCaretTo(getSelectionStart() + 1, false);
 			} else {
 				content.append(e.character);
 				moveCaretTo(caretOffset + 1, false);
 			}
-			removeSelection();
+			clearSelection();
 		}
 		redraw();
 	}
@@ -200,7 +205,7 @@ public class CSimpleText extends Canvas {
 		return false;
 	}
 
-	private void removeSelection() {
+	public void clearSelection() {
 		selectionStart = selectionEnd = -1;
 	}
 
@@ -209,14 +214,14 @@ public class CSimpleText extends Canvas {
 			return;
 
 		if (updateSelection) {
-			if (caretOffset == selectionEnd) {
+			if (caretOffset == getSelectionEnd()) {
 				selectionEnd = newOffset;
 			} else if (selectionStart < 0 && selectionEnd < 0) {
 				selectionStart = caretOffset;
 				selectionEnd = newOffset;
 			}
 		} else {
-			removeSelection();
+			clearSelection();
 		}
 		caretOffset = newOffset;
 	}
@@ -236,19 +241,21 @@ public class CSimpleText extends Canvas {
 	private void drawSelection(PaintEvent e, Rectangle visibleArea) {
 		GC gc = e.gc;
 		int textLength = content.getText().length();
-		int start = Math.min(Math.max(Math.min(selectionStart, selectionEnd), 0), textLength);
-		int end = Math.min(Math.max(Math.max(selectionStart, selectionEnd), 0), textLength);
+		int start = Math.min(Math.max(getSelectionStart(), 0), textLength);
+		int end = Math.min(Math.max(getSelectionEnd(), 0), textLength);
 
-		if (selectionStart >= 0) {
+		if (getSelectionStart() >= 0) {
 			Point startLocationPixel = getLocationByOffset(start, gc);
 			TextLocation startLocation = content.getLocation(start);
 			TextLocation endLocation = content.getLocation(end);
 			String[] textLines = content.getLines();
 
 			Color oldBackground = gc.getBackground();
-			gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_GRAY));
+			gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT));
+			gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION));
 
 			int y = startLocationPixel.y;
+			int lineHeight = getLineHeight(gc);
 			for (int i = startLocation.line; i <= endLocation.line; i++) {
 				int x = 0;
 				String text = textLines[i];
@@ -260,7 +267,7 @@ public class CSimpleText extends Canvas {
 					text = text.substring(startLocation.column);
 				}
 				gc.drawText(text, x - visibleArea.x, y - visibleArea.y, false);
-				y += LINE_HEIGTH;
+				y += lineHeight;
 			}
 
 			gc.setBackground(oldBackground);
@@ -275,7 +282,7 @@ public class CSimpleText extends Canvas {
 			Point caretLocation = getLocationByOffset(caretOffset, gc);
 			int x = e.x + caretLocation.x - visibleArea.x;
 			int y = e.y + caretLocation.y - visibleArea.y;
-			caret.setBounds(x, y, 1, LINE_HEIGTH);
+			caret.setBounds(x, y, 1, getLineHeight(gc));
 		}
 	}
 
@@ -355,14 +362,14 @@ public class CSimpleText extends Canvas {
 	}
 
 	public String getSelectionText() {
-		return content.getText().substring(selectionStart, selectionEnd);
+		return content.getText().substring(getSelectionStart(), getSelectionEnd());
 	}
 
 	public int getTopIndex() {
 		if ((style & SWT.SINGLE) != 0)
 			return 0;
 		Rectangle visibleArea = getVisibleArea();
-		return visibleArea.x / LINE_HEIGTH;
+		return visibleArea.x / getLineHeight();
 	}
 
 	public void setTopIndex(int index) {
@@ -371,7 +378,7 @@ public class CSimpleText extends Canvas {
 			return;
 		Rectangle visibleArea = getVisibleArea();
 
-		int y = index * LINE_HEIGTH;
+		int y = index * getLineHeight();
 		scroll(0, 0, visibleArea.x, y, visibleArea.width, visibleArea.height, true);
 	}
 
@@ -398,7 +405,7 @@ public class CSimpleText extends Canvas {
 
 		String beforeSelection = content.getLines()[selectionLocation.line].substring(0, selectionLocation.column);
 		int x = gc.textExtent(beforeSelection).x;
-		int y = selectionLocation.line * LINE_HEIGTH;
+		int y = selectionLocation.line * getLineHeight(gc);
 		return new Point(x, y);
 	}
 
@@ -419,7 +426,7 @@ public class CSimpleText extends Canvas {
 	 *                         </ul>
 	 */
 	public int getCaretPosition() {
-		return selectionStart;
+		return caretOffset;
 	}
 
 	class TextLocation {
@@ -438,7 +445,7 @@ public class CSimpleText extends Canvas {
 	}
 
 	class TextContent {
-		private String text = "";
+		private String text = "##";
 
 		public String getText() {
 			return text;
@@ -484,7 +491,7 @@ public class CSimpleText extends Canvas {
 		public void setText(String text) {
 			if (text == null)
 				SWT.error(SWT.ERROR_NULL_ARGUMENT);
-			this.text = text;
+			this.text = "##" + text;
 		}
 
 		public void append(String string) {
@@ -590,5 +597,86 @@ public class CSimpleText extends Canvas {
 			return;
 		textLimit = limit;
 	}
+
+	@Override
+	public Point computeSize(int wHint, int hHint, boolean changed) {
+		checkWidget();
+		int width = 0, height = 0;
+		if ((style & SWT.SINGLE) != 0) {
+			GC gc = new GC(this);
+			String str = content.getLines()[0];
+			Point size = gc.textExtent(str);
+			gc.dispose();
+			if (str.length() > 0) {
+				width = (int) Math.ceil(size.x);
+			}
+			height = (int) Math.ceil(size.y);
+
+			if (hasBorder()) {
+				width += 2;
+			}
+
+			return new Point(width, height);
+		} else {
+			return super.computeSize(wHint, hHint, changed);
+		}
+	}
+
+	public int getLineHeight() {
+		checkWidget();
+		GC gc = new GC(this);
+		int height = getLineHeight(gc);
+		gc.dispose();
+		return height;
+	}
+
+	private int getLineHeight(GC gc) {
+		checkWidget();
+		String str = content.getLines()[0];
+		return gc.textExtent(str).y;
+	}
+
+
+	/**
+	 * Copies the selected text.
+	 * <p>
+	 * The current selection is copied to the clipboard.
+	 * </p>
+	 *
+	 * @exception SWTException <ul>
+	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+	 * </ul>
+	 */
+	public void copy () {
+		checkWidget ();
+		// if ((style & SWT.PASSWORD) != 0 || echoCharacter != '\0') return;
+		if ((style & SWT.SINGLE) != 0) {
+			Point selection = getSelection ();
+			if (selection.x == selection.y) return;
+			copyToClipboard(content.getText().substring(getSelectionStart(), getSelectionEnd()).toCharArray());
+		} else {
+			NSText text = (NSText) view;
+			if (text.selectedRange ().length == 0) return;
+			text.copy (null);
+		}
+	}
+
+	public void cut() {
+		// TODO
+	}
+
+	public void paste() {
+		// TODO
+	}
+
+	public int getSelectionStart() {
+		return Math.min(selectionStart, selectionEnd);
+	}
+
+	public int getSelectionEnd() {
+		return Math.max(selectionStart, selectionEnd);
+	}
+
 
 }
