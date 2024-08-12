@@ -15,6 +15,8 @@ public class CSimpleText extends Canvas {
 
 	private TextContent content;
 	private String message;
+	private char echoChar;
+
 
 	private int selectionStart, selectionEnd;
 	private int caretOffset;
@@ -22,6 +24,7 @@ public class CSimpleText extends Canvas {
 	int textLimit = LIMIT;
 
 	private boolean mouseDown;
+	private boolean doubleClick;
 
 
 	public CSimpleText(Composite parent, int style) {
@@ -35,6 +38,11 @@ public class CSimpleText extends Canvas {
 		setBackground(display.getSystemColor(SWT.COLOR_LIST_BACKGROUND));
 		setForeground(display.getSystemColor(SWT.COLOR_LIST_FOREGROUND));
 
+		addListeners();
+
+	}
+
+	private void addListeners() {
 		addDisposeListener(e -> CSimpleText.this.widgetDisposed(e));
 		addPaintListener(e -> CSimpleText.this.paintControl(e));
 		addKeyListener(new KeyAdapter() {
@@ -86,8 +94,6 @@ public class CSimpleText extends Canvas {
 		addMouseMoveListener(e -> {
 			CSimpleText.this.onMouseMove(e);
 		});
-
-
 	}
 
 	private void onMouseMove(MouseEvent e) {
@@ -465,6 +471,17 @@ public class CSimpleText extends Canvas {
 			text = sb.toString();
 		}
 
+		public void replaceWith(String string, int from, int to) {
+			int start = Math.min(from, to);
+			int end = Math.min(Math.max(from, to), text.length());
+
+			StringBuilder sb = new StringBuilder(text.substring(0, start));
+			sb.append(string);
+			sb.append(text.substring(end));
+
+			text = sb.toString();
+		}
+
 		public void removeCharacter(int offset) {
 			if (offset > text.length()) return;
 			StringBuilder sb = new StringBuilder(text.substring(0, offset));
@@ -683,5 +700,105 @@ public class CSimpleText extends Canvas {
 		return Math.max(selectionStart, selectionEnd);
 	}
 
+	public int getSelectionCount() {
+		return getSelectionEnd() - getSelectionStart();
+	}
+
+	public void addVerifyListener(VerifyListener listener) {
+		addTypedListener(listener, SWT.Verify);
+	}
+
+	public void removeVerifyListener(VerifyListener listener) {
+		checkWidget();
+		if (listener == null)
+			error(SWT.ERROR_NULL_ARGUMENT);
+		if (eventTable == null)
+			return;
+		eventTable.unhook(SWT.Verify, listener);
+	}
+
+	public int getCaretLineNumber() {
+		checkWidget();
+		if ((style & SWT.SINGLE) != 0)
+			return 0;
+		return content.getLocation(caretOffset).line;
+	}
+
+	public void insert(String string) {
+		checkWidget();
+		if (string == null)
+			error(SWT.ERROR_NULL_ARGUMENT);
+		if (hooks(SWT.Verify) || filters(SWT.Verify)) {
+			Point selection = getSelection();
+			string = verifyText(string, selection.x, selection.y);
+			if (string == null)
+				return;
+		}
+		content.replaceWith(string, getSelectionStart(), getSelectionEnd());
+		if (string.length() != 0)
+			sendEvent(SWT.Modify);
+		redraw();
+	}
+
+	String verifyText(String string, int start, int end) {
+		Event event = new Event();
+		event.text = string;
+		event.start = start;
+		event.end = end;
+		/*
+		 * It is possible (but unlikely), that application code could have disposed the
+		 * widget in the verify event. If this happens, answer null to cancel the
+		 * operation.
+		 */
+		sendEvent(SWT.Verify, event);
+		if (!event.doit || isDisposed())
+			return null;
+		return event.text;
+	}
+
+	public int getCharCount() {
+		return content.getText().length();
+	}
+
+	public boolean getDoubleClickEnabled() {
+		return doubleClick;
+	}
+
+	public void setDoubleClickEnabled(boolean doubleClick) {
+		this.doubleClick = doubleClick;
+	}
+
+	public char getEchoChar() {
+		return echoChar;
+	}
+
+	public void setEchoChar(char echoChar) {
+		this.echoChar = echoChar;
+	}
+
+	public int getLineCount() {
+		checkWidget();
+		if ((style & SWT.SINGLE) != 0)
+			return 1;
+		return content.getLineCount();
+	}
+
+	public String getLineDelimiter() {
+		checkWidget();
+		return DELIMITER;
+	}
+
+	public void addSegmentListener(SegmentListener listener) {
+		addTypedListener(listener, SWT.Segments);
+	}
+
+	public void removeSegmentListener(SegmentListener listener) {
+		checkWidget();
+		if (listener == null)
+			error(SWT.ERROR_NULL_ARGUMENT);
+		eventTable.unhook(SWT.Segments, listener);
+	}
 
 }
+
+
