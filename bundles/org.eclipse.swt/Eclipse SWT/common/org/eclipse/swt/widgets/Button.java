@@ -67,7 +67,6 @@ public class Button extends Canvas {
 	private boolean checked;
 	private boolean hasMouseEntered;
 
-
 	private static int DRAW_FLAGS = SWT.DRAW_MNEMONIC | SWT.DRAW_TAB
 			| SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER;
 
@@ -117,8 +116,6 @@ public class Button extends Canvas {
 	 */
 	public Button(Composite parent, int style) {
 		super(parent, checkStyle(style));
-
-		setCapture(true);
 
 		listener = event -> {
 			switch (event.type) {
@@ -191,9 +188,6 @@ public class Button extends Canvas {
 		this.dispose();
 	}
 
-	private void onMouseUp(MouseEvent e) {
-		notifyListeners(SWT.Selection, new Event());
-	}
 
 	private void onKeyReleased(KeyEvent e) {
 		System.out.println("Key: " + e.keyCode + " - " + e.character);
@@ -213,12 +207,6 @@ public class Button extends Canvas {
 	private void onSelection(Event event) {
 		System.out.println("WARN: Not implemented yet: "
 				+ new Throwable().getStackTrace()[0]);
-
-		if (checked)
-			checked = false;
-		else
-			checked = true;
-
 		onPaint(event);
 
 	}
@@ -270,9 +258,14 @@ public class Button extends Canvas {
 	}
 
 	private void onMouseUp(Event e) {
-		GC gc = (e.gc != null) ? e.gc : new GC(this);
-		onPaint(e);
-		gc.dispose();
+		if ((style & SWT.RADIO) != 0) {
+			selectRadio();
+		} else {
+			if (checked)
+				checked = false;
+			else
+				checked = true;
+		}
 		notifyListeners(SWT.Selection, new Event());
 	}
 
@@ -311,7 +304,6 @@ public class Button extends Canvas {
 		if ((style & SWT.CHECK) == SWT.CHECK) {
 
 			toRight = 8;
-
 
 			gc.drawRectangle(new Rectangle(4, 10, 12, 12));
 
@@ -363,7 +355,6 @@ public class Button extends Canvas {
 
 		int lineWidth = gc.textExtent(getText(), DRAW_FLAGS).x;
 		int lineX = Math.max(0, (r.width - lineWidth) / 2);
-
 
 		if (hasMouseEntered) {
 			gc.setForeground(
@@ -985,14 +976,6 @@ public class Button extends Canvas {
 		eventTable.unhook(SWT.DefaultSelection, listener);
 	}
 
-	void selectRadio() {
-		for (Control child : parent._getChildren()) {
-			if (this != child)
-				child.setRadioSelection(false);
-		}
-		setSelection(true);
-	}
-
 	/**
 	 * Controls how text, images and arrows will be displayed in the receiver.
 	 * The argument should be one of <code>LEFT</code>, <code>RIGHT</code> or
@@ -1226,17 +1209,6 @@ public class Button extends Canvas {
 		}
 	}
 
-	@Override
-	boolean setRadioSelection(boolean value) {
-		if ((style & SWT.RADIO) == 0)
-			return false;
-		if (getSelection() != value) {
-			setSelection(value);
-			sendSelectionEvent(SWT.Selection);
-		}
-		return true;
-	}
-
 	/**
 	 * Sets the selection state of the receiver, if it is of type
 	 * <code>CHECK</code>, <code>RADIO</code>, or <code>TOGGLE</code>.
@@ -1259,21 +1231,33 @@ public class Button extends Canvas {
 	 */
 	public void setSelection(boolean selected) {
 		checkWidget();
-		if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0)
-			return;
-		// int flags = selected ? OS.BST_CHECKED : OS.BST_UNCHECKED;
-		// if ((style & SWT.CHECK) != 0) {
-		// if (selected && grayed) flags = OS.BST_INDETERMINATE;
-		// }
-		// updateSelection (flags);
 
-		this.checked = selected;
+			this.checked = selected;
 
 		onPaint(new Event());
 
 		System.out.println(text + "  " + selected);
 		System.out.println("WARN: Not implemented yet: "
 				+ new Throwable().getStackTrace()[0]);
+	}
+
+	@Override
+	boolean setRadioSelection(boolean value) {
+		if ((style & SWT.RADIO) == 0)
+			return false;
+		if (getSelection() != value) {
+			setSelection(value);
+			sendSelectionEvent(SWT.Selection);
+		}
+		return true;
+	}
+
+	void selectRadio() {
+		for (Control child : parent._getChildren()) {
+			if (this != child)
+				child.setRadioSelection(false);
+		}
+		setSelection(true);
 	}
 
 	/**
