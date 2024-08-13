@@ -24,7 +24,7 @@ package org.eclipse.swt.graphics;
  * @see GC#getFontMetrics
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
-public final class FontMetrics {
+public final class FontMetrics implements IFontMetrics {
 	int ascent, descent, leading, height;
 	double averageCharWidth;
 
@@ -102,6 +102,7 @@ public boolean equals (Object object) {
  *
  * @return the ascent of the font
  */
+@Override
 public int getAscent() {
 	return ascent;
 }
@@ -113,6 +114,7 @@ public int getAscent() {
  * @return the average character width of the font
  * @since 3.107
  */
+@Override
 public double getAverageCharacterWidth () {
 	return averageCharWidth;
 }
@@ -124,6 +126,7 @@ public double getAverageCharacterWidth () {
  * @return the average character width of the font
  * @deprecated Use getAverageCharacterWidth() instead
  */
+@Override
 @Deprecated
 public int getAverageCharWidth() {
 	return (int) averageCharWidth;
@@ -137,6 +140,7 @@ public int getAverageCharWidth() {
  *
  * @return the descent of the font
  */
+@Override
 public int getDescent() {
 	return descent;
 }
@@ -152,6 +156,7 @@ public int getDescent() {
  * @see #getDescent
  * @see #getLeading
  */
+@Override
 public int getHeight() {
 	return height;
 }
@@ -163,6 +168,7 @@ public int getHeight() {
  *
  * @return the leading space of the font
  */
+@Override
 public int getLeading() {
 	return leading;
 }

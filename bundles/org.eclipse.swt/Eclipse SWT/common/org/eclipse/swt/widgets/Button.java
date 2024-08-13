@@ -55,7 +55,6 @@ import org.eclipse.swt.internal.*;
 public class Button extends Canvas {
 	String text = "", message = "";
 	Image image, disabledImage;
-	ImageList imageList;
 	boolean ignoreMouse, grayed, useDarkModeExplorerTheme;
 	static final int MARGIN = 4;
 	static final int ICON_WIDTH = 128, ICON_HEIGHT = 128;
@@ -897,7 +896,6 @@ public class Button extends Canvas {
 		return super.isTabItem();
 	}
 
-	@Override
 	boolean mnemonicHit(char ch) {
 		/*
 		 * Feature in Windows. When a radio button gets focus, it selects the
@@ -911,7 +909,6 @@ public class Button extends Canvas {
 		return true;
 	}
 
-	@Override
 	boolean mnemonicMatch(char key) {
 		// char mnemonic = findMnemonic (getText ());
 		// if (mnemonic == '\0') return false;
@@ -925,9 +922,6 @@ public class Button extends Canvas {
 	@Override
 	void releaseWidget() {
 		super.releaseWidget();
-		if (imageList != null)
-			imageList.dispose();
-		imageList = null;
 		if (disabledImage != null)
 			disabledImage.dispose();
 		disabledImage = null;
@@ -1070,7 +1064,7 @@ public class Button extends Canvas {
 	void setDefault(boolean value) {
 		if ((style & SWT.PUSH) == 0)
 			return;
-		long hwndShell = menuShell().handle;
+		// long hwndShell = menuShell().handle;
 		// int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 		// if (value) {
 		// bits |= OS.BS_DEFPUSHBUTTON;

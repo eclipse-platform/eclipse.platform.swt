@@ -59,7 +59,7 @@ import org.eclipse.swt.internal.cocoa.*;
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Examples: GraphicsExample, PaintExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
-public class GC extends Resource {
+public class GC extends Resource implements IGraphicsContext {
 	/**
 	 * the handle to the OS device context
 	 * (Warning: This field is platform dependent)
@@ -1048,6 +1048,7 @@ void destroy() {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
+@Override
 public void drawArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0) {
@@ -1139,6 +1140,7 @@ public void drawFocus(int x, int y, int width, int height) {
  *    <li>ERROR_NO_HANDLES - if no handles are available to perform the operation</li>
  * </ul>
  */
+@Override
 public void drawImage(Image image, int x, int y) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -1178,6 +1180,7 @@ public void drawImage(Image image, int x, int y) {
  *    <li>ERROR_NO_HANDLES - if no handles are available to perform the operation</li>
  * </ul>
  */
+@Override
 public void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (srcWidth == 0 || srcHeight == 0 || destWidth == 0 || destHeight == 0) return;
@@ -1245,6 +1248,7 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
+@Override
 public void drawLine(int x1, int y1, int x2, int y2) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (x1 == x2 && y1 == y2 && data.lineWidth <= 1) {
@@ -1295,6 +1299,7 @@ public void drawLine(int x1, int y1, int x2, int y2) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
+@Override
 public void drawOval(int x, int y, int width, int height) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	NSAutoreleasePool pool = checkGC(DRAW);
@@ -1393,6 +1398,7 @@ public void drawPath(Path path) {
  *
  * @since 3.0
  */
+@Override
 public void drawPoint(int x, int y) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	NSAutoreleasePool pool = checkGC(FOREGROUND_FILL | CLIPPING | TRANSFORM);
@@ -1428,6 +1434,7 @@ public void drawPoint(int x, int y) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
+@Override
 public void drawPolygon(int[] pointArray) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -1523,6 +1530,7 @@ public void drawPolyline(int[] pointArray) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
+@Override
 public void drawRectangle(int x, int y, int width, int height) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	NSAutoreleasePool pool = checkGC(DRAW);
@@ -1598,6 +1606,7 @@ public void drawRectangle(Rectangle rect) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
+@Override
 public void drawRoundRectangle(int x, int y, int width, int height, int arcWidth, int arcHeight) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (arcWidth == 0 || arcHeight == 0) {
@@ -1705,6 +1714,7 @@ public void drawString(String string, int x, int y, boolean isTransparent) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
+@Override
 public void drawText(String string, int x, int y) {
 	drawText(string, x, y, SWT.DRAW_DELIMITER | SWT.DRAW_TAB);
 }
@@ -1733,6 +1743,7 @@ public void drawText(String string, int x, int y) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
+@Override
 public void drawText(String string, int x, int y, boolean isTransparent) {
 	int flags = SWT.DRAW_DELIMITER | SWT.DRAW_TAB;
 	if (isTransparent) flags |= SWT.DRAW_TRANSPARENT;
@@ -1778,6 +1789,7 @@ public void drawText(String string, int x, int y, boolean isTransparent) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
+@Override
 public void drawText (String string, int x, int y, int flags) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -1970,6 +1982,7 @@ public void fillArc(int x, int y, int width, int height, int startAngle, int arc
  *
  * @see #drawRectangle(int, int, int, int)
  */
+@Override
 public void fillGradientRectangle(int x, int y, int width, int height, boolean vertical) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if ((width == 0) || (height == 0)) return;
@@ -2030,6 +2043,7 @@ public void fillGradientRectangle(int x, int y, int width, int height, boolean v
  *
  * @see #drawOval
  */
+@Override
 public void fillOval(int x, int y, int width, int height) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	NSAutoreleasePool pool = checkGC(FILL);
@@ -2204,6 +2218,7 @@ public void fillPath(Path path) {
  *
  * @see #drawPolygon
  */
+@Override
 public void fillPolygon(int[] pointArray) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -2250,6 +2265,7 @@ public void fillPolygon(int[] pointArray) {
  *
  * @see #drawRectangle(int, int, int, int)
  */
+@Override
 public void fillRectangle(int x, int y, int width, int height) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	NSAutoreleasePool pool = checkGC(FILL);
@@ -2297,6 +2313,7 @@ public void fillRectangle(int x, int y, int width, int height) {
  *
  * @see #drawRectangle(int, int, int, int)
  */
+@Override
 public void fillRectangle(Rectangle rect) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -2320,6 +2337,7 @@ public void fillRectangle(Rectangle rect) {
  *
  * @see #drawRoundRectangle
  */
+@Override
 public void fillRoundRectangle(int x, int y, int width, int height, int arcWidth, int arcHeight) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (arcWidth == 0 || arcHeight == 0) {
@@ -2401,6 +2419,7 @@ public int getAdvanceWidth(char ch) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
+@Override
 public Color getBackground() {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return Color.cocoa_new (data.device, data.background);
@@ -2467,6 +2486,7 @@ public boolean getAdvanced() {
  *
  * @since 3.1
  */
+@Override
 public int getAlpha() {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return data.alpha;
@@ -2688,6 +2708,7 @@ public int getFillRule() {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
+@Override
 public Font getFont() {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return data.font;
@@ -2704,6 +2725,7 @@ public Font getFont() {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
+@Override
 public FontMetrics getFontMetrics() {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	NSAutoreleasePool pool = checkGC(FONT);
@@ -2743,6 +2765,7 @@ public FontMetrics getFontMetrics() {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
+@Override
 public Color getForeground() {
 	if (handle == null) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
 	return Color.cocoa_new(data.device, data.foreground);
@@ -3257,6 +3280,7 @@ public void setAdvanced(boolean advanced) {
  *
  * @since 3.1
  */
+@Override
 public void setAlpha(int alpha) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	data.alpha = alpha & 0xFF;
@@ -3324,6 +3348,7 @@ public void setAntialias(int antialias) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
+@Override
 public void setBackground(Color color) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -3381,6 +3406,7 @@ public void setBackgroundPattern(Pattern pattern) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
+@Override
 public void setClipping(int x, int y, int width, int height) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	NSAutoreleasePool pool = null;
@@ -3552,6 +3578,7 @@ public void setFillRule(int rule) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
+@Override
 public void setFont(Font font) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (font != null && font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -3573,6 +3600,7 @@ public void setFont(Font font) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
+@Override
 public void setForeground(Color color) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -3929,6 +3957,7 @@ public void setLineStyle(int lineStyle) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
+@Override
 public void setLineWidth(int lineWidth) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (data.lineWidth == lineWidth) return;
@@ -4041,6 +4070,7 @@ public void setTextAntialias(int antialias) {
  *
  * @since 3.1
  */
+@Override
 public void setTransform(Transform transform) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (transform != null && transform.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -4136,6 +4166,7 @@ public Point textExtent(String string) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
+@Override
 public Point textExtent(String string, int flags) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
