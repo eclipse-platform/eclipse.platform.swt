@@ -57,7 +57,7 @@ import org.eclipse.swt.*;
  *      information</a>
  * @noextend This class is not intended to be subclassed by clients.
  */
-public class Text extends CText {
+public class Text extends CSimpleText {
 	/**
 	 * Constructs a new instance of this class given its parent and a style value
 	 * describing its behavior and appearance.

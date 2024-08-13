@@ -2,10 +2,11 @@ package org.eclipse.swt.widgets;
 
 
 
+import java.util.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.cocoa.*;
 
 public class CSimpleText extends Canvas {
 
@@ -30,7 +31,7 @@ public class CSimpleText extends Canvas {
 
 
 	public CSimpleText(Composite parent, int style) {
-		super(parent, style);
+		super(parent, checkStyle(style));
 		content = new TextContent();
 		message = "";
 
@@ -42,6 +43,34 @@ public class CSimpleText extends Canvas {
 
 		addListeners();
 
+	}
+
+	static int checkStyle(int style) {
+		if ((style & SWT.SEARCH) != 0) {
+			style |= SWT.SINGLE | SWT.BORDER;
+			style &= ~SWT.PASSWORD;
+			/*
+			 * NOTE: ICON_CANCEL has the same value as H_SCROLL and ICON_SEARCH has the same
+			 * value as V_SCROLL so they are cleared because SWT.SINGLE is set.
+			 */
+		}
+		if ((style & SWT.SINGLE) != 0 && (style & SWT.MULTI) != 0) {
+			style &= ~SWT.MULTI;
+		}
+		style = checkBits(style, SWT.LEFT, SWT.CENTER, SWT.RIGHT, 0, 0, 0);
+		if ((style & SWT.SINGLE) != 0)
+			style &= ~(SWT.H_SCROLL | SWT.V_SCROLL | SWT.WRAP);
+		if ((style & SWT.WRAP) != 0) {
+			style |= SWT.MULTI;
+			style &= ~SWT.H_SCROLL;
+		}
+		if ((style & SWT.MULTI) != 0)
+			style &= ~SWT.PASSWORD;
+		if ((style & (SWT.SINGLE | SWT.MULTI)) != 0)
+			return style;
+		if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0)
+			return style | SWT.MULTI;
+		return style | SWT.SINGLE;
 	}
 
 	private void addListeners() {
@@ -127,12 +156,12 @@ public class CSimpleText extends Canvas {
 
 	private TextLocation getTextLocation(int selectedX, int selectedY) {
 		Rectangle visibleArea = getVisibleArea();
-		int x = selectedX + visibleArea.x;
-		int y = selectedY + visibleArea.y;
+		int x = Math.max(selectedX + visibleArea.x, 0);
+		int y = Math.max(selectedY + visibleArea.y, 0);
 
 		GC gc = new GC(this);
 		String[] textLines = content.getLines();
-		int clickedLine = Math.round(y / getLineHeight(gc));
+		int clickedLine = Math.min(Math.round(y / getLineHeight(gc)), textLines.length - 1);
 		int selectedLine = Math.min(clickedLine, textLines.length - 1);
 		String text = "";
 		if (clickedLine > selectedLine) {
@@ -184,25 +213,41 @@ public class CSimpleText extends Canvas {
 			moveCaretTo(content.getOffset(caretLocation), updateSelection);
 			break;
 		case SWT.BS:
-			content.removeCharacter(caretOffset - 1);
-			moveCaretTo(caretOffset - 1, false);
-			clearSelection();
+			if (isEnabled()) {
+				content.removeCharacter(caretOffset - 1);
+				moveCaretTo(caretOffset - 1, false);
+				clearSelection();
+				sendEvent(SWT.Modify);
+			}
 			break;
 		case SWT.DEL:
-			content.removeCharacter(caretOffset);
-			clearSelection();
+			if (isEnabled()) {
+				content.removeCharacter(caretOffset);
+				clearSelection();
+				sendEvent(SWT.Modify);
+			}
 			break;
 		default:
-			if (isTextSelected()) {
-				content.replaceWith(e.character, getSelectionStart(), getSelectionEnd());
-				moveCaretTo(getSelectionStart() + 1, false);
-			} else {
-				content.append(e.character);
-				moveCaretTo(caretOffset + 1, false);
+			if (isEnabled()) {
+				char character = normalize(e.character);
+				if (isTextSelected()) {
+					content.replaceWith(character, getSelectionStart(), getSelectionEnd());
+					moveCaretTo(getSelectionStart() + 1, false);
+				} else {
+					content.append(character);
+					moveCaretTo(caretOffset + 1, false);
+				}
+				clearSelection();
+				sendEvent(SWT.Modify);
 			}
-			clearSelection();
 		}
 		redraw();
+	}
+
+	private char normalize(char character) {
+		if (character == SWT.CR)
+			return DELIMITER.charAt(0);
+		return character;
 	}
 
 	private boolean isTextSelected() {
@@ -422,9 +467,11 @@ public class CSimpleText extends Canvas {
 		checkWidget();
 		if ((style & SWT.SINGLE) != 0)
 			return;
+		TextLocation location = content.getLocation(index);
 		Rectangle visibleArea = getVisibleArea();
 
-		int y = index * getLineHeight();
+		int y = location.line * getLineHeight();
+
 		scroll(0, 0, visibleArea.x, y, visibleArea.width, visibleArea.height, true);
 	}
 
@@ -448,6 +495,9 @@ public class CSimpleText extends Canvas {
 
 	public Point getLocationByOffset(int offset, GC gc) {
 		TextLocation selectionLocation = content.getLocation(offset);
+
+		if (selectionLocation.line >= content.getLines().length)
+			System.out.println("break");
 
 		String beforeSelection = content.getLines()[selectionLocation.line].substring(0, selectionLocation.column);
 		int x = gc.textExtent(beforeSelection).x;
@@ -520,7 +570,8 @@ public class CSimpleText extends Canvas {
 		}
 
 		public void removeCharacter(int offset) {
-			if (offset > text.length()) return;
+			if (offset > text.length() || offset < 0)
+				return;
 			StringBuilder sb = new StringBuilder(text.substring(0, offset));
 			if (offset + 1 < text.length()) {
 				sb.append(text.substring(offset + 1, text.length()));
@@ -592,7 +643,19 @@ public class CSimpleText extends Canvas {
 		}
 
 		private String[] getLinesOf(String string) {
-			return string.split(DELIMITER);
+
+			String[] lines = string.split(DELIMITER);
+			if (string.endsWith(DELIMITER)) {
+				lines = appendEnptyLineTo(lines);
+			}
+			return lines;
+		}
+
+		private String[] appendEnptyLineTo(String[] lines) {
+			String[] lines2 = new String[lines.length + 1];
+			System.arraycopy(lines, 0, lines2, 0, lines.length);
+			lines2[lines.length] = "";
+			return lines2;
 		}
 
 		public void insert(String string, int offset) {
