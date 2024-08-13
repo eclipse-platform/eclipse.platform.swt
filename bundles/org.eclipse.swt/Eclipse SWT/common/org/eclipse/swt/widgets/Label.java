@@ -46,9 +46,8 @@ import org.eclipse.swt.graphics.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * @see Label#shortenText(IGraphicsContext, String, int)
  */
-// for replacing Canvas with Control, it is necessary to handle the createWidget Method in Control differently
-// Idea: move Control to the common folder and create another class, that handles the OS dependent stuff.
-public class Label extends Canvas {
+//TODO: replace Canvas with Control and see what happens on mac
+public class Label extends Canvas implements ICustomWidget {
 
 	/** Gap between icon and text */
 	private static final int GAP = 5;
@@ -440,7 +439,7 @@ void onPaint(PaintEvent event) {
 	}
 
 //	IGraphicsContext gc = event.gc;
-	IGraphicsContext gc = new SkijaGC(event.gc);
+	 IGraphicsContext gc = new SkijaGC(event.gc);
 
 
 	String[] lines = text == null ? null : splitString(text);
@@ -528,7 +527,7 @@ void onPaint(PaintEvent event) {
 			}
 			gc.setBackground(oldBackground);
 		} else {
-			if ((background != null || (getStyle() & SWT.DOUBLE_BUFFERED) == 0) && background.getAlpha() > 0) {
+			if (background != null && background.getAlpha() > 0) {
 				gc.setBackground(getBackground());
 				gc.fillRectangle(rect);
 			}
@@ -1046,5 +1045,7 @@ private String[] splitString(String text) {
 	} while (pos != -1);
 	return lines;
 }
+
+
 }
 

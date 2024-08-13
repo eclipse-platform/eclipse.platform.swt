@@ -52,7 +52,8 @@ import org.eclipse.swt.internal.*;
  *      information</a>
  * @noextend This class is not intended to be subclassed by clients.
  */
-public class Button extends Canvas {
+// TODO: replace Canvas with Control and see what happens on mac
+public class Button extends Canvas implements ICustomWidget {
 	String text = "", message = "";
 	Image image, disabledImage;
 	boolean ignoreMouse, grayed, useDarkModeExplorerTheme;
@@ -250,6 +251,8 @@ public class Button extends Canvas {
 		System.out.println("WARN: Not implemented yet: "
 				+ new Throwable().getStackTrace()[0]);
 
+		// todo dispose resources...
+		this.dispose();
 	}
 
 	private void onMouseDown(Event e) {
@@ -341,8 +344,8 @@ public class Button extends Canvas {
 
 		// gc.setBackground(bgColor);
 		// gc.fillRectangle(r);
-		System.out.println("ClientArea: " + getClientArea());
-		System.out.println("Bounds: " + getBounds());
+		// System.out.println("ClientArea: " + getClientArea());
+		// System.out.println("Bounds: " + getBounds());
 
 		// // draw border
 		// gc.setForeground(fgColor);
@@ -896,6 +899,7 @@ public class Button extends Canvas {
 		return super.isTabItem();
 	}
 
+	@Override
 	boolean mnemonicHit(char ch) {
 		/*
 		 * Feature in Windows. When a radio button gets focus, it selects the
@@ -909,6 +913,7 @@ public class Button extends Canvas {
 		return true;
 	}
 
+	@Override
 	boolean mnemonicMatch(char key) {
 		// char mnemonic = findMnemonic (getText ());
 		// if (mnemonic == '\0') return false;

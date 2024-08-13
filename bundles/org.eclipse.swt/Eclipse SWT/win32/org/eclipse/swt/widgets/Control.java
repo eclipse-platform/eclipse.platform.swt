@@ -4743,9 +4743,30 @@ public boolean setParent (Composite parent) {
 	return true;
 }
 
-abstract TCHAR windowClass ();
+// abstract TCHAR windowClass ();
+//
+// abstract long windowProc ();
+//
 
-abstract long windowProc ();
+TCHAR windowClass() {
+	if (display.useOwnDC)
+		return display.windowOwnDCClass;
+	return display.windowClass;
+}
+
+long windowProc() {
+	return display.windowProc;
+};
+
+@Override
+long callWindowProc(long hwnd, int msg, long wParam, long lParam) {
+	if (this instanceof ICustomWidget) {
+		if (handle == 0)
+			return 0;
+		return OS.DefWindowProc(hwnd, msg, wParam, lParam);
+	}
+	return super.callWindowProc(hwnd, msg, wParam, lParam);
+}
 
 long windowProc (long hwnd, int msg, long wParam, long lParam) {
 	Display display = this.display;
