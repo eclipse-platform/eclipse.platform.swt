@@ -429,6 +429,9 @@ public void create(Composite parent, int style) {
 	handler = newCallback(this::handleGotFocus);
 	controller.add_GotFocus(handler, token);
 	handler.Release();
+	handler = newCallback(this::handleAcceleratorKeyPressed);
+	controller.add_AcceleratorKeyPressed(handler, token);
+	handler.Release();
 	if (webView_2 != null) {
 		handler = newCallback(this::handleDOMContentLoaded);
 		webView_2.add_DOMContentLoaded(handler, token);
@@ -791,6 +794,63 @@ int handleNewWindowRequested(long pView, long pArgs) {
 
 int handleGotFocus(long pView, long pArg) {
 	this.browser.forceFocus();
+	return COM.S_OK;
+}
+
+/**
+ * Events are not fired for all keyboard shortcuts.
+ * <ul>
+ * <li>Events for ctrl, alt modifiers are sent, but not for shift. So we use
+ * GetKeyState() to read modifier keys consistently and don't send out any
+ * events for the modifier-only events themselves.
+ * <li>We are missing some other keys (e.g. VK_TAB or VK_RETURN, unless modified
+ * by ctrl or alt).
+ * </ul>
+ * This is a best-effort implementation oriented towards
+ * {@link IE#handleDOMEvent(org.eclipse.swt.ole.win32.OleEvent)}.
+ *
+ * @see <a href=
+ *      "https://learn.microsoft.com/en-us/microsoft-edge/webview2/reference/win32/icorewebview2controller">https://learn.microsoft.com/en-us/microsoft-edge/webview2/reference/win32/icorewebview2controller</a>
+ */
+int handleAcceleratorKeyPressed(long pView, long pArgs) {
+	ICoreWebView2AcceleratorKeyPressedEventArgs args = new ICoreWebView2AcceleratorKeyPressedEventArgs(pArgs);
+	int[] virtualKey = new int[1];
+	args.get_VirtualKey(virtualKey);
+	int[] lparam = new int[1];
+	args.get_KeyEventLParam(lparam);
+	long flags = Integer.toUnsignedLong(lparam[0]) >> 16;
+	boolean isDown = (flags & 0x8000) == 0;
+
+	if (virtualKey[0] == OS.VK_SHIFT || virtualKey[0] == OS.VK_CONTROL || virtualKey[0] == OS.VK_MENU) {
+		return COM.S_OK;
+	}
+
+	Event keyEvent = new Event ();
+	keyEvent.widget = browser;
+	keyEvent.keyCode = translateKey(virtualKey[0]);
+	if (OS.GetKeyState (OS.VK_MENU) < 0) keyEvent.stateMask |= SWT.ALT;
+	if (OS.GetKeyState (OS.VK_SHIFT) < 0) keyEvent.stateMask |= SWT.SHIFT;
+	if (OS.GetKeyState (OS.VK_CONTROL) < 0) keyEvent.stateMask |= SWT.CONTROL;
+
+	if (isDown) {
+		keyEvent.type = SWT.KeyDown;
+		// Ignore repeated events while key is pressed
+		boolean isRepeat = (flags & 0x4000) != 0;
+		if (isRepeat) {
+			return COM.S_OK;
+		}
+
+		if (!sendKeyEvent(keyEvent)) {
+			args.put_Handled(true);
+		}
+	} else {
+		keyEvent.type = SWT.KeyUp;
+		browser.notifyListeners (keyEvent.type, keyEvent);
+		if (!keyEvent.doit) {
+			args.put_Handled(true);
+		}
+	}
+
 	return COM.S_OK;
 }
 
