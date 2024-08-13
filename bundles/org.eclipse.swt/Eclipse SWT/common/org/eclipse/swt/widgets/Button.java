@@ -899,7 +899,6 @@ public class Button extends Canvas implements ICustomWidget {
 		return super.isTabItem();
 	}
 
-	@Override
 	boolean mnemonicHit(char ch) {
 		/*
 		 * Feature in Windows. When a radio button gets focus, it selects the
@@ -913,7 +912,6 @@ public class Button extends Canvas implements ICustomWidget {
 		return true;
 	}
 
-	@Override
 	boolean mnemonicMatch(char key) {
 		// char mnemonic = findMnemonic (getText ());
 		// if (mnemonic == '\0') return false;
