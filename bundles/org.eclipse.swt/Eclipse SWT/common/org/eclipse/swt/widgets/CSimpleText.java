@@ -345,9 +345,10 @@ public class CSimpleText extends Canvas {
 
 	private void drawBackground(PaintEvent e) {
 		GC gc = e.gc;
-		gc.setBackground(getBackgroundColor());
+		gc.setBackground(getBackground());
 		gc.fillRectangle(e.x, e.y, e.width - 1, e.height - 1);
 	}
+
 
 	private Rectangle getVisibleArea() {
 		Rectangle clientArea = getClientArea();

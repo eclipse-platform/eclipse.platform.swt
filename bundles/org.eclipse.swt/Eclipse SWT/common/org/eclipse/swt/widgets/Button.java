@@ -622,15 +622,6 @@ public class Button extends Canvas {
 		addTypedListener(listener, SWT.Selection, SWT.DefaultSelection);
 	}
 
-	// @Override
-	// long callWindowProc (long hwnd, int msg, long wParam, long lParam) {
-	// if (handle == 0) return 0;
-	//// return OS.CallWindowProc (ButtonProc, hwnd, msg, wParam, lParam);
-	// System.out.println("WARN: Not implemented yet: " + new
-	// Throwable().getStackTrace()[0]);
-	// return -1;
-	// }
-
 	static int checkStyle(int style) {
 		style = checkBits(style, SWT.PUSH, SWT.ARROW, SWT.CHECK, SWT.RADIO,
 				SWT.TOGGLE, COMMAND_LINK ? SWT.COMMAND : 0);
