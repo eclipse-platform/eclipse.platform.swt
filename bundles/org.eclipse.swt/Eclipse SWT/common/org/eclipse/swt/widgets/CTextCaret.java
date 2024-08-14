@@ -106,9 +106,9 @@ boolean blinkCaret () {
 	return hideCaret ();
 }
 
-@Override
+
 void createWidget () {
-	blinkRate = display.getCaretBlinkTime ();
+	blinkRate = 570;
 	isVisible = true;
 	if (parent.getCaret () == null) {
 		parent.setCaret(this);
@@ -321,7 +321,6 @@ void releaseWidget () {
 	super.releaseWidget ();
 	if (isCurrentCart()) {
 		hideCaret ();
-		display.setCurrentCaret (null);
 	}
 	parent = null;
 	image = null;

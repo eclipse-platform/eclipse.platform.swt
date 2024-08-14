@@ -135,12 +135,12 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 	}
 
 	protected void focusLost(FocusEvent e) {
-		caret.setFocus();
+		caret.killFocus();
 
 	}
 
 	protected void focusGained(FocusEvent e) {
-		caret.killFocus();
+		caret.setFocus();
 	}
 
 	private void onMouseDown(MouseEvent e) {
