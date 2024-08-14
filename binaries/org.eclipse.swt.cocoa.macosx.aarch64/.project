@@ -107,6 +107,11 @@
 			<type>2</type>
 			<locationURI>SWT_HOST_PLUGIN/Eclipse%20SWT%20WebKit</locationURI>
 		</link>
+		<link>
+			<name>Eclipse SWT Tests</name>
+			<type>2</type>
+			<locationURI>SWT_HOST_PLUGIN/Eclipse%20SWT%20Tests</locationURI>
+		</link>		
 	</linkedResources>
 	<variableList>
 		<variable>
