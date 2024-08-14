@@ -292,6 +292,8 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 			int y = e.y + caretLocation.y - visibleArea.y;
 			getCaret().setBounds(x, y, 1, getLineHeight(gc));
 		}
+
+		caret.drawCaret(gc);
 	}
 
 	private void drawText(PaintEvent e, Rectangle visibleArea) {
@@ -359,6 +361,10 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 		}
 		model.setText(text);
 		redraw();
+	}
+
+	public void setTextChars(char[] cs) {
+		model.setTextChars(cs);
 	}
 
 	public void append(String string) {
@@ -750,5 +756,16 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 		this.caret = caret;
 	}
 
+	@Override
+	public void setVisible(boolean visible) {
+		super.setVisible(visible);
+		caret.setVisible(visible);
+	}
+
+	@Override
+	public boolean setFocus() {
+		caret.setFocus();
+		return super.setFocus();
+	}
 
 }

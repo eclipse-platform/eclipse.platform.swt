@@ -328,6 +328,9 @@ public class CSimpleTextModel {
 		return getText(getSelectionStart(), getSelectionEnd());
 	}
 
+	public void setTextChars(char[] cs) {
+		setText(new String(cs));
+	}
 
 }
 

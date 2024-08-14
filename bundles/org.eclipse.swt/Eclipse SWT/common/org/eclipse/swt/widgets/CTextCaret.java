@@ -16,6 +16,7 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 
 /**
  * Instances of this class provide an i-beam that is typically used
@@ -36,7 +37,7 @@ import org.eclipse.swt.graphics.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class CTextCaret extends Widget {
-	boolean currentCaret = false;
+	static CTextCaret currentCaret;;
 	CSimpleText parent;
 	int x, y, width, height;
 	boolean isVisible, isShowing;
@@ -44,7 +45,25 @@ public class CTextCaret extends Widget {
 	Image image;
 	Font font;
 
-	static final int DEFAULT_WIDTH	= 1;
+	static final int DEFAULT_WIDTH = 10;
+
+	static Runnable caretTimer = new Runnable() {
+		@Override
+		public void run() {
+			if (currentCaret != null) {
+				if (currentCaret == null || currentCaret.isDisposed())
+					return;
+				if (currentCaret.blinkCaret()) {
+					int blinkRate = currentCaret.blinkRate;
+					if (blinkRate != 0)
+						Display.getDefault().timerExec(blinkRate, this);
+				} else {
+					currentCaret = null;
+				}
+			}
+
+		}
+	};
 
 /**
  * Constructs a new instance of this class given its parent
@@ -89,7 +108,6 @@ boolean blinkCaret () {
 
 @Override
 void createWidget () {
-	super.createWidget ();
 	blinkRate = display.getCaretBlinkTime ();
 	isVisible = true;
 	if (parent.getCaret () == null) {
@@ -97,20 +115,21 @@ void createWidget () {
 	}
 }
 
-boolean drawCaret () {
+boolean drawCaret(GC gc) {
+
 	if (parent == null) return false;
 	if (parent.isDisposed ()) return false;
 	int nWidth = width, nHeight = height;
 	if (nWidth <= 0) nWidth = DEFAULT_WIDTH;
 
-	GC gc = new GC(parent);
 	if (image != null) {
 		Rectangle imageBounds = image.getBounds();
 		gc.drawImage(image, 0, 0, imageBounds.width, imageBounds.height, x, y, nWidth, nHeight);
 	}
+	Color oldBackground = gc.getBackground();
+	gc.setBackground(parent.getForeground());
 	gc.fillRectangle(x, y, nWidth, nHeight);
-	gc.dispose();
-	parent.redraw();
+	gc.setBackground(oldBackground);
 	return true;
 }
 
@@ -246,9 +265,11 @@ public boolean getVisible () {
 }
 
 boolean hideCaret () {
+	System.out.println("show");
+
 	if (!isShowing) return true;
 	isShowing = false;
-	return drawCaret ();
+	return drawCaret();
 }
 
 /**
@@ -278,12 +299,12 @@ boolean isFocusCaret () {
 void killFocus () {
 	if (!isCurrentCart())
 		return;
-	display.setCurrentCaret (null);
+	currentCaret = null;
 	if (isVisible) hideCaret ();
 }
 
 private boolean isCurrentCart() {
-	return currentCaret;
+	return currentCaret == this;
 }
 
 @Override
@@ -356,8 +377,8 @@ public void setBounds (Rectangle rect) {
 void setFocus () {
 	if (isCurrentCart())
 		return;
-	currentCaret = true;
-//	display.timerExec(blinkRate, caretTimer);
+	currentCaret = this;
+	display.timerExec(blinkRate, caretTimer);
 	if (isVisible) showCaret ();
 }
 
@@ -510,9 +531,17 @@ public void setVisible (boolean visible) {
 }
 
 boolean showCaret () {
+	System.out.println("show");
 	if (isShowing) return true;
 	isShowing = true;
 	return drawCaret ();
+}
+
+private boolean drawCaret() {
+	GC gc = new GC(parent);
+	boolean drawCaret = drawCaret(gc);
+	gc.dispose();
+	return drawCaret;
 }
 
 }
