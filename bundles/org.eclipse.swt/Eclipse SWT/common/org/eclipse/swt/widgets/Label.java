@@ -46,8 +46,7 @@ import org.eclipse.swt.graphics.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * @see Label#shortenText(IGraphicsContext, String, int)
  */
-//TODO: replace Canvas with Control and see what happens on mac
-public class Label extends Canvas implements ICustomWidget {
+public class Label extends Control implements ICustomWidget {
 
 	/** Gap between icon and text */
 	private static final int GAP = 5;
@@ -438,8 +437,8 @@ void onPaint(PaintEvent event) {
 		}
 	}
 
-//	IGraphicsContext gc = event.gc;
-	 IGraphicsContext gc = new SkijaGC(event.gc);
+	IGraphicsContext gc = event.gc;
+//	 IGraphicsContext gc = new SkijaGC(event.gc);
 
 
 	String[] lines = text == null ? null : splitString(text);

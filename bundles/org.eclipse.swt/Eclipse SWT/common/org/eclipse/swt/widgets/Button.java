@@ -52,8 +52,7 @@ import org.eclipse.swt.internal.*;
  *      information</a>
  * @noextend This class is not intended to be subclassed by clients.
  */
-// TODO: replace Canvas with Control and see what happens on mac
-public class Button extends Canvas implements ICustomWidget {
+public class Button extends Control implements ICustomWidget {
 	String text = "", message = "";
 	Image image, disabledImage;
 	boolean ignoreMouse, grayed, useDarkModeExplorerTheme;
@@ -169,7 +168,7 @@ public class Button extends Canvas implements ICustomWidget {
 				if (!hasMouseEntered) {
 					System.out.println("Mouse entered");
 					hasMouseEntered = true;
-					onPaint(new Event());
+					redraw();
 				}
 			}
 
@@ -177,7 +176,7 @@ public class Button extends Canvas implements ICustomWidget {
 			public void mouseExit(MouseEvent e) {
 				hasMouseEntered = false;
 				System.out.println("Mouse left");
-				onPaint(new Event());
+				redraw();
 			}
 
 		});
@@ -1222,7 +1221,7 @@ public class Button extends Canvas implements ICustomWidget {
 
 			this.checked = selected;
 
-		onPaint(new Event());
+			redraw();
 
 		System.out.println(text + "  " + selected);
 		System.out.println("WARN: Not implemented yet: "

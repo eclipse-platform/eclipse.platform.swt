@@ -1,12 +1,11 @@
 package org.eclipse.swt.widgets;
 
-import javax.crypto.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 
-public class CSimpleText extends Canvas {
+public class CSimpleText extends Scrollable implements ICustomWidget {
 
 	private int tabs = 8;
 
@@ -22,13 +21,14 @@ public class CSimpleText extends Canvas {
 
 	private boolean mouseDown;
 	private boolean doubleClick;
+	private CTextCaret caret;
 
 	public CSimpleText(Composite parent, int style) {
 		super(parent, checkStyle(style));
 		model = new CSimpleTextModel();
 		message = "";
 
-		caret = new Caret(this, SWT.NONE);
+		setCaret(new CTextCaret(this, SWT.NONE));
 
 		setCursor(display.getSystemCursor(SWT.CURSOR_IBEAM));
 		setBackground(display.getSystemColor(SWT.COLOR_LIST_BACKGROUND));
@@ -119,7 +119,28 @@ public class CSimpleText extends Canvas {
 			CSimpleText.this.onMouseMove(e);
 		});
 
+		addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusGained(FocusEvent e) {
+				CSimpleText.this.focusGained(e);
+			}
+
+			@Override
+			public void focusLost(FocusEvent e) {
+				CSimpleText.this.focusLost(e);
+			}
+		});
+
 		model.addModelChangedListner(() -> CSimpleText.this.sendEvent(SWT.Modify));
+	}
+
+	protected void focusLost(FocusEvent e) {
+		caret.setFocus();
+
+	}
+
+	protected void focusGained(FocusEvent e) {
+		caret.killFocus();
 	}
 
 	private void onMouseDown(MouseEvent e) {
@@ -147,8 +168,6 @@ public class CSimpleText extends Canvas {
 	}
 
 	private void keyPressed(KeyEvent e) {
-		TextLocation caretLocation;
-
 		boolean updateSelection = (e.stateMask & SWT.SHIFT) != 0;
 
 		switch (e.keyCode) {
@@ -271,7 +290,7 @@ public class CSimpleText extends Canvas {
 			Point caretLocation = getLocationByOffset(caretOffset, gc);
 			int x = e.x + caretLocation.x - visibleArea.x;
 			int y = e.y + caretLocation.y - visibleArea.y;
-			caret.setBounds(x, y, 1, getLineHeight(gc));
+			getCaret().setBounds(x, y, 1, getLineHeight(gc));
 		}
 	}
 
@@ -281,9 +300,22 @@ public class CSimpleText extends Canvas {
 	}
 
 	private void drawBackground(PaintEvent e) {
+		System.out.println(getVisibleArea());
+		System.out.println(getBounds());
+		System.out.println(getSize());
+		System.out.println(model.getLineCount() * getLineHeight());
+		ScrollBar verticalBar = getVerticalBar();
+		System.out.println(verticalBar.getMaximum());
+		System.out.println(verticalBar.getThumb());
 		GC gc = e.gc;
 		gc.setBackground(getBackground());
 		gc.fillRectangle(e.x, e.y, e.width - 1, e.height - 1);
+	}
+
+	@Override
+	public Point getSize() {
+		// TODO Auto-generated method stub
+		return super.getSize();
 	}
 
 	private Rectangle getVisibleArea() {
@@ -397,7 +429,8 @@ public class CSimpleText extends Canvas {
 
 		int y = location.line * getLineHeight();
 
-		scroll(0, 0, visibleArea.x, y, visibleArea.width, visibleArea.height, true);
+		// TODO scroll(0, 0, visibleArea.x, y, visibleArea.width, visibleArea.height,
+		// true);
 	}
 
 	/**
@@ -708,5 +741,14 @@ public class CSimpleText extends Canvas {
 	public void setTabs(int tabs) {
 		this.tabs = tabs;
 	}
+
+	public CTextCaret getCaret() {
+		return caret;
+	}
+
+	public void setCaret(CTextCaret caret) {
+		this.caret = caret;
+	}
+
 
 }
