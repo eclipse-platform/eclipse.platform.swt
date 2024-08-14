@@ -187,7 +187,6 @@ public class Button extends Control implements ICustomWidget {
 		this.dispose();
 	}
 
-
 	private void onKeyReleased(KeyEvent e) {
 		System.out.println("Key: " + e.keyCode + " - " + e.character);
 
@@ -270,13 +269,26 @@ public class Button extends Control implements ICustomWidget {
 		notifyListeners(SWT.Selection, new Event());
 	}
 
-	private void drawBevelRect(IGraphicsContext gc, int x, int y, int w, int h,
-			Color foregournd) {
+	private void drawBevelRect(IGraphicsContext gc, int x, int y, int w,
+			int h) {
 
-		gc.setBackground(getBackground());
+		if (hasMouseEntered) {
+
+			gc.setBackground(new Color(getDisplay(), 232, 242, 254));
+
+		} else {
+			gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
+		}
 		gc.fillRoundRectangle(x, y, w, h, 10, 10);
 
-		gc.setForeground(foregournd);
+		Color fg = getForeground();
+		if (hasMouseEntered) {
+			fg = getDisplay().getSystemColor(SWT.COLOR_LINK_FOREGROUND);
+		} else {
+			fg = getDisplay().getSystemColor(SWT.COLOR_WIDGET_BORDER);
+		}
+
+		gc.setForeground(fg);
 		gc.drawRoundRectangle(x, y, w, h, 10, 10);
 
 		gc.setForeground(getForeground());
@@ -286,14 +298,30 @@ public class Button extends Control implements ICustomWidget {
 	private void doPaint(Event e) {
 		// draw background
 
-		GC gc = e.gc;
-
+		// IGraphicsContext gc = event.gc;
 		Rectangle r = getBounds();
-		// Rectangle r = getClientArea();
+		if (r.width == 0 && r.height == 0)
+			return;
 
 		// this call is necessary in order to clear the button area, and then
 		// repaint the button.
-		gc.fillRectangle(0, 0, r.width, r.height);
+		// TODO if we use skija, we have to clear the area also.
+		e.gc.setBackground(getBackground());
+		e.gc.fillRectangle(0, 0, r.width, r.height);
+
+		e.gc.setClipping(new Rectangle(0, 0, r.width, r.height));
+
+		e.gc.setAntialias(SWT.ON);
+
+		IGraphicsContext gc = e.gc;;
+		// IGraphicsContext gc = new SkijaGC(e.gc);
+
+		if (gc instanceof SkijaGC sgc) {
+			sgc.setAntiAliasing(true);
+		}
+
+		gc.setForeground(getForeground());
+		gc.setBackground(gc.getBackground());
 
 		int toRight = 0;
 
@@ -332,12 +360,7 @@ public class Button extends Control implements ICustomWidget {
 
 			System.out.println("Draw Bevel...");
 
-			Color fg = getForeground();
-			if (hasMouseEntered) {
-				fg = getDisplay().getSystemColor(SWT.COLOR_LINK_FOREGROUND);
-			}
-
-			drawBevelRect(gc, 0, 0, r.width - 1, r.height - 1, fg);
+			drawBevelRect(gc, 0, 0, r.width - 1, r.height - 1);
 
 		}
 
@@ -357,14 +380,13 @@ public class Button extends Control implements ICustomWidget {
 		int lineWidth = gc.textExtent(getText(), DRAW_FLAGS).x;
 		int lineX = Math.max(0, (r.width - lineWidth) / 2);
 
-		if (hasMouseEntered) {
-			gc.setForeground(
-					getDisplay().getSystemColor(SWT.COLOR_LINK_FOREGROUND));
-
-		}
+		gc.setForeground(getForeground());
 
 		gc.drawText(getText(), lineX + toRight, 2, DRAW_FLAGS);
 
+		if (gc instanceof SkijaGC sgc) {
+			sgc.commit();
+		}
 	}
 
 	@Override
@@ -534,55 +556,55 @@ public class Button extends Control implements ICustomWidget {
 				+ new Throwable().getStackTrace()[0]);
 	}
 
-	void _setText(String text) {
-		// int oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE), newBits =
-		// oldBits;
-		// newBits &= ~(OS.BS_LEFT | OS.BS_CENTER | OS.BS_RIGHT);
-		// if ((style & SWT.LEFT) != 0) newBits |= OS.BS_LEFT;
-		// if ((style & SWT.CENTER) != 0) newBits |= OS.BS_CENTER;
-		// if ((style & SWT.RIGHT) != 0) newBits |= OS.BS_RIGHT;
-		// if (imageList != null) {
-		// BUTTON_IMAGELIST buttonImageList = new BUTTON_IMAGELIST ();
-		// buttonImageList.himl = imageList.getHandle(getZoom());
-		// if (text.length () == 0) {
-		// if ((style & SWT.LEFT) != 0) buttonImageList.uAlign =
-		// OS.BUTTON_IMAGELIST_ALIGN_LEFT;
-		// if ((style & SWT.CENTER) != 0) buttonImageList.uAlign =
-		// OS.BUTTON_IMAGELIST_ALIGN_CENTER;
-		// if ((style & SWT.RIGHT) != 0) buttonImageList.uAlign =
-		// OS.BUTTON_IMAGELIST_ALIGN_RIGHT;
-		// } else {
-		// buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_LEFT;
-		// buttonImageList.margin_left = computeLeftMargin ();
-		// buttonImageList.margin_right = MARGIN;
-		// newBits &= ~(OS.BS_CENTER | OS.BS_RIGHT);
-		// newBits |= OS.BS_LEFT;
-		// }
-		// OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, buttonImageList);
-		// }
-		// if (newBits != oldBits) {
-		// OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
-		// OS.InvalidateRect (handle, null, true);
-		// }
-		// /*
-		// * Bug in Windows. When a Button control is right-to-left and
-		// * is disabled, the first pixel of the text is clipped. The fix
-		// * is to append a space to the text.
-		// */
-		// if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-		// if (!OS.IsAppThemed ()) {
-		// text = OS.IsWindowEnabled (handle) ? text : text + " ";
-		// }
-		// }
-		// TCHAR buffer = new TCHAR (getCodePage (), text, true);
-		// OS.SetWindowText (handle, buffer);
-		// if ((state & HAS_AUTO_DIRECTION) != 0) {
-		// updateTextDirection (AUTO_TEXT_DIRECTION);
-		// }
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
-	}
-
+	// void _setText(String text) {
+	// // int oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE), newBits =
+	// // oldBits;
+	// // newBits &= ~(OS.BS_LEFT | OS.BS_CENTER | OS.BS_RIGHT);
+	// // if ((style & SWT.LEFT) != 0) newBits |= OS.BS_LEFT;
+	// // if ((style & SWT.CENTER) != 0) newBits |= OS.BS_CENTER;
+	// // if ((style & SWT.RIGHT) != 0) newBits |= OS.BS_RIGHT;
+	// // if (imageList != null) {
+	// // BUTTON_IMAGELIST buttonImageList = new BUTTON_IMAGELIST ();
+	// // buttonImageList.himl = imageList.getHandle(getZoom());
+	// // if (text.length () == 0) {
+	// // if ((style & SWT.LEFT) != 0) buttonImageList.uAlign =
+	// // OS.BUTTON_IMAGELIST_ALIGN_LEFT;
+	// // if ((style & SWT.CENTER) != 0) buttonImageList.uAlign =
+	// // OS.BUTTON_IMAGELIST_ALIGN_CENTER;
+	// // if ((style & SWT.RIGHT) != 0) buttonImageList.uAlign =
+	// // OS.BUTTON_IMAGELIST_ALIGN_RIGHT;
+	// // } else {
+	// // buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_LEFT;
+	// // buttonImageList.margin_left = computeLeftMargin ();
+	// // buttonImageList.margin_right = MARGIN;
+	// // newBits &= ~(OS.BS_CENTER | OS.BS_RIGHT);
+	// // newBits |= OS.BS_LEFT;
+	// // }
+	// // OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, buttonImageList);
+	// // }
+	// // if (newBits != oldBits) {
+	// // OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
+	// // OS.InvalidateRect (handle, null, true);
+	// // }
+	// // /*
+	// // * Bug in Windows. When a Button control is right-to-left and
+	// // * is disabled, the first pixel of the text is clipped. The fix
+	// // * is to append a space to the text.
+	// // */
+	// // if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+	// // if (!OS.IsAppThemed ()) {
+	// // text = OS.IsWindowEnabled (handle) ? text : text + " ";
+	// // }
+	// // }
+	// // TCHAR buffer = new TCHAR (getCodePage (), text, true);
+	// // OS.SetWindowText (handle, buffer);
+	// // if ((state & HAS_AUTO_DIRECTION) != 0) {
+	// // updateTextDirection (AUTO_TEXT_DIRECTION);
+	// // }
+	// System.out.println("WARN: Not implemented yet: "
+	// + new Throwable().getStackTrace()[0]);
+	// }
+	//
 	/**
 	 * Adds the listener to the collection of listeners who will be notified
 	 * when the control is selected by the user, by sending it one of the
@@ -1219,7 +1241,7 @@ public class Button extends Control implements ICustomWidget {
 	public void setSelection(boolean selected) {
 		checkWidget();
 
-			this.checked = selected;
+		this.checked = selected;
 
 			redraw();
 
@@ -1294,7 +1316,9 @@ public class Button extends Control implements ICustomWidget {
 		if ((style & SWT.ARROW) != 0)
 			return;
 		text = string;
-		_setText(string);
+		// _setText(string);
+
+		onPaint(new Event());
 	}
 
 	void updateImageList() {
