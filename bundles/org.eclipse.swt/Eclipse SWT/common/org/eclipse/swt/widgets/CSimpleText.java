@@ -307,8 +307,8 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 		System.out.println(getSize());
 		System.out.println(model.getLineCount() * getLineHeight());
 		ScrollBar verticalBar = getVerticalBar();
-		System.out.println(verticalBar.getMaximum());
-		System.out.println(verticalBar.getThumb());
+		// System.out.println(verticalBar.getMaximum());
+		// System.out.println(verticalBar.getThumb());
 		GC gc = e.gc;
 		gc.setBackground(getBackground());
 		gc.fillRectangle(e.x, e.y, e.width - 1, e.height - 1);

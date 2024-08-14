@@ -1997,6 +1997,7 @@ void drawRectangleInPixels (int x, int y, int width, int height) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
+@Override
 public void drawRectangle (Rectangle rect) {
 	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	rect = DPIUtil.scaleUp(drawable, rect, getZoom());

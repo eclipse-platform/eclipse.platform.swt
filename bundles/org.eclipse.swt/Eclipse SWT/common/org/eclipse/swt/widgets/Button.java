@@ -66,6 +66,23 @@ public class Button extends Control implements ICustomWidget {
 	private boolean checked;
 	private boolean hasMouseEntered;
 
+	private static final int GAP = 5;
+	/** Left and right margins */
+	private static final int DEFAULT_MARGIN = 3;
+	/** a string inserted in the middle of text that has been shortened */
+	private static final String ELLIPSIS = "..."; //$NON-NLS-1$ // could use
+													// the ellipsis glyph on
+													// some platforms "\u2026"
+	/** the alignment. Either CENTER, RIGHT, LEFT. Default is LEFT */
+	private int align = SWT.LEFT;
+	private int leftMargin = DEFAULT_MARGIN;
+	private int topMargin = DEFAULT_MARGIN;
+	private int rightMargin = DEFAULT_MARGIN;
+	private int bottomMargin = DEFAULT_MARGIN;
+
+	private final static FontData DEFAULT_FONT_DATA_WIN = new FontData(
+			"Segoe UI", 9, SWT.NORMAL);
+
 	private static int DRAW_FLAGS = SWT.DRAW_MNEMONIC | SWT.DRAW_TAB
 			| SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER;
 
@@ -246,10 +263,6 @@ public class Button extends Control implements ICustomWidget {
 	}
 
 	private void onDispose(Event event) {
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
-
-		// todo dispose resources...
 		this.dispose();
 	}
 
@@ -257,7 +270,8 @@ public class Button extends Control implements ICustomWidget {
 		onPaint(e);
 	}
 
-	private void onMouseUp(Event e) {
+	private void handleSelection() {
+
 		if ((style & SWT.RADIO) != 0) {
 			selectRadio();
 		} else {
@@ -267,6 +281,11 @@ public class Button extends Control implements ICustomWidget {
 				checked = true;
 		}
 		notifyListeners(SWT.Selection, new Event());
+	}
+
+	private void onMouseUp(Event e) {
+		handleSelection();
+
 	}
 
 	private void drawBevelRect(IGraphicsContext gc, int x, int y, int w,
@@ -279,7 +298,7 @@ public class Button extends Control implements ICustomWidget {
 		} else {
 			gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
 		}
-		gc.fillRoundRectangle(x, y, w, h, 10, 10);
+		gc.fillRoundRectangle(x, y, w, h, 6, 6);
 
 		Color fg = getForeground();
 		if (hasMouseEntered) {
@@ -289,7 +308,7 @@ public class Button extends Control implements ICustomWidget {
 		}
 
 		gc.setForeground(fg);
-		gc.drawRoundRectangle(x, y, w, h, 10, 10);
+		gc.drawRoundRectangle(x, y, w, h, 6, 6);
 
 		gc.setForeground(getForeground());
 
@@ -303,6 +322,8 @@ public class Button extends Control implements ICustomWidget {
 		if (r.width == 0 && r.height == 0)
 			return;
 
+		System.out.println("Paint Rectangle: " + r);
+
 		// this call is necessary in order to clear the button area, and then
 		// repaint the button.
 		// TODO if we use skija, we have to clear the area also.
@@ -311,14 +332,8 @@ public class Button extends Control implements ICustomWidget {
 
 		e.gc.setClipping(new Rectangle(0, 0, r.width, r.height));
 
-		e.gc.setAntialias(SWT.ON);
-
 		IGraphicsContext gc = e.gc;;
 		// IGraphicsContext gc = new SkijaGC(e.gc);
-
-		if (gc instanceof SkijaGC sgc) {
-			sgc.setAntiAliasing(true);
-		}
 
 		gc.setForeground(getForeground());
 		gc.setBackground(gc.getBackground());
@@ -364,29 +379,84 @@ public class Button extends Control implements ICustomWidget {
 
 		}
 
-		// gc.setBackground(bgColor);
-		// gc.fillRectangle(r);
-		// System.out.println("ClientArea: " + getClientArea());
-		// System.out.println("Bounds: " + getBounds());
+		gc.setFont(new Font(getDisplay(), DEFAULT_FONT_DATA_WIN));
+		Point textExtent = gc.textExtent(text, DRAW_FLAGS);
 
-		// // draw border
-		// gc.setForeground(fgColor);
-		// gc.drawRectangle(r);
-
-		// draw text
-		// TODO (visjee) the text should be centered both vertically and
-		// horizontally
-
-		int lineWidth = gc.textExtent(getText(), DRAW_FLAGS).x;
-		int lineX = Math.max(0, (r.width - lineWidth) / 2);
+		int lineWidth = 0;
+		int lineHeight = 0;
 
 		gc.setForeground(getForeground());
 
-		gc.drawText(getText(), lineX + toRight, 2, DRAW_FLAGS);
+		int leftMargin = this.leftMargin;
+		int imageWidth = 0;
+		int imageHeight = 0;
+		int GAP = 0;
+		int topMargin = this.topMargin;
+
+		if (text != null && !"".equals(text)) {
+
+			lineWidth = textExtent.x;
+			lineHeight = textExtent.y;
+			GAP = Button.GAP;
+
+		}
+		if (image != null) {
+
+			Rectangle imgB = image.getBounds();
+			imageWidth = imgB.width;
+			imageHeight = imgB.height;
+		}
+
+
+		int sideOffset = 20;
+		int topOffset = topMargin;
+
+		topOffset = (r.height - Math.max(imageHeight, lineHeight)) / 2;
+
+		if ((style & SWT.PUSH) != 0) {
+
+			sideOffset = leftMargin;
+
+			if ((style & SWT.LEFT) != 0) {
+
+			} else if ((style & SWT.RIGHT) != 0) {
+				sideOffset = r.width
+						- (imageWidth + GAP + lineWidth + this.rightMargin);
+
+			} else {
+				sideOffset = (r.width - (imageWidth + GAP + lineWidth)) / 2;
+
+			}
+		}
+
+		if (image != null)
+			gc.drawImage(image, sideOffset,
+					topOffset + Math.max(0, (lineHeight - imageHeight) / 2));
+
+		if (text != null && !"".equals(text))
+			gc.drawText(getText(), sideOffset + imageWidth + GAP,
+					topOffset + Math.max(0, (imageHeight - lineHeight) / 2),
+					DRAW_FLAGS);
+
+		// int widthStart = (width - imgB.width - lineWidth) / 2;
+		// int heightStart = (height - imgB.height) / 2;
+		// imgWidth = imgB.width;
+		//
+		// System.out
+		// .println("ImageBounds: " + imgB.width + " " + imgB.height);
+		// System.out.print("Rect: " + this.width + " " + this.width);
+		//
+		// gc.drawImage(image, widthStart, heightStart);
+		// }
+		//
+		// int lineX = Math.max(0, (r.width - imgWidth - lineWidth) / 2);
 
 		if (gc instanceof SkijaGC sgc) {
 			sgc.commit();
 		}
+
+		gc.dispose();
+
 	}
 
 	@Override
@@ -412,86 +482,82 @@ public class Button extends Control implements ICustomWidget {
 		this.width = width;
 		this.height = height;
 
+		System.out.println("setSize: " + this.width + "  " + this.height);
+
 		super.setSize(this.width, this.height);
 
 	}
 
 	@Override
 	public void setBounds(int x, int y, int width, int height) {
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
-		System.out.println(text);
-
-		// GC gc = new GC(this);
-		// Point ext = gc.textExtent(text);
-		// gc.dispose();
 
 		this.width = width;
 		this.height = height;
 
+		System.out.println("setBounds: " + this.width + "  " + this.height);
+
 		super.setBounds(x, y, this.width, this.height);
+
+		redraw();
 	}
 
 	@Override
 	public Point computeSize(int wHint, int hHint) {
-		checkWidget();
-
-		GC gc = new GC(this);
-		Point ext = gc.textExtent(text);
-		gc.dispose();
-
-		if ((style & SWT.TOGGLE) == SWT.TOGGLE) {
-			this.width = ext.x + 6 + 12;
-			this.height = ext.y + 6 + 12;
-
-		} else if ((style & SWT.RADIO) == SWT.RADIO) {
-
-			this.width = ext.x + 12;
-			this.height = ext.y + 12;
-
-		} else if ((style & SWT.CHECK) == SWT.CHECK) {
-
-			this.width = ext.x + 12;
-			this.height = ext.y + 12;
-
-		} else {
-			this.width = ext.x + 6;
-			this.height = ext.y + 6;
-
-		}
-
-		return new Point(this.width, this.height);
+		return computeSize(wHint, hHint, true);
 	}
+
+	Point computedSize = null;
 
 	@Override
 	public Point computeSize(int wHint, int hHint, boolean changed) {
 		checkWidget();
 
+		if (changed == false && computedSize != null)
+			return new Point(Math.max(wHint, computedSize.x),
+					Math.max(hHint, computedSize.y));
+
 		GC gc = new GC(this);
-		Point ext = gc.textExtent(text);
+		Font f = new Font(getDisplay(), DEFAULT_FONT_DATA_WIN);
+		gc.setFont(f);
+		Point textExtent = gc.textExtent(getText(), DRAW_FLAGS);
+
 		gc.dispose();
+		f.dispose();
 
-		if ((style & SWT.TOGGLE) == SWT.TOGGLE) {
-			this.width = ext.x + 6 + 12;
-			this.height = ext.y + 6 + 12;
+		int lineWidth = textExtent.x;
+		int lineHeight = textExtent.y;
 
-		} else if ((style & SWT.RADIO) == SWT.RADIO) {
+		int leftMargin = this.leftMargin;
+		int imageWidth = 0;
+		int imageHeight = 0;
+		int GAP = 0;
+		int topMargin = this.topMargin;
 
-			this.width = ext.x + 6 + 12;
-			this.height = ext.y + 6;
+		if (image != null) {
 
-		} else if ((style & SWT.CHECK) == SWT.CHECK) {
+			Rectangle imgB = image.getBounds();
+			imageWidth = imgB.width;
+			imageHeight = imgB.height;
+			if (text != null && !"".equals(text))
+				GAP = this.GAP;
+		}
 
-			this.width = ext.x + 6 + 12;
-			this.height = ext.y + 6;
+		int width = leftMargin + imageWidth + GAP + lineWidth
+				+ this.rightMargin;
+		int height = topMargin + Math.max(lineHeight, imageHeight)
+				+ this.bottomMargin;
 
-		} else {
-			this.width = ext.x + 6;
-			this.height = ext.y + 6;
+		computedSize = new Point(width, height);
+
+		if ((style & SWT.PUSH) == 0) {
+
+			computedSize = new Point(computedSize.x + 20, computedSize.y);
 
 		}
 
-		return new Point(this.width, this.height);
+		return new Point(Math.max(wHint, computedSize.x),
+				Math.max(hHint, computedSize.y));
+
 	}
 
 	@Override
@@ -499,112 +565,6 @@ public class Button extends Control implements ICustomWidget {
 		return new Point(width, height);
 	}
 
-	/************************************************/
-	// Old code (win32)
-	/************************************************/
-
-	void _setImage(Image image) {
-		// if ((style & SWT.COMMAND) != 0) return;
-		// if (imageList != null) imageList.dispose ();
-		// imageList = null;
-		// if (image != null) {
-		// imageList = new ImageList (style & SWT.RIGHT_TO_LEFT, getZoom());
-		// if (OS.IsWindowEnabled (handle)) {
-		// imageList.add (image);
-		// } else {
-		// if (disabledImage != null) disabledImage.dispose ();
-		// disabledImage = new Image (display, image, SWT.IMAGE_DISABLE);
-		// imageList.add (disabledImage);
-		// }
-		// BUTTON_IMAGELIST buttonImageList = new BUTTON_IMAGELIST ();
-		// buttonImageList.himl = imageList.getHandle(getZoom());
-		// int oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE), newBits =
-		// oldBits;
-		// newBits &= ~(OS.BS_LEFT | OS.BS_CENTER | OS.BS_RIGHT);
-		// if ((style & SWT.LEFT) != 0) newBits |= OS.BS_LEFT;
-		// if ((style & SWT.CENTER) != 0) newBits |= OS.BS_CENTER;
-		// if ((style & SWT.RIGHT) != 0) newBits |= OS.BS_RIGHT;
-		// if (text.length () == 0) {
-		// if ((style & SWT.LEFT) != 0) buttonImageList.uAlign =
-		// OS.BUTTON_IMAGELIST_ALIGN_LEFT;
-		// if ((style & SWT.CENTER) != 0) buttonImageList.uAlign =
-		// OS.BUTTON_IMAGELIST_ALIGN_CENTER;
-		// if ((style & SWT.RIGHT) != 0) buttonImageList.uAlign =
-		// OS.BUTTON_IMAGELIST_ALIGN_RIGHT;
-		// } else {
-		// buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_LEFT;
-		// buttonImageList.margin_left = computeLeftMargin ();
-		// buttonImageList.margin_right = MARGIN;
-		// newBits &= ~(OS.BS_CENTER | OS.BS_RIGHT);
-		// newBits |= OS.BS_LEFT;
-		// }
-		// if (newBits != oldBits) {
-		// OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
-		// OS.InvalidateRect (handle, null, true);
-		// }
-		// OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, buttonImageList);
-		// } else {
-		// OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, 0);
-		// }
-		// /*
-		// * Bug in Windows. Under certain cirumstances yet to be
-		// * isolated, BCM_SETIMAGELIST does not redraw the control
-		// * when a new image is set. The fix is to force a redraw.
-		// */
-		// OS.InvalidateRect (handle, null, true);
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
-	}
-
-	// void _setText(String text) {
-	// // int oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE), newBits =
-	// // oldBits;
-	// // newBits &= ~(OS.BS_LEFT | OS.BS_CENTER | OS.BS_RIGHT);
-	// // if ((style & SWT.LEFT) != 0) newBits |= OS.BS_LEFT;
-	// // if ((style & SWT.CENTER) != 0) newBits |= OS.BS_CENTER;
-	// // if ((style & SWT.RIGHT) != 0) newBits |= OS.BS_RIGHT;
-	// // if (imageList != null) {
-	// // BUTTON_IMAGELIST buttonImageList = new BUTTON_IMAGELIST ();
-	// // buttonImageList.himl = imageList.getHandle(getZoom());
-	// // if (text.length () == 0) {
-	// // if ((style & SWT.LEFT) != 0) buttonImageList.uAlign =
-	// // OS.BUTTON_IMAGELIST_ALIGN_LEFT;
-	// // if ((style & SWT.CENTER) != 0) buttonImageList.uAlign =
-	// // OS.BUTTON_IMAGELIST_ALIGN_CENTER;
-	// // if ((style & SWT.RIGHT) != 0) buttonImageList.uAlign =
-	// // OS.BUTTON_IMAGELIST_ALIGN_RIGHT;
-	// // } else {
-	// // buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_LEFT;
-	// // buttonImageList.margin_left = computeLeftMargin ();
-	// // buttonImageList.margin_right = MARGIN;
-	// // newBits &= ~(OS.BS_CENTER | OS.BS_RIGHT);
-	// // newBits |= OS.BS_LEFT;
-	// // }
-	// // OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, buttonImageList);
-	// // }
-	// // if (newBits != oldBits) {
-	// // OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
-	// // OS.InvalidateRect (handle, null, true);
-	// // }
-	// // /*
-	// // * Bug in Windows. When a Button control is right-to-left and
-	// // * is disabled, the first pixel of the text is clipped. The fix
-	// // * is to append a space to the text.
-	// // */
-	// // if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-	// // if (!OS.IsAppThemed ()) {
-	// // text = OS.IsWindowEnabled (handle) ? text : text + " ";
-	// // }
-	// // }
-	// // TCHAR buffer = new TCHAR (getCodePage (), text, true);
-	// // OS.SetWindowText (handle, buffer);
-	// // if ((state & HAS_AUTO_DIRECTION) != 0) {
-	// // updateTextDirection (AUTO_TEXT_DIRECTION);
-	// // }
-	// System.out.println("WARN: Not implemented yet: "
-	// + new Throwable().getStackTrace()[0]);
-	// }
-	//
 	/**
 	 * Adds the listener to the collection of listeners who will be notified
 	 * when the control is selected by the user, by sending it one of the
@@ -663,17 +623,7 @@ public class Button extends Control implements ICustomWidget {
 	}
 
 	void click() {
-		/*
-		 * Feature in Windows. BM_CLICK sends a fake WM_LBUTTONDOWN and
-		 * WM_LBUTTONUP in order to click the button. This causes the
-		 * application to get unexpected mouse events. The fix is to ignore
-		 * mouse events when they are caused by BM_CLICK.
-		 */
-		ignoreMouse = true;
-		// OS.SendMessage (handle, OS.BM_CLICK, 0, 0);
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
-		ignoreMouse = false;
+		handleSelection();
 	}
 
 	// TODO: this method ignores the style LEFT, CENTER or RIGHT
@@ -920,6 +870,7 @@ public class Button extends Control implements ICustomWidget {
 		return super.isTabItem();
 	}
 
+	@Override
 	boolean mnemonicHit(char ch) {
 		/*
 		 * Feature in Windows. When a radio button gets focus, it selects the
@@ -933,6 +884,7 @@ public class Button extends Control implements ICustomWidget {
 		return true;
 	}
 
+	@Override
 	boolean mnemonicMatch(char key) {
 		// char mnemonic = findMnemonic (getText ());
 		// if (mnemonic == '\0') return false;
@@ -1006,6 +958,12 @@ public class Button extends Control implements ICustomWidget {
 	 */
 	public void setAlignment(int alignment) {
 		checkWidget();
+
+		style &= ~(SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT);
+		style |= alignment & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT);
+
+		redraw();
+
 		// if ((style & SWT.ARROW) != 0) {
 		// if ((style & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT)) == 0)
 		// return;
@@ -1146,7 +1104,7 @@ public class Button extends Control implements ICustomWidget {
 		if ((style & SWT.ARROW) != 0)
 			return;
 		this.image = image;
-		_setImage(image);
+		redraw();
 	}
 
 	/**
@@ -1243,7 +1201,7 @@ public class Button extends Control implements ICustomWidget {
 
 		this.checked = selected;
 
-			redraw();
+		redraw();
 
 		System.out.println(text + "  " + selected);
 		System.out.println("WARN: Not implemented yet: "

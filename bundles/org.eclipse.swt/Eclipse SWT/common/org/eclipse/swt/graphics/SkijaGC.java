@@ -25,7 +25,6 @@ public class SkijaGC implements IGraphicsContext {
 												// einer Schriftgröße von 12
 	private io.github.humbleui.skija.FontMetrics metrics;
 
-	private boolean antiAliasing;
 
 	public SkijaGC(Drawable drawable, int style) {
 		innerGC = new GC(drawable, style);
@@ -337,7 +336,6 @@ public class SkijaGC implements IGraphicsContext {
 
 		Paint p = new Paint();
 		p.setColor(convertSWTColorToSkijaColor(getForeground()));
-		p.setAntiAlias(antiAliasing);
 		// For some reason, here i have to set alpha, but at other positions this
 		// shouldn't be done.
 //		p.setAlpha(co.getAlpha());
@@ -540,7 +538,4 @@ public class SkijaGC implements IGraphicsContext {
 		return fm;
 	}
 
-	public void setAntiAliasing(boolean b) {
-		this.antiAliasing = b;
-	}
 }

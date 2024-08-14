@@ -440,10 +440,6 @@ void onPaint(PaintEvent event) {
 	IGraphicsContext gc = event.gc;
 //	 IGraphicsContext gc = new SkijaGC(event.gc);
 
-		if (gc instanceof SkijaGC sgc) {
-			sgc.setAntiAliasing(true);
-		}
-
 
 	String[] lines = text == null ? null : splitString(text);
 
