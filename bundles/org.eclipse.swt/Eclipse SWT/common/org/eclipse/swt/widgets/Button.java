@@ -328,7 +328,7 @@ public class Button extends Control implements ICustomWidget {
 		// repaint the button.
 		// TODO if we use skija, we have to clear the area also.
 		e.gc.setBackground(getBackground());
-		e.gc.fillRectangle(0, 0, r.width, r.height);
+		e.gc.fillRoundRectangle(0, 0, r.width, r.height, 6, 6);
 
 		e.gc.setClipping(new Rectangle(0, 0, r.width, r.height));
 
