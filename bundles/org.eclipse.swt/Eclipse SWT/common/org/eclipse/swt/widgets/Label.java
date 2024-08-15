@@ -77,7 +77,10 @@ public class Label extends Control implements ICustomWidget {
 	private int[] gradientPercents;
 	private boolean gradientVertical;
 	private Color background;
+	private Point computedSize = null;
 
+	private final static FontData DEFAULT_FONT_DATA_WIN = new FontData(
+			"Segoe UI", 9, SWT.NORMAL);
 	private static int DRAW_FLAGS = SWT.DRAW_MNEMONIC | SWT.DRAW_TAB | SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER;
 
 /**
@@ -142,20 +145,59 @@ private static int checkStyle (int style) {
 }
 
 @Override
+public Point computeSize(int wHint, int hHint) {
+	return computeSize(wHint, hHint, true);
+}
+
+@Override
 public Point computeSize(int wHint, int hHint, boolean changed) {
 	checkWidget();
-	Point e = getTotalSize(image, text);
-	if (wHint == SWT.DEFAULT){
-		e.x += leftMargin + rightMargin;
-	} else {
-		e.x = wHint;
+
+	if (changed == false && computedSize != null)
+		return new Point(Math.max(wHint, computedSize.x),
+				Math.max(hHint, computedSize.y));
+
+	int lineWidth = 0;
+	int lineHeight = 0;
+
+
+	int leftMargin = this.leftMargin;
+	int imageWidth = 0;
+	int imageHeight = 0;
+	int GAP = 0;
+	int topMargin = this.topMargin;
+
+	if (text != null && !"".equals(text)) {
+
+		GC gc = new GC(this);
+		Font f = new Font(getDisplay(), DEFAULT_FONT_DATA_WIN);
+		gc.setFont(f);
+		Point textExtent = gc.textExtent(text, DRAW_FLAGS);
+		f.dispose();
+		gc.dispose();
+		lineWidth = textExtent.x;
+		lineHeight = textExtent.y;
+		if (image != null)
+			GAP = Label.GAP;
+
 	}
-	if (hHint == SWT.DEFAULT) {
-		e.y += topMargin + bottomMargin;
-	} else {
-		e.y = hHint;
+	if (image != null) {
+
+		Rectangle imgB = image.getBounds();
+		imageWidth = imgB.width;
+		imageHeight = imgB.height;
 	}
-	return e;
+
+	int width = leftMargin + imageWidth + GAP + lineWidth + this.rightMargin;
+	int height = topMargin + Math.max(lineHeight, imageHeight)
+			+ this.bottomMargin;
+
+	computedSize = new Point(width, height);
+
+	System.out.println("computedSize: " + width + "  " + height);
+	return new Point(Math.max(wHint, computedSize.x),
+			Math.max(hHint, computedSize.y));
+
 }
 /**
  * Draw a rectangle in the given colors.
@@ -261,7 +303,7 @@ public int getRightMargin() {
 /**
  * Compute the minimum size.
  */
-private Point getTotalSize(Image image, String text) {
+private Point getTotalSize(GC gc, Image image, String text) {
 	Point size = new Point(0, 0);
 
 	if (image != null) {
@@ -270,7 +312,6 @@ private Point getTotalSize(Image image, String text) {
 		size.y += r.height;
 	}
 
-	GC gc = new GC(this);
 	if (text != null && text.length() > 0) {
 		Point e = gc.textExtent(text, DRAW_FLAGS);
 		size.x += e.x;
@@ -279,7 +320,6 @@ private Point getTotalSize(Image image, String text) {
 	} else {
 		size.y = Math.max(size.y, gc.getFontMetrics().getHeight());
 	}
-	gc.dispose();
 
 	return size;
 }
@@ -422,16 +462,23 @@ void onMnemonic(TraverseEvent event) {
 
 void onPaint(PaintEvent event) {
 	Rectangle rect = getBounds();
-	if (rect.width == 0 || rect.height == 0) return;
+	if (rect.width == 0 && rect.height == 0)
+		return;
+
+	event.gc.setBackground(new Color(getDisplay(), new RGBA(255, 255, 255, 0)));
+	event.gc.fillRectangle(0, 0, rect.width, rect.height);
+	event.gc.setBackground(getBackground());
+
+	event.gc.setClipping(new Rectangle(0, 0, rect.width, rect.height));
 
 	boolean shortenText = false;
 	String t = text;
 	Image img = image;
 	int availableWidth = Math.max(0, rect.width - (leftMargin + rightMargin));
-	Point extent = getTotalSize(img, t);
+	Point extent = getTotalSize(event.gc, img, t);
 	if (extent.x > availableWidth) {
 		img = null;
-		extent = getTotalSize(img, t);
+		extent = getTotalSize(event.gc, img, t);
 		if (extent.x > availableWidth) {
 			shortenText = true;
 		}
@@ -450,7 +497,8 @@ void onPaint(PaintEvent event) {
 			Point e = gc.textExtent(lines[i], DRAW_FLAGS);
 			if (e.x > availableWidth) {
 				lines[i] = shortenText(gc, lines[i], availableWidth);
-				extent.x = Math.max(extent.x, getTotalSize(null, lines[i]).x);
+				extent.x = Math.max(extent.x,
+						getTotalSize(event.gc, null, lines[i]).x);
 			} else {
 				extent.x = Math.max(extent.x, e.x);
 			}
@@ -463,7 +511,7 @@ void onPaint(PaintEvent event) {
 	}
 
 	// determine horizontal position
-	int x = rect.x + leftMargin;
+	int x = leftMargin;
 	if (align == SWT.CENTER) {
 		x = (rect.width - extent.x)/2;
 	}
@@ -539,10 +587,10 @@ void onPaint(PaintEvent event) {
 	}
 
 	// draw border
-	int style = getStyle();
-	if ((style & SWT.SHADOW_IN) != 0 || (style & SWT.SHADOW_OUT) != 0) {
-		paintBorder(gc, rect);
-	}
+	// int style = getStyle();
+	// if ((style & SWT.SHADOW_IN) != 0 || (style & SWT.SHADOW_OUT) != 0) {
+	// paintBorder(gc, rect);
+	// }
 
 	/*
 	 * Compute text height and image height. If image height is more than
@@ -950,6 +998,7 @@ public void setRightMargin(int rightMargin) {
  */
 public void setText(String text) {
 	checkWidget();
+	computedSize = null;
 	if (text == null) text = ""; //$NON-NLS-1$
 	if (! text.equals(this.text)) {
 		this.text = text;

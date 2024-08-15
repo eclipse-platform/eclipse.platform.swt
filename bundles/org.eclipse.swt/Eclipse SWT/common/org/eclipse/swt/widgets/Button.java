@@ -65,6 +65,7 @@ public class Button extends Control implements ICustomWidget {
 	private Listener listener;
 	private boolean checked;
 	private boolean hasMouseEntered;
+	private Point computedSize = null;
 
 	private static final int GAP = 5;
 	/** Left and right margins */
@@ -251,7 +252,7 @@ public class Button extends Control implements ICustomWidget {
 
 	private void onPaint(Event event) {
 
-		if (!isVisible() ) {
+		if (!isVisible()) {
 			return;
 		}
 
@@ -305,7 +306,7 @@ public class Button extends Control implements ICustomWidget {
 			} else {
 				gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
 			}
-			 gc.fillRoundRectangle(x, y, w, h, 6, 6);
+			gc.fillRoundRectangle(x, y, w, h, 6, 6);
 		}
 
 		Color fg = getForeground();
@@ -332,13 +333,17 @@ public class Button extends Control implements ICustomWidget {
 
 		// this call is necessary in order to clear the button area, and then
 		// repaint the button.
-// the color is transparent, this is necessary to set the original background, which was there
-// if we don't fill the rectangle, older button drawings from previous paint calls could stay
-// if we draw any background color, the original bg color of the parent can be overridden
-// here parent.getBackgroundColor is insufficient, because the background could also contain custom paintings.
+		// the color is transparent, this is necessary to set the original
+		// background, which was there
+		// if we don't fill the rectangle, older button drawings from previous
+		// paint calls could stay
+		// if we draw any background color, the original bg color of the parent
+		// can be overridden
+		// here parent.getBackgroundColor is insufficient, because the
+		// background could also contain custom paintings.
 
- e.gc.setBackground(new Color(getDisplay(), new RGBA(255, 255, 255, 0)));
- e.gc.fillRectangle(0, 0, r.width, r.height);
+		e.gc.setBackground(new Color(getDisplay(), new RGBA(255, 255, 255, 0)));
+		e.gc.fillRectangle(0, 0, r.width, r.height);
 		e.gc.setBackground(getBackground());
 
 		e.gc.setClipping(new Rectangle(0, 0, r.width, r.height));
@@ -349,7 +354,6 @@ public class Button extends Control implements ICustomWidget {
 		gc.setForeground(getForeground());
 		gc.setBackground(gc.getBackground());
 
-		int toRight = 0;
 
 		if (hasMouseEntered) {
 			gc.setForeground(
@@ -358,7 +362,6 @@ public class Button extends Control implements ICustomWidget {
 		}
 		if ((style & SWT.CHECK) == SWT.CHECK) {
 
-			toRight = 8;
 
 			gc.drawRectangle(new Rectangle(4, 10, 12, 12));
 
@@ -373,7 +376,6 @@ public class Button extends Control implements ICustomWidget {
 
 		} else if ((style & SWT.RADIO) == SWT.RADIO) {
 
-			toRight = 8;
 
 			if (getSelection()) {
 				gc.setBackground(getForeground());
@@ -390,8 +392,6 @@ public class Button extends Control implements ICustomWidget {
 
 		}
 
-		gc.setFont(new Font(getDisplay(), DEFAULT_FONT_DATA_WIN));
-		Point textExtent = gc.textExtent(text, DRAW_FLAGS);
 
 		int lineWidth = 0;
 		int lineHeight = 0;
@@ -406,6 +406,8 @@ public class Button extends Control implements ICustomWidget {
 
 		if (text != null && !"".equals(text)) {
 
+			gc.setFont(new Font(getDisplay(), DEFAULT_FONT_DATA_WIN));
+			Point textExtent = gc.textExtent(text, DRAW_FLAGS);
 			lineWidth = textExtent.x;
 			lineHeight = textExtent.y;
 			if (image != null)
@@ -517,7 +519,7 @@ public class Button extends Control implements ICustomWidget {
 		return computeSize(wHint, hHint, true);
 	}
 
-	Point computedSize = null;
+
 
 	@Override
 	public Point computeSize(int wHint, int hHint, boolean changed) {
@@ -527,16 +529,9 @@ public class Button extends Control implements ICustomWidget {
 			return new Point(Math.max(wHint, computedSize.x),
 					Math.max(hHint, computedSize.y));
 
-		GC gc = new GC(this);
-		Font f = new Font(getDisplay(), DEFAULT_FONT_DATA_WIN);
-		gc.setFont(f);
-		Point textExtent = gc.textExtent(getText(), DRAW_FLAGS);
+		int lineWidth = 0;
+		int lineHeight = 0;
 
-		gc.dispose();
-		f.dispose();
-
-		int lineWidth = textExtent.x;
-		int lineHeight = textExtent.y;
 
 		int leftMargin = this.leftMargin;
 		int imageWidth = 0;
@@ -544,14 +539,27 @@ public class Button extends Control implements ICustomWidget {
 		int GAP = 0;
 		int topMargin = this.topMargin;
 
+		if (text != null && !"".equals(text)) {
+
+			GC gc = new GC(this);
+			Font f = new Font(getDisplay(), DEFAULT_FONT_DATA_WIN);
+			gc.setFont(f);
+			Point textExtent = gc.textExtent(text, DRAW_FLAGS);
+			gc.dispose();
+			f.dispose();
+			lineWidth = textExtent.x;
+			lineHeight = textExtent.y;
+			if (image != null)
+				GAP = Button.GAP;
+
+		}
 		if (image != null) {
 
 			Rectangle imgB = image.getBounds();
 			imageWidth = imgB.width;
 			imageHeight = imgB.height;
-			if (text != null && !"".equals(text))
-				GAP = this.GAP;
 		}
+
 
 		int width = leftMargin + imageWidth + GAP + lineWidth
 				+ this.rightMargin;
