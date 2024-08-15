@@ -397,7 +397,8 @@ public class Button extends Control implements ICustomWidget {
 
 			lineWidth = textExtent.x;
 			lineHeight = textExtent.y;
-			GAP = Button.GAP;
+			if (image != null)
+				GAP = Button.GAP;
 
 		}
 		if (image != null) {
