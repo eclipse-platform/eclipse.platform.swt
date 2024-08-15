@@ -870,8 +870,7 @@ public class Button extends Control implements ICustomWidget {
 		return super.isTabItem();
 	}
 
-	@Override
-	boolean mnemonicHit(char ch) {
+	boolean mnemonicIsHit(char ch) {
 		/*
 		 * Feature in Windows. When a radio button gets focus, it selects the
 		 * button in WM_SETFOCUS. Workaround is to never set focus to an
@@ -884,8 +883,7 @@ public class Button extends Control implements ICustomWidget {
 		return true;
 	}
 
-	@Override
-	boolean mnemonicMatch(char key) {
+	boolean mnemonicHasMatch(char key) {
 		// char mnemonic = findMnemonic (getText ());
 		// if (mnemonic == '\0') return false;
 		// return Character.toUpperCase (key) == Character.toUpperCase
