@@ -3,7 +3,6 @@ package org.eclipse.swt.widgets;
 import java.util.*;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.CSimpleText.*;
 
 public class CSimpleTextModel {
 	static final String DELIMITER = "\n";
@@ -153,19 +152,20 @@ public class CSimpleTextModel {
 	}
 
 	private String[] getLinesOf(String string) {
+		int count = (int) string.chars().filter(c -> c == DELIMITER.toCharArray()[0]).count();
+		String[] lines = new String[count + 1];
 
-		String[] lines = string.split(DELIMITER);
-		if (string.endsWith(DELIMITER)) {
-			lines = appendEnptyLineTo(lines);
+		int offset = string.indexOf(DELIMITER);
+		int i = 0;
+		while (offset >= 0) {
+			lines[i] = string.substring(0, offset);
+			string = string.substring(offset + 1);
+			offset = string.indexOf(DELIMITER);
+			i++;
 		}
-		return lines;
-	}
+		lines[i] = string;
 
-	private String[] appendEnptyLineTo(String[] lines) {
-		String[] lines2 = new String[lines.length + 1];
-		System.arraycopy(lines, 0, lines2, 0, lines.length);
-		lines2[lines.length] = "";
-		return lines2;
+		return lines;
 	}
 
 	void insert(String string) {
@@ -195,14 +195,14 @@ public class CSimpleTextModel {
 		return caretOffset;
 	}
 
-	private void moveCaretTo(int newOffset, boolean updateSelection) {
+	private void moveCaretTo(int newOffset, boolean changeSelection) {
 		if (newOffset < 0 || newOffset > getText().length())
 			return;
 
-		if (updateSelection) {
-			if (caretOffset == getSelectionEnd()) {
+		if (changeSelection) {
+			if (caretOffset == selectionEnd) {
 				selectionEnd = newOffset;
-			} else if (selectionStart < 0 && selectionEnd < 0) {
+			} else if (!isTextSelected()) {
 				selectionStart = caretOffset;
 				selectionEnd = newOffset;
 			}
@@ -210,6 +210,7 @@ public class CSimpleTextModel {
 			clearSelection();
 		}
 		caretOffset = newOffset;
+		sendSelectionChanged();
 	}
 
 	void clearSelection() {
@@ -233,7 +234,7 @@ public class CSimpleTextModel {
 	}
 
 	void setSelection(int start) {
-		Math.min(start, getText().length());
+		start = Math.min(start, getText().length());
 		selectionStart = selectionEnd = caretOffset = start;
 		sendSelectionChanged();
 	}
@@ -285,7 +286,7 @@ public class CSimpleTextModel {
 
 	void moveCaretDown(boolean updateSelection) {
 		TextLocation caretLocation = getLocation(getCaretOffset());
-		if (caretLocation.line > getLineCount() - 1)
+		if (caretLocation.line >= getLineCount() - 1)
 			return;
 		caretLocation.line++;
 		moveCaretTo(getOffset(caretLocation), updateSelection);

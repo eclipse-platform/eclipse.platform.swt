@@ -119,6 +119,13 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 			CSimpleText.this.onMouseMove(e);
 		});
 
+		addMouseWheelListener(e -> {
+			CSimpleText.this.onMouseWheel(e);
+		});
+
+		addGestureListener(e -> CSimpleText.this.onGesture(e));
+
+
 		addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusGained(FocusEvent e) {
@@ -147,9 +154,94 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 	}
 
 
+	protected void onGesture(GestureEvent e) {
+
+		if (e.yDirection != 0) {
+			verticalScroll(e.yDirection);
+		}
+		if (e.xDirection != 0) {
+			if (horizontalBar != null) {
+				horizontalScroll(e.xDirection);
+			}
+		}
+
+		redraw();
+	}
+
+	private void horizontalScroll(int diff) {
+		int selection = horizontalBar.getSelection();
+		horizontalBar.setSelection(selection - diff * 16);
+	}
+
+	private void verticalScroll(int diff) {
+		if (verticalBar != null) {
+			int selection = verticalBar.getSelection();
+			verticalBar.setSelection(selection - diff * 16);
+		}
+	}
+
+	private void onMouseWheel(MouseEvent e) {
+		verticalScroll(e.count);
+		redraw();
+	}
+
 	private void textModified() {
+		updateScrollBarWithTextSize();
 		sendEvent(SWT.Modify);
 		redraw();
+	}
+
+	private void updateScrollBarWithTextSize() {
+		Point size = computeTextSize();
+		Rectangle bounds = getBounds();
+		if (verticalBar != null) {
+			verticalBar.setMaximum(size.y);
+			verticalBar.setThumb(bounds.height);
+			verticalBar.setPageIncrement(bounds.height);
+		}
+		if (horizontalBar != null) {
+			horizontalBar.setMaximum(size.y);
+			horizontalBar.setThumb(bounds.width);
+			horizontalBar.setPageIncrement(bounds.height);
+		}
+
+	}
+
+	@Override
+	public Point computeSize(int wHint, int hHint, boolean changed) {
+		checkWidget();
+		if ((style & SWT.SINGLE) != 0) {
+			Point size = computeTextSize();
+			if ((style & SWT.BORDER) != 0) {
+				size.x += 2 * getBorderWidth();
+				size.y += 2 * getBorderWidth();
+			}
+			return size;
+		} else {
+			return super.computeSize(wHint, hHint, changed);
+		}
+	}
+
+	private Point computeTextSize() {
+		GC gc = new GC(this);
+		int width = 0, height = 0;
+		if ((style & SWT.SINGLE) != 0) {
+			String str = model.getLines()[0];
+			Point size = gc.textExtent(str);
+			if (str.length() > 0) {
+				width = (int) Math.ceil(size.x);
+			}
+			height = (int) Math.ceil(size.y);
+		} else {
+			Point size = null;
+			for (String line : model.getLines()) {
+				size = gc.textExtent(line);
+				width = Math.max(width, size.x);
+			}
+			height = size.y * model.getLineCount();
+		}
+		gc.dispose();
+		return new Point(width, height);
 	}
 
 	private void selectionChanged() {
@@ -168,7 +260,6 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 	private void onMouseDown(MouseEvent e) {
 		TextLocation location = getTextLocation(e.x, e.y);
 		model.setSectionStart(location);
-		redraw();
 		mouseDown = true;
 	}
 
@@ -186,7 +277,6 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 	private void updateSelectionEnd(MouseEvent e) {
 		TextLocation location = getTextLocation(e.x, e.y);
 		model.setSelectionEnd(location);
-		redraw();
 	}
 
 	private void keyPressed(KeyEvent e) {
@@ -215,12 +305,10 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 			model.insert(e.character);
 			break;
 		}
-		redraw();
 	}
 
 	public void clearSelection() {
 		model.clearSelection();
-		redraw();
 	}
 
 	private TextLocation getTextLocation(int selectedX, int selectedY) {
@@ -260,7 +348,7 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 	}
 
 	private void paintControl(PaintEvent e) {
-//		setSize(computeSize(0, 0));
+//		setSize(computeSize(0, 0, true, e.gc));
 		drawBackground(e);
 		Rectangle visibleArea = getVisibleArea();
 		drawText(e, visibleArea);
@@ -326,15 +414,6 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 	}
 
 	private void drawBackground(PaintEvent e) {
-		System.out.println(getVisibleArea());
-		System.out.println(getBounds());
-		System.out.println(getSize());
-		System.out.println(model.getLineCount() * getLineHeight());
-		ScrollBar verticalBar = getVerticalBar();
-		if (verticalBar != null) {
-			System.out.println(verticalBar.getMaximum());
-			System.out.println(verticalBar.getThumb());
-		}
 		GC gc = e.gc;
 		gc.setBackground(getBackground());
 		gc.fillRectangle(e.x, e.y, e.width - 1, e.height - 1);
@@ -380,7 +459,6 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 				return;
 		}
 		model.setText(text);
-		redraw();
 	}
 
 	public void setTextChars(char[] cs) {
@@ -394,7 +472,6 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 				return;
 		}
 		model.append(string);
-		redraw();
 	}
 
 	public void setSelection(int start) {
@@ -447,11 +524,10 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 		if ((style & SWT.SINGLE) != 0)
 			return;
 		TextLocation location = model.getLocation(index);
-		Rectangle visibleArea = getVisibleArea();
-
 		int y = location.line * getLineHeight();
-		// TODO scroll(0, 0, visibleArea.x, y, visibleArea.width, visibleArea.height,
-		// true);
+		if (verticalBar != null) {
+			verticalBar.setSelection(y);
+		}
 	}
 
 	/**
@@ -562,27 +638,11 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 	}
 
 	@Override
-	public Point computeSize(int wHint, int hHint, boolean changed) {
-		checkWidget();
-		int width = 0, height = 0;
-		if ((style & SWT.SINGLE) != 0) {
-			GC gc = new GC(this);
-			String str = model.getLines()[0];
-			Point size = gc.textExtent(str);
-			gc.dispose();
-			if (str.length() > 0) {
-				width = (int) Math.ceil(size.x);
-			}
-			height = (int) Math.ceil(size.y);
-
-			if ((style & SWT.BORDER) != 0) {
-				width += 2;
-			}
-
-			return new Point(width, height);
-		} else {
-			return super.computeSize(wHint, hHint, changed);
+	public int getBorderWidth() {
+		if (hasBorder()) {
+			return 2;
 		}
+		return super.getBorderWidth();
 	}
 
 	public int getLineHeight() {
