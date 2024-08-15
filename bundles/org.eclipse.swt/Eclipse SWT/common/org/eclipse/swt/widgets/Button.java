@@ -70,16 +70,11 @@ public class Button extends Control implements ICustomWidget {
 	private static final int GAP = 5;
 	/** Left and right margins */
 	private static final int DEFAULT_MARGIN = 3;
-	/** a string inserted in the middle of text that has been shortened */
-	private static final String ELLIPSIS = "..."; //$NON-NLS-1$ // could use
-													// the ellipsis glyph on
-													// some platforms "\u2026"
-	/** the alignment. Either CENTER, RIGHT, LEFT. Default is LEFT */
-	private int align = SWT.LEFT;
 	private int leftMargin = DEFAULT_MARGIN;
 	private int topMargin = DEFAULT_MARGIN;
 	private int rightMargin = DEFAULT_MARGIN;
 	private int bottomMargin = DEFAULT_MARGIN;
+	private boolean enabled;
 
 	private final static FontData DEFAULT_FONT_DATA_WIN = new FontData(
 			"Segoe UI", 9, SWT.NORMAL);
@@ -298,29 +293,40 @@ public class Button extends Control implements ICustomWidget {
 
 		if ((style & SWT.PUSH) != 0) {
 
-			if (hasMouseEntered) {
+			if (isEnabled()) {
 
-				gc.setBackground(new Color(getDisplay(), 232, 242, 254));
-				// gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT));
+				if (hasMouseEntered) {
 
+					gc.setBackground(new Color(getDisplay(), 232, 242, 254));
+					// gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT));
+
+				} else {
+					gc.setBackground(
+							getDisplay().getSystemColor(SWT.COLOR_WHITE));
+				}
 			} else {
-				gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
+				gc.setBackground(getDisplay()
+						.getSystemColor(SWT.COLOR_TEXT_DISABLED_BACKGROUND));
 			}
 			gc.fillRoundRectangle(x, y, w, h, 6, 6);
 		}
 
 		Color fg = getForeground();
-		if (hasMouseEntered) {
-			fg = getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION);
+		if (isEnabled()) {
+
+			if (hasMouseEntered) {
+				fg = getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION);
+			} else {
+				fg = getDisplay().getSystemColor(SWT.COLOR_WIDGET_BORDER);
+			}
+
 		} else {
-			fg = getDisplay().getSystemColor(SWT.COLOR_WIDGET_BORDER);
+			fg = getDisplay().getSystemColor(SWT.COLOR_GRAY);
 		}
 
 		gc.setForeground(fg);
 		gc.drawRoundRectangle(x, y, w, h, 6, 6);
-
 		gc.setForeground(getForeground());
-
 	}
 
 	private void doPaint(Event e) {
@@ -354,14 +360,12 @@ public class Button extends Control implements ICustomWidget {
 		gc.setForeground(getForeground());
 		gc.setBackground(gc.getBackground());
 
-
 		if (hasMouseEntered) {
 			gc.setForeground(
 					getDisplay().getSystemColor(SWT.COLOR_LINK_FOREGROUND));
 
 		}
 		if ((style & SWT.CHECK) == SWT.CHECK) {
-
 
 			gc.drawRectangle(new Rectangle(4, 10, 12, 12));
 
@@ -375,7 +379,6 @@ public class Button extends Control implements ICustomWidget {
 			}
 
 		} else if ((style & SWT.RADIO) == SWT.RADIO) {
-
 
 			if (getSelection()) {
 				gc.setBackground(getForeground());
@@ -391,7 +394,6 @@ public class Button extends Control implements ICustomWidget {
 			drawBevelRect(gc, 0, 0, r.width - 1, r.height - 1);
 
 		}
-
 
 		int lineWidth = 0;
 		int lineHeight = 0;
@@ -447,6 +449,11 @@ public class Button extends Control implements ICustomWidget {
 					topOffset + Math.max(0, (lineHeight - imageHeight) / 2));
 
 		if (text != null && !"".equals(text))
+
+			if (!isEnabled()) {
+				gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_GRAY));
+			}
+
 			gc.drawText(getText(), sideOffset + imageWidth + GAP,
 					topOffset + Math.max(0, (imageHeight - lineHeight) / 2),
 					DRAW_FLAGS);
@@ -519,8 +526,6 @@ public class Button extends Control implements ICustomWidget {
 		return computeSize(wHint, hHint, true);
 	}
 
-
-
 	@Override
 	public Point computeSize(int wHint, int hHint, boolean changed) {
 		checkWidget();
@@ -531,7 +536,6 @@ public class Button extends Control implements ICustomWidget {
 
 		int lineWidth = 0;
 		int lineHeight = 0;
-
 
 		int leftMargin = this.leftMargin;
 		int imageWidth = 0;
@@ -559,7 +563,6 @@ public class Button extends Control implements ICustomWidget {
 			imageWidth = imgB.width;
 			imageHeight = imgB.height;
 		}
-
 
 		int width = leftMargin + imageWidth + GAP + lineWidth
 				+ this.rightMargin;
@@ -1380,6 +1383,24 @@ public class Button extends Control implements ICustomWidget {
 		System.out.println("WARN: Not implemented yet: "
 				+ new Throwable().getStackTrace()[0]);
 		return -1;
+	}
+
+	@Override
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+		super.setEnabled(enabled);
+		redraw();
+	}
+
+	@Override
+	public boolean getEnabled() {
+		this.enabled = super.getEnabled();
+		return enabled;
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return getEnabled();
 	}
 
 }
