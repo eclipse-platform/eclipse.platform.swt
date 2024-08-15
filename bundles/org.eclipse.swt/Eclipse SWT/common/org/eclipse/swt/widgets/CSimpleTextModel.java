@@ -33,6 +33,9 @@ public class CSimpleTextModel {
 		int start = getSelectionStart();
 		replaceWith(string, start, getSelectionEnd());
 		setCaretOffset(start + string.length());
+		if (string.length() > 0) {
+			sendTextModified();
+		}
 	}
 
 
@@ -167,6 +170,9 @@ public class CSimpleTextModel {
 
 	void insert(String string) {
 		insert(string, getCaretOffset());
+		if (string.length() > 0) {
+			sendTextModified();
+		}
 	}
 
 	private void insert(String string, int offset) {
@@ -208,6 +214,7 @@ public class CSimpleTextModel {
 
 	void clearSelection() {
 		selectionStart = selectionEnd = -1;
+		sendSelectionChanged();
 	}
 
 	boolean isTextSelected() {
@@ -226,30 +233,25 @@ public class CSimpleTextModel {
 	}
 
 	void setSelection(int start) {
-		start = Math.min(start, getText().length());
+		Math.min(start, getText().length());
 		selectionStart = selectionEnd = caretOffset = start;
+		sendSelectionChanged();
 	}
 
 	void setSelection(int start, int end) {
 		selectionStart = start;
 		selectionEnd = end;
 		caretOffset = end;
+		sendSelectionChanged();
 	}
 
 	void setSectionStart(TextLocation location) {
-		caretOffset = selectionStart = selectionEnd = getOffset(location);
+		setSelection(getOffset(location));
 	}
 
 	void setSelectionEnd(TextLocation location) {
 		caretOffset = selectionEnd = getOffset(location);
-// TODO can we delete this?
-//		if (finalSelection) {
-//			if (isTextSelected()) {
-//				caretOffset = selectionEnd;
-//			} else {
-//				clearSelection();
-//			}
-//		}
+		sendSelectionChanged();
 	}
 
 	void selectAll() {
@@ -303,6 +305,12 @@ public class CSimpleTextModel {
 		}
 	}
 
+	private void sendSelectionChanged() {
+		for (ITextModelChangedListener listener : modelChangedListeners) {
+			listener.selectionChanged();
+		}
+	}
+
 	void insert(char character) {
 		character = normalize(character);
 		if (isTextSelected()) {
@@ -351,4 +359,6 @@ class TextLocation {
 
 interface ITextModelChangedListener {
 	void textModified();
+
+	void selectionChanged();
 }

@@ -131,7 +131,29 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 			}
 		});
 
-		model.addModelChangedListner(() -> CSimpleText.this.sendEvent(SWT.Modify));
+		model.addModelChangedListner(new ITextModelChangedListener() {
+
+			@Override
+			public void textModified() {
+				CSimpleText.this.textModified();
+			}
+
+			@Override
+			public void selectionChanged() {
+				CSimpleText.this.selectionChanged();
+
+			}
+		});
+	}
+
+
+	private void textModified() {
+		sendEvent(SWT.Modify);
+		redraw();
+	}
+
+	private void selectionChanged() {
+		redraw();
 	}
 
 	protected void focusLost(FocusEvent e) {
@@ -234,10 +256,11 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 	}
 
 	protected void widgetDisposed(DisposeEvent e) {
-		// TODO Auto-generated method stub
+		caret.dispose();
 	}
 
 	private void paintControl(PaintEvent e) {
+//		setSize(computeSize(0, 0));
 		drawBackground(e);
 		Rectangle visibleArea = getVisibleArea();
 		drawText(e, visibleArea);
@@ -286,6 +309,7 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 		GC gc = e.gc;
 
 		int caretOffset = model.getCaretOffset();
+
 		if (caretOffset >= 0) {
 			Point caretLocation = getLocationByOffset(caretOffset, gc);
 			int x = e.x + caretLocation.x - visibleArea.x;
@@ -293,7 +317,7 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 			getCaret().setBounds(x, y, 1, getLineHeight(gc));
 		}
 
-		caret.drawCaret(gc);
+		caret.paint(e);
 	}
 
 	private void drawText(PaintEvent e, Rectangle visibleArea) {
@@ -307,17 +331,13 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 		System.out.println(getSize());
 		System.out.println(model.getLineCount() * getLineHeight());
 		ScrollBar verticalBar = getVerticalBar();
-		// System.out.println(verticalBar.getMaximum());
-		// System.out.println(verticalBar.getThumb());
+		if (verticalBar != null) {
+			System.out.println(verticalBar.getMaximum());
+			System.out.println(verticalBar.getThumb());
+		}
 		GC gc = e.gc;
 		gc.setBackground(getBackground());
 		gc.fillRectangle(e.x, e.y, e.width - 1, e.height - 1);
-	}
-
-	@Override
-	public Point getSize() {
-		// TODO Auto-generated method stub
-		return super.getSize();
 	}
 
 	private Rectangle getVisibleArea() {
@@ -379,24 +399,20 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 
 	public void setSelection(int start) {
 		model.setSelection(start);
-		redraw();
 	}
 
 	public void setSelection(int start, int end) {
 		model.setSelection(start, end);
-		redraw();
 	}
 
 	public void setSelection(Point selection) {
 		if (selection == null)
 			error(SWT.ERROR_NULL_ARGUMENT);
 		setSelection(selection.x, selection.y);
-		redraw();
 	}
 
 	public void selectAll() {
 		model.selectAll();
-		redraw();
 	}
 
 	public Point getSelection() {
@@ -434,7 +450,6 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 		Rectangle visibleArea = getVisibleArea();
 
 		int y = location.line * getLineHeight();
-
 		// TODO scroll(0, 0, visibleArea.x, y, visibleArea.width, visibleArea.height,
 		// true);
 	}
@@ -600,6 +615,7 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 	 */
 	public void copy() {
 		checkWidget();
+		// TODO
 		// if ((style & SWT.PASSWORD) != 0 || echoCharacter != '\0') return;
 		// if ((style & SWT.SINGLE) != 0) {
 		// Point selection = getSelection ();
@@ -629,7 +645,6 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 	public void showSelection() {
 		checkWidget();
 		setSelection(getSelection());
-		redraw();
 	}
 
 	public void addVerifyListener(VerifyListener listener) {
@@ -667,10 +682,6 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 		} else {
 			insertTextAtCaret(string);
 		}
-
-		if (string.length() != 0)
-			sendEvent(SWT.Modify);
-		redraw();
 	}
 
 	private void insertTextAtCaret(String string) {

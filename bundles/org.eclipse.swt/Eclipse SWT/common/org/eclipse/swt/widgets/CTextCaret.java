@@ -103,7 +103,7 @@ public class CTextCaret extends Widget {
 	public CTextCaret(CSimpleText parent, int style) {
 		super(parent, style);
 		this.parent = parent;
-		createWidget();
+		init();
 	}
 
 	boolean blinkCaret() {
@@ -116,8 +116,7 @@ public class CTextCaret extends Widget {
 		return hideCaret();
 	}
 
-	@Override
-	void createWidget() {
+	void init() {
 		blinkRate = 570;
 		isVisible = true;
 		if (parent.getCaret() == null) {
