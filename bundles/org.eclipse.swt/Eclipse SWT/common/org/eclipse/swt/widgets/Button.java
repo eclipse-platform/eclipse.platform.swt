@@ -222,7 +222,7 @@ public class Button extends Control implements ICustomWidget {
 	private void onSelection(Event event) {
 		System.out.println("WARN: Not implemented yet: "
 				+ new Throwable().getStackTrace()[0]);
-		onPaint(event);
+		redraw();
 
 	}
 
@@ -250,7 +250,11 @@ public class Button extends Control implements ICustomWidget {
 	}
 
 	private void onPaint(Event event) {
-		System.out.println("Paint: GC=" + event.gc);
+
+		if (!isVisible() ) {
+			return;
+		}
+
 		GC gc = event.gc;
 
 		if (gc == null) {
@@ -267,7 +271,7 @@ public class Button extends Control implements ICustomWidget {
 	}
 
 	private void onMouseDown(Event e) {
-		onPaint(e);
+		redraw();
 	}
 
 	private void handleSelection() {
@@ -291,18 +295,22 @@ public class Button extends Control implements ICustomWidget {
 	private void drawBevelRect(IGraphicsContext gc, int x, int y, int w,
 			int h) {
 
-		if (hasMouseEntered) {
+		if ((style & SWT.PUSH) != 0) {
 
-			gc.setBackground(new Color(getDisplay(), 232, 242, 254));
+			if (hasMouseEntered) {
 
-		} else {
-			gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
+				gc.setBackground(new Color(getDisplay(), 232, 242, 254));
+				// gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT));
+
+			} else {
+				gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
+			}
+			 gc.fillRoundRectangle(x, y, w, h, 6, 6);
 		}
-		gc.fillRoundRectangle(x, y, w, h, 6, 6);
 
 		Color fg = getForeground();
 		if (hasMouseEntered) {
-			fg = getDisplay().getSystemColor(SWT.COLOR_LINK_FOREGROUND);
+			fg = getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION);
 		} else {
 			fg = getDisplay().getSystemColor(SWT.COLOR_WIDGET_BORDER);
 		}
@@ -322,13 +330,16 @@ public class Button extends Control implements ICustomWidget {
 		if (r.width == 0 && r.height == 0)
 			return;
 
-		System.out.println("Paint Rectangle: " + r);
-
 		// this call is necessary in order to clear the button area, and then
 		// repaint the button.
-		// TODO if we use skija, we have to clear the area also.
+// the color is transparent, this is necessary to set the original background, which was there
+// if we don't fill the rectangle, older button drawings from previous paint calls could stay
+// if we draw any background color, the original bg color of the parent can be overridden
+// here parent.getBackgroundColor is insufficient, because the background could also contain custom paintings.
+
+ e.gc.setBackground(new Color(getDisplay(), new RGBA(255, 255, 255, 0)));
+ e.gc.fillRectangle(0, 0, r.width, r.height);
 		e.gc.setBackground(getBackground());
-		e.gc.fillRoundRectangle(0, 0, r.width, r.height, 6, 6);
 
 		e.gc.setClipping(new Rectangle(0, 0, r.width, r.height));
 
@@ -407,7 +418,6 @@ public class Button extends Control implements ICustomWidget {
 			imageWidth = imgB.width;
 			imageHeight = imgB.height;
 		}
-
 
 		int sideOffset = 20;
 		int topOffset = topMargin;
@@ -1275,7 +1285,7 @@ public class Button extends Control implements ICustomWidget {
 		text = string;
 		// _setText(string);
 
-		onPaint(new Event());
+		redraw();
 	}
 
 	void updateImageList() {
