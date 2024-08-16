@@ -281,9 +281,8 @@ int DragEnter_64(long pDataObject, int grfKeyState, long pt, long pdwEffect) {
 }
 
 int DragEnter(long pDataObject, int grfKeyState, int pt_x, int pt_y, long pdwEffect) {
-	int zoom = nativeZoom;
-	pt_x = DPIUtil.scaleDown(pt_x, zoom);// To Points
-	pt_y = DPIUtil.scaleDown(pt_y, zoom);// To Points
+	pt_x = DPIUtil.scaleDown(pt_x, nativeZoom);// To Points
+	pt_y = DPIUtil.scaleDown(pt_y, nativeZoom);// To Points
 	selectedDataType = null;
 	selectedOperation = DND.DROP_NONE;
 	if (iDataObject != null) iDataObject.Release();
@@ -349,9 +348,8 @@ int DragOver_64(int grfKeyState, long pt, long pdwEffect) {
 }
 
 int DragOver(int grfKeyState, int pt_x, int pt_y, long pdwEffect) {
-	int zoom = nativeZoom;
-	pt_x = DPIUtil.scaleDown(pt_x, zoom);// To Points
-	pt_y = DPIUtil.scaleDown(pt_y, zoom);// To Points
+	pt_x = DPIUtil.scaleDown(pt_x, nativeZoom);// To Points
+	pt_y = DPIUtil.scaleDown(pt_y, nativeZoom);// To Points
 	if (iDataObject == null) return COM.S_FALSE;
 	int oldKeyOperation = keyOperation;
 
@@ -405,9 +403,8 @@ int Drop_64(long pDataObject, int grfKeyState, long pt, long pdwEffect) {
 
 int Drop(long pDataObject, int grfKeyState, int pt_x, int pt_y, long pdwEffect) {
 	try {
-		int zoom = nativeZoom;
-		pt_x = DPIUtil.scaleDown(pt_x, zoom);// To Points
-		pt_y = DPIUtil.scaleDown(pt_y, zoom);// To Points
+		pt_x = DPIUtil.scaleDown(pt_x, nativeZoom);// To Points
+		pt_y = DPIUtil.scaleDown(pt_y, nativeZoom);// To Points
 		DNDEvent event = new DNDEvent();
 		event.widget = this;
 		event.time = OS.GetMessageTime();

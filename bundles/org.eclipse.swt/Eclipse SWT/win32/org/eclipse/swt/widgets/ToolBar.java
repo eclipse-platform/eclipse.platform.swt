@@ -144,6 +144,8 @@ public ToolBar (Composite parent, int style) {
 	} else {
 		this.style |= SWT.HORIZONTAL;
 	}
+//	setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_MAGENTA));
+//	parent.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN));
 }
 
 @Override
@@ -570,7 +572,7 @@ public ToolItem getItem (int index) {
 public ToolItem getItem (Point point) {
 	checkWidget ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	return getItemInPixels(DPIUtil.scaleUp(point, getZoom()));
+	return getItemInPixels(DPIUtil.scaleUp(point, getDeviceZoom()));
 }
 
 ToolItem getItemInPixels (Point point) {
@@ -1051,7 +1053,7 @@ void setDisabledImageList (ImageList imageList) {
 	long hImageList = 0;
 	if ((disabledImageList = imageList) != null) {
 		hImageList = OS.SendMessage(handle, OS.TB_GETDISABLEDIMAGELIST, 0, 0);
-		long newImageList = disabledImageList.getHandle(getZoom());
+		long newImageList = disabledImageList.getHandle(getDeviceZoom());
 		if (hImageList == newImageList) return;
 		hImageList = newImageList;
 	}
@@ -1090,7 +1092,7 @@ void setHotImageList (ImageList imageList) {
 	long hImageList = 0;
 	if ((hotImageList = imageList) != null) {
 		hImageList = OS.SendMessage(handle, OS.TB_GETHOTIMAGELIST, 0, 0);
-		long newImageList = hotImageList.getHandle(getZoom());
+		long newImageList = hotImageList.getHandle(getDeviceZoom());
 		if (hImageList == newImageList) return;
 		hImageList = newImageList;
 	}
@@ -1103,7 +1105,7 @@ void setImageList (ImageList imageList) {
 	long hImageList = 0;
 	if ((this.imageList = imageList) != null) {
 		hImageList = OS.SendMessage(handle, OS.TB_GETIMAGELIST, 0, 0);
-		long newImageList = imageList.getHandle(getZoom());
+		long newImageList = imageList.getHandle(getDeviceZoom());
 		if (hImageList == newImageList) return;
 		hImageList = newImageList;
 	}
@@ -1273,9 +1275,9 @@ void updateOrientation () {
 	super.updateOrientation ();
 	if (imageList != null) {
 		Point size = imageList.getImageSize ();
-		ImageList newImageList = display.getImageListToolBar (style & SWT.RIGHT_TO_LEFT, size.x, size.y, getZoom());
-		ImageList newHotImageList = display.getImageListToolBarHot (style & SWT.RIGHT_TO_LEFT, size.x, size.y, getZoom());
-		ImageList newDisabledImageList = display.getImageListToolBarDisabled (style & SWT.RIGHT_TO_LEFT, size.x, size.y, getZoom());
+		ImageList newImageList = display.getImageListToolBar (style & SWT.RIGHT_TO_LEFT, size.x, size.y, getDeviceZoom());
+		ImageList newHotImageList = display.getImageListToolBarHot (style & SWT.RIGHT_TO_LEFT, size.x, size.y, getDeviceZoom());
+		ImageList newDisabledImageList = display.getImageListToolBarDisabled (style & SWT.RIGHT_TO_LEFT, size.x, size.y, getDeviceZoom());
 		TBBUTTONINFO info = new TBBUTTONINFO ();
 		info.cbSize = TBBUTTONINFO.sizeof;
 		info.dwMask = OS.TBIF_IMAGE;
@@ -1301,9 +1303,9 @@ void updateOrientation () {
 		display.releaseToolImageList (imageList);
 		display.releaseToolHotImageList (hotImageList);
 		display.releaseToolDisabledImageList (disabledImageList);
-		OS.SendMessage (handle, OS.TB_SETIMAGELIST, 0, newImageList.getHandle(getZoom()));
-		OS.SendMessage (handle, OS.TB_SETHOTIMAGELIST, 0, newHotImageList.getHandle(getZoom()));
-		OS.SendMessage (handle, OS.TB_SETDISABLEDIMAGELIST, 0, newDisabledImageList.getHandle(getZoom()));
+		OS.SendMessage (handle, OS.TB_SETIMAGELIST, 0, newImageList.getHandle(getDeviceZoom()));
+		OS.SendMessage (handle, OS.TB_SETHOTIMAGELIST, 0, newHotImageList.getHandle(getDeviceZoom()));
+		OS.SendMessage (handle, OS.TB_SETDISABLEDIMAGELIST, 0, newDisabledImageList.getHandle(getDeviceZoom()));
 		imageList = newImageList;
 		hotImageList = newHotImageList;
 		disabledImageList = newDisabledImageList;
@@ -1650,7 +1652,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 				int index = (int)OS.SendMessage (handle, OS.TB_COMMANDTOINDEX, lpnmtb.iItem, 0);
 				RECT rect = new RECT ();
 				OS.SendMessage (handle, OS.TB_GETITEMRECT, index, rect);
-				int zoom = getZoom();
+				int zoom = getDeviceZoom();
 				event.setLocation(DPIUtil.scaleDown(rect.left, zoom), DPIUtil.scaleDown(rect.bottom, zoom));
 				child.sendSelectionEvent (SWT.Selection, event, false);
 			}
@@ -1805,5 +1807,26 @@ private static void handleDPIChange(Widget widget, int newZoom, float scalingFac
 	toolBar.setHotImageList(toolBar.getHotImageList());
 	OS.SendMessage(toolBar.handle, OS.TB_AUTOSIZE, 0, 0);
 	toolBar.layout(true);
+}
+
+@Override
+public void setSize (Point size) {
+	checkWidget ();
+	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
+	size = DPIUtil.scaleUp(size, nativeZoom);
+	setSizeInPixels(size.x, size.y);
+}
+
+@Override
+public Point computeSize (int wHint, int hHint, boolean changed){
+	checkWidget ();
+	int zoom = nativeZoom;
+	wHint = (wHint != SWT.DEFAULT ? DPIUtil.scaleUp(wHint, zoom) : wHint);
+	hHint = (hHint != SWT.DEFAULT ? DPIUtil.scaleUp(hHint, zoom) : hHint);
+	return DPIUtil.scaleDown(computeSizeInPixels(wHint, hHint, changed), zoom);
+}
+
+int getDeviceZoom() {
+	return DPIUtil.getZoomForAutoscaleProperty(nativeZoom);
 }
 }

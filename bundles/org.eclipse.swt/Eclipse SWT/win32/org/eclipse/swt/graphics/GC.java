@@ -976,9 +976,12 @@ public void drawImage (Image image, int srcX, int srcY, int srcWidth, int srcHei
 	if (image == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 
-	int deviceZoom = getZoom();
+	int deviceZoom = image.useDeviceZoom ? DPIUtil.getZoomForAutoscaleProperty(getZoom()) : getZoom();
 	Rectangle src = DPIUtil.scaleUp(drawable, new Rectangle(srcX, srcY, srcWidth, srcHeight), deviceZoom);
-	Rectangle dest = DPIUtil.scaleUp(drawable, new Rectangle(destX, destY, destWidth, destHeight), deviceZoom);
+	destX = DPIUtil.scaleUp(destX, getZoom());
+	destY = DPIUtil.scaleUp(destY, getZoom());
+	destWidth = DPIUtil.scaleUp(destWidth, deviceZoom);
+	destHeight = DPIUtil.scaleUp(destHeight, deviceZoom);
 	if (deviceZoom != 100) {
 		/*
 		 * This is a HACK! Due to rounding errors at fractional scale factors,
@@ -996,13 +999,13 @@ public void drawImage (Image image, int srcX, int srcY, int srcWidth, int srcHei
 			}
 		}
 	}
-	drawImage(image, src.x, src.y, src.width, src.height, dest.x, dest.y, dest.width, dest.height, false);
+	drawImage(image, src.x, src.y, src.width, src.height, destX, destY, destWidth, destHeight, false);
 }
 
 void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple) {
 	if (data.gdipGraphics != 0) {
 		//TODO - cache bitmap
-		long [] gdipImage = srcImage.createGdipImage(getZoom());
+		long [] gdipImage = srcImage.createGdipImage(DPIUtil.getZoomForAutoscaleProperty(getZoom()));
 		long img = gdipImage[0];
 		int imgWidth = Gdip.Image_GetWidth(img);
 		int imgHeight = Gdip.Image_GetHeight(img);

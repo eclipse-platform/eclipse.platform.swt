@@ -44,7 +44,7 @@ public ImageList (int style, int width, int height, int zoom) {
 	handle = OS.ImageList_Create (width, height, this.flags, 16, 16);
 	zoomToHandle.put(zoom, handle);
 	images = new Image [4];
-	this.zoom = zoom;
+	this.zoom = DPIUtil.getZoomForAutoscaleProperty(zoom);
 }
 
 public int add (Image image) {
@@ -331,6 +331,7 @@ public int getStyle () {
 }
 
 public long getHandle(int targetZoom) {
+	targetZoom = DPIUtil.getZoomForAutoscaleProperty(targetZoom);
 	if (!zoomToHandle.containsKey(targetZoom)) {
 		int scaledWidth = DPIUtil.scaleUp(DPIUtil.scaleDown(width, this.zoom), targetZoom);
 		int scaledHeight = DPIUtil.scaleUp(DPIUtil.scaleDown(height, this.zoom), targetZoom);

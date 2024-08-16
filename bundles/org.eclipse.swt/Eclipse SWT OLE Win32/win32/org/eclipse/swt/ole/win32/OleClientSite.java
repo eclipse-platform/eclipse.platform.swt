@@ -1369,12 +1369,11 @@ void setBorderSpace(RECT newBorderwidth) {
 	setBounds();
 }
 void setBounds() {
-	int zoom = nativeZoom;
-	Rectangle area = DPIUtil.scaleDown(frame.getClientArea(), zoom); // To Pixels
-	setBounds(DPIUtil.scaleDown(borderWidths.left, zoom),
-			  DPIUtil.scaleDown(borderWidths.top, zoom),
-			  DPIUtil.scaleDown(area.width - borderWidths.left - borderWidths.right, zoom),
-			  DPIUtil.scaleDown(area.height - borderWidths.top - borderWidths.bottom, zoom));
+	Rectangle area = DPIUtil.scaleDown(frame.getClientArea(), nativeZoom); // To Pixels
+	setBounds(DPIUtil.scaleDown(borderWidths.left, nativeZoom),
+			  DPIUtil.scaleDown(borderWidths.top, nativeZoom),
+			  DPIUtil.scaleDown(area.width - borderWidths.left - borderWidths.right, nativeZoom),
+			  DPIUtil.scaleDown(area.height - borderWidths.top - borderWidths.bottom, nativeZoom));
 	setObjectRects();
 }
 private void setExtent(int width, int height){

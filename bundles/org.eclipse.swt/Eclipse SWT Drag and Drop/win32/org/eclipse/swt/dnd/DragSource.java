@@ -491,8 +491,7 @@ private void drag(Event dragEvent) {
 	hwndDrag = 0;
 	topControl = null;
 	if (image != null) {
-		int zoom = nativeZoom;
-		imagelist = new ImageList(SWT.NONE, zoom);
+		imagelist = new ImageList(SWT.NONE, nativeZoom);
 		imagelist.add(image);
 		topControl = control.getShell();
 		/*
@@ -520,7 +519,7 @@ private void drag(Event dragEvent) {
 				null);
 			OS.ShowWindow (hwndDrag, OS.SW_SHOW);
 		}
-		OS.ImageList_BeginDrag(imagelist.getHandle(zoom), 0, offsetX, event.offsetY);
+		OS.ImageList_BeginDrag(imagelist.getHandle(nativeZoom), 0, offsetX, event.offsetY);
 		/*
 		* Feature in Windows. When ImageList_DragEnter() is called,
 		* it takes a snapshot of the screen  If a drag is started
@@ -532,8 +531,8 @@ private void drag(Event dragEvent) {
 		int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
 		OS.RedrawWindow (topControl.handle, null, 0, flags);
 		POINT pt = new POINT ();
-		pt.x = DPIUtil.scaleUp(dragEvent.x, zoom);// To Pixels
-		pt.y = DPIUtil.scaleUp(dragEvent.y, zoom);// To Pixels
+		pt.x = DPIUtil.scaleUp(dragEvent.x, nativeZoom);// To Pixels
+		pt.y = DPIUtil.scaleUp(dragEvent.y, nativeZoom);// To Pixels
 		OS.MapWindowPoints (control.handle, 0, pt, 1);
 		RECT rect = new RECT ();
 		OS.GetWindowRect (hwndDrag, rect);

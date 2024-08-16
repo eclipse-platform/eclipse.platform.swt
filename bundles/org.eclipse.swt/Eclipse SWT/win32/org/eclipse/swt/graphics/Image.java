@@ -158,6 +158,8 @@ public final class Image extends Resource implements Drawable {
 
 	private HashMap<Integer, Long> zoomLevelToHandle = new HashMap<>();
 
+	boolean useDeviceZoom = false;
+
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
@@ -256,6 +258,7 @@ public Image(Device device, Image srcImage, int flag) {
 	this.type = srcImage.type;
 	this.imageDataProvider = srcImage.imageDataProvider;
 	this.imageFileNameProvider = srcImage.imageFileNameProvider;
+	this.useDeviceZoom = srcImage.useDeviceZoom;
 	this.styleFlag = srcImage.styleFlag | flag;
 	initialNativeZoom = srcImage.initialNativeZoom;
 	this.dataAtBaseZoom = srcImage.dataAtBaseZoom;
@@ -350,6 +353,7 @@ public Image(Device device, Image srcImage, int flag) {
  */
 public Image(Device device, Rectangle bounds) {
 	super(device);
+	useDeviceZoom = true;
 	if (bounds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
 	bounds = DPIUtil.scaleUp (bounds, getZoom());
@@ -492,6 +496,7 @@ public Image(Device device, ImageData source, ImageData mask) {
 public Image (Device device, InputStream stream) {
 	super(device);
 	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
+	useDeviceZoom = true;
 	this.dataAtBaseZoom =  new ElementAtZoom<>(new ImageData (stream), 100);
 	ImageData data = DPIUtil.autoScaleUp(device, this.dataAtBaseZoom);
 	init(data, getZoom());
@@ -534,6 +539,7 @@ public Image (Device device, String filename) {
 	super(device);
 	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
+	useDeviceZoom = true;
 	this.dataAtBaseZoom = new ElementAtZoom<>(new ImageData (filename), 100);
 	ImageData data = DPIUtil.autoScaleUp(device, this.dataAtBaseZoom);
 	init(data, getZoom());
@@ -573,6 +579,7 @@ public Image(Device device, ImageFileNameProvider imageFileNameProvider) {
 	super(device);
 	this.imageFileNameProvider = imageFileNameProvider;
 	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
+	useDeviceZoom = true;
 	ElementAtZoom<String> fileName = DPIUtil.validateAndGetImagePathAtZoom (imageFileNameProvider, getZoom());
 	if (fileName.zoom() == getZoom()) {
 		long handle = initNative (fileName.element(), getZoom());
@@ -620,6 +627,7 @@ public Image(Device device, ImageFileNameProvider imageFileNameProvider) {
 public Image(Device device, ImageDataProvider imageDataProvider) {
 	super(device);
 	this.imageDataProvider = imageDataProvider;
+	useDeviceZoom = true;
 	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
 	ElementAtZoom<ImageData> data =  DPIUtil.validateAndGetImageDataAtZoom(imageDataProvider, getZoom());
 	ImageData resizedData = DPIUtil.scaleImageData(device, data.element(), getZoom(), data.zoom());
@@ -788,6 +796,9 @@ private ImageData applyGrayImageData(ImageData data, int pHeight, int pWidth) {
  * @noreference This method is not intended to be referenced by clients.
  */
 public static Long win32_getHandle (Image image, int zoom) {
+	if(image.useDeviceZoom) {
+		zoom = DPIUtil.getZoomForAutoscaleProperty(zoom);
+	}
 	if(image.isDisposed()) {
 		return image.handle;
 	}
@@ -809,7 +820,7 @@ public static Long win32_getHandle (Image image, int zoom) {
 			image.init(newData, zoom);
 		}
 	} else if (image.imageDataProvider != null) {
-		ElementAtZoom<ImageData> imageCandidate = DPIUtil.validateAndGetImageDataAtZoom (image.imageDataProvider, zoom);
+		ElementAtZoom<ImageData> imageCandidate = DPIUtil.validateAndGetImageDataAtZoom (image.imageDataProvider, image.getZoom());
 		ImageData resizedData = DPIUtil.scaleImageData (image.device, imageCandidate.element(), zoom, imageCandidate.zoom());
 		ImageData newData = image.adaptImageDataIfDisabledOrGray(resizedData);
 		image.init(newData, zoom);
@@ -1008,6 +1019,9 @@ long [] createGdipImage() {
 }
 
 long [] createGdipImage(Integer zoom) {
+	if(useDeviceZoom) {
+		zoom = DPIUtil.getZoomForAutoscaleProperty(zoom);
+	}
 	long handle = Image.win32_getHandle(this, zoom);
 	switch (type) {
 		case SWT.BITMAP: {
@@ -1305,6 +1319,9 @@ public Rectangle getBounds() {
 }
 
 Rectangle getBounds(int zoom) {
+	if(useDeviceZoom) {
+		zoom = DPIUtil.getZoomForAutoscaleProperty(zoom);
+	}
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	// Read the bounds in pixels from native layer.
 	Rectangle bounds = getBoundsInPixelsFromNative();
@@ -1411,6 +1428,9 @@ public ImageData getImageData() {
  * @since 3.106
  */
 public ImageData getImageData (int zoom) {
+	if(useDeviceZoom) {
+		zoom = DPIUtil.getZoomForAutoscaleProperty(zoom);
+	}
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int currentZoom = getZoom();
 	if (zoom == currentZoom) {
@@ -2333,6 +2353,9 @@ public void setBackground(Color color) {
 }
 
 private int getZoom() {
+	if(useDeviceZoom) {
+		return DPIUtil.getZoomForAutoscaleProperty(initialNativeZoom);
+	}
 	return initialNativeZoom;
 }
 /**
