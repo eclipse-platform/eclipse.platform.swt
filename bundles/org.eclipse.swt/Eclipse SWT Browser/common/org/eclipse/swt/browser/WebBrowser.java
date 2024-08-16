@@ -13,6 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
+import java.net.*;
 import java.util.*;
 import java.util.List;
 
@@ -36,6 +37,7 @@ abstract class WebBrowser {
 
 	static final String ERROR_ID = "org.eclipse.swt.browser.error"; // $NON-NLS-1$
 	static final String EXECUTE_ID = "SWTExecuteTemporaryFunction"; // $NON-NLS-1$
+	private static final URI URI_FOR_CUSTOM_TEXT_PAGE = URI.create("about:blank");
 
 	static List<String[]> NativePendingCookies = new ArrayList<> ();
 	static String CookieName, CookieValue, CookieUrl;
@@ -722,6 +724,10 @@ boolean sendKeyEvent (Event event) {
 
 public void setBrowser (Browser browser) {
 	this.browser = browser;
+}
+
+URI getUriForCustomText() {
+	return URI_FOR_CUSTOM_TEXT_PAGE;
 }
 
 public abstract boolean setText (String html, boolean trusted);

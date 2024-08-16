@@ -209,7 +209,7 @@ class BrowserTab extends Tab {
 		/* store the state of the Browser if applicable */
 		if (browser != null) {
 			String url = browser.getUrl();
-			if (url.length() > 0 && !url.equals("about:blank")) { //$NON-NLS-1$
+			if (url.length() > 0 && !browser.isLocationForCustomText(url)) { //$NON-NLS-1$
 				lastUrl = url;
 			} else {
 				String text = browser.getText();
