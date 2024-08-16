@@ -224,7 +224,6 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 	}
 
 	private Point computeTextSize() {
-		long start = System.currentTimeMillis();
 		GC gc = new GC(this);
 		int width = 0, height = 0;
 		if ((style & SWT.SINGLE) != 0) {
@@ -243,8 +242,6 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 			height = size.y * model.getLineCount();
 		}
 		gc.dispose();
-		long end = System.currentTimeMillis();
-		System.out.println("computeTextSize: " + (end - start));
 
 		return new Point(width, height);
 
@@ -319,29 +316,49 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 
 	private void keyPressed(KeyEvent e) {
 		boolean updateSelection = (e.stateMask & SWT.SHIFT) != 0;
+		System.out.println(e.stateMask);
+		if ((e.stateMask == 0 || (e.stateMask & SWT.SHIFT) != 0)) {
 
-		switch (e.keyCode) {
-		case SWT.ARROW_LEFT:
-			model.moveCaretLeft(updateSelection);
-			break;
-		case SWT.ARROW_RIGHT:
-			model.moveCaretRight(updateSelection);
-			break;
-		case SWT.ARROW_UP:
-			model.moveCaretUp(updateSelection);
-			break;
-		case SWT.ARROW_DOWN:
-			model.moveCaretDown(updateSelection);
-			break;
-		case SWT.BS:
-			model.removeCharacterBeforeCaret();
-			break;
-		case SWT.DEL:
-			model.removeCharacterBeforeCaret();
-			break;
-		default:
-			model.insert(e.character);
-			break;
+			switch (e.keyCode) {
+			case SWT.ARROW_LEFT:
+				model.moveCaretLeft(updateSelection);
+				break;
+			case SWT.ARROW_RIGHT:
+				model.moveCaretRight(updateSelection);
+				break;
+			case SWT.ARROW_UP:
+				model.moveCaretUp(updateSelection);
+				break;
+			case SWT.ARROW_DOWN:
+				model.moveCaretDown(updateSelection);
+				break;
+			case SWT.BS:
+				model.removeCharacterBeforeCaret();
+				break;
+			case SWT.DEL:
+				model.removeCharacterBeforeCaret();
+				break;
+			default:
+				if (e.keyCode == 0 || e.character != '\0') {
+					model.insert(e.character);
+				}
+				break;
+			}
+		} else if ((e.stateMask & SWT.MOD1) != 0) {
+			switch (e.character) {
+			case 'a':
+				model.selectAll();
+				break;
+			case 'c':
+				copy();
+				break;
+			case 'x':
+				copy();
+				break;
+			case 'v':
+				paste();
+				break;
+			}
 		}
 	}
 
@@ -713,27 +730,20 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 	 */
 	public void copy() {
 		checkWidget();
-		// TODO
-		// if ((style & SWT.PASSWORD) != 0 || echoCharacter != '\0') return;
-		// if ((style & SWT.SINGLE) != 0) {
-		// Point selection = getSelection ();
-		// if (selection.x == selection.y) return;
-		// copyToClipboard(content.getText().substring(getSelectionStart(),
-		// getSelectionEnd()).toCharArray());
-		// }
-		// else {
-		// NSText text = (NSText) view;
-		// if (text.selectedRange ().length == 0) return;
-		// text.copy (null);
-		// }
+		if ((style & SWT.PASSWORD) != 0)// || echoCharacter != '\0')
+			return;
+		copyToClipboard(model.getSelectedText().toCharArray());
 	}
 
 	public void cut() {
-		// TODO
+		copy();
+		model.replaceSelectedTextWith("");
 	}
 
 	public void paste() {
-		// TODO
+		checkWidget();
+		String clipboardText = getClipboardText();
+		model.insert(clipboardText);
 	}
 
 	public int getSelectionCount() {
@@ -775,20 +785,10 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 			if (string == null)
 				return;
 		}
-		if (model.isTextSelected()) {
-			replaceSelectedText(string);
-		} else {
-			insertTextAtCaret(string);
-		}
-	}
-
-	private void insertTextAtCaret(String string) {
 		model.insert(string);
 	}
 
-	private void replaceSelectedText(String string) {
-		model.replaceSelectedTextWith(string);
-	}
+
 
 	String verifyText(String string, int start, int end) {
 		Event event = new Event();

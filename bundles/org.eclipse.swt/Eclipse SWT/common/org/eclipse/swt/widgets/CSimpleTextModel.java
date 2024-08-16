@@ -34,62 +34,42 @@ public class CSimpleTextModel {
 		int start = getSelectionStart();
 		replaceWith(string, start, getSelectionEnd());
 		setCaretOffset(start + string.length());
+		clearSelection();
 		if (string.length() > 0) {
 			sendTextModified();
 		}
 	}
 
 
-	private void replaceWith(char character, int from, int to) {
-		int start = Math.min(from, to);
-		int end = Math.min(Math.max(from, to), text.length());
-
-		StringBuilder sb = new StringBuilder(text.substring(0, start));
-		sb.append(character);
-		sb.append(text.substring(end));
-
-		text = sb.toString();
-		sendTextModified();
-	}
-
-	private void replaceWith(String string, int from, int to) {
-		int start = Math.min(from, to);
-		int end = Math.min(Math.max(from, to), text.length());
+	private void replaceWith(String string, int start, int end) {
+		if (start > end) {
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		}
 
 		StringBuilder sb = new StringBuilder(text.substring(0, start));
 		sb.append(string);
 		sb.append(text.substring(end));
 
 		text = sb.toString();
+		caretOffset = start + string.length();
 		sendTextModified();
-	}
-
-	public void removeCharacterBeforeCaret() {
-		removeCharacter(getCaretOffset() - 1);
-	}
-
-	public void removeCharacterAfterCaret() {
-		removeCharacter(getCaretOffset());
-	}
-
-	private void removeCharacter(int offset) {
-		if (offset > text.length() || offset < 0)
-			return;
-		StringBuilder sb = new StringBuilder(text.substring(0, offset));
-		if (offset + 1 < text.length()) {
-			sb.append(text.substring(offset + 1, text.length()));
-		}
-		text = sb.toString();
-		moveCaretLeft(false);
 		clearSelection();
-		sendTextModified();
 	}
 
-	private void append(char character) {
-		StringBuilder sb = new StringBuilder(text);
-		sb.insert(getCaretOffset(), character);
-		text = sb.toString();
-		sendTextModified();
+	void removeCharacterBeforeCaret() {
+		if (isTextSelected()) {
+			replaceSelectedTextWith("");
+		} else {
+			replaceWith("", getCaretOffset() - 1, getCaretOffset());
+		}
+	}
+
+	void removeCharacterAfterCaret() {
+		if (isTextSelected()) {
+			replaceSelectedTextWith("");
+		} else {
+			replaceWith("", getCaretOffset(), getCaretOffset() + 1);
+		}
 	}
 
 	int getOffset(TextLocation location) {
@@ -158,7 +138,6 @@ public class CSimpleTextModel {
 	}
 
 	private String[] getLinesOf(String string) {
-		long start = System.currentTimeMillis();
 		int count = (int) string.chars().filter(c -> c == DELIMITER.toCharArray()[0]).count();
 		String[] lines = new String[count + 1];
 
@@ -172,13 +151,15 @@ public class CSimpleTextModel {
 		}
 		lines[i] = string;
 
-		long end = System.currentTimeMillis();
-		System.out.println("getLinesOf:" + (end - start));
 		return lines;
 	}
 
 	void insert(String string) {
-		insert(string, getCaretOffset());
+		if (isTextSelected()) {
+			replaceSelectedTextWith(string);
+		} else {
+			insert(string, getCaretOffset());
+		}
 		if (string.length() > 0) {
 			sendTextModified();
 		}
@@ -326,13 +307,12 @@ public class CSimpleTextModel {
 	}
 
 	void insert(char character) {
-		character = normalize(character);
+		char[] chars = { normalize(character) };
+		String text = new String(chars);
 		if (isTextSelected()) {
-			replaceWith(character, getSelectionStart(), getSelectionEnd());
-			moveCaretTo(getSelectionStart() + 1, false);
+			replaceWith(text, getSelectionStart(), getSelectionEnd());
 		} else {
-			append(character);
-			moveCaretRight(false);
+			insert(text);
 		}
 		clearSelection();
 	}
