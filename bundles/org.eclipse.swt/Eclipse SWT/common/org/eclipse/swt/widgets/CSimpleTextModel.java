@@ -106,6 +106,7 @@ public class CSimpleTextModel {
 		if (text == null)
 			SWT.error(SWT.ERROR_NULL_ARGUMENT);
 		this.text = text;
+		caretOffset = 0;
 		clearSelection();
 		sendTextModified();
 	}
@@ -234,25 +235,28 @@ public class CSimpleTextModel {
 	}
 
 	int getSelectionStart() {
-		return Math.max(0, Math.min(selectionStart, selectionEnd));
+		return Math.min(selectionStart, selectionEnd);
 	}
 
 	int getSelectionEnd() {
-		return Math.max(0, Math.min(Math.max(selectionStart, selectionEnd), getText().length()));
+		return Math.max(selectionStart, selectionEnd);
+	}
+
+	private int keepOffsetInTextBounds(int offset) {
+		return Math.max(0, Math.min(offset, getText().length()));
 	}
 
 	void setSelection(int start) {
-		start = Math.min(start, getText().length());
-		selectionStart = selectionEnd = caretOffset = start;
+		selectionStart = selectionEnd = caretOffset = keepOffsetInTextBounds(start);
 		sendSelectionChanged();
 	}
 
 	void setSelection(int start, int end) {
-		selectionStart = start;
-		selectionEnd = end;
-		caretOffset = end;
+		selectionStart = keepOffsetInTextBounds(start);
+		selectionEnd = caretOffset = keepOffsetInTextBounds(end);
 		sendSelectionChanged();
 	}
+
 
 	void setSectionStart(TextLocation location) {
 		setSelection(getOffset(location));
