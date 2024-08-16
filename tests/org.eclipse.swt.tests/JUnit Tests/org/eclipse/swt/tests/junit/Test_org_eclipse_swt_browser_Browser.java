@@ -34,6 +34,7 @@ import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -516,6 +517,80 @@ public void test_LocationListener_addAndRemove() {
 	};
 	for (int i = 0; i < 100; i++) browser.addLocationListener(listener);
 	for (int i = 0; i < 100; i++) browser.removeLocationListener(listener);
+}
+
+@Test
+public void test_isLocationForCustomText_setUrlAfterDisposedThrowsSwtException() {
+	Browser testBrowser = createBrowser(shell, SWT.NONE);
+	testBrowser.dispose();
+	assertThrows(SWTException.class, () -> testBrowser.isLocationForCustomText("about:blank"));
+}
+
+@Test
+public void test_isLocationForCustomText_isSetUrlNotCustomTextUrlAfterSetText() {
+	assumeFalse("behavior is not (yet) supported by Edge browser", isEdge);	// Edge doesn't fire a changed event if the URL is the same as the previous location.
+	URI url = getValidUrl();
+	AtomicBoolean locationChanged = new AtomicBoolean(false);
+	browser.addLocationListener(changedAdapter(event -> {
+			locationChanged.set(true);
+	}));
+
+	browser.setText("Custom text");
+	assertTrue("Time Out: The Browser didn't navigate to the URL", waitForPassCondition(locationChanged::get));
+	locationChanged.set(false);
+	browser.setUrl(url.toASCIIString());
+	assertTrue("Time Out: The Browser didn't navigate to the URL", waitForPassCondition(locationChanged::get));
+	assertEquals("Url is wrongly considered Custom Text Url", URI.create(browser.getUrl()), url);
+	assertFalse("The navigated URL is falsly indicated to be the custom text URL", browser.isLocationForCustomText(browser.getUrl()));
+}
+
+@Test
+public void test_isLocationForCustomText_isFirstSetTextURLStillCustomTextUrlAfterSetUrl() {
+	assumeFalse("behavior is not (yet) supported by Edge browser", isEdge);	// Edge doesn't fire a changed event if the URL is the same as the previous location.
+	AtomicBoolean locationChanged = new AtomicBoolean(false);
+	browser.addLocationListener(changedAdapter(event -> locationChanged.set(true)));
+	URI url = getValidUrl();
+	browser.setText("Custom text");
+	assertTrue(waitForPassCondition(locationChanged::get));
+	String firstUrl = browser.getUrl();
+	locationChanged.set(false);
+	browser.setUrl(url.toASCIIString());
+	assertTrue("Time Out: The Browser didn't navigate to the URL", waitForPassCondition(locationChanged::get));
+	assertTrue(browser.isLocationForCustomText(firstUrl));
+	assertFalse(browser.isLocationForCustomText(browser.getUrl()));
+}
+
+private URI getValidUrl() {
+	String pluginPath = System.getProperty("PLUGIN_PATH");
+	URI url;
+	// Depending on how the jUnit test is ran, (gui/maven/ant), url for local file needs to be acquired differently.
+	if (pluginPath != null) {
+		url = URI.create(pluginPath + "/data/testWebsiteWithTitle.html");
+	} else {
+		// used when ran from Eclipse gui.
+		url = URI.create(Test_org_eclipse_swt_browser_Browser.class.getClassLoader().getResource("testWebsiteWithTitle.html").toString());
+	}
+	return url;
+}
+
+@Test
+public void test_isLocationForCustomText_isSetUrlNotCustomTextUrl() {
+	AtomicBoolean locationChanged = new AtomicBoolean(false);
+	browser.addLocationListener(changedAdapter(event -> locationChanged.set(true)));
+	URI url = getValidUrl();
+	browser.setUrl(url.toASCIIString());
+	waitForPassCondition(locationChanged::get);
+	assertFalse("Url is wrongly considered Custom Text Url", browser.isLocationForCustomText(browser.getUrl()));
+}
+
+@Test
+public void test_isLocationForCustomText() {
+	assumeFalse("behavior is not (yet) supported by Edge browser", isEdge);	// Edge doesn't fire a changed event if the URL is the same as the previous location.
+	AtomicBoolean locationChanged = new AtomicBoolean(false);
+	browser.addLocationListener(changedAdapter(e -> locationChanged.set(true)));
+	browser.setText("Hello world");
+	assertTrue("Timeout: LocationListener.changing() event was never fired", waitForPassCondition(locationChanged::get));
+	assertTrue("Custom Text URI was not loaded on setText", browser.isLocationForCustomText(browser.getUrl()));
 }
 
 @Test
