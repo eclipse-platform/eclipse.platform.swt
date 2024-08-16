@@ -14,6 +14,8 @@ public class CSimpleTextModel {
 
 	private ArrayList<ITextModelChangedListener> modelChangedListeners = new ArrayList<>();
 
+	private String[] textLines;
+
 	String getText() {
 		return text;
 	}
@@ -118,7 +120,10 @@ public class CSimpleTextModel {
 	}
 
 	String[] getLines() {
-		return getLinesOf(text);
+		if (textLines == null) {
+			textLines = getLinesOf(text);
+		}
+		return textLines;
 	}
 
 	int getLineCount() {
@@ -152,6 +157,7 @@ public class CSimpleTextModel {
 	}
 
 	private String[] getLinesOf(String string) {
+		long start = System.currentTimeMillis();
 		int count = (int) string.chars().filter(c -> c == DELIMITER.toCharArray()[0]).count();
 		String[] lines = new String[count + 1];
 
@@ -165,6 +171,8 @@ public class CSimpleTextModel {
 		}
 		lines[i] = string;
 
+		long end = System.currentTimeMillis();
+		System.out.println("getLinesOf:" + (end - start));
 		return lines;
 	}
 
@@ -301,6 +309,7 @@ public class CSimpleTextModel {
 	}
 
 	private void sendTextModified() {
+		textLines = null;
 		for (ITextModelChangedListener listener : modelChangedListeners) {
 			listener.textModified();
 		}
@@ -359,6 +368,7 @@ class TextLocation {
 }
 
 interface ITextModelChangedListener {
+
 	void textModified();
 
 	void selectionChanged();

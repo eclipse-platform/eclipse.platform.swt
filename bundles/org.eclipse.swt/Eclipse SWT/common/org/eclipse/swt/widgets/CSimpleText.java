@@ -148,10 +148,11 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 			@Override
 			public void selectionChanged() {
 				CSimpleText.this.selectionChanged();
-
 			}
+
 		});
 	}
+
 
 
 	protected void onGesture(GestureEvent e) {
@@ -223,6 +224,7 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 	}
 
 	private Point computeTextSize() {
+		long start = System.currentTimeMillis();
 		GC gc = new GC(this);
 		int width = 0, height = 0;
 		if ((style & SWT.SINGLE) != 0) {
@@ -241,11 +243,47 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 			height = size.y * model.getLineCount();
 		}
 		gc.dispose();
+		long end = System.currentTimeMillis();
+		System.out.println("computeTextSize: " + (end - start));
+
 		return new Point(width, height);
+
 	}
 
 	private void selectionChanged() {
+		keepCaretInVisibleArea();
 		redraw();
+	}
+
+	private void keepCaretInVisibleArea() {
+		GC gc = new GC(this);
+		Point caretLocation = getLocationByOffset(model.getCaretOffset(), gc);
+		Rectangle visibleArea = getVisibleArea();
+
+		if (horizontalBar != null) {
+			if (caretLocation.x < visibleArea.x) {
+				horizontalBar.setSelection(caretLocation.x);
+			} else {
+				int maxVisibleAreaWidth = visibleArea.width - 5;
+				if (caretLocation.x > visibleArea.x + maxVisibleAreaWidth) {
+					horizontalBar.setSelection(caretLocation.x - maxVisibleAreaWidth);
+				}
+			}
+		}
+
+		if (verticalBar != null) {
+
+			if (caretLocation.y < visibleArea.y) {
+				verticalBar.setSelection(caretLocation.y);
+			} else {
+				int maxVisibleAreaHeight = visibleArea.height - getLineHeight(gc);
+				if (caretLocation.y > visibleArea.y + maxVisibleAreaHeight) {
+					verticalBar.setSelection(caretLocation.y - maxVisibleAreaHeight);
+				}
+			}
+		}
+
+		gc.dispose();
 	}
 
 	protected void focusLost(FocusEvent e) {
@@ -348,9 +386,9 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 	}
 
 	private void paintControl(PaintEvent e) {
-//		setSize(computeSize(0, 0, true, e.gc));
-		drawBackground(e);
 		Rectangle visibleArea = getVisibleArea();
+
+		drawBackground(e);
 		drawText(e, visibleArea);
 		drawSelection(e, visibleArea);
 		drawCaret(e, visibleArea);
@@ -399,7 +437,7 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 		int caretOffset = model.getCaretOffset();
 
 		if (caretOffset >= 0) {
-			Point caretLocation = getLocationByOffset(caretOffset, gc);
+			Point caretLocation = getLocationByOffset(model.getCaretOffset(), e.gc);
 			int x = e.x + caretLocation.x - visibleArea.x;
 			int y = e.y + caretLocation.y - visibleArea.y;
 			getCaret().setBounds(x, y, 1, getLineHeight(gc));
@@ -639,7 +677,7 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 
 	@Override
 	public int getBorderWidth() {
-		if (hasBorder()) {
+		if ((style & SWT.BORDER) != 0) {
 			return 2;
 		}
 		return super.getBorderWidth();
