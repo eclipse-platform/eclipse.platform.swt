@@ -13,8 +13,11 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
+import java.io.*;
 import java.net.*;
 import java.nio.charset.*;
+import java.nio.file.*;
+import java.nio.file.Path;
 import java.time.*;
 import java.util.*;
 import java.util.function.*;
@@ -43,6 +46,13 @@ class Edge extends WebBrowser {
 	static final String DATA_DIR_PROP = "org.eclipse.swt.browser.EdgeDataDir";
 	static final String LANGUAGE_PROP = "org.eclipse.swt.browser.EdgeLanguage";
 	static final String VERSIONT_PROP = "org.eclipse.swt.browser.EdgeVersion";
+	/**
+	 * The URI_FOR_CUSTOM_TEXT_PAGE is the path to a temporary html file which is used
+	 * by Edge browser to navigate to for setting html content in the
+	 * DOM of the browser to enable it to load local resources.
+	 */
+	private static final URI URI_FOR_CUSTOM_TEXT_PAGE = setupAndGetLocationForCustomTextPage();
+	private static final String ABOUT_BLANK = "about:blank";
 
 	private record WebViewEnvironment(ICoreWebView2Environment environment, ArrayList<Edge> instances) {
 		public WebViewEnvironment(ICoreWebView2Environment environment) {
@@ -65,6 +75,8 @@ class Edge extends WebBrowser {
 	boolean inNewWindow;
 	HashMap<Long, LocationEvent> navigations = new HashMap<>();
 	private boolean ignoreFocus;
+
+	private String lastCustomText;
 
 	static {
 		NativeClearSessions = () -> {
@@ -172,6 +184,18 @@ class Edge extends WebBrowser {
 			CookieResult = hr >= COM.S_OK;
 		};
 	}
+
+private static URI setupAndGetLocationForCustomTextPage() {
+	URI absolutePath;
+	try {
+		Path tempFile = Files.createTempFile("base", ".html");
+		absolutePath = tempFile.toUri();
+		tempFile.toFile().deleteOnExit();
+	} catch (IOException e) {
+		absolutePath = URI.create(ABOUT_BLANK);
+	}
+	return absolutePath;
+}
 
 static String wstrToString(long psz, boolean free) {
 	if (psz == 0) return "";
@@ -447,6 +471,8 @@ public void create(Composite parent, int style) {
 		handler.Release();
 	}
 
+	addProgressListener(ProgressListener.completedAdapter(__ -> writeToDefaultPathDOM()));
+
 	IUnknown hostDisp = newHostObject(this::handleCallJava);
 	long[] hostObj = { COM.VT_DISPATCH, hostDisp.getAddress(), 0 }; // VARIANT
 	webView.AddHostObjectToScript("swt\0".toCharArray(), hostObj);
@@ -559,7 +585,11 @@ public String getText() {
 public String getUrl() {
 	long ppsz[] = new long[1];
 	webView.get_Source(ppsz);
-	return wstrToString(ppsz[0], true);
+	return getExposedUrl(wstrToString(ppsz[0], true));
+}
+
+private String getExposedUrl(String url) {
+	return isLocationForCustomText(url) ? ABOUT_BLANK : url;
 }
 
 int handleCloseRequested(long pView, long pArgs) {
@@ -625,7 +655,7 @@ int handleNavigationStarting(long pView, long pArgs, boolean top) {
 	long[] ppszUrl = new long[1];
 	int hr = args.get_Uri(ppszUrl);
 	if (hr != COM.S_OK) return hr;
-	String url = wstrToString(ppszUrl[0], true);
+	String url = getExposedUrl(wstrToString(ppszUrl[0], true));
 	long[] pNavId = new long[1];
 	args.get_NavigationId(pNavId);
 	LocationEvent event = new LocationEvent(browser);
@@ -666,7 +696,7 @@ int handleSourceChanged(long pView, long pArgs) {
 	long[] ppsz = new long[1];
 	int hr = webView.get_Source(ppsz);
 	if (hr != COM.S_OK) return hr;
-	String url = wstrToString(ppsz[0], true);
+	String url = getExposedUrl(wstrToString(ppsz[0], true));
 	browser.getDisplay().asyncExec(() -> {
 		if (browser.isDisposed()) return;
 		LocationEvent event = new LocationEvent(browser);
@@ -954,15 +984,30 @@ public void stop() {
 	webView.Stop();
 }
 
-@Override
-public boolean setText(String html, boolean trusted) {
-	char[] data = new char[html.length() + 1];
-	html.getChars(0, html.length(), data, 0);
-	return webView.NavigateToString(data) == COM.S_OK;
+private boolean isLocationForCustomText(String location) {
+		try {
+			return URI_FOR_CUSTOM_TEXT_PAGE.equals(new URI(location));
+		} catch (URISyntaxException e) {
+			return false;
+		}
+}
+
+private void writeToDefaultPathDOM() {
+	if(lastCustomText != null && getUrl().equals(ABOUT_BLANK)) {
+		boolean test = jsEnabled;
+		jsEnabled = true;
+		execute("document.open(); document.write(`" + lastCustomText + "`); document.close();");
+		jsEnabled = test;
+		this.lastCustomText = null;
+	}
 }
 
 @Override
-public boolean setUrl(String url, String postData, String[] headers) {
+public boolean setText(String html, boolean trusted) {
+	return setWebpageData(URI_FOR_CUSTOM_TEXT_PAGE.toASCIIString(), null, null, html);
+}
+
+private boolean setWebpageData(String url, String postData, String[] headers, String html) {
 	// Feature in WebView2. Partial URLs like "www.example.com" are not accepted.
 	// Prepend the protocol if it's missing.
 	if (!url.matches("[a-z][a-z0-9+.-]*:.*")) {
@@ -970,6 +1015,9 @@ public boolean setUrl(String url, String postData, String[] headers) {
 	}
 	int hr;
 	char[] pszUrl = stringToWstr(url);
+	if(isLocationForCustomText(url)) {
+		this.lastCustomText = html;
+	}
 	if (postData != null || headers != null) {
 		if (environment2 == null || webView_2 == null) {
 			SWT.error(SWT.ERROR_NOT_IMPLEMENTED, null, " [WebView2 version 88+ is required to set postData and headers]");
@@ -1002,6 +1050,11 @@ public boolean setUrl(String url, String postData, String[] headers) {
 		hr = webView.Navigate(pszUrl);
 	}
 	return hr == COM.S_OK;
+}
+
+@Override
+public boolean setUrl(String url, String postData, String[] headers) {
+	return setWebpageData(url, postData, headers, null);
 }
 
 }
