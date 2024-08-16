@@ -316,7 +316,6 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 
 	private void keyPressed(KeyEvent e) {
 		boolean updateSelection = (e.stateMask & SWT.SHIFT) != 0;
-		System.out.println(e.stateMask);
 		if ((e.stateMask == 0 || (e.stateMask & SWT.SHIFT) != 0)) {
 
 			switch (e.keyCode) {
@@ -381,8 +380,9 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 		} else {
 			text = textLines[selectedLine];
 			for (int i = 0; i < text.length(); i++) {
-				int textExtend = gc.textExtent(text.substring(0, i)).x;
-				if (textExtend >= x + 5) {
+				Point textLocationPixel = getLocationByTextLocation(new TextLocation(selectedLine, i), gc);
+
+				if (textLocationPixel.x >= x + 5) {
 					if (i > 0) {
 						text = text.substring(0, i - 1);
 					} else {
@@ -418,31 +418,29 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 		int end = Math.min(Math.max(model.getSelectionEnd(), 0), textLength);
 
 		if (model.getSelectionStart() >= 0) {
-			Point startLocationPixel = getLocationByOffset(start, gc);
 			TextLocation startLocation = model.getLocation(start);
 			TextLocation endLocation = model.getLocation(end);
 			String[] textLines = model.getLines();
 
+			Color oldForeground = gc.getForeground();
 			Color oldBackground = gc.getBackground();
 			gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT));
 			gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION));
 
-			int y = startLocationPixel.y;
-			int lineHeight = getLineHeight(gc);
 			for (int i = startLocation.line; i <= endLocation.line; i++) {
-				int x = 0;
+				TextLocation location = new TextLocation(i, 0);
 				String text = textLines[i];
 				if (i == endLocation.line) {
 					text = text.substring(0, endLocation.column);
 				}
 				if (i == startLocation.line) {
-					x = startLocationPixel.x;
+					location.column = startLocation.column;
 					text = text.substring(startLocation.column);
 				}
-				gc.drawText(text, x - visibleArea.x, y - visibleArea.y, false);
-				y += lineHeight;
+				Point locationPixel = getLocationByTextLocation(location, gc);
+				gc.drawText(text, locationPixel.x - visibleArea.x, locationPixel.y - visibleArea.y, false);
 			}
-
+			gc.setForeground(oldForeground);
 			gc.setBackground(oldBackground);
 
 		}
@@ -464,8 +462,29 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 	}
 
 	private void drawText(PaintEvent e, Rectangle visibleArea) {
-		GC gc = e.gc;
-		gc.drawText(model.getText(), e.x - visibleArea.x, e.y - visibleArea.y, true);
+		String[] lines = model.getLines();
+		for (int i = 0; i < lines.length; i++) {
+			String line = lines[i];
+			drawTextLine(line, i, e.x, e.y, visibleArea, e.gc);
+		}
+	}
+
+
+	private void drawTextLine(String text, int lineNumber, int x, int y, Rectangle visibleArea,
+			GC gc) {
+		Point completeTextExtent = gc.textExtent(text);
+		Rectangle clientArea = getClientArea();
+		int _x;
+		if ((style & SWT.CENTER) != 0) {
+			_x = (clientArea.width - completeTextExtent.x) / 2;
+		} else if ((style & SWT.RIGHT) != 0) {
+			_x = clientArea.width - completeTextExtent.x;
+		} else { // ((style & SWT.LEFT) != 0)
+			_x = x;
+		}
+		_x -= visibleArea.x;
+		int _y = y + lineNumber * completeTextExtent.y - visibleArea.y;
+		gc.drawText(text, _x, _y, true);
 	}
 
 	private void drawBackground(PaintEvent e) {
@@ -603,14 +622,31 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 		return getLocationByOffset(model.getCaretOffset(), new GC(this));
 	}
 
-	public Point getLocationByOffset(int offset, GC gc) {
-		TextLocation selectionLocation = model.getLocation(offset);
+	private Point getLocationByOffset(int offset, GC gc) {
+		TextLocation textLocation = model.getLocation(offset);
+		return getLocationByTextLocation(textLocation, gc);
+	}
 
-		String beforeSelection = model.getLines()[selectionLocation.line].substring(0, selectionLocation.column);
-		int x = gc.textExtent(beforeSelection).x;
-		int y = selectionLocation.line * getLineHeight(gc);
+	private Point getLocationByTextLocation(TextLocation textLocation, GC gc) {
+
+		String completeText = model.getLines()[textLocation.line];
+		String beforeSelection = completeText.substring(0, textLocation.column);
+		Point completeTextExtent = gc.textExtent(completeText);
+		Point textExtent = gc.textExtent(beforeSelection);
+		int x;
+		Rectangle clientArea = getClientArea();
+		if ((style & SWT.CENTER) != 0) {
+			x = (clientArea.width - completeTextExtent.x) / 2;
+		} else if ((style & SWT.RIGHT) != 0) {
+			x = clientArea.width - completeTextExtent.x;
+		} else { // ((style & SWT.LEFT) != 0)
+			x = 0;
+		}
+		x += textExtent.x;
+		int y = textLocation.line * textExtent.y;
 		return new Point(x, y);
 	}
+
 
 	/**
 	 * Returns the character position of the caret.
