@@ -513,22 +513,7 @@ public class Label extends Control implements ICustomWidget {
 
 		GC gc = event.gc;
 
-		// there are parent controls, which contain images or colors, these
-		// should not be overwritten.
-		// even if it means that the same texts will be printed multiple times
-		// BUT on other composites this is absolutely necessary, else redraw
-		// does not clear the area before drawing
-		// drawings over each other is the consequence.
-		if (parent.backgroundMode != SWT.INHERIT_FORCE) {
-
-			gc.setClipping(new Rectangle(0, 0, rect.width, rect.height));
-
-			// gc.setBackground(new Color(getDisplay(), new RGBA(255, 255, 255,
-			// 0)));
-			gc.fillRectangle(0, 0, rect.width, rect.height);
-			gc.setBackground(getBackground());
-
-		}
+		gc.setBackground(getBackground());
 		gc.setClipping(new Rectangle(0, 0, rect.width, rect.height));
 
 		boolean shortenText = false;

@@ -337,21 +337,7 @@ public class Button extends Control implements ICustomWidget {
 		if (r.width == 0 && r.height == 0)
 			return;
 
-		// this call is necessary in order to clear the button area, and then
-		// repaint the button.
-		// the color is transparent, this is necessary to set the original
-		// background, which was there
-		// if we don't fill the rectangle, older button drawings from previous
-		// paint calls could stay
-		// if we draw any background color, the original bg color of the parent
-		// can be overridden
-		// here parent.getBackgroundColor is insufficient, because the
-		// background could also contain custom paintings.
-
-		e.gc.setBackground(new Color(getDisplay(), new RGBA(255, 255, 255, 0)));
-		e.gc.fillRectangle(0, 0, r.width, r.height);
 		e.gc.setBackground(getBackground());
-
 		e.gc.setClipping(new Rectangle(0, 0, r.width, r.height));
 
 		IGraphicsContext gc = e.gc;;
