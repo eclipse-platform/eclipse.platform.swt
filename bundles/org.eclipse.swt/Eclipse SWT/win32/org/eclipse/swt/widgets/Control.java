@@ -4905,7 +4905,7 @@ LRESULT WM_DPICHANGED (long wParam, long lParam) {
 		if (newNativeZoom != oldNativeZoom) {
 			DPIUtil.setDeviceZoom (newNativeZoom);
 
-			float scalingFactor = 1f * DPIUtil.getZoomForAutoscaleProperty(newNativeZoom) / DPIUtil.getZoomForAutoscaleProperty(oldNativeZoom);
+			float scalingFactor = 1f * newNativeZoom / oldNativeZoom;
 			DPIZoomChangeRegistry.applyChange(this, newNativeZoom, scalingFactor);
 
 			RECT rect = new RECT ();
@@ -4914,14 +4914,14 @@ LRESULT WM_DPICHANGED (long wParam, long lParam) {
 			return LRESULT.ZERO;
 		}
 	} else {
-		int newZoom = DPIUtil.getZoomForAutoscaleProperty (newNativeZoom);
-		int oldZoom = DPIUtil.getZoomForAutoscaleProperty (nativeZoom);
+		int newZoom = newNativeZoom;
+		int oldZoom = nativeZoom;
 		if (newZoom != oldZoom) {
 			// Throw the DPI change event if zoom value changes
 			Event event = new Event();
 			event.type = SWT.ZoomChanged;
 			event.widget = this;
-			event.detail = DPIUtil.getZoomForAutoscaleProperty(newNativeZoom);
+			event.detail = newNativeZoom;
 			event.doit = true;
 			notifyListeners(SWT.ZoomChanged, event);
 			return LRESULT.ZERO;

@@ -2657,7 +2657,7 @@ GC createNewGC(long hDC, GCData data) {
 }
 
 int getZoom() {
-	return DPIUtil.getZoomForAutoscaleProperty(nativeZoom);
+	return nativeZoom;
 }
 
 private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {

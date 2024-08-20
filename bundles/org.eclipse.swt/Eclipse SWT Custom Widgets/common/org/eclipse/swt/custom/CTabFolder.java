@@ -2519,6 +2519,7 @@ void updateButtons() {
 	if (showMax) {
 		if (minMaxTb == null) {
 			minMaxTb = new ToolBar(this, SWT.FLAT);
+			minMaxTb.setBackground(getDisplay().getSystemColor(SWT.COLOR_DARK_MAGENTA));
 			initAccessibleMinMaxTb();
 			addTabControl(minMaxTb, SWT.TRAIL, 0, false);
 		}
@@ -2542,6 +2543,7 @@ void updateButtons() {
 	if (showMin) {
 		if (minMaxTb == null) {
 			minMaxTb = new ToolBar(this, SWT.FLAT);
+			minMaxTb.setBackground(getDisplay().getSystemColor(SWT.COLOR_DARK_MAGENTA));
 			initAccessibleMinMaxTb();
 			addTabControl(minMaxTb, SWT.TRAIL, 0, false);
 		}

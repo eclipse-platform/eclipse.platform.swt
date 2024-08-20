@@ -604,7 +604,7 @@ public static int getDeviceZoom() {
 
 public static void setDeviceZoom (int nativeDeviceZoom) {
 	DPIUtil.nativeDeviceZoom = nativeDeviceZoom;
-	int deviceZoom = getZoomForAutoscaleProperty (nativeDeviceZoom);
+	int deviceZoom = nativeDeviceZoom;
 
 	DPIUtil.deviceZoom = deviceZoom;
 	System.setProperty("org.eclipse.swt.internal.deviceZoom", Integer.toString(deviceZoom));
