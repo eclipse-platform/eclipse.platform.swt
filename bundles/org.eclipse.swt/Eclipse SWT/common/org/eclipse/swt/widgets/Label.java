@@ -639,10 +639,10 @@ public class Label extends Control implements ICustomWidget {
 		}
 
 		// draw border
-		// int style = getStyle();
-		// if ((style & SWT.SHADOW_IN) != 0 || (style & SWT.SHADOW_OUT) != 0) {
-		// paintBorder(gc, rect);
-		// }
+		int style = getStyle();
+		if ((style & SWT.SHADOW_IN) != 0 || (style & SWT.SHADOW_OUT) != 0) {
+			paintBorder(gc, rect);
+		}
 
 		/*
 		 * Compute text height and image height. If image height is more than
@@ -742,7 +742,7 @@ public class Label extends Control implements ICustomWidget {
 
 		if (c1 != null && c2 != null) {
 			gc.setLineWidth(1);
-			drawBevelRect(gc, r.x, r.y, r.width - 1, r.height - 1, c1, c2);
+			drawBevelRect(gc, 0, 0, r.width - 1, r.height - 1, c1, c2);
 		}
 	}
 	/**
