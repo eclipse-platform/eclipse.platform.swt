@@ -353,13 +353,13 @@ public class Button extends Control implements ICustomWidget {
 		}
 		if ((style & SWT.CHECK) == SWT.CHECK) {
 
-			gc.drawRectangle(new Rectangle(4, 10, 12, 12));
+			gc.drawRectangle(new Rectangle(3, 4, 12, 12));
 
 			if (getSelection()) {
 
-				gc.setLineWidth(3);
-				gc.drawLine(5, 11, 15, 22);
-				gc.drawLine(16, 11, 5, 22);
+				gc.setLineWidth(2);
+				gc.drawLine(5, 6, 13, 14);
+				gc.drawLine(5, 14, 13, 6);
 				gc.setLineWidth(1);
 
 			}
@@ -368,10 +368,11 @@ public class Button extends Control implements ICustomWidget {
 
 			if (getSelection()) {
 				gc.setBackground(getForeground());
-				gc.fillOval(4, 8, 15, 15);
+				gc.fillOval(3, 4, 12, 12);
 				gc.setBackground(getBackground());
+			} else {
+				gc.drawOval(3, 4, 12, 12);
 			}
-			gc.drawOval(4, 8, 14, 14);
 
 		} else {
 
