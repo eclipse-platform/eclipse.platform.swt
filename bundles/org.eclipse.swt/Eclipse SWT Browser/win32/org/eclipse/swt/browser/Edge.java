@@ -63,6 +63,7 @@ class Edge extends WebBrowser {
 	static boolean inCallback;
 	boolean inNewWindow;
 	HashMap<Long, LocationEvent> navigations = new HashMap<>();
+	private boolean ignoreFocus;
 
 	static {
 		NativeClearSessions = () -> {
@@ -480,6 +481,7 @@ void browserDispose(Event event) {
 }
 
 void browserFocusIn(Event event) {
+	if (ignoreFocus) return;
 	// TODO: directional traversals
 	controller.MoveFocus(COM.COREWEBVIEW2_MOVE_FOCUS_REASON_PROGRAMMATIC);
 }
@@ -793,7 +795,16 @@ int handleNewWindowRequested(long pView, long pArgs) {
 }
 
 int handleGotFocus(long pView, long pArg) {
-	this.browser.forceFocus();
+	// browser.forceFocus() does not result in
+	// Shell#setActiveControl(Control)
+	// being called and therefore no SWT.FocusIn event being dispatched,
+	// causing active part, etc. not to be updated correctly.
+	// The solution is to explicitly send a WM_SETFOCUS
+	// to the browser, and, while doing so, ignoring any recursive
+	// calls in #browserFocusIn(Event).
+	ignoreFocus = true;
+	OS.SendMessage (browser.handle, OS.WM_SETFOCUS, 0, 0);
+	ignoreFocus = false;
 	return COM.S_OK;
 }
 
