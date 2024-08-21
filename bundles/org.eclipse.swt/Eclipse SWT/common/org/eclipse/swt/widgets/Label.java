@@ -512,7 +512,7 @@ public class Label extends Control implements ICustomWidget {
 			return;
 
 		GC gc = event.gc;
-
+		gc.setFont(font);
 		gc.setBackground(getBackground());
 		gc.setClipping(new Rectangle(0, 0, rect.width, rect.height));
 
@@ -997,6 +997,7 @@ public class Label extends Control implements ICustomWidget {
 		this.bottomMargin = bottomMargin;
 		redraw();
 	}
+
 	@Override
 	public void setFont(Font font) {
 		super.setFont(font);
