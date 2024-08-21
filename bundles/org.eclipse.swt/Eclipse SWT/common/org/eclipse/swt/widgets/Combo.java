@@ -151,6 +151,10 @@ public void addSegmentListener(SegmentListener listener) {
 	System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 }
 
+public void removeSegmentListener(SegmentListener listener) {
+	System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+}
+
 public int getCaretPosition() {
 	System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	return -1;
