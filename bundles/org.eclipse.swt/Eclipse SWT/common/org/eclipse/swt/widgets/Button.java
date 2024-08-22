@@ -452,8 +452,7 @@ public class Button extends Control implements ICustomWidget {
 		}
 
 		// Calculate area for button content (image + text)
-		Rectangle contentArea = new Rectangle(LEFT_MARGIN + boxSpace, TOP_MARGIN,
-				r.width - RIGHT_MARGIN - LEFT_MARGIN - boxSpace, r.height - TOP_MARGIN - BOTTOM_MARGIN);
+		int horizontalSpaceForContent = r.width - RIGHT_MARGIN - LEFT_MARGIN - boxSpace;
 		int textWidth = 0;
 		int textHeight = 0;
 		if (text != null && !text.isEmpty()) {
@@ -471,13 +470,13 @@ public class Button extends Control implements ICustomWidget {
 			imageHeight = imgB.height;
 			imageSpace = imageWidth + SPACING;
 		}
-		int contentsWidth = imageSpace + textWidth;
+		Rectangle contentArea = new Rectangle(LEFT_MARGIN + boxSpace, TOP_MARGIN, imageSpace + textWidth,
+				r.height - TOP_MARGIN - BOTTOM_MARGIN);
 		if (isRightAligned) {
-			contentArea.x += contentArea.width - contentsWidth;
+			contentArea.x += horizontalSpaceForContent - contentArea.width;
 		} else if (isCentered) {
-			contentArea.x += (contentArea.width - contentsWidth) / 2;
+			contentArea.x += (horizontalSpaceForContent - contentArea.width) / 2;
 		}
-		contentArea.width = contentsWidth;
 
 		if (image != null) {
 			int imageTopOffset = (r.height - imageHeight) / 2;
