@@ -225,6 +225,7 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 
 	private Point computeTextSize() {
 		GC gc = new GC(this);
+		gc.setFont(getFont());
 		int width = 0, height = 0;
 		if ((style & SWT.SINGLE) != 0) {
 			String str = model.getLines()[0];
@@ -405,6 +406,7 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 	private void paintControl(PaintEvent e) {
 		Rectangle visibleArea = getVisibleArea();
 
+		e.gc.setFont(getFont());
 		drawBackground(e);
 		drawText(e, visibleArea);
 		drawSelection(e, visibleArea);
@@ -426,7 +428,6 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 			Color oldBackground = gc.getBackground();
 			gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT));
 			gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION));
-
 			for (int i = startLocation.line; i <= endLocation.line; i++) {
 				TextLocation location = new TextLocation(i, 0);
 				String text = textLines[i];
