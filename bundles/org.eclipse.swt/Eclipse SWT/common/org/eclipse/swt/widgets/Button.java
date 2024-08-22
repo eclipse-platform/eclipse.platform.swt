@@ -68,7 +68,6 @@ public class Button extends Control implements ICustomWidget {
 	private Point computedSize = null;
 
 	/** Left and right margins */
-	private static final int PUSH_BUTTON_PADDING = MARGIN;
 	private static final int LEFT_MARGIN = 2;
 	private static final int RIGHT_MARGIN = 2;
 	private static final int TOP_MARGIN = 0;
@@ -634,8 +633,8 @@ public class Button extends Control implements ICustomWidget {
 		int height = TOP_MARGIN + Math.max(boxSpace, Math.max(textHeight, imageHeight)) + BOTTOM_MARGIN;
 
 		if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0) {
-			width += PUSH_BUTTON_PADDING * 2;
-			height += PUSH_BUTTON_PADDING * 2;
+			width += 12;
+			height += 10;
 		}
 
 		computedSize = new Point(width, height);
