@@ -67,17 +67,18 @@ public class Button extends Control implements ICustomWidget {
 	private boolean hasMouseEntered;
 	private Point computedSize = null;
 
-	private static final int GAP = 5;
 	/** Left and right margins */
-	private static final int DEFAULT_MARGIN = 3;
-	private int leftMargin = DEFAULT_MARGIN;
-	private int topMargin = DEFAULT_MARGIN;
-	private int rightMargin = DEFAULT_MARGIN;
-	private int bottomMargin = DEFAULT_MARGIN;
+	private static final int PUSH_BUTTON_PADDING = MARGIN;
+	private static final int LEFT_MARGIN = 2;
+	private static final int RIGHT_MARGIN = 2;
+	private static final int TOP_MARGIN = 0;
+	private static final int BOTTOM_MARGIN = 0;
+	private static final int BOX_SIZE = 13;
+	private static final int SPACING = 6;
 	private boolean enabled;
 
-	private final static FontData DEFAULT_FONT_DATA_WIN = new FontData(
-			"Segoe UI", 9, SWT.NORMAL);
+	private static final boolean USE_SKIJA = false;
+	private final static FontData DEFAULT_FONT_DATA_WIN = new FontData("Segoe UI", 9, SWT.NORMAL);
 
 	private static int DRAW_FLAGS = SWT.DRAW_MNEMONIC | SWT.DRAW_TAB
 			| SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER;
@@ -330,36 +331,42 @@ public class Button extends Control implements ICustomWidget {
 	}
 
 	private void doPaint(Event e) {
-		// draw background
-
-		// IGraphicsContext gc = event.gc;
 		Rectangle r = getBounds();
-		if (r.width == 0 && r.height == 0)
+		if (r.width == 0 && r.height == 0) {
 			return;
+		}
 
 		e.gc.setBackground(getBackground());
 		e.gc.setClipping(new Rectangle(0, 0, r.width, r.height));
+		e.gc.setAntialias(SWT.ON);
 
-		IGraphicsContext gc = e.gc;;
-		// IGraphicsContext gc = new SkijaGC(e.gc);
+		if (USE_SKIJA) {
+			doPaintWithSkijaGC(e.gc);
+		} else {
+			doPaintWithOrdinaryGC(e.gc);
+		}
+	}
+
+	private void doPaintWithSkijaGC(GC originalGc) {
+		Rectangle r = getBounds();
+		SkijaGC gc = new SkijaGC(originalGc);
 
 		gc.setForeground(getForeground());
 		gc.setBackground(gc.getBackground());
 
 		if (hasMouseEntered) {
-			gc.setForeground(
-					getDisplay().getSystemColor(SWT.COLOR_LINK_FOREGROUND));
+			gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_LINK_FOREGROUND));
 
 		}
 		if ((style & SWT.CHECK) == SWT.CHECK) {
 
-			gc.drawRectangle(new Rectangle(3, 4, 12, 12));
+			gc.drawRectangle(new Rectangle(4, 10, 12, 12));
 
 			if (getSelection()) {
 
-				gc.setLineWidth(2);
-				gc.drawLine(5, 6, 13, 14);
-				gc.drawLine(5, 14, 13, 6);
+				gc.setLineWidth(3);
+				gc.drawLine(5, 11, 15, 22);
+				gc.drawLine(16, 11, 5, 22);
 				gc.setLineWidth(1);
 
 			}
@@ -368,11 +375,10 @@ public class Button extends Control implements ICustomWidget {
 
 			if (getSelection()) {
 				gc.setBackground(getForeground());
-				gc.fillOval(3, 4, 12, 12);
+				gc.fillOval(4, 8, 15, 15);
 				gc.setBackground(getBackground());
-			} else {
-				gc.drawOval(3, 4, 12, 12);
 			}
+			gc.drawOval(4, 8, 14, 14);
 
 		} else {
 
@@ -387,11 +393,11 @@ public class Button extends Control implements ICustomWidget {
 
 		gc.setForeground(getForeground());
 
-		int leftMargin = this.leftMargin;
+		int leftMargin = this.LEFT_MARGIN;
 		int imageWidth = 0;
 		int imageHeight = 0;
 		int GAP = 0;
-		int topMargin = this.topMargin;
+		int topMargin = this.TOP_MARGIN;
 
 		if (text != null && !"".equals(text)) {
 
@@ -400,7 +406,7 @@ public class Button extends Control implements ICustomWidget {
 			lineWidth = textExtent.x;
 			lineHeight = textExtent.y;
 			if (image != null)
-				GAP = Button.GAP;
+				GAP = Button.SPACING;
 
 		}
 		if (image != null) {
@@ -422,8 +428,7 @@ public class Button extends Control implements ICustomWidget {
 			if ((style & SWT.LEFT) != 0) {
 
 			} else if ((style & SWT.RIGHT) != 0) {
-				sideOffset = r.width
-						- (imageWidth + GAP + lineWidth + this.rightMargin);
+				sideOffset = r.width - (imageWidth + GAP + lineWidth + this.RIGHT_MARGIN);
 
 			} else {
 				sideOffset = (r.width - (imageWidth + GAP + lineWidth)) / 2;
@@ -432,8 +437,7 @@ public class Button extends Control implements ICustomWidget {
 		}
 
 		if (image != null)
-			gc.drawImage(image, sideOffset,
-					topOffset + Math.max(0, (lineHeight - imageHeight) / 2));
+			gc.drawImage(image, sideOffset, topOffset + Math.max(0, (lineHeight - imageHeight) / 2));
 
 		if (text != null && !"".equals(text))
 
@@ -441,9 +445,8 @@ public class Button extends Control implements ICustomWidget {
 				gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_GRAY));
 			}
 
-			gc.drawText(getText(), sideOffset + imageWidth + GAP,
-					topOffset + Math.max(0, (imageHeight - lineHeight) / 2),
-					DRAW_FLAGS);
+		gc.drawText(getText(), sideOffset + imageWidth + GAP, topOffset + Math.max(0, (imageHeight - lineHeight) / 2),
+				DRAW_FLAGS);
 
 		// int widthStart = (width - imgB.width - lineWidth) / 2;
 		// int heightStart = (height - imgB.height) / 2;
@@ -458,8 +461,98 @@ public class Button extends Control implements ICustomWidget {
 		//
 		// int lineX = Math.max(0, (r.width - imgWidth - lineWidth) / 2);
 
-		if (gc instanceof SkijaGC sgc) {
-			sgc.commit();
+		gc.commit();
+		gc.dispose();
+	}
+
+	private void doPaintWithOrdinaryGC(GC gc) {
+		Rectangle r = getBounds();
+		gc.setForeground(getForeground());
+		gc.setBackground(gc.getBackground());
+
+		if (hasMouseEntered) {
+			gc.setForeground(
+					getDisplay().getSystemColor(SWT.COLOR_LINK_FOREGROUND));
+
+		}
+
+		boolean isRightAligned = (style & SWT.RIGHT) != 0;
+		boolean isCentered = (style & SWT.CENTER) != 0;
+		boolean isPushOrToggleButton = (style & (SWT.PUSH | SWT.TOGGLE)) != 0;
+
+		int boxSpace = 0;
+		// Draw check box / radio box / push button border
+		if (isPushOrToggleButton) {
+			drawBevelRect(gc, 0, 0, r.width - 1, r.height - 1);
+		} else {
+			boxSpace = BOX_SIZE + SPACING;
+			int boxLeftOffset = LEFT_MARGIN;
+			int boxTopOffset = (r.height - 1 - BOX_SIZE) / 2;
+			if ((style & SWT.CHECK) == SWT.CHECK) {
+				gc.drawRoundRectangle(boxLeftOffset, boxTopOffset, BOX_SIZE - 1, BOX_SIZE - 1, 4, 4);
+				if (getSelection()) {
+					gc.setLineWidth(2);
+					gc.drawLine(boxLeftOffset + 2, boxTopOffset + 2, boxLeftOffset + BOX_SIZE - 2,
+							boxTopOffset + BOX_SIZE - 2);
+					gc.drawLine(boxLeftOffset + 2, boxTopOffset + BOX_SIZE - 2, boxLeftOffset + BOX_SIZE - 2,
+							boxTopOffset + 2);
+					gc.setLineWidth(1);
+				}
+			} else if ((style & SWT.RADIO) == SWT.RADIO) {
+				gc.drawOval(boxLeftOffset, boxTopOffset, BOX_SIZE - 1, BOX_SIZE - 1);
+				if (getSelection()) {
+					gc.setBackground(getForeground());
+					gc.fillOval(boxLeftOffset, boxTopOffset, BOX_SIZE - 1, BOX_SIZE - 1);
+					gc.setBackground(getBackground());
+					gc.fillOval(boxLeftOffset + 3, boxTopOffset + 3, BOX_SIZE - 6, BOX_SIZE - 6);
+				}
+			}
+		}
+
+		// Calculate area for button content (image + text)
+		Rectangle contentArea = new Rectangle(LEFT_MARGIN + boxSpace, TOP_MARGIN,
+				r.width - RIGHT_MARGIN - LEFT_MARGIN - boxSpace, r.height - TOP_MARGIN - BOTTOM_MARGIN);
+
+		int textWidth = 0;
+		int textHeight = 0;
+		if (text != null && !text.isEmpty()) {
+			gc.setFont(getFont());
+			Point textExtent = gc.textExtent(text, DRAW_FLAGS);
+			textWidth = textExtent.x;
+			textHeight = textExtent.y;
+		}
+		int imageSpace = 0;
+		int imageWidth = 0;
+		int imageHeight = 0;
+		if (image != null) {
+			Rectangle imgB = image.getBounds();
+			imageWidth = imgB.width;
+			imageHeight = imgB.height;
+			imageSpace = imageWidth + SPACING;
+		}
+
+		int contentsWidth = imageSpace + textWidth;
+		if (isRightAligned) {
+			System.out.println("area: " + contentArea.width + ", contents: " + contentsWidth);
+			contentArea.x += contentArea.width - contentsWidth;
+		} else if (isCentered) {
+			contentArea.x += (contentArea.width - contentsWidth) / 2;
+		}
+		contentArea.width = contentsWidth;
+
+		if (image != null) {
+			int imageTopOffset = (r.height - imageHeight) / 2;
+			int imageLeftOffset = contentArea.x;
+			gc.drawImage(image, imageLeftOffset, imageTopOffset);
+		}
+
+		if (text != null && !text.isEmpty()) {
+			if (!isEnabled()) {
+				gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_GRAY));
+			}
+			int textTopOffset = (r.height - textHeight) / 2;
+			int textLeftOffset = contentArea.x + imageSpace;
+			gc.drawText(text, textLeftOffset, textTopOffset, DRAW_FLAGS);
 		}
 
 		gc.dispose();
@@ -475,11 +568,6 @@ public class Button extends Control implements ICustomWidget {
 	@Override
 	public Color getForeground() {
 		return new Color(0, 0, 0);
-	}
-
-	private void refreshCheckSize(int nativeZoom) {
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
 	}
 
 	@Override
@@ -521,51 +609,44 @@ public class Button extends Control implements ICustomWidget {
 			return new Point(Math.max(wHint, computedSize.x),
 					Math.max(hHint, computedSize.y));
 
-		int lineWidth = 0;
-		int lineHeight = 0;
-
-		int leftMargin = this.leftMargin;
-		int imageWidth = 0;
-		int imageHeight = 0;
-		int GAP = 0;
-		int topMargin = this.topMargin;
-
-		if (text != null && !"".equals(text)) {
-
-			GC gc = new GC(this);
-			Font f = new Font(getDisplay(), DEFAULT_FONT_DATA_WIN);
-			gc.setFont(f);
-			Point textExtent = gc.textExtent(text, DRAW_FLAGS);
-			gc.dispose();
-			f.dispose();
-			lineWidth = textExtent.x;
-			lineHeight = textExtent.y;
-			if (image != null)
-				GAP = Button.GAP;
-
+		int textWidth = 0;
+		int textHeight = 0;
+		int boxSpace = 0;
+		if ((style & (SWT.PUSH | SWT.TOGGLE)) == 0) {
+			boxSpace = BOX_SIZE + SPACING;
 		}
+		if (text != null && !text.isEmpty()) {
+			GC gc = new GC(this);
+			gc.setFont(getFont());
+			Point textExtent = gc.textExtent(text, DRAW_FLAGS);
+			textWidth = textExtent.x + 1;
+			textHeight = textExtent.y;
+			gc.dispose();
+		}
+		int imageSpace = 0;
+		int imageHeight = 0;
 		if (image != null) {
-
 			Rectangle imgB = image.getBounds();
-			imageWidth = imgB.width;
+			imageSpace = imgB.width + SPACING;
 			imageHeight = imgB.height;
 		}
 
-		int width = leftMargin + imageWidth + GAP + lineWidth
-				+ this.rightMargin;
-		int height = topMargin + Math.max(lineHeight, imageHeight)
-				+ this.bottomMargin;
+		int width = LEFT_MARGIN + boxSpace + imageSpace + textWidth + 1 + RIGHT_MARGIN;
+		int height = TOP_MARGIN + Math.max(boxSpace, Math.max(textHeight, imageHeight)) + BOTTOM_MARGIN;
+
+		if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0) {
+			width += PUSH_BUTTON_PADDING * 2;
+			height += PUSH_BUTTON_PADDING * 2;
+		}
 
 		computedSize = new Point(width, height);
 
-		if ((style & SWT.PUSH) == 0) {
+		if (wHint != SWT.DEFAULT)
+			computedSize.x = wHint;
+		if (hHint != SWT.DEFAULT)
+			computedSize.y = wHint;
 
-			computedSize = new Point(computedSize.x + 20, computedSize.y);
-
-		}
-
-		return new Point(Math.max(wHint, computedSize.x),
-				Math.max(hHint, computedSize.y));
+		return computedSize;
 
 	}
 
