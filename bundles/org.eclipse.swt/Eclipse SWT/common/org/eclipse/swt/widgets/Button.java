@@ -74,7 +74,7 @@ public class Button extends Control implements ICustomWidget {
 	private static final int TOP_MARGIN = 0;
 	private static final int BOTTOM_MARGIN = 0;
 	private static final int BOX_SIZE = 13;
-	private static final int SPACING = 6;
+	private static final int SPACING = 4;
 	private boolean enabled;
 
 	private static final boolean USE_SKIJA = false;
@@ -533,7 +533,6 @@ public class Button extends Control implements ICustomWidget {
 
 		int contentsWidth = imageSpace + textWidth;
 		if (isRightAligned) {
-			System.out.println("area: " + contentArea.width + ", contents: " + contentsWidth);
 			contentArea.x += contentArea.width - contentsWidth;
 		} else if (isCentered) {
 			contentArea.x += (contentArea.width - contentsWidth) / 2;
@@ -552,7 +551,7 @@ public class Button extends Control implements ICustomWidget {
 			}
 			int textTopOffset = (r.height - textHeight) / 2;
 			int textLeftOffset = contentArea.x + imageSpace;
-			gc.drawText(text, textLeftOffset, textTopOffset, DRAW_FLAGS);
+			gc.drawText(text, textLeftOffset + 1, textTopOffset, DRAW_FLAGS);
 		}
 
 		gc.dispose();
