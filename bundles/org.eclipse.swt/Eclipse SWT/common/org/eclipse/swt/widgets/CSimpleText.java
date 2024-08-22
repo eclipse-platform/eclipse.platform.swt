@@ -632,6 +632,7 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 
 		String completeText = model.getLines()[textLocation.line];
 		String beforeSelection = completeText.substring(0, textLocation.column);
+		gc.setFont(getFont());
 		Point completeTextExtent = gc.textExtent(completeText);
 		Point textExtent = gc.textExtent(beforeSelection);
 		int x;
