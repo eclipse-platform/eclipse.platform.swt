@@ -79,9 +79,9 @@ public class Button extends Control implements ICustomWidget {
 	private static final boolean USE_SKIJA = false;
 	private final static FontData DEFAULT_FONT_DATA_WIN = new FontData("Segoe UI", 9, SWT.NORMAL);
 
-	private static final Color hoverColor = new Color(Display.getDefault(), 224, 238, 254);
-	private static final Color toggleColor = new Color(Display.getDefault(), 204, 228, 247);
-	private static final Color selectionColor = new Color(Display.getDefault(), 0, 95, 184); // getDisplay().getSystemColor(SWT.COLOR_WIDGET_DARK_SHADOW)
+	private static final Color HOVER_COLOR = new Color(Display.getDefault(), 224, 238, 254);
+	private static final Color TOGGLE_COLOR = new Color(Display.getDefault(), 204, 228, 247);
+	private static final Color SELECTION_COLOR = new Color(Display.getDefault(), 0, 95, 184); // getDisplay().getSystemColor(SWT.COLOR_WIDGET_DARK_SHADOW)
 
 	private static int DRAW_FLAGS = SWT.DRAW_MNEMONIC | SWT.DRAW_TAB
 			| SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER;
@@ -298,9 +298,11 @@ public class Button extends Control implements ICustomWidget {
 			return;
 		}
 
+		e.gc.setForeground(getForeground());
 		e.gc.setBackground(getBackground());
 		e.gc.setClipping(new Rectangle(0, 0, r.width, r.height));
 		e.gc.setAntialias(SWT.ON);
+		e.gc.setTextAntialias(SWT.ON);
 
 		if (USE_SKIJA) {
 			doPaintWithSkijaGC(e.gc);
@@ -429,8 +431,6 @@ public class Button extends Control implements ICustomWidget {
 
 	private void doPaintWithOrdinaryGC(GC gc) {
 		Rectangle r = getBounds();
-		gc.setForeground(getForeground());
-		gc.setBackground(gc.getBackground());
 
 		boolean isRightAligned = (style & SWT.RIGHT) != 0;
 		boolean isCentered = (style & SWT.CENTER) != 0;
@@ -478,6 +478,7 @@ public class Button extends Control implements ICustomWidget {
 			contentArea.x += (horizontalSpaceForContent - contentArea.width) / 2;
 		}
 
+		// Draw image
 		if (image != null) {
 			int imageTopOffset = (r.height - imageHeight) / 2;
 			int imageLeftOffset = contentArea.x;
@@ -490,6 +491,7 @@ public class Button extends Control implements ICustomWidget {
 			}
 		}
 
+		// Draw text
 		if (text != null && !text.isEmpty()) {
 			if (isEnabled()) {
 				gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_BLACK));
@@ -507,9 +509,9 @@ public class Button extends Control implements ICustomWidget {
 	private void drawPushButton(IGraphicsContext gc, int x, int y, int w, int h) {
 		if (isEnabled()) {
 			if ((style & SWT.TOGGLE) != 0 && isChecked()) {
-				gc.setBackground(toggleColor);
+				gc.setBackground(TOGGLE_COLOR);
 			} else if (hasMouseEntered) {
-				gc.setBackground(new Color(getDisplay(), 232, 242, 254));
+				gc.setBackground(HOVER_COLOR);
 			} else {
 				gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
 			}
@@ -523,7 +525,7 @@ public class Button extends Control implements ICustomWidget {
 
 		if (isEnabled()) {
 			if (hasMouseEntered) {
-				gc.setForeground(selectionColor);
+				gc.setForeground(SELECTION_COLOR);
 			} else {
 				gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_WIDGET_BORDER));
 			}
@@ -536,13 +538,13 @@ public class Button extends Control implements ICustomWidget {
 
 	private void drawRadioButton(GC gc, int x, int y) {
 		if (getSelection()) {
-			gc.setBackground(selectionColor);
+			gc.setBackground(SELECTION_COLOR);
 			int partialBoxBorder = 2;
 			gc.fillOval(x + partialBoxBorder, y + partialBoxBorder, BOX_SIZE - 2 * partialBoxBorder,
 					BOX_SIZE - 2 * partialBoxBorder);
 		}
 		if (hasMouseEntered) {
-			gc.setBackground(hoverColor);
+			gc.setBackground(HOVER_COLOR);
 			int partialBoxBorder = getSelection() ? 4 : 0;
 			gc.fillOval(x + partialBoxBorder, y + partialBoxBorder, BOX_SIZE - 2 * partialBoxBorder,
 					BOX_SIZE - 2 * partialBoxBorder);
@@ -555,14 +557,14 @@ public class Button extends Control implements ICustomWidget {
 
 	private void drawCheckbox(GC gc, int x, int y) {
 		if (getSelection()) {
-			gc.setBackground(selectionColor);
+			gc.setBackground(SELECTION_COLOR);
 			int partialBoxBorder = 2;
 			gc.fillRoundRectangle(x + partialBoxBorder, y + partialBoxBorder, BOX_SIZE - 2 * partialBoxBorder,
 					BOX_SIZE - 2 * partialBoxBorder, BOX_SIZE / 4 - partialBoxBorder / 2,
 					BOX_SIZE / 4 - partialBoxBorder / 2);
 		}
 		if (hasMouseEntered) {
-			gc.setBackground(hoverColor);
+			gc.setBackground(HOVER_COLOR);
 			int partialBoxBorder = getSelection() ? 4 : 0;
 			gc.fillRoundRectangle(x + partialBoxBorder, y + partialBoxBorder, BOX_SIZE - 2 * partialBoxBorder,
 					BOX_SIZE - 2 * partialBoxBorder, BOX_SIZE / 4 - partialBoxBorder / 2,
