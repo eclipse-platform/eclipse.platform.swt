@@ -541,7 +541,13 @@ public class Button extends Control implements ICustomWidget {
 		if (image != null) {
 			int imageTopOffset = (r.height - imageHeight) / 2;
 			int imageLeftOffset = contentArea.x;
-			gc.drawImage(image, imageLeftOffset, imageTopOffset);
+			if (!isEnabled()) {
+				Image grayedImage = new Image(getDisplay(), image, SWT.IMAGE_GRAY);
+				gc.drawImage(grayedImage, imageLeftOffset, imageTopOffset);
+				grayedImage.dispose();
+			} else {
+				gc.drawImage(image, imageLeftOffset, imageTopOffset);
+			}
 		}
 
 		if (text != null && !text.isEmpty()) {
