@@ -34,8 +34,13 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 		setCaret(new CTextCaret(this, SWT.NONE));
 
 		setCursor(display.getSystemCursor(SWT.CURSOR_IBEAM));
-		setBackground(display.getSystemColor(SWT.COLOR_LIST_BACKGROUND));
-		setForeground(display.getSystemColor(SWT.COLOR_LIST_FOREGROUND));
+		if (isEnabled() && (style & SWT.READ_ONLY) == 0) {
+			setForeground(getDisplay().getSystemColor(SWT.COLOR_BLACK));
+			setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
+		} else {
+			setForeground(getDisplay().getSystemColor(SWT.COLOR_WIDGET_DISABLED_FOREGROUND));
+			setBackground(getDisplay().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
+		}
 
 		addListeners();
 
@@ -408,7 +413,6 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 
 	private void paintControl(PaintEvent e) {
 		Rectangle visibleArea = getVisibleArea();
-
 		e.gc.setFont(getFont());
 		drawBackground(e);
 		drawText(e, visibleArea);
