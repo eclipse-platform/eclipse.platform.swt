@@ -79,6 +79,10 @@ public class Button extends Control implements ICustomWidget {
 	private static final boolean USE_SKIJA = false;
 	private final static FontData DEFAULT_FONT_DATA_WIN = new FontData("Segoe UI", 9, SWT.NORMAL);
 
+	private static final Color hoverColor = new Color(Display.getDefault(), 224, 238, 254);
+	private static final Color toggleColor = new Color(Display.getDefault(), 204, 228, 247);
+	private static final Color selectionColor = new Color(Display.getDefault(), 0, 95, 184); // getDisplay().getSystemColor(SWT.COLOR_WIDGET_DARK_SHADOW)
+
 	private static int DRAW_FLAGS = SWT.DRAW_MNEMONIC | SWT.DRAW_TAB
 			| SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER;
 
@@ -288,47 +292,6 @@ public class Button extends Control implements ICustomWidget {
 
 	}
 
-	private void drawBevelRect(IGraphicsContext gc, int x, int y, int w,
-			int h) {
-
-		if ((style & SWT.PUSH) != 0) {
-
-			if (isEnabled()) {
-
-				if (hasMouseEntered) {
-
-					gc.setBackground(new Color(getDisplay(), 232, 242, 254));
-					// gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT));
-
-				} else {
-					gc.setBackground(
-							getDisplay().getSystemColor(SWT.COLOR_WHITE));
-				}
-			} else {
-				gc.setBackground(getDisplay()
-						.getSystemColor(SWT.COLOR_TEXT_DISABLED_BACKGROUND));
-			}
-			gc.fillRoundRectangle(x, y, w, h, 6, 6);
-		}
-
-		Color fg = getForeground();
-		if (isEnabled()) {
-
-			if (hasMouseEntered) {
-				fg = getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION);
-			} else {
-				fg = getDisplay().getSystemColor(SWT.COLOR_WIDGET_BORDER);
-			}
-
-		} else {
-			fg = getDisplay().getSystemColor(SWT.COLOR_GRAY);
-		}
-
-		gc.setForeground(fg);
-		gc.drawRoundRectangle(x, y, w, h, 6, 6);
-		gc.setForeground(getForeground());
-	}
-
 	private void doPaint(Event e) {
 		Rectangle r = getBounds();
 		if (r.width == 0 && r.height == 0) {
@@ -383,7 +346,7 @@ public class Button extends Control implements ICustomWidget {
 
 			System.out.println("Draw Bevel...");
 
-			drawBevelRect(gc, 0, 0, r.width - 1, r.height - 1);
+			drawPushButton(gc, 0, 0, r.width - 1, r.height - 1);
 
 		}
 
@@ -469,12 +432,6 @@ public class Button extends Control implements ICustomWidget {
 		gc.setForeground(getForeground());
 		gc.setBackground(gc.getBackground());
 
-		if (hasMouseEntered) {
-			gc.setForeground(
-					getDisplay().getSystemColor(SWT.COLOR_LINK_FOREGROUND));
-
-		}
-
 		boolean isRightAligned = (style & SWT.RIGHT) != 0;
 		boolean isCentered = (style & SWT.CENTER) != 0;
 		boolean isPushOrToggleButton = (style & (SWT.PUSH | SWT.TOGGLE)) != 0;
@@ -482,36 +439,21 @@ public class Button extends Control implements ICustomWidget {
 		int boxSpace = 0;
 		// Draw check box / radio box / push button border
 		if (isPushOrToggleButton) {
-			drawBevelRect(gc, 0, 0, r.width - 1, r.height - 1);
+			drawPushButton(gc, 0, 0, r.width - 1, r.height - 1);
 		} else {
 			boxSpace = BOX_SIZE + SPACING;
 			int boxLeftOffset = LEFT_MARGIN;
 			int boxTopOffset = (r.height - 1 - BOX_SIZE) / 2;
 			if ((style & SWT.CHECK) == SWT.CHECK) {
-				gc.drawRoundRectangle(boxLeftOffset, boxTopOffset, BOX_SIZE - 1, BOX_SIZE - 1, 4, 4);
-				if (getSelection()) {
-					gc.setLineWidth(2);
-					gc.drawLine(boxLeftOffset + 2, boxTopOffset + 2, boxLeftOffset + BOX_SIZE - 2,
-							boxTopOffset + BOX_SIZE - 2);
-					gc.drawLine(boxLeftOffset + 2, boxTopOffset + BOX_SIZE - 2, boxLeftOffset + BOX_SIZE - 2,
-							boxTopOffset + 2);
-					gc.setLineWidth(1);
-				}
+				drawCheckbox(gc, boxLeftOffset, boxTopOffset);
 			} else if ((style & SWT.RADIO) == SWT.RADIO) {
-				gc.drawOval(boxLeftOffset, boxTopOffset, BOX_SIZE - 1, BOX_SIZE - 1);
-				if (getSelection()) {
-					gc.setBackground(getForeground());
-					gc.fillOval(boxLeftOffset, boxTopOffset, BOX_SIZE - 1, BOX_SIZE - 1);
-					gc.setBackground(getBackground());
-					gc.fillOval(boxLeftOffset + 3, boxTopOffset + 3, BOX_SIZE - 6, BOX_SIZE - 6);
-				}
+				drawRadioButton(gc, boxLeftOffset, boxTopOffset);
 			}
 		}
 
 		// Calculate area for button content (image + text)
 		Rectangle contentArea = new Rectangle(LEFT_MARGIN + boxSpace, TOP_MARGIN,
 				r.width - RIGHT_MARGIN - LEFT_MARGIN - boxSpace, r.height - TOP_MARGIN - BOTTOM_MARGIN);
-
 		int textWidth = 0;
 		int textHeight = 0;
 		if (text != null && !text.isEmpty()) {
@@ -529,7 +471,6 @@ public class Button extends Control implements ICustomWidget {
 			imageHeight = imgB.height;
 			imageSpace = imageWidth + SPACING;
 		}
-
 		int contentsWidth = imageSpace + textWidth;
 		if (isRightAligned) {
 			contentArea.x += contentArea.width - contentsWidth;
@@ -551,8 +492,10 @@ public class Button extends Control implements ICustomWidget {
 		}
 
 		if (text != null && !text.isEmpty()) {
-			if (!isEnabled()) {
-				gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_GRAY));
+			if (isEnabled()) {
+				gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_BLACK));
+			} else {
+				gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_WIDGET_DISABLED_FOREGROUND));
 			}
 			int textTopOffset = (r.height - textHeight) / 2;
 			int textLeftOffset = contentArea.x + imageSpace;
@@ -560,7 +503,73 @@ public class Button extends Control implements ICustomWidget {
 		}
 
 		gc.dispose();
+	}
 
+	private void drawPushButton(IGraphicsContext gc, int x, int y, int w, int h) {
+		if (isEnabled()) {
+			if ((style & SWT.TOGGLE) != 0 && isChecked()) {
+				gc.setBackground(toggleColor);
+			} else if (hasMouseEntered) {
+				gc.setBackground(new Color(getDisplay(), 232, 242, 254));
+			} else {
+				gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
+			}
+			gc.fillRoundRectangle(x, y, w, h, 6, 6);
+		}
+
+		gc.setLineWidth(2);
+		gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW));
+		gc.drawRoundRectangle(x, y, w, h, 6, 6);
+		gc.setLineWidth(1);
+
+		if (isEnabled()) {
+			if (hasMouseEntered) {
+				gc.setForeground(selectionColor);
+			} else {
+				gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_WIDGET_BORDER));
+			}
+		} else {
+			gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_GRAY));
+		}
+
+		gc.drawRoundRectangle(x, y, w, h, 6, 6);
+	}
+
+	private void drawRadioButton(GC gc, int x, int y) {
+		if (getSelection()) {
+			gc.setBackground(selectionColor);
+			int partialBoxBorder = 2;
+			gc.fillOval(x + partialBoxBorder, y + partialBoxBorder, BOX_SIZE - 2 * partialBoxBorder,
+					BOX_SIZE - 2 * partialBoxBorder);
+		}
+		if (hasMouseEntered) {
+			gc.setBackground(hoverColor);
+			int partialBoxBorder = getSelection() ? 4 : 0;
+			gc.fillOval(x + partialBoxBorder, y + partialBoxBorder, BOX_SIZE - 2 * partialBoxBorder,
+					BOX_SIZE - 2 * partialBoxBorder);
+		}
+		if (!isEnabled()) {
+			gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_GRAY));
+		}
+		gc.drawOval(x, y, BOX_SIZE - 1, BOX_SIZE - 1);
+	}
+
+	private void drawCheckbox(GC gc, int x, int y) {
+		if (getSelection()) {
+			gc.setBackground(selectionColor);
+			int partialBoxBorder = 2;
+			gc.fillRoundRectangle(x + partialBoxBorder, y + partialBoxBorder, BOX_SIZE - 2 * partialBoxBorder,
+					BOX_SIZE - 2 * partialBoxBorder, BOX_SIZE / 4 - partialBoxBorder / 2,
+					BOX_SIZE / 4 - partialBoxBorder / 2);
+		}
+		if (hasMouseEntered) {
+			gc.setBackground(hoverColor);
+			int partialBoxBorder = getSelection() ? 4 : 0;
+			gc.fillRoundRectangle(x + partialBoxBorder, y + partialBoxBorder, BOX_SIZE - 2 * partialBoxBorder,
+					BOX_SIZE - 2 * partialBoxBorder, BOX_SIZE / 4 - partialBoxBorder / 2,
+					BOX_SIZE / 4 - partialBoxBorder / 2);
+		}
+		gc.drawRoundRectangle(x, y, BOX_SIZE - 1, BOX_SIZE - 1, 4, 4);
 	}
 
 	@Override
