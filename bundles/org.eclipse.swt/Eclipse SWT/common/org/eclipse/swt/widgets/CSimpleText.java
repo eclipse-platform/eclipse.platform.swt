@@ -23,8 +23,11 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 	private boolean doubleClick;
 	private CTextCaret caret;
 
+	private int style;
+
 	public CSimpleText(Composite parent, int style) {
-		super(parent, checkStyle(style));
+		super(parent, checkStyle(style) & ~SWT.BORDER);
+		this.style = style;
 		model = new CSimpleTextModel();
 		message = "";
 
@@ -492,6 +495,11 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 		GC gc = e.gc;
 		gc.setBackground(getBackground());
 		gc.fillRectangle(e.x, e.y, e.width - 1, e.height - 1);
+		if ((style & SWT.READ_ONLY) == 0) {
+			gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_DARK_GRAY));
+			gc.drawLine(e.x, e.y + e.height - 1, e.x + e.x + e.width - 1, e.y + e.height - 1);
+			gc.setForeground(getForeground());
+		}
 	}
 
 	private Rectangle getVisibleArea() {
