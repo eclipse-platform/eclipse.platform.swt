@@ -302,7 +302,6 @@ public class Button extends Control implements ICustomWidget {
 		e.gc.setBackground(getBackground());
 		e.gc.setClipping(new Rectangle(0, 0, r.width, r.height));
 		e.gc.setAntialias(SWT.ON);
-		e.gc.setTextAntialias(SWT.ON);
 
 		if (USE_SKIJA) {
 			doPaintWithSkijaGC(e.gc);
@@ -435,6 +434,7 @@ public class Button extends Control implements ICustomWidget {
 		boolean isRightAligned = (style & SWT.RIGHT) != 0;
 		boolean isCentered = (style & SWT.CENTER) != 0;
 		boolean isPushOrToggleButton = (style & (SWT.PUSH | SWT.TOGGLE)) != 0;
+		int initialAntiAlias = gc.getAntialias();
 
 		int boxSpace = 0;
 		// Draw check box / radio box / push button border
@@ -478,6 +478,9 @@ public class Button extends Control implements ICustomWidget {
 			contentArea.x += (horizontalSpaceForContent - contentArea.width) / 2;
 		}
 
+		gc.setAntialias(initialAntiAlias);
+		gc.setAdvanced(false);
+
 		// Draw image
 		if (image != null) {
 			int imageTopOffset = (r.height - imageHeight) / 2;
@@ -500,7 +503,7 @@ public class Button extends Control implements ICustomWidget {
 			}
 			int textTopOffset = (r.height - textHeight) / 2;
 			int textLeftOffset = contentArea.x + imageSpace;
-			gc.drawText(text, textLeftOffset + 1, textTopOffset, DRAW_FLAGS);
+			gc.drawText(text, textLeftOffset, textTopOffset, DRAW_FLAGS);
 		}
 
 		gc.dispose();
@@ -518,16 +521,11 @@ public class Button extends Control implements ICustomWidget {
 			gc.fillRoundRectangle(x, y, w, h, 6, 6);
 		}
 
-		gc.setLineWidth(2);
-		gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW));
-		gc.drawRoundRectangle(x, y, w, h, 6, 6);
-		gc.setLineWidth(1);
-
 		if (isEnabled()) {
-			if (hasMouseEntered) {
+			if ((style & SWT.TOGGLE) != 0 && isChecked() || hasMouseEntered) {
 				gc.setForeground(SELECTION_COLOR);
 			} else {
-				gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_WIDGET_BORDER));
+				gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW));
 			}
 		} else {
 			gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_GRAY));
