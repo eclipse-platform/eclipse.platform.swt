@@ -86,6 +86,8 @@ public class Button extends Control implements ICustomWidget {
 	private static int DRAW_FLAGS = SWT.DRAW_MNEMONIC | SWT.DRAW_TAB
 			| SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER;
 
+	private static Color background;
+
 	/**
 	 * Constructs a new instance of this class given its parent and a style
 	 * value describing its behavior and appearance.
@@ -428,8 +430,23 @@ public class Button extends Control implements ICustomWidget {
 		gc.dispose();
 	}
 
-	private void doPaintWithOrdinaryGC(GC gc) {
+	private void doPaintWithOrdinaryGC(GC targetGC) {
 		Rectangle r = getBounds();
+		if (background == null) {
+			Image backgroundColorImage = new Image(getDisplay(), r.width, r.height);
+			targetGC.copyArea(backgroundColorImage, 0, 0);
+			int pixel = backgroundColorImage.getImageData().getPixel(0, 0);
+			background = new Color((pixel & 0xFF000000) >>> 24, (pixel & 0xFF0000) >>> 16, (pixel & 0xFF00) >>> 8);
+		}
+		style |= SWT.NO_BACKGROUND;
+
+		Image doubleBufferingImage = new Image(getDisplay(), r.width, r.height);
+		targetGC.copyArea(doubleBufferingImage, 0, 0);
+		GC gc = new GC(doubleBufferingImage);
+		gc.setForeground(targetGC.getForeground());
+		gc.setBackground(background);
+		gc.setAntialias(SWT.ON);
+		gc.fillRectangle(0, 0, r.width, r.height);
 
 		boolean isRightAligned = (style & SWT.RIGHT) != 0;
 		boolean isCentered = (style & SWT.CENTER) != 0;
@@ -507,6 +524,9 @@ public class Button extends Control implements ICustomWidget {
 		}
 
 		gc.dispose();
+		targetGC.drawImage(doubleBufferingImage, 0, 0);
+		doubleBufferingImage.dispose();
+		targetGC.dispose();
 	}
 
 	private void drawPushButton(IGraphicsContext gc, int x, int y, int w, int h) {
