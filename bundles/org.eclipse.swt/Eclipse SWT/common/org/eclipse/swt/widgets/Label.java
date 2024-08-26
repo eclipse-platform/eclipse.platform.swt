@@ -383,7 +383,7 @@ public class Label extends Control implements ICustomWidget {
 		 * the widget.
 		 */
 		// checkWidget();
-		return text;
+		return text != null ? text : "";
 	}
 	@Override
 	public String getToolTipText() {
