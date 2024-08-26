@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2021, 2023 Syntevo and others.
+ * Copyright (c) 2021, 2024 Syntevo and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -191,7 +191,29 @@ public class GTK4 {
 	 * @param error cast=(GError **)
 	 */
 	public static final native boolean gtk_file_chooser_set_file(long chooser, long file, long error);
-
+	
+	/* GtkFileDialog */
+	public static final native long gtk_file_dialog_new();
+	/**
+	 * @param self cast=(GtkFileDialog *)
+	 * @param parent cast=(GtkWindow *)
+	 * @param cancellable cast=(GCancellable *)
+	 * @param callback cast=(GAsyncReadyCallback)
+	 * @param user_data cast=(gpointer)
+	 */
+	public static final native void gtk_file_dialog_select_folder(long self, long parent, long cancellable, long callback, long user_data);
+	/**
+	 * @param self cast=(GtkFileDialog *)
+	 * @param result cast=(GAsyncResult *)
+	 * @param error cast=(GError *)
+	 */
+	public static final native long gtk_file_dialog_select_folder_finish(long self, long result, long[] error);
+	/**
+	 * @param self cast=(GtkFileDialog *)
+	 * @param folder cast=(GFile *)
+	 */
+	public static final native void gtk_file_dialog_set_initial_folder(long self, long folder);
+	
 	/* GtkScrolledWindow */
 	public static final native long gtk_scrolled_window_new();
 	/** @param scrolled_window cast=(GtkScrolledWindow *) */
