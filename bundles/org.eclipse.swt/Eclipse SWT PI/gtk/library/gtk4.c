@@ -704,6 +704,54 @@ JNIEXPORT jboolean JNICALL GTK4_NATIVE(gtk_1file_1chooser_1set_1file)
 }
 #endif
 
+#ifndef NO_gtk_1file_1dialog_1new
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1file_1dialog_1new)
+	(JNIEnv *env, jclass that)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1file_1dialog_1new_FUNC);
+	rc = (jlong)gtk_file_dialog_new();
+	GTK4_NATIVE_EXIT(env, that, gtk_1file_1dialog_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1file_1dialog_1select_1folder
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1file_1dialog_1select_1folder)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2, jlong arg3, jlong arg4)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1file_1dialog_1select_1folder_FUNC);
+	gtk_file_dialog_select_folder((GtkFileDialog *)arg0, (GtkWindow *)arg1, (GCancellable *)arg2, (GAsyncReadyCallback)arg3, (gpointer)arg4);
+	GTK4_NATIVE_EXIT(env, that, gtk_1file_1dialog_1select_1folder_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1file_1dialog_1select_1folder_1finish
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1file_1dialog_1select_1folder_1finish)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlongArray arg2)
+{
+	jlong *lparg2=NULL;
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1file_1dialog_1select_1folder_1finish_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jlong)gtk_file_dialog_select_folder_finish((GtkFileDialog *)arg0, (GAsyncResult *)arg1, (GError **)lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseLongArrayElements(env, arg2, lparg2, 0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1file_1dialog_1select_1folder_1finish_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1file_1dialog_1set_1initial_1folder
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1file_1dialog_1set_1initial_1folder)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1file_1dialog_1set_1initial_1folder_FUNC);
+	gtk_file_dialog_set_initial_folder((GtkFileDialog *)arg0, (GFile *)arg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1file_1dialog_1set_1initial_1folder_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1frame_1set_1child
 JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1frame_1set_1child)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
