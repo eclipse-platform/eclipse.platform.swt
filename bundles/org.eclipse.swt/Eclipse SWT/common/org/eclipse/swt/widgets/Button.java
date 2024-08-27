@@ -517,7 +517,7 @@ public class Button extends Control implements ICustomWidget {
 			if (isEnabled()) {
 				gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_BLACK));
 			} else {
-				gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_WIDGET_DISABLED_FOREGROUND));
+				gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_GRAY));
 			}
 			int textTopOffset = (r.height - textHeight) / 2;
 			int textLeftOffset = contentArea.x + imageSpace;
