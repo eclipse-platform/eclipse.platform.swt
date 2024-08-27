@@ -187,12 +187,10 @@ public class Label extends Control implements ICustomWidget {
 		int topMargin = this.topMargin;
 
 		if (text != null && !"".equals(text)) {
-
-			GC gc = new GC(this);
-			Font f = new Font(getDisplay(), DEFAULT_FONT_DATA_WIN);
-			gc.setFont(f);
+			GC originalGC = new GC(this);
+			IGraphicsContext gc = SWT.USE_SKIJA ? new SkijaGC(originalGC) : originalGC;
+			gc.setFont(getFont());
 			Point textExtent = gc.textExtent(text, DRAW_FLAGS);
-			f.dispose();
 			gc.dispose();
 			lineWidth = textExtent.x;
 			lineHeight = textExtent.y;
@@ -333,7 +331,7 @@ public class Label extends Control implements ICustomWidget {
 	/**
 	 * Compute the minimum size.
 	 */
-	private Point getTotalSize(GC gc, Image image, String text) {
+	private Point getTotalSize(IGraphicsContext gc, Image image, String text) {
 		Point size = new Point(0, 0);
 
 		if (image != null) {
@@ -511,10 +509,10 @@ public class Label extends Control implements ICustomWidget {
 		if ((text == null || "".equals(text)) && image == null)
 			return;
 
-		GC gc = event.gc;
-		gc.setFont(font);
-		gc.setBackground(getBackground());
-		gc.setClipping(new Rectangle(0, 0, rect.width, rect.height));
+		event.gc.setFont(font);
+		event.gc.setBackground(getBackground());
+		event.gc.setClipping(new Rectangle(0, 0, rect.width, rect.height));
+		IGraphicsContext gc = SWT.USE_SKIJA ? new SkijaGC(event.gc) : event.gc;
 
 		boolean shortenText = false;
 		String t = text;
@@ -529,9 +527,6 @@ public class Label extends Control implements ICustomWidget {
 				shortenText = true;
 			}
 		}
-
-		// IGraphicsContext gc = event.gc;
-		// IGraphicsContext gc = new SkijaGC(event.gc);
 
 		String[] lines = text == null ? null : splitString(text);
 
