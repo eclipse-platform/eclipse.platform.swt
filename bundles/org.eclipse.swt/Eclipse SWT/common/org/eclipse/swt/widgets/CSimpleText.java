@@ -305,6 +305,7 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 	}
 
 	private void onMouseDown(MouseEvent e) {
+		setFocus();
 		TextLocation location = getTextLocation(e.x, e.y);
 		model.setSectionStart(location);
 		mouseDown = true;
