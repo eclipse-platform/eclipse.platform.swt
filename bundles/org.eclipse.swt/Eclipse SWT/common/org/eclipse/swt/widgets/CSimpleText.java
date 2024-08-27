@@ -71,6 +71,12 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 		return style | SWT.SINGLE;
 	}
 
+	@Override
+	public int getStyle() {
+		checkWidget();
+		return style;
+	}
+
 	private void addListeners() {
 		addDisposeListener(e -> CSimpleText.this.widgetDisposed(e));
 		addPaintListener(e -> CSimpleText.this.paintControl(e));
