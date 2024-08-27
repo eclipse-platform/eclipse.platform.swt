@@ -415,6 +415,9 @@ public class CTextCaret extends Widget {
 	void setFocus() {
 		if (isCurrentCart())
 			return;
+		if (currentCaret != null) {
+			currentCaret.killFocus();
+		}
 		currentCaret = this;
 		display.timerExec(blinkRate, caretTimer);
 		if (isVisible)
