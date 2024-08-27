@@ -693,6 +693,10 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 		}
 		x += textExtent.x;
 		int y = textLocation.line * textExtent.y;
+		if ((style & SWT.BORDER) != 0) {
+			x += getBorderWidth();
+			y += getBorderWidth();
+		}
 		return new Point(x, y);
 	}
 
