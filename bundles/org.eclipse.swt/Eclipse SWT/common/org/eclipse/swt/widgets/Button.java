@@ -524,6 +524,7 @@ public class Button extends Control implements ICustomWidget {
 			gc.drawText(text, textLeftOffset, textTopOffset, DRAW_FLAGS);
 		}
 
+		gc.commit();
 		gc.dispose();
 		targetGC.drawImage(doubleBufferingImage, 0, 0);
 		doubleBufferingImage.dispose();

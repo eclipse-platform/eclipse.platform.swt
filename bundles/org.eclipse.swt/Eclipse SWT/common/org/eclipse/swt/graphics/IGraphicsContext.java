@@ -38,4 +38,13 @@ public interface IGraphicsContext {
 	void drawText(String line, int lineX, int lineY, int dRAW_FLAGS);
 	void drawRectangle(Rectangle rectangle);
 
+	void setAntialias(int antialias);
+
+	int getAntialias();
+
+	void setAdvanced(boolean enable);
+
+	default void commit() {
+	};
+
 }

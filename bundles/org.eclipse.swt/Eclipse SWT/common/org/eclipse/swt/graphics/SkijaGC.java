@@ -2,11 +2,15 @@ package org.eclipse.swt.graphics;
 
 import java.io.*;
 
+import org.eclipse.swt.*;
+
 import io.github.humbleui.skija.*;
 import io.github.humbleui.skija.Font;
 import io.github.humbleui.types.*;
 
 public class SkijaGC implements IGraphicsContext {
+
+	public final static float CONVERSION_RATIO_OS_TO_SKIJA = 1.3f;
 
 	public final static int FONT_DEFAULT_SIZE = 18;
 
@@ -14,16 +18,9 @@ public class SkijaGC implements IGraphicsContext {
 	private Rectangle r;
 	private GC innerGC;
 
-	private Color background;
-
-	private Color foreground;
 	private int lineWidth;
 
-	private Typeface typeface = Typeface.makeDefault(); // Lädt die
-														// Standardschriftart
-	private Font font = new Font(typeface, 12); // Erstellt ein Font-Objekt mit
-												// einer Schriftgröße von 12
-	private io.github.humbleui.skija.FontMetrics metrics;
+	private Font font;
 
 
 	public SkijaGC(Drawable drawable, int style) {
@@ -38,10 +35,14 @@ public class SkijaGC implements IGraphicsContext {
 
 	private void init() {
 		r = innerGC.getClipping();
-		surface = Surface.makeRaster(ImageInfo.makeN32Premul(r.width, r.height));
-
-		metrics = font.getMetrics();
-
+		int width = r.width == 0 ? 1 : r.width;
+		int height = r.height == 0 ? 1 : r.height;
+		surface = Surface.makeRaster(ImageInfo.makeN32Premul(width, height));
+		org.eclipse.swt.graphics.Font originalFont = innerGC.getFont();
+		if (originalFont == null || originalFont.isDisposed()) {
+			originalFont = innerGC.getDevice().getSystemFont();
+		}
+		setFont(originalFont);
 	}
 
 	@Override
@@ -52,7 +53,7 @@ public class SkijaGC implements IGraphicsContext {
 
 	@Override
 	public Color getBackground() {
-		return this.background;
+		return innerGC.getBackground();
 	}
 
 	private String[] splitString(String text) {
@@ -74,6 +75,7 @@ public class SkijaGC implements IGraphicsContext {
 		return lines;
 	}
 
+	@Override
 	public void commit() {
 
 //		if (this.background != null) {
@@ -111,44 +113,22 @@ public class SkijaGC implements IGraphicsContext {
 	}
 
 	public Point textExtent(String string) {
-
-		Typeface typeface = Typeface.makeDefault();
-		Font f = new Font(typeface);
-		Rect mT = f.measureText(string);
-
-		return new Point((int) mT.getHeight(), (int) mT.getWidth());
-
+		return textExtent(string, SWT.None);
 	}
 
 	@Override
 	public void setBackground(Color color) {
-
-		this.background = color;
-
-		// TODO trigger necessary
-
+		innerGC.setBackground(color);
 	}
 
 	@Override
 	public void setForeground(Color color) {
-
-		this.foreground = color;
-
-		// TODO i guess there we don't need a trigger for redraw
-
+		innerGC.setForeground(color);
 	}
 
 	@Override
 	public void fillRectangle(Rectangle rect) {
-
-		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
-
-		Canvas canvas = surface.getCanvas();
-		Paint bgPaint = new Paint().setColor(convertSWTColorToSkijaColor(getBackground()));
-		Rect rectOutline = Rect.makeXYWH(rect.x, rect.y, rect.width, rect.height);
-		canvas.drawRect(rectOutline, bgPaint);
-		bgPaint.close();
-
+		fillRectangle(rect.x, rect.y, rect.width, rect.height);
 	}
 
 	@Override
@@ -314,7 +294,7 @@ public class SkijaGC implements IGraphicsContext {
 
 	@Override
 	public Color getForeground() {
-		return this.foreground;
+		return innerGC.getForeground();
 	}
 
 	@Override
@@ -339,11 +319,6 @@ public class SkijaGC implements IGraphicsContext {
 		// For some reason, here i have to set alpha, but at other positions this
 		// shouldn't be done.
 //		p.setAlpha(co.getAlpha());
-
-		// Schriftart und -größe
-		Typeface typeface = Typeface.makeDefault();
-
-		Font font = new Font(typeface, FONT_DEFAULT_SIZE);
 
 		// Erstellen eines TextBlob für 2 Zeilen
 		TextBlobBuilder blobBuilder = new TextBlobBuilder();
@@ -406,7 +381,11 @@ public class SkijaGC implements IGraphicsContext {
 
 	@Override
 	public void drawOval(int x, int y, int width, int height) {
-		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		Paint p = new Paint();
+		p.setColor(convertSWTColorToSkijaColor(getForeground()));
+		p.setMode(PaintMode.STROKE);
+		surface.getCanvas().drawOval(new Rect(x, y, width, height), p);
+		p.close();
 	}
 
 	public void drawPath(Path path) {
@@ -429,17 +408,21 @@ public class SkijaGC implements IGraphicsContext {
 
 	@Override
 	public void drawRectangle(int x, int y, int width, int height) {
-		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		Paint p = new Paint();
+		p.setColor(convertSWTColorToSkijaColor(getForeground()));
+		p.setMode(PaintMode.STROKE);
+		surface.getCanvas().drawRect(new Rect(x, y, width, height), p);
+		p.close();
 	}
 
 	@Override
 	public void drawRectangle(Rectangle rect) {
-		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		drawRectangle(rect.x, rect.y, rect.width, rect.height);
 	}
 
 	@Override
 	public void drawRoundRectangle(int x, int y, int width, int height, int arcWidth, int arcHeight) {
-		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		drawRectangle(x, y, width, height);
 	}
 
 	public void drawString(String string, int x, int y) {
@@ -461,7 +444,11 @@ public class SkijaGC implements IGraphicsContext {
 
 	@Override
 	public void fillOval(int x, int y, int width, int height) {
-		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		Paint p = new Paint();
+		p.setColor(convertSWTColorToSkijaColor(getBackground()));
+		p.setMode(PaintMode.FILL);
+		surface.getCanvas().drawOval(new Rect(x, y, width, height), p);
+		p.close();
 	}
 
 	public void fillPath(Path path) {
@@ -475,29 +462,35 @@ public class SkijaGC implements IGraphicsContext {
 
 	@Override
 	public void fillRectangle(int x, int y, int width, int height) {
-		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		Paint p = new Paint();
+		p.setColor(convertSWTColorToSkijaColor(getBackground()));
+		p.setMode(PaintMode.FILL);
+		surface.getCanvas().drawRect(new Rect(x, y, width, height), p);
+		p.close();
 	}
 
 	@Override
 	public void fillRoundRectangle(int x, int y, int width, int height, int arcWidth, int arcHeight) {
-		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		fillRectangle(x, y, width, height);
 	}
 
 	@Override
-	public Point textExtent(String string, int dRAW_FLAGS) {
-		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
-		return new Point(10, 10);
+	public Point textExtent(String string, int flags) {
+		Rect textExtent = this.font.measureText(string);
+		return new Point((int) textExtent.getWidth(), (int) textExtent.getHeight());
 	}
 
 	@Override
 	public void setFont(org.eclipse.swt.graphics.Font font) {
-		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		innerGC.setFont(font);
+		FontData fontData = font.getFontData()[0];
+		this.font = new Font(Typeface.makeFromName(fontData.getName(), FontStyle.NORMAL),
+				fontData.getHeightF() * CONVERSION_RATIO_OS_TO_SKIJA);
 	}
 
 	@Override
 	public org.eclipse.swt.graphics.Font getFont() {
-		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
-		return null;
+		return innerGC.getFont();
 	}
 
 	@Override
@@ -533,9 +526,23 @@ public class SkijaGC implements IGraphicsContext {
 
 	@Override
 	public IFontMetrics getFontMetrics() {
-
-		IFontMetrics fm = new SkijaFontMetrics(metrics);
+		IFontMetrics fm = new SkijaFontMetrics(font.getMetrics());
 		return fm;
+	}
+
+	@Override
+	public int getAntialias() {
+		return innerGC.getAntialias();
+	}
+
+	@Override
+	public void setAntialias(int antialias) {
+		innerGC.setAntialias(antialias);
+	}
+
+	@Override
+	public void setAdvanced(boolean enable) {
+		innerGC.setAdvanced(enable);
 	}
 
 }

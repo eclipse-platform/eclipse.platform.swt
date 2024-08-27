@@ -720,10 +720,7 @@ public class Label extends Control implements ICustomWidget {
 			}
 		}
 
-		// if( gc instanceof SkijaGC sgc) {
-		// sgc.commit();
-		// }
-
+		gc.commit();
 	}
 
 	@Override
