@@ -536,7 +536,7 @@ public class Button extends Control implements ICustomWidget {
 			gc.setFont(getFont());
 			Point textExtent = gc.textExtent(text, DRAW_FLAGS);
 			textWidth = textExtent.x + 1;
-			textHeight = textExtent.y;
+			textHeight = gc.getFontMetrics().getHeight();
 			gc.dispose();
 		}
 		int imageSpace = 0;
