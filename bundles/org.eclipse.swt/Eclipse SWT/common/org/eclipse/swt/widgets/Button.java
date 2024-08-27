@@ -305,148 +305,34 @@ public class Button extends Control implements ICustomWidget {
 		e.gc.setClipping(new Rectangle(0, 0, r.width, r.height));
 		e.gc.setAntialias(SWT.ON);
 
-		if (USE_SKIJA) {
-			doPaintWithSkijaGC(e.gc);
-		} else {
-			doPaintWithOrdinaryGC(e.gc);
-		}
-	}
+		GC originalGC = e.gc;
+		IGraphicsContext gc = originalGC;
+		Image doubleBufferingImage = null;
 
-	private void doPaintWithSkijaGC(GC originalGc) {
-		Rectangle r = getBounds();
-		SkijaGC gc = new SkijaGC(originalGc);
-
-		gc.setForeground(getForeground());
-		gc.setBackground(gc.getBackground());
-
-		if (hasMouseEntered) {
-			gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_LINK_FOREGROUND));
-
-		}
-		if ((style & SWT.CHECK) == SWT.CHECK) {
-
-			gc.drawRectangle(new Rectangle(4, 10, 12, 12));
-
-			if (getSelection()) {
-
-				gc.setLineWidth(3);
-				gc.drawLine(5, 11, 15, 22);
-				gc.drawLine(16, 11, 5, 22);
-				gc.setLineWidth(1);
-
+		// Use double buffering on windows
+		if (SWT.getPlatform().equals("win32")) {
+			// Extract background color on first execution
+			if (background == null) {
+				Image backgroundColorImage = new Image(getDisplay(), r.width, r.height);
+				originalGC.copyArea(backgroundColorImage, 0, 0);
+				int pixel = backgroundColorImage.getImageData().getPixel(0, 0);
+				background = new Color((pixel & 0xFF000000) >>> 24, (pixel & 0xFF0000) >>> 16, (pixel & 0xFF00) >>> 8);
 			}
+			style |= SWT.NO_BACKGROUND;
 
-		} else if ((style & SWT.RADIO) == SWT.RADIO) {
-
-			if (getSelection()) {
-				gc.setBackground(getForeground());
-				gc.fillOval(4, 8, 15, 15);
-				gc.setBackground(getBackground());
-			}
-			gc.drawOval(4, 8, 14, 14);
-
-		} else {
-
-			System.out.println("Draw Bevel...");
-
-			drawPushButton(gc, 0, 0, r.width - 1, r.height - 1);
-
+			doubleBufferingImage = new Image(getDisplay(), r.width, r.height);
+			originalGC.copyArea(doubleBufferingImage, 0, 0);
+			GC doubleBufferingGC = new GC(doubleBufferingImage);
+			doubleBufferingGC.setForeground(originalGC.getForeground());
+			doubleBufferingGC.setBackground(background);
+			doubleBufferingGC.setAntialias(SWT.ON);
+			doubleBufferingGC.fillRectangle(0, 0, r.width, r.height);
+			gc = doubleBufferingGC;
 		}
 
-		int lineWidth = 0;
-		int lineHeight = 0;
-
-		gc.setForeground(getForeground());
-
-		int leftMargin = this.LEFT_MARGIN;
-		int imageWidth = 0;
-		int imageHeight = 0;
-		int GAP = 0;
-		int topMargin = this.TOP_MARGIN;
-
-		if (text != null && !"".equals(text)) {
-
-			gc.setFont(new Font(getDisplay(), DEFAULT_FONT_DATA_WIN));
-			Point textExtent = gc.textExtent(text, DRAW_FLAGS);
-			lineWidth = textExtent.x;
-			lineHeight = textExtent.y;
-			if (image != null)
-				GAP = Button.SPACING;
-
+		if (SWT.USE_SKIJA) {
+			gc = new SkijaGC((GC) gc);
 		}
-		if (image != null) {
-
-			Rectangle imgB = image.getBounds();
-			imageWidth = imgB.width;
-			imageHeight = imgB.height;
-		}
-
-		int sideOffset = 20;
-		int topOffset = topMargin;
-
-		topOffset = (r.height - Math.max(imageHeight, lineHeight)) / 2;
-
-		if ((style & SWT.PUSH) != 0) {
-
-			sideOffset = leftMargin;
-
-			if ((style & SWT.LEFT) != 0) {
-
-			} else if ((style & SWT.RIGHT) != 0) {
-				sideOffset = r.width - (imageWidth + GAP + lineWidth + this.RIGHT_MARGIN);
-
-			} else {
-				sideOffset = (r.width - (imageWidth + GAP + lineWidth)) / 2;
-
-			}
-		}
-
-		if (image != null)
-			gc.drawImage(image, sideOffset, topOffset + Math.max(0, (lineHeight - imageHeight) / 2));
-
-		if (text != null && !"".equals(text))
-
-			if (!isEnabled()) {
-				gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_GRAY));
-			}
-
-		gc.drawText(getText(), sideOffset + imageWidth + GAP, topOffset + Math.max(0, (imageHeight - lineHeight) / 2),
-				DRAW_FLAGS);
-
-		// int widthStart = (width - imgB.width - lineWidth) / 2;
-		// int heightStart = (height - imgB.height) / 2;
-		// imgWidth = imgB.width;
-		//
-		// System.out
-		// .println("ImageBounds: " + imgB.width + " " + imgB.height);
-		// System.out.print("Rect: " + this.width + " " + this.width);
-		//
-		// gc.drawImage(image, widthStart, heightStart);
-		// }
-		//
-		// int lineX = Math.max(0, (r.width - imgWidth - lineWidth) / 2);
-
-		gc.commit();
-		gc.dispose();
-	}
-
-	private void doPaintWithOrdinaryGC(GC targetGC) {
-		Rectangle r = getBounds();
-		if (background == null) {
-			Image backgroundColorImage = new Image(getDisplay(), r.width, r.height);
-			targetGC.copyArea(backgroundColorImage, 0, 0);
-			int pixel = backgroundColorImage.getImageData().getPixel(0, 0);
-			background = new Color((pixel & 0xFF000000) >>> 24, (pixel & 0xFF0000) >>> 16, (pixel & 0xFF00) >>> 8);
-		}
-		style |= SWT.NO_BACKGROUND;
-
-		Image doubleBufferingImage = new Image(getDisplay(), r.width, r.height);
-		targetGC.copyArea(doubleBufferingImage, 0, 0);
-		GC gc = new GC(doubleBufferingImage);
-		gc.setForeground(targetGC.getForeground());
-		gc.setBackground(background);
-		gc.setAntialias(SWT.ON);
-		gc.fillRectangle(0, 0, r.width, r.height);
 
 		boolean isRightAligned = (style & SWT.RIGHT) != 0;
 		boolean isCentered = (style & SWT.CENTER) != 0;
@@ -526,9 +412,11 @@ public class Button extends Control implements ICustomWidget {
 
 		gc.commit();
 		gc.dispose();
-		targetGC.drawImage(doubleBufferingImage, 0, 0);
-		doubleBufferingImage.dispose();
-		targetGC.dispose();
+		if (doubleBufferingImage != null) {
+			originalGC.drawImage(doubleBufferingImage, 0, 0);
+			doubleBufferingImage.dispose();
+		}
+		originalGC.dispose();
 	}
 
 	private void drawPushButton(IGraphicsContext gc, int x, int y, int w, int h) {
@@ -556,7 +444,7 @@ public class Button extends Control implements ICustomWidget {
 		gc.drawRoundRectangle(x, y, w, h, 6, 6);
 	}
 
-	private void drawRadioButton(GC gc, int x, int y) {
+	private void drawRadioButton(IGraphicsContext gc, int x, int y) {
 		if (getSelection()) {
 			gc.setBackground(SELECTION_COLOR);
 			int partialBoxBorder = 2;
@@ -575,7 +463,7 @@ public class Button extends Control implements ICustomWidget {
 		gc.drawOval(x, y, BOX_SIZE - 1, BOX_SIZE - 1);
 	}
 
-	private void drawCheckbox(GC gc, int x, int y) {
+	private void drawCheckbox(IGraphicsContext gc, int x, int y) {
 		if (getSelection()) {
 			gc.setBackground(SELECTION_COLOR);
 			int partialBoxBorder = 2;
