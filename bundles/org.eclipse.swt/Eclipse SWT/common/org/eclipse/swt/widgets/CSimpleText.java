@@ -38,6 +38,7 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 		setCursor(display.getSystemCursor(SWT.CURSOR_IBEAM));
 		setForeground(getDisplay().getSystemColor(SWT.COLOR_BLACK));
 		setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
+		this.customBackground = false;
 
 		addListeners();
 	}
@@ -408,9 +409,11 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 	}
 
 	@Override
-	void setBackground() {
-		super.setBackground();
-		this.customBackground = true;
+	public void setBackground(Color color) {
+		if (color != null) {
+			super.setBackground(color);
+			this.customBackground = true;
+		}
 	}
 
 	private void paintControl(PaintEvent e) {
