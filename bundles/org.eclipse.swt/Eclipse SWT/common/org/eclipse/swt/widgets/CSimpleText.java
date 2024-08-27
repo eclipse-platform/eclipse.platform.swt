@@ -523,6 +523,10 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 		}
 		_x -= visibleArea.x;
 		int _y = y + lineNumber * completeTextExtent.y - visibleArea.y;
+		if ((style & SWT.BORDER) != 0) {
+			_x += getBorderWidth();
+			_y += getBorderWidth();
+		}
 		gc.drawText(text, _x, _y, true);
 	}
 
