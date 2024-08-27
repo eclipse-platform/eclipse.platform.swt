@@ -22,7 +22,7 @@ public class SkijaFontMetrics implements IFontMetrics {
 
 	@Override
 	public int getHeight() {
-		return (int) this.metrics.getDescent();
+		return (int) this.metrics.getHeight();
 	}
 
 	@Override
