@@ -3,6 +3,7 @@ package org.eclipse.swt.graphics;
 import java.io.*;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.*;
 
 import io.github.humbleui.skija.*;
 import io.github.humbleui.skija.Font;
@@ -34,7 +35,7 @@ public class SkijaGC implements IGraphicsContext {
 	}
 
 	private void init() {
-		r = innerGC.getClipping();
+		r = DPIUtil.autoScaleUp(innerGC.getClipping());
 		int width = r.width == 0 ? 1 : r.width;
 		int height = r.height == 0 ? 1 : r.height;
 		surface = Surface.makeRaster(ImageInfo.makeN32Premul(width, height));
@@ -106,7 +107,10 @@ public class SkijaGC implements IGraphicsContext {
 
 		Image i = new Image(innerGC.getDevice(), new ByteArrayInputStream(imageBytes));
 
-		innerGC.drawImage(i, 0, 0);
+		Rectangle clipping = innerGC.getClipping();
+		Rectangle scaledClipping = DPIUtil.autoScaleUp(clipping);
+		innerGC.drawImage(i, 0, 0, scaledClipping.width, scaledClipping.height, 0, 0, clipping.width,
+				clipping.height);
 
 		i.dispose();
 
@@ -133,16 +137,13 @@ public class SkijaGC implements IGraphicsContext {
 
 	@Override
 	public void drawImage(Image image, int x, int y) {
-
 		Canvas canvas = surface.getCanvas();
-		canvas.drawImage(convertSWTImageToSkijaImage(image), x, y);
-
+		canvas.drawImage(convertSWTImageToSkijaImage(image), DPIUtil.autoScaleUp(x), DPIUtil.autoScaleUp(y));
 	}
 
 	@Override
 	public void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY,
 			int destWidth, int destHeight) {
-
 		Canvas canvas = surface.getCanvas();
 		canvas.drawImageRect(convertSWTImageToSkijaImage(image), new Rect(srcX, srcY, srcWidth, srcHeight),
 				new Rect(destX, destY, destWidth, destHeight));
@@ -223,7 +224,7 @@ public class SkijaGC implements IGraphicsContext {
 	}
 
 	private static io.github.humbleui.skija.Image convertSWTImageToSkijaImage(Image swtImage) {
-		ImageData imageData = swtImage.getImageData();
+		ImageData imageData = swtImage.getImageData(DPIUtil.getDeviceZoom());
 
 		int width = imageData.width;
 		int height = imageData.height;
@@ -329,7 +330,7 @@ public class SkijaGC implements IGraphicsContext {
 
 		// we actually have to set the first height to the text hight half. This
 		// is kind of irritating...
-		float fy = lineHeight / 2;
+		float fy = DPIUtil.autoScaleUp(lineHeight / 2);
 
 		if (lines != null)
 			for (String line : lines) {
@@ -344,7 +345,7 @@ public class SkijaGC implements IGraphicsContext {
 
 		// Zeichnen des TextBlobs auf dem Canvas
 
-		c.drawTextBlob(textBlob, x, y, p);
+		c.drawTextBlob(textBlob, DPIUtil.autoScaleUp(x), DPIUtil.autoScaleUp(y), p);
 
 		p.close();
 
@@ -384,7 +385,8 @@ public class SkijaGC implements IGraphicsContext {
 		Paint p = new Paint();
 		p.setColor(convertSWTColorToSkijaColor(getForeground()));
 		p.setMode(PaintMode.STROKE);
-		surface.getCanvas().drawOval(new Rect(x, y, width, height), p);
+		surface.getCanvas().drawOval(new Rect(DPIUtil.autoScaleUp(x), DPIUtil.autoScaleUp(y),
+				DPIUtil.autoScaleUp(width), DPIUtil.autoScaleUp(height)), p);
 		p.close();
 	}
 
@@ -411,7 +413,8 @@ public class SkijaGC implements IGraphicsContext {
 		Paint p = new Paint();
 		p.setColor(convertSWTColorToSkijaColor(getForeground()));
 		p.setMode(PaintMode.STROKE);
-		surface.getCanvas().drawRect(new Rect(x, y, width, height), p);
+		surface.getCanvas().drawRect(new Rect(DPIUtil.autoScaleUp(x), DPIUtil.autoScaleUp(y),
+				DPIUtil.autoScaleUp(width), DPIUtil.autoScaleUp(height)), p);
 		p.close();
 	}
 
@@ -447,7 +450,8 @@ public class SkijaGC implements IGraphicsContext {
 		Paint p = new Paint();
 		p.setColor(convertSWTColorToSkijaColor(getBackground()));
 		p.setMode(PaintMode.FILL);
-		surface.getCanvas().drawOval(new Rect(x, y, width, height), p);
+		surface.getCanvas().drawOval(new Rect(DPIUtil.autoScaleUp(x), DPIUtil.autoScaleUp(y),
+				DPIUtil.autoScaleUp(width), DPIUtil.autoScaleUp(height)), p);
 		p.close();
 	}
 
@@ -465,7 +469,8 @@ public class SkijaGC implements IGraphicsContext {
 		Paint p = new Paint();
 		p.setColor(convertSWTColorToSkijaColor(getBackground()));
 		p.setMode(PaintMode.FILL);
-		surface.getCanvas().drawRect(new Rect(x, y, width, height), p);
+		surface.getCanvas().drawRect(new Rect(DPIUtil.autoScaleUp(x), DPIUtil.autoScaleUp(y),
+				DPIUtil.autoScaleUp(width), DPIUtil.autoScaleUp(height)), p);
 		p.close();
 	}
 
@@ -485,7 +490,7 @@ public class SkijaGC implements IGraphicsContext {
 		innerGC.setFont(font);
 		FontData fontData = font.getFontData()[0];
 		this.font = new Font(Typeface.makeFromName(fontData.getName(), FontStyle.NORMAL),
-				fontData.getHeightF() * CONVERSION_RATIO_OS_TO_SKIJA);
+				DPIUtil.autoScaleUp(fontData.getHeightF()) * CONVERSION_RATIO_OS_TO_SKIJA);
 	}
 
 	@Override
