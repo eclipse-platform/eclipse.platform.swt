@@ -697,7 +697,11 @@ public class Label extends Control implements ICustomWidget {
 		}
 
 		if (lines != null) {
-			gc.setForeground(getForeground());
+			if (isEnabled()) {
+				gc.setForeground(getForeground());
+			} else {
+				gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW));
+			}
 			for (String line : lines) {
 				int lineX = x;
 				if (lines.length > 1) {
