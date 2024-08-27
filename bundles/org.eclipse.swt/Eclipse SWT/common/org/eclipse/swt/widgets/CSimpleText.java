@@ -25,6 +25,8 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 
 	private int style;
 
+	private boolean customBackground;
+
 	public CSimpleText(Composite parent, int style) {
 		super(parent, checkStyle(style) & ~SWT.BORDER);
 		this.style = style;
@@ -34,16 +36,10 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 		setCaret(new CTextCaret(this, SWT.NONE));
 
 		setCursor(display.getSystemCursor(SWT.CURSOR_IBEAM));
-		if (isEnabled() && (style & SWT.READ_ONLY) == 0) {
-			setForeground(getDisplay().getSystemColor(SWT.COLOR_BLACK));
-			setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
-		} else {
-			setForeground(getDisplay().getSystemColor(SWT.COLOR_WIDGET_DISABLED_FOREGROUND));
-			setBackground(getDisplay().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
-		}
+		setForeground(getDisplay().getSystemColor(SWT.COLOR_BLACK));
+		setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
 
 		addListeners();
-
 	}
 
 	static int checkStyle(int style) {
@@ -411,9 +407,29 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 		caret.dispose();
 	}
 
+	@Override
+	void setBackground() {
+		super.setBackground();
+		this.customBackground = true;
+	}
+
 	private void paintControl(PaintEvent e) {
 		Rectangle visibleArea = getVisibleArea();
 		e.gc.setFont(getFont());
+		e.gc.setForeground(getForeground());
+		e.gc.setBackground(getBackground());
+		if (!isEnabled()) {
+			e.gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW));
+		}
+		if (!customBackground) {
+			if (!isEnabled() || ((style & SWT.BORDER) == 1 && !getEditable())) {
+				e.gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW));
+			}
+			if ((style & SWT.BORDER) == 0 && !getEditable()) {
+				e.gc.setBackground(getParent().getBackground());
+			}
+		}
+
 		drawBackground(e);
 		drawText(e, visibleArea);
 		drawSelection(e, visibleArea);
@@ -497,12 +513,12 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 
 	private void drawBackground(PaintEvent e) {
 		GC gc = e.gc;
-		gc.setBackground(getBackground());
 		gc.fillRectangle(e.x, e.y, e.width - 1, e.height - 1);
-		if ((style & SWT.READ_ONLY) == 0) {
+		if (getEditable() && isEnabled()) {
+			Color foreground = gc.getForeground();
 			gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_DARK_GRAY));
 			gc.drawLine(e.x, e.y + e.height - 1, e.x + e.x + e.width - 1, e.y + e.height - 1);
-			gc.setForeground(getForeground());
+			gc.setForeground(foreground);
 		}
 	}
 
