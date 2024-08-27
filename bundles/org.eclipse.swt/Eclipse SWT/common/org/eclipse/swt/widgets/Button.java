@@ -542,7 +542,8 @@ public class Button extends Control implements ICustomWidget {
 			boxSpace = BOX_SIZE + SPACING;
 		}
 		if (text != null && !text.isEmpty()) {
-			GC gc = new GC(this);
+			GC originalGC = new GC(this);
+			IGraphicsContext gc = SWT.USE_SKIJA ? new SkijaGC(originalGC) : originalGC;
 			gc.setFont(getFont());
 			Point textExtent = gc.textExtent(text, DRAW_FLAGS);
 			textWidth = textExtent.x + 1;

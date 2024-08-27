@@ -75,7 +75,6 @@ public class SkijaGC implements IGraphicsContext {
 
 	@Override
 	public void commit() {
-
 //		if (this.background != null) {
 //
 //			Surface bgSurface = Surface
@@ -106,11 +105,8 @@ public class SkijaGC implements IGraphicsContext {
 
 		Rectangle clipping = innerGC.getClipping();
 		Rectangle scaledClipping = DPIUtil.autoScaleUp(clipping);
-		innerGC.drawImage(i, 0, 0, scaledClipping.width, scaledClipping.height, 0, 0, clipping.width,
-				clipping.height);
-
+		innerGC.drawImage(i, 0, 0, scaledClipping.width, scaledClipping.height, 0, 0, clipping.width, clipping.height);
 		i.dispose();
-
 	}
 
 	public Point textExtent(String string) {
@@ -142,8 +138,11 @@ public class SkijaGC implements IGraphicsContext {
 	public void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY,
 			int destWidth, int destHeight) {
 		Canvas canvas = surface.getCanvas();
-		canvas.drawImageRect(convertSWTImageToSkijaImage(image), new Rect(srcX, srcY, srcWidth, srcHeight),
-				new Rect(destX, destY, destWidth, destHeight));
+		canvas.drawImageRect(
+				convertSWTImageToSkijaImage(image), new Rect(DPIUtil.autoScaleUp(srcX), DPIUtil.autoScaleUp(srcY),
+						DPIUtil.autoScaleUp(srcX + srcWidth), DPIUtil.autoScaleUp(srcY + srcHeight)),
+				new Rect(DPIUtil.autoScaleUp(destX), DPIUtil.autoScaleUp(destY), DPIUtil.autoScaleUp(destX + destWidth),
+						DPIUtil.autoScaleUp(destY + destHeight)));
 
 	}
 
@@ -226,7 +225,7 @@ public class SkijaGC implements IGraphicsContext {
 		int width = imageData.width;
 		int height = imageData.height;
 
-		PaletteData palette = swtImage.getImageData().palette;
+		PaletteData palette = imageData.palette;
 
 		palette.getPixel(new RGB(1, 2, 3));
 
@@ -321,7 +320,7 @@ public class SkijaGC implements IGraphicsContext {
 
 		// we actually have to set the first height to the text hight half. This
 		// is kind of irritating...
-		float fy = DPIUtil.autoScaleUp(lineHeight / 2);
+		float fy = lineHeight / 2;
 
 		if (lines != null)
 			for (String line : lines) {
@@ -477,7 +476,7 @@ public class SkijaGC implements IGraphicsContext {
 	@Override
 	public Point textExtent(String string, int flags) {
 		Rect textExtent = this.font.measureText(string);
-		return new Point((int) textExtent.getWidth(), (int) textExtent.getHeight());
+		return DPIUtil.autoScaleDown(new Point((int) textExtent.getWidth(), (int) textExtent.getHeight()));
 	}
 
 	@Override
