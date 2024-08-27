@@ -49,7 +49,7 @@ import org.eclipse.swt.widgets.*;
  *   releases.
  */
 public class SWT {
-	public static final boolean USE_SKIJA = true;
+	public static final boolean USE_SKIJA = false;
 
 	/* Widget Event Constants */
 

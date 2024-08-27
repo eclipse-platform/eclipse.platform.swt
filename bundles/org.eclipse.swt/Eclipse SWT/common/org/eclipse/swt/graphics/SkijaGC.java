@@ -10,7 +10,7 @@ import io.github.humbleui.types.*;
 
 public class SkijaGC implements IGraphicsContext {
 
-	public final static float CONVERSION_RATIO_OS_TO_SKIJA = 1.3f;
+	public final static float CONVERSION_RATIO_OS_TO_SKIJA = SWT.getPlatform().equals("win32") ? 1.3f : 1.0f;
 
 	public final static int FONT_DEFAULT_SIZE = 18;
 
