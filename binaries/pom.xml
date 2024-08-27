@@ -135,12 +135,10 @@
 														</exec>
 													</then>
 													<else>
-														<property name="gtk_version" value="3.0" />
 														<exec dir="${build_dir}" executable="sh" failonerror="true">
 															<arg line="build.sh"/>
 															<env key="SWT_JAVA_HOME" value="${SWT_JAVA_HOME}"/>
 															<env key="OUTPUT_DIR" value="${project.basedir}"/>
-															<env key="GTK_VERSION" value="${gtk_version}"/>
 															<env key="MODEL" value="${arch}"/>
 															<arg line="install clean"/>
 														</exec>
