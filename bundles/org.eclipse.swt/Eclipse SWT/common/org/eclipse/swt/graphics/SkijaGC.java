@@ -304,9 +304,6 @@ public class SkijaGC implements IGraphicsContext {
 
 	@Override
 	public void drawText(String text, int x, int y, int flags) {
-
-		Canvas c = surface.getCanvas();
-
 		Paint p = new Paint();
 		p.setColor(convertSWTColorToSkijaColor(getForeground()));
 		p.setAntiAlias(true);
@@ -316,28 +313,24 @@ public class SkijaGC implements IGraphicsContext {
 		String[] lines = text == null ? null : splitString(text);
 
 		float lineHeight = font.getMetrics().getHeight();
-
-		// we actually have to set the first height to the text hight half. This
-		// is kind of irritating...
-		float fy = textExtent(lines[0]).y;
-
-		if (lines != null)
+		float fy = 0;
+		if (lines != null) {
 			for (String line : lines) {
 				blobBuilder.appendRun(font, line, 0, fy);
 				fy = fy + lineHeight;
 
 			}
+		}
 
 		// Erstellen des TextBlob
 		TextBlob textBlob = blobBuilder.build();
 		blobBuilder.close();
 
 		// Zeichnen des TextBlobs auf dem Canvas
-
-		c.drawTextBlob(textBlob, DPIUtil.autoScaleUp(x), DPIUtil.autoScaleUp(y), p);
+		surface.getCanvas().drawTextBlob(textBlob, DPIUtil.autoScaleUp(x),
+				DPIUtil.autoScaleUp(y) - textBlob.getBounds().getTop(), p);
 
 		p.close();
-
 	}
 
 	@Override
