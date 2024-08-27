@@ -520,7 +520,7 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 	private void drawBackground(PaintEvent e) {
 		GC gc = e.gc;
 		gc.fillRectangle(e.x, e.y, e.width - 1, e.height - 1);
-		if (getEditable() && isEnabled()) {
+		if ((style & SWT.BORDER) != 0 && getEditable() && isEnabled()) {
 			Color foreground = gc.getForeground();
 			gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_DARK_GRAY));
 			gc.drawLine(e.x, e.y + e.height - 1, e.x + e.x + e.width - 1, e.y + e.height - 1);
