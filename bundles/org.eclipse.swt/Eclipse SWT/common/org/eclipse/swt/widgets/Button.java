@@ -445,44 +445,44 @@ public class Button extends Control implements ICustomWidget {
 	}
 
 	private void drawRadioButton(IGraphicsContext gc, int x, int y) {
-		int correctionValue = SWT.USE_SKIJA ? 1 : 0;
+		int correctionValue = SWT.USE_SKIJA ? 0 : 1;
 		if (getSelection()) {
 			gc.setBackground(SELECTION_COLOR);
 			int partialBoxBorder = 2;
-			gc.fillOval(x + partialBoxBorder, y + partialBoxBorder, BOX_SIZE - 2 * partialBoxBorder + correctionValue,
-					BOX_SIZE - 2 * partialBoxBorder + correctionValue);
+			gc.fillOval(x + partialBoxBorder, y + partialBoxBorder, BOX_SIZE - 2 * partialBoxBorder,
+					BOX_SIZE - 2 * partialBoxBorder);
 		}
 		if (hasMouseEntered) {
 			gc.setBackground(HOVER_COLOR);
 			int partialBoxBorder = getSelection() ? 4 : 0;
-			gc.fillOval(x + partialBoxBorder, y + partialBoxBorder, BOX_SIZE - 2 * partialBoxBorder + correctionValue,
-					BOX_SIZE - 2 * partialBoxBorder + correctionValue);
+			gc.fillOval(x + partialBoxBorder, y + partialBoxBorder, BOX_SIZE - 2 * partialBoxBorder,
+					BOX_SIZE - 2 * partialBoxBorder);
 		}
 		if (!isEnabled()) {
 			gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_GRAY));
 		}
-		gc.drawOval(x, y, BOX_SIZE - 1, BOX_SIZE - 1);
+		gc.drawOval(x, y, BOX_SIZE - correctionValue, BOX_SIZE - correctionValue);
 	}
 
 	private void drawCheckbox(IGraphicsContext gc, int x, int y) {
-		int correctionValue = SWT.USE_SKIJA ? 1 : 0;
+		int correctionValue = SWT.USE_SKIJA ? 0 : 1;
 		if (getSelection()) {
 			gc.setBackground(SELECTION_COLOR);
 			int partialBoxBorder = 2;
 			gc.fillRoundRectangle(x + partialBoxBorder, y + partialBoxBorder,
-					BOX_SIZE - 2 * partialBoxBorder + correctionValue,
-					BOX_SIZE - 2 * partialBoxBorder + correctionValue, BOX_SIZE / 4 - partialBoxBorder / 2,
+					BOX_SIZE - 2 * partialBoxBorder, BOX_SIZE - 2 * partialBoxBorder,
+					BOX_SIZE / 4 - partialBoxBorder / 2,
 					BOX_SIZE / 4 - partialBoxBorder / 2);
 		}
 		if (hasMouseEntered) {
 			gc.setBackground(HOVER_COLOR);
 			int partialBoxBorder = getSelection() ? 4 : 0;
 			gc.fillRoundRectangle(x + partialBoxBorder, y + partialBoxBorder,
-					BOX_SIZE - 2 * partialBoxBorder + correctionValue,
-					BOX_SIZE - 2 * partialBoxBorder + correctionValue, BOX_SIZE / 4 - partialBoxBorder / 2,
+					BOX_SIZE - 2 * partialBoxBorder, BOX_SIZE - 2 * partialBoxBorder,
+					BOX_SIZE / 4 - partialBoxBorder / 2,
 					BOX_SIZE / 4 - partialBoxBorder / 2);
 		}
-		gc.drawRoundRectangle(x, y, BOX_SIZE - 1, BOX_SIZE - 1, 4, 4);
+		gc.drawRoundRectangle(x, y, BOX_SIZE - correctionValue, BOX_SIZE - correctionValue, 4, 4);
 	}
 
 	@Override

@@ -378,7 +378,7 @@ public class SkijaGC implements IGraphicsContext {
 		p.setMode(PaintMode.STROKE);
 		p.setAntiAlias(true);
 		surface.getCanvas().drawOval(new Rect(DPIUtil.autoScaleUp(x), DPIUtil.autoScaleUp(y),
-				DPIUtil.autoScaleUp(width), DPIUtil.autoScaleUp(height)), p);
+				DPIUtil.autoScaleUp(x + width), DPIUtil.autoScaleUp(y + height)), p);
 		p.close();
 	}
 
@@ -407,7 +407,7 @@ public class SkijaGC implements IGraphicsContext {
 		p.setMode(PaintMode.STROKE);
 		p.setAntiAlias(true);
 		surface.getCanvas().drawRect(new Rect(DPIUtil.autoScaleUp(x), DPIUtil.autoScaleUp(y),
-				DPIUtil.autoScaleUp(width), DPIUtil.autoScaleUp(height)), p);
+				DPIUtil.autoScaleUp(x + width), DPIUtil.autoScaleUp(y + height)), p);
 		p.close();
 	}
 
@@ -445,8 +445,7 @@ public class SkijaGC implements IGraphicsContext {
 		p.setMode(PaintMode.FILL);
 		p.setAntiAlias(true);
 		surface.getCanvas().drawOval(new Rect(DPIUtil.autoScaleUp(x), DPIUtil.autoScaleUp(y),
-				DPIUtil.autoScaleUp(width), DPIUtil.autoScaleUp(height)), p);
-		surface.getCanvas().drawOval(new Rect(x, y, width, height), p);
+				DPIUtil.autoScaleUp(x + width), DPIUtil.autoScaleUp(y + height)), p);
 		p.close();
 	}
 
@@ -466,7 +465,7 @@ public class SkijaGC implements IGraphicsContext {
 		p.setMode(PaintMode.FILL);
 		p.setAntiAlias(true);
 		surface.getCanvas().drawRect(new Rect(DPIUtil.autoScaleUp(x), DPIUtil.autoScaleUp(y),
-				DPIUtil.autoScaleUp(width), DPIUtil.autoScaleUp(height)), p);
+				DPIUtil.autoScaleUp(x + width), DPIUtil.autoScaleUp(y + height)), p);
 		p.close();
 	}
 
