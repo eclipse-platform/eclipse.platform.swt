@@ -316,11 +316,11 @@ public class SkijaGC implements IGraphicsContext {
 
 		String[] lines = text == null ? null : splitString(text);
 
-		float lineHeight = font.getMetrics().getHeight();
+		float lineHeight = getFontMetrics().getHeight();
 
 		// we actually have to set the first height to the text hight half. This
 		// is kind of irritating...
-		float fy = lineHeight / 2;
+		float fy = textExtent(lines[0]).y;
 
 		if (lines != null)
 			for (String line : lines) {
@@ -476,7 +476,7 @@ public class SkijaGC implements IGraphicsContext {
 	@Override
 	public Point textExtent(String string, int flags) {
 		Rect textExtent = this.font.measureText(string);
-		return DPIUtil.autoScaleDown(new Point((int) textExtent.getWidth(), (int) textExtent.getHeight()));
+		return DPIUtil.autoScaleDown(new Point(Math.round(textExtent.getWidth()), Math.round(textExtent.getHeight())));
 	}
 
 	@Override
