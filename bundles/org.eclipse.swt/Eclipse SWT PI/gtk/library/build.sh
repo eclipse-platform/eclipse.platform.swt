@@ -254,8 +254,9 @@ func_echo_plus "Building SWT/GTK+ for Architectures: $SWT_OS $SWT_ARCH"
 
 func_build_gtk4 () {
 	export GTK_VERSION=4.0
-
 	func_echo_plus "Building GTK4 bindings:"
+	pkg-config --libs gtk+4.0
+	rpm -qi gtk4-devel
 	${MAKE_TYPE} -f $MAKEFILE all $MAKE_CAIRO $MAKE_AWT "${@}"
 	RETURN_VALUE=$?   #make can return 1 or 2 if it fails. Thus need to cache it in case it's used programmatically somewhere.
 	if [ "$RETURN_VALUE" -eq 0 ]; then
@@ -268,8 +269,9 @@ func_build_gtk4 () {
 
 func_build_gtk3 () {
 	export GTK_VERSION=3.0
-
 	func_echo_plus "Building GTK3 bindings:"
+	pkg-config --libs gtk+3.0
+	rpm -qi gtk3-devel
 	${MAKE_TYPE} -f $MAKEFILE all $MAKE_CAIRO $MAKE_AWT "${@}"
 	RETURN_VALUE=$?   #make can return 1 or 2 if it fails. Thus need to cache it in case it's used programmatically somewhere.
 	if [ "$RETURN_VALUE" -eq 0 ]; then
@@ -280,14 +282,7 @@ func_build_gtk3 () {
 	fi
 }
 
-if [ "$1" = "-gtk-all" ]; then
-	shift
-	func_echo_plus "Note: When building multiple GTK versions, a cleanup is required (and automatically performed) between them."
-	func_clean_up
-	func_build_gtk4 "$@"
-	func_clean_up
-	func_build_gtk3 "$@"
-elif [ "$1" = "-gtk4" ]; then
+if [ "$1" = "-gtk4" ]; then
 	shift
 	func_build_gtk4 "$@"
 elif [ "$1" = "-gtk3" ]; then
@@ -295,7 +290,21 @@ elif [ "$1" = "-gtk3" ]; then
 	func_build_gtk3 "$@"
 elif [ "${GTK_VERSION}" = "4.0" ]; then
 	func_build_gtk4 "$@"
-elif [ "${GTK_VERSION}" = "3.0" -o "${GTK_VERSION}" = "" ]; then
-	export GTK_VERSION="3.0"
+elif [ "${GTK_VERSION}" = "3.0" ]; then
+	func_build_gtk3 "$@"
+else
+	if [ "$1" = "-gtk-all" ]; then
+		shift
+	fi
+	func_echo_plus "==== Building GTK3 + GTK 4 ===="
+	func_echo_plus "See below for installed GTK versions:"
+	dpkg --get-selections | grep libgtk
+	apt list --installed libgtk*
+	rpm -qa|grep gtk
+	func_echo_plus "Note: When building multiple GTK versions, a cleanup is required (and automatically performed) between them."
+	func_clean_up
+	func_build_gtk4 "$@"
+	func_echo_plus "Note: When building multiple GTK versions, a cleanup is required (and automatically performed) between them."
+	func_clean_up
 	func_build_gtk3 "$@"
 fi

@@ -10,6 +10,7 @@
  *
  * Contributors:
  *     Syntevo - initial API and implementation
+ * DUMMY CHANGE
  *******************************************************************************/
   
 #ifndef INC_gtk3_H

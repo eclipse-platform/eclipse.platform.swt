@@ -21,7 +21,7 @@ RUN chmod 555 /usr/local/bin/jenkins-slave && \
 ENTRYPOINT [ "uid_entrypoint", "jenkins-slave" ]
 
 RUN dnf -y update && dnf -y install \
-    java-openjdk maven webkit2gtk3-devel \
+    java-openjdk maven webkit2gtk3-devel libgtk-4-dev \
     make gcc mesa-libGLU-devel mesa-libGL-devel \
     libXt-devel procps-ng \
     && dnf clean all
