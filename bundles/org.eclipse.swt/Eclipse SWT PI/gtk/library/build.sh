@@ -280,14 +280,7 @@ func_build_gtk3 () {
 	fi
 }
 
-if [ "$1" = "-gtk-all" ]; then
-	shift
-	func_echo_plus "Note: When building multiple GTK versions, a cleanup is required (and automatically performed) between them."
-	func_clean_up
-	func_build_gtk4 "$@"
-	func_clean_up
-	func_build_gtk3 "$@"
-elif [ "$1" = "-gtk4" ]; then
+if [ "$1" = "-gtk4" ]; then
 	shift
 	func_build_gtk4 "$@"
 elif [ "$1" = "-gtk3" ]; then
@@ -295,7 +288,17 @@ elif [ "$1" = "-gtk3" ]; then
 	func_build_gtk3 "$@"
 elif [ "${GTK_VERSION}" = "4.0" ]; then
 	func_build_gtk4 "$@"
-elif [ "${GTK_VERSION}" = "3.0" -o "${GTK_VERSION}" = "" ]; then
-	export GTK_VERSION="3.0"
+elif [ "${GTK_VERSION}" = "3.0" ]; then
+	func_build_gtk3 "$@"
+else
+	if [ "$1" = "-gtk-all" ]; then
+		shift
+	fi
+	func_echo_plus "==== Building GTK3 + GTK 4 ===="
+	func_echo_plus "Note: When building multiple GTK versions, a cleanup is required (and automatically performed) between them."
+	func_clean_up
+	func_build_gtk4 "$@"
+	func_echo_plus "Note: When building multiple GTK versions, a cleanup is required (and automatically performed) between them."
+	func_clean_up
 	func_build_gtk3 "$@"
 fi

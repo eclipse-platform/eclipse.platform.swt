@@ -19,7 +19,7 @@ def runOnNativeBuildAgent(String platform, Closure body) {
 	def final nativeBuildStageName = 'Build SWT-native binaries'
 	if (platform == 'gtk.linux.x86_64') {
 		podTemplate(inheritFrom: 'ubuntu-latest' /* inhert general configuration */, containers: [
-			containerTemplate(name: 'swtbuild', image: 'eclipse/platformreleng-centos-swt-build:8',
+			containerTemplate(name: 'swtbuild', image: 'eclipse/platformreleng-debian-swtnativebuild:12',
 				resourceRequestCpu:'1000m', resourceRequestMemory:'512Mi',
 				resourceLimitCpu:'2000m', resourceLimitMemory:'4096Mi',
 				alwaysPullImage: true, command: 'cat', ttyEnabled: true)
@@ -228,7 +228,15 @@ pipeline {
 										if (isUnix()){
 											sh '''
 												mkdir libs
-												sh build.sh install
+												if [ "${PLATFORM}" = "gtk.linux.aarch64" ]; then
+													sh build.sh -gtk3 install
+												elif [ "${PLATFORM}" = "gtk.linux.ppc64le" ]; then
+													sh build.sh -gtk3 install
+												elif [ "${PLATFORM}" = "gtk.linux.riscv64" ]; then
+													sh build.sh -gtk3 install
+												else
+													sh build.sh install 
+												fi
 												ls -1R libs
 											'''
 										} else {
