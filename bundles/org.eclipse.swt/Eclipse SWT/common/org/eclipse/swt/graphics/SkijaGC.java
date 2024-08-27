@@ -10,10 +10,7 @@ import io.github.humbleui.skija.Font;
 import io.github.humbleui.types.*;
 
 public class SkijaGC implements IGraphicsContext {
-
-	public final static float CONVERSION_RATIO_OS_TO_SKIJA = SWT.getPlatform().equals("win32") ? 1.3f : 1.0f;
-
-	public final static int FONT_DEFAULT_SIZE = 18;
+	public final static float CONVERSION_RATIO_OS_TO_SKIJA = SWT.getPlatform().equals("win32") ? 1.35f : 1.0f;
 
 	private Surface surface;
 	private Rectangle r;
@@ -117,7 +114,7 @@ public class SkijaGC implements IGraphicsContext {
 	}
 
 	public Point textExtent(String string) {
-		return textExtent(string, SWT.None);
+		return textExtent(string, SWT.NONE);
 	}
 
 	@Override
@@ -284,13 +281,11 @@ public class SkijaGC implements IGraphicsContext {
 
 	@Override
 	public void drawLine(int x1, int y1, int x2, int y2) {
-
-		Canvas c = surface.getCanvas();
-
 		Paint p = new Paint();
 		p.setColor(convertSWTColorToSkijaColor(getForeground()));
-		c.drawLine(x1, y1, x2, y2, p);
-
+		p.setAntiAlias(true);
+		surface.getCanvas().drawLine(x1, y1, x2, y2, p);
+		p.close();
 	}
 
 	@Override
@@ -300,9 +295,7 @@ public class SkijaGC implements IGraphicsContext {
 
 	@Override
 	public void drawText(String string, int x, int y) {
-
-		drawText(string, x, y, 0);
-
+		drawText(string, x, y, SWT.NONE);
 	}
 
 	@Override
@@ -317,9 +310,7 @@ public class SkijaGC implements IGraphicsContext {
 
 		Paint p = new Paint();
 		p.setColor(convertSWTColorToSkijaColor(getForeground()));
-		// For some reason, here i have to set alpha, but at other positions this
-		// shouldn't be done.
-//		p.setAlpha(co.getAlpha());
+		p.setAntiAlias(true);
 
 		// Erstellen eines TextBlob für 2 Zeilen
 		TextBlobBuilder blobBuilder = new TextBlobBuilder();
@@ -385,6 +376,7 @@ public class SkijaGC implements IGraphicsContext {
 		Paint p = new Paint();
 		p.setColor(convertSWTColorToSkijaColor(getForeground()));
 		p.setMode(PaintMode.STROKE);
+		p.setAntiAlias(true);
 		surface.getCanvas().drawOval(new Rect(DPIUtil.autoScaleUp(x), DPIUtil.autoScaleUp(y),
 				DPIUtil.autoScaleUp(width), DPIUtil.autoScaleUp(height)), p);
 		p.close();
@@ -413,6 +405,7 @@ public class SkijaGC implements IGraphicsContext {
 		Paint p = new Paint();
 		p.setColor(convertSWTColorToSkijaColor(getForeground()));
 		p.setMode(PaintMode.STROKE);
+		p.setAntiAlias(true);
 		surface.getCanvas().drawRect(new Rect(DPIUtil.autoScaleUp(x), DPIUtil.autoScaleUp(y),
 				DPIUtil.autoScaleUp(width), DPIUtil.autoScaleUp(height)), p);
 		p.close();
@@ -450,8 +443,10 @@ public class SkijaGC implements IGraphicsContext {
 		Paint p = new Paint();
 		p.setColor(convertSWTColorToSkijaColor(getBackground()));
 		p.setMode(PaintMode.FILL);
+		p.setAntiAlias(true);
 		surface.getCanvas().drawOval(new Rect(DPIUtil.autoScaleUp(x), DPIUtil.autoScaleUp(y),
 				DPIUtil.autoScaleUp(width), DPIUtil.autoScaleUp(height)), p);
+		surface.getCanvas().drawOval(new Rect(x, y, width, height), p);
 		p.close();
 	}
 
@@ -469,6 +464,7 @@ public class SkijaGC implements IGraphicsContext {
 		Paint p = new Paint();
 		p.setColor(convertSWTColorToSkijaColor(getBackground()));
 		p.setMode(PaintMode.FILL);
+		p.setAntiAlias(true);
 		surface.getCanvas().drawRect(new Rect(DPIUtil.autoScaleUp(x), DPIUtil.autoScaleUp(y),
 				DPIUtil.autoScaleUp(width), DPIUtil.autoScaleUp(height)), p);
 		p.close();
@@ -490,7 +486,7 @@ public class SkijaGC implements IGraphicsContext {
 		innerGC.setFont(font);
 		FontData fontData = font.getFontData()[0];
 		this.font = new Font(Typeface.makeFromName(fontData.getName(), FontStyle.NORMAL),
-				DPIUtil.autoScaleUp(fontData.getHeightF()) * CONVERSION_RATIO_OS_TO_SKIJA);
+				DPIUtil.autoScaleUp(fontData.getHeight()) * CONVERSION_RATIO_OS_TO_SKIJA);
 	}
 
 	@Override
