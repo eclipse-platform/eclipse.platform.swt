@@ -313,10 +313,9 @@ public class SkijaGC implements IGraphicsContext {
 
 		// Erstellen eines TextBlob für 2 Zeilen
 		TextBlobBuilder blobBuilder = new TextBlobBuilder();
-
 		String[] lines = text == null ? null : splitString(text);
 
-		float lineHeight = getFontMetrics().getHeight();
+		float lineHeight = font.getMetrics().getHeight();
 
 		// we actually have to set the first height to the text hight half. This
 		// is kind of irritating...

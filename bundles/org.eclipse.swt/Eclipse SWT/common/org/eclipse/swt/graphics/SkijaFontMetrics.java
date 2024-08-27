@@ -2,6 +2,8 @@ package org.eclipse.swt.graphics;
 
 import java.util.*;
 
+import org.eclipse.swt.internal.*;
+
 public class SkijaFontMetrics implements IFontMetrics {
 
 	private io.github.humbleui.skija.FontMetrics metrics;
@@ -12,27 +14,27 @@ public class SkijaFontMetrics implements IFontMetrics {
 
 	@Override
 	public int getAscent() {
-		return (int) this.metrics.getAscent();
+		return (int) DPIUtil.autoScaleDown(this.metrics.getAscent());
 	}
 
 	@Override
 	public int getDescent() {
-		return (int) this.metrics.getDescent();
+		return (int) DPIUtil.autoScaleDown(this.metrics.getDescent());
 	}
 
 	@Override
 	public int getHeight() {
-		return (int) this.metrics.getHeight();
+		return (int) DPIUtil.autoScaleDown(this.metrics.getHeight());
 	}
 
 	@Override
 	public int getLeading() {
-		return (int) this.metrics.getLeading();
+		return (int) DPIUtil.autoScaleDown(this.metrics.getLeading());
 	}
 
 	@Override
 	public int getAverageCharWidth() {
-		return (int) this.metrics.getAvgCharWidth();
+		return (int) DPIUtil.autoScaleDown(this.metrics.getAvgCharWidth());
 	}
 
 	@Override
@@ -54,7 +56,7 @@ public class SkijaFontMetrics implements IFontMetrics {
 
 	@Override
 	public double getAverageCharacterWidth() {
-		return this.metrics.getAvgCharWidth();
+		return DPIUtil.autoScaleDown(this.metrics.getAvgCharWidth());
 
 	}
 
