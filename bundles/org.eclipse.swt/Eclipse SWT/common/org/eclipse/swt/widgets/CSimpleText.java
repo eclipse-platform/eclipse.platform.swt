@@ -436,6 +436,12 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 		drawCaret(e, visibleArea);
 	}
 
+	@Override
+	public void setEnabled(boolean enabled) {
+		super.setEnabled(enabled);
+		redraw();
+	}
+
 	private void drawSelection(PaintEvent e, Rectangle visibleArea) {
 		GC gc = e.gc;
 		int textLength = model.getText().length();
