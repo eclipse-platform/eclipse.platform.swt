@@ -53,6 +53,7 @@ import org.eclipse.swt.internal.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class Button extends Control implements ICustomWidget {
+	private static final int GC_CORRECTION_VALUE = SWT.USE_SKIJA ? 0 : 1;
 	String text = "", message = "";
 	Image image, disabledImage;
 	boolean ignoreMouse, grayed, useDarkModeExplorerTheme;
@@ -342,11 +343,11 @@ public class Button extends Control implements ICustomWidget {
 		int boxSpace = 0;
 		// Draw check box / radio box / push button border
 		if (isPushOrToggleButton) {
-			drawPushButton(gc, 0, 0, r.width - 1, r.height - 1);
+			drawPushButton(gc, 0, 0, r.width, r.height);
 		} else {
 			boxSpace = BOX_SIZE + SPACING;
 			int boxLeftOffset = LEFT_MARGIN;
-			int boxTopOffset = (r.height - 1 - BOX_SIZE) / 2;
+			int boxTopOffset = (r.height - GC_CORRECTION_VALUE - BOX_SIZE) / 2;
 			if ((style & SWT.CHECK) == SWT.CHECK) {
 				drawCheckbox(gc, boxLeftOffset, boxTopOffset);
 			} else if ((style & SWT.RADIO) == SWT.RADIO) {
@@ -441,11 +442,10 @@ public class Button extends Control implements ICustomWidget {
 			gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_GRAY));
 		}
 
-		gc.drawRoundRectangle(x, y, w, h, 6, 6);
+		gc.drawRoundRectangle(x, y, w - GC_CORRECTION_VALUE, h - GC_CORRECTION_VALUE, 6, 6);
 	}
 
 	private void drawRadioButton(IGraphicsContext gc, int x, int y) {
-		int correctionValue = SWT.USE_SKIJA ? 0 : 1;
 		if (getSelection()) {
 			gc.setBackground(SELECTION_COLOR);
 			int partialBoxBorder = 2;
@@ -461,7 +461,7 @@ public class Button extends Control implements ICustomWidget {
 		if (!isEnabled()) {
 			gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_GRAY));
 		}
-		gc.drawOval(x, y, BOX_SIZE - correctionValue, BOX_SIZE - correctionValue);
+		gc.drawOval(x, y, BOX_SIZE - GC_CORRECTION_VALUE, BOX_SIZE - GC_CORRECTION_VALUE);
 	}
 
 	private void drawCheckbox(IGraphicsContext gc, int x, int y) {
@@ -482,18 +482,7 @@ public class Button extends Control implements ICustomWidget {
 					BOX_SIZE / 4 - partialBoxBorder / 2,
 					BOX_SIZE / 4 - partialBoxBorder / 2);
 		}
-		gc.drawRoundRectangle(x, y, BOX_SIZE - correctionValue, BOX_SIZE - correctionValue, 4, 4);
-	}
-
-	@Override
-	public Color getBackground() {
-		return super.getBackground();
-		// return new Color(0, 0, 255); // blue
-	}
-
-	@Override
-	public Color getForeground() {
-		return new Color(0, 0, 0);
+		gc.drawRoundRectangle(x, y, BOX_SIZE - GC_CORRECTION_VALUE, BOX_SIZE - GC_CORRECTION_VALUE, 4, 4);
 	}
 
 	@Override
