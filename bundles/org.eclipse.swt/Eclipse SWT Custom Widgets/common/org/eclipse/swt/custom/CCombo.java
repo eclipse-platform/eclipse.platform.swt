@@ -100,7 +100,7 @@ public class CCombo extends Composite {
  * @see Widget#getStyle()
  */
 public CCombo (Composite parent, int style) {
-	super (parent, style = checkStyle (style));
+	super(parent, (style = checkStyle(style)) | SWT.BORDER);
 	_shell = super.getShell ();
 
 	listener = event -> {

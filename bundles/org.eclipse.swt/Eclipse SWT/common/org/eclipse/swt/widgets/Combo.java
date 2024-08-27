@@ -108,7 +108,7 @@ public class Combo extends CCombo {
  * @see Widget#getStyle
  */
 public Combo (Composite parent, int style) {
-	super (parent, style);
+	super(parent, style);
 }
 
 @Override
@@ -164,5 +164,6 @@ public Point getCaretLocation() {
 	System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	return null;
 }
+
 
 }
