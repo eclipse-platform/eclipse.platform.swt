@@ -279,6 +279,7 @@ public class Button extends Control implements ICustomWidget {
 				Image backgroundColorImage = new Image(getDisplay(), r.width, r.height);
 				originalGC.copyArea(backgroundColorImage, 0, 0);
 				int pixel = backgroundColorImage.getImageData().getPixel(0, 0);
+				backgroundColorImage.dispose();
 				background = new Color((pixel & 0xFF000000) >>> 24, (pixel & 0xFF0000) >>> 16, (pixel & 0xFF00) >>> 8);
 			}
 			style |= SWT.NO_BACKGROUND;
