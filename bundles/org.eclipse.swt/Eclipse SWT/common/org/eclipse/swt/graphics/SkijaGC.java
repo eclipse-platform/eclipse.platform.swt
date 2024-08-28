@@ -468,7 +468,17 @@ public class SkijaGC implements IGraphicsContext {
 	public void setFont(org.eclipse.swt.graphics.Font font) {
 		innerGC.setFont(font);
 		FontData fontData = font.getFontData()[0];
-		this.font = new Font(Typeface.makeFromName(fontData.getName(), FontStyle.NORMAL),
+		FontStyle style = FontStyle.NORMAL;
+		boolean isBold = (fontData.getStyle() & SWT.BOLD) != 0;
+		boolean isItalic = (fontData.getStyle() & SWT.ITALIC) != 0;
+		if (isBold && isItalic) {
+			style = FontStyle.BOLD_ITALIC;
+		} else if (isBold) {
+			style = FontStyle.BOLD;
+		} else if (isItalic) {
+			style = FontStyle.ITALIC;
+		}
+		this.font = new Font(Typeface.makeFromName(fontData.getName(), style),
 				DPIUtil.autoScaleUp(fontData.getHeight()) * CONVERSION_RATIO_OS_TO_SKIJA);
 		this.font.setEdging(FontEdging.SUBPIXEL_ANTI_ALIAS);
 		this.font.setSubpixel(true);
