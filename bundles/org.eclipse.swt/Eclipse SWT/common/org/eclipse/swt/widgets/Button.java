@@ -218,7 +218,6 @@ public class Button extends Control implements ICustomWidget {
 
 	@Override
 	void sendSelectionEvent(int type) {
-		System.out.println("YAAAAAY! " + new Throwable().getStackTrace()[0]);
 		super.sendSelectionEvent(type);
 	}
 
@@ -278,16 +277,12 @@ public class Button extends Control implements ICustomWidget {
 	}
 
 	private void handleSelection() {
-
 		if ((style & SWT.RADIO) != 0) {
 			selectRadio();
 		} else {
-			if (checked)
-				checked = false;
-			else
-				checked = true;
+			setSelection(!checked);
 		}
-		notifyListeners(SWT.Selection, new Event());
+		sendSelectionEvent(SWT.Selection);
 	}
 
 	private void onMouseUp(Event e) {
@@ -1201,20 +1196,15 @@ public class Button extends Control implements ICustomWidget {
 	 */
 	public void setSelection(boolean selected) {
 		checkWidget();
-
 		this.checked = selected;
-
 		redraw();
-
-		System.out.println(text + "  " + selected);
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
 	}
 
 	@Override
 	boolean setRadioSelection(boolean value) {
-		if ((style & SWT.RADIO) == 0)
+		if ((style & SWT.RADIO) == 0) {
 			return false;
+		}
 		if (getSelection() != value) {
 			setSelection(value);
 			sendSelectionEvent(SWT.Selection);
@@ -1287,16 +1277,7 @@ public class Button extends Control implements ICustomWidget {
 				+ new Throwable().getStackTrace()[0]);
 	}
 
-	void updateSelection(int flags) {
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
-	}
-
 	private boolean isChecked() {
-
-		System.out.print(text + "  ");
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
 		return checked;
 	}
 
