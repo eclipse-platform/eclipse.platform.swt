@@ -464,26 +464,17 @@ public class Button extends Control implements ICustomWidget {
 	@Override
 	public void setSize(int width, int height) {
 		checkWidget();
-
 		this.width = width;
 		this.height = height;
-
-		System.out.println("setSize: " + this.width + "  " + this.height);
-
 		super.setSize(this.width, this.height);
-
+		redraw();
 	}
 
 	@Override
 	public void setBounds(int x, int y, int width, int height) {
-
 		this.width = width;
 		this.height = height;
-
-		System.out.println("setBounds: " + this.width + "  " + this.height);
-
 		super.setBounds(x, y, this.width, this.height);
-
 		redraw();
 	}
 
@@ -496,9 +487,12 @@ public class Button extends Control implements ICustomWidget {
 	public Point computeSize(int wHint, int hHint, boolean changed) {
 		checkWidget();
 
-		if (changed == false && computedSize != null)
-			return new Point(Math.max(wHint, computedSize.x),
-					Math.max(hHint, computedSize.y));
+		if (!changed) {
+			Point hintPoint = new Point(wHint, hHint);
+			if (hintPoint.equals(computedSize)) {
+				return computedSize;
+			}
+		}
 
 		int textWidth = 0;
 		int textHeight = 0;
@@ -536,10 +530,12 @@ public class Button extends Control implements ICustomWidget {
 
 		computedSize = new Point(width, height);
 
-		if (wHint != SWT.DEFAULT)
+		if (wHint != SWT.DEFAULT) {
 			computedSize.x = wHint;
-		if (hHint != SWT.DEFAULT)
+		}
+		if (hHint != SWT.DEFAULT) {
 			computedSize.y = wHint;
+		}
 
 		return computedSize;
 
