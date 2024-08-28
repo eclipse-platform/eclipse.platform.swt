@@ -44,7 +44,9 @@ public class SkijaGC implements IGraphicsContext {
 
 	private void fillSurfaceWithDefaultBackground(Surface surface) {
 		Rectangle originalGCArea = innerGC.getClipping();
-		if (originalGCArea.isEmpty()) {
+		// Do not fill when using dummy GC for text extent calculation or when on cocoa
+		// (as it does not have proper color)
+		if (originalGCArea.isEmpty() || SWT.getPlatform().equals("cocoa")) {
 			return;
 		}
 		Image colorImage = new Image(innerGC.getDevice(), originalGCArea.width, originalGCArea.height);
