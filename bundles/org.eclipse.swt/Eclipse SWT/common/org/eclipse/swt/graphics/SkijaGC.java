@@ -102,7 +102,10 @@ public class SkijaGC implements IGraphicsContext {
 
 		Image transferImage = new Image(innerGC.getDevice(), new ByteArrayInputStream(imageBytes));
 
-		innerGC.drawImage(transferImage, 0, 0);
+		Rectangle originalArea = innerGC.getClipping();
+		Rectangle scaledArea = DPIUtil.autoScaleUp(originalArea);
+		innerGC.drawImage(transferImage, 0, 0, scaledArea.width, scaledArea.height, //
+				0, 0, originalArea.width, originalArea.height);
 		transferImage.dispose();
 	}
 
