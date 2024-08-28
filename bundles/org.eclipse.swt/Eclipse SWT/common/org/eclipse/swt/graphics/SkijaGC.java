@@ -159,8 +159,10 @@ public class SkijaGC implements IGraphicsContext {
 			int destWidth, int destHeight) {
 		Canvas canvas = surface.getCanvas();
 		canvas.drawImageRect(convertSWTImageToSkijaImage(image),
-				createScaledAndOffsetRectangle(srcX, srcY, srcWidth, srcHeight),
-				createScaledAndOffsetRectangle(destX, destY, destWidth, destHeight));
+				new Rect(DPIUtil.autoScaleUp(srcX), DPIUtil.autoScaleUp(srcY), DPIUtil.autoScaleUp(srcX + srcWidth),
+						DPIUtil.autoScaleUp(srcY + srcHeight)),
+				new Rect(DPIUtil.autoScaleUp(destX), DPIUtil.autoScaleUp(destY), DPIUtil.autoScaleUp(destX + destWidth),
+						DPIUtil.autoScaleUp(destY + destHeight)));
 
 	}
 
