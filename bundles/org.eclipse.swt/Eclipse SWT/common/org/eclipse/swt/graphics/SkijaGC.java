@@ -235,35 +235,33 @@ public class SkijaGC implements IGraphicsContext {
 
 		int width = imageData.width;
 		int height = imageData.height;
-
-		PaletteData palette = imageData.palette;
-
-		palette.getPixel(new RGB(1, 2, 3));
-
-		// ImageInfo imageInfo = new ImageInfo(width, height,
-		// ColorType.BGRA_8888,
-		// ColorAlphaType.PREMUL);
-
 		ColorType colType = getSkijaColorType(imageData);
 
-		if (colType.equals(ColorType.UNKNOWN)) {
+		if (colType.equals(ColorType.UNKNOWN) || imageData.getTransparencyType() != SWT.TRANSPARENCY_ALPHA) {
 			imageData = convertARGBToRGBA(imageData);
 			colType = ColorType.RGBA_8888;
 		}
-
-		ImageInfo imageInfo = new ImageInfo(width, height, colType, ColorAlphaType.UNPREMUL);
+		ImageInfo imageInfo = new ImageInfo(width, height, ColorType.RGBA_8888, ColorAlphaType.UNPREMUL);
 
 		return io.github.humbleui.skija.Image.makeRasterFromBytes(imageInfo, imageData.data, imageData.bytesPerLine);
 	}
 
 	private static ImageData convertARGBToRGBA(ImageData imageData) {
+		ImageData transparencyData = imageData.getTransparencyMask();
 		byte[] data = imageData.data;
 		byte[] convertedData = new byte[data.length];
 		for (int i = 0; i < data.length; i += 4) {
-			byte alpha = (byte) imageData.alphaData[i / 4];
-			byte red = data[i + 1];
-			byte green = data[i + 2];
-			byte blue = data[i + 3];
+			byte alpha = (byte) 255;
+			if (transparencyData != null) {
+				int x = (i / 4) % imageData.width;
+				int y = (i / 4) / imageData.width;
+				if (imageData.getTransparencyMask().getPixel(x, y) != 1) {
+					alpha = (byte) 0;
+				}
+			}
+			byte red = data[i + 2];
+			byte green = data[i + 1];
+			byte blue = data[i];
 
 			convertedData[i] = red;
 			convertedData[i + 1] = green;
