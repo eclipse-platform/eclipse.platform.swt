@@ -97,38 +97,13 @@ public class SkijaGC implements IGraphicsContext {
 
 	@Override
 	public void commit() {
-//		if (this.background != null) {
-//
-//			Surface bgSurface = Surface
-//					.makeRaster(ImageInfo.makeN32Premul(r.width, r.height));
-//			//
-//			//
-//			Canvas bgc = bgSurface.getCanvas();
-//			Paint bgPaint = new Paint().setColor(convertSWTColorToSkijaColor(getBackground()));
-//			bgc.drawRect(Rect.makeWH(r.width, r.height), bgPaint);
-//
-//			bgSurface.draw(surface.getCanvas(), 0, 0, null);
-//			bgPaint.close();
-//
-//			// byte[] imageBytes = EncoderPNG.encode(im).getBytes();
-//			//
-//			// Image i = new Image(getDevice(), new
-//			// ByteArrayInputStream(imageBytes));
-//			// super.drawImage(i, 0, 0);
-//
-//			bgSurface = surface;
-//
-//		}
-
 		io.github.humbleui.skija.Image im = surface.makeImageSnapshot();
 		byte[] imageBytes = EncoderPNG.encode(im).getBytes();
 
-		Image i = new Image(innerGC.getDevice(), new ByteArrayInputStream(imageBytes));
+		Image transferImage = new Image(innerGC.getDevice(), new ByteArrayInputStream(imageBytes));
 
-		Rectangle clipping = innerGC.getClipping();
-		Rectangle scaledClipping = DPIUtil.autoScaleUp(clipping);
-		innerGC.drawImage(i, 0, 0, scaledClipping.width, scaledClipping.height, 0, 0, clipping.width, clipping.height);
-		i.dispose();
+		innerGC.drawImage(transferImage, 0, 0);
+		transferImage.dispose();
 	}
 
 	public Point textExtent(String string) {
