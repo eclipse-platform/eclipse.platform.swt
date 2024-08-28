@@ -346,7 +346,10 @@ public class Button extends Control implements ICustomWidget {
 			Rectangle imgB = image.getBounds();
 			imageWidth = imgB.width;
 			imageHeight = imgB.height;
-			imageSpace = imageWidth + SPACING;
+			imageSpace = imageWidth;
+			if (text != null && !text.isEmpty()) {
+				imageSpace += SPACING;
+			}
 		}
 		Rectangle contentArea = new Rectangle(LEFT_MARGIN + boxSpace, TOP_MARGIN, imageSpace + textWidth,
 				r.height - TOP_MARGIN - BOTTOM_MARGIN);
@@ -516,8 +519,11 @@ public class Button extends Control implements ICustomWidget {
 		int imageHeight = 0;
 		if (image != null) {
 			Rectangle imgB = image.getBounds();
-			imageSpace = imgB.width + SPACING;
 			imageHeight = imgB.height;
+			imageSpace = imgB.width;
+			if (text != null && !text.isEmpty()) {
+				imageSpace += SPACING;
+			}
 		}
 
 		int width = LEFT_MARGIN + boxSpace + imageSpace + textWidth + 1 + RIGHT_MARGIN;
