@@ -17,7 +17,6 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.*;
 
 /**
  * Instances of this class represent a selectable user interface object that
@@ -76,9 +75,6 @@ public class Button extends Control implements ICustomWidget {
 	private static final int BOX_SIZE = 13;
 	private static final int SPACING = 4;
 	private boolean enabled;
-
-	private static final boolean USE_SKIJA = false;
-	private final static FontData DEFAULT_FONT_DATA_WIN = new FontData("Segoe UI", 9, SWT.NORMAL);
 
 	private static final Color HOVER_COLOR = new Color(Display.getDefault(), 224, 238, 254);
 	private static final Color TOGGLE_COLOR = new Color(Display.getDefault(), 204, 228, 247);
@@ -201,19 +197,6 @@ public class Button extends Control implements ICustomWidget {
 
 		});
 
-	}
-
-	private void onDispose(DisposeEvent e) {
-		this.dispose();
-	}
-
-	private void onKeyReleased(KeyEvent e) {
-		System.out.println("Key: " + e.keyCode + " - " + e.character);
-
-		int oneOf = e.keyCode & SWT.CR & SWT.LF & SWT.DEL & SWT.ESC & SWT.TAB;
-		System.out.println("Is one of: " + oneOf);
-
-		notifyListeners(SWT.Selection, new Event());
 	}
 
 	@Override
