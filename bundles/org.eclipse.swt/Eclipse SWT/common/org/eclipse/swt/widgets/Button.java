@@ -74,7 +74,6 @@ public class Button extends Control implements ICustomWidget {
 	private static final int BOTTOM_MARGIN = 0;
 	private static final int BOX_SIZE = 13;
 	private static final int SPACING = 4;
-	private boolean enabled;
 
 	private static final Color HOVER_COLOR = new Color(Display.getDefault(), 224, 238, 254);
 	private static final Color TOGGLE_COLOR = new Color(Display.getDefault(), 204, 228, 247);
@@ -182,7 +181,6 @@ public class Button extends Control implements ICustomWidget {
 			@Override
 			public void mouseEnter(MouseEvent e) {
 				if (!hasMouseEntered) {
-					System.out.println("Mouse entered");
 					hasMouseEntered = true;
 					redraw();
 				}
@@ -191,7 +189,6 @@ public class Button extends Control implements ICustomWidget {
 			@Override
 			public void mouseExit(MouseEvent e) {
 				hasMouseEntered = false;
-				System.out.println("Mouse left");
 				redraw();
 			}
 
@@ -270,7 +267,6 @@ public class Button extends Control implements ICustomWidget {
 
 	private void onMouseUp(Event e) {
 		handleSelection();
-
 	}
 
 	private void doPaint(Event e) {
@@ -645,40 +641,6 @@ public class Button extends Control implements ICustomWidget {
 					+ new Throwable().getStackTrace()[0]);
 		}
 		return margin;
-	}
-
-	@Override
-	void enableWidget(boolean enabled) {
-		super.enableWidget(enabled);
-		/*
-		 * Bug in Windows. When a Button control is right-to-left and is
-		 * disabled, the first pixel of the text is clipped. The fix is to
-		 * append a space to the text.
-		 */
-		// if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-		// if (!OS.IsAppThemed ()) {
-		// int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-		// boolean hasImage = (bits & (OS.BS_BITMAP | OS.BS_ICON)) != 0;
-		// if (!hasImage) {
-		// String string = enabled ? text : text + " ";
-		// TCHAR buffer = new TCHAR (getCodePage (), string, true);
-		// OS.SetWindowText (handle, buffer);
-		// }
-		// }
-		// }
-		/*
-		 * Bug in Windows. When a button has the style BS_CHECKBOX or
-		 * BS_RADIOBUTTON, is checked, and is displaying both an image and some
-		 * text, when BCM_SETIMAGELIST is used to assign an image list for each
-		 * of the button states, the button does not draw properly. When the
-		 * user drags the mouse in and out of the button, it draws using a blank
-		 * image. The fix is to set the complete image list only when the button
-		 * is disabled.
-		 */
-		updateImageList();
-
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
 	}
 
 	/**
@@ -1250,14 +1212,7 @@ public class Button extends Control implements ICustomWidget {
 		if ((style & SWT.ARROW) != 0)
 			return;
 		text = string;
-		// _setText(string);
-
 		redraw();
-	}
-
-	void updateImageList() {
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
 	}
 
 	private boolean isChecked() {
@@ -1334,20 +1289,8 @@ public class Button extends Control implements ICustomWidget {
 
 	@Override
 	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
 		super.setEnabled(enabled);
 		redraw();
-	}
-
-	@Override
-	public boolean getEnabled() {
-		this.enabled = super.getEnabled();
-		return enabled;
-	}
-
-	@Override
-	public boolean isEnabled() {
-		return getEnabled();
 	}
 
 }
