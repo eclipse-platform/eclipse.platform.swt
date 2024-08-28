@@ -151,8 +151,7 @@ public class SkijaGC implements IGraphicsContext {
 	@Override
 	public void drawImage(Image image, int x, int y) {
 		Canvas canvas = surface.getCanvas();
-		canvas.drawImage(convertSWTImageToSkijaImage(image), DPIUtil.autoScaleUp(x + 0.5f),
-				DPIUtil.autoScaleUp(y + 0.5f));
+		canvas.drawImage(convertSWTImageToSkijaImage(image), DPIUtil.autoScaleUp(x), DPIUtil.autoScaleUp(y));
 	}
 
 	@Override
