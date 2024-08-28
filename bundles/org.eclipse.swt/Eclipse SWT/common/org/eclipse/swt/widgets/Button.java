@@ -202,43 +202,31 @@ public class Button extends Control implements ICustomWidget {
 	}
 
 	private void onSelection(Event event) {
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
 		redraw();
-
 	}
 
 	private void onTraverse(Event event) {
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
+		// Not implemented yet
 	}
 
 	private void onFocus() {
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
-
+		// Not implemented yet
 	}
 
 	private void onKeyDown(Event event) {
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
-
+		// Not implemented yet
 	}
 
 	private void onResize() {
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
-
+		redraw();
 	}
 
 	private void onPaint(Event event) {
-
 		if (!isVisible()) {
 			return;
 		}
 
 		GC gc = event.gc;
-
 		if (gc == null) {
 			gc = new GC(this);
 			event.gc = gc;
@@ -607,44 +595,6 @@ public class Button extends Control implements ICustomWidget {
 		handleSelection();
 	}
 
-	// TODO: this method ignores the style LEFT, CENTER or RIGHT
-	int computeLeftMargin() {
-		if ((style & (SWT.PUSH | SWT.TOGGLE)) == 0)
-			return MARGIN;
-		int margin = 0;
-		if (image != null && text.length() != 0) {
-			// Rectangle bounds = DPIUtil.scaleBounds(image.getBounds(),
-			// this.getZoom(), 100);
-			// margin += bounds.width + MARGIN * 2;
-			// long oldFont = 0;
-			// long hDC = OS.GetDC (handle);
-			// long newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
-			// if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
-			// char [] buffer = text.toCharArray ();
-			// RECT rect = new RECT ();
-			// int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE;
-			// OS.DrawText (hDC, buffer, buffer.length, rect, flags);
-			// margin += rect.right - rect.left;
-			// if (newFont != 0) OS.SelectObject (hDC, oldFont);
-			// OS.ReleaseDC (handle, hDC);
-			// OS.GetClientRect (handle, rect);
-			// if ((style & SWT.LEFT) != 0) {
-			// margin = MARGIN;
-			// }
-			// else if ((style & SWT.RIGHT) != 0) {
-			// margin = Math.max (MARGIN, (rect.right - rect.left - margin -
-			// MARGIN));
-			// }
-			// else {
-			// margin = Math.max (MARGIN, (rect.right - rect.left - margin) /
-			// 2);
-			// }
-			System.out.println("WARN: Not implemented yet: "
-					+ new Throwable().getStackTrace()[0]);
-		}
-		return margin;
-	}
-
 	/**
 	 * Returns a value which describes the position of the text or image in the
 	 * receiver. The value will be one of <code>LEFT</code>, <code>RIGHT</code>
@@ -690,8 +640,7 @@ public class Button extends Control implements ICustomWidget {
 			return false;
 		// int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 		// return (bits & OS.BS_DEFPUSHBUTTON) != 0;
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
+		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 		return false;
 	}
 

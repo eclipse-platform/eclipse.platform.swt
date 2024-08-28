@@ -212,7 +212,6 @@ public class Label extends Control implements ICustomWidget {
 
 		computedSize = new Point(width, height);
 
-		System.out.println("computedSize: " + width + "  " + height);
 		return new Point(Math.max(wHint, computedSize.x),
 				Math.max(hHint, computedSize.y));
 
