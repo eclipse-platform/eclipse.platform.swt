@@ -12,30 +12,50 @@ import io.github.humbleui.types.*;
 public class SkijaGC implements IGraphicsContext {
 	public final static float CONVERSION_RATIO_OS_TO_SKIJA = SWT.getPlatform().equals("win32") ? 1.35f : 1.0f;
 
-	private Surface surface;
-	private Rectangle r;
-	private GC innerGC;
-
-	private int lineWidth;
+	private final GC innerGC;
+	private final Surface surface;
 
 	private Font font;
-
+	private int lineWidth;
 
 	public SkijaGC(Drawable drawable, int style) {
-		innerGC = new GC(drawable, style);
-		init();
+		this(new GC(drawable, style));
 	}
 
 	public SkijaGC(GC gc) {
 		innerGC = gc;
-		init();
+		surface = createSurface();
+		initFont();
 	}
 
-	private void init() {
-		r = DPIUtil.autoScaleUp(innerGC.getClipping());
-		int width = r.width == 0 ? 1 : r.width;
-		int height = r.height == 0 ? 1 : r.height;
-		surface = Surface.makeRaster(ImageInfo.makeN32Premul(width, height));
+	private Surface createSurface() {
+		int width = 1;
+		int height = 1;
+		Rectangle originalGCArea = innerGC.getClipping();
+		if (!originalGCArea.isEmpty()) {
+			width = DPIUtil.autoScaleUp(originalGCArea.width);
+			height = DPIUtil.autoScaleUp(originalGCArea.height);
+		}
+		Surface surface = Surface.makeRaster(ImageInfo.makeN32Premul(width, height), 0,
+				new SurfaceProps(PixelGeometry.RGB_H));
+		fillSurfaceWithDefaultBackground(surface);
+		return surface;
+	}
+
+	private void fillSurfaceWithDefaultBackground(Surface surface) {
+		Rectangle originalGCArea = innerGC.getClipping();
+		if (originalGCArea.isEmpty()) {
+			return;
+		}
+		Image colorImage = new Image(innerGC.getDevice(), originalGCArea.width, originalGCArea.height);
+		innerGC.copyArea(colorImage, 0, 0);
+		int pixel = colorImage.getImageData().getPixel(0, 0);
+		Color originalColor = new Color((pixel & 0xFF000000) >>> 24, (pixel & 0xFF0000) >>> 16, (pixel & 0xFF00) >>> 8);
+		surface.getCanvas().clear(convertSWTColorToSkijaColor(originalColor));
+		colorImage.dispose();
+	}
+
+	private void initFont() {
 		org.eclipse.swt.graphics.Font originalFont = innerGC.getFont();
 		if (originalFont == null || originalFont.isDisposed()) {
 			originalFont = innerGC.getDevice().getSystemFont();
