@@ -325,7 +325,6 @@ public class SkijaGC implements IGraphicsContext {
 	public void drawText(String text, int x, int y, int flags) {
 		Paint p = new Paint();
 		p.setColor(convertSWTColorToSkijaColor(getForeground()));
-		p.setAntiAlias(true);
 
 		// Erstellen eines TextBlob für 2 Zeilen
 		TextBlobBuilder blobBuilder = new TextBlobBuilder();
@@ -492,6 +491,8 @@ public class SkijaGC implements IGraphicsContext {
 		FontData fontData = font.getFontData()[0];
 		this.font = new Font(Typeface.makeFromName(fontData.getName(), FontStyle.NORMAL),
 				DPIUtil.autoScaleUp(fontData.getHeight()) * CONVERSION_RATIO_OS_TO_SKIJA);
+		this.font.setEdging(FontEdging.SUBPIXEL_ANTI_ALIAS);
+		this.font.setSubpixel(true);
 	}
 
 	@Override
