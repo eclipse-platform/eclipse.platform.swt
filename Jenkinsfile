@@ -24,7 +24,7 @@ kind: Pod
 spec:
   containers:
   - name: "swtbuild"
-    image: "eclipse/platformreleng-centos-swt-build:8"
+    image: "eclipse/platformreleng-centos-swt-build:9"
     imagePullPolicy: "Always"
     resources:
       limits:
