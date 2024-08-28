@@ -173,15 +173,6 @@ public class SkijaGC implements IGraphicsContext {
 			int greenMask = palette.greenMask;
 			int blueMask = palette.blueMask;
 
-			String hexString = Integer.toHexString(redMask);
-			System.out.println("RED: " + hexString);
-
-			hexString = Integer.toHexString(greenMask);
-			System.out.println("GREEN: " + hexString);
-
-			hexString = Integer.toHexString(blueMask);
-			System.out.println("BLUE: " + hexString);
-
 			if (redMask == 0xFF0000 && greenMask == 0x00FF00 && blueMask == 0x0000FF) {
 				return ColorType.UNKNOWN;
 			}
@@ -318,7 +309,7 @@ public class SkijaGC implements IGraphicsContext {
 
 	@Override
 	public void drawText(String string, int x, int y, boolean isTransparent) {
-		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	}
 
 	@Override
@@ -357,31 +348,31 @@ public class SkijaGC implements IGraphicsContext {
 
 	@Override
 	public void drawArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
-		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	}
 
 	public void drawFocus(int x, int y, int width, int height) {
-		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	}
 
 	void drawIcon(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth,
 			int destHeight, boolean simple) {
-		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	}
 
 	void drawBitmap(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY,
 			int destWidth, int destHeight, boolean simple) {
-		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	}
 
 	void drawBitmapAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY,
 			int destWidth, int destHeight, boolean simple) {
-		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	}
 
 	void drawBitmapTransparentByClipping(long srcHdc, long maskHdc, int srcX, int srcY, int srcWidth, int srcHeight,
 			int destX, int destY, int destWidth, int destHeight, boolean simple, int imgWidth, int imgHeight) {
-		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	}
 
 	@Override
@@ -395,21 +386,21 @@ public class SkijaGC implements IGraphicsContext {
 	}
 
 	public void drawPath(Path path) {
-		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	}
 
 	@Override
 	public void drawPoint(int x, int y) {
-		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	}
 
 	@Override
 	public void drawPolygon(int[] pointArray) {
-		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	}
 
 	public void drawPolyline(int[] pointArray) {
-		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	}
 
 	@Override
@@ -433,20 +424,20 @@ public class SkijaGC implements IGraphicsContext {
 	}
 
 	public void drawString(String string, int x, int y) {
-		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	}
 
 	public void drawString(String string, int x, int y, boolean isTransparent) {
-		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	}
 
 	public void fillArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
-		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	}
 
 	@Override
 	public void fillGradientRectangle(int x, int y, int width, int height, boolean vertical) {
-		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	}
 
 	@Override
@@ -460,12 +451,12 @@ public class SkijaGC implements IGraphicsContext {
 	}
 
 	public void fillPath(Path path) {
-		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	}
 
 	@Override
 	public void fillPolygon(int[] pointArray) {
-		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	}
 
 	@Override
@@ -506,26 +497,26 @@ public class SkijaGC implements IGraphicsContext {
 
 	@Override
 	public void setClipping(int x, int y, int width, int height) {
-		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 
 	}
 
 	@Override
 	public void setTransform(Transform transform) {
 
-		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 
 	}
 
 	@Override
 	public void setAlpha(int alpha) {
-		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 
 	}
 
 	@Override
 	public int getAlpha() {
-		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 		return 0;
 	}
 
