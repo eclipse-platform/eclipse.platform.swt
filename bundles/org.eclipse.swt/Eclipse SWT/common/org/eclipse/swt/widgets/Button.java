@@ -465,7 +465,6 @@ public class Button extends Control implements ICustomWidget {
 	}
 
 	private void drawCheckbox(IGraphicsContext gc, int x, int y) {
-		int correctionValue = SWT.USE_SKIJA ? 0 : 1;
 		if (getSelection()) {
 			gc.setBackground(SELECTION_COLOR);
 			int partialBoxBorder = 2;
