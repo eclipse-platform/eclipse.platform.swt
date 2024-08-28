@@ -131,18 +131,17 @@ public class SkijaGC implements IGraphicsContext {
 	@Override
 	public void drawImage(Image image, int x, int y) {
 		Canvas canvas = surface.getCanvas();
-		canvas.drawImage(convertSWTImageToSkijaImage(image), DPIUtil.autoScaleUp(x), DPIUtil.autoScaleUp(y));
+		canvas.drawImage(convertSWTImageToSkijaImage(image), DPIUtil.autoScaleUp(x + 0.5f),
+				DPIUtil.autoScaleUp(y + 0.5f));
 	}
 
 	@Override
 	public void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY,
 			int destWidth, int destHeight) {
 		Canvas canvas = surface.getCanvas();
-		canvas.drawImageRect(
-				convertSWTImageToSkijaImage(image), new Rect(DPIUtil.autoScaleUp(srcX), DPIUtil.autoScaleUp(srcY),
-						DPIUtil.autoScaleUp(srcX + srcWidth), DPIUtil.autoScaleUp(srcY + srcHeight)),
-				new Rect(DPIUtil.autoScaleUp(destX), DPIUtil.autoScaleUp(destY), DPIUtil.autoScaleUp(destX + destWidth),
-						DPIUtil.autoScaleUp(destY + destHeight)));
+		canvas.drawImageRect(convertSWTImageToSkijaImage(image),
+				createScaledAndOffsetRectangle(srcX, srcY, srcWidth, srcHeight),
+				createScaledAndOffsetRectangle(destX, destY, destWidth, destHeight));
 
 	}
 
@@ -368,8 +367,7 @@ public class SkijaGC implements IGraphicsContext {
 		p.setColor(convertSWTColorToSkijaColor(getForeground()));
 		p.setMode(PaintMode.STROKE);
 		p.setAntiAlias(true);
-		surface.getCanvas().drawOval(new Rect(DPIUtil.autoScaleUp(x), DPIUtil.autoScaleUp(y),
-				DPIUtil.autoScaleUp(x + width), DPIUtil.autoScaleUp(y + height)), p);
+		surface.getCanvas().drawOval(createScaledAndOffsetRectangle(x, y, width, height), p);
 		p.close();
 	}
 
@@ -397,8 +395,7 @@ public class SkijaGC implements IGraphicsContext {
 		p.setColor(convertSWTColorToSkijaColor(getForeground()));
 		p.setMode(PaintMode.STROKE);
 		p.setAntiAlias(true);
-		surface.getCanvas().drawRect(new Rect(DPIUtil.autoScaleUp(x), DPIUtil.autoScaleUp(y),
-				DPIUtil.autoScaleUp(x + width), DPIUtil.autoScaleUp(y + height)), p);
+		surface.getCanvas().drawRect(createScaledAndOffsetRectangle(x, y, width, height), p);
 		p.close();
 	}
 
@@ -435,8 +432,7 @@ public class SkijaGC implements IGraphicsContext {
 		p.setColor(convertSWTColorToSkijaColor(getBackground()));
 		p.setMode(PaintMode.FILL);
 		p.setAntiAlias(true);
-		surface.getCanvas().drawOval(new Rect(DPIUtil.autoScaleUp(x), DPIUtil.autoScaleUp(y),
-				DPIUtil.autoScaleUp(x + width), DPIUtil.autoScaleUp(y + height)), p);
+		surface.getCanvas().drawOval(createScaledAndOffsetRectangle(x, y, width, height), p);
 		p.close();
 	}
 
@@ -455,8 +451,7 @@ public class SkijaGC implements IGraphicsContext {
 		p.setColor(convertSWTColorToSkijaColor(getBackground()));
 		p.setMode(PaintMode.FILL);
 		p.setAntiAlias(true);
-		surface.getCanvas().drawRect(new Rect(DPIUtil.autoScaleUp(x), DPIUtil.autoScaleUp(y),
-				DPIUtil.autoScaleUp(x + width), DPIUtil.autoScaleUp(y + height)), p);
+		surface.getCanvas().drawRect(createScaledAndOffsetRectangle(x, y, width, height), p);
 		p.close();
 	}
 
@@ -534,6 +529,11 @@ public class SkijaGC implements IGraphicsContext {
 	@Override
 	public void setAdvanced(boolean enable) {
 		innerGC.setAdvanced(enable);
+	}
+
+	private Rect createScaledAndOffsetRectangle(int x, int y, int width, int height) {
+		return new Rect(DPIUtil.autoScaleUp(x + 0.5f), DPIUtil.autoScaleUp(y + 0.5f),
+				DPIUtil.autoScaleUp(x - 0.5f + width), DPIUtil.autoScaleUp(y - 0.5f + height));
 	}
 
 }
