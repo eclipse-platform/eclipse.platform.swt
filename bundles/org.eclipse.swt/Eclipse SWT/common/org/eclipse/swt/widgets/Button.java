@@ -904,11 +904,10 @@ public class Button extends Control implements ICustomWidget {
 	public void setAlignment(int alignment) {
 		checkWidget();
 
-		style &= ~(SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT);
-		style |= alignment & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT);
+		style &= ~(SWT.UP | SWT.DOWN | SWT.LEFT | SWT.CENTER | SWT.RIGHT);
+		style |= alignment & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.CENTER | SWT.RIGHT);
 
 		redraw();
-
 		// if ((style & SWT.ARROW) != 0) {
 		// if ((style & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT)) == 0)
 		// return;
@@ -949,8 +948,6 @@ public class Button extends Control implements ICustomWidget {
 		// OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
 		// OS.InvalidateRect (handle, null, true);
 		// }
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
 	}
 
 	/**
