@@ -169,6 +169,10 @@ public class SkijaGC implements IGraphicsContext {
 	private static ColorType getSkijaColorType(ImageData imageData) {
 		PaletteData palette = imageData.palette;
 
+		if (imageData.getTransparencyType() == SWT.TRANSPARENCY_MASK) {
+			return ColorType.UNKNOWN;
+		}
+
 		if (palette.isDirect) {
 			int redMask = palette.redMask;
 			int greenMask = palette.greenMask;
@@ -237,8 +241,8 @@ public class SkijaGC implements IGraphicsContext {
 		int height = imageData.height;
 		ColorType colType = getSkijaColorType(imageData);
 
-		if (colType.equals(ColorType.UNKNOWN) || imageData.getTransparencyType() != SWT.TRANSPARENCY_ALPHA) {
-			imageData = convertARGBToRGBA(imageData);
+		if (colType.equals(ColorType.UNKNOWN)) {
+			imageData = convertToRGBA(imageData);
 			colType = ColorType.RGBA_8888;
 		}
 		ImageInfo imageInfo = new ImageInfo(width, height, ColorType.RGBA_8888, ColorAlphaType.UNPREMUL);
@@ -246,27 +250,28 @@ public class SkijaGC implements IGraphicsContext {
 		return io.github.humbleui.skija.Image.makeRasterFromBytes(imageInfo, imageData.data, imageData.bytesPerLine);
 	}
 
-	private static ImageData convertARGBToRGBA(ImageData imageData) {
+	private static ImageData convertToRGBA(ImageData imageData) {
 		ImageData transparencyData = imageData.getTransparencyMask();
-		byte[] data = imageData.data;
-		byte[] convertedData = new byte[data.length];
-		for (int i = 0; i < data.length; i += 4) {
-			byte alpha = (byte) 255;
-			if (transparencyData != null) {
-				int x = (i / 4) % imageData.width;
-				int y = (i / 4) / imageData.width;
-				if (imageData.getTransparencyMask().getPixel(x, y) != 1) {
-					alpha = (byte) 0;
+		byte[] convertedData = new byte[imageData.data.length];
+		for (int y = 0; y < imageData.height; y++) {
+			for (int x = 0; x < imageData.width; x++) {
+				byte alpha = (byte) 255;
+				if (transparencyData != null) {
+					if (imageData.getTransparencyMask().getPixel(x, y) != 1) {
+						alpha = (byte) 0;
+					}
 				}
-			}
-			byte red = data[i + 2];
-			byte green = data[i + 1];
-			byte blue = data[i];
+				int pixel = imageData.getPixel(x, y);
+				byte red = (byte) ((pixel & imageData.palette.redMask) >>> -imageData.palette.redShift);
+				byte green = (byte) ((pixel & imageData.palette.greenMask) >>> -imageData.palette.greenShift);
+				byte blue = (byte) ((pixel & imageData.palette.blueMask) >>> -imageData.palette.blueShift);
 
-			convertedData[i] = red;
-			convertedData[i + 1] = green;
-			convertedData[i + 2] = blue;
-			convertedData[i + 3] = alpha;
+				int index = (x + y * imageData.width) * 4;
+				convertedData[index] = red;
+				convertedData[index + 1] = green;
+				convertedData[index + 2] = blue;
+				convertedData[index + 3] = alpha;
+			}
 		}
 		imageData.data = convertedData;
 		return imageData;
