@@ -323,32 +323,36 @@ public class SkijaGC implements IGraphicsContext {
 
 	@Override
 	public void drawText(String text, int x, int y, int flags) {
+		if (text == null) {
+			return;
+		}
 		Paint p = new Paint();
 		p.setColor(convertSWTColorToSkijaColor(getForeground()));
-
-		// Erstellen eines TextBlob für 2 Zeilen
-		TextBlobBuilder blobBuilder = new TextBlobBuilder();
-		String[] lines = text == null ? null : splitString(text);
-
-		float lineHeight = font.getMetrics().getHeight();
-		float fy = 0;
-		if (lines != null) {
-			for (String line : lines) {
-				blobBuilder.appendRun(font, line, 0, fy);
-				fy = fy + lineHeight;
-
-			}
-		}
-
-		// Erstellen des TextBlob
-		TextBlob textBlob = blobBuilder.build();
-		blobBuilder.close();
-
-		// Zeichnen des TextBlobs auf dem Canvas
+		TextBlob textBlob = buildTextBlob(text, (flags & SWT.DRAW_MNEMONIC) != 0);
 		surface.getCanvas().drawTextBlob(textBlob, DPIUtil.autoScaleUp(x),
 				DPIUtil.autoScaleUp(y) - textBlob.getBounds().getTop(), p);
-
 		p.close();
+	}
+
+	private TextBlob buildTextBlob(String text, boolean containsMnemonics) {
+		if (containsMnemonics) {
+			int mnemonicIndex = text.lastIndexOf('&');
+			if (mnemonicIndex != -1) {
+				text = text.replaceAll("&", "");
+				// TODO Underline the mnemonic key
+			}
+		}
+		String[] lines = splitString(text);
+		TextBlobBuilder blobBuilder = new TextBlobBuilder();
+		float lineHeight = font.getMetrics().getHeight();
+		int yOffset = 0;
+		for (String line : lines) {
+			blobBuilder.appendRun(font, line, 0, yOffset);
+			yOffset += lineHeight;
+		}
+		TextBlob textBlob = blobBuilder.build();
+		blobBuilder.close();
+		return textBlob;
 	}
 
 	@Override
