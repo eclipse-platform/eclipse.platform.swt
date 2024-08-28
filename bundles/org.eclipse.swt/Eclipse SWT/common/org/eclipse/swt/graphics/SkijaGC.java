@@ -293,6 +293,7 @@ public class SkijaGC implements IGraphicsContext {
 		Paint p = new Paint();
 		p.setColor(convertSWTColorToSkijaColor(getForeground()));
 		p.setAntiAlias(true);
+		p.setStrokeWidth(lineWidth);
 		surface.getCanvas().drawLine(x1, y1, x2, y2, p);
 		p.close();
 	}
@@ -380,6 +381,7 @@ public class SkijaGC implements IGraphicsContext {
 		Paint p = new Paint();
 		p.setColor(convertSWTColorToSkijaColor(getForeground()));
 		p.setMode(PaintMode.STROKE);
+		p.setStrokeWidth(lineWidth);
 		p.setAntiAlias(true);
 		surface.getCanvas().drawOval(createScaledAndOffsetRectangle(x, y, width, height), p);
 		p.close();
@@ -408,6 +410,7 @@ public class SkijaGC implements IGraphicsContext {
 		Paint p = new Paint();
 		p.setColor(convertSWTColorToSkijaColor(getForeground()));
 		p.setMode(PaintMode.STROKE);
+		p.setStrokeWidth(lineWidth);
 		p.setAntiAlias(true);
 		surface.getCanvas().drawRect(createScaledAndOffsetRectangle(x, y, width, height), p);
 		p.close();
