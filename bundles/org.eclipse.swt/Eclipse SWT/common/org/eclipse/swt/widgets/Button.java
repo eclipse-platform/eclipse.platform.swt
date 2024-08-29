@@ -350,9 +350,6 @@ public class Button extends Control implements ICustomWidget {
 			contentArea.x += (horizontalSpaceForContent - contentArea.width) / 2;
 		}
 
-		gc.setAntialias(initialAntiAlias);
-		gc.setAdvanced(false);
-
 		// Draw image
 		if (image != null) {
 			int imageTopOffset = (r.height - imageHeight) / 2;
@@ -374,7 +371,7 @@ public class Button extends Control implements ICustomWidget {
 			} else {
 				gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW));
 			}
-			int textTopOffset = (r.height - textHeight) / 2;
+			int textTopOffset = (r.height - 1 - textHeight) / 2;
 			int textLeftOffset = contentArea.x + imageSpace;
 			gc.drawText(text, textLeftOffset, textTopOffset, DRAW_FLAGS);
 		}
@@ -501,7 +498,7 @@ public class Button extends Control implements ICustomWidget {
 			gc.setFont(getFont());
 			Point textExtent = gc.textExtent(text, DRAW_FLAGS);
 			textWidth = textExtent.x + 1;
-			textHeight = gc.getFontMetrics().getHeight();
+			textHeight = textExtent.y;
 			gc.dispose();
 		}
 		int imageSpace = 0;
@@ -533,7 +530,6 @@ public class Button extends Control implements ICustomWidget {
 		}
 
 		return computedSize;
-
 	}
 
 	@Override

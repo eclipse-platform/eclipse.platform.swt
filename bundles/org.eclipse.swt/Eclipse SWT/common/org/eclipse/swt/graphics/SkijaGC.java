@@ -16,6 +16,7 @@ public class SkijaGC implements IGraphicsContext {
 	private final Surface surface;
 
 	private Font font;
+	private float baseSymbolHeight = 0; // Height of symbol with "usual" height, like "T", to be vertically centered
 	private int lineWidth;
 
 	public SkijaGC(Drawable drawable, int style) {
@@ -305,8 +306,17 @@ public class SkijaGC implements IGraphicsContext {
 		Paint p = new Paint();
 		p.setColor(convertSWTColorToSkijaColor(getForeground()));
 		TextBlob textBlob = buildTextBlob(text);
-		surface.getCanvas().drawTextBlob(textBlob, DPIUtil.autoScaleUp(x),
-				DPIUtil.autoScaleUp(y) - textBlob.getBounds().getTop(), p);
+		// y position in drawTextBlob() is the text baseline, e.g., the bottom of "T"
+		// but the middle of "y"
+		// So center a base symbol (like "T") in the desired text box (according to
+		// parameter y being the top left text box position and the text box height
+		// according to font metrics)
+		int topLeftTextBoxYPosition = DPIUtil.autoScaleUp(y);
+		float heightOfTextBoxConsideredByClients = font.getMetrics().getHeight();
+		float heightOfSymbolToCenter = baseSymbolHeight;
+		surface.getCanvas().drawTextBlob(textBlob, (int) DPIUtil.autoScaleUp(x),
+				(int) (topLeftTextBoxYPosition + heightOfTextBoxConsideredByClients / 2 + heightOfSymbolToCenter / 2),
+				p);
 		p.close();
 	}
 
@@ -467,7 +477,7 @@ public class SkijaGC implements IGraphicsContext {
 	@Override
 	public Point textExtent(String string, int flags) {
 		Rect textExtent = this.font.measureText(replaceMnemonics(string));
-		return DPIUtil.autoScaleDown(new Point(Math.round(textExtent.getWidth()), Math.round(textExtent.getHeight())));
+		return DPIUtil.autoScaleDown(new Point(Math.round(textExtent.getWidth()), getFontMetrics().getHeight()));
 	}
 
 	@Override
@@ -488,6 +498,7 @@ public class SkijaGC implements IGraphicsContext {
 				DPIUtil.autoScaleUp(fontData.getHeight()) * CONVERSION_RATIO_OS_TO_SKIJA);
 		this.font.setEdging(FontEdging.SUBPIXEL_ANTI_ALIAS);
 		this.font.setSubpixel(true);
+		this.baseSymbolHeight = this.font.measureText("T").getHeight();
 	}
 
 	@Override
