@@ -304,20 +304,14 @@ public class SkijaGC implements IGraphicsContext {
 		}
 		Paint p = new Paint();
 		p.setColor(convertSWTColorToSkijaColor(getForeground()));
-		TextBlob textBlob = buildTextBlob(text, (flags & SWT.DRAW_MNEMONIC) != 0);
+		TextBlob textBlob = buildTextBlob(text);
 		surface.getCanvas().drawTextBlob(textBlob, DPIUtil.autoScaleUp(x),
 				DPIUtil.autoScaleUp(y) - textBlob.getBounds().getTop(), p);
 		p.close();
 	}
 
-	private TextBlob buildTextBlob(String text, boolean containsMnemonics) {
-		if (containsMnemonics) {
-			int mnemonicIndex = text.lastIndexOf('&');
-			if (mnemonicIndex != -1) {
-				text = text.replaceAll("&", "");
-				// TODO Underline the mnemonic key
-			}
-		}
+	private TextBlob buildTextBlob(String text) {
+		text = replaceMnemonics(text);
 		String[] lines = splitString(text);
 		TextBlobBuilder blobBuilder = new TextBlobBuilder();
 		float lineHeight = font.getMetrics().getHeight();
@@ -329,6 +323,15 @@ public class SkijaGC implements IGraphicsContext {
 		TextBlob textBlob = blobBuilder.build();
 		blobBuilder.close();
 		return textBlob;
+	}
+
+	private String replaceMnemonics(String text) {
+		int mnemonicIndex = text.lastIndexOf('&');
+		if (mnemonicIndex != -1) {
+			text = text.replaceAll("&", "");
+			// TODO Underline the mnemonic key
+		}
+		return text;
 	}
 
 	@Override
@@ -463,7 +466,7 @@ public class SkijaGC implements IGraphicsContext {
 
 	@Override
 	public Point textExtent(String string, int flags) {
-		Rect textExtent = this.font.measureText(string);
+		Rect textExtent = this.font.measureText(replaceMnemonics(string));
 		return DPIUtil.autoScaleDown(new Point(Math.round(textExtent.getWidth()), Math.round(textExtent.getHeight())));
 	}
 
