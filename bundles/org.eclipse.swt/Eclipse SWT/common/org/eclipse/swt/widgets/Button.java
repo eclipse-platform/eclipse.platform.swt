@@ -306,7 +306,7 @@ public class Button extends Control implements ICustomWidget {
 		int boxSpace = 0;
 		// Draw check box / radio box / push button border
 		if (isPushOrToggleButton) {
-			drawPushButton(gc, 0, 0, r.width, r.height);
+			drawPushButton(gc, 0, 0, r.width - 1, r.height - 1);
 		} else {
 			boxSpace = BOX_SIZE + SPACING;
 			int boxLeftOffset = LEFT_MARGIN;
