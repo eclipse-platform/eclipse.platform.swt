@@ -22,11 +22,15 @@ import java.util.ResourceBundle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ControlListener;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
@@ -65,6 +69,7 @@ public class ControlExample {
 	 */
 	public ControlExample(Composite parent) {
 		initResources();
+		parent.setLayout(new GridLayout(1, false));
 		ScrolledComposite scrollComposite = new ScrolledComposite (parent, SWT.V_SCROLL | SWT.H_SCROLL);
 		tabFolder = new TabFolder (scrollComposite, SWT.NONE);
 		tabs = createTabs();
@@ -94,6 +99,16 @@ public class ControlExample {
 				tabItems[i].setText (tabs [i].getShortTabText ());
 			}
 		}
+		Button skijaToggle = new Button(parent, SWT.TOGGLE);
+		skijaToggle.setText("Use Skija");
+		skijaToggle.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		skijaToggle.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
+				SWT.USE_SKIJA = skijaToggle.getSelection();
+				parent.redraw(0, 0, parent.getBounds().width, parent.getBounds().height, true);
+			}
+		});
 		startup = false;
 	}
 
