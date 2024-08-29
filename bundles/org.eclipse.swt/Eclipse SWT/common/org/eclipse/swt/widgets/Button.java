@@ -309,13 +309,16 @@ public class Button extends Control implements ICustomWidget {
 		} else {
 			boxSpace = BOX_SIZE + SPACING;
 			int boxLeftOffset = LEFT_MARGIN;
-			int boxTopOffset = (r.height - getGCCorrectionValue() - BOX_SIZE) / 2;
+			int boxTopOffset = (r.height - 1 - BOX_SIZE) / 2;
 			if ((style & SWT.CHECK) == SWT.CHECK) {
 				drawCheckbox(gc, boxLeftOffset, boxTopOffset);
 			} else if ((style & SWT.RADIO) == SWT.RADIO) {
 				drawRadioButton(gc, boxLeftOffset, boxTopOffset);
 			}
 		}
+
+		gc.setAntialias(initialAntiAlias);
+		gc.setAdvanced(false);
 
 		// Calculate area for button content (image + text)
 		int horizontalSpaceForContent = r.width - RIGHT_MARGIN - LEFT_MARGIN - boxSpace;
