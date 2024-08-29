@@ -10,7 +10,7 @@ import io.github.humbleui.skija.Font;
 import io.github.humbleui.types.*;
 
 public class SkijaGC implements IGraphicsContext {
-	public final static float CONVERSION_RATIO_OS_TO_SKIJA = SWT.getPlatform().equals("win32") ? 1.35f : 1.0f;
+	public final static float CONVERSION_RATIO_OS_TO_SKIJA = SWT.getPlatform().equals("win32") ? 1.333f : 1.0f;
 
 	private final GC innerGC;
 	private final Surface surface;
