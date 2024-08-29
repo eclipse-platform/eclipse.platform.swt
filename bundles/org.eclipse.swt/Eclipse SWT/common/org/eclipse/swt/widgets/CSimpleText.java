@@ -222,16 +222,12 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 	@Override
 	public Point computeSize(int wHint, int hHint, boolean changed) {
 		checkWidget();
-		if ((style & SWT.SINGLE) != 0) {
-			Point size = computeTextSize();
-			if ((style & SWT.BORDER) != 0) {
-				size.x += 2 * getBorderWidth();
-				size.y += 2 * getBorderWidth();
-			}
-			return size;
-		} else {
-			return super.computeSize(wHint, hHint, changed);
+		Point size = computeTextSize();
+		if ((style & SWT.BORDER) != 0) {
+			size.x += 2 * getBorderWidth();
+			size.y += 2 * getBorderWidth();
 		}
+		return size;
 	}
 
 	private Point computeTextSize() {
@@ -252,6 +248,12 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 				width = Math.max(width, size.x);
 			}
 			height = size.y * model.getLineCount();
+			if (horizontalBar != null) {
+				height += horizontalBar.getBounds().height;
+			}
+			if (verticalBar != null) {
+				width += verticalBar.getBounds().width;
+			}
 		}
 		gc.dispose();
 
