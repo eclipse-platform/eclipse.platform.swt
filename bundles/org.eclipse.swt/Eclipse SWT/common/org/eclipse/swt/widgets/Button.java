@@ -309,7 +309,7 @@ public class Button extends Control implements ICustomWidget {
 		} else {
 			boxSpace = BOX_SIZE + SPACING;
 			int boxLeftOffset = LEFT_MARGIN;
-			int boxTopOffset = (r.height + getGCCorrectionValue() - BOX_SIZE) / 2;
+			int boxTopOffset = (r.height - getGCCorrectionValue() - BOX_SIZE) / 2;
 			if ((style & SWT.CHECK) == SWT.CHECK) {
 				drawCheckbox(gc, boxLeftOffset, boxTopOffset);
 			} else if ((style & SWT.RADIO) == SWT.RADIO) {
