@@ -87,14 +87,24 @@ public class OS extends C {
 				Library.loadLibrary("swt-pi4");
 			} catch (Throwable e) {
 				System.err.println("SWT OS.java Error: Failed to load swt-pi4, loading swt-pi3 as fallback.");
-				Library.loadLibrary("swt-pi3");
+				try {
+					Library.loadLibrary("swt-pi3");
+				} catch (Throwable fallback) {
+					e.addSuppressed(fallback);
+					throw e;
+				}
 			}
 		} else {
 			try {
 				Library.loadLibrary("swt-pi3");
 			} catch (Throwable e) {
 				System.err.println("SWT OS.java Error: Failed to load swt-pi3, loading swt-pi4 as fallback.");
-				Library.loadLibrary("swt-pi4");
+				try {
+					Library.loadLibrary("swt-pi4");
+				} catch (Throwable fallback) {
+					e.addSuppressed(fallback);
+					throw e;
+				}
 			}
 		}
 	}
