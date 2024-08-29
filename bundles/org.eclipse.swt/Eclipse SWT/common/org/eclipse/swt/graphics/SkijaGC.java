@@ -10,8 +10,6 @@ import io.github.humbleui.skija.Font;
 import io.github.humbleui.types.*;
 
 public class SkijaGC implements IGraphicsContext {
-	public final static float CONVERSION_RATIO_OS_TO_SKIJA = SWT.getPlatform().equals("win32") ? 1.333f : 1.0f;
-
 	private final GC innerGC;
 	private final Surface surface;
 
@@ -494,8 +492,9 @@ public class SkijaGC implements IGraphicsContext {
 		} else if (isItalic) {
 			style = FontStyle.ITALIC;
 		}
-		this.font = new Font(Typeface.makeFromName(fontData.getName(), style),
-				DPIUtil.autoScaleUp(fontData.getHeight()) * CONVERSION_RATIO_OS_TO_SKIJA);
+		this.font = new Font(Typeface.makeFromName(fontData.getName(), style));
+		this.font.setSize(this.font.getSize() * fontData.getHeight()
+				/ innerGC.getDevice().getSystemFont().getFontData()[0].getHeight());
 		this.font.setEdging(FontEdging.SUBPIXEL_ANTI_ALIAS);
 		this.font.setSubpixel(true);
 		this.baseSymbolHeight = this.font.measureText("T").getHeight();
