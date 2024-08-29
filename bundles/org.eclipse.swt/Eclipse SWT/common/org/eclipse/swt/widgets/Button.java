@@ -52,7 +52,6 @@ import org.eclipse.swt.graphics.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class Button extends Control implements ICustomWidget {
-	private static final int GC_CORRECTION_VALUE = SWT.USE_SKIJA ? 0 : 1;
 	String text = "", message = "";
 	Image image, disabledImage;
 	boolean ignoreMouse, grayed, useDarkModeExplorerTheme;
@@ -310,7 +309,7 @@ public class Button extends Control implements ICustomWidget {
 		} else {
 			boxSpace = BOX_SIZE + SPACING;
 			int boxLeftOffset = LEFT_MARGIN;
-			int boxTopOffset = (r.height - GC_CORRECTION_VALUE - BOX_SIZE) / 2;
+			int boxTopOffset = (r.height + getGCCorrectionValue() - BOX_SIZE) / 2;
 			if ((style & SWT.CHECK) == SWT.CHECK) {
 				drawCheckbox(gc, boxLeftOffset, boxTopOffset);
 			} else if ((style & SWT.RADIO) == SWT.RADIO) {
@@ -408,7 +407,7 @@ public class Button extends Control implements ICustomWidget {
 			gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_GRAY));
 		}
 
-		gc.drawRoundRectangle(x, y, w - GC_CORRECTION_VALUE, h - GC_CORRECTION_VALUE, 6, 6);
+		gc.drawRoundRectangle(x, y, w - getGCCorrectionValue(), h - getGCCorrectionValue(), 6, 6);
 	}
 
 	private void drawRadioButton(IGraphicsContext gc, int x, int y) {
@@ -427,7 +426,7 @@ public class Button extends Control implements ICustomWidget {
 		if (!isEnabled()) {
 			gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_GRAY));
 		}
-		gc.drawOval(x, y, BOX_SIZE - GC_CORRECTION_VALUE, BOX_SIZE - GC_CORRECTION_VALUE);
+		gc.drawOval(x, y, BOX_SIZE - getGCCorrectionValue(), BOX_SIZE - getGCCorrectionValue());
 	}
 
 	private void drawCheckbox(IGraphicsContext gc, int x, int y) {
@@ -447,7 +446,11 @@ public class Button extends Control implements ICustomWidget {
 					BOX_SIZE / 4 - partialBoxBorder / 2,
 					BOX_SIZE / 4 - partialBoxBorder / 2);
 		}
-		gc.drawRoundRectangle(x, y, BOX_SIZE - GC_CORRECTION_VALUE, BOX_SIZE - GC_CORRECTION_VALUE, 4, 4);
+		gc.drawRoundRectangle(x, y, BOX_SIZE - getGCCorrectionValue(), BOX_SIZE - getGCCorrectionValue(), 4, 4);
+	}
+
+	private int getGCCorrectionValue() {
+		return SWT.USE_SKIJA ? 0 : 1;
 	}
 
 	@Override
