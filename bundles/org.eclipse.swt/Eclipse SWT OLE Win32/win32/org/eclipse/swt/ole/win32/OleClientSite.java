@@ -1370,7 +1370,7 @@ void setBorderSpace(RECT newBorderwidth) {
 }
 void setBounds() {
 	int zoom = DPIUtil.getZoomForAutoscaleProperty(nativeZoom);
-	Rectangle area = DPIUtil.scaleDown(frame.getClientArea(), zoom); // To Pixels
+	Rectangle area = DPIUtil.scaleUp(frame.getClientArea(), zoom); // To Pixels
 	setBounds(DPIUtil.scaleDown(borderWidths.left, zoom),
 			  DPIUtil.scaleDown(borderWidths.top, zoom),
 			  DPIUtil.scaleDown(area.width - borderWidths.left - borderWidths.right, zoom),
