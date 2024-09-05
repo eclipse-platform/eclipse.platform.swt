@@ -54,6 +54,7 @@ class Edge extends WebBrowser {
 
 	ICoreWebView2 webView;
 	ICoreWebView2_2 webView_2;
+	ICoreWebView2_11 webView_11;
 	ICoreWebView2Controller controller;
 	ICoreWebView2Settings settings;
 	ICoreWebView2Environment2 environment2;
@@ -397,6 +398,8 @@ public void create(Composite parent, int style) {
 	settings = new ICoreWebView2Settings(ppv[0]);
 	hr = webView.QueryInterface(COM.IID_ICoreWebView2_2, ppv);
 	if (hr == COM.S_OK) webView_2 = new ICoreWebView2_2(ppv[0]);
+	hr = webView.QueryInterface(COM.IID_ICoreWebView2_11, ppv);
+	if (hr == COM.S_OK) webView_11 = new ICoreWebView2_11(ppv[0]);
 
 	long[] token = new long[1];
 	IUnknown handler;
@@ -436,6 +439,11 @@ public void create(Composite parent, int style) {
 	if (webView_2 != null) {
 		handler = newCallback(this::handleDOMContentLoaded);
 		webView_2.add_DOMContentLoaded(handler, token);
+		handler.Release();
+	}
+	if (webView_11 != null) {
+		handler = newCallback(this::handleContextMenuRequested);
+		webView_11.add_ContextMenuRequested(handler, token);
 		handler.Release();
 	}
 
@@ -694,6 +702,35 @@ int handleDOMContentLoaded(long pView, long pArgs) {
 	LocationEvent startEvent = navigations.get(pNavId[0]);
 	if (startEvent != null && startEvent.top) {
 		sendProgressCompleted();
+	}
+	return COM.S_OK;
+}
+
+int handleContextMenuRequested(long pView, long pArgs) {
+	ICoreWebView2ContextMenuRequestedEventArgs args = new ICoreWebView2ContextMenuRequestedEventArgs(pArgs);
+
+	long[] locationPointer = new long[1];
+	args.get_Location(locationPointer);
+	POINT pt = new POINT();
+	OS.MoveMemory(pt, locationPointer, POINT.sizeof);
+	pt.x = DPIUtil.autoScaleDown(pt.x); // To Points
+	pt.y = DPIUtil.autoScaleDown(pt.y); // To Points
+	Event event = new Event();
+	event.x = pt.x;
+	event.y = pt.y;
+	browser.notifyListeners(SWT.MenuDetect, event);
+	if (!event.doit) {
+		// Suppress context menu
+		args.put_Handled(true);
+	} else {
+		Menu menu = browser.getMenu();
+		if (menu != null && !menu.isDisposed()) {
+			args.put_Handled(true);
+			if (pt.x != event.x || pt.y != event.y) {
+				menu.setLocation(event.x, event.y);
+			}
+			menu.setVisible(true);
+		}
 	}
 	return COM.S_OK;
 }
