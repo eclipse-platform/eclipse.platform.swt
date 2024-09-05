@@ -607,6 +607,19 @@ public void test_LocationListener_changed() {
 	assertTrue("LocationListener.changed() event was never fired", passed);
 }
 @Test
+public void test_LocationListener_changed_twoSetTextCycles() {
+	AtomicInteger changedCount = new AtomicInteger();
+	browser.addLocationListener(changedAdapter(e -> changedCount.incrementAndGet()));
+	shell.open();
+	browser.setText("Hello world");
+	boolean passed = waitForPassCondition(() -> changedCount.get() == 1);
+	assertTrue("LocationListener.changed() event was never fired", passed);
+	browser.setText("2nd text");
+	passed = waitForPassCondition(() -> changedCount.get() == 2);
+	assertTrue("LocationListener.changed() event was not fired for the 2nd text change", passed);
+}
+
+@Test
 public void test_LocationListener_changingAndOnlyThenChanged() {
 	// Test proper order of events.
 	// Check that 'changed' is only fired after 'changing' has fired at least once.
