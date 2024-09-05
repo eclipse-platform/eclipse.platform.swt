@@ -666,9 +666,10 @@ int handleNavigationStarting(long pView, long pArgs, boolean top) {
 		listener.changing(event);
 		if (browser.isDisposed()) return COM.S_OK;
 	}
+	// Save location and top for all events that use navigationId.
+	// will be eventually cleared again in handleNavigationCompleted().
+	navigations.put(pNavId[0], event);
 	if (event.doit) {
-		// Save location and top for all events that use navigationId.
-		navigations.put(pNavId[0], event);
 		jsEnabled = jsEnabledOnNextPage;
 		settings.put_IsScriptEnabled(jsEnabled);
 		// Register browser functions in the new document.
@@ -690,23 +691,13 @@ int handleSourceChanged(long pView, long pArgs) {
 	// to an empty string. Navigations with NavigateToString set the Source
 	// to about:blank. Initial Source is about:blank. If Source value
 	// is the same between navigations, SourceChanged isn't fired.
-	// TODO: emit missing location changed events
-	long[] ppsz = new long[1];
-	int hr = webView.get_Source(ppsz);
-	if (hr != COM.S_OK) return hr;
-	String url = getExposedUrl(wstrToString(ppsz[0], true));
-	browser.getDisplay().asyncExec(() -> {
-		if (browser.isDisposed()) return;
-		LocationEvent event = new LocationEvent(browser);
-		event.display = browser.getDisplay();
-		event.widget = browser;
-		event.location = url;
-		event.top = true;
-		for (LocationListener listener : locationListeners) {
-			listener.changed(event);
-			if (browser.isDisposed()) return;
-		}
-	});
+	// Calling LocationListener#changed() was moved to
+	// handleNavigationCompleted() to have consistent/symmetric
+	// LocationListener.changing() -> LocationListener.changed() behavior.
+	// TODO: #fragment navigation inside a page does not result in
+	// NavigationStarted / NavigationCompleted events from WebView2.
+	// so for now we cannot send consistent changing() + changed() events
+	// for those scenarios.
 	return COM.S_OK;
 }
 
@@ -795,11 +786,32 @@ int handleNavigationCompleted(long pView, long pArgs, boolean top) {
 	long[] pNavId = new long[1];
 	args.get_NavigationId(pNavId);
 	LocationEvent startEvent = navigations.remove(pNavId[0]);
-	if (webView_2 == null && startEvent != null && startEvent.top) {
-		// If DOMContentLoaded isn't available, fire
+	if (startEvent == null) {
+		// handleNavigationStarted() always stores the event, so this should never happen
+		return COM.S_OK;
+	}
+	if (webView_2 == null && startEvent.top) {
+		// If DOMContentLoaded (part of ICoreWebView2_2 interface) isn't available, fire
 		// ProgressListener.completed from here.
 		sendProgressCompleted();
 	}
+	int[] pIsSuccess = new int[1];
+	args.get_IsSuccess(pIsSuccess);
+	if (pIsSuccess[0] != 0) {
+		browser.getDisplay().asyncExec(() -> {
+			if (browser.isDisposed()) return;
+			LocationEvent event = new LocationEvent(browser);
+			event.display = browser.getDisplay();
+			event.widget = browser;
+			event.location = startEvent.location;
+			event.top = startEvent.top;
+			for (LocationListener listener : locationListeners) {
+				listener.changed(event);
+				if (browser.isDisposed()) return;
+			}
+		});
+	}
+
 	return COM.S_OK;
 }
 
