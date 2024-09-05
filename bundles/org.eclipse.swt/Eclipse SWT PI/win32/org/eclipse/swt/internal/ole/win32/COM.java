@@ -86,6 +86,7 @@ public class COM extends OS {
 	public static final GUID CGID_Explorer = IIDFromString("{000214D0-0000-0000-C000-000000000046}"); //$NON-NLS-1$
 	public static final GUID IID_ICoreWebView2Environment2 = IIDFromString("{41F3632B-5EF4-404F-AD82-2D606C5A9A21}"); //$NON-NLS-1$
 	public static final GUID IID_ICoreWebView2_2 = IIDFromString("{9E8F0CF8-E670-4B5E-B2BC-73E061E3184C}"); //$NON-NLS-1$
+	public static final GUID IID_ICoreWebView2_11 = IIDFromString("{0BE78E56-C193-4051-B943-23B460C08BDB}"); //$NON-NLS-1$
 
 	// IA2 related GUIDS
 	public static final GUID IIDIAccessible2 = IIDFromString("{E89F726E-C4F4-4c19-BB19-B647D7FA8478}"); //$NON-NLS-1$
