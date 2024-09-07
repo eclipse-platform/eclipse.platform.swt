@@ -446,7 +446,7 @@ boolean resignFirstResponder (long id, long sel) {
  * be notified when an event of the given type occurs. When the
  * event does occur in the widget, the listener is notified by
  * sending it the <code>handleEvent()</code> message. The event
- * type is one of the event constants defined in class {@link SWTError}.
+ * type is one of the event constants defined in class {@link SWT}.
  *
  * @param eventType the type of event to listen for
  * @param listener the listener which should be notified when the event occurs
