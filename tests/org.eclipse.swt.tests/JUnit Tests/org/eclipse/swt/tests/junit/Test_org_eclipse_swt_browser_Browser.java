@@ -34,7 +34,6 @@ import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -529,7 +528,7 @@ public void test_isLocationForCustomText_setUrlAfterDisposedThrowsSwtException()
 @Test
 public void test_isLocationForCustomText_isSetUrlNotCustomTextUrlAfterSetText() {
 	assumeFalse("behavior is not (yet) supported by Edge browser", isEdge);	// Edge doesn't fire a changed event if the URL is the same as the previous location.
-	URI url = getValidUrl();
+	String url = getValidUrl();
 	AtomicBoolean locationChanged = new AtomicBoolean(false);
 	browser.addLocationListener(changedAdapter(event -> {
 			locationChanged.set(true);
@@ -538,7 +537,7 @@ public void test_isLocationForCustomText_isSetUrlNotCustomTextUrlAfterSetText() 
 	browser.setText("Custom text");
 	assertTrue("Time Out: The Browser didn't navigate to the URL", waitForPassCondition(locationChanged::get));
 	locationChanged.set(false);
-	browser.setUrl(url.toASCIIString());
+	browser.setUrl(url);
 	assertTrue("Time Out: The Browser didn't navigate to the URL", waitForPassCondition(locationChanged::get));
 	assertFalse("The navigated URL is falsly indicated to be the custom text URL", browser.isLocationForCustomText(browser.getUrl()));
 }
@@ -548,36 +547,35 @@ public void test_isLocationForCustomText_isFirstSetTextURLStillCustomTextUrlAfte
 	assumeFalse("behavior is not (yet) supported by Edge browser", isEdge);	// Edge doesn't fire a changed event if the URL is the same as the previous location.
 	AtomicBoolean locationChanged = new AtomicBoolean(false);
 	browser.addLocationListener(changedAdapter(event -> locationChanged.set(true)));
-	URI url = getValidUrl();
+	String url = getValidUrl();
 	browser.setText("Custom text");
 	assertTrue(waitForPassCondition(locationChanged::get));
 	String firstUrl = browser.getUrl();
 	locationChanged.set(false);
-	browser.setUrl(url.toASCIIString());
+	browser.setUrl(url);
 	assertTrue("Time Out: The Browser didn't navigate to the URL", waitForPassCondition(locationChanged::get));
 	assertTrue(browser.isLocationForCustomText(firstUrl));
 	assertFalse(browser.isLocationForCustomText(browser.getUrl()));
 }
 
-private URI getValidUrl() {
+private String getValidUrl() {
 	String pluginPath = System.getProperty("PLUGIN_PATH");
-	URI url;
-	// Depending on how the jUnit test is ran, (gui/maven/ant), url for local file needs to be acquired differently.
+	testLogAppend("PLUGIN_PATH: " + pluginPath);
+	// When test is run via Ant, URL needs to be acquired differently. In that case the PLUGIN_PATH property is set and used.
 	if (pluginPath != null) {
-		url = URI.create(pluginPath + "/data/testWebsiteWithTitle.html");
+		return pluginPath + "/data/testWebsiteWithTitle.html";
 	} else {
 		// used when ran from Eclipse gui.
-		url = URI.create(Test_org_eclipse_swt_browser_Browser.class.getClassLoader().getResource("testWebsiteWithTitle.html").toString());
+		return Test_org_eclipse_swt_browser_Browser.class.getClassLoader().getResource("testWebsiteWithTitle.html").toString();
 	}
-	return url;
 }
 
 @Test
 public void test_isLocationForCustomText_isSetUrlNotCustomTextUrl() {
 	AtomicBoolean locationChanged = new AtomicBoolean(false);
 	browser.addLocationListener(changedAdapter(event -> locationChanged.set(true)));
-	URI url = getValidUrl();
-	browser.setUrl(url.toASCIIString());
+	String url = getValidUrl();
+	browser.setUrl(url);
 	waitForPassCondition(locationChanged::get);
 	assertFalse("Url is wrongly considered Custom Text Url", browser.isLocationForCustomText(browser.getUrl()));
 }
@@ -1124,21 +1122,8 @@ public void test_setUrl_local() {
 	assumeFalse("Test fails on Mac, see https://github.com/eclipse-platform/eclipse.platform.swt/issues/722", SwtTestUtil.isCocoa);
 	String expectedTitle = "Website Title";
 	Runnable browserSetFunc = () -> {
-
-		String pluginPath = System.getProperty("PLUGIN_PATH");
-		testLogAppend("PLUGIN_PATH: " + pluginPath);
-
-		String url;
-		// Depending on how the jUnit test is ran, (gui/maven/ant), url for local file needs to be acquired differently.
-		if (pluginPath != null) {
-			url = pluginPath + "/data/testWebsiteWithTitle.html";
-		} else {
-			// used when ran from Eclipse gui.
-			url = Test_org_eclipse_swt_browser_Browser.class.getClassLoader().getResource("testWebsiteWithTitle.html").toString();
-		}
-
+		String url = getValidUrl();
 		testLogAppend("URL: " + url);
-
 		boolean opSuccess = browser.setUrl(url);
 		assertTrue("Expecting setUrl() to return true" + testLog.toString(), opSuccess);
 	};
