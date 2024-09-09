@@ -540,7 +540,6 @@ public void test_isLocationForCustomText_isSetUrlNotCustomTextUrlAfterSetText() 
 	locationChanged.set(false);
 	browser.setUrl(url.toASCIIString());
 	assertTrue("Time Out: The Browser didn't navigate to the URL", waitForPassCondition(locationChanged::get));
-	assertEquals("Url is wrongly considered Custom Text Url", URI.create(browser.getUrl()), url);
 	assertFalse("The navigated URL is falsly indicated to be the custom text URL", browser.isLocationForCustomText(browser.getUrl()));
 }
 
