@@ -711,13 +711,21 @@ int handleContextMenuRequested(long pView, long pArgs) {
 
 	long[] locationPointer = new long[1];
 	args.get_Location(locationPointer);
-	POINT pt = new POINT();
-	OS.MoveMemory(pt, locationPointer, POINT.sizeof);
-	pt.x = DPIUtil.autoScaleDown(pt.x); // To Points
-	pt.y = DPIUtil.autoScaleDown(pt.y); // To Points
+	POINT ptWidgetRelative = new POINT();
+	OS.MoveMemory(ptWidgetRelative, locationPointer, POINT.sizeof);
+	ptWidgetRelative.x = DPIUtil.autoScaleDown(ptWidgetRelative.x); // To Points
+	ptWidgetRelative.y = DPIUtil.autoScaleDown(ptWidgetRelative.y); // To Points
+	// The Event we create here will be mapped to a
+	// MenuDetectEvent used with SWT.MenuDetect eventually
+	// MenuDetectEvent uses display-relative coordinates, but
+	// the POINT received from Edge is widget-relative.
+	// We need to convert to display coordinates first
+	// and construct an Event with those (even though Event Javadoc
+	// says x and y are widget-relative).
+	Point ptDisplayRelative = browser.toDisplay(ptWidgetRelative.x, ptWidgetRelative.y);
 	Event event = new Event();
-	event.x = pt.x;
-	event.y = pt.y;
+	event.x = ptDisplayRelative.x;
+	event.y = ptDisplayRelative.y;
 	browser.notifyListeners(SWT.MenuDetect, event);
 	if (!event.doit) {
 		// Suppress context menu
@@ -726,7 +734,7 @@ int handleContextMenuRequested(long pView, long pArgs) {
 		Menu menu = browser.getMenu();
 		if (menu != null && !menu.isDisposed()) {
 			args.put_Handled(true);
-			if (pt.x != event.x || pt.y != event.y) {
+			if (ptDisplayRelative.x != event.x || ptDisplayRelative.y != event.y) {
 				menu.setLocation(event.x, event.y);
 			}
 			menu.setVisible(true);
