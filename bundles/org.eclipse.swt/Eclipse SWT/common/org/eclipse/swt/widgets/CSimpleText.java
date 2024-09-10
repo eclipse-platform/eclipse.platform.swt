@@ -249,10 +249,10 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 			}
 			height = size.y * model.getLineCount();
 			if (horizontalBar != null) {
-				height += horizontalBar.getThumbBounds().height;
+				height += horizontalBar.getSize().y;
 			}
 			if (verticalBar != null) {
-				width += verticalBar.getThumbBounds().width;
+				width += verticalBar.getSize().x;
 			}
 		}
 		gc.dispose();
