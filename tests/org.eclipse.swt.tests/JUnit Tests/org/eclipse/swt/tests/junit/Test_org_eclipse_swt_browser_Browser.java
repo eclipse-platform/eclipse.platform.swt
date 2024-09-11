@@ -1105,6 +1105,44 @@ public void test_setText() {
 	validateTitleChanged(expectedTitle, browserSetFunc);
 }
 
+/**
+ * Corner-case, probably only relevant on Edge, see
+ * https://github.com/eclipse-platform/eclipse.platform.swt/pull/1463
+ */
+@Test
+public void test_setTextContainingScript_applicationLayerProgressListenerMustSeeUpToDateDom() {
+	AtomicBoolean completed = new AtomicBoolean();
+	browser.addProgressListener(ProgressListener.completedAdapter(event -> {
+		String script = """
+				var h1s = document.getElementsByTagName("h1");
+				// extract the information from the DOM via the document's title
+				// since getText() afterwards does not necessarily return the updated DOM (platform-dependent)
+				document.title = "ProgressListener: Found " + h1s.length + " h1 tag(s)";
+				""";
+		browser.execute(script);
+		completed.set(true);
+	}));
+	AtomicReference<String> title = new AtomicReference<>();
+	browser.addTitleListener(event -> {
+		if (event.title.startsWith("ProgressListener: ")) {
+			title.set(event.title);
+		}
+	});
+	browser.setText("""
+			<html>
+				<head>
+					<script src=\"file:///does/not/really/needs/to/exist.js\"></script>
+				</head>
+				<body>
+					<h1>Hello, World!</h1>
+				</body>
+			</html>
+			""");
+	waitForPassCondition(completed::get);
+	waitForPassCondition(() -> title.get() != null);
+	assertEquals("ProgressListener: Found 1 h1 tag(s)", title.get());
+}
+
 @Test
 public void test_setUrl_local() {
 	assumeFalse("Test fails on Mac, see https://github.com/eclipse-platform/eclipse.platform.swt/issues/722", SwtTestUtil.isCocoa);
