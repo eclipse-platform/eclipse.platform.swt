@@ -735,7 +735,7 @@ int handleDOMContentLoaded(long pView, long pArgs) {
 				return COM.S_OK;
 			});
 			webView.ExecuteScript(
-					stringToWstr("document.open(); document.write(`" + lastCustomText + "`); document.close();"),
+					stringToWstr("document.open(); document.write('" + escapeForSingleQuotedJSString(lastCustomText) + "'); document.close();"),
 					postExecute);
 			postExecute.Release();
 			this.lastCustomText = null;
@@ -744,6 +744,13 @@ int handleDOMContentLoaded(long pView, long pArgs) {
 		}
 	}
 	return COM.S_OK;
+}
+
+private static String escapeForSingleQuotedJSString(String str) {
+	return str.replace("\\", "\\\\") //
+			.replace("'", "\\'") //
+			.replace("\r", "\\r") //
+			.replace("\n", "\\n");
 }
 
 int handleContextMenuRequested(long pView, long pArgs) {
