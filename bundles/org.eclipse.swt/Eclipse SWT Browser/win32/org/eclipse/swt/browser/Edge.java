@@ -471,8 +471,6 @@ public void create(Composite parent, int style) {
 		handler.Release();
 	}
 
-	addProgressListener(ProgressListener.completedAdapter(__ -> writeToDefaultPathDOM()));
-
 	IUnknown hostDisp = newHostObject(this::handleCallJava);
 	long[] hostObj = { COM.VT_DISPATCH, hostDisp.getAddress(), 0 }; // VARIANT
 	webView.AddHostObjectToScript("swt\0".toCharArray(), hostObj);
@@ -731,7 +729,19 @@ int handleDOMContentLoaded(long pView, long pArgs) {
 	args.get_NavigationId(pNavId);
 	LocationEvent startEvent = navigations.get(pNavId[0]);
 	if (startEvent != null && startEvent.top) {
-		sendProgressCompleted();
+		if (lastCustomText != null && getUrl().equals(ABOUT_BLANK)) {
+			IUnknown postExecute = newCallback((long result, long json) -> {
+				sendProgressCompleted();
+				return COM.S_OK;
+			});
+			webView.ExecuteScript(
+					stringToWstr("document.open(); document.write(`" + lastCustomText + "`); document.close();"),
+					postExecute);
+			postExecute.Release();
+			this.lastCustomText = null;
+		} else {
+			sendProgressCompleted();
+		}
 	}
 	return COM.S_OK;
 }
@@ -990,16 +1000,6 @@ private boolean isLocationForCustomText(String location) {
 		} catch (URISyntaxException e) {
 			return false;
 		}
-}
-
-private void writeToDefaultPathDOM() {
-	if(lastCustomText != null && getUrl().equals(ABOUT_BLANK)) {
-		boolean test = jsEnabled;
-		jsEnabled = true;
-		execute("document.open(); document.write(`" + lastCustomText + "`); document.close();");
-		jsEnabled = test;
-		this.lastCustomText = null;
-	}
 }
 
 @Override
