@@ -660,6 +660,7 @@ void webView_didChangeLocationWithinPageForFrame(long sender, long frameID) {
 	location.display = display;
 	location.widget = browser;
 	location.location = url2;
+	location.isLocationForCustomText = browser.isLocationForCustomText(url2);
 	location.top = top;
 	for (int i = 0; i < locationListeners.length; i++) {
 		locationListeners[i].changed(location);
@@ -965,6 +966,7 @@ void webView_didCommitLoadForFrame(long sender, long frameID) {
 	location.display = display;
 	location.widget = browser;
 	location.location = url2;
+	location.isLocationForCustomText = browser.isLocationForCustomText(url2);
 	location.top = top;
 	for (int i = 0; i < locationListeners.length; i++) {
 		locationListeners[i].changed(location);
@@ -1492,6 +1494,7 @@ void webView_decidePolicyForNavigationAction_request_frame_decisionListener(long
 	newEvent.display = browser.getDisplay();
 	newEvent.widget = browser;
 	newEvent.location = url2;
+	newEvent.isLocationForCustomText = browser.isLocationForCustomText(url2);
 	newEvent.doit = true;
 	if (locationListeners != null) {
 		for (int i = 0; i < locationListeners.length; i++) {

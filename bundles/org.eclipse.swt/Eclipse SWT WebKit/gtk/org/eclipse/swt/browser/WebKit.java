@@ -1735,6 +1735,7 @@ long handleLoadCommitted (long uri, boolean top) {
 	event.display = browser.getDisplay ();
 	event.widget = browser;
 	event.location = url;
+	event.isLocationForCustomText = browser.isLocationForCustomText(url);
 	event.top = top;
 	Runnable fireLocationChanged = () ->  {
 		if (browser.isDisposed ()) return;
@@ -2291,6 +2292,7 @@ long webkit_decide_policy (long web_view, long decision, int decision_type, long
 		newEvent.display = browser.getDisplay ();
 		newEvent.widget = browser;
 		newEvent.location = url;
+		newEvent.isLocationForCustomText = browser.isLocationForCustomText(url);
 		newEvent.doit = true;
 
 		try {

@@ -42,6 +42,12 @@ public class LocationEvent extends TypedEvent {
 	public boolean top;
 
 	/**
+	 * A flag indicating if the location is for the custom text.
+	 * @since 3.128
+	 */
+	public boolean isLocationForCustomText;
+
+	/**
 	 * A flag indicating whether the location loading should be allowed.
 	 * Setting this field to <code>false</code> will cancel the operation.
 	 */

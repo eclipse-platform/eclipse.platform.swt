@@ -520,6 +520,7 @@ public void create(Composite parent, int style) {
 					newEvent1.display = browser.getDisplay();
 					newEvent1.widget = browser;
 					newEvent1.location = url1;
+					newEvent1.isLocationForCustomText = browser.isLocationForCustomText(url1);
 					newEvent1.doit = true;
 					for (LocationListener locationListener : locationListeners) {
 						locationListener.changing(newEvent1);
@@ -608,6 +609,7 @@ public void create(Composite parent, int style) {
 						locationEvent.display = browser.getDisplay();
 						locationEvent.widget = browser;
 						locationEvent.location = url2;
+						locationEvent.isLocationForCustomText = browser.isLocationForCustomText(url2);
 						locationEvent.top = top2.getAddress() == dispatch2.getAddress();
 						for (LocationListener locationListener : locationListeners) {
 							locationListener.changed(locationEvent);

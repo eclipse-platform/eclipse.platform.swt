@@ -660,6 +660,7 @@ int handleNavigationStarting(long pView, long pArgs, boolean top) {
 	event.display = browser.getDisplay();
 	event.widget = browser;
 	event.location = url;
+	event.isLocationForCustomText = browser.isLocationForCustomText(url);
 	event.top = top;
 	event.doit = true;
 	for (LocationListener listener : locationListeners) {
@@ -701,6 +702,7 @@ int handleSourceChanged(long pView, long pArgs) {
 		event.display = browser.getDisplay();
 		event.widget = browser;
 		event.location = url;
+		event.isLocationForCustomText = browser.isLocationForCustomText(url);
 		event.top = true;
 		for (LocationListener listener : locationListeners) {
 			listener.changed(event);
