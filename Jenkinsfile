@@ -229,6 +229,7 @@ pipeline {
 									dir('libs') {
 										stash "swt.binaries.${PLATFORM}"
 									}
+									cleanWs() // workspace not cleaned by default
 								}
 							}
 						}
