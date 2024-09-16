@@ -15,9 +15,12 @@
 package org.eclipse.swt.graphics;
 
 
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.*;
 import java.util.List;
+
+import javax.imageio.ImageIO;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
@@ -159,11 +162,73 @@ void reset() {
  * </ul>
  */
 public ImageData[] load(InputStream stream) {
+	return loadDefault(stream);
+}
+
+private ImageData[] loadDefault(InputStream stream) {
 	if (stream == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	reset();
-	ImageData [] imgDataArray = getImageDataArrayFromStream(stream);
-	data = imgDataArray;
-	return imgDataArray;
+	data = getImageDataArrayFromStream(stream);
+	return data;
+}
+
+/**
+ * Loads an array of <code>ImageData</code> objects from the
+ * specified input stream. If the stream is a SVG File and zoom is not 0,
+ * this method will try to rasterize the SVG.
+ * Throws an error if either an error occurs while loading the images, or if the images are not
+ * of a supported type. Returns the loaded image data array.
+ *
+ * @param stream the input stream to load the images from
+ * @param zoom the zoom factor to apply when rasterizing a SVG.
+ * A value of 0 means that the standard method for loading should be used.
+ * @return an array of <code>ImageData</code> objects loaded from the specified input stream
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the stream is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_IO - if an IO error occurs while reading from the stream</li>
+ *    <li>ERROR_INVALID_IMAGE - if the image stream contains invalid data</li>
+ *    <li>ERROR_UNSUPPORTED_FORMAT - if the image stream contains an unrecognized format</li>
+ * </ul>
+ *
+ * @since 3.129
+ */
+public ImageData[] load(InputStream stream, int zoom) {
+	if (stream == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+    reset();
+    byte[] bytes = null;
+	try {
+		bytes = stream.readAllBytes();
+	} catch (IOException e) {
+		SWT.error(SWT.ERROR_IO, e);
+	}
+	ISVGRasterizer rasterizer = SVGRasterizerRegistry.getRasterizer();
+	if (rasterizer != null && zoom != 0) {
+	    try {
+	    	float scalingFactor = zoom / 100.0f;
+	    	BufferedImage image = rasterizer.rasterizeSVG(bytes, scalingFactor);
+	    	if(image != null) {
+	    		try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+	        	    ImageIO.write(image, "png", baos);
+	        	    try (InputStream in = new ByteArrayInputStream(baos.toByteArray())) {
+	        			data = getImageDataArrayFromStream(in);
+	        			return data;
+	        	    }
+	        	}
+	    	}
+	    } catch (IOException e) {
+	        // try standard method
+	    }
+	}
+	try (InputStream fallbackStream = new ByteArrayInputStream(bytes)) {
+		data = getImageDataArrayFromStream(stream);
+		return data;
+	} catch (IOException e) {
+		SWT.error(SWT.ERROR_IO, e);
+	}
+	return null;
 }
 
 /**
@@ -294,18 +359,43 @@ ImageData [] getImageDataArrayFromStream(InputStream stream) {
  */
 public ImageData[] load(String filename) {
 	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	InputStream stream = null;
-	try {
-		stream = new FileInputStream(filename);
-		return load(stream);
+	try (InputStream stream = new FileInputStream(filename)) {
+		return loadDefault(stream);
 	} catch (IOException e) {
 		SWT.error(SWT.ERROR_IO, e);
-	} finally {
-		try {
-			if (stream != null) stream.close();
-		} catch (IOException e) {
-			// Ignore error
-		}
+	}
+	return null;
+}
+
+/**
+ * Loads an array of <code>ImageData</code> objects from the
+ * file with the specified name. If the filename is a SVG File and zoom is not 0,
+ * this method will try to rasterize the SVG. Throws an error if either
+ * an error occurs while loading the images, or if the images are
+ * not of a supported type. Returns the loaded image data array.
+ *
+ * @param filename the name of the file to load the images from
+ * @param zoom the zoom factor to apply when rasterizing a SVG.
+ * A value of 0 means that the standard method for loading should be used.
+ * @return an array of <code>ImageData</code> objects loaded from the specified file
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the file name is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_IO - if an IO error occurs while reading from the file</li>
+ *    <li>ERROR_INVALID_IMAGE - if the image file contains invalid data</li>
+ *    <li>ERROR_UNSUPPORTED_FORMAT - if the image file contains an unrecognized format</li>
+ * </ul>
+ *
+ * @since 3.129
+ */
+public ImageData[] load(String filename, int zoom) {
+	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	try (InputStream stream = new FileInputStream(filename)) {
+		return load(stream, zoom);
+	} catch (IOException e) {
+		SWT.error(SWT.ERROR_IO, e);
 	}
 	return null;
 }
