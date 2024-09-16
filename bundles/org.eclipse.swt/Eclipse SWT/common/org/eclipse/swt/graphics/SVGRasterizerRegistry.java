@@ -17,7 +17,7 @@ import java.util.*;
  * A registry for managing the instance of an {@link SVGRasterizer} implementation.
  * This allows for the registration and retrieval of a single rasterizer instance.
  *
- * @since 3.129
+ * @since 4.0
  */
 class SVGRasterizerRegistry {
 

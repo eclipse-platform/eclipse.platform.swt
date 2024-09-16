@@ -235,6 +235,14 @@ public Image(Device device, Image srcImage, int flag) {
 	long srcImageHandle = win32_getHandle(srcImage, getZoom());
 	switch (flag) {
 		case SWT.IMAGE_COPY: {
+			ImageData data = null;
+			Image newImage = createWithSVG(device, flag);
+			if(newImage != null) {
+				data = newImage.getImageData(newImage.getZoom());
+				init(data, getZoom());
+				newImage.dispose();
+				break;
+			}
 			switch (type) {
 				case SWT.BITMAP:
 					/* Get the HDC for the device */
@@ -270,13 +278,29 @@ public Image(Device device, Image srcImage, int flag) {
 			break;
 		}
 		case SWT.IMAGE_DISABLE: {
-			ImageData data = srcImage.getImageData(srcImage.getZoom());
+			ImageData data = null;
+			Image disabledImage = createWithSVG(device, flag);
+			if(disabledImage != null) {
+				data = disabledImage.getImageData(disabledImage.getZoom());
+				init(data, getZoom());
+				disabledImage.dispose();
+				break;
+			}
+			data = srcImage.getImageData(srcImage.getZoom());
 			ImageData newData = applyDisableImageData(data, rect.height, rect.width);
 			init (newData, getZoom());
 			break;
 		}
 		case SWT.IMAGE_GRAY: {
-			ImageData data = srcImage.getImageData(srcImage.getZoom());
+			ImageData data = null;
+			Image grayImage = createWithSVG(device, flag);
+			if(grayImage != null) {
+				data = grayImage.getImageData(grayImage.getZoom());
+				init(data, getZoom());
+				grayImage.dispose();
+				break;
+			}
+			data = srcImage.getImageData(srcImage.getZoom());
 			ImageData newData = applyGrayImageData(data, rect.height, rect.width);
 			init (newData, getZoom());
 			break;
@@ -286,6 +310,26 @@ public Image(Device device, Image srcImage, int flag) {
 	}
 	init();
 	this.device.registerResourceWithZoomSupport(this);
+}
+
+private Image createWithSVG(Device device, int flag) {
+	Image customizedImage = null;
+	if (imageFileNameProvider != null) {
+		ElementAtZoom<String> fileName = DPIUtil.validateAndGetImagePathAtZoom (imageFileNameProvider, getZoom());
+		try (InputStream stream = new BufferedInputStream(new FileInputStream(fileName.element()))){
+			SVGRasterizer rasterizer = SVGRasterizerRegistry.getRasterizer();
+			if(rasterizer != null && rasterizer.isSVGFile(stream)) {
+				customizedImage = new Image(device, imageFileNameProvider, flag);
+			}
+		} catch (IOException e) {
+			SWT.error(SWT.ERROR_IO, e);
+		}
+	} else if (imageDataProvider != null) {
+		if(imageDataProvider.supportsRasterizationFlag(flag)) {
+			customizedImage = new Image(device, imageDataProvider, flag);
+		}
+	}
+	return customizedImage;
 }
 
 /**
@@ -468,7 +512,7 @@ public Image(Device device, ImageData source, ImageData mask) {
 public Image (Device device, InputStream stream) {
 	super(device);
 	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
-	ImageData data = DPIUtil.autoScaleUp(device, new ElementAtZoom<>(new ImageData (stream, getZoom()), 100));
+	ImageData data = DPIUtil.autoScaleUp(device, new ElementAtZoom<>(new ImageData (stream, getZoom(), SWT.IMAGE_COPY), 100));
 	init(data, getZoom());
 	init();
 	this.device.registerResourceWithZoomSupport(this);
@@ -510,7 +554,7 @@ public Image (Device device, String filename) {
 	super(device);
 	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
-	ImageData data = DPIUtil.autoScaleUp(device, new ElementAtZoom<>(new ImageData (filename, getZoom()), 100));
+	ImageData data = DPIUtil.autoScaleUp(device, new ElementAtZoom<>(new ImageData (filename, getZoom(), SWT.IMAGE_COPY), 100));
 	init(data, getZoom());
 	init();
 	this.device.registerResourceWithZoomSupport(this);
@@ -546,6 +590,13 @@ public Image (Device device, String filename) {
  * @since 3.104
  */
 public Image(Device device, ImageFileNameProvider imageFileNameProvider) {
+	this(device, imageFileNameProvider, SWT.IMAGE_COPY);
+}
+
+/**
+ * @since 4.0
+ */
+public Image(Device device, ImageFileNameProvider imageFileNameProvider, int flag) {
 	super(device);
 	this.imageFileNameProvider = imageFileNameProvider;
 	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
@@ -553,10 +604,10 @@ public Image(Device device, ImageFileNameProvider imageFileNameProvider) {
 	if (fileName.zoom() == getZoom()) {
 		ImageHandle imageMetadata = initNative (fileName.element(), getZoom());
 		if (imageMetadata == null) {
-			init(new ImageData (fileName.element(), getZoom()), getZoom());
+			init(new ImageData (fileName.element(), getZoom(), flag), getZoom());
 		}
 	} else {
-		ImageData resizedData = DPIUtil.autoScaleImageData (device, new ImageData (fileName.element(), getZoom()), fileName.zoom());
+		ImageData resizedData = DPIUtil.autoScaleImageData (device, new ImageData (fileName.element(), getZoom(), flag), fileName.zoom());
 		init(resizedData, getZoom());
 	}
 	init();
@@ -599,6 +650,16 @@ public Image(Device device, ImageDataProvider imageDataProvider) {
 	ElementAtZoom<ImageData> data =  DPIUtil.validateAndGetImageDataAtZoom(imageDataProvider, getZoom());
 	ImageData resizedData = DPIUtil.scaleImageData(device, data.element(), getZoom(), data.zoom());
 	init (resizedData, getZoom());
+	init();
+	this.device.registerResourceWithZoomSupport(this);
+}
+
+private Image(Device device, ImageDataProvider imageDataProvider, int flag) {
+	super(device);
+	this.imageDataProvider = imageDataProvider;
+	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
+	ImageData data = imageDataProvider.getCustomizedImageData(getZoom(), flag);
+	init (data, getZoom());
 	init();
 	this.device.registerResourceWithZoomSupport(this);
 }
@@ -753,7 +814,7 @@ private ImageHandle getImageMetadata(int zoom) {
 
 	if (imageFileNameProvider != null) {
 		ElementAtZoom<String> imageCandidate = DPIUtil.validateAndGetImagePathAtZoom (imageFileNameProvider, zoom);
-		ImageData imageData = new ImageData (imageCandidate.element(), zoom);
+		ImageData imageData = new ImageData (imageCandidate.element(), zoom, SWT.IMAGE_COPY);
 		if (imageCandidate.zoom() == zoom) {
 			/* Release current native resources */
 			ImageHandle imageMetadata = initNative(imageCandidate.element(), zoom);
@@ -1389,7 +1450,7 @@ public ImageData getImageData (int zoom) {
 		return DPIUtil.scaleImageData (device, data.element(), zoom, data.zoom());
 	} else if (imageFileNameProvider != null) {
 		ElementAtZoom<String> fileName = DPIUtil.validateAndGetImagePathAtZoom (imageFileNameProvider, zoom);
-		return DPIUtil.scaleImageData (device, new ImageData (fileName.element(), zoom), zoom, fileName.zoom());
+		return DPIUtil.scaleImageData (device, new ImageData (fileName.element(), zoom, SWT.IMAGE_COPY), zoom, fileName.zoom());
 	}
 
 	// if a GC is initialized with an Image (memGC != null), the image data must not be resized, because it would

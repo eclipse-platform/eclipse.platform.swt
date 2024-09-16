@@ -17,7 +17,7 @@ import java.io.*;
  * Defines the interface for an SVG rasterizer, responsible for converting SVG
  * data into rasterized images.
  *
- * @since 3.129
+ * @since 4.0
  */
 public interface SVGRasterizer {
 
@@ -33,6 +33,10 @@ public interface SVGRasterizer {
 	 * @throws IOException if an error occurs while reading the SVG data.
 	 */
 	public ImageData rasterizeSVG(InputStream stream, float scalingFactor) throws IOException;
+
+	public ImageData rasterizeDisabledSVG(InputStream stream, float scalingFactor) throws IOException;
+
+	public ImageData rasterizeGraySVG(InputStream stream, float scalingFactor) throws IOException;
 
 	/**
 	 * Determines whether the given {@link InputStream} contains a SVG file.

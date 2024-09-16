@@ -186,26 +186,37 @@ public ImageData[] load(InputStream stream) {
  *    <li>ERROR_UNSUPPORTED_FORMAT - if the image stream contains an unrecognized format</li>
  * </ul>
  *
- * @since 3.129
+ * @since 4.0
  */
-public ImageData[] load(InputStream stream, int zoom) {
+public ImageData[] load(InputStream stream, int zoom, int flag) {
 	if (stream == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
     reset();
     if (!stream.markSupported()) {
 		stream = new BufferedInputStream(stream);
 	}
+	ImageData rasterizedData = null;
 	SVGRasterizer rasterizer = SVGRasterizerRegistry.getRasterizer();
 	if (rasterizer != null && zoom != 0) {
-		try {
+	    try {
 			if (rasterizer.isSVGFile(stream)) {
-				float scalingFactor = zoom / 100.0f;
-				ImageData rasterizedData = rasterizer.rasterizeSVG(stream, scalingFactor);
-				if (rasterizedData != null) {
+		    	float scalingFactor = zoom / 100.0f;
+		    	switch(flag) {
+					case SWT.IMAGE_DISABLE:
+						rasterizedData = rasterizer.rasterizeDisabledSVG(stream, scalingFactor);
+						break;
+					case SWT.IMAGE_GRAY:
+						rasterizedData = rasterizer.rasterizeGraySVG(stream, scalingFactor);
+						break;
+					case SWT.IMAGE_COPY:
+						rasterizedData = rasterizer.rasterizeSVG(stream, scalingFactor);
+						break;
+					}
+		    	if (rasterizedData != null) {
 					data = new ImageData[]{rasterizedData};
-				    return data;
+					return data;
 				}
 			}
-		} catch (IOException e) {
+	    } catch (IOException e) {
 			//ignore.
 		}
 	}
@@ -376,12 +387,12 @@ public ImageData[] load(String filename) {
  *    <li>ERROR_UNSUPPORTED_FORMAT - if the image file contains an unrecognized format</li>
  * </ul>
  *
- * @since 3.129
+ * @since 4.0
  */
-public ImageData[] load(String filename, int zoom) {
+public ImageData[] load(String filename, int zoom, int flag) {
 	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	try (InputStream stream = new FileInputStream(filename)) {
-		return load(stream, zoom);
+		return load(stream, zoom, flag);
 	} catch (IOException e) {
 		SWT.error(SWT.ERROR_IO, e);
 	}

@@ -331,7 +331,7 @@ public ImageData(int width, int height, int depth, PaletteData palette, int scan
  * @see ImageLoader#load(InputStream)
  */
 public ImageData(InputStream stream) {
-	this(stream, 0);
+	this(stream, 0, SWT.IMAGE_COPY);
 }
 
 /**
@@ -360,10 +360,10 @@ public ImageData(InputStream stream) {
  * </ul>
  *
  * @see ImageLoader#load(InputStream)
- * @since 3.129
+ * @since 4.0
  */
-public ImageData(InputStream stream, int zoom) {
-	ImageData[] data = ImageDataLoader.load(stream, zoom);
+public ImageData(InputStream stream, int zoom, int flag) {
+	ImageData[] data = ImageDataLoader.load(stream, zoom, flag);
 	if (data.length < 1) SWT.error(SWT.ERROR_INVALID_IMAGE);
 	ImageData i = data[0];
 	setAllFields(
@@ -409,7 +409,7 @@ public ImageData(InputStream stream, int zoom) {
  * </ul>
  */
 public ImageData(String filename) {
-	this(filename, 0);
+	this(filename, 0, SWT.IMAGE_COPY);
 }
 
 /**
@@ -435,10 +435,10 @@ public ImageData(String filename) {
  *    <li>ERROR_UNSUPPORTED_FORMAT - if the image file contains an unrecognized format</li>
  * </ul>
  *
- * @since 3.129
+ * @since 4.0
  */
-public ImageData(String filename, int zoom) {
-	ImageData[] data = ImageDataLoader.load(filename, zoom);
+public ImageData(String filename, int zoom, int flag) {
+	ImageData[] data = ImageDataLoader.load(filename, zoom, flag);
 	if (data.length < 1) SWT.error(SWT.ERROR_INVALID_IMAGE);
 	ImageData i = data[0];
 	setAllFields(
