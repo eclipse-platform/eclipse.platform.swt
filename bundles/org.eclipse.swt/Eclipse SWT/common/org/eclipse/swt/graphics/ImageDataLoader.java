@@ -25,8 +25,16 @@ class ImageDataLoader {
 		return new ImageLoader().load(stream);
 	}
 
-	public static ImageData[] load(String filename) {
+	public static ImageData[] load(InputStream stream, int zoom) {
+		return new ImageLoader().load(stream, zoom);
+	}
+
+		public static ImageData[] load(String filename) {
 		return new ImageLoader().load(filename);
+	}
+
+	public static ImageData[] load(String filename, int zoom) {
+		return new ImageLoader().load(filename, zoom);
 	}
 
 }
