@@ -132,7 +132,7 @@ public static ImageData[] load(InputStream is, ImageLoader loader) {
  *
  * @since 3.129
  */
-public static ImageData[] load(InputStream stream, int zoom, ImageLoader loader) {
+public static ImageData[] load(InputStream stream, int zoom, int flag, ImageLoader loader) {
 	if (stream == null) {
 		throw new IllegalArgumentException("InputStream cannot be null");
 	}
@@ -141,7 +141,7 @@ public static ImageData[] load(InputStream stream, int zoom, ImageLoader loader)
 	}
 	try {
 		if (RASTERIZER != null && zoom != 0 && isSVGFile(stream)) {
-			return RASTERIZER.rasterizeSVG(stream, zoom);
+			return RASTERIZER.rasterizeSVG(stream, zoom, flag);
 		} else {
 			return load(stream, loader);
 		}

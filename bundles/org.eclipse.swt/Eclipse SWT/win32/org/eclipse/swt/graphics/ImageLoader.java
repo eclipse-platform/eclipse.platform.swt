@@ -155,6 +155,7 @@ public ImageData[] load(InputStream stream) {
 	return data;
 }
 
+//TODO: JavaDocs flag parameter
 /**
  * Loads an array of <code>ImageData</code> objects from the
  * specified input stream. If the stream is a SVG File and zoom is not 0,
@@ -184,12 +185,12 @@ public ImageData[] load(InputStream stream) {
  *    <li>ERROR_UNSUPPORTED_FORMAT - if the image stream contains an unrecognized format</li>
  * </ul>
  *
- * @since 3.129
+ * @since 4.0
  */
-public ImageData[] load(InputStream stream, int zoom) {
+public ImageData[] load(InputStream stream, int zoom, int flag) {
 	if (stream == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
     reset();
-    data = FileFormat.load(stream, zoom, this);
+    data = FileFormat.load(stream, zoom, flag, this);
     return data;
 }
 
@@ -252,12 +253,12 @@ public ImageData[] load(String filename) {
  *    <li>ERROR_UNSUPPORTED_FORMAT - if the image file contains an unrecognized format</li>
  * </ul>
  *
- * @since 3.129
+ * @since 4.0
  */
-public ImageData[] load(String filename, int zoom) {
+public ImageData[] load(String filename, int zoom, int flag) {
 	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	try (InputStream stream = new FileInputStream(filename)) {
-		return load(stream, zoom);
+		return load(stream, zoom, flag);
 	} catch (IOException e) {
 		SWT.error(SWT.ERROR_IO, e);
 	}
