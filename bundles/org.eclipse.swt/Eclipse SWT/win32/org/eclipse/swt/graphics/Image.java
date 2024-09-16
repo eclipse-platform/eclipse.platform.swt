@@ -2130,7 +2130,7 @@ private class ImageFileNameProviderWrapper extends AbstractImageProviderWrapper 
 	@Override
 	ImageData getImageData(int zoom) {
 		ElementAtZoom<String> fileName = DPIUtil.validateAndGetImagePathAtZoom (provider, zoom);
-		return DPIUtil.scaleImageData (device, new ImageData (fileName.element()), zoom, fileName.zoom());
+		return DPIUtil.scaleImageData (device, new ImageData (fileName.element(), zoom), zoom, fileName.zoom());
 	}
 
 	@Override
