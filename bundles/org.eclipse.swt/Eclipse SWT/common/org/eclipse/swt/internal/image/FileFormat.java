@@ -82,7 +82,7 @@ public abstract class FileFormat {
 		abstract ImageData[] loadFromByteStream();
 
 		@Override
-		List<ElementAtZoom<ImageData>> loadFromByteStream(int fileZoom, int targetZoom) {
+		List<ElementAtZoom<ImageData>> loadFromByteStream(int fileZoom, int targetZoom, int flag) {
 			return Arrays.stream(loadFromByteStream()).map(d -> new ElementAtZoom<>(d, fileZoom)).toList();
 		}
 	}
@@ -102,16 +102,16 @@ public abstract class FileFormat {
 	 * Format that do not implement {@link StaticImageFileFormat} MUST return
 	 * {@link ImageData} with the specified {@code targetZoom}.
 	 */
-	abstract List<ElementAtZoom<ImageData>> loadFromByteStream(int fileZoom, int targetZoom);
+	abstract List<ElementAtZoom<ImageData>> loadFromByteStream(int fileZoom, int targetZoom, int flag);
 
 /**
  * Read the specified input stream, and return the
  * device independent image array represented by the stream.
  */
-public List<ElementAtZoom<ImageData>> loadFromStream(LEDataInputStream stream, int fileZoom, int targetZoom) {
+public List<ElementAtZoom<ImageData>> loadFromStream(LEDataInputStream stream, int fileZoom, int targetZoom, int flag) {
 	try {
 		inputStream = stream;
-		return loadFromByteStream(fileZoom, targetZoom);
+		return loadFromByteStream(fileZoom, targetZoom, flag);
 	} catch (Exception e) {
 		if (e instanceof IOException) {
 			SWT.error(SWT.ERROR_IO, e);
@@ -126,14 +126,14 @@ public List<ElementAtZoom<ImageData>> loadFromStream(LEDataInputStream stream, i
  * Read the specified input stream using the specified loader, and
  * return the device independent image array represented by the stream.
  */
-public static List<ElementAtZoom<ImageData>> load(InputStream is, ImageLoader loader, int fileZoom, int targetZoom) {
+public static List<ElementAtZoom<ImageData>> load(InputStream is, ImageLoader loader, int fileZoom, int targetZoom, int flag) {
 	LEDataInputStream stream = new LEDataInputStream(is);
 	FileFormat fileFormat = determineFileFormat(stream).orElseGet(() -> {
 		SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT);
 		return null;
 	});
 	fileFormat.loader = loader;
-	return fileFormat.loadFromStream(stream, fileZoom, targetZoom);
+	return fileFormat.loadFromStream(stream, fileZoom, targetZoom, flag);
 }
 
 /**

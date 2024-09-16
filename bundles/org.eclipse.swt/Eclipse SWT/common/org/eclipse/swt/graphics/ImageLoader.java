@@ -150,14 +150,14 @@ void reset() {
  * </ul>
  */
 public ImageData[] load(InputStream stream) {
-	load(stream, FileFormat.DEFAULT_ZOOM, FileFormat.DEFAULT_ZOOM);
+	load(stream, FileFormat.DEFAULT_ZOOM, FileFormat.DEFAULT_ZOOM, SWT.IMAGE_COPY);
 	return data;
 }
 
-List<ElementAtZoom<ImageData>> load(InputStream stream, int fileZoom, int targetZoom) {
+List<ElementAtZoom<ImageData>> load(InputStream stream, int fileZoom, int targetZoom, int flag) {
 	if (stream == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	reset();
-	List<ElementAtZoom<ImageData>> images = InternalImageLoader.load(stream, this, fileZoom, targetZoom);
+	List<ElementAtZoom<ImageData>> images = InternalImageLoader.load(stream, this, fileZoom, targetZoom, flag);
 	data = images.stream().map(ElementAtZoom::element).toArray(ImageData[]::new);
 	return images;
 }
@@ -181,14 +181,14 @@ List<ElementAtZoom<ImageData>> load(InputStream stream, int fileZoom, int target
  * </ul>
  */
 public ImageData[] load(String filename) {
-	load(filename, FileFormat.DEFAULT_ZOOM, FileFormat.DEFAULT_ZOOM);
+	load(filename, FileFormat.DEFAULT_ZOOM, FileFormat.DEFAULT_ZOOM, SWT.IMAGE_COPY);
 	return data;
 }
 
-List<ElementAtZoom<ImageData>> load(String filename, int fileZoom, int targetZoom) {
+List<ElementAtZoom<ImageData>> load(String filename, int fileZoom, int targetZoom, int flag) {
 	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	try (InputStream stream = new FileInputStream(filename)) {
-		return load(stream, fileZoom, targetZoom);
+		return load(stream, fileZoom, targetZoom, flag);
 	} catch (IOException e) {
 		SWT.error(SWT.ERROR_IO, e);
 	}
