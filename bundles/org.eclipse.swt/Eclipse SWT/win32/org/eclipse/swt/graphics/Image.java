@@ -239,6 +239,9 @@ public Image(Device device, Image srcImage, int flag) {
 	long srcImageHandle = win32_getHandle(srcImage, getZoom());
 	switch (flag) {
 		case SWT.IMAGE_COPY: {
+			if(createWithSVG(device, flag)) {
+				break;
+			}
 			switch (type) {
 				case SWT.BITMAP:
 					/* Get the HDC for the device */
@@ -274,12 +277,18 @@ public Image(Device device, Image srcImage, int flag) {
 			break;
 		}
 		case SWT.IMAGE_DISABLE: {
+			if(createWithSVG(device, flag)) {
+				break;
+			}
 			ImageData data = srcImage.getImageData(srcImage.getZoom());
 			ImageData newData = applyDisableImageData(data, rect.height, rect.width);
 			init (newData, getZoom());
 			break;
 		}
 		case SWT.IMAGE_GRAY: {
+			if(createWithSVG(device, flag)) {
+				break;
+			}
 			ImageData data = srcImage.getImageData(srcImage.getZoom());
 			ImageData newData = applyGrayImageData(data, rect.height, rect.width);
 			init (newData, getZoom());
@@ -290,6 +299,28 @@ public Image(Device device, Image srcImage, int flag) {
 	}
 	init();
 	this.device.registerResourceWithZoomSupport(this);
+}
+
+private boolean createWithSVG(Device device, int flag) {
+	ImageData data = null;
+	Image customizedImage = null;
+	if (imageProvider.getProvider() instanceof ImageFileNameProvider imageFileNameProvider) {
+		ElementAtZoom<String> fileName = DPIUtil.validateAndGetImagePathAtZoom(imageFileNameProvider, getZoom());
+		if (fileName.element().endsWith(".svg")) {
+			customizedImage = new Image(device, imageFileNameProvider, flag);
+		}
+	} else if (imageProvider.getProvider() instanceof ImageDataProvider imageDataProvider) {
+		if (imageDataProvider.supportsRasterizationFlag(flag)) {
+			customizedImage = new Image(device, imageDataProvider, flag);
+		}
+	}
+	if(customizedImage != null) {
+		data = customizedImage.getImageData(customizedImage.getZoom());
+		init(data, getZoom());
+		customizedImage.dispose();
+		return true;
+	}
+	return false;
 }
 
 /**
