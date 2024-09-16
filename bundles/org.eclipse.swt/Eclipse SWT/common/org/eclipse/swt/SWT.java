@@ -4465,7 +4465,6 @@ public class SWT {
 
 	/**
 	 * Image format constant indicating a SVG format image (value is 8).
-	 * <br>Note that this is a <em>HINT</em> and is currently only supported on GTK.
 	 *
 	 * @since 3.113
 	 */

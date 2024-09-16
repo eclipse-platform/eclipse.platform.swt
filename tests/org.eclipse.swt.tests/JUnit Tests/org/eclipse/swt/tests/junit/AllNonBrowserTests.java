@@ -45,6 +45,7 @@ import org.junit.platform.suite.api.Suite;
 		Test_org_eclipse_swt_accessibility_AccessibleControlEvent.class,
 		Test_org_eclipse_swt_accessibility_AccessibleEvent.class,
 		Test_org_eclipse_swt_accessibility_AccessibleTextEvent.class,
+		Test_org_eclipse_swt_internal_SVGRasterizer.class,
 		DPIUtilTests.class})
 public class AllNonBrowserTests {
 	private static List<Error> leakedResources;
