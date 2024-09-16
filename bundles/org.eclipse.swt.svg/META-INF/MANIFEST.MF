@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.eclipse.swt.svg
+Bundle-Version: 3.130.0.qualifier
+Automatic-Module-Name: org.eclipse.swt.svg
+Bundle-Name: %fragmentName
+Bundle-Vendor: %providerName
+Bundle-RequiredExecutionEnvironment: JavaSE-17
+Fragment-Host: org.eclipse.swt
+Import-Package: com.github.weisj.jsvg;version="[1.7.0,2.0.0)",
+ com.github.weisj.jsvg.geometry.size;version="[1.7.0,2.0.0)",
+ com.github.weisj.jsvg.parser;version="[1.7.0,2.0.0)"
+Export-Package: org.eclipse.swt.svg
