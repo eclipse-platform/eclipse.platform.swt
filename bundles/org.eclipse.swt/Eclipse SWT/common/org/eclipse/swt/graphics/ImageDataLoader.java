@@ -49,4 +49,8 @@ class ImageDataLoader {
 		return data.get(0);
 	}
 
+	public static ImageData[] load(String filename, int zoom) {
+		return new ImageLoader().load(filename, zoom);
+	}
+
 }

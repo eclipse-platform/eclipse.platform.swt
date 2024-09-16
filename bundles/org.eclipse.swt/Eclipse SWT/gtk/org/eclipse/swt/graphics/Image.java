@@ -1149,7 +1149,7 @@ public ImageData getImageData (int zoom) {
 		return DPIUtil.scaleImageData (device, data.element(), zoom, data.zoom());
 	} else if (imageFileNameProvider != null) {
 		ElementAtZoom<String> fileName = DPIUtil.validateAndGetImagePathAtZoom (imageFileNameProvider, zoom);
-		return DPIUtil.scaleImageData (device, new ImageData (fileName.element()), zoom, fileName.zoom());
+		return DPIUtil.scaleImageData (device, new ImageData (fileName.element(), currentDeviceZoom), zoom, fileName.zoom());
 	} else if (imageGcDrawer != null) {
 		return drawWithImageGcDrawer(width, height, zoom);
 	} else {
