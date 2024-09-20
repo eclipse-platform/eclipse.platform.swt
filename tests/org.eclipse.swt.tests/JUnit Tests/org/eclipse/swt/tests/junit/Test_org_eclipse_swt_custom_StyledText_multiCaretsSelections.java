@@ -40,13 +40,7 @@ import org.junit.rules.TestWatcher;
 public class Test_org_eclipse_swt_custom_StyledText_multiCaretsSelections {
 
 	@Rule
-	public TestWatcher screenshotRule = new TestWatcher() {
-		@Override
-		protected void failed(Throwable e, org.junit.runner.Description description) {
-			super.failed(e, description);
-			Screenshots.takeScreenshot(description.getTestClass(), description.getMethodName());
-		}
-	};
+	public TestWatcher screenshotRule = Screenshots.onFailure();
 
 	Shell shell;
 	StyledText text;

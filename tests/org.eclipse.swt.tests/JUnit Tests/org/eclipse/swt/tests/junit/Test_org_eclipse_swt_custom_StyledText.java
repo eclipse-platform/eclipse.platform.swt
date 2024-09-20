@@ -103,13 +103,8 @@ Map<RGB, Color> colors = new HashMap<>();
 private boolean listenerCalled;
 private boolean listener2Called;
 
-@Rule public TestWatcher screenshotRule = new TestWatcher() {
-	@Override
-	protected void failed(Throwable e, org.junit.runner.Description description) {
-		super.failed(e, description);
-		Screenshots.takeScreenshot(description.getTestClass(), description.getMethodName());
-	}
-};
+@Rule
+public TestWatcher screenshotRule = Screenshots.onFailure();
 
 @Override
 @Before
