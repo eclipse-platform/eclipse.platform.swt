@@ -38,6 +38,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
+import org.junit.rules.TestWatcher;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Tree
@@ -915,6 +916,9 @@ public void test_disposeItemNotTriggerSelection() {
 	assertFalse(selectionCalled[0]);
 }
 
+@Rule
+public TestWatcher screenshotRule = Screenshots.onFailure();
+
 @Test
 public void test_Virtual() {
 	tree.dispose();
@@ -964,7 +968,6 @@ public void test_Virtual() {
 	}
 	// temp code to capture screenshot
 	if (SwtTestUtil.isCocoa) {
-		Screenshots.takeScreenshot(getClass(), testName.getMethodName());
 		// check if setData is called for root item
 		assertTrue("SetData not called for top item", top[0] != null);
 	}
