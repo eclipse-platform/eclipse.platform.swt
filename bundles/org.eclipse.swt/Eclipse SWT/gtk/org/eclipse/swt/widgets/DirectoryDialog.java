@@ -168,8 +168,9 @@ Optional<String> openNativeChooserDialog () {
 	long handle;
 	if (GTK.GTK4) {
 		handle = GTK4.gtk_file_dialog_new();
+		GTK4.gtk_file_dialog_set_title(handle, titleBytes);
 	} else {
-		handle = GTK.gtk_file_chooser_native_new(titleBytes, shellHandle, GTK.GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, null, null);
+		handle = GTK3.gtk_file_chooser_native_new(titleBytes, shellHandle, GTK.GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, null, null);
 	}
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 

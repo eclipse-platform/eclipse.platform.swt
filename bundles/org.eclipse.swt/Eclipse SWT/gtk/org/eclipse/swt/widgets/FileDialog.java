@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corporation and others.
+ * Copyright (c) 2000, 2024 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -106,13 +106,13 @@ public FileDialog (Shell parent, int style) {
 	super (parent, checkStyle (parent, style));
 	checkSubclass ();
 }
-String computeResultChooserDialog () {
+String computeResultChooserDialog (long file) {
 	/* MULTI is only valid if the native dialog's action is Open */
 	fullPath = null;
 	if ((style & SWT.MULTI) != 0) {
 		long list = 0;
 		if (GTK.GTK4) {
-			list = GTK4.gtk_file_chooser_get_files(handle);
+			list = file;
 		} else {
 			if (uriMode) {
 				list = GTK3.gtk_file_chooser_get_uris (handle);
@@ -172,7 +172,6 @@ String computeResultChooserDialog () {
 		long utf8Ptr = 0;
 		if (uriMode) {
 			if (GTK.GTK4) {
-				long file = GTK4.gtk_file_chooser_get_file(handle);
 				utf8Ptr = OS.g_file_get_uri(file);
 			} else {
 				utf8Ptr = GTK3.gtk_file_chooser_get_uri (handle);
@@ -180,7 +179,6 @@ String computeResultChooserDialog () {
 		} else {
 			long path;
 			if (GTK.GTK4) {
-				long file = GTK4.gtk_file_chooser_get_file(handle);
 				path = OS.g_file_get_path(file);
 			} else {
 				path = GTK3.gtk_file_chooser_get_filename (handle);
@@ -208,7 +206,12 @@ String computeResultChooserDialog () {
 		}
 	}
 	filterIndex = -1;
-	long filter = GTK.gtk_file_chooser_get_filter (handle);
+	long filter;
+	if (GTK.GTK4) {
+		filter = GTK4.gtk_file_dialog_get_default_filter(handle);
+	} else {
+		filter = GTK3.gtk_file_chooser_get_filter (handle);
+	}
 	if (filter != 0) {
 		long filterNamePtr = GTK.gtk_file_filter_get_name (filter);
 		if (filterNamePtr != 0) {
@@ -376,7 +379,12 @@ Optional<String> openNativeChooserDialog () {
 	int action = (style & SWT.SAVE) != 0 ? GTK.GTK_FILE_CHOOSER_ACTION_SAVE : GTK.GTK_FILE_CHOOSER_ACTION_OPEN;
 	long shellHandle = parent.topHandle();
 	Display display = parent != null ? parent.getDisplay (): Display.getCurrent();
-	handle = GTK.gtk_file_chooser_native_new(titleBytes, shellHandle, action, null, null);
+	if (GTK.GTK4) {
+		handle = GTK4.gtk_file_dialog_new();
+		GTK4.gtk_file_dialog_set_title(handle, titleBytes);
+	} else {
+		handle = GTK3.gtk_file_chooser_native_new(titleBytes, shellHandle, action, null, null);
+	}
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 
 	if (uriMode && !GTK.GTK4) {
@@ -393,8 +401,24 @@ Optional<String> openNativeChooserDialog () {
 	}
 
 	int response;
+	long file = 0;
 	if (GTK.GTK4) {
-		response = SyncDialogUtil.run(display, handle, true);
+		if ((style & SWT.MULTI) != 0) {
+			file = SyncDialogUtil.run(display,
+					asyncCallback -> GTK4.gtk_file_dialog_open_multiple(handle, shellHandle, 0, asyncCallback, 0),
+					asyncResult -> GTK4.gtk_file_dialog_open_multiple_finish(handle, asyncResult, null));
+		} else {
+			if ((style & SWT.SAVE) != 0) {
+				file = SyncDialogUtil.run(display,
+						asyncCallback -> GTK4.gtk_file_dialog_save(handle, shellHandle, 0, asyncCallback, 0),
+						asyncResult -> GTK4.gtk_file_dialog_save_finish(handle, asyncResult, null));
+			} else {
+				file = SyncDialogUtil.run(display,
+						asyncCallback -> GTK4.gtk_file_dialog_open(handle, shellHandle, 0, asyncCallback, 0),
+						asyncResult -> GTK4.gtk_file_dialog_open_finish(handle, asyncResult, null));
+			}
+		}
+		response = file != 0 ? GTK.GTK_RESPONSE_ACCEPT : GTK.GTK_RESPONSE_CANCEL;
 	} else {
 		display.externalEventLoop = true;
 		display.sendPreExternalEventDispatchEvent ();
@@ -409,7 +433,7 @@ Optional<String> openNativeChooserDialog () {
 	
 	Optional<String> result = Optional.empty();
 	if (response == GTK.GTK_RESPONSE_ACCEPT) {
-		result = Optional.ofNullable(computeResultChooserDialog ());
+		result = Optional.ofNullable(computeResultChooserDialog (file));
 	}
 	display.removeIdleProc ();
 	OS.g_object_unref(handle);
@@ -421,8 +445,8 @@ Optional<String> openNativeChooserDialog () {
 
 void presetChooserDialog () {
 	/* MULTI is only valid if the native dialog's action is Open */
-	if ((style & (SWT.SAVE | SWT.MULTI)) == SWT.MULTI) {
-		GTK.gtk_file_chooser_set_select_multiple (handle, true);
+	if (!GTK.GTK4 && (style & (SWT.SAVE | SWT.MULTI)) == SWT.MULTI) {
+		GTK3.gtk_file_chooser_set_select_multiple (handle, true);
 	}
 	if (filterPath == null) filterPath = "";
 	if (fileName == null) fileName = "";
@@ -436,7 +460,7 @@ void presetChooserDialog () {
 
 				if (GTK.GTK4) {
 					long file = OS.g_file_new_for_uri(buffer);
-					GTK4.gtk_file_chooser_set_current_folder (handle, file, 0);
+					GTK4.gtk_file_dialog_set_initial_folder(handle, file);
 					OS.g_object_unref(file);
 				} else {
 					GTK3.gtk_file_chooser_set_current_folder_uri (handle, buffer);
@@ -454,7 +478,7 @@ void presetChooserDialog () {
 				if (ptr != 0) {
 					if (GTK.GTK4) {
 						long file = OS.g_file_new_for_path(buffer);
-						GTK4.gtk_file_chooser_set_current_folder (handle, file, 0);
+						GTK4.gtk_file_dialog_set_initial_folder(handle, file);
 						OS.g_object_unref(file);
 					} else {
 						GTK3.gtk_file_chooser_set_current_folder (handle, ptr);
@@ -490,7 +514,11 @@ void presetChooserDialog () {
 				}
 			}
 			byte [] buffer = Converter.wcsToMbcs (filenameWithExt.toString (), true);
-			GTK.gtk_file_chooser_set_current_name (handle, buffer);
+			if (GTK.GTK4) {
+				GTK4.gtk_file_dialog_set_initial_name(handle, buffer);
+			} else {
+				GTK3.gtk_file_chooser_set_current_name (handle, buffer);
+			}
 		}
 	} else {
 		StringBuilder stringBuilder = new StringBuilder();
@@ -511,12 +539,12 @@ void presetChooserDialog () {
 			long file;
 			if (uriMode) {
 				file = OS.g_file_new_for_uri(buffer);
-				GTK4.gtk_file_chooser_set_file (handle, file, 0);
+				GTK4.gtk_file_dialog_set_initial_file(handle, file);
 			} else {
 				file = OS.g_file_new_for_path(buffer);
 
 				if (fileName.length() > 0) {
-					GTK4.gtk_file_chooser_set_file (handle, file, 0);
+					GTK4.gtk_file_dialog_set_initial_file(handle, file);
 				}
 			}
 
@@ -556,6 +584,10 @@ void presetChooserDialog () {
 	if (filterNames == null) filterNames = new String [0];
 	if (filterExtensions == null) filterExtensions = new String [0];
 	long initialFilter = 0;
+	long fileFilters = 0;
+	if (GTK.GTK4) {
+		fileFilters = OS.g_list_store_new(GTK.GTK_TYPE_FILE_FILTER());
+	}
 	for (int i = 0; i < filterExtensions.length; i++) {
 		if (filterExtensions [i] != null) {
 			long filter = GTK.gtk_file_filter_new ();
@@ -578,14 +610,26 @@ void presetChooserDialog () {
 			String current = filterExtensions [i].substring (start);
 			byte [] filterString = Converter.wcsToMbcs (current, true);
 			GTK.gtk_file_filter_add_pattern (filter, filterString);
-			GTK.gtk_file_chooser_add_filter (handle, filter);
+			if (GTK.GTK4) {
+				OS.g_list_store_append(fileFilters, filter);
+			} else {
+				GTK3.gtk_file_chooser_add_filter (handle, filter);
+			}
 			if (i == filterIndex) {
 				initialFilter = filter;
 			}
 		}
 	}
+	if (GTK.GTK4) {
+		GTK4.gtk_file_dialog_set_filters(handle, fileFilters);
+		OS.g_object_unref(fileFilters);
+	}
 	if (initialFilter != 0) {
-		GTK.gtk_file_chooser_set_filter(handle, initialFilter);
+		if (GTK.GTK4) {
+			GTK4.gtk_file_dialog_set_default_filter(handle, initialFilter);
+		} else {
+			GTK3.gtk_file_chooser_set_filter(handle, initialFilter);
+		}
 	}
 	fullPath = null;
 	fileNames = new String [0];

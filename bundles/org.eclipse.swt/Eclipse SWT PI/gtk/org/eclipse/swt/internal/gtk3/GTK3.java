@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2021 Syntevo and others.
+ * Copyright (c) 2021, 2024 Syntevo and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -516,6 +516,38 @@ public class GTK3 {
 	 * @param extra_widget cast=(GtkWidget *)
 	 */
 	public static final native void gtk_file_chooser_set_extra_widget(long chooser, long extra_widget);
+	/**
+	 * @param chooser cast=(GtkFileChooser *)
+	 * @param filter cast=(GtkFileFilter *)
+	 */
+	public static final native void gtk_file_chooser_add_filter(long chooser, long filter);
+	/** @param chooser cast=(GtkFileChooser *) */
+	public static final native long gtk_file_chooser_get_filter(long chooser);
+	/**
+	 * @param chooser cast=(GtkFileChooser *)
+	 * @param name cast=(const gchar *)
+	 */
+	public static final native void gtk_file_chooser_set_current_name(long chooser, byte[] name);
+	/**
+	 * @param chooser cast=(GtkFileChooser *)
+	 * @param filter cast=(GtkFileFilter *)
+	 */
+	public static final native void gtk_file_chooser_set_filter(long chooser, long filter);
+	/**
+	 * @param chooser cast=(GtkFileChooser *)
+	 * @param select_multiple cast=(gboolean)
+	 */
+	public static final native void gtk_file_chooser_set_select_multiple(long chooser, boolean select_multiple);
+
+	/* GtkFileChooserNative */
+	/**
+	 * @method flags=dynamic
+	 * @param title cast=(const gchar *),flags=no_out
+	 * @param parent cast=(GtkWindow *)
+	 * @param accept_label cast=(const gchar *),flags=no_out
+	 * @param cancel_label cast=(const gchar *),flags=no_out
+	 */
+	public static final native long gtk_file_chooser_native_new(byte[] title, long parent, int action, byte[] accept_label, byte[] cancel_label);
 
 	/* GtkRadioButton */
 	/** @param radio_button cast=(GtkRadioButton *) */
@@ -1089,5 +1121,5 @@ public class GTK3 {
 	public static final native int GdkEventWindowState_sizeof();
 	public static final native int GdkGeometry_sizeof();
 	public static final native int GdkWindowAttr_sizeof();
-	
+
 }
