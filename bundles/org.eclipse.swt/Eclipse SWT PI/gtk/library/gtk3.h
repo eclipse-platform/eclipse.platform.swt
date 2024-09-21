@@ -21,5 +21,7 @@
 #define GTK_DISABLE_SINGLE_INCLUDES
 
 #include <gtk/gtk.h>
+// Hard-link code generated from GTK3.java to LIB_GTK
+#define GTK3_LOAD_FUNCTION(var, name) LOAD_FUNCTION_LIB(var, LIB_GTK, name)
 
 #endif /* INC_gtk3_H */

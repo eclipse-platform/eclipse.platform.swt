@@ -245,6 +245,8 @@ public class GTK extends OS {
 	public static final native long GTK_TYPE_WIDGET();
 	/** @method flags=const */
 	public static final native long GTK_TYPE_WINDOW();
+	/** @method flags=const */
+	public static final native long GTK_TYPE_FILE_FILTER();
 
 	/** GTK3 Macros [if-def'd in os.h] */
 	public static final native boolean GTK_IS_ACCEL_LABEL(long obj);
@@ -699,30 +701,6 @@ public class GTK extends OS {
 	/** @param expander cast=(GtkExpander *) */
 	public static final native long gtk_expander_get_label_widget(long expander);
 
-	/* GtkFileChooser */
-	/**
-	 * @param chooser cast=(GtkFileChooser *)
-	 * @param filter cast=(GtkFileFilter *)
-	 */
-	public static final native void gtk_file_chooser_add_filter(long chooser, long filter);
-	/** @param chooser cast=(GtkFileChooser *) */
-	public static final native long gtk_file_chooser_get_filter(long chooser);
-	/**
-	 * @param chooser cast=(GtkFileChooser *)
-	 * @param name cast=(const gchar *)
-	 */
-	public static final native void gtk_file_chooser_set_current_name(long chooser, byte[] name);
-	/**
-	 * @param chooser cast=(GtkFileChooser *)
-	 * @param filter cast=(GtkFileFilter *)
-	 */
-	public static final native void gtk_file_chooser_set_filter(long chooser, long filter);
-	/**
-	 * @param chooser cast=(GtkFileChooser *)
-	 * @param select_multiple cast=(gboolean)
-	 */
-	public static final native void gtk_file_chooser_set_select_multiple(long chooser, boolean select_multiple);
-
 	/* GtkEventController */
 	/**
 	 * @param controller cast=(GtkEventController *)
@@ -740,16 +718,6 @@ public class GTK extends OS {
 	public static final native void gtk_gesture_single_set_button(long gesture, int button);
 	/** @param gesture cast=(GtkGestureSingle *) */
 	public static final native int gtk_gesture_single_get_current_button(long gesture);
-
-	/* GtkFileChooserNative */
-	/**
-	 * @method flags=dynamic
-	 * @param title cast=(const gchar *),flags=no_out
-	 * @param parent cast=(GtkWindow *)
-	 * @param accept_label cast=(const gchar *),flags=no_out
-	 * @param cancel_label cast=(const gchar *),flags=no_out
-	 */
-	public static final native long gtk_file_chooser_native_new(byte[] title, long parent, int action, byte[] accept_label, byte[] cancel_label);
 
 	/* GtkFileFilter */
 	public static final native long gtk_file_filter_new();

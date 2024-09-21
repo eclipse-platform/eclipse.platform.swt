@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2022 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2024 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -1096,6 +1096,15 @@ public static final native long g_list_next(long list);
  */
 public static final native long g_list_nth_data(long list, int n);
 public static final native long g_list_previous(long list);
+/**
+ * @param item_type cast=(GType)
+ */
+public static final native long g_list_store_new(long item_type);
+/**
+ * @param store cast=(GListStore *)
+ * @param item cast=(GObject *)
+ */
+public static final native void g_list_store_append(long store, long item);
 /**
  * @param log_domain cast=(gchar *)
  * @param log_levels cast=(GLogLevelFlags)
