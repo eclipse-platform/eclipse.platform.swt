@@ -1176,9 +1176,9 @@ static long create32bitDIB (long hBitmap, int alpha, byte [] alphaData, int tran
 	return memDib;
 }
 
-static Image createIcon (Image image) {
+static Image createIcon (Image image, int zoom) {
 	Device device = image.getDevice ();
-	ImageData data = image.getImageDataAtCurrentZoom();
+	ImageData data = image.getImageData(zoom);
 	if (data.alpha == -1 && data.alphaData == null) {
 		ImageData mask = data.getTransparencyMask ();
 		return new Image (device, data, mask);
@@ -1187,7 +1187,7 @@ static Image createIcon (Image image) {
 	long hMask, hBitmap;
 	long hDC = device.internal_new_GC (null);
 	long dstHdc = OS.CreateCompatibleDC (hDC), oldDstBitmap;
-	hBitmap = Display.create32bitDIB (image.handle, data.alpha, data.alphaData, data.transparentPixel);
+	hBitmap = Display.create32bitDIB (Image.win32_getHandle(image, zoom), data.alpha, data.alphaData, data.transparentPixel);
 	hMask = OS.CreateBitmap (width, height, 1, 1, null);
 	oldDstBitmap = OS.SelectObject (dstHdc, hMask);
 	OS.PatBlt (dstHdc, 0, 0, width, height, OS.BLACKNESS);
