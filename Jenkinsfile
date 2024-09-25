@@ -46,6 +46,17 @@ def getNativeJdkUrl(String os, String arch){ // To update the used JDK version u
 			"""
 		}
 		return "file://${WORKSPACE}/repackage-win32.aarch64-jdk/jdk.tar.gz"
+	} else if ('linux'.equals(os) && 'riscv64'.equals(arch)) {
+		// Downloading jdk and renew it for riscv64 architecture on Linux
+		dir("${WORKSPACE}/repackage-linux.riscv64-jdk") {
+				sh """
+				curl -L 'https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.12%2B7/OpenJDK17U-jdk_riscv64_linux_hotspot_17.0.12_7.tar.gz' > jdk.tar.gz
+				tar -xzf jdk.tar.gz jdk-17.0.12+7/include/ jdk-17.0.12+7/lib/
+				cd jdk-17.0.12+7
+				tar -czf ../jdk.tar.gz include/ lib/
+				"""
+		}
+		return "file://${WORKSPACE}/repackage-linux.riscv64-jdk/jdk.tar.gz"
 	}
 	return "https://download.eclipse.org/justj/jres/17/downloads/20230428_1804/org.eclipse.justj.openjdk.hotspot.jre.minimal.stripped-17.0.7-${os}-${arch}.tar.gz"
 }
@@ -186,6 +197,7 @@ pipeline {
 						'cocoa.macosx.x86_64',\
 						'gtk.linux.aarch64',\
 						'gtk.linux.ppc64le',\
+						'gtk.linux.riscv64',\
 						'gtk.linux.x86_64',\
 						'win32.win32.aarch64',\
 						'win32.win32.x86_64'
