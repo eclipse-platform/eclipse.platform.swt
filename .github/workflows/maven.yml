@@ -73,6 +73,7 @@ jobs:
         --fail-at-end
         -DskipNativeTests=false
         -DfailIfNoTests=false
+        -Dtycho.version=4.0.8
         clean install
     - name: Performance tests
       if: contains(github.event.pull_request.labels.*.name, 'performance')
