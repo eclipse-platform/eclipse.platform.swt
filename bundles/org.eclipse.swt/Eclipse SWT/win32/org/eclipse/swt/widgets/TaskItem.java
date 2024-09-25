@@ -473,7 +473,7 @@ void updateImage () {
 	long hIcon = 0;
 	switch (overlayImage.type) {
 		case SWT.BITMAP:
-			image2 = Display.createIcon (overlayImage);
+			image2 = Display.createIcon (overlayImage, getZoom());
 			hIcon = Image.win32_getHandle(image2, getZoom());
 			break;
 		case SWT.ICON:
