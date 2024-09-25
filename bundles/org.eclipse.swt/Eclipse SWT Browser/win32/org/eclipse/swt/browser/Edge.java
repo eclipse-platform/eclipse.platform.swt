@@ -57,6 +57,8 @@ class Edge extends WebBrowser {
 	private static final URI URI_FOR_CUSTOM_TEXT_PAGE = setupAndGetLocationForCustomTextPage();
 	private static final String ABOUT_BLANK = "about:blank";
 
+	private static final int MAXIMUM_CREATION_RETRIES = 5;
+
 	private record WebViewEnvironment(ICoreWebView2Environment environment, ArrayList<Edge> instances) {
 		public WebViewEnvironment(ICoreWebView2Environment environment) {
 			this (environment, new ArrayList<>());
@@ -307,6 +309,10 @@ class WebViewProvider {
 		initializeWebView_13(webView);
 		webViewFuture.complete(webView);
 		return webView;
+	}
+
+	private void abortInitialization() {
+		webViewFuture.cancel(true);
 	}
 
 	private void initializeWebView_2(ICoreWebView2 webView) {
@@ -567,39 +573,66 @@ private String getDataDir(Display display) {
 
 @Override
 public void create(Composite parent, int style) {
+	createInstance(0);
+}
+
+private void createInstance(int previousAttempts) {
 	containingEnvironment = createEnvironment();
 	containingEnvironment.instances().add(this);
 	long[] ppv = new long[1];
 	int hr = containingEnvironment.environment().QueryInterface(COM.IID_ICoreWebView2Environment2, ppv);
 	if (hr == COM.S_OK) environment2 = new ICoreWebView2Environment2(ppv[0]);
 	// The webview calls are queued to be executed when it is done executing the current task.
-	IUnknown setupBrowserCallback = newCallback((result, pv) -> {
-		if ((int)result == COM.S_OK) {
-			new IUnknown(pv).AddRef();
+	containingEnvironment.environment().CreateCoreWebView2Controller(browser.handle, createControllerInitializationCallback(previousAttempts));
+}
+
+private IUnknown createControllerInitializationCallback(int previousAttempts) {
+	Runnable initializationRollback = () -> {
+		webViewProvider.abortInitialization();
+		if (environment2 != null) {
+			environment2.Release();
+			environment2 = null;
 		}
-		setupBrowser((int)result, pv);
+		containingEnvironment.instances().remove(this);
+	};
+	return newCallback((result, pv) -> {
+		if (browser.isDisposed()) {
+			initializationRollback.run();
+			return COM.S_OK;
+		}
+		if (result == OS.HRESULT_FROM_WIN32(OS.ERROR_INVALID_STATE)) {
+			initializationRollback.run();
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT, null,
+					" Edge instance with same data folder but different environment options already exists");
+		}
+		switch ((int) result) {
+		case COM.S_OK:
+			new IUnknown(pv).AddRef();
+			setupBrowser((int) result, pv);
+			break;
+		case COM.E_WRONG_THREAD:
+			initializationRollback.run();
+			error(SWT.ERROR_THREAD_INVALID_ACCESS, (int) result);
+			break;
+		case COM.E_ABORT:
+			initializationRollback.run();
+			break;
+		default:
+			initializationRollback.run();
+			if (previousAttempts < MAXIMUM_CREATION_RETRIES) {
+				System.err.println(String.format("Edge initialization failed, retrying (attempt %d / %d)", previousAttempts + 1, MAXIMUM_CREATION_RETRIES));
+				createInstance(previousAttempts + 1);
+			} else {
+				SWT.error(SWT.ERROR_UNSPECIFIED, null,
+						String.format(" Aborting Edge initialiation after %d retries", MAXIMUM_CREATION_RETRIES));
+			}
+			break;
+		}
 		return COM.S_OK;
 	});
-	containingEnvironment.environment().CreateCoreWebView2Controller(browser.handle, setupBrowserCallback);
 }
 
 void setupBrowser(int hr, long pv) {
-	if(browser.isDisposed()) {
-		browserDispose(new Event());
-		return;
-	}
-	switch (hr) {
-	case COM.S_OK:
-		break;
-	case COM.E_WRONG_THREAD:
-		containingEnvironment.instances().remove(this);
-		error(SWT.ERROR_THREAD_INVALID_ACCESS, hr);
-		break;
-	default:
-		System.err.println("WebView instantiation failed with result: " + hr);
-		containingEnvironment.instances().remove(this);
-		error(SWT.ERROR_NO_HANDLES, hr);
-	}
 	long[] ppv = new long[] {pv};
 	controller = new ICoreWebView2Controller(ppv[0]);
 	final ICoreWebView2 webView = webViewProvider.initializeWebView(controller);
