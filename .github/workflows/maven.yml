@@ -60,26 +60,24 @@ jobs:
       with:
         maven-version: 3.9.9
     - name: Build
-      uses: coactions/setup-xvfb@6b00cf1889f4e1d5a48635647013c0508128ee1a
-      with:
-       run: >-
+      run: >-
+        ${{ contains(matrix.config.native, 'linux') && 'xvfb-run' || '' }}
         mvn --batch-mode -V -U -e
         --threads 1C
         -DforkCount=1
-        -Dnative=${{ matrix.config.native }}
+        '-Dnative=${{ matrix.config.native }}'
         -Papi-check
-        -Dtycho.baseline.replace=none
+        '-Dtycho.baseline.replace=none'
         --fail-at-end
         -DskipNativeTests=false
         -DfailIfNoTests=false
-        -Dtycho.version=4.0.8
+        '-Dtycho.version=4.0.8'
         clean install
     - name: Performance tests
       if: contains(github.event.pull_request.labels.*.name, 'performance')
-      uses: coactions/setup-xvfb@6b00cf1889f4e1d5a48635647013c0508128ee1a
-      with:
-       working-directory: tests/org.eclipse.swt.tests
-       run: >-
+      working-directory: tests/org.eclipse.swt.tests
+      run: >-
+        ${{ contains(matrix.config.native, 'linux') && 'xvfb-run' || '' }}
         mvn --batch-mode -V -U -e
         -DforkCount=1
         --fail-at-end
