@@ -914,7 +914,7 @@ void setImages (Image image, Image [] images) {
 	if (smallIcon != null) {
 		switch (smallIcon.type) {
 			case SWT.BITMAP:
-				smallImage = Display.createIcon (smallIcon);
+				smallImage = Display.createIcon (smallIcon, getZoom());
 				hSmallIcon = Image.win32_getHandle(smallImage, getZoom());
 				break;
 			case SWT.ICON:
@@ -926,7 +926,7 @@ void setImages (Image image, Image [] images) {
 	if (largeIcon != null) {
 		switch (largeIcon.type) {
 			case SWT.BITMAP:
-				largeImage = Display.createIcon (largeIcon);
+				largeImage = Display.createIcon (largeIcon, getZoom());
 				hLargeIcon = Image.win32_getHandle(largeImage, getZoom());
 				break;
 			case SWT.ICON:
