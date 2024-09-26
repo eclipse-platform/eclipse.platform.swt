@@ -16,7 +16,7 @@
     <stringAttribute key="M2_USER_SETTINGS" value=""/>
     <booleanAttribute key="M2_WORKSPACE_RESOLUTION" value="false"/>
     <booleanAttribute key="org.eclipse.debug.core.ATTR_FORCE_SYSTEM_CONSOLE_ENCODING" value="false"/>
-    <stringAttribute key="org.eclipse.debug.core.ATTR_REFRESH_SCOPE" value="${working_set:&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#13;&#10;&lt;resources&gt;&#13;&#10;&lt;item path=&quot;/org.eclipse.swt.cocoa.macosx.aarch64&quot; type=&quot;4&quot;/&gt;&#13;&#10;&lt;item path=&quot;/org.eclipse.swt.cocoa.macosx.x86_64&quot; type=&quot;4&quot;/&gt;&#13;&#10;&lt;item path=&quot;/org.eclipse.swt.gtk.linux.aarch64&quot; type=&quot;4&quot;/&gt;&#13;&#10;&lt;item path=&quot;/org.eclipse.swt.gtk.linux.loongarch64&quot; type=&quot;4&quot;/&gt;&#13;&#10;&lt;item path=&quot;/org.eclipse.swt.gtk.linux.ppc64le&quot; type=&quot;4&quot;/&gt;&#13;&#10;&lt;item path=&quot;/org.eclipse.swt.gtk.linux.x86_64&quot; type=&quot;4&quot;/&gt;&#13;&#10;&lt;item path=&quot;/org.eclipse.swt.win32.win32.aarch64&quot; type=&quot;4&quot;/&gt;&#13;&#10;&lt;item path=&quot;/org.eclipse.swt.win32.win32.x86_64&quot; type=&quot;4&quot;/&gt;&#13;&#10;&lt;/resources&gt;}"/> 
+    <stringAttribute key="org.eclipse.debug.core.ATTR_REFRESH_SCOPE" value="${workspace}"/>
     <booleanAttribute key="org.eclipse.jdt.launching.ATTR_ATTR_USE_ARGFILE" value="false"/>
     <booleanAttribute key="org.eclipse.jdt.launching.ATTR_SHOW_CODEDETAILS_IN_EXCEPTION_MESSAGES" value="true"/>
     <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_CLASSPATH_ONLY_JAR" value="false"/>
