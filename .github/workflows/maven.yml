@@ -23,7 +23,6 @@ jobs:
         name: Event File
         path: ${{ github.event_path }}
   build:
-    runs-on: ${{ matrix.config.os }}
     strategy:
       fail-fast: false
       matrix:
@@ -34,6 +33,7 @@ jobs:
           - { name: MacOS x86, os: macos-13, native: cocoa.macosx.x86_64 }
           - { name: MacOS ARM, os: macos-latest, native: cocoa.macosx.aarch64 }
     name: Verify ${{ matrix.config.name }} with Java-${{ matrix.java }}
+    runs-on: ${{ matrix.config.os }}
     steps:
     - name: checkout swt
       uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4.2.1
@@ -41,14 +41,14 @@ jobs:
        fetch-depth: 0 # required for jgit timestamp provider to work
        lfs: false # lfs-pull is not necessary, the natives are re-build in each run
     - name: Install Linux requirements
+      if: ${{ matrix.config.native == 'gtk.linux.x86_64'}}
       run: |
         sudo apt-get update -qq 
         sudo apt-get install -qq -y libgtk-3-dev freeglut3-dev webkit2gtk-driver
-      if: ${{ matrix.config.native == 'gtk.linux.x86_64'}}
     - name: Pull large static Windows binaries
+      if: ${{ matrix.config.native == 'win32.win32.x86_64'}}
       run: |
         git lfs pull --include='/binaries/org.eclipse.swt.win32.win32.x86_64/WebView2Loader.dll'
-      if: ${{ matrix.config.native == 'win32.win32.x86_64'}}
     - name: Set up Java ${{ matrix.java }}
       uses: actions/setup-java@b36c23c0d998641eff861008f374ee103c25ac73 # v4.4.0
       with:
@@ -58,8 +58,8 @@ jobs:
     - name: Set up Maven
       uses: stCarolas/setup-maven@v5
       with:
-        maven-version: 3.9.6
-    - name: Build with Maven
+        maven-version: 3.9.9
+    - name: Build
       uses: coactions/setup-xvfb@6b00cf1889f4e1d5a48635647013c0508128ee1a
       with:
        run: >-
@@ -79,6 +79,7 @@ jobs:
       if: contains(github.event.pull_request.labels.*.name, 'performance')
       uses: coactions/setup-xvfb@6b00cf1889f4e1d5a48635647013c0508128ee1a
       with:
+       working-directory: tests/org.eclipse.swt.tests
        run: >-
         mvn --batch-mode -V -U -e
         -DforkCount=1
@@ -88,7 +89,6 @@ jobs:
         -DfailIfNoTests=true
         -Dtest=PerformanceTests
         integration-test
-       working-directory: tests/org.eclipse.swt.tests
     - name: Upload Test Results for ${{ matrix.config.name }} / Java-${{ matrix.java }}
       if: always()
       uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
