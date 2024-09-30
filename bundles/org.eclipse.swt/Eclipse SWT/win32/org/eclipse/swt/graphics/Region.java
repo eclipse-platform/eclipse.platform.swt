@@ -84,6 +84,7 @@ public Region (Device device) {
 	zoomToHandle.put(initialZoom, handle);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	init();
+	this.device.registerResourceWithZoomSupport(this);
 }
 
 /**
@@ -225,6 +226,18 @@ void destroy () {
 	zoomToHandle.values().forEach(handle -> OS.DeleteObject(handle));
 	zoomToHandle.clear();
 	operations.clear();
+}
+
+@Override
+void destroyHandlesExcept(Set<Integer> zoomLevels) {
+	zoomToHandle.entrySet().removeIf(entry -> {
+		final Integer zoom = entry.getKey();
+		if (!zoomLevels.contains(zoom) && zoom != initialZoom) {
+			OS.DeleteObject(entry.getValue());
+			return true;
+		}
+		return false;
+	});
 }
 
 /**

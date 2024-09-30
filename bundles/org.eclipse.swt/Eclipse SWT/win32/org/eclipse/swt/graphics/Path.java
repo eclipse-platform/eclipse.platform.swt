@@ -86,6 +86,7 @@ private Path(Device device, int zoom) {
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	zoomLevelToHandle.put(initialZoom, handle);
 	init();
+	this.device.registerResourceWithZoomSupport(this);
 }
 
 /**
@@ -133,6 +134,7 @@ public Path (Device device, Path path, float flatness) {
 	initialZoom = path.initialZoom;
 	zoomLevelToHandle.put(initialZoom, handle);
 	init();
+	this.device.registerResourceWithZoomSupport(this);
 }
 
 /**
@@ -172,6 +174,7 @@ private Path(Device device, PathData data, int zoom) {
 	this(device, zoom);
 	if (data == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	init(data);
+	this.device.registerResourceWithZoomSupport(this);
 }
 
 /**
@@ -436,6 +439,18 @@ void cubicToInPixels(float cx1, float cy1, float cx2, float cy2, float x, float 
 void destroy() {
 	zoomLevelToHandle.values().forEach(Gdip::GraphicsPath_delete);
 	zoomLevelToHandle.clear();
+}
+
+@Override
+void destroyHandlesExcept(Set<Integer> zoomLevels) {
+	zoomLevelToHandle.entrySet().removeIf(entry -> {
+		final Integer zoom = entry.getKey();
+		if (!zoomLevels.contains(zoom) && zoom != initialZoom) {
+			Gdip.GraphicsPath_delete(entry.getValue());
+			return true;
+		}
+		return false;
+	});
 }
 
 /**
