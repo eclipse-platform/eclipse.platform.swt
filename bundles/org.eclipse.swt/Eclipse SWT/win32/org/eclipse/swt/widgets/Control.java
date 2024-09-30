@@ -4899,6 +4899,7 @@ LRESULT WM_DPICHANGED (long wParam, long lParam) {
 	// Map DPI to Zoom and compare
 	int newNativeZoom = DPIUtil.mapDPIToZoom (OS.HIWORD (wParam));
 	if (getDisplay().isRescalingAtRuntime()) {
+		Device.win32_destroyUnusedHandles(getDisplay());
 		int oldNativeZoom = nativeZoom;
 		if (newNativeZoom != oldNativeZoom) {
 			DPIUtil.setDeviceZoom (newNativeZoom);

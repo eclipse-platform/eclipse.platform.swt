@@ -13,6 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
+import java.util.*;
 import java.util.function.*;
 
 import org.eclipse.swt.*;
@@ -121,6 +122,17 @@ Resource(Device device) {
 }
 
 void destroy() {
+}
+
+/**
+ * Destroy all handles of the resource which are not necessary for the given
+ * zoom levels. This method is supposed to be overridden by sub-classes that
+ * retain handles for different zoom levels.
+ *
+ * @param zoomLevels The zoom levels for which the handles are supposed to be
+ *                   retained.
+ */
+void destroyHandlesExcept(Set<Integer> zoomLevels) {
 }
 
 /**
