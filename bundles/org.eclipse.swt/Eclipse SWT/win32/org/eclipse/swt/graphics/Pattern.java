@@ -90,6 +90,7 @@ public Pattern(Device device, Image image) {
 	initialZoom = DPIUtil.getDeviceZoom();
 	setImageHandle(image, initialZoom);
 	init();
+	this.device.registerResourceWithZoomSupport(this);
 }
 
 /**
@@ -183,6 +184,7 @@ public Pattern(Device device, float x1, float y1, float x2, float y2, Color colo
 	this.image = null;
 	initialZoom = DPIUtil.getDeviceZoom();
 	initializeSize(initialZoom);
+	this.device.registerResourceWithZoomSupport(this);
 }
 
 long getHandle(int zoom) {
@@ -260,26 +262,42 @@ void setImageHandle(Image image, int zoom) {
 @Override
 void destroy() {
 	for (long handle: zoomLevelToHandle.values()) {
-		int type = Gdip.Brush_GetType(handle);
-		switch (type) {
-			case Gdip.BrushTypeSolidColor:
-				Gdip.SolidBrush_delete(handle);
-				break;
-			case Gdip.BrushTypeHatchFill:
-				Gdip.HatchBrush_delete(handle);
-				break;
-			case Gdip.BrushTypeLinearGradient:
-				Gdip.LinearGradientBrush_delete(handle);
-				break;
-			case Gdip.BrushTypeTextureFill:
-				Gdip.TextureBrush_delete(handle);
-				break;
-		}
+		destroyHandle(handle);
 	}
 	zoomLevelToHandle.clear();
 	if (bitmapDestructor != null) {
 		bitmapDestructor.run();
 		bitmapDestructor = null;
+	}
+}
+
+@Override
+void destroyHandlesExcept(Set<Integer> zoomLevels) {
+	zoomLevelToHandle.entrySet().removeIf(entry -> {
+		final Integer zoom = entry.getKey();
+		if (!zoomLevels.contains(zoom) && zoom != initialZoom) {
+			destroyHandle(entry.getValue());
+			return true;
+		}
+		return false;
+	});
+}
+
+private void destroyHandle(long handle) {
+	int type = Gdip.Brush_GetType(handle);
+	switch (type) {
+		case Gdip.BrushTypeSolidColor:
+			Gdip.SolidBrush_delete(handle);
+			break;
+		case Gdip.BrushTypeHatchFill:
+			Gdip.HatchBrush_delete(handle);
+			break;
+		case Gdip.BrushTypeLinearGradient:
+			Gdip.LinearGradientBrush_delete(handle);
+			break;
+		case Gdip.BrushTypeTextureFill:
+			Gdip.TextureBrush_delete(handle);
+			break;
 	}
 }
 

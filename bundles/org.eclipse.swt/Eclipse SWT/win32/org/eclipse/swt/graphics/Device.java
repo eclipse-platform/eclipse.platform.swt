@@ -14,10 +14,14 @@
 package org.eclipse.swt.graphics;
 
 
+import java.util.*;
+import java.util.concurrent.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gdip.*;
 import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * This class is the abstract superclass of all device objects,
@@ -55,6 +59,7 @@ public abstract class Device implements Drawable {
 	String[] loadedFonts;
 
 	volatile boolean disposed;
+	private Set<Resource> resourcesWithZoomSupport  = ConcurrentHashMap.newKeySet();
 
 	/*
 	* TEMPORARY CODE. When a graphics object is
@@ -914,6 +919,8 @@ protected void release () {
 		Gdip.GdiplusShutdown (gdipToken[0]);
 	}
 	SWTFontProvider.disposeFontRegistry(this);
+	resourcesWithZoomSupport.clear();
+	resourcesWithZoomSupport = null;
 	gdipToken = null;
 	scripts = null;
 	logFonts = null;
@@ -946,5 +953,25 @@ public void setWarnings (boolean warnings) {
  */
 protected int getDeviceZoom () {
 	return DPIUtil.mapDPIToZoom ( _getDPIx ());
+}
+
+void registerResourceWithZoomSupport(Resource resource) {
+	resourcesWithZoomSupport.add(resource);
+}
+
+/**
+ * Destroys the handles of all the resources in the resource tracker by
+ * identifying the zoom levels which is not valid for any monitor
+ *
+ * @noreference This method is not intended to be referenced by clients.
+ */
+public static void win32_destroyUnusedHandles(Display display) {
+	Set<Integer> availableZoomLevels = new HashSet<>();
+	for (Monitor monitor : display.getMonitors()) {
+	    availableZoomLevels.add(DPIUtil.getZoomForAutoscaleProperty(monitor.getZoom()));
+	}
+	for (Resource resource: ((Device) display).resourcesWithZoomSupport) {
+		resource.destroyHandlesExcept(availableZoomLevels);
+	}
 }
 }
