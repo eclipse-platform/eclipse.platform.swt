@@ -284,6 +284,7 @@ class WebViewProvider {
 	private CompletableFuture<ICoreWebView2> webViewFuture = new CompletableFuture<>();
 	private CompletableFuture<ICoreWebView2_2> webView_2Future = new CompletableFuture<>();
 	private CompletableFuture<ICoreWebView2_11> webView_11Future = new CompletableFuture<>();
+	private CompletableFuture<ICoreWebView2_12> webView_12Future = new CompletableFuture<>();
 
 	private CompletableFuture<Void> lastWebViewTask = webViewFuture.thenRun(() -> {});
 
@@ -293,6 +294,7 @@ class WebViewProvider {
 		final ICoreWebView2 webView = new ICoreWebView2(ppv[0]);
 		initializeWebView_2(webView);
 		initializeWebView_11(webView);
+		initializeWebView_12(webView);
 		webViewFuture.complete(webView);
 		return webView;
 	}
@@ -314,6 +316,16 @@ class WebViewProvider {
 			webView_11Future.complete(new ICoreWebView2_11(ppv[0]));
 		} else {
 			webView_11Future.cancel(true);
+		}
+	}
+
+	private void initializeWebView_12(ICoreWebView2 webView) {
+		long[] ppv = new long[1];
+		int hr = webView.QueryInterface(COM.IID_ICoreWebView2_12, ppv);
+		if (hr == COM.S_OK) {
+			webView_12Future.complete(new ICoreWebView2_12(ppv[0]));
+		} else {
+			webView_12Future.cancel(true);
 		}
 	}
 
@@ -346,6 +358,18 @@ class WebViewProvider {
 	boolean isWebView_11Available() {
 		waitForFutureToFinish(webView_11Future);
 		return !webView_11Future.isCancelled();
+	}
+
+	ICoreWebView2_12 getWebView_12(boolean waitForPendingWebviewTasksToFinish) {
+		if(waitForPendingWebviewTasksToFinish) {
+			waitForFutureToFinish(lastWebViewTask);
+		}
+		return webView_12Future.join();
+	}
+
+	boolean isWebView_12Available() {
+		waitForFutureToFinish(webView_12Future);
+		return !webView_12Future.isCancelled();
 	}
 
 	/*
@@ -561,6 +585,11 @@ void setupBrowser(int hr, long pv) {
 		webViewProvider.getWebView_11(false).add_ContextMenuRequested(handler, token);
 		handler.Release();
 	}
+	if (webViewProvider.isWebView_12Available()) {
+		handler = newCallback(this::handleStatusBarTextChanged);
+		webViewProvider.getWebView_12(false).add_StatusBarTextChanged(handler, token);
+		handler.Release();
+	}
 
 	IUnknown hostDisp = newHostObject(this::handleCallJava);
 	long[] hostObj = { COM.VT_DISPATCH, hostDisp.getAddress(), 0 }; // VARIANT
@@ -587,6 +616,7 @@ void browserDispose(Event event) {
 		if (settings != null) settings.Release();
 		if (webViewProvider.isWebView_2Available()) webViewProvider.getWebView_2(false).Release();
 		if (webViewProvider.isWebView_11Available()) webViewProvider.getWebView_11(false).Release();
+		if (webViewProvider.isWebView_12Available()) webViewProvider.getWebView_12(false).Release();
 		if(controller != null) {
 			// Bug in WebView2. Closing the controller from an event handler results
 			// in a crash. The fix is to delay the closure with asyncExec.
@@ -862,6 +892,20 @@ int handleContextMenuRequested(long pView, long pArgs) {
 			}
 			menu.setVisible(true);
 		}
+	}
+	return COM.S_OK;
+}
+
+int handleStatusBarTextChanged(long pView, long pArgs) {
+	long ppsz[] = new long[1];
+	webViewProvider.getWebView_12(true).get_StatusBarText(ppsz);
+	String text = wstrToString(ppsz[0], true);
+	StatusTextEvent newEvent5 = new StatusTextEvent(browser);
+	newEvent5.display = browser.getDisplay();
+	newEvent5.widget = browser;
+	newEvent5.text = text;
+	for (StatusTextListener statusTextListener : statusTextListeners) {
+		statusTextListener.changed(newEvent5);
 	}
 	return COM.S_OK;
 }
