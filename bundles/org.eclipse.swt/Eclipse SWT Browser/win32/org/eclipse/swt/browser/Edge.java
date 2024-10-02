@@ -540,6 +540,13 @@ void setupBrowser(int hr, long pv) {
 	webView.get_Settings(ppv);
 	settings = new ICoreWebView2Settings(ppv[0]);
 
+	if (webViewProvider.isWebView_12Available()) {
+		// Align with other Browser implementations:
+		// Disable internal status bar on the bottom left of the Browser control
+		// Send out StatusTextEvents via handleStatusBarTextChanged for SWT consumers
+		settings.put_IsStatusBarEnabled(false);
+	}
+
 	long[] token = new long[1];
 	IUnknown handler;
 	handler = newCallback(this::handleCloseRequested);
@@ -900,12 +907,12 @@ int handleStatusBarTextChanged(long pView, long pArgs) {
 	long ppsz[] = new long[1];
 	webViewProvider.getWebView_12(true).get_StatusBarText(ppsz);
 	String text = wstrToString(ppsz[0], true);
-	StatusTextEvent newEvent5 = new StatusTextEvent(browser);
-	newEvent5.display = browser.getDisplay();
-	newEvent5.widget = browser;
-	newEvent5.text = text;
+	StatusTextEvent statusTextEvent = new StatusTextEvent(browser);
+	statusTextEvent.display = browser.getDisplay();
+	statusTextEvent.widget = browser;
+	statusTextEvent.text = text;
 	for (StatusTextListener statusTextListener : statusTextListeners) {
-		statusTextListener.changed(newEvent5);
+		statusTextListener.changed(statusTextEvent);
 	}
 	return COM.S_OK;
 }
