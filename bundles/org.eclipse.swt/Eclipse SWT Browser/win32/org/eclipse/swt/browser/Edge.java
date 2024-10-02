@@ -345,7 +345,7 @@ class WebViewProvider {
 
 	boolean isWebView_11Available() {
 		waitForFutureToFinish(webView_11Future);
-		return webView_11Future.isCancelled();
+		return !webView_11Future.isCancelled();
 	}
 
 	/*
