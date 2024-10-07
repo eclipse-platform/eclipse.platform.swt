@@ -81,7 +81,14 @@ Contributing to SWT
 
 Thanks for your interest in this project.
 
-See https://github.com/eclipse-platform/.github/blob/main/CONTRIBUTING.md for contributing to Eclipse Platform in general.
+For information about contributing to Eclipse Platform in general, see the general [CONTRIBUTING](https://github.com/eclipse-platform/.github/blob/main/CONTRIBUTING.md) page.
+
+
+[![Create Eclipse Development Environment for Eclipse SWT](https://download.eclipse.org/oomph/www/setups/svg/Eclipse_SWT.svg)](
+https://www.eclipse.org/setups/installer/?url=https://raw.githubusercontent.com/eclipse-platform/eclipse.platform.swt/master/bundles/org.eclipse.swt.tools/Oomph/PlatformSWTConfiguration.setup&show=true
+"Click to open Eclipse-Installer Auto Launch or drag into your running installer")
+
+
 
 Developer resources:
 --------------------
