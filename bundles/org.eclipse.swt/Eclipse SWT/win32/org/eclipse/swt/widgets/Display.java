@@ -3157,7 +3157,7 @@ private Rectangle translateRectangleInPixelsInDisplayCoordinateSystem(int x, int
 
 private Rectangle translateRectangleInPixelsInDisplayCoordinateSystem(int x, int y, int width, int height, Monitor monitorOfLocation, Monitor monitorOfArea) {
 	Point topLeft = getPixelsFromPoint(monitorOfLocation, x, y);
-	int zoom = DPIUtil.getZoomForAutoscaleProperty(monitorOfArea.zoom);
+	int zoom = getApplicableMonitorZoom(monitorOfArea);
 	int widthInPixels = DPIUtil.scaleUp(width, zoom);
 	int heightInPixels = DPIUtil.scaleUp(height, zoom);
 	return new Rectangle(topLeft.x, topLeft.y, widthInPixels, heightInPixels);
@@ -3176,10 +3176,14 @@ private Rectangle translateRectangleInPointsInDisplayCoordinateSystem(int x, int
 
 private Rectangle translateRectangleInPointsInDisplayCoordinateSystem(int x, int y, int widthInPixels, int heightInPixels, Monitor monitorOfLocation, Monitor monitorOfArea) {
 	Point topLeft = getPointFromPixels(monitorOfLocation, x, y);
-	int zoom = DPIUtil.getZoomForAutoscaleProperty(monitorOfArea.zoom);
+	int zoom = getApplicableMonitorZoom(monitorOfArea);
 	int width = DPIUtil.scaleDown(widthInPixels, zoom);
 	int height = DPIUtil.scaleDown(heightInPixels, zoom);
 	return new Rectangle(topLeft.x, topLeft.y, width, height);
+}
+
+private int getApplicableMonitorZoom(Monitor monitor) {
+	return DPIUtil.getZoomForAutoscaleProperty(isRescalingAtRuntime() ? monitor.zoom : getDeviceZoom());
 }
 
 long messageProc (long hwnd, long msg, long wParam, long lParam) {
@@ -5480,21 +5484,21 @@ private Monitor getContainingMonitorInPixelsCoordinate(int xInPixels, int yInPix
 }
 
 private Rectangle getMonitorClientAreaInPixels(Monitor monitor) {
-	int zoom = DPIUtil.getZoomForAutoscaleProperty(monitor.zoom);
+	int zoom = getApplicableMonitorZoom(monitor);
 	int widthInPixels = DPIUtil.scaleUp(monitor.clientWidth, zoom);
 	int heightInPixels = DPIUtil.scaleUp(monitor.clientHeight, zoom);
 	return new Rectangle(monitor.clientX, monitor.clientY, widthInPixels, heightInPixels);
 }
 
 private Point getPixelsFromPoint(Monitor monitor, int x, int y) {
-	int zoom = DPIUtil.getZoomForAutoscaleProperty(monitor.zoom);
+	int zoom = getApplicableMonitorZoom(monitor);
 	int mappedX = DPIUtil.scaleUp(x - monitor.clientX, zoom) + monitor.clientX;
 	int mappedY = DPIUtil.scaleUp(y - monitor.clientY, zoom) + monitor.clientY;
 	return new Point(mappedX, mappedY);
 }
 
 private Point getPointFromPixels(Monitor monitor, int x, int y) {
-	int zoom = DPIUtil.getZoomForAutoscaleProperty(monitor.zoom);
+	int zoom = getApplicableMonitorZoom(monitor);
 	int mappedX = DPIUtil.scaleDown(x - monitor.clientX, zoom) + monitor.clientX;
 	int mappedY = DPIUtil.scaleDown(y - monitor.clientY, zoom) + monitor.clientY;
 	return new Point(mappedX, mappedY);
