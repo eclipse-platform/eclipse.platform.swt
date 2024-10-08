@@ -2062,6 +2062,9 @@ void onPaint(Event event) {
 	}
 
 	GC gc = event.gc;
+	if (gc == null) {
+		return;
+	}
 	Font gcFont = gc.getFont();
 	Color gcBackground = gc.getBackground();
 	Color gcForeground = gc.getForeground();
