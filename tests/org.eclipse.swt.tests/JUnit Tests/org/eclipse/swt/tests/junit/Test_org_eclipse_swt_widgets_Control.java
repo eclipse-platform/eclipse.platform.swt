@@ -62,16 +62,14 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /**
- * Automated Test Suite for class org.eclipse.swt.widgets.Control
+ * Base Test for widgets of type org.eclipse.swt.widgets.Control
  *
  * @see org.eclipse.swt.widgets.Control
  */
-public class Test_org_eclipse_swt_widgets_Control extends Test_org_eclipse_swt_widgets_Widget {
+abstract class Test_org_eclipse_swt_widgets_Control extends Test_org_eclipse_swt_widgets_Widget {
 
 @Test
-public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
-	// abstract class
-}
+abstract void test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
 
 @Test
 public void test_addControlListenerLorg_eclipse_swt_events_ControlListener() {
