@@ -873,7 +873,9 @@ static void checkDisplay (Thread thread, boolean multiple) {
 		for (Display display : Displays) {
 			if (display != null) {
 				if (!multiple) SWT.error (SWT.ERROR_NOT_IMPLEMENTED, null, " [multiple displays]"); //$NON-NLS-1$
-				if (display.thread == thread) SWT.error (SWT.ERROR_THREAD_INVALID_ACCESS);
+				if (display.thread == thread)
+					SWT.error(SWT.ERROR_THREAD_INVALID_ACCESS, null,
+							" Another Display is already associated by this thread: " + thread);
 			}
 		}
 	}
