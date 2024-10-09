@@ -22,4 +22,7 @@
 
 #include <gtk/gtk.h>
 
+// Hard-link code generated from GTK4.java to LIB_GTK
+#define GTK4_LOAD_FUNCTION(var, name) LOAD_FUNCTION_LIB(var, LIB_GTK, name)
+
 #endif /* INC_gtk4_H */
