@@ -593,8 +593,7 @@ public Object getData () {
 public Object getData (String key) {
 	checkWidget();
 	if (key == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if ((state & KEYED_DATA) != 0) {
-		Object [] table = (Object []) data;
+	if ((state & KEYED_DATA) != 0 && data instanceof Object [] table) {
 		for (int i=1; i<table.length; i+=2) {
 			if (key.equals (table [i])) return table [i+1];
 		}
