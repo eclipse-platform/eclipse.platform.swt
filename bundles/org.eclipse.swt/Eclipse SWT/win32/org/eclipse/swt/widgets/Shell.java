@@ -1586,7 +1586,8 @@ public void setLocation(Point location) {
 
 @Override
 public void setLocation(int x, int y) {
-	Point location = display.translateLocationInPixelsInDisplayCoordinateSystem(x, y);
+	Point translatedPoint = display.translatePointIfInDisplayCoordinateGap(x, y);
+	Point location = display.translateLocationInPixelsInDisplayCoordinateSystem(translatedPoint.x, translatedPoint.y);
 	setLocationInPixels(location.x, location.y);
 }
 
@@ -1598,7 +1599,8 @@ public void setBounds(Rectangle rect) {
 
 @Override
 public void setBounds(int x, int y, int width, int height) {
-	Rectangle boundsInPixels = display.translateRectangleInPixelsInDisplayCoordinateSystemByContainment(x, y, width, height);
+	Point translatedPoint = display.translatePointIfInDisplayCoordinateGap(x, y);
+	Rectangle boundsInPixels = display.translateRectangleInPixelsInDisplayCoordinateSystemByContainment(translatedPoint.x, translatedPoint.y, width, height);
 	setBoundsInPixels(boundsInPixels.x, boundsInPixels.y, boundsInPixels.width, boundsInPixels.height);
 }
 
