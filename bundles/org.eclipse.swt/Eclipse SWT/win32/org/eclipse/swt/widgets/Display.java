@@ -3006,7 +3006,8 @@ public Point map (Control from, Control to, int x, int y) {
 	checkDevice ();
 	Point mappedPointInPoints;
 	if (from == null) {
-		Point mappedPointInpixels = mapInPixels(from, to, getPixelsFromPoint(to.getShell().getMonitor(), x, y));
+		Point translatedPoint = translatePointIfInDisplayCoordinateGap(x, y);
+		Point mappedPointInpixels = mapInPixels(from, to, getPixelsFromPoint(to.getShell().getMonitor(), translatedPoint.x, translatedPoint.y));
 		mappedPointInPoints = DPIUtil.scaleDown(mappedPointInpixels, to.getZoom());
 	} else if (to == null) {
 		Point mappedPointInpixels = mapInPixels(from, to, DPIUtil.scaleUp(new Point(x, y), from.getZoom()));
@@ -3119,7 +3120,8 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
 	checkDevice ();
 	Rectangle mappedRectangleInPoints;
 	if (from == null) {
-		Rectangle mappedRectangleInPixels = mapInPixels(from, to, translateRectangleInPixelsInDisplayCoordinateSystem(x, y, width, height, to.getShell().getMonitor()));
+		Point translatedPoint = translatePointIfInDisplayCoordinateGap(x, y);
+		Rectangle mappedRectangleInPixels = mapInPixels(from, to, translateRectangleInPixelsInDisplayCoordinateSystem(translatedPoint.x, translatedPoint.y, width, height, to.getShell().getMonitor()));
 		mappedRectangleInPoints = DPIUtil.scaleDown(mappedRectangleInPixels, to.getZoom());
 	} else if (to == null) {
 		Rectangle mappedRectangleInPixels = mapInPixels(from, to, DPIUtil.scaleUp(new Rectangle(x, y, width, height), from.getZoom()));
@@ -3147,19 +3149,21 @@ Rectangle mapInPixels (Control from, Control to, int x, int y, int width, int he
 }
 
 Point translateLocationInPixelsInDisplayCoordinateSystem(int x, int y) {
-	Monitor monitor = getContainingMonitor(x, y);
-	return getPixelsFromPoint(monitor, x, y);
+	Point translatedPoint = translatePointIfInDisplayCoordinateGap(x, y);
+	Monitor monitor = getContainingMonitorOrPrimaryMonitor(translatedPoint.x, translatedPoint.y);
+	return getPixelsFromPoint(monitor, translatedPoint.x, translatedPoint.y);
 }
 
 Point translateLocationInPointInDisplayCoordinateSystem(int x, int y) {
-	Monitor monitor = getContainingMonitorInPixelsCoordinate(x, y);
+	Monitor monitor = getContainingMonitorInPixelsCoordinateOrPrimaryMonitor(x, y);
 	return getPointFromPixels(monitor, x, y);
 }
 
 Rectangle translateRectangleInPixelsInDisplayCoordinateSystemByContainment(int x, int y, int width, int height) {
-	Monitor monitorByLocation = getContainingMonitor(x, y);
-	Monitor monitorByContainment = getContainingMonitor(x, y, width, height);
-	return translateRectangleInPixelsInDisplayCoordinateSystem(x, y, width, height, monitorByLocation, monitorByContainment);
+	Point translatedPoint = translatePointIfInDisplayCoordinateGap(x, y);
+	Monitor monitorByLocation = getContainingMonitorOrPrimaryMonitor(translatedPoint.x, translatedPoint.y);
+	Monitor monitorByContainment = getContainingMonitorOrPrimaryMonitor(translatedPoint.x, translatedPoint.y, width, height);
+	return translateRectangleInPixelsInDisplayCoordinateSystem(translatedPoint.x, translatedPoint.y, width, height, monitorByLocation, monitorByContainment);
 }
 
 private Rectangle translateRectangleInPixelsInDisplayCoordinateSystem(int x, int y, int width, int height, Monitor monitor) {
@@ -3175,8 +3179,8 @@ private Rectangle translateRectangleInPixelsInDisplayCoordinateSystem(int x, int
 }
 
 Rectangle translateRectangleInPointsInDisplayCoordinateSystemByContainment(int x, int y, int widthInPixels, int heightInPixels) {
-	Monitor monitorByLocation = getContainingMonitor(x, y);
-	Monitor monitorByContainment = getContainingMonitor(x, y, widthInPixels, heightInPixels);
+	Monitor monitorByLocation = getContainingMonitorOrPrimaryMonitor(x, y);
+	Monitor monitorByContainment = getContainingMonitorOrPrimaryMonitor(x, y, widthInPixels, heightInPixels);
 	return translateRectangleInPointsInDisplayCoordinateSystem(x, y, widthInPixels, heightInPixels, monitorByLocation, monitorByContainment);
 }
 
@@ -5458,18 +5462,32 @@ private boolean setDPIAwareness(int desiredDpiAwareness) {
 	return true;
 }
 
-private Monitor getContainingMonitor(int x, int y) {
+private Monitor getContainingMonitorOrPrimaryMonitor(int x, int y) {
+	return getContainingMonitor(x, y).orElse(getPrimaryMonitor());
+}
+
+private Optional<Monitor> getContainingMonitor(int x, int y) {
 	Monitor[] monitors = getMonitors();
 	for (Monitor currentMonitor : monitors) {
 		Rectangle clientArea = currentMonitor.getClientArea();
 		if (clientArea.contains(x, y)) {
-			return currentMonitor;
+			return Optional.of(currentMonitor);
 		}
 	}
-	return getPrimaryMonitor();
+	return Optional.empty();
 }
 
-private Monitor getContainingMonitor(int x, int y, int width, int height) {
+private Point translatePointIfInDisplayCoordinateGap(int x, int y) {
+	// Translate only if the point doesn't lie in the point coordinate space but in
+	// the pixel coordinate space (the gap between the point coordinate spaces of
+	// the monitors)
+	if(getContainingMonitor(x, y).isEmpty() && getContainingMonitorInPixelsCoordinate(x, y).isPresent()) {
+		return translateLocationInPointInDisplayCoordinateSystem(x, y);
+	}
+	return new Point(x, y);
+}
+
+private Monitor getContainingMonitorOrPrimaryMonitor(int x, int y, int width, int height) {
 	Rectangle rectangle = new Rectangle(x, y, width, height);
 	Monitor[] monitors = getMonitors();
 	Monitor selectedMonitor = getPrimaryMonitor();
@@ -5486,15 +5504,19 @@ private Monitor getContainingMonitor(int x, int y, int width, int height) {
 	return selectedMonitor;
 }
 
-private Monitor getContainingMonitorInPixelsCoordinate(int xInPixels, int yInPixels) {
+private Monitor getContainingMonitorInPixelsCoordinateOrPrimaryMonitor(int xInPixels, int yInPixels) {
+	return getContainingMonitorInPixelsCoordinate(xInPixels, yInPixels).orElse(getPrimaryMonitor());
+}
+
+private Optional<Monitor> getContainingMonitorInPixelsCoordinate(int xInPixels, int yInPixels) {
 	Monitor[] monitors = getMonitors();
 	for (Monitor current : monitors) {
 		Rectangle clientArea = getMonitorClientAreaInPixels(current);
 		if (clientArea.contains(xInPixels, yInPixels)) {
-			return current;
+			return Optional.of(current);
 		}
 	}
-	return getPrimaryMonitor();
+	return Optional.empty();
 }
 
 private Rectangle getMonitorClientAreaInPixels(Monitor monitor) {
