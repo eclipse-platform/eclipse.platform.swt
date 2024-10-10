@@ -32,6 +32,10 @@ public class SnippetRadioButton {
 		radio3.setText("Option 3");
 		radio3.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
+		Button push = new Button(shell, SWT.PUSH);
+		push.setText("Push");
+		push.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+
 		// Event-Handling
 		SelectionAdapter selectionAdapter = new SelectionAdapter() {
 			@Override

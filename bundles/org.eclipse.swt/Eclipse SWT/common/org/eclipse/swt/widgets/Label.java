@@ -165,6 +165,11 @@ public class Label extends Control implements ICustomWidget {
 	}
 
 	@Override
+	boolean isTabItem() {
+		return false;
+	}
+
+	@Override
 	public Point computeSize(int wHint, int hHint) {
 		return computeSize(wHint, hHint, true);
 	}
@@ -1246,5 +1251,4 @@ public class Label extends Control implements ICustomWidget {
 		} while (pos != -1);
 		return lines;
 	}
-
 }

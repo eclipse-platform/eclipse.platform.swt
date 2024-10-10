@@ -14,7 +14,11 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
+import java.util.*;
+
 import org.eclipse.swt.*;
+import org.eclipse.swt.accessibility.*;
+import org.eclipse.swt.custom.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 
@@ -82,6 +86,9 @@ public class Button extends Control implements ICustomWidget {
 			| SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER;
 
 	private static Color background;
+
+	private Accessible acc;
+	private AccessibleAdapter accAdapter;
 
 	/**
 	 * Constructs a new instance of this class given its parent and a style
@@ -151,10 +158,10 @@ public class Button extends Control implements ICustomWidget {
 					onKeyDown(event);
 					break;
 				case SWT.FocusIn :
-					onFocus();
+					onFocusIn();
 					break;
 				case SWT.FocusOut :
-					onFocus();
+					onFocusOut();
 					break;
 				case SWT.Traverse :
 					onTraverse(event);
@@ -193,6 +200,106 @@ public class Button extends Control implements ICustomWidget {
 
 		});
 
+		initializeAccessible();
+	}
+
+	/**
+	 * TODO: improve this support and make it completely similar to native
+	 * windows buttons.
+	 * ---------------------------------------------------------------------------
+	 * Add accessibility support for the widget.
+	 */
+	void initializeAccessible() {
+		acc = getAccessible();
+
+		accAdapter = new AccessibleAdapter() {
+			@Override
+			public void getName (AccessibleEvent e) {
+				e.result = getText();
+			}
+			@Override
+			public void getHelp(AccessibleEvent e) {
+				e.result = getToolTipText();
+			}
+			@Override
+			public void getKeyboardShortcut(AccessibleEvent e) {
+				String shortcut = null;
+				String text = getText();
+				if (text != null) {
+					char mnemonic = _findMnemonic (text);
+					if (mnemonic != '\0') {
+						shortcut = "Alt+"+mnemonic; //$NON-NLS-1$
+					}
+				}
+				e.result = shortcut;
+			}
+		};
+		acc.addAccessibleListener(accAdapter);
+		addListener(SWT.FocusIn, event -> acc.setFocus(ACC.CHILDID_SELF));
+
+	}
+
+	/*
+	 * Return the lowercase of the first non-'&' character following an '&'
+	 * character in the given string. If there are no '&' characters in the
+	 * given string, return '\0'.
+	 */
+	char _findMnemonic(String string) {
+		if (string == null)
+			return '\0';
+		int index = 0;
+		int length = string.length();
+		do {
+			while (index < length && string.charAt(index) != '&')
+				index++;
+			if (++index >= length)
+				return '\0';
+			if (string.charAt(index) != '&')
+				return Character.toLowerCase(string.charAt(index));
+			index++;
+		} while (index < length);
+		return '\0';
+	}
+
+	// TODO maybe this can be improved with a cache.
+	// But this cache must be handled somehow on the parent element. But there multiple radio groups can exist.
+	private Button[] getRadioGroup() {
+
+		if ((style & SWT.RADIO) == 0)
+			return null;
+
+		Control[] children = parent._getChildren();
+		int length = children.length;
+		int index = 0;
+		int firstRadioButton = -1;
+		while (index < length) {
+
+			if(children[index] instanceof Button b && (children[index].getStyle() & SWT.RADIO) != 0) {
+				if( firstRadioButton == -1 ) {
+					firstRadioButton = index;
+				}
+
+			}else
+				firstRadioButton = -1;
+
+
+			if (children[index] == this)
+				break;
+			index++;
+		}
+
+		ArrayList<Button> radioGroup = new ArrayList<>();
+		for( int k = firstRadioButton ;   k < length ; k++  ) {
+
+			if (children[k] instanceof Button b
+					&& (children[k].getStyle() & SWT.RADIO) != 0)
+				radioGroup.add(b);
+			else
+				break;
+		}
+
+		return radioGroup.toArray(new Button[0]);
+
 	}
 
 	@Override
@@ -208,12 +315,16 @@ public class Button extends Control implements ICustomWidget {
 		// Not implemented yet
 	}
 
-	private void onFocus() {
-		// Not implemented yet
+	private void onFocusIn() {
+		redraw();
+	}
+
+	private void onFocusOut() {
+		redraw();
 	}
 
 	private void onKeyDown(Event event) {
-		// Not implemented yet
+		// TODO implement behaviour
 	}
 
 	private void onResize() {
@@ -375,6 +486,16 @@ public class Button extends Control implements ICustomWidget {
 			int textLeftOffset = contentArea.x + imageSpace;
 			gc.drawText(text, textLeftOffset, textTopOffset, DRAW_FLAGS);
 		}
+		if (hasFocus()) {
+			if (((style & SWT.RADIO) | (style & SWT.CHECK)) != 0) {
+				int textTopOffset = (r.height - 1 - textHeight) / 2;
+				int textLeftOffset = contentArea.x + imageSpace;
+				gc.drawFocus(textLeftOffset - 2, textTopOffset, textWidth + 4, textHeight);
+			} else {
+				gc.drawFocus(3, 3, r.width - 7, r.height - 7);
+
+			}
+		}
 
 		gc.commit();
 		gc.dispose();
@@ -407,7 +528,12 @@ public class Button extends Control implements ICustomWidget {
 			gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_GRAY));
 		}
 
+		// if the button has focus, the border also changes the color
+		Color fg = gc.getForeground();
+		if (hasFocus())
+			gc.setForeground(SELECTION_COLOR);
 		gc.drawRoundRectangle(x, y, w - getGCCorrectionValue(), h - getGCCorrectionValue(), 6, 6);
+		gc.setForeground(fg);
 	}
 
 	private void drawRadioButton(IGraphicsContext gc, int x, int y) {
@@ -763,10 +889,24 @@ public class Button extends Control implements ICustomWidget {
 	}
 
 	@Override
-	boolean isTabItem() {
-		if ((style & SWT.PUSH) != 0)
-			return isTabGroup();
-		return super.isTabItem();
+	boolean isTabGroup() {
+
+		// in case that a radio button of this radioGroup is already focused,
+		// then this button belongs to this other tab group.
+		// Else this radio button presents a new tab group.
+		if ((style & SWT.RADIO) != 0) {
+			for (Button b : getRadioGroup()) {
+				if (b.hasFocus()) {
+					return false;
+				}
+			}
+			return true;
+		}
+
+		if ((style & SWT.PUSH) != 0 || (style & SWT.CHECK ) != 0 ) {
+			return true;
+		}
+		return super.isTabGroup();
 	}
 
 	boolean mnemonicIsHit(char ch) {
@@ -1243,5 +1383,4 @@ public class Button extends Control implements ICustomWidget {
 		super.setEnabled(enabled);
 		redraw();
 	}
-
 }

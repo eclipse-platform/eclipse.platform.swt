@@ -347,8 +347,15 @@ public class SkijaGC implements IGraphicsContext {
 		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	}
 
+	@Override
 	public void drawFocus(int x, int y, int width, int height) {
-		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		Paint p = new Paint();
+		p.setColor(convertSWTColorToSkijaColor(getForeground()));
+		p.setMode(PaintMode.STROKE);
+		p.setStrokeWidth(lineWidth);
+		p.setPathEffect(PathEffect.makeDash(new float[]{1.5f, 1.5f}, 0.0f));
+		surface.getCanvas().drawRect(
+				createScaledAndOffsetRectangle(x, y, width, height), p);
 	}
 
 	void drawIcon(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth,
@@ -563,6 +570,22 @@ public class SkijaGC implements IGraphicsContext {
 	private Rect createScaledAndOffsetRectangle(int x, int y, int width, int height) {
 		return new Rect(DPIUtil.autoScaleUp(x + 0.5f), DPIUtil.autoScaleUp(y + 0.5f),
 				DPIUtil.autoScaleUp(x - 0.5f + width), DPIUtil.autoScaleUp(y - 0.5f + height));
+	}
+
+	@Override
+	public void setLineStyle(int lineDot) {
+		innerGC.setLineStyle(lineDot);
+
+	}
+
+	@Override
+	public int getLineStyle() {
+		return innerGC.getLineStyle();
+	}
+
+	@Override
+	public int getLineWidth() {
+		return innerGC.getLineWidth();
 	}
 
 }
