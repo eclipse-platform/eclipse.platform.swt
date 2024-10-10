@@ -2285,6 +2285,7 @@ public static final void setTheme(boolean isDarkTheme) {
 	display.setData("org.eclipse.swt.internal.win32.Combo.useDarkTheme",       isDarkTheme);
 	display.setData("org.eclipse.swt.internal.win32.ProgressBar.useColors",    isDarkTheme);
 	display.setData("org.eclipse.swt.internal.win32.Text.useDarkThemeIcons",   isDarkTheme);
+	display.setData("org.eclipse.swt.internal.win32.Edge.useDarkPreferedColorScheme", isDarkTheme);
 }
 
 public static final boolean SetWindowText (long hWnd, TCHAR lpString) {
