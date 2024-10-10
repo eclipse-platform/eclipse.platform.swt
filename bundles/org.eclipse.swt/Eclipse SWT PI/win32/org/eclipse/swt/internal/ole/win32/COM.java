@@ -88,6 +88,7 @@ public class COM extends OS {
 	public static final GUID IID_ICoreWebView2_2 = IIDFromString("{9E8F0CF8-E670-4B5E-B2BC-73E061E3184C}"); //$NON-NLS-1$
 	public static final GUID IID_ICoreWebView2_11 = IIDFromString("{0BE78E56-C193-4051-B943-23B460C08BDB}"); //$NON-NLS-1$
 	public static final GUID IID_ICoreWebView2_12 = IIDFromString("{35D69927-BCFA-4566-9349-6B3E0D154CAC}"); //$NON-NLS-1$
+	public static final GUID IID_ICoreWebView2_13 = IIDFromString("{F75F09A8-667E-4983-88D6-C8773F315E84}"); //$NON-NLS-1$
 
 	// IA2 related GUIDS
 	public static final GUID IIDIAccessible2 = IIDFromString("{E89F726E-C4F4-4c19-BB19-B647D7FA8478}"); //$NON-NLS-1$
