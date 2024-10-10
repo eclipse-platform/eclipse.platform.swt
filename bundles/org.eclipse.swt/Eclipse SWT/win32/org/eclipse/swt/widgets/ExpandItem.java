@@ -536,7 +536,8 @@ private static void handleDPIChange(Widget widget, int newZoom, float scalingFac
 	if (item.height != 0 || item.width != 0) {
 		int newWidth = Math.round(item.width * scalingFactor);
 		int newHeight = Math.round(item.height * scalingFactor);
-		item.setBoundsInPixels(item.x, item.y, newWidth, newHeight, false, true);
+		item.setBoundsInPixels(item.x, item.y, newWidth, newHeight, true, true);
+		item.parent.layoutItems(0, true);
 	}
 }
 }
