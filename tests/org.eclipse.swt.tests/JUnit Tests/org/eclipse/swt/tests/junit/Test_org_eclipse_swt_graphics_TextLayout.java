@@ -547,6 +547,60 @@ public void test_setStyle() {
 	assertNull(layout.getStyle(4));
 	assertNull(layout.getStyle(5));
 	layout.dispose();
+
+	layout = new TextLayout (display);
+	layout.setText("\rabc\ndef\r\rghi\n\njkl\r\nmno\r\n\r\npqr\r");
+	layout.setStyle(s1, 0, 5);//abcd
+	layout.setStyle (s2, 7, 10);//fg
+	layout.setStyle (s3, 11, 18);//hijkl
+	layout.setStyle (s4, 19, 24);//mno
+	assertEquals(s1, layout.getStyle(0));
+	assertEquals(s1, layout.getStyle(1));
+	assertEquals(s1, layout.getStyle(3));
+	assertEquals(s1, layout.getStyle(4));
+	assertEquals(s1, layout.getStyle(5));
+
+	assertEquals(s2, layout.getStyle(7));
+	assertEquals(s2, layout.getStyle(8));
+	assertEquals(s2, layout.getStyle(9));
+	assertEquals(s2, layout.getStyle(10));
+
+	assertEquals(s3, layout.getStyle(12));
+	assertEquals(s3, layout.getStyle(13));
+	assertEquals(s3, layout.getStyle(14));
+	assertEquals(s3, layout.getStyle(15));
+
+	assertEquals(s4, layout.getStyle(19));
+	assertEquals(s4, layout.getStyle(20));
+	assertEquals(s4, layout.getStyle(22));
+	assertEquals(s4, layout.getStyle(23));
+	assertEquals(s4, layout.getStyle(24));
+
+	layout.setStyle (null, 0, 3);//abc
+	assertNull(layout.getStyle(0));
+
+	layout.setStyle(s1, 0, 9);//abcdef
+	assertEquals(s1, layout.getStyle(8));
+
+	layout.setStyle (s2, 1, 24);//abcdefghijklmno
+	assertEquals(s2, layout.getStyle(7));
+	assertEquals(s2, layout.getStyle(8));
+	assertEquals(s2, layout.getStyle(14));
+	assertEquals(s2, layout.getStyle(18));
+	assertEquals(s2, layout.getStyle(22));
+	assertEquals(s2, layout.getStyle(23));
+	assertEquals(s2, layout.getStyle(24));
+
+	layout.setStyle (s3, 0, 30);//abcdefghijklmnopqr
+	assertEquals(s3, layout.getStyle(0));
+	assertEquals(s3, layout.getStyle(1));
+	assertEquals(s3, layout.getStyle(30));
+
+	layout.setStyle (s4, 1, 30);//abcdefghijklmnopqr
+	assertEquals(s4, layout.getStyle(1));
+	assertEquals(s4, layout.getStyle(29));
+	assertEquals(s4, layout.getStyle(30));
+	layout.dispose();
 }
 
 @Test
