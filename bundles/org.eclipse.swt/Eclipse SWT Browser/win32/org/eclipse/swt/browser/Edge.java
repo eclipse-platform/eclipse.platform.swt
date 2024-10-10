@@ -1045,6 +1045,15 @@ int handleGotFocus(long pView, long pArg) {
 	ignoreFocus = true;
 	OS.SendMessage (browser.handle, OS.WM_SETFOCUS, 0, 0);
 	ignoreFocus = false;
+
+	Event newEvent = new Event();
+	newEvent.widget = browser;
+	Point position = browser.getDisplay().getCursorLocation(); // To Points
+	position = browser.getDisplay().map(null, browser, position);
+	newEvent.x = position.x; newEvent.y = position.y;
+	newEvent.type = SWT.MouseEnter;
+	browser.notifyListeners(newEvent.type, newEvent);
+
 	return COM.S_OK;
 }
 
