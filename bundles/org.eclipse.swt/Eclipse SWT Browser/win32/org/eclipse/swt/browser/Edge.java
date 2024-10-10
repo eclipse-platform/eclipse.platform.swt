@@ -299,6 +299,10 @@ class WebViewProvider {
 		return webView;
 	}
 
+	private void abortInitialization() {
+		webViewFuture.cancel(true);
+	}
+
 	private void initializeWebView_2(ICoreWebView2 webView) {
 		long[] ppv = new long[1];
 		int hr = webView.QueryInterface(COM.IID_ICoreWebView2_2, ppv);
@@ -510,29 +514,42 @@ public void create(Composite parent, int style) {
 	int hr = containingEnvironment.environment().QueryInterface(COM.IID_ICoreWebView2Environment2, ppv);
 	if (hr == COM.S_OK) environment2 = new ICoreWebView2Environment2(ppv[0]);
 	// The webview calls are queued to be executed when it is done executing the current task.
-	IUnknown setupBrowserCallback = newCallback((result, pv) -> {
-		if ((int)result == COM.S_OK) {
-			new IUnknown(pv).AddRef();
+	containingEnvironment.environment().CreateCoreWebView2Controller(browser.handle, getSetupCallback());
+}
+
+private IUnknown getSetupCallback() {
+	return newCallback((result, pv) -> {
+		if (result == OS.HRESULT_FROM_WIN32(OS.ERROR_INVALID_STATE)) {
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT, null, " Edge instance with same data folder but different environment options already exists");
 		}
-		setupBrowser((int)result, pv);
+		switch ((int) result) {
+		case COM.S_OK:
+			new IUnknown(pv).AddRef();
+			setupBrowser((int)result, pv);
+			break;
+		case COM.E_WRONG_THREAD:
+			error(SWT.ERROR_THREAD_INVALID_ACCESS, (int)result);
+			break;
+		case COM.E_ABORT:
+			webViewProvider.abortInitialization();
+			break;
+		default:
+			System.err.println("Edge initialization failed, retrying");
+			webViewProvider.abortInitialization();
+			if (environment2 != null) {
+				environment2.Release();
+			}
+			create(null, 0);
+			break;
+		}
 		return COM.S_OK;
 	});
-	containingEnvironment.environment().CreateCoreWebView2Controller(browser.handle, setupBrowserCallback);
 }
 
 void setupBrowser(int hr, long pv) {
 	if(browser.isDisposed()) {
 		browserDispose(new Event());
 		return;
-	}
-	switch (hr) {
-	case COM.S_OK:
-		break;
-	case COM.E_WRONG_THREAD:
-		error(SWT.ERROR_THREAD_INVALID_ACCESS, hr);
-		break;
-	default:
-		error(SWT.ERROR_NO_HANDLES, hr);
 	}
 	long[] ppv = new long[] {pv};
 	controller = new ICoreWebView2Controller(ppv[0]);
