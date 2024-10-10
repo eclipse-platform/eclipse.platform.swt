@@ -710,7 +710,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 												backgroundRect = selectionRect;
 											}
 										}
-										long hTheme = OS.OpenThemeData (handle, Display.TREEVIEW);
+										long hTheme = OS.OpenThemeDataForDpi(handle, Display.TREEVIEW, getZoom());
 										int iStateId = selected ? OS.TREIS_SELECTED : OS.TREIS_HOT;
 										if (OS.GetFocus () != handle && selected && !hot) iStateId = OS.TREIS_SELECTEDNOTFOCUS;
 										OS.DrawThemeBackground (hTheme, hDC, OS.TVP_TREEITEM, iStateId, pRect, backgroundRect);
@@ -4781,14 +4781,14 @@ void setCheckboxImageList () {
 		 * artifacts, limit the rectangle to actual checkbox bitmap size.
 		 */
 		SIZE size = new SIZE();
-		OS.GetThemePartSize(display.hButtonTheme(), memDC, OS.BP_CHECKBOX, 0, null, OS.TS_TRUE, size);
+		OS.GetThemePartSize(display.hButtonTheme(getZoom()), memDC, OS.BP_CHECKBOX, 0, null, OS.TS_TRUE, size);
 		itemWidth = Math.min (size.cx, itemWidth);
 		itemHeight = Math.min (size.cy, itemHeight);
 	}
 	int left = (width - itemWidth) / 2, top = (height - itemHeight) / 2 + 1;
 	OS.SetRect (rect, left + width, top, left + width + itemWidth, top + itemHeight);
 	if (OS.IsAppThemed ()) {
-		long hTheme = display.hButtonTheme ();
+		long hTheme = display.hButtonTheme(getZoom());
 		OS.DrawThemeBackground (hTheme, memDC, OS.BP_CHECKBOX, OS.CBS_UNCHECKEDNORMAL, rect, null);
 		rect.left += width;  rect.right += width;
 		OS.DrawThemeBackground (hTheme, memDC, OS.BP_CHECKBOX, OS.CBS_CHECKEDNORMAL, rect, null);
