@@ -200,7 +200,7 @@ protected void checkSubclass () {
 }
 
 @Override
-Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
+public Point computeSize(int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
@@ -211,7 +211,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 		GTK.gtk_widget_get_preferred_size(handle, requisition, null);
 		int width = wHint == SWT.DEFAULT ? requisition.width : Math.max(wHint, requisition.width);
 		int height = hHint == SWT.DEFAULT ? requisition.height : hHint;
-		Rectangle trim = computeTrimInPixels(0, 0, width, height);
+		Rectangle trim = computeTrim(0, 0, width, height);
 		return new Point(trim.width, trim.height);
 	} else {
 		GTK.gtk_widget_realize (handle);
@@ -247,16 +247,16 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 		width = wHint == SWT.DEFAULT ? requisition.width : Math.max(wHint, requisition.width);
 		height = hHint == SWT.DEFAULT ? requisition.height : hHint;
 		OS.pango_layout_set_text (layout, buffer2, buffer2.length);
-		Rectangle trim = computeTrimInPixels (0, 0, width, height);
+		Rectangle trim = computeTrim(0, 0, width, height);
 		return new Point (trim.width, trim.height);
 	}
 }
 
 @Override
-Rectangle computeTrimInPixels (int x, int y, int width, int height) {
+public Rectangle computeTrim(int x, int y, int width, int height) {
 	checkWidget ();
 	int xborder = 0, yborder = 0;
-	Rectangle trim = super.computeTrimInPixels (x, y, width, height);
+	Rectangle trim = super.computeTrim(x, y, width, height);
 	GtkBorder tmp = new GtkBorder();
 	long context = GTK.gtk_widget_get_style_context (handle);
 	int state_flag = GTK.gtk_widget_get_state_flags(handle);
@@ -429,7 +429,7 @@ void fixIM () {
 }
 
 @Override
-int getBorderWidthInPixels () {
+public int getBorderWidth() {
 	checkWidget();
 	if ((this.style & SWT.BORDER) != 0) {
 		return getThickness (handle).x;
