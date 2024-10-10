@@ -358,7 +358,7 @@ void createItem (MenuItem item, int index) {
 	info.fMask = OS.MIIM_ID | OS.MIIM_TYPE | OS.MIIM_DATA;
 	info.wID = item.id;
 	info.dwItemData = item.id;
-	info.fType = item.widgetStyle ();
+	info.fType = (style & SWT.BAR) != 0 && needsMenuCallback() ? OS.MFT_OWNERDRAW :  item.widgetStyle ();
 	info.dwTypeData = pszText;
 	boolean success = OS.InsertMenuItem (handle, index, true, info);
 	if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
