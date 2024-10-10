@@ -270,6 +270,17 @@ public class Display extends Device implements Executor {
 	 */
 	static final String USE_DARKTHEME_TEXT_ICONS = "org.eclipse.swt.internal.win32.Text.useDarkThemeIcons"; //$NON-NLS-1$
 	boolean textUseDarkthemeIcons = false;
+	/**
+	 * Use dark prefered color scheme in Edge browser.
+	 * Note:<br>
+	 * <ul>
+	 *   <li>When setting this property on the display, it is first AND'ed with !disableCustomThemeTweaks.
+	 *   <li>The data is then read from withing Edge.
+	 *   <li>This is to avoid adding public methods/members.
+	 * </ul>
+	 * Expects a <code>boolean</code> value.
+	 */
+	static final String EDGE_USE_DARK_PREFERED_COLOR_SCHEME = "org.eclipse.swt.internal.win32.Edge.useDarkPreferedColorScheme"; //$NON-NLS-1$
 
 	/* Custom icons */
 	private HashMap<Integer, Long> sizeToSearchIconHandle = new HashMap<>();
@@ -4574,6 +4585,9 @@ public void setData (String key, Object value) {
 			break;
 		case USE_DARKTHEME_TEXT_ICONS:
 			textUseDarkthemeIcons = !disableCustomThemeTweaks && _toBoolean(value);
+			break;
+		case EDGE_USE_DARK_PREFERED_COLOR_SCHEME:
+			value = !disableCustomThemeTweaks && _toBoolean(value);
 			break;
 	}
 

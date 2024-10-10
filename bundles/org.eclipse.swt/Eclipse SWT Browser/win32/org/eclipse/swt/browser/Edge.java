@@ -40,6 +40,7 @@ class Edge extends WebBrowser {
 
 	// Display.getData() keys
 	static final String APPLOCAL_DIR_KEY = "org.eclipse.swt.internal.win32.appLocalDir";
+	static final String EDGE_USE_DARK_PREFERED_COLOR_SCHEME = "org.eclipse.swt.internal.win32.Edge.useDarkPreferedColorScheme"; //$NON-NLS-1$
 
 	// System.getProperty() keys
 	static final String BROWSER_DIR_PROP = "org.eclipse.swt.browser.EdgeDir";
@@ -64,6 +65,7 @@ class Edge extends WebBrowser {
 	private static Map<Display, WebViewEnvironment> webViewEnvironments = new HashMap<>();
 	ICoreWebView2Controller controller;
 	ICoreWebView2Settings settings;
+	ICoreWebView2Profile profile;
 	ICoreWebView2Environment2 environment2;
 	private final WebViewProvider webViewProvider = new WebViewProvider();
 
@@ -285,6 +287,7 @@ class WebViewProvider {
 	private CompletableFuture<ICoreWebView2_2> webView_2Future = new CompletableFuture<>();
 	private CompletableFuture<ICoreWebView2_11> webView_11Future = new CompletableFuture<>();
 	private CompletableFuture<ICoreWebView2_12> webView_12Future = new CompletableFuture<>();
+	private CompletableFuture<ICoreWebView2_13> webView_13Future = new CompletableFuture<>();
 
 	private CompletableFuture<Void> lastWebViewTask = webViewFuture.thenRun(() -> {});
 
@@ -295,6 +298,7 @@ class WebViewProvider {
 		initializeWebView_2(webView);
 		initializeWebView_11(webView);
 		initializeWebView_12(webView);
+		initializeWebView_13(webView);
 		webViewFuture.complete(webView);
 		return webView;
 	}
@@ -326,6 +330,16 @@ class WebViewProvider {
 			webView_12Future.complete(new ICoreWebView2_12(ppv[0]));
 		} else {
 			webView_12Future.cancel(true);
+		}
+	}
+
+	private void initializeWebView_13(ICoreWebView2 webView) {
+		long[] ppv = new long[1];
+		int hr = webView.QueryInterface(COM.IID_ICoreWebView2_13, ppv);
+		if (hr == COM.S_OK) {
+			webView_13Future.complete(new ICoreWebView2_13(ppv[0]));
+		} else {
+			webView_13Future.cancel(true);
 		}
 	}
 
@@ -370,6 +384,18 @@ class WebViewProvider {
 	boolean isWebView_12Available() {
 		waitForFutureToFinish(webView_12Future);
 		return !webView_12Future.isCancelled();
+	}
+
+	ICoreWebView2_13 getWebView_13(boolean waitForPendingWebviewTasksToFinish) {
+		if(waitForPendingWebviewTasksToFinish) {
+			waitForFutureToFinish(lastWebViewTask);
+		}
+		return webView_13Future.join();
+	}
+
+	boolean isWebView_13Available() {
+		waitForFutureToFinish(webView_13Future);
+		return !webView_13Future.isCancelled();
 	}
 
 	/*
@@ -545,6 +571,18 @@ void setupBrowser(int hr, long pv) {
 		// Disable internal status bar on the bottom left of the Browser control
 		// Send out StatusTextEvents via handleStatusBarTextChanged for SWT consumers
 		settings.put_IsStatusBarEnabled(false);
+	}
+
+	if (webViewProvider.isWebView_13Available()) {
+		webViewProvider.getWebView_13(false).get_Profile(ppv);
+		profile = new ICoreWebView2Profile(ppv[0]);
+
+		// Dark theme inherited from application theme
+		if (Boolean.TRUE.equals(browser.getDisplay().getData(EDGE_USE_DARK_PREFERED_COLOR_SCHEME))) {
+			profile.put_PreferredColorScheme(/* COREWEBVIEW2_PREFERRED_COLOR_SCHEME_DARK */ 2);
+		} else {
+			profile.put_PreferredColorScheme(/* COREWEBVIEW2_PREFERRED_COLOR_SCHEME_AUTO */ 0);
+		}
 	}
 
 	long[] token = new long[1];
