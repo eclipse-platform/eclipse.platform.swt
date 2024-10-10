@@ -245,7 +245,7 @@ public TextLayout (Device device) {
 	OS.pango_context_set_base_dir(context, OS.PANGO_DIRECTION_LTR);
 	layout = OS.pango_layout_new(context);
 	if (layout == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	OS.pango_layout_set_font_description(layout, device.systemFont.handle);
+	OS.pango_layout_set_font_description(layout, device.systemFont.handle.pointer);
 	OS.pango_layout_set_wrap(layout, OS.PANGO_WRAP_WORD_CHAR);
 	OS.pango_layout_set_tabs(layout, device.emptyTab);
 	OS.pango_layout_set_auto_dir(layout, false);
@@ -371,7 +371,7 @@ void computeRuns () {
 		byteEnd = Math.min(byteEnd, strlen);
 		Font font = style.font;
 		if (font != null && !font.isDisposed() && !defaultFont.equals(font)) {
-			long attr = OS.pango_attr_font_desc_new (font.handle);
+			long attr = font.handle.newFontAttributes();
 			OS.memmove (attribute, attr, PangoAttribute.sizeof);
 			attribute.start_index = byteStart;
 			attribute.end_index = byteEnd;
@@ -1250,7 +1250,7 @@ public FontMetrics getLineMetrics (int lineIndex) {
 	int heightInPoints;
 	int ascentInPoints;
 	if (line.runs == 0) {
-		long font = this.font != null ? this.font.handle : device.systemFont.handle;
+		long font = this.font != null ? this.font.handle.pointer : device.systemFont.handle.pointer;
 		long lang = OS.pango_context_get_language(context);
 		long metrics = OS.pango_context_get_metrics(context, font, lang);
 		int ascent = OS.pango_font_metrics_get_ascent(metrics);
@@ -2023,7 +2023,7 @@ public void setFont (Font font) {
 	freeRuns();
 	this.font = font;
 	if (oldFont != null && oldFont.equals(font)) return;
-	OS.pango_layout_set_font_description(layout, font != null ? font.handle : device.systemFont.handle);
+	OS.pango_layout_set_font_description(layout, font != null ? font.handle.pointer : device.systemFont.handle.pointer);
 }
 
 /**

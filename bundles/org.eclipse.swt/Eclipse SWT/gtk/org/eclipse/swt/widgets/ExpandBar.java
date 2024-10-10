@@ -170,7 +170,7 @@ void createHandle (int index) {
 	gtk_container_set_border_width (handle, 0);
 	// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,
 	// reset to default font to get the usual behavior
-	setFontDescription(defaultFont().handle);
+	setFontDescription(defaultFont().handle.pointer);
 }
 
 void createItem (ExpandItem item, int style, int index) {
