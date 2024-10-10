@@ -1311,7 +1311,7 @@ private int getCheckboxTextOffset(long hdc) {
 	SIZE size = new SIZE();
 
 	if (OS.IsAppThemed ()) {
-		OS.GetThemePartSize(display.hButtonTheme(), hdc, OS.BP_CHECKBOX, OS.CBS_UNCHECKEDNORMAL, null, OS.TS_TRUE, size);
+		OS.GetThemePartSize(display.hButtonTheme(getZoom()), hdc, OS.BP_CHECKBOX, OS.CBS_UNCHECKEDNORMAL, null, OS.TS_TRUE, size);
 		result += size.cx;
 	} else {
 		result += DPIUtil.scaleUp(13, nativeZoom);
@@ -1543,7 +1543,7 @@ LRESULT wmDrawChild (long wParam, long lParam) {
 		boolean pressed = ((struct.itemState & OS.ODS_SELECTED) != 0);
 		boolean enabled = getEnabled ();
 		int iStateId = getThemeStateId(style, pressed, enabled);
-		OS.DrawThemeBackground (display.hScrollBarThemeAuto (), struct.hDC, OS.SBP_ARROWBTN, iStateId, rect, null);
+		OS.DrawThemeBackground (display.hScrollBarThemeAuto (getZoom()), struct.hDC, OS.SBP_ARROWBTN, iStateId, rect, null);
 	} else {
 		int uState = OS.DFCS_SCROLLLEFT;
 		switch (style & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT)) {

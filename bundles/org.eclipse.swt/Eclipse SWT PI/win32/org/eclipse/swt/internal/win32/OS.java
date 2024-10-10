@@ -4581,4 +4581,12 @@ public static final native long GetCurrentProcess();
 public static final native boolean DuplicateHandle(long hSourceProcessHandle, long hSourceHandle, long hTargetProcessHandle,
 		long [] lpTargetHandle, int dwDesiredAccess, boolean b, int dwOptions);
 
+
+public static long OpenThemeData(long hwnd, char[] themeName, int dpi) {
+	if (OS.WIN32_BUILD >= OS.WIN32_BUILD_WIN10_1809) {
+		return OS.OpenThemeDataForDpi(hwnd, themeName, dpi);
+	} else {
+		return OS.OpenThemeData(hwnd, themeName);
+	}
+}
 }
