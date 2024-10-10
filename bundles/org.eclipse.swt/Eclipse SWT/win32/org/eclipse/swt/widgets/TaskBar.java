@@ -165,13 +165,10 @@ IShellLink createShellLink (MenuItem item) {
 				icon = directory + "\\" + "menu" + item.id + ".ico";
 				ImageData data;
 				if (item.hBitmap != 0) {
-					Image image2 = Image.win32_new (display, SWT.BITMAP, item.hBitmap);
+					long handle = OS.CopyImage(item.hBitmap, SWT.BITMAP, 0, 0, 0);
+					Image image2 = Image.win32_new (display, SWT.BITMAP, handle);
 					data = image2.getImageData (DPIUtil.getDeviceZoom ());
-					/*
-					 * image2 instance doesn't own the handle and shall not be disposed. Make it
-					 * appear disposed to cause leak trackers to ignore it.
-					 */
-					image2.handle = 0;
+					image2.dispose();
 				} else {
 					data = image.getImageData (DPIUtil.getDeviceZoom ());
 				}

@@ -457,7 +457,7 @@ public void setImage (Image image) {
 	if (icon != null) {
 		switch (icon.type) {
 			case SWT.BITMAP:
-				image2 = Display.createIcon (image);
+				image2 = Display.createIcon (image, getZoom());
 				hIcon = Image.win32_getHandle(image2, getZoom());
 				break;
 			case SWT.ICON:
