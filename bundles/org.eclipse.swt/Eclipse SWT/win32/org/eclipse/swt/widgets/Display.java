@@ -5377,14 +5377,25 @@ private boolean setDPIAwareness(int desiredDpiAwareness) {
 }
 
 private Monitor getContainingMonitor(int x, int y) {
+	return getContainingMonitorOptional(x, y).orElse(getPrimaryMonitor());
+}
+
+private Optional<Monitor> getContainingMonitorOptional(int x, int y) {
 	Monitor[] monitors = getMonitors();
 	for (Monitor currentMonitor : monitors) {
 		Rectangle clientArea = currentMonitor.getClientArea();
 		if (clientArea.contains(x, y)) {
-			return currentMonitor;
+			return Optional.of(currentMonitor);
 		}
 	}
-	return getPrimaryMonitor();
+	return Optional.empty();
+}
+
+Point translatePointIfInDisplayCoordinateGap(int x, int y) {
+	if(getContainingMonitorOptional(x, y).isEmpty() && getContainingMonitorInPixelsCoordinateOptional(x, y).isPresent()) {
+		return translateLocationInPointInDisplayCoordinateSystem(x, y);
+	}
+	return new Point(x, y);
 }
 
 private Monitor getContainingMonitor(int x, int y, int width, int height) {
@@ -5405,14 +5416,18 @@ private Monitor getContainingMonitor(int x, int y, int width, int height) {
 }
 
 private Monitor getContainingMonitorInPixelsCoordinate(int xInPixels, int yInPixels) {
+	return getContainingMonitorInPixelsCoordinateOptional(xInPixels, yInPixels).orElse(getPrimaryMonitor());
+}
+
+private Optional<Monitor> getContainingMonitorInPixelsCoordinateOptional(int xInPixels, int yInPixels) {
 	Monitor[] monitors = getMonitors();
 	for (Monitor current : monitors) {
 		Rectangle clientArea = getMonitorClientAreaInPixels(current);
 		if (clientArea.contains(xInPixels, yInPixels)) {
-			return current;
+			return Optional.of(current);
 		}
 	}
-	return getPrimaryMonitor();
+	return Optional.empty();
 }
 
 private Rectangle getMonitorClientAreaInPixels(Monitor monitor) {
