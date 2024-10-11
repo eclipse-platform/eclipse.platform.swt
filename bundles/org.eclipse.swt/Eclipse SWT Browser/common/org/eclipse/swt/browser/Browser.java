@@ -13,9 +13,6 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
-import java.net.*;
-import java.util.*;
-
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 
@@ -1188,21 +1185,6 @@ public boolean setUrl (String url, String postData, String[] headers) {
 	checkWidget();
 	if (url == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	return webBrowser.setUrl (url, postData, headers);
-}
-
-/**
- * Checks if the location supplied is the location for setting custom text in the browser.
- * This means, when passing the browser URL to this method after a custom text has been set
- * via {@link #setText(String)} will yield true as long as no further navigation
- * to some other location is performed.
- *
- * @param location the URL to be checked, must not be null
- *
- * @since 3.128
- */
-public boolean isLocationForCustomText(String location) {
-	checkWidget();
-	return URI.create(Objects.requireNonNull(location)).equals(webBrowser.getUriForCustomText());
 }
 
 /**
