@@ -33,12 +33,8 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
-import org.eclipse.test.Screenshots;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestName;
-import org.junit.rules.TestWatcher;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Tree
@@ -47,8 +43,7 @@ import org.junit.rules.TestWatcher;
  */
 public class Test_org_eclipse_swt_widgets_Tree extends Test_org_eclipse_swt_widgets_Composite {
 
-@Rule
-public TestName testName = new TestName();
+private Tree tree;
 
 @Override
 @Before
@@ -750,9 +745,6 @@ public void test_showSelection() {
 	tree.showSelection();
 }
 
-/* custom */
-public Tree tree;
-
 /**
  * Clean up the environment for a new test.
  *
@@ -915,9 +907,6 @@ public void test_disposeItemNotTriggerSelection() {
 
 	assertFalse(selectionCalled[0]);
 }
-
-@Rule
-public TestWatcher screenshotRule = Screenshots.onFailure();
 
 @Test
 public void test_Virtual() {

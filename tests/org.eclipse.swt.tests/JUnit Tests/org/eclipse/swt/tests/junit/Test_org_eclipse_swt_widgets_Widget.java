@@ -31,6 +31,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Widget;
+import org.eclipse.test.Screenshots.ScreenshotOnFailure;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -42,7 +43,10 @@ import org.junit.rules.TestName;
  *
  * @see org.eclipse.swt.widgets.Widget
  */
-public class Test_org_eclipse_swt_widgets_Widget{
+abstract class Test_org_eclipse_swt_widgets_Widget{
+	protected Shell shell;
+	private Widget widget;
+
 	// Use this variable to help validate callbacks
 	boolean listenerCalled;
 	/**
@@ -56,17 +60,27 @@ public void setUp() {
 	shell = new Shell();
 }
 
+@Rule
+public ScreenshotOnFailure screenshotRule = new ScreenshotOnFailure(()-> this.shell) {
+	@Override
+	public void dispose() {
+		Display display = null;
+		if (!disposedIntentionally) {
+			assertFalse(shell.isDisposed());
+			display = shell.getDisplay();
+		}
+		super.dispose();
+		afterDispose(display);
+	}
+};
+
 @After
 public void tearDown() {
 	if (widget != null) {
 		assertEquals(disposedIntentionally, widget.isDisposed());
 	}
-	Display display = null;
-	if (!disposedIntentionally) {
-		assertFalse(shell.isDisposed());
-		display = shell.getDisplay();
-	}
-	shell.dispose();
+}
+protected void afterDispose(Display display) {
 	if (widget != null) {
 		assertTrue(widget.isDisposed());
 		if(SwtTestUtil.isLinux && display != null) {
@@ -83,10 +97,7 @@ public void tearDown() {
 		assertNotExists(getWidgetTable(display), shell);
 	}
 }
-@Test
-public void test_ConstructorLorg_eclipse_swt_widgets_WidgetI() {
-	// abstract class
-}
+
 @Test
 public void test_addDisposeListenerLorg_eclipse_swt_events_DisposeListener() {
 	DisposeListener listener = e -> {
@@ -173,10 +184,6 @@ public void test_toString() {
 	assertNotNull(widget.toString());
 	assertTrue(widget.toString().length() > 0);
 }
-
-/* custom */
-public Shell shell;
-private Widget widget;
 
 protected void setWidget(Widget w) {
 	widget = w;
