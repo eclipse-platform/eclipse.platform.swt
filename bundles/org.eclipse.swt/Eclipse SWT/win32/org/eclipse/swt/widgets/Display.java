@@ -583,9 +583,6 @@ public Display () {
  */
 public Display (DeviceData data) {
 	super (data);
-	if (DPIUtil.isAutoScaleOnRuntimeActive()) {
-		setRescalingAtRuntime(true);
-	}
 }
 
 Control _getFocusControl () {
@@ -939,6 +936,9 @@ public void close () {
 protected void create (DeviceData data) {
 	checkSubclass ();
 	checkDisplay (thread = Thread.currentThread (), true);
+	if (DPIUtil.isAutoScaleOnRuntimeActive()) {
+		setRescalingAtRuntime(true);
+	}
 	createDisplay (data);
 	register (this);
 	if (Default == null) Default = this;
