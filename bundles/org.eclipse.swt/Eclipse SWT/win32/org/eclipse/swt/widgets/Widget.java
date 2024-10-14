@@ -1651,8 +1651,8 @@ boolean showMenu (int x, int y) {
 
 boolean showMenu (int x, int y, int detail) {
 	Event event = new Event ();
-	int zoom = getZoom();
-	event.setLocation(DPIUtil.scaleDown(x, zoom), DPIUtil.scaleDown(y, zoom));
+	Point mappedLocation = getDisplay().translateLocationInPointInDisplayCoordinateSystem(x, y);
+	event.setLocation(mappedLocation.x, mappedLocation.y);
 	event.detail = detail;
 	if (event.detail == SWT.MENU_KEYBOARD) {
 		updateMenuLocation (event);
@@ -1663,7 +1663,7 @@ boolean showMenu (int x, int y, int detail) {
 	if (!event.doit) return true;
 	Menu menu = getMenu ();
 	if (menu != null && !menu.isDisposed ()) {
-		Point locInPixels = DPIUtil.scaleUp(event.getLocation(), zoom); // In Pixels
+		Point locInPixels = DPIUtil.scaleUp(event.getLocation(), getZoom()); // In Pixels
 		if (x != locInPixels.x || y != locInPixels.y) {
 			menu.setLocation (event.getLocation());
 		}
