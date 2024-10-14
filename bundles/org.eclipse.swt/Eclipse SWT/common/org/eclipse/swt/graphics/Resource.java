@@ -13,6 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
+import java.lang.ref.*;
 import java.util.function.*;
 
 import org.eclipse.swt.*;
@@ -41,6 +42,11 @@ import org.eclipse.swt.*;
  * @since 3.1
  */
 public abstract class Resource {
+
+	/**
+	 * A cleaner that can be used to track automatic disposal of resources by the cleaning API see <a href="https://docs.oracle.com/javase%2F9%2Fdocs%2Fapi%2F%2F/java/lang/ref/Cleaner.html">Cleaner</a>
+	 */
+	protected static final Cleaner cleaner = Cleaner.create();
 
 	/**
 	 * Used to track not disposed SWT resource. A separate class allows

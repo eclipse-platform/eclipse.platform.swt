@@ -5496,10 +5496,10 @@ public void setFont (Font font) {
 	this.font = font;
 	long fontDesc;
 	if (font == null) {
-		fontDesc = defaultFont ().handle;
+		fontDesc = defaultFont ().handle.pointer;
 	} else {
 		if (font.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
-		fontDesc = font.handle;
+		fontDesc = font.handle.pointer;
 	}
 	if (font == null) {
 		state &= ~FONT;

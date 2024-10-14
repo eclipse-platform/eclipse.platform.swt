@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2024 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -10,6 +10,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Christoph Läubrich - introduce automatic resource handling for fonts
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
@@ -35,6 +36,73 @@ import org.eclipse.swt.internal.gtk.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public final class Font extends Resource {
+
+	/**
+	 * @noreference This class is not intended to be referenced by clients.
+	 * @since 3.125
+	 */
+	public static final class Handle implements Runnable {
+
+		public long pointer;
+
+		Handle(long handle, Font font, boolean owner) {
+			this.pointer = handle;
+			// IMPORTANT: never hold a reference to the font here! it is only used to unify
+			// the ignoreNonDisposed handling and register our handle with the cleaner!
+			if (owner) {
+				cleaner.register(font, this);
+			}
+			font.ignoreNonDisposed();
+		}
+
+		@Override
+		public void run() {
+			if (pointer != 0) {
+				OS.pango_font_description_free(pointer);
+				pointer = 0;
+			}
+		}
+
+		public long getFamily() {
+			return OS.pango_font_description_get_family(pointer);
+		}
+
+		public float getHeight() {
+			return (float) OS.pango_font_description_get_size(pointer) / OS.PANGO_SCALE;
+		}
+
+		public int getStyle() {
+			return OS.pango_font_description_get_style(pointer);
+		}
+
+		public int getWeight() {
+			return OS.pango_font_description_get_weight(pointer);
+		}
+
+		public long getFontName() {
+			return OS.pango_font_description_to_string(pointer);
+		}
+
+		public long getMetrics(long context) {
+			long lang = OS.pango_context_get_language(context);
+			return OS.pango_context_get_metrics(context, pointer, lang);
+		}
+
+		public long newFontAttributes() {
+			return OS.pango_attr_font_desc_new(pointer);
+		}
+
+		public int getVariant() {
+			return OS.pango_font_description_get_variant(pointer);
+		}
+
+		public int getStretch() {
+			return OS.pango_font_description_get_stretch(pointer);
+		}
+
+	}
+
+
 	/**
 	 * the handle to the OS font resource
 	 * (Warning: This field is platform dependent)
@@ -47,7 +115,7 @@ public final class Font extends Resource {
 	 *
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
-	public long handle;
+	public Handle handle;
 
 Font(Device device) {
 	super(device);
@@ -155,8 +223,10 @@ public Font(Device device, String name, int height, int style) {
 
 @Override
 void destroy() {
-	OS.pango_font_description_free(handle);
-	handle = 0;
+	if (handle!=null) {
+		handle.run();
+		handle = null;
+	}
 }
 
 /**
@@ -191,21 +261,21 @@ public boolean equals(Object object) {
 public FontData[] getFontData() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 
-	long family = OS.pango_font_description_get_family(handle);
+	long family = handle.getFamily();
 	int length = C.strlen(family);
 	byte[] buffer = new byte[length];
 	C.memmove(buffer, family, length);
 	String name = new String(Converter.mbcsToWcs(buffer));
-	float height = (float)OS.pango_font_description_get_size(handle) / OS.PANGO_SCALE;
+	float height = handle.getHeight();
 	Point dpi = device.dpi, screenDPI = device.getScreenDPI();
 	float size = height * screenDPI.y / dpi.y;
-	int pangoStyle = OS.pango_font_description_get_style(handle);
-	int pangoWeight = OS.pango_font_description_get_weight(handle);
+	int pangoStyle = handle.getStyle();
+	int pangoWeight = handle.getWeight();
 	int style = SWT.NORMAL;
 	if (pangoStyle == OS.PANGO_STYLE_ITALIC) style |= SWT.ITALIC;
 	if (pangoStyle == OS.PANGO_STYLE_OBLIQUE) style |= SWT.ROMAN;
 	if (pangoWeight >= OS.PANGO_WEIGHT_BOLD) style |= SWT.BOLD;
-	long fontString = OS.pango_font_description_to_string (handle);
+	long fontString = handle.getFontName();
 	length = C.strlen (fontString);
 	buffer = new byte [length + 1];
 	C.memmove (buffer, fontString, length);
@@ -232,13 +302,7 @@ public FontData[] getFontData() {
  */
 public static Font gtk_new(Device device, long handle) {
 	Font font = new Font(device);
-	font.handle = handle;
-	/*
-	 * When created this way, Font doesn't own its .handle, and
-	 * for this reason it can't be disposed. Tell leak detector
-	 * to just ignore it.
-	 */
-	font.ignoreNonDisposed();
+	font.handle = new Handle(handle, font, false);
 	return font;
 }
 
@@ -254,7 +318,10 @@ public static Font gtk_new(Device device, long handle) {
  */
 @Override
 public int hashCode() {
-	return (int)handle;
+	if (handle == null) {
+		return 0;
+	}
+	return (int)handle.pointer;
 }
 
 void init(String name, float height, int style, byte[] fontString) {
@@ -263,11 +330,13 @@ void init(String name, float height, int style, byte[] fontString) {
 	Point dpi = device.dpi, screenDPI = device.getScreenDPI();
 	float size = height * dpi.y / screenDPI.y;
 	if (fontString != null) {
-		handle = OS.pango_font_description_from_string (fontString);
+		long handle = OS.pango_font_description_from_string (fontString);
 		if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		this.handle = new Handle(handle, this, true);
 	} else {
-		handle = OS.pango_font_description_new();
+		long handle = OS.pango_font_description_new();
 		if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		this.handle = new Handle(handle, this, true);
 		byte[] buffer = Converter.wcsToMbcs(name, true);
 		OS.pango_font_description_set_family(handle, buffer);
 		if (size > 0) {
@@ -296,7 +365,7 @@ void init(String name, float height, int style, byte[] fontString) {
  */
 @Override
 public boolean isDisposed() {
-	return handle == 0;
+	return handle == null;
 }
 
 /**
@@ -308,7 +377,7 @@ public boolean isDisposed() {
 @Override
 public String toString () {
 	if (isDisposed()) return "Font {*DISPOSED*}";
-	return "Font {" + handle + "}";
+	return "Font {" + handle.pointer + "}";
 }
 
 }
