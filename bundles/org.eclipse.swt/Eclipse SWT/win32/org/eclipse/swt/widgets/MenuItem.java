@@ -47,7 +47,12 @@ public class MenuItem extends Item {
 	/* Image margin. */
 	final static int MARGIN_WIDTH = 1;
 	final static int MARGIN_HEIGHT = 1;
-
+	private final static int LEFT_TEXT_MARGIN = 7;
+	private final static int IMAGE_TEXT_GAP = 3;
+	// There is a weird behavior in the Windows API with menus in OWENERDRAW mode that the returned
+	// value in wmMeasureChild is increased by a fixed value (in points) when wmDrawChild is called
+	// This static is used to mitigate this increase
+	private final static int WINDOWS_OVERHEAD = 6;
 	static {
 		DPIZoomChangeRegistry.registerHandler(MenuItem::handleDPIChange, MenuItem.class);
 	}
@@ -1121,10 +1126,32 @@ LRESULT wmCommandChild (long wParam, long lParam) {
 	return null;
 }
 
-LRESULT wmDrawChild (long wParam, long lParam) {
-	DRAWITEMSTRUCT struct = new DRAWITEMSTRUCT ();
-	OS.MoveMemory (struct, lParam, DRAWITEMSTRUCT.sizeof);
-	if (image != null) {
+@Override
+GC createNewGC(long hDC, GCData data) {
+	if (getDisplay().isRescalingAtRuntime()) {
+		return super.createNewGC(hDC, data);
+	} else {
+		data.nativeZoom = getMonitorZoom();
+		return GC.win32_new(hDC, data);
+	}
+}
+
+private int getMonitorZoom() {
+	return getMenu().getShell().getMonitor().zoom;
+}
+
+private int getMenuZoom() {
+	if (getDisplay().isRescalingAtRuntime()) {
+		return super.getZoom();
+	} else {
+		return DPIUtil.getZoomForAutoscaleProperty(getMonitorZoom());
+	}
+}
+
+LRESULT wmDrawChild(long wParam, long lParam) {
+	DRAWITEMSTRUCT struct = new DRAWITEMSTRUCT();
+	OS.MoveMemory(struct, lParam, DRAWITEMSTRUCT.sizeof);
+	if ((text != null || image != null)) {
 		GCData data = new GCData();
 		data.device = display;
 		GC gc = createNewGC(struct.hDC, data);
@@ -1134,14 +1161,50 @@ LRESULT wmDrawChild (long wParam, long lParam) {
 		* coordinate.  The fix is to ignore this value when
 		* the item is in a menu bar.
 		*/
-		int x = (parent.style & SWT.BAR) != 0 ? MARGIN_WIDTH * 2 : struct.left;
-		Image image = getEnabled () ? this.image : new Image (display, this.image, SWT.IMAGE_DISABLE);
-		int zoom = getZoom();
-		gc.drawImage (image, DPIUtil.scaleDown(x, zoom), DPIUtil.scaleDown(struct.top + MARGIN_HEIGHT, zoom));
-		if (this.image != image) image.dispose ();
-		gc.dispose ();
+		int x = (parent.style & SWT.BAR) == 0 ? MARGIN_WIDTH * 2 : struct.left;
+		int zoom = getMenuZoom();
+		Rectangle menuItemArea = null;
+		if (text != null) {
+			this.getParent().redraw();
+			int flags = SWT.DRAW_DELIMITER;
+			boolean isInactive = ((struct.itemState & OS.ODS_INACTIVE) != 0);
+			boolean isSelected = ((struct.itemState & OS.ODS_SELECTED) != 0);
+			boolean isNoAccel = ((struct.itemState & OS.ODS_NOACCEL) != 0);
+
+			String drawnText = "";
+			if(isNoAccel) {
+				drawnText = this.text.replace("&", "");
+			} else {
+				drawnText = this.text;
+				flags |= SWT.DRAW_MNEMONIC;
+			}
+			Rectangle menuItemBounds = this.getBounds();
+
+			int fillMenuWidth =  DPIUtil.scaleDown(menuItemBounds.width, zoom);
+			int fillMenuHeight = DPIUtil.scaleDown(menuItemBounds.height, zoom);
+			menuItemArea = new Rectangle(DPIUtil.scaleDown(x, zoom), DPIUtil.scaleDown(struct.top, zoom), fillMenuWidth, fillMenuHeight);
+
+			gc.setForeground(isInactive ? display.getSystemColor(SWT.COLOR_GRAY) : display.getSystemColor(SWT.COLOR_WHITE));
+			gc.setBackground(isSelected ? display.getSystemColor(SWT.COLOR_DARK_GRAY) : parent.getBackground());
+			gc.fillRectangle(menuItemArea);
+
+			int xPositionText = LEFT_TEXT_MARGIN + DPIUtil.scaleDown(x, zoom) + (this.image != null ? this.image.getBounds().width + IMAGE_TEXT_GAP : 0);
+			int yPositionText = DPIUtil.scaleDown(struct.top, zoom) + MARGIN_HEIGHT;
+			gc.drawText(drawnText, xPositionText, yPositionText, flags);
+		}
+		if (image != null) {
+			Image image = getEnabled() ? this.image : new Image(display, this.image, SWT.IMAGE_DISABLE);
+			int gap = (menuItemArea.height - image.getBounds().height) / 2;
+			gc.drawImage(image, LEFT_TEXT_MARGIN + DPIUtil.scaleDown(x, zoom), gap + DPIUtil.scaleDown(struct.top, zoom));
+			if (this.image != image) {
+				image.dispose();
+			}
+		}
+		gc.dispose();
 	}
-	if (parent.foreground != -1) OS.SetTextColor (struct.hDC, parent.foreground);
+	if (parent.foreground != -1) {
+		OS.SetTextColor(struct.hDC, parent.foreground);
+	}
 	return null;
 }
 
@@ -1151,6 +1214,9 @@ LRESULT wmMeasureChild (long wParam, long lParam) {
 
 	if ((parent.style & SWT.BAR) != 0) {
 		if (parent.needsMenuCallback()) {
+			Point point = calculateRenderedTextSize();
+			int menuZoom = getDisplay().isRescalingAtRuntime() ? super.getZoom() : getMonitorZoom();
+			struct.itemHeight = DPIUtil.scaleUp(point.y, menuZoom);
 			/*
 			 * Weirdness in Windows. Setting `HBMMENU_CALLBACK` causes
 			 * item sizes to mean something else. It seems that it is
@@ -1158,10 +1224,9 @@ LRESULT wmMeasureChild (long wParam, long lParam) {
 			 * if menu item has a mnemonic, it's always drawn at a fixed
 			 * position. I have tested on Win7, Win8.1, Win10 and found
 			 * that value of 5 works well in matching text to mnemonic.
-			 * NOTE: autoScaleUpUsingNativeDPI() is used to avoid problems
-			 * with applications that disable automatic scaling.
 			 */
-			struct.itemWidth = DPIUtil.scaleUp(5, nativeZoom);
+			int horizontalSpaceImage = this.image != null ? this.image.getBounds().width + IMAGE_TEXT_GAP: 0;
+			struct.itemWidth = DPIUtil.scaleUp(LEFT_TEXT_MARGIN + point.x - WINDOWS_OVERHEAD + horizontalSpaceImage, menuZoom);
 			OS.MoveMemory (lParam, struct, MEASUREITEMSTRUCT.sizeof);
 			return null;
 		}
@@ -1203,6 +1268,32 @@ LRESULT wmMeasureChild (long wParam, long lParam) {
 		OS.MoveMemory (lParam, struct, MEASUREITEMSTRUCT.sizeof);
 	}
 	return null;
+}
+
+private Point calculateRenderedTextSize() {
+	GC gc = new GC(this.getMenu().getShell());
+	String textWithoutMnemonicCharacter = getText().replace("&", "");
+	Point points = gc.textExtent(textWithoutMnemonicCharacter);
+	gc.dispose();
+
+	if (!getDisplay().isRescalingAtRuntime()) {
+		int primaryMonitorZoom = this.getDisplay().getDeviceZoom();
+		int adjustedPrimaryMonitorZoom = DPIUtil.getZoomForAutoscaleProperty(primaryMonitorZoom);
+		if (primaryMonitorZoom != adjustedPrimaryMonitorZoom) {
+			// Windows will use a font matching the native primary monitor zoom for calculating the size in pixels,
+			// GC will use the native primary monitor zoom to scale down from pixels to points in this scenario
+			// Therefore we need to make sure adjust the points as if it would have been scaled down by the
+			// native primary monitor zoom.
+			// Example:
+			// Primary monitor on 150% with int200: native zoom 150%, adjusted zoom 100%
+			// Pixel height of font in this example is 15px
+			// GC calculated height of 15px, scales down with adjusted zoom of 100% and returns 15pt -> should be 10pt
+			// this calculation is corrected by the following line
+			// This is the only place, where the GC needs to use the native zoom to do that, therefore it is fixed only here
+			points = DPIUtil.scaleDown(DPIUtil.scaleUp(points, adjustedPrimaryMonitorZoom), primaryMonitorZoom);
+		}
+	}
+	return points;
 }
 
 private static final class MenuItemToolTip extends ToolTip {
