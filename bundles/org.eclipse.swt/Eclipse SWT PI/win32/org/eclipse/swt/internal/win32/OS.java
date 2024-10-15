@@ -897,6 +897,7 @@ public class OS extends C {
 	public static final int MFS_CHECKED = 0x8;
 	public static final int MFS_DISABLED = 0x3;
 	public static final int MFS_GRAYED = 0x3;
+	public static final int MFT_OWNERDRAW = 0x100;
 	public static final int MFT_RADIOCHECK = 0x200;
 	public static final int MFT_RIGHTJUSTIFY = 0x4000;
 	public static final int MFT_RIGHTORDER = 0x2000;
@@ -1019,6 +1020,8 @@ public class OS extends C {
 	public static final int OBJ_PEN = 0x1;
 	public static final int OBM_CHECKBOXES = 0x7ff7;
 	public static final int ODS_SELECTED = 0x1;
+	public static final int ODS_NOACCEL = 0x0100;
+	public static final int ODS_INACTIVE = 0x80;
 	public static final int ODT_MENU = 0x1;
 	public static final int OIC_BANG = 0x7F03;
 	public static final int OIC_HAND = 0x7F01;
