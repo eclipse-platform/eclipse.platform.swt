@@ -68,7 +68,6 @@ jobs:
         -DforkCount=1
         -Dnative=${{ matrix.config.native }}
         -Papi-check
-        -Dcompare-version-with-baselines.skip=true
         -Dtycho.baseline.replace=none
         --fail-at-end
         -DskipNativeTests=false
@@ -83,7 +82,6 @@ jobs:
        run: >-
         mvn --batch-mode -V -U -e
         -DforkCount=1
-        -Dcompare-version-with-baselines.skip=true
         --fail-at-end
         -DskipNativeTests=true
         -DfailIfNoTests=true
