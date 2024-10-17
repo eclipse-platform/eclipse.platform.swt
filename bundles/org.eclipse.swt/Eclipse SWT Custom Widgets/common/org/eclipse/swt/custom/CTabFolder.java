@@ -3913,9 +3913,9 @@ boolean updateItems (int showIndex) {
 }
 boolean updateTabHeight(boolean force){
 	int oldHeight = tabHeight;
-	GC gc = new GC(this);
-	tabHeight = renderer.computeSize(CTabFolderRenderer.PART_HEADER, SWT.NONE, gc, SWT.DEFAULT, SWT.DEFAULT).y;
-	gc.dispose();
+	try (var gc = GC.create(this)) {
+		tabHeight = renderer.computeSize(CTabFolderRenderer.PART_HEADER, SWT.NONE, gc, SWT.DEFAULT, SWT.DEFAULT).y;
+	}
 	if (fixedTabHeight == SWT.DEFAULT && controls != null && controls.length > 0) {
 		for (int i = 0; i < controls.length; i++) {
 			if ((controlAlignments[i] & SWT.WRAP) == 0 && !controls[i].isDisposed() && controls[i].getVisible()) {
@@ -4001,9 +4001,9 @@ void updateBkImages(boolean colorChanged) {
 							bkImageBounds[i] = bounds;
 							if (controlBkImages[i] != null) controlBkImages[i].dispose();
 							controlBkImages[i] = new Image(control.getDisplay(), bounds);
-							GC gc = new GC(controlBkImages[i]);
-							renderer.draw(CTabFolderRenderer.PART_BACKGROUND, 0, bounds, gc);
-							gc.dispose();
+							try (var gc = GC.create(controlBkImages[i])) {
+								renderer.draw(CTabFolderRenderer.PART_BACKGROUND, 0, bounds, gc);
+							}
 							control.setBackground(null);
 							control.setBackgroundImage(controlBkImages[i]);
 						}
