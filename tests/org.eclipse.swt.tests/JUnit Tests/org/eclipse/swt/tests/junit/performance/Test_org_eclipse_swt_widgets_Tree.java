@@ -219,8 +219,8 @@ public class Test_org_eclipse_swt_widgets_Tree {
 			});
 			return measureNanos(() -> tree.dispose());
 		});
+		
 	}
-
 
 	@Test
 	public void getForeground() {
