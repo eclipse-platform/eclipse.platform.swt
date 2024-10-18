@@ -150,7 +150,7 @@ public class TreeDropTargetEffect extends DropTargetEffect {
 
 		long handle = tree.handle;
 		Point coordinates = new Point(event.x, event.y);
-		coordinates = DPIUtil.autoScaleUp(tree.toControl(coordinates));
+		coordinates = tree.toControl(coordinates);
 		long [] path = new long [1];
 		GTK.gtk_tree_view_get_path_at_pos (handle, coordinates.x, coordinates.y, path, null, null, null);
 		int index = -1;
