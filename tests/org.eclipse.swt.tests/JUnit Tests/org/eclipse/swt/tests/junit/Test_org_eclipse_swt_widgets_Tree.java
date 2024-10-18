@@ -1146,7 +1146,7 @@ public void test_setItemCount_indexOf() {
 		// Issue 333
 		{
 			item_0.setItemCount(5);   // This causes cached index to be reset
-			item_0.indexOf(item_0_4); // This causes index to be cached again
+			assertEquals(4, item_0.indexOf(item_0_4)); // This causes index to be cached again
 			item_0.setItemCount(10);  // This causes index to be recalculated
 			assertEquals(4, item_0.indexOf(item_0_4));
 		}
