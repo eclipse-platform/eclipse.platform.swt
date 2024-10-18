@@ -641,6 +641,76 @@ void setupBrowser(int hr, long pv) {
 	webView.AddHostObjectToScript("swt\0".toCharArray(), hostObj);
 	hostDisp.Release();
 
+	class MouseNavigationFunction extends BrowserFunction {
+		public MouseNavigationFunction (Browser browser, String name) {
+			super (browser, name);
+		}
+		@Override
+		public Object function (Object[] arguments) {
+			System.out.println(Arrays.toString(arguments));
+			Event newEvent = new Event ();
+			newEvent.widget = browser;
+			String eventType = (String) arguments[0];
+			int x = (int) Math.round((Double) arguments[1]);
+			int y= (int)  Math.round((Double) arguments[2]);
+			int button = (int) Math.round((Double) arguments[3]);
+
+			if (OS.GetKeyState (OS.VK_MENU) < 0) newEvent.stateMask |= SWT.ALT;
+			if (OS.GetKeyState (OS.VK_SHIFT) < 0) newEvent.stateMask |= SWT.SHIFT;
+			if (OS.GetKeyState (OS.VK_CONTROL) < 0) newEvent.stateMask |= SWT.CONTROL;
+
+			x =	DPIUtil.scaleUp(x, DPIUtil.getNativeDeviceZoom());
+			y = DPIUtil.scaleUp(y, DPIUtil.getNativeDeviceZoom());
+			x = DPIUtil.scaleDown(x, DPIUtil.getZoomForAutoscaleProperty(browser.getShell().nativeZoom)); //
+			y = DPIUtil.scaleDown(y, DPIUtil.getZoomForAutoscaleProperty(browser.getShell().nativeZoom));
+			newEvent.x = x;
+			newEvent.y = y;
+
+			switch (button) {
+			case 0: button = 1; break;
+			case 1: button = 3; break;
+			case 2: button = 2;
+			break;
+			}
+			if (eventType.equals("mousedown")) {
+				newEvent.type = SWT.MouseDown;
+				newEvent.button = button;
+				newEvent.count = 1;
+			} else if (eventType.equals("mouseup")/* || eventType.equals(EVENT_DRAGEND)*/) {
+				newEvent.type = SWT.MouseUp;
+				newEvent.button = button != 0 ? button : 1;	/* button assumed to be 1 for dragends */
+				newEvent.count = 1;
+				switch (newEvent.button) {
+					case 1: newEvent.stateMask |= SWT.BUTTON1; break;
+					case 2: newEvent.stateMask |= SWT.BUTTON2; break;
+					case 3: newEvent.stateMask |= SWT.BUTTON3; break;
+					case 4: newEvent.stateMask |= SWT.BUTTON4; break;
+					case 5: newEvent.stateMask |= SWT.BUTTON5; break;
+				}
+			/*} else if (eventType.equals("mousewhell")) {
+				newEvent.type = SWT.MouseWheel;
+				rgdispid = newEvent.getIDsOfNames(new String[] { PROPERTY_WHEELDELTA });
+				dispIdMember = rgdispid[0];
+				pVarResult = newEvent.getProperty(dispIdMember);
+				newEvent.count = pVarResult.getInt () / 120 * 3;
+				pVarResult.dispose();*/
+			} else if (eventType.equals("mousemove")) {
+				newEvent.type = SWT.MouseMove;
+			} else if (eventType.equals("mouseover")) {
+				newEvent.type = SWT.MouseEnter;
+			} else if (eventType.equals("mouseout")) {
+				newEvent.type = SWT.MouseExit;
+			/*} else if (eventType.equals(EVENT_DRAGSTART)) {
+				newEvent.type = SWT.DragDetect;
+				newEvent.button = 1;	// button assumed to be 1 for dragstarts
+				newEvent.stateMask |= SWT.BUTTON1;*/
+			}
+			browser.notifyListeners(newEvent.type, newEvent);
+			return null;
+		}
+	}
+	new MouseNavigationFunction(this.browser, "swtHandleMouse");
+
 	browser.addListener(SWT.Dispose, this::browserDispose);
 	browser.addListener(SWT.FocusIn, this::browserFocusIn);
 	browser.addListener(SWT.Resize, this::browserResize);
@@ -840,14 +910,6 @@ int handleNavigationStarting(long pView, long pArgs, boolean top) {
 	if (event.doit) {
 		jsEnabled = jsEnabledOnNextPage;
 		settings.put_IsScriptEnabled(jsEnabled);
-		// Register browser functions in the new document.
-		if (!functions.isEmpty()) {
-			StringBuilder sb = new StringBuilder();
-			for (BrowserFunction function : functions.values()) {
-				sb.append(function.functionString);
-			}
-			execute(sb.toString());
-		}
 	} else {
 		args.put_Cancel(true);
 	}
@@ -890,6 +952,7 @@ int handleDOMContentLoaded(long pView, long pArgs) {
 	if (startEvent != null && startEvent.top) {
 		if (lastCustomText != null && getUrl().equals(ABOUT_BLANK)) {
 			IUnknown postExecute = newCallback((long result, long json) -> {
+				registerBrowserFunctionsAndEventListenersInDocument();
 				sendProgressCompleted();
 				return COM.S_OK;
 			});
@@ -899,10 +962,29 @@ int handleDOMContentLoaded(long pView, long pArgs) {
 			postExecute.Release();
 			this.lastCustomText = null;
 		} else {
+			registerBrowserFunctionsAndEventListenersInDocument();
 			sendProgressCompleted();
 		}
 	}
 	return COM.S_OK;
+}
+
+private void registerBrowserFunctionsAndEventListenersInDocument() {
+	StringBuilder sb = new StringBuilder();
+	// Register browser functions in the new document.
+	if (!functions.isEmpty()) {
+		for (BrowserFunction function : functions.values()) {
+			sb.append(function.functionString);
+		}
+		execute(sb.toString());
+	}
+	sb.append("""
+			"mousedown mouseup mousewheel mouseover mouseout mousemove".split(" ").forEach(function(e){
+			  window.document.addEventListener(e, (event)=>swtHandleMouse(e, event.x, event.y, event.button))
+			})""");
+	IUnknown newCallback = newCallback((r, j) -> COM.S_OK);
+	webViewProvider.getWebView(true).ExecuteScript(stringToWstr(sb.toString()), newCallback);
+	newCallback.Release();
 }
 
 private static String escapeForSingleQuotedJSString(String str) {
