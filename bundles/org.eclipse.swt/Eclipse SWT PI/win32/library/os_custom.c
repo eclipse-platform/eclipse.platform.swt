@@ -135,6 +135,13 @@ BOOL Validate_AllowDarkModeForWindowWithTelemetryId(const BYTE* functionPtr)
 		return TRUE;
 	}
 
+	/* Win11 builds from 26100 */
+	if ((functionPtr[0x16] == 0xBE) &&                      // mov      esi,
+		(*(const DWORD*)(functionPtr + 0x17) == 0xA91E))    //              0A91Eh
+	{
+		return TRUE;
+	}
+
 	return FALSE;
 #elif defined(_M_ARM64)
 	if (*(const DWORD*)(&functionPtr[0x18]) == 0xD29523C1) // mov x1,#0xA91E
