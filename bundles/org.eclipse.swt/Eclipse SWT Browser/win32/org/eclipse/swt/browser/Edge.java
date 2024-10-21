@@ -40,6 +40,7 @@ class Edge extends WebBrowser {
 
 	// Display.getData() keys
 	static final String APPLOCAL_DIR_KEY = "org.eclipse.swt.internal.win32.appLocalDir";
+	static final String EDGE_USER_DATA_FOLDER = "org.eclipse.swt.internal.win32.Edge.userDataFolder";
 	static final String EDGE_USE_DARK_PREFERED_COLOR_SCHEME = "org.eclipse.swt.internal.win32.Edge.useDarkPreferedColorScheme"; //$NON-NLS-1$
 
 	// System.getProperty() keys
@@ -473,13 +474,9 @@ WebViewEnvironment createEnvironment() {
 
 	// Gather customization properties
 	String browserDir = System.getProperty(BROWSER_DIR_PROP);
-	String dataDir = System.getProperty(DATA_DIR_PROP);
 	String browserArgs = System.getProperty(BROWSER_ARGS_PROP);
 	String language = System.getProperty(LANGUAGE_PROP);
-	if (dataDir == null) {
-		// WebView2 will append "\\EBWebView"
-		dataDir = (String)display.getData(APPLOCAL_DIR_KEY);
-	}
+	String dataDir = getDataDir(display);
 
 	// Initialize options
 	long pOpts = COM.CreateSwtWebView2Options();
@@ -527,6 +524,18 @@ WebViewEnvironment createEnvironment() {
 
 	webViewEnvironments.put(display, environmentWrapper);
 	return environmentWrapper;
+}
+
+private String getDataDir(Display display) {
+	String dataDir = System.getProperty(DATA_DIR_PROP);
+	if (dataDir == null) {
+		dataDir = (String) display.getData(EDGE_USER_DATA_FOLDER);
+	}
+	if (dataDir == null) {
+		// WebView2 will append "\\EBWebView"
+		dataDir = (String)display.getData(APPLOCAL_DIR_KEY);
+	}
+	return dataDir;
 }
 
 @Override
