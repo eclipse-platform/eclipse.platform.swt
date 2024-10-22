@@ -78,6 +78,9 @@ class Edge extends WebBrowser {
 	private boolean ignoreFocus;
 	private String lastCustomText;
 
+	private static record CursorPosition(Point location, boolean isInsideBrowser) {};
+	private CursorPosition previousCursorPosition = new CursorPosition(new Point(0, 0), false);
+
 	static {
 		NativeClearSessions = () -> {
 			ICoreWebView2CookieManager manager = getCookieManager();
@@ -654,6 +657,7 @@ void setupBrowser(int hr, long pv) {
 	browser.addListener(SWT.FocusIn, this::browserFocusIn);
 	browser.addListener(SWT.Resize, this::browserResize);
 	browser.addListener(SWT.Move, this::browserMove);
+	scheduleMouseMovementHandling();
 
 	containingEnvironment.instances().add(this);
 	// Sometimes when the shell of the browser is opened before the browser is
@@ -707,6 +711,52 @@ void browserResize(Event event) {
 	OS.GetClientRect(browser.handle, rect);
 	controller.put_Bounds(rect);
 	controller.put_IsVisible(true);
+}
+
+private void scheduleMouseMovementHandling() {
+	browser.getDisplay().timerExec(100, () -> {
+		if (browser.isDisposed()) {
+			return;
+		}
+		if (browser.isVisible() && hasDisplayFocus()) {
+			handleMouseMovement();
+		}
+		scheduleMouseMovementHandling();
+	});
+}
+
+private void handleMouseMovement() {
+	final Point currentCursorLocation = browser.getDisplay().getCursorLocation();
+	Point cursorLocationInControlCoordinate = browser.toControl(currentCursorLocation);
+	boolean isCursorInsideBrowser = browser.getBounds().contains(cursorLocationInControlCoordinate);
+	boolean hasCursorLocationChanged = !currentCursorLocation.equals(previousCursorPosition.location);
+
+	boolean mousePassedBrowserBorder = previousCursorPosition.isInsideBrowser != isCursorInsideBrowser;
+	boolean mouseMovedInsideBrowser = isCursorInsideBrowser && hasCursorLocationChanged;
+	if (mousePassedBrowserBorder) {
+		if (isCursorInsideBrowser) {
+			sendMouseEvent(cursorLocationInControlCoordinate, SWT.MouseEnter);
+		} else {
+			sendMouseEvent(cursorLocationInControlCoordinate, SWT.MouseExit);
+		}
+	} else if (mouseMovedInsideBrowser) {
+		sendMouseEvent(cursorLocationInControlCoordinate, SWT.MouseMove);
+	}
+	previousCursorPosition = new CursorPosition(currentCursorLocation, isCursorInsideBrowser);
+}
+
+private void sendMouseEvent(Point cursorLocationInControlCoordinate, int mouseEvent) {
+	Event newEvent = new Event();
+	newEvent.widget = browser;
+	Point position = cursorLocationInControlCoordinate;
+	newEvent.x = position.x;
+	newEvent.y = position.y;
+	newEvent.type = mouseEvent;
+	browser.notifyListeners(newEvent.type, newEvent);
+}
+
+private boolean hasDisplayFocus() {
+	return browser.getDisplay().getFocusControl() != null;
 }
 
 @Override
