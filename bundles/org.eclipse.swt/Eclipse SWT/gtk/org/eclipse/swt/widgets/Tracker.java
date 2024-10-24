@@ -200,7 +200,7 @@ Point adjustMoveCursor () {
 	int newX = bounds.x + bounds.width / 2;
 	int newY = bounds.y;
 
-	Point point = display.mapInPixels(parent, null, newX, newY);
+	Point point = display.map(parent, null, newX, newY);
 	display.setCursorLocation(point);
 
 	int[] actualX = new int[1], actualY = new int[1], state = new int[1];
@@ -237,7 +237,7 @@ Point adjustResizeCursor () {
 		newY = bounds.y + bounds.height / 2;
 	}
 
-	Point point = display.mapInPixels (parent, null, newX, newY);
+	Point point = display.map(parent, null, newX, newY);
 	display.setCursorLocation (point);
 
 	/*
@@ -368,7 +368,7 @@ void drawRectangles (Rectangle [] rects) {
 
 		// Ensure we have absolute screen coordinates. (btw, there are no absolute coordinates on Wayland, so Tracker(Display) is probably broken).
 		if (parent != null) {  // if Tracker(Display) has absolute coords.  Tracker(Composite) has relative. For relative, we need to find absolute.
-			cachedUnion = display.mapInPixels(parent, null, cachedUnion) ;
+			cachedUnion = display.map(parent, null, cachedUnion) ;
 		}
 
 		if (!cachedCombinedDisplayResolution.intersects(cachedUnion)) {
@@ -382,7 +382,7 @@ void drawRectangles (Rectangle [] rects) {
 		// Combine Rects into a region. (region is not necessarily a rectangle, E.g it can be 'L' shaped etc..).
 		for (int i = 0; i < rects.length; i++) {
 			// Turn filled rectangles into just the outer lines by drawing one line at a time.
-			Rectangle r = parent != null ? display.mapInPixels(parent, null, rects[i]) : rects[i];
+			Rectangle r = parent != null ? display.map(parent, null, rects[i]) : rects[i];
 			rect.x = r.x;
 			rect.y = r.y;
 			rect.width = r.width + 1;
@@ -436,16 +436,6 @@ void drawRectangles (Rectangle [] rects) {
  * </ul>
  */
 public Rectangle [] getRectangles () {
-	checkWidget();
-	Rectangle [] result = new Rectangle [rectangles.length];
-	for (int i = 0; i < rectangles.length; i++) {
-		Rectangle current = rectangles [i];
-		result [i] = DPIUtil.autoScaleDown (new Rectangle (current.x, current.y, current.width, current.height));
-	}
-	return result;
-}
-
-Rectangle [] getRectanglesInPixels () {
 	checkWidget();
 	Rectangle [] result = new Rectangle [rectangles.length];
 	for (int i = 0; i < rectangles.length; i++) {
@@ -529,9 +519,9 @@ long gtk_key_press_event (long widget, long eventPtr) {
 		}
 		Event event = new Event ();
 		Rectangle eventRect = new Rectangle (oldX + xChange, oldY + yChange, 0, 0);
-		event.setBounds (DPIUtil.autoScaleDown (eventRect));
+		event.setBounds(eventRect);
 		if (parent != null && (parent.style & SWT.MIRRORED) != 0) {
-			event.x = DPIUtil.autoScaleDown (parent.getClientWidth ()) - event.width - event.x;
+			event.x = parent.getClientWidth () - event.width - event.x;
 		}
 		if ((style & SWT.RESIZE) != 0) {
 			resizeRectangles (xChange, yChange);
@@ -659,11 +649,11 @@ long gtk_mouse (int eventType, long widget, long eventPtr) {
 		Event event = new Event ();
 		if (parent == null) {
 			Rectangle eventRect = new Rectangle (newX [0], newY [0], 0, 0);
-			event.setBounds (DPIUtil.autoScaleDown (eventRect));
+			event.setBounds(eventRect);
 		} else {
-			Point screenCoord = display.mapInPixels (parent, null, newX [0], newY [0]);
+			Point screenCoord = display.map(parent, null, newX [0], newY [0]);
 			Rectangle eventRect = new Rectangle (screenCoord.x, screenCoord.y, 0, 0);
-			event.setBounds (DPIUtil.autoScaleDown (eventRect));
+			event.setBounds(eventRect);
 		}
 		if ((style & SWT.RESIZE) != 0) {
 			resizeRectangles (newX [0] - oldX, newY [0] - oldY);
@@ -846,7 +836,7 @@ public boolean open () {
 		GDK.gdk_window_set_override_redirect (overlayWindow, true);
 	}
 	setTrackerBackground(true);
-	Rectangle bounds = display.getBoundsInPixels();
+	Rectangle bounds = display.getBounds();
 	GTK3.gtk_window_move (overlay, bounds.x, bounds.y);
 	GTK3.gtk_window_resize (overlay, bounds.width, bounds.height);
 	GTK.gtk_widget_show (overlay);
@@ -1154,16 +1144,6 @@ public void setCursor (Cursor newCursor) {
  * </ul>
  */
 public void setRectangles (Rectangle [] rectangles) {
-	checkWidget();
-	if (rectangles == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int length = rectangles.length;
-	for (int i = 0; i < length; i++) {
-		rectangles [i] = DPIUtil.autoScaleUp (rectangles [i]);
-	}
-	setRectanglesInPixels (rectangles);
-}
-
-void setRectanglesInPixels (Rectangle [] rectangles) {
 	checkWidget();
 	if (rectangles == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int length = rectangles.length;

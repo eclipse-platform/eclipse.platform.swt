@@ -205,9 +205,8 @@ Image(Device device) {
  */
 public Image(Device device, int width, int height) {
 	super(device);
-	Point size = DPIUtil.autoScaleUp(new Point(width, height));
 	currentDeviceZoom = DPIUtil.getDeviceZoom();
-	init(size.x, size.y);
+	init(width, height);
 	init();
 }
 
@@ -275,7 +274,7 @@ public Image(Device device, Image srcImage, int flag) {
 	boolean hasAlpha = format == Cairo.CAIRO_FORMAT_ARGB32;
 	surface = Cairo.cairo_image_surface_create(format, width, height);
 	if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	if (DPIUtil.getDeviceZoom() != currentDeviceZoom && DPIUtil.useCairoAutoScale()) {
+	if (DPIUtil.getDeviceZoom() != currentDeviceZoom) {
 		double scaleFactor = DPIUtil.getDeviceZoom() / 100f;
 		Cairo.cairo_surface_set_device_scale(surface, scaleFactor, scaleFactor);
 	}
@@ -383,8 +382,7 @@ public Image(Device device, Rectangle bounds) {
 	super(device);
 	if (bounds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	currentDeviceZoom = DPIUtil.getDeviceZoom();
-	Rectangle bounds1 = DPIUtil.autoScaleUp (bounds);
-	init(bounds1.width, bounds1.height);
+	init(bounds.width, bounds.height);
 	init();
 }
 
@@ -415,7 +413,6 @@ public Image(Device device, ImageData data) {
 	super(device);
 	if (data == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	currentDeviceZoom = DPIUtil.getDeviceZoom();
-	data = DPIUtil.autoScaleUp (device, data);
 	init(data);
 	init();
 }
@@ -458,8 +455,6 @@ public Image(Device device, ImageData source, ImageData mask) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	currentDeviceZoom = DPIUtil.getDeviceZoom();
-	source = DPIUtil.autoScaleUp (device, source);
-	mask = DPIUtil.autoScaleUp (device, mask);
 	mask = ImageData.convertMask (mask);
 	ImageData image = new ImageData(source.width, source.height, source.depth, source.palette, source.scanlinePad, source.data);
 	image.maskPad = mask.scanlinePad;
@@ -525,7 +520,6 @@ public Image(Device device, InputStream stream) {
 	super(device);
 	ImageData data = new ImageData(stream);
 	currentDeviceZoom = DPIUtil.getDeviceZoom();
-	data = DPIUtil.autoScaleUp (device, data);
 	init(data);
 	init();
 }
@@ -568,7 +562,6 @@ public Image(Device device, String filename) {
 
 	ImageData data = new ImageData(filename);
 	currentDeviceZoom = DPIUtil.getDeviceZoom();
-	data = DPIUtil.autoScaleUp (device, data);
 	init(data);
 	init();
 }
@@ -722,19 +715,6 @@ boolean refreshImageForZoom () {
 			refreshed = true;
 			currentDeviceZoom = deviceZoomLevel;
 		}
-	} else {
-		if (!DPIUtil.useCairoAutoScale()) {
-			int deviceZoomLevel = deviceZoom;
-			if (deviceZoomLevel != currentDeviceZoom) {
-				ImageData data = getImageDataAtCurrentZoom();
-				destroy ();
-				ImageData resizedData = DPIUtil.scaleImageData(device, data, deviceZoomLevel, currentDeviceZoom);
-				init(resizedData);
-				init();
-				refreshed = true;
-				currentDeviceZoom = deviceZoomLevel;
-			}
-		}
 	}
 	return refreshed;
 }
@@ -772,7 +752,7 @@ void createFromPixbuf(int type, long pixbuf) {
 	// Initialize surface with dimensions received from the pixbuf and set device_scale appropriately
 	surface = Cairo.cairo_image_surface_create(format, pixbufWidth, pixbufHeight);
 	if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	if (DPIUtil.useCairoAutoScale()) Cairo.cairo_surface_set_device_scale(surface, scaleFactor, scaleFactor);
+	Cairo.cairo_surface_set_device_scale(surface, scaleFactor, scaleFactor);
 
 	long data = Cairo.cairo_image_surface_get_data(surface);
 	int cairoStride = Cairo.cairo_image_surface_get_stride(surface);
@@ -947,7 +927,11 @@ public Color getBackground() {
  */
 public Rectangle getBounds() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return DPIUtil.autoScaleDown(getBoundsInPixels());
+	if (width != -1 && height != -1) {
+		return new Rectangle(0, 0, width, height);
+	}
+	// There are no pixmaps on GTK3, so this will just return 0
+	return new Rectangle(0, 0, 0, 0);
 }
 
 /**
@@ -968,11 +952,7 @@ public Rectangle getBounds() {
 @Deprecated
 public Rectangle getBoundsInPixels() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (width != -1 && height != -1) {
-		return new Rectangle(0, 0, width, height);
-	}
-	// There are no pixmaps on GTK3, so this will just return 0
-	return new Rectangle(0, 0, 0, 0);
+	return getBounds();
 }
 
 /**
@@ -1199,12 +1179,8 @@ void init(int width, int height) {
 	if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	// When we create a blank image we need to set it to 100 in GTK3 as we draw using 100% scale.
 	// Cairo will take care of scaling for us when image needs to be scaled.
-	if (DPIUtil.useCairoAutoScale()) {
-		currentDeviceZoom = 100;
-		Cairo.cairo_surface_set_device_scale(surface, 1f, 1f);
-	} else {
-		currentDeviceZoom = DPIUtil.getDeviceZoom();
-	}
+	currentDeviceZoom = 100;
+	Cairo.cairo_surface_set_device_scale(surface, 1f, 1f);
 	long cairo = Cairo.cairo_create(surface);
 	if (cairo == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	Cairo.cairo_set_source_rgb(cairo, 1, 1, 1);
@@ -1238,7 +1214,7 @@ void init(ImageData image) {
 	// Initialize surface with dimensions received from the ImageData and set device_scale appropriately
 	surface = Cairo.cairo_image_surface_create(format, imageDataWidth, imageDataHeight);
 	if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	if (DPIUtil.useCairoAutoScale()) Cairo.cairo_surface_set_device_scale(surface, scaleFactor, scaleFactor);
+	Cairo.cairo_surface_set_device_scale(surface, scaleFactor, scaleFactor);
 
 	int stride = Cairo.cairo_image_surface_get_stride(surface);
 	long data = Cairo.cairo_image_surface_get_data(surface);
