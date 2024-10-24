@@ -55,6 +55,7 @@ class Edge extends WebBrowser {
 	 */
 	private static final URI URI_FOR_CUSTOM_TEXT_PAGE = setupAndGetLocationForCustomTextPage();
 	private static final String ABOUT_BLANK = "about:blank";
+	private static final String WORKSPACE_URL = "workspaceUrl";
 
 	private record WebViewEnvironment(ICoreWebView2Environment environment, ArrayList<Edge> instances) {
 		public WebViewEnvironment(ICoreWebView2Environment environment) {
@@ -473,7 +474,7 @@ WebViewEnvironment createEnvironment() {
 
 	// Gather customization properties
 	String browserDir = System.getProperty(BROWSER_DIR_PROP);
-	String dataDir = System.getProperty(DATA_DIR_PROP);
+	String dataDir = (String) browser.getDisplay().getData(WORKSPACE_URL);
 	String browserArgs = System.getProperty(BROWSER_ARGS_PROP);
 	String language = System.getProperty(LANGUAGE_PROP);
 	if (dataDir == null) {
