@@ -645,6 +645,7 @@ void setupBrowser(int hr, long pv) {
 	browser.addListener(SWT.FocusIn, this::browserFocusIn);
 	browser.addListener(SWT.Resize, this::browserResize);
 	browser.addListener(SWT.Move, this::browserMove);
+	handleBrowserHover();
 
 	containingEnvironment.instances().add(this);
 	// Sometimes when the shell of the browser is opened before the browser is
@@ -698,6 +699,35 @@ void browserResize(Event event) {
 	OS.GetClientRect(browser.handle, rect);
 	controller.put_Bounds(rect);
 	controller.put_IsVisible(true);
+}
+
+private void handleBrowserHover() {
+	browser.getDisplay().timerExec(500, () -> {
+		if (browser.isDisposed()) {
+			return;
+		}
+		if (!browser.isVisible() || !hasDisplayFocus()) {
+			handleBrowserHover();
+			return;
+		}
+		final Point cursorLocation = browser.getDisplay().getCursorLocation();
+		Point cursorLocationInControlCoordinate = browser.toControl(cursorLocation);
+		Rectangle browserBounds = browser.getBounds();
+		if (browserBounds.contains(cursorLocationInControlCoordinate)) {
+			Event newEvent = new Event();
+			newEvent.widget = browser;
+			Point position = cursorLocationInControlCoordinate;
+			newEvent.x = position.x;
+			newEvent.y = position.y;
+			newEvent.type = SWT.MouseMove;
+			browser.notifyListeners(newEvent.type, newEvent);
+		}
+		handleBrowserHover();
+	});
+}
+
+private boolean hasDisplayFocus() {
+	return browser.getDisplay().getFocusControl() != null;
 }
 
 @Override
