@@ -92,6 +92,7 @@ public class Button extends Control implements ICustomWidget {
 
 	private Accessible acc;
 	private AccessibleAdapter accAdapter;
+	private boolean spaceDown;
 
 	/**
 	 * Constructs a new instance of this class given its parent and a style
@@ -157,9 +158,6 @@ public class Button extends Control implements ICustomWidget {
 				case SWT.Resize :
 					onResize();
 					break;
-				case SWT.KeyDown :
-					onKeyDown(event);
-					break;
 				case SWT.FocusIn :
 					onFocusIn();
 					break;
@@ -185,6 +183,17 @@ public class Button extends Control implements ICustomWidget {
 		addListener(SWT.Traverse, listener);
 		addListener(SWT.Selection, listener);
 
+		addKeyListener(new KeyListener() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				onKeyReleased(e);
+			}
+			@Override
+			public void keyPressed(KeyEvent e) {
+				onKeyPressed(e);
+			}
+		});
+
 		addMouseTrackListener(new MouseTrackAdapter() {
 
 			@Override
@@ -206,6 +215,8 @@ public class Button extends Control implements ICustomWidget {
 		initializeAccessible();
 	}
 
+
+
 	/**
 	 * TODO: improve this support and make it completely similar to native
 	 * windows buttons.
@@ -215,11 +226,22 @@ public class Button extends Control implements ICustomWidget {
 	void initializeAccessible() {
 		acc = getAccessible();
 
+		Button current = this;
+
 		accAdapter = new AccessibleAdapter() {
 			@Override
 			public void getName(AccessibleEvent e) {
-				e.result = getText();
+
+				if (current.isRadioButton()) {
+					e.result = createRadioButtonText(current);
+				}
+				if (current.isPushButton()) {
+					e.result = createPushButtonText(current);
+				}
+				else
+					e.result = getText();
 			}
+
 			@Override
 			public void getHelp(AccessibleEvent e) {
 				e.result = getToolTipText();
@@ -239,6 +261,35 @@ public class Button extends Control implements ICustomWidget {
 		};
 		acc.addAccessibleListener(accAdapter);
 		addListener(SWT.FocusIn, event -> acc.setFocus(ACC.CHILDID_SELF));
+
+	}
+
+	private boolean isPushButton() {
+
+		return (style & SWT.PUSH) != 0;
+	}
+
+	private String createRadioButtonText(Button button) {
+
+		StringBuilder b = new StringBuilder();
+
+		Button[] radioGroup = getRadioGroup();
+
+
+		int index = Arrays.asList(radioGroup).indexOf(button) + 1;
+		int all = radioGroup.length;
+
+
+		b.append(button.getText() + " radio button checked.\r\n");
+		b.append(index + " of " + all + ".\r\n ");
+		b.append("To change the selection press Up or Down Arrow.");
+
+		return b.toString();
+	}
+
+	private String createPushButtonText(Button button) {
+
+		return button.getText() + " button.\r\n To activate press space bar.";
 
 	}
 
@@ -327,8 +378,20 @@ public class Button extends Control implements ICustomWidget {
 		redraw();
 	}
 
-	private void onKeyDown(Event event) {
-		// TODO implement behaviour
+	private void onKeyPressed(KeyEvent event) {
+		if (event.character == SWT.SPACE) {
+			this.spaceDown = true;
+			redraw();
+		}
+	}
+
+	private void onKeyReleased(KeyEvent event) {
+		if (event.character == SWT.SPACE) {
+			this.spaceDown = false;
+			handleSelection();
+			redraw();
+		}
+
 	}
 
 	private void onResize() {
@@ -359,7 +422,7 @@ public class Button extends Control implements ICustomWidget {
 	}
 
 	private void handleSelection() {
-		if ((style & SWT.RADIO) != 0) {
+		if (isRadioButton()) {
 			selectRadio();
 		} else {
 			setSelection(!checked);
@@ -512,6 +575,55 @@ public class Button extends Control implements ICustomWidget {
 			}
 		}
 
+		if (isArrowButton()) {
+
+			Color bg2 = gc.getBackground();
+
+			gc.setBackground(
+					getDisplay().getSystemColor(SWT.COLOR_WIDGET_FOREGROUND));
+
+
+			int centerHeight = r.height / 2;
+			int centerWidth = r.width / 2;
+			if (hasBorder()) {
+				// border ruins center position...
+				centerHeight -= 2;
+				centerWidth -= 2;
+			}
+
+			// TODO: in the next version use a bezier path
+
+			int[] curve = null;
+
+			if ((style & SWT.DOWN) != 0)
+			{
+				curve = new int[]{centerWidth, centerHeight + 5,
+						centerWidth - 5, centerHeight - 5, centerWidth + 5,
+						centerHeight - 5};
+
+			} else if ((style & SWT.LEFT) != 0) {
+
+				curve = new int[]{centerWidth - 5, centerHeight,
+						centerWidth + 5, centerHeight + 5, centerWidth + 5,
+						centerHeight - 5};
+
+			} else if ((style & SWT.RIGHT) != 0) {
+
+				curve = new int[]{centerWidth + 5, centerHeight,
+						centerWidth - 5, centerHeight - 5, centerWidth - 5,
+						centerHeight + 5};
+
+			} else {
+				curve = new int[]{centerWidth, centerHeight - 5,
+						centerWidth - 5, centerHeight + 5, centerWidth + 5,
+						centerHeight + 5};
+			}
+
+			gc.fillPolygon(curve);
+			gc.setBackground(bg2);
+
+		}
+
 		gc.commit();
 		gc.dispose();
 		if (doubleBufferingImage != null) {
@@ -519,6 +631,10 @@ public class Button extends Control implements ICustomWidget {
 			doubleBufferingImage.dispose();
 		}
 		originalGC.dispose();
+	}
+
+	private boolean isArrowButton() {
+		return (style & SWT.ARROW) != 0;
 	}
 
 	private boolean isRadioButton() {
@@ -530,7 +646,7 @@ public class Button extends Control implements ICustomWidget {
 		if (isEnabled()) {
 			if ((style & SWT.TOGGLE) != 0 && isChecked()) {
 				gc.setBackground(TOGGLE_COLOR);
-			} else if (hasMouseEntered) {
+			} else if (hasMouseEntered || spaceDown) {
 				gc.setBackground(HOVER_COLOR);
 			} else {
 				gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
@@ -632,12 +748,26 @@ public class Button extends Control implements ICustomWidget {
 	@Override
 	public Point computeSize(int wHint, int hHint, boolean changed) {
 		checkWidget();
-
 		if (!changed) {
 			Point hintPoint = new Point(wHint, hHint);
 			if (hintPoint.equals(computedSize)) {
 				return computedSize;
 			}
+		}
+
+		// if (isArrow()) {
+		//
+		// int width = wHint != SWT.DEFAULT ? wHint : 14;
+		// int height = hHint != SWT.DEFAULT ? hHint : 14;
+		// return new Point(width, height);
+		// }
+
+		// Probably this must be extended with SWT.DEFAULT
+		if (isArrowButton()) {
+			int borderWidth = hasBorder() ? 8 : 0;
+			int width = Math.max(wHint, 14 + borderWidth);
+			int height = Math.max(hHint, 14 + borderWidth);
+			return new Point(width, height);
 		}
 
 		int textWidth = 0;
@@ -689,6 +819,11 @@ public class Button extends Control implements ICustomWidget {
 		}
 
 		return computedSize;
+	}
+
+	private boolean hasBorder() {
+
+		return (style & SWT.BORDER) != 0;
 	}
 
 	@Override
@@ -922,77 +1057,77 @@ public class Button extends Control implements ICustomWidget {
 		return text;
 	}
 
-	@Override
-	boolean isTabGroup() {
-		System.out.println("isTabGroup: " + getText());
-
-		// in case that a radio button of this radioGroup is already focused,
-		// then this button belongs to this other tab group.
-		// Else this radio button presents a new tab group.
-		if (isRadioButton()) {
-			for (Button b : getRadioGroup()) {
-				if (b.hasFocus()) {
-					System.out.println("false");
-					return false;
-				}
-			}
-			System.out.println("true");
-			return true;
-		}
-
-		if ((style & SWT.PUSH) != 0 || (style & SWT.CHECK) != 0) {
-			System.out.println("true");
-			return true;
-		}
-		return super.isTabGroup();
-	}
-
-	@Override
-	boolean setTabGroupFocus() {
-		System.out.println("setTabGroupFocus: " + getText());
-
-		if (isRadioButton()) {
-			for (Button b : getRadioGroup()) {
-				if (b.isChecked() && b != this) {
-					System.out.println("false");
-					return false;
-				}
-			}
-			System.out.println("setTabItemFocus");
-			return setTabItemFocus();
-		}
-
-		return setTabItemFocus();
-	}
-
-	@Override
-	boolean setTabItemFocus() {
-
-		System.out.println("setTabItemFocus: " + getText());
-		if (!isShowing())
-			return false;
-		return forceFocus();
-	}
-
-	@Override
-	boolean isTabItem() {
-
-		if (hasFocus() && isRadioButton()) {
-			for (Button b : getRadioGroup()) {
-				if (b.isChecked() && b != this) {
-					System.out.println("isTabItem: " + getText() + " false");
-					return false;
-				}
-			}
-			System.out.println("isTabItem: " + getText() + " true");
-			return true;
-		}
-
-		boolean b = super.isTabItem();
-
-		System.out.println("isTabItem: " + getText() + "  " + b);
-		return b;
-	}
+	// @Override
+	// boolean isTabGroup() {
+	// System.out.println("isTabGroup: " + getText());
+	//
+	// // in case that a radio button of this radioGroup is already focused,
+	// // then this button belongs to this other tab group.
+	// // Else this radio button presents a new tab group.
+	// if (isRadioButton()) {
+	// for (Button b : getRadioGroup()) {
+	// if (b.hasFocus()) {
+	// System.out.println("false");
+	// return false;
+	// }
+	// }
+	// System.out.println("true");
+	// return true;
+	// }
+	//
+	// if ((style & SWT.PUSH) != 0 || (style & SWT.CHECK) != 0) {
+	// System.out.println("true");
+	// return true;
+	// }
+	// return super.isTabGroup();
+	// }
+	//
+	// @Override
+	// boolean setTabGroupFocus() {
+	// System.out.println("setTabGroupFocus: " + getText());
+	//
+	// if (isRadioButton()) {
+	// for (Button b : getRadioGroup()) {
+	// if (b.isChecked() && b != this) {
+	// System.out.println("false");
+	// return false;
+	// }
+	// }
+	// System.out.println("setTabItemFocus");
+	// return setTabItemFocus();
+	// }
+	//
+	// return setTabItemFocus();
+	// }
+	//
+	// @Override
+	// boolean setTabItemFocus() {
+	//
+	// System.out.println("setTabItemFocus: " + getText());
+	// if (!isShowing())
+	// return false;
+	// return forceFocus();
+	// }
+	//
+	// @Override
+	// boolean isTabItem() {
+	//
+	// if (hasFocus() && isRadioButton()) {
+	// for (Button b : getRadioGroup()) {
+	// if (b.isChecked() && b != this) {
+	// System.out.println("isTabItem: " + getText() + " false");
+	// return false;
+	// }
+	// }
+	// System.out.println("isTabItem: " + getText() + " true");
+	// return true;
+	// }
+	//
+	// boolean b = super.isTabItem();
+	//
+	// System.out.println("isTabItem: " + getText() + " " + b);
+	// return b;
+	// }
 
 	boolean mnemonicIsHit(char ch) {
 		/*
@@ -1337,11 +1472,15 @@ public class Button extends Control implements ICustomWidget {
 	void selectRadio() {
 
 		for (Button b : getRadioGroup()) {
-			if (b != this)
+			if (b != this) {
 				b.setSelection(false);
+				b.redraw();
+			}
 		}
 
+		setFocus();
 		setSelection(true);
+		redraw();
 	}
 
 	/**
@@ -1471,4 +1610,30 @@ public class Button extends Control implements ICustomWidget {
 		super.setEnabled(enabled);
 		redraw();
 	}
+
+	static int[] bezier(int x0, int y0, int x1, int y1, int x2, int y2, int x3,
+			int y3, int count) {
+		// The parametric equations for a Bezier curve for x[t] and y[t] where 0
+		// <= t <=1 are:
+		// x[t] = x0+3(x1-x0)t+3(x0+x2-2x1)t^2+(x3-x0+3x1-3x2)t^3
+		// y[t] = y0+3(y1-y0)t+3(y0+y2-2y1)t^2+(y3-y0+3y1-3y2)t^3
+		double a0 = x0;
+		double a1 = 3 * (x1 - x0);
+		double a2 = 3 * (x0 + x2 - 2 * x1);
+		double a3 = x3 - x0 + 3 * x1 - 3 * x2;
+		double b0 = y0;
+		double b1 = 3 * (y1 - y0);
+		double b2 = 3 * (y0 + y2 - 2 * y1);
+		double b3 = y3 - y0 + 3 * y1 - 3 * y2;
+
+		int[] polygon = new int[2 * count + 2];
+		for (int i = 0; i <= count; i++) {
+			double t = (double) i / (double) count;
+			polygon[2 * i] = (int) (a0 + a1 * t + a2 * t * t + a3 * t * t * t);
+			polygon[2 * i
+					+ 1] = (int) (b0 + b1 * t + b2 * t * t + b3 * t * t * t);
+		}
+		return polygon;
+	}
+
 }

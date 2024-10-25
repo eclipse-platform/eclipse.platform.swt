@@ -1,6 +1,7 @@
 package org.eclipse.swt.graphics;
 
 import java.io.*;
+import java.util.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
@@ -461,7 +462,33 @@ public class SkijaGC implements IGraphicsContext {
 
 	@Override
 	public void fillPolygon(int[] pointArray) {
-		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+
+		boolean isXCoord = true;
+		int xCoord = 0;
+		List<io.github.humbleui.types.Point> ps = new ArrayList<>();
+
+		for (int i : pointArray) {
+
+			if (isXCoord) {
+				xCoord = i;
+				isXCoord = false;
+			} else {
+				ps.add(new io.github.humbleui.types.Point(xCoord, i));
+				isXCoord = true;
+			}
+		}
+
+
+		Paint p = new Paint();
+		p.setColor(convertSWTColorToSkijaColor(getBackground()));
+		p.setMode(PaintMode.FILL);
+		p.setAntiAlias(true);
+
+		surface.getCanvas().drawTriangles(
+				ps.toArray(new io.github.humbleui.types.Point[0]), null, p);
+
+		p.close();
+
 	}
 
 	@Override

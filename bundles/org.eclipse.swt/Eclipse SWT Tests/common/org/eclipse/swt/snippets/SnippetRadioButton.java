@@ -50,6 +50,17 @@ public class SnippetRadioButton {
 		radio2.addSelectionListener(selectionAdapter);
 		radio3.addSelectionListener(selectionAdapter);
 
+		push.addSelectionListener(new SelectionAdapter() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				Button selectedButton = (Button) e.widget;
+				System.out.println("Selected: " + selectedButton.getText());
+				System.out.println(selectedButton.getSelection());
+			}
+
+		});
+
 		// Shell öffnen
 		shell.open();
 		while (!shell.isDisposed()) {
