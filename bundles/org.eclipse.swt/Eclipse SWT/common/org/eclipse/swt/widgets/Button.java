@@ -93,6 +93,7 @@ public class Button extends Control implements ICustomWidget {
 	private Accessible acc;
 	private AccessibleAdapter accAdapter;
 	private boolean spaceDown;
+	private boolean defaultButton = false;
 
 	/**
 	 * Constructs a new instance of this class given its parent and a style
@@ -215,8 +216,6 @@ public class Button extends Control implements ICustomWidget {
 		initializeAccessible();
 	}
 
-
-
 	/**
 	 * TODO: improve this support and make it completely similar to native
 	 * windows buttons.
@@ -237,8 +236,7 @@ public class Button extends Control implements ICustomWidget {
 				}
 				if (current.isPushButton()) {
 					e.result = createPushButtonText(current);
-				}
-				else
+				} else
 					e.result = getText();
 			}
 
@@ -270,27 +268,25 @@ public class Button extends Control implements ICustomWidget {
 	}
 
 	private String createRadioButtonText(Button button) {
-
 		StringBuilder b = new StringBuilder();
-
 		Button[] radioGroup = getRadioGroup();
-
 
 		int index = Arrays.asList(radioGroup).indexOf(button) + 1;
 		int all = radioGroup.length;
 
-
-		b.append(button.getText() + " radio button checked.\r\n");
-		b.append(index + " of " + all + ".\r\n ");
+		b.append(button.getText());
+		b.append(" radio button checked.\r\n");
+		b.append(index);
+		b.append( " of ");
+		b.append( all );
+		b.append(".\r\n ");
 		b.append("To change the selection press Up or Down Arrow.");
 
 		return b.toString();
 	}
 
 	private String createPushButtonText(Button button) {
-
 		return button.getText() + " button.\r\n To activate press space bar.";
-
 	}
 
 	/*
@@ -316,41 +312,21 @@ public class Button extends Control implements ICustomWidget {
 	}
 
 	// TODO maybe this can be improved with a cache.
-	// But this cache must be handled somehow on the parent element. But there
-	// multiple radio groups can exist.
+	// But this cache must be handled somehow on the parent element.
 	private Button[] getRadioGroup() {
 
 		if ((style & SWT.RADIO) == 0)
 			return null;
 
 		Control[] children = parent._getChildren();
-		int length = children.length;
-		int index = 0;
-		int firstRadioButton = -1;
-		while (index < length) {
-
-			if (children[index] instanceof Button b
-					&& (children[index].getStyle() & SWT.RADIO) != 0) {
-				if (firstRadioButton == -1) {
-					firstRadioButton = index;
-				}
-
-			} else
-				firstRadioButton = -1;
-
-			if (children[index] == this)
-				break;
-			index++;
-		}
 
 		ArrayList<Button> radioGroup = new ArrayList<>();
-		for (int k = firstRadioButton; k < length; k++) {
+		for (int k = 0; k < children.length; k++) {
 
 			if (children[k] instanceof Button b
 					&& (children[k].getStyle() & SWT.RADIO) != 0)
 				radioGroup.add(b);
-			else
-				break;
+
 		}
 
 		return radioGroup.toArray(new Button[0]);
@@ -367,7 +343,6 @@ public class Button extends Control implements ICustomWidget {
 	}
 
 	private void onTraverse(Event event) {
-		// Not implemented yet
 	}
 
 	private void onFocusIn() {
@@ -423,6 +398,9 @@ public class Button extends Control implements ICustomWidget {
 
 	private void handleSelection() {
 		if (isRadioButton()) {
+// here we have to force the focus, else the focus stays on another button in this group
+// TODO this must be improved. 
+			forceFocus();
 			selectRadio();
 		} else {
 			setSelection(!checked);
@@ -431,10 +409,14 @@ public class Button extends Control implements ICustomWidget {
 	}
 
 	private void onMouseUp(Event e) {
-		handleSelection();
+		if ((e.stateMask & SWT.BUTTON1) != 0)
+			handleSelection();
+		else
+			redraw();
 	}
 
 	private void doPaint(Event e) {
+
 		Rectangle r = getBounds();
 		if (r.width == 0 && r.height == 0) {
 			return;
@@ -561,9 +543,6 @@ public class Button extends Control implements ICustomWidget {
 			gc.drawText(text, textLeftOffset, textTopOffset, DRAW_FLAGS);
 		}
 		if (hasFocus()) {
-
-			if (isRadioButton() && !isChecked())
-				selectRadio();
 			if (((style & SWT.RADIO) | (style & SWT.CHECK)) != 0) {
 				int textTopOffset = (r.height - 1 - textHeight) / 2;
 				int textLeftOffset = contentArea.x + imageSpace;
@@ -571,7 +550,6 @@ public class Button extends Control implements ICustomWidget {
 						textHeight);
 			} else {
 				gc.drawFocus(3, 3, r.width - 7, r.height - 7);
-
 			}
 		}
 
@@ -581,7 +559,6 @@ public class Button extends Control implements ICustomWidget {
 
 			gc.setBackground(
 					getDisplay().getSystemColor(SWT.COLOR_WIDGET_FOREGROUND));
-
 
 			int centerHeight = r.height / 2;
 			int centerWidth = r.width / 2;
@@ -595,8 +572,7 @@ public class Button extends Control implements ICustomWidget {
 
 			int[] curve = null;
 
-			if ((style & SWT.DOWN) != 0)
-			{
+			if ((style & SWT.DOWN) != 0) {
 				curve = new int[]{centerWidth, centerHeight + 5,
 						centerWidth - 5, centerHeight - 5, centerWidth + 5,
 						centerHeight - 5};
@@ -639,6 +615,10 @@ public class Button extends Control implements ICustomWidget {
 
 	private boolean isRadioButton() {
 		return (style & SWT.RADIO) != 0;
+	}
+
+	private boolean isCheckButton() {
+		return (style & SWT.CHECK) != 0;
 	}
 
 	private void drawPushButton(IGraphicsContext gc, int x, int y, int w,
@@ -698,13 +678,18 @@ public class Button extends Control implements ICustomWidget {
 
 	private void drawCheckbox(IGraphicsContext gc, int x, int y) {
 		if (getSelection()) {
-			gc.setBackground(SELECTION_COLOR);
+
+			if (grayed)
+				gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_GRAY));
+			else
+				gc.setBackground(SELECTION_COLOR);
 			int partialBoxBorder = 2;
 			gc.fillRoundRectangle(x + partialBoxBorder, y + partialBoxBorder,
 					BOX_SIZE - 2 * partialBoxBorder,
 					BOX_SIZE - 2 * partialBoxBorder,
 					BOX_SIZE / 4 - partialBoxBorder / 2,
 					BOX_SIZE / 4 - partialBoxBorder / 2);
+
 		}
 		if (hasMouseEntered) {
 			gc.setBackground(HOVER_COLOR);
@@ -755,18 +740,20 @@ public class Button extends Control implements ICustomWidget {
 			}
 		}
 
-		// if (isArrow()) {
-		//
-		// int width = wHint != SWT.DEFAULT ? wHint : 14;
-		// int height = hHint != SWT.DEFAULT ? hHint : 14;
-		// return new Point(width, height);
-		// }
-
-		// Probably this must be extended with SWT.DEFAULT
 		if (isArrowButton()) {
 			int borderWidth = hasBorder() ? 8 : 0;
 			int width = Math.max(wHint, 14 + borderWidth);
 			int height = Math.max(hHint, 14 + borderWidth);
+
+			computedSize = new Point(width, height);
+
+			if (wHint != SWT.DEFAULT) {
+				computedSize.x = wHint;
+			}
+			if (hHint != SWT.DEFAULT) {
+				computedSize.y = wHint;
+			}
+
 			return new Point(width, height);
 		}
 
@@ -933,13 +920,11 @@ public class Button extends Control implements ICustomWidget {
 	}
 
 	boolean getDefault() {
-		if ((style & SWT.PUSH) == 0)
+		if (!isPushButton() || !isEnabled() || isDisposed())
 			return false;
-		// int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-		// return (bits & OS.BS_DEFPUSHBUTTON) != 0;
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
-		return false;
+
+		return defaultButton;
+
 	}
 
 	/**
@@ -960,7 +945,7 @@ public class Button extends Control implements ICustomWidget {
 	 */
 	public boolean getGrayed() {
 		checkWidget();
-		if ((style & SWT.CHECK) == 0)
+		if (!isCheckButton())
 			return false;
 		return grayed;
 	}
@@ -1057,91 +1042,80 @@ public class Button extends Control implements ICustomWidget {
 		return text;
 	}
 
-	// @Override
-	// boolean isTabGroup() {
-	// System.out.println("isTabGroup: " + getText());
-	//
-	// // in case that a radio button of this radioGroup is already focused,
-	// // then this button belongs to this other tab group.
-	// // Else this radio button presents a new tab group.
-	// if (isRadioButton()) {
-	// for (Button b : getRadioGroup()) {
-	// if (b.hasFocus()) {
-	// System.out.println("false");
-	// return false;
-	// }
-	// }
-	// System.out.println("true");
-	// return true;
-	// }
-	//
-	// if ((style & SWT.PUSH) != 0 || (style & SWT.CHECK) != 0) {
-	// System.out.println("true");
-	// return true;
-	// }
-	// return super.isTabGroup();
-	// }
-	//
-	// @Override
-	// boolean setTabGroupFocus() {
-	// System.out.println("setTabGroupFocus: " + getText());
-	//
-	// if (isRadioButton()) {
-	// for (Button b : getRadioGroup()) {
-	// if (b.isChecked() && b != this) {
-	// System.out.println("false");
-	// return false;
-	// }
-	// }
-	// System.out.println("setTabItemFocus");
-	// return setTabItemFocus();
-	// }
-	//
-	// return setTabItemFocus();
-	// }
-	//
-	// @Override
-	// boolean setTabItemFocus() {
-	//
-	// System.out.println("setTabItemFocus: " + getText());
-	// if (!isShowing())
-	// return false;
-	// return forceFocus();
-	// }
-	//
-	// @Override
-	// boolean isTabItem() {
-	//
-	// if (hasFocus() && isRadioButton()) {
-	// for (Button b : getRadioGroup()) {
-	// if (b.isChecked() && b != this) {
-	// System.out.println("isTabItem: " + getText() + " false");
-	// return false;
-	// }
-	// }
-	// System.out.println("isTabItem: " + getText() + " true");
-	// return true;
-	// }
-	//
-	// boolean b = super.isTabItem();
-	//
-	// System.out.println("isTabItem: " + getText() + " " + b);
-	// return b;
-	// }
+	@Override
+	boolean isTabGroup() {
+		if (isPushButton() || isCheckButton()) {
+			return true;
+		}
+		boolean b = super.isTabGroup();
+		return b;
+	}
 
-	boolean mnemonicIsHit(char ch) {
-		/*
-		 * Feature in Windows. When a radio button gets focus, it selects the
-		 * button in WM_SETFOCUS. Workaround is to never set focus to an
-		 * unselected radio button. Therefore, don't try to set focus on radio
-		 * buttons, click will set focus.
-		 */
+	@Override
+	boolean setTabGroupFocus() {
+		boolean b = super.setTabGroupFocus();
+		return b;
+	}
+
+	@Override
+	boolean setTabItemFocus() {
+
+		if (isRadioButton()) {
+
+			for (Button b : getRadioGroup()) {
+				// we only tab on this element, if there is no other radio
+				// button which is selected.
+				// in case of another selected radio button, this other radio
+				// button should be tabbed.
+				// But if the other checked radio button has focus, then the
+				// tabbing should not be blocked.
+				if (!b.hasFocus() && b.isChecked() && b != this) {
+					return false;
+				}
+
+			}
+
+		}
+
+		boolean b = super.setTabItemFocus();
+		return b;
+	}
+	//
+	@Override
+	boolean isTabItem() {
+
+		boolean b = super.isTabItem();
+		return b;
+
+	}
+
+	@Override
+	boolean traverseItem(boolean next) {
+		boolean b = super.traverseItem(next);
+		// if the next item is selected, a radio button loses the check.
+		if (b && isRadioButton())
+			setSelection(false);
+		redraw();
+		return b;
+	}
+
+	@Override
+	boolean traverseGroup(boolean next) {
+		boolean b = super.traverseGroup(next);
+		return b;
+	}
+
+
+	// menmonicHis(char ch) does not exist on mac. It seems on mac there is no
+	// mnemonic...
+	boolean mnemonicISHit(char ch) {
 		if ((style & SWT.RADIO) == 0 && !setFocus())
 			return false;
 		click();
 		return true;
 	}
 
+	// mnemonicMatch(char key) does not exist on mac...
 	boolean mnemonicHasMatch(char key) {
 		// char mnemonic = findMnemonic (getText ());
 		// if (mnemonic == '\0') return false;
@@ -1221,46 +1195,7 @@ public class Button extends Control implements ICustomWidget {
 				& (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.CENTER | SWT.RIGHT);
 
 		redraw();
-		// if ((style & SWT.ARROW) != 0) {
-		// if ((style & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT)) == 0)
-		// return;
-		// style &= ~(SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT);
-		// style |= alignment & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT);
-		// OS.InvalidateRect (handle, null, true);
-		// return;
-		// }
-		// if ((alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) == 0) return;
-		// style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
-		// style |= alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
-		// int oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE), newBits =
-		// oldBits;
-		// newBits &= ~(OS.BS_LEFT | OS.BS_CENTER | OS.BS_RIGHT);
-		// if ((style & SWT.LEFT) != 0) newBits |= OS.BS_LEFT;
-		// if ((style & SWT.CENTER) != 0) newBits |= OS.BS_CENTER;
-		// if ((style & SWT.RIGHT) != 0) newBits |= OS.BS_RIGHT;
-		// if (imageList != null) {
-		// BUTTON_IMAGELIST buttonImageList = new BUTTON_IMAGELIST ();
-		// buttonImageList.himl = imageList.getHandle(getZoom());
-		// if (text.length () == 0) {
-		// if ((style & SWT.LEFT) != 0) buttonImageList.uAlign =
-		// OS.BUTTON_IMAGELIST_ALIGN_LEFT;
-		// if ((style & SWT.CENTER) != 0) buttonImageList.uAlign =
-		// OS.BUTTON_IMAGELIST_ALIGN_CENTER;
-		// if ((style & SWT.RIGHT) != 0) buttonImageList.uAlign =
-		// OS.BUTTON_IMAGELIST_ALIGN_RIGHT;
-		// } else {
-		// buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_LEFT;
-		// buttonImageList.margin_left = computeLeftMargin ();
-		// buttonImageList.margin_right = MARGIN;
-		// newBits &= ~(OS.BS_CENTER | OS.BS_RIGHT);
-		// newBits |= OS.BS_LEFT;
-		// }
-		// OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, buttonImageList);
-		// }
-		// if (newBits != oldBits) {
-		// OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
-		// OS.InvalidateRect (handle, null, true);
-		// }
+
 	}
 
 	/**
@@ -1301,31 +1236,37 @@ public class Button extends Control implements ICustomWidget {
 	void setDefault(boolean value) {
 		if ((style & SWT.PUSH) == 0)
 			return;
-		// long hwndShell = menuShell().handle;
-		// int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-		// if (value) {
-		// bits |= OS.BS_DEFPUSHBUTTON;
-		// OS.SendMessage (hwndShell, OS.DM_SETDEFID, handle, 0);
-		// } else {
-		// bits &= ~OS.BS_DEFPUSHBUTTON;
-		// OS.SendMessage (hwndShell, OS.DM_SETDEFID, 0, 0);
-		// }
-		// OS.SendMessage (handle, OS.BM_SETSTYLE, bits, 1);
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
+			defaultButton = value;
 	}
 
 	@Override
 	public boolean setFocus() {
+
 		checkWidget();
+
+		/*
+		 * If the button should get focus, use forceFocus().
+		 * Here it should be prevented, that focus changes the selection of radion buttons.
+		 */
 		/*
 		 * Feature in Windows. When a radio button gets focus, it selects the
 		 * button in WM_SETFOCUS. The fix is to not assign focus to an
 		 * unselected radio button.
 		 */
-		if (isRadioButton() && !isChecked())
+		if (isRadioButton() && !isChecked()) {
 			return false;
-		return super.setFocus();
+		}
+		boolean b = super.setFocus();
+		return b;
+	}
+	@Override
+	public boolean forceFocus() {
+		boolean b = super.forceFocus();
+		if (b && isRadioButton()) // if a radio button gets focus, then all
+									// other radio buttons of the group lose the
+									// selection
+			selectRadio(/* withFocus = */false);
+		return b;
 	}
 
 	/**
@@ -1384,14 +1325,6 @@ public class Button extends Control implements ICustomWidget {
 		if ((style & SWT.CHECK) == 0)
 			return;
 		this.grayed = grayed;
-		// long flags = OS.SendMessage (handle, OS.BM_GETCHECK, 0, 0);
-		// if (grayed) {
-		// if (flags == OS.BST_CHECKED) updateSelection (OS.BST_INDETERMINATE);
-		// } else {
-		// if (flags == OS.BST_INDETERMINATE) updateSelection (OS.BST_CHECKED);
-		// }
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
 	}
 
 	/**
@@ -1417,6 +1350,7 @@ public class Button extends Control implements ICustomWidget {
 	 * @since 3.3
 	 */
 	/* public */ void setMessage(String message) {
+		// TODO not yet implemented, never heard of this...
 		checkWidget();
 		if (message == null)
 			error(SWT.ERROR_NULL_ARGUMENT);
@@ -1459,7 +1393,7 @@ public class Button extends Control implements ICustomWidget {
 
 	@Override
 	boolean setRadioSelection(boolean value) {
-		if ((style & SWT.RADIO) == 0) {
+		if (!isRadioButton()) {
 			return false;
 		}
 		if (getSelection() != value) {
@@ -1479,7 +1413,22 @@ public class Button extends Control implements ICustomWidget {
 		}
 
 		setFocus();
-		setSelection(true);
+		setRadioSelection(true);
+		redraw();
+	}
+
+	void selectRadio(boolean withFocus) {
+
+		for (Button b : getRadioGroup()) {
+			if (b != this) {
+				b.setSelection(false);
+				b.redraw();
+			}
+		}
+
+		if (withFocus)
+			setFocus();
+		setRadioSelection(true);
 		redraw();
 	}
 
@@ -1611,6 +1560,7 @@ public class Button extends Control implements ICustomWidget {
 		redraw();
 	}
 
+	// TODO can this be used for a better arrow image?
 	static int[] bezier(int x0, int y0, int x1, int y1, int x2, int y2, int x3,
 			int y3, int count) {
 		// The parametric equations for a Bezier curve for x[t] and y[t] where 0
