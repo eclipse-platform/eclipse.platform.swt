@@ -1204,6 +1204,8 @@ void createDisplay (DeviceData data) {
 	themeDark = checkAndSetThemeDetails(themeName);
 	if (OS.isX11()) {
 		xDisplay = GTK.GTK4 ? 0 : GDK.gdk_x11_get_default_xdisplay();
+		// set GDK backend if we are on X11
+		System.setProperty("org.eclipse.swt.internal.gdk.backend", "x11");
 	}
 	if (OS.SWT_DEBUG) Device.DEBUG = true;
 	long ptr = GTK.gtk_check_version (GTK3_MAJOR, GTK3_MINOR, GTK3_MICRO);
