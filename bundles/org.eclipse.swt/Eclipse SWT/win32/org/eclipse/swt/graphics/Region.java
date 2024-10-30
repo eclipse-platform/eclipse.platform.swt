@@ -223,6 +223,7 @@ public boolean contains (Point pt) {
 
 @Override
 void destroy () {
+	device.deregisterResourceWithZoomSupport(this);
 	zoomToHandle.values().forEach(handle -> OS.DeleteObject(handle));
 	zoomToHandle.clear();
 	operations.clear();
