@@ -3276,7 +3276,15 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetSystemMetricsForDpi)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, GetSystemMetricsForDpi_FUNC);
+/*
 	rc = (jint)GetSystemMetricsForDpi(arg0, arg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, GetSystemMetricsForDpi)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(jint, jint))fp)(arg0, arg1);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, GetSystemMetricsForDpi_FUNC);
 	return rc;
 }
@@ -3374,7 +3382,15 @@ JNIEXPORT jlong JNICALL OS_NATIVE(GetThreadDpiAwarenessContext)
 {
 	jlong rc = 0;
 	OS_NATIVE_ENTER(env, that, GetThreadDpiAwarenessContext_FUNC);
+/*
 	rc = (jlong)GetThreadDpiAwarenessContext();
+*/
+	{
+		OS_LOAD_FUNCTION(fp, GetThreadDpiAwarenessContext)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)())fp)();
+		}
+	}
 	OS_NATIVE_EXIT(env, that, GetThreadDpiAwarenessContext_FUNC);
 	return rc;
 }
@@ -6616,7 +6632,15 @@ JNIEXPORT jlong JNICALL OS_NATIVE(OpenThemeDataForDpi)
 	jlong rc = 0;
 	OS_NATIVE_ENTER(env, that, OpenThemeDataForDpi_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL)) == NULL) goto fail;
+/*
 	rc = (jlong)OpenThemeDataForDpi((HWND)arg0, (LPCWSTR)lparg1, arg2);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, OpenThemeDataForDpi)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(HWND, LPCWSTR, jint))fp)((HWND)arg0, (LPCWSTR)lparg1, arg2);
+		}
+	}
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, JNI_ABORT);
 	OS_NATIVE_EXIT(env, that, OpenThemeDataForDpi_FUNC);
@@ -8865,7 +8889,15 @@ JNIEXPORT jlong JNICALL OS_NATIVE(SetThreadDpiAwarenessContext)
 {
 	jlong rc = 0;
 	OS_NATIVE_ENTER(env, that, SetThreadDpiAwarenessContext_FUNC);
+/*
 	rc = (jlong)SetThreadDpiAwarenessContext((DPI_AWARENESS_CONTEXT)arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, SetThreadDpiAwarenessContext)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(DPI_AWARENESS_CONTEXT))fp)((DPI_AWARENESS_CONTEXT)arg0);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, SetThreadDpiAwarenessContext_FUNC);
 	return rc;
 }
@@ -9215,7 +9247,15 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(SystemParametersInfoForDpi)
 	jboolean rc = 0;
 	OS_NATIVE_ENTER(env, that, SystemParametersInfoForDpi_FUNC);
 	if (arg2) if ((lparg2 = getNONCLIENTMETRICSFields(env, arg2, &_arg2)) == NULL) goto fail;
+/*
 	rc = (jboolean)SystemParametersInfoForDpi(arg0, arg1, lparg2, arg3, arg4);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, SystemParametersInfoForDpi)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jint, jint, NONCLIENTMETRICS *, jint, jint))fp)(arg0, arg1, lparg2, arg3, arg4);
+		}
+	}
 fail:
 	if (arg2 && lparg2) setNONCLIENTMETRICSFields(env, arg2, lparg2);
 	OS_NATIVE_EXIT(env, that, SystemParametersInfoForDpi_FUNC);

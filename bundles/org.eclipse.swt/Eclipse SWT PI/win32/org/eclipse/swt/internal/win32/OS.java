@@ -2990,6 +2990,7 @@ public static final native long GetSysColorBrush (int nIndex);
 /** @param hWnd cast=(HWND) */
 public static final native long GetSystemMenu (long hWnd, boolean bRevert);
 public static final native int GetSystemMetrics (int nIndex);
+/** @method flags=dynamic */
 public static final native int GetSystemMetricsForDpi (int nIndex, int dpi);
 /** @param hDC cast=(HDC) */
 public static final native int GetTextColor (long hDC);
@@ -3784,6 +3785,7 @@ public static final native boolean OpenClipboard (long hWndNewOwner);
  */
 public static final native long OpenThemeData (long hwnd, char[] pszClassList);
 /**
+ * @method flags=dynamic
  * @param hwnd cast=(HWND)
  * @param pszClassList cast=(LPCWSTR),flags=no_out
  */
@@ -4354,8 +4356,12 @@ public static final native int SetPixel (long hdc, int X, int Y, int crColor);
 /** @param hdc cast=(HDC) */
 public static final native int SetPolyFillMode (long hdc, int iPolyFillMode);
 public static final native boolean SetProcessDPIAware ();
-/** @param dpiContext cast=(DPI_AWARENESS_CONTEXT) */
+/**
+ * @method flags=dynamic
+ * @param dpiContext cast=(DPI_AWARENESS_CONTEXT)
+ */
 public static final native long SetThreadDpiAwarenessContext (long dpiContext);
+/** @method flags=dynamic */
 public static final native long GetThreadDpiAwarenessContext ();
 /** @method flags=no_gen */
 public static final native int SetPreferredAppMode(int mode);
@@ -4462,6 +4468,7 @@ public static final native boolean SystemParametersInfo (int uiAction, int uiPar
 public static final native boolean SystemParametersInfo (int uiAction, int uiParam, RECT pvParam, int fWinIni);
 public static final native boolean SystemParametersInfo (int uiAction, int uiParam, NONCLIENTMETRICS pvParam, int fWinIni);
 public static final native boolean SystemParametersInfo (int uiAction, int uiParam, int [] pvParam, int fWinIni);
+/** @method flags=dynamic */
 public static final native boolean SystemParametersInfoForDpi (int uiAction, int uiParam, NONCLIENTMETRICS pvParam, int fWinIni, int dpi);
 /**
  * @param lpKeyState cast=(PBYTE)
