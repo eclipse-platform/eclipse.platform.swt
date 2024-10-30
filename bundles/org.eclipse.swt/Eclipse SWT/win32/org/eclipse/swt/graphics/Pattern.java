@@ -261,6 +261,7 @@ void setImageHandle(Image image, int zoom) {
 
 @Override
 void destroy() {
+	device.deregisterResourceWithZoomSupport(this);
 	for (long handle: zoomLevelToHandle.values()) {
 		destroyHandle(handle);
 	}

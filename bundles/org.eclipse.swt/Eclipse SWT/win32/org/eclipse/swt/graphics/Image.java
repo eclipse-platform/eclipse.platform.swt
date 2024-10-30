@@ -1187,6 +1187,7 @@ long [] createGdipImage(Integer zoom) {
 
 @Override
 void destroy () {
+	device.deregisterResourceWithZoomSupport(this);
 	if (memGC != null) memGC.dispose();
 	destroyHandle();
 	memGC = null;

@@ -156,6 +156,7 @@ static float[] checkTransform(float[] elements) {
 
 @Override
 void destroy() {
+	device.deregisterResourceWithZoomSupport(this);
 	zoomLevelToHandle.values().forEach(Gdip::Matrix_delete);
 	zoomLevelToHandle.clear();
 }

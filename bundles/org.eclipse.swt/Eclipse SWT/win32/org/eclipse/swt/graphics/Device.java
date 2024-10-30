@@ -959,6 +959,10 @@ void registerResourceWithZoomSupport(Resource resource) {
 	resourcesWithZoomSupport.add(resource);
 }
 
+void deregisterResourceWithZoomSupport(Resource resource) {
+	resourcesWithZoomSupport.remove(resource);
+}
+
 /**
  * Destroys the handles of all the resources in the resource tracker by
  * identifying the zoom levels which is not valid for any monitor

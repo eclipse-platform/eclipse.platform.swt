@@ -437,6 +437,7 @@ void cubicToInPixels(float cx1, float cy1, float cx2, float cy2, float x, float 
 
 @Override
 void destroy() {
+	device.deregisterResourceWithZoomSupport(this);
 	zoomLevelToHandle.values().forEach(Gdip::GraphicsPath_delete);
 	zoomLevelToHandle.clear();
 }
