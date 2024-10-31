@@ -90,10 +90,13 @@ final class ScalingSWTFontRegistry implements SWTFontRegistry {
 	private ScaledFontContainer getOrCreateBaseSystemFontContainer(Device device) {
 		ScaledFontContainer systemFontContainer = fontKeyMap.get(KEY_SYSTEM_FONTS);
 		if (systemFontContainer == null) {
-			int targetZoom = DPIUtil.mapDPIToZoom(device.getDPI().x);
-			long systemFontHandle = createSystemFont(targetZoom);
-			Font systemFont = Font.win32_new(device, systemFontHandle);
-			systemFontContainer = new ScaledFontContainer(systemFont, targetZoom);
+			long hDC = device.internal_new_GC (null);
+			int dpiX = OS.GetDeviceCaps (hDC, OS.LOGPIXELSX);
+			device.internal_dispose_GC (hDC, null);
+			int primaryZoom = DPIUtil.mapDPIToZoom(dpiX);
+			long systemFontHandle = createSystemFont(primaryZoom);
+			Font systemFont = Font.win32_new(device, systemFontHandle, primaryZoom);
+			systemFontContainer = new ScaledFontContainer(systemFont, primaryZoom);
 			fontHandleMap.put(systemFont.handle, systemFontContainer);
 			fontKeyMap.put(KEY_SYSTEM_FONTS, systemFontContainer);
 		}
