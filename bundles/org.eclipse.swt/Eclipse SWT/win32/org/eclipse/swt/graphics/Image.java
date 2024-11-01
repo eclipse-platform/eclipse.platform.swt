@@ -22,6 +22,7 @@ import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.DPIUtil.*;
 import org.eclipse.swt.internal.gdip.*;
 import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Instances of this class are graphics which have been prepared
@@ -819,7 +820,10 @@ public static Long win32_getHandle (Image image, int zoom) {
 			image.init(newData, zoom);
 		}
 	} else if (image.imageDataProvider != null) {
-		ElementAtZoom<ImageData> imageCandidate = DPIUtil.validateAndGetImageDataAtZoom (image.imageDataProvider, zoom);
+		ElementAtZoom<ImageData> imageCandidate;
+		try (StaticZoomUpdater unused = image.new StaticZoomUpdater(zoom)) {
+			imageCandidate = DPIUtil.validateAndGetImageDataAtZoom (image.imageDataProvider, zoom);
+		}
 		ImageData resizedData = DPIUtil.scaleImageData (image.device, imageCandidate.element(), zoom, imageCandidate.zoom());
 		ImageData newData = image.adaptImageDataIfDisabledOrGray(resizedData);
 		image.init(newData, zoom);
@@ -1443,7 +1447,10 @@ public ImageData getImageData (int zoom) {
 	if (zoom == currentZoom) {
 		return getImageDataAtCurrentZoom();
 	} else if (imageDataProvider != null) {
-		ElementAtZoom<ImageData> data = DPIUtil.validateAndGetImageDataAtZoom (imageDataProvider, zoom);
+		ElementAtZoom<ImageData> data;
+		try (StaticZoomUpdater unused = new StaticZoomUpdater(zoom)) {
+			data = DPIUtil.validateAndGetImageDataAtZoom (imageDataProvider, zoom);
+		}
 		return DPIUtil.scaleImageData (device, data.element(), zoom, data.zoom());
 	} else if (imageFileNameProvider != null) {
 		ElementAtZoom<String> fileName = DPIUtil.validateAndGetImagePathAtZoom (imageFileNameProvider, zoom);
@@ -2396,5 +2403,26 @@ public static Image win32_new(Device device, int type, long handle) {
 	image.type = type;
 	image.setHandleForZoomLevel(handle, image.getZoom());
 	return image;
+}
+
+// This class is only used for a workaround and will be removed again
+private class StaticZoomUpdater implements AutoCloseable {
+	private final boolean updateStaticZoom;
+	private final int currentNativeDeviceZoom;
+
+	private StaticZoomUpdater(int targetZoom) {
+		this.currentNativeDeviceZoom = DPIUtil.getNativeDeviceZoom();
+		this.updateStaticZoom = this.currentNativeDeviceZoom != targetZoom && device instanceof Display display && display.isRescalingAtRuntime();
+		if (updateStaticZoom) {
+			DPIUtil.setDeviceZoom(targetZoom);
+		}
+	}
+
+	@Override
+	public void close() {
+		if (updateStaticZoom) {
+			DPIUtil.setDeviceZoom(currentNativeDeviceZoom);
+		}
+	}
 }
 }
