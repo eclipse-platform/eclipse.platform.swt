@@ -256,6 +256,165 @@ static int callAndWait(String[] pstr, ToIntFunction<IUnknown> callable) {
 	return phr[0];
 }
 
+class WebViewProvider {
+
+	private CompletableFuture<ICoreWebView2> webViewFuture = new CompletableFuture<>();
+	private CompletableFuture<ICoreWebView2_2> webView_2Future = new CompletableFuture<>();
+	private CompletableFuture<ICoreWebView2_10> webView_10Future = new CompletableFuture<>();
+	private CompletableFuture<ICoreWebView2_11> webView_11Future = new CompletableFuture<>();
+	private CompletableFuture<ICoreWebView2_12> webView_12Future = new CompletableFuture<>();
+	private CompletableFuture<ICoreWebView2_13> webView_13Future = new CompletableFuture<>();
+
+	private CompletableFuture<Void> lastWebViewTask = webViewFuture.thenRun(() -> {});
+
+	ICoreWebView2 initializeWebView(ICoreWebView2Controller controller) {
+		long[] ppv = new long[1];
+		controller.get_CoreWebView2(ppv);
+		final ICoreWebView2 webView = new ICoreWebView2(ppv[0]);
+		initializeWebView_2(webView);
+		initializeWebView_10(webView);
+		initializeWebView_11(webView);
+		initializeWebView_12(webView);
+		initializeWebView_13(webView);
+		webViewFuture.complete(webView);
+		return webView;
+	}
+
+	private void initializeWebView_2(ICoreWebView2 webView) {
+		long[] ppv = new long[1];
+		int hr = webView.QueryInterface(COM.IID_ICoreWebView2_2, ppv);
+		if (hr == COM.S_OK) {
+			webView_2Future.complete(new ICoreWebView2_2(ppv[0]));
+		} else {
+			webView_2Future.cancel(true);
+		}
+	}
+
+	private void initializeWebView_10(ICoreWebView2 webView) {
+		long[] ppv = new long[1];
+		int hr = webView.QueryInterface(COM.IID_ICoreWebView2_10, ppv);
+		if (hr == COM.S_OK) {
+			webView_10Future.complete(new ICoreWebView2_10(ppv[0]));
+		} else {
+			webView_10Future.cancel(true);
+		}
+	}
+
+	private void initializeWebView_11(ICoreWebView2 webView) {
+		long[] ppv = new long[1];
+		int hr = webView.QueryInterface(COM.IID_ICoreWebView2_11, ppv);
+		if (hr == COM.S_OK) {
+			webView_11Future.complete(new ICoreWebView2_11(ppv[0]));
+		} else {
+			webView_11Future.cancel(true);
+		}
+	}
+
+	private void initializeWebView_12(ICoreWebView2 webView) {
+		long[] ppv = new long[1];
+		int hr = webView.QueryInterface(COM.IID_ICoreWebView2_12, ppv);
+		if (hr == COM.S_OK) {
+			webView_12Future.complete(new ICoreWebView2_12(ppv[0]));
+		} else {
+			webView_12Future.cancel(true);
+		}
+	}
+
+	private void initializeWebView_13(ICoreWebView2 webView) {
+		long[] ppv = new long[1];
+		int hr = webView.QueryInterface(COM.IID_ICoreWebView2_13, ppv);
+		if (hr == COM.S_OK) {
+			webView_13Future.complete(new ICoreWebView2_13(ppv[0]));
+		} else {
+			webView_13Future.cancel(true);
+		}
+	}
+
+	ICoreWebView2 getWebView(boolean waitForPendingWebviewTasksToFinish) {
+		if(waitForPendingWebviewTasksToFinish) {
+			waitForFutureToFinish(lastWebViewTask);
+		}
+		return webViewFuture.join();
+	}
+
+	ICoreWebView2_2 getWebView_2(boolean waitForPendingWebviewTasksToFinish) {
+		if(waitForPendingWebviewTasksToFinish) {
+			waitForFutureToFinish(lastWebViewTask);
+		}
+		return webView_2Future.join();
+	}
+
+	boolean isWebView_2Available() {
+		waitForFutureToFinish(webView_2Future);
+		return !webView_2Future.isCancelled();
+	}
+
+	ICoreWebView2_10 getWebView_10(boolean waitForPendingWebviewTasksToFinish) {
+		if(waitForPendingWebviewTasksToFinish) {
+			waitForFutureToFinish(lastWebViewTask);
+		}
+		return webView_10Future.join();
+	}
+
+	boolean isWebView_10Available() {
+		waitForFutureToFinish(webView_10Future);
+		return !webView_10Future.isCancelled();
+	}
+
+	ICoreWebView2_11 getWebView_11(boolean waitForPendingWebviewTasksToFinish) {
+		if(waitForPendingWebviewTasksToFinish) {
+			waitForFutureToFinish(lastWebViewTask);
+		}
+		return webView_11Future.join();
+	}
+
+	boolean isWebView_11Available() {
+		waitForFutureToFinish(webView_11Future);
+		return !webView_11Future.isCancelled();
+	}
+
+	ICoreWebView2_12 getWebView_12(boolean waitForPendingWebviewTasksToFinish) {
+		if(waitForPendingWebviewTasksToFinish) {
+			waitForFutureToFinish(lastWebViewTask);
+		}
+		return webView_12Future.join();
+	}
+
+	boolean isWebView_12Available() {
+		waitForFutureToFinish(webView_12Future);
+		return !webView_12Future.isCancelled();
+	}
+
+	ICoreWebView2_13 getWebView_13(boolean waitForPendingWebviewTasksToFinish) {
+		if(waitForPendingWebviewTasksToFinish) {
+			waitForFutureToFinish(lastWebViewTask);
+		}
+		return webView_13Future.join();
+	}
+
+	boolean isWebView_13Available() {
+		waitForFutureToFinish(webView_13Future);
+		return !webView_13Future.isCancelled();
+	}
+
+	/*
+	 * Schedule a given runnable in a queue to execute when the webView is free and
+	 * has finished all the pending tasks queued before it.
+	 */
+	void scheduleWebViewTask(Runnable action) {
+		lastWebViewTask = lastWebViewTask.thenRun(() -> {
+			action.run();
+		});
+	}
+
+	private <T> void waitForFutureToFinish(CompletableFuture<T> future) {
+		while(!future.isDone()) {
+			processNextOSMessage();
+		}
+	}
+
+}
+
 /**
  * Processes a single OS message using {@link Display#readAndDispatch()}. This
  * is required for processing the OS events during browser initialization, since
@@ -428,7 +587,22 @@ public void create(Composite parent, int style) {
 	handler.Release();
 	if (webView_2 != null) {
 		handler = newCallback(this::handleDOMContentLoaded);
-		webView_2.add_DOMContentLoaded(handler, token);
+		webViewProvider.getWebView_2(false).add_DOMContentLoaded(handler, token);
+		handler.Release();
+	}
+	if (webViewProvider.isWebView_10Available()) {
+		handler = newCallback(this::handleBasicAuthenticationRequested);
+		webViewProvider.getWebView_10(false).add_BasicAuthenticationRequested(handler, token);
+		handler.Release();
+	}
+	if (webViewProvider.isWebView_11Available()) {
+		handler = newCallback(this::handleContextMenuRequested);
+		webViewProvider.getWebView_11(false).add_ContextMenuRequested(handler, token);
+		handler.Release();
+	}
+	if (webViewProvider.isWebView_12Available()) {
+		handler = newCallback(this::handleStatusBarTextChanged);
+		webViewProvider.getWebView_12(false).add_StatusBarTextChanged(handler, token);
 		handler.Release();
 	}
 
@@ -685,7 +859,116 @@ int handleDOMContentLoaded(long pView, long pArgs) {
 	args.get_NavigationId(pNavId);
 	LocationEvent startEvent = navigations.get(pNavId[0]);
 	if (startEvent != null && startEvent.top) {
-		sendProgressCompleted();
+		if (lastCustomText != null && getUrl().equals(ABOUT_BLANK)) {
+			IUnknown postExecute = newCallback((long result, long json) -> {
+				sendProgressCompleted();
+				return COM.S_OK;
+			});
+			webViewProvider.getWebView(true).ExecuteScript(
+					stringToWstr("document.open(); document.write('" + escapeForSingleQuotedJSString(lastCustomText) + "'); document.close();"),
+					postExecute);
+			postExecute.Release();
+			this.lastCustomText = null;
+		} else {
+			sendProgressCompleted();
+		}
+	}
+	return COM.S_OK;
+}
+
+private static String escapeForSingleQuotedJSString(String str) {
+	return str.replace("\\", "\\\\") //
+			.replace("'", "\\'") //
+			.replace("\r", "\\r") //
+			.replace("\n", "\\n");
+}
+
+int handleBasicAuthenticationRequested(long pView, long pArgs) {
+	ICoreWebView2BasicAuthenticationRequestedEventArgs args = new ICoreWebView2BasicAuthenticationRequestedEventArgs(pArgs);
+
+	long[] ppv = new long[1];
+
+	args.get_Uri(ppv);
+	String uri = wstrToString(ppv[0], true);
+
+	for (AuthenticationListener authenticationListener : this.authenticationListeners) {
+		AuthenticationEvent event = new AuthenticationEvent (browser);
+		event.location = uri;
+		authenticationListener.authenticate (event);
+		if (!event.doit) {
+			args.put_Cancel(true);
+			return COM.S_OK;
+		}
+		if (event.user != null && event.password != null) {
+			args.get_Response(ppv);
+			ICoreWebView2BasicAuthenticationResponse response = new ICoreWebView2BasicAuthenticationResponse(ppv[0]);
+			response.put_UserName(stringToWstr(event.user));
+			response.put_Password(stringToWstr(event.password));
+			return COM.S_OK;
+		}
+	}
+
+	return COM.S_OK;
+}
+
+int handleContextMenuRequested(long pView, long pArgs) {
+	ICoreWebView2ContextMenuRequestedEventArgs args = new ICoreWebView2ContextMenuRequestedEventArgs(pArgs);
+
+	long[] locationPointer = new long[1];
+	args.get_Location(locationPointer);
+	POINT win32Point = new POINT();
+	OS.MoveMemory(win32Point, locationPointer, POINT.sizeof);
+
+	// From WebView2 we receive widget-relative win32 POINTs.
+	// The Event we create here will be mapped to a
+	// MenuDetectEvent used with SWT.MenuDetect eventually, which
+	// uses display-relative DISPLAY coordinates.
+	// Thefore, we
+	// - first, explicitly scale up the the win32 POINT values from edge
+	//   to PIXEL coordinates with the real native zoom value
+	//   independent from the swt.autoScale property:
+	Point pt = new Point( //
+			DPIUtil.scaleUp(win32Point.x, DPIUtil.getNativeDeviceZoom()), //
+			DPIUtil.scaleUp(win32Point.y, DPIUtil.getNativeDeviceZoom()));
+	// - then, scale back down from PIXEL to DISPLAY coordinates, taking
+	//   swt.autoScale property into account
+	//   which is also later considered in Menu#setLocation()
+	pt = new Point( //
+			DPIUtil.scaleDown(pt.x, DPIUtil.getZoomForAutoscaleProperty(browser.getShell().nativeZoom)), //
+			DPIUtil.scaleDown(pt.y, DPIUtil.getZoomForAutoscaleProperty(browser.getShell().nativeZoom)));
+	// - finally, translate the POINT from widget-relative
+	//   to DISPLAY-relative coordinates
+	pt = browser.toDisplay(pt.x, pt.y);
+	Event event = new Event();
+	event.x = pt.x;
+	event.y = pt.y;
+	browser.notifyListeners(SWT.MenuDetect, event);
+	if (!event.doit) {
+		// Suppress context menu
+		args.put_Handled(true);
+	} else {
+		Menu menu = browser.getMenu();
+		if (menu != null && !menu.isDisposed()) {
+			args.put_Handled(true);
+			if (pt.x != event.x || pt.y != event.y) {
+				menu.setLocation(event.x, event.y);
+			}
+			menu.setVisible(true);
+		}
+	}
+	return COM.S_OK;
+}
+
+int handleStatusBarTextChanged(long pView, long pArgs) {
+	long ppsz[] = new long[1];
+	webViewProvider.getWebView_12(true).get_StatusBarText(ppsz);
+	String text = wstrToString(ppsz[0], true);
+	StatusTextEvent statusTextEvent = new StatusTextEvent(browser);
+	statusTextEvent.display = browser.getDisplay();
+	statusTextEvent.widget = browser;
+	statusTextEvent.text = text;
+	for (StatusTextListener statusTextListener : statusTextListeners) {
+		statusTextListener.changed(statusTextEvent);
 	}
 	return COM.S_OK;
 }
