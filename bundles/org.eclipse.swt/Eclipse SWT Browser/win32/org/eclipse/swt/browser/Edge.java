@@ -289,6 +289,7 @@ class WebViewProvider {
 
 	private CompletableFuture<ICoreWebView2> webViewFuture = new CompletableFuture<>();
 	private CompletableFuture<ICoreWebView2_2> webView_2Future = new CompletableFuture<>();
+	private CompletableFuture<ICoreWebView2_10> webView_10Future = new CompletableFuture<>();
 	private CompletableFuture<ICoreWebView2_11> webView_11Future = new CompletableFuture<>();
 	private CompletableFuture<ICoreWebView2_12> webView_12Future = new CompletableFuture<>();
 	private CompletableFuture<ICoreWebView2_13> webView_13Future = new CompletableFuture<>();
@@ -300,6 +301,7 @@ class WebViewProvider {
 		controller.get_CoreWebView2(ppv);
 		final ICoreWebView2 webView = new ICoreWebView2(ppv[0]);
 		initializeWebView_2(webView);
+		initializeWebView_10(webView);
 		initializeWebView_11(webView);
 		initializeWebView_12(webView);
 		initializeWebView_13(webView);
@@ -314,6 +316,16 @@ class WebViewProvider {
 			webView_2Future.complete(new ICoreWebView2_2(ppv[0]));
 		} else {
 			webView_2Future.cancel(true);
+		}
+	}
+
+	private void initializeWebView_10(ICoreWebView2 webView) {
+		long[] ppv = new long[1];
+		int hr = webView.QueryInterface(COM.IID_ICoreWebView2_10, ppv);
+		if (hr == COM.S_OK) {
+			webView_10Future.complete(new ICoreWebView2_10(ppv[0]));
+		} else {
+			webView_10Future.cancel(true);
 		}
 	}
 
@@ -364,6 +376,18 @@ class WebViewProvider {
 	boolean isWebView_2Available() {
 		waitForFutureToFinish(webView_2Future);
 		return !webView_2Future.isCancelled();
+	}
+
+	ICoreWebView2_10 getWebView_10(boolean waitForPendingWebviewTasksToFinish) {
+		if(waitForPendingWebviewTasksToFinish) {
+			waitForFutureToFinish(lastWebViewTask);
+		}
+		return webView_10Future.join();
+	}
+
+	boolean isWebView_10Available() {
+		waitForFutureToFinish(webView_10Future);
+		return !webView_10Future.isCancelled();
 	}
 
 	ICoreWebView2_11 getWebView_11(boolean waitForPendingWebviewTasksToFinish) {
@@ -635,6 +659,11 @@ void setupBrowser(int hr, long pv) {
 	if (webViewProvider.isWebView_2Available()) {
 		handler = newCallback(this::handleDOMContentLoaded);
 		webViewProvider.getWebView_2(false).add_DOMContentLoaded(handler, token);
+		handler.Release();
+	}
+	if (webViewProvider.isWebView_10Available()) {
+		handler = newCallback(this::handleBasicAuthenticationRequested);
+		webViewProvider.getWebView_10(false).add_BasicAuthenticationRequested(handler, token);
 		handler.Release();
 	}
 	if (webViewProvider.isWebView_11Available()) {
@@ -969,6 +998,34 @@ private static String escapeForSingleQuotedJSString(String str) {
 			.replace("'", "\\'") //
 			.replace("\r", "\\r") //
 			.replace("\n", "\\n");
+}
+
+int handleBasicAuthenticationRequested(long pView, long pArgs) {
+	ICoreWebView2BasicAuthenticationRequestedEventArgs args = new ICoreWebView2BasicAuthenticationRequestedEventArgs(pArgs);
+
+	long[] ppv = new long[1];
+
+	args.get_Uri(ppv);
+	String uri = wstrToString(ppv[0], true);
+
+	for (AuthenticationListener authenticationListener : this.authenticationListeners) {
+		AuthenticationEvent event = new AuthenticationEvent (browser);
+		event.location = uri;
+		authenticationListener.authenticate (event);
+		if (!event.doit) {
+			args.put_Cancel(true);
+			return COM.S_OK;
+		}
+		if (event.user != null && event.password != null) {
+			args.get_Response(ppv);
+			ICoreWebView2BasicAuthenticationResponse response = new ICoreWebView2BasicAuthenticationResponse(ppv[0]);
+			response.put_UserName(stringToWstr(event.user));
+			response.put_Password(stringToWstr(event.password));
+			return COM.S_OK;
+		}
+	}
+
+	return COM.S_OK;
 }
 
 int handleContextMenuRequested(long pView, long pArgs) {
