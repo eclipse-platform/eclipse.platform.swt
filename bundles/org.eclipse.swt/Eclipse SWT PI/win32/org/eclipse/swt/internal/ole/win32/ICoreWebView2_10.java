@@ -13,18 +13,18 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.ole.win32;
 
-public class ICoreWebView2_11 extends ICoreWebView2_10 {
+public class ICoreWebView2_10 extends ICoreWebView2_2 {
 
-public ICoreWebView2_11(long address) {
+public ICoreWebView2_10(long address) {
 	super(address);
 }
 
-public int add_ContextMenuRequested(IUnknown eventHandler, long[] token) {
-	return COM.VtblCall(100, address, eventHandler.getAddress(), token);
+public int add_BasicAuthenticationRequested(IUnknown eventHandler, long[] token) {
+	return COM.VtblCall(97, address, eventHandler.getAddress(), token);
 }
 
-public int remove_ContextMenuRequested(long[] token) {
-	return COM.VtblCall(101, address, token);
+public int remove_BasicAuthenticationRequested(long[] token) {
+	return COM.VtblCall(98, address, token);
 }
 
 }
