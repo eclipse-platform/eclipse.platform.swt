@@ -43,6 +43,7 @@ public class ExpandItem extends Item {
 	boolean expanded, hover;
 	int x, y, width, height;
 	int imageHeight, imageWidth;
+	private static final int IMAGE_MARGIN = 8;
 	static final int TEXT_INSET = 6;
 	static final int BORDER = 1;
 	static final int CHEVRON_SIZE = 24;
@@ -183,9 +184,13 @@ private void drawChevron (long hDC, RECT rect) {
 
 void drawItem (GC gc, long hTheme, RECT clipRect, boolean drawFocus) {
 	long hDC = gc.handle;
-	int headerHeight = parent.getBandHeight ();
+	int headerHeightinPixels = getHeaderHeightInPixels();
+	int zoom = getZoom();
+	int imageHeightInPixels = DPIUtil.scaleUp(imageHeight, zoom);
+	int imageWidthInPixels = DPIUtil.scaleUp(imageWidth, zoom);
+
 	RECT rect = new RECT ();
-	OS.SetRect (rect, x, y, x + width, y + headerHeight);
+	OS.SetRect (rect, x, y, x + width, y + headerHeightinPixels);
 	if (hTheme != 0) {
 		OS.DrawThemeBackground (hTheme, hDC, OS.EBP_NORMALGROUPHEAD, 0, rect, clipRect);
 	} else {
@@ -194,14 +199,10 @@ void drawItem (GC gc, long hTheme, RECT clipRect, boolean drawFocus) {
 		OS.SelectObject (hDC, oldBrush);
 	}
 	if (image != null) {
-		int zoom = getZoom();
 		rect.left += ExpandItem.TEXT_INSET;
-		if (imageHeight > headerHeight) {
-			gc.drawImage (image, DPIUtil.scaleDown(rect.left, zoom), DPIUtil.scaleDown(rect.top + headerHeight - imageHeight, zoom));
-		} else {
-			gc.drawImage (image, DPIUtil.scaleDown(rect.left, zoom), DPIUtil.scaleDown(rect.top + (headerHeight - imageHeight) / 2, zoom));
-		}
-		rect.left += imageWidth;
+		int yInPoints = DPIUtil.scaleDown(rect.top + ((headerHeightinPixels - imageHeightInPixels) / 2), zoom);
+		gc.drawImage (image, DPIUtil.scaleDown(rect.left, zoom), yInPoints);
+		rect.left += imageWidthInPixels;
 	}
 	if (text.length () > 0) {
 		rect.left += ExpandItem.TEXT_INSET;
@@ -213,8 +214,7 @@ void drawItem (GC gc, long hTheme, RECT clipRect, boolean drawFocus) {
 			} else {
 				buffer = (RLE + text).toCharArray ();
 			}
-		}
-		else {
+		} else {
 			buffer = text.toCharArray ();
 		}
 		if (hTheme != 0) {
@@ -227,7 +227,7 @@ void drawItem (GC gc, long hTheme, RECT clipRect, boolean drawFocus) {
 	}
 	int chevronSize = ExpandItem.CHEVRON_SIZE;
 	rect.left = rect.right - chevronSize;
-	rect.top = y + (headerHeight - chevronSize) / 2;
+	rect.top = y;
 	rect.bottom = rect.top + chevronSize;
 	if (hTheme != 0) {
 		int partID = expanded ? OS.EBP_NORMALGROUPCOLLAPSE : OS.EBP_NORMALGROUPEXPAND;
@@ -237,7 +237,7 @@ void drawItem (GC gc, long hTheme, RECT clipRect, boolean drawFocus) {
 		drawChevron (hDC, rect);
 	}
 	if (drawFocus) {
-		OS.SetRect (rect, x + 1, y + 1, x + width - 2, y + headerHeight - 2);
+		OS.SetRect (rect, x + 1, y + 1, x + width - 2, y + headerHeightinPixels - 2);
 		OS.DrawFocusRect (hDC, rect);
 	}
 	if (expanded) {
@@ -245,10 +245,10 @@ void drawItem (GC gc, long hTheme, RECT clipRect, boolean drawFocus) {
 			long pen = OS.CreatePen (OS.PS_SOLID, 1, OS.GetSysColor (OS.COLOR_BTNFACE));
 			long oldPen = OS.SelectObject (hDC, pen);
 			int [] points = {
-					x, y + headerHeight,
-					x, y + headerHeight + height,
-					x + width - 1, y + headerHeight + height,
-					x + width - 1, y + headerHeight - 1};
+					x, y + headerHeightinPixels,
+					x, y + headerHeightinPixels + height,
+					x + width - 1, y + headerHeightinPixels + height,
+					x + width - 1, y + headerHeightinPixels - 1};
 			OS.Polyline (hDC, points, points.length / 2);
 			OS.SelectObject (hDC, oldPen);
 			OS.DeleteObject (pen);
@@ -310,7 +310,13 @@ public int getHeaderHeight () {
 }
 
 int getHeaderHeightInPixels () {
-	return Math.max (parent.getBandHeight (), imageHeight);
+	int headerHeightInPixels = parent.getBandHeight();
+	int imageHeightInPixels = DPIUtil.scaleUp(imageHeight, getZoom());
+	int imageHeaderDiff = headerHeightInPixels - imageHeightInPixels;
+	if (imageHeaderDiff < IMAGE_MARGIN) {
+		headerHeightInPixels = imageHeightInPixels + IMAGE_MARGIN;
+	}
+	return headerHeightInPixels;
 }
 
 /**
@@ -372,17 +378,20 @@ boolean isHover (int x, int y) {
 
 void redraw (boolean all) {
 	long parentHandle = parent.handle;
-	int headerHeight = parent.getBandHeight ();
+	int headerHeightInPixels = getHeaderHeightInPixels();
+	int zoom = getZoom();
+	int imageHeightInPixels = DPIUtil.scaleUp(imageHeight, zoom);
+	int imageWidthInPixels = DPIUtil.scaleUp(imageWidth, zoom);
 	RECT rect = new RECT ();
-	int left = all ? x : x + width - headerHeight;
-	OS.SetRect (rect, left, y, x + width, y + headerHeight);
+	int left = all ? x : x + width - headerHeightInPixels;
+	OS.SetRect (rect, left, y, x + width, y + headerHeightInPixels);
 	OS.InvalidateRect (parentHandle, rect, true);
-	if (imageHeight > headerHeight) {
-		OS.SetRect (rect, x + ExpandItem.TEXT_INSET, y + headerHeight - imageHeight, x + ExpandItem.TEXT_INSET + imageWidth, y);
+	if (imageHeightInPixels > headerHeightInPixels) {
+		OS.SetRect (rect, x + ExpandItem.TEXT_INSET, y + headerHeightInPixels - imageHeightInPixels, x + ExpandItem.TEXT_INSET + imageWidthInPixels, y);
 		OS.InvalidateRect (parentHandle, rect, true);
 	}
 	if (!parent.isAppThemed ()) {
-		OS.SetRect (rect, x, y + headerHeight, x + width, y + headerHeight + height + 1);
+		OS.SetRect (rect, x, y + headerHeightInPixels, x + width, y + headerHeightInPixels + height + 1);
 		OS.InvalidateRect (parentHandle, rect, true);
 	}
 }
@@ -401,11 +410,8 @@ void releaseWidget () {
 
 void setBoundsInPixels (int x, int y, int width, int height, boolean move, boolean size) {
 	redraw (true);
-	int headerHeight = parent.getBandHeight ();
+	int headerHeightInPixels = getHeaderHeightInPixels();
 	if (move) {
-		if (imageHeight > headerHeight) {
-			y += (imageHeight - headerHeight);
-		}
 		this.x = x;
 		this.y = y;
 		redraw (true);
@@ -421,8 +427,8 @@ void setBoundsInPixels (int x, int y, int width, int height, boolean move, boole
 			width = Math.max (0, width - BORDER * 2);
 			height = Math.max (0, height - BORDER);
 		}
-		if (move && size) control.setBoundsInPixels (x, y + headerHeight, width, height);
-		if (move && !size) control.setLocationInPixels (x, y + headerHeight);
+		if (move && size) control.setBoundsInPixels (x, y + headerHeightInPixels, width, height);
+		if (move && !size) control.setLocationInPixels (x, y + headerHeightInPixels);
 		if (!move && size) control.setSizeInPixels (width, height);
 	}
 }
@@ -504,7 +510,7 @@ public void setImage (Image image) {
 	super.setImage (image);
 	int oldImageHeight = imageHeight;
 	if (image != null) {
-		Rectangle bounds = image.getBoundsInPixels ();
+		Rectangle bounds = image.getBounds();
 		imageHeight = bounds.height;
 		imageWidth = bounds.width;
 	} else {
