@@ -42,7 +42,7 @@ import org.eclipse.swt.internal.win32.*;
 public class MenuItem extends Item {
 	Menu parent, menu;
 	long hBitmap;
-	int id, accelerator, userId, index;
+	int id, accelerator, userId;
 	ToolTip itemToolTip;
 	/* Image margin. */
 	final static int MARGIN_WIDTH = 1;
@@ -94,7 +94,7 @@ public class MenuItem extends Item {
 public MenuItem (Menu parent, int style) {
 	super (parent, checkStyle (style));
 	this.parent = parent;
-	parent.createItem (this, (index = parent.getItemCount ()));
+	parent.createItem (this, parent.getItemCount ());
 }
 
 /**
@@ -136,16 +136,7 @@ public MenuItem (Menu parent, int style) {
 public MenuItem (Menu parent, int style, int index) {
 	super (parent, checkStyle (style));
 	this.parent = parent;
-	parent.createItem (this, (this.index = index));
-}
-
-MenuItem (Menu parent, Menu menu, int style, int index) {
-	super (parent, checkStyle (style));
-	this.parent = parent;
-	this.menu = menu;
-	this.index = index;
-	if (menu != null) menu.cascade = this;
-	display.addMenuItem (this);
+	parent.createItem (this, index);
 }
 
 /**

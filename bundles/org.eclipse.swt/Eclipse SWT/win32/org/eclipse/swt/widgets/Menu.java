@@ -1349,7 +1349,7 @@ LRESULT wmTimer (long wParam, long lParam) {
 		OS.GetCursorPos (pt);
 		if (selectedMenuItem != null && selectedMenuItem.parent != null) {
 			RECT rect = new RECT ();
-			boolean success = OS.GetMenuItemRect (0, selectedMenuItem.parent.handle, selectedMenuItem.index, rect);
+			boolean success = OS.GetMenuItemRect (0, selectedMenuItem.parent.handle, indexOf(selectedMenuItem), rect);
 			if (!success) return null;
 			if (OS.PtInRect (rect, pt)) {
 				// Mouse cursor is within the bounds of menu item
