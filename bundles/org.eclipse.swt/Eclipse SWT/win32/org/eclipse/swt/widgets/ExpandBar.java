@@ -878,6 +878,7 @@ private static void handleDPIChange(Widget widget, int newZoom, float scalingFac
 	for (ExpandItem item : expandBar.getItems()) {
 		DPIZoomChangeRegistry.applyChange(item, newZoom, scalingFactor);
 	}
+	expandBar.layoutItems(0, true);
 	expandBar.redraw();
 }
 }
