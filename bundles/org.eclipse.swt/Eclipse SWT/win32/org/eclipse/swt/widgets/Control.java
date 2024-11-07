@@ -5810,7 +5810,7 @@ private static void handleDPIChange(Widget widget, int newZoom, float scalingFac
 	}
 	resizeFont(control, control.getShell().nativeZoom);
 
-	Image image = control.getBackgroundImage();
+	Image image = control.backgroundImage;
 	if (image != null) {
 		if (image.isDisposed()) {
 			control.setBackgroundImage(null);
