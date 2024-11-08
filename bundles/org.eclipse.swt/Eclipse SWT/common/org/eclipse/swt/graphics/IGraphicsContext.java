@@ -24,6 +24,7 @@ public interface IGraphicsContext {
     Color getForeground();
     void setFont(Font font);
     Font getFont();
+    Rectangle getClipping();
     void setClipping(int x, int y, int width, int height);
     void setTransform(Transform transform);
     void setAlpha(int alpha);

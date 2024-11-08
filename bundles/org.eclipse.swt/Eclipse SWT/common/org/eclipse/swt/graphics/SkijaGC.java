@@ -14,6 +14,7 @@ import io.github.humbleui.types.*;
 public class SkijaGC implements IGraphicsContext {
 	private final GC innerGC;
 	private final Surface surface;
+	private Rectangle clipping;
 
 	private Font font;
 	private float baseSymbolHeight = 0; // Height of symbol with "usual" height, like "T", to be vertically centered
@@ -26,6 +27,7 @@ public class SkijaGC implements IGraphicsContext {
 	public SkijaGC(GC gc) {
 		innerGC = gc;
 		surface = createSurface();
+		clipping = innerGC.getClipping();
 		initFont();
 	}
 
@@ -610,6 +612,11 @@ public class SkijaGC implements IGraphicsContext {
 	@Override
 	public int getLineWidth() {
 		return innerGC.getLineWidth();
+	}
+
+	@Override
+	public Rectangle getClipping() {
+		return clipping;
 	}
 
 }
