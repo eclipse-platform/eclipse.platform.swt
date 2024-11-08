@@ -324,7 +324,7 @@ public class SkijaGC implements IGraphicsContext {
 
 	@Override
 	public void drawText(String string, int x, int y, boolean isTransparent) {
-		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		drawText(string, x, y, SWT.TRANSPARENT);
 	}
 
 	@Override
@@ -422,7 +422,7 @@ public class SkijaGC implements IGraphicsContext {
 
 	@Override
 	public void drawPolygon(int[] pointArray) {
-		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		performDrawLine(paint -> surface.getCanvas().drawPolygon(convertToFloat(pointArray), paint));
 	}
 
 	@Override
