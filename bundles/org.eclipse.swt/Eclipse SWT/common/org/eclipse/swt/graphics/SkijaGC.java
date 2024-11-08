@@ -425,8 +425,17 @@ public class SkijaGC implements IGraphicsContext {
 		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	}
 
+	@Override
 	public void drawPolyline(int[] pointArray) {
-		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		performDrawLine(paint -> surface.getCanvas().drawLines(convertToFloat(pointArray), paint));
+	}
+
+	private static float[] convertToFloat(int[] array) {
+		float[] arrayAsFloat = new float[array.length];
+		for (int i = 0; i < array.length; i++) {
+			arrayAsFloat[i] = array[i];
+		}
+		return arrayAsFloat;
 	}
 
 	@Override

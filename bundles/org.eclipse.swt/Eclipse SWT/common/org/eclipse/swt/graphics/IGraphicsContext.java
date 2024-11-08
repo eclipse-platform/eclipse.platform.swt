@@ -12,6 +12,7 @@ public interface IGraphicsContext {
     void drawArc(int x, int y, int width, int height, int startAngle, int arcAngle);
     void drawOval(int x, int y, int width, int height);
     void fillOval(int x, int y, int width, int height);
+    void drawPolyline(int[] pointArray);
     void drawPolygon(int[] pointArray);
     void fillPolygon(int[] pointArray);
     void drawPoint(int x, int y);
