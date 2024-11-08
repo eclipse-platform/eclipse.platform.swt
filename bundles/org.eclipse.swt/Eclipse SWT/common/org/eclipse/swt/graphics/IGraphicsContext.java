@@ -50,6 +50,6 @@ public interface IGraphicsContext {
 	void drawFocus (int x, int y, int width, int height);
 	int getLineStyle();
 	int getLineWidth();
-
+	LineAttributes getLineAttributes();
 
 }

@@ -615,6 +615,20 @@ public class SkijaGC implements IGraphicsContext {
 	}
 
 	@Override
+	public LineAttributes getLineAttributes() {
+		LineAttributes attributes = getLineAttributesInPixels();
+		attributes.width = DPIUtil.autoScaleDown(attributes.width);
+		if (attributes.dash != null) {
+			attributes.dash = DPIUtil.autoScaleDown(attributes.dash);
+		}
+		return attributes;
+	}
+
+	LineAttributes getLineAttributesInPixels() {
+		return new LineAttributes(lineWidth, SWT.CAP_FLAT, SWT.JOIN_MITER, SWT.LINE_SOLID, null, 0, 10);
+	}
+
+	@Override
 	public Rectangle getClipping() {
 		return clipping;
 	}
