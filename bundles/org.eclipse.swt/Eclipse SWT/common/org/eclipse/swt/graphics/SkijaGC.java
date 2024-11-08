@@ -2,6 +2,7 @@ package org.eclipse.swt.graphics;
 
 import java.io.*;
 import java.util.*;
+import java.util.function.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
@@ -74,6 +75,38 @@ public class SkijaGC implements IGraphicsContext {
 	@Override
 	public Color getBackground() {
 		return innerGC.getBackground();
+	}
+
+	private void performDraw(Consumer<Paint> operations) {
+		Paint paint = new Paint();
+		operations.accept(paint);
+		paint.close();
+	}
+
+	private void performDrawLine(Consumer<Paint> operations) {
+		performDraw(paint -> {
+			paint.setColor(convertSWTColorToSkijaColor(getForeground()));
+			paint.setMode(PaintMode.STROKE);
+			paint.setStrokeWidth(lineWidth);
+			paint.setAntiAlias(true);
+			operations.accept(paint);
+		});
+	}
+
+	private void performDrawText(Consumer<Paint> operations) {
+		performDraw(paint -> {
+			paint.setColor(convertSWTColorToSkijaColor(getForeground()));
+			operations.accept(paint);
+		});
+	}
+
+	private void performDrawFilled(Consumer<Paint> operations) {
+		performDraw(paint -> {
+			paint.setColor(convertSWTColorToSkijaColor(getBackground()));
+			paint.setMode(PaintMode.FILL);
+			paint.setAntiAlias(true);
+			operations.accept(paint);
+		});
 	}
 
 	private String[] splitString(String text) {
@@ -274,12 +307,7 @@ public class SkijaGC implements IGraphicsContext {
 
 	@Override
 	public void drawLine(int x1, int y1, int x2, int y2) {
-		Paint p = new Paint();
-		p.setColor(convertSWTColorToSkijaColor(getForeground()));
-		p.setAntiAlias(true);
-		p.setStrokeWidth(lineWidth);
-		surface.getCanvas().drawLine(x1, y1, x2, y2, p);
-		p.close();
+		performDrawLine(paint -> surface.getCanvas().drawLine(x1, y1, x2, y2, paint));
 	}
 
 	@Override
@@ -302,21 +330,20 @@ public class SkijaGC implements IGraphicsContext {
 		if (text == null) {
 			return;
 		}
-		Paint p = new Paint();
-		p.setColor(convertSWTColorToSkijaColor(getForeground()));
-		TextBlob textBlob = buildTextBlob(text);
-		// y position in drawTextBlob() is the text baseline, e.g., the bottom of "T"
-		// but the middle of "y"
-		// So center a base symbol (like "T") in the desired text box (according to
-		// parameter y being the top left text box position and the text box height
-		// according to font metrics)
-		int topLeftTextBoxYPosition = DPIUtil.autoScaleUp(y);
-		float heightOfTextBoxConsideredByClients = font.getMetrics().getHeight();
-		float heightOfSymbolToCenter = baseSymbolHeight;
-		surface.getCanvas().drawTextBlob(textBlob, (int) DPIUtil.autoScaleUp(x),
-				(int) (topLeftTextBoxYPosition + heightOfTextBoxConsideredByClients / 2 + heightOfSymbolToCenter / 2),
-				p);
-		p.close();
+		performDrawText(paint -> {
+			TextBlob textBlob = buildTextBlob(text);
+			// y position in drawTextBlob() is the text baseline, e.g., the bottom of "T"
+			// but the middle of "y"
+			// So center a base symbol (like "T") in the desired text box (according to
+			// parameter y being the top left text box position and the text box height
+			// according to font metrics)
+			int topLeftTextBoxYPosition = DPIUtil.autoScaleUp(y);
+			float heightOfTextBoxConsideredByClients = font.getMetrics().getHeight();
+			float heightOfSymbolToCenter = baseSymbolHeight;
+			surface.getCanvas().drawTextBlob(textBlob, (int) DPIUtil.autoScaleUp(x),
+					(int) (topLeftTextBoxYPosition + heightOfTextBoxConsideredByClients / 2 + heightOfSymbolToCenter / 2),
+					paint);
+		});
 	}
 
 	private TextBlob buildTextBlob(String text) {
@@ -350,13 +377,10 @@ public class SkijaGC implements IGraphicsContext {
 
 	@Override
 	public void drawFocus(int x, int y, int width, int height) {
-		Paint p = new Paint();
-		p.setColor(convertSWTColorToSkijaColor(getForeground()));
-		p.setMode(PaintMode.STROKE);
-		p.setStrokeWidth(lineWidth);
-		p.setPathEffect(PathEffect.makeDash(new float[]{1.5f, 1.5f}, 0.0f));
-		surface.getCanvas().drawRect(
-				createScaledAndOffsetRectangle(x, y, width, height), p);
+		performDrawLine(paint -> {
+			paint.setPathEffect(PathEffect.makeDash(new float[] { 1.5f, 1.5f }, 0.0f));
+			surface.getCanvas().drawRect(createScaledAndOffsetRectangle(x, y, width, height), paint);
+		});
 	}
 
 	void drawIcon(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth,
@@ -381,13 +405,8 @@ public class SkijaGC implements IGraphicsContext {
 
 	@Override
 	public void drawOval(int x, int y, int width, int height) {
-		Paint p = new Paint();
-		p.setColor(convertSWTColorToSkijaColor(getForeground()));
-		p.setMode(PaintMode.STROKE);
-		p.setStrokeWidth(lineWidth);
-		p.setAntiAlias(true);
-		surface.getCanvas().drawOval(createScaledAndOffsetRectangle(x, y, width, height), p);
-		p.close();
+		performDrawLine(
+				paint -> surface.getCanvas().drawOval(createScaledAndOffsetRectangle(x, y, width, height), paint));
 	}
 
 	public void drawPath(Path path) {
@@ -410,13 +429,8 @@ public class SkijaGC implements IGraphicsContext {
 
 	@Override
 	public void drawRectangle(int x, int y, int width, int height) {
-		Paint p = new Paint();
-		p.setColor(convertSWTColorToSkijaColor(getForeground()));
-		p.setMode(PaintMode.STROKE);
-		p.setStrokeWidth(lineWidth);
-		p.setAntiAlias(true);
-		surface.getCanvas().drawRect(createScaledAndOffsetRectangle(x, y, width, height), p);
-		p.close();
+		performDrawLine(
+				paint -> surface.getCanvas().drawRect(createScaledAndOffsetRectangle(x, y, width, height), paint));
 	}
 
 	@Override
@@ -448,12 +462,8 @@ public class SkijaGC implements IGraphicsContext {
 
 	@Override
 	public void fillOval(int x, int y, int width, int height) {
-		Paint p = new Paint();
-		p.setColor(convertSWTColorToSkijaColor(getBackground()));
-		p.setMode(PaintMode.FILL);
-		p.setAntiAlias(true);
-		surface.getCanvas().drawOval(createScaledAndOffsetRectangle(x, y, width, height), p);
-		p.close();
+		performDrawFilled(
+				paint -> surface.getCanvas().drawOval(createScaledAndOffsetRectangle(x, y, width, height), paint));
 	}
 
 	public void fillPath(Path path) {
@@ -478,27 +488,14 @@ public class SkijaGC implements IGraphicsContext {
 			}
 		}
 
-
-		Paint p = new Paint();
-		p.setColor(convertSWTColorToSkijaColor(getBackground()));
-		p.setMode(PaintMode.FILL);
-		p.setAntiAlias(true);
-
-		surface.getCanvas().drawTriangles(
-				ps.toArray(new io.github.humbleui.types.Point[0]), null, p);
-
-		p.close();
-
+		performDrawFilled(paint -> surface.getCanvas().drawTriangles(ps.toArray(new io.github.humbleui.types.Point[0]),
+				null, paint));
 	}
 
 	@Override
 	public void fillRectangle(int x, int y, int width, int height) {
-		Paint p = new Paint();
-		p.setColor(convertSWTColorToSkijaColor(getBackground()));
-		p.setMode(PaintMode.FILL);
-		p.setAntiAlias(true);
-		surface.getCanvas().drawRect(createScaledAndOffsetRectangle(x, y, width, height), p);
-		p.close();
+		performDrawFilled(
+				paint -> surface.getCanvas().drawRect(createScaledAndOffsetRectangle(x, y, width, height), paint));
 	}
 
 	@Override
