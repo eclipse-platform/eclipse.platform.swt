@@ -214,9 +214,17 @@ Optional<String> openNativeChooserDialog () {
 	int response;
 	long file = 0;
 	if (GTK.GTK4) {
-		file = SyncDialogUtil.run(display,
-				asyncCallback -> GTK4.gtk_file_dialog_select_folder(handle, shellHandle, 0, asyncCallback, 0),
-				asyncResult -> GTK4.gtk_file_dialog_select_folder_finish(handle, asyncResult, null));
+		file = SyncDialogUtil.run(display, new AsyncReadyCallback() {
+			@Override
+			public void async(long result) {
+				GTK4.gtk_file_dialog_select_folder(handle, shellHandle, 0, result, 0);
+			}
+
+			@Override
+			public long await(long result) {
+				return GTK4.gtk_file_dialog_select_folder_finish(handle, result, null);
+			}
+		});
 		response = file != 0 ? GTK.GTK_RESPONSE_ACCEPT : GTK.GTK_RESPONSE_CANCEL;
 	} else {
 		display.externalEventLoop = true;
