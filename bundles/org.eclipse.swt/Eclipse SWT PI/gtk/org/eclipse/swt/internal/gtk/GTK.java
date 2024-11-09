@@ -776,22 +776,6 @@ public class GTK extends OS {
 	 */
 	public static final native double gtk_gesture_zoom_get_scale_delta(long gesture);
 
-	/* GtkFontChooserDialog */
-	/**
-	 * @param title cast=(const gchar *)
-	 * @param parent cast=(GtkWindow *)
-	 */
-	public static final native long gtk_font_chooser_dialog_new(byte[] title, long parent);
-
-	/* GtkFontChooser Interface */
-	/** @param fontchooser cast=(GtkFontChooser *) */
-	public static final native long gtk_font_chooser_get_font(long fontchooser);
-	/**
-	 * @param fsd cast=(GtkFontChooser *)
-	 * @param fontname cast=(const gchar *)
-	 */
-	public static final native void gtk_font_chooser_set_font(long fsd, byte[] fontname);
-
 	/* GtkFrame */
 	/** @param label cast=(const gchar *) */
 	public static final native long gtk_frame_new(byte[] label);

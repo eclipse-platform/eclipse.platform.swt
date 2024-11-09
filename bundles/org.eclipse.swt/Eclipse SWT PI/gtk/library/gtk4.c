@@ -980,6 +980,112 @@ fail:
 }
 #endif
 
+#ifndef NO_gtk_1font_1dialog_1choose_1font
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1font_1dialog_1choose_1font)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2, jlong arg3, jlong arg4, jlong arg5)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1font_1dialog_1choose_1font_FUNC);
+/*
+	gtk_font_dialog_choose_font(arg0, (GtkWindow *)arg1, (PangoFontDescription *)arg2, (GCancellable *)arg3, (GAsyncReadyCallback)arg4, (gpointer)arg5);
+*/
+	{
+		GTK4_LOAD_FUNCTION(fp, gtk_font_dialog_choose_font)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jlong, GtkWindow *, PangoFontDescription *, GCancellable *, GAsyncReadyCallback, gpointer))fp)(arg0, (GtkWindow *)arg1, (PangoFontDescription *)arg2, (GCancellable *)arg3, (GAsyncReadyCallback)arg4, (gpointer)arg5);
+		}
+	}
+	GTK4_NATIVE_EXIT(env, that, gtk_1font_1dialog_1choose_1font_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1font_1dialog_1choose_1font_1finish
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1font_1dialog_1choose_1font_1finish)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlongArray arg2)
+{
+	jlong *lparg2=NULL;
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1font_1dialog_1choose_1font_1finish_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
+/*
+	rc = (jlong)gtk_font_dialog_choose_font_finish(arg0, (GAsyncResult *)arg1, (GError **)lparg2);
+*/
+	{
+		GTK4_LOAD_FUNCTION(fp, gtk_font_dialog_choose_font_finish)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong, GAsyncResult *, GError **))fp)(arg0, (GAsyncResult *)arg1, (GError **)lparg2);
+		}
+	}
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseLongArrayElements(env, arg2, lparg2, 0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1font_1dialog_1choose_1font_1finish_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1font_1dialog_1new
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1font_1dialog_1new)
+	(JNIEnv *env, jclass that)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1font_1dialog_1new_FUNC);
+/*
+	rc = (jlong)gtk_font_dialog_new();
+*/
+	{
+		GTK4_LOAD_FUNCTION(fp, gtk_font_dialog_new)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)())fp)();
+		}
+	}
+	GTK4_NATIVE_EXIT(env, that, gtk_1font_1dialog_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1font_1dialog_1set_1modal
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1font_1dialog_1set_1modal)
+	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1font_1dialog_1set_1modal_FUNC);
+/*
+	rc = (jlong)gtk_font_dialog_set_modal(arg0, (gboolean)arg1);
+*/
+	{
+		GTK4_LOAD_FUNCTION(fp, gtk_font_dialog_set_modal)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong, gboolean))fp)(arg0, (gboolean)arg1);
+		}
+	}
+	GTK4_NATIVE_EXIT(env, that, gtk_1font_1dialog_1set_1modal_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1font_1dialog_1set_1title
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1font_1dialog_1set_1title)
+	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1font_1dialog_1set_1title_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+/*
+	rc = (jlong)gtk_font_dialog_set_title(arg0, (char *)lparg1);
+*/
+	{
+		GTK4_LOAD_FUNCTION(fp, gtk_font_dialog_set_title)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong, char *))fp)(arg0, (char *)lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1font_1dialog_1set_1title_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1frame_1set_1child
 JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1frame_1set_1child)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)

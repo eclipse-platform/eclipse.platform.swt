@@ -4781,48 +4781,6 @@ fail:
 }
 #endif
 
-#ifndef NO_gtk_1font_1chooser_1dialog_1new
-JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1font_1chooser_1dialog_1new)
-	(JNIEnv *env, jclass that, jbyteArray arg0, jlong arg1)
-{
-	jbyte *lparg0=NULL;
-	jlong rc = 0;
-	GTK_NATIVE_ENTER(env, that, gtk_1font_1chooser_1dialog_1new_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
-	rc = (jlong)gtk_font_chooser_dialog_new((const gchar *)lparg0, (GtkWindow *)arg1);
-fail:
-	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	GTK_NATIVE_EXIT(env, that, gtk_1font_1chooser_1dialog_1new_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_gtk_1font_1chooser_1get_1font
-JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1font_1chooser_1get_1font)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	jlong rc = 0;
-	GTK_NATIVE_ENTER(env, that, gtk_1font_1chooser_1get_1font_FUNC);
-	rc = (jlong)gtk_font_chooser_get_font((GtkFontChooser *)arg0);
-	GTK_NATIVE_EXIT(env, that, gtk_1font_1chooser_1get_1font_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_gtk_1font_1chooser_1set_1font
-JNIEXPORT void JNICALL GTK_NATIVE(gtk_1font_1chooser_1set_1font)
-	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1)
-{
-	jbyte *lparg1=NULL;
-	GTK_NATIVE_ENTER(env, that, gtk_1font_1chooser_1set_1font_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	gtk_font_chooser_set_font((GtkFontChooser *)arg0, (const gchar *)lparg1);
-fail:
-	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	GTK_NATIVE_EXIT(env, that, gtk_1font_1chooser_1set_1font_FUNC);
-}
-#endif
-
 #ifndef NO_gtk_1frame_1get_1label_1widget
 JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1frame_1get_1label_1widget)
 	(JNIEnv *env, jclass that, jlong arg0)
