@@ -283,6 +283,42 @@ public class GTK4 {
 	 */
 	public static final native long gtk_file_dialog_save_finish(long self, long result, long[] error);
 
+	/* GtkFontDialog */
+	/**
+	 * @method flags=dynamic
+	 *
+	 * @param parent cast=(GtkWindow *)
+	 * @param initial_value cast=(PangoFontDescription *)
+	 * @param cancellable cast=(GCancellable *)
+	 * @param callback cast=(GAsyncReadyCallback)
+	 * @param user_data cast=(gpointer)
+	 */
+	public static final native void gtk_font_dialog_choose_font(long self, long parent, long initial_value, long cancellable, long callback, long user_data);
+	/**
+	 * @method flags=dynamic
+	 *
+	 * @param result cast=(GAsyncResult *)
+	 * @param error cast=(GError **)
+	 */
+	public static final native long gtk_font_dialog_choose_font_finish(long self, long result, long[] error);
+	/**
+	 * @method flags=dynamic
+	 */
+	public static final native long gtk_font_dialog_new();
+	/**
+	 * @method flags=dynamic
+	 *
+	 * @param modal cast=(gboolean)
+	 */
+	public static final native long gtk_font_dialog_set_modal(long self, boolean modal);
+	/**
+	 * @method flags=dynamic
+	 *
+	 * @param title cast=(char *)
+	 */
+	public static final native long gtk_font_dialog_set_title(long self, byte[] title);
+
+
 	/* GtkScrolledWindow */
 	public static final native long gtk_scrolled_window_new();
 	/** @param scrolled_window cast=(GtkScrolledWindow *) */

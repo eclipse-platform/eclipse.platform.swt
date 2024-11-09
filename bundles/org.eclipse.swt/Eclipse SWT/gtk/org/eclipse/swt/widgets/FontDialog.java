@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corporation and others.
+ * Copyright (c) 2000, 2024 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -159,23 +159,34 @@ public RGB getRGB () {
 public FontData open () {
 	byte[] titleBytes = Converter.javaStringToCString(title);
 	Display display = parent != null ? parent.getDisplay(): Display.getCurrent();
-	long handle = GTK.gtk_font_chooser_dialog_new (titleBytes, 0);
-
-	if (parent != null) {
-		long shellHandle = parent.topHandle();
-		GTK.gtk_window_set_transient_for(handle, shellHandle);
+	long handle;
+	if (GTK.GTK4) {
+		handle = GTK4.gtk_font_dialog_new();
+	} else {
+		handle = GTK3.gtk_font_chooser_dialog_new (titleBytes, 0);
 	}
+	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 
-	long defaultWindowGroup = GTK.gtk_window_get_group(0);
-	GTK.gtk_window_group_add_window(defaultWindowGroup, handle);
-	GTK.gtk_window_set_modal(handle, true);
+	if (GTK.GTK4) {
+		GTK4.gtk_font_dialog_set_modal(handle, true);
+		GTK4.gtk_font_dialog_set_title(handle, titleBytes);
+	} else {
+		if (parent != null) {
+			long shellHandle = parent.topHandle();
+			GTK.gtk_window_set_transient_for(handle, shellHandle);
+		}
+
+		long defaultWindowGroup = GTK.gtk_window_get_group(0);
+		GTK.gtk_window_group_add_window(defaultWindowGroup, handle);
+		GTK.gtk_window_set_modal(handle, true);
+	}
 
 	display.addIdleProc();
 	Dialog oldModal = display.getModalDialog();
 	display.setModalDialog(this);
 
 	// Set font chooser dialog to current font
-	if (fontData != null) {
+	if (fontData != null && !GTK.GTK4) {
 		Font font = new Font(display, fontData);
 
 		long fontName = OS.pango_font_description_to_string(font.handle);
@@ -185,7 +196,7 @@ public FontData open () {
 		font.dispose();
 		OS.g_free(fontName);
 
-		GTK.gtk_font_chooser_set_font(handle, buffer);
+		GTK3.gtk_font_chooser_set_font(handle, buffer);
 	}
 
 	int signalId = 0;
@@ -196,8 +207,27 @@ public FontData open () {
 	}
 
 	int response;
+	long fontDesc = 0;
 	if (GTK.GTK4) {
-		response = SyncDialogUtil.run(display, handle, false);
+		long shellHandle = parent != null ? parent.topHandle() : 0;
+		Font font = new Font(display, fontData);
+		fontDesc = SyncDialogUtil.run(display, new AsyncReadyCallback() {
+			@Override
+			public void async(long callback) {
+				// The font dialog ignores the given font and simply picks the first installed font
+				// See https://gitlab.gnome.org/GNOME/gtk/-/issues/6892
+				GTK4.gtk_font_dialog_choose_font(handle, shellHandle, font.handle, 0, callback, 0);
+			}
+
+			@Override
+			public long await(long result) {
+				return GTK4.gtk_font_dialog_choose_font_finish(handle, result, null);
+			}
+
+		});
+		font.dispose();
+
+		response = fontDesc != 0 ? GTK.GTK_RESPONSE_OK : GTK.GTK_RESPONSE_CANCEL;
 	} else {
 		display.externalEventLoop = true;
 		display.sendPreExternalEventDispatchEvent();
@@ -214,12 +244,14 @@ public FontData open () {
 
 	boolean success = response == GTK.GTK_RESPONSE_OK;
 	if (success) {
-		long fontName = GTK.gtk_font_chooser_get_font (handle);
-		int length = C.strlen (fontName);
-		byte [] buffer = new byte [length + 1];
-		C.memmove (buffer, fontName, length);
-		OS.g_free (fontName);
-		long fontDesc = OS.pango_font_description_from_string (buffer);
+		if (!GTK.GTK4) {
+			long fontName = GTK3.gtk_font_chooser_get_font (handle);
+			int length = C.strlen (fontName);
+			byte [] buffer = new byte [length + 1];
+			C.memmove (buffer, fontName, length);
+			OS.g_free (fontName);
+			fontDesc = OS.pango_font_description_from_string (buffer);
+		}
 		Font font = Font.gtk_new (display, fontDesc);
 		fontData = font.getFontData () [0];
 		OS.pango_font_description_free (fontDesc);
@@ -229,9 +261,7 @@ public FontData open () {
 
 	display.removeIdleProc ();
 
-	if (GTK.GTK4) {
-		GTK4.gtk_window_destroy(handle);
-	} else {
+	if (!GTK.GTK4) {
 		GTK3.gtk_widget_destroy(handle);
 	}
 
