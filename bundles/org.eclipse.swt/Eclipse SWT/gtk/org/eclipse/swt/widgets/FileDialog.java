@@ -404,18 +404,42 @@ Optional<String> openNativeChooserDialog () {
 	long file = 0;
 	if (GTK.GTK4) {
 		if ((style & SWT.MULTI) != 0) {
-			file = SyncDialogUtil.run(display,
-					asyncCallback -> GTK4.gtk_file_dialog_open_multiple(handle, shellHandle, 0, asyncCallback, 0),
-					asyncResult -> GTK4.gtk_file_dialog_open_multiple_finish(handle, asyncResult, null));
+			file = SyncDialogUtil.run(display, new AsyncReadyCallback() {
+				@Override
+				public void async(long callback) {
+					GTK4.gtk_file_dialog_open_multiple(handle, shellHandle, 0, callback, 0);
+				}
+
+				@Override
+				public long await(long result) {
+					return GTK4.gtk_file_dialog_open_multiple_finish(handle, result, null);
+				}
+			});
 		} else {
 			if ((style & SWT.SAVE) != 0) {
-				file = SyncDialogUtil.run(display,
-						asyncCallback -> GTK4.gtk_file_dialog_save(handle, shellHandle, 0, asyncCallback, 0),
-						asyncResult -> GTK4.gtk_file_dialog_save_finish(handle, asyncResult, null));
+				file = SyncDialogUtil.run(display, new AsyncReadyCallback() {
+					@Override
+					public void async(long callback) {
+						GTK4.gtk_file_dialog_save(handle, shellHandle, 0, callback, 0);
+					}
+
+					@Override
+					public long await(long result) {
+						return GTK4.gtk_file_dialog_save_finish(handle, result, null);
+					}
+				});
 			} else {
-				file = SyncDialogUtil.run(display,
-						asyncCallback -> GTK4.gtk_file_dialog_open(handle, shellHandle, 0, asyncCallback, 0),
-						asyncResult -> GTK4.gtk_file_dialog_open_finish(handle, asyncResult, null));
+				file = SyncDialogUtil.run(display, new AsyncReadyCallback() {
+					@Override
+					public void async(long callback) {
+						GTK4.gtk_file_dialog_open(handle, shellHandle, 0, callback, 0);
+					}
+
+					@Override
+					public long await(long result) {
+						return GTK4.gtk_file_dialog_open_finish(handle, result, null);
+					}
+				});
 			}
 		}
 		response = file != 0 ? GTK.GTK_RESPONSE_ACCEPT : GTK.GTK_RESPONSE_CANCEL;

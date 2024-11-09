@@ -48,11 +48,11 @@ public class SyncDialogUtil {
 	 * therefore essential that callers use the address of the {@link Callback}
 	 * as address for the {@code AsyncReadyCallback} object.
 	 */
-	static public long run(Display display, Consumer<Long> asyncOpen, Function<Long, Long> asyncFinish) {
+	static public long run(Display display, AsyncReadyCallback callback) {
 		initializeResponseCallback();
 
-		dialogAsyncFinish = asyncFinish;
-		asyncOpen.accept(dialogResponseCallback.getAddress());
+		dialogAsyncFinish = callback::await;
+		callback.async(dialogResponseCallback.getAddress());
 
 		while (!display.isDisposed()) {
 			if (dialogAsyncValue != null) {
