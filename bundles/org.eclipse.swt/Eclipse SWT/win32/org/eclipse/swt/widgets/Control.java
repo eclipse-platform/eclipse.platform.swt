@@ -16,15 +16,18 @@ package org.eclipse.swt.widgets;
 
 
 import java.util.*;
+import java.util.stream.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.accessibility.*;
+import org.eclipse.swt.browser.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gdip.*;
 import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.ole.win32.*;
 
 /**
  * Control is the abstract superclass of all windowed user interface classes.
@@ -3631,6 +3634,21 @@ boolean setRadioSelection (boolean value) {
  */
 public void setRedraw (boolean redraw) {
 	checkWidget ();
+
+	/*
+	 * Some embedded applications like webview2 (Edge), Excel, etc have a renderer
+	 * that will draw the whole application white when setting redraw to false and
+	 * will repaint it completely when setting it to true. This causes flickering,
+	 * which is why turning redraw off is not allowed in case this control has an
+	 * embedded application as a child.
+	 *
+	 * https://github.com/eclipse-platform/eclipse.platform.swt/issues/1122
+	 */
+	boolean isShown = isVisible() && !isDisposed();
+	if (!redraw && isShown && embedsWin32Control()) {
+		return;
+	}
+
 	/*
 	 * Feature in Windows.  When WM_SETREDRAW is used to turn
 	 * off drawing in a widget, it clears the WS_VISIBLE bits
@@ -3665,6 +3683,25 @@ public void setRedraw (boolean redraw) {
 			if (handle != topHandle) OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
 		}
 	}
+}
+
+private boolean embedsWin32Control () {
+	if (this instanceof Browser) {
+		// The Edge browser embeds webView2
+		return (getStyle() & SWT.EDGE) != 0;
+	}
+
+	if (this instanceof OleClientSite) {
+		// OLE objects are always embedded by windows
+		return true;
+	}
+
+	// This needs to be checked AFTER OleClientSite because OleClientSite itself is a Composite
+	if (this instanceof Composite comp) {
+		return Stream.of(comp.getChildren()).anyMatch(Control::embedsWin32Control);
+	}
+
+	return false;
 }
 
 /**
