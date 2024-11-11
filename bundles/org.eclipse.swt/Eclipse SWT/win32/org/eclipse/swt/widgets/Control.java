@@ -3969,9 +3969,8 @@ void subclass () {
  */
 public Point toControl (int x, int y) {
 	checkWidget ();
-	Point displayPointInPixels = getDisplay().translateLocationInPixelsInDisplayCoordinateSystem(x, y);
-	final Point controlPointInPixels = toControlInPixels(displayPointInPixels.x, displayPointInPixels.y);
-	return DPIUtil.scaleDown(controlPointInPixels, getZoom());
+	int zoom = getZoom();
+	return DPIUtil.scaleDown(toControlInPixels(DPIUtil.scaleUp(x, zoom), DPIUtil.scaleUp(y, zoom)), zoom);
 }
 
 Point toControlInPixels (int x, int y) {
@@ -4004,7 +4003,9 @@ Point toControlInPixels (int x, int y) {
 public Point toControl (Point point) {
 	checkWidget ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	return toControl(point.x, point.y);
+	int zoom = getZoom();
+	point = DPIUtil.scaleUp(point, zoom);
+	return DPIUtil.scaleDown(toControlInPixels(point.x, point.y), zoom);
 }
 
 /**
@@ -4030,8 +4031,7 @@ public Point toControl (Point point) {
 public Point toDisplay (int x, int y) {
 	checkWidget ();
 	int zoom = getZoom();
-	Point displayPointInPixels = toDisplayInPixels(DPIUtil.scaleUp(x, zoom), DPIUtil.scaleUp(y, zoom));
-	return getDisplay().translateLocationInPointInDisplayCoordinateSystem(displayPointInPixels.x, displayPointInPixels.y);
+	return DPIUtil.scaleDown(toDisplayInPixels(DPIUtil.scaleUp(x, zoom), DPIUtil.scaleUp(y, zoom)), zoom);
 }
 
 Point toDisplayInPixels (int x, int y) {
@@ -4064,7 +4064,9 @@ Point toDisplayInPixels (int x, int y) {
 public Point toDisplay (Point point) {
 	checkWidget ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	return toDisplay(point.x, point.y);
+	int zoom = getZoom();
+	point = DPIUtil.scaleUp(point, zoom);
+	return DPIUtil.scaleDown(toDisplayInPixels(point.x, point.y), zoom);
 }
 
 long topHandle () {
