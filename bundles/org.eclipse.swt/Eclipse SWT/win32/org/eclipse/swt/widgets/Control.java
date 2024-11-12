@@ -2219,7 +2219,15 @@ public boolean print (GC gc) {
 	}
 	int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
 	OS.RedrawWindow (topHandle, null, 0, flags);
-	printWidget (topHandle, hdc, gc);
+	int printWindowFlags = 0;
+	if (OS.WIN32_BUILD >= OS.WIN32_BUILD_WIN8_1) {
+		/*
+		 * Undocumented flag in windows, which also allows the capturing
+		 * of GPU-drawn areas, e.g. an embedded Edge WebView2.
+		 */
+		printWindowFlags |= OS.PW_RENDERFULLCONTENT;
+	}
+	printWidget (topHandle, hdc, gc, printWindowFlags);
 	if (gdipGraphics != 0) {
 		OS.RestoreDC(hdc, state);
 		Gdip.Graphics_ReleaseHDC(gdipGraphics, hdc);
@@ -2227,7 +2235,7 @@ public boolean print (GC gc) {
 	return true;
 }
 
-void printWidget (long hwnd, long hdc, GC gc) {
+void printWidget (long hwnd, long hdc, GC gc, int printWindowFlags) {
 	/*
 	* Bug in Windows.  For some reason, PrintWindow()
 	* returns success but does nothing when it is called
@@ -2311,7 +2319,7 @@ void printWidget (long hwnd, long hdc, GC gc) {
 		if ((bits1 & OS.WS_VISIBLE) == 0) {
 			OS.ShowWindow (hwnd, OS.SW_SHOW);
 		}
-		success = OS.PrintWindow (hwnd, hdc, 0);
+		success = OS.PrintWindow (hwnd, hdc, printWindowFlags);
 		if ((bits1 & OS.WS_VISIBLE) == 0) {
 			OS.ShowWindow (hwnd, OS.SW_HIDE);
 		}
