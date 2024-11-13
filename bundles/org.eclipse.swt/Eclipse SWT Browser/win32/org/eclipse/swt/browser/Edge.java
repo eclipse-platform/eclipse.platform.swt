@@ -568,6 +568,7 @@ private String getDataDir(Display display) {
 @Override
 public void create(Composite parent, int style) {
 	containingEnvironment = createEnvironment();
+	containingEnvironment.instances().add(this);
 	long[] ppv = new long[1];
 	int hr = containingEnvironment.environment().QueryInterface(COM.IID_ICoreWebView2Environment2, ppv);
 	if (hr == COM.S_OK) environment2 = new ICoreWebView2Environment2(ppv[0]);
@@ -591,9 +592,11 @@ void setupBrowser(int hr, long pv) {
 	case COM.S_OK:
 		break;
 	case COM.E_WRONG_THREAD:
+		containingEnvironment.instances().remove(this);
 		error(SWT.ERROR_THREAD_INVALID_ACCESS, hr);
 		break;
 	default:
+		containingEnvironment.instances().remove(this);
 		error(SWT.ERROR_NO_HANDLES, hr);
 	}
 	long[] ppv = new long[] {pv};
@@ -688,7 +691,6 @@ void setupBrowser(int hr, long pv) {
 	browser.addListener(SWT.Move, this::browserMove);
 	scheduleMouseMovementHandling();
 
-	containingEnvironment.instances().add(this);
 	// Sometimes when the shell of the browser is opened before the browser is
 	// initialized, nothing is drawn on the shell. We need browserResize to force
 	// the shell to draw itself again.
