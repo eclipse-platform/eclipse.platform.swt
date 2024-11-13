@@ -145,7 +145,7 @@ public static Collection<Object[]> browserFlagsToTest() {
 	if (SwtTestUtil.isWindows) {
 		// NOTE: This is currently disabled due to test issues in the CI
 		// Execute Edge tests first, because IE starts some OS timer that conflicts with Edge event handling
-		// browserFlags.add(0, new Object[] {SWT.EDGE});
+		browserFlags.add(0, new Object[] {SWT.EDGE});
 	}
 	browserFlags.add(new Object[] {SWT.NONE});
 	return browserFlags;
