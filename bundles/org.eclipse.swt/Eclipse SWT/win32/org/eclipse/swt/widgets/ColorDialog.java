@@ -233,54 +233,69 @@ public RGB open () {
 
 	display.externalEventLoop = true;
 	display.sendPreExternalEventDispatchEvent ();
-	/* Open the dialog */
-	boolean success = OS.ChooseColor (lpcc);
-	display.externalEventLoop = false;
-	display.sendPostExternalEventDispatchEvent ();
-
-	/* Clear the temporary dialog modal parent */
-	if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
-		display.setModalDialog (oldModal);
-	}
-
-	/* Get the Custom Colors (if the user defined any) from the dialog */
-	boolean customColor = false;
-	OS.MoveMemory (colors, display.lpCustColors, colors.length * 4);
-	for (int color : colors) {
-		if (color != 0x00FFFFFF) {
-			customColor = true;
-			break;
+	long currentDpiAwarenessContext = OS.GetThreadDpiAwarenessContext();
+	boolean success = false;
+	try {
+		/*
+		 * Temporarily setting the thread dpi awareness to gdi scaling because window
+		 * dialog has weird resize handling
+		 */
+		if (display.isRescalingAtRuntime()) {
+			currentDpiAwarenessContext = OS.SetThreadDpiAwarenessContext(OS.DPI_AWARENESS_CONTEXT_UNAWARE_GDISCALED);
 		}
-	}
-	if (customColor) {
-		rgbs = new RGB [CUSTOM_COLOR_COUNT];
-		for (int i=0; i<colors.length; i++) {
-			int color = colors[i];
-			int red = color & 0xFF;
-			int green = (color >> 8) & 0xFF;
-			int blue = (color >> 16) & 0xFF;
-			rgbs[i] = new RGB (red, green, blue);
+
+		/* Open the dialog */
+		success = OS.ChooseColor(lpcc);
+		display.externalEventLoop = false;
+		display.sendPostExternalEventDispatchEvent();
+
+		/* Clear the temporary dialog modal parent */
+		if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
+			display.setModalDialog(oldModal);
 		}
+
+		/* Get the Custom Colors (if the user defined any) from the dialog */
+		boolean customColor = false;
+		OS.MoveMemory(colors, display.lpCustColors, colors.length * 4);
+		for (int color : colors) {
+			if (color != 0x00FFFFFF) {
+				customColor = true;
+				break;
+			}
+		}
+		if (customColor) {
+			rgbs = new RGB[CUSTOM_COLOR_COUNT];
+			for (int i = 0; i < colors.length; i++) {
+				int color = colors[i];
+				int red = color & 0xFF;
+				int green = (color >> 8) & 0xFF;
+				int blue = (color >> 16) & 0xFF;
+				rgbs[i] = new RGB(red, green, blue);
+			}
+		}
+
+		if (success) {
+			int red = lpcc.rgbResult & 0xFF;
+			int green = (lpcc.rgbResult >> 8) & 0xFF;
+			int blue = (lpcc.rgbResult >> 16) & 0xFF;
+			rgb = new RGB(red, green, blue);
+		}
+	} finally {
+		/* Reset the dpi awareness context */
+		if (display.isRescalingAtRuntime()) {
+			OS.SetThreadDpiAwarenessContext(currentDpiAwarenessContext);
+		}
+		/* Free the CCHookProc */
+		callback.dispose ();
+		/* Destroy the BIDI orientation window */
+		if (hwndParent != hwndOwner) {
+			if (enabled) OS.EnableWindow (hwndParent, true);
+			OS.SetActiveWindow (hwndParent);
+			OS.DestroyWindow (hwndOwner);
+		}
+
+		if (!success) return null;
 	}
-
-	if (success) {
-		int red = lpcc.rgbResult & 0xFF;
-		int green = (lpcc.rgbResult >> 8) & 0xFF;
-		int blue = (lpcc.rgbResult >> 16) & 0xFF;
-		rgb = new RGB (red, green, blue);
-	}
-
-	/* Free the CCHookProc */
-	callback.dispose ();
-
-	/* Destroy the BIDI orientation window */
-	if (hwndParent != hwndOwner) {
-		if (enabled) OS.EnableWindow (hwndParent, true);
-		OS.SetActiveWindow (hwndParent);
-		OS.DestroyWindow (hwndOwner);
-	}
-
-	if (!success) return null;
 	return rgb;
 }
 
