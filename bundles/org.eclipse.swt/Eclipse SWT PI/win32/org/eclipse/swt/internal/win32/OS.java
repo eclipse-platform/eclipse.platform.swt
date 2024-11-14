@@ -370,6 +370,7 @@ public class OS extends C {
 	public static final short DMDUP_VERTICAL = 2;
 	public static final short DMDUP_HORIZONTAL = 3;
 	public static final int DPI_AWARENESS_CONTEXT_UNAWARE = 24592;
+	public static final int DPI_AWARENESS_CONTEXT_UNAWARE_GDISCALED = 1073766416;
 	public static final int DPI_AWARENESS_CONTEXT_SYSTEM_AWARE = 24593;
 	public static final int DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE = 18;
 	public static final int DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 = 34;

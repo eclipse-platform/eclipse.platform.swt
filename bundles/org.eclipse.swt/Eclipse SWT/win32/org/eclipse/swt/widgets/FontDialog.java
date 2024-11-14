@@ -226,70 +226,85 @@ public FontData open () {
 
 	display.externalEventLoop = true;
 	display.sendPreExternalEventDispatchEvent ();
-	/* Open the dialog */
-	boolean success = OS.ChooseFont (lpcf);
-	display.externalEventLoop = false;
-	display.sendPostExternalEventDispatchEvent ();
-
-	/* Clear the temporary dialog modal parent */
-	if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
-		display.setModalDialog (oldModal);
-	}
-
-	/* Compute the result */
-	if (success) {
-		LOGFONT logFont = new LOGFONT ();
-		OS.MoveMemory (logFont, lpLogFont, LOGFONT.sizeof);
-
+	long currentDpiAwarenessContext = OS.GetThreadDpiAwarenessContext();
+	boolean success = false;
+	try {
 		/*
-		 * This will not work on multiple screens or
-		 * for printing. Should use DC for the proper device.
+		 * Temporarily setting the thread dpi awareness to gdi scaling because window
+		 * dialog has weird resize handling
 		 */
-		long hDC = OS.GetDC(0);
-		int logPixelsY = OS.GetDeviceCaps(hDC, OS.LOGPIXELSY);
-		int pixels = 0;
-		if (logFont.lfHeight > 0) {
+		if (display.isRescalingAtRuntime()) {
+			currentDpiAwarenessContext = OS.SetThreadDpiAwarenessContext(OS.DPI_AWARENESS_CONTEXT_UNAWARE_GDISCALED);
+		}
+
+		/* Open the dialog */
+		success = OS.ChooseFont(lpcf);
+		display.externalEventLoop = false;
+		display.sendPostExternalEventDispatchEvent();
+
+		/* Clear the temporary dialog modal parent */
+		if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
+			display.setModalDialog(oldModal);
+		}
+
+		/* Compute the result */
+		if (success) {
+			LOGFONT logFont = new LOGFONT();
+			OS.MoveMemory(logFont, lpLogFont, LOGFONT.sizeof);
+
 			/*
-			 * Feature in Windows. If the lfHeight of the LOGFONT structure
-			 * is positive, the lfHeight measures the height of the entire
-			 * cell, including internal leading, in logical units. Since the
-			 * height of a font in points does not include the internal leading,
-			 * we must subtract the internal leading, which requires a TEXTMETRIC,
-			 * which in turn requires font creation.
+			 * This will not work on multiple screens or for printing. Should use DC for the
+			 * proper device.
 			 */
-			long hFont = OS.CreateFontIndirect(logFont);
-			long oldFont = OS.SelectObject(hDC, hFont);
-			TEXTMETRIC lptm = new TEXTMETRIC ();
-			OS.GetTextMetrics(hDC, lptm);
-			OS.SelectObject(hDC, oldFont);
-			OS.DeleteObject(hFont);
-			pixels = logFont.lfHeight - lptm.tmInternalLeading;
-		} else {
-			pixels = -logFont.lfHeight;
-		}
-		OS.ReleaseDC(0, hDC);
+			long hDC = OS.GetDC(0);
+			int logPixelsY = OS.GetDeviceCaps(hDC, OS.LOGPIXELSY);
+			int pixels = 0;
+			if (logFont.lfHeight > 0) {
+				/*
+				 * Feature in Windows. If the lfHeight of the LOGFONT structure is positive, the
+				 * lfHeight measures the height of the entire cell, including internal leading,
+				 * in logical units. Since the height of a font in points does not include the
+				 * internal leading, we must subtract the internal leading, which requires a
+				 * TEXTMETRIC, which in turn requires font creation.
+				 */
+				long hFont = OS.CreateFontIndirect(logFont);
+				long oldFont = OS.SelectObject(hDC, hFont);
+				TEXTMETRIC lptm = new TEXTMETRIC();
+				OS.GetTextMetrics(hDC, lptm);
+				OS.SelectObject(hDC, oldFont);
+				OS.DeleteObject(hFont);
+				pixels = logFont.lfHeight - lptm.tmInternalLeading;
+			} else {
+				pixels = -logFont.lfHeight;
+			}
+			OS.ReleaseDC(0, hDC);
 
-		float points = pixels * 72f /logPixelsY;
-		fontData = FontData.win32_new (logFont, points);
-		if (effectsVisible) {
-			int red = lpcf.rgbColors & 0xFF;
-			int green = (lpcf.rgbColors >> 8) & 0xFF;
-			int blue = (lpcf.rgbColors >> 16) & 0xFF;
-			rgb = new RGB (red, green, blue);
+			float points = pixels * 72f / logPixelsY;
+			fontData = FontData.win32_new(logFont, points);
+			if (effectsVisible) {
+				int red = lpcf.rgbColors & 0xFF;
+				int green = (lpcf.rgbColors >> 8) & 0xFF;
+				int blue = (lpcf.rgbColors >> 16) & 0xFF;
+				rgb = new RGB(red, green, blue);
+			}
 		}
+	} finally {
+		/* Reset the dpi awareness context */
+		if (display.isRescalingAtRuntime()) {
+			OS.SetThreadDpiAwarenessContext(currentDpiAwarenessContext);
+		}
+		/* Free the OS memory */
+		if (lpLogFont != 0) OS.HeapFree (hHeap, 0, lpLogFont);
+
+		/* Destroy the BIDI orientation window */
+		if (hwndParent != hwndOwner) {
+			if (enabled) OS.EnableWindow (hwndParent, true);
+			OS.SetActiveWindow (hwndParent);
+			OS.DestroyWindow (hwndOwner);
+		}
+		if (!success) return null;
 	}
 
-	/* Free the OS memory */
-	if (lpLogFont != 0) OS.HeapFree (hHeap, 0, lpLogFont);
-
-	/* Destroy the BIDI orientation window */
-	if (hwndParent != hwndOwner) {
-		if (enabled) OS.EnableWindow (hwndParent, true);
-		OS.SetActiveWindow (hwndParent);
-		OS.DestroyWindow (hwndOwner);
-	}
-
-	if (!success) return null;
 	return fontData;
 }
 
