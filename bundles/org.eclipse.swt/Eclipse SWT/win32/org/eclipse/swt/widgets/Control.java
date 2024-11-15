@@ -1711,6 +1711,10 @@ boolean hasCustomForeground() {
 	return foreground != -1;
 }
 
+boolean hasBorder() {
+	return (style & SWT.BORDER) != 0;
+}
+
 boolean hasFocus () {
 	/*
 	* If a non-SWT child of the control has focus,
