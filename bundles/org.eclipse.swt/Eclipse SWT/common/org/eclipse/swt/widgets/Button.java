@@ -431,20 +431,22 @@ public class Button extends Control implements ICustomWidget {
 		IGraphicsContext gc = originalGC;
 		Image doubleBufferingImage = null;
 
-		// Use double buffering on windows
 		if (SWT.getPlatform().equals("win32")) {
 			// Extract background color on first execution
 			if (background == null) {
-				Image backgroundColorImage = new Image(getDisplay(), r.width,
-						r.height);
+				Image backgroundColorImage = new Image(getDisplay(), r.width, r.height);
 				originalGC.copyArea(backgroundColorImage, 0, 0);
 				int pixel = backgroundColorImage.getImageData().getPixel(0, 0);
 				backgroundColorImage.dispose();
-				background = new Color((pixel & 0xFF000000) >>> 24,
-						(pixel & 0xFF0000) >>> 16, (pixel & 0xFF00) >>> 8);
+				background = new Color((pixel & 0xFF000000) >>> 24, (pixel & 0xFF0000) >>> 16, (pixel & 0xFF00) >>> 8);
 			}
 			style |= SWT.NO_BACKGROUND;
+		}
 
+		if (SWT.USE_SKIJA) {
+			gc = new SkijaGC(originalGC, background);
+		} else {
+			// Use double buffering on windows
 			doubleBufferingImage = new Image(getDisplay(), r.width, r.height);
 			originalGC.copyArea(doubleBufferingImage, 0, 0);
 			GC doubleBufferingGC = new GC(doubleBufferingImage);
@@ -453,10 +455,6 @@ public class Button extends Control implements ICustomWidget {
 			doubleBufferingGC.setAntialias(SWT.ON);
 			doubleBufferingGC.fillRectangle(0, 0, r.width, r.height);
 			gc = doubleBufferingGC;
-		}
-
-		if (SWT.USE_SKIJA) {
-			gc = new SkijaGC((GC) gc, background);
 		}
 
 		boolean isRightAligned = (style & SWT.RIGHT) != 0;
