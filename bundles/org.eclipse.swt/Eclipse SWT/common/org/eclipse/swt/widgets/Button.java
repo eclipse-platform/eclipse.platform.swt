@@ -445,15 +445,17 @@ public class Button extends Control implements ICustomWidget {
 		if (SWT.USE_SKIJA) {
 			gc = new SkijaGC(originalGC, background);
 		} else {
-			// Use double buffering on windows
-			doubleBufferingImage = new Image(getDisplay(), r.width, r.height);
-			originalGC.copyArea(doubleBufferingImage, 0, 0);
-			GC doubleBufferingGC = new GC(doubleBufferingImage);
-			doubleBufferingGC.setForeground(originalGC.getForeground());
-			doubleBufferingGC.setBackground(background);
-			doubleBufferingGC.setAntialias(SWT.ON);
-			doubleBufferingGC.fillRectangle(0, 0, r.width, r.height);
-			gc = doubleBufferingGC;
+			if (SWT.getPlatform().equals("win32")) {
+				// Use double buffering on windows
+				doubleBufferingImage = new Image(getDisplay(), r.width, r.height);
+				originalGC.copyArea(doubleBufferingImage, 0, 0);
+				GC doubleBufferingGC = new GC(doubleBufferingImage);
+				doubleBufferingGC.setForeground(originalGC.getForeground());
+				doubleBufferingGC.setBackground(background);
+				doubleBufferingGC.setAntialias(SWT.ON);
+				doubleBufferingGC.fillRectangle(0, 0, r.width, r.height);
+				gc = doubleBufferingGC;
+			}
 		}
 
 		boolean isRightAligned = (style & SWT.RIGHT) != 0;
