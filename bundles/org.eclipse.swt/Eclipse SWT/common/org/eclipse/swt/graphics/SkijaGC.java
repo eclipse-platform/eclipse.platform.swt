@@ -2,12 +2,14 @@ package org.eclipse.swt.graphics;
 
 import java.io.*;
 import java.util.*;
+import java.util.List;
 import java.util.function.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 
 import io.github.humbleui.skija.*;
+import io.github.humbleui.skija.Canvas;
 import io.github.humbleui.skija.Font;
 import io.github.humbleui.types.*;
 
@@ -25,13 +27,32 @@ public class SkijaGC implements IGraphicsContext {
 	}
 
 	public SkijaGC(GC gc) {
+		this(gc, extractBackgroundColor(gc));
+	}
+
+	public SkijaGC(GC gc, Color backgroundColor) {
 		innerGC = gc;
-		surface = createSurface();
+		surface = createSurface(backgroundColor);
 		clipping = innerGC.getClipping();
 		initFont();
 	}
 
-	private Surface createSurface() {
+	private static Color extractBackgroundColor(GC gc) {
+		Rectangle originalGCArea = gc.getClipping();
+		// Do not fill when using dummy GC for text extent calculation or when on cocoa
+		// (as it does not have proper color)
+		if (originalGCArea.isEmpty() || SWT.getPlatform().equals("cocoa")) {
+			return null;
+		}
+		Image colorImage = new Image(gc.getDevice(), originalGCArea.width, originalGCArea.height);
+		gc.copyArea(colorImage, 0, 0);
+		int pixel = colorImage.getImageData().getPixel(0, 0);
+		Color originalColor = new Color((pixel & 0xFF000000) >>> 24, (pixel & 0xFF0000) >>> 16, (pixel & 0xFF00) >>> 8);
+		colorImage.dispose();
+		return originalColor;
+	}
+
+	private Surface createSurface(Color backgroundColor) {
 		int width = 1;
 		int height = 1;
 		Rectangle originalGCArea = innerGC.getClipping();
@@ -41,23 +62,10 @@ public class SkijaGC implements IGraphicsContext {
 		}
 		Surface surface = Surface.makeRaster(ImageInfo.makeN32Premul(width, height), 0,
 				new SurfaceProps(PixelGeometry.RGB_H));
-		fillSurfaceWithDefaultBackground(surface);
-		return surface;
-	}
-
-	private void fillSurfaceWithDefaultBackground(Surface surface) {
-		Rectangle originalGCArea = innerGC.getClipping();
-		// Do not fill when using dummy GC for text extent calculation or when on cocoa
-		// (as it does not have proper color)
-		if (originalGCArea.isEmpty() || SWT.getPlatform().equals("cocoa")) {
-			return;
+		if (backgroundColor != null) {
+			surface.getCanvas().clear(convertSWTColorToSkijaColor(backgroundColor));
 		}
-		Image colorImage = new Image(innerGC.getDevice(), originalGCArea.width, originalGCArea.height);
-		innerGC.copyArea(colorImage, 0, 0);
-		int pixel = colorImage.getImageData().getPixel(0, 0);
-		Color originalColor = new Color((pixel & 0xFF000000) >>> 24, (pixel & 0xFF0000) >>> 16, (pixel & 0xFF00) >>> 8);
-		surface.getCanvas().clear(convertSWTColorToSkijaColor(originalColor));
-		colorImage.dispose();
+		return surface;
 	}
 
 	private void initFont() {
@@ -142,6 +150,7 @@ public class SkijaGC implements IGraphicsContext {
 		innerGC.drawImage(transferImage, 0, 0, scaledArea.width, scaledArea.height, //
 				0, 0, originalArea.width, originalArea.height);
 		transferImage.dispose();
+		surface.close();
 	}
 
 	public Point textExtent(String string) {
