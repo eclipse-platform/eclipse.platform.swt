@@ -102,6 +102,7 @@ public class ControlExample {
 		Button skijaToggle = new Button(parent, SWT.TOGGLE);
 		skijaToggle.setText("Use Skija");
 		skijaToggle.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		skijaToggle.setSelection(SWT.USE_SKIJA);
 		skijaToggle.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
