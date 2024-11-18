@@ -76,22 +76,19 @@ Finally, we set the window's size determines by its child controls and open the 
 The `while`-loop processes all GUI related events until the shell is disposed which happens when closing.
 Before exiting, any claimed GUI resources needs to be freed.
 
-Contributing to SWT
-===================
+
+# Contributing to SWT
 
 Thanks for your interest in this project.
 
 For information about contributing to Eclipse Platform in general, see the general [CONTRIBUTING](https://github.com/eclipse-platform/.github/blob/main/CONTRIBUTING.md) page.
-
 
 [![Create Eclipse Development Environment for Eclipse SWT](https://download.eclipse.org/oomph/www/setups/svg/SWT.svg)](
 https://www.eclipse.org/setups/installer/?url=https://raw.githubusercontent.com/eclipse-platform/eclipse.platform.swt/master/bundles/org.eclipse.swt.tools/Oomph/PlatformSWTConfiguration.setup&show=true
 "Click to open Eclipse-Installer Auto Launch or drag into your running installer")
 
 
-
-Developer resources:
---------------------
+## Developer Resources
 
 See the following description for how to contribute a feature or a bug fix to SWT.
 
@@ -101,29 +98,25 @@ Information regarding source code management, builds, coding standards, and more
 
 - <https://projects.eclipse.org/projects/eclipse.platform.swt/developer>
 
-Contributor License Agreement:
-------------------------------
+## Contributor License Agreement
 
 Before your contribution can be accepted by the project, you need to create and electronically sign the Eclipse Foundation Contributor License Agreement (CLA).
 
 - <http://www.eclipse.org/legal/CLA.php>
 
-Contact:
---------
+## Contact
 
 Contact the project developers via the project's "dev" list.
 
 - <https://accounts.eclipse.org/mailing-list/platform-dev>
 
-Search for bugs:
-----------------
+## Search for Bugs
 
 SWT used to track ongoing development and issues in Bugzilla .
 
 - <https://bugs.eclipse.org/bugs/buglist.cgi?product=Platform&component=SWT>
 
-Create a new bug:
------------------
+## Create a New Bug
 
 You can register bugs and feature requests in the Github Issue Tracker. Remember that contributions are always welcome!
 - [View existing SWT issues](https://github.com/eclipse-platform/eclipse.platform.swt/issues)
