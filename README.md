@@ -123,3 +123,14 @@ You can register bugs and feature requests in the Github Issue Tracker. Remember
 - [New SWT issue](https://github.com/eclipse-platform/eclipse.platform.swt/issues/new)
 
 Please bear in mind that this project is almost entirely developed by volunteers. If you do not provide the implementation yourself (or pay someone to do it for you), the bug might never get fixed. If it is a serious bug, other people than you might care enough to provide a fix.
+
+
+# Prototyping on a Single, Cross-Platform SWT Implementation
+
+There is current work on evaluating the feasibility of achieving a single, OS-agnostic implementation of SWT in order to reduce maintenance efforts, enable better look and feel, and improve configurability.
+The work on these prototypes and their documentation can currently be found in a dedicated GitHub organization: https://github.com/swt-initiative31
+
+Actual prototyping work has been started on four technologies: Skia with Visual Class Library (VCL), Skia with custom-rendered widgets, GTK, and Swing\
+The prototypes for the following technologies are still under investigation, are further developed and can be tried out here:
+- Skia with custom-drawn widgets: https://github.com/swt-initiative31/prototype-skija
+- Cross-platform GTK: https://github.com/swt-initiative31/prototype-gtk
