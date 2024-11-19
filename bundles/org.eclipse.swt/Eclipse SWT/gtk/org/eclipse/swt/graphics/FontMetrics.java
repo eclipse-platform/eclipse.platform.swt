@@ -23,7 +23,7 @@ package org.eclipse.swt.graphics;
  * @see GC#getFontMetrics
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
-public final class FontMetrics {
+public final class FontMetrics implements IFontMetrics {
 	int ascentInPoints, descentInPoints, averageCharWidthInPoints;
 
 FontMetrics() {
@@ -56,6 +56,7 @@ public boolean equals (Object object) {
  *
  * @return the ascent of the font
  */
+@Override
 public int getAscent() {
 	return ascentInPoints;
 }
@@ -67,6 +68,7 @@ public int getAscent() {
  * @return the average character width of the font
  * @since 3.107
  */
+@Override
 public double getAverageCharacterWidth() {
 	return getAverageCharWidth();
 }
@@ -78,6 +80,7 @@ public double getAverageCharacterWidth() {
  * @return the average character width of the font
  * @deprecated Use getAverageCharacterWidth() instead
  */
+@Override
 @Deprecated
 public int getAverageCharWidth() {
 	return averageCharWidthInPoints;
@@ -91,6 +94,7 @@ public int getAverageCharWidth() {
  *
  * @return the descent of the font
  */
+@Override
 public int getDescent() {
 	return descentInPoints;
 }
@@ -106,6 +110,7 @@ public int getDescent() {
  * @see #getDescent
  * @see #getLeading
  */
+@Override
 public int getHeight() {
 	return ascentInPoints + descentInPoints;
 }
@@ -117,6 +122,7 @@ public int getHeight() {
  *
  * @return the leading space of the font
  */
+@Override
 public int getLeading() {
 	return 0; // Pango has no concept of "leading"
 }
