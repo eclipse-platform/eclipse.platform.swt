@@ -630,6 +630,8 @@ public static int getZoomForAutoscaleProperty (int nativeDeviceZoom) {
 	if (autoScaleValue != null) {
 		if ("false".equalsIgnoreCase (autoScaleValue)) {
 			zoom = 100;
+		} else if ("halfUp".equalsIgnoreCase (autoScaleValue)) {
+			zoom = (nativeDeviceZoom + 50) / 100 * 100;
 		} else if ("half".equalsIgnoreCase (autoScaleValue)) {
 			// Math.round rounds 125->150 and 175->200,
 			// Math.rint rounds 125->100 and 175->200 matching
