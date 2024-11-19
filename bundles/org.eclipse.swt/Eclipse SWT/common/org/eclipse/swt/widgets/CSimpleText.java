@@ -824,7 +824,7 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 		checkWidget();
 		if ((style & SWT.PASSWORD) != 0)// || echoCharacter != '\0')
 			return;
-		copyToClipboard(model.getSelectedText().toCharArray());
+//		copyToClipboard(model.getSelectedText().toCharArray());
 	}
 
 	public void cut() {
@@ -834,7 +834,7 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 
 	public void paste() {
 		checkWidget();
-		String clipboardText = getClipboardText();
+		String clipboardText = ""; // getClipboardText();
 		model.insert(clipboardText);
 	}
 

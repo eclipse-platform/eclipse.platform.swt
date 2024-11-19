@@ -1045,35 +1045,29 @@ public class Button extends Control implements ICustomWidget {
 		return b;
 	}
 
-	@Override
-	boolean setTabGroupFocus() {
-		boolean b = super.setTabGroupFocus();
-		return b;
-	}
-
-	@Override
-	boolean setTabItemFocus() {
-
-		if (isRadioButton()) {
-
-			for (Button b : getRadioGroup()) {
-				// we only tab on this element, if there is no other radio
-				// button which is selected.
-				// in case of another selected radio button, this other radio
-				// button should be tabbed.
-				// But if the other checked radio button has focus, then the
-				// tabbing should not be blocked.
-				if (!b.hasFocus() && b.isChecked() && b != this) {
-					return false;
-				}
-
-			}
-
-		}
-
-		boolean b = super.setTabItemFocus();
-		return b;
-	}
+//	@Override
+//	boolean setTabItemFocus() {
+//
+//		if (isRadioButton()) {
+//
+//			for (Button b : getRadioGroup()) {
+//				// we only tab on this element, if there is no other radio
+//				// button which is selected.
+//				// in case of another selected radio button, this other radio
+//				// button should be tabbed.
+//				// But if the other checked radio button has focus, then the
+//				// tabbing should not be blocked.
+//				if (!b.hasFocus() && b.isChecked() && b != this) {
+//					return false;
+//				}
+//
+//			}
+//
+//		}
+//
+//		boolean b = super.setTabItemFocus();
+//		return b;
+//	}
 	//
 	@Override
 	boolean isTabItem() {
