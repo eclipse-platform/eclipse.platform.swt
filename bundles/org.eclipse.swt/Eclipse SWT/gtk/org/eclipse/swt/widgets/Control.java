@@ -5974,6 +5974,10 @@ boolean setTabItemFocus (boolean next) {
 	return forceFocus ();
 }
 
+boolean hasBorder() {
+	return (style & SWT.BORDER) != 0;
+}
+
 /**
  * Sets the base text direction (a.k.a. "paragraph direction") of the receiver,
  * which must be one of the constants <code>SWT.LEFT_TO_RIGHT</code>,
