@@ -31,5 +31,8 @@
 	<classpathentry kind="src" path="Eclipse SWT OpenGL/glx"/>
 	<classpathentry kind="src" path="Eclipse SWT OpenGL/common"/>
 	<classpathentry kind="src" path="Eclipse SWT WebKit/gtk"/>
+	<classpathentry kind="lib" path="lib/skija-linux-x64-0.116.2.jar"/>
+	<classpathentry kind="lib" path="lib/skija-shared-0.116.2.jar"/>
+	<classpathentry kind="lib" path="lib/types-0.1.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
