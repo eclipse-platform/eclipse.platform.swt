@@ -107,6 +107,11 @@
 			<type>2</type>
 			<locationURI>SWT_HOST_PLUGIN/Eclipse%20SWT%20WebKit</locationURI>
 		</link>
+		<link>
+			<name>lib</name>
+			<type>2</type>
+			<locationURI>SWT_HOST_PLUGIN/lib</locationURI>
+		</link>
 	</linkedResources>
 	<variableList>
 		<variable>

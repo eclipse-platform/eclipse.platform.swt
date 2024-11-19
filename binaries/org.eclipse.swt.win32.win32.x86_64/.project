@@ -108,6 +108,11 @@
 			<locationURI>SWT_HOST_PLUGIN/Eclipse%20SWT%20WebKit</locationURI>
 		</link>
 		<link>
+			<name>lib</name>
+			<type>2</type>
+			<locationURI>SWT_HOST_PLUGIN/lib</locationURI>
+		</link>
+		<link>
 			<name>Eclipse SWT Tests</name>
 			<type>2</type>
 			<!-- Once Tycho supports custom variables, SWT_HOST_PLUGIN should be used here: https://github.com/eclipse-tycho/tycho/issues/3820 -->
