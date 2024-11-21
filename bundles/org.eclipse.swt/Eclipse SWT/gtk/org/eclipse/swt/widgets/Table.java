@@ -1124,11 +1124,11 @@ void destroyItem (TableItem item) {
 	}
 	if (index == itemCount) return;
 	long selection = GTK.gtk_tree_view_get_selection (handle);
+	System.arraycopy (items, index + 1, items, index, --itemCount - index);
+	items [itemCount] = null;
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	GTK.gtk_list_store_remove (modelHandle, item.handle);
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-	System.arraycopy (items, index + 1, items, index, --itemCount - index);
-	items [itemCount] = null;
 	if (itemCount == 0) resetCustomDraw ();
 }
 
@@ -2664,11 +2664,11 @@ public void remove (int index) {
 	}
 	if (!disposed) {
 		long selection = GTK.gtk_tree_view_get_selection (handle);
+		System.arraycopy (items, index + 1, items, index, --itemCount - index);
+		items [itemCount] = null;
 		OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 		GTK.gtk_list_store_remove (modelHandle, iter);
 		OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-		System.arraycopy (items, index + 1, items, index, --itemCount - index);
-		items [itemCount] = null;
 	}
 	OS.g_free (iter);
 }
@@ -2703,20 +2703,17 @@ public void remove (int start, int end) {
 	long selection = GTK.gtk_tree_view_get_selection (handle);
 	long iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
 	if (iter == 0) error (SWT.ERROR_NO_HANDLES);
-	int index = -1;
-	for (index = start; index <= end; index++) {
-		if (index == start) GTK.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
-		TableItem item = items [index];
+	GTK.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, start);
+	for (int index = start; index <= end; index++) {
+		TableItem item = items [start];
 		if (item != null && !item.isDisposed ()) item.release (false);
+		System.arraycopy (items, start + 1, items, start, --itemCount - start);
+		items [itemCount] = null;
 		OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 		GTK.gtk_list_store_remove (modelHandle, iter);
 		OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	}
 	OS.g_free (iter);
-	index = end + 1;
-	System.arraycopy (items, index, items, start, itemCount - index);
-	for (int i=itemCount-(index-start); i<itemCount; i++) items [i] = null;
-	itemCount = itemCount - (index - start);
 }
 
 /**
@@ -2764,11 +2761,11 @@ public void remove (int [] indices) {
 				GTK.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
 			}
 			if (!disposed) {
+				System.arraycopy (items, index + 1, items, index, --itemCount - index);
+				items [itemCount] = null;
 				OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 				GTK.gtk_list_store_remove (modelHandle, iter);
 				OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-				System.arraycopy (items, index + 1, items, index, --itemCount - index);
-				items [itemCount] = null;
 			}
 			last = index;
 		}
