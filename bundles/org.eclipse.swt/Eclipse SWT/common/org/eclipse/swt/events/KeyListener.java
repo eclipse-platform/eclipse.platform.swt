@@ -15,9 +15,8 @@
 package org.eclipse.swt.events;
 
 
+import java.util.*;
 import java.util.function.*;
-
-import org.eclipse.swt.internal.*;
 
 /**
  * Classes which implement this interface provide methods
@@ -35,7 +34,7 @@ import org.eclipse.swt.internal.*;
  * @see KeyAdapter
  * @see KeyEvent
  */
-public interface KeyListener extends SWTEventListener {
+public interface KeyListener extends EventListener {
 
 /**
  * Sent when a key is pressed on the system keyboard.

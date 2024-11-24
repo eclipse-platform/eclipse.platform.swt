@@ -14,9 +14,8 @@
 package org.eclipse.swt.events;
 
 
+import java.util.*;
 import java.util.function.*;
-
-import org.eclipse.swt.internal.*;
 
 /**
  * Classes which implement this interface provide methods
@@ -34,7 +33,7 @@ import org.eclipse.swt.internal.*;
  * @see TreeAdapter
  * @see TreeEvent
  */
-public interface TreeListener extends SWTEventListener {
+public interface TreeListener extends EventListener {
 
 /**
  * Sent when a tree branch is collapsed.

@@ -14,7 +14,7 @@
  *******************************************************************************/
 package org.eclipse.swt.events;
 
-import org.eclipse.swt.internal.*;
+import java.util.*;
 
 /**
  * This listener interface may be implemented in order to receive
@@ -24,7 +24,7 @@ import org.eclipse.swt.internal.*;
  * @since 3.8
  */
 @FunctionalInterface
-public interface SegmentListener extends SWTEventListener {
+public interface SegmentListener extends EventListener {
 
 /**
  * This method is called when text content is being modified.
