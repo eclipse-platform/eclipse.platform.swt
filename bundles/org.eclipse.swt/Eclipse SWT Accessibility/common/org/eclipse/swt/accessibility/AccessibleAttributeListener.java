@@ -13,7 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.accessibility;
 
-import org.eclipse.swt.internal.SWTEventListener;
+import java.util.*;
 
 /**
  * Classes which implement this interface provide methods
@@ -31,7 +31,7 @@ import org.eclipse.swt.internal.SWTEventListener;
  *
  * @since 3.6
  */
-public interface AccessibleAttributeListener extends SWTEventListener {
+public interface AccessibleAttributeListener extends EventListener {
 	/**
 	 * Returns attributes specific to this Accessible object.
 	 *

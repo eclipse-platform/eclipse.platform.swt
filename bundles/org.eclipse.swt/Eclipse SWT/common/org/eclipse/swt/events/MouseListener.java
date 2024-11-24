@@ -15,9 +15,8 @@
 package org.eclipse.swt.events;
 
 
+import java.util.*;
 import java.util.function.*;
-
-import org.eclipse.swt.internal.*;
 
 /**
  * Classes which implement this interface provide methods
@@ -35,7 +34,7 @@ import org.eclipse.swt.internal.*;
  * @see MouseAdapter
  * @see MouseEvent
  */
-public interface MouseListener extends SWTEventListener {
+public interface MouseListener extends EventListener {
 
 /**
  * Sent when a mouse button is pressed twice within the

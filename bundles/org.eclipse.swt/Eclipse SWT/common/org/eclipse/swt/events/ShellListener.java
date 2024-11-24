@@ -14,9 +14,8 @@
 package org.eclipse.swt.events;
 
 
+import java.util.*;
 import java.util.function.*;
-
-import org.eclipse.swt.internal.*;
 
 /**
  * Classes which implement this interface provide methods
@@ -33,7 +32,7 @@ import org.eclipse.swt.internal.*;
  * @see ShellAdapter
  * @see ShellEvent
  */
-public interface ShellListener extends SWTEventListener {
+public interface ShellListener extends EventListener {
 
 /**
  * Sent when a shell becomes the active window.

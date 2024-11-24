@@ -63,11 +63,26 @@ public class TypedListener implements Listener {
  *
  * @noreference This method is not intended to be referenced by clients.
  */
+@Deprecated(forRemoval=true, since="2025-03")
 public TypedListener (SWTEventListener listener) {
 	eventListener = listener;
 }
 
-TypedListener (EventListener listener) {
+/**
+ * Constructs a new instance of this class for the given event listener.
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the SWT
+ * public API. It is marked public only so that it can be shared
+ * within the packages provided by SWT. It should never be
+ * referenced from application code.
+ * </p>
+ *
+ * @param listener the event listener to store in the receiver
+ *
+ * @noreference This method is not intended to be referenced by clients.
+ */
+
+public TypedListener (EventListener listener) {
 	eventListener = listener;
 }
 
@@ -84,12 +99,12 @@ TypedListener (EventListener listener) {
  *
  * @noreference This method is not intended to be referenced by clients.
  */
-public SWTEventListener getEventListener () {
+public EventListener getEventListener () {
 	// At the moment all typed listeners implement SWTEventListener but that interface is intended to be removed in the future and then they will only implement EventListener.
 	// This method should not be called for typed listeners listeners that only implement EventListener.
 	// This is only relevant for custom typed listeners that implement EventListener directly before SWTEventListener is eventually removed.
 	// But then the new Widget.getTypedListener() method can be used.
-	return (SWTEventListener) eventListener;
+	return eventListener;
 }
 
 /**

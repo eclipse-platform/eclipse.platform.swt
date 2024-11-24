@@ -14,8 +14,7 @@
  *******************************************************************************/
 package org.eclipse.swt.events;
 
-
-import org.eclipse.swt.internal.*;
+import java.util.*;
 
 /**
  * Classes which implement this interface provide methods
@@ -39,7 +38,7 @@ import org.eclipse.swt.internal.*;
  * @since 3.7
  */
 @FunctionalInterface
-public interface TouchListener extends SWTEventListener {
+public interface TouchListener extends EventListener {
 
 /**
  * Sent when a touch sequence begins, changes state, or ends.

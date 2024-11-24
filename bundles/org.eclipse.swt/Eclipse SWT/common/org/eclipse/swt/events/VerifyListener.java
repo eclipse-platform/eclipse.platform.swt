@@ -14,8 +14,7 @@
  *******************************************************************************/
 package org.eclipse.swt.events;
 
-
-import org.eclipse.swt.internal.*;
+import java.util.*;
 
 /**
  * Classes which implement this interface provide a method
@@ -33,7 +32,7 @@ import org.eclipse.swt.internal.*;
  * @see VerifyEvent
  */
 @FunctionalInterface
-public interface VerifyListener extends SWTEventListener {
+public interface VerifyListener extends EventListener {
 
 /**
  * Sent when the text is about to be modified.

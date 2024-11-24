@@ -13,8 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.accessibility;
 
-
-import org.eclipse.swt.internal.*;
+import java.util.*;
 
 /**
  * Classes that implement this interface provide methods
@@ -43,7 +42,7 @@ import org.eclipse.swt.internal.*;
  *
  * @since 3.0
  */
-public interface AccessibleTextListener extends SWTEventListener {
+public interface AccessibleTextListener extends EventListener {
 
 	/**
 	 * Sent when an accessibility client requests the current character offset

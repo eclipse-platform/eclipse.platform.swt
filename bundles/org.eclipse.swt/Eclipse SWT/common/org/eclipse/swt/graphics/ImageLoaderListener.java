@@ -14,7 +14,7 @@
 package org.eclipse.swt.graphics;
 
 
-import org.eclipse.swt.internal.*;
+import java.util.*;
 
 /**
  * Classes which implement this interface provide methods
@@ -32,7 +32,7 @@ import org.eclipse.swt.internal.*;
  * @see ImageLoaderEvent
  */
 @FunctionalInterface
-public interface ImageLoaderListener extends SWTEventListener {
+public interface ImageLoaderListener extends EventListener {
 
 /**
  * Sent when image data is either partially or completely loaded.

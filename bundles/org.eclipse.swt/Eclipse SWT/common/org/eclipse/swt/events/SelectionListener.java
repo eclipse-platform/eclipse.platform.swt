@@ -15,9 +15,8 @@
 package org.eclipse.swt.events;
 
 
+import java.util.*;
 import java.util.function.*;
-
-import org.eclipse.swt.internal.*;
 
 /**
  * Classes which implement this interface provide methods
@@ -35,7 +34,7 @@ import org.eclipse.swt.internal.*;
  * @see SelectionAdapter
  * @see SelectionEvent
  */
-public interface SelectionListener extends SWTEventListener {
+public interface SelectionListener extends EventListener {
 
 /**
  * Sent when selection occurs in the control.
