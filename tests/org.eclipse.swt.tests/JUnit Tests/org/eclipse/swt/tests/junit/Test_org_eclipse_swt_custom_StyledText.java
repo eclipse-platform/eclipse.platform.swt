@@ -4792,6 +4792,11 @@ public void test_notFixedLineHeightDoesntChangeLinePixelIfUnnecessary() {
 	int firstLinePixel = text.getLinePixel(line);
 	text.setWordWrap(true); // make non fixed line height
 	assertEquals(firstLinePixel, text.getLinePixel(line));
+	shell.setVisible(true);
+	shell.forceActive();
+	text.setVisible(true);
+	assertTrue("setFocus failed",text.setFocus());
+	assertTrue("text has not focus",text.isFocusControl());
 	text.replaceTextRange(0, 1, "X");
 	assertEquals(0, text.getTopIndex());
 	assertEquals(0, text.getLinePixel(0));
