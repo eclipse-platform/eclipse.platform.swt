@@ -592,4 +592,12 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="META-INF/MANIFEST.MF">
+        <filter id="926941240">
+            <message_arguments>
+                <message_argument value="3.129.0"/>
+                <message_argument value="3.128.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
 </component>
