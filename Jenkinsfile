@@ -18,7 +18,7 @@
 def runOnNativeBuildAgent(String platform, Closure body) {
 	def final nativeBuildStageName = 'Build SWT-native binaries'
 	if (platform == 'gtk.linux.x86_64') {
-		podTemplate(inheritFrom: 'ubuntu-latest' /* inhert general configuration */, containers: [
+		podTemplate(inheritFrom: 'basic' /* inherit general configuration */, containers: [
 			containerTemplate(name: 'swtbuild', image: 'eclipse/platformreleng-debian-swtnativebuild:12',
 				resourceRequestCpu:'1000m', resourceRequestMemory:'512Mi',
 				resourceLimitCpu:'2000m', resourceLimitMemory:'4096Mi',
