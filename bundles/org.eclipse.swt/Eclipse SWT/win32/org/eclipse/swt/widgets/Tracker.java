@@ -823,7 +823,7 @@ public void setCursor(Cursor newCursor) {
 	checkWidget();
 	clientCursor = newCursor;
 	if (newCursor != null) {
-		if (inEvent) OS.SetCursor (clientCursor.handle);
+		if (inEvent) OS.SetCursor (Cursor.win32_getHandle(clientCursor, getZoom()));
 	}
 }
 
@@ -892,7 +892,7 @@ long transparentProc (long hwnd, long msg, long wParam, long lParam) {
 			break;
 		case OS.WM_SETCURSOR:
 			if (clientCursor != null) {
-				OS.SetCursor (clientCursor.handle);
+				OS.SetCursor (Cursor.win32_getHandle(clientCursor, getZoom()));
 				return 1;
 			}
 			if (resizeCursor != 0) {
