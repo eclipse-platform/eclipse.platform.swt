@@ -123,6 +123,8 @@ public final class Image extends Resource implements Drawable {
 
 	private Map<Integer, ImageHandle> zoomLevelToImageHandle = new HashMap<>();
 
+	private boolean genericImage;
+
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
@@ -1321,6 +1323,11 @@ public Rectangle getBounds() {
 }
 
 Rectangle getBounds(int zoom) {
+	if (this.genericImage) {
+		var d = imageProvider.getImageData(100);
+		return new Rectangle(0, 0, d.width, d.height);
+	}
+
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (zoomLevelToImageHandle.containsKey(zoom)) {
 		ImageHandle imageMetadata = zoomLevelToImageHandle.get(zoom);
@@ -1405,6 +1412,9 @@ public ImageData getImageData() {
  * @since 3.106
  */
 public ImageData getImageData (int zoom) {
+	if (this.genericImage)
+		return imageProvider.getImageData(zoom);
+
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (zoomLevelToImageHandle.containsKey(zoom)) {
 		return zoomLevelToImageHandle.get(zoom).getImageData();
@@ -1444,6 +1454,9 @@ public ImageData getImageData (int zoom) {
  */
 @Deprecated
 public ImageData getImageDataAtCurrentZoom() {
+	if (Image.this.genericImage)
+		return imageProvider.getImageData(100);
+
 	return getImageMetadata(getZoom()).getImageData();
 }
 
@@ -1975,6 +1988,9 @@ public void internal_dispose_GC (long hDC, GCData data) {
  */
 @Override
 public boolean isDisposed() {
+	if(this.genericImage)
+		return false;
+
 	if (this.imageProvider != null) {
 		return this.imageProvider.isDisposed();
 	}
@@ -2620,5 +2636,23 @@ private class ImageHandle {
 		}
 	}
 
+}
+void setImageDataProvider(ImageDataProvider imgDataProv) {
+    if (!this.isDisposed())
+	dispose();
+    this.genericImage = true;
+	this.imageProvider = new ImageDataProviderWrapper(imgDataProv);
+
+}
+
+/**
+ * constructor with imageData only in order to prevent conversion because of the
+ * device. This constructor is mainly for the usage with Skija. Don't use this
+ *
+ * @param res
+ */
+Image(ImageDataProvider imgDataProvider) {
+    this.genericImage = true;
+	this.imageProvider = new ImageDataProviderWrapper(imgDataProvider);
 }
 }

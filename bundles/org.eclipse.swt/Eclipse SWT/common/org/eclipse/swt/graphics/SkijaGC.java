@@ -1,5 +1,6 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2024 SAP SE and others.
+
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -7,9 +8,6 @@
  * https://www.eclipse.org/legal/epl-2.0/
  *
  * SPDX-License-Identifier: EPL-2.0
- *
- * Contributors:
- *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
@@ -22,7 +20,6 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 
 import io.github.humbleui.skija.*;
-import io.github.humbleui.skija.Canvas;
 import io.github.humbleui.skija.Font;
 import io.github.humbleui.types.*;
 
@@ -35,6 +32,8 @@ public class SkijaGC extends GCHandle {
 	private Font font;
 	private float baseSymbolHeight = 0; // Height of symbol with "usual" height, like "T", to be vertically centered
 	private int lineWidth;
+
+	private static Map<ColorType, int[]> colorTypeMap = null;
 
 	public SkijaGC(org.eclipse.swt.widgets.Control c, int style) {
 
@@ -230,7 +229,7 @@ public class SkijaGC extends GCHandle {
 
 	}
 
-	private static ColorType getSkijaColorType(ImageData imageData) {
+	private static ColorType getColorType(ImageData imageData) {
 		PaletteData palette = imageData.palette;
 
 		if (imageData.getTransparencyType() == SWT.TRANSPARENCY_MASK) {
@@ -246,7 +245,8 @@ public class SkijaGC extends GCHandle {
 				return ColorType.UNKNOWN;
 			}
 
-			if (redMask == 0xFF00000 && greenMask == 0x00FF0000 && blueMask == 0x0000FF00) {
+			if (redMask == 0xFF000000 && greenMask == 0x00FF0000
+					&& blueMask == 0x0000FF00) {
 				return ColorType.RGBA_8888;
 			}
 
@@ -291,65 +291,203 @@ public class SkijaGC extends GCHandle {
 			}
 		}
 
-		// Additional mappings for more complex or less common types
-		// You may need additional logic or assumptions here
-
-		// Fallback for unsupported or unknown types
-		throw new UnsupportedOperationException("Unsupported ColorType");
+		throw new UnsupportedOperationException("Unsupported SWT ColorType: " + Integer.toBinaryString(palette.redMask)
+				+ "__" + Integer.toBinaryString(palette.greenMask) + "__" + Integer.toBinaryString(palette.blueMask));
 	}
 
 	private static io.github.humbleui.skija.Image convertSWTImageToSkijaImage(Image swtImage) {
-		ImageData imageData = swtImage.getImageData(DPIUtil.getDeviceZoom());
+	    ImageData imageData = swtImage.getImageData(DPIUtil.getDeviceZoom());
+	    return convertSWTImageToSkijaImage(imageData);
+	}
+
+
+	    static io.github.humbleui.skija.Image convertSWTImageToSkijaImage(ImageData imageData) {
 
 		int width = imageData.width;
 		int height = imageData.height;
-		ColorType colType = getSkijaColorType(imageData);
+		ColorType colType = getColorType(imageData);
 
-		if (colType.equals(ColorType.UNKNOWN)) {
-			imageData = convertToRGBA(imageData);
+		// always prefer the alphaData. If these are set, the bytes data are empty!!
+		if (colType.equals(ColorType.UNKNOWN) || imageData.alphaData != null) {
+		byte[] bytes = null;
+			bytes = convertToRGBA(imageData);
 			colType = ColorType.RGBA_8888;
-		}
-		ImageInfo imageInfo = new ImageInfo(width, height, ColorType.RGBA_8888, ColorAlphaType.UNPREMUL);
+			ImageInfo imageInfo = new ImageInfo(width, height, colType, ColorAlphaType.UNPREMUL);
+			return io.github.humbleui.skija.Image.makeRasterFromBytes(imageInfo, bytes,
+				imageData.width * 4);
+		    } else {
 
-		return io.github.humbleui.skija.Image.makeRasterFromBytes(imageInfo, imageData.data, imageData.bytesPerLine);
+			ImageInfo imageInfo = new ImageInfo(width, height, colType, ColorAlphaType.UNPREMUL);
+
+
+			return io.github.humbleui.skija.Image.makeRasterFromBytes(imageInfo, imageData.data,
+				imageData.width * 4);
+	    }
 	}
 
-	private static ImageData convertToRGBA(ImageData imageData) {
+	public static byte[] convertToRGBA(ImageData imageData) {
+
 		ImageData transparencyData = imageData.getTransparencyMask();
-		byte[] convertedData = new byte[imageData.data.length];
+		byte[] convertedData = new byte[imageData.width * imageData.height * 4];
+		byte defaultAlpha = (byte)255;
+
+		var source = imageData.data;
+		int bytesPerPixel = source.length / (imageData.width * imageData.height);
+
+		var alphaData = imageData.alphaData;
+		if (imageData.alpha != -1) {
+			defaultAlpha = (byte) imageData.alpha;
+		}
+
+		boolean byteSourceContainsAlpha = bytesPerPixel > 3;
+
 		for (int y = 0; y < imageData.height; y++) {
 			for (int x = 0; x < imageData.width; x++) {
-				byte alpha = (byte) 255;
+
+				int pixel = imageData.getPixel(x, y);
+				int arrayPos = (y * imageData.width + x);
+
+				byte r = (byte) ((pixel & imageData.palette.redMask) >>> -imageData.palette.redShift);
+				byte g = (byte) ((pixel & imageData.palette.greenMask) >>> -imageData.palette.greenShift);
+				byte b = (byte) ((pixel & imageData.palette.blueMask) >>> -imageData.palette.blueShift);
+
+				byte a = (byte)255;
 				if (transparencyData != null) {
-					if (imageData.getTransparencyMask().getPixel(x, y) != 1) {
-						alpha = (byte) 0;
+					if (transparencyData.getPixel(x, y) != 1) {
+						a = (byte) 0;
 					}
 				}
-				int pixel = imageData.getPixel(x, y);
-				byte red = (byte) ((pixel & imageData.palette.redMask) >>> -imageData.palette.redShift);
-				byte green = (byte) ((pixel & imageData.palette.greenMask) >>> -imageData.palette.greenShift);
-				byte blue = (byte) ((pixel & imageData.palette.blueMask) >>> -imageData.palette.blueShift);
 
-				int index = (x + y * imageData.width) * 4;
-				convertedData[index] = red;
-				convertedData[index + 1] = green;
-				convertedData[index + 2] = blue;
-				convertedData[index + 3] = alpha;
+				var index = arrayPos * 4;
+
+				convertedData[index + 0] = (byte) r;
+				convertedData[index + 1] = (byte) g;
+				convertedData[index + 2] = (byte) b;
+				convertedData[index + 3] = (byte) a;
+
+				if (alphaData != null && alphaData.length > arrayPos)
+					convertedData[index + 3] = alphaData[arrayPos];
+				else if (imageData.alpha != -1)
+					convertedData[index + 3] = defaultAlpha;
+				else if(!byteSourceContainsAlpha)
+					convertedData[index + 3] = defaultAlpha;
+
+
 			}
 		}
-		imageData.data = convertedData;
-		return imageData;
+
+		return convertedData;
 	}
 
-	// Funktion zur Konvertierung der Farbe
+	static ImageData convertToSkijaImageData(io.github.humbleui.skija.Image image) {
+
+
+		Bitmap bm = Bitmap.makeFromImage(  image);
+		var colType = bm.getColorType();
+		byte[] alphas = new byte[bm.getHeight() * bm.getWidth()];
+		var source = bm.readPixels();
+		byte[] convertedData = new byte[bm.getHeight() * bm.getWidth() * 3];
+
+		var colorOrder = getPixelOrder(colType);
+
+		// no alphaType handling support. UNPREMUL and OPAQUE should always work.
+//		ColorAlphaType alphaType = bm.getAlphaType();
+
+
+		for (int y = 0; y < bm.getHeight(); y++) {
+		    for (int x = 0; x < bm.getWidth(); x++) {
+				byte alpha = convertAlphaTo255Range(bm.getAlphaf(x, y));
+
+				int index = (x + y * bm.getWidth()) * 4;
+
+				byte red = (byte) source[index + colorOrder[0]];
+				byte green = (byte) source[index + colorOrder[1]];
+				byte blue = (byte) source[index + colorOrder[2]];
+				alpha = (byte) source[index + colorOrder[3]];
+
+				alphas[x + y * bm.getWidth()] = alpha;
+
+				int target = (x + y * bm.getWidth()) * 3;
+
+				convertedData[target + 0] = (byte) (red);
+				convertedData[target + 1] = (byte) (green);
+				convertedData[target + 2] = (byte) (blue);
+
+			}
+		}
+
+		ImageData d = new ImageData(bm.getWidth(), bm.getHeight(), 24,
+				new PaletteData(0xFF0000, 0x00FF00, 0x0000FF));
+		d.data = convertedData;
+		d.alphaData = alphas;
+
+		return d;
+	}
+
+	public static void writeFile(String str, io.github.humbleui.skija.Image image) {
+
+		byte[] imageBytes = EncoderPNG.encode(image).getBytes();
+
+		File f = new File(str);
+		if (f.exists())
+			f.delete();
+
+		try {
+			FileOutputStream fis = new FileOutputStream(f);
+			fis.write(imageBytes);
+			fis.close();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	public static byte convertAlphaTo255Range(float alphaF) {
+		if (alphaF < 0.0f)
+			alphaF = 0.0f;
+		if (alphaF > 1.0f)
+			alphaF = 1.0f;
+
+		return (byte) Math.round(alphaF * 255);
+	}
+
+	public static byte[] convertPremulToUnpremul(byte[] premulColor) {
+		if (premulColor.length != 4) {
+			throw new IllegalArgumentException("Input array must have a length of 4.");
+		}
+
+		int rPremul = premulColor[0] & 0xFF;
+		int gPremul = premulColor[1] & 0xFF;
+		int bPremul = premulColor[2] & 0xFF;
+		int a = premulColor[3] & 0xFF;
+
+		if (a == 0) {
+			// no conversion necessary if alpha is 0
+			return new byte[] { (byte) rPremul, (byte) gPremul, (byte) bPremul, (byte) a };
+		}
+
+		// convert premul -> unpremul
+		int r = (rPremul * 255) / a;
+		int g = (gPremul * 255) / a;
+		int b = (bPremul * 255) / a;
+
+		// Ensure values are within the valid range [0, 255]
+		r = Math.min(255, Math.max(0, r));
+		g = Math.min(255, Math.max(0, g));
+		b = Math.min(255, Math.max(0, b));
+
+		return new byte[] { (byte) r, (byte) g, (byte) b, (byte) a };
+	}
+
 	public static int convertSWTColorToSkijaColor(Color swtColor) {
-		// Extrahieren der RGB-Komponenten
+		// extract RGB-components
 		int red = swtColor.getRed();
 		int green = swtColor.getGreen();
 		int blue = swtColor.getBlue();
 		int alpha = swtColor.getAlpha();
 
-		// Erstellen der Skija-Farbe: ARGB 32-Bit-Farbe
+		// create ARGB 32-Bit-color
 		int skijaColor = (alpha << 24) | (red << 16) | (green << 8) | blue;
 
 		return skijaColor;
@@ -1026,6 +1164,118 @@ public class SkijaGC extends GCHandle {
 	public boolean isDisposed() {
 		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 		return false;
+	}
+
+	static PaletteData getPaletteData(ColorType colorType) {
+	    // Note: RGB values here should be representative of a palette.
+
+	    // TODO test all mappings here
+	    switch (colorType) {
+	    case ALPHA_8:
+		return new PaletteData(new RGB[] { new RGB(255, 255, 255), new RGB(0, 0, 0) });
+	    case RGB_565:
+		return new PaletteData(0xF800, 0x07E0, 0x001F); // Mask for RGB565
+	    case ARGB_4444:
+		return new PaletteData(0x0F00, 0x00F0, 0x000F); // Mask for ARGB4444
+	    case RGBA_8888:
+			var p = new PaletteData(0xFF000000, 0x00FF0000, 0x0000FF00); // Standard RGBA masks
+			return p;
+	    case BGRA_8888:
+			return new PaletteData(0x0000FF00, 0x00FF0000, 0xFF000000);
+	    case RGBA_F16:
+		return new PaletteData(new RGB[] { new RGB(255, 0, 0), // Example red
+			new RGB(0, 255, 0), // Example green
+			new RGB(0, 0, 255) }); // Example blue
+	    case RGBA_F32:
+		return new PaletteData(new RGB[] { new RGB(255, 165, 0), // Example orange
+			new RGB(0, 255, 255), // Example cyan
+			new RGB(128, 0, 128) }); // Example purple
+
+	    default:
+		throw new IllegalArgumentException("Unknown Skija ColorType: " + colorType);
+
+	    }
+	}
+
+	static int getImageDepth(ColorType colorType) {
+
+		// TODO test all mappings
+	    switch (colorType) {
+	    case ALPHA_8:
+		return 8;
+	    case RGB_565:
+		return 16;
+	    case ARGB_4444:
+		return 16;
+	    case RGBA_8888:
+		return 32;
+	    case BGRA_8888:
+		return 32;
+	    case RGBA_F16:
+		// Typically could represent more colors, but SWT doesn't support floating-point
+		// depths.
+		return 64; // This is theoretical; SWT will usually not handle more than 32
+	    case RGBA_F32:
+		// Same as RGBA_F16 with regards to SWT support
+		return 128; // Theoretical; actual handling requires custom treatment
+	    default:
+		throw new IllegalArgumentException("Unknown Skija ColorType: " + colorType);
+	    }
+
+	}
+
+	static ColorAlphaType determineAlphaType(ImageData imageData) {
+
+		// TODO test all mappings
+	    if (imageData.alphaData == null && imageData.alpha == -1) {
+			// no alpha
+		return ColorAlphaType.OPAQUE;
+	    }
+
+	    if (imageData.alphaData != null || imageData.alpha < 255) {
+			// alpha data available
+		return ColorAlphaType.UNPREMUL;
+	    }
+
+	    // usually without additional information
+	    return ColorAlphaType.UNPREMUL;
+	}
+
+	private static Map<ColorType, int[]> createColorTypeMap() {
+	    if (colorTypeMap != null) {
+		return colorTypeMap;
+	    }
+
+	    colorTypeMap = new HashMap<>();
+
+	    // define pixel order for skija ColorType
+	    // what to do if the number of ints is not 4?
+	    colorTypeMap.put(ColorType.ALPHA_8, new int[] { 0 }); // only Alpha
+	    colorTypeMap.put(ColorType.RGB_565, new int[] { 0, 1, 2 }); // RGB
+	    colorTypeMap.put(ColorType.ARGB_4444, new int[] { 1, 2, 3, 0 }); // ARGB
+	    colorTypeMap.put(ColorType.RGBA_8888, new int[] { 0, 1, 2, 3 }); // RGBA
+	    colorTypeMap.put(ColorType.RGB_888X, new int[] { 0, 1, 2, 3 }); // RGB, ignore X
+	    colorTypeMap.put(ColorType.BGRA_8888, new int[] { 2, 1, 0, 3 }); // BGRA
+	    colorTypeMap.put(ColorType.RGBA_1010102, new int[] { 0, 1, 2, 3 }); // RGBA
+	    colorTypeMap.put(ColorType.BGRA_1010102, new int[] { 2, 1, 0, 3 }); // BGRA
+	    colorTypeMap.put(ColorType.RGB_101010X, new int[] { 0, 1, 2, 3 }); // RGB, ignore X
+	    colorTypeMap.put(ColorType.BGR_101010X, new int[] { 2, 1, 0, 3 }); // BGR, ignore X
+	    colorTypeMap.put(ColorType.RGBA_F16NORM, new int[] { 0, 1, 2, 3 }); // RGBA
+	    colorTypeMap.put(ColorType.RGBA_F16, new int[] { 0, 1, 2, 3 }); // RGBA
+	    colorTypeMap.put(ColorType.RGBA_F32, new int[] { 0, 1, 2, 3 }); // RGBA
+	    colorTypeMap.put(ColorType.R8G8_UNORM, new int[] { 0, 1 }); // RG
+	    colorTypeMap.put(ColorType.A16_FLOAT, new int[] { 0 }); // Alpha
+	    colorTypeMap.put(ColorType.R16G16_FLOAT, new int[] { 0, 1 }); // RG
+	    colorTypeMap.put(ColorType.A16_UNORM, new int[] { 0 }); // Alpha
+	    colorTypeMap.put(ColorType.R16G16_UNORM, new int[] { 0, 1 }); // RG
+	    colorTypeMap.put(ColorType.R16G16B16A16_UNORM, new int[] { 0, 1, 2, 3 }); // RGBA
+
+	    return colorTypeMap;
+	}
+
+	public static int[] getPixelOrder(ColorType colorType) {
+	    Map<ColorType, int[]> colorTypeMap = createColorTypeMap();
+	    return colorTypeMap.get(colorType);
 	}
 
 }

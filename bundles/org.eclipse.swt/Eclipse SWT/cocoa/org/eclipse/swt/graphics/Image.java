@@ -136,6 +136,8 @@ public final class Image extends Resource implements Drawable {
 	 */
 	private ImageDataProvider imageDataProvider;
 
+	private boolean genericImage;
+
 	/**
 	 * ImageGcDrawer to provide a callback to draw on a GC for various zoom levels
 	 */
@@ -1257,6 +1259,12 @@ public Color getBackground() {
  */
 public Rectangle getBounds() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+
+	if (this.genericImage) {
+		var imgD = imageDataProvider.getImageData(100);
+		return new Rectangle(0, 0, imgD.width, imgD.height);
+	}
+
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
@@ -1367,6 +1375,9 @@ public ImageData getImageDataAtCurrentZoom() {
  * @since 3.106
  */
 public ImageData getImageData(int zoom) {
+	if (this.genericImage)
+	    return imageDataProvider.getImageData(zoom);
+
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
@@ -1674,6 +1685,9 @@ public void internal_dispose_GC (long hDC, GCData data) {
  */
 @Override
 public boolean isDisposed() {
+	if (this.genericImage)
+		return false;
+
 	return handle == null;
 }
 
@@ -1770,6 +1784,23 @@ public void setBackground(Color color) {
 public String toString () {
 	if (isDisposed()) return "Image {*DISPOSED*}";
 	return "Image {" + handle + "}";
+}
+
+/**
+ * set a new ImageDataProvider.
+ * @param res
+ */
+void setImageDataProvider(ImageDataProvider imgDataProv) {
+    if (!this.isDisposed())
+	dispose();
+
+    this.genericImage = true;
+    this.imageDataProvider = imgDataProv;
+}
+
+Image(ImageDataProvider imgDataProv) {
+    this.genericImage = true;
+    this.imageDataProvider = imgDataProv;
 }
 
 }
