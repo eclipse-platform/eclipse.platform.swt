@@ -884,15 +884,12 @@ public class CTabFolderRenderer {
 		Color originalForeground = gc.getForeground();
 	    int state = closeImageState & (SWT.HOT | SWT.SELECTED | SWT.BACKGROUND);
 	    if (state == SWT.NONE) {
-	        if (showDirtyIndicator) drawDirtyIndicator(gc, closeRect, originalForeground, false);
-	        drawCloseButton(gc, closeRect, false);
+	        if (showDirtyIndicator)
+	        	drawDirtyIndicator(gc, closeRect, originalForeground, false);
+	        else
+	        	drawCloseButton(gc, closeRect, false);
 	    } else if (state == SWT.HOT || state == SWT.SELECTED) {
-			if (showDirtyIndicator) {
-				drawDirtyIndicator(gc, closeRect, originalForeground, true);
-				drawCloseButton(gc, closeRect, false);
-			} else {
-				drawCloseButton(gc, closeRect, true);
-			}
+			drawCloseButton(gc, closeRect, true);
 	    } else if (state == SWT.BACKGROUND) {
 	        if (showDirtyIndicator)
 	        	drawDirtyIndicator(gc, closeRect, originalForeground, false);
@@ -905,15 +902,17 @@ public class CTabFolderRenderer {
 	}
 
 	private void drawDirtyIndicator(GC gc, Rectangle closeRect, Color originalForeground, boolean hot) {
-		Color indicatorColor = hot ? getFillColor() : originalForeground;
-		drawCloseBackground(gc, closeRect, indicatorColor);
+		Color originalBackground = gc.getBackground();
+		gc.setBackground(originalForeground);
+		gc.fillOval(closeRect.x + 3, closeRect.y + 4, closeRect.width - 6, closeRect.height - 6);
+		gc.setBackground(originalBackground);
 	}
 
 	private void drawCloseBackground(GC gc, Rectangle closeRect, Color backgroundColor) {
 		Color originalBackground = gc.getBackground();
 		gc.setBackground(backgroundColor);
 		gc.setForeground(originalBackground);
-		gc.fillRoundRectangle(closeRect.x + 3, closeRect.y + 4, closeRect.width - 5, closeRect.height - 5, 4, 4);
+		gc.fillRoundRectangle(closeRect.x + 1, closeRect.y + 2, closeRect.width - 2, closeRect.height - 2, 4, 4);
 		gc.setBackground(originalBackground);
 	}
 
@@ -925,7 +924,7 @@ public class CTabFolderRenderer {
 			gc.setForeground(gc.getBackground());
 		}
 		// draw X with length of this constant
-		final int lineLength = 6;
+		final int lineLength = 9;
 		int x = closeRect.x + Math.max(1, (closeRect.width-lineLength)/2);
 		int y = closeRect.y + Math.max(1, (closeRect.height-lineLength)/2);
 		y += parent.onBottom ? -1 : 1;
