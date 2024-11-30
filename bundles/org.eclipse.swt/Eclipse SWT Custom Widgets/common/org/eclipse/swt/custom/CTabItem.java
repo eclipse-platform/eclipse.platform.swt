@@ -55,6 +55,7 @@ public class CTabItem extends Item {
 	int closeImageState = SWT.BACKGROUND;
 	int state = SWT.NONE;
 	boolean showClose = false;
+	boolean showDirty = false;
 	boolean showing = false;
 
 /**
@@ -276,6 +277,12 @@ public boolean getShowClose() {
 	checkWidget();
 	return showClose;
 }
+
+public boolean getShowDirty() {
+	checkWidget();
+	return showClose;
+}
+
 /**
  * Returns the receiver's tool tip text, or null if it has
  * not been set.
@@ -490,6 +497,14 @@ public void setShowClose(boolean close) {
 	showClose = close;
 	parent.updateFolder(CTabFolder.REDRAW_TABS);
 }
+
+public void setShowDirty(boolean dirty) {
+	checkWidget();
+	if (showDirty == dirty) return;
+	showDirty = dirty;
+	parent.updateFolder(CTabFolder.REDRAW_TABS);
+}
+
 /**
  * Sets the text to display on the tab.
  * A carriage return '\n' allows to display multi line text.
