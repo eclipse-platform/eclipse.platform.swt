@@ -272,6 +272,10 @@ public class SkijaGC extends GCHandle {
 			if (redMask == 0x000003FF && greenMask == 0x000FFC00 && blueMask == 0x3FF00000) {
 				return ColorType.BGRA_1010102;
 			}
+
+			if (redMask == 0xFF && greenMask == 0xFF00 && blueMask == 0xFF0000) {
+				return ColorType.UNKNOWN;
+			}
 		} else {
 			if (imageData.depth == 8 && palette.colors != null && palette.colors.length <= 256) {
 				return ColorType.ALPHA_8;
