@@ -279,9 +279,10 @@ public boolean getShowClose() {
 }
 
 /**
- * TODO
-
- * @return
+ * Returns <code>true</code> to indicate that the dirty indicator should be shown.
+ * Otherwise return <code>false</code>.
+ *
+ * @return <code>true</code> if the dirty indicatorn should be shown
  *
  * @since 4.35
  */
@@ -506,9 +507,9 @@ public void setShowClose(boolean close) {
 }
 
 /**
- * TODO
+ * Sets to <code>true</code> to indicate that the dirty indicator should be shown.
  *
- * @param dirty
+ * @param dirty the new value whether the dirty indicator shall be shown
  *
  * @since 4.35
  */
