@@ -278,6 +278,13 @@ public boolean getShowClose() {
 	return showClose;
 }
 
+/**
+ * TODO
+
+ * @return
+ *
+ * @since 4.35
+ */
 public boolean getShowDirty() {
 	checkWidget();
 	return showClose;
@@ -498,6 +505,13 @@ public void setShowClose(boolean close) {
 	parent.updateFolder(CTabFolder.REDRAW_TABS);
 }
 
+/**
+ * TODO
+ *
+ * @param dirty
+ *
+ * @since 4.35
+ */
 public void setShowDirty(boolean dirty) {
 	checkWidget();
 	if (showDirty == dirty) return;
