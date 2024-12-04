@@ -4,6 +4,10 @@ This repository is a fork of the original [SWT repository](https://github.com/ec
 
 In the following, you find information about the current state of the prototype and how to try it out. Note that the prototype does currently not provide other/better look and feel or customizability compared to the native widgets. It is supposed to demonstrate feasibility to custom draw widgets based on an efficient rendering engine (as an enabler for improved customizability and look and feel) while seamlessly integrating the custom-drawn widgets with the other, still native widgets. For that reason, the custom-drawn widgets are currently implemented to look similar to the existing widgets they replace, but they could be easily replaced with whatever look and feel is desired.
 
+## How to Contribute
+
+See our [contributing information](CONTRIBUTING.md) to find out how to contribute.
+
 ## Getting Started
 
 To test the prototype, an Eclipse IDE has to be set up and the SWT projects from this repository have to be imported into it to start example applications.
