@@ -1567,6 +1567,44 @@ public void setAlpha (int alpha) {
 }
 
 @Override
+public Rectangle getBounds() {
+	checkWidget ();
+	return getDisplay().translateFromDisplayCoordinates(getBoundsInPixels(), getZoom());
+}
+
+@Override
+public Point getLocation() {
+	checkWidget ();
+	return getDisplay().translateFromDisplayCoordinates(getLocationInPixels(), getZoom());
+}
+
+@Override
+public void setLocation(Point location) {
+	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);
+	checkWidget ();
+	Point locationInPixels = getDisplay().translateToDisplayCoordinates(location, getZoom());
+	setLocationInPixels(locationInPixels.x, locationInPixels.y);
+}
+
+@Override
+public void setLocation(int x, int y) {
+	setLocation(new Point(x, y));
+}
+
+@Override
+public void setBounds(Rectangle rect) {
+	if (rect == null) error (SWT.ERROR_NULL_ARGUMENT);
+	checkWidget ();
+	Rectangle boundsInPixels = getDisplay().translateToDisplayCoordinates(rect, getZoom());
+	setBoundsInPixels(boundsInPixels.x, boundsInPixels.y, boundsInPixels.width, boundsInPixels.height);
+}
+
+@Override
+public void setBounds(int x, int y, int width, int height) {
+	setBounds(new Rectangle(x, y, width, height));
+}
+
+@Override
 void setBoundsInPixels (int x, int y, int width, int height, int flags, boolean defer) {
 	if (fullScreen) setFullScreen (false);
 	/*

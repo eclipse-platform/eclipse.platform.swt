@@ -1686,7 +1686,7 @@ boolean showMenu (int x, int y) {
 
 boolean showMenu (int x, int y, int detail) {
 	Event event = new Event ();
-	Point mappedLocation = getDisplay().translateLocationInPointInDisplayCoordinateSystem(x, y);
+	Point mappedLocation = getDisplay().translateFromDisplayCoordinates(new Point(x, y), getZoom());
 	event.setLocation(mappedLocation.x, mappedLocation.y);
 	event.detail = detail;
 	if (event.detail == SWT.MENU_KEYBOARD) {
