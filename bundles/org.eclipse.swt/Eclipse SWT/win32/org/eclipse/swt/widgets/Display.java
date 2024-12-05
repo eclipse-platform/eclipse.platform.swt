@@ -1704,11 +1704,7 @@ public Control getCursorControl () {
  */
 public Point getCursorLocation () {
 	checkDevice ();
-	Point cursorLocationInPixels = getCursorLocationInPixels();
-	if (isRescalingAtRuntime()) {
-		return translateLocationInPointInDisplayCoordinateSystem(cursorLocationInPixels.x, cursorLocationInPixels.y);
-	}
-	return DPIUtil.autoScaleDown(cursorLocationInPixels);
+	return DPIUtil.autoScaleDown(getCursorLocationInPixels());
 }
 
 Point getCursorLocationInPixels () {
@@ -2187,21 +2183,14 @@ Monitor getMonitor (long hmonitor) {
 	OS.GetMonitorInfo (hmonitor, lpmi);
 	Monitor monitor = new Monitor ();
 	monitor.handle = hmonitor;
-	Rectangle boundsInPixels = new Rectangle(lpmi.rcMonitor_left, lpmi.rcMonitor_top, lpmi.rcMonitor_right - lpmi.rcMonitor_left,lpmi.rcMonitor_bottom - lpmi.rcMonitor_top);
-	Rectangle clientAreaInPixels = new Rectangle(lpmi.rcWork_left, lpmi.rcWork_top, lpmi.rcWork_right - lpmi.rcWork_left, lpmi.rcWork_bottom - lpmi.rcWork_top);
+	Rectangle boundsInPixels = new Rectangle (lpmi.rcMonitor_left, lpmi.rcMonitor_top, lpmi.rcMonitor_right - lpmi.rcMonitor_left,lpmi.rcMonitor_bottom - lpmi.rcMonitor_top);
+	monitor.setBounds (DPIUtil.autoScaleDown (boundsInPixels));
+	Rectangle clientAreaInPixels = new Rectangle (lpmi.rcWork_left, lpmi.rcWork_top, lpmi.rcWork_right - lpmi.rcWork_left, lpmi.rcWork_bottom - lpmi.rcWork_top);
+	monitor.setClientArea (DPIUtil.autoScaleDown (clientAreaInPixels));
 	int [] dpiX = new int[1];
 	int [] dpiY = new int[1];
 	int result = OS.GetDpiForMonitor (monitor.handle, OS.MDT_EFFECTIVE_DPI, dpiX, dpiY);
 	result = (result == OS.S_OK) ? DPIUtil.mapDPIToZoom (dpiX[0]) : 100;
-
-	if (DPIUtil.isAutoScaleOnRuntimeActive()) {
-		int autoscaleZoom = DPIUtil.getZoomForAutoscaleProperty(result);
-		monitor.setBounds(getMonitorBoundsInPointsInDisplayCoordinateSystem(boundsInPixels, autoscaleZoom));
-		monitor.setClientArea(getMonitorBoundsInPointsInDisplayCoordinateSystem(clientAreaInPixels, autoscaleZoom));
-	} else {
-		monitor.setBounds(DPIUtil.autoScaleDown(boundsInPixels));
-		monitor.setClientArea(DPIUtil.autoScaleDown(clientAreaInPixels));
-	}
 	if (result == 0) {
 		System.err.println("***WARNING: GetDpiForMonitor: SWT could not get valid monitor scaling factor.");
 		result = 100;
@@ -2212,13 +2201,6 @@ Monitor getMonitor (long hmonitor) {
 	 */
 	monitor.zoom = result;
 	return monitor;
-}
-
-private Rectangle getMonitorBoundsInPointsInDisplayCoordinateSystem(Rectangle boundsInPixels, int zoom) {
-	Rectangle bounds = DPIUtil.scaleDown(boundsInPixels, zoom);
-	bounds.x = boundsInPixels.x;
-	bounds.y = boundsInPixels.y;
-	return bounds;
 }
 
 /**
@@ -2962,9 +2944,6 @@ boolean isValidThread () {
 public Point map (Control from, Control to, Point point) {
 	checkDevice ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (isRescalingAtRuntime()) {
-		return map(from, to, point.x, point.y);
-	}
 	int zoom = getZoomLevelForMapping(from, to);
 	point = DPIUtil.scaleUp(point, zoom);
 	return DPIUtil.scaleDown(mapInPixels(from, to, point), zoom);
@@ -3012,20 +2991,6 @@ Point mapInPixels (Control from, Control to, Point point) {
  */
 public Point map (Control from, Control to, int x, int y) {
 	checkDevice ();
-	if (isRescalingAtRuntime()) {
-		Point mappedPointInPoints;
-		if (from == null) {
-			Point mappedPointInpixels = mapInPixels(from, to, getPixelsFromPoint(to.getShell().getMonitor(), x, y));
-			mappedPointInPoints = DPIUtil.scaleDown(mappedPointInpixels, to.getZoom());
-		} else if (to == null) {
-			Point mappedPointInpixels = mapInPixels(from, to, DPIUtil.scaleUp(new Point(x, y), from.getZoom()));
-			mappedPointInPoints = getPointFromPixels(from.getShell().getMonitor(), mappedPointInpixels.x, mappedPointInpixels.y);
-		} else {
-			Point mappedPointInpixels = mapInPixels(from, to, DPIUtil.scaleUp(new Point(x, y), from.getZoom()));
-			mappedPointInPoints = DPIUtil.scaleDown(mappedPointInpixels, to.getZoom());
-		}
-		return mappedPointInPoints;
-	}
 	int zoom = getZoomLevelForMapping(from, to);
 	x = DPIUtil.scaleUp(x, zoom);
 	y = DPIUtil.scaleUp(y, zoom);
@@ -3093,9 +3058,6 @@ private int getZoomLevelForMapping(Control from, Control to) {
 public Rectangle map (Control from, Control to, Rectangle rectangle) {
 	checkDevice ();
 	if (rectangle == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (isRescalingAtRuntime()) {
-		return map(from, to, rectangle.x, rectangle.y, rectangle.width, rectangle.height);
-	}
 	int zoom = getZoomLevelForMapping(from, to);
 	rectangle = DPIUtil.scaleUp(rectangle, zoom);
 	return DPIUtil.scaleDown(mapInPixels(from, to, rectangle), zoom);
@@ -3145,20 +3107,6 @@ Rectangle mapInPixels (Control from, Control to, Rectangle rectangle) {
  */
 public Rectangle map (Control from, Control to, int x, int y, int width, int height) {
 	checkDevice ();
-	if (isRescalingAtRuntime()) {
-		Rectangle mappedRectangleInPoints;
-		if (from == null) {
-			Rectangle mappedRectangleInPixels = mapInPixels(from, to, translateRectangleInPixelsInDisplayCoordinateSystem(x, y, width, height, to.getShell().getMonitor()));
-			mappedRectangleInPoints = DPIUtil.scaleDown(mappedRectangleInPixels, to.getZoom());
-		} else if (to == null) {
-			Rectangle mappedRectangleInPixels = mapInPixels(from, to, DPIUtil.scaleUp(new Rectangle(x, y, width, height), from.getZoom()));
-			mappedRectangleInPoints = translateRectangleInPointsInDisplayCoordinateSystem(mappedRectangleInPixels.x, mappedRectangleInPixels.y, mappedRectangleInPixels.width, mappedRectangleInPixels.height, from.getShell().getMonitor());
-		} else {
-			Rectangle mappedRectangleInPixels = mapInPixels(from, to, DPIUtil.scaleUp(new Rectangle(x, y, width, height), from.getZoom()));
-			mappedRectangleInPoints = DPIUtil.scaleDown(mappedRectangleInPixels, to.getZoom());
-		}
-		return mappedRectangleInPoints;
-	}
 	int zoom = getZoomLevelForMapping(from, to);
 	x = DPIUtil.scaleUp(x, zoom);
 	y = DPIUtil.scaleUp(y, zoom);
@@ -3180,57 +3128,6 @@ Rectangle mapInPixels (Control from, Control to, int x, int y, int width, int he
 	rect.bottom = y + height;
 	OS.MapWindowPoints (hwndFrom, hwndTo, rect, 2);
 	return new Rectangle (rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
-}
-
-Point translateLocationInPixelsInDisplayCoordinateSystem(int x, int y) {
-	Monitor monitor = getContainingMonitor(x, y);
-	return getPixelsFromPoint(monitor, x, y);
-}
-
-Point translateLocationInPointInDisplayCoordinateSystem(int x, int y) {
-	Monitor monitor = getContainingMonitorInPixelsCoordinate(x, y);
-	return getPointFromPixels(monitor, x, y);
-}
-
-Rectangle translateRectangleInPixelsInDisplayCoordinateSystemByContainment(int x, int y, int width, int height) {
-	Monitor monitorByLocation = getContainingMonitor(x, y);
-	Monitor monitorByContainment = getContainingMonitor(x, y, width, height);
-	return translateRectangleInPixelsInDisplayCoordinateSystem(x, y, width, height, monitorByLocation, monitorByContainment);
-}
-
-private Rectangle translateRectangleInPixelsInDisplayCoordinateSystem(int x, int y, int width, int height, Monitor monitor) {
-	return translateRectangleInPixelsInDisplayCoordinateSystem(x, y, width, height, monitor, monitor);
-}
-
-private Rectangle translateRectangleInPixelsInDisplayCoordinateSystem(int x, int y, int width, int height, Monitor monitorOfLocation, Monitor monitorOfArea) {
-	Point topLeft = getPixelsFromPoint(monitorOfLocation, x, y);
-	int zoom = getApplicableMonitorZoom(monitorOfArea);
-	int widthInPixels = DPIUtil.scaleUp(width, zoom);
-	int heightInPixels = DPIUtil.scaleUp(height, zoom);
-	return new Rectangle(topLeft.x, topLeft.y, widthInPixels, heightInPixels);
-}
-
-Rectangle translateRectangleInPointsInDisplayCoordinateSystemByContainment(int x, int y, int widthInPixels, int heightInPixels) {
-	Monitor monitorByLocation = getContainingMonitor(x, y);
-	Monitor monitorByContainment = getContainingMonitor(x, y, widthInPixels, heightInPixels);
-	return translateRectangleInPointsInDisplayCoordinateSystem(x, y, widthInPixels, heightInPixels, monitorByLocation, monitorByContainment);
-}
-
-private Rectangle translateRectangleInPointsInDisplayCoordinateSystem(int x, int y, int widthInPixels, int heightInPixels, Monitor monitor) {
-	return translateRectangleInPointsInDisplayCoordinateSystem(x, y, widthInPixels, heightInPixels, monitor, monitor);
-}
-
-
-private Rectangle translateRectangleInPointsInDisplayCoordinateSystem(int x, int y, int widthInPixels, int heightInPixels, Monitor monitorOfLocation, Monitor monitorOfArea) {
-	Point topLeft = getPointFromPixels(monitorOfLocation, x, y);
-	int zoom = getApplicableMonitorZoom(monitorOfArea);
-	int width = DPIUtil.scaleDown(widthInPixels, zoom);
-	int height = DPIUtil.scaleDown(heightInPixels, zoom);
-	return new Rectangle(topLeft.x, topLeft.y, width, height);
-}
-
-private int getApplicableMonitorZoom(Monitor monitor) {
-	return DPIUtil.getZoomForAutoscaleProperty(isRescalingAtRuntime() ? monitor.zoom : getDeviceZoom());
 }
 
 long messageProc (long hwnd, long msg, long wParam, long lParam) {
@@ -4458,12 +4355,7 @@ public void sendPostExternalEventDispatchEvent () {
  */
 public void setCursorLocation (int x, int y) {
 	checkDevice ();
-	if (isRescalingAtRuntime()) {
-		Point cursorLocationInPixels = translateLocationInPixelsInDisplayCoordinateSystem(x, y);
-		setCursorLocationInPixels (cursorLocationInPixels.x, cursorLocationInPixels.y);
-	} else {
-		setCursorLocationInPixels (DPIUtil.autoScaleUp (x), DPIUtil.autoScaleUp (y));
-	}
+	setCursorLocationInPixels (DPIUtil.autoScaleUp (x), DPIUtil.autoScaleUp (y));
 }
 
 void setCursorLocationInPixels (int x, int y) {
@@ -5498,63 +5390,4 @@ private boolean setDPIAwareness(int desiredDpiAwareness) {
 	return true;
 }
 
-private Monitor getContainingMonitor(int x, int y) {
-	Monitor[] monitors = getMonitors();
-	for (Monitor currentMonitor : monitors) {
-		Rectangle clientArea = currentMonitor.getClientArea();
-		if (clientArea.contains(x, y)) {
-			return currentMonitor;
-		}
-	}
-	return getPrimaryMonitor();
-}
-
-private Monitor getContainingMonitor(int x, int y, int width, int height) {
-	Rectangle rectangle = new Rectangle(x, y, width, height);
-	Monitor[] monitors = getMonitors();
-	Monitor selectedMonitor = getPrimaryMonitor();
-	int highestArea = 0;
-	for (Monitor currentMonitor : monitors) {
-		Rectangle clientArea = currentMonitor.getClientArea();
-		Rectangle intersection = clientArea.intersection(rectangle);
-		int area = intersection.width * intersection.height;
-		if (area > highestArea) {
-			selectedMonitor = currentMonitor;
-			highestArea = area;
-		}
-	}
-	return selectedMonitor;
-}
-
-private Monitor getContainingMonitorInPixelsCoordinate(int xInPixels, int yInPixels) {
-	Monitor[] monitors = getMonitors();
-	for (Monitor current : monitors) {
-		Rectangle clientArea = getMonitorClientAreaInPixels(current);
-		if (clientArea.contains(xInPixels, yInPixels)) {
-			return current;
-		}
-	}
-	return getPrimaryMonitor();
-}
-
-private Rectangle getMonitorClientAreaInPixels(Monitor monitor) {
-	int zoom = getApplicableMonitorZoom(monitor);
-	int widthInPixels = DPIUtil.scaleUp(monitor.clientWidth, zoom);
-	int heightInPixels = DPIUtil.scaleUp(monitor.clientHeight, zoom);
-	return new Rectangle(monitor.clientX, monitor.clientY, widthInPixels, heightInPixels);
-}
-
-private Point getPixelsFromPoint(Monitor monitor, int x, int y) {
-	int zoom = getApplicableMonitorZoom(monitor);
-	int mappedX = DPIUtil.scaleUp(x - monitor.clientX, zoom) + monitor.clientX;
-	int mappedY = DPIUtil.scaleUp(y - monitor.clientY, zoom) + monitor.clientY;
-	return new Point(mappedX, mappedY);
-}
-
-private Point getPointFromPixels(Monitor monitor, int x, int y) {
-	int zoom = getApplicableMonitorZoom(monitor);
-	int mappedX = DPIUtil.scaleDown(x - monitor.clientX, zoom) + monitor.clientX;
-	int mappedY = DPIUtil.scaleDown(y - monitor.clientY, zoom) + monitor.clientY;
-	return new Point(mappedX, mappedY);
-}
 }
