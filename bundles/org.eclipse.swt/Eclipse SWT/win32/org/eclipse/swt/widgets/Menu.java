@@ -1225,8 +1225,8 @@ void setLocationInPixels (int x, int y) {
 public void setLocation (Point location) {
 	checkWidget ();
 	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);
-	location = getDisplay().translateLocationInPixelsInDisplayCoordinateSystem(location.x, location.y);
-	setLocationInPixels(location.x, location.y);
+	Point locationInPixels = getDisplay().translateToDisplayCoordinates(location, getZoom());
+	setLocationInPixels(locationInPixels.x, locationInPixels.y);
 }
 
 /**
