@@ -1568,52 +1568,40 @@ public void setAlpha (int alpha) {
 
 @Override
 public Rectangle getBounds() {
-	if (getDisplay().isRescalingAtRuntime()) {
-		Rectangle boundsInPixels = getBoundsInPixels();
-		return display.translateRectangleInPointsInDisplayCoordinateSystemByContainment(boundsInPixels.x, boundsInPixels.y, boundsInPixels.width, boundsInPixels.height);
-	}
-	return super.getBounds();
+	checkWidget ();
+	return getDisplay().translateFromDisplayCoordinates(getBoundsInPixels(), getZoom());
 }
 
 @Override
 public Point getLocation() {
-	if (getDisplay().isRescalingAtRuntime()) {
-		Point locationInPixels = getLocationInPixels();
-		return display.translateLocationInPointInDisplayCoordinateSystem(locationInPixels.x, locationInPixels.y);
-	}
-	return super.getLocation();
+	checkWidget ();
+	return getDisplay().translateFromDisplayCoordinates(getLocationInPixels(), getZoom());
 }
 
 @Override
 public void setLocation(Point location) {
 	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setLocation(location.x, location.y);
+	checkWidget ();
+	Point locationInPixels = getDisplay().translateToDisplayCoordinates(location, getZoom());
+	setLocationInPixels(locationInPixels.x, locationInPixels.y);
 }
 
 @Override
 public void setLocation(int x, int y) {
-	if (getDisplay().isRescalingAtRuntime()) {
-		Point location = display.translateLocationInPixelsInDisplayCoordinateSystem(x, y);
-		setLocationInPixels(location.x, location.y);
-	} else {
-		super.setLocation(x, y);
-	}
+	setLocation(new Point(x, y));
 }
 
 @Override
 public void setBounds(Rectangle rect) {
 	if (rect == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setBounds(rect.x, rect.y, rect.width, rect.height);
+	checkWidget ();
+	Rectangle boundsInPixels = getDisplay().translateToDisplayCoordinates(rect, getZoom());
+	setBoundsInPixels(boundsInPixels.x, boundsInPixels.y, boundsInPixels.width, boundsInPixels.height);
 }
 
 @Override
 public void setBounds(int x, int y, int width, int height) {
-	if (getDisplay().isRescalingAtRuntime()) {
-		Rectangle boundsInPixels = display.translateRectangleInPixelsInDisplayCoordinateSystemByContainment(x, y, width, height);
-		setBoundsInPixels(boundsInPixels.x, boundsInPixels.y, boundsInPixels.width, boundsInPixels.height);
-	} else {
-		super.setBounds(x, y, width, height);
-	}
+	setBounds(new Rectangle(x, y, width, height));
 }
 
 @Override
