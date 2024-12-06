@@ -98,6 +98,10 @@ Information regarding source code management, builds, coding standards, and more
 
 - <https://projects.eclipse.org/projects/eclipse.platform.swt/developer>
 
+Also see in the SWT section of the Eclipse FAQ for more background information about SWT.
+
+- <https://github.com/eclipse-platform/eclipse.platform/blob/master/docs/FAQ/The_Official_Eclipse_FAQs.md#standard-widget-toolkit-swt>
+
 ## Contributor License Agreement
 
 Before your contribution can be accepted by the project, you need to create and electronically sign the Eclipse Foundation Contributor License Agreement (CLA).
