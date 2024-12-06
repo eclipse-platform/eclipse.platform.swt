@@ -269,7 +269,7 @@ int applyThemeBackground () {
 }
 
 @Override
-Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
+public Point computeSize(int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
@@ -282,7 +282,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	 * based on the number of items in the table
 	 */
 	if (size.y == 0 && hHint == SWT.DEFAULT) {
-		size.y = getItemCount() * getItemHeightInPixels();
+		size.y = getItemCount() * getItemHeight();
 	}
 
 	/*
@@ -291,7 +291,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	 * so need to assign default height
 	 */
 	if (size.y == 0 && hHint == SWT.DEFAULT) size.y = DEFAULT_HEIGHT;
-	Rectangle trim = computeTrimInPixels (0, 0, size.x, size.y);
+	Rectangle trim = computeTrim(0, 0, size.x, size.y);
 	size.x = trim.width;
 	size.y = trim.height;
 	return size;
@@ -543,12 +543,6 @@ public int getItemCount () {
  */
 public int getItemHeight () {
 	checkWidget();
-	return DPIUtil.autoScaleDown(getItemHeightInPixels());
-}
-
-int getItemHeightInPixels() {
-	checkWidget();
-
 	final int BASE_ITEM_PADDING = 1;
 
 	int[] h = new int [1];
