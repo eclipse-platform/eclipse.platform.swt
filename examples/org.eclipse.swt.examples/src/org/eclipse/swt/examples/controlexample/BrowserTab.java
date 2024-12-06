@@ -49,6 +49,7 @@ class BrowserTab extends Tab {
 	/* Style widgets added to the "Style" group */
 	Button webKitButton;
 	Button edgeButton;
+	Button ieButton;
 
 	String errorMessage, lastText, lastUrl;
 
@@ -94,6 +95,7 @@ class BrowserTab extends Tab {
 		if (borderButton.getSelection ()) style |= SWT.BORDER;
 		if (webKitButton.getSelection ()) style |= SWT.WEBKIT;
 		if (edgeButton.getSelection ()) style |= SWT.EDGE;
+		if (ieButton.getSelection ()) style |= SWT.IE;
 
 		/* Create the example widgets */
 		try {
@@ -168,6 +170,8 @@ class BrowserTab extends Tab {
 		webKitButton.setText ("SWT.WEBKIT");
 		edgeButton = new Button (styleGroup, SWT.RADIO);
 		edgeButton.setText ("SWT.EDGE");
+		ieButton = new Button (styleGroup, SWT.RADIO);
+		ieButton.setText ("SWT.IE");
 		borderButton = new Button (styleGroup, SWT.CHECK);
 		borderButton.setText ("SWT.BORDER");
 	}
@@ -345,6 +349,7 @@ class BrowserTab extends Tab {
 		super.setExampleWidgetState ();
 		webKitButton.setSelection (browser == null ? false : (browser.getStyle () & SWT.WEBKIT) != 0);
 		edgeButton.setSelection (browser == null ? false : (browser.getStyle () & SWT.EDGE) != 0);
+		ieButton.setSelection (browser == null ? false : (browser.getStyle () & SWT.IE) != 0);
 		borderButton.setSelection (browser == null ? false : (browser.getStyle () & SWT.BORDER) != 0);
 	}
 }
