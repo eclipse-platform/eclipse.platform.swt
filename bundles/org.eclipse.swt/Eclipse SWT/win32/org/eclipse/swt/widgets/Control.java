@@ -3686,9 +3686,9 @@ public void setRedraw (boolean redraw) {
 }
 
 private boolean embedsWin32Control () {
-	if (this instanceof Browser) {
+	if (this instanceof Browser browser) {
 		// The Edge browser embeds webView2
-		return (getStyle() & SWT.EDGE) != 0;
+		return "edge".equals(browser.getBrowserType());
 	}
 
 	if (this instanceof OleClientSite) {
