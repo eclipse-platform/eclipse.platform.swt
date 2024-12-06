@@ -2564,8 +2564,6 @@ public class SWT {
 	/**
 	 * Style constant specifying that a Browser should use Edge (WebView2)
 	 * for rendering its content (value is 1&lt;&lt;18).
-	 * <p>NOTE: Edge integration is experimental, it isn't a drop-in replacement
-	 * for Internet Explorer.</p>
 	 * <p><b>Used By:</b></p>
 	 * <ul>
 	 * <li><code>Browser</code></li>
@@ -2574,6 +2572,18 @@ public class SWT {
 	 * @since 3.116
 	 */
 	public static final int EDGE = 1 << 18;
+
+	/**
+	 * Style constant specifying that a Browser should use Internet Explorer
+	 * for rendering its content (value is 1&lt;&lt;19).
+	 * <p><b>Used By:</b></p>
+	 * <ul>
+	 * <li><code>Browser</code></li>
+	 * </ul>
+	 *
+	 * @since 3.129
+	 */
+	public static final int IE = 1 << 19;
 
 	/**
 	 * Style constant for balloon behavior (value is 1&lt;&lt;12).
