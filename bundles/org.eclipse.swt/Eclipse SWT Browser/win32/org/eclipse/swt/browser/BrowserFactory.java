@@ -19,13 +19,13 @@ class BrowserFactory {
 
 WebBrowser createWebBrowser (int style) {
 	// This function can't throw, otherwise the Browser will be left in inconsistent state.
-	if ((style & SWT.EDGE) != 0) {
+	if ((style & SWT.IE) != 0) {
 		try {
-			return new Edge();
+			return new IE();
 		} catch (SWTError e) {
 			System.err.println(e);
 		}
 	}
-	return new IE ();
+	return new Edge ();
 }
 }
