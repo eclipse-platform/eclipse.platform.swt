@@ -30,13 +30,26 @@ public static void main (String [] args) {
 	Display display = new Display ();
 	final Shell shell = new Shell (display);
 	shell.setText("Snippet 99");
-	shell.addListener (SWT.Close, event -> {
-		MessageBox messageBox = new MessageBox(shell, SWT.ICON_QUESTION | SWT.YES | SWT.NO);
-		messageBox.setText("Information");
-		messageBox.setMessage("Close the shell?");
-		messageBox.setButtonLabels(Map.of(SWT.YES, "Close"));
-		event.doit = messageBox.open () == SWT.YES;
-	});
+	// Listener for when the shell close button is clicked
+    shell.addListener (SWT.Close, event -> {
+        if (!shell.isDisposed()) {
+            MessageBox messageBox = new MessageBox(shell, SWT.ICON_QUESTION | SWT.YES | SWT.NO);
+            messageBox.setText("Information");
+            messageBox.setMessage("Close the shell?");
+            messageBox.setButtonLabels(Map.of(SWT.YES, "Close"));
+            event.doit = messageBox.open () == SWT.YES;
+        }
+    });
+    // Dispose listener to implement Cmd+Q (on macOS)
+    display.addListener(SWT.Dispose, event -> {
+        if (!shell.isDisposed()) {
+            MessageBox messageBox = new MessageBox(shell, SWT.ICON_QUESTION | SWT.YES | SWT.NO);
+            messageBox.setText("Information");
+            messageBox.setMessage("Close the application?");
+            messageBox.setButtonLabels(Map.of(SWT.YES, "Close"));
+            event.doit = messageBox.open() == SWT.YES;
+        }
+    });
 	shell.pack ();
 	shell.open();
 	while (!shell.isDisposed ()) {
