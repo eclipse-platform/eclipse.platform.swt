@@ -695,6 +695,12 @@ void setupBrowser(int hr, long pv) {
 	// initialized, nothing is drawn on the shell. We need browserResize to force
 	// the shell to draw itself again.
 	browserResize(new Event());
+
+	// Check whether the browser was made the focus control while we were
+	// initializing the runtime and apply it accordingly.
+	if (browser.isFocusControl()) {
+		browserFocusIn(new Event());
+	}
 }
 
 void browserDispose(Event event) {

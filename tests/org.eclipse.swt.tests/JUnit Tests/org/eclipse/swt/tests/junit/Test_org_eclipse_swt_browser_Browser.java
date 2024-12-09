@@ -73,10 +73,13 @@ import org.eclipse.swt.browser.TitleListener;
 import org.eclipse.swt.browser.VisibilityWindowAdapter;
 import org.eclipse.swt.browser.VisibilityWindowListener;
 import org.eclipse.swt.browser.WindowEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Rule;
@@ -2575,6 +2578,41 @@ public void test_BrowserFunction_multiprocess() {
 	browser2.dispose();
 }
 
+@Test
+public void test_TabTraversalOutOfBrowser() {
+	assumeFalse("Not currently working on macOS, see https://github.com/eclipse-platform/eclipse.platform.swt/issues/1644", SwtTestUtil.isCocoa);
+	assumeFalse("Not currently working on Linux, see https://github.com/eclipse-platform/eclipse.platform.swt/issues/1644", SwtTestUtil.isGTK);
+
+	Text text = new Text(shell, SWT.NONE);
+
+	// open and immediately set focus. this test therefore also covers
+	// https://github.com/eclipse-platform/eclipse.platform.swt/issues/1640
+	shell.open();
+	browser.forceFocus();
+
+	// wait for browser to fully load
+	AtomicBoolean changedFired = new AtomicBoolean(false);
+	browser.addLocationListener(changedAdapter(e ->	changedFired.set(true)));
+	browser.setText("Hello world");
+	assertTrue("LocationListener.changed() event was never fired", waitForPassCondition(changedFired::get));
+
+	// browser should have focus
+	assertTrue(browser.isFocusControl());
+	assertFalse(text.isFocusControl());
+
+	// send tab key via low-level event -> focus should move to Text control
+	AtomicBoolean textGainedFocus = new AtomicBoolean(false);
+	text.addFocusListener(FocusListener.focusGainedAdapter(e -> textGainedFocus.set(true)));
+	Event event = new Event();
+	event.type = SWT.KeyDown;
+	event.keyCode = SWT.TAB;
+	Display.getDefault().post(event);
+
+	// focus should move to Text
+	assertTrue("Text did not gain focus", waitForPassCondition(textGainedFocus::get));
+	assertFalse(browser.isFocusControl());
+	assertTrue(text.isFocusControl());
+}
 
 /* custom */
 /**
