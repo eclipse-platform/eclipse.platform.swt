@@ -331,7 +331,39 @@ public ImageData(int width, int height, int depth, PaletteData palette, int scan
  * @see ImageLoader#load(InputStream)
  */
 public ImageData(InputStream stream) {
-	ImageData[] data = ImageDataLoader.load(stream);
+	this(stream, 0);
+}
+
+/**
+ * Constructs an <code>ImageData</code> loaded from the specified
+ * input stream. Throws an error if an error occurs while loading
+ * the image, or if the image has an unsupported type.  Application
+ * code is still responsible for closing the input stream.
+ * <p>
+ * This constructor is provided for convenience when loading a single
+ * image only. If the stream contains multiple images, only the first
+ * one will be loaded. To load multiple images, use
+ * <code>ImageLoader.load()</code>.
+ * </p>
+ *
+ * @param stream the input stream to load the image from (must not be null)
+ * @param zoom the zoom factor to apply when rasterizing a SVG.
+ * A value of 0 means that the standard method for loading should be used.
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the stream is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_IO - if an IO error occurs while reading from the stream</li>
+ *    <li>ERROR_INVALID_IMAGE - if the image stream contains invalid data</li>
+ *    <li>ERROR_UNSUPPORTED_FORMAT - if the image stream contains an unrecognized format</li>
+ * </ul>
+ *
+ * @see ImageLoader#load(InputStream)
+ * @since 3.129
+ */
+public ImageData(InputStream stream, int zoom) {
+	ImageData[] data = ImageDataLoader.load(stream, zoom);
 	if (data.length < 1) SWT.error(SWT.ERROR_INVALID_IMAGE);
 	ImageData i = data[0];
 	setAllFields(
@@ -377,7 +409,36 @@ public ImageData(InputStream stream) {
  * </ul>
  */
 public ImageData(String filename) {
-	ImageData[] data = ImageDataLoader.load(filename);
+	this(filename, 0);
+}
+
+/**
+ * Constructs an <code>ImageData</code> loaded from a file with the
+ * specified name. Throws an error if an error occurs loading the
+ * image, or if the image has an unsupported type.
+ * <p>
+ * This constructor is provided for convenience when loading a single
+ * image only. If the file contains multiple images, only the first
+ * one will be loaded. To load multiple images, use
+ * <code>ImageLoader.load()</code>.
+ * </p>
+ *
+ * @param filename the name of the file to load the image from (must not be null)
+ * @param zoom the zoom factor to apply when rasterizing a SVG.
+ * A value of 0 means that the standard method for loading should be used.
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the file name is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_IO - if an IO error occurs while reading from the file</li>
+ *    <li>ERROR_INVALID_IMAGE - if the image file contains invalid data</li>
+ *    <li>ERROR_UNSUPPORTED_FORMAT - if the image file contains an unrecognized format</li>
+ * </ul>
+ *
+ * @since 3.129
+ */
+public ImageData(String filename, int zoom) {
+	ImageData[] data = ImageDataLoader.load(filename, zoom);
 	if (data.length < 1) SWT.error(SWT.ERROR_INVALID_IMAGE);
 	ImageData i = data[0];
 	setAllFields(
