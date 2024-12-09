@@ -33,6 +33,7 @@ public class PatternWin32ManualTest {
 	private static Display display = Display.getDefault();
 
 	public static void main (String [] args) {
+		@SuppressWarnings("restriction")
 		int zoom = DPIUtil.getDeviceZoom();
 		int scalingFactor = 3;
 		int scaledZoom = zoom * scalingFactor;
