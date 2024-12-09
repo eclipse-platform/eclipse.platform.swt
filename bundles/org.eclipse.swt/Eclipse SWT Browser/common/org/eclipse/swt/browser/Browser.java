@@ -182,10 +182,10 @@ static int checkStyle(int style) {
 				if (current.equalsIgnoreCase ("webkit")) { //$NON-NLS-1$
 					DefaultType = SWT.WEBKIT;
 					break;
+				} else if (current.equalsIgnoreCase ("ie") && "win32".equals (platform)) { //$NON-NLS-1$ //$NON-NLS-2$
+					DefaultType = SWT.IE;
 				} else if (current.equalsIgnoreCase ("edge") && "win32".equals (platform)) { //$NON-NLS-1$ //$NON-NLS-2$
 					DefaultType = SWT.EDGE;
-				} else if (current.equalsIgnoreCase ("ie") && "win32".equals (platform)) { //$NON-NLS-1$ //$NON-NLS-2$
-					DefaultType = SWT.NONE;
 					break;
 				}
 				index = newIndex + 1;
@@ -196,7 +196,7 @@ static int checkStyle(int style) {
 		}
 	}
 	/* If particular backend isn't specified, use the value from the system property. */
-	if ((style & (SWT.WEBKIT | SWT.EDGE)) == 0) {
+	if ((style & (SWT.WEBKIT | SWT.IE | SWT.EDGE)) == 0) {
 		style |= DefaultType;
 	}
 	if ("win32".equals (platform) && (style & SWT.EDGE) != 0) { //$NON-NLS-1$
