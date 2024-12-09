@@ -1726,10 +1726,15 @@ public Object getLayoutData () {
 }
 
 /**
- * Returns a point describing the receiver's location relative
- * to its parent in points (or its display if its parent is null), unless
- * the receiver is a shell. In this case, the point is
- * relative to the display.
+ * Returns a point describing the receiver's location relative to its parent in
+ * points (or its display if its parent is null), unless the receiver is a
+ * shell. In this case, the point is usually relative to the display.
+ * <p>
+ * <b>Warning:</b> When executing this operation on a shell, it may not yield a
+ * value with the expected meaning on some platforms. For example, executing
+ * this operation on a shell when the environment uses the Wayland protocol, the
+ * result is <b>not</b> a coordinate relative to the display. It will not change
+ * when moving the shell.
  *
  * @return the receiver's location
  *
@@ -3974,11 +3979,14 @@ public void setLayoutData (Object layoutData) {
 }
 
 /**
- * Sets the receiver's location to the point specified by
- * the arguments which are relative to the receiver's
- * parent (or its display if its parent is null), unless
- * the receiver is a shell. In this case, the point is
- * relative to the display.
+ * Sets the receiver's location to the point specified by the arguments which
+ * are relative to the receiver's parent (or its display if its parent is null),
+ * unless the receiver is a shell. In this case, the point is relative to the
+ * display.
+ * <p>
+ * <b>Warning:</b> When executing this operation on a shell, it may not have the
+ * intended effect on some platforms. For example, executing this operation on a
+ * shell when the environment uses the Wayland protocol, nothing will happen.
  *
  * @param x the new x coordinate for the receiver
  * @param y the new y coordinate for the receiver
@@ -3994,11 +4002,14 @@ public void setLocation (int x, int y) {
 }
 
 /**
- * Sets the receiver's location to the point specified by
- * the arguments which are relative to the receiver's
- * parent (or its display if its parent is null), unless
- * the receiver is a shell. In this case, the point is
- * relative to the display.
+ * Sets the receiver's location to the point specified by the argument which
+ * is relative to the receiver's parent (or its display if its parent is null),
+ * unless the receiver is a shell. In this case, the point is relative to the
+ * display.
+ * <p>
+ * <b>Warning:</b> When executing this operation on a shell, it may not have the
+ * intended effect on some platforms. For example, executing this operation on a
+ * shell when the environment uses the Wayland protocol, nothing will happen.
  *
  * @param location the new location for the receiver
  *
