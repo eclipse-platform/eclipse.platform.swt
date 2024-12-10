@@ -298,6 +298,8 @@ private Browser createBrowser(Shell s, int flags) {
 	long maximumBrowserCreationMilliseconds = 10_000;
 	long createStartTime = System.currentTimeMillis();
 	Browser b = new Browser(s, flags);
+	// Wait for asynchronous initialization via getting URL
+	b.getUrl();
 	createdBroswers.add(b);
 	long createDuration = System.currentTimeMillis() - createStartTime;
 	assertTrue("creating browser took too long: " + createDuration + "ms", createDuration < maximumBrowserCreationMilliseconds);
@@ -735,14 +737,16 @@ public void test_LocationListener_ProgressListener_cancledLoad () {
 
 @Test
 public void test_LocationListener_LocationListener_ordered_changing () {
-	List<String> locations = new ArrayList<>();
-	browser.addLocationListener(changingAdapter(event -> locations.add(event.location)));
+	List<String> locations = Collections.synchronizedList(new ArrayList<>());
+	browser.addLocationListener(changingAdapter(event -> {
+		locations.add(event.location);
+	}));
 	shell.open();
 	browser.setText("You should not see this message.");
 	String url = getValidUrl();
 	browser.setUrl(url);
-	waitForPassCondition(() -> locations.size() == 2);
-	assertTrue("Change of locations do not fire in order.", locations.get(0).equals("about:blank") && locations.get(1).contains("testWebsiteWithTitle.html"));
+	assertTrue("Change of locations do not fire in order: " + locations.toString(), waitForPassCondition(() -> locations.size() == 2));
+	assertTrue("Change of locations do not fire in order", locations.get(0).equals("about:blank") && locations.get(1).contains("testWebsiteWithTitle.html"));
 }
 
 private String getValidUrl() {
@@ -1942,6 +1946,7 @@ public void test_evaluate_null() {
 	// Boolen only used as dummy placeholder so the object is not null.
 	final AtomicReference<Object> returnValue = new AtomicReference<>(true);
 	browser.addProgressListener(completedAdapter(event -> {
+		returnValue.set(false);
 		Object evalResult = browser.evaluate("return null");
 		returnValue.set(evalResult);
 		if (debug_verbose_output)
@@ -1951,7 +1956,7 @@ public void test_evaluate_null() {
 	browser.setText("<html><body>HelloWorld</body></html>");
 	shell.open();
 	boolean passed = waitForPassCondition(() -> returnValue.get() == null);
-	assertTrue("Evaluate did not return a null. Timed out.", passed);
+	assertTrue("Evaluate did not return a null (current value: " + returnValue.get() + "). Timed out.", passed);
 }
 
 /**
