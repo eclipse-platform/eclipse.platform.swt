@@ -1110,6 +1110,22 @@ public class GTK3 {
 	 */
 	public static final native long gtk_gesture_drag_new(long widget);
 
+	/* GtkFontChooserDialog */
+	/**
+	 * @param title cast=(const gchar *)
+	 * @param parent cast=(GtkWindow *)
+	 */
+	public static final native long gtk_font_chooser_dialog_new(byte[] title, long parent);
+
+	/* GtkFontChooser Interface */
+	/** @param fontchooser cast=(GtkFontChooser *) */
+	public static final native long gtk_font_chooser_get_font(long fontchooser);
+	/**
+	 * @param fsd cast=(GtkFontChooser *)
+	 * @param fontname cast=(const gchar *)
+	 */
+	public static final native void gtk_font_chooser_set_font(long fsd, byte[] fontname);
+
 	/* Sizeof */
 	public static final native int GtkTargetEntry_sizeof();
 	public static final native int GdkEvent_sizeof();
