@@ -127,7 +127,7 @@ public final class Image extends Resource implements Drawable {
 	 */
 	static final int DEFAULT_SCANLINE_PAD = 4;
 
-	private HashMap<Integer, ImageHandle> zoomLevelToImageHandle = new HashMap<>();
+	private Map<Integer, ImageHandle> zoomLevelToImageHandle = new HashMap<>();
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -1303,8 +1303,14 @@ public Rectangle getBounds() {
 
 Rectangle getBounds(int zoom) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	ImageHandle imageMetadata = getImageMetadata(zoom);
-	return new Rectangle(0, 0, imageMetadata.width, imageMetadata.height);
+	ImageHandle imageMetadata;
+	if (zoomLevelToImageHandle.containsKey(zoom)) {
+		imageMetadata = zoomLevelToImageHandle.get(zoom);
+	} else {
+		imageMetadata = zoomLevelToImageHandle.values().iterator().next();
+	}
+	Rectangle rectangle = new Rectangle(0, 0, imageMetadata.width, imageMetadata.height);
+	return DPIUtil.scaleBounds(rectangle, zoom, imageMetadata.zoom);
 }
 
 /**
@@ -2084,17 +2090,18 @@ private class StaticZoomUpdater implements AutoCloseable {
 
 private class ImageHandle {
 	final long handle;
+	final int zoom;
 	int height;
 	int width;
 
 	public ImageHandle(long handle, int zoom) {
 		Rectangle bounds = getBoundsInPixelsFromNative(handle);
 		this.handle = handle;
+		this.zoom = zoom;
 		this.height = bounds.height;
 		this.width = bounds.width;
 		setImageMetadataForHandle(this, zoom);
 	}
-
 
 	private Rectangle getBoundsInPixelsFromNative(long handle) {
 		switch (type) {
