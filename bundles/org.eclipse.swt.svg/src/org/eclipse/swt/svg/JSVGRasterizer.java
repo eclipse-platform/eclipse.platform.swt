@@ -16,7 +16,6 @@ import static java.awt.RenderingHints.*;
 import java.awt.*;
 import java.awt.image.*;
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import org.eclipse.swt.graphics.SVGRasterizer;
 import org.eclipse.swt.graphics.ImageData;
@@ -58,14 +57,12 @@ public class JSVGRasterizer implements SVGRasterizer {
 	);
 
 	@Override
-	public ImageData rasterizeSVG(byte[] bytes, float scalingFactor) throws IOException {
+	public ImageData rasterizeSVG(InputStream stream, float scalingFactor) throws IOException {
 		if(svgLoader == null) {
 			svgLoader = new SVGLoader();
 		}
 		SVGDocument svgDocument = null;
-		try (InputStream stream = new ByteArrayInputStream(bytes)) {
-			svgDocument = svgLoader.load(stream, null, LoaderContext.createDefault());
-		}
+		svgDocument = svgLoader.load(stream, null, LoaderContext.createDefault());
 		if (svgDocument != null) {
 			FloatSize size = svgDocument.size();
 			double originalWidth = size.getWidth();
