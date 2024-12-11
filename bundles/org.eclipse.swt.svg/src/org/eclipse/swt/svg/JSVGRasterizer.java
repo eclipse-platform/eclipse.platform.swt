@@ -63,24 +63,22 @@ public class JSVGRasterizer implements SVGRasterizer {
 			svgLoader = new SVGLoader();
 		}
 		SVGDocument svgDocument = null;
-		if (isSVGFile(bytes)) {
-			try (InputStream stream = new ByteArrayInputStream(bytes)) {
-				svgDocument = svgLoader.load(stream, null, LoaderContext.createDefault());
-			}
-			if (svgDocument != null) {
-				FloatSize size = svgDocument.size();
-				double originalWidth = size.getWidth();
-				double originalHeight = size.getHeight();
-				int scaledWidth = (int) Math.round(originalWidth * scalingFactor);
-				int scaledHeight = (int) Math.round(originalHeight * scalingFactor);
-				BufferedImage image = new BufferedImage(scaledWidth, scaledHeight, BufferedImage.TYPE_INT_ARGB);
-				Graphics2D g = image.createGraphics();
-				g.setRenderingHints(RENDERING_HINTS);
-				g.scale(scalingFactor, scalingFactor);
-				svgDocument.render(null, g);
-				g.dispose();
-				return convertToSWT(image);
-			}
+		try (InputStream stream = new ByteArrayInputStream(bytes)) {
+			svgDocument = svgLoader.load(stream, null, LoaderContext.createDefault());
+		}
+		if (svgDocument != null) {
+			FloatSize size = svgDocument.size();
+			double originalWidth = size.getWidth();
+			double originalHeight = size.getHeight();
+			int scaledWidth = (int) Math.round(originalWidth * scalingFactor);
+			int scaledHeight = (int) Math.round(originalHeight * scalingFactor);
+			BufferedImage image = new BufferedImage(scaledWidth, scaledHeight, BufferedImage.TYPE_INT_ARGB);
+			Graphics2D g = image.createGraphics();
+			g.setRenderingHints(RENDERING_HINTS);
+			g.scale(scalingFactor, scalingFactor);
+			svgDocument.render(null, g);
+			g.dispose();
+			return convertToSWT(image);
 		}
 		return null;
 	}
@@ -155,16 +153,11 @@ public class JSVGRasterizer implements SVGRasterizer {
 	    return null;
 	}
 
-	private boolean isSVGFile(byte[] data) throws IOException {
-		String content = new String(data, 0, Math.min(data.length, 512), StandardCharsets.UTF_8);
-		return content.contains("<svg");
-	}
-
 	public boolean isSVGFile(InputStream inputStream) throws IOException {
-		if (inputStream == null) {
-			throw new IllegalArgumentException("InputStream cannot be null");
-		}
-		byte[] data = inputStream.readNBytes(512);
-		return isSVGFile(data);
+	    if (inputStream == null) {
+	        throw new IllegalArgumentException("InputStream cannot be null");
+	    }
+	    int firstByte = inputStream.read();
+	    return firstByte == '<';
 	}
 }
