@@ -189,10 +189,12 @@ public ImageData[] load(InputStream stream, int zoom) {
 		try (InputStream imageStream = new ByteArrayInputStream(bytes)) {
 			if (rasterizer.isSVGFile(imageStream)) {
 				float scalingFactor = zoom / 100.0f;
-				ImageData rasterizedData = rasterizer.rasterizeSVG(bytes, scalingFactor);
-				if (rasterizedData != null) {
-					data = new ImageData[]{rasterizedData};
-				    return data;
+				try (InputStream svgFileStream = new ByteArrayInputStream(bytes)) {
+					ImageData rasterizedData = rasterizer.rasterizeSVG(svgFileStream, scalingFactor);
+					if (rasterizedData != null) {
+						data = new ImageData[]{rasterizedData};
+					    return data;
+					}
 				}
 			}
 		} catch (IOException e) {
