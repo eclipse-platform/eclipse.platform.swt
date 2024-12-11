@@ -16,13 +16,13 @@ import static java.awt.RenderingHints.*;
 import java.awt.*;
 import java.awt.image.*;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import org.eclipse.swt.graphics.SVGRasterizer;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.SVGRasterizerRegistry;
-import org.eclipse.swt.graphics.SVGUtil;
 
 import com.github.weisj.jsvg.*;
 import com.github.weisj.jsvg.geometry.size.*;
@@ -63,7 +63,7 @@ public class JSVGRasterizer implements SVGRasterizer {
 			svgLoader = new SVGLoader();
 		}
 		SVGDocument svgDocument = null;
-		if (SVGUtil.isSVGFile(bytes)) {
+		if (isSVGFile(bytes)) {
 			try (InputStream stream = new ByteArrayInputStream(bytes)) {
 				svgDocument = svgLoader.load(stream, null, LoaderContext.createDefault());
 			}
@@ -153,5 +153,18 @@ public class JSVGRasterizer implements SVGRasterizer {
 	        return data;
 	    }
 	    return null;
+	}
+
+	private boolean isSVGFile(byte[] data) throws IOException {
+		String content = new String(data, 0, Math.min(data.length, 512), StandardCharsets.UTF_8);
+		return content.contains("<svg");
+	}
+
+	public boolean isSVGFile(InputStream inputStream) throws IOException {
+		if (inputStream == null) {
+			throw new IllegalArgumentException("InputStream cannot be null");
+		}
+		byte[] data = inputStream.readNBytes(512);
+		return isSVGFile(data);
 	}
 }
