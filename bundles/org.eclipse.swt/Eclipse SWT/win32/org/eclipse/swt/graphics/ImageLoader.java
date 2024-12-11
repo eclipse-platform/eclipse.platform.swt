@@ -14,11 +14,8 @@
 package org.eclipse.swt.graphics;
 
 
-import java.awt.image.*;
 import java.io.*;
 import java.util.*;
-
-import javax.imageio.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.image.*;
@@ -187,23 +184,18 @@ public ImageData[] load(InputStream stream, int zoom) {
 	} catch (IOException e) {
 		SWT.error(SWT.ERROR_IO, e);
 	}
-	ISVGRasterizer rasterizer = SVGRasterizerRegistry.getRasterizer();
+	SVGRasterizer rasterizer = SVGRasterizerRegistry.getRasterizer();
 	if (rasterizer != null && zoom != 0) {
-	    try {
 	    	float scalingFactor = zoom / 100.0f;
-	    	BufferedImage image = rasterizer.rasterizeSVG(bytes, scalingFactor);
-	    	if(image != null) {
-	    		try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-	        	    ImageIO.write(image, "png", baos);
-	        	    try (InputStream in = new ByteArrayInputStream(baos.toByteArray())) {
-	        	    	data = FileFormat.load(in, this);
-	        		    return data;
-	        	    }
-	        	}
-	    	}
-	    } catch (IOException e) {
-	        // try standard method
-	    }
+			try {
+				ImageData rasterizedData = rasterizer.rasterizeSVG(bytes, scalingFactor);
+				if (rasterizedData != null) {
+					data = new ImageData[]{rasterizedData};
+				    return data;
+				}
+			} catch (IOException e) {
+				//ignore.
+			}
 	}
 	try (InputStream fallbackStream = new ByteArrayInputStream(bytes)) {
 		return loadDefault(fallbackStream);

@@ -12,7 +12,7 @@
 package org.eclipse.swt.graphics;
 
 /**
- * A registry for managing the instance of an {@link ISVGRasterizer} implementation.
+ * A registry for managing the instance of an {@link SVGRasterizer} implementation.
  * This allows for the registration and retrieval of a single rasterizer instance.
  *
  * @since 3.129
@@ -20,30 +20,30 @@ package org.eclipse.swt.graphics;
 public class SVGRasterizerRegistry {
 
 	/**
-     * The instance of the registered {@link ISVGRasterizer}.
+     * The instance of the registered {@link SVGRasterizer}.
      */
-	private static ISVGRasterizer rasterizer;
+	private static SVGRasterizer rasterizer;
 
 	 /**
-     * Registers the provided implementation of {@link ISVGRasterizer}.
+     * Registers the provided implementation of {@link SVGRasterizer}.
      * If a rasterizer has already been registered, subsequent calls to this method
      * will have no effect.
      *
-     * @param implementation the {@link ISVGRasterizer} implementation to register.
+     * @param implementation the {@link SVGRasterizer} implementation to register.
      */
-	public static void register(ISVGRasterizer implementation) {
+	public static void register(SVGRasterizer implementation) {
 		if (rasterizer == null) {
 			rasterizer = implementation;
 		}
 	}
 
 	/**
-     * Retrieves the currently registered {@link ISVGRasterizer} implementation.
+     * Retrieves the currently registered {@link SVGRasterizer} implementation.
      *
-     * @return the registered {@link ISVGRasterizer}, or {@code null} if no implementation
+     * @return the registered {@link SVGRasterizer}, or {@code null} if no implementation
      *         has been registered.
      */
-	public static ISVGRasterizer getRasterizer() {
+	public static SVGRasterizer getRasterizer() {
 		return rasterizer;
 	}
 }
