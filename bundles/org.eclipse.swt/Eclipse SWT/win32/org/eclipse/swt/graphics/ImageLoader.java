@@ -186,16 +186,18 @@ public ImageData[] load(InputStream stream, int zoom) {
 	}
 	SVGRasterizer rasterizer = SVGRasterizerRegistry.getRasterizer();
 	if (rasterizer != null && zoom != 0) {
-	    	float scalingFactor = zoom / 100.0f;
-			try {
+		try (InputStream imageStream = new ByteArrayInputStream(bytes)) {
+			if (rasterizer.isSVGFile(imageStream)) {
+				float scalingFactor = zoom / 100.0f;
 				ImageData rasterizedData = rasterizer.rasterizeSVG(bytes, scalingFactor);
 				if (rasterizedData != null) {
 					data = new ImageData[]{rasterizedData};
 				    return data;
 				}
-			} catch (IOException e) {
-				//ignore.
 			}
+		} catch (IOException e) {
+			//ignore.
+		}
 	}
 	try (InputStream fallbackStream = new ByteArrayInputStream(bytes)) {
 		return loadDefault(fallbackStream);
