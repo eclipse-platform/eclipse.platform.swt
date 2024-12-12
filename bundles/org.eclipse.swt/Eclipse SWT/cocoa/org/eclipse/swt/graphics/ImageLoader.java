@@ -155,13 +155,6 @@ public ImageData[] load(InputStream stream) {
 	return loadDefault(stream);
 }
 
-private ImageData[] loadDefault(InputStream stream) {
-	if (stream == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	reset();
-	data = FileFormat.load(stream, this);
-    return data;
-}
-
 /**
  * Loads an array of <code>ImageData</code> objects from the
  * specified input stream. If the stream is a SVG File and zoom is not 0,
@@ -188,36 +181,32 @@ private ImageData[] loadDefault(InputStream stream) {
 public ImageData[] load(InputStream stream, int zoom) {
 	if (stream == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
     reset();
-    byte[] bytes = null;
-	try {
-		bytes = stream.readAllBytes();
-	} catch (IOException e) {
-		SWT.error(SWT.ERROR_IO, e);
+    if (!stream.markSupported()) {
+		stream = new BufferedInputStream(stream);
 	}
-	ISVGRasterizer rasterizer = SVGRasterizerRegistry.getRasterizer();
+	SVGRasterizer rasterizer = SVGRasterizerRegistry.getRasterizer();
 	if (rasterizer != null && zoom != 0) {
-	    try {
-	    	float scalingFactor = zoom / 100.0f;
-	    	BufferedImage image = rasterizer.rasterizeSVG(bytes, scalingFactor);
-	    	if(image != null) {
-	    		try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-	        	    ImageIO.write(image, "png", baos);
-	        	    try (InputStream in = new ByteArrayInputStream(baos.toByteArray())) {
-	        	    	data = FileFormat.load(in, this);
-	        		    return data;
-	        	    }
-	        	}
-	    	}
-	    } catch (IOException e) {
-	        // try standard method
-	    }
+		try {
+			if (rasterizer.isSVGFile(stream)) {
+				float scalingFactor = zoom / 100.0f;
+				ImageData rasterizedData = rasterizer.rasterizeSVG(stream, scalingFactor);
+				if (rasterizedData != null) {
+					data = new ImageData[]{rasterizedData};
+				    return data;
+				}
+			}
+		} catch (IOException e) {
+			//ignore.
+		}
 	}
-	try (InputStream fallbackStream = new ByteArrayInputStream(bytes)) {
-		return loadDefault(fallbackStream);
-	} catch (IOException e) {
-		SWT.error(SWT.ERROR_IO, e);
-	}
-	return null;
+	return loadDefault(stream);
+}
+
+private ImageData[] loadDefault(InputStream stream) {
+	if (stream == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	reset();
+	data = FileFormat.load(stream, this);
+    return data;
 }
 
 /**
