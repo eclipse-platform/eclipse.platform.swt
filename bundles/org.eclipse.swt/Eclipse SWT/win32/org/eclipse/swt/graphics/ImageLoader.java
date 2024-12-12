@@ -181,7 +181,6 @@ public ImageData[] load(InputStream stream, int zoom) {
     if (!stream.markSupported()) {
 		stream = new BufferedInputStream(stream);
 	}
-
 	SVGRasterizer rasterizer = SVGRasterizerRegistry.getRasterizer();
 	if (rasterizer != null && zoom != 0) {
 		try {
