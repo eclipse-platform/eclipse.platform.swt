@@ -178,35 +178,26 @@ public ImageData[] load(InputStream stream) {
 public ImageData[] load(InputStream stream, int zoom) {
 	if (stream == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
     reset();
-    byte[] bytes = null;
-	try {
-		bytes = stream.readAllBytes();
-	} catch (IOException e) {
-		SWT.error(SWT.ERROR_IO, e);
+    if (!stream.markSupported()) {
+		stream = new BufferedInputStream(stream);
 	}
+
 	SVGRasterizer rasterizer = SVGRasterizerRegistry.getRasterizer();
 	if (rasterizer != null && zoom != 0) {
-		try (InputStream imageStream = new ByteArrayInputStream(bytes)) {
-			if (rasterizer.isSVGFile(imageStream)) {
+		try {
+			if (rasterizer.isSVGFile(stream)) {
 				float scalingFactor = zoom / 100.0f;
-				try (InputStream svgFileStream = new ByteArrayInputStream(bytes)) {
-					ImageData rasterizedData = rasterizer.rasterizeSVG(svgFileStream, scalingFactor);
-					if (rasterizedData != null) {
-						data = new ImageData[]{rasterizedData};
-					    return data;
-					}
+				ImageData rasterizedData = rasterizer.rasterizeSVG(stream, scalingFactor);
+				if (rasterizedData != null) {
+					data = new ImageData[]{rasterizedData};
+				    return data;
 				}
 			}
 		} catch (IOException e) {
 			//ignore.
 		}
 	}
-	try (InputStream fallbackStream = new ByteArrayInputStream(bytes)) {
-		return loadDefault(fallbackStream);
-	} catch (IOException e) {
-		SWT.error(SWT.ERROR_IO, e);
-	}
-	return null;
+	return loadDefault(stream);
 }
 
 private ImageData[] loadDefault(InputStream stream) {

@@ -37,11 +37,11 @@ public interface SVGRasterizer {
 	/**
 	 * Determines whether the given {@link InputStream} contains a SVG file.
 	 *
-	 * @param inputStream the input stream to check.
+	 * @param stream the input stream to check.
 	 * @return {@code true} if the input stream contains SVG content; {@code false}
 	 *         otherwise.
 	 * @throws IOException              if an error occurs while reading the stream.
 	 * @throws IllegalArgumentException if the input stream is {@code null}.
 	 */
-	public boolean isSVGFile(InputStream inputStream) throws IOException;
+	public boolean isSVGFile(InputStream stream) throws IOException;
 }
