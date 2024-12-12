@@ -328,8 +328,9 @@ pipeline {
 					junit 'eclipse.platform.swt/tests/*.test*/target/surefire-reports/*.xml'
 					archiveArtifacts artifacts: '**/*.log,**/*.html,**/target/*.jar,**/target/*.zip'
 					discoverGitReferenceBuild referenceJob: 'eclipse.platform.swt/master'
-					recordIssues publishAllIssues: true, tools: [eclipse(name: 'Compiler and API Tools', pattern: '**/target/compilelogs/*.xml'), javaDoc()], qualityGates: [[threshold: 1, type: 'DELTA', unstable: true]]
-					recordIssues publishAllIssues: true, tool: mavenConsole(), qualityGates: [[threshold: 1, type: 'DELTA_ERROR', unstable: true]]
+					// To accept unstable builds (test errors or new warnings introduced by third party changes) as reference using "ignoreQualityGate:true"
+					recordIssues publishAllIssues: true, ignoreQualityGate:true, tools: [eclipse(name: 'Compiler and API Tools', pattern: '**/target/compilelogs/*.xml'), javaDoc()], qualityGates: [[threshold: 1, type: 'DELTA', unstable: true]]
+					recordIssues publishAllIssues: true, ignoreQualityGate:true, tool: mavenConsole(), qualityGates: [[threshold: 1, type: 'DELTA_ERROR', unstable: true]]
 				}
 			}
 		}
