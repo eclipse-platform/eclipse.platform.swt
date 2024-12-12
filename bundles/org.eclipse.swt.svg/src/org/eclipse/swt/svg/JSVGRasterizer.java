@@ -58,11 +58,22 @@ public class JSVGRasterizer implements SVGRasterizer {
 
 	@Override
 	public ImageData rasterizeSVG(InputStream stream, float scalingFactor) throws IOException {
+		if (stream == null) {
+	        throw new IllegalArgumentException("InputStream cannot be null");
+	    }
+		stream.mark(Integer.MAX_VALUE);
 		if(svgLoader == null) {
 			svgLoader = new SVGLoader();
 		}
 		SVGDocument svgDocument = null;
-		svgDocument = svgLoader.load(stream, null, LoaderContext.createDefault());
+		InputStream nonClosingStream = new FilterInputStream(stream) {
+		        @Override
+		        public void close() throws IOException {
+		            // Do nothing to prevent closing the underlying stream
+		        }
+		    };
+        svgDocument = svgLoader.load(nonClosingStream, null, LoaderContext.createDefault());
+        stream.reset();
 		if (svgDocument != null) {
 			FloatSize size = svgDocument.size();
 			double originalWidth = size.getWidth();
@@ -150,11 +161,16 @@ public class JSVGRasterizer implements SVGRasterizer {
 	    return null;
 	}
 
-	public boolean isSVGFile(InputStream inputStream) throws IOException {
-	    if (inputStream == null) {
+	public boolean isSVGFile(InputStream stream) throws IOException {
+		if (stream == null) {
 	        throw new IllegalArgumentException("InputStream cannot be null");
 	    }
-	    int firstByte = inputStream.read();
-	    return firstByte == '<';
+		stream.mark(Integer.MAX_VALUE);
+		try {
+		    int firstByte = stream.read();
+		    return firstByte == '<';
+		} finally {
+			stream.reset();
+		}
 	}
 }
