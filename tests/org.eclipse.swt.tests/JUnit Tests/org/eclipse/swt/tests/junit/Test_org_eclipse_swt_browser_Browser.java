@@ -180,7 +180,7 @@ public void setUp() {
 	isEdge = browser.getBrowserType().equals("edge");
 
 	String shellTitle = name.getMethodName();
-	if (SwtTestUtil.isGTK && browser.getBrowserType().equals("webkit")) {
+	if (SwtTestUtil.isGTK) {
 
 		// Note, webkitGtk version is only available once Browser is instantiated.
 		String webkitGtkVersionStr = System.getProperty("org.eclipse.swt.internal.webkitgtk.version"); //$NON-NLS-1$
