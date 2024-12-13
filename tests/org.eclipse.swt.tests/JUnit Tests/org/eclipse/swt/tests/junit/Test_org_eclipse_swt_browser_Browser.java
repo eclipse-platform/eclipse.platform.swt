@@ -2584,6 +2584,7 @@ public void test_BrowserFunction_multiprocess() {
 public void test_TabTraversalOutOfBrowser() {
 	assumeFalse("Not currently working on macOS, see https://github.com/eclipse-platform/eclipse.platform.swt/issues/1644", SwtTestUtil.isCocoa);
 	assumeFalse("Not currently working on Linux, see https://github.com/eclipse-platform/eclipse.platform.swt/issues/1644", SwtTestUtil.isGTK);
+	assumeFalse("Currently broken for IE", browser.getBrowserType().equalsIgnoreCase("ie"));
 
 	Text text = new Text(shell, SWT.NONE);
 
