@@ -2638,8 +2638,7 @@ public void test_BrowserFunction_multiprocess() {
 	browser2.dispose();
 }
 
-//@Test
-// FIXME This test should at least work for Edge on Windows.
+@Test
 public void test_TabTraversalOutOfBrowser() {
 	assumeFalse("Not currently working on macOS, see https://github.com/eclipse-platform/eclipse.platform.swt/issues/1644", SwtTestUtil.isCocoa);
 	assumeFalse("Not currently working on Linux, see https://github.com/eclipse-platform/eclipse.platform.swt/issues/1644", SwtTestUtil.isGTK);
@@ -2665,6 +2664,8 @@ public void test_TabTraversalOutOfBrowser() {
 	// send tab key via low-level event -> focus should move to Text control
 	AtomicBoolean textGainedFocus = new AtomicBoolean(false);
 	text.addFocusListener(FocusListener.focusGainedAdapter(e -> textGainedFocus.set(true)));
+	// make sure the browser's shell is active
+	browser.getShell().forceActive();
 	Event event = new Event();
 	event.type = SWT.KeyDown;
 	event.keyCode = SWT.TAB;
