@@ -4319,6 +4319,80 @@ void checkSetDataInProcessBeforeRemoval() {
 	}
 }
 
+boolean initPixbufSize(Image image) {
+	if (pixbufSizeSet || image == null) {
+		return false;
+	}
+	int iWidth, iHeight;
+	if (DPIUtil.useCairoAutoScale()) {
+		iWidth = image.getBounds().width;
+		iHeight = image.getBounds().height;
+	} else {
+		iWidth = image.getBoundsInPixels().width;
+		iHeight = image.getBoundsInPixels().height;
+	}
+	if (iWidth <= 0 || iHeight <= 0) {
+		return false;
+	}
+	pixbufSizeSet = true;
+	pixbufHeight = iHeight;
+	pixbufWidth = iWidth;
+	/*
+	 * Feature in GTK: a Tree with the style SWT.VIRTUAL has fixed-height-mode
+	 * enabled. This will limit the size of any cells, including renderers. In order
+	 * to prevent images from disappearing/being cropped, we update row heights when
+	 * the first image is set. Fix for bug 480261.
+	 */
+	if ((style & SWT.VIRTUAL) != 0) {
+		resetFixedRowHeight();
+	}
+	return true;
+}
+
+private void resetFixedRowHeight() {
+	long columnList = GTK.gtk_tree_view_get_columns(handle);
+	if (columnList == 0) {
+		return;
+	}
+
+	// set fixed width and height for all GtkCellRendererPixbufs
+	for (var colItem = columnList; colItem != 0; colItem = OS.g_list_next(colItem)) {
+		long column = OS.g_list_data(colItem);
+		var cellList = GTK.gtk_cell_layout_get_cells(column);
+		for (var cellItem = cellList; cellItem != 0; cellItem = OS.g_list_next(cellItem)) {
+			var renderer = OS.g_list_data(cellItem);
+			if (GTK.GTK_IS_CELL_RENDERER_PIXBUF(renderer)) {
+				GTK.gtk_cell_renderer_set_fixed_size(renderer, pixbufWidth, pixbufHeight);
+			}
+		}
+		OS.g_list_free(cellList);
+	}
+	OS.g_list_free(columnList);
+
+	// Executed in asyncExec because when this method is invoked from checkData(),
+	// then the "row_changed" signal is blocked (but we need it unblocked to invalidate
+	// existing rows).
+	display.asyncExec(() -> {
+		if (!isDisposed() && modelHandle != 0) {
+			// reset computed 'fixed_height' to '-1'
+			OS.g_object_set(handle, OS.fixed_height_mode, false, 0);
+			OS.g_object_set(handle, OS.fixed_height_mode, true, 0);
+
+			// to update height of the existing rows we need to invalidate them in gtk
+			// we do that by invoking gtk_tree_view_row_changed on each of them
+			long iter = OS.g_malloc(GTK.GtkTreeIter_sizeof());
+			if (GTK.gtk_tree_model_get_iter_first(modelHandle, iter)) {
+				int[] value = new int[1];
+				do {
+					GTK.gtk_tree_model_get(modelHandle, iter, ID_COLUMN, value, -1);
+					GTK.gtk_tree_store_set(modelHandle, iter, ID_COLUMN, value[0], -1);
+				} while (GTK.gtk_tree_model_iter_next(modelHandle, iter));
+			}
+			OS.g_free(iter);
+		}
+	});
+}
+
 private void throwCannotRemoveItem(int i) {
 	String message = "Cannot remove item with index " + i + ".";
 	throw new SWTException(message);
