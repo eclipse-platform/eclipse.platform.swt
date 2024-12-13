@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2022 IBM Corporation and others.
+ * Copyright (c) 2000, 2024 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -803,8 +803,10 @@ public void test_OpenWindowListener_openHasValidEventDetails() {
 	});
 
 	shell.open();
-	browser.setText("<html><script type='text/javascript'>window.open('about:blank')</script>\n" +
-			"<body>This test uses Javascript to open a new window.</body></html>");
+	browser.setText("""
+			<html><script type='text/javascript'>window.open('about:blank')</script>
+			<body>This test uses Javascript to open a new window.</body></html>
+			""");
 
 	boolean passed = waitForPassCondition(openFiredCorrectly::get);
 	assertTrue("Test timed out. OpenWindow event not fired.", passed);
@@ -833,15 +835,17 @@ public void test_OpenWindowListener_open_ChildPopup() {
 
 	shell.open();
 
-	browser.setText("<html>"
-			+ "<script type='text/javascript'>"
-			+ "var newWin = window.open('about:blank');" // opens child window.
-			+ "</script>\n" +
-			"<body>This test uses javascript to open a new window.</body></html>");
+	browser.setText("""
+		<html>
+		<script type='text/javascript'>
+		var newWin = window.open('about:blank');
+		</script>
+		<body>This test uses javascript to open a new window.</body>
+		</html>""");
 
 	boolean passed = waitForPassCondition(childCompleted::get);
 
-	String errMsg = "\nTest timed out.";
+	String errMsg = "Test timed out.";
 	assertTrue(errMsg, passed);
 }
 
@@ -880,11 +884,13 @@ public void test_OpenWindow_Progress_Listener_ValidateEventOrder() {
 
 	shell.open();
 
-	browser.setText("<html>"
-			+ "<script type='text/javascript'>"
-			+ "var newWin = window.open('about:blank');" // opens child window.
-			+ "</script>\n" +
-			"<body>This test uses javascript to open a new window.</body></html>");
+	browser.setText("""
+		<html>
+		<script type='text/javascript'>
+		var newWin = window.open('about:blank');
+		</script>
+		<body>This test uses javascript to open a new window.</body>
+		</html>""");
 
 	boolean passed = waitForPassCondition(() -> windowOpenFired.get() && visibilityShowed.get() && childCompleted.get());
 
@@ -1323,12 +1329,14 @@ public void test_VisibilityWindowListener_multiple_shells() {
 		});
 
 		shell.open();
-		browser.setText("<html>"
-				+ "<script type='text/javascript'>"
-				+ "window.open('about:blank');" // opens child window.
-				+ "window.open('about:blank');"
-				+ "</script>\n" +
-				"<body>This test uses javascript to open a new window.</body></html>");
+		browser.setText("""
+			<html>\
+			<script type='text/javascript'>\
+			window.open('about:blank');\
+			window.open('about:blank');\
+			</script>
+			<body>This test uses javascript to open a new window.</body>
+			</html>""");
 
 		boolean passed = waitForPassCondition(secondChildCompleted::get);
 
@@ -1365,11 +1373,13 @@ public void test_VisibilityWindowListener_eventSize() {
 	}));
 
 	shell.open();
-	browser.setText("<html>"
-			+ "<script type='text/javascript'>"
-			+ "window.open('javascript:\"Child Window\"','', \"height=200,width=300\")\n"
-			+ "</script>\n" +
-			"<body>This test uses javascript to open a new window.</body></html>");
+	browser.setText("""
+		<html>
+		<script type='text/javascript'>
+		window.open('javascript:"Child Window"','', "height=200,width=300")
+		</script>
+		<body>This test uses javascript to open a new window.</body>
+		</html>""");
 
 	boolean finishedWithoutTimeout = waitForPassCondition(childCompleted::get);
 	browserChild.dispose();
@@ -1720,7 +1730,10 @@ public void test_getText_script() {
 	if (SwtTestUtil.isWindows) {
 		// Windows' Browser implementation returns the processed HTML rather than the original one.
 		// The processed page injects "style" property into the body from the script.
-		getText_helper(testString, "<html><head></head><body style=\"background-color: red;\">hello World<script>document.body.style.backgroundColor = \"red\";</script></body></html>");
+		getText_helper(testString, """
+				<html><head></head><body style="background-color: red;">hello World
+				<script>document.body.style.backgroundColor = "red";</script>
+				</body></html>""");
 	} else {
 		// Linux Webkit1, Webkit2
 		// Cocoa
@@ -2154,16 +2167,19 @@ public void test_BrowserFunction_callback () {
 		}
 	}
 
-	String htmlWithScript = "<html><head>\n"
-			+ "<script language=\"JavaScript\">\n"
-			+ "function callCustomFunction() {\n"  // Define a javascript function.
-			+ "     document.body.style.backgroundColor = 'red'\n"
-			+ "		jsCallbackToJava()\n"        // This calls the javafunction that we registered.
-			+ "}"
-			+ "</script>\n"
-			+ "</head>\n"
-			+ "<body> Going to make a callback to Java </body>\n"
-			+ "</html>\n";
+	// Define a javascript function and calls it
+	String htmlWithScript = """
+		<html><head>
+		<script language="JavaScript">
+		function callCustomFunction() {
+		     document.body.style.backgroundColor = 'red'
+				jsCallbackToJava()
+		}
+		</script>
+		</head>
+		<body> Going to make a callback to Java </body>
+		</html>
+		""";
 
 	browser.setText(htmlWithScript);
 	new JavascriptCallback(browser, "jsCallbackToJava");
@@ -2197,16 +2213,19 @@ public void test_BrowserFunction_callback_with_integer () {
 		}
 	}
 
-	String htmlWithScript = "<html><head>\n"
-			+ "<script language=\"JavaScript\">\n"
-			+ "function callCustomFunction() {\n"  // Define a javascript function.
-			+ "     document.body.style.backgroundColor = 'red'\n"
-			+ "		jsCallbackToJava(5)\n"        // This calls the javafunction that we registered ** with value of 5.
-			+ "}"
-			+ "</script>\n"
-			+ "</head>\n"
-			+ "<body> Going to make a callback to Java </body>\n"
-			+ "</html>\n";
+	// Define a javascript function and calls it with value of 5
+	String htmlWithScript = """
+		<html><head>
+		<script language="JavaScript">
+		function callCustomFunction() {
+		     document.body.style.backgroundColor = 'red'
+				jsCallbackToJava(5)
+		}
+		</script>
+		</head>
+		<body> Going to make a callback to Java </body>
+		</html>
+		""";
 
 	browser.setText(htmlWithScript);
 	new JavascriptCallback(browser, "jsCallbackToJava");
@@ -2241,17 +2260,19 @@ public void test_BrowserFunction_callback_with_boolean () {
 			return null;
 		}
 	}
-
-	String htmlWithScript = "<html><head>\n"
-			+ "<script language=\"JavaScript\">\n"
-			+ "function callCustomFunction() {\n"  // Define a javascript function.
-			+ "     document.body.style.backgroundColor = 'red'\n"
-			+ "		jsCallbackToJava(true)\n"        // This calls the javafunction that we registered.
-			+ "}"
-			+ "</script>\n"
-			+ "</head>\n"
-			+ "<body> Going to make a callback to Java </body>\n"
-			+ "</html>\n";
+	// Define a javascript function and call it
+	String htmlWithScript = """
+		<html><head>
+		<script language="JavaScript">
+		function callCustomFunction() {
+		     document.body.style.backgroundColor = 'red'
+				jsCallbackToJava(true)
+		}
+		</script>
+		</head>
+		<body> Going to make a callback to Java </body>
+		</html>
+		""";
 
 	browser.setText(htmlWithScript);
 	new JavascriptCallback(browser, "jsCallbackToJava");
@@ -2285,16 +2306,19 @@ public void test_BrowserFunction_callback_with_String () {
 		}
 	}
 
-	String htmlWithScript = "<html><head>\n"
-			+ "<script language=\"JavaScript\">\n"
-			+ "function callCustomFunction() {\n"  // Define a javascript function.
-			+ "     document.body.style.backgroundColor = 'red'\n"
-			+ "		jsCallbackToJava('hellojava')\n"        // This calls the javafunction that we registered.
-			+ "}"
-			+ "</script>\n"
-			+ "</head>\n"
-			+ "<body> Going to make a callback to Java </body>\n"
-			+ "</html>\n";
+	// Define a javascript function and call it
+	String htmlWithScript = """
+		<html><head>
+		<script language="JavaScript">
+		function callCustomFunction() {
+		    document.body.style.backgroundColor = 'red'
+			jsCallbackToJava('hellojava')
+		}
+		</script>
+		</head>
+		<body> Going to make a callback to Java </body>
+		</html>
+		""";
 
 	browser.setText(htmlWithScript);
 	new JavascriptCallback(browser, "jsCallbackToJava");
@@ -2332,16 +2356,19 @@ public void test_BrowserFunction_callback_with_multipleValues () {
 		}
 	}
 
-	String htmlWithScript = "<html><head>\n"
-			+ "<script language=\"JavaScript\">\n"
-			+ "function callCustomFunction() {\n"  // Define a javascript function.
-			+ "     document.body.style.backgroundColor = 'red'\n"
-			+ "		jsCallbackToJava('hellojava', 5, true)\n"        // This calls the javafunction that we registered.
-			+ "}"
-			+ "</script>\n"
-			+ "</head>\n"
-			+ "<body> Going to make a callback to Java </body>\n"
-			+ "</html>\n";
+	// Define a javascript function and call it
+	String htmlWithScript = """
+		<html><head>
+		<script language="JavaScript">
+		function callCustomFunction() {
+		     document.body.style.backgroundColor = 'red'
+				jsCallbackToJava('hellojava', 5, true)
+		}
+		</script>
+		</head>
+		<body> Going to make a callback to Java </body>
+		</html>
+		""";
 
 	browser.setText(htmlWithScript);
 	new JavascriptCallback(browser, "jsCallbackToJava");
@@ -2410,19 +2437,21 @@ public void test_BrowserFunction_callback_with_javaReturningInt () {
 			return null;
 		}
 	}
-
-	String htmlWithScript = "<html><head>\n"
-			+ "<script language=\"JavaScript\">\n"
-			+ "function callCustomFunction() {\n"  // Define a javascript function.
-			+ "     document.body.style.backgroundColor = 'red'\n"
-			+ "     var retVal = jsCallbackToJava()\n"  // 2)
-			+ "		document.write(retVal)\n"        // This calls the javafunction that we registered. Set HTML body to return value.
-			+ "     jsSuccess(retVal)\n"				// 3)
-			+ "}"
-			+ "</script>\n"
-			+ "</head>\n"
-			+ "<body> If you see this, Javascript did not receive anything from Java. This page should just be '42' </body>\n"
-			+ "</html>\n";
+	// Define a javascript function and call it, return value to be checked in html body
+	String htmlWithScript = """
+		<html><head>
+		<script language="JavaScript">
+		function callCustomFunction() {
+		     document.body.style.backgroundColor = 'red'
+		     var retVal = jsCallbackToJava()
+		     document.write(retVal)
+		     jsSuccess(retVal)
+		}
+		</script>
+		</head>
+		<body> If you see this, Javascript did not receive anything from Java. This page should just be '42' </body>
+		</html>
+		""";
 	// 1)
 	browser.setText(htmlWithScript);
 	new JavascriptCallback(browser, "jsCallbackToJava");
