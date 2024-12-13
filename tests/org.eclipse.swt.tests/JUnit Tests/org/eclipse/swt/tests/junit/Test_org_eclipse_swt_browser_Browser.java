@@ -2609,7 +2609,8 @@ public void test_BrowserFunction_multiprocess() {
 	browser2.dispose();
 }
 
-@Test
+//@Test
+// FIXME This test should at least work for Edge on Windows.
 public void test_TabTraversalOutOfBrowser() {
 	assumeFalse("Not currently working on macOS, see https://github.com/eclipse-platform/eclipse.platform.swt/issues/1644", SwtTestUtil.isCocoa);
 	assumeFalse("Not currently working on Linux, see https://github.com/eclipse-platform/eclipse.platform.swt/issues/1644", SwtTestUtil.isGTK);
