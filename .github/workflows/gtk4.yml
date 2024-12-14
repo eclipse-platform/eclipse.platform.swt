@@ -1,0 +1,68 @@
+name: GTK4 Tests
+concurrency: 
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+on:
+  pull_request:
+    branches: [ master ]
+    types: [labeled]
+
+env:
+  SWT_GTK4: 1
+
+jobs:
+  build:
+    if: contains(github.event.pull_request.labels.*.name, 'gtk4')
+    strategy:
+      fail-fast: false
+      matrix:
+        java: [ '17' ]
+        config: 
+          - { name: Linux, os: ubuntu-latest, native: gtk.linux.x86_64 }
+    name: Verify ${{ matrix.config.name }} with Java-${{ matrix.java }} on GTK4
+    runs-on: ${{ matrix.config.os }}
+    steps:
+    - name: checkout swt
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      with:
+       fetch-depth: 0 # required for jgit timestamp provider to work
+       lfs: true
+    - name: Install Linux requirements
+      if: ${{ matrix.config.native == 'gtk.linux.x86_64'}}
+      run: |
+        sudo apt-get update -qq 
+        sudo apt-get install -qq -y libgtk-3-dev libgtk-4-dev freeglut3-dev webkit2gtk-driver
+    - name: Set up Java ${{ matrix.java }}
+      uses: actions/setup-java@8df1039502a15bceb9433410b1a100fbe190c53b # v4.5.0
+      with:
+        java-version: ${{ matrix.java }}
+        distribution: 'temurin'
+        cache: maven
+    - name: Set up Maven
+      uses: stCarolas/setup-maven@v5
+      with:
+        maven-version: 3.9.9
+    - name: Build
+      run: >-
+        ulimit -c unlimited && xvfb-run
+        mvn --batch-mode -V -U -e
+        --threads 1C
+        -DforkCount=1
+        --fail-at-end
+        -DskipNativeTests=false
+        -DfailIfNoTests=false
+        -Dtycho.baseline.replace=none
+        clean install
+    - name: Upload Test Results for ${{ matrix.config.name }} / Java-${{ matrix.java }}
+      if: always()
+      uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+      with:
+        name: test-results-gtk4-${{ matrix.config.native }}-java${{ matrix.java }}
+        if-no-files-found: warn
+        path: |
+          ${{ github.workspace }}/**/target/surefire-reports/*.xml
+          ${{ github.workspace }}/**/*.dumpstream
+          ${{ github.workspace }}/**/*.dump
+          ${{ github.workspace }}/**/hs_err_pid*.log
+
