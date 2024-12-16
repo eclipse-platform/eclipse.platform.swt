@@ -11,6 +11,8 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
+import java.util.*;
+
 /**
  * A registry for managing the instance of an {@link SVGRasterizer} implementation.
  * This allows for the registration and retrieval of a single rasterizer instance.
@@ -18,24 +20,12 @@ package org.eclipse.swt.graphics;
  * @since 3.129
  */
 public class SVGRasterizerRegistry {
+	//TODO: make this internal?
 
 	/**
      * The instance of the registered {@link SVGRasterizer}.
      */
-	private static SVGRasterizer rasterizer;
-
-	 /**
-     * Registers the provided implementation of {@link SVGRasterizer}.
-     * If a rasterizer has already been registered, subsequent calls to this method
-     * will have no effect.
-     *
-     * @param implementation the {@link SVGRasterizer} implementation to register.
-     */
-	public static void register(SVGRasterizer implementation) {
-		if (rasterizer == null) {
-			rasterizer = implementation;
-		}
-	}
+	private static final SVGRasterizer RASTERIZER = ServiceLoader.load(SVGRasterizer.class).findFirst().orElse(null);
 
 	/**
      * Retrieves the currently registered {@link SVGRasterizer} implementation.
@@ -44,6 +34,6 @@ public class SVGRasterizerRegistry {
      *         has been registered.
      */
 	public static SVGRasterizer getRasterizer() {
-		return rasterizer;
+		return RASTERIZER;
 	}
 }
