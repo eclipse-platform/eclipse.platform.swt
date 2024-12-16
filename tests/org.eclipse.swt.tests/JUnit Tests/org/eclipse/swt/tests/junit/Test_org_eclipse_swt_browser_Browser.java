@@ -137,7 +137,6 @@ public class Test_org_eclipse_swt_browser_Browser extends Test_org_eclipse_swt_w
 	static List<String> initialOpenedDescriptors = new ArrayList<>();
 
 	List<Browser> createdBroswers = new ArrayList<>();
-	boolean ignoreNonDisposedShells;
 	static List<String> descriptors = new ArrayList<>();
 
 	private final int swtBrowserSettings;
@@ -165,7 +164,6 @@ public Test_org_eclipse_swt_browser_Browser(int swtBrowserSettings) {
 public void setUp() {
 	super.setUp();
 	testNumber ++;
-	ignoreNonDisposedShells = false;
 	secondsToWaitTillFail = Math.max(15, debug_show_browser_timeout_seconds);
 
 	// If webkit crashes, it's very hard to tell which jUnit caused the JVM crash.
@@ -207,14 +205,21 @@ protected void afterDispose(Display display) {
 	Shell[] shells = Display.getDefault().getShells();
 	int disposedShells = 0;
 	for (Shell shell : shells) {
+
+		if (shell.getParent() == null // top-level shell
+				|| shell.getText() != null && shell.getText().contains("limbo")) {
+			// Skip the check for the top-level and the "limbo" shell since they are disposed
+			// after all tests are finished
+			continue;
+		}
+
 		if(!shell.isDisposed()) {
 			System.out.println("Not disposed shell: " + shell);
-			shell.dispose();
 			disposedShells ++;
 		}
 	}
-	if(!ignoreNonDisposedShells) {
-		assertEquals("Found " + disposedShells + " not disposed shells!", 0, disposedShells);
+	if(disposedShells > 0) {
+		throw new RuntimeException("Found " + disposedShells + " not disposed shells!");
 	}
 
 	int disposedBrowsers = 0;
@@ -2151,8 +2156,6 @@ ProgressListener callCustomFunctionUponLoad = completedAdapter(event ->	browser.
  */
 @Test
 public void test_BrowserFunction_callback () {
-	// There are shells left opened after this test
-	ignoreNonDisposedShells = true;
 	AtomicBoolean javaCallbackExecuted = new AtomicBoolean(false);
 
 	class JavascriptCallback extends BrowserFunction { // Note: Local class defined inside method.
