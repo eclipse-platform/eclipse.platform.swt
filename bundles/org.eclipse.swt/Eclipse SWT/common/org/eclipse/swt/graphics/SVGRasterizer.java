@@ -44,4 +44,5 @@ public interface SVGRasterizer {
 	 * @throws IllegalArgumentException if the input stream is {@code null}.
 	 */
 	public boolean isSVGFile(InputStream stream) throws IOException;
+	//TODO: use optional above instead?
 }

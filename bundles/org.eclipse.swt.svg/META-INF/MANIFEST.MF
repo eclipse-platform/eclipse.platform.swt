@@ -5,6 +5,6 @@ Bundle-SymbolicName: org.eclipse.swt.svg
 Bundle-Version: 1.0.0.qualifier
 Automatic-Module-Name: org.eclipse.swt.svgPlugin
 Bundle-RequiredExecutionEnvironment: JavaSE-17
+Fragment-Host: org.eclipse.swt
 Export-Package: org.eclipse.swt.svg
-Import-Package: org.eclipse.swt.graphics
 Bundle-ClassPath: ., libs/jsvg-1.6.1.jar
