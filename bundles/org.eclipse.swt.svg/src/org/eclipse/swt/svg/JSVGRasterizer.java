@@ -21,8 +21,6 @@ import org.eclipse.swt.graphics.SVGRasterizer;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.RGB;
-import org.eclipse.swt.graphics.SVGRasterizerRegistry;
-
 import com.github.weisj.jsvg.*;
 import com.github.weisj.jsvg.geometry.size.*;
 import com.github.weisj.jsvg.parser.*;
@@ -36,14 +34,6 @@ import com.github.weisj.jsvg.parser.*;
 public class JSVGRasterizer implements SVGRasterizer {
 	
 	private SVGLoader svgLoader;
-
-	/**
-	 * Initializes the SVG rasterizer by registering an instance of this rasterizer
-	 * with the {@link SVGRasterizerRegistry}.
-	 */
-	public static void intializeJSVGRasterizer() {
-		SVGRasterizerRegistry.register(new JSVGRasterizer());
-	}
 
 	private final static Map<Key, Object> RENDERING_HINTS = Map.of(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON, //
 			KEY_ALPHA_INTERPOLATION, VALUE_ALPHA_INTERPOLATION_QUALITY, //
