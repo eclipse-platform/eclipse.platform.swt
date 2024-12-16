@@ -87,7 +87,7 @@ pipeline {
 		label 'ubuntu-latest'
 	}
 	tools {
-		jdk 'temurin-jdk17-latest'
+		jdk 'temurin-jdk21-latest'
 		maven 'apache-maven-latest'
 	}
 	environment {
