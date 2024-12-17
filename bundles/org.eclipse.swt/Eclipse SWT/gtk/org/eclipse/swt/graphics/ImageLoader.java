@@ -180,10 +180,7 @@ ImageData [] getImageDataArrayFromStream(InputStream stream) {
 	List<ImageData> imgDataList = new ArrayList<>();
 	try {
 		// 1) Load InputStream into byte array
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		stream.transferTo(baos);
-		baos.flush();
-		byte[] data_buffer = baos.toByteArray();
+		byte[] data_buffer = stream.readAllBytes();
 		if (data_buffer.length == 0) SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT);	// empty stream
 
 		// 2) Copy byte array to C memory, write to GdkPixbufLoader
