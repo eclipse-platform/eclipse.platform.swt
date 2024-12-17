@@ -1772,16 +1772,16 @@ static long [] init(Device device, Image image, ImageData i, Integer zoom) {
 			if (hIcon == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 			OS.DeleteObject(hBitmap);
 			OS.DeleteObject(hMask);
-			image.new ImageHandle(hIcon, zoom);
 			image.type = SWT.ICON;
+			image.new ImageHandle(hIcon, zoom);
 		}
 	} else {
 		if (image == null) {
 			result = new long []{hDib};
 		} else {
-			image.new ImageHandle(hDib, zoom);
 			image.type = SWT.BITMAP;
 			image.transparentPixel = i.transparentPixel;
+			image.new ImageHandle(hDib, zoom);
 		}
 	}
 	return result;
@@ -2092,26 +2092,26 @@ private class StaticZoomUpdater implements AutoCloseable {
 }
 
 private class ImageHandle {
-	final long handle;
-	final int zoom;
-	int height;
-	int width;
+	private final long handle;
+	private final int zoom;
+	private int height;
+	private int width;
 
 	public ImageHandle(long handle, int zoom) {
-		Rectangle bounds = getBoundsInPixelsFromNative(handle);
 		this.handle = handle;
 		this.zoom = zoom;
-		this.height = bounds.height;
-		this.width = bounds.width;
+		updateBoundsInPixelsFromNative();
 		setImageMetadataForHandle(this, zoom);
 	}
 
-	private Rectangle getBoundsInPixelsFromNative(long handle) {
+	private void updateBoundsInPixelsFromNative() {
 		switch (type) {
 		case SWT.BITMAP:
 			BITMAP bm = new BITMAP();
 			OS.GetObject(handle, BITMAP.sizeof, bm);
-			return new Rectangle(0, 0, width = bm.bmWidth, height = bm.bmHeight);
+			width = bm.bmWidth;
+			height = bm.bmHeight;
+			return;
 		case SWT.ICON:
 			ICONINFO info = new ICONINFO();
 			OS.GetIconInfo(handle, info);
@@ -2122,10 +2122,11 @@ private class ImageHandle {
 			if (hBitmap == info.hbmMask) bm.bmHeight /= 2;
 			if (info.hbmColor != 0) OS.DeleteObject(info.hbmColor);
 			if (info.hbmMask != 0) OS.DeleteObject(info.hbmMask);
-			return new Rectangle(0, 0, width = bm.bmWidth, height = bm.bmHeight);
+			width = bm.bmWidth;
+			height = bm.bmHeight;
+			return;
 		default:
 			SWT.error(SWT.ERROR_INVALID_IMAGE);
-			return null;
 		}
 	}
 
