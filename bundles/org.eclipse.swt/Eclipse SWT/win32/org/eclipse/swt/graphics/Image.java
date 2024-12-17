@@ -1788,9 +1788,12 @@ static long [] init(Device device, Image image, ImageData i, Integer zoom) {
 }
 
 private void setImageMetadataForHandle(ImageHandle imageMetadata, Integer zoom) {
-	if (zoom != null && !zoomLevelToImageHandle.containsKey(zoom)) {
-		zoomLevelToImageHandle.put(zoom, imageMetadata);
+	if (zoom == null)
+		return;
+	if (zoomLevelToImageHandle.containsKey(zoom)) {
+		SWT.error(SWT.ERROR_ITEM_NOT_ADDED);
 	}
+	zoomLevelToImageHandle.put(zoom, imageMetadata);
 }
 
 static long [] init(Device device, Image image, ImageData source, ImageData mask, Integer zoom) {
