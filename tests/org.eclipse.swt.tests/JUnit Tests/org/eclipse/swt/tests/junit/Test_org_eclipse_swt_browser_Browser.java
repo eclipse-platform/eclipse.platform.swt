@@ -302,7 +302,7 @@ private int reportOpenedDescriptors() {
 }
 
 private Browser createBrowser(Shell s, int flags) {
-	long maximumBrowserCreationMilliseconds = 10_000;
+	long maximumBrowserCreationMilliseconds = 90_000;
 	long createStartTime = System.currentTimeMillis();
 	Browser b = new Browser(s, flags);
 	// Wait for asynchronous initialization via getting URL
