@@ -19,8 +19,7 @@ import java.util.*;
  *
  * @since 3.129
  */
-public class SVGRasterizerRegistry {
-	//TODO: make this internal?
+class SVGRasterizerRegistry {
 
 	/**
      * The instance of the registered {@link SVGRasterizer}.
