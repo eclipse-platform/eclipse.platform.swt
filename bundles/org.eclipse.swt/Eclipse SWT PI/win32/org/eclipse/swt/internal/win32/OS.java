@@ -1752,6 +1752,7 @@ public class OS extends C {
 	public static final int WM_DEADCHAR = 0x103;
 	public static final int WM_DESTROY = 0x2;
 	public static final int WM_DPICHANGED = 0x02E0;
+	public static final int WM_DISPLAYCHANGE = 0x7E;
 	public static final int WM_DRAWITEM = 0x2b;
 	public static final int WM_ENDSESSION = 0x16;
 	public static final int WM_ENTERIDLE = 0x121;

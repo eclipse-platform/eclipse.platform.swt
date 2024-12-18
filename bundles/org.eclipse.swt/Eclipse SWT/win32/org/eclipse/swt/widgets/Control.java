@@ -4856,6 +4856,7 @@ long windowProc (long hwnd, int msg, long wParam, long lParam) {
 		case OS.WM_XBUTTONDOWN:			result = WM_XBUTTONDOWN (wParam, lParam); break;
 		case OS.WM_XBUTTONUP:			result = WM_XBUTTONUP (wParam, lParam); break;
 		case OS.WM_DPICHANGED:			result = WM_DPICHANGED (wParam, lParam); break;
+		case OS.WM_DISPLAYCHANGE:		result = WM_DISPLAYCHANGE(wParam, lParam); break;
 	}
 	if (result != null) return result.value;
 	// widget could be disposed at this point
@@ -4963,6 +4964,14 @@ LRESULT WM_DPICHANGED (long wParam, long lParam) {
 			notifyListeners(SWT.ZoomChanged, event);
 			return LRESULT.ZERO;
 		}
+	}
+	return LRESULT.ONE;
+}
+
+LRESULT WM_DISPLAYCHANGE (long wParam, long lParam) {
+	if (getDisplay().isRescalingAtRuntime()) {
+		Device.win32_destroyUnusedHandles(getDisplay());
+		return LRESULT.ZERO;
 	}
 	return LRESULT.ONE;
 }
