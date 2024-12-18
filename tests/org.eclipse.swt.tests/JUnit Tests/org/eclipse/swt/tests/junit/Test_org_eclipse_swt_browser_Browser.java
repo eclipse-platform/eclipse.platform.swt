@@ -83,6 +83,7 @@ import org.eclipse.swt.widgets.Text;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
@@ -2639,10 +2640,10 @@ public void test_BrowserFunction_multiprocess() {
 }
 
 @Test
+@Ignore("Too fragile on CI, Display.getDefault().post(event) does not work reliably")
 public void test_TabTraversalOutOfBrowser() {
 	assumeFalse("Not currently working on macOS, see https://github.com/eclipse-platform/eclipse.platform.swt/issues/1644", SwtTestUtil.isCocoa);
 	assumeFalse("Not currently working on Linux, see https://github.com/eclipse-platform/eclipse.platform.swt/issues/1644", SwtTestUtil.isGTK);
-	assumeFalse("Currently broken for IE", browser.getBrowserType().equalsIgnoreCase("ie"));
 
 	Text text = new Text(shell, SWT.NONE);
 
