@@ -2772,7 +2772,9 @@ protected void init () {
 	// Field initialization happens after super constructor
 	controlByHandle = new HashMap<>();
 	this.synchronizer = new Synchronizer (this);
-	this.coordinateSystemMapper = new SingleZoomCoordinateSystemMapper();
+	if (this.coordinateSystemMapper == null) {
+		this.coordinateSystemMapper = new SingleZoomCoordinateSystemMapper();
+	}
 	super.init ();
 	DPIUtil.setDeviceZoom (getDeviceZoom ());
 
