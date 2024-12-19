@@ -103,7 +103,7 @@ public final class Image extends Resource implements Drawable {
 	/**
 	 * AbstractImageProvider to avail right ImageProvider (ImageDataProvider or ImageFileNameProvider)
 	 */
-	private AbstractImageProvider imageProvider;
+	private AbstractImageProviderWrapper imageProvider;
 
 	/**
 	 * Style flag used to differentiate normal, gray-scale and disabled images based
@@ -2036,7 +2036,7 @@ public static Image win32_new(Device device, int type, long handle) {
 	return image;
 }
 
-// This class is only used for a workaround and will be removed again
+//This class is only used for a workaround and will be removed again
 private class StaticZoomUpdater implements AutoCloseable {
 	private final boolean updateStaticZoom;
 	private final int currentNativeDeviceZoom;
@@ -2057,11 +2057,11 @@ private class StaticZoomUpdater implements AutoCloseable {
 	}
 }
 
-private abstract class AbstractImageProvider {
+private abstract class AbstractImageProviderWrapper {
 	abstract Object getProvider();
 	abstract ImageData getImageData(int zoom);
 	abstract ImageHandle getImageMetadata(int zoom);
-	abstract AbstractImageProvider createCopy(Image image);
+	abstract AbstractImageProviderWrapper createCopy(Image image);
 
 	@Override
 	public int hashCode() {
@@ -2070,22 +2070,20 @@ private abstract class AbstractImageProvider {
 
 	@Override
 	public boolean equals(Object otherProvider) {
-		if(otherProvider != null && otherProvider instanceof AbstractImageProvider) {
-			return getProvider().equals (((AbstractImageProvider) otherProvider).getProvider());
-		}
-		return false;
+		return otherProvider instanceof AbstractImageProviderWrapper aip //
+				&& getProvider().equals(aip.getProvider());
 	}
 }
 
-private class ImageFileNameProviderWrapper extends AbstractImageProvider {
+private class ImageFileNameProviderWrapper extends AbstractImageProviderWrapper {
 
 	/**
 	 * ImageFileNameProvider to provide file names at various Zoom levels
 	 */
-	final ImageFileNameProvider provider;
+	private final ImageFileNameProvider provider;
 
-	public ImageFileNameProviderWrapper(ImageFileNameProvider provider) {
-		this.provider = provider;
+	ImageFileNameProviderWrapper(ImageFileNameProvider provider) {
+		this.provider = Objects.requireNonNull(provider);
 	}
 
 	@Override
@@ -2122,20 +2120,20 @@ private class ImageFileNameProviderWrapper extends AbstractImageProvider {
 	}
 
 	@Override
-	AbstractImageProvider createCopy(Image image) {
+	ImageFileNameProviderWrapper createCopy(Image image) {
 		return image.new ImageFileNameProviderWrapper(provider);
 	}
 }
 
-private class ImageDataProviderWrapper extends AbstractImageProvider {
+private class ImageDataProviderWrapper extends AbstractImageProviderWrapper {
 
 	/**
 	 * ImageDataProvider to provide ImageData at various Zoom levels
 	 */
-	final ImageDataProvider provider;
+	private final ImageDataProvider provider;
 
-	public ImageDataProviderWrapper(ImageDataProvider provider) {
-		this.provider = provider;
+	ImageDataProviderWrapper(ImageDataProvider provider) {
+		this.provider = Objects.requireNonNull(provider);
 	}
 
 	@Override
@@ -2160,7 +2158,7 @@ private class ImageDataProviderWrapper extends AbstractImageProvider {
 	}
 
 	@Override
-	AbstractImageProvider createCopy(Image image) {
+	ImageDataProviderWrapper createCopy(Image image) {
 		return image.new ImageDataProviderWrapper(provider);
 	}
 }
