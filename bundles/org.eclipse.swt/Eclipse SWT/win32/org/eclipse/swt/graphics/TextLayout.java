@@ -2136,10 +2136,10 @@ public FontMetrics getLineMetrics (int lineIndex) {
 	metricsAdapter.GetTextMetrics(srcHdc, lptm);
 	OS.DeleteDC(srcHdc);
 	device.internal_dispose_GC(hDC, null);
-
-	int ascentInPoints = this.ascent;
-	int descentInPoints = this.descent;
-	int leadingInPoints = DPIUtil.scaleDown(getDevice(), lptm.tmInternalLeading, availableFont.zoom);
+	final int zoom = getZoom();
+	int ascentInPoints = Math.max(DPIUtil.scaleDown(this.device, lptm.tmAscent, zoom), this.ascent);
+	int descentInPoints = Math.max(DPIUtil.scaleDown(this.device, lptm.tmDescent, zoom), this.descent);
+	int leadingInPoints = DPIUtil.scaleDown(this.device, lptm.tmInternalLeading, availableFont.zoom);
 	if (text.length() != 0) {
 		for (StyleItem run : runs[lineIndex]) {
 			if (run.ascentInPoints > ascentInPoints) {
@@ -2149,10 +2149,10 @@ public FontMetrics getLineMetrics (int lineIndex) {
 			descentInPoints = Math.max(descentInPoints, run.descentInPoints);
 		}
 	}
-	lptm.tmAscent = DPIUtil.scaleUp(getDevice(), ascentInPoints, getZoom());
-	lptm.tmDescent = DPIUtil.scaleUp(getDevice(), descentInPoints, getZoom());
-	lptm.tmHeight = DPIUtil.scaleUp(getDevice(), ascentInPoints + descentInPoints, getZoom());
-	lptm.tmInternalLeading = DPIUtil.scaleUp(getDevice(), leadingInPoints, getZoom());
+	lptm.tmAscent = DPIUtil.scaleUp(this.device, ascentInPoints, zoom);
+	lptm.tmDescent = DPIUtil.scaleUp(this.device, descentInPoints, zoom);
+	lptm.tmHeight = DPIUtil.scaleUp(this.device, ascentInPoints + descentInPoints, zoom);
+	lptm.tmInternalLeading = DPIUtil.scaleUp(this.device, leadingInPoints, zoom);
 	lptm.tmAveCharWidth = 0;
 	return FontMetrics.win32_new(lptm, nativeZoom);
 }
