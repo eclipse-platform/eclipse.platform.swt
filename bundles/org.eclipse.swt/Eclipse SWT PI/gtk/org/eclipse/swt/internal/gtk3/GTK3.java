@@ -125,6 +125,39 @@ public class GTK3 {
 	 */
 	public static final native void gtk_rgb_to_hsv(double r, double g, double b, double[] h, double[] s, double[] v);
 
+	/**
+	 * @param chooser cast=(GtkColorChooser *)
+	 * @param orientation cast=(GtkOrientation)
+	 * @param colors_per_line cast=(gint)
+	 * @param n_colors cast=(gint)
+	 * @param colors cast=(GdkRGBA *)
+	 */
+	public static final native void gtk_color_chooser_add_palette(long chooser, int orientation, int colors_per_line, int n_colors, long colors);
+	/**
+	 * @param chooser cast=(GtkColorChooser *)
+	 * @param use_alpha cast=(gboolean)
+	 */
+	public static final native void gtk_color_chooser_set_use_alpha(long chooser, boolean use_alpha);
+	/**
+	 * @param chooser cast=(GtkColorChooser *)
+	 */
+	public static final native boolean gtk_color_chooser_get_use_alpha(long chooser);
+	/**
+	 * @param chooser cast=(GtkColorChooser *)
+	 * @param color cast=(GdkRGBA *)
+	 */
+	public static final native void gtk_color_chooser_set_rgba(long chooser, GdkRGBA color);
+	/**
+	 * @param chooser cast=(GtkColorChooser *)
+	 * @param color cast=(GdkRGBA *)
+	 */
+	public static final native void gtk_color_chooser_get_rgba(long chooser, GdkRGBA color);
+	/**
+	 * @param title cast=(const gchar *)
+	 * @param parent cast=(GtkWindow *)
+	 */
+	public static final native long gtk_color_chooser_dialog_new(byte[] title, long parent);
+
 	/* GtkContainer */
 	/**
 	 * @param container cast=(GtkContainer *)
