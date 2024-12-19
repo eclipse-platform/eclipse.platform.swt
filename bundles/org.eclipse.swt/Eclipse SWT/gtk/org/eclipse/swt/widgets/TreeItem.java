@@ -1518,69 +1518,81 @@ public void setImage(int index, Image image) {
 		surface = imageList.getSurface(imageIndex);
 		pixbuf = ImageList.createPixbuf(surface);
 	}
-
-	int modelIndex = parent.columnCount == 0 ? Tree.FIRST_COLUMN : parent.columns [index].modelIndex;
-	long parentHandle = parent.handle;
-	long column = GTK.gtk_tree_view_get_column (parentHandle, index);
-	long pixbufRenderer = parent.getPixbufRenderer (column);
-	int [] currentWidth = new int [1];
-	int [] currentHeight= new int [1];
-	GTK.gtk_cell_renderer_get_fixed_size (pixbufRenderer, currentWidth, currentHeight);
-	if (!parent.pixbufSizeSet) {
-		if (image != null) {
-			int iWidth, iHeight;
-			if (DPIUtil.useCairoAutoScale()) {
-				iWidth = image.getBounds ().width;
-				iHeight = image.getBounds ().height;
-			} else {
-				iWidth = image.getBoundsInPixels ().width;
-				iHeight = image.getBoundsInPixels ().height;
-			}
-			if (iWidth > currentWidth [0] || iHeight > currentHeight [0]) {
-				GTK.gtk_cell_renderer_set_fixed_size (pixbufRenderer, iWidth, iHeight);
-				parent.pixbufSizeSet = true;
-				parent.pixbufHeight = iHeight;
-				parent.pixbufWidth = iWidth;
-				/*
-				 * Feature in GTK: a Tree with the style SWT.VIRTUAL has
-				 * fixed-height-mode enabled. This will limit the size of
-				 * any cells, including renderers. In order to prevent
-				 * images from disappearing/being cropped, we re-create
-				 * the renderers when the first image is set. Fix for
-				 * bug 480261.
-				 */
-				if ((parent.style & SWT.VIRTUAL) != 0) {
+	try {
+		int modelIndex = parent.columnCount == 0 ? Tree.FIRST_COLUMN : parent.columns [index].modelIndex;
+		long parentHandle = parent.handle;
+		long column = GTK.gtk_tree_view_get_column (parentHandle, index);
+		long pixbufRenderer = parent.getPixbufRenderer (column);
+		int [] currentWidth = new int [1];
+		int [] currentHeight= new int [1];
+		GTK.gtk_cell_renderer_get_fixed_size (pixbufRenderer, currentWidth, currentHeight);
+		if (!parent.pixbufSizeSet) {
+			if (image != null) {
+				int iWidth, iHeight;
+				if (DPIUtil.useCairoAutoScale()) {
+					iWidth = image.getBounds ().width;
+					iHeight = image.getBounds ().height;
+				} else {
+					iWidth = image.getBoundsInPixels ().width;
+					iHeight = image.getBoundsInPixels ().height;
+				}
+				if (iWidth > currentWidth [0] || iHeight > currentHeight [0]) {
+					GTK.gtk_cell_renderer_set_fixed_size (pixbufRenderer, iWidth, iHeight);
+					parent.pixbufSizeSet = true;
+					parent.pixbufHeight = iHeight;
+					parent.pixbufWidth = iWidth;
 					/*
-					 * Only re-create SWT.CHECK renderers if this is the first column.
-					 * Otherwise check-boxes will be rendered in columns they are not
-					 * supposed to be rendered in. See bug 513761.
+					 * Feature in GTK: a Tree with the style SWT.VIRTUAL has
+					 * fixed-height-mode enabled. This will limit the size of
+					 * any cells, including renderers. In order to prevent
+					 * images from disappearing/being cropped, we re-create
+					 * the renderers when the first image is set. Fix for
+					 * bug 480261.
 					 */
-					boolean check = modelIndex == Tree.FIRST_COLUMN && (parent.style & SWT.CHECK) != 0;
-					parent.createRenderers(column, modelIndex, check, parent.style);
+					if ((parent.style & SWT.VIRTUAL) != 0) {
+						/*
+						 * Only re-create SWT.CHECK renderers if this is the first column.
+						 * Otherwise check-boxes will be rendered in columns they are not
+						 * supposed to be rendered in. See bug 513761.
+						 */
+						boolean check = modelIndex == Tree.FIRST_COLUMN && (parent.style & SWT.CHECK) != 0;
+						// Renderers can't be replaced during render on GTK 3.24.41
+						// https://github.com/eclipse-platform/eclipse.platform.swt/issues/678
+						getDisplay ().asyncExec (() -> {
+							// Do not perform request if it is no longer applicable
+							if (parent.isDisposed () || Math.max (1, parent.getColumnCount ()) <= index) return;
+							// On multiple resize requests, perform only the last one
+							if (parent.pixbufHeight != iHeight || parent.pixbufWidth != iWidth) return;
+							int modelIndexAsync = parent.columnCount == 0 ? Tree.FIRST_COLUMN : parent.columns [index].modelIndex;
+							long columnAsync = GTK.gtk_tree_view_get_column (parent.handle, index);
+							parent.createRenderers (columnAsync, modelIndexAsync, check, parent.style);
+						});
+					}
 				}
 			}
+		} else {
+			/*
+			 * Bug 483112: We check to see if the cached value is greater than the size of the pixbufRenderer.
+			 * If it is, then we change the size of the pixbufRenderer accordingly.
+			 * Bug 489025: There is a corner case where the below is triggered when current(Width|Height) is -1,
+			 * which results in icons being set to 0. Fix is to compare only positive sizes.
+			 */
+			if (parent.pixbufWidth > Math.max(currentWidth [0], 0) || parent.pixbufHeight > Math.max(currentHeight [0], 0)) {
+				GTK.gtk_cell_renderer_set_fixed_size (pixbufRenderer, parent.pixbufWidth, parent.pixbufHeight);
+			}
 		}
-	} else {
+	
+		GTK.gtk_tree_store_set(parent.modelHandle, handle, modelIndex + Tree.CELL_PIXBUF, pixbuf, -1);
+		GTK.gtk_tree_store_set(parent.modelHandle, handle, modelIndex + Tree.CELL_SURFACE, surface, -1);
+	}  finally {
 		/*
-		 * Bug 483112: We check to see if the cached value is greater than the size of the pixbufRenderer.
-		 * If it is, then we change the size of the pixbufRenderer accordingly.
-		 * Bug 489025: There is a corner case where the below is triggered when current(Width|Height) is -1,
-		 * which results in icons being set to 0. Fix is to compare only positive sizes.
+		 * Bug 573633: gtk_tree_store_set() will reference the handle. So we unref the pixbuf here,
+		 * and leave the destruction of the handle to be done later on by the GTK+ tree.
 		 */
-		if (parent.pixbufWidth > Math.max(currentWidth [0], 0) || parent.pixbufHeight > Math.max(currentHeight [0], 0)) {
-			GTK.gtk_cell_renderer_set_fixed_size (pixbufRenderer, parent.pixbufWidth, parent.pixbufHeight);
+		if (pixbuf != 0) {
+			OS.g_object_unref(pixbuf);
 		}
 	}
-
-	GTK.gtk_tree_store_set(parent.modelHandle, handle, modelIndex + Tree.CELL_PIXBUF, pixbuf, -1);
-	/*
-	 * Bug 573633: gtk_tree_store_set() will reference the handle. So we unref the pixbuf here,
-	 * and leave the destruction of the handle to be done later on by the GTK+ tree.
-	 */
-	if (pixbuf != 0) {
-		OS.g_object_unref(pixbuf);
-	}
-	GTK.gtk_tree_store_set(parent.modelHandle, handle, modelIndex + Tree.CELL_SURFACE, surface, -1);
 	cached = true;
 	updated = true;
 }
