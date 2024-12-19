@@ -136,7 +136,7 @@ public class TableDropTargetEffect extends DropTargetEffect {
 		long handle = table.handle;
 		int effect = checkEffect(event.feedback);
 		Point coordinates = new Point(event.x, event.y);
-		coordinates = DPIUtil.autoScaleUp(table.toControl(coordinates));
+		coordinates = table.toControl(coordinates);
 		long [] path = new long [1];
 		GTK.gtk_tree_view_get_path_at_pos (handle, coordinates.x, coordinates.y, path, null, null, null);
 		int index = -1;
@@ -154,7 +154,7 @@ public class TableDropTargetEffect extends DropTargetEffect {
 		} else {
 			if (index != -1 && scrollIndex == index && scrollBeginTime != 0) {
 				if (System.currentTimeMillis() >= scrollBeginTime) {
-					if (coordinates.y < DPIUtil.autoScaleUp(table.getItemHeight())) {
+					if (coordinates.y < table.getItemHeight()) {
 						GTK.gtk_tree_path_prev(path[0]);
 					} else {
 						GTK.gtk_tree_path_next(path[0]);

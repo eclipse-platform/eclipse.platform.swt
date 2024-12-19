@@ -16,7 +16,6 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.gtk3.*;
 import org.eclipse.swt.internal.gtk4.*;
@@ -116,7 +115,7 @@ protected void checkSubclass () {
 }
 
 @Override
-Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
+public Point computeSize(int wHint, int hHint, boolean changed) {
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
 	Point size = computeNativeSize (handle, wHint, hHint, changed);
@@ -183,7 +182,7 @@ void createItem (ExpandItem item, int style, int index) {
 	System.arraycopy (items, index, items, index + 1, itemCount - index);
 	items [index] = item;
 	itemCount++;
-	item.width = Math.max (0, getClientAreaInPixels ().width - spacing * 2);
+	item.width = Math.max (0, getClientArea().width - spacing * 2);
 	layoutItems();
 }
 
@@ -309,7 +308,7 @@ public ExpandItem [] getItems () {
  */
 public int getSpacing () {
 	checkWidget ();
-	return DPIUtil.autoScaleDown(spacing);
+	return spacing;
 }
 
 @Override
@@ -484,11 +483,6 @@ void setOrientation (boolean create) {
  * </ul>
  */
 public void setSpacing (int spacing) {
-	checkWidget ();
-	setSpacingInPixels(DPIUtil.autoScaleUp(spacing));
-}
-
-void setSpacingInPixels (int spacing) {
 	checkWidget ();
 	if (spacing < 0) return;
 	if (spacing == this.spacing) return;
