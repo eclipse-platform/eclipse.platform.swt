@@ -107,9 +107,9 @@ private static class MetricsAdapter {
 		}
 
 		FontMetrics result = new FontMetrics();
-		result.ascentInPoints = DPIUtil.autoScaleDown(device, lineMetricsInPixels.ascentInPoints);
-		result.descentInPoints = DPIUtil.autoScaleDown(device, lineMetricsInPixels.descentInPoints);
-		result.averageCharWidthInPoints = DPIUtil.autoScaleDown(device, lineMetricsInPixels.averageCharWidthInPoints);
+		result.ascentInPoints = lineMetricsInPixels.ascentInPoints;
+		result.descentInPoints = lineMetricsInPixels.descentInPoints;
+		result.averageCharWidthInPoints = lineMetricsInPixels.averageCharWidthInPoints;
 
 		return result;
 	}
@@ -121,9 +121,9 @@ private static class MetricsAdapter {
 		}
 
 		FontMetrics result = new FontMetrics();
-		result.ascentInPoints = DPIUtil.autoScaleUp(device, metrics.ascentInPoints);
-		result.descentInPoints = DPIUtil.autoScaleUp(device, metrics.descentInPoints);
-		result.averageCharWidthInPoints = DPIUtil.autoScaleUp(device, metrics.averageCharWidthInPoints);
+		result.ascentInPoints = metrics.ascentInPoints;
+		result.descentInPoints = metrics.descentInPoints;
+		result.averageCharWidthInPoints = metrics.averageCharWidthInPoints;
 
 		lineMetricsInPixels = result;
 	}
@@ -296,8 +296,8 @@ void computeRuns () {
 	boolean useMinAscentDescent = !metricsAdapter.isFixedMetrics() && (ascentInPoints != -1 || descentInPoints != -1);
 	if (useMinAscentDescent && segementsLength > 0) {
 		PangoRectangle rect = new PangoRectangle();
-		if (ascentInPoints != -1) rect.y =  -(DPIUtil.autoScaleUp(getDevice(), ascentInPoints)  * OS.PANGO_SCALE);
-		rect.height = DPIUtil.autoScaleUp(getDevice(), (Math.max(0, ascentInPoints) + Math.max(0, descentInPoints))) * OS.PANGO_SCALE;
+		if (ascentInPoints != -1) rect.y =  -(ascentInPoints * OS.PANGO_SCALE);
+		rect.height = (Math.max(0, ascentInPoints) + Math.max(0, descentInPoints)) * OS.PANGO_SCALE;
 		int lineCount = OS.pango_layout_get_line_count(layout);
 		chars = new char[segementsLength + lineCount * 2];
 		lineOffsets = new int [lineCount];
@@ -481,9 +481,9 @@ void computeRuns () {
 		GlyphMetrics metrics = style.metrics;
 		if (metrics != null) {
 			PangoRectangle rect = new PangoRectangle();
-			rect.y =  -(DPIUtil.autoScaleUp(getDevice(), metrics.ascent) * OS.PANGO_SCALE);
-			rect.height = DPIUtil.autoScaleUp(getDevice(), (metrics.ascent + metrics.descent)) * OS.PANGO_SCALE;
-			rect.width = DPIUtil.autoScaleUp(getDevice(), metrics.width) * OS.PANGO_SCALE;
+			rect.y =  -(metrics.ascent) * OS.PANGO_SCALE;
+			rect.height = (metrics.ascent + metrics.descent) * OS.PANGO_SCALE;
+			rect.width = metrics.width * OS.PANGO_SCALE;
 			long attr = OS.pango_attr_shape_new (rect, rect);
 			OS.memmove (attribute, attr, PangoAttribute.sizeof);
 			attribute.start_index = byteStart;
@@ -494,7 +494,7 @@ void computeRuns () {
 		}
 		int rise = style.rise;
 		if (rise != 0) {
-			long attr = OS.pango_attr_rise_new (DPIUtil.autoScaleUp(getDevice(), rise) * OS.PANGO_SCALE);
+			long attr = OS.pango_attr_rise_new (rise * OS.PANGO_SCALE);
 			OS.memmove (attribute, attr, PangoAttribute.sizeof);
 			attribute.start_index = byteStart;
 			attribute.end_index = byteEnd;
@@ -559,13 +559,7 @@ void destroy() {
  * </ul>
  */
 public void draw(GC gc, int x, int y) {
-	x = DPIUtil.autoScaleUp(getDevice(), x);
-	y = DPIUtil.autoScaleUp(getDevice(), y);
-	drawInPixels(gc, x, y);
-}
-
-void drawInPixels(GC gc, int x, int y) {
-	drawInPixels(gc, x, y, -1, -1, null, null);
+	draw(gc, x, y, -1, -1, null, null);
 }
 
 /**
@@ -589,12 +583,7 @@ void drawInPixels(GC gc, int x, int y) {
  */
 public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground) {
 	checkLayout ();
-	x = DPIUtil.autoScaleUp(getDevice(), x);
-	y = DPIUtil.autoScaleUp(getDevice(), y);
-	drawInPixels(gc, x, y, selectionStart, selectionEnd, selectionForeground, selectionBackground);
-}
-void drawInPixels(GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground) {
-	drawInPixels(gc, x, y, selectionStart, selectionEnd, selectionForeground, selectionBackground, 0);
+	draw(gc, x, y, selectionStart, selectionEnd, selectionForeground, selectionBackground, 0);
 }
 
 /**
@@ -625,12 +614,6 @@ void drawInPixels(GC gc, int x, int y, int selectionStart, int selectionEnd, Col
  * @since 3.3
  */
 public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground, int flags) {
-	checkLayout ();
-	x = DPIUtil.autoScaleUp(getDevice(), x);
-	y = DPIUtil.autoScaleUp(getDevice(), y);
-	drawInPixels(gc, x, y, selectionStart, selectionEnd, selectionForeground, selectionBackground, flags);
-}
-void drawInPixels(GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground, int flags) {
 	checkLayout ();
 	computeRuns();
 	if (gc == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -685,9 +668,9 @@ void drawInPixels(GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 				int lineY = y + OS.PANGO_PIXELS(rect.y);
 				int height = OS.PANGO_PIXELS(rect.height);
 				if (ascentInPoints != -1 && descentInPoints != -1) {
-					height = Math.max (height, DPIUtil.autoScaleUp(getDevice(), ascentInPoints + descentInPoints));
+					height = Math.max (height, ascentInPoints + descentInPoints);
 				}
-				height += getSpacingInPixels();
+				height += getSpacing();
 				int width = (flags & SWT.FULL_SELECTION) != 0 ? 0x7fff : height / 3;
 				Cairo.cairo_rectangle(cairo, lineX, lineY, width, height);
 				Cairo.cairo_fill(cairo);
@@ -718,7 +701,7 @@ void drawInPixels(GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 		selectionEnd = translateOffset(selectionEnd);
 		if (selectionForeground == null) selectionForeground = device.getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT);
 		if (selectionBackground == null) selectionBackground = device.getSystemColor(SWT.COLOR_LIST_SELECTION);
-		int yExtent = extent ? getSpacingInPixels() : 0;
+		int yExtent = extent ? getSpacing() : 0;
 		boolean fullSelection = selectionStart == 0 && selectionEnd == length - 1;
 		if (fullSelection) {
 			long ptr = OS.pango_layout_get_text(layout);
@@ -917,11 +900,7 @@ public int getAscent () {
  * @see #getLineBounds(int)
  */
 public Rectangle getBounds() {
-	int spacingInPixels = getSpacingInPixels();
-	return DPIUtil.autoScaleDown(getDevice(), getBoundsInPixels(spacingInPixels));
-}
-
-Rectangle getBoundsInPixels(int spacingInPixels) {
+	int spacing = getSpacing();
 	checkLayout();
 	computeRuns();
 	int[] w = new int[1], h = new int[1];
@@ -931,9 +910,9 @@ Rectangle getBoundsInPixels(int spacingInPixels) {
 	int width = OS.PANGO_PIXELS(w[0]);
 	int height = OS.PANGO_PIXELS(h[0]);
 	if (ascentInPoints != -1 && descentInPoints != -1) {
-		height = Math.max (height, DPIUtil.autoScaleUp(getDevice(), ascentInPoints + descentInPoints));
+		height = Math.max (height, ascentInPoints + descentInPoints);
 	}
-	height += spacingInPixels;
+	height += spacing;
 	return new Rectangle(0, 0, width, height + getScaledVerticalIndent());
 }
 
@@ -952,11 +931,6 @@ Rectangle getBoundsInPixels(int spacingInPixels) {
  * </ul>
  */
 public Rectangle getBounds(int start, int end) {
-	checkLayout();
-	return DPIUtil.autoScaleDown(getDevice(), getBoundsInPixels(start, end));
-}
-
-Rectangle getBoundsInPixels(int start, int end) {
 	checkLayout();
 	computeRuns();
 	int length = text.length();
@@ -1059,10 +1033,6 @@ public Font getFont () {
 */
 public int getIndent () {
 	checkLayout();
-	return DPIUtil.autoScaleDown(getDevice(), getIndentInPixels());
-}
-
-int getIndentInPixels () {
 	return indent;
 }
 
@@ -1141,10 +1111,6 @@ public int getLevel(int offset) {
  */
 public Rectangle getLineBounds(int lineIndex) {
 	checkLayout();
-	return DPIUtil.autoScaleDown(getDevice(), getLineBoundsInPixels(lineIndex));
-}
-
-Rectangle getLineBoundsInPixels(int lineIndex) {
 	computeRuns();
 	int lineCount = OS.pango_layout_get_line_count(layout);
 	if (!(0 <= lineIndex && lineIndex < lineCount)) SWT.error(SWT.ERROR_INVALID_RANGE);
@@ -1152,12 +1118,6 @@ Rectangle getLineBoundsInPixels(int lineIndex) {
 	for (int i = 0; i < lineIndex; i++) {
 		OS.pango_layout_iter_next_line(iter);
 	}
-	Rectangle lineBoundsInPixels = getLineBoundsInPixels(lineIndex, iter);
-	OS.pango_layout_iter_free(iter);
-	return lineBoundsInPixels;
-}
-
-private Rectangle getLineBoundsInPixels(int lineIndex, long iter) {
 	if (iter == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	PangoRectangle rect = new PangoRectangle();
 	metricsAdapter.pango_layout_iter_get_line_extents(iter, null, rect);
@@ -1166,10 +1126,12 @@ private Rectangle getLineBoundsInPixels(int lineIndex, long iter) {
 	int width = OS.PANGO_PIXELS(rect.width);
 	int height = OS.PANGO_PIXELS(rect.height);
 	if (ascentInPoints != -1 && descentInPoints != -1) {
-		height = Math.max (height, DPIUtil.autoScaleUp(getDevice(), ascentInPoints + descentInPoints));
+		height = Math.max (height, ascentInPoints + descentInPoints);
 	}
 	x += Math.min (indent, wrapIndent);
-	return new Rectangle(x, y, width, height);
+	Rectangle lineBounds = new Rectangle(x, y, width, height);
+	OS.pango_layout_iter_free(iter);
+	return lineBounds;
 }
 
 /**
@@ -1255,14 +1217,14 @@ public FontMetrics getLineMetrics (int lineIndex) {
 		long metrics = OS.pango_context_get_metrics(context, font, lang);
 		int ascent = OS.pango_font_metrics_get_ascent(metrics);
 		int descent = OS.pango_font_metrics_get_descent(metrics);
-		ascentInPoints = DPIUtil.autoScaleDown(getDevice(), OS.PANGO_PIXELS(ascent));
-		heightInPoints = DPIUtil.autoScaleDown(getDevice(), OS.PANGO_PIXELS(ascent + descent));
+		ascentInPoints = OS.PANGO_PIXELS(ascent);
+		heightInPoints = OS.PANGO_PIXELS(ascent + descent);
 		OS.pango_font_metrics_unref(metrics);
 	} else {
 		PangoRectangle rect = new PangoRectangle();
 		metricsAdapter.pango_layout_line_get_extents(OS.pango_layout_get_line(layout, lineIndex), null, rect);
-		ascentInPoints = DPIUtil.autoScaleDown(getDevice(), OS.PANGO_PIXELS(-rect.y));
-		heightInPoints = DPIUtil.autoScaleDown(getDevice(), OS.PANGO_PIXELS(rect.height));
+		ascentInPoints = OS.PANGO_PIXELS(-rect.y);
+		heightInPoints = OS.PANGO_PIXELS(rect.height);
 	}
 	heightInPoints = Math.max(this.ascentInPoints + this.descentInPoints, heightInPoints);
 	ascentInPoints = Math.max(this.ascentInPoints, ascentInPoints);
@@ -1320,10 +1282,6 @@ public int[] getLineOffsets() {
  */
 public Point getLocation(int offset, boolean trailing) {
 	checkLayout();
-	return DPIUtil.autoScaleDown(getDevice(), getLocationInPixels(offset, trailing));
-}
-
-Point getLocationInPixels(int offset, boolean trailing) {
 	computeRuns();
 	int length = text.length();
 	if (!(0 <= offset && offset <= length)) SWT.error(SWT.ERROR_INVALID_RANGE);
@@ -1459,43 +1417,9 @@ int _getOffset (int offset, int movement, boolean forward) {
  */
 public int getOffset(Point point, int[] trailing) {
 	checkLayout();
-	return getOffsetInPixels(DPIUtil.autoScaleUp(getDevice(), point), trailing);
-}
-
-int getOffsetInPixels(Point point, int[] trailing) {
 	if (point == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	return getOffsetInPixels(point.x, point.y, trailing);
-}
-
-/**
- * Returns the character offset for the specified point.
- * For a typical character, the trailing argument will be filled in to
- * indicate whether the point is closer to the leading edge (0) or
- * the trailing edge (1).  When the point is over a cluster composed
- * of multiple characters, the trailing argument will be filled with the
- * position of the character in the cluster that is closest to
- * the point.
- *
- * @param x the x coordinate of the point
- * @param y the y coordinate of the point
- * @param trailing the trailing buffer
- * @return the character offset
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the trailing length is less than <code>1</code></li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
- * </ul>
- *
- * @see #getLocation(int, boolean)
- */
-public int getOffset(int x, int y, int[] trailing) {
-	checkLayout();
-	return getOffset(new Point(x, y), trailing);
-}
-
-int getOffsetInPixels(int x, int y, int[] trailing) {
+	int x = point.x;
+	int y = point.y;
 	computeRuns();
 	if (trailing != null && trailing.length < 1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	x -= Math.min (indent, wrapIndent);
@@ -1541,6 +1465,35 @@ int getOffsetInPixels(int x, int y, int[] trailing) {
 	return untranslateOffset(offset);
 }
 
+/**
+ * Returns the character offset for the specified point.
+ * For a typical character, the trailing argument will be filled in to
+ * indicate whether the point is closer to the leading edge (0) or
+ * the trailing edge (1).  When the point is over a cluster composed
+ * of multiple characters, the trailing argument will be filled with the
+ * position of the character in the cluster that is closest to
+ * the point.
+ *
+ * @param x the x coordinate of the point
+ * @param y the y coordinate of the point
+ * @param trailing the trailing buffer
+ * @return the character offset
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the trailing length is less than <code>1</code></li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @see #getLocation(int, boolean)
+ */
+public int getOffset(int x, int y, int[] trailing) {
+	checkLayout();
+	return getOffset(new Point(x, y), trailing);
+}
+
+/**
 /**
  * Returns the orientation of the receiver.
  *
@@ -1685,10 +1638,6 @@ String getSegmentsText() {
  */
 public int getSpacing () {
 	checkLayout();
-	return DPIUtil.autoScaleDown(getDevice(), getSpacingInPixels());
-}
-
-int getSpacingInPixels () {
 	return OS.PANGO_PIXELS(OS.pango_layout_get_spacing(layout));
 }
 
@@ -1717,7 +1666,7 @@ private int getScaledVerticalIndent() {
 	if (verticalIndentInPoints == 0) {
 		return verticalIndentInPoints;
 	}
-	return DPIUtil.autoScaleUp(getDevice(), verticalIndentInPoints);
+	return verticalIndentInPoints;
 }
 
 /**
@@ -1787,10 +1736,6 @@ public TextStyle[] getStyles () {
  */
 public int[] getTabs() {
 	checkLayout();
-	return DPIUtil.autoScaleDown (getDevice(), getTabsInPixels ());
-}
-
-int[] getTabsInPixels () {
 	return tabs;
 }
 
@@ -1834,10 +1779,6 @@ public int getTextDirection () {
  */
 public int getWidth () {
 	checkLayout ();
-	return DPIUtil.autoScaleDown(getDevice(), getWidthInPixels());
-}
-
-int getWidthInPixels () {
 	return wrapWidth;
 }
 
@@ -1854,9 +1795,6 @@ int getWidthInPixels () {
 */
 public int getWrapIndent () {
 	checkLayout ();
-	return DPIUtil.autoScaleDown(getDevice(), getWrapIndentInPixels());
-}
-int getWrapIndentInPixels () {
 	return wrapIndent;
 }
 
@@ -2041,11 +1979,6 @@ public void setFont (Font font) {
  * @since 3.2
  */
 public void setIndent (int indent) {
-	checkLayout ();
-	setIndentInPixels(DPIUtil.autoScaleUp(getDevice(), indent));
-}
-
-void setIndentInPixels (int indent) {
 	checkLayout();
 	if (indent < 0) return;
 	if (this.indent == indent) return;
@@ -2115,10 +2048,6 @@ public void setOrientation(int orientation) {
 public void setSpacing (int spacing) {
 	checkLayout();
 	if (spacing < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	setSpacingInPixels(DPIUtil.autoScaleUp(getDevice(), spacing));
-}
-
-void setSpacingInPixels (int spacing) {
 	OS.pango_layout_set_spacing(layout, spacing * OS.PANGO_SCALE);
 }
 
@@ -2338,10 +2267,6 @@ public void setStyle (TextStyle style, int start, int end) {
 public void setTabs(int[] tabs) {
 	checkLayout();
 	if (this.tabs == null && tabs == null) return;
-	setTabsInPixels (DPIUtil.autoScaleUp (getDevice(), tabs));
-}
-
-void setTabsInPixels (int[] tabs) {
 	if (Arrays.equals (this.tabs, tabs)) return;
 	this.tabs = tabs;
 	if (tabs == null) {
@@ -2434,10 +2359,6 @@ public void setTextDirection (int textDirection) {
 public void setWidth (int width) {
 	checkLayout ();
 	if (width < -1 || width == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	setWidthInPixels(DPIUtil.autoScaleUp(getDevice(), width));
-}
-
-void setWidthInPixels (int width) {
 	if (wrapWidth == width) return;
 	freeRuns();
 	wrapWidth = width;
@@ -2472,10 +2393,6 @@ void setWidth () {
 public void setWrapIndent (int wrapIndent) {
 	checkLayout();
 	if (wrapIndent < 0) return;
-	setWrapIndentInPixels(DPIUtil.autoScaleUp(getDevice(), wrapIndent));
-}
-
-void setWrapIndentInPixels (int wrapIndent) {
 	if (this.wrapIndent == wrapIndent) return;
 	this.wrapIndent = wrapIndent;
 	OS.pango_layout_set_indent(layout, (indent - wrapIndent) * OS.PANGO_SCALE);
