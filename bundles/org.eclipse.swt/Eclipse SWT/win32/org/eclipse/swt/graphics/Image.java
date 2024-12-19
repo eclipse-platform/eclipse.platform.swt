@@ -22,7 +22,6 @@ import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.DPIUtil.*;
 import org.eclipse.swt.internal.gdip.*;
 import org.eclipse.swt.internal.win32.*;
-import org.eclipse.swt.widgets.*;
 
 /**
  * Instances of this class are graphics which have been prepared
@@ -2034,27 +2033,6 @@ public static Image win32_new(Device device, int type, long handle) {
 	image.type = type;
 	image.new ImageHandle(handle, image.getZoom());
 	return image;
-}
-
-//This class is only used for a workaround and will be removed again
-private class StaticZoomUpdater implements AutoCloseable {
-	private final boolean updateStaticZoom;
-	private final int currentNativeDeviceZoom;
-
-	private StaticZoomUpdater(int targetZoom) {
-		this.currentNativeDeviceZoom = DPIUtil.getNativeDeviceZoom();
-		this.updateStaticZoom = this.currentNativeDeviceZoom != targetZoom && device instanceof Display display && display.isRescalingAtRuntime();
-		if (updateStaticZoom) {
-			DPIUtil.setDeviceZoom(targetZoom);
-		}
-	}
-
-	@Override
-	public void close() {
-		if (updateStaticZoom) {
-			DPIUtil.setDeviceZoom(currentNativeDeviceZoom);
-		}
-	}
 }
 
 private abstract class AbstractImageProviderWrapper {
