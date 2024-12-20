@@ -2042,9 +2042,8 @@ private abstract class AbstractImageProviderWrapper {
 	abstract AbstractImageProviderWrapper createCopy(Image image);
 
 	protected void checkProvider(Object provider, Class<?> expectedClass) {
-		if (provider == null || !expectedClass.isAssignableFrom(provider.getClass())) {
-			SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		}
+		if (provider == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+		if (!expectedClass.isAssignableFrom(provider.getClass())) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 
 	@Override
