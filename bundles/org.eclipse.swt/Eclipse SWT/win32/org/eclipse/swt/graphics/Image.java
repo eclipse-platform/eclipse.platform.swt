@@ -2041,6 +2041,12 @@ private abstract class AbstractImageProviderWrapper {
 	abstract ImageHandle getImageMetadata(int zoom);
 	abstract AbstractImageProviderWrapper createCopy(Image image);
 
+	protected void checkProvider(Object provider, Class<?> expectedClass) {
+		if (provider == null || !expectedClass.isAssignableFrom(provider.getClass())) {
+			SWT.error(SWT.ERROR_NULL_ARGUMENT);
+		}
+	}
+
 	@Override
 	public int hashCode() {
 		return getProvider().hashCode();
@@ -2061,7 +2067,8 @@ private class ImageFileNameProviderWrapper extends AbstractImageProviderWrapper 
 	private final ImageFileNameProvider provider;
 
 	ImageFileNameProviderWrapper(ImageFileNameProvider provider) {
-		this.provider = Objects.requireNonNull(provider);
+		checkProvider(provider, ImageFileNameProvider.class);
+		this.provider = provider;
 	}
 
 	@Override
@@ -2111,7 +2118,8 @@ private class ImageDataProviderWrapper extends AbstractImageProviderWrapper {
 	private final ImageDataProvider provider;
 
 	ImageDataProviderWrapper(ImageDataProvider provider) {
-		this.provider = Objects.requireNonNull(provider);
+		checkProvider(provider, ImageDataProvider.class);
+		this.provider = provider;
 	}
 
 	@Override
