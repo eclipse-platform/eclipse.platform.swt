@@ -193,7 +193,7 @@ public ImageData[] load(InputStream stream, int zoom) {
 				}
 			}
 		} catch (IOException e) {
-			//ignore.
+			SWT.error(SWT.ERROR_INVALID_IMAGE);
 		}
 	}
 	return loadDefault(stream);

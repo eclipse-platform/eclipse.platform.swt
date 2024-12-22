@@ -18,6 +18,7 @@ import java.awt.image.*;
 import java.io.*;
 import java.util.*;
 import org.eclipse.swt.graphics.SVGRasterizer;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.RGB;
@@ -77,8 +78,10 @@ public class JSVGRasterizer implements SVGRasterizer {
 			svgDocument.render(null, g);
 			g.dispose();
 			return convertToSWT(image);
+		} else {
+			SWT.error(SWT.ERROR_INVALID_IMAGE);
+			return null;
 		}
-		return null;
 	}
 	
 	private ImageData convertToSWT(BufferedImage bufferedImage) {
