@@ -10,7 +10,7 @@ on:
     branches: [ master ]
 
 env:
-  SWT_GTK4: 1
+  SWT_GTK4: 0
 
 jobs:
   event_file:
