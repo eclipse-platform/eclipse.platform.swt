@@ -74,7 +74,7 @@ cd `dirname $0`
 
 MAKE_TYPE=make
 
-export CFLAGS='-O -Wall -fPIC'
+export CFLAGS="-O -Wall -fPIC ${GTK_XCFLAGS}"
 
 # Determine which OS we are on
 if [ "${OS}" = "" ]; then

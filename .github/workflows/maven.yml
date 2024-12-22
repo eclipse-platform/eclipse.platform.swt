@@ -60,6 +60,8 @@ jobs:
       with:
         maven-version: 3.9.9
     - name: Build
+      env:
+        GTK_XCFLAGS: '-Wno-deprecated-declarations'
       run: >-
         ${{ contains(matrix.config.native, 'linux') && 'xvfb-run' || '' }}
         mvn --batch-mode -V -U -e
