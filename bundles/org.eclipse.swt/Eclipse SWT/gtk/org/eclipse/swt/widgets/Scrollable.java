@@ -16,7 +16,6 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.gtk3.*;
 import org.eclipse.swt.internal.gtk4.*;
@@ -116,12 +115,6 @@ long clientHandle () {
  */
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
-	Rectangle rect = DPIUtil.autoScaleUp(new Rectangle (x, y, width, height));
-	return DPIUtil.autoScaleDown(computeTrimInPixels(rect.x, rect.y, rect.width, rect.height));
-}
-
-Rectangle computeTrimInPixels (int x, int y, int width, int height) {
-	checkWidget();
 	int border = 0;
 	if (fixedHandle != 0) border += gtk_container_get_border_width_or_margin (fixedHandle);
 	if (scrolledHandle != 0) border += gtk_container_get_border_width_or_margin (scrolledHandle);
@@ -211,7 +204,7 @@ void destroyScrollBar (ScrollBar bar) {
 }
 
 @Override
-int getBorderWidthInPixels () {
+public int getBorderWidth() {
 	checkWidget();
 	int border = 0;
 	if (fixedHandle != 0) border += gtk_container_get_border_width_or_margin (fixedHandle);
@@ -245,11 +238,6 @@ int getBorderWidthInPixels () {
  * @see #computeTrim
  */
 public Rectangle getClientArea () {
-	checkWidget ();
-	return DPIUtil.autoScaleDown(getClientAreaInPixels());
-}
-
-Rectangle getClientAreaInPixels () {
 	checkWidget ();
 	if(RESIZE_ON_GETCLIENTAREA) {
 		forceResize ();

@@ -618,7 +618,7 @@ void clearAll (boolean all, long parentIter) {
 }
 
 @Override
-Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
+public Point computeSize(int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
@@ -645,7 +645,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	 * the number of items at the root of the tree.
 	 */
 	if (hHint == SWT.DEFAULT && size.y == getHeaderHeight()) {
-		int itemHeight = getItemHeightInPixels();
+		int itemHeight = getItemHeight();
 
 		// Initialize to height of root items & header
 		size.y = getItemCount() * itemHeight + getHeaderHeight();
@@ -657,7 +657,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 		}
 	}
 
-	Rectangle trim = computeTrimInPixels (0, 0, size.x, size.y);
+	Rectangle trim = computeTrim(0, 0, size.x, size.y);
 	size.x = trim.width;
 	/*
 	 * Feature in GTK: sometimes GtkScrolledWindow's with no scrollbars
@@ -1320,7 +1320,7 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 		long [] path = new long [1];
 		if (GTK.gtk_gesture_drag_get_start_point(dragGesture, startX, startY)) {
 			if (getHeaderVisible()) {
-				startY[0]-= getHeaderHeightInPixels();
+				startY[0]-= getHeaderHeight();
 			}
 			if (GTK.gtk_tree_view_get_path_at_pos (handle, (int) startX[0], (int) startY[0], path, null, null, null)) {
 				if (path [0] != 0) {
@@ -1343,7 +1343,7 @@ long eventWindow () {
 }
 
 @Override
-Rectangle getClientAreaInPixels () {
+public Rectangle getClientArea() {
 	checkWidget();
 	if(RESIZE_ON_GETCLIENTAREA) {
 		forceResize();
@@ -1602,11 +1602,6 @@ TreeItem getFocusItem () {
  */
 public int getGridLineWidth () {
 	checkWidget ();
-	return DPIUtil.autoScaleDown (getGridLineWidthInPixels ());
-}
-
-int getGridLineWidthInPixels () {
-	checkWidget();
 	return 0;
 }
 
@@ -1656,11 +1651,6 @@ public Color getHeaderForeground () {
  */
 public int getHeaderHeight () {
 	checkWidget ();
-	return DPIUtil.autoScaleDown (getHeaderHeightInPixels ());
-}
-
-int getHeaderHeightInPixels () {
-	checkWidget();
 	if (!GTK.gtk_tree_view_get_headers_visible(handle)) return 0;
 
 	int height = 0;
@@ -1771,11 +1761,6 @@ public TreeItem getItem (int index) {
  */
 public TreeItem getItem (Point point) {
 	checkWidget();
-	return getItemInPixels(DPIUtil.autoScaleUp(point));
-}
-
-TreeItem getItemInPixels (Point point) {
-	checkWidget ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
 	long [] path = new long [1];
 	GTK.gtk_widget_realize (handle);
@@ -1846,11 +1831,6 @@ public int getItemCount () {
  */
 public int getItemHeight () {
 	checkWidget ();
-	return DPIUtil.autoScaleDown (getItemHeightInPixels ());
-}
-
-int getItemHeightInPixels () {
-	checkWidget();
 	int height = 0;
 	int itemCount = GTK.gtk_tree_model_iter_n_children(modelHandle, 0);
 
@@ -3078,11 +3058,6 @@ void sendMeasureEvent (long cell, long width, long height) {
 			int imageWidth = 0;
 			if (image != null && !image.isDisposed()) {
 				Rectangle bounds;
-				if (DPIUtil.useCairoAutoScale()) {
-					bounds = image.getBounds ();
-				} else {
-					bounds = image.getBoundsInPixels ();
-				}
 				bounds = image.getBounds ();
 				imageWidth = bounds.width;
 			}
@@ -3094,7 +3069,7 @@ void sendMeasureEvent (long cell, long width, long height) {
 			event.index = columnIndex;
 			event.gc = gc;
 			Rectangle eventRect = new Rectangle (0, 0, contentWidth [0], contentHeight [0]);
-			event.setBounds (DPIUtil.autoScaleDown (eventRect));
+			event.setBounds(eventRect);
 			long path = GTK.gtk_tree_model_get_path (modelHandle, iter);
 			long selection = GTK.gtk_tree_view_get_selection (handle);
 			if (GTK.gtk_tree_selection_path_is_selected (selection, path)) {
@@ -3103,7 +3078,7 @@ void sendMeasureEvent (long cell, long width, long height) {
 			GTK.gtk_tree_path_free (path);
 			sendEvent (SWT.MeasureItem, event);
 			gc.dispose ();
-			Rectangle rect = DPIUtil.autoScaleUp (event.getBounds ());
+			Rectangle rect = event.getBounds();
 			contentWidth [0] = rect.width - imageWidth;
 			if (contentHeight [0] < rect.height) contentHeight [0] = rect.height;
 			if (width != 0) C.memmove (width, contentWidth, 4);
@@ -3253,12 +3228,10 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 				if (cr != 0) {
 					// Use the original rectangle, not the Cairo clipping for the y, width, and height values.
 					// See bug 535124.
-					Rectangle rect2 = DPIUtil.autoScaleDown(rect);
-					gc.setClipping(rect2.x, rect2.y, rect2.width, rect2.height);
+					gc.setClipping(rect.x, rect.y, rect.width, rect.height);
 				} else {
-					Rectangle rect2 = DPIUtil.autoScaleDown(rect);
 					// Caveat: rect2 is necessary because GC#setClipping(Rectangle) got broken by bug 446075
-					gc.setClipping(rect2.x, rect2.y, rect2.width, rect2.height);
+					gc.setClipping(rect.x, rect.y, rect.width, rect.height);
 				}
 
 				// SWT.PaintItem/SWT.EraseItem often expect that event.y matches
@@ -3275,7 +3248,7 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 					event.index = columnIndex;
 					event.gc = gc;
 					event.detail = drawState;
-					event.setBounds (DPIUtil.autoScaleDown (eventRect));
+					event.setBounds(eventRect);
 					sendEvent (SWT.EraseItem, event);
 				} finally {
 					Cairo.cairo_translate (cr, 0, y_offset);
@@ -3300,7 +3273,7 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 	if ((drawState & SWT.BACKGROUND) != 0 && (drawState & SWT.SELECTED) == 0) {
 		GC gc = getGC(cr);
 		gc.setBackground (item.getBackground (columnIndex));
-		gc.fillRectangle (DPIUtil.autoScaleDown (rendererRect.toRectangle ()));
+		gc.fillRectangle(rendererRect.toRectangle());
 		gc.dispose ();
 	}
 	if ((drawState & SWT.FOREGROUND) != 0 || GTK.GTK_IS_CELL_RENDERER_TOGGLE (cell)) {
@@ -3336,11 +3309,7 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 				int imageWidth = 0;
 				if (image != null) {
 					Rectangle bounds;
-					if(DPIUtil.useCairoAutoScale()) {
-						bounds = image.getBounds ();
-					} else {
-						bounds = image.getBoundsInPixels ();
-					}
+					bounds = image.getBounds();
 					imageWidth = bounds.width;
 				}
 				// Account for the image width on GTK3, see bug 535124.
@@ -3378,10 +3347,8 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 				if ((style & SWT.MIRRORED) != 0) {
 					rect.x = getClientWidth () - rect.width - rect.x;
 				}
-
-				Rectangle rect2 = DPIUtil.autoScaleDown(rect);
 				// Caveat: rect2 is necessary because GC#setClipping(Rectangle) got broken by bug 446075
-				gc.setClipping(rect2.x, rect2.y, rect2.width, rect2.height);
+				gc.setClipping(rect.x, rect.y, rect.width, rect.height);
 
 				// SWT.PaintItem/SWT.EraseItem often expect that event.y matches
 				// what 'event.item.getBounds()' returns. The workaround is to
@@ -3397,7 +3364,7 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 					event.index = columnIndex;
 					event.gc = gc;
 					event.detail = drawState;
-					event.setBounds (DPIUtil.autoScaleDown (eventRect));
+					event.setBounds(eventRect);
 					sendEvent (SWT.PaintItem, event);
 				} finally {
 					Cairo.cairo_translate (cr, 0, y_offset);
@@ -3478,7 +3445,7 @@ public void setInsertMark (TreeItem item, boolean before) {
 	}
 	if (item.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (item.parent != this) return;
-	Rectangle rect = item.getBoundsInPixels();
+	Rectangle rect = item.getBounds();
 	long [] path = new long [1];
 	GTK.gtk_widget_realize (handle);
 	if (!GTK.gtk_tree_view_get_path_at_pos(handle, rect.x, rect.y, path, null, null, null)) return;
