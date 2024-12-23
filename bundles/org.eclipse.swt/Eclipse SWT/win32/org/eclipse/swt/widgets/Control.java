@@ -618,8 +618,8 @@ public Point computeSize (int wHint, int hHint) {
 public Point computeSize (int wHint, int hHint, boolean changed){
 	checkWidget ();
 	int zoom = getZoom();
-	wHint = (wHint != SWT.DEFAULT ? DPIUtil.scaleUp(wHint, zoom) : wHint);
-	hHint = (hHint != SWT.DEFAULT ? DPIUtil.scaleUp(hHint, zoom) : hHint);
+	wHint = (wHint != SWT.DEFAULT ? DPIUtil.scaleUp(wHint, nativeZoom) : wHint);
+	hHint = (hHint != SWT.DEFAULT ? DPIUtil.scaleUp(hHint, nativeZoom) : hHint);
 	return DPIUtil.scaleDown(computeSizeInPixels(wHint, hHint, changed), zoom);
 }
 
