@@ -58,22 +58,23 @@ public abstract class Resource {
 		/**
 		 * Allows to disarm this cleaning action.
 		 */
-		private final AtomicBoolean ignore = new AtomicBoolean(false);
+		private final AtomicBoolean reporting = new AtomicBoolean(false);
 
 		ResourceTracker(Error allocationStack) {
 			this.allocationStack = allocationStack;
 		}
 
 		/**
-		 * Causes all future invocations of {@link #run()} to be ignored
+		 * @param value whether the {@link Resource#nonDisposedReporter} should be
+		 *              notified
 		 */
-		public void ignore() {
-			ignore.set(true);
+		public void setReporting(boolean value) {
+			reporting.set(value);
 		}
 
 		@Override
 		public void run() {
-			if (ignore.get()) return;
+			if (!reporting.get()) return;
 			if (nonDisposedReporter == null) return;
 
 			nonDisposedReporter.accept(allocationStack);
@@ -145,7 +146,7 @@ void destroyHandlesExcept(Set<Integer> zoomLevels) {
  * This method does nothing if the resource is already disposed.
  */
 public void dispose() {
-	if (tracker != null) tracker.ignore();
+	if (tracker != null) tracker.setReporting(false);
 	if (device == null) return;
 	if (device.isDisposed()) return;
 	destroy();
@@ -169,12 +170,13 @@ public Device getDevice() {
 
 void ignoreNonDisposed() {
 	if (tracker != null) {
-		tracker.ignore();
+		tracker.setReporting(false);
 	}
 }
 
 void init() {
 	if (device.tracking) device.new_Object(this);
+	if (tracker != null) tracker.setReporting(true);
 }
 
 void initNonDisposeTracking() {
