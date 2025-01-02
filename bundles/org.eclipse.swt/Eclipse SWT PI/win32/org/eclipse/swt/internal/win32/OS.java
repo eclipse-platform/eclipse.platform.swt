@@ -39,6 +39,7 @@ public class OS extends C {
 	/**
 	 * Values taken from https://en.wikipedia.org/wiki/List_of_Microsoft_Windows_versions
 	 */
+	public static final int WIN32_BUILD_WIN8_1 = 9600; // "Windows 8.1"
 	public static final int WIN32_BUILD_WIN10_1607 = 14393; // "Windows 10 August 2016 Update"
 	public static final int WIN32_BUILD_WIN10_1809 = 17763; // "Windows 10 October 2018 Update"
 	public static final int WIN32_BUILD_WIN10_2004 = 19041; // "Windows 10 May 2020 Update"
@@ -1068,6 +1069,7 @@ public class OS extends C {
 	public static final int PLANES = 0xe;
 	public static final int PM_NOREMOVE = 0x0;
 	public static final int PM_NOYIELD = 0x2;
+	public static final int PW_RENDERFULLCONTENT = 0x2; // undocumented ( >= Windows 8.1)
 	public static final int QS_HOTKEY = 0x0080;
 	public static final int QS_KEY = 0x0001;
 	public static final int QS_MOUSEMOVE = 0x0002;
