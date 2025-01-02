@@ -762,7 +762,7 @@ private String getValidUrl() {
 	testLogAppend("PLUGIN_PATH: " + pluginPath);
 	// When test is run via Ant, URL needs to be acquired differently. In that case the PLUGIN_PATH property is set and used.
 	if (pluginPath != null) {
-		return pluginPath + "/data/testWebsiteWithTitle.html";
+		return Path.of(pluginPath, "data/testWebsiteWithTitle.html").toUri().toString();
 	} else {
 		// used when ran from Eclipse gui.
 		return Test_org_eclipse_swt_browser_Browser.class.getClassLoader().getResource("testWebsiteWithTitle.html").toString();
