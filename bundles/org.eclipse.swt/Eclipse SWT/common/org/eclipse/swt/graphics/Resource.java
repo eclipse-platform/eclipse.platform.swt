@@ -13,7 +13,9 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
+import java.lang.ref.*;
 import java.util.*;
+import java.util.concurrent.atomic.*;
 import java.util.function.*;
 
 import org.eclipse.swt.*;
@@ -44,41 +46,37 @@ import org.eclipse.swt.*;
 public abstract class Resource {
 
 	/**
-	 * Used to track not disposed SWT resource. A separate class allows
-	 * not to have the {@link #finalize} when tracking is disabled, avoiding
-	 * possible performance issues in GC.
+	 * Used to track not disposed SWT resource.
 	 */
-	private static class ResourceTracker {
-		/**
-		 * Resource that is tracked here
-		 */
-		private Resource resource;
-
+	private static class ResourceTracker implements Runnable {
 		/**
 		 * Recorded at Resource creation if {@link #setNonDisposeHandler} was
 		 * enabled, used to track resource disposal
 		 */
-		private Error allocationStack;
+		private final Error allocationStack;
 
 		/**
-		 * Allows to ignore specific Resources even if they are not disposed
-		 * properly, used for example for Fonts that SWT doesn't own.
+		 * Allows to disarm this cleaning action.
 		 */
-		boolean ignoreMe;
+		private final AtomicBoolean ignore = new AtomicBoolean(false);
 
-		ResourceTracker(Resource resource, Error allocationStack) {
-			this.resource = resource;
+		ResourceTracker(Error allocationStack) {
 			this.allocationStack = allocationStack;
 		}
 
+		/**
+		 * Causes all future invocations of {@link #run()} to be ignored
+		 */
+		public void ignore() {
+			ignore.set(true);
+		}
+
 		@Override
-		protected void finalize() {
-			if (ignoreMe) return;
+		public void run() {
+			if (ignore.get()) return;
 			if (nonDisposedReporter == null) return;
 
-			// If the Resource is GC'ed before it was disposed, this is a leak.
-			if (!resource.isDisposed())
-				nonDisposedReporter.accept(allocationStack);
+			nonDisposedReporter.accept(allocationStack);
 		}
 	}
 
@@ -86,6 +84,11 @@ public abstract class Resource {
 	 * the device where this resource was created
 	 */
 	Device device;
+
+	/**
+	 * Invokes {@link ResourceTracker#run()} once the resource is eligible for GC
+	 */
+	private static final Cleaner cleaner = Cleaner.create();
 
 	/**
 	 * Used to report not disposed SWT resources, null by default
@@ -142,6 +145,7 @@ void destroyHandlesExcept(Set<Integer> zoomLevels) {
  * This method does nothing if the resource is already disposed.
  */
 public void dispose() {
+	if (tracker != null) tracker.ignore();
 	if (device == null) return;
 	if (device.isDisposed()) return;
 	destroy();
@@ -165,7 +169,7 @@ public Device getDevice() {
 
 void ignoreNonDisposed() {
 	if (tracker != null) {
-		tracker.ignoreMe = true;
+		tracker.ignore();
 	}
 }
 
@@ -177,17 +181,15 @@ void initNonDisposeTracking() {
 	// Color doesn't really have any resource to be leaked, ignore.
 	if (this instanceof Color) return;
 
-	// Avoid performance costs of having '.finalize()' when not tracking.
+	// Avoid performance costs of gathering the current stack trace when not tracking.
 	if (nonDisposedReporter == null) return;
 
 	// Capture a stack trace to help investigating the leak
 	Error error = new Error("SWT Resource was not properly disposed"); //$NON-NLS-1$
 
-	// Allocate a helper class with '.finalize()' in it, it will do the actual
-	// work of detecting and reporting errors. This works because Resource
-	// holds the only reference to 'ResourceTracker' and therefore the tracker
-	// is only GC'ed when Resource itself is ready to be GC'ed.
-	tracker = new ResourceTracker(this, error);
+	// Create and register the tracker to run as a cleaning action for this resource.
+	tracker = new ResourceTracker(error);
+	cleaner.register(this, tracker);
 }
 
 /**
