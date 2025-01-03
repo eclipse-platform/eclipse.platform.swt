@@ -56,20 +56,12 @@ public abstract class Resource {
 		private final Error allocationStack;
 
 		/**
-		 * Allows to disarm this cleaning action.
+		 * Controls whether the {@link Resource#nonDisposedReporter} should be notified
 		 */
 		private final AtomicBoolean reporting = new AtomicBoolean(false);
 
 		ResourceTracker(Error allocationStack) {
 			this.allocationStack = allocationStack;
-		}
-
-		/**
-		 * @param value whether the {@link Resource#nonDisposedReporter} should be
-		 *              notified
-		 */
-		public void setReporting(boolean value) {
-			reporting.set(value);
 		}
 
 		@Override
@@ -146,7 +138,7 @@ void destroyHandlesExcept(Set<Integer> zoomLevels) {
  * This method does nothing if the resource is already disposed.
  */
 public void dispose() {
-	if (tracker != null) tracker.setReporting(false);
+	if (tracker != null) tracker.reporting.set(false);
 	if (device == null) return;
 	if (device.isDisposed()) return;
 	destroy();
@@ -170,13 +162,15 @@ public Device getDevice() {
 
 void ignoreNonDisposed() {
 	if (tracker != null) {
-		tracker.setReporting(false);
+		tracker.reporting.set(false);
 	}
 }
 
 void init() {
 	if (device.tracking) device.new_Object(this);
-	if (tracker != null) tracker.setReporting(true);
+	if (tracker != null && tracker.reporting.compareAndSet(false, true)) {
+		cleaner.register(this, tracker);
+	}
 }
 
 void initNonDisposeTracking() {
@@ -189,9 +183,8 @@ void initNonDisposeTracking() {
 	// Capture a stack trace to help investigating the leak
 	Error error = new Error("SWT Resource was not properly disposed"); //$NON-NLS-1$
 
-	// Create and register the tracker to run as a cleaning action for this resource.
+	// Create the tracker that will later be registered as a cleaning action for this resource.
 	tracker = new ResourceTracker(error);
-	cleaner.register(this, tracker);
 }
 
 /**
