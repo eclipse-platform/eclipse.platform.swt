@@ -765,7 +765,7 @@ public class Button extends Control implements ICustomWidget {
 		if (text != null && !text.isEmpty()) {
 			GC originalGC = new GC(this);
 			IGraphicsContext gc = SWT.USE_SKIJA
-					? new SkijaGC(originalGC)
+					? new SkijaGC(originalGC, null)
 					: originalGC;
 			gc.setFont(getFont());
 			Point textExtent = gc.textExtent(text, DRAW_FLAGS);

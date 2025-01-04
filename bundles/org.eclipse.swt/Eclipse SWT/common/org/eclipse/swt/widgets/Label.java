@@ -193,7 +193,7 @@ public class Label extends Control implements ICustomWidget {
 
 		if (text != null && !"".equals(text)) {
 			GC originalGC = new GC(this);
-			IGraphicsContext gc = SWT.USE_SKIJA ? new SkijaGC(originalGC) : originalGC;
+			IGraphicsContext gc = SWT.USE_SKIJA ? new SkijaGC(originalGC, null) : originalGC;
 			gc.setFont(getFont());
 			Point textExtent = gc.textExtent(text, DRAW_FLAGS);
 			gc.dispose();
