@@ -430,14 +430,10 @@ public class Button extends Control implements ICustomWidget {
 		IGraphicsContext gc = originalGC;
 		Image doubleBufferingImage = null;
 
-		if (SWT.getPlatform().equals("win32")) {
+		if (SWT.getPlatform().equals("win32") | SWT.getPlatform().equals("gtk")) {
 			// Extract background color on first execution
 			if (background == null) {
-				Image backgroundColorImage = new Image(getDisplay(), r.width, r.height);
-				originalGC.copyArea(backgroundColorImage, 0, 0);
-				int pixel = backgroundColorImage.getImageData().getPixel(0, 0);
-				backgroundColorImage.dispose();
-				background = new Color((pixel & 0xFF000000) >>> 24, (pixel & 0xFF0000) >>> 16, (pixel & 0xFF00) >>> 8);
+				extractAndStoreBackgroundColor(r, originalGC);
 			}
 			style |= SWT.NO_BACKGROUND;
 		}
@@ -606,6 +602,18 @@ public class Button extends Control implements ICustomWidget {
 			doubleBufferingImage.dispose();
 		}
 		originalGC.dispose();
+	}
+
+	private void extractAndStoreBackgroundColor(Rectangle r, GC originalGC) {
+		Image backgroundColorImage = new Image(getDisplay(), r.width, r.height);
+		originalGC.copyArea(backgroundColorImage, 0, 0);
+		int pixel = backgroundColorImage.getImageData().getPixel(0, 0);
+		backgroundColorImage.dispose();
+		if (SWT.getPlatform().equals("win32")) {
+			background = new Color((pixel & 0xFF000000) >>> 24, (pixel & 0xFF0000) >>> 16, (pixel & 0xFF00) >>> 8);
+		} else if (SWT.getPlatform().equals("gtk")) {
+			background = new Color((pixel & 0xFF0000) >>> 16, (pixel & 0xFF00) >>> 8, (pixel & 0xFF));
+		}
 	}
 
 	private boolean isArrowButton() {
