@@ -2269,7 +2269,7 @@ public Font getFont() {
  * </ul>
  */
 @Override
-public IFontMetrics getFontMetrics() {
+public FontMetrics getFontMetrics() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (data.context == 0) createLayout();
 	checkGC(FONT);
