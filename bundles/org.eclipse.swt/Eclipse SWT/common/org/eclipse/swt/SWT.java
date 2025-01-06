@@ -15,6 +15,7 @@
 package org.eclipse.swt;
 
 
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.widgets.*;
 
@@ -4846,6 +4847,14 @@ public static void error (int code) {
  */
 public static void error (int code, Throwable throwable) {
 	error (code, throwable, null);
+}
+
+public static Color convertPixelToColor(int pixelValue) {
+	if (SWT.getPlatform().equals("gtk")) {
+		return new Color((pixelValue & 0xFF0000) >>> 16, (pixelValue & 0xFF00) >>> 8, (pixelValue & 0xFF));
+	} else {
+		return new Color((pixelValue & 0xFF000000) >>> 24, (pixelValue & 0xFF0000) >>> 16, (pixelValue & 0xFF00) >>> 8);
+	}
 }
 
 /**

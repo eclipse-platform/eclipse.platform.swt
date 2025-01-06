@@ -47,7 +47,7 @@ public class SkijaGC implements IGraphicsContext {
 		Image colorImage = new Image(gc.getDevice(), originalGCArea.width, originalGCArea.height);
 		gc.copyArea(colorImage, 0, 0);
 		int pixel = colorImage.getImageData().getPixel(0, 0);
-		Color originalColor = new Color((pixel & 0xFF000000) >>> 24, (pixel & 0xFF0000) >>> 16, (pixel & 0xFF00) >>> 8);
+		Color originalColor = SWT.convertPixelToColor(pixel);
 		colorImage.dispose();
 		return originalColor;
 	}
