@@ -105,8 +105,7 @@ import org.junit.runners.Parameterized.Parameters;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class Test_org_eclipse_swt_browser_Browser extends Test_org_eclipse_swt_widgets_Composite {
 
-	// TODO Reduce to reasonable value
-	private static Duration MAXIMUM_BROWSER_CREATION_TIME = Duration.ofSeconds(90);
+	private static Duration MAXIMUM_BROWSER_CREATION_TIME = Duration.ofSeconds(10);
 
 	static {
 		try {
@@ -114,7 +113,7 @@ public class Test_org_eclipse_swt_browser_Browser extends Test_org_eclipse_swt_w
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		System.setProperty("org.eclipse.swt.internal.win32.Edge.timeout", Long.toString(MAXIMUM_BROWSER_CREATION_TIME.toMillis()));
+		System.setProperty("org.eclipse.swt.internal.win32.Edge.timeout", Long.toString(Duration.ofSeconds(90).toMillis()));
 	}
 
 	// CONFIG
