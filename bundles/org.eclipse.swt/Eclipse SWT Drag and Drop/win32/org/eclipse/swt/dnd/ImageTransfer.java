@@ -184,7 +184,7 @@ public Object nativeToJava(TransferData transferData) {
 					pSourceBits -= scanline;
 				}
 			}
-			Image image = Image.win32_new(null, SWT.BITMAP, memDib);
+			Image image = Image.win32_new(null, SWT.BITMAP, memDib, DPIUtil.getNativeDeviceZoom());
 			ImageData data = image.getImageData (DPIUtil.getDeviceZoom ());
 			OS.DeleteObject(memDib);
 			image.dispose();
