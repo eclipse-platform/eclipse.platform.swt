@@ -13,26 +13,52 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.win32.widgets;
 
+import static org.junit.Assert.assertEquals;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 public class Test_org_eclipse_swt_widgets_Display {
 
+	private Display display;
+	private Shell shell;
+
+	@Before
+	public void setup() {
+		display = new Display();
+		shell = new Shell(display);
+	}
+
+	@After
+	public void teardown() {
+		shell.dispose();
+		display.dispose();
+	}
+
 	@Test
 	public void test_isXMouseActive() throws NoSuchMethodException, SecurityException, IllegalAccessException,
 			IllegalArgumentException, InvocationTargetException {
-		Display display = new Display();
-		try {
-			Method method = display.getClass().getDeclaredMethod("isXMouseActive");
-			method.setAccessible(true);
+		Method method = display.getClass().getDeclaredMethod("isXMouseActive");
+		method.setAccessible(true);
 
-			boolean xMouseActive = (boolean) method.invoke(display);
-			System.out.println("org.eclipse.swt.widgets.Display.isXMouseActive(): " + xMouseActive);
-		} finally {
-			display.dispose();
-		}
+		boolean xMouseActive = (boolean) method.invoke(display);
+		System.out.println("org.eclipse.swt.widgets.Display.isXMouseActive(): " + xMouseActive);
+	}
+
+	@Test
+	public void test_mixedLfAndCrfl() {
+		//Use text control for testing since Display.withCrLf() is package private
+		Text text = new Text(shell, SWT.None);
+
+		text.setText("First Line \n second line \r\n third line");
+		assertEquals("First Line \r\n second line \r\n third line", text.getText());
 	}
 }
