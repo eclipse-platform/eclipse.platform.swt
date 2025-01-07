@@ -1204,7 +1204,7 @@ static Image createIcon (Image image, int zoom) {
 	if (hIcon == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.DeleteObject (hBitmap);
 	OS.DeleteObject (hMask);
-	return Image.win32_new (device, SWT.ICON, hIcon);
+	return Image.win32_new (device, SWT.ICON, hIcon, zoom);
 }
 
 long getTextSearchIcon(int size) {
@@ -2543,27 +2543,28 @@ Font getSystemFont (int zoom) {
  */
 public Image getSystemImage (int id) {
 	checkDevice ();
+	int primaryMonitorNativeZoom = getPrimaryMonitor().getZoom();
 	switch (id) {
 		case SWT.ICON_ERROR: {
 			if (errorImage != null) return errorImage;
 			long hIcon = OS.LoadImage (0, OS.OIC_HAND, OS.IMAGE_ICON, 0, 0, OS.LR_SHARED);
-			return errorImage = Image.win32_new (this, SWT.ICON, hIcon);
+			return errorImage = Image.win32_new (this, SWT.ICON, hIcon, primaryMonitorNativeZoom);
 		}
 		case SWT.ICON_WORKING:
 		case SWT.ICON_INFORMATION: {
 			if (infoImage != null) return infoImage;
 			long hIcon = OS.LoadImage (0, OS.OIC_INFORMATION, OS.IMAGE_ICON, 0, 0, OS.LR_SHARED);
-			return infoImage = Image.win32_new (this, SWT.ICON, hIcon);
+			return infoImage = Image.win32_new (this, SWT.ICON, hIcon, primaryMonitorNativeZoom);
 		}
 		case SWT.ICON_QUESTION: {
 			if (questionImage != null) return questionImage;
 			long hIcon = OS.LoadImage (0, OS.OIC_QUES, OS.IMAGE_ICON, 0, 0, OS.LR_SHARED);
-			return questionImage = Image.win32_new (this, SWT.ICON, hIcon);
+			return questionImage = Image.win32_new (this, SWT.ICON, hIcon, primaryMonitorNativeZoom);
 		}
 		case SWT.ICON_WARNING: {
 			if (warningIcon != null) return warningIcon;
 			long hIcon = OS.LoadImage (0, OS.OIC_BANG, OS.IMAGE_ICON, 0, 0, OS.LR_SHARED);
-			return warningIcon = Image.win32_new (this, SWT.ICON, hIcon);
+			return warningIcon = Image.win32_new (this, SWT.ICON, hIcon, primaryMonitorNativeZoom);
 		}
 	}
 	return null;

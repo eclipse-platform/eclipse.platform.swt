@@ -127,8 +127,12 @@ public final class Image extends Resource implements Drawable {
  * Prevents uninitialized instances from being created outside the package.
  */
 Image (Device device) {
+	this(device, DPIUtil.getNativeDeviceZoom());
+}
+
+private Image (Device device, int nativeZoom) {
 	super(device);
-	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
+	initialNativeZoom = nativeZoom;
 	this.device.registerResourceWithZoomSupport(this);
 }
 
@@ -2030,10 +2034,10 @@ public String toString () {
  *
  * @noreference This method is not intended to be referenced by clients.
  */
-public static Image win32_new(Device device, int type, long handle) {
-	Image image = new Image(device);
+public static Image win32_new(Device device, int type, long handle, int nativeZoom) {
+	Image image = new Image(device, nativeZoom);
 	image.type = type;
-	image.new ImageHandle(handle, image.getZoom());
+	image.new ImageHandle(handle, nativeZoom);
 	return image;
 }
 

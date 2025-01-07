@@ -19,7 +19,6 @@ import java.util.stream.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.widgets.*;
 
@@ -382,16 +381,22 @@ public ImageData getImageData () {
 public ImageData getImageData (int zoom) {
 	// Windows API returns image data according to primary monitor zoom factor
 	// rather than at original scaling
-	int nativeZoomFactor = 100 * Display.getCurrent().getPrimaryMonitor().getZoom() / DPIUtil.getDeviceZoom();
-	int imageZoomFactor = 100 * zoom / nativeZoomFactor;
+	int initialNativeZoom = Display.getCurrent().getPrimaryMonitor().getZoom();
 	if (extension != null) {
 		SHFILEINFO shfi = new SHFILEINFO ();
-		int flags = OS.SHGFI_ICON | OS.SHGFI_SMALLICON | OS.SHGFI_USEFILEATTRIBUTES;
+		int flags = OS.SHGFI_ICON | OS.SHGFI_USEFILEATTRIBUTES;
+		boolean useLargeIcon = 100 * zoom /  initialNativeZoom >= 200;
+		if(useLargeIcon) {
+			flags |= OS.SHGFI_LARGEICON;
+			initialNativeZoom *= 2;
+		} else {
+			flags |= OS.SHGFI_SMALLICON;
+		}
 		TCHAR pszPath = new TCHAR (0, extension, true);
 		OS.SHGetFileInfo (pszPath.chars, OS.FILE_ATTRIBUTE_NORMAL, shfi, SHFILEINFO.sizeof, flags);
 		if (shfi.hIcon != 0) {
-			Image image = Image.win32_new (null, SWT.ICON, shfi.hIcon);
-			ImageData imageData = image.getImageData (imageZoomFactor);
+			Image image = Image.win32_new (null, SWT.ICON, shfi.hIcon, initialNativeZoom);
+			ImageData imageData = image.getImageData (zoom);
 			image.dispose ();
 			return imageData;
 		}
@@ -416,8 +421,8 @@ public ImageData getImageData (int zoom) {
 	long [] phiconSmall = new long[1], phiconLarge = null;
 	OS.ExtractIconEx (lpszFile, nIconIndex, phiconLarge, phiconSmall, 1);
 	if (phiconSmall [0] == 0) return null;
-	Image image = Image.win32_new (null, SWT.ICON, phiconSmall [0]);
-	ImageData imageData = image.getImageData (imageZoomFactor);
+	Image image = Image.win32_new (null, SWT.ICON, phiconSmall [0], initialNativeZoom);
+	ImageData imageData = image.getImageData (zoom);
 	image.dispose ();
 	return imageData;
 }
