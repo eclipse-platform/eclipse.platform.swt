@@ -5157,79 +5157,65 @@ static String withCrLf (String string) {
 	int length = string.length ();
 	if (length == 0) return string;
 
-	/*
-	* Check for an LF or CR/LF and assume the rest of
-	* the string is formated that way.  This will not
-	* work if the string contains mixed delimiters.
-	*/
+	/* If there is no LF - return string */
 	int i = string.indexOf ('\n', 0);
 	if (i == -1) return string;
-	if (i > 0 && string.charAt (i - 1) == '\r') {
-		return string;
-	}
 
-	/*
-	* The string is formatted with LF.  Compute the
-	* number of lines and the size of the buffer
-	* needed to hold the result
-	*/
-	i++;
-	int count = 1;
-	while (i < length) {
-		if ((i = string.indexOf ('\n', i)) == -1) break;
-		count++; i++;
-	}
-	count += length;
+	/*Create String Builder for return string*/
+	StringBuilder result = new StringBuilder();
+	int j = 0;
 
-	/* Create a new string with the CR/LF line terminator. */
-	i = 0;
-	StringBuilder result = new StringBuilder (count);
+	/*If there is just LF, without CR before it,
+	add CR before LF*/
+
 	while (i < length) {
-		int j = string.indexOf ('\n', i);
-		if (j == -1) j = length;
-		result.append (string.substring (i, j));
-		if ((i = j) < length) {
-			result.append ("\r\n"); //$NON-NLS-1$
-			i++;
+		result.append(string.substring(j, i));
+		if(string.charAt(i - 1) == '\r'){
+			result.append('\n');
+		}
+		else {
+			result.append("\r\n");//$NON-NLS-1$
+		}
+		j = i + 1;
+		i = string.indexOf('\n', j);
+		if (i == -1) {
+			i = length;
+			result.append(string.substring(j));
 		}
 	}
-	return result.toString ();
+	return result.toString();
 }
 
 static char [] withCrLf (char [] string) {
-	/* If the string is empty, return the string. */
 	int length = string.length;
 	if (length == 0) return string;
-
-	/*
-	* Check for an LF or CR/LF and assume the rest of
-	* the string is formated that way.  This will not
-	* work if the string contains mixed delimiters.
-	* Also, compute the number of lines.
-	*/
 	int count = 0;
-	for (int i = 0; i < string.length; i++) {
-		if (string [i] == '\n') {
+
+	/* If there is no standalone LF - return string */
+	for(int i = 0; i < length; i++){
+		if (string[i] == '\n' && string[i-1] != '\r'){
 			count++;
-			if (count == 1 && i > 0 && string [i - 1] == '\r') return string;
 		}
 	}
 	if (count == 0) return string;
 
-	/*
-	* The string is formatted with LF.
-	*/
-	count += length;
+	/*Create new char array to return, and fill it
+      from initial char array,
+      adding CR before each stand-alone LF */
+	char[] result = new char[length + count];
+	count = 0;
 
-	/* Create a new string with the CR/LF line terminator. */
-	char [] result = new char [count];
-	for (int i = 0, j = 0; i < length && j < count; i++) {
-		if (string [i] == '\n') {
-			result [j++] = '\r';
+	for (int i = 0; i < length; i++) {
+		if (string[i] == '\n' && string[i-1] != '\r'){
+			result[i + count] = '\r';
+			count++;
+			result[i + count] = '\n';
 		}
-		result [j++] = string [i];
-	}
 
+		else {
+			result[i + count] = string[i];
+		}
+	}
 	return result;
 }
 
