@@ -4,7 +4,6 @@ import static org.eclipse.swt.tests.junit.SwtTestUtil.assertSWTProblem;
 import static org.junit.Assert.fail;
 
 import java.io.File;
-import java.net.URISyntaxException;
 import java.nio.file.Path;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
@@ -16,7 +15,6 @@ import org.eclipse.swt.tests.junit.SwtTestUtil;
 import org.eclipse.swt.widgets.Display;
 import org.junit.Before;
 import org.junit.Test;
-import org.osgi.framework.FrameworkUtil;
 
 public class Test_org_eclipse_swt_graphics_SVGRasterizer {
 
