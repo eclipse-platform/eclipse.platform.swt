@@ -1359,10 +1359,10 @@ public ImageData getImageData() {
  */
 public ImageData getImageData (int zoom) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	int currentZoom = getZoom();
-	if (zoom == currentZoom) {
-		return getImageDataAtCurrentZoom();
-	} else if (imageProvider != null) {
+	if (zoomLevelToImageHandle.containsKey(zoom)) {
+		return zoomLevelToImageHandle.get(zoom).getImageData();
+	}
+	if (imageProvider != null) {
 		return imageProvider.getImageData(zoom);
 	}
 
@@ -1371,7 +1371,9 @@ public ImageData getImageData (int zoom) {
 	if (memGC != null) {
 		return getImageDataAtCurrentZoom();
 	}
-	return DPIUtil.scaleImageData (device, getImageMetadata(currentZoom).getImageData(), zoom, currentZoom);
+	TreeSet<Integer> availableZooms = new TreeSet<>(zoomLevelToImageHandle.keySet());
+	int closestZoom = Optional.ofNullable(availableZooms.higher(zoom)).orElse(availableZooms.lower(zoom));
+	return DPIUtil.scaleImageData (device, getImageMetadata(closestZoom).getImageData(), zoom, closestZoom);
 }
 
 /**
