@@ -110,6 +110,7 @@ public class Tree extends Composite {
 	Color headerBackground, headerForeground;
 	boolean boundsChangedSinceLastDraw, wasScrolled;
 	boolean rowActivated;
+	SetDataTask setDataTask = new SetDataTask();
 
 	private long headerCSSProvider;
 
@@ -296,12 +297,10 @@ long cellDataProc (long tree_column, long cell, long tree_model, long iter, long
 		}
 	}
 	if (modelIndex == -1) return 0;
-	boolean setData = false;
 	boolean updated = false;
 	if ((style & SWT.VIRTUAL) != 0) {
 		if (!item.cached) {
-			//lastIndexOf = index [0];
-			setData = checkData (item);
+			setDataTask.enqueueItem (item);
 		}
 		if (item.updated) {
 			updated = true;
@@ -309,19 +308,17 @@ long cellDataProc (long tree_column, long cell, long tree_model, long iter, long
 		}
 	}
 	long [] ptr = new long [1];
-	if (setData) {
-		if (isPixbuf) {
-			ptr [0] = 0;
-			GTK.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_PIXBUF, ptr, -1);
-			OS.g_object_set (cell, OS.gicon, ptr [0], 0);
-			if (ptr [0] != 0) OS.g_object_unref (ptr [0]);
-		} else {
-			ptr [0] = 0;
-			GTK.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_TEXT, ptr, -1);
-			if (ptr [0] != 0) {
-				OS.g_object_set (cell, OS.text, ptr[0], 0);
-				OS.g_free (ptr[0]);
-			}
+	if (isPixbuf) {
+		ptr [0] = 0;
+		GTK.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_PIXBUF, ptr, -1);
+		OS.g_object_set (cell, OS.gicon, ptr [0], 0);
+		if (ptr [0] != 0) OS.g_object_unref (ptr [0]);
+	} else {
+		ptr [0] = 0;
+		GTK.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_TEXT, ptr, -1);
+		if (ptr [0] != 0) {
+			OS.g_object_set (cell, OS.text, ptr[0], 0);
+			OS.g_free (ptr[0]);
 		}
 	}
 	if (customDraw) {
@@ -348,7 +345,7 @@ long cellDataProc (long tree_column, long cell, long tree_model, long iter, long
 			}
 		}
 	}
-	if (setData || updated) {
+	if (updated) {
 		ignoreCell = cell;
 		setScrollWidth (tree_column, item);
 		ignoreCell = 0;
@@ -4331,6 +4328,50 @@ public void dispose() {
 	if (headerCSSProvider != 0) {
 		OS.g_object_unref(headerCSSProvider);
 		headerCSSProvider = 0;
+	}
+}
+
+class SetDataTask implements Runnable {
+	boolean scheduled;
+	LinkedHashSet<TreeItem> itemsQueue = new LinkedHashSet<> ();
+
+	void enqueueItem (TreeItem item) {
+		itemsQueue.add (item);
+		ensureExecutionScheduled ();
+	}
+
+	void ensureExecutionScheduled () {
+		if (!scheduled && !isDisposed ()) {
+			display.asyncExec (this);
+			scheduled = true;
+		}
+	}
+
+	@Override
+	public void run () {
+		scheduled = false;
+		if (itemsQueue.isEmpty () || isDisposed ()) {
+			return;
+		}
+		LinkedHashSet<TreeItem> items = itemsQueue;
+		itemsQueue = new LinkedHashSet<> ();
+		try {
+			for (Iterator<TreeItem> it = items.iterator (); it.hasNext ();) {
+				TreeItem item = it.next ();
+				it.remove ();
+				if (!item.cached && !item.isDisposed ()) {
+					if (checkData (item)) {
+						item.updated = true;
+					}
+				}
+			}
+		} catch (Throwable t) {
+			if (!items.isEmpty ()) {
+				itemsQueue.addAll (items);
+				ensureExecutionScheduled ();
+			}
+			throw t;
+		}
 	}
 }
 }

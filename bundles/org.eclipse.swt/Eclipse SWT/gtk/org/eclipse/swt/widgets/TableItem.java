@@ -44,7 +44,7 @@ public class TableItem extends Item {
 	Font font;
 	Font[] cellFont;
 	String [] strings;
-	boolean cached, grayed, settingData;
+	boolean cached, grayed, updated, settingData;
 
 /**
  * Constructs a new instance of this class given its parent
