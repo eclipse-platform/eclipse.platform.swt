@@ -2346,6 +2346,8 @@ public static final native long ActivateKeyboardLayout(long hkl, int Flags);
  */
 public static final native int AddFontResourceEx(char[] lpszFilename, int fl, long pdv);
 public static final native boolean AdjustWindowRectEx (RECT lpRect, int dwStyle, boolean bMenu, int dwExStyle);
+/** @method flags=dynamic */
+public static final native boolean AdjustWindowRectExForDpi (RECT lpRect, int dwStyle, boolean bMenu, int dwExStyle, int dpi);
 /** @method flags=no_gen */
 public static final native boolean AllowDarkModeForWindow(long hWnd, boolean allow);
 public static final native boolean AllowSetForegroundWindow (int dwProcessId);
