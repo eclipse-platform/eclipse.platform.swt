@@ -2708,5 +2708,15 @@ int getSystemMetrics(int nIndex) {
 	return OS.GetSystemMetrics(nIndex);
 }
 
+boolean adjustWindowRectEx(RECT lpRect, int dwStyle, boolean bMenu, int dwExStyle) {
+	/*
+	 * DPI-dependent version of the method was introduced with Windows 10 Version 1607
+	 */
+	if (OS.WIN32_BUILD >= OS.WIN32_BUILD_WIN10_1607) {
+		return OS.AdjustWindowRectExForDpi (lpRect, dwStyle, bMenu, dwExStyle, DPIUtil.mapZoomToDPI(nativeZoom));
+	}
+	return OS.AdjustWindowRectEx(lpRect, dwStyle, bMenu, dwExStyle);
+}
+
 
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2024 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -120,6 +120,31 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(AdjustWindowRectEx)
 fail:
 	if (arg0 && lparg0) setRECTFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, AdjustWindowRectEx_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_AdjustWindowRectExForDpi
+JNIEXPORT jboolean JNICALL OS_NATIVE(AdjustWindowRectExForDpi)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jboolean arg2, jint arg3, jint arg4)
+{
+	RECT _arg0, *lparg0=NULL;
+	jboolean rc = 0;
+	
+	OS_NATIVE_ENTER(env, that, AdjustWindowRectExForDpi_FUNC);
+	if (arg0) if ((lparg0 = getRECTFields(env, arg0, &_arg0)) == NULL) goto fail;
+/*
+	rc = (jboolean)AdjustWindowRectExForDpi(lparg0, arg1, arg2, arg3, arg4);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, AdjustWindowRectExForDpi)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(RECT *, jint, jboolean, jint, jint))fp)(lparg0, arg1, arg2, arg3, arg4);
+		}
+	}
+fail:
+	if (arg0 && lparg0) setRECTFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, AdjustWindowRectExForDpi_FUNC);
 	return rc;
 }
 #endif

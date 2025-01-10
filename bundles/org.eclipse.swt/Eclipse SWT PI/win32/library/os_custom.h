@@ -25,3 +25,4 @@
 #define GetThreadDpiAwarenessContext_LIB "user32.dll"
 #define SetThreadDpiAwarenessContext_LIB "user32.dll"
 #define SystemParametersInfoForDpi_LIB "user32.dll"
+#define AdjustWindowRectExForDpi_LIB "user32.dll"

@@ -313,7 +313,7 @@ Control computeTabRoot () {
 	int bits1 = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	int bits2 = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
 	boolean hasMenu = OS.GetMenu (handle) != 0;
-	OS.AdjustWindowRectEx (rect, bits1, hasMenu, bits2);
+	adjustWindowRectEx(rect, bits1, hasMenu, bits2);
 
 	/* Get the size of the scroll bars */
 	if (horizontalBar != null) rect.bottom += getSystemMetrics (OS.SM_CYHSCROLL);
@@ -472,7 +472,7 @@ void fixDecorations (Decorations newDecorations, Control control, Menu [] menus)
 		int bits1 = OS.GetWindowLong (handle, OS.GWL_STYLE);
 		int bits2 = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
 		boolean hasMenu = OS.GetMenu (handle) != 0;
-		OS.AdjustWindowRectEx (rect, bits1, hasMenu, bits2);
+		adjustWindowRectEx(rect, bits1, hasMenu, bits2);
 		width = Math.max (0, width - (rect.right - rect.left));
 		height = Math.max (0, height - (rect.bottom - rect.top));
 		return new Rectangle (0, 0, width, height);
