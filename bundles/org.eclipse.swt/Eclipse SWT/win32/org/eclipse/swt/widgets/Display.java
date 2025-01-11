@@ -139,6 +139,7 @@ public class Display extends Device implements Executor {
 	boolean useOwnDC;
 	boolean externalEventLoop; // events are dispatched outside SWT, e.g. TrackPopupMenu or DoDragDrop
 	private CoordinateSystemMapper coordinateSystemMapper;
+	private static boolean monitorSpecificScaling;
 	private boolean rescalingAtRuntime;
 
 	/* Widget Table */
@@ -948,7 +949,7 @@ public void close () {
 protected void create (DeviceData data) {
 	checkSubclass ();
 	checkDisplay (thread = Thread.currentThread (), true);
-	if (DPIUtil.isAutoScaleOnRuntimeActive()) {
+	if (monitorSpecificScaling || DPIUtil.isAutoScaleOnRuntimeActive()) {
 		setRescalingAtRuntime(true);
 	}
 	createDisplay (data);
@@ -5270,6 +5271,24 @@ private class ThemeData {
 		return OS.OpenThemeData(hwndMessage, themeName, dpi);
 	}
 }
+
+/**
+ * Activates or deactivates monitor-specific scaling of shells at runtime for
+ * all Displays subsequently created whenever the DPI scaling of the shell's
+ * monitor changes. This only affects displays created after calling this
+ * method.
+ * <p>
+ * <b>Note:</b> This functionality is only available on Windows. Calling this
+ * method on other operating system will have no effect.
+ *
+ * @param activated whether monitor-specific scaling shall be activated or
+ *                  deactivated
+ * @since 3.129
+ */
+public static void setMonitorSpecificScaling(boolean activated) {
+	monitorSpecificScaling = activated;
+}
+
 /**
  * {@return whether rescaling of shells at runtime when the DPI scaling of a
  * shell's monitor changes is activated for this device}
@@ -5278,7 +5297,10 @@ private class ThemeData {
  * method on other operating system will always return false.
  *
  * @since 3.127
+ * @deprecated this method should not be used as the corresponding
+ *             {@link #setRescalingAtRuntime(boolean)} should not be used either
  */
+@Deprecated(since = "2025-03", forRemoval = true)
 public boolean isRescalingAtRuntime() {
 	return rescalingAtRuntime;
 }
@@ -5295,7 +5317,12 @@ public boolean isRescalingAtRuntime() {
  * @param activate whether rescaling shall be activated or deactivated
  * @return whether activating or deactivating the rescaling was successful
  * @since 3.127
+ * @deprecated this method should not be used as it needs to be called already
+ *             during instantiation to take proper effect; use
+ *             {@link #setMonitorSpecificScaling(boolean)} before creating a
+ *             Display instead
  */
+@Deprecated(since = "2025-03", forRemoval = true)
 public boolean setRescalingAtRuntime(boolean activate) {
 	int desiredApiAwareness = activate ? OS.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 : OS.DPI_AWARENESS_CONTEXT_SYSTEM_AWARE;
 	if (setDPIAwareness(desiredApiAwareness)) {
