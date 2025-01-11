@@ -949,7 +949,7 @@ protected void create (DeviceData data) {
 	checkSubclass ();
 	checkDisplay (thread = Thread.currentThread (), true);
 	if (DPIUtil.isMonitorSpecificScalingActive()) {
-		setRescalingAtRuntime(true);
+		setMonitorSpecificScaling(true);
 		DPIUtil.setAutoScaleForMonitorSpecificScaling();
 	}
 	createDisplay (data);
@@ -5263,6 +5263,7 @@ private class ThemeData {
 		return OS.OpenThemeData(hwndMessage, themeName, dpi);
 	}
 }
+
 /**
  * {@return whether rescaling of shells at runtime when the DPI scaling of a
  * shell's monitor changes is activated for this device}
@@ -5288,8 +5289,15 @@ public boolean isRescalingAtRuntime() {
  * @param activate whether rescaling shall be activated or deactivated
  * @return whether activating or deactivating the rescaling was successful
  * @since 3.127
+ * @deprecated this method should not be used as it needs to be called already
+ *             during instantiation to take proper effect
  */
+@Deprecated(since = "2025-03", forRemoval = true)
 public boolean setRescalingAtRuntime(boolean activate) {
+	return setMonitorSpecificScaling(activate);
+}
+
+private boolean setMonitorSpecificScaling(boolean activate) {
 	int desiredApiAwareness = activate ? OS.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 : OS.DPI_AWARENESS_CONTEXT_SYSTEM_AWARE;
 	if (setDPIAwareness(desiredApiAwareness)) {
 		rescalingAtRuntime = activate;
