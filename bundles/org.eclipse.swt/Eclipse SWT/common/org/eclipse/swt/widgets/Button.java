@@ -74,7 +74,7 @@ public class Button extends Control implements ICustomWidget {
 	private static final int RIGHT_MARGIN = 2;
 	private static final int TOP_MARGIN = 0;
 	private static final int BOTTOM_MARGIN = 0;
-	private static final int BOX_SIZE = 13;
+	private static final int BOX_SIZE = 12;
 	private static final int SPACING = 4;
 
 	private static final Color HOVER_COLOR = new Color(Display.getDefault(),
@@ -652,8 +652,7 @@ public class Button extends Control implements ICustomWidget {
 		Color fg = gc.getForeground();
 		if (hasFocus())
 			gc.setForeground(SELECTION_COLOR);
-		gc.drawRoundRectangle(x, y, w - getGCCorrectionValue(),
-				h - getGCCorrectionValue(), 6, 6);
+		gc.drawRoundRectangle(x, y, w - 1, h - 1, 6, 6);
 		gc.setForeground(fg);
 	}
 
@@ -662,21 +661,18 @@ public class Button extends Control implements ICustomWidget {
 			gc.setBackground(SELECTION_COLOR);
 			int partialBoxBorder = 2;
 			gc.fillOval(x + partialBoxBorder, y + partialBoxBorder,
-					BOX_SIZE - 2 * partialBoxBorder,
-					BOX_SIZE - 2 * partialBoxBorder);
+					BOX_SIZE - 2 * partialBoxBorder + 1, BOX_SIZE - 2 * partialBoxBorder + 1);
 		}
 		if (hasMouseEntered) {
 			gc.setBackground(HOVER_COLOR);
 			int partialBoxBorder = getSelection() ? 4 : 0;
 			gc.fillOval(x + partialBoxBorder, y + partialBoxBorder,
-					BOX_SIZE - 2 * partialBoxBorder,
-					BOX_SIZE - 2 * partialBoxBorder);
+					BOX_SIZE - 2 * partialBoxBorder + 1, BOX_SIZE - 2 * partialBoxBorder + 1);
 		}
 		if (!isEnabled()) {
 			gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_GRAY));
 		}
-		gc.drawOval(x, y, BOX_SIZE - getGCCorrectionValue(),
-				BOX_SIZE - getGCCorrectionValue());
+		gc.drawOval(x, y, BOX_SIZE, BOX_SIZE);
 	}
 
 	private void drawCheckbox(IGraphicsContext gc, int x, int y) {
@@ -688,8 +684,7 @@ public class Button extends Control implements ICustomWidget {
 				gc.setBackground(SELECTION_COLOR);
 			int partialBoxBorder = 2;
 			gc.fillRoundRectangle(x + partialBoxBorder, y + partialBoxBorder,
-					BOX_SIZE - 2 * partialBoxBorder,
-					BOX_SIZE - 2 * partialBoxBorder,
+					BOX_SIZE - 2 * partialBoxBorder + 1, BOX_SIZE - 2 * partialBoxBorder + 1,
 					BOX_SIZE / 4 - partialBoxBorder / 2,
 					BOX_SIZE / 4 - partialBoxBorder / 2);
 
@@ -698,17 +693,11 @@ public class Button extends Control implements ICustomWidget {
 			gc.setBackground(HOVER_COLOR);
 			int partialBoxBorder = getSelection() ? 4 : 0;
 			gc.fillRoundRectangle(x + partialBoxBorder, y + partialBoxBorder,
-					BOX_SIZE - 2 * partialBoxBorder,
-					BOX_SIZE - 2 * partialBoxBorder,
+					BOX_SIZE - 2 * partialBoxBorder + 1, BOX_SIZE - 2 * partialBoxBorder + 1,
 					BOX_SIZE / 4 - partialBoxBorder / 2,
 					BOX_SIZE / 4 - partialBoxBorder / 2);
 		}
-		gc.drawRoundRectangle(x, y, BOX_SIZE - getGCCorrectionValue(),
-				BOX_SIZE - getGCCorrectionValue(), 4, 4);
-	}
-
-	private int getGCCorrectionValue() {
-		return SWT.USE_SKIJA ? 0 : 1;
+		gc.drawRoundRectangle(x, y, BOX_SIZE, BOX_SIZE, 4, 4);
 	}
 
 	@Override

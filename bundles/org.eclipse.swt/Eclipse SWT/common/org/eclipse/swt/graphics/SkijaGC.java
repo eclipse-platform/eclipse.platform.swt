@@ -183,10 +183,8 @@ public class SkijaGC implements IGraphicsContext {
 			int destWidth, int destHeight) {
 		Canvas canvas = surface.getCanvas();
 		canvas.drawImageRect(convertSWTImageToSkijaImage(image),
-				new Rect(DPIUtil.autoScaleUp(srcX), DPIUtil.autoScaleUp(srcY), DPIUtil.autoScaleUp(srcX + srcWidth),
-						DPIUtil.autoScaleUp(srcY + srcHeight)),
-				new Rect(DPIUtil.autoScaleUp(destX), DPIUtil.autoScaleUp(destY), DPIUtil.autoScaleUp(destX + destWidth),
-						DPIUtil.autoScaleUp(destY + destHeight)));
+				createScaledRectangle(srcX, srcY, srcWidth, srcHeight),
+				createScaledRectangle(destX, destY, destWidth, destHeight));
 
 	}
 
@@ -318,7 +316,8 @@ public class SkijaGC implements IGraphicsContext {
 
 	@Override
 	public void drawLine(int x1, int y1, int x2, int y2) {
-		performDrawLine(paint -> surface.getCanvas().drawLine(x1, y1, x2, y2, paint));
+		performDrawLine(paint -> surface.getCanvas().drawLine(DPIUtil.autoScaleUp(x1 + 0.5f),
+				DPIUtil.autoScaleUp(y1 + 0.5f), DPIUtil.autoScaleUp(x2 + 0.5f), DPIUtil.autoScaleUp(y2 + 0.5f), paint));
 	}
 
 	@Override
@@ -390,7 +389,7 @@ public class SkijaGC implements IGraphicsContext {
 	public void drawFocus(int x, int y, int width, int height) {
 		performDrawLine(paint -> {
 			paint.setPathEffect(PathEffect.makeDash(new float[] { 1.5f, 1.5f }, 0.0f));
-			surface.getCanvas().drawRect(createScaledAndOffsetRectangle(x, y, width, height), paint);
+			surface.getCanvas().drawRect(offsetRectangle(createScaledRectangle(x, y, width, height)), paint);
 		});
 	}
 
@@ -417,7 +416,8 @@ public class SkijaGC implements IGraphicsContext {
 	@Override
 	public void drawOval(int x, int y, int width, int height) {
 		performDrawLine(
-				paint -> surface.getCanvas().drawOval(createScaledAndOffsetRectangle(x, y, width, height), paint));
+				paint -> surface.getCanvas().drawOval(offsetRectangle(createScaledRectangle(x, y, width, height)),
+						paint));
 	}
 
 	public void drawPath(Path path) {
@@ -450,7 +450,8 @@ public class SkijaGC implements IGraphicsContext {
 	@Override
 	public void drawRectangle(int x, int y, int width, int height) {
 		performDrawLine(
-				paint -> surface.getCanvas().drawRect(createScaledAndOffsetRectangle(x, y, width, height), paint));
+				paint -> surface.getCanvas()
+						.drawRect(offsetRectangle(createScaledRectangle(x, y, width, height)), paint));
 	}
 
 	@Override
@@ -483,7 +484,7 @@ public class SkijaGC implements IGraphicsContext {
 	@Override
 	public void fillOval(int x, int y, int width, int height) {
 		performDrawFilled(
-				paint -> surface.getCanvas().drawOval(createScaledAndOffsetRectangle(x, y, width, height), paint));
+				paint -> surface.getCanvas().drawOval(createScaledRectangle(x, y, width, height), paint));
 	}
 
 	public void fillPath(Path path) {
@@ -515,7 +516,7 @@ public class SkijaGC implements IGraphicsContext {
 	@Override
 	public void fillRectangle(int x, int y, int width, int height) {
 		performDrawFilled(
-				paint -> surface.getCanvas().drawRect(createScaledAndOffsetRectangle(x, y, width, height), paint));
+				paint -> surface.getCanvas().drawRect(createScaledRectangle(x, y, width, height), paint));
 	}
 
 	@Override
@@ -611,9 +612,14 @@ public class SkijaGC implements IGraphicsContext {
 		innerGC.setAdvanced(enable);
 	}
 
-	private Rect createScaledAndOffsetRectangle(int x, int y, int width, int height) {
-		return new Rect(DPIUtil.autoScaleUp(x + 0.5f), DPIUtil.autoScaleUp(y + 0.5f),
-				DPIUtil.autoScaleUp(x - 0.5f + width), DPIUtil.autoScaleUp(y - 0.5f + height));
+	private Rect offsetRectangle(Rect rect) {
+		return new Rect(rect.getLeft() + DPIUtil.autoScaleUp(0.5f), rect.getTop() + DPIUtil.autoScaleUp(0.5f),
+				rect.getRight() + DPIUtil.autoScaleUp(0.5f), rect.getBottom() + DPIUtil.autoScaleUp(0.5f));
+	}
+
+	private Rect createScaledRectangle(int x, int y, int width, int height) {
+		return new Rect(DPIUtil.autoScaleUp(x), DPIUtil.autoScaleUp(y), DPIUtil.autoScaleUp(x + width),
+				DPIUtil.autoScaleUp(y + height));
 	}
 
 	@Override
