@@ -948,8 +948,9 @@ public void close () {
 protected void create (DeviceData data) {
 	checkSubclass ();
 	checkDisplay (thread = Thread.currentThread (), true);
-	if (DPIUtil.isAutoScaleOnRuntimeActive()) {
+	if (DPIUtil.isMonitorSpecificScalingActive()) {
 		setRescalingAtRuntime(true);
+		DPIUtil.setAutoScaleForMonitorSpecificScaling();
 	}
 	createDisplay (data);
 	register (this);

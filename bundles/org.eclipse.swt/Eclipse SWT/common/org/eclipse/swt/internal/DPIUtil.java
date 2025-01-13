@@ -650,9 +650,50 @@ public static int getZoomForAutoscaleProperty (int nativeDeviceZoom) {
 	return zoom;
 }
 
-public static boolean isAutoScaleOnRuntimeActive() {
+public static boolean isMonitorSpecificScalingActive() {
 	boolean updateOnRuntimeValue = Boolean.getBoolean (SWT_AUTOSCALE_UPDATE_ON_RUNTIME);
 	return updateOnRuntimeValue;
+}
+
+public static void setAutoScaleForMonitorSpecificScaling() {
+	boolean isDefaultAutoScale = autoScaleValue == null;
+	if (isDefaultAutoScale) {
+		autoScaleValue = "quarter";
+	} else if (!isSupportedAutoScaleForMonitorSpecificScaling()) {
+		throw new SWTError(SWT.ERROR_NOT_IMPLEMENTED,
+				"monitor-specific scaling is only implemented for auto-scale values \"quarter\", \"exact\", \"false\" or a concrete zoom value, but \""
+						+ autoScaleValue + "\" has been specified");
+	}
+}
+
+/**
+ * Monitor-specific scaling on Windows only supports auto-scale modes in which
+ * all elements (font, images, control bounds etc.) are scaled equally or almost
+ * equally. The previously default mode "integer"/"integer200", which rounded
+ * the scale factor for everything but fonts to multiples of 100, is complex and
+ * difficult to realize with monitor-specific rescaling of UI elements. Since a
+ * uniform scale factor for everything should perspectively be used anyway,
+ * there will be support for complex auto-scale modes for monitor-specific
+ * scaling.
+ *
+ * The supported modes are "quarter" and "exact" or explicit zoom values given
+ * by the value itself or "false". Every other value will be treated as
+ * "integer"/"integer200" and is thus not supported.
+ */
+private static boolean isSupportedAutoScaleForMonitorSpecificScaling() {
+	if (autoScaleValue == null) {
+		return false;
+	}
+	switch (autoScaleValue.toLowerCase()) {
+		case "false", "quarter", "exact": return true;
+	}
+	try {
+		Integer.parseInt(autoScaleValue);
+		return true;
+	} catch (NumberFormatException e) {
+		// unsupported value, use default
+	}
+	return false;
 }
 
 /**
