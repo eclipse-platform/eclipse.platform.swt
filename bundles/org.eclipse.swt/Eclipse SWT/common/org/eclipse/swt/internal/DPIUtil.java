@@ -45,7 +45,6 @@ public class DPIUtil {
 	private static enum AutoScaleMethod { AUTO, NEAREST, SMOOTH }
 	private static AutoScaleMethod autoScaleMethodSetting = AutoScaleMethod.AUTO;
 	private static AutoScaleMethod autoScaleMethod = AutoScaleMethod.NEAREST;
-	private static boolean autoScaleOnRuntime = false;
 
 	private static String autoScaleValue;
 	private static boolean useCairoAutoScale = false;
@@ -109,9 +108,6 @@ public class DPIUtil {
 				autoScaleMethod = autoScaleMethodSetting = AutoScaleMethod.SMOOTH;
 			}
 		}
-
-		String updateOnRuntimeValue = System.getProperty (SWT_AUTOSCALE_UPDATE_ON_RUNTIME);
-		autoScaleOnRuntime = Boolean.parseBoolean(updateOnRuntimeValue);
 	}
 
 /**
@@ -655,7 +651,8 @@ public static int getZoomForAutoscaleProperty (int nativeDeviceZoom) {
 }
 
 public static boolean isAutoScaleOnRuntimeActive() {
-	return autoScaleOnRuntime;
+	boolean updateOnRuntimeValue = Boolean.getBoolean (SWT_AUTOSCALE_UPDATE_ON_RUNTIME);
+	return updateOnRuntimeValue;
 }
 
 /**
