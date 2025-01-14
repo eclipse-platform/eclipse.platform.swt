@@ -60,5 +60,8 @@ public class Test_org_eclipse_swt_widgets_Display {
 
 		text.setText("First Line \n second line \r\n third line");
 		assertEquals("First Line \r\n second line \r\n third line", text.getText());
+
+		text.setText("First Line \n second line \r\n third line\n");
+		assertEquals("First Line \r\n second line \r\n third line\r\n", text.getText());
 	}
 }
