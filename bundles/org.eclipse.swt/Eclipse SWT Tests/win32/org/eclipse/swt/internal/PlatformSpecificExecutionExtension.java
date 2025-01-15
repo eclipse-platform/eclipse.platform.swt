@@ -14,11 +14,14 @@ import static org.junit.Assume.assumeTrue;
 
 import java.net.*;
 
-public final class PlatformSpecificExecution {
-	private PlatformSpecificExecution()  {
+import org.junit.jupiter.api.extension.*;
+
+public final class PlatformSpecificExecutionExtension implements BeforeAllCallback {
+	private PlatformSpecificExecutionExtension()  {
 	}
 
-	public static void assumeIsFittingPlatform() {
+	@Override
+	public void beforeAll(ExtensionContext context) throws Exception {
 		assumeTrue("test is specific for Windows", isFittingOS());
 		assumeTrue("architecture of platform does not match", isFittingArchitecture());
 	}
@@ -28,7 +31,7 @@ public final class PlatformSpecificExecution {
 	}
 
 	private static boolean isFittingArchitecture() {
-		Class<?> thisClass = PlatformSpecificExecution.class;
+		Class<?> thisClass = PlatformSpecificExecutionExtension.class;
 		String thisClassResourcePath = thisClass.getName().replace('.', '/')  + ".class";
 		URL thisClassURL = thisClass.getClassLoader().getResource(thisClassResourcePath); //$NON-NLS-1$
 		return thisClassURL.toString().contains(Library.arch());

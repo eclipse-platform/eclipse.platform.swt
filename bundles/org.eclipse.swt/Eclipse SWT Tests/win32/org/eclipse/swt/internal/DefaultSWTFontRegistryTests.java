@@ -20,16 +20,13 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.*;
 
+@ExtendWith(PlatformSpecificExecutionExtension.class)
 class DefaultSWTFontRegistryTests {
 	private static String TEST_FONT = "Helvetica";
 	private Display display;
 	private SWTFontRegistry fontRegistry;
-
-	@BeforeAll
-	public static void assumeIsFittingPlatform() {
-		PlatformSpecificExecution.assumeIsFittingPlatform();
-	}
 
 	@BeforeEach
 	public void setUp() {
@@ -42,6 +39,7 @@ class DefaultSWTFontRegistryTests {
 		if (this.fontRegistry != null) {
 			this.fontRegistry.dispose();
 		}
+		display.dispose();
 	}
 
 	@Test

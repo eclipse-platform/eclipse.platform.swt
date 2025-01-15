@@ -5,15 +5,12 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.*;
 
+@ExtendWith(PlatformSpecificExecutionExtension.class)
 public class DisplayWin32Test {
 
 	private Display display;
-
-	@BeforeAll
-	public static void assumeIsFittingPlatform() {
-		PlatformSpecificExecution.assumeIsFittingPlatform();
-	}
 
 	@BeforeEach
 	public void createDisplay() {

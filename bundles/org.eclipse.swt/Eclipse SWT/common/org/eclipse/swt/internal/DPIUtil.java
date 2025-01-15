@@ -650,6 +650,10 @@ public static int getZoomForAutoscaleProperty (int nativeDeviceZoom) {
 	return zoom;
 }
 
+public static void setMonitorSpecificScaling(boolean activate) {
+	System.setProperty(SWT_AUTOSCALE_UPDATE_ON_RUNTIME, Boolean.toString(activate));
+}
+
 public static boolean isMonitorSpecificScalingActive() {
 	boolean updateOnRuntimeValue = Boolean.getBoolean (SWT_AUTOSCALE_UPDATE_ON_RUNTIME);
 	return updateOnRuntimeValue;

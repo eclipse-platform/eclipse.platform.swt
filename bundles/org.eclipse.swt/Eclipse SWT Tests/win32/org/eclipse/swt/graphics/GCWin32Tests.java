@@ -20,12 +20,18 @@ import java.util.concurrent.atomic.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.widgets.*;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.*;
 
-class GCWin32Tests extends Win32AutoscaleTestBase {
+@ExtendWith(PlatformSpecificExecutionExtension.class)
+@ExtendWith(WithMonitorSpecificScalingExtension.class)
+class GCWin32Tests {
 
 	@Test
 	public void gcZoomLevelMustChangeOnShellZoomChange() {
+		Shell shell = new Shell(Display.getDefault());
+
 		CompletableFuture<Integer> gcNativeZoom = new CompletableFuture<>();
 		CompletableFuture<Integer> scaledGcNativeZoom = new CompletableFuture<>();
 		int zoom = DPIUtil.getDeviceZoom();
@@ -42,7 +48,7 @@ class GCWin32Tests extends Win32AutoscaleTestBase {
 		assertEquals("GCData must have a zoom level equal to the actual zoom level of the widget/shell", DPIUtil.getNativeDeviceZoom(), (int) gcNativeZoom.join());
 
 		int newSWTZoom = zoom * 2;
-		changeDPIZoom(newSWTZoom);
+		DPITestUtil.changeDPIZoom(shell, newSWTZoom);
 		isScaled.set(true);
 		shell.setVisible(false);
 		shell.setVisible(true);
@@ -52,6 +58,8 @@ class GCWin32Tests extends Win32AutoscaleTestBase {
 
 	@Test
 	public void drawnElementsShouldScaleUpToTheRightZoomLevel() {
+		Shell shell = new Shell(Display.getDefault());
+
 		int zoom = DPIUtil.getDeviceZoom();
 		int scalingFactor = 2;
 		GC gc = GC.win32_new(shell, new GCData());

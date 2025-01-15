@@ -22,11 +22,16 @@ import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.layout.*;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.*;
 
-class WidgetWin32Tests extends Win32AutoscaleTestBase {
+@ExtendWith(PlatformSpecificExecutionExtension.class)
+@ExtendWith(WithMonitorSpecificScalingExtension.class)
+class WidgetWin32Tests {
 
 	@Test
 	public void testWidgetZoomShouldChangeOnZoomLevelChange() {
+		Display display = Display.getDefault();
+		Shell shell = new Shell(display);
 		int zoom = DPIUtil.getDeviceZoom();
 		int scaledZoom = zoom * 2;
 
@@ -36,17 +41,18 @@ class WidgetWin32Tests extends Win32AutoscaleTestBase {
 		button.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_CYAN));
 		shell.open();
 		assertEquals("The initial zoom is wrong", zoom, button.getZoom()); // pre-condition
-		changeDPIZoom(scaledZoom);
+		DPITestUtil.changeDPIZoom(shell, scaledZoom);
 		assertEquals("The Zoom Level should be updated for button on zoom change event on its shell", scaledZoom,
 				button.getZoom());
 	}
 
 	@Test
 	public void testButtonPointsAfterZooming() throws NoSuchMethodException, IllegalAccessException {
+		Display display = Display.getDefault();
 		int zoom = DPIUtil.getDeviceZoom();
 		int scaledZoom = zoom * 2;
 
-		shell = new Shell(display);
+		Shell shell = new Shell(display);
 		shell.setBounds(0, 0, 100, 160);
 		shell.setLayout(new FillLayout());
 		shell.pack();
@@ -56,7 +62,7 @@ class WidgetWin32Tests extends Win32AutoscaleTestBase {
 		button.setBounds(0, 0, 100, 200);
 		Point sizeBeforeEvent = button.getSize();
 		Point p1 = button.computeSizeInPixels(sizeBeforeEvent.x, sizeBeforeEvent.y, false);
-		changeDPIZoom(scaledZoom);
+		DPITestUtil.changeDPIZoom(shell, scaledZoom);
 		Point sizeAfterEvent = button.getSize();
 		Point p2 = button.computeSizeInPixels(sizeAfterEvent.x, sizeAfterEvent.y, false);
 
@@ -66,6 +72,7 @@ class WidgetWin32Tests extends Win32AutoscaleTestBase {
 
 	@Test
 	public void testImagePixelsWithDoubleZoomLevel() {
+		Display display = Display.getDefault();
 		int zoom = DPIUtil.getDeviceZoom();
 		int scaledZoom = zoom * 2;
 
@@ -91,10 +98,11 @@ class WidgetWin32Tests extends Win32AutoscaleTestBase {
 
 	@Test
 	public void testButtonFontAfterZooming() {
+		Display display = Display.getDefault();
 		int zoom = DPIUtil.getDeviceZoom();
 		int scaledZoom = zoom * 2;
 
-		shell = new Shell(display);
+		Shell shell = new Shell(display);
 		shell.setBounds(0, 0, 100, 160);
 		shell.setLayout(new FillLayout());
 		shell.pack();
@@ -106,7 +114,7 @@ class WidgetWin32Tests extends Win32AutoscaleTestBase {
 		button.setFont(font);
 
 		int heightBeforeZoom = button.getFont().getFontData()[0].data.lfHeight;
-		changeDPIZoom(scaledZoom);
+		DPITestUtil.changeDPIZoom(shell, scaledZoom);
 		int heightAfterZoom = button.getFont().getFontData()[0].data.lfHeight;
 
 		assertEquals("Height of a font of the button should be doubled after zooming to 200",
@@ -115,10 +123,11 @@ class WidgetWin32Tests extends Win32AutoscaleTestBase {
 
 	@Test
 	public void testCoolItemAfterZooming() {
+		Display display = Display.getDefault();
 		int zoom = DPIUtil.getDeviceZoom();
 		int scaledZoom = zoom * 2;
 
-		shell = new Shell(display);
+		Shell shell = new Shell(display);
 		shell.setBounds(0, 0, 100, 160);
 		shell.setLayout(new FillLayout());
 		shell.pack();
@@ -135,7 +144,7 @@ class WidgetWin32Tests extends Win32AutoscaleTestBase {
 		var preferredControlSize = item1.getPreferredSizeInPixels();
 		int xBeforeZoom = preferredControlSize.x;
 		int yBeforeZoom = preferredControlSize.y;
-		changeDPIZoom(scaledZoom);
+		DPITestUtil.changeDPIZoom(shell, scaledZoom);
 		var preferredControlSize2 = item1.getPreferredSizeInPixels();
 		int xAfterZoom = preferredControlSize2.x;
 		int yAfterZoom = preferredControlSize2.y;
@@ -153,10 +162,11 @@ class WidgetWin32Tests extends Win32AutoscaleTestBase {
 
 	@Test
 	public void testExpandItemAfterZooming() {
+		Display display = Display.getDefault();
 		int zoom = DPIUtil.getDeviceZoom();
 		int scaledZoom = zoom * 2;
 
-		shell = new Shell(display);
+		Shell shell = new Shell(display);
 		shell.setBounds(0, 0, 100, 160);
 		shell.setLayout(new FillLayout());
 		shell.pack();
@@ -170,7 +180,7 @@ class WidgetWin32Tests extends Win32AutoscaleTestBase {
 		item1.setExpanded(true);
 
 		var heightBeforeZoom = item1.getHeightInPixels();
-		changeDPIZoom(scaledZoom);
+		DPITestUtil.changeDPIZoom(shell, scaledZoom);
 		var heightAfterZoom = item1.getHeightInPixels();
 
 		assertEquals("Height of a font of the button should be doubled after zooming to 200",
@@ -179,10 +189,11 @@ class WidgetWin32Tests extends Win32AutoscaleTestBase {
 
 	@Test
 	public void testTabFolderSizeAfterZooming() {
+		Display display = Display.getDefault();
 		int zoom = DPIUtil.getDeviceZoom();
 		int scaledZoom = zoom * 2;
 
-		shell = new Shell(display);
+		Shell shell = new Shell(display);
 		shell.setBounds(0, 0, 100, 160);
 		shell.setLayout(new FillLayout());
 		shell.pack();
@@ -197,7 +208,7 @@ class WidgetWin32Tests extends Win32AutoscaleTestBase {
 		tabItem.setControl(label);
 
 		Point tabItemSizeBeforeEvent = tabItem.getControl().getSize();
-		changeDPIZoom(scaledZoom);
+		DPITestUtil.changeDPIZoom(shell, scaledZoom);
 		Point tabItemSizeAfterEvent = tabItem.getControl().getSize();
 
 		assertEquals("Width of a tab folder item should be halved in points after zooming to 200",
@@ -208,10 +219,11 @@ class WidgetWin32Tests extends Win32AutoscaleTestBase {
 
 	@Test
 	public void testTableAfterZooming() {
+		Display display = Display.getDefault();
 		int zoom = DPIUtil.getDeviceZoom();
 		int scaledZoom = zoom * 2;
 
-		shell = new Shell(display);
+		Shell shell = new Shell(display);
 		shell.setBounds(0, 0, 100, 160);
 		shell.setLayout(new FillLayout());
 		shell.pack();
@@ -236,7 +248,7 @@ class WidgetWin32Tests extends Win32AutoscaleTestBase {
 		}
 
 		int fontHeightBefore = item1.getFont().getFontData()[0].data.lfHeight;
-		changeDPIZoom(scaledZoom);
+		DPITestUtil.changeDPIZoom(shell, scaledZoom);
 		int fontHeightAfter = item1.getFont().getFontData()[0].data.lfHeight;
 
 		assertEquals("Height of a font for table item should be doubled after zooming to 200",
@@ -245,10 +257,11 @@ class WidgetWin32Tests extends Win32AutoscaleTestBase {
 
 	@Test
 	public void testTreeAfterZooming() {
+		Display display = Display.getDefault();
 		int zoom = DPIUtil.getDeviceZoom();
 		int scaledZoom = zoom * 2;
 
-		shell = new Shell(display);
+		Shell shell = new Shell(display);
 		shell.setBounds(0, 0, 100, 160);
 		shell.setLayout(new FillLayout());
 		shell.pack();
@@ -271,7 +284,7 @@ class WidgetWin32Tests extends Win32AutoscaleTestBase {
 		}
 
 		int fontHeightBefore = item1.getFont().getFontData()[0].data.lfHeight;
-		changeDPIZoom(scaledZoom);
+		DPITestUtil.changeDPIZoom(shell, scaledZoom);
 		int fontHeightAfter = item1.getFont().getFontData()[0].data.lfHeight;
 
 		assertEquals("Height of a font for tree item should be doubled after zooming to 200",
@@ -280,10 +293,11 @@ class WidgetWin32Tests extends Win32AutoscaleTestBase {
 
 	@Test
 	public void testCaretInStyledTextAfterZooming() {
+		Display display = Display.getDefault();
 		int zoom = DPIUtil.getDeviceZoom();
 		int scaledZoom = zoom * 2;
 
-		shell = new Shell(display);
+		Shell shell = new Shell(display);
 		shell.setBounds(0, 0, 100, 160);
 		shell.setLayout(new FillLayout());
 		shell.pack();
@@ -311,7 +325,7 @@ class WidgetWin32Tests extends Win32AutoscaleTestBase {
 
 		// Get the caret size
 		Point caretSize = styledText.getCaret().getSizeInPixels();
-		changeDPIZoom(scaledZoom);
+		DPITestUtil.changeDPIZoom(shell, scaledZoom);
 		Point caretSize2 = styledText.getCaret().getSizeInPixels();
 
 		assertEquals("Height of a Caret for Styled Text should be doubled after zooming to 200", caretSize.y * 2,

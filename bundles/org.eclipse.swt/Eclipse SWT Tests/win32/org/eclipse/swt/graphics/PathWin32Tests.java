@@ -19,15 +19,20 @@ import java.util.*;
 
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gdip.*;
+import org.eclipse.swt.widgets.*;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.*;
 
-class PathWin32Tests extends Win32AutoscaleTestBase {
+@ExtendWith(PlatformSpecificExecutionExtension.class)
+@ExtendWith(WithMonitorSpecificScalingExtension.class)
+class PathWin32Tests {
 
 	int zoom = 100;
 	int scaledZoom = 200;
 
 	@Test
 	public void testPathMustBeScaledOnZoomLevelChange() {
+		Display display = Display.getDefault();
 		Path path = new Path(display);
 		path.addArc(0, 0, 10, 10, 0, 90);
 		PathData pathData = path.getPathData();
@@ -40,6 +45,7 @@ class PathWin32Tests extends Win32AutoscaleTestBase {
 
 	@Test
 	public void testHandlesExistForEachZoomLevelInHashMap() {
+		Display display = Display.getDefault();
 		DPIUtil.setDeviceZoom(zoom);
 		Path path = new Path(display);
 		path.addArc(0, 0, 10, 10, 0, 90);
@@ -50,6 +56,7 @@ class PathWin32Tests extends Win32AutoscaleTestBase {
 
 	@Test
 	public void testBoundsAreScaledWRTZoomLevel() {
+		Display display = Display.getDefault();
 		DPIUtil.setDeviceZoom(zoom);
 		int scalingFactor = scaledZoom/zoom;
 		Path path = new Path(display);
