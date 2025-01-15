@@ -17,12 +17,18 @@ import static org.junit.Assert.assertEquals;
 
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.widgets.*;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.*;
 
-class RegionWin32Tests extends Win32AutoscaleTestBase {
+@ExtendWith(PlatformSpecificExecutionExtension.class)
+@ExtendWith(WithMonitorSpecificScalingExtension.class)
+class RegionWin32Tests {
 
 	@Test
 	public void testRegionMustBeScaledOnHandleOfScaledZoomLevel() {
+		Display display = Display.getDefault();
+
 		int zoom = DPIUtil.getDeviceZoom();
 		int scalingFactor = 2;
 

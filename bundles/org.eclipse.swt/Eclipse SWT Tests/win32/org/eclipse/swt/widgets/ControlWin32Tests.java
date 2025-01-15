@@ -19,61 +19,63 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.*;
 
 /**
- * Automated Tests for class org.eclipse.swt.widgets.Control
- * for Windows specific behavior
+ * Automated Tests for class org.eclipse.swt.widgets.Control for Windows
+ * specific behavior
  *
  * @see org.eclipse.swt.widgets.Control
  */
-class ControlWin32Tests extends Win32AutoscaleTestBase {
+@ExtendWith(PlatformSpecificExecutionExtension.class)
+@ExtendWith(ResetMonitorSpecificScalingExtension.class)
+class ControlWin32Tests {
 
 	@Test
 	public void testScaleFontCorrectlyInAutoScaleSzenario() {
-		assertTrue("Autoscale property is not set to true", display.isRescalingAtRuntime());
+		DPIUtil.setMonitorSpecificScaling(true);
+		Display display = Display.getDefault();
 
+		assertTrue("Autoscale property is not set to true", display.isRescalingAtRuntime());
 		int scalingFactor = 2;
-		Control control = new Composite(shell, SWT.NONE);
-		int zoom = DPIUtil.getDeviceZoom();
-		int newZoom = zoom * scalingFactor;
-		try {
-			Font oldFont = control.getFont();
-			changeDPIZoom(newZoom);
-			control.setFont(oldFont);
-			Font newFont = control.getFont();
-			FontData fontData = oldFont.getFontData()[0];
-			FontData currentFontData = newFont.getFontData()[0];
-			int heightInPixels = fontData.data.lfHeight;
-			int currentHeightInPixels = currentFontData.data.lfHeight;
-			assertEquals("Font height in points is different on different zoom levels", fontData.getHeight(), currentFontData.getHeight());
-			assertEquals("Font height in pixels is not adjusted according to the scale factor", heightInPixels * scalingFactor, currentHeightInPixels);
-		} finally {
-			control.dispose();
-		}
+		FontComparison fontComparison = updateFont(scalingFactor);
+		assertEquals("Font height in pixels is not adjusted according to the scale factor",
+				fontComparison.originalFontHeight * scalingFactor, fontComparison.currentFontHeight);
 	}
 
 	@Test
 	public void testDoNotScaleFontCorrectlyInNoAutoScaleSzenario() {
-		display.setRescalingAtRuntime(false);
-		assertFalse("Autoscale property is not set to false", display.isRescalingAtRuntime());
+		DPIUtil.setMonitorSpecificScaling(false);
+		Display display = Display.getDefault();
 
+		assertFalse("Autoscale property is not set to false", display.isRescalingAtRuntime());
 		int scalingFactor = 2;
+		FontComparison fontComparison = updateFont(scalingFactor);
+		assertEquals("Font height in pixels is different when setting the same font again",
+				fontComparison.originalFontHeight, fontComparison.currentFontHeight);
+	}
+
+	record FontComparison(int originalFontHeight, int currentFontHeight) {
+	}
+
+	private FontComparison updateFont(int scalingFactor) {
+		Shell shell = new Shell(Display.getDefault());
 		Control control = new Composite(shell, SWT.NONE);
 		int zoom = DPIUtil.getDeviceZoom();
 		int newZoom = zoom * scalingFactor;
-		try {
-			Font oldFont = control.getFont();
-			changeDPIZoom(newZoom);
-			control.setFont(oldFont);
-			Font newFont = control.getFont();
-			FontData fontData = oldFont.getFontData()[0];
-			FontData currentFontData = newFont.getFontData()[0];
-			int heightInPixels = fontData.data.lfHeight;
-			int currentHeightInPixels = currentFontData.data.lfHeight;
-			assertEquals("Font height in points is different on different zoom levels", fontData.getHeight(), currentFontData.getHeight());
-			assertEquals("Font height in pixels is different when setting the same font again", heightInPixels, currentHeightInPixels);
-		} finally {
-			control.dispose();
-		}
+
+		Font oldFont = control.getFont();
+		DPITestUtil.changeDPIZoom(shell, newZoom);
+		control.setFont(oldFont);
+		Font newFont = control.getFont();
+		FontData fontData = oldFont.getFontData()[0];
+		FontData currentFontData = newFont.getFontData()[0];
+		int heightInPixels = fontData.data.lfHeight;
+		int currentHeightInPixels = currentFontData.data.lfHeight;
+		assertEquals("Font height in points is different on different zoom levels", fontData.getHeight(),
+				currentFontData.getHeight());
+
+		return new FontComparison(heightInPixels, currentHeightInPixels);
 	}
+
 }

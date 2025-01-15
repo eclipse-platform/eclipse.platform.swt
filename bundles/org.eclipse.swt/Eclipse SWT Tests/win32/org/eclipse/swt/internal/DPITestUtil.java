@@ -14,35 +14,16 @@
 package org.eclipse.swt.internal;
 
 import org.eclipse.swt.widgets.*;
-import org.junit.jupiter.api.*;
 
-public abstract class Win32AutoscaleTestBase {
-	protected Display display;
-	protected Shell shell;
+public final class DPITestUtil {
 
-	@BeforeAll
-	public static void assumeIsFittingPlatform() {
-		PlatformSpecificExecution.assumeIsFittingPlatform();
+	private DPITestUtil() {
 	}
 
-	@BeforeEach
-	public void setUpTest() {
-		display = Display.getDefault();
-		display.setRescalingAtRuntime(true);
-		shell = new Shell(display);
-	}
-
-	@AfterEach
-	public void tearDownTest() {
-		if (shell != null) {
-			shell.dispose();
-		}
-		display.dispose();
-	}
-
-	protected void changeDPIZoom (int nativeZoom) {
+	public static void changeDPIZoom (Shell shell, int nativeZoom) {
 		DPIUtil.setDeviceZoom(nativeZoom);
 		float scalingFactor = 1f * DPIUtil.getZoomForAutoscaleProperty(nativeZoom) / DPIUtil.getZoomForAutoscaleProperty(shell.nativeZoom);
 		DPIZoomChangeRegistry.applyChange(shell, nativeZoom, scalingFactor);
 	}
+
 }

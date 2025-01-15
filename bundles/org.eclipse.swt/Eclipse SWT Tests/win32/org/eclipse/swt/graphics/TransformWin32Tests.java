@@ -18,12 +18,17 @@ import static org.junit.Assert.assertNotEquals;
 
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gdip.*;
+import org.eclipse.swt.widgets.*;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.*;
 
-class TransformWin32Tests extends Win32AutoscaleTestBase {
+@ExtendWith(PlatformSpecificExecutionExtension.class)
+@ExtendWith(WithMonitorSpecificScalingExtension.class)
+class TransformWin32Tests {
 
 	@Test
 	public void testShouldHaveDifferentHandlesAtDifferentZoomLevels() {
+		Display display = Display.getDefault();
 		int zoom = DPIUtil.getDeviceZoom();
 		Transform transform = new Transform(display);
 		long scaledHandle = transform.getHandle(zoom * 2);
@@ -34,6 +39,7 @@ class TransformWin32Tests extends Win32AutoscaleTestBase {
 
 	@Test
 	public void testScaledTrasformMustHaveScaledValues() {
+		Display display = Display.getDefault();
 		int zoom = DPIUtil.getDeviceZoom();
 		Transform transform = new Transform(display, 0, 0, 0, 0, 4, 2);
 		float[] elements = new float[6];
