@@ -63,6 +63,14 @@ public class Snippet382 {
 		};
 
 		final Display display = new Display ();
+
+		final ImageGcDrawer imageGcDrawer = gc -> {
+			gc.setBackground(display.getSystemColor(SWT.COLOR_RED));
+			gc.fillRectangle(0, 0, 16, 16);
+			gc.setForeground(display.getSystemColor(SWT.COLOR_YELLOW));
+			gc.drawRectangle(4, 4, 8, 8);
+		};
+
 		final Shell shell = new Shell (display);
 		shell.setText("Snippet382");
 		shell.setLayout (new GridLayout (3, false));
@@ -84,6 +92,10 @@ public class Snippet382 {
 					final Image disabledImageWithData = new Image (display,imageWithData, SWT.IMAGE_DISABLE);
 					final Image greyImageWithData = new Image (display,imageWithData, SWT.IMAGE_GRAY);
 
+					final Image imageWithGcDrawer = new Image (display, imageGcDrawer, 16, 16);
+					final Image disabledImageWithGcDrawer = new Image (display, imageWithGcDrawer, SWT.IMAGE_DISABLE);
+					final Image greyImageWithGcDrawer = new Image (display, imageWithGcDrawer, SWT.IMAGE_GRAY);
+
 					try {
 						drawImages(mainGC, gcData, "Normal",40, imageWithFileNameProvider);
 						drawImages(mainGC, gcData, "Disabled",80, disabledImageWithFileNameProvider);
@@ -96,6 +108,10 @@ public class Snippet382 {
 						drawImages(mainGC, gcData, "Normal",280, imageWithDataProvider);
 						drawImages(mainGC, gcData, "Disabled",320, disabledImageWithData);
 						drawImages(mainGC, gcData, "Greyed",360, greyImageWithData);
+
+						drawImages(mainGC, gcData, "Normal", 400, imageWithGcDrawer);
+						drawImages(mainGC, gcData, "Disabled", 440, disabledImageWithGcDrawer);
+						drawImages(mainGC, gcData, "Greyed", 480, greyImageWithGcDrawer);
 					} finally {
 						mainGC.dispose ();
 					}
@@ -114,7 +130,7 @@ public class Snippet382 {
 		};
 		shell.addListener(SWT.Paint, l);
 
-		shell.setSize(400, 500);
+		shell.setSize(400, 550);
 		shell.open ();
 		while (!shell.isDisposed ()) {
 			if (!display.readAndDispatch ()) display.sleep ();

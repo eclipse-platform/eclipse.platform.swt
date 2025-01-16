@@ -172,8 +172,13 @@ private Image (Device device, int nativeZoom) {
  * @see #dispose()
  */
 public Image(Device device, int width, int height) {
+	this(device, width, height, DPIUtil.getNativeDeviceZoom());
+}
+
+
+private Image(Device device, int width, int height, int nativeZoom) {
 	super(device);
-	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
+	initialNativeZoom = nativeZoom;
 	final int zoom = getZoom();
 	width = DPIUtil.scaleUp (width, zoom);
 	height = DPIUtil.scaleUp (height, zoom);
@@ -600,6 +605,31 @@ public Image(Device device, ImageDataProvider imageDataProvider) {
 	init (resizedData, getZoom());
 	init();
 	this.device.registerResourceWithZoomSupport(this);
+}
+
+/**
+ * The provided ImageGcDrawer will be called on demand whenever a new variant of the
+ * Image for an additional zoom is required. Depending on the OS-specific implementation
+ * these calls will be done during the instantiation or later when a new variant is
+ * requested.
+ *
+ * @param device the device on which to create the image
+ * @param imageGcDrawer the ImageGcDrawer object to be called when a new image variant
+ * for another zoom is required.
+ * @param width the width of the new image in points
+ * @param height the height of the new image in points
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the ImageGcDrawer is null</li>
+ * </ul>
+ * @since 3.129
+ */
+public Image(Device device, ImageGcDrawer imageGcDrawer, int width, int height) {
+	super(device);
+	this.imageProvider = new ImageGcDrawerWrapper(imageGcDrawer, width, height);
+	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
+	init();
 }
 
 private ImageData adaptImageDataIfDisabledOrGray(ImageData data) {
@@ -1140,6 +1170,9 @@ long [] createGdipImage(Integer zoom) {
 void destroy () {
 	device.deregisterResourceWithZoomSupport(this);
 	if (memGC != null) memGC.dispose();
+	if (this.imageProvider != null) {
+		this.imageProvider.destroy();
+	}
 	destroyHandle();
 	memGC = null;
 }
@@ -1282,14 +1315,17 @@ public Rectangle getBounds() {
 
 Rectangle getBounds(int zoom) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	ImageHandle imageMetadata;
 	if (zoomLevelToImageHandle.containsKey(zoom)) {
-		imageMetadata = zoomLevelToImageHandle.get(zoom);
+		ImageHandle imageMetadata = zoomLevelToImageHandle.get(zoom);
+		Rectangle rectangle = new Rectangle(0, 0, imageMetadata.width, imageMetadata.height);
+		return DPIUtil.scaleBounds(rectangle, zoom, imageMetadata.zoom);
+	} else if (this.imageProvider != null) {
+		return this.imageProvider.getBounds(zoom);
 	} else {
-		imageMetadata = zoomLevelToImageHandle.values().iterator().next();
+		ImageHandle imageMetadata = zoomLevelToImageHandle.values().iterator().next();
+		Rectangle rectangle = new Rectangle(0, 0, imageMetadata.width, imageMetadata.height);
+		return DPIUtil.scaleBounds(rectangle, zoom, imageMetadata.zoom);
 	}
-	Rectangle rectangle = new Rectangle(0, 0, imageMetadata.width, imageMetadata.height);
-	return DPIUtil.scaleBounds(rectangle, zoom, imageMetadata.zoom);
 }
 
 /**
@@ -1932,6 +1968,9 @@ public void internal_dispose_GC (long hDC, GCData data) {
  */
 @Override
 public boolean isDisposed() {
+	if (this.imageProvider != null) {
+		return this.imageProvider.isDisposed();
+	}
 	return zoomLevelToImageHandle.isEmpty();
 }
 
@@ -2043,9 +2082,11 @@ public static Image win32_new(Device device, int type, long handle, int nativeZo
 
 private abstract class AbstractImageProviderWrapper {
 	abstract Object getProvider();
+	protected abstract Rectangle getBounds(int zoom);
 	abstract ImageData getImageData(int zoom);
 	abstract ImageHandle getImageMetadata(int zoom);
 	abstract AbstractImageProviderWrapper createCopy(Image image);
+	abstract boolean isDisposed();
 
 	protected void checkProvider(Object provider, Class<?> expectedClass) {
 		if (provider == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -2062,6 +2103,9 @@ private abstract class AbstractImageProviderWrapper {
 		return otherProvider instanceof AbstractImageProviderWrapper aip //
 				&& getProvider().equals(aip.getProvider());
 	}
+
+	protected void destroy() {
+	}
 }
 
 private class ImageFileNameProviderWrapper extends AbstractImageProviderWrapper {
@@ -2074,6 +2118,13 @@ private class ImageFileNameProviderWrapper extends AbstractImageProviderWrapper 
 	ImageFileNameProviderWrapper(ImageFileNameProvider provider) {
 		checkProvider(provider, ImageFileNameProvider.class);
 		this.provider = provider;
+	}
+
+	@Override
+	protected Rectangle getBounds(int zoom) {
+		ImageHandle imageHandle = zoomLevelToImageHandle.values().iterator().next();
+		Rectangle rectangle = new Rectangle(0, 0, imageHandle.width, imageHandle.height);
+		return DPIUtil.scaleBounds(rectangle, zoom, imageHandle.zoom);
 	}
 
 	@Override
@@ -2097,6 +2148,11 @@ private class ImageFileNameProviderWrapper extends AbstractImageProviderWrapper 
 			init(newData, zoom);
 		}
 		return zoomLevelToImageHandle.get(zoom);
+	}
+
+	@Override
+	boolean isDisposed() {
+		return zoomLevelToImageHandle.isEmpty();
 	}
 
 	@Override
@@ -2128,6 +2184,13 @@ private class ImageDataProviderWrapper extends AbstractImageProviderWrapper {
 	}
 
 	@Override
+	protected Rectangle getBounds(int zoom) {
+		ElementAtZoom<ImageData> data = DPIUtil.validateAndGetImageDataAtZoom (provider, zoom);
+		Rectangle rectangle = new Rectangle(0, 0, data.element().width, data.element().height);
+		return DPIUtil.scaleBounds(rectangle, zoom, data.zoom());
+	}
+
+	@Override
 	ImageData getImageData(int zoom) {
 		ElementAtZoom<ImageData> data = DPIUtil.validateAndGetImageDataAtZoom (provider, zoom);
 		return DPIUtil.scaleImageData (device, data.element(), zoom, data.zoom());
@@ -2144,6 +2207,11 @@ private class ImageDataProviderWrapper extends AbstractImageProviderWrapper {
 	}
 
 	@Override
+	boolean isDisposed() {
+		return zoomLevelToImageHandle.isEmpty();
+	}
+
+	@Override
 	Object getProvider() {
 		return provider;
 	}
@@ -2151,6 +2219,81 @@ private class ImageDataProviderWrapper extends AbstractImageProviderWrapper {
 	@Override
 	ImageDataProviderWrapper createCopy(Image image) {
 		return image.new ImageDataProviderWrapper(provider);
+	}
+}
+
+private class ImageGcDrawerWrapper extends AbstractImageProviderWrapper {
+	private ImageGcDrawer drawer;
+	private int width;
+	private int height;
+	private boolean isDestroyed;
+
+	public ImageGcDrawerWrapper(ImageGcDrawer imageGcDrawer, int width, int height) {
+		checkProvider(imageGcDrawer, ImageGcDrawer.class);
+		this.drawer = imageGcDrawer;
+		this.width = width;
+		this.height = height;
+	}
+
+	@Override
+	protected Rectangle getBounds(int zoom) {
+		Rectangle rectangle = new Rectangle(0, 0, width, height);
+		return DPIUtil.scaleBounds(rectangle, zoom, 100);
+	}
+
+	@Override
+	ImageData getImageData(int zoom) {
+		return getImageMetadata(zoom).getImageData();
+	}
+
+	@Override
+	ImageHandle getImageMetadata(int zoom) {
+		initialNativeZoom = zoom;
+		Image image = new Image(device, width, height, zoom);
+		GC gc = new GC(image);
+		try {
+			gc.data.nativeZoom = zoom;
+			drawer.drawOn(gc, width, height);
+			ImageData imageData = image.getImageMetadata(zoom).getImageData();
+			drawer.postProcess(imageData);
+			ImageData newData = adaptImageDataIfDisabledOrGray(imageData);
+			init(newData, zoom);
+		} finally {
+			gc.dispose();
+			image.dispose();
+		}
+		return zoomLevelToImageHandle.get(zoom);
+	}
+
+	@Override
+	protected void destroy() {
+		isDestroyed = true;
+	}
+
+	@Override
+	boolean isDisposed() {
+		return isDestroyed;
+	}
+
+	@Override
+	Object getProvider() {
+		return drawer;
+	}
+
+	@Override
+	ImageGcDrawerWrapper createCopy(Image image) {
+		return image.new ImageGcDrawerWrapper(drawer, width, height);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(getProvider().hashCode(), width, height);
+	}
+
+	@Override
+	public boolean equals(Object otherProvider) {
+		return otherProvider instanceof ImageGcDrawerWrapper aip && getProvider().equals(aip.getProvider())
+				&& width == aip.width && height == aip.height;
 	}
 }
 

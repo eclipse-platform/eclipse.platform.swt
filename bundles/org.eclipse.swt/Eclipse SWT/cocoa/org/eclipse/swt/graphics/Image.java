@@ -15,6 +15,7 @@ package org.eclipse.swt.graphics;
 
 
 import java.io.*;
+import java.util.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
@@ -134,6 +135,11 @@ public final class Image extends Resource implements Drawable {
 	 * ImageDataProvider to provide ImageData at various Zoom levels
 	 */
 	private ImageDataProvider imageDataProvider;
+
+	/**
+	 * ImageGcDrawer to provide a callback to draw on a GC for various zoom levels
+	 */
+	private ImageGcDrawer imageGcDrawer;
 
 	/**
 	 * Style flag used to differentiate normal, gray-scale and disabled images based
@@ -384,8 +390,9 @@ public Image(Device device, Image srcImage, int flag) {
 
 		imageFileNameProvider = srcImage.imageFileNameProvider;
 		imageDataProvider = srcImage.imageDataProvider;
+		imageGcDrawer = srcImage.imageGcDrawer;
 		this.styleFlag = srcImage.styleFlag | flag;
-		if (imageFileNameProvider != null || imageDataProvider != null) {
+		if (imageFileNameProvider != null || imageDataProvider != null ||srcImage.imageGcDrawer != null) {
 			/* If source image has 200% representation then create the 200% representation for the new image & apply flag */
 			NSBitmapImageRep rep200 = srcImage.getRepresentation (200);
 			if (rep200 != null) createRepFromSourceAndApplyFlag(rep200, srcWidth * 2, srcHeight * 2, flag);
@@ -843,6 +850,54 @@ public Image(Device device, ImageDataProvider imageDataProvider) {
 	}
 }
 
+/**
+ * The provided ImageGcDrawer will be called on demand whenever a new variant of the
+ * Image for an additional zoom is required. Depending on the OS specific implementation
+ * these calls will be done during the instantiation or later when a new variant is
+ * requested.
+ *
+ * @param device the device on which to create the image
+ * @param imageGcDrawer the ImageGcDrawer object to be called when a new image variant
+ * for another zoom is required.
+ * @param width the width of the new image in points
+ * @param height the height of the new image in points
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the ImageGcDrawer is null</li>
+ * </ul>
+ * @since 3.129
+ */
+public Image(Device device, ImageGcDrawer imageGcDrawer, int width, int height) {
+	super(device);
+	if (imageGcDrawer == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	this.imageGcDrawer = imageGcDrawer;
+	ImageData data = drawWithImageGcDrawer(imageGcDrawer, width, height, 100);
+	if (data == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		init (data);
+		init ();		
+	} finally {
+		if (pool != null) pool.release();
+	}
+}
+
+private ImageData drawWithImageGcDrawer(ImageGcDrawer imageGcDrawer, int width, int height, int zoom) {
+	Image image = new Image(device, width, height);
+	GC gc = new GC(image);
+	try {
+		imageGcDrawer.drawOn(gc, width, height);
+		ImageData imageData = image.getImageData(zoom);
+		imageGcDrawer.postProcess(imageData);
+		return imageData;
+	} finally {
+		gc.dispose();
+		image.dispose();
+	}
+}
+
 private AlphaInfo _getAlphaInfoAtCurrentZoom (NSBitmapImageRep rep) {
 	int deviceZoom = DPIUtil.getDeviceZoom();
 	if (deviceZoom != 100 && (imageFileNameProvider != null || imageDataProvider != null)) {
@@ -1121,6 +1176,9 @@ public boolean equals (Object object) {
 		return styleFlag == image.styleFlag && imageDataProvider.equals (image.imageDataProvider);
 	} else if (imageFileNameProvider != null && image.imageFileNameProvider != null) {
 		return styleFlag == image.styleFlag && imageFileNameProvider.equals (image.imageFileNameProvider);
+	} else if (imageGcDrawer != null && image.imageGcDrawer != null) {
+		return styleFlag == image.styleFlag && imageGcDrawer.equals(image.imageGcDrawer) && width == image.width
+				&& height == image.height;
 	} else {
 		return handle == image.handle;
 	}
@@ -1357,6 +1415,8 @@ public int hashCode () {
 		return imageDataProvider.hashCode();
 	} else if (imageFileNameProvider != null) {
 		return imageFileNameProvider.hashCode();
+	} else if (imageGcDrawer != null) {
+		return Objects.hash(imageGcDrawer, height, width);
 	} else {
 		return handle != null ? (int)handle.id : 0;
 	}
