@@ -463,7 +463,9 @@ public class SkijaGC implements IGraphicsContext {
 
 	@Override
 	public void drawRoundRectangle(int x, int y, int width, int height, int arcWidth, int arcHeight) {
-		drawRectangle(x, y, width, height);
+		performDrawLine(paint -> surface.getCanvas().drawRRect(
+				offsetRectangle(createScaledRoundRectangle(x, y, width, height, arcWidth / 2.0f, arcHeight / 2.0f)),
+				paint));
 	}
 
 	public void drawString(String string, int x, int y) {
@@ -523,7 +525,8 @@ public class SkijaGC implements IGraphicsContext {
 
 	@Override
 	public void fillRoundRectangle(int x, int y, int width, int height, int arcWidth, int arcHeight) {
-		fillRectangle(x, y, width, height);
+		performDrawFilled(paint -> surface.getCanvas()
+				.drawRRect(createScaledRoundRectangle(x, y, width, height, arcWidth / 2.0f, arcHeight / 2.0f), paint));
 	}
 
 	@Override
@@ -626,6 +629,18 @@ public class SkijaGC implements IGraphicsContext {
 		}
 	}
 
+	private RRect offsetRectangle(RRect rect) {
+		float scaledOffsetValue = getScaledOffsetValue();
+		float widthHightAutoScaleOffset = DPIUtil.autoScaleUp(1) - 1.0f;
+		if (scaledOffsetValue != 0f) {
+			return new RRect(rect.getLeft() + scaledOffsetValue, rect.getTop() + scaledOffsetValue,
+					rect.getRight() + scaledOffsetValue + widthHightAutoScaleOffset,
+					rect.getBottom() + scaledOffsetValue + widthHightAutoScaleOffset, rect._radii);
+		} else {
+			return rect;
+		}
+	}
+
 	private Rect createScaledRectangle(int x, int y, int width, int height) {
 		return new Rect(DPIUtil.autoScaleUp(x), DPIUtil.autoScaleUp(y), DPIUtil.autoScaleUp(x + width),
 				DPIUtil.autoScaleUp(y + height));
@@ -643,6 +658,11 @@ public class SkijaGC implements IGraphicsContext {
 		return 0f;
 	}
 
+	private RRect createScaledRoundRectangle(int x, int y, int width, int height, float arcWidth, float arcHeight) {
+		return new RRect(DPIUtil.autoScaleUp(x), DPIUtil.autoScaleUp(y), DPIUtil.autoScaleUp(x + width),
+				DPIUtil.autoScaleUp(y + height),
+				new float[] { DPIUtil.autoScaleUp(arcWidth), DPIUtil.autoScaleUp(arcHeight) });
+	}
 
 	@Override
 	public void setLineStyle(int lineDot) {
