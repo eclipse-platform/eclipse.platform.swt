@@ -17,6 +17,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.widgets.*;
 
 /**
@@ -717,26 +718,25 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	}
 	return trim;
 }
+
 Image createButtonImage(Display display, int button) {
-	return new Image(display, (ImageDataProvider) zoom -> {
-		GC tempGC = new GC (CTabFolder.this);
-		Point size = renderer.computeSize(button, SWT.NONE, tempGC, SWT.DEFAULT, SWT.DEFAULT);
-		tempGC.dispose();
+	final GC tempGC = new GC (CTabFolder.this);
+	final Point size = renderer.computeSize(button, SWT.NONE, tempGC, SWT.DEFAULT, SWT.DEFAULT);
+	tempGC.dispose();
 
-		Rectangle trim = renderer.computeTrim(button, SWT.NONE, 0, 0, 0, 0);
-		Image image = new Image (display, size.x - trim.width, size.y - trim.height);
-		GC gc = new GC (image);
-		Color transColor = renderer.parent.getBackground();
-		gc.setBackground(transColor);
-		gc.fillRectangle(image.getBounds());
-		renderer.draw(button, SWT.NONE, new Rectangle(trim.x, trim.y, size.x, size.y), gc);
-		gc.dispose ();
-
-		final ImageData imageData = image.getImageData (zoom);
-		imageData.transparentPixel = imageData.palette.getPixel(transColor.getRGB());
-		image.dispose();
-		return imageData;
-	});
+	final Rectangle trim = renderer.computeTrim(button, SWT.NONE, 0, 0, 0, 0);
+	final Point imageSize = new Point(size.x - trim.width, size.y - trim.height);
+	Color transColor = renderer.parent.getBackground();
+	final ImageGcDrawer imageGcDrawer = new TransparencyColorImageGcDrawer(transColor) {
+		@Override
+		public void drawOn(GC gc, int imageWidth, int imageHeight) {
+			Rectangle imageBounds = new Rectangle(0, 0, imageWidth, imageHeight);
+			gc.setBackground(transColor);
+			gc.fillRectangle(imageBounds);
+			renderer.draw(button, SWT.NONE, imageBounds, gc);
+		}
+	};
+	return new Image(display, imageGcDrawer, imageSize.x, imageSize.y);
 }
 
 private void notifyItemCountChange() {

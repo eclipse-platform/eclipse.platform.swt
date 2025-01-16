@@ -37,6 +37,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageDataProvider;
 import org.eclipse.swt.graphics.ImageFileNameProvider;
+import org.eclipse.swt.graphics.ImageGcDrawer;
 import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
@@ -97,6 +98,7 @@ ImageDataProvider imageDataProvider1xOnly = zoom -> {
 	}
 	return new ImageData(getPath(fileName));
 };
+ImageGcDrawer imageGcDrawer = (gc, width, height) -> {};
 
 @Before
 public void setUp() {
@@ -608,6 +610,23 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Device_ImageDataProvider()
 }
 
 @Test
+public void test_ConstructorLorg_eclipse_swt_graphics_Device_ImageGcDrawer() {
+	// Null provider
+	ImageGcDrawer drawer = null;
+	try {
+		Image image = new Image(display, drawer, 20, 20);
+		image.dispose();
+		fail("No exception thrown for ImageGcDrawer == null");
+	} catch (IllegalArgumentException e) {
+		assertSWTProblem("Incorrect exception thrown for ImageGcDrawer == null", SWT.ERROR_NULL_ARGUMENT, e);
+	}
+
+	// Valid provider
+	Image image = new Image(display, imageGcDrawer, 20, 20);
+	image.dispose();
+}
+
+@Test
 public void test_equalsLjava_lang_Object() {
 	Image image = null;
 	Image image1 = null;
@@ -671,6 +690,22 @@ public void test_equalsLjava_lang_Object() {
 
 		image1 = new Image(display, imageDataProvider);
 		assertTrue(":i:", image.equals(image1));
+	} finally {
+		image.dispose();
+		image1.dispose();
+	}
+
+	// ImageGcDrawer
+	try {
+		image = new Image(display, imageGcDrawer, 10, 10);
+		image1 = image;
+
+		assertFalse(image.equals(null));
+
+		assertTrue(image.equals(image1));
+
+		image1 = new Image(display, imageGcDrawer, 10, 10);
+		assertTrue(image.equals(image1));
 	} finally {
 		image.dispose();
 		image1.dispose();
@@ -760,6 +795,13 @@ public void test_getBoundsInPixels() {
 	bounds = image.getBounds();
 	image.dispose();
 	assertEquals(":d: Image.getBoundsInPixels method doesn't return bounds in Pixel values.", boundsInPixels, DPIUtil.autoScaleUp(bounds));
+
+	// create image with ImageGcDrawer
+	image = new Image(display, imageGcDrawer, bounds.width, bounds.height);
+	boundsInPixels = image.getBoundsInPixels();
+	bounds = image.getBounds();
+	image.dispose();
+	assertEquals("Image.getBoundsInPixels method doesn't return bounds in Pixel values for ImageGcDrawer.", boundsInPixels, DPIUtil.autoScaleUp(bounds));
 }
 
 @SuppressWarnings("deprecation")
@@ -964,6 +1006,16 @@ public void test_hashCode() {
 		image = new Image(display, imageDataProvider);
 		image1 = new Image(display, imageDataProvider);
 		assertEquals(":d:", image1.hashCode(), image.hashCode());
+	} finally {
+		image.dispose();
+		image1.dispose();
+	}
+
+	// ImageGcDrawer
+	try {
+		image = new Image(display, imageGcDrawer, 10, 10);
+		image1 = new Image(display, imageGcDrawer, 10, 10);
+		assertEquals(image1.hashCode(), image.hashCode());
 	} finally {
 		image.dispose();
 		image1.dispose();

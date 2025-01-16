@@ -60,6 +60,10 @@ public class Snippet367 {
 				return null;
 			}
 		};
+		final ImageGcDrawer imageGcDrawer = gc -> {
+			gc.drawRectangle(1, 1, 18, 18);
+			gc.drawLine(3, 3, 17, 17);
+		};
 
 		final Display display = new Display ();
 		final Shell shell = new Shell (display);
@@ -97,6 +101,10 @@ public class Snippet367 {
 		new Label (shell, SWT.NONE).setText ("ImageDataProvider:");
 		new Label (shell, SWT.NONE).setImage (new Image (display, imageDataProvider));
 		new Button(shell, SWT.NONE).setImage (new Image (display, imageDataProvider));
+
+		new Label (shell, SWT.NONE).setText ("ImageGcDrawer:");
+		new Label (shell, SWT.NONE).setImage (new Image (display, imageGcDrawer, 20, 20));
+		new Button(shell, SWT.NONE).setImage (new Image (display, imageGcDrawer, 20, 20));
 
 		createSeparator(shell);
 

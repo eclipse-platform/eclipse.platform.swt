@@ -15,6 +15,7 @@ package org.eclipse.swt.graphics;
 
 
 import java.io.*;
+import java.util.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
@@ -152,6 +153,11 @@ public final class Image extends Resource implements Drawable {
 	private ImageDataProvider imageDataProvider;
 
 	/**
+	 * ImageGcDrawer to provide a callback to draw on a GC for various zoom levels
+	 */
+	private ImageGcDrawer imageGcDrawer;
+
+	/**
 	 * Style flag used to differentiate normal, gray-scale and disabled images based
 	 * on image data providers. Without this, a normal and a disabled image of the
 	 * same image data provider would be considered equal.
@@ -263,6 +269,7 @@ public Image(Device device, Image srcImage, int flag) {
 	this.type = srcImage.type;
 	this.imageDataProvider = srcImage.imageDataProvider;
 	this.imageFileNameProvider = srcImage.imageFileNameProvider;
+	this.imageGcDrawer = srcImage.imageGcDrawer;
 	this.styleFlag = srcImage.styleFlag | flag;
 	this.currentDeviceZoom = srcImage.currentDeviceZoom;
 
@@ -662,6 +669,36 @@ public Image(Device device, ImageDataProvider imageDataProvider) {
 }
 
 /**
+ * The provided ImageGcDrawer will be called on demand whenever a new variant of the
+ * Image for an additional zoom is required. Depending on the OS specific implementation
+ * these calls will be done during the instantiation or later when a new variant is
+ * requested.
+ *
+ * @param device the device on which to create the image
+ * @param imageGcDrawer the ImageGcDrawer object to be called when a new image variant
+ * for another zoom is required.
+ * @param width the width of the new image in points
+ * @param height the height of the new image in points
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the ImageGcDrawer is null</li>
+ * </ul>
+ * @since 3.129
+ */
+public Image(Device device, ImageGcDrawer imageGcDrawer, int width, int height) {
+	super(device);
+	if (imageGcDrawer == null) {
+		SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	}
+	this.imageGcDrawer = imageGcDrawer;
+	currentDeviceZoom = DPIUtil.getDeviceZoom();
+	ImageData imageData = drawWithImageGcDrawer(width, height, currentDeviceZoom);
+	init (imageData);
+	init ();
+}
+
+/**
  * Refreshes the image for the current device scale factor.
  * <p>
  * <b>IMPORTANT:</b> This function is <em>not</em> part of the SWT
@@ -718,6 +755,17 @@ boolean refreshImageForZoom () {
 			destroy ();
 			ImageData resizedData = DPIUtil.autoScaleImageData (device, data.element(), data.zoom());
 			init(resizedData);
+			init();
+			refreshed = true;
+			currentDeviceZoom = deviceZoomLevel;
+		}
+	} else if (imageGcDrawer != null) {
+		int deviceZoomLevel = deviceZoom;
+		if (deviceZoomLevel != currentDeviceZoom) {
+			ImageData data = drawWithImageGcDrawer(width, height, deviceZoomLevel);
+			/* Release current native resources */
+			destroy ();
+			init(data);
 			init();
 			refreshed = true;
 			currentDeviceZoom = deviceZoomLevel;
@@ -904,6 +952,9 @@ public boolean equals (Object object) {
 		return (styleFlag == image.styleFlag) && imageDataProvider.equals (image.imageDataProvider);
 	} else if (imageFileNameProvider != null && image.imageFileNameProvider != null) {
 		return (styleFlag == image.styleFlag) && imageFileNameProvider.equals (image.imageFileNameProvider);
+	} else if (imageGcDrawer != null && image.imageGcDrawer != null) {
+		return styleFlag == image.styleFlag && imageGcDrawer.equals(image.imageGcDrawer) && width == image.width
+				&& height == image.height;
 	} else {
 		return surface == image.surface;
 	}
@@ -1110,8 +1161,24 @@ public ImageData getImageData (int zoom) {
 	} else if (imageFileNameProvider != null) {
 		ElementAtZoom<String> fileName = DPIUtil.validateAndGetImagePathAtZoom (imageFileNameProvider, zoom);
 		return DPIUtil.scaleImageData (device, new ImageData (fileName.element()), zoom, fileName.zoom());
+	} else if (imageGcDrawer != null) {
+		return drawWithImageGcDrawer(width, height, zoom);
 	} else {
 		return DPIUtil.scaleImageData (device, getImageDataAtCurrentZoom (), zoom, currentDeviceZoom);
+	}
+}
+
+private ImageData drawWithImageGcDrawer(int width, int height, int zoom) {
+	Image image = new Image(device, width, height);
+	GC gc = new GC(image);
+	try {
+		imageGcDrawer.drawOn(gc, width, height);
+		ImageData imageData = image.getImageData(zoom);
+		imageGcDrawer.postProcess(imageData);
+		return imageData;
+	} finally {
+		gc.dispose();
+		image.dispose();
 	}
 }
 
@@ -1179,6 +1246,8 @@ public int hashCode () {
 		return imageDataProvider.hashCode();
 	} else if (imageFileNameProvider != null) {
 		return imageFileNameProvider.hashCode();
+	} else if (imageGcDrawer != null) {
+		return Objects.hash(imageGcDrawer, width, height);
 	} else {
 		return (int)surface;
 	}
