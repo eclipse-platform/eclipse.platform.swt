@@ -175,8 +175,8 @@ public DateTime (Composite parent, int style) {
 	if (isDateWithDropDownButton ()) {
 		//Date w/ drop down button is in containers.
 		//first time round we set the bounds manually for correct Right_to_left behaviour
-		Point size = computeSizeInPixels (SWT.DEFAULT, SWT.DEFAULT);
-		setBoundsInPixels (0, 0, size.x, size.y);
+		Point size = computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		setBounds(0, 0, size.x, size.y);
 	}
 }
 
@@ -303,7 +303,7 @@ Point computeMaxTextSize (int wHint, int hHint, boolean changed) {
 }
 
 @Override
-Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
+public Point computeSize(int wHint, int hHint, boolean changed) {
 	checkWidget ();
 
 	int width = 0, height = 0;
@@ -327,9 +327,9 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 			 * formatted text.
 			 */
 			Point textSize = computeMaxTextSize (wHint, hHint, changed);
-			Rectangle trim = computeTrimInPixels (0,0, textSize.x,textSize.y);
+			Rectangle trim = computeTrim(0,0, textSize.x,textSize.y);
 			if (isDateWithDropDownButton ()){
-				Point buttonSize = down.computeSizeInPixels (SWT.DEFAULT, SWT.DEFAULT, changed);
+				Point buttonSize = down.computeSize(SWT.DEFAULT, SWT.DEFAULT, changed);
 				width = trim.width + buttonSize.x;
 				height = Math.max (trim.height, buttonSize.y);
 			} else if (isDate () || isTime ()) {
@@ -342,7 +342,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	if (height == 0) height = DEFAULT_HEIGHT;
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
-	int borderWidth = getBorderWidthInPixels ();
+	int borderWidth = getBorderWidth();
 
 	if (prefferedSize == null && isDateWithDropDownButton ()) {
 		prefferedSize = new Point (width + 2*borderWidth, height+ 2*borderWidth);
@@ -353,13 +353,13 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 }
 
 @Override
-Rectangle computeTrimInPixels (int x, int y, int width, int height) {
+public Rectangle computeTrim(int x, int y, int width, int height) {
 	if (isCalendar ()) {
-		return super.computeTrimInPixels (x, y, width, height);
+		return super.computeTrim(x, y, width, height);
 	}
 
 	checkWidget ();
-	Rectangle trim = super.computeTrimInPixels (x, y, width, height);
+	Rectangle trim = super.computeTrim(x, y, width, height);
 	int xborder = 0, yborder = 0;
 		GtkBorder tmp = new GtkBorder ();
 		long context = GTK.gtk_widget_get_style_context (GTK.GTK4 ? editableHandle : textEntryHandle);
@@ -613,11 +613,11 @@ void dropDownCalendar (boolean drop) {
 	}
 
 	//This is the x/y/width/height of the container of DateTime
-	Point containerBounds = getSizeInPixels ();
-	Point calendarSize = popupCalendar.computeSizeInPixels (SWT.DEFAULT, SWT.DEFAULT, false);
+	Point containerBounds = getSize();
+	Point calendarSize = popupCalendar.computeSize(SWT.DEFAULT, SWT.DEFAULT, false);
 
 	//Set the inner calendar pos/size. (not the popup shell pos/size)
-	popupCalendar.setBoundsInPixels (1, 1, Math.max (containerBounds.x - 2, calendarSize.x), calendarSize.y);
+	popupCalendar.setBounds(1, 1, Math.max (containerBounds.x - 2, calendarSize.x), calendarSize.y);
 
 	//Set Date & focus current day
 	popupCalendar.setDate (savedYear, savedMonth, savedDay);
@@ -626,8 +626,8 @@ void dropDownCalendar (boolean drop) {
 	Display display = getDisplay ();
 
 	//To display popup calendar, we need to know where the parent is relative to the whole screen.
-	Rectangle coordsRelativeToScreen = display.mapInPixels (getParent (), null, getBoundsInPixels ());
-	Rectangle displayRect = DPIUtil.autoScaleUp(getMonitor ().getClientArea ());
+	Rectangle coordsRelativeToScreen = display.map(getParent (), null, getBounds());
+	Rectangle displayRect = getMonitor().getClientArea();
 
 	showPopupShell (containerBounds, calendarSize, coordsRelativeToScreen, displayRect);
 
@@ -641,7 +641,7 @@ private void showPopupShell (Point containerBounds, Point calendarSize, Rectangl
 	int y = calculateCalendarYpos (containerBounds, coordsRelativeToScreen, height, displayRect);
 	int x = calculateCalendarXpos (calendarSize, coordsRelativeToScreen, displayRect, width);
 
-	popupShell.setBoundsInPixels (x, y, width, height);
+	popupShell.setBounds(x, y, width, height);
 	popupShell.setVisible (true);
 	if (isFocusControl ()) {
 		popupCalendar.setFocus ();
@@ -1725,7 +1725,7 @@ public void setYear (int year) {
 }
 
 @Override
-void setBoundsInPixels (int x, int y, int width, int height) {
+public void setBounds(int x, int y, int width, int height) {
 
 	//Date with Drop down is in container. Needs extra handling.
 	if (isDateWithDropDownButton ()) {
@@ -1734,21 +1734,21 @@ void setBoundsInPixels (int x, int y, int width, int height) {
 		GTK.gtk_widget_get_preferred_size (sizingHandle, null, requisition);
 		int oldHeight = requisition.height; //Entry should not expand vertically. It is single liner.
 
-		int newWidth = width - (down.getSizeInPixels ().x + getGtkBorderPadding ().right);
+		int newWidth = width - (down.getSize().x + getGtkBorderPadding ().right);
 		GTK.gtk_widget_set_size_request (sizingHandle, (newWidth >= 0) ? newWidth : 0, oldHeight);
 	}
 
-	super.setBoundsInPixels (x, y, width, height);
+	super.setBounds(x, y, width, height);
 }
 
 /**
  * Usually called when control is resized or first initialized.
  */
 private void setDropDownButtonSize() {
-	Rectangle rect = getClientAreaInPixels();
+	Rectangle rect = getClientArea();
 	int parentWidth = rect.width;
 	int parentHeight = rect.height;
-	Point buttonSize = down.computeSizeInPixels(SWT.DEFAULT, parentHeight);
+	Point buttonSize = down.computeSize(SWT.DEFAULT, parentHeight);
 
 	int dateEntryHeight = computeNativeSize(GTK.GTK4 ? editableHandle : textEntryHandle, SWT.DEFAULT, SWT.DEFAULT, false).y;
 
@@ -1756,7 +1756,7 @@ private void setDropDownButtonSize() {
 	int newXpos = parentWidth - buttonSize.x - getGtkBorderPadding().left - getGtkBorderPadding().right;
 
 	int newYPos = parentHeight/2 - dateEntryHeight/2;
-	down.setBoundsInPixels (newXpos, newYPos, buttonSize.x, dateEntryHeight);
+	down.setBounds(newXpos, newYPos, buttonSize.x, dateEntryHeight);
 }
 
 /**
