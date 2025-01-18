@@ -142,39 +142,17 @@ public class Button extends Control implements ICustomWidget {
 
 		Listener listener = event -> {
 			switch (event.type) {
-			case SWT.Dispose:
-				onDispose(event);
-				break;
-			case SWT.MouseDown:
-				onMouseDown(event);
-				break;
-			case SWT.MouseUp:
-				onMouseUp(event);
-				break;
-			case SWT.Paint:
-				onPaint(event);
-				break;
-			case SWT.Resize:
-				onResize();
-				break;
-			case SWT.FocusIn:
-				onFocusIn();
-				break;
-			case SWT.FocusOut:
-				onFocusOut();
-				break;
-			case SWT.Traverse:
-				onTraverse(event);
-				break;
-			case SWT.Selection:
-				onSelection(event);
-				break;
-			case SWT.KeyDown:
-				onKeyDown(event);
-				break;
-			case SWT.KeyUp:
-				onKeyUp(event);
-				break;
+			case SWT.Dispose -> onDispose(event);
+			case SWT.MouseDown -> onMouseDown(event);
+			case SWT.MouseUp -> onMouseUp(event);
+			case SWT.Paint -> onPaint(event);
+			case SWT.Resize -> onResize();
+			case SWT.FocusIn -> onFocusIn();
+			case SWT.FocusOut -> onFocusOut();
+			case SWT.Traverse -> onTraverse(event);
+			case SWT.Selection -> onSelection(event);
+			case SWT.KeyDown -> onKeyDown(event);
+			case SWT.KeyUp -> onKeyUp(event);
 			}
 		};
 		addListener(SWT.Dispose, listener);
