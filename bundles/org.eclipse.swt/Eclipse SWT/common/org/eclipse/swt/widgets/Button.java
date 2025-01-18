@@ -142,6 +142,8 @@ public class Button extends Control implements ICustomWidget {
 
 		Listener listener = event -> {
 			switch (event.type) {
+			case SWT.MouseEnter -> onMouseEnter();
+			case SWT.MouseExit -> onMouseExit();
 			case SWT.Dispose -> onDispose(event);
 			case SWT.MouseDown -> onMouseDown(event);
 			case SWT.MouseUp -> onMouseUp(event);
@@ -166,22 +168,8 @@ public class Button extends Control implements ICustomWidget {
 		addListener(SWT.FocusOut, listener);
 		addListener(SWT.Traverse, listener);
 		addListener(SWT.Selection, listener);
-
-		addMouseTrackListener(new MouseTrackAdapter() {
-			@Override
-			public void mouseEnter(MouseEvent e) {
-				if (!hasMouseEntered) {
-					hasMouseEntered = true;
-					redraw();
-				}
-			}
-
-			@Override
-			public void mouseExit(MouseEvent e) {
-				hasMouseEntered = false;
-				redraw();
-			}
-		});
+		addListener(SWT.MouseEnter, listener);
+		addListener(SWT.MouseExit, listener);
 
 		initializeAccessible();
 	}
@@ -384,6 +372,18 @@ public class Button extends Control implements ICustomWidget {
 		} else {
 			redraw();
 		}
+	}
+
+	private void onMouseEnter() {
+		if (!hasMouseEntered) {
+			hasMouseEntered = true;
+			redraw();
+		}
+	}
+
+	private void onMouseExit() {
+		hasMouseEntered = false;
+		redraw();
 	}
 
 	private void doPaint(Event e) {
