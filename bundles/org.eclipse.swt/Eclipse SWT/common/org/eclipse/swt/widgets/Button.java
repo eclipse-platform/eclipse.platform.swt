@@ -230,11 +230,11 @@ public class Button extends Control implements ICustomWidget {
 			public void getName(AccessibleEvent e) {
 				if (current.isRadioButton()) {
 					e.result = createRadioButtonText(current);
-				}
-				if (current.isPushButton()) {
+				} else if (current.isPushButton()) {
 					e.result = createPushButtonText(current);
-				} else
+				} else {
 					e.result = getText();
+				}
 			}
 
 			@Override
@@ -291,17 +291,22 @@ public class Button extends Control implements ICustomWidget {
 	 * given string, return '\0'.
 	 */
 	char _findMnemonic(String string) {
-		if (string == null)
+		if (string == null) {
 			return '\0';
+		}
+
 		int index = 0;
 		int length = string.length();
 		do {
-			while (index < length && string.charAt(index) != '&')
+			while (index < length && string.charAt(index) != '&') {
 				index++;
-			if (++index >= length)
+			}
+			if (++index >= length) {
 				return '\0';
-			if (string.charAt(index) != '&')
+			}
+			if (string.charAt(index) != '&') {
 				return Character.toLowerCase(string.charAt(index));
+			}
 			index++;
 		} while (index < length);
 		return '\0';
@@ -310,18 +315,18 @@ public class Button extends Control implements ICustomWidget {
 	// TODO maybe this can be improved with a cache.
 	// But this cache must be handled somehow on the parent element.
 	private Button[] getRadioGroup() {
-
-		if ((style & SWT.RADIO) == 0)
+		if ((style & SWT.RADIO) == 0) {
 			return null;
+		}
 
 		Control[] children = parent._getChildren();
 
 		ArrayList<Button> radioGroup = new ArrayList<>();
 		for (int k = 0; k < children.length; k++) {
 			if (children[k] instanceof Button b
-					&& (children[k].getStyle() & SWT.RADIO) != 0)
+					&& (children[k].getStyle() & SWT.RADIO) != 0) {
 				radioGroup.add(b);
-
+			}
 		}
 
 		return radioGroup.toArray(new Button[0]);
@@ -382,7 +387,7 @@ public class Button extends Control implements ICustomWidget {
 	}
 
 	private void onDispose(Event event) {
-		this.dispose();
+		dispose();
 	}
 
 	private void onMouseDown(Event e) {
@@ -402,10 +407,11 @@ public class Button extends Control implements ICustomWidget {
 	}
 
 	private void onMouseUp(Event e) {
-		if ((e.stateMask & SWT.BUTTON1) != 0)
+		if ((e.stateMask & SWT.BUTTON1) != 0) {
 			handleSelection();
-		else
+		} else {
 			redraw();
+		}
 	}
 
 	private void doPaint(Event e) {
@@ -639,8 +645,9 @@ public class Button extends Control implements ICustomWidget {
 
 		// if the button has focus, the border also changes the color
 		Color fg = gc.getForeground();
-		if (hasFocus())
+		if (hasFocus()) {
 			gc.setForeground(SELECTION_COLOR);
+		}
 		gc.drawRoundRectangle(x, y, w - 1, h - 1, 6, 6);
 		gc.setForeground(fg);
 	}
@@ -666,11 +673,11 @@ public class Button extends Control implements ICustomWidget {
 
 	private void drawCheckbox(IGraphicsContext gc, int x, int y) {
 		if (getSelection()) {
-
-			if (grayed)
+			if (grayed) {
 				gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_GRAY));
-			else
+			} else {
 				gc.setBackground(SELECTION_COLOR);
+			}
 			int partialBoxBorder = 2;
 			gc.fillRoundRectangle(x + partialBoxBorder, y + partialBoxBorder,
 					BOX_SIZE - 2 * partialBoxBorder + 1, BOX_SIZE - 2 * partialBoxBorder + 1,
@@ -876,28 +883,36 @@ public class Button extends Control implements ICustomWidget {
 	public int getAlignment() {
 		checkWidget();
 		if ((style & SWT.ARROW) != 0) {
-			if ((style & SWT.UP) != 0)
+			if ((style & SWT.UP) != 0) {
 				return SWT.UP;
-			if ((style & SWT.DOWN) != 0)
+			}
+			if ((style & SWT.DOWN) != 0) {
 				return SWT.DOWN;
-			if ((style & SWT.LEFT) != 0)
+			}
+			if ((style & SWT.LEFT) != 0) {
 				return SWT.LEFT;
-			if ((style & SWT.RIGHT) != 0)
+			}
+			if ((style & SWT.RIGHT) != 0) {
 				return SWT.RIGHT;
+			}
 			return SWT.UP;
 		}
-		if ((style & SWT.LEFT) != 0)
+		if ((style & SWT.LEFT) != 0) {
 			return SWT.LEFT;
-		if ((style & SWT.CENTER) != 0)
+		}
+		if ((style & SWT.CENTER) != 0) {
 			return SWT.CENTER;
-		if ((style & SWT.RIGHT) != 0)
+		}
+		if ((style & SWT.RIGHT) != 0) {
 			return SWT.RIGHT;
+		}
 		return SWT.LEFT;
 	}
 
 	boolean getDefault() {
-		if (!isPushButton() || !isEnabled() || isDisposed())
+		if (!isPushButton() || !isEnabled() || isDisposed()) {
 			return false;
+		}
 
 		return defaultButton;
 	}
@@ -920,8 +935,9 @@ public class Button extends Control implements ICustomWidget {
 	 */
 	public boolean getGrayed() {
 		checkWidget();
-		if (!isCheckButton())
+		if (!isCheckButton()) {
 			return false;
+		}
 		return grayed;
 	}
 
@@ -991,8 +1007,9 @@ public class Button extends Control implements ICustomWidget {
 	 */
 	public boolean getSelection() {
 		checkWidget();
-		if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0)
+		if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) {
 			return false;
+		}
 		return isChecked();
 	}
 
@@ -1012,8 +1029,9 @@ public class Button extends Control implements ICustomWidget {
 	 */
 	public String getText() {
 		checkWidget();
-		if ((style & SWT.ARROW) != 0)
+		if ((style & SWT.ARROW) != 0) {
 			return "";
+		}
 		return text;
 	}
 
@@ -1060,8 +1078,9 @@ public class Button extends Control implements ICustomWidget {
 	boolean traverseItem(boolean next) {
 		boolean b = super.traverseItem(next);
 		// if the next item is selected, a radio button loses the check.
-		if (b && isRadioButton())
+		if (b && isRadioButton()) {
 			setSelection(false);
+		}
 		redraw();
 		return b;
 	}
@@ -1075,8 +1094,9 @@ public class Button extends Control implements ICustomWidget {
 	// menmonicHis(char ch) does not exist on mac. It seems on mac there is no
 	// mnemonic...
 	boolean mnemonicISHit(char ch) {
-		if ((style & SWT.RADIO) == 0 && !setFocus())
+		if ((style & SWT.RADIO) == 0 && !setFocus()) {
 			return false;
+		}
 		click();
 		return true;
 	}
@@ -1095,8 +1115,9 @@ public class Button extends Control implements ICustomWidget {
 	@Override
 	void releaseWidget() {
 		super.releaseWidget();
-		if (disabledImage != null)
+		if (disabledImage != null) {
 			disabledImage.dispose();
+		}
 		disabledImage = null;
 		text = null;
 		image = null;
@@ -1126,10 +1147,12 @@ public class Button extends Control implements ICustomWidget {
 	 */
 	public void removeSelectionListener(SelectionListener listener) {
 		checkWidget();
-		if (listener == null)
+		if (listener == null) {
 			error(SWT.ERROR_NULL_ARGUMENT);
-		if (eventTable == null)
+		}
+		if (eventTable == null) {
 			return;
+		}
 		eventTable.unhook(SWT.Selection, listener);
 		eventTable.unhook(SWT.DefaultSelection, listener);
 	}
@@ -1200,9 +1223,10 @@ public class Button extends Control implements ICustomWidget {
 	}
 
 	void setDefault(boolean value) {
-		if ((style & SWT.PUSH) == 0)
+		if ((style & SWT.PUSH) == 0) {
 			return;
-			defaultButton = value;
+		}
+		defaultButton = value;
 	}
 
 	@Override
@@ -1228,10 +1252,11 @@ public class Button extends Control implements ICustomWidget {
 	@Override
 	public boolean forceFocus() {
 		boolean b = super.forceFocus();
-		if (b && isRadioButton()) // if a radio button gets focus, then all
+		if (b && isRadioButton()) { // if a radio button gets focus, then all
 									// other radio buttons of the group lose the
 									// selection
 			selectRadio(/* withFocus = */false);
+		}
 		return b;
 	}
 
@@ -1261,10 +1286,12 @@ public class Button extends Control implements ICustomWidget {
 	 */
 	public void setImage(Image image) {
 		checkWidget();
-		if (image != null && image.isDisposed())
+		if (image != null && image.isDisposed()) {
 			error(SWT.ERROR_INVALID_ARGUMENT);
-		if ((style & SWT.ARROW) != 0)
+		}
+		if ((style & SWT.ARROW) != 0) {
 			return;
+		}
 		this.image = image;
 		redraw();
 	}
@@ -1288,8 +1315,9 @@ public class Button extends Control implements ICustomWidget {
 	 */
 	public void setGrayed(boolean grayed) {
 		checkWidget();
-		if ((style & SWT.CHECK) == 0)
+		if ((style & SWT.CHECK) == 0) {
 			return;
+		}
 		this.grayed = grayed;
 	}
 
@@ -1318,8 +1346,9 @@ public class Button extends Control implements ICustomWidget {
 	/* public */ void setMessage(String message) {
 		// TODO not yet implemented, never heard of this...
 		checkWidget();
-		if (message == null)
+		if (message == null) {
 			error(SWT.ERROR_NULL_ARGUMENT);
+		}
 		this.message = message;
 		if ((style & SWT.COMMAND) != 0) {
 			int length = message.length();
@@ -1390,8 +1419,9 @@ public class Button extends Control implements ICustomWidget {
 			}
 		}
 
-		if (withFocus)
+		if (withFocus) {
 			setFocus();
+		}
 		setRadioSelection(true);
 		redraw();
 	}
@@ -1438,10 +1468,12 @@ public class Button extends Control implements ICustomWidget {
 	 */
 	public void setText(String string) {
 		checkWidget();
-		if (string == null)
+		if (string == null) {
 			error(SWT.ERROR_NULL_ARGUMENT);
-		if ((style & SWT.ARROW) != 0)
+		}
+		if ((style & SWT.ARROW) != 0) {
 			return;
+		}
 		text = string;
 		redraw();
 	}
