@@ -188,6 +188,7 @@ public class Button extends Control implements ICustomWidget {
 			public void keyReleased(KeyEvent e) {
 				onKeyReleased(e);
 			}
+
 			@Override
 			public void keyPressed(KeyEvent e) {
 				onKeyPressed(e);
@@ -195,7 +196,6 @@ public class Button extends Control implements ICustomWidget {
 		});
 
 		addMouseTrackListener(new MouseTrackAdapter() {
-
 			@Override
 			public void mouseEnter(MouseEvent e) {
 				if (!hasMouseEntered) {
@@ -209,7 +209,6 @@ public class Button extends Control implements ICustomWidget {
 				hasMouseEntered = false;
 				redraw();
 			}
-
 		});
 
 		initializeAccessible();
@@ -229,7 +228,6 @@ public class Button extends Control implements ICustomWidget {
 		accAdapter = new AccessibleAdapter() {
 			@Override
 			public void getName(AccessibleEvent e) {
-
 				if (current.isRadioButton()) {
 					e.result = createRadioButtonText(current);
 				}
@@ -243,6 +241,7 @@ public class Button extends Control implements ICustomWidget {
 			public void getHelp(AccessibleEvent e) {
 				e.result = getToolTipText();
 			}
+
 			@Override
 			public void getKeyboardShortcut(AccessibleEvent e) {
 				String shortcut = null;
@@ -258,11 +257,9 @@ public class Button extends Control implements ICustomWidget {
 		};
 		acc.addAccessibleListener(accAdapter);
 		addListener(SWT.FocusIn, event -> acc.setFocus(ACC.CHILDID_SELF));
-
 	}
 
 	private boolean isPushButton() {
-
 		return (style & SWT.PUSH) != 0;
 	}
 
@@ -321,7 +318,6 @@ public class Button extends Control implements ICustomWidget {
 
 		ArrayList<Button> radioGroup = new ArrayList<>();
 		for (int k = 0; k < children.length; k++) {
-
 			if (children[k] instanceof Button b
 					&& (children[k].getStyle() & SWT.RADIO) != 0)
 				radioGroup.add(b);
@@ -329,7 +325,6 @@ public class Button extends Control implements ICustomWidget {
 		}
 
 		return radioGroup.toArray(new Button[0]);
-
 	}
 
 	@Override
@@ -365,7 +360,6 @@ public class Button extends Control implements ICustomWidget {
 			handleSelection();
 			redraw();
 		}
-
 	}
 
 	private void onResize() {
@@ -415,7 +409,6 @@ public class Button extends Control implements ICustomWidget {
 	}
 
 	private void doPaint(Event e) {
-
 		Rectangle r = getBounds();
 		if (r.width == 0 && r.height == 0) {
 			return;
@@ -549,7 +542,6 @@ public class Button extends Control implements ICustomWidget {
 		}
 
 		if (isArrowButton()) {
-
 			Color bg2 = gc.getBackground();
 
 			gc.setBackground(
@@ -573,13 +565,11 @@ public class Button extends Control implements ICustomWidget {
 						centerHeight - 5};
 
 			} else if ((style & SWT.LEFT) != 0) {
-
 				curve = new int[]{centerWidth - 5, centerHeight,
 						centerWidth + 5, centerHeight + 5, centerWidth + 5,
 						centerHeight - 5};
 
 			} else if ((style & SWT.RIGHT) != 0) {
-
 				curve = new int[]{centerWidth + 5, centerHeight,
 						centerWidth - 5, centerHeight - 5, centerWidth - 5,
 						centerHeight + 5};
@@ -592,7 +582,6 @@ public class Button extends Control implements ICustomWidget {
 
 			gc.fillPolygon(curve);
 			gc.setBackground(bg2);
-
 		}
 
 		gc.commit();
@@ -911,7 +900,6 @@ public class Button extends Control implements ICustomWidget {
 			return false;
 
 		return defaultButton;
-
 	}
 
 	/**
@@ -1064,10 +1052,8 @@ public class Button extends Control implements ICustomWidget {
 	//
 	@Override
 	boolean isTabItem() {
-
 		boolean b = super.isTabItem();
 		return b;
-
 	}
 
 	@Override
@@ -1085,7 +1071,6 @@ public class Button extends Control implements ICustomWidget {
 		boolean b = super.traverseGroup(next);
 		return b;
 	}
-
 
 	// menmonicHis(char ch) does not exist on mac. It seems on mac there is no
 	// mnemonic...
@@ -1222,7 +1207,6 @@ public class Button extends Control implements ICustomWidget {
 
 	@Override
 	public boolean setFocus() {
-
 		checkWidget();
 
 		/*
@@ -1240,6 +1224,7 @@ public class Button extends Control implements ICustomWidget {
 		boolean b = super.setFocus();
 		return b;
 	}
+
 	@Override
 	public boolean forceFocus() {
 		boolean b = super.forceFocus();
@@ -1385,7 +1370,6 @@ public class Button extends Control implements ICustomWidget {
 	}
 
 	void selectRadio() {
-
 		for (Button b : getRadioGroup()) {
 			if (b != this) {
 				b.setSelection(false);
@@ -1399,7 +1383,6 @@ public class Button extends Control implements ICustomWidget {
 	}
 
 	void selectRadio(boolean withFocus) {
-
 		for (Button b : getRadioGroup()) {
 			if (b != this) {
 				b.setSelection(false);
@@ -1566,5 +1549,4 @@ public class Button extends Control implements ICustomWidget {
 		}
 		return polygon;
 	}
-
 }
