@@ -64,7 +64,6 @@ public class Button extends Control implements ICustomWidget {
 	static final char[] STRING_WITH_ZERO_CHAR = new char[]{'0'};
 	private int width;
 	private int height;
-	private Listener listener;
 	private boolean checked;
 	private boolean hasMouseEntered;
 	private Point computedSize = null;
@@ -141,35 +140,41 @@ public class Button extends Control implements ICustomWidget {
 	public Button(Composite parent, int style) {
 		super(parent, checkStyle(style));
 
-		listener = event -> {
+		Listener listener = event -> {
 			switch (event.type) {
-				case SWT.Dispose :
-					onDispose(event);
-					break;
-				case SWT.MouseDown :
-					onMouseDown(event);
-					break;
-				case SWT.MouseUp :
-					onMouseUp(event);
-					break;
-				case SWT.Paint :
-					onPaint(event);
-					break;
-				case SWT.Resize :
-					onResize();
-					break;
-				case SWT.FocusIn :
-					onFocusIn();
-					break;
-				case SWT.FocusOut :
-					onFocusOut();
-					break;
-				case SWT.Traverse :
-					onTraverse(event);
-					break;
-				case SWT.Selection :
-					onSelection(event);
-					break;
+			case SWT.Dispose:
+				onDispose(event);
+				break;
+			case SWT.MouseDown:
+				onMouseDown(event);
+				break;
+			case SWT.MouseUp:
+				onMouseUp(event);
+				break;
+			case SWT.Paint:
+				onPaint(event);
+				break;
+			case SWT.Resize:
+				onResize();
+				break;
+			case SWT.FocusIn:
+				onFocusIn();
+				break;
+			case SWT.FocusOut:
+				onFocusOut();
+				break;
+			case SWT.Traverse:
+				onTraverse(event);
+				break;
+			case SWT.Selection:
+				onSelection(event);
+				break;
+			case SWT.KeyDown:
+				onKeyDown(event);
+				break;
+			case SWT.KeyUp:
+				onKeyUp(event);
+				break;
 			}
 		};
 		addListener(SWT.Dispose, listener);
@@ -177,23 +182,12 @@ public class Button extends Control implements ICustomWidget {
 		addListener(SWT.MouseUp, listener);
 		addListener(SWT.Paint, listener);
 		addListener(SWT.Resize, listener);
+		addListener(SWT.KeyUp, listener);
 		addListener(SWT.KeyDown, listener);
 		addListener(SWT.FocusIn, listener);
 		addListener(SWT.FocusOut, listener);
 		addListener(SWT.Traverse, listener);
 		addListener(SWT.Selection, listener);
-
-		addKeyListener(new KeyListener() {
-			@Override
-			public void keyReleased(KeyEvent e) {
-				onKeyReleased(e);
-			}
-
-			@Override
-			public void keyPressed(KeyEvent e) {
-				onKeyPressed(e);
-			}
-		});
 
 		addMouseTrackListener(new MouseTrackAdapter() {
 			@Override
@@ -352,14 +346,14 @@ public class Button extends Control implements ICustomWidget {
 		redraw();
 	}
 
-	private void onKeyPressed(KeyEvent event) {
+	private void onKeyDown(Event event) {
 		if (event.character == SWT.SPACE) {
 			this.spaceDown = true;
 			redraw();
 		}
 	}
 
-	private void onKeyReleased(KeyEvent event) {
+	private void onKeyUp(Event event) {
 		if (event.character == SWT.SPACE) {
 			this.spaceDown = false;
 			handleSelection();
