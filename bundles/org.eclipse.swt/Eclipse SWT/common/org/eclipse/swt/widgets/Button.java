@@ -92,7 +92,7 @@ public class Button extends Control implements ICustomWidget {
 	private Accessible acc;
 	private AccessibleAdapter accAdapter;
 	private boolean spaceDown;
-	private boolean defaultButton = false;
+	private boolean defaultButton;
 
 	/**
 	 * Constructs a new instance of this class given its parent and a style
