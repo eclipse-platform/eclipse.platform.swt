@@ -180,7 +180,7 @@ public class Label extends Control implements ICustomWidget {
 	public Point computeSize(int wHint, int hHint, boolean changed) {
 		checkWidget();
 
-		if (changed == false && computedSize != null) {
+		if (!changed && computedSize != null) {
 			return new Point(Math.max(wHint, computedSize.x),
 			                 Math.max(hHint, computedSize.y));
 		}
