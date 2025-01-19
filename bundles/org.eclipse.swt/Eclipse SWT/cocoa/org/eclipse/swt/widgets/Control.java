@@ -5253,7 +5253,7 @@ static double luma (double[] rgbColor) {
 void createHandle() {
 	if (this instanceof ICustomWidget) {
 		state |= CANVAS;
-//		boolean scrolled = (style & (SWT.V_SCROLL | SWT.H_SCROLL)) != 0;
+//		boolean scrolled = isScrolled();
 //		if (!scrolled)
 //			state |= THEME_BACKGROUND;
 		NSRect rect = new NSRect();
@@ -5280,6 +5280,10 @@ void createHandle() {
 	} else {
 		super.createHandle();
 	}
+}
+
+protected boolean isScrolled() {
+	return (style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0;
 }
 
 }
