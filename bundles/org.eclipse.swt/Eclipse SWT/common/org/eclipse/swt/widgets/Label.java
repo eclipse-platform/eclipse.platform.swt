@@ -150,8 +150,8 @@ public class Label extends Control implements ICustomWidget {
 		addListener(SWT.Dispose, this::onDispose);
 
 		initAccessible();
-
 	}
+
 	/**
 	 * Check the style bits to ensure that no invalid styles are applied.
 	 */
@@ -204,7 +204,6 @@ public class Label extends Control implements ICustomWidget {
 
 		}
 		if (image != null) {
-
 			Rectangle imgB = image.getBounds();
 			imageWidth = imgB.width;
 			imageHeight = imgB.height;
@@ -219,8 +218,8 @@ public class Label extends Control implements ICustomWidget {
 
 		return new Point(Math.max(wHint, computedSize.x),
 				Math.max(hHint, computedSize.y));
-
 	}
+
 	/**
 	 * Draw a rectangle in the given colors.
 	 */
@@ -234,6 +233,7 @@ public class Label extends Control implements ICustomWidget {
 		gc.drawLine(x, y, x + w - 1, y);
 		gc.drawLine(x, y, x, y + h - 1);
 	}
+
 	/*
 	 * Return the lowercase of the first non-'&' character following an '&'
 	 * character in the given string. If there are no '&' characters in the
@@ -255,6 +255,7 @@ public class Label extends Control implements ICustomWidget {
 		} while (index < length);
 		return '\0';
 	}
+
 	/**
 	 * Returns the horizontal alignment. The alignment style (LEFT, CENTER or
 	 * RIGHT) is returned.
@@ -270,6 +271,7 @@ public class Label extends Control implements ICustomWidget {
 		// checkWidget();
 		return align;
 	}
+
 	/**
 	 * Return the Label's bottom margin.
 	 *
@@ -286,6 +288,7 @@ public class Label extends Control implements ICustomWidget {
 		// checkWidget();
 		return bottomMargin;
 	}
+
 	/**
 	 * Return the Label's image or <code>null</code>.
 	 *
@@ -300,6 +303,7 @@ public class Label extends Control implements ICustomWidget {
 		// checkWidget();
 		return image;
 	}
+
 	/**
 	 * Return the Label's left margin.
 	 *
@@ -316,6 +320,7 @@ public class Label extends Control implements ICustomWidget {
 		// checkWidget();
 		return leftMargin;
 	}
+
 	/**
 	 * Return the Label's right margin.
 	 *
@@ -332,6 +337,7 @@ public class Label extends Control implements ICustomWidget {
 		// checkWidget();
 		return rightMargin;
 	}
+
 	/**
 	 * Compute the minimum size.
 	 */
@@ -356,6 +362,7 @@ public class Label extends Control implements ICustomWidget {
 
 		return size;
 	}
+
 	@Override
 	public int getStyle() {
 		int style = super.getStyle();
@@ -387,11 +394,13 @@ public class Label extends Control implements ICustomWidget {
 		// checkWidget();
 		return text != null ? text : "";
 	}
+
 	@Override
 	public String getToolTipText() {
 		checkWidget();
 		return appToolTipText;
 	}
+
 	/**
 	 * Return the Label's top margin.
 	 *
@@ -408,6 +417,7 @@ public class Label extends Control implements ICustomWidget {
 		// checkWidget();
 		return topMargin;
 	}
+
 	private void initAccessible() {
 		Accessible accessible = getAccessible();
 		accessible.addAccessibleListener(new AccessibleAdapter() {
@@ -462,6 +472,7 @@ public class Label extends Control implements ICustomWidget {
 			}
 		});
 	}
+
 	void onDispose(Event event) {
 		/* make this handler run after other dispose listeners */
 		if (ignoreDispose) {
@@ -479,6 +490,7 @@ public class Label extends Control implements ICustomWidget {
 		image = null;
 		appToolTipText = null;
 	}
+
 	void onMnemonic(TraverseEvent event) {
 		char mnemonic = _findMnemonic(text);
 		if (mnemonic == '\0')
@@ -690,9 +702,7 @@ public class Label extends Control implements ICustomWidget {
 		lineY = topMargin;
 
 		if (textHeight < imageHeight) {
-
 			lineY = (imageHeight - textHeight) / 2;
-
 		}
 
 		if (lines != null) {
@@ -752,6 +762,7 @@ public class Label extends Control implements ICustomWidget {
 			drawBevelRect(gc, 0, 0, r.width - 1, r.height - 1, c1, c2);
 		}
 	}
+
 	/**
 	 * Set the horizontal alignment of the Label. Use the values LEFT, CENTER
 	 * and RIGHT to align image and text within the available space.
@@ -843,6 +854,7 @@ public class Label extends Control implements ICustomWidget {
 	public void setBackground(Color[] colors, int[] percents) {
 		setBackground(colors, percents, false);
 	}
+
 	/**
 	 * Specify a gradient of colours to be drawn in the background of the Label.
 	 * <p>
@@ -953,6 +965,7 @@ public class Label extends Control implements ICustomWidget {
 		// Refresh with the new settings
 		redraw();
 	}
+
 	/**
 	 * Set the image to be drawn in the background of the label.
 	 *
@@ -980,6 +993,7 @@ public class Label extends Control implements ICustomWidget {
 		redraw();
 
 	}
+
 	/**
 	 * Set the label's bottom margin, in points.
 	 *
@@ -1010,6 +1024,7 @@ public class Label extends Control implements ICustomWidget {
 		super.setFont(font);
 		redraw();
 	}
+
 	/**
 	 * Set the label's Image. The value <code>null</code> clears it.
 	 *
@@ -1031,6 +1046,7 @@ public class Label extends Control implements ICustomWidget {
 			redraw();
 		}
 	}
+
 	/**
 	 * Set the label's horizontal left margin, in points.
 	 *
@@ -1055,6 +1071,7 @@ public class Label extends Control implements ICustomWidget {
 		this.leftMargin = leftMargin;
 		redraw();
 	}
+
 	/**
 	 * Set the label's margins, in points.
 	 *
@@ -1085,6 +1102,7 @@ public class Label extends Control implements ICustomWidget {
 		this.bottomMargin = Math.max(0, bottomMargin);
 		redraw();
 	}
+
 	/**
 	 * Set the label's right margin, in points.
 	 *
@@ -1109,6 +1127,7 @@ public class Label extends Control implements ICustomWidget {
 		this.rightMargin = rightMargin;
 		redraw();
 	}
+
 	/**
 	 * Set the label's text. The value <code>null</code> clears it.
 	 * <p>
@@ -1146,11 +1165,13 @@ public class Label extends Control implements ICustomWidget {
 			redraw();
 		}
 	}
+
 	@Override
 	public void setToolTipText(String string) {
 		super.setToolTipText(string);
 		appToolTipText = super.getToolTipText();
 	}
+
 	/**
 	 * Set the label's top margin, in points.
 	 *
@@ -1175,6 +1196,7 @@ public class Label extends Control implements ICustomWidget {
 		this.topMargin = topMargin;
 		redraw();
 	}
+
 	/**
 	 * Shorten the given text <code>t</code> so that its length doesn't exceed
 	 * the given width. The default implementation replaces characters in the
@@ -1226,12 +1248,14 @@ public class Label extends Control implements ICustomWidget {
 		layout.dispose();
 		return result;
 	}
+
 	int validateOffset(TextLayout layout, int offset) {
 		int nextOffset = layout.getNextOffset(offset, SWT.MOVEMENT_CLUSTER);
 		if (nextOffset != offset)
 			return layout.getPreviousOffset(nextOffset, SWT.MOVEMENT_CLUSTER);
 		return offset;
 	}
+
 	private String[] splitString(String text) {
 		String[] lines = new String[1];
 		int start = 0, pos;
