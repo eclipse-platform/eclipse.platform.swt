@@ -1595,8 +1595,8 @@ public void setLocation(int x, int y) {
 public void setBounds(Rectangle rect) {
 	if (rect == null) error (SWT.ERROR_NULL_ARGUMENT);
 	checkWidget ();
-	Rectangle boundsInPixels = getDisplay().translateToDisplayCoordinates(rect, getZoom());
-	setBoundsInPixels(boundsInPixels.x, boundsInPixels.y, boundsInPixels.width, boundsInPixels.height);
+	Point topLeftInPixels = getDisplay().translateToDisplayCoordinates(new Point(rect.x, rect.y), getZoom());
+	setBoundsInPixels(topLeftInPixels.x, topLeftInPixels.y, DPIUtil.scaleUp(rect.width, getZoom()), DPIUtil.scaleUp(rect.height, getZoom()));
 }
 
 @Override
