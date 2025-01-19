@@ -688,7 +688,7 @@ void createHandle () {
 		// else the old drawings stay in the area.
 		state |= CANVAS;
 
-		if (isScrolled() || findThemeControl() == parent) {
+		if (!isScrolled() || findThemeControl() == parent) {
 			state |= THEME_BACKGROUND;
 		}
 		if ((style & SWT.TRANSPARENT) != 0) {
