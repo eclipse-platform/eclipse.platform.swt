@@ -87,8 +87,8 @@ public class Label extends Control implements ICustomWidget {
 	private Color background;
 	private Point computedSize;
 
-	private static int DRAW_FLAGS = SWT.DRAW_MNEMONIC | SWT.DRAW_TAB
-			| SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER;
+	private static final int DRAW_FLAGS = SWT.DRAW_MNEMONIC | SWT.DRAW_TAB
+	                                      | SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER;
 
 	/**
 	 * Constructs a new instance of this class given its parent and a style
