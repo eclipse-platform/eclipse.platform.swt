@@ -682,7 +682,7 @@ public class Label extends Control implements ICustomWidget {
 			textHeight = lines.length * lineHeight;
 		}
 
-		int imageY = 0, midPoint = 0, lineY = 0;
+		int imageY, midPoint;
 		if (imageHeight > textHeight) {
 			if (topMargin == DEFAULT_MARGIN && bottomMargin == DEFAULT_MARGIN) {
 				imageY = 0;
@@ -690,8 +690,8 @@ public class Label extends Control implements ICustomWidget {
 				imageY = topMargin;
 			}
 			midPoint = imageY + imageHeight / 2;
-			lineY = midPoint - textHeight / 2;
 		} else {
+			int lineY;
 			if (topMargin == DEFAULT_MARGIN && bottomMargin == DEFAULT_MARGIN) {
 				lineY = (textHeight - imageHeight) / 2;
 			} else {
@@ -711,7 +711,7 @@ public class Label extends Control implements ICustomWidget {
 
 		// draw the text
 		// we draw the label at the top.
-		lineY = topMargin;
+		int lineY = topMargin;
 
 		if (textHeight < imageHeight) {
 			lineY = (imageHeight - textHeight) / 2;
