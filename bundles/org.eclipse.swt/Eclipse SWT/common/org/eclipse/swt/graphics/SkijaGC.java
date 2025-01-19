@@ -97,7 +97,7 @@ public class SkijaGC implements IGraphicsContext {
 		performDraw(paint -> {
 			paint.setColor(convertSWTColorToSkijaColor(getForeground()));
 			paint.setMode(PaintMode.STROKE);
-			paint.setStrokeWidth(lineWidth);
+			paint.setStrokeWidth(DPIUtil.autoScaleUp(lineWidth));
 			paint.setAntiAlias(true);
 			operations.accept(paint);
 		});
@@ -316,8 +316,10 @@ public class SkijaGC implements IGraphicsContext {
 
 	@Override
 	public void drawLine(int x1, int y1, int x2, int y2) {
-		performDrawLine(paint -> surface.getCanvas().drawLine(DPIUtil.autoScaleUp(x1 + 0.5f),
-				DPIUtil.autoScaleUp(y1 + 0.5f), DPIUtil.autoScaleUp(x2 + 0.5f), DPIUtil.autoScaleUp(y2 + 0.5f), paint));
+		float scaledOffsetValue = getScaledOffsetValue();
+		performDrawLine(paint -> surface.getCanvas().drawLine(DPIUtil.autoScaleUp(x1) + scaledOffsetValue,
+				DPIUtil.autoScaleUp(y1) + scaledOffsetValue, DPIUtil.autoScaleUp(x2) + scaledOffsetValue,
+				DPIUtil.autoScaleUp(y2) + scaledOffsetValue, paint));
 	}
 
 	@Override
@@ -613,14 +615,34 @@ public class SkijaGC implements IGraphicsContext {
 	}
 
 	private Rect offsetRectangle(Rect rect) {
-		return new Rect(rect.getLeft() + DPIUtil.autoScaleUp(0.5f), rect.getTop() + DPIUtil.autoScaleUp(0.5f),
-				rect.getRight() + DPIUtil.autoScaleUp(0.5f), rect.getBottom() + DPIUtil.autoScaleUp(0.5f));
+		float scaledOffsetValue = getScaledOffsetValue();
+		float widthHightAutoScaleOffset = DPIUtil.autoScaleUp(1) - 1.0f;
+		if (scaledOffsetValue != 0f) {
+			return new Rect(rect.getLeft() + scaledOffsetValue, rect.getTop() + scaledOffsetValue,
+					rect.getRight() + scaledOffsetValue + widthHightAutoScaleOffset,
+					rect.getBottom() + scaledOffsetValue + widthHightAutoScaleOffset);
+		} else {
+			return rect;
+		}
 	}
 
 	private Rect createScaledRectangle(int x, int y, int width, int height) {
 		return new Rect(DPIUtil.autoScaleUp(x), DPIUtil.autoScaleUp(y), DPIUtil.autoScaleUp(x + width),
 				DPIUtil.autoScaleUp(y + height));
 	}
+
+	private float getScaledOffsetValue() {
+		boolean isDefaultLineWidth = lineWidth == 0;
+		if (isDefaultLineWidth) {
+			return 0.5f;
+		}
+		int effectiveLineWidth = DPIUtil.autoScaleUp(lineWidth);
+		if (effectiveLineWidth % 2 == 1) {
+			return DPIUtil.autoScaleUp(0.5f);
+		}
+		return 0f;
+	}
+
 
 	@Override
 	public void setLineStyle(int lineDot) {
