@@ -85,10 +85,8 @@ public class Label extends Control implements ICustomWidget {
 	private int[] gradientPercents;
 	private boolean gradientVertical;
 	private Color background;
-	private Point computedSize = null;
+	private Point computedSize;
 
-	private final static FontData DEFAULT_FONT_DATA_WIN = new FontData(
-			"Segoe UI", 9, SWT.NORMAL);
 	private static int DRAW_FLAGS = SWT.DRAW_MNEMONIC | SWT.DRAW_TAB
 			| SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER;
 
