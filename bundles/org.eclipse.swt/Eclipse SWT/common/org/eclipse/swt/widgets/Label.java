@@ -193,7 +193,7 @@ public class Label extends Control implements ICustomWidget {
 		int GAP = 0;
 		int topMargin = this.topMargin;
 
-		if (text != null && !"".equals(text)) {
+		if (text != null && !text.isEmpty()) {
 			GC originalGC = new GC(this);
 			IGraphicsContext gc = SWT.USE_SKIJA ? new SkijaGC(originalGC, null) : originalGC;
 			gc.setFont(getFont());
@@ -527,7 +527,7 @@ public class Label extends Control implements ICustomWidget {
 		if (rect.width == 0 && rect.height == 0) {
 			return;
 		}
-		if ((text == null || "".equals(text)) && image == null) {
+		if ((text == null || text.isEmpty()) && image == null) {
 			return;
 		}
 
