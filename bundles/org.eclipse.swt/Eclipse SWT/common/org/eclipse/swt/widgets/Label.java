@@ -130,14 +130,16 @@ public class Label extends Control implements ICustomWidget {
 	 */
 	public Label(Composite parent, int style) {
 		super(parent, checkStyle(style));
-		if ((style & (SWT.CENTER | SWT.RIGHT)) == 0)
+		if ((style & (SWT.CENTER | SWT.RIGHT)) == 0) {
 			style |= SWT.LEFT;
-		if ((style & SWT.CENTER) != 0)
+		}
+		if ((style & SWT.CENTER) != 0) {
 			align = SWT.CENTER;
-		if ((style & SWT.RIGHT) != 0)
+		} else if ((style & SWT.RIGHT) != 0) {
 			align = SWT.RIGHT;
-		if ((style & SWT.LEFT) != 0)
+		} else if ((style & SWT.LEFT) != 0) {
 			align = SWT.LEFT;
+		}
 
 		addPaintListener(this::onPaint);
 
@@ -156,8 +158,9 @@ public class Label extends Control implements ICustomWidget {
 	 * Check the style bits to ensure that no invalid styles are applied.
 	 */
 	private static int checkStyle(int style) {
-		if ((style & SWT.BORDER) != 0)
+		if ((style & SWT.BORDER) != 0) {
 			style |= SWT.SHADOW_IN;
+		}
 		int mask = SWT.SHADOW_IN | SWT.SHADOW_OUT | SWT.SHADOW_NONE
 				| SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 		style = style & mask;
@@ -178,9 +181,10 @@ public class Label extends Control implements ICustomWidget {
 	public Point computeSize(int wHint, int hHint, boolean changed) {
 		checkWidget();
 
-		if (changed == false && computedSize != null)
+		if (changed == false && computedSize != null) {
 			return new Point(Math.max(wHint, computedSize.x),
-					Math.max(hHint, computedSize.y));
+			                 Math.max(hHint, computedSize.y));
+		}
 
 		int lineWidth = 0;
 		int lineHeight = 0;
@@ -199,9 +203,9 @@ public class Label extends Control implements ICustomWidget {
 			gc.dispose();
 			lineWidth = textExtent.x;
 			lineHeight = textExtent.y;
-			if (image != null)
+			if (image != null) {
 				GAP = Label.GAP;
-
+			}
 		}
 		if (image != null) {
 			Rectangle imgB = image.getBounds();
@@ -240,17 +244,22 @@ public class Label extends Control implements ICustomWidget {
 	 * given string, return '\0'.
 	 */
 	char _findMnemonic(String string) {
-		if (string == null)
+		if (string == null) {
 			return '\0';
+		}
+
 		int index = 0;
 		int length = string.length();
 		do {
-			while (index < length && string.charAt(index) != '&')
+			while (index < length && string.charAt(index) != '&') {
 				index++;
-			if (++index >= length)
+			}
+			if (++index >= length) {
 				return '\0';
-			if (string.charAt(index) != '&')
+			}
+			if (string.charAt(index) != '&') {
 				return Character.toLowerCase(string.charAt(index));
+			}
 			index++;
 		} while (index < length);
 		return '\0';
@@ -354,8 +363,9 @@ public class Label extends Control implements ICustomWidget {
 			Point e = gc.textExtent(text, DRAW_FLAGS);
 			size.x += e.x;
 			size.y = Math.max(size.y, e.y);
-			if (image != null)
+			if (image != null) {
 				size.x += GAP;
+			}
 		} else {
 			size.y = Math.max(size.y, gc.getFontMetrics().getHeight());
 		}
@@ -493,17 +503,20 @@ public class Label extends Control implements ICustomWidget {
 
 	void onMnemonic(TraverseEvent event) {
 		char mnemonic = _findMnemonic(text);
-		if (mnemonic == '\0')
+		if (mnemonic == '\0') {
 			return;
-		if (Character.toLowerCase(event.character) != mnemonic)
+		}
+		if (Character.toLowerCase(event.character) != mnemonic) {
 			return;
+		}
 		Composite control = this.getParent();
 		while (control != null) {
 			Control[] children = control.getChildren();
 			int index = 0;
 			while (index < children.length) {
-				if (children[index] == this)
+				if (children[index] == this) {
 					break;
+				}
 				index++;
 			}
 			index++;
@@ -519,11 +532,12 @@ public class Label extends Control implements ICustomWidget {
 
 	void onPaint(PaintEvent event) {
 		Rectangle rect = getBounds();
-		if (rect.width == 0 && rect.height == 0)
+		if (rect.width == 0 && rect.height == 0) {
 			return;
-
-		if ((text == null || "".equals(text)) && image == null)
+		}
+		if ((text == null || "".equals(text)) && image == null) {
 			return;
+		}
 
 		event.gc.setFont(font);
 		event.gc.setBackground(getBackground());
@@ -596,20 +610,23 @@ public class Label extends Control implements ICustomWidget {
 				// draw a gradient behind the text
 				final Color oldBackground = gc.getBackground();
 				if (gradientColors.length == 1) {
-					if (gradientColors[0] != null)
+					if (gradientColors[0] != null) {
 						gc.setBackground(gradientColors[0]);
+					}
 					gc.fillRectangle(0, 0, rect.width, rect.height);
 				} else {
 					final Color oldForeground = gc.getForeground();
 					Color lastColor = gradientColors[0];
-					if (lastColor == null)
+					if (lastColor == null) {
 						lastColor = oldBackground;
+					}
 					int pos = 0;
 					for (int i = 0; i < gradientPercents.length; ++i) {
 						gc.setForeground(lastColor);
 						lastColor = gradientColors[i + 1];
-						if (lastColor == null)
+						if (lastColor == null) {
 							lastColor = oldBackground;
+						}
 						gc.setBackground(lastColor);
 						if (gradientVertical) {
 							final int gradientHeight = (gradientPercents[i]
@@ -674,17 +691,19 @@ public class Label extends Control implements ICustomWidget {
 
 		int imageY = 0, midPoint = 0, lineY = 0;
 		if (imageHeight > textHeight) {
-			if (topMargin == DEFAULT_MARGIN && bottomMargin == DEFAULT_MARGIN)
+			if (topMargin == DEFAULT_MARGIN && bottomMargin == DEFAULT_MARGIN) {
 				imageY = 0;
-			else
+			} else {
 				imageY = topMargin;
+			}
 			midPoint = imageY + imageHeight / 2;
 			lineY = midPoint - textHeight / 2;
 		} else {
-			if (topMargin == DEFAULT_MARGIN && bottomMargin == DEFAULT_MARGIN)
+			if (topMargin == DEFAULT_MARGIN && bottomMargin == DEFAULT_MARGIN) {
 				lineY = (textHeight - imageHeight) / 2;
-			else
+			} else {
 				lineY = topMargin;
+			}
 			midPoint = lineY + textHeight / 2;
 			imageY = midPoint - imageHeight / 2;
 		}
@@ -798,11 +817,13 @@ public class Label extends Control implements ICustomWidget {
 		if (backgroundImage == null && gradientColors == null
 				&& gradientPercents == null) {
 			if (color == null) {
-				if (background == null)
+				if (background == null) {
 					return;
+				}
 			} else {
-				if (color.equals(background))
+				if (color.equals(background)) {
 					return;
+				}
 			}
 		}
 		background = color;
@@ -930,14 +951,16 @@ public class Label extends Control implements ICustomWidget {
 									&& (colors[i] == background))
 							|| ((gradientColors[i] == background)
 									&& (colors[i] == null));
-					if (!same)
+					if (!same) {
 						break;
+					}
 				}
 				if (same) {
 					for (int i = 0; i < gradientPercents.length; i++) {
 						same = gradientPercents[i] == percents[i];
-						if (!same)
+						if (!same) {
 							break;
+						}
 					}
 				}
 				if (same && this.gradientVertical == vertical)
@@ -958,8 +981,9 @@ public class Label extends Control implements ICustomWidget {
 						? colors[i]
 						: background;
 			gradientPercents = new int[percents.length];
-			for (int i = 0; i < percents.length; ++i)
+			for (int i = 0; i < percents.length; ++i) {
 				gradientPercents[i] = percents[i];
+			}
 			gradientVertical = vertical;
 		}
 		// Refresh with the new settings
@@ -983,8 +1007,9 @@ public class Label extends Control implements ICustomWidget {
 	@Override
 	public void setBackgroundImage(Image image) {
 		checkWidget();
-		if (image == backgroundImage)
+		if (image == backgroundImage) {
 			return;
+		}
 		if (image != null) {
 			gradientColors = null;
 			gradientPercents = null;
@@ -1013,8 +1038,9 @@ public class Label extends Control implements ICustomWidget {
 	 */
 	public void setBottomMargin(int bottomMargin) {
 		checkWidget();
-		if (this.bottomMargin == bottomMargin || bottomMargin < 0)
+		if (this.bottomMargin == bottomMargin || bottomMargin < 0) {
 			return;
+		}
 		this.bottomMargin = bottomMargin;
 		redraw();
 	}
@@ -1066,8 +1092,9 @@ public class Label extends Control implements ICustomWidget {
 	 */
 	public void setLeftMargin(int leftMargin) {
 		checkWidget();
-		if (this.leftMargin == leftMargin || leftMargin < 0)
+		if (this.leftMargin == leftMargin || leftMargin < 0) {
 			return;
+		}
 		this.leftMargin = leftMargin;
 		redraw();
 	}
@@ -1122,8 +1149,9 @@ public class Label extends Control implements ICustomWidget {
 	 */
 	public void setRightMargin(int rightMargin) {
 		checkWidget();
-		if (this.rightMargin == rightMargin || rightMargin < 0)
+		if (this.rightMargin == rightMargin || rightMargin < 0) {
 			return;
+		}
 		this.rightMargin = rightMargin;
 		redraw();
 	}
@@ -1158,8 +1186,9 @@ public class Label extends Control implements ICustomWidget {
 	public void setText(String text) {
 		checkWidget();
 		computedSize = null;
-		if (text == null)
+		if (text == null) {
 			text = ""; //$NON-NLS-1$
+		}
 		if (!text.equals(this.text)) {
 			this.text = text;
 			redraw();
@@ -1191,8 +1220,9 @@ public class Label extends Control implements ICustomWidget {
 	 */
 	public void setTopMargin(int topMargin) {
 		checkWidget();
-		if (this.topMargin == topMargin || topMargin < 0)
+		if (this.topMargin == topMargin || topMargin < 0) {
 			return;
+		}
 		this.topMargin = topMargin;
 		redraw();
 	}
@@ -1212,17 +1242,20 @@ public class Label extends Control implements ICustomWidget {
 	 * @return the shortened text
 	 */
 	protected String shortenText(IGraphicsContext gc, String t, int width) {
-		if (t == null)
+		if (t == null) {
 			return null;
+		}
 		int w = gc.textExtent(ELLIPSIS, DRAW_FLAGS).x;
-		if (width <= w)
+		if (width <= w) {
 			return t;
+		}
 		int l = t.length();
 		int max = l / 2;
 		int min = 0;
 		int mid = (max + min) / 2 - 1;
-		if (mid <= 0)
+		if (mid <= 0) {
 			return t;
+		}
 		TextLayout layout = new TextLayout(getDisplay());
 		layout.setText(t);
 		mid = validateOffset(layout, mid);
@@ -1251,8 +1284,9 @@ public class Label extends Control implements ICustomWidget {
 
 	int validateOffset(TextLayout layout, int offset) {
 		int nextOffset = layout.getNextOffset(offset, SWT.MOVEMENT_CLUSTER);
-		if (nextOffset != offset)
+		if (nextOffset != offset) {
 			return layout.getPreviousOffset(nextOffset, SWT.MOVEMENT_CLUSTER);
+		}
 		return offset;
 	}
 
