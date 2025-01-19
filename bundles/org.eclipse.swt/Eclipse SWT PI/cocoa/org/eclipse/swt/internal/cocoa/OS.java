@@ -73,6 +73,7 @@ public class OS extends C {
 	public static final int kAXUnderlineStyleThick = 0x2;
 	public static final int kAXUnderlineStyleDouble = 0x9;
 	public static final int kPMDestinationPrinter = 1;
+	public static final int kPMDestinationFile = 2;
 	public static final int kPMDuplexNone = 0x0001;
 	public static final int kPMDuplexNoTumble = 0x0002;
 	public static final int kPMDuplexTumble = 0x0003;

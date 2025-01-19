@@ -593,7 +593,7 @@ public Point getDPI() {
 			long printSettings = printInfo.PMPrintSettings();
 			short[] destType = new short[1];
 			if (OS.PMSessionGetDestinationType(pmPrintSession, printSettings, destType) == OS.noErr) {
-				if (destType[0] == OS.kPMDestinationPrinter) {
+				if (destType[0] == OS.kPMDestinationPrinter || destType[0] == OS.kPMDestinationFile) {
 					PMResolution resolution =  new PMResolution();
 
 					if (OS.PMPrinterGetOutputResolution(printer[0], printSettings, resolution) != OS.noErr) {
