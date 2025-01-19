@@ -375,15 +375,9 @@ public class Label extends Control implements ICustomWidget {
 	public int getStyle() {
 		int style = super.getStyle();
 		switch (align) {
-			case SWT.RIGHT :
-				style |= SWT.RIGHT;
-				break;
-			case SWT.CENTER :
-				style |= SWT.CENTER;
-				break;
-			case SWT.LEFT :
-				style |= SWT.LEFT;
-				break;
+		case SWT.RIGHT -> style |= SWT.RIGHT;
+		case SWT.CENTER -> style |= SWT.CENTER;
+		case SWT.LEFT -> style |= SWT.LEFT;
 		}
 		return style;
 	}
