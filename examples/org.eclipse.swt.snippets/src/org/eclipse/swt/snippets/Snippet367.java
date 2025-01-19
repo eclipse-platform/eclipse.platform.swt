@@ -60,9 +60,9 @@ public class Snippet367 {
 				return null;
 			}
 		};
-		final ImageGcDrawer imageGcDrawer = gc -> {
-			gc.drawRectangle(1, 1, 18, 18);
-			gc.drawLine(3, 3, 17, 17);
+		final ImageGcDrawer imageGcDrawer = (gc, width, height) -> {
+			gc.drawRectangle(1, 1, width - 2, height - 2);
+			gc.drawLine(3, 3, width - 3, height - 3);
 		};
 
 		final Display display = new Display ();

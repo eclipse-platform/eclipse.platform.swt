@@ -64,11 +64,11 @@ public class Snippet382 {
 
 		final Display display = new Display ();
 
-		final ImageGcDrawer imageGcDrawer = gc -> {
+		final ImageGcDrawer imageGcDrawer = (gc, width, height) -> {
 			gc.setBackground(display.getSystemColor(SWT.COLOR_RED));
-			gc.fillRectangle(0, 0, 16, 16);
+			gc.fillRectangle(0, 0, width, height);
 			gc.setForeground(display.getSystemColor(SWT.COLOR_YELLOW));
-			gc.drawRectangle(4, 4, 8, 8);
+			gc.drawRectangle(4, 4, width - 8, height - 8);
 		};
 
 		final Shell shell = new Shell (display);
