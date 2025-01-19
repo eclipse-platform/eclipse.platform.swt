@@ -162,7 +162,8 @@ public class Label extends Control implements ICustomWidget {
 		int mask = SWT.SHADOW_IN | SWT.SHADOW_OUT | SWT.SHADOW_NONE
 				| SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 		style = style & mask;
-		return style |= SWT.NO_FOCUS | SWT.DOUBLE_BUFFERED;
+		style |= SWT.NO_FOCUS | SWT.DOUBLE_BUFFERED;
+		return style;
 	}
 
 	@Override
