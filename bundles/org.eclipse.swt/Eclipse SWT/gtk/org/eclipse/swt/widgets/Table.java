@@ -15,6 +15,8 @@
 package org.eclipse.swt.widgets;
 
 
+import java.util.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
@@ -98,6 +100,7 @@ public class Table extends Composite {
 	int headerHeight;
 	boolean boundsChangedSinceLastDraw, headerVisible, wasScrolled;
 	boolean rowActivated;
+	SetDataTask setDataTask = new SetDataTask();
 
 	private long headerCSSProvider;
 
@@ -220,26 +223,27 @@ long cellDataProc (long tree_column, long cell, long tree_model, long iter, long
 		}
 	}
 	if (modelIndex == -1) return 0;
-	boolean setData = false;
+	boolean updated = false;
 	if ((style & SWT.VIRTUAL) != 0) {
 		if (!item.cached) {
-			lastIndexOf = index[0];
-			setData = checkData (item);
+			setDataTask.enqueueItem (item);
+		}
+		if (item.updated) {
+			updated = true;
+			item.updated = false;
 		}
 	}
 	long [] ptr = new long [1];
-	if (setData) {
-		ptr [0] = 0;
-		if (isPixbuf) {
-			GTK.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_PIXBUF, ptr, -1);
-			OS.g_object_set (cell, OS.gicon, ptr [0], 0);
-			if (ptr [0] != 0) OS.g_object_unref (ptr [0]);
-		} else {
-			GTK.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_TEXT, ptr, -1);
-			if (ptr [0] != 0) {
-				OS.g_object_set (cell, OS.text, ptr [0], 0);
-				OS.g_free (ptr [0]);
-			}
+	ptr [0] = 0;
+	if (isPixbuf) {
+		GTK.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_PIXBUF, ptr, -1);
+		OS.g_object_set (cell, OS.gicon, ptr [0], 0);
+		if (ptr [0] != 0) OS.g_object_unref (ptr [0]);
+	} else {
+		GTK.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_TEXT, ptr, -1);
+		if (ptr [0] != 0) {
+			OS.g_object_set (cell, OS.text, ptr [0], 0);
+			OS.g_free (ptr [0]);
 		}
 	}
 	if (customDraw) {
@@ -266,7 +270,7 @@ long cellDataProc (long tree_column, long cell, long tree_model, long iter, long
 			}
 		}
 	}
-	if (setData) {
+	if (updated) {
 		ignoreCell = cell;
 		setScrollWidth (tree_column, item);
 		ignoreCell = 0;
@@ -4247,6 +4251,50 @@ public void dispose() {
 	if (headerCSSProvider != 0) {
 		OS.g_object_unref(headerCSSProvider);
 		headerCSSProvider = 0;
+	}
+}
+
+class SetDataTask implements Runnable {
+	boolean scheduled;
+	LinkedHashSet<TableItem> itemsQueue = new LinkedHashSet<> ();
+
+	void enqueueItem (TableItem item) {
+		itemsQueue.add (item);
+		ensureExecutionScheduled ();
+	}
+
+	void ensureExecutionScheduled () {
+		if (!scheduled && !isDisposed ()) {
+			display.asyncExec (this);
+			scheduled = true;
+		}
+	}
+
+	@Override
+	public void run () {
+		scheduled = false;
+		if (itemsQueue.isEmpty () || isDisposed ()) {
+			return;
+		}
+		LinkedHashSet<TableItem> items = itemsQueue;
+		itemsQueue = new LinkedHashSet<> ();
+		try {
+			for (Iterator<TableItem> it = items.iterator (); it.hasNext ();) {
+				TableItem item = it.next ();
+				it.remove ();
+				if (!item.cached && !item.isDisposed ()) {
+					if (checkData (item)) {
+						item.updated = true;
+					}
+				}
+			}
+		} catch (Throwable t) {
+			if (!items.isEmpty ()) {
+				itemsQueue.addAll (items);
+				ensureExecutionScheduled ();
+			}
+			throw t;
+		}
 	}
 }
 }
