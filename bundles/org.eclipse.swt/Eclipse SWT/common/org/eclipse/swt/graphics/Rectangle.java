@@ -45,7 +45,7 @@ import org.eclipse.swt.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 
-public final class Rectangle implements Serializable {
+public sealed class Rectangle implements Serializable permits MonitorAwareRectangle {
 
 	/**
 	 * the x coordinate of the rectangle
@@ -155,10 +155,18 @@ public boolean contains (Point pt) {
  * @see #hashCode()
  */
 @Override
-public boolean equals (Object object) {
-	if (object == this) return true;
-	if (!(object instanceof Rectangle r)) return false;
-	return (r.x == this.x) && (r.y == this.y) && (r.width == this.width) && (r.height == this.height);
+public boolean equals(Object object) {
+	if (object == null) {
+		return false;
+	}
+	if (object == this) {
+		return true;
+	}
+	if (object.getClass() != this.getClass()) {
+		return false;
+	}
+	Rectangle other = (Rectangle) object;
+	return (other.x == this.x) && (other.y == this.y) && (other.width == this.width) && (other.height == this.height);
 }
 
 /**
