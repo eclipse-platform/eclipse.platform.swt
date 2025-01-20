@@ -115,7 +115,7 @@ class ScaleRenderer implements IScaleRenderer {
 		ppu = totalPixel / units;
 		drawCenterNotches(gc, firstNotch, lastNotch, units, unitPerPage, totalPixel);
 
-		drawHande(gc, effectiveValue);
+		drawHandle(gc, effectiveValue);
 	}
 
 	private void drawCenterNotches(IGraphicsContext gc, int firstNotchPos, int lastNotchPos, int units, int unitPerPage,
@@ -133,7 +133,7 @@ class ScaleRenderer implements IScaleRenderer {
 		}
 	}
 
-	private void drawHande(IGraphicsContext gc, int value) {
+	private void drawHandle(IGraphicsContext gc, int value) {
 		// draw handle
 		Color handleColor = switch (scale.getHandleState()) {
 		case IDLE -> IDLE_COLOR;
