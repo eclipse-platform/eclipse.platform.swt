@@ -113,13 +113,12 @@ class ScaleRenderer implements IScaleRenderer {
 		int unitPerPage = scale.getPageIncrement();
 		double totalPixel = lastNotch - firstNotch;
 		ppu = totalPixel / units;
-		drawCenterNotches(gc, firstNotch, lastNotch, units, unitPerPage, totalPixel);
+		drawCenterNotches(gc, firstNotch, lastNotch, units, unitPerPage);
 
 		drawHandle(gc, effectiveValue);
 	}
 
-	private void drawCenterNotches(IGraphicsContext gc, int firstNotchPos, int lastNotchPos, int units, int unitPerPage,
-			double scalePixels) {
+	private void drawCenterNotches(IGraphicsContext gc, int firstNotchPos, int lastNotchPos, int units, int unitPerPage) {
 		if (isRTL() && !isVertical()) {
 			for (int i = unitPerPage; i < units; i += unitPerPage) {
 				int position = lastNotchPos - (int) (i * ppu);
