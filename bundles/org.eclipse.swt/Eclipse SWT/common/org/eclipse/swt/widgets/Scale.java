@@ -268,7 +268,7 @@ public class Scale extends Control implements ICustomWidget {
 
 		updateHandleColor(newHandleState);
 
-		super.forceFocus();
+		forceFocus();
 	}
 
 	private void onMouseUp(Event event) {
@@ -665,7 +665,7 @@ public class Scale extends Control implements ICustomWidget {
 	private void selectAndNotify(int newValue) {
 		if (newValue != selection) {
 			selection = newValue;
-			super.sendEvent(SWT.Selection, new Event());
+			sendEvent(SWT.Selection, new Event());
 		}
 	}
 
