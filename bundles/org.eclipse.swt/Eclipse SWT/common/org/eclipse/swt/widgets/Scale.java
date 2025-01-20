@@ -45,7 +45,6 @@ import org.eclipse.swt.graphics.*;
 public class Scale extends Control implements ICustomWidget {
 	private static Point preferedSize = new Point(170, 42);
 
-
 	private Listener listener;
 	private Point computedSize = null;
 
@@ -57,8 +56,6 @@ public class Scale extends Control implements ICustomWidget {
 	private int increment = 1;
 	private int pageIncrement = 10;;
 	private int selection = 0;
-
-
 
 	private int alignment = SWT.HORIZONTAL;
 	private int orientation = SWT.LEFT_TO_RIGHT;
@@ -115,9 +112,7 @@ public class Scale extends Control implements ICustomWidget {
 		 * @param bounds
 		 */
 		void render(GC gc, Rectangle bounds);
-
 	}
-
 
 	/**
 	 * Constructs a new instance of this class given its parent and a style value
@@ -166,7 +161,6 @@ public class Scale extends Control implements ICustomWidget {
 			case SWT.MouseHorizontalWheel -> onMouseHorizontalWheel(event);
 			case SWT.MouseVerticalWheel -> onMouseVerticalWheel(event);
 			case SWT.Paint -> onPaint(event);
-
 			}
 		};
 		addListener(SWT.KeyDown, listener);
@@ -181,7 +175,6 @@ public class Scale extends Control implements ICustomWidget {
 		orientation = style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
 
 		renderer = new ScaleRenderer(this);
-
 	}
 
 	@Override
@@ -222,7 +215,6 @@ public class Scale extends Control implements ICustomWidget {
 	HandleState getHandleState() {
 		return handleState;
 	}
-
 
 	private void onMouseMove(Event event) {
 		if (!isVisible()) {
@@ -373,7 +365,6 @@ public class Scale extends Control implements ICustomWidget {
 
 		renderer.render(e.gc, bounds);
 	}
-
 
 	@Override
 	public Point computeSize(int wHint, int hHint, boolean changed) {
@@ -670,7 +661,6 @@ public class Scale extends Control implements ICustomWidget {
 		selectAndNotify(minMax(minimum, selection, maximum));
 		redraw();
 	}
-
 
 	private void selectAndNotify(int newValue) {
 		if (newValue != selection) {
