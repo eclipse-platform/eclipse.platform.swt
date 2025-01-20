@@ -43,7 +43,8 @@ import org.eclipse.swt.graphics.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class Scale extends Control implements ICustomWidget {
-	private static Point preferedSize = new Point(170, 42);
+	private static final int PREFERRED_WIDTH = 170;
+	private static final int PREFERRED_HEIGHT = 42;
 
 	private Listener listener;
 	private Point computedSize;
@@ -370,11 +371,11 @@ public class Scale extends Control implements ICustomWidget {
 		int computedHeight;
 
 		if (getAlignement() == SWT.VERTICAL) {
-			computedWidth = (wHint == SWT.DEFAULT) ? preferedSize.y : wHint;
-			computedHeight = (hHint == SWT.DEFAULT) ? preferedSize.x : hHint;
+			computedWidth = (wHint == SWT.DEFAULT) ? PREFERRED_HEIGHT : wHint;
+			computedHeight = (hHint == SWT.DEFAULT) ? PREFERRED_WIDTH : hHint;
 		} else {
-			computedWidth = (wHint == SWT.DEFAULT) ? preferedSize.x : wHint;
-			computedHeight = (hHint == SWT.DEFAULT) ? preferedSize.y : hHint;
+			computedWidth = (wHint == SWT.DEFAULT) ? PREFERRED_WIDTH : wHint;
+			computedHeight = (hHint == SWT.DEFAULT) ? PREFERRED_HEIGHT : hHint;
 		}
 
 		computedSize = new Point(computedWidth, computedHeight);
