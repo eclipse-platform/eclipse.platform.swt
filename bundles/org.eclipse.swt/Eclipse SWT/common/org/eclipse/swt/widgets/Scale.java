@@ -46,10 +46,7 @@ public class Scale extends Control implements ICustomWidget {
 	private static Point preferedSize = new Point(170, 42);
 
 	private Listener listener;
-	private Point computedSize = null;
-
-	private int width;
-	private int height;
+	private Point computedSize;
 
 	private int minimum = 0;
 	private int maximum = 100;
@@ -382,11 +379,6 @@ public class Scale extends Control implements ICustomWidget {
 
 		computedSize = new Point(computedWidth, computedHeight);
 		return computedSize;
-	}
-
-	@Override
-	public Point getSize() {
-		return new Point(width, height);
 	}
 
 	/**
