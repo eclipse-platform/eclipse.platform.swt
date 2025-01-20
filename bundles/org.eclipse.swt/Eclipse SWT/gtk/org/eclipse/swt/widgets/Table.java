@@ -15,6 +15,8 @@
 package org.eclipse.swt.widgets;
 
 
+import java.util.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
@@ -98,6 +100,7 @@ public class Table extends Composite {
 	int headerHeight;
 	boolean boundsChangedSinceLastDraw, headerVisible, wasScrolled;
 	boolean rowActivated;
+	AsyncSetDataTask asyncSetDataTask = new AsyncSetDataTask();
 
 	private long headerCSSProvider;
 
@@ -220,15 +223,15 @@ long cellDataProc (long tree_column, long cell, long tree_model, long iter, long
 		}
 	}
 	if (modelIndex == -1) return 0;
-	boolean setData = false;
-	if ((style & SWT.VIRTUAL) != 0) {
-		if (!item.cached) {
-			lastIndexOf = index[0];
-			setData = checkData (item);
-		}
-	}
+	boolean updated = false;
 	long [] ptr = new long [1];
-	if (setData) {
+	if ((style & SWT.VIRTUAL) != 0) {
+		if (item.cached) {
+			updated = item.updated;
+			item.updated = false;
+		} else {
+			asyncSetDataTask.enqueueItem (item);
+		}
 		ptr [0] = 0;
 		if (isPixbuf) {
 			GTK.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_PIXBUF, ptr, -1);
@@ -266,7 +269,7 @@ long cellDataProc (long tree_column, long cell, long tree_model, long iter, long
 			}
 		}
 	}
-	if (setData) {
+	if (updated) {
 		ignoreCell = cell;
 		setScrollWidth (tree_column, item);
 		ignoreCell = 0;
@@ -4247,6 +4250,70 @@ public void dispose() {
 	if (headerCSSProvider != 0) {
 		OS.g_object_unref(headerCSSProvider);
 		headerCSSProvider = 0;
+	}
+}
+
+/**
+ * A task to set data for {@link TableItem items} via {@link SWT#SetData} user
+ * callbacks asynchronously.
+ * <p>
+ * {@link SWT#SetData} callbacks should not be run inside
+ * {@link Table#cellDataProc(long, long, long, long, long)} because it's a cell
+ * data function (in GTK terms) and no tree structure modifications are allowed
+ * in such functions.<br>
+ * Violation of the above may cause application crashes and other native-code
+ * problems in gtk.<br>
+ * Since {@link SWT#SetData} callbacks are written by users, we run them inside
+ * {@link Display#asyncExec(Runnable)} to avoid the native-code problems.
+ */
+class AsyncSetDataTask implements Runnable {
+	boolean scheduled;
+	LinkedHashSet<TableItem> itemsQueue = new LinkedHashSet<> ();
+
+	void enqueueItem (TableItem item) {
+		itemsQueue.add (item);
+		ensureExecutionScheduled ();
+	}
+
+	void ensureExecutionScheduled () {
+		if (!scheduled && !isDisposed ()) {
+			display.asyncExec (this);
+			scheduled = true;
+		}
+	}
+
+	@Override
+	public void run () {
+		scheduled = false;
+		if (itemsQueue.isEmpty () || isDisposed ()) {
+			return;
+		}
+		boolean updated = false;
+		LinkedHashSet<TableItem> items = itemsQueue;
+		itemsQueue = new LinkedHashSet<> ();
+		try {
+			for (Iterator<TableItem> it = items.iterator (); it.hasNext ();) {
+				TableItem item = it.next ();
+				it.remove ();
+				if (!item.cached && !item.isDisposed ()) {
+					if (checkData (item)) {
+						updated = item.updated = true;
+					}
+				}
+			}
+		} catch (Throwable t) {
+			if (!items.isEmpty ()) {
+				itemsQueue.addAll (items);
+				if (updated) {
+					display.asyncExec ( () -> redraw ());
+				}
+				ensureExecutionScheduled ();
+			}
+			throw t;
+		}
+		if (updated) {
+			redraw ();
+		}
 	}
 }
 }
