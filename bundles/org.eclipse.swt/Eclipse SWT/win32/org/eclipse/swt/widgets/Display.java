@@ -5145,16 +5145,65 @@ String wrapText (String text, long handle, int width) {
 }
 
 static String withCrLf (String string) {
-	if (string == null) {
-		return string;
+	/* Create a new string with the CR/LF line terminator. */
+	int i = 0;	
+	int length = string.length();
+	StringBuilder result = new StringBuilder (length);
+	while (i < length) {
+		int j = string.indexOf ('\n', i);
+		if (j > 0 && string.charAt(j - 1) == '\r') {
+			result.append(string.substring(i, j + 1));
+			i = j + 1;
+		} else {
+			if (j == -1) j = length;
+			result.append (string.substring (i, j));
+			if ((i = j) < length) {
+				result.append ("\r\n"); //$NON-NLS-1$
+				i++;
+			}
+		}
 	}
-	// Replace \r\n, \r, or \n with \r\n
-	return string.replaceAll("(\r\n|\r|\n)", "\r\n");
+	
+	/* Avoid creating a copy of the string if it has not changed */
+	if (string.length()== result.length()) return string;
+	return result.toString ();
 }
 
 static char [] withCrLf (char [] string) {
-	String withCrLf = withCrLf(new String(string));
-	return withCrLf.toCharArray();
+	/* If the string is empty, return the string. */
+	int length = string.length;
+	if (length == 0) return string;
+
+	/*
+	* Check for an LF or CR/LF and assume the rest of
+	* the string is formated that way.  This will not
+	* work if the string contains mixed delimiters.
+	* Also, compute the number of lines.
+	*/
+	int count = 0;
+	for (int i = 0; i < string.length; i++) {
+		if (string [i] == '\n') {
+			count++;
+			if (count == 1 && i > 0 && string [i - 1] == '\r') return string;
+		}
+	}
+	if (count == 0) return string;
+
+	/*
+	* The string is formatted with LF.
+	*/
+	count += length;
+
+	/* Create a new string with the CR/LF line terminator. */
+	char [] result = new char [count];
+	for (int i = 0, j = 0; i < length && j < count; i++) {
+		if (string [i] == '\n') {
+			result [j++] = '\r';
+		}
+		result [j++] = string [i];
+	}
+
+	return result;
 }
 
 static boolean isActivateShellOnForceFocus() {
