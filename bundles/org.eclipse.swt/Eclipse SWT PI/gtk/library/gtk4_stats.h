@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2024 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -164,6 +164,7 @@ typedef enum {
 	gtk_1widget_1translate_1coordinates_FUNC,
 	gtk_1window_1destroy_FUNC,
 	gtk_1window_1get_1icon_1name_FUNC,
+	gtk_1window_1get_1titlebar_FUNC,
 	gtk_1window_1is_1maximized_FUNC,
 	gtk_1window_1maximize_FUNC,
 	gtk_1window_1minimize_FUNC,
