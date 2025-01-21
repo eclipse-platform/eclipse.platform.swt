@@ -324,6 +324,8 @@ public class GTK4 {
 	 * @param name cast=(const char *)
 	 * */
 	public static final native void gtk_window_set_icon_name(long window, long name);
+	/** @param window cast=(GtkWindow *) */
+	public static final native long gtk_window_get_titlebar(long window);
 
 	/* GtkShortcutController */
 	public static final native long gtk_shortcut_controller_new();
