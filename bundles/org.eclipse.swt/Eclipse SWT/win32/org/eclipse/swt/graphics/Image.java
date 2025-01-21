@@ -133,7 +133,6 @@ Image (Device device) {
 private Image (Device device, int nativeZoom) {
 	super(device);
 	initialNativeZoom = nativeZoom;
-	this.device.registerResourceWithZoomSupport(this);
 }
 
 /**
@@ -2077,6 +2076,7 @@ public static Image win32_new(Device device, int type, long handle, int nativeZo
 	Image image = new Image(device, nativeZoom);
 	image.type = type;
 	image.new ImageHandle(handle, nativeZoom);
+	image.device.registerResourceWithZoomSupport(image);
 	return image;
 }
 
