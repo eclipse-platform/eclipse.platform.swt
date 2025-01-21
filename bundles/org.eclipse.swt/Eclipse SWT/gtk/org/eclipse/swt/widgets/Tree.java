@@ -3900,7 +3900,7 @@ void setParentGdkResource (Control child) {
 void setScrollWidth (long column, TreeItem item) {
 	if (columnCount != 0 || currentItem == item) return;
 	int width = GTK.gtk_tree_view_column_get_fixed_width (column);
-	int itemWidth = calculateWidth (column, item.handle, true);
+	int itemWidth = calculateWidth (column, item.handle, false);
 	if (width < itemWidth) {
 		GTK.gtk_tree_view_column_set_fixed_width (column, itemWidth);
 	}
