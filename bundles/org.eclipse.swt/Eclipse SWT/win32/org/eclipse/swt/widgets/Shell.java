@@ -1596,6 +1596,7 @@ public void setBounds(Rectangle rect) {
 	if (rect == null) error (SWT.ERROR_NULL_ARGUMENT);
 	checkWidget ();
 	Rectangle boundsInPixels = getDisplay().translateToDisplayCoordinates(rect, getZoom());
+	isDpiChangeHandlingNeeded = false;
 	setBoundsInPixels(boundsInPixels.x, boundsInPixels.y, boundsInPixels.width, boundsInPixels.height);
 }
 

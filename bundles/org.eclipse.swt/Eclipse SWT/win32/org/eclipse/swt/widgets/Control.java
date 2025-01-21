@@ -81,6 +81,7 @@ public abstract class Control extends Widget implements Drawable {
 	Region region;
 	Font font;
 	int drawCount, foreground, background, backgroundAlpha = 255;
+	boolean isDpiChangeHandlingNeeded = true;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -4946,9 +4947,12 @@ LRESULT WM_DPICHANGED (long wParam, long lParam) {
 			float scalingFactor = 1f * DPIUtil.getZoomForAutoscaleProperty(newNativeZoom) / DPIUtil.getZoomForAutoscaleProperty(oldNativeZoom);
 			DPIZoomChangeRegistry.applyChange(this, newNativeZoom, scalingFactor);
 
-			RECT rect = new RECT ();
-			COM.MoveMemory(rect, lParam, RECT.sizeof);
-			this.setBoundsInPixels(rect.left, rect.top, rect.right - rect.left, rect.bottom-rect.top);
+			if (isDpiChangeHandlingNeeded) {
+				RECT rect = new RECT ();
+				COM.MoveMemory(rect, lParam, RECT.sizeof);
+				this.setBoundsInPixels(rect.left, rect.top, rect.right - rect.left, rect.bottom-rect.top);
+			}
+			isDpiChangeHandlingNeeded = true;
 			return LRESULT.ZERO;
 		}
 	} else {
