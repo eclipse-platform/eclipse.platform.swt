@@ -287,149 +287,149 @@ static int callAndWait(String[] pstr, ToIntFunction<IUnknown> callable) {
 	return phr[0];
 }
 
+class WebViewWrapper {
+	private ICoreWebView2 webView;
+	private ICoreWebView2_2 webView_2;
+	private ICoreWebView2_10 webView_10;
+	private ICoreWebView2_11 webView_11;
+	private ICoreWebView2_12 webView_12;
+	private ICoreWebView2_13 webView_13;
+}
+
 class WebViewProvider {
 
-	private CompletableFuture<ICoreWebView2> webViewFuture = new CompletableFuture<>();
-	private CompletableFuture<ICoreWebView2_2> webView_2Future = new CompletableFuture<>();
-	private CompletableFuture<ICoreWebView2_10> webView_10Future = new CompletableFuture<>();
-	private CompletableFuture<ICoreWebView2_11> webView_11Future = new CompletableFuture<>();
-	private CompletableFuture<ICoreWebView2_12> webView_12Future = new CompletableFuture<>();
-	private CompletableFuture<ICoreWebView2_13> webView_13Future = new CompletableFuture<>();
-
-	private CompletableFuture<Void> lastWebViewTask = webViewFuture.thenRun(() -> {});
+	private CompletableFuture<WebViewWrapper> webViewWrapperFuture = new CompletableFuture<>();
+	private CompletableFuture<Void> lastWebViewTask = webViewWrapperFuture.thenRun(() -> {});;
 
 	ICoreWebView2 initializeWebView(ICoreWebView2Controller controller) {
 		long[] ppv = new long[1];
 		controller.get_CoreWebView2(ppv);
 		final ICoreWebView2 webView = new ICoreWebView2(ppv[0]);
-		initializeWebView_2(webView);
-		initializeWebView_10(webView);
-		initializeWebView_11(webView);
-		initializeWebView_12(webView);
-		initializeWebView_13(webView);
-		webViewFuture.complete(webView);
+		final WebViewWrapper webViewWrapper = new WebViewWrapper();
+		webViewWrapper.webView = webView;
+		webViewWrapper.webView_2 = initializeWebView_2(webView);
+		webViewWrapper.webView_10 = initializeWebView_10(webView);
+		webViewWrapper.webView_11 = initializeWebView_11(webView);
+		webViewWrapper.webView_12 = initializeWebView_12(webView);
+		webViewWrapper.webView_13= initializeWebView_13(webView);
+		webViewWrapperFuture.complete(webViewWrapper);
 		return webView;
 	}
 
 	private void abortInitialization() {
-		webViewFuture.cancel(true);
+		webViewWrapperFuture.cancel(true);
 	}
 
-	private void initializeWebView_2(ICoreWebView2 webView) {
+	private ICoreWebView2_2 initializeWebView_2(ICoreWebView2 webView) {
 		long[] ppv = new long[1];
 		int hr = webView.QueryInterface(COM.IID_ICoreWebView2_2, ppv);
 		if (hr == COM.S_OK) {
-			webView_2Future.complete(new ICoreWebView2_2(ppv[0]));
-		} else {
-			webView_2Future.cancel(true);
+			return new ICoreWebView2_2(ppv[0]);
 		}
+		return null;
 	}
 
-	private void initializeWebView_10(ICoreWebView2 webView) {
+	private ICoreWebView2_10 initializeWebView_10(ICoreWebView2 webView) {
 		long[] ppv = new long[1];
 		int hr = webView.QueryInterface(COM.IID_ICoreWebView2_10, ppv);
 		if (hr == COM.S_OK) {
-			webView_10Future.complete(new ICoreWebView2_10(ppv[0]));
-		} else {
-			webView_10Future.cancel(true);
+			return new ICoreWebView2_10(ppv[0]);
 		}
+		return null;
 	}
 
-	private void initializeWebView_11(ICoreWebView2 webView) {
+	private ICoreWebView2_11 initializeWebView_11(ICoreWebView2 webView) {
 		long[] ppv = new long[1];
 		int hr = webView.QueryInterface(COM.IID_ICoreWebView2_11, ppv);
 		if (hr == COM.S_OK) {
-			webView_11Future.complete(new ICoreWebView2_11(ppv[0]));
-		} else {
-			webView_11Future.cancel(true);
+			return new ICoreWebView2_11(ppv[0]);
 		}
+		return null;
 	}
 
-	private void initializeWebView_12(ICoreWebView2 webView) {
+	private ICoreWebView2_12 initializeWebView_12(ICoreWebView2 webView) {
 		long[] ppv = new long[1];
 		int hr = webView.QueryInterface(COM.IID_ICoreWebView2_12, ppv);
 		if (hr == COM.S_OK) {
-			webView_12Future.complete(new ICoreWebView2_12(ppv[0]));
-		} else {
-			webView_12Future.cancel(true);
+			return new ICoreWebView2_12(ppv[0]);
 		}
+		return null;
 	}
 
-	private void initializeWebView_13(ICoreWebView2 webView) {
+	private ICoreWebView2_13 initializeWebView_13(ICoreWebView2 webView) {
 		long[] ppv = new long[1];
 		int hr = webView.QueryInterface(COM.IID_ICoreWebView2_13, ppv);
 		if (hr == COM.S_OK) {
-			webView_13Future.complete(new ICoreWebView2_13(ppv[0]));
-		} else {
-			webView_13Future.cancel(true);
+			return new ICoreWebView2_13(ppv[0]);
 		}
+		return null;
 	}
 
 	ICoreWebView2 getWebView(boolean waitForPendingWebviewTasksToFinish) {
 		if(waitForPendingWebviewTasksToFinish) {
 			waitForFutureToFinish(lastWebViewTask);
 		}
-		return webViewFuture.join();
+		return webViewWrapperFuture.join().webView;
 	}
 
 	ICoreWebView2_2 getWebView_2(boolean waitForPendingWebviewTasksToFinish) {
 		if(waitForPendingWebviewTasksToFinish) {
 			waitForFutureToFinish(lastWebViewTask);
 		}
-		return webView_2Future.join();
+		return webViewWrapperFuture.join().webView_2;
 	}
 
 	boolean isWebView_2Available() {
-		waitForFutureToFinish(webView_2Future);
-		return !webView_2Future.isCancelled();
+		waitForFutureToFinish(webViewWrapperFuture);
+		return webViewWrapperFuture.join().webView_2 != null;
 	}
 
 	ICoreWebView2_10 getWebView_10(boolean waitForPendingWebviewTasksToFinish) {
 		if(waitForPendingWebviewTasksToFinish) {
 			waitForFutureToFinish(lastWebViewTask);
 		}
-		return webView_10Future.join();
+		return webViewWrapperFuture.join().webView_10;
 	}
 
 	boolean isWebView_10Available() {
-		waitForFutureToFinish(webView_10Future);
-		return !webView_10Future.isCancelled();
+		waitForFutureToFinish(webViewWrapperFuture);
+		return webViewWrapperFuture.join().webView_10 != null;
 	}
 
 	ICoreWebView2_11 getWebView_11(boolean waitForPendingWebviewTasksToFinish) {
 		if(waitForPendingWebviewTasksToFinish) {
 			waitForFutureToFinish(lastWebViewTask);
 		}
-		return webView_11Future.join();
+		return webViewWrapperFuture.join().webView_11;
 	}
 
 	boolean isWebView_11Available() {
-		waitForFutureToFinish(webView_11Future);
-		return !webView_11Future.isCancelled();
+		waitForFutureToFinish(webViewWrapperFuture);
+		return webViewWrapperFuture.join().webView_11 != null;
 	}
 
 	ICoreWebView2_12 getWebView_12(boolean waitForPendingWebviewTasksToFinish) {
 		if(waitForPendingWebviewTasksToFinish) {
 			waitForFutureToFinish(lastWebViewTask);
 		}
-		return webView_12Future.join();
+		return webViewWrapperFuture.join().webView_12;
 	}
 
 	boolean isWebView_12Available() {
-		waitForFutureToFinish(webView_12Future);
-		return !webView_12Future.isCancelled();
+		waitForFutureToFinish(webViewWrapperFuture);
+		return webViewWrapperFuture.join().webView_12 != null;
 	}
 
 	ICoreWebView2_13 getWebView_13(boolean waitForPendingWebviewTasksToFinish) {
 		if(waitForPendingWebviewTasksToFinish) {
 			waitForFutureToFinish(lastWebViewTask);
 		}
-		return webView_13Future.join();
+		return webViewWrapperFuture.join().webView_13;
 	}
 
 	boolean isWebView_13Available() {
-		waitForFutureToFinish(webView_13Future);
-		return !webView_13Future.isCancelled();
+		waitForFutureToFinish(webViewWrapperFuture);
+		return webViewWrapperFuture.join().webView_13 != null;
 	}
 
 	/*
