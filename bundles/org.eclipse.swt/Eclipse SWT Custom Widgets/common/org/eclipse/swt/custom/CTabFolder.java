@@ -341,6 +341,7 @@ void init(int style) {
 			case SWT.Selection:        onSelection(event); break;
 			case SWT.Activate:         onActivate(event); break;
 			case SWT.Deactivate:       onDeactivate(event); break;
+			case SWT.ZoomChanged:	   onZoomChange(event); break;
 		}
 	};
 
@@ -362,7 +363,8 @@ void init(int style) {
 		SWT.Resize,
 		SWT.Traverse,
 		SWT.Activate,
-		SWT.Deactivate
+		SWT.Deactivate,
+		SWT.ZoomChanged
 	};
 	for (int folderEvent : folderEvents) {
 		addListener(folderEvent, listener);
@@ -370,6 +372,11 @@ void init(int style) {
 
 	initAccessible();
 }
+
+private void onZoomChange(Event event) {
+	update();
+}
+
 void onDeactivate(Event event) {
 	if (!highlightEnabled) {
 		return;

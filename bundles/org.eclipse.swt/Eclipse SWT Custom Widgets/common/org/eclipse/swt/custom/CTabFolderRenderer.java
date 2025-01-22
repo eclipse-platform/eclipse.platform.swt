@@ -102,7 +102,8 @@ public class CTabFolderRenderer {
 	static final int FLAGS = SWT.DRAW_TRANSPARENT | SWT.DRAW_MNEMONIC | SWT.DRAW_DELIMITER;
 	static final String ELLIPSIS = "..."; //$NON-NLS-1$
 	private static final String CHEVRON_ELLIPSIS = "99+"; //$NON-NLS-1$
-	private static final int CHEVRON_FONT_HEIGHT = 10;
+	private static final float CHEVRON_FONT_SIZE_FACTOR = 0.7f;
+	private static final int CHEVRON_BOTTOM_INDENT = 4;
 
 	//Part constants
 	/**
@@ -926,7 +927,7 @@ public class CTabFolderRenderer {
 		Display display = parent.getDisplay();
 		Font font = getChevronFont(display);
 		int fontHeight = font.getFontData()[0].getHeight();
-		int indent = Math.max(2, (chevronRect.height - fontHeight - 4) /2);
+		int indent = Math.max(2, (chevronRect.height - fontHeight - CHEVRON_BOTTOM_INDENT) /2);
 		int x = chevronRect.x + 2;
 		int y = chevronRect.y + indent;
 		int count = parent.getChevronCount();
@@ -1696,9 +1697,8 @@ public class CTabFolderRenderer {
 
 	private Font getChevronFont(Display display) {
 		if (chevronFont == null) {
-			Point dpi = display.getDPI();
-			int fontHeight = 72 * CHEVRON_FONT_HEIGHT / dpi.y;
 			FontData fd = parent.getFont().getFontData()[0];
+			int fontHeight = (int) (fd.height * CHEVRON_FONT_SIZE_FACTOR);
 			fd.setHeight(fontHeight);
 			chevronFont = new Font(display, fd);
 		}
