@@ -51,7 +51,7 @@
               <argLine>@{tycho.testArgLine} -Dorg.eclipse.swt.internal.gtk.disablePrinting ${os-jvm-flags}</argLine>
               <systemPropertyVariables>
                 <user.home>${project.build.directory}</user.home> <!-- used as cache directory for SWT native libraries -->
-                <org.eclipse.swt.internal.gtk.enableStrictChecks>true</org.eclipse.swt.internal.gtk.enableStrictChecks> <!-- see bug 532632 -->
+                <org.eclipse.swt.internal.enableStrictChecks>true</org.eclipse.swt.internal.enableStrictChecks> <!-- see bug 532632 -->
                 <swt.autoScale>quarter</swt.autoScale>
               </systemPropertyVariables>
               <!-- Trim does not only remove the entries before entering the test method but

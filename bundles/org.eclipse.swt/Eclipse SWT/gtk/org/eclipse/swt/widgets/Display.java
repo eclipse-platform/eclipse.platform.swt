@@ -116,7 +116,7 @@ import org.eclipse.swt.internal.gtk4.*;
  */
 public class Display extends Device implements Executor {
 
-	static boolean strictChecks = System.getProperty("org.eclipse.swt.internal.gtk.enableStrictChecks") != null;
+	static boolean strictChecks = System.getProperty("org.eclipse.swt.internal.enableStrictChecks") != null;
 
 	private static final int SLOT_IN_USE = -2;
 	private static final int LAST_TABLE_INDEX = -1;
