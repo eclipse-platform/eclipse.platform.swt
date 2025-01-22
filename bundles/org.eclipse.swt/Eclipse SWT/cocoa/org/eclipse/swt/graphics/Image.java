@@ -872,7 +872,9 @@ public Image(Device device, ImageGcDrawer imageGcDrawer, int width, int height) 
 	super(device);
 	if (imageGcDrawer == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.imageGcDrawer = imageGcDrawer;
-	ImageData data = drawWithImageGcDrawer(imageGcDrawer, width, height, 100);
+	this.width = width;
+	this.height = height;
+	ImageData data = drawWithImageGcDrawer(imageGcDrawer, width, height, DPIUtil.getDeviceZoom());
 	if (data == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
