@@ -298,8 +298,8 @@ class WebViewWrapper {
 
 class WebViewProvider {
 
-	private CompletableFuture<WebViewWrapper> webViewWrapperFuture = new CompletableFuture<>();
-	private CompletableFuture<Void> lastWebViewTask = webViewWrapperFuture.thenRun(() -> {});;
+	private CompletableFuture<WebViewWrapper> webViewWrapperFuture = initializeWebViewFutureWithTimeOut();
+	private CompletableFuture<Void> lastWebViewTask = webViewWrapperFuture.thenRun(() -> {});
 
 	ICoreWebView2 initializeWebView(ICoreWebView2Controller controller) {
 		long[] ppv = new long[1];
@@ -316,10 +316,23 @@ class WebViewProvider {
 		return webView;
 	}
 
+	private CompletableFuture<WebViewWrapper> initializeWebViewFutureWithTimeOut() {
+		CompletableFuture<WebViewWrapper> webViewWrapperFuture = new CompletableFuture<>();
+		webViewWrapperFuture.orTimeout(3, TimeUnit.SECONDS).exceptionally(exception -> {
+			releaseEnvironment();
+			// Needs to be executed on the display thread since the exceptionally spawns a different thread
+			browser.getDisplay().execute(() -> replaceWithErrorLabel());
+			// Throw exception on the Display thread directly to prevent CompletableFuture
+			// to wrap the exception and throw it silently
+			browser.getDisplay().execute(() -> SWT.error(SWT.ERROR_UNSPECIFIED, exception, "Edge Browser initialization timed out"));
+			return null;
+		});
+		return webViewWrapperFuture;
+	}
+
 	private void abortInitialization() {
 		webViewWrapperFuture.cancel(true);
 	}
-
 	private ICoreWebView2_2 initializeWebView_2(ICoreWebView2 webView) {
 		long[] ppv = new long[1];
 		int hr = webView.QueryInterface(COM.IID_ICoreWebView2_2, ppv);
@@ -571,6 +584,15 @@ private String getDataDir(Display display) {
 	return dataDir;
 }
 
+private void replaceWithErrorLabel() {
+	Label errorLabel = new Label(browser.getParent(), SWT.WRAP);
+	errorLabel.setForeground(browser.getDisplay().getSystemColor(SWT.COLOR_RED));
+	errorLabel.setText("Edge browser initialization failed");
+	errorLabel.setLocation(0, 0);
+	errorLabel.setSize(browser.getSize());
+	browser.setVisible(false);
+}
+
 @Override
 public void create(Composite parent, int style) {
 	createInstance(0);
@@ -587,21 +609,13 @@ private void createInstance(int previousAttempts) {
 }
 
 private IUnknown createControllerInitializationCallback(int previousAttempts) {
-	Runnable initializationRollback = () -> {
-		webViewProvider.abortInitialization();
-		if (environment2 != null) {
-			environment2.Release();
-			environment2 = null;
-		}
-		containingEnvironment.instances().remove(this);
-	};
 	return newCallback((result, pv) -> {
 		if (browser.isDisposed()) {
-			initializationRollback.run();
+			rollbackInitialization();
 			return COM.S_OK;
 		}
 		if (result == OS.HRESULT_FROM_WIN32(OS.ERROR_INVALID_STATE)) {
-			initializationRollback.run();
+			rollbackInitialization();
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT, null,
 					" Edge instance with same data folder but different environment options already exists");
 		}
@@ -611,14 +625,14 @@ private IUnknown createControllerInitializationCallback(int previousAttempts) {
 			setupBrowser((int) result, pv);
 			break;
 		case COM.E_WRONG_THREAD:
-			initializationRollback.run();
+			rollbackInitialization();
 			error(SWT.ERROR_THREAD_INVALID_ACCESS, (int) result);
 			break;
 		case COM.E_ABORT:
-			initializationRollback.run();
+			rollbackInitialization();
 			break;
 		default:
-			initializationRollback.run();
+			rollbackInitialization();
 			if (previousAttempts < MAXIMUM_CREATION_RETRIES) {
 				System.err.println(String.format("Edge initialization failed, retrying (attempt %d / %d)", previousAttempts + 1, MAXIMUM_CREATION_RETRIES));
 				createInstance(previousAttempts + 1);
@@ -630,6 +644,19 @@ private IUnknown createControllerInitializationCallback(int previousAttempts) {
 		}
 		return COM.S_OK;
 	});
+}
+
+private void rollbackInitialization() {
+	webViewProvider.abortInitialization();
+	releaseEnvironment();
+}
+
+private void releaseEnvironment() {
+	if (environment2 != null) {
+		environment2.Release();
+		environment2 = null;
+	}
+	containingEnvironment.instances().remove(this);
 }
 
 void setupBrowser(int hr, long pv) {
