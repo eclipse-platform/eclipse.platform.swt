@@ -3950,6 +3950,10 @@ void init(Drawable drawable, GCData data, long hDC) {
 }
 
 private static int extractZoom(long hDC) {
+	if (Device.strictChecks) {
+		System.err.println("***WARNING: GC is initialized with a missing zoom. This indicates an "
+				+ "incompatible custom Drawable implementation.");
+	}
 	long hwnd = OS.WindowFromDC(hDC);
 	long parentWindow = OS.GetAncestor(hwnd, OS.GA_ROOT);
 	long monitorParent = OS.MonitorFromWindow(parentWindow, OS.MONITOR_DEFAULTTONEAREST);
