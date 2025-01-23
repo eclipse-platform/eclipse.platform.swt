@@ -2578,7 +2578,7 @@ void drawTextGDIP(long gdipGraphics, String string, int x, int y, int flags, boo
 		buffer = string.toCharArray();
 	} else {
 		if (draw) return;
-		buffer = new char[]{' '};
+		buffer = new char[]{SWT.SPACE};
 	}
 	PointF pt = new PointF();
 	long format = Gdip.StringFormat_Clone(Gdip.StringFormat_GenericTypographic());
@@ -4030,7 +4030,7 @@ public boolean isDisposed() {
 float measureSpace(long font, long format) {
 	PointF pt = new PointF();
 	RectF bounds = new RectF();
-	Gdip.Graphics_MeasureString(data.gdipGraphics, new char[]{' '}, 1, font, pt, format, bounds);
+	Gdip.Graphics_MeasureString(data.gdipGraphics, new char[]{SWT.SPACE}, 1, font, pt, format, bounds);
 	return bounds.Width;
 }
 

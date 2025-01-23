@@ -206,7 +206,7 @@ public class Snippet133 {
 			/* Create a buffer for computing tab width. */
 			int tabSize = 4; // is tab width a user setting in your UI?
 			StringBuilder tabBuffer = new StringBuilder(tabSize);
-			for (int i = 0; i < tabSize; i++) tabBuffer.append(' ');
+			for (int i = 0; i < tabSize; i++) tabBuffer.append(SWT.SPACE);
 			tabs = tabBuffer.toString();
 
 			/* Create printer GC, and create and set the printer font & foreground color. */

@@ -525,12 +525,12 @@ char [] fixMnemonic (String string, boolean spaces, boolean removeAppended) {
 	while (i < buffer.length) {
 		if (buffer [i] == '&') {
 			if (i + 1 < buffer.length && buffer [i + 1] == '&') {
-				buffer [j++] = spaces ? ' ' : buffer [i];
+				buffer [j++] = spaces ? SWT.SPACE : buffer [i];
 				i++;
 			}
 			i++;
 		} else if (buffer [i] == '(' && removeAppended && i + 4 == string.length () && buffer [i + 1] == '&' && buffer [i + 3] == ')') {
-			if (spaces) buffer [j++] = ' ';
+			if (spaces) buffer [j++] = SWT.SPACE;
 			i += 4;
 		} else {
 			buffer [j++] = buffer [i++];

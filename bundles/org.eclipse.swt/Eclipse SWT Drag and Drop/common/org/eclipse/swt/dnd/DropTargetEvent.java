@@ -13,6 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
+import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.widgets.*;
 
@@ -139,7 +140,7 @@ public String toString() {
 	sb.append(" dataTypes={ ");
 	if (dataTypes != null) {
 		for (TransferData dataType : dataTypes) {
-			sb.append(dataType.type); sb.append(' ');
+			sb.append(dataType.type); sb.append(SWT.SPACE);
 		}
 	}
 	sb.append('}');

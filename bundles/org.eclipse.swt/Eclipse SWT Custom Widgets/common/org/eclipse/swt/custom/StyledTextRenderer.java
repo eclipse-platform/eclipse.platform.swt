@@ -1231,7 +1231,7 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 				if (style.metrics != null && line.substring(start, endIndex).contains("\t")) {
 					line =
 						line.substring(0, start) +
-						line.substring(start, endIndex).replace('\t', ' ') +
+						line.substring(start, endIndex).replace('\t', SWT.SPACE) +
 						(end < line.length() ? line.substring(end + 1, line.length()) : "");
 				}
 				styleEntries.add(new StyleEntry(style, start, end));
@@ -1256,7 +1256,7 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 				if (style.metrics != null && line.substring(start, endIndex).contains("\t")) {
 					line =
 						line.substring(0, start) +
-						line.substring(start, endIndex).replace('\t', ' ') +
+						line.substring(start, endIndex).replace('\t', SWT.SPACE) +
 						(end < line.length() ? line.substring(end + 1, line.length()) : "");
 				}
 				styleEntries.add(new StyleEntry(style, start, end));
@@ -1494,7 +1494,7 @@ void setFont(Font font, int tabs) {
 	layout.setFont(regularFont);
 	StringBuilder tabBuffer = new StringBuilder(tabs);
 	for (int i = 0; i < tabs; i++) {
-		tabBuffer.append(' ');
+		tabBuffer.append(SWT.SPACE);
 	}
 	layout.setText(tabBuffer.toString());
 	tabWidth = layout.getBounds().width;

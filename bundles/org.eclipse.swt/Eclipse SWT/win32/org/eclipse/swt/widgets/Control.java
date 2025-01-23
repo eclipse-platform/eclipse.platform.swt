@@ -5553,7 +5553,7 @@ LRESULT WM_SYSCOMMAND (long wParam, long lParam) {
 				* the keystroke.
 				*/
 				if (hooks (SWT.KeyDown) || hooks (SWT.KeyUp)) {
-					if (lParam != ' ') {
+					if (lParam != SWT.SPACE) {
 						Decorations shell = menuShell ();
 						Menu menu = shell.getMenuBar ();
 						if (menu != null) {

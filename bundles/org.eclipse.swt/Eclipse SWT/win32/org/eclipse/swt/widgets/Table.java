@@ -4853,7 +4853,7 @@ boolean setScrollWidth (TableItem item, boolean force) {
 		* space.
 		*/
 		if (newWidth == 0) {
-			char [] buffer = {' ', '\0'};
+			char [] buffer = {SWT.SPACE, '\0'};
 			newWidth = Math.max (newWidth, (int)OS.SendMessage (handle, OS.LVM_GETSTRINGWIDTH, 0, buffer));
 		}
 		long hStateList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
@@ -5817,7 +5817,7 @@ LRESULT WM_CHAR (long wParam, long lParam) {
 	LRESULT result = super.WM_CHAR (wParam, lParam);
 	if (result != null) return result;
 	switch ((int)wParam) {
-		case ' ':
+		case SWT.SPACE:
 			if ((style & SWT.CHECK) != 0) {
 				int index = -1;
 				while ((index = (int)OS.SendMessage (handle, OS.LVM_GETNEXTITEM, index, OS.LVNI_SELECTED)) != -1) {

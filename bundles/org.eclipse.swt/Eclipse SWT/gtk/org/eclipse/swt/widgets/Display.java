@@ -4861,10 +4861,10 @@ void releaseDisplay () {
 			File file = new File (dir, "trims.prefs");
 			Properties props = new Properties ();
 			StringBuilder buf = new StringBuilder ();
-			for (int w : trimWidths) buf.append (w).append (' ');
+			for (int w : trimWidths) buf.append (w).append (SWT.SPACE);
 			props.put ("trimWidths", buf.toString ());
 			buf = new StringBuilder();
-			for (int h : trimHeights) buf.append (h).append (' ');
+			for (int h : trimHeights) buf.append (h).append (SWT.SPACE);
 			props.put ("trimHeights", buf.toString ());
 			try (FileOutputStream fos = new FileOutputStream (file)){
 				props.store (fos, null);

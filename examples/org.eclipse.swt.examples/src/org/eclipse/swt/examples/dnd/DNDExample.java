@@ -421,7 +421,7 @@ private void createDragSource() {
 			if (dragDataText != null) {
 				dragDataRTF = "{\\rtf1{\\colortbl;\\red255\\green0\\blue0;}\\cf1\\b "+dragDataText+"}";
 				dragDataHTML = "<b>"+dragDataText+"</b>";
-				dragDataURL = "http://" + dragDataText.replace(' ', '.');
+				dragDataURL = "http://" + dragDataText.replace(SWT.SPACE, '.');
 				try {
 					new URL(dragDataURL);
 				} catch (MalformedURLException e) {

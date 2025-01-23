@@ -1353,7 +1353,7 @@ void selectField(FieldPosition fieldPosition) {
 	display.syncExec(() -> {
 		if (textEntryHandle != 0) {
 			String value = getText(getText(), start, end - 1);
-			int s = value.lastIndexOf(' ');
+			int s = value.lastIndexOf(SWT.SPACE);
 			s = (s == -1) ? start : start + s + 1;
 			setTextSelection(s, end);
 		}

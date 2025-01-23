@@ -139,7 +139,7 @@ public class SpyView extends ViewPart {
 		if (object == null) return "null";
 		String name = object.toString ();
 		if (fullyQualifiedAction.isChecked()) {
-			int index = name.indexOf(' ');
+			int index = name.indexOf(SWT.SPACE);
 			if (index >= 0 && name.length() >= 1) {
 				name = object.getClass ().getName () + name.substring(index);
 			}

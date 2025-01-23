@@ -1226,7 +1226,7 @@ char [] fixMnemonic (String string, boolean replace, boolean removeAppended) {
 				 */
 			case '(':
 				if (removeAppended && i + 4 == string.length () && text [i + 1] == '&' && text [i + 3] == ')') {
-					if (replace) result [j++] = ' ';
+					if (replace) result [j++] = SWT.SPACE;
 					i += 4;
 					break; // break switch case only if we are removing the mnemonic
 				}

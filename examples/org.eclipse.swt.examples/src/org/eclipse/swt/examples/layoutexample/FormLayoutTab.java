@@ -661,7 +661,7 @@ class FormLayoutTab extends Tab {
 					oldPos = oldAttach.substring (0, oldAttach.indexOf (','));
 					oldOffset = oldAttach.substring (oldAttach.indexOf (',') + 1);
 					if (oldOffset.endsWith (")")) { // i.e. (Default)
-						oldOffset = oldOffset.substring (0, oldOffset.indexOf (' '));
+						oldOffset = oldOffset.substring (0, oldOffset.indexOf (SWT.SPACE));
 					}
 				}
 			}

@@ -2896,7 +2896,7 @@ StyleItem[] itemize () {
 		for (int i = 0, latestNeutralIndex = -2, latestUnicodeIndex = -2; i < length; i++) {
 			char c = chars[i];
 
-			if (c >= ' ' && c <= '~' && !Character.isAlphabetic(c)) {
+			if (c >= SWT.SPACE && c <= '~' && !Character.isAlphabetic(c)) {
 				latestNeutralIndex = i;
 			} else if (c > 255) {
 				latestUnicodeIndex = i;
