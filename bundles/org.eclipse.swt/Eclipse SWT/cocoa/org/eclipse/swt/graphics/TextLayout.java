@@ -2438,7 +2438,7 @@ public void setDefaultTabWidth(int tabLength) {
 	String oldString = getText();
 	StringBuilder tabBuffer = new StringBuilder(tabLength);
 	for (int i = 0; i < tabLength; i++) {
-		tabBuffer.append(' ');
+		tabBuffer.append(SWT.SPACE);
 	}
 	setText(tabBuffer.toString());
 	ignoreSegments = true;
