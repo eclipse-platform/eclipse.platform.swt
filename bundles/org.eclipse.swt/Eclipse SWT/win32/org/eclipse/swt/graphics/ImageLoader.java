@@ -143,7 +143,7 @@ void reset() {
  *    <li>ERROR_NULL_ARGUMENT - if the stream is null</li>
  * </ul>
  * @exception SWTException <ul>
- *    <li>ERROR_IO - if an IO error occurs while reading from the stream</li>
+ *    <li>ERROR_IO - if an IO error occurs while reading the stream</li>
  *    <li>ERROR_INVALID_IMAGE - if the image stream contains invalid data</li>
  *    <li>ERROR_UNSUPPORTED_FORMAT - if the image stream contains an unrecognized format</li>
  * </ul>
@@ -168,7 +168,7 @@ public ImageData[] load(InputStream stream) {
  *    <li>ERROR_NULL_ARGUMENT - if the file name is null</li>
  * </ul>
  * @exception SWTException <ul>
- *    <li>ERROR_IO - if an IO error occurs while reading from the file</li>
+ *    <li>ERROR_IO - if an IO error occurs while reading the file</li>
  *    <li>ERROR_INVALID_IMAGE - if the image file contains invalid data</li>
  *    <li>ERROR_UNSUPPORTED_FORMAT - if the image file contains an unrecognized format</li>
  * </ul>
