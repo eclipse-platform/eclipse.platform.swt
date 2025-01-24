@@ -1,3 +1,16 @@
+/*******************************************************************************
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
+ * which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
 package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.*;
@@ -32,7 +45,7 @@ class ScaleRenderer implements IScaleRenderer {
 
 		IGraphicsContext sgc = initSkijaGc(nativeGc, bounds);
 
-		renderScale(sgc, 0, 0, bounds.width - 1, bounds.height - 1);
+		renderScale(sgc, 0, 0, bounds.width, bounds.height);
 
 		sgc.commit();
 		sgc.dispose();
@@ -80,7 +93,7 @@ class ScaleRenderer implements IScaleRenderer {
 		// draw background
 		if (background != null) {
 			gc.setBackground(background);
-			gc.fillRectangle(max, y, w - 1, h - 1);
+			gc.fillRectangle(x, y, w, h);
 		}
 
 		int firstNotch;

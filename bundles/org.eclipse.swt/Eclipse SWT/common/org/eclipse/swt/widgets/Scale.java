@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -159,6 +159,7 @@ public class Scale extends Control implements ICustomWidget {
 			case SWT.MouseHorizontalWheel -> onMouseHorizontalWheel(event);
 			case SWT.MouseVerticalWheel -> onMouseVerticalWheel(event);
 			case SWT.Paint -> onPaint(event);
+			case SWT.Resize -> redraw();
 			}
 		};
 		addListener(SWT.KeyDown, listener);
@@ -168,6 +169,7 @@ public class Scale extends Control implements ICustomWidget {
 		addListener(SWT.MouseHorizontalWheel, listener);
 		addListener(SWT.MouseVerticalWheel, listener);
 		addListener(SWT.Paint, listener);
+		addListener(SWT.Resize, listener);
 
 		alignment = style & (SWT.HORIZONTAL | SWT.VERTICAL);
 		orientation = style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
