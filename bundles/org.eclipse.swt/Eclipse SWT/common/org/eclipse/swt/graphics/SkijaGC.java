@@ -299,7 +299,6 @@ public class SkijaGC implements IGraphicsContext {
 		return imageData;
 	}
 
-
 	// Funktion zur Konvertierung der Farbe
 	public static int convertSWTColorToSkijaColor(Color swtColor) {
 		// Extrahieren der RGB-Komponenten
@@ -344,18 +343,23 @@ public class SkijaGC implements IGraphicsContext {
 		}
 		performDrawText(paint -> {
 			TextBlob textBlob = buildTextBlob(text);
-			// y position in drawTextBlob() is the text baseline, e.g., the bottom of "T"
-			// but the middle of "y"
-			// So center a base symbol (like "T") in the desired text box (according to
-			// parameter y being the top left text box position and the text box height
-			// according to font metrics)
-			int topLeftTextBoxYPosition = DPIUtil.autoScaleUp(y);
-			float heightOfTextBoxConsideredByClients = font.getMetrics().getHeight();
-			float heightOfSymbolToCenter = baseSymbolHeight;
-			surface.getCanvas().drawTextBlob(textBlob, (int) DPIUtil.autoScaleUp(x),
-					(int) (topLeftTextBoxYPosition + heightOfTextBoxConsideredByClients / 2 + heightOfSymbolToCenter / 2),
-					paint);
+			Point point = calculateSymbolCenterPoint(x, y);
+			surface.getCanvas().drawTextBlob(textBlob, point.x, point.y, paint);
 		});
+	}
+
+	// y position in drawTextBlob() is the text baseline, e.g., the bottom of "T"
+	// but the middle of "y"
+	// So center a base symbol (like "T") in the desired text box (according to
+	// parameter y being the top left text box position and the text box height
+	// according to font metrics)
+	private Point calculateSymbolCenterPoint(int x, int y) {
+		int topLeftTextBoxYPosition = DPIUtil.autoScaleUp(y);
+		float heightOfTextBoxConsideredByClients = font.getMetrics().getHeight();
+		float heightOfSymbolToCenter = baseSymbolHeight;
+		Point point = new Point((int) DPIUtil.autoScaleUp(x),
+				(int) (topLeftTextBoxYPosition + heightOfTextBoxConsideredByClients / 2 + heightOfSymbolToCenter / 2));
+		return point;
 	}
 
 	private TextBlob buildTextBlob(String text) {
@@ -469,11 +473,25 @@ public class SkijaGC implements IGraphicsContext {
 	}
 
 	public void drawString(String string, int x, int y) {
-		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		if (string == null) {
+			SWT.error(SWT.ERROR_NULL_ARGUMENT);
+		}
+		Point point = calculateSymbolCenterPoint(x, y);
+		performDrawText(paint -> {
+			surface.getCanvas().drawString(string, point.x, point.y, font, paint);
+		});
 	}
 
 	public void drawString(String string, int x, int y, boolean isTransparent) {
-		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		if (string == null) {
+			SWT.error(SWT.ERROR_NULL_ARGUMENT);
+		}
+		if (!isTransparent) {
+			int width = (int) DPIUtil.autoScaleDown(font.measureTextWidth(string));
+			int height = (int) DPIUtil.autoScaleDown(font.getMetrics().getHeight());
+			fillRectangle(x, y, width, height);
+		}
+		drawString(string, x, y);
 	}
 
 	public void fillArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
