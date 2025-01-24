@@ -104,11 +104,8 @@ public Canvas (Composite parent, int style) {
  */
 public void drawBackground (GC gc, int x, int y, int width, int height) {
 	int zoom = getZoom();
-	x = DPIUtil.scaleUp(x, zoom);
-	y = DPIUtil.scaleUp(y, zoom);
-	width = DPIUtil.scaleUp(width, zoom);
-	height = DPIUtil.scaleUp(height, zoom);
-	drawBackgroundInPixels(gc, x, y, width, height, 0, 0);
+	Rectangle rectangle = DPIUtil.scaleUp(new Rectangle(x, y, width, height), zoom);
+	drawBackgroundInPixels(gc, rectangle.x, rectangle.y, rectangle.width, rectangle.height, 0, 0);
 }
 
 /**
