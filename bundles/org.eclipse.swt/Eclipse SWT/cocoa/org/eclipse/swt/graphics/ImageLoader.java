@@ -143,7 +143,7 @@ void reset() {
  *    <li>ERROR_NULL_ARGUMENT - if the stream is null</li>
  * </ul>
  * @exception SWTException <ul>
- *    <li>ERROR_IO - if an IO error occurs while reading from the stream</li>
+ *    <li>ERROR_IO - if an IO error occurs while reading the stream</li>
  *    <li>ERROR_INVALID_IMAGE - if the image stream contains invalid data</li>
  *    <li>ERROR_UNSUPPORTED_FORMAT - if the image stream contains an unrecognized format</li>
  * </ul>
@@ -168,25 +168,17 @@ public ImageData[] load(InputStream stream) {
  *    <li>ERROR_NULL_ARGUMENT - if the file name is null</li>
  * </ul>
  * @exception SWTException <ul>
- *    <li>ERROR_IO - if an IO error occurs while reading from the file</li>
+ *    <li>ERROR_IO - if an IO error occurs while reading the file</li>
  *    <li>ERROR_INVALID_IMAGE - if the image file contains invalid data</li>
  *    <li>ERROR_UNSUPPORTED_FORMAT - if the image file contains an unrecognized format</li>
  * </ul>
  */
 public ImageData[] load(String filename) {
 	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	InputStream stream = null;
-	try {
-		stream = new FileInputStream(filename);
+	try (InputStream stream = new FileInputStream(filename)) {
 		return load(stream);
 	} catch (IOException e) {
 		SWT.error(SWT.ERROR_IO, e);
-	} finally {
-		try {
-			if (stream != null) stream.close();
-		} catch (IOException e) {
-			// Ignore error
-		}
 	}
 	return null;
 }
@@ -258,16 +250,10 @@ public void save(OutputStream stream, int format) {
  */
 public void save(String filename, int format) {
 	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	OutputStream stream = null;
-	try {
-		stream = new FileOutputStream(filename);
+	try (OutputStream stream = new FileOutputStream(filename)) {
+		save(stream, format);
 	} catch (IOException e) {
 		SWT.error(SWT.ERROR_IO, e);
-	}
-	save(stream, format);
-	try {
-		stream.close();
-	} catch (IOException e) {
 	}
 }
 
