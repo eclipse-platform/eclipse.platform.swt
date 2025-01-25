@@ -15,6 +15,7 @@ package org.eclipse.swt.graphics;
 
 
 import java.io.*;
+import java.nio.file.Path;
 import java.util.*;
 
 import org.eclipse.swt.*;
@@ -440,18 +441,11 @@ public Image(Device device, ImageData source, ImageData mask) {
  * </p>
  * <pre>
  *     static Image loadImage (Display display, Class clazz, String string) {
- *          InputStream stream = clazz.getResourceAsStream (string);
- *          if (stream == null) return null;
- *          Image image = null;
- *          try {
- *               image = new Image (display, stream);
- *          } catch (SWTException ex) {
- *          } finally {
- *               try {
- *                    stream.close ();
- *               } catch (IOException ex) {}
- *          }
- *          return image;
+ *         try (InputStream stream = clazz.getResourceAsStream(string)){
+ *             if (stream == null) return null;
+*              return new Image (display, stream);
+ *         } catch (SWTException | IOException ex) {
+ *         }
  *     }
  * </pre>
  * <p>
@@ -481,7 +475,7 @@ public Image (Device device, InputStream stream) {
 	super(device);
 	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
 	int deviceZoom = getZoom();
-	ElementAtZoom<ImageData> imageCandidate = ImageDataLoader.load(stream, FileFormat.DEFAULT_ZOOM, deviceZoom);
+	ElementAtZoom<ImageData> imageCandidate = ImageData.load(stream, FileFormat.DEFAULT_ZOOM, deviceZoom);
 	ImageData data = scaleImageData(imageCandidate.element(), deviceZoom, imageCandidate.zoom());
 	init(data, deviceZoom);
 	init();
@@ -525,7 +519,7 @@ public Image (Device device, String filename) {
 	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
 	int deviceZoom = getZoom();
-	ElementAtZoom<ImageData> imageCandidate = ImageDataLoader.load(filename, FileFormat.DEFAULT_ZOOM, deviceZoom);
+	ElementAtZoom<ImageData> imageCandidate = ImageData.load(Path.of(filename), FileFormat.DEFAULT_ZOOM, deviceZoom);
 	ImageData data = scaleImageData(imageCandidate.element(), deviceZoom, imageCandidate.zoom());
 	init(data, deviceZoom);
 	init();
@@ -560,14 +554,49 @@ public Image (Device device, String filename) {
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
  * @since 3.104
+ * @deprecated Instead use {@link #Image(Device, ImageFileProvider)}
  */
+@Deprecated(since = "2025-06")
 public Image(Device device, ImageFileNameProvider imageFileNameProvider) {
+	this(device, DPIUtil.asImageFileProvider(imageFileNameProvider));
+}
+
+/**
+ * Constructs an instance of this class by loading its representation
+ * from the file retrieved from the {@link ImageFileProvider}. Throws an
+ * error if an error occurs while loading the image, or if the result
+ * is an image of an unsupported type.
+ * <p>
+ * This constructor is provided for convenience for loading image as
+ * per DPI level.
+ *
+ * @param device the device on which to create the image
+ * @param imageFileProvider the {@link ImageFileProvider} object that is
+ * to be used to get the file
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the ImageFileNameProvider is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the fileName provided by ImageFileNameProvider is null at 100% zoom</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_IO - if an IO error occurs while reading from the file</li>
+ *    <li>ERROR_INVALID_IMAGE - if the image file contains invalid data </li>
+ *    <li>ERROR_UNSUPPORTED_DEPTH - if the image file describes an image with an unsupported depth</li>
+ *    <li>ERROR_UNSUPPORTED_FORMAT - if the image file contains an unrecognized format</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
+ * </ul>
+ * @since 3.130
+ */
+public Image(Device device, ImageFileProvider imageFileProvider) {
 	super(device);
-	this.imageProvider = new ImageFileNameProviderWrapper(imageFileNameProvider);
+	this.imageProvider = new ImageFileNameProviderWrapper(imageFileProvider);
 	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
 	if (imageProvider.getImageData(100) == null) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT, null,
-				": ImageFileNameProvider [" + imageFileNameProvider + "] returns null ImageData at 100% zoom.");
+				": ImageFileNameProvider [" + imageFileProvider + "] returns null ImageData at 100% zoom.");
 	}
 	init();
 	this.device.registerResourceWithZoomSupport(this);
@@ -630,7 +659,7 @@ public Image(Device device, ImageDataProvider imageDataProvider) {
  *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  *    <li>ERROR_NULL_ARGUMENT - if the ImageGcDrawer is null</li>
  * </ul>
- * @since 3.129
+ * @since 3.130
  */
 public Image(Device device, ImageGcDrawer imageGcDrawer, int width, int height) {
 	super(device);
@@ -2080,14 +2109,14 @@ private abstract class BaseImageProviderWrapper<T> extends DynamicImageProviderW
 	}
 }
 
-private class ImageFileNameProviderWrapper extends BaseImageProviderWrapper<ImageFileNameProvider> {
-	ImageFileNameProviderWrapper(ImageFileNameProvider provider) {
-		super(provider, ImageFileNameProvider.class);
+private class ImageFileNameProviderWrapper extends BaseImageProviderWrapper<ImageFileProvider> {
+	ImageFileNameProviderWrapper(ImageFileProvider provider) {
+		super(provider, ImageFileProvider.class);
 	}
 
 	@Override
 	ImageData getImageData(int zoom) {
-		ElementAtZoom<String> fileForZoom = DPIUtil.validateAndGetImagePathAtZoom(provider, zoom);
+		ElementAtZoom<Path> fileForZoom = DPIUtil.validateAndGetImagePathAtZoom(provider, zoom);
 		ImageHandle nativeInitializedImage;
 		if (zoomLevelToImageHandle.containsKey(fileForZoom.zoom())) {
 			nativeInitializedImage = zoomLevelToImageHandle.get(fileForZoom.zoom());
@@ -2097,7 +2126,7 @@ private class ImageFileNameProviderWrapper extends BaseImageProviderWrapper<Imag
 
 		ElementAtZoom<ImageData> imageDataAtZoom;
 		if (nativeInitializedImage == null) {
-			imageDataAtZoom = ImageDataLoader.load(fileForZoom.element(), fileForZoom.zoom(), zoom);
+			imageDataAtZoom = ImageData.load(fileForZoom.element(), fileForZoom.zoom(), zoom);
 		} else {
 			imageDataAtZoom = new ElementAtZoom<>(nativeInitializedImage.getImageData(), fileForZoom.zoom());
 			destroyHandleForZoom(zoom);
@@ -2132,38 +2161,40 @@ private class ImageFileNameProviderWrapper extends BaseImageProviderWrapper<Imag
 		return image.new ImageFileNameProviderWrapper(provider);
 	}
 
-	ImageHandle initNative(String filename, int zoom) {
+	ImageHandle initNative(Path file, int zoom) {
 		ImageHandle imageMetadata = null;
 		long handle = 0;
 		int width = -1;
 		int height = -1;
 		device.checkGDIP();
 		boolean gdip = true;
+		String filenameLowerCase = file.getFileName().toString().toLowerCase();
 		/*
 		* Bug in GDI+.  For some reason, Bitmap.LockBits() segment faults
 		* when loading GIF files in 64-bit Windows.  The fix is to not use
 		* GDI+ image loading in this case.
 		*/
-		if (gdip && C.PTR_SIZEOF == 8 && filename.toLowerCase().endsWith(".gif")) gdip = false;
+		if (gdip && C.PTR_SIZEOF == 8 && filenameLowerCase.endsWith(".gif")) gdip = false;
 		/*
 		* Bug in GDI+. Bitmap.LockBits() fails to load GIF files in
 		* Windows 7 when the image has a position offset in the first frame.
 		* The fix is to not use GDI+ image loading in this case.
 		*/
-		if (filename.toLowerCase().endsWith(".gif")) gdip = false;
+		if (filenameLowerCase.endsWith(".gif")) gdip = false;
 
 		if(!gdip) return null;
 
-		int length = filename.length();
-		char[] chars = new char[length+1];
-		filename.getChars(0, length, chars, 0);
-		long bitmap = Gdip.Bitmap_new(chars, false);
+		String filePath = file.toString();
+		int length = filePath.length();
+		char[] nullTerminatedChars = new char[length + 1];
+		filePath.getChars(0, length, nullTerminatedChars, 0);
+		long bitmap = Gdip.Bitmap_new(nullTerminatedChars, false);
 		if (bitmap == 0) return null;
 
 		int error = SWT.ERROR_NO_HANDLES;
 		int status = Gdip.Image_GetLastStatus(bitmap);
 		if (status == 0) {
-			if (filename.toLowerCase().endsWith(".ico")) {
+			if (filenameLowerCase.endsWith(".ico")) {
 				type = SWT.ICON;
 				long[] hicon = new long[1];
 				status = Gdip.Bitmap_GetHICON(bitmap, hicon);
