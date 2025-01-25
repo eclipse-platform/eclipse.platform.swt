@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2024 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -2131,6 +2131,16 @@ fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) setGdkRectangleFields(env, arg1, lparg1);
 	GTK3_NATIVE_EXIT(env, that, gtk_1tree_1view_1column_1cell_1get_1size_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1tree_1view_1column_1queue_1resize
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1tree_1view_1column_1queue_1resize)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	GTK3_NATIVE_ENTER(env, that, gtk_1tree_1view_1column_1queue_1resize_FUNC);
+	gtk_tree_view_column_queue_resize((GtkTreeViewColumn *)arg0);
+	GTK3_NATIVE_EXIT(env, that, gtk_1tree_1view_1column_1queue_1resize_FUNC);
 }
 #endif
 
