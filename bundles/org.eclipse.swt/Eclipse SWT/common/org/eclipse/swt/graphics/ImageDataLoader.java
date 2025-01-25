@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -14,6 +14,7 @@
 package org.eclipse.swt.graphics;
 
 import java.io.*;
+import java.nio.file.Path;
 
 /**
  * Internal class that separates ImageData from ImageLoader
@@ -25,8 +26,8 @@ class ImageDataLoader {
 		return new ImageLoader().load(stream);
 	}
 
-	public static ImageData[] load(String filename) {
-		return new ImageLoader().load(filename);
+	public static ImageData[] load(Path file) {
+		return new ImageLoader().load(file);
 	}
 
 }

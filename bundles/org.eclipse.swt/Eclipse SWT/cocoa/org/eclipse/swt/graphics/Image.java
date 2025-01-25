@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2020 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -15,6 +15,7 @@ package org.eclipse.swt.graphics;
 
 
 import java.io.*;
+import java.nio.file.Path;
 import java.util.*;
 
 import org.eclipse.swt.*;
@@ -127,9 +128,9 @@ public final class Image extends Resource implements Drawable {
 	static final int DEFAULT_SCANLINE_PAD = 4;
 
 	/**
-	 * ImageFileNameProvider to provide file names at various Zoom levels
+	 * ImageFileProvider to provide files at various Zoom levels
 	 */
-	private ImageFileNameProvider imageFileNameProvider;
+	private ImageFileProvider imageFileProvider;
 
 	/**
 	 * ImageDataProvider to provide ImageData at various Zoom levels
@@ -388,11 +389,11 @@ public Image(Device device, Image srcImage, int flag) {
 		/* Create the 100% representation for the new image from source image & apply flag */
 		createRepFromSourceAndApplyFlag(srcImage.getRepresentation (100), srcWidth, srcHeight, flag);
 
-		imageFileNameProvider = srcImage.imageFileNameProvider;
+		imageFileProvider = srcImage.imageFileProvider;
 		imageDataProvider = srcImage.imageDataProvider;
 		imageGcDrawer = srcImage.imageGcDrawer;
 		this.styleFlag = srcImage.styleFlag | flag;
-		if (imageFileNameProvider != null || imageDataProvider != null ||srcImage.imageGcDrawer != null) {
+		if (imageFileProvider != null || imageDataProvider != null ||srcImage.imageGcDrawer != null) {
 			/* If source image has 200% representation then create the 200% representation for the new image & apply flag */
 			NSBitmapImageRep rep200 = srcImage.getRepresentation (200);
 			if (rep200 != null) createRepFromSourceAndApplyFlag(rep200, srcWidth * 2, srcHeight * 2, flag);
@@ -713,6 +714,53 @@ public Image(Device device, InputStream stream) {
  * </p>
  *
  * @param device the device on which to create the image
+ * @param file the name of the file to load the image from
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the file name is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_IO - if an IO error occurs while reading from the file</li>
+ *    <li>ERROR_INVALID_IMAGE - if the image file contains invalid data </li>
+ *    <li>ERROR_UNSUPPORTED_DEPTH - if the image file describes an image with an unsupported depth</li>
+ *    <li>ERROR_UNSUPPORTED_FORMAT - if the image file contains an unrecognized format</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
+ * </ul>
+ *
+ * @see #dispose()
+ * @since 3.129
+ */
+public Image(Device device, Path file) {
+	super(device);
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		if (file == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+		initNative(file);
+		if (this.handle == null) init(ImageData.create(file));
+		init();
+	} finally {
+		if (pool != null) pool.release();
+	}
+}
+
+/**
+ * Constructs an instance of this class by loading its representation
+ * from the file with the specified name. Throws an error if an error
+ * occurs while loading the image, or if the result is an image
+ * of an unsupported type.
+ * <p>
+ * This constructor is provided for convenience when loading
+ * a single image only. If the specified file contains
+ * multiple images, only the first one will be used.
+ * <p>
+ * You must dispose the image when it is no longer required.
+ * </p>
+ *
+ * @param device the device on which to create the image
  * @param filename the name of the file to load the image from
  *
  * @exception IllegalArgumentException <ul>
@@ -730,16 +778,61 @@ public Image(Device device, InputStream stream) {
  * </ul>
  *
  * @see #dispose()
+ * @deprecated Instead use {@link #Image(Device, Path)}
  */
+@Deprecated(since = "2025-03")
 public Image(Device device, String filename) {
+	this(device, filename == null ? Path.of(filename) : null);
+}
+
+/**
+ * Constructs an instance of this class by loading its representation
+ * from the file retrieved from the {@link ImageFileProvider}. Throws an
+ * error if an error occurs while loading the image, or if the result
+ * is an image of an unsupported type.
+ * <p>
+ * This constructor is provided for convenience for loading image as
+ * per DPI level.
+ *
+ * @param device the device on which to create the image
+ * @param imageFileProvider the {@link ImageFileProvider} object that is
+ * to be used to get the file
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the ImageFileNameProvider is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the fileName provided by ImageFileNameProvider is null at 100% zoom</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_IO - if an IO error occurs while reading from the file</li>
+ *    <li>ERROR_INVALID_IMAGE - if the image file contains invalid data </li>
+ *    <li>ERROR_UNSUPPORTED_DEPTH - if the image file describes an image with an unsupported depth</li>
+ *    <li>ERROR_UNSUPPORTED_FORMAT - if the image file contains an unrecognized format</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
+ * </ul>
+ * @since 3.129
+ */
+public Image(Device device, ImageFileProvider imageFileProvider) {
 	super(device);
+	if (imageFileProvider == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	this.imageFileProvider = imageFileProvider;
+	Path file = imageFileProvider.getImagePath(100);
+	if (file == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
-		if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		initNative(filename);
-		if (this.handle == null) init(new ImageData(filename));
+		initNative(file);
+		if (this.handle == null) init(ImageData.create(file));
 		init();
+		Path file2x = imageFileProvider.getImagePath(200);
+		if (file2x != null) {
+			alphaInfo_200 = new AlphaInfo();
+			id id = NSImageRep.imageRepWithContentsOfFile(NSString.stringWith(file2x.toString()));
+			NSImageRep rep = new NSImageRep(id);
+			handle.addRepresentation(rep);
+		}
 	} finally {
 		if (pool != null) pool.release();
 	}
@@ -773,29 +866,11 @@ public Image(Device device, String filename) {
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
  * @since 3.104
+ * @deprecated Instead use {@link #Image(Device, ImageFileProvider)}
  */
+@Deprecated(since = "2025-03")
 public Image(Device device, ImageFileNameProvider imageFileNameProvider) {
-	super(device);
-	if (imageFileNameProvider == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.imageFileNameProvider = imageFileNameProvider;
-	String filename = imageFileNameProvider.getImagePath(100);
-	if (filename == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	NSAutoreleasePool pool = null;
-	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
-	try {
-		initNative(filename);
-		if (this.handle == null) init(new ImageData(filename));
-		init();
-		String filename2x = imageFileNameProvider.getImagePath(200);
-		if (filename2x != null) {
-			alphaInfo_200 = new AlphaInfo();
-			id id = NSImageRep.imageRepWithContentsOfFile(NSString.stringWith(filename2x));
-			NSImageRep rep = new NSImageRep(id);
-			handle.addRepresentation(rep);
-		}
-	} finally {
-		if (pool != null) pool.release();
-	}
+	this(device, (ImageFileProvider) zoom -> Path.of(imageFileNameProvider.getImagePath(zoom)));
 }
 
 /**
@@ -880,7 +955,7 @@ public Image(Device device, ImageGcDrawer imageGcDrawer, int width, int height) 
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
 		init (data);
-		init ();		
+		init ();
 	} finally {
 		if (pool != null) pool.release();
 	}
@@ -902,7 +977,7 @@ private ImageData drawWithImageGcDrawer(ImageGcDrawer imageGcDrawer, int width, 
 
 private AlphaInfo _getAlphaInfoAtCurrentZoom (NSBitmapImageRep rep) {
 	int deviceZoom = DPIUtil.getDeviceZoom();
-	if (deviceZoom != 100 && (imageFileNameProvider != null || imageDataProvider != null)) {
+	if (deviceZoom != 100 && (imageFileProvider != null || imageDataProvider != null)) {
 		if (alphaInfo_100.alphaData != null && alphaInfo_200 != null) {
 			if (alphaInfo_200.alphaData == null) initAlpha_200(rep);
 			return alphaInfo_200;
@@ -1176,8 +1251,8 @@ public boolean equals (Object object) {
 	if (device != image.device || alphaInfo_100.transparentPixel != image.alphaInfo_100.transparentPixel) return false;
 	if (imageDataProvider != null && image.imageDataProvider != null) {
 		return styleFlag == image.styleFlag && imageDataProvider.equals (image.imageDataProvider);
-	} else if (imageFileNameProvider != null && image.imageFileNameProvider != null) {
-		return styleFlag == image.styleFlag && imageFileNameProvider.equals (image.imageFileNameProvider);
+	} else if (imageFileProvider != null && image.imageFileProvider != null) {
+		return styleFlag == image.styleFlag && imageFileProvider.equals (image.imageFileProvider);
 	} else if (imageGcDrawer != null && image.imageGcDrawer != null) {
 		return styleFlag == image.styleFlag && imageGcDrawer.equals(image.imageGcDrawer) && width == image.width
 				&& height == image.height;
@@ -1415,8 +1490,8 @@ NSBitmapImageRep createImageRep(NSSize targetSize) {
 public int hashCode () {
 	if (imageDataProvider != null) {
 		return imageDataProvider.hashCode();
-	} else if (imageFileNameProvider != null) {
-		return imageFileNameProvider.hashCode();
+	} else if (imageFileProvider != null) {
+		return imageFileProvider.hashCode();
 	} else if (imageGcDrawer != null) {
 		return Objects.hash(imageGcDrawer, height, width);
 	} else {
@@ -1507,7 +1582,8 @@ void initAlpha_100(NSBitmapImageRep nativeRep) {
 
 }
 
-void initNative(String filename) {
+void initNative(Path file) {
+	String filename = file.toString();
 	NSAutoreleasePool pool = null;
 	NSImage nativeImage = null;
 
