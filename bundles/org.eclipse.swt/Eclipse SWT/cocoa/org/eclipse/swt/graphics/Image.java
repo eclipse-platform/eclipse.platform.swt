@@ -713,6 +713,53 @@ public Image(Device device, InputStream stream) {
  * </p>
  *
  * @param device the device on which to create the image
+ * @param file the name of the file to load the image from
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the file name is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_IO - if an IO error occurs while reading from the file</li>
+ *    <li>ERROR_INVALID_IMAGE - if the image file contains invalid data </li>
+ *    <li>ERROR_UNSUPPORTED_DEPTH - if the image file describes an image with an unsupported depth</li>
+ *    <li>ERROR_UNSUPPORTED_FORMAT - if the image file contains an unrecognized format</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
+ * </ul>
+ *
+ * @see #dispose()
+ * @since 3.129
+ */
+public Image(Device device, File file) {
+	super(device);
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		if (file == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+		initNative(file.toString());
+		if (this.handle == null) init(new ImageData(file));
+		init();
+	} finally {
+		if (pool != null) pool.release();
+	}
+}
+
+/**
+ * Constructs an instance of this class by loading its representation
+ * from the file with the specified name. Throws an error if an error
+ * occurs while loading the image, or if the result is an image
+ * of an unsupported type.
+ * <p>
+ * This constructor is provided for convenience when loading
+ * a single image only. If the specified file contains
+ * multiple images, only the first one will be used.
+ * <p>
+ * You must dispose the image when it is no longer required.
+ * </p>
+ *
+ * @param device the device on which to create the image
  * @param filename the name of the file to load the image from
  *
  * @exception IllegalArgumentException <ul>
@@ -730,19 +777,11 @@ public Image(Device device, InputStream stream) {
  * </ul>
  *
  * @see #dispose()
+ * @deprecated Instead use {@link #Image(Device, File)}
  */
+@Deprecated(since = "2025-03")
 public Image(Device device, String filename) {
-	super(device);
-	NSAutoreleasePool pool = null;
-	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
-	try {
-		if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		initNative(filename);
-		if (this.handle == null) init(new ImageData(filename));
-		init();
-	} finally {
-		if (pool != null) pool.release();
-	}
+	this(device, new File(filename));
 }
 
 /**
@@ -880,7 +919,7 @@ public Image(Device device, ImageGcDrawer imageGcDrawer, int width, int height) 
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
 		init (data);
-		init ();		
+		init ();
 	} finally {
 		if (pool != null) pool.release();
 	}
