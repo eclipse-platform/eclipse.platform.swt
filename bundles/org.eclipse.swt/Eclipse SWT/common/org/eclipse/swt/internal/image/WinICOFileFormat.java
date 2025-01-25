@@ -14,9 +14,10 @@
 package org.eclipse.swt.internal.image;
 
 
+import java.io.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import java.io.*;
 
 public final class WinICOFileFormat extends FileFormat {
 
@@ -130,8 +131,8 @@ ImageData[] loadFromByteStream() {
  */
 ImageData loadIcon(int[] iconHeader) {
 	try {
-		FileFormat png = getFileFormat(inputStream, "PNG");
-		if (png != null) {
+		FileFormat png = new PNGFileFormat();
+		if (png.isFileFormat(inputStream)) {
 			png.loader = this.loader;
 			return png.loadFromStream(inputStream)[0];
 		}
