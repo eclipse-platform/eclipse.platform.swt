@@ -187,18 +187,20 @@ public ImageData[] load(String filename) {
  * Saves the image data in this ImageLoader to the specified stream.
  * The format parameter can have one of the following values:
  * <dl>
- * <dt><code>IMAGE_BMP</code></dt>
+ * <dt>{@link SWT#IMAGE_BMP}</dt>
  * <dd>Windows BMP file format, no compression</dd>
- * <dt><code>IMAGE_BMP_RLE</code></dt>
+ * <dt>{@link SWT#IMAGE_BMP_RLE}</dt>
  * <dd>Windows BMP file format, RLE compression if appropriate</dd>
- * <dt><code>IMAGE_GIF</code></dt>
+ * <dt>{@link SWT#IMAGE_GIF}</dt>
  * <dd>GIF file format</dd>
- * <dt><code>IMAGE_ICO</code></dt>
+ * <dt>{@link SWT#IMAGE_ICO}</dt>
  * <dd>Windows ICO file format</dd>
- * <dt><code>IMAGE_JPEG</code></dt>
+ * <dt>{@link SWT#IMAGE_JPEG}</dt>
  * <dd>JPEG file format</dd>
- * <dt><code>IMAGE_PNG</code></dt>
+ * <dt>{@link SWT#IMAGE_PNG}</dt>
  * <dd>PNG file format</dd>
+ * <dt>{@link SWT#IMAGE_TIFF}</dt>
+ * <dd>TIFF file format</dd>
  * </dl>
  *
  * @param stream the output stream to write the images to
@@ -222,18 +224,20 @@ public void save(OutputStream stream, int format) {
  * Saves the image data in this ImageLoader to a file with the specified name.
  * The format parameter can have one of the following values:
  * <dl>
- * <dt><code>IMAGE_BMP</code></dt>
+ * <dt>{@link SWT#IMAGE_BMP}</dt>
  * <dd>Windows BMP file format, no compression</dd>
- * <dt><code>IMAGE_BMP_RLE</code></dt>
+ * <dt>{@link SWT#IMAGE_BMP_RLE}</dt>
  * <dd>Windows BMP file format, RLE compression if appropriate</dd>
- * <dt><code>IMAGE_GIF</code></dt>
+ * <dt>{@link SWT#IMAGE_GIF}</dt>
  * <dd>GIF file format</dd>
- * <dt><code>IMAGE_ICO</code></dt>
+ * <dt>{@link SWT#IMAGE_ICO}</dt>
  * <dd>Windows ICO file format</dd>
- * <dt><code>IMAGE_JPEG</code></dt>
+ * <dt>{@link SWT#IMAGE_JPEG}</dt>
  * <dd>JPEG file format</dd>
- * <dt><code>IMAGE_PNG</code></dt>
+ * <dt>{@link SWT#IMAGE_PNG}</dt>
  * <dd>PNG file format</dd>
+ * <dt>{@link SWT#IMAGE_TIFF}</dt>
+ * <dd>TIFF file format</dd>
  * </dl>
  *
  * @param filename the name of the file to write the images to
