@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2022 IBM Corporation and others.
+ * Copyright (c) 2022, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -15,6 +15,7 @@
  *******************************************************************************/
 package org.eclipse.swt.internal;
 
+import java.nio.file.Path;
 import java.util.function.*;
 
 import org.eclipse.swt.*;
@@ -551,16 +552,16 @@ public static ElementAtZoom<ImageData> validateAndGetImageDataAtZoom(ImageDataPr
  * the 100% image is returned as a fallback. If provider or fallback image is
  * not available, an error is thrown.
  */
-public static ElementAtZoom<String> validateAndGetImagePathAtZoom(ImageFileNameProvider provider, int zoom) {
+public static ElementAtZoom<Path> validateAndGetImagePathAtZoom(ImageFileProvider provider, int zoom) {
 	if (provider == null) {
 		SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	}
-	ElementAtZoom<String> imagePathAtZoom = getElementAtZoom(z -> provider.getImagePath(z), zoom);
-	if (imagePathAtZoom == null) {
+	ElementAtZoom<Path> imageAtZoom = getElementAtZoom(z -> provider.getImagePath(z), zoom);
+	if (imageAtZoom == null) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT, null,
-				": ImageFileNameProvider [" + provider + "] returns null filename at 100% zoom.");
+				": ImageFileNameProvider [" + provider + "] returns null file at 100% zoom.");
 	}
-	return imagePathAtZoom;
+	return imageAtZoom;
 }
 
 private static <T> ElementAtZoom<T> getElementAtZoom(Function<Integer, T> elementForZoomProvider, int zoom) {
@@ -726,5 +727,32 @@ public static final class AutoScaleImageDataProvider implements ImageDataProvide
 	public ImageData getImageData(int zoom) {
 		return DPIUtil.scaleImageData(device, imageData, zoom, currentZoom);
 	}
+}
+
+@SuppressWarnings("deprecation")
+public static ImageFileProvider asImageFileProvider(ImageFileNameProvider provider) {
+	class WrappingImageFileProvider implements ImageFileProvider {
+		ImageFileNameProvider filenameProvider = provider;
+
+		@Override
+		public Path getImagePath(int zoom) {
+			String path = filenameProvider.getImagePath(zoom);
+			return path != null ? Path.of(path) : null;
+		}
+
+		@Override
+		public int hashCode() {
+			return filenameProvider.hashCode();
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (obj instanceof WrappingImageFileProvider wrappingProvider) {
+				return this.filenameProvider.equals(wrappingProvider.filenameProvider);
+			}
+			return this.filenameProvider.equals(obj);
+		}
+	}
+	return provider == null ? null : new WrappingImageFileProvider();
 }
 }

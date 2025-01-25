@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2022 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -15,6 +15,7 @@ package org.eclipse.swt.graphics;
 
 
 import java.io.*;
+import java.nio.file.Path;
 import java.util.*;
 
 import org.eclipse.swt.*;
@@ -471,7 +472,7 @@ public Image(Device device, ImageData source, ImageData mask) {
 public Image (Device device, InputStream stream) {
 	super(device);
 	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
-	ImageData data = DPIUtil.autoScaleUp(device, new ElementAtZoom<>(new ImageData (stream), 100));
+	ImageData data = DPIUtil.autoScaleUp(device, new ElementAtZoom<>(ImageData.load(stream), 100));
 	init(data, getZoom());
 	init();
 	this.device.registerResourceWithZoomSupport(this);
@@ -513,7 +514,7 @@ public Image (Device device, String filename) {
 	super(device);
 	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
-	ImageData data = DPIUtil.autoScaleUp(device, new ElementAtZoom<>(new ImageData (filename), 100));
+	ImageData data = DPIUtil.autoScaleImageData(device, ImageData.load(Path.of(filename)), 100);
 	init(data, getZoom());
 	init();
 	this.device.registerResourceWithZoomSupport(this);
@@ -547,19 +548,54 @@ public Image (Device device, String filename) {
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
  * @since 3.104
+ * @deprecated Instead use {@link #Image(Device, ImageFileProvider)}
  */
+@Deprecated(since = "2025-06")
 public Image(Device device, ImageFileNameProvider imageFileNameProvider) {
+	this(device, DPIUtil.asImageFileProvider(imageFileNameProvider));
+}
+
+/**
+ * Constructs an instance of this class by loading its representation
+ * from the file retrieved from the {@link ImageFileProvider}. Throws an
+ * error if an error occurs while loading the image, or if the result
+ * is an image of an unsupported type.
+ * <p>
+ * This constructor is provided for convenience for loading image as
+ * per DPI level.
+ *
+ * @param device the device on which to create the image
+ * @param imageFileProvider the {@link ImageFileProvider} object that is
+ * to be used to get the file
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the ImageFileNameProvider is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the fileName provided by ImageFileNameProvider is null at 100% zoom</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_IO - if an IO error occurs while reading from the file</li>
+ *    <li>ERROR_INVALID_IMAGE - if the image file contains invalid data </li>
+ *    <li>ERROR_UNSUPPORTED_DEPTH - if the image file describes an image with an unsupported depth</li>
+ *    <li>ERROR_UNSUPPORTED_FORMAT - if the image file contains an unrecognized format</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
+ * </ul>
+ * @since 3.129
+ */
+public Image(Device device, ImageFileProvider imageFileProvider) {
 	super(device);
-	this.imageProvider = new ImageFileNameProviderWrapper(imageFileNameProvider);
+	this.imageProvider = new ImageFileNameProviderWrapper(imageFileProvider);
 	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
-	ElementAtZoom<String> fileName = DPIUtil.validateAndGetImagePathAtZoom (imageFileNameProvider, getZoom());
-	if (fileName.zoom() == getZoom()) {
-		ImageHandle imageMetadata = initNative (fileName.element(), getZoom());
+	ElementAtZoom<Path> file = DPIUtil.validateAndGetImagePathAtZoom (imageFileProvider, getZoom());
+	if (file.zoom() == getZoom()) {
+		ImageHandle imageMetadata = initNative (file.element(), getZoom());
 		if (imageMetadata == null) {
-			init(new ImageData (fileName.element()), getZoom());
+			init(ImageData.load(file.element()), getZoom());
 		}
 	} else {
-		ImageData resizedData = DPIUtil.autoScaleImageData (device, new ImageData (fileName.element()), fileName.zoom());
+		ImageData resizedData = DPIUtil.autoScaleImageData(device, ImageData.load(file.element()), file.zoom());
 		init(resizedData, getZoom());
 	}
 	init();
@@ -821,7 +857,8 @@ public static long win32_getHandle (Image image, int zoom) {
 	return image.getImageMetadata(zoom).handle;
 }
 
-ImageHandle initNative(String filename, int zoom) {
+ImageHandle initNative(Path file, int zoom) {
+	String filename = file.toString();
 	ImageHandle imageMetadata = null;
 	long handle = 0;
 	int width = -1;
@@ -2121,10 +2158,10 @@ private class ImageFileNameProviderWrapper extends AbstractImageProviderWrapper 
 	/**
 	 * ImageFileNameProvider to provide file names at various Zoom levels
 	 */
-	private final ImageFileNameProvider provider;
+	private final ImageFileProvider provider;
 
-	ImageFileNameProviderWrapper(ImageFileNameProvider provider) {
-		checkProvider(provider, ImageFileNameProvider.class);
+	ImageFileNameProviderWrapper(ImageFileProvider provider) {
+		checkProvider(provider, ImageFileProvider.class);
 		this.provider = provider;
 	}
 
@@ -2137,14 +2174,14 @@ private class ImageFileNameProviderWrapper extends AbstractImageProviderWrapper 
 
 	@Override
 	ImageData getImageData(int zoom) {
-		ElementAtZoom<String> fileName = DPIUtil.validateAndGetImagePathAtZoom (provider, zoom);
-		return DPIUtil.scaleImageData (device, new ImageData (fileName.element()), zoom, fileName.zoom());
+		ElementAtZoom<Path> file = DPIUtil.validateAndGetImagePathAtZoom (provider, zoom);
+		return DPIUtil.scaleImageData(device, ImageData.load(file.element()), zoom, file.zoom());
 	}
 
 	@Override
 	ImageHandle getImageMetadata(int zoom) {
-		ElementAtZoom<String> imageCandidate = DPIUtil.validateAndGetImagePathAtZoom (provider, zoom);
-		ImageData imageData = new ImageData (imageCandidate.element());
+		ElementAtZoom<Path> imageCandidate = DPIUtil.validateAndGetImagePathAtZoom (provider, zoom);
+		ImageData imageData = ImageData.load(imageCandidate.element());
 		if (imageCandidate.zoom() == zoom) {
 			/* Release current native resources */
 			ImageHandle imageMetadata = initNative(imageCandidate.element(), zoom);
