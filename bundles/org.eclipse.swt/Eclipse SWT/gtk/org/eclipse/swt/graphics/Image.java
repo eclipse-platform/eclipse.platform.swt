@@ -1449,8 +1449,8 @@ public long internal_new_GC (GCData data) {
 			}
 		}
 		data.device = device;
-		data.foregroundRGBA = device.COLOR_BLACK.handle;
-		data.backgroundRGBA = device.COLOR_WHITE.handle;
+		data.foregroundRGBA = Device.COLOR_BLACK.handle;
+		data.backgroundRGBA = Device.COLOR_WHITE.handle;
 		data.font = device.systemFont;
 		data.image = this;
 	}
