@@ -200,11 +200,8 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	int zoom = getZoom();
 	destX = DPIUtil.scaleUp(destX, zoom);
 	destY = DPIUtil.scaleUp(destY, zoom);
-	x = DPIUtil.scaleUp(x, zoom);
-	y = DPIUtil.scaleUp(y, zoom);
-	width = DPIUtil.scaleUp(width, zoom);
-	height = DPIUtil.scaleUp(height, zoom);
-	scrollInPixels(destX, destY, x, y, width, height, all);
+	Rectangle rectangle = DPIUtil.scaleUp(new Rectangle(x, y, width, height), zoom);
+	scrollInPixels(destX, destY, rectangle.x, rectangle.y, rectangle.width, rectangle.height, all);
 }
 
 void scrollInPixels (int destX, int destY, int x, int y, int width, int height, boolean all) {

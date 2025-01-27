@@ -2434,14 +2434,11 @@ public void redraw () {
 public void redraw (int x, int y, int width, int height, boolean all) {
 	checkWidget ();
 	int zoom = getZoom();
-	x = DPIUtil.scaleUp(x, zoom);
-	y = DPIUtil.scaleUp(y, zoom);
-	width = DPIUtil.scaleUp(width, zoom);
-	height = DPIUtil.scaleUp(height, zoom);
 	if (width <= 0 || height <= 0) return;
+	Rectangle rectangle = DPIUtil.scaleUp(new Rectangle(x, y, width, height), zoom);
 
 	RECT rect = new RECT ();
-	OS.SetRect (rect, x, y, x + width, y + height);
+	OS.SetRect (rect, rectangle.x, rectangle.y, rectangle.x + rectangle.width, rectangle.y + rectangle.height);
 
 	redrawInPixels(rect, all);
 }
