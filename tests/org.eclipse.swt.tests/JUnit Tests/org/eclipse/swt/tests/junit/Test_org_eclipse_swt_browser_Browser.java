@@ -302,11 +302,17 @@ private int reportOpenedDescriptors() {
 }
 
 private Browser createBrowser(Shell s, int flags) {
-	long maximumBrowserCreationMilliseconds = 90_000;
+	return createBrowser(s, flags, true);
+}
+
+private Browser createBrowser(Shell s, int flags, boolean expectSuccess) {
+	long maximumBrowserCreationMilliseconds = 5_000;
 	long createStartTime = System.currentTimeMillis();
 	Browser b = new Browser(s, flags);
 	// Wait for asynchronous initialization via getting URL
-	b.getUrl();
+	if (expectSuccess) {
+		b.getUrl();
+	}
 	createdBroswers.add(b);
 	long createDuration = System.currentTimeMillis() - createStartTime;
 	assertTrue("creating browser took too long: " + createDuration + "ms", createDuration < maximumBrowserCreationMilliseconds);
@@ -334,7 +340,7 @@ public void test_Constructor_asyncParentDisposal() {
 	Display.getCurrent().asyncExec(() -> {
 		shell.dispose();
 	});
-	Browser browser = createBrowser(shell, swtBrowserSettings);
+	Browser browser = createBrowser(shell, swtBrowserSettings, false);
 	assertFalse(browser.isDisposed());
 }
 
