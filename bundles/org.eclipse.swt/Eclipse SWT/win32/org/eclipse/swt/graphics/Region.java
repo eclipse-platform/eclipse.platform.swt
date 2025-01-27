@@ -389,7 +389,7 @@ public void intersect (Region region) {
  */
 public boolean intersects (int x, int y, int width, int height) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return 	intersectsInPixels(DPIUtil.scaleUp(x, initialZoom), DPIUtil.scaleUp(y, initialZoom), DPIUtil.scaleUp(width, initialZoom), DPIUtil.scaleUp(height, initialZoom));
+	return intersects(new Rectangle(x, y, width, height));
 }
 
 boolean intersectsInPixels (int x, int y, int width, int height) {
