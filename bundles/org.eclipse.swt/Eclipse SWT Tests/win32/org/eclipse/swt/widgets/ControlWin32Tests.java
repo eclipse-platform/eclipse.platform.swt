@@ -55,6 +55,25 @@ class ControlWin32Tests {
 				fontComparison.originalFontHeight, fontComparison.currentFontHeight);
 	}
 
+	@Test
+	public void testCorrectScaleUpUsingDifferentSetBoundsMethod() {
+		DPIUtil.setMonitorSpecificScaling(true);
+		Display display = Display.getDefault();
+		Shell shell = new Shell(display);
+		DPITestUtil.changeDPIZoom(shell, 175);
+
+		Button button = new Button(shell, SWT.PUSH);
+		button.setText("Widget Test");
+		button.setBounds(new Rectangle(0, 47, 200, 47));
+		shell.open();
+		assertEquals("Control::setBounds(Rectangle) doesn't scale up correctly",
+				new Rectangle(0, 82, 350, 83), button.getBoundsInPixels());
+
+		button.setBounds(0, 47, 200, 47);
+		assertEquals("Control::setBounds(int, int, int, int) doesn't scale up correctly",
+				new Rectangle(0, 82, 350, 83), button.getBoundsInPixels());
+	}
+
 	record FontComparison(int originalFontHeight, int currentFontHeight) {
 	}
 
