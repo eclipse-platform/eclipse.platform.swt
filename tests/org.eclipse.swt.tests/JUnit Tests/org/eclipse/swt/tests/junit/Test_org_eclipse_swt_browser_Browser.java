@@ -163,7 +163,7 @@ public static void setupEdgeEnvironment() {
 	// initialize Edge environment before any test runs to isolate environment setup
 	if (SwtTestUtil.isWindows) {
 		Shell shell = new Shell();
-		new Browser(shell, SWT.EDGE);
+		new Browser(shell, SWT.EDGE).getUrl();
 		shell.dispose();
 	}
 }
@@ -302,7 +302,7 @@ private int reportOpenedDescriptors() {
 }
 
 private Browser createBrowser(Shell s, int flags) {
-	long maximumBrowserCreationMilliseconds = 90_000;
+	long maximumBrowserCreationMilliseconds = 15_000;
 	long createStartTime = System.currentTimeMillis();
 	Browser b = new Browser(s, flags);
 	// Wait for asynchronous initialization via getting URL
