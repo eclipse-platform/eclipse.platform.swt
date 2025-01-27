@@ -3168,13 +3168,7 @@ void setBackgroundPixel (int pixel) {
  * </ul>
  */
 public void setBounds(int x, int y, int width, int height) {
-	checkWidget ();
-	int zoom = getZoom();
-	x = DPIUtil.scaleUp(x, zoom);
-	y = DPIUtil.scaleUp(y, zoom);
-	width = DPIUtil.scaleUp(width, zoom);
-	height = DPIUtil.scaleUp(height, zoom);
-	setBoundsInPixels(x, y, width, height);
+	setBounds(new Rectangle(x, y, width, height));
 }
 
 void setBoundsInPixels (int x, int y, int width, int height) {
