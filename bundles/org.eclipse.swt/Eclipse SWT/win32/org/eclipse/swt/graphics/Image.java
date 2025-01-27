@@ -2260,7 +2260,7 @@ private class ImageGcDrawerWrapper extends AbstractImageProviderWrapper {
 		Image image = new Image(device, width, height, zoom);
 		GC gc = new GC(image);
 		try {
-			gc.data.nativeZoom = zoom;
+			((NativeGC) gc.innerGC).data.nativeZoom = zoom;
 			drawer.drawOn(gc, width, height);
 			ImageData imageData = image.getImageMetadata(zoom).getImageData();
 			drawer.postProcess(imageData);

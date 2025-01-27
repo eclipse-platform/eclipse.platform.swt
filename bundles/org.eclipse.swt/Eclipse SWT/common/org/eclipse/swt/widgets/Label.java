@@ -49,7 +49,7 @@ import org.eclipse.swt.graphics.*;
  *      CustomControlExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further
  *      information</a>
- * @see Label#shortenText(IGraphicsContext, String, int)
+ * @see Label#shortenText(GC, String, int)
  */
 public class Label extends Control implements ICustomWidget {
 
@@ -195,8 +195,7 @@ public class Label extends Control implements ICustomWidget {
 		int topMargin = this.topMargin;
 
 		if (text != null && !text.isEmpty()) {
-			GC originalGC = new GC(this);
-			IGraphicsContext gc = SWT.USE_SKIJA ? new SkijaGC(originalGC, null) : originalGC;
+			GC gc = GCFactory.createGraphicsContext(this);
 			gc.setFont(getFont());
 			Point textExtent = gc.textExtent(text, DRAW_FLAGS);
 			gc.dispose();
@@ -226,7 +225,7 @@ public class Label extends Control implements ICustomWidget {
 	/**
 	 * Draw a rectangle in the given colors.
 	 */
-	private void drawBevelRect(IGraphicsContext gc, int x, int y, int w, int h,
+	private void drawBevelRect(GC gc, int x, int y, int w, int h,
 			Color topleft, Color bottomright) {
 		gc.setForeground(bottomright);
 		gc.drawLine(x + w, y, x + w, y + h);
@@ -349,7 +348,7 @@ public class Label extends Control implements ICustomWidget {
 	/**
 	 * Compute the minimum size.
 	 */
-	private Point getTotalSize(IGraphicsContext gc, Image image, String text) {
+	private Point getTotalSize(GC gc, Image image, String text) {
 		Point size = new Point(0, 0);
 
 		if (image != null) {
@@ -524,6 +523,7 @@ public class Label extends Control implements ICustomWidget {
 	}
 
 	void onPaint(PaintEvent event) {
+
 		Rectangle rect = getBounds();
 		if (rect.width == 0 && rect.height == 0) {
 			return;
@@ -532,10 +532,13 @@ public class Label extends Control implements ICustomWidget {
 			return;
 		}
 
-		event.gc.setFont(font);
-		event.gc.setBackground(getBackground());
-		event.gc.setClipping(new Rectangle(0, 0, rect.width, rect.height));
-		IGraphicsContext gc = SWT.USE_SKIJA ? new SkijaGC(event.gc) : event.gc;
+		GC gc = GCFactory.createGraphicsContext(this);
+
+		gc.setFont(font);
+		gc.setBackground(getBackground());
+		gc.setClipping(new Rectangle(0, 0, rect.width, rect.height));
+
+
 
 		boolean shortenText = false;
 		String t = text;
@@ -741,7 +744,7 @@ public class Label extends Control implements ICustomWidget {
 			}
 		}
 
-		gc.commit();
+		gc.dispose();
 	}
 
 	@Override
@@ -753,7 +756,7 @@ public class Label extends Control implements ICustomWidget {
 	/**
 	 * Paint the Label's border.
 	 */
-	private void paintBorder(IGraphicsContext gc, Rectangle r) {
+	private void paintBorder(GC gc, Rectangle r) {
 		Display disp = getDisplay();
 
 		Color c1 = null;
@@ -1234,7 +1237,7 @@ public class Label extends Control implements ICustomWidget {
 	 *            the width to shorten the text to, in points
 	 * @return the shortened text
 	 */
-	protected String shortenText(IGraphicsContext gc, String t, int width) {
+	protected String shortenText(GC gc, String t, int width) {
 		if (t == null) {
 			return null;
 		}

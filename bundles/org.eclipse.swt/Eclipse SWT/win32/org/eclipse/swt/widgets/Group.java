@@ -302,7 +302,8 @@ void printWidget (long hwnd, long hdc, GC gc) {
 	* WM_PRINT in this case.
 	*/
 	boolean success = false;
-	if (!(OS.GetDeviceCaps(gc.handle, OS.TECHNOLOGY) == OS.DT_RASPRINTER)) {
+	NativeGC ngc = (NativeGC) gc.innerGC;
+	if (!(OS.GetDeviceCaps(ngc.handle, OS.TECHNOLOGY) == OS.DT_RASPRINTER)) {
 		int bits = OS.GetWindowLong (hwnd, OS.GWL_STYLE);
 		if ((bits & OS.WS_VISIBLE) == 0) {
 			OS.ShowWindow (hwnd, OS.SW_SHOW);

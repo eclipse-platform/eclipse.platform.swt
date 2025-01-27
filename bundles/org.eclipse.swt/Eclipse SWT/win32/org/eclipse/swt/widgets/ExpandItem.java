@@ -183,7 +183,8 @@ private void drawChevron (long hDC, RECT rect) {
 }
 
 void drawItem (GC gc, long hTheme, RECT clipRect, boolean drawFocus) {
-	long hDC = gc.handle;
+	NativeGC ngc = (NativeGC) gc.innerGC;
+	long hDC = ngc.handle;
 	int headerHeightinPixels = getHeaderHeightInPixels();
 	int zoom = getZoom();
 	int imageHeightInPixels = DPIUtil.scaleUp(imageHeight, zoom);

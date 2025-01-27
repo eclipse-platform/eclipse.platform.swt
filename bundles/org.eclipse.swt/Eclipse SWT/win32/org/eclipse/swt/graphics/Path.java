@@ -323,7 +323,9 @@ void addStringInPixels(String string, float x, float y, Font font) {
 	char[] buffer = string.toCharArray();
 	long hDC = device.internal_new_GC(null);
 	long [] family = new long [1];
-	long gdipFont = GC.createGdipFont(hDC, SWTFontProvider.getFont(device, font.getFontData()[0], initialZoom).handle, 0, device.fontCollection, family, null);
+	long gdipFont = NativeGC.createGdipFont(hDC,
+			SWTFontProvider.getFont(device, font.getFontData()[0], initialZoom).handle, 0, device.fontCollection,
+			family, null);
 	PointF point = new PointF();
 	point.X = x - (Gdip.Font_GetSize(gdipFont) / 6);
 	point.Y = y;
@@ -393,14 +395,17 @@ boolean containsInPixels(float x, float y, GC gc, boolean outline) {
 	if (gc == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (gc.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	//TODO - should use GC transformation
-	gc.initGdip();
+	NativeGC ngc = (NativeGC) gc.innerGC;
+
+	ngc.initGdip();
 	gc.checkGC(GC.LINE_CAP | GC.LINE_JOIN | GC.LINE_STYLE | GC.LINE_WIDTH);
-	int mode = OS.GetPolyFillMode(gc.handle) == OS.WINDING ? Gdip.FillModeWinding : Gdip.FillModeAlternate;
+	int mode = OS.GetPolyFillMode(ngc.handle) == OS.WINDING ? Gdip.FillModeWinding : Gdip.FillModeAlternate;
 	Gdip.GraphicsPath_SetFillMode(getHandle(initialZoom), mode);
 	if (outline) {
-		return Gdip.GraphicsPath_IsOutlineVisible(getHandle(initialZoom), x, y, gc.data.gdipPen, gc.data.gdipGraphics);
+		return Gdip.GraphicsPath_IsOutlineVisible(getHandle(initialZoom), x, y, ngc.data.gdipPen,
+				ngc.data.gdipGraphics);
 	} else {
-		return Gdip.GraphicsPath_IsVisible(getHandle(initialZoom), x, y, gc.data.gdipGraphics);
+		return Gdip.GraphicsPath_IsVisible(getHandle(initialZoom), x, y, ngc.data.gdipGraphics);
 	}
 }
 

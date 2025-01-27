@@ -2210,7 +2210,8 @@ public boolean print (GC gc) {
 	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	long topHandle = topHandle ();
-	long hdc = gc.handle;
+	NativeGC ngc = (NativeGC) gc.innerGC;
+	long hdc = ngc.handle;
 	int state = 0;
 	long gdipGraphics = gc.getGCData().gdipGraphics;
 	if (gdipGraphics != 0) {
@@ -2262,7 +2263,8 @@ void printWidget (long hwnd, long hdc, GC gc) {
 	* WM_PRINT in this case.
 	*/
 	boolean success = false;
-	if (!(OS.GetDeviceCaps(gc.handle, OS.TECHNOLOGY) == OS.DT_RASPRINTER)) {
+	NativeGC ngc = (NativeGC) gc.innerGC;
+	if (!(OS.GetDeviceCaps(ngc.handle, OS.TECHNOLOGY) == OS.DT_RASPRINTER)) {
 		/*
 		* Bug in Windows.  When PrintWindow() will only draw that
 		* portion of a control that is not obscured by the shell.
@@ -5550,14 +5552,15 @@ LRESULT extended_WM_PAINT(long wParam, long lParam) {
 			data.ps = ps;
 			data.hwnd = handle;
 			GC gc = GC.win32_new(this, data);
+			NativeGC ngc = (NativeGC) gc.innerGC;
 
 			/* Get the system region for the paint HDC */
 			long sysRgn = 0;
 			if ((style & (SWT.DOUBLE_BUFFERED | SWT.TRANSPARENT)) != 0
 					|| (style & SWT.NO_MERGE_PAINTS) != 0) {
 				sysRgn = OS.CreateRectRgn(0, 0, 0, 0);
-				if (OS.GetRandomRgn(gc.handle, sysRgn, OS.SYSRGN) == 1) {
-					if ((OS.GetLayout(gc.handle) & OS.LAYOUT_RTL) != 0) {
+				if (OS.GetRandomRgn(ngc.handle, sysRgn, OS.SYSRGN) == 1) {
+					if ((OS.GetLayout(ngc.handle) & OS.LAYOUT_RTL) != 0) {
 						int nBytes = OS.GetRegionData(sysRgn, 0, null);
 						int[] lpRgnData = new int[nBytes / 4];
 						OS.GetRegionData(sysRgn, nBytes, lpRgnData);
@@ -5582,22 +5585,24 @@ LRESULT extended_WM_PAINT(long wParam, long lParam) {
 				if ((style & (SWT.DOUBLE_BUFFERED | SWT.TRANSPARENT)) != 0) {
 					image = new Image(display, width, height);
 					paintGC = gc;
+					NativeGC npaintGC = (NativeGC) paintGC.innerGC;
 					gc = new GC(image, paintGC.getStyle() & SWT.RIGHT_TO_LEFT);
+					ngc = (NativeGC) gc.innerGC;
 					GCData gcData = gc.getGCData();
 					gcData.uiState = data.uiState;
 					gc.setForeground(getForeground());
 					gc.setBackground(getBackground());
 					gc.setFont(getFont());
 					if ((style & SWT.TRANSPARENT) != 0) {
-						OS.BitBlt(gc.handle, 0, 0, width, height,
-								paintGC.handle, ps.left, ps.top, OS.SRCCOPY);
+						OS.BitBlt(ngc.handle, 0, 0, width, height,
+								npaintGC.handle, ps.left, ps.top, OS.SRCCOPY);
 					}
 					OS.OffsetRgn(sysRgn, -ps.left, -ps.top);
-					OS.SelectClipRgn(gc.handle, sysRgn);
+					OS.SelectClipRgn(ngc.handle, sysRgn);
 					OS.OffsetRgn(sysRgn, ps.left, ps.top);
-					OS.SetMetaRgn(gc.handle);
-					OS.SetWindowOrgEx(gc.handle, ps.left, ps.top, null);
-					OS.SetBrushOrgEx(gc.handle, ps.left, ps.top, null);
+					OS.SetMetaRgn(ngc.handle);
+					OS.SetWindowOrgEx(ngc.handle, ps.left, ps.top, null);
+					OS.SetBrushOrgEx(ngc.handle, ps.left, ps.top, null);
 					if ((style & (SWT.NO_BACKGROUND | SWT.TRANSPARENT)) != 0) {
 						/*
 						 * This code is intentionally commented because it may
@@ -5607,12 +5612,13 @@ LRESULT extended_WM_PAINT(long wParam, long lParam) {
 					} else {
 						RECT rect = new RECT();
 						OS.SetRect(rect, ps.left, ps.top, ps.right, ps.bottom);
-						drawBackground(gc.handle, rect);
+						drawBackground(ngc.handle, rect);
 					}
 				}
 				Event event = new Event();
 				event.gc = gc;
 				RECT rect = null;
+				ngc = (NativeGC) gc.innerGC;
 				int zoom = getZoom();
 				if ((style & SWT.NO_MERGE_PAINTS) != 0 && OS.GetRgnBox(sysRgn,
 						rect = new RECT()) == OS.COMPLEXREGION) {
@@ -5627,7 +5633,7 @@ LRESULT extended_WM_PAINT(long wParam, long lParam) {
 								lpRgnData[offset + 3]);
 						if ((style & (SWT.DOUBLE_BUFFERED | SWT.NO_BACKGROUND
 								| SWT.TRANSPARENT)) == 0) {
-							drawBackground(gc.handle, rect);
+							drawBackground(ngc.handle, rect);
 						}
 						event.setBounds(DPIUtil.scaleDown(new Rectangle(
 								rect.left, rect.top, rect.right - rect.left,
@@ -5641,7 +5647,7 @@ LRESULT extended_WM_PAINT(long wParam, long lParam) {
 						if (rect == null)
 							rect = new RECT();
 						OS.SetRect(rect, ps.left, ps.top, ps.right, ps.bottom);
-						drawBackground(gc.handle, rect);
+						drawBackground(ngc.handle, rect);
 					}
 					event.setBounds(DPIUtil.scaleDown(
 							new Rectangle(ps.left, ps.top, width, height),

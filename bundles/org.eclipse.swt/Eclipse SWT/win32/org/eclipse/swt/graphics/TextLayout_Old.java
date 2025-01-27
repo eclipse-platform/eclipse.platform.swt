@@ -206,16 +206,18 @@ public final class TextLayout_Old extends Resource {
 		}
 
 		public void setFixedLineMetrics(FontMetrics metrics) {
-			if (metrics == null) {
+			if (metrics == null || !(metrics.innerFontMetrics instanceof NativeFontMetrics)) {
 				wantMetricsInPixels = null;
 				return;
 			}
 
+			NativeFontMetrics nfm = (NativeFontMetrics) metrics.innerFontMetrics;
+
 			TEXTMETRIC result = new TEXTMETRIC();
-			result.tmAscent = metrics.handle.tmAscent;
-			result.tmDescent = metrics.handle.tmDescent;
-			result.tmHeight = metrics.handle.tmHeight;
-			result.tmInternalLeading = metrics.handle.tmInternalLeading;
+			result.tmAscent = nfm.handle.tmAscent;
+			result.tmDescent = nfm.handle.tmDescent;
+			result.tmHeight = nfm.handle.tmHeight;
+			result.tmInternalLeading = nfm.handle.tmInternalLeading;
 			result.tmAveCharWidth = 0;
 
 			wantMetricsInPixels = result;
@@ -400,7 +402,10 @@ public final class TextLayout_Old extends Resource {
 			}
 			if (runs != null)
 				return;
-			long hDC = gc != null ? gc.handle : device.internal_new_GC(null);
+
+			NativeGC ngc = (NativeGC) gc.innerGC;
+
+			long hDC = gc != null ? ngc.handle : device.internal_new_GC(null);
 			long srcHdc = OS.CreateCompatibleDC(hDC);
 			allRuns = itemize();
 			for (int i = 0; i < allRuns.length - 1; i++) {
@@ -917,7 +922,8 @@ public final class TextLayout_Old extends Resource {
 
 	private int getNativeZoom(GC gc) {
 		if (gc != null) {
-			return gc.data.nativeZoom;
+			NativeGC ngc = (NativeGC) gc.innerGC;
+			return ngc.data.nativeZoom;
 		}
 		return nativeZoom;
 	}
@@ -949,9 +955,10 @@ public final class TextLayout_Old extends Resource {
 		if (length == 0 && flags == 0)
 			return;
 		y += getScaledVerticalIndent();
-		long hdc = gc.handle;
-		Rectangle clip = gc.getClippingInPixels();
-		GCData data = gc.data;
+		NativeGC ngc = (NativeGC) gc.innerGC;
+		long hdc = ngc.handle;
+		Rectangle clip = ngc.getClippingInPixels();
+		GCData data = ngc.data;
 		long gdipGraphics = data.gdipGraphics;
 		int foreground = data.foreground;
 		int linkColor = OS.GetSysColor(OS.COLOR_HOTLIGHT);
@@ -962,7 +969,7 @@ public final class TextLayout_Old extends Resource {
 		int state = 0;
 		if (gdip) {
 			gc.checkGC(GC.FOREGROUND);
-			gdipForeground = gc.getFgBrush();
+			gdipForeground = ngc.getFgBrush();
 		} else {
 			state = OS.SaveDC(hdc);
 			if ((data.style & SWT.MIRRORED) != 0) {

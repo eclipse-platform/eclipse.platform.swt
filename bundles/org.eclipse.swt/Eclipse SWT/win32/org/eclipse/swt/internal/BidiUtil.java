@@ -124,15 +124,16 @@ static long EnumSystemLanguageGroupsProc(long lpLangGrpId, long lpLangGrpIdStrin
  */
 public static void drawGlyphs(GC gc, char[] renderBuffer, int[] renderDx, int x, int y) {
 	int length = renderDx.length;
-	if (OS.GetLayout (gc.handle) != 0) {
+	NativeGC ngc = (NativeGC) gc.innerGC;
+	if (OS.GetLayout(ngc.handle) != 0) {
 		reverse(renderDx);
 		renderDx[length-1]--;               //fixes bug 40006
 		reverse(renderBuffer);
 	}
 	// render transparently to avoid overlapping segments. fixes bug 40006
-	int oldBkMode = OS.SetBkMode(gc.handle, OS.TRANSPARENT);
-	OS.ExtTextOut(gc.handle, x, y, ETO_GLYPH_INDEX , null, renderBuffer, renderBuffer.length, renderDx);
-	OS.SetBkMode(gc.handle, oldBkMode);
+	int oldBkMode = OS.SetBkMode(ngc.handle, OS.TRANSPARENT);
+	OS.ExtTextOut(ngc.handle, x, y, ETO_GLYPH_INDEX, null, renderBuffer, renderBuffer.length, renderDx);
+	OS.SetBkMode(ngc.handle, oldBkMode);
 }
 /**
  * Return ordering and rendering information for the given text.  Wraps the GetFontLanguageInfo
@@ -152,9 +153,10 @@ public static void drawGlyphs(GC gc, char[] renderBuffer, int[] renderDx, int x,
  * @return buffer with the glyphs that should be rendered for the given text
  */
 public static char[] getRenderInfo(GC gc, String text, int[] order, byte[] classBuffer, int[] dx, int flags, int [] offsets) {
-	int fontLanguageInfo = OS.GetFontLanguageInfo(gc.handle);
+	NativeGC ngc = (NativeGC) gc.innerGC;
+	int fontLanguageInfo = OS.GetFontLanguageInfo(ngc.handle);
 	long hHeap = OS.GetProcessHeap();
-	boolean isRightOriented = OS.GetLayout(gc.handle) != 0;
+	boolean isRightOriented = OS.GetLayout(ngc.handle) != 0;
 	char [] textBuffer = text.toCharArray();
 	int byteCount = textBuffer.length;
 	boolean linkBefore = (flags & LINKBEFORE) == LINKBEFORE;
@@ -214,7 +216,8 @@ public static char[] getRenderInfo(GC gc, String text, int[] order, byte[] class
 		// the actual number returned may be less in case of Arabic ligatures.
 		result.nGlyphs = length;
 		text.getChars(offset, offset + length, textBuffer, 0);
-		OS.GetCharacterPlacement(gc.handle, textBuffer, length, 0, result, dwFlags);
+		ngc = (NativeGC) gc.innerGC;
+		OS.GetCharacterPlacement(ngc.handle, textBuffer, length, 0, result, dwFlags);
 
 		if (dx != null) {
 			int [] dx2 = new int [result.nGlyphs];
@@ -278,11 +281,12 @@ public static char[] getRenderInfo(GC gc, String text, int[] order, byte[] class
  *  parameter. See org.eclipse.swt.custom.BidiSegmentEvent for details.
  */
 public static void getOrderInfo(GC gc, String text, int[] order, byte[] classBuffer, int flags, int [] offsets) {
-	int fontLanguageInfo = OS.GetFontLanguageInfo(gc.handle);
+	NativeGC ngc = (NativeGC) gc.innerGC;
+	int fontLanguageInfo = OS.GetFontLanguageInfo(ngc.handle);
 	long hHeap = OS.GetProcessHeap();
 	char [] textBuffer = text.toCharArray();
 	int byteCount = textBuffer.length;
-	boolean isRightOriented = OS.GetLayout(gc.handle) != 0;
+	boolean isRightOriented = OS.GetLayout(ngc.handle) != 0;
 
 	GCP_RESULTS result = new GCP_RESULTS();
 	result.lStructSize = GCP_RESULTS.sizeof;
@@ -317,7 +321,7 @@ public static void getOrderInfo(GC gc, String text, int[] order, byte[] classBuf
 		// the actual number returned may be less in case of Arabic ligatures.
 		result.nGlyphs = length;
 		text.getChars(offset, offset + length, textBuffer, 0);
-		OS.GetCharacterPlacement(gc.handle, textBuffer, length, 0, result, dwFlags);
+		OS.GetCharacterPlacement(ngc.handle, textBuffer, length, 0, result, dwFlags);
 
 		if (order != null) {
 			int [] order2 = new int [length];
@@ -354,7 +358,8 @@ public static void getOrderInfo(GC gc, String text, int[] order, byte[] classBuf
  */
 public static int getFontBidiAttributes(GC gc) {
 	int fontStyle = 0;
-	int fontLanguageInfo = OS.GetFontLanguageInfo(gc.handle);
+	NativeGC ngc = (NativeGC) gc.innerGC;
+	int fontLanguageInfo = OS.GetFontLanguageInfo(ngc.handle);
 	if (((fontLanguageInfo & GCP_REORDER) != 0)) {
 		fontStyle |= REORDER;
 	}

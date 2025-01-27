@@ -43,7 +43,7 @@ class ScaleRenderer implements IScaleRenderer {
 	public void render(GC nativeGc, Rectangle bounds) {
 		initBackground(nativeGc, bounds);
 
-		IGraphicsContext sgc = initSkijaGc(nativeGc, bounds);
+		GC sgc = initSkijaGc(nativeGc, bounds);
 
 		renderScale(sgc, 0, 0, bounds.width, bounds.height);
 
@@ -69,8 +69,8 @@ class ScaleRenderer implements IScaleRenderer {
 		background = SWT.convertPixelToColor(pixel);
 	}
 
-	public IGraphicsContext initSkijaGc(GC originalGC, Rectangle bounds) {
-		IGraphicsContext gc = new SkijaGC(originalGC, background);
+	public GC initSkijaGc(GC originalGC, Rectangle bounds) {
+//		IGraphicsContext gc = new SkijaGC(originalGC, background);
 
 		originalGC.setClipping(bounds.x, bounds.y, bounds.width, bounds.height);
 
@@ -79,11 +79,11 @@ class ScaleRenderer implements IScaleRenderer {
 		originalGC.setClipping(new Rectangle(0, 0, bounds.width, bounds.height));
 		originalGC.setAntialias(SWT.ON);
 
-		return gc;
+		return originalGC;
 	}
 
 
-	private void renderScale(IGraphicsContext gc, int x, int y, int w, int h) {
+	private void renderScale(GC gc, int x, int y, int w, int h) {
 		int value = scale.getSelection();
 		int min = scale.getMinimum();
 		int max = scale.getMaximum();
@@ -131,7 +131,7 @@ class ScaleRenderer implements IScaleRenderer {
 		drawHandle(gc, effectiveValue);
 	}
 
-	private void drawCenterNotches(IGraphicsContext gc, int firstNotchPos, int lastNotchPos, int units, int unitPerPage) {
+	private void drawCenterNotches(GC gc, int firstNotchPos, int lastNotchPos, int units, int unitPerPage) {
 		if (isRTL() && !isVertical()) {
 			for (int i = unitPerPage; i < units; i += unitPerPage) {
 				int position = lastNotchPos - (int) (i * ppu);
@@ -145,7 +145,7 @@ class ScaleRenderer implements IScaleRenderer {
 		}
 	}
 
-	private void drawHandle(IGraphicsContext gc, int value) {
+	private void drawHandle(GC gc, int value) {
 		// draw handle
 		Color handleColor = switch (scale.getHandleState()) {
 		case IDLE -> IDLE_COLOR;
@@ -185,7 +185,7 @@ class ScaleRenderer implements IScaleRenderer {
 		return scale.getAlignement() == SWT.VERTICAL;
 	}
 
-	private void drawNotch(IGraphicsContext gc, int pos, int size) {
+	private void drawNotch(GC gc, int pos, int size) {
 		if (isVertical()) {
 			gc.drawLine(bar.x - 10 - size, pos, bar.x - 10, pos);
 			gc.drawLine(bar.x + 14, pos, bar.x + 14 + size, pos);

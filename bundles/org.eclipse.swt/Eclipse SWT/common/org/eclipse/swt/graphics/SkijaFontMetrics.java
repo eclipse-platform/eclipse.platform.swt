@@ -1,10 +1,23 @@
+/*******************************************************************************
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
+ * which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
 package org.eclipse.swt.graphics;
 
 import java.util.*;
 
 import org.eclipse.swt.internal.*;
 
-public class SkijaFontMetrics implements IFontMetrics {
+public class SkijaFontMetrics extends FontMetricsHandle {
 
 	private io.github.humbleui.skija.FontMetrics metrics;
 
@@ -14,7 +27,8 @@ public class SkijaFontMetrics implements IFontMetrics {
 
 	@Override
 	public int getAscent() {
-		return (int) this.metrics.getAscent();
+		// in skija, these are negative usually.
+		return Math.abs((int) this.metrics.getAscent());
 	}
 
 	@Override

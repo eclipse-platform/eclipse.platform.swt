@@ -14,6 +14,8 @@
 package org.eclipse.swt.graphics;
 
 
+import java.util.*;
+
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 
@@ -27,23 +29,9 @@ import org.eclipse.swt.internal.win32.*;
  * @see GC#getFontMetrics
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
-public final class FontMetrics implements IFontMetrics{
+public final class FontMetrics {
 
-	/**
-	 * On Windows, handle is a Win32 TEXTMETRIC struct
-	 * (Warning: This field is platform dependent)
-	 * <p>
-	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
-	 * public API. It is marked public only so that it can be shared
-	 * within the packages provided by SWT. It is not available on all
-	 * platforms and should never be accessed from application code.
-	 * </p>
-	 *
-	 * @noreference This field is not intended to be referenced by clients.
-	 */
-	public TEXTMETRIC handle;
-
-	private int nativeZoom;
+	FontMetricsHandle innerFontMetrics;
 
 /**
  * Prevents instances from being created outside the package.
@@ -65,27 +53,10 @@ FontMetrics() {
 public boolean equals (Object object) {
 	if (object == this) return true;
 	if (!(object instanceof FontMetrics)) return false;
-	TEXTMETRIC metric = ((FontMetrics)object).handle;
-	return handle.tmHeight == metric.tmHeight &&
-		handle.tmAscent == metric.tmAscent &&
-		handle.tmDescent == metric.tmDescent &&
-		handle.tmInternalLeading == metric.tmInternalLeading &&
-		handle.tmExternalLeading == metric.tmExternalLeading &&
-		handle.tmAveCharWidth == metric.tmAveCharWidth &&
-		handle.tmMaxCharWidth == metric.tmMaxCharWidth &&
-		handle.tmWeight == metric.tmWeight &&
-		handle.tmOverhang == metric.tmOverhang &&
-		handle.tmDigitizedAspectX == metric.tmDigitizedAspectX &&
-		handle.tmDigitizedAspectY == metric.tmDigitizedAspectY &&
-//		handle.tmFirstChar == metric.tmFirstChar &&
-//		handle.tmLastChar == metric.tmLastChar &&
-//		handle.tmDefaultChar == metric.tmDefaultChar &&
-//		handle.tmBreakChar == metric.tmBreakChar &&
-		handle.tmItalic == metric.tmItalic &&
-		handle.tmUnderlined == metric.tmUnderlined &&
-		handle.tmStruckOut == metric.tmStruckOut &&
-		handle.tmPitchAndFamily == metric.tmPitchAndFamily &&
-		handle.tmCharSet == metric.tmCharSet;
+
+	FontMetrics f = (FontMetrics) object;
+
+	return Objects.equals(f.innerFontMetrics, innerFontMetrics);
 }
 
 /**
@@ -96,9 +67,9 @@ public boolean equals (Object object) {
  *
  * @return the ascent of the font
  */
-@Override
 public int getAscent() {
-	return DPIUtil.scaleDown(handle.tmAscent - handle.tmInternalLeading, getZoom());
+
+	return innerFontMetrics.getAscent();
 }
 
 /**
@@ -108,9 +79,8 @@ public int getAscent() {
  * @return the average character width of the font
  * @since 3.107
  */
-@Override
 public double getAverageCharacterWidth() {
-	return getAverageCharWidth();
+	return innerFontMetrics.getAverageCharacterWidth();
 }
 
 /**
@@ -120,10 +90,9 @@ public double getAverageCharacterWidth() {
  * @return the average character width of the font
  * @deprecated Use getAverageCharacterWidth() instead
  */
-@Override
 @Deprecated
 public int getAverageCharWidth() {
-	return DPIUtil.scaleDown(handle.tmAveCharWidth, getZoom());
+	return innerFontMetrics.getAverageCharWidth();
 }
 
 /**
@@ -134,9 +103,8 @@ public int getAverageCharWidth() {
  *
  * @return the descent of the font
  */
-@Override
 public int getDescent() {
-	return DPIUtil.scaleDown(handle.tmDescent, getZoom());
+	return innerFontMetrics.getDescent();
 }
 
 /**
@@ -150,9 +118,8 @@ public int getDescent() {
  * @see #getDescent
  * @see #getLeading
  */
-@Override
 public int getHeight() {
-	return DPIUtil.scaleDown(handle.tmHeight, getZoom());
+	return innerFontMetrics.getHeight();
 }
 
 /**
@@ -162,26 +129,8 @@ public int getHeight() {
  *
  * @return the leading space of the font
  */
-@Override
 public int getLeading() {
-	/*
-	 * HiHPI rounding problem (bug 490743 comment 17):
-	 *
-	 * API clients expect this invariant:
-	 *    getHeight() == getLeading() + getAscent() + getDescent()
-	 *
-	 * Separate rounding of each RHS term can break the invariant.
-	 *
-	 * An additional problem is that ascent and descent are more important to
-	 * be as close as possible to the real value. Any necessary rounding
-	 * adjustment should go into leading, that's why compute this as a derived
-	 * value here:
-	 */
-	return getHeight() - getAscent() - getDescent();
-}
-
-private int getZoom() {
-	return DPIUtil.getZoomForAutoscaleProperty(nativeZoom);
+	return innerFontMetrics.getLeading();
 }
 
 /**
@@ -196,13 +145,7 @@ private int getZoom() {
  */
 @Override
 public int hashCode() {
-	return handle.tmHeight ^ handle.tmAscent ^ handle.tmDescent ^
-		handle.tmInternalLeading ^ handle.tmExternalLeading ^
-		handle.tmAveCharWidth ^ handle.tmMaxCharWidth ^ handle.tmWeight ^
-		handle.tmOverhang ^ handle.tmDigitizedAspectX ^ handle.tmDigitizedAspectY ^
-//		handle.tmFirstChar ^ handle.tmLastChar ^ handle.tmDefaultChar ^ handle.tmBreakChar ^
-		handle.tmItalic ^ handle.tmUnderlined ^ handle.tmStruckOut ^
-		handle.tmPitchAndFamily ^ handle.tmCharSet;
+	return innerFontMetrics.hashCode();
 }
 
 /**
@@ -222,9 +165,11 @@ public int hashCode() {
  * @noreference This method is not intended to be referenced by clients.
  */
 public static FontMetrics win32_new(TEXTMETRIC handle, int nativeZoom) {
+
+	NativeFontMetrics nfm = NativeFontMetrics.win32_new(handle, nativeZoom);
 	FontMetrics fontMetrics = new FontMetrics();
-	fontMetrics.handle = handle;
-	fontMetrics.nativeZoom = nativeZoom;
+	fontMetrics.innerFontMetrics = nfm;
+
 	return fontMetrics;
 }
 

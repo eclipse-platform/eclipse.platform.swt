@@ -162,7 +162,7 @@ public class StyledTextDropTargetEffect extends DropTargetEffect {
 					if (System.currentTimeMillis() >= scrollBeginTime) {
 						Rectangle area = text.getClientArea();
 						GC gc = new GC(text);
-						IFontMetrics fm = gc.getFontMetrics();
+						FontMetrics fm = gc.getFontMetrics();
 						gc.dispose();
 						double charWidth = fm.getAverageCharacterWidth();
 						int scrollAmount = (int) (10*charWidth);

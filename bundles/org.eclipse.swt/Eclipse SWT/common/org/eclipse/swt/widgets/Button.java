@@ -335,13 +335,11 @@ public class Button extends Control implements ICustomWidget {
 		if (!isVisible()) {
 			return;
 		}
-
 		GC gc = event.gc;
 		if (gc == null) {
 			gc = new GC(this);
 			event.gc = gc;
 		}
-
 		doPaint(event);
 		gc.dispose();
 	}
@@ -398,7 +396,7 @@ public class Button extends Control implements ICustomWidget {
 		e.gc.setAntialias(SWT.ON);
 
 		GC originalGC = e.gc;
-		IGraphicsContext gc = originalGC;
+		GC gc = originalGC;
 		Image doubleBufferingImage = null;
 
 		if (SWT.getPlatform().equals("win32") | SWT.getPlatform().equals("gtk")) {
@@ -410,7 +408,7 @@ public class Button extends Control implements ICustomWidget {
 		}
 
 		if (SWT.USE_SKIJA) {
-			gc = new SkijaGC(originalGC, background);
+			gc = GCFactory.createGraphicsContext(this);
 		} else {
 			if (SWT.getPlatform().equals("win32")) {
 				// Use double buffering on windows
@@ -591,7 +589,7 @@ public class Button extends Control implements ICustomWidget {
 		return (style & SWT.CHECK) != 0;
 	}
 
-	private void drawPushButton(IGraphicsContext gc, int x, int y, int w,
+	private void drawPushButton(GC gc, int x, int y, int w,
 			int h) {
 		if (isEnabled()) {
 			if ((style & SWT.TOGGLE) != 0 && isChecked()) {
@@ -624,7 +622,7 @@ public class Button extends Control implements ICustomWidget {
 		gc.setForeground(fg);
 	}
 
-	private void drawRadioButton(IGraphicsContext gc, int x, int y) {
+	private void drawRadioButton(GC gc, int x, int y) {
 		if (getSelection()) {
 			gc.setBackground(SELECTION_COLOR);
 			int partialBoxBorder = 2;
@@ -643,7 +641,7 @@ public class Button extends Control implements ICustomWidget {
 		gc.drawOval(x, y, BOX_SIZE, BOX_SIZE);
 	}
 
-	private void drawCheckbox(IGraphicsContext gc, int x, int y) {
+	private void drawCheckbox(GC gc, int x, int y) {
 		if (getSelection()) {
 			if (grayed) {
 				gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_GRAY));
@@ -724,10 +722,8 @@ public class Button extends Control implements ICustomWidget {
 			boxSpace = BOX_SIZE + SPACING;
 		}
 		if (text != null && !text.isEmpty()) {
-			GC originalGC = new GC(this);
-			IGraphicsContext gc = SWT.USE_SKIJA
-					? new SkijaGC(originalGC, null)
-					: originalGC;
+			GC gc = GCFactory.createGraphicsContext(this);
+
 			gc.setFont(getFont());
 			Point textExtent = gc.textExtent(text, DRAW_FLAGS);
 			textWidth = textExtent.x + 1;

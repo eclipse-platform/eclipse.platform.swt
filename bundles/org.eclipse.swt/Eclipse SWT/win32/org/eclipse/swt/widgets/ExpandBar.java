@@ -252,15 +252,16 @@ void drawThemeBackground (long hDC, long hwnd, RECT rect) {
 
 void drawWidget (GC gc, RECT clipRect) {
 	long hTheme = 0;
+	NativeGC ngc = (NativeGC) gc.innerGC;
 	if (isAppThemed ()) {
 		hTheme = display.hExplorerBarTheme(nativeZoom);
 	}
 	if (hTheme != 0) {
 		RECT rect = new RECT ();
 		OS.GetClientRect (handle, rect);
-		OS.DrawThemeBackground (hTheme, gc.handle, OS.EBP_HEADERBACKGROUND, 0, rect, clipRect);
+		OS.DrawThemeBackground(hTheme, ngc.handle, OS.EBP_HEADERBACKGROUND, 0, rect, clipRect);
 	} else {
-		drawBackground (gc.handle);
+		drawBackground(ngc.handle);
 	}
 	boolean drawFocus = false;
 	if (handle == OS.GetFocus ()) {
@@ -280,10 +281,10 @@ void drawWidget (GC gc, RECT clipRect) {
 			}
 		}
 		if (hCurrentFont != 0) {
-			oldFont = OS.SelectObject (gc.handle, hCurrentFont);
+			oldFont = OS.SelectObject(ngc.handle, hCurrentFont);
 		}
 		if (foreground != -1) {
-			OS.SetTextColor (gc.handle, foreground);
+			OS.SetTextColor(ngc.handle, foreground);
 		}
 	}
 	for (int i = 0; i < itemCount; i++) {
@@ -291,7 +292,7 @@ void drawWidget (GC gc, RECT clipRect) {
 		item.drawItem (gc, hTheme, clipRect, item == focusItem && drawFocus);
 	}
 	if (hCurrentFont != 0) {
-		OS.SelectObject (gc.handle, oldFont);
+		OS.SelectObject(ngc.handle, oldFont);
 		if (hCurrentFont != hFont) OS.DeleteObject (hCurrentFont);
 	}
 }

@@ -37,7 +37,7 @@ import org.eclipse.swt.dnd.RTFTransfer;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.dnd.URLTransfer;
-import org.eclipse.swt.graphics.IFontMetrics;
+import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -1164,7 +1164,7 @@ private Control createWidget(int type, Composite parent, String prefix){
 				} else {
 					String[] strings = (String[])c.getData("STRINGS");
 					if (strings != null) {
-						IFontMetrics metrics = e.gc.getFontMetrics();
+						FontMetrics metrics = e.gc.getFontMetrics();
 						int height = metrics.getHeight();
 						int y = 5;
 						for (String string : strings) {

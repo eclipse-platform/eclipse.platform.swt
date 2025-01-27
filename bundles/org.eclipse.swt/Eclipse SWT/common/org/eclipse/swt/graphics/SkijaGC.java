@@ -1,11 +1,27 @@
+/*******************************************************************************
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
+ * which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
 package org.eclipse.swt.graphics;
 
 import java.io.*;
 import java.util.*;
 import java.util.List;
+import java.util.ResourceBundle.*;
 import java.util.function.*;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Resource.*;
 import org.eclipse.swt.internal.*;
 
 import io.github.humbleui.skija.*;
@@ -13,31 +29,52 @@ import io.github.humbleui.skija.Canvas;
 import io.github.humbleui.skija.Font;
 import io.github.humbleui.types.*;
 
-public class SkijaGC implements IGraphicsContext {
-	private final GC innerGC;
+public class SkijaGC extends GCHandle {
 	private final Surface surface;
 	private Rectangle clipping;
+
+	private NativeGC innerGC;
 
 	private Font font;
 	private float baseSymbolHeight = 0; // Height of symbol with "usual" height, like "T", to be vertically centered
 	private int lineWidth;
+	private boolean committed = false;
 
-	public SkijaGC(Drawable drawable, int style) {
-		this(new GC(drawable, style));
+	public SkijaGC(org.eclipse.swt.widgets.Control c, int style) {
+
+		innerGC = new NativeGC(c, style);
+		innerGC.setFont(c.getFont());
+		innerGC.setBackground(c.getBackground());
+		innerGC.setForeground(c.getForeground());
+
+		surface = createSurface(extractBackgroundColor(innerGC));
+		clipping = innerGC.getClipping();
+		initFont();
 	}
 
-	public SkijaGC(GC gc) {
-		this(gc, extractBackgroundColor(gc));
+	public SkijaGC(org.eclipse.swt.widgets.Control c) {
+		this(c, SWT.None);
 	}
 
-	public SkijaGC(GC gc, Color backgroundColor) {
+	public SkijaGC(NativeGC gc, Color backgroundColor) {
 		innerGC = gc;
+		if (backgroundColor == null)
+			backgroundColor = extractBackgroundColor(gc);
 		surface = createSurface(backgroundColor);
 		clipping = innerGC.getClipping();
 		initFont();
 	}
 
-	private static Color extractBackgroundColor(GC gc) {
+	@Override
+	void initNonDisposeTracking() {
+		// do not yet use resource handling for SkijaGC
+		// TODO use the resource handling and prevent the error messages for not closed
+		// resources.
+
+	}
+
+
+	private static Color extractBackgroundColor(NativeGC gc) {
 		Rectangle originalGCArea = gc.getClipping();
 		// Do not fill when using dummy GC for text extent calculation or when on cocoa
 		// (as it does not have proper color)
@@ -78,8 +115,10 @@ public class SkijaGC implements IGraphicsContext {
 
 	@Override
 	public void dispose() {
-		this.innerGC.dispose();
 
+		if (!committed)
+			commit();
+		this.innerGC.dispose();
 	}
 
 	@Override
@@ -140,6 +179,9 @@ public class SkijaGC implements IGraphicsContext {
 
 	@Override
 	public void commit() {
+
+		committed = true;
+
 		io.github.humbleui.skija.Image im = surface.makeImageSnapshot();
 		byte[] imageBytes = EncoderPNG.encode(im).getBytes();
 
@@ -153,6 +195,7 @@ public class SkijaGC implements IGraphicsContext {
 		surface.close();
 	}
 
+	@Override
 	public Point textExtent(String string) {
 		return textExtent(string, SWT.NONE);
 	}
@@ -426,6 +469,7 @@ public class SkijaGC implements IGraphicsContext {
 						paint));
 	}
 
+	@Override
 	public void drawPath(Path path) {
 		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	}
@@ -472,6 +516,7 @@ public class SkijaGC implements IGraphicsContext {
 				paint));
 	}
 
+	@Override
 	public void drawString(String string, int x, int y) {
 		if (string == null) {
 			SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -482,6 +527,7 @@ public class SkijaGC implements IGraphicsContext {
 		});
 	}
 
+	@Override
 	public void drawString(String string, int x, int y, boolean isTransparent) {
 		if (string == null) {
 			SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -494,6 +540,7 @@ public class SkijaGC implements IGraphicsContext {
 		drawString(string, x, y);
 	}
 
+	@Override
 	public void fillArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
 		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	}
@@ -509,6 +556,7 @@ public class SkijaGC implements IGraphicsContext {
 				paint -> surface.getCanvas().drawOval(createScaledRectangle(x, y, width, height), paint));
 	}
 
+	@Override
 	public void fillPath(Path path) {
 		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	}
@@ -556,6 +604,10 @@ public class SkijaGC implements IGraphicsContext {
 	@Override
 	public void setFont(org.eclipse.swt.graphics.Font font) {
 		innerGC.setFont(font);
+
+		if (font == null)
+			font = innerGC.getFont();
+
 		FontData fontData = font.getFontData()[0];
 		FontStyle style = FontStyle.NORMAL;
 		boolean isBold = (fontData.getStyle() & SWT.BOLD) != 0;
@@ -615,8 +667,12 @@ public class SkijaGC implements IGraphicsContext {
 	}
 
 	@Override
-	public IFontMetrics getFontMetrics() {
-		IFontMetrics fm = new SkijaFontMetrics(font.getMetrics());
+	public FontMetrics getFontMetrics() {
+		FontMetricsHandle fmh = new SkijaFontMetrics(font.getMetrics());
+
+		FontMetrics fm = new FontMetrics();
+		fm.innerFontMetrics = fmh;
+
 		return fm;
 	}
 
@@ -715,6 +771,216 @@ public class SkijaGC implements IGraphicsContext {
 	@Override
 	public Rectangle getClipping() {
 		return clipping;
+	}
+
+	@Override
+	public Point stringExtent(String string) {
+		return textExtent(string);
+	}
+
+	@Override
+	public int getLineCap() {
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		return 0;
+	}
+
+	@Override
+	public void copyArea(Image image, int x, int y) {
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+	}
+
+	@Override
+	public void copyArea(int srcX, int srcY, int width, int height, int destX, int destY) {
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+	}
+
+	@Override
+	public void copyArea(int srcX, int srcY, int width, int height, int destX, int destY, boolean paint) {
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+	}
+
+	@Override
+	void checkGC(int mask) {
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+	}
+
+	@Override
+	boolean isClipped() {
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		return false;
+	}
+
+	@Override
+	int getFillRule() {
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		return 0;
+	}
+
+	@Override
+	void getClipping(Region region) {
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+	}
+
+	@Override
+	protected int getAdvanceWidth(char ch) {
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		return 0;
+	}
+
+	@Override
+	protected boolean getAdvanced() {
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		return false;
+	}
+
+	@Override
+	protected Pattern getBackgroundPattern() {
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		return null;
+	}
+
+	@Override
+	protected int getCharWidth(char ch) {
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		return 0;
+	}
+
+	@Override
+	protected Pattern getForegroundPattern() {
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		return null;
+	}
+
+	@Override
+	GCData getGCData() {
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		return null;
+	}
+
+	@Override
+	protected int getInterpolation() {
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		return 0;
+	}
+
+	@Override
+	protected int[] getLineDash() {
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		return null;
+	}
+
+	@Override
+	protected int getLineJoin() {
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		return 0;
+	}
+
+	@Override
+	int getStyle() {
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		return 0;
+	}
+
+	@Override
+	protected int getTextAntialias() {
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		return 0;
+	}
+
+	@Override
+	protected void getTransform(Transform transform) {
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+
+	}
+
+	@Override
+	protected boolean getXORMode() {
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		return false;
+	}
+
+	@Override
+	protected void setBackgroundPattern(Pattern pattern) {
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+
+	}
+
+	@Override
+	protected void setClipping(Path path) {
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+
+	}
+
+	@Override
+	protected void setClipping(Rectangle rect) {
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+
+	}
+
+	@Override
+	protected void setClipping(Region region) {
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+
+	}
+
+	@Override
+	void setFillRule(int rule) {
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+
+	}
+
+	@Override
+	protected void setForegroundPattern(Pattern pattern) {
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+
+	}
+
+	@Override
+	protected void setInterpolation(int interpolation) {
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+
+	}
+
+	@Override
+	protected void setLineAttributes(LineAttributes attributes) {
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+
+	}
+
+	@Override
+	protected void setLineCap(int cap) {
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+
+	}
+
+	@Override
+	protected void setLineDash(int[] dashes) {
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+
+	}
+
+	@Override
+	protected void setLineJoin(int join) {
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+
+	}
+
+	@Override
+	protected void setXORMode(boolean xor) {
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+
+	}
+
+	@Override
+	protected void setTextAntialias(int antialias) {
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+
+	}
+
+	@Override
+	public boolean isDisposed() {
+		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		return false;
 	}
 
 }

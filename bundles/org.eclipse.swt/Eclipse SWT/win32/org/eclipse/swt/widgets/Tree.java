@@ -7126,7 +7126,8 @@ LRESULT WM_PAINT (long wParam, long lParam) {
 				data.ps = ps;
 				data.hwnd = handle;
 				gc = GC.win32_new (this, data);
-				paintDC = gc.handle;
+				NativeGC ngc = (NativeGC) gc.innerGC;
+				paintDC = ngc.handle;
 			} else {
 				paintDC = OS.BeginPaint (handle, ps);
 			}
