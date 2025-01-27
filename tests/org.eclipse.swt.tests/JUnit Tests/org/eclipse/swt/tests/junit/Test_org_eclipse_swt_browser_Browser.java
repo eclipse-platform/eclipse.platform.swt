@@ -81,7 +81,6 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -156,16 +155,6 @@ public static Collection<Object[]> browserFlagsToTest() {
 
 public Test_org_eclipse_swt_browser_Browser(int swtBrowserSettings) {
 	this.swtBrowserSettings = swtBrowserSettings;
-}
-
-@BeforeClass
-public static void setupEdgeEnvironment() {
-	// initialize Edge environment before any test runs to isolate environment setup
-	if (SwtTestUtil.isWindows) {
-		Shell shell = new Shell();
-		new Browser(shell, SWT.EDGE);
-		shell.dispose();
-	}
 }
 
 @Override
@@ -302,11 +291,17 @@ private int reportOpenedDescriptors() {
 }
 
 private Browser createBrowser(Shell s, int flags) {
+	return createBrowser(s, flags, true);
+}
+
+private Browser createBrowser(Shell s, int flags, boolean expectSuccess) {
 	long maximumBrowserCreationMilliseconds = 90_000;
 	long createStartTime = System.currentTimeMillis();
 	Browser b = new Browser(s, flags);
 	// Wait for asynchronous initialization via getting URL
-	b.getUrl();
+	if (expectSuccess) {
+		b.getUrl();
+	}
 	createdBroswers.add(b);
 	long createDuration = System.currentTimeMillis() - createStartTime;
 	assertTrue("creating browser took too long: " + createDuration + "ms", createDuration < maximumBrowserCreationMilliseconds);
@@ -334,7 +329,7 @@ public void test_Constructor_asyncParentDisposal() {
 	Display.getCurrent().asyncExec(() -> {
 		shell.dispose();
 	});
-	Browser browser = createBrowser(shell, swtBrowserSettings);
+	Browser browser = createBrowser(shell, swtBrowserSettings, false);
 	assertFalse(browser.isDisposed());
 }
 
