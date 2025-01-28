@@ -261,7 +261,7 @@ static int callAndWait(long[] ppv, ToIntFunction<IUnknown> callable) {
 	// "completion" callback may be called asynchronously,
 	// so keep processing next OS message that may call it
 	while (phr[0] == COM.S_OK && ppv[0] == 0) {
-		processNextOSMessage();
+		spinEventLoop();
 	}
 	completion.Release();
 	return phr[0];
@@ -281,7 +281,7 @@ static int callAndWait(String[] pstr, ToIntFunction<IUnknown> callable) {
 	// "completion" callback may be called asynchronously,
 	// so keep processing next OS message that may call it
 	while (phr[0] == COM.S_OK && pstr[0] == null) {
-		processNextOSMessage();
+		spinEventLoop();
 	}
 	completion.Release();
 	return phr[0];
@@ -316,8 +316,8 @@ class WebViewProvider {
 		return webView;
 	}
 
-	private void abortInitialization() {
-		webViewWrapperFuture.cancel(true);
+	private void abortInitialization(String abortMessage) {
+		webViewWrapperFuture.completeExceptionally(new SWTError(abortMessage));
 	}
 
 	private ICoreWebView2_2 initializeWebView_2(ICoreWebView2 webView) {
@@ -444,31 +444,17 @@ class WebViewProvider {
 
 	private <T> void waitForFutureToFinish(CompletableFuture<T> future) {
 		while(!future.isDone()) {
-			processNextOSMessage();
+			spinEventLoop();
 		}
 	}
 
 }
 
-/**
- * Processes a single OS message using {@link Display#readAndDispatch()}. This
- * is required for processing the OS events during browser initialization, since
- * Edge browser initialization happens asynchronously.
- * <p>
- * {@link Display#readAndDispatch()} also processes events scheduled for
- * asynchronous execution via {@link Display#asyncExec(Runnable)}. This may
- * include events such as the disposal of the browser's parent composite, which
- * leads to a failure in browser initialization if processed in between the OS
- * events for initialization. Thus, this method does not implement an ordinary
- * readAndDispatch loop, but waits for an OS event to be processed.
- */
-private static void processNextOSMessage() {
+private static void spinEventLoop() {
 	Display display = Display.getCurrent();
-	MSG msg = new MSG();
-	while (!OS.PeekMessage (msg, 0, 0, 0, OS.PM_NOREMOVE)) {
+	if (!display.readAndDispatch()) {
 		display.sleep();
 	}
-	display.readAndDispatch();
 }
 
 static ICoreWebView2CookieManager getCookieManager() {
@@ -588,22 +574,26 @@ private void createInstance(int previousAttempts) {
 
 private IUnknown createControllerInitializationCallback(int previousAttempts) {
 	Runnable initializationRollback = () -> {
-		webViewProvider.abortInitialization();
 		if (environment2 != null) {
 			environment2.Release();
 			environment2 = null;
 		}
 		containingEnvironment.instances().remove(this);
 	};
+	Consumer<String> initializationAbortion = abortMessage -> {
+		webViewProvider.abortInitialization(abortMessage);
+		initializationRollback.run();
+	};
 	return newCallback((result, pv) -> {
 		if (browser.isDisposed()) {
-			initializationRollback.run();
+			initializationAbortion.accept("Edge initialization was aborted");
 			return COM.S_OK;
 		}
 		if (result == OS.HRESULT_FROM_WIN32(OS.ERROR_INVALID_STATE)) {
-			initializationRollback.run();
-			SWT.error(SWT.ERROR_INVALID_ARGUMENT, null,
-					" Edge instance with same data folder but different environment options already exists");
+			String message = "Edge instance with same data folder but different environment options already exists";
+			initializationAbortion.accept(message);
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT, null, " " + message);
+			return COM.S_OK;
 		}
 		switch ((int) result) {
 		case COM.S_OK:
@@ -611,11 +601,11 @@ private IUnknown createControllerInitializationCallback(int previousAttempts) {
 			setupBrowser((int) result, pv);
 			break;
 		case COM.E_WRONG_THREAD:
-			initializationRollback.run();
+			initializationAbortion.accept("Invalid thread access");
 			error(SWT.ERROR_THREAD_INVALID_ACCESS, (int) result);
 			break;
 		case COM.E_ABORT:
-			initializationRollback.run();
+			initializationAbortion.accept("Edge initialization was aborted");
 			break;
 		default:
 			initializationRollback.run();
