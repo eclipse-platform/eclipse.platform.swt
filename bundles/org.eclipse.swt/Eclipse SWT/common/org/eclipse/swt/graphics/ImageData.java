@@ -365,7 +365,7 @@ public ImageData(InputStream stream) {
  * <code>ImageLoader.load()</code>.
  * </p>
  *
- * @param filename the name of the file to load the image from (must not be null)
+ * @param file the name of the file to load the image from (must not be null)
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the file name is null</li>
@@ -375,9 +375,10 @@ public ImageData(InputStream stream) {
  *    <li>ERROR_INVALID_IMAGE - if the image file contains invalid data</li>
  *    <li>ERROR_UNSUPPORTED_FORMAT - if the image file contains an unrecognized format</li>
  * </ul>
+ * @since 3.129
  */
-public ImageData(String filename) {
-	ImageData[] data = ImageDataLoader.load(filename);
+public ImageData(File file) {
+	ImageData[] data = ImageDataLoader.load(file);
 	if (data.length < 1) SWT.error(SWT.ERROR_INVALID_IMAGE);
 	ImageData i = data[0];
 	setAllFields(
@@ -398,6 +399,35 @@ public ImageData(String filename) {
 		i.y,
 		i.disposalMethod,
 		i.delayTime);
+}
+
+/**
+ * Constructs an <code>ImageData</code> loaded from a file with the
+ * specified name. Throws an error if an error occurs loading the
+ * image, or if the image has an unsupported type.
+ * <p>
+ * This constructor is provided for convenience when loading a single
+ * image only. If the file contains multiple images, only the first
+ * one will be loaded. To load multiple images, use
+ * <code>ImageLoader.load()</code>.
+ * </p>
+ *
+ * @param filename the name of the file to load the image from (must not be null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the file name is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_IO - if an IO error occurs while reading from the file</li>
+ *    <li>ERROR_INVALID_IMAGE - if the image file contains invalid data</li>
+ *    <li>ERROR_UNSUPPORTED_FORMAT - if the image file contains an unrecognized format</li>
+ * </ul>
+ * @since 3.129
+ * @deprecated Instead use {@link #ImageData(File)}
+ */
+@Deprecated(since = "2025-03")
+public ImageData(String filename) {
+	this(new File(filename));
 }
 
 /**

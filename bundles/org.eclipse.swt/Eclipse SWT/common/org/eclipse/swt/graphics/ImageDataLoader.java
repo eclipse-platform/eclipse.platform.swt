@@ -25,8 +25,8 @@ class ImageDataLoader {
 		return new ImageLoader().load(stream);
 	}
 
-	public static ImageData[] load(String filename) {
-		return new ImageLoader().load(filename);
+	public static ImageData[] load(File file) {
+		return new ImageLoader().load(file);
 	}
 
 }

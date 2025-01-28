@@ -277,6 +277,35 @@ ImageData [] getImageDataArrayFromStream(InputStream stream) {
  * an error occurs while loading the images, or if the images are
  * not of a supported type. Returns the loaded image data array.
  *
+ * @param file the name of the file to load the images from
+ * @return an array of <code>ImageData</code> objects loaded from the specified file
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the file name is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_IO - if an IO error occurs while reading the file</li>
+ *    <li>ERROR_INVALID_IMAGE - if the image file contains invalid data</li>
+ *    <li>ERROR_UNSUPPORTED_FORMAT - if the image file contains an unrecognized format</li>
+ * </ul>
+ * @since 3.129
+ */
+public ImageData[] load(File file) {
+	if (file == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	try (InputStream stream = new FileInputStream(file)) {
+		return load(stream);
+	} catch (IOException e) {
+		SWT.error(SWT.ERROR_IO, e);
+	}
+	return null;
+}
+
+/**
+ * Loads an array of <code>ImageData</code> objects from the
+ * file with the specified name. Throws an error if either
+ * an error occurs while loading the images, or if the images are
+ * not of a supported type. Returns the loaded image data array.
+ *
  * @param filename the name of the file to load the images from
  * @return an array of <code>ImageData</code> objects loaded from the specified file
  *
@@ -288,15 +317,11 @@ ImageData [] getImageDataArrayFromStream(InputStream stream) {
  *    <li>ERROR_INVALID_IMAGE - if the image file contains invalid data</li>
  *    <li>ERROR_UNSUPPORTED_FORMAT - if the image file contains an unrecognized format</li>
  * </ul>
+ * @deprecated Instead use {@link #load(File)}
  */
+@Deprecated(since = "2025-03")
 public ImageData[] load(String filename) {
-	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	try (InputStream stream = new FileInputStream(filename)) {
-		return load(stream);
-	} catch (IOException e) {
-		SWT.error(SWT.ERROR_IO, e);
-	}
-	return null;
+	return load(new File(filename));
 }
 
 /**
@@ -589,6 +614,46 @@ public void save(OutputStream stream, int format) {
  * <dd>PNG file format</dd>
  * </dl>
  *
+ * @param file the name of the file to write the images to
+ * @param format the format to write the images in
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the file name is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_IO - if an IO error occurs while writing to the file</li>
+ *    <li>ERROR_INVALID_IMAGE - if the image data contains invalid data</li>
+ *    <li>ERROR_UNSUPPORTED_FORMAT - if the image data cannot be saved to the requested format</li>
+ * </ul>
+ * @since 3.129
+ */
+public void save(File file, int format) {
+	if (file == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	try (OutputStream stream = new FileOutputStream(file)) {
+		save(stream, format);
+	} catch (IOException e) {
+		SWT.error(SWT.ERROR_IO, e);
+	}
+}
+
+/**
+ * Saves the image data in this ImageLoader to a file with the specified name.
+ * The format parameter can have one of the following values:
+ * <dl>
+ * <dt><code>IMAGE_BMP</code></dt>
+ * <dd>Windows BMP file format, no compression</dd>
+ * <dt><code>IMAGE_BMP_RLE</code></dt>
+ * <dd>Windows BMP file format, RLE compression if appropriate</dd>
+ * <dt><code>IMAGE_GIF</code></dt>
+ * <dd>GIF file format</dd>
+ * <dt><code>IMAGE_ICO</code></dt>
+ * <dd>Windows ICO file format</dd>
+ * <dt><code>IMAGE_JPEG</code></dt>
+ * <dd>JPEG file format</dd>
+ * <dt><code>IMAGE_PNG</code></dt>
+ * <dd>PNG file format</dd>
+ * </dl>
+ *
  * @param filename the name of the file to write the images to
  * @param format the format to write the images in
  *
@@ -600,14 +665,11 @@ public void save(OutputStream stream, int format) {
  *    <li>ERROR_INVALID_IMAGE - if the image data contains invalid data</li>
  *    <li>ERROR_UNSUPPORTED_FORMAT - if the image data cannot be saved to the requested format</li>
  * </ul>
+ * @deprecated Instead use {@link #save(File, int)}
  */
+@Deprecated(since = "2025-03")
 public void save(String filename, int format) {
-	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	try (OutputStream stream = new FileOutputStream(filename)) {
-		save(stream, format);
-	} catch (IOException e) {
-		SWT.error(SWT.ERROR_IO, e);
-	}
+	save(new File(filename), format);
 }
 
 /**
