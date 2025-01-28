@@ -430,6 +430,27 @@ public void test_evalute_Cookies () {
 }
 
 @Test
+public void test_evaluate_callingIntoSwt() throws Exception {
+	AtomicBoolean initialLoad = new AtomicBoolean();
+	AtomicBoolean openWindowListenerCalled = new AtomicBoolean();
+	browser.addProgressListener(ProgressListener.completedAdapter(e -> initialLoad.set(true)));
+	browser.addOpenWindowListener(event -> {
+		event.required = true; // block default
+		openWindowListenerCalled.set(true);
+	});
+	browser.setText("""
+			<button id="button" onClick="window.open('https://eclipse.org');">open eclipse.org</button>
+			""");
+	waitForPassCondition(initialLoad::get);
+
+	browser.evaluate("""
+				document.getElementById("button").click();
+			""");
+
+	waitForPassCondition(openWindowListenerCalled::get);
+}
+
+@Test
 public void test_ClearAllSessionCookies () {
 	// clearSessions will only work for Webkit2 when >= 2.16
 	assumeTrue(webkitGtkVersionInts[1] >= 16);
