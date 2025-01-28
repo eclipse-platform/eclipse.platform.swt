@@ -5295,7 +5295,7 @@ int insertBlockSelectionText(String text, boolean fillWithSpaces) {
 				int numSpaces = maxLength - length;
 				StringBuilder buffer = new StringBuilder(length + numSpaces);
 				buffer.append(line);
-				for (int j = 0; j < numSpaces; j++) buffer.append(' ');
+				for (int j = 0; j < numSpaces; j++) buffer.append(SWT.SPACE);
 				lines[i] = buffer.toString();
 			}
 		}
@@ -8104,7 +8104,7 @@ int sendTextEvent(int left, int right, int lineIndex, String text, boolean fillW
 		int spacesWidth = left - lineWidth + horizontalScrollOffset - leftMargin;
 		int spacesCount = spacesWidth / renderer.averageCharWidth;
 		for (int i = 0; i < spacesCount; i++) {
-			buffer.append(' ');
+			buffer.append(SWT.SPACE);
 		}
 	}
 	buffer.append(text);

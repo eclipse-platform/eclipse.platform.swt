@@ -6164,7 +6164,7 @@ LRESULT WM_CHAR (long wParam, long lParam) {
 	* proc in these cases.
 	*/
 	switch ((int)wParam) {
-		case ' ': {
+		case SWT.SPACE: {
 			long hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
 			if (hItem != 0) {
 				hAnchor = hItem;

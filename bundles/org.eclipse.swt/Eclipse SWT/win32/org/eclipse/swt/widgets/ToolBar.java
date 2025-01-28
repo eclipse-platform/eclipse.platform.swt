@@ -1373,7 +1373,7 @@ LRESULT WM_CHAR (long wParam, long lParam) {
 	LRESULT result = super.WM_CHAR (wParam, lParam);
 	if (result != null) return result;
 	switch ((int)wParam) {
-		case ' ':
+		case SWT.SPACE:
 			int index = (int)OS.SendMessage (handle, OS.TB_GETHOTITEM, 0, 0);
 			if (index != -1) {
 				TBBUTTON lpButton = new TBBUTTON ();
