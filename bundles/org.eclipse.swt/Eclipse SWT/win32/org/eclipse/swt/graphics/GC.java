@@ -512,14 +512,10 @@ public void copyArea (int srcX, int srcY, int width, int height, int destX, int 
  * @since 3.1
  */
 public void copyArea (int srcX, int srcY, int width, int height, int destX, int destY, boolean paint) {
-	int deviceZoom = getZoom();
-	srcX = DPIUtil.scaleUp(drawable, srcX, deviceZoom);
-	srcY = DPIUtil.scaleUp(drawable, srcY, deviceZoom);
-	width = DPIUtil.scaleUp(drawable, width, deviceZoom);
-	height = DPIUtil.scaleUp(drawable, height, deviceZoom);
-	destX = DPIUtil.scaleUp(drawable, destX, deviceZoom);
-	destY = DPIUtil.scaleUp(drawable, destY, deviceZoom);
-	copyAreaInPixels(srcX, srcY, width, height, destX, destY, paint);
+	int zoom = getZoom();
+	Rectangle sourceRect = DPIUtil.scaleUp(drawable, new Rectangle(srcX, srcY, width, height), zoom);
+	Rectangle destRect = DPIUtil.scaleUp(drawable, new Rectangle(destX, destY, width, height), zoom);
+	copyAreaInPixels(sourceRect.x, sourceRect.y, sourceRect.width, sourceRect.height, destRect.x, destRect.y, paint);
 }
 
 void copyAreaInPixels(int srcX, int srcY, int width, int height, int destX, int destY, boolean paint) {
@@ -759,12 +755,8 @@ void disposeGdip() {
  * </ul>
  */
 public void drawArc (int x, int y, int width, int height, int startAngle, int arcAngle) {
-	int deviceZoom = getZoom();
-	x = DPIUtil.scaleUp(drawable, x, deviceZoom);
-	y = DPIUtil.scaleUp(drawable, y, deviceZoom);
-	width = DPIUtil.scaleUp(drawable, width, deviceZoom);
-	height = DPIUtil.scaleUp(drawable, height, deviceZoom);
-	drawArcInPixels(x, y, width, height, startAngle, arcAngle);
+	Rectangle rect = DPIUtil.scaleUp(drawable, new Rectangle(x, y, width, height), getZoom());
+	drawArcInPixels(rect.x, rect.y, rect.width, rect.height, startAngle, arcAngle);
 }
 
 void drawArcInPixels (int x, int y, int width, int height, int startAngle, int arcAngle) {
@@ -843,12 +835,8 @@ void drawArcInPixels (int x, int y, int width, int height, int startAngle, int a
  * @see #drawRectangle(int, int, int, int)
  */
 public void drawFocus (int x, int y, int width, int height) {
-	int deviceZoom = getZoom();
-	x = DPIUtil.scaleUp (drawable, x, deviceZoom);
-	y = DPIUtil.scaleUp (drawable, y, deviceZoom);
-	width = DPIUtil.scaleUp (drawable, width, deviceZoom);
-	height = DPIUtil.scaleUp (drawable, height, deviceZoom);
-	drawFocusInPixels(x, y, width, height);
+	Rectangle rect = DPIUtil.scaleUp(drawable, new Rectangle(x, y, width, height), getZoom());
+	drawFocusInPixels(rect.x, rect.y, rect.width, rect.height);
 }
 
 void drawFocusInPixels (int x, int y, int width, int height) {
@@ -1696,12 +1684,8 @@ void drawLineInPixels (int x1, int y1, int x2, int y2) {
  * </ul>
  */
 public void drawOval (int x, int y, int width, int height) {
-	int deviceZoom = getZoom();
-	x = DPIUtil.scaleUp (drawable, x, deviceZoom);
-	y = DPIUtil.scaleUp (drawable, y, deviceZoom);
-	width = DPIUtil.scaleUp (drawable, width, deviceZoom);
-	height = DPIUtil.scaleUp (drawable, height, deviceZoom);
-	drawOvalInPixels(x, y, width, height);
+	Rectangle rect = DPIUtil.scaleUp(drawable, new Rectangle(x, y, width, height), getZoom());
+	drawOvalInPixels(rect.x, rect.y, rect.width, rect.height);
 }
 
 void drawOvalInPixels (int x, int y, int width, int height) {
@@ -1910,12 +1894,7 @@ void drawPolylineInPixels(int[] pointArray) {
  * </ul>
  */
 public void drawRectangle (int x, int y, int width, int height) {
-	int deviceZoom = getZoom();
-	x = DPIUtil.scaleUp (drawable, x, deviceZoom);
-	y = DPIUtil.scaleUp (drawable, y, deviceZoom);
-	width = DPIUtil.scaleUp (drawable, width, deviceZoom);
-	height = DPIUtil.scaleUp (drawable, height, deviceZoom);
-	drawRectangleInPixels(x, y, width, height);
+	drawRectangle(new Rectangle(x, y, width, height));
 }
 
 void drawRectangleInPixels (int x, int y, int width, int height) {
@@ -1996,14 +1975,11 @@ public void drawRectangle (Rectangle rect) {
  * </ul>
  */
 public void drawRoundRectangle (int x, int y, int width, int height, int arcWidth, int arcHeight) {
-	int deviceZoom = getZoom();
-	x = DPIUtil.scaleUp (drawable, x, deviceZoom);
-	y = DPIUtil.scaleUp (drawable, y, deviceZoom);
-	width = DPIUtil.scaleUp (drawable, width, deviceZoom);
-	height = DPIUtil.scaleUp (drawable, height, deviceZoom);
-	arcWidth = DPIUtil.scaleUp (drawable, arcWidth, deviceZoom);
-	arcHeight = DPIUtil.scaleUp (drawable, arcHeight, deviceZoom);
-	drawRoundRectangleInPixels(x, y, width, height, arcWidth, arcHeight);
+	int zoom = getZoom();
+	Rectangle rect = DPIUtil.scaleUp(drawable, new Rectangle(x, y, width, height), zoom);
+	arcWidth = DPIUtil.scaleUp (drawable, arcWidth, zoom);
+	arcHeight = DPIUtil.scaleUp (drawable, arcHeight, zoom);
+	drawRoundRectangleInPixels(rect.x, rect.y, rect.width, rect.height, arcWidth, arcHeight);
 }
 
 void drawRoundRectangleInPixels (int x, int y, int width, int height, int arcWidth, int arcHeight) {
@@ -2687,12 +2663,8 @@ public boolean equals (Object object) {
  * @see #drawArc
  */
 public void fillArc (int x, int y, int width, int height, int startAngle, int arcAngle) {
-	int deviceZoom = getZoom();
-	x = DPIUtil.scaleUp (drawable, x, deviceZoom);
-	y = DPIUtil.scaleUp (drawable, y, deviceZoom);
-	width = DPIUtil.scaleUp (drawable, width, deviceZoom);
-	height = DPIUtil.scaleUp (drawable, height, deviceZoom);
-	fillArcInPixels(x, y, width, height, startAngle, arcAngle);
+	Rectangle rect = DPIUtil.scaleUp(drawable, new Rectangle(x, y, width, height), getZoom());
+	fillArcInPixels(rect.x, rect.y, rect.width, rect.height, startAngle, arcAngle);
 }
 
 void fillArcInPixels (int x, int y, int width, int height, int startAngle, int arcAngle) {
@@ -2767,12 +2739,8 @@ void fillArcInPixels (int x, int y, int width, int height, int startAngle, int a
  * @see #drawRectangle(int, int, int, int)
  */
 public void fillGradientRectangle (int x, int y, int width, int height, boolean vertical) {
-	int deviceZoom = getZoom();
-	x = DPIUtil.scaleUp (drawable, x, deviceZoom);
-	y = DPIUtil.scaleUp (drawable, y, deviceZoom);
-	width = DPIUtil.scaleUp (drawable, width, deviceZoom);
-	height = DPIUtil.scaleUp (drawable, height, deviceZoom);
-	fillGradientRectangleInPixels(x, y, width, height, vertical);
+	Rectangle rect = DPIUtil.scaleUp(drawable, new Rectangle(x, y, width, height), getZoom());
+	fillGradientRectangleInPixels(rect.x, rect.y, rect.width, rect.height, vertical);
 }
 
 void fillGradientRectangleInPixels(int x, int y, int width, int height, boolean vertical) {
@@ -2886,12 +2854,8 @@ void fillGradientRectangleInPixels(int x, int y, int width, int height, boolean 
  * @see #drawOval
  */
 public void fillOval (int x, int y, int width, int height) {
-	int deviceZoom = getZoom();
-	x = DPIUtil.scaleUp (drawable, x, deviceZoom);
-	y = DPIUtil.scaleUp (drawable, y, deviceZoom);
-	width = DPIUtil.scaleUp (drawable, width, deviceZoom);
-	height = DPIUtil.scaleUp (drawable, height, deviceZoom);
-	fillOvalInPixels(x, y, width, height);
+	Rectangle rect = DPIUtil.scaleUp(drawable, new Rectangle(x, y, width, height), getZoom());
+	fillOvalInPixels(rect.x, rect.y, rect.width, rect.height);
 }
 
 void fillOvalInPixels (int x, int y, int width, int height) {
@@ -3010,12 +2974,7 @@ void fillPolygonInPixels (int[] pointArray) {
  * @see #drawRectangle(int, int, int, int)
  */
 public void fillRectangle (int x, int y, int width, int height) {
-	int deviceZoom = getZoom();
-	x = DPIUtil.scaleUp (drawable, x, deviceZoom);
-	y = DPIUtil.scaleUp (drawable, y, deviceZoom);
-	width = DPIUtil.scaleUp (drawable, width, deviceZoom);
-	height = DPIUtil.scaleUp (drawable, height, deviceZoom);
-	fillRectangleInPixels(x, y, width, height);
+	fillRectangle(new Rectangle(x, y, width, height));
 }
 
 void fillRectangleInPixels (int x, int y, int width, int height) {
@@ -3076,14 +3035,11 @@ public void fillRectangle (Rectangle rect) {
  * @see #drawRoundRectangle
  */
 public void fillRoundRectangle (int x, int y, int width, int height, int arcWidth, int arcHeight) {
-	int deviceZoom = getZoom();
-	x = DPIUtil.scaleUp (drawable, x, deviceZoom);
-	y = DPIUtil.scaleUp (drawable, y, deviceZoom);
-	width = DPIUtil.scaleUp (drawable, width, deviceZoom);
-	height = DPIUtil.scaleUp (drawable, height, deviceZoom);
-	arcWidth = DPIUtil.scaleUp (drawable, arcWidth, deviceZoom);
-	arcHeight = DPIUtil.scaleUp (drawable, arcHeight, deviceZoom);
-	fillRoundRectangleInPixels(x, y, width, height, arcWidth, arcHeight);
+	int zoom = getZoom();
+	Rectangle rect = DPIUtil.scaleUp(drawable, new Rectangle(x, y, width, height), zoom);
+	arcWidth = DPIUtil.scaleUp (drawable, arcWidth, zoom);
+	arcHeight = DPIUtil.scaleUp (drawable, arcHeight, zoom);
+	fillRoundRectangleInPixels(rect.x, rect.y, rect.width, rect.height, arcWidth, arcHeight);
 }
 
 void fillRoundRectangleInPixels (int x, int y, int width, int height, int arcWidth, int arcHeight) {
@@ -4281,12 +4237,7 @@ void setClipping(long clipRgn) {
  * </ul>
  */
 public void setClipping (int x, int y, int width, int height) {
-	int deviceZoom = getZoom();
-	x = DPIUtil.scaleUp(drawable, x, deviceZoom);
-	y = DPIUtil.scaleUp(drawable, y, deviceZoom);
-	width = DPIUtil.scaleUp(drawable, width, deviceZoom);
-	height = DPIUtil.scaleUp(drawable, height, deviceZoom);
-	setClippingInPixels(x, y, width, height);
+	setClipping(new Rectangle(x, y, width, height));
 }
 
 void setClippingInPixels (int x, int y, int width, int height) {
