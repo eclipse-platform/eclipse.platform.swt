@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2024 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -1866,6 +1866,18 @@ JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1window_1get_1icon_1name)
 	GTK4_NATIVE_ENTER(env, that, gtk_1window_1get_1icon_1name_FUNC);
 	rc = (jlong)gtk_window_get_icon_name((GtkWindow *)arg0);
 	GTK4_NATIVE_EXIT(env, that, gtk_1window_1get_1icon_1name_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1window_1get_1titlebar
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1window_1get_1titlebar)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1window_1get_1titlebar_FUNC);
+	rc = (jlong)gtk_window_get_titlebar((GtkWindow *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1window_1get_1titlebar_FUNC);
 	return rc;
 }
 #endif
