@@ -311,7 +311,7 @@ class WebViewProvider {
 		webViewWrapper.webView_10 = initializeWebView_10(webView);
 		webViewWrapper.webView_11 = initializeWebView_11(webView);
 		webViewWrapper.webView_12 = initializeWebView_12(webView);
-		webViewWrapper.webView_13= initializeWebView_13(webView);
+		webViewWrapper.webView_13 = initializeWebView_13(webView);
 		webViewWrapperFuture.complete(webViewWrapper);
 		return webView;
 	}
@@ -744,8 +744,10 @@ void browserDispose(Event event) {
 		if (environment2 != null) environment2.Release();
 		if (settings != null) settings.Release();
 		if (webViewProvider.isWebView_2Available()) webViewProvider.getWebView_2(false).Release();
+		if (webViewProvider.isWebView_10Available()) webViewProvider.getWebView_10(false).Release();
 		if (webViewProvider.isWebView_11Available()) webViewProvider.getWebView_11(false).Release();
 		if (webViewProvider.isWebView_12Available()) webViewProvider.getWebView_12(false).Release();
+		if (webViewProvider.isWebView_13Available()) webViewProvider.getWebView_13(false).Release();
 		if(controller != null) {
 			// Bug in WebView2. Closing the controller from an event handler results
 			// in a crash. The fix is to delay the closure with asyncExec.
