@@ -438,6 +438,82 @@ JNIEXPORT jlong JNICALL GTK3_NATIVE(gtk_1clipboard_1wait_1for_1contents)
 }
 #endif
 
+#ifndef NO_gtk_1color_1chooser_1add_1palette
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1color_1chooser_1add_1palette)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jint arg2, jint arg3, jlong arg4)
+{
+	GTK3_NATIVE_ENTER(env, that, gtk_1color_1chooser_1add_1palette_FUNC);
+	gtk_color_chooser_add_palette((GtkColorChooser *)arg0, (GtkOrientation)arg1, (gint)arg2, (gint)arg3, (GdkRGBA *)arg4);
+	GTK3_NATIVE_EXIT(env, that, gtk_1color_1chooser_1add_1palette_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1color_1chooser_1dialog_1new
+JNIEXPORT jlong JNICALL GTK3_NATIVE(gtk_1color_1chooser_1dialog_1new)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jlong arg1)
+{
+	jbyte *lparg0=NULL;
+	jlong rc = 0;
+	GTK3_NATIVE_ENTER(env, that, gtk_1color_1chooser_1dialog_1new_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	rc = (jlong)gtk_color_chooser_dialog_new((const gchar *)lparg0, (GtkWindow *)arg1);
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	GTK3_NATIVE_EXIT(env, that, gtk_1color_1chooser_1dialog_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1color_1chooser_1get_1rgba
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1color_1chooser_1get_1rgba)
+	(JNIEnv *env, jclass that, jlong arg0, jobject arg1)
+{
+	GdkRGBA _arg1, *lparg1=NULL;
+	GTK3_NATIVE_ENTER(env, that, gtk_1color_1chooser_1get_1rgba_FUNC);
+	if (arg1) if ((lparg1 = getGdkRGBAFields(env, arg1, &_arg1)) == NULL) goto fail;
+	gtk_color_chooser_get_rgba((GtkColorChooser *)arg0, (GdkRGBA *)lparg1);
+fail:
+	if (arg1 && lparg1) setGdkRGBAFields(env, arg1, lparg1);
+	GTK3_NATIVE_EXIT(env, that, gtk_1color_1chooser_1get_1rgba_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1color_1chooser_1get_1use_1alpha
+JNIEXPORT jboolean JNICALL GTK3_NATIVE(gtk_1color_1chooser_1get_1use_1alpha)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jboolean rc = 0;
+	GTK3_NATIVE_ENTER(env, that, gtk_1color_1chooser_1get_1use_1alpha_FUNC);
+	rc = (jboolean)gtk_color_chooser_get_use_alpha((GtkColorChooser *)arg0);
+	GTK3_NATIVE_EXIT(env, that, gtk_1color_1chooser_1get_1use_1alpha_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1color_1chooser_1set_1rgba
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1color_1chooser_1set_1rgba)
+	(JNIEnv *env, jclass that, jlong arg0, jobject arg1)
+{
+	GdkRGBA _arg1, *lparg1=NULL;
+	GTK3_NATIVE_ENTER(env, that, gtk_1color_1chooser_1set_1rgba_FUNC);
+	if (arg1) if ((lparg1 = getGdkRGBAFields(env, arg1, &_arg1)) == NULL) goto fail;
+	gtk_color_chooser_set_rgba((GtkColorChooser *)arg0, (GdkRGBA *)lparg1);
+fail:
+	if (arg1 && lparg1) setGdkRGBAFields(env, arg1, lparg1);
+	GTK3_NATIVE_EXIT(env, that, gtk_1color_1chooser_1set_1rgba_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1color_1chooser_1set_1use_1alpha
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1color_1chooser_1set_1use_1alpha)
+	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
+{
+	GTK3_NATIVE_ENTER(env, that, gtk_1color_1chooser_1set_1use_1alpha_FUNC);
+	gtk_color_chooser_set_use_alpha((GtkColorChooser *)arg0, (gboolean)arg1);
+	GTK3_NATIVE_EXIT(env, that, gtk_1color_1chooser_1set_1use_1alpha_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1combo_1box_1get_1wrap_1width
 JNIEXPORT jint JNICALL GTK3_NATIVE(gtk_1combo_1box_1get_1wrap_1width)
 	(JNIEnv *env, jclass that, jlong arg0)
