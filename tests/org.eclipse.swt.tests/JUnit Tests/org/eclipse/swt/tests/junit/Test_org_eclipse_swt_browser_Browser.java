@@ -165,11 +165,15 @@ public Test_org_eclipse_swt_browser_Browser(int swtBrowserSettings) {
 
 @BeforeClass
 public static void setupEdgeEnvironment() {
-	// initialize Edge environment before any test runs to isolate environment setup
+	// Initialize Edge environment before any test runs to isolate environment setup
+	// as this takes quite long in GitHub Actions builds
 	if (SwtTestUtil.isWindows) {
 		Shell shell = new Shell();
-		new Browser(shell, SWT.EDGE);
+		Browser firstBrowser = new Browser(shell, SWT.EDGE);
+		// Ensure browser is initialized by calling blocking method
+		firstBrowser.getUrl();
 		shell.dispose();
+		processUiEvents();
 	}
 }
 
