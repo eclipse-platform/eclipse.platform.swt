@@ -21,6 +21,7 @@ import java.nio.file.Path;
 import java.time.*;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
 import java.util.function.*;
 
 import org.eclipse.swt.*;
@@ -42,6 +43,7 @@ class Edge extends WebBrowser {
 	static final String APPLOCAL_DIR_KEY = "org.eclipse.swt.internal.win32.appLocalDir";
 	static final String EDGE_USER_DATA_FOLDER = "org.eclipse.swt.internal.win32.Edge.userDataFolder";
 	static final String EDGE_USE_DARK_PREFERED_COLOR_SCHEME = "org.eclipse.swt.internal.win32.Edge.useDarkPreferedColorScheme"; //$NON-NLS-1$
+	static final String WEB_VIEW_OPERATION_TIMEOUT = "org.eclipse.swt.internal.win32.Edge.timeout"; //$NON-NLS-1$
 
 	// System.getProperty() keys
 	static final String BROWSER_DIR_PROP = "org.eclipse.swt.browser.EdgeDir";
@@ -58,6 +60,7 @@ class Edge extends WebBrowser {
 	private static final String ABOUT_BLANK = "about:blank";
 
 	private static final int MAXIMUM_CREATION_RETRIES = 5;
+	private static final Duration MAXIMUM_OPERATION_TIME = Duration.ofMillis(Integer.getInteger(WEB_VIEW_OPERATION_TIMEOUT, 5_000));
 
 	private record WebViewEnvironment(ICoreWebView2Environment environment, ArrayList<Edge> instances) {
 		public WebViewEnvironment(ICoreWebView2Environment environment) {
@@ -260,14 +263,12 @@ static int callAndWait(long[] ppv, ToIntFunction<IUnknown> callable) {
 	phr[0] = callable.applyAsInt(completion);
 	// "completion" callback may be called asynchronously,
 	// so keep processing next OS message that may call it
-	while (phr[0] == COM.S_OK && ppv[0] == 0) {
-		processNextOSMessage();
-	}
+	processOSMessagesUntil(() -> phr[0] != COM.S_OK || ppv[0] != 0, Display.getCurrent());
 	completion.Release();
 	return phr[0];
 }
 
-static int callAndWait(String[] pstr, ToIntFunction<IUnknown> callable) {
+int callAndWait(String[] pstr, ToIntFunction<IUnknown> callable) {
 	int[] phr = new int[1];
 	IUnknown completion = newCallback((result, pszJson) -> {
 		phr[0] = (int)result;
@@ -280,9 +281,7 @@ static int callAndWait(String[] pstr, ToIntFunction<IUnknown> callable) {
 	phr[0] = callable.applyAsInt(completion);
 	// "completion" callback may be called asynchronously,
 	// so keep processing next OS message that may call it
-	while (phr[0] == COM.S_OK && pstr[0] == null) {
-		processNextOSMessage();
-	}
+	processOSMessagesUntil(() -> phr[0] != COM.S_OK || pstr[0] != null, browser.getDisplay());
 	completion.Release();
 	return phr[0];
 }
@@ -298,7 +297,7 @@ class WebViewWrapper {
 
 class WebViewProvider {
 
-	private CompletableFuture<WebViewWrapper> webViewWrapperFuture = new CompletableFuture<>();
+	private CompletableFuture<WebViewWrapper> webViewWrapperFuture = wakeDisplayAfterFuture(new CompletableFuture<>());
 	private CompletableFuture<Void> lastWebViewTask = webViewWrapperFuture.thenRun(() -> {});;
 
 	ICoreWebView2 initializeWebView(ICoreWebView2Controller controller) {
@@ -365,71 +364,60 @@ class WebViewProvider {
 		return null;
 	}
 
-	ICoreWebView2 getWebView(boolean waitForPendingWebviewTasksToFinish) {
+	private WebViewWrapper getWebViewWrapper(boolean waitForPendingWebviewTasksToFinish) {
 		if(waitForPendingWebviewTasksToFinish) {
-			waitForFutureToFinish(lastWebViewTask);
+			processOSMessagesUntil(lastWebViewTask::isDone, browser.getDisplay());
 		}
-		return webViewWrapperFuture.join().webView;
+		return webViewWrapperFuture.join();
+	}
+
+	private WebViewWrapper getWebViewWrapper() {
+		processOSMessagesUntil(webViewWrapperFuture::isDone, browser.getDisplay());
+		return webViewWrapperFuture.join();
+	}
+
+	ICoreWebView2 getWebView(boolean waitForPendingWebviewTasksToFinish) {
+		return getWebViewWrapper(waitForPendingWebviewTasksToFinish).webView;
 	}
 
 	ICoreWebView2_2 getWebView_2(boolean waitForPendingWebviewTasksToFinish) {
-		if(waitForPendingWebviewTasksToFinish) {
-			waitForFutureToFinish(lastWebViewTask);
-		}
-		return webViewWrapperFuture.join().webView_2;
+		return getWebViewWrapper(waitForPendingWebviewTasksToFinish).webView_2;
 	}
 
 	boolean isWebView_2Available() {
-		waitForFutureToFinish(webViewWrapperFuture);
-		return webViewWrapperFuture.join().webView_2 != null;
+		return getWebViewWrapper().webView_2 != null;
 	}
 
 	ICoreWebView2_10 getWebView_10(boolean waitForPendingWebviewTasksToFinish) {
-		if(waitForPendingWebviewTasksToFinish) {
-			waitForFutureToFinish(lastWebViewTask);
-		}
-		return webViewWrapperFuture.join().webView_10;
+		return getWebViewWrapper(waitForPendingWebviewTasksToFinish).webView_10;
 	}
 
 	boolean isWebView_10Available() {
-		waitForFutureToFinish(webViewWrapperFuture);
-		return webViewWrapperFuture.join().webView_10 != null;
+		return getWebViewWrapper().webView_10 != null;
 	}
 
 	ICoreWebView2_11 getWebView_11(boolean waitForPendingWebviewTasksToFinish) {
-		if(waitForPendingWebviewTasksToFinish) {
-			waitForFutureToFinish(lastWebViewTask);
-		}
-		return webViewWrapperFuture.join().webView_11;
+		return getWebViewWrapper(waitForPendingWebviewTasksToFinish).webView_11;
 	}
 
 	boolean isWebView_11Available() {
-		waitForFutureToFinish(webViewWrapperFuture);
-		return webViewWrapperFuture.join().webView_11 != null;
+		return getWebViewWrapper().webView_11 != null;
 	}
 
 	ICoreWebView2_12 getWebView_12(boolean waitForPendingWebviewTasksToFinish) {
-		if(waitForPendingWebviewTasksToFinish) {
-			waitForFutureToFinish(lastWebViewTask);
-		}
-		return webViewWrapperFuture.join().webView_12;
+		return getWebViewWrapper(waitForPendingWebviewTasksToFinish).webView_12;
 	}
 
 	boolean isWebView_12Available() {
-		waitForFutureToFinish(webViewWrapperFuture);
-		return webViewWrapperFuture.join().webView_12 != null;
+		return getWebViewWrapper().webView_12 != null;
 	}
 
 	ICoreWebView2_13 getWebView_13(boolean waitForPendingWebviewTasksToFinish) {
-		if(waitForPendingWebviewTasksToFinish) {
-			waitForFutureToFinish(lastWebViewTask);
-		}
-		return webViewWrapperFuture.join().webView_13;
+		return getWebViewWrapper(waitForPendingWebviewTasksToFinish).webView_13;
 	}
 
 	boolean isWebView_13Available() {
-		waitForFutureToFinish(webViewWrapperFuture);
-		return webViewWrapperFuture.join().webView_13 != null;
+		return getWebViewWrapper().webView_13 != null;
 	}
 
 	/*
@@ -437,23 +425,30 @@ class WebViewProvider {
 	 * has finished all the pending tasks queued before it.
 	 */
 	void scheduleWebViewTask(Runnable action) {
-		lastWebViewTask = lastWebViewTask.thenRun(() -> {
-			action.run();
+		lastWebViewTask = wakeDisplayAfterFuture(lastWebViewTask.thenRun(action::run));
+	}
+
+	private <T> CompletableFuture<T> wakeDisplayAfterFuture(CompletableFuture<T> future) {
+		return future.handle((nil1, nil2) -> {
+			Display display = browser.getDisplay();
+			if (!display.isDisposed()) {
+				try {
+					display.wake();
+				} catch (SWTException e) {
+					// ignore then, this can happen due to the async nature between our check for
+					// disposed and the actual call to wake the display can be disposed
+				}
+			}
+			return null;
 		});
 	}
-
-	private <T> void waitForFutureToFinish(CompletableFuture<T> future) {
-		while(!future.isDone()) {
-			processNextOSMessage();
-		}
-	}
-
 }
 
 /**
- * Processes a single OS message using {@link Display#readAndDispatch()}. This
+ * Processes single OS messages using {@link Display#readAndDispatch()}. This
  * is required for processing the OS events during browser initialization, since
- * Edge browser initialization happens asynchronously.
+ * Edge browser initialization happens asynchronously. Messages are processed
+ * until the given condition is fulfilled or a timeout occurs.
  * <p>
  * {@link Display#readAndDispatch()} also processes events scheduled for
  * asynchronous execution via {@link Display#asyncExec(Runnable)}. This may
@@ -462,13 +457,21 @@ class WebViewProvider {
  * events for initialization. Thus, this method does not implement an ordinary
  * readAndDispatch loop, but waits for an OS event to be processed.
  */
-private static void processNextOSMessage() {
-	Display display = Display.getCurrent();
+private static void processOSMessagesUntil(Supplier<Boolean> condition, Display display) {
 	MSG msg = new MSG();
-	while (!OS.PeekMessage (msg, 0, 0, 0, OS.PM_NOREMOVE)) {
-		display.sleep();
+	AtomicBoolean timeoutOccurred = new AtomicBoolean();
+	// The timer call also wakes up the display to avoid being stuck in display.sleep()
+	display.timerExec((int) MAXIMUM_OPERATION_TIME.toMillis(), () -> timeoutOccurred.set(true));
+	while (!display.isDisposed() && !condition.get() && !timeoutOccurred.get()) {
+		if (OS.PeekMessage(msg, 0, 0, 0, OS.PM_NOREMOVE)) {
+			display.readAndDispatch();
+		} else {
+			display.sleep();
+		}
 	}
-	display.readAndDispatch();
+	if (!condition.get()) {
+		SWT.error(SWT.ERROR_UNSPECIFIED, null, " Waiting for Edge operation to terminate timed out");
+	}
 }
 
 static ICoreWebView2CookieManager getCookieManager() {
