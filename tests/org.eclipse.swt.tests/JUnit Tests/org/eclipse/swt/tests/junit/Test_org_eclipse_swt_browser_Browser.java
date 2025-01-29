@@ -39,6 +39,7 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -101,12 +102,16 @@ import org.junit.runners.Parameterized.Parameters;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class Test_org_eclipse_swt_browser_Browser extends Test_org_eclipse_swt_widgets_Composite {
 
+	// TODO Reduce to reasonable value
+	private static Duration MAXIMUM_BROWSER_CREATION_TIME = Duration.ofSeconds(90);
+
 	static {
 		try {
 			printSystemEnv();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		System.setProperty("org.eclipse.swt.internal.win32.Edge.timeout", Long.toString(MAXIMUM_BROWSER_CREATION_TIME.toMillis()));
 	}
 
 	// CONFIG
@@ -296,14 +301,13 @@ private int reportOpenedDescriptors() {
 }
 
 private Browser createBrowser(Shell s, int flags) {
-	long maximumBrowserCreationMilliseconds = 90_000;
-	long createStartTime = System.currentTimeMillis();
+	Instant createStartTime = Instant.now();
 	Browser b = new Browser(s, flags);
 	// Wait for asynchronous initialization via getting URL
 	b.getUrl();
 	createdBroswers.add(b);
-	long createDuration = System.currentTimeMillis() - createStartTime;
-	assertTrue("creating browser took too long: " + createDuration + "ms", createDuration < maximumBrowserCreationMilliseconds);
+	Duration createDuration = Duration.between(createStartTime, Instant.now());
+	assertTrue("creating browser took too long: " + createDuration.toMillis() + "ms", createDuration.minus(MAXIMUM_BROWSER_CREATION_TIME).isNegative());
 	return b;
 }
 
