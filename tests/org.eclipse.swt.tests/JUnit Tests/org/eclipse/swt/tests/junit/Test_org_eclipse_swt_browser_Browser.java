@@ -251,13 +251,7 @@ protected void afterDispose(Display display) {
 	}
 	if (isEdge) {
 		// wait for and process pending events to properly cleanup Edge browser resources
-		do {
-			processUiEvents();
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-			}
-		} while (Display.getCurrent().readAndDispatch());
+		processUiEvents();
 	}
 	if (SwtTestUtil.isGTK) {
 		int descriptorDiff = reportOpenedDescriptors();
