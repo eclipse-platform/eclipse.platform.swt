@@ -151,7 +151,7 @@ void reset() {
 public ImageData[] load(InputStream stream) {
 	if (stream == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	reset();
-	data = FileFormat.load(stream, this);
+	data = FileFormat.load(stream, this, FileFormat.DEFAULT_ZOOM);
 	return data;
 }
 
