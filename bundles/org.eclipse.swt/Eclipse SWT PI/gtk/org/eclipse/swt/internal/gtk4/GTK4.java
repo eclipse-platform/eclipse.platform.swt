@@ -649,6 +649,18 @@ public class GTK4 {
 	 * @param allocation cast=(GtkAllocation *),flags=no_out
 	 */
 	public static final native void gtk_widget_size_allocate(long widget, GtkAllocation allocation, int baseline);
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 * @param parent cast=(GtkWidget *)
+	 * @param previous_sibling cast=(GtkWidget *)
+	 */
+	public static final native void gtk_widget_insert_after(long widget, long parent, long previous_sibling);
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 * @param parent cast=(GtkWidget *)
+	 * @param next_sibling cast=(GtkWidget *)
+	 */
+	public static final native void gtk_widget_insert_before(long widget, long parent, long next_sibling);
 
 	/* GtkComboBox */
 	/** @param combo_box cast=(GtkComboBox *) */

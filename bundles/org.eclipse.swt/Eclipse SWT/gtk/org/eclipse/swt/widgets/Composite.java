@@ -1353,7 +1353,15 @@ void markLayout (boolean changed, boolean all) {
 void moveAbove (long child, long sibling) {
 	if (child == sibling) return;
 	long parentHandle = parentingHandle ();
-	OS.swt_fixed_restack (parentHandle, child, sibling, true);
+	if (GTK.GTK4) {
+		if (sibling == 0) {
+			GTK4.gtk_widget_insert_after(child, parentHandle, 0L);
+		} else {
+			GTK4.gtk_widget_insert_before(child, parentHandle, sibling);
+		}
+	} else {
+		OS.swt_fixed_restack (parentHandle, child, sibling, true);
+	}
 	return;
 }
 
@@ -1364,7 +1372,15 @@ void moveBelow (long child, long sibling) {
 		moveAbove (child, scrolledHandle != 0  ? scrolledHandle : handle);
 		return;
 	}
-	OS.swt_fixed_restack (parentHandle, child, sibling, false);
+	if (GTK.GTK4) {
+		if (sibling == 0) {
+			GTK4.gtk_widget_insert_before(child, parentHandle, 0L);
+		} else {
+			GTK4.gtk_widget_insert_after(child, parentHandle, sibling);
+		}
+	} else {
+		OS.swt_fixed_restack (parentHandle, child, sibling, false);
+	}
 	return;
 }
 
