@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2014 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -18,11 +18,13 @@
 package org.eclipse.swt.internal.image;
 
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
 import java.io.*;
 
-public final class JPEGFileFormat extends FileFormat {
+import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.image.FileFormat.*;
+
+public final class JPEGFileFormat extends StaticImageFileFormat {
 	int restartInterval;
 	JPEGFrameHeader frameHeader;
 	int imageWidth, imageHeight;
@@ -1362,16 +1364,14 @@ void inverseDCT(int[] dataUnit) {
 		}
 	}
 }
-@Override
-boolean isFileFormat(LEDataInputStream stream) {
-	try {
+
+	@Override
+	boolean isFileFormat(LEDataInputStream stream) throws IOException {
 		JPEGStartOfImage soi = new JPEGStartOfImage(stream);
 		stream.unread(soi.reference);
-		return soi.verify();  // we no longer check for appN
-	} catch (Exception e) {
-		return false;
+		return soi.verify(); // we no longer check for appN
 	}
-}
+
 boolean isZeroInColumn(int[] dataUnit, int col) {
 	return dataUnit[col + 8] == 0 && dataUnit[col + 16] == 0
 			&& dataUnit[col + 24] == 0 && dataUnit[col + 32] == 0

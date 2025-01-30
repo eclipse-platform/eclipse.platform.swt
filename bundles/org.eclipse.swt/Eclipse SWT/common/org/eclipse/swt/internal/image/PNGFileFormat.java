@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -19,8 +19,9 @@ import java.util.zip.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.image.FileFormat.*;
 
-public final class PNGFileFormat extends FileFormat {
+public final class PNGFileFormat extends StaticImageFileFormat {
 	static final int SIGNATURE_LENGTH = 8;
 	static final int PRIME = 65521;
 	PngIhdrChunk headerChunk;
@@ -151,9 +152,9 @@ void unloadIntoByteStream(ImageLoader loader) {
 	PngEncoder encoder = new PngEncoder(loader);
 	encoder.encode(outputStream);
 }
-@Override
-boolean isFileFormat(LEDataInputStream stream) {
-	try {
+
+	@Override
+	boolean isFileFormat(LEDataInputStream stream) throws IOException {
 		byte[] signature = new byte[SIGNATURE_LENGTH];
 		stream.read(signature);
 		stream.unread(signature);
@@ -166,10 +167,8 @@ boolean isFileFormat(LEDataInputStream stream) {
 		if ((signature[6] & 0xFF) != 26) return false; //<CTRL/Z>
 		if ((signature[7] & 0xFF) != 10) return false; //<LINEFEED>
 		return true;
-	} catch (Exception e) {
-		return false;
 	}
-}
+
 /**
  * SWT does not support 16-bit depths. If this image uses
  * 16-bit depths, convert the data to an 8-bit depth.
