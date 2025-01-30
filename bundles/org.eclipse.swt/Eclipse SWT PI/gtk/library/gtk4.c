@@ -2083,6 +2083,26 @@ JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1widget_1get_1root)
 }
 #endif
 
+#ifndef NO_gtk_1widget_1insert_1after
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1widget_1insert_1after)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1widget_1insert_1after_FUNC);
+	gtk_widget_insert_after((GtkWidget *)arg0, (GtkWidget *)arg1, (GtkWidget *)arg2);
+	GTK4_NATIVE_EXIT(env, that, gtk_1widget_1insert_1after_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1widget_1insert_1before
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1widget_1insert_1before)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1widget_1insert_1before_FUNC);
+	gtk_widget_insert_before((GtkWidget *)arg0, (GtkWidget *)arg1, (GtkWidget *)arg2);
+	GTK4_NATIVE_EXIT(env, that, gtk_1widget_1insert_1before_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1widget_1measure
 JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1widget_1measure)
 	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jint arg2, jintArray arg3, jintArray arg4, jintArray arg5, jintArray arg6)

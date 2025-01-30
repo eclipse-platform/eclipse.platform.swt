@@ -173,6 +173,8 @@ typedef enum {
 	gtk_1widget_1get_1prev_1sibling_FUNC,
 	gtk_1widget_1get_1receives_1default_FUNC,
 	gtk_1widget_1get_1root_FUNC,
+	gtk_1widget_1insert_1after_FUNC,
+	gtk_1widget_1insert_1before_FUNC,
 	gtk_1widget_1measure_FUNC,
 	gtk_1widget_1set_1cursor_FUNC,
 	gtk_1widget_1set_1focusable_FUNC,
