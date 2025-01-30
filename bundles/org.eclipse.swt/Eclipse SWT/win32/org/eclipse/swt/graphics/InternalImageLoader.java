@@ -14,13 +14,15 @@
 package org.eclipse.swt.graphics;
 
 import java.io.*;
+import java.util.*;
 
+import org.eclipse.swt.internal.DPIUtil.*;
 import org.eclipse.swt.internal.image.*;
 
 class InternalImageLoader {
 
-	static ImageData[] load(InputStream stream, ImageLoader imageLoader) {
-		return FileFormat.load(stream, imageLoader);
+	static List<ElementAtZoom<ImageData>> load(InputStream stream, ImageLoader imageLoader, int fileZoom, int targetZoom) {
+		return FileFormat.load(stream, imageLoader, fileZoom, targetZoom);
 	}
 
 	static void save(OutputStream stream, int format, ImageLoader imageLoader) {

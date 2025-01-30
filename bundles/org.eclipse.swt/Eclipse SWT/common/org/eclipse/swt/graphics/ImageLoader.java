@@ -18,6 +18,8 @@ import java.io.*;
 import java.util.*;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.DPIUtil.*;
+import org.eclipse.swt.internal.image.*;
 
 /**
  * Instances of this class are used to load images from,
@@ -148,10 +150,16 @@ void reset() {
  * </ul>
  */
 public ImageData[] load(InputStream stream) {
+	load(stream, FileFormat.DEFAULT_ZOOM, FileFormat.DEFAULT_ZOOM);
+	return data;
+}
+
+List<ElementAtZoom<ImageData>> load(InputStream stream, int fileZoom, int targetZoom) {
 	if (stream == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	reset();
-	data = InternalImageLoader.load(stream, this);
-	return data;
+	List<ElementAtZoom<ImageData>> images = InternalImageLoader.load(stream, this, fileZoom, targetZoom);
+	data = images.stream().map(ElementAtZoom::element).toArray(ImageData[]::new);
+	return images;
 }
 
 /**
@@ -173,9 +181,14 @@ public ImageData[] load(InputStream stream) {
  * </ul>
  */
 public ImageData[] load(String filename) {
+	load(filename, FileFormat.DEFAULT_ZOOM, FileFormat.DEFAULT_ZOOM);
+	return data;
+}
+
+List<ElementAtZoom<ImageData>> load(String filename, int fileZoom, int targetZoom) {
 	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	try (InputStream stream = new FileInputStream(filename)) {
-		return load(stream);
+		return load(stream, fileZoom, targetZoom);
 	} catch (IOException e) {
 		SWT.error(SWT.ERROR_IO, e);
 	}
