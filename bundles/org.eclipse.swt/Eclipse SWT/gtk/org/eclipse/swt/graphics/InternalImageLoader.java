@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.DPIUtil.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.image.*;
 import org.eclipse.swt.widgets.*;
@@ -32,7 +33,7 @@ class InternalImageLoader {
 
 	// --- loading ---
 
-	static ImageData[] load(InputStream stream, ImageLoader imageLoader) {
+	static List<ElementAtZoom<ImageData>> load(InputStream stream, ImageLoader imageLoader, int fileZoom, int targetZoom) {
 		// 1) Load InputStream into byte array
 		byte[] data_buffer;
 		try (stream) {
@@ -41,11 +42,20 @@ class InternalImageLoader {
 			SWT.error(SWT.ERROR_IO);
 			return null;
 		}
-		long loader = GDK.gdk_pixbuf_loader_new();
-		List<ImageData> imgDataList = new ArrayList<>();
 		if (data_buffer.length == 0) {
 			SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT); // empty stream
 		}
+		InputStream stream2 = new ByteArrayInputStream(data_buffer);
+		if (FileFormat.isDynamicallySizableFormat(stream2)) {
+			try {
+				stream2.reset();
+			} catch (IOException e) {
+				SWT.error(SWT.ERROR_IO);
+			}
+			return FileFormat.load(stream2, imageLoader, fileZoom, targetZoom);
+		}
+		List<ImageData> imgDataList = new ArrayList<>();
+		long loader = GDK.gdk_pixbuf_loader_new();
 		// 2) Copy byte array to C memory, write to GdkPixbufLoader
 		long buffer_ptr = OS.g_malloc(data_buffer.length);
 		C.memmove(buffer_ptr, data_buffer, data_buffer.length);
@@ -128,7 +138,7 @@ class InternalImageLoader {
 		}
 		OS.g_free(buffer_ptr);
 		OS.g_object_unref(loader);
-		return imgDataArray;
+		return Arrays.stream(imgDataArray).map(data -> new ElementAtZoom<>(data, fileZoom)).toList();
 	}
 
 	/**
