@@ -20,6 +20,7 @@ import java.nio.file.*;
 import java.nio.file.Path;
 import java.time.*;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 import java.util.function.*;
@@ -62,9 +63,9 @@ class Edge extends WebBrowser {
 	private static final int MAXIMUM_CREATION_RETRIES = 5;
 	private static final Duration MAXIMUM_OPERATION_TIME = Duration.ofMillis(Integer.getInteger(WEB_VIEW_OPERATION_TIMEOUT, 5_000));
 
-	private record WebViewEnvironment(ICoreWebView2Environment environment, ArrayList<Edge> instances) {
+	private record WebViewEnvironment(ICoreWebView2Environment environment, List<Edge> instances) {
 		public WebViewEnvironment(ICoreWebView2Environment environment) {
-			this (environment, new ArrayList<>());
+			this (environment, new CopyOnWriteArrayList<>());
 		}
 	}
 
