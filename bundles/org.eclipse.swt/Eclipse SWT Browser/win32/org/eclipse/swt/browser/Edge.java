@@ -601,7 +601,8 @@ private IUnknown createControllerInitializationCallback(int previousAttempts) {
 		webViewProvider.abortInitialization();
 		initializationRollback.run();
 	};
-	return newCallback((result, pv) -> {
+	return newCallback((resultAsLong, pv) -> {
+		int result = (int) resultAsLong;
 		if (browser.isDisposed()) {
 			initializationAbortion.run();
 			return COM.S_OK;
@@ -611,14 +612,14 @@ private IUnknown createControllerInitializationCallback(int previousAttempts) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT, null,
 					" Edge instance with same data folder but different environment options already exists");
 		}
-		switch ((int) result) {
+		switch (result) {
 		case COM.S_OK:
 			new IUnknown(pv).AddRef();
-			setupBrowser((int) result, pv);
+			setupBrowser(result, pv);
 			break;
 		case COM.E_WRONG_THREAD:
 			initializationAbortion.run();
-			error(SWT.ERROR_THREAD_INVALID_ACCESS, (int) result);
+			error(SWT.ERROR_THREAD_INVALID_ACCESS, result);
 			break;
 		case COM.E_ABORT:
 			initializationAbortion.run();
