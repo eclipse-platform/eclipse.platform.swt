@@ -2185,9 +2185,9 @@ private class ImageDataProviderWrapper extends AbstractImageProviderWrapper {
 
 	@Override
 	protected Rectangle getBounds(int zoom) {
-		ElementAtZoom<ImageData> data = DPIUtil.validateAndGetImageDataAtZoom (provider, zoom);
-		Rectangle rectangle = new Rectangle(0, 0, data.element().width, data.element().height);
-		return DPIUtil.scaleBounds(rectangle, zoom, data.zoom());
+		ImageHandle imageHandle = zoomLevelToImageHandle.values().iterator().next();
+		Rectangle rectangle = new Rectangle(0, 0, imageHandle.width, imageHandle.height);
+		return DPIUtil.scaleBounds(rectangle, zoom, imageHandle.zoom);
 	}
 
 	@Override
