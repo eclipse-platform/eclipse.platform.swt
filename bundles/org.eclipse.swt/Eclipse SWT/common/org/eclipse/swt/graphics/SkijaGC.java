@@ -158,6 +158,15 @@ public class SkijaGC extends GCHandle {
 		});
 	}
 
+	private void performDrawPoint(Consumer<Paint> operations) {
+		performDraw(paint -> {
+			paint.setColor(convertSWTColorToSkijaColor(getForeground()));
+			paint.setMode(PaintMode.FILL);
+			paint.setAntiAlias(false);
+			operations.accept(paint);
+		});
+	}
+
 	private String[] splitString(String text) {
 		String[] lines = new String[1];
 		int start = 0, pos;
@@ -431,7 +440,9 @@ public class SkijaGC extends GCHandle {
 
 	@Override
 	public void drawArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
-		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		performDrawLine(paint -> surface.getCanvas().drawArc((float) DPIUtil.autoScaleUp(x),
+				(float) DPIUtil.autoScaleUp(y), (float) DPIUtil.autoScaleUp(x + width),
+				(float) DPIUtil.autoScaleUp(y + height), -startAngle, (float) -arcAngle, false, paint));
 	}
 
 	@Override
@@ -476,7 +487,7 @@ public class SkijaGC extends GCHandle {
 
 	@Override
 	public void drawPoint(int x, int y) {
-		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		performDrawPoint(paint -> surface.getCanvas().drawRect(createScaledRectangle(x, y, 1, 1), paint));
 	}
 
 	@Override
@@ -542,12 +553,56 @@ public class SkijaGC extends GCHandle {
 
 	@Override
 	public void fillArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
-		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		performDrawFilled(paint -> surface.getCanvas().drawArc((float) DPIUtil.autoScaleUp(x),
+				(float) DPIUtil.autoScaleUp(y), (float) DPIUtil.autoScaleUp(x + width),
+				(float) DPIUtil.autoScaleUp(y + height), (float) -startAngle, (float) -arcAngle, false, paint));
 	}
 
 	@Override
 	public void fillGradientRectangle(int x, int y, int width, int height, boolean vertical) {
-		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		boolean swapColors = false;
+		if (width < 0) {
+			x = Math.max(0, x + width);
+			width = -width;
+			if (!vertical)
+				swapColors = true;
+		}
+		if (height < 0) {
+			y = Math.max(0, y + height);
+			height = -height;
+			if (vertical)
+				swapColors = true;
+		}
+		int x2 = vertical ? x : x + width;
+		int y2 = vertical ? y + height : y;
+
+		Rect rect = createScaledRectangle(x, y, width, height);
+		int fromColor = convertSWTColorToSkijaColor(getForeground());
+		int toColor = convertSWTColorToSkijaColor(getBackground());
+		if (fromColor == toColor) {
+			performDrawFilled(paint -> surface.getCanvas().drawRect(rect, paint));
+			return;
+		}
+		if (swapColors) {
+			int tempColor = convertSWTColorToSkijaColor(getForeground());
+			fromColor = convertSWTColorToSkijaColor(getBackground());
+			toColor = tempColor;
+		}
+		performDrawGradientFilled(paint -> surface.getCanvas().drawRect(rect, paint), x, y, x2, y2, fromColor, toColor);
+	}
+
+	private void performDrawGradientFilled(Consumer<Paint> operations, int x, int y, int x2, int y2,
+			int fromColor, int toColor) {
+
+		performDraw(paint -> {
+			try (Shader gradient = Shader.makeLinearGradient(DPIUtil.autoScaleUp(x), DPIUtil.autoScaleUp(y),
+					DPIUtil.autoScaleUp(x2), DPIUtil.autoScaleUp(y2), new int[] { fromColor, toColor }, null,
+					GradientStyle.DEFAULT)) {
+				paint.setShader(gradient);
+				paint.setAntiAlias(true);
+				operations.accept(paint);
+			}
+		});
 	}
 
 	@Override

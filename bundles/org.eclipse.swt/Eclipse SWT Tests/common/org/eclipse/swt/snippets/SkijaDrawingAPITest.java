@@ -28,12 +28,24 @@ public class SkijaDrawingAPITest {
 		shell.setBounds(10, 10, 1000, 1000);
 
 		shell.setVisible(true);
-
-		SkijaGC skijaGC = new SkijaGC(shell, SWT.NONE);
+		SWT.USE_SKIJA = true;
+		GC skijaGC = GCFactory.createGraphicsContext(shell, SWT.NONE);
 		skijaGC.setBackground(display.getSystemColor(SWT.COLOR_GREEN));
+
 		skijaGC.drawString("yTjJ", 0, 0, false);
 		skijaGC.drawString("yTjJ", 0, 20, true);
 		skijaGC.drawString("yTjJ", 0, 40);
+		for (int i = 20; i < 300; i = i + 4) {
+			skijaGC.drawPoint(100, i);
+		}
+		skijaGC.drawArc(120, 20, 100, 100, 30, 180);
+		skijaGC.fillArc(120, 160, 100, 100, 30, 180);
+		//Test when width and height values are negative
+		skijaGC.fillGradientRectangle(300, 80, -30, -80, false);
+		skijaGC.fillGradientRectangle(300, 80, 30, 80, true);
+		//Test when both foreground and background colors are same
+		skijaGC.setForeground(display.getSystemColor(SWT.COLOR_GREEN));
+		skijaGC.fillGradientRectangle(350, 80, 30, 80, true);
 		skijaGC.commit();
 
 		shell.open();
