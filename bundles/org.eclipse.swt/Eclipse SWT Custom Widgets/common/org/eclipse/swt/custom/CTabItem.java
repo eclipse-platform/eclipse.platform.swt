@@ -282,13 +282,13 @@ public boolean getShowClose() {
  * Returns <code>true</code> to indicate that the dirty indicator should be shown.
  * Otherwise return <code>false</code>.
  *
- * @return <code>true</code> if the dirty indicatorn should be shown
+ * @return <code>true</code> if the dirty indicator should be shown
  *
  * @since 3.129
  */
-public boolean getShowDirty() {
+public boolean isDirtyIndicatorShown() {
 	checkWidget();
-	return showClose;
+	return showDirty;
 }
 
 /**
