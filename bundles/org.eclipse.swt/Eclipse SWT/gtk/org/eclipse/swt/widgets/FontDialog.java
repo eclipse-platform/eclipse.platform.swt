@@ -160,14 +160,14 @@ public FontData open () {
 	byte[] titleBytes = Converter.javaStringToCString(title);
 	Display display = parent != null ? parent.getDisplay(): Display.getCurrent();
 	long handle;
-	if (GTK.GTK4) {
+	if (GTK.GTK_VERSION >= OS.VERSION(4, 10, 0)) {
 		handle = GTK4.gtk_font_dialog_new();
 	} else {
-		handle = GTK3.gtk_font_chooser_dialog_new (titleBytes, 0);
+		handle = GTK.gtk_font_chooser_dialog_new (titleBytes, 0);
 	}
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 
-	if (GTK.GTK4) {
+	if (GTK.GTK_VERSION >= OS.VERSION(4, 10, 0)) {
 		GTK4.gtk_font_dialog_set_modal(handle, true);
 		GTK4.gtk_font_dialog_set_title(handle, titleBytes);
 	} else {
@@ -186,7 +186,7 @@ public FontData open () {
 	display.setModalDialog(this);
 
 	// Set font chooser dialog to current font
-	if (fontData != null && !GTK.GTK4) {
+	if (fontData != null && (GTK.GTK_VERSION < OS.VERSION(4, 10, 0))) {
 		Font font = new Font(display, fontData);
 
 		long fontName = OS.pango_font_description_to_string(font.handle);
@@ -196,7 +196,7 @@ public FontData open () {
 		font.dispose();
 		OS.g_free(fontName);
 
-		GTK3.gtk_font_chooser_set_font(handle, buffer);
+		GTK.gtk_font_chooser_set_font(handle, buffer);
 	}
 
 	int signalId = 0;
@@ -209,25 +209,31 @@ public FontData open () {
 	int response;
 	long fontDesc = 0;
 	if (GTK.GTK4) {
-		long shellHandle = parent != null ? parent.topHandle() : 0;
-		Font font = new Font(display, fontData);
-		fontDesc = SyncDialogUtil.run(display, new AsyncReadyCallback() {
-			@Override
-			public void async(long callback) {
-				// The font dialog ignores the given font and simply picks the first installed font
-				// See https://gitlab.gnome.org/GNOME/gtk/-/issues/6892
-				GTK4.gtk_font_dialog_choose_font(handle, shellHandle, font.handle, 0, callback, 0);
+		if (GTK.GTK_VERSION >= OS.VERSION(4, 10, 0)) {
+			long shellHandle = parent != null ? parent.topHandle() : 0;
+			Font font = fontData != null ? new Font(display, fontData) : null;
+			fontDesc = SyncDialogUtil.run(display, new AsyncReadyCallback() {
+				@Override
+				public void async(long callback) {
+					// The font dialog ignores the given font and simply picks the first installed font
+					// See https://gitlab.gnome.org/GNOME/gtk/-/issues/6892
+					GTK4.gtk_font_dialog_choose_font(handle, shellHandle, font != null ? font.handle : 0, 0, callback, 0);
+				}
+
+				@Override
+				public long await(long result) {
+					return GTK4.gtk_font_dialog_choose_font_finish(handle, result, null);
+				}
+
+			});
+			if (font != null) {
+				font.dispose();
 			}
 
-			@Override
-			public long await(long result) {
-				return GTK4.gtk_font_dialog_choose_font_finish(handle, result, null);
-			}
-
-		});
-		font.dispose();
-
-		response = fontDesc != 0 ? GTK.GTK_RESPONSE_OK : GTK.GTK_RESPONSE_CANCEL;
+			response = fontDesc != 0 ? GTK.GTK_RESPONSE_OK : GTK.GTK_RESPONSE_CANCEL;
+		} else {
+			response = SyncDialogUtil.run(display, handle, false);
+		}
 	} else {
 		display.externalEventLoop = true;
 		display.sendPreExternalEventDispatchEvent();
@@ -244,8 +250,8 @@ public FontData open () {
 
 	boolean success = response == GTK.GTK_RESPONSE_OK;
 	if (success) {
-		if (!GTK.GTK4) {
-			long fontName = GTK3.gtk_font_chooser_get_font (handle);
+		if (GTK.GTK_VERSION < OS.VERSION(4, 10, 0)) {
+			long fontName = GTK.gtk_font_chooser_get_font (handle);
 			int length = C.strlen (fontName);
 			byte [] buffer = new byte [length + 1];
 			C.memmove (buffer, fontName, length);
@@ -261,7 +267,11 @@ public FontData open () {
 
 	display.removeIdleProc ();
 
-	if (!GTK.GTK4) {
+	if (GTK.GTK4) {
+		if (GTK.GTK_VERSION < OS.VERSION(4, 10, 0)) {
+			GTK4.gtk_window_destroy(handle);
+		}
+	} else {
 		GTK3.gtk_widget_destroy(handle);
 	}
 
