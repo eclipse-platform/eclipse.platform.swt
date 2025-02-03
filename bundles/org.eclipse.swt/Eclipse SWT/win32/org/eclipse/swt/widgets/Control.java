@@ -3257,7 +3257,8 @@ void setBoundsInPixels (int x, int y, int width, int height, int flags, boolean 
 public void setBounds (Rectangle rect) {
 	checkWidget ();
 	if (rect == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setBoundsInPixels(DPIUtil.scaleUp(rect, getZoom()));
+	int zoom = autoScaleDisabled ? parent.getZoom() : getZoom();
+	setBoundsInPixels(DPIUtil.scaleUp(rect, zoom));
 }
 
 void setBoundsInPixels (Rectangle rect) {

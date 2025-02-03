@@ -65,6 +65,7 @@ public abstract class Widget {
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public int nativeZoom;
+	boolean autoScaleDisabled = false;
 	int style, state;
 	Display display;
 	EventTable eventTable;
@@ -132,6 +133,9 @@ public abstract class Widget {
 	/* Bidi flag and for auto text direction */
 	static final int AUTO_TEXT_DIRECTION = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 
+	private static final String DATA_AUTOSCALE_DISABLED = "AUTOSCALE_DISABLED";
+	private static final String DATA_NATIVE_ZOOM = "NATIVE_ZOOM";
+
 	/* Initialize the Common Controls DLL */
 	static {
 		INITCOMMONCONTROLSEX icce = new INITCOMMONCONTROLSEX ();
@@ -182,9 +186,11 @@ public Widget (Widget parent, int style) {
 	checkParent (parent);
 	this.style = style;
 	this.nativeZoom = parent != null ? parent.nativeZoom : DPIUtil.getNativeDeviceZoom();
+	this.autoScaleDisabled = parent.autoScaleDisabled;
 	display = parent.display;
 	reskinWidget ();
 	notifyCreationTracker();
+	this.setData(DATA_NATIVE_ZOOM, this.nativeZoom);
 }
 
 void _addListener (int eventType, Listener listener) {
@@ -1457,6 +1463,10 @@ public void setData (String key, Object value) {
 		}
 	}
 	if (key.equals(SWT.SKIN_CLASS) || key.equals(SWT.SKIN_ID)) this.reskin(SWT.ALL);
+
+	if (DATA_AUTOSCALE_DISABLED.equals(key)) {
+		autoScaleDisabled = Boolean.parseBoolean(value.toString());
+	}
 }
 
 boolean sendFocusEvent (int type) {
@@ -2686,20 +2696,30 @@ void notifyDisposalTracker() {
 }
 
 GC createNewGC(long hDC, GCData data) {
-	data.nativeZoom = nativeZoom;
+	data.nativeZoom = getNativeZoom();
+	if (autoScaleDisabled && data.font != null) {
+		data.font = SWTFontProvider.getFont(display, data.font.getFontData()[0], 100);
+	}
 	return GC.win32_new(hDC, data);
 }
 
 int getNativeZoom() {
+	if (autoScaleDisabled) {
+		return 100;
+	}
 	return nativeZoom;
 }
 
 int getZoom() {
+	if (autoScaleDisabled) {
+		return 100;
+	}
 	return DPIUtil.getZoomForAutoscaleProperty(nativeZoom);
 }
 
 private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
 	widget.nativeZoom = newZoom;
+	widget.setData(DATA_NATIVE_ZOOM, newZoom);
 }
 
 int getSystemMetrics(int nIndex) {
