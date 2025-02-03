@@ -514,14 +514,14 @@ public void test_CloseWindowListener_closeShell() {
 	shell.close();
 }
 
-@Test(expected = IllegalArgumentException.class)
+@Test
 public void test_CloseWindowListener_addWithNullArg() {
-	browser.addCloseWindowListener(null);
+	assertThrows(IllegalArgumentException.class, () -> browser.addCloseWindowListener(null));
 }
 
-@Test(expected = IllegalArgumentException.class)
+@Test
 public void test_CloseWindowListener_removeWithNullArg() {
-	browser.removeCloseWindowListener(null);
+	assertThrows(IllegalArgumentException.class, () -> browser.removeCloseWindowListener(null));
 }
 
 @Test
@@ -554,14 +554,14 @@ public void test_LocationListener_adapter_closeShell() {
 	shell.close();
 }
 
-@Test(expected = IllegalArgumentException.class)
+@Test
 public void test_LocationListener_addWithNullArg() {
-	browser.addLocationListener(null);
+	assertThrows(IllegalArgumentException.class, () -> browser.addLocationListener(null));
 }
 
-@Test(expected = IllegalArgumentException.class)
+@Test
 public void test_LocationListener_removeWithNullArg() {
-	browser.removeLocationListener(null);
+	assertThrows(IllegalArgumentException.class, () -> browser.removeLocationListener(null));
 }
 
 @Test
@@ -806,14 +806,14 @@ public void test_OpenWindowListener_closeShell() {
 	shell.close();
 }
 
-@Test(expected = IllegalArgumentException.class)
+@Test
 public void test_OpenWindowListener_addWithNulArg() {
-	browser.addOpenWindowListener(null);
+	assertThrows(IllegalArgumentException.class, () -> browser.addOpenWindowListener(null));
 }
 
-@Test(expected = IllegalArgumentException.class)
+@Test
 public void test_OpenWindowListener_removeWithNullArg() {
-	browser.removeOpenWindowListener(null);
+	assertThrows(IllegalArgumentException.class, () -> browser.removeOpenWindowListener(null));
 }
 
 @Test
@@ -967,14 +967,14 @@ public void test_ProgressListener_newListener_closeShell() {
 	shell.close();
 }
 
-@Test(expected = IllegalArgumentException.class)
+@Test
 public void test_ProgressListener_addWithNullArg() {
-	browser.addProgressListener(null);
+	assertThrows(IllegalArgumentException.class, () -> browser.addProgressListener(null));
 }
 
-@Test(expected = IllegalArgumentException.class)
+@Test
 public void test_ProgressListener_removeWithNullArg() {
-	browser.removeProgressListener(null);
+	assertThrows(IllegalArgumentException.class, () -> browser.removeProgressListener(null));
 }
 
 @Test
@@ -1013,14 +1013,14 @@ public void test_ProgressListener_completed_Called() {
 	assertTrue(passed);
 }
 
-@Test(expected = IllegalArgumentException.class)
+@Test
 public void test_StatusTextListener_addWithNull() {
-	browser.addStatusTextListener(null);
+	assertThrows(IllegalArgumentException.class, () -> browser.addStatusTextListener(null));
 }
 
-@Test(expected = IllegalArgumentException.class)
+@Test
 public void test_StatusTextListener_removeWithNullArg() {
-	browser.removeStatusTextListener(null);
+	assertThrows(IllegalArgumentException.class, () -> browser.removeStatusTextListener(null));
 }
 
 @Test
@@ -1104,14 +1104,14 @@ public void test_TitleListener_addListener_closeShell() {
 	shell.close();
 }
 
-@Test(expected = IllegalArgumentException.class)
+@Test
 public void test_TitleListener_addwithNull() {
-	browser.addTitleListener(null);
+	assertThrows(IllegalArgumentException.class, () -> browser.addTitleListener(null));
 }
 
-@Test(expected = IllegalArgumentException.class)
+@Test
 public void test_TitleListener_removeWithNullArg() {
-	browser.removeTitleListener(null);
+	assertThrows(IllegalArgumentException.class, () -> browser.removeTitleListener(null));
 }
 
 @Test
@@ -1298,14 +1298,14 @@ public void test_VisibilityWindowListener_newListener_closeShell() {
 	shell.close();
 }
 
-@Test(expected = IllegalArgumentException.class)
+@Test
 public void test_VisibilityWindowListener_addWithNull() {
-	browser.addVisibilityWindowListener(null);
+	assertThrows(IllegalArgumentException.class, () -> browser.addVisibilityWindowListener(null));
 }
 
-@Test(expected = IllegalArgumentException.class)
+@Test
 public void test_VisibilityWindowListener_removeWithNullArg() {
-	browser.removeVisibilityWindowListener(null);
+	assertThrows(IllegalArgumentException.class, () -> browser.removeVisibilityWindowListener(null));
 }
 
 @Test
@@ -1457,14 +1457,14 @@ public void test_back() {
 	assertFalse(result);
 }
 
-@Test(expected = IllegalArgumentException.class)
+@Test
 public void test_setTextNull() {
-	browser.setText(null);
+	assertThrows(IllegalArgumentException.class, () -> browser.setText(null));
 }
 
-@Test(expected = IllegalArgumentException.class)
+@Test
 public void test_setUrlWithNullArg() {
-	browser.setUrl(null);
+	assertThrows(IllegalArgumentException.class, () -> browser.setUrl(null));
 }
 
 
@@ -1831,9 +1831,9 @@ public void test_stop() {
 	browser.stop();
 }
 
-@Test(expected = IllegalArgumentException.class)
+@Test
 public void test_execute_withNullArg() {
-	browser.execute(null);
+	assertThrows(IllegalArgumentException.class, () -> browser.execute(null));
 }
 
 /**
