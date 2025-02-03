@@ -342,11 +342,10 @@ public void test_Constructor_asyncParentDisposal() {
 
 @Test
 public void test_Constructor_multipleInstantiationsInDifferentShells() {
-	assumeTrue("This test is intended for Edge only", isEdge);
 	final int numberOfBrowsers = 5;
 	for (int i = 0; i < numberOfBrowsers; i++) {
 		Shell browserShell = new Shell(Display.getCurrent());
-		Browser browser = createBrowser(browserShell, SWT.EDGE);
+		Browser browser = createBrowser(browserShell, swtBrowserSettings);
 		assertFalse(browser.isDisposed());
 		browser.dispose();
 		assertTrue(browser.isDisposed());
