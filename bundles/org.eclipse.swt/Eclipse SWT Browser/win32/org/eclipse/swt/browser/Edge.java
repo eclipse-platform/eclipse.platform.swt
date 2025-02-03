@@ -510,7 +510,7 @@ private static void processOSMessagesUntil(Supplier<Boolean> condition, Consumer
 	// The timer call also wakes up the display to avoid being stuck in display.sleep()
 	display.timerExec((int) MAXIMUM_OPERATION_TIME.toMillis(), () -> timeoutOccurred.set(true));
 	while (!display.isDisposed() && !condition.get() && !timeoutOccurred.get()) {
-		if (OS.PeekMessage(msg, 0, 0, 0, OS.PM_NOREMOVE)) {
+		if (OS.PeekMessage(msg, 0, 0, 0, OS.PM_NOREMOVE | OS.PM_QS_POSTMESSAGE)) {
 			display.readAndDispatch();
 		} else {
 			display.sleep();
