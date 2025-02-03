@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2024 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -88,26 +88,17 @@ typedef enum {
 	gtk_1event_1box_1new_FUNC,
 	gtk_1event_1controller_1handle_1event_FUNC,
 	gtk_1events_1pending_FUNC,
-	gtk_1file_1chooser_1add_1filter_FUNC,
 	gtk_1file_1chooser_1get_1filename_FUNC,
 	gtk_1file_1chooser_1get_1filenames_FUNC,
-	gtk_1file_1chooser_1get_1filter_FUNC,
 	gtk_1file_1chooser_1get_1uri_FUNC,
 	gtk_1file_1chooser_1get_1uris_FUNC,
-	gtk_1file_1chooser_1native_1new_FUNC,
 	gtk_1file_1chooser_1set_1current_1folder_FUNC,
 	gtk_1file_1chooser_1set_1current_1folder_1uri_FUNC,
-	gtk_1file_1chooser_1set_1current_1name_FUNC,
 	gtk_1file_1chooser_1set_1do_1overwrite_1confirmation_FUNC,
 	gtk_1file_1chooser_1set_1extra_1widget_FUNC,
 	gtk_1file_1chooser_1set_1filename_FUNC,
-	gtk_1file_1chooser_1set_1filter_FUNC,
 	gtk_1file_1chooser_1set_1local_1only_FUNC,
-	gtk_1file_1chooser_1set_1select_1multiple_FUNC,
 	gtk_1file_1chooser_1set_1uri_FUNC,
-	gtk_1font_1chooser_1dialog_1new_FUNC,
-	gtk_1font_1chooser_1get_1font_FUNC,
-	gtk_1font_1chooser_1set_1font_FUNC,
 	gtk_1frame_1set_1shadow_1type_FUNC,
 	gtk_1gesture_1drag_1new_FUNC,
 	gtk_1gesture_1rotate_1new_FUNC,

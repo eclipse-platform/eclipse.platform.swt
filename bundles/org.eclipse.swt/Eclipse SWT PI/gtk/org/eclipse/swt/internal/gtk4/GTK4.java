@@ -174,6 +174,24 @@ public class GTK4 {
 	/** @param builder cast=(GdkContentFormatsBuilder *) */
 	public static final native long gdk_content_formats_builder_free_to_formats(long builder);
 
+	/* GtkFileChooser */
+	/** @param chooser cast=(GtkFileChooser *) */
+	public static final native long gtk_file_chooser_get_files(long chooser);
+	/** @param chooser cast=(GtkFileChooser *) */
+	public static final native long gtk_file_chooser_get_file(long chooser);
+	/**
+	 * @param chooser cast=(GtkFileChooser *)
+	 * @param file cast=(GFile *)
+	 * @param error cast=(GError **)
+	 */
+	public static final native boolean gtk_file_chooser_set_current_folder(long chooser, long file, long error);
+	/**
+	 * @param chooser cast=(GtkFileChooser *)
+	 * @param file cast=(GFile *)
+	 * @param error cast=(GError **)
+	 */
+	public static final native boolean gtk_file_chooser_set_file(long chooser, long file, long error);
+
 	/* GtkFileDialog */
 	/** @method flags=dynamic **/
 	public static final native long gtk_file_dialog_new();

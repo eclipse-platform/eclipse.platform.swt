@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2024 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2025 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -376,10 +376,19 @@ typedef enum {
 	gtk_1expander_1new_FUNC,
 	gtk_1expander_1set_1expanded_FUNC,
 	gtk_1expander_1set_1label_1widget_FUNC,
+	gtk_1file_1chooser_1add_1filter_FUNC,
+	gtk_1file_1chooser_1get_1filter_FUNC,
+	gtk_1file_1chooser_1native_1new_FUNC,
+	gtk_1file_1chooser_1set_1current_1name_FUNC,
+	gtk_1file_1chooser_1set_1filter_FUNC,
+	gtk_1file_1chooser_1set_1select_1multiple_FUNC,
 	gtk_1file_1filter_1add_1pattern_FUNC,
 	gtk_1file_1filter_1get_1name_FUNC,
 	gtk_1file_1filter_1new_FUNC,
 	gtk_1file_1filter_1set_1name_FUNC,
+	gtk_1font_1chooser_1dialog_1new_FUNC,
+	gtk_1font_1chooser_1get_1font_FUNC,
+	gtk_1font_1chooser_1set_1font_FUNC,
 	gtk_1frame_1get_1label_1widget_FUNC,
 	gtk_1frame_1new_FUNC,
 	gtk_1frame_1set_1label_1widget_FUNC,
