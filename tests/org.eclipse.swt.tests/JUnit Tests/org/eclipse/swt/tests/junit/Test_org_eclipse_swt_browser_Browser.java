@@ -342,6 +342,7 @@ public void test_Constructor_asyncParentDisposal() {
 
 @Test
 public void test_Constructor_multipleInstantiationsInDifferentShells() {
+	assumeTrue("This test is intended for Edge only", isEdge);
 	final int numberOfBrowsers = 5;
 	for (int i = 0; i < numberOfBrowsers; i++) {
 		Shell browserShell = new Shell(Display.getCurrent());
@@ -396,7 +397,7 @@ private class EdgeBrowserApplication extends Thread {
 
 @Test
 public void test_Constructor_multipleInstantiationsInDifferentThreads() {
-	assumeTrue("test case is only relevant on Windows", SwtTestUtil.isWindows);
+	assumeTrue("This test is intended for Edge only", isEdge);
 
 	int numberOfApplication = 5;
 	List<EdgeBrowserApplication> browserApplications = new ArrayList<>();
