@@ -1015,6 +1015,9 @@ static void checkDisplay (Thread thread, boolean multiple) {
 }
 
 long checkIfEventProc (long display, long xEvent, long userData) {
+	if (GTK.GTK4) {
+		return 0;
+	}
 	int type = OS.X_EVENT_TYPE (xEvent);
 	switch (type) {
 		case OS.Expose:
