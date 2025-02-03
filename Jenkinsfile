@@ -17,9 +17,18 @@
 
 def runOnNativeBuildAgent(String platform, Closure body) {
 	def final nativeBuildStageName = 'Build SWT-native binaries'
-	if (platform == 'gtk.linux.x86_64') {
+	def dockerImage = null
+	switch (platform) {
+		case 'gtk.linux.x86_64':
+			dockerImage = 'eclipse/platformreleng-debian-swtgtk3nativebuild:10'
+			break
+		case 'gtk4.linux.x86_64':
+			dockerImage = 'eclipse/platformreleng-debian-swtnativebuild:12'
+			break
+	}
+	if (dockerImage != null) {
 		podTemplate(inheritFrom: 'basic' /* inherit general configuration */, containers: [
-			containerTemplate(name: 'swtbuild', image: 'eclipse/platformreleng-debian-swtnativebuild:12',
+			containerTemplate(name: 'swtbuild', image: dockerImage,
 				resourceRequestCpu:'1000m', resourceRequestMemory:'512Mi',
 				resourceLimitCpu:'2000m', resourceLimitMemory:'4096Mi',
 				alwaysPullImage: true, command: 'cat', ttyEnabled: true)
@@ -199,6 +208,7 @@ pipeline {
 						'gtk.linux.ppc64le',\
 						'gtk.linux.riscv64',\
 						'gtk.linux.x86_64',\
+						'gtk4.linux.x86_64',\
 						'win32.win32.aarch64',\
 						'win32.win32.x86_64'
 					}
@@ -220,22 +230,29 @@ pipeline {
 								runOnNativeBuildAgent("${PLATFORM}") {
 									cleanWs() // Workspace is not cleaned up by default, so we do it explicitly
 									echo "OS: ${os}, ARCH: ${arch}"
-									unstash "swt.binaries.sources.${ws}"
+									unstash "swt.binaries.sources.${ws == 'gtk4' ? 'gtk' : ws }"
 									dir('jdk.resources') {
 										unstash "jdk.resources.${os}.${arch}"
 									}
 									withEnv(['MODEL=' + arch, "OUTPUT_DIR=${WORKSPACE}/libs", "SWT_JAVA_HOME=${WORKSPACE}/jdk.resources"]) {
 										if (isUnix()){
-											sh '''
+											sh '''#!/bin/bash -x
 												mkdir libs
-												if [ "${PLATFORM}" = "gtk.linux.aarch64" ]; then
-													sh build.sh -gtk3 install
-												elif [ "${PLATFORM}" = "gtk.linux.ppc64le" ]; then
-													sh build.sh -gtk3 install
-												elif [ "${PLATFORM}" = "gtk.linux.riscv64" ]; then
-													sh build.sh -gtk3 install
-												else
+												if [[ ${PLATFORM} == gtk.linux.* ]]; then
+													sh build.sh -gtk3 checklibs install
+												elif [[ ${PLATFORM} == gtk4.linux.* ]]; then
+													# We build both 3 + 4, but we only keep libswt-pi4-gtk
+													# We build both to help catch build errors as this
+													# build runs against more modern gcc/libs and helps
+													# with verification
+													sh build.sh -gtk3 checklibs
+													sh build.sh clean
+													sh build.sh -gtk4 checklibs install-pi-only
+												elif [[ ${PLATFORM} == cocoa.macosx.* ]]; then
 													sh build.sh install 
+												else
+													echo "Unexpected build platform ${PLATFORM}"
+													exit 1
 												fi
 												ls -1R libs
 											'''
@@ -258,12 +275,14 @@ pipeline {
 						steps {
 							dir("libs/${PLATFORM}") {
 								unstash "swt.binaries.${PLATFORM}"
-								sh '''
+								sh '''#!/bin/bash -x
 									if [[ ${PLATFORM} == cocoa.macosx.* ]]; then
 										binariesExtension='jnilib'
 										signerUrl='https://cbi.eclipse.org/macos/codesign/sign'
-									elif [[ ${PLATFORM} == gtk.linux.* ]]; then
+									elif [[ ${PLATFORM} == gtk.linux.* || ${PLATFORM} == gtk4.linux.* ]]; then
 										binariesExtension='so'
+										# Replace 'gtk4' by 'gtk' to copy the built gtk4 library into gtk fragment
+										PLATFORM=${PLATFORM/#gtk4/gtk}
 									elif [[ ${PLATFORM} == win32.win32.* ]]; then
 										binariesExtension='dll'
 										signerUrl='https://cbi.eclipse.org/authenticode/sign'

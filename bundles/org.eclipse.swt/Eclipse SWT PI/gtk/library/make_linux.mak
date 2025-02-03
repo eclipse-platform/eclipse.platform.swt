@@ -241,6 +241,44 @@ glx_stats.o: glx_stats.c glx_stats.h
 	$(CC) $(CFLAGS) $(GLXCFLAGS) -c glx_stats.c
 
 #
+# Permitted dependencies and glibc versions
+#
+# This does not include libraries that are dynamically loaded with dlopen,
+# The purpose of this list, and the version limit on glibc is to ensure
+# eclipse swt will be able to start on the widest range on Linuxes.
+# All other error handling regarding missing/problematic libraries
+# can be done at runtime.
+ifeq ($(MODEL),x86_64)
+PERMITTED_LIBRARIES=libc.so.6 libpthread.so.0 libdl.so.2 libm.so.6
+ifeq ($(GTK_VERSION), 4.0)
+PERMITTED_GLIBC_VERSION=2.34
+PERMITTED_GTK_LIBRARIES = libgtk-4.so.1
+else
+PERMITTED_GLIBC_VERSION=2.14
+PERMITTED_GTK_LIBRARIES = libgtk-3.so.0 libgdk-3.so.0 libcairo.so.2 libgthread-2.0.so.0
+endif
+checklibs: all
+	$(info Verifying $(ALL_SWT_LIBS) have permitted dependencies)
+	./check_dependencies.sh $(SWT_LIB) $(PERMITTED_GLIBC_VERSION) $(PERMITTED_LIBRARIES)
+	./check_dependencies.sh $(AWT_LIB) $(PERMITTED_GLIBC_VERSION) $(PERMITTED_LIBRARIES) libjawt.so
+	./check_dependencies.sh $(SWTPI_LIB) $(PERMITTED_GLIBC_VERSION) $(PERMITTED_LIBRARIES) $(PERMITTED_GTK_LIBRARIES)
+	./check_dependencies.sh $(CAIRO_LIB) $(PERMITTED_GLIBC_VERSION) $(PERMITTED_LIBRARIES) libcairo.so.2
+	./check_dependencies.sh $(ATK_LIB) $(PERMITTED_GLIBC_VERSION) $(PERMITTED_LIBRARIES) libatk-1.0.so.0
+	./check_dependencies.sh $(GLX_LIB) $(PERMITTED_GLIBC_VERSION) $(PERMITTED_LIBRARIES) libGL.so.1 libGLU.so.1
+	./check_dependencies.sh $(WEBKIT_LIB) $(PERMITTED_GLIBC_VERSION) $(PERMITTED_LIBRARIES) libgio-2.0.so.0 libgobject-2.0.so.0 libglib-2.0.so.0
+else
+# We don't enforce max version and library sets on non-x86-64 because
+# 1. We build on native hardware for those platforms so we don't have
+#    ability to use docker to adjust dependency versions as easily
+# 2. The other platforms that are newer are generally faster moving
+#    and it is less likely to break users to have harder version
+#    requirements.
+# As we get bigger user base on non-x86-64 we should start enforcing
+# upper bounds for them too.
+checklibs: all
+endif
+
+#
 # Install
 #
 # Note on syntax because below might be confusing even for bash-Gods:
@@ -252,6 +290,9 @@ glx_stats.o: glx_stats.c glx_stats.h
 # I hope there are no spaces in the path :-).
 install: all
 	cp $(ALL_SWT_LIBS) $(OUTPUT_DIR)
+
+install-pi-only: all
+	cp $(SWTPI_LIB) $(OUTPUT_DIR)
 
 #
 # Clean
