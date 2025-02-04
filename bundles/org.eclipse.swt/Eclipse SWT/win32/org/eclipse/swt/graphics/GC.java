@@ -182,7 +182,28 @@ static int checkStyle(int style) {
 	return style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
 }
 
+private void validateGCState() {
+	if (drawable == null) {
+		return;
+	}
+	try {
+		GCData newData = new GCData();
+		long newHdc = drawable.internal_new_GC(newData);
+
+		if (data.nativeZoom != newData.nativeZoom) {
+			System.err.println("***WARNING: Zoom of the underlying Drawable of the GC has changed. This indicates a "
+					+ "long running GC that should be recreated.");
+		}
+		drawable.internal_dispose_GC(newHdc, newData);
+	} catch (Exception e) {
+		// ignore if recreation fails
+	}
+}
+
 void checkGC(int mask) {
+	if (Device.strictChecks) {
+		validateGCState();
+	}
 	int state = data.state;
 	if ((state & mask) == mask) return;
 	state = (state ^ mask) & mask;
