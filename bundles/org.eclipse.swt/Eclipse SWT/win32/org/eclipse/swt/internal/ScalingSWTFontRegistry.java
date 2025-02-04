@@ -53,7 +53,9 @@ final class ScalingSWTFontRegistry implements SWTFontRegistry {
 
 		private Font scaleFont(int zoom) {
 			FontData fontData = baseFont.getFontData()[0];
-			fontData.data.lfHeight = computePixels(zoom, fontData);
+			int baseZoom = computeZoom(fontData);
+			int zoomScaleFactor = Math.round(1.0f * zoom / baseZoom);
+			fontData.data.lfHeight *= zoomScaleFactor;
 			Font scaledFont = Font.win32_new(device, fontData, zoom);
 			addScaledFont(zoom, scaledFont);
 			return scaledFont;
@@ -168,24 +170,13 @@ final class ScalingSWTFontRegistry implements SWTFontRegistry {
 	}
 
 	private int computeZoom(FontData fontData) {
-		int dpi = device.getDPI().x;
-		int pixelsAtPrimaryMonitorZoom = computePixels(fontData.height);
-		int value = DPIUtil.mapDPIToZoom(dpi) * fontData.data.lfHeight / pixelsAtPrimaryMonitorZoom;
-		return value;
-	}
-
-	private int computePixels(int zoom, FontData fontData) {
-		int dpi = device.getDPI().x;
-		int adjustedLogFontHeight = computePixels(fontData.height);
-		int primaryZoom = DPIUtil.mapDPIToZoom(dpi);
-		if (zoom != primaryZoom) {
-			adjustedLogFontHeight *= (1f * zoom / primaryZoom);
+		int pixelHeight = fontData.data.lfHeight;
+		float currentPointHeight = fontData.height;
+		if (pixelHeight == 0 || Math.abs(currentPointHeight) < 0.001) {
+			// if there is no font yet available, we use a defined zoom
+			return 100;
 		}
-		return adjustedLogFontHeight;
-	}
-
-	private int computePixels(float height) {
-		int dpi = device.getDPI().x;
-		return -(int)(0.5f + (height * dpi / 72f));
+		float pointHeightOn100 = -(pixelHeight / 96f * 72f);
+		return Math.round(100.0f * pointHeightOn100 / currentPointHeight);
 	}
 }
