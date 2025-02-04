@@ -268,6 +268,12 @@ protected void create(DeviceData deviceData) {
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 }
 
+@Override
+protected int getDeviceZoom() {
+	// Printer directly renders on pixel basis, so the zoom must be fixed to 100
+	return 100;
+}
+
 /**
  * Invokes platform specific functionality to allocate a new GC handle.
  * <p>
@@ -295,8 +301,9 @@ public long internal_new_GC(GCData data) {
 			data.style |= SWT.LEFT_TO_RIGHT;
 		}
 		data.device = this;
-		data.font = Font.win32_new(this, OS.GetCurrentObject(handle, OS.OBJ_FONT));
+		data.font = Font.win32_new(this, OS.GetCurrentObject(handle, OS.OBJ_FONT), getDeviceZoom());
 		isGCCreated = true;
+		data.nativeZoom = getDeviceZoom();
 	}
 	return handle;
 }

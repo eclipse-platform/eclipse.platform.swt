@@ -213,7 +213,7 @@ public FontData[] getFontData() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	LOGFONT logFont = new LOGFONT ();
 	OS.GetObject(handle, LOGFONT.sizeof, logFont);
-	float heightInPoints = device.computePoints(logFont, handle, DPIUtil.mapZoomToDPI(zoom));
+	float heightInPoints = device.computePoints(logFont, handle, zoom);
 	return new FontData[] {FontData.win32_new(logFont, heightInPoints)};
 }
 
@@ -280,7 +280,7 @@ private static int extractZoom(Device device) {
 	if (device == null) {
 		return DPIUtil.getNativeDeviceZoom();
 	}
-	return DPIUtil.mapDPIToZoom(device._getDPIx());
+	return device.getDeviceZoom();
 }
 
 /**
@@ -331,8 +331,15 @@ public static Font win32_new(Device device, long handle) {
  * @since 3.126
  */
 public static Font win32_new(Device device, long handle, int zoom) {
-	Font font = win32_new(device, handle);
+	Font font = new Font(device);
 	font.zoom = zoom;
+	font.handle = handle;
+	/*
+	 * When created this way, Font doesn't own its .handle, and
+	 * for this reason it can't be disposed. Tell leak detector
+	 * to just ignore it.
+	 */
+	font.ignoreNonDisposed();
 	return font;
 }
 
