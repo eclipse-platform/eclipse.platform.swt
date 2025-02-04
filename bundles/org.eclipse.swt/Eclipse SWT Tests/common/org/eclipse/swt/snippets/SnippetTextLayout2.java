@@ -11,7 +11,7 @@ public class SnippetTextLayout2 {
 		Display display = new Display();
 		final Shell shell = new Shell(display);
 		shell.setText("Snippet 197");
-		final TextLayout_Old layout = new TextLayout_Old(display);
+		final TextLayout layout = new TextLayout(display);
 		layout.setText(longString);
 		Listener listener = event -> {
 			switch (event.type) {

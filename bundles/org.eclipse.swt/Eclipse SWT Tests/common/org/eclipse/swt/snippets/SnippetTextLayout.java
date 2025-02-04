@@ -20,7 +20,7 @@ public class SnippetTextLayout {
 		Color yellow = display.getSystemColor(SWT.COLOR_YELLOW);
 		Color gray = display.getSystemColor(SWT.COLOR_GRAY);
 
-		final TextLayout_Old layout = new TextLayout_Old(display);
+		final TextLayout layout = new TextLayout(display);
 		TextStyle style1 = new TextStyle(font1, yellow, blue);
 		TextStyle style2 = new TextStyle(font2, green, null);
 		TextStyle style3 = new TextStyle(font3, blue, gray);
