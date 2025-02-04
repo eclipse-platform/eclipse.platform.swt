@@ -70,7 +70,7 @@ public final class TextLayout extends Resource {
  * Adapts necessary Pango APIs to enforce fixed line metrics (when set)
  */
 private static class MetricsAdapter {
-	private FontMetrics lineMetricsInPixels;
+	private NativeFontMetrics lineMetricsInPixels;
 
 	/**
 	 * Calculates Y offset from line metrics configured in
@@ -106,12 +106,14 @@ private static class MetricsAdapter {
 			return null;
 		}
 
-		FontMetrics result = new FontMetrics();
+		NativeFontMetrics result = new NativeFontMetrics();
 		result.ascentInPoints = DPIUtil.autoScaleDown(device, lineMetricsInPixels.ascentInPoints);
 		result.descentInPoints = DPIUtil.autoScaleDown(device, lineMetricsInPixels.descentInPoints);
 		result.averageCharWidthInPoints = DPIUtil.autoScaleDown(device, lineMetricsInPixels.averageCharWidthInPoints);
 
-		return result;
+		FontMetrics metrics = new FontMetrics();
+		metrics.innerFontMetrics = result;
+		return metrics;
 	}
 
 	public void setFixedLineMetrics(Device device, FontMetrics metrics) {
@@ -120,10 +122,10 @@ private static class MetricsAdapter {
 			return;
 		}
 
-		FontMetrics result = new FontMetrics();
-		result.ascentInPoints = DPIUtil.autoScaleUp(device, metrics.ascentInPoints);
-		result.descentInPoints = DPIUtil.autoScaleUp(device, metrics.descentInPoints);
-		result.averageCharWidthInPoints = DPIUtil.autoScaleUp(device, metrics.averageCharWidthInPoints);
+		NativeFontMetrics result = new NativeFontMetrics();
+		result.ascentInPoints = DPIUtil.autoScaleUp(device, metrics.getAscent());
+		result.descentInPoints = DPIUtil.autoScaleUp(device, metrics.getDescent());
+		result.averageCharWidthInPoints = DPIUtil.autoScaleUp(device, metrics.getAverageCharWidth());
 
 		lineMetricsInPixels = result;
 	}
@@ -642,7 +644,7 @@ void drawInPixels(GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 	x += Math.min (indent, wrapIndent);
 	y += getScaledVerticalIndent();
 	boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
-	GCData data = gc.data;
+	GCData data = gc.getGCData();
 	long cairo = data.cairo;
 	boolean extent = false;
 	if ((flags & (SWT.FULL_SELECTION | SWT.DELIMITER_SELECTION)) != 0 && (hasSelection || (flags & SWT.LAST_LINE_SELECTION) != 0)) {
@@ -755,7 +757,7 @@ void drawInPixels(GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 }
 
 void drawWithCairo(GC gc, int x, int y, int start, int end, int yExtent, boolean fullSelection, GdkRGBA fg, GdkRGBA bg) {
-	GCData data = gc.data;
+	GCData data = gc.getGCData();
 	long cairo = data.cairo;
 	Cairo.cairo_save(cairo);
 	if (!fullSelection) {
@@ -788,7 +790,7 @@ void drawWithCairo(GC gc, int x, int y, int start, int end, int yExtent, boolean
 }
 
 void drawBorder(GC gc, int x, int y, GdkRGBA selectionColor) {
-	GCData data = gc.data;
+	GCData data = gc.getGCData();
 	long cairo = data.cairo;
 	long ptr = OS.pango_layout_get_text(layout);
 	Cairo.cairo_save(cairo);
@@ -822,8 +824,8 @@ void drawBorder(GC gc, int x, int y, GdkRGBA selectionColor) {
 				float[] dashes = null;
 				switch (style.borderStyle) {
 					case SWT.BORDER_SOLID: break;
-					case SWT.BORDER_DASH: dashes = width != 0 ? GC.LINE_DASH : GC.LINE_DASH_ZERO; break;
-					case SWT.BORDER_DOT: dashes = width != 0 ? GC.LINE_DOT : GC.LINE_DOT_ZERO; break;
+					case SWT.BORDER_DASH: dashes = width != 0 ? NativeGC.LINE_DASH : GC.LINE_DASH_ZERO; break;
+					case SWT.BORDER_DOT: dashes = width != 0 ? NativeGC.LINE_DOT : GC.LINE_DOT_ZERO; break;
 				}
 				Cairo.cairo_set_source_rgba(cairo, colorRGBA.red, colorRGBA.green, colorRGBA.blue, colorRGBA.alpha);
 				Cairo.cairo_set_line_width(cairo, width);
@@ -1236,7 +1238,7 @@ public int getLineIndex(int offset) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public FontMetrics getLineMetrics (int lineIndex) {
+public FontMetrics getLineMetrics(int lineIndex) {
 	if (metricsAdapter.isFixedMetrics()) {
 		return metricsAdapter.getFixedLineMetrics(getDevice());
 	}
@@ -1267,11 +1269,13 @@ public FontMetrics getLineMetrics (int lineIndex) {
 	heightInPoints = Math.max(this.ascentInPoints + this.descentInPoints, heightInPoints);
 	ascentInPoints = Math.max(this.ascentInPoints, ascentInPoints);
 	int descentInPoints = heightInPoints - ascentInPoints;
-	FontMetrics fm = new FontMetrics();
+	NativeFontMetrics fm = new NativeFontMetrics();
 	fm.ascentInPoints = ascentInPoints;
 	fm.descentInPoints = descentInPoints;
 	fm.averageCharWidthInPoints = 0;
-	return fm;
+	FontMetrics metrics = new FontMetrics();
+	metrics.innerFontMetrics = fm;
+	return metrics;
 }
 
 /**

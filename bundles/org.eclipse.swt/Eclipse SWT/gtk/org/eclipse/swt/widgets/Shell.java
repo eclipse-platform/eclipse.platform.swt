@@ -2101,8 +2101,9 @@ public boolean print (GC gc) {
 		long rootWindow = GDK.gdk_get_default_root_window();
 		long pixbuf = GDK.gdk_pixbuf_get_from_window(rootWindow, rect.x, rect.y, rect.width, rect.height);
 		if (pixbuf != 0) {
-			GDK.gdk_cairo_set_source_pixbuf(gc.handle, pixbuf, 0, 0);
-			Cairo.cairo_paint(gc.handle);
+			NativeGC ngc = (NativeGC) gc.innerGC;
+			GDK.gdk_cairo_set_source_pixbuf(ngc.handle, pixbuf, 0, 0);
+			Cairo.cairo_paint(ngc.handle);
 			OS.g_object_unref(pixbuf);
 			return true;
 		}

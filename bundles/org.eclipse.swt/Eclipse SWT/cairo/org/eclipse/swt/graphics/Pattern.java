@@ -183,8 +183,8 @@ public Pattern(Device device, float x1, float y1, float x2, float y2, Color colo
 	if (color2.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	handle = Cairo.cairo_pattern_create_linear(x1, y1, x2, y2);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	GC.setCairoPatternColor(handle, 0, color1, alpha1);
-	GC.setCairoPatternColor(handle, 1, color2, alpha2);
+	NativeGC.setCairoPatternColor(handle, 0, color1, alpha1);
+	NativeGC.setCairoPatternColor(handle, 1, color2, alpha2);
 	Cairo.cairo_pattern_set_extend(handle, Cairo.CAIRO_EXTEND_REPEAT);
 	init();
 }
