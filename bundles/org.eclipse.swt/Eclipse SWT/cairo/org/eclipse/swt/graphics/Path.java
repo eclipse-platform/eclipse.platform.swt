@@ -336,6 +336,7 @@ public void addString(String string, float x, float y, Font font) {
 	scaledFont.dispose(); // Dispose the scaled up font
 }
 void addStringInPixels(String string, float x, float y, Font font) {
+
 	moved = false;
 	NativeGC.addCairoString(handle, string, x, y, font);
 	closed = true;
@@ -388,8 +389,14 @@ public boolean contains(float x, float y, GC gc, boolean outline) {
 	y = DPIUtil.autoScaleUp(y);
 	return containsInPixels(x, y, gc, outline);
 }
+
 boolean containsInPixels(float x, float y, GC gc, boolean outline) {
-	//TODO - see Windows
+	assert (gc.innerGC instanceof NativeGC);
+	return containsInPixels(x, y, (NativeGC) gc.innerGC, outline);
+}
+
+boolean containsInPixels(float x, float y, NativeGC gc, boolean outline) {
+
 	gc.initCairo();
 	gc.checkGC(GC.LINE_CAP | GC.LINE_JOIN | GC.LINE_STYLE | GC.LINE_WIDTH);
 	boolean result = false;

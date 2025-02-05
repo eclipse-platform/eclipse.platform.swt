@@ -32,6 +32,10 @@ public final class FontMetrics {
 FontMetrics() {
 }
 
+FontMetrics(NativeFontMetrics ifm) {
+	this.innerFontMetrics = ifm;
+}
+
 /**
  * Compares the argument to the receiver, and returns true
  * if they represent the <em>same</em> object using a class

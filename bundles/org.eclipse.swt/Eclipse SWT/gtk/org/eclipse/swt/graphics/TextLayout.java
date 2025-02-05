@@ -70,7 +70,7 @@ public final class TextLayout extends Resource {
  * Adapts necessary Pango APIs to enforce fixed line metrics (when set)
  */
 private static class MetricsAdapter {
-	private NativeFontMetrics lineMetricsInPixels;
+	private FontMetrics lineMetricsInPixels;
 
 	/**
 	 * Calculates Y offset from line metrics configured in
@@ -106,14 +106,16 @@ private static class MetricsAdapter {
 			return null;
 		}
 
-		NativeFontMetrics result = new NativeFontMetrics();
-		result.ascentInPoints = DPIUtil.autoScaleDown(device, lineMetricsInPixels.ascentInPoints);
-		result.descentInPoints = DPIUtil.autoScaleDown(device, lineMetricsInPixels.descentInPoints);
-		result.averageCharWidthInPoints = DPIUtil.autoScaleDown(device, lineMetricsInPixels.averageCharWidthInPoints);
+		assert (lineMetricsInPixels.innerFontMetrics instanceof NativeFontMetrics);
+		NativeFontMetrics nfm = (NativeFontMetrics) lineMetricsInPixels.innerFontMetrics;
 
-		FontMetrics metrics = new FontMetrics();
-		metrics.innerFontMetrics = result;
-		return metrics;
+		NativeFontMetrics result = new NativeFontMetrics();
+		result.ascentInPoints = DPIUtil.autoScaleDown(device, nfm.ascentInPoints);
+		result.descentInPoints = DPIUtil.autoScaleDown(device, nfm.descentInPoints);
+		result.averageCharWidthInPoints = DPIUtil.autoScaleDown(device,
+				nfm.averageCharWidthInPoints);
+
+		return new FontMetrics(result);
 	}
 
 	public void setFixedLineMetrics(Device device, FontMetrics metrics) {
@@ -122,12 +124,15 @@ private static class MetricsAdapter {
 			return;
 		}
 
-		NativeFontMetrics result = new NativeFontMetrics();
-		result.ascentInPoints = DPIUtil.autoScaleUp(device, metrics.getAscent());
-		result.descentInPoints = DPIUtil.autoScaleUp(device, metrics.getDescent());
-		result.averageCharWidthInPoints = DPIUtil.autoScaleUp(device, metrics.getAverageCharWidth());
+		assert (metrics.innerFontMetrics instanceof NativeFontMetrics);
+		NativeFontMetrics nfm = (NativeFontMetrics) metrics.innerFontMetrics;
 
-		lineMetricsInPixels = result;
+		NativeFontMetrics result = new NativeFontMetrics();
+		result.ascentInPoints = DPIUtil.autoScaleUp(device, nfm.ascentInPoints);
+		result.descentInPoints = DPIUtil.autoScaleUp(device, nfm.descentInPoints);
+		result.averageCharWidthInPoints = DPIUtil.autoScaleUp(device, nfm.averageCharWidthInPoints);
+
+		lineMetricsInPixels = new FontMetrics(result);
 	}
 
 	private void validateLayout (long layout) {
@@ -644,7 +649,10 @@ void drawInPixels(GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 	x += Math.min (indent, wrapIndent);
 	y += getScaledVerticalIndent();
 	boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
-	GCData data = gc.getGCData();
+
+	assert (gc.innerGC instanceof NativeGC);
+	NativeGC ngc = (NativeGC) gc.innerGC;
+	GCData data = ngc.data;
 	long cairo = data.cairo;
 	boolean extent = false;
 	if ((flags & (SWT.FULL_SELECTION | SWT.DELIMITER_SELECTION)) != 0 && (hasSelection || (flags & SWT.LAST_LINE_SELECTION) != 0)) {
@@ -757,7 +765,11 @@ void drawInPixels(GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 }
 
 void drawWithCairo(GC gc, int x, int y, int start, int end, int yExtent, boolean fullSelection, GdkRGBA fg, GdkRGBA bg) {
-	GCData data = gc.getGCData();
+
+	assert (gc.innerGC instanceof NativeGC);
+	NativeGC ngc = (NativeGC) gc.innerGC;
+
+	GCData data = ngc.data;
 	long cairo = data.cairo;
 	Cairo.cairo_save(cairo);
 	if (!fullSelection) {
@@ -790,7 +802,9 @@ void drawWithCairo(GC gc, int x, int y, int start, int end, int yExtent, boolean
 }
 
 void drawBorder(GC gc, int x, int y, GdkRGBA selectionColor) {
-	GCData data = gc.getGCData();
+	assert (gc.innerGC instanceof NativeGC);
+	NativeGC ngc = (NativeGC) gc.innerGC;
+	GCData data = ngc.data;
 	long cairo = data.cairo;
 	long ptr = OS.pango_layout_get_text(layout);
 	Cairo.cairo_save(cairo);
@@ -1273,9 +1287,7 @@ public FontMetrics getLineMetrics(int lineIndex) {
 	fm.ascentInPoints = ascentInPoints;
 	fm.descentInPoints = descentInPoints;
 	fm.averageCharWidthInPoints = 0;
-	FontMetrics metrics = new FontMetrics();
-	metrics.innerFontMetrics = fm;
-	return metrics;
+	return new FontMetrics(fm);
 }
 
 /**

@@ -261,6 +261,7 @@ void drawBackground (Control control, long gdkResource, long cr, int x, int y, i
 }
 
 boolean drawGripper (GC gc, int x, int y, int width, int height, boolean vertical) {
+
 	long paintHandle = paintHandle ();
 	long gdkResource = GTK.GTK4? gtk_widget_get_surface(paintHandle) : gtk_widget_get_window (paintHandle);
 	if (gdkResource == 0) return false;
@@ -638,6 +639,7 @@ long paintSurface () {
  */
 public boolean print (GC gc) {
 	checkWidget ();
+
 	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	long topHandle = topHandle ();
