@@ -2777,17 +2777,18 @@ public boolean print (GC gc) {
 	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 
+	NativeGC ngc = (NativeGC) gc.innerGC;
 	if (OS.VERSION < OS.VERSION(10, 13, 0)) {
 		NSGraphicsContext.static_saveGraphicsState();
-		NSGraphicsContext.setCurrentContext(gc.handle);
+		NSGraphicsContext.setCurrentContext(ngc.handle);
 		NSAffineTransform transform = NSAffineTransform.transform ();
 		transform.translateXBy (0, view.bounds().height);
 		transform.scaleXBy (1, -1);
 		transform.concat ();
-		view.displayRectIgnoringOpacity(view.bounds(), gc.handle);
+		view.displayRectIgnoringOpacity(view.bounds(), ngc.handle);
 		NSGraphicsContext.static_restoreGraphicsState();
 	} else {
-		view.displayRectIgnoringOpacity (view.bounds (), gc.handle);
+		view.displayRectIgnoringOpacity(view.bounds(), ngc.handle);
 	}
 	return true;
 }

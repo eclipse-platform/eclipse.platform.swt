@@ -487,7 +487,7 @@ public boolean contains(float x, float y, GC gc, boolean outline) {
 				C.free(pixel);
 				SWT.error(SWT.ERROR_NO_HANDLES);
 			}
-			GCData data = gc.data;
+			GCData data = gc.getGCData();
 			int capStyle = 0;
 			switch (data.lineCap) {
 				case SWT.CAP_ROUND: capStyle = OS.kCGLineCapRound; break;
@@ -504,7 +504,7 @@ public boolean contains(float x, float y, GC gc, boolean outline) {
 			OS.CGContextSetLineJoin(context, joinStyle);
 			OS.CGContextSetLineWidth(context, data.lineWidth);
 			OS.CGContextTranslateCTM(context, -x + 0.5f, -y + 0.5f);
-			long path = GC.createCGPathRef(handle);
+			long path = NativeGC.createCGPathRef(handle);
 			OS.CGContextAddPath(context, path);
 			OS.CGPathRelease(path);
 			OS.CGContextStrokePath(context);

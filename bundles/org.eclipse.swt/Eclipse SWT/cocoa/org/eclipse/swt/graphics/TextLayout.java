@@ -357,9 +357,9 @@ void computeRuns() {
 			final double realHeight = bounds[numberOfLines].height;
 			final double realDescent = layoutManager.typesetter().baselineOffsetInLayoutManager(layoutManager, lineOffset);
 			final double realAscent = realHeight - realDescent;
-			final double wantAscent = fixedLineMetrics.ascent;
+			final double wantAscent = fixedLineMetrics.getAscent();
 			fixedLineMetricsDy = wantAscent - realAscent;
-			bounds[numberOfLines].height = fixedLineMetrics.height;
+			bounds[numberOfLines].height = fixedLineMetrics.getHeight();
 		}
 	}
 	if (numberOfLines == 0) {
@@ -463,13 +463,14 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 	if (gc.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (selectionForeground != null && selectionForeground.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (selectionBackground != null && selectionBackground.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	NSAutoreleasePool pool = gc.checkGC(GC.CLIPPING | GC.TRANSFORM | GC.FOREGROUND);
+	NativeGC ngc = (NativeGC) gc.innerGC;
+	NSAutoreleasePool pool = ngc.internalCheckGC(NativeGC.CLIPPING | NativeGC.TRANSFORM | NativeGC.FOREGROUND);
 	try {
 		computeRuns();
 		int length = translateOffset(text.length());
 		if (length == 0 && flags == 0) return;
 		y += getVerticalIndent();
-		gc.handle.saveGraphicsState();
+		ngc.handle.saveGraphicsState();
 		NSPoint pt = new NSPoint();
 		pt.x = x;
 		pt.y = y;
@@ -496,7 +497,8 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 					fixRect(rect);
 					rect.x += pt.x;
 					rect.y += pt.y;
-					if (fixedLineMetrics != null) rect.height = fixedLineMetrics.height;
+					if (fixedLineMetrics != null)
+						rect.height = fixedLineMetrics.getHeight();
 					rect.height = Math.max(rect.height, ascent + descent);
 					if ((flags & (SWT.FULL_SELECTION | SWT.DELIMITER_SELECTION)) != 0 && (/*hasSelection ||*/ (flags & SWT.LAST_LINE_SELECTION) != 0)) {
 						rect.height += spacing;
@@ -519,8 +521,8 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 		if (numberOfGlyphs > 0) {
 			range.location = 0;
 			range.length = numberOfGlyphs;
-			double [] fg = gc.data.foreground;
-			boolean defaultFg = fg[0] == 0 && fg[1] == 0 && fg[2] == 0 && fg[3] == 1 && gc.data.alpha == 255;
+			double[] fg = ngc.data.foreground;
+			boolean defaultFg = fg[0] == 0 && fg[1] == 0 && fg[2] == 0 && fg[3] == 1 && ngc.data.alpha == 255;
 			if (!defaultFg) {
 				for (int i = 0; i < stylesCount - 1; i++) {
 					StyleItem run = styles[i];
@@ -528,7 +530,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 					if (run.style != null && run.style.underline && run.style.underlineStyle == SWT.UNDERLINE_LINK) continue;
 					range.location = length != 0 ? translateOffset(run.start) : 0;
 					range.length = translateOffset(styles[i + 1].start) - range.location;
-					layoutManager.addTemporaryAttribute(OS.NSForegroundColorAttributeName, gc.data.fg, range);
+					layoutManager.addTemporaryAttribute(OS.NSForegroundColorAttributeName, ngc.data.fg, range);
 				}
 			}
 			NSPoint ptGlyphs = new NSPoint();
@@ -570,7 +572,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 								long [] rectCount = new long [1];
 								long pArray = layoutManager.rectArrayForCharacterRange(range, range, textContainer, rectCount);
 								NSRect rect = new NSRect();
-								gc.handle.saveGraphicsState();
+								ngc.handle.saveGraphicsState();
 								double baseline = layoutManager.typesetter().baselineOffsetInLayoutManager(layoutManager, lineStart);
 								double [] color = null;
 								if (style.underlineColor != null) color = style.underlineColor.handle;
@@ -599,7 +601,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 											break;
 										}
 										case SWT.UNDERLINE_SQUIGGLE: {
-											gc.handle.setShouldAntialias(false);
+											ngc.handle.setShouldAntialias(false);
 											path.setLineWidth(1.0f);
 											path.setLineCapStyle(OS.NSButtLineCapStyle);
 											path.setLineJoinStyle(OS.NSMiterLineJoinStyle);
@@ -621,7 +623,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 									}
 									path.stroke();
 								}
-								gc.handle.restoreGraphicsState();
+								ngc.handle.restoreGraphicsState();
 							}
 						}
 					}
@@ -638,7 +640,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 								long [] rectCount = new long [1];
 								long pArray = layoutManager.rectArrayForCharacterRange(range, range, textContainer, rectCount);
 								NSRect rect = new NSRect();
-								gc.handle.saveGraphicsState();
+								ngc.handle.saveGraphicsState();
 								double [] color = null;
 								if (style.borderColor != null) color = style.borderColor.handle;
 								if (color == null && style.foreground != null) color = style.foreground.handle;
@@ -649,8 +651,8 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 								float[] dashes = null;
 								switch (style.borderStyle) {
 									case SWT.BORDER_SOLID:	break;
-									case SWT.BORDER_DASH: dashes = width != 0 ? GC.LINE_DASH : GC.LINE_DASH_ZERO; break;
-									case SWT.BORDER_DOT: dashes = width != 0 ? GC.LINE_DOT : GC.LINE_DOT_ZERO; break;
+									case SWT.BORDER_DASH: dashes = width != 0 ? NativeGC.LINE_DASH : GC.LINE_DASH_ZERO; break;
+									case SWT.BORDER_DOT: dashes = width != 0 ? NativeGC.LINE_DOT : GC.LINE_DOT_ZERO; break;
 								}
 								double [] lengths = null;
 								if (dashes != null) {
@@ -671,16 +673,16 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 									path.appendBezierPathWithRect(rect);
 									path.stroke();
 								}
-								gc.handle.restoreGraphicsState();
+								ngc.handle.restoreGraphicsState();
 							}
 						}
 					}
 				}
 			}
 		}
-		gc.handle.restoreGraphicsState();
+		ngc.handle.restoreGraphicsState();
 	} finally {
-		gc.uncheckGC(pool);
+		ngc.uncheckGC(pool);
 	}
 }
 
@@ -774,7 +776,8 @@ public Rectangle getBounds() {
 			NSFont nsFont = font.handle;
 			rect.height = layoutManager.defaultLineHeightForFont(nsFont);
 		}
-		if (fixedLineMetrics != null) rect.height = fixedLineMetrics.height;
+		if (fixedLineMetrics != null)
+			rect.height = fixedLineMetrics.getHeight();
 		rect.height = Math.max(rect.height, ascent + descent) + spacing;
 		return new Rectangle(0, 0, (int)Math.ceil(rect.width), (int)Math.ceil(rect.height) + getVerticalIndent());
 	} finally {
@@ -825,7 +828,8 @@ public Rectangle getBounds(int start, int end) {
 			top = Math.min(top, (int)rect.y);
 			bottom = Math.max(bottom, (int)Math.ceil(rect.y + rect.height));
 		}
-		if (fixedLineMetrics != null) bottom = top + fixedLineMetrics.height;
+		if (fixedLineMetrics != null)
+			bottom = top + fixedLineMetrics.getHeight();
 		return new Rectangle(left, top, right - left, bottom - top + getVerticalIndent());
 	} finally {
 		if (pool != null) pool.release();

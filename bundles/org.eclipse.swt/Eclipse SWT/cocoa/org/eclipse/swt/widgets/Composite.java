@@ -335,7 +335,8 @@ public void drawBackground(GC gc, int x, int y, int width, int height, int offse
 		int imgHeight = -1;
 		GCData data = gc.getGCData();
 		if (data.image != null) imgHeight =  data.image.getBounds().height;
-		NSGraphicsContext context = gc.handle;
+		NativeGC ngc = (NativeGC) gc.innerGC;
+		NSGraphicsContext context = ngc.handle;
 		if (data.flippedContext != null) {
 			NSGraphicsContext.static_saveGraphicsState();
 			NSGraphicsContext.setCurrentContext(context);

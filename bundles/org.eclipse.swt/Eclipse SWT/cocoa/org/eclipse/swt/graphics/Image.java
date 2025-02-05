@@ -105,7 +105,7 @@ public final class Image extends Resource implements Drawable {
 	/**
 	 * The GC the image is currently selected in.
 	 */
-	GC memGC;
+	NativeGC memGC;
 
 	/**
 	 * The global alpha value to be used for every pixel.
