@@ -126,7 +126,7 @@ public Rectangle getBounds () {
 
 Rectangle getBoundsInPixels () {
 	if (image != null) {
-		Rectangle rect = image.getBoundsInPixels ();
+		Rectangle rect = DPIUtil.scaleUp(image.getBounds(), getZoom());
 		return new Rectangle (getXInPixels(), getYInPixels(), rect.width, rect.height);
 	}
 	if (width == 0) {
@@ -220,7 +220,7 @@ public Point getSize () {
 
 Point getSizeInPixels () {
 	if (image != null) {
-		Rectangle rect = image.getBoundsInPixels ();
+		Rectangle rect = DPIUtil.scaleUp(image.getBounds(), getZoom());
 		return new Point (rect.width, rect.height);
 	}
 	if (width == 0) {
