@@ -1225,7 +1225,7 @@ LRESULT wmMeasureChild (long wParam, long lParam) {
 
 	int width = 0, height = 0;
 	if (image != null) {
-		Rectangle rect = image.getBoundsInPixels ();
+		Rectangle rect = DPIUtil.scaleUp(image.getBounds(), getZoom());
 		width = rect.width;
 		height = rect.height;
 	} else {
@@ -1247,7 +1247,7 @@ LRESULT wmMeasureChild (long wParam, long lParam) {
 		if ((lpcmi.dwStyle & OS.MNS_CHECKORBMP) == 0) {
 			for (MenuItem item : parent.getItems ()) {
 				if (item.image != null) {
-					Rectangle rect = item.image.getBoundsInPixels ();
+					Rectangle rect = DPIUtil.scaleUp(item.image.getBounds(), getZoom());
 					width = Math.max (width, rect.width);
 				}
 			}

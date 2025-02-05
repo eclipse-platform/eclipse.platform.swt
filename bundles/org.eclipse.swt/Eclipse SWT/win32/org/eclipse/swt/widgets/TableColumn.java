@@ -413,7 +413,7 @@ public void pack () {
 		if (parent.sortColumn == this && parent.sortDirection != SWT.NONE) {
 			headerWidth += Table.SORT_WIDTH;
 		} else if (image != null) {
-			Rectangle bounds = image.getBoundsInPixels ();
+			Rectangle bounds = DPIUtil.scaleUp(image.getBounds(), getZoom());
 			headerWidth += bounds.width;
 		}
 		long hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
