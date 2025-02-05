@@ -228,13 +228,13 @@ public Image(Device device, Image srcImage, int flag) {
 	ImageHandle imageMetadata;
 	if (srcImage == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (srcImage.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	Rectangle rect = srcImage.getBoundsInPixels();
+	initialNativeZoom = srcImage.initialNativeZoom;
+	Rectangle rect = srcImage.getBounds(getZoom());
 	this.type = srcImage.type;
 	if(srcImage.imageProvider != null) {
 		this.imageProvider = srcImage.imageProvider.createCopy(this);
 	}
 	this.styleFlag = srcImage.styleFlag | flag;
-	initialNativeZoom = srcImage.initialNativeZoom;
 	long srcImageHandle = win32_getHandle(srcImage, getZoom());
 	switch (flag) {
 		case SWT.IMAGE_COPY: {

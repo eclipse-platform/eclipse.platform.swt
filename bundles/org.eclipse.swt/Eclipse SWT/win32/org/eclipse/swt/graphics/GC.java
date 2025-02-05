@@ -487,7 +487,7 @@ void copyAreaInPixels(Image image, int x, int y) {
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (image.type != SWT.BITMAP || image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	/* Copy the bitmap area */
-	Rectangle rect = image.getBoundsInPixels();
+	Rectangle rect = image.getBounds(getZoom());
 	long memHdc = OS.CreateCompatibleDC(handle);
 	long hOldBitmap = OS.SelectObject(memHdc, Image.win32_getHandle(image, getZoom()));
 	OS.BitBlt(memHdc, 0, 0, rect.width, rect.height, handle, x, y, OS.SRCCOPY);
