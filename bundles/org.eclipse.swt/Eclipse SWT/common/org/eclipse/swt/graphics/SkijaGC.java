@@ -392,6 +392,7 @@ public class SkijaGC extends GCHandle {
 				new PaletteData(0xFF0000, 0x00FF00, 0x0000FF));
 		d.data = convertedData;
 		d.alphaData = alphas;
+		d.bytesPerLine = d.width * 3;
 
 		return d;
 	}
@@ -630,13 +631,7 @@ public class SkijaGC extends GCHandle {
 
 	@Override
 	public void drawString(String string, int x, int y) {
-		if (string == null) {
-			SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		}
-		Point point = calculateSymbolCenterPoint(x, y);
-		performDrawText(paint -> {
-			surface.getCanvas().drawString(string, point.x, point.y, font, paint);
-		});
+		drawString(string, x, y, false);
 	}
 
 	@Override
@@ -649,7 +644,10 @@ public class SkijaGC extends GCHandle {
 			int height = (int) DPIUtil.autoScaleDown(font.getMetrics().getHeight());
 			fillRectangle(x, y, width, height);
 		}
-		drawString(string, x, y);
+		Point point = calculateSymbolCenterPoint(x, y);
+		performDrawText(paint -> {
+			surface.getCanvas().drawString(string, point.x, point.y, font, paint);
+		});
 	}
 
 	@Override
@@ -942,17 +940,42 @@ public class SkijaGC extends GCHandle {
 
 	@Override
 	public void copyArea(Image image, int x, int y) {
-		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		io.github.humbleui.skija.Image skijaImage = convertSWTImageToSkijaImage(image);
+		io.github.humbleui.skija.Image copiedArea = surface.makeImageSnapshot(
+				createScaledRectangle(x, y, skijaImage.getWidth(), skijaImage.getHeight()).toIRect());
+
+		if (copiedArea != null) {
+			Surface imageSurface = surface.makeSurface(skijaImage.getWidth(), skijaImage.getHeight());
+			Canvas imageCanvas = imageSurface.getCanvas();
+			imageCanvas.drawImage(copiedArea, 0, 0);
+			skijaImage = imageSurface.makeImageSnapshot();
+			ImageUtils.setImageDataProvider(image, new SkijaImageDataProvider(skijaImage));
+
+		} else {
+			System.err.println(
+					"WARN: Area copied at given x,y co-ordinates is null: " + new Throwable().getStackTrace()[0]);
+		}
 	}
 
 	@Override
 	public void copyArea(int srcX, int srcY, int width, int height, int destX, int destY) {
-		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+
+		io.github.humbleui.skija.Image copiedArea = surface
+				.makeImageSnapshot(createScaledRectangle(srcX, srcY, width, height).toIRect());
+		surface.getCanvas().drawImage(copiedArea, DPIUtil.autoScaleUp(destX), DPIUtil.autoScaleUp(destY));
 	}
 
 	@Override
 	public void copyArea(int srcX, int srcY, int width, int height, int destX, int destY, boolean paint) {
-		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		copyArea(srcX, srcY, width, height, destX, destY);
+		if (paint) {
+// cut-paste behaviour
+//			surface.getCanvas().save();
+//			surface.getCanvas().clipRect(createScaledRectangle(srcX, srcY, width, height));
+//			surface.getCanvas().clear(0x00000000);
+//			surface.getCanvas().restore();
+			/** TODO - Implement correct behavior when paint is true **/
+		}
 	}
 
 	@Override

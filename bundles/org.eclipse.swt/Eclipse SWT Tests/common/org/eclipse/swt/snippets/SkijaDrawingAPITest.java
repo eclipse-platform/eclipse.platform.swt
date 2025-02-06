@@ -46,7 +46,19 @@ public class SkijaDrawingAPITest {
 			// Test when both foreground and background colors are same
 			skijaGC.setForeground(display.getSystemColor(SWT.COLOR_GREEN));
 			skijaGC.fillGradientRectangle(350, 80, 30, 80, true);
+			// Test copyArea
+			Image image = new Image(display, new Rectangle(0, 0, 50, 50));
+			// Copy the area/rectangle present at (100,100,image.width,image.height) into
+			// the image
+			skijaGC.copyArea(image, 100, 100);
+			// Draw the image and check if area/rect is copied to the image
+			skijaGC.drawImage(image, 500, 150);
+			// copy- paste
+			skijaGC.copyArea(300, 80, 20, 50, 400, 50, false);
+
+			skijaGC.copyArea(300, 80, 50, 50, 500, 50, true);
 			skijaGC.commit();
+			image.dispose();
 		});
 
 		shell.open();
