@@ -603,11 +603,11 @@ public static void setDeviceZoom (int nativeDeviceZoom) {
 
 	DPIUtil.deviceZoom = deviceZoom;
 	System.setProperty("org.eclipse.swt.internal.deviceZoom", Integer.toString(deviceZoom));
-	if (deviceZoom != 100 && autoScaleMethodSetting == AutoScaleMethod.AUTO) {
-		if (sholdUseSmoothScaling()) {
-			autoScaleMethod = AutoScaleMethod.SMOOTH;
-		} else {
+	if (autoScaleMethodSetting == AutoScaleMethod.AUTO) {
+		if (deviceZoom == 100 || !sholdUseSmoothScaling()) {
 			autoScaleMethod = AutoScaleMethod.NEAREST;
+		} else {
+			autoScaleMethod = AutoScaleMethod.SMOOTH;
 		}
 	}
 }
