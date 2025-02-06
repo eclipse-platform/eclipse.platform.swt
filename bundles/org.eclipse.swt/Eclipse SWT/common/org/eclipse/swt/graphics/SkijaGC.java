@@ -16,12 +16,9 @@ package org.eclipse.swt.graphics;
 import java.io.*;
 import java.util.*;
 import java.util.List;
-import java.util.ResourceBundle.*;
 import java.util.function.*;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Resource.*;
 import org.eclipse.swt.internal.*;
 
 import io.github.humbleui.skija.*;
@@ -38,7 +35,6 @@ public class SkijaGC extends GCHandle {
 	private Font font;
 	private float baseSymbolHeight = 0; // Height of symbol with "usual" height, like "T", to be vertically centered
 	private int lineWidth;
-	private boolean committed = false;
 
 	public SkijaGC(org.eclipse.swt.widgets.Control c, int style) {
 
@@ -115,9 +111,6 @@ public class SkijaGC extends GCHandle {
 
 	@Override
 	public void dispose() {
-
-		if (!committed)
-			commit();
 		this.innerGC.dispose();
 	}
 
@@ -188,9 +181,6 @@ public class SkijaGC extends GCHandle {
 
 	@Override
 	public void commit() {
-
-		committed = true;
-
 		io.github.humbleui.skija.Image im = surface.makeImageSnapshot();
 		byte[] imageBytes = EncoderPNG.encode(im).getBytes();
 
