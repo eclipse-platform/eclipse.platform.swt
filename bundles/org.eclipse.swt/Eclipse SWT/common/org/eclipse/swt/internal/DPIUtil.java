@@ -603,7 +603,10 @@ public static void setDeviceZoom (int nativeDeviceZoom) {
 
 	DPIUtil.deviceZoom = deviceZoom;
 	System.setProperty("org.eclipse.swt.internal.deviceZoom", Integer.toString(deviceZoom));
-	if (deviceZoom != 100 && autoScaleMethodSetting == AutoScaleMethod.AUTO) {
+
+	// in GTK, preserve the current method when switching to a 100% monitor
+	boolean preserveScalingMethod = SWT.getPlatform().equals("gtk") && deviceZoom == 100;
+	if (!preserveScalingMethod && autoScaleMethodSetting == AutoScaleMethod.AUTO) {
 		if (sholdUseSmoothScaling()) {
 			autoScaleMethod = AutoScaleMethod.SMOOTH;
 		} else {
