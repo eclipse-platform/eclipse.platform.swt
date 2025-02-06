@@ -532,7 +532,7 @@ public class Label extends Control implements ICustomWidget {
 			return;
 		}
 
-		GC gc = GCFactory.createGraphicsContext(this);
+		GC gc = GCFactory.createGraphicsContext(event.gc);
 
 		gc.setFont(font);
 		gc.setBackground(getBackground());

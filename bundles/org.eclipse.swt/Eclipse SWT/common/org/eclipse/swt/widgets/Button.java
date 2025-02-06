@@ -408,7 +408,7 @@ public class Button extends Control implements ICustomWidget {
 		}
 
 		if (SWT.USE_SKIJA) {
-			gc = GCFactory.createGraphicsContext(this);
+			gc = GCFactory.createGraphicsContext(e.gc);
 		} else {
 			if (SWT.getPlatform().equals("win32")) {
 				// Use double buffering on windows

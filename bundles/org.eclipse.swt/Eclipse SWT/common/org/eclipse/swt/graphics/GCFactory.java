@@ -18,24 +18,30 @@ import org.eclipse.swt.widgets.*;
 
 public class GCFactory {
 
-	public static GC createGraphicsContext(Control c, int style) {
-
-		GCHandle igc = null;
-
+	public static GC createGraphicsContext(Control control) {
+		GCHandle innerGC = null;
 		if (SWT.USE_SKIJA) {
-			igc = new SkijaGC(c, style);
+			innerGC = new SkijaGC(control);
 		} else
-			igc = new NativeGC(c, style);
+			innerGC = new NativeGC(control);
 
 		GC gc = new GC();
-		gc.innerGC = igc;
-
+		gc.innerGC = innerGC;
 		return gc;
-
 	}
 
-	public static GC createGraphicsContext(Control c) {
-		return createGraphicsContext(c, SWT.NONE);
+	public static GC createGraphicsContext(GC originalGC) {
+		if (!SWT.USE_SKIJA) {
+			return originalGC;
+		}
+
+		if (!(originalGC.innerGC instanceof NativeGC originalNativeGC)) {
+			return originalGC;
+		}
+
+		GC gc = new GC();
+		gc.innerGC = new SkijaGC(originalNativeGC, null);
+		return gc;
 	}
 
 }
