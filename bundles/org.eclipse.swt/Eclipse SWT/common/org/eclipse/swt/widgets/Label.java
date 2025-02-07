@@ -744,6 +744,7 @@ public class Label extends Control implements ICustomWidget {
 			}
 		}
 
+		gc.commit();
 		gc.dispose();
 	}
 
