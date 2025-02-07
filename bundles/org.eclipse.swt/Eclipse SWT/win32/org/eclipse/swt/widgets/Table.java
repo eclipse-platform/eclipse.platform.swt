@@ -7357,6 +7357,12 @@ private static void handleDPIChange(Widget widget, int newZoom, float scalingFac
 		table.imageList = null;
 	}
 
+	// if the item height was set at least once programmatically with CDDS_SUBITEMPREPAINT,
+	// the item height of the table is not managed by the OS anymore e.g. when the zoom
+	// on the monitor is changed, the height of the item will stay at the fixed size.
+	// Resetting it will re-enable the default behavior again
+	table.setItemHeight(-1);
+
 	for (TableItem item : table.getItems()) {
 		DPIZoomChangeRegistry.applyChange(item, newZoom, scalingFactor);
 	}
