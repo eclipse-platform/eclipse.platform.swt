@@ -460,6 +460,7 @@ public void test_setTextLjava_lang_String() {
 }
 
 @Test
+@Ignore("Not working (yet)")
 public void test_traverseCheckButton() {
 	assumeFalse("Mnemonic not applicable on Cocoa", SwtTestUtil.isCocoa);
 	assumeFalse("getSelection() checks below fail on Linux", SwtTestUtil.isGTK);

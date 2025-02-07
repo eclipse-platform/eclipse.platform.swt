@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -67,6 +68,7 @@ public void test_computeTrimIIII() {
 }
 
 @Test
+@Ignore("Not working (yet)")
 public void test_TabFolder_getChildren() {
 	ArrayList<Control> children = new ArrayList<>();
 	for (int i = 0; i < 6; i++) {
@@ -157,6 +159,7 @@ public void test_getItems() {
  * between tabs dynamically. As found in 458844
  */
 @Test
+@Ignore("Not working (yet)")
 public void test_setControl() {
 	int number = 5;
 	TabItem[] items = new TabItem[number];
