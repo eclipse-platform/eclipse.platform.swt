@@ -1455,7 +1455,7 @@ public Widget findWidget (Widget widget, long id) {
 
 long foregroundIdleProc (long code, long wParam, long lParam) {
 	if (code >= 0) {
-		if (!synchronizer.isMessagesEmpty()) {
+		Runnable processMessages = () -> {
 			sendPostExternalEventDispatchEvent ();
 			if (runMessagesInIdle) {
 				if (runMessagesInMessageProc) {
@@ -1481,6 +1481,15 @@ long foregroundIdleProc (long code, long wParam, long lParam) {
 			int flags = OS.PM_NOREMOVE | OS.PM_NOYIELD | OS.PM_QS_INPUT;
 			if (!OS.PeekMessage (msg, 0, 0, 0, flags)) wakeThread ();
 			sendPreExternalEventDispatchEvent ();
+		};
+		if (!synchronizer.isMessagesEmpty()) {
+			// Windows hooks will inherit the thread DPI awareness from
+			// the process. Whatever DPI awareness was set before on
+			// the thread will be overwritten before the hook is called.
+			// This requires to reset the thread DPi awareness to make
+			// sure, all UI updates caused by this will be executed
+			// with the correct DPI awareness
+			runWithProperDPIAwareness(processMessages);
 		}
 	}
 	return OS.CallNextHookEx (idleHook, (int)code, wParam, lParam);
@@ -3424,9 +3433,17 @@ long msgFilterProc (long code, long wParam, long lParam) {
 			if (hookMsg.message == OS.WM_NULL) {
 				MSG msg = new MSG ();
 				int flags = OS.PM_NOREMOVE | OS.PM_NOYIELD | OS.PM_QS_INPUT | OS.PM_QS_POSTMESSAGE;
-				if (!OS.PeekMessage (msg, 0, 0, 0, flags)) {
-					if (runAsyncMessages (false)) wakeThread ();
-				}
+				// Windows hooks will inherit the thread DPI awareness from
+				// the process. Whatever DPI awareness was set before on
+				// the thread will be overwritten before the hook is called.
+				// This requires to reset the thread DPi awareness to make
+				// sure, all UI updates caused by this will be executed
+				// with the correct DPI awareness
+				runWithProperDPIAwareness(() -> {
+					if (!OS.PeekMessage (msg, 0, 0, 0, flags)) {
+						if (runAsyncMessages (false)) wakeThread ();
+					}
+				});
 			}
 			break;
 		}
@@ -5382,4 +5399,20 @@ private boolean setDPIAwareness(int desiredDpiAwareness) {
 	return true;
 }
 
+private void runWithProperDPIAwareness(Runnable operation) {
+	if (isRescalingAtRuntime()) {
+		// refreshing is only necessary, when monitor specific scaling is active
+		long previousDPIAwareness = OS.GetThreadDpiAwarenessContext();
+		if (!setDPIAwareness(OS.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2)) {
+			// awareness was not changed, so no need to reset it
+			previousDPIAwareness = 0;
+		}
+		operation.run();
+		if (previousDPIAwareness > 0) {
+			OS.SetThreadDpiAwarenessContext(previousDPIAwareness);
+		}
+	} else {
+		operation.run();
+	}
+}
 }
