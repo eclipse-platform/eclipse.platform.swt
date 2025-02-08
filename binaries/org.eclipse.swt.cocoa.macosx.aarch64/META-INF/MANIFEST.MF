@@ -28,3 +28,4 @@ SWT-WS: cocoa
 SWT-OS: macosx
 SWT-Arch: aarch64
 Automatic-Module-Name: org.eclipse.swt.cocoa.macosx.aarch64
+Bundle-ClassPath: .,lib/
