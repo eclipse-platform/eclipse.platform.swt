@@ -86,8 +86,6 @@ public class Button extends Control implements ICustomWidget {
 	private static int DRAW_FLAGS = SWT.DRAW_MNEMONIC | SWT.DRAW_TAB
 			| SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER;
 
-	private static Color background;
-
 	private Accessible acc;
 	private AccessibleAdapter accAdapter;
 	private boolean spaceDown;
@@ -335,13 +333,7 @@ public class Button extends Control implements ICustomWidget {
 		if (!isVisible()) {
 			return;
 		}
-		GC gc = event.gc;
-		if (gc == null) {
-			gc = new GC(this);
-			event.gc = gc;
-		}
-		doPaint(event);
-		gc.dispose();
+		Drawing.drawWithGC(this, event.gc, this::doPaint);
 	}
 
 	private void onDispose(Event event) {
@@ -384,43 +376,10 @@ public class Button extends Control implements ICustomWidget {
 		redraw();
 	}
 
-	private void doPaint(Event e) {
+	private void doPaint(GC gc) {
 		Rectangle r = getBounds();
 		if (r.width == 0 && r.height == 0) {
 			return;
-		}
-
-		e.gc.setForeground(getForeground());
-		e.gc.setBackground(getBackground());
-		e.gc.setClipping(new Rectangle(0, 0, r.width, r.height));
-		e.gc.setAntialias(SWT.ON);
-
-		GC originalGC = e.gc;
-		GC gc = originalGC;
-		Image doubleBufferingImage = null;
-
-		if (SWT.getPlatform().equals("win32") | SWT.getPlatform().equals("gtk")) {
-			// Extract background color on first execution
-			if (background == null) {
-				extractAndStoreBackgroundColor(r, originalGC);
-			}
-			style |= SWT.NO_BACKGROUND;
-		}
-
-		if (SWT.USE_SKIJA) {
-			gc = GCFactory.createGraphicsContext(e.gc);
-		} else {
-			if (SWT.getPlatform().equals("win32")) {
-				// Use double buffering on windows
-				doubleBufferingImage = new Image(getDisplay(), r.width, r.height);
-				originalGC.copyArea(doubleBufferingImage, 0, 0);
-				GC doubleBufferingGC = new GC(doubleBufferingImage);
-				doubleBufferingGC.setForeground(originalGC.getForeground());
-				doubleBufferingGC.setBackground(background);
-				doubleBufferingGC.setAntialias(SWT.ON);
-				doubleBufferingGC.fillRectangle(0, 0, r.width, r.height);
-				gc = doubleBufferingGC;
-			}
 		}
 
 		boolean isRightAligned = (style & SWT.RIGHT) != 0;
@@ -559,22 +518,6 @@ public class Button extends Control implements ICustomWidget {
 			gc.fillPolygon(curve);
 			gc.setBackground(bg2);
 		}
-
-		gc.commit();
-		gc.dispose();
-		if (doubleBufferingImage != null) {
-			originalGC.drawImage(doubleBufferingImage, 0, 0);
-			doubleBufferingImage.dispose();
-		}
-		originalGC.dispose();
-	}
-
-	private void extractAndStoreBackgroundColor(Rectangle r, GC originalGC) {
-		Image backgroundColorImage = new Image(getDisplay(), r.width, r.height);
-		originalGC.copyArea(backgroundColorImage, 0, 0);
-		int pixel = backgroundColorImage.getImageData().getPixel(0, 0);
-		backgroundColorImage.dispose();
-		background = SWT.convertPixelToColor(pixel);
 	}
 
 	private boolean isArrowButton() {
@@ -722,13 +665,12 @@ public class Button extends Control implements ICustomWidget {
 			boxSpace = BOX_SIZE + SPACING;
 		}
 		if (text != null && !text.isEmpty()) {
-			GC gc = GCFactory.createGraphicsContext(this);
-
-			gc.setFont(getFont());
-			Point textExtent = gc.textExtent(text, DRAW_FLAGS);
+			Point textExtent = Drawing.executeOnGC(this, gc -> {
+				gc.setFont(getFont());
+				return gc.textExtent(text, DRAW_FLAGS);
+			});
 			textWidth = textExtent.x + 1;
 			textHeight = textExtent.y;
-			gc.dispose();
 		}
 		int imageSpace = 0;
 		int imageHeight = 0;

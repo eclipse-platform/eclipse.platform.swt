@@ -195,10 +195,10 @@ public class Label extends Control implements ICustomWidget {
 		int topMargin = this.topMargin;
 
 		if (text != null && !text.isEmpty()) {
-			GC gc = GCFactory.createGraphicsContext(this);
-			gc.setFont(getFont());
-			Point textExtent = gc.textExtent(text, DRAW_FLAGS);
-			gc.dispose();
+			Point textExtent = Drawing.executeOnGC(this, gc -> {
+				gc.setFont(getFont());
+				return gc.textExtent(text, DRAW_FLAGS);
+			});
 			lineWidth = textExtent.x;
 			lineHeight = textExtent.y;
 			if (image != null) {
@@ -523,7 +523,10 @@ public class Label extends Control implements ICustomWidget {
 	}
 
 	void onPaint(PaintEvent event) {
+		Drawing.drawWithGC(this, event.gc, this::doPaint);
+	}
 
+	void doPaint(GC gc) {
 		Rectangle rect = getBounds();
 		if (rect.width == 0 && rect.height == 0) {
 			return;
@@ -531,14 +534,6 @@ public class Label extends Control implements ICustomWidget {
 		if ((text == null || text.isEmpty()) && image == null) {
 			return;
 		}
-
-		GC gc = GCFactory.createGraphicsContext(event.gc);
-
-		gc.setFont(font);
-		gc.setBackground(getBackground());
-		gc.setClipping(new Rectangle(0, 0, rect.width, rect.height));
-
-
 
 		boolean shortenText = false;
 		String t = text;
@@ -564,7 +559,7 @@ public class Label extends Control implements ICustomWidget {
 				if (e.x > availableWidth) {
 					lines[i] = shortenText(gc, lines[i], availableWidth);
 					extent.x = Math.max(extent.x,
-							getTotalSize(event.gc, null, lines[i]).x);
+							getTotalSize(gc, null, lines[i]).x);
 				} else {
 					extent.x = Math.max(extent.x, e.x);
 				}
@@ -743,9 +738,6 @@ public class Label extends Control implements ICustomWidget {
 				lineY += lineHeight;
 			}
 		}
-
-		gc.commit();
-		gc.dispose();
 	}
 
 	@Override
