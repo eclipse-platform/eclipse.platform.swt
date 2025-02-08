@@ -76,7 +76,6 @@ jobs:
         --fail-at-end
         -DskipNativeTests=false
         -DfailIfNoTests=false
-        -DskipTests
         clean install
     - name: Performance tests
       if: contains(github.event.pull_request.labels.*.name, 'performance')
@@ -90,12 +89,12 @@ jobs:
         -DfailIfNoTests=true
         -Dtest=PerformanceTests
         integration-test
-    # - name: Upload Test Results for ${{ matrix.config.name }} / Java-${{ matrix.java }}
-    #   if: always()
-    #   uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
-    #   with:
-    #     name: test-results-${{ matrix.config.native }}-java${{ matrix.java }}
-    #     if-no-files-found: warn
-    #     path: |
-    #       ${{ github.workspace }}/**/target/surefire-reports/*.xml
-    #       ${{ github.workspace }}/**/hs_err_pid*.log
+    - name: Upload Test Results for ${{ matrix.config.name }} / Java-${{ matrix.java }}
+      if: always()
+      uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
+      with:
+        name: test-results-${{ matrix.config.native }}-java${{ matrix.java }}
+        if-no-files-found: warn
+        path: |
+          ${{ github.workspace }}/**/target/surefire-reports/*.xml
+          ${{ github.workspace }}/**/hs_err_pid*.log
