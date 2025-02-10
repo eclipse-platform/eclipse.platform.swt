@@ -5988,9 +5988,10 @@ static long dialogProc(long id, long sel, long arg0) {
 
 	switch (Selector.valueOf(sel)) {
 		case sel_changeColor_: {
-			ColorDialog dialog = (ColorDialog)OS.JNIGetObject(jniRef[0]);
-			if (dialog == null) return 0;
-			dialog.changeColor(id, sel, arg0);
+			Object object = OS.JNIGetObject(jniRef[0]);
+			if (object instanceof ColorDialog) {
+				((ColorDialog)object).changeColor(id, sel, arg0);
+			}
 			return 0;
 		}
 		case sel_changeFont_: {
