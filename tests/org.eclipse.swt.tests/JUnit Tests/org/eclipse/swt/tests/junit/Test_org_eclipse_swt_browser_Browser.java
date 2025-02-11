@@ -205,6 +205,7 @@ public void setUp() {
 	}
 	shell.setText(shellTitle);
 	setWidget(browser); // For browser to occupy the whole shell, not just half of it.
+	shell.open();
 
 	testLog = new StringBuilder("\nTest log:\n");
 	if (SwtTestUtil.isGTK) {
@@ -1429,6 +1430,7 @@ public void test_VisibilityWindowListener_eventSize() {
 @Override
 @Test
 public void test_isVisible() {
+	shell.setVisible(false);
 	// Note. This test sometimes crashes with webkit1 because shell.setVisible() calls g_main_context_iteration(). See Bug 509411
 	// To reproduce, try running test suite 20 times in a loop.
 	super.test_isVisible();
