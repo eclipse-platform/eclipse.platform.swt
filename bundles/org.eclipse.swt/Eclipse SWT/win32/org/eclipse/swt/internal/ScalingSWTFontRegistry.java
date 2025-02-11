@@ -54,8 +54,7 @@ final class ScalingSWTFontRegistry implements SWTFontRegistry {
 		private Font scaleFont(int zoom) {
 			FontData fontData = baseFont.getFontData()[0];
 			int baseZoom = computeZoom(fontData);
-			int zoomScaleFactor = Math.round(1.0f * zoom / baseZoom);
-			fontData.data.lfHeight *= zoomScaleFactor;
+			fontData.data.lfHeight = Math.round(1.0f * fontData.data.lfHeight * zoom / baseZoom);
 			Font scaledFont = Font.win32_new(device, fontData, zoom);
 			addScaledFont(zoom, scaledFont);
 			return scaledFont;
