@@ -236,14 +236,7 @@ void init (FontData fd) {
 	if (fd == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	LOGFONT logFont = fd.data;
 	int lfHeight = logFont.lfHeight;
-	logFont.lfHeight = device.computePixels(fd.height);
-
-	int primaryZoom = extractZoom(device);
-	if (zoom != primaryZoom) {
-		float scaleFactor = 1f * zoom / primaryZoom;
-		logFont.lfHeight *= scaleFactor;
-	}
-
+	logFont.lfHeight = device.computePixels(fd.height, zoom);
 	handle = OS.CreateFontIndirect(logFont);
 	logFont.lfHeight = lfHeight;
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
