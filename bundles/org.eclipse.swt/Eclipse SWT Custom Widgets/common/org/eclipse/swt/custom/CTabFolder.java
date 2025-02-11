@@ -4007,10 +4007,7 @@ void updateBkImages(boolean colorChanged) {
 						if (colorChanged || !bounds.equals(bkImageBounds[i])) {
 							bkImageBounds[i] = bounds;
 							if (controlBkImages[i] != null) controlBkImages[i].dispose();
-							controlBkImages[i] = new Image(control.getDisplay(), bounds);
-							GC gc = new GC(controlBkImages[i]);
-							renderer.draw(CTabFolderRenderer.PART_BACKGROUND, 0, bounds, gc);
-							gc.dispose();
+							controlBkImages[i] = new Image(control.getDisplay(), (gc, imageWidth, imageHeight) -> renderer.draw(CTabFolderRenderer.PART_BACKGROUND, 0, bounds, gc), bounds.width, bounds.height);
 							control.setBackground(null);
 							control.setBackgroundImage(controlBkImages[i]);
 						}
