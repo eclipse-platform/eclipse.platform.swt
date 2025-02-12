@@ -292,8 +292,8 @@ private static ImageData autoScaleImageData (Device device, final ImageData imag
 	int height = imageData.height;
 	int scaledWidth = Math.round (width * scaleFactor);
 	int scaledHeight = Math.round (height * scaleFactor);
-	return switch (autoScaleMethod) {
-	case SMOOTH -> {
+	boolean useSmoothScaling = autoScaleMethod == AutoScaleMethod.SMOOTH && imageData.getTransparencyType() != SWT.TRANSPARENCY_MASK;
+	if (useSmoothScaling) {
 		Image original = new Image (device, (ImageDataProvider) zoom -> imageData);
 		/* Create a 24 bit image data with alpha channel */
 		final ImageData resultData = new ImageData (scaledWidth, scaledHeight, 24, new PaletteData (0xFF, 0xFF00, 0xFF0000));
@@ -310,10 +310,10 @@ private static ImageData autoScaleImageData (Device device, final ImageData imag
 		original.dispose ();
 		ImageData result = resultImage.getImageData (getDeviceZoom ());
 		resultImage.dispose ();
-		yield result;
+		return result;
+	} else {
+		return imageData.scaledTo (scaledWidth, scaledHeight);
 	}
-	default -> imageData.scaledTo (scaledWidth, scaledHeight);
-	};
 }
 
 /**
