@@ -77,7 +77,7 @@ final class ScalingSWTFontRegistry implements SWTFontRegistry {
 
 	@Override
 	public Font getSystemFont(int zoom) {
-		ScaledFontContainer container = getOrCreateBaseSystemFontContainer(device);
+		ScaledFontContainer container = getOrCreateBaseSystemFontContainer(device, zoom);
 
 		Font systemFont = container.getScaledFont(zoom);
 		if (systemFont != null) {
@@ -89,16 +89,12 @@ final class ScalingSWTFontRegistry implements SWTFontRegistry {
 		return systemFont;
 	}
 
-	private ScaledFontContainer getOrCreateBaseSystemFontContainer(Device device) {
+	private ScaledFontContainer getOrCreateBaseSystemFontContainer(Device device, int zoom) {
 		ScaledFontContainer systemFontContainer = fontKeyMap.get(KEY_SYSTEM_FONTS);
 		if (systemFontContainer == null) {
-			long hDC = device.internal_new_GC (null);
-			int dpiX = OS.GetDeviceCaps (hDC, OS.LOGPIXELSX);
-			device.internal_dispose_GC (hDC, null);
-			int primaryZoom = DPIUtil.mapDPIToZoom(dpiX);
-			long systemFontHandle = createSystemFont(primaryZoom);
-			Font systemFont = Font.win32_new(device, systemFontHandle, primaryZoom);
-			systemFontContainer = new ScaledFontContainer(systemFont, primaryZoom);
+			long systemFontHandle = createSystemFont(zoom);
+			Font systemFont = Font.win32_new(device, systemFontHandle, zoom);
+			systemFontContainer = new ScaledFontContainer(systemFont, zoom);
 			fontHandleMap.put(systemFont.handle, systemFontContainer);
 			fontKeyMap.put(KEY_SYSTEM_FONTS, systemFontContainer);
 		}
