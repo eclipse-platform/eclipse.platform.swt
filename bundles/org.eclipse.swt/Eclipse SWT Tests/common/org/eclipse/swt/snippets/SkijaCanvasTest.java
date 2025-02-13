@@ -1,6 +1,15 @@
+/*******************************************************************************
+ * Copyright (c) 2024 SAP SE and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
+ * which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *******************************************************************************/
 package org.eclipse.swt.snippets;
 
-import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
@@ -16,18 +25,14 @@ public class SkijaCanvasTest {
 
 		shell.setVisible(true);
 
+		shell.addPaintListener(event -> {
+			SkijaGC skijaGC = new SkijaGC((NativeGC) event.gc.innerGC, null);
 
-		SkijaGC skijaGC = new SkijaGC(shell, SWT.NONE);
+			skijaGC.drawText("Hello World Test", 0, 0);
+			skijaGC.drawLine(0, 0, 200, 200);
 
-
-		skijaGC.drawText("Hello World Test", 0, 0);
-
-
-		skijaGC.drawLine(0, 0,  200 , 200);
-
-
-		skijaGC.commit();
-
+			skijaGC.commit();
+		});
 
 		shell.open();
 		while (!shell.isDisposed()) {
@@ -35,7 +40,6 @@ public class SkijaCanvasTest {
 				display.sleep();
 		}
 		display.dispose();
-
 
 	}
 
