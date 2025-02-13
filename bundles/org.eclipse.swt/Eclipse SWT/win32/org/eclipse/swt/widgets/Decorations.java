@@ -1699,7 +1699,7 @@ private static void handleDPIChange(Widget widget, int newZoom, float scalingFac
 	}
 
 	Image[] images = decorations.getImages();
-	if (images != null) {
+	if (images != null && images.length > 0) {
 		decorations.setImages(images);
 	}
 
