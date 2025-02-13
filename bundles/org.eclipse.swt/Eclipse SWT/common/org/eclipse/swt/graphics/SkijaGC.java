@@ -35,22 +35,6 @@ public class SkijaGC extends GCHandle {
 
 	private static Map<ColorType, int[]> colorTypeMap = null;
 
-	public SkijaGC(org.eclipse.swt.widgets.Control c, int style) {
-
-		innerGC = new NativeGC(c, style);
-		innerGC.setFont(c.getFont());
-		innerGC.setBackground(c.getBackground());
-		innerGC.setForeground(c.getForeground());
-
-		surface = createSurface(extractBackgroundColor(innerGC));
-		clipping = innerGC.getClipping();
-		initFont();
-	}
-
-	public SkijaGC(org.eclipse.swt.widgets.Control c) {
-		this(c, SWT.None);
-	}
-
 	public SkijaGC(NativeGC gc, Color backgroundColor) {
 		innerGC = gc;
 		if (backgroundColor == null)
