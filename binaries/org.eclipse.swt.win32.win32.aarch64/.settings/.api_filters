@@ -336,6 +336,12 @@
                 <message_argument value="IE"/>
             </message_arguments>
         </filter>
+        <filter id="336658481">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.SWT"/>
+                <message_argument value="NO_SEARCH"/>
+            </message_arguments>
+        </filter>
     </resource>
     <resource path="Eclipse SWT OLE Win32/win32/org/eclipse/swt/ole/win32/OleControlSite.java" type="org.eclipse.swt.ole.win32.OleControlSite">
         <filter id="643846161">
