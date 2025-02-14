@@ -20,7 +20,9 @@ import java.util.stream.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Instances of this class represent programs and
@@ -381,26 +383,20 @@ public ImageData getImageData () {
 public ImageData getImageData (int zoom) {
 	// OS.SHGetFileInfo is System DPI-aware, hence it retrieves the icon with zoom
 	// of primary monitor at the application startup
-	int initialNativeZoom = getPrimaryMonitorZoomAtStartup();
 	if (extension != null) {
 		SHFILEINFO shfi = new SHFILEINFO ();
-		int flags = OS.SHGFI_ICON | OS.SHGFI_USEFILEATTRIBUTES;
-		boolean useLargeIcon = 100 * zoom /  initialNativeZoom >= 200;
-		if(useLargeIcon) {
-			flags |= OS.SHGFI_LARGEICON;
-			initialNativeZoom *= 2;
-		} else {
-			flags |= OS.SHGFI_SMALLICON;
-		}
+		int flags = OS.SHGFI_USEFILEATTRIBUTES | OS.SHGFI_ICONLOCATION;
 		TCHAR pszPath = new TCHAR (0, extension, true);
 		OS.SHGetFileInfo (pszPath.chars, OS.FILE_ATTRIBUTE_NORMAL, shfi, SHFILEINFO.sizeof, flags);
-		if (shfi.hIcon != 0) {
-			Image image = Image.win32_new (null, SWT.ICON, shfi.hIcon, initialNativeZoom);
-			ImageData imageData = image.getImageData (zoom);
-			image.dispose ();
+		if (shfi.iIcon >= 0) {
+			Image icon = getImageForZoom(zoom, shfi.iIcon);
+			ImageData imageData = icon.getImageData(zoom);
+			icon.dispose();
 			return imageData;
 		}
 	}
+
+	int initialNativeZoom = getPrimaryMonitorZoomAtStartup();
 	int nIconIndex = 0;
 	String fileName = iconName;
 	int index = iconName.indexOf (',');
@@ -432,6 +428,60 @@ private int getPrimaryMonitorZoomAtStartup() {
 	int dpi = OS.GetDeviceCaps(hDC, OS.LOGPIXELSX);
 	OS.ReleaseDC(0, hDC);
 	return DPIUtil.mapDPIToZoom(dpi);
+}
+
+private NavigableMap<Integer, Long> getImageListinAllAvailableSizesMappedWithZoom() {
+	TreeMap<Integer, Long> zoomToHImageList = new TreeMap<>();
+	int primaryMonitorZoomAtStartup = getPrimaryMonitorZoomAtStartup();
+	// SHIL_SYSSMALL is the size of icon at startup zoom of the primary monitor. The
+	// sizes can differ as specified by OS.GetSystemMetrics.
+	long hImageListAtPrimaryMonitorZoomAtStartup = getImageListForSize(OS.SHIL_SYSSMALL);
+	int sizeAtPrimaryMonitorZoomAtStartup = getIconSizeOfImageList(hImageListAtPrimaryMonitorZoomAtStartup);
+	zoomToHImageList.put(primaryMonitorZoomAtStartup, hImageListAtPrimaryMonitorZoomAtStartup);
+	// SHIL_* (SMALL, LARGE and EXTRALARGE) are typically 1x, 2x, 3x relative to the
+	// primary monitor zoom at startup, e.g., 16px, 32px and 48px
+	// respectively.
+	int[] allSizes = new int[] { OS.SHIL_SMALL, OS.SHIL_LARGE, OS.SHIL_EXTRALARGE };
+	for (int size : allSizes) {
+		long hImageList = getImageListForSize(size);
+		int iconSize = getIconSizeOfImageList(hImageList);
+		int zoom = (iconSize / sizeAtPrimaryMonitorZoomAtStartup) * primaryMonitorZoomAtStartup;
+		if (!zoomToHImageList.containsKey(zoom)) {
+			zoomToHImageList.put(zoom, hImageList);
+		} else {
+			OS.ImageList_Destroy(hImageList);
+		}
+	}
+	return zoomToHImageList;
+}
+
+private int getIconSizeOfImageList(long hImageList) {
+	int [] cx = new int [1];
+	int [] cy = new int [1];
+	OS.ImageList_GetIconSize(hImageList, cx, cy);
+	return cx[0];
+}
+
+private Image getImageForZoom(int zoom, int index) {
+	NavigableMap<Integer, Long> zoomToHImageList = getImageListinAllAvailableSizesMappedWithZoom();
+	int closestZoomAvailable = getClosestKey(zoomToHImageList, zoom);
+	long hIcon = OS.ImageList_GetIcon(zoomToHImageList.get(closestZoomAvailable), index, OS.ILD_TRANSPARENT);
+	zoomToHImageList.values().forEach(handle -> OS.ImageList_Destroy(handle));
+	return Image.win32_new(Display.getCurrent(), SWT.ICON, hIcon, closestZoomAvailable);
+}
+
+private long getImageListForSize(int size) {
+	long [] ppv = new long [1];
+	COM.SHGetImageList(size, COM.IID_IImageList, ppv);
+	return ppv[0];
+}
+
+private Integer getClosestKey(NavigableMap<Integer, Long> map, int x) {
+    Integer floorKey = map.floorKey(x);
+    Integer ceilingKey = map.ceilingKey(x);
+    if (floorKey == null) return ceilingKey;
+    if (ceilingKey == null) return floorKey;
+    return (Math.abs(x - floorKey) <= Math.abs(x - ceilingKey)) ? floorKey : ceilingKey;
 }
 
 /**

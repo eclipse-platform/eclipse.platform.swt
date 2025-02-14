@@ -107,7 +107,7 @@ public class COM extends OS {
 	public static final GUID IIDIAccessibleImage = IIDFromString("{FE5ABB3D-615E-4f7b-909F-5F0EDA9E8DDE}"); //$NON-NLS-1$
 	public static final GUID IIDIAccessibleApplication = IIDFromString("{D49DED83-5B25-43F4-9B95-93B44595979E}"); //$NON-NLS-1$
 	public static final GUID IIDIAccessibleContext = IIDFromString("{77A123E4-5794-44e0-B8BF-DE600C9D29BD}"); //$NON-NLS-1$
-
+	public static final GUID IID_IImageList = IIDFromString("{46EB5926-582E-4017-9FDF-E8998DAA0950}");
 	/** Constants */
 	public static final int CF_TEXT = 1;
 	public static final int CF_BITMAP = 2;
@@ -465,6 +465,11 @@ public static final native int RevokeDragDrop(long hwnd);
  * @param ppv cast=(void **)
  */
 public static final native int SHCreateItemFromParsingName (char [] pszName, long pbc, GUID riid, long [] ppv);
+/**
+ * @param riid flags=no_out
+ * @param ppvObj cast=(VOID **),flags=no_in critical
+ */
+public static final native long SHGetImageList (int iImageList, GUID riid, long[] ppvObj);
 /**
  * @param pwcsName cast=(const WCHAR *),flags=no_out
  * @param ppstgOpen cast=(IStorage **)
