@@ -1564,6 +1564,20 @@ public class SWT {
 	 */
 	public static final int SEARCH = 1 << 7;
 
+    /**
+     * Style constant for disabling GTK interactive search popup (value is 1&lt;&lt;10).
+     * <br>Note that this is a <em>HINT</em> and is currently only supported on GTK.
+     * <p><b>Used By:</b></p>
+     * <ul>
+     * <li><code>List</code></li>
+     * <li><code>Table</code></li>
+     * <li><code>Tree</code></li>
+     * </ul>
+     *
+     * @since 3.130
+     */
+    public static final int NO_SEARCH = 1 << 10;
+
 	/**
 	 * Style constant for simple (not drop down) behavior (value is 1&lt;&lt;6).
 	 * <br>Note that this is a <em>HINT</em>.
