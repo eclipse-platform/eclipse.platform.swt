@@ -32,7 +32,7 @@ public class SkijaDrawImage {
 		gc.dispose ();
 
 		shell.addPaintListener(event -> {
-			SkijaGC skijaGC = new SkijaGC((NativeGC) event.gc.innerGC, null);
+			SkijaGC skijaGC = new SkijaGC((NativeGC) event.gc.innerGC, false);
 
 			skijaGC.drawImage(image, 0, 0);
 			skijaGC.drawText("Test", 0, 0);

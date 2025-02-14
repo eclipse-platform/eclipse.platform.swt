@@ -614,10 +614,7 @@ public class Button extends CustomControl {
 			boxSpace = BOX_SIZE + SPACING;
 		}
 		if (text != null && !text.isEmpty()) {
-			Point textExtent = Drawing.executeOnGC(this, gc -> {
-				gc.setFont(getFont());
-				return gc.textExtent(text, DRAW_FLAGS);
-			});
+			Point textExtent = Drawing.getTextExtent(this, text, DRAW_FLAGS);
 			textWidth = textExtent.x + 1;
 			textHeight = textExtent.y;
 		}

@@ -23,6 +23,10 @@ public final class Drawing {
 	}
 
 	public static GC createGraphicsContext(GC originalGC) {
+		return createGraphicsContext(originalGC, false);
+	}
+
+	private static GC createGraphicsContext(GC originalGC, boolean onlyForMeasuring) {
 		if (!SWT.USE_SKIJA) {
 			return originalGC;
 		}
@@ -32,7 +36,7 @@ public final class Drawing {
 		}
 
 		GC gc = new GC();
-		gc.innerGC = new SkijaGC(originalNativeGC, null);
+		gc.innerGC = new SkijaGC(originalNativeGC, onlyForMeasuring);
 		return gc;
 	}
 
@@ -132,4 +136,15 @@ public final class Drawing {
 		}
 	}
 
+	public static Point getTextExtent(CustomControl control, String text, int drawFlags) {
+		GC originalGC = new GC(control);
+		GC gc = createGraphicsContext(originalGC, true);
+		try {
+			gc.setFont(control.getFont());
+			return gc.textExtent(text, drawFlags);
+		} finally {
+			gc.dispose();
+			originalGC.dispose();
+		}
+	}
 }

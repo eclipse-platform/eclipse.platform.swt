@@ -187,10 +187,7 @@ public class Label extends CustomControl {
 		int topMargin = this.topMargin;
 
 		if (text != null && !text.isEmpty()) {
-			Point textExtent = Drawing.executeOnGC(this, gc -> {
-				gc.setFont(getFont());
-				return gc.textExtent(text, DRAW_FLAGS);
-			});
+			Point textExtent = Drawing.getTextExtent(this, text, DRAW_FLAGS);
 			lineWidth = textExtent.x;
 			lineHeight = textExtent.y;
 			if (image != null) {

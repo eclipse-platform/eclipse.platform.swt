@@ -38,12 +38,15 @@ public class SkijaGC extends GCHandle {
 
 	private static Map<ColorType, int[]> colorTypeMap = null;
 
-	public SkijaGC(NativeGC gc, Color backgroundColor) {
+	public SkijaGC(NativeGC gc, boolean onlyForMeasuring) {
 		innerGC = gc;
 		originalDrawingSize = extractSize(innerGC.drawable);
-		if (backgroundColor == null)
-			backgroundColor = extractBackgroundColor(gc, originalDrawingSize);
-		surface = createSurface(backgroundColor);
+		if (onlyForMeasuring) {
+			surface = createMeasureSurface();
+		} else {
+			Color backgroundColor = extractBackgroundColor(gc, originalDrawingSize);
+			surface = createSurface(backgroundColor);
+		}
 		initFont();
 	}
 
@@ -100,6 +103,11 @@ public class SkijaGC extends GCHandle {
 			surface.getCanvas().clear(convertSWTColorToSkijaColor(backgroundColor));
 		}
 		return surface;
+	}
+
+	private Surface createMeasureSurface() {
+		return Surface.makeRaster(ImageInfo.makeN32Premul(1, 1), 0,
+				new SurfaceProps(PixelGeometry.RGB_H));
 	}
 
 	private void initFont() {
