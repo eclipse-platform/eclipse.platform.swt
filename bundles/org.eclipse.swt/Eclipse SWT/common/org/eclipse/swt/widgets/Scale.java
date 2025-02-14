@@ -42,7 +42,7 @@ import org.eclipse.swt.graphics.*;
  *      information</a>
  * @noextend This class is not intended to be subclassed by clients.
  */
-public class Scale extends Control implements ICustomWidget {
+public class Scale extends CustomControl {
 	private static final int PREFERRED_WIDTH = 170;
 	private static final int PREFERRED_HEIGHT = 42;
 

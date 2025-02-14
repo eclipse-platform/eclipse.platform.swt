@@ -54,7 +54,7 @@ import org.eclipse.swt.graphics.*;
  *      information</a>
  * @noextend This class is not intended to be subclassed by clients.
  */
-public class Button extends Control implements ICustomWidget {
+public class Button extends CustomControl {
 	String text = "", message = "";
 	Image image, disabledImage;
 	boolean ignoreMouse, grayed, useDarkModeExplorerTheme;
@@ -62,8 +62,6 @@ public class Button extends Control implements ICustomWidget {
 	static final int ICON_WIDTH = 128, ICON_HEIGHT = 128;
 	static /* final */ boolean COMMAND_LINK = false;
 	static final char[] STRING_WITH_ZERO_CHAR = new char[]{'0'};
-	private int width;
-	private int height;
 	private boolean checked;
 	private boolean hasMouseEntered;
 	private Point computedSize = null;
@@ -610,28 +608,6 @@ public class Button extends Control implements ICustomWidget {
 	}
 
 	@Override
-	public void setSize(int width, int height) {
-		checkWidget();
-		this.width = width;
-		this.height = height;
-		super.setSize(this.width, this.height);
-		redraw();
-	}
-
-	@Override
-	public void setBounds(int x, int y, int width, int height) {
-		this.width = width;
-		this.height = height;
-		super.setBounds(x, y, this.width, this.height);
-		redraw();
-	}
-
-	@Override
-	public Point computeSize(int wHint, int hHint) {
-		return computeSize(wHint, hHint, true);
-	}
-
-	@Override
 	public Point computeSize(int wHint, int hHint, boolean changed) {
 		checkWidget();
 		if (!changed) {
@@ -704,11 +680,6 @@ public class Button extends Control implements ICustomWidget {
 		}
 
 		return computedSize;
-	}
-
-	@Override
-	public Point getSize() {
-		return new Point(width, height);
 	}
 
 	/**
