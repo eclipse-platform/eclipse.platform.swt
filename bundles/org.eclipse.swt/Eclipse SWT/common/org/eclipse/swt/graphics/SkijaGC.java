@@ -65,9 +65,7 @@ public class SkijaGC extends GCHandle {
 		// do not yet use resource handling for SkijaGC
 		// TODO use the resource handling and prevent the error messages for not closed
 		// resources.
-
 	}
-
 
 	private static Color extractBackgroundColor(NativeGC gc) {
 		Rectangle originalGCArea = gc.getClipping();
@@ -226,7 +224,6 @@ public class SkijaGC extends GCHandle {
 		canvas.drawImageRect(convertSWTImageToSkijaImage(image),
 				createScaledRectangle(srcX, srcY, srcWidth, srcHeight),
 				createScaledRectangle(destX, destY, destWidth, destHeight));
-
 	}
 
 	private static ColorType getColorType(ImageData imageData) {
@@ -300,9 +297,7 @@ public class SkijaGC extends GCHandle {
 	    return convertSWTImageToSkijaImage(imageData);
 	}
 
-
 	    static io.github.humbleui.skija.Image convertSWTImageToSkijaImage(ImageData imageData) {
-
 		int width = imageData.width;
 		int height = imageData.height;
 		ColorType colType = getColorType(imageData);
@@ -316,9 +311,7 @@ public class SkijaGC extends GCHandle {
 			return io.github.humbleui.skija.Image.makeRasterFromBytes(imageInfo, bytes,
 				imageData.width * 4);
 		    } else {
-
 			ImageInfo imageInfo = new ImageInfo(width, height, colType, ColorAlphaType.UNPREMUL);
-
 
 			return io.github.humbleui.skija.Image.makeRasterFromBytes(imageInfo, imageData.data,
 				imageData.width * 4);
@@ -326,7 +319,6 @@ public class SkijaGC extends GCHandle {
 	}
 
 	public static byte[] convertToRGBA(ImageData imageData) {
-
 		ImageData transparencyData = imageData.getTransparencyMask();
 		byte[] convertedData = new byte[imageData.width * imageData.height * 4];
 		byte defaultAlpha = (byte)255;
@@ -343,7 +335,6 @@ public class SkijaGC extends GCHandle {
 
 		for (int y = 0; y < imageData.height; y++) {
 			for (int x = 0; x < imageData.width; x++) {
-
 				int pixel = imageData.getPixel(x, y);
 				int arrayPos = (y * imageData.width + x);
 
@@ -371,8 +362,6 @@ public class SkijaGC extends GCHandle {
 					convertedData[index + 3] = defaultAlpha;
 				else if(!byteSourceContainsAlpha)
 					convertedData[index + 3] = defaultAlpha;
-
-
 			}
 		}
 
@@ -380,8 +369,6 @@ public class SkijaGC extends GCHandle {
 	}
 
 	static ImageData convertToSkijaImageData(io.github.humbleui.skija.Image image) {
-
-
 		Bitmap bm = Bitmap.makeFromImage(  image);
 		var colType = bm.getColorType();
 		byte[] alphas = new byte[bm.getHeight() * bm.getWidth()];
@@ -392,7 +379,6 @@ public class SkijaGC extends GCHandle {
 
 		// no alphaType handling support. UNPREMUL and OPAQUE should always work.
 //		ColorAlphaType alphaType = bm.getAlphaType();
-
 
 		for (int y = 0; y < bm.getHeight(); y++) {
 		    for (int x = 0; x < bm.getWidth(); x++) {
@@ -412,7 +398,6 @@ public class SkijaGC extends GCHandle {
 				convertedData[target + 0] = (byte) (red);
 				convertedData[target + 1] = (byte) (green);
 				convertedData[target + 2] = (byte) (blue);
-
 			}
 		}
 
@@ -425,7 +410,6 @@ public class SkijaGC extends GCHandle {
 	}
 
 	public static void writeFile(String str, io.github.humbleui.skija.Image image) {
-
 		byte[] imageBytes = EncoderPNG.encode(image).getBytes();
 
 		File f = new File(str);
@@ -440,7 +424,6 @@ public class SkijaGC extends GCHandle {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 	}
 
 	public static byte convertAlphaTo255Range(float alphaF) {
@@ -721,7 +704,6 @@ public class SkijaGC extends GCHandle {
 
 	private void performDrawGradientFilled(Consumer<Paint> operations, int x, int y, int x2, int y2,
 			int fromColor, int toColor) {
-
 		performDraw(paint -> {
 			try (Shader gradient = Shader.makeLinearGradient(DPIUtil.autoScaleUp(x), DPIUtil.autoScaleUp(y),
 					DPIUtil.autoScaleUp(x2), DPIUtil.autoScaleUp(y2), new int[] { fromColor, toColor }, null,
@@ -821,20 +803,16 @@ public class SkijaGC extends GCHandle {
 	@Override
 	public void setClipping(int x, int y, int width, int height) {
 		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
-
 	}
 
 	@Override
 	public void setTransform(Transform transform) {
-
 		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
-
 	}
 
 	@Override
 	public void setAlpha(int alpha) {
 		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
-
 	}
 
 	@Override
@@ -846,7 +824,6 @@ public class SkijaGC extends GCHandle {
 	@Override
 	public void setLineWidth(int i) {
 		this.lineWidth = i;
-
 	}
 
 	@Override
@@ -1073,7 +1050,6 @@ public class SkijaGC extends GCHandle {
 	@Override
 	protected void getTransform(Transform transform) {
 		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
-
 	}
 
 	@Override
@@ -1085,7 +1061,6 @@ public class SkijaGC extends GCHandle {
 	@Override
 	protected void setBackgroundPattern(Pattern pattern) {
 		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
-
 	}
 
 	@Override
@@ -1097,67 +1072,56 @@ public class SkijaGC extends GCHandle {
 	@Override
 	protected void setClipping(Rectangle rect) {
 		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
-
 	}
 
 	@Override
 	protected void setClipping(Region region) {
 		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
-
 	}
 
 	@Override
 	void setFillRule(int rule) {
 		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
-
 	}
 
 	@Override
 	protected void setForegroundPattern(Pattern pattern) {
 		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
-
 	}
 
 	@Override
 	protected void setInterpolation(int interpolation) {
 		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
-
 	}
 
 	@Override
 	protected void setLineAttributes(LineAttributes attributes) {
 		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
-
 	}
 
 	@Override
 	protected void setLineCap(int cap) {
 		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
-
 	}
 
 	@Override
 	protected void setLineDash(int[] dashes) {
 		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
-
 	}
 
 	@Override
 	protected void setLineJoin(int join) {
 		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
-
 	}
 
 	@Override
 	protected void setXORMode(boolean xor) {
 		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
-
 	}
 
 	@Override
 	protected void setTextAntialias(int antialias) {
 		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
-
 	}
 
 	@Override
@@ -1190,15 +1154,12 @@ public class SkijaGC extends GCHandle {
 		return new PaletteData(new RGB[] { new RGB(255, 165, 0), // Example orange
 			new RGB(0, 255, 255), // Example cyan
 			new RGB(128, 0, 128) }); // Example purple
-
 	    default:
 		throw new IllegalArgumentException("Unknown Skija ColorType: " + colorType);
-
 	    }
 	}
 
 	static int getImageDepth(ColorType colorType) {
-
 		// TODO test all mappings
 	    switch (colorType) {
 	    case ALPHA_8:
@@ -1221,11 +1182,9 @@ public class SkijaGC extends GCHandle {
 	    default:
 		throw new IllegalArgumentException("Unknown Skija ColorType: " + colorType);
 	    }
-
 	}
 
 	static ColorAlphaType determineAlphaType(ImageData imageData) {
-
 		// TODO test all mappings
 	    if (imageData.alphaData == null && imageData.alpha == -1) {
 			// no alpha
@@ -1277,5 +1236,4 @@ public class SkijaGC extends GCHandle {
 	    Map<ColorType, int[]> colorTypeMap = createColorTypeMap();
 	    return colorTypeMap.get(colorType);
 	}
-
 }

@@ -29,13 +29,10 @@ public class SnippetSkijaImageDataProvider {
     private static final String CHANGED_FILE = "changed.png";
 
     private static String[] filenames = new String[] {
-
 	    BEFORE_FILE, AFTER_FILE_SWT, AFTER_FILE_SKIA, CHANGED_FILE
-
     };
 
     public static void main(String[] arg) {
-
 	deleteFiles();
 
 	Display display = new Display();
@@ -52,7 +49,6 @@ public class SnippetSkijaImageDataProvider {
 	{
 	    saver.data = new ImageData[] { image.getImageData(zoom) };
 	    saver.save(AFTER_FILE_SWT, SWT.IMAGE_PNG);
-
 	}
 	{
 	    SkijaImageDataProvider skiaScale = new SkijaImageDataProvider(image.getImageData());
@@ -68,19 +64,13 @@ public class SnippetSkijaImageDataProvider {
 	if (DELETE_AFTER_EXECUTE) {
 	    deleteFiles();
 	}
-
     }
 
     private static void deleteFiles() {
-
 	for (var s : filenames) {
-
 	    File f = new File(s);
 	    if (f.exists())
 		f.delete();
-
 	}
-
     }
-
 }

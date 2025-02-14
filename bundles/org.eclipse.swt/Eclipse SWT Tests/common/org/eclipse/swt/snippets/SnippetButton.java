@@ -29,7 +29,6 @@ public class SnippetButton {
 
 		ImageData img = image1.getImageData();
 
-
 		Shell shell = new Shell(display);
 		shell.setText("SnippetButton");
 		shell.setLayout(new GridLayout());
@@ -95,7 +94,6 @@ public class SnippetButton {
 		}
 
 		{
-
 			Image image3 = new Image(display, 5, 5);
 			var b3 = image3.getBounds();
 			var gc3 = new GC(image3);

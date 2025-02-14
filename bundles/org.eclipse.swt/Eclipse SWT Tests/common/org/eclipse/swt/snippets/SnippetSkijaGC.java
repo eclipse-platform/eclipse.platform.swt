@@ -29,7 +29,6 @@ public class SnippetSkijaGC {
     };
 
     public static void main(String[] args) {
-
 	deleteFiles();
 
 	Display display = new Display();
@@ -58,18 +57,13 @@ public class SnippetSkijaGC {
 	if (DELETE_AFTER_EXECUTE) {
 	    deleteFiles();
 	}
-
     }
 
     private static void deleteFiles() {
-
 	for (var s : FILENAMES) {
-
 	    File f = new File(s);
 	    if (f.exists())
 		f.delete();
-
 	}
-
     }
 }

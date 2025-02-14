@@ -41,7 +41,6 @@ public class SkijaImageDataProvider implements ImageDataProvider {
 
     @Override
     public ImageData getImageData(int zoom) {
-
 	if (convertedImageData.get(zoom) != null)
 	    return convertedImageData.get(zoom);
 
@@ -49,15 +48,12 @@ public class SkijaImageDataProvider implements ImageDataProvider {
 	convertedImageData.put(zoom, id);
 
 	return id;
-
     }
 
     ImageData scaleImage(int zoom) {
-
 	Surface surface = null;
 	Image image = null;
 	try {
-
 	    double scale = (double) (zoom) / 100.0;
 
 	    var originalWidth = imageData.width;
@@ -87,5 +83,4 @@ public class SkijaImageDataProvider implements ImageDataProvider {
 		image.close();
 	}
     }
-
 }
