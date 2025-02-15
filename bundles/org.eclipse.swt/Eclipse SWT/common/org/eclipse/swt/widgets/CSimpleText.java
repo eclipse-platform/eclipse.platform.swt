@@ -7,11 +7,11 @@ import org.eclipse.swt.graphics.*;
 
 public class CSimpleText extends Scrollable implements ICustomWidget {
 
-	private int tabs = 8;
-
 	public static final int LIMIT = 0x7FFFFFFF;
 
 	public static final String DELIMITER = CSimpleTextModel.DELIMITER;
+
+	private int tabs = 8;
 
 	private CSimpleTextModel model;
 	private String message;
