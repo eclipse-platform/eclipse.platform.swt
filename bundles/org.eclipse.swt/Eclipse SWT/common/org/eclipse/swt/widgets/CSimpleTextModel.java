@@ -1,6 +1,7 @@
 package org.eclipse.swt.widgets;
 
 import java.util.*;
+import java.util.List;
 
 import org.eclipse.swt.*;
 
@@ -12,7 +13,7 @@ public class CSimpleTextModel {
 	private int selectionStart, selectionEnd;
 	private int caretOffset;
 
-	private final ArrayList<ITextModelChangedListener> modelChangedListeners = new ArrayList<>();
+	private final List<ITextModelChangedListener> modelChangedListeners = new ArrayList<>();
 
 	private String[] textLines;
 
