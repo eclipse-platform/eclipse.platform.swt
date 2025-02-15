@@ -51,7 +51,7 @@ public class CTextCaret extends Widget {
 		@Override
 		public void run() {
 			if (currentCaret != null) {
-				if (currentCaret == null || currentCaret.isDisposed()) {
+				if (currentCaret.isDisposed()) {
 					return;
 				}
 				if (currentCaret.blinkCaret()) {
