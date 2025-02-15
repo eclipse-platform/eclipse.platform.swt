@@ -12,7 +12,7 @@ public class CSimpleTextModel {
 	private int selectionStart, selectionEnd;
 	private int caretOffset;
 
-	private ArrayList<ITextModelChangedListener> modelChangedListeners = new ArrayList<>();
+	private final ArrayList<ITextModelChangedListener> modelChangedListeners = new ArrayList<>();
 
 	private String[] textLines;
 
