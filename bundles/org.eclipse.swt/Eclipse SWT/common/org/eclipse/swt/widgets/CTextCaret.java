@@ -61,7 +61,6 @@ public class CTextCaret extends Widget {
 					currentCaret = null;
 				}
 			}
-
 		}
 	};
 
@@ -124,7 +123,6 @@ public class CTextCaret extends Widget {
 	}
 
 	boolean drawCaret() {
-
 		if (parent == null)
 			return false;
 		if (parent.isDisposed())
@@ -318,7 +316,6 @@ public class CTextCaret extends Widget {
 	}
 
 	boolean isFocusCaret() {
-
 		return isCurrentCart();
 	}
 
@@ -621,5 +618,4 @@ public class CTextCaret extends Widget {
 			gc.setBackground(oldBackground);
 		}
 	}
-
 }

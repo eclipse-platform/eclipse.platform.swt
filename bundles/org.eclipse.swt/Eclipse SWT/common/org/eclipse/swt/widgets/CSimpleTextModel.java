@@ -108,7 +108,6 @@ public class CSimpleTextModel {
 	}
 
 	int getLineCount() {
-
 		return getLines().length;
 	}
 
@@ -238,7 +237,6 @@ public class CSimpleTextModel {
 		sendSelectionChanged();
 	}
 
-
 	void setSectionStart(TextLocation location) {
 		setSelection(getOffset(location));
 	}
@@ -266,7 +264,6 @@ public class CSimpleTextModel {
 
 	void moveCaretRight(boolean updateSelection) {
 		moveCaretTo(getCaretOffset() + 1, updateSelection);
-
 	}
 
 	void moveCaretUp(boolean updateSelection) {
@@ -333,7 +330,6 @@ public class CSimpleTextModel {
 	public void setTextChars(char[] cs) {
 		setText(new String(cs));
 	}
-
 }
 
 class TextLocation {

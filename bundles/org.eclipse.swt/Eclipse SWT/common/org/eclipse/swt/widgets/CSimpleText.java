@@ -8,11 +8,9 @@ import org.eclipse.swt.graphics.*;
 public class CSimpleText extends Scrollable implements ICustomWidget {
 
 	public static final int LIMIT = 0x7FFFFFFF;
-
 	public static final String DELIMITER = CSimpleTextModel.DELIMITER;
 
 	private int tabs = 8;
-
 	private CSimpleTextModel model;
 	private String message;
 	private char echoChar;
@@ -22,9 +20,7 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 	private boolean mouseDown;
 	private boolean doubleClick;
 	private CTextCaret caret;
-
 	private int style;
-
 	private boolean customBackground;
 
 	public CSimpleText(Composite parent, int style) {
@@ -113,7 +109,6 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 		}
 
 		model.addModelChangedListner(new ITextModelChangedListener() {
-
 			@Override
 			public void textModified() {
 				CSimpleText.this.textModified();
@@ -123,14 +118,10 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 			public void selectionChanged() {
 				CSimpleText.this.selectionChanged();
 			}
-
 		});
 	}
 
-
-
 	protected void onGesture(Event e) {
-
 		if (e.yDirection != 0) {
 			verticalScroll(e.yDirection);
 		}
@@ -179,7 +170,6 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 			horizontalBar.setThumb(bounds.width);
 			horizontalBar.setPageIncrement(bounds.height);
 		}
-
 	}
 
 	@Override
@@ -221,7 +211,6 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 		gc.dispose();
 
 		return new Point(width, height);
-
 	}
 
 	private void selectionChanged() {
@@ -246,7 +235,6 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 		}
 
 		if (verticalBar != null) {
-
 			if (caretLocation.y < visibleArea.y) {
 				verticalBar.setSelection(caretLocation.y);
 			} else {
@@ -262,7 +250,6 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 
 	protected void focusLost(Event e) {
 		caret.killFocus();
-
 	}
 
 	protected void focusGained(Event e) {
@@ -295,7 +282,6 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 	private void keyPressed(Event e) {
 		boolean updateSelection = (e.stateMask & SWT.SHIFT) != 0;
 		if ((e.stateMask == 0 || (e.stateMask & SWT.SHIFT) != 0)) {
-
 			switch (e.keyCode) {
 			case SWT.ARROW_LEFT:
 				model.moveCaretLeft(updateSelection);
@@ -447,7 +433,6 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 			}
 			gc.setForeground(oldForeground);
 			gc.setBackground(oldBackground);
-
 		}
 	}
 
@@ -642,7 +627,6 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 	}
 
 	private Point getLocationByTextLocation(TextLocation textLocation, GC gc) {
-
 		String completeText = model.getLines()[textLocation.line];
 		String beforeSelection = completeText.substring(0, textLocation.column);
 		gc.setFont(getFont());
@@ -843,8 +827,6 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 		model.insert(string);
 	}
 
-
-
 	String verifyText(String string, int start, int end) {
 		Event event = new Event();
 		event.text = string;
@@ -931,5 +913,4 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 		caret.setFocus();
 		return super.setFocus();
 	}
-
 }
