@@ -52,18 +52,22 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 			style &= ~SWT.MULTI;
 		}
 		style = checkBits(style, SWT.LEFT, SWT.CENTER, SWT.RIGHT, 0, 0, 0);
-		if ((style & SWT.SINGLE) != 0)
+		if ((style & SWT.SINGLE) != 0) {
 			style &= ~(SWT.H_SCROLL | SWT.V_SCROLL | SWT.WRAP);
+		}
 		if ((style & SWT.WRAP) != 0) {
 			style |= SWT.MULTI;
 			style &= ~SWT.H_SCROLL;
 		}
-		if ((style & SWT.MULTI) != 0)
+		if ((style & SWT.MULTI) != 0) {
 			style &= ~SWT.PASSWORD;
-		if ((style & (SWT.SINGLE | SWT.MULTI)) != 0)
+		}
+		if ((style & (SWT.SINGLE | SWT.MULTI)) != 0) {
 			return style;
-		if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0)
+		}
+		if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
 			return style | SWT.MULTI;
+		}
 		return style | SWT.SINGLE;
 	}
 
@@ -528,8 +532,9 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 		// TODO move verify listener to TextModel
 		if (hooks(SWT.Verify) || filters(SWT.Verify)) {
 			text = verifyText(text, 0, getCharCount());
-			if (text == null)
+			if (text == null) {
 				return;
+			}
 		}
 		model.setText(text);
 	}
@@ -541,8 +546,9 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 	public void append(String string) {
 		if (hooks(SWT.Verify) || filters(SWT.Verify)) {
 			string = verifyText(string, 0, getCharCount());
-			if (string == null)
+			if (string == null) {
 				return;
+			}
 		}
 		model.append(string);
 	}
@@ -556,8 +562,9 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 	}
 
 	public void setSelection(Point selection) {
-		if (selection == null)
+		if (selection == null) {
 			error(SWT.ERROR_NULL_ARGUMENT);
+		}
 		setSelection(selection.x, selection.y);
 	}
 
@@ -579,23 +586,26 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 	}
 
 	public int getTopIndex() {
-		if ((style & SWT.SINGLE) != 0)
+		if ((style & SWT.SINGLE) != 0) {
 			return 0;
+		}
 		Rectangle visibleArea = getVisibleArea();
 		return visibleArea.y / getLineHeight();
 	}
 
 	public int getTopPixel() {
 		checkWidget();
-		if ((style & SWT.SINGLE) != 0)
+		if ((style & SWT.SINGLE) != 0) {
 			return 0;
+		}
 		return getVisibleArea().y;
 	}
 
 	public void setTopIndex(int index) {
 		checkWidget();
-		if ((style & SWT.SINGLE) != 0)
+		if ((style & SWT.SINGLE) != 0) {
 			return;
+		}
 		TextLocation location = model.getLocation(index);
 		int y = location.line * getLineHeight();
 		if (verticalBar != null) {
@@ -681,10 +691,12 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 
 	public void removeSelectionListener(SelectionListener listener) {
 		checkWidget();
-		if (listener == null)
+		if (listener == null) {
 			error(SWT.ERROR_NULL_ARGUMENT);
-		if (eventTable == null)
+		}
+		if (eventTable == null) {
 			return;
+		}
 		eventTable.unhook(SWT.Selection, listener);
 		eventTable.unhook(SWT.DefaultSelection, listener);
 	}
@@ -695,10 +707,12 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 
 	public void removeModifyListener(ModifyListener listener) {
 		checkWidget();
-		if (listener == null)
+		if (listener == null) {
 			error(SWT.ERROR_NULL_ARGUMENT);
-		if (eventTable == null)
+		}
+		if (eventTable == null) {
 			return;
+		}
 		eventTable.unhook(SWT.Modify, listener);
 	}
 
@@ -724,10 +738,12 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 
 	public void setTextLimit(int limit) {
 		checkWidget();
-		if (limit == 0)
+		if (limit == 0) {
 			error(SWT.ERROR_CANNOT_BE_ZERO);
-		if (limit < 0)
+		}
+		if (limit < 0) {
 			return;
+		}
 		textLimit = limit;
 	}
 
@@ -800,29 +816,34 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 
 	public void removeVerifyListener(VerifyListener listener) {
 		checkWidget();
-		if (listener == null)
+		if (listener == null) {
 			error(SWT.ERROR_NULL_ARGUMENT);
-		if (eventTable == null)
+		}
+		if (eventTable == null) {
 			return;
+		}
 		eventTable.unhook(SWT.Verify, listener);
 	}
 
 	public int getCaretLineNumber() {
 		checkWidget();
-		if ((style & SWT.SINGLE) != 0)
+		if ((style & SWT.SINGLE) != 0) {
 			return 0;
+		}
 		return model.getCaretLocation().line;
 	}
 
 	public void insert(String string) {
 		checkWidget();
-		if (string == null)
+		if (string == null) {
 			error(SWT.ERROR_NULL_ARGUMENT);
+		}
 		if (hooks(SWT.Verify) || filters(SWT.Verify)) {
 			Point selection = getSelection();
 			string = verifyText(string, selection.x, selection.y);
-			if (string == null)
+			if (string == null) {
 				return;
+			}
 		}
 		model.insert(string);
 	}
@@ -838,8 +859,9 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 		 * operation.
 		 */
 		sendEvent(SWT.Verify, event);
-		if (!event.doit || isDisposed())
+		if (!event.doit || isDisposed()) {
 			return null;
+		}
 		return event.text;
 	}
 
@@ -865,8 +887,9 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 
 	public int getLineCount() {
 		checkWidget();
-		if ((style & SWT.SINGLE) != 0)
+		if ((style & SWT.SINGLE) != 0) {
 			return 1;
+		}
 		return model.getLineCount();
 	}
 
@@ -881,8 +904,9 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 
 	public void removeSegmentListener(SegmentListener listener) {
 		checkWidget();
-		if (listener == null)
+		if (listener == null) {
 			error(SWT.ERROR_NULL_ARGUMENT);
+		}
 		eventTable.unhook(SWT.Segments, listener);
 	}
 

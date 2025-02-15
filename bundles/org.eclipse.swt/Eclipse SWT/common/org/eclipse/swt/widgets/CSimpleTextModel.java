@@ -83,8 +83,9 @@ public class CSimpleTextModel {
 	}
 
 	void setText(String text) {
-		if (text == null)
+		if (text == null) {
 			SWT.error(SWT.ERROR_NULL_ARGUMENT);
+		}
 		this.text = text;
 		caretOffset = 0;
 		clearSelection();
@@ -92,12 +93,14 @@ public class CSimpleTextModel {
 	}
 
 	void append(String string) {
-		if (string == null)
+		if (string == null) {
 			SWT.error(SWT.ERROR_NULL_ARGUMENT);
+		}
 		text = text + string;
 		caretOffset = getText().length();
-		if (string.length() != 0)
+		if (string.length() != 0) {
 			sendTextModified();
+		}
 	}
 
 	String[] getLines() {
@@ -112,8 +115,9 @@ public class CSimpleTextModel {
 	}
 
 	TextLocation getLocation(int offset) {
-		if (offset < 0 || offset > text.length())
+		if (offset < 0 || offset > text.length()) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		}
 
 		int line = 0;
 		int column = 0;
@@ -165,8 +169,9 @@ public class CSimpleTextModel {
 	}
 
 	private void insert(String string, int offset) {
-		if (text == null)
+		if (text == null) {
 			SWT.error(SWT.ERROR_NULL_ARGUMENT);
+		}
 		StringBuilder sb = new StringBuilder(text.substring(0, offset));
 		sb.append(string);
 		sb.append(text.substring(offset));
@@ -185,8 +190,9 @@ public class CSimpleTextModel {
 	}
 
 	private void moveCaretTo(int newOffset, boolean changeSelection) {
-		if (newOffset < 0 || newOffset > getText().length())
+		if (newOffset < 0 || newOffset > getText().length()) {
 			return;
+		}
 
 		if (changeSelection) {
 			if (caretOffset == selectionEnd) {
@@ -268,16 +274,18 @@ public class CSimpleTextModel {
 
 	void moveCaretUp(boolean updateSelection) {
 		TextLocation caretLocation = getLocation(getCaretOffset());
-		if (caretLocation.line <= 0)
+		if (caretLocation.line <= 0) {
 			return;
+		}
 		caretLocation.line--;
 		moveCaretTo(getOffset(caretLocation), updateSelection);
 	}
 
 	void moveCaretDown(boolean updateSelection) {
 		TextLocation caretLocation = getLocation(getCaretOffset());
-		if (caretLocation.line >= getLineCount() - 1)
+		if (caretLocation.line >= getLineCount() - 1) {
 			return;
+		}
 		caretLocation.line++;
 		moveCaretTo(getOffset(caretLocation), updateSelection);
 	}
@@ -315,8 +323,9 @@ public class CSimpleTextModel {
 	}
 
 	private char normalize(char character) {
-		if (character == SWT.CR)
+		if (character == SWT.CR) {
 			return DELIMITER.charAt(0);
+		}
 		return character;
 	}
 

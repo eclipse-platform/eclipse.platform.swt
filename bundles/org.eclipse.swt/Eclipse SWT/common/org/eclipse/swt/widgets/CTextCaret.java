@@ -51,12 +51,14 @@ public class CTextCaret extends Widget {
 		@Override
 		public void run() {
 			if (currentCaret != null) {
-				if (currentCaret == null || currentCaret.isDisposed())
+				if (currentCaret == null || currentCaret.isDisposed()) {
 					return;
+				}
 				if (currentCaret.blinkCaret()) {
 					int blinkRate = currentCaret.blinkRate;
-					if (blinkRate != 0)
+					if (blinkRate != 0) {
 						Display.getDefault().timerExec(blinkRate, this);
+					}
 				} else {
 					currentCaret = null;
 				}
@@ -105,12 +107,15 @@ public class CTextCaret extends Widget {
 	}
 
 	boolean blinkCaret() {
-		if (!isVisible)
+		if (!isVisible) {
 			return true;
-		if (!isShowing)
+		}
+		if (!isShowing) {
 			return showCaret();
-		if (blinkRate == 0)
+		}
+		if (blinkRate == 0) {
 			return true;
+		}
 		return hideCaret();
 	}
 
@@ -123,13 +128,16 @@ public class CTextCaret extends Widget {
 	}
 
 	boolean drawCaret() {
-		if (parent == null)
+		if (parent == null) {
 			return false;
-		if (parent.isDisposed())
+		}
+		if (parent.isDisposed()) {
 			return false;
+		}
 		int nWidth = width, nHeight = height;
-		if (nWidth <= 0)
+		if (nWidth <= 0) {
 			nWidth = DEFAULT_WIDTH;
+		}
 		setBounds(x, y, nWidth, nHeight);
 		parent.redraw();
 		return true;
@@ -177,8 +185,9 @@ public class CTextCaret extends Widget {
 	 */
 	public Font getFont() {
 		checkWidget();
-		if (font != null)
+		if (font != null) {
 			return font;
+		}
 		return parent.getFont();
 	}
 
@@ -288,8 +297,9 @@ public class CTextCaret extends Widget {
 	}
 
 	boolean hideCaret() {
-		if (!isShowing)
+		if (!isShowing) {
 			return true;
+		}
 		isShowing = false;
 		return drawCaret();
 	}
@@ -320,11 +330,13 @@ public class CTextCaret extends Widget {
 	}
 
 	void killFocus() {
-		if (!isCurrentCart())
+		if (!isCurrentCart()) {
 			return;
+		}
 		currentCaret = null;
-		if (isVisible)
+		if (isVisible) {
 			hideCaret();
+		}
 	}
 
 	private boolean isCurrentCart() {
@@ -373,8 +385,9 @@ public class CTextCaret extends Widget {
 	 */
 	public void setBounds(int x, int y, int width, int height) {
 		checkWidget();
-		if (this.x == x && this.y == y && this.width == width && this.height == height)
+		if (this.x == x && this.y == y && this.width == width && this.height == height) {
 			return;
+		}
 		boolean isFocus = isFocusCaret();
 		if (isFocus && isVisible)
 			hideCaret();
@@ -382,8 +395,9 @@ public class CTextCaret extends Widget {
 		this.y = y;
 		this.width = width;
 		this.height = height;
-		if (isFocus && isVisible)
+		if (isFocus && isVisible) {
 			showCaret();
+		}
 	}
 
 	/**
@@ -403,21 +417,24 @@ public class CTextCaret extends Widget {
 	 */
 	public void setBounds(Rectangle rect) {
 		checkWidget();
-		if (rect == null)
+		if (rect == null) {
 			error(SWT.ERROR_NULL_ARGUMENT);
+		}
 		setBounds(rect.x, rect.y, rect.width, rect.height);
 	}
 
 	void setFocus() {
-		if (isCurrentCart())
+		if (isCurrentCart()) {
 			return;
+		}
 		if (currentCaret != null) {
 			currentCaret.killFocus();
 		}
 		currentCaret = this;
 		display.timerExec(blinkRate, caretTimer);
-		if (isVisible)
+		if (isVisible) {
 			showCaret();
+		}
 	}
 
 	/**
@@ -476,11 +493,13 @@ public class CTextCaret extends Widget {
 			error(SWT.ERROR_INVALID_ARGUMENT);
 		}
 		boolean isFocus = isFocusCaret();
-		if (isFocus && isVisible)
+		if (isFocus && isVisible) {
 			hideCaret();
+		}
 		this.image = image;
-		if (isFocus && isVisible)
+		if (isFocus && isVisible) {
 			showCaret();
+		}
 	}
 
 	/**
@@ -519,8 +538,9 @@ public class CTextCaret extends Widget {
 	 */
 	public void setLocation(Point location) {
 		checkWidget();
-		if (location == null)
+		if (location == null) {
 			error(SWT.ERROR_NULL_ARGUMENT);
+		}
 		setLocation(location.x, location.y);
 	}
 
@@ -564,8 +584,9 @@ public class CTextCaret extends Widget {
 	 */
 	public void setSize(Point size) {
 		checkWidget();
-		if (size == null)
+		if (size == null) {
 			error(SWT.ERROR_NULL_ARGUMENT);
+		}
 		setSize(size.x, size.y);
 	}
 
@@ -590,11 +611,13 @@ public class CTextCaret extends Widget {
 	 */
 	public void setVisible(boolean visible) {
 		checkWidget();
-		if (visible == isVisible)
+		if (visible == isVisible) {
 			return;
+		}
 		isVisible = visible;
-		if (!isFocusCaret())
+		if (!isFocusCaret()) {
 			return;
+		}
 		if (isVisible) {
 			showCaret();
 		} else {
@@ -603,8 +626,9 @@ public class CTextCaret extends Widget {
 	}
 
 	boolean showCaret() {
-		if (isShowing)
+		if (isShowing) {
 			return true;
+		}
 		isShowing = true;
 		return drawCaret();
 	}
