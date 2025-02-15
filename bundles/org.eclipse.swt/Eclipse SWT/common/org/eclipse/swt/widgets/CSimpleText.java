@@ -78,76 +78,39 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 	}
 
 	private void addListeners() {
-		addDisposeListener(e -> CSimpleText.this.widgetDisposed(e));
-		addPaintListener(e -> CSimpleText.this.paintControl(e));
-		addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				super.keyPressed(e);
-				CSimpleText.this.keyPressed(e);
+		final Listener listener = event -> {
+			switch (event.type) {
+			case SWT.Paint -> CSimpleText.this.paintControl(event);
+			case SWT.MouseMove -> CSimpleText.this.onMouseMove(event);
+			case SWT.MouseDown -> CSimpleText.this.onMouseDown(event);
+			case SWT.MouseUp -> CSimpleText.this.onMouseUp(event);
+			case SWT.MouseWheel -> CSimpleText.this.onMouseWheel(event);
+			case SWT.KeyDown -> CSimpleText.this.keyPressed(event);
+			case SWT.FocusIn -> CSimpleText.this.focusGained(event);
+			case SWT.FocusOut -> CSimpleText.this.focusLost(event);
+			case SWT.Gesture -> CSimpleText.this.onGesture(event);
+			case SWT.Dispose -> CSimpleText.this.widgetDisposed(event);
 			}
-		});
+		};
+		addListener(SWT.Paint, listener);
+		addListener(SWT.MouseMove, listener);
+		addListener(SWT.MouseDown, listener);
+		addListener(SWT.MouseUp, listener);
+		addListener(SWT.MouseWheel, listener);
+		addListener(SWT.KeyDown, listener);
+		addListener(SWT.FocusIn, listener);
+		addListener(SWT.FocusOut, listener);
+		addListener(SWT.Gesture, listener);
+		addListener(SWT.Dispose, listener);
 
 		ScrollBar horizontalBar = getHorizontalBar();
 		if (horizontalBar != null) {
-			horizontalBar.addSelectionListener(new SelectionAdapter() {
-
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					super.widgetSelected(e);
-					CSimpleText.this.scrollBarSelectionChanged(e);
-				}
-			});
+			horizontalBar.addListener(SWT.Selection, CSimpleText.this::scrollBarSelectionChanged);
 		}
 		ScrollBar verticalBar = getVerticalBar();
 		if (verticalBar != null) {
-			verticalBar.addSelectionListener(new SelectionAdapter() {
-
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					super.widgetSelected(e);
-					CSimpleText.this.scrollBarSelectionChanged(e);
-				}
-			});
+			verticalBar.addListener(SWT.Selection, CSimpleText.this::scrollBarSelectionChanged);
 		}
-		addMouseListener(new MouseAdapter() {
-
-			@Override
-			public void mouseDown(MouseEvent e) {
-				super.mouseDown(e);
-				CSimpleText.this.onMouseDown(e);
-			}
-
-			@Override
-			public void mouseUp(MouseEvent e) {
-				super.mouseUp(e);
-				CSimpleText.this.onMouseUp(e);
-			}
-
-		});
-
-		addMouseMoveListener(e -> {
-			CSimpleText.this.onMouseMove(e);
-		});
-
-		addMouseWheelListener(e -> {
-			CSimpleText.this.onMouseWheel(e);
-		});
-
-		addGestureListener(e -> CSimpleText.this.onGesture(e));
-
-
-		addFocusListener(new FocusAdapter() {
-			@Override
-			public void focusGained(FocusEvent e) {
-				CSimpleText.this.focusGained(e);
-			}
-
-			@Override
-			public void focusLost(FocusEvent e) {
-				CSimpleText.this.focusLost(e);
-			}
-		});
 
 		model.addModelChangedListner(new ITextModelChangedListener() {
 
@@ -166,7 +129,7 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 
 
 
-	protected void onGesture(GestureEvent e) {
+	protected void onGesture(Event e) {
 
 		if (e.yDirection != 0) {
 			verticalScroll(e.yDirection);
@@ -192,7 +155,7 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 		}
 	}
 
-	private void onMouseWheel(MouseEvent e) {
+	private void onMouseWheel(Event e) {
 		verticalScroll(e.count);
 		redraw();
 	}
@@ -297,39 +260,39 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 		gc.dispose();
 	}
 
-	protected void focusLost(FocusEvent e) {
+	protected void focusLost(Event e) {
 		caret.killFocus();
 
 	}
 
-	protected void focusGained(FocusEvent e) {
+	protected void focusGained(Event e) {
 		caret.setFocus();
 	}
 
-	private void onMouseDown(MouseEvent e) {
+	private void onMouseDown(Event e) {
 		setFocus();
 		TextLocation location = getTextLocation(e.x, e.y);
 		model.setSectionStart(location);
 		mouseDown = true;
 	}
 
-	private void onMouseMove(MouseEvent e) {
+	private void onMouseMove(Event e) {
 		if (mouseDown) {
 			updateSelectionEnd(e);
 		}
 	}
 
-	private void onMouseUp(MouseEvent e) {
+	private void onMouseUp(Event e) {
 		updateSelectionEnd(e);
 		mouseDown = false;
 	}
 
-	private void updateSelectionEnd(MouseEvent e) {
+	private void updateSelectionEnd(Event e) {
 		TextLocation location = getTextLocation(e.x, e.y);
 		model.setSelectionEnd(location);
 	}
 
-	private void keyPressed(KeyEvent e) {
+	private void keyPressed(Event e) {
 		boolean updateSelection = (e.stateMask & SWT.SHIFT) != 0;
 		if ((e.stateMask == 0 || (e.stateMask & SWT.SHIFT) != 0)) {
 
@@ -413,7 +376,7 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 		return location;
 	}
 
-	protected void widgetDisposed(DisposeEvent e) {
+	protected void widgetDisposed(Event e) {
 		caret.dispose();
 	}
 
@@ -425,7 +388,7 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 		}
 	}
 
-	private void paintControl(PaintEvent e) {
+	private void paintControl(Event e) {
 		Rectangle visibleArea = getVisibleArea();
 		e.gc.setFont(getFont());
 		e.gc.setForeground(getForeground());
@@ -454,7 +417,7 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 		redraw();
 	}
 
-	private void drawSelection(PaintEvent e, Rectangle visibleArea) {
+	private void drawSelection(Event e, Rectangle visibleArea) {
 		GC gc = e.gc;
 		int textLength = model.getText().length();
 		int start = Math.min(Math.max(model.getSelectionStart(), 0), textLength);
@@ -488,7 +451,7 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 		}
 	}
 
-	private void drawCaret(PaintEvent e, Rectangle visibleArea) {
+	private void drawCaret(Event e, Rectangle visibleArea) {
 		GC gc = e.gc;
 
 		int caretOffset = model.getCaretOffset();
@@ -503,7 +466,7 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 		caret.paint(e);
 	}
 
-	private void drawText(PaintEvent e, Rectangle visibleArea) {
+	private void drawText(Event e, Rectangle visibleArea) {
 		String[] lines = model.getLines();
 		for (int i = 0; i < lines.length; i++) {
 			String line = lines[i];
@@ -533,7 +496,7 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 		gc.drawText(text, _x, _y, true);
 	}
 
-	private void drawBackground(PaintEvent e) {
+	private void drawBackground(Event e) {
 		GC gc = e.gc;
 		gc.fillRectangle(e.x, e.y, e.width - 1, e.height - 1);
 		if ((style & SWT.BORDER) != 0 && getEditable() && isEnabled()) {
@@ -724,7 +687,7 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 		return model.getCaretOffset();
 	}
 
-	private void scrollBarSelectionChanged(SelectionEvent e) {
+	private void scrollBarSelectionChanged(Event e) {
 		redraw();
 	}
 
