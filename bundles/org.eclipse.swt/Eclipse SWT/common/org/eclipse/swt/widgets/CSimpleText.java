@@ -11,7 +11,7 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 
 	public static final int LIMIT = 0x7FFFFFFF;
 
-	public static String DELIMITER = CSimpleTextModel.DELIMITER;
+	public static final String DELIMITER = CSimpleTextModel.DELIMITER;
 
 	private CSimpleTextModel model;
 	private String message;
