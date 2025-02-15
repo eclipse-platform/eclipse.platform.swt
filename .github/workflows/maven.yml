@@ -11,6 +11,10 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
+    types: [opened, reopened, synchronize, labeled]
+
+env:
+  SWT_GTK4: "${{ contains(github.event.pull_request.labels.*.name, 'gtk4') && '1' || '0' }}"
 
 jobs:
   event_file:
@@ -94,3 +98,4 @@ jobs:
         if-no-files-found: warn
         path: |
           ${{ github.workspace }}/**/target/surefire-reports/*.xml
+          ${{ github.workspace }}/**/hs_err_pid*.log
