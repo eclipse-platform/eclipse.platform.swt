@@ -934,7 +934,7 @@ public class SkijaGC extends GCHandle {
 
 	@Override
 	public Rectangle getClipping() {
-		return clipping;
+		return new Rectangle(clipping.x, clipping.y, clipping.width, clipping.height);
 	}
 
 	@Override
