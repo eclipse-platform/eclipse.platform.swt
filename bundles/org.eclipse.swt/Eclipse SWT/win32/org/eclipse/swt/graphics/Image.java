@@ -133,7 +133,6 @@ Image (Device device) {
 private Image (Device device, int nativeZoom) {
 	super(device);
 	initialNativeZoom = nativeZoom;
-	this.device.registerResourceWithZoomSupport(this);
 }
 
 /**
@@ -784,7 +783,15 @@ private ImageHandle getImageMetadata(int zoom) {
 	} else {
 		ImageData resizedData = getImageData(zoom);
 		ImageData newData = adaptImageDataIfDisabledOrGray(resizedData);
-		init(newData, zoom);
+		if (type == SWT.ICON && newData.getTransparencyType() != SWT.TRANSPARENCY_MASK) {
+			// If the original type was an icon with transparency mask and re-scaling leads
+			// to image data without transparency mask, this will create invalid images
+			// so this fallback will "repair" the image data by explicitly passing
+			// the transparency mask created from the scaled image data
+			init(this.device, this, newData, newData.getTransparencyMask(), zoom);
+		} else {
+			init(newData, zoom);
+		}
 		init();
 	}
 	return zoomLevelToImageHandle.get(zoom);
@@ -2077,6 +2084,7 @@ public static Image win32_new(Device device, int type, long handle, int nativeZo
 	Image image = new Image(device, nativeZoom);
 	image.type = type;
 	image.new ImageHandle(handle, nativeZoom);
+	image.device.registerResourceWithZoomSupport(image);
 	return image;
 }
 
@@ -2185,9 +2193,9 @@ private class ImageDataProviderWrapper extends AbstractImageProviderWrapper {
 
 	@Override
 	protected Rectangle getBounds(int zoom) {
-		ElementAtZoom<ImageData> data = DPIUtil.validateAndGetImageDataAtZoom (provider, zoom);
-		Rectangle rectangle = new Rectangle(0, 0, data.element().width, data.element().height);
-		return DPIUtil.scaleBounds(rectangle, zoom, data.zoom());
+		ImageHandle imageHandle = zoomLevelToImageHandle.values().iterator().next();
+		Rectangle rectangle = new Rectangle(0, 0, imageHandle.width, imageHandle.height);
+		return DPIUtil.scaleBounds(rectangle, zoom, imageHandle.zoom);
 	}
 
 	@Override

@@ -79,10 +79,9 @@ public class DPIUtil {
 	 * <li>"nearest": nearest-neighbor interpolation, may look jagged</li>
 	 * <li>"smooth": smooth edges, may look blurry</li>
 	 * </ul>
-	 * The current default is to use "nearest", except on
-	 * GTK when the deviceZoom is not an integer multiple of 100%.
-	 * The smooth strategy currently doesn't work on Win32 and Cocoa, see
-	 * <a href="https://bugs.eclipse.org/493455">bug 493455</a>.
+	 * The current default is to use "smooth" on GTK when deviceZoom is an integer
+	 * multiple of 100% and on Windows if monitor-specific scaling is enabled, and
+	 * "nearest" otherwise..
 	 */
 	private static final String SWT_AUTOSCALE_METHOD = "swt.autoScale.method";
 
@@ -293,8 +292,8 @@ private static ImageData autoScaleImageData (Device device, final ImageData imag
 	int height = imageData.height;
 	int scaledWidth = Math.round (width * scaleFactor);
 	int scaledHeight = Math.round (height * scaleFactor);
-	return switch (autoScaleMethod) {
-	case SMOOTH -> {
+	boolean useSmoothScaling = autoScaleMethod == AutoScaleMethod.SMOOTH && imageData.getTransparencyType() != SWT.TRANSPARENCY_MASK;
+	if (useSmoothScaling) {
 		Image original = new Image (device, (ImageDataProvider) zoom -> imageData);
 		/* Create a 24 bit image data with alpha channel */
 		final ImageData resultData = new ImageData (scaledWidth, scaledHeight, 24, new PaletteData (0xFF, 0xFF00, 0xFF0000));
@@ -311,10 +310,10 @@ private static ImageData autoScaleImageData (Device device, final ImageData imag
 		original.dispose ();
 		ImageData result = resultImage.getImageData (getDeviceZoom ());
 		resultImage.dispose ();
-		yield result;
+		return result;
+	} else {
+		return imageData.scaledTo (scaledWidth, scaledHeight);
 	}
-	default -> imageData.scaledTo (scaledWidth, scaledHeight);
-	};
 }
 
 /**
@@ -604,13 +603,24 @@ public static void setDeviceZoom (int nativeDeviceZoom) {
 
 	DPIUtil.deviceZoom = deviceZoom;
 	System.setProperty("org.eclipse.swt.internal.deviceZoom", Integer.toString(deviceZoom));
-	if (deviceZoom != 100 && autoScaleMethodSetting == AutoScaleMethod.AUTO) {
-		if (deviceZoom / 100 * 100 == deviceZoom || !"gtk".equals(SWT.getPlatform())) {
-			autoScaleMethod = AutoScaleMethod.NEAREST;
-		} else {
+
+	// in GTK, preserve the current method when switching to a 100% monitor
+	boolean preserveScalingMethod = SWT.getPlatform().equals("gtk") && deviceZoom == 100;
+	if (!preserveScalingMethod && autoScaleMethodSetting == AutoScaleMethod.AUTO) {
+		if (sholdUseSmoothScaling()) {
 			autoScaleMethod = AutoScaleMethod.SMOOTH;
+		} else {
+			autoScaleMethod = AutoScaleMethod.NEAREST;
 		}
 	}
+}
+
+private static boolean sholdUseSmoothScaling() {
+	return switch (SWT.getPlatform()) {
+	case "gtk" -> deviceZoom / 100 * 100 != deviceZoom;
+	case "win32" -> isMonitorSpecificScalingActive();
+	default -> false;
+	};
 }
 
 public static void setUseCairoAutoScale (boolean cairoAutoScale) {

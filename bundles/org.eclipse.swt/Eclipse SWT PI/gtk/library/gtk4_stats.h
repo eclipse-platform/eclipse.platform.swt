@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2024 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -58,6 +58,14 @@ typedef enum {
 	gtk_1check_1button_1set_1group_FUNC,
 	gtk_1check_1button_1set_1inconsistent_FUNC,
 	gtk_1check_1button_1set_1use_1underline_FUNC,
+	gtk_1color_1dialog_1choose_1rgba_FUNC,
+	gtk_1color_1dialog_1choose_1rgba_1finish_FUNC,
+	gtk_1color_1dialog_1get_1modal_FUNC,
+	gtk_1color_1dialog_1get_1with_1alpha_FUNC,
+	gtk_1color_1dialog_1new_FUNC,
+	gtk_1color_1dialog_1set_1modal_FUNC,
+	gtk_1color_1dialog_1set_1title_FUNC,
+	gtk_1color_1dialog_1set_1with_1alpha_FUNC,
 	gtk_1combo_1box_1get_1child_FUNC,
 	gtk_1css_1provider_1load_1from_1data_FUNC,
 	gtk_1drag_1source_1new_FUNC,
@@ -77,6 +85,10 @@ typedef enum {
 	gtk_1event_1controller_1motion_1new_FUNC,
 	gtk_1event_1controller_1scroll_1new_FUNC,
 	gtk_1expander_1set_1child_FUNC,
+	gtk_1file_1chooser_1get_1file_FUNC,
+	gtk_1file_1chooser_1get_1files_FUNC,
+	gtk_1file_1chooser_1set_1current_1folder_FUNC,
+	gtk_1file_1chooser_1set_1file_FUNC,
 	gtk_1file_1dialog_1get_1default_1filter_FUNC,
 	gtk_1file_1dialog_1new_FUNC,
 	gtk_1file_1dialog_1open_FUNC,
@@ -93,6 +105,11 @@ typedef enum {
 	gtk_1file_1dialog_1set_1initial_1folder_FUNC,
 	gtk_1file_1dialog_1set_1initial_1name_FUNC,
 	gtk_1file_1dialog_1set_1title_FUNC,
+	gtk_1font_1dialog_1choose_1font_FUNC,
+	gtk_1font_1dialog_1choose_1font_1finish_FUNC,
+	gtk_1font_1dialog_1new_FUNC,
+	gtk_1font_1dialog_1set_1modal_FUNC,
+	gtk_1font_1dialog_1set_1title_FUNC,
 	gtk_1frame_1set_1child_FUNC,
 	gtk_1gesture_1click_1new_FUNC,
 	gtk_1gesture_1drag_1new_FUNC,
@@ -156,6 +173,8 @@ typedef enum {
 	gtk_1widget_1get_1prev_1sibling_FUNC,
 	gtk_1widget_1get_1receives_1default_FUNC,
 	gtk_1widget_1get_1root_FUNC,
+	gtk_1widget_1insert_1after_FUNC,
+	gtk_1widget_1insert_1before_FUNC,
 	gtk_1widget_1measure_FUNC,
 	gtk_1widget_1set_1cursor_FUNC,
 	gtk_1widget_1set_1focusable_FUNC,
@@ -164,6 +183,7 @@ typedef enum {
 	gtk_1widget_1translate_1coordinates_FUNC,
 	gtk_1window_1destroy_FUNC,
 	gtk_1window_1get_1icon_1name_FUNC,
+	gtk_1window_1get_1titlebar_FUNC,
 	gtk_1window_1is_1maximized_FUNC,
 	gtk_1window_1maximize_FUNC,
 	gtk_1window_1minimize_FUNC,

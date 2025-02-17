@@ -31,7 +31,7 @@
       <property name="plugin-name" value="${plugin-name}"/>
       <property name="classname" value="org.eclipse.swt.tests.junit.AllNonBrowserTests"/>
       <!-- workaround for https://bugs.eclipse.org/502410 and checks for bug 532632 -->
-      <property name="vmargs" value="-Dorg.eclipse.swt.internal.gtk.disablePrinting -Dorg.eclipse.swt.internal.gtk.enableStrictChecks"/>
+      <property name="vmargs" value="-Dorg.eclipse.swt.internal.gtk.disablePrinting -Dorg.eclipse.swt.internal.enableStrictChecks"/>
     </ant>
   </target>
 	

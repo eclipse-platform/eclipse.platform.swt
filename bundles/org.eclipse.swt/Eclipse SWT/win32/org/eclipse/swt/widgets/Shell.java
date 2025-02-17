@@ -1596,7 +1596,12 @@ public void setBounds(Rectangle rect) {
 	if (rect == null) error (SWT.ERROR_NULL_ARGUMENT);
 	checkWidget ();
 	Rectangle boundsInPixels = getDisplay().translateToDisplayCoordinates(rect, getZoom());
-	setBoundsInPixels(boundsInPixels.x, boundsInPixels.y, boundsInPixels.width, boundsInPixels.height);
+	// The scaling of the width and height in case of a monitor change is handled by
+	// the WM_DPICHANGED event processing. So to avoid duplicate scaling, we always
+	// have to scale width and height with the zoom of the original monitor (still
+	// returned by getZoom()) here.
+	setBoundsInPixels(boundsInPixels.x, boundsInPixels.y, DPIUtil.scaleUp(rect.width, getZoom()),
+			DPIUtil.scaleUp(rect.height, getZoom()));
 }
 
 @Override

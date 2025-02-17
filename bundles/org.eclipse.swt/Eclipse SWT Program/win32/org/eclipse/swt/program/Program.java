@@ -19,8 +19,8 @@ import java.util.stream.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
-import org.eclipse.swt.widgets.*;
 
 /**
  * Instances of this class represent programs and
@@ -379,9 +379,9 @@ public ImageData getImageData () {
  * @since 3.125
  */
 public ImageData getImageData (int zoom) {
-	// Windows API returns image data according to primary monitor zoom factor
-	// rather than at original scaling
-	int initialNativeZoom = Display.getCurrent().getPrimaryMonitor().getZoom();
+	// OS.SHGetFileInfo is System DPI-aware, hence it retrieves the icon with zoom
+	// of primary monitor at the application startup
+	int initialNativeZoom = getPrimaryMonitorZoomAtStartup();
 	if (extension != null) {
 		SHFILEINFO shfi = new SHFILEINFO ();
 		int flags = OS.SHGFI_ICON | OS.SHGFI_USEFILEATTRIBUTES;
@@ -425,6 +425,13 @@ public ImageData getImageData (int zoom) {
 	ImageData imageData = image.getImageData (zoom);
 	image.dispose ();
 	return imageData;
+}
+
+private int getPrimaryMonitorZoomAtStartup() {
+	long hDC = OS.GetDC(0);
+	int dpi = OS.GetDeviceCaps(hDC, OS.LOGPIXELSX);
+	OS.ReleaseDC(0, hDC);
+	return DPIUtil.mapDPIToZoom(dpi);
 }
 
 /**

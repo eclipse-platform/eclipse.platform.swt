@@ -121,11 +121,8 @@ long callWindowProc (long hwnd, int msg, long wParam, long lParam) {
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
 	int zoom = getZoom();
-	x = DPIUtil.scaleUp(x, zoom);
-	y = DPIUtil.scaleUp(y, zoom);
-	width = DPIUtil.scaleUp(width, zoom);
-	height = DPIUtil.scaleUp(height, zoom);
-	return DPIUtil.scaleDown(computeTrimInPixels(x, y, width, height), zoom);
+	Rectangle rectangle = DPIUtil.scaleUp(new Rectangle(x, y, width, height), zoom);
+	return DPIUtil.scaleDown(computeTrimInPixels(rectangle.x, rectangle.y, rectangle.width, rectangle.height), zoom);
 }
 
 Rectangle computeTrimInPixels (int x, int y, int width, int height) {

@@ -97,6 +97,7 @@ if [ "${MODEL}" = "" ]; then
 	else
 		MODEL=`uname -m`
 	fi
+	export MODEL
 fi
 case $MODEL in
 	"x86_64")

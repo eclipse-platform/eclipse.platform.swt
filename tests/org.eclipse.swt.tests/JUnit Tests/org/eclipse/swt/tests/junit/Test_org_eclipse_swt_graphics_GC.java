@@ -173,6 +173,52 @@ public void test_copyAreaIIIIII() {
 }
 
 @Test
+public void test_copyAreaIIIIII_overlapingSourceTarget() {
+	Color red= display.getSystemColor(SWT.COLOR_RED);
+	Color blue = display.getSystemColor(SWT.COLOR_BLUE);
+	RGB redRGB = getRealRGB(red);
+	RGB blueRGB = getRealRGB(blue);
+
+	gc.setBackground(red);
+	gc.fillRectangle(image.getBounds());
+	gc.setBackground(blue);
+	gc.fillRectangle(0, 100, 200, 100);
+
+	ImageData imageData = image.getImageData();
+	PaletteData palette = imageData.palette;
+
+	int pixel = imageData.getPixel(0, 0);
+	assertEquals(redRGB, palette.getRGB(pixel));
+	pixel = imageData.getPixel(0, 105);
+	assertEquals(blueRGB, palette.getRGB(pixel));
+	pixel = imageData.getPixel(0, 155);
+	assertEquals(blueRGB, palette.getRGB(pixel));
+
+	gc.copyArea(0, 50, 200, 100, 0, 100);
+
+	imageData = image.getImageData();
+	palette = imageData.palette;
+
+	if (DPIUtil.getDeviceZoom() != 100) {
+		//TODO Fix non integer scaling factors.
+		if (SwtTestUtil.verbose) {
+			System.out.println("Excluded test_copyAreaIIIIII(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_GC)");
+		}
+		return;
+	}
+
+	pixel = imageData.getPixel(0, 105);
+	assertEquals(redRGB, palette.getRGB(pixel));
+	pixel = imageData.getPixel(0, 145);
+	assertEquals(redRGB, palette.getRGB(pixel));
+	pixel = imageData.getPixel(0, 155);
+	assertEquals(blueRGB, palette.getRGB(pixel));
+	pixel = imageData.getPixel(0, 195);
+	assertEquals(blueRGB, palette.getRGB(pixel));
+}
+
+
+@Test
 public void test_copyAreaLorg_eclipse_swt_graphics_ImageII() {
 	Color white = display.getSystemColor(SWT.COLOR_WHITE);
 	Color blue = display.getSystemColor(SWT.COLOR_BLUE);

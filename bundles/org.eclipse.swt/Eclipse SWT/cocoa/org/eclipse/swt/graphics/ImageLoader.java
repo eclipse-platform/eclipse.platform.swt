@@ -143,7 +143,7 @@ void reset() {
  *    <li>ERROR_NULL_ARGUMENT - if the stream is null</li>
  * </ul>
  * @exception SWTException <ul>
- *    <li>ERROR_IO - if an IO error occurs while reading from the stream</li>
+ *    <li>ERROR_IO - if an IO error occurs while reading the stream</li>
  *    <li>ERROR_INVALID_IMAGE - if the image stream contains invalid data</li>
  *    <li>ERROR_UNSUPPORTED_FORMAT - if the image stream contains an unrecognized format</li>
  * </ul>
@@ -168,25 +168,17 @@ public ImageData[] load(InputStream stream) {
  *    <li>ERROR_NULL_ARGUMENT - if the file name is null</li>
  * </ul>
  * @exception SWTException <ul>
- *    <li>ERROR_IO - if an IO error occurs while reading from the file</li>
+ *    <li>ERROR_IO - if an IO error occurs while reading the file</li>
  *    <li>ERROR_INVALID_IMAGE - if the image file contains invalid data</li>
  *    <li>ERROR_UNSUPPORTED_FORMAT - if the image file contains an unrecognized format</li>
  * </ul>
  */
 public ImageData[] load(String filename) {
 	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	InputStream stream = null;
-	try {
-		stream = new FileInputStream(filename);
+	try (InputStream stream = new FileInputStream(filename)) {
 		return load(stream);
 	} catch (IOException e) {
 		SWT.error(SWT.ERROR_IO, e);
-	} finally {
-		try {
-			if (stream != null) stream.close();
-		} catch (IOException e) {
-			// Ignore error
-		}
 	}
 	return null;
 }
@@ -195,18 +187,20 @@ public ImageData[] load(String filename) {
  * Saves the image data in this ImageLoader to the specified stream.
  * The format parameter can have one of the following values:
  * <dl>
- * <dt><code>IMAGE_BMP</code></dt>
+ * <dt>{@link SWT#IMAGE_BMP}</dt>
  * <dd>Windows BMP file format, no compression</dd>
- * <dt><code>IMAGE_BMP_RLE</code></dt>
+ * <dt>{@link SWT#IMAGE_BMP_RLE}</dt>
  * <dd>Windows BMP file format, RLE compression if appropriate</dd>
- * <dt><code>IMAGE_GIF</code></dt>
+ * <dt>{@link SWT#IMAGE_GIF}</dt>
  * <dd>GIF file format</dd>
- * <dt><code>IMAGE_ICO</code></dt>
+ * <dt>{@link SWT#IMAGE_ICO}</dt>
  * <dd>Windows ICO file format</dd>
- * <dt><code>IMAGE_JPEG</code></dt>
+ * <dt>{@link SWT#IMAGE_JPEG}</dt>
  * <dd>JPEG file format</dd>
- * <dt><code>IMAGE_PNG</code></dt>
+ * <dt>{@link SWT#IMAGE_PNG}</dt>
  * <dd>PNG file format</dd>
+ * <dt>{@link SWT#IMAGE_TIFF}</dt>
+ * <dd>TIFF file format</dd>
  * </dl>
  *
  * @param stream the output stream to write the images to
@@ -230,18 +224,20 @@ public void save(OutputStream stream, int format) {
  * Saves the image data in this ImageLoader to a file with the specified name.
  * The format parameter can have one of the following values:
  * <dl>
- * <dt><code>IMAGE_BMP</code></dt>
+ * <dt>{@link SWT#IMAGE_BMP}</dt>
  * <dd>Windows BMP file format, no compression</dd>
- * <dt><code>IMAGE_BMP_RLE</code></dt>
+ * <dt>{@link SWT#IMAGE_BMP_RLE}</dt>
  * <dd>Windows BMP file format, RLE compression if appropriate</dd>
- * <dt><code>IMAGE_GIF</code></dt>
+ * <dt>{@link SWT#IMAGE_GIF}</dt>
  * <dd>GIF file format</dd>
- * <dt><code>IMAGE_ICO</code></dt>
+ * <dt>{@link SWT#IMAGE_ICO}</dt>
  * <dd>Windows ICO file format</dd>
- * <dt><code>IMAGE_JPEG</code></dt>
+ * <dt>{@link SWT#IMAGE_JPEG}</dt>
  * <dd>JPEG file format</dd>
- * <dt><code>IMAGE_PNG</code></dt>
+ * <dt>{@link SWT#IMAGE_PNG}</dt>
  * <dd>PNG file format</dd>
+ * <dt>{@link SWT#IMAGE_TIFF}</dt>
+ * <dd>TIFF file format</dd>
  * </dl>
  *
  * @param filename the name of the file to write the images to
@@ -258,16 +254,10 @@ public void save(OutputStream stream, int format) {
  */
 public void save(String filename, int format) {
 	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	OutputStream stream = null;
-	try {
-		stream = new FileOutputStream(filename);
+	try (OutputStream stream = new FileOutputStream(filename)) {
+		save(stream, format);
 	} catch (IOException e) {
 		SWT.error(SWT.ERROR_IO, e);
-	}
-	save(stream, format);
-	try {
-		stream.close();
-	} catch (IOException e) {
 	}
 }
 

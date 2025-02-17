@@ -14,6 +14,7 @@
 package org.eclipse.swt.internal;
 
 import java.util.*;
+import java.util.concurrent.*;
 
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
@@ -26,20 +27,46 @@ import org.eclipse.swt.widgets.*;
  * take the provided values for the zoom into consideration and return scaled variant of a font if necessary.
  */
 public class SWTFontProvider {
-	private static Map<Device, SWTFontRegistry> fontRegistries = new HashMap<>();
+	private static final Map<Device, SWTFontRegistry> fontRegistries = new ConcurrentHashMap<>();
 
 	private static SWTFontRegistry getFontRegistry(Device device) {
 		return fontRegistries.computeIfAbsent(device, SWTFontProvider::newFontRegistry);
 	}
 
+	/**
+	 * Returns the system font for the given device at the specified zoom.
+	 *
+	 * <b>Note:</b> This operation is not thread-safe. It must thus always be called
+	 * from the same thread for the same device, such as the display's UI thread.
+	 *
+	 * @param device the device to retrieve the font for, must not be {@code null}
+	 * @param zoom   the zoom for which the font shall be scaled
+	 */
 	public static Font getSystemFont(Device device, int zoom) {
 		return getFontRegistry(device).getSystemFont(zoom);
 	}
 
+	/**
+	 * Returns the font with the given font data for the given device at the
+	 * specified zoom.
+	 *
+	 * <b>Note:</b> This operation is not thread-safe. It must thus always be called
+	 * from the same thread for the same device, such as the display's UI thread.
+	 *
+	 * @param device   the device to retrieve the font for, must not be {@code null}
+	 * @param fontData the data for the font to retrieve, must not be {@code null}
+	 * @param zoom     the zoom for which the font shall be scaled
+	 */
 	public static Font getFont(Device device, FontData fontData, int zoom) {
 		return getFontRegistry(device).getFont(fontData, zoom);
 	}
 
+	/**
+	 * Disposes the font registry for the given device, if one exists.
+	 *
+	 * @param device the device to dispose the font registry for, must not be
+	 *               {@code null}
+	 */
 	public static void disposeFontRegistry(Device device) {
 		SWTFontRegistry fontRegistry = fontRegistries.remove(device);
 		if (fontRegistry != null) {

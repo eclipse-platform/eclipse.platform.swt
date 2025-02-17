@@ -356,13 +356,10 @@ int applyThemeBackground () {
 public void drawBackground (GC gc, int x, int y, int width, int height, int offsetX, int offsetY) {
 	checkWidget ();
 	int zoom = getZoom();
-	x = DPIUtil.scaleUp(x, zoom);
-	y = DPIUtil.scaleUp(y, zoom);
-	width = DPIUtil.scaleUp(width, zoom);
-	height = DPIUtil.scaleUp(height, zoom);
+	Rectangle rectangle = DPIUtil.scaleUp(new Rectangle(x, y, width, height), zoom);
 	offsetX = DPIUtil.scaleUp(offsetX, zoom);
 	offsetY = DPIUtil.scaleUp(offsetY, zoom);
-	drawBackgroundInPixels(gc, x, y, width, height, offsetX, offsetY);
+	drawBackgroundInPixels(gc, rectangle.x, rectangle.y, rectangle.width, rectangle.height, offsetX, offsetY);
 }
 
 void drawBackgroundInPixels(GC gc, int x, int y, int width, int height, int offsetX, int offsetY) {

@@ -131,7 +131,18 @@ public RGB[] getRGBs() {
  */
 public RGB open () {
 	byte[] buffer = Converter.javaStringToCString(title);
-	long handle = GTK.gtk_color_chooser_dialog_new(buffer, parent.topHandle());
+	long handle;
+	if (GTK.GTK_VERSION >= OS.VERSION(4, 10, 0)) {
+		handle = GTK4.gtk_color_dialog_new();
+	} else {
+		handle = GTK.gtk_color_chooser_dialog_new(buffer, parent.topHandle());
+	}
+	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+	if (GTK.GTK_VERSION >= OS.VERSION(4, 10, 0)) {
+		GTK4.gtk_color_dialog_set_modal(handle, true);
+		GTK4.gtk_color_dialog_set_title(handle, buffer);
+	}
+
 	Display display = parent != null ? parent.getDisplay(): Display.getCurrent();
 
 	GdkRGBA rgba = new GdkRGBA();
@@ -141,34 +152,46 @@ public RGB open () {
 		rgba.blue = (double) rgb.blue / 255;
 		rgba.alpha = 1;
 	}
-	GTK.gtk_color_chooser_set_rgba (handle, rgba);
-	if (rgbs != null) {
-		int colorsPerRow = 9;
-		long gdkRGBAS = OS.g_malloc(GdkRGBA.sizeof * rgbs.length);
-		rgba = new GdkRGBA ();
-		for (int i=0; i<rgbs.length; i++) {
-			RGB rgbS = rgbs[i];
-			if (rgbS != null) {
-				rgba.red = (double) rgbS.red / 255;
-				rgba.green = (double) rgbS.green / 255;
-				rgba.blue = (double) rgbS.blue / 255;
-				OS.memmove (gdkRGBAS + i * GdkRGBA.sizeof, rgba, GdkRGBA.sizeof);
-			}
+
+	if (GTK.GTK_VERSION >= OS.VERSION(4, 10, 0)) {
+		// TODO The ColorDialog API doesn't support setting a custom palette
+		// See https://gitlab.gnome.org/GNOME/gtk/-/issues/5936
+		// > The new GtkColorDialog api doesn't have this feature atm. We might
+		// > want to bring it back, but judging from application use of color
+		// > choosers, setting custom palettes is not very popular.
+		if (GTK4.gtk_color_dialog_get_with_alpha(handle)) {
+			GTK4.gtk_color_dialog_set_with_alpha(handle, false);
 		}
-		GTK.gtk_color_chooser_add_palette(handle, GTK.GTK_ORIENTATION_HORIZONTAL, colorsPerRow,
-				rgbs.length, gdkRGBAS);
+	} else {
 		GTK.gtk_color_chooser_set_rgba (handle, rgba);
+		if (rgbs != null) {
+			int colorsPerRow = 9;
+			long gdkRGBAS = OS.g_malloc(GdkRGBA.sizeof * rgbs.length);
+			rgba = new GdkRGBA ();
+			for (int i=0; i<rgbs.length; i++) {
+				RGB rgbS = rgbs[i];
+				if (rgbS != null) {
+					rgba.red = (double) rgbS.red / 255;
+					rgba.green = (double) rgbS.green / 255;
+					rgba.blue = (double) rgbS.blue / 255;
+					OS.memmove (gdkRGBAS + i * GdkRGBA.sizeof, rgba, GdkRGBA.sizeof);
+				}
+			}
+			GTK.gtk_color_chooser_add_palette(handle, GTK.GTK_ORIENTATION_HORIZONTAL, colorsPerRow,
+					rgbs.length, gdkRGBAS);
+			GTK.gtk_color_chooser_set_rgba (handle, rgba);
 
 
-		if (GTK.gtk_color_chooser_get_use_alpha(handle)) {
-			GTK.gtk_color_chooser_set_use_alpha (handle, false);
+			if (GTK.gtk_color_chooser_get_use_alpha(handle)) {
+				GTK.gtk_color_chooser_set_use_alpha (handle, false);
+			}
+			OS.g_free (gdkRGBAS);
 		}
-		OS.g_free (gdkRGBAS);
 	}
 
 	display.addIdleProc();
 	Dialog oldModal = null;
-	if (GTK.gtk_window_get_modal(handle)) {
+	if ((GTK.GTK_VERSION >= OS.VERSION(4, 10, 0)) ? GTK4.gtk_color_dialog_get_modal(handle) : GTK.gtk_window_get_modal(handle)) {
 		oldModal = display.getModalDialog();
 		display.setModalDialog(this);
 	}
@@ -181,7 +204,31 @@ public RGB open () {
 
 	int response;
 	if (GTK.GTK4) {
-		response = SyncDialogUtil.run(display, handle, false);
+		if (GTK.GTK_VERSION >= OS.VERSION(4, 10, 0)) {
+			long shellHandle = parent != null ? parent.topHandle() : 0;
+			GdkRGBA initialColor = rgba;
+			long gdkRGBA = SyncDialogUtil.run(display, new AsyncReadyCallback() {
+				@Override
+				public void async(long callback) {
+					GTK4.gtk_color_dialog_choose_rgba(handle, shellHandle, initialColor, 0, callback, 0);
+				}
+	
+				@Override
+				public long await(long result) {
+					return GTK4.gtk_color_dialog_choose_rgba_finish(handle, result, null);
+				}
+			});
+	
+			if (gdkRGBA != 0) {
+				OS.memmove(rgba, gdkRGBA, GdkRGBA.sizeof);
+				GDK.gdk_rgba_free(gdkRGBA);
+				response = GTK.GTK_RESPONSE_OK;
+			} else {
+				response = GTK.GTK_RESPONSE_CANCEL;
+			}
+		} else {
+			response = SyncDialogUtil.run(display, handle, false);
+		}
 	} else {
 		display.externalEventLoop = true;
 		display.sendPreExternalEventDispatchEvent();
@@ -193,7 +240,7 @@ public RGB open () {
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		OS.g_signal_remove_emission_hook(signalId, hookId);
 	}
-	if (GTK.gtk_window_get_modal (handle)) {
+	if ((GTK.GTK_VERSION >= OS.VERSION(4, 10, 0)) ? GTK4.gtk_color_dialog_get_modal(handle) : GTK.gtk_window_get_modal(handle)) {
 		display.setModalDialog(oldModal);
 	}
 	boolean success = response == GTK.GTK_RESPONSE_OK;
@@ -201,8 +248,10 @@ public RGB open () {
 		int red = 0;
 		int green = 0;
 		int blue = 0;
-		rgba = new GdkRGBA();
-		GTK.gtk_color_chooser_get_rgba(handle, rgba);
+		if (GTK.GTK_VERSION < OS.VERSION(4, 10, 0)) {
+			rgba = new GdkRGBA();
+			GTK.gtk_color_chooser_get_rgba(handle, rgba);
+		}
 		red =  (int) (rgba.red * 255);
 		green = (int) (rgba.green * 255);
 		blue =  (int) (rgba.blue *  255);
@@ -213,7 +262,9 @@ public RGB open () {
 
 	display.removeIdleProc();
 	if (GTK.GTK4) {
-		GTK4.gtk_window_destroy(handle);
+		if (GTK.GTK_VERSION < OS.VERSION(4, 10, 0)) {
+			GTK4.gtk_window_destroy(handle);
+		}
 	} else {
 		GTK3.gtk_widget_destroy(handle);
 	}

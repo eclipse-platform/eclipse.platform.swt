@@ -254,6 +254,16 @@ BOOL Validate_SetPreferredAppMode(const BYTE* functionPtr)
 		return arg0 == arg1;
 	}
 
+	/* Win11 builds from 26100 */
+	if (((*(const DWORD*)(&functionPtr[0x00])) & 0x9F00001F) == 0x90000008 &&  // adrp  x8,#...
+		((*(const DWORD*)(&functionPtr[0x04])) & 0xFF8003FF) == 0x91000108 &&  // add   x8,x8,#...
+		*(const DWORD*)(&functionPtr[0x08]) == 0x2A0003E9 &&                   // mov   w9,w0
+		*(const DWORD*)(&functionPtr[0x0c]) == 0xB9400100 &&                   // ldr   w0,[x8]
+		*(const DWORD*)(&functionPtr[0x10]) == 0xB8E98109)                     // swpal w9,w9,[x8]
+	{
+		return TRUE;
+	}
+
 	return FALSE;
 #else
 	#error Unsupported processor type

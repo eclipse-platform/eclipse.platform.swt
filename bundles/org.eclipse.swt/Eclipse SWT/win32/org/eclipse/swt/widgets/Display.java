@@ -1455,7 +1455,7 @@ public Widget findWidget (Widget widget, long id) {
 
 long foregroundIdleProc (long code, long wParam, long lParam) {
 	if (code >= 0) {
-		if (!synchronizer.isMessagesEmpty()) {
+		Runnable processMessages = () -> {
 			sendPostExternalEventDispatchEvent ();
 			if (runMessagesInIdle) {
 				if (runMessagesInMessageProc) {
@@ -1481,6 +1481,15 @@ long foregroundIdleProc (long code, long wParam, long lParam) {
 			int flags = OS.PM_NOREMOVE | OS.PM_NOYIELD | OS.PM_QS_INPUT;
 			if (!OS.PeekMessage (msg, 0, 0, 0, flags)) wakeThread ();
 			sendPreExternalEventDispatchEvent ();
+		};
+		if (!synchronizer.isMessagesEmpty()) {
+			// Windows hooks will inherit the thread DPI awareness from
+			// the process. Whatever DPI awareness was set before on
+			// the thread will be overwritten before the hook is called.
+			// This requires to reset the thread DPi awareness to make
+			// sure, all UI updates caused by this will be executed
+			// with the correct DPI awareness
+			runWithProperDPIAwareness(processMessages);
 		}
 	}
 	return OS.CallNextHookEx (idleHook, (int)code, wParam, lParam);
@@ -3424,9 +3433,17 @@ long msgFilterProc (long code, long wParam, long lParam) {
 			if (hookMsg.message == OS.WM_NULL) {
 				MSG msg = new MSG ();
 				int flags = OS.PM_NOREMOVE | OS.PM_NOYIELD | OS.PM_QS_INPUT | OS.PM_QS_POSTMESSAGE;
-				if (!OS.PeekMessage (msg, 0, 0, 0, flags)) {
-					if (runAsyncMessages (false)) wakeThread ();
-				}
+				// Windows hooks will inherit the thread DPI awareness from
+				// the process. Whatever DPI awareness was set before on
+				// the thread will be overwritten before the hook is called.
+				// This requires to reset the thread DPi awareness to make
+				// sure, all UI updates caused by this will be executed
+				// with the correct DPI awareness
+				runWithProperDPIAwareness(() -> {
+					if (!OS.PeekMessage (msg, 0, 0, 0, flags)) {
+						if (runAsyncMessages (false)) wakeThread ();
+					}
+				});
 			}
 			break;
 		}
@@ -5145,16 +5162,65 @@ String wrapText (String text, long handle, int width) {
 }
 
 static String withCrLf (String string) {
-	if (string == null) {
-		return string;
+	/* Create a new string with the CR/LF line terminator. */
+	int i = 0;	
+	int length = string.length();
+	StringBuilder result = new StringBuilder (length);
+	while (i < length) {
+		int j = string.indexOf ('\n', i);
+		if (j > 0 && string.charAt(j - 1) == '\r') {
+			result.append(string.substring(i, j + 1));
+			i = j + 1;
+		} else {
+			if (j == -1) j = length;
+			result.append (string.substring (i, j));
+			if ((i = j) < length) {
+				result.append ("\r\n"); //$NON-NLS-1$
+				i++;
+			}
+		}
 	}
-	// Replace \r\n, \r, or \n with \r\n
-	return string.replaceAll("(\r\n|\r|\n)", "\r\n");
+	
+	/* Avoid creating a copy of the string if it has not changed */
+	if (string.length()== result.length()) return string;
+	return result.toString ();
 }
 
 static char [] withCrLf (char [] string) {
-	String withCrLf = withCrLf(new String(string));
-	return withCrLf.toCharArray();
+	/* If the string is empty, return the string. */
+	int length = string.length;
+	if (length == 0) return string;
+
+	/*
+	* Check for an LF or CR/LF and assume the rest of
+	* the string is formated that way.  This will not
+	* work if the string contains mixed delimiters.
+	* Also, compute the number of lines.
+	*/
+	int count = 0;
+	for (int i = 0; i < string.length; i++) {
+		if (string [i] == '\n') {
+			count++;
+			if (count == 1 && i > 0 && string [i - 1] == '\r') return string;
+		}
+	}
+	if (count == 0) return string;
+
+	/*
+	* The string is formatted with LF.
+	*/
+	count += length;
+
+	/* Create a new string with the CR/LF line terminator. */
+	char [] result = new char [count];
+	for (int i = 0, j = 0; i < length && j < count; i++) {
+		if (string [i] == '\n') {
+			result [j++] = '\r';
+		}
+		result [j++] = string [i];
+	}
+
+	return result;
 }
 
 static boolean isActivateShellOnForceFocus() {
@@ -5333,4 +5399,20 @@ private boolean setDPIAwareness(int desiredDpiAwareness) {
 	return true;
 }
 
+private void runWithProperDPIAwareness(Runnable operation) {
+	if (isRescalingAtRuntime()) {
+		// refreshing is only necessary, when monitor specific scaling is active
+		long previousDPIAwareness = OS.GetThreadDpiAwarenessContext();
+		if (!setDPIAwareness(OS.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2)) {
+			// awareness was not changed, so no need to reset it
+			previousDPIAwareness = 0;
+		}
+		operation.run();
+		if (previousDPIAwareness > 0) {
+			OS.SetThreadDpiAwarenessContext(previousDPIAwareness);
+		}
+	} else {
+		operation.run();
+	}
+}
 }

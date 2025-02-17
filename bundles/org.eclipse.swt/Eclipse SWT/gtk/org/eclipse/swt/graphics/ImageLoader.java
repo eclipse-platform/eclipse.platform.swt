@@ -153,7 +153,7 @@ void reset() {
  *    <li>ERROR_NULL_ARGUMENT - if the stream is null</li>
  * </ul>
  * @exception SWTException <ul>
- *    <li>ERROR_IO - if an IO error occurs while reading from the stream</li>
+ *    <li>ERROR_IO - if an IO error occurs while reading the stream</li>
  *    <li>ERROR_INVALID_IMAGE - if the image stream contains invalid data</li>
  *    <li>ERROR_UNSUPPORTED_FORMAT - if the image stream contains an unrecognized format</li>
  * </ul>
@@ -284,25 +284,17 @@ ImageData [] getImageDataArrayFromStream(InputStream stream) {
  *    <li>ERROR_NULL_ARGUMENT - if the file name is null</li>
  * </ul>
  * @exception SWTException <ul>
- *    <li>ERROR_IO - if an IO error occurs while reading from the file</li>
+ *    <li>ERROR_IO - if an IO error occurs while reading the file</li>
  *    <li>ERROR_INVALID_IMAGE - if the image file contains invalid data</li>
  *    <li>ERROR_UNSUPPORTED_FORMAT - if the image file contains an unrecognized format</li>
  * </ul>
  */
 public ImageData[] load(String filename) {
 	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	InputStream stream = null;
-	try {
-		stream = new FileInputStream(filename);
+	try (InputStream stream = new FileInputStream(filename)) {
 		return load(stream);
 	} catch (IOException e) {
 		SWT.error(SWT.ERROR_IO, e);
-	} finally {
-		try {
-			if (stream != null) stream.close();
-		} catch (IOException e) {
-			// Ignore error
-		}
 	}
 	return null;
 }
@@ -324,18 +316,20 @@ ImageData[] loadFromFile(String filename) {
  *
  * It is expressed as one of the following values:
  * <dl>
- * <dt><code>IMAGE_BMP</code></dt>
+ * <dt>{@link SWT#IMAGE_BMP}</dt>
  * <dd>Windows BMP file format, no compression</dd>
- * <dt><code>IMAGE_BMP_RLE</code></dt>
+ * <dt>{@link SWT#IMAGE_BMP_RLE}</dt>
  * <dd>Windows BMP file format, RLE compression if appropriate</dd>
- * <dt><code>IMAGE_GIF</code></dt>
+ * <dt>{@link SWT#IMAGE_GIF}</dt>
  * <dd>GIF file format</dd>
- * <dt><code>IMAGE_ICO</code></dt>
+ * <dt>{@link SWT#IMAGE_ICO}</dt>
  * <dd>Windows ICO file format</dd>
- * <dt><code>IMAGE_JPEG</code></dt>
+ * <dt>{@link SWT#IMAGE_JPEG}</dt>
  * <dd>JPEG file format</dd>
- * <dt><code>IMAGE_PNG</code></dt>
+ * <dt>{@link SWT#IMAGE_PNG}</dt>
  * <dd>PNG file format</dd>
+ * <dt>{@link SWT#IMAGE_TIFF}</dt>
+ * <dd>TIFF file format</dd>
  * </dl>
  */
 int getImageFormat(long loader) {
@@ -343,15 +337,16 @@ int getImageFormat(long loader) {
 	long name = GDK.gdk_pixbuf_format_get_name(format);
 	String nameStr = Converter.cCharPtrToJavaString(name, false);
 	OS.g_free(name);
-	switch (nameStr) {
-		case "bmp": return SWT.IMAGE_BMP;
-		case "gif": return SWT.IMAGE_GIF;
-		case "ico": return SWT.IMAGE_ICO;
-		case "jpeg": return SWT.IMAGE_JPEG;
-		case "png": return SWT.IMAGE_PNG;
-		case "svg": return SWT.IMAGE_SVG;
-		default: return SWT.IMAGE_UNDEFINED;
-	}
+	return switch (nameStr) {
+	case "bmp" -> SWT.IMAGE_BMP;
+	case "gif" -> SWT.IMAGE_GIF;
+	case "ico" -> SWT.IMAGE_ICO;
+	case "jpeg" -> SWT.IMAGE_JPEG;
+	case "png" -> SWT.IMAGE_PNG;
+	case "tiff" -> SWT.IMAGE_TIFF;
+	case "svg" -> SWT.IMAGE_SVG;
+	default -> SWT.IMAGE_UNDEFINED;
+	};
 }
 
 /**
@@ -431,18 +426,20 @@ static long gdk_pixbuf_new_from_file(String filename) {
  * Saves the image data in this ImageLoader to the specified stream.
  * The format parameter can have one of the following values:
  * <dl>
- * <dt><code>IMAGE_BMP</code></dt>
+ * <dt>{@link SWT#IMAGE_BMP}</dt>
  * <dd>Windows BMP file format, no compression</dd>
- * <dt><code>IMAGE_BMP_RLE</code></dt>
+ * <dt>{@link SWT#IMAGE_BMP_RLE}</dt>
  * <dd>Windows BMP file format, RLE compression if appropriate</dd>
- * <dt><code>IMAGE_GIF</code></dt>
+ * <dt>{@link SWT#IMAGE_GIF}</dt>
  * <dd>GIF file format</dd>
- * <dt><code>IMAGE_ICO</code></dt>
+ * <dt>{@link SWT#IMAGE_ICO}</dt>
  * <dd>Windows ICO file format</dd>
- * <dt><code>IMAGE_JPEG</code></dt>
+ * <dt>{@link SWT#IMAGE_JPEG}</dt>
  * <dd>JPEG file format</dd>
- * <dt><code>IMAGE_PNG</code></dt>
+ * <dt>{@link SWT#IMAGE_PNG}</dt>
  * <dd>PNG file format</dd>
+ * <dt>{@link SWT#IMAGE_TIFF}</dt>
+ * <dd>TIFF file format</dd>
  * </dl>
  *
  * @param stream the output stream to write the images to
@@ -547,17 +544,17 @@ public void save(OutputStream stream, int format) {
 	}
 
 	// Write pixbuf to byte array and then to OutputStream
-	String typeStr = "";
-	switch (format) {
-		case SWT.IMAGE_BMP_RLE: typeStr = "bmp"; break;
-		case SWT.IMAGE_BMP: typeStr = "bmp"; break;
-		case SWT.IMAGE_GIF: typeStr = "gif"; break;
-		case SWT.IMAGE_ICO: typeStr = "ico"; break;
-		case SWT.IMAGE_JPEG: typeStr = "jpeg"; break;
-		case SWT.IMAGE_PNG: typeStr = "png"; break;
-		case SWT.IMAGE_TIFF: typeStr = "tiff"; break;
-		case SWT.IMAGE_SVG: typeStr = "svg"; break;
-	}
+	String typeStr = switch (format) {
+	case SWT.IMAGE_BMP_RLE -> "bmp";
+	case SWT.IMAGE_BMP -> "bmp";
+	case SWT.IMAGE_GIF -> "gif";
+	case SWT.IMAGE_ICO -> "ico";
+	case SWT.IMAGE_JPEG -> "jpeg";
+	case SWT.IMAGE_PNG -> "png";
+	case SWT.IMAGE_TIFF -> "tiff";
+	case SWT.IMAGE_SVG -> "svg";
+	default -> "";
+	};
 	byte [] type = Converter.wcsToMbcs(typeStr, true);
 
 	long [] buffer = new long [1];
@@ -583,18 +580,20 @@ public void save(OutputStream stream, int format) {
  * Saves the image data in this ImageLoader to a file with the specified name.
  * The format parameter can have one of the following values:
  * <dl>
- * <dt><code>IMAGE_BMP</code></dt>
+ * <dt>{@link SWT#IMAGE_BMP}</dt>
  * <dd>Windows BMP file format, no compression</dd>
- * <dt><code>IMAGE_BMP_RLE</code></dt>
+ * <dt>{@link SWT#IMAGE_BMP_RLE}</dt>
  * <dd>Windows BMP file format, RLE compression if appropriate</dd>
- * <dt><code>IMAGE_GIF</code></dt>
+ * <dt>{@link SWT#IMAGE_GIF}</dt>
  * <dd>GIF file format</dd>
- * <dt><code>IMAGE_ICO</code></dt>
+ * <dt>{@link SWT#IMAGE_ICO}</dt>
  * <dd>Windows ICO file format</dd>
- * <dt><code>IMAGE_JPEG</code></dt>
+ * <dt>{@link SWT#IMAGE_JPEG}</dt>
  * <dd>JPEG file format</dd>
- * <dt><code>IMAGE_PNG</code></dt>
+ * <dt>{@link SWT#IMAGE_PNG}</dt>
  * <dd>PNG file format</dd>
+ * <dt>{@link SWT#IMAGE_TIFF}</dt>
+ * <dd>TIFF file format</dd>
  * </dl>
  *
  * @param filename the name of the file to write the images to
@@ -611,16 +610,10 @@ public void save(OutputStream stream, int format) {
  */
 public void save(String filename, int format) {
 	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	OutputStream stream = null;
-	try {
-		stream = new FileOutputStream(filename);
+	try (OutputStream stream = new FileOutputStream(filename)) {
+		save(stream, format);
 	} catch (IOException e) {
 		SWT.error(SWT.ERROR_IO, e);
-	}
-	save(stream, format);
-	try {
-		stream.close();
-	} catch (IOException e) {
 	}
 }
 

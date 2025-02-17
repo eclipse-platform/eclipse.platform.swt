@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2024 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -436,6 +436,172 @@ JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1check_1button_1set_1use_1underline)
 }
 #endif
 
+#ifndef NO_gtk_1color_1dialog_1choose_1rgba
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1color_1dialog_1choose_1rgba)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jobject arg2, jlong arg3, jlong arg4, jlong arg5)
+{
+	GdkRGBA _arg2, *lparg2=NULL;
+	GTK4_NATIVE_ENTER(env, that, gtk_1color_1dialog_1choose_1rgba_FUNC);
+	if (arg2) if ((lparg2 = getGdkRGBAFields(env, arg2, &_arg2)) == NULL) goto fail;
+/*
+	gtk_color_dialog_choose_rgba(arg0, (GtkWindow *)arg1, (GdkRGBA *)lparg2, (GCancellable *)arg3, (GAsyncReadyCallback)arg4, (gpointer)arg5);
+*/
+	{
+		GTK4_LOAD_FUNCTION(fp, gtk_color_dialog_choose_rgba)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jlong, GtkWindow *, GdkRGBA *, GCancellable *, GAsyncReadyCallback, gpointer))fp)(arg0, (GtkWindow *)arg1, (GdkRGBA *)lparg2, (GCancellable *)arg3, (GAsyncReadyCallback)arg4, (gpointer)arg5);
+		}
+	}
+fail:
+	if (arg2 && lparg2) setGdkRGBAFields(env, arg2, lparg2);
+	GTK4_NATIVE_EXIT(env, that, gtk_1color_1dialog_1choose_1rgba_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1color_1dialog_1choose_1rgba_1finish
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1color_1dialog_1choose_1rgba_1finish)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlongArray arg2)
+{
+	jlong *lparg2=NULL;
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1color_1dialog_1choose_1rgba_1finish_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
+/*
+	rc = (jlong)gtk_color_dialog_choose_rgba_finish(arg0, (GAsyncResult *)arg1, (GError **)lparg2);
+*/
+	{
+		GTK4_LOAD_FUNCTION(fp, gtk_color_dialog_choose_rgba_finish)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong, GAsyncResult *, GError **))fp)(arg0, (GAsyncResult *)arg1, (GError **)lparg2);
+		}
+	}
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseLongArrayElements(env, arg2, lparg2, 0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1color_1dialog_1choose_1rgba_1finish_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1color_1dialog_1get_1modal
+JNIEXPORT jboolean JNICALL GTK4_NATIVE(gtk_1color_1dialog_1get_1modal)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jboolean rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1color_1dialog_1get_1modal_FUNC);
+/*
+	rc = (jboolean)gtk_color_dialog_get_modal(arg0);
+*/
+	{
+		GTK4_LOAD_FUNCTION(fp, gtk_color_dialog_get_modal)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jlong))fp)(arg0);
+		}
+	}
+	GTK4_NATIVE_EXIT(env, that, gtk_1color_1dialog_1get_1modal_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1color_1dialog_1get_1with_1alpha
+JNIEXPORT jboolean JNICALL GTK4_NATIVE(gtk_1color_1dialog_1get_1with_1alpha)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jboolean rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1color_1dialog_1get_1with_1alpha_FUNC);
+/*
+	rc = (jboolean)gtk_color_dialog_get_with_alpha(arg0);
+*/
+	{
+		GTK4_LOAD_FUNCTION(fp, gtk_color_dialog_get_with_alpha)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jlong))fp)(arg0);
+		}
+	}
+	GTK4_NATIVE_EXIT(env, that, gtk_1color_1dialog_1get_1with_1alpha_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1color_1dialog_1new
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1color_1dialog_1new)
+	(JNIEnv *env, jclass that)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1color_1dialog_1new_FUNC);
+/*
+	rc = (jlong)gtk_color_dialog_new();
+*/
+	{
+		GTK4_LOAD_FUNCTION(fp, gtk_color_dialog_new)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)())fp)();
+		}
+	}
+	GTK4_NATIVE_EXIT(env, that, gtk_1color_1dialog_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1color_1dialog_1set_1modal
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1color_1dialog_1set_1modal)
+	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1color_1dialog_1set_1modal_FUNC);
+/*
+	gtk_color_dialog_set_modal(arg0, (gboolean)arg1);
+*/
+	{
+		GTK4_LOAD_FUNCTION(fp, gtk_color_dialog_set_modal)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jlong, gboolean))fp)(arg0, (gboolean)arg1);
+		}
+	}
+	GTK4_NATIVE_EXIT(env, that, gtk_1color_1dialog_1set_1modal_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1color_1dialog_1set_1title
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1color_1dialog_1set_1title)
+	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1color_1dialog_1set_1title_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+/*
+	rc = (jlong)gtk_color_dialog_set_title(arg0, (char *)lparg1);
+*/
+	{
+		GTK4_LOAD_FUNCTION(fp, gtk_color_dialog_set_title)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong, char *))fp)(arg0, (char *)lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1color_1dialog_1set_1title_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1color_1dialog_1set_1with_1alpha
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1color_1dialog_1set_1with_1alpha)
+	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1color_1dialog_1set_1with_1alpha_FUNC);
+/*
+	gtk_color_dialog_set_with_alpha(arg0, (gboolean)arg1);
+*/
+	{
+		GTK4_LOAD_FUNCTION(fp, gtk_color_dialog_set_with_alpha)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jlong, gboolean))fp)(arg0, (gboolean)arg1);
+		}
+	}
+	GTK4_NATIVE_EXIT(env, that, gtk_1color_1dialog_1set_1with_1alpha_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1combo_1box_1get_1child
 JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1combo_1box_1get_1child)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -653,6 +819,54 @@ JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1expander_1set_1child)
 	GTK4_NATIVE_ENTER(env, that, gtk_1expander_1set_1child_FUNC);
 	gtk_expander_set_child((GtkExpander *)arg0, (GtkWidget *)arg1);
 	GTK4_NATIVE_EXIT(env, that, gtk_1expander_1set_1child_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1file_1chooser_1get_1file
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1file_1chooser_1get_1file)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1file_1chooser_1get_1file_FUNC);
+	rc = (jlong)gtk_file_chooser_get_file((GtkFileChooser *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1file_1chooser_1get_1file_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1file_1chooser_1get_1files
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1file_1chooser_1get_1files)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1file_1chooser_1get_1files_FUNC);
+	rc = (jlong)gtk_file_chooser_get_files((GtkFileChooser *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1file_1chooser_1get_1files_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1file_1chooser_1set_1current_1folder
+JNIEXPORT jboolean JNICALL GTK4_NATIVE(gtk_1file_1chooser_1set_1current_1folder)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2)
+{
+	jboolean rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1file_1chooser_1set_1current_1folder_FUNC);
+	rc = (jboolean)gtk_file_chooser_set_current_folder((GtkFileChooser *)arg0, (GFile *)arg1, (GError **)arg2);
+	GTK4_NATIVE_EXIT(env, that, gtk_1file_1chooser_1set_1current_1folder_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1file_1chooser_1set_1file
+JNIEXPORT jboolean JNICALL GTK4_NATIVE(gtk_1file_1chooser_1set_1file)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2)
+{
+	jboolean rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1file_1chooser_1set_1file_FUNC);
+	rc = (jboolean)gtk_file_chooser_set_file((GtkFileChooser *)arg0, (GFile *)arg1, (GError **)arg2);
+	GTK4_NATIVE_EXIT(env, that, gtk_1file_1chooser_1set_1file_FUNC);
+	return rc;
 }
 #endif
 
@@ -977,6 +1191,112 @@ JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1file_1dialog_1set_1title)
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	GTK4_NATIVE_EXIT(env, that, gtk_1file_1dialog_1set_1title_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1font_1dialog_1choose_1font
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1font_1dialog_1choose_1font)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2, jlong arg3, jlong arg4, jlong arg5)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1font_1dialog_1choose_1font_FUNC);
+/*
+	gtk_font_dialog_choose_font(arg0, (GtkWindow *)arg1, (PangoFontDescription *)arg2, (GCancellable *)arg3, (GAsyncReadyCallback)arg4, (gpointer)arg5);
+*/
+	{
+		GTK4_LOAD_FUNCTION(fp, gtk_font_dialog_choose_font)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jlong, GtkWindow *, PangoFontDescription *, GCancellable *, GAsyncReadyCallback, gpointer))fp)(arg0, (GtkWindow *)arg1, (PangoFontDescription *)arg2, (GCancellable *)arg3, (GAsyncReadyCallback)arg4, (gpointer)arg5);
+		}
+	}
+	GTK4_NATIVE_EXIT(env, that, gtk_1font_1dialog_1choose_1font_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1font_1dialog_1choose_1font_1finish
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1font_1dialog_1choose_1font_1finish)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlongArray arg2)
+{
+	jlong *lparg2=NULL;
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1font_1dialog_1choose_1font_1finish_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
+/*
+	rc = (jlong)gtk_font_dialog_choose_font_finish(arg0, (GAsyncResult *)arg1, (GError **)lparg2);
+*/
+	{
+		GTK4_LOAD_FUNCTION(fp, gtk_font_dialog_choose_font_finish)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong, GAsyncResult *, GError **))fp)(arg0, (GAsyncResult *)arg1, (GError **)lparg2);
+		}
+	}
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseLongArrayElements(env, arg2, lparg2, 0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1font_1dialog_1choose_1font_1finish_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1font_1dialog_1new
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1font_1dialog_1new)
+	(JNIEnv *env, jclass that)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1font_1dialog_1new_FUNC);
+/*
+	rc = (jlong)gtk_font_dialog_new();
+*/
+	{
+		GTK4_LOAD_FUNCTION(fp, gtk_font_dialog_new)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)())fp)();
+		}
+	}
+	GTK4_NATIVE_EXIT(env, that, gtk_1font_1dialog_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1font_1dialog_1set_1modal
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1font_1dialog_1set_1modal)
+	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1font_1dialog_1set_1modal_FUNC);
+/*
+	rc = (jlong)gtk_font_dialog_set_modal(arg0, (gboolean)arg1);
+*/
+	{
+		GTK4_LOAD_FUNCTION(fp, gtk_font_dialog_set_modal)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong, gboolean))fp)(arg0, (gboolean)arg1);
+		}
+	}
+	GTK4_NATIVE_EXIT(env, that, gtk_1font_1dialog_1set_1modal_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1font_1dialog_1set_1title
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1font_1dialog_1set_1title)
+	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1font_1dialog_1set_1title_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+/*
+	rc = (jlong)gtk_font_dialog_set_title(arg0, (char *)lparg1);
+*/
+	{
+		GTK4_LOAD_FUNCTION(fp, gtk_font_dialog_set_title)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong, char *))fp)(arg0, (char *)lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1font_1dialog_1set_1title_FUNC);
+	return rc;
 }
 #endif
 
@@ -1763,6 +2083,26 @@ JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1widget_1get_1root)
 }
 #endif
 
+#ifndef NO_gtk_1widget_1insert_1after
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1widget_1insert_1after)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1widget_1insert_1after_FUNC);
+	gtk_widget_insert_after((GtkWidget *)arg0, (GtkWidget *)arg1, (GtkWidget *)arg2);
+	GTK4_NATIVE_EXIT(env, that, gtk_1widget_1insert_1after_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1widget_1insert_1before
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1widget_1insert_1before)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1widget_1insert_1before_FUNC);
+	gtk_widget_insert_before((GtkWidget *)arg0, (GtkWidget *)arg1, (GtkWidget *)arg2);
+	GTK4_NATIVE_EXIT(env, that, gtk_1widget_1insert_1before_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1widget_1measure
 JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1widget_1measure)
 	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jint arg2, jintArray arg3, jintArray arg4, jintArray arg5, jintArray arg6)
@@ -1866,6 +2206,18 @@ JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1window_1get_1icon_1name)
 	GTK4_NATIVE_ENTER(env, that, gtk_1window_1get_1icon_1name_FUNC);
 	rc = (jlong)gtk_window_get_icon_name((GtkWindow *)arg0);
 	GTK4_NATIVE_EXIT(env, that, gtk_1window_1get_1icon_1name_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1window_1get_1titlebar
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1window_1get_1titlebar)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1window_1get_1titlebar_FUNC);
+	rc = (jlong)gtk_window_get_titlebar((GtkWindow *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1window_1get_1titlebar_FUNC);
 	return rc;
 }
 #endif

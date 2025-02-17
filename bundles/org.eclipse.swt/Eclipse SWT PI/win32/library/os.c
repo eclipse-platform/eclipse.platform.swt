@@ -130,7 +130,6 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(AdjustWindowRectExForDpi)
 {
 	RECT _arg0, *lparg0=NULL;
 	jboolean rc = 0;
-	
 	OS_NATIVE_ENTER(env, that, AdjustWindowRectExForDpi_FUNC);
 	if (arg0) if ((lparg0 = getRECTFields(env, arg0, &_arg0)) == NULL) goto fail;
 /*

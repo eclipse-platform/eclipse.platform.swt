@@ -65,6 +65,7 @@ public class TaskBar extends Widget {
 
 TaskBar (Display display, int style) {
 	this.display = display;
+	this.nativeZoom = display.getDeviceZoom();
 	createHandle ();
 	reskinWidget ();
 }

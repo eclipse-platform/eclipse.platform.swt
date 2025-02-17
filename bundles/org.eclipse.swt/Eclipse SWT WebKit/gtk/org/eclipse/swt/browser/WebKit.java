@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010, 2024 IBM Corporation and others.
+ * Copyright (c) 2010, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -736,7 +736,9 @@ public void create (Composite parent, int style) {
 	OS.g_object_set (settings, WebKitGTK.enable_developer_extras, 1, 0);
 	//disable hardware acceleration due to  https://bugs.webkit.org/show_bug.cgi?id=239429#c11
 	//even evolution ended up doing the same https://gitlab.gnome.org/GNOME/evolution/-/commit/eb62ccaa28bbbca7668913ce7d8056a6d75f9b05
-	OS.g_object_set (settings, WebKitGTK.hardware_acceleration_policy, 2, 0);
+	if (!GTK.GTK4) {
+		OS.g_object_set (settings, WebKitGTK.hardware_acceleration_policy, 2, 0);
+	}
 
 	OS.g_object_set (settings, WebKitGTK.default_charset, utfBytes, 0);
 	if (WebKitGTK.webkit_get_minor_version() >= 14) {
