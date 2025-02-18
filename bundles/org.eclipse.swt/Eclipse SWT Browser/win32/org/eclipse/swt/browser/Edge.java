@@ -1315,7 +1315,7 @@ int handleNewWindowRequested(long pView, long pArgs) {
 			WindowEvent openEvent = new WindowEvent(browser);
 			openEvent.display = browser.getDisplay();
 			openEvent.widget = browser;
-			openEvent.required = true;
+			openEvent.required = false;
 			for (OpenWindowListener openListener : openWindowListeners) {
 				openListener.open(openEvent);
 				if (browser.isDisposed()) return;
