@@ -3635,8 +3635,8 @@ public void setRedraw (boolean redraw) {
 	 *
 	 * https://github.com/eclipse-platform/eclipse.platform.swt/issues/1122
 	 */
-	boolean isShown = isVisible() && !isDisposed();
-	if (!redraw && isShown && embedsWin32Control()) {
+	if (!redraw && embedsWin32Control()) {
+		drawCount++;
 		return;
 	}
 
@@ -3677,6 +3677,9 @@ public void setRedraw (boolean redraw) {
 }
 
 private boolean embedsWin32Control () {
+	if (this.isDisposed() || !this.isVisible()) {
+		return false;
+	}
 	if (this instanceof Browser browser) {
 		// The Edge browser embeds webView2
 		return "edge".equals(browser.getBrowserType());
