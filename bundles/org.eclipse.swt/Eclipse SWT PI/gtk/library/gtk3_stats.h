@@ -191,6 +191,7 @@ typedef enum {
 	gtk_1toolbar_1set_1show_1arrow_FUNC,
 	gtk_1toolbar_1set_1style_FUNC,
 	gtk_1tree_1view_1column_1cell_1get_1size_FUNC,
+	gtk_1tree_1view_1column_1queue_1resize_FUNC,
 	gtk_1tree_1view_1get_1bin_1window_FUNC,
 	gtk_1viewport_1set_1shadow_1type_FUNC,
 	gtk_1widget_1add_1accelerator_FUNC,

@@ -2048,6 +2048,16 @@ fail:
 }
 #endif
 
+#ifndef NO_gtk_1tree_1view_1column_1queue_1resize
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1tree_1view_1column_1queue_1resize)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	GTK3_NATIVE_ENTER(env, that, gtk_1tree_1view_1column_1queue_1resize_FUNC);
+	gtk_tree_view_column_queue_resize((GtkTreeViewColumn *)arg0);
+	GTK3_NATIVE_EXIT(env, that, gtk_1tree_1view_1column_1queue_1resize_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1tree_1view_1get_1bin_1window
 JNIEXPORT jlong JNICALL GTK3_NATIVE(gtk_1tree_1view_1get_1bin_1window)
 	(JNIEnv *env, jclass that, jlong arg0)

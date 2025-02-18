@@ -1002,6 +1002,10 @@ public class GTK3 {
 	 * @param height cast=(gint *)
 	 */
 	public static final native void gtk_tree_view_column_cell_get_size(long tree_column, GdkRectangle cell_area, int[] x_offset, int[] y_offset, int[] width, int[] height);
+	/**
+	 * @param tree_column cast=(GtkTreeViewColumn *)
+	 */
+	public static final native void gtk_tree_view_column_queue_resize(long tree_column);
 
 	/* GdkWindow */
 	/**
