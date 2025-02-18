@@ -852,7 +852,7 @@ public Image(Device device, ImageDataProvider imageDataProvider) {
 
 /**
  * The provided ImageGcDrawer will be called on demand whenever a new variant of the
- * Image for an additional zoom is required. Depending on the OS specific implementation
+ * Image for an additional zoom is required. Depending on the OS-specific implementation
  * these calls will be done during the instantiation or later when a new variant is
  * requested.
  *
