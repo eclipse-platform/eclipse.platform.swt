@@ -41,8 +41,9 @@ public class SkijaImageDataProvider implements ImageDataProvider {
 
 	@Override
 	public ImageData getImageData(int zoom) {
-		if (convertedImageData.get(zoom) != null)
+		if (convertedImageData.get(zoom) != null) {
 			return convertedImageData.get(zoom);
+		}
 
 		var id = scaleImage(zoom);
 		convertedImageData.put(zoom, id);
@@ -68,19 +69,22 @@ public class SkijaImageDataProvider implements ImageDataProvider {
 			var sourceRect = Rect.makeWH(imageData.width, imageData.height);
 			var targetRect = Rect.makeWH(newWidth, newHeight);
 
-			if (imageData != null)
+			if (imageData != null) {
 				image = SkijaGC.convertSWTImageToSkijaImage(imageData);
-			else
+			} else {
 				image = this.image;
+			}
 			surface.getCanvas().drawImageRect(image, sourceRect, targetRect, mode, null, false);
 			ImageData conv = SkijaGC.convertToSkijaImageData(surface.makeImageSnapshot());
 
 			return conv;
 		} finally {
-			if (surface != null)
+			if (surface != null) {
 				surface.close();
-			if (image != null)
+			}
+			if (image != null) {
 				image.close();
+			}
 		}
 	}
 }

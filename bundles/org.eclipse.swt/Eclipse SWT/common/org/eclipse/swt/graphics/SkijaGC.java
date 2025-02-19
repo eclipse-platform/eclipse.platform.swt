@@ -356,12 +356,13 @@ public class SkijaGC extends GCHandle {
 				convertedData[index + 2] = (byte) b;
 				convertedData[index + 3] = (byte) a;
 
-				if (alphaData != null && alphaData.length > arrayPos)
+				if (alphaData != null && alphaData.length > arrayPos) {
 					convertedData[index + 3] = alphaData[arrayPos];
-				else if (imageData.alpha != -1)
+				} else if (imageData.alpha != -1) {
 					convertedData[index + 3] = defaultAlpha;
-				else if(!byteSourceContainsAlpha)
+				} else if(!byteSourceContainsAlpha) {
 					convertedData[index + 3] = defaultAlpha;
+				}
 			}
 		}
 
@@ -413,8 +414,9 @@ public class SkijaGC extends GCHandle {
 		byte[] imageBytes = EncoderPNG.encode(image).getBytes();
 
 		File f = new File(str);
-		if (f.exists())
+		if (f.exists()) {
 			f.delete();
+		}
 
 		try {
 			FileOutputStream fis = new FileOutputStream(f);
@@ -427,10 +429,12 @@ public class SkijaGC extends GCHandle {
 	}
 
 	public static byte convertAlphaTo255Range(float alphaF) {
-		if (alphaF < 0.0f)
+		if (alphaF < 0.0f) {
 			alphaF = 0.0f;
-		if (alphaF > 1.0f)
+		}
+		if (alphaF > 1.0f) {
 			alphaF = 1.0f;
+		}
 
 		return (byte) Math.round(alphaF * 255);
 	}

@@ -62,8 +62,9 @@ public class SnippetSkijaGC {
 	private static void deleteFiles() {
 		for (var s : FILENAMES) {
 			File f = new File(s);
-			if (f.exists())
+			if (f.exists()) {
 				f.delete();
+			}
 		}
 	}
 }

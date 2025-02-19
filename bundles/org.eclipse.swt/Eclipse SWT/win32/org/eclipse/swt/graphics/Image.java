@@ -1412,8 +1412,9 @@ public ImageData getImageData() {
  * @since 3.106
  */
 public ImageData getImageData (int zoom) {
-	if (this.genericImage)
+	if (this.genericImage) {
 		return imageProvider.getImageData(zoom);
+	}
 
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (zoomLevelToImageHandle.containsKey(zoom)) {
@@ -1454,8 +1455,9 @@ public ImageData getImageData (int zoom) {
  */
 @Deprecated
 public ImageData getImageDataAtCurrentZoom() {
-	if (Image.this.genericImage)
+	if (Image.this.genericImage) {
 		return imageProvider.getImageData(100);
+	}
 
 	return getImageMetadata(getZoom()).getImageData();
 }
@@ -1988,8 +1990,9 @@ public void internal_dispose_GC (long hDC, GCData data) {
  */
 @Override
 public boolean isDisposed() {
-	if(this.genericImage)
+	if (this.genericImage) {
 		return false;
+	}
 
 	if (this.imageProvider != null) {
 		return this.imageProvider.isDisposed();

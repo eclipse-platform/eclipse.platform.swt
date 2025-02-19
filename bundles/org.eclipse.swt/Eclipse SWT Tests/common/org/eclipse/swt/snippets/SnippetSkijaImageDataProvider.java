@@ -69,8 +69,9 @@ public class SnippetSkijaImageDataProvider {
 	private static void deleteFiles() {
 		for (var s : filenames) {
 			File f = new File(s);
-			if (f.exists())
+			if (f.exists()) {
 				f.delete();
+			}
 		}
 	}
 }
