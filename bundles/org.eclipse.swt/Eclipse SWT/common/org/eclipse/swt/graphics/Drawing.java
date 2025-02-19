@@ -47,7 +47,7 @@ public final class Drawing {
 	 * @param drawOperation the operation that draws the control
 	 */
 	public static void drawWithGC(Control control, GC originalGC, Consumer<GC> drawOperation) {
-		Rectangle controlSize = control.getBounds();
+		Rectangle bounds = control.getBounds();
 		if (originalGC != null && originalGC.innerGC instanceof NativeGC nativeGC) {
 			if (nativeGC.drawable != control) {
 				throw new IllegalStateException("given GC was not created for given control");
@@ -60,7 +60,7 @@ public final class Drawing {
 		originalGC.setFont(control.getFont());
 		originalGC.setForeground(control.getForeground());
 		originalGC.setBackground(control.getBackground());
-		originalGC.setClipping(new Rectangle(0, 0, controlSize.width, controlSize.height));
+		originalGC.setClipping(new Rectangle(0, 0, bounds.width, bounds.height));
 		originalGC.setAntialias(SWT.ON);
 
 		GC gc = createGraphicsContext(originalGC);
@@ -70,7 +70,7 @@ public final class Drawing {
 		if (SWT.getPlatform().equals("win32") || SWT.getPlatform().equals("gtk")) {
 			// Extract background color on first execution
 			if (widgetBackground == null) {
-				extractAndStoreBackgroundColor(controlSize, originalGC);
+				extractAndStoreBackgroundColor(bounds, originalGC);
 			}
 			control.style |= SWT.NO_BACKGROUND;
 		}
@@ -78,13 +78,13 @@ public final class Drawing {
 		if (gc.innerGC instanceof NativeGC) {
 			if (SWT.getPlatform().equals("win32")) {
 				// Use double buffering on windows
-				doubleBufferingImage = new Image(gc.getDevice(), controlSize.width, controlSize.height);
+				doubleBufferingImage = new Image(gc.getDevice(), bounds.width, bounds.height);
 				originalGC.copyArea(doubleBufferingImage, 0, 0);
 				GC doubleBufferingGC = new GC(doubleBufferingImage);
 				doubleBufferingGC.setForeground(originalGC.getForeground());
 				doubleBufferingGC.setBackground(widgetBackground);
 				doubleBufferingGC.setAntialias(SWT.ON);
-				doubleBufferingGC.fillRectangle(0, 0, controlSize.width, controlSize.height);
+				doubleBufferingGC.fillRectangle(0, 0, bounds.width, bounds.height);
 				gc = doubleBufferingGC;
 			}
 		}
