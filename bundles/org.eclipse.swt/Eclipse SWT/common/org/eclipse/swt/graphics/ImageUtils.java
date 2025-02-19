@@ -12,11 +12,11 @@ package org.eclipse.swt.graphics;
 
 public class ImageUtils {
 
-    public static void setImageDataProvider(Image image, ImageDataProvider imgDataProv) {
-	image.setImageDataProvider(imgDataProv);
-    }
+	public static void setImageDataProvider(Image image, ImageDataProvider imgDataProv) {
+		image.setImageDataProvider(imgDataProv);
+	}
 
 	public static Image createGenericImage(ImageDataProvider imgDataProv) {
-	return new Image(imgDataProv);
-    }
+		return new Image(imgDataProv);
+	}
 }

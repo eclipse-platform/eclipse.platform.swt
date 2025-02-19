@@ -19,20 +19,20 @@ import org.eclipse.swt.widgets.*;
 
 public class SnippetSkijaImageDataProvider {
 // if you wish to check the images, set this to false
-    private static boolean DELETE_AFTER_EXECUTE = true;
+	private static boolean DELETE_AFTER_EXECUTE = true;
 
-    static int zoom = 800;
+	static int zoom = 800;
 
-    private static final String BEFORE_FILE = "before.png";
-    private static final String AFTER_FILE_SWT = "after_swt.png";
-    private static final String AFTER_FILE_SKIA = "after_skia.png";
-    private static final String CHANGED_FILE = "changed.png";
+	private static final String BEFORE_FILE = "before.png";
+	private static final String AFTER_FILE_SWT = "after_swt.png";
+	private static final String AFTER_FILE_SKIA = "after_skia.png";
+	private static final String CHANGED_FILE = "changed.png";
 
-    private static String[] filenames = new String[] {
-	    BEFORE_FILE, AFTER_FILE_SWT, AFTER_FILE_SKIA, CHANGED_FILE
-    };
+	private static String[] filenames = new String[] {
+		BEFORE_FILE, AFTER_FILE_SWT, AFTER_FILE_SKIA, CHANGED_FILE
+	};
 
-    public static void main(String[] arg) {
+	public static void main(String[] arg) {
 	deleteFiles();
 
 	Display display = new Display();
@@ -43,34 +43,34 @@ public class SnippetSkijaImageDataProvider {
 
 	{
 		saver.data = new ImageData[] { image.getImageData() };
-	    saver.save(BEFORE_FILE, SWT.IMAGE_PNG);
+		saver.save(BEFORE_FILE, SWT.IMAGE_PNG);
 	}
 
 	{
-	    saver.data = new ImageData[] { image.getImageData(zoom) };
-	    saver.save(AFTER_FILE_SWT, SWT.IMAGE_PNG);
+		saver.data = new ImageData[] { image.getImageData(zoom) };
+		saver.save(AFTER_FILE_SWT, SWT.IMAGE_PNG);
 	}
 	{
-	    SkijaImageDataProvider skiaScale = new SkijaImageDataProvider(image.getImageData());
+		SkijaImageDataProvider skiaScale = new SkijaImageDataProvider(image.getImageData());
 		saver.data = new ImageData[] { skiaScale.getImageData(zoom) };
-	    saver.save(AFTER_FILE_SKIA, SWT.IMAGE_PNG);
-	    image = display.getSystemImage(SWT.ICON_WARNING);
-	    image = display.getSystemImage(SWT.ICON_WARNING);
-	    ImageUtils.setImageDataProvider(image, skiaScale);
-	    saver.data = new ImageData[] { image.getImageData() };
-	    saver.save(CHANGED_FILE, SWT.IMAGE_PNG);
+		saver.save(AFTER_FILE_SKIA, SWT.IMAGE_PNG);
+		image = display.getSystemImage(SWT.ICON_WARNING);
+		image = display.getSystemImage(SWT.ICON_WARNING);
+		ImageUtils.setImageDataProvider(image, skiaScale);
+		saver.data = new ImageData[] { image.getImageData() };
+		saver.save(CHANGED_FILE, SWT.IMAGE_PNG);
 	}
 
 	if (DELETE_AFTER_EXECUTE) {
-	    deleteFiles();
+		deleteFiles();
 	}
-    }
+	}
 
-    private static void deleteFiles() {
-	for (var s : filenames) {
-	    File f = new File(s);
-	    if (f.exists())
-		f.delete();
+	private static void deleteFiles() {
+		for (var s : filenames) {
+			File f = new File(s);
+			if (f.exists())
+				f.delete();
+		}
 	}
-    }
 }

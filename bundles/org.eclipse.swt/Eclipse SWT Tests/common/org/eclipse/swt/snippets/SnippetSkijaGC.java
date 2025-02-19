@@ -21,49 +21,49 @@ import org.eclipse.swt.widgets.*;
 import io.github.humbleui.skija.*;
 
 public class SnippetSkijaGC {
-    // if you wish to check the images, set this to false
-    static boolean DELETE_AFTER_EXECUTE = true;
+	// if you wish to check the images, set this to false
+	static boolean DELETE_AFTER_EXECUTE = true;
 
-    static String[] FILENAMES = new String[] {
-	    "testout_before.png", "testout_after.png"
-    };
+	static String[] FILENAMES = new String[] {
+		"testout_before.png", "testout_after.png"
+	};
 
-    public static void main(String[] args) {
-	deleteFiles();
+	public static void main(String[] args) {
+		deleteFiles();
 
-	Display display = new Display();
-	Image image1 = display.getSystemImage(SWT.ICON_QUESTION);
+		Display display = new Display();
+		Image image1 = display.getSystemImage(SWT.ICON_QUESTION);
 
-	ImageData img = image1.getImageData();
+		ImageData img = image1.getImageData();
 
-	byte[] bytes = null;
-	var out = ImageUtils.createGenericImage(new SkijaImageDataProvider(img)).getImageData(400);
+		byte[] bytes = null;
+		var out = ImageUtils.createGenericImage(new SkijaImageDataProvider(img)).getImageData(400);
 
-	ImageLoader saver = new ImageLoader();
+		ImageLoader saver = new ImageLoader();
 
-	{
-	    saver.data = new ImageData[] { out };
-	    saver.save(FILENAMES[0], SWT.IMAGE_PNG);
+		{
+			saver.data = new ImageData[] { out };
+			saver.save(FILENAMES[0], SWT.IMAGE_PNG);
+		}
+
+		bytes = SkijaGC.convertToRGBA(out);
+		var colType = ColorType.RGBA_8888;
+
+		ImageInfo imageInfo = new ImageInfo(out.width, out.height, colType, ColorAlphaType.UNPREMUL);
+
+		var i = io.github.humbleui.skija.Image.makeRasterFromBytes(imageInfo, bytes, out.width * 4);
+
+		SkijaGC.writeFile(FILENAMES[1], i);
+		if (DELETE_AFTER_EXECUTE) {
+			deleteFiles();
+		}
 	}
 
-	bytes = SkijaGC.convertToRGBA(out);
-	var colType = ColorType.RGBA_8888;
-
-	ImageInfo imageInfo = new ImageInfo(out.width, out.height, colType, ColorAlphaType.UNPREMUL);
-
-	var i = io.github.humbleui.skija.Image.makeRasterFromBytes(imageInfo, bytes, out.width * 4);
-
-	SkijaGC.writeFile(FILENAMES[1], i);
-	if (DELETE_AFTER_EXECUTE) {
-	    deleteFiles();
+	private static void deleteFiles() {
+		for (var s : FILENAMES) {
+			File f = new File(s);
+			if (f.exists())
+				f.delete();
+		}
 	}
-    }
-
-    private static void deleteFiles() {
-	for (var s : FILENAMES) {
-	    File f = new File(s);
-	    if (f.exists())
-		f.delete();
-	}
-    }
 }

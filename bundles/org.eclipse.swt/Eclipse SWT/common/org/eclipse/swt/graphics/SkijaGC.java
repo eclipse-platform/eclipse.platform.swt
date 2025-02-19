@@ -293,29 +293,29 @@ public class SkijaGC extends GCHandle {
 	}
 
 	private static io.github.humbleui.skija.Image convertSWTImageToSkijaImage(Image swtImage) {
-	    ImageData imageData = swtImage.getImageData(DPIUtil.getDeviceZoom());
-	    return convertSWTImageToSkijaImage(imageData);
+		ImageData imageData = swtImage.getImageData(DPIUtil.getDeviceZoom());
+		return convertSWTImageToSkijaImage(imageData);
 	}
 
-	    static io.github.humbleui.skija.Image convertSWTImageToSkijaImage(ImageData imageData) {
+	static io.github.humbleui.skija.Image convertSWTImageToSkijaImage(ImageData imageData) {
 		int width = imageData.width;
 		int height = imageData.height;
 		ColorType colType = getColorType(imageData);
 
 		// always prefer the alphaData. If these are set, the bytes data are empty!!
 		if (colType.equals(ColorType.UNKNOWN) || imageData.alphaData != null) {
-		byte[] bytes = null;
+			byte[] bytes = null;
 			bytes = convertToRGBA(imageData);
 			colType = ColorType.RGBA_8888;
 			ImageInfo imageInfo = new ImageInfo(width, height, colType, ColorAlphaType.UNPREMUL);
 			return io.github.humbleui.skija.Image.makeRasterFromBytes(imageInfo, bytes,
 				imageData.width * 4);
-		    } else {
+		} else {
 			ImageInfo imageInfo = new ImageInfo(width, height, colType, ColorAlphaType.UNPREMUL);
 
 			return io.github.humbleui.skija.Image.makeRasterFromBytes(imageInfo, imageData.data,
 				imageData.width * 4);
-	    }
+		}
 	}
 
 	public static byte[] convertToRGBA(ImageData imageData) {
@@ -381,7 +381,7 @@ public class SkijaGC extends GCHandle {
 //		ColorAlphaType alphaType = bm.getAlphaType();
 
 		for (int y = 0; y < bm.getHeight(); y++) {
-		    for (int x = 0; x < bm.getWidth(); x++) {
+			for (int x = 0; x < bm.getWidth(); x++) {
 				byte alpha = convertAlphaTo255Range(bm.getAlphaf(x, y));
 
 				int index = (x + y * bm.getWidth()) * 4;
@@ -1131,109 +1131,109 @@ public class SkijaGC extends GCHandle {
 	}
 
 	static PaletteData getPaletteData(ColorType colorType) {
-	    // Note: RGB values here should be representative of a palette.
+		// Note: RGB values here should be representative of a palette.
 
-	    // TODO test all mappings here
-	    switch (colorType) {
-	    case ALPHA_8:
-		return new PaletteData(new RGB[] { new RGB(255, 255, 255), new RGB(0, 0, 0) });
-	    case RGB_565:
-		return new PaletteData(0xF800, 0x07E0, 0x001F); // Mask for RGB565
-	    case ARGB_4444:
-		return new PaletteData(0x0F00, 0x00F0, 0x000F); // Mask for ARGB4444
-	    case RGBA_8888:
-			var p = new PaletteData(0xFF000000, 0x00FF0000, 0x0000FF00); // Standard RGBA masks
-			return p;
-	    case BGRA_8888:
-			return new PaletteData(0x0000FF00, 0x00FF0000, 0xFF000000);
-	    case RGBA_F16:
-		return new PaletteData(new RGB[] { new RGB(255, 0, 0), // Example red
-			new RGB(0, 255, 0), // Example green
-			new RGB(0, 0, 255) }); // Example blue
-	    case RGBA_F32:
-		return new PaletteData(new RGB[] { new RGB(255, 165, 0), // Example orange
-			new RGB(0, 255, 255), // Example cyan
-			new RGB(128, 0, 128) }); // Example purple
-	    default:
-		throw new IllegalArgumentException("Unknown Skija ColorType: " + colorType);
-	    }
+		// TODO test all mappings here
+		switch (colorType) {
+			case ALPHA_8:
+				return new PaletteData(new RGB[] { new RGB(255, 255, 255), new RGB(0, 0, 0) });
+			case RGB_565:
+				return new PaletteData(0xF800, 0x07E0, 0x001F); // Mask for RGB565
+			case ARGB_4444:
+				return new PaletteData(0x0F00, 0x00F0, 0x000F); // Mask for ARGB4444
+			case RGBA_8888:
+				var p = new PaletteData(0xFF000000, 0x00FF0000, 0x0000FF00); // Standard RGBA masks
+				return p;
+			case BGRA_8888:
+				return new PaletteData(0x0000FF00, 0x00FF0000, 0xFF000000);
+			case RGBA_F16:
+				return new PaletteData(new RGB[] { new RGB(255, 0, 0), // Example red
+					new RGB(0, 255, 0), // Example green
+					new RGB(0, 0, 255) }); // Example blue
+			case RGBA_F32:
+				return new PaletteData(new RGB[] { new RGB(255, 165, 0), // Example orange
+					new RGB(0, 255, 255), // Example cyan
+					new RGB(128, 0, 128) }); // Example purple
+			default:
+				throw new IllegalArgumentException("Unknown Skija ColorType: " + colorType);
+		}
 	}
 
 	static int getImageDepth(ColorType colorType) {
 		// TODO test all mappings
-	    switch (colorType) {
-	    case ALPHA_8:
-		return 8;
-	    case RGB_565:
-		return 16;
-	    case ARGB_4444:
-		return 16;
-	    case RGBA_8888:
-		return 32;
-	    case BGRA_8888:
-		return 32;
-	    case RGBA_F16:
-		// Typically could represent more colors, but SWT doesn't support floating-point
-		// depths.
-		return 64; // This is theoretical; SWT will usually not handle more than 32
-	    case RGBA_F32:
-		// Same as RGBA_F16 with regards to SWT support
-		return 128; // Theoretical; actual handling requires custom treatment
-	    default:
-		throw new IllegalArgumentException("Unknown Skija ColorType: " + colorType);
-	    }
+		switch (colorType) {
+			case ALPHA_8:
+				return 8;
+			case RGB_565:
+				return 16;
+			case ARGB_4444:
+				return 16;
+			case RGBA_8888:
+				return 32;
+			case BGRA_8888:
+				return 32;
+			case RGBA_F16:
+				// Typically could represent more colors, but SWT doesn't support floating-point
+				// depths.
+				return 64; // This is theoretical; SWT will usually not handle more than 32
+			case RGBA_F32:
+				// Same as RGBA_F16 with regards to SWT support
+				return 128; // Theoretical; actual handling requires custom treatment
+			default:
+				throw new IllegalArgumentException("Unknown Skija ColorType: " + colorType);
+		}
 	}
 
 	static ColorAlphaType determineAlphaType(ImageData imageData) {
 		// TODO test all mappings
-	    if (imageData.alphaData == null && imageData.alpha == -1) {
+		if (imageData.alphaData == null && imageData.alpha == -1) {
 			// no alpha
-		return ColorAlphaType.OPAQUE;
-	    }
+			return ColorAlphaType.OPAQUE;
+		}
 
-	    if (imageData.alphaData != null || imageData.alpha < 255) {
+		if (imageData.alphaData != null || imageData.alpha < 255) {
 			// alpha data available
-		return ColorAlphaType.UNPREMUL;
-	    }
+			return ColorAlphaType.UNPREMUL;
+		}
 
-	    // usually without additional information
-	    return ColorAlphaType.UNPREMUL;
+		// usually without additional information
+		return ColorAlphaType.UNPREMUL;
 	}
 
 	private static Map<ColorType, int[]> createColorTypeMap() {
-	    if (colorTypeMap != null) {
+		if (colorTypeMap != null) {
+			return colorTypeMap;
+		}
+
+		colorTypeMap = new HashMap<>();
+
+		// define pixel order for skija ColorType
+		// what to do if the number of ints is not 4?
+		colorTypeMap.put(ColorType.ALPHA_8, new int[] { 0 }); // only Alpha
+		colorTypeMap.put(ColorType.RGB_565, new int[] { 0, 1, 2 }); // RGB
+		colorTypeMap.put(ColorType.ARGB_4444, new int[] { 1, 2, 3, 0 }); // ARGB
+		colorTypeMap.put(ColorType.RGBA_8888, new int[] { 0, 1, 2, 3 }); // RGBA
+		colorTypeMap.put(ColorType.RGB_888X, new int[] { 0, 1, 2, 3 }); // RGB, ignore X
+		colorTypeMap.put(ColorType.BGRA_8888, new int[] { 2, 1, 0, 3 }); // BGRA
+		colorTypeMap.put(ColorType.RGBA_1010102, new int[] { 0, 1, 2, 3 }); // RGBA
+		colorTypeMap.put(ColorType.BGRA_1010102, new int[] { 2, 1, 0, 3 }); // BGRA
+		colorTypeMap.put(ColorType.RGB_101010X, new int[] { 0, 1, 2, 3 }); // RGB, ignore X
+		colorTypeMap.put(ColorType.BGR_101010X, new int[] { 2, 1, 0, 3 }); // BGR, ignore X
+		colorTypeMap.put(ColorType.RGBA_F16NORM, new int[] { 0, 1, 2, 3 }); // RGBA
+		colorTypeMap.put(ColorType.RGBA_F16, new int[] { 0, 1, 2, 3 }); // RGBA
+		colorTypeMap.put(ColorType.RGBA_F32, new int[] { 0, 1, 2, 3 }); // RGBA
+		colorTypeMap.put(ColorType.R8G8_UNORM, new int[] { 0, 1 }); // RG
+		colorTypeMap.put(ColorType.A16_FLOAT, new int[] { 0 }); // Alpha
+		colorTypeMap.put(ColorType.R16G16_FLOAT, new int[] { 0, 1 }); // RG
+		colorTypeMap.put(ColorType.A16_UNORM, new int[] { 0 }); // Alpha
+		colorTypeMap.put(ColorType.R16G16_UNORM, new int[] { 0, 1 }); // RG
+		colorTypeMap.put(ColorType.R16G16B16A16_UNORM, new int[] { 0, 1, 2, 3 }); // RGBA
+
 		return colorTypeMap;
-	    }
-
-	    colorTypeMap = new HashMap<>();
-
-	    // define pixel order for skija ColorType
-	    // what to do if the number of ints is not 4?
-	    colorTypeMap.put(ColorType.ALPHA_8, new int[] { 0 }); // only Alpha
-	    colorTypeMap.put(ColorType.RGB_565, new int[] { 0, 1, 2 }); // RGB
-	    colorTypeMap.put(ColorType.ARGB_4444, new int[] { 1, 2, 3, 0 }); // ARGB
-	    colorTypeMap.put(ColorType.RGBA_8888, new int[] { 0, 1, 2, 3 }); // RGBA
-	    colorTypeMap.put(ColorType.RGB_888X, new int[] { 0, 1, 2, 3 }); // RGB, ignore X
-	    colorTypeMap.put(ColorType.BGRA_8888, new int[] { 2, 1, 0, 3 }); // BGRA
-	    colorTypeMap.put(ColorType.RGBA_1010102, new int[] { 0, 1, 2, 3 }); // RGBA
-	    colorTypeMap.put(ColorType.BGRA_1010102, new int[] { 2, 1, 0, 3 }); // BGRA
-	    colorTypeMap.put(ColorType.RGB_101010X, new int[] { 0, 1, 2, 3 }); // RGB, ignore X
-	    colorTypeMap.put(ColorType.BGR_101010X, new int[] { 2, 1, 0, 3 }); // BGR, ignore X
-	    colorTypeMap.put(ColorType.RGBA_F16NORM, new int[] { 0, 1, 2, 3 }); // RGBA
-	    colorTypeMap.put(ColorType.RGBA_F16, new int[] { 0, 1, 2, 3 }); // RGBA
-	    colorTypeMap.put(ColorType.RGBA_F32, new int[] { 0, 1, 2, 3 }); // RGBA
-	    colorTypeMap.put(ColorType.R8G8_UNORM, new int[] { 0, 1 }); // RG
-	    colorTypeMap.put(ColorType.A16_FLOAT, new int[] { 0 }); // Alpha
-	    colorTypeMap.put(ColorType.R16G16_FLOAT, new int[] { 0, 1 }); // RG
-	    colorTypeMap.put(ColorType.A16_UNORM, new int[] { 0 }); // Alpha
-	    colorTypeMap.put(ColorType.R16G16_UNORM, new int[] { 0, 1 }); // RG
-	    colorTypeMap.put(ColorType.R16G16B16A16_UNORM, new int[] { 0, 1, 2, 3 }); // RGBA
-
-	    return colorTypeMap;
 	}
 
 	public static int[] getPixelOrder(ColorType colorType) {
-	    Map<ColorType, int[]> colorTypeMap = createColorTypeMap();
-	    return colorTypeMap.get(colorType);
+		Map<ColorType, int[]> colorTypeMap = createColorTypeMap();
+		return colorTypeMap.get(colorType);
 	}
 }
