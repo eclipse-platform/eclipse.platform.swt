@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Tests
+Bundle-Name: SWT SVG Support Tests
 Bundle-SymbolicName: org.eclipse.swt.svg.tests
 Bundle-Version: 1.0.0.qualifier
 Require-Bundle: org.eclipse.swt,
@@ -10,4 +10,4 @@ Require-Bundle: org.eclipse.swt,
  org.eclipse.core.runtime
 Automatic-Module-Name: org.eclipse.swt.svg.tests
 Bundle-ClassPath: .
-Bundle-RequiredExecutionEnvironment: JavaSE-21
+Bundle-RequiredExecutionEnvironment: JavaSE-17

@@ -7,7 +7,8 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *
- * Contributors: Michael Bangas (Vector Informatik GmbH) - initial API and implementation
+ * Contributors:
+ *     Michael Bangas (Vector Informatik GmbH) - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.svg.tests.junit;
 
@@ -16,6 +17,7 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.nio.file.Path;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.Image;

@@ -7,25 +7,51 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *
- * Contributors: Michael Bangas (Vector Informatik GmbH) - initial API and implementation
+ * Contributors:
+ *     Michael Bangas (Vector Informatik GmbH) - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.svg;
 
-import static java.awt.RenderingHints.*;
+import static java.awt.RenderingHints.KEY_ALPHA_INTERPOLATION;
+import static java.awt.RenderingHints.KEY_ANTIALIASING;
+import static java.awt.RenderingHints.KEY_COLOR_RENDERING;
+import static java.awt.RenderingHints.KEY_DITHERING;
+import static java.awt.RenderingHints.KEY_FRACTIONALMETRICS;
+import static java.awt.RenderingHints.KEY_INTERPOLATION;
+import static java.awt.RenderingHints.KEY_RENDERING;
+import static java.awt.RenderingHints.KEY_STROKE_CONTROL;
+import static java.awt.RenderingHints.KEY_TEXT_ANTIALIASING;
+import static java.awt.RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY;
+import static java.awt.RenderingHints.VALUE_ANTIALIAS_ON;
+import static java.awt.RenderingHints.VALUE_COLOR_RENDER_QUALITY;
+import static java.awt.RenderingHints.VALUE_DITHER_DISABLE;
+import static java.awt.RenderingHints.VALUE_FRACTIONALMETRICS_ON;
+import static java.awt.RenderingHints.VALUE_INTERPOLATION_BICUBIC;
+import static java.awt.RenderingHints.VALUE_RENDER_QUALITY;
+import static java.awt.RenderingHints.VALUE_STROKE_PURE;
+import static java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON;
 
-import java.awt.*;
-import java.awt.image.*;
-import java.io.*;
-import java.util.*;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints.Key;
+import java.awt.image.BufferedImage;
+import java.awt.image.ComponentColorModel;
+import java.awt.image.DirectColorModel;
+import java.awt.image.IndexColorModel;
+import java.awt.image.WritableRaster;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Map;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.internal.SVGRasterizer;
-import com.github.weisj.jsvg.*;
-import com.github.weisj.jsvg.geometry.size.*;
-import com.github.weisj.jsvg.parser.*;
+
+import com.github.weisj.jsvg.SVGDocument;
+import com.github.weisj.jsvg.geometry.size.FloatSize;
+import com.github.weisj.jsvg.parser.LoaderContext;
+import com.github.weisj.jsvg.parser.SVGLoader;
 
 /**
  * A rasterizer implementation for converting SVG data into rasterized images.
