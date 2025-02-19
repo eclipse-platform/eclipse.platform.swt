@@ -107,9 +107,9 @@ public class Scale extends Control implements ICustomWidget {
 		 * Renders the handle.
 		 *
 		 * @param gc
-		 * @param bounds
+		 * @param size
 		 */
-		void render(GC gc, Rectangle bounds);
+		void render(GC gc, Point size);
 	}
 
 	/**
@@ -349,21 +349,12 @@ public class Scale extends Control implements ICustomWidget {
 			return;
 		}
 
-		try {
-			event.gc = Objects.requireNonNullElseGet(event.gc, () -> new GC(this));
-			doPaint(event);
-		} finally {
-			event.gc.dispose();
-		}
-	}
-
-	private void doPaint(Event e) {
-		Rectangle bounds = getBounds();
-		if (bounds.width == 0 && bounds.height == 0) {
+		final Point size = getSize();
+		if (size.x == 0 && size.y == 0) {
 			return;
 		}
 
-		renderer.render(e.gc, bounds);
+		Drawing.drawWithGC(this, event.gc, gc -> renderer.render(gc, size));
 	}
 
 	@Override
