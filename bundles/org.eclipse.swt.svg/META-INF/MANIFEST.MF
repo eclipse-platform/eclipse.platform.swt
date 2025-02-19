@@ -8,5 +8,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-17
 Fragment-Host: org.eclipse.swt
 Import-Package: com.github.weisj.jsvg;version="[1.7.0,2.0.0)",
  com.github.weisj.jsvg.geometry.size;version="[1.7.0,2.0.0)",
- com.github.weisj.jsvg.parser;version="[1.7.0,2.0.0)"
+ com.github.weisj.jsvg.parser;version="[1.7.0,2.0.0)",
+ org.eclipse.swt.internal.image
 Export-Package: org.eclipse.swt.svg
+Require-Capability: eclipse.swt.native;filter:="(eclipse.swt.native=native)"
