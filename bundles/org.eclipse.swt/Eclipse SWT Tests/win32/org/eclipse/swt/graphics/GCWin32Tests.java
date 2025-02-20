@@ -16,7 +16,6 @@ package org.eclipse.swt.graphics;
 import static org.junit.Assert.assertEquals;
 
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
@@ -30,30 +29,26 @@ class GCWin32Tests {
 
 	@Test
 	public void gcZoomLevelMustChangeOnShellZoomChange() {
-		Shell shell = new Shell(Display.getDefault());
+		checkGcZoomLevelOnCanvas(DPIUtil.getNativeDeviceZoom());
+		checkGcZoomLevelOnCanvas(DPIUtil.getNativeDeviceZoom()*2);
+	}
 
+	private void checkGcZoomLevelOnCanvas(int expectedZoom) {
+		Display display = Display.getDefault();
+		Shell shell = new Shell(display);
 		CompletableFuture<Integer> gcNativeZoom = new CompletableFuture<>();
-		CompletableFuture<Integer> scaledGcNativeZoom = new CompletableFuture<>();
-		int zoom = DPIUtil.getDeviceZoom();
-		AtomicBoolean isScaled = new AtomicBoolean(false);
-		shell.addListener(SWT.Paint, event -> {
-			if (isScaled.get()) {
-				scaledGcNativeZoom.complete(event.gc.getGCData().nativeZoom);
-			} else {
-				gcNativeZoom.complete(event.gc.getGCData().nativeZoom);
-			}
+
+		Canvas canvas = new Canvas(shell, SWT.NONE);
+		canvas.setSize(20, 20);
+		shell.open ();
+		canvas.addPaintListener(event -> {
+			gcNativeZoom.complete(event.gc.getGCData().nativeZoom);
 		});
 
-		shell.open();
-		assertEquals("GCData must have a zoom level equal to the actual zoom level of the widget/shell", DPIUtil.getNativeDeviceZoom(), (int) gcNativeZoom.join());
-
-		int newSWTZoom = zoom * 2;
-		DPITestUtil.changeDPIZoom(shell, newSWTZoom);
-		isScaled.set(true);
-		shell.setVisible(false);
-		shell.setVisible(true);
-
-		assertEquals("GCData must have a zoom level equal to the actual zoom level of the widget/shell on zoomChanged event", newSWTZoom, (int) scaledGcNativeZoom.join());
+		DPITestUtil.changeDPIZoom(shell, expectedZoom);
+		canvas.update();
+		assertEquals("GCData must have a zoom level equal to the actual zoom level of the widget/shell", expectedZoom, (int) gcNativeZoom.join());
+		shell.dispose();
 	}
 
 	@Test
