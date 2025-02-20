@@ -74,6 +74,8 @@ public class Link extends Control implements ICustomWidget {
 	private static final int DRAW_FLAGS = SWT.DRAW_MNEMONIC | SWT.DRAW_TAB | SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER;
 
 	Set<TextSegment> links = new HashSet<>();
+	TextSegment prevHoverLink;
+	Map<String, List<TextSegment>> parsedText = new HashMap<>();
 
 	/**
 	 * Constructs a new instance of this class given its parent and a style value
@@ -128,6 +130,7 @@ public class Link extends Control implements ICustomWidget {
 		addListener(SWT.MouseUp, this::onMouseUp);
 
 		initAccessible();
+		text = "";
 	}
 
 	private void onMouseUp(Event e) {
@@ -135,7 +138,7 @@ public class Link extends Control implements ICustomWidget {
 		int y = e.y;
 		if ((e.stateMask & SWT.BUTTON1) != 0) {
 			for (TextSegment link : links) {
-				if ((x >= link.x) && (y >= link.y) && x < (link.width) && y < (link.height)) {
+				if (link.rect.contains(x, y)) {
 					Event event = new Event();
 					event.text = link.linkData != null ? link.linkData : link.text;
 					sendSelectionEvent(SWT.Selection, event, true);
@@ -406,9 +409,16 @@ public class Link extends Control implements ICustomWidget {
 	void onMouseMove(MouseEvent event) {
 		int x = event.x;
 		int y = event.y;
+
+		if (prevHoverLink != null && prevHoverLink.rect.contains(x, y)) {
+			setCursor(display.getSystemCursor(SWT.CURSOR_HAND));
+			return;
+		}
+
 		for (TextSegment link : links) {
-			if ((x >= link.x) && (y >= link.y) && x < (link.width) && y < (link.height)) {
+			if (link.rect.contains(x, y)) {
 				setCursor(display.getSystemCursor(SWT.CURSOR_HAND));
+				prevHoverLink = link;
 				return;
 			}
 		}
@@ -427,8 +437,6 @@ public class Link extends Control implements ICustomWidget {
 		if ((text == null || text.isEmpty()))
 			return;
 
-		links.clear();
-
 		gc.setFont(font);
 		gc.setBackground(getBackground());
 		gc.setClipping(new Rectangle(0, 0, rect.width, rect.height));
@@ -438,12 +446,14 @@ public class Link extends Control implements ICustomWidget {
 
 		Color linkColor = this.linkColor != null ? this.linkColor
 				: getDisplay().getSystemColor(SWT.COLOR_LINK_FOREGROUND);
-		String[] lines = text.split("\n");
+
+		links.clear();
+
 		int x = leftMargin;
 		int lineY = topMargin;
 
-		for (String line : lines) {
-			List<TextSegment> segments = parseTextSegments(line);
+		for (String line : parsedText.keySet()) {
+			List<TextSegment> segments = parsedText.get(line);
 			int lineX = x;
 			if (align == SWT.CENTER) {
 				int lineWidth = getLineExtent(gc, segments).x;
@@ -476,10 +486,7 @@ public class Link extends Control implements ICustomWidget {
 					int underlineY = lineY + extent.y - 2;
 					gc.drawLine(lineX, underlineY, lineX + extent.x, underlineY);
 					// remember bounds of links
-					segment.x = lineX;
-					segment.y = lineY;
-					segment.width = lineX + extent.x;
-					segment.height = lineY + extent.y;
+					segment.rect = new Rectangle(lineX, lineY, extent.x, extent.y);
 					links.add(segment);
 				}
 
@@ -549,19 +556,19 @@ public class Link extends Control implements ICustomWidget {
 			// Extract normal text before <a> tag
 			String normalText = matcher.group(1);
 			if (!normalText.isEmpty()) {
-				segments.add(new TextSegment(normalText, false, -1, -1, -1, -1, null));
+				segments.add(new TextSegment(normalText, false, null, null));
 			}
 
 			// Extract href attribute (if present) and linked text inside <a> tag
 			String href = matcher.group(2); // href="..." value (can be null)
 			String linkText = matcher.group(3); // The actual clickable text
-			segments.add(new TextSegment(linkText, true, -1, -1, -1, -1, href));
+			segments.add(new TextSegment(linkText, true, href, null));
 
 			// Capture trailing spaces and punctuation (important for handling ", "
 			// correctly)
 			String trailingText = matcher.group(4);
 			if (!trailingText.isEmpty()) {
-				segments.add(new TextSegment(trailingText, false, -1, -1, -1, -1, null));
+				segments.add(new TextSegment(trailingText, false, null, null));
 			}
 
 			lastEnd = matcher.end();
@@ -570,7 +577,7 @@ public class Link extends Control implements ICustomWidget {
 		// Add any remaining text after the last <a> tag
 		if (lastEnd < input.length()) {
 			String remainingText = input.substring(lastEnd);
-			segments.add(new TextSegment(remainingText, false, -1, -1, -1, -1, null));
+			segments.add(new TextSegment(remainingText, false, null, null));
 		}
 
 		return segments;
@@ -579,16 +586,13 @@ public class Link extends Control implements ICustomWidget {
 	static class TextSegment {
 		String text, linkData;
 		boolean isLink;
-		int x, y, width, height;
+		Rectangle rect;
 
-		TextSegment(String text, boolean isLink, int x, int y, int width, int height, String linkData) {
+		TextSegment(String text, boolean isLink, String linkData, Rectangle rect) {
 			this.text = text;
 			this.isLink = isLink;
-			this.x = x;
-			this.y = y;
-			this.width = width;
-			this.height = height;
 			this.linkData = linkData;
+			this.rect = rect;
 		}
 	}
 
@@ -813,10 +817,16 @@ public class Link extends Control implements ICustomWidget {
 	 */
 	public void setText(String text) {
 		checkWidget();
+		if (text == null)
+			error(SWT.ERROR_NULL_ARGUMENT);
 		computedSize = null;
-		if (text == null) {
-			text = ""; //$NON-NLS-1$
+
+		parsedText.clear();
+		String[] lines = text.split("\n");
+		for (String line : lines) {
+			parsedText.put(line, parseTextSegments(line));
 		}
+
 		if (!text.equals(this.text)) {
 			this.text = text;
 			redraw();
