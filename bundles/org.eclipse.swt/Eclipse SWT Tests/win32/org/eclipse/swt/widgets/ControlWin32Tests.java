@@ -60,12 +60,12 @@ class ControlWin32Tests {
 		DPIUtil.setMonitorSpecificScaling(true);
 		Display display = Display.getDefault();
 		Shell shell = new Shell(display);
-		DPITestUtil.changeDPIZoom(shell, 175);
-
 		Button button = new Button(shell, SWT.PUSH);
 		button.setText("Widget Test");
-		button.setBounds(new Rectangle(0, 47, 200, 47));
 		shell.open();
+		DPITestUtil.changeDPIZoom(shell, 175);
+
+		button.setBounds(new Rectangle(0, 47, 200, 47));
 		assertEquals("Control::setBounds(Rectangle) doesn't scale up correctly",
 				new Rectangle(0, 82, 350, 83), button.getBoundsInPixels());
 

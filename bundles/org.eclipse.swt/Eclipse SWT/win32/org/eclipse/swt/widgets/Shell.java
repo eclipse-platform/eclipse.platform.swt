@@ -2685,6 +2685,26 @@ LRESULT WM_WINDOWPOSCHANGING (long wParam, long lParam) {
 	return result;
 }
 
+@Override
+LRESULT WM_WINDOWPOSCHANGED (long wParam, long lParam) {
+	LRESULT result = super.WM_WINDOWPOSCHANGED(wParam, lParam);
+	// When the process is started with System DPI awareness and
+	// only the thread is PerMonitorV2 aware, there are some scenarios, when the
+	// OS does not send a DPI change event when a child Shell is positioned and
+	// opened on another monitor as its parent Shell. To work around that limitation
+	// this check is added to trigger a dpi change event if an unexpected DPI value is
+	// detected.
+	if (display.isRescalingAtRuntime()) {
+		int dpiForWindow = DPIUtil.mapDPIToZoom(OS.GetDpiForWindow(getShell().handle));
+		if (dpiForWindow != nativeZoom) {
+			WINDOWPOS lpwp = new WINDOWPOS ();
+			OS.MoveMemory (lpwp, lParam, WINDOWPOS.sizeof);
+			handleMonitorSpecificDpiChange(dpiForWindow, new Rectangle(lpwp.x, lpwp.y, lpwp.cx, lpwp.cy));
+		}
+	}
+	return result;
+}
+
 private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
 	if (!(widget instanceof Shell shell)) {
 		return;
