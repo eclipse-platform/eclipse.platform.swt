@@ -81,7 +81,8 @@ class Edge extends WebBrowser {
 	static boolean inCallback;
 	boolean inNewWindow;
 	HashMap<Long, LocationEvent> navigations = new HashMap<>();
-	private boolean ignoreFocus;
+	private boolean ignoreGotFocus;
+	private boolean ignoreFocusIn;
 	private String lastCustomText;
 
 	private static record CursorPosition(Point location, boolean isInsideBrowser) {};
@@ -829,8 +830,17 @@ void browserDispose(Event event) {
 }
 
 void browserFocusIn(Event event) {
-	if (ignoreFocus) return;
+	if (ignoreFocusIn) return;
 	// TODO: directional traversals
+
+	// https://github.com/eclipse-platform/eclipse.platform.swt/issues/1848
+	// When we call ICoreWebView2Controller.MoveFocus(int) here,
+	// WebView2 will call us back in handleGotFocus() asynchronously.
+	// We need to ignore that next event, as in the meantime the user might
+	// have moved focus to some other control and reacting on that event
+	// would bring us back to the Browser.
+	ignoreGotFocus = true;
+
 	controller.MoveFocus(COM.COREWEBVIEW2_MOVE_FOCUS_REASON_PROGRAMMATIC);
 }
 
@@ -1350,6 +1360,11 @@ int handleNewWindowRequested(long pView, long pArgs) {
 }
 
 int handleGotFocus(long pView, long pArg) {
+	if (ignoreGotFocus) {
+		ignoreGotFocus = false;
+		return COM.S_OK;
+	}
+	// https://github.com/eclipse-platform/eclipse.platform.swt/issues/1139
 	// browser.forceFocus() does not result in
 	// Shell#setActiveControl(Control)
 	// being called and therefore no SWT.FocusIn event being dispatched,
@@ -1357,9 +1372,9 @@ int handleGotFocus(long pView, long pArg) {
 	// The solution is to explicitly send a WM_SETFOCUS
 	// to the browser, and, while doing so, ignoring any recursive
 	// calls in #browserFocusIn(Event).
-	ignoreFocus = true;
+	ignoreFocusIn = true;
 	OS.SendMessage (browser.handle, OS.WM_SETFOCUS, 0, 0);
-	ignoreFocus = false;
+	ignoreFocusIn = false;
 	return COM.S_OK;
 }
 
