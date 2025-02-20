@@ -14,6 +14,8 @@
 package org.eclipse.swt.graphics;
 
 
+import java.util.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
@@ -55,6 +57,9 @@ public final class Font extends Resource {
 	 * (Warning: This field is platform dependent)
 	 */
 	int zoom;
+
+	private static Map<Long, Float> fontHeightCache = new HashMap<>();
+
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
@@ -176,6 +181,7 @@ public Font(Device device, String name, int height, int style) {
 @Override
 void destroy() {
 	OS.DeleteObject(handle);
+	fontHeightCache.remove(handle);
 	handle = 0;
 }
 
@@ -213,7 +219,13 @@ public FontData[] getFontData() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	LOGFONT logFont = new LOGFONT ();
 	OS.GetObject(handle, LOGFONT.sizeof, logFont);
-	float heightInPoints = device.computePoints(logFont, handle, zoom);
+
+	float heightInPoints;
+	if (fontHeightCache.containsKey(handle)) {
+		heightInPoints = fontHeightCache.get(handle);
+	} else {
+		heightInPoints = device.computePoints(logFont, handle, zoom);
+	}
 	return new FontData[] {FontData.win32_new(logFont, heightInPoints)};
 }
 
@@ -240,6 +252,7 @@ void init (FontData fd) {
 	handle = OS.CreateFontIndirect(logFont);
 	logFont.lfHeight = lfHeight;
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	fontHeightCache.put(handle, fd.height);
 }
 
 /**
