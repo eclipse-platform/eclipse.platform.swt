@@ -24,7 +24,6 @@ public class SkijaImageDataProvider implements ImageDataProvider {
 	private Map<Integer, ImageData> convertedImageData = new HashMap<>();
 	private ImageData imageData;
 	SamplingMode mode = SamplingMode.CATMULL_ROM;
-	private Image image;
 
 	/**
 	 * For scaling imageData up, if necessary.
@@ -35,8 +34,15 @@ public class SkijaImageDataProvider implements ImageDataProvider {
 		this.imageData = imageData;
 	}
 
-	SkijaImageDataProvider(io.github.humbleui.skija.Image image) {
-		this.image = image;
+	/**
+	 *
+	 * This constructor directly converts the Skija Image to ImageData. Close the
+	 * skija Image after usage of this constructor. This is up to the caller.
+	 *
+	 * @param skijaImage
+	 */
+	public SkijaImageDataProvider(io.github.humbleui.skija.Image skijaImage) {
+	    this.imageData = SkijaGC.convertToSkijaImageData(skijaImage);
 	}
 
 	@Override
@@ -69,11 +75,7 @@ public class SkijaImageDataProvider implements ImageDataProvider {
 			var sourceRect = Rect.makeWH(imageData.width, imageData.height);
 			var targetRect = Rect.makeWH(newWidth, newHeight);
 
-			if (imageData != null) {
-				image = SkijaGC.convertSWTImageToSkijaImage(imageData);
-			} else {
-				image = this.image;
-			}
+			image = SkijaGC.convertSWTImageToSkijaImage(imageData);
 			surface.getCanvas().drawImageRect(image, sourceRect, targetRect, mode, null, false);
 			ImageData conv = SkijaGC.convertToSkijaImageData(surface.makeImageSnapshot());
 
