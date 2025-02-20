@@ -2812,6 +2812,10 @@ public static final native long GetDlgItem (long hDlg, int nIDDlgItem);
 public static final native int GetDoubleClickTime ();
 /** @method flags=dynamic */
 public static final native int GetDpiForMonitor (long hmonitor, int dpiType, int [] dpiX, int [] dpiY);
+/**
+ * @param hWnd cast=(HWND)
+ */
+public static final native int GetDpiForWindow (long hWnd);
 public static final native long GetFocus ();
 /** @param hdc cast=(HDC) */
 public static final native int GetFontLanguageInfo (long hdc);
