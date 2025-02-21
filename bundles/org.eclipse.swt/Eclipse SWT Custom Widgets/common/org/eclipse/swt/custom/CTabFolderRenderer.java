@@ -878,44 +878,57 @@ public class CTabFolderRenderer {
 		}
 	}
 
-	void drawClose(GC gc, Rectangle closeRect, int closeImageState) {
+	void drawClose(GC gc, Rectangle closeRect, int closeImageState, boolean showDirtyIndicator) {
 		if (closeRect.width == 0 || closeRect.height == 0) return;
 
+		int originalLineWidth = gc.getLineWidth();
+	    int state = closeImageState & (SWT.HOT | SWT.SELECTED | SWT.BACKGROUND);
+	    if (state == SWT.NONE) {
+	        if (showDirtyIndicator)
+	        	drawDirtyIndicator(gc, closeRect, false);
+	        else
+	        	drawCloseButton(gc, closeRect, false);
+	    } else if (state == SWT.HOT || state == SWT.SELECTED) {
+			drawCloseButton(gc, closeRect, true);
+	    } else if (state == SWT.BACKGROUND) {
+	        if (showDirtyIndicator)
+	        	drawDirtyIndicator(gc, closeRect, false);
+	        else
+		    	drawBackground(gc, closeRect, SWT.BACKGROUND);
+	    }
+	    gc.setLineWidth(originalLineWidth);
+	}
+
+	private void drawDirtyIndicator(GC gc, Rectangle closeRect, boolean hot) {
+		String DIRTY_INDICATOR = "●";
+
+		Point stringExtent = gc.stringExtent(DIRTY_INDICATOR);
+		int x = closeRect.x + (closeRect.width - stringExtent.x) / 2;
+		int y = closeRect.y + (closeRect.height - stringExtent.y) / 2;
+		gc.drawString(DIRTY_INDICATOR, x, y, true);
+	}
+
+	private void drawCloseBackground(GC gc, Rectangle closeRect, Color backgroundColor) {
+		Color originalBackground = gc.getBackground();
+		gc.setBackground(backgroundColor);
+		gc.setForeground(originalBackground);
+		gc.fillRoundRectangle(closeRect.x + 1, closeRect.y + 2, closeRect.width - 2, closeRect.height - 2, 4, 4);
+		gc.setBackground(originalBackground);
+	}
+
+
+	private void drawCloseButton(GC gc, Rectangle closeRect, boolean hot) {
+		if (hot) {
+			drawCloseBackground(gc, closeRect, parent.getDisplay().getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW));
+//			gc.setLineWidth(gc.getLineWidth() + 2);
+			gc.setForeground(gc.getBackground());
+		}
 		// draw X with length of this constant
-		final int lineLength = 8;
+		final int lineLength = 9;
 		int x = closeRect.x + Math.max(1, (closeRect.width-lineLength)/2);
 		int y = closeRect.y + Math.max(1, (closeRect.height-lineLength)/2);
 		y += parent.onBottom ? -1 : 1;
-		int originalLineWidth = gc.getLineWidth();
-		Color originalForeground = gc.getForeground();
-		switch (closeImageState & (SWT.HOT | SWT.SELECTED | SWT.BACKGROUND)) {
-			case SWT.NONE: {
-				drawCloseLines(gc, x, y , lineLength, false);
-				break;
-			}
-			case SWT.HOT: {
-				drawCloseLines(gc, x, y , lineLength, true);
-				break;
-			}
-			case SWT.SELECTED: {
-				drawCloseLines(gc, x, y , lineLength, true);
-				break;
-			}
-			case SWT.BACKGROUND: {
-				int[] shape = new int[] {x,y, x+10,y, x+10,y+10, x,y+10};
-				drawBackground(gc, shape, false);
-				break;
-			}
-		}
-		gc.setLineWidth(originalLineWidth);
-		gc.setForeground(originalForeground);
-	}
 
-	private void drawCloseLines(GC gc, int x, int y, int lineLength, boolean hot) {
-		if (hot) {
-			gc.setLineWidth(gc.getLineWidth() + 2);
-			gc.setForeground(getFillColor());
-		}
 		gc.setLineCap(SWT.CAP_ROUND);
 		gc.drawLine(x, y, x + lineLength, y + lineLength);
 		gc.drawLine(x, y + lineLength, x + lineLength, y);
@@ -1464,7 +1477,7 @@ public class CTabFolderRenderer {
 					gc.setBackground(orginalBackground);
 				}
 			}
-			if (shouldDrawCloseIcon(item)) drawClose(gc, item.closeRect, item.closeImageState);
+ 			if (shouldDrawCloseIcon(item)) drawClose(gc, item.closeRect, item.closeImageState, item.showDirty);
 		}
 	}
 
@@ -1673,7 +1686,7 @@ public class CTabFolderRenderer {
 				gc.setFont(gcFont);
 			}
 			// draw close
-			if (shouldDrawCloseIcon(item)) drawClose(gc, item.closeRect, item.closeImageState);
+			if (shouldDrawCloseIcon(item)) drawClose(gc, item.closeRect, item.closeImageState, item.showDirty);
 		}
 	}
 
