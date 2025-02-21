@@ -274,26 +274,6 @@ void closeWidget () {
 	if (event.doit && !isDisposed ()) dispose ();
 }
 
-int compare (ImageData data1, ImageData data2, int width, int height, int depth) {
-	int value1 = Math.abs (data1.width - width), value2 = Math.abs (data2.width - width);
-	if (value1 == value2) {
-		int transparent1 = data1.getTransparencyType ();
-		int transparent2 = data2.getTransparencyType ();
-		if (transparent1 == transparent2) {
-			if (data1.depth == data2.depth) return 0;
-			return data1.depth > data2.depth && data1.depth <= depth ? -1 : 1;
-		}
-		if (transparent1 == SWT.TRANSPARENCY_ALPHA) return -1;
-		if (transparent2 == SWT.TRANSPARENCY_ALPHA) return 1;
-		if (transparent1 == SWT.TRANSPARENCY_MASK) return -1;
-		if (transparent2 == SWT.TRANSPARENCY_MASK) return 1;
-		if (transparent1 == SWT.TRANSPARENCY_PIXEL) return -1;
-		if (transparent2 == SWT.TRANSPARENCY_PIXEL) return 1;
-		return 0;
-	}
-	return value1 < value2 ? -1 : 1;
-}
-
 @Override
 Widget computeTabGroup () {
 	return this;
@@ -882,7 +862,7 @@ public void setImage (Image image) {
 	setImages (image, null);
 }
 
-void setImages (Image image, Image [] images) {
+private void setImages (Image image, Image [] images) {
 	if (smallImage != null) smallImage.dispose ();
 	if (largeImage != null) largeImage.dispose ();
 	smallImage = largeImage = null;
@@ -892,23 +872,17 @@ void setImages (Image image, Image [] images) {
 		smallIcon = largeIcon = image;
 	} else {
 		if (images != null && images.length > 0) {
-			int depth = display.getIconDepth ();
-			ImageData [] datas = null;
-			if (images.length > 1) {
-				Image [] bestImages = new Image [images.length];
-				System.arraycopy (images, 0, bestImages, 0, images.length);
-				datas = new ImageData [images.length];
-				for (int i=0; i<datas.length; i++) {
-					datas [i] = images [i].getImageData ();
-				}
-				images = bestImages;
-				sort (images, datas, getSystemMetrics (OS.SM_CXSMICON), getSystemMetrics (OS.SM_CYSMICON), depth);
-			}
-			smallIcon = images [0];
-			if (images.length > 1) {
-				sort (images, datas, getSystemMetrics (OS.SM_CXICON), getSystemMetrics (OS.SM_CYICON), depth);
-			}
-			largeIcon = images [0];
+			int depth = display.getIconDepth();
+
+			ImageData[] imageData = getImageDataAt100(images);
+
+			int smallIconWidthAt100 = getSystemMetrics(OS.SM_CXSMICON);
+			int smallIconIndex = findIndexOfClosest(imageData, smallIconWidthAt100, depth);
+			smallIcon = images[smallIconIndex];
+
+			int largeIconWidthAt100 = getSystemMetrics(OS.SM_CXICON);
+			int largeIconIndex = findIndexOfClosest(imageData, largeIconWidthAt100, depth);
+			largeIcon = images[largeIconIndex];
 		}
 	}
 	if (smallIcon != null) {
@@ -947,6 +921,64 @@ void setImages (Image image, Image [] images) {
 		int flags = OS.RDW_FRAME | OS.RDW_INVALIDATE;
 		OS.RedrawWindow (handle, null, 0, flags);
 	}
+}
+
+private static ImageData[] getImageDataAt100(Image[] images) {
+	ImageData[] datas = new ImageData[images.length];
+	for (int i = 0; i < images.length; i++) {
+		datas[i] = images[i].getImageData(100);
+	}
+	return datas;
+}
+
+private static int findIndexOfClosest(ImageData[] imageData, int targetWidth, int targetDepth) {
+	int closestIndex = 0;
+	ImageData closestData = imageData[0];
+	for (int i = 1; i < imageData.length; i++) {
+		if (isCloserThan(imageData[i], closestData, targetWidth, targetDepth)) {
+			closestIndex = i;
+			closestData = imageData[i];
+		}
+	}
+
+	return closestIndex;
+}
+
+private static boolean isCloserThan(ImageData dataToTest, ImageData referenceData, int targetWidth, int targetDepth) {
+	int diffWidthToTest = Math.abs(dataToTest.width - targetWidth);
+	int diffReferenceWidth = Math.abs(referenceData.width - targetWidth);
+
+	// The closer the width the better
+	if (diffWidthToTest != diffReferenceWidth)
+		return diffWidthToTest < diffReferenceWidth;
+
+	int transparencyToTest = dataToTest.getTransparencyType();
+	int referenceTransparency = referenceData.getTransparencyType();
+
+	// If they have the same transparency then the bigger the pixel depth (without
+	// surpassing the target depth) the better
+	if (transparencyToTest == referenceTransparency) {
+		if (dataToTest.depth == referenceData.depth)
+			return false;
+
+		return dataToTest.depth > referenceData.depth && dataToTest.depth <= targetDepth;
+	}
+
+	// If they have different transparency, favor (in this order): the one with
+	// an alpha channel, the one with a mask, the one with a transparency pixel
+	if (transparencyToTest == SWT.TRANSPARENCY_ALPHA)
+		return true;
+	if (referenceTransparency == SWT.TRANSPARENCY_ALPHA)
+		return false;
+	if (transparencyToTest == SWT.TRANSPARENCY_MASK)
+		return true;
+	if (referenceTransparency == SWT.TRANSPARENCY_MASK)
+		return false;
+	if (transparencyToTest == SWT.TRANSPARENCY_PIXEL)
+		return true;
+	if (referenceTransparency == SWT.TRANSPARENCY_PIXEL)
+		return false;
+	return false;
 }
 
 /**
@@ -1310,26 +1342,6 @@ public void setVisible (boolean visible) {
 		}
 		if (isDisposed ()) return;
 		sendEvent (SWT.Hide);
-	}
-}
-
-void sort (Image [] images, ImageData [] datas, int width, int height, int depth) {
-	/* Shell Sort from K&R, pg 108 */
-	int length = images.length;
-	if (length <= 1) return;
-	for (int gap=length/2; gap>0; gap/=2) {
-		for (int i=gap; i<length; i++) {
-			for (int j=i-gap; j>=0; j-=gap) {
-				if (compare (datas [j], datas [j + gap], width, height, depth) >= 0) {
-					Image swap = images [j];
-					images [j] = images [j + gap];
-					images [j + gap] = swap;
-					ImageData swapData = datas [j];
-					datas [j] = datas [j + gap];
-					datas [j + gap] = swapData;
-				}
-			}
-		}
 	}
 }
 
