@@ -15,3 +15,9 @@ Still, we have a list of general tasks that we do currently or need to work on:
 - [Roadmap / Tasks](https://github.com/swt-initiative31/prototype-skija/issues/14)
 
 You can have a look into that list to find out which topics might be of interest for you. A good starting point to get familiar with the work is to pick any of the controls that are not custom-implemented so far and try to implement them on your own, i.e., without using the current native implementation of that widget. In case you have any questions on that, please comment to that issue, reach out to any of the current contributors to the project or join any of our [communication channels](https://github.com/swt-initiative31#contacts).
+
+## Testing Different Platforms
+Currently, most developers are working on Windows and/or Linux. Only few have a Mac available.
+
+Since we want to test in all OSes, we created a team with the people that have a Mac available: `@swt-initiative31/mac-users` . If you think some change of yours may break something on Mac and would like to have your PR tested before it is merged, just ping the team:
+![mac-users team](image.png)
