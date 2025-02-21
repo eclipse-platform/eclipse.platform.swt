@@ -54,27 +54,46 @@ public abstract class FileFormat {
 		} catch (NoClassDefFoundError e) { } // ignore format
 	}
 
+	public static final int DEFAULT_ZOOM = 100;
+
+	static abstract class StaticImageFileFormat extends FileFormat {
+
+		abstract ImageData[] loadFromByteStream();
+
+		@Override
+		ImageData[] loadFromByteStream(int zoom) {
+			if (zoom == DEFAULT_ZOOM) {
+				return loadFromByteStream();
+			}
+			return Arrays.stream(loadFromByteStream()).map(data -> {
+				int width = (int) Math.round(data.width * zoom / 100.);
+				int height = (int) Math.round(data.height * zoom / 100.);
+				return data.scaledTo(width, height);
+			}).toArray(ImageData[]::new);
+		}
+	}
+
 	LEDataInputStream inputStream;
 	LEDataOutputStream outputStream;
 	ImageLoader loader;
 	int compression;
 
-/**
- * Return whether or not the specified input stream
- * represents a supported file format.
- */
-abstract boolean isFileFormat(LEDataInputStream stream);
+	/**
+	 * Return whether or not the specified input stream represents a supported file
+	 * format.
+	 */
+	abstract boolean isFileFormat(LEDataInputStream stream) throws IOException;
 
-abstract ImageData[] loadFromByteStream();
+	abstract ImageData[] loadFromByteStream(int zoom);
 
 /**
  * Read the specified input stream, and return the
  * device independent image array represented by the stream.
  */
-public ImageData[] loadFromStream(LEDataInputStream stream) {
+public ImageData[] loadFromStream(LEDataInputStream stream, int zoom) {
 	try {
 		inputStream = stream;
-		return loadFromByteStream();
+		return loadFromByteStream(zoom);
 	} catch (Exception e) {
 		if (e instanceof IOException) {
 			SWT.error(SWT.ERROR_IO, e);
@@ -89,14 +108,20 @@ public ImageData[] loadFromStream(LEDataInputStream stream) {
  * Read the specified input stream using the specified loader, and
  * return the device independent image array represented by the stream.
  */
-public static ImageData[] load(InputStream is, ImageLoader loader) {
+public static ImageData[] load(InputStream is, ImageLoader loader, int zoom) {
 	LEDataInputStream stream = new LEDataInputStream(is);
 	FileFormat fileFormat = FORMAT_FACTORIES.stream().skip(1) //
-			.map(Supplier::get).filter(f -> f.isFileFormat(stream)) //
+			.map(Supplier::get).filter(f -> {
+				try {
+					return f.isFileFormat(stream);
+				} catch (IOException e) {
+					return false;
+				}
+			}) //
 			.findFirst().orElse(null);
- 	if (fileFormat == null) SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT);
+	if (fileFormat == null) SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT);
 	fileFormat.loader = loader;
-	return fileFormat.loadFromStream(stream);
+	return fileFormat.loadFromStream(stream, zoom);
 }
 
 /**
