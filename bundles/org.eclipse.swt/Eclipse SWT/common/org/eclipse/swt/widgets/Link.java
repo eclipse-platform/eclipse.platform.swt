@@ -187,7 +187,7 @@ public class Link extends Control implements ICustomWidget {
 		int leftMargin = this.leftMargin;
 		int topMargin = this.topMargin;
 
-		if (text != null && !text.isEmpty()) {
+		if (!text.isEmpty()) {
 			String[] lines = text.split("\n");
 			for (String line : lines) {
 				Point textExtent = Drawing.executeOnGC(this, gc -> {
@@ -299,7 +299,7 @@ public class Link extends Control implements ICustomWidget {
 		 * called from a thread which is different from one that created the widget.
 		 */
 		// checkWidget();
-		return text != null ? text : "";
+		return text;
 	}
 
 	/**
@@ -401,7 +401,7 @@ public class Link extends Control implements ICustomWidget {
 		event.type = SWT.NONE;
 
 		backgroundImage = null;
-		text = null;
+		text = "";
 	}
 
 	void onMouseMove(MouseEvent event) {
@@ -432,7 +432,7 @@ public class Link extends Control implements ICustomWidget {
 
 		if (rect.width == 0 || rect.height == 0)
 			return;
-		if ((text == null || text.isEmpty()))
+		if (text.isEmpty())
 			return;
 
 		gc.setFont(font);
