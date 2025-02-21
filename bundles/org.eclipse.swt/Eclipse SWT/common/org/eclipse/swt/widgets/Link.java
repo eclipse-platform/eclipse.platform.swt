@@ -69,13 +69,13 @@ public class Link extends Control implements ICustomWidget {
 
 	private Point computedSize;
 
-	Color linkColor;
+	private Color linkColor;
 
 	private static final int DRAW_FLAGS = SWT.DRAW_MNEMONIC | SWT.DRAW_TAB | SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER;
 
-	Set<TextSegment> links = new HashSet<>();
-	TextSegment prevHoverLink;
-	Map<String, List<TextSegment>> parsedText = new HashMap<>();
+	private final Set<TextSegment> links = new HashSet<>();
+	private TextSegment prevHoverLink;
+	private final Map<String, List<TextSegment>> parsedText = new HashMap<>();
 
 	/**
 	 * Constructs a new instance of this class given its parent and a style value
@@ -400,7 +400,7 @@ public class Link extends Control implements ICustomWidget {
 		return sb.toString();
 	}
 
-	void onDispose(Event event) {
+	private void onDispose(Event event) {
 		/* make this handler run after other dispose listeners */
 		if (ignoreDispose) {
 			ignoreDispose = false;
@@ -414,7 +414,7 @@ public class Link extends Control implements ICustomWidget {
 		text = "";
 	}
 
-	void onMouseMove(Event event) {
+	private void onMouseMove(Event event) {
 		int x = event.x;
 		int y = event.y;
 
@@ -433,11 +433,11 @@ public class Link extends Control implements ICustomWidget {
 		setCursor(null);
 	}
 
-	void onPaint(Event event) {
+	private void onPaint(Event event) {
 		Drawing.drawWithGC(this, event.gc, this::doPaint);
 	}
 
-	void doPaint(GC gc) {
+	private void doPaint(GC gc) {
 		Rectangle rect = getBounds();
 
 		if (rect.width == 0 || rect.height == 0) {
@@ -592,7 +592,7 @@ public class Link extends Control implements ICustomWidget {
 		return segments;
 	}
 
-	static class TextSegment {
+	private static class TextSegment {
 		String text, linkData;
 		boolean isLink;
 		Rectangle rect;
