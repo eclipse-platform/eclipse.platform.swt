@@ -47,7 +47,7 @@ import java.util.List;
  * @since 3.1
  * @noextend This class is not intended to be subclassed by clients.
  */
-public class Link extends Control implements ICustomWidget {
+public class Link extends CustomControl {
 
 	/** Left and right margins */
 	private static final int DEFAULT_MARGIN = 3;
