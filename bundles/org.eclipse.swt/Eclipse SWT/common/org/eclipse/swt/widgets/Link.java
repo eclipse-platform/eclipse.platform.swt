@@ -201,7 +201,7 @@ public class Link extends Control implements ICustomWidget {
 					gc.setFont(getFont());
 					return getLineExtent(gc, parseTextSegments(line));
 				});
-				lineWidth = textExtent.x > lineWidth ? textExtent.x : lineWidth;
+				lineWidth = Math.max(textExtent.x, lineWidth);
 				lineHeight = textExtent.y;
 			}
 		}
