@@ -362,8 +362,9 @@ public class Link extends Control implements ICustomWidget {
 			@Override
 			public void getState(AccessibleControlEvent e) {
 				e.detail = ACC.STATE_FOCUSABLE;
-				if (hasFocus())
+				if (hasFocus()) {
 					e.detail |= ACC.STATE_FOCUSED;
+				}
 			}
 
 			@Override
@@ -373,14 +374,16 @@ public class Link extends Control implements ICustomWidget {
 
 			@Override
 			public void getSelection(AccessibleControlEvent e) {
-				if (hasFocus())
+				if (hasFocus()) {
 					e.childID = ACC.CHILDID_SELF;
+				}
 			}
 
 			@Override
 			public void getFocus(AccessibleControlEvent e) {
-				if (hasFocus())
+				if (hasFocus()) {
 					e.childID = ACC.CHILDID_SELF;
+				}
 			}
 		});
 	}
@@ -437,10 +440,12 @@ public class Link extends Control implements ICustomWidget {
 	void doPaint(GC gc) {
 		Rectangle rect = getBounds();
 
-		if (rect.width == 0 || rect.height == 0)
+		if (rect.width == 0 || rect.height == 0) {
 			return;
-		if (text.isEmpty())
+		}
+		if (text.isEmpty()) {
 			return;
+		}
 
 		gc.setFont(font);
 		gc.setBackground(getBackground());
@@ -820,8 +825,9 @@ public class Link extends Control implements ICustomWidget {
 	 */
 	public void setText(String text) {
 		checkWidget();
-		if (text == null)
+		if (text == null) {
 			error(SWT.ERROR_NULL_ARGUMENT);
+		}
 		computedSize = null;
 
 		parsedText.clear();
@@ -888,12 +894,16 @@ public class Link extends Control implements ICustomWidget {
 	public void setLinkForeground(Color color) {
 		checkWidget();
 		if (color != null) {
-			if (color.isDisposed())
+			if (color.isDisposed()) {
 				error(SWT.ERROR_INVALID_ARGUMENT);
-			if (color.equals(linkColor))
+			}
+			if (color.equals(linkColor)) {
 				return;
-		} else if (linkColor == null)
+			}
+		} else if (linkColor == null) {
 			return;
+		}
+
 		linkColor = color;
 		if (getEnabled()) {
 			redraw();
@@ -944,10 +954,12 @@ public class Link extends Control implements ICustomWidget {
 	 */
 	public void removeSelectionListener(SelectionListener listener) {
 		checkWidget();
-		if (listener == null)
+		if (listener == null) {
 			error(SWT.ERROR_NULL_ARGUMENT);
-		if (eventTable == null)
+		}
+		if (eventTable == null) {
 			return;
+		}
 		eventTable.unhook(SWT.Selection, listener);
 		eventTable.unhook(SWT.DefaultSelection, listener);
 	}
