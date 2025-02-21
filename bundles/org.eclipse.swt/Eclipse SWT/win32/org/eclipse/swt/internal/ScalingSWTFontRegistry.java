@@ -53,8 +53,6 @@ final class ScalingSWTFontRegistry implements SWTFontRegistry {
 
 		private Font scaleFont(int zoom) {
 			FontData fontData = baseFont.getFontData()[0];
-			int baseZoom = computeZoom(fontData);
-			fontData.data.lfHeight = Math.round(1.0f * fontData.data.lfHeight * zoom / baseZoom);
 			Font scaledFont = Font.win32_new(device, fontData, zoom);
 			addScaledFont(zoom, scaledFont);
 			return scaledFont;
@@ -134,9 +132,8 @@ final class ScalingSWTFontRegistry implements SWTFontRegistry {
 		if (fontKeyMap.containsKey(fontData)) {
 			container = fontKeyMap.get(fontData);
 		} else {
-			int calculatedZoom = computeZoom(fontData);
-			Font newFont = Font.win32_new(device, fontData, calculatedZoom);
-			container = new ScaledFontContainer(newFont, calculatedZoom);
+			Font newFont = Font.win32_new(device, fontData, zoom);
+			container = new ScaledFontContainer(newFont, zoom);
 			fontHandleMap.put(newFont.handle, container);
 			fontKeyMap.put(fontData, container);
 		}
@@ -166,16 +163,5 @@ final class ScalingSWTFontRegistry implements SWTFontRegistry {
 			fontKeyMap.put(scaledFont.getFontData()[0], container);
 		}
 		return scaledFont;
-	}
-
-	private int computeZoom(FontData fontData) {
-		int pixelHeight = fontData.data.lfHeight;
-		float currentPointHeight = fontData.height;
-		if (pixelHeight == 0 || Math.abs(currentPointHeight) < 0.001) {
-			// if there is no font yet available, we use a defined zoom
-			return 100;
-		}
-		float pointHeightOn100 = -(pixelHeight / 96f * 72f);
-		return Math.round(100.0f * pointHeightOn100 / currentPointHeight);
 	}
 }
