@@ -1257,4 +1257,46 @@ public void test_updateWidthHeightAfterDPIChange() {
 		DPIUtil.setDeviceZoom(deviceZoom);
 	}
 }
+
+@Test
+public void test_paintWithTextAntialias() {
+	// Must be executed on e.g. a Gnome system
+	// where anti-alias is set to use Grayscale
+	// whereas Cairo is using RGB by default
+	int[] modes = {SWT.ON, SWT.OFF, SWT.DEFAULT};
+	int width = (modes.length + 1) * 100;
+	int height = 100;
+
+	Image image1 = new Image(display, width, height);
+	GC g1 = new GC(image1);
+	g1.setAdvanced(true);
+
+	g1.drawString("OWVO", 35, 20);
+	for (int i = 0 ; i < modes.length; ++i) {
+		g1.setTextAntialias(modes[i]);
+		g1.drawString("OWVO", 135 + i * 100, 20);
+	}
+
+	Image image2 = new Image(display, width, height);
+	GC g2 = new GC(image2);
+	g2.setAdvanced(true);
+
+	for (int i = modes.length - 1 ; i >= 0; --i) {
+		g2.setTextAntialias(modes[i]);
+		g2.drawString("OWVO", 135 + i * 100, 20);
+	}
+	g2.setTextAntialias(SWT.DEFAULT);
+	g2.drawString("OWVO", 35, 20);
+
+	ImageData data1 = image1.getImageData();
+	ImageData data2 = image2.getImageData();
+
+	g1.dispose();
+	g2.dispose();
+	image1.dispose();
+	image2.dispose();
+
+	ImageTestUtil.assertImagesEqual(data1, data2);
+}
+
 }

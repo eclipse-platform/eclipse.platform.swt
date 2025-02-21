@@ -2659,6 +2659,7 @@ void init(Drawable drawable, GCData data, long gdkGC) {
 	Cairo.cairo_set_fill_rule(cairo, Cairo.CAIRO_FILL_RULE_EVEN_ODD);
 	data.state &= ~(BACKGROUND | FOREGROUND | FONT | LINE_WIDTH | LINE_CAP | LINE_JOIN | LINE_STYLE | DRAW_OFFSET);
 	setClipping(data.clipRgn);
+	setTextAntialias(SWT.DEFAULT);
 	initCairo();
 	if ((data.style & SWT.MIRRORED) != 0) {
 		// Don't overwrite the Cairo transformation matrix in GTK 3.14 and above; it contains a translation relative to the parent widget.
