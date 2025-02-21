@@ -556,7 +556,7 @@ public class Link extends CustomControl {
 
 	private List<TextSegment> parseTextSegments(String input) {
 		List<TextSegment> segments = new ArrayList<>();
-		Pattern pattern = Pattern.compile("(.*?)<a(?: href=\\\"(.*?)\\\")?>(.*?)</a>([\\s.,]*)");
+		Pattern pattern = Pattern.compile("(.*?)<a(?: href=\"(.*?)\")?>(.*?)</a>([\\s.,]*)");
 		Matcher matcher = pattern.matcher(input);
 
 		int lastEnd = 0;
