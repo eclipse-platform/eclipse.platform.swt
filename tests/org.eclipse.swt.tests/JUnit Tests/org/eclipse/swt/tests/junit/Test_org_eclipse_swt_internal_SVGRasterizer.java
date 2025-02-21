@@ -39,7 +39,7 @@ public class Test_org_eclipse_swt_internal_SVGRasterizer {
 
 	ImageDataProvider imageDataProvider = zoom -> {
 		String fileName = "collapseall.svg";
-		return new ImageData(getPath(fileName), zoom);
+		return new ImageData(getPath(fileName));
 	};
 
 	@Before
@@ -90,7 +90,7 @@ public class Test_org_eclipse_swt_internal_SVGRasterizer {
 		// Corrupt Image provider
 		ImageDataProvider provider = zoom -> {
 			String fileName = "corrupt.svg";
-			return new ImageData(getPath(fileName), zoom);
+			return new ImageData(getPath(fileName));
 		};
 		try {
 			image = new Image(display, provider);
