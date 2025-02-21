@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2022 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -866,6 +866,24 @@ JNIEXPORT jlong JNICALL COM_NATIVE(SHCreateMemStream)
 fail:
 		if (arg0 && lparg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
 	COM_NATIVE_EXIT(env, that, SHCreateMemStream_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_SHGetImageList
+JNIEXPORT jlong JNICALL COM_NATIVE(SHGetImageList)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jlongArray arg2)
+{
+	GUID _arg1, *lparg1=NULL;
+	jlong *lparg2=NULL;
+	jlong rc = 0;
+	COM_NATIVE_ENTER(env, that, SHGetImageList_FUNC);
+	if (arg1) if ((lparg1 = getGUIDFields(env, arg1, &_arg1)) == NULL) goto fail;
+		if (arg2) if ((lparg2 = (*env)->GetPrimitiveArrayCritical(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jlong)SHGetImageList(arg0, lparg1, (VOID **)lparg2);
+fail:
+		if (arg2 && lparg2) (*env)->ReleasePrimitiveArrayCritical(env, arg2, lparg2, 0);
+	COM_NATIVE_EXIT(env, that, SHGetImageList_FUNC);
 	return rc;
 }
 #endif

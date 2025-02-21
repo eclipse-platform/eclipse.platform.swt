@@ -310,6 +310,7 @@ typedef enum {
 	ImageList_1DragMove_FUNC,
 	ImageList_1DragShowNolock_FUNC,
 	ImageList_1EndDrag_FUNC,
+	ImageList_1GetIcon_FUNC,
 	ImageList_1GetIconSize_FUNC,
 	ImageList_1GetImageCount_FUNC,
 	ImageList_1Remove_FUNC,

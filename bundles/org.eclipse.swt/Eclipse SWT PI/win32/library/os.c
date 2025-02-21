@@ -3981,6 +3981,18 @@ JNIEXPORT void JNICALL OS_NATIVE(ImageList_1EndDrag)
 }
 #endif
 
+#ifndef NO_ImageList_1GetIcon
+JNIEXPORT jlong JNICALL OS_NATIVE(ImageList_1GetIcon)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jint arg2)
+{
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, ImageList_1GetIcon_FUNC);
+	rc = (jlong)ImageList_GetIcon((HIMAGELIST)arg0, arg1, (UINT)arg2);
+	OS_NATIVE_EXIT(env, that, ImageList_1GetIcon_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_ImageList_1GetIconSize
 JNIEXPORT jboolean JNICALL OS_NATIVE(ImageList_1GetIconSize)
 	(JNIEnv *env, jclass that, jlong arg0, jintArray arg1, jintArray arg2)
