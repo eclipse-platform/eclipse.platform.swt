@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2022 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -15,6 +15,7 @@ package org.eclipse.swt.graphics;
 
 
 import java.io.*;
+import java.nio.file.Path;
 import java.util.*;
 
 import org.eclipse.swt.*;
@@ -143,9 +144,9 @@ public final class Image extends Resource implements Drawable {
 	static final int DEFAULT_SCANLINE_PAD = 4;
 
 	/**
-	 * ImageFileNameProvider to provide file names at various Zoom levels
+	 * ImageFileProvider to provide files at various Zoom levels
 	 */
-	private ImageFileNameProvider imageFileNameProvider;
+	private ImageFileProvider imageFileProvider;
 
 	/**
 	 * ImageDataProvider to provide ImageData at various Zoom levels
@@ -268,7 +269,7 @@ public Image(Device device, Image srcImage, int flag) {
 	device = this.device;
 	this.type = srcImage.type;
 	this.imageDataProvider = srcImage.imageDataProvider;
-	this.imageFileNameProvider = srcImage.imageFileNameProvider;
+	this.imageFileProvider = srcImage.imageFileProvider;
 	this.imageGcDrawer = srcImage.imageGcDrawer;
 	this.styleFlag = srcImage.styleFlag | flag;
 	this.currentDeviceZoom = srcImage.currentDeviceZoom;
@@ -551,6 +552,50 @@ public Image(Device device, InputStream stream) {
  * </p>
  *
  * @param device the device on which to create the image
+ * @param file the name of the file to load the image from
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the file name is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_IO - if an IO error occurs while reading from the file</li>
+ *    <li>ERROR_INVALID_IMAGE - if the image file contains invalid data </li>
+ *    <li>ERROR_UNSUPPORTED_DEPTH - if the image file describes an image with an unsupported depth</li>
+ *    <li>ERROR_UNSUPPORTED_FORMAT - if the image file contains an unrecognized format</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
+ * </ul>
+ *
+ * @see #dispose()
+ * @since 3.129
+ */
+public Image(Device device, Path file) {
+	super(device);
+	if (file == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+
+	ImageData data = ImageData.create(file);
+	currentDeviceZoom = DPIUtil.getDeviceZoom();
+	data = DPIUtil.autoScaleUp (device, data);
+	init(data);
+	init();
+}
+
+/**
+ * Constructs an instance of this class by loading its representation
+ * from the file with the specified name. Throws an error if an error
+ * occurs while loading the image, or if the result is an image
+ * of an unsupported type.
+ * <p>
+ * This constructor is provided for convenience when loading
+ * a single image only. If the specified file contains
+ * multiple images, only the first one will be used.
+ * <p>
+ * You must dispose the image when it is no longer required.
+ * </p>
+ *
+ * @param device the device on which to create the image
  * @param filename the name of the file to load the image from
  *
  * @exception IllegalArgumentException <ul>
@@ -568,16 +613,59 @@ public Image(Device device, InputStream stream) {
  * </ul>
  *
  * @see #dispose()
+ * @deprecated Instead use {@link #Image(Device, Path)}
  */
+@Deprecated(since = "2025-03")
 public Image(Device device, String filename) {
-	super(device);
-	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	this(device, filename == null ? Path.of(filename) : null);
+}
 
-	ImageData data = new ImageData(filename);
+/**
+ * Constructs an instance of this class by loading its representation
+ * from the file retrieved from the {@link ImageFileProvider}. Throws an
+ * error if an error occurs while loading the image, or if the result
+ * is an image of an unsupported type.
+ * <p>
+ * This constructor is provided for convenience for loading image as
+ * per DPI level.
+ *
+ * @param device the device on which to create the image
+ * @param imageFileProvider the {@link ImageFileProvider} object that is
+ * to be used to get the file
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the ImageFileNameProvider is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the fileName provided by ImageFileNameProvider is null at 100% zoom</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_IO - if an IO error occurs while reading from the file</li>
+ *    <li>ERROR_INVALID_IMAGE - if the image file contains invalid data </li>
+ *    <li>ERROR_UNSUPPORTED_DEPTH - if the image file describes an image with an unsupported depth</li>
+ *    <li>ERROR_UNSUPPORTED_FORMAT - if the image file contains an unrecognized format</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
+ * </ul>
+ * @since 3.129
+ */
+public Image(Device device, ImageFileProvider imageFileProvider) {
+	super(device);
+	this.imageFileProvider = imageFileProvider;
 	currentDeviceZoom = DPIUtil.getDeviceZoom();
-	data = DPIUtil.autoScaleUp (device, data);
-	init(data);
-	init();
+	ElementAtZoom<Path> file = DPIUtil.validateAndGetImagePathAtZoom(imageFileProvider, currentDeviceZoom);
+	if (file.zoom() == currentDeviceZoom) {
+		initNative(file.element());
+
+		if (this.surface == 0) {
+			init(ImageData.create(file.element()));
+		}
+	} else {
+		ImageData imageData = ImageData.create(file.element());
+		ImageData resizedData = DPIUtil.autoScaleImageData(device, imageData, file.zoom());
+		init(resizedData);
+	}
+	init ();
 }
 
 /**
@@ -608,25 +696,11 @@ public Image(Device device, String filename) {
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
  * @since 3.104
+ * @deprecated Instead use {@link #Image(Device, ImageFileProvider)}
  */
+@Deprecated(since = "2025-03")
 public Image(Device device, ImageFileNameProvider imageFileNameProvider) {
-	super(device);
-	this.imageFileNameProvider = imageFileNameProvider;
-	currentDeviceZoom = DPIUtil.getDeviceZoom();
-	ElementAtZoom<String> filename = DPIUtil.validateAndGetImagePathAtZoom (imageFileNameProvider, currentDeviceZoom);
-	if (filename.zoom() == currentDeviceZoom) {
-		initNative (filename.element());
-
-		if (this.surface == 0) {
-			ImageData data = new ImageData(filename.element());
-			init(data);
-		}
-	} else {
-		ImageData imageData = new ImageData (filename.element());
-		ImageData resizedData = DPIUtil.autoScaleImageData (device, imageData, filename.zoom());
-		init(resizedData);
-	}
-	init ();
+	this(device, (ImageFileProvider) zoom -> Path.of(imageFileNameProvider.getImagePath(zoom)));
 }
 
 /**
@@ -721,26 +795,25 @@ public boolean internal_gtk_refreshImageForZoom() {
 boolean refreshImageForZoom () {
 	boolean refreshed = false;
 	int deviceZoom = DPIUtil.getDeviceZoom();
-	if (imageFileNameProvider != null) {
+	if (imageFileProvider != null) {
 		int deviceZoomLevel = deviceZoom;
 		if (deviceZoomLevel != currentDeviceZoom) {
-			ElementAtZoom<String> filename = DPIUtil.validateAndGetImagePathAtZoom (imageFileNameProvider, deviceZoomLevel);
+			ElementAtZoom<Path> file = DPIUtil.validateAndGetImagePathAtZoom(imageFileProvider, deviceZoomLevel);
 			/* Avoid re-creating the fall-back image, when current zoom is already 100% */
-			if (filename.zoom() == deviceZoomLevel) {
+			if (file.zoom() == deviceZoomLevel) {
 				/* Release current native resources */
 				destroy ();
-				initNative(filename.element());
+				initNative(file.element());
 				if (this.surface == 0) {
-					ImageData data = new ImageData(filename.element());
-					init(data);
+					init(ImageData.create(file.element()));
 				}
 				init ();
 				refreshed = true;
 			} else {
 				/* Release current native resources */
 				destroy ();
-				ImageData imageData = new ImageData (filename.element());
-				ImageData resizedData = DPIUtil.autoScaleImageData (device, imageData, filename.zoom());
+				ImageData imageData = ImageData.create(file.element());
+				ImageData resizedData = DPIUtil.autoScaleImageData(device, imageData, file.zoom());
 				init(resizedData);
 				init ();
 				refreshed = true;
@@ -787,9 +860,9 @@ boolean refreshImageForZoom () {
 	return refreshed;
 }
 
-void initNative(String filename) {
+void initNative(Path file) {
 	try {
-		byte[] fileNameBuffer = Converter.javaStringToCString(filename);
+		byte[] fileNameBuffer = Converter.javaStringToCString(file.toString());
 		long pixbuf = GDK.gdk_pixbuf_new_from_file(fileNameBuffer, null);
 		if (pixbuf != 0) {
 			try {
@@ -950,8 +1023,8 @@ public boolean equals (Object object) {
 	if (device != image.device || transparentPixel != image.transparentPixel) return false;
 	if (imageDataProvider != null && image.imageDataProvider != null) {
 		return (styleFlag == image.styleFlag) && imageDataProvider.equals (image.imageDataProvider);
-	} else if (imageFileNameProvider != null && image.imageFileNameProvider != null) {
-		return (styleFlag == image.styleFlag) && imageFileNameProvider.equals (image.imageFileNameProvider);
+	} else if (imageFileProvider != null && image.imageFileProvider != null) {
+		return (styleFlag == image.styleFlag) && imageFileProvider.equals(image.imageFileProvider);
 	} else if (imageGcDrawer != null && image.imageGcDrawer != null) {
 		return styleFlag == image.styleFlag && imageGcDrawer.equals(image.imageGcDrawer) && width == image.width
 				&& height == image.height;
@@ -1158,9 +1231,9 @@ public ImageData getImageData (int zoom) {
 	} else if (imageDataProvider != null) {
 		ElementAtZoom<ImageData> data = DPIUtil.validateAndGetImageDataAtZoom (imageDataProvider, zoom);
 		return DPIUtil.scaleImageData (device, data.element(), zoom, data.zoom());
-	} else if (imageFileNameProvider != null) {
-		ElementAtZoom<String> fileName = DPIUtil.validateAndGetImagePathAtZoom (imageFileNameProvider, zoom);
-		return DPIUtil.scaleImageData (device, new ImageData (fileName.element()), zoom, fileName.zoom());
+	} else if (imageFileProvider != null) {
+		ElementAtZoom<Path> file = DPIUtil.validateAndGetImagePathAtZoom(imageFileProvider, zoom);
+		return DPIUtil.scaleImageData(device, ImageData.create(file.element()), zoom, file.zoom());
 	} else if (imageGcDrawer != null) {
 		return drawWithImageGcDrawer(width, height, zoom);
 	} else {
@@ -1244,8 +1317,8 @@ public static Image gtk_new_from_pixbuf(Device device, int type, long pixbuf) {
 public int hashCode () {
 	if (imageDataProvider != null) {
 		return imageDataProvider.hashCode();
-	} else if (imageFileNameProvider != null) {
-		return imageFileNameProvider.hashCode();
+	} else if (imageFileProvider != null) {
+		return imageFileProvider.hashCode();
 	} else if (imageGcDrawer != null) {
 		return Objects.hash(imageGcDrawer, width, height);
 	} else {
@@ -1551,8 +1624,8 @@ public void setBackground(Color color) {
 public String toString () {
 	if (isDisposed()) return "Image {*DISPOSED*}";
 
-	if (imageFileNameProvider != null) {
-		return "Image {" + imageFileNameProvider.getImagePath(100) + "}";
+	if (imageFileProvider != null) {
+		return "Image {" + imageFileProvider.getImagePath(100) + "}";
 	}
 
 	return "Image {" + surface + "}";
