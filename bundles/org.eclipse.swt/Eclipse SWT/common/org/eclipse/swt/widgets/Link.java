@@ -123,11 +123,18 @@ public class Link extends Control implements ICustomWidget {
 			align = SWT.LEFT;
 		}
 
-		addPaintListener(this::onPaint);
-		addMouseMoveListener(this::onMouseMove);
-
-		addListener(SWT.Dispose, this::onDispose);
-		addListener(SWT.MouseUp, this::onMouseUp);
+		final Listener listener = event -> {
+			switch (event.type) {
+				case SWT.Paint -> onPaint(event);
+				case SWT.MouseMove -> onMouseMove(event);
+				case SWT.MouseUp -> onMouseUp(event);
+				case SWT.Dispose -> onDispose(event);
+			}
+		};
+		addListener(SWT.Paint, listener);
+		addListener(SWT.MouseMove, listener);
+		addListener(SWT.MouseUp, listener);
+		addListener(SWT.Dispose, listener);
 
 		initAccessible();
 	}
@@ -404,7 +411,7 @@ public class Link extends Control implements ICustomWidget {
 		text = "";
 	}
 
-	void onMouseMove(MouseEvent event) {
+	void onMouseMove(Event event) {
 		int x = event.x;
 		int y = event.y;
 
@@ -423,7 +430,7 @@ public class Link extends Control implements ICustomWidget {
 		setCursor(null);
 	}
 
-	void onPaint(PaintEvent event) {
+	void onPaint(Event event) {
 		Drawing.drawWithGC(this, event.gc, this::doPaint);
 	}
 
