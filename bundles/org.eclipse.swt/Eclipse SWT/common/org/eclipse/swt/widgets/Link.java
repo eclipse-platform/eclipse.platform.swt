@@ -188,7 +188,6 @@ public class Link extends Control implements ICustomWidget {
 		int leftMargin = this.leftMargin;
 		int topMargin = this.topMargin;
 
-
 		if (text != null && !text.isEmpty()) {
 			String[] lines = text.split("\n");
 			for (String line : lines) {
@@ -534,7 +533,6 @@ public class Link extends Control implements ICustomWidget {
 				gc.fillRectangle(rect);
 			}
 		}
-
 	}
 
 	private int countTrailingSpaces(String text) {
@@ -663,7 +661,6 @@ public class Link extends Control implements ICustomWidget {
 		}
 		backgroundImage = image;
 		redraw();
-
 	}
 
 	/**
