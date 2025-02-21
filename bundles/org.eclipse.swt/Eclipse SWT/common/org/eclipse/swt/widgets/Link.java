@@ -59,7 +59,7 @@ public class Link extends Control implements ICustomWidget {
 	private int rightMargin = DEFAULT_MARGIN;
 	private int bottomMargin = DEFAULT_MARGIN;
 
-	private String text;
+	private String text = "";
 
 	private boolean ignoreDispose;
 
@@ -130,7 +130,6 @@ public class Link extends Control implements ICustomWidget {
 		addListener(SWT.MouseUp, this::onMouseUp);
 
 		initAccessible();
-		text = "";
 	}
 
 	private void onMouseUp(Event e) {
