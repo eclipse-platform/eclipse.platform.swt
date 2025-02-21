@@ -2892,7 +2892,7 @@ public void setText (String string) {
 	int length = string.length ();
 	char [] chars = new char [Math.max (6, length) + 1];
 	string.getChars (0, length , chars, 0);
-	for (int i=length; i<chars.length; i++)  chars [i] = ' ';
+	for (int i=length; i<chars.length; i++)  chars [i] = SWT.SPACE;
 	byte [] buffer = Converter.wcsToMbcs (chars, true);
 	GTK.gtk_window_set_title (shellHandle, buffer);
 }

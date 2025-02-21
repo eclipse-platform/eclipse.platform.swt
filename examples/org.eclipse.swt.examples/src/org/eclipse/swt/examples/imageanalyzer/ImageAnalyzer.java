@@ -2015,12 +2015,12 @@ public class ImageAnalyzer {
 					dump[index++] = Character.forDigit(line / 10 % 10, 10);
 					dump[index++] = Character.forDigit(line % 10, 10);
 					dump[index++] = ':';
-					dump[index++] = ' ';
+					dump[index++] = SWT.SPACE;
 				}
 				byte b = imageData.data[i];
 				dump[index++] = Character.forDigit((b & 0xF0) >> 4, 16);
 				dump[index++] = Character.forDigit(b & 0x0F, 16);
-				dump[index++] = ' ';
+				dump[index++] = SWT.SPACE;
 				if ((i + 1) % imageData.bytesPerLine == 0) {
 					dump[index++] = lineDelimiter.charAt(0);
 					if (lineDelimiter.length() > 1) {
@@ -2047,12 +2047,12 @@ public class ImageAnalyzer {
 						dump[index++] = Character.forDigit(line / 10 % 10, 10);
 						dump[index++] = Character.forDigit(line % 10, 10);
 						dump[index++] = ':';
-						dump[index++] = ' ';
+						dump[index++] = SWT.SPACE;
 					}
 					byte b = alphas[i];
 					dump[index++] = Character.forDigit((b & 0xF0) >> 4, 16);
 					dump[index++] = Character.forDigit(b & 0x0F, 16);
-					dump[index++] = ' ';
+					dump[index++] = SWT.SPACE;
 					if ((i + 1) % imageData.width == 0) {
 						dump[index++] = lineDelimiter.charAt(0);
 						if (lineDelimiter.length() > 1) {

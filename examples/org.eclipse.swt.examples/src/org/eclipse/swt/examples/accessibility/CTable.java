@@ -2626,7 +2626,7 @@ void onKeyDown (Event event) {
 			onEnd (event.stateMask);
 			return;
 	}
-	if (event.character == ' ') {
+	if (event.character == SWT.SPACE) {
 		onSpace ();
 		return;
 	}
