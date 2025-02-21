@@ -294,7 +294,7 @@ boolean mnemonicMatch (char key) {
 }
 
 @Override
-void printWidget (long hwnd, long hdc, GC gc) {
+void printWidget (long hwnd, long hdc, GC gc, int printWindowFlags) {
 	/*
 	* Bug in Windows.  For some reason, PrintWindow()
 	* returns success but does nothing when it is called
@@ -307,7 +307,7 @@ void printWidget (long hwnd, long hdc, GC gc) {
 		if ((bits & OS.WS_VISIBLE) == 0) {
 			OS.ShowWindow (hwnd, OS.SW_SHOW);
 		}
-		success = OS.PrintWindow (hwnd, hdc, 0);
+		success = OS.PrintWindow (hwnd, hdc, printWindowFlags);
 		if ((bits & OS.WS_VISIBLE) == 0) {
 			OS.ShowWindow (hwnd, OS.SW_HIDE);
 		}
@@ -334,6 +334,14 @@ void printWidget (long hwnd, long hdc, GC gc) {
 		Control [] children = _getChildren ();
 		Rectangle rect = getBoundsInPixels ();
 		OS.IntersectClipRect (hdc, 0, 0, rect.width, rect.height);
+		// When looping over child windows and printWindowFlags has
+		// PW_RENDERFULLCONTENT set, then the printed content is always
+		// rendered at the top-left of the passed hdc.
+		// clear that flag
+		// This should be not an issue, since with PW_RENDERFULLCONTENT set
+		// the problem above (push button) does not appear to occurr.
+		// To be on the safe side, clear the flag when dealing with children
+		printWindowFlags &= ~OS.PW_RENDERFULLCONTENT;
 		for (int i=children.length - 1; i>=0; --i) {
 			Point location = children [i].getLocationInPixels ();
 			int graphicsMode = OS.GetGraphicsMode(hdc);
@@ -346,7 +354,7 @@ void printWidget (long hwnd, long hdc, GC gc) {
 			long topHandle = children [i].topHandle();
 			int bits = OS.GetWindowLong (topHandle, OS.GWL_STYLE);
 			if ((bits & OS.WS_VISIBLE) != 0) {
-				children [i].printWidget (topHandle, hdc, gc);
+				children [i].printWidget (topHandle, hdc, gc, printWindowFlags);
 			}
 			if (graphicsMode == OS.GM_ADVANCED) {
 				float [] lpXform = {1, 0, 0, 1, -location.x, -location.y};
