@@ -395,6 +395,10 @@ public static int autoScaleUp(Drawable drawable, int size) {
 	return scaleUp(drawable, size, deviceZoom);
 }
 
+public static int scaleUpXY(Drawable drawable, int size, int zoom) {
+	return scaleUp(drawable, size + 1, zoom) - 1;
+}
+
 public static int scaleUp(Drawable drawable, int size, int zoom) {
 	if (drawable != null && !drawable.isAutoScalable()) return size;
 	return scaleUp (size, zoom);
@@ -412,6 +416,10 @@ public static float scaleUp(float size, int zoom) {
 
 public static float autoScaleUp(Drawable drawable, float size) {
 	return scaleUp(drawable, size, deviceZoom);
+}
+
+public static float scaleUpXY(Drawable drawable, float size, int zoom) {
+	return scaleUp(drawable, size + 1, zoom) - 1;
 }
 
 public static float scaleUp(Drawable drawable, float size, int zoom) {
@@ -636,6 +644,8 @@ public static int getZoomForAutoscaleProperty (int nativeDeviceZoom) {
 	if (autoScaleValue != null) {
 		if ("false".equalsIgnoreCase (autoScaleValue)) {
 			zoom = 100;
+		} else if ("halfUp".equalsIgnoreCase (autoScaleValue)) {
+			zoom = (nativeDeviceZoom + 50) / 100 * 100;
 		} else if ("half".equalsIgnoreCase (autoScaleValue)) {
 			// Math.round rounds 125->150 and 175->200,
 			// Math.rint rounds 125->100 and 175->200 matching
