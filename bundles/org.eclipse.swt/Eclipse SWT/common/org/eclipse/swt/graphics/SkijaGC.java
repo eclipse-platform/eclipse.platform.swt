@@ -18,8 +18,10 @@ import java.util.function.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.widgets.*;
 
 import io.github.humbleui.skija.*;
+import io.github.humbleui.skija.Canvas;
 import io.github.humbleui.skija.Font;
 import io.github.humbleui.types.*;
 
@@ -761,6 +763,11 @@ public class SkijaGC extends GCHandle {
 		if (font == null)
 			font = innerGC.getFont();
 
+		this.font = convertToSkijaFont(font);
+		this.baseSymbolHeight = this.font.measureText("T").getHeight();
+	}
+
+	static Font convertToSkijaFont(org.eclipse.swt.graphics.Font font) {
 		FontData fontData = font.getFontData()[0];
 		FontStyle style = FontStyle.NORMAL;
 		boolean isBold = (fontData.getStyle() & SWT.BOLD) != 0;
@@ -772,15 +779,16 @@ public class SkijaGC extends GCHandle {
 		} else if (isItalic) {
 			style = FontStyle.ITALIC;
 		}
-		this.font = new Font(Typeface.makeFromName(fontData.getName(), style));
+		Font skijaFont = new Font(Typeface.makeFromName(fontData.getName(), style));
 		int fontSize = DPIUtil.scaleUp(fontData.getHeight(), DPIUtil.getNativeDeviceZoom());
 		if (SWT.getPlatform().equals("win32")) {
-			fontSize *= this.font.getSize() / innerGC.getDevice().getSystemFont().getFontData()[0].getHeight();
+			fontSize *= skijaFont.getSize() / Display.getDefault().getSystemFont().getFontData()[0].getHeight();
 		}
-		this.font.setSize(fontSize);
-		this.font.setEdging(FontEdging.SUBPIXEL_ANTI_ALIAS);
-		this.font.setSubpixel(true);
-		this.baseSymbolHeight = this.font.measureText("T").getHeight();
+		skijaFont.setSize(fontSize);
+		skijaFont.setEdging(FontEdging.SUBPIXEL_ANTI_ALIAS);
+		skijaFont.setSubpixel(true);
+
+		return skijaFont;
 	}
 
 	@Override
