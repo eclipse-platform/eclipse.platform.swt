@@ -60,7 +60,7 @@ public class CSimpleTextModel {
 	void removeCharacterBeforeCaret() {
 		if (isTextSelected()) {
 			replaceSelectedTextWith("");
-		} else {
+		} else if (getCaretOffset() > 0) {
 			replaceWith("", getCaretOffset() - 1, getCaretOffset());
 		}
 	}
@@ -68,7 +68,7 @@ public class CSimpleTextModel {
 	void removeCharacterAfterCaret() {
 		if (isTextSelected()) {
 			replaceSelectedTextWith("");
-		} else {
+		} else if (getCaretOffset() < text.length()) {
 			replaceWith("", getCaretOffset(), getCaretOffset() + 1);
 		}
 	}

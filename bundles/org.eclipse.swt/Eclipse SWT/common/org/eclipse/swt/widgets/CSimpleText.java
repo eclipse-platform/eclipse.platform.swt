@@ -303,7 +303,7 @@ public class CSimpleText extends Scrollable implements ICustomWidget {
 				model.removeCharacterBeforeCaret();
 				break;
 			case SWT.DEL:
-				model.removeCharacterBeforeCaret();
+				model.removeCharacterAfterCaret();
 				break;
 			default:
 				if (e.keyCode == 0 || e.character != '\0') {
