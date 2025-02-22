@@ -20,7 +20,7 @@ import org.eclipse.swt.graphics.Rectangle;
 /**
  * Temporary API.
  */
-public abstract class CustomControl extends Control implements ICustomWidget {
+public abstract class CustomControl extends NativeBasedCustomControl {
 
 	private int x;
 	private int y;

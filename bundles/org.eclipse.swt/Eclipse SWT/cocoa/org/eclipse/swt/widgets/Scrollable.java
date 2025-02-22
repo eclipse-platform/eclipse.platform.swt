@@ -436,37 +436,4 @@ void updateCursorRects (boolean enabled) {
 	updateCursorRects (enabled, contentView);
 }
 
-@Override
-void createHandle() {
-	if (this instanceof ICustomWidget) {
-		state |= CANVAS;
-		boolean scrolled = (style & (SWT.V_SCROLL | SWT.H_SCROLL)) != 0;
-		if (!scrolled)
-			state |= THEME_BACKGROUND;
-		NSRect rect = new NSRect();
-		if (scrolled || hasBorder()) {
-			NSScrollView scrollWidget = (NSScrollView) new SWTScrollView().alloc();
-			scrollWidget.initWithFrame(rect);
-			scrollWidget.setDrawsBackground(false);
-			if ((style & SWT.H_SCROLL) != 0)
-				scrollWidget.setHasHorizontalScroller(true);
-			if ((style & SWT.V_SCROLL) != 0)
-				scrollWidget.setHasVerticalScroller(true);
-			scrollWidget.setBorderType(hasBorder() ? OS.NSBezelBorder : OS.NSNoBorder);
-			scrollView = scrollWidget;
-		}
-		NSView widget = (NSView) new SWTCanvasView().alloc();
-		widget.initWithFrame(rect);
-//widget.setFocusRingType(OS.NSFocusRingTypeExterior);
-		view = widget;
-		if (scrollView != null) {
-			NSClipView contentView = scrollView.contentView();
-			contentView.setAutoresizesSubviews(true);
-			view.setAutoresizingMask(OS.NSViewWidthSizable | OS.NSViewHeightSizable);
-		}
-	} else {
-		super.createHandle();
-	}
-}
-
 }

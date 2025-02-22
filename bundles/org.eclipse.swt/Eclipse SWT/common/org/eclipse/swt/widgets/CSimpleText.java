@@ -5,7 +5,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 
-public class CSimpleText extends Scrollable implements ICustomWidget {
+public class CSimpleText extends NativeBasedCustomScrollable {
 
 	public static final int LIMIT = 0x7FFFFFFF;
 	public static final String DELIMITER = CSimpleTextModel.DELIMITER;
