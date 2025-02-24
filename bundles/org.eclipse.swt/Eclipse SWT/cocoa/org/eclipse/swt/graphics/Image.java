@@ -689,10 +689,11 @@ public Image(Device device, ImageData source, ImageData mask) {
  */
 public Image(Device device, InputStream stream) {
 	super(device);
+	
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
-		init(new ImageData(stream));
+		init(new ImageData(stream, DPIUtil.getDeviceZoom()));
 		init();
 	} finally {
 		if (pool != null) pool.release();
@@ -738,7 +739,7 @@ public Image(Device device, String filename) {
 	try {
 		if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 		initNative(filename);
-		if (this.handle == null) init(new ImageData(filename));
+		if (this.handle == null) init(new ImageData(filename, DPIUtil.getDeviceZoom()));
 		init();
 	} finally {
 		if (pool != null) pool.release();
@@ -784,7 +785,8 @@ public Image(Device device, ImageFileNameProvider imageFileNameProvider) {
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
 		initNative(filename);
-		if (this.handle == null) init(new ImageData(filename));
+		//TODO: is using DPIUtil.getDeviceZoom() possible here?
+		if (this.handle == null) init(new ImageData(filename, DPIUtil.getDeviceZoom()));
 		init();
 		String filename2x = imageFileNameProvider.getImagePath(200);
 		if (filename2x != null) {

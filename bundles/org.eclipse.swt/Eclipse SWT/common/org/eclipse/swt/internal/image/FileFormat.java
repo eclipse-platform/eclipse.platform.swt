@@ -20,6 +20,7 @@ import java.util.function.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 
 /**
  * Abstract factory class for loading/unloading images from files or streams
@@ -97,6 +98,70 @@ public static ImageData[] load(InputStream is, ImageLoader loader) {
  	if (fileFormat == null) SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT);
 	fileFormat.loader = loader;
 	return fileFormat.loadFromStream(stream);
+}
+
+/**
+ * Loads an array of <code>ImageData</code> objects from the specified input stream.
+ * Depending on the file type and zoom factor, this method either rasterizes the image
+ * (for SVG files) or uses the provided {@link ImageLoader} to load the image data.
+ *
+ * <p>If the input stream is an SVG file and the specified zoom factor is not 0,
+ * the method attempts to rasterize the SVG using the configured rasterizer.
+ * Otherwise, it delegates the loading process to the {@link FileFormat#load(InputStream, ImageLoader)} method.
+ *
+ * @param stream the input stream to load the images from. The stream cannot be null.
+ *               If the stream does not support marking, it is wrapped in a
+ *               {@link BufferedInputStream}.
+ * @param zoom the zoom factor to apply when rasterizing an SVG. A value of 0 uses
+ *             the standard image loading method. A positive value specifies a scaling
+ *             factor for the output image:
+ *             <ul>
+ *               <li><code>100</code>: Maintains the original size of the SVG when rasterized.</li>
+ *               <li><code>200</code>: Doubles the size of the rasterized image.</li>
+ *               <li><code>50</code>: Reduces the size of the rasterized image to half.</li>
+ *             </ul>
+ *             The scaling factor is applied uniformly to both width and height.
+ * @param loader the {@link ImageLoader} instance used to load the image if the
+ *               stream is not an SVG or if the zoom factor is 0.
+ *
+ * @return an array of <code>ImageData</code> objects loaded from the specified
+ *         input stream, or <code>null</code> if an error occurs during loading.
+ *
+ * @exception IllegalArgumentException if the input stream is null.
+ * @exception SWTException if an error occurs while loading the image data.
+ *
+ * @since 3.129
+ */
+public static ImageData[] load(InputStream stream, int zoom, int flag, ImageLoader loader) {
+	if (stream == null) {
+		throw new IllegalArgumentException("InputStream cannot be null");
+	}
+	if (!stream.markSupported()) {
+		stream = new BufferedInputStream(stream);
+	}
+	try {
+		if (RASTERIZER != null && zoom != 0 && isSVGFile(stream)) {
+			return RASTERIZER.rasterizeSVG(stream, zoom, flag);
+		} else {
+			return load(stream, loader);
+		}
+	} catch (IOException e) {
+		SWT.error(SWT.ERROR_INVALID_IMAGE, e);
+	}
+	return null;
+}
+
+private static boolean isSVGFile(InputStream stream) throws IOException {
+	if (stream == null) {
+		throw new IllegalArgumentException("InputStream cannot be null");
+	}
+	stream.mark(1);
+	try {
+		int firstByte = stream.read();
+		return firstByte == '<';
+	} finally {
+		stream.reset();
+	}
 }
 
 /**
