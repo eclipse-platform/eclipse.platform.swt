@@ -31,7 +31,7 @@ public interface SVGRasterizer {
 	 *               not be 0.
 	 * @return the {@link ImageData} for the rasterized image, or {@code null} if
 	 *         the input is not a valid SVG file or cannot be processed.
-	 * @throws IOException if an error occurs while reading the SVG data.
+	 * @throws IOException
 	 */
 	public ImageData[] rasterizeSVG(InputStream stream, int zoom) throws IOException;
 }
