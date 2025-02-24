@@ -23,11 +23,12 @@ import org.eclipse.swt.graphics.*;
  */
 public interface SVGRasterizer {
 	/**
-	 * Rasterizes an SVG image from the provided {@code InputStream} using the specified
-	 * zoom factor.
+	 * Rasterizes an SVG image from the provided {@code InputStream} using the
+	 * specified zoom factor.
 	 *
 	 * @param stream the SVG image as an {@link InputStream}.
-	 * @param zoom   the scaling factor e.g. 200 for doubled size. This value must no be 0.
+	 * @param zoom   the scaling factor e.g. 200 for doubled size. This value must
+	 *               not be 0.
 	 * @return the {@link ImageData} for the rasterized image, or {@code null} if
 	 *         the input is not a valid SVG file or cannot be processed.
 	 * @throws IOException if an error occurs while reading the SVG data.
