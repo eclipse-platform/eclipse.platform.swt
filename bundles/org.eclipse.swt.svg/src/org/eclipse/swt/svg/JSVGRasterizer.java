@@ -34,6 +34,7 @@ import static java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints.Key;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
 import java.awt.image.ComponentColorModel;
 import java.awt.image.DirectColorModel;
 import java.awt.image.IndexColorModel;
@@ -55,7 +56,8 @@ import com.github.weisj.jsvg.parser.SVGLoader;
 
 /**
  * A rasterizer implementation for converting SVG data into rasterized images.
- * This class implements the {@code SVGRasterizer} interface.
+ * This class uses the third party library JSVG for the raterization of SVG
+ * images.
  * 
  * @since 1.0.0
  */
@@ -76,90 +78,138 @@ public class JSVGRasterizer implements SVGRasterizer {
 	);
 
 	@Override
-	public ImageData[] rasterizeSVG(InputStream stream, int zoom) throws IOException {
-		SVGDocument svgDocument = null;
-		svgDocument = SVG_LOADER.load(stream, null, LoaderContext.createDefault());
+	public ImageData[] rasterizeSVG(InputStream inputStream, int zoom) throws IOException {
+		SVGDocument svgDocument = loadSVG(inputStream);
 		if (svgDocument != null) {
-			float scalingFactor = zoom / 100.0f;
-			FloatSize size = svgDocument.size();
-			double originalWidth = size.getWidth();
-			double originalHeight = size.getHeight();
-			int scaledWidth = (int) Math.round(originalWidth * scalingFactor);
-			int scaledHeight = (int) Math.round(originalHeight * scalingFactor);
-			BufferedImage image = new BufferedImage(scaledWidth, scaledHeight, BufferedImage.TYPE_INT_ARGB);
-			Graphics2D g = image.createGraphics();
-			g.setRenderingHints(RENDERING_HINTS);
-			g.scale(scalingFactor, scalingFactor);
-			svgDocument.render(null, g);
-			g.dispose();
-			return new ImageData[] { convertToSWT(image) };
+			return generateRasterizedImageData(svgDocument, zoom);
 		} else {
 			SWT.error(SWT.ERROR_INVALID_IMAGE);
 		}
 		return null;
 	}
 
-	private ImageData convertToSWT(BufferedImage bufferedImage) {
-		if (bufferedImage.getColorModel() instanceof DirectColorModel) {
-			DirectColorModel colorModel = (DirectColorModel) bufferedImage.getColorModel();
-			PaletteData palette = new PaletteData(colorModel.getRedMask(), colorModel.getGreenMask(),
-					colorModel.getBlueMask());
-			ImageData data = new ImageData(bufferedImage.getWidth(), bufferedImage.getHeight(),
-					colorModel.getPixelSize(), palette);
-			for (int y = 0; y < data.height; y++) {
-				for (int x = 0; x < data.width; x++) {
-					int rgb = bufferedImage.getRGB(x, y);
-					int pixel = palette.getPixel(new RGB((rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, rgb & 0xFF));
-					data.setPixel(x, y, pixel);
-					if (colorModel.hasAlpha()) {
-						data.setAlpha(x, y, (rgb >> 24) & 0xFF);
-					}
-				}
-			}
-			return data;
-		} else if (bufferedImage.getColorModel() instanceof IndexColorModel) {
-			IndexColorModel colorModel = (IndexColorModel) bufferedImage.getColorModel();
-			int size = colorModel.getMapSize();
-			byte[] reds = new byte[size];
-			byte[] greens = new byte[size];
-			byte[] blues = new byte[size];
-			colorModel.getReds(reds);
-			colorModel.getGreens(greens);
-			colorModel.getBlues(blues);
-			RGB[] rgbs = new RGB[size];
-			for (int i = 0; i < rgbs.length; i++) {
-				rgbs[i] = new RGB(reds[i] & 0xFF, greens[i] & 0xFF, blues[i] & 0xFF);
-			}
-			PaletteData palette = new PaletteData(rgbs);
-			ImageData data = new ImageData(bufferedImage.getWidth(), bufferedImage.getHeight(),
-					colorModel.getPixelSize(), palette);
-			data.transparentPixel = colorModel.getTransparentPixel();
-			WritableRaster raster = bufferedImage.getRaster();
-			int[] pixelArray = new int[1];
-			for (int y = 0; y < data.height; y++) {
-				for (int x = 0; x < data.width; x++) {
-					raster.getPixel(x, y, pixelArray);
-					data.setPixel(x, y, pixelArray[0]);
-				}
-			}
-			return data;
-		} else if (bufferedImage.getColorModel() instanceof ComponentColorModel) {
-			ComponentColorModel colorModel = (ComponentColorModel) bufferedImage.getColorModel();
-			PaletteData palette = new PaletteData(0x0000FF, 0x00FF00, 0xFF0000);
-			ImageData data = new ImageData(bufferedImage.getWidth(), bufferedImage.getHeight(),
-					colorModel.getPixelSize(), palette);
-			data.transparentPixel = -1;
-			WritableRaster raster = bufferedImage.getRaster();
-			int[] pixelArray = new int[3];
-			for (int y = 0; y < data.height; y++) {
-				for (int x = 0; x < data.width; x++) {
-					raster.getPixel(x, y, pixelArray);
-					int pixel = palette.getPixel(new RGB(pixelArray[0], pixelArray[1], pixelArray[2]));
-					data.setPixel(x, y, pixel);
-				}
-			}
-			return data;
+	private SVGDocument loadSVG(InputStream inputStream) {
+		return SVG_LOADER.load(inputStream, null, LoaderContext.createDefault());
+	}
+
+	private ImageData[] generateRasterizedImageData(SVGDocument svgDocument, int zoom) {
+		BufferedImage rasterizedImage = renderSVG(svgDocument, zoom);
+		ImageData[] rasterizedImageData = transformtoSWTImageData(rasterizedImage);
+		return rasterizedImageData;
+	}
+
+	private BufferedImage renderSVG(SVGDocument svgDocument, int zoom) {
+		float scalingFactor = zoom / 100.0f;
+		BufferedImage image = createImageBase(svgDocument, scalingFactor);
+		Graphics2D g = configureRenderingOptions(scalingFactor, image);
+		svgDocument.render(null, g);
+		g.dispose();
+		return image;
+	}
+
+	private BufferedImage createImageBase(SVGDocument svgDocument, float scalingFactor) {
+		FloatSize sourceImageSize = svgDocument.size();
+		int targetImageWidth = calculateTargetWidth(scalingFactor, sourceImageSize);
+		int targetImageHeight = calculateTargetHeight(scalingFactor, sourceImageSize);
+		BufferedImage image = new BufferedImage(targetImageWidth, targetImageHeight, BufferedImage.TYPE_INT_ARGB);
+		return image;
+	}
+
+	private int calculateTargetWidth(float scalingFactor, FloatSize sourceImageSize) {
+		double sourceImageWidth = sourceImageSize.getWidth();
+		int targetImageWidth = (int) Math.round(sourceImageWidth * scalingFactor);
+		return targetImageWidth;
+	}
+
+	private int calculateTargetHeight(float scalingFactor, FloatSize sourceImageSize) {
+		double sourceImageHeight = sourceImageSize.getHeight();
+		int targetImageHeight = (int) Math.round(sourceImageHeight * scalingFactor);
+		return targetImageHeight;
+	}
+
+	private Graphics2D configureRenderingOptions(float scalingFactor, BufferedImage image) {
+		Graphics2D g = image.createGraphics();
+		g.setRenderingHints(RENDERING_HINTS);
+		g.scale(scalingFactor, scalingFactor);
+		return g;
+	}
+
+	private ImageData[] transformtoSWTImageData(BufferedImage bufferedImage) {
+		ColorModel colorModel = bufferedImage.getColorModel();
+		if (colorModel instanceof DirectColorModel directColorModel) {
+			return generateSWTImageData(bufferedImage, directColorModel);
+		} else if (colorModel instanceof IndexColorModel indexColorModel) {
+			return generateSWTImageData(bufferedImage, indexColorModel);
+		} else if (colorModel instanceof ComponentColorModel componentColorModel) {
+			return generateSWTImageData(bufferedImage, componentColorModel);
 		}
 		return null;
+	}
+
+	private ImageData[] generateSWTImageData(BufferedImage bufferedImage, DirectColorModel colorModel) {
+		PaletteData paletteData = new PaletteData(colorModel.getRedMask(), colorModel.getGreenMask(),
+				colorModel.getBlueMask());
+		ImageData imageData = new ImageData(bufferedImage.getWidth(), bufferedImage.getHeight(),
+				colorModel.getPixelSize(), paletteData);
+		for (int y = 0; y < imageData.height; y++) {
+			for (int x = 0; x < imageData.width; x++) {
+				int rgb = bufferedImage.getRGB(x, y);
+				int pixel = paletteData.getPixel(new RGB((rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, rgb & 0xFF));
+				imageData.setPixel(x, y, pixel);
+				if (colorModel.hasAlpha()) {
+					imageData.setAlpha(x, y, (rgb >> 24) & 0xFF);
+				}
+			}
+		}
+		return new ImageData[] { imageData };
+	}
+
+	private ImageData[] generateSWTImageData(BufferedImage bufferedImage, IndexColorModel indexColorModel) {
+		RGB[] colors = calculateColors(indexColorModel);
+		PaletteData paletteData = new PaletteData(colors);
+		ImageData imageData = new ImageData(bufferedImage.getWidth(), bufferedImage.getHeight(),
+				indexColorModel.getPixelSize(), paletteData);
+		imageData.transparentPixel = indexColorModel.getTransparentPixel();
+		WritableRaster raster = bufferedImage.getRaster();
+		int[] pixelArray = new int[1];
+		for (int y = 0; y < imageData.height; y++) {
+			for (int x = 0; x < imageData.width; x++) {
+				raster.getPixel(x, y, pixelArray);
+				imageData.setPixel(x, y, pixelArray[0]);
+			}
+		}
+		return new ImageData[] { imageData };
+	}
+
+	private RGB[] calculateColors(IndexColorModel indexColorModel) {
+		int size = indexColorModel.getMapSize();
+		byte[] reds = new byte[size];
+		byte[] greens = new byte[size];
+		byte[] blues = new byte[size];
+		indexColorModel.getReds(reds);
+		indexColorModel.getGreens(greens);
+		indexColorModel.getBlues(blues);
+		RGB[] rgbs = new RGB[size];
+		for (int i = 0; i < rgbs.length; i++) {
+			rgbs[i] = new RGB(reds[i] & 0xFF, greens[i] & 0xFF, blues[i] & 0xFF);
+		}
+		return rgbs;
+	}
+
+	private ImageData[] generateSWTImageData(BufferedImage bufferedImage, ComponentColorModel componentColorModel) {
+		PaletteData paletteData = new PaletteData(0x0000FF, 0x00FF00, 0xFF0000);
+		ImageData imageData = new ImageData(bufferedImage.getWidth(), bufferedImage.getHeight(),
+				componentColorModel.getPixelSize(), paletteData);
+		imageData.transparentPixel = -1;
+		WritableRaster raster = bufferedImage.getRaster();
+		int[] pixelArray = new int[3];
+		for (int y = 0; y < imageData.height; y++) {
+			for (int x = 0; x < imageData.width; x++) {
+				raster.getPixel(x, y, pixelArray);
+				int pixel = paletteData.getPixel(new RGB(pixelArray[0], pixelArray[1], pixelArray[2]));
+				imageData.setPixel(x, y, pixel);
+			}
+		}
+		return new ImageData[] { imageData };
 	}
 }
