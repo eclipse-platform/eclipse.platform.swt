@@ -65,7 +65,7 @@ public class JSVGRasterizer implements SVGRasterizer {
 
 	private static final SVGLoader SVG_LOADER = new SVGLoader();
 
-	private final static Map<Key, Object> RENDERING_HINTS = Map.of(
+	private final static Map<Key, Object> RENDERING_HINTS = Map.of( //
 			KEY_ANTIALIASING, VALUE_ANTIALIAS_ON, //
 			KEY_ALPHA_INTERPOLATION, VALUE_ALPHA_INTERPOLATION_QUALITY, //
 			KEY_COLOR_RENDERING, VALUE_COLOR_RENDER_QUALITY, //
@@ -94,8 +94,7 @@ public class JSVGRasterizer implements SVGRasterizer {
 
 	private ImageData[] generateRasterizedImageData(SVGDocument svgDocument, int zoom) {
 		BufferedImage rasterizedImage = renderSVG(svgDocument, zoom);
-		ImageData[] rasterizedImageData = transformtoSWTImageData(rasterizedImage);
-		return rasterizedImageData;
+		return transformtoSWTImageData(rasterizedImage);
 	}
 
 	private BufferedImage renderSVG(SVGDocument svgDocument, int zoom) {
@@ -111,20 +110,17 @@ public class JSVGRasterizer implements SVGRasterizer {
 		FloatSize sourceImageSize = svgDocument.size();
 		int targetImageWidth = calculateTargetWidth(scalingFactor, sourceImageSize);
 		int targetImageHeight = calculateTargetHeight(scalingFactor, sourceImageSize);
-		BufferedImage image = new BufferedImage(targetImageWidth, targetImageHeight, BufferedImage.TYPE_INT_ARGB);
-		return image;
+		return new BufferedImage(targetImageWidth, targetImageHeight, BufferedImage.TYPE_INT_ARGB);
 	}
 
 	private int calculateTargetWidth(float scalingFactor, FloatSize sourceImageSize) {
 		double sourceImageWidth = sourceImageSize.getWidth();
-		int targetImageWidth = (int) Math.round(sourceImageWidth * scalingFactor);
-		return targetImageWidth;
+		return (int) Math.round(sourceImageWidth * scalingFactor);
 	}
 
 	private int calculateTargetHeight(float scalingFactor, FloatSize sourceImageSize) {
 		double sourceImageHeight = sourceImageSize.getHeight();
-		int targetImageHeight = (int) Math.round(sourceImageHeight * scalingFactor);
-		return targetImageHeight;
+		return (int) Math.round(sourceImageHeight * scalingFactor);
 	}
 
 	private Graphics2D configureRenderingOptions(float scalingFactor, BufferedImage image) {
