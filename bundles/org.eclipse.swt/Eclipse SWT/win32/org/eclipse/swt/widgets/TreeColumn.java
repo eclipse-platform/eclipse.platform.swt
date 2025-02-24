@@ -385,7 +385,7 @@ public void pack () {
 			headerImage = image;
 		}
 		if (headerImage != null) {
-			Rectangle bounds = headerImage.getBoundsInPixels ();
+			Rectangle bounds = DPIUtil.scaleUp(headerImage.getBounds(), getZoom());
 			headerWidth += bounds.width;
 		}
 		int margin = 0;

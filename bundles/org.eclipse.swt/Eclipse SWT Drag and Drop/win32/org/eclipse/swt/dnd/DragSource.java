@@ -504,7 +504,7 @@ private void drag(Event dragEvent) {
 		int offsetX = event.offsetX;
 		hwndDrag = topControl.handle;
 		if ((topControl.getStyle() & SWT.RIGHT_TO_LEFT) != 0) {
-			offsetX = image.getBoundsInPixels().width - offsetX;
+			offsetX = DPIUtil.scaleUp(image.getBounds(), zoom).width - offsetX;
 			RECT rect = new RECT ();
 			OS.GetClientRect (topControl.handle, rect);
 			hwndDrag = OS.CreateWindowEx (

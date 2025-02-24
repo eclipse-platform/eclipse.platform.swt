@@ -6966,10 +6966,10 @@ LRESULT wmNotifyHeader (NMHDR hdr, long wParam, long lParam) {
 							GCData data = new GCData();
 							data.device = display;
 							GC gc = createNewGC(nmcd.hdc, data);
-							int y = Math.max (0, (nmcd.bottom - columns[i].image.getBoundsInPixels().height) / 2);
+							int y = Math.max (0, (nmcd.bottom - DPIUtil.scaleUp(columns[i].image.getBounds(), getZoom()).height) / 2);
 							int zoom = getZoom();
 							gc.drawImage (columns[i].image, DPIUtil.scaleDown(x, zoom), DPIUtil.scaleDown(y, zoom));
-							x += columns[i].image.getBoundsInPixels().width + 12;
+							x += DPIUtil.scaleUp(columns[i].image.getBounds(), getZoom()).width + 12;
 							gc.dispose ();
 						}
 
@@ -7293,7 +7293,7 @@ LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, long lParam) {
 					if (pinfo.iSubItem != 0) x -= gridWidth;
 					Image image = item.getImage (pinfo.iSubItem);
 					if (image != null) {
-						Rectangle rect = image.getBoundsInPixels ();
+						Rectangle rect = DPIUtil.scaleUp(image.getBounds(), getZoom());
 						RECT imageRect = item.getBounds (pinfo.iItem, pinfo.iSubItem, false, true, false, false, hDC);
 						Point size = imageList == null ? new Point (rect.width, rect.height) : imageList.getImageSize ();
 						int y = imageRect.top + Math.max (0, (imageRect.bottom - imageRect.top - size.y) / 2);
