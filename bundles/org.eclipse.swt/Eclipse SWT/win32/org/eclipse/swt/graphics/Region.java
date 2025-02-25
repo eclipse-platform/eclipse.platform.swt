@@ -15,6 +15,7 @@ package org.eclipse.swt.graphics;
 
 
 import java.util.*;
+import java.util.function.*;
 import java.util.stream.*;
 
 import org.eclipse.swt.*;
@@ -80,9 +81,8 @@ public Region () {
 public Region (Device device) {
 	super(device);
 	initialZoom = DPIUtil.getDeviceZoom();
-	long handle = OS.CreateRectRgn (0, 0, 0, 0);
+	long handle = newEmptyRegionHandle();
 	zoomToHandle.put(initialZoom, handle);
-	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	init();
 	this.device.registerResourceWithZoomSupport(this);
 }
@@ -597,6 +597,29 @@ private void storeAndApplyOperationForAllHandles(Operation operation) {
 	zoomToHandle.forEach((zoom, handle) -> operation.apply(handle, zoom));
 }
 
+private static <T> T applyUsingTemporaryHandle(int zoom, List<Operation> operations, Function<Long, T> function) {
+	long temporaryHandle = newRegionHandle(operations, zoom);
+	try {
+		return function.apply(temporaryHandle);
+	} finally {
+		OS.DeleteObject(temporaryHandle);
+	}
+}
+
+private static long newEmptyRegionHandle() {
+	long newHandle = OS.CreateRectRgn (0, 0, 0, 0);
+	if (newHandle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	return newHandle;
+}
+
+private static long newRegionHandle(List<Operation> operations, int zoom) {
+	long newHandle = newEmptyRegionHandle();
+	for (Operation operation : operations) {
+		operation.apply(newHandle, zoom);
+	}
+	return newHandle;
+}
+
 /**
  * <b>IMPORTANT:</b> This method is not part of the public
  * API for Image. It is marked public only so that it
@@ -615,9 +638,9 @@ private void storeAndApplyOperationForAllHandles(Operation operation) {
  * @noreference This method is not intended to be referenced by clients.
  */
 public static long win32_getHandle(Region region, int zoom) {
-	if(!region.zoomToHandle.containsKey(zoom)) {
-		long handle = OS.CreateRectRgn(0, 0, 0, 0);
-		for(Operation operation : region.operations) {
+	if (!region.zoomToHandle.containsKey(zoom)) {
+		long handle = newEmptyRegionHandle();
+		for (Operation operation : region.operations) {
 			operation.apply(handle, zoom);
 		}
 		region.zoomToHandle.put(zoom, handle);
@@ -642,7 +665,7 @@ private interface OperationStrategy {
 	void apply(Operation operation, long handle, int zoom);
 }
 
-private abstract class Operation {
+private abstract static class Operation {
 	private OperationStrategy operationStrategy;
 
 	Operation(OperationStrategy operationStrategy) {
@@ -662,7 +685,7 @@ private abstract class Operation {
 	abstract void translate(long handle, int zoom);
 }
 
-private class OperationWithRectangle extends Operation {
+private static class OperationWithRectangle extends Operation {
 
 	Rectangle data;
 
@@ -721,7 +744,7 @@ private class OperationWithRectangle extends Operation {
 
 }
 
-private class OperationWithArray extends Operation {
+private static class OperationWithArray extends Operation {
 
 	int[] data;
 
@@ -769,7 +792,7 @@ private class OperationWithArray extends Operation {
 	}
 }
 
-private class OperationWithPoint extends Operation {
+private static class OperationWithPoint extends Operation {
 
 	Point data;
 
@@ -801,41 +824,38 @@ private class OperationWithPoint extends Operation {
 
 }
 
-private class OperationWithRegion extends Operation {
-
-	Region data;
+private static class OperationWithRegion extends Operation {
+	private final List<Operation> operations;
 
 	OperationWithRegion(OperationStrategy operationStrategy, Region data) {
 		super(operationStrategy);
-		this.data = data;
+		this.operations = data.operations;
 	}
 
 	@Override
 	void add(long handle, int zoom) {
-		long scaledHandle = getHandleForScaledRegion(zoom);
-		OS.CombineRgn (handle, handle, scaledHandle, OS.RGN_OR);
+		applyUsingTemporaryHandle(zoom, operations, regionHandle -> {
+			return OS.CombineRgn (handle, handle, regionHandle, OS.RGN_OR);
+		});
 	}
 
 	@Override
 	void subtract(long handle, int zoom) {
-		long scaledHandle = getHandleForScaledRegion(zoom);
-		OS.CombineRgn (handle, handle, scaledHandle, OS.RGN_DIFF);
+		applyUsingTemporaryHandle(zoom, operations, regionHandle -> {
+			return OS.CombineRgn (handle, handle, regionHandle, OS.RGN_DIFF);
+		});
 	}
 
 	@Override
 	void intersect(long handle, int zoom) {
-		long scaledHandle = getHandleForScaledRegion(zoom);
-		OS.CombineRgn (handle, handle, scaledHandle, OS.RGN_AND);
+		applyUsingTemporaryHandle(zoom, operations, regionHandle -> {
+			return OS.CombineRgn (handle, handle, regionHandle, OS.RGN_AND);
+		});
 	}
 
 	@Override
 	void translate(long handle, int zoom) {
 		throw new UnsupportedOperationException();
-	}
-
-	private long getHandleForScaledRegion(int zoom) {
-		if (data.isDisposed() || data == Region.this) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-		return win32_getHandle(data, zoom);
 	}
 }
 }
