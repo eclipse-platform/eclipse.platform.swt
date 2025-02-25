@@ -57,7 +57,7 @@ public class CTextCaret extends Widget {
 				if (currentCaret.blinkCaret()) {
 					int blinkRate = currentCaret.blinkRate;
 					if (blinkRate != 0) {
-						Display.getDefault().timerExec(blinkRate, this);
+						currentCaret.display.timerExec(blinkRate, this);
 					}
 				} else {
 					currentCaret = null;
