@@ -15,6 +15,7 @@ package org.eclipse.swt.graphics;
 
 
 import java.util.*;
+import java.util.function.*;
 import java.util.stream.*;
 
 import org.eclipse.swt.*;
@@ -36,11 +37,11 @@ import org.eclipse.swt.internal.win32.*;
  */
 public final class Region extends Resource {
 
-	private int initialZoom;
-
-	private HashMap<Integer, Long> zoomToHandle = new HashMap<>();
+	private Map<Integer, RegionHandle> zoomToHandle = new HashMap<>();
 
 	private List<Operation> operations = new ArrayList<>();
+
+	private boolean isDestroyed;
 
 /**
  * Constructs a new empty region.
@@ -79,10 +80,6 @@ public Region () {
  */
 public Region (Device device) {
 	super(device);
-	initialZoom = DPIUtil.getDeviceZoom();
-	long handle = OS.CreateRectRgn (0, 0, 0, 0);
-	zoomToHandle.put(initialZoom, handle);
-	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	init();
 	this.device.registerResourceWithZoomSupport(this);
 }
@@ -192,11 +189,16 @@ public void add (Region region) {
  */
 public boolean contains (int x, int y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return containsInPixels(DPIUtil.scaleUp(x, initialZoom), DPIUtil.scaleUp(y, initialZoom));
+	return applyOnAnyHandle(regionHandle -> {
+		int zoom = regionHandle.zoom;
+		int xInPixels = DPIUtil.scaleUp(x, zoom);
+		int yInPixels = DPIUtil.scaleUp(y, zoom);
+		return containsInPixels(regionHandle.handle, xInPixels, yInPixels);
+	});
 }
 
-boolean containsInPixels (int x, int y) {
-	return OS.PtInRegion (getHandleForInitialZoom(), x, y);
+boolean containsInPixels (long handle, int x, int y) {
+	return OS.PtInRegion (handle, x, y);
 }
 
 /**
@@ -217,46 +219,27 @@ boolean containsInPixels (int x, int y) {
 public boolean contains (Point pt) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pt == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	Point p = DPIUtil.scaleUp(pt, initialZoom);
-	return containsInPixels(p.x, p.y);
+	return applyOnAnyHandle(regionHandle -> {
+		int zoom = regionHandle.zoom;
+		Point p = DPIUtil.scaleUp(pt, zoom);
+		return containsInPixels(regionHandle.handle, p.x, p.y);
+	});
 }
 
 @Override
 void destroy () {
 	device.deregisterResourceWithZoomSupport(this);
-	zoomToHandle.values().forEach(handle -> OS.DeleteObject(handle));
+	zoomToHandle.values().forEach(RegionHandle::destroy);
 	zoomToHandle.clear();
 	operations.clear();
+	this.isDestroyed = true;
 }
 
 @Override
 void destroyHandlesExcept(Set<Integer> zoomLevels) {
-	zoomToHandle.entrySet().removeIf(entry -> {
-		final Integer zoom = entry.getKey();
-		if (!zoomLevels.contains(zoom) && zoom != initialZoom) {
-			OS.DeleteObject(entry.getValue());
-			return true;
-		}
-		return false;
-	});
-}
-
-/**
- * Compares the argument to the receiver, and returns true
- * if they represent the <em>same</em> object using a class
- * specific comparison.
- *
- * @param object the object to compare with this object
- * @return <code>true</code> if the object is the same as this object and <code>false</code> otherwise
- *
- * @see #hashCode
- */
-@Override
-public boolean equals (Object object) {
-	if (this == object) return true;
-	if (!(object instanceof Region)) return false;
-	Region rgn = (Region)object;
-	return getHandleForInitialZoom() == rgn.getHandleForInitialZoom();
+	// As long as we keep the operations, we can cleanup all handles
+	zoomToHandle.values().forEach(RegionHandle::destroy);
+	zoomToHandle.clear();
 }
 
 /**
@@ -274,28 +257,15 @@ public boolean equals (Object object) {
  */
 public Rectangle getBounds () {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return DPIUtil.scaleDown(getBoundsInPixels(), initialZoom);
+	return applyOnAnyHandle(regionHandle -> {
+		return DPIUtil.scaleDown(getBoundsInPixels(regionHandle.handle), regionHandle.zoom);
+	});
 }
 
-Rectangle getBoundsInPixels() {
+private Rectangle getBoundsInPixels(long handle) {
 	RECT rect = new RECT();
-	OS.GetRgnBox(getHandleForInitialZoom(), rect);
+	OS.GetRgnBox(handle, rect);
 	return new Rectangle(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
-}
-
-/**
- * Returns an integer hash code for the receiver. Any two
- * objects that return <code>true</code> when passed to
- * <code>equals</code> must return the same value for this
- * method.
- *
- * @return the receiver's hash
- *
- * @see #equals
- */
-@Override
-public int hashCode () {
-	return (int)getHandleForInitialZoom();
 }
 
 /**
@@ -392,10 +362,10 @@ public boolean intersects (int x, int y, int width, int height) {
 	return intersects(new Rectangle(x, y, width, height));
 }
 
-boolean intersectsInPixels (int x, int y, int width, int height) {
+boolean intersectsInPixels (long handle, int x, int y, int width, int height) {
 	RECT r = new RECT ();
 	OS.SetRect (r, x, y, x + width, y + height);
-	return OS.RectInRegion (getHandleForInitialZoom(), r);
+	return OS.RectInRegion(handle, r);
 }
 
 /**
@@ -418,8 +388,10 @@ boolean intersectsInPixels (int x, int y, int width, int height) {
 public boolean intersects (Rectangle rect) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	Rectangle r = DPIUtil.scaleUp(rect, initialZoom);
-	return intersectsInPixels(r.x, r.y, r.width, r.height);
+	return applyOnAnyHandle(regionHandle -> {
+		Rectangle r = DPIUtil.scaleUp(rect, regionHandle.zoom);
+		return intersectsInPixels(regionHandle.handle, r.x, r.y, r.width, r.height);
+	});
 }
 
 /**
@@ -434,7 +406,7 @@ public boolean intersects (Rectangle rect) {
  */
 @Override
 public boolean isDisposed() {
-	return zoomToHandle.isEmpty();
+	return isDestroyed;
 }
 
 /**
@@ -451,9 +423,11 @@ public boolean isDisposed() {
 public boolean isEmpty () {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	RECT rect = new RECT ();
-	int result = OS.GetRgnBox (getHandleForInitialZoom(), rect);
-	if (result == OS.NULLREGION) return true;
-	return ((rect.right - rect.left) <= 0) || ((rect.bottom - rect.top) <= 0);
+	return applyOnAnyHandle(regionHandle -> {
+		int result = OS.GetRgnBox(regionHandle.handle, rect);
+		if (result == OS.NULLREGION) return true;
+		return ((rect.right - rect.left) <= 0) || ((rect.bottom - rect.top) <= 0);
+	});
 }
 
 /**
@@ -591,13 +565,40 @@ public void translate (Point pt) {
 	storeAndApplyOperationForAllHandles(operation);
 }
 
-private long getHandleForInitialZoom() {
-	return win32_getHandle(this, initialZoom);
-}
-
 private void storeAndApplyOperationForAllHandles(Operation operation) {
 	operations.add(operation);
-	zoomToHandle.forEach((zoom, handle) -> operation.apply(handle, zoom));
+	zoomToHandle.forEach((zoom, handle) -> operation.apply(handle));
+}
+
+private <T> T applyOnAnyHandle(Function<RegionHandle, T> function) {
+	if (zoomToHandle.isEmpty()) {
+		RegionHandle handle = newRegionHandle(DPIUtil.getDeviceZoom());
+		try {
+			return function.apply(handle);
+		} finally {
+			handle.destroy();
+		}
+	} else {
+		return function.apply(zoomToHandle.values().iterator().next());
+	}
+}
+
+private RegionHandle newRegionHandle(int zoom) {
+	long newHandle = OS.CreateRectRgn (0, 0, 0, 0);
+	if (newHandle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	RegionHandle newRegionHandle = new RegionHandle(newHandle, zoom);
+	for (Operation operation : operations) {
+		operation.apply(newRegionHandle);
+	}
+	return newRegionHandle;
+}
+
+private RegionHandle getRegionHandle(int zoom) {
+	if (!zoomToHandle.containsKey(zoom)) {
+		RegionHandle regionHandle = newRegionHandle(zoom);
+		zoomToHandle.put(zoom, regionHandle);
+	}
+	return zoomToHandle.get(zoom);
 }
 
 /**
@@ -618,14 +619,7 @@ private void storeAndApplyOperationForAllHandles(Operation operation) {
  * @noreference This method is not intended to be referenced by clients.
  */
 public static long win32_getHandle(Region region, int zoom) {
-	if(!region.zoomToHandle.containsKey(zoom)) {
-		long handle = OS.CreateRectRgn(0, 0, 0, 0);
-		for(Operation operation : region.operations) {
-			operation.apply(handle, zoom);
-		}
-		region.zoomToHandle.put(zoom, handle);
-	}
-	return region.zoomToHandle.get(zoom);
+	return region.getRegionHandle(zoom).handle;
 }
 
 /**
@@ -640,20 +634,34 @@ public String toString () {
 	return "Region {" + zoomToHandle.entrySet().stream().map(entry -> entry.getValue() + "(zoom:" + entry.getKey() + ")").collect(Collectors.joining(","));
 }
 
+private class RegionHandle {
+	private long handle;
+	private int zoom;
+
+	public RegionHandle(long handle, int zoom) {
+		this.handle = handle;
+		this.zoom = zoom;
+	}
+
+	void destroy() {
+		OS.DeleteObject(handle);
+	}
+}
+
 @FunctionalInterface
 private interface OperationStrategy {
 	void apply(Operation operation, long handle, int zoom);
 }
 
 private abstract class Operation {
-	private OperationStrategy operationStrategy;
+	private final OperationStrategy operationStrategy;
 
 	Operation(OperationStrategy operationStrategy) {
 		this.operationStrategy = operationStrategy;
 	}
 
-	void apply(long handle, int zoom) {
-		operationStrategy.apply(this, handle, zoom);
+	void apply(RegionHandle regionHandle) {
+		operationStrategy.apply(this, regionHandle.handle, regionHandle.zoom);
 	}
 
 	abstract void add(long handle, int zoom);
@@ -666,8 +674,7 @@ private abstract class Operation {
 }
 
 private class OperationWithRectangle extends Operation {
-
-	Rectangle data;
+	private final Rectangle data;
 
 	OperationWithRectangle(OperationStrategy operationStrategy, Rectangle data) {
 		super(operationStrategy);
@@ -725,8 +732,7 @@ private class OperationWithRectangle extends Operation {
 }
 
 private class OperationWithArray extends Operation {
-
-	int[] data;
+	private final int[] data;
 
 	public OperationWithArray(OperationStrategy operationStrategy, int[] data) {
 		super(operationStrategy);
@@ -773,8 +779,7 @@ private class OperationWithArray extends Operation {
 }
 
 private class OperationWithPoint extends Operation {
-
-	Point data;
+	private final Point data;
 
 	public OperationWithPoint(OperationStrategy operationStrategy, Point data) {
 		super(operationStrategy);
@@ -805,8 +810,7 @@ private class OperationWithPoint extends Operation {
 }
 
 private class OperationWithRegion extends Operation {
-
-	Region data;
+	private final Region data;
 
 	OperationWithRegion(OperationStrategy operationStrategy, Region data) {
 		super(operationStrategy);
