@@ -5636,8 +5636,8 @@ void handleDispose(Event event) {
 		rightCaretBitmap.dispose();
 		rightCaretBitmap = null;
 	}
-	if (getCarets() != null) {
-		for (Caret caret : getCarets()) {
+	if (carets != null) {
+		for (Caret caret : carets) {
 			if (caret != null) {
 				caret.dispose();
 			}
@@ -5922,7 +5922,7 @@ void handleMouseUp(Event event) {
  *
  * @param event paint event
  */
-protected void handlePaint(Event event) {
+void handlePaint(Event event) {
 	if (event.width == 0 || event.height == 0) return;
 	if (clientAreaWidth == 0 || clientAreaHeight == 0) return;
 
@@ -5952,9 +5952,9 @@ protected void handlePaint(Event event) {
 			gc.setAdvanced(false);
 		}
 	}
-	if(getCarets() != null) {
-		for (int i = 1; i < getCarets().length; i++) { //skip 1st caret that's already drawn
-			Caret caret = getCarets()[i];
+	if(carets != null) {
+		for (int i = 1; i < carets.length; i++) { //skip 1st caret that's already drawn
+			Caret caret = carets[i];
 			if (caret.isVisible()) {
 				if (caret.getImage() != null) {
 					gc.drawImage(caret.getImage(), caret.getBounds().x, caret.getBounds().y);
@@ -8392,9 +8392,9 @@ public void setCaret(Caret caret) {
 	caretDirection = SWT.NULL;
 	if (caret != null) {
 		setCaretLocations();
-		if(getCarets() != null) {
-			for (int i = 1; i < getCarets().length; i++) {
-				getCarets()[i].dispose();
+		if(carets != null) {
+			for (int i = 1; i < carets.length; i++) {
+				carets[i].dispose();
 			}
 		}
 		carets = new Caret[] {caret};
@@ -8445,27 +8445,27 @@ void setCaretLocations() {
 void setCaretLocations(final Point[] locations, int direction) {
 	Caret firstCaret = getCaret();
 	if (firstCaret != null) {
-		if (getCarets() == null || getCarets().length == 0) {
+		if (carets == null || carets.length == 0) {
 			carets = new Caret[] { firstCaret };
 		}
 		final boolean isDefaultCaret = firstCaret == defaultCaret;
-		if (locations.length > getCarets().length) {
-			int formerCaretCount = getCarets().length;
-			carets = Arrays.copyOf(getCarets(), locations.length);
-			for (int i = formerCaretCount; i < getCarets().length; i++) {
-				getCarets()[i] = new Caret(this, firstCaret.getStyle());
-				getCarets()[i].setImage(firstCaret.getImage());
-				getCarets()[i].setFont(firstCaret.getFont());
-				getCarets()[i].setSize(firstCaret.getSize());
+		if (locations.length > carets.length) {
+			int formerCaretCount = carets.length;
+			carets = Arrays.copyOf(carets, locations.length);
+			for (int i = formerCaretCount; i < carets.length; i++) {
+				carets[i] = new Caret(this, firstCaret.getStyle());
+				carets[i].setImage(firstCaret.getImage());
+				carets[i].setFont(firstCaret.getFont());
+				carets[i].setSize(firstCaret.getSize());
 			}
-		} else if (locations.length < getCarets().length) {
-			for (int i = locations.length; i < getCarets().length; i++) {
-				getCarets()[i].dispose();
+		} else if (locations.length < carets.length) {
+			for (int i = locations.length; i < carets.length; i++) {
+				carets[i].dispose();
 			}
-			carets = Arrays.copyOf(getCarets(), locations.length);
+			carets = Arrays.copyOf(carets, locations.length);
 		}
 		for (int i = Math.min(caretOffsets.length, locations.length)-1; i>=0; i--) { // reverse order, seee bug 579028#c7
-			final Caret caret = getCarets()[i];
+			final Caret caret = carets[i];
 			final int caretOffset = caretOffsets[i];
 			final Point location = locations[i];
 			final StyleRange styleAtOffset = content.getCharCount() > 0 ?
@@ -8765,7 +8765,7 @@ public boolean setFocus() {
 }
 
 private boolean hasMultipleCarets() {
-	return getCarets() != null && getCarets().length > 1;
+	return carets != null && carets.length > 1;
 }
 
 /**
@@ -10737,7 +10737,7 @@ boolean showLocation(Rectangle rect, boolean scrollPage) {
  */
 void showCaret() {
 	Rectangle bounds = getBoundsAtOffset(caretOffsets[0]);
-	if (!showLocation(bounds, true) || (getCarets() != null && caretOffsets.length != getCarets().length)) {
+	if (!showLocation(bounds, true) || (carets != null && caretOffsets.length != carets.length)) {
 		setCaretLocations();
 	}
 }
@@ -10792,13 +10792,13 @@ public void showSelection() {
 void updateCaretVisibility() {
 	Caret caret = getCaret();
 	if (caret != null) {
-		if (getCarets() == null || getCarets().length == 0) {
+		if (carets == null || carets.length == 0) {
 			carets = new Caret[] { caret };
 		}
 		if (blockSelection && blockXLocation != -1) {
-			Arrays.stream(getCarets()).forEach(c -> c.setVisible(false));
+			Arrays.stream(carets).forEach(c -> c.setVisible(false));
 		} else {
-			Arrays.stream(getCarets()).forEach(c -> {
+			Arrays.stream(carets).forEach(c -> {
 				Point location = c.getLocation();
 				Point size = c.getSize();
 				boolean visible =
@@ -10878,15 +10878,12 @@ void updateSelection(int startOffset, int replacedLength, int newLength) {
 public static void updateAndRefreshCarets(StyledText styledText, Consumer<Caret> caretUpdater) {
 	caretUpdater.accept(styledText.getCaret());
 	caretUpdater.accept(styledText.defaultCaret);
-	for (Caret caret : styledText.getCarets()) {
+	for (Caret caret : styledText.carets) {
 		caretUpdater.accept(caret);
 	}
 	styledText.updateCaretVisibility();
 	styledText.setCaretLocations();
 
-}
-public Caret[] getCarets() {
-	return carets;
 }
 
 }
