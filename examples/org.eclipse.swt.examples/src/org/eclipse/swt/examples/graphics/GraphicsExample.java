@@ -463,6 +463,7 @@ GraphicsTab[] createTabs() {
 		new ImageScaleTab(this),
 		new PathTab(this),
 		new TransformReuseTab(this),
+		new PathReuseTab(this),
 	};
 }
 

@@ -13,6 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.*;
@@ -49,9 +50,11 @@ class PathWin32Tests {
 		DPIUtil.setDeviceZoom(zoom);
 		Path path = new Path(display);
 		path.addArc(0, 0, 10, 10, 0, 90);
+		path.getHandle(zoom);
+		assertTrue("zoomLevelToHandle should contain initial zoom's handle", path.toString().contains(zoom + "="));
+		assertFalse("zoomLevelToHandle should not contains scaled handle", path.toString().contains(scaledZoom + "="));
 		path.getHandle(scaledZoom);
-		assertTrue("zoomLevelToHandle contains scaled handle", path.toString().contains(scaledZoom + "="));
-		assertTrue("zoomLevelToHandle contains initial zoom's handle", path.toString().contains(zoom + "="));
+		assertTrue("zoomLevelToHandle should contain scaled handle", path.toString().contains(scaledZoom + "="));
 	}
 
 	@Test
@@ -69,5 +72,23 @@ class PathWin32Tests {
 		assertTrue("X coordinate is scaled up wrt the scalingFactor", bounds.Y * scalingFactor == scaledBounds.Y);
 		assertTrue("Height is scaled up wrt the scalingFactor", bounds.Height * scalingFactor == scaledBounds.Height);
 		assertTrue("Height is scaled up wrt the scalingFactor", bounds.Width * scalingFactor == scaledBounds.Width);
+	}
+
+	@Test
+	public void testCreatePathHandleWithDisposedPathInvolved() {
+		Display display = Display.getDefault();
+
+		Path path = new Path(display);
+		path.addArc(0, 0, 10, 10, 0, 90);
+
+		Path path2 = new Path(display);
+		path.addArc(0, 0, 30, 30, 0, 270);
+
+		path.addPath(path2);
+
+		path2.dispose();
+		path.getHandle(100);
+		path.getHandle(200);
+		path.dispose();
 	}
 }
