@@ -94,7 +94,7 @@ public class JSVGRasterizer implements SVGRasterizer {
 
 	private ImageData[] generateRasterizedImageData(SVGDocument svgDocument, int zoom) {
 		BufferedImage rasterizedImage = renderSVG(svgDocument, zoom);
-		return transformtoSWTImageData(rasterizedImage);
+		return transformToSWTImageData(rasterizedImage);
 	}
 
 	private BufferedImage renderSVG(SVGDocument svgDocument, int zoom) {
@@ -130,7 +130,7 @@ public class JSVGRasterizer implements SVGRasterizer {
 		return g;
 	}
 
-	private ImageData[] transformtoSWTImageData(BufferedImage bufferedImage) {
+	private ImageData[] transformToSWTImageData(BufferedImage bufferedImage) {
 		ColorModel colorModel = bufferedImage.getColorModel();
 		if (colorModel instanceof DirectColorModel directColorModel) {
 			return generateSWTImageData(bufferedImage, directColorModel);
