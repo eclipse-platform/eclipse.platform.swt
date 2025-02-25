@@ -57,7 +57,6 @@ class RegionWin32Tests {
 		assertEquals("scaled region's y position should be double of unscaled region", bounds.y * scalingFactor, scaledBounds.y);
 	}
 
-
 	@Test
 	public void testRegionMustIntersectProperlyOn175Zoom() {
 		Display display = Display.getDefault();
@@ -81,7 +80,24 @@ class RegionWin32Tests {
 		// be rounded independently
 		boolean shouldNotIntersect = region.intersects(0, 27, 100, 31);
 		assertFalse(shouldNotIntersect);
-
+		region.dispose();
 	}
 
+	@Test
+	public void testCreateRegionHandleWithDisposedRegionInvolved() {
+		Display display = Display.getDefault();
+
+		Region region = new Region(display);
+		region.add(0, 0, 100, 100);
+
+		Region region2 = new Region(display);
+		region.add(50, 50, 100, 100);
+
+		region.add(region2);
+
+		region2.dispose();
+		Region.win32_getHandle(region, 100);
+		Region.win32_getHandle(region, 200);
+		region.dispose();
+	}
 }
