@@ -253,10 +253,7 @@ void destroyHandlesExcept(Set<Integer> zoomLevels) {
  */
 @Override
 public boolean equals (Object object) {
-	if (this == object) return true;
-	if (!(object instanceof Region)) return false;
-	Region rgn = (Region)object;
-	return getHandleForInitialZoom() == rgn.getHandleForInitialZoom();
+	return super.equals(object);
 }
 
 /**
@@ -295,7 +292,7 @@ Rectangle getBoundsInPixels() {
  */
 @Override
 public int hashCode () {
-	return (int)getHandleForInitialZoom();
+	return super.hashCode();
 }
 
 /**
