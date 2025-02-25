@@ -32,3 +32,4 @@ SWT-WS: win32
 SWT-OS: win32
 SWT-Arch: aarch64
 Automatic-Module-Name: org.eclipse.swt.win32.win32.aarch64
+Provide-Capability: eclipse.swt.native;eclipse.swt.native=native

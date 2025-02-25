@@ -15,8 +15,6 @@ Export-Package:
  org.eclipse.swt.dnd,
  org.eclipse.swt.events,
  org.eclipse.swt.graphics,
- org.eclipse.swt.internal;x-internal:=true,
- org.eclipse.swt.internal.image;x-internal:=true,
  org.eclipse.swt.layout,
  org.eclipse.swt.opengl,
  org.eclipse.swt.printing,
