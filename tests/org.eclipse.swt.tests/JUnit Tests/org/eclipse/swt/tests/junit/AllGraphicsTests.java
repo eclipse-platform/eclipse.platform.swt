@@ -38,7 +38,8 @@ import org.junit.runners.Suite;
 		Test_org_eclipse_swt_graphics_RGBA.class,
 		Test_org_eclipse_swt_graphics_TextLayout.class,
 		Test_org_eclipse_swt_graphics_ImageLoader.class,
-		Test_org_eclipse_swt_graphics_ImageLoaderEvent.class })
+		Test_org_eclipse_swt_graphics_ImageLoaderEvent.class,
+		Test_org_eclipse_swt_graphics_Transform.class })
 public class AllGraphicsTests {
 	public static void main(String[] args) {
 		JUnitCore.main(AllGraphicsTests.class.getName());
