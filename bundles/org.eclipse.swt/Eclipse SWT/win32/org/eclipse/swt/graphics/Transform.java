@@ -14,6 +14,7 @@
 package org.eclipse.swt.graphics;
 
 import java.util.*;
+import java.util.function.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
@@ -39,9 +40,11 @@ import org.eclipse.swt.internal.gdip.*;
  */
 public class Transform extends Resource {
 
-	private int initialZoom;
+	private Map<Integer, TransformHandle> zoomToHandle = new HashMap<>();
 
-	private HashMap<Integer, Long> zoomLevelToHandle = new HashMap<>();
+	private List<Operation> operations = new ArrayList<>();
+
+	private boolean isDestroyed;
 
 /**
  * Constructs a new identity Transform.
@@ -138,12 +141,8 @@ public Transform(Device device, float[] elements) {
  */
 public Transform (Device device, float m11, float m12, float m21, float m22, float dx, float dy) {
 	super(device);
-	initialZoom = DPIUtil.getDeviceZoom();
 	this.device.checkGDIP();
-	long handle = Gdip.Matrix_new(m11, m12, m21, m22,
-			DPIUtil.scaleUp(this.device, dx, initialZoom), DPIUtil.scaleUp(this.device, dy, initialZoom));
-	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	zoomLevelToHandle.put(initialZoom, handle);
+	storeAndApplyOperationForAllHandles(new SetElementsOperation(m11, m12, m21, m22, dx, dy));
 	init();
 	this.device.registerResourceWithZoomSupport(this);
 }
@@ -157,20 +156,17 @@ static float[] checkTransform(float[] elements) {
 @Override
 void destroy() {
 	device.deregisterResourceWithZoomSupport(this);
-	zoomLevelToHandle.values().forEach(Gdip::Matrix_delete);
-	zoomLevelToHandle.clear();
+	zoomToHandle.values().forEach(TransformHandle::destroy);
+	zoomToHandle.clear();
+	operations.clear();
+	this.isDestroyed = true;
 }
 
 @Override
 void destroyHandlesExcept(Set<Integer> zoomLevels) {
-	zoomLevelToHandle.entrySet().removeIf(entry -> {
-		final Integer zoom = entry.getKey();
-		if (!zoomLevels.contains(zoom) && zoom != initialZoom) {
-			Gdip.Matrix_delete(entry.getValue());
-			return true;
-		}
-		return false;
-	});
+	// As long as we keep the operations, we can cleanup all handles
+	zoomToHandle.values().forEach(TransformHandle::destroy);
+	zoomToHandle.clear();
 }
 
 /**
@@ -191,10 +187,14 @@ public void getElements(float[] elements) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (elements == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (elements.length < 6) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	Gdip.Matrix_GetElements(getHandle(initialZoom), elements);
-	Drawable drawable = getDevice();
-	elements[4] = DPIUtil.scaleDown(drawable, elements[4], initialZoom);
-	elements[5] = DPIUtil.scaleDown(drawable, elements[5], initialZoom);
+	applyOnAnyHandle(transformHandle -> {
+		Gdip.Matrix_GetElements(transformHandle.handle, elements);
+		Drawable drawable = getDevice();
+		int zoom = transformHandle.zoom;
+		elements[4] = DPIUtil.scaleDown(drawable, elements[4], zoom);
+		elements[5] = DPIUtil.scaleDown(drawable, elements[5], zoom);
+		return true;
+	});
 }
 
 /**
@@ -209,7 +209,9 @@ public void getElements(float[] elements) {
  */
 public void identity() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Gdip.Matrix_SetElements(getHandle(initialZoom), 1, 0, 0, 1, 0, 0);
+	// identity invalidates all previous operations, so we remove them
+	operations.clear();
+	storeAndApplyOperationForAllHandles(new SetElementsOperation(1, 0, 0, 1, 0, 0));
 }
 
 /**
@@ -223,7 +225,7 @@ public void identity() {
  */
 public void invert() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (Gdip.Matrix_Invert(getHandle(initialZoom)) != 0) SWT.error(SWT.ERROR_CANNOT_INVERT_MATRIX);
+	storeAndApplyOperationForAllHandles(new InvertOperation());
 }
 
 /**
@@ -238,7 +240,7 @@ public void invert() {
  */
 @Override
 public boolean isDisposed() {
-	return zoomLevelToHandle.isEmpty();
+	return this.isDestroyed;
 }
 
 /**
@@ -249,7 +251,9 @@ public boolean isDisposed() {
  */
 public boolean isIdentity() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return Gdip.Matrix_IsIdentity(getHandle(initialZoom));
+	return applyOnAnyHandle(transformHandle -> {
+		return Gdip.Matrix_IsIdentity(transformHandle.handle);
+	});
 }
 
 /**
@@ -271,7 +275,7 @@ public void multiply(Transform matrix) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (matrix == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (matrix.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	Gdip.Matrix_Multiply(getHandle(initialZoom), matrix.getHandle(initialZoom), Gdip.MatrixOrderPrepend);
+	storeAndApplyOperationForAllHandles(new MultiplayOperation(matrix));
 }
 
 /**
@@ -289,7 +293,7 @@ public void multiply(Transform matrix) {
  */
 public void rotate(float angle) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Gdip.Matrix_Rotate(getHandle(initialZoom), angle, Gdip.MatrixOrderPrepend);
+	storeAndApplyOperationForAllHandles(new RotateOperation(angle));
 }
 
 /**
@@ -305,7 +309,7 @@ public void rotate(float angle) {
  */
 public void scale(float scaleX, float scaleY) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Gdip.Matrix_Scale(getHandle(initialZoom), scaleX, scaleY, Gdip.MatrixOrderPrepend);
+	storeAndApplyOperationForAllHandles(new ScaleOperation(scaleX, scaleY));
 }
 
 /**
@@ -325,8 +329,9 @@ public void scale(float scaleX, float scaleY) {
  */
 public void setElements(float m11, float m12, float m21, float m22, float dx, float dy) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Drawable drawable = getDevice();
-	Gdip.Matrix_SetElements(getHandle(initialZoom), m11, m12, m21, m22, DPIUtil.scaleUp(drawable, dx, initialZoom), DPIUtil.scaleUp(drawable, dy, initialZoom));
+	// setElements invalidates all previous operations, so we remove them
+	operations.clear();
+	storeAndApplyOperationForAllHandles(new SetElementsOperation(m11, m12, m21, m22, dx, dy));
 }
 
 /**
@@ -344,7 +349,7 @@ public void setElements(float m11, float m12, float m21, float m22, float dx, fl
  */
 public void shear(float shearX, float shearY) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Gdip.Matrix_Shear(getHandle(initialZoom), shearX, shearY, Gdip.MatrixOrderPrepend);
+	storeAndApplyOperationForAllHandles(new ShearOperation(shearX, shearY));
 }
 
 /**
@@ -364,15 +369,19 @@ public void shear(float shearX, float shearY) {
 public void transform(float[] pointArray) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	int length = pointArray.length;
 	Drawable drawable = getDevice();
-	for (int i = 0; i < length; i++) {
-		pointArray[i] = DPIUtil.scaleUp(drawable, pointArray[i], initialZoom);
-	}
-	Gdip.Matrix_TransformPoints(getHandle(initialZoom), pointArray, length / 2);
-	for (int i = 0; i < length; i++) {
-		pointArray[i] = DPIUtil.scaleDown(drawable, pointArray[i], initialZoom);
-	}
+	applyOnAnyHandle(transformHandle -> {
+		int length = pointArray.length;
+		for (int i = 0; i < length; i++) {
+			pointArray[i] = DPIUtil.scaleUp(drawable, pointArray[i], transformHandle.zoom);
+		}
+		Gdip.Matrix_TransformPoints(transformHandle.handle, pointArray, length / 2);
+		for (int i = 0; i < length; i++) {
+			pointArray[i] = DPIUtil.scaleDown(drawable, pointArray[i], transformHandle.zoom);
+		}
+		return pointArray;
+	});
+
 }
 
 /**
@@ -388,8 +397,166 @@ public void transform(float[] pointArray) {
  */
 public void translate(float offsetX, float offsetY) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Drawable drawable = getDevice();
-	Gdip.Matrix_Translate(getHandle(initialZoom), DPIUtil.scaleUp(drawable, offsetX, initialZoom), DPIUtil.scaleUp(drawable, offsetY, initialZoom), Gdip.MatrixOrderPrepend);
+	storeAndApplyOperationForAllHandles(new TranslateOperation(offsetX, offsetY));
+}
+
+private class TransformHandle {
+	private long handle;
+	private int zoom;
+
+	public TransformHandle(long handle, int zoom) {
+		this.handle = handle;
+		this.zoom = zoom;
+	}
+
+	void destroy() {
+		Gdip.Matrix_delete(handle);
+	}
+}
+
+private class InvertOperation implements Operation {
+	public InvertOperation() {
+	}
+
+	@Override
+	public void apply(TransformHandle transformHandle) {
+		if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+		long handle = transformHandle.handle;
+		if (Gdip.Matrix_Invert(handle) != 0) SWT.error(SWT.ERROR_CANNOT_INVERT_MATRIX);
+	}
+}
+
+private class MultiplayOperation implements Operation {
+	private Transform matrix;
+
+	public MultiplayOperation(Transform matrix) {
+		this.matrix = matrix;
+	}
+
+	@Override
+	public void apply(TransformHandle transformHandle) {
+		if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+		long handle = transformHandle.handle;
+		int zoom = transformHandle.zoom;
+		Gdip.Matrix_Multiply(handle, matrix.getHandle(zoom), Gdip.MatrixOrderPrepend);
+	}
+}
+
+private class RotateOperation implements Operation {
+	private float angle;
+
+	public RotateOperation(float angle) {
+		this.angle = angle;
+	}
+
+	@Override
+	public void apply(TransformHandle transformHandle) {
+		if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+		long handle = transformHandle.handle;
+		Gdip.Matrix_Rotate(handle, angle, Gdip.MatrixOrderPrepend);
+	}
+}
+
+private class ScaleOperation implements Operation {
+	private float scaleX;
+	private float scaleY;
+
+	public ScaleOperation(float scaleX, float scaleY) {
+		this.scaleX = scaleX;
+		this.scaleY = scaleY;
+	}
+
+	@Override
+	public void apply(TransformHandle transformHandle) {
+		if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+		long handle = transformHandle.handle;
+		Gdip.Matrix_Scale(handle, scaleX, scaleY, Gdip.MatrixOrderPrepend);
+	}
+}
+
+private class SetElementsOperation implements Operation {
+	private float m11;
+	private float m12;
+	private float m21;
+	private float m22;
+	private float dx;
+	private float dy;
+
+	public SetElementsOperation(float m11, float m12, float m21, float m22, float dx, float dy) {
+		this.m11 = m11;
+		this.m12 = m12;
+		this.m21 = m21;
+		this.m22 = m22;
+		this.dx = dx;
+		this.dy = dy;
+	}
+
+	@Override
+	public void apply(TransformHandle transformHandle) {
+		if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+		Drawable drawable = getDevice();
+		long handle = transformHandle.handle;
+		int zoom = transformHandle.zoom;
+		Gdip.Matrix_SetElements(handle, m11, m12, m21, m22, DPIUtil.scaleUp(drawable, dx, zoom), DPIUtil.scaleUp(drawable, dy, zoom));
+	}
+}
+
+private class ShearOperation implements Operation {
+	private float shearX;
+	private float shearY;
+
+	public ShearOperation(float shearX, float shearY) {
+		this.shearX = shearX;
+		this.shearY = shearY;
+	}
+
+	@Override
+	public void apply(TransformHandle transformHandle) {
+		if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+		long handle = transformHandle.handle;
+		Gdip.Matrix_Shear(handle, shearX, shearY, Gdip.MatrixOrderPrepend);
+	}
+}
+
+private class TranslateOperation implements Operation {
+	private float offsetX;
+	private float offsetY;
+
+	public TranslateOperation(float offsetX, float offsetY) {
+		this.offsetX = offsetX;
+		this.offsetY = offsetY;
+	}
+
+	@Override
+	public void apply(TransformHandle transformHandle) {
+		if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+		Drawable drawable = getDevice();
+		long handle = transformHandle.handle;
+		int zoom = transformHandle.zoom;
+		Gdip.Matrix_Translate(handle, DPIUtil.scaleUp(drawable, offsetX, zoom), DPIUtil.scaleUp(drawable, offsetY, zoom), Gdip.MatrixOrderPrepend);
+	}
+}
+
+private interface Operation {
+	void apply(TransformHandle transformHandle);
+}
+
+private void storeAndApplyOperationForAllHandles(Operation operation) {
+	operations.add(operation);
+	zoomToHandle.forEach((zoom, handle) -> operation.apply(handle));
+}
+
+private <T> T applyOnAnyHandle(Function<TransformHandle, T> function) {
+	if (zoomToHandle.isEmpty()) {
+		TransformHandle handle = newTransformHandle(DPIUtil.getDeviceZoom());
+		try {
+			return function.apply(handle);
+		} finally {
+			handle.destroy();
+		}
+	} else {
+		return function.apply(zoomToHandle.values().iterator().next());
+	}
 }
 
 /**
@@ -406,16 +573,26 @@ public String toString() {
 	return "Transform {" + elements [0] + "," + elements [1] + "," +elements [2] + "," +elements [3] + "," +elements [4] + "," +elements [5] + "}";
 }
 
-long getHandle(int zoomLevel) {
-	if(zoomLevelToHandle.get(zoomLevel) == null) {
-		float[] elements = new float[6];
-		getElements(elements);
-		elements[4] = DPIUtil.scaleUp(device, DPIUtil.scaleDown(device, elements[4], initialZoom), zoomLevel);
-		elements[5] = DPIUtil.scaleUp(device, DPIUtil.scaleDown(device, elements[5], initialZoom), zoomLevel);
-
-		zoomLevelToHandle.put(zoomLevel, Gdip.Matrix_new(elements[0], elements[1], elements[2], elements[3], elements[4], elements[5]));
+private TransformHandle newTransformHandle(int zoom) {
+	long newHandle = Gdip.Matrix_new(0, 0, 0, 0, 0, 0);
+	if (newHandle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	TransformHandle newTransformHandle = new TransformHandle(newHandle, zoom);
+	for(Operation operation : operations) {
+		operation.apply(newTransformHandle);
 	}
-	return zoomLevelToHandle.get(zoomLevel);
+	return newTransformHandle;
 }
 
+private TransformHandle getTransformHandle(int zoom) {
+	if (!zoomToHandle.containsKey(zoom)) {
+		TransformHandle newPathHandle = newTransformHandle(zoom);
+		zoomToHandle.put(zoom, newPathHandle);
+		return newPathHandle;
+	}
+	return zoomToHandle.get(zoom);
+}
+
+long getHandle(int zoom) {
+	return getTransformHandle(zoom).handle;
+}
 }
