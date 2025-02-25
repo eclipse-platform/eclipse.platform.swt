@@ -310,10 +310,7 @@ void destroy() {
  */
 @Override
 public boolean equals(Object object) {
-	if (this == object) return true;
-	if (!(object instanceof Region)) return false;
-	Region region = (Region)object;
-	return handle == region.handle;
+	return super.equals(object);
 }
 
 /**
@@ -371,7 +368,7 @@ public static Region gtk_new(Device device, long handle) {
  */
 @Override
 public int hashCode() {
-	return (int)handle;
+	return super.hashCode();
 }
 
 /**
