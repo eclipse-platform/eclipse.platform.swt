@@ -23,6 +23,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SegmentListener;
@@ -381,6 +383,19 @@ public void test_getSelectionIndex() {
 		combo.deselect(i);
 		assertEquals(-1, combo.getSelectionIndex());
 	}
+}
+
+@Test
+public void test_getSelectionIndex_duringSelect() {
+	final AtomicInteger duringModification = new AtomicInteger(-2);
+	combo.add("abc");
+	combo.addListener(SWT.Modify, evt -> {
+		duringModification.set(combo.getSelectionIndex());
+	});
+
+	combo.select(0);
+
+	assertEquals(0, duringModification.get());
 }
 
 @Test
