@@ -96,6 +96,7 @@ public class List extends Scrollable implements ICustomWidget {
 		if (!isVisible()) {
 			return;
 		}
+		e.gc.setFont(getFont());
 		GC gc = e.gc != null ? e.gc : new GC(this);
 		doPaint(e);
 		gc.dispose();
@@ -106,8 +107,21 @@ public class List extends Scrollable implements ICustomWidget {
 		if (r.width == 0 && r.height == 0) {
 			return;
 		}
+		drawBackground(e);
 		for (int i = 0; i < this.items.size(); i++) {
 			drawTextLine(items.get(i), i, e.x, e.y, e.gc);
+		}
+	}
+
+	private void drawBackground(PaintEvent e) {
+		GC gc = e.gc;
+		gc.fillRectangle(e.x, e.y, e.width - 1, e.height - 1);
+
+		if ((style & SWT.BORDER) != 0 && isEnabled()) {
+			Color foreground = gc.getForeground();
+			gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_DARK_GRAY));
+			gc.drawLine(e.x, e.y + e.height - 1, e.x + e.x + e.width - 1, e.y + e.height - 1);
+			gc.setForeground(foreground);
 		}
 	}
 
@@ -132,11 +146,17 @@ public class List extends Scrollable implements ICustomWidget {
 		if (horizontalBar != null) {
 			_x -= horizontalBar.getSelection();
 		}
-
-		if (this.selectedItems.size() != 0 && this.selectedItems.contains(lineNumber)) {
-			drawSelectedText(text, gc, _x, _y);
+		if (isEnabled()) {
+			if (this.selectedItems.size() != 0 && this.selectedItems.contains(lineNumber)) {
+				drawSelectedText(text, gc, _x, _y);
+			} else {
+				gc.drawText(text, _x, _y, true);
+			}
 		} else {
+			Color foreground = gc.getForeground();
+			gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_DARK_GRAY));
 			gc.drawText(text, _x, _y, true);
+			gc.setForeground(foreground);
 		}
 	}
 
@@ -211,32 +231,26 @@ public class List extends Scrollable implements ICustomWidget {
 
 	private void onMouseUp(MouseEvent e) {
 		if ((e.stateMask & SWT.BUTTON1) != 0) {
-			if ((e.stateMask & SWT.CTRL) != 0) {
-				toggleSelection(e.x, e.y);
-			} else {
-				selectSingleItem(e);
-			}
+			toggleSelection(e);
 		}
 		redraw();
 	}
 
-	private void toggleSelection(int x, int y) {
-		int clickedLine = getTextLocation(x, y);
-		if (clickedLine >= 0 && clickedLine < this.items.size()) {
+	private void toggleSelection(MouseEvent e) {
+		int clickedLine = getTextLocation(e.x, e.y);
+		if ((e.stateMask & SWT.CTRL) != 0) {
 			if (this.selectedItems.contains(clickedLine)) {
 				this.selectedItems.remove(Integer.valueOf(clickedLine));
 			} else {
 				this.selectedItems.add(clickedLine);
 				this.lastSelectedItem = clickedLine;
 			}
+		} else {
+			this.selectedItems.clear();
+			this.selectedItems.add(clickedLine);
+			this.lastSelectedItem = clickedLine;
 		}
-	}
-
-	private void selectSingleItem(MouseEvent e) {
-		Integer selectedLine = Integer.valueOf(getTextLocation(e.x, e.y));
-		this.selectedItems.clear();
-		this.selectedItems.add(selectedLine);
-		this.lastSelectedItem = selectedLine;
+		sendSelectionEvent(SWT.Selection);
 	}
 
 	private int getTextLocation(int selectedX, int selectedY) {
@@ -245,9 +259,9 @@ public class List extends Scrollable implements ICustomWidget {
 
 		GC gc = new GC(this);
 		String[] textLines = this.items.toArray(new String[0]);
-		int clickedLine = Math.min(Math.round(y / getLineHeight(gc)), textLines.length - 1);
-		int selectedLine = Math.min(clickedLine, textLines.length - 1);
-		return selectedLine;
+		int lineOnArea = Math.min(Math.round(y / getLineHeight(gc)), textLines.length - 1);
+		int lineOfText = lineOnArea + this.topIndex;
+		return Math.min(lineOfText, textLines.length - 1);
 	}
 
 	private int getLineHeight(GC gc) {
@@ -281,31 +295,31 @@ public class List extends Scrollable implements ICustomWidget {
 		GC gc = new GC(this);
 		gc.setFont(getFont());
 		int width = 0, height = 0;
-		if ((style & SWT.SINGLE) != 0) {
-			String str = this.items.isEmpty() ? "" : this.items.get(0);
-			Point size = gc.textExtent(str);
-			if (str.length() > 0) {
-				width = (int) Math.ceil(size.x);
-			}
-			height = (int) Math.ceil(size.y);
-		} else {
-			Point size = null;
-			for (String line : this.items) {
-				size = gc.textExtent(line);
-				width = Math.max(width, size.x);
-			}
-			height = size != null ? size.y * this.items.size() : 0;
-			if (horizontalBar != null) {
-				height += horizontalBar.getSize().y;
-			}
-			if (verticalBar != null) {
-				width += verticalBar.getSize().x;
-			}
+		Point size = null;
+		for (String line : this.items) {
+			size = gc.textExtent(line);
+			width = Math.max(width, size.x);
+		}
+		height = size != null ? size.y * this.items.size() : 0;
+		if (horizontalBar != null) {
+			height += horizontalBar.getSize().y;
+		}
+		if (verticalBar != null) {
+			width += verticalBar.getSize().x;
 		}
 		gc.dispose();
-
 		return new Point(width, height);
+	}
 
+	@Override
+	public Point computeSize(int wHint, int hHint, boolean changed) {
+		checkWidget();
+		Point size = computeTextSize();
+		if ((style & SWT.BORDER) != 0) {
+			size.x += 2 * getBorderWidth() + INSET;
+			size.y += 2 * getBorderWidth();
+		}
+		return size;
 	}
 
 	private void updateScrollBarWithTextSize() {
