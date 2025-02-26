@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -4655,6 +4655,7 @@ class AccessibleObject {
 	}
 
 	void sendEvent(int event, Object eventData) {
+		if(GTK.GTK4) return; //TODO reenable for GTK 4.x
 		switch (event) {
 			case ACC.EVENT_SELECTION_CHANGED:
 				OS.g_signal_emit_by_name (atkHandle, ATK.selection_changed);
