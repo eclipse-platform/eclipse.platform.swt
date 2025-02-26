@@ -72,7 +72,6 @@ public final class TextLayout extends Resource {
 
 	int nativeZoom = DPIUtil.getNativeDeviceZoom();
 	private static Surface surface;
-	private static GC innerGC;
 
 	static final char LTR_MARK = '\u200E', RTL_MARK = '\u200F';
 
@@ -137,10 +136,7 @@ public final class TextLayout extends Resource {
 
 			}
 
-			if (innerGC == null) {
-				innerGC = new GC(device);
-				setFont(innerGC.getFont());
-			}
+			setFont(device.getSystemFont());
 
 			textLayouts.add(this);
 
@@ -319,10 +315,6 @@ public final class TextLayout extends Resource {
 			if (textLayouts.isEmpty()) {
 				surface.close();
 				surface = null;
-
-				innerGC.dispose();
-				innerGC = null;
-
 			}
 
 		}
@@ -1188,12 +1180,11 @@ public final class TextLayout extends Resource {
 
 		if (lineBounds == null && fastCalculationMode) {
 
-			FontMetrics fm = innerGC.getFontMetrics();
+			var fm = skijaFont.getMetrics();
 
-			int height = Math.abs(fm.getAscent()) + Math.abs(fm.getDescent())
-					+ Math.abs(fm.getLeading());
+			int height = getLineHeight();
 
-			double avgWidth = fm.getAverageCharacterWidth();
+			double avgWidth = fm.getAvgCharWidth();
 
 			String[] splits = text.split(System.lineSeparator());
 
@@ -1343,11 +1334,7 @@ public final class TextLayout extends Resource {
 
 	public Font getFont() {
 		checkLayout();
-
-		if (swtFont != null)
-			return swtFont;
-
-		return innerGC.getFont();
+		return swtFont;
 	}
 
 	/**
@@ -1526,10 +1513,7 @@ public final class TextLayout extends Resource {
 		checkLayout();
 
 		if (lineBounds == null && lineIndex == 0 && fastCalculationMode) {
-			FontMetrics fm = innerGC.getFontMetrics();
-
-			return new Rectangle(0, 0, 0, Math.abs(fm.getAscent())
-					+ Math.abs(fm.getDescent()) + Math.abs(fm.getLeading()));
+			return new Rectangle(0, 0, 0, getLineHeight());
 
 		}
 		computeRuns(null);
@@ -1609,53 +1593,45 @@ public final class TextLayout extends Resource {
 
 	public FontMetrics getLineMetrics(int lineIndex) {
 		checkLayout();
+		computeRuns(null);
+		FontMetrics fontMetrics = new FontMetrics();
 
-		// if (font == null)
-		// setFont(null);
-		// if (true) {
-		// IFontMetrics fm = new SkijaFontMetrics(font.getMetrics());
-		// return fm;
-		// }
-		//
-		// // TODO a GC just for getting the FontMetrics is wrong. This should
-		// be
-		// // done differently.
-		FontMetrics fm = innerGC.getFontMetrics();
+		var lineMetricsPerLine = paragraph.getLineMetrics();
+		var lineMetrics = lineMetricsPerLine.length > 0 ? lineMetricsPerLine[lineIndex] : null;
+		fontMetrics.innerFontMetrics = new FontMetricsHandle() {
+			@Override
+			public int getLeading() {
+				return lineMetrics != null
+						? (int) (lineMetrics.getHeight() - lineMetrics.getDescent() - lineMetrics.getAscent())
+						: getHeight() - getAscent() - getDescent();
+			}
 
-		return fm;
+			@Override
+			public int getHeight() {
+				return lineMetrics != null ? (int) lineMetrics.getHeight() : TextLayout.this.getLineHeight();
+			}
 
-		// NSAutoreleasePool pool = null;
-		// if (!NSThread.isMainThread())
-		// pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
-		// try {
-		// computeRuns();
-		// int lineCount = getLineCount();
-		// if (!(0 <= lineIndex && lineIndex < lineCount))
-		// SWT.error(SWT.ERROR_INVALID_RANGE);
-		// if (fixedLineMetrics != null)
-		// return fixedLineMetrics.makeCopy();
-		// int length = text.length();
-		// if (length == 0) {
-		// Font font = this.font != null ? this.font : device.systemFont;
-		// int ascent = (int) layoutManager
-		// .defaultBaselineOffsetForFont(font.handle);
-		// int descent = (int) layoutManager
-		// .defaultLineHeightForFont(font.handle) - ascent;
-		// ascent = Math.max(ascent, this.ascent);
-		// descent = Math.max(descent, this.descent);
-		// return FontMetrics.cocoa_new(ascent, descent, 0.0, 0,
-		// ascent + descent);
-		// }
-		// Rectangle rect = getLineBounds(lineIndex);
-		// int baseline = (int) layoutManager.typesetter()
-		// .baselineOffsetInLayoutManager(layoutManager,
-		// getLineOffsets()[lineIndex]);
-		// return FontMetrics.cocoa_new(rect.height - baseline, baseline, 0.0,
-		// 0, rect.height);
-		// } finally {
-		// if (pool != null)
-		// pool.release();
-		// }
+			@Override
+			public int getDescent() {
+				return lineMetrics != null ? (int) lineMetrics.getDescent() : TextLayout.this.getDescent();
+			}
+
+			@Override
+			public double getAverageCharacterWidth() {
+				return skijaFont.getMetrics().getAvgCharWidth();
+			}
+
+			@Override
+			public int getAverageCharWidth() {
+				return (int) skijaFont.getMetrics().getAvgCharWidth();
+			}
+
+			@Override
+			public int getAscent() {
+				return lineMetrics != null ? (int) lineMetrics.getAscent() : TextLayout.this.getAscent();
+			}
+		};
+		return fontMetrics;
 	}
 
 	Color getLinkForeground() {
@@ -2673,6 +2649,9 @@ public final class TextLayout extends Resource {
 			return;
 
 		this.swtFont = font;
+		if (swtFont == null) {
+			swtFont = device.getSystemFont();
+		}
 		if (skijaFont != null) {
 			skijaFont.close();
 		}
