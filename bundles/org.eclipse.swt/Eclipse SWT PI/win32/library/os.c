@@ -2510,6 +2510,18 @@ fail:
 }
 #endif
 
+#ifndef NO_GetDpiForWindow
+JNIEXPORT jint JNICALL OS_NATIVE(GetDpiForWindow)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetDpiForWindow_FUNC);
+	rc = (jint)GetDpiForWindow((HWND)arg0);
+	OS_NATIVE_EXIT(env, that, GetDpiForWindow_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetFocus
 JNIEXPORT jlong JNICALL OS_NATIVE(GetFocus)
 	(JNIEnv *env, jclass that)
