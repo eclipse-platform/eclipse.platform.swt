@@ -5163,7 +5163,7 @@ String wrapText (String text, long handle, int width) {
 
 static String withCrLf (String string) {
 	/* Create a new string with the CR/LF line terminator. */
-	int i = 0;	
+	int i = 0;
 	int length = string.length();
 	StringBuilder result = new StringBuilder (length);
 	while (i < length) {
@@ -5180,7 +5180,7 @@ static String withCrLf (String string) {
 			}
 		}
 	}
-	
+
 	/* Avoid creating a copy of the string if it has not changed */
 	if (string.length()== result.length()) return string;
 	return result.toString ();
