@@ -14,6 +14,7 @@
 package org.eclipse.swt.graphics;
 
 import java.util.*;
+import java.util.function.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
@@ -39,11 +40,11 @@ import org.eclipse.swt.internal.gdip.*;
  */
 public class Transform extends Resource {
 
-	private int initialZoom;
-
 	private Map<Integer, TransformHandle> zoomToHandle = new HashMap<>();
 
 	private List<Operation> operations = new ArrayList<>();
+
+	private boolean isDestroyed;
 
 /**
  * Constructs a new identity Transform.
@@ -140,12 +141,8 @@ public Transform(Device device, float[] elements) {
  */
 public Transform (Device device, float m11, float m12, float m21, float m22, float dx, float dy) {
 	super(device);
-	initialZoom = DPIUtil.getDeviceZoom();
 	this.device.checkGDIP();
-	long handle = Gdip.Matrix_new(m11, m12, m21, m22,
-			DPIUtil.scaleUp(this.device, dx, initialZoom), DPIUtil.scaleUp(this.device, dy, initialZoom));
-	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	zoomToHandle.put(initialZoom, new TransformHandle(handle, initialZoom));
+	storeAndApplyOperationForAllHandles(new SetElementsOperation(m11, m12, m21, m22, dx, dy));
 	init();
 	this.device.registerResourceWithZoomSupport(this);
 }
@@ -161,19 +158,14 @@ void destroy() {
 	device.deregisterResourceWithZoomSupport(this);
 	zoomToHandle.values().forEach(TransformHandle::destroy);
 	zoomToHandle.clear();
-	operations.clear();
+	this.isDestroyed = true;
 }
 
 @Override
 void destroyHandlesExcept(Set<Integer> zoomLevels) {
-	zoomToHandle.entrySet().removeIf(entry -> {
-		final Integer zoom = entry.getKey();
-		if (!zoomLevels.contains(zoom) && zoom != initialZoom) {
-			entry.getValue().destroy();
-			return true;
-		}
-		return false;
-	});
+	// As long as we keep the operations, we can cleanup all handles
+	zoomToHandle.values().forEach(TransformHandle::destroy);
+	zoomToHandle.clear();
 }
 
 /**
@@ -194,12 +186,14 @@ public void getElements(float[] elements) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (elements == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (elements.length < 6) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	TransformHandle transformHandle = getTransformHandle(initialZoom);
-	Gdip.Matrix_GetElements(transformHandle.handle, elements);
-	Drawable drawable = getDevice();
-	int zoom = transformHandle.zoom;
-	elements[4] = DPIUtil.scaleDown(drawable, elements[4], zoom);
-	elements[5] = DPIUtil.scaleDown(drawable, elements[5], zoom);
+	applyUsingAnyHandle(transformHandle -> {
+		Gdip.Matrix_GetElements(transformHandle.handle, elements);
+		Drawable drawable = getDevice();
+		int zoom = transformHandle.zoom;
+		elements[4] = DPIUtil.scaleDown(drawable, elements[4], zoom);
+		elements[5] = DPIUtil.scaleDown(drawable, elements[5], zoom);
+		return true;
+	});
 }
 
 /**
@@ -245,7 +239,7 @@ public void invert() {
  */
 @Override
 public boolean isDisposed() {
-	return zoomToHandle.isEmpty();
+	return this.isDestroyed;
 }
 
 /**
@@ -256,8 +250,9 @@ public boolean isDisposed() {
  */
 public boolean isIdentity() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	TransformHandle transformHandle = getTransformHandle(initialZoom);
-	return Gdip.Matrix_IsIdentity(transformHandle.handle);
+	return applyUsingAnyHandle(transformHandle -> {
+		return Gdip.Matrix_IsIdentity(transformHandle.handle);
+	});
 }
 
 /**
@@ -374,15 +369,18 @@ public void transform(float[] pointArray) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	Drawable drawable = getDevice();
-	TransformHandle transformHandle = getTransformHandle(initialZoom);
-	int length = pointArray.length;
-	for (int i = 0; i < length; i++) {
-		pointArray[i] = DPIUtil.scaleUp(drawable, pointArray[i], transformHandle.zoom);
-	}
-	Gdip.Matrix_TransformPoints(transformHandle.handle, pointArray, length / 2);
-	for (int i = 0; i < length; i++) {
-		pointArray[i] = DPIUtil.scaleDown(drawable, pointArray[i], transformHandle.zoom);
-	}
+	applyUsingAnyHandle(transformHandle -> {
+		int length = pointArray.length;
+		for (int i = 0; i < length; i++) {
+			pointArray[i] = DPIUtil.scaleUp(drawable, pointArray[i], transformHandle.zoom);
+		}
+		Gdip.Matrix_TransformPoints(transformHandle.handle, pointArray, length / 2);
+		for (int i = 0; i < length; i++) {
+			pointArray[i] = DPIUtil.scaleDown(drawable, pointArray[i], transformHandle.zoom);
+		}
+		return pointArray;
+	});
+
 }
 
 /**
@@ -517,6 +515,19 @@ private void storeAndApplyOperationForAllHandles(Operation operation) {
 	zoomToHandle.forEach((zoom, handle) -> operation.apply(handle));
 }
 
+private <T> T applyUsingAnyHandle(Function<TransformHandle, T> function) {
+	if (zoomToHandle.isEmpty()) {
+		TransformHandle temporaryHandle = newTransformHandle(DPIUtil.getDeviceZoom());
+		try {
+			return function.apply(temporaryHandle);
+		} finally {
+			temporaryHandle.destroy();
+		}
+	} else {
+		return function.apply(zoomToHandle.values().iterator().next());
+	}
+}
+
 /**
  * Returns a string containing a concise, human-readable
  * description of the receiver.
@@ -530,21 +541,27 @@ public String toString() {
 	getElements(elements);
 	return "Transform {" + elements [0] + "," + elements [1] + "," +elements [2] + "," +elements [3] + "," +elements [4] + "," +elements [5] + "}";
 }
+
+private TransformHandle newTransformHandle(int zoom) {
+	long newHandle = Gdip.Matrix_new(0, 0, 0, 0, 0, 0);
+	if (newHandle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	TransformHandle newTransformHandle = new TransformHandle(newHandle, zoom);
+	for(Operation operation : operations) {
+		operation.apply(newTransformHandle);
+	}
+	return newTransformHandle;
+}
+
 private TransformHandle getTransformHandle(int zoom) {
-	if(zoomToHandle.get(zoom) == null) {
-		float[] elements = new float[6];
-		getElements(elements);
-		elements[4] = DPIUtil.scaleUp(device, DPIUtil.scaleDown(device, elements[4], initialZoom), zoom);
-		elements[5] = DPIUtil.scaleUp(device, DPIUtil.scaleDown(device, elements[5], initialZoom), zoom);
-		long handle = Gdip.Matrix_new(elements[0], elements[1], elements[2], elements[3], elements[4], elements[5]);
-		TransformHandle transformHandle = new TransformHandle(handle, zoom);
-		zoomToHandle.put(zoom, transformHandle);
-		return transformHandle;
+	if (!zoomToHandle.containsKey(zoom)) {
+		TransformHandle newHandle = newTransformHandle(zoom);
+		zoomToHandle.put(zoom, newHandle);
+		return newHandle;
 	}
 	return zoomToHandle.get(zoom);
 }
 
-long getHandle(int zoomLevel) {
-	return getTransformHandle(zoomLevel).handle;
+long getHandle(int zoom) {
+	return getTransformHandle(zoom).handle;
 }
 }
