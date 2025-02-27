@@ -45,7 +45,7 @@ import org.eclipse.swt.internal.gtk4.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * @noextend This class is not intended to be subclassed by clients.
  */
-public class Group extends Composite {
+public class Group_old extends Composite {
 	long clientHandle, labelHandle;
 	String text = "";
 	// We use this to keep track of the foreground color
@@ -83,7 +83,7 @@ public class Group extends Composite {
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
-public Group (Composite parent, int style) {
+public Group_old (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
