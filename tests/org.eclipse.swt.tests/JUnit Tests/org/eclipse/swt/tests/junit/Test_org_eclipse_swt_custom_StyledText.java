@@ -3296,7 +3296,6 @@ public void test_setEditableZ(){
 
 @Override
 @Test
-@Ignore
 public void test_setFontLorg_eclipse_swt_graphics_Font(){
 	FontData fontData = text.getFont().getFontData()[0];
 	int lineHeight;
