@@ -19,6 +19,7 @@
 
 /* Libraries for dynamic loaded functions */
 #define GetDpiForMonitor_LIB "shcore.dll"
+#define GetDpiForWindow_LIB "shcore.dll"
 #define RtlGetVersion_LIB "ntdll.dll"
 #define OpenThemeDataForDpi_LIB "uxtheme.dll"
 #define GetSystemMetricsForDpi_LIB "user32.dll"

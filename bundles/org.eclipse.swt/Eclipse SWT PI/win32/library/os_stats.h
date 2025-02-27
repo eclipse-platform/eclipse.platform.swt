@@ -203,6 +203,7 @@ typedef enum {
 	GetDlgItem_FUNC,
 	GetDoubleClickTime_FUNC,
 	GetDpiForMonitor_FUNC,
+	GetDpiForWindow_FUNC,
 	GetFocus_FUNC,
 	GetFontLanguageInfo_FUNC,
 	GetForegroundWindow_FUNC,
