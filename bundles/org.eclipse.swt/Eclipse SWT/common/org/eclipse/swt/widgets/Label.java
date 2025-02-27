@@ -91,7 +91,6 @@ public class Label extends CustomControl {
 	private int[] gradientPercents;
 	private boolean gradientVertical;
 	private Color background;
-	private Point computedSize;
 
 	private static final int DRAW_FLAGS = SWT.DRAW_MNEMONIC | SWT.DRAW_TAB
 	                                      | SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER;
@@ -177,15 +176,7 @@ public class Label extends CustomControl {
 		return false;
 	}
 
-	@Override
-	public Point computeSize(int wHint, int hHint, boolean changed) {
-		checkWidget();
-
-		if (!changed && computedSize != null) {
-			return new Point(Math.max(wHint, computedSize.x),
-			                 Math.max(hHint, computedSize.y));
-		}
-
+	protected Point computeDefaultSize() {
 		int lineWidth = 0;
 		int lineHeight = 0;
 
@@ -217,10 +208,7 @@ public class Label extends CustomControl {
 		int height = topMargin + Math.max(lineHeight, imageHeight)
 				+ this.bottomMargin;
 
-		computedSize = new Point(width, height);
-
-		return new Point(Math.max(wHint, computedSize.x),
-				Math.max(hHint, computedSize.y));
+		return new Point(width, height);
 	}
 
 	/**
@@ -1165,7 +1153,6 @@ public class Label extends CustomControl {
 	 */
 	public void setText(String text) {
 		checkWidget();
-		computedSize = null;
 		if (text == null) {
 			text = ""; //$NON-NLS-1$
 		}

@@ -352,20 +352,18 @@ public class Scale extends CustomControl {
 	}
 
 	@Override
-	public Point computeSize(int wHint, int hHint, boolean changed) {
-		checkWidget();
-		int computedWidth;
-		int computedHeight;
-
+	protected Point computeDefaultSize() {
+		int width;
+		int height;
 		if (isVertical()) {
-			computedWidth = (wHint == SWT.DEFAULT) ? PREFERRED_HEIGHT : wHint;
-			computedHeight = (hHint == SWT.DEFAULT) ? PREFERRED_WIDTH : hHint;
+			width = PREFERRED_HEIGHT;
+			height = PREFERRED_WIDTH;
 		} else {
-			computedWidth = (wHint == SWT.DEFAULT) ? PREFERRED_WIDTH : wHint;
-			computedHeight = (hHint == SWT.DEFAULT) ? PREFERRED_HEIGHT : hHint;
+			width = PREFERRED_WIDTH;
+			height = PREFERRED_HEIGHT;
 		}
 
-		return new Point(computedWidth, computedHeight);
+		return new Point(width, height);
 	}
 
 	/**

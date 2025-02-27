@@ -70,8 +70,6 @@ public class Link extends CustomControl {
 
 	private Color background;
 
-	private Point computedSize;
-
 	private Color linkColor;
 
 	private static final int DRAW_FLAGS = SWT.DRAW_MNEMONIC | SWT.DRAW_TAB | SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER;
@@ -184,13 +182,7 @@ public class Link extends CustomControl {
 	}
 
 	@Override
-	public Point computeSize(int wHint, int hHint, boolean changed) {
-		checkWidget();
-
-		if (!changed && computedSize != null) {
-			return new Point(Math.max(wHint, computedSize.x), Math.max(hHint, computedSize.y));
-		}
-
+	protected Point computeDefaultSize() {
 		int lineWidth = 0;
 		int lineHeight = 0;
 
@@ -218,10 +210,7 @@ public class Link extends CustomControl {
 		}
 
 		int height = topMargin + lineHeight + this.bottomMargin;
-
-		computedSize = new Point(width, height);
-
-		return new Point(Math.max(wHint, computedSize.x), Math.max(hHint, computedSize.y));
+		return new Point(width, height);
 	}
 
 	/**
@@ -824,7 +813,6 @@ public class Link extends CustomControl {
 		if (text == null) {
 			error(SWT.ERROR_NULL_ARGUMENT);
 		}
-		computedSize = null;
 
 		parsedText.clear();
 		String[] lines = text.split("\n");

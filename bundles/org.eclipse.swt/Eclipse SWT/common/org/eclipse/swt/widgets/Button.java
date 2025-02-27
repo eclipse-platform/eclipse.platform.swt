@@ -599,29 +599,11 @@ public class Button extends CustomControl {
 	}
 
 	@Override
-	public Point computeSize(int wHint, int hHint, boolean changed) {
-		checkWidget();
-		if (!changed) {
-			Point hintPoint = new Point(wHint, hHint);
-			if (hintPoint.equals(computedSize)) {
-				return computedSize;
-			}
-		}
-
+	protected Point computeDefaultSize() {
 		if (isArrowButton()) {
 			int borderWidth = hasBorder() ? 8 : 0;
-			int width = Math.max(wHint, 14 + borderWidth);
-			int height = Math.max(hHint, 14 + borderWidth);
-
-			computedSize = new Point(width, height);
-
-			if (wHint != SWT.DEFAULT) {
-				computedSize.x = wHint;
-			}
-			if (hHint != SWT.DEFAULT) {
-				computedSize.y = wHint;
-			}
-
+			int width = 14 + borderWidth;
+			int height = 14 + borderWidth;
 			return new Point(width, height);
 		}
 
@@ -661,16 +643,7 @@ public class Button extends CustomControl {
 			height += 10;
 		}
 
-		computedSize = new Point(width, height);
-
-		if (wHint != SWT.DEFAULT) {
-			computedSize.x = wHint;
-		}
-		if (hHint != SWT.DEFAULT) {
-			computedSize.y = wHint;
-		}
-
-		return computedSize;
+		return new Point(width, height);
 	}
 
 	/**

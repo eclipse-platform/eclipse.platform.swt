@@ -22,6 +22,8 @@ import org.eclipse.swt.graphics.Rectangle;
  */
 public abstract class CustomControl extends NativeBasedCustomControl {
 
+	protected abstract Point computeDefaultSize();
+
 	private int x;
 	private int y;
 	private int width;
@@ -118,5 +120,15 @@ public abstract class CustomControl extends NativeBasedCustomControl {
 		if (parent.isEnabled()) {
 			redraw();
 		}
+	}
+
+	@Override
+	public Point computeSize(int wHint, int hHint, boolean changed) {
+		checkWidget();
+
+		Point defaultSize = computeDefaultSize();
+		int width = wHint == SWT.DEFAULT ? defaultSize.x : wHint;
+		int height = hHint == SWT.DEFAULT ? defaultSize.y : hHint;
+		return new Point(width, height);
 	}
 }
