@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Red Hat and others. All rights reserved.
+ * Copyright (c) 2019, 2025 Red Hat and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.DPIUtil.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.image.*;
 import org.eclipse.swt.widgets.*;
@@ -166,6 +167,14 @@ public ImageData[] load(InputStream stream) {
 	return imgDataArray;
 }
 
+private List<ElementAtZoom<ImageData>> load(InputStream stream, int fileZoom, int targetZoom) {
+	if (stream == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	reset();
+	ImageData[] imgDataArray = getImageDataArrayFromStream(stream);
+	data = imgDataArray;
+	return Arrays.stream(imgDataArray).map(i -> new ElementAtZoom<>(i, fileZoom)).toList();
+}
+
 /**
  * Return true if the image is an interlaced PNG file.
  * This is used to check whether ImageLoaderEvent should be fired when loading images.
@@ -290,9 +299,14 @@ ImageData [] getImageDataArrayFromStream(InputStream stream) {
  * </ul>
  */
 public ImageData[] load(String filename) {
+	load(filename, FileFormat.DEFAULT_ZOOM, FileFormat.DEFAULT_ZOOM);
+	return data;
+}
+
+List<ElementAtZoom<ImageData>> load(String filename, int fileZoom, int targetZoom) {
 	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	try (InputStream stream = new FileInputStream(filename)) {
-		return load(stream);
+		return load(stream, fileZoom, targetZoom);
 	} catch (IOException e) {
 		SWT.error(SWT.ERROR_IO, e);
 	}
