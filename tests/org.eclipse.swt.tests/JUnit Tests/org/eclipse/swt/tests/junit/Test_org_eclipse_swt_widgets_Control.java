@@ -882,7 +882,6 @@ public void test_setSizeII() {
 	control.setSize(-10, -10);
 }
 @Test
-@Ignore("Not working (yet)")
 public void test_setSizeLorg_eclipse_swt_graphics_Point() {
 	control.setSize(new Point(30, 40));
 	assertEquals(new Point(30, 40), control.getSize());
