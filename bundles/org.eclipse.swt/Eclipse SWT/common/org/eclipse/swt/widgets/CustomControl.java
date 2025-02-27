@@ -108,4 +108,15 @@ public abstract class CustomControl extends NativeBasedCustomControl {
 	public void setBounds(int x, int y, int width, int height) {
 		setBounds(new Rectangle(x, y, width, height));
 	}
+
+	@Override
+	public void setEnabled(boolean enabled) {
+		if (enabled == getEnabled()) {
+			return;
+		}
+		super.setEnabled(enabled);
+		if (parent.isEnabled()) {
+			redraw();
+		}
+	}
 }

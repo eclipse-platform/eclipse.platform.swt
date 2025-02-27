@@ -735,12 +735,6 @@ public class Label extends CustomControl {
 		}
 	}
 
-	@Override
-	public void setEnabled(boolean enabled) {
-		super.setEnabled(enabled);
-		redraw();
-	}
-
 	/**
 	 * Paint the Label's border.
 	 */

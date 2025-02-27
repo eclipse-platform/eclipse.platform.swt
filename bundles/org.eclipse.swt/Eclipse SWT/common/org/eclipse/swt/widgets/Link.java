@@ -605,12 +605,6 @@ public class Link extends CustomControl {
 		}
 	}
 
-	@Override
-	public void setEnabled(boolean enabled) {
-		super.setEnabled(enabled);
-		redraw();
-	}
-
 	/**
 	 * Set the horizontal alignment of the Link. Use the values LEFT, CENTER and
 	 * RIGHT to align image and text within the available space.

@@ -1431,12 +1431,6 @@ public class Button extends CustomControl {
 		return -1;
 	}
 
-	@Override
-	public void setEnabled(boolean enabled) {
-		super.setEnabled(enabled);
-		redraw();
-	}
-
 	// TODO can this be used for a better arrow image?
 	static int[] bezier(int x0, int y0, int x1, int y1, int x2, int y2, int x3,
 			int y3, int count) {
