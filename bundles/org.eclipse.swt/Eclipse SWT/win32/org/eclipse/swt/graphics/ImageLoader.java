@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -18,6 +18,7 @@ import java.io.*;
 import java.util.*;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.DPIUtil.*;
 import org.eclipse.swt.internal.image.*;
 
 /**
@@ -149,10 +150,16 @@ void reset() {
  * </ul>
  */
 public ImageData[] load(InputStream stream) {
+	load(stream, FileFormat.DEFAULT_ZOOM, FileFormat.DEFAULT_ZOOM);
+	return data;
+}
+
+private List<ElementAtZoom<ImageData>> load(InputStream stream, int fileZoom, int targetZoom) {
 	if (stream == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	reset();
-	data = FileFormat.load(stream, this, FileFormat.DEFAULT_ZOOM);
-	return data;
+	List<ElementAtZoom<ImageData>> images = FileFormat.load(stream, this, fileZoom, targetZoom);
+	data = images.stream().map(ElementAtZoom::element).toArray(ImageData[]::new);
+	return images;
 }
 
 /**
@@ -174,9 +181,14 @@ public ImageData[] load(InputStream stream) {
  * </ul>
  */
 public ImageData[] load(String filename) {
+	load(filename, FileFormat.DEFAULT_ZOOM, FileFormat.DEFAULT_ZOOM);
+	return data;
+}
+
+List<ElementAtZoom<ImageData>> load(String filename, int fileZoom, int targetZoom) {
 	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	try (InputStream stream = new FileInputStream(filename)) {
-		return load(stream);
+		return load(stream, fileZoom, targetZoom);
 	} catch (IOException e) {
 		SWT.error(SWT.ERROR_IO, e);
 	}

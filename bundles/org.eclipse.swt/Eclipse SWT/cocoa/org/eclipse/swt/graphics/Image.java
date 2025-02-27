@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2020 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -778,6 +778,7 @@ public Image(Device device, ImageFileNameProvider imageFileNameProvider) {
 	super(device);
 	if (imageFileNameProvider == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.imageFileNameProvider = imageFileNameProvider;
+	//TODO: implement fine-grained zoom handling here as well?
 	String filename = imageFileNameProvider.getImagePath(100);
 	if (filename == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	NSAutoreleasePool pool = null;
@@ -880,7 +881,7 @@ public Image(Device device, ImageGcDrawer imageGcDrawer, int width, int height) 
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
 		init (data);
-		init ();		
+		init ();
 	} finally {
 		if (pool != null) pool.release();
 	}

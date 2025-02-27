@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2022 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -614,16 +614,15 @@ public Image(Device device, ImageFileNameProvider imageFileNameProvider) {
 	this.imageFileNameProvider = imageFileNameProvider;
 	currentDeviceZoom = DPIUtil.getDeviceZoom();
 	ElementAtZoom<String> filename = DPIUtil.validateAndGetImagePathAtZoom (imageFileNameProvider, currentDeviceZoom);
-	if (filename.zoom() == currentDeviceZoom) {
+	ElementAtZoom<ImageData> imageData = ImageDataLoader.load(filename.element(), filename.zoom(), currentDeviceZoom).get(0);
+	if (imageData.zoom() == currentDeviceZoom) {
 		initNative (filename.element());
 
 		if (this.surface == 0) {
-			ImageData data = new ImageData(filename.element());
-			init(data);
+			init(imageData.element());
 		}
 	} else {
-		ImageData imageData = new ImageData (filename.element());
-		ImageData resizedData = DPIUtil.autoScaleImageData (device, imageData, filename.zoom());
+		ImageData resizedData = DPIUtil.autoScaleImageData (device, imageData.element(), imageData.zoom());
 		init(resizedData);
 	}
 	init ();

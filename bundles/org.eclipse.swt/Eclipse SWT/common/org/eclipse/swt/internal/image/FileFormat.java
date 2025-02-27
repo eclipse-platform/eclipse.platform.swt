@@ -20,7 +20,7 @@ import java.util.function.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.DPIUtil.*;
 
 /**
  * Abstract factory class for loading/unloading images from files or streams
@@ -62,15 +62,8 @@ public abstract class FileFormat {
 		abstract ImageData[] loadFromByteStream();
 
 		@Override
-		ImageData[] loadFromByteStream(int zoom) {
-			if (zoom == DEFAULT_ZOOM) {
-				return loadFromByteStream();
-			}
-			return Arrays.stream(loadFromByteStream()).map(data -> {
-				int width = DPIUtil.scaleUp(data.width, zoom);
-				int height = DPIUtil.scaleUp(data.height, zoom);
-				return data.scaledTo(width, height);
-			}).toArray(ImageData[]::new);
+		List<ElementAtZoom<ImageData>> loadFromByteStream(int fileZoom, int targetZoom) {
+			return Arrays.stream(loadFromByteStream()).map(d -> new ElementAtZoom<>(d, fileZoom)).toList();
 		}
 	}
 
@@ -85,16 +78,16 @@ public abstract class FileFormat {
 	 */
 	abstract boolean isFileFormat(LEDataInputStream stream) throws IOException;
 
-	abstract ImageData[] loadFromByteStream(int zoom);
+	abstract List<ElementAtZoom<ImageData>> loadFromByteStream(int fileZoom, int targetZoom);
 
 /**
  * Read the specified input stream, and return the
  * device independent image array represented by the stream.
  */
-public ImageData[] loadFromStream(LEDataInputStream stream, int zoom) {
+public List<ElementAtZoom<ImageData>> loadFromStream(LEDataInputStream stream, int fileZoom, int targetZoom) {
 	try {
 		inputStream = stream;
-		return loadFromByteStream(zoom);
+		return loadFromByteStream(fileZoom, targetZoom);
 	} catch (Exception e) {
 		if (e instanceof IOException) {
 			SWT.error(SWT.ERROR_IO, e);
@@ -109,7 +102,7 @@ public ImageData[] loadFromStream(LEDataInputStream stream, int zoom) {
  * Read the specified input stream using the specified loader, and
  * return the device independent image array represented by the stream.
  */
-public static ImageData[] load(InputStream is, ImageLoader loader, int zoom) {
+public static List<ElementAtZoom<ImageData>> load(InputStream is, ImageLoader loader, int fileZoom, int targetZoom) {
 	LEDataInputStream stream = new LEDataInputStream(is);
 	FileFormat fileFormat = FORMAT_FACTORIES.stream().skip(1) //
 			.map(Supplier::get).filter(f -> {
@@ -122,7 +115,7 @@ public static ImageData[] load(InputStream is, ImageLoader loader, int zoom) {
 			.findFirst().orElse(null);
 	if (fileFormat == null) SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT);
 	fileFormat.loader = loader;
-	return fileFormat.loadFromStream(stream, zoom);
+	return fileFormat.loadFromStream(stream, fileZoom,targetZoom);
 }
 
 /**

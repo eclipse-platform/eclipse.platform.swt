@@ -133,7 +133,7 @@ ImageData loadIcon(int[] iconHeader) {
 		StaticImageFileFormat png = new PNGFileFormat();
 		if (png.isFileFormat(inputStream)) {
 			png.loader = this.loader;
-			return png.loadFromStream(inputStream, DEFAULT_ZOOM)[0];
+			return png.loadFromStream(inputStream, DEFAULT_ZOOM, DEFAULT_ZOOM).get(0).element();
 		}
 	} catch (Exception e) {
 	}

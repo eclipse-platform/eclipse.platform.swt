@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2022 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -552,15 +552,17 @@ public Image(Device device, ImageFileNameProvider imageFileNameProvider) {
 	super(device);
 	this.imageProvider = new ImageFileNameProviderWrapper(imageFileNameProvider);
 	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
-	ElementAtZoom<String> fileName = DPIUtil.validateAndGetImagePathAtZoom (imageFileNameProvider, getZoom());
-	if (fileName.zoom() == getZoom()) {
-		ImageHandle imageMetadata = initNative (fileName.element(), getZoom());
+	int deviceZoom = getZoom();
+	ElementAtZoom<String> fileName = DPIUtil.validateAndGetImagePathAtZoom(imageFileNameProvider, deviceZoom);
+	ElementAtZoom<ImageData> imageData = ImageDataLoader.load(fileName.element(), fileName.zoom(), deviceZoom).get(0);
+	if (imageData.zoom() == deviceZoom) {
+		ImageHandle imageMetadata = initNative(fileName.element(), deviceZoom);
 		if (imageMetadata == null) {
-			init(new ImageData (fileName.element()), getZoom());
+			init(imageData.element(), deviceZoom);
 		}
 	} else {
-		ImageData resizedData = DPIUtil.autoScaleImageData (device, new ImageData (fileName.element()), fileName.zoom());
-		init(resizedData, getZoom());
+		ImageData resizedData = DPIUtil.autoScaleImageData(device, imageData.element(), imageData.zoom());
+		init(resizedData, deviceZoom);
 	}
 	init();
 	this.device.registerResourceWithZoomSupport(this);
