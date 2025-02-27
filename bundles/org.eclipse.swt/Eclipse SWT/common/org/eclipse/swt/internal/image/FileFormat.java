@@ -20,6 +20,7 @@ import java.util.function.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 
 /**
  * Abstract factory class for loading/unloading images from files or streams
@@ -66,8 +67,8 @@ public abstract class FileFormat {
 				return loadFromByteStream();
 			}
 			return Arrays.stream(loadFromByteStream()).map(data -> {
-				int width = (int) Math.round(data.width * zoom / 100.);
-				int height = (int) Math.round(data.height * zoom / 100.);
+				int width = DPIUtil.scaleUp(data.width, zoom);
+				int height = DPIUtil.scaleUp(data.height, zoom);
 				return data.scaledTo(width, height);
 			}).toArray(ImageData[]::new);
 		}
