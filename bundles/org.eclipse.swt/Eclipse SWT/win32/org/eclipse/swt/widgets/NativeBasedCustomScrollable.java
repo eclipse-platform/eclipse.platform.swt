@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
-public class NativeBasedCustomScrollable extends Scrollable {
+abstract class NativeBasedCustomScrollable extends Scrollable {
 
 	public NativeBasedCustomScrollable(Composite parent, int style) {
 		super(parent, style);
