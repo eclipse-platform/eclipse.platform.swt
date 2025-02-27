@@ -375,10 +375,9 @@ public class Button extends CustomControl {
 	}
 
 	private void doPaint(GC gc) {
-		Rectangle r = getBounds();
-		if (r.width == 0 && r.height == 0) {
-			return;
-		}
+		Point size = getSize();
+		final int width = size.x;
+		final int height = size.y;
 
 		boolean isRightAligned = (style & SWT.RIGHT) != 0;
 		boolean isCentered = (style & SWT.CENTER) != 0;
@@ -388,11 +387,11 @@ public class Button extends CustomControl {
 		int boxSpace = 0;
 		// Draw check box / radio box / push button border
 		if (isPushOrToggleButton) {
-			drawPushButton(gc, 0, 0, r.width - 1, r.height - 1);
+			drawPushButton(gc, 0, 0, width - 1, height - 1);
 		} else {
 			boxSpace = BOX_SIZE + SPACING;
 			int boxLeftOffset = LEFT_MARGIN;
-			int boxTopOffset = (r.height - 1 - BOX_SIZE) / 2;
+			int boxTopOffset = (height - 1 - BOX_SIZE) / 2;
 			if ((style & SWT.CHECK) == SWT.CHECK) {
 				drawCheckbox(gc, boxLeftOffset, boxTopOffset);
 			} else if ((style & SWT.RADIO) == SWT.RADIO) {
@@ -404,7 +403,7 @@ public class Button extends CustomControl {
 		gc.setAdvanced(false);
 
 		// Calculate area for button content (image + text)
-		int horizontalSpaceForContent = r.width - RIGHT_MARGIN - LEFT_MARGIN
+		int horizontalSpaceForContent = width - RIGHT_MARGIN - LEFT_MARGIN
 				- boxSpace;
 		int textWidth = 0;
 		int textHeight = 0;
@@ -428,7 +427,7 @@ public class Button extends CustomControl {
 		}
 		Rectangle contentArea = new Rectangle(LEFT_MARGIN + boxSpace,
 				TOP_MARGIN, imageSpace + textWidth,
-				r.height - TOP_MARGIN - BOTTOM_MARGIN);
+				height - TOP_MARGIN - BOTTOM_MARGIN);
 		if (isRightAligned) {
 			contentArea.x += horizontalSpaceForContent - contentArea.width;
 		} else if (isCentered) {
@@ -438,7 +437,7 @@ public class Button extends CustomControl {
 
 		// Draw image
 		if (image != null) {
-			int imageTopOffset = (r.height - imageHeight) / 2;
+			int imageTopOffset = (height - imageHeight) / 2;
 			int imageLeftOffset = contentArea.x;
 			if (!isEnabled()) {
 				if (disabledImage == null) {
@@ -459,18 +458,18 @@ public class Button extends CustomControl {
 				gc.setForeground(getDisplay()
 						.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW));
 			}
-			int textTopOffset = (r.height - 1 - textHeight) / 2;
+			int textTopOffset = (height - 1 - textHeight) / 2;
 			int textLeftOffset = contentArea.x + imageSpace;
 			gc.drawText(text, textLeftOffset, textTopOffset, DRAW_FLAGS);
 		}
 		if (hasFocus()) {
 			if (((style & SWT.RADIO) | (style & SWT.CHECK)) != 0) {
-				int textTopOffset = (r.height - 1 - textHeight) / 2;
+				int textTopOffset = (height - 1 - textHeight) / 2;
 				int textLeftOffset = contentArea.x + imageSpace;
 				gc.drawFocus(textLeftOffset - 2, textTopOffset, textWidth + 4,
 						textHeight);
 			} else {
-				gc.drawFocus(3, 3, r.width - 7, r.height - 7);
+				gc.drawFocus(3, 3, width - 7, height - 7);
 			}
 		}
 
@@ -480,8 +479,8 @@ public class Button extends CustomControl {
 			gc.setBackground(
 					getDisplay().getSystemColor(SWT.COLOR_WIDGET_FOREGROUND));
 
-			int centerHeight = r.height / 2;
-			int centerWidth = r.width / 2;
+			int centerHeight = height / 2;
+			int centerWidth = width / 2;
 			if (hasBorder()) {
 				// border ruins center position...
 				centerHeight -= 2;

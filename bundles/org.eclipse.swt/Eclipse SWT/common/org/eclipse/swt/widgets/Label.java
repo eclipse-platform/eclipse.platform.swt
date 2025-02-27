@@ -522,19 +522,19 @@ public class Label extends CustomControl {
 	}
 
 	void doPaint(GC gc) {
-		Rectangle rect = getBounds();
-		if (rect.width == 0 && rect.height == 0) {
-			return;
-		}
 		if ((text == null || text.isEmpty()) && image == null) {
 			return;
 		}
+
+		Point size = getSize();
+		final int width = size.x;
+		final int height = size.y;
 
 		boolean shortenText = false;
 		String t = text;
 		Image img = image;
 		int availableWidth = Math.max(0,
-				rect.width - (leftMargin + rightMargin));
+				width - (leftMargin + rightMargin));
 		Point extent = getTotalSize(gc, img, t);
 		if (extent.x > availableWidth) {
 			img = null;
@@ -569,10 +569,10 @@ public class Label extends CustomControl {
 		// determine horizontal position
 		int x = leftMargin;
 		if (align == SWT.CENTER) {
-			x = (rect.width - extent.x) / 2;
+			x = (width - extent.x) / 2;
 		}
 		if (align == SWT.RIGHT) {
-			x = rect.width - rightMargin - extent.x;
+			x = width - rightMargin - extent.x;
 		}
 
 		// draw a background image behind the text
@@ -582,11 +582,11 @@ public class Label extends CustomControl {
 				Rectangle imageRect = backgroundImage.getBounds();
 				// tile image to fill space
 				gc.setBackground(getBackground());
-				gc.fillRectangle(rect);
+				gc.fillRectangle(0, 0, width, height);
 				int xPos = 0;
-				while (xPos < rect.width) {
+				while (xPos < width) {
 					int yPos = 0;
-					while (yPos < rect.height) {
+					while (yPos < height) {
 						gc.drawImage(backgroundImage, xPos, yPos);
 						yPos += imageRect.height;
 					}
@@ -599,7 +599,7 @@ public class Label extends CustomControl {
 					if (gradientColors[0] != null) {
 						gc.setBackground(gradientColors[0]);
 					}
-					gc.fillRectangle(0, 0, rect.width, rect.height);
+					gc.fillRectangle(0, 0, width, height);
 				} else {
 					final Color oldForeground = gc.getForeground();
 					Color lastColor = gradientColors[0];
@@ -616,25 +616,25 @@ public class Label extends CustomControl {
 						gc.setBackground(lastColor);
 						if (gradientVertical) {
 							final int gradientHeight = (gradientPercents[i]
-									* rect.height / 100) - pos;
-							gc.fillGradientRectangle(0, pos, rect.width,
+									* height / 100) - pos;
+							gc.fillGradientRectangle(0, pos, width,
 									gradientHeight, true);
 							pos += gradientHeight;
 						} else {
 							final int gradientWidth = (gradientPercents[i]
-									* rect.width / 100) - pos;
+									* width / 100) - pos;
 							gc.fillGradientRectangle(pos, 0, gradientWidth,
-									rect.height, false);
+									height, false);
 							pos += gradientWidth;
 						}
 					}
-					if (gradientVertical && pos < rect.height) {
+					if (gradientVertical && pos < height) {
 						gc.setBackground(getBackground());
-						gc.fillRectangle(0, pos, rect.width, rect.height - pos);
+						gc.fillRectangle(0, pos, width, height - pos);
 					}
-					if (!gradientVertical && pos < rect.width) {
+					if (!gradientVertical && pos < width) {
 						gc.setBackground(getBackground());
-						gc.fillRectangle(pos, 0, rect.width - pos, rect.height);
+						gc.fillRectangle(pos, 0, width - pos, height);
 					}
 					gc.setForeground(oldForeground);
 				}
@@ -642,20 +642,20 @@ public class Label extends CustomControl {
 			} else {
 				if (background != null && background.getAlpha() > 0) {
 					gc.setBackground(getBackground());
-					gc.fillRectangle(rect);
+					gc.fillRectangle(0, 0, width, height);
 				}
 			}
 		} catch (SWTException e) {
 			if ((getStyle() & SWT.DOUBLE_BUFFERED) == 0) {
 				gc.setBackground(getBackground());
-				gc.fillRectangle(rect);
+				gc.fillRectangle(0, 0, width, height);
 			}
 		}
 
 		// draw border
 		int style = getStyle();
 		if ((style & SWT.SHADOW_IN) != 0 || (style & SWT.SHADOW_OUT) != 0) {
-			paintBorder(gc, rect);
+			paintBorder(gc, width, height);
 		}
 
 		/*
@@ -726,7 +726,7 @@ public class Label extends CustomControl {
 					if (align == SWT.RIGHT) {
 						int lineWidth = gc.textExtent(line, DRAW_FLAGS).x;
 						lineX = Math.max(x,
-								rect.x + rect.width - rightMargin - lineWidth);
+								width - rightMargin - lineWidth);
 					}
 				}
 				gc.drawText(line, lineX, lineY, DRAW_FLAGS);
@@ -738,7 +738,7 @@ public class Label extends CustomControl {
 	/**
 	 * Paint the Label's border.
 	 */
-	private void paintBorder(GC gc, Rectangle r) {
+	private void paintBorder(GC gc, int width, int height) {
 		Display disp = getDisplay();
 
 		Color c1 = null;
@@ -756,7 +756,7 @@ public class Label extends CustomControl {
 
 		if (c1 != null && c2 != null) {
 			gc.setLineWidth(1);
-			drawBevelRect(gc, 0, 0, r.width - 1, r.height - 1, c1, c2);
+			drawBevelRect(gc, 0, 0, width - 1, height - 1, c1, c2);
 		}
 	}
 
