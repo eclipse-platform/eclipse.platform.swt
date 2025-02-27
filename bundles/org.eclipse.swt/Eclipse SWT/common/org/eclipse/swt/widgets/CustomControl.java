@@ -50,6 +50,14 @@ public abstract class CustomControl extends Control implements ICustomWidget {
 	}
 
 	@Override
+	public void setSize(Point size) {
+		checkWidget ();
+		if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
+
+		setSize(size.x, size.y);
+	}
+
+	@Override
 	public Point getLocation() {
 		checkWidget();
 		return new Point(x, y);
