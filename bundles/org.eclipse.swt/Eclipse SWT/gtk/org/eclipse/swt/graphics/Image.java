@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2022 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -22,6 +22,7 @@ import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.DPIUtil.*;
 import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.image.*;
 
 /**
  * Instances of this class are graphics which have been prepared
@@ -530,9 +531,9 @@ public Image(Device device, ImageData source, ImageData mask) {
  */
 public Image(Device device, InputStream stream) {
 	super(device);
-	ImageData data = new ImageData(stream);
 	currentDeviceZoom = DPIUtil.getDeviceZoom();
-	data = DPIUtil.autoScaleUp (device, data);
+	ElementAtZoom<ImageData> image = ImageDataLoader.load(stream, FileFormat.DEFAULT_ZOOM, currentDeviceZoom);
+	ImageData data = DPIUtil.scaleImageData(device, image, currentDeviceZoom);
 	init(data);
 	init();
 }
@@ -572,10 +573,9 @@ public Image(Device device, InputStream stream) {
 public Image(Device device, String filename) {
 	super(device);
 	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-
-	ImageData data = new ImageData(filename);
 	currentDeviceZoom = DPIUtil.getDeviceZoom();
-	data = DPIUtil.autoScaleUp (device, data);
+	ElementAtZoom<ImageData> image = ImageDataLoader.load(filename, FileFormat.DEFAULT_ZOOM, currentDeviceZoom);
+	ImageData data = DPIUtil.scaleImageData(device, image, currentDeviceZoom);
 	init(data);
 	init();
 }
@@ -613,18 +613,18 @@ public Image(Device device, ImageFileNameProvider imageFileNameProvider) {
 	super(device);
 	this.imageFileNameProvider = imageFileNameProvider;
 	currentDeviceZoom = DPIUtil.getDeviceZoom();
-	ElementAtZoom<String> filename = DPIUtil.validateAndGetImagePathAtZoom (imageFileNameProvider, currentDeviceZoom);
-	if (filename.zoom() == currentDeviceZoom) {
-		initNative (filename.element());
-
-		if (this.surface == 0) {
-			ImageData data = new ImageData(filename.element());
-			init(data);
+	ElementAtZoom<String> fileName = DPIUtil.validateAndGetImagePathAtZoom (imageFileNameProvider, currentDeviceZoom);
+	if (fileName.zoom() == currentDeviceZoom) {
+		initNative(fileName.element());
+	}
+	if (this.surface == 0) {
+		ElementAtZoom<ImageData> imageData = ImageDataLoader.load(fileName.element(), fileName.zoom(), currentDeviceZoom);
+		if (imageData.zoom() == currentDeviceZoom) {
+			init(imageData.element());
+		} else {
+			ImageData resizedData = DPIUtil.scaleImageData(device, imageData, currentDeviceZoom);
+			init(resizedData);
 		}
-	} else {
-		ImageData imageData = new ImageData (filename.element());
-		ImageData resizedData = DPIUtil.autoScaleImageData (device, imageData, filename.zoom());
-		init(resizedData);
 	}
 	init ();
 }
