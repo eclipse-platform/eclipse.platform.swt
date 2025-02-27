@@ -186,7 +186,7 @@ public class Label extends CustomControl {
 		int leftMargin = this.leftMargin;
 		int imageWidth = 0;
 		int imageHeight = 0;
-		int GAP = 0;
+		int gap = 0;
 		int topMargin = this.topMargin;
 
 		if (text != null && !text.isEmpty()) {
@@ -197,7 +197,7 @@ public class Label extends CustomControl {
 			lineWidth = textExtent.x;
 			lineHeight = textExtent.y;
 			if (image != null) {
-				GAP = Label.GAP;
+				gap = Label.GAP;
 			}
 		}
 		if (image != null) {
@@ -206,7 +206,7 @@ public class Label extends CustomControl {
 			imageHeight = imgB.height;
 		}
 
-		int width = leftMargin + imageWidth + GAP + lineWidth
+		int width = leftMargin + imageWidth + gap + lineWidth
 				+ this.rightMargin;
 		int height = topMargin + Math.max(lineHeight, imageHeight)
 				+ this.bottomMargin;
