@@ -50,8 +50,8 @@ public class Scale extends CustomControl {
 	private int pageIncrement = 10;
 	private int selection = 0;
 
-	private boolean horizontal;
-	private int orientation = SWT.LEFT_TO_RIGHT;
+	private final boolean horizontal;
+	private final int orientation;
 
 	private final IScaleRenderer renderer;
 
