@@ -74,12 +74,15 @@ public class Button extends CustomControl {
 	private static final int BOX_SIZE = 12;
 	private static final int SPACING = 4;
 
-	private static final Color HOVER_COLOR = new Color(Display.getDefault(),
-			224, 238, 254);
-	private static final Color TOGGLE_COLOR = new Color(Display.getDefault(),
-			204, 228, 247);
-	private static final Color SELECTION_COLOR = new Color(Display.getDefault(),
-			0, 95, 184); // getDisplay().getSystemColor(SWT.COLOR_WIDGET_DARK_SHADOW)
+	private static final Color HOVER_COLOR = new Color(224, 238, 254);
+	private static final Color TOGGLE_COLOR = new Color(204, 228, 247);
+	private static final Color SELECTION_COLOR = new Color(0, 95, 184);
+	private static final Color TEXT_COLOR = new Color(0, 0, 0);
+	private static final Color DISABLED_COLOR = new Color(160, 160, 160);
+	private static final Color BORDER_COLOR = new Color(160, 160, 160);
+	private static final Color BORDER_DISABLED_COLOR = new Color(192, 192, 192);
+	private static final Color CHECKBOX_GRAYED_COLOR = new Color(192, 192, 192);
+	private static final Color PUSH_BACKGROUND_COLOR = new Color(255, 255, 255);
 
 	private static int DRAW_FLAGS = SWT.DRAW_MNEMONIC | SWT.DRAW_TAB
 			| SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER;
@@ -452,12 +455,7 @@ public class Button extends CustomControl {
 
 		// Draw text
 		if (text != null && !text.isEmpty()) {
-			if (isEnabled()) {
-				gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_BLACK));
-			} else {
-				gc.setForeground(getDisplay()
-						.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW));
-			}
+			gc.setForeground(isEnabled() ? TEXT_COLOR : DISABLED_COLOR);
 			int textTopOffset = (height - 1 - textHeight) / 2;
 			int textLeftOffset = contentArea.x + imageSpace;
 			gc.drawText(text, textLeftOffset, textTopOffset, DRAW_FLAGS);
@@ -476,8 +474,7 @@ public class Button extends CustomControl {
 		if (isArrowButton()) {
 			Color bg2 = gc.getBackground();
 
-			gc.setBackground(
-					getDisplay().getSystemColor(SWT.COLOR_WIDGET_FOREGROUND));
+			gc.setBackground(TEXT_COLOR);
 
 			int centerHeight = height / 2;
 			int centerWidth = width / 2;
@@ -537,7 +534,7 @@ public class Button extends CustomControl {
 			} else if (hasMouseEntered || spaceDown) {
 				gc.setBackground(HOVER_COLOR);
 			} else {
-				gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
+				gc.setBackground(PUSH_BACKGROUND_COLOR);
 			}
 			gc.fillRoundRectangle(x, y, w, h, 6, 6);
 		}
@@ -546,11 +543,10 @@ public class Button extends CustomControl {
 			if ((style & SWT.TOGGLE) != 0 && isChecked() || hasMouseEntered) {
 				gc.setForeground(SELECTION_COLOR);
 			} else {
-				gc.setForeground(getDisplay()
-						.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW));
+				gc.setForeground(BORDER_COLOR);
 			}
 		} else {
-			gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_GRAY));
+			gc.setForeground(BORDER_DISABLED_COLOR);
 		}
 
 		// if the button has focus, the border also changes the color
@@ -576,18 +572,14 @@ public class Button extends CustomControl {
 					BOX_SIZE - 2 * partialBoxBorder + 1, BOX_SIZE - 2 * partialBoxBorder + 1);
 		}
 		if (!isEnabled()) {
-			gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_GRAY));
+			gc.setForeground(BORDER_DISABLED_COLOR);
 		}
 		gc.drawOval(x, y, BOX_SIZE, BOX_SIZE);
 	}
 
 	private void drawCheckbox(GC gc, int x, int y) {
 		if (getSelection()) {
-			if (grayed) {
-				gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_GRAY));
-			} else {
-				gc.setBackground(SELECTION_COLOR);
-			}
+			gc.setBackground(grayed ? CHECKBOX_GRAYED_COLOR : SELECTION_COLOR);
 			int partialBoxBorder = 2;
 			gc.fillRoundRectangle(x + partialBoxBorder, y + partialBoxBorder,
 					BOX_SIZE - 2 * partialBoxBorder + 1, BOX_SIZE - 2 * partialBoxBorder + 1,
