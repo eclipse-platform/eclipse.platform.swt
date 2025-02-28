@@ -49,6 +49,9 @@ import java.util.List;
  */
 public class Link extends CustomControl {
 
+	private static final Color DISABLED_COLOR = new Color(160, 160, 160);
+	private static final Color LINK_COLOR = new Color(0, 102, 204);
+
 	/** Left and right margins */
 	private static final int DEFAULT_MARGIN = 3;
 
@@ -454,8 +457,7 @@ public class Link extends CustomControl {
 
 		drawBackground(gc, rect);
 
-		Color linkColor = this.linkColor != null ? this.linkColor
-				: getDisplay().getSystemColor(SWT.COLOR_LINK_FOREGROUND);
+		Color linkColor = getLinkForeground();
 
 		links.clear();
 
@@ -488,7 +490,7 @@ public class Link extends CustomControl {
 				if (isEnabled()) {
 					gc.setForeground(segment.isLink ? linkColor : getForeground());
 				} else {
-					gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW));
+					gc.setForeground(DISABLED_COLOR);
 				}
 				gc.drawText(segment.text, lineX, lineY, DRAW_FLAGS);
 
@@ -920,7 +922,7 @@ public class Link extends CustomControl {
 	 */
 	public Color getLinkForeground() {
 		checkWidget();
-		return linkColor != null ? linkColor : display.getSystemColor(SWT.COLOR_LINK_FOREGROUND);
+		return linkColor != null ? linkColor : LINK_COLOR;
 	}
 
 	/**
