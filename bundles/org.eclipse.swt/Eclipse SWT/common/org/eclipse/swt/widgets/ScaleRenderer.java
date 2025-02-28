@@ -18,9 +18,10 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.Scale.*;
 
 class ScaleRenderer implements IScaleRenderer {
-	private static final Color IDLE_COLOR = new Color(Display.getDefault(), 0, 95, 184);
-	private static final Color HOVER_COLOR = new Color(Display.getDefault(), 0, 0, 0);
-	private static final Color DRAG_COLOR = new Color(Display.getDefault(), 204, 204, 204);
+	private static final Color IDLE_COLOR = new Color(0, 95, 184);
+	private static final Color HOVER_COLOR = new Color(0, 0, 0);
+	private static final Color DRAG_COLOR = new Color(204, 204, 204);
+	private static final Color LINE_COLOR = new Color(160, 160, 160);
 
 	private final Scale scale;
 
@@ -59,12 +60,11 @@ class ScaleRenderer implements IScaleRenderer {
 		}
 
 		gc.fillRectangle(bar);
-		gc.setForeground(scale.getDisplay().getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW));
+		gc.setForeground(LINE_COLOR);
 		gc.drawRectangle(bar);
 
 		// prepare for line drawing
-		gc.setForeground(scale.getDisplay().getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW));
-		gc.setLineWidth(1);
+		gc.setForeground(LINE_COLOR);
 		gc.setLineWidth(1);
 
 		// draw first and last notch
