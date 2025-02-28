@@ -7,6 +7,14 @@ import org.eclipse.swt.graphics.*;
 
 public class CSimpleText extends NativeBasedCustomScrollable {
 
+	private static final Color DISABLED_COLOR = new Color(160, 160, 160);
+	private static final Color TEXT_COLOR = new Color(0, 0, 0);
+	private static final Color BACKGROUND_COLOR = new Color(255, 255, 255);
+	private static final Color BORDER_COLOR = new Color(128, 128, 128);
+	private static final Color READONLY_BACKGROUND_COLOR = new Color(227, 227, 227);
+	private static final Color SELECTION_BACKGROUND_COLOR = new Color(0, 120, 215);
+	private static final Color SELECTION_TEXT_COLOR = new Color(255, 255, 255);
+
 	public static final int LIMIT = 0x7FFFFFFF;
 	public static final String DELIMITER = CSimpleTextModel.DELIMITER;
 
@@ -21,7 +29,8 @@ public class CSimpleText extends NativeBasedCustomScrollable {
 	private boolean doubleClick;
 	private CTextCaret caret;
 	private int style;
-	private boolean customBackground;
+	private Color backgroundColor;
+	private Color foregroundColor;
 
 	public CSimpleText(Composite parent, int style) {
 		super(parent, checkStyle(style) & ~SWT.BORDER);
@@ -32,9 +41,6 @@ public class CSimpleText extends NativeBasedCustomScrollable {
 		setCaret(new CTextCaret(this, SWT.NONE));
 
 		setCursor(display.getSystemCursor(SWT.CURSOR_IBEAM));
-		setForeground(getDisplay().getSystemColor(SWT.COLOR_BLACK));
-		setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
-		this.customBackground = false;
 
 		addListeners();
 	}
@@ -370,12 +376,25 @@ public class CSimpleText extends NativeBasedCustomScrollable {
 		caret.dispose();
 	}
 
+	public Color getBackground() {
+		return backgroundColor != null ? backgroundColor : BACKGROUND_COLOR;
+	}
+
 	@Override
 	public void setBackground(Color color) {
-		if (color != null) {
-			super.setBackground(color);
-			this.customBackground = true;
-		}
+		backgroundColor = color;
+		super.setBackground(color);
+	}
+
+	@Override
+	public Color getForeground() {
+		return foregroundColor != null ? foregroundColor : TEXT_COLOR;
+	}
+
+	@Override
+	public void setForeground(Color color) {
+		foregroundColor = color;
+		super.setForeground(color);
 	}
 
 	private void paintControl(Event e) {
@@ -384,11 +403,11 @@ public class CSimpleText extends NativeBasedCustomScrollable {
 		e.gc.setForeground(getForeground());
 		e.gc.setBackground(getBackground());
 		if (!isEnabled()) {
-			e.gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW));
+			e.gc.setForeground(DISABLED_COLOR);
 		}
-		if (!customBackground) {
+		if (backgroundColor != null) {
 			if (!isEnabled() || ((style & SWT.BORDER) == 1 && !getEditable())) {
-				e.gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW));
+				e.gc.setBackground(READONLY_BACKGROUND_COLOR);
 			}
 			if ((style & SWT.BORDER) == 0 && !getEditable()) {
 				e.gc.setBackground(getParent().getBackground());
@@ -420,8 +439,8 @@ public class CSimpleText extends NativeBasedCustomScrollable {
 
 			Color oldForeground = gc.getForeground();
 			Color oldBackground = gc.getBackground();
-			gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT));
-			gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION));
+			gc.setForeground(SELECTION_TEXT_COLOR);
+			gc.setBackground(SELECTION_BACKGROUND_COLOR);
 			for (int i = startLocation.line; i <= endLocation.line; i++) {
 				TextLocation location = new TextLocation(i, 0);
 				String text = textLines[i];
@@ -490,7 +509,7 @@ public class CSimpleText extends NativeBasedCustomScrollable {
 		gc.fillRectangle(e.x, e.y, e.width - 1, e.height - 1);
 		if ((style & SWT.BORDER) != 0 && getEditable() && isEnabled()) {
 			Color foreground = gc.getForeground();
-			gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_DARK_GRAY));
+			gc.setForeground(BORDER_COLOR);
 			gc.drawLine(e.x, e.y + e.height - 1, e.x + e.x + e.width - 1, e.y + e.height - 1);
 			gc.setForeground(foreground);
 		}
