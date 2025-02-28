@@ -22,6 +22,7 @@ class ScaleRenderer implements IScaleRenderer {
 	private static final Color HOVER_COLOR = new Color(0, 0, 0);
 	private static final Color DRAG_COLOR = new Color(204, 204, 204);
 	private static final Color LINE_COLOR = new Color(160, 160, 160);
+	private static final Color DISABLED_COLOR = new Color(160, 160, 160);
 
 	private final Scale scale;
 
@@ -96,11 +97,16 @@ class ScaleRenderer implements IScaleRenderer {
 
 	private void drawHandle(GC gc, int value) {
 		// draw handle
-		Color handleColor = switch (scale.getHandleState()) {
-		case IDLE -> IDLE_COLOR;
-		case HOVER -> HOVER_COLOR;
-		case DRAG -> DRAG_COLOR;
-		};
+		Color handleColor;
+		if (scale.isEnabled()) {
+			handleColor = switch (scale.getHandleState()) {
+				case IDLE -> IDLE_COLOR;
+				case HOVER -> HOVER_COLOR;
+				case DRAG -> DRAG_COLOR;
+			};
+		} else {
+			handleColor = DISABLED_COLOR;
+		}
 		gc.setBackground(handleColor);
 		handleBounds = calculateHandleBounds(value);
 		gc.fillRectangle(handleBounds);
