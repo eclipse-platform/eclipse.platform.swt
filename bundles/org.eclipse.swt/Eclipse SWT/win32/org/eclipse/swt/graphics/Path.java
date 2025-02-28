@@ -14,6 +14,7 @@
 package org.eclipse.swt.graphics;
 
 import java.util.*;
+import java.util.function.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
@@ -42,11 +43,11 @@ import org.eclipse.swt.internal.win32.*;
  * @since 3.1
  */
 public class Path extends Resource {
-	private int initialZoom;
-
 	private Map<Integer, PathHandle> zoomToHandle = new HashMap<>();
 
 	private List<Operation> operations = new ArrayList<>();
+
+	private boolean isDestroyed;
 
 /**
  * Constructs a new empty Path.
@@ -74,16 +75,8 @@ public class Path extends Resource {
  * @see #dispose()
  */
 public Path (Device device) {
-	this(device, DPIUtil.getDeviceZoom());
-}
-
-private Path(Device device, int zoom) {
 	super(device);
 	this.device.checkGDIP();
-	initialZoom = zoom;
-	long handle = Gdip.GraphicsPath_new(Gdip.FillModeAlternate);
-	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	zoomToHandle.put(initialZoom, new PathHandle(handle, initialZoom));
 	init();
 	this.device.registerResourceWithZoomSupport(this);
 }
@@ -127,11 +120,10 @@ public Path (Device device, Path path, float flatness) {
 	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (path.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	flatness = Math.max(0, flatness);
-	long handle = Gdip.GraphicsPath_Clone(path.getHandle(path.initialZoom));
-	if (flatness != 0) Gdip.GraphicsPath_Flatten(handle, 0, flatness);
-	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	initialZoom = path.initialZoom;
-	zoomToHandle.put(initialZoom, new PathHandle(handle, initialZoom));
+	operations.addAll(path.operations);
+	if (flatness != 0) {
+		operations.add(new FlattenOperation(flatness));
+	}
 	init();
 	this.device.registerResourceWithZoomSupport(this);
 }
@@ -165,15 +157,9 @@ public Path (Device device, Path path, float flatness) {
  * @since 3.4
  */
 public Path (Device device, PathData data) {
-	this(device, data, DPIUtil.getDeviceZoom());
-
-}
-
-private Path(Device device, PathData data, int zoom) {
-	this(device, zoom);
+	this(device);
 	if (data == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	init(data);
-	this.device.registerResourceWithZoomSupport(this);
 }
 
 /**
@@ -312,8 +298,9 @@ public boolean contains (float x, float y, GC gc, boolean outline) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (gc == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (gc.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	PathHandle handle = getPathHandle(initialZoom);
-	return handle.contains(x, y, gc, outline);
+	return applyOnAnyHandle(handle -> {
+		return handle.contains(x, y, gc, outline);
+	});
 }
 
 /**
@@ -341,18 +328,14 @@ void destroy() {
 	zoomToHandle.values().forEach(PathHandle::destroy);
 	zoomToHandle.clear();
 	operations.clear();
+	this.isDestroyed = true;
 }
 
 @Override
 void destroyHandlesExcept(Set<Integer> zoomLevels) {
-	zoomToHandle.entrySet().removeIf(entry -> {
-		final Integer zoom = entry.getKey();
-		if (!zoomLevels.contains(zoom) && zoom != initialZoom) {
-			entry.getValue().destroy();
-			return true;
-		}
-		return false;
-	});
+	// As long as we keep the operations, we can cleanup all handles
+	zoomToHandle.values().forEach(PathHandle::destroy);
+	zoomToHandle.clear();
 }
 
 /**
@@ -374,8 +357,10 @@ public void getBounds (float[] bounds) {
 	if (bounds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (bounds.length < 4) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	PathHandle handle = getPathHandle(initialZoom);
-	handle.fillBounds(bounds);
+	applyOnAnyHandle(handle -> {
+		handle.fillBounds(bounds);
+		return true;
+	});
 }
 
 /**
@@ -396,8 +381,10 @@ public void getCurrentPoint (float[] point) {
 	if (point == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (point.length < 2) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	PathHandle handle = getPathHandle(initialZoom);
-	handle.fillCurrentPoint(point);
+	applyOnAnyHandle(handle -> {
+		handle.fillCurrentPoint(point);
+		return true;
+	});
 }
 
 /**
@@ -413,8 +400,9 @@ public void getCurrentPoint (float[] point) {
  */
 public PathData getPathData() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	PathHandle handle = getPathHandle(initialZoom);
-	return handle.getPathData();
+	return applyOnAnyHandle(handle -> {
+		return handle.getPathData();
+	});
 }
 
 /**
@@ -473,7 +461,7 @@ void init(PathData data) {
  */
 @Override
 public boolean isDisposed() {
-	return zoomToHandle.isEmpty();
+	return this.isDestroyed;
 }
 
 /**
@@ -927,6 +915,19 @@ private void storeAndApplyOperationForAllHandles(Operation operation) {
 	zoomToHandle.values().forEach(operation::apply);
 }
 
+private <T> T applyOnAnyHandle(Function<PathHandle, T> function) {
+	if (zoomToHandle.isEmpty()) {
+		PathHandle temporaryHandle = newPathHandle(DPIUtil.getDeviceZoom());
+		try {
+			return function.apply(temporaryHandle);
+		} finally {
+			temporaryHandle.destroy();
+		}
+	} else {
+		return function.apply(zoomToHandle.values().iterator().next());
+	}
+}
+
 /**
  * Returns a string containing a concise, human-readable
  * description of the receiver.
@@ -939,14 +940,22 @@ public String toString() {
 	return "Path " + zoomToHandle;
 }
 
+private PathHandle newPathHandle(int zoom) {
+	this.device.checkGDIP();
+	long newHandle = Gdip.GraphicsPath_new(Gdip.FillModeAlternate);
+	if (newHandle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	PathHandle newPathHandle = new PathHandle(newHandle, zoom);
+	for(Operation operation : operations) {
+		operation.apply(newPathHandle);
+	}
+	return newPathHandle;
+}
+
 private PathHandle getPathHandle(int zoom) {
 	if (!zoomToHandle.containsKey(zoom)) {
-		PathData pathData = getPathData();
-		Path scaledPath = new Path(getDevice(), pathData, zoom);
-		long handle = scaledPath.getHandle(scaledPath.initialZoom);
-		PathHandle pathHandle = new PathHandle(handle, zoom);
-		zoomToHandle.put(zoom, pathHandle);
-		return pathHandle;
+		PathHandle newHandle = newPathHandle( zoom);
+		zoomToHandle.put(zoom, newHandle);
+		return newHandle;
 	}
 	return zoomToHandle.get(zoom);
 }
