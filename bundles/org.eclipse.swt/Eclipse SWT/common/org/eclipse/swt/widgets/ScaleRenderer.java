@@ -48,7 +48,7 @@ class ScaleRenderer implements IScaleRenderer {
 		int firstNotch;
 		int lastNotch;
 
-		if (isVertical()) {
+		if (scale.isVertical()) {
 			bar = new Rectangle(19, 8, 3, size.y - 16);
 			firstNotch = bar.y + 5;
 			lastNotch = bar.y + bar.height - 5;
@@ -81,7 +81,7 @@ class ScaleRenderer implements IScaleRenderer {
 	}
 
 	private void drawCenterNotches(GC gc, int firstNotchPos, int lastNotchPos, int units, int unitPerPage) {
-		if (isRTL() && !isVertical()) {
+		if (isRTL() && scale.isHorizontal()) {
 			for (int i = unitPerPage; i < units; i += unitPerPage) {
 				int position = lastNotchPos - (int) (i * ppu);
 				drawNotch(gc, position, 3);
@@ -108,7 +108,7 @@ class ScaleRenderer implements IScaleRenderer {
 
 	private Rectangle calculateHandleBounds(int value) {
 		int pixelValue = (int) (ppu * value);
-		if (isVertical()) {
+		if (scale.isVertical()) {
 			return new Rectangle(bar.x - 9, bar.y + pixelValue, 21, 10);
 		} else if (isRTL()) {
 			return new Rectangle(bar.x + bar.width - pixelValue - 10, bar.y - 9, 10, 21);
@@ -119,7 +119,7 @@ class ScaleRenderer implements IScaleRenderer {
 
 	@Override
 	public int handlePosToValue(Point pos) {
-		if (isVertical()) {
+		if (scale.isVertical()) {
 			return (int) Math.round((pos.y - bar.y) / ppu);
 		} else {
 			return (int) Math.round((pos.x - bar.x) / ppu);
@@ -130,12 +130,8 @@ class ScaleRenderer implements IScaleRenderer {
 		return scale.getOrientation() == SWT.RIGHT_TO_LEFT;
 	}
 
-	private boolean isVertical() {
-		return scale.getAlignement() == SWT.VERTICAL;
-	}
-
 	private void drawNotch(GC gc, int pos, int size) {
-		if (isVertical()) {
+		if (scale.isVertical()) {
 			gc.drawLine(bar.x - 10 - size, pos, bar.x - 10, pos);
 			gc.drawLine(bar.x + 14, pos, bar.x + 14 + size, pos);
 		} else {
@@ -163,7 +159,7 @@ class ScaleRenderer implements IScaleRenderer {
 
 	@Override
 	public boolean isAfterHandle(Point position) {
-		if (isVertical()) {
+		if (scale.isVertical()) {
 			return position.y > handleBounds.y + handleBounds.height;
 		} else if (isRTL()) {
 			position = mirrorVertically(position);
@@ -175,7 +171,7 @@ class ScaleRenderer implements IScaleRenderer {
 
 	@Override
 	public boolean isBeforeHandle(Point position) {
-		if (isVertical()) {
+		if (scale.isVertical()) {
 			return position.y < handleBounds.y;
 		} else if (isRTL()) {
 			position = mirrorVertically(position);

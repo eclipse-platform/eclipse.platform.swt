@@ -13,8 +13,6 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
-import java.util.*;
-
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
@@ -52,10 +50,10 @@ public class Scale extends CustomControl {
 	private int minimum = 0;
 	private int maximum = 100;
 	private int increment = 1;
-	private int pageIncrement = 10;;
+	private int pageIncrement = 10;
 	private int selection = 0;
 
-	private int alignment = SWT.HORIZONTAL;
+	private boolean horizontal;
 	private int orientation = SWT.LEFT_TO_RIGHT;
 
 	private final IScaleRenderer renderer;
@@ -171,26 +169,20 @@ public class Scale extends CustomControl {
 		addListener(SWT.Paint, listener);
 		addListener(SWT.Resize, listener);
 
-		alignment = style & (SWT.HORIZONTAL | SWT.VERTICAL);
+		horizontal = (style & SWT.VERTICAL) == 0;
 		orientation = style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
+
+		// re-add the horizontal/vertical flags
+		super.style |= horizontal ? SWT.HORIZONTAL : SWT.VERTICAL;
 
 		renderer = new ScaleRenderer(this);
 	}
 
-	@Override
-	protected boolean isScrolled() {
-		return false;
-	}
 
 	private static int checkStyle(int style) {
-		if ((style & SWT.HORIZONTAL) != 0) {
-			style &= ~SWT.VERTICAL;
-		} else if ((style & SWT.VERTICAL) != 0) {
-			style &= ~SWT.HORIZONTAL;
-		} else {
-			style |= SWT.HORIZONTAL;
-			style &= ~SWT.VERTICAL;
-		}
+		// Do not propagate this flags to the super class
+		style &= ~SWT.HORIZONTAL;
+		style &= ~SWT.VERTICAL;
 
 		if ((style & SWT.LEFT_TO_RIGHT) != 0) {
 			style &= ~SWT.RIGHT_TO_LEFT;
@@ -200,11 +192,16 @@ public class Scale extends CustomControl {
 			style |= SWT.LEFT_TO_RIGHT;
 			style &= ~SWT.RIGHT_TO_LEFT;
 		}
+
 		return style;
 	}
 
-	public int getAlignement() {
-		return alignment;
+	public boolean isHorizontal() {
+		return horizontal;
+	}
+
+	public boolean isVertical() {
+		return !horizontal;
 	}
 
 	@Override
@@ -363,7 +360,7 @@ public class Scale extends CustomControl {
 		int computedWidth;
 		int computedHeight;
 
-		if (getAlignement() == SWT.VERTICAL) {
+		if (isVertical()) {
 			computedWidth = (wHint == SWT.DEFAULT) ? PREFERRED_HEIGHT : wHint;
 			computedHeight = (hHint == SWT.DEFAULT) ? PREFERRED_WIDTH : hHint;
 		} else {

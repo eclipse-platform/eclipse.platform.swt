@@ -36,7 +36,7 @@ abstract class NativeBasedCustomControl extends Control {
 		// else the old drawings stay in the area.
 		state |= CANVAS;
 
-		if (!isScrolled() || findThemeControl() == parent) {
+		if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0 || findThemeControl() == parent) {
 			state |= THEME_BACKGROUND;
 		}
 		if ((style & SWT.TRANSPARENT) != 0) {
@@ -44,10 +44,6 @@ abstract class NativeBasedCustomControl extends Control {
 			bits |= OS.WS_EX_TRANSPARENT;
 			OS.SetWindowLong(handle, OS.GWL_EXSTYLE, bits);
 		}
-	}
-
-	protected boolean isScrolled() {
-		return (style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0;
 	}
 
 	@Override
