@@ -53,6 +53,12 @@ import org.eclipse.swt.graphics.*;
  */
 public class Label extends CustomControl {
 
+	private static final Color DISABLED_COLOR = new Color(160, 160, 160);
+	private static final Color SHADOW_IN_COLOR1 = new Color(160, 160, 160);
+	private static final Color SHADOW_IN_COLOR2 = new Color(255, 255, 255);
+	private static final Color SHADOW_OUT_COLOR1 = new Color(227, 227, 227);
+	private static final Color SHADOW_OUT_COLOR2 = new Color(160, 160, 160);
+
 	/** Gap between icon and text */
 	private static final int GAP = 5;
 	/** Left and right margins */
@@ -711,11 +717,7 @@ public class Label extends CustomControl {
 		}
 
 		if (lines != null) {
-			if (isEnabled()) {
-				gc.setForeground(getForeground());
-			} else {
-				gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW));
-			}
+			gc.setForeground(isEnabled() ? getForeground() : DISABLED_COLOR);
 			for (String line : lines) {
 				int lineX = x;
 				if (lines.length > 1) {
@@ -746,12 +748,12 @@ public class Label extends CustomControl {
 
 		int style = getStyle();
 		if ((style & SWT.SHADOW_IN) != 0) {
-			c1 = disp.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW);
-			c2 = disp.getSystemColor(SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW);
+			c1 = SHADOW_IN_COLOR1;
+			c2 = SHADOW_IN_COLOR2;
 		}
 		if ((style & SWT.SHADOW_OUT) != 0) {
-			c1 = disp.getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW);
-			c2 = disp.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW);
+			c1 = SHADOW_OUT_COLOR1;
+			c2 = SHADOW_OUT_COLOR2;
 		}
 
 		if (c1 != null && c2 != null) {
