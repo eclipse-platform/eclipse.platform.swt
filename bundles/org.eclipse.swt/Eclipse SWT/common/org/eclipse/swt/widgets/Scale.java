@@ -44,9 +44,6 @@ public class Scale extends CustomControl {
 	private static final int PREFERRED_WIDTH = 170;
 	private static final int PREFERRED_HEIGHT = 42;
 
-	private Listener listener;
-	private Point computedSize;
-
 	private int minimum = 0;
 	private int maximum = 100;
 	private int increment = 1;
@@ -148,16 +145,16 @@ public class Scale extends CustomControl {
 	public Scale(Composite parent, int style) {
 		super(parent, checkStyle(style));
 
-		listener = event -> {
+		Listener listener = event -> {
 			switch (event.type) {
-			case SWT.KeyDown -> onKeyDown(event);
-			case SWT.MouseDown -> onMouseDown(event);
-			case SWT.MouseMove -> onMouseMove(event);
-			case SWT.MouseUp -> onMouseUp(event);
-			case SWT.MouseHorizontalWheel -> onMouseHorizontalWheel(event);
-			case SWT.MouseVerticalWheel -> onMouseVerticalWheel(event);
-			case SWT.Paint -> onPaint(event);
-			case SWT.Resize -> redraw();
+				case SWT.KeyDown -> onKeyDown(event);
+				case SWT.MouseDown -> onMouseDown(event);
+				case SWT.MouseMove -> onMouseMove(event);
+				case SWT.MouseUp -> onMouseUp(event);
+				case SWT.MouseHorizontalWheel -> onMouseHorizontalWheel(event);
+				case SWT.MouseVerticalWheel -> onMouseVerticalWheel(event);
+				case SWT.Paint -> onPaint(event);
+				case SWT.Resize -> redraw();
 			}
 		};
 		addListener(SWT.KeyDown, listener);
@@ -368,8 +365,7 @@ public class Scale extends CustomControl {
 			computedHeight = (hHint == SWT.DEFAULT) ? PREFERRED_HEIGHT : hHint;
 		}
 
-		computedSize = new Point(computedWidth, computedHeight);
-		return computedSize;
+		return new Point(computedWidth, computedHeight);
 	}
 
 	/**
