@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -10,15 +10,14 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Hannes Wellmann - Unify ImageLoader implementations and extract differences into InternalImageLoader
  *******************************************************************************/
 package org.eclipse.swt.graphics;
-
 
 import java.io.*;
 import java.util.*;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.internal.image.*;
 
 /**
  * Instances of this class are used to load images from,
@@ -151,7 +150,7 @@ void reset() {
 public ImageData[] load(InputStream stream) {
 	if (stream == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	reset();
-	data = FileFormat.load(stream, this);
+	data = InternalImageLoader.load(stream, this);
 	return data;
 }
 
@@ -217,7 +216,7 @@ public ImageData[] load(String filename) {
  */
 public void save(OutputStream stream, int format) {
 	if (stream == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	FileFormat.save(stream, format, this);
+	InternalImageLoader.save(stream, format, this);
 }
 
 /**
@@ -253,8 +252,7 @@ public void save(OutputStream stream, int format) {
  * </ul>
  */
 public void save(String filename, int format) {
-	if (filename == null)
-		SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	try (OutputStream stream = new FileOutputStream(filename)) {
 		save(stream, format);
 	} catch (IOException e) {
