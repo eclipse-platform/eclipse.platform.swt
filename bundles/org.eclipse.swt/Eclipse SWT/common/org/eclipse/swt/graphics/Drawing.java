@@ -17,16 +17,14 @@ import org.eclipse.swt.widgets.*;
 
 public final class Drawing {
 
-	private static Color widgetBackground;
-
 	private Drawing() {
 	}
 
-	public static GC createGraphicsContext(GC originalGC) {
-		return createGraphicsContext(originalGC, false);
+	public static GC createGraphicsContext(GC originalGC, Control control) {
+		return createGraphicsContext(originalGC, control, false);
 	}
 
-	private static GC createGraphicsContext(GC originalGC, boolean onlyForMeasuring) {
+	private static GC createGraphicsContext(GC originalGC, Control control, boolean onlyForMeasuring) {
 		if (!SWT.USE_SKIJA) {
 			return originalGC;
 		}
@@ -36,9 +34,11 @@ public final class Drawing {
 		}
 
 		GC gc = new GC();
+
 		gc.innerGC = onlyForMeasuring
-				? SkijaGC.createMeasureInstance(originalNativeGC)
-				: SkijaGC.createDefaultInstance(originalNativeGC);
+				? SkijaGC.createMeasureInstance(originalNativeGC, control)
+				: SkijaGC.createDefaultInstance(originalNativeGC, control);
+
 		return gc;
 	}
 
@@ -54,8 +54,9 @@ public final class Drawing {
 	 */
 	public static void drawWithGC(Control control, GC originalGC, Consumer<GC> drawOperation) {
 		Rectangle bounds = control.getBounds();
-		if (originalGC != null && originalGC.innerGC instanceof NativeGC nativeGC) {
-			if (nativeGC.drawable != control) {
+		if (originalGC != null && originalGC.innerGC instanceof NativeGC nativeGC
+				&& nativeGC.drawable instanceof Control gcControl) {
+			if (gcControl != control) {
 				throw new IllegalStateException("given GC was not created for given control");
 			}
 		}
@@ -69,51 +70,15 @@ public final class Drawing {
 		originalGC.setClipping(new Rectangle(0, 0, bounds.width, bounds.height));
 		originalGC.setAntialias(SWT.ON);
 
-		GC gc = createGraphicsContext(originalGC);
-
-		Image doubleBufferingImage = null;
-
-		if (SWT.getPlatform().equals("win32") || SWT.getPlatform().equals("gtk")) {
-			// Extract background color on first execution
-			if (widgetBackground == null) {
-				extractAndStoreBackgroundColor(bounds, originalGC);
-			}
-			control.style |= SWT.NO_BACKGROUND;
-		}
-
-		if (gc.innerGC instanceof NativeGC) {
-			if (SWT.getPlatform().equals("win32")) {
-				// Use double buffering on windows
-				doubleBufferingImage = new Image(gc.getDevice(), bounds.width, bounds.height);
-				originalGC.copyArea(doubleBufferingImage, 0, 0);
-				GC doubleBufferingGC = new GC(doubleBufferingImage);
-				doubleBufferingGC.setForeground(originalGC.getForeground());
-				doubleBufferingGC.setBackground(widgetBackground);
-				doubleBufferingGC.setAntialias(SWT.ON);
-				doubleBufferingGC.fillRectangle(0, 0, bounds.width, bounds.height);
-				gc = doubleBufferingGC;
-			}
-		}
+		GC gc = createGraphicsContext(originalGC, control);
 
 		try {
 			drawOperation.accept(gc);
 			gc.commit();
-			if (doubleBufferingImage != null) {
-				originalGC.drawImage(doubleBufferingImage, 0, 0);
-				doubleBufferingImage.dispose();
-			}
 		} finally {
 			gc.dispose();
 			originalGC.dispose();
 		}
-	}
-
-	private static void extractAndStoreBackgroundColor(Rectangle r, GC originalGC) {
-		Image backgroundColorImage = new Image(originalGC.getDevice(), r.width, r.height);
-		originalGC.copyArea(backgroundColorImage, 0, 0);
-		int pixel = backgroundColorImage.getImageData().getPixel(0, 0);
-		backgroundColorImage.dispose();
-		widgetBackground = SWT.convertPixelToColor(pixel);
 	}
 
 	/**
@@ -128,7 +93,7 @@ public final class Drawing {
 	 */
 	public static <T> T executeOnGC(Control control, Function<GC, T> operation) {
 		GC originalGC = new GC(control);
-		GC gc = createGraphicsContext(originalGC);
+		GC gc = createGraphicsContext(originalGC, control);
 		try {
 			T result = operation.apply(gc);
 			return result;
@@ -140,7 +105,7 @@ public final class Drawing {
 
 	public static Point getTextExtent(CustomControl control, String text, int drawFlags) {
 		GC originalGC = new GC(control);
-		GC gc = createGraphicsContext(originalGC, true);
+		GC gc = createGraphicsContext(originalGC, control, true);
 		try {
 			gc.setFont(control.getFont());
 			return gc.textExtent(text, drawFlags);

@@ -138,6 +138,7 @@ public class Button extends CustomControl {
 	 */
 	public Button(Composite parent, int style) {
 		super(parent, checkStyle(style));
+		this.style |= SWT.DOUBLE_BUFFERED;
 
 		Listener listener = event -> {
 			switch (event.type) {

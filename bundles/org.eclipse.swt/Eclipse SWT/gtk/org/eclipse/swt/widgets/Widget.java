@@ -65,8 +65,7 @@ public abstract class Widget {
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public long handle;
-	public int style;
-	int state;
+	int style, state;
 	Display display;
 	protected EventTable eventTable;
 	Object data;

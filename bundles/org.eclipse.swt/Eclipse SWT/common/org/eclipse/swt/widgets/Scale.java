@@ -144,6 +144,7 @@ public class Scale extends CustomControl {
 	 */
 	public Scale(Composite parent, int style) {
 		super(parent, checkStyle(style));
+		this.style |= SWT.DOUBLE_BUFFERED;
 
 		Listener listener = event -> {
 			switch (event.type) {

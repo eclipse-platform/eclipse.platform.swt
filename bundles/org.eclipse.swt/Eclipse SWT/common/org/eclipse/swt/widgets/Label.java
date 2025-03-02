@@ -133,6 +133,7 @@ public class Label extends CustomControl {
 	 */
 	public Label(Composite parent, int style) {
 		super(parent, checkStyle(style));
+		this.style |= SWT.DOUBLE_BUFFERED;
 		if ((style & (SWT.CENTER | SWT.RIGHT)) == 0) {
 			style |= SWT.LEFT;
 		}
@@ -181,6 +182,7 @@ public class Label extends CustomControl {
 		return false;
 	}
 
+	@Override
 	protected Point computeDefaultSize() {
 		int lineWidth = 0;
 		int lineHeight = 0;

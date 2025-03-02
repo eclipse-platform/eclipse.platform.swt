@@ -14,14 +14,13 @@
 package org.eclipse.swt.widgets.toolbar;
 
 import java.util.*;
+import java.util.List;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.widgets.ToolBar.*;
 import org.eclipse.swt.widgets.toolbar.ToolBarLayout.*;
-
-import java.util.List;
 
 /**
  * Default renderer for the ToolBar.
@@ -46,8 +45,6 @@ public class ToolBarRenderer implements IToolBarRenderer {
 	}
 
 	private void render(GC gc, Point size, List<Row> rows) {
-		gc.fillRectangle(0, 0, size.x, size.y);
-
 		if (bar.isShadowOut()) {
 			gc.setForeground(new Color(160, 160, 160));
 			gc.drawLine(0, 0, size.x, 0);

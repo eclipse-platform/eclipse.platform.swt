@@ -49,8 +49,7 @@ import org.eclipse.swt.internal.cocoa.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public abstract class Widget {
-	public int style;
-	int state;
+	int style, state;
 	Display display;
 	protected EventTable eventTable;
 	Object data;

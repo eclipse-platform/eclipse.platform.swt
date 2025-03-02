@@ -28,11 +28,15 @@ import io.github.humbleui.types.*;
 public class SkijaGC extends GCHandle {
 
 	public static SkijaGC createDefaultInstance(NativeGC gc) {
-		return new SkijaGC(gc, false);
+		return new SkijaGC(gc, gc.drawable, false);
 	}
 
-	public static SkijaGC createMeasureInstance(NativeGC gc) {
-		return new SkijaGC(gc, true);
+	public static SkijaGC createDefaultInstance(NativeGC gc, Control control) {
+		return new SkijaGC(gc, control, false);
+	}
+
+	public static SkijaGC createMeasureInstance(NativeGC gc, Control control) {
+		return new SkijaGC(gc, control, true);
 	}
 
 	private final Surface surface;
@@ -47,9 +51,9 @@ public class SkijaGC extends GCHandle {
 
 	private static Map<ColorType, int[]> colorTypeMap = null;
 
-	private SkijaGC(NativeGC gc, boolean onlyForMeasuring) {
+	private SkijaGC(NativeGC gc, Drawable drawable, boolean onlyForMeasuring) {
 		innerGC = gc;
-		originalDrawingSize = extractSize(innerGC.drawable);
+		originalDrawingSize = extractSize(drawable);
 		if (onlyForMeasuring) {
 			surface = createMeasureSurface();
 		} else {

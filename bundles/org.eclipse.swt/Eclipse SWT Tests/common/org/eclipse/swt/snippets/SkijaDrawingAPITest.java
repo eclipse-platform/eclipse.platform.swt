@@ -29,7 +29,7 @@ public class SkijaDrawingAPITest {
 		SWT.USE_SKIJA = true;
 
 		shell.addPaintListener(event -> {
-			GC skijaGC = Drawing.createGraphicsContext(event.gc);
+			GC skijaGC = Drawing.createGraphicsContext(event.gc, shell);
 			skijaGC.setBackground(display.getSystemColor(SWT.COLOR_GREEN));
 
 			skijaGC.drawString("yTjJ", 0, 0, false);
