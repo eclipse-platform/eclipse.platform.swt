@@ -27,7 +27,6 @@ import io.github.humbleui.types.*;
 
 public class SkijaGC extends GCHandle {
 	private final Surface surface;
-	private Rectangle clipping;
 
 	private NativeGC innerGC;
 
@@ -35,15 +34,33 @@ public class SkijaGC extends GCHandle {
 	private float baseSymbolHeight = 0; // Height of symbol with "usual" height, like "T", to be vertically centered
 	private int lineWidth;
 
+	private final Point originalDrawingSize;
+
 	private static Map<ColorType, int[]> colorTypeMap = null;
 
 	public SkijaGC(NativeGC gc, Color backgroundColor) {
 		innerGC = gc;
+		originalDrawingSize = extractSize(innerGC.drawable);
 		if (backgroundColor == null)
-			backgroundColor = extractBackgroundColor(gc);
+			backgroundColor = extractBackgroundColor(gc, originalDrawingSize);
 		surface = createSurface(backgroundColor);
-		clipping = innerGC.getClipping();
 		initFont();
+	}
+
+	private static Point extractSize(Drawable drawable) {
+		Point size = new Point(0, 0);
+		if (drawable instanceof Image image) {
+			var imageBounds = image.getBounds();
+			size.x = imageBounds.width;
+			size.y = imageBounds.height;
+		} else if (drawable instanceof Control control) {
+			size = control.getSize();
+		} else if (drawable instanceof Device device) {
+			var deviceBounds = device.getBounds();
+			size.x = deviceBounds.width;
+			size.y = deviceBounds.height;
+		}
+		return size;
 	}
 
 	@Override
@@ -53,14 +70,13 @@ public class SkijaGC extends GCHandle {
 		// resources.
 	}
 
-	private static Color extractBackgroundColor(NativeGC gc) {
-		Rectangle originalGCArea = gc.getClipping();
+	private static Color extractBackgroundColor(NativeGC gc, Point drawingSize) {
 		// Do not fill when using dummy GC for text extent calculation or when on cocoa
 		// (as it does not have proper color)
-		if (originalGCArea.isEmpty() || SWT.getPlatform().equals("cocoa")) {
+		if (isEmpty(drawingSize) || SWT.getPlatform().equals("cocoa")) {
 			return null;
 		}
-		Image colorImage = new Image(gc.getDevice(), originalGCArea.width, originalGCArea.height);
+		Image colorImage = new Image(gc.getDevice(), 1, 1);
 		gc.copyArea(colorImage, 0, 0);
 		int pixel = colorImage.getImageData().getPixel(0, 0);
 		Color originalColor = SWT.convertPixelToColor(pixel);
@@ -68,15 +84,17 @@ public class SkijaGC extends GCHandle {
 		return originalColor;
 	}
 
+	private static boolean isEmpty(Point area) {
+		return area.x <= 0 || area.y <= 0;
+	}
+
 	private Surface createSurface(Color backgroundColor) {
-		int width = 1;
-		int height = 1;
-		Rectangle originalGCArea = innerGC.getClipping();
-		if (!originalGCArea.isEmpty()) {
-			width = DPIUtil.autoScaleUp(originalGCArea.width);
-			height = DPIUtil.autoScaleUp(originalGCArea.height);
+		Point drawingSizeInPixels = DPIUtil.autoScaleUp(originalDrawingSize);
+		if (isEmpty(originalDrawingSize)) {
+			drawingSizeInPixels = new Point(1, 1);
 		}
-		Surface surface = Surface.makeRaster(ImageInfo.makeN32Premul(width, height), 0,
+		Surface surface = Surface.makeRaster(
+				ImageInfo.makeN32Premul(drawingSizeInPixels.x, drawingSizeInPixels.y), 0,
 				new SurfaceProps(PixelGeometry.RGB_H));
 		if (backgroundColor != null) {
 			surface.getCanvas().clear(convertSWTColorToSkijaColor(backgroundColor));
@@ -164,15 +182,17 @@ public class SkijaGC extends GCHandle {
 
 	@Override
 	public void commit() {
+		if (isEmpty(originalDrawingSize)) {
+			return;
+		}
 		io.github.humbleui.skija.Image im = surface.makeImageSnapshot();
 		byte[] imageBytes = EncoderPNG.encode(im).getBytes();
 
 		Image transferImage = new Image(innerGC.getDevice(), new ByteArrayInputStream(imageBytes));
 
-		Rectangle originalArea = innerGC.getClipping();
-		Rectangle scaledArea = DPIUtil.autoScaleUp(originalArea);
-		innerGC.drawImage(transferImage, 0, 0, scaledArea.width, scaledArea.height, //
-				0, 0, originalArea.width, originalArea.height);
+		Point drawingSizeInPixels = DPIUtil.autoScaleUp(originalDrawingSize);
+		innerGC.drawImage(transferImage, 0, 0, drawingSizeInPixels.x, drawingSizeInPixels.y, //
+				0, 0, originalDrawingSize.x, originalDrawingSize.y);
 		transferImage.dispose();
 		surface.close();
 	}
@@ -916,7 +936,7 @@ public class SkijaGC extends GCHandle {
 
 	@Override
 	public Rectangle getClipping() {
-		return new Rectangle(clipping.x, clipping.y, clipping.width, clipping.height);
+		return innerGC.getClipping();
 	}
 
 	@Override
