@@ -318,7 +318,7 @@ public class CSimpleText extends NativeBasedCustomScrollable {
 				break;
 			}
 		} else if ((e.stateMask & SWT.MOD1) != 0) {
-			switch (e.character) {
+			switch (e.keyCode) {
 			case 'a':
 				model.selectAll();
 				break;
