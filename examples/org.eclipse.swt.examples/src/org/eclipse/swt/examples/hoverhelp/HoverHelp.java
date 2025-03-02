@@ -88,7 +88,7 @@ public class HoverHelp {
 
 				for (int i = 0; i < imageLocations.length; ++i) {
 					try (InputStream stream = clazz.getResourceAsStream(imageLocations[i])) {
-						ImageData source = new ImageData(stream);
+						ImageData source = ImageData.load(stream);
 						ImageData mask = source.getTransparencyMask();
 						images[i] = new Image(display, source, mask);
 					} catch (IOException e) {
