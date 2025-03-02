@@ -293,44 +293,24 @@ public class CSimpleText extends NativeBasedCustomScrollable {
 		boolean updateSelection = (e.stateMask & SWT.SHIFT) != 0;
 		if ((e.stateMask == 0 || (e.stateMask & SWT.SHIFT) != 0)) {
 			switch (e.keyCode) {
-			case SWT.ARROW_LEFT:
-				model.moveCaretLeft(updateSelection);
-				break;
-			case SWT.ARROW_RIGHT:
-				model.moveCaretRight(updateSelection);
-				break;
-			case SWT.ARROW_UP:
-				model.moveCaretUp(updateSelection);
-				break;
-			case SWT.ARROW_DOWN:
-				model.moveCaretDown(updateSelection);
-				break;
-			case SWT.BS:
-				model.removeCharacterBeforeCaret();
-				break;
-			case SWT.DEL:
-				model.removeCharacterAfterCaret();
-				break;
-			default:
+			case SWT.ARROW_LEFT -> model.moveCaretLeft(updateSelection);
+			case SWT.ARROW_RIGHT -> model.moveCaretRight(updateSelection);
+			case SWT.ARROW_UP -> model.moveCaretUp(updateSelection);
+			case SWT.ARROW_DOWN -> model.moveCaretDown(updateSelection);
+			case SWT.BS -> model.removeCharacterBeforeCaret();
+			case SWT.DEL -> model.removeCharacterAfterCaret();
+			default -> {
 				if (e.keyCode == 0 || e.character != '\0') {
 					model.insert(e.character);
 				}
-				break;
+			}
 			}
 		} else if ((e.stateMask & SWT.MOD1) != 0) {
 			switch (e.keyCode) {
-			case 'a':
-				model.selectAll();
-				break;
-			case 'c':
-				copy();
-				break;
-			case 'x':
-				cut();
-				break;
-			case 'v':
-				paste();
-				break;
+			case 'a' -> model.selectAll();
+			case 'c' -> copy();
+			case 'x' -> cut();
+			case 'v' -> paste();
 			}
 		}
 	}
