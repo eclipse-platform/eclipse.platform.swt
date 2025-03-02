@@ -12,7 +12,7 @@
  *     Andrey Loskutov - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.tests.gtk.snippets;
-import java.io.File;
+import java.nio.file.Path;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -91,21 +91,18 @@ class Bug547529_ControlPrintBroken {
 
 		ImageLoader loader = new ImageLoader();
 		loader.data = new ImageData[] { image.getImageData() };
-		File file = new File(filename + ".png");
-		file.delete();
-		loader.save(filename + ".png", SWT.IMAGE_PNG);
-
+		Path file = Path.of(filename + ".png");
+		loader.save(file, SWT.IMAGE_PNG);
 
 		loader = new ImageLoader();
-		ImageData[] loaded = loader.load(file.getAbsolutePath());
-		Shell shell = display.getShells()[0];
-		for (ImageData d : loaded) {
-			Label l = new Label(shell, SWT.NONE);
-			image = new Image(display, d);
-			l.setImage(image);
-		}
 
-		loader.save(filename + "_2.png", SWT.IMAGE_PNG);
+		ImageData loadedImage = ImageData.load(file);
+		Shell shell = display.getShells()[0];
+		Label l = new Label(shell, SWT.NONE);
+		image = new Image(display, loadedImage);
+		l.setImage(image);
+
+		loader.save(Path.of(filename + "_2.png"), SWT.IMAGE_PNG);
 		shell.pack();
 	}
 }

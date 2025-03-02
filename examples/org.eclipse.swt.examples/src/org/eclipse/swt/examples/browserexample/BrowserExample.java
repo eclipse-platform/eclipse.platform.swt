@@ -324,7 +324,7 @@ public class BrowserExample {
 					images = new Image[imageLocations.length];
 					for (int i = 0; i < imageLocations.length; ++i) {
 						try (InputStream sourceStream = clazz.getResourceAsStream(imageLocations[i])) {
-						ImageData source = new ImageData(sourceStream);
+						ImageData source = ImageData.load(sourceStream);
 						ImageData mask = source.getTransparencyMask();
 						images[i] = new Image(null, source, mask);
 						}

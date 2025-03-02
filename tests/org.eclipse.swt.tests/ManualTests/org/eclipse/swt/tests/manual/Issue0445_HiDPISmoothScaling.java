@@ -66,7 +66,7 @@ public class Issue0445_HiDPISmoothScaling {
 				try (InputStream in = new BufferedInputStream(
 						Issue0445_HiDPISmoothScaling.class.getResourceAsStream("gear_icon1.png"))) {
 					if (in != null) {
-						result = new ImageData(in);
+						result = ImageData.load(in);
 					}
 				} catch (IOException | SWTException e) {
 				}

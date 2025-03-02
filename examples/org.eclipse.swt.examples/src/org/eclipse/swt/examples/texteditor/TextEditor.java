@@ -1120,7 +1120,7 @@ public class TextEditor {
 	Image loadImage(Display display, String fileName) {
 		Image image = null;
 		try (InputStream sourceStream = getClass().getResourceAsStream(fileName + ".ico")) { //$NON-NLS-1$
-			ImageData source = new ImageData(sourceStream);
+			ImageData source = ImageData.load(sourceStream);
 			ImageData mask = source.getTransparencyMask();
 			image = new Image(display, source, mask);
 		} catch (IOException e) {

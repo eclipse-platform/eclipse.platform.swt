@@ -14,7 +14,9 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.gtk.snippets;
 
-import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -41,8 +43,8 @@ import org.eclipse.swt.widgets.Shell;
  */
 public class Bug531667_CanvasPrint_does_not_work {
 
-	public static void main(String[] args) {
-		String filename = "some_canvas.png";
+	public static void main(String[] args) throws IOException {
+		Path filename = Path.of("some_canvas.png");
 
 		Display display = new Display();
 		Shell shell = new Shell(display);
@@ -79,7 +81,7 @@ public class Bug531667_CanvasPrint_does_not_work {
 		return composite;
 	}
 
-	private static void snapshot(Display display, Composite composite, String filename) {
+	private static void snapshot(Display display, Composite composite, Path output) throws IOException {
 		Rectangle bounds = composite.getBounds();
 		Image image = new Image(display, bounds.width, bounds.height);
 		GC gc = new GC(image);
@@ -88,9 +90,8 @@ public class Bug531667_CanvasPrint_does_not_work {
 
 		ImageLoader loader = new ImageLoader();
 		loader.data = new ImageData[] { image.getImageData() };
-		File output = new File(filename);
-		output.delete();
-		loader.save(filename, SWT.IMAGE_PNG);
-		System.out.println("Image saved to: " + output.getAbsolutePath());
+		Files.delete(output);
+		loader.save(output, SWT.IMAGE_PNG);
+		System.out.println("Image saved to: " + output.toAbsolutePath());
 	}
 }

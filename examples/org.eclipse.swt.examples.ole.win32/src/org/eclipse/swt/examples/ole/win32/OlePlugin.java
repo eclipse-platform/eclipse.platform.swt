@@ -14,16 +14,22 @@
 package org.eclipse.swt.examples.ole.win32;
 
 
-import java.io.*;
-import java.net.*;
-import java.text.*;
-import java.util.*;
+import java.io.InputStream;
+import java.net.URL;
+import java.text.MessageFormat;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
-import org.eclipse.core.runtime.*;
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.ui.plugin.*;
-import org.osgi.framework.*;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 
 /**
  * The main plugin class to be used in the desktop.
@@ -174,7 +180,7 @@ public class OlePlugin extends AbstractUIPlugin {
 	private static Image getImageFromPlugin(Bundle bundle, String iconPath) {
 		URL installUrl = bundle.getEntry("/");
 		try (InputStream is = new URL(installUrl, iconPath).openConnection().getInputStream()) {
-			ImageData source = new ImageData(is);
+			ImageData source = ImageData.load(is);
 			ImageData mask = source.getTransparencyMask();
 			Image image = new Image(null, source, mask);
 			return image;

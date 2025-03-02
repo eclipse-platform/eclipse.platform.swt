@@ -17,6 +17,8 @@ import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -103,7 +105,7 @@ public class ImageAnalyzer {
 	Thread incrementalThread; // draws incremental images
 	String lastPath; // used to seed the file dialog
 	String currentName; // the current image file or URL name
-	String fileName; // the current image file
+	Path fileName; // the current image file
 	ImageLoader loader; // the loader for the current image file
 	ImageData[] imageDataArray; // all image data read from the current file
 	int imageDataIndex; // the index of the current image data
@@ -793,7 +795,7 @@ public class ImageAnalyzer {
 
 			// Cache the filename.
 			currentName = filename;
-			fileName = filename;
+			fileName = Path.of(filename);
 
 			// Fill in array and loader data.
 			loader = new ImageLoader();
@@ -838,12 +840,12 @@ public class ImageAnalyzer {
 			}
 			// Read the new image(s) from the chosen file.
 			long startTime = System.currentTimeMillis();
-			imageDataArray = loader.load(filename);
+			imageDataArray = loader.load(Path.of(filename));
 			loadTime = System.currentTimeMillis() - startTime;
 			if (imageDataArray.length > 0) {
 				// Cache the filename.
 				currentName = filename;
-				fileName = filename;
+				fileName = Path.of(filename);
 
 				// If there are multiple images in the file (typically GIF)
 				// then enable the Previous, Next and Animate buttons.
@@ -1005,11 +1007,7 @@ public class ImageAnalyzer {
 		FileDialog fileChooser = new FileDialog(shell, SWT.SAVE);
 		fileChooser.setFilterPath(lastPath);
 		if (fileName != null) {
-			String name = fileName;
-			int nameStart = name.lastIndexOf(java.io.File.separatorChar);
-			if (nameStart > -1) {
-				name = name.substring(nameStart + 1);
-			}
+			String name = fileName.getFileName().toString();
 			fileChooser.setFileName(name.substring(0, name.indexOf(".")) + "." + imageTypeCombo.getText().toLowerCase());
 		}
 		fileChooser.setFilterExtensions(SAVE_FILTER_EXTENSIONS);
@@ -1055,9 +1053,10 @@ public class ImageAnalyzer {
 			}
 		}
 
-		if (new java.io.File(filename).exists()) {
+		Path file = Path.of(filename);
+		if (Files.exists(file)) {
 			MessageBox box = new MessageBox(shell, SWT.ICON_QUESTION | SWT.OK | SWT.CANCEL);
-			box.setMessage(createMsg(bundle.getString("Overwrite"), filename));
+			box.setMessage(createMsg(bundle.getString("Overwrite"), file));
 			if (box.open() == SWT.CANCEL)
 				return;
 		}
@@ -1084,7 +1083,7 @@ public class ImageAnalyzer {
 
 			if (!multi) loader.data = new ImageData[] {imageData};
 			loader.compression = compressionCombo.indexOf(compressionCombo.getText());
-			loader.save(filename, filetype);
+			loader.save(file, filetype);
 
 			/* Restore the previous transparency setting. */
 			if (!multi && transparentPixel != -1 && !transparent) {
@@ -1093,12 +1092,12 @@ public class ImageAnalyzer {
 
 			// Update the shell title and file type label,
 			// and use the new file.
-			fileName = filename;
-			shell.setText(createMsg(bundle.getString("Analyzer_on"), filename));
+			fileName = file;
+			shell.setText(createMsg(bundle.getString("Analyzer_on"), file));
 			typeLabel.setText(createMsg(bundle.getString("Type_string"), fileTypeString(filetype)));
 
 		} catch (SWTException | SWTError e) {
-			showErrorDialog(bundle.getString("Saving_lc"), filename, e);
+			showErrorDialog(bundle.getString("Saving_lc"), file, e);
 		} finally {
 			shell.setCursor(null);
 			imageCanvas.setCursor(crossCursor);
@@ -1113,7 +1112,7 @@ public class ImageAnalyzer {
 		// Get the user to choose a file name and type to save.
 		FileDialog fileChooser = new FileDialog(shell, SWT.SAVE);
 		fileChooser.setFilterPath(lastPath);
-		if (fileName != null) fileChooser.setFileName(fileName);
+		if (fileName != null) fileChooser.setFileName(fileName.toString());
 		fileChooser.setFilterExtensions(SAVE_FILTER_EXTENSIONS);
 		fileChooser.setFilterNames(SAVE_FILTER_NAMES);
 		String filename = fileChooser.open();
@@ -1137,9 +1136,10 @@ public class ImageAnalyzer {
 			}
 		}
 
-		if (new java.io.File(filename).exists()) {
+		Path file = Path.of(filename);
+		if (Files.exists(file)) {
 			MessageBox box = new MessageBox(shell, SWT.ICON_QUESTION | SWT.OK | SWT.CANCEL);
-			box.setMessage(createMsg(bundle.getString("Overwrite"), filename));
+			box.setMessage(createMsg(bundle.getString("Overwrite"), file));
 			if (box.open() == SWT.CANCEL)
 				return;
 		}
@@ -1151,10 +1151,10 @@ public class ImageAnalyzer {
 			// Save the mask of the current image to the specified file.
 			ImageData maskImageData = imageData.getTransparencyMask();
 			loader.data = new ImageData[] {maskImageData};
-			loader.save(filename, filetype);
+			loader.save(file, filetype);
 
 		} catch (SWTException | SWTError e) {
-			showErrorDialog(bundle.getString("Saving_lc"), filename, e);
+			showErrorDialog(bundle.getString("Saving_lc"), file, e);
 		} finally {
 			shell.setCursor(null);
 			imageCanvas.setCursor(crossCursor);
@@ -2077,7 +2077,7 @@ public class ImageAnalyzer {
 	/*
 	 * Open an error dialog displaying the specified information.
 	 */
-	void showErrorDialog(String operation, String filename, Throwable e) {
+	void showErrorDialog(String operation, Object filename, Throwable e) {
 		MessageBox box = new MessageBox(shell, SWT.ICON_ERROR);
 		String message = createMsg(bundle.getString("Error"), operation, filename);
 		String errorMessage = "";
