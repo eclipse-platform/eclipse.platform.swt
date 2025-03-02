@@ -26,7 +26,7 @@ public class CSimpleTextModel {
 			return "";
 		}
 
-		int textLength = getText().length();
+		int textLength = getCharCount();
 
 		return getText().substring(Math.min(Math.max(start, 0), textLength), Math.min(Math.max(0, end), textLength));
 	}
@@ -98,7 +98,7 @@ public class CSimpleTextModel {
 			SWT.error(SWT.ERROR_NULL_ARGUMENT);
 		}
 		text = text + string;
-		caretOffset = getText().length();
+		caretOffset = getCharCount();
 		if (string.length() != 0) {
 			sendTextModified();
 		}
@@ -115,8 +115,12 @@ public class CSimpleTextModel {
 		return getLines().length;
 	}
 
+	int getCharCount() {
+		return text.length();
+	}
+
 	TextLocation getLocation(int offset) {
-		if (offset < 0 || offset > text.length()) {
+		if (offset < 0 || offset > getCharCount()) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		}
 
@@ -191,7 +195,7 @@ public class CSimpleTextModel {
 	}
 
 	private void moveCaretTo(int newOffset, boolean changeSelection) {
-		if (newOffset < 0 || newOffset > getText().length()) {
+		if (newOffset < 0 || newOffset > getCharCount()) {
 			return;
 		}
 
@@ -230,7 +234,7 @@ public class CSimpleTextModel {
 	}
 
 	private int keepOffsetInTextBounds(int offset) {
-		return Math.max(0, Math.min(offset, getText().length()));
+		return Math.max(0, Math.min(offset, getCharCount()));
 	}
 
 	void setSelection(int start) {
@@ -254,7 +258,7 @@ public class CSimpleTextModel {
 	}
 
 	void selectAll() {
-		setSelection(0, getText().length());
+		setSelection(0, getCharCount());
 	}
 
 	int getSelectionCount() {

@@ -865,7 +865,7 @@ public class CSimpleText extends NativeBasedCustomScrollable {
 	}
 
 	public int getCharCount() {
-		return model.getText().length();
+		return model.getCharCount();
 	}
 
 	public boolean getDoubleClickEnabled() {
