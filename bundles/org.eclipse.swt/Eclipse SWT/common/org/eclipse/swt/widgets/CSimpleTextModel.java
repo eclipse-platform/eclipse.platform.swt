@@ -294,6 +294,26 @@ public class CSimpleTextModel {
 		moveCaretTo(getOffset(caretLocation), updateSelection);
 	}
 
+	void moveCaretToLineStart(boolean updateSelection) {
+		TextLocation caretLocation = getLocation(getCaretOffset());
+		caretLocation.column = 0;
+		moveCaretTo(getOffset(caretLocation), updateSelection);
+	}
+
+	void moveCaretToLineEnd(boolean updateSelection) {
+		TextLocation caretLocation = getLocation(getCaretOffset());
+		caretLocation.column = getLines()[caretLocation.line].length();
+		moveCaretTo(getOffset(caretLocation), updateSelection);
+	}
+
+	void moveCaretToTextStart(boolean updateSelection) {
+		moveCaretTo(0, updateSelection);
+	}
+
+	void moveCaretToTextEnd(boolean updateSelection) {
+		moveCaretTo(getCharCount(), updateSelection);
+	}
+
 	void addModelChangedListner(ITextModelChangedListener listener) {
 		modelChangedListeners.add(listener);
 	}

@@ -290,28 +290,39 @@ public class CSimpleText extends NativeBasedCustomScrollable {
 	}
 
 	private void keyPressed(Event e) {
-		boolean updateSelection = (e.stateMask & SWT.SHIFT) != 0;
-		if ((e.stateMask == 0 || (e.stateMask & SWT.SHIFT) != 0)) {
+		final boolean mod1Pressed = (e.stateMask & SWT.MOD1) != 0;
+		final boolean shiftPressed = (e.stateMask & SWT.SHIFT) != 0;
+		if (mod1Pressed) {
 			switch (e.keyCode) {
-			case SWT.ARROW_LEFT -> model.moveCaretLeft(updateSelection);
-			case SWT.ARROW_RIGHT -> model.moveCaretRight(updateSelection);
-			case SWT.ARROW_UP -> model.moveCaretUp(updateSelection);
-			case SWT.ARROW_DOWN -> model.moveCaretDown(updateSelection);
-			case SWT.BS -> model.removeCharacterBeforeCaret();
-			case SWT.DEL -> model.removeCharacterAfterCaret();
-			default -> {
-				if (e.keyCode == 0 || e.character != '\0') {
-					model.insert(e.character);
+			case SWT.HOME -> model.moveCaretToTextStart(shiftPressed);
+			case SWT.END -> model.moveCaretToTextEnd(shiftPressed);
+			}
+			if (!shiftPressed) {
+				switch (e.keyCode) {
+				case 'a' -> model.selectAll();
+				case 'c' -> copy();
+				case 'x' -> cut();
+				case 'v' -> paste();
 				}
 			}
+			return;
+		}
+
+		boolean updateSelection = shiftPressed;
+		switch (e.keyCode) {
+		case SWT.ARROW_LEFT -> model.moveCaretLeft(updateSelection);
+		case SWT.ARROW_RIGHT -> model.moveCaretRight(updateSelection);
+		case SWT.ARROW_UP -> model.moveCaretUp(updateSelection);
+		case SWT.ARROW_DOWN -> model.moveCaretDown(updateSelection);
+		case SWT.HOME -> model.moveCaretToLineStart(shiftPressed);
+		case SWT.END -> model.moveCaretToLineEnd(shiftPressed);
+		case SWT.BS -> model.removeCharacterBeforeCaret();
+		case SWT.DEL -> model.removeCharacterAfterCaret();
+		default -> {
+			if (e.keyCode == 0 || e.character != '\0') {
+				model.insert(e.character);
 			}
-		} else if ((e.stateMask & SWT.MOD1) != 0) {
-			switch (e.keyCode) {
-			case 'a' -> model.selectAll();
-			case 'c' -> copy();
-			case 'x' -> cut();
-			case 'v' -> paste();
-			}
+		}
 		}
 	}
 
