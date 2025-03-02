@@ -326,7 +326,7 @@ public class CSimpleText extends NativeBasedCustomScrollable {
 				copy();
 				break;
 			case 'x':
-				copy();
+				cut();
 				break;
 			case 'v':
 				paste();
