@@ -23,10 +23,12 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.function.Consumer;
 
 import org.eclipse.swt.SWT;
@@ -36,7 +38,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageDataProvider;
-import org.eclipse.swt.graphics.ImageFileNameProvider;
+import org.eclipse.swt.graphics.ImageFileProvider;
 import org.eclipse.swt.graphics.ImageGcDrawer;
 import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.RGB;
@@ -53,7 +55,8 @@ import org.junit.Test;
  */
 @SuppressWarnings("restriction")
 public class Test_org_eclipse_swt_graphics_Image {
-ImageFileNameProvider imageFileNameProvider = zoom -> {
+
+ImageFileProvider imageFileNameProvider = zoom -> {
 	String fileName;
 	switch (zoom) {
 	case 100:
@@ -85,7 +88,7 @@ ImageDataProvider imageDataProvider = zoom -> {
 	default:
 		return null;
 	}
-	return new ImageData(getPath(fileName));
+	return ImageData.load(getPath(fileName));
 };
 ImageDataProvider imageDataProvider1xOnly = zoom -> {
 	String fileName;
@@ -96,7 +99,7 @@ ImageDataProvider imageDataProvider1xOnly = zoom -> {
 	default:
 		return null;
 	}
-	return new ImageData(getPath(fileName));
+	return ImageData.load(getPath(fileName));
 };
 ImageGcDrawer imageGcDrawer = (gc, width, height) -> {};
 
@@ -430,7 +433,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String() 
 		assertSWTProblem("Incorrect exception thrown for non-existent file name", SWT.ERROR_IO, e);
 	}
 		try {
-			String pathName = getPath("empty.txt");
+			String pathName = getPath("empty.txt").toString();
 			Image image = new Image(display, pathName);
 			image.dispose();
 			fail("No exception thrown for invalid file name");
@@ -446,7 +449,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String() 
 				String format = SwtTestUtil.imageFormats[i];
 
 				try {
-					String pathName = getPath(fileName + "." + format);
+					String pathName = getPath(fileName + "." + format).toString();
 					Image image = new Image(display, pathName);
 					image.dispose();
 					fail("No exception thrown for invalid file name");
@@ -460,7 +463,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String() 
 		}
 
 		try {
-			String pathName = getPath(SwtTestUtil.invalidImageFilenames[1]);
+			String pathName = getPath(SwtTestUtil.invalidImageFilenames[1]).toString();
 			Image image = new Image(display, pathName);
 			image.dispose();
 			fail("No exception thrown for invalid file name");
@@ -475,7 +478,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String() 
 				fileName = SwtTestUtil.imageFilenames[k];
 				for (int i=0; i<numFormats; i++) {
 					String format = SwtTestUtil.imageFormats[i];
-					String pathName = getPath(fileName + "." + format);
+					String pathName = getPath(fileName + "." + format).toString();
 					Image image = new Image(display, pathName);
 					image.dispose();
 				}
@@ -486,7 +489,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String() 
 @Test
 public void test_ConstructorLorg_eclipse_swt_graphics_Device_ImageFileNameProvider() {
 	// Null provider
-	ImageFileNameProvider provider = null;
+	ImageFileProvider provider = null;
 	try {
 		Image image = new Image(display, provider);
 		image.dispose();
@@ -582,7 +585,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Device_ImageDataProvider()
 		default:
 			return null;
 		}
-		return new ImageData(getPath(fileName));
+		return ImageData.load(getPath(fileName));
 	};
 	try {
 		image = new Image(display, provider);
@@ -603,7 +606,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Device_ImageDataProvider()
 		default:
 			return null;
 		}
-		return new ImageData(getPath(fileName));
+		return ImageData.load(getPath(fileName));
 	};
 	image = new Image(display, provider);
 	image.dispose();
@@ -1114,7 +1117,7 @@ void getImageData1() {
 	for (int i=0; i<numFormats; i++) {
 		String format = SwtTestUtil.imageFormats[i];
 		try (InputStream stream = SwtTestUtil.class.getResourceAsStream(fileName + "." + format)) {
-			ImageData data1 = new ImageData(stream);
+			ImageData data1 = ImageData.load(stream);
 			Image image = new Image(display, data1);
 			ImageData data2 = image.getImageData();
 			image.dispose();
@@ -1156,26 +1159,24 @@ void getImageData2(int depth, PaletteData palette) {
 	gc.dispose();
 	image.dispose();
 }
-String getPath(String fileName) {
-	String urlPath;
 
+Path getPath(String fileName) {
+	URI uri;
 	String pluginPath = System.getProperty("PLUGIN_PATH");
 	if (pluginPath == null) {
 		URL url = getClass().getClassLoader().getResource(fileName);
-		if (url == null) {
-			fail("URL == null for file " + fileName);
+		assertNotNull("URL == null for file " + fileName, url);
+		try {
+			uri = url.toURI();
+		} catch (URISyntaxException e) {
+			throw new IllegalArgumentException(e);
 		}
-		urlPath = url.getFile();
 	} else {
-		urlPath = pluginPath + "/data/" + fileName;
+		uri = URI.create(pluginPath + "/data/" + fileName);
 	}
-
-	if (File.separatorChar != '/') urlPath = urlPath.replace('/', File.separatorChar);
-	if (SwtTestUtil.isWindows && urlPath.indexOf(File.separatorChar) == 0) urlPath = urlPath.substring(1);
-	urlPath = urlPath.replaceAll("%20", " ");
-
-	return urlPath;
+	return Path.of(uri);
 }
+
 RGB getRealRGB(Color color) {
 	Image colorImage = new Image(display, 10, 10);
 	GC imageGc = new GC(colorImage);
