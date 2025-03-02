@@ -57,8 +57,8 @@ public class SkijaGC extends GCHandle {
 		if (onlyForMeasuring) {
 			surface = createMeasureSurface();
 		} else {
-			Color backgroundColor = extractBackgroundColor(gc, originalDrawingSize);
-			surface = createSurface(backgroundColor);
+			surface = createDrawingSurface();
+			initializeWithParentBackground();
 		}
 		initFont();
 	}
@@ -86,41 +86,33 @@ public class SkijaGC extends GCHandle {
 		// resources.
 	}
 
-	private static Color extractBackgroundColor(NativeGC gc, Point drawingSize) {
-		// Do not fill when using dummy GC for text extent calculation or when on cocoa
-		// (as it does not have proper color)
-		if (isEmpty(drawingSize) || SWT.getPlatform().equals("cocoa")) {
-			return null;
-		}
-		Image colorImage = new Image(gc.getDevice(), 1, 1);
-		gc.copyArea(colorImage, 0, 0);
-		int pixel = colorImage.getImageData().getPixel(0, 0);
-		Color originalColor = SWT.convertPixelToColor(pixel);
-		colorImage.dispose();
-		return originalColor;
-	}
-
 	private static boolean isEmpty(Point area) {
 		return area.x <= 0 || area.y <= 0;
 	}
 
-	private Surface createSurface(Color backgroundColor) {
+	private Surface createDrawingSurface() {
 		Point drawingSizeInPixels = DPIUtil.autoScaleUp(originalDrawingSize);
 		if (isEmpty(originalDrawingSize)) {
 			drawingSizeInPixels = new Point(1, 1);
 		}
-		Surface surface = Surface.makeRaster(
-				ImageInfo.makeN32Premul(drawingSizeInPixels.x, drawingSizeInPixels.y), 0,
-				new SurfaceProps(PixelGeometry.RGB_H));
-		if (backgroundColor != null) {
-			surface.getCanvas().clear(convertSWTColorToSkijaColor(backgroundColor));
-		}
-		return surface;
+		return createSurface(drawingSizeInPixels.x, drawingSizeInPixels.y);
 	}
 
 	private Surface createMeasureSurface() {
-		return Surface.makeRaster(ImageInfo.makeN32Premul(1, 1), 0,
-				new SurfaceProps(PixelGeometry.RGB_H));
+		return createSurface(1, 1);
+	}
+
+	private Surface createSurface(int width, int height) {
+		return Surface.makeRaster(ImageInfo.makeN32Premul(width, height), 0, new SurfaceProps(PixelGeometry.RGB_H));
+	}
+
+	private void initializeWithParentBackground() {
+		if (originalDrawingSize.x > 0 && originalDrawingSize.y > 0) {
+			Image image = new Image(innerGC.device, originalDrawingSize.x, originalDrawingSize.y);
+			innerGC.copyArea(image, 0, 0);
+			drawImage(image, 0, 0);
+			image.dispose();
+		}
 	}
 
 	private void initFont() {
