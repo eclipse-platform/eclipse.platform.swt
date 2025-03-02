@@ -195,9 +195,8 @@ public class CSimpleTextModel {
 	}
 
 	private void moveCaretTo(int newOffset, boolean changeSelection) {
-		if (newOffset < 0 || newOffset > getCharCount()) {
-			return;
-		}
+		newOffset = Math.min(newOffset, getCharCount());
+		newOffset = Math.max(newOffset, 0);
 
 		if (changeSelection) {
 			if (caretOffset == selectionEnd) {
