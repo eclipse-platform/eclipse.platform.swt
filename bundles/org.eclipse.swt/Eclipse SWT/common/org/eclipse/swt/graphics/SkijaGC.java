@@ -716,20 +716,12 @@ public class SkijaGC extends GCHandle {
 
 	@Override
 	public void fillPolygon(int[] pointArray) {
-
-		boolean isXCoord = true;
-		int xCoord = 0;
 		List<io.github.humbleui.types.Point> ps = new ArrayList<>();
 
-		for (int i : pointArray) {
-
-			if (isXCoord) {
-				xCoord = i;
-				isXCoord = false;
-			} else {
-				ps.add(new io.github.humbleui.types.Point(xCoord, i));
-				isXCoord = true;
-			}
+		for (int i = 0; i < pointArray.length; i += 2) {
+			int x = DPIUtil.autoScaleUp(pointArray[i]);
+			int y = DPIUtil.autoScaleUp(pointArray[i + 1]);
+			ps.add(new io.github.humbleui.types.Point(x, y));
 		}
 
 		performDrawFilled(paint -> surface.getCanvas().drawTriangles(ps.toArray(new io.github.humbleui.types.Point[0]),
