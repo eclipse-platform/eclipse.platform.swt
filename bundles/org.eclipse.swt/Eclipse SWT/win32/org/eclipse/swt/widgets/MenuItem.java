@@ -782,7 +782,10 @@ public void setImage (Image image) {
 	} else {
 		if (OS.IsAppThemed ()) {
 			if (hBitmap != 0) OS.DeleteObject (hBitmap);
-			info.hbmpItem = hBitmap = image != null ? Display.create32bitDIB (image, getZoom()) : 0;
+			// MenuItem images are painted badly/squeezed down by windows on quarter
+			// scaling size, e.g. at zoom 125%, 175%, etc.
+			int zoom = DPIUtil.getZoomForMenuItemImage(nativeZoom);
+			info.hbmpItem = hBitmap = image != null ? Display.create32bitDIB (image, zoom) : 0;
 		} else {
 			info.hbmpItem = image != null ? OS.HBMMENU_CALLBACK : 0;
 		}
