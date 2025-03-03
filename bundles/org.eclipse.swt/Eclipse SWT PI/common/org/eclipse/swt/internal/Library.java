@@ -35,12 +35,12 @@ public class Library {
 	/**
 	 * SWT Minor version number (must be in the range 0..999)
 	 */
-	static int MINOR_VERSION = 968;
+	static int MINOR_VERSION = 969;
 
 	/**
 	 * SWT revision number (must be >= 0)
 	 */
-	static int REVISION = 13;
+	static int REVISION = 0;
 
 	/**
 	 * The JAVA and SWT versions
