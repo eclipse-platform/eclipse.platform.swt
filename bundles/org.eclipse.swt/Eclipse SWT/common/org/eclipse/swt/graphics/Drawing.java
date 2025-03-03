@@ -36,7 +36,9 @@ public final class Drawing {
 		}
 
 		GC gc = new GC();
-		gc.innerGC = new SkijaGC(originalNativeGC, onlyForMeasuring);
+		gc.innerGC = onlyForMeasuring
+				? SkijaGC.createMeasureInstance(originalNativeGC)
+				: SkijaGC.createDefaultInstance(originalNativeGC);
 		return gc;
 	}
 

@@ -26,6 +26,15 @@ import io.github.humbleui.skija.Font;
 import io.github.humbleui.types.*;
 
 public class SkijaGC extends GCHandle {
+
+	public static SkijaGC createDefaultInstance(NativeGC gc) {
+		return new SkijaGC(gc, false);
+	}
+
+	public static SkijaGC createMeasureInstance(NativeGC gc) {
+		return new SkijaGC(gc, true);
+	}
+
 	private final Surface surface;
 
 	private NativeGC innerGC;
@@ -38,7 +47,7 @@ public class SkijaGC extends GCHandle {
 
 	private static Map<ColorType, int[]> colorTypeMap = null;
 
-	public SkijaGC(NativeGC gc, boolean onlyForMeasuring) {
+	private SkijaGC(NativeGC gc, boolean onlyForMeasuring) {
 		innerGC = gc;
 		originalDrawingSize = extractSize(innerGC.drawable);
 		if (onlyForMeasuring) {

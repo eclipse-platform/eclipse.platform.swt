@@ -26,7 +26,7 @@ public class SkijaCanvasTest {
 		shell.setVisible(true);
 
 		shell.addPaintListener(event -> {
-			SkijaGC skijaGC = new SkijaGC((NativeGC) event.gc.innerGC, false);
+			SkijaGC skijaGC = SkijaGC.createDefaultInstance((NativeGC) event.gc.innerGC);
 
 			skijaGC.drawText("Hello World Test", 0, 0);
 			skijaGC.drawLine(0, 0, 200, 200);
