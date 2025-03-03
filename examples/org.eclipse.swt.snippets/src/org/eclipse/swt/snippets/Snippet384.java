@@ -14,6 +14,7 @@ package org.eclipse.swt.snippets;
 import java.io.*;
 import java.util.*;
 import java.util.List;
+import java.util.function.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -24,19 +25,20 @@ public class Snippet384 {
 
 	private static Display display = new Display();
 
-	// colors and thresholds used in the current Win32/macOS algorithm
-	private static final RGB GRAY_LOW = display.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW).getRGB(); // == RGB(160,
-																											// 160, 160)
-																											// on
-																											// Windows
-	private static final RGB GRAY_HIGH = display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND).getRGB(); // == RGB(240,
-																										// 240, 240) on
-																										// Windows
+	private static final boolean ENABLE_DARK_MODE = false;
 
-	private static final int WIN32_COCOA_THRESHOLD = 98304; // == 3 * 2^15, this is the real threshold used in
-															// Win32/macOS
-	private static final int BACKGROUND_THRESHOLD = GRAY_HIGH.red * GRAY_HIGH.red + GRAY_HIGH.green + GRAY_HIGH.green
-			+ GRAY_HIGH.blue * GRAY_HIGH.blue; // == on windows 240^2 * 3
+	private static final Color LIGHT_THEME_BACKGROUND = display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND);
+	private static final Color DARK_THEME_GRAY = new Color(47, 47, 47);
+	private static final Color DARK_THEME_GRAY_DARKER = new Color(72, 72, 76);
+
+	// colors and thresholds used in the current Win32/macOS algorithm
+	private static final RGB GRAY_LOW = display.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW).getRGB(); // == RGB(160, 160, 160) on Windows
+
+	private static final RGB GRAY_HIGH = display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND).getRGB(); // == RGB(240, 240,240) on Windows
+
+	private static final int WIN32_COCOA_THRESHOLD = 98304; // == 3 * 2^15, this is the real threshold used in Win32/macOS
+
+	private static final int BACKGROUND_THRESHOLD = GRAY_HIGH.red * GRAY_HIGH.red + GRAY_HIGH.green + GRAY_HIGH.green + GRAY_HIGH.blue * GRAY_HIGH.blue; // == on windows 240^2 * 3
 
 	private static final int MAX_BRIGHTNESS = 256 * 256 * 3;
 
@@ -44,7 +46,13 @@ public class Snippet384 {
 	private static final int ADJUSTABLE_THRESHOLD_LOW_DEFAULT = WIN32_COCOA_THRESHOLD;
 	private static final int ADJUSTABLE_THRESHOLD_HIGH_DEFAULT = BACKGROUND_THRESHOLD;
 	private static final RGB ADDITIONAL_GRAY_MID_DEFAULT = new RGB(214, 214, 214); // arbitrarily chosen
+
 	private static final int HSB_DISABLING_BRIGHTNESS_DEFAULT = 90;
+	private static final int HSB_DISABLING_ALPHA_DEFAULT = 100;
+	private static final int HSB_DISABLING_SATURATION_DEFAULT = 100;
+
+	private static final int ECLIPSE_RENDER_MOJOE_BRIGHTNESS_DEFAULT = 290;
+	private static final int ECLIPSE_RENDER_MOJO_ALPHA_DEFAULT = 100;
 
 	public static void main(String[] args) {
 
@@ -64,66 +72,80 @@ public class Snippet384 {
 		}
 
 		Map<PixelTransformer, List<Label>> imageRowStorage = new HashMap<>();
-
 		List<Image> originalImages = loadImagesFromFolder(selectedDirectory, display);
 
 		// define PixelTransformers
 		GTKDisablingTransformer gtkTransformer = new GTKDisablingTransformer();
-		ThresholdBasedDisablingTransformer win32MacTransformer = new ThresholdBasedDisablingTransformer(GRAY_LOW,
-				GRAY_HIGH, GRAY_HIGH, WIN32_COCOA_THRESHOLD, WIN32_COCOA_THRESHOLD);
-		HSBConversionDisablingTransformer hsbTransformer = new HSBConversionDisablingTransformer(
-				HSB_DISABLING_BRIGHTNESS_DEFAULT / 100f);
-		ThresholdBasedDisablingTransformer adjThreshAdditGray = new ThresholdBasedDisablingTransformer(GRAY_LOW,
-				ADDITIONAL_GRAY_MID_DEFAULT, GRAY_HIGH, ADJUSTABLE_THRESHOLD_LOW_DEFAULT,
-				ADJUSTABLE_THRESHOLD_HIGH_DEFAULT);
-
-		Composite imagesComposite = new Composite(shell, SWT.NONE);
-		imagesComposite.setLayout(new GridLayout(2, false));
+		ThresholdBasedDisablingTransformer win32MacTransformer = new ThresholdBasedDisablingTransformer(GRAY_LOW, GRAY_HIGH, GRAY_HIGH, WIN32_COCOA_THRESHOLD, WIN32_COCOA_THRESHOLD);
+		EclipseRenderMojoDisablingTransformer eclipseMojoTransformer = new EclipseRenderMojoDisablingTransformer(ECLIPSE_RENDER_MOJOE_BRIGHTNESS_DEFAULT / 100f, ECLIPSE_RENDER_MOJO_ALPHA_DEFAULT / 100.f);
+		HSBConversionDisablingTransformer hsbTransformer = new HSBConversionDisablingTransformer(HSB_DISABLING_BRIGHTNESS_DEFAULT / 100.f, HSB_DISABLING_ALPHA_DEFAULT / 100.f, HSB_DISABLING_SATURATION_DEFAULT / 100.f);
+		ThresholdBasedDisablingTransformer adjThreshAdditGray = new ThresholdBasedDisablingTransformer(GRAY_LOW, ADDITIONAL_GRAY_MID_DEFAULT, GRAY_HIGH, ADJUSTABLE_THRESHOLD_LOW_DEFAULT, ADJUSTABLE_THRESHOLD_HIGH_DEFAULT);
 
 		// create transformed icon rows
+		Composite imagesComposite = new Composite(shell, SWT.NONE);
+		imagesComposite.setBackgroundMode(SWT.INHERIT_DEFAULT);
+		imagesComposite.setLayout(new GridLayout(2, false));
 		addTransformationRow(imagesComposite, "Original Images:", rgba -> rgba, originalImages, imageRowStorage);
-		addTransformationRow(imagesComposite, "(current) Win32/macOS:", win32MacTransformer, originalImages,
-				imageRowStorage);
+		addTransformationRow(imagesComposite, "(current) Win32/macOS:", win32MacTransformer, originalImages, imageRowStorage);
+		addTransformationRow(imagesComposite, "(current) Eclipsde Pre-Disabling Mojo", eclipseMojoTransformer, originalImages, imageRowStorage);
 		addTransformationRow(imagesComposite, "(current) GTK+:", gtkTransformer, originalImages, imageRowStorage);
-		addTransformationRow(imagesComposite, "(proposed) HSB Adding Brightness:", hsbTransformer, originalImages,
-				imageRowStorage);
-		addTransformationRow(imagesComposite, "(proposed) Adjustable Threshold + 3rd Gray Tone:", adjThreshAdditGray,
-				originalImages, imageRowStorage);
+		addTransformationRow(imagesComposite, "(proposed) HSB Transformation:", hsbTransformer, originalImages, imageRowStorage);
+		addTransformationRow(imagesComposite, "(proposed) Adjustable Threshold + 3rd Gray Tone:", adjThreshAdditGray, originalImages, imageRowStorage);
 
-		Composite slidersComposite = new Composite(shell, SWT.NONE);
-		slidersComposite.setLayout(new GridLayout(3, false));
+		// add sliders
+		Composite hsbSliderComposite = new Composite(shell, SWT.NONE);
+		hsbSliderComposite.setBackgroundMode(SWT.INHERIT_DEFAULT);
+		hsbSliderComposite.setLayout(new GridLayout(9, false));
+		Scale hsbDisablingBrightness = addScale(hsbSliderComposite, "HSB Brightness %:", 40, 140, HSB_DISABLING_BRIGHTNESS_DEFAULT);
+		Scale hsbDisablingSaturation = addScale(hsbSliderComposite, "HSB Saturation %:", 0, 100, HSB_DISABLING_SATURATION_DEFAULT);
+		Scale hsbDisablingAlpha = addScale(hsbSliderComposite, "HSB Alpha %:", 0, 100, HSB_DISABLING_ALPHA_DEFAULT);
 
-		Scale lowScale = addScale(slidersComposite, "Low Threshold:", 0, MAX_BRIGHTNESS, WIN32_COCOA_THRESHOLD);
-		Scale highScale = addScale(slidersComposite, "High Threshold:", 0, MAX_BRIGHTNESS,
-				ADJUSTABLE_THRESHOLD_HIGH_DEFAULT);
-		Scale thirdGray = addScale(slidersComposite, "3rd Gray:", GRAY_LOW.red, GRAY_HIGH.red,
-				ADDITIONAL_GRAY_MID_DEFAULT.red);
-		Scale hsbDisablingBrightness = addScale(slidersComposite, "HSB Brightness Percentage:", 40, 140,
-				HSB_DISABLING_BRIGHTNESS_DEFAULT);
+		Composite eclipseMojoSliderComposite = new Composite(shell, SWT.NONE);
+		eclipseMojoSliderComposite.setBackgroundMode(SWT.INHERIT_DEFAULT);
+		eclipseMojoSliderComposite.setLayout(new GridLayout(9, false));
+		Scale eclipsePreDisablingBrightness = addScale(eclipseMojoSliderComposite, "Eclipse Mojo Brightness %:", 40, 350, ECLIPSE_RENDER_MOJOE_BRIGHTNESS_DEFAULT);
+		Scale eclipsePreDisablingAlpha = addScale(eclipseMojoSliderComposite, "Eclipse Mojo Alpha %:", 0, 100, ECLIPSE_RENDER_MOJO_ALPHA_DEFAULT);
 
-		lowScale.addListener(SWT.Selection, e -> {
-			int lowThreshold = lowScale.getSelection();
-			adjThreshAdditGray.setThresholdLow(lowThreshold);
-			updateImageRow(adjThreshAdditGray, imageRowStorage, originalImages);
-		});
+		Composite adjThreshAddGraySliderComposite = new Composite(shell, SWT.NONE);
+		adjThreshAddGraySliderComposite.setLayout(new GridLayout(9, false));
+		adjThreshAddGraySliderComposite.setBackgroundMode(SWT.INHERIT_DEFAULT);
+		Scale lowScale = addScale(adjThreshAddGraySliderComposite, "Low Threshold:", 0, MAX_BRIGHTNESS, WIN32_COCOA_THRESHOLD);
+		Scale highScale = addScale(adjThreshAddGraySliderComposite, "High Threshold:", 0, MAX_BRIGHTNESS, ADJUSTABLE_THRESHOLD_HIGH_DEFAULT);
+		Scale thirdGray = addScale(adjThreshAddGraySliderComposite, "3rd Gray:", GRAY_LOW.red, GRAY_HIGH.red, ADDITIONAL_GRAY_MID_DEFAULT.red);
 
-		highScale.addListener(SWT.Selection, e -> {
-			int highThreshold = highScale.getSelection();
-			adjThreshAdditGray.setThresholdHigh(highThreshold);
-			updateImageRow(adjThreshAdditGray, imageRowStorage, originalImages);
-		});
+		// update images on slider change
+	    addImageUpdateScaleListener(hsbDisablingBrightness, hsbTransformer, value -> hsbTransformer.setBrightnessChange(value / 100.f), imageRowStorage, originalImages);
+	    addImageUpdateScaleListener(hsbDisablingAlpha, hsbTransformer, value -> hsbTransformer.setAlphaChange(value / 100.f), imageRowStorage, originalImages);
+	    addImageUpdateScaleListener(hsbDisablingSaturation, hsbTransformer, value -> hsbTransformer.setSaturationChange(value / 100.f), imageRowStorage, originalImages);
 
-		thirdGray.addListener(SWT.Selection, e -> {
-			int grayMid = thirdGray.getSelection();
-			adjThreshAdditGray.setGrayMid(new RGB(grayMid, grayMid, grayMid));
-			updateImageRow(adjThreshAdditGray, imageRowStorage, originalImages);
-		});
+	    addImageUpdateScaleListener(eclipsePreDisablingBrightness, eclipseMojoTransformer, value -> eclipseMojoTransformer.setBrightnessChange(value / 100.f), imageRowStorage, originalImages);
+	    addImageUpdateScaleListener(eclipsePreDisablingAlpha, eclipseMojoTransformer, value -> eclipseMojoTransformer.setAlphaChange(value / 100.f), imageRowStorage, originalImages);
 
-		hsbDisablingBrightness.addListener(SWT.Selection, e -> {
-			int brightnessPercentage = hsbDisablingBrightness.getSelection();
-			hsbTransformer.setBrightnessChange(brightnessPercentage / 100f);
-			updateImageRow(hsbTransformer, imageRowStorage, originalImages);
-		});
+		addImageUpdateScaleListener(lowScale, adjThreshAdditGray, adjThreshAdditGray::setThresholdLow, imageRowStorage, originalImages);
+	    addImageUpdateScaleListener(highScale, adjThreshAdditGray, adjThreshAdditGray::setThresholdHigh, imageRowStorage, originalImages);
+	    addImageUpdateScaleListener(thirdGray, adjThreshAdditGray, value -> adjThreshAdditGray.setGrayMid(new RGB(value, value, value)), imageRowStorage, originalImages);
+
+
+	    // combo box for theme selection
+	    Combo themeCombo = new Combo(shell, SWT.DROP_DOWN | SWT.READ_ONLY);
+	    themeCombo.setItems("Light Theme", "Dark Theme", "Darker Theme");
+	    themeCombo.select(1);
+	    themeCombo.addListener(SWT.Selection, e -> {
+	    	int selected = themeCombo.getSelectionIndex();
+	    	switch (selected) {
+	    		case 1:
+	    			shell.setBackground(DARK_THEME_GRAY);
+	    			imagesComposite.setBackground(DARK_THEME_GRAY_DARKER);
+	    			break;
+	    		case 2:
+	    			shell.setBackground(DARK_THEME_GRAY_DARKER);
+	    			imagesComposite.setBackground(DARK_THEME_GRAY);
+	    			break;
+	    		default:
+	    			shell.setBackground(LIGHT_THEME_BACKGROUND);
+	    			imagesComposite.setBackground(LIGHT_THEME_BACKGROUND);
+	    	}
+	    });
 
 		shell.open();
 		shell.layout();
@@ -156,6 +178,14 @@ public class Snippet384 {
 			transformedImageLabels.add(imageLabel);
 		}
 		imageRowStorage.put(transformer, transformedImageLabels);
+	}
+
+	private static void addImageUpdateScaleListener(Scale scale, PixelTransformer transformer,  IntConsumer transformerUpdateMethod, Map<PixelTransformer, List<Label>> transformedImageStorage, List<Image> imagesToTransformOnUpdate ) {
+		scale.addListener(SWT.Selection, e -> {
+			int scaleValue = scale.getSelection();
+			transformerUpdateMethod.accept(scaleValue);
+			updateImageRow(transformer, transformedImageStorage, imagesToTransformOnUpdate);
+		});
 	}
 
 	private static Scale addScale(Composite parent, String labelText, int minimum, int maximum, int init) {
@@ -274,21 +304,82 @@ public class Snippet384 {
 	 */
 	public static class HSBConversionDisablingTransformer implements PixelTransformer {
 		private float brightnessChange;
+		private float alphaChange;
+		private float saturationChange;
 
-		public HSBConversionDisablingTransformer(float brightnessChange) {
+		public HSBConversionDisablingTransformer(float brightnessChange, float alphaChange, float saturationChange) {
+			this.saturationChange = saturationChange;
 			this.brightnessChange = brightnessChange;
+			this.alphaChange = alphaChange;
 		}
 
 		public void setBrightnessChange(float brightnessChange) {
 			this.brightnessChange = brightnessChange;
 		}
 
+		public void setAlphaChange(float alphaChange) {
+			this.alphaChange = alphaChange;
+		}
+
+		public void setSaturationChange(float saturationChange) {
+			this.saturationChange = saturationChange;
+		}
+
 		@Override
 		public RGBA transform(RGBA originalRgba) {
 			float[] hsba = originalRgba.getHSBA();
-			hsba[1] *= 0.0f; // Lower saturation (0.0f = grayscale, 1.0f = full saturation)
-			hsba[2] = Math.min(hsba[2] * brightnessChange, 1.0f); // Change brightness (cap at 1.0 for max brightness)
+
+			hsba[1] *= saturationChange;
+			hsba[2] *= brightnessChange;
+			hsba[3] *= alphaChange;
+
+			hsba[1] = Math.min(hsba[1], 1.f);
+			hsba[2] = Math.min(hsba[2], 1.f);
+			hsba[3] = Math.min(hsba[3], 255.f);
+
 			return new RGBA(hsba[0], hsba[1], hsba[2], hsba[3]);
+		}
+	}
+
+	/*
+	 * Class for Eclipse Mojo disabling (offline disabling for icons delivered with
+	 * eclipse)
+	 */
+	public static class EclipseRenderMojoDisablingTransformer implements PixelTransformer {
+		private float brightnessChange;
+		private float alphaChange;
+
+		public EclipseRenderMojoDisablingTransformer(float brightnessChange, float alphaChange) {
+			this.brightnessChange = brightnessChange;
+			this.alphaChange = alphaChange;
+		}
+
+		public void setBrightnessChange(float brightnessChange) {
+			this.brightnessChange = brightnessChange;
+		}
+
+		public void setAlphaChange(float alphaChange) {
+			this.alphaChange = alphaChange;
+		}
+
+		@Override
+		public RGBA transform(RGBA rgba) {
+			float saturation = 0.3f;
+			float contrast = 0.2f;
+			// float brightness = 2.9f;
+
+			// Adjust saturation
+			float[] hsba = rgba.getHSBA();
+			hsba[1] *= saturation;
+			rgba = new RGBA(hsba[0], hsba[1], hsba[2], hsba[3]);
+
+			// Adjust contrast and brightness
+			rgba.rgb.blue = (int) Math.min(Math.max((contrast * (rgba.rgb.blue * brightnessChange - 128) + 128), 0), 255);
+			rgba.rgb.red = (int) Math.min(Math.max((contrast * (rgba.rgb.red * brightnessChange - 128) + 128), 0), 255);
+			rgba.rgb.green = (int) Math.min(Math.max((contrast * (rgba.rgb.green * brightnessChange - 128) + 128), 0), 255);
+			rgba.alpha = (int) (alphaChange * rgba.alpha);
+
+			return rgba;
 		}
 	}
 
