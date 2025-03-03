@@ -25,21 +25,15 @@ public class Snippet384 {
 
 	private static Display display = new Display();
 
-	private static final boolean ENABLE_DARK_MODE = false;
-
 	private static final Color LIGHT_THEME_BACKGROUND = display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND);
 	private static final Color DARK_THEME_GRAY = new Color(47, 47, 47);
 	private static final Color DARK_THEME_GRAY_DARKER = new Color(72, 72, 76);
 
 	// colors and thresholds used in the current Win32/macOS algorithm
 	private static final RGB GRAY_LOW = display.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW).getRGB(); // == RGB(160, 160, 160) on Windows
-
 	private static final RGB GRAY_HIGH = display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND).getRGB(); // == RGB(240, 240,240) on Windows
-
 	private static final int WIN32_COCOA_THRESHOLD = 98304; // == 3 * 2^15, this is the real threshold used in Win32/macOS
-
 	private static final int BACKGROUND_THRESHOLD = GRAY_HIGH.red * GRAY_HIGH.red + GRAY_HIGH.green + GRAY_HIGH.green + GRAY_HIGH.blue * GRAY_HIGH.blue; // == on windows 240^2 * 3
-
 	private static final int MAX_BRIGHTNESS = 256 * 256 * 3;
 
 	// change these to adjust the sliders default values
@@ -125,7 +119,6 @@ public class Snippet384 {
 	    addImageUpdateScaleListener(highScale, adjThreshAdditGray, adjThreshAdditGray::setThresholdHigh, imageRowStorage, originalImages);
 	    addImageUpdateScaleListener(thirdGray, adjThreshAdditGray, value -> adjThreshAdditGray.setGrayMid(new RGB(value, value, value)), imageRowStorage, originalImages);
 
-
 	    // combo box for theme selection
 	    Combo themeCombo = new Combo(shell, SWT.DROP_DOWN | SWT.READ_ONLY);
 	    themeCombo.setItems("Light Theme", "Dark Theme", "Darker Theme");
@@ -147,7 +140,6 @@ public class Snippet384 {
 	    	}
 	    });
 
-
 		shell.open();
 		shell.layout();
 
@@ -158,9 +150,7 @@ public class Snippet384 {
 		}
 
 		originalImages.forEach(Image::dispose);
-
 		display.dispose();
-
 	}
 
 	private static void addTransformationRow(Composite parent, String labelText, PixelTransformer transformer,
