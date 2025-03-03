@@ -781,8 +781,7 @@ public void setImage (Image image) {
 		info.hbmpItem = OS.HBMMENU_CALLBACK;
 	} else {
 		if (OS.IsAppThemed ()) {
-			if (hBitmap != 0) OS.DeleteObject (hBitmap);
-			info.hbmpItem = hBitmap = image != null ? Display.create32bitDIB (image, getZoom()) : 0;
+			info.hbmpItem = hBitmap = getMenuItemIconBitmapHandle(image);
 		} else {
 			info.hbmpItem = image != null ? OS.HBMMENU_CALLBACK : 0;
 		}
@@ -790,6 +789,16 @@ public void setImage (Image image) {
 	long hMenu = parent.handle;
 	OS.SetMenuItemInfo (hMenu, id, false, info);
 	parent.redraw ();
+}
+
+private long getMenuItemIconBitmapHandle(Image image) {
+	if(image == null) {
+		return 0;
+	}
+	if (hBitmap != 0) OS.DeleteObject (hBitmap);
+	int desiredSize = getSystemMetrics(OS.SM_CYMENUCHECK);
+	int zoom = (int) (((double) desiredSize / image.getBounds().height) * 100);
+	return Display.create32bitDIB (image, zoom);
 }
 
 /**

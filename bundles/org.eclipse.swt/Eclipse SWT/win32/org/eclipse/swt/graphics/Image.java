@@ -22,6 +22,7 @@ import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.DPIUtil.*;
 import org.eclipse.swt.internal.gdip.*;
 import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Instances of this class are graphics which have been prepared
@@ -363,7 +364,7 @@ public Image(Device device, ImageData data) {
 	super(device);
 	if (data == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
-	data = DPIUtil.autoScaleUp(device, new ElementAtZoom<>(data, 100));
+	data = scaleImageData(device, 100, getZoom(), data);
 	init(data, getZoom());
 	init();
 	this.device.registerResourceWithZoomSupport(this);
@@ -407,8 +408,8 @@ public Image(Device device, ImageData source, ImageData mask) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
-	source = DPIUtil.autoScaleUp(device, source);
-	mask = DPIUtil.autoScaleUp(device, mask);
+	source = scaleImageData(device, 100, getZoom(), source);
+	mask = scaleImageData(device, 100, getZoom(), mask);
 	mask = ImageData.convertMask(mask);
 	init(this.device, this, source, mask, getZoom());
 	init();
@@ -471,7 +472,7 @@ public Image(Device device, ImageData source, ImageData mask) {
 public Image (Device device, InputStream stream) {
 	super(device);
 	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
-	ImageData data = DPIUtil.autoScaleUp(device, new ElementAtZoom<>(new ImageData (stream), 100));
+	ImageData data = scaleImageData(device, 100, getZoom(), new ImageData (stream));
 	init(data, getZoom());
 	init();
 	this.device.registerResourceWithZoomSupport(this);
@@ -513,7 +514,7 @@ public Image (Device device, String filename) {
 	super(device);
 	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
-	ImageData data = DPIUtil.autoScaleUp(device, new ElementAtZoom<>(new ImageData (filename), 100));
+	ImageData data = scaleImageData(device, 100, getZoom(), new ImageData (filename));
 	init(data, getZoom());
 	init();
 	this.device.registerResourceWithZoomSupport(this);
@@ -559,7 +560,7 @@ public Image(Device device, ImageFileNameProvider imageFileNameProvider) {
 			init(new ImageData (fileName.element()), getZoom());
 		}
 	} else {
-		ImageData resizedData = DPIUtil.autoScaleImageData (device, new ImageData (fileName.element()), fileName.zoom());
+		ImageData resizedData = scaleImageData(device, fileName.zoom(), getZoom(), new ImageData (fileName.element()));
 		init(resizedData, getZoom());
 	}
 	init();
@@ -600,7 +601,7 @@ public Image(Device device, ImageDataProvider imageDataProvider) {
 	this.imageProvider = new ImageDataProviderWrapper(imageDataProvider);
 	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
 	ElementAtZoom<ImageData> data =  DPIUtil.validateAndGetImageDataAtZoom(imageDataProvider, getZoom());
-	ImageData resizedData = DPIUtil.scaleImageData(device, data.element(), getZoom(), data.zoom());
+	ImageData resizedData = scaleImageData(device, data.zoom(), getZoom(), data.element());
 	init (resizedData, getZoom());
 	init();
 	this.device.registerResourceWithZoomSupport(this);
@@ -1420,7 +1421,7 @@ public ImageData getImageData (int zoom) {
 	}
 	TreeSet<Integer> availableZooms = new TreeSet<>(zoomLevelToImageHandle.keySet());
 	int closestZoom = Optional.ofNullable(availableZooms.higher(zoom)).orElse(availableZooms.lower(zoom));
-	return DPIUtil.scaleImageData (device, getImageMetadata(closestZoom).getImageData(), zoom, closestZoom);
+	return scaleImageData(device, closestZoom, zoom, getImageMetadata(closestZoom).getImageData());
 }
 
 /**
@@ -2048,6 +2049,41 @@ private void setBackground(Color color, long handle) {
 	device.internal_dispose_GC(hDC, null);
 }
 
+private ImageData scaleImageData(Device device, int currentZoom, int targetZoom, ImageData imageData) {
+	if (imageData == null || targetZoom == currentZoom || (device != null && !device.isAutoScalable())) return imageData;
+	float scaleFactor = (float) targetZoom / (float) currentZoom;
+	int width = imageData.width;
+	int height = imageData.height;
+	int scaledWidth = Math.round (width * scaleFactor);
+	int scaledHeight = Math.round (height * scaleFactor);
+	boolean useSmoothScaling = DPIUtil.isSmoothScalingEnabled() && imageData.getTransparencyType() != SWT.TRANSPARENCY_MASK;
+	if (useSmoothScaling) {
+		return scaleToUsingSmoothScaling(scaledWidth, scaledHeight, imageData);
+	} else {
+		return imageData.scaledTo (scaledWidth, scaledHeight);
+	}
+}
+
+private ImageData scaleToUsingSmoothScaling(int width, int height, ImageData imageData) {
+	Image original = new Image (Display.getCurrent(), (ImageDataProvider) zoom -> imageData);
+	/* Create a 24 bit image data with alpha channel */
+	final ImageData resultData = new ImageData (width, height, 24, new PaletteData (0xFF, 0xFF00, 0xFF0000));
+	resultData.alphaData = new byte [width * height];
+	Image resultImage = new Image (Display.getCurrent(), (ImageDataProvider) zoom -> resultData);
+	GC gc = new GC (resultImage);
+	gc.setAntialias (SWT.ON);
+	gc.drawImage (original, 0, 0, imageData.width, imageData.height,
+			/* E.g. destWidth here is effectively DPIUtil.autoScaleDown (scaledWidth), but avoiding rounding errors.
+			 * Nevertheless, we still have some rounding errors due to the point-based API GC#drawImage(..).
+			 */
+			0, 0, width, height, false);
+	gc.dispose ();
+	original.dispose ();
+	ImageData result = resultImage.getImageData (resultImage.getZoom());
+	resultImage.dispose ();
+	return result;
+}
+
 private int getZoom() {
 	return DPIUtil.getZoomForAutoscaleProperty(initialNativeZoom);
 }
@@ -2138,7 +2174,8 @@ private class ImageFileNameProviderWrapper extends AbstractImageProviderWrapper 
 	@Override
 	ImageData getImageData(int zoom) {
 		ElementAtZoom<String> fileName = DPIUtil.validateAndGetImagePathAtZoom (provider, zoom);
-		return DPIUtil.scaleImageData (device, new ImageData (fileName.element()), zoom, fileName.zoom());
+		ImageData imageData = new ImageData (fileName.element());
+		return scaleImageData(device, fileName.zoom(), zoom, imageData);
 	}
 
 	@Override
@@ -2151,7 +2188,7 @@ private class ImageFileNameProviderWrapper extends AbstractImageProviderWrapper 
 			if (imageMetadata == null) init(imageData, zoom);
 			init();
 		} else {
-			ImageData resizedData = DPIUtil.scaleImageData(device, imageData, zoom, imageCandidate.zoom());
+			ImageData resizedData = scaleImageData(device, imageCandidate.zoom(), zoom, imageData);
 			ImageData newData = adaptImageDataIfDisabledOrGray(resizedData);
 			init(newData, zoom);
 		}
@@ -2201,13 +2238,13 @@ private class ImageDataProviderWrapper extends AbstractImageProviderWrapper {
 	@Override
 	ImageData getImageData(int zoom) {
 		ElementAtZoom<ImageData> data = DPIUtil.validateAndGetImageDataAtZoom (provider, zoom);
-		return DPIUtil.scaleImageData (device, data.element(), zoom, data.zoom());
+		return scaleImageData(device, data.zoom(), zoom, data.element());
 	}
 
 	@Override
 	ImageHandle getImageMetadata(int zoom) {
 		ElementAtZoom<ImageData> imageCandidate = DPIUtil.validateAndGetImageDataAtZoom (provider, zoom);
-		ImageData resizedData = DPIUtil.scaleImageData (device, imageCandidate.element(), zoom, imageCandidate.zoom());
+		ImageData resizedData = scaleImageData(device, imageCandidate.zoom(), zoom, imageCandidate.element());
 		ImageData newData = adaptImageDataIfDisabledOrGray(resizedData);
 		init(newData, zoom);
 		init();

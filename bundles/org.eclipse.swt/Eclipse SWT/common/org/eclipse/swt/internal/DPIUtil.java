@@ -292,7 +292,7 @@ private static ImageData autoScaleImageData (Device device, final ImageData imag
 	int height = imageData.height;
 	int scaledWidth = Math.round (width * scaleFactor);
 	int scaledHeight = Math.round (height * scaleFactor);
-	boolean useSmoothScaling = autoScaleMethod == AutoScaleMethod.SMOOTH && imageData.getTransparencyType() != SWT.TRANSPARENCY_MASK;
+	boolean useSmoothScaling = isSmoothScalingEnabled() && imageData.getTransparencyType() != SWT.TRANSPARENCY_MASK;
 	if (useSmoothScaling) {
 		Image original = new Image (device, (ImageDataProvider) zoom -> imageData);
 		/* Create a 24 bit image data with alpha channel */
@@ -314,6 +314,10 @@ private static ImageData autoScaleImageData (Device device, final ImageData imag
 	} else {
 		return imageData.scaledTo (scaledWidth, scaledHeight);
 	}
+}
+
+public static boolean isSmoothScalingEnabled() {
+	return autoScaleMethod == AutoScaleMethod.SMOOTH;
 }
 
 /**
@@ -631,7 +635,19 @@ public static boolean useCairoAutoScale() {
 	return useCairoAutoScale;
 }
 
+public static int getZoomForMenuItemImage(int nativeDeviceZoom) {
+	String autoScaleValueForMenuItemImage = DPIUtil.autoScaleValue;
+	if(autoScaleValueForMenuItemImage.equals("quarter") || autoScaleValueForMenuItemImage.equals("exact")) {
+		autoScaleValueForMenuItemImage = "half";
+	}
+	return getZoomForAutoscaleProperty(nativeDeviceZoom, autoScaleValueForMenuItemImage);
+}
+
 public static int getZoomForAutoscaleProperty (int nativeDeviceZoom) {
+	return getZoomForAutoscaleProperty(nativeDeviceZoom, autoScaleValue);
+}
+
+private static int getZoomForAutoscaleProperty (int nativeDeviceZoom, String autoScaleValue) {
 	int zoom = 0;
 	if (autoScaleValue != null) {
 		if ("false".equalsIgnoreCase (autoScaleValue)) {
