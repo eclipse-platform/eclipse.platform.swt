@@ -70,10 +70,10 @@ public class Snippet384 {
 
 		// define PixelTransformers
 		GTKDisablingTransformer gtkTransformer = new GTKDisablingTransformer();
-		ThresholdBasedDisablingTransformer win32MacTransformer = new ThresholdBasedDisablingTransformer(GRAY_LOW, GRAY_HIGH, GRAY_HIGH, WIN32_COCOA_THRESHOLD, WIN32_COCOA_THRESHOLD);
+		ThresholdBasedDisablingTransformer win32MacTransformer = new ThresholdBasedDisablingTransformer(GRAY_LOW, GRAY_HIGH, GRAY_HIGH, WIN32_COCOA_THRESHOLD, WIN32_COCOA_THRESHOLD, 1.f);
 		EclipseRenderMojoDisablingTransformer eclipseMojoTransformer = new EclipseRenderMojoDisablingTransformer(ECLIPSE_RENDER_MOJOE_BRIGHTNESS_DEFAULT / 100f, ECLIPSE_RENDER_MOJO_ALPHA_DEFAULT / 100.f);
 		HSBConversionDisablingTransformer hsbTransformer = new HSBConversionDisablingTransformer(HSB_DISABLING_BRIGHTNESS_DEFAULT / 100.f, HSB_DISABLING_ALPHA_DEFAULT / 100.f, HSB_DISABLING_SATURATION_DEFAULT / 100.f);
-		ThresholdBasedDisablingTransformer adjThreshAdditGray = new ThresholdBasedDisablingTransformer(GRAY_LOW, ADDITIONAL_GRAY_MID_DEFAULT, GRAY_HIGH, ADJUSTABLE_THRESHOLD_LOW_DEFAULT, ADJUSTABLE_THRESHOLD_HIGH_DEFAULT);
+		ThresholdBasedDisablingTransformer adjThreshAdditGray = new ThresholdBasedDisablingTransformer(GRAY_LOW, ADDITIONAL_GRAY_MID_DEFAULT, GRAY_HIGH, ADJUSTABLE_THRESHOLD_LOW_DEFAULT, ADJUSTABLE_THRESHOLD_HIGH_DEFAULT, 1.f);
 
 		// create transformed icon rows
 		Composite imagesComposite = new Composite(shell, SWT.NONE);
@@ -101,11 +101,12 @@ public class Snippet384 {
 		Scale eclipsePreDisablingAlpha = addScale(eclipseMojoSliderComposite, "Eclipse Mojo Alpha %:", 0, 100, ECLIPSE_RENDER_MOJO_ALPHA_DEFAULT);
 
 		Composite adjThreshAddGraySliderComposite = new Composite(shell, SWT.NONE);
-		adjThreshAddGraySliderComposite.setLayout(new GridLayout(9, false));
+		adjThreshAddGraySliderComposite.setLayout(new GridLayout(12, false));
 		adjThreshAddGraySliderComposite.setBackgroundMode(SWT.INHERIT_DEFAULT);
 		Scale lowScale = addScale(adjThreshAddGraySliderComposite, "Low Threshold:", 0, MAX_BRIGHTNESS, WIN32_COCOA_THRESHOLD);
 		Scale highScale = addScale(adjThreshAddGraySliderComposite, "High Threshold:", 0, MAX_BRIGHTNESS, ADJUSTABLE_THRESHOLD_HIGH_DEFAULT);
 		Scale thirdGray = addScale(adjThreshAddGraySliderComposite, "3rd Gray:", GRAY_LOW.red, GRAY_HIGH.red, ADDITIONAL_GRAY_MID_DEFAULT.red);
+		Scale adjThreshAlphaChange = addScale(adjThreshAddGraySliderComposite, "Alpha %:", 0, 100, 100);
 
 		// update images on slider change
 	    addImageUpdateScaleListener(hsbDisablingBrightness, hsbTransformer, value -> hsbTransformer.setBrightnessChange(value / 100.f), imageRowStorage, originalImages);
@@ -118,6 +119,7 @@ public class Snippet384 {
 		addImageUpdateScaleListener(lowScale, adjThreshAdditGray, adjThreshAdditGray::setThresholdLow, imageRowStorage, originalImages);
 	    addImageUpdateScaleListener(highScale, adjThreshAdditGray, adjThreshAdditGray::setThresholdHigh, imageRowStorage, originalImages);
 	    addImageUpdateScaleListener(thirdGray, adjThreshAdditGray, value -> adjThreshAdditGray.setGrayMid(new RGB(value, value, value)), imageRowStorage, originalImages);
+	    addImageUpdateScaleListener(adjThreshAlphaChange, adjThreshAdditGray, value -> adjThreshAdditGray.setAlphaChange(value / 100.f), imageRowStorage, originalImages);
 
 	    // combo box for theme selection
 	    Combo themeCombo = new Combo(shell, SWT.DROP_DOWN | SWT.READ_ONLY);
@@ -248,14 +250,16 @@ public class Snippet384 {
 		private RGB grayHigh;
 		private int thresholdLow;
 		private int thresholdHigh;
+		private float alphaChange;
 
 		public ThresholdBasedDisablingTransformer(RGB grayLow, RGB grayMid, RGB grayHigh, int thresholdLow,
-				int thresholdHigh) {
+				int thresholdHigh, float alphaChange) {
 			this.grayLow = grayLow;
 			this.grayMid = grayMid;
 			this.grayHigh = grayHigh;
 			this.thresholdLow = thresholdLow;
 			this.thresholdHigh = thresholdHigh;
+			this.alphaChange = alphaChange;
 		}
 
 		public void setThresholdLow(int thresholdLow) {
@@ -270,6 +274,10 @@ public class Snippet384 {
 			this.grayMid = grayMid;
 		}
 
+		public void setAlphaChange(float alphaChange) {
+			this.alphaChange = alphaChange;
+		}
+
 		@Override
 		public RGBA transform(RGBA originalRgba) {
 			int red = originalRgba.rgb.red;
@@ -280,11 +288,11 @@ public class Snippet384 {
 			RGBA disabled;
 			int squareDist = red * red + green * green + blue * blue;
 			if (squareDist < thresholdLow) {
-				disabled = new RGBA(grayLow.red, grayLow.green, grayLow.blue, alpha);
+				disabled = new RGBA(grayLow.red, grayLow.green, grayLow.blue, (int) (alphaChange * alpha));
 			} else if (squareDist < thresholdHigh) {
-				disabled = new RGBA(grayMid.red, grayMid.green, grayMid.blue, alpha);
+				disabled = new RGBA(grayMid.red, grayMid.green, grayMid.blue, (int) (alphaChange * alpha));
 			} else {
-				disabled = new RGBA(grayHigh.red, grayHigh.green, grayHigh.blue, alpha);
+				disabled = new RGBA(grayHigh.red, grayHigh.green, grayHigh.blue, (int) (alphaChange * alpha));
 			}
 			return disabled;
 		}
