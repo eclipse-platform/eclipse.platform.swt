@@ -466,7 +466,7 @@ public class Label extends CustomControl {
 		});
 	}
 
-	void onDispose(Event event) {
+	private void onDispose(Event event) {
 		/* make this handler run after other dispose listeners */
 		if (ignoreDispose) {
 			ignoreDispose = false;
@@ -484,7 +484,7 @@ public class Label extends CustomControl {
 		appToolTipText = null;
 	}
 
-	void onMnemonic(Event event) {
+	private void onMnemonic(Event event) {
 		char mnemonic = _findMnemonic(text);
 		if (mnemonic == '\0') {
 			return;
@@ -513,11 +513,11 @@ public class Label extends CustomControl {
 		}
 	}
 
-	void onPaint(Event event) {
+	private void onPaint(Event event) {
 		Drawing.drawWithGC(this, event.gc, this::doPaint);
 	}
 
-	void doPaint(GC gc) {
+	private void doPaint(GC gc) {
 		if ((text == null || text.isEmpty()) && image == null) {
 			return;
 		}
