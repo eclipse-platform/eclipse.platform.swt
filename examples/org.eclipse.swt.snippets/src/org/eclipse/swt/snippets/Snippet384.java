@@ -129,7 +129,7 @@ public class Snippet384 {
 	    // combo box for theme selection
 	    Combo themeCombo = new Combo(shell, SWT.DROP_DOWN | SWT.READ_ONLY);
 	    themeCombo.setItems("Light Theme", "Dark Theme", "Darker Theme");
-	    themeCombo.select(1);
+	    themeCombo.select(0);
 	    themeCombo.addListener(SWT.Selection, e -> {
 	    	int selected = themeCombo.getSelectionIndex();
 	    	switch (selected) {
@@ -146,6 +146,7 @@ public class Snippet384 {
 	    			imagesComposite.setBackground(LIGHT_THEME_BACKGROUND);
 	    	}
 	    });
+
 
 		shell.open();
 		shell.layout();
