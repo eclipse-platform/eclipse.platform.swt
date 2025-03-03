@@ -631,7 +631,19 @@ public static boolean useCairoAutoScale() {
 	return useCairoAutoScale;
 }
 
+public static int getZoomForMenuItemImage(int nativeDeviceZoom) {
+	String autoScaleValueForMenuItemImage = DPIUtil.autoScaleValue;
+	if(autoScaleValueForMenuItemImage.equals("quarter") || autoScaleValueForMenuItemImage.equals("exact")) {
+		autoScaleValueForMenuItemImage = "half";
+	}
+	return getZoomForAutoscaleProperty(nativeDeviceZoom, autoScaleValueForMenuItemImage);
+}
+
 public static int getZoomForAutoscaleProperty (int nativeDeviceZoom) {
+	return getZoomForAutoscaleProperty(nativeDeviceZoom, autoScaleValue);
+}
+
+private static int getZoomForAutoscaleProperty (int nativeDeviceZoom, String autoScaleValue) {
 	int zoom = 0;
 	if (autoScaleValue != null) {
 		if ("false".equalsIgnoreCase (autoScaleValue)) {

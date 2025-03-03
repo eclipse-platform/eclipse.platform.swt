@@ -782,7 +782,15 @@ public void setImage (Image image) {
 	} else {
 		if (OS.IsAppThemed ()) {
 			if (hBitmap != 0) OS.DeleteObject (hBitmap);
-			info.hbmpItem = hBitmap = image != null ? Display.create32bitDIB (image, getZoom()) : 0;
+			int desiredSize = getSystemMetrics(72);
+			int zoom = (int) (((double) desiredSize / image.getBounds().height) * 100);
+			int currentSize = image.getImageData(zoom).height;
+			while(currentSize == desiredSize) {
+				zoom--;
+				currentSize = image.getImageData(zoom).height;
+			}
+			zoom++;
+			info.hbmpItem = hBitmap = image != null ? Display.create32bitDIB (image, zoom) : 0;
 		} else {
 			info.hbmpItem = image != null ? OS.HBMMENU_CALLBACK : 0;
 		}
