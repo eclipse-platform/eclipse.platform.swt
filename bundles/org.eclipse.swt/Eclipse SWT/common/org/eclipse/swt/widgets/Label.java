@@ -144,15 +144,20 @@ public class Label extends CustomControl {
 			align = SWT.LEFT;
 		}
 
-		addPaintListener(this::onPaint);
-
-		addTraverseListener(event -> {
-			if (event.detail == SWT.TRAVERSE_MNEMONIC) {
-				onMnemonic(event);
+		final Listener listener = event -> {
+			switch (event.type) {
+			case SWT.Paint -> onPaint(event);
+			case SWT.Traverse -> {
+				if (event.detail == SWT.TRAVERSE_MNEMONIC) {
+					onMnemonic(event);
+				}
 			}
-		});
-
-		addListener(SWT.Dispose, this::onDispose);
+			case SWT.Dispose -> onDispose(event);
+			}
+		};
+		addListener(SWT.Paint, listener);
+		addListener(SWT.Traverse, listener);
+		addListener(SWT.Dispose, listener);
 
 		initAccessible();
 	}
@@ -479,7 +484,7 @@ public class Label extends CustomControl {
 		appToolTipText = null;
 	}
 
-	void onMnemonic(TraverseEvent event) {
+	void onMnemonic(Event event) {
 		char mnemonic = _findMnemonic(text);
 		if (mnemonic == '\0') {
 			return;
@@ -508,7 +513,7 @@ public class Label extends CustomControl {
 		}
 	}
 
-	void onPaint(PaintEvent event) {
+	void onPaint(Event event) {
 		Drawing.drawWithGC(this, event.gc, this::doPaint);
 	}
 
