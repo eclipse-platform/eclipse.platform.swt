@@ -561,34 +561,40 @@ public class Button extends CustomControl {
 
 	private void drawRadioButton(GC gc, int x, int y) {
 		if (getSelection()) {
-			gc.setBackground(SELECTION_COLOR);
+			gc.setBackground(isEnabled() ? SELECTION_COLOR : DISABLED_COLOR);
 			int partialBoxBorder = 2;
 			gc.fillOval(x + partialBoxBorder, y + partialBoxBorder,
 					BOX_SIZE - 2 * partialBoxBorder + 1, BOX_SIZE - 2 * partialBoxBorder + 1);
 		}
-		if (hasMouseEntered) {
+
+		if (!isEnabled()) {
+			gc.setForeground(BORDER_DISABLED_COLOR);
+		}
+		else if (hasMouseEntered) {
 			gc.setBackground(HOVER_COLOR);
 			int partialBoxBorder = getSelection() ? 4 : 0;
 			gc.fillOval(x + partialBoxBorder, y + partialBoxBorder,
 					BOX_SIZE - 2 * partialBoxBorder + 1, BOX_SIZE - 2 * partialBoxBorder + 1);
-		}
-		if (!isEnabled()) {
-			gc.setForeground(BORDER_DISABLED_COLOR);
 		}
 		gc.drawOval(x, y, BOX_SIZE, BOX_SIZE);
 	}
 
 	private void drawCheckbox(GC gc, int x, int y) {
 		if (getSelection()) {
-			gc.setBackground(grayed ? CHECKBOX_GRAYED_COLOR : SELECTION_COLOR);
+			gc.setBackground(isEnabled()
+					? grayed ? CHECKBOX_GRAYED_COLOR : SELECTION_COLOR
+					: DISABLED_COLOR);
 			int partialBoxBorder = 2;
 			gc.fillRoundRectangle(x + partialBoxBorder, y + partialBoxBorder,
 					BOX_SIZE - 2 * partialBoxBorder + 1, BOX_SIZE - 2 * partialBoxBorder + 1,
 					BOX_SIZE / 4 - partialBoxBorder / 2,
 					BOX_SIZE / 4 - partialBoxBorder / 2);
-
 		}
-		if (hasMouseEntered) {
+
+		if (!isEnabled()) {
+			gc.setForeground(BORDER_DISABLED_COLOR);
+		}
+		else if (hasMouseEntered) {
 			gc.setBackground(HOVER_COLOR);
 			int partialBoxBorder = getSelection() ? 4 : 0;
 			gc.fillRoundRectangle(x + partialBoxBorder, y + partialBoxBorder,
