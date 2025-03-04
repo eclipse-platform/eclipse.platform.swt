@@ -373,8 +373,8 @@ public static String getVersionString () {
 			if (MINOR_VERSION < 100) version += "0"; //$NON-NLS-1$
 		}
 		version += MINOR_VERSION;
-		/* No "r" until first revision */
-		if (REVISION > 0) version += "r" + REVISION; //$NON-NLS-1$
+		/* "r" followed by respective revision version starting with zero(0) */
+		version += "r" + REVISION; //$NON-NLS-1$
 	}
 	return version;
 }
