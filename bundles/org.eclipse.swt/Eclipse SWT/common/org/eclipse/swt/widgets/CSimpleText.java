@@ -405,7 +405,7 @@ public class CSimpleText extends NativeBasedCustomScrollable {
 			}
 		}
 
-		drawBackground(e);
+		drawBackground(e, getClientArea());
 		drawText(e, visibleArea);
 		drawSelection(e, visibleArea);
 		drawCaret(e, visibleArea);
@@ -495,14 +495,19 @@ public class CSimpleText extends NativeBasedCustomScrollable {
 		gc.drawText(text, _x, _y, true);
 	}
 
-	private void drawBackground(Event e) {
+	private void drawBackground(Event e, Rectangle clientArea) {
 		GC gc = e.gc;
-		gc.fillRectangle(e.x, e.y, e.width - 1, e.height - 1);
-		if ((style & SWT.BORDER) != 0 && getEditable() && isEnabled()) {
-			Color foreground = gc.getForeground();
-			gc.setForeground(BORDER_COLOR);
-			gc.drawLine(e.x, e.y + e.height - 1, e.x + e.x + e.width - 1, e.y + e.height - 1);
-			gc.setForeground(foreground);
+		int height = clientArea.height;
+		final boolean drawLine = (style & SWT.BORDER) != 0 && getEditable() && isEnabled();
+		if (drawLine) {
+			height--;
+		}
+		gc.fillRectangle(clientArea.x, clientArea.y, clientArea.width, height);
+		if (drawLine) {
+			Color prevBackground = gc.getBackground();
+			gc.setBackground(BORDER_COLOR);
+			gc.fillRectangle(clientArea.x, clientArea.y + height, clientArea.width, 1);
+			gc.setBackground(prevBackground);
 		}
 	}
 
