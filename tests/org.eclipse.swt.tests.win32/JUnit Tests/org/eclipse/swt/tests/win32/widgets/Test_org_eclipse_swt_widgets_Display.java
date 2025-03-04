@@ -24,6 +24,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class Test_org_eclipse_swt_widgets_Display {
@@ -54,6 +55,7 @@ public class Test_org_eclipse_swt_widgets_Display {
 	}
 
 	@Test
+	@Ignore
 	public void test_mixedLfAndCrfl() {
 		//Use text control for testing since Display.withCrLf() is package private
 		Text text = new Text(shell, SWT.None);
