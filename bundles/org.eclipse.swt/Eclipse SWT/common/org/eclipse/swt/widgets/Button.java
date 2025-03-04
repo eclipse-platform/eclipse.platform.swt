@@ -84,7 +84,7 @@ public class Button extends CustomControl {
 	private static final Color CHECKBOX_GRAYED_COLOR = new Color(192, 192, 192);
 	private static final Color PUSH_BACKGROUND_COLOR = new Color(255, 255, 255);
 
-	private static int DRAW_FLAGS = SWT.DRAW_MNEMONIC | SWT.DRAW_TAB
+	private static final int DRAW_FLAGS = SWT.DRAW_MNEMONIC | SWT.DRAW_TAB
 			| SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER;
 
 	private Accessible acc;
