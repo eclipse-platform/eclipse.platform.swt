@@ -505,7 +505,7 @@ public class CSimpleText extends NativeBasedCustomScrollable {
 		gc.fillRectangle(clientArea.x, clientArea.y, clientArea.width, height);
 		if (drawLine) {
 			Color prevBackground = gc.getBackground();
-			gc.setBackground(BORDER_COLOR);
+			gc.setBackground(isFocusControl() ? SELECTION_BACKGROUND_COLOR : BORDER_COLOR);
 			gc.fillRectangle(clientArea.x, clientArea.y + height, clientArea.width, 1);
 			gc.setBackground(prevBackground);
 		}
