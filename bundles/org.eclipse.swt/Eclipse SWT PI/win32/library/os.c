@@ -4745,6 +4745,22 @@ fail:
 }
 #endif
 
+#ifndef NO_LoadIconWithScaleDown
+JNIEXPORT jlong JNICALL OS_NATIVE(LoadIconWithScaleDown)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jint arg2, jint arg3, jlongArray arg4)
+{
+	jlong *lparg4=NULL;
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, LoadIconWithScaleDown_FUNC);
+	if (arg4) if ((lparg4 = (*env)->GetLongArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	rc = (jlong)LoadIconWithScaleDown((HINSTANCE)arg0, (LPWSTR)arg1, arg2, arg3, (HICON *)lparg4);
+fail:
+	if (arg4 && lparg4) (*env)->ReleaseLongArrayElements(env, arg4, lparg4, 0);
+	OS_NATIVE_EXIT(env, that, LoadIconWithScaleDown_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_LoadImage
 JNIEXPORT jlong JNICALL OS_NATIVE(LoadImage)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jint arg2, jint arg3, jint arg4, jint arg5)
