@@ -365,6 +365,7 @@ typedef enum {
 	LoadCursor_FUNC,
 	LoadIcon_FUNC,
 	LoadIconMetric_FUNC,
+	LoadIconWithScaleDown_FUNC,
 	LoadImage_FUNC,
 	LoadKeyboardLayout_FUNC,
 	LocalFree_FUNC,
