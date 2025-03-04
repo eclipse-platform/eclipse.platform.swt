@@ -355,6 +355,62 @@ public ImageData(InputStream stream) {
 }
 
 /**
+ * Constructs an <code>ImageData</code> loaded from the specified
+ * input stream. Throws an error if an error occurs while loading
+ * the image, or if the image has an unsupported type. Application
+ * code is still responsible for closing the input stream.
+ *
+ * @param stream the input stream to load the image from (must not be null)
+ * @param zoom the zoom factor to apply when rasterizing an SVG.
+ *
+ * A value of 0 means that the standard method for loading should be used.
+ * This case is equivalent to calling {@link ImageLoader#load(InputStream)}.
+ *
+ * A value above 0 specifies a scaling factor for the output image. For example:
+ * <ul>
+ *   <li>A value of 100 maintains the original size of the SVG when rasterized.</li>
+ *   <li>A value of 200 doubles the size of the rasterized image.</li>
+ *   <li>A value of 50 reduces the size of the rasterized image to half.</li>
+ * </ul>
+ * The scaling is applied uniformly to both width and height.
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the stream is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_IO - if an IO error occurs while reading from the stream</li>
+ *    <li>ERROR_INVALID_IMAGE - if the image stream contains invalid data</li>
+ *    <li>ERROR_UNSUPPORTED_FORMAT - if the image stream contains an unrecognized format</li>
+ * </ul>
+ *
+ * @see ImageLoader#load(InputStream)
+ * @since 4.0
+ */
+public ImageData(InputStream stream, int zoom, int flag) {
+	ImageData[] data = ImageDataLoader.load(stream, zoom, flag);
+	if (data.length < 1) SWT.error(SWT.ERROR_INVALID_IMAGE);
+	ImageData i = data[0];
+	setAllFields(
+		i.width,
+		i.height,
+		i.depth,
+		i.scanlinePad,
+		i.bytesPerLine,
+		i.data,
+		i.palette,
+		i.transparentPixel,
+		i.maskData,
+		i.maskPad,
+		i.alphaData,
+		i.alpha,
+		i.type,
+		i.x,
+		i.y,
+		i.disposalMethod,
+		i.delayTime);
+}
+
+/**
  * Constructs an <code>ImageData</code> loaded from a file with the
  * specified name. Throws an error if an error occurs loading the
  * image, or if the image has an unsupported type.
@@ -378,6 +434,59 @@ public ImageData(InputStream stream) {
  */
 public ImageData(String filename) {
 	ImageData[] data = ImageDataLoader.load(filename);
+	if (data.length < 1) SWT.error(SWT.ERROR_INVALID_IMAGE);
+	ImageData i = data[0];
+	setAllFields(
+		i.width,
+		i.height,
+		i.depth,
+		i.scanlinePad,
+		i.bytesPerLine,
+		i.data,
+		i.palette,
+		i.transparentPixel,
+		i.maskData,
+		i.maskPad,
+		i.alphaData,
+		i.alpha,
+		i.type,
+		i.x,
+		i.y,
+		i.disposalMethod,
+		i.delayTime);
+}
+
+/**
+ * Constructs an <code>ImageData</code> loaded from a file with the
+ * specified name. Throws an error if an error occurs loading the
+ * image, or if the image has an unsupported type.
+ *
+ * @param filename the name of the file to load the image from (must not be null)
+ * @param zoom the zoom factor to apply when rasterizing a SVG.
+ * A value of 0 means that the standard method for loading should be used.
+ * This case is equivalent to calling {@link ImageLoader#load(String)}.
+ *
+ * A value above 0 specifies a scaling factor for the output image. For example:
+ * <ul>
+ *   <li>A value of 100 maintains the original size of the SVG when rasterized.</li>
+ *   <li>A value of 200 doubles the size of the rasterized image.</li>
+ *   <li>A value of 50 reduces the size of the rasterized image to half.</li>
+ * </ul>
+ * The scaling is applied uniformly to both width and height.
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the file name is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_IO - if an IO error occurs while reading from the file</li>
+ *    <li>ERROR_INVALID_IMAGE - if the image file contains invalid data</li>
+ *    <li>ERROR_UNSUPPORTED_FORMAT - if the image file contains an unrecognized format</li>
+ * </ul>
+ *
+ * @since 4.0
+ */
+public ImageData(String filename, int zoom, int flag) {
+	ImageData[] data = ImageDataLoader.load(filename, zoom, flag);
 	if (data.length < 1) SWT.error(SWT.ERROR_INVALID_IMAGE);
 	ImageData i = data[0];
 	setAllFields(
