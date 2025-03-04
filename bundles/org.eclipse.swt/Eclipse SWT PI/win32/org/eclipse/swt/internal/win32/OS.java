@@ -3303,6 +3303,12 @@ public static final native int LoadIconMetric (long hinst, long pszName, int lim
  */
 public static final native long LoadImage (long hinst, long lpszName, int uType, int cxDesired, int cyDesired, int fuLoad);
 /**
+ * @param hinst cast=(HINSTANCE)
+ * @param lpszName cast=(LPWSTR)
+ * @param phico cast=(HICON *)
+ */
+public static final native long LoadIconWithScaleDown (long hinst, long lpszName, int cxDesired, int cyDesired, long [] phico);
+/**
  * @param pwszKLID cast=(LPCWSTR)
  * @param Flags cast=(UINT)
  */

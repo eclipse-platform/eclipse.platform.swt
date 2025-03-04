@@ -530,6 +530,15 @@ public class Display extends Device implements Executor {
 	static int SWT_RESTORECARET;
 	static int DI_GETDRAGIMAGE;
 	static int SWT_OPENDOC;
+	private static int ICON_SIZE_AT_100 = retrieveDefaultIconSize();
+
+	private static int retrieveDefaultIconSize() {
+		if (OS.WIN32_BUILD >= OS.WIN32_BUILD_WIN10_1607) {
+			return OS.GetSystemMetricsForDpi(OS.SM_CXICON, DPIUtil.mapZoomToDPI(100));
+		} else {
+			return 32;
+		}
+	}
 
 	/* Skinning support */
 	Widget [] skinList = new Widget [GROW_SIZE];
@@ -2552,31 +2561,42 @@ Font getSystemFont (int zoom) {
  */
 public Image getSystemImage (int id) {
 	checkDevice ();
-	int primaryMonitorNativeZoom = getPrimaryMonitor().getZoom();
 	switch (id) {
 		case SWT.ICON_ERROR: {
 			if (errorImage != null) return errorImage;
-			long hIcon = OS.LoadImage (0, OS.OIC_HAND, OS.IMAGE_ICON, 0, 0, OS.LR_SHARED);
-			return errorImage = Image.win32_new (this, SWT.ICON, hIcon, primaryMonitorNativeZoom);
+			errorImage = new Image(this, getImageDataProviderForIcon(OS.OIC_HAND));
+			return errorImage;
 		}
 		case SWT.ICON_WORKING:
 		case SWT.ICON_INFORMATION: {
 			if (infoImage != null) return infoImage;
-			long hIcon = OS.LoadImage (0, OS.OIC_INFORMATION, OS.IMAGE_ICON, 0, 0, OS.LR_SHARED);
-			return infoImage = Image.win32_new (this, SWT.ICON, hIcon, primaryMonitorNativeZoom);
+			infoImage = new Image(this, getImageDataProviderForIcon(OS.OIC_INFORMATION));
+			return infoImage;
 		}
 		case SWT.ICON_QUESTION: {
 			if (questionImage != null) return questionImage;
-			long hIcon = OS.LoadImage (0, OS.OIC_QUES, OS.IMAGE_ICON, 0, 0, OS.LR_SHARED);
-			return questionImage = Image.win32_new (this, SWT.ICON, hIcon, primaryMonitorNativeZoom);
+			questionImage = new Image(this, getImageDataProviderForIcon(OS.OIC_QUES));
+			return questionImage;
 		}
 		case SWT.ICON_WARNING: {
 			if (warningIcon != null) return warningIcon;
-			long hIcon = OS.LoadImage (0, OS.OIC_BANG, OS.IMAGE_ICON, 0, 0, OS.LR_SHARED);
-			return warningIcon = Image.win32_new (this, SWT.ICON, hIcon, primaryMonitorNativeZoom);
+			warningIcon = new Image(this, getImageDataProviderForIcon(OS.OIC_BANG));
+			return warningIcon;
 		}
 	}
 	return null;
+}
+
+private ImageDataProvider getImageDataProviderForIcon(int iconName) {
+	return zoom -> {
+		int scaledIconSize = DPIUtil.scaleUp(ICON_SIZE_AT_100, zoom);
+		long [] hIcon = new long [1];
+		OS.LoadIconWithScaleDown(0, iconName, scaledIconSize, scaledIconSize, hIcon);
+		Image image = Image.win32_new (this, SWT.ICON, hIcon[0], zoom);
+		ImageData imageData = image.getImageData(zoom);
+		image.dispose();
+		return imageData;
+	};
 }
 
 /**
