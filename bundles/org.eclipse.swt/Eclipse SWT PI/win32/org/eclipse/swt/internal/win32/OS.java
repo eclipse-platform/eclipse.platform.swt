@@ -2302,6 +2302,11 @@ public static final boolean SetWindowText (long hWnd, TCHAR lpString) {
 	return SetWindowText (hWnd, lpString1);
 }
 
+public static final int SHDefExtractIcon (TCHAR lpszFile, int iIndex, int uFlags, long [] phiconLarge, long [] phiconSmall, int nIconSize) {
+	char [] lpszFile1 = lpszFile == null ? null : lpszFile.chars;
+	return SHDefExtractIcon (lpszFile1, iIndex, uFlags, phiconLarge, phiconSmall, nIconSize);
+}
+
 public static final boolean UnregisterClass (TCHAR lpClassName, long hInstance) {
 	char [] lpClassName1 = lpClassName == null ? null : lpClassName.chars;
 	return UnregisterClass (lpClassName1, hInstance);
@@ -4455,6 +4460,12 @@ public static final native long SetWindowsHookEx (int idHook, long lpfn,  long h
  * @param lpXform cast=(XFORM *),flags=no_out
  */
 public static final native boolean SetWorldTransform(long hdc, float[] lpXform);
+/**
+ * @param lpszFile cast=(LPWSTR)
+ * @param phiconLarge cast=(HICON FAR *)
+ * @param phiconSmall cast=(HICON FAR *)
+ */
+public static final native int SHDefExtractIcon (char [] lpszFile, int iIndex, int uFlags, long [] phiconLarge, long [] phiconSmall, int nIconSize);
 /** @param pszPath cast=(LPCWSTR),flags=no_out */
 public static final native long SHGetFileInfo (char [] pszPath, int dwFileAttributes, SHFILEINFO psfi, int cbFileInfo, int uFlags);
 public static final native boolean ShellExecuteEx (SHELLEXECUTEINFO lpExecInfo);
