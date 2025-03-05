@@ -7534,6 +7534,28 @@ JNIEXPORT jint JNICALL OS_NATIVE(SHDRAGIMAGE_1sizeof)
 }
 #endif
 
+#ifndef NO_SHDefExtractIcon
+JNIEXPORT jint JNICALL OS_NATIVE(SHDefExtractIcon)
+	(JNIEnv *env, jclass that, jcharArray arg0, jint arg1, jint arg2, jlongArray arg3, jlongArray arg4, jint arg5)
+{
+	jchar *lparg0=NULL;
+	jlong *lparg3=NULL;
+	jlong *lparg4=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SHDefExtractIcon_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetLongArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetLongArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	rc = (jint)SHDefExtractIcon((LPWSTR)lparg0, arg1, arg2, (HICON FAR *)lparg3, (HICON FAR *)lparg4, arg5);
+fail:
+	if (arg4 && lparg4) (*env)->ReleaseLongArrayElements(env, arg4, lparg4, 0);
+	if (arg3 && lparg3) (*env)->ReleaseLongArrayElements(env, arg3, lparg3, 0);
+	if (arg0 && lparg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, SHDefExtractIcon_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_SHELLEXECUTEINFO_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(SHELLEXECUTEINFO_1sizeof)
 	(JNIEnv *env, jclass that)
