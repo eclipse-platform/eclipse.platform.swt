@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -15,6 +15,7 @@ package org.eclipse.swt.graphics;
 
 
 import java.io.*;
+import java.nio.file.Path;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
@@ -239,6 +240,84 @@ public final class ImageData implements Cloneable {
 		{ 0x000000, 0x800000, 0x200000, 0xa00000, 0x080000, 0x880000, 0x280000, 0xa80000 }
 	};
 
+	/**
+	 * Creates an {@code ImageData} loaded from the specified file. Throws an error
+	 * if an error occurs loading the image, or if the image has an unsupported
+	 * type.
+	 * <p>
+	 * This factory is provided for convenience when loading a single image only. If
+	 * the file contains multiple images, only the first one will be loaded. To load
+	 * multiple images, use {@code ImageLoader.load()}
+	 * </p>
+	 *
+	 * @param file the file to load the image from (must not be null)
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_NULL_ARGUMENT - if the file name is null</li>
+	 * </ul>
+	 * @exception SWTException <ul>
+	 *    <li>ERROR_IO - if an IO error occurs while reading from the file</li>
+	 *    <li>ERROR_INVALID_IMAGE - if the image file contains invalid data</li>
+	 *    <li>ERROR_UNSUPPORTED_FORMAT - if the image file contains an unrecognized format</li>
+	 * </ul>
+	 * @since 3.129
+	 */
+	public static ImageData load(Path file) {
+		ImageData[] data = new ImageLoader().load(file);
+		if (data.length < 1) {
+			SWT.error(SWT.ERROR_INVALID_IMAGE);
+		}
+		return data[0];
+	}
+
+	/**
+	 * Creates an <code>ImageData</code> loaded from the specified input stream.
+	 * Throws an error if an error occurs while loading the image, or if the image
+	 * has an unsupported type. Application code is still responsible for closing
+	 * the input stream.
+	 * <p>
+	 * This factory is provided for convenience when loading a single image only. If
+	 * the stream contains multiple images, only the first one will be loaded. To
+	 * load multiple images, use <code>ImageLoader.load()</code>.
+	 * </p>
+	 * <p>
+	 * This factory may be used to load a resource as follows:
+	 * </p>
+	 *
+	 * <pre>
+	 * static ImageData loadImageData(Class clazz, String string) {
+	 * 	try (InputStream stream = clazz.getResourceAsStream(string)) {
+	 * 		if (stream == null)
+	 * 			return null;
+	 * 		return ImageData.load(stream);
+	 * 	} catch (SWTException | IOException ex) {
+	 * 		// handle exception appropriately
+	 * 	}
+	 * }
+	 * </pre>
+	 *
+	 * @param stream the input stream to load the image from (must not be null)
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_NULL_ARGUMENT - if the stream is null</li>
+	 * </ul>
+	 * @exception SWTException <ul>
+	 *    <li>ERROR_IO - if an IO error occurs while reading from the stream</li>
+	 *    <li>ERROR_INVALID_IMAGE - if the image stream contains invalid data</li>
+	 *    <li>ERROR_UNSUPPORTED_FORMAT - if the image stream contains an unrecognized format</li>
+	 * </ul>
+	 *
+	 * @see ImageLoader#load(InputStream)
+	 * @since 3.129
+	 */
+	public static ImageData load(InputStream stream) {
+		ImageData[] data = new ImageLoader().load(stream);
+		if (data.length < 1) {
+			SWT.error(SWT.ERROR_INVALID_IMAGE);
+		}
+		return data[0];
+	}
+
 /**
  * Constructs a new, empty ImageData with the given width, height,
  * depth and palette. The data will be initialized to an (all zero)
@@ -302,18 +381,12 @@ public ImageData(int width, int height, int depth, PaletteData palette, int scan
  * </p>
  * <pre>
  *     static ImageData loadImageData (Class clazz, String string) {
- *          InputStream stream = clazz.getResourceAsStream (string);
- *          if (stream == null) return null;
- *          ImageData imageData = null;
- *          try {
- *               imageData = new ImageData (stream);
- *          } catch (SWTException ex) {
- *          } finally {
- *               try {
- *                    stream.close ();
- *               } catch (IOException ex) {}
+ *          try (InputStream stream = clazz.getResourceAsStream (string)) {
+ *              if (stream == null) return null;
+ *              return ImageData.load(stream);
+ *          } catch (SWTException |IOException ex) {
+ *              // handle exception appropriately
  *          }
- *          return imageData;
  *     }
  * </pre>
  *
@@ -329,11 +402,11 @@ public ImageData(int width, int height, int depth, PaletteData palette, int scan
  * </ul>
  *
  * @see ImageLoader#load(InputStream)
+ * @deprecated Instead use {@link #load(InputStream)}
  */
+@Deprecated(since = "2025-06")
 public ImageData(InputStream stream) {
-	ImageData[] data = ImageDataLoader.load(stream);
-	if (data.length < 1) SWT.error(SWT.ERROR_INVALID_IMAGE);
-	ImageData i = data[0];
+	ImageData i = load(stream);
 	setAllFields(
 		i.width,
 		i.height,
@@ -375,11 +448,12 @@ public ImageData(InputStream stream) {
  *    <li>ERROR_INVALID_IMAGE - if the image file contains invalid data</li>
  *    <li>ERROR_UNSUPPORTED_FORMAT - if the image file contains an unrecognized format</li>
  * </ul>
+ * @deprecated Instead use {@link #load(Path)}
  */
+@Deprecated(since = "2025-06")
 public ImageData(String filename) {
-	ImageData[] data = ImageDataLoader.load(filename);
-	if (data.length < 1) SWT.error(SWT.ERROR_INVALID_IMAGE);
-	ImageData i = data[0];
+	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	ImageData i = load(Path.of(filename));
 	setAllFields(
 		i.width,
 		i.height,
