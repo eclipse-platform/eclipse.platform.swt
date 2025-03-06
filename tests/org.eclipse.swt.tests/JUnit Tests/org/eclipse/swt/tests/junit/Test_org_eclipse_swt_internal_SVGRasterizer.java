@@ -10,7 +10,7 @@
  * Contributors:
  *     Michael Bangas (Vector Informatik GmbH) - initial API and implementation
  *******************************************************************************/
-package org.eclipse.swt.svg.tests.junit;
+package org.eclipse.swt.tests.junit;
 
 import static org.eclipse.swt.tests.junit.SwtTestUtil.assertSWTProblem;
 import static org.junit.Assert.fail;
@@ -24,7 +24,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageDataProvider;
 import org.eclipse.swt.graphics.ImageFileNameProvider;
-import org.eclipse.swt.tests.junit.SwtTestUtil;
 import org.eclipse.swt.widgets.Display;
 import org.junit.Before;
 import org.junit.Test;
