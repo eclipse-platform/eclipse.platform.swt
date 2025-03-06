@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: SWT SVG Rendering Support
 Bundle-SymbolicName: org.eclipse.swt.svg
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 3.130.0.qualifier
 Automatic-Module-Name: org.eclipse.swt.svgPlugin
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Fragment-Host: org.eclipse.swt
