@@ -874,13 +874,20 @@ public Image(Device device, ImageGcDrawer imageGcDrawer, int width, int height) 
 	this.imageGcDrawer = imageGcDrawer;
 	this.width = width;
 	this.height = height;
-	ImageData data = drawWithImageGcDrawer(imageGcDrawer, width, height, DPIUtil.getDeviceZoom());
+	ImageData data = drawWithImageGcDrawer(imageGcDrawer, width, height, 100);
 	if (data == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
 		init (data);
-		init ();		
+		init ();
+		ImageData data2x = drawWithImageGcDrawer(imageGcDrawer, width, height, 200);
+		if (data2x != null) {
+			alphaInfo_200 = new AlphaInfo();
+			NSBitmapImageRep rep = createRepresentation (data2x, alphaInfo_200);
+			handle.addRepresentation(rep);
+			rep.release();
+		}
 	} finally {
 		if (pool != null) pool.release();
 	}
