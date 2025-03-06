@@ -14,6 +14,7 @@ package org.eclipse.swt.graphics;
 import java.io.*;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.*;
 import java.util.function.*;
 
 import org.eclipse.swt.*;
@@ -26,6 +27,8 @@ import io.github.humbleui.skija.Font;
 import io.github.humbleui.types.*;
 
 public class SkijaGC extends GCHandle {
+
+	private static final Map<FontData, Font> FONT_CACHE = new ConcurrentHashMap<>();
 
 	public static SkijaGC createDefaultInstance(NativeGC gc) {
 		return new SkijaGC(gc, gc.drawable, false);
@@ -798,6 +801,14 @@ public class SkijaGC extends GCHandle {
 
 	static Font convertToSkijaFont(org.eclipse.swt.graphics.Font font) {
 		FontData fontData = font.getFontData()[0];
+		var cachedFont = FONT_CACHE.get(fontData);
+		if (cachedFont != null && cachedFont.isClosed()) {
+			FONT_CACHE.remove(fontData);
+		}
+		return FONT_CACHE.computeIfAbsent(fontData, SkijaGC::createSkijaFont);
+	}
+
+	static Font createSkijaFont(FontData fontData) {
 		FontStyle style = FontStyle.NORMAL;
 		boolean isBold = (fontData.getStyle() & SWT.BOLD) != 0;
 		boolean isItalic = (fontData.getStyle() & SWT.ITALIC) != 0;
@@ -816,7 +827,6 @@ public class SkijaGC extends GCHandle {
 		skijaFont.setSize(fontSize);
 		skijaFont.setEdging(FontEdging.SUBPIXEL_ANTI_ALIAS);
 		skijaFont.setSubpixel(true);
-
 		return skijaFont;
 	}
 

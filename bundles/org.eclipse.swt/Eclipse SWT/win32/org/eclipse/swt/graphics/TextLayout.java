@@ -2655,7 +2655,7 @@ public final class TextLayout extends Resource {
 		if (skijaFont != null) {
 			skijaFont.close();
 		}
-		this.skijaFont = SkijaGC.convertToSkijaFont(getFont());
+		this.skijaFont = SkijaGC.createSkijaFont(getFont().getFontData()[0]);
 
 		freeRuns();
 	}
