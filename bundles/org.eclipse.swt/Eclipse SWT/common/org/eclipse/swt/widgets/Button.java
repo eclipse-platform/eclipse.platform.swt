@@ -57,14 +57,10 @@ import org.eclipse.swt.graphics.*;
 public class Button extends CustomControl {
 	String text = "", message = "";
 	Image image, disabledImage;
-	boolean ignoreMouse, grayed, useDarkModeExplorerTheme;
-	static final int MARGIN = 4;
-	static final int ICON_WIDTH = 128, ICON_HEIGHT = 128;
+	boolean grayed;
 	static /* final */ boolean COMMAND_LINK = false;
-	static final char[] STRING_WITH_ZERO_CHAR = new char[]{'0'};
 	private boolean checked;
 	private boolean hasMouseEntered;
-	private Point computedSize = null;
 
 	/** Left and right margins */
 	private static final int LEFT_MARGIN = 2;
@@ -1329,99 +1325,5 @@ public class Button extends CustomControl {
 
 	private boolean isChecked() {
 		return checked;
-	}
-
-	static int getThemeStateId(int style, boolean pressed, boolean enabled) {
-		int direction = style & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT);
-
-		/*
-		 * Feature in Windows. DrawThemeBackground() does not mirror the
-		 * drawing. The fix is switch left to right and right to left.
-		 */
-		if ((style & SWT.MIRRORED) != 0) {
-			if (direction == SWT.LEFT) {
-				direction = SWT.RIGHT;
-			} else if (direction == SWT.RIGHT) {
-				direction = SWT.LEFT;
-			}
-		}
-
-		/*
-		 * On Win11, scrollbars no longer show arrows by default. Arrows only
-		 * show up when hot/disabled/pushed. The workaround is to use hot image
-		 * in place of default.
-		 */
-		// boolean hot = false;
-		// if (OS.WIN32_BUILD >= OS.WIN32_BUILD_WIN11_21H2) {
-		// if (!pressed && enabled) {
-		// hot = true;
-		// }
-		// }
-		//
-		// if (hot) {
-		// switch (direction) {
-		// case SWT.UP: return OS.ABS_UPHOT;
-		// case SWT.DOWN: return OS.ABS_DOWNHOT;
-		// case SWT.LEFT: return OS.ABS_LEFTHOT;
-		// case SWT.RIGHT: return OS.ABS_RIGHTHOT;
-		// }
-		// }
-		//
-		// if (pressed) {
-		// switch (direction) {
-		// case SWT.UP: return OS.ABS_UPPRESSED;
-		// case SWT.DOWN: return OS.ABS_DOWNPRESSED;
-		// case SWT.LEFT: return OS.ABS_LEFTPRESSED;
-		// case SWT.RIGHT: return OS.ABS_RIGHTPRESSED;
-		// }
-		// }
-		//
-		// if (!enabled) {
-		// switch (direction) {
-		// case SWT.UP: return OS.ABS_UPDISABLED;
-		// case SWT.DOWN: return OS.ABS_DOWNDISABLED;
-		// case SWT.LEFT: return OS.ABS_LEFTDISABLED;
-		// case SWT.RIGHT: return OS.ABS_RIGHTDISABLED;
-		// }
-		// }
-		//
-		// switch (direction) {
-		// case SWT.UP: return OS.ABS_UPNORMAL;
-		// case SWT.DOWN: return OS.ABS_DOWNNORMAL;
-		// case SWT.LEFT: return OS.ABS_LEFTNORMAL;
-		// case SWT.RIGHT: return OS.ABS_RIGHTNORMAL;
-		// }
-		//
-		// // Have some sane value if all else fails
-		// return OS.ABS_LEFTNORMAL;
-		System.out.println("WARN: Not implemented yet: "
-				+ new Throwable().getStackTrace()[0]);
-		return -1;
-	}
-
-	// TODO can this be used for a better arrow image?
-	static int[] bezier(int x0, int y0, int x1, int y1, int x2, int y2, int x3,
-			int y3, int count) {
-		// The parametric equations for a Bezier curve for x[t] and y[t] where 0
-		// <= t <=1 are:
-		// x[t] = x0+3(x1-x0)t+3(x0+x2-2x1)t^2+(x3-x0+3x1-3x2)t^3
-		// y[t] = y0+3(y1-y0)t+3(y0+y2-2y1)t^2+(y3-y0+3y1-3y2)t^3
-		double a0 = x0;
-		double a1 = 3 * (x1 - x0);
-		double a2 = 3 * (x0 + x2 - 2 * x1);
-		double a3 = x3 - x0 + 3 * x1 - 3 * x2;
-		double b0 = y0;
-		double b1 = 3 * (y1 - y0);
-		double b2 = 3 * (y0 + y2 - 2 * y1);
-		double b3 = y3 - y0 + 3 * y1 - 3 * y2;
-
-		int[] polygon = new int[2 * count + 2];
-		for (int i = 0; i <= count; i++) {
-			double t = (double) i / (double) count;
-			polygon[2 * i] = (int) (a0 + a1 * t + a2 * t * t + a3 * t * t * t);
-			polygon[2 * i
-					+ 1] = (int) (b0 + b1 * t + b2 * t * t + b3 * t * t * t);
-		}
-		return polygon;
 	}
 }
