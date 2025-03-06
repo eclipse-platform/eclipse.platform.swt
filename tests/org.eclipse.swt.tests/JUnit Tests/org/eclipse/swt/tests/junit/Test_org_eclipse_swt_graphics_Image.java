@@ -759,8 +759,8 @@ public void test_getBounds() {
 @SuppressWarnings("deprecation")
 @Test
 public void test_getBoundsInPixels() {
-	Rectangle bounds = new Rectangle(0, 0, 10, 20);
-	Image image = new Image(display, bounds.width, bounds.height);
+	Rectangle initialBounds = new Rectangle(0, 0, 10, 20);
+	Image image = new Image(display, initialBounds.width, initialBounds.height);
 	image.dispose();
 	try {
 		image.getBoundsInPixels();
@@ -770,38 +770,43 @@ public void test_getBoundsInPixels() {
 	}
 
 	// creates bitmap image
-	image = new Image(display, bounds.width, bounds.height);
+	image = new Image(display, initialBounds.width, initialBounds.height);
 	Rectangle boundsInPixels = image.getBoundsInPixels();
+	Rectangle bounds = image.getBounds();
 	image.dispose();
-	assertEquals(":a: Image.getBoundsInPixels method doesn't return bounds in Pixel values.", boundsInPixels, DPIUtil.autoScaleUp(bounds));
+	assertEquals("Image.getBounds method doesn't return original bounds.", initialBounds, bounds);
+	assertEquals("Image.getBoundsInPixels method doesn't return bounds in Pixel values.", DPIUtil.autoScaleUp(initialBounds), boundsInPixels);
 
 	// create icon image
-	ImageData imageData = new ImageData(bounds.width, bounds.height, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
+	ImageData imageData = new ImageData(initialBounds.width, initialBounds.height, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
 	image = new Image(display, imageData);
 	boundsInPixels = image.getBoundsInPixels();
+	bounds = image.getBounds();
 	image.dispose();
-	assertEquals(":b: Image.getBoundsInPixels method doesn't return bounds in Pixel values.", boundsInPixels, DPIUtil.autoScaleUp(bounds));
+	assertEquals("Image.getBounds method doesn't return original bounds.", initialBounds, bounds);
+	assertEquals("Image.getBoundsInPixels method doesn't return bounds in Pixel values.", DPIUtil.autoScaleUp(initialBounds), boundsInPixels);
 
 	// create image with FileNameProvider
 	image = new Image(display, imageFileNameProvider);
 	boundsInPixels = image.getBoundsInPixels();
 	bounds = image.getBounds();
 	image.dispose();
-	assertEquals(":c: Image.getBoundsInPixels method doesn't return bounds in Pixel values.", boundsInPixels, DPIUtil.autoScaleUp(bounds));
+	assertEquals("Image.getBoundsInPixels method doesn't return bounds in Pixel values.", DPIUtil.autoScaleUp(bounds), boundsInPixels);
 
 	// create image with ImageDataProvider
 	image = new Image(display, imageDataProvider);
 	boundsInPixels = image.getBoundsInPixels();
 	bounds = image.getBounds();
 	image.dispose();
-	assertEquals(":d: Image.getBoundsInPixels method doesn't return bounds in Pixel values.", boundsInPixels, DPIUtil.autoScaleUp(bounds));
+	assertEquals("Image.getBoundsInPixels method doesn't return bounds in Pixel values.", DPIUtil.autoScaleUp(bounds), boundsInPixels);
 
 	// create image with ImageGcDrawer
-	image = new Image(display, imageGcDrawer, bounds.width, bounds.height);
+	image = new Image(display, imageGcDrawer, initialBounds.width, initialBounds.height);
 	boundsInPixels = image.getBoundsInPixels();
 	bounds = image.getBounds();
 	image.dispose();
-	assertEquals("Image.getBoundsInPixels method doesn't return bounds in Pixel values for ImageGcDrawer.", boundsInPixels, DPIUtil.autoScaleUp(bounds));
+	assertEquals("Image.getBounds method doesn't return original bounds.", initialBounds, bounds);
+	assertEquals("Image.getBoundsInPixels method doesn't return bounds in Pixel values for ImageGcDrawer.", DPIUtil.autoScaleUp(initialBounds), boundsInPixels);
 }
 
 @SuppressWarnings("deprecation")
