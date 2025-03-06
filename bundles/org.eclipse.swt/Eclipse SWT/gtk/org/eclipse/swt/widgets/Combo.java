@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2020 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -1091,16 +1091,21 @@ Point getCaretLocationInPixels () {
 		return new Point (0, 0);
 	}
 	int index = GTK.gtk_editable_get_position (entryHandle);
-	index = GTK3.gtk_entry_text_index_to_layout_index (entryHandle, index);
 	int [] offset_x = new int [1], offset_y = new int [1];
-	GTK3.gtk_entry_get_layout_offsets (entryHandle, offset_x, offset_y);
-	long layout = GTK3.gtk_entry_get_layout (entryHandle);
-	PangoRectangle pos = new PangoRectangle ();
-	OS.pango_layout_index_to_pos (layout, index, pos);
-	Point thickness = getThickness (entryHandle);
-	int x = offset_x [0] + OS.PANGO_PIXELS (pos.x) - getBorderWidthInPixels () - thickness.x;
-	int y = offset_y [0] + OS.PANGO_PIXELS (pos.y) - thickness.y;
-	return new Point (x, y);
+	if (GTK.GTK4) {
+		// TODO GTK 4.x implementation
+		return new Point (0, 0);
+	} else {
+		index = GTK3.gtk_entry_text_index_to_layout_index (entryHandle, index);
+		GTK3.gtk_entry_get_layout_offsets (entryHandle, offset_x, offset_y);
+		long layout = GTK3.gtk_entry_get_layout (entryHandle);
+		PangoRectangle pos = new PangoRectangle ();
+		OS.pango_layout_index_to_pos (layout, index, pos);
+		Point thickness = getThickness (entryHandle);
+		int x = offset_x [0] + OS.PANGO_PIXELS (pos.x) - getBorderWidthInPixels () - thickness.x;
+		int y = offset_y [0] + OS.PANGO_PIXELS (pos.y) - thickness.y;
+		return new Point (x, y);
+	}
 }
 
 /**
@@ -1123,7 +1128,7 @@ public int getCaretPosition () {
 	if ((style & SWT.READ_ONLY) != 0) {
 		return 0;
 	}
-	long ptr = GTK3.gtk_entry_get_text (entryHandle);
+	long ptr = GTK.GTK4? GTK4.gtk_entry_buffer_get_text(GTK4.gtk_entry_get_buffer(entryHandle)) : GTK3.gtk_entry_get_text (entryHandle);
 	return (int)OS.g_utf8_offset_to_utf16_offset (ptr, GTK.gtk_editable_get_position (entryHandle));
 }
 
