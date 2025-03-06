@@ -173,7 +173,7 @@ public class ToolBar extends Composite {
 		addListener(SWT.Paint, listener);
 		addListener(SWT.Resize, listener);
 
-		// cash flags for later use.
+		// cache flags for later use
 		flat = isFlag(style, SWT.FLAT);
 		wrap = isFlag(style, SWT.WRAP);
 		shadowOut = isFlag(style, SWT.SHADOW_OUT);
@@ -183,7 +183,6 @@ public class ToolBar extends Composite {
 		rightToLeft = isFlag(style, SWT.RIGHT_TO_LEFT);
 
 		super.style |= vertical ? SWT.VERTICAL : SWT.HORIZONTAL;
-
 	}
 
 	private static boolean isFlag(int style, int flag) {
