@@ -48,7 +48,7 @@ public class ToolItem extends Item {
 	 * All {@link ToolItem} renderers have to implement this interface to work with
 	 * the ToolItem.
 	 */
-	public static interface ToolItemRenderer {
+	public interface ToolItemRenderer {
 
 		/**
 		 * Renders the {@link ToolItem}.
@@ -100,7 +100,7 @@ public class ToolItem extends Item {
 	/**
 	 * The mouse state of the {@link ToolItem}
 	 */
-	public static enum MouseState {
+	public enum MouseState {
 		IDLE, HOVER, DOWN
 	}
 
