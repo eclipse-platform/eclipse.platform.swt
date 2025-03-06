@@ -114,7 +114,7 @@ public class ToolItem extends Item {
 	private Image disabledImage;
 	private Image hotImage;
 
-	private Color foregourndColor;
+	private Color foregroundColor;
 	private Color backgroundColor;
 
 	private MouseState mouseState = MouseState.IDLE;
@@ -431,7 +431,7 @@ public class ToolItem extends Item {
 	 */
 	public Color getForeground() {
 		checkWidget();
-		return foregourndColor;
+		return foregroundColor;
 	}
 
 	/**
@@ -737,7 +737,7 @@ public class ToolItem extends Item {
 	 */
 	public void setForeground(Color color) {
 		checkWidget();
-		foregourndColor = color;
+		foregroundColor = color;
 	}
 
 	/**
