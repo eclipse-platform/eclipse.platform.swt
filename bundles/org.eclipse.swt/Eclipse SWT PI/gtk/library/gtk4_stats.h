@@ -75,6 +75,7 @@ typedef enum {
 	gtk_1drop_1target_1async_1set_1formats_FUNC,
 	gtk_1editable_1get_1delegate_FUNC,
 	gtk_1editable_1get_1text_FUNC,
+	gtk_1entry_1buffer_1get_1text_FUNC,
 	gtk_1entry_1get_1buffer_FUNC,
 	gtk_1entry_1get_1text_1length_FUNC,
 	gtk_1entry_1set_1buffer_FUNC,
