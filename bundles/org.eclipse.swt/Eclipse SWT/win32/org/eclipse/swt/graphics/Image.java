@@ -363,8 +363,9 @@ public Image(Device device, ImageData data) {
 	super(device);
 	if (data == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
-	data = DPIUtil.autoScaleUp(device, new ElementAtZoom<>(data, 100));
-	init(data, getZoom());
+	int deviceZoom = getZoom();
+	data = DPIUtil.scaleImageData(device, new ElementAtZoom<>(data, 100), deviceZoom);
+	init(data, deviceZoom);
 	init();
 	this.device.registerResourceWithZoomSupport(this);
 }
@@ -471,8 +472,9 @@ public Image(Device device, ImageData source, ImageData mask) {
 public Image (Device device, InputStream stream) {
 	super(device);
 	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
-	ImageData data = DPIUtil.autoScaleUp(device, new ElementAtZoom<>(new ImageData (stream), 100));
-	init(data, getZoom());
+	int deviceZoom = getZoom();
+	ImageData data = DPIUtil.scaleImageData(device, new ElementAtZoom<>(new ImageData (stream), 100), deviceZoom);
+	init(data, deviceZoom);
 	init();
 	this.device.registerResourceWithZoomSupport(this);
 }
@@ -513,8 +515,9 @@ public Image (Device device, String filename) {
 	super(device);
 	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
-	ImageData data = DPIUtil.autoScaleUp(device, new ElementAtZoom<>(new ImageData (filename), 100));
-	init(data, getZoom());
+	int deviceZoom = getZoom();
+	ImageData data = DPIUtil.scaleImageData(device, new ElementAtZoom<>(new ImageData (filename), 100), deviceZoom);
+	init(data, deviceZoom);
 	init();
 	this.device.registerResourceWithZoomSupport(this);
 }

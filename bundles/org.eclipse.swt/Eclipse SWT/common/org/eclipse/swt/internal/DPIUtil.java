@@ -346,10 +346,6 @@ public static ImageData autoScaleUp (Device device, final ImageData imageData) {
 	return autoScaleImageData(device, imageData, 100);
 }
 
-public static ImageData autoScaleUp (Device device, final ElementAtZoom<ImageData> elementAtZoom) {
-	return autoScaleImageData(device, elementAtZoom.element(), elementAtZoom.zoom());
-}
-
 public static int[] autoScaleUp(int[] pointArray) {
 	return scaleUp(pointArray, deviceZoom);
 }
