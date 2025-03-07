@@ -59,7 +59,7 @@ public class ToolBar extends Composite {
 	 * Renderer interface for the {@link ToolBar} widget. All renderers have to
 	 * implement this to work with the ToolBar.
 	 */
-	public static interface IToolBarRenderer {
+	public interface IToolBarRenderer {
 
 		/**
 		 * Renders the handle.
