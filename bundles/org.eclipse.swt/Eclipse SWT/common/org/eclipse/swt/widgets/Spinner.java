@@ -1,22 +1,23 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
- *
- * This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License 2.0
- * which accompanies this distribution, and is available at
- * https://www.eclipse.org/legal/epl-2.0/
- *
- * SPDX-License-Identifier: EPL-2.0
- *
- * Contributors:
- *     IBM Corporation - initial API and implementation
- *******************************************************************************/
+* Copyright (c) 2025 Vector Informatik GmbH and others.
+*
+* This program and the accompanying materials
+* are made available under the terms of the Eclipse Public License 2.0
+* which accompanies this distribution, and is available at
+* https://www.eclipse.org/legal/epl-2.0/
+*
+* SPDX-License-Identifier: EPL-2.0
+*
+* Contributors:
+*     Vector Informatik GmbH  - initial API and implementation
+*******************************************************************************/
 package org.eclipse.swt.widgets;
+
+import java.text.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.cocoa.*;
+import org.eclipse.swt.layout.*;
 
 /**
  * Instances of this class are selectable user interface
@@ -44,12 +45,69 @@ import org.eclipse.swt.internal.cocoa.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class Spinner extends Composite {
-	NSTextField textView;
-	NSNumberFormatter textFormatter;
-	NSStepper buttonView;
+
+	private static final class ArrowButtons extends Composite {
+
+		private final Button arrowUp, arrowDown;
+
+		public ArrowButtons(Spinner parent2, int style) {
+			super(parent2, style);
+			int arrowStyle = SWT.ARROW;
+			if ((style & SWT.FLAT) != 0)
+				arrowStyle |= SWT.FLAT;
+
+			setLayout(new GridLayout(1, false));
+			setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, true));
+
+			arrowUp = createArrowButton(arrowStyle | SWT.UP,
+					SelectionListener.widgetSelectedAdapter(this::increment));
+			arrowDown = createArrowButton(arrowStyle | SWT.DOWN,
+					SelectionListener.widgetSelectedAdapter(this::decrement));
+		}
+
+		private Button createArrowButton(int style, SelectionListener selectionListener) {
+			Button b = new Button(this, style);
+			b.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+			b.addSelectionListener(selectionListener);
+			return b;
+		}
+
+		private void increment(SelectionEvent e) {
+			Spinner spinner = (Spinner) ((Button) e.widget).getParent().getParent();
+			step(spinner, spinner.getIncrement());
+		}
+
+		private void decrement(SelectionEvent e) {
+			Spinner spinner = (Spinner) ((Button) e.widget).getParent().getParent();
+			step(spinner, -spinner.getIncrement());
+		}
+
+		private void step(Spinner spinner, int i) {
+			spinner.setSelection(spinner.getSelection() + i);
+		}
+
+		@Override
+		public void setEnabled(boolean enabled) {
+			arrowUp.setEnabled(enabled);
+			arrowDown.setEnabled(enabled);
+		}
+
+		@Override
+		void releaseHandle() {
+			arrowUp.releaseHandle();
+			arrowDown.releaseHandle();
+		}
+
+	}
+
+	private Text text;
+	private ArrowButtons arrows;
+	private int increment = 1;
 	int pageIncrement = 10;
 	int digits = 0;
 	int textLimit = LIMIT;
+	private int maxValue = 100;
+	private int minValue;
 	static int GAP = 0;
 
 	/**
@@ -100,18 +158,47 @@ public class Spinner extends Composite {
  */
 public Spinner (Composite parent, int style) {
 	super (parent, checkStyle (style));
+
+	GridLayout layout = new GridLayout(2, false); // 2 columns, no equal width
+	layout.marginWidth = 0;
+	layout.marginHeight = 0;
+	setLayout(layout);
+
+	createText();
+	createButtons();
+}
+
+private void createText() {
+	text = new Text(this, style);
+	text.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+
+	text.addListener(SWT.MouseVerticalWheel, this::step);
+	text.addVerifyListener(this::ignoreLineBreaks);
+}
+
+private void step(Event e) {
+	setSelection(getSelection() + e.count);
+}
+
+private void ignoreLineBreaks(KeyEvent e) {
+	e.doit = e.keyCode != 13 // Enter
+			&& e.keyCode != SWT.KEYPAD_CR;
+}
+
+private void createButtons() {
+	arrows = new ArrowButtons(this, style);
 }
 
 @Override
-boolean acceptsFirstResponder(long id, long sel) {
-	if (id == view.id) return false;
-	return super.acceptsFirstResponder (id, sel);
+public void redraw() {
+	super.redraw();
+	text.redraw();
+	arrows.redraw();
 }
 
 @Override
-boolean accessibilityIsIgnored(long id, long sel) {
-	if (id == view.id) return true;
-	return super.accessibilityIsIgnored(id, sel);
+public void redraw(int x, int y, int width, int height, boolean all) {
+	super.redraw(x, y, width, height, true);
 }
 
 /**
@@ -204,40 +291,6 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
-@Override
-public Point computeSize (int wHint, int hHint, boolean changed) {
-	checkWidget ();
-	double width = 0, height = 0;
-	String string = Double.toString (buttonView.maxValue ());
-	Font font = Font.cocoa_new(display, textView.font ());
-	NSAttributedString str = parent.createString(string, font, null, 0, false, true, false);
-	NSSize size = str.size ();
-	str.release ();
-	width = (float)size.width;
-	height = (float)size.height;
-	if (wHint != SWT.DEFAULT) width = wHint;
-	if (hHint != SWT.DEFAULT) height = hHint;
-	Rectangle trim = computeTrim (0, 0, (int)Math.ceil (width), (int)Math.ceil (height));
-	if (hHint == SWT.DEFAULT) {
-		size = buttonView.cell ().cellSize ();
-		trim.height = Math.max (trim.height, (int)size.height);
-	}
-	return new Point (trim.width, trim.height);
-}
-@Override
-public Rectangle computeTrim (int x, int y, int width, int height) {
-	checkWidget();
-	NSRect frameRect = textView.frame();
-	NSCell cell = new NSCell (textView.cell ());
-	NSRect cellRect = cell.drawingRectForBounds(frameRect);
-	width += frameRect.width - cellRect.width;
-	height += frameRect.height - cellRect.height;
-	width += GAP;
-	NSSize size = buttonView.cell ().cellSize ();
-	width += (int)size.width;
-	return new Rectangle (x, y, width, height);
-}
-
 /**
  * Copies the selected text.
  * <p>
@@ -251,41 +304,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
  */
 public void copy () {
 	checkWidget ();
-	NSText fieldEditor = textView.currentEditor();
-	if (fieldEditor != null) {
-		fieldEditor.copy(null);
-	} else {
-		//TODO
-	}
-}
-
-@Override
-void createHandle () {
-	NSView widget = (NSView)new SWTView().alloc();
-	widget.init();
-//	widget.setDrawsBackground(false);
-	NSStepper buttonWidget = (NSStepper)new SWTStepper().alloc();
-	buttonWidget.init();
-	buttonWidget.setValueWraps((style & SWT.WRAP) != 0);
-	buttonWidget.setTarget(buttonWidget);
-	buttonWidget.setAction(OS.sel_sendSelection);
-	buttonWidget.setMaxValue(100);
-	NSTextField textWidget = (NSTextField)new SWTTextField().alloc();
-	textWidget.init();
-//	textWidget.setTarget(widget);
-	textWidget.setEditable((style & SWT.READ_ONLY) == 0);
-	if ((style & SWT.BORDER) == 0) {
-		textWidget.setFocusRingType (OS.NSFocusRingTypeNone);
-		textWidget.setBordered (false);
-	}
-	textFormatter = (NSNumberFormatter)new NSNumberFormatter().alloc();
-	textFormatter.init();
-	widget.addSubview(textWidget);
-	widget.addSubview(buttonWidget);
-	buttonView = buttonWidget;
-	textView = textWidget;
-	view = widget;
-	setSelection (0, false, true, false);
+	text.copy();
 }
 
 /**
@@ -303,74 +322,14 @@ void createHandle () {
 public void cut () {
 	checkWidget ();
 	if ((style & SWT.READ_ONLY) != 0) return;
-	NSText fieldEditor = textView.currentEditor();
-	if (fieldEditor != null) {
-		fieldEditor.cut(null);
-	} else {
-		//TODO
-	}
+	text.cut();
 }
 
 @Override
 void enableWidget (boolean enabled) {
 	super.enableWidget(enabled);
-	buttonView.setEnabled(enabled);
-	textView.setEnabled(enabled);
-}
-
-@Override
-NSFont defaultNSFont () {
-	return display.textFieldFont;
-}
-
-@Override
-void deregister () {
-	super.deregister ();
-	if (textView != null) {
-		display.removeWidget (textView);
-		display.removeWidget (textView.cell());
-	}
-
-	if (buttonView != null) {
-		display.removeWidget (buttonView);
-		display.removeWidget (buttonView.cell());
-	}
-}
-
-@Override
-void drawBackground (long id, NSGraphicsContext context, NSRect rect) {
-	if (backgroundImage == null) return;
-	if (new NSView(id).isKindOfClass(OS.class_NSText)) {
-		NSText text = new NSText(id);
-		if (!text.isFieldEditor()) return;
-	}
-	fillBackground (view, context, rect, -1);
-}
-
-@Override
-void drawInteriorWithFrame_inView(long id, long sel, NSRect cellFrame, long viewid) {
-	Control control = findBackgroundControl();
-	if (control == null) control = this;
-	Image image = control.backgroundImage;
-	if (image != null && !image.isDisposed()) {
-		NSGraphicsContext context = NSGraphicsContext.currentContext();
-		control.fillBackground (view, context, cellFrame, -1);
-	}
-	super.drawInteriorWithFrame_inView(id, sel, cellFrame, viewid);
-}
-
-@Override
-Cursor findCursor () {
-	Cursor cursor = super.findCursor ();
-	if (cursor == null && (style & SWT.READ_ONLY) == 0 && OS.VERSION < OS.VERSION(10, 14, 0)) {
-		cursor = display.getSystemCursor (SWT.CURSOR_IBEAM);
-	}
-	return cursor;
-}
-
-@Override
-NSView focusView () {
-	return textView;
+	arrows.setEnabled(enabled);
+	text.setEnabled(enabled);
 }
 
 /**
@@ -401,7 +360,7 @@ public int getDigits () {
  */
 public int getIncrement () {
 	checkWidget ();
-	return (int)buttonView.increment();
+	return this.increment;
 }
 
 /**
@@ -416,7 +375,7 @@ public int getIncrement () {
  */
 public int getMaximum () {
 	checkWidget ();
-	return (int)buttonView.maxValue();
+	return this.maxValue;
 }
 
 /**
@@ -431,7 +390,7 @@ public int getMaximum () {
  */
 public int getMinimum () {
 	checkWidget ();
-	return (int)buttonView.minValue();
+	return this.minValue;
 }
 
 /**
@@ -460,17 +419,24 @@ public int getPageIncrement () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public int getSelection () {
-	checkWidget ();
-	return (int)((NSStepper)buttonView).doubleValue();
+public int getSelection() {
+	checkWidget();
+	int val = Integer.MIN_VALUE;
+
+	try {
+		val = Integer.parseInt(
+				text.getText().replace("" + DecimalFormatSymbols.getInstance().getDecimalSeparator(), ""));
+	} catch (NumberFormatException e) {
+	}
+	return val;
 }
 
 int getSelectionText (boolean[] parseFail) {
-	String string = textView.stringValue().getString();
+	String string = text.getSelectionText();
 	try {
 		int value;
 		if (digits > 0) {
-			String decimalSeparator = textFormatter.decimalSeparator().getString();
+			char decimalSeparator = DecimalFormatSymbols.getInstance().getDecimalSeparator();
 			int index = string.indexOf (decimalSeparator);
 			if (index != -1)  {
 				int startIndex = string.startsWith ("+") || string.startsWith ("-") ? 1 : 0;
@@ -521,8 +487,7 @@ int getSelectionText (boolean[] parseFail) {
  */
 public String getText () {
 	checkWidget ();
-	NSString str = new NSTextFieldCell (textView.cell ()).title ();
-	return str.getString ();
+	return text.getText();
 }
 
 /**
@@ -547,18 +512,6 @@ public int getTextLimit () {
 	return textLimit;
 }
 
-@Override
-boolean handleIsAccessible(long id) {
-	// All subviews of a Spinner can have their accessible properties overridden.
-	// The top-level NSView is already ignored, so we don't need to test for that.
-	return true;
-}
-
-@Override
-boolean isEventView (long id) {
-	return true;
-}
-
 /**
  * Pastes text from clipboard.
  * <p>
@@ -574,43 +527,16 @@ boolean isEventView (long id) {
 public void paste () {
 	checkWidget ();
 	if ((style & SWT.READ_ONLY) != 0) return;
-	NSText fieldEditor = textView.currentEditor();
-	if (fieldEditor != null) {
-		fieldEditor.paste(null);
-	} else {
-		//TODO
-	}
-}
-
-@Override
-void register () {
-	super.register ();
-	if (textView != null) {
-		display.addWidget (textView, this);
-		display.addWidget (textView.cell(), this);
-	}
-
-	if (buttonView != null) {
-		display.addWidget (buttonView, this);
-		display.addWidget (buttonView.cell(), this);
-	}
+	text.paste();
 }
 
 @Override
 void releaseHandle () {
 	super.releaseHandle();
-	if (textFormatter != null) textFormatter.release();
-	if (buttonView != null) buttonView.release();
-	if (textView != null) textView.release();
-	textFormatter = null;
-	buttonView = null;
-	textView = null;
-}
-
-@Override
-void releaseWidget () {
-	super.releaseWidget ();
-	if (textView != null) textView.abortEditing();
+	if (arrows != null) arrows.releaseHandle();
+	if (text != null) text.releaseHandle();
+	arrows = null;
+	text = null;
 }
 
 /**
@@ -686,90 +612,6 @@ void removeVerifyListener (VerifyListener listener) {
 	eventTable.unhook (SWT.Verify, listener);
 }
 
-@Override
-void resized () {
-	super.resized ();
-	buttonView.sizeToFit();
-	NSSize textSize = textView.cell ().cellSize ();
-	NSRect buttonFrame = buttonView.bounds();
-	NSRect frame = view.frame();
-	buttonFrame.x = frame.width - buttonFrame.width;
-	buttonFrame.y = (frame.height - buttonFrame.height) / 2;
-	int textHeight = (int)Math.min(textSize.height, frame.height);
-	frame.x = 0;
-	frame.y = (frame.height - textHeight) / 2;
-	frame.width -= buttonFrame.width + GAP;
-	frame.height = textHeight;
-	textView.setFrame(frame);
-	buttonView.setFrame(buttonFrame);
-}
-
-@Override
-boolean sendKeyEvent (NSEvent nsEvent, int type) {
-	boolean result = super.sendKeyEvent (nsEvent, type);
-	if (!result) return result;
-	if (type != SWT.KeyDown) return result;
-	int delta = 0;
-	short keyCode = nsEvent.keyCode ();
-	switch (keyCode) {
-		case 76: /* KP Enter */
-		case 36: { /* Return */
-			sendSelectionEvent (SWT.DefaultSelection);
-			return true;
-		}
-
-		case 116: delta = pageIncrement; break; /* Page Up */
-		case 121: delta = -pageIncrement; break; /* Page Down */
-		case 125: delta = -getIncrement(); break; /* Down arrow */
-		case 126: delta = getIncrement(); break; /* Up arrow */
-	}
-
-	if (delta != 0) {
-		boolean [] parseFail = new boolean [1];
-		int value = getSelectionText (parseFail);
-		if (parseFail [0]) {
-			value = (int)buttonView.doubleValue();
-		}
-		int newValue = value + delta;
-		int max = (int)buttonView.maxValue();
-		int min = (int)buttonView.minValue();
-		if ((style & SWT.WRAP) != 0) {
-			if (newValue > max) newValue = min;
-			if (newValue < min) newValue = max;
-		}
-		newValue = Math.min (Math.max (min, newValue), max);
-		if (value != newValue) setSelection (newValue, true, true, true);
-		// Prevent the arrow or page up/down from being handled by the text field.
-		result = false;
-	} else {
-		boolean [] parseFail = new boolean [1];
-		int value = getSelectionText (parseFail);
-		if (!parseFail [0]) {
-			int pos = (int)buttonView.doubleValue();
-			if (pos != value) setSelection (value, true, false, true);
-		}
-	}
-
-	return result;
-}
-
-@Override
-void sendSelection () {
-	setSelection (getSelection(), false, true, true);
-}
-
-@Override
-void setBackgroundColor(NSColor nsColor) {
-	((NSTextField) textView).setBackgroundColor (nsColor);
-}
-
-@Override
-void setBackgroundImage(NSImage image) {
-	NSTextField widget = (NSTextField) textView;
-	widget.setDrawsBackground(image == null);
-	NSText editor = widget.window().fieldEditor(true, widget);
-	editor.setDrawsBackground(image == null);
-}
 /**
  * Sets the number of decimal places used by the receiver.
  * <p>
@@ -795,24 +637,7 @@ public void setDigits (int value) {
 	if (value < 0) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (value == digits) return;
 	digits = value;
-	int pos = (int)buttonView.doubleValue();
-	setSelection (pos, false, true, false);
-}
-
-@Override
-void setFont(NSFont font) {
-	textView.setFont(font);
-}
-
-@Override
-void setForeground (double [] color) {
-	NSColor nsColor;
-	if (color == null) {
-		nsColor = NSColor.textColor ();
-	} else {
-		nsColor = NSColor.colorWithDeviceRed (color [0], color [1], color [2], 1);
-	}
-	((NSTextField) textView).setTextColor (nsColor);
+	setSelection(getSelection(), true, false);
 }
 
 /**
@@ -830,7 +655,7 @@ void setForeground (double [] color) {
 public void setIncrement (int value) {
 	checkWidget ();
 	if (value < 1) return;
-	buttonView.setIncrement(value);
+	this.increment = value;
 }
 
 /**
@@ -851,8 +676,9 @@ public void setMaximum (int value) {
 	int min = getMinimum ();
 	if (value < min) return;
 	int pos = getSelection();
-	buttonView.setMaxValue(value);
-	if (pos > value) setSelection (value, true, true, false);
+	this.maxValue = value;
+	if (pos > value)
+		setSelection(value, true, false);
 }
 
 /**
@@ -873,8 +699,9 @@ public void setMinimum (int value) {
 	int max = getMaximum();
 	if (value > max) return;
 	int pos = getSelection();
-	buttonView.setMinValue(value);
-	if (pos < value) setSelection (value, true, true, false);
+	this.minValue = value;
+	if (pos < value)
+		setSelection(value, true, false);
 }
 
 /**
@@ -895,12 +722,6 @@ public void setPageIncrement (int value) {
 	pageIncrement = value;
 }
 
-@Override
-void setOrientation () {
-	int direction = (style & SWT.RIGHT_TO_LEFT) != 0 ? OS.NSWritingDirectionRightToLeft : OS.NSWritingDirectionLeftToRight;
-	textView.setBaseWritingDirection(direction);
-}
-
 /**
  * Sets the <em>selection</em>, which is the receiver's
  * position, to the argument. If the argument is not within
@@ -919,17 +740,14 @@ public void setSelection (int value) {
 	int min = getMinimum();
 	int max = getMaximum();
 	value = Math.min (Math.max (min, value), max);
-	setSelection (value, true, true, false);
+	setSelection(value, true, false);
 }
 
-void setSelection (int value, boolean setPos, boolean setText, boolean notify) {
-	if (setPos) {
-		((NSStepper)buttonView).setDoubleValue(value);
-	}
+void setSelection(int value, boolean setText, boolean notify) {
 	if (setText) {
 		String string = String.valueOf (value);
 		if (digits > 0) {
-			String decimalSeparator = textFormatter.decimalSeparator().getString();
+			char decimalSeparator = DecimalFormatSymbols.getInstance().getDecimalSeparator();
 			int index = string.length () - digits;
 			StringBuilder buffer = new StringBuilder ();
 			if (index > 0) {
@@ -944,27 +762,16 @@ void setSelection (int value, boolean setPos, boolean setText, boolean notify) {
 			}
 			string = buffer.toString ();
 		}
-		NSCell cell = new NSCell(textView.cell());
 		if (hooks (SWT.Verify) || filters (SWT.Verify)) {
-			int length = (int)cell.title().length();
-			string = verifyText (string, 0, length, null);
+			int length = (int) text.getText().length();
+			string = verifyText(string, 0, length);
 			if (string == null) return;
 		}
-		textView.setStringValue(NSString.stringWith(string));
-		NSRange selection = new NSRange();
-		selection.location = 0;
-		selection.length = string.length();
-		NSText fieldEditor = textView.currentEditor();
-		if (fieldEditor != null) fieldEditor.setSelectedRange(selection);
+		text.setText(string);
+		text.selectAll();
 		sendEvent (SWT.Modify);
 	}
 	if (notify) sendSelectionEvent (SWT.Selection);
-}
-
-@Override
-void setSmallSize () {
-	textView.cell ().setControlSize (OS.NSSmallControlSize);
-	buttonView.cell ().setControlSize (OS.NSSmallControlSize);
 }
 
 /**
@@ -1027,90 +834,15 @@ public void setValues (int selection, int minimum, int maximum, int digits, int 
 	selection = Math.min (Math.max (minimum, selection), maximum);
 	this.pageIncrement = pageIncrement;
 	this.digits = digits;
-	buttonView.setIncrement(increment);
-	buttonView.setMaxValue(maximum);
-	buttonView.setMinValue(minimum);
-	setSelection (selection, true, true, false);
+	this.setIncrement(increment);
+	this.setMaximum(maximum);
+	this.setMinimum(minimum);
+	setSelection(selection, true, false);
 }
 
-@Override
-boolean shouldChangeTextInRange_replacementString(long id, long sel, long affectedCharRange, long replacementString) {
-	NSRange range = new NSRange();
-	OS.memmove(range, affectedCharRange, NSRange.sizeof);
-	boolean result = callSuperBoolean(id, sel, range, replacementString);
-	if (hooks (SWT.Verify)) {
-		String text = new NSString(replacementString).getString();
-		NSEvent currentEvent = display.application.currentEvent();
-		long type = currentEvent.type();
-		if (type != OS.NSKeyDown && type != OS.NSKeyUp) currentEvent = null;
-		String newText = verifyText(text, (int)range.location, (int)(range.location+range.length), currentEvent);
-		if (newText == null) return false;
-		if (text != newText) {
-			int length = newText.length();
-			NSText fieldEditor = textView.currentEditor ();
-			if (fieldEditor != null) {
-				NSRange selectedRange = fieldEditor.selectedRange();
-				if (textLimit != LIMIT) {
-					long charCount = fieldEditor.string().length();
-					if (charCount - selectedRange.length + length > textLimit) {
-						length = (int)(textLimit - charCount + selectedRange.length);
-					}
-				}
-				char [] buffer = new char [length];
-				newText.getChars (0, buffer.length, buffer, 0);
-				NSString nsstring = NSString.stringWithCharacters (buffer, buffer.length);
-				fieldEditor.replaceCharactersInRange (fieldEditor.selectedRange (), nsstring);
-				result = false;
-			}
-		}
-		if (!result) sendEvent (SWT.Modify);
-	}
-	return result;
-}
-
-@Override
-void textDidChange (long id, long sel, long aNotification) {
-	super.textDidChange (id, sel, aNotification);
-	boolean [] parseFail = new boolean [1];
-	int value = getSelectionText (parseFail);
-	if (!parseFail [0]) {
-		int pos = (int)buttonView.doubleValue();
-		if (value != pos) {
-			setSelection (value, true, false, true);
-		}
-	}
-	postEvent (SWT.Modify);
-}
-
-@Override
-NSRange textView_willChangeSelectionFromCharacterRange_toCharacterRange (long id, long sel, long aTextView, long oldSelectedCharRange, long newSelectedCharRange) {
-	/* allow the selection change to proceed */
-	NSRange result = new NSRange ();
-	OS.memmove(result, newSelectedCharRange, NSRange.sizeof);
-	return result;
-}
-
-@Override
-void textDidEndEditing(long id, long sel, long aNotification) {
-	boolean [] parseFail = new boolean [1];
-	int value = getSelectionText (parseFail);
-	if (parseFail [0]) {
-		value = (int)buttonView.doubleValue();
-		setSelection (value, false, true, false);
-	}
-	super.textDidEndEditing(id, sel, aNotification);
-}
-
-@Override
-void updateCursorRects (boolean enabled) {
-	super.updateCursorRects (enabled);
-	updateCursorRects (enabled, textView);
-	updateCursorRects (enabled, buttonView);
-}
-
-String verifyText (String string, int start, int end, NSEvent keyEvent) {
+String verifyText(String string, int start, int end) {
 	Event event = new Event ();
-	if (keyEvent != null) setKeyState(event, SWT.MouseDown, keyEvent);
+//	if (keyEvent != null) setKeyState(event, SWT.MouseDown, keyEvent);
 	event.text = string;
 	event.start = start;
 	event.end = end;
@@ -1138,5 +870,4 @@ String verifyText (String string, int start, int end, NSEvent keyEvent) {
 	if (!event.doit || isDisposed ()) return null;
 	return event.text;
 }
-
 }

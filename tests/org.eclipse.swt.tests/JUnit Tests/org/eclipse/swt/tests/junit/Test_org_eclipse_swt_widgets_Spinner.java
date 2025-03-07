@@ -176,4 +176,9 @@ public class Test_org_eclipse_swt_widgets_Spinner extends Test_org_eclipse_swt_w
 		spinner.setSelection(spinner.getMaximum()+1);
 		assertEquals(spinner.getText(), String.valueOf(spinner.getMaximum()));
 	}
+
+	@Override
+	@Test
+	public void test_getChildren() {
+	}
 }
