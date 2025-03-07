@@ -59,7 +59,7 @@ public class ToolItemButtonRenderer implements ToolItemRenderer {
 		this.item = item;
 	}
 
-	private LayoutType getContenType() {
+	private LayoutType getContentType() {
 		boolean hasImage = hasImage();
 		boolean hasText = hasText();
 		if (hasImage && hasText) {
@@ -134,10 +134,10 @@ public class ToolItemButtonRenderer implements ToolItemRenderer {
 		}
 
 		int red = Math.round(set.red - (set.red - TARGET_RGB.red) * type.ratio);
-		int gree = Math.round(set.green - (set.green - TARGET_RGB.green) * type.ratio);
+		int green = Math.round(set.green - (set.green - TARGET_RGB.green) * type.ratio);
 		int blue = Math.round(set.blue - (set.blue - TARGET_RGB.blue) * type.ratio);
 
-		return new Color(red, gree, blue);
+		return new Color(red, green, blue);
 	}
 
 	private void drawHighlight(GC gc, Rectangle bounds, Color borderColor, Color fillColor) {
@@ -208,7 +208,7 @@ public class ToolItemButtonRenderer implements ToolItemRenderer {
 	}
 
 	private Blueprint getBlueprint(Point requestedSize) {
-		LayoutType type = getContenType();
+		LayoutType type = getContentType();
 		return switch (type) {
 		case IMAGE_ONLY -> getImageOnlyBlueprint(requestedSize);
 		case TEXT_ONLY -> getTextOnlyBlueprint(requestedSize);
