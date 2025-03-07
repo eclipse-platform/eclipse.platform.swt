@@ -554,15 +554,22 @@ public Image(Device device, ImageFileNameProvider imageFileNameProvider) {
 	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
 	ElementAtZoom<String> fileName = DPIUtil.validateAndGetImagePathAtZoom (imageFileNameProvider, getZoom());
 	ImageHandle imageMetadata = initNative (fileName.element(), getZoom());
-	if (imageMetadata == null) {
-		if (fileName.zoom() == getZoom()) {
+	if (fileName.zoom() == getZoom()) {
+		if (imageMetadata == null) {
 			init(new ImageData(fileName.element()), getZoom());
-		} else {
-			ImageData resizedData = DPIUtil.autoScaleImageData(device, new ImageData(fileName.element()),
-					fileName.zoom());
-			init(resizedData, getZoom());
 		}
+	} else {
+		ImageData imageData;
+		if (imageMetadata == null) {
+			imageData = new ImageData(fileName.element());
+		} else {
+			imageData = imageMetadata.getImageData();
+		}
+		ImageData resizedData = DPIUtil.autoScaleImageData(device, imageData, fileName.zoom());
+		destroyHandle();
+		init(resizedData, getZoom());
 	}
+
 	init();
 	this.device.registerResourceWithZoomSupport(this);
 }
@@ -2160,19 +2167,26 @@ private class ImageFileNameProviderWrapper extends AbstractImageProviderWrapper 
 	ImageHandle getImageMetadata(int zoom) {
 		ElementAtZoom<String> imageCandidate = DPIUtil.validateAndGetImagePathAtZoom (provider, zoom);
 		ImageHandle imageMetadata = initNative(imageCandidate.element(), zoom);
-		if (imageMetadata == null) {
-			if (imageCandidate.zoom() == zoom) {
+		if (imageCandidate.zoom() == zoom) {
+			if (imageMetadata == null) {
 				/* Release current native resources */
 				ImageData imageData = new ImageData(imageCandidate.element());
 				init(imageData, zoom);
 				init();
-			} else {
-				ImageData imageData = new ImageData(imageCandidate.element());
-				ImageData resizedData = DPIUtil.scaleImageData(device, imageData, zoom, imageCandidate.zoom());
-				ImageData newData = adaptImageDataIfDisabledOrGray(resizedData);
-				init(newData, zoom);
 			}
+		} else {
+			ImageData imageData;
+			if(imageMetadata == null) {
+				imageData = new ImageData(imageCandidate.element());
+			} else {
+				imageData = imageMetadata.getImageData();
+			}
+			ImageData resizedData = DPIUtil.scaleImageData(device, imageData, zoom, imageCandidate.zoom());
+			ImageData newData = adaptImageDataIfDisabledOrGray(resizedData);
+			destroyHandle();
+			init(newData, zoom);
 		}
+
 		return zoomLevelToImageHandle.get(zoom);
 	}
 
