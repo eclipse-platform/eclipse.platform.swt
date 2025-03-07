@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2022 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -18,17 +18,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.graphics.Resource;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.runner.JUnitCore;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.platform.suite.api.SelectClasses;
+import org.junit.platform.suite.api.Suite;
 
 /**
  * Suite for running most SWT test cases (all except for browser tests).
  */
-@RunWith(Suite.class)
-@Suite.SuiteClasses({ Test_org_eclipse_swt_SWT.class, Test_org_eclipse_swt_SWTException.class,
+@Suite
+@SelectClasses({ Test_org_eclipse_swt_SWT.class, Test_org_eclipse_swt_SWTException.class,
 		Test_org_eclipse_swt_SWTError.class, Test_org_eclipse_swt_widgets_Display.class, AllGraphicsTests.class,
 		AllWidgetTests.class, Test_org_eclipse_swt_layout_GridData.class,
 		Test_org_eclipse_swt_events_ControlEvent.class, Test_org_eclipse_swt_events_ModifyEvent.class,
@@ -50,7 +49,7 @@ import org.junit.runners.Suite;
 public class AllNonBrowserTests {
 	private static List<Error> leakedResources;
 
-	@BeforeClass
+	@BeforeAll
 	public static void beforeClass() {
 		// Set up ResourceTracked to detect any leaks
 		leakedResources = new ArrayList<> ();
@@ -67,7 +66,7 @@ public class AllNonBrowserTests {
 	 * through  a test and not through @AfterClass, but this is a
 	 * suite class and not a test class, so it can't have tests.
 	 */
-	@AfterClass
+	@AfterAll
 	public static void afterClass() {
 		// Run GC in order do detect any outstanding leaks
 		System.gc ();
@@ -91,10 +90,6 @@ public class AllNonBrowserTests {
 			String hint = leakedResources.size () + " leaks found, the first is:";
 			throw new AssertionError(hint, leakedResources.get (0));
 		}
-	}
-
-	public static void main(String[] args) {
-		JUnitCore.main(AllNonBrowserTests.class.getName());
 	}
 
 	/*
