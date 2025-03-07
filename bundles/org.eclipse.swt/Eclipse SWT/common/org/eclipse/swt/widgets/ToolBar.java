@@ -90,8 +90,6 @@ public class ToolBar extends Composite {
 	@Deprecated
 	public int itemCount;
 
-	private Listener listener;
-
 	/** The renderer used to render to {@link ToolBar}. */
 	private final IToolBarRenderer renderer;
 
@@ -152,7 +150,7 @@ public class ToolBar extends Composite {
 
 		renderer = new ToolBarRenderer(this);
 
-		listener = event -> {
+		Listener listener = event -> {
 			if (isDisposed()) {
 				return;
 			}
