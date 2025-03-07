@@ -85,7 +85,7 @@ public class ToolBar extends Composite {
 	}
 
 	/** The {@link ToolItem}s contained in the {@link ToolBar} */
-	private java.util.List<ToolItem> items = new ArrayList<>();
+	private final java.util.List<ToolItem> items = new ArrayList<>();
 
 	@Deprecated
 	public int itemCount;
