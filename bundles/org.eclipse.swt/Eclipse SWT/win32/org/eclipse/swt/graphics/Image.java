@@ -555,16 +555,7 @@ public Image(Device device, ImageFileNameProvider imageFileNameProvider) {
 	super(device);
 	this.imageProvider = new ImageFileNameProviderWrapper(imageFileNameProvider);
 	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
-	ElementAtZoom<String> fileName = DPIUtil.validateAndGetImagePathAtZoom (imageFileNameProvider, getZoom());
-	if (fileName.zoom() == getZoom()) {
-		ImageHandle imageMetadata = initNative (fileName.element(), getZoom());
-		if (imageMetadata == null) {
-			init(new ImageData (fileName.element()), getZoom());
-		}
-	} else {
-		ImageData resizedData = DPIUtil.autoScaleImageData (device, new ImageData (fileName.element()), fileName.zoom());
-		init(resizedData, getZoom());
-	}
+	imageProvider.getImageMetadata(getZoom());
 	init();
 	this.device.registerResourceWithZoomSupport(this);
 }
@@ -602,9 +593,7 @@ public Image(Device device, ImageDataProvider imageDataProvider) {
 	super(device);
 	this.imageProvider = new ImageDataProviderWrapper(imageDataProvider);
 	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
-	ElementAtZoom<ImageData> data =  DPIUtil.validateAndGetImageDataAtZoom(imageDataProvider, getZoom());
-	ImageData resizedData = DPIUtil.scaleImageData(device, data.element(), getZoom(), data.zoom());
-	init (resizedData, getZoom());
+	imageProvider.getImageMetadata(getZoom());
 	init();
 	this.device.registerResourceWithZoomSupport(this);
 }
@@ -2146,17 +2135,18 @@ private class ImageFileNameProviderWrapper extends AbstractImageProviderWrapper 
 
 	@Override
 	ImageHandle getImageMetadata(int zoom) {
-		ElementAtZoom<String> imageCandidate = DPIUtil.validateAndGetImagePathAtZoom (provider, zoom);
-		ImageData imageData = new ImageData (imageCandidate.element());
-		if (imageCandidate.zoom() == zoom) {
-			/* Release current native resources */
-			ImageHandle imageMetadata = initNative(imageCandidate.element(), zoom);
-			if (imageMetadata == null) init(imageData, zoom);
-			init();
-		} else {
-			ImageData resizedData = DPIUtil.scaleImageData(device, imageData, zoom, imageCandidate.zoom());
-			ImageData newData = adaptImageDataIfDisabledOrGray(resizedData);
-			init(newData, zoom);
+		ElementAtZoom<String> fileForZoom = DPIUtil.validateAndGetImagePathAtZoom (provider, zoom);
+		ImageHandle nativeInitializedImage = null;
+		if (fileForZoom.zoom() == zoom) {
+			nativeInitializedImage = initNative(fileForZoom.element(), zoom);
+		}
+		if (nativeInitializedImage == null) {
+			ImageData imageData = new ImageData (fileForZoom.element());
+			if (fileForZoom.zoom() != zoom) {
+				imageData = DPIUtil.scaleImageData(device, imageData, zoom, fileForZoom.zoom());
+			}
+			imageData = adaptImageDataIfDisabledOrGray(imageData);
+			init(imageData, zoom);
 		}
 		return zoomLevelToImageHandle.get(zoom);
 	}
@@ -2213,7 +2203,6 @@ private class ImageDataProviderWrapper extends AbstractImageProviderWrapper {
 		ImageData resizedData = DPIUtil.scaleImageData (device, imageCandidate.element(), zoom, imageCandidate.zoom());
 		ImageData newData = adaptImageDataIfDisabledOrGray(resizedData);
 		init(newData, zoom);
-		init();
 		return zoomLevelToImageHandle.get(zoom);
 	}
 
