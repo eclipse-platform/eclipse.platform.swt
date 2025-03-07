@@ -57,16 +57,36 @@
               <!-- Trim does not only remove the entries before entering the test method but
                    also every entry which is not part of the test class. See bug 558848 for example. -->
               <trimStackTrace>false</trimStackTrace>
+              <properties>
+		            <configurationParameters>
+		                junit.jupiter.execution.parallel.enabled=false
+		                junit.jupiter.execution.parallel.methods=false
+		                junit.jupiter.execution.parallel.classes=false
+		                junit.vintage.execution.parallel.enabled=false
+		                junit.vintage.execution.parallel.methods=false
+		                junit.vintage.execution.parallel.classes=false
+		            </configurationParameters>
+		        </properties>
             </configuration>
           </execution>
         </executions>
-        <dependencies>
-          <dependency>
-            <groupId>org.apache.maven.surefire</groupId>
-            <artifactId>surefire-junit47</artifactId>
-            <version>${surefire.version}</version>
-          </dependency>
-        </dependencies>
+		<dependencies>
+			<dependency>
+				<groupId>org.apache.maven.surefire</groupId>
+				<artifactId>surefire-junit-platform</artifactId>
+				<version>${surefire.version}</version>
+			</dependency>
+			<dependency>
+			    <groupId>org.junit.vintage</groupId>
+			    <artifactId>junit-vintage-engine</artifactId>
+			    <version>5.12.1</version>
+			</dependency>
+			<dependency>
+			    <groupId>org.junit.platform</groupId>
+			    <artifactId>junit-platform-suite-engine</artifactId>
+			    <version>1.12.1</version>
+			</dependency>
+		</dependencies>
       </plugin>
     </plugins>
   </build>
