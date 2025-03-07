@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -14,21 +14,17 @@
 package org.eclipse.swt.tests.junit;
 
 
-import org.junit.runner.JUnitCore;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import org.junit.platform.suite.api.SelectClasses;
+import org.junit.platform.suite.api.Suite;
 
 /**
  * Suite for running all SWT test cases.
  */
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
+@Suite
+@SelectClasses({
 	AllNonBrowserTests.class,
 	AllBrowserTests.class
 })
 public class AllTests {
 
-public static void main(String[] args) {
-	JUnitCore.main(AllTests.class.getName());
-}
 }
