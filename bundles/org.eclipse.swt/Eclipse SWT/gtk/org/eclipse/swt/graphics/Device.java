@@ -88,9 +88,30 @@ public abstract class Device implements Drawable {
 	* Programmer's Reference as the colors in the default
 	* palette.
 	*/
-	Color COLOR_BLACK, COLOR_DARK_RED, COLOR_DARK_GREEN, COLOR_DARK_YELLOW, COLOR_DARK_BLUE;
-	Color COLOR_DARK_MAGENTA, COLOR_DARK_CYAN, COLOR_GRAY, COLOR_DARK_GRAY, COLOR_RED, COLOR_TRANSPARENT;
-	Color COLOR_GREEN, COLOR_YELLOW, COLOR_BLUE, COLOR_MAGENTA, COLOR_CYAN, COLOR_WHITE;
+	static final Color COLOR_BLACK, COLOR_DARK_RED, COLOR_DARK_GREEN, COLOR_DARK_YELLOW, COLOR_DARK_BLUE;
+	static final Color COLOR_DARK_MAGENTA, COLOR_DARK_CYAN, COLOR_GRAY, COLOR_DARK_GRAY, COLOR_RED, COLOR_TRANSPARENT;
+	static final Color COLOR_GREEN, COLOR_YELLOW, COLOR_BLUE, COLOR_MAGENTA, COLOR_CYAN, COLOR_WHITE;
+
+	static {
+		/* Create the standard colors */
+		COLOR_TRANSPARENT = new Color (0xFF, 0xFF,0xFF,0);
+		COLOR_BLACK = new Color (0, 0,0);
+		COLOR_DARK_RED = new Color (0x80, 0,0);
+		COLOR_DARK_GREEN = new Color (0, 0x80,0);
+		COLOR_DARK_YELLOW = new Color (0x80, 0x80,0);
+		COLOR_DARK_BLUE = new Color (0, 0,0x80);
+		COLOR_DARK_MAGENTA = new Color (0x80, 0,0x80);
+		COLOR_DARK_CYAN = new Color (0, 0x80,0x80);
+		COLOR_GRAY = new Color (0xC0, 0xC0,0xC0);
+		COLOR_DARK_GRAY = new Color (0x80, 0x80,0x80);
+		COLOR_RED = new Color (0xFF, 0,0);
+		COLOR_GREEN = new Color (0, 0xFF,0);
+		COLOR_YELLOW = new Color (0xFF, 0xFF,0);
+		COLOR_BLUE = new Color (0, 0,0xFF);
+		COLOR_MAGENTA = new Color (0xFF, 0,0xFF);
+		COLOR_CYAN = new Color (0, 0xFF,0xFF);
+		COLOR_WHITE = new Color (0xFF, 0xFF,0xFF);
+	}
 
 	/* System Font */
 	Font systemFont;
@@ -662,25 +683,6 @@ protected void init () {
 		}
 	}
 
-	/* Create the standard colors */
-	COLOR_TRANSPARENT = new Color (0xFF, 0xFF,0xFF,0);
-	COLOR_BLACK = new Color (0, 0,0);
-	COLOR_DARK_RED = new Color (0x80, 0,0);
-	COLOR_DARK_GREEN = new Color (0, 0x80,0);
-	COLOR_DARK_YELLOW = new Color (0x80, 0x80,0);
-	COLOR_DARK_BLUE = new Color (0, 0,0x80);
-	COLOR_DARK_MAGENTA = new Color (0x80, 0,0x80);
-	COLOR_DARK_CYAN = new Color (0, 0x80,0x80);
-	COLOR_GRAY = new Color (0xC0, 0xC0,0xC0);
-	COLOR_DARK_GRAY = new Color (0x80, 0x80,0x80);
-	COLOR_RED = new Color (0xFF, 0,0);
-	COLOR_GREEN = new Color (0, 0xFF,0);
-	COLOR_YELLOW = new Color (0xFF, 0xFF,0);
-	COLOR_BLUE = new Color (0, 0,0xFF);
-	COLOR_MAGENTA = new Color (0xFF, 0,0xFF);
-	COLOR_CYAN = new Color (0, 0xFF,0xFF);
-	COLOR_WHITE = new Color (0xFF, 0xFF,0xFF);
-
 	emptyTab = OS.pango_tab_array_new(1, false);
 	if (emptyTab == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.pango_tab_array_set_tab(emptyTab, 0, OS.PANGO_TAB_LEFT, 1);
@@ -979,10 +981,6 @@ protected void release () {
 	/* Dispose the default font */
 	if (systemFont != null) systemFont.dispose ();
 	systemFont = null;
-
-	COLOR_BLACK = COLOR_DARK_RED = COLOR_DARK_GREEN = COLOR_DARK_YELLOW = COLOR_DARK_BLUE =
-	COLOR_DARK_MAGENTA = COLOR_DARK_CYAN = COLOR_GRAY = COLOR_DARK_GRAY = COLOR_RED =
-	COLOR_GREEN = COLOR_YELLOW = COLOR_BLUE = COLOR_MAGENTA = COLOR_CYAN = COLOR_WHITE = null;
 
 	if (emptyTab != 0) OS.pango_tab_array_free(emptyTab);
 	emptyTab = 0;
