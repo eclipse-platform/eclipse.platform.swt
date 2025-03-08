@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -14,15 +14,14 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import org.junit.runner.JUnitCore;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import org.junit.platform.suite.api.SelectClasses;
+import org.junit.platform.suite.api.Suite;
 
 /**
  * Suite for testing all of the widget test cases.
  */
-@RunWith(Suite.class)
-@Suite.SuiteClasses({ Test_org_eclipse_swt_widgets_Shell.class,
+@Suite
+@SelectClasses({ Test_org_eclipse_swt_widgets_Shell.class,
 		Test_org_eclipse_swt_widgets_ExpandItem.class, Test_org_eclipse_swt_widgets_MenuItem.class,
 		Test_org_eclipse_swt_widgets_ToolItem.class, Test_org_eclipse_swt_widgets_TabItem.class,
 		Test_org_eclipse_swt_widgets_TableItem.class, Test_org_eclipse_swt_widgets_TableColumn.class,
@@ -53,7 +52,4 @@ import org.junit.runners.Suite;
 		Test_org_eclipse_swt_widgets_ScrolledComposite.class,
 		Test_org_eclipse_swt_custom_BusyIndicator.class})
 public class AllWidgetTests {
-	public static void main(String[] args) {
-		JUnitCore.main(AllWidgetTests.class.getName());
-	}
 }
