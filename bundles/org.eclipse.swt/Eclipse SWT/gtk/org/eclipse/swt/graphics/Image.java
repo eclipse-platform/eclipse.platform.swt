@@ -726,51 +726,33 @@ public Image(Device device, ImageGcDrawer imageGcDrawer, int width, int height) 
  *
  * @noreference This function is not intended to be referenced by clients.
  */
-public boolean internal_gtk_refreshImageForZoom() {
-	return refreshImageForZoom();
+public void internal_gtk_refreshImageForZoom() {
+	refreshImageForZoom();
 }
 
 /**
  * Refresh the Image based on the zoom level, if required.
- *
- * @return true if image is refreshed
  */
-boolean refreshImageForZoom () {
-	boolean refreshed = false;
+void refreshImageForZoom () {
 	int deviceZoom = DPIUtil.getDeviceZoom();
-	if (imageFileNameProvider != null) {
-		int deviceZoomLevel = deviceZoom;
-		if (deviceZoomLevel != currentDeviceZoom) {
-			/* Release current native resources */
-			destroy ();
-			initFromFileNameProvider(deviceZoomLevel);
-			init ();
-			refreshed = true;
-			currentDeviceZoom = deviceZoomLevel;
-		}
-	} else if (imageDataProvider != null) {
-		int deviceZoomLevel = deviceZoom;
-		if (deviceZoomLevel != currentDeviceZoom) {
-			/* Release current native resources */
-			destroy ();
-			initFromImageDataProvider(deviceZoomLevel);
-			init();
-			refreshed = true;
-			currentDeviceZoom = deviceZoomLevel;
-		}
-	} else if (imageGcDrawer != null) {
-		int deviceZoomLevel = deviceZoom;
-		if (deviceZoomLevel != currentDeviceZoom) {
-			ImageData data = drawWithImageGcDrawer(width, height, deviceZoomLevel);
-			/* Release current native resources */
-			destroy ();
-			init(data);
-			init();
-			refreshed = true;
-			currentDeviceZoom = deviceZoomLevel;
-		}
+	if (deviceZoom == currentDeviceZoom) {
+		return;
 	}
-	return refreshed;
+	if (imageFileNameProvider != null) {
+		reinitializeImage(deviceZoom, zoom -> initFromFileNameProvider(zoom));
+	} else if (imageDataProvider != null) {
+		reinitializeImage(deviceZoom, zoom -> initFromImageDataProvider(zoom));
+	} else if (imageGcDrawer != null) {
+		reinitializeImage(deviceZoom, zoom -> init(drawWithImageGcDrawer(width, height, zoom)));
+	}
+}
+
+private void reinitializeImage(int zoom, IntConsumer initializerForZoom) {
+	/* Release current native resources */
+	destroy ();
+	initializerForZoom.accept(zoom);
+	init();
+	currentDeviceZoom = zoom;
 }
 
 void initNative(String filename) {
