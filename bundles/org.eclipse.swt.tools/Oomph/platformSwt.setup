@@ -36,7 +36,7 @@
       </detail>
       <detail
           key="label">
-        <value>Platform SWT Github Repository</value>
+        <value>Platform SWT GitHub Repository</value>
       </detail>
       <detail
           key="target">
@@ -170,7 +170,7 @@
         </detail>
         <detail
             key="label">
-          <value>Platform Website Github Repository</value>
+          <value>Platform Website GitHub Repository</value>
         </detail>
         <detail
             key="target">

@@ -122,7 +122,7 @@ SWT used to track ongoing development and issues in Bugzilla .
 
 ## Create a New Bug
 
-You can register bugs and feature requests in the Github Issue Tracker. Remember that contributions are always welcome!
+You can register bugs and feature requests in the GitHub Issue Tracker. Remember that contributions are always welcome!
 - [View existing SWT issues](https://github.com/eclipse-platform/eclipse.platform.swt/issues)
 - [New SWT issue](https://github.com/eclipse-platform/eclipse.platform.swt/issues/new)
 
