@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2020 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -16,11 +16,14 @@ package org.eclipse.swt.graphics;
 
 import java.io.*;
 import java.util.*;
+import java.util.function.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.DPIUtil.*;
 import org.eclipse.swt.internal.cocoa.*;
 import org.eclipse.swt.internal.graphics.*;
+import org.eclipse.swt.internal.image.*;
 
 /**
  * Instances of this class are graphics which have been prepared
@@ -692,7 +695,7 @@ public Image(Device device, InputStream stream) {
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
-		init(new ImageData(stream));
+		initWithSupplier(zoom -> ImageDataLoader.load(stream, FileFormat.DEFAULT_ZOOM, zoom));
 		init();
 	} finally {
 		if (pool != null) pool.release();
@@ -738,7 +741,7 @@ public Image(Device device, String filename) {
 	try {
 		if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 		initNative(filename);
-		if (this.handle == null) init(new ImageData(filename));
+		if (this.handle == null) initWithSupplier(zoom -> ImageDataLoader.load(filename, FileFormat.DEFAULT_ZOOM, zoom));
 		init();
 	} finally {
 		if (pool != null) pool.release();
@@ -784,7 +787,7 @@ public Image(Device device, ImageFileNameProvider imageFileNameProvider) {
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
 		initNative(filename);
-		if (this.handle == null) init(new ImageData(filename));
+		if (this.handle == null) init(ImageDataLoader.load(filename, 100, 100).element());
 		init();
 		String filename2x = imageFileNameProvider.getImagePath(200);
 		if (filename2x != null) {
@@ -792,6 +795,15 @@ public Image(Device device, ImageFileNameProvider imageFileNameProvider) {
 			id id = NSImageRep.imageRepWithContentsOfFile(NSString.stringWith(filename2x));
 			NSImageRep rep = new NSImageRep(id);
 			handle.addRepresentation(rep);
+		} else {
+			// Try to natively scale up the image (e.g. possible if it's an SVG)
+			ElementAtZoom<ImageData> imageData2x = ImageDataLoader.load(filename, 100, 200);
+			if (imageData2x.zoom() == 200) {
+				alphaInfo_200 = new AlphaInfo();
+				NSBitmapImageRep rep = createRepresentation (imageData2x.element(), alphaInfo_200);
+				handle.addRepresentation(rep);
+				rep.release();
+			}
 		}
 	} finally {
 		if (pool != null) pool.release();
@@ -1471,6 +1483,25 @@ void init(ImageData image) {
 	rep.release();
 	handle.setCacheMode(OS.NSImageCacheNever);
 }
+
+private void initWithSupplier(Function<Integer, ElementAtZoom<ImageData>> zoomToImageData) {
+	ElementAtZoom<ImageData> imageData = zoomToImageData.apply(DPIUtil.getDeviceZoom());
+	ImageData imageData2x = null;
+	if (imageData.zoom() == 200) {
+		imageData2x = imageData.element();
+	}
+	if (imageData.zoom() != 100) {
+		imageData = zoomToImageData.apply(100);
+	}
+	init(imageData.element());
+	if (imageData2x != null) {
+		alphaInfo_200 = new AlphaInfo();
+		NSBitmapImageRep rep = createRepresentation (imageData2x, alphaInfo_200);
+		handle.addRepresentation(rep);
+		rep.release();
+	}
+}
+
 
 void initAlpha_200(NSBitmapImageRep nativeRep) {
 	NSAutoreleasePool pool = null;
