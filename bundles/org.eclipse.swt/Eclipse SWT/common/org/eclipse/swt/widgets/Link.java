@@ -441,11 +441,6 @@ public class Link extends CustomControl {
 			return;
 		}
 
-		gc.setFont(font);
-		gc.setBackground(getBackground());
-		gc.setClipping(new Rectangle(0, 0, rect.width, rect.height));
-		gc.setForeground(getForeground());
-
 		drawBackground(gc, rect);
 
 		Color linkColor = getLinkForeground();
