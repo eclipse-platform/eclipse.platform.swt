@@ -49,6 +49,7 @@ class Edge extends WebBrowser {
 	// System.getProperty() keys
 	static final String BROWSER_DIR_PROP = "org.eclipse.swt.browser.EdgeDir";
 	static final String BROWSER_ARGS_PROP = "org.eclipse.swt.browser.EdgeArgs";
+	static final String ALLOW_SINGLE_SIGN_ON_USING_OS_PRIMARY_ACCOUNT_PROP = "org.eclipse.swt.browser.Edge.allowSingleSignOnUsingOSPrimaryAccount";
 	static final String DATA_DIR_PROP = "org.eclipse.swt.browser.EdgeDataDir";
 	static final String LANGUAGE_PROP = "org.eclipse.swt.browser.EdgeLanguage";
 	static final String VERSIONT_PROP = "org.eclipse.swt.browser.EdgeVersion";
@@ -564,6 +565,11 @@ WebViewEnvironment createEnvironment() {
 	String browserDir = System.getProperty(BROWSER_DIR_PROP);
 	String browserArgs = System.getProperty(BROWSER_ARGS_PROP);
 	String language = System.getProperty(LANGUAGE_PROP);
+
+	Boolean instanceAllowSSO = (Boolean) browser.getData(ALLOW_SINGLE_SIGN_ON_USING_OS_PRIMARY_ACCOUNT_PROP);
+	Boolean globalAllowSSO = Boolean.getBoolean(ALLOW_SINGLE_SIGN_ON_USING_OS_PRIMARY_ACCOUNT_PROP);
+	boolean allowSSO = instanceAllowSSO != null ? instanceAllowSSO : globalAllowSSO;
+
 	String dataDir = getDataDir(display);
 
 	// Initialize options
@@ -579,6 +585,11 @@ WebViewEnvironment createEnvironment() {
 	if (language != null) {
 		char[] pLanguage = stringToWstr(language);
 		options.put_Language(pLanguage);
+	}
+
+	if (allowSSO) {
+		int[] pAllowSSO = new int[]{1};
+		options.put_AllowSingleSignOnUsingOSPrimaryAccount(pAllowSSO);
 	}
 
 	// Create the environment
