@@ -14,6 +14,7 @@
 package org.eclipse.swt.graphics;
 
 import java.util.*;
+import java.util.function.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
@@ -42,9 +43,11 @@ import org.eclipse.swt.internal.win32.*;
  * @since 3.1
  */
 public class Path extends Resource {
-	private int initialZoom;
-
 	private Map<Integer, PathHandle> zoomToHandle = new HashMap<>();
+
+	private List<Operation> operations = new ArrayList<>();
+
+	private boolean isDestroyed;
 
 /**
  * Constructs a new empty Path.
@@ -72,16 +75,8 @@ public class Path extends Resource {
  * @see #dispose()
  */
 public Path (Device device) {
-	this(device, DPIUtil.getDeviceZoom());
-}
-
-private Path(Device device, int zoom) {
 	super(device);
 	this.device.checkGDIP();
-	initialZoom = zoom;
-	long handle = Gdip.GraphicsPath_new(Gdip.FillModeAlternate);
-	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	zoomToHandle.put(initialZoom, new PathHandle(handle, initialZoom));
 	init();
 	this.device.registerResourceWithZoomSupport(this);
 }
@@ -125,11 +120,10 @@ public Path (Device device, Path path, float flatness) {
 	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (path.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	flatness = Math.max(0, flatness);
-	long handle = Gdip.GraphicsPath_Clone(path.getHandle(path.initialZoom));
-	if (flatness != 0) Gdip.GraphicsPath_Flatten(handle, 0, flatness);
-	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	initialZoom = path.initialZoom;
-	zoomToHandle.put(initialZoom, new PathHandle(handle, initialZoom));
+	path.operations.forEach(this::storeAndApplyOperationOnAllHandles);
+	if (flatness != 0) {
+		storeAndApplyOperationOnAllHandles(new FlattenOperation(flatness));
+	}
 	init();
 	this.device.registerResourceWithZoomSupport(this);
 }
@@ -163,15 +157,9 @@ public Path (Device device, Path path, float flatness) {
  * @since 3.4
  */
 public Path (Device device, PathData data) {
-	this(device, data, DPIUtil.getDeviceZoom());
-
-}
-
-private Path(Device device, PathData data, int zoom) {
-	this(device, zoom);
+	this(device);
 	if (data == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	init(data);
-	this.device.registerResourceWithZoomSupport(this);
 }
 
 /**
@@ -205,7 +193,7 @@ private Path(Device device, PathData data, int zoom) {
  */
 public void addArc (float x, float y, float width, float height, float startAngle, float arcAngle) {
 	if (width == 0 || height == 0 || arcAngle == 0) return;
-	applyOperationForAllHandles(new AddArcOperation(x, y, width, height, startAngle, arcAngle));
+	storeAndApplyOperationOnAllHandles(new AddArcOperation(x, y, width, height, startAngle, arcAngle));
 }
 
 /**
@@ -225,7 +213,7 @@ public void addPath(Path path) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (path.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	applyOperationForAllHandles(new AddPathOperation(path));
+	storeAndApplyOperationOnAllHandles(new AddPathOperation(path));
 }
 
 /**
@@ -242,7 +230,7 @@ public void addPath(Path path) {
  */
 public void addRectangle (float x, float y, float width, float height) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	applyOperationForAllHandles(new AddRectangleOperation(x, y, width, height));
+	storeAndApplyOperationOnAllHandles(new AddRectangleOperation(x, y, width, height));
 }
 
 /**
@@ -266,7 +254,7 @@ public void addString (String string, float x, float y, Font font) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (font == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	applyOperationForAllHandles(new AddStringOperation(string, x, y, font));
+	storeAndApplyOperationOnAllHandles(new AddStringOperation(string, x, y, font));
 }
 
 /**
@@ -280,7 +268,7 @@ public void addString (String string, float x, float y, Font font) {
  */
 public void close() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	applyOperationForAllHandles(new CloseOperation());
+	storeAndApplyOperationOnAllHandles(new CloseOperation());
 }
 
 /**
@@ -310,8 +298,9 @@ public boolean contains (float x, float y, GC gc, boolean outline) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (gc == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (gc.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	PathHandle handle = getPathHandle(initialZoom);
-	return handle.contains(x, y, gc, outline);
+	return applyUsingAnyHandle(handle -> {
+		return handle.contains(x, y, gc, outline);
+	});
 }
 
 /**
@@ -330,7 +319,7 @@ public boolean contains (float x, float y, GC gc, boolean outline) {
  */
 public void cubicTo (float cx1, float cy1, float cx2, float cy2, float x, float y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	applyOperationForAllHandles(new CubicToOperation(cx1, cy1, cx2, cy2, x, y));
+	storeAndApplyOperationOnAllHandles(new CubicToOperation(cx1, cy1, cx2, cy2, x, y));
 }
 
 @Override
@@ -338,13 +327,14 @@ void destroy() {
 	device.deregisterResourceWithZoomSupport(this);
 	zoomToHandle.values().forEach(PathHandle::destroy);
 	zoomToHandle.clear();
+	this.isDestroyed = true;
 }
 
 @Override
 void destroyHandlesExcept(Set<Integer> zoomLevels) {
 	zoomToHandle.entrySet().removeIf(entry -> {
 		final Integer zoom = entry.getKey();
-		if (!zoomLevels.contains(zoom) && zoom != initialZoom) {
+		if (!zoomLevels.contains(zoom)) {
 			entry.getValue().destroy();
 			return true;
 		}
@@ -371,8 +361,10 @@ public void getBounds (float[] bounds) {
 	if (bounds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (bounds.length < 4) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	PathHandle handle = getPathHandle(initialZoom);
-	handle.fillBounds(bounds);
+	applyUsingAnyHandle(handle -> {
+		handle.fillBounds(bounds);
+		return true;
+	});
 }
 
 /**
@@ -393,8 +385,10 @@ public void getCurrentPoint (float[] point) {
 	if (point == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (point.length < 2) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	PathHandle handle = getPathHandle(initialZoom);
-	handle.fillCurrentPoint(point);
+	applyUsingAnyHandle(handle -> {
+		handle.fillCurrentPoint(point);
+		return true;
+	});
 }
 
 /**
@@ -410,8 +404,9 @@ public void getCurrentPoint (float[] point) {
  */
 public PathData getPathData() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	PathHandle handle = getPathHandle(initialZoom);
-	return handle.getPathData();
+	return applyUsingAnyHandle(handle -> {
+		return handle.getPathData();
+	});
 }
 
 /**
@@ -427,7 +422,7 @@ public PathData getPathData() {
  */
 public void lineTo (float x, float y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	applyOperationForAllHandles(new LineToOperation(x, y));
+	storeAndApplyOperationOnAllHandles(new LineToOperation(x, y));
 }
 
 
@@ -470,7 +465,7 @@ void init(PathData data) {
  */
 @Override
 public boolean isDisposed() {
-	return zoomToHandle.isEmpty();
+	return this.isDestroyed;
 }
 
 /**
@@ -487,7 +482,7 @@ public boolean isDisposed() {
  */
 public void moveTo (float x, float y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	applyOperationForAllHandles(new MoveToOperation(x, y));
+	storeAndApplyOperationOnAllHandles(new MoveToOperation(x, y));
 }
 
 /**
@@ -504,24 +499,25 @@ public void moveTo (float x, float y) {
  */
 public void quadTo (float cx, float cy, float x, float y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	applyOperationForAllHandles(new QuadToOperation(cx, cy, x, y));
+	storeAndApplyOperationOnAllHandles(new QuadToOperation(cx, cy, x, y));
 }
 
-private class PathHandle {
-	private long handle;
-	private int zoom;
+private static class PathHandle {
+	private final Device device;
+	private final long handle;
+	private final int zoom;
 	private PointF currentPoint = new PointF();
 	private PointF startPoint = new PointF();
 
-	public PathHandle(final long handle, final int zoom) {
+	public PathHandle(final Device device, final long handle, final int zoom) {
+		this.device = device;
 		this.handle = handle;
 		this.zoom = zoom;
 	}
 
 	boolean contains (float x, float y, GC gc, boolean outline) {
-		Drawable drawable = getDevice();
-		float xInPixels = DPIUtil.scaleUp(drawable, x, zoom);
-		float yInPixels = DPIUtil.scaleUp(drawable, y, zoom);
+		float xInPixels = DPIUtil.scaleUp(device, x, zoom);
+		float yInPixels = DPIUtil.scaleUp(device, y, zoom);
 		return containsInPixels(xInPixels, yInPixels, gc, outline);
 	}
 
@@ -544,7 +540,7 @@ private class PathHandle {
 
 	void fillBounds (float[] bounds) {
 		getBoundsInPixels(bounds);
-		float[] scaledbounds= DPIUtil.scaleDown(getDevice(), bounds, zoom);
+		float[] scaledbounds= DPIUtil.scaleDown(device, bounds, zoom);
 		System.arraycopy(scaledbounds, 0, bounds, 0, 4);
 	}
 
@@ -559,7 +555,7 @@ private class PathHandle {
 
 	void fillCurrentPoint (float[] point) {
 		getCurrentPointInPixels(point);
-		float[] scaledpoint= DPIUtil.scaleDown(getDevice(), point, zoom);
+		float[] scaledpoint= DPIUtil.scaleDown(device, point, zoom);
 		System.arraycopy(scaledpoint, 0, point, 0, 2);
 	}
 
@@ -570,7 +566,7 @@ private class PathHandle {
 
 	PathData getPathData() {
 		PathData result = getPathDataInPixels();
-		result.points = DPIUtil.scaleDown(getDevice(), result.points, zoom);
+		result.points = DPIUtil.scaleDown(device, result.points, zoom);
 		return result;
 	}
 
@@ -721,18 +717,20 @@ private class AddRectangleOperation implements Operation {
 }
 
 private class AddPathOperation implements Operation {
-	private final Path path;
+	private final List<Operation> pathOperations;
 
 	public AddPathOperation(Path path) {
-		this.path = path;
+		this.pathOperations = path.operations;
 	}
 
 	@Override
 	public void apply(PathHandle pathHandle) {
-		PathHandle secondPathHandle = path.getPathHandle(pathHandle.zoom);
-		Gdip.GraphicsPath_AddPath(pathHandle.handle, secondPathHandle.handle, false);
-		pathHandle.currentPoint.X = secondPathHandle.currentPoint.X;
-		pathHandle.currentPoint.Y = secondPathHandle.currentPoint.Y;
+		applyOnTemporaryHandle(getDevice(), pathHandle.zoom, pathOperations, temporaryHandle -> {
+			Gdip.GraphicsPath_AddPath(pathHandle.handle, temporaryHandle.handle, false);
+			pathHandle.currentPoint.X = temporaryHandle.currentPoint.X;
+			pathHandle.currentPoint.Y = temporaryHandle.currentPoint.Y;
+			return true;
+		});
 	}
 }
 
@@ -795,6 +793,14 @@ private record CloseOperation() implements Operation {
 		*/
 		currentPoint.X = startPoint.X;
 		currentPoint.Y = startPoint.Y;
+	}
+}
+
+private record FlattenOperation(float flatness) implements Operation {
+	@Override
+	public void apply(PathHandle pathHandle) {
+		long handle = pathHandle.handle;
+		Gdip.GraphicsPath_Flatten(handle, 0, flatness);
 	}
 }
 
@@ -926,8 +932,29 @@ private interface Operation {
 	void apply(PathHandle pathHandle);
 }
 
-private void applyOperationForAllHandles(Operation operation) {
+private void storeAndApplyOperationOnAllHandles(Operation operation) {
+	operations.add(operation);
 	zoomToHandle.values().forEach(operation::apply);
+}
+
+private <T> T applyUsingAnyHandle(Function<PathHandle, T> function) {
+	if (zoomToHandle.isEmpty()) {
+		return applyOnTemporaryHandle(getDevice(), DPIUtil.getDeviceZoom(), this.operations, function);
+	} else {
+		return function.apply(zoomToHandle.values().iterator().next());
+	}
+}
+
+private static <T> T applyOnTemporaryHandle(Device device, int zoom, List<Operation> operations, Function<PathHandle, T> function) {
+	PathHandle temporaryHandle = newEmptyPathHandle(device, zoom);
+	try {
+		for (Operation operation : operations) {
+			operation.apply(temporaryHandle);
+		}
+		return function.apply(temporaryHandle);
+	} finally {
+		temporaryHandle.destroy();
+	}
 }
 
 /**
@@ -942,14 +969,26 @@ public String toString() {
 	return "Path " + zoomToHandle;
 }
 
+private static PathHandle newEmptyPathHandle(Device device, int zoom) {
+	long newHandle = Gdip.GraphicsPath_new(Gdip.FillModeAlternate);
+	if (newHandle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	PathHandle newPathHandle = new PathHandle(device, newHandle, zoom);
+	return newPathHandle;
+}
+
+private PathHandle newPathHandle(int zoom) {
+	PathHandle newPathHandle = newEmptyPathHandle(getDevice(), zoom);
+	for (Operation operation : operations) {
+		operation.apply(newPathHandle);
+	}
+	return newPathHandle;
+}
+
 private PathHandle getPathHandle(int zoom) {
 	if (!zoomToHandle.containsKey(zoom)) {
-		PathData pathData = getPathData();
-		Path scaledPath = new Path(getDevice(), pathData, zoom);
-		long handle = scaledPath.getHandle(scaledPath.initialZoom);
-		PathHandle pathHandle = new PathHandle(handle, zoom);
-		zoomToHandle.put(zoom, pathHandle);
-		return pathHandle;
+		PathHandle newHandle = newPathHandle(zoom);
+		zoomToHandle.put(zoom, newHandle);
+		return newHandle;
 	}
 	return zoomToHandle.get(zoom);
 }
