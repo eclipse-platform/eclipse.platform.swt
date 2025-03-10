@@ -22,8 +22,25 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.*;
 
 @ExtendWith(PlatformSpecificExecutionExtension.class)
-@ExtendWith(WithMonitorSpecificScalingExtension.class)
-class ImagesWin32Tests {
+class ImageSmoothScalingWin32Tests {
+
+	private static final String SWT_AUTOSCALE_METHOD = "swt.autoScale.method";
+	private static String originalAutoScaleMethod;
+
+	@BeforeAll
+	static void setUpAutoScaleMethodSmooth() {
+		originalAutoScaleMethod = System.getProperty(SWT_AUTOSCALE_METHOD);
+		System.setProperty(SWT_AUTOSCALE_METHOD, "smooth");
+	}
+
+	@AfterAll
+	static void restoreAutoScaleMethod() {
+		if (originalAutoScaleMethod != null) {
+			System.setProperty(SWT_AUTOSCALE_METHOD, originalAutoScaleMethod);
+		} else {
+			System.clearProperty(SWT_AUTOSCALE_METHOD);
+		}
+	}
 
 	@Test
 	public void testImageIconTypeShouldNotChangeAfterCallingGetHandleForDifferentZoom() {
