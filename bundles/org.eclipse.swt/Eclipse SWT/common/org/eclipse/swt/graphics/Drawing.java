@@ -103,11 +103,24 @@ public final class Drawing {
 	}
 
 	public static Point getTextExtent(CustomControl control, String text, int drawFlags) {
+		return measure(control, gc -> gc.textExtent(text, drawFlags));
+	}
+
+	/**
+	 * Executes the given non-drawing operation on a GC. The GC is automatically
+	 * generated and disposed. The type of GC depends on global configuration.
+	 *
+	 * @param <T>       the type of result of the operation
+	 * @param control   the control to execute the operation on
+	 * @param operation the operation to execute
+	 * @return the result of the given operation
+	 */
+	public static <T> T measure(CustomControl control, Function<GC, T> operation) {
 		GC originalGC = new GC(control);
 		GC gc = createGraphicsContext(originalGC, control, true);
 		try {
 			gc.setFont(control.getFont());
-			return gc.textExtent(text, drawFlags);
+			return operation.apply(gc);
 		} finally {
 			gc.dispose();
 			originalGC.dispose();
