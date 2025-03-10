@@ -38,3 +38,4 @@ requires.8.namespace = org.eclipse.equinox.p2.iu
 requires.8.name = org.eclipse.swt.gtk.linux.riscv64
 requires.8.range = 0.0.0
 requires.8.filter = (&(osgi.os=linux)(osgi.ws=gtk)(osgi.arch=riscv64))
+
