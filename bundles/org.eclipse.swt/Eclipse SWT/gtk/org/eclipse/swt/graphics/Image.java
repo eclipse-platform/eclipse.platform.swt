@@ -613,19 +613,7 @@ public Image(Device device, ImageFileNameProvider imageFileNameProvider) {
 	super(device);
 	this.imageFileNameProvider = imageFileNameProvider;
 	currentDeviceZoom = DPIUtil.getDeviceZoom();
-	ElementAtZoom<String> filename = DPIUtil.validateAndGetImagePathAtZoom (imageFileNameProvider, currentDeviceZoom);
-	if (filename.zoom() == currentDeviceZoom) {
-		initNative (filename.element());
-
-		if (this.surface == 0) {
-			ImageData data = new ImageData(filename.element());
-			init(data);
-		}
-	} else {
-		ImageData imageData = new ImageData (filename.element());
-		ImageData resizedData = DPIUtil.autoScaleImageData (device, imageData, filename.zoom());
-		init(resizedData);
-	}
+	initFromFileNameProvider(currentDeviceZoom);
 	init ();
 }
 
@@ -662,9 +650,7 @@ public Image(Device device, ImageDataProvider imageDataProvider) {
 	super(device);
 	this.imageDataProvider = imageDataProvider;
 	currentDeviceZoom = DPIUtil.getDeviceZoom();
-	ElementAtZoom<ImageData> data =  DPIUtil.validateAndGetImageDataAtZoom(imageDataProvider, currentDeviceZoom);
-	ImageData resizedData = DPIUtil.autoScaleImageData(device, data.element(), data.zoom());
-	init (resizedData);
+	initFromImageDataProvider(currentDeviceZoom);
 	init ();
 }
 
@@ -724,37 +710,19 @@ boolean refreshImageForZoom () {
 	if (imageFileNameProvider != null) {
 		int deviceZoomLevel = deviceZoom;
 		if (deviceZoomLevel != currentDeviceZoom) {
-			ElementAtZoom<String> filename = DPIUtil.validateAndGetImagePathAtZoom (imageFileNameProvider, deviceZoomLevel);
-			/* Avoid re-creating the fall-back image, when current zoom is already 100% */
-			if (filename.zoom() == deviceZoomLevel) {
-				/* Release current native resources */
-				destroy ();
-				initNative(filename.element());
-				if (this.surface == 0) {
-					ImageData data = new ImageData(filename.element());
-					init(data);
-				}
-				init ();
-				refreshed = true;
-			} else {
-				/* Release current native resources */
-				destroy ();
-				ImageData imageData = new ImageData (filename.element());
-				ImageData resizedData = DPIUtil.autoScaleImageData (device, imageData, filename.zoom());
-				init(resizedData);
-				init ();
-				refreshed = true;
-			}
+			/* Release current native resources */
+			destroy ();
+			initFromFileNameProvider(deviceZoomLevel);
+			init ();
+			refreshed = true;
 			currentDeviceZoom = deviceZoomLevel;
 		}
 	} else if (imageDataProvider != null) {
 		int deviceZoomLevel = deviceZoom;
 		if (deviceZoomLevel != currentDeviceZoom) {
-			ElementAtZoom<ImageData> data = DPIUtil.validateAndGetImageDataAtZoom (imageDataProvider, deviceZoomLevel);
 			/* Release current native resources */
 			destroy ();
-			ImageData resizedData = DPIUtil.autoScaleImageData (device, data.element(), data.zoom());
-			init(resizedData);
+			initFromImageDataProvider(deviceZoomLevel);
 			init();
 			refreshed = true;
 			currentDeviceZoom = deviceZoomLevel;
@@ -799,6 +767,26 @@ void initNative(String filename) {
 			}
 		}
 	} catch (SWTException e) {}
+}
+
+private void initFromFileNameProvider(int zoom) {
+	ElementAtZoom<String> fileForZoom = DPIUtil.validateAndGetImagePathAtZoom (imageFileNameProvider, zoom);
+	if (fileForZoom.zoom() == zoom) {
+		initNative(fileForZoom.element());
+	}
+	if (this.surface == 0) {
+		ImageData imageData = new ImageData(fileForZoom.element());
+		if (fileForZoom.zoom() != zoom) {
+			imageData = DPIUtil.scaleImageData(device, imageData, zoom, fileForZoom.zoom());
+		}
+		init(imageData);
+	}
+}
+
+private void initFromImageDataProvider(int zoom) {
+	ElementAtZoom<ImageData> data = DPIUtil.validateAndGetImageDataAtZoom (imageDataProvider, zoom);
+	ImageData resizedData = DPIUtil.scaleImageData (device, data.element(), zoom, data.zoom());
+	init(resizedData);
 }
 
 void createFromPixbuf(int type, long pixbuf) {
