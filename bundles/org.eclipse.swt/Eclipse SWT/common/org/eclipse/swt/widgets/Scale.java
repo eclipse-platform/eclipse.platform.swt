@@ -126,7 +126,8 @@ public class Scale extends CustomControl {
 		// re-add the horizontal/vertical flags
 		super.style |= horizontal ? SWT.HORIZONTAL : SWT.VERTICAL;
 
-		renderer = new DefaultScaleRenderer(this);
+		final RendererFactory rendererFactory = parent.getDisplay().getRendererFactory();
+		renderer = rendererFactory.createScaleRenderer(this);
 	}
 
 

@@ -107,7 +107,8 @@ public class Label extends CustomControl {
 			align = SWT.LEFT;
 		}
 
-		renderer = new BasicLabelRenderer(this);
+		final RendererFactory rendererFactory = parent.getDisplay().getRendererFactory();
+		renderer = rendererFactory.createLabelRenderer(this);
 		renderer.setAlign(align);
 		renderer.setForeground(getForeground());
 

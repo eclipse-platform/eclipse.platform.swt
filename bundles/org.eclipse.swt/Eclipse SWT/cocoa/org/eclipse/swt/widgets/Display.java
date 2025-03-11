@@ -340,6 +340,7 @@ public class Display extends Device implements Executor {
 	static Display [] Displays = new Display [1];
 
 	/* Skinning support */
+	private RendererFactory rendererFactory;
 	static final int GROW_SIZE = 1024;
 	Widget [] skinList = new Widget [GROW_SIZE];
 	int skinCount;
@@ -798,6 +799,8 @@ public Display () {
  */
 public Display (DeviceData data) {
 	super (data);
+
+	rendererFactory = new DefaultRendererFactory();
 }
 
 static void checkDisplay (Thread thread, boolean multiple) {
@@ -6866,5 +6869,14 @@ public boolean isRescalingAtRuntime() {
 public boolean setRescalingAtRuntime(boolean activate) {
 	// not implemented for Cocoa
 	return false;
+}
+
+public RendererFactory getRendererFactory() {
+	return rendererFactory;
+}
+
+public void setRendererFactory(RendererFactory rendererFactory) {
+	if (rendererFactory == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	this.rendererFactory = rendererFactory;
 }
 }
