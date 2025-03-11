@@ -170,7 +170,7 @@ abstract class RangeTab extends Tab {
 	abstract int getDefaultMaximum ();
 
 	/**
-	 * Gets the default minimim of the "Example" widgets.
+	 * Gets the default minimum of the "Example" widgets.
 	 */
 	abstract int getDefaultMinimum ();
 
@@ -185,7 +185,7 @@ abstract class RangeTab extends Tab {
 	abstract void setWidgetMaximum ();
 
 	/**
-	 * Sets the minimim of the "Example" widgets.
+	 * Sets the minimum of the "Example" widgets.
 	 */
 	abstract void setWidgetMinimum ();
 

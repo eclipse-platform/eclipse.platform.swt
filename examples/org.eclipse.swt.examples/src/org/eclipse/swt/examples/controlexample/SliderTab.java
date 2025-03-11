@@ -195,7 +195,7 @@ class SliderTab extends RangeTab {
 	}
 
 	/**
-	 * Gets the default minimim of the "Example" widgets.
+	 * Gets the default minimum of the "Example" widgets.
 	 */
 	@Override
 	int getDefaultMinimum () {
@@ -239,7 +239,7 @@ class SliderTab extends RangeTab {
 	}
 
 	/**
-	 * Sets the minimim of the "Example" widgets.
+	 * Sets the minimum of the "Example" widgets.
 	 */
 	@Override
 	void setWidgetMaximum () {
@@ -247,7 +247,7 @@ class SliderTab extends RangeTab {
 	}
 
 	/**
-	 * Sets the minimim of the "Example" widgets.
+	 * Sets the minimum of the "Example" widgets.
 	 */
 	@Override
 	void setWidgetMinimum () {
