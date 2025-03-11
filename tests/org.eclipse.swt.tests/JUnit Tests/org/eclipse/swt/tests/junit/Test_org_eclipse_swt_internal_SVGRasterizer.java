@@ -16,7 +16,7 @@ import static org.eclipse.swt.tests.junit.SwtTestUtil.assertSWTProblem;
 import static org.junit.Assert.fail;
 
 import java.io.File;
-import java.nio.file.Path;
+import java.net.URL;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
@@ -51,7 +51,11 @@ public class Test_org_eclipse_swt_internal_SVGRasterizer {
 		String urlPath = "";
 		String pluginPath = System.getProperty("PLUGIN_PATH");
 		if (pluginPath == null) {
-			urlPath = Path.of("data/" + fileName).toAbsolutePath().toString();
+			URL url = getClass().getClassLoader().getResource(fileName);
+			if (url == null) {
+				fail("URL == null for file " + fileName);
+			}
+			urlPath = url.getFile();
 		} else {
 			urlPath = pluginPath + "/data/" + fileName;
 		}
