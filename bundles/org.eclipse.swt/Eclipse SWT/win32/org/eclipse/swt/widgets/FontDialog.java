@@ -200,9 +200,7 @@ public FontData open () {
 	if (fontData != null && fontData.data != null) {
 		LOGFONT logFont = fontData.data;
 		int lfHeight = logFont.lfHeight;
-		long hDC = OS.GetDC (0);
-		int pixels = -(int)(0.5f + (fontData.height * OS.GetDeviceCaps(hDC, OS.LOGPIXELSY) / 72));
-		OS.ReleaseDC (0, hDC);
+		int pixels = -(int)(0.5f + (fontData.height * getDPI() / 72));
 		logFont.lfHeight = pixels;
 		lpcf.Flags |= OS.CF_INITTOLOGFONTSTRUCT;
 		OS.MoveMemory (lpLogFont, logFont, LOGFONT.sizeof);
@@ -256,9 +254,9 @@ public FontData open () {
 			 * This will not work on multiple screens or for printing. Should use DC for the
 			 * proper device.
 			 */
-			long hDC = OS.GetDC(0);
-			int logPixelsY = OS.GetDeviceCaps(hDC, OS.LOGPIXELSY);
+			int logPixelsY = getDPI();
 			int pixels = 0;
+			long hDC = OS.GetDC(0);
 			if (logFont.lfHeight > 0) {
 				/*
 				 * Feature in Windows. If the lfHeight of the LOGFONT structure is positive, the
@@ -306,6 +304,17 @@ public FontData open () {
 	}
 
 	return fontData;
+}
+
+private int getDPI() {
+	long hDC = OS.GetDC (0);
+	// We need to use OS.GetDeviceCaps, which is static throughout application
+	// lifecycle (System DPI Aware), because we use
+	// DPI_AWARENESS_CONTEXT_UNAWARE_GDISCALED which always depends on the DPI at
+	// application startup
+	int dpi = OS.GetDeviceCaps(hDC, OS.LOGPIXELSY);
+	OS.ReleaseDC (0, hDC);
+	return dpi;
 }
 
 /**
