@@ -54,7 +54,7 @@ func_echo_info $HELP_MSG
 
 # Parse arguments
 SILENT=false
-NOCLEANUP=false   # for when you make changes to gtk source code, e.g print statments etc..
+NOCLEANUP=false   # for when you make changes to gtk source code, e.g print statements etc..
 NOCONFIG=false    # faster build speeds.
 for arg in "$@"; do  # loop over all input parameters
 	if [ "$arg" == "-y" ]; then
