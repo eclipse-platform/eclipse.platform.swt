@@ -1176,9 +1176,10 @@ public void test_setTextContainingScript_applicationLayerProgressListenerMustSee
 				</body>
 			</html>
 			""");
-	waitForPassCondition(completed::get);
-	waitForPassCondition(() -> title.get() != null);
-	assertEquals("ProgressListener: Found 1 h1 tag(s)", title.get());
+	assertTrue("progress completion not reported", waitForPassCondition(completed::get));
+	assertTrue("title not set", waitForPassCondition(() -> title.get() != null));
+	assertTrue(
+			"unexpected title: " + title.get(), waitForPassCondition(() -> title.get().contains("ProgressListener: Found 1 h1 tag(s)")));
 }
 
 @Test
