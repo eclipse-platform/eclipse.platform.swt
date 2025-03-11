@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2022 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -21,6 +21,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.DPIUtil.*;
 import org.eclipse.swt.internal.gdip.*;
+import org.eclipse.swt.internal.image.*;
 import org.eclipse.swt.internal.win32.*;
 
 /**
@@ -473,7 +474,7 @@ public Image (Device device, InputStream stream) {
 	super(device);
 	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
 	int deviceZoom = getZoom();
-	ImageData data = DPIUtil.scaleImageData(device, new ElementAtZoom<>(new ImageData (stream), 100), deviceZoom);
+	ImageData data = DPIUtil.scaleImageData(device, ImageDataLoader.load(stream, FileFormat.DEFAULT_ZOOM, deviceZoom), deviceZoom);
 	init(data, deviceZoom);
 	init();
 	this.device.registerResourceWithZoomSupport(this);
@@ -516,7 +517,7 @@ public Image (Device device, String filename) {
 	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
 	int deviceZoom = getZoom();
-	ImageData data = DPIUtil.scaleImageData(device, new ElementAtZoom<>(new ImageData (filename), 100), deviceZoom);
+	ImageData data = DPIUtil.scaleImageData(device, ImageDataLoader.load(filename, FileFormat.DEFAULT_ZOOM, deviceZoom), deviceZoom);
 	init(data, deviceZoom);
 	init();
 	this.device.registerResourceWithZoomSupport(this);
@@ -2130,7 +2131,8 @@ private class ImageFileNameProviderWrapper extends AbstractImageProviderWrapper 
 	@Override
 	ImageData getImageData(int zoom) {
 		ElementAtZoom<String> fileName = DPIUtil.validateAndGetImagePathAtZoom (provider, zoom);
-		return DPIUtil.scaleImageData (device, new ImageData (fileName.element()), zoom, fileName.zoom());
+		ElementAtZoom<ImageData> imageData = ImageDataLoader.load(fileName.element(), fileName.zoom(), zoom);
+		return DPIUtil.scaleImageData (device, imageData, zoom);
 	}
 
 	@Override
@@ -2141,9 +2143,10 @@ private class ImageFileNameProviderWrapper extends AbstractImageProviderWrapper 
 			nativeInitializedImage = initNative(fileForZoom.element(), zoom);
 		}
 		if (nativeInitializedImage == null) {
-			ImageData imageData = new ImageData (fileForZoom.element());
-			if (fileForZoom.zoom() != zoom) {
-				imageData = DPIUtil.scaleImageData(device, imageData, zoom, fileForZoom.zoom());
+			ElementAtZoom<ImageData> imageDataAtZoom = ImageDataLoader.load(fileForZoom.element(), fileForZoom.zoom(), zoom);
+			ImageData imageData = imageDataAtZoom.element();
+			if (imageDataAtZoom.zoom() != zoom) {
+				imageData = DPIUtil.scaleImageData(device, imageDataAtZoom, zoom);
 			}
 			imageData = adaptImageDataIfDisabledOrGray(imageData);
 			init(imageData, zoom);
