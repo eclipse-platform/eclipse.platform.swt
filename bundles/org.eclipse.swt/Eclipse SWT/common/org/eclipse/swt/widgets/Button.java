@@ -115,7 +115,13 @@ public class Button extends CustomControl {
 		super(parent, checkStyle(style));
 		this.style |= SWT.DOUBLE_BUFFERED;
 
-		renderer = new DefaultButtonRenderer(this);
+		renderer = (this.style & SWT.CHECK) != 0
+				? new DefaultCheckboxRenderer(this)
+				: (this.style & SWT.RADIO) != 0
+				? new DefaultRadioButtonRenderer(this)
+				: (this.style & SWT.ARROW) != 0
+				? new DefaultArrowButtonRenderer(this)
+				: new DefaultButtonRenderer(this);
 
 		Listener listener = event -> {
 			switch (event.type) {

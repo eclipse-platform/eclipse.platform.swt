@@ -81,19 +81,4 @@ public abstract class ButtonRenderer extends ControlRenderer {
 			gc.drawImage(disabledImage, x, y);
 		}
 	}
-
-	protected final boolean isPushOrToggle() {
-		final int style = getStyle();
-		return (style & (SWT.PUSH | SWT.TOGGLE)) != 0;
-	}
-
-	protected final boolean isToggle() {
-		final int style = getStyle();
-		return (style & SWT.TOGGLE) != 0;
-	}
-
-	protected final boolean isArrowButton() {
-		final int style = getStyle();
-		return (style & SWT.ARROW) != 0;
-	}
 }
