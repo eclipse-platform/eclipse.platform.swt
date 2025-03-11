@@ -667,7 +667,7 @@ You should consider browsing unstable API more often than stable API. Often you 
 **Getting help with GTK**
 
 * GTK IRC channel: Folks are very helpful here. I often got responses very quickly. Mostly good for quick little bits and general wisdom.
-* GTK bugzilla: If you think you have come across a bug, or need some official statment from GTK folks about some functionality (e.g if something doesn't work in SWT, have a link to a GTK bug that explains things). Posting a bug to the GTK bugzilla is the way to go. E.g: https://bugzilla.gnome.org/show_bug.cgi?id=747798
+* GTK bugzilla: If you think you have come across a bug, or need some official statement from GTK folks about some functionality (e.g if something doesn't work in SWT, have a link to a GTK bug that explains things). Posting a bug to the GTK bugzilla is the way to go. E.g: https://bugzilla.gnome.org/show_bug.cgi?id=747798
 * Mailing lists: I didn't get many responses when I asked complex questions, but for small & straight forward stuff, people respond quite well: See: http://www.gtk.org/mailing-lists.php
 * Stack Overflow: For your broken snippets. Tag things with GTK http://stackoverflow.com/
 * See: http://www.gtk.org/development.php
