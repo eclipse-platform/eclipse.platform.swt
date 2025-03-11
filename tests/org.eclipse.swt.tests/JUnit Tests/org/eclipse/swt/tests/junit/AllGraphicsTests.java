@@ -31,6 +31,7 @@ import org.junit.runners.Suite;
 		Test_org_eclipse_swt_graphics_Image.class,
 		Test_org_eclipse_swt_graphics_ImageData.class,
 		Test_org_eclipse_swt_graphics_PaletteData.class,
+		Test_org_eclipse_swt_graphics_Path.class,
 		Test_org_eclipse_swt_graphics_Point.class,
 		Test_org_eclipse_swt_graphics_Rectangle.class,
 		Test_org_eclipse_swt_graphics_Region.class,
