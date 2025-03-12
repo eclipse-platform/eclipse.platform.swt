@@ -633,9 +633,8 @@ public class CTextCaret extends Widget {
 		return drawCaret();
 	}
 
-	public void paint(Event e) {
+	public void paint(GC gc) {
 		if (isShowing) {
-			GC gc = e.gc;
 			Color oldBackground = gc.getBackground();
 			gc.setBackground(parent.getForeground());
 			gc.fillRectangle(getBounds());

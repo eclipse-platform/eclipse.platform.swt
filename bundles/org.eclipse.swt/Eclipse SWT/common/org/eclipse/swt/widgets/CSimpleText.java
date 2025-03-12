@@ -367,6 +367,7 @@ public class CSimpleText extends NativeBasedCustomScrollable {
 		caret.dispose();
 	}
 
+	@Override
 	public Color getBackground() {
 		return backgroundColor != null ? backgroundColor : BACKGROUND_COLOR;
 	}
@@ -390,25 +391,27 @@ public class CSimpleText extends NativeBasedCustomScrollable {
 
 	private void paintControl(Event e) {
 		Rectangle visibleArea = getVisibleArea();
-		e.gc.setFont(getFont());
-		e.gc.setForeground(getForeground());
-		e.gc.setBackground(getBackground());
-		if (!isEnabled()) {
-			e.gc.setForeground(DISABLED_COLOR);
-		}
-		if (backgroundColor != null) {
-			if (!isEnabled() || ((style & SWT.BORDER) == 1 && !getEditable())) {
-				e.gc.setBackground(READONLY_BACKGROUND_COLOR);
+		Drawing.drawWithGC(this, e.gc, gc -> {
+			gc.setFont(getFont());
+			gc.setForeground(getForeground());
+			gc.setBackground(getBackground());
+			if (!isEnabled()) {
+				gc.setForeground(DISABLED_COLOR);
 			}
-			if ((style & SWT.BORDER) == 0 && !getEditable()) {
-				e.gc.setBackground(getParent().getBackground());
+			if (backgroundColor != null) {
+				if (!isEnabled() || ((style & SWT.BORDER) == 1 && !getEditable())) {
+					gc.setBackground(READONLY_BACKGROUND_COLOR);
+				}
+				if ((style & SWT.BORDER) == 0 && !getEditable()) {
+					gc.setBackground(getParent().getBackground());
+				}
 			}
-		}
 
-		drawBackground(e, getClientArea());
-		drawText(e, visibleArea);
-		drawSelection(e, visibleArea);
-		drawCaret(e, visibleArea);
+			drawBackground(gc, getClientArea());
+			drawText(gc, visibleArea);
+			drawSelection(gc, visibleArea);
+			drawCaret(gc, visibleArea);
+		});
 	}
 
 	@Override
@@ -417,8 +420,7 @@ public class CSimpleText extends NativeBasedCustomScrollable {
 		redraw();
 	}
 
-	private void drawSelection(Event e, Rectangle visibleArea) {
-		GC gc = e.gc;
+	private void drawSelection(GC gc, Rectangle visibleArea) {
 		int textLength = model.getText().length();
 		int start = Math.min(Math.max(model.getSelectionStart(), 0), textLength);
 		int end = Math.min(Math.max(model.getSelectionEnd(), 0), textLength);
@@ -450,44 +452,39 @@ public class CSimpleText extends NativeBasedCustomScrollable {
 		}
 	}
 
-	private void drawCaret(Event e, Rectangle visibleArea) {
-		GC gc = e.gc;
-
+	private void drawCaret(GC gc, Rectangle visibleArea) {
 		int caretOffset = model.getCaretOffset();
-
 		if (caretOffset >= 0) {
-			Point caretLocation = getLocationByOffset(model.getCaretOffset(), e.gc);
-			int x = e.x + caretLocation.x - visibleArea.x;
-			int y = e.y + caretLocation.y - visibleArea.y;
+			Point caretLocation = getLocationByOffset(model.getCaretOffset(), gc);
+			int x = caretLocation.x - visibleArea.x;
+			int y = caretLocation.y - visibleArea.y;
 			getCaret().setBounds(x, y, 1, getLineHeight(gc));
 		}
 
-		caret.paint(e);
+		caret.paint(gc);
 	}
 
-	private void drawText(Event e, Rectangle visibleArea) {
+	private void drawText(GC gc, Rectangle visibleArea) {
 		String[] lines = model.getLines();
 		for (int i = 0; i < lines.length; i++) {
 			String line = lines[i];
-			drawTextLine(line, i, e.x, e.y, visibleArea, e.gc);
+			drawTextLine(line, i, visibleArea, gc);
 		}
 	}
 
 
-	private void drawTextLine(String text, int lineNumber, int x, int y, Rectangle visibleArea,
+	private void drawTextLine(String text, int lineNumber, Rectangle visibleArea,
 			GC gc) {
 		Point completeTextExtent = gc.textExtent(text);
 		Rectangle clientArea = getClientArea();
-		int _x;
+		int _x = 0;
 		if ((style & SWT.CENTER) != 0) {
 			_x = (clientArea.width - completeTextExtent.x) / 2;
 		} else if ((style & SWT.RIGHT) != 0) {
 			_x = clientArea.width - completeTextExtent.x;
-		} else { // ((style & SWT.LEFT) != 0)
-			_x = x;
 		}
 		_x -= visibleArea.x;
-		int _y = y + lineNumber * completeTextExtent.y - visibleArea.y;
+		int _y = lineNumber * completeTextExtent.y - visibleArea.y;
 		if ((style & SWT.BORDER) != 0) {
 			_x += getBorderWidth();
 			_y += getBorderWidth();
@@ -495,8 +492,7 @@ public class CSimpleText extends NativeBasedCustomScrollable {
 		gc.drawText(text, _x, _y, true);
 	}
 
-	private void drawBackground(Event e, Rectangle clientArea) {
-		GC gc = e.gc;
+	private void drawBackground(GC gc, Rectangle clientArea) {
 		int height = clientArea.height;
 		final boolean drawLine = (style & SWT.BORDER) != 0 && getEditable() && isEnabled();
 		if (drawLine) {
