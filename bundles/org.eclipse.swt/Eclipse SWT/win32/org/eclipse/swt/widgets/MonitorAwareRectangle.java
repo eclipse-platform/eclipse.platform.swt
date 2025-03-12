@@ -26,7 +26,7 @@ import org.eclipse.swt.widgets.*;
  * @since 3.129
  * @noreference This class is not intended to be referenced by clients
  */
-public final class MonitorAwareRectangle extends Rectangle {
+final class MonitorAwareRectangle extends Rectangle {
 
 	private static final long serialVersionUID = 5041911840525116925L;
 

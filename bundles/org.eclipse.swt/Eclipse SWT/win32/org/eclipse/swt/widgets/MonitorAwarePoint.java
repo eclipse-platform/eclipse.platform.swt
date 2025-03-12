@@ -26,7 +26,7 @@ import org.eclipse.swt.widgets.*;
  * @since 3.129
  * @noreference This class is not intended to be referenced by clients
  */
-public final class MonitorAwarePoint extends Point {
+final class MonitorAwarePoint extends Point {
 
 	private static final long serialVersionUID = 6077427420686999194L;
 
