@@ -56,7 +56,7 @@ public class Link extends CustomControl {
 	private static final int DEFAULT_MARGIN = 3;
 
 	/** the alignment. Either CENTER, RIGHT, LEFT. Default is LEFT */
-	private int align = SWT.LEFT;
+	private int align;
 	private int leftMargin = DEFAULT_MARGIN;
 	private int topMargin = DEFAULT_MARGIN;
 	private int rightMargin = DEFAULT_MARGIN;
@@ -117,11 +117,12 @@ public class Link extends CustomControl {
 		if ((style & (SWT.CENTER | SWT.RIGHT)) == 0) {
 			style |= SWT.LEFT;
 		}
+
 		if ((style & SWT.CENTER) != 0) {
 			align = SWT.CENTER;
 		} else if ((style & SWT.RIGHT) != 0) {
 			align = SWT.RIGHT;
-		} else if ((style & SWT.LEFT) != 0) {
+		} else {
 			align = SWT.LEFT;
 		}
 
