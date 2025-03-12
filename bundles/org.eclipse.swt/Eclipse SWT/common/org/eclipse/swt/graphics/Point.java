@@ -41,7 +41,7 @@ import java.io.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 
-public sealed class Point implements Serializable permits MonitorAwarePoint {
+public class Point implements Serializable {
 
 	/**
 	 * the x coordinate of the point
