@@ -524,12 +524,12 @@ public class SkijaGC extends GCHandle {
 
 	@Override
 	public void drawText(String string, int x, int y) {
-		drawText(string, x, y, SWT.NONE);
+		drawText(string, x, y, false);
 	}
 
 	@Override
 	public void drawText(String string, int x, int y, boolean isTransparent) {
-		drawText(string, x, y, SWT.TRANSPARENT);
+		drawText(string, x, y, isTransparent ? SWT.TRANSPARENT : SWT.NONE);
 	}
 
 	@Override
@@ -537,11 +537,17 @@ public class SkijaGC extends GCHandle {
 		if (text == null) {
 			return;
 		}
-		performDrawText(paint -> {
-			TextBlob textBlob = buildTextBlob(text);
-			Point point = calculateSymbolCenterPoint(x, y);
-			surface.getCanvas().drawTextBlob(textBlob, point.x, point.y, paint);
-		});
+		TextBlob textBlob = buildTextBlob(text);
+		if (textBlob == null) {
+			return;
+		}
+		if ((flags & (SWT.TRANSPARENT | SWT.DRAW_TRANSPARENT)) == 0) {
+			int textWidth = (int) textBlob.getBounds().getWidth();
+			int fontHeight = (int) font.getMetrics().getHeight();
+			fillRectangle(x, y, textWidth, fontHeight);
+		}
+		Point point = calculateSymbolCenterPoint(x, y);
+		performDrawText(paint -> surface.getCanvas().drawTextBlob(textBlob, point.x, point.y, paint));
 	}
 
 	// y position in drawTextBlob() is the text baseline, e.g., the bottom of "T"

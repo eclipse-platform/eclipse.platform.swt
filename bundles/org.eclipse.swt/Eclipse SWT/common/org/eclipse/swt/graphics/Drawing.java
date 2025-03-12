@@ -61,8 +61,10 @@ public final class Drawing {
 			}
 		}
 
+		boolean usingTemporaryGC = false;
 		if (originalGC == null) {
 			originalGC = new GC(control);
+			usingTemporaryGC = true;
 		}
 		originalGC.setFont(control.getFont());
 		originalGC.setForeground(control.getForeground());
@@ -77,6 +79,9 @@ public final class Drawing {
 			gc.commit();
 		} finally {
 			gc.dispose();
+			if (usingTemporaryGC) {
+				originalGC.dispose();
+			}
 		}
 	}
 
