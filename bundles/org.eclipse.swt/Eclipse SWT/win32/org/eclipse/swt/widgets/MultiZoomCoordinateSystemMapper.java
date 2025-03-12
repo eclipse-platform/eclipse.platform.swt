@@ -19,6 +19,14 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 
 class MultiZoomCoordinateSystemMapper implements CoordinateSystemMapper {
+	static class WithMonitor<T> {
+		final T geometry;
+		final Monitor monitor;
+		WithMonitor(T geometry, Monitor monitor) {
+			this.geometry = geometry;
+			this.monitor = monitor;
+		}
+	}
 
 	private final Display display;
 
@@ -45,42 +53,40 @@ class MultiZoomCoordinateSystemMapper implements CoordinateSystemMapper {
 
 	@Override
 	public Point map(Control from, Control to, int x, int y) {
-		Point mappedPointInPoints;
 		if (from == null) {
 			Point mappedPointInpixels = display.mapInPixels(from, to,
 					getPixelsFromPoint(to.getShell().getMonitor(), x, y));
-			mappedPointInPoints = DPIUtil.scaleDown(mappedPointInpixels, to.getZoom());
+			return DPIUtil.scaleDown(mappedPointInpixels, to.getZoom());
 		} else if (to == null) {
 			Point mappedPointInpixels = display.mapInPixels(from, to, DPIUtil.scaleUp(new Point(x, y), from.getZoom()));
-			mappedPointInPoints = getPointFromPixels(from.getShell().getMonitor(), mappedPointInpixels.x,
+			WithMonitor<Point> mappedPointInPointsWithMonitor = getPointFromPixels(from.getShell().getMonitor(), mappedPointInpixels.x,
 					mappedPointInpixels.y);
+			return mappedPointInPointsWithMonitor.geometry;
 		} else {
 			Point mappedPointInpixels = display.mapInPixels(from, to, DPIUtil.scaleUp(new Point(x, y), from.getZoom()));
-			mappedPointInPoints = DPIUtil.scaleDown(mappedPointInpixels, to.getZoom());
+			return DPIUtil.scaleDown(mappedPointInpixels, to.getZoom());
 		}
-		return mappedPointInPoints;
 	}
 
 	@Override
 	public Rectangle map(Control from, Control to, int x, int y, int width, int height) {
-		Rectangle mappedRectangleInPoints;
 		if (from == null) {
 			Rectangle mappedRectangleInPixels = display.mapInPixels(from, to,
 					translateRectangleInPointsToPixels(x, y, width, height,
 							to.getShell().getMonitor()));
-			mappedRectangleInPoints = DPIUtil.scaleDown(mappedRectangleInPixels, to.getZoom());
+			return DPIUtil.scaleDown(mappedRectangleInPixels, to.getZoom());
 		} else if (to == null) {
 			Rectangle mappedRectangleInPixels = display.mapInPixels(from, to,
 					DPIUtil.scaleUp(new Rectangle(x, y, width, height), from.getZoom()));
-			mappedRectangleInPoints = translateRectangleInPixelsToPoints(mappedRectangleInPixels.x,
+			WithMonitor<Rectangle> mappedRectangleInPoints = translateRectangleInPixelsToPoints(mappedRectangleInPixels.x,
 					mappedRectangleInPixels.y, mappedRectangleInPixels.width, mappedRectangleInPixels.height,
 					from.getShell().getMonitor());
+			return mappedRectangleInPoints.geometry;
 		} else {
 			Rectangle mappedRectangleInPixels = display.mapInPixels(from, to,
 					DPIUtil.scaleUp(new Rectangle(x, y, width, height), from.getZoom()));
-			mappedRectangleInPoints = DPIUtil.scaleDown(mappedRectangleInPixels, to.getZoom());
+			return DPIUtil.scaleDown(mappedRectangleInPixels, to.getZoom());
 		}
-		return mappedRectangleInPoints;
 	}
 
 	@Override
@@ -98,19 +104,20 @@ class MultiZoomCoordinateSystemMapper implements CoordinateSystemMapper {
 
 	@Override
 	public Point translateToDisplayCoordinates(Point point, int zoom) {
-		Monitor monitor = point instanceof MonitorAwarePoint monitorAwarePoint ? monitorAwarePoint.getMonitor() : null;
+		Monitor monitor = null;
 		return translateLocationInPointsToPixels(point.x, point.y, monitor);
 	}
 
 	@Override
 	public Rectangle translateFromDisplayCoordinates(Rectangle rect, int zoom) {
-		Monitor monitor = rect instanceof MonitorAwareRectangle monitorAwareRect ? monitorAwareRect.getMonitor() : null;
-		return translateRectangleInPixelsToPoints(rect.x, rect.y, rect.width, rect.height, monitor);
+		Monitor monitor = null;
+		WithMonitor<Rectangle> value = translateRectangleInPixelsToPoints(rect.x, rect.y, rect.width, rect.height, monitor);
+		return value.geometry;
 	}
 
 	@Override
 	public Rectangle translateToDisplayCoordinates(Rectangle rect, int zoom) {
-		Monitor monitor = rect instanceof MonitorAwareRectangle monitorAwareRect ? monitorAwareRect.getMonitor() : null;
+		Monitor monitor = null;
 		return translateRectangleInPointsToPixels(rect.x, rect.y, rect.width, rect.height, monitor);
 	}
 
@@ -133,7 +140,8 @@ class MultiZoomCoordinateSystemMapper implements CoordinateSystemMapper {
 
 	private Point translateLocationInPixelsToPoints(int x, int y) {
 		Monitor monitor = getContainingMonitorForPixels(x, y);
-		return getPointFromPixels(monitor, x, y);
+		WithMonitor<Point> value = getPointFromPixels(monitor, x, y);
+		return value.geometry;
 	}
 
 	private Rectangle translateRectangleInPointsToPixels(int x, int y, int width, int height, Monitor monitor) {
@@ -145,15 +153,14 @@ class MultiZoomCoordinateSystemMapper implements CoordinateSystemMapper {
 		return new Rectangle(topLeft.x, topLeft.y, widthInPixels, heightInPixels);
 	}
 
-	private Rectangle translateRectangleInPixelsToPoints(int x, int y, int widthInPixels, int heightInPixels, Monitor monitor) {
+	private WithMonitor<Rectangle> translateRectangleInPixelsToPoints(int x, int y, int widthInPixels, int heightInPixels, Monitor monitor) {
 		if (monitor == null)
 			monitor = getContainingMonitorForPixels(x, y, widthInPixels, heightInPixels);
 		int zoom = getApplicableMonitorZoom(monitor);
-		Point topLeft = getPointFromPixels(monitor, x, y);
+		WithMonitor<Point> topLeft = getPointFromPixels(monitor, x, y);
 		int width = DPIUtil.scaleDown(widthInPixels, zoom);
 		int height = DPIUtil.scaleDown(heightInPixels, zoom);
-		MonitorAwareRectangle rect = new MonitorAwareRectangle(topLeft.x, topLeft.y, width, height, monitor);
-		return rect;
+		return new WithMonitor<>(new Rectangle(topLeft.geometry.x, topLeft.geometry.y, width, height), monitor);
 	}
 
 	private Monitor getValidMonitorIfApplicable(int x, int y, int width, int height, Monitor monitor) {
@@ -257,11 +264,11 @@ class MultiZoomCoordinateSystemMapper implements CoordinateSystemMapper {
 		return new Point(mappedX, mappedY);
 	}
 
-	private Point getPointFromPixels(Monitor monitor, int x, int y) {
+	private WithMonitor<Point> getPointFromPixels(Monitor monitor, int x, int y) {
 		int zoom = getApplicableMonitorZoom(monitor);
 		int mappedX = DPIUtil.scaleDown(x - monitor.clientX, zoom) + monitor.clientX;
 		int mappedY = DPIUtil.scaleDown(y - monitor.clientY, zoom) + monitor.clientY;
-		return new MonitorAwarePoint(mappedX, mappedY, monitor);
+		return new WithMonitor<>(new Point(mappedX, mappedY), monitor);
 	}
 
 	private int getApplicableMonitorZoom(Monitor monitor) {
