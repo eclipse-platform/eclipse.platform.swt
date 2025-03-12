@@ -53,6 +53,7 @@ public class SkijaGC extends GCHandle {
 
 	private SkijaGC(NativeGC gc, Drawable drawable, boolean onlyForMeasuring) {
 		innerGC = gc;
+		device = gc.device;
 		originalDrawingSize = extractSize(drawable);
 		if (onlyForMeasuring) {
 			surface = createMeasureSurface();
@@ -125,7 +126,9 @@ public class SkijaGC extends GCHandle {
 
 	@Override
 	public void dispose() {
-		this.innerGC.dispose();
+		surface.close();
+		innerGC = null;
+		font = null;
 	}
 
 	@Override
@@ -207,7 +210,6 @@ public class SkijaGC extends GCHandle {
 		innerGC.drawImage(transferImage, 0, 0, drawingSizeInPixels.x, drawingSizeInPixels.y, //
 				0, 0, originalDrawingSize.x, originalDrawingSize.y);
 		transferImage.dispose();
-		surface.close();
 	}
 
 	@Override
@@ -1174,8 +1176,7 @@ public class SkijaGC extends GCHandle {
 
 	@Override
 	public boolean isDisposed() {
-		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
-		return false;
+		return surface.isClosed();
 	}
 
 	static PaletteData getPaletteData(ColorType colorType) {

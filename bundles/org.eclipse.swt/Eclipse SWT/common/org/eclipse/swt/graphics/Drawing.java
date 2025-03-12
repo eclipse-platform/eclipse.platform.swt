@@ -77,7 +77,6 @@ public final class Drawing {
 			gc.commit();
 		} finally {
 			gc.dispose();
-			originalGC.dispose();
 		}
 	}
 
