@@ -348,7 +348,7 @@ public class Button extends CustomControl {
 // TODO this must be improved.
 			forceFocus();
 			selectRadio();
-		} else {
+		} else if ((style & SWT.PUSH) == 0 && (style & (SWT.TOGGLE | SWT.CHECK)) != 0) {
 			setSelection(!checked);
 		}
 		sendSelectionEvent(SWT.Selection);
