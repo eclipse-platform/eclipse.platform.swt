@@ -85,7 +85,7 @@ public class Button extends CustomControl {
 
 	private Accessible acc;
 	private AccessibleAdapter accAdapter;
-	private boolean spaceDown;
+	private boolean pressed;
 	private boolean defaultButton;
 
 	/**
@@ -310,14 +310,14 @@ public class Button extends CustomControl {
 
 	private void onKeyDown(Event event) {
 		if (event.character == SWT.SPACE) {
-			this.spaceDown = true;
+			pressed = true;
 			redraw();
 		}
 	}
 
 	private void onKeyUp(Event event) {
 		if (event.character == SWT.SPACE) {
-			this.spaceDown = false;
+			pressed = false;
 			handleSelection();
 			redraw();
 		}
@@ -339,7 +339,10 @@ public class Button extends CustomControl {
 	}
 
 	private void onMouseDown(Event e) {
-		redraw();
+		if (e.button == 1) {
+			pressed = true;
+			redraw();
+		}
 	}
 
 	private void handleSelection() {
@@ -355,7 +358,8 @@ public class Button extends CustomControl {
 	}
 
 	private void onMouseUp(Event e) {
-		if ((e.stateMask & SWT.BUTTON1) != 0) {
+		if (e.button == 1) {
+			pressed = false;
 			handleSelection();
 		} else {
 			redraw();
@@ -435,10 +439,15 @@ public class Button extends CustomControl {
 					/ 2;
 		}
 
+		boolean shiftDownRight = isPushOrToggleButton && (pressed || checked);
 		// Draw image
 		if (image != null) {
 			int imageTopOffset = (height - imageHeight) / 2;
 			int imageLeftOffset = contentArea.x;
+			if (shiftDownRight) {
+				imageTopOffset++;
+				imageLeftOffset++;
+			}
 			if (!isEnabled()) {
 				if (disabledImage == null) {
 					disabledImage = new Image(getDisplay(), image,
@@ -455,6 +464,10 @@ public class Button extends CustomControl {
 			gc.setForeground(isEnabled() ? TEXT_COLOR : DISABLED_COLOR);
 			int textTopOffset = (height - 1 - textHeight) / 2;
 			int textLeftOffset = contentArea.x + imageSpace;
+			if (shiftDownRight) {
+				textTopOffset++;
+				textLeftOffset++;
+			}
 			gc.drawText(text, textLeftOffset, textTopOffset, DRAW_FLAGS);
 		}
 		if (hasFocus()) {
@@ -528,7 +541,7 @@ public class Button extends CustomControl {
 		if (isEnabled()) {
 			if ((style & SWT.TOGGLE) != 0 && isChecked()) {
 				gc.setBackground(TOGGLE_COLOR);
-			} else if (hasMouseEntered || spaceDown) {
+			} else if (hasMouseEntered || pressed) {
 				gc.setBackground(HOVER_COLOR);
 			} else {
 				gc.setBackground(PUSH_BACKGROUND_COLOR);
