@@ -442,7 +442,7 @@ public class Button extends CustomControl {
 			if (!isEnabled()) {
 				if (disabledImage == null) {
 					disabledImage = new Image(getDisplay(), image,
-							SWT.IMAGE_GRAY);
+							SWT.IMAGE_DISABLE);
 				}
 				gc.drawImage(disabledImage, imageLeftOffset, imageTopOffset);
 			} else {
