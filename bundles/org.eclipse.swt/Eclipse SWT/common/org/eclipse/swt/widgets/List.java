@@ -91,27 +91,27 @@ public class List extends Scrollable {
 		if (r.width == 0 && r.height == 0) {
 			return;
 		}
-		drawBackground(e);
+
+		final Rectangle clientArea = getClientArea();
+		drawBackground(clientArea, e.gc);
 		for (int i = 0; i < this.items.size(); i++) {
-			drawTextLine(items.get(i), i, e.x, e.y, e.gc);
+			drawTextLine(items.get(i), i, e.x, e.y, e.gc, clientArea);
 		}
 	}
 
-	private void drawBackground(Event e) {
-		GC gc = e.gc;
-		gc.fillRectangle(e.x, e.y, e.width - 1, e.height - 1);
+	private void drawBackground(Rectangle clientArea, GC gc) {
+		gc.fillRectangle(clientArea.x, clientArea.y, clientArea.width - 1, clientArea.height - 1);
 
 		if ((style & SWT.BORDER) != 0 && isEnabled()) {
 			Color foreground = gc.getForeground();
 			gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_DARK_GRAY));
-			gc.drawLine(e.x, e.y + e.height - 1, e.x + e.x + e.width - 1, e.y + e.height - 1);
+			gc.drawLine(clientArea.x, clientArea.y + clientArea.height - 1, clientArea.x + clientArea.x + clientArea.width - 1, clientArea.y + clientArea.height - 1);
 			gc.setForeground(foreground);
 		}
 	}
 
-	private void drawTextLine(String text, int lineNumber, int x, int y, GC gc) {
+	private void drawTextLine(String text, int lineNumber, int x, int y, GC gc, Rectangle clientArea) {
 		Point textExtent = gc.textExtent(text);
-		Rectangle clientArea = getClientArea();
 
 		int _x = calculateHorizontalAlignment(x, textExtent, clientArea);
 		int _y = y + lineNumber * textExtent.y - clientArea.y;
