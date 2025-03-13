@@ -259,8 +259,7 @@ public class List extends Scrollable {
 
 	public void add(String string) {
 		checkWidget();
-		if (string == null)
-			error(SWT.ERROR_NULL_ARGUMENT);
+		if (string == null) error(SWT.ERROR_NULL_ARGUMENT);
 
 		this.items.add(string);
 		updateScrollBarWithTextSize();
@@ -281,20 +280,20 @@ public class List extends Scrollable {
 	private Point computeTextSize() {
 		GC gc = new GC(this);
 		gc.setFont(getFont());
-		int width = 0, height = 0;
+		int width = 0;
 		Point size = null;
 		for (String line : this.items) {
 			size = gc.textExtent(line);
 			width = Math.max(width, size.x);
 		}
-		height = size != null ? size.y * this.items.size() : 0;
+		gc.dispose();
+		int height = size != null ? size.y * this.items.size() : 0;
 		if (horizontalBar != null) {
 			height += horizontalBar.getSize().y;
 		}
 		if (verticalBar != null) {
 			width += verticalBar.getSize().x;
 		}
-		gc.dispose();
 		return new Point(width, height);
 	}
 
@@ -303,8 +302,9 @@ public class List extends Scrollable {
 		checkWidget();
 		Point size = computeTextSize();
 		if ((style & SWT.BORDER) != 0) {
-			size.x += 2 * getBorderWidth() + INSET;
-			size.y += 2 * getBorderWidth();
+			final int borderWidth = getBorderWidth();
+			size.x += 2 * borderWidth + INSET;
+			size.y += 2 * borderWidth;
 		}
 		return size;
 	}
@@ -331,10 +331,8 @@ public class List extends Scrollable {
 
 	public void add(String string, int index) {
 		checkWidget();
-		if (string == null)
-			error(SWT.ERROR_NULL_ARGUMENT);
-		if (index == -1)
-			error(SWT.ERROR_INVALID_RANGE);
+		if (string == null) error(SWT.ERROR_NULL_ARGUMENT);
+		if (index == -1) error(SWT.ERROR_INVALID_RANGE);
 		this.items.add(index, string);
 		updateScrollBarWithTextSize();
 		redraw();
@@ -350,8 +348,7 @@ public class List extends Scrollable {
 
 	public void deselect(int[] indices) {
 		checkWidget();
-		if (indices == null)
-			error(SWT.ERROR_NULL_ARGUMENT);
+		if (indices == null) error(SWT.ERROR_NULL_ARGUMENT);
 		for (int index : indices) {
 			deselect(index);
 		}
@@ -415,9 +412,7 @@ public class List extends Scrollable {
 		int itemHeight = gc.textExtent(this.items.get(0)).y;
 		gc.dispose();
 
-		if (itemHeight <= 0) {
-			error(SWT.ERROR_CANNOT_GET_ITEM_HEIGHT);
-		}
+		if (itemHeight <= 0) error(SWT.ERROR_CANNOT_GET_ITEM_HEIGHT);
 		return itemHeight;
 	}
 
@@ -466,8 +461,7 @@ public class List extends Scrollable {
 
 	public int indexOf(String string, int start) {
 		checkWidget();
-		if (string == null)
-			error(SWT.ERROR_NULL_ARGUMENT);
+		if (string == null) error(SWT.ERROR_NULL_ARGUMENT);
 
 		return this.items.indexOf(string);
 
@@ -485,10 +479,8 @@ public class List extends Scrollable {
 
 	public void remove(int[] indices) {
 		checkWidget();
-		if (indices == null)
-			error(SWT.ERROR_NULL_ARGUMENT);
-		if (indices.length == 0)
-			return;
+		if (indices == null) error(SWT.ERROR_NULL_ARGUMENT);
+		if (indices.length == 0) return;
 		java.util.List<String> indicesToRemove = new ArrayList<>();
 		for (int index : indices) {
 			indicesToRemove.add(String.valueOf(index));
@@ -500,16 +492,14 @@ public class List extends Scrollable {
 
 	public void remove(int index) {
 		checkWidget();
-		if (index < 0)
-			error(SWT.ERROR_INVALID_ARGUMENT);
+		if (index < 0) error(SWT.ERROR_INVALID_ARGUMENT);
 		this.items.remove(index);
 		redraw();
 	}
 
 	public void remove(int start, int end) {
 		checkWidget();
-		if (start > end)
-			return;
+		if (start > end) return;
 
 		for (int i = start; i < end; i++) {
 			remove(i);
@@ -519,8 +509,7 @@ public class List extends Scrollable {
 
 	public void remove(String string) {
 		checkWidget();
-		if (string == null)
-			error(SWT.ERROR_NULL_ARGUMENT);
+		if (string == null) error(SWT.ERROR_NULL_ARGUMENT);
 		this.items.remove(string);
 		redraw();
 	}
@@ -533,21 +522,19 @@ public class List extends Scrollable {
 
 	public void removeSelectionListener(SelectionListener listener) {
 		checkWidget();
-		if (listener == null)
-			error(SWT.ERROR_NULL_ARGUMENT);
-		if (eventTable == null)
-			return;
+		if (listener == null) error(SWT.ERROR_NULL_ARGUMENT);
+		if (eventTable == null) return;
 		eventTable.unhook(SWT.Selection, listener);
 		eventTable.unhook(SWT.DefaultSelection, listener);
 	}
 
 	public void select(int[] indices) {
 		checkWidget();
-		if (indices == null)
-			error(SWT.ERROR_NULL_ARGUMENT);
+		if (indices == null) error(SWT.ERROR_NULL_ARGUMENT);
 		int length = indices.length;
-		if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1))
+		if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) {
 			return;
+		}
 		select(indices, false);
 	}
 
@@ -560,8 +547,9 @@ public class List extends Scrollable {
 			}
 			i++;
 		}
-		if (scroll)
+		if (scroll) {
 			showSelection();
+		}
 	}
 
 	public void select(int index) {
@@ -580,11 +568,13 @@ public class List extends Scrollable {
 
 	public void select(int start, int end) {
 		checkWidget();
-		if (end < 0 || start > end || ((style & SWT.SINGLE) != 0 && start != end))
+		if (end < 0 || start > end || ((style & SWT.SINGLE) != 0 && start != end)) {
 			return;
+		}
 		int count = this.items.size();
-		if (count == 0 || start >= count)
+		if (count == 0 || start >= count) {
 			return;
+		}
 		start = Math.max(0, start);
 		end = Math.min(end, count - 1);
 		if ((style & SWT.SINGLE) != 0) {
@@ -603,8 +593,9 @@ public class List extends Scrollable {
 			select(i, scroll);
 		}
 
-		if (scroll)
+		if (scroll) {
 			showSelection();
+		}
 	}
 
 	public void selectAll() {
@@ -631,25 +622,23 @@ public class List extends Scrollable {
 	public void setFont(Font font) {
 		checkWidget();
 		super.setFont(font);
-		if ((style & SWT.H_SCROLL) != 0)
+		if ((style & SWT.H_SCROLL) != 0) {
 			setScrollWidth();
+		}
 	}
 
 	public void setItem(int index, String string) {
 		checkWidget();
-		if (string == null)
-			error(SWT.ERROR_NULL_ARGUMENT);
+		if (string == null) error(SWT.ERROR_NULL_ARGUMENT);
 		this.items.set(index, string);
 		redraw();
 	}
 
 	public void setItems(String... items) {
 		checkWidget();
-		if (items == null)
-			error(SWT.ERROR_NULL_ARGUMENT);
+		if (items == null) error(SWT.ERROR_NULL_ARGUMENT);
 		for (String item : items) {
-			if (item == null)
-				error(SWT.ERROR_INVALID_ARGUMENT);
+			if (item == null) error(SWT.ERROR_INVALID_ARGUMENT);
 		}
 		this.items.clear();
 		this.items.addAll(Arrays.asList(items));
@@ -689,14 +678,16 @@ public class List extends Scrollable {
 		newWidth += INSET;
 		int width = getCurrentScrollWidth();
 		if (grow) {
-			if (newWidth <= width)
+			if (newWidth <= width) {
 				return;
+			}
 			if (horizontalBar != null) {
 				horizontalBar.setMaximum(newWidth);
 			}
 		} else {
-			if (newWidth < width)
+			if (newWidth < width) {
 				return;
+			}
 			setScrollWidth();
 		}
 	}
@@ -710,23 +701,23 @@ public class List extends Scrollable {
 
 	public void setSelection(int[] indices) {
 		checkWidget();
-		if (indices == null)
-			error(SWT.ERROR_NULL_ARGUMENT);
+		if (indices == null) error(SWT.ERROR_NULL_ARGUMENT);
 		deselectAll();
 		int length = indices.length;
-		if (length == 0)
+		if (length == 0) {
 			return;
+		}
 		select(indices, true);
 	}
 
 	public void setSelection(String[] items) {
 		checkWidget();
-		if (items == null)
-			error(SWT.ERROR_NULL_ARGUMENT);
+		if (items == null) error(SWT.ERROR_NULL_ARGUMENT);
 		deselectAll();
 		int length = items.length;
-		if (length == 0)
+		if (length == 0) {
 			return;
+		}
 		for (int i = 0; i < length; i++) {
 			select(this.items.indexOf(items[i]));
 		}
@@ -741,11 +732,13 @@ public class List extends Scrollable {
 	public void setSelection(int start, int end) {
 		checkWidget();
 		deselectAll();
-		if (end < 0 || start > end)
+		if (end < 0 || start > end) {
 			return;
+		}
 		int count = this.items.size();
-		if (count == 0 || start >= count)
+		if (count == 0 || start >= count) {
 			return;
+		}
 		start = Math.max(0, start);
 		end = Math.min(end, count - 1);
 		select(start, end, true);
@@ -783,5 +776,4 @@ public class List extends Scrollable {
 
 		redraw();
 	}
-
 }
