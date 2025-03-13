@@ -100,7 +100,7 @@ public class ToolItemButtonRenderer implements ToolItemRenderer {
 			String text = item.getText();
 
 			gc.setForeground(getTextColor());
-			gc.drawText(text, bounds.x + textBounds.x, bounds.y + textBounds.y);
+			gc.drawText(text, bounds.x + textBounds.x, bounds.y + textBounds.y, true);
 		}
 	}
 
