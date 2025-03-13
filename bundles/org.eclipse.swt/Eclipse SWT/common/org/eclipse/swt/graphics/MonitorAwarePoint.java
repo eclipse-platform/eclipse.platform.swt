@@ -36,7 +36,15 @@ public final class MonitorAwarePoint {
 	 * @param monitor the monitor with whose context the point is created
 	 */
 	public MonitorAwarePoint(int x, int y, Monitor monitor) {
-		this.point = new Point(x, y);
+		this(new Point(x, y), monitor);
+	}
+
+	public MonitorAwarePoint(Point point) {
+		this(point, null);
+	}
+
+	public MonitorAwarePoint(Point point, Monitor monitor) {
+		this.point = point;
 		this.monitor = monitor;
 	}
 

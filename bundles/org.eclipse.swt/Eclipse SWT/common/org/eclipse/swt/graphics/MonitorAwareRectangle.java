@@ -38,7 +38,15 @@ public final class MonitorAwareRectangle {
 	 * @param monitor the monitor with whose context the rectangle is created
 	 */
 	public MonitorAwareRectangle(int x, int y, int width, int height, Monitor monitor) {
-		this.rect = new Rectangle(x, y, width, height);
+		this(new Rectangle(x, y, width, height), monitor);
+	}
+
+	public MonitorAwareRectangle(Rectangle rect) {
+		this(rect, null);
+	}
+
+	public MonitorAwareRectangle(Rectangle rect, Monitor monitor) {
+		this.rect = rect;
 		this.monitor = monitor;
 	}
 
