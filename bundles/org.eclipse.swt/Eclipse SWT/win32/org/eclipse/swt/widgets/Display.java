@@ -2981,7 +2981,7 @@ boolean isValidThread () {
 public Point map (Control from, Control to, Point point) {
 	checkDevice ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	return coordinateSystemMapper.map(from, to, point);
+	return coordinateSystemMapper.map(from, to, point).getPoint();
 }
 
 Point mapInPixels (Control from, Control to, Point point) {
@@ -3026,7 +3026,7 @@ Point mapInPixels (Control from, Control to, Point point) {
  */
 public Point map (Control from, Control to, int x, int y) {
 	checkDevice ();
-	return coordinateSystemMapper.map(from, to, x, y);
+	return coordinateSystemMapper.map(from, to, x, y).getPoint();
 }
 
 Point mapInPixels (Control from, Control to, int x, int y) {
@@ -3081,7 +3081,7 @@ Point mapInPixels (Control from, Control to, int x, int y) {
 public Rectangle map (Control from, Control to, Rectangle rectangle) {
 	checkDevice ();
 	if (rectangle == null) error (SWT.ERROR_NULL_ARGUMENT);
-	return coordinateSystemMapper.map(from, to, rectangle);
+	return coordinateSystemMapper.map(from, to, rectangle).getRectangle();
 }
 
 Rectangle mapInPixels (Control from, Control to, Rectangle rectangle) {
@@ -3128,7 +3128,7 @@ Rectangle mapInPixels (Control from, Control to, Rectangle rectangle) {
  */
 public Rectangle map (Control from, Control to, int x, int y, int width, int height) {
 	checkDevice ();
-	return coordinateSystemMapper.map(from, to, x, y, width, height);
+	return coordinateSystemMapper.map(from, to, x, y, width, height).getRectangle();
 }
 
 Rectangle mapInPixels (Control from, Control to, int x, int y, int width, int height) {
@@ -3150,15 +3150,15 @@ Point translateFromDisplayCoordinates(Point point, int zoom) {
 	return coordinateSystemMapper.translateFromDisplayCoordinates(point, zoom);
 }
 
-Point translateToDisplayCoordinates(Point point, int zoom) {
+Point translateToDisplayCoordinates(MonitorAwarePoint point, int zoom) {
 	return coordinateSystemMapper.translateToDisplayCoordinates(point, zoom);
 }
 
-Rectangle translateFromDisplayCoordinates(Rectangle rect, int zoom) {
+Rectangle translateFromDisplayCoordinates(MonitorAwareRectangle rect, int zoom) {
 	return coordinateSystemMapper.translateFromDisplayCoordinates(rect, zoom);
 }
 
-Rectangle translateToDisplayCoordinates(Rectangle rect, int zoom) {
+Rectangle translateToDisplayCoordinates(MonitorAwareRectangle rect, int zoom) {
 	return coordinateSystemMapper.translateToDisplayCoordinates(rect, zoom);
 }
 
