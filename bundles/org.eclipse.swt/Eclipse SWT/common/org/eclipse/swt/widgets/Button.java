@@ -541,7 +541,9 @@ public class Button extends CustomControl {
 		if (isEnabled()) {
 			if ((style & SWT.TOGGLE) != 0 && isChecked()) {
 				gc.setBackground(TOGGLE_COLOR);
-			} else if (hasMouseEntered || pressed) {
+			} else if (pressed) {
+				gc.setBackground(TOGGLE_COLOR);
+			} else if (hasMouseEntered) {
 				gc.setBackground(HOVER_COLOR);
 			} else {
 				gc.setBackground(PUSH_BACKGROUND_COLOR);
