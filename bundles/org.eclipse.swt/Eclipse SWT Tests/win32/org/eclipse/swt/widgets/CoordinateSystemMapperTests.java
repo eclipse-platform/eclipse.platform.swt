@@ -63,9 +63,9 @@ public class CoordinateSystemMapperTests {
 	@MethodSource("provideCoordinateSystemMappers")
 	void translatePointInNoMonitorBackAndForthShouldBeTheSame(CoordinateSystemMapper mapper) {
 		setupMonitors(mapper);
-		Point pt = createExpectedPoint(mapper, 5000, -400, monitors[0]);
+		MonitorAwarePoint pt = createExpectedPoint(mapper, 5000, -400, monitors[0]);
 		Point px = mapper.translateToDisplayCoordinates(pt, monitors[0].getZoom());
-		assertEquals(pt, mapper.translateFromDisplayCoordinates(px, monitors[0].getZoom()));
+		assertEquals(pt.getPoint(), mapper.translateFromDisplayCoordinates(px, monitors[0].getZoom()));
 	}
 
 	@Test
@@ -73,7 +73,7 @@ public class CoordinateSystemMapperTests {
 		SingleZoomCoordinateSystemMapper mapper = getSingleZoomCoordinateSystemMapper();
 		setupMonitors(mapper);
 		Point pt = new Point(1900, 400);
-		Point px = mapper.translateToDisplayCoordinates(pt, monitors[0].getZoom());
+		Point px = mapper.translateToDisplayCoordinates(new MonitorAwarePoint(pt), monitors[0].getZoom());
 		assertEquals(pt, mapper.translateFromDisplayCoordinates(px, monitors[0].getZoom()));
 	}
 
@@ -82,9 +82,9 @@ public class CoordinateSystemMapperTests {
 		MultiZoomCoordinateSystemMapper mapper = getMultiZoomCoordinateSystemMapper();
 		setupMonitors(mapper);
 		Point pt = new Point(1900, 400);
-		Point px = mapper.translateToDisplayCoordinates(pt, monitors[0].getZoom());
+		Point px = mapper.translateToDisplayCoordinates(new MonitorAwarePoint(pt), monitors[0].getZoom());
 		Point translatedPt = mapper.translateFromDisplayCoordinates(px, monitors[0].getZoom());
-		Point translatedPx = mapper.translateToDisplayCoordinates(translatedPt, monitors[0].getZoom());
+		Point translatedPx = mapper.translateToDisplayCoordinates(new MonitorAwarePoint(translatedPt), monitors[0].getZoom());
 		assertEquals(new Point(translatedPt.x, translatedPt.y), translatedPx);
 		assertEquals(translatedPx, px);
 	}
@@ -93,9 +93,9 @@ public class CoordinateSystemMapperTests {
 	@MethodSource("provideCoordinateSystemMappers")
 	void translateRectangleInNoMonitorBackAndForthShouldBeTheSame(CoordinateSystemMapper mapper) {
 		setupMonitors(mapper);
-		Rectangle rectInPts = createExpectedRectangle(mapper, 5000, -400, 200, 200, monitors[0]);
+		MonitorAwareRectangle rectInPts = createExpectedRectangle(mapper, 5000, -400, 200, 200, monitors[0]);
 		Rectangle rectInPxs = mapper.translateToDisplayCoordinates(rectInPts, monitors[0].getZoom());
-		assertEquals(rectInPts, mapper.translateFromDisplayCoordinates(rectInPxs, monitors[0].getZoom()));
+		assertEquals(rectInPts.getRectangle(), mapper.translateFromDisplayCoordinates(new MonitorAwareRectangle(rectInPxs), monitors[0].getZoom()));
 	}
 
 	@Test
@@ -103,8 +103,8 @@ public class CoordinateSystemMapperTests {
 		SingleZoomCoordinateSystemMapper mapper = getSingleZoomCoordinateSystemMapper();
 		setupMonitors(mapper);
 		Rectangle rectInPts = new Rectangle(1800, 400, 100, 100);
-		Rectangle rectInPxs = mapper.translateToDisplayCoordinates(rectInPts, monitors[0].getZoom());
-		assertEquals(rectInPts, mapper.translateFromDisplayCoordinates(rectInPxs, monitors[0].getZoom()));
+		Rectangle rectInPxs = mapper.translateToDisplayCoordinates(new MonitorAwareRectangle(rectInPts), monitors[0].getZoom());
+		assertEquals(rectInPts, mapper.translateFromDisplayCoordinates(new MonitorAwareRectangle(rectInPxs), monitors[0].getZoom()));
 	}
 
 	@Test
@@ -112,8 +112,8 @@ public class CoordinateSystemMapperTests {
 		MultiZoomCoordinateSystemMapper mapper = getMultiZoomCoordinateSystemMapper();
 		setupMonitors(mapper);
 		Rectangle rectInPts = new Rectangle(1800, 400, 100, 100);
-		Rectangle rectInPxs = mapper.translateToDisplayCoordinates(rectInPts, monitors[0].getZoom());
-		Rectangle rectInPtsTranslated = mapper.translateFromDisplayCoordinates(rectInPxs, monitors[0].getZoom());
+		Rectangle rectInPxs = mapper.translateToDisplayCoordinates(new MonitorAwareRectangle(rectInPts), monitors[0].getZoom());
+		Rectangle rectInPtsTranslated = mapper.translateFromDisplayCoordinates(new MonitorAwareRectangle(rectInPxs), monitors[0].getZoom());
 		boolean isInsideMonitor = false;
 		for (Monitor monitor : monitors) {
 			if (monitor.getClientArea().intersects(rectInPtsTranslated)) {
@@ -129,26 +129,26 @@ public class CoordinateSystemMapperTests {
 		SingleZoomCoordinateSystemMapper mapper = getSingleZoomCoordinateSystemMapper();
 		setupMonitors(mapper);
 		Rectangle rectInPts = new Rectangle(1950, 400, 150, 100);
-		Rectangle rectInPxs = mapper.translateToDisplayCoordinates(rectInPts, monitors[0].getZoom());
-		assertEquals(rectInPts, mapper.translateFromDisplayCoordinates(rectInPxs, monitors[0].getZoom()));
+		Rectangle rectInPxs = mapper.translateToDisplayCoordinates(new MonitorAwareRectangle(rectInPts), monitors[0].getZoom());
+		assertEquals(rectInPts, mapper.translateFromDisplayCoordinates(new MonitorAwareRectangle(rectInPxs), monitors[0].getZoom()));
 	}
 
 	@Test
 	void translateRectangleInGapPartiallyInRightBackAndForthInMultiZoomShouldBeInside() {
 		MultiZoomCoordinateSystemMapper mapper = getMultiZoomCoordinateSystemMapper();
 		setupMonitors(mapper);
-		Rectangle rectInPts = new MonitorAwareRectangle(1950, 400, 150, 100, monitors[1]);
+		MonitorAwareRectangle rectInPts = new MonitorAwareRectangle(1950, 400, 150, 100, monitors[1]);
 		Rectangle rectInPxs = mapper.translateToDisplayCoordinates(rectInPts, monitors[0].getZoom());
-		assertEquals(rectInPts, mapper.translateFromDisplayCoordinates(rectInPxs, monitors[0].getZoom()));
+		assertEquals(rectInPts.getRectangle(), mapper.translateFromDisplayCoordinates(new MonitorAwareRectangle(rectInPxs), monitors[0].getZoom()));
 	}
 
 	@ParameterizedTest
 	@MethodSource("provideCoordinateSystemMappers")
 	void translateRectangleInGapPartiallyInLeftBackAndForthShouldBeTheSame(CoordinateSystemMapper mapper) {
 		setupMonitors(mapper);
-		Rectangle rectInPts = createExpectedRectangle(mapper, 750, 400, 100, 100, monitors[0]);
+		MonitorAwareRectangle rectInPts = createExpectedRectangle(mapper, 750, 400, 100, 100, monitors[0]);
 		Rectangle rectInPxs = mapper.translateToDisplayCoordinates(rectInPts, monitors[0].getZoom());
-		assertEquals(rectInPts, mapper.translateFromDisplayCoordinates(rectInPxs, monitors[0].getZoom()));
+		assertEquals(rectInPts.getRectangle(), mapper.translateFromDisplayCoordinates(new MonitorAwareRectangle(rectInPxs), monitors[0].getZoom()));
 	}
 
 	@Test
@@ -156,8 +156,8 @@ public class CoordinateSystemMapperTests {
 		SingleZoomCoordinateSystemMapper mapper = getSingleZoomCoordinateSystemMapper();
 		setupMonitors(mapper);
 		Rectangle rectInPts = new Rectangle(950, 400, 1500, 100);
-		Rectangle rectInPxs = mapper.translateToDisplayCoordinates(rectInPts, monitors[0].getZoom());
-		assertEquals(rectInPts, mapper.translateFromDisplayCoordinates(rectInPxs, monitors[0].getZoom()));
+		Rectangle rectInPxs = mapper.translateToDisplayCoordinates(new MonitorAwareRectangle(rectInPts), monitors[0].getZoom());
+		assertEquals(rectInPts, mapper.translateFromDisplayCoordinates(new MonitorAwareRectangle(rectInPxs), monitors[0].getZoom()));
 	}
 
 	@Test
@@ -165,9 +165,9 @@ public class CoordinateSystemMapperTests {
 		MultiZoomCoordinateSystemMapper mapper = getMultiZoomCoordinateSystemMapper();
 		setupMonitors(mapper);
 		Rectangle rectInPts = new Rectangle(950, 400, 1500, 100);
-		Rectangle rectInPxs = mapper.translateToDisplayCoordinates(rectInPts, monitors[0].getZoom());
-		Rectangle rectInPtsTranslated = mapper.translateFromDisplayCoordinates(rectInPxs, monitors[0].getZoom());
-		Rectangle rectInPxsTranslated = mapper.translateToDisplayCoordinates(rectInPtsTranslated,
+		Rectangle rectInPxs = mapper.translateToDisplayCoordinates(new MonitorAwareRectangle(rectInPts), monitors[0].getZoom());
+		Rectangle rectInPtsTranslated = mapper.translateFromDisplayCoordinates(new MonitorAwareRectangle(rectInPxs), monitors[0].getZoom());
+		Rectangle rectInPxsTranslated = mapper.translateToDisplayCoordinates(new MonitorAwareRectangle(rectInPtsTranslated),
 				monitors[0].getZoom());
 		assertEquals(rectInPxs, rectInPxsTranslated);
 	}
@@ -182,13 +182,13 @@ public class CoordinateSystemMapperTests {
 		expectedSmallRectInPxs.y = rectInPxs.y + (rectInPxs.height / 2) - 200;
 		expectedSmallRectInPxs.width = 400;
 		expectedSmallRectInPxs.height = 400;
-		Rectangle rectInPts = mapper.translateFromDisplayCoordinates(rectInPxs, monitors[0].getZoom());
+		Rectangle rectInPts = mapper.translateFromDisplayCoordinates(new MonitorAwareRectangle(rectInPxs), monitors[0].getZoom());
 		Rectangle smallRectInPts = new Rectangle(0, 0, 0, monitors[0].getZoom());
 		smallRectInPts.x = rectInPts.x + (rectInPts.width / 2) - 200;
 		smallRectInPts.y = rectInPts.y + (rectInPts.height / 2) - 200;
 		smallRectInPts.width = 400;
 		smallRectInPts.height = 400;
-		Rectangle smallRectInPxs = mapper.translateToDisplayCoordinates(smallRectInPts, monitors[0].getZoom());
+		Rectangle smallRectInPxs = mapper.translateToDisplayCoordinates(new MonitorAwareRectangle(smallRectInPts), monitors[0].getZoom());
 		assertEquals(expectedSmallRectInPxs, smallRectInPxs);
 	}
 
@@ -197,8 +197,8 @@ public class CoordinateSystemMapperTests {
 	void translateRectangleInPixelsOutisdeMonitorsBackAndForthShouldBeTheSame(CoordinateSystemMapper mapper) {
 		setupMonitors(mapper);
 		Rectangle rectInPxs = new Rectangle(400, 2400, 1000, 1000);
-		Rectangle rectInPts = mapper.translateFromDisplayCoordinates(rectInPxs, monitors[0].getZoom());
-		assertEquals(rectInPxs, mapper.translateToDisplayCoordinates(rectInPts, monitors[0].getZoom()));
+		Rectangle rectInPts = mapper.translateFromDisplayCoordinates(new MonitorAwareRectangle(rectInPxs), monitors[0].getZoom());
+		assertEquals(rectInPxs, mapper.translateToDisplayCoordinates(new MonitorAwareRectangle(rectInPts), monitors[0].getZoom()));
 	}
 
 	@ParameterizedTest
@@ -206,21 +206,21 @@ public class CoordinateSystemMapperTests {
 	void translateRectangleInPixelsInBothMonitorsBackAndForthShouldBeTheSame(CoordinateSystemMapper mapper) {
 		setupMonitors(mapper);
 		Rectangle rectInPxs = new Rectangle(1500, 400, 502, 500);
-		Rectangle rectInPts = mapper.translateFromDisplayCoordinates(rectInPxs, monitors[0].getZoom());
-		assertEquals(rectInPxs, mapper.translateToDisplayCoordinates(rectInPts, monitors[0].getZoom()));
+		Rectangle rectInPts = mapper.translateFromDisplayCoordinates(new MonitorAwareRectangle(rectInPxs), monitors[0].getZoom());
+		assertEquals(rectInPxs, mapper.translateToDisplayCoordinates(new MonitorAwareRectangle(rectInPts), monitors[0].getZoom()));
 	}
 
-	private Point createExpectedPoint(CoordinateSystemMapper mapper, int x, int y, Monitor monitor) {
+	private MonitorAwarePoint createExpectedPoint(CoordinateSystemMapper mapper, int x, int y, Monitor monitor) {
 		if (mapper instanceof SingleZoomCoordinateSystemMapper) {
-			return new Point(x, y);
+			return new MonitorAwarePoint(new Point(x, y));
 		} else {
 			return new MonitorAwarePoint(x, y, monitor);
 		}
 	}
 
-	private Rectangle createExpectedRectangle(CoordinateSystemMapper mapper, int x, int y, int width, int height, Monitor monitor) {
+	private MonitorAwareRectangle createExpectedRectangle(CoordinateSystemMapper mapper, int x, int y, int width, int height, Monitor monitor) {
 		if (mapper instanceof SingleZoomCoordinateSystemMapper) {
-			return new Rectangle(x, y, width, height);
+			return new MonitorAwareRectangle(new Rectangle(x, y, width, height));
 		} else {
 			return new MonitorAwareRectangle(x, y, width, height, monitor);
 		}
