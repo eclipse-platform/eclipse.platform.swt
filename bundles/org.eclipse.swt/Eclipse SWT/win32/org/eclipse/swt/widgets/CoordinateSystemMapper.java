@@ -17,23 +17,23 @@ import org.eclipse.swt.graphics.*;
 
 interface CoordinateSystemMapper {
 
-	Rectangle map(Control from, Control to, Rectangle rectangle);
+	MonitorAwareRectangle map(Control from, Control to, Rectangle rectangle);
 
-	Rectangle map(Control from, Control to, int x, int y, int width, int height);
+	MonitorAwareRectangle map(Control from, Control to, int x, int y, int width, int height);
 
-	Point map(Control from, Control to, Point point);
+	MonitorAwarePoint map(Control from, Control to, Point point);
 
-	Point map(Control from, Control to, int x, int y);
+	MonitorAwarePoint map(Control from, Control to, int x, int y);
 
 	Rectangle mapMonitorBounds(Rectangle rectangle, int zoom);
 
 	Point translateFromDisplayCoordinates(Point point, int zoom);
 
-	Point translateToDisplayCoordinates(Point point, int zoom);
+	Point translateToDisplayCoordinates(MonitorAwarePoint point, int zoom);
 
-	Rectangle translateFromDisplayCoordinates(Rectangle rect, int zoom);
+	Rectangle translateFromDisplayCoordinates(MonitorAwareRectangle rect, int zoom);
 
-	Rectangle translateToDisplayCoordinates(Rectangle rect, int zoom);
+	Rectangle translateToDisplayCoordinates(MonitorAwareRectangle rect, int zoom);
 
 	void setCursorLocation(int x, int y);
 
