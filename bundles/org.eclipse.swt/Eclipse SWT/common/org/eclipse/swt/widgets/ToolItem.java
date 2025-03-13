@@ -882,12 +882,7 @@ public class ToolItem extends Item {
 			newState = MouseState.IDLE;
 		}
 
-		if (mouseState != newState) {
-			mouseState = newState;
-			return true;
-		} else {
-			return false;
-		}
+		return updateMouseState(newState);
 	}
 
 	/**
@@ -896,14 +891,7 @@ public class ToolItem extends Item {
 	 * @return true if this changed the state of the item somehow.
 	 */
 	public boolean notifyMouseExit() {
-		MouseState newState = MouseState.IDLE;
-
-		if (mouseState != newState) {
-			mouseState = newState;
-			return true;
-		} else {
-			return false;
-		}
+		return updateMouseState(MouseState.IDLE);
 	}
 
 	/**
@@ -927,15 +915,16 @@ public class ToolItem extends Item {
 			newState = MouseState.IDLE;
 		}
 
-		if (renderer.isOnArrow(location)) {
-		}
+		return updateMouseState(newState);
+	}
 
-		if (mouseState != newState) {
-			mouseState = newState;
-			return true;
-		} else {
+	private boolean updateMouseState(MouseState mouseState) {
+		if (this.mouseState == mouseState) {
 			return false;
 		}
+
+		this.mouseState = mouseState;
+		return true;
 	}
 
 	/**
