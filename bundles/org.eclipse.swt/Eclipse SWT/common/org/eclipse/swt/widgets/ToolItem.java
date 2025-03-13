@@ -86,13 +86,13 @@ public class ToolItem extends Item {
 		}
 
 		/**
-		 * Indicates if the given location is on the arrow area of the {@link ToolItem}.
+		 * Indicates the popup location if the given location is on the arrow area of the {@link ToolItem}.
 		 *
 		 * @param location The location to check.
-		 * @return true if on the arrow are, false otherwise.
+		 * @return the popup location (bottom-left corner of the main button), if the specified location is over the arrow, null otherwise.
 		 */
-		default boolean isOnArrow(Point location) {
-			return false;
+		default Point getOnArrowLocation(Point location) {
+			return null;
 		}
 	}
 
@@ -904,15 +904,18 @@ public class ToolItem extends Item {
 		MouseState newState;
 		if (renderer.isOnButton(location)) {
 			newState = MouseState.DOWN;
-		} else if (renderer.isOnArrow(location)) {
-			newState = MouseState.IDLE;
-			Event event = new Event();
-			event.detail = SWT.ARROW;
-			event.setLocation(location.x, location.y);
-			event.stateMask |= SWT.NO_FOCUS;
-			sendEvent(SWT.Selection, event);
 		} else {
-			newState = MouseState.IDLE;
+			final Point onArrowLocation = renderer.getOnArrowLocation(location);
+			if (onArrowLocation != null) {
+				newState = MouseState.IDLE;
+				Event event = new Event();
+				event.detail = SWT.ARROW;
+				event.setLocation(onArrowLocation.x, onArrowLocation.y);
+				event.stateMask |= SWT.NO_FOCUS;
+				sendEvent(SWT.Selection, event);
+			} else {
+				newState = MouseState.IDLE;
+			}
 		}
 
 		return updateMouseState(newState);

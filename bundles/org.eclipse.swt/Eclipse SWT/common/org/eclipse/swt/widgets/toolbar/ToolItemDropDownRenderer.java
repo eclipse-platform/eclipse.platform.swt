@@ -84,7 +84,10 @@ public class ToolItemDropDownRenderer implements ToolItemRenderer {
 	}
 
 	@Override
-	public boolean isOnArrow(Point location) {
-		return arrow.contains(location);
+	public Point getOnArrowLocation(Point location) {
+		if (!arrow.contains(location)) {
+			return null;
+		}
+		return new Point(button.x, button.y + button.height);
 	}
 }
