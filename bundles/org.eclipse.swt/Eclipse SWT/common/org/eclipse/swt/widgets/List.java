@@ -23,59 +23,43 @@ public class List extends Scrollable {
 	}
 
 	private void addListeners() {
-		addDisposeListener(e -> dispose());
-		addPaintListener(this::paintControl);
-
-		addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyReleased(KeyEvent e) {
-				onKeyReleased(e);
+		final Listener listener = event -> {
+			switch (event.type) {
+				case SWT.Paint -> paintControl(event);
+				case SWT.MouseDown -> onMouseDown(event);
+				case SWT.MouseUp -> onMouseUp(event);
+				case SWT.MouseWheel -> onMouseWheel(event);
+				case SWT.Resize -> onResize();
+				case SWT.KeyUp -> onKeyReleased(event);
+				case SWT.Dispose -> dispose();
 			}
-		});
+		};
+		addListener(SWT.Paint, listener);
+		addListener(SWT.MouseDown, listener);
+		addListener(SWT.MouseUp, listener);
+		addListener(SWT.MouseWheel, listener);
+		addListener(SWT.KeyUp, listener);
+		addListener(SWT.Dispose, listener);
 
 		ScrollBar horizontalBar = getHorizontalBar();
 		if (horizontalBar != null) {
-			horizontalBar.addSelectionListener(new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					List.this.onScrollBarChange(e);
-				}
-			});
+			horizontalBar.addListener(SWT.Selection, this::onScrollBarChange);
 		}
 		ScrollBar verticalBar = getVerticalBar();
 		if (verticalBar != null) {
-			verticalBar.addSelectionListener(new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					List.this.topIndex = verticalBar.getSelection();
-					List.this.onScrollBarChange(e);
-				}
+			verticalBar.addListener(SWT.Selection, e -> {
+				topIndex = verticalBar.getSelection();
+				onScrollBarChange(e);
 			});
 		}
-
-		addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseDown(MouseEvent e) {
-				List.this.onMouseDown(e);
-			}
-
-			@Override
-			public void mouseUp(MouseEvent e) {
-				List.this.onMouseUp(e);
-			}
-		});
-
-		addMouseWheelListener(e -> {
-			List.this.onMouseWheel(e);
-		});
-
-		addListener(SWT.Resize, event -> {
-			updateScrollBarWithTextSize();
-			redraw();
-		});
 	}
 
-	private void onMouseWheel(MouseEvent e) {
+	private void onResize() {
+		updateScrollBarWithTextSize();
+		redraw();
+	}
+
+	private void onMouseWheel(Event e) {
 		if (verticalBar != null) {
 			int scrollAmount = e.count > 0 ? -1 : 1;
 			this.topIndex = Math.max(0,
@@ -92,7 +76,7 @@ public class List extends Scrollable {
 		return (lineHeight > 0) ? clientArea.height / lineHeight : 0;
 	}
 
-	private void paintControl(PaintEvent e) {
+	private void paintControl(Event e) {
 		if (!isVisible()) {
 			return;
 		}
@@ -102,7 +86,7 @@ public class List extends Scrollable {
 		gc.dispose();
 	}
 
-	private void doPaint(PaintEvent e) {
+	private void doPaint(Event e) {
 		Rectangle r = getBounds();
 		if (r.width == 0 && r.height == 0) {
 			return;
@@ -113,7 +97,7 @@ public class List extends Scrollable {
 		}
 	}
 
-	private void drawBackground(PaintEvent e) {
+	private void drawBackground(Event e) {
 		GC gc = e.gc;
 		gc.fillRectangle(e.x, e.y, e.width - 1, e.height - 1);
 
@@ -179,7 +163,7 @@ public class List extends Scrollable {
 		return x;
 	}
 
-	private void onKeyReleased(KeyEvent event) {
+	private void onKeyReleased(Event event) {
 		boolean isShiftPressed = (event.stateMask & SWT.SHIFT) != 0;
 		switch (event.keyCode) {
 		case SWT.ARROW_DOWN -> navigateSelection(1, isShiftPressed);
@@ -221,22 +205,22 @@ public class List extends Scrollable {
 		return Math.max(0, Math.min(newIndex, items.size() - 1));
 	}
 
-	private void onScrollBarChange(SelectionEvent e) {
+	private void onScrollBarChange(Event e) {
 		redraw();
 	}
 
-	private void onMouseDown(MouseEvent e) {
+	private void onMouseDown(Event e) {
 		redraw();
 	}
 
-	private void onMouseUp(MouseEvent e) {
+	private void onMouseUp(Event e) {
 		if ((e.stateMask & SWT.BUTTON1) != 0) {
 			toggleSelection(e);
 		}
 		redraw();
 	}
 
-	private void toggleSelection(MouseEvent e) {
+	private void toggleSelection(Event e) {
 		int clickedLine = getTextLocation(e.x, e.y);
 		if ((e.stateMask & SWT.CTRL) != 0) {
 			if (this.selectedItems.contains(clickedLine)) {
