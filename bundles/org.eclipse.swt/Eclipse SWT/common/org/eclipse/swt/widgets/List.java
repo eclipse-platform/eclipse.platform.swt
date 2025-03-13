@@ -11,11 +11,12 @@ public class List extends Scrollable {
 	static final int INSET = 3;
 	boolean addedUCC = false;
 
-	private java.util.List<String> items = new ArrayList<>();
+	private final java.util.List<String> items = new ArrayList<>();
 	private java.util.List<Integer> selectedItems = new ArrayList<>();
 
-	private int topIndex = 0;
+	private int topIndex;
 	private Integer lastSelectedItem = 0;
+	private int lineHeight;
 
 	public List(Composite parent, int style) {
 		super(parent, checkStyle(style));
@@ -70,9 +71,6 @@ public class List extends Scrollable {
 
 	private int getVisibleLineCount() {
 		Rectangle clientArea = getClientArea();
-		GC gc = new GC(this);
-		int lineHeight = getLineHeight();
-		gc.dispose();
 		return (lineHeight > 0) ? clientArea.height / lineHeight : 0;
 	}
 
@@ -82,20 +80,31 @@ public class List extends Scrollable {
 		}
 		e.gc.setFont(getFont());
 		GC gc = e.gc != null ? e.gc : new GC(this);
-		doPaint(e);
+		doPaint(e.gc);
 		gc.dispose();
 	}
 
-	private void doPaint(Event e) {
+	private void doPaint(GC gc) {
 		Rectangle r = getBounds();
 		if (r.width == 0 && r.height == 0) {
 			return;
 		}
 
 		final Rectangle clientArea = getClientArea();
-		drawBackground(clientArea, e.gc);
-		for (int i = 0; i < this.items.size(); i++) {
-			drawTextLine(items.get(i), i, e.x, e.y, e.gc, clientArea);
+		drawBackground(clientArea, gc);
+
+		if ((style & SWT.BORDER) != 0) {
+			int borderSize = getBorderWidth();
+			clientArea.x += borderSize;
+			clientArea.y += borderSize;
+		}
+
+		lineHeight = getLineHeight(gc);
+		int x = clientArea.x;
+		int y = clientArea.y;
+		for (int i = topIndex; i < this.items.size(); i++) {
+			drawTextLine(i, x, y, gc, clientArea);
+			y += lineHeight;
 		}
 	}
 
@@ -110,36 +119,25 @@ public class List extends Scrollable {
 		}
 	}
 
-	private void drawTextLine(String text, int lineNumber, int x, int y, GC gc, Rectangle clientArea) {
+	private void drawTextLine(int lineNumber, int x, int y, GC gc, Rectangle clientArea) {
+		String text = items.get(lineNumber);
 		Point textExtent = gc.textExtent(text);
 
 		int _x = calculateHorizontalAlignment(x, textExtent, clientArea);
-		int _y = y + lineNumber * textExtent.y - clientArea.y;
-
-		_x -= clientArea.x;
-
-		if ((style & SWT.BORDER) != 0) {
-			int borderWidth = getBorderWidth();
-			_x += borderWidth;
-			_y += borderWidth;
-		}
-
-		// handle Vertical Scroll
-		_y -= this.topIndex * textExtent.y;
-		// handle Horizontal Scroll
 		if (horizontalBar != null) {
 			_x -= horizontalBar.getSelection();
 		}
+
 		if (isEnabled()) {
-			if (this.selectedItems.size() != 0 && this.selectedItems.contains(lineNumber)) {
-				drawSelectedText(text, gc, _x, _y);
+			if (selectedItems.contains(lineNumber)) {
+				drawSelectedText(text, gc, _x, y);
 			} else {
-				gc.drawText(text, _x, _y, true);
+				gc.drawText(text, _x, y, true);
 			}
 		} else {
 			Color foreground = gc.getForeground();
 			gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_DARK_GRAY));
-			gc.drawText(text, _x, _y, true);
+			gc.drawText(text, _x, y, true);
 			gc.setForeground(foreground);
 		}
 	}
@@ -210,7 +208,6 @@ public class List extends Scrollable {
 	}
 
 	private void onMouseDown(Event e) {
-		redraw();
 	}
 
 	private void onMouseUp(Event e) {
@@ -221,7 +218,7 @@ public class List extends Scrollable {
 	}
 
 	private void toggleSelection(Event e) {
-		int clickedLine = getTextLocation(e.x, e.y);
+		int clickedLine = getTextLocation(e.y);
 		if ((e.stateMask & SWT.CTRL) != 0) {
 			if (this.selectedItems.contains(clickedLine)) {
 				this.selectedItems.remove(Integer.valueOf(clickedLine));
@@ -237,23 +234,27 @@ public class List extends Scrollable {
 		sendSelectionEvent(SWT.Selection);
 	}
 
-	private int getTextLocation(int selectedX, int selectedY) {
+	private int getTextLocation(int selectedY) {
+		final int itemCount = items.size();
+		if (lineHeight < 1) {
+			return itemCount - 1;
+		}
+
 		Rectangle clientArea = getClientArea();
 		int y = Math.max(selectedY + clientArea.y, 0);
+		if ((style & SWT.BORDER) != 0) {
+			int borderSize = getBorderWidth();
+			y -= borderSize;
+		}
 
-		GC gc = new GC(this);
-		String[] textLines = this.items.toArray(new String[0]);
-		int lineOnArea = Math.min(Math.round(y / getLineHeight(gc)), textLines.length - 1);
+		int lineOnArea = Math.min(y / lineHeight, itemCount - 1);
 		int lineOfText = lineOnArea + this.topIndex;
-		return Math.min(lineOfText, textLines.length - 1);
+		return Math.min(lineOfText, itemCount - 1);
 	}
 
 	private int getLineHeight(GC gc) {
 		checkWidget();
-		if (this.items.isEmpty()) {
-			return 0;
-		}
-		return gc.textExtent(this.items.get(0)).y;
+		return gc.getFontMetrics().getHeight();
 	}
 
 	public void add(String string) {
@@ -264,14 +265,16 @@ public class List extends Scrollable {
 		this.items.add(string);
 		updateScrollBarWithTextSize();
 		redraw();
-
 	}
 
 	public int getLineHeight() {
 		checkWidget();
-		GC gc = new GC(this);
-		int height = getLineHeight(gc);
-		gc.dispose();
+		int height = lineHeight;
+		if (height == 0) {
+			GC gc = new GC(this);
+			height = getLineHeight(gc);
+			gc.dispose();
+		}
 		return height;
 	}
 
