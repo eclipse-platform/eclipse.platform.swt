@@ -94,7 +94,6 @@ public class ToolItem extends Item {
 		default boolean isOnArrow(Point location) {
 			return false;
 		}
-
 	}
 
 	/**
@@ -164,15 +163,7 @@ public class ToolItem extends Item {
 	public ToolItem(ToolBar parent, int style) {
 		super(checkParent(parent), checkStyle(style));
 		this.parent = parent;
-
-		this.renderer = switch (this.style) {
-		case SWT.CHECK -> new ToolItemButtonRenderer(parent, this);
-		case SWT.PUSH -> new ToolItemButtonRenderer(parent, this);
-		case SWT.RADIO -> new ToolItemButtonRenderer(parent, this);
-		case SWT.SEPARATOR -> new ToolItemSeparatorRenderer(parent);
-		case SWT.DROP_DOWN -> new ToolItemDropDownRenderer(parent, this);
-		default -> throw new IllegalArgumentException("Invalid Style: " + style);
-		};
+		this.renderer = createRenderer();
 
 		parent.createItem(this, parent.getItemCount());
 	}
@@ -223,17 +214,18 @@ public class ToolItem extends Item {
 	public ToolItem(ToolBar parent, int style, int index) {
 		super(checkParent(parent), checkStyle(style));
 		this.parent = parent;
-
-		this.renderer = switch (this.style) {
-		case SWT.CHECK -> new ToolItemButtonRenderer(parent, this);
-		case SWT.PUSH -> new ToolItemButtonRenderer(parent, this);
-		case SWT.RADIO -> new ToolItemButtonRenderer(parent, this);
-		case SWT.SEPARATOR -> new ToolItemSeparatorRenderer(parent);
-		case SWT.DROP_DOWN -> new ToolItemDropDownRenderer(parent, this);
-		default -> throw new IllegalArgumentException("Invalid Style: " + style);
-		};
+		this.renderer = createRenderer();
 
 		parent.createItem(this, index);
+	}
+
+	private ToolItemRenderer createRenderer() {
+		return switch (style) {
+			case SWT.CHECK, SWT.PUSH, SWT.RADIO -> new ToolItemButtonRenderer(parent, this);
+			case SWT.SEPARATOR -> new ToolItemSeparatorRenderer(parent);
+			case SWT.DROP_DOWN -> new ToolItemDropDownRenderer(parent, this);
+			default -> throw new IllegalArgumentException("Invalid Style: " + style);
+		};
 	}
 
 	private static ToolBar checkParent(ToolBar parent) {
