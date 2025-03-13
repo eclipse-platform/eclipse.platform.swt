@@ -13,8 +13,6 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
-import java.util.*;
-
 import org.eclipse.swt.widgets.*;
 
 /**
@@ -26,10 +24,8 @@ import org.eclipse.swt.widgets.*;
  * @since 3.129
  * @noreference This class is not intended to be referenced by clients
  */
-public final class MonitorAwarePoint extends Point {
-
-	private static final long serialVersionUID = 6077427420686999194L;
-
+public final class MonitorAwarePoint {
+	private final Point point;
 	private final Monitor monitor;
 
 	/**
@@ -40,7 +36,7 @@ public final class MonitorAwarePoint extends Point {
 	 * @param monitor the monitor with whose context the point is created
 	 */
 	public MonitorAwarePoint(int x, int y, Monitor monitor) {
-		super(x, y);
+		this.point = new Point(x, y);
 		this.monitor = monitor;
 	}
 
@@ -51,21 +47,10 @@ public final class MonitorAwarePoint extends Point {
 		return monitor;
 	}
 
-	@Override
-	public boolean equals(Object object) {
-		if (this == object) {
-			return true;
-		}
-		if (!super.equals(object)) {
-			return false;
-		}
-		MonitorAwarePoint other = (MonitorAwarePoint) object;
-		return Objects.equals(this.monitor, other.monitor);
+	/**
+	 * {@return the monitor with whose context the instance is created}
+	 */
+	public Point getPoint() {
+		return point;
 	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(super.hashCode(), monitor);
-	}
-
 }

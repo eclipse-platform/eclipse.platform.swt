@@ -13,8 +13,6 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
-import java.util.*;
-
 import org.eclipse.swt.widgets.*;
 
 /**
@@ -26,10 +24,8 @@ import org.eclipse.swt.widgets.*;
  * @since 3.129
  * @noreference This class is not intended to be referenced by clients
  */
-public final class MonitorAwareRectangle extends Rectangle {
-
-	private static final long serialVersionUID = 5041911840525116925L;
-
+public final class MonitorAwareRectangle {
+	private final Rectangle rect;
 	private final Monitor monitor;
 
 	/**
@@ -42,8 +38,15 @@ public final class MonitorAwareRectangle extends Rectangle {
 	 * @param monitor the monitor with whose context the rectangle is created
 	 */
 	public MonitorAwareRectangle(int x, int y, int width, int height, Monitor monitor) {
-		super(x, y, width, height);
+		this.rect = new Rectangle(x, y, width, height);
 		this.monitor = monitor;
+	}
+
+	/**
+	 * {@return the monitor with whose context the instance is created}
+	 */
+	public Rectangle getRectangle() {
+		return rect;
 	}
 
 	/**
@@ -52,22 +55,4 @@ public final class MonitorAwareRectangle extends Rectangle {
 	public Monitor getMonitor() {
 		return monitor;
 	}
-
-	@Override
-	public boolean equals(Object object) {
-		if (this == object) {
-			return true;
-		}
-		if (!super.equals(object)) {
-			return false;
-		}
-		MonitorAwareRectangle other = (MonitorAwareRectangle) object;
-		return Objects.equals(this.monitor, other.monitor);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(super.hashCode(), monitor);
-	}
-
 }
