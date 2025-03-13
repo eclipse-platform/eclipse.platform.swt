@@ -7,7 +7,7 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 
-public class List extends Scrollable implements ICustomWidget {
+public class List extends Scrollable {
 	static final int INSET = 3;
 	boolean addedUCC = false;
 
