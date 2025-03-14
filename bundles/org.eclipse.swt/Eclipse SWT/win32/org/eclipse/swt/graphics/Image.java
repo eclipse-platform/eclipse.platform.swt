@@ -227,13 +227,14 @@ public Image(Device device, Image srcImage, int flag) {
 	if (srcImage == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (srcImage.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	initialNativeZoom = srcImage.initialNativeZoom;
-	Rectangle rect = srcImage.getBounds(getZoom());
+	int zoom = getZoom();
+	Rectangle rect = srcImage.getBounds(zoom);
 	this.type = srcImage.type;
 	if(srcImage.imageProvider != null) {
 		this.imageProvider = srcImage.imageProvider.createCopy(this);
 	}
 	this.styleFlag = srcImage.styleFlag | flag;
-	long srcImageHandle = win32_getHandle(srcImage, getZoom());
+	long srcImageHandle = win32_getHandle(srcImage, zoom);
 	switch (flag) {
 		case SWT.IMAGE_COPY: {
 			switch (type) {
@@ -247,8 +248,8 @@ public Image(Device device, Image srcImage, int flag) {
 					long hOldSrc = OS.SelectObject(hdcSource, srcImageHandle);
 					BITMAP bm = new BITMAP();
 					OS.GetObject(srcImageHandle, BITMAP.sizeof, bm);
-					imageMetadata = new ImageHandle(OS.CreateCompatibleBitmap(hdcSource, rect.width, bm.bmBits != 0 ? -rect.height : rect.height), getZoom());
-					if (imageMetadata.handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+					imageMetadata = newImageHandle(OS.CreateCompatibleBitmap(hdcSource, rect.width, bm.bmBits != 0 ? -rect.height : rect.height), zoom);
+					if (imageMetadata == null) SWT.error(SWT.ERROR_NO_HANDLES);
 					long hOldDest = OS.SelectObject(hdcDest, imageMetadata.handle);
 					OS.BitBlt(hdcDest, 0, 0, rect.width, rect.height, hdcSource, 0, 0, OS.SRCCOPY);
 					OS.SelectObject(hdcSource, hOldSrc);
@@ -262,8 +263,8 @@ public Image(Device device, Image srcImage, int flag) {
 					transparentPixel = srcImage.transparentPixel;
 					break;
 				case SWT.ICON:
-					imageMetadata = new ImageHandle(OS.CopyImage(srcImageHandle, OS.IMAGE_ICON, rect.width, rect.height, 0), getZoom());
-					if (imageMetadata.handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+					imageMetadata = newImageHandle(OS.CopyImage(srcImageHandle, OS.IMAGE_ICON, rect.width, rect.height, 0), zoom);
+					if (imageMetadata == null) SWT.error(SWT.ERROR_NO_HANDLES);
 					break;
 				default:
 					SWT.error(SWT.ERROR_INVALID_IMAGE);
@@ -843,7 +844,7 @@ ImageHandle initNative(String filename, int zoom) {
 					long[] hicon = new long[1];
 					status = Gdip.Bitmap_GetHICON(bitmap, hicon);
 					handle = hicon[0];
-					imageMetadata = new ImageHandle(handle, zoom);
+					imageMetadata = newImageHandle(handle, zoom);
 				} else {
 					this.type = SWT.BITMAP;
 					width = Gdip.Image_GetWidth(bitmap);
@@ -892,7 +893,7 @@ ImageHandle initNative(String filename, int zoom) {
 						OS.SelectObject(srcHDC, oldSrcBitmap);
 						OS.DeleteDC(srcHDC);
 						device.internal_dispose_GC(hDC, null);
-						imageMetadata = new ImageHandle(handle, zoom);
+						imageMetadata = newImageHandle(handle, zoom);
 					} else {
 						long lockedBitmapData = Gdip.BitmapData_new();
 						if (lockedBitmapData != 0) {
@@ -1742,15 +1743,6 @@ private static HandleForImageDataContainer init(Device device, ImageData i) {
 	}
 }
 
-private void setImageMetadataForHandle(ImageHandle imageMetadata, Integer zoom) {
-	if (zoom == null)
-		return;
-	if (zoomLevelToImageHandle.containsKey(zoom)) {
-		SWT.error(SWT.ERROR_ITEM_NOT_ADDED);
-	}
-	zoomLevelToImageHandle.put(zoom, imageMetadata);
-}
-
 private ImageHandle initIconHandle(Device device, ImageData source, ImageData mask, Integer zoom) {
 	ImageData imageData = applyMask(source, mask);
 	HandleForImageDataContainer imageDataHandle = init(device, imageData);
@@ -1768,13 +1760,13 @@ private ImageHandle initIconHandle(long[] handles, int zoom) {
 	OS.DeleteObject(handles[0]);
 	OS.DeleteObject(handles[1]);
 	type = SWT.ICON;
-	return new ImageHandle(hIcon, zoom);
+	return newImageHandle(hIcon, zoom);
 }
 
 private ImageHandle initBitmapHandle(ImageData imageData, long handle, Integer zoom) {
 	type = SWT.BITMAP;
 	transparentPixel = imageData.transparentPixel;
-	return new ImageHandle(handle, zoom);
+	return newImageHandle(handle, zoom);
 }
 
 static long [] initIcon(Device device, ImageData source, ImageData mask) {
@@ -2061,7 +2053,7 @@ public String toString () {
 public static Image win32_new(Device device, int type, long handle, int nativeZoom) {
 	Image image = new Image(device, nativeZoom);
 	image.type = type;
-	image.new ImageHandle(handle, nativeZoom);
+	image.newImageHandle(handle, nativeZoom);
 	image.device.registerResourceWithZoomSupport(image);
 	return image;
 }
@@ -2110,7 +2102,7 @@ private class PlainImageProviderWrapper extends AbstractImageProviderWrapper {
 	ImageHandle getImageMetadata(int zoom) {
 		if (zoomLevelToImageHandle.isEmpty()) {
 			long handle = initBaseHandle(zoom);
-			ImageHandle imageHandle = new ImageHandle(handle, zoom);
+			ImageHandle imageHandle = newImageHandle(handle, zoom);
 			zoomLevelToImageHandle.put(zoom, imageHandle);
 			return imageHandle;
 		} else if(zoomLevelToImageHandle.containsKey(zoom)) {
@@ -2383,17 +2375,28 @@ private class ImageGcDrawerWrapper extends DynamicImageProviderWrapper {
 	}
 }
 
+private ImageHandle newImageHandle(long handle, int zoom) {
+	if (handle == 0) {
+		return null;
+	}
+	if (zoomLevelToImageHandle.containsKey(zoom)) {
+		SWT.error(SWT.ERROR_ITEM_NOT_ADDED);
+	}
+	ImageHandle imageHandle = new ImageHandle(handle, zoom);
+	zoomLevelToImageHandle.put(zoom, imageHandle);
+	return imageHandle;
+}
+
 private class ImageHandle {
 	private final long handle;
 	private final int zoom;
 	private int height;
 	private int width;
 
-	public ImageHandle(long handle, int zoom) {
+	ImageHandle(long handle, int zoom) {
 		this.handle = handle;
 		this.zoom = zoom;
 		updateBoundsInPixelsFromNative();
-		setImageMetadataForHandle(this, zoom);
 	}
 
 	private void updateBoundsInPixelsFromNative() {
