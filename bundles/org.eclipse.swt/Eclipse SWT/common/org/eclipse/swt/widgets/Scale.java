@@ -53,7 +53,7 @@ public class Scale extends CustomControl {
 	private final boolean horizontal;
 	private final int orientation;
 
-	private final IScaleRenderer renderer;
+	private final ScaleRenderer renderer;
 
 	/** The state of the handle */
 	public enum HandleState {
@@ -61,51 +61,6 @@ public class Scale extends CustomControl {
 	}
 
 	private HandleState handleState = HandleState.IDLE;
-
-	/**
-	 * Interface for all scale renderer
-	 */
-	public interface IScaleRenderer {
-		/**
-		 * Maps the point to a scale value
-		 *
-		 * @param point The point containing the pixels relative to the scale
-		 * @return The scale value that corresponds to the point
-		 */
-		int handlePosToValue(Point point);
-
-		/**
-		 * Indicates if the given position is within the rendered handle.
-		 *
-		 * @param position The position to check.
-		 * @return True if the position is within the bounds of the handle.
-		 */
-		boolean isWithinHandle(Point position);
-
-		/**
-		 * Indicates if the given position before the rendered handle.
-		 *
-		 * @param position The position to check.
-		 * @return True if the position is before the bounds of the handle.
-		 */
-		boolean isAfterHandle(Point position);
-
-		/**
-		 * Indicates if the given position after the rendered handle.
-		 *
-		 * @param position The position to check.
-		 * @return True if the position is after the bounds of the handle.
-		 */
-		boolean isBeforeHandle(Point position);
-
-		/**
-		 * Renders the handle.
-		 *
-		 * @param gc
-		 * @param size
-		 */
-		void render(GC gc, Point size);
-	}
 
 	/**
 	 * Constructs a new instance of this class given its parent and a style value

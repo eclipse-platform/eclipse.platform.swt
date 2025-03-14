@@ -15,9 +15,8 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.Scale.*;
 
-class DefaultScaleRenderer implements IScaleRenderer {
+class DefaultScaleRenderer implements ScaleRenderer {
 	private static final Color IDLE_COLOR = new Color(0, 95, 184);
 	private static final Color HOVER_COLOR = new Color(0, 0, 0);
 	private static final Color DRAG_COLOR = new Color(204, 204, 204);
