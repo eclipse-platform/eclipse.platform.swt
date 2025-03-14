@@ -16,7 +16,6 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.accessibility.*;
-import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 
 /**
@@ -49,51 +48,13 @@ import org.eclipse.swt.graphics.*;
  *      CustomControlExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further
  *      information</a>
- * @see Label#shortenText(GC, String, int)
+ * @see LabelRenderer#shortenText(GC, String, int, int)
  */
 public class Label extends CustomControl {
 
-	private static final Color DISABLED_COLOR = new Color(160, 160, 160);
-	private static final Color SHADOW_IN_COLOR1 = new Color(160, 160, 160);
-	private static final Color SHADOW_IN_COLOR2 = new Color(255, 255, 255);
-	private static final Color SHADOW_OUT_COLOR1 = new Color(227, 227, 227);
-	private static final Color SHADOW_OUT_COLOR2 = new Color(160, 160, 160);
+	private final LabelRenderer renderer;
 
-	/** Gap between icon and text */
-	private static final int GAP = 5;
-	/** Left and right margins */
-	private static final int DEFAULT_MARGIN = 3;
-	/** a string inserted in the middle of text that has been shortened */
-	private static final String ELLIPSIS = "..."; //$NON-NLS-1$ // could use
-													// the ellipsis glyph on
-													// some platforms "\u2026"
-	/** the alignment. Either CENTER, RIGHT, LEFT. Default is LEFT */
-	private int align = SWT.LEFT;
-	private int leftMargin = DEFAULT_MARGIN;
-	private int topMargin = DEFAULT_MARGIN;
-	private int rightMargin = DEFAULT_MARGIN;
-	private int bottomMargin = DEFAULT_MARGIN;
-	/** the current text */
-	private String text;
-	/** the current icon */
-	private Image image;
-	// The tooltip is used for two purposes - the application can set
-	// a tooltip or the tooltip can be used to display the full text when the
-	// the text has been truncated due to the label being too short.
-	// The appToolTip stores the tooltip set by the application.
-	// Control.tooltiptext
-	// contains whatever tooltip is currently being displayed.
-	private String appToolTipText;
 	private boolean ignoreDispose;
-
-	private Image backgroundImage;
-	private Color[] gradientColors;
-	private int[] gradientPercents;
-	private boolean gradientVertical;
-	private Color background;
-
-	private static final int DRAW_FLAGS = SWT.DRAW_MNEMONIC | SWT.DRAW_TAB
-	                                      | SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER;
 
 	/**
 	 * Constructs a new instance of this class given its parent and a style
@@ -137,13 +98,18 @@ public class Label extends CustomControl {
 		if ((style & (SWT.CENTER | SWT.RIGHT)) == 0) {
 			style |= SWT.LEFT;
 		}
+		final int align;
 		if ((style & SWT.CENTER) != 0) {
 			align = SWT.CENTER;
 		} else if ((style & SWT.RIGHT) != 0) {
 			align = SWT.RIGHT;
-		} else if ((style & SWT.LEFT) != 0) {
+		} else {
 			align = SWT.LEFT;
 		}
+
+		renderer = new BasicLabelRenderer(this);
+		renderer.setAlign(align);
+		renderer.setForeground(getForeground());
 
 		final Listener listener = event -> {
 			switch (event.type) {
@@ -184,49 +150,7 @@ public class Label extends CustomControl {
 
 	@Override
 	protected Point computeDefaultSize() {
-		int lineWidth = 0;
-		int lineHeight = 0;
-
-		int leftMargin = this.leftMargin;
-		int imageWidth = 0;
-		int imageHeight = 0;
-		int gap = 0;
-		int topMargin = this.topMargin;
-
-		if (text != null && !text.isEmpty()) {
-			Point textExtent = Drawing.getTextExtent(this, text, DRAW_FLAGS);
-			lineWidth = textExtent.x;
-			lineHeight = textExtent.y;
-			if (image != null) {
-				gap = Label.GAP;
-			}
-		}
-		if (image != null) {
-			Rectangle imgB = image.getBounds();
-			imageWidth = imgB.width;
-			imageHeight = imgB.height;
-		}
-
-		int width = leftMargin + imageWidth + gap + lineWidth
-				+ this.rightMargin;
-		int height = topMargin + Math.max(lineHeight, imageHeight)
-				+ this.bottomMargin;
-
-		return new Point(width, height);
-	}
-
-	/**
-	 * Draw a rectangle in the given colors.
-	 */
-	private void drawBevelRect(GC gc, int x, int y, int w, int h,
-			Color topleft, Color bottomright) {
-		gc.setForeground(bottomright);
-		gc.drawLine(x + w, y, x + w, y + h);
-		gc.drawLine(x, y + h, x + w, y + h);
-
-		gc.setForeground(topleft);
-		gc.drawLine(x, y, x + w - 1, y);
-		gc.drawLine(x, y, x, y + h - 1);
+		return renderer.computeDefaultSize();
 	}
 
 	/*
@@ -269,7 +193,7 @@ public class Label extends CustomControl {
 		 * the widget.
 		 */
 		// checkWidget();
-		return align;
+		return renderer.getAlign();
 	}
 
 	/**
@@ -286,7 +210,7 @@ public class Label extends CustomControl {
 		 * the widget.
 		 */
 		// checkWidget();
-		return bottomMargin;
+		return renderer.getBottomMargin();
 	}
 
 	/**
@@ -301,7 +225,7 @@ public class Label extends CustomControl {
 		 * the widget.
 		 */
 		// checkWidget();
-		return image;
+		return renderer.getImage();
 	}
 
 	/**
@@ -318,7 +242,7 @@ public class Label extends CustomControl {
 		 * the widget.
 		 */
 		// checkWidget();
-		return leftMargin;
+		return renderer.getLeftMargin();
 	}
 
 	/**
@@ -335,39 +259,13 @@ public class Label extends CustomControl {
 		 * the widget.
 		 */
 		// checkWidget();
-		return rightMargin;
-	}
-
-	/**
-	 * Compute the minimum size.
-	 */
-	private Point getTotalSize(GC gc, Image image, String text) {
-		Point size = new Point(0, 0);
-
-		if (image != null) {
-			Rectangle r = image.getBounds();
-			size.x += r.width;
-			size.y += r.height;
-		}
-
-		if (text != null && text.length() > 0) {
-			Point e = gc.textExtent(text, DRAW_FLAGS);
-			size.x += e.x;
-			size.y = Math.max(size.y, e.y);
-			if (image != null) {
-				size.x += GAP;
-			}
-		} else {
-			size.y = Math.max(size.y, gc.getFontMetrics().getHeight());
-		}
-
-		return size;
+		return renderer.getRightMargin();
 	}
 
 	@Override
 	public int getStyle() {
 		int style = super.getStyle();
-		switch (align) {
+		switch (renderer.getAlign()) {
 		case SWT.RIGHT -> style |= SWT.RIGHT;
 		case SWT.CENTER -> style |= SWT.CENTER;
 		case SWT.LEFT -> style |= SWT.LEFT;
@@ -387,13 +285,14 @@ public class Label extends CustomControl {
 		 * the widget.
 		 */
 		// checkWidget();
+		final String text = renderer.getText();
 		return text != null ? text : "";
 	}
 
 	@Override
 	public String getToolTipText() {
 		checkWidget();
-		return appToolTipText;
+		return renderer.getToolTipText();
 	}
 
 	/**
@@ -410,7 +309,7 @@ public class Label extends CustomControl {
 		 * the widget.
 		 */
 		// checkWidget();
-		return topMargin;
+		return renderer.getTopMargin();
 	}
 
 	private void initAccessible() {
@@ -428,7 +327,7 @@ public class Label extends CustomControl {
 
 			@Override
 			public void getKeyboardShortcut(AccessibleEvent e) {
-				char mnemonic = _findMnemonic(Label.this.text);
+				char mnemonic = _findMnemonic(renderer.getText());
 				if (mnemonic != '\0') {
 					e.result = "Alt+" + mnemonic; //$NON-NLS-1$
 				}
@@ -478,16 +377,11 @@ public class Label extends CustomControl {
 		notifyListeners(event.type, event);
 		event.type = SWT.NONE;
 
-		gradientColors = null;
-		gradientPercents = null;
-		backgroundImage = null;
-		text = null;
-		image = null;
-		appToolTipText = null;
+		renderer.dispose();
 	}
 
 	private void onMnemonic(Event event) {
-		char mnemonic = _findMnemonic(text);
+		char mnemonic = _findMnemonic(renderer.getText());
 		if (mnemonic == '\0') {
 			return;
 		}
@@ -516,243 +410,9 @@ public class Label extends CustomControl {
 	}
 
 	private void onPaint(Event event) {
-		Drawing.drawWithGC(this, event.gc, this::doPaint);
+		Drawing.drawWithGC(this, event.gc, renderer::paint);
 	}
 
-	private void doPaint(GC gc) {
-		if ((text == null || text.isEmpty()) && image == null) {
-			return;
-		}
-
-		Point size = getSize();
-		final int width = size.x;
-		final int height = size.y;
-
-		boolean shortenText = false;
-		String t = text;
-		Image img = image;
-		int availableWidth = Math.max(0,
-				width - (leftMargin + rightMargin));
-		Point extent = getTotalSize(gc, img, t);
-		if (extent.x > availableWidth) {
-			img = null;
-			extent = getTotalSize(gc, img, t);
-			if (extent.x > availableWidth) {
-				shortenText = true;
-			}
-		}
-
-		String[] lines = text == null ? null : splitString(text);
-
-		// shorten the text
-		if (shortenText) {
-			extent.x = 0;
-			for (int i = 0; i < lines.length; i++) {
-				Point e = gc.textExtent(lines[i], DRAW_FLAGS);
-				if (e.x > availableWidth) {
-					lines[i] = shortenText(gc, lines[i], availableWidth);
-					extent.x = Math.max(extent.x,
-							getTotalSize(gc, null, lines[i]).x);
-				} else {
-					extent.x = Math.max(extent.x, e.x);
-				}
-			}
-			if (appToolTipText == null) {
-				super.setToolTipText(text);
-			}
-		} else {
-			super.setToolTipText(appToolTipText);
-		}
-
-		// determine horizontal position
-		int x = leftMargin;
-		if (align == SWT.CENTER) {
-			x = (width - extent.x) / 2;
-		}
-		if (align == SWT.RIGHT) {
-			x = width - rightMargin - extent.x;
-		}
-
-		// draw a background image behind the text
-		try {
-			if (backgroundImage != null) {
-				// draw a background image behind the text
-				Rectangle imageRect = backgroundImage.getBounds();
-				// tile image to fill space
-				gc.setBackground(getBackground());
-				gc.fillRectangle(0, 0, width, height);
-				int xPos = 0;
-				while (xPos < width) {
-					int yPos = 0;
-					while (yPos < height) {
-						gc.drawImage(backgroundImage, xPos, yPos);
-						yPos += imageRect.height;
-					}
-					xPos += imageRect.width;
-				}
-			} else if (gradientColors != null) {
-				// draw a gradient behind the text
-				final Color oldBackground = gc.getBackground();
-				if (gradientColors.length == 1) {
-					if (gradientColors[0] != null) {
-						gc.setBackground(gradientColors[0]);
-					}
-					gc.fillRectangle(0, 0, width, height);
-				} else {
-					final Color oldForeground = gc.getForeground();
-					Color lastColor = gradientColors[0];
-					if (lastColor == null) {
-						lastColor = oldBackground;
-					}
-					int pos = 0;
-					for (int i = 0; i < gradientPercents.length; ++i) {
-						gc.setForeground(lastColor);
-						lastColor = gradientColors[i + 1];
-						if (lastColor == null) {
-							lastColor = oldBackground;
-						}
-						gc.setBackground(lastColor);
-						if (gradientVertical) {
-							final int gradientHeight = (gradientPercents[i]
-									* height / 100) - pos;
-							gc.fillGradientRectangle(0, pos, width,
-									gradientHeight, true);
-							pos += gradientHeight;
-						} else {
-							final int gradientWidth = (gradientPercents[i]
-									* width / 100) - pos;
-							gc.fillGradientRectangle(pos, 0, gradientWidth,
-									height, false);
-							pos += gradientWidth;
-						}
-					}
-					if (gradientVertical && pos < height) {
-						gc.setBackground(getBackground());
-						gc.fillRectangle(0, pos, width, height - pos);
-					}
-					if (!gradientVertical && pos < width) {
-						gc.setBackground(getBackground());
-						gc.fillRectangle(pos, 0, width - pos, height);
-					}
-					gc.setForeground(oldForeground);
-				}
-				gc.setBackground(oldBackground);
-			} else {
-				if (background != null && background.getAlpha() > 0) {
-					gc.setBackground(getBackground());
-					gc.fillRectangle(0, 0, width, height);
-				}
-			}
-		} catch (SWTException e) {
-			if ((getStyle() & SWT.DOUBLE_BUFFERED) == 0) {
-				gc.setBackground(getBackground());
-				gc.fillRectangle(0, 0, width, height);
-			}
-		}
-
-		// draw border
-		int style = getStyle();
-		if ((style & SWT.SHADOW_IN) != 0 || (style & SWT.SHADOW_OUT) != 0) {
-			paintBorder(gc, width, height);
-		}
-
-		/*
-		 * Compute text height and image height. If image height is more than
-		 * the text height, draw image starting from top margin. Else draw text
-		 * starting from top margin.
-		 */
-		Rectangle imageRect = null;
-		int lineHeight = 0, textHeight = 0, imageHeight = 0;
-
-		if (img != null) {
-			imageRect = img.getBounds();
-			imageHeight = imageRect.height;
-		}
-		if (lines != null) {
-			lineHeight = gc.getFontMetrics().getHeight();
-			textHeight = lines.length * lineHeight;
-		}
-
-		int imageY, midPoint;
-		if (imageHeight > textHeight) {
-			if (topMargin == DEFAULT_MARGIN && bottomMargin == DEFAULT_MARGIN) {
-				imageY = 0;
-			} else {
-				imageY = topMargin;
-			}
-			midPoint = imageY + imageHeight / 2;
-		} else {
-			int lineY;
-			if (topMargin == DEFAULT_MARGIN && bottomMargin == DEFAULT_MARGIN) {
-				lineY = (textHeight - imageHeight) / 2;
-			} else {
-				lineY = topMargin;
-			}
-			midPoint = lineY + textHeight / 2;
-			imageY = midPoint - imageHeight / 2;
-		}
-
-		// draw the image
-		if (img != null) {
-			gc.drawImage(img, 0, 0, imageRect.width, imageHeight, x, imageY,
-					imageRect.width, imageHeight);
-			x += imageRect.width + GAP;
-			extent.x -= imageRect.width + GAP;
-		}
-
-		// draw the text
-		// we draw the label at the top.
-		int lineY = topMargin;
-
-		if (textHeight < imageHeight) {
-			lineY = (imageHeight - textHeight) / 2;
-		}
-
-		if (lines != null) {
-			gc.setForeground(isEnabled() ? getForeground() : DISABLED_COLOR);
-			for (String line : lines) {
-				int lineX = x;
-				if (lines.length > 1) {
-					if (align == SWT.CENTER) {
-						int lineWidth = gc.textExtent(line, DRAW_FLAGS).x;
-						lineX = x + Math.max(0, (extent.x - lineWidth) / 2);
-					}
-					if (align == SWT.RIGHT) {
-						int lineWidth = gc.textExtent(line, DRAW_FLAGS).x;
-						lineX = Math.max(x,
-								width - rightMargin - lineWidth);
-					}
-				}
-				gc.drawText(line, lineX, lineY, DRAW_FLAGS);
-				lineY += lineHeight;
-			}
-		}
-	}
-
-	/**
-	 * Paint the Label's border.
-	 */
-	private void paintBorder(GC gc, int width, int height) {
-		Display disp = getDisplay();
-
-		Color c1 = null;
-		Color c2 = null;
-
-		int style = getStyle();
-		if ((style & SWT.SHADOW_IN) != 0) {
-			c1 = SHADOW_IN_COLOR1;
-			c2 = SHADOW_IN_COLOR2;
-		}
-		if ((style & SWT.SHADOW_OUT) != 0) {
-			c1 = SHADOW_OUT_COLOR1;
-			c2 = SHADOW_OUT_COLOR2;
-		}
-
-		if (c1 != null && c2 != null) {
-			gc.setLineWidth(1);
-			drawBevelRect(gc, 0, 0, width - 1, height - 1, c1, c2);
-		}
-	}
 
 	/**
 	 * Set the horizontal alignment of the Label. Use the values LEFT, CENTER
@@ -776,8 +436,8 @@ public class Label extends CustomControl {
 		if (align != SWT.LEFT && align != SWT.RIGHT && align != SWT.CENTER) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		}
-		if (this.align != align) {
-			this.align = align;
+		if (renderer.getAlign() != align) {
+			renderer.setAlign(align);
 			redraw();
 		}
 	}
@@ -785,23 +445,14 @@ public class Label extends CustomControl {
 	@Override
 	public void setBackground(Color color) {
 		super.setBackground(color);
-		// Are these settings the same as before?
-		if (backgroundImage == null && gradientColors == null
-				&& gradientPercents == null) {
-			if (color == null) {
-				if (background == null) {
-					return;
-				}
-			} else {
-				if (color.equals(background)) {
-					return;
-				}
-			}
-		}
-		background = color;
-		backgroundImage = null;
-		gradientColors = null;
-		gradientPercents = null;
+		renderer.setBackground(color);
+		redraw();
+	}
+
+	@Override
+	public void setForeground(Color color) {
+		super.setForeground(color);
+		renderer.setForeground(getForeground());
 		redraw();
 	}
 
@@ -892,73 +543,7 @@ public class Label extends CustomControl {
 	public void setBackground(Color[] colors, int[] percents,
 			boolean vertical) {
 		checkWidget();
-		if (colors != null) {
-			if (percents == null || percents.length != colors.length - 1) {
-				SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-			}
-			if (getDisplay().getDepth() < 15) {
-				// Don't use gradients on low color displays
-				colors = new Color[]{colors[colors.length - 1]};
-				percents = new int[]{};
-			}
-			for (int i = 0; i < percents.length; i++) {
-				if (percents[i] < 0 || percents[i] > 100) {
-					SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-				}
-				if (i > 0 && percents[i] < percents[i - 1]) {
-					SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-				}
-			}
-		}
-
-		// Are these settings the same as before?
-		final Color background = getBackground();
-		if (backgroundImage == null) {
-			if ((gradientColors != null) && (colors != null)
-					&& (gradientColors.length == colors.length)) {
-				boolean same = false;
-				for (int i = 0; i < gradientColors.length; i++) {
-					same = (gradientColors[i] == colors[i])
-							|| ((gradientColors[i] == null)
-									&& (colors[i] == background))
-							|| ((gradientColors[i] == background)
-									&& (colors[i] == null));
-					if (!same) {
-						break;
-					}
-				}
-				if (same) {
-					for (int i = 0; i < gradientPercents.length; i++) {
-						same = gradientPercents[i] == percents[i];
-						if (!same) {
-							break;
-						}
-					}
-				}
-				if (same && this.gradientVertical == vertical)
-					return;
-			}
-		} else {
-			backgroundImage = null;
-		}
-		// Store the new settings
-		if (colors == null) {
-			gradientColors = null;
-			gradientPercents = null;
-			gradientVertical = false;
-		} else {
-			gradientColors = new Color[colors.length];
-			for (int i = 0; i < colors.length; ++i)
-				gradientColors[i] = (colors[i] != null)
-						? colors[i]
-						: background;
-			gradientPercents = new int[percents.length];
-			for (int i = 0; i < percents.length; ++i) {
-				gradientPercents[i] = percents[i];
-			}
-			gradientVertical = vertical;
-		}
-		// Refresh with the new settings
+		renderer.setBackground(colors, percents, vertical);
 		redraw();
 	}
 
@@ -979,14 +564,10 @@ public class Label extends CustomControl {
 	@Override
 	public void setBackgroundImage(Image image) {
 		checkWidget();
-		if (image == backgroundImage) {
+		if (image == renderer.getBackgroundImage()) {
 			return;
 		}
-		if (image != null) {
-			gradientColors = null;
-			gradientPercents = null;
-		}
-		backgroundImage = image;
+		renderer.setBackgroundImage(image);
 		redraw();
 
 	}
@@ -1010,10 +591,10 @@ public class Label extends CustomControl {
 	 */
 	public void setBottomMargin(int bottomMargin) {
 		checkWidget();
-		if (this.bottomMargin == bottomMargin || bottomMargin < 0) {
+		if (renderer.getBottomMargin() == bottomMargin || bottomMargin < 0) {
 			return;
 		}
-		this.bottomMargin = bottomMargin;
+		renderer.setBottomMargin(bottomMargin);
 		redraw();
 	}
 
@@ -1039,8 +620,8 @@ public class Label extends CustomControl {
 	 */
 	public void setImage(Image image) {
 		checkWidget();
-		if (image != this.image) {
-			this.image = image;
+		if (image != renderer.getImage()) {
+			renderer.setImage(image);
 			redraw();
 		}
 	}
@@ -1064,10 +645,10 @@ public class Label extends CustomControl {
 	 */
 	public void setLeftMargin(int leftMargin) {
 		checkWidget();
-		if (this.leftMargin == leftMargin || leftMargin < 0) {
+		if (renderer.getLeftMargin() == leftMargin || leftMargin < 0) {
 			return;
 		}
-		this.leftMargin = leftMargin;
+		renderer.setLeftMargin(leftMargin);
 		redraw();
 	}
 
@@ -1095,10 +676,7 @@ public class Label extends CustomControl {
 	public void setMargins(int leftMargin, int topMargin, int rightMargin,
 			int bottomMargin) {
 		checkWidget();
-		this.leftMargin = Math.max(0, leftMargin);
-		this.topMargin = Math.max(0, topMargin);
-		this.rightMargin = Math.max(0, rightMargin);
-		this.bottomMargin = Math.max(0, bottomMargin);
+		renderer.setMargins(leftMargin, topMargin, rightMargin, bottomMargin);
 		redraw();
 	}
 
@@ -1121,10 +699,11 @@ public class Label extends CustomControl {
 	 */
 	public void setRightMargin(int rightMargin) {
 		checkWidget();
-		if (this.rightMargin == rightMargin || rightMargin < 0) {
+		if (renderer.getRightMargin() == rightMargin || rightMargin < 0) {
 			return;
 		}
-		this.rightMargin = rightMargin;
+
+		renderer.setRightMargin(rightMargin);
 		redraw();
 	}
 
@@ -1160,16 +739,20 @@ public class Label extends CustomControl {
 		if (text == null) {
 			text = ""; //$NON-NLS-1$
 		}
-		if (!text.equals(this.text)) {
-			this.text = text;
+		if (!text.equals(renderer.getText())) {
+			renderer.setText(text);
 			redraw();
 		}
 	}
 
 	@Override
 	public void setToolTipText(String string) {
+		setDisplayedToolTip(string);
+		renderer.setToolTipText(string);
+	}
+
+	void setDisplayedToolTip(String string) {
 		super.setToolTipText(string);
-		appToolTipText = super.getToolTipText();
 	}
 
 	/**
@@ -1191,93 +774,11 @@ public class Label extends CustomControl {
 	 */
 	public void setTopMargin(int topMargin) {
 		checkWidget();
-		if (this.topMargin == topMargin || topMargin < 0) {
+		if (renderer.getTopMargin() == topMargin || topMargin < 0) {
 			return;
 		}
-		this.topMargin = topMargin;
+
+		renderer.setTopMargin(topMargin);
 		redraw();
-	}
-
-	/**
-	 * Shorten the given text <code>t</code> so that its length doesn't exceed
-	 * the given width. The default implementation replaces characters in the
-	 * center of the original string with an ellipsis ("..."). Override if you
-	 * need a different strategy.
-	 *
-	 * @param gc
-	 *            the gc to use for text measurement
-	 * @param t
-	 *            the text to shorten
-	 * @param width
-	 *            the width to shorten the text to, in points
-	 * @return the shortened text
-	 */
-	protected String shortenText(GC gc, String t, int width) {
-		if (t == null) {
-			return null;
-		}
-		int w = gc.textExtent(ELLIPSIS, DRAW_FLAGS).x;
-		if (width <= w) {
-			return t;
-		}
-		int l = t.length();
-		int max = l / 2;
-		int min = 0;
-		int mid = (max + min) / 2 - 1;
-		if (mid <= 0) {
-			return t;
-		}
-		TextLayout layout = new TextLayout(getDisplay());
-		layout.setText(t);
-		mid = validateOffset(layout, mid);
-		while (min < mid && mid < max) {
-			String s1 = t.substring(0, mid);
-			String s2 = t.substring(validateOffset(layout, l - mid), l);
-			int l1 = gc.textExtent(s1, DRAW_FLAGS).x;
-			int l2 = gc.textExtent(s2, DRAW_FLAGS).x;
-			if (l1 + w + l2 > width) {
-				max = mid;
-				mid = validateOffset(layout, (max + min) / 2);
-			} else if (l1 + w + l2 < width) {
-				min = mid;
-				mid = validateOffset(layout, (max + min) / 2);
-			} else {
-				min = max;
-			}
-		}
-		String result = mid == 0
-				? t
-				: t.substring(0, mid) + ELLIPSIS
-						+ t.substring(validateOffset(layout, l - mid), l);
-		layout.dispose();
-		return result;
-	}
-
-	int validateOffset(TextLayout layout, int offset) {
-		int nextOffset = layout.getNextOffset(offset, SWT.MOVEMENT_CLUSTER);
-		if (nextOffset != offset) {
-			return layout.getPreviousOffset(nextOffset, SWT.MOVEMENT_CLUSTER);
-		}
-		return offset;
-	}
-
-	private String[] splitString(String text) {
-		String[] lines = new String[1];
-		int start = 0, pos;
-		do {
-			pos = text.indexOf('\n', start);
-			if (pos == -1) {
-				lines[lines.length - 1] = text.substring(start);
-			} else {
-				boolean crlf = (pos > 0) && (text.charAt(pos - 1) == '\r');
-				lines[lines.length - 1] = text.substring(start,
-						pos - (crlf ? 1 : 0));
-				start = pos + 1;
-				String[] newLines = new String[lines.length + 1];
-				System.arraycopy(lines, 0, newLines, 0, lines.length);
-				lines = newLines;
-			}
-		} while (pos != -1);
-		return lines;
 	}
 }

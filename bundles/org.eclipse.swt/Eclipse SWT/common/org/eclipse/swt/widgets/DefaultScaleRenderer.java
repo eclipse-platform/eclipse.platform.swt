@@ -16,14 +16,16 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
-class DefaultScaleRenderer implements ScaleRenderer {
+public class DefaultScaleRenderer extends ScaleRenderer {
+
+	private static final int PREFERRED_WIDTH = 170;
+	private static final int PREFERRED_HEIGHT = 42;
+
 	private static final Color IDLE_COLOR = new Color(0, 95, 184);
 	private static final Color HOVER_COLOR = new Color(0, 0, 0);
 	private static final Color DRAG_COLOR = new Color(204, 204, 204);
 	private static final Color LINE_COLOR = new Color(160, 160, 160);
 	private static final Color DISABLED_COLOR = new Color(160, 160, 160);
-
-	private final Scale scale;
 
 	/**
 	 * Pixel per Unit. Ratio of how many pixels are used to display one unit of the
@@ -34,29 +36,46 @@ class DefaultScaleRenderer implements ScaleRenderer {
 	private Rectangle handleBounds;
 	private Rectangle bar;
 
-	DefaultScaleRenderer(Scale scale) {
-		this.scale = scale;
+	public DefaultScaleRenderer(Scale scale) {
+		super(scale);
 	}
 
 	@Override
-	public void render(GC gc, Point size) {
-		int value = scale.getSelection();
-		int min = scale.getMinimum();
-		int max = scale.getMaximum();
+	public Point computeDefaultSize() {
+		int width;
+		int height;
+		if (isHorizontal()) {
+			width = PREFERRED_WIDTH;
+			height = PREFERRED_HEIGHT;
+		}
+		else {
+			width = PREFERRED_HEIGHT;
+			height = PREFERRED_WIDTH;
+		}
+
+		return new Point(width, height);
+	}
+
+	@Override
+	public void paint(GC gc, int width, int height) {
+		int value = getSelection();
+		int min = getMinimum();
+		int max = getMaximum();
 		int units = Math.max(1, max - min);
 		int effectiveValue = Math.min(max, Math.max(min, value));
 
 		int firstNotch;
 		int lastNotch;
 
-		if (scale.isVertical()) {
-			bar = new Rectangle(19, 8, 3, size.y - 16);
-			firstNotch = bar.y + 5;
-			lastNotch = bar.y + bar.height - 5;
-		} else {
-			bar = new Rectangle(8, 19, size.x - 16, 3);
+		if (isHorizontal()) {
+			bar = new Rectangle(8, 19, width - 16, 3);
 			firstNotch = bar.x + 5;
 			lastNotch = bar.x + bar.width - 5;
+		}
+		else {
+			bar = new Rectangle(19, 8, 3, height - 16);
+			firstNotch = bar.y + 5;
+			lastNotch = bar.y + bar.height - 5;
 		}
 
 		gc.fillRectangle(bar);
@@ -72,7 +91,7 @@ class DefaultScaleRenderer implements ScaleRenderer {
 		drawNotch(gc, lastNotch, 4);
 
 		// draw center notches
-		int unitPerPage = scale.getPageIncrement();
+		int unitPerPage = getPageIncrement();
 		double totalPixel = lastNotch - firstNotch;
 		ppu = totalPixel / units;
 		drawCenterNotches(gc, firstNotch, lastNotch, units, unitPerPage);
@@ -81,7 +100,7 @@ class DefaultScaleRenderer implements ScaleRenderer {
 	}
 
 	private void drawCenterNotches(GC gc, int firstNotchPos, int lastNotchPos, int units, int unitPerPage) {
-		if (isRTL() && scale.isHorizontal()) {
+		if (isRTL() && isHorizontal()) {
 			for (int i = unitPerPage; i < units; i += unitPerPage) {
 				int position = lastNotchPos - (int) (i * ppu);
 				drawNotch(gc, position, 3);
@@ -97,8 +116,8 @@ class DefaultScaleRenderer implements ScaleRenderer {
 	private void drawHandle(GC gc, int value) {
 		// draw handle
 		Color handleColor;
-		if (scale.isEnabled()) {
-			handleColor = switch (scale.getHandleState()) {
+		if (isEnabled()) {
+			handleColor = switch (getHandleState()) {
 				case IDLE -> IDLE_COLOR;
 				case HOVER -> HOVER_COLOR;
 				case DRAG -> DRAG_COLOR;
@@ -113,35 +132,35 @@ class DefaultScaleRenderer implements ScaleRenderer {
 
 	private Rectangle calculateHandleBounds(int value) {
 		int pixelValue = (int) (ppu * value);
-		if (scale.isVertical()) {
-			return new Rectangle(bar.x - 9, bar.y + pixelValue, 21, 10);
-		} else if (isRTL()) {
-			return new Rectangle(bar.x + bar.width - pixelValue - 10, bar.y - 9, 10, 21);
-		} else {
+		if (isHorizontal()) {
+			if (isRTL()) {
+				return new Rectangle(bar.x + bar.width - pixelValue - 10, bar.y - 9, 10, 21);
+			}
 			return new Rectangle(bar.x + pixelValue, bar.y - 9, 10, 21);
 		}
+		return new Rectangle(bar.x - 9, bar.y + pixelValue, 21, 10);
 	}
 
 	@Override
 	public int handlePosToValue(Point pos) {
-		if (scale.isVertical()) {
-			return (int) Math.round((pos.y - bar.y) / ppu);
-		} else {
+		if (isHorizontal()) {
 			return (int) Math.round((pos.x - bar.x) / ppu);
 		}
+		return (int) Math.round((pos.y - bar.y) / ppu);
 	}
 
 	private boolean isRTL() {
-		return scale.getOrientation() == SWT.RIGHT_TO_LEFT;
+		return getOrientation() == SWT.RIGHT_TO_LEFT;
 	}
 
 	private void drawNotch(GC gc, int pos, int size) {
-		if (scale.isVertical()) {
-			gc.drawLine(bar.x - 10 - size, pos, bar.x - 10, pos);
-			gc.drawLine(bar.x + 14, pos, bar.x + 14 + size, pos);
-		} else {
+		if (isHorizontal()) {
 			gc.drawLine(pos, bar.y - 10 - size, pos, bar.y - 10);
 			gc.drawLine(pos, bar.y + 14, pos, bar.y + 14 + size);
+		}
+		else {
+			gc.drawLine(bar.x - 10 - size, pos, bar.x - 10, pos);
+			gc.drawLine(bar.x + 14, pos, bar.x + 14 + size, pos);
 		}
 	}
 
@@ -150,10 +169,6 @@ class DefaultScaleRenderer implements ScaleRenderer {
 	 * the widget. Since everything else is still relative to the top left, we
 	 * mirror vertically.
 	 */
-	private Point mirrorVertically(Point p) {
-		return new Point(scale.getBounds().width - p.x, p.y);
-	}
-
 	@Override
 	public boolean isWithinHandle(Point position) {
 		if (isRTL()) {
@@ -164,25 +179,29 @@ class DefaultScaleRenderer implements ScaleRenderer {
 
 	@Override
 	public boolean isAfterHandle(Point position) {
-		if (scale.isVertical()) {
-			return position.y > handleBounds.y + handleBounds.height;
-		} else if (isRTL()) {
-			position = mirrorVertically(position);
-			return position.x < handleBounds.x;
-		} else {
+		if (isHorizontal()) {
+			if (isRTL()) {
+				position = mirrorVertically(position);
+				return position.x < handleBounds.x;
+			}
 			return position.x > handleBounds.x + handleBounds.width;
 		}
+		return position.y > handleBounds.y + handleBounds.height;
 	}
 
 	@Override
 	public boolean isBeforeHandle(Point position) {
-		if (scale.isVertical()) {
-			return position.y < handleBounds.y;
-		} else if (isRTL()) {
-			position = mirrorVertically(position);
-			return position.x > handleBounds.x + handleBounds.width;
-		} else {
+		if (isHorizontal()) {
+			if (isRTL()) {
+				position = mirrorVertically(position);
+				return position.x > handleBounds.x + handleBounds.width;
+			}
 			return position.x < handleBounds.x;
 		}
+		return position.y < handleBounds.y;
+	}
+
+	private Point mirrorVertically(Point p) {
+		return new Point(getSize().x - p.x, p.y);
 	}
 }

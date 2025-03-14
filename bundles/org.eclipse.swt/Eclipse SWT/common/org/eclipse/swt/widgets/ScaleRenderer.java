@@ -13,20 +13,19 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.*;
 
 /**
  * Interface for all scale renderer
  */
-public interface ScaleRenderer {
+public abstract class ScaleRenderer extends ControlRenderer {
 	/**
 	 * Maps the point to a scale value
 	 *
 	 * @param point The point containing the pixels relative to the scale
 	 * @return The scale value that corresponds to the point
 	 */
-	int handlePosToValue(Point point);
+	public abstract int handlePosToValue(Point point);
 
 	/**
 	 * Indicates if the given position is within the rendered handle.
@@ -34,7 +33,7 @@ public interface ScaleRenderer {
 	 * @param position The position to check.
 	 * @return True if the position is within the bounds of the handle.
 	 */
-	boolean isWithinHandle(Point position);
+	public abstract boolean isWithinHandle(Point position);
 
 	/**
 	 * Indicates if the given position before the rendered handle.
@@ -42,7 +41,7 @@ public interface ScaleRenderer {
 	 * @param position The position to check.
 	 * @return True if the position is before the bounds of the handle.
 	 */
-	boolean isAfterHandle(Point position);
+	public abstract boolean isAfterHandle(Point position);
 
 	/**
 	 * Indicates if the given position after the rendered handle.
@@ -50,13 +49,40 @@ public interface ScaleRenderer {
 	 * @param position The position to check.
 	 * @return True if the position is after the bounds of the handle.
 	 */
-	boolean isBeforeHandle(Point position);
+	public abstract boolean isBeforeHandle(Point position);
 
-	/**
-	 * Renders the handle.
-	 *
-	 * @param gc
-	 * @param size
-	 */
-	void render(GC gc, Point size);
+	private final Scale scale;
+
+	protected ScaleRenderer(Scale scale) {
+		super(scale);
+		this.scale = scale;
+	}
+
+	protected int getSelection() {
+		return scale.getSelection();
+	}
+
+	protected int getMinimum() {
+		return scale.getMinimum();
+	}
+
+	protected int getMaximum() {
+		return scale.getMaximum();
+	}
+
+	protected int getPageIncrement() {
+		return scale.getPageIncrement();
+	}
+
+	protected boolean isHorizontal() {
+		return scale.isHorizontal();
+	}
+
+	protected Scale.HandleState getHandleState() {
+		return scale.getHandleState();
+	}
+
+	protected int getOrientation() {
+		return scale.getOrientation();
+	}
 }

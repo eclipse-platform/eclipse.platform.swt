@@ -41,8 +41,6 @@ import org.eclipse.swt.graphics.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class Scale extends CustomControl {
-	private static final int PREFERRED_WIDTH = 170;
-	private static final int PREFERRED_HEIGHT = 42;
 
 	private int minimum = 0;
 	private int maximum = 100;
@@ -304,22 +302,12 @@ public class Scale extends CustomControl {
 			return;
 		}
 
-		Drawing.drawWithGC(this, event.gc, gc -> renderer.render(gc, size));
+		Drawing.drawWithGC(this, event.gc, gc -> renderer.paint(gc, size.x, size.y));
 	}
 
 	@Override
 	protected Point computeDefaultSize() {
-		int width;
-		int height;
-		if (isVertical()) {
-			width = PREFERRED_HEIGHT;
-			height = PREFERRED_WIDTH;
-		} else {
-			width = PREFERRED_WIDTH;
-			height = PREFERRED_HEIGHT;
-		}
-
-		return new Point(width, height);
+		return renderer.computeDefaultSize();
 	}
 
 	/**
