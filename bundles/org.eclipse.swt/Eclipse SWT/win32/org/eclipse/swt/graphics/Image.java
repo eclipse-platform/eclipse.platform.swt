@@ -408,7 +408,7 @@ public Image(Device device, ImageData source, ImageData mask) {
 	source = DPIUtil.autoScaleUp(device, source);
 	mask = DPIUtil.autoScaleUp(device, mask);
 	mask = ImageData.convertMask(mask);
-	init(this.device, this, source, mask, getZoom());
+	initIconHandle(this.device, source, mask, getZoom());
 	init();
 	this.device.registerResourceWithZoomSupport(this);
 }
@@ -777,7 +777,7 @@ private ImageHandle getImageMetadata(int zoom) {
 			// to image data without transparency mask, this will create invalid images
 			// so this fallback will "repair" the image data by explicitly passing
 			// the transparency mask created from the scaled image data
-			init(this.device, this, newData, newData.getTransparencyMask(), zoom);
+			initIconHandle(this.device, newData, newData.getTransparencyMask(), zoom);
 		} else {
 			init(newData, zoom);
 		}
@@ -1542,7 +1542,9 @@ static ImageData directToDirect(ImageData src, int newDepth, PaletteData newPale
 	return img;
 }
 
-static long [] init(Device device, Image image, ImageData i, Integer zoom) {
+private record HandleForImageDataContainer(int type, ImageData imageData, long[] handles) {}
+
+private static HandleForImageDataContainer init(Device device, ImageData i) {
 	/* Windows does not support 2-bit images. Convert to 4-bit image. */
 	if (i.depth == 2) {
 		i = indexToIndex(i, 4);
@@ -1708,7 +1710,6 @@ static long [] init(Device device, Image image, ImageData i, Integer zoom) {
 	}
 	OS.MoveMemory(pBits[0], data, data.length);
 
-	long [] result = null;
 	if (i.getTransparencyType() == SWT.TRANSPARENCY_MASK) {
 		/* Get the HDC for the device */
 		long hDC = device.internal_new_GC(null);
@@ -1735,31 +1736,10 @@ static long [] init(Device device, Image image, ImageData i, Integer zoom) {
 		OS.DeleteDC(hdcDest);
 		OS.DeleteObject(hDib);
 
-		if (image == null) {
-			result = new long []{hBitmap, hMask};
-		} else {
-			/* Create the icon */
-			ICONINFO info = new ICONINFO();
-			info.fIcon = true;
-			info.hbmColor = hBitmap;
-			info.hbmMask = hMask;
-			long hIcon = OS.CreateIconIndirect(info);
-			if (hIcon == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-			OS.DeleteObject(hBitmap);
-			OS.DeleteObject(hMask);
-			image.type = SWT.ICON;
-			image.new ImageHandle(hIcon, zoom);
-		}
+		return new HandleForImageDataContainer(SWT.ICON, i, new long []{hBitmap, hMask});
 	} else {
-		if (image == null) {
-			result = new long []{hDib};
-		} else {
-			image.type = SWT.BITMAP;
-			image.transparentPixel = i.transparentPixel;
-			image.new ImageHandle(hDib, zoom);
-		}
+		return new HandleForImageDataContainer(SWT.BITMAP, i, new long []{hDib});
 	}
-	return result;
 }
 
 private void setImageMetadataForHandle(ImageHandle imageMetadata, Integer zoom) {
@@ -1771,9 +1751,35 @@ private void setImageMetadataForHandle(ImageHandle imageMetadata, Integer zoom) 
 	zoomLevelToImageHandle.put(zoom, imageMetadata);
 }
 
-static long [] init(Device device, Image image, ImageData source, ImageData mask, Integer zoom) {
+private ImageHandle initIconHandle(Device device, ImageData source, ImageData mask, Integer zoom) {
 	ImageData imageData = applyMask(source, mask);
-	return init(device, image, imageData, zoom);
+	HandleForImageDataContainer imageDataHandle = init(device, imageData);
+	return initIconHandle(imageDataHandle.handles, zoom);
+}
+
+private ImageHandle initIconHandle(long[] handles, int zoom) {
+	/* Create the icon */
+	ICONINFO info = new ICONINFO();
+	info.fIcon = true;
+	info.hbmColor = handles[0];
+	info.hbmMask = handles[1];
+	long hIcon = OS.CreateIconIndirect(info);
+	if (hIcon == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	OS.DeleteObject(handles[0]);
+	OS.DeleteObject(handles[1]);
+	type = SWT.ICON;
+	return new ImageHandle(hIcon, zoom);
+}
+
+private ImageHandle initBitmapHandle(ImageData imageData, long handle, Integer zoom) {
+	type = SWT.BITMAP;
+	transparentPixel = imageData.transparentPixel;
+	return new ImageHandle(handle, zoom);
+}
+
+static long [] initIcon(Device device, ImageData source, ImageData mask) {
+	ImageData imageData = applyMask(source, mask);
+	return init(device, imageData).handles;
 }
 
 private static ImageData applyMask(ImageData source, ImageData mask) {
@@ -1851,9 +1857,20 @@ private static ImageData applyMask(ImageData source, ImageData mask) {
 }
 
 
-void init(ImageData i, Integer zoom) {
+private ImageHandle init(ImageData i, int zoom) {
 	if (i == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, this, i, zoom);
+	HandleForImageDataContainer imageDataHandle = init(device, i);
+	switch (imageDataHandle.type()) {
+		case SWT.ICON: {
+			return initIconHandle(imageDataHandle.handles(), zoom);
+		}
+		case SWT.BITMAP: {
+			return initBitmapHandle(imageDataHandle.imageData(), imageDataHandle.handles()[0], zoom);
+		}
+		default:
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+			return null;
+	}
 }
 
 /**
