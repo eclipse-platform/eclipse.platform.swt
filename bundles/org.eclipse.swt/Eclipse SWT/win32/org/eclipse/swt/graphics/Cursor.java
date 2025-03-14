@@ -325,7 +325,7 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 		if (hMask == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	} else {
 		ImageData mask = source.getTransparencyMask();
-		long [] result = Image.init(this.device, null, source, mask, null);	// Since the image is null, the device zoom can be null
+		long [] result = Image.initIcon(this.device, source, mask);
 		hBitmap = result[0];
 		hMask = result[1];
 	}
