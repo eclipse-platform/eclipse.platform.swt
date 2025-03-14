@@ -59,7 +59,7 @@ import org.eclipse.swt.internal.gtk4.*;
  * </p>
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>SINGLE, MULTI, CHECK, FULL_SELECTION, HIDE_SELECTION, VIRTUAL, NO_SCROLL</dd>
+ * <dd>SINGLE, MULTI, CHECK, FULL_SELECTION, HIDE_SELECTION, VIRTUAL, NO_SCROLL, NO_SEARCH</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Selection, DefaultSelection, SetData, MeasureItem, EraseItem, PaintItem</dd>
  * </dl>
@@ -3247,8 +3247,8 @@ void reskinChildren (int flags) {
 }
 
 boolean searchEnabled () {
-	/* Disable searching when using VIRTUAL */
-	if ((style & SWT.VIRTUAL) != 0) return false;
+	/* Disable searching when using VIRTUAL or NO_SEARCH */
+	if ((style & SWT.VIRTUAL) != 0 || (style & SWT.NO_SEARCH) != 0) return false;
 	return true;
 }
 

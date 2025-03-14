@@ -28,7 +28,7 @@ import org.eclipse.swt.internal.gtk4.*;
  * when a string is selected.  A list may be single or multi select.
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>SINGLE, MULTI</dd>
+ * <dd>SINGLE, MULTI, NO_SEARCH</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Selection, DefaultSelection</dd>
  * </dl>
@@ -258,6 +258,9 @@ void createHandle (int index) {
 	if ((getShell ().style & SWT.ON_TOP) != 0) {
 		GTK.gtk_tree_view_set_search_column (handle, -1);
 	}
+    if ((style & SWT.NO_SEARCH) != 0) {
+        GTK.gtk_tree_view_set_search_column(handle, -1);
+    }
 	// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,
 	// reset to default font to get the usual behavior
 	setFontDescription(defaultFont().handle);
