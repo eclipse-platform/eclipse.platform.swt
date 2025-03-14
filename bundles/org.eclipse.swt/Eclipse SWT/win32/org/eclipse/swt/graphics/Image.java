@@ -993,8 +993,6 @@ void destroy () {
 	memGC = null;
 }
 
-static int count = 0;
-
 private void destroyHandle () {
 	for (ImageHandle imageMetadata : zoomLevelToImageHandle.values()) {
 		destroyHandle(imageMetadata.handle);
@@ -1299,7 +1297,7 @@ static long createDIB(int width, int height, int depth) {
 	return OS.CreateDIBSection(0, bmi, OS.DIB_RGB_COLORS, pBits, 0, 0);
 }
 
-static ImageData indexToIndex(ImageData src, int newDepth) {
+private static ImageData indexToIndex(ImageData src, int newDepth) {
 	ImageData img = new ImageData(src.width, src.height, newDepth, src.palette);
 
 	ImageData.blit(
@@ -1316,7 +1314,7 @@ static ImageData indexToIndex(ImageData src, int newDepth) {
 	return img;
 }
 
-static ImageData indexToDirect(ImageData src, int newDepth, PaletteData newPalette, int newByteOrder) {
+private static ImageData indexToDirect(ImageData src, int newDepth, PaletteData newPalette, int newByteOrder) {
 	ImageData img = new ImageData(src.width, src.height, newDepth, newPalette);
 
 	RGB[] rgbs = src.palette.getRGBs();
@@ -1348,7 +1346,7 @@ static ImageData indexToDirect(ImageData src, int newDepth, PaletteData newPalet
 	return img;
 }
 
-static ImageData directToDirect(ImageData src, int newDepth, PaletteData newPalette, int newByteOrder) {
+private static ImageData directToDirect(ImageData src, int newDepth, PaletteData newPalette, int newByteOrder) {
 	ImageData img = new ImageData(src.width, src.height, newDepth, newPalette);
 
 	ImageData.blit(
