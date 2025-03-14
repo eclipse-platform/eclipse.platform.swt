@@ -108,7 +108,10 @@ public final class Drawing {
 	}
 
 	public static Point getTextExtent(CustomControl control, String text, int drawFlags) {
-		return measure(control, gc -> gc.textExtent(text, drawFlags));
+		return measure(control, gc -> {
+			gc.setFont(control.getFont());
+			return gc.textExtent(text, drawFlags);
+		});
 	}
 
 	/**
@@ -124,7 +127,6 @@ public final class Drawing {
 		GC originalGC = new GC(control);
 		GC gc = createGraphicsContext(originalGC, control, true);
 		try {
-			gc.setFont(control.getFont());
 			return operation.apply(gc);
 		} finally {
 			gc.dispose();
