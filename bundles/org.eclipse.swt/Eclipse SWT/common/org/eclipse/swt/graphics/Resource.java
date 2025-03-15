@@ -13,7 +13,11 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
+import java.lang.ref.*;
+import java.lang.ref.Cleaner.*;
 import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
 import java.util.function.*;
 
 import org.eclipse.swt.*;
@@ -44,41 +48,35 @@ import org.eclipse.swt.*;
 public abstract class Resource {
 
 	/**
-	 * Used to track not disposed SWT resource. A separate class allows
-	 * not to have the {@link #finalize} when tracking is disabled, avoiding
-	 * possible performance issues in GC.
+	 * Used to track not disposed SWT resource.
 	 */
-	private static class ResourceTracker {
+	private static final class ResourceTracker implements Runnable {
 		/**
-		 * Resource that is tracked here
+		 * Invokes {@link #run()} once the resource is eligible for GC
 		 */
-		private Resource resource;
+		private static final Cleaner cleaner = Cleaner.create(new ResourceTrackerThreadFactory());
 
 		/**
 		 * Recorded at Resource creation if {@link #setNonDisposeHandler} was
 		 * enabled, used to track resource disposal
 		 */
-		private Error allocationStack;
+		private final Error allocationStack;
 
 		/**
-		 * Allows to ignore specific Resources even if they are not disposed
-		 * properly, used for example for Fonts that SWT doesn't own.
+		 * Controls whether the {@link Resource#nonDisposedReporter} should be notified
 		 */
-		boolean ignoreMe;
+		private final AtomicBoolean reporting = new AtomicBoolean(false);
 
-		ResourceTracker(Resource resource, Error allocationStack) {
-			this.resource = resource;
+		ResourceTracker(Error allocationStack) {
 			this.allocationStack = allocationStack;
 		}
 
 		@Override
-		protected void finalize() {
-			if (ignoreMe) return;
+		public void run() {
+			if (!reporting.get()) return;
 			if (nonDisposedReporter == null) return;
 
-			// If the Resource is GC'ed before it was disposed, this is a leak.
-			if (!resource.isDisposed())
-				nonDisposedReporter.accept(allocationStack);
+			nonDisposedReporter.accept(allocationStack);
 		}
 	}
 
@@ -96,6 +94,11 @@ public abstract class Resource {
 	 * Used to track not disposed SWT resource
 	 */
 	private ResourceTracker tracker;
+
+	/**
+	 * Represents the {@link #tracker} registered as a cleaning action via the {@link ResourceTracker#cleaner}
+	 */
+	private Cleanable cleanable;
 
 	static {
 		boolean trackingEnabled = Boolean.getBoolean("org.eclipse.swt.graphics.Resource.reportNonDisposed"); //$NON-NLS-1$
@@ -142,6 +145,8 @@ void destroyHandlesExcept(Set<Integer> zoomLevels) {
  * This method does nothing if the resource is already disposed.
  */
 public void dispose() {
+	if (tracker != null) tracker.reporting.set(false);
+	if (cleanable != null) cleanable.clean();
 	if (device == null) return;
 	if (device.isDisposed()) return;
 	destroy();
@@ -164,30 +169,29 @@ public Device getDevice() {
 }
 
 void ignoreNonDisposed() {
-	if (tracker != null) {
-		tracker.ignoreMe = true;
-	}
+	if (tracker != null) tracker.reporting.set(false);
+	if (cleanable != null) cleanable.clean();
 }
 
 void init() {
 	if (device.tracking) device.new_Object(this);
+	if (tracker != null && tracker.reporting.compareAndSet(false, true)) {
+		cleanable = ResourceTracker.cleaner.register(this, tracker);
+	}
 }
 
 void initNonDisposeTracking() {
 	// Color doesn't really have any resource to be leaked, ignore.
 	if (this instanceof Color) return;
 
-	// Avoid performance costs of having '.finalize()' when not tracking.
+	// Avoid performance costs of gathering the current stack trace when not tracking.
 	if (nonDisposedReporter == null) return;
 
 	// Capture a stack trace to help investigating the leak
 	Error error = new Error("SWT Resource was not properly disposed"); //$NON-NLS-1$
 
-	// Allocate a helper class with '.finalize()' in it, it will do the actual
-	// work of detecting and reporting errors. This works because Resource
-	// holds the only reference to 'ResourceTracker' and therefore the tracker
-	// is only GC'ed when Resource itself is ready to be GC'ed.
-	tracker = new ResourceTracker(this, error);
+	// Create the tracker that will later be registered as a cleaning action for this resource.
+	tracker = new ResourceTracker(error);
 }
 
 /**
@@ -218,6 +222,27 @@ public abstract boolean isDisposed();
  */
 public static void setNonDisposeHandler(Consumer<Error> reporter) {
 	nonDisposedReporter = reporter;
+}
+
+private final static class ResourceTrackerThreadFactory implements ThreadFactory {
+
+	private final ThreadGroup group;
+
+	public ResourceTrackerThreadFactory() {
+		ThreadGroup root = Thread.currentThread().getThreadGroup();
+		while (root.getParent() != null) {
+			root = root.getParent();
+		}
+		this.group = new ThreadGroup(root, "SWTResourceTrackerThreadGroup"); //$NON-NLS-1$
+	}
+
+	@Override
+	public Thread newThread(Runnable r) {
+		Thread thread = new Thread(group, r, "SWTResourceTracker", 0, false); //$NON-NLS-1$
+		thread.setPriority(Thread.MAX_PRIORITY - 2);
+		thread.setContextClassLoader(ClassLoader.getSystemClassLoader());
+		return thread;
+	}
 }
 
 }
