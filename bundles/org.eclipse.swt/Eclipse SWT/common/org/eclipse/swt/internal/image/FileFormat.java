@@ -53,6 +53,9 @@ public abstract class FileFormat {
 		try {
 			FORMAT_FACTORIES.add(OS2BMPFileFormat::new);
 		} catch (NoClassDefFoundError e) { } // ignore format
+		try {
+			FORMAT_FACTORIES.add(SVGFileFormat::new);
+		} catch (NoClassDefFoundError e) { } // ignore format
 	}
 
 	public static final int DEFAULT_ZOOM = 100;
@@ -81,6 +84,16 @@ public abstract class FileFormat {
 		@Override
 		List<ElementAtZoom<ImageData>> loadFromByteStream(int fileZoom, int targetZoom) {
 			return Arrays.stream(loadFromByteStream()).map(d -> new ElementAtZoom<>(d, fileZoom)).toList();
+		}
+	}
+
+	static abstract class DynamicImageFileFormat extends FileFormat {
+
+		abstract ImageData[] loadFromByteStream(int targetZoom);
+
+		@Override
+		List<ElementAtZoom<ImageData>> loadFromByteStream(int fileZoom, int targetZoom) {
+			return Arrays.stream(loadFromByteStream(targetZoom)).map(d -> new ElementAtZoom<>(d, fileZoom)).toList();
 		}
 	}
 
