@@ -552,7 +552,10 @@ public Image(Device device, ImageFileNameProvider imageFileNameProvider) {
 	super(device);
 	this.imageProvider = new ImageFileNameProviderWrapper(imageFileNameProvider);
 	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
-	imageProvider.getImageMetadata(getZoom());
+	if (imageProvider.getImageData(100) == null) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT, null,
+				": ImageFileNameProvider [" + imageFileNameProvider + "] returns null ImageData at 100% zoom.");
+	}
 	init();
 	this.device.registerResourceWithZoomSupport(this);
 }
@@ -590,7 +593,10 @@ public Image(Device device, ImageDataProvider imageDataProvider) {
 	super(device);
 	this.imageProvider = new ImageDataProviderWrapper(imageDataProvider);
 	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
-	imageProvider.getImageMetadata(getZoom());
+	if (imageDataProvider.getImageData(100) == null) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT, null,
+				": ImageDataProvider [" + imageDataProvider + "] returns null ImageData at 100% zoom.");
+	}
 	init();
 	this.device.registerResourceWithZoomSupport(this);
 }
@@ -1891,18 +1897,23 @@ public static Image win32_new(Device device, int type, long handle, int nativeZo
 }
 
 private abstract class AbstractImageProviderWrapper {
+	private boolean isDestroyed;
+
 	protected abstract Rectangle getBounds(int zoom);
 	abstract ImageData getImageData(int zoom);
 	abstract ImageHandle getImageMetadata(int zoom);
 	abstract AbstractImageProviderWrapper createCopy(Image image);
-	abstract boolean isDisposed();
+
+	protected boolean isDisposed() {
+		return isDestroyed;
+	}
 
 	protected void destroy() {
+		this.isDestroyed = true;
 	}
 }
 
 private class PlainImageProviderWrapper extends AbstractImageProviderWrapper {
-	private boolean isDestroyed;
 	private final int width;
 	private final int height;
 
@@ -1984,16 +1995,6 @@ private class PlainImageProviderWrapper extends AbstractImageProviderWrapper {
 	AbstractImageProviderWrapper createCopy(Image image) {
 		return image.new PlainImageProviderWrapper(width, height);
 	}
-
-	@Override
-	protected void destroy() {
-		this.isDestroyed = true;
-	}
-
-	@Override
-	boolean isDisposed() {
-		return isDestroyed;
-	}
 }
 
 private abstract class DynamicImageProviderWrapper extends AbstractImageProviderWrapper {
@@ -2016,24 +2017,41 @@ private abstract class DynamicImageProviderWrapper extends AbstractImageProvider
 	}
 }
 
-private class ImageFileNameProviderWrapper extends DynamicImageProviderWrapper {
 
-	/**
-	 * ImageFileNameProvider to provide file names at various Zoom levels
-	 */
-	private final ImageFileNameProvider provider;
+private abstract class BaseImageProviderWrapper<T> extends DynamicImageProviderWrapper {
+    protected final T provider;
+    protected Map<Integer, Rectangle> rectCache = new HashMap<>();
 
-	ImageFileNameProviderWrapper(ImageFileNameProvider provider) {
-		checkProvider(provider, ImageFileNameProvider.class);
-		this.provider = provider;
-	}
+    BaseImageProviderWrapper(T provider, Class<T> expectedClass) {
+        checkProvider(provider, expectedClass);
+        this.provider = provider;
+    }
 
-	@Override
+    @Override
+    Object getProvider() {
+        return provider;
+    }
+
+    @Override
 	protected Rectangle getBounds(int zoom) {
-		ImageHandle imageHandle = zoomLevelToImageHandle.values().iterator().next();
-		Rectangle rectangle = new Rectangle(0, 0, imageHandle.width, imageHandle.height);
-		return DPIUtil.scaleBounds(rectangle, zoom, imageHandle.zoom);
-	}
+        if (zoomLevelToImageHandle.containsKey(zoom)) {
+            ImageHandle imgHandle = zoomLevelToImageHandle.get(zoom);
+            return new Rectangle(0, 0, imgHandle.width, imgHandle.height);
+        }
+        if (!rectCache.containsKey(zoom)) {
+            ImageData imageData = getImageData(zoom);
+            Rectangle rectangle = new Rectangle(0, 0, imageData.width, imageData.height);
+            rectCache.put(zoom, rectangle);
+        }
+        return rectCache.get(zoom);
+    }
+}
+
+
+private class ImageFileNameProviderWrapper extends BaseImageProviderWrapper<ImageFileNameProvider> {
+	ImageFileNameProviderWrapper(ImageFileNameProvider provider) {
+        super(provider, ImageFileNameProvider.class);
+    }
 
 	@Override
 	ImageData getImageData(int zoom) {
@@ -2070,21 +2088,6 @@ private class ImageFileNameProviderWrapper extends DynamicImageProviderWrapper {
 		ImageData imageData = getImageData(zoom);
 		init(imageData, zoom);
 		return zoomLevelToImageHandle.get(zoom);
-	}
-
-	@Override
-	boolean isDisposed() {
-		return zoomLevelToImageHandle.isEmpty();
-	}
-
-	@Override
-	Object getProvider() {
-		return provider;
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(provider, styleFlag, transparentPixel, getZoom());
 	}
 
 	@Override
@@ -2286,24 +2289,10 @@ private class ImageFileNameProviderWrapper extends DynamicImageProviderWrapper {
 	}
 }
 
-private class ImageDataProviderWrapper extends DynamicImageProviderWrapper {
-
-	/**
-	 * ImageDataProvider to provide ImageData at various Zoom levels
-	 */
-	private final ImageDataProvider provider;
-
+private class ImageDataProviderWrapper extends BaseImageProviderWrapper<ImageDataProvider> {
 	ImageDataProviderWrapper(ImageDataProvider provider) {
-		checkProvider(provider, ImageDataProvider.class);
-		this.provider = provider;
-	}
-
-	@Override
-	protected Rectangle getBounds(int zoom) {
-		ImageHandle imageHandle = zoomLevelToImageHandle.values().iterator().next();
-		Rectangle rectangle = new Rectangle(0, 0, imageHandle.width, imageHandle.height);
-		return DPIUtil.scaleBounds(rectangle, zoom, imageHandle.zoom);
-	}
+        super(provider, ImageDataProvider.class);
+    }
 
 	@Override
 	ImageData getImageData(int zoom) {
@@ -2321,16 +2310,6 @@ private class ImageDataProviderWrapper extends DynamicImageProviderWrapper {
 	}
 
 	@Override
-	boolean isDisposed() {
-		return zoomLevelToImageHandle.isEmpty();
-	}
-
-	@Override
-	Object getProvider() {
-		return provider;
-	}
-
-	@Override
 	ImageDataProviderWrapper createCopy(Image image) {
 		return image.new ImageDataProviderWrapper(provider);
 	}
@@ -2340,7 +2319,6 @@ private class ImageGcDrawerWrapper extends DynamicImageProviderWrapper {
 	private ImageGcDrawer drawer;
 	private int width;
 	private int height;
-	private boolean isDestroyed;
 
 	ImageGcDrawerWrapper(ImageGcDrawer imageGcDrawer, int width, int height) {
 		checkProvider(imageGcDrawer, ImageGcDrawer.class);
@@ -2377,16 +2355,6 @@ private class ImageGcDrawerWrapper extends DynamicImageProviderWrapper {
 			image.dispose();
 		}
 		return zoomLevelToImageHandle.get(zoom);
-	}
-
-	@Override
-	protected void destroy() {
-		isDestroyed = true;
-	}
-
-	@Override
-	boolean isDisposed() {
-		return isDestroyed;
 	}
 
 	@Override
