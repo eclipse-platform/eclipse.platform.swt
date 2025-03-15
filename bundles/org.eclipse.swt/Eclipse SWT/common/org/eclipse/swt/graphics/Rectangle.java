@@ -45,7 +45,7 @@ import org.eclipse.swt.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 
-public sealed class Rectangle implements Serializable permits MonitorAwareRectangle {
+public final class Rectangle implements Serializable {
 
 	/**
 	 * the x coordinate of the rectangle

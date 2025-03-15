@@ -39,35 +39,35 @@ class SingleZoomCoordinateSystemMapper implements CoordinateSystemMapper {
 	}
 
 	@Override
-	public Point map(Control from, Control to, Point point) {
+	public MonitorAwarePoint map(Control from, Control to, Point point) {
 		int zoom = getZoomLevelForMapping(from, to);
 		point = DPIUtil.scaleUp(point, zoom);
-		return DPIUtil.scaleDown(display.mapInPixels(from, to, point), zoom);
+		return new MonitorAwarePoint(DPIUtil.scaleDown(display.mapInPixels(from, to, point), zoom));
 	}
 
 	@Override
-	public Rectangle map(Control from, Control to, Rectangle rectangle) {
+	public MonitorAwareRectangle map(Control from, Control to, Rectangle rectangle) {
 		int zoom = getZoomLevelForMapping(from, to);
 		rectangle = DPIUtil.scaleUp(rectangle, zoom);
-		return DPIUtil.scaleDown(display.mapInPixels(from, to, rectangle), zoom);
+		return new MonitorAwareRectangle(DPIUtil.scaleDown(display.mapInPixels(from, to, rectangle), zoom));
 	}
 
 	@Override
-	public Point map(Control from, Control to, int x, int y) {
+	public MonitorAwarePoint map(Control from, Control to, int x, int y) {
 		int zoom = getZoomLevelForMapping(from, to);
 		x = DPIUtil.scaleUp(x, zoom);
 		y = DPIUtil.scaleUp(y, zoom);
-		return DPIUtil.scaleDown(display.mapInPixels(from, to, x, y), zoom);
+		return new MonitorAwarePoint(DPIUtil.scaleDown(display.mapInPixels(from, to, x, y), zoom));
 	}
 
 	@Override
-	public Rectangle map(Control from, Control to, int x, int y, int width, int height) {
+	public MonitorAwareRectangle map(Control from, Control to, int x, int y, int width, int height) {
 		int zoom = getZoomLevelForMapping(from, to);
 		x = DPIUtil.scaleUp(x, zoom);
 		y = DPIUtil.scaleUp(y, zoom);
 		width = DPIUtil.scaleUp(width, zoom);
 		height = DPIUtil.scaleUp(height, zoom);
-		return DPIUtil.scaleDown(display.mapInPixels(from, to, x, y, width, height), zoom);
+		return new MonitorAwareRectangle(DPIUtil.scaleDown(display.mapInPixels(from, to, x, y, width, height), zoom));
 	}
 
 	@Override
@@ -81,18 +81,18 @@ class SingleZoomCoordinateSystemMapper implements CoordinateSystemMapper {
 	}
 
 	@Override
-	public Point translateToDisplayCoordinates(Point point, int zoom) {
-		return DPIUtil.scaleUp(point, zoom);
+	public Point translateToDisplayCoordinates(MonitorAwarePoint point, int zoom) {
+		return DPIUtil.scaleUp(point.getPoint(), zoom);
 	}
 
 	@Override
-	public Rectangle translateFromDisplayCoordinates(Rectangle rect, int zoom) {
-		return DPIUtil.scaleDown(rect, zoom);
+	public Rectangle translateFromDisplayCoordinates(MonitorAwareRectangle rect, int zoom) {
+		return DPIUtil.scaleDown(rect.getRectangle(), zoom);
 	}
 
 	@Override
-	public Rectangle translateToDisplayCoordinates(Rectangle rect, int zoom) {
-		return DPIUtil.scaleUp(rect, zoom);
+	public Rectangle translateToDisplayCoordinates(MonitorAwareRectangle rect, int zoom) {
+		return DPIUtil.scaleUp(rect.getRectangle(), zoom);
 	}
 
 	@Override

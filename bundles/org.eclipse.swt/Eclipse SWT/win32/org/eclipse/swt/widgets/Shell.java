@@ -1569,7 +1569,7 @@ public void setAlpha (int alpha) {
 @Override
 public Rectangle getBounds() {
 	checkWidget ();
-	return getDisplay().translateFromDisplayCoordinates(getBoundsInPixels(), getZoom());
+	return getDisplay().translateFromDisplayCoordinates(new MonitorAwareRectangle(getBoundsInPixels()), getZoom());
 }
 
 @Override
@@ -1582,7 +1582,7 @@ public Point getLocation() {
 public void setLocation(Point location) {
 	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);
 	checkWidget ();
-	Point locationInPixels = getDisplay().translateToDisplayCoordinates(location, getZoom());
+	Point locationInPixels = getDisplay().translateToDisplayCoordinates(new MonitorAwarePoint(location), getZoom());
 	setLocationInPixels(locationInPixels.x, locationInPixels.y);
 }
 
@@ -1595,7 +1595,7 @@ public void setLocation(int x, int y) {
 public void setBounds(Rectangle rect) {
 	if (rect == null) error (SWT.ERROR_NULL_ARGUMENT);
 	checkWidget ();
-	Rectangle boundsInPixels = getDisplay().translateToDisplayCoordinates(rect, getZoom());
+	Rectangle boundsInPixels = getDisplay().translateToDisplayCoordinates(new MonitorAwareRectangle(rect), getZoom());
 	// The scaling of the width and height in case of a monitor change is handled by
 	// the WM_DPICHANGED event processing. So to avoid duplicate scaling, we always
 	// have to scale width and height with the zoom of the original monitor (still
