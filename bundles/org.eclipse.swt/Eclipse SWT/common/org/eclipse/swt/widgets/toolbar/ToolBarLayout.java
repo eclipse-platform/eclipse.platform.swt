@@ -135,7 +135,7 @@ public class ToolBarLayout {
 		/**
 		 * Mirrors the layout vertically.
 		 */
-		void mirrow() {
+		void mirrorX() {
 			for (ItemRecord itemRecord : items) {
 				itemRecord.bounds.x = availableSpace.x - itemRecord.bounds.x - itemRecord.bounds.width;
 			}

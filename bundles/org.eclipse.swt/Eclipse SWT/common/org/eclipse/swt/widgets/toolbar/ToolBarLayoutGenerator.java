@@ -71,7 +71,7 @@ public class ToolBarLayoutGenerator {
 		row.setY(offset.y);
 
 		if (rtl) {
-			row.mirrow();
+			row.mirrorX();
 		}
 
 		int width = offset.x + row.usedSpace.x;
@@ -114,7 +114,7 @@ public class ToolBarLayoutGenerator {
 			}
 
 			if (rtl) {
-				row.mirrow();
+				row.mirrorX();
 			}
 		}
 
