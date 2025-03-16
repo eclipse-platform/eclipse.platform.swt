@@ -25,13 +25,13 @@ import org.eclipse.swt.widgets.toolbar.ToolBarLayout.*;
 /**
  * Default renderer for the ToolBar.
  */
-public class ToolBarRenderer implements IToolBarRenderer {
+public class DefaultToolBarRenderer implements IToolBarRenderer {
 	public static final Color COLOR_SEPARATOR = new Color(Display.getDefault(), 160, 160, 160);
 
 	private final ToolBar bar;
 	private int rowCount = SWT.DEFAULT;
 
-	public ToolBarRenderer(ToolBar toolbar) {
+	public DefaultToolBarRenderer(ToolBar toolbar) {
 		this.bar = toolbar;
 	}
 

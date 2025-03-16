@@ -148,7 +148,7 @@ public class ToolBar extends Composite {
 		super(parent, checkStyle(style));
 		this.style |= SWT.DOUBLE_BUFFERED;
 
-		renderer = new ToolBarRenderer(this);
+		renderer = new DefaultToolBarRenderer(this);
 
 		Listener listener = event -> {
 			if (isDisposed()) {
