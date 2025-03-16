@@ -55,35 +55,6 @@ import org.eclipse.swt.widgets.toolbar.*;
  */
 public class ToolBar extends Composite {
 
-	/**
-	 * Renderer interface for the {@link ToolBar} widget. All renderers have to
-	 * implement this to work with the ToolBar.
-	 */
-	public interface IToolBarRenderer {
-
-		/**
-		 * Renders the handle.
-		 *
-		 * @param gc     GC to render with.
-		 * @param bounds Bounds of the rendering. x and y are always 0.
-		 */
-		void render(GC gc, Rectangle bounds);
-
-		/**
-		 * Computes the size of the rendered ToolBar.
-		 *
-		 * @return The size as {@link Point}
-		 */
-		Point computeSize(Point size);
-
-		/**
-		 * Returns the row count of the rendered widget.
-		 *
-		 * @return The row count.
-		 */
-		int rowCount();
-	}
-
 	/** The {@link ToolItem}s contained in the {@link ToolBar} */
 	private final java.util.List<ToolItem> items = new ArrayList<>();
 
@@ -91,7 +62,7 @@ public class ToolBar extends Composite {
 	public int itemCount;
 
 	/** The renderer used to render to {@link ToolBar}. */
-	private final IToolBarRenderer renderer;
+	private final ToolBarRenderer renderer;
 
 	private final boolean flat;
 	private final boolean wrap;

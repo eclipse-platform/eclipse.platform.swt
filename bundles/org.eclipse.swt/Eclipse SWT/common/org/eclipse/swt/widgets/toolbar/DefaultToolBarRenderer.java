@@ -19,13 +19,12 @@ import java.util.List;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.widgets.ToolBar.*;
 import org.eclipse.swt.widgets.toolbar.ToolBarLayout.*;
 
 /**
  * Default renderer for the ToolBar.
  */
-public class DefaultToolBarRenderer implements IToolBarRenderer {
+public class DefaultToolBarRenderer extends ToolBarRenderer {
 	public static final Color COLOR_SEPARATOR = new Color(Display.getDefault(), 160, 160, 160);
 
 	private final ToolBar bar;
