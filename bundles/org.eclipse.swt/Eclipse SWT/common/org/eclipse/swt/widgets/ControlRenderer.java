@@ -24,9 +24,9 @@ public abstract class ControlRenderer {
 
 	protected abstract void paint(GC gc, int width, int height);
 
-	private final CustomControl control;
+	private final Control control;
 
-	protected ControlRenderer(CustomControl control) {
+	protected ControlRenderer(Control control) {
 		this.control = control;
 	}
 

@@ -107,7 +107,7 @@ public final class Drawing {
 		}
 	}
 
-	public static Point getTextExtent(CustomControl control, String text, int drawFlags) {
+	public static Point getTextExtent(Control control, String text, int drawFlags) {
 		return measure(control, gc -> {
 			gc.setFont(control.getFont());
 			return gc.textExtent(text, drawFlags);
@@ -123,7 +123,7 @@ public final class Drawing {
 	 * @param operation the operation to execute
 	 * @return the result of the given operation
 	 */
-	public static <T> T measure(CustomControl control, Function<GC, T> operation) {
+	public static <T> T measure(Control control, Function<GC, T> operation) {
 		GC originalGC = new GC(control);
 		GC gc = createGraphicsContext(originalGC, control, true);
 		try {
