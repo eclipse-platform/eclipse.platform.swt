@@ -328,14 +328,6 @@ public class ToolBar extends Composite {
 		return size;
 	}
 
-	Point computeSizeInPixels(int wHint, int hHint, boolean changed) {
-		checkWidget();
-		Point sizeHint = new Point(wHint, hHint);
-		Point size = renderer.computeSize(sizeHint);
-
-		return DPIUtil.autoScaleUp(size);
-	}
-
 	void createItem(ToolItem item, int index) {
 		items.add(index, item);
 		itemCount = items.size();
