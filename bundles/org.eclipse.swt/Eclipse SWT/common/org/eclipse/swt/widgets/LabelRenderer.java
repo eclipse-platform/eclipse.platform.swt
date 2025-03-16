@@ -18,6 +18,8 @@ import org.eclipse.swt.graphics.*;
 
 public abstract class LabelRenderer extends ControlRenderer {
 
+	public abstract Point computeDefaultSize();
+
 	/** a string inserted in the middle of text that has been shortened */
 	private static final String ELLIPSIS = "..."; //$NON-NLS-1$ // could use
 	// the ellipsis glyph on

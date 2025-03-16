@@ -20,8 +20,6 @@ import java.util.function.Function;
 
 public abstract class ControlRenderer {
 
-	public abstract Point computeDefaultSize();
-
 	protected abstract void paint(GC gc, int width, int height);
 
 	private final Control control;

@@ -20,6 +20,8 @@ public abstract class ButtonRenderer extends ControlRenderer {
 
 	private final Button button;
 
+	public abstract Point computeDefaultSize();
+
 	private Image disabledImage;
 	private boolean pressed;
 	private boolean hover;

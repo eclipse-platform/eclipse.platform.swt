@@ -19,6 +19,9 @@ import org.eclipse.swt.graphics.*;
  * Interface for all scale renderer
  */
 public abstract class ScaleRenderer extends ControlRenderer {
+
+	public abstract Point computeDefaultSize();
+
 	/**
 	 * Maps the point to a scale value
 	 *
