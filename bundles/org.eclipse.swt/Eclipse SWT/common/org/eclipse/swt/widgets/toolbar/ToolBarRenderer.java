@@ -50,8 +50,7 @@ public class ToolBarRenderer implements IToolBarRenderer {
 			gc.drawLine(0, 0, size.x, 0);
 		}
 
-		for (int i = 0; i < rows.size(); i++) {
-			Row row = rows.get(i);
+		for (Row row : rows) {
 			for (ItemRecord itemRecord : row.items) {
 				bar.getItem(itemRecord.index()).render(gc, itemRecord.bounds());
 			}
