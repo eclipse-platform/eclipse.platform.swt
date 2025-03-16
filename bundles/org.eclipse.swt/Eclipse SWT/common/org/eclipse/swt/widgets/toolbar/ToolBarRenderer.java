@@ -72,8 +72,8 @@ public class ToolBarRenderer implements IToolBarRenderer {
 		List<ItemRecord> itemRecords = new ArrayList<>();
 		for (int i = 0; i < bar.getItemCount(); i++) {
 			ToolItem item = bar.getItem(i);
-			Point preferedSize = item.getSize();
-			Rectangle initialBounds = new Rectangle(0, 0, preferedSize.x, preferedSize.y);
+			Point preferredSize = item.getSize();
+			Rectangle initialBounds = new Rectangle(0, 0, preferredSize.x, preferredSize.y);
 			ItemRecord itemRecord = new ItemRecord(i, initialBounds, item.isSeparator());
 			itemRecords.add(itemRecord);
 		}
