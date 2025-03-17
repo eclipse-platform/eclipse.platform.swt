@@ -371,9 +371,7 @@ public Image(Device device, ImageData data) {
 	super(device);
 	if (data == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
-	int deviceZoom = getZoom();
-	data = scaleImageData(data, deviceZoom, 100);
-	init(data, deviceZoom);
+	this.imageProvider = new PlainImageDataProviderWrapper(data);
 	init();
 	this.device.registerResourceWithZoomSupport(this);
 }
@@ -416,10 +414,7 @@ public Image(Device device, ImageData source, ImageData mask) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
-	source = scaleImageData(source, getZoom(), 100);
-	mask = scaleImageData(mask, getZoom(), 100);
-	mask = ImageData.convertMask(mask);
-	initIconHandle(this.device, source, mask, getZoom());
+	this.imageProvider = new MaskedImageDataProviderWrapper(source, mask);
 	init();
 	this.device.registerResourceWithZoomSupport(this);
 }
@@ -479,11 +474,9 @@ public Image(Device device, ImageData source, ImageData mask) {
  */
 public Image (Device device, InputStream stream) {
 	super(device);
+	if (stream == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
-	int deviceZoom = getZoom();
-	ElementAtZoom<ImageData> imageCandidate = ImageDataLoader.load(stream, FileFormat.DEFAULT_ZOOM, deviceZoom);
-	ImageData data = scaleImageData(imageCandidate.element(), deviceZoom, imageCandidate.zoom());
-	init(data, deviceZoom);
+	this.imageProvider = new ImageDataLoaderStreamProviderWrapper(stream);
 	init();
 	this.device.registerResourceWithZoomSupport(this);
 }
@@ -524,10 +517,16 @@ public Image (Device device, String filename) {
 	super(device);
 	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
-	int deviceZoom = getZoom();
-	ElementAtZoom<ImageData> imageCandidate = ImageDataLoader.load(filename, FileFormat.DEFAULT_ZOOM, deviceZoom);
-	ImageData data = scaleImageData(imageCandidate.element(), deviceZoom, imageCandidate.zoom());
-	init(data, deviceZoom);
+	this.imageProvider = new ImageFileNameProviderWrapper(zoom -> {
+		if (zoom == 100) {
+			return filename;
+		}
+		return null;
+	});
+	if (imageProvider.getImageData(100) == null) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT, null,
+				": [" + filename + "] returns null ImageData at 100% zoom.");
+	}
 	init();
 	this.device.registerResourceWithZoomSupport(this);
 }
@@ -1944,6 +1943,131 @@ private abstract class AbstractImageProviderWrapper {
 
 	protected void destroy() {
 		this.isDestroyed = true;
+	}
+}
+
+private abstract class ImageFromImageDataProviderWrapper extends AbstractImageProviderWrapper {
+
+	protected abstract ElementAtZoom<ImageData> loadImageData(int zoom);
+
+	void initImage() {
+		// As the init call configured some Image attributes (e.g. type)
+		// it must be called
+		ImageData imageDataAt100 = getImageData(100);
+		init(imageDataAt100, 100);
+		destroyHandleForZoom(100);
+	}
+
+	@Override
+	ImageData getImageData(int zoom) {
+		if (zoomLevelToImageHandle.containsKey(zoom)) {
+			return zoomLevelToImageHandle.get(zoom).getImageData();
+		}
+		if (!zoomLevelToImageHandle.isEmpty()) {
+			return getScaledImageData(zoom);
+		}
+		ElementAtZoom<ImageData> loadedImageData = loadImageData(zoom);
+		return DPIUtil.scaleImageData(device, loadedImageData, zoom);
+	}
+
+	@Override
+	ImageHandle getImageMetadata(int zoom) {
+		if (zoomLevelToImageHandle.containsKey(zoom)) {
+			return zoomLevelToImageHandle.get(zoom);
+		} else  {
+			ImageData scaledImageData = getImageData(zoom);
+			ImageHandle imageHandle = init(scaledImageData, zoom);
+			return imageHandle;
+		}
+	}
+}
+
+private class PlainImageDataProviderWrapper extends ImageFromImageDataProviderWrapper {
+	private ImageData imageDataAt100;
+
+	PlainImageDataProviderWrapper(ImageData imageData) {
+		this.imageDataAt100 = (ImageData) imageData.clone();
+		initImage();
+	}
+
+	@Override
+	protected Rectangle getBounds(int zoom) {
+		Rectangle rectangle = new Rectangle(0, 0, imageDataAt100.width, imageDataAt100.height);
+		return DPIUtil.scaleUp(rectangle, zoom);
+	}
+
+	@Override
+	protected ElementAtZoom<ImageData> loadImageData(int zoom) {
+		return new ElementAtZoom<>(imageDataAt100, 100);
+	}
+
+	@Override
+	AbstractImageProviderWrapper createCopy(Image image) {
+		return image.new PlainImageDataProviderWrapper(this.imageDataAt100);
+	}
+}
+
+private class MaskedImageDataProviderWrapper extends ImageFromImageDataProviderWrapper {
+	private final ImageData srcAt100;
+	private final ImageData maskAt100;
+
+	MaskedImageDataProviderWrapper(ImageData srcAt100, ImageData maskAt100) {
+		this.srcAt100 = (ImageData) srcAt100.clone();
+		this.maskAt100 = (ImageData) maskAt100.clone();
+		initImage();
+	}
+
+	@Override
+	protected Rectangle getBounds(int zoom) {
+		Rectangle rectangle = new Rectangle(0, 0, srcAt100.width, srcAt100.height);
+		return DPIUtil.scaleUp(rectangle, zoom);
+	}
+
+	@Override
+	protected ElementAtZoom<ImageData> loadImageData(int zoom) {
+		ImageData scaledSource = DPIUtil.scaleImageData(device, srcAt100, zoom, 100);
+		ImageData scaledMask = DPIUtil.scaleImageData(device, maskAt100, zoom, 100);
+		scaledMask = ImageData.convertMask(scaledMask);
+		ImageData mergedData = applyMask(scaledSource, scaledMask);
+		return new ElementAtZoom<>(mergedData, zoom);
+	}
+
+	@Override
+	AbstractImageProviderWrapper createCopy(Image image) {
+		return image.new MaskedImageDataProviderWrapper(this.srcAt100, this.maskAt100);
+	}
+}
+
+private class ImageDataLoaderStreamProviderWrapper extends ImageFromImageDataProviderWrapper {
+	private byte[] inputStreamData;
+
+	ImageDataLoaderStreamProviderWrapper(InputStream inputStream) {
+		try {
+			this.inputStreamData = inputStream.readAllBytes();
+			initImage();
+		} catch (IOException e) {
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT, e);
+		}
+	}
+
+	private ImageDataLoaderStreamProviderWrapper(byte[] inputStreamData) {
+		this.inputStreamData = inputStreamData;
+	}
+
+	@Override
+	protected ElementAtZoom<ImageData> loadImageData(int zoom) {
+		return ImageDataLoader.load(new ByteArrayInputStream(inputStreamData), FileFormat.DEFAULT_ZOOM, zoom);
+	}
+
+	@Override
+	protected Rectangle getBounds(int zoom) {
+		ImageData scaledImageData = getImageData(zoom);
+		return new Rectangle(0, 0, scaledImageData.width, scaledImageData.height);
+	}
+
+	@Override
+	AbstractImageProviderWrapper createCopy(Image image) {
+		return new ImageDataLoaderStreamProviderWrapper(inputStreamData);
 	}
 }
 
