@@ -19,15 +19,7 @@ import org.eclipse.swt.graphics.*;
  * Renderer interface for the {@link ToolBar} widget. All renderers have to
  * implement this to work with the ToolBar.
  */
-public abstract class ToolBarRenderer {
-
-	/**
-	 * Renders the handle.
-	 *
-	 * @param gc     GC to render with.
-	 * @param bounds Bounds of the rendering. x and y are always 0.
-	 */
-	public abstract void render(GC gc, Rectangle bounds);
+public abstract class ToolBarRenderer extends ControlRenderer {
 
 	/**
 	 * Computes the size of the rendered ToolBar.
@@ -42,4 +34,8 @@ public abstract class ToolBarRenderer {
 	 * @return The row count.
 	 */
 	public abstract int rowCount();
+
+	protected ToolBarRenderer(ToolBar control) {
+		super(control);
+	}
 }

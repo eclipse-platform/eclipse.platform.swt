@@ -18,7 +18,6 @@ import java.util.List;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.*;
 import org.eclipse.swt.widgets.toolbar.*;
 
 /**
@@ -272,12 +271,12 @@ public class ToolBar extends Composite {
 			return;
 		}
 
-		Rectangle bounds = getBounds();
-		if (bounds.width == 0 && bounds.height == 0) {
+		final Point size = getSize();
+		if (size.x == 0 || size.y == 0) {
 			return;
 		}
 
-		Drawing.drawWithGC(this, event.gc, gc -> renderer.render(gc, bounds));
+		Drawing.drawWithGC(this, event.gc, gc -> renderer.paint(gc, size.x, size.y));
 	}
 
 	/**

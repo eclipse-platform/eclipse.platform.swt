@@ -31,12 +31,13 @@ public class DefaultToolBarRenderer extends ToolBarRenderer {
 	private int rowCount = SWT.DEFAULT;
 
 	public DefaultToolBarRenderer(ToolBar toolbar) {
+		super(toolbar);
 		this.bar = toolbar;
 	}
 
 	@Override
-	public void render(GC gc, Rectangle bounds) {
-		Point size = new Point(bounds.width, bounds.height);
+	public void paint(GC gc, int width, int height) {
+		Point size = new Point(width, height);
 		ToolBarLayout layout = computeLayout(size);
 		rowCount = layout.rows().size();
 
@@ -51,7 +52,8 @@ public class DefaultToolBarRenderer extends ToolBarRenderer {
 
 		for (Row row : rows) {
 			for (ItemRecord itemRecord : row.items) {
-				bar.getItem(itemRecord.index()).render(gc, itemRecord.bounds());
+				final ToolItem item = bar.getItem(itemRecord.index());
+				item.render(gc, itemRecord.bounds());
 			}
 			if (row.hasRowSeparator) {
 				drawHorizontalSeparator(gc, row);
@@ -109,8 +111,7 @@ public class DefaultToolBarRenderer extends ToolBarRenderer {
 	@Override
 	public int rowCount() {
 		if (rowCount == SWT.DEFAULT) {
-			Rectangle bounds = bar.getBounds();
-			Point size = new Point(bounds.x, bounds.y);
+			Point size = getSize();
 			rowCount = computeLayout(size).rows().size();
 		}
 		return rowCount;
