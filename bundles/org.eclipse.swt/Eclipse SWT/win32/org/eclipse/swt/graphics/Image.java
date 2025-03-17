@@ -118,6 +118,12 @@ public final class Image extends Resource implements Drawable {
 	private int styleFlag = SWT.IMAGE_COPY;
 
 	/**
+	 * Sets the color to which to map the transparent pixel.
+	 * For further info see {@link #setBackground(Color)}
+	 */
+	private RGB backgroundColor;
+
+	/**
 	 * Attribute to cache current native zoom level
 	 */
 	private int initialNativeZoom = 100;
@@ -1087,6 +1093,10 @@ public boolean equals (Object object) {
 public Color getBackground() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (transparentPixel == -1) return null;
+	if (backgroundColor != null) {
+		// if a background color was set explicitly, we use the cached color directly
+		return Color.win32_new(device, (backgroundColor.blue << 16) | (backgroundColor.green << 8) | backgroundColor.red);
+	}
 
 	/* Get the HDC for the device */
 	long hDC = device.internal_new_GC(null);
@@ -1838,33 +1848,10 @@ public void setBackground(Color color) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	zoomLevelToImageHandle.values().forEach(imageHandle -> setBackground(color, imageHandle.handle));
-}
-
-private void setBackground(Color color, long handle) {
 	if (transparentPixel == -1) return;
 	transparentColor = -1;
-
-	/* Get the HDC for the device */
-	long hDC = device.internal_new_GC(null);
-
-	/* Change the background color in the image */
-	BITMAP bm = new BITMAP();
-	OS.GetObject(handle, BITMAP.sizeof, bm);
-	long hdcMem = OS.CreateCompatibleDC(hDC);
-	OS.SelectObject(hdcMem, handle);
-	int maxColors = 1 << bm.bmBitsPixel;
-	byte[] colors = new byte[maxColors * 4];
-	int numColors = OS.GetDIBColorTable(hdcMem, 0, maxColors, colors);
-	int offset = transparentPixel * 4;
-	colors[offset] = (byte)color.getBlue();
-	colors[offset + 1] = (byte)color.getGreen();
-	colors[offset + 2] = (byte)color.getRed();
-	OS.SetDIBColorTable(hdcMem, 0, numColors, colors);
-	OS.DeleteDC(hdcMem);
-
-	/* Release the HDC for the device */
-	device.internal_dispose_GC(hDC, null);
+	backgroundColor = color.getRGB();
+	zoomLevelToImageHandle.values().forEach(imageHandle -> imageHandle.setBackground(backgroundColor));
 }
 
 private int getZoom() {
@@ -2403,7 +2390,35 @@ private class ImageHandle {
 		this.handle = handle;
 		this.zoom = zoom;
 		updateBoundsInPixelsFromNative();
+		if (backgroundColor != null) {
+			setBackground(backgroundColor);
+		}
 		setImageMetadataForHandle(this, zoom);
+	}
+
+	private void setBackground(RGB color) {
+		if (transparentPixel == -1) return;
+
+		/* Get the HDC for the device */
+		long hDC = device.internal_new_GC(null);
+
+		/* Change the background color in the image */
+		BITMAP bm = new BITMAP();
+		OS.GetObject(handle, BITMAP.sizeof, bm);
+		long hdcMem = OS.CreateCompatibleDC(hDC);
+		OS.SelectObject(hdcMem, handle);
+		int maxColors = 1 << bm.bmBitsPixel;
+		byte[] colors = new byte[maxColors * 4];
+		int numColors = OS.GetDIBColorTable(hdcMem, 0, maxColors, colors);
+		int offset = transparentPixel * 4;
+		colors[offset] = (byte)color.blue;
+		colors[offset + 1] = (byte)color.green;
+		colors[offset + 2] = (byte)color.red;
+		OS.SetDIBColorTable(hdcMem, 0, numColors, colors);
+		OS.DeleteDC(hdcMem);
+
+		/* Release the HDC for the device */
+		device.internal_dispose_GC(hDC, null);
 	}
 
 	private void updateBoundsInPixelsFromNative() {
