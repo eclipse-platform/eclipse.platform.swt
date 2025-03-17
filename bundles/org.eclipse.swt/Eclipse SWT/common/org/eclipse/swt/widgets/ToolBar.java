@@ -321,10 +321,7 @@ public class ToolBar extends Composite {
 	@Override
 	public Point computeSize(int wHint, int hHint, boolean changed) {
 		checkWidget();
-		Point sizeHint = new Point(wHint, hHint);
-		Point size = renderer.computeSize(sizeHint);
-
-		return size;
+		return renderer.computeSize(wHint, hHint);
 	}
 
 	void createItem(ToolItem item, int index) {

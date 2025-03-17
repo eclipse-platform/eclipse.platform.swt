@@ -86,8 +86,8 @@ public class DefaultToolBarRenderer extends ToolBarRenderer {
 
 
 	@Override
-	public Point computeSize(Point size) {
-		ToolBarLayout layout = computeLayout(size);
+	public Point computeSize(int widthHint, int heightHint) {
+		ToolBarLayout layout = computeLayout(new Point(widthHint, heightHint));
 
 		Point computedSize = layout.size();
 		if (bar.isBorder()) {
@@ -96,12 +96,12 @@ public class DefaultToolBarRenderer extends ToolBarRenderer {
 		}
 
 		Point finalSize = new Point(computedSize.x, computedSize.y);
-		if (size.x > 0) {
-			finalSize.x = size.x;
+		if (widthHint > 0) {
+			finalSize.x = widthHint;
 		}
 
-		if (size.y > 0) {
-			finalSize.y = size.y;
+		if (heightHint > 0) {
+			finalSize.y = heightHint;
 		}
 
 		return finalSize;

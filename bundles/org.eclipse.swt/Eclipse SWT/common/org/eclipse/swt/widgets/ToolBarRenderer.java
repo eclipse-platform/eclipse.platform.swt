@@ -26,7 +26,7 @@ public abstract class ToolBarRenderer extends ControlRenderer {
 	 *
 	 * @return The size as {@link Point}
 	 */
-	public abstract Point computeSize(Point size);
+	public abstract Point computeSize(int widthHint, int heightHint);
 
 	/**
 	 * Returns the row count of the rendered widget.
