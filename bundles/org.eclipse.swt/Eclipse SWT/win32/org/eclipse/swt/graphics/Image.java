@@ -304,11 +304,11 @@ public Image(Device device, Image srcImage, int flag) {
 private boolean createWithSVG(Device device, int flag) {
 	if (imageProvider.getProvider() instanceof ImageFileNameProvider imageFileNameProvider) {
 		ElementAtZoom<String> fileName = DPIUtil.validateAndGetImagePathAtZoom(imageFileNameProvider, getZoom());
-		if (fileName.element().endsWith(".svg")) {
+//		if (fileName.element().endsWith(".svg")) {
 			ElementAtZoom<ImageData> imageData = ImageDataLoader.load(fileName.element(), fileName.zoom(), getZoom(), flag);
 			init(imageData.element(), getZoom());
 			return true;
-		}
+//		}
 	}
 //	else if (imageProvider.getProvider() instanceof ImageDataProvider imageDataProvider) {
 //		if (imageDataProvider.supportsRasterizationFlag(flag)) {
