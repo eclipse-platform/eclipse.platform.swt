@@ -5840,6 +5840,8 @@ public boolean setParent (Composite parent) {
 	if (parent.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (this.parent == parent) return true;
 	if (!isReparentable ()) return false;
+	// preserve focus when re-parenting
+	Control focusControlBeforeReparent = display.getFocusControl();
 	GTK.gtk_widget_realize (parent.handle);
 	long topHandle = topHandle ();
 	GtkAllocation allocation = new GtkAllocation ();
@@ -5888,6 +5890,10 @@ public boolean setParent (Composite parent) {
 	this.parent = parent;
 	setZOrder (null, false, true);
 	reskin (SWT.ALL);
+	// restore focus to the last Control that had it, if focus is now gone
+	if (focusControlBeforeReparent != null && !focusControlBeforeReparent.isDisposed() && display.getFocusControl() == null) {
+		focusControlBeforeReparent.setFocus();
+	}
 	return true;
 }
 
