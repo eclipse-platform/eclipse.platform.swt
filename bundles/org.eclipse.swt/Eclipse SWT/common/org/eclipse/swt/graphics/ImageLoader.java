@@ -162,6 +162,14 @@ List<ElementAtZoom<ImageData>> load(InputStream stream, int fileZoom, int target
 	return images;
 }
 
+List<ElementAtZoom<ImageData>> load(InputStream stream, int fileZoom, int targetZoom, int flag) {
+	if (stream == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	reset();
+	List<ElementAtZoom<ImageData>> images = InternalImageLoader.load(stream, this, fileZoom, targetZoom, flag);
+	data = images.stream().map(ElementAtZoom::element).toArray(ImageData[]::new);
+	return images;
+}
+
 /**
  * Loads an array of <code>ImageData</code> objects from the
  * file with the specified name. Throws an error if either
@@ -189,6 +197,16 @@ List<ElementAtZoom<ImageData>> load(String filename, int fileZoom, int targetZoo
 	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	try (InputStream stream = new FileInputStream(filename)) {
 		return load(stream, fileZoom, targetZoom);
+	} catch (IOException e) {
+		SWT.error(SWT.ERROR_IO, e);
+	}
+	return null;
+}
+
+List<ElementAtZoom<ImageData>> load(String filename, int fileZoom, int targetZoom, int flag) {
+	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	try (InputStream stream = new FileInputStream(filename)) {
+		return load(stream, fileZoom, targetZoom, flag);
 	} catch (IOException e) {
 		SWT.error(SWT.ERROR_IO, e);
 	}

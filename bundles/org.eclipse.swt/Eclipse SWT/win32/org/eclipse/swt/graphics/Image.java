@@ -302,24 +302,22 @@ public Image(Device device, Image srcImage, int flag) {
 }
 
 private boolean createWithSVG(Device device, int flag) {
-	ImageData data = null;
-	Image customizedImage = null;
 	if (imageProvider.getProvider() instanceof ImageFileNameProvider imageFileNameProvider) {
 		ElementAtZoom<String> fileName = DPIUtil.validateAndGetImagePathAtZoom(imageFileNameProvider, getZoom());
 		if (fileName.element().endsWith(".svg")) {
-			customizedImage = new Image(device, imageFileNameProvider, flag);
-		}
-	} else if (imageProvider.getProvider() instanceof ImageDataProvider imageDataProvider) {
-		if (imageDataProvider.supportsRasterizationFlag(flag)) {
-			customizedImage = new Image(device, imageDataProvider, flag);
+			ElementAtZoom<ImageData> imageData = ImageDataLoader.load(fileName.element(), fileName.zoom(), getZoom(), flag);
+			init(imageData.element(), getZoom());
+			return true;
 		}
 	}
-	if(customizedImage != null) {
-		data = customizedImage.getImageData(customizedImage.getZoom());
-		init(data, getZoom());
-		customizedImage.dispose();
-		return true;
-	}
+//	else if (imageProvider.getProvider() instanceof ImageDataProvider imageDataProvider) {
+//		if (imageDataProvider.supportsRasterizationFlag(flag)) {
+//			ImageData data = imageDataProvider.getCustomizedImageData(getZoom(), flag);
+//			ElementAtZoom<ImageData> imageData = new ElementAtZoom<>(data, getZoom());
+//			init(imageData.element(), getZoom());
+//			return true;
+//		}
+//	}
 	return false;
 }
 

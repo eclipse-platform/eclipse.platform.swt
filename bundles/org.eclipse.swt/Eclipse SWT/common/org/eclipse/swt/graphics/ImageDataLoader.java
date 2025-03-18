@@ -49,4 +49,10 @@ class ImageDataLoader {
 		return data.get(0);
 	}
 
+	public static ElementAtZoom<ImageData> load(String filename, int fileZoom, int targetZoom, int flag) {
+		List<ElementAtZoom<ImageData>> data = new ImageLoader().load(filename, fileZoom, targetZoom, flag);
+		if (data.isEmpty()) SWT.error(SWT.ERROR_INVALID_IMAGE);
+		return data.get(0);
+	}
+
 }
