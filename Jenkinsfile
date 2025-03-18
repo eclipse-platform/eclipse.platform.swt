@@ -42,7 +42,7 @@ def runOnNativeBuildAgent(String platform, Closure body) {
 	}
 }
 
-/** Returns the download URL of the JDK against whoose C headers (in the 'include/' folder) and native libaries the SWT natives are compiled.*/
+/** Returns the download URL of the JDK against whoose C headers (in the 'include/' folder) and native libraries the SWT natives are compiled.*/
 def getNativeJdkUrl(String os, String arch){ // To update the used JDK version update the URL template below
 	if('win32'.equals(os) && 'aarch64'.equals(arch)) {
 		// Temporary workaround until there are official Temurin GA releases for Windows on ARM that can be consumed through JustJ
@@ -222,7 +222,7 @@ pipeline {
 							script {
 								def (ws, os, arch) = env.PLATFORM.split('\\.')
 								dir("jdk-download-${os}.${arch}") {
-									// Fetch the JDK, which provides the C header-files and shared native libaries, against which the natives are build.
+									// Fetch the JDK, which provides the C header-files and shared native libraries, against which the natives are build.
 									sh "curl ${getNativeJdkUrl(os, arch)} | tar -xzf - include/ lib/"
 									stash name:"jdk.resources.${os}.${arch}", includes: "include/,lib/"
 									deleteDir()
