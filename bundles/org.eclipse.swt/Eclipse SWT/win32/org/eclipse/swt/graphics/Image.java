@@ -372,7 +372,7 @@ public Image(Device device, ImageData data) {
 	if (data == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
 	int deviceZoom = getZoom();
-	data = DPIUtil.scaleImageData(device, new ElementAtZoom<>(data, 100), deviceZoom);
+	data = scaleImageData(data, deviceZoom, 100);
 	init(data, deviceZoom);
 	init();
 	this.device.registerResourceWithZoomSupport(this);
@@ -416,8 +416,8 @@ public Image(Device device, ImageData source, ImageData mask) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
-	source = DPIUtil.autoScaleUp(device, source);
-	mask = DPIUtil.autoScaleUp(device, mask);
+	source = scaleImageData(source, getZoom(), 100);
+	mask = scaleImageData(mask, getZoom(), 100);
 	mask = ImageData.convertMask(mask);
 	initIconHandle(this.device, source, mask, getZoom());
 	init();
@@ -481,7 +481,8 @@ public Image (Device device, InputStream stream) {
 	super(device);
 	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
 	int deviceZoom = getZoom();
-	ImageData data = DPIUtil.scaleImageData(device, ImageDataLoader.load(stream, FileFormat.DEFAULT_ZOOM, deviceZoom), deviceZoom);
+	ElementAtZoom<ImageData> imageCandidate = ImageDataLoader.load(stream, FileFormat.DEFAULT_ZOOM, deviceZoom);
+	ImageData data = scaleImageData(imageCandidate.element(), deviceZoom, imageCandidate.zoom());
 	init(data, deviceZoom);
 	init();
 	this.device.registerResourceWithZoomSupport(this);
@@ -524,7 +525,8 @@ public Image (Device device, String filename) {
 	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
 	int deviceZoom = getZoom();
-	ImageData data = DPIUtil.scaleImageData(device, ImageDataLoader.load(filename, FileFormat.DEFAULT_ZOOM, deviceZoom), deviceZoom);
+	ElementAtZoom<ImageData> imageCandidate = ImageDataLoader.load(filename, FileFormat.DEFAULT_ZOOM, deviceZoom);
+	ImageData data = scaleImageData(imageCandidate.element(), deviceZoom, imageCandidate.zoom());
 	init(data, deviceZoom);
 	init();
 	this.device.registerResourceWithZoomSupport(this);
@@ -1264,7 +1266,7 @@ private ImageData getScaledImageData (int zoom) {
 	}
 	TreeSet<Integer> availableZooms = new TreeSet<>(zoomLevelToImageHandle.keySet());
 	int closestZoom = Optional.ofNullable(availableZooms.higher(zoom)).orElse(availableZooms.lower(zoom));
-	return DPIUtil.scaleImageData (device, getImageMetadata(closestZoom).getImageData(), zoom, closestZoom);
+	return scaleImageData(getImageMetadata(closestZoom).getImageData(), zoom, closestZoom);
 }
 
 
@@ -1854,6 +1856,40 @@ public void setBackground(Color color) {
 	zoomLevelToImageHandle.values().forEach(imageHandle -> imageHandle.setBackground(backgroundColor));
 }
 
+private ImageData scaleImageData(final ImageData imageData, int targetZoom, int currentZoom) {
+	if (imageData == null || targetZoom == currentZoom || (device != null && !device.isAutoScalable())) return imageData;
+	float scaleFactor = (float) targetZoom / (float) currentZoom;
+	int width = imageData.width;
+	int height = imageData.height;
+	int scaledWidth = Math.round (width * scaleFactor);
+	int scaledHeight = Math.round (height * scaleFactor);
+	boolean useSmoothScaling = DPIUtil.isSmoothScalingEnabled() && imageData.getTransparencyType() != SWT.TRANSPARENCY_MASK;
+	if (useSmoothScaling) {
+		return scaleToUsingSmoothScaling(scaledWidth, scaledHeight, imageData);
+	}
+	return imageData.scaledTo (scaledWidth, scaledHeight);
+}
+
+private ImageData scaleToUsingSmoothScaling(int width, int height, ImageData imageData) {
+	Image original = new Image (device, (ImageDataProvider) zoom -> imageData);
+	/* Create a 24 bit image data with alpha channel */
+	final ImageData resultData = new ImageData (width, height, 24, new PaletteData (0xFF, 0xFF00, 0xFF0000));
+	resultData.alphaData = new byte [width * height];
+	Image resultImage = new Image (device, (ImageDataProvider) zoom -> resultData);
+	GC gc = new GC (resultImage);
+	gc.setAntialias (SWT.ON);
+	gc.drawImage (original, 0, 0, imageData.width, imageData.height,
+			/* E.g. destWidth here is effectively DPIUtil.autoScaleDown (scaledWidth), but avoiding rounding errors.
+			 * Nevertheless, we still have some rounding errors due to the point-based API GC#drawImage(..).
+			 */
+			0, 0, width, height, false);
+	gc.dispose ();
+	original.dispose ();
+	ImageData result = resultImage.getImageData (resultImage.getZoom());
+	resultImage.dispose ();
+	return result;
+}
+
 private int getZoom() {
 	return DPIUtil.getZoomForAutoscaleProperty(initialNativeZoom);
 }
@@ -2073,7 +2109,7 @@ private class ImageFileNameProviderWrapper extends BaseImageProviderWrapper<Imag
 
 	private ImageData scaleIfNecessary(ElementAtZoom<ImageData> imageDataAtZoom, int zoom) {
 		if (imageDataAtZoom.zoom() != zoom) {
-			return DPIUtil.scaleImageData(device, imageDataAtZoom, zoom);
+			return scaleImageData(imageDataAtZoom.element(), zoom, imageDataAtZoom.zoom());
 		} else {
 			return imageDataAtZoom.element();
 		}
@@ -2298,13 +2334,13 @@ private class ImageDataProviderWrapper extends BaseImageProviderWrapper<ImageDat
 	@Override
 	ImageData getImageData(int zoom) {
 		ElementAtZoom<ImageData> data = DPIUtil.validateAndGetImageDataAtZoom (provider, zoom);
-		return DPIUtil.scaleImageData (device, data.element(), zoom, data.zoom());
+		return scaleImageData(data.element(), zoom, data.zoom());
 	}
 
 	@Override
 	ImageHandle getImageMetadata(int zoom) {
 		ElementAtZoom<ImageData> imageCandidate = DPIUtil.validateAndGetImageDataAtZoom (provider, zoom);
-		ImageData resizedData = DPIUtil.scaleImageData (device, imageCandidate.element(), zoom, imageCandidate.zoom());
+		ImageData resizedData = scaleImageData(imageCandidate.element(), zoom, imageCandidate.zoom());
 		ImageData newData = adaptImageDataIfDisabledOrGray(resizedData);
 		init(newData, zoom);
 		return zoomLevelToImageHandle.get(zoom);
