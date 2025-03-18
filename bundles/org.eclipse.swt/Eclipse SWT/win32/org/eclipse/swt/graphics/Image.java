@@ -93,7 +93,7 @@ public final class Image extends Resource implements Drawable {
 	/**
 	 * this field make sure the image is initialized without any errors
 	 */
-	boolean isInitialized = false;
+	private boolean isInitialized;
 
 	/**
 	 * specifies the transparent pixel
