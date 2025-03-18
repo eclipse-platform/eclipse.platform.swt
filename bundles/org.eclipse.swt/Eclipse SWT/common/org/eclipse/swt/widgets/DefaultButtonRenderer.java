@@ -91,7 +91,7 @@ public class DefaultButtonRenderer extends ButtonRenderer {
 		int initialAntiAlias = gc.getAntialias();
 
 		int boxSpace = 0;
-		drawPushButton(gc, width - 1, height - 1);
+		drawPushButton(gc, width, height);
 
 		gc.setAntialias(initialAntiAlias);
 		gc.setAdvanced(false);
@@ -150,7 +150,8 @@ public class DefaultButtonRenderer extends ButtonRenderer {
 			gc.drawText(text, textLeftOffset, textTopOffset, DRAW_FLAGS);
 		}
 		if (hasFocus()) {
-			gc.drawFocus(3, 3, width - 7, height - 7);
+			int inset = 2;
+			gc.drawFocus(inset, inset, width - 2 * inset - 1, height - 2 * inset - 1);
 		}
 	}
 
