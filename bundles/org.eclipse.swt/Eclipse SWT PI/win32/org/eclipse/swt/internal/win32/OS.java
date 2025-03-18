@@ -1248,6 +1248,7 @@ public class OS extends C {
 	public static final int SM_CYFOCUSBORDER = 84;
 	public static final int SM_CYHSCROLL = 0x3;
 	public static final int SM_CYMENU = 0xf;
+	public static final int SM_CYMENUCHECK = 72;
 	public static final int SM_CXMINTRACK = 34;
 	public static final int SM_CYMINTRACK = 35;
 	public static final int SM_CXMAXTRACK = 59;
