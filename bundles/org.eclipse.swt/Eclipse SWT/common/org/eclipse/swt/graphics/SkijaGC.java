@@ -149,7 +149,7 @@ public class SkijaGC extends GCHandle {
 		performDraw(paint -> {
 			paint.setColor(convertSWTColorToSkijaColor(getForeground()));
 			paint.setMode(PaintMode.STROKE);
-			paint.setStrokeWidth(DPIUtil.autoScaleUp(lineWidth));
+			paint.setStrokeWidth(lineWidth > 0 ? DPIUtil.autoScaleUp(lineWidth) : 1);
 			paint.setAntiAlias(true);
 			operations.accept(paint);
 		});
