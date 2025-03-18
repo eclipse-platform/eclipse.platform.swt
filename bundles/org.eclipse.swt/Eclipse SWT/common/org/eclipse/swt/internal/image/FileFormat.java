@@ -16,11 +16,13 @@ package org.eclipse.swt.internal.image;
 
 import java.io.*;
 import java.util.*;
+import java.util.List;
 import java.util.function.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.DPIUtil.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Abstract factory class for loading/unloading images from files or streams
@@ -83,7 +85,144 @@ public abstract class FileFormat {
 
 		@Override
 		List<ElementAtZoom<ImageData>> loadFromByteStream(int fileZoom, int targetZoom, int flag) {
-			return Arrays.stream(loadFromByteStream()).map(d -> new ElementAtZoom<>(d, fileZoom)).toList();
+			switch (flag) {
+				case SWT.IMAGE_COPY: {
+					return Arrays.stream(loadFromByteStream()).map(d -> new ElementAtZoom<>(d, fileZoom)).toList();
+				}
+				case SWT.IMAGE_DISABLE: {
+					ImageData originalData = loadFromByteStream()[0];
+					ImageData data = applyDisableImageData(originalData, originalData.width, originalData.height);
+					return List.of(new ElementAtZoom<>(data, fileZoom));
+				}
+				case SWT.IMAGE_GRAY: {
+					ImageData originalData = loadFromByteStream()[0];
+					ImageData data = applyGrayImageData(originalData, originalData.width, originalData.height);
+					return List.of(new ElementAtZoom<>(data, fileZoom));
+				} default:
+				throw new IllegalArgumentException("Unexpected value: " + flag);
+			}
+
+		}
+
+		private ImageData applyDisableImageData(ImageData data, int height, int width) {
+			PaletteData palette = data.palette;
+			RGB[] rgbs = new RGB[3];
+			rgbs[0] = Display.getDefault().getSystemColor(SWT.COLOR_BLACK).getRGB();
+			rgbs[1] = Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW).getRGB();
+			rgbs[2] = Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND).getRGB();
+			ImageData newData = new ImageData(width, height, 8, new PaletteData(rgbs));
+			newData.alpha = data.alpha;
+			newData.alphaData = data.alphaData;
+			newData.maskData = data.maskData;
+			newData.maskPad = data.maskPad;
+			if (data.transparentPixel != -1) newData.transparentPixel = 0;
+
+			/* Convert the pixels. */
+			int[] scanline = new int[width];
+			int[] maskScanline = null;
+			ImageData mask = null;
+			if (data.maskData != null) mask = data.getTransparencyMask();
+			if (mask != null) maskScanline = new int[width];
+			int redMask = palette.redMask;
+			int greenMask = palette.greenMask;
+			int blueMask = palette.blueMask;
+			int redShift = palette.redShift;
+			int greenShift = palette.greenShift;
+			int blueShift = palette.blueShift;
+			for (int y=0; y<height; y++) {
+				int offset = y * newData.bytesPerLine;
+				data.getPixels(0, y, width, scanline, 0);
+				if (mask != null) mask.getPixels(0, y, width, maskScanline, 0);
+				for (int x=0; x<width; x++) {
+					int pixel = scanline[x];
+					if (!((data.transparentPixel != -1 && pixel == data.transparentPixel) || (mask != null && maskScanline[x] == 0))) {
+						int red, green, blue;
+						if (palette.isDirect) {
+							red = pixel & redMask;
+							red = (redShift < 0) ? red >>> -redShift : red << redShift;
+							green = pixel & greenMask;
+							green = (greenShift < 0) ? green >>> -greenShift : green << greenShift;
+							blue = pixel & blueMask;
+							blue = (blueShift < 0) ? blue >>> -blueShift : blue << blueShift;
+						} else {
+							red = palette.colors[pixel].red;
+							green = palette.colors[pixel].green;
+							blue = palette.colors[pixel].blue;
+						}
+						int intensity = red * red + green * green + blue * blue;
+						if (intensity < 98304) {
+							newData.data[offset] = (byte)1;
+						} else {
+							newData.data[offset] = (byte)2;
+						}
+					}
+					offset++;
+				}
+			}
+			return newData;
+		}
+
+		private ImageData applyGrayImageData(ImageData data, int pHeight, int pWidth) {
+			PaletteData palette = data.palette;
+			ImageData newData = data;
+			if (!palette.isDirect) {
+				/* Convert the palette entries to gray. */
+				RGB [] rgbs = palette.getRGBs();
+				for (int i=0; i<rgbs.length; i++) {
+					if (data.transparentPixel != i) {
+						RGB color = rgbs [i];
+						int red = color.red;
+						int green = color.green;
+						int blue = color.blue;
+						int intensity = (red+red+green+green+green+green+green+blue) >> 3;
+						color.red = color.green = color.blue = intensity;
+					}
+				}
+				newData.palette = new PaletteData(rgbs);
+			} else {
+				/* Create a 8 bit depth image data with a gray palette. */
+				RGB[] rgbs = new RGB[256];
+				for (int i=0; i<rgbs.length; i++) {
+					rgbs[i] = new RGB(i, i, i);
+				}
+				newData = new ImageData(pWidth, pHeight, 8, new PaletteData(rgbs));
+				newData.alpha = data.alpha;
+				newData.alphaData = data.alphaData;
+				newData.maskData = data.maskData;
+				newData.maskPad = data.maskPad;
+				if (data.transparentPixel != -1) newData.transparentPixel = 254;
+
+				/* Convert the pixels. */
+				int[] scanline = new int[pWidth];
+				int redMask = palette.redMask;
+				int greenMask = palette.greenMask;
+				int blueMask = palette.blueMask;
+				int redShift = palette.redShift;
+				int greenShift = palette.greenShift;
+				int blueShift = palette.blueShift;
+				for (int y=0; y<pHeight; y++) {
+					int offset = y * newData.bytesPerLine;
+					data.getPixels(0, y, pWidth, scanline, 0);
+					for (int x=0; x<pWidth; x++) {
+						int pixel = scanline[x];
+						if (pixel != data.transparentPixel) {
+							int red = pixel & redMask;
+							red = (redShift < 0) ? red >>> -redShift : red << redShift;
+							int green = pixel & greenMask;
+							green = (greenShift < 0) ? green >>> -greenShift : green << greenShift;
+							int blue = pixel & blueMask;
+							blue = (blueShift < 0) ? blue >>> -blueShift : blue << blueShift;
+							int intensity = (red+red+green+green+green+green+green+blue) >> 3;
+							if (newData.transparentPixel == intensity) intensity = 255;
+							newData.data[offset] = (byte)intensity;
+						} else {
+							newData.data[offset] = (byte)254;
+						}
+						offset++;
+					}
+				}
+			}
+			return newData;
 		}
 	}
 
