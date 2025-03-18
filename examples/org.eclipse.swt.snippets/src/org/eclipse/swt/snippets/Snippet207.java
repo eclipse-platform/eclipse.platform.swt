@@ -41,7 +41,7 @@ public class Snippet207 {
 
 		final Rectangle rect = image.getBounds();
 		Shell shell = new Shell(display);
-		shell.setText("Matrix Tranformations");
+		shell.setText("Matrix Transformations");
 		shell.setLayout(new FillLayout());
 		final Canvas canvas = new Canvas(shell, SWT.DOUBLE_BUFFERED);
 		canvas.addPaintListener(e -> {
@@ -59,7 +59,7 @@ public class Snippet207 {
 
 			Transform transform = new Transform(display);
 
-			// Note that the tranform is applied to the whole GC therefore
+			// Note that the transform is applied to the whole GC therefore
 			// the coordinates need to be adjusted too.
 
 			// Reflect around the y axis.
