@@ -2302,7 +2302,6 @@ long getMsgProc (long code, long wParam, long lParam) {
  * @since 3.0
  */
 public Monitor getPrimaryMonitor () {
-	checkDevice ();
 	long hmonitor = OS.MonitorFromWindow (0, OS.MONITOR_DEFAULTTOPRIMARY);
 	return getMonitor (hmonitor);
 }

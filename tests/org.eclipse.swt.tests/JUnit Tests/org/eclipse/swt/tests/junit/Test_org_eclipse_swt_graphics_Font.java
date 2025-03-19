@@ -19,6 +19,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -112,7 +113,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Device$Lorg_eclipse_swt_gr
 }
 
 @Test
-public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_FontData() {
+public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_FontData() throws InterruptedException {
 	// Test new Font(Device device, FontData fd)
 	// IllegalArgumentException if the fd argument is null
 	// SWTError: ERROR_NO_HANDLES, if a font could not be created from the given font data
@@ -172,6 +173,20 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 		fail("No exception thrown for height < 0");
 	} catch (IllegalArgumentException e) {
 	}
+
+	// using an invalid display
+	Exception[] thrown = new Exception[1];
+	Thread t = new Thread(() -> {
+		try {
+			new Font(Display.getCurrent(), new FontData());
+		} catch (Exception e1) {
+			thrown[0] = e1;
+		}
+	});
+	t.start();
+	t.join();
+
+	assertNull("Exception thrown", thrown[0]);
 }
 
 @Test
