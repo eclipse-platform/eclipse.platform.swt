@@ -597,6 +597,10 @@ public static int getDeviceZoom() {
 	return deviceZoom;
 }
 
+public static int getDeviceZoom(String autoScaleProperty) {
+	return getZoomForAutoscaleProperty(nativeDeviceZoom, autoScaleProperty);
+}
+
 public static void setDeviceZoom (int nativeDeviceZoom) {
 	DPIUtil.nativeDeviceZoom = nativeDeviceZoom;
 	int deviceZoom = getZoomForAutoscaleProperty (nativeDeviceZoom);
