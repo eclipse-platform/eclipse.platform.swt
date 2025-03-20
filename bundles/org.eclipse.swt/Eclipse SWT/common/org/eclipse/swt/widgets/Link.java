@@ -11,19 +11,17 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *     Conrad Groth - Bug 401015 - [CSS] Add support for styling hyperlinks in Links
+ *     Raghunandana Murthappa(Advantest) - SkiJa Link implementation
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
 import java.util.*;
-import java.util.regex.*;
-import java.util.regex.Pattern;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
-
-import java.util.List;
+import org.eclipse.swt.widgets.LinkRenderer.*;
 
 /**
  * Instances of this class represent a selectable user interface object that
@@ -49,7 +47,6 @@ import java.util.List;
  */
 public class Link extends CustomControl {
 
-	private static final Color DISABLED_COLOR = new Color(160, 160, 160);
 	private static final Color LINK_COLOR = new Color(0, 102, 204);
 
 	/** Left and right margins */
@@ -66,17 +63,11 @@ public class Link extends CustomControl {
 
 	private boolean ignoreDispose;
 
-	private Image backgroundImage;
-
-	private Color background;
+	private Set<TextSegment> links;;
+	private String displayText = "";
 
 	private Color linkColor;
-
-	private static final int DRAW_FLAGS = SWT.DRAW_MNEMONIC | SWT.DRAW_TAB | SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER;
-
-	private final Set<TextSegment> links = new HashSet<>();
-	private TextSegment prevHoverLink;
-	private final Map<String, List<TextSegment>> parsedText = new HashMap<>();
+	private final LinkRenderer renderer;
 
 	/**
 	 * Constructs a new instance of this class given its parent and a style value
@@ -126,6 +117,9 @@ public class Link extends CustomControl {
 			align = SWT.LEFT;
 		}
 
+		final RendererFactory rendererFactory = parent.getDisplay().getRendererFactory();
+		renderer = rendererFactory.createLinkRenderer(this);
+
 		final Listener listener = event -> {
 			switch (event.type) {
 				case SWT.Paint -> onPaint(event);
@@ -143,6 +137,9 @@ public class Link extends CustomControl {
 	}
 
 	private void onMouseUp(Event e) {
+		if (links == null) {
+			return;
+		}
 		int x = e.x;
 		int y = e.y;
 		if ((e.stateMask & SWT.BUTTON1) != 0) {
@@ -158,6 +155,41 @@ public class Link extends CustomControl {
 
 	public void addSelectionListener(SelectionListener listener) {
 		addTypedListener(listener, SWT.Selection, SWT.DefaultSelection);
+	}
+
+	/**
+	 * Removes the listener from the collection of listeners who will be notified
+	 * when the control is selected by the user.
+	 *
+	 * @param listener the listener which should no longer be notified
+	 *
+	 * @exception IllegalArgumentException
+	 *                                     <ul>
+	 *                                     <li>ERROR_NULL_ARGUMENT - if the listener
+	 *                                     is null</li>
+	 *                                     </ul>
+	 * @exception SWTException
+	 *                                     <ul>
+	 *                                     <li>ERROR_WIDGET_DISPOSED - if the
+	 *                                     receiver has been disposed</li>
+	 *                                     <li>ERROR_THREAD_INVALID_ACCESS - if not
+	 *                                     called from the thread that created the
+	 *                                     receiver</li>
+	 *                                     </ul>
+	 *
+	 * @see SelectionListener
+	 * @see #addSelectionListener
+	 */
+	public void removeSelectionListener(SelectionListener listener) {
+		checkWidget();
+		if (listener == null) {
+			error(SWT.ERROR_NULL_ARGUMENT);
+		}
+		if (eventTable == null) {
+			return;
+		}
+		eventTable.unhook(SWT.Selection, listener);
+		eventTable.unhook(SWT.DefaultSelection, listener);
 	}
 
 	/**
@@ -185,103 +217,13 @@ public class Link extends CustomControl {
 
 	@Override
 	protected Point computeDefaultSize() {
-		int lineWidth = 0;
-		int lineHeight = 0;
-
-		int leftMargin = this.leftMargin;
-		int topMargin = this.topMargin;
-
-		if (!text.isEmpty()) {
-			String[] lines = text.split("\n");
-			for (String line : lines) {
-				Point textExtent = Drawing.executeOnGC(this, gc -> {
-					gc.setFont(getFont());
-					return getLineExtent(gc, parseTextSegments(line));
-				});
-				lineWidth = Math.max(textExtent.x, lineWidth);
-				lineHeight = textExtent.y;
-			}
-		}
-
-		int width = leftMargin + lineWidth + this.rightMargin;
-
-		// Height must be multiple of lines.
-		int newlineCount = (int) text.chars().filter(ch -> ch == '\n').count();
-		if (text.contains("\n")) {
-			lineHeight *= (newlineCount + 1);
-		}
-
-		int height = topMargin + lineHeight + this.bottomMargin;
-		return new Point(width, height);
-	}
-
-	/**
-	 * Returns the horizontal alignment. The alignment style (LEFT, CENTER or RIGHT)
-	 * is returned.
-	 *
-	 * @return SWT.LEFT, SWT.RIGHT or SWT.CENTER
-	 */
-	public int getAlignment() {
-		/*
-		 * This call is intentionally commented out, to allow this getter method to be
-		 * called from a thread which is different from one that created the widget.
-		 */
-		// checkWidget();
-		return align;
-	}
-
-	/**
-	 * Return the Link's bottom margin.
-	 *
-	 * @return the bottom margin of the link
-	 *
-	 * @since 3.6
-	 */
-	public int getBottomMargin() {
-		/*
-		 * This call is intentionally commented out, to allow this getter method to be
-		 * called from a thread which is different from one that created the widget.
-		 */
-		// checkWidget();
-		return bottomMargin;
-	}
-
-	/**
-	 * Return the Link's left margin.
-	 *
-	 * @return the left margin of the link
-	 *
-	 * @since 3.6
-	 */
-	public int getLeftMargin() {
-		/*
-		 * This call is intentionally commented out, to allow this getter method to be
-		 * called from a thread which is different from one that created the widget.
-		 */
-		// checkWidget();
-		return leftMargin;
-	}
-
-	/**
-	 * Return the Link's right margin.
-	 *
-	 * @return the right margin of the link
-	 *
-	 * @since 3.6
-	 */
-	public int getRightMargin() {
-		/*
-		 * This call is intentionally commented out, to allow this getter method to be
-		 * called from a thread which is different from one that created the widget.
-		 */
-		// checkWidget();
-		return rightMargin;
+		return renderer.computeDefaultSize();
 	}
 
 	@Override
 	public int getStyle() {
 		int style = super.getStyle();
-		switch (align) {
+		switch (getAlignment()) {
 		case SWT.RIGHT -> style |= SWT.RIGHT;
 		case SWT.CENTER -> style |= SWT.CENTER;
 		case SWT.LEFT -> style |= SWT.LEFT;
@@ -289,42 +231,12 @@ public class Link extends CustomControl {
 		return style;
 	}
 
-	/**
-	 * Return the Link's text.
-	 *
-	 * @return the text of the link or null
-	 */
-	public String getText() {
-		/*
-		 * This call is intentionally commented out, to allow this getter method to be
-		 * called from a thread which is different from one that created the widget.
-		 */
-		// checkWidget();
-		return text;
-	}
-
-	/**
-	 * Return the Link's top margin.
-	 *
-	 * @return the top margin of the link
-	 *
-	 * @since 3.6
-	 */
-	public int getTopMargin() {
-		/*
-		 * This call is intentionally commented out, to allow this getter method to be
-		 * called from a thread which is different from one that created the widget.
-		 */
-		// checkWidget();
-		return topMargin;
-	}
-
 	private void initAccessible() {
 		Accessible accessible = getAccessible();
 		accessible.addAccessibleListener(new AccessibleAdapter() {
 			@Override
 			public void getName(AccessibleEvent e) {
-				e.result = getParsedText();
+				e.result = displayText;
 			}
 		});
 
@@ -382,18 +294,6 @@ public class Link extends CustomControl {
 		});
 	}
 
-	private String getParsedText() {
-		StringBuilder sb = new StringBuilder();
-		String[] lines = text.split("\n");
-		for (String line : lines) {
-			List<TextSegment> segments = parseTextSegments(line);
-			for (TextSegment segment : segments) {
-				sb.append(segment.text);
-			}
-		}
-		return sb.toString();
-	}
-
 	private void onDispose(Event event) {
 		/* make this handler run after other dispose listeners */
 		if (ignoreDispose) {
@@ -404,363 +304,30 @@ public class Link extends CustomControl {
 		notifyListeners(event.type, event);
 		event.type = SWT.NONE;
 
-		backgroundImage = null;
 		text = "";
+		super.dispose();
 	}
 
 	private void onMouseMove(Event event) {
-		int x = event.x;
-		int y = event.y;
-
-		if (prevHoverLink != null && prevHoverLink.rect.contains(x, y)) {
-			setCursor(display.getSystemCursor(SWT.CURSOR_HAND));
+		if (links == null) {
 			return;
 		}
 
-		for (TextSegment link : links) {
-			if (link.rect.contains(x, y)) {
-				setCursor(display.getSystemCursor(SWT.CURSOR_HAND));
-				prevHoverLink = link;
-				return;
-			}
+		if (renderer.isOverLink(event.x, event.y)) {
+			setCursor(display.getSystemCursor(SWT.CURSOR_HAND));
 		}
-		setCursor(null);
+		else {
+			setCursor(null);
+		}
 	}
 
 	private void onPaint(Event event) {
-		Drawing.drawWithGC(this, event.gc, this::doPaint);
-	}
-
-	private void doPaint(GC gc) {
-		Rectangle rect = getBounds();
-
-		if (rect.width == 0 || rect.height == 0) {
+		final Point size = getSize();
+		if (size.x == 0 || size.y == 0) {
 			return;
 		}
-		if (text.isEmpty()) {
-			return;
-		}
-
-		drawBackground(gc, rect);
-
-		Color linkColor = getLinkForeground();
-
-		links.clear();
-
-		int x = leftMargin;
-		int lineY = topMargin;
-
-		for (String line : parsedText.keySet()) {
-			List<TextSegment> segments = parsedText.get(line);
-			int lineX = x;
-			if (align == SWT.CENTER) {
-				int lineWidth = getLineExtent(gc, segments).x;
-				if (rect.width > lineWidth) {
-					lineX = Math.max(x, (rect.width - lineWidth) / 2);
-				}
-			}
-			if (align == SWT.RIGHT) {
-				int lineWidth = getLineExtent(gc, segments).x;
-				lineX = Math.max(x, rect.x + rect.width - rightMargin - lineWidth);
-			}
-
-			Point baseExtent = gc.textExtent("a", DRAW_FLAGS);
-
-			for (TextSegment segment : segments) {
-				Point extent = gc.textExtent(segment.text, DRAW_FLAGS);
-				int noOfTrailSpaces = countTrailingSpaces(segment.text);
-				if (noOfTrailSpaces > 0) {
-					extent.x = extent.x + noOfTrailSpaces * baseExtent.x;
-				}
-
-				if (isEnabled()) {
-					gc.setForeground(segment.isLink ? linkColor : getForeground());
-				} else {
-					gc.setForeground(DISABLED_COLOR);
-				}
-				gc.drawText(segment.text, lineX, lineY, DRAW_FLAGS);
-
-				if (segment.isLink) {
-					int underlineY = lineY + extent.y - 2;
-					gc.drawLine(lineX, underlineY, lineX + extent.x, underlineY);
-					// remember bounds of links
-					segment.rect = new Rectangle(lineX, lineY, extent.x, extent.y);
-					links.add(segment);
-				}
-
-				lineX += extent.x;
-			}
-			lineY += gc.getFontMetrics().getHeight();
-		}
-	}
-
-	private Point getLineExtent(GC gc, List<TextSegment> segments) {
-		StringBuilder sb = new StringBuilder();
-		for (TextSegment textSegment : segments) {
-			sb.append(textSegment.text);
-		}
-		return gc.textExtent(sb.toString(), DRAW_FLAGS);
-	}
-
-	private void drawBackground(GC gc, Rectangle rect) {
-		// draw a background image behind the text
-		try {
-			if (backgroundImage != null) {
-				// draw a background image behind the text
-				Rectangle imageRect = backgroundImage.getBounds();
-				// tile image to fill space
-				gc.setBackground(getBackground());
-				gc.fillRectangle(rect);
-				int xPos = 0;
-				while (xPos < rect.width) {
-					int yPos = 0;
-					while (yPos < rect.height) {
-						gc.drawImage(backgroundImage, xPos, yPos);
-						yPos += imageRect.height;
-					}
-					xPos += imageRect.width;
-				}
-			} else {
-				if (background != null && background.getAlpha() > 0) {
-					gc.setBackground(getBackground());
-					gc.fillRectangle(rect);
-				}
-			}
-		} catch (SWTException e) {
-			if ((getStyle() & SWT.DOUBLE_BUFFERED) == 0) {
-				gc.setBackground(getBackground());
-				gc.fillRectangle(rect);
-			}
-		}
-	}
-
-	private int countTrailingSpaces(String text) {
-		int count = 0;
-		for (int i = text.length() - 1; i >= 0 && text.charAt(i) == ' '; i--) {
-			count++;
-		}
-		return count;
-	}
-
-	private List<TextSegment> parseTextSegments(String input) {
-		List<TextSegment> segments = new ArrayList<>();
-		Pattern pattern = Pattern.compile("(.*?)<a(?: href=\"(.*?)\")?>(.*?)</a>([\\s.,]*)", Pattern.CASE_INSENSITIVE);
-		Matcher matcher = pattern.matcher(input);
-
-		int lastEnd = 0;
-
-		while (matcher.find()) {
-			// Extract normal text before <a> tag
-			String normalText = matcher.group(1);
-			if (!normalText.isEmpty()) {
-				segments.add(new TextSegment(normalText, false, null, null));
-			}
-
-			// Extract href attribute (if present) and linked text inside <a> tag
-			String href = matcher.group(2); // href="..." value (can be null)
-			String linkText = matcher.group(3); // The actual clickable text
-			segments.add(new TextSegment(linkText, true, href, null));
-
-			// Capture trailing spaces and punctuation (important for handling ", "
-			// correctly)
-			String trailingText = matcher.group(4);
-			if (!trailingText.isEmpty()) {
-				segments.add(new TextSegment(trailingText, false, null, null));
-			}
-
-			lastEnd = matcher.end();
-		}
-
-		// Add any remaining text after the last <a> tag
-		if (lastEnd < input.length()) {
-			String remainingText = input.substring(lastEnd);
-			segments.add(new TextSegment(remainingText, false, null, null));
-		}
-
-		return segments;
-	}
-
-	private static class TextSegment {
-		String text, linkData;
-		boolean isLink;
-		Rectangle rect;
-
-		TextSegment(String text, boolean isLink, String linkData, Rectangle rect) {
-			this.text = text;
-			this.isLink = isLink;
-			this.linkData = linkData;
-			this.rect = rect;
-		}
-	}
-
-	/**
-	 * Set the horizontal alignment of the Link. Use the values LEFT, CENTER and
-	 * RIGHT to align image and text within the available space.
-	 *
-	 * @param align the alignment style of LEFT, RIGHT or CENTER
-	 *
-	 * @exception SWTException
-	 *                         <ul>
-	 *                         <li>ERROR_WIDGET_DISPOSED - if the receiver has been
-	 *                         disposed</li>
-	 *                         <li>ERROR_THREAD_INVALID_ACCESS - if not called from
-	 *                         the thread that created the receiver</li>
-	 *                         <li>ERROR_INVALID_ARGUMENT - if the value of align is
-	 *                         not one of SWT.LEFT, SWT.RIGHT or SWT.CENTER</li>
-	 *                         </ul>
-	 */
-	public void setAlignment(int align) {
-		checkWidget();
-		if (align != SWT.LEFT && align != SWT.RIGHT && align != SWT.CENTER) {
-			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-		}
-		if (this.align != align) {
-			this.align = align;
-			redraw();
-		}
-	}
-
-	@Override
-	public void setBackground(Color color) {
-		super.setBackground(color);
-		if (color == null || color.equals(background)) {
-			return;
-		}
-
-		background = color;
-		backgroundImage = null;
-		redraw();
-	}
-
-	/**
-	 * Set the image to be drawn in the background of the Link.
-	 *
-	 * @param image the image to be drawn in the background
-	 *
-	 * @exception SWTException
-	 *                         <ul>
-	 *                         <li>ERROR_WIDGET_DISPOSED - if the receiver has been
-	 *                         disposed</li>
-	 *                         <li>ERROR_THREAD_INVALID_ACCESS - if not called from
-	 *                         the thread that created the receiver</li>
-	 *                         </ul>
-	 */
-	@Override
-	public void setBackgroundImage(Image image) {
-		checkWidget();
-		// background color takes the priority.
-		if (background != null || image == backgroundImage) {
-			return;
-		}
-		backgroundImage = image;
-		redraw();
-	}
-
-	/**
-	 * Set the Link's bottom margin, in points.
-	 *
-	 * @param bottomMargin the bottom margin of the link, which must be equal to or
-	 *                     greater than zero
-	 *
-	 * @exception SWTException
-	 *                         <ul>
-	 *                         <li>ERROR_WIDGET_DISPOSED - if the receiver has been
-	 *                         disposed</li>
-	 *                         <li>ERROR_THREAD_INVALID_ACCESS - if not called from
-	 *                         the thread that created the receiver</li>
-	 *                         </ul>
-	 *
-	 * @since 3.6
-	 */
-	public void setBottomMargin(int bottomMargin) {
-		checkWidget();
-		if (this.bottomMargin == bottomMargin || bottomMargin < 0) {
-			return;
-		}
-		this.bottomMargin = bottomMargin;
-		redraw();
-	}
-
-	@Override
-	public void setFont(Font font) {
-		super.setFont(font);
-		redraw();
-	}
-
-	/**
-	 * Set the Link's horizontal left margin, in points.
-	 *
-	 * @param leftMargin the left margin of the link, which must be equal to or
-	 *                   greater than zero
-	 *
-	 * @exception SWTException
-	 *                         <ul>
-	 *                         <li>ERROR_WIDGET_DISPOSED - if the receiver has been
-	 *                         disposed</li>
-	 *                         <li>ERROR_THREAD_INVALID_ACCESS - if not called from
-	 *                         the thread that created the receiver</li>
-	 *                         </ul>
-	 *
-	 * @since 3.6
-	 */
-	public void setLeftMargin(int leftMargin) {
-		checkWidget();
-		if (this.leftMargin == leftMargin || leftMargin < 0) {
-			return;
-		}
-		this.leftMargin = leftMargin;
-		redraw();
-	}
-
-	/**
-	 * Set the Link's margins, in points.
-	 *
-	 * @param leftMargin   the left margin.
-	 * @param topMargin    the top margin.
-	 * @param rightMargin  the right margin.
-	 * @param bottomMargin the bottom margin.
-	 * @exception SWTException
-	 *                         <ul>
-	 *                         <li>ERROR_WIDGET_DISPOSED - if the receiver has been
-	 *                         disposed</li>
-	 *                         <li>ERROR_THREAD_INVALID_ACCESS - if not called from
-	 *                         the thread that created the receiver</li>
-	 *                         </ul>
-	 *
-	 * @since 3.6
-	 */
-	public void setMargins(int leftMargin, int topMargin, int rightMargin, int bottomMargin) {
-		checkWidget();
-		this.leftMargin = Math.max(0, leftMargin);
-		this.topMargin = Math.max(0, topMargin);
-		this.rightMargin = Math.max(0, rightMargin);
-		this.bottomMargin = Math.max(0, bottomMargin);
-		redraw();
-	}
-
-	/**
-	 * Set the Link's right margin, in points.
-	 *
-	 * @param rightMargin the right margin of the link, which must be equal to or
-	 *                    greater than zero
-	 *
-	 * @exception SWTException
-	 *                         <ul>
-	 *                         <li>ERROR_WIDGET_DISPOSED - if the receiver has been
-	 *                         disposed</li>
-	 *                         <li>ERROR_THREAD_INVALID_ACCESS - if not called from
-	 *                         the thread that created the receiver</li>
-	 *                         </ul>
-	 *
-	 * @since 3.6
-	 */
-	public void setRightMargin(int rightMargin) {
-		checkWidget();
-		if (this.rightMargin == rightMargin || rightMargin < 0) {
-			return;
-		}
-		this.rightMargin = rightMargin;
-		redraw();
+		Drawing.drawWithGC(this, event.gc, gc -> renderer.paint(gc, size.x, size.y));
+		links = renderer.getLinks();
 	}
 
 	/**
@@ -807,27 +374,22 @@ public class Link extends CustomControl {
 	 */
 	public void setText(String text) {
 		checkWidget();
-		if (text == null) {
-			error(SWT.ERROR_NULL_ARGUMENT);
-		}
+		if (text == null) error(SWT.ERROR_NULL_ARGUMENT);
+		if (this.text.equals(text)) return;
 
-		parsedText.clear();
-		String[] lines = text.split("\n");
-		for (String line : lines) {
-			parsedText.put(line, parseTextSegments(line));
-		}
+		this.text = text;
 
-		if (!text.equals(this.text)) {
-			this.text = text;
-			redraw();
-		}
+		renderer.parseLinkText(text);
+		displayText = renderer.getLinkDisplayText();
+
+		redraw();
 	}
 
 	/**
-	 * Set the Link's top margin, in points.
+	 * Returns the receiver's text, which will be an empty string if it has never
+	 * been set.
 	 *
-	 * @param topMargin the top margin of the link, which must be equal to or
-	 *                  greater than zero
+	 * @return the receiver's text
 	 *
 	 * @exception SWTException
 	 *                         <ul>
@@ -836,16 +398,10 @@ public class Link extends CustomControl {
 	 *                         <li>ERROR_THREAD_INVALID_ACCESS - if not called from
 	 *                         the thread that created the receiver</li>
 	 *                         </ul>
-	 *
-	 * @since 3.6
 	 */
-	public void setTopMargin(int topMargin) {
+	public String getText() {
 		checkWidget();
-		if (this.topMargin == topMargin || topMargin < 0) {
-			return;
-		}
-		this.topMargin = topMargin;
-		redraw();
+		return text;
 	}
 
 	/**
@@ -874,18 +430,15 @@ public class Link extends CustomControl {
 	 */
 	public void setLinkForeground(Color color) {
 		checkWidget();
-		if (color != null) {
-			if (color.isDisposed()) {
-				error(SWT.ERROR_INVALID_ARGUMENT);
-			}
-			if (color.equals(linkColor)) {
-				return;
-			}
-		} else if (linkColor == null) {
+
+		if (color == null) {
+			return;
+		}
+		if (color.equals(linkColor)) {
 			return;
 		}
 
-		linkColor = color;
+		this.linkColor = color;
 		if (getEnabled()) {
 			redraw();
 		}
@@ -911,37 +464,218 @@ public class Link extends CustomControl {
 	}
 
 	/**
-	 * Removes the listener from the collection of listeners who will be notified
-	 * when the control is selected by the user.
+	 * Set the Link's horizontal left margin, in points.
 	 *
-	 * @param listener the listener which should no longer be notified
+	 * @param leftMargin the left margin of the link, which must be equal to or
+	 *                   greater than zero
 	 *
-	 * @exception IllegalArgumentException
-	 *                                     <ul>
-	 *                                     <li>ERROR_NULL_ARGUMENT - if the listener
-	 *                                     is null</li>
-	 *                                     </ul>
 	 * @exception SWTException
-	 *                                     <ul>
-	 *                                     <li>ERROR_WIDGET_DISPOSED - if the
-	 *                                     receiver has been disposed</li>
-	 *                                     <li>ERROR_THREAD_INVALID_ACCESS - if not
-	 *                                     called from the thread that created the
-	 *                                     receiver</li>
-	 *                                     </ul>
+	 *                         <ul>
+	 *                         <li>ERROR_WIDGET_DISPOSED - if the receiver has been
+	 *                         disposed</li>
+	 *                         <li>ERROR_THREAD_INVALID_ACCESS - if not called from
+	 *                         the thread that created the receiver</li>
+	 *                         </ul>
 	 *
-	 * @see SelectionListener
-	 * @see #addSelectionListener
+	 * @since 3.6
 	 */
-	public void removeSelectionListener(SelectionListener listener) {
+	public void setLeftMargin(int leftMargin) {
 		checkWidget();
-		if (listener == null) {
-			error(SWT.ERROR_NULL_ARGUMENT);
-		}
-		if (eventTable == null) {
+
+		if (this.leftMargin == leftMargin || leftMargin < 0) {
 			return;
 		}
-		eventTable.unhook(SWT.Selection, listener);
-		eventTable.unhook(SWT.DefaultSelection, listener);
+		this.leftMargin = leftMargin;
+		redraw();
+
+	}
+
+	/**
+	 * Return the Link's left margin.
+	 *
+	 * @return the left margin of the link
+	 *
+	 * @since 3.6
+	 */
+	public int getLeftMargin() {
+		checkWidget();
+		return leftMargin;
+	}
+
+	/**
+	 * Set the Link's right margin, in points.
+	 *
+	 * @param rightMargin the right margin of the link, which must be equal to or
+	 *                    greater than zero
+	 *
+	 * @exception SWTException
+	 *                         <ul>
+	 *                         <li>ERROR_WIDGET_DISPOSED - if the receiver has been
+	 *                         disposed</li>
+	 *                         <li>ERROR_THREAD_INVALID_ACCESS - if not called from
+	 *                         the thread that created the receiver</li>
+	 *                         </ul>
+	 *
+	 * @since 3.6
+	 */
+	public void setRightMargin(int rightMargin) {
+		checkWidget();
+
+		if (this.rightMargin == rightMargin || rightMargin < 0) {
+			return;
+		}
+		this.rightMargin = rightMargin;
+		redraw();
+
+	}
+
+	/**
+	 * Return the Link's right margin.
+	 *
+	 * @return the right margin of the link
+	 *
+	 * @since 3.6
+	 */
+	public int getRightMargin() {
+		checkWidget();
+		return rightMargin;
+	}
+
+	/**
+	 * Set the Link's top margin, in points.
+	 *
+	 * @param topMargin the top margin of the link, which must be equal to or
+	 *                  greater than zero
+	 *
+	 * @exception SWTException
+	 *                         <ul>
+	 *                         <li>ERROR_WIDGET_DISPOSED - if the receiver has been
+	 *                         disposed</li>
+	 *                         <li>ERROR_THREAD_INVALID_ACCESS - if not called from
+	 *                         the thread that created the receiver</li>
+	 *                         </ul>
+	 *
+	 * @since 3.6
+	 */
+	public void setTopMargin(int topMargin) {
+		if (this.topMargin == topMargin || topMargin < 0) {
+			return;
+		}
+		this.topMargin = topMargin;
+		redraw();
+	}
+
+	/**
+	 * Return the Link's top margin.
+	 *
+	 * @return the top margin of the link
+	 *
+	 * @since 3.6
+	 */
+	public int getTopMargin() {
+		checkWidget();
+		return topMargin;
+	}
+
+	/**
+	 * Set the Link's bottom margin, in points.
+	 *
+	 * @param bottomMargin the bottom margin of the link, which must be equal to or
+	 *                     greater than zero
+	 *
+	 * @exception SWTException
+	 *                         <ul>
+	 *                         <li>ERROR_WIDGET_DISPOSED - if the receiver has been
+	 *                         disposed</li>
+	 *                         <li>ERROR_THREAD_INVALID_ACCESS - if not called from
+	 *                         the thread that created the receiver</li>
+	 *                         </ul>
+	 *
+	 * @since 3.6
+	 */
+	public void setBottomMargin(int bottomMargin) {
+		checkWidget();
+
+		if (this.bottomMargin == bottomMargin || bottomMargin < 0) {
+			return;
+		}
+		this.bottomMargin = bottomMargin;
+		redraw();
+
+	}
+
+	/**
+	 * Return the Link's bottom margin.
+	 *
+	 * @return the bottom margin of the link
+	 *
+	 * @since 3.6
+	 */
+	public int getBottomMargin() {
+		checkWidget();
+		return bottomMargin;
+	}
+
+	/**
+	 * Set the Link's margins, in points.
+	 *
+	 * @param leftMargin   the left margin.
+	 * @param topMargin    the top margin.
+	 * @param rightMargin  the right margin.
+	 * @param bottomMargin the bottom margin.
+	 * @exception SWTException
+	 *                         <ul>
+	 *                         <li>ERROR_WIDGET_DISPOSED - if the receiver has been
+	 *                         disposed</li>
+	 *                         <li>ERROR_THREAD_INVALID_ACCESS - if not called from
+	 *                         the thread that created the receiver</li>
+	 *                         </ul>
+	 *
+	 * @since 3.6
+	 */
+	public void setMargins(int leftMargin, int topMargin, int rightMargin, int bottomMargin) {
+		checkWidget();
+		this.leftMargin = Math.max(0, leftMargin);
+		this.topMargin = Math.max(0, topMargin);
+		this.rightMargin = Math.max(0, rightMargin);
+		this.bottomMargin = Math.max(0, bottomMargin);
+		redraw();
+	}
+
+	/**
+	 * Set the horizontal alignment of the Link. Use the values LEFT, CENTER and
+	 * RIGHT to align image and text within the available space.
+	 *
+	 * @param align the alignment style of LEFT, RIGHT or CENTER
+	 *
+	 * @exception SWTException
+	 *                         <ul>
+	 *                         <li>ERROR_WIDGET_DISPOSED - if the receiver has been
+	 *                         disposed</li>
+	 *                         <li>ERROR_THREAD_INVALID_ACCESS - if not called from
+	 *                         the thread that created the receiver</li>
+	 *                         <li>ERROR_INVALID_ARGUMENT - if the value of align is
+	 *                         not one of SWT.LEFT, SWT.RIGHT or SWT.CENTER</li>
+	 *                         </ul>
+	 */
+	public void setAlignment(int align) {
+		if (align != SWT.LEFT && align != SWT.RIGHT && align != SWT.CENTER) {
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		}
+		if (this.align != align) {
+			this.align = align;
+			redraw();
+		}
+	}
+
+	/**
+	 * Returns the horizontal alignment. The alignment style (LEFT, CENTER or RIGHT)
+	 * is returned.
+	 *
+	 * @return SWT.LEFT, SWT.RIGHT or SWT.CENTER
+	 */
+	public int getAlignment() {
+		checkWidget();
+		return align;
 	}
 }

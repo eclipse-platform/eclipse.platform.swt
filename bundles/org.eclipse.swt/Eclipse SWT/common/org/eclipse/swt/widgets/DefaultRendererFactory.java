@@ -43,4 +43,9 @@ public class DefaultRendererFactory implements RendererFactory {
 	public LabelRenderer createLabelRenderer(Label label) {
 		return new BasicLabelRenderer(label);
 	}
+
+	@Override
+	public LinkRenderer createLinkRenderer(Link link) {
+		return new DefaultLinkRenderer(link);
+	}
 }

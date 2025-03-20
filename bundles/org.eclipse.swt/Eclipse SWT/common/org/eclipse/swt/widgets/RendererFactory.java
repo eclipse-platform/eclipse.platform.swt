@@ -25,4 +25,6 @@ public interface RendererFactory {
 	LabelRenderer createLabelRenderer(Label label);
 
 	ScaleRenderer createScaleRenderer(Scale scale);
+
+	LinkRenderer createLinkRenderer(Link link);
 }
