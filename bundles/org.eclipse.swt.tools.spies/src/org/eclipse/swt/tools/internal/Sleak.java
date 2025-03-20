@@ -359,14 +359,11 @@ private void saveToFile(boolean prompt) {
 			if (saveImages) {
 				String suffix = String.format("%05d.png", i++);
 				String pngName = String.format("%s_%s", fileName, suffix);
-				Image image = new Image(saveAs.getDisplay(), 100, 100);
+				final ImageGcDrawer imageGcDrawer = (gc, width, height) -> {
+					draw(gc, object);
+				};
+				Image image = new Image(saveAs.getDisplay(), imageGcDrawer, 100, 100);
 				try {
-					GC gc = new GC(image);
-					try {
-						draw(gc, object);
-					} finally {
-						gc.dispose();
-					}
 					ImageLoader loader = new ImageLoader();
 					loader.data = new ImageData[] { image.getImageData() };
 					loader.save(pngName, SWT.IMAGE_PNG);
