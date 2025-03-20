@@ -2303,6 +2303,37 @@ void overpaintMenuBorder () {
 	OS.ReleaseDC (handle, dc);
 }
 
+/**
+ * Fills the remaining area which are not painted by MenuBar and ClientArea
+ * inside the shell window.
+ */
+private void fillUnpaintedRegionInShellWindow() {
+	if (menuBar == null) return;
+	Rectangle clientArea = getClientRectInWindow();
+	Rectangle menuArea = menuBar.getBounds();
+	Rectangle windowBounds = getBoundsInPixels();
+	menuArea.x = menuArea.x - windowBounds.x;
+	menuArea.y = menuArea .y - windowBounds.y;
+	long windowRegion = OS.CreateRectRgn (0, 0, windowBounds.width, windowBounds.height);
+	long menuRegion = OS.CreateRectRgn (menuArea.x, menuArea.y, menuArea.x + menuArea.width, menuArea.y + menuArea.height);
+	long clientRegion = OS.CreateRectRgn (clientArea.x, clientArea.y, clientArea.x + clientArea.width, clientArea.y + clientArea.height);
+	OS.CombineRgn (windowRegion, windowRegion, menuRegion, OS.RGN_DIFF);
+	OS.CombineRgn (windowRegion, windowRegion, clientRegion, OS.RGN_DIFF);
+	OS.DeleteObject (menuRegion);
+	OS.DeleteObject (clientRegion);
+	int dwRop = display.useDarkModeExplorerTheme ? OS.BLACKNESS : OS.PATCOPY;
+	long dc = OS.GetWindowDC (handle);
+	POINT pt = null;
+	pt = new POINT();
+	OS.GetWindowOrgEx(dc, pt);
+	OS.OffsetRgn(windowRegion, -pt.x, -pt.y);
+	OS.SelectClipRgn(dc, windowRegion);
+	OS.OffsetRgn(windowRegion, pt.x, pt.y);
+	OS.PatBlt(dc, 0, 0, windowBounds.width, windowBounds.height, dwRop);
+	OS.DeleteObject (windowRegion);
+	OS.ReleaseDC (handle, dc);
+}
+
 @Override
 long windowProc (long hwnd, int msg, long wParam, long lParam) {
 	if (handle == 0) return 0;
@@ -2347,6 +2378,7 @@ long windowProc (long hwnd, int msg, long wParam, long lParam) {
 		{
 			long ret = super.windowProc (hwnd, msg, wParam, lParam);
 			overpaintMenuBorder();
+			fillUnpaintedRegionInShellWindow();
 			return ret;
 		}
 	}
@@ -2534,6 +2566,16 @@ LRESULT WM_NCHITTEST (long wParam, long lParam) {
 		if (hittest == OS.HTMENU) hittest = OS.HTBORDER;
 		return new LRESULT (hittest);
 	}
+	/*
+	 * In quarter zoom levels, sometimes the MenuItem in the MenuBar has more height
+	 * than the MenuBar, which leads to a gap between the client area and the menu
+	 * bar leaving it unpainted and unmanaged. On hovering over the MenuItem, it
+	 * leaves the gap area painted with remains of the MenuItem hover overlay. The
+	 * event WM_NCHITTEST is sent on hovering over MenuItem and hence the overlay
+	 * remains can be cleaned by calling
+	 * fillUnpaintedRegionBetweenMenuBarAndClientArea on this event.
+	 */
+	fillUnpaintedRegionInShellWindow();
 	return null;
 }
 
