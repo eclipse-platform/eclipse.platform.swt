@@ -28,27 +28,27 @@ public class SkijaFontMetrics extends FontMetricsHandle {
 	@Override
 	public int getAscent() {
 		// in skija, these are negative usually.
-		return Math.abs((int) this.metrics.getAscent());
+		return Math.abs(Math.round(DPIUtil.autoScaleDown(metrics.getAscent())));
 	}
 
 	@Override
 	public int getDescent() {
-		return (int) this.metrics.getDescent();
+		return Math.round(DPIUtil.autoScaleDown(metrics.getDescent()));
 	}
 
 	@Override
 	public int getHeight() {
-		return (int) this.metrics.getHeight();
+		return Math.round(DPIUtil.autoScaleDown(metrics.getHeight()));
 	}
 
 	@Override
 	public int getLeading() {
-		return (int) this.metrics.getLeading();
+		return Math.round(DPIUtil.autoScaleDown(metrics.getLeading()));
 	}
 
 	@Override
 	public int getAverageCharWidth() {
-		return (int) this.metrics.getAvgCharWidth();
+		return Math.round(DPIUtil.autoScaleDown(metrics.getAvgCharWidth()));
 	}
 
 	@Override

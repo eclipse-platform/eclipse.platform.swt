@@ -792,7 +792,7 @@ public class SkijaGC extends GCHandle {
 	public Point textExtent(String string, int flags) {
 		float height = font.getMetrics().getHeight();
 		float width = font.measureTextWidth(replaceMnemonics(string));
-		return new Point((int) DPIUtil.autoScaleDown(width), (int) DPIUtil.autoScaleDown(height));
+		return new Point(Math.round(DPIUtil.autoScaleDown(width)), Math.round(DPIUtil.autoScaleDown(height)));
 	}
 
 	@Override
