@@ -192,6 +192,9 @@ class MultiZoomCoordinateSystemMapper implements CoordinateSystemMapper {
 	}
 
 	private Monitor getContainingMonitorForPoints(int x, int y, int width, int height) {
+		if (width <= 0 || height <= 0) {
+			return getContainingMonitorForPoints(x, y);
+		}
 		Monitor[] monitors = monitorSupplier.get();
 		Monitor selectedMonitor = null;
 		int highestIntersectionRatio = 0;
