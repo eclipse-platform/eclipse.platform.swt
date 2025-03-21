@@ -25,6 +25,10 @@ class InternalImageLoader {
 		return FileFormat.load(stream, imageLoader, fileZoom, targetZoom);
 	}
 
+	static List<ElementAtZoom<ImageData>> load(InputStream stream, ImageLoader imageLoader, int fileZoom, int targetZoom, int flag) {
+		return FileFormat.load(stream, imageLoader, fileZoom, targetZoom, flag);
+	}
+
 	static void save(OutputStream stream, int format, ImageLoader imageLoader) {
 		FileFormat.save(stream, format, imageLoader);
 	}
