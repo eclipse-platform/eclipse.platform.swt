@@ -19,7 +19,7 @@ import org.eclipse.swt.internal.*;
 
 public class SkijaFontMetrics extends FontMetricsHandle {
 
-	private io.github.humbleui.skija.FontMetrics metrics;
+	private final io.github.humbleui.skija.FontMetrics metrics;
 
 	SkijaFontMetrics(io.github.humbleui.skija.FontMetrics metrics) {
 		this.metrics = metrics;
@@ -58,20 +58,21 @@ public class SkijaFontMetrics extends FontMetricsHandle {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		SkijaFontMetrics other = (SkijaFontMetrics) obj;
 		return Objects.equals(metrics, other.metrics);
 	}
 
 	@Override
 	public double getAverageCharacterWidth() {
-		return this.metrics.getAvgCharWidth();
-
+		return metrics.getAvgCharWidth();
 	}
-
 }
