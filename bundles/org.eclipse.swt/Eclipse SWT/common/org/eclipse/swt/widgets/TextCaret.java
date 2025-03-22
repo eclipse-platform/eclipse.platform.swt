@@ -1,5 +1,6 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corporation and others.
+ * Copyright (c) 2024 SAP SE and others.
+
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -7,9 +8,6 @@
  * https://www.eclipse.org/legal/epl-2.0/
  *
  * SPDX-License-Identifier: EPL-2.0
- *
- * Contributors:
- *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
@@ -34,11 +32,10 @@ import org.eclipse.swt.graphics.*;
  *      ControlExample, Canvas tab</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further
  *      information</a>
- * @noextend This class is not intended to be subclassed by clients.
  */
-public class CTextCaret extends Widget {
-	static CTextCaret currentCaret;;
-	CSimpleText parent;
+class TextCaret extends Widget {
+	static TextCaret currentCaret;;
+	Text parent;
 	int x, y, width, height;
 	boolean isVisible, isShowing;
 	int blinkRate;
@@ -100,7 +97,7 @@ public class CTextCaret extends Widget {
 	 * @see Widget#checkSubclass
 	 * @see Widget#getStyle
 	 */
-	public CTextCaret(CSimpleText parent, int style) {
+	public TextCaret(Text parent, int style) {
 		super(parent, style);
 		this.parent = parent;
 		init();
@@ -241,7 +238,7 @@ public class CTextCaret extends Widget {
 	 *                         the thread that created the receiver</li>
 	 *                         </ul>
 	 */
-	public CSimpleText getParent() {
+	public Text getParent() {
 		checkWidget();
 		return parent;
 	}
