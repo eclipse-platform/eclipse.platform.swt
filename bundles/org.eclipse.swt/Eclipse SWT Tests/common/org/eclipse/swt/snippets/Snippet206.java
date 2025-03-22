@@ -13,8 +13,6 @@
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 
-import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
-
 /*
  * Button example snippet: a Button with text and image
  *
@@ -36,7 +34,7 @@ public static void main(String[] args) {
 	Shell shell = new Shell(display);
 	shell.setText("Snippet 206");
 	shell.setLayout (new GridLayout());
-	var button = new CButton(shell, SWT.PUSH);
+	var button = new Button(shell, SWT.PUSH);
 
 //	button.addSelectionListener(widgetSelectedAdapter(e -> System.out.println("Received evt: " + e )));
 //	button.addSelectionListener(widgetSelectedAdapter(__ -> System.out.println("Another click")));
