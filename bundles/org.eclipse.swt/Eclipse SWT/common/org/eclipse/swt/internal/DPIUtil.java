@@ -200,6 +200,10 @@ public static float scaleDown(float size, int zoom) {
 	return (size / scaleFactor);
 }
 
+public static int autoScaleDownToInt(float value) {
+	return Math.round(DPIUtil.autoScaleDown(value));
+}
+
 /**
  * Auto-scale down float dimensions if enabled for Drawable class.
  */
