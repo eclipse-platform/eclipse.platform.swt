@@ -248,7 +248,7 @@ void createHandle (int index) {
 			GTK3.gtk_scrolled_window_set_shadow_type (scrolledHandle, GTK.GTK_SHADOW_ETCHED_IN);
 		}
 	}
-	if (!search_enabled()) {
+	if (!searchEnabled()) {
 		GTK.gtk_tree_view_set_search_column(handle, -1);
 	}
 	// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,
@@ -1292,7 +1292,7 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);
 }
 
-private boolean search_enabled() {
+boolean searchEnabled() {
 	/* Disable searching when using NO_SEARCH */
 	if ((style & SWT.NO_SEARCH) != 0
 		/*
