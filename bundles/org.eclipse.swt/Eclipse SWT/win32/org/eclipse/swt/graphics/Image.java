@@ -1265,7 +1265,39 @@ private ImageData getScaledImageData (int zoom) {
 	}
 	TreeSet<Integer> availableZooms = new TreeSet<>(zoomLevelToImageHandle.keySet());
 	int closestZoom = Optional.ofNullable(availableZooms.higher(zoom)).orElse(availableZooms.lower(zoom));
-	return DPIUtil.scaleImageData (device, getImageMetadata(closestZoom).getImageData(), zoom, closestZoom);
+	ImageData imageData = getImageMetadata(closestZoom).getImageData();
+	return scaledTo(imageData, zoom, closestZoom, DPIUtil.getScalingType(imageData));
+}
+
+private ImageData scaledTo(ImageData imageData, int targetZoom, int currentZoom, int scaleType) {
+	if (imageData == null || currentZoom == targetZoom || !device.isAutoScalable()) {
+		return imageData;
+	}
+	float scaleFactor = (float) targetZoom / (float) currentZoom;
+	int scaledWidth = Math.round (imageData.width * scaleFactor);
+	int scaledHeight = Math.round (imageData.height * scaleFactor);
+	switch (scaleType) {
+	case SWT.SMOOTH:
+		return scaleUsingSmoothScaling(imageData, scaledWidth, scaledHeight);
+	default:
+		return imageData.scaledTo(scaledWidth, scaledHeight);
+	}
+}
+
+private ImageData scaleUsingSmoothScaling(ImageData imageData, int width, int height) {
+	Image original = new Image (device, (ImageDataProvider) zoom -> imageData);
+	/* Create a 24 bit image data with alpha channel */
+	final ImageData resultData = new ImageData (width, height, 24, new PaletteData (0xFF, 0xFF00, 0xFF0000));
+	resultData.alphaData = new byte [width * height];
+	Image resultImage = new Image (device, (ImageDataProvider) zoom -> resultData);
+	GC gc = new GC (resultImage);
+	gc.setAntialias (SWT.ON);
+	gc.drawImage (original, 0, 0, imageData.width, imageData.height, 0, 0, width, height, false);
+	gc.dispose ();
+	original.dispose ();
+	ImageData result = resultImage.getImageData (resultImage.getZoom());
+	resultImage.dispose ();
+	return result;
 }
 
 
@@ -1933,7 +1965,7 @@ private abstract class ImageFromImageDataProviderWrapper extends AbstractImagePr
 			return getScaledImageData(zoom);
 		}
 		ElementAtZoom<ImageData> loadedImageData = loadImageData(zoom);
-		return DPIUtil.scaleImageData(device, loadedImageData, zoom);
+		return scaledTo(loadedImageData.element(), zoom, loadedImageData.zoom(), DPIUtil.getScalingType(loadedImageData.element()));
 	}
 
 	@Override
@@ -1991,8 +2023,8 @@ private class MaskedImageDataProviderWrapper extends ImageFromImageDataProviderW
 
 	@Override
 	protected ElementAtZoom<ImageData> loadImageData(int zoom) {
-		ImageData scaledSource = DPIUtil.scaleImageData(device, srcAt100, zoom, 100);
-		ImageData scaledMask = DPIUtil.scaleImageData(device, maskAt100, zoom, 100);
+		ImageData scaledSource = scaledTo(srcAt100, zoom, 100, DPIUtil.getScalingType(srcAt100));
+		ImageData scaledMask = scaledTo(maskAt100, zoom, 100, DPIUtil.getScalingType(maskAt100));
 		scaledMask = ImageData.convertMask(scaledMask);
 		ImageData mergedData = applyMask(scaledSource, scaledMask);
 		return new ElementAtZoom<>(mergedData, zoom);
@@ -2192,16 +2224,9 @@ private class ImageFileNameProviderWrapper extends BaseImageProviderWrapper<Imag
 			imageDataAtZoom = new ElementAtZoom<>(nativeInitializedImage.getImageData(), fileForZoom.zoom());
 			destroyHandleForZoom(zoom);
 		}
-		ImageData imageData = scaleIfNecessary(imageDataAtZoom, zoom);
+		ImageData imageData = scaledTo(imageDataAtZoom.element(), zoom, imageDataAtZoom.zoom(), DPIUtil.getScalingType(imageDataAtZoom.element()));
 		imageData = adaptImageDataIfDisabledOrGray(imageData);
 		return imageData;
-	}
-
-	private ImageData scaleIfNecessary(ElementAtZoom<ImageData> imageDataAtZoom, int zoom) {
-		if (imageDataAtZoom.zoom() != zoom) {
-			return DPIUtil.scaleImageData(device, imageDataAtZoom, zoom);
-		}
-		return imageDataAtZoom.element();
 	}
 
 	@Override
@@ -2423,13 +2448,13 @@ private class ImageDataProviderWrapper extends BaseImageProviderWrapper<ImageDat
 	@Override
 	ImageData getImageData(int zoom) {
 		ElementAtZoom<ImageData> data = DPIUtil.validateAndGetImageDataAtZoom (provider, zoom);
-		return DPIUtil.scaleImageData (device, data.element(), zoom, data.zoom());
+		return scaledTo(data.element(), zoom, data.zoom(), DPIUtil.getScalingType(data.element()));
 	}
 
 	@Override
 	ImageHandle getImageMetadata(int zoom) {
 		ElementAtZoom<ImageData> imageCandidate = DPIUtil.validateAndGetImageDataAtZoom (provider, zoom);
-		ImageData resizedData = DPIUtil.scaleImageData (device, imageCandidate.element(), zoom, imageCandidate.zoom());
+		ImageData resizedData = scaledTo(imageCandidate.element(), zoom, imageCandidate.zoom(), DPIUtil.getScalingType(imageCandidate.element()));
 		ImageData newData = adaptImageDataIfDisabledOrGray(resizedData);
 		init(newData, zoom);
 		return zoomLevelToImageHandle.get(zoom);

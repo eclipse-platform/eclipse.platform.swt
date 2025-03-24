@@ -372,15 +372,21 @@ public static Long win32_getHandle (Cursor cursor, int zoom) {
 	if (cursor.source == null) {
 		cursor.setHandleForZoomLevel(cursor.handle, zoom);
 	} else {
-		ImageData source = DPIUtil.scaleImageData(cursor.device, cursor.source, zoom, DEFAULT_ZOOM);
+		Image image;
+		ImageData source, mask;
+		Cursor newCursor;
+		image = new Image(cursor.device, cursor.source);
+		source = image.getImageData(zoom);
+		image.dispose();
 		if (cursor.isIcon) {
-			Cursor newCursor = new Cursor(cursor.device, source, cursor.hotspotX, cursor.hotspotY);
-			cursor.setHandleForZoomLevel(newCursor.handle, zoom);
+			newCursor = new Cursor(cursor.device, source, cursor.hotspotX, cursor.hotspotY);
 		} else {
-			ImageData mask = DPIUtil.scaleImageData(cursor.device, cursor.mask, zoom, DEFAULT_ZOOM);
-			Cursor newCursor = new Cursor(cursor.device, source, mask, cursor.hotspotX, cursor.hotspotY);
-			cursor.setHandleForZoomLevel(newCursor.handle, zoom);
+			image = new Image(cursor.device, cursor.mask);
+			mask = image.getImageData(zoom);
+			image.dispose();
+			newCursor = new Cursor(cursor.device, source, mask, cursor.hotspotX, cursor.hotspotY);
 		}
+		cursor.setHandleForZoomLevel(newCursor.handle, zoom);
 	}
 	return cursor.zoomLevelToHandle.get(zoom);
 }

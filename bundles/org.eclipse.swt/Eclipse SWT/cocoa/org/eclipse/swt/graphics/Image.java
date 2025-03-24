@@ -1408,7 +1408,39 @@ public ImageData getImageData(int zoom) {
 	} finally {
 		if (pool != null) pool.release();
 	}
-	return DPIUtil.scaleImageData (device, getImageData(100), zoom, 100);
+	ImageData imageData = getImageData(100);
+	return scaledTo (imageData, zoom, 100, DPIUtil.getScalingType(imageData));
+}
+
+private ImageData scaledTo(ImageData imageData, int targetZoom, int currentZoom, int scaleType) {
+	if (imageData == null || currentZoom == targetZoom || !device.isAutoScalable()) {
+		return imageData;
+	}
+	float scaleFactor = (float) targetZoom / (float) currentZoom;
+	int scaledWidth = Math.round (imageData.width * scaleFactor);
+	int scaledHeight = Math.round (imageData.height * scaleFactor);
+	switch (scaleType) {
+	case SWT.SMOOTH:
+		return scaleUsingSmoothScaling(imageData, scaledWidth, scaledHeight);
+	default:
+		return imageData.scaledTo(scaledWidth, scaledHeight);
+	}
+}
+
+private ImageData scaleUsingSmoothScaling(ImageData imageData, int width, int height) {
+	Image original = new Image (device, (ImageDataProvider) zoom -> imageData);
+	/* Create a 24 bit image data with alpha channel */
+	final ImageData resultData = new ImageData (width, height, 24, new PaletteData (0xFF, 0xFF00, 0xFF0000));
+	resultData.alphaData = new byte [width * height];
+	Image resultImage = new Image (device, (ImageDataProvider) zoom -> resultData);
+	GC gc = new GC (resultImage);
+	gc.setAntialias (SWT.ON);
+	gc.drawImage (original, 0, 0, imageData.width, imageData.height, 0, 0, width, height, false);
+	gc.dispose ();
+	original.dispose ();
+	ImageData result = resultImage.getImageData (DPIUtil.getDeviceZoom());
+	resultImage.dispose ();
+	return result;
 }
 
 /** Returns the best available representation. May be 100% or 200% iff there is an image provider. */
