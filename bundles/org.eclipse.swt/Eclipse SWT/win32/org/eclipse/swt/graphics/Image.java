@@ -76,6 +76,8 @@ import org.eclipse.swt.internal.win32.*;
  */
 public final class Image extends Resource implements Drawable {
 
+	private static final boolean USE_LEGACY_IMAGE_DISABLEMENT = Boolean.getBoolean("org.eclipse.swt.image.useLegacyDisablementAlgorithm");
+
 	/**
 	 * specifies whether the receiver is a bitmap or an icon
 	 * (one of <code>SWT.BITMAP</code>, <code>SWT.ICON</code>)
@@ -667,12 +669,11 @@ void init() {
 }
 
 private ImageData applyDisableImageData(ImageData data, int height, int width) {
+	ImageColorTransformer disabledImageTransformer = USE_LEGACY_IMAGE_DISABLEMENT
+			? ImageColorTransformer.forIntensityThreshold(device)
+			: ImageColorTransformer.forHSB(1.0f, 0.2f, 0.9f, 0.5f);
 	PaletteData palette = data.palette;
-	RGB[] rgbs = new RGB[3];
-	rgbs[0] = this.device.getSystemColor(SWT.COLOR_BLACK).getRGB();
-	rgbs[1] = this.device.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW).getRGB();
-	rgbs[2] = this.device.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND).getRGB();
-	ImageData newData = new ImageData(width, height, 8, new PaletteData(rgbs));
+	ImageData newData = new ImageData(width, height, 32, new PaletteData(0xFF, 0xFF00, 0xFF0000));
 	newData.alpha = data.alpha;
 	newData.alphaData = data.alphaData;
 	newData.maskData = data.maskData;
@@ -692,7 +693,6 @@ private ImageData applyDisableImageData(ImageData data, int height, int width) {
 	int greenShift = palette.greenShift;
 	int blueShift = palette.blueShift;
 	for (int y=0; y<height; y++) {
-		int offset = y * newData.bytesPerLine;
 		data.getPixels(0, y, width, scanline, 0);
 		if (mask != null) mask.getPixels(0, y, width, maskScanline, 0);
 		for (int x=0; x<width; x++) {
@@ -711,14 +711,10 @@ private ImageData applyDisableImageData(ImageData data, int height, int width) {
 					green = palette.colors[pixel].green;
 					blue = palette.colors[pixel].blue;
 				}
-				int intensity = red * red + green * green + blue * blue;
-				if (intensity < 98304) {
-					newData.data[offset] = (byte)1;
-				} else {
-					newData.data[offset] = (byte)2;
-				}
+				RGBA result = disabledImageTransformer.adaptPixelValue(red, green, blue, data.getAlpha(x, y));
+				newData.setAlpha(x, y, result.alpha);
+				newData.setPixel(x, y, newData.palette.getPixel(result.rgb));
 			}
-			offset++;
 		}
 	}
 	return newData;
