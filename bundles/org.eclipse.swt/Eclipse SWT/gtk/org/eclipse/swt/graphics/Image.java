@@ -304,6 +304,7 @@ public Image(Device device, Image srcImage, int flag) {
 		}
 		switch (flag) {
 			case SWT.IMAGE_DISABLE: {
+				ImageColorTransformer disabledImageTransformer = ImageColorTransformer.forRGB(0.5f, 0.5f, 0.5f, 0.5f);
 				byte[] line = new byte[stride];
 				for (int y=0; y<height; y++) {
 					C.memmove(line, data + (y * stride), stride);
@@ -312,10 +313,11 @@ public Image(Device device, Image srcImage, int flag) {
 						int r = line[offset + or] & 0xFF;
 						int g = line[offset + og] & 0xFF;
 						int b = line[offset + ob] & 0xFF;
-						line[offset + oa] = (byte) Math.round((double) a * 0.5);
-						line[offset + or] = (byte) Math.round((double) r * 0.5);
-						line[offset + og] = (byte) Math.round((double) g * 0.5);
-						line[offset + ob] = (byte) Math.round((double) b * 0.5);
+						RGBA result = disabledImageTransformer.adaptPixelValue(r, g, b, a);
+						line[offset + oa] = (byte) Math.round(result.alpha);
+						line[offset + or] = (byte) Math.round(result.rgb.red);
+						line[offset + og] = (byte) Math.round(result.rgb.green);
+						line[offset + ob] = (byte) Math.round(result.rgb.blue);
 					}
 					C.memmove(data + (y * stride), line, stride);
 				}
