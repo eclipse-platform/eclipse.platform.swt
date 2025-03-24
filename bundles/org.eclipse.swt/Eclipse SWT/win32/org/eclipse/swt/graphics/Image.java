@@ -14,6 +14,8 @@
 package org.eclipse.swt.graphics;
 
 
+import static org.eclipse.swt.internal.image.ImageColorTransformer.DEFAULT_DISABLED_IMAGE_TRANSFORMER;
+
 import java.io.*;
 import java.util.*;
 import java.util.function.*;
@@ -669,11 +671,7 @@ void init() {
 
 private ImageData applyDisableImageData(ImageData data, int height, int width) {
 	PaletteData palette = data.palette;
-	RGB[] rgbs = new RGB[3];
-	rgbs[0] = this.device.getSystemColor(SWT.COLOR_BLACK).getRGB();
-	rgbs[1] = this.device.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW).getRGB();
-	rgbs[2] = this.device.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND).getRGB();
-	ImageData newData = new ImageData(width, height, 8, new PaletteData(rgbs));
+	ImageData newData = new ImageData(width, height, 32, new PaletteData(0xFF, 0xFF00, 0xFF0000));
 	newData.alpha = data.alpha;
 	newData.alphaData = data.alphaData;
 	newData.maskData = data.maskData;
@@ -693,7 +691,6 @@ private ImageData applyDisableImageData(ImageData data, int height, int width) {
 	int greenShift = palette.greenShift;
 	int blueShift = palette.blueShift;
 	for (int y=0; y<height; y++) {
-		int offset = y * newData.bytesPerLine;
 		data.getPixels(0, y, width, scanline, 0);
 		if (mask != null) mask.getPixels(0, y, width, maskScanline, 0);
 		for (int x=0; x<width; x++) {
@@ -712,14 +709,10 @@ private ImageData applyDisableImageData(ImageData data, int height, int width) {
 					green = palette.colors[pixel].green;
 					blue = palette.colors[pixel].blue;
 				}
-				int intensity = red * red + green * green + blue * blue;
-				if (intensity < 98304) {
-					newData.data[offset] = (byte)1;
-				} else {
-					newData.data[offset] = (byte)2;
-				}
+				RGBA result = DEFAULT_DISABLED_IMAGE_TRANSFORMER.adaptPixelValue(red, green, blue, data.getAlpha(x, y));
+				newData.setAlpha(x, y, result.alpha);
+				newData.setPixel(x, y, newData.palette.getPixel(result.rgb));
 			}
-			offset++;
 		}
 	}
 	return newData;
