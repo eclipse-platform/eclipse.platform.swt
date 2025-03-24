@@ -1115,6 +1115,27 @@ int getByteOrder() {
 }
 
 /**
+ * Returns the scaled ImageData using smooth scaling.
+ *
+ * @since 3.130
+ */
+public ImageData scaleToUsingSmoothScaling(Device device, int width, int height) {
+	Image original = new Image (device, (ImageDataProvider) zoom -> this);
+	/* Create a 24 bit image data with alpha channel */
+	final ImageData resultData = new ImageData (width, height, 24, new PaletteData (0xFF, 0xFF00, 0xFF0000));
+	resultData.alphaData = new byte [width * height];
+	Image resultImage = new Image (device, (ImageDataProvider) zoom -> resultData);
+	GC gc = new GC (resultImage);
+	gc.setAntialias (SWT.ON);
+	gc.drawImage (original, 0, 0, this.width, this.height, 0, 0, width, height, false);
+	gc.dispose ();
+	original.dispose ();
+	ImageData result = resultImage.getImageData (DPIUtil.getDeviceZoom());
+	resultImage.dispose ();
+	return result;
+}
+
+/**
  * Returns a copy of the receiver which has been stretched or
  * shrunk to the specified size. If either the width or height
  * is negative, the resulting image will be inverted in the

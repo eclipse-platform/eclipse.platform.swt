@@ -294,26 +294,9 @@ private static ImageData autoScaleImageData (Device device, final ImageData imag
 	int scaledHeight = Math.round (height * scaleFactor);
 	boolean useSmoothScaling = autoScaleMethod == AutoScaleMethod.SMOOTH && imageData.getTransparencyType() != SWT.TRANSPARENCY_MASK;
 	if (useSmoothScaling) {
-		Image original = new Image (device, (ImageDataProvider) zoom -> imageData);
-		/* Create a 24 bit image data with alpha channel */
-		final ImageData resultData = new ImageData (scaledWidth, scaledHeight, 24, new PaletteData (0xFF, 0xFF00, 0xFF0000));
-		resultData.alphaData = new byte [scaledWidth * scaledHeight];
-		Image resultImage = new Image (device, (ImageDataProvider) zoom -> resultData);
-		GC gc = new GC (resultImage);
-		gc.setAntialias (SWT.ON);
-		gc.drawImage (original, 0, 0, autoScaleDown (width), autoScaleDown (height),
-				/* E.g. destWidth here is effectively DPIUtil.autoScaleDown (scaledWidth), but avoiding rounding errors.
-				 * Nevertheless, we still have some rounding errors due to the point-based API GC#drawImage(..).
-				 */
-				0, 0, Math.round (autoScaleDown (width * scaleFactor)), Math.round (autoScaleDown (height * scaleFactor)));
-		gc.dispose ();
-		original.dispose ();
-		ImageData result = resultImage.getImageData (getDeviceZoom ());
-		resultImage.dispose ();
-		return result;
-	} else {
-		return imageData.scaledTo (scaledWidth, scaledHeight);
+		return imageData.scaleToUsingSmoothScaling(device, scaledWidth, scaledHeight);
 	}
+	return imageData.scaledTo (scaledWidth, scaledHeight);
 }
 
 /**
