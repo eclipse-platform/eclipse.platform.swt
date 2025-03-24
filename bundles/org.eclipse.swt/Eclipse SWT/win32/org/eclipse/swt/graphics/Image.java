@@ -1265,7 +1265,7 @@ private ImageData getScaledImageData (int zoom) {
 	}
 	TreeSet<Integer> availableZooms = new TreeSet<>(zoomLevelToImageHandle.keySet());
 	int closestZoom = Optional.ofNullable(availableZooms.higher(zoom)).orElse(availableZooms.lower(zoom));
-	return scaleImageData(getImageMetadata(closestZoom).getImageData(), zoom, closestZoom);
+	return DPIUtil.scaleImageData (device, getImageMetadata(closestZoom).getImageData(), zoom, closestZoom);
 }
 
 
@@ -1855,40 +1855,6 @@ public void setBackground(Color color) {
 	zoomLevelToImageHandle.values().forEach(imageHandle -> imageHandle.setBackground(backgroundColor));
 }
 
-private ImageData scaleImageData(final ImageData imageData, int targetZoom, int currentZoom) {
-	if (imageData == null || targetZoom == currentZoom || (device != null && !device.isAutoScalable())) return imageData;
-	float scaleFactor = (float) targetZoom / (float) currentZoom;
-	int width = imageData.width;
-	int height = imageData.height;
-	int scaledWidth = Math.round (width * scaleFactor);
-	int scaledHeight = Math.round (height * scaleFactor);
-	boolean useSmoothScaling = DPIUtil.isSmoothScalingEnabled() && imageData.getTransparencyType() != SWT.TRANSPARENCY_MASK;
-	if (useSmoothScaling) {
-		return scaleToUsingSmoothScaling(scaledWidth, scaledHeight, imageData);
-	}
-	return imageData.scaledTo (scaledWidth, scaledHeight);
-}
-
-private ImageData scaleToUsingSmoothScaling(int width, int height, ImageData imageData) {
-	Image original = new Image (device, (ImageDataProvider) zoom -> imageData);
-	/* Create a 24 bit image data with alpha channel */
-	final ImageData resultData = new ImageData (width, height, 24, new PaletteData (0xFF, 0xFF00, 0xFF0000));
-	resultData.alphaData = new byte [width * height];
-	Image resultImage = new Image (device, (ImageDataProvider) zoom -> resultData);
-	GC gc = new GC (resultImage);
-	gc.setAntialias (SWT.ON);
-	gc.drawImage (original, 0, 0, imageData.width, imageData.height,
-			/* E.g. destWidth here is effectively DPIUtil.autoScaleDown (scaledWidth), but avoiding rounding errors.
-			 * Nevertheless, we still have some rounding errors due to the point-based API GC#drawImage(..).
-			 */
-			0, 0, width, height, false);
-	gc.dispose ();
-	original.dispose ();
-	ImageData result = resultImage.getImageData (resultImage.getZoom());
-	resultImage.dispose ();
-	return result;
-}
-
 private int getZoom() {
 	return DPIUtil.getZoomForAutoscaleProperty(initialNativeZoom);
 }
@@ -2233,7 +2199,7 @@ private class ImageFileNameProviderWrapper extends BaseImageProviderWrapper<Imag
 
 	private ImageData scaleIfNecessary(ElementAtZoom<ImageData> imageDataAtZoom, int zoom) {
 		if (imageDataAtZoom.zoom() != zoom) {
-			return scaleImageData(imageDataAtZoom.element(), zoom, imageDataAtZoom.zoom());
+			return DPIUtil.scaleImageData(device, imageDataAtZoom, zoom);
 		}
 		return imageDataAtZoom.element();
 	}
@@ -2457,13 +2423,13 @@ private class ImageDataProviderWrapper extends BaseImageProviderWrapper<ImageDat
 	@Override
 	ImageData getImageData(int zoom) {
 		ElementAtZoom<ImageData> data = DPIUtil.validateAndGetImageDataAtZoom (provider, zoom);
-		return scaleImageData(data.element(), zoom, data.zoom());
+		return DPIUtil.scaleImageData (device, data.element(), zoom, data.zoom());
 	}
 
 	@Override
 	ImageHandle getImageMetadata(int zoom) {
 		ElementAtZoom<ImageData> imageCandidate = DPIUtil.validateAndGetImageDataAtZoom (provider, zoom);
-		ImageData resizedData = scaleImageData(imageCandidate.element(), zoom, imageCandidate.zoom());
+		ImageData resizedData = DPIUtil.scaleImageData (device, imageCandidate.element(), zoom, imageCandidate.zoom());
 		ImageData newData = adaptImageDataIfDisabledOrGray(resizedData);
 		init(newData, zoom);
 		return zoomLevelToImageHandle.get(zoom);
