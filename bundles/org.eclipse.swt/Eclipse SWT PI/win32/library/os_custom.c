@@ -18,16 +18,6 @@
 
 #define OS_NATIVE(func) Java_org_eclipse_swt_internal_win32_OS_##func
 
-__declspec(dllexport) HRESULT DllGetVersion(DLLVERSIONINFO *dvi);
-HRESULT DllGetVersion(DLLVERSIONINFO *dvi)
-{
-	dvi->dwMajorVersion = SWT_VERSION / 1000;
-	dvi->dwMinorVersion = SWT_VERSION % 1000;
-	dvi->dwBuildNumber = SWT_REVISION;
-	dvi->dwPlatformID = DLLVER_PLATFORM_WINDOWS;
-	return 1;
-}
-
 HINSTANCE g_hInstance = NULL;
 BOOL WINAPI DllMain(HANDLE hInstDLL, DWORD dwReason, LPVOID lpvReserved)
 {
