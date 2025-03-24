@@ -13,14 +13,8 @@
 package org.eclipse.swt.tests.junit;
 
 import static org.eclipse.swt.tests.junit.SwtTestUtil.assertSWTProblem;
-import static org.junit.Assert.fail;
+import static org.eclipse.swt.tests.junit.SwtTestUtil.getPath;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.io.File;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
@@ -68,28 +62,4 @@ public class Test_org_eclipse_swt_internal_SVGRasterizer {
 		assertSWTProblem("Incorrect exception thrown for provider with corrupt images", SWT.ERROR_INVALID_IMAGE, e);
 	}
 
-	String getPath(String fileName) {
-		String urlPath = "";
-		String pluginPath = System.getProperty("PLUGIN_PATH");
-		if (pluginPath == null) {
-			URL url = getClass().getClassLoader().getResource(fileName);
-			if (url == null) {
-				fail("URL == null for file " + fileName);
-			}
-			urlPath = url.getFile();
-		} else {
-			urlPath = pluginPath + "/data/" + fileName;
-		}
-		if (File.separatorChar != '/')
-			urlPath = urlPath.replace('/', File.separatorChar);
-		if (SwtTestUtil.isWindows && urlPath.indexOf(File.separatorChar) == 0)
-			urlPath = urlPath.substring(1);
-		urlPath = urlPath.replaceAll("%20", " ");
-		// Fallback when test is locally executed as plug-in test
-		if (!Files.exists(Path.of(urlPath))) {
-			urlPath = Path.of("data/" + fileName).toAbsolutePath().toString();
-		}
-		assertTrue(Files.exists(Path.of(urlPath)), "file not found: " + urlPath);
-		return urlPath;
-	}
 }

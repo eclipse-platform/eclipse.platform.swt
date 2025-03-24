@@ -16,6 +16,7 @@ package org.eclipse.swt.tests.junit;
 
 
 import static org.eclipse.swt.tests.junit.SwtTestUtil.assertSWTProblem;
+import static org.eclipse.swt.tests.junit.SwtTestUtil.getPath;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -26,10 +27,8 @@ import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeFalse;
 import static org.junit.Assume.assumeTrue;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
@@ -1167,26 +1166,7 @@ void getImageData2(int depth, PaletteData palette) {
 	gc.dispose();
 	image.dispose();
 }
-String getPath(String fileName) {
-	String urlPath;
 
-	String pluginPath = System.getProperty("PLUGIN_PATH");
-	if (pluginPath == null) {
-		URL url = getClass().getClassLoader().getResource(fileName);
-		if (url == null) {
-			fail("URL == null for file " + fileName);
-		}
-		urlPath = url.getFile();
-	} else {
-		urlPath = pluginPath + "/data/" + fileName;
-	}
-
-	if (File.separatorChar != '/') urlPath = urlPath.replace('/', File.separatorChar);
-	if (SwtTestUtil.isWindows && urlPath.indexOf(File.separatorChar) == 0) urlPath = urlPath.substring(1);
-	urlPath = urlPath.replaceAll("%20", " ");
-
-	return urlPath;
-}
 RGB getRealRGB(Color color) {
 	Image colorImage = new Image(display, 10, 10);
 	GC imageGc = new GC(colorImage);
