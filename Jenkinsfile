@@ -344,12 +344,18 @@ pipeline {
 			}
 			post {
 				always {
-					junit 'eclipse.platform.swt/tests/*.test*/target/surefire-reports/*.xml'
-					archiveArtifacts artifacts: '**/*.log,*/binaries/*/target/*.jar', excludes: '**/*-sources.jar'
+					junit allowEmptyResults: true, testResults: 'eclipse.platform.swt/tests/*.test*/target/surefire-reports/*.xml'
+					archiveArtifacts allowEmptyArchive: true, artifacts: '**/*.log,*/binaries/*/target/*.jar', excludes: '**/*-sources.jar'
 					discoverGitReferenceBuild referenceJob: 'eclipse.platform.swt/master'
 					// To accept unstable builds (test errors or new warnings introduced by third party changes) as reference using "ignoreQualityGate:true"
-					recordIssues publishAllIssues: true, ignoreQualityGate:true, tools: [eclipse(name: 'Compiler and API Tools', pattern: '**/target/compilelogs/*.xml'), javaDoc()], qualityGates: [[threshold: 1, type: 'DELTA', unstable: true]]
-					recordIssues publishAllIssues: true, ignoreQualityGate:true, tool: mavenConsole(), qualityGates: [[threshold: 1, type: 'DELTA_ERROR', unstable: true]]
+					recordIssues enabledForFailure: true, publishAllIssues: true, ignoreQualityGate:true,
+						tools: [
+							eclipse(name: 'Compiler', pattern: '**/target/compilelogs/*.xml'),
+							issues(name: 'API Tools', id: 'apitools', pattern: '**/target/apianalysis/*.xml'),
+							javaDoc()
+						],
+						qualityGates: [[threshold: 1, type: 'DELTA', unstable: true]]
+					recordIssues enabledForFailure: true, publishAllIssues: true, ignoreQualityGate:true, tool: mavenConsole(), qualityGates: [[threshold: 1, type: 'DELTA_ERROR', unstable: true]]
 				}
 			}
 		}
