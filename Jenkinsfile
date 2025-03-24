@@ -160,25 +160,19 @@ pipeline {
 						}
 						if (nativesChanged || params.forceNativeBuilds) {
 							NATIVES_CHANGED = true
-							def swtVersions = getSWTVersions()
-							withEnv(['swt_version='+swtVersions['swt_version'], 'new_version='+swtVersions['new_version'], 'rev='+swtVersions['rev'], 'new_rev='+swtVersions['new_rev'],
-									'comma_ver='+swtVersions['comma_ver'], "new_comma_ver=${swtVersions['maj_ver']},${swtVersions['min_ver']},${swtVersions['new_rev']},0" ]) {
-								sh '''
+							def versions = getSWTVersions()
+								sh """
 									# Delete native binaries to be replaced by subsequent binaries build
 									rm binaries/org.eclipse.swt.gtk.*/libswt-*.so
 									rm binaries/org.eclipse.swt.win32.*/swt-*.dll
 									rm binaries/org.eclipse.swt.cocoa.*/libswt-*.jnilib
 									
-									echo "Incrementing version from ${swt_version} to ${new_version}; new comma_ver=${new_comma_ver}"
-									
-									libraryFile='bundles/org.eclipse.swt/Eclipse SWT PI/common/org/eclipse/swt/internal/Library.java'
-									sed -i -e "s/REVISION = ${rev}/REVISION = ${new_rev}/g" "$libraryFile"
-									
-									commonMakeFile='bundles/org.eclipse.swt/Eclipse SWT/common/library/make_common.mak'
-									sed -i -e "s/rev=${rev}/rev=${new_rev}/g" "$commonMakeFile"
-									sed -i -e "s/comma_ver=${comma_ver}/comma_ver=${new_comma_ver}/g" "$commonMakeFile"
-								'''
-							}
+									echo "Incrementing version from ${versions.swt_version} to ${versions.new_version}"
+									sed -i -e "s/REVISION = ${versions.rev}/REVISION = ${versions.new_rev}/g" \
+										'bundles/org.eclipse.swt/Eclipse SWT PI/common/org/eclipse/swt/internal/Library.java'
+									sed -i -e "s/rev=${versions.rev}/rev=${versions.new_rev}/g" \
+										'bundles/org.eclipse.swt/Eclipse SWT/common/library/make_common.mak'
+								"""
 							// Collect SWT-native's sources
 							dir('bundles/org.eclipse.swt') {
 								for (ws in ['cocoa', 'gtk', 'win32']) {
@@ -348,13 +342,11 @@ pipeline {
 					archiveArtifacts allowEmptyArchive: true, artifacts: '**/*.log,*/binaries/*/target/*.jar', excludes: '**/*-sources.jar'
 					discoverGitReferenceBuild referenceJob: 'eclipse.platform.swt/master'
 					// To accept unstable builds (test errors or new warnings introduced by third party changes) as reference using "ignoreQualityGate:true"
-					recordIssues enabledForFailure: true, publishAllIssues: true, ignoreQualityGate:true,
-						tools: [
+					recordIssues enabledForFailure: true, publishAllIssues: true, ignoreQualityGate: true, tools: [
 							eclipse(name: 'Compiler', pattern: '**/target/compilelogs/*.xml'),
 							issues(name: 'API Tools', id: 'apitools', pattern: '**/target/apianalysis/*.xml'),
 							javaDoc()
-						],
-						qualityGates: [[threshold: 1, type: 'DELTA', unstable: true]]
+						], qualityGates: [[threshold: 1, type: 'DELTA', unstable: true]]
 					recordIssues enabledForFailure: true, publishAllIssues: true, ignoreQualityGate:true, tool: mavenConsole(), qualityGates: [[threshold: 1, type: 'DELTA_ERROR', unstable: true]]
 				}
 			}
