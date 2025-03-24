@@ -19,8 +19,15 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.PrintStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BooleanSupplier;
 
@@ -573,5 +580,28 @@ public static boolean hasPixelNotMatching(Image image, Color nonMatchingColor, R
 		}
 	}
 	return false;
+}
+
+public static String getPath(String fileName) {
+	URI uri;
+	String pluginPath = System.getProperty("PLUGIN_PATH");
+	if (pluginPath == null) {
+		URL url = SwtTestUtil.class.getResource(fileName);
+		assertNotNull(url, "URL == null for file " + fileName);
+		try {
+			uri = url.toURI();
+		} catch (URISyntaxException e) {
+			throw new IllegalArgumentException(e);
+		}
+	} else {
+		uri = URI.create(pluginPath + "/data/" + fileName);
+	}
+	// Fallback when test is locally executed as plug-in test
+	Path path = Path.of(uri);
+	if (!Files.exists(path)) {
+		path = Path.of("data/" + fileName).toAbsolutePath();
+	}
+	assertTrue(Files.exists(path), "file not found: " + uri);
+	return path.toString();
 }
 }
