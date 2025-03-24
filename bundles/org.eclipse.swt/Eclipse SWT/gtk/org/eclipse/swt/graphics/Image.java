@@ -14,6 +14,8 @@
 package org.eclipse.swt.graphics;
 
 
+import static org.eclipse.swt.internal.image.ImageColorTransformer.DEFAULT_DISABLED_IMAGE_TRANSFORMER;
+
 import java.io.*;
 import java.util.*;
 
@@ -307,15 +309,30 @@ public Image(Device device, Image srcImage, int flag) {
 				byte[] line = new byte[stride];
 				for (int y=0; y<height; y++) {
 					C.memmove(line, data + (y * stride), stride);
-					for (int x=0, offset=0; x<width; x++, offset += 4) {
+					for (int x = 0, offset = 0; x < width; x++, offset += 4) {
 						int a = line[offset + oa] & 0xFF;
 						int r = line[offset + or] & 0xFF;
 						int g = line[offset + og] & 0xFF;
 						int b = line[offset + ob] & 0xFF;
-						line[offset + oa] = (byte) Math.round((double) a * 0.5);
-						line[offset + or] = (byte) Math.round((double) r * 0.5);
-						line[offset + og] = (byte) Math.round((double) g * 0.5);
-						line[offset + ob] = (byte) Math.round((double) b * 0.5);
+						// The alpha value is embedded into the RGB values as well, so extract it out
+						// of those values for transformation and reapply it afterwards
+						// Note: don't change execution order, e.g., using *= assignment, as this is
+						// integer arithmetics
+						if (hasAlpha && a != 0) {
+							r = r * 255 / a;
+							g = g * 255 / a;
+							b = b * 255 / a;
+						}
+						RGBA result = DEFAULT_DISABLED_IMAGE_TRANSFORMER.adaptPixelValue(r, g, b, a);
+						if (hasAlpha) {
+							result.rgb.red = result.rgb.red * result.alpha / 255;
+							result.rgb.green = result.rgb.green * result.alpha / 255;
+							result.rgb.blue = result.rgb.blue * result.alpha / 255;
+						}
+						line[offset + oa] = (byte) result.alpha;
+						line[offset + or] = (byte) result.rgb.red;
+						line[offset + og] = (byte) result.rgb.green;
+						line[offset + ob] = (byte) result.rgb.blue;
 					}
 					C.memmove(data + (y * stride), line, stride);
 				}
