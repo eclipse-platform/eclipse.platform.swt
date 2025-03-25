@@ -204,7 +204,7 @@ public class ControlExample {
 
 					for (int i = 0; i < imageLocations.length; ++i) {
 						try (InputStream sourceStream = clazz.getResourceAsStream(imageLocations[i])) {
-							ImageData source = new ImageData(sourceStream);
+							ImageData source = ImageData.load(sourceStream);
 							if (imageTypes[i] == SWT.ICON) {
 								ImageData mask = source.getTransparencyMask();
 								images[i] = new Image(null, source, mask);

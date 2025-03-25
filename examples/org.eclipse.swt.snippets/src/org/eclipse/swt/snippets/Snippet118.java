@@ -21,6 +21,8 @@ package org.eclipse.swt.snippets;
  *
  * @since 3.0
  */
+import java.nio.file.Path;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
@@ -42,7 +44,7 @@ public static void main (String [] args) {
 		dialog.setFilterExtensions(new String[] {"*.ico", "*.gif", "*.*"});
 		String name = dialog.open();
 		if (name == null) return;
-		ImageData image = new ImageData(name);
+		ImageData image = ImageData.load(Path.of(name));
 		Cursor oldCursor = cursor[0];
 		cursor[0] = new Cursor(display, image, 0, 0);
 		shell.setCursor(cursor[0]);
