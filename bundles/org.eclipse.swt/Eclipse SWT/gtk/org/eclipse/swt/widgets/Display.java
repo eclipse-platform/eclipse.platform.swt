@@ -1143,12 +1143,12 @@ void checkIMModule () {
 	if (module != null && module.equals("xim")) {
 		System.err.println("***WARNING: Detected: GTK_IM_MODULE=xim. This input method is unsupported and can cause graphical issues.");
 		System.err.println("***WARNING: Unset GTK_IM_MODULE or set GTK_IM_MODULE=ibus if flicking is experienced. ");
-	}
-	// Enforce ibus as the input module on GNOME
-	if (OS.isGNOME) {
-		long settings = GTK.gtk_settings_get_default ();
-		byte[] ibus = Converter.wcsToMbcs ("ibus", true);
-		if (settings != 0) OS.g_object_set (settings, GTK.gtk_im_module, ibus, 0);
+		// Enforce ibus as the input module on GNOME X11
+		if (OS.isGNOME && OS.isX11()) {
+			long settings = GTK.gtk_settings_get_default ();
+			byte[] ibus = Converter.wcsToMbcs ("ibus", true);
+			if (settings != 0) OS.g_object_set (settings, GTK.gtk_im_module, ibus, 0);
+		}
 	}
 }
 
