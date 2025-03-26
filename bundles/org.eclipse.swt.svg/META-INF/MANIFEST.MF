@@ -11,3 +11,4 @@ Import-Package: com.github.weisj.jsvg;version="[1.7.0,2.0.0)",
  com.github.weisj.jsvg.geometry.size;version="[1.7.0,2.0.0)",
  com.github.weisj.jsvg.parser;version="[1.7.0,2.0.0)"
 Export-Package: org.eclipse.swt.svg
+Provide-Capability: eclipse.swt;image.format="svg";version:Version="1.0"
