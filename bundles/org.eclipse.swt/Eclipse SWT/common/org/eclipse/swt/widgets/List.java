@@ -1,6 +1,7 @@
 package org.eclipse.swt.widgets;
 
 import java.util.*;
+import java.util.stream.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
@@ -17,6 +18,8 @@ public class List extends Scrollable {
 	private int topIndex;
 	private Integer lastSelectedItem = 0;
 	private int lineHeight;
+
+	private static final String DUMMY_ITEM_TEXT = "a";
 
 	public List(Composite parent, int style) {
 		super(parent, checkStyle(style));
@@ -332,7 +335,8 @@ public class List extends Scrollable {
 	public void add(String string, int index) {
 		checkWidget();
 		if (string == null) error(SWT.ERROR_NULL_ARGUMENT);
-		if (index == -1) error(SWT.ERROR_INVALID_RANGE);
+		if (index < 0 || index > this.items.size())
+			error(SWT.ERROR_INVALID_RANGE);
 		this.items.add(index, string);
 		updateScrollBarWithTextSize();
 		redraw();
@@ -388,6 +392,8 @@ public class List extends Scrollable {
 
 	public String getItem(int index) {
 		checkWidget();
+		if (index < 0 || index >= this.items.size())
+			error(SWT.ERROR_INVALID_RANGE);
 		return this.items.get(index);
 	}
 
@@ -402,18 +408,14 @@ public class List extends Scrollable {
 	}
 
 	public int getItemHeightInPixels() {
-		checkWidget();
-
-		if (this.items.isEmpty()) {
-			return 0;
-		}
-		GC gc = new GC(this);
-		gc.setFont(getFont());
-		int itemHeight = gc.textExtent(this.items.get(0)).y;
-		gc.dispose();
-
-		if (itemHeight <= 0) error(SWT.ERROR_CANNOT_GET_ITEM_HEIGHT);
-		return itemHeight;
+	    checkWidget();
+	    String referenceText = this.items.isEmpty() ? DUMMY_ITEM_TEXT : this.items.get(0);
+	    GC gc = new GC(this);
+	    gc.setFont(getFont());
+	    int itemHeight = gc.textExtent(referenceText).y;
+	    gc.dispose();
+	    if (itemHeight <= 0) error(SWT.ERROR_CANNOT_GET_ITEM_HEIGHT);
+	    return itemHeight;
 	}
 
 	public String[] getItems() {
@@ -462,9 +464,12 @@ public class List extends Scrollable {
 	public int indexOf(String string, int start) {
 		checkWidget();
 		if (string == null) error(SWT.ERROR_NULL_ARGUMENT);
-
-		return this.items.indexOf(string);
-
+		int count = getItemCount();
+		if (!(0 <= start && start < count)) return -1;
+		for (int i = start; i < count; i++)
+			if (string.equals(getItem(i)))
+				return i;
+		return -1;
 	}
 
 	public boolean isSelected(int index) {
@@ -481,18 +486,22 @@ public class List extends Scrollable {
 		checkWidget();
 		if (indices == null) error(SWT.ERROR_NULL_ARGUMENT);
 		if (indices.length == 0) return;
-		java.util.List<String> indicesToRemove = new ArrayList<>();
-		for (int index : indices) {
-			indicesToRemove.add(String.valueOf(index));
-		}
+		for (int index : indices)
+			if (index < 0 || index >= this.items.size())
+				error(SWT.ERROR_INVALID_RANGE);
 
-		this.items.removeAll(indicesToRemove);
+		// Sort indices in descending order and remove duplicates
+	    int[] uniqueSortedIndices = IntStream.of(indices).distinct().boxed()
+	        .sorted((a, b) -> Integer.compare(b, a)).mapToInt(Integer::intValue).toArray();
+
+	    for (int index : uniqueSortedIndices) this.items.remove(index);
 		redraw();
 	}
 
 	public void remove(int index) {
 		checkWidget();
-		if (index < 0) error(SWT.ERROR_INVALID_ARGUMENT);
+		if (index < 0 || index >= this.items.size())
+			error(SWT.ERROR_INVALID_ARGUMENT);
 		this.items.remove(index);
 		redraw();
 	}
@@ -501,17 +510,26 @@ public class List extends Scrollable {
 		checkWidget();
 		if (start > end) return;
 
-		for (int i = start; i < end; i++) {
+		if (start < 0 || end >= this.items.size()) {
+			error(SWT.ERROR_INVALID_RANGE);
+			return;
+		}
+		if (start == 0 && end == this.items.size() - 1) {
+			removeAll();
+			return;
+		}
+		for (int i = end; i >= start; i--) {
 			remove(i);
 		}
 		redraw();
 	}
 
 	public void remove(String string) {
-		checkWidget();
-		if (string == null) error(SWT.ERROR_NULL_ARGUMENT);
-		this.items.remove(string);
-		redraw();
+	    checkWidget();
+	    if (string == null) error(SWT.ERROR_NULL_ARGUMENT);
+	    int index = indexOf(string, 0);
+	    if (index == -1) error(SWT.ERROR_INVALID_ARGUMENT);
+	    remove(index);
 	}
 
 	public void removeAll() {
@@ -558,12 +576,21 @@ public class List extends Scrollable {
 	}
 
 	void select(int index, boolean scroll) {
-		if (index < 0 || index >= this.items.size()) {
-			return;
-		}
-		this.selectedItems.add(index);
-		this.lastSelectedItem = index;
-		redraw();
+	    if (index < 0 || index >= this.items.size()) return;
+
+	    if ((this.style & SWT.SINGLE) != 0) {
+	        this.selectedItems.clear();
+	        this.selectedItems.add(index);
+	    } else {
+	        if (!this.selectedItems.contains(index)) {
+	            int insertPos = 0;
+	            while (insertPos < this.selectedItems.size() && this.selectedItems.get(insertPos) < index) insertPos++;
+	            this.selectedItems.add(insertPos, index);
+	        }
+	    }
+
+	    this.lastSelectedItem = index;
+	    redraw();
 	}
 
 	public void select(int start, int end) {
@@ -599,6 +626,8 @@ public class List extends Scrollable {
 	}
 
 	public void selectAll() {
+		if ((style & SWT.SINGLE) != 0)
+			return;
 		this.selectedItems.clear();
 		for (int i = 0; i < this.items.size(); i++) {
 			this.selectedItems.add(i);
@@ -629,6 +658,8 @@ public class List extends Scrollable {
 
 	public void setItem(int index, String string) {
 		checkWidget();
+		if (index < 0 || index >= this.items.size())
+			error(SWT.ERROR_INVALID_ARGUMENT);
 		if (string == null) error(SWT.ERROR_NULL_ARGUMENT);
 		this.items.set(index, string);
 		redraw();
@@ -704,9 +735,8 @@ public class List extends Scrollable {
 		if (indices == null) error(SWT.ERROR_NULL_ARGUMENT);
 		deselectAll();
 		int length = indices.length;
-		if (length == 0) {
+		if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1))
 			return;
-		}
 		select(indices, true);
 	}
 
@@ -715,11 +745,17 @@ public class List extends Scrollable {
 		if (items == null) error(SWT.ERROR_NULL_ARGUMENT);
 		deselectAll();
 		int length = items.length;
-		if (length == 0) {
+		if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1))
 			return;
-		}
-		for (int i = 0; i < length; i++) {
-			select(this.items.indexOf(items[i]));
+		for (int i = 0; i < this.items.size(); i++) {
+			for (String item : items) {
+				if (this.items.get(i).equals(item)) {
+					select(i);
+					if ((style & SWT.SINGLE) != 0)
+						return;
+					break;
+				}
+			}
 		}
 	}
 
@@ -730,23 +766,20 @@ public class List extends Scrollable {
 	}
 
 	public void setSelection(int start, int end) {
-		checkWidget();
-		deselectAll();
-		if (end < 0 || start > end) {
-			return;
-		}
-		int count = this.items.size();
-		if (count == 0 || start >= count) {
-			return;
-		}
-		start = Math.max(0, start);
-		end = Math.min(end, count - 1);
-		select(start, end, true);
+	    checkWidget();
+	    deselectAll();
+	    if (end < 0 || start > end || ((style & SWT.SINGLE) != 0 && start != end)) return;
+	    int count = this.items.size();
+	    if (count == 0 || start >= count) return;
+	    start = Math.max(0, start);
+	    end = Math.min(end, count - 1);
+	    select(start, end, true);
 	}
 
 	public void setTopIndex(int index) {
-		checkWidget();
-		this.topIndex = index;
+	    checkWidget();
+	    if (index < 0 || index > this.items.size()) return;
+	    this.topIndex = index;
 	}
 
 	public void showSelection() {
