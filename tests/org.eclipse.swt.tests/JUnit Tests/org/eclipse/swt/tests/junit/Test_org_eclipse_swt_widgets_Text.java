@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -17,7 +17,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.time.Instant;
 
@@ -31,7 +30,11 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Widget;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -54,12 +57,7 @@ public void setUp() {
 @Override
 @Test
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
-	try {
-		text = new Text(null, 0);
-		fail("No exception thrown for parent == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for parent == null", IllegalArgumentException.class, () ->	text = new Text(null, 0));
 
 	int[] cases = {0, SWT.SINGLE, SWT.MULTI, SWT.MULTI | SWT.V_SCROLL, SWT.MULTI | SWT.H_SCROLL, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL,
 					SWT.WRAP};
@@ -69,16 +67,8 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 
 @Test
 public void test_addModifyListenerLorg_eclipse_swt_events_ModifyListener() {
-	boolean exceptionThrown = false;
 	ModifyListener listener = event -> listenerCalled = true;
-	try {
-		text.addModifyListener(null);
-	}
-	catch (IllegalArgumentException e) {
-		exceptionThrown = true;
-	}
-	assertTrue("Expected exception not thrown", exceptionThrown);
-	exceptionThrown = false;
+	assertThrows("Expected exception not thrown", IllegalArgumentException.class, ()-> text.addModifyListener(null));
 
 	// test whether all content modifying API methods send a Modify event
 	text.addModifyListener(listener);
@@ -91,13 +81,7 @@ public void test_addModifyListenerLorg_eclipse_swt_events_ModifyListener() {
 	// cause to call the listener.
 	text.setText("line");
 	assertFalse("Listener not removed", listenerCalled);
-	try {
-		text.removeModifyListener(null);
-	}
-	catch (IllegalArgumentException e) {
-		exceptionThrown = true;
-	}
-	assertTrue("Expected exception not thrown", exceptionThrown);
+	assertThrows("Expected exception not thrown", IllegalArgumentException.class, ()-> text.removeModifyListener(null));
 }
 
 @Test
@@ -118,7 +102,7 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 	text.addSelectionListener(listener);
 	text.setText("12345");
 	text.setSelection(1,3);
-	assertEquals(":a:", false, listenerCalled);
+	assertFalse(listenerCalled);
 	text.removeSelectionListener(listener);
 
 	assertThrows(IllegalArgumentException.class, () ->text.removeSelectionListener(null));
@@ -132,7 +116,7 @@ public void test_addSelectionListenerWidgetSelectedAdapterLorg_eclipse_swt_event
 	text.addSelectionListener(listener);
 	text.setText("12345");
 	text.setSelection(1,3);
-	assertFalse(":a:", listenerCalled);
+	assertFalse(listenerCalled);
 	text.removeSelectionListener(listener);
 }
 
@@ -140,17 +124,10 @@ public void test_addSelectionListenerWidgetSelectedAdapterLorg_eclipse_swt_event
 public void test_addVerifyListenerLorg_eclipse_swt_events_VerifyListener() {
 	final String line = "Line1";
 	final String newLine = "NewLine1";
-	boolean exceptionThrown = false;
 	text.setText("");
 
 	// test null listener case
-	try {
-		text.addVerifyListener(null);
-	}
-	catch (IllegalArgumentException e) {
-		exceptionThrown = true;
-	}
-	assertTrue("Expected exception not thrown", exceptionThrown);
+	assertThrows("Expected exception not thrown", IllegalArgumentException.class, ()->	text.addVerifyListener(null));
 
 	// test append case
 	VerifyListener listener = event -> {
@@ -204,12 +181,7 @@ public void test_addVerifyListenerLorg_eclipse_swt_events_VerifyListener() {
 
 @Test
 public void test_appendLjava_lang_String() {
-	try {
-		text.append(null);
-		fail("No exception thrown for string == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for string == null", IllegalArgumentException.class, ()->text.append(null));
 
 	text.setText("01");
 	text.append("23");
@@ -232,12 +204,7 @@ public void test_appendLjava_lang_String() {
 	// tests a SINGLE line text editor
 	makeCleanEnvironment(true);
 
-	try {
-		text.append(null);
-		fail("No exception thrown on string == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for string == null", IllegalArgumentException.class, ()->text.append(null));
 
 	// tests a SINGLE line text editor
 	makeCleanEnvironment(true);
@@ -388,23 +355,23 @@ public void test_getCaretLineNumber() {
 		return;
 	}
 	text.setBounds(0, 0, 500, 500);
-	assertEquals(":a:", 0, text.getCaretLineNumber());
+	assertEquals( 0, text.getCaretLineNumber());
 	text.setText("Line0\r\n");
-	assertEquals(":b:", 0, text.getCaretLineNumber());
+	assertEquals( 0, text.getCaretLineNumber());
 	text.setTopIndex(1);
-	assertEquals(":c:", 0, text.getCaretLineNumber());
+	assertEquals( 0, text.getCaretLineNumber());
 
 	text.append("Line1");
-	assertEquals(":d:", 1, text.getCaretLineNumber());
+	assertEquals( 1, text.getCaretLineNumber());
 	String newText = "Line-1\r\n";
 	text.setSelection(0,0);
 	text.insert(newText);
-	assertEquals(":e:", 1, text.getCaretLineNumber());
+	assertEquals(1, text.getCaretLineNumber());
 
 	text.setSelection(0,0);
-	assertEquals(":f:", 0, text.getCaretLineNumber());
+	assertEquals(0, text.getCaretLineNumber());
 	text.setSelection(8,8);
-	assertEquals(":g:", 1, text.getCaretLineNumber());
+	assertEquals(1, text.getCaretLineNumber());
 }
 
 @Test
@@ -413,26 +380,26 @@ public void test_getCaretLocation() {
 	text.setSize(200,50);
 	text.setSelection(0,0);
 	text.insert("");
-	assertTrue(":a:", text.getCaretLocation().x >= 0);
-	assertTrue(":a:", text.getCaretLocation().y >= 0);
+	assertTrue(text.getCaretLocation().x >= 0);
+	assertTrue(text.getCaretLocation().y >= 0);
 	text.setText("Line0\r\nLine1\r\nLine2");
 	text.insert("");
-	assertTrue(":b:", text.getCaretLocation().x >= 0);
-	assertTrue(":b:", text.getCaretLocation().y >= 0);
+	assertTrue(text.getCaretLocation().x >= 0);
+	assertTrue(text.getCaretLocation().y >= 0);
 	text.setSelection(1,1);
-	assertTrue(":c:", text.getCaretLocation().x > 0);
-	assertTrue(":c:", text.getCaretLocation().y >= 0);
+	assertTrue(text.getCaretLocation().x > 0);
+	assertTrue(text.getCaretLocation().y >= 0);
 }
 
 @Test
 public void test_getCaretPosition() {
 	text.setText("Line");
-	assertEquals(":a:", 0, text.getCaretPosition());
+	assertEquals(0, text.getCaretPosition());
 	text.append("123");
-	assertEquals(":b:", 7, text.getCaretPosition());
+	assertEquals(7, text.getCaretPosition());
 	text.setSelection(1,3);
 	text.insert("123");
-	assertEquals(":b:", 4, text.getCaretPosition());
+	assertEquals(4, text.getCaretPosition());
 }
 
 @Test
@@ -514,15 +481,15 @@ public void test_getEchoChar() {
 
 @Test
 public void test_getEditable() {
-	assertTrue(":a:", text.getEditable());
+	assertTrue(text.getEditable());
 	text.setEditable(true);
-	assertTrue(":b:", text.getEditable());
+	assertTrue(text.getEditable());
 	text.setEditable(false);
-	assertFalse(":c:", text.getEditable());
+	assertFalse(text.getEditable());
 	text.setEditable(false);
-	assertFalse(":d:", text.getEditable());
+	assertFalse(text.getEditable());
 	text.setEditable(true);
-	assertTrue(":e:", text.getEditable());
+	assertTrue(text.getEditable());
 }
 
 @Test
@@ -549,47 +516,47 @@ public void test_getLineDelimiter() {
 	String platform = SWT.getPlatform();
 	String delimiter = text.getLineDelimiter();
 	if (platform.equals("win32")) {
-		assertEquals(":a:", "\r\n", delimiter);
+		assertEquals("\r\n", delimiter);
 	}
 }
 
 @Test
 public void test_getLineHeight() {
-	assertTrue(":a:", text.getLineHeight() > 0);
+	assertTrue(text.getLineHeight() > 0);
 }
 
 @Test
 public void test_getSelection() {
 	text.setText("01234567890");
 	text.setSelection(new Point(2, 2));
-	assertEquals(":b:", new Point(2, 2), text.getSelection());
+	assertEquals(new Point(2, 2), text.getSelection());
 	text.setSelection(new Point(2, 3));
-	assertEquals(":c:", new Point(2, 3), text.getSelection());
+	assertEquals(new Point(2, 3), text.getSelection());
 	text.setSelection(new Point(3, 11));
-	assertEquals(":d:", new Point(3, 11), text.getSelection());
+	assertEquals(new Point(3, 11), text.getSelection());
 	text.setText("01234567890");
 	text.setSelection(4);
-	assertEquals(":a:", new Point(4, 4), text.getSelection());
+	assertEquals(new Point(4, 4), text.getSelection());
 	text.setSelection(11);
-	assertEquals(":b:", new Point(11, 11), text.getSelection());
+	assertEquals(new Point(11, 11), text.getSelection());
 	text.setSelection(new Point(3, 2));
-	assertEquals(":c:", new Point(2, 3), text.getSelection());
+	assertEquals(new Point(2, 3), text.getSelection());
 }
 
 @Test
 public void test_getSelectionCount() {
 	text.setText("01234567890");
-	assertEquals(":a:", 0, text.getSelectionCount());
+	assertEquals(0, text.getSelectionCount());
 	text.setSelection(2, 4);
-	assertEquals(":b:", 2, text.getSelectionCount());
+	assertEquals(2, text.getSelectionCount());
 	text.setSelection(2, 11);
-	assertEquals(":c:", 9, text.getSelectionCount());
+	assertEquals(9, text.getSelectionCount());
 	text.setText("0123\n4567890");
-	assertEquals(":d:", 0, text.getSelectionCount());
+	assertEquals(0, text.getSelectionCount());
 	text.setSelection(2, 4);
-	assertEquals(":e:", 2, text.getSelectionCount());
+	assertEquals(2, text.getSelectionCount());
 	text.setSelection(2, 12);
-	assertEquals(":f:", 10, text.getSelectionCount());
+	assertEquals(10, text.getSelectionCount());
 }
 
 @Test
@@ -608,13 +575,13 @@ public void test_getTabs() {
 	if (SWT.getPlatform().equals("win32") || SWT.getPlatform().equals("gtk")) {
 		// API not supported on all platforms
 		text.setTabs(1);
-		assertEquals(":a:", 1, text.getTabs());
+		assertEquals(1, text.getTabs());
 		text.setTabs(8);
-		assertEquals(":b:", 8, text.getTabs());
+		assertEquals(8, text.getTabs());
 		text.setText("Line\t1\r\n");
-		assertEquals(":c:", 8, text.getTabs());
+		assertEquals(8, text.getTabs());
 		text.setTabs(7);
-		assertEquals(":d:", 7, text.getTabs());
+		assertEquals(7, text.getTabs());
 	}
 }
 
@@ -834,7 +801,7 @@ public void test_getTextLimit() {
 		return;
 	}
 	text.setTextLimit(10);
-	assertEquals(":a:", 10, text.getTextLimit());
+	assertEquals(10, text.getTextLimit());
 }
 
 @Test
@@ -867,31 +834,26 @@ public void test_getTopPixel() {
 	}
 	text.setText("Line0\r\nLine0a\r\n");
 
-	assertEquals(":a:", 0, text.getTopPixel());
+	assertEquals(0, text.getTopPixel());
 	text.setTopIndex(-2);
-	assertEquals(":b:", 0, text.getTopPixel());
+	assertEquals(0, text.getTopPixel());
 	text.setTopIndex(-1);
-	assertEquals(":c:", 0, text.getTopPixel());
+	assertEquals(0, text.getTopPixel());
 	text.setTopIndex(1);
-	assertEquals(":d:", text.getLineHeight(), text.getTopPixel());
+	assertEquals(text.getLineHeight(), text.getTopPixel());
 	text.setSize(10, text.getLineHeight());
 	text.setTopIndex(2);
-	assertEquals(":e:", text.getLineHeight() * 2, text.getTopPixel());
+	assertEquals(text.getLineHeight() * 2, text.getTopPixel());
 	text.setTopIndex(0);
-	assertEquals(":f:", 0, text.getTopPixel());
+	assertEquals(0, text.getTopPixel());
 	text.setTopIndex(3);
-	assertEquals(":g:", text.getLineHeight() * 2, text.getTopPixel());
+	assertEquals(text.getLineHeight() * 2, text.getTopPixel());
 }
 
 @Test
 public void test_insertLjava_lang_String() {
 	text.setBounds(0, 0, 500, 500);
-	try {
-		text.insert(null);
-		fail("No exception thrown for string == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for string == null", IllegalArgumentException.class, ()->text.insert(null));
 
 	assertEquals("", text.getText());
 	text.insert("");
@@ -911,12 +873,7 @@ public void test_insertLjava_lang_String() {
 	// tests a SINGLE line text editor
 	makeCleanEnvironment(true);
 
-	try {
-		text.insert(null);
-		fail("No exception thrown on string == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for string == null", IllegalArgumentException.class, ()->text.insert(null));
 
 	// tests a SINGLE line text editor
 	makeCleanEnvironment(true);
@@ -942,12 +899,7 @@ public void test_insertLjava_lang_String() {
 	// tests a SINGLE line text editor
 	makeCleanEnvironment(true);
 
-	try {
-		text.insert(null);
-		fail("No exception thrown on string == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for string == null", IllegalArgumentException.class, ()->text.insert(null));
 }
 
 @Override
@@ -1118,13 +1070,13 @@ public void test_setEchoCharC() {
 @Test
 public void test_setEditableZ() {
 	text.setEditable(true);
-	assertTrue(":a:", text.getEditable());
+	assertTrue(text.getEditable());
 	text.setEditable(false);
-	assertFalse(":b:", text.getEditable());
+	assertFalse(text.getEditable());
 	text.setEditable(false);
-	assertFalse(":c:", text.getEditable());
+	assertFalse(text.getEditable());
 	text.setEditable(true);
-	assertTrue(":d:", text.getEditable());
+	assertTrue(text.getEditable());
 }
 
 @Override
@@ -1141,7 +1093,7 @@ public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	font.dispose();
 	font = new Font(text.getDisplay(), fontData.getName(), 12, fontData.getStyle());
 	text.setFont(font);
-	assertTrue(":a:", text.getLineHeight() > lineHeight && font.equals(text.getFont()));
+	assertTrue(text.getLineHeight() > lineHeight && font.equals(text.getFont()));
 	text.setFont(null);
 	font.dispose();
 }
@@ -1165,10 +1117,10 @@ public void test_setForegroundAfterBackground() {
 public void test_setOrientationI() {
 	text.setOrientation(SWT.RIGHT_TO_LEFT);
 	if ((text.getStyle() & SWT.MIRRORED) != 0) {
-		assertEquals(":a:", SWT.RIGHT_TO_LEFT, text.getOrientation());
+		assertEquals(SWT.RIGHT_TO_LEFT, text.getOrientation());
 	}
 	text.setOrientation(SWT.LEFT_TO_RIGHT);
-	assertEquals(":b:", SWT.LEFT_TO_RIGHT, text.getOrientation());
+	assertEquals(SWT.LEFT_TO_RIGHT, text.getOrientation());
 }
 
 @Override
@@ -1230,12 +1182,7 @@ public void test_setSelectionII() {
 @Test
 public void test_setSelectionLorg_eclipse_swt_graphics_Point() {
 	text.setText("dsdsdasdslaasdas");
-	try {
-		text.setSelection((Point) null);
-		fail("No exception thrown for selection == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for selection == null", IllegalArgumentException.class, ()->text.setSelection((Point) null));
 
 	text.setText("01234567890");
 	text.setSelection(new Point(2, 2));
@@ -1258,12 +1205,7 @@ public void test_setSelectionLorg_eclipse_swt_graphics_Point() {
 	makeCleanEnvironment(true);
 
 	text.setText("dsdsdasdslaasdas");
-	try {
-		text.setSelection((Point) null);
-		fail("No exception thrown for selection == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for selection == null", IllegalArgumentException.class, ()->text.setSelection((Point) null));
 
 	// tests a SINGLE line text editor
 	makeCleanEnvironment(true);
@@ -1307,31 +1249,18 @@ public void test_setTextLimitI() {
 		}
 		return;
 	}
-	boolean exceptionThrown = false;
-
 	text.setTextLimit(10);
-	assertEquals(":a:", 10, text.getTextLimit());
+	assertEquals(10, text.getTextLimit());
 
 	text.setTextLimit(Text.LIMIT);
-	assertEquals(":b:", Text.LIMIT, text.getTextLimit());
+	assertEquals(Text.LIMIT, text.getTextLimit());
 
-	try {
-		text.setTextLimit(0);
-	}
-	catch (IllegalArgumentException e) {
-		exceptionThrown = true;
-	}
-	assertTrue(":c:", exceptionThrown);
+	assertThrows(IllegalArgumentException.class, () -> text.setTextLimit(0));
 }
 
 @Test
 public void test_setTextLjava_lang_String() {
-	try {
-		text.setText(null);
-		fail("No exception thrown for string == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for string == null", IllegalArgumentException.class,()->text.setText(null));
 
 	text.setText("");
 
@@ -1514,12 +1443,7 @@ public void test_consistency_Segments () {
 		}
 		listenerCalled = true;
 	};
-	try {
-		text.addSegmentListener(null);
-		fail("No exception thrown for addSegmentListener(null)");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for addSegmentListener(null)", IllegalArgumentException.class,()->text.addSegmentListener(null));
 	boolean[] singleLine = {false, true};
 	for (int i = singleLine.length; i-- > 0;) {
 		makeCleanEnvironment(singleLine[i]);
