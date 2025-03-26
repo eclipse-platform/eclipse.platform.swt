@@ -1593,15 +1593,15 @@ void createCaretBitmaps() {
 		leftCaretBitmap.dispose();
 	}
 	int lineHeight = renderer.getLineHeight();
-	leftCaretBitmap = new Image(display, caretWidth, lineHeight);
-	GC gc = new GC (leftCaretBitmap);
-	gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
-	gc.fillRectangle(0, 0, caretWidth, lineHeight);
-	gc.setForeground(display.getSystemColor(SWT.COLOR_WHITE));
-	gc.drawLine(0,0,0,lineHeight);
-	gc.drawLine(0,0,caretWidth-1,0);
-	gc.drawLine(0,1,1,1);
-	gc.dispose();
+	final ImageGcDrawer leftCaretDrawer = (gc, width, height) -> {
+		gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
+		gc.fillRectangle(0, 0, width, height);
+		gc.setForeground(display.getSystemColor(SWT.COLOR_WHITE));
+		gc.drawLine(0,0,0,height);
+		gc.drawLine(0,0,width-1,0);
+		gc.drawLine(0,1,1,1);
+	};
+	leftCaretBitmap = new Image(display, leftCaretDrawer, caretWidth, lineHeight);
 
 	if (rightCaretBitmap != null) {
 		if (defaultCaret != null && rightCaretBitmap.equals(defaultCaret.getImage())) {
@@ -1609,15 +1609,15 @@ void createCaretBitmaps() {
 		}
 		rightCaretBitmap.dispose();
 	}
-	rightCaretBitmap = new Image(display, caretWidth, lineHeight);
-	gc = new GC (rightCaretBitmap);
-	gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
-	gc.fillRectangle(0, 0, caretWidth, lineHeight);
-	gc.setForeground(display.getSystemColor(SWT.COLOR_WHITE));
-	gc.drawLine(caretWidth-1,0,caretWidth-1,lineHeight);
-	gc.drawLine(0,0,caretWidth-1,0);
-	gc.drawLine(caretWidth-1,1,1,1);
-	gc.dispose();
+	final ImageGcDrawer rightCaretDrawer = (gc, width, height) -> {
+		gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
+		gc.fillRectangle(0, 0, width, height);
+		gc.setForeground(display.getSystemColor(SWT.COLOR_WHITE));
+		gc.drawLine(width-1,0,width-1,height);
+		gc.drawLine(0,0,width-1,0);
+		gc.drawLine(width-1,1,1,1);
+	};
+	rightCaretBitmap = new Image(display, rightCaretDrawer, caretWidth, lineHeight);
 }
 /**
  * Moves the selected text to the clipboard.  The text will be put in the
