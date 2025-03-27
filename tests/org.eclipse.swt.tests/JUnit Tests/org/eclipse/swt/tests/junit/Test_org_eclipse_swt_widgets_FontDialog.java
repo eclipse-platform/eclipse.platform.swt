@@ -13,17 +13,17 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.FontDialog;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.FontDialog
@@ -33,7 +33,7 @@ import org.junit.Test;
 public class Test_org_eclipse_swt_widgets_FontDialog extends Test_org_eclipse_swt_widgets_Dialog {
 
 @Override
-@Before
+@BeforeEach
 public void setUp() {
 	super.setUp();
 	fontDialog = new FontDialog(shell, SWT.NULL);
@@ -43,22 +43,12 @@ public void setUp() {
 @Test
 public void test_ConstructorLorg_eclipse_swt_widgets_Shell() {
 	new FontDialog(shell);
-	try {
-		new FontDialog(null);
-		fail("No exception thrown for parent == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class,()-> new FontDialog(null),"No exception thrown for parent == null");
 }
 
 @Test
 public void test_ConstructorLorg_eclipse_swt_widgets_ShellI() {
-	try {
-		new FontDialog(null, SWT.NULL);
-		fail("No exception thrown for parent == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class,()-> new FontDialog(null, SWT.NULL),"No exception thrown for parent == null");
 }
 
 @Test
