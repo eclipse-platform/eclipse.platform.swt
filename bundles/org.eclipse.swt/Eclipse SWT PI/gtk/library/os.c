@@ -12648,6 +12648,33 @@ fail:
 }
 #endif
 
+#ifndef NO_g_1uri_1parse
+JNIEXPORT jlong JNICALL OS_NATIVE(g_1uri_1parse)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jlong arg1, jlongArray arg2)
+{
+	jbyte *lparg0=NULL;
+	jlong *lparg2=NULL;
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, g_1uri_1parse_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
+/*
+	rc = (jlong)g_uri_parse((const gchar *)lparg0, arg1, (GError **)lparg2);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, g_uri_parse)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(const gchar *, jlong, GError **))fp)((const gchar *)lparg0, arg1, (GError **)lparg2);
+		}
+	}
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseLongArrayElements(env, arg2, lparg2, 0);
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, g_1uri_1parse_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_g_1utf16_1offset_1to_1pointer
 JNIEXPORT jlong JNICALL OS_NATIVE(g_1utf16_1offset_1to_1pointer)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)

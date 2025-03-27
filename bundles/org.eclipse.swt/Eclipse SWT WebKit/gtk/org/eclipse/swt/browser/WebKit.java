@@ -1127,10 +1127,26 @@ private static class Webkit2AsyncToSync {
 		long context = WebKitGTK.webkit_web_context_get_default();
 		long cookieManager = WebKitGTK.webkit_web_context_get_cookie_manager(context);
 		byte[] bytes = Converter.wcsToMbcs (cookieUrl, true);
-		long uri = WebKitGTK.soup_uri_new (bytes);
-		if (uri == 0) {
-			System.err.println("SWT WebKit: SoupURI == 0 when setting cookie");
-			return false;
+		long uri;
+		if (WebKitGTK.soup_get_major_version()==2) {
+			uri = WebKitGTK.soup_uri_new (bytes);
+			if (uri == 0) {
+				System.err.println("SWT WebKit: SoupURI == 0 when setting cookie");
+				return false;
+			}
+		} else {
+			long [] error = new long [1];
+			uri = OS.g_uri_parse(bytes, 0, error);
+			if (uri == 0) {
+				long errorMessageC = OS.g_error_get_message(error[0]);
+				String errorMessageStr = Converter.cCharPtrToJavaString(errorMessageC, false);
+				OS.g_error_free(error[0]);
+				System.err.format(
+						"SWT WebKit: Failed to parse cookie URI: %s%n",
+						errorMessageStr);
+				return false;
+			}
+
 		}
 		bytes = Converter.wcsToMbcs (cookieValue, true);
 		long soupCookie = WebKitGTK.soup_cookie_parse (bytes, uri);
