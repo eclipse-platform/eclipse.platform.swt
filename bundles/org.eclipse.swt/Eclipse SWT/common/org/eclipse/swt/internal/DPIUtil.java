@@ -521,6 +521,14 @@ public static int mapZoomToDPI (int zoom) {
  * @param <T> type of the element to be presented, e.g., {@link ImageData}
  */
 public record ElementAtZoom<T>(T element, int zoom) {
+	public ElementAtZoom {
+		if (element == null) {
+			SWT.error(SWT.ERROR_NULL_ARGUMENT);
+		}
+		if (zoom <= 0) {
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		}
+	}
 }
 
 /**

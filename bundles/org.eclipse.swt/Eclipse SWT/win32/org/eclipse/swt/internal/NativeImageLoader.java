@@ -11,21 +11,22 @@
  * Contributors:
  *     Hannes Wellmann - initial API and implementation
  *******************************************************************************/
-package org.eclipse.swt.graphics;
+package org.eclipse.swt.internal;
 
 import java.io.*;
 import java.util.*;
 
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.DPIUtil.*;
 import org.eclipse.swt.internal.image.*;
 
-class InternalImageLoader {
+public class NativeImageLoader {
 
-	static List<ElementAtZoom<ImageData>> load(InputStream stream, ImageLoader imageLoader, int fileZoom, int targetZoom) {
-		return FileFormat.load(stream, imageLoader, fileZoom, targetZoom);
+	public static List<ElementAtZoom<ImageData>> load(ElementAtZoom<InputStream> streamAtZoom, ImageLoader imageLoader, int targetZoom) {
+		return FileFormat.load(streamAtZoom, imageLoader, targetZoom);
 	}
 
-	static void save(OutputStream stream, int format, ImageLoader imageLoader) {
+	public static void save(OutputStream stream, int format, ImageLoader imageLoader) {
 		FileFormat.save(stream, format, imageLoader);
 	}
 }

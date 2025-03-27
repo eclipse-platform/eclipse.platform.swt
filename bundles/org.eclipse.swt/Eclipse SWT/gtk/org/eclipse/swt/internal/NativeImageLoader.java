@@ -13,29 +13,30 @@
  *     Red Hat - initial implementation
  *     Hannes Wellmann - Unify ImageLoader implementations and extract differences into InternalImageLoader
  *******************************************************************************/
-package org.eclipse.swt.graphics;
+package org.eclipse.swt.internal;
 
 import java.io.*;
 import java.util.*;
 import java.util.List;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.internal.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.DPIUtil.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.image.*;
 import org.eclipse.swt.widgets.*;
 
-class InternalImageLoader {
+public class NativeImageLoader {
 
 	/** If the 29th byte of the PNG file is not zero, then it is interlaced. */
 	private static final int PNG_INTERLACE_METHOD_OFFSET = 28;
 
 	// --- loading ---
 
-	static List<ElementAtZoom<ImageData>> load(InputStream stream, ImageLoader imageLoader, int fileZoom, int targetZoom) {
+	public static List<ElementAtZoom<ImageData>> load(ElementAtZoom<InputStream> streamAtZoom, ImageLoader imageLoader, int targetZoom) {
 		// 1) Load InputStream into byte array
 		byte[] data_buffer;
+		InputStream stream = streamAtZoom.element();
 		try (stream) {
 			data_buffer = stream.readAllBytes();
 		} catch (IOException e) {
@@ -52,7 +53,7 @@ class InternalImageLoader {
 			} catch (IOException e) {
 				SWT.error(SWT.ERROR_IO);
 			}
-			return FileFormat.load(stream2, imageLoader, fileZoom, targetZoom);
+			return FileFormat.load(new ElementAtZoom<>(stream2, streamAtZoom.zoom()), imageLoader, targetZoom);
 		}
 		List<ImageData> imgDataList = new ArrayList<>();
 		long loader = GDK.gdk_pixbuf_loader_new();
@@ -138,7 +139,7 @@ class InternalImageLoader {
 		}
 		OS.g_free(buffer_ptr);
 		OS.g_object_unref(loader);
-		return Arrays.stream(imgDataArray).map(data -> new ElementAtZoom<>(data, fileZoom)).toList();
+		return Arrays.stream(imgDataArray).map(data -> new ElementAtZoom<>(data, streamAtZoom.zoom())).toList();
 	}
 
 	/**
@@ -256,7 +257,7 @@ class InternalImageLoader {
 
 	// --- saving ---
 
-	static void save(OutputStream stream, int format, ImageLoader imageLoader) {
+	public static void save(OutputStream stream, int format, ImageLoader imageLoader) {
 		if (format == -1) {
 			SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT);
 		}

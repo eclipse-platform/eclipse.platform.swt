@@ -18,6 +18,7 @@ import java.io.*;
 import java.util.*;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.DPIUtil.*;
 import org.eclipse.swt.internal.image.*;
 
@@ -157,7 +158,7 @@ public ImageData[] load(InputStream stream) {
 List<ElementAtZoom<ImageData>> load(InputStream stream, int fileZoom, int targetZoom) {
 	if (stream == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	reset();
-	List<ElementAtZoom<ImageData>> images = InternalImageLoader.load(stream, this, fileZoom, targetZoom);
+	List<ElementAtZoom<ImageData>> images = NativeImageLoader.load(new ElementAtZoom<>(stream, fileZoom), this, targetZoom);
 	data = images.stream().map(ElementAtZoom::element).toArray(ImageData[]::new);
 	return images;
 }
@@ -229,7 +230,7 @@ List<ElementAtZoom<ImageData>> load(String filename, int fileZoom, int targetZoo
  */
 public void save(OutputStream stream, int format) {
 	if (stream == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	InternalImageLoader.save(stream, format, this);
+	NativeImageLoader.save(stream, format, this);
 }
 
 /**

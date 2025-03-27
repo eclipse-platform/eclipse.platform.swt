@@ -126,14 +126,14 @@ public List<ElementAtZoom<ImageData>> loadFromStream(LEDataInputStream stream, i
  * Read the specified input stream using the specified loader, and
  * return the device independent image array represented by the stream.
  */
-public static List<ElementAtZoom<ImageData>> load(InputStream is, ImageLoader loader, int fileZoom, int targetZoom) {
-	LEDataInputStream stream = new LEDataInputStream(is);
+public static List<ElementAtZoom<ImageData>> load(ElementAtZoom<InputStream> is, ImageLoader loader, int targetZoom) {
+	LEDataInputStream stream = new LEDataInputStream(is.element());
 	FileFormat fileFormat = determineFileFormat(stream).orElseGet(() -> {
 		SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT);
 		return null;
 	});
 	fileFormat.loader = loader;
-	return fileFormat.loadFromStream(stream, fileZoom, targetZoom);
+	return fileFormat.loadFromStream(stream, is.zoom(), targetZoom);
 }
 
 /**
