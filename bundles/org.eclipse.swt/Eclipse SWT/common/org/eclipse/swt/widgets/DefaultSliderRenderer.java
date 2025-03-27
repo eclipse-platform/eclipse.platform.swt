@@ -19,10 +19,10 @@ public class DefaultSliderRenderer extends SliderRenderer {
 	private static final int PREFERRED_WIDTH = 170;
 	private static final int PREFERRED_HEIGHT = 18;
 
-	private static final Color TRACK_BACKGROUND = new Color(64, 64, 64, 35);
-	private static final Color TRACK_FOREGROUND = new Color(64, 64, 64, 70);
-	private static final Color THUMB_BACKGROUND = new Color(64, 64, 64, 50);
-	private static final Color THUMB_FOREGROUND = new Color(64, 64, 64, 100);
+	private static final Color TRACK_BACKGROUND = new Color(240, 240, 240);
+	private static final Color TRACK_FOREGROUND = new Color(204, 204, 204);
+	private static final Color THUMB_BACKGROUND = new Color(204, 204, 204);
+	private static final Color THUMB_FOREGROUND = new Color(133, 133, 133);
 	private static final Color THUMB_HOVER_COLOR = new Color(135, 206, 235);
 
 	private boolean drawTrack;
@@ -50,7 +50,6 @@ public class DefaultSliderRenderer extends SliderRenderer {
 			gc.setBackground(background);
 			gc.fillRectangle(0, 0, width, height);
 		}
-		gc.setForeground(TRACK_FOREGROUND);
 
 		if (slider.isVertical()) {
 			int trackX = (width - 7) / 2;
@@ -86,13 +85,11 @@ public class DefaultSliderRenderer extends SliderRenderer {
 			gc.drawLine(0, 0, width, 0);
 		}
 
+		gc.setForeground(TRACK_FOREGROUND);
 		// Draw the track
 		if (drawTrack) {
 			gc.setBackground(TRACK_BACKGROUND);
-			gc.drawRoundRectangle(trackRectangle.x, trackRectangle.y, trackRectangle.width, trackRectangle.height, 10,
-					10);
-			gc.fillRoundRectangle(trackRectangle.x, trackRectangle.y, trackRectangle.width, trackRectangle.height, 10,
-					10);
+			drawRoundRectWithBorder(gc, trackRectangle);
 		}
 
 		// Draw the thumb
@@ -102,8 +99,13 @@ public class DefaultSliderRenderer extends SliderRenderer {
 			gc.setBackground(THUMB_BACKGROUND);
 		}
 		gc.setForeground(THUMB_FOREGROUND);
-		gc.drawRoundRectangle(thumbRectangle.x, thumbRectangle.y, thumbRectangle.width, thumbRectangle.height, 10, 10);
-		gc.fillRoundRectangle(thumbRectangle.x, thumbRectangle.y, thumbRectangle.width, thumbRectangle.height, 10, 10);
+		drawRoundRectWithBorder(gc, thumbRectangle);
+	}
+
+	private void drawRoundRectWithBorder(GC gc, Rectangle rect) {
+		final int arcSize = 10;
+		gc.fillRoundRectangle(rect.x, rect.y, rect.width + 1, rect.height + 1, arcSize, arcSize);
+		gc.drawRoundRectangle(rect.x, rect.y, rect.width, rect.height, arcSize, arcSize);
 	}
 
 	@Override
