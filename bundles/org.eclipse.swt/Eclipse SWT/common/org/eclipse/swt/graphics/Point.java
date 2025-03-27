@@ -84,10 +84,9 @@ public boolean equals (Object object) {
 	if (object == this) {
 		return true;
 	}
-	if (object.getClass() != this.getClass()) {
+	if (!(object instanceof Point other)) {
 		return false;
 	}
-	Point other = (Point) object;
 	return (other.x == this.x) && (other.y == this.y);
 }
 

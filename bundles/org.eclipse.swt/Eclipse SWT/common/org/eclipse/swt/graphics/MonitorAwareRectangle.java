@@ -13,8 +13,6 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
-import java.util.*;
-
 import org.eclipse.swt.widgets.*;
 
 /**
@@ -55,19 +53,12 @@ public final class MonitorAwareRectangle extends Rectangle {
 
 	@Override
 	public boolean equals(Object object) {
-		if (this == object) {
-			return true;
-		}
-		if (!super.equals(object)) {
-			return false;
-		}
-		MonitorAwareRectangle other = (MonitorAwareRectangle) object;
-		return Objects.equals(this.monitor, other.monitor);
+		return super.equals(object);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(super.hashCode(), monitor);
+		return super.hashCode();
 	}
 
 }
