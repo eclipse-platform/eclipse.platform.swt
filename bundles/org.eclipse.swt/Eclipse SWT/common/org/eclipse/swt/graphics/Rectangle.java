@@ -162,10 +162,9 @@ public boolean equals(Object object) {
 	if (object == this) {
 		return true;
 	}
-	if (object.getClass() != this.getClass()) {
+	if (!(object instanceof Rectangle other)) {
 		return false;
 	}
-	Rectangle other = (Rectangle) object;
 	return (other.x == this.x) && (other.y == this.y) && (other.width == this.width) && (other.height == this.height);
 }
 
