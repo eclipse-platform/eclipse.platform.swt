@@ -5,6 +5,7 @@ Bundle-Version: 3.130.0.qualifier
 Automatic-Module-Name: org.eclipse.swt.svg
 Bundle-Name: %fragmentName
 Bundle-Vendor: %providerName
+Bundle-Localization: fragment
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Fragment-Host: org.eclipse.swt
 Import-Package: com.github.weisj.jsvg;version="[1.7.0,2.0.0)",
