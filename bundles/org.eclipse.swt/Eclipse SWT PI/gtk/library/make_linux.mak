@@ -106,6 +106,7 @@ CFLAGS := $(CFLAGS) \
 		-DLINUX -DGTK \
 		-I$(SWT_JAVA_HOME)/include \
 		-I$(SWT_JAVA_HOME)/include/linux \
+		-std=gnu17 \
 		${SWT_PTR_CFLAGS}
 LFLAGS = -shared -fPIC ${SWT_LFLAGS}
 
