@@ -95,6 +95,8 @@ public class Slider extends CustomControl {
 
 	private final SliderRenderer renderer;
 
+	private boolean autoRepeating;
+
 	/**
 	 * Constructs a new instance of this class given its parent and a style value
 	 * describing its behavior and appearance.
@@ -227,6 +229,8 @@ public class Slider extends CustomControl {
 	}
 
 	private void onKeyDown(Event event) {
+		autoRepeating = false;
+
 		KeyEvent keyEvent = new KeyEvent(event);
 		switch (keyEvent.keyCode) {
 		case SWT.ARROW_DOWN, SWT.ARROW_LEFT -> increment(-1);
@@ -263,6 +267,8 @@ public class Slider extends CustomControl {
 			return;
 		}
 
+		setCapture(true);
+
 		// Drag of the thumb.
 		if (thumbRectangle != null && thumbRectangle.contains(event.x, event.y)) {
 			renderer.setDragging(true);
@@ -271,32 +277,68 @@ public class Slider extends CustomControl {
 		}
 
 		// Click on the track. i.e page increment/decrement
-		if (trackRectangle != null && trackRectangle.contains(event.x, event.y)) {
-			int pageIncrement = getPageIncrement();
-			int oldSelection = getSelection();
-
-			int newSelection;
-			if (isHorizontal()) {
-				if (event.x < thumbRectangle.x) {
-					newSelection = Math.max(getMinimum(), oldSelection - pageIncrement);
-				} else {
-					newSelection = Math.min(getMaximum() - getThumb(), oldSelection + pageIncrement);
-				}
-			} else {
-				if (event.y < thumbRectangle.y) {
-					newSelection = Math.max(getMinimum(), oldSelection - pageIncrement);
-				} else {
-					newSelection = Math.min(getMaximum() - getThumb(), oldSelection + pageIncrement);
-				}
-			}
-
-			setSelection(newSelection);
-			redraw();
+		if (trackRectangle == null || !trackRectangle.contains(event.x, event.y)) {
+			return;
 		}
 
+		handleTrackClick(event.x, event.y, 500, new Runnable() {
+			@Override
+			public void run() {
+				if (!autoRepeating) {
+					return;
+				}
+
+				autoRepeating = false;
+				if (Slider.this.isDisposed()) {
+					return;
+				}
+
+				final Point cursorPos = Slider.this.toControl(display.getCursorLocation());
+				if (thumbRectangle != null && thumbRectangle.contains(cursorPos.x, cursorPos.y)) {
+					return;
+				}
+
+				if (trackRectangle == null || !trackRectangle.contains(cursorPos.x, cursorPos.y)) {
+					return;
+				}
+
+				handleTrackClick(cursorPos.x, cursorPos.y, 150, this);
+			}
+		});
+	}
+
+	private void handleTrackClick(int x, int y, int milliseconds, Runnable runnable) {
+		int pageIncrement = getPageIncrement();
+		int oldSelection = getSelection();
+
+		int newSelection;
+		if (isHorizontal()) {
+			if (x < thumbRectangle.x) {
+				newSelection = Math.max(getMinimum(), oldSelection - pageIncrement);
+			} else {
+				newSelection = Math.min(getMaximum() - getThumb(), oldSelection + pageIncrement);
+			}
+		} else {
+			if (y < thumbRectangle.y) {
+				newSelection = Math.max(getMinimum(), oldSelection - pageIncrement);
+			} else {
+				newSelection = Math.min(getMaximum() - getThumb(), oldSelection + pageIncrement);
+			}
+		}
+
+		setSelection(newSelection);
+
+		autoRepeating = true;
+		display.timerExec(milliseconds, runnable);
 	}
 
 	private void onMouseUp(Event event) {
+		if (event.button != 1) {
+			return;
+		}
+
+		autoRepeating = false;
+		setCapture(false);
 		if (renderer.getDragging()) {
 			renderer.setDragging(false);
 			updateValueFromThumbPosition();
