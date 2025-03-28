@@ -2234,9 +2234,8 @@ private class ImageFileNameProviderWrapper extends BaseImageProviderWrapper<Imag
 	private ImageData scaleIfNecessary(ElementAtZoom<ImageData> imageDataAtZoom, int zoom) {
 		if (imageDataAtZoom.zoom() != zoom) {
 			return scaleImageData(imageDataAtZoom.element(), zoom, imageDataAtZoom.zoom());
-		} else {
-			return imageDataAtZoom.element();
 		}
+		return imageDataAtZoom.element();
 	}
 
 	@Override
