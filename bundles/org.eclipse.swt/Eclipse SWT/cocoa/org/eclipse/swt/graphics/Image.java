@@ -77,6 +77,8 @@ import org.eclipse.swt.internal.image.*;
  */
 public final class Image extends Resource implements Drawable {
 
+	private static final boolean USE_LEGACY_IMAGE_DISABLEMENT = Boolean.getBoolean("org.eclipse.swt.image.useLegacyDisablementAlgorithm");
+
 	/**
 	 * specifies whether the receiver is a bitmap or an icon
 	 * (one of <code>SWT.BITMAP</code>, <code>SWT.ICON</code>)
@@ -436,12 +438,14 @@ private void createRepFromSourceAndApplyFlag(NSBitmapImageRep srcRep, int srcWid
 	long data = rep.bitmapData();
 	C.memmove(data, srcData, srcWidth * srcHeight * 4);
 	if (flag != SWT.IMAGE_COPY) {
-		final int redOffset, greenOffset, blueOffset;
+		final int redOffset, greenOffset, blueOffset, alphaOffset;
 		if (srcBpp == 32 && (srcBitmapFormat & OS.NSAlphaFirstBitmapFormat) == 0) {
 			redOffset = 0;
 			greenOffset = 1;
 			blueOffset = 2;
+			alphaOffset = 3;
 		} else {
+			alphaOffset = 0;
 			redOffset = 1;
 			greenOffset = 2;
 			blueOffset = 3;
@@ -449,16 +453,9 @@ private void createRepFromSourceAndApplyFlag(NSBitmapImageRep srcRep, int srcWid
 		/* Apply transformation */
 		switch (flag) {
 		case SWT.IMAGE_DISABLE: {
-			Color zeroColor = this.device.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW);
-			RGB zeroRGB = zeroColor.getRGB();
-			byte zeroRed = (byte)zeroRGB.red;
-			byte zeroGreen = (byte)zeroRGB.green;
-			byte zeroBlue = (byte)zeroRGB.blue;
-			Color oneColor = this.device.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND);
-			RGB oneRGB = oneColor.getRGB();
-			byte oneRed = (byte)oneRGB.red;
-			byte oneGreen = (byte)oneRGB.green;
-			byte oneBlue = (byte)oneRGB.blue;
+			ImageColorTransformer disabledImageTransformer = USE_LEGACY_IMAGE_DISABLEMENT
+					? ImageColorTransformer.forIntensityThreshold(device)
+					: ImageColorTransformer.forHSB(1.0f, 0.2f, 0.9f, 0.5f);
 			byte[] line = new byte[(int)srcBpr];
 			for (int y=0; y<srcHeight; y++) {
 				C.memmove(line, data + (y * srcBpr), srcBpr);
@@ -467,16 +464,12 @@ private void createRepFromSourceAndApplyFlag(NSBitmapImageRep srcRep, int srcWid
 					int red = line[offset+redOffset] & 0xFF;
 					int green = line[offset+greenOffset] & 0xFF;
 					int blue = line[offset+blueOffset] & 0xFF;
-					int intensity = red * red + green * green + blue * blue;
-					if (intensity < 98304) {
-						line[offset+redOffset] = zeroRed;
-						line[offset+greenOffset] = zeroGreen;
-						line[offset+blueOffset] = zeroBlue;
-					} else {
-						line[offset+redOffset] = oneRed;
-						line[offset+greenOffset] = oneGreen;
-						line[offset+blueOffset] = oneBlue;
-					}
+					int alpha = line[offset+alphaOffset] & 0xFF;
+					RGBA result = disabledImageTransformer.adaptPixelValue(red, green, blue, alpha);
+					line[offset+redOffset] = (byte) result.rgb.red;
+					line[offset+greenOffset] = (byte) result.rgb.green;
+					line[offset+blueOffset] = (byte) result.rgb.blue;
+					line[offset+alphaOffset] = (byte) result.alpha;
 					offset += 4;
 				}
 				C.memmove(data + (y * srcBpr), line, srcBpr);
