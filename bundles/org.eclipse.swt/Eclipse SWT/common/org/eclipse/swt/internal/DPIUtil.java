@@ -272,52 +272,26 @@ public static Rectangle scaleDown(Drawable drawable, Rectangle rect, int zoom) {
 	return scaleDown (rect, zoom);
 }
 
-/**
- * Auto-scale image with ImageData
- */
-public static ImageData scaleImageData (Device device, final ImageData imageData, int targetZoom, int currentZoom) {
-	if (imageData == null || targetZoom == currentZoom || (device != null && !device.isAutoScalable())) return imageData;
-	float scaleFactor = (float) targetZoom / (float) currentZoom;
-	return autoScaleImageData(device, imageData, scaleFactor);
-}
-
-
-public static ImageData scaleImageData (Device device, final ElementAtZoom<ImageData> elementAtZoom, int targetZoom) {
-	return scaleImageData(device, elementAtZoom.element(), targetZoom, elementAtZoom.zoom());
-}
-
 private static ImageData autoScaleImageData (Device device, final ImageData imageData, float scaleFactor) {
 	// Guards are already implemented in callers: if (deviceZoom == 100 || imageData == null || scaleFactor == 1.0f) return imageData;
 	int width = imageData.width;
 	int height = imageData.height;
 	int scaledWidth = Math.round (width * scaleFactor);
 	int scaledHeight = Math.round (height * scaleFactor);
-	boolean useSmoothScaling = isSmoothScalingEnabled() && imageData.getTransparencyType() != SWT.TRANSPARENCY_MASK;
-	if (useSmoothScaling) {
-		Image original = new Image (device, (ImageDataProvider) zoom -> imageData);
-		/* Create a 24 bit image data with alpha channel */
-		final ImageData resultData = new ImageData (scaledWidth, scaledHeight, 24, new PaletteData (0xFF, 0xFF00, 0xFF0000));
-		resultData.alphaData = new byte [scaledWidth * scaledHeight];
-		Image resultImage = new Image (device, (ImageDataProvider) zoom -> resultData);
-		GC gc = new GC (resultImage);
-		gc.setAntialias (SWT.ON);
-		gc.drawImage (original, 0, 0, autoScaleDown (width), autoScaleDown (height),
-				/* E.g. destWidth here is effectively DPIUtil.autoScaleDown (scaledWidth), but avoiding rounding errors.
-				 * Nevertheless, we still have some rounding errors due to the point-based API GC#drawImage(..).
-				 */
-				0, 0, Math.round (autoScaleDown (width * scaleFactor)), Math.round (autoScaleDown (height * scaleFactor)));
-		gc.dispose ();
-		original.dispose ();
-		ImageData result = resultImage.getImageData (getDeviceZoom ());
-		resultImage.dispose ();
-		return result;
-	} else {
-		return imageData.scaledTo (scaledWidth, scaledHeight);
-	}
+	boolean useSmoothScaling = autoScaleMethod == AutoScaleMethod.SMOOTH && imageData.getTransparencyType() != SWT.TRANSPARENCY_MASK;
+	return imageData.scaledTo (scaledWidth, scaledHeight);
 }
 
-public static boolean isSmoothScalingEnabled() {
-	return autoScaleMethod == AutoScaleMethod.SMOOTH;
+public static int getScalingType(ImageData imageData) {
+	switch(autoScaleMethod) {
+	case SMOOTH:
+		if (imageData.getTransparencyType() != SWT.TRANSPARENCY_MASK) {
+			return SWT.SMOOTH;
+		}
+		return SWT.DEFAULT;
+	default:
+		return SWT.DEFAULT;
+	}
 }
 
 /**
@@ -332,15 +306,6 @@ public static Rectangle scaleBounds (Rectangle rect, int targetZoom, int current
 	returnRect.width = Math.round (rect.width * scaleFactor);
 	returnRect.height = Math.round (rect.height * scaleFactor);
 	return returnRect;
-}
-
-/**
- * Auto-scale ImageData to device zoom that are at given zoom factor.
- */
-public static ImageData autoScaleImageData (Device device, final ImageData imageData, int imageDataZoomFactor) {
-	if (deviceZoom == imageDataZoomFactor || imageData == null || (device != null && !device.isAutoScalable())) return imageData;
-	float scaleFactor = (float) deviceZoom / imageDataZoomFactor;
-	return autoScaleImageData(device, imageData, scaleFactor);
 }
 
 /**
@@ -605,10 +570,6 @@ public static int getDeviceZoom() {
 	return deviceZoom;
 }
 
-public static int getDeviceZoom(String autoScaleProperty) {
-	return getZoomForAutoscaleProperty(nativeDeviceZoom, autoScaleProperty);
-}
-
 public static void setDeviceZoom (int nativeDeviceZoom) {
 	DPIUtil.nativeDeviceZoom = nativeDeviceZoom;
 	int deviceZoom = getZoomForAutoscaleProperty (nativeDeviceZoom);
@@ -644,10 +605,6 @@ public static boolean useCairoAutoScale() {
 }
 
 public static int getZoomForAutoscaleProperty (int nativeDeviceZoom) {
-	return getZoomForAutoscaleProperty(nativeDeviceZoom, autoScaleValue);
-}
-
-private static int getZoomForAutoscaleProperty (int nativeDeviceZoom, String autoScaleValue) {
 	int zoom = 0;
 	if (autoScaleValue != null) {
 		if ("false".equalsIgnoreCase (autoScaleValue)) {
@@ -740,7 +697,11 @@ public static final class AutoScaleImageDataProvider implements ImageDataProvide
 	}
 	@Override
 	public ImageData getImageData(int zoom) {
-		return DPIUtil.scaleImageData(device, imageData, zoom, currentZoom);
+		Image image = new Image(device, imageData);
+		int adjustedZoom = (int) ((float) getDeviceZoom() / (float) currentZoom) * zoom;
+		ImageData imageData = image.getImageData(adjustedZoom);
+		image.dispose();
+		return imageData;
 	}
 }
 }
