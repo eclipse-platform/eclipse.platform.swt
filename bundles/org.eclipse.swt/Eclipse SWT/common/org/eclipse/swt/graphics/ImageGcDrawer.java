@@ -13,6 +13,8 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
+import org.eclipse.swt.*;
+
 /**
  * Interface to provide a callback mechanism to draw on different GC instances
  * depending on the zoom the image will be used for. A common use case is when
@@ -45,4 +47,15 @@ public interface ImageGcDrawer {
 	default void postProcess(ImageData imageData) {
 	}
 
+	/**
+     * Returns the GC style used when creating the GC instance.
+     * Default implementation returns <code>SWT.NONE</code>.
+     *
+     * @return the GC style constant
+     *
+     * @since 3.130
+     */
+    default int getGcStyle() {
+        return SWT.NONE;
+    }
 }
