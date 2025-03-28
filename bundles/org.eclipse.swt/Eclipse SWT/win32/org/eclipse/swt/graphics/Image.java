@@ -2502,7 +2502,7 @@ private class ImageGcDrawerWrapper extends DynamicImageProviderWrapper {
 	ImageHandle getImageMetadata(int zoom) {
 		initialNativeZoom = zoom;
 		Image image = new Image(device, width, height, zoom);
-		GC gc = new GC(image);
+		GC gc = new GC(image, drawer.getGcStyle());
 		try {
 			gc.data.nativeZoom = zoom;
 			drawer.drawOn(gc, width, height);
