@@ -247,6 +247,9 @@ public Image(Device device, Image srcImage, int flag) {
 	long srcImageHandle = win32_getHandle(srcImage, getZoom());
 	switch (flag) {
 		case SWT.IMAGE_COPY: {
+			if(createWithSVG(device, flag)) {
+				break;
+			}
 			switch (type) {
 				case SWT.BITMAP:
 					/* Get the HDC for the device */
@@ -282,12 +285,18 @@ public Image(Device device, Image srcImage, int flag) {
 			break;
 		}
 		case SWT.IMAGE_DISABLE: {
+			if(createWithSVG(device, flag)) {
+				break;
+			}
 			ImageData data = srcImage.getImageData(srcImage.getZoom());
 			ImageData newData = applyDisableImageData(data, rect.height, rect.width);
 			init (newData, getZoom());
 			break;
 		}
 		case SWT.IMAGE_GRAY: {
+			if(createWithSVG(device, flag)) {
+				break;
+			}
 			ImageData data = srcImage.getImageData(srcImage.getZoom());
 			ImageData newData = applyGrayImageData(data, rect.height, rect.width);
 			init (newData, getZoom());
@@ -298,6 +307,29 @@ public Image(Device device, Image srcImage, int flag) {
 	}
 	init();
 	this.device.registerResourceWithZoomSupport(this);
+}
+
+private boolean createWithSVG(Device device, int flag) {
+	if (imageProvider instanceof DynamicImageProviderWrapper dynamicImageProvider) {
+		if (dynamicImageProvider.getProvider() instanceof ImageFileNameProvider imageFileNameProvider) {
+			ElementAtZoom<String> fileName = DPIUtil.validateAndGetImagePathAtZoom(imageFileNameProvider, getZoom());
+//		if (fileName.element().endsWith(".svg")) {
+			ElementAtZoom<ImageData> imageData = ImageDataLoader.load(fileName.element(), fileName.zoom(), getZoom(),
+					flag);
+			init(imageData.element(), getZoom());
+			return true;
+//		}
+		}
+//	else if (imageProvider.getProvider() instanceof ImageDataProvider imageDataProvider) {
+//		if (imageDataProvider.supportsRasterizationFlag(flag)) {
+//			ImageData data = imageDataProvider.getCustomizedImageData(getZoom(), flag);
+//			ElementAtZoom<ImageData> imageData = new ElementAtZoom<>(data, getZoom());
+//			init(imageData.element(), getZoom());
+//			return true;
+//		}
+//	}
+	}
+	return false;
 }
 
 /**
@@ -2056,7 +2088,7 @@ private class ImageDataLoaderStreamProviderWrapper extends ImageFromImageDataPro
 
 	@Override
 	protected ElementAtZoom<ImageData> loadImageData(int zoom) {
-		return ImageDataLoader.load(new ByteArrayInputStream(inputStreamData), FileFormat.DEFAULT_ZOOM, zoom);
+		return ImageDataLoader.load(new ByteArrayInputStream(inputStreamData), FileFormat.DEFAULT_ZOOM, zoom, SWT.IMAGE_COPY);
 	}
 
 	@Override
@@ -2221,7 +2253,7 @@ private class ImageFileNameProviderWrapper extends BaseImageProviderWrapper<Imag
 
 		ElementAtZoom<ImageData> imageDataAtZoom;
 		if (nativeInitializedImage == null) {
-			imageDataAtZoom = ImageDataLoader.load(fileForZoom.element(), fileForZoom.zoom(), zoom);
+			imageDataAtZoom = ImageDataLoader.load(fileForZoom.element(), fileForZoom.zoom(), zoom, SWT.IMAGE_COPY);
 		} else {
 			imageDataAtZoom = new ElementAtZoom<>(nativeInitializedImage.getImageData(), fileForZoom.zoom());
 			destroyHandleForZoom(zoom);

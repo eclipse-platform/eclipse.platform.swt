@@ -43,4 +43,17 @@ public interface ImageDataProvider {
 	 */
 	ImageData getImageData (int zoom);
 
+//	/**
+//	* @since 4.0
+//	*/
+//	default ImageData getCustomizedImageData(int zoom, int flag) {
+//		throw new UnsupportedOperationException();
+//	}
+//
+//	/**
+//	* @since 4.0
+//	*/
+//	default boolean supportsRasterizationFlag(int flag) {
+//		return false;
+//	}
 }
