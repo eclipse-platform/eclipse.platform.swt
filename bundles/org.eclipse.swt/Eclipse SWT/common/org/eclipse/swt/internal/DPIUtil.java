@@ -272,20 +272,6 @@ public static Rectangle scaleDown(Drawable drawable, Rectangle rect, int zoom) {
 	return scaleDown (rect, zoom);
 }
 
-/**
- * Auto-scale image with ImageData
- */
-public static ImageData scaleImageData (Device device, final ImageData imageData, int targetZoom, int currentZoom) {
-	if (imageData == null || targetZoom == currentZoom || (device != null && !device.isAutoScalable())) return imageData;
-	float scaleFactor = (float) targetZoom / (float) currentZoom;
-	return autoScaleImageData(device, imageData, scaleFactor);
-}
-
-
-public static ImageData scaleImageData (Device device, final ElementAtZoom<ImageData> elementAtZoom, int targetZoom) {
-	return scaleImageData(device, elementAtZoom.element(), targetZoom, elementAtZoom.zoom());
-}
-
 private static ImageData autoScaleImageData (Device device, final ImageData imageData, float scaleFactor) {
 	// Guards are already implemented in callers: if (deviceZoom == 100 || imageData == null || scaleFactor == 1.0f) return imageData;
 	int width = imageData.width;
@@ -293,10 +279,19 @@ private static ImageData autoScaleImageData (Device device, final ImageData imag
 	int scaledWidth = Math.round (width * scaleFactor);
 	int scaledHeight = Math.round (height * scaleFactor);
 	boolean useSmoothScaling = autoScaleMethod == AutoScaleMethod.SMOOTH && imageData.getTransparencyType() != SWT.TRANSPARENCY_MASK;
-	if (useSmoothScaling) {
-		return imageData.scaleToUsingSmoothScaling(device, scaledWidth, scaledHeight);
-	}
 	return imageData.scaledTo (scaledWidth, scaledHeight);
+}
+
+public static int getScalingType(ImageData imageData) {
+	switch(autoScaleMethod) {
+	case SMOOTH:
+		if (imageData.getTransparencyType() != SWT.TRANSPARENCY_MASK) {
+			return SWT.SMOOTH;
+		}
+		return SWT.DEFAULT;
+	default:
+		return SWT.DEFAULT;
+	}
 }
 
 /**
@@ -311,15 +306,6 @@ public static Rectangle scaleBounds (Rectangle rect, int targetZoom, int current
 	returnRect.width = Math.round (rect.width * scaleFactor);
 	returnRect.height = Math.round (rect.height * scaleFactor);
 	return returnRect;
-}
-
-/**
- * Auto-scale ImageData to device zoom that are at given zoom factor.
- */
-public static ImageData autoScaleImageData (Device device, final ImageData imageData, int imageDataZoomFactor) {
-	if (deviceZoom == imageDataZoomFactor || imageData == null || (device != null && !device.isAutoScalable())) return imageData;
-	float scaleFactor = (float) deviceZoom / imageDataZoomFactor;
-	return autoScaleImageData(device, imageData, scaleFactor);
 }
 
 /**
@@ -584,10 +570,6 @@ public static int getDeviceZoom() {
 	return deviceZoom;
 }
 
-public static int getDeviceZoom(String autoScaleProperty) {
-	return getZoomForAutoscaleProperty(nativeDeviceZoom, autoScaleProperty);
-}
-
 public static void setDeviceZoom (int nativeDeviceZoom) {
 	DPIUtil.nativeDeviceZoom = nativeDeviceZoom;
 	int deviceZoom = getZoomForAutoscaleProperty (nativeDeviceZoom);
@@ -715,7 +697,11 @@ public static final class AutoScaleImageDataProvider implements ImageDataProvide
 	}
 	@Override
 	public ImageData getImageData(int zoom) {
-		return DPIUtil.scaleImageData(device, imageData, zoom, currentZoom);
+		Image image = new Image(device, imageData);
+		int adjustedZoom = (int) ((float) getDeviceZoom() / (float) currentZoom) * zoom;
+		ImageData imageData = image.getImageData(adjustedZoom);
+		image.dispose();
+		return imageData;
 	}
 }
 }

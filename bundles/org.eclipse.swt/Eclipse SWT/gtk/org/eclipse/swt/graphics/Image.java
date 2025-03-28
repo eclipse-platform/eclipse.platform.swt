@@ -533,7 +533,7 @@ public Image(Device device, InputStream stream) {
 	super(device);
 	currentDeviceZoom = DPIUtil.getDeviceZoom();
 	ElementAtZoom<ImageData> image = ImageDataLoader.load(stream, FileFormat.DEFAULT_ZOOM, currentDeviceZoom);
-	ImageData data = DPIUtil.scaleImageData(device, image, currentDeviceZoom);
+	ImageData data = scaledTo(image.element(), currentDeviceZoom, image.zoom(), DPIUtil.getScalingType(imageData));
 	init(data);
 	init();
 }
@@ -575,7 +575,7 @@ public Image(Device device, String filename) {
 	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	currentDeviceZoom = DPIUtil.getDeviceZoom();
 	ElementAtZoom<ImageData> image = ImageDataLoader.load(filename, FileFormat.DEFAULT_ZOOM, currentDeviceZoom);
-	ImageData data = DPIUtil.scaleImageData(device, image, currentDeviceZoom);
+	ImageData data = scaledTo(image.element(), currentDeviceZoom, image.zoom(), DPIUtil.getScalingType(imageData));
 	init(data);
 	init();
 }
@@ -744,7 +744,7 @@ boolean refreshImageForZoom () {
 			if (deviceZoomLevel != currentDeviceZoom) {
 				ImageData data = getImageDataAtCurrentZoom();
 				destroy ();
-				ImageData resizedData = DPIUtil.scaleImageData(device, data, deviceZoomLevel, currentDeviceZoom);
+				ImageData resizedData = scaledTo(data, deviceZoomLevel, currentDeviceZoom, DPIUtil.getScalingType(imageData));
 				init(resizedData);
 				init();
 				refreshed = true;
@@ -778,7 +778,7 @@ private void initFromFileNameProvider(int zoom) {
 		ElementAtZoom<ImageData> imageDataAtZoom = ImageDataLoader.load(fileForZoom.element(), fileForZoom.zoom(), zoom);
 		ImageData imageData = imageDataAtZoom.element();
 		if (imageDataAtZoom.zoom() != zoom) {
-			imageData = DPIUtil.scaleImageData(device, imageDataAtZoom, zoom);
+			imageData = scaledTo(imageDataAtZoom.element(), zoom, imageDataAtZoom.zoom(), DPIUtil.getScalingType(imageData));
 		}
 		init(imageData);
 	}
@@ -786,7 +786,7 @@ private void initFromFileNameProvider(int zoom) {
 
 private void initFromImageDataProvider(int zoom) {
 	ElementAtZoom<ImageData> data = DPIUtil.validateAndGetImageDataAtZoom (imageDataProvider, zoom);
-	ImageData resizedData = DPIUtil.scaleImageData (device, data.element(), zoom, data.zoom());
+	ImageData resizedData = scaledTo(data.element(), zoom, data.zoom(), DPIUtil.getScalingType(imageData));
 	init(resizedData);
 }
 
@@ -1146,15 +1146,46 @@ public ImageData getImageData (int zoom) {
 		return getImageDataAtCurrentZoom();
 	} else if (imageDataProvider != null) {
 		ElementAtZoom<ImageData> data = DPIUtil.validateAndGetImageDataAtZoom (imageDataProvider, zoom);
-		return DPIUtil.scaleImageData (device, data.element(), zoom, data.zoom());
+		return scaledTo(data.element(), zoom, data.zoom(), DPIUtil.getScalingType(imageData));
 	} else if (imageFileNameProvider != null) {
 		ElementAtZoom<String> fileName = DPIUtil.validateAndGetImagePathAtZoom (imageFileNameProvider, zoom);
-		return DPIUtil.scaleImageData (device, new ImageData (fileName.element()), zoom, fileName.zoom());
+		return scaledTo(new ImageData (fileName.element()), zoom, fileName.zoom(), DPIUtil.getScalingType(imageData));
 	} else if (imageGcDrawer != null) {
 		return drawWithImageGcDrawer(width, height, zoom);
 	} else {
-		return DPIUtil.scaleImageData (device, getImageDataAtCurrentZoom (), zoom, currentDeviceZoom);
+		return scaledTo(getImageDataAtCurrentZoom (), zoom, currentDeviceZoom, DPIUtil.getScalingType(imageData));
 	}
+}
+
+private ImageData scaledTo(ImageData imageData, int targetZoom, int currentZoom, int scaleType) {
+	if (imageData == null || currentZoom == targetZoom || !device.isAutoScalable()) {
+		return imageData;
+	}
+	float scaleFactor = (float) targetZoom / (float) currentZoom;
+	int scaledWidth = Math.round (imageData.width * scaleFactor);
+	int scaledHeight = Math.round (imageData.height * scaleFactor);
+	switch (scaleType) {
+	case SWT.SMOOTH:
+		return scaleUsingSmoothScaling(imageData, scaledWidth, scaledHeight);
+	default:
+		return imageData.scaledTo(scaledWidth, scaledHeight);
+	}
+}
+
+private ImageData scaleUsingSmoothScaling(ImageData imageData, int width, int height) {
+	Image original = new Image (device, (ImageDataProvider) zoom -> imageData);
+	/* Create a 24 bit image data with alpha channel */
+	final ImageData resultData = new ImageData (width, height, 24, new PaletteData (0xFF, 0xFF00, 0xFF0000));
+	resultData.alphaData = new byte [width * height];
+	Image resultImage = new Image (device, (ImageDataProvider) zoom -> resultData);
+	GC gc = new GC (resultImage);
+	gc.setAntialias (SWT.ON);
+	gc.drawImage (original, 0, 0, imageData.width, imageData.height, 0, 0, width, height, false);
+	gc.dispose ();
+	original.dispose ();
+	ImageData result = resultImage.getImageData (resultImage.getZoom());
+	resultImage.dispose ();
+	return result;
 }
 
 private ImageData drawWithImageGcDrawer(int width, int height, int zoom) {
