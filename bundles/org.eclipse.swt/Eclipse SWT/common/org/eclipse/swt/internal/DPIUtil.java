@@ -605,10 +605,6 @@ public static int getDeviceZoom() {
 	return deviceZoom;
 }
 
-public static int getDeviceZoom(String autoScaleProperty) {
-	return getZoomForAutoscaleProperty(nativeDeviceZoom, autoScaleProperty);
-}
-
 public static void setDeviceZoom (int nativeDeviceZoom) {
 	DPIUtil.nativeDeviceZoom = nativeDeviceZoom;
 	int deviceZoom = getZoomForAutoscaleProperty (nativeDeviceZoom);
@@ -674,6 +670,16 @@ private static int getZoomForAutoscaleProperty (int nativeDeviceZoom, String aut
 		zoom = Math.max ((nativeDeviceZoom + 25) / 100 * 100, 100);
 	}
 	return zoom;
+}
+
+public static void runWithAutoScaleValue(String autoScaleValue, Runnable runnable) {
+	String initialAutoScaleValue = DPIUtil.autoScaleValue;
+	DPIUtil.autoScaleValue = autoScaleValue;
+	try {
+		runnable.run();
+	} finally {
+		DPIUtil.autoScaleValue = initialAutoScaleValue;
+	}
 }
 
 public static void setMonitorSpecificScaling(boolean activate) {
