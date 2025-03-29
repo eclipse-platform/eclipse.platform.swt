@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -855,14 +855,14 @@ Point computeNativeSize (long h, int wHint, int hHint, boolean changed) {
 		int [] natural_size = new int [1];
 		if (wHint == SWT.DEFAULT) {
 			if (GTK.GTK4) {
-				GTK4.gtk_widget_measure(h, GTK.GTK_ORIENTATION_HORIZONTAL, height, null, natural_size, null, null);
+				GTK4.gtk_widget_measure(h, GTK.GTK_ORIENTATION_HORIZONTAL, height>0?height:-1, null, natural_size, null, null);
 			} else {
 				GTK3.gtk_widget_get_preferred_width_for_height (h, height, null, natural_size);
 			}
 			width = natural_size [0];
 		} else {
 			if (GTK.GTK4) {
-				GTK4.gtk_widget_measure(h, GTK.GTK_ORIENTATION_VERTICAL, width, null, natural_size, null, null);
+				GTK4.gtk_widget_measure(h, GTK.GTK_ORIENTATION_VERTICAL, width>0?width:-1, null, natural_size, null, null);
 			} else {
 				GTK3.gtk_widget_get_preferred_height_for_width (h, width, null, natural_size);
 			}
@@ -5840,6 +5840,8 @@ public boolean setParent (Composite parent) {
 	if (parent.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (this.parent == parent) return true;
 	if (!isReparentable ()) return false;
+	// preserve focus when re-parenting
+	Control focusControlBeforeReparent = display.getFocusControl();
 	GTK.gtk_widget_realize (parent.handle);
 	long topHandle = topHandle ();
 	GtkAllocation allocation = new GtkAllocation ();
@@ -5888,6 +5890,10 @@ public boolean setParent (Composite parent) {
 	this.parent = parent;
 	setZOrder (null, false, true);
 	reskin (SWT.ALL);
+	// restore focus to the last Control that had it, if focus is now gone
+	if (focusControlBeforeReparent != null && !focusControlBeforeReparent.isDisposed() && display.getFocusControl() == null) {
+		focusControlBeforeReparent.setFocus();
+	}
 	return true;
 }
 

@@ -5,7 +5,7 @@
 # To add your distribution:
 # 1) Identify your distribution ID via:
 #    lsb_release -a
-# 2) Add a case to the case statment below.
+# 2) Add a case to the case statement below.
 # 3) Add a function to handle your distribution.
 
 

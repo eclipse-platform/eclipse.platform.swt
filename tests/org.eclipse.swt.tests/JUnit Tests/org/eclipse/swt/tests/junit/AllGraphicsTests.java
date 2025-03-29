@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -13,15 +13,14 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import org.junit.runner.JUnitCore;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import org.junit.platform.suite.api.SelectClasses;
+import org.junit.platform.suite.api.Suite;
 
 /**
  * Suite for testing all of the graphics test cases.
  */
-@RunWith(Suite.class)
-@Suite.SuiteClasses({ Test_org_eclipse_swt_graphics_Color.class,
+@Suite
+@SelectClasses({ Test_org_eclipse_swt_graphics_Color.class,
 		Test_org_eclipse_swt_graphics_Cursor.class,
 		Test_org_eclipse_swt_graphics_DeviceData.class,
 		Test_org_eclipse_swt_graphics_Font.class,
@@ -42,7 +41,4 @@ import org.junit.runners.Suite;
 		Test_org_eclipse_swt_graphics_ImageLoaderEvent.class,
 		Test_org_eclipse_swt_graphics_Transform.class })
 public class AllGraphicsTests {
-	public static void main(String[] args) {
-		JUnitCore.main(AllGraphicsTests.class.getName());
-	}
 }

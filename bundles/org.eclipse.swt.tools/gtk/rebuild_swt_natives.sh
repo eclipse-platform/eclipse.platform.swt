@@ -7,7 +7,7 @@
 #
 # It uses SWT's build script ()*1) and adds extra functionality:
 # - Builds SWT's JNI native code (libswt-*-xyzz.so) with debugging support enabled by default
-#   * Also prints number of warnigns found. (Useful to see if new warnings were introduced)
+#   * Also prints number of warnings found. (Useful to see if new warnings were introduced)
 # - Cleans up binary git repository holding '.so' filse
 #   * This prevents the situation where when you checkout an older swt patch and
 #     rebuild, swt would use some newer .so's instead of the newly compiled once.
@@ -179,7 +179,7 @@ if [ "$?" -ne 0 ]; then # Failed
 	exit 1 # Failed
 else # Success
 	WARNING_COUNT=$(cat $temp_log_file | grep warning | wc -l)
-	func_echo_info "[Step 3] Bindings compiled sucessfully"
+	func_echo_info "[Step 3] Bindings compiled successfully"
 	func_echo_error "[Step 3] ** Warning count: $WARNING_COUNT "
 	rm "$temp_log_file"
 fi

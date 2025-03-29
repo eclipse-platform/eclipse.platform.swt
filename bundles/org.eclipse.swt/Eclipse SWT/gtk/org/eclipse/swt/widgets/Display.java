@@ -1143,12 +1143,12 @@ void checkIMModule () {
 	if (module != null && module.equals("xim")) {
 		System.err.println("***WARNING: Detected: GTK_IM_MODULE=xim. This input method is unsupported and can cause graphical issues.");
 		System.err.println("***WARNING: Unset GTK_IM_MODULE or set GTK_IM_MODULE=ibus if flicking is experienced. ");
-	}
-	// Enforce ibus as the input module on GNOME
-	if (OS.isGNOME) {
-		long settings = GTK.gtk_settings_get_default ();
-		byte[] ibus = Converter.wcsToMbcs ("ibus", true);
-		if (settings != 0) OS.g_object_set (settings, GTK.gtk_im_module, ibus, 0);
+		// Enforce ibus as the input module on GNOME X11
+		if (OS.isGNOME && OS.isX11()) {
+			long settings = GTK.gtk_settings_get_default ();
+			byte[] ibus = Converter.wcsToMbcs ("ibus", true);
+			if (settings != 0) OS.g_object_set (settings, GTK.gtk_im_module, ibus, 0);
+		}
 	}
 }
 
@@ -4817,26 +4817,28 @@ void releaseDisplay () {
 	keysChangedProc = 0;
 
 	/* Dispose subclass */
-	long pangoLayoutType = OS.PANGO_TYPE_LAYOUT ();
-	long pangoLayoutClass = OS.g_type_class_ref (pangoLayoutType);
-	OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (pangoLayoutClass, pangoLayoutNewProc);
-	OS.g_type_class_unref (pangoLayoutClass);
-	pangoLayoutNewProc = 0;
-	long imContextType = GTK.GTK_TYPE_IM_MULTICONTEXT ();
-	long imContextClass = OS.g_type_class_ref (imContextType);
-	OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (imContextClass, imContextNewProc);
-	OS.g_type_class_unref (imContextClass);
-	imContextNewProc = 0;
-	long pangoFontFamilyType = OS.PANGO_TYPE_FONT_FAMILY ();
-	long pangoFontFamilyClass = OS.g_type_class_ref (pangoFontFamilyType);
-	OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (pangoFontFamilyClass, pangoFontFamilyNewProc);
-	OS.g_type_class_unref (pangoFontFamilyClass);
-	pangoFontFamilyNewProc = 0;
-	long pangoFontFaceType = OS.PANGO_TYPE_FONT_FACE ();
-	long pangoFontFaceClass = OS.g_type_class_ref (pangoFontFaceType);
-	OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (pangoFontFaceClass, pangoFontFaceNewProc);
-	OS.g_type_class_unref (pangoFontFaceClass);
-	pangoFontFaceNewProc = 0;
+	if (!GTK.GTK4) {
+		long pangoLayoutType = OS.PANGO_TYPE_LAYOUT ();
+		long pangoLayoutClass = OS.g_type_class_ref (pangoLayoutType);
+		OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (pangoLayoutClass, pangoLayoutNewProc);
+		OS.g_type_class_unref (pangoLayoutClass);
+		pangoLayoutNewProc = 0;
+		long imContextType = GTK.GTK_TYPE_IM_MULTICONTEXT ();
+		long imContextClass = OS.g_type_class_ref (imContextType);
+		OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (imContextClass, imContextNewProc);
+		OS.g_type_class_unref (imContextClass);
+		imContextNewProc = 0;
+		long pangoFontFamilyType = OS.PANGO_TYPE_FONT_FAMILY ();
+		long pangoFontFamilyClass = OS.g_type_class_ref (pangoFontFamilyType);
+		OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (pangoFontFamilyClass, pangoFontFamilyNewProc);
+		OS.g_type_class_unref (pangoFontFamilyClass);
+		pangoFontFamilyNewProc = 0;
+		long pangoFontFaceType = OS.PANGO_TYPE_FONT_FACE ();
+		long pangoFontFaceClass = OS.g_type_class_ref (pangoFontFaceType);
+		OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (pangoFontFaceClass, pangoFontFaceNewProc);
+		OS.g_type_class_unref (pangoFontFaceClass);
+		pangoFontFaceNewProc = 0;
+	}
 
 	/* Release the sleep resources */
 	max_priority = timeout = null;

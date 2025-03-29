@@ -210,6 +210,15 @@ public class CoordinateSystemMapperTests {
 		assertEquals(rectInPxs, mapper.translateToDisplayCoordinates(rectInPts, monitors[0].getZoom()));
 	}
 
+	@ParameterizedTest
+	@MethodSource("provideCoordinateSystemMappers")
+	void translateRectangleInPixelsForZeroSize(CoordinateSystemMapper mapper) {
+		setupMonitors(mapper);
+		Rectangle rectInPts = createExpectedRectangle(mapper, 0, 0, 0, 0, monitors[0]);
+		Rectangle rectInPxs = mapper.translateToDisplayCoordinates(rectInPts, monitors[0].getZoom());
+		assertEquals(rectInPts, mapper.translateFromDisplayCoordinates(rectInPxs, monitors[0].getZoom()));
+	}
+
 	private Point createExpectedPoint(CoordinateSystemMapper mapper, int x, int y, Monitor monitor) {
 		if (mapper instanceof SingleZoomCoordinateSystemMapper) {
 			return new Point(x, y);

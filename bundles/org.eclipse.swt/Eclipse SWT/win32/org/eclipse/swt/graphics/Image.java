@@ -91,6 +91,11 @@ public final class Image extends Resource implements Drawable {
 	public int type;
 
 	/**
+	 * this field make sure the image is initialized without any errors
+	 */
+	private boolean isInitialized;
+
+	/**
 	 * specifies the transparent pixel
 	 */
 	int transparentPixel = -1, transparentColor = -1;
@@ -111,6 +116,12 @@ public final class Image extends Resource implements Drawable {
 	 * same image data provider would be considered equal.
 	 */
 	private int styleFlag = SWT.IMAGE_COPY;
+
+	/**
+	 * Sets the color to which to map the transparent pixel.
+	 * For further info see {@link #setBackground(Color)}
+	 */
+	private RGB backgroundColor;
 
 	/**
 	 * Attribute to cache current native zoom level
@@ -178,11 +189,8 @@ public Image(Device device, int width, int height) {
 
 private Image(Device device, int width, int height, int nativeZoom) {
 	super(device);
-	initialNativeZoom = nativeZoom;
-	final int zoom = getZoom();
-	width = DPIUtil.scaleUp (width, zoom);
-	height = DPIUtil.scaleUp (height, zoom);
-	init(width, height);
+	this.initialNativeZoom = nativeZoom;
+	this.imageProvider = new PlainImageProviderWrapper(width, height);
 	init();
 	this.device.registerResourceWithZoomSupport(this);
 }
@@ -331,8 +339,7 @@ public Image(Device device, Rectangle bounds) {
 	super(device);
 	if (bounds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
-	bounds = DPIUtil.scaleUp (bounds, getZoom());
-	init(bounds.width, bounds.height);
+	this.imageProvider = new PlainImageProviderWrapper(bounds.width, bounds.height);
 	init();
 	this.device.registerResourceWithZoomSupport(this);
 }
@@ -364,9 +371,7 @@ public Image(Device device, ImageData data) {
 	super(device);
 	if (data == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
-	int deviceZoom = getZoom();
-	data = DPIUtil.scaleImageData(device, new ElementAtZoom<>(data, 100), deviceZoom);
-	init(data, deviceZoom);
+	this.imageProvider = new PlainImageDataProviderWrapper(data);
 	init();
 	this.device.registerResourceWithZoomSupport(this);
 }
@@ -409,10 +414,7 @@ public Image(Device device, ImageData source, ImageData mask) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
-	source = DPIUtil.autoScaleUp(device, source);
-	mask = DPIUtil.autoScaleUp(device, mask);
-	mask = ImageData.convertMask(mask);
-	init(this.device, this, source, mask, getZoom());
+	this.imageProvider = new MaskedImageDataProviderWrapper(source, mask);
 	init();
 	this.device.registerResourceWithZoomSupport(this);
 }
@@ -472,10 +474,9 @@ public Image(Device device, ImageData source, ImageData mask) {
  */
 public Image (Device device, InputStream stream) {
 	super(device);
+	if (stream == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
-	int deviceZoom = getZoom();
-	ImageData data = DPIUtil.scaleImageData(device, ImageDataLoader.load(stream, FileFormat.DEFAULT_ZOOM, deviceZoom), deviceZoom);
-	init(data, deviceZoom);
+	this.imageProvider = new ImageDataLoaderStreamProviderWrapper(stream);
 	init();
 	this.device.registerResourceWithZoomSupport(this);
 }
@@ -516,9 +517,16 @@ public Image (Device device, String filename) {
 	super(device);
 	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
-	int deviceZoom = getZoom();
-	ImageData data = DPIUtil.scaleImageData(device, ImageDataLoader.load(filename, FileFormat.DEFAULT_ZOOM, deviceZoom), deviceZoom);
-	init(data, deviceZoom);
+	this.imageProvider = new ImageFileNameProviderWrapper(zoom -> {
+		if (zoom == 100) {
+			return filename;
+		}
+		return null;
+	});
+	if (imageProvider.getImageData(100) == null) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT, null,
+				": [" + filename + "] returns null ImageData at 100% zoom.");
+	}
 	init();
 	this.device.registerResourceWithZoomSupport(this);
 }
@@ -556,7 +564,10 @@ public Image(Device device, ImageFileNameProvider imageFileNameProvider) {
 	super(device);
 	this.imageProvider = new ImageFileNameProviderWrapper(imageFileNameProvider);
 	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
-	imageProvider.getImageMetadata(getZoom());
+	if (imageProvider.getImageData(100) == null) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT, null,
+				": ImageFileNameProvider [" + imageFileNameProvider + "] returns null ImageData at 100% zoom.");
+	}
 	init();
 	this.device.registerResourceWithZoomSupport(this);
 }
@@ -594,7 +605,10 @@ public Image(Device device, ImageDataProvider imageDataProvider) {
 	super(device);
 	this.imageProvider = new ImageDataProviderWrapper(imageDataProvider);
 	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
-	imageProvider.getImageMetadata(getZoom());
+	if (imageDataProvider.getImageData(100) == null) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT, null,
+				": ImageDataProvider [" + imageDataProvider + "] returns null ImageData at 100% zoom.");
+	}
 	init();
 	this.device.registerResourceWithZoomSupport(this);
 }
@@ -644,6 +658,12 @@ private ImageData adaptImageDataIfDisabledOrGray(ImageData data) {
 	}
 
 	return returnImageData;
+}
+
+@Override
+void init() {
+	super.init();
+	this.isInitialized = true;
 }
 
 private ImageData applyDisableImageData(ImageData data, int height, int width) {
@@ -781,7 +801,7 @@ private ImageHandle getImageMetadata(int zoom) {
 			// to image data without transparency mask, this will create invalid images
 			// so this fallback will "repair" the image data by explicitly passing
 			// the transparency mask created from the scaled image data
-			init(this.device, this, newData, newData.getTransparencyMask(), zoom);
+			initIconHandle(this.device, newData, newData.getTransparencyMask(), zoom);
 		} else {
 			init(newData, zoom);
 		}
@@ -812,186 +832,6 @@ public static long win32_getHandle (Image image, int zoom) {
 		return 0L;
 	}
 	return image.getImageMetadata(zoom).handle;
-}
-
-ImageHandle initNative(String filename, int zoom) {
-	ImageHandle imageMetadata = null;
-	long handle = 0;
-	int width = -1;
-	int height = -1;
-	device.checkGDIP();
-	boolean gdip = true;
-	/*
-	* Bug in GDI+.  For some reason, Bitmap.LockBits() segment faults
-	* when loading GIF files in 64-bit Windows.  The fix is to not use
-	* GDI+ image loading in this case.
-	*/
-	if (gdip && C.PTR_SIZEOF == 8 && filename.toLowerCase().endsWith(".gif")) gdip = false;
-	/*
-	* Bug in GDI+. Bitmap.LockBits() fails to load GIF files in
-	* Windows 7 when the image has a position offset in the first frame.
-	* The fix is to not use GDI+ image loading in this case.
-	*/
-	if (filename.toLowerCase().endsWith(".gif")) gdip = false;
-	if (gdip) {
-		int length = filename.length();
-		char[] chars = new char[length+1];
-		filename.getChars(0, length, chars, 0);
-		long bitmap = Gdip.Bitmap_new(chars, false);
-		if (bitmap != 0) {
-			int error = SWT.ERROR_NO_HANDLES;
-			int status = Gdip.Image_GetLastStatus(bitmap);
-			if (status == 0) {
-				if (filename.toLowerCase().endsWith(".ico")) {
-					this.type = SWT.ICON;
-					long[] hicon = new long[1];
-					status = Gdip.Bitmap_GetHICON(bitmap, hicon);
-					handle = hicon[0];
-					imageMetadata = new ImageHandle(handle, zoom);
-				} else {
-					this.type = SWT.BITMAP;
-					width = Gdip.Image_GetWidth(bitmap);
-					height = Gdip.Image_GetHeight(bitmap);
-					int pixelFormat = Gdip.Image_GetPixelFormat(bitmap);
-					switch (pixelFormat) {
-						case Gdip.PixelFormat16bppRGB555:
-						case Gdip.PixelFormat16bppRGB565:
-							handle = createDIB(width, height, 16);
-							break;
-						case Gdip.PixelFormat24bppRGB:
-						case Gdip.PixelFormat32bppCMYK:
-							handle = createDIB(width, height, 24);
-							break;
-						case Gdip.PixelFormat32bppRGB:
-						// These will lose either precision or transparency
-						case Gdip.PixelFormat16bppGrayScale:
-						case Gdip.PixelFormat48bppRGB:
-						case Gdip.PixelFormat32bppPARGB:
-						case Gdip.PixelFormat64bppARGB:
-						case Gdip.PixelFormat64bppPARGB:
-							handle = createDIB(width, height, 32);
-							break;
-					}
-					if (handle != 0) {
-						/*
-						* This performs better than getting the bits with Bitmap.LockBits(),
-						* but it cannot be used when there is transparency.
-						*/
-						long hDC = device.internal_new_GC(null);
-						long srcHDC = OS.CreateCompatibleDC(hDC);
-						long oldSrcBitmap = OS.SelectObject(srcHDC, handle);
-						long graphics = Gdip.Graphics_new(srcHDC);
-						if (graphics != 0) {
-							Rect rect = new Rect();
-							rect.Width = width;
-							rect.Height = height;
-							status = Gdip.Graphics_DrawImage(graphics, bitmap, rect, 0, 0, width, height, Gdip.UnitPixel, 0, 0, 0);
-							if (status != 0) {
-								error = SWT.ERROR_INVALID_IMAGE;
-								OS.DeleteObject(handle);
-								handle = 0;
-							}
-							Gdip.Graphics_delete(graphics);
-						}
-						OS.SelectObject(srcHDC, oldSrcBitmap);
-						OS.DeleteDC(srcHDC);
-						device.internal_dispose_GC(hDC, null);
-						imageMetadata = new ImageHandle(handle, zoom);
-					} else {
-						long lockedBitmapData = Gdip.BitmapData_new();
-						if (lockedBitmapData != 0) {
-							status = Gdip.Bitmap_LockBits(bitmap, 0, 0, pixelFormat, lockedBitmapData);
-							if (status == 0) {
-								BitmapData bitmapData = new BitmapData();
-								Gdip.MoveMemory(bitmapData, lockedBitmapData);
-								int stride = bitmapData.Stride;
-								long pixels = bitmapData.Scan0;
-								int depth = 0, scanlinePad = 4, transparentPixel = -1;
-								switch (bitmapData.PixelFormat) {
-									case Gdip.PixelFormat1bppIndexed: depth = 1; break;
-									case Gdip.PixelFormat4bppIndexed: depth = 4; break;
-									case Gdip.PixelFormat8bppIndexed: depth = 8; break;
-									case Gdip.PixelFormat16bppARGB1555:
-									case Gdip.PixelFormat16bppRGB555:
-									case Gdip.PixelFormat16bppRGB565: depth = 16; break;
-									case Gdip.PixelFormat24bppRGB: depth = 24; break;
-									case Gdip.PixelFormat32bppRGB:
-									case Gdip.PixelFormat32bppARGB: depth = 32; break;
-								}
-								if (depth != 0) {
-									PaletteData paletteData = null;
-									switch (bitmapData.PixelFormat) {
-										case Gdip.PixelFormat1bppIndexed:
-										case Gdip.PixelFormat4bppIndexed:
-										case Gdip.PixelFormat8bppIndexed:
-											int paletteSize = Gdip.Image_GetPaletteSize(bitmap);
-											long hHeap = OS.GetProcessHeap();
-											long palette = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, paletteSize);
-											if (palette == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-											Gdip.Image_GetPalette(bitmap, palette, paletteSize);
-											ColorPalette colorPalette = new ColorPalette();
-											Gdip.MoveMemory(colorPalette, palette, ColorPalette.sizeof);
-											int[] entries = new int[colorPalette.Count];
-											OS.MoveMemory(entries, palette + 8, entries.length * 4);
-											OS.HeapFree(hHeap, 0, palette);
-											RGB[] rgbs = new RGB[colorPalette.Count];
-											paletteData = new PaletteData(rgbs);
-											for (int i = 0; i < entries.length; i++) {
-												if (((entries[i] >> 24) & 0xFF) == 0 && (colorPalette.Flags & Gdip.PaletteFlagsHasAlpha) != 0) {
-													transparentPixel = i;
-												}
-												rgbs[i] = new RGB(((entries[i] & 0xFF0000) >> 16), ((entries[i] & 0xFF00) >> 8), ((entries[i] & 0xFF) >> 0));
-											}
-											break;
-										case Gdip.PixelFormat16bppARGB1555:
-										case Gdip.PixelFormat16bppRGB555: paletteData = new PaletteData(0x7C00, 0x3E0, 0x1F); break;
-										case Gdip.PixelFormat16bppRGB565: paletteData = new PaletteData(0xF800, 0x7E0, 0x1F); break;
-										case Gdip.PixelFormat24bppRGB: paletteData = new PaletteData(0xFF, 0xFF00, 0xFF0000); break;
-										case Gdip.PixelFormat32bppRGB:
-										case Gdip.PixelFormat32bppARGB: paletteData = new PaletteData(0xFF00, 0xFF0000, 0xFF000000); break;
-									}
-									byte[] data = new byte[stride * height], alphaData = null;
-									OS.MoveMemory(data, pixels, data.length);
-									switch (bitmapData.PixelFormat) {
-										case Gdip.PixelFormat16bppARGB1555:
-											alphaData = new byte[width * height];
-											for (int i = 1, j = 0; i < data.length; i += 2, j++) {
-												alphaData[j] = (byte)((data[i] & 0x80) != 0 ? 255 : 0);
-											}
-											break;
-										case Gdip.PixelFormat32bppARGB:
-											alphaData = new byte[width * height];
-											for (int i = 3, j = 0; i < data.length; i += 4, j++) {
-												alphaData[j] = data[i];
-											}
-											break;
-									}
-									ImageData img = new ImageData(width, height, depth, paletteData, scanlinePad, data);
-									img.transparentPixel = transparentPixel;
-									img.alphaData = alphaData;
-
-									ImageData newData = adaptImageDataIfDisabledOrGray(img);
-									init(newData, zoom);
-									imageMetadata = zoomLevelToImageHandle.get(zoom);
-									handle = imageMetadata.handle;
-								}
-								Gdip.Bitmap_UnlockBits(bitmap, lockedBitmapData);
-							} else {
-								error = SWT.ERROR_INVALID_IMAGE;
-							}
-							Gdip.BitmapData_delete(lockedBitmapData);
-						}
-					}
-				}
-			}
-			Gdip.Bitmap_delete(bitmap);
-			if (status == 0) {
-				if (handle == 0) SWT.error(error);
-				if (imageMetadata == null) SWT.error(error);
-			}
-		}
-	}
-	return imageMetadata;
 }
 
 long [] createGdipImage() {
@@ -1177,8 +1017,6 @@ void destroy () {
 	memGC = null;
 }
 
-static int count = 0;
-
 private void destroyHandle () {
 	for (ImageHandle imageMetadata : zoomLevelToImageHandle.values()) {
 		destroyHandle(imageMetadata.handle);
@@ -1196,6 +1034,12 @@ void destroyHandlesExcept(Set<Integer> zoomLevels) {
 		}
 		return false;
 	});
+}
+private void destroyHandleForZoom(int zoom) {
+	ImageHandle imageHandle = zoomLevelToImageHandle.remove(zoom);
+	if (imageHandle != null) {
+	     destroyHandle(imageHandle.handle);
+	}
 }
 
 private void destroyHandle(long handle) {
@@ -1250,6 +1094,10 @@ public boolean equals (Object object) {
 public Color getBackground() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (transparentPixel == -1) return null;
+	if (backgroundColor != null) {
+		// if a background color was set explicitly, we use the cached color directly
+		return Color.win32_new(device, (backgroundColor.blue << 16) | (backgroundColor.green << 8) | backgroundColor.red);
+	}
 
 	/* Get the HDC for the device */
 	long hDC = device.internal_new_GC(null);
@@ -1406,6 +1254,10 @@ public ImageData getImageData (int zoom) {
 		return imageProvider.getImageData(zoom);
 	}
 
+	return getScaledImageData(zoom);
+}
+
+private ImageData getScaledImageData (int zoom) {
 	// if a GC is initialized with an Image (memGC != null), the image data must not be resized, because it would
 	// be a destructive operation. Therefor, always the current image data must be returned
 	if (memGC != null) {
@@ -1413,8 +1265,9 @@ public ImageData getImageData (int zoom) {
 	}
 	TreeSet<Integer> availableZooms = new TreeSet<>(zoomLevelToImageHandle.keySet());
 	int closestZoom = Optional.ofNullable(availableZooms.higher(zoom)).orElse(availableZooms.lower(zoom));
-	return DPIUtil.scaleImageData (device, getImageMetadata(closestZoom).getImageData(), zoom, closestZoom);
+	return scaleImageData(getImageMetadata(closestZoom).getImageData(), zoom, closestZoom);
 }
+
 
 /**
  * Returns an <code>ImageData</code> based on the receiver.
@@ -1458,39 +1311,6 @@ public int hashCode () {
 	return (int)win32_getHandle(this, getZoom());
 }
 
-void init(int width, int height) {
-	if (width <= 0 || height <= 0) {
-		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
-	}
-	type = SWT.BITMAP;
-	long hDC = device.internal_new_GC(null);
-	ImageHandle imageMetadata = new ImageHandle(OS.CreateCompatibleBitmap(hDC, width, height), getZoom());
-	/*
-	* Feature in Windows.  CreateCompatibleBitmap() may fail
-	* for large images.  The fix is to create a DIB section
-	* in that case.
-	*/
-	if (imageMetadata.handle == 0) {
-		int bits = OS.GetDeviceCaps(hDC, OS.BITSPIXEL);
-		int planes = OS.GetDeviceCaps(hDC, OS.PLANES);
-		int depth = bits * planes;
-		if (depth < 16) depth = 16;
-		if (depth > 24) depth = 24;
-		imageMetadata = new ImageHandle(createDIB(width, height, depth), getZoom());
-	}
-	if (imageMetadata.handle != 0) {
-		long memDC = OS.CreateCompatibleDC(hDC);
-		long hOldBitmap = OS.SelectObject(memDC, imageMetadata.handle);
-		OS.PatBlt(memDC, 0, 0, width, height, OS.PATCOPY);
-		OS.SelectObject(memDC, hOldBitmap);
-		OS.DeleteDC(memDC);
-	}
-	device.internal_dispose_GC(hDC, null);
-	if (imageMetadata.handle == 0) {
-		SWT.error(SWT.ERROR_NO_HANDLES, null, device.getLastError());
-	}
-}
-
 static long createDIB(int width, int height, int depth) {
 	BITMAPINFOHEADER bmiHeader = new BITMAPINFOHEADER();
 	bmiHeader.biSize = BITMAPINFOHEADER.sizeof;
@@ -1505,7 +1325,7 @@ static long createDIB(int width, int height, int depth) {
 	return OS.CreateDIBSection(0, bmi, OS.DIB_RGB_COLORS, pBits, 0, 0);
 }
 
-static ImageData indexToIndex(ImageData src, int newDepth) {
+private static ImageData indexToIndex(ImageData src, int newDepth) {
 	ImageData img = new ImageData(src.width, src.height, newDepth, src.palette);
 
 	ImageData.blit(
@@ -1522,7 +1342,7 @@ static ImageData indexToIndex(ImageData src, int newDepth) {
 	return img;
 }
 
-static ImageData indexToDirect(ImageData src, int newDepth, PaletteData newPalette, int newByteOrder) {
+private static ImageData indexToDirect(ImageData src, int newDepth, PaletteData newPalette, int newByteOrder) {
 	ImageData img = new ImageData(src.width, src.height, newDepth, newPalette);
 
 	RGB[] rgbs = src.palette.getRGBs();
@@ -1554,7 +1374,7 @@ static ImageData indexToDirect(ImageData src, int newDepth, PaletteData newPalet
 	return img;
 }
 
-static ImageData directToDirect(ImageData src, int newDepth, PaletteData newPalette, int newByteOrder) {
+private static ImageData directToDirect(ImageData src, int newDepth, PaletteData newPalette, int newByteOrder) {
 	ImageData img = new ImageData(src.width, src.height, newDepth, newPalette);
 
 	ImageData.blit(
@@ -1574,7 +1394,9 @@ static ImageData directToDirect(ImageData src, int newDepth, PaletteData newPale
 	return img;
 }
 
-static long [] init(Device device, Image image, ImageData i, Integer zoom) {
+private record HandleForImageDataContainer(int type, ImageData imageData, long[] handles) {}
+
+private static HandleForImageDataContainer init(Device device, ImageData i) {
 	/* Windows does not support 2-bit images. Convert to 4-bit image. */
 	if (i.depth == 2) {
 		i = indexToIndex(i, 4);
@@ -1740,7 +1562,6 @@ static long [] init(Device device, Image image, ImageData i, Integer zoom) {
 	}
 	OS.MoveMemory(pBits[0], data, data.length);
 
-	long [] result = null;
 	if (i.getTransparencyType() == SWT.TRANSPARENCY_MASK) {
 		/* Get the HDC for the device */
 		long hDC = device.internal_new_GC(null);
@@ -1767,31 +1588,10 @@ static long [] init(Device device, Image image, ImageData i, Integer zoom) {
 		OS.DeleteDC(hdcDest);
 		OS.DeleteObject(hDib);
 
-		if (image == null) {
-			result = new long []{hBitmap, hMask};
-		} else {
-			/* Create the icon */
-			ICONINFO info = new ICONINFO();
-			info.fIcon = true;
-			info.hbmColor = hBitmap;
-			info.hbmMask = hMask;
-			long hIcon = OS.CreateIconIndirect(info);
-			if (hIcon == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-			OS.DeleteObject(hBitmap);
-			OS.DeleteObject(hMask);
-			image.type = SWT.ICON;
-			image.new ImageHandle(hIcon, zoom);
-		}
+		return new HandleForImageDataContainer(SWT.ICON, i, new long []{hBitmap, hMask});
 	} else {
-		if (image == null) {
-			result = new long []{hDib};
-		} else {
-			image.type = SWT.BITMAP;
-			image.transparentPixel = i.transparentPixel;
-			image.new ImageHandle(hDib, zoom);
-		}
+		return new HandleForImageDataContainer(SWT.BITMAP, i, new long []{hDib});
 	}
-	return result;
 }
 
 private void setImageMetadataForHandle(ImageHandle imageMetadata, Integer zoom) {
@@ -1803,9 +1603,35 @@ private void setImageMetadataForHandle(ImageHandle imageMetadata, Integer zoom) 
 	zoomLevelToImageHandle.put(zoom, imageMetadata);
 }
 
-static long [] init(Device device, Image image, ImageData source, ImageData mask, Integer zoom) {
+private ImageHandle initIconHandle(Device device, ImageData source, ImageData mask, Integer zoom) {
 	ImageData imageData = applyMask(source, mask);
-	return init(device, image, imageData, zoom);
+	HandleForImageDataContainer imageDataHandle = init(device, imageData);
+	return initIconHandle(imageDataHandle.handles, zoom);
+}
+
+private ImageHandle initIconHandle(long[] handles, int zoom) {
+	/* Create the icon */
+	ICONINFO info = new ICONINFO();
+	info.fIcon = true;
+	info.hbmColor = handles[0];
+	info.hbmMask = handles[1];
+	long hIcon = OS.CreateIconIndirect(info);
+	if (hIcon == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	OS.DeleteObject(handles[0]);
+	OS.DeleteObject(handles[1]);
+	type = SWT.ICON;
+	return new ImageHandle(hIcon, zoom);
+}
+
+private ImageHandle initBitmapHandle(ImageData imageData, long handle, Integer zoom) {
+	type = SWT.BITMAP;
+	transparentPixel = imageData.transparentPixel;
+	return new ImageHandle(handle, zoom);
+}
+
+static long [] initIcon(Device device, ImageData source, ImageData mask) {
+	ImageData imageData = applyMask(source, mask);
+	return init(device, imageData).handles;
 }
 
 private static ImageData applyMask(ImageData source, ImageData mask) {
@@ -1883,9 +1709,20 @@ private static ImageData applyMask(ImageData source, ImageData mask) {
 }
 
 
-void init(ImageData i, Integer zoom) {
+private ImageHandle init(ImageData i, int zoom) {
 	if (i == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, this, i, zoom);
+	HandleForImageDataContainer imageDataHandle = init(device, i);
+	switch (imageDataHandle.type()) {
+		case SWT.ICON: {
+			return initIconHandle(imageDataHandle.handles(), zoom);
+		}
+		case SWT.BITMAP: {
+			return initBitmapHandle(imageDataHandle.imageData(), imageDataHandle.handles()[0], zoom);
+		}
+		default:
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+			return null;
+	}
 }
 
 /**
@@ -2012,33 +1849,44 @@ public void setBackground(Color color) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	zoomLevelToImageHandle.values().forEach(imageHandle -> setBackground(color, imageHandle.handle));
-}
-
-private void setBackground(Color color, long handle) {
 	if (transparentPixel == -1) return;
 	transparentColor = -1;
+	backgroundColor = color.getRGB();
+	zoomLevelToImageHandle.values().forEach(imageHandle -> imageHandle.setBackground(backgroundColor));
+}
 
-	/* Get the HDC for the device */
-	long hDC = device.internal_new_GC(null);
+private ImageData scaleImageData(final ImageData imageData, int targetZoom, int currentZoom) {
+	if (imageData == null || targetZoom == currentZoom || (device != null && !device.isAutoScalable())) return imageData;
+	float scaleFactor = (float) targetZoom / (float) currentZoom;
+	int width = imageData.width;
+	int height = imageData.height;
+	int scaledWidth = Math.round (width * scaleFactor);
+	int scaledHeight = Math.round (height * scaleFactor);
+	boolean useSmoothScaling = DPIUtil.isSmoothScalingEnabled() && imageData.getTransparencyType() != SWT.TRANSPARENCY_MASK;
+	if (useSmoothScaling) {
+		return scaleToUsingSmoothScaling(scaledWidth, scaledHeight, imageData);
+	}
+	return imageData.scaledTo (scaledWidth, scaledHeight);
+}
 
-	/* Change the background color in the image */
-	BITMAP bm = new BITMAP();
-	OS.GetObject(handle, BITMAP.sizeof, bm);
-	long hdcMem = OS.CreateCompatibleDC(hDC);
-	OS.SelectObject(hdcMem, handle);
-	int maxColors = 1 << bm.bmBitsPixel;
-	byte[] colors = new byte[maxColors * 4];
-	int numColors = OS.GetDIBColorTable(hdcMem, 0, maxColors, colors);
-	int offset = transparentPixel * 4;
-	colors[offset] = (byte)color.getBlue();
-	colors[offset + 1] = (byte)color.getGreen();
-	colors[offset + 2] = (byte)color.getRed();
-	OS.SetDIBColorTable(hdcMem, 0, numColors, colors);
-	OS.DeleteDC(hdcMem);
-
-	/* Release the HDC for the device */
-	device.internal_dispose_GC(hDC, null);
+private ImageData scaleToUsingSmoothScaling(int width, int height, ImageData imageData) {
+	Image original = new Image (device, (ImageDataProvider) zoom -> imageData);
+	/* Create a 24 bit image data with alpha channel */
+	final ImageData resultData = new ImageData (width, height, 24, new PaletteData (0xFF, 0xFF00, 0xFF0000));
+	resultData.alphaData = new byte [width * height];
+	Image resultImage = new Image (device, (ImageDataProvider) zoom -> resultData);
+	GC gc = new GC (resultImage);
+	gc.setAntialias (SWT.ON);
+	gc.drawImage (original, 0, 0, imageData.width, imageData.height,
+			/* E.g. destWidth here is effectively DPIUtil.autoScaleDown (scaledWidth), but avoiding rounding errors.
+			 * Nevertheless, we still have some rounding errors due to the point-based API GC#drawImage(..).
+			 */
+			0, 0, width, height, false);
+	gc.dispose ();
+	original.dispose ();
+	ImageData result = resultImage.getImageData (resultImage.getZoom());
+	resultImage.dispose ();
+	return result;
 }
 
 private int getZoom() {
@@ -2082,12 +1930,233 @@ public static Image win32_new(Device device, int type, long handle, int nativeZo
 }
 
 private abstract class AbstractImageProviderWrapper {
-	abstract Object getProvider();
+	private boolean isDestroyed;
+
 	protected abstract Rectangle getBounds(int zoom);
 	abstract ImageData getImageData(int zoom);
 	abstract ImageHandle getImageMetadata(int zoom);
 	abstract AbstractImageProviderWrapper createCopy(Image image);
-	abstract boolean isDisposed();
+
+	protected boolean isDisposed() {
+		return !isInitialized || isDestroyed;
+	}
+
+	protected void destroy() {
+		this.isDestroyed = true;
+	}
+}
+
+private abstract class ImageFromImageDataProviderWrapper extends AbstractImageProviderWrapper {
+
+	protected abstract ElementAtZoom<ImageData> loadImageData(int zoom);
+
+	void initImage() {
+		// As the init call configured some Image attributes (e.g. type)
+		// it must be called
+		ImageData imageDataAt100 = getImageData(100);
+		init(imageDataAt100, 100);
+		destroyHandleForZoom(100);
+	}
+
+	@Override
+	ImageData getImageData(int zoom) {
+		if (zoomLevelToImageHandle.containsKey(zoom)) {
+			return zoomLevelToImageHandle.get(zoom).getImageData();
+		}
+		if (!zoomLevelToImageHandle.isEmpty()) {
+			return getScaledImageData(zoom);
+		}
+		ElementAtZoom<ImageData> loadedImageData = loadImageData(zoom);
+		return DPIUtil.scaleImageData(device, loadedImageData, zoom);
+	}
+
+	@Override
+	ImageHandle getImageMetadata(int zoom) {
+		if (zoomLevelToImageHandle.containsKey(zoom)) {
+			return zoomLevelToImageHandle.get(zoom);
+		} else  {
+			ImageData scaledImageData = getImageData(zoom);
+			ImageHandle imageHandle = init(scaledImageData, zoom);
+			return imageHandle;
+		}
+	}
+}
+
+private class PlainImageDataProviderWrapper extends ImageFromImageDataProviderWrapper {
+	private ImageData imageDataAt100;
+
+	PlainImageDataProviderWrapper(ImageData imageData) {
+		this.imageDataAt100 = (ImageData) imageData.clone();
+		initImage();
+	}
+
+	@Override
+	protected Rectangle getBounds(int zoom) {
+		Rectangle rectangle = new Rectangle(0, 0, imageDataAt100.width, imageDataAt100.height);
+		return DPIUtil.scaleUp(rectangle, zoom);
+	}
+
+	@Override
+	protected ElementAtZoom<ImageData> loadImageData(int zoom) {
+		return new ElementAtZoom<>(imageDataAt100, 100);
+	}
+
+	@Override
+	AbstractImageProviderWrapper createCopy(Image image) {
+		return image.new PlainImageDataProviderWrapper(this.imageDataAt100);
+	}
+}
+
+private class MaskedImageDataProviderWrapper extends ImageFromImageDataProviderWrapper {
+	private final ImageData srcAt100;
+	private final ImageData maskAt100;
+
+	MaskedImageDataProviderWrapper(ImageData srcAt100, ImageData maskAt100) {
+		this.srcAt100 = (ImageData) srcAt100.clone();
+		this.maskAt100 = (ImageData) maskAt100.clone();
+		initImage();
+	}
+
+	@Override
+	protected Rectangle getBounds(int zoom) {
+		Rectangle rectangle = new Rectangle(0, 0, srcAt100.width, srcAt100.height);
+		return DPIUtil.scaleUp(rectangle, zoom);
+	}
+
+	@Override
+	protected ElementAtZoom<ImageData> loadImageData(int zoom) {
+		ImageData scaledSource = DPIUtil.scaleImageData(device, srcAt100, zoom, 100);
+		ImageData scaledMask = DPIUtil.scaleImageData(device, maskAt100, zoom, 100);
+		scaledMask = ImageData.convertMask(scaledMask);
+		ImageData mergedData = applyMask(scaledSource, scaledMask);
+		return new ElementAtZoom<>(mergedData, zoom);
+	}
+
+	@Override
+	AbstractImageProviderWrapper createCopy(Image image) {
+		return image.new MaskedImageDataProviderWrapper(this.srcAt100, this.maskAt100);
+	}
+}
+
+private class ImageDataLoaderStreamProviderWrapper extends ImageFromImageDataProviderWrapper {
+	private byte[] inputStreamData;
+
+	ImageDataLoaderStreamProviderWrapper(InputStream inputStream) {
+		try {
+			this.inputStreamData = inputStream.readAllBytes();
+			initImage();
+		} catch (IOException e) {
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT, e);
+		}
+	}
+
+	private ImageDataLoaderStreamProviderWrapper(byte[] inputStreamData) {
+		this.inputStreamData = inputStreamData;
+	}
+
+	@Override
+	protected ElementAtZoom<ImageData> loadImageData(int zoom) {
+		return ImageDataLoader.load(new ByteArrayInputStream(inputStreamData), FileFormat.DEFAULT_ZOOM, zoom);
+	}
+
+	@Override
+	protected Rectangle getBounds(int zoom) {
+		ImageData scaledImageData = getImageData(zoom);
+		return new Rectangle(0, 0, scaledImageData.width, scaledImageData.height);
+	}
+
+	@Override
+	AbstractImageProviderWrapper createCopy(Image image) {
+		return new ImageDataLoaderStreamProviderWrapper(inputStreamData);
+	}
+}
+
+private class PlainImageProviderWrapper extends AbstractImageProviderWrapper {
+	private final int width;
+	private final int height;
+
+	PlainImageProviderWrapper(int width, int height) {
+		if (width <= 0 || height <= 0) {
+			SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+		}
+		this.width = width;
+		this.height = height;
+		type = SWT.BITMAP;
+	}
+
+	@Override
+	protected Rectangle getBounds(int zoom) {
+		Rectangle rectangle = new Rectangle(0, 0, width, height);
+		return DPIUtil.scaleUp(rectangle, zoom);
+	}
+
+	@Override
+	ImageData getImageData(int zoom) {
+		if (zoomLevelToImageHandle.isEmpty() || zoomLevelToImageHandle.containsKey(zoom)) {
+			return getImageMetadata(zoom).getImageData();
+		}
+
+		return getScaledImageData(zoom);
+	}
+
+	@Override
+	ImageHandle getImageMetadata(int zoom) {
+		if (zoomLevelToImageHandle.isEmpty()) {
+			long handle = initBaseHandle(zoom);
+			ImageHandle imageHandle = new ImageHandle(handle, zoom);
+			zoomLevelToImageHandle.put(zoom, imageHandle);
+			return imageHandle;
+		} else if(zoomLevelToImageHandle.containsKey(zoom)) {
+			return zoomLevelToImageHandle.get(zoom);
+		} else {
+			ImageData resizedData = getImageData(zoom);
+			ImageData newData = adaptImageDataIfDisabledOrGray(resizedData);
+			init(newData, zoom);
+			return zoomLevelToImageHandle.get(zoom);
+		}
+	}
+
+	private long initBaseHandle(int zoom) {
+		if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+		int scaledWidth = DPIUtil.scaleUp (width, zoom);
+		int scaledHeight = DPIUtil.scaleUp (height, zoom);
+		long hDC = device.internal_new_GC(null);
+		long newHandle = OS.CreateCompatibleBitmap(hDC, scaledWidth, scaledHeight);
+		/*
+		* Feature in Windows.  CreateCompatibleBitmap() may fail
+		* for large images.  The fix is to create a DIB section
+		* in that case.
+		*/
+		if (newHandle == 0) {
+			int bits = OS.GetDeviceCaps(hDC, OS.BITSPIXEL);
+			int planes = OS.GetDeviceCaps(hDC, OS.PLANES);
+			int depth = bits * planes;
+			if (depth < 16) depth = 16;
+			if (depth > 24) depth = 24;
+			newHandle = createDIB(scaledWidth, scaledHeight, depth);
+		}
+		if (newHandle != 0) {
+			long memDC = OS.CreateCompatibleDC(hDC);
+			long hOldBitmap = OS.SelectObject(memDC, newHandle);
+			OS.PatBlt(memDC, 0, 0, scaledWidth, scaledHeight, OS.PATCOPY);
+			OS.SelectObject(memDC, hOldBitmap);
+			OS.DeleteDC(memDC);
+		}
+		device.internal_dispose_GC(hDC, null);
+		if (newHandle == 0) {
+			SWT.error(SWT.ERROR_NO_HANDLES, null, device.getLastError());
+		}
+		return newHandle;
+	}
+
+	@Override
+	AbstractImageProviderWrapper createCopy(Image image) {
+		return image.new PlainImageProviderWrapper(width, height);
+	}
+}
+
+private abstract class DynamicImageProviderWrapper extends AbstractImageProviderWrapper {
+	abstract Object getProvider();
 
 	protected void checkProvider(Object provider, Class<?> expectedClass) {
 		if (provider == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -2101,67 +2170,80 @@ private abstract class AbstractImageProviderWrapper {
 
 	@Override
 	public boolean equals(Object otherProvider) {
-		return otherProvider instanceof AbstractImageProviderWrapper aip //
-				&& getProvider().equals(aip.getProvider());
-	}
-
-	protected void destroy() {
+		return otherProvider instanceof DynamicImageProviderWrapper aip
+				&& Objects.equals(getProvider(), aip.getProvider());
 	}
 }
 
-private class ImageFileNameProviderWrapper extends AbstractImageProviderWrapper {
+private abstract class BaseImageProviderWrapper<T> extends DynamicImageProviderWrapper {
+	protected final T provider;
+	private final Map<Integer, Rectangle> zoomToBounds = new HashMap<>();
 
-	/**
-	 * ImageFileNameProvider to provide file names at various Zoom levels
-	 */
-	private final ImageFileNameProvider provider;
-
-	ImageFileNameProviderWrapper(ImageFileNameProvider provider) {
-		checkProvider(provider, ImageFileNameProvider.class);
+	BaseImageProviderWrapper(T provider, Class<T> expectedClass) {
+		checkProvider(provider, expectedClass);
 		this.provider = provider;
-	}
-
-	@Override
-	protected Rectangle getBounds(int zoom) {
-		ImageHandle imageHandle = zoomLevelToImageHandle.values().iterator().next();
-		Rectangle rectangle = new Rectangle(0, 0, imageHandle.width, imageHandle.height);
-		return DPIUtil.scaleBounds(rectangle, zoom, imageHandle.zoom);
-	}
-
-	@Override
-	ImageData getImageData(int zoom) {
-		ElementAtZoom<String> fileName = DPIUtil.validateAndGetImagePathAtZoom (provider, zoom);
-		ElementAtZoom<ImageData> imageData = ImageDataLoader.load(fileName.element(), fileName.zoom(), zoom);
-		return DPIUtil.scaleImageData (device, imageData, zoom);
-	}
-
-	@Override
-	ImageHandle getImageMetadata(int zoom) {
-		ElementAtZoom<String> fileForZoom = DPIUtil.validateAndGetImagePathAtZoom (provider, zoom);
-		ImageHandle nativeInitializedImage = null;
-		if (fileForZoom.zoom() == zoom) {
-			nativeInitializedImage = initNative(fileForZoom.element(), zoom);
-		}
-		if (nativeInitializedImage == null) {
-			ElementAtZoom<ImageData> imageDataAtZoom = ImageDataLoader.load(fileForZoom.element(), fileForZoom.zoom(), zoom);
-			ImageData imageData = imageDataAtZoom.element();
-			if (imageDataAtZoom.zoom() != zoom) {
-				imageData = DPIUtil.scaleImageData(device, imageDataAtZoom, zoom);
-			}
-			imageData = adaptImageDataIfDisabledOrGray(imageData);
-			init(imageData, zoom);
-		}
-		return zoomLevelToImageHandle.get(zoom);
-	}
-
-	@Override
-	boolean isDisposed() {
-		return zoomLevelToImageHandle.isEmpty();
 	}
 
 	@Override
 	Object getProvider() {
 		return provider;
+	}
+
+	@Override
+	protected Rectangle getBounds(int zoom) {
+		if (zoomLevelToImageHandle.containsKey(zoom)) {
+			ImageHandle imgHandle = zoomLevelToImageHandle.get(zoom);
+			return new Rectangle(0, 0, imgHandle.width, imgHandle.height);
+		}
+		if (!zoomToBounds.containsKey(zoom)) {
+			ImageData imageData = getImageData(zoom);
+			Rectangle rectangle = new Rectangle(0, 0, imageData.width, imageData.height);
+			zoomToBounds.put(zoom, rectangle);
+		}
+		return zoomToBounds.get(zoom);
+	}
+}
+
+private class ImageFileNameProviderWrapper extends BaseImageProviderWrapper<ImageFileNameProvider> {
+	ImageFileNameProviderWrapper(ImageFileNameProvider provider) {
+		super(provider, ImageFileNameProvider.class);
+	}
+
+	@Override
+	ImageData getImageData(int zoom) {
+		ElementAtZoom<String> fileForZoom = DPIUtil.validateAndGetImagePathAtZoom(provider, zoom);
+		ImageHandle nativeInitializedImage;
+		if (zoomLevelToImageHandle.containsKey(fileForZoom.zoom())) {
+			nativeInitializedImage = zoomLevelToImageHandle.get(fileForZoom.zoom());
+		} else {
+			nativeInitializedImage = initNative(fileForZoom.element(), fileForZoom.zoom());
+		}
+
+		ElementAtZoom<ImageData> imageDataAtZoom;
+		if (nativeInitializedImage == null) {
+			imageDataAtZoom = ImageDataLoader.load(fileForZoom.element(), fileForZoom.zoom(), zoom);
+		} else {
+			imageDataAtZoom = new ElementAtZoom<>(nativeInitializedImage.getImageData(), fileForZoom.zoom());
+			destroyHandleForZoom(zoom);
+		}
+		ImageData imageData = scaleIfNecessary(imageDataAtZoom, zoom);
+		imageData = adaptImageDataIfDisabledOrGray(imageData);
+		return imageData;
+	}
+
+	private ImageData scaleIfNecessary(ElementAtZoom<ImageData> imageDataAtZoom, int zoom) {
+		if (imageDataAtZoom.zoom() != zoom) {
+			return scaleImageData(imageDataAtZoom.element(), zoom, imageDataAtZoom.zoom());
+		} else {
+			return imageDataAtZoom.element();
+		}
+	}
+
+	@Override
+	ImageHandle getImageMetadata(int zoom) {
+		ImageData imageData = getImageData(zoom);
+		init(imageData, zoom);
+		return zoomLevelToImageHandle.get(zoom);
 	}
 
 	@Override
@@ -2173,50 +2255,219 @@ private class ImageFileNameProviderWrapper extends AbstractImageProviderWrapper 
 	ImageFileNameProviderWrapper createCopy(Image image) {
 		return image.new ImageFileNameProviderWrapper(provider);
 	}
-}
 
-private class ImageDataProviderWrapper extends AbstractImageProviderWrapper {
+	ImageHandle initNative(String filename, int zoom) {
+		ImageHandle imageMetadata = null;
+		long handle = 0;
+		int width = -1;
+		int height = -1;
+		device.checkGDIP();
+		boolean gdip = true;
+		/*
+		* Bug in GDI+.  For some reason, Bitmap.LockBits() segment faults
+		* when loading GIF files in 64-bit Windows.  The fix is to not use
+		* GDI+ image loading in this case.
+		*/
+		if (gdip && C.PTR_SIZEOF == 8 && filename.toLowerCase().endsWith(".gif")) gdip = false;
+		/*
+		* Bug in GDI+. Bitmap.LockBits() fails to load GIF files in
+		* Windows 7 when the image has a position offset in the first frame.
+		* The fix is to not use GDI+ image loading in this case.
+		*/
+		if (filename.toLowerCase().endsWith(".gif")) gdip = false;
 
-	/**
-	 * ImageDataProvider to provide ImageData at various Zoom levels
-	 */
-	private final ImageDataProvider provider;
+		if(!gdip) return null;
 
-	ImageDataProviderWrapper(ImageDataProvider provider) {
-		checkProvider(provider, ImageDataProvider.class);
-		this.provider = provider;
+		int length = filename.length();
+		char[] chars = new char[length+1];
+		filename.getChars(0, length, chars, 0);
+		long bitmap = Gdip.Bitmap_new(chars, false);
+		if (bitmap == 0) return null;
+
+		int error = SWT.ERROR_NO_HANDLES;
+		int status = Gdip.Image_GetLastStatus(bitmap);
+		if (status == 0) {
+			if (filename.toLowerCase().endsWith(".ico")) {
+				type = SWT.ICON;
+				long[] hicon = new long[1];
+				status = Gdip.Bitmap_GetHICON(bitmap, hicon);
+				handle = hicon[0];
+				imageMetadata = new ImageHandle(handle, zoom);
+			} else {
+				type = SWT.BITMAP;
+				width = Gdip.Image_GetWidth(bitmap);
+				height = Gdip.Image_GetHeight(bitmap);
+				int pixelFormat = Gdip.Image_GetPixelFormat(bitmap);
+				handle = extractHandleForPixelFormat(width, height, pixelFormat);
+				if (handle != 0) {
+					/*
+					* This performs better than getting the bits with Bitmap.LockBits(),
+					* but it cannot be used when there is transparency.
+					*/
+					long hDC = device.internal_new_GC(null);
+					long srcHDC = OS.CreateCompatibleDC(hDC);
+					long oldSrcBitmap = OS.SelectObject(srcHDC, handle);
+					long graphics = Gdip.Graphics_new(srcHDC);
+					if (graphics != 0) {
+						Rect rect = new Rect();
+						rect.Width = width;
+						rect.Height = height;
+						status = Gdip.Graphics_DrawImage(graphics, bitmap, rect, 0, 0, width, height, Gdip.UnitPixel, 0, 0, 0);
+						if (status != 0) {
+							error = SWT.ERROR_INVALID_IMAGE;
+							OS.DeleteObject(handle);
+							handle = 0;
+						}
+						Gdip.Graphics_delete(graphics);
+					}
+					OS.SelectObject(srcHDC, oldSrcBitmap);
+					OS.DeleteDC(srcHDC);
+					device.internal_dispose_GC(hDC, null);
+					imageMetadata = new ImageHandle(handle, zoom);
+				} else {
+					long lockedBitmapData = Gdip.BitmapData_new();
+					if (lockedBitmapData != 0) {
+						status = Gdip.Bitmap_LockBits(bitmap, 0, 0, pixelFormat, lockedBitmapData);
+						if (status == 0) {
+							BitmapData bitmapData = new BitmapData();
+							Gdip.MoveMemory(bitmapData, lockedBitmapData);
+							int stride = bitmapData.Stride;
+							long pixels = bitmapData.Scan0;
+							int depth = 0, scanlinePad = 4, transparentPixel = -1;
+							depth = extractDepthForPixelFormat(bitmapData);
+							if (depth != 0) {
+								PaletteData paletteData = null;
+								switch (bitmapData.PixelFormat) {
+									case Gdip.PixelFormat1bppIndexed:
+									case Gdip.PixelFormat4bppIndexed:
+									case Gdip.PixelFormat8bppIndexed:
+										int paletteSize = Gdip.Image_GetPaletteSize(bitmap);
+										long hHeap = OS.GetProcessHeap();
+										long palette = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, paletteSize);
+										if (palette == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+										Gdip.Image_GetPalette(bitmap, palette, paletteSize);
+										ColorPalette colorPalette = new ColorPalette();
+										Gdip.MoveMemory(colorPalette, palette, ColorPalette.sizeof);
+										int[] entries = new int[colorPalette.Count];
+										OS.MoveMemory(entries, palette + 8, entries.length * 4);
+										OS.HeapFree(hHeap, 0, palette);
+										RGB[] rgbs = new RGB[colorPalette.Count];
+										paletteData = new PaletteData(rgbs);
+										for (int i = 0; i < entries.length; i++) {
+											if (((entries[i] >> 24) & 0xFF) == 0 && (colorPalette.Flags & Gdip.PaletteFlagsHasAlpha) != 0) {
+												transparentPixel = i;
+											}
+											rgbs[i] = new RGB(((entries[i] & 0xFF0000) >> 16), ((entries[i] & 0xFF00) >> 8), ((entries[i] & 0xFF) >> 0));
+										}
+										break;
+									case Gdip.PixelFormat16bppARGB1555:
+									case Gdip.PixelFormat16bppRGB555: paletteData = new PaletteData(0x7C00, 0x3E0, 0x1F); break;
+									case Gdip.PixelFormat16bppRGB565: paletteData = new PaletteData(0xF800, 0x7E0, 0x1F); break;
+									case Gdip.PixelFormat24bppRGB: paletteData = new PaletteData(0xFF, 0xFF00, 0xFF0000); break;
+									case Gdip.PixelFormat32bppRGB:
+									case Gdip.PixelFormat32bppARGB: paletteData = new PaletteData(0xFF00, 0xFF0000, 0xFF000000); break;
+								}
+								byte[] data = new byte[stride * height], alphaData = null;
+								OS.MoveMemory(data, pixels, data.length);
+								switch (bitmapData.PixelFormat) {
+									case Gdip.PixelFormat16bppARGB1555:
+										alphaData = new byte[width * height];
+										for (int i = 1, j = 0; i < data.length; i += 2, j++) {
+											alphaData[j] = (byte)((data[i] & 0x80) != 0 ? 255 : 0);
+										}
+										break;
+									case Gdip.PixelFormat32bppARGB:
+										alphaData = new byte[width * height];
+										for (int i = 3, j = 0; i < data.length; i += 4, j++) {
+											alphaData[j] = data[i];
+										}
+										break;
+								}
+								ImageData img = new ImageData(width, height, depth, paletteData, scanlinePad, data);
+								img.transparentPixel = transparentPixel;
+								img.alphaData = alphaData;
+
+								init(img, zoom);
+								imageMetadata = zoomLevelToImageHandle.get(zoom);
+								handle = imageMetadata.handle;
+							}
+							Gdip.Bitmap_UnlockBits(bitmap, lockedBitmapData);
+						} else {
+							error = SWT.ERROR_INVALID_IMAGE;
+						}
+						Gdip.BitmapData_delete(lockedBitmapData);
+					}
+				}
+			}
+		}
+		Gdip.Bitmap_delete(bitmap);
+		if (status == 0) {
+			if (handle == 0) SWT.error(error);
+			if (imageMetadata == null) SWT.error(error);
+		}
+
+		return imageMetadata;
 	}
 
-	@Override
-	protected Rectangle getBounds(int zoom) {
-		ImageHandle imageHandle = zoomLevelToImageHandle.values().iterator().next();
-		Rectangle rectangle = new Rectangle(0, 0, imageHandle.width, imageHandle.height);
-		return DPIUtil.scaleBounds(rectangle, zoom, imageHandle.zoom);
+	private int extractDepthForPixelFormat(BitmapData bitmapData) {
+		int depth = 0;
+		switch (bitmapData.PixelFormat) {
+			case Gdip.PixelFormat1bppIndexed: depth = 1; break;
+			case Gdip.PixelFormat4bppIndexed: depth = 4; break;
+			case Gdip.PixelFormat8bppIndexed: depth = 8; break;
+			case Gdip.PixelFormat16bppARGB1555:
+			case Gdip.PixelFormat16bppRGB555:
+			case Gdip.PixelFormat16bppRGB565: depth = 16; break;
+			case Gdip.PixelFormat24bppRGB: depth = 24; break;
+			case Gdip.PixelFormat32bppRGB:
+			case Gdip.PixelFormat32bppARGB: depth = 32; break;
+		}
+		return depth;
+	}
+
+	private long extractHandleForPixelFormat(int width, int height, int pixelFormat) {
+		long handle = 0;
+		switch (pixelFormat) {
+			case Gdip.PixelFormat16bppRGB555:
+			case Gdip.PixelFormat16bppRGB565:
+				handle = createDIB(width, height, 16);
+				break;
+			case Gdip.PixelFormat24bppRGB:
+			case Gdip.PixelFormat32bppCMYK:
+				handle = createDIB(width, height, 24);
+				break;
+			case Gdip.PixelFormat32bppRGB:
+			// These will lose either precision or transparency
+			case Gdip.PixelFormat16bppGrayScale:
+			case Gdip.PixelFormat48bppRGB:
+			case Gdip.PixelFormat32bppPARGB:
+			case Gdip.PixelFormat64bppARGB:
+			case Gdip.PixelFormat64bppPARGB:
+				handle = createDIB(width, height, 32);
+				break;
+		}
+		return handle;
+	}
+}
+
+private class ImageDataProviderWrapper extends BaseImageProviderWrapper<ImageDataProvider> {
+	ImageDataProviderWrapper(ImageDataProvider provider) {
+		super(provider, ImageDataProvider.class);
 	}
 
 	@Override
 	ImageData getImageData(int zoom) {
 		ElementAtZoom<ImageData> data = DPIUtil.validateAndGetImageDataAtZoom (provider, zoom);
-		return DPIUtil.scaleImageData (device, data.element(), zoom, data.zoom());
+		return scaleImageData(data.element(), zoom, data.zoom());
 	}
 
 	@Override
 	ImageHandle getImageMetadata(int zoom) {
 		ElementAtZoom<ImageData> imageCandidate = DPIUtil.validateAndGetImageDataAtZoom (provider, zoom);
-		ImageData resizedData = DPIUtil.scaleImageData (device, imageCandidate.element(), zoom, imageCandidate.zoom());
+		ImageData resizedData = scaleImageData(imageCandidate.element(), zoom, imageCandidate.zoom());
 		ImageData newData = adaptImageDataIfDisabledOrGray(resizedData);
 		init(newData, zoom);
 		return zoomLevelToImageHandle.get(zoom);
-	}
-
-	@Override
-	boolean isDisposed() {
-		return zoomLevelToImageHandle.isEmpty();
-	}
-
-	@Override
-	Object getProvider() {
-		return provider;
 	}
 
 	@Override
@@ -2225,13 +2476,12 @@ private class ImageDataProviderWrapper extends AbstractImageProviderWrapper {
 	}
 }
 
-private class ImageGcDrawerWrapper extends AbstractImageProviderWrapper {
+private class ImageGcDrawerWrapper extends DynamicImageProviderWrapper {
 	private ImageGcDrawer drawer;
 	private int width;
 	private int height;
-	private boolean isDestroyed;
 
-	public ImageGcDrawerWrapper(ImageGcDrawer imageGcDrawer, int width, int height) {
+	ImageGcDrawerWrapper(ImageGcDrawer imageGcDrawer, int width, int height) {
 		checkProvider(imageGcDrawer, ImageGcDrawer.class);
 		this.drawer = imageGcDrawer;
 		this.width = width;
@@ -2269,16 +2519,6 @@ private class ImageGcDrawerWrapper extends AbstractImageProviderWrapper {
 	}
 
 	@Override
-	protected void destroy() {
-		isDestroyed = true;
-	}
-
-	@Override
-	boolean isDisposed() {
-		return isDestroyed;
-	}
-
-	@Override
 	Object getProvider() {
 		return drawer;
 	}
@@ -2310,7 +2550,35 @@ private class ImageHandle {
 		this.handle = handle;
 		this.zoom = zoom;
 		updateBoundsInPixelsFromNative();
+		if (backgroundColor != null) {
+			setBackground(backgroundColor);
+		}
 		setImageMetadataForHandle(this, zoom);
+	}
+
+	private void setBackground(RGB color) {
+		if (transparentPixel == -1) return;
+
+		/* Get the HDC for the device */
+		long hDC = device.internal_new_GC(null);
+
+		/* Change the background color in the image */
+		BITMAP bm = new BITMAP();
+		OS.GetObject(handle, BITMAP.sizeof, bm);
+		long hdcMem = OS.CreateCompatibleDC(hDC);
+		OS.SelectObject(hdcMem, handle);
+		int maxColors = 1 << bm.bmBitsPixel;
+		byte[] colors = new byte[maxColors * 4];
+		int numColors = OS.GetDIBColorTable(hdcMem, 0, maxColors, colors);
+		int offset = transparentPixel * 4;
+		colors[offset] = (byte)color.blue;
+		colors[offset + 1] = (byte)color.green;
+		colors[offset + 2] = (byte)color.red;
+		OS.SetDIBColorTable(hdcMem, 0, numColors, colors);
+		OS.DeleteDC(hdcMem);
+
+		/* Release the HDC for the device */
+		device.internal_dispose_GC(hDC, null);
 	}
 
 	private void updateBoundsInPixelsFromNative() {
@@ -2613,6 +2881,10 @@ private class ImageHandle {
 				SWT.error(SWT.ERROR_INVALID_IMAGE);
 				return null;
 		}
+	}
+
+	private boolean isDisposed() {
+		return this.handle == 0;
 	}
 
 }

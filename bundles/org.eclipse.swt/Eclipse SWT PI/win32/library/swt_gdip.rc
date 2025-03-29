@@ -15,7 +15,6 @@
 #include "windows.h"
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION SWT_COMMA_VERSION
  PRODUCTVERSION 0,0,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
@@ -33,9 +32,8 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Eclipse Foundation\0"
             VALUE "FileDescription", "SWT for Windows native library\0"
-            VALUE "FileVersion", SWT_FILE_VERSION
             VALUE "InternalName", "SWT\0"
-            VALUE "LegalCopyright", "Copyright (c) 2000, 2011 IBM Corp.  All Rights Reserved.\0"
+            VALUE "LegalCopyright", "Copyright (c) 2000, 2025 IBM Corp.  All Rights Reserved.\0"
             VALUE "OriginalFilename", SWT_ORG_FILENAME
             VALUE "ProductName", "Standard Widget Toolkit\0"
             VALUE "ProductVersion", "0,0,0,0\0"

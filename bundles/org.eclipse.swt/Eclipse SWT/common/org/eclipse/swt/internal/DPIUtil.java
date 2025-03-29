@@ -292,7 +292,7 @@ private static ImageData autoScaleImageData (Device device, final ImageData imag
 	int height = imageData.height;
 	int scaledWidth = Math.round (width * scaleFactor);
 	int scaledHeight = Math.round (height * scaleFactor);
-	boolean useSmoothScaling = autoScaleMethod == AutoScaleMethod.SMOOTH && imageData.getTransparencyType() != SWT.TRANSPARENCY_MASK;
+	boolean useSmoothScaling = isSmoothScalingEnabled() && imageData.getTransparencyType() != SWT.TRANSPARENCY_MASK;
 	if (useSmoothScaling) {
 		Image original = new Image (device, (ImageDataProvider) zoom -> imageData);
 		/* Create a 24 bit image data with alpha channel */
@@ -314,6 +314,10 @@ private static ImageData autoScaleImageData (Device device, final ImageData imag
 	} else {
 		return imageData.scaledTo (scaledWidth, scaledHeight);
 	}
+}
+
+public static boolean isSmoothScalingEnabled() {
+	return autoScaleMethod == AutoScaleMethod.SMOOTH;
 }
 
 /**
@@ -517,6 +521,14 @@ public static int mapZoomToDPI (int zoom) {
  * @param <T> type of the element to be presented, e.g., {@link ImageData}
  */
 public record ElementAtZoom<T>(T element, int zoom) {
+	public ElementAtZoom {
+		if (element == null) {
+			SWT.error(SWT.ERROR_NULL_ARGUMENT);
+		}
+		if (zoom <= 0) {
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		}
+	}
 }
 
 /**
@@ -593,6 +605,10 @@ public static int getDeviceZoom() {
 	return deviceZoom;
 }
 
+public static int getDeviceZoom(String autoScaleProperty) {
+	return getZoomForAutoscaleProperty(nativeDeviceZoom, autoScaleProperty);
+}
+
 public static void setDeviceZoom (int nativeDeviceZoom) {
 	DPIUtil.nativeDeviceZoom = nativeDeviceZoom;
 	int deviceZoom = getZoomForAutoscaleProperty (nativeDeviceZoom);
@@ -628,6 +644,10 @@ public static boolean useCairoAutoScale() {
 }
 
 public static int getZoomForAutoscaleProperty (int nativeDeviceZoom) {
+	return getZoomForAutoscaleProperty(nativeDeviceZoom, autoScaleValue);
+}
+
+private static int getZoomForAutoscaleProperty (int nativeDeviceZoom, String autoScaleValue) {
 	int zoom = 0;
 	if (autoScaleValue != null) {
 		if ("false".equalsIgnoreCase (autoScaleValue)) {

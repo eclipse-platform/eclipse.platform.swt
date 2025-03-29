@@ -13,15 +13,15 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.DirectoryDialog;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.DirectoryDialog
@@ -31,7 +31,7 @@ import org.junit.Test;
 public class Test_org_eclipse_swt_widgets_DirectoryDialog extends Test_org_eclipse_swt_widgets_Dialog {
 
 @Override
-@Before
+@BeforeEach
 public void setUp() {
 	super.setUp();
 	dirDialog = new DirectoryDialog(shell, SWT.NULL);
@@ -41,12 +41,7 @@ public void setUp() {
 @Test
 public void test_ConstructorLorg_eclipse_swt_widgets_Shell() {
 	new DirectoryDialog(shell);
-	try {
-		new DirectoryDialog(null);
-		fail("No exception thrown for null parent");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class,()-> new DirectoryDialog(null),"No exception thrown for null parent");
 }
 
 @Test
@@ -57,29 +52,25 @@ public void test_open() {
 
 @Test
 public void test_setFilterPathLjava_lang_String() {
-	assertTrue(":1:", dirDialog.getFilterPath() == "");
+	assertTrue(dirDialog.getFilterPath() == "");
 	String testStr = "./*";
 	dirDialog.setFilterPath(testStr);
-	assertEquals(":2:", testStr, dirDialog.getFilterPath());
+	assertEquals(testStr, dirDialog.getFilterPath());
 	dirDialog.setFilterPath("");
-	assertTrue(":3:", dirDialog.getFilterPath().isEmpty());
+	assertTrue(dirDialog.getFilterPath().isEmpty());
 	dirDialog.setFilterPath(null);
-	assertNull(":4:", dirDialog.getFilterPath());
+	assertNull(dirDialog.getFilterPath());
 }
 
 @Test
 public void test_setMessageLjava_lang_String() {
-	assertTrue(":1:", dirDialog.getMessage() == "");
+	assertTrue( dirDialog.getMessage() == "");
 	String testStr = "test string";
 	dirDialog.setMessage(testStr);
-	assertEquals(":2:", testStr, dirDialog.getMessage());
+	assertEquals(testStr, dirDialog.getMessage());
 	dirDialog.setMessage("");
-	assertTrue(":3:", dirDialog.getMessage().isEmpty());
-	try {
-		dirDialog.setMessage(null);
-		fail ("null argument did not throw IllegalArgumentException");
-	} catch (IllegalArgumentException e) {
-	}
+	assertTrue(dirDialog.getMessage().isEmpty());
+	assertThrows(IllegalArgumentException.class,()->dirDialog.setMessage(null),"null argument did not throw IllegalArgumentException");
 }
 
 /* custom */

@@ -112,7 +112,7 @@ public class Bug497705_setBoundsAfterSetVisible {
 		testControl.setVisible(true);
 		shell.open(); for (int i = 0; i < 500; i++) display.readAndDispatch();
 
-		bounds = testControl.getBounds(); // Visually looks ok. (width/height), but programatically incorrect getBounds().
+		bounds = testControl.getBounds(); // Visually looks ok. (width/height), but programmatically incorrect getBounds().
 		verifyBounds();
 	}
 

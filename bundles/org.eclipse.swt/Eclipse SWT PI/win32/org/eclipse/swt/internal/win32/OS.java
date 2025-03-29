@@ -1248,6 +1248,7 @@ public class OS extends C {
 	public static final int SM_CYFOCUSBORDER = 84;
 	public static final int SM_CYHSCROLL = 0x3;
 	public static final int SM_CYMENU = 0xf;
+	public static final int SM_CYMENUCHECK = 72;
 	public static final int SM_CXMINTRACK = 34;
 	public static final int SM_CYMINTRACK = 35;
 	public static final int SM_CXMAXTRACK = 59;
@@ -2300,6 +2301,11 @@ public static final void setTheme(boolean isDarkTheme) {
 public static final boolean SetWindowText (long hWnd, TCHAR lpString) {
 	char [] lpString1 = lpString == null ? null : lpString.chars;
 	return SetWindowText (hWnd, lpString1);
+}
+
+public static final int SHDefExtractIcon (TCHAR lpszFile, int iIndex, int uFlags, long [] phiconLarge, long [] phiconSmall, int nIconSize) {
+	char [] lpszFile1 = lpszFile == null ? null : lpszFile.chars;
+	return SHDefExtractIcon (lpszFile1, iIndex, uFlags, phiconLarge, phiconSmall, nIconSize);
 }
 
 public static final boolean UnregisterClass (TCHAR lpClassName, long hInstance) {
@@ -4455,6 +4461,12 @@ public static final native long SetWindowsHookEx (int idHook, long lpfn,  long h
  * @param lpXform cast=(XFORM *),flags=no_out
  */
 public static final native boolean SetWorldTransform(long hdc, float[] lpXform);
+/**
+ * @param lpszFile cast=(LPWSTR)
+ * @param phiconLarge cast=(HICON FAR *)
+ * @param phiconSmall cast=(HICON FAR *)
+ */
+public static final native int SHDefExtractIcon (char [] lpszFile, int iIndex, int uFlags, long [] phiconLarge, long [] phiconSmall, int nIconSize);
 /** @param pszPath cast=(LPCWSTR),flags=no_out */
 public static final native long SHGetFileInfo (char [] pszPath, int dwFileAttributes, SHFILEINFO psfi, int cbFileInfo, int uFlags);
 public static final native boolean ShellExecuteEx (SHELLEXECUTEINFO lpExecInfo);

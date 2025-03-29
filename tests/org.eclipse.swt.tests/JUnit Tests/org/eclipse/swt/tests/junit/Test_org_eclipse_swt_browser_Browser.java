@@ -131,8 +131,6 @@ public class Test_org_eclipse_swt_browser_Browser extends Test_org_eclipse_swt_w
 	Browser browser;
 	boolean isEdge = false;
 
-	static int[] webkitGtkVersionInts = new int[3];
-
 	/** Accumiliate logs, print only if test case fails. Cleared for each test case. */
 	StringBuilder testLog;
 	private void testLogAppend(String msg) {
@@ -438,9 +436,6 @@ public void test_evalute_Cookies () {
 
 @Test
 public void test_ClearAllSessionCookies () {
-	// clearSessions will only work for Webkit2 when >= 2.16
-	assumeTrue(webkitGtkVersionInts[1] >= 16);
-
 	final AtomicBoolean loaded = new AtomicBoolean(false);
 	browser.addProgressListener(ProgressListener.completedAdapter(event -> loaded.set(true)));
 
@@ -470,8 +465,6 @@ public void test_ClearAllSessionCookies () {
 
 @Test
 public void test_get_set_Cookies() {
-	// set/get cookies will only work for WebKit2.20+
-	assumeTrue(webkitGtkVersionInts[1] >= 20);
 	final AtomicBoolean loaded = new AtomicBoolean(false);
 	browser.addProgressListener(ProgressListener.completedAdapter(event -> loaded.set(true)));
 
@@ -1176,9 +1169,10 @@ public void test_setTextContainingScript_applicationLayerProgressListenerMustSee
 				</body>
 			</html>
 			""");
-	waitForPassCondition(completed::get);
-	waitForPassCondition(() -> title.get() != null);
-	assertEquals("ProgressListener: Found 1 h1 tag(s)", title.get());
+	assertTrue("progress completion not reported", waitForPassCondition(completed::get));
+	assertTrue("title not set", waitForPassCondition(() -> title.get() != null));
+	assertTrue(
+			"unexpected title: " + title.get(), waitForPassCondition(() -> title.get().contains("ProgressListener: Found 1 h1 tag(s)")));
 }
 
 @Test

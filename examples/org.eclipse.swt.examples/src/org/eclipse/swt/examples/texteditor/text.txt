@@ -5381,7 +5381,7 @@ void handleTextChanging(TextChangingEvent event) {
 	if (caretOffset > newEndOfText) caretOffset = newEndOfText;
 }
 /**
- * Called when the widget content is set programatically, overwriting 
+ * Called when the widget content is set programmatically, overwriting
  * the old content. Resets the caret position, selection and scroll offsets. 
  * Recalculates the content width and scroll bars. Redraws the widget.
  * <p>

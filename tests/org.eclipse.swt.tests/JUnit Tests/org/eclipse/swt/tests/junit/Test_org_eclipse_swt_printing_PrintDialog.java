@@ -13,12 +13,12 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.printing.PrintDialog;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.printing.PrintDialog
@@ -28,7 +28,7 @@ import org.junit.Test;
 public class Test_org_eclipse_swt_printing_PrintDialog extends Test_org_eclipse_swt_widgets_Dialog {
 
 @Override
-@Before
+@BeforeEach
 public void setUp() {
 	super.setUp();
 	printDialog = new PrintDialog(shell, SWT.NONE);
@@ -39,24 +39,14 @@ public void setUp() {
 public void test_ConstructorLorg_eclipse_swt_widgets_Shell() {
 	new PrintDialog(shell);
 
-	try {
-		new PrintDialog(null);
-		fail("No exception thrown for parent == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, ()	-> new PrintDialog(null),"No exception thrown for parent == null");
 }
 
 @Test
 public void test_ConstructorLorg_eclipse_swt_widgets_ShellI() {
 	new PrintDialog(shell, SWT.NONE);
 
-	try {
-		new PrintDialog(null, SWT.NONE);
-		fail("No exception thrown for parent == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, ()	-> new PrintDialog(null, SWT.NONE),"No exception thrown for parent == null");
 }
 
 /* custom */

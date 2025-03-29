@@ -14,20 +14,12 @@
 package org.eclipse.swt.tests.junit;
 
 
-import org.eclipse.test.TracingSuite;
-import org.eclipse.test.TracingSuite.TracingOptions;
-import org.junit.runner.JUnitCore;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import org.junit.platform.suite.api.SelectClasses;
+import org.junit.platform.suite.api.Suite;
 
-@RunWith(TracingSuite.class)
-@TracingOptions(stackDumpTimeoutSeconds = 60)
-@Suite.SuiteClasses({
+@Suite
+@SelectClasses({
 	Test_org_eclipse_swt_browser_Browser.class,
 })
 public class AllBrowserTests {
-
-public static void main(String[] args) {
-	JUnitCore.main(AllBrowserTests.class.getName());
-}
 }

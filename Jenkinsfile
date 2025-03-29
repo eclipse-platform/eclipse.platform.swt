@@ -42,8 +42,8 @@ def runOnNativeBuildAgent(String platform, Closure body) {
 	}
 }
 
-/** Returns the download URL of the JDK against whoose C headers (in the 'include/' folder) and native libaries the SWT natives are compiled.*/
-def getNativeJdkUrl(String os, String arch){ // To update the used JDK version update the URL template below
+/** Returns the download URL of the JDK against whose C headers (in the 'include/' folder) and native libraries the SWT natives are compiled.*/
+def getNativeJdkUrl(String os, String arch) { // To update the used JDK version update the URL template below
 	if('win32'.equals(os) && 'aarch64'.equals(arch)) {
 		// Temporary workaround until there are official Temurin GA releases for Windows on ARM that can be consumed through JustJ
 		dir("${WORKSPACE}/repackage-win32.aarch64-jdk") {
@@ -82,7 +82,7 @@ def getSWTVersions() { // must be called from the repository root
 	return props
 }
 
-boolean NATIVES_CHANGED = false
+def Set NATIVES_CHANGED = []
 
 pipeline {
 	options {
@@ -103,7 +103,9 @@ pipeline {
 		PR_VALIDATION_BUILD = "true"
 	}
 	parameters {
-		booleanParam(name: 'forceNativeBuilds', defaultValue: false, description: 'Forces to run the native builds of swt\'s binaries. Will push the built binaries to the master branch, unless \'skipCommit\' is set. Useful in debugging.')
+		booleanParam(name: 'forceNativeBuilds-cocoa', defaultValue: false, description: 'Enforce a re-build of SWT\'s native binaries for Mac OS X. Will push the built binaries to the master branch, unless \'skipCommit\' is set.')
+		booleanParam(name: 'forceNativeBuilds-gtk', defaultValue: false, description: 'Enforce a re-build of SWT\'s native binaries for Linux. Will push the built binaries to the master branch, unless \'skipCommit\' is set.')
+		booleanParam(name: 'forceNativeBuilds-win32', defaultValue: false, description: 'Enforce a re-build of SWT\'s native binaries for Windows. Will push the built binaries to the master branch, unless \'skipCommit\' is set.')
 		booleanParam(name: 'skipCommit', defaultValue: false, description: 'Stops committing to swt and swt binaries repo at the end. Useful in debugging.')
 	}
 	stages {
@@ -141,9 +143,10 @@ pipeline {
 						git config --global user.name 'Eclipse Releng Bot'
 					'''
 					script {
+						def allWS = ['cocoa', 'gtk', 'win32']
+						def libraryFilePattern = [ 'cocoa' : 'libswt-*.jnilib', 'gtk' : 'libswt-*.so', 'win32' : 'swt-*.dll' ]
 						def swtTag = getLatestGitTag()
 						echo "Current tag=${swtTag}."
-						boolean nativesChanged = false
 						dir('bundles/org.eclipse.swt') {
 							// Verify preprocessing is completed
 							sh '''
@@ -154,34 +157,42 @@ pipeline {
 							'''
 							def sourceFoldersProps = readProperties(file: 'nativeSourceFolders.properties')
 							def sources = sourceFoldersProps.collectEntries{ k, src -> [ k, src.split(',').collect{ f -> '\'' + f + '\''}.join(' ') ] }
-							def diff = sh(script: "git diff HEAD ${swtTag} ${sources.values().join(' ')}", returnStdout: true)
-							nativesChanged = !diff.strip().isEmpty()
-							echo "Natives changed since ${swtTag}: ${nativesChanged}"
+							for(ws in allWS) {
+								def diff = sh(script: "git diff HEAD ${swtTag} ${sources.src_common} ${sources['src_' + ws]}", returnStdout: true)
+								if (!diff.strip().isEmpty()) {
+									NATIVES_CHANGED += ws
+								}
+							}
+							echo "Natives changed since ${swtTag}: ${NATIVES_CHANGED.isEmpty() ? 'None': NATIVES_CHANGED}"
 						}
-						if (nativesChanged || params.forceNativeBuilds) {
-							NATIVES_CHANGED = true
-							def swtVersions = getSWTVersions()
-							withEnv(['swt_version='+swtVersions['swt_version'], 'new_version='+swtVersions['new_version'], 'rev='+swtVersions['rev'], 'new_rev='+swtVersions['new_rev'],
-									'comma_ver='+swtVersions['comma_ver'], "new_comma_ver=${swtVersions['maj_ver']},${swtVersions['min_ver']},${swtVersions['new_rev']},0" ]) {
-								sh '''
+						NATIVES_CHANGED += allWS.findAll{ ws -> params[ 'forceNativeBuilds-' + ws] }
+						if (!NATIVES_CHANGED.isEmpty()) {
+							def versions = getSWTVersions()
+								sh """
+									echo "Incrementing version from ${versions.swt_version} to ${versions.new_version}"
+									sed -i -e "s/REVISION = ${versions.rev}/REVISION = ${versions.new_rev}/g" \
+										'bundles/org.eclipse.swt/Eclipse SWT PI/common/org/eclipse/swt/internal/Library.java'
+									sed -i -e "s/rev=${versions.rev}/rev=${versions.new_rev}/g" \
+										'bundles/org.eclipse.swt/Eclipse SWT/common/library/make_common.mak'
+								"""
+							for(ws in allWS) {
+								if (NATIVES_CHANGED.contains(ws)) {
+								sh """
 									# Delete native binaries to be replaced by subsequent binaries build
-									rm binaries/org.eclipse.swt.gtk.*/libswt-*.so
-									rm binaries/org.eclipse.swt.win32.*/swt-*.dll
-									rm binaries/org.eclipse.swt.cocoa.*/libswt-*.jnilib
-									
-									echo "Incrementing version from ${swt_version} to ${new_version}; new comma_ver=${new_comma_ver}"
-									
-									libraryFile='bundles/org.eclipse.swt/Eclipse SWT PI/common/org/eclipse/swt/internal/Library.java'
-									sed -i -e "s/REVISION = ${rev}/REVISION = ${new_rev}/g" "$libraryFile"
-									
-									commonMakeFile='bundles/org.eclipse.swt/Eclipse SWT/common/library/make_common.mak'
-									sed -i -e "s/rev=${rev}/rev=${new_rev}/g" "$commonMakeFile"
-									sed -i -e "s/comma_ver=${comma_ver}/comma_ver=${new_comma_ver}/g" "$commonMakeFile"
-								'''
+									rm binaries/org.eclipse.swt.${ws}.*/${libraryFilePattern[ws]}
+								"""
+								} else {
+									// Just rename existing native library files to new revision instead of rebuilding them
+									sh """
+										for f in binaries/org.eclipse.swt.${ws}.*/${libraryFilePattern[ws]}; do
+											mv "\$f" "\$(echo \$f | sed 's/-${ws}-${versions.swt_version}/-${ws}-${versions.new_version}/g')"
+										done
+									"""
+								}
 							}
 							// Collect SWT-native's sources
 							dir('bundles/org.eclipse.swt') {
-								for (ws in ['cocoa', 'gtk', 'win32']) {
+								for (ws in NATIVES_CHANGED) {
 									sh "java -Dws=${ws} build-scripts/CollectSources.java -nativeSources 'target/natives-build-temp/${ws}'"
 									dir("target/natives-build-temp/${ws}") {
 										stash(name:"swt.binaries.sources.${ws}")
@@ -213,8 +224,14 @@ pipeline {
 						'win32.win32.x86_64'
 					}
 				}
+				when {
+					expression {
+						def (ws, os, arch) = env.PLATFORM.split('\\.')
+						return NATIVES_CHANGED.any{ w -> ws.startsWith(w)} // handle also dedicated gtk4 build
+					}
+				}
 				stages {
-					stage('Build SWT-natives') {
+					stage('Initiate native build') {
 						options {
 							timeout(time: 120, unit: 'MINUTES') // Some build agents are rare and it might take awhile until they are available.
 						}
@@ -222,7 +239,7 @@ pipeline {
 							script {
 								def (ws, os, arch) = env.PLATFORM.split('\\.')
 								dir("jdk-download-${os}.${arch}") {
-									// Fetch the JDK, which provides the C header-files and shared native libaries, against which the natives are build.
+									// Fetch the JDK, which provides the C header-files and shared native libraries, against which the natives are build.
 									sh "curl ${getNativeJdkUrl(os, arch)} | tar -xzf - include/ lib/"
 									stash name:"jdk.resources.${os}.${arch}", includes: "include/,lib/"
 									deleteDir()
@@ -235,7 +252,7 @@ pipeline {
 										unstash "jdk.resources.${os}.${arch}"
 									}
 									withEnv(['MODEL=' + arch, "OUTPUT_DIR=${WORKSPACE}/libs", "SWT_JAVA_HOME=${WORKSPACE}/jdk.resources"]) {
-										if (isUnix()){
+										if (isUnix()) {
 											sh '''#!/bin/bash -x
 												mkdir libs
 												if [[ ${PLATFORM} == gtk.linux.* ]]; then
@@ -344,12 +361,16 @@ pipeline {
 			}
 			post {
 				always {
-					junit 'eclipse.platform.swt/tests/*.test*/target/surefire-reports/*.xml'
-					archiveArtifacts artifacts: '**/*.log,*/binaries/*/target/*.jar', excludes: '**/*-sources.jar'
+					junit allowEmptyResults: true, testResults: 'eclipse.platform.swt/tests/*.test*/target/surefire-reports/*.xml'
+					archiveArtifacts allowEmptyArchive: true, artifacts: '**/*.log,*/binaries/*/target/*.jar', excludes: '**/*-sources.jar'
 					discoverGitReferenceBuild referenceJob: 'eclipse.platform.swt/master'
 					// To accept unstable builds (test errors or new warnings introduced by third party changes) as reference using "ignoreQualityGate:true"
-					recordIssues publishAllIssues: true, ignoreQualityGate:true, tools: [eclipse(name: 'Compiler and API Tools', pattern: '**/target/compilelogs/*.xml'), javaDoc()], qualityGates: [[threshold: 1, type: 'DELTA', unstable: true]]
-					recordIssues publishAllIssues: true, ignoreQualityGate:true, tool: mavenConsole(), qualityGates: [[threshold: 1, type: 'DELTA_ERROR', unstable: true]]
+					recordIssues enabledForFailure: true, publishAllIssues: true, ignoreQualityGate: true, tools: [
+							eclipse(name: 'Compiler', pattern: '**/target/compilelogs/*.xml'),
+							issues(name: 'API Tools', id: 'apitools', pattern: '**/target/apianalysis/*.xml'),
+							javaDoc()
+						], qualityGates: [[threshold: 1, type: 'DELTA', unstable: true]]
+					recordIssues enabledForFailure: true, publishAllIssues: true, ignoreQualityGate:true, tool: mavenConsole(), qualityGates: [[threshold: 1, type: 'DELTA_ERROR', unstable: true]]
 				}
 			}
 		}

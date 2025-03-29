@@ -226,6 +226,9 @@ public static final native void soup_uri_free(long uri);
 /** @method flags=dynamic */
 public static final native long soup_uri_new(byte[] uri_string);
 
+/** @method flags=dynamic */
+public static final native int soup_get_major_version();
+
 /* --------------------- start WebKitGTK natives --------------------- */
 
 /** @method flags=dynamic */

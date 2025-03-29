@@ -280,7 +280,7 @@ static void swt_fixed_class_init (SwtFixedClass *class) {
 	gobject_class->get_property = swt_fixed_get_property;
 	gobject_class->finalize = swt_fixed_finalize;
 
-	/* Scrollable implemetation */
+	/* Scrollable implementation */
 	g_object_class_override_property (gobject_class, PROP_HADJUSTMENT,    "hadjustment");
 	g_object_class_override_property (gobject_class, PROP_VADJUSTMENT,    "vadjustment");
 	g_object_class_override_property (gobject_class, PROP_HSCROLL_POLICY, "hscroll-policy");

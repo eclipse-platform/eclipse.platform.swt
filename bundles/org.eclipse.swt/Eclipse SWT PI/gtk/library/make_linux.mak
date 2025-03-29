@@ -100,12 +100,12 @@ WEBKIT_OBJECTS = swt.o webkitgtk.o webkitgtk_structs.o webkitgtk_stats.o webkitg
 GLX_OBJECTS = swt.o glx.o glx_structs.o glx_stats.o
 
 CFLAGS := $(CFLAGS) \
-		-DSWT_VERSION=$(SWT_VERSION) \
 		$(SWT_DEBUG) \
 		$(SWT_WEBKIT_DEBUG) \
 		-DLINUX -DGTK \
 		-I$(SWT_JAVA_HOME)/include \
 		-I$(SWT_JAVA_HOME)/include/linux \
+		-std=gnu17 \
 		${SWT_PTR_CFLAGS}
 LFLAGS = -shared -fPIC ${SWT_LFLAGS}
 

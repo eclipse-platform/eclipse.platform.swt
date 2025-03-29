@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2023 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2009, 2025 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -37,6 +37,7 @@ typedef enum {
 	soup_1cookie_1get_1name_FUNC,
 	soup_1cookie_1get_1value_FUNC,
 	soup_1cookie_1parse_FUNC,
+	soup_1get_1major_1version_FUNC,
 	soup_1message_1headers_1append_FUNC,
 	soup_1uri_1free_FUNC,
 	soup_1uri_1new_FUNC,

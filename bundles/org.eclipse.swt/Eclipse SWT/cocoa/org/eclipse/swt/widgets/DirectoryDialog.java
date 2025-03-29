@@ -195,7 +195,7 @@ public Optional<String> openDialog () {
 	directoryPath = null;
 	panel = NSOpenPanel.openPanel();
 	if (panel == null) {
-		return null;
+		throw new SWTException(SWT.ERROR_INVALID_RETURN_VALUE);
 	}
 
 	callback_performKeyEquivalent = new Callback(this, "_performKeyEquivalent", 3);

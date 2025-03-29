@@ -1249,7 +1249,11 @@ void init(int width, int height) {
 	this.type = SWT.BITMAP;
 
 	/* Create the pixmap */
-	surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_ARGB32, width, height);
+	if (GTK.GTK4) {
+		surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_RGB24, width, height);
+	} else {
+		surface = GDK.gdk_window_create_similar_surface(GDK.gdk_get_default_root_window(), Cairo.CAIRO_CONTENT_COLOR, width, height);
+	}
 	if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	// When we create a blank image we need to set it to 100 in GTK3 as we draw using 100% scale.
 	// Cairo will take care of scaling for us when image needs to be scaled.
@@ -1445,8 +1449,8 @@ public long internal_new_GC (GCData data) {
 			}
 		}
 		data.device = device;
-		data.foregroundRGBA = device.COLOR_BLACK.handle;
-		data.backgroundRGBA = device.COLOR_WHITE.handle;
+		data.foregroundRGBA = Device.COLOR_BLACK.handle;
+		data.backgroundRGBA = Device.COLOR_WHITE.handle;
 		data.font = device.systemFont;
 		data.image = this;
 	}

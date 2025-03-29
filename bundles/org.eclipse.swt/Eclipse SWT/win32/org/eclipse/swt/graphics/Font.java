@@ -67,7 +67,7 @@ public final class Font extends Resource {
  */
 Font(Device device) {
 	super(device);
-	this.zoom = extractZoom(this.device);
+	this.zoom = DPIUtil.getNativeDeviceZoom();
 	this.fontHeight = 0;
 }
 
@@ -100,7 +100,7 @@ private Font(Device device, long handle, int zoom) {
  */
 public Font(Device device, FontData fd) {
 	super(device);
-	this.zoom = extractZoom(this.device);
+	this.zoom = DPIUtil.getNativeDeviceZoom();
 	init(fd);
 	this.fontHeight = fd.height;
 	init();
@@ -146,7 +146,7 @@ public Font(Device device, FontData[] fds) {
 	for (FontData fd : fds) {
 		if (fd == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	this.zoom = extractZoom(this.device);
+	this.zoom = DPIUtil.getNativeDeviceZoom();
 	FontData fd = fds[0];
 	init(fds[0]);
 	this.fontHeight = fd.height;
@@ -180,7 +180,7 @@ public Font(Device device, FontData[] fds) {
 public Font(Device device, String name, int height, int style) {
 	super(device);
 	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.zoom = extractZoom(this.device);
+	this.zoom = DPIUtil.getNativeDeviceZoom();
 	init(new FontData (name, height, style));
 	this.fontHeight = height;
 	init();
@@ -189,7 +189,7 @@ public Font(Device device, String name, int height, int style) {
 /*public*/ Font(Device device, String name, float height, int style) {
 	super(device);
 	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.zoom = extractZoom(this.device);
+	this.zoom = DPIUtil.getNativeDeviceZoom();
 	init(new FontData (name, height, style));
 	this.fontHeight = height;
 	init();
@@ -294,13 +294,6 @@ public String toString () {
 	return "Font {" + handle + "}";
 }
 
-private static int extractZoom(Device device) {
-	if (device == null) {
-		return DPIUtil.getNativeDeviceZoom();
-	}
-	return device.getDeviceZoom();
-}
-
 /**
  * Invokes platform specific functionality to allocate a new font.
  * <p>
@@ -318,7 +311,7 @@ private static int extractZoom(Device device) {
  * @noreference This method is not intended to be referenced by clients.
  */
 public static Font win32_new(Device device, long handle) {
-	int zoom = extractZoom(device);
+	int zoom = DPIUtil.getNativeDeviceZoom();
 	return win32_new(device, handle, zoom);
 }
 

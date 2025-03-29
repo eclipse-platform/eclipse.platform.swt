@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2022 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2009, 2025 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -303,6 +303,26 @@ JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(soup_1cookie_1parse)
 fail:
 	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	WebKitGTK_NATIVE_EXIT(env, that, soup_1cookie_1parse_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_soup_1get_1major_1version
+JNIEXPORT jint JNICALL WebKitGTK_NATIVE(soup_1get_1major_1version)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, soup_1get_1major_1version_FUNC);
+/*
+	rc = (jint)soup_get_major_version();
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, soup_get_major_version)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)())fp)();
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, soup_1get_1major_1version_FUNC);
 	return rc;
 }
 #endif

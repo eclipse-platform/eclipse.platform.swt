@@ -1410,6 +1410,14 @@ public static final native long g_value_peek_pointer(long value);
  * @param variable cast=(const gchar *),flags=no_out
  */
 public static final native void g_unsetenv(byte [] variable);
+
+/**
+ * @method flags=dynamic
+ * @param uri_string cast=(const gchar *)
+ * @param flags
+ * @param error cast=(GError **)
+ */
+public static final native long g_uri_parse (byte[] uri_string,  long flags, long[] error);
 /** @method flags=const */
 public static final native int glib_major_version();
 /** @method flags=const */

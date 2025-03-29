@@ -24,30 +24,3 @@ You need to install the following on your system:
 Import and build the SWT project `bundles/org.eclipse.swt` and `binaries/org.eclipse.swt.win32.win32.${arch}` in Eclipse.
 
 See **Building and Testing locally** in [Readme.md](Readme.md) for further instructions.
-
-## (More advanced) (Optional) Building Webkit
-Note, I.E is the default backend. But Webkit is also a possible alternative Browser backend.
-
-Disclaimer:
-
-Note Webkit SDKs are an older version being consumed by SWT native build process and Webkit build binaries are no more available for download in public Webkit download page (https://webkit.org/downloads/)
-
-But WebKit-r72896 sources are still avilable for download via either of:
-https://builds-nightly.webkit.org/files/trunk/src/WebKit-r72896.tar.bz2  
-http://build.eclipse.org/eclipse/swt/WebKit-r72896.tar.bz2  
-
-Webkit SDKs:  
-
-* WebKit-r72896 http://build.eclipse.org/eclipse/swt/WebKit-r72896.zip
-* WebKitSupportLibrary http://build.eclipse.org/eclipse/swt/WebKitSupportLibrary.zip
-
-
-Steps:  
-
-* Create an SWT Build dir such as `C:\SWT_BUILD_DIR`
-* In your enviornment:  
-    `set SWT_BUILD_DIR=YOUR.DIR`
-* Unzip two Webkit SDks into:  
-  - `SWT_BUILD_DIR\Webkit\r72896`  
-  - `SWT_BLUID_DIR\Webkit\SupportLibrary`  
-  - (Note: SWT's Webkit support exists for SWT 32bit on Windows, so Webkit SDKs are consumed only by the SWT 32bit build process)

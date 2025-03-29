@@ -15,13 +15,13 @@
 package org.eclipse.swt.tests.junit;
 
 import static org.eclipse.swt.tests.junit.SwtTestUtil.assertSWTProblem;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
@@ -46,10 +46,9 @@ import org.eclipse.swt.widgets.Monitor;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Synchronizer;
 import org.eclipse.test.Screenshots;
-import org.junit.Assume;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
+import org.junit.jupiter.api.condition.DisabledOnOs;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Display
@@ -64,9 +63,6 @@ private static boolean isRunningOnEclipseOrgHudson =
 		|| "genie.platform".equalsIgnoreCase(System.getProperty("user.name"));
 
 private static final boolean BUG_492569 = SwtTestUtil.isWindows && isRunningOnEclipseOrgHudson;
-
-@Rule
-public TestName testName = new TestName();
 
 @Test
 public void test_Constructor() {
@@ -144,8 +140,8 @@ public void test_addListenerILorg_eclipse_swt_widgets_Listener() {
 	} finally {
 		display.close();
 	}
-	assertFalse(":a:", callbackReceived[CLOSE_CALLBACK]);
-	assertTrue(":b:", callbackReceived[DISPOSE_CALLBACK]);
+	assertFalse(callbackReceived[CLOSE_CALLBACK]);
+	assertTrue(callbackReceived[DISPOSE_CALLBACK]);
 
 	display = new Display();
 	try {
@@ -153,7 +149,7 @@ public void test_addListenerILorg_eclipse_swt_widgets_Listener() {
 	} finally {
 		display.close();
 	}
-	assertTrue(":c:", callbackReceived[CLOSE_CALLBACK]);
+	assertTrue(callbackReceived[CLOSE_CALLBACK]);
 }
 
 @Test
@@ -250,10 +246,10 @@ public void test_disposeExecLjava_lang_Runnable() {
 	Display testDisplay = new Display();
 	disposeExecRan = false;
 	testDisplay.disposeExec(() -> disposeExecRan = true);
-	assertEquals("Display should not be disposed", false, testDisplay.isDisposed());
+	assertFalse(testDisplay.isDisposed(), "Display should not be disposed");
 	testDisplay.dispose();
-	assertTrue("Display should be disposed", testDisplay.isDisposed());
-	assertTrue("DisposeExec Runnable did not run", disposeExecRan);
+	assertTrue(testDisplay.isDisposed(), "Display should be disposed");
+	assertTrue(disposeExecRan, "DisposeExec Runnable did not run");
 }
 
 @Test
@@ -268,9 +264,8 @@ public void test_findDisplayLjava_lang_Thread() {
 	}
 }
 
-@Test
+@Test @DisabledOnOs(value=org.junit.jupiter.api.condition.OS.MAC, disabledReason = "Test fails on Mac: Bug 536564" )
 public void test_getActiveShell() {
-	Assume.assumeFalse("Test fails on Mac: Bug 536564", SwtTestUtil.isCocoa);
 	Display display = new Display();
 	try {
 		Shell shell = new Shell(display);
@@ -372,8 +367,7 @@ public void test_getDismissalAlignment() {
 	Display display = new Display();
 	try {
 		int alignment = display.getDismissalAlignment();
-		assertTrue("getDismissalAlignment should return SWT.LEFT or SWT.RIGHT",
-			alignment == SWT.LEFT || alignment == SWT.RIGHT);
+		assertTrue(alignment == SWT.LEFT || alignment == SWT.RIGHT, "getDismissalAlignment should return SWT.LEFT or SWT.RIGHT");
 	} finally {
 		display.dispose();
 	}
@@ -416,9 +410,9 @@ public void test_getMonitors() {
 	Display display = new Display();
 	Monitor[] monitors = display.getMonitors();
 	assertNotNull(monitors);
-	assertTrue("at least one monitor should be returned", monitors.length >= 1);
+	assertTrue(monitors.length >= 1, "at least one monitor should be returned");
 	for (int i = 0; i < monitors.length; i++)
-		assertNotNull("monitor at index "+i+" should not be null", monitors[i]);
+		assertNotNull(monitors[i], "monitor at index "+i+" should not be null");
 	display.dispose();
 }
 
@@ -1103,7 +1097,7 @@ public void test_postLorg_eclipse_swt_widgets_Event() {
 		event = new Event();
 		event.type = SWT.KeyDown;
 		event.keyCode = -1;  // bogus key code; default 0 character
-		assertTrue("Display#post failed, probably because screen is not rendered (bug 407862)", display.post(event));  //$NON-NLS-1$
+		assertTrue(display.post(event), "Display#post failed, probably because screen is not rendered (bug 407862)");  //$NON-NLS-1$
 		// don't test KeyDown/KeyUp with a character to avoid sending to
 		// random window if test shell looses focus
 
@@ -1237,7 +1231,7 @@ public void test_setAppNameLjava_lang_String() {
 }
 
 @Test
-public void test_setCursorLocationII() {
+public void test_setCursorLocationII(TestInfo info) {
 	Display display = new Display();
 	try {
 		// Move mouse back to original location, to prevent mouse being jerked around.
@@ -1250,11 +1244,11 @@ public void test_setCursorLocationII() {
 		Point actual = display.getCursorLocation();
 		if (!BUG_492569 && SwtTestUtil.isX11) {
 			if (!location.equals(actual)) {
-				Screenshots.takeScreenshot(getClass(), testName.getMethodName()); // Bug 528968 This call causes crash on Wayland.
+				Screenshots.takeScreenshot(getClass(), info.getDisplayName()); // Bug 528968 This call causes crash on Wayland.
 				fail("\nExpected:"+location.toString()+"  Actual:"+actual.toString());
 			}
 		} else {
-			System.out.println(getClass().getName() + "#" + testName.getMethodName() + ": actual == " + actual);
+			System.out.println(getClass().getName() + "#" + info.getDisplayName() + ": actual == " + actual);
 		}
 
 	} finally {
@@ -1263,7 +1257,7 @@ public void test_setCursorLocationII() {
 }
 
 @Test
-public void test_setCursorLocationLorg_eclipse_swt_graphics_Point() {
+public void test_setCursorLocationLorg_eclipse_swt_graphics_Point(TestInfo info) {
 	Display display = new Display();
 	try {
 		// Move mouse back to original location, to prevent mouse being jerked around.
@@ -1282,11 +1276,11 @@ public void test_setCursorLocationLorg_eclipse_swt_graphics_Point() {
 		Point actual = display.getCursorLocation();
 		if (!BUG_492569 && SwtTestUtil.isX11) {
 			if (!location.equals(actual)) {
-				Screenshots.takeScreenshot(getClass(), testName.getMethodName()); // Bug 528968 This call causes crash on Wayland.
+				Screenshots.takeScreenshot(getClass(), info.getDisplayName()); // Bug 528968 This call causes crash on Wayland.
 				fail("\nExpected:"+location.toString()+"  Actual:"+actual.toString());
 			}
 		} else {
-			System.out.println(getClass().getName() + "#" + testName.getMethodName() + ": actual == " + actual);
+			System.out.println(getClass().getName() + "#" + info.getDisplayName() + ": actual == " + actual);
 		}
 	} finally {
 		display.dispose();
@@ -1469,7 +1463,7 @@ public void test_syncCall_RuntimeException() {
 	final Display display = new Display();
 	try {
 		int depth=display.syncCall(() -> {throw new IllegalArgumentException("42");});
-		assertFalse("should not be reached "+depth, true);
+		fail("should not be reached "+depth);
 	} catch (RuntimeException e) {
 		assertEquals("42", e.getMessage());
 	} finally {
@@ -1481,7 +1475,7 @@ public void test_syncCall_Exception() {
 	final Display display = new Display();
 	try {
 		int depth=display.syncCall(() -> {throw new IOException("42");});
-		assertFalse("should not be reached "+depth, true);
+		fail("should not be reached "+depth);
 	} catch (IOException e) {
 		assertEquals("42", e.getMessage());
 	} finally {
@@ -1494,20 +1488,18 @@ public void test_syncCall_SWTException() {
 	display.dispose();
 	try {
 		int magic=display.syncCall(() -> {display.dispose(); return 42;});
-		assertFalse("should not be reached "+magic, true);
+		fail("should not be reached "+magic);
 	} catch (SWTException e) {
 		assertEquals("Device is disposed", e.getMessage());
 	}
 }
 @Test
-public void test_syncCall_concurrentCallable() {
+public void test_syncCall_concurrentCallable() throws Exception {
 	final Display display = new Display();
 	try {
 		java.util.concurrent.Callable<Integer> c=() -> {return 42;};
 		int magic=display.syncCall(c::call);
 		assertEquals(42, magic);
-	} catch (Exception e) {
-		assertFalse("should not be reached ", true);
 	} finally {
 		display.dispose();
 	}
@@ -1518,7 +1510,7 @@ public void test_syncCall_concurrentCallable_Exception() {
 	try {
 		java.util.concurrent.Callable<Integer> c=() -> {throw new IOException("42");};
 		int depth=display.syncCall(c::call);
-		assertFalse("should not be reached "+depth, true);
+		fail("should not be reached "+depth);
 	} catch (Exception e) {
 		assertEquals("42", e.getMessage());
 	} finally {
@@ -1560,7 +1552,7 @@ public void test_timerExecILjava_lang_Runnable() {
 		}
 
 		// Verify the timerExec with less than zero milliseconds didn't execute.
-		assertFalse("< 0 ms timer did execute", timerExecRan[0]);
+		assertFalse(timerExecRan[0], "< 0 ms timer did execute");
 	} finally {
 		display.dispose();
 	}
@@ -1589,8 +1581,8 @@ public void test_getDPI() {
 	Display display = new Display();
 	try {
 		Point p = display.getDPI();
-		assertTrue("horizontal DPI not greater than zero", p.x > 0);
-		assertTrue("vertical DPI not greater than zero", p.y > 0);
+		assertTrue(p.x > 0, "horizontal DPI not greater than zero" );
+		assertTrue(p.y > 0, "vertical DPI not greater than zero");
 	} finally {
 		display.dispose();
 	}
@@ -1601,7 +1593,7 @@ public void test_getDepth() {
 	Display display = new Display();
 	try {
 		int d = display.getDepth();
-		assertTrue("depth not greater than zero", d > 0);
+		assertTrue(d > 0, "depth not greater than zero" );
 	} finally {
 		display.dispose();
 	}
@@ -1612,7 +1604,7 @@ public void test_getFontListLjava_lang_StringZ() {
 	try {
 		FontData[] scalable = display.getFontList(null, true);
 		FontData[] non_scalable = display.getFontList(null, false);
-		assertTrue("no fonts detected", (scalable.length + non_scalable.length) > 0);
+		assertTrue((scalable.length + non_scalable.length) > 0, "no fonts detected");
 	} finally {
 		display.dispose();
 	}

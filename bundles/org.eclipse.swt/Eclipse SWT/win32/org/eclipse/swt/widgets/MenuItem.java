@@ -781,8 +781,7 @@ public void setImage (Image image) {
 		info.hbmpItem = OS.HBMMENU_CALLBACK;
 	} else {
 		if (OS.IsAppThemed ()) {
-			if (hBitmap != 0) OS.DeleteObject (hBitmap);
-			info.hbmpItem = hBitmap = image != null ? Display.create32bitDIB (image, getZoom()) : 0;
+			info.hbmpItem = hBitmap = getMenuItemIconBitmapHandle(image);
 		} else {
 			info.hbmpItem = image != null ? OS.HBMMENU_CALLBACK : 0;
 		}
@@ -790,6 +789,52 @@ public void setImage (Image image) {
 	long hMenu = parent.handle;
 	OS.SetMenuItemInfo (hMenu, id, false, info);
 	parent.redraw ();
+}
+
+private long getMenuItemIconBitmapHandle(Image image) {
+	if (image == null) {
+		return 0;
+	}
+	if (hBitmap != 0) OS.DeleteObject (hBitmap);
+	int zoom = adaptZoomForMenuItem(getZoom());
+	return Display.create32bitDIB (image, zoom);
+}
+
+private int adaptZoomForMenuItem(int currentZoom) {
+	int primaryMonitorZoomAtAppStartUp = getPrimaryMonitorZoomAtStartup();
+	/*
+	 * Windows has inconsistent behavior when setting the size of MenuItem image and
+	 * hence we need to adjust the size of the images as per different kind of zoom
+	 * level, i.e. full (100s), half (50s) and quarter (25s). The image size per
+	 * zoom level is also affected by the primaryMonitorZoomAtAppStartUp. The
+	 * implementation below is based on the pattern observed for all the zoom values
+	 * and what fits the best for these zoom level types.
+	 */
+	if (primaryMonitorZoomAtAppStartUp > currentZoom && isQuarterZoom(currentZoom)) {
+		return currentZoom - 25;
+	}
+	if (!isHalfZoom(primaryMonitorZoomAtAppStartUp) && isHalfZoom(currentZoom)) {
+		// Use the size recommended by System Metrics. This value only holds
+		// for this case and does not work consistently for other cases.
+		double expectedSize = getSystemMetrics(OS.SM_CYMENUCHECK);
+		return (int) ((expectedSize / image.getBounds().height) * 100);
+	}
+	return currentZoom;
+}
+
+private static boolean isHalfZoom(int zoom) {
+	return zoom % 50 == 0 && zoom % 100 != 0;
+}
+
+private static boolean isQuarterZoom(int zoom) {
+	return zoom % 10 != 0 && zoom % 25 == 0;
+}
+
+private static int getPrimaryMonitorZoomAtStartup() {
+	long hDC = OS.GetDC(0);
+	int dpi = OS.GetDeviceCaps(hDC, OS.LOGPIXELSX);
+	OS.ReleaseDC(0, hDC);
+	return DPIUtil.mapDPIToZoom(dpi);
 }
 
 /**

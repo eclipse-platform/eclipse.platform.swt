@@ -35,6 +35,7 @@ import org.eclipse.swt.widgets.*;
 class Edge extends WebBrowser {
 	static {
 		Library.loadLibrary("WebView2Loader");
+		setupLocationForCustomTextPage();
 	}
 
 	// WebView2Loader.dll compatible version. This is NOT the minimal required version.
@@ -57,7 +58,7 @@ class Edge extends WebBrowser {
 	 * by Edge browser to navigate to for setting html content in the
 	 * DOM of the browser to enable it to load local resources.
 	 */
-	private static final URI URI_FOR_CUSTOM_TEXT_PAGE = setupAndGetLocationForCustomTextPage();
+	static URI URI_FOR_CUSTOM_TEXT_PAGE;
 	private static final String ABOUT_BLANK = "about:blank";
 
 	private static final int MAXIMUM_CREATION_RETRIES = 5;
@@ -195,16 +196,14 @@ class Edge extends WebBrowser {
 		};
 	}
 
-private static URI setupAndGetLocationForCustomTextPage() {
-	URI absolutePath;
+static void setupLocationForCustomTextPage() {
 	try {
-		Path tempFile = Files.createTempFile("base", ".html");
-		absolutePath = tempFile.toUri();
+		Path tempFile = Files.createTempFile(Path.of(System.getProperty("java.io.tmpdir")), "base", ".html");
+		URI_FOR_CUSTOM_TEXT_PAGE = URI.create(tempFile.toUri().toASCIIString());
 		tempFile.toFile().deleteOnExit();
 	} catch (IOException e) {
-		absolutePath = URI.create(ABOUT_BLANK);
+		URI_FOR_CUSTOM_TEXT_PAGE = URI.create(ABOUT_BLANK);
 	}
-	return absolutePath;
 }
 
 static String wstrToString(long psz, boolean free) {
@@ -1487,7 +1486,7 @@ public void stop() {
 	webViewProvider.scheduleWebViewTask(() -> webViewProvider.getWebView(false).Stop());
 }
 
-private boolean isLocationForCustomText(String location) {
+static boolean isLocationForCustomText(String location) {
 		try {
 			return URI_FOR_CUSTOM_TEXT_PAGE.equals(new URI(location));
 		} catch (URISyntaxException e) {
@@ -1497,7 +1496,7 @@ private boolean isLocationForCustomText(String location) {
 
 @Override
 public boolean setText(String html, boolean trusted) {
-	return setWebpageData(URI_FOR_CUSTOM_TEXT_PAGE.toASCIIString(), null, null, html);
+	return setWebpageData(URI_FOR_CUSTOM_TEXT_PAGE.toString(), null, null, html);
 }
 
 private boolean setWebpageData(String url, String postData, String[] headers, String html) {

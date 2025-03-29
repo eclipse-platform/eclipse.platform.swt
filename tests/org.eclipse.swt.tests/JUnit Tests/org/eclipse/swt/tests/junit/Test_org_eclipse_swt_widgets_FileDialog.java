@@ -13,15 +13,15 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.FileDialog
@@ -31,7 +31,7 @@ import org.junit.Test;
 public class Test_org_eclipse_swt_widgets_FileDialog extends Test_org_eclipse_swt_widgets_Dialog {
 
 @Override
-@Before
+@BeforeEach
 public void setUp() {
 	super.setUp();
 	fileDialog = new FileDialog(shell, SWT.NULL);
@@ -42,12 +42,7 @@ public void setUp() {
 public void test_ConstructorLorg_eclipse_swt_widgets_Shell() {
 	// Test FileDialog(Shell)
 	new FileDialog(shell);
-	try {
-		new FileDialog(null);
-		fail("No exception thrown for parent == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class,()-> new FileDialog(null),"No exception thrown for parent == null");
 }
 
 @Test
@@ -136,14 +131,14 @@ public void test_setFilterNames$Ljava_lang_String() {
 
 @Test
 public void test_setFilterPathLjava_lang_String() {
-	assertEquals(":1:", "", fileDialog.getFilterPath());
+	assertEquals("", fileDialog.getFilterPath());
 	String testStr = "./*";
 	fileDialog.setFilterPath(testStr);
-	assertEquals(":2:", testStr, fileDialog.getFilterPath());
+	assertEquals(testStr, fileDialog.getFilterPath());
 	fileDialog.setFilterPath("");
-	assertTrue(":3:", fileDialog.getFilterPath().isEmpty());
+	assertTrue(fileDialog.getFilterPath().isEmpty());
 	fileDialog.setFilterPath(null);
-	assertNull(":4:", fileDialog.getFilterPath());
+	assertNull(fileDialog.getFilterPath());
 }
 /* custom */
 FileDialog fileDialog;
