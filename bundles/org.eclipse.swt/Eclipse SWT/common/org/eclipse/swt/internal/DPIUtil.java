@@ -605,10 +605,6 @@ public static int getDeviceZoom() {
 	return deviceZoom;
 }
 
-public static int getDeviceZoom(String autoScaleProperty) {
-	return getZoomForAutoscaleProperty(nativeDeviceZoom, autoScaleProperty);
-}
-
 public static void setDeviceZoom (int nativeDeviceZoom) {
 	DPIUtil.nativeDeviceZoom = nativeDeviceZoom;
 	int deviceZoom = getZoomForAutoscaleProperty (nativeDeviceZoom);
@@ -683,6 +679,14 @@ public static void setMonitorSpecificScaling(boolean activate) {
 public static boolean isMonitorSpecificScalingActive() {
 	boolean updateOnRuntimeValue = Boolean.getBoolean (SWT_AUTOSCALE_UPDATE_ON_RUNTIME);
 	return updateOnRuntimeValue;
+}
+
+public static String getAutoScaleValue() {
+	return autoScaleValue;
+}
+
+public static void setAutoScaleValue(String value) {
+	autoScaleValue = value;
 }
 
 public static void setAutoScaleForMonitorSpecificScaling() {
