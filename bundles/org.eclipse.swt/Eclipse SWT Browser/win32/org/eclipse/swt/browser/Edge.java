@@ -405,13 +405,14 @@ class WebViewProvider {
 	}
 
 	private WebViewWrapper getWebViewWrapper(boolean waitForPendingWebviewTasksToFinish) {
+		WebViewWrapper webViewWrapper = getWebViewWrapper();
 		if(waitForPendingWebviewTasksToFinish) {
 			processOSMessagesUntil(lastWebViewTask::isDone, exception -> {
 				lastWebViewTask.completeExceptionally(exception);
 				throw exception;
 			}, browser.getDisplay());
 		}
-		return webViewWrapperFuture.join();
+		return webViewWrapper;
 	}
 
 	private WebViewWrapper getWebViewWrapper() {
