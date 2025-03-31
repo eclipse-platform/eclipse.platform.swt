@@ -509,7 +509,7 @@ void setBackgroundPixel (int pixel) {
 @Override
 public void setFont (Font font) {
 	super.setFont (font);
-	hFont = font != null ? font.handle : 0;
+	hFont = font != null ? SWTFontProvider.getFontHandle(font, getNativeZoom()) : 0;
 	layoutItems (0, true);
 }
 

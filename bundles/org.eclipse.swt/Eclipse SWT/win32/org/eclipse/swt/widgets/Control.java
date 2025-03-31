@@ -721,7 +721,7 @@ int defaultBackground () {
 }
 
 long defaultFont() {
-	return display.getSystemFont(getNativeZoom()).handle;
+	return SWTFontProvider.getSystemFontHandle(display, getNativeZoom());
 }
 
 int defaultForeground () {
@@ -3334,7 +3334,7 @@ public void setCursor (Cursor cursor) {
 }
 
 void setDefaultFont () {
-	long hFont = display.getSystemFont (getNativeZoom()).handle;
+	long hFont = SWTFontProvider.getSystemFontHandle(display, getNativeZoom());
 	OS.SendMessage (handle, OS.WM_SETFONT, hFont, 0);
 }
 
@@ -5894,8 +5894,7 @@ private static void resizeFont(Control control, int newZoom) {
 	if (font == null) {
 		long currentFontHandle = OS.SendMessage (control.handle, OS.WM_GETFONT, 0, 0);
 		if (currentFontHandle != 0) {
-			Font newFont  = display.getSystemFont(newZoom);
-			long newFontHandle = newFont.handle;
+			long newFontHandle = SWTFontProvider.getSystemFontHandle(display, newZoom);
 			OS.SendMessage(control.handle, OS.WM_SETFONT, newFontHandle, 1);
 		}
 	} else {

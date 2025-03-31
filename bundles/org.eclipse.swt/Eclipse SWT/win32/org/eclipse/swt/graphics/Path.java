@@ -763,7 +763,7 @@ private class AddStringOperation implements Operation {
 		char[] buffer = string.toCharArray();
 		long hDC = device.internal_new_GC(null);
 		long [] family = new long [1];
-		long gdipFont = GC.createGdipFont(hDC, SWTFontProvider.getFont(device, this.fontData, zoom).handle, 0, device.fontCollection, family, null);
+		long gdipFont = GC.createGdipFont(hDC, SWTFontProvider.getFontHandle(device, this.fontData, zoom), 0, device.fontCollection, family, null);
 		PointF point = new PointF();
 		point.X = x - (Gdip.Font_GetSize(gdipFont) / 6);
 		point.Y = y;

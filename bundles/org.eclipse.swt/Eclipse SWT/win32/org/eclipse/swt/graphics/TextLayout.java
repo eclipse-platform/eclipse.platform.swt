@@ -1969,12 +1969,12 @@ long getItemFont (StyleItem item, GC gc) {
 	if (item.fallbackFont != 0) return item.fallbackFont;
 	final int zoom = getNativeZoom(gc);
 	if (item.style != null && item.style.font != null) {
-		return Font.win32_new(item.style.font, zoom).handle;
+		return SWTFontProvider.getFontHandle(item.style.font, zoom);
 	}
 	if (this.font != null) {
-		return Font.win32_new(this.font, zoom).handle;
+		return SWTFontProvider.getFontHandle(this.font, zoom);
 	}
-	return SWTFontProvider.getSystemFont(device, zoom).handle;
+	return SWTFontProvider.getSystemFontHandle(device, zoom);
 }
 
 /**
@@ -2131,15 +2131,15 @@ public FontMetrics getLineMetrics (int lineIndex) {
 	long hDC = device.internal_new_GC(null);
 	long srcHdc = OS.CreateCompatibleDC(hDC);
 	TEXTMETRIC lptm = new TEXTMETRIC();
-	Font availableFont = font != null ? font : device.systemFont;
-	OS.SelectObject(srcHdc, availableFont.handle);
+	final int zoom = getZoom();
+	long availableFont = font != null ? SWTFontProvider.getFontHandle(font, zoom) : SWTFontProvider.getSystemFontHandle(device, zoom);
+	OS.SelectObject(srcHdc, availableFont);
 	metricsAdapter.GetTextMetrics(srcHdc, lptm);
 	OS.DeleteDC(srcHdc);
 	device.internal_dispose_GC(hDC, null);
-	final int zoom = getZoom();
 	int ascentInPoints = Math.max(DPIUtil.scaleDown(this.device, lptm.tmAscent, zoom), this.ascent);
 	int descentInPoints = Math.max(DPIUtil.scaleDown(this.device, lptm.tmDescent, zoom), this.descent);
-	int leadingInPoints = DPIUtil.scaleDown(this.device, lptm.tmInternalLeading, availableFont.zoom);
+	int leadingInPoints = DPIUtil.scaleDown(this.device, lptm.tmInternalLeading, zoom);
 	if (text.length() != 0) {
 		for (StyleItem run : runs[lineIndex]) {
 			if (run.ascentInPoints > ascentInPoints) {
