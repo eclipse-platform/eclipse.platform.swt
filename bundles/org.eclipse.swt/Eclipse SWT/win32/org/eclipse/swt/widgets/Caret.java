@@ -509,7 +509,7 @@ public void setImage (Image image) {
 void setIMEFont () {
 	if (!OS.IsDBLocale) return;
 	long hFont = 0;
-	if (font != null) hFont = font.handle;
+	if (font != null) hFont = SWTFontProvider.getFontHandle(font, getNativeZoom());
 	if (hFont == 0) hFont = defaultFont ();
 	long hwnd = parent.handle;
 	long hIMC = OS.ImmGetContext (hwnd);

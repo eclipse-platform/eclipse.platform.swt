@@ -16,6 +16,7 @@ package org.eclipse.swt.internal;
 import java.util.*;
 import java.util.concurrent.*;
 
+import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
@@ -46,6 +47,10 @@ public class SWTFontProvider {
 		return getFontRegistry(device).getSystemFont(zoom);
 	}
 
+	public static long getSystemFontHandle(Device device, int zoom) {
+		return getSystemFont(device, zoom).handle;
+	}
+
 	/**
 	 * Returns the font with the given font data for the given device at the
 	 * specified zoom.
@@ -59,6 +64,17 @@ public class SWTFontProvider {
 	 */
 	public static Font getFont(Device device, FontData fontData, int zoom) {
 		return getFontRegistry(device).getFont(fontData, zoom);
+	}
+
+	public static long getFontHandle(Device device, FontData fontData, int zoom) {
+		return getFont(device, fontData, zoom).handle;
+	}
+
+	public static long getFontHandle(Font font, int zoom) {
+		if (font == null) {
+			SWT.error(SWT.ERROR_NULL_ARGUMENT);
+		}
+		return getFont(font.getDevice(), font.getFontData()[0], zoom).handle;
 	}
 
 	/**
