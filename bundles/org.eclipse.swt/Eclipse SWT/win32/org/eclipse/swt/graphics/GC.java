@@ -333,10 +333,10 @@ void checkGC(int mask) {
 			}
 		}
 		if ((state & FONT) != 0) {
-			Font font = data.font;
-			OS.SelectObject(handle, font.handle);
+			long fontHandle = SWTFontProvider.getFontHandle(data.font, data.nativeZoom);
+			OS.SelectObject(handle, fontHandle);
 			long[] hFont = new long[1];
-			long gdipFont = createGdipFont(handle, font.handle, gdipGraphics, device.fontCollection, null, hFont);
+			long gdipFont = createGdipFont(handle, fontHandle, gdipGraphics, device.fontCollection, null, hFont);
 			if (hFont[0] != 0) OS.SelectObject(handle, hFont[0]);
 			if (data.hGDIFont != 0) OS.DeleteObject(data.hGDIFont);
 			data.hGDIFont = hFont[0];
@@ -454,8 +454,8 @@ void checkGC(int mask) {
 		OS.SetTextColor(handle, data.foreground);
 	}
 	if ((state & FONT) != 0) {
-		Font font = data.font;
-		OS.SelectObject(handle, font.handle);
+		long fontHandle = SWTFontProvider.getFontHandle(data.font, data.nativeZoom);
+		OS.SelectObject(handle, fontHandle);
 	}
 }
 
@@ -2388,7 +2388,7 @@ void drawText(long gdipGraphics, String string, int x, int y, int flags, Point s
 	char[] chars = string.toCharArray();
 	long hdc = Gdip.Graphics_GetHDC(gdipGraphics);
 	long hFont = data.hGDIFont;
-	if (hFont == 0 && data.font != null) hFont = data.font.handle;
+	if (hFont == 0 && data.font != null) hFont = SWTFontProvider.getFontHandle(data.font, data.nativeZoom);
 	long oldFont = 0;
 	if (hFont != 0) oldFont = OS.SelectObject(hdc, hFont);
 	TEXTMETRIC lptm = new TEXTMETRIC();
@@ -2478,7 +2478,7 @@ RectF drawText(long gdipGraphics, char[] buffer, int start, int length, int x, i
 	}
 	long hdc = Gdip.Graphics_GetHDC(gdipGraphics);
 	long hFont = data.hGDIFont;
-	if (hFont == 0 && data.font != null) hFont = data.font.handle;
+	if (hFont == 0 && data.font != null) hFont = SWTFontProvider.getFontHandle(data.font, data.nativeZoom);
 	long oldFont = 0;
 	if (hFont != 0) oldFont = OS.SelectObject(hdc, hFont);
 	if (start != 0) {

@@ -1419,7 +1419,7 @@ LRESULT WM_GETFONT (long wParam, long lParam) {
 	if (result != null) return result;
 	long code = callWindowProc (handle, OS.WM_GETFONT, wParam, lParam);
 	if (code != 0) return new LRESULT (code);
-	return new LRESULT (font != null ? font.handle : defaultFont ());
+	return new LRESULT (font != null ? SWTFontProvider.getFontHandle(font, getNativeZoom()) : defaultFont ());
 }
 
 @Override
