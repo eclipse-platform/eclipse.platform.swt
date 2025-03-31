@@ -14,6 +14,7 @@
 package org.eclipse.swt.dnd;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.internal.win32.*;
@@ -281,16 +282,14 @@ int DragEnter_64(long pDataObject, int grfKeyState, long pt, long pdwEffect) {
 }
 
 int DragEnter(long pDataObject, int grfKeyState, int pt_x, int pt_y, long pdwEffect) {
-	int zoom = DPIUtil.getZoomForAutoscaleProperty(nativeZoom);
-	pt_x = DPIUtil.scaleDown(pt_x, zoom);// To Points
-	pt_y = DPIUtil.scaleDown(pt_y, zoom);// To Points
+	Point location = convertPixelToPoint(pt_x, pt_y);
 	selectedDataType = null;
 	selectedOperation = DND.DROP_NONE;
 	if (iDataObject != null) iDataObject.Release();
 	iDataObject = null;
 
 	DNDEvent event = new DNDEvent();
-	if (!setEventData(event, pDataObject, grfKeyState, pt_x, pt_y, pdwEffect)) {
+	if (!setEventData(event, pDataObject, grfKeyState, location.x, location.y, pdwEffect)) {
 		OS.MoveMemory(pdwEffect, new int[] {COM.DROPEFFECT_NONE}, 4);
 		return COM.S_FALSE;
 	}
@@ -349,14 +348,12 @@ int DragOver_64(int grfKeyState, long pt, long pdwEffect) {
 }
 
 int DragOver(int grfKeyState, int pt_x, int pt_y, long pdwEffect) {
-	int zoom = DPIUtil.getZoomForAutoscaleProperty(nativeZoom);
-	pt_x = DPIUtil.scaleDown(pt_x, zoom);// To Points
-	pt_y = DPIUtil.scaleDown(pt_y, zoom);// To Points
+	Point location = convertPixelToPoint(pt_x, pt_y);
 	if (iDataObject == null) return COM.S_FALSE;
 	int oldKeyOperation = keyOperation;
 
 	DNDEvent event = new DNDEvent();
-	if (!setEventData(event, iDataObject.getAddress(), grfKeyState, pt_x, pt_y, pdwEffect)) {
+	if (!setEventData(event, iDataObject.getAddress(), grfKeyState, location.x, location.y, pdwEffect)) {
 		keyOperation = -1;
 		OS.MoveMemory(pdwEffect, new int[] {COM.DROPEFFECT_NONE}, 4);
 		return COM.S_FALSE;
@@ -403,23 +400,38 @@ int Drop_64(long pDataObject, int grfKeyState, long pt, long pdwEffect) {
 	return Drop(pDataObject, grfKeyState, point.x, point.y, pdwEffect);
 }
 
+private Point convertPixelToPoint(int xInPixels, int yInPixels) {
+	if (this.control == null) {
+		// If there is no control for context, the behavior remains as before
+		int zoom = DPIUtil.getZoomForAutoscaleProperty(this.nativeZoom);
+		return DPIUtil.scaleDown(new Point(xInPixels, yInPixels), zoom);
+	}
+	int zoom = DPIUtil.getZoomForAutoscaleProperty(this.control.nativeZoom);
+	// There is no API to convert absolute values in pixels to display relative
+	// points. Therefor, the display relative pixel values are converted to control
+	// relative pixel values via Windows API. These values can be scaled down to points
+	POINT pt = new POINT ();
+	pt.x = xInPixels;  pt.y = yInPixels;
+	OS.ScreenToClient (this.control.handle, pt);
+	Point p = DPIUtil.scaleDown(new Point (pt.x, pt.y), zoom);
+	return this.control.toDisplay(p);
+}
+
 int Drop(long pDataObject, int grfKeyState, int pt_x, int pt_y, long pdwEffect) {
 	try {
-		int zoom = DPIUtil.getZoomForAutoscaleProperty(nativeZoom);
-		pt_x = DPIUtil.scaleDown(pt_x, zoom);// To Points
-		pt_y = DPIUtil.scaleDown(pt_y, zoom);// To Points
+		Point location = convertPixelToPoint(pt_x, pt_y);
 		DNDEvent event = new DNDEvent();
 		event.widget = this;
 		event.time = OS.GetMessageTime();
 		if (dropEffect != null) {
-			event.item = dropEffect.getItem(pt_x, pt_y);
+			event.item = dropEffect.getItem(location.x, location.y);
 		}
 		event.detail = DND.DROP_NONE;
 		notifyListeners(DND.DragLeave, event);
 		refresh();
 
 		event = new DNDEvent();
-		if (!setEventData(event, pDataObject, grfKeyState, pt_x, pt_y, pdwEffect)) {
+		if (!setEventData(event, pDataObject, grfKeyState, location.x, location.y, pdwEffect)) {
 			keyOperation = -1;
 			OS.MoveMemory(pdwEffect, new int[] {COM.DROPEFFECT_NONE}, 4);
 			return COM.S_FALSE;
