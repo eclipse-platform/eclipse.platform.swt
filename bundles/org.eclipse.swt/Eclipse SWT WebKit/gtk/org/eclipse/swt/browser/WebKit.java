@@ -2082,8 +2082,8 @@ public boolean setUrl (String url, String postData, String[] headers) {
 					{ // Extract result meta data
 						// Get Media Type from Content-Type
 						String content_type = conn.getContentType();
-						int paramaterSeparatorIndex = content_type.indexOf(';');
-						mime_type = paramaterSeparatorIndex > 0 ? content_type.substring(0, paramaterSeparatorIndex) : content_type;
+						int parameterSeparatorIndex = content_type.indexOf(';');
+						mime_type = parameterSeparatorIndex > 0 ? content_type.substring(0, parameterSeparatorIndex) : content_type;
 
 						// Get Encoding if defined
 						if (content_type.indexOf(';') > 0) {

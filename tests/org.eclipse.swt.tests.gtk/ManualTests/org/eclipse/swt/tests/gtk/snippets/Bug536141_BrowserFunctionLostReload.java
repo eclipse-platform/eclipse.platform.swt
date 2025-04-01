@@ -50,7 +50,7 @@ public class Bug536141_BrowserFunctionLostReload {
 
 		final Text jsConsole = new Text(shell, SWT.BORDER);
 //		jsConsole.setText("document.body.innerHTML = theJavaFunction(123, 'hello', null, true)");
-		jsConsole.setText("document.body.innerHTML = theJavaFunction()"); // Case where there are no paramaters.
+		jsConsole.setText("document.body.innerHTML = theJavaFunction()"); // Case where there are no parameters.
 		jsConsole.setSelection(jsConsole.getText().length());
 		GridData data = new GridData(SWT.FILL, SWT.BEGINNING, true, false);
 		jsConsole.setLayoutData(data);

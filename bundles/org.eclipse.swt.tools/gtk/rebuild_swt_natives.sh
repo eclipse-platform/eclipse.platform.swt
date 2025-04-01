@@ -170,7 +170,7 @@ temp_log_file="$(mktemp)"  # Keep log so we can count warnings after.
 # 'script' command logs commands and their output.
 #  This is used instead of output redirection to preserve make colouring output,
 #  while at the same time capture log for parsing.
-#  (Dev note: old 'build.sh' did not have '-gtk-all' paramater and 'install' was broken. 
+#  (Dev note: old 'build.sh' did not have '-gtk-all' parameter and 'install' was broken.
 #   For really old SWT builds, may need to manually copy '.so' files and manually specify GTK3)
 script --quiet --return --command " ./build.sh -gtk-all install" $temp_log_file   #"script" cmd preserves color coding during logging.
 if [ "$?" -ne 0 ]; then # Failed

@@ -77,7 +77,7 @@ public class Bug510905_Browser_TwoJsConsoles {
 		leftBrowser.setLayout(gridLayout);
 
 		final Text jsConsole = new Text(leftBrowser, SWT.BORDER);
-		jsConsole.setText("document.body.innerHTML = " + funcName + "(123)"); // Case where there are no paramaters.
+		jsConsole.setText("document.body.innerHTML = " + funcName + "(123)"); // Case where there are no parameters.
 		jsConsole.setSelection(jsConsole.getText().length());
 		GridData data = new GridData(SWT.FILL, SWT.BEGINNING, true, false);
 		jsConsole.setLayoutData(data);
