@@ -814,7 +814,7 @@ void browserDispose(Event event) {
 			if (inCallback) {
 				ICoreWebView2Controller controller1 = controller;
 				controller.put_IsVisible(false);
-				browser.getDisplay().asyncExec(() -> {
+				executeAsynchronously(() -> {
 					controller1.Close();
 					controller1.Release();
 				});
@@ -960,7 +960,7 @@ private String getExposedUrl(String url) {
 }
 
 int handleCloseRequested(long pView, long pArgs) {
-	browser.getDisplay().asyncExec(() -> {
+	executeAsynchronously(() -> {
 		if (browser.isDisposed()) return;
 		WindowEvent event = new WindowEvent(browser);
 		event.display = browser.getDisplay();
@@ -978,7 +978,7 @@ int handleDocumentTitleChanged(long pView, long pArgs) {
 	long[] ppsz = new long[1];
 	webViewProvider.getWebView(false).get_DocumentTitle(ppsz);
 	String title = wstrToString(ppsz[0], true);
-	browser.getDisplay().asyncExec(() -> {
+	executeAsynchronously(() -> {
 		if (browser.isDisposed()) return;
 		TitleEvent event = new TitleEvent(browser);
 		event.display = browser.getDisplay();
@@ -1031,10 +1031,12 @@ int handleNavigationStarting(long pView, long pArgs, boolean top) {
 	event.location = url;
 	event.top = top;
 	event.doit = true;
-	for (LocationListener listener : locationListeners) {
-		listener.changing(event);
-		if (browser.isDisposed()) return COM.S_OK;
-	}
+	executeAsynchronously(() -> {
+		for (LocationListener listener : locationListeners) {
+			listener.changing(event);
+			if (browser.isDisposed()) return;
+		}
+	});
 	// Save location and top for all events that use navigationId.
 	// will be eventually cleared again in handleNavigationCompleted().
 	navigations.put(pNavId[0], event);
@@ -1043,11 +1045,13 @@ int handleNavigationStarting(long pView, long pArgs, boolean top) {
 		settings.put_IsScriptEnabled(jsEnabled);
 		// Register browser functions in the new document.
 		if (!functions.isEmpty()) {
-			StringBuilder sb = new StringBuilder();
-			for (BrowserFunction function : functions.values()) {
-				sb.append(function.functionString);
-			}
-			execute(sb.toString());
+			executeAsynchronously(() -> {
+				StringBuilder sb = new StringBuilder();
+				for (BrowserFunction function : functions.values()) {
+					sb.append(function.functionString);
+				}
+				execute(sb.toString());
+			});
 		}
 	} else {
 		args.put_Cancel(true);
@@ -1093,7 +1097,7 @@ int handleSourceChanged(long pView, long pArgs) {
 		} else {
 			location = url;
 		}
-		browser.getDisplay().asyncExec(() -> {
+		executeAsynchronously(() -> {
 			if (browser.isDisposed()) return;
 			LocationEvent event = new LocationEvent(browser);
 			event.display = browser.getDisplay();
@@ -1110,7 +1114,7 @@ int handleSourceChanged(long pView, long pArgs) {
 }
 
 void sendProgressCompleted() {
-	browser.getDisplay().asyncExec(() -> {
+	executeAsynchronously(() -> {
 		if (browser.isDisposed()) return;
 		ProgressEvent event = new ProgressEvent(browser);
 		event.display = browser.getDisplay();
@@ -1160,22 +1164,24 @@ int handleBasicAuthenticationRequested(long pView, long pArgs) {
 	args.get_Uri(ppv);
 	String uri = wstrToString(ppv[0], true);
 
-	for (AuthenticationListener authenticationListener : this.authenticationListeners) {
-		AuthenticationEvent event = new AuthenticationEvent (browser);
-		event.location = uri;
-		authenticationListener.authenticate (event);
-		if (!event.doit) {
-			args.put_Cancel(true);
-			return COM.S_OK;
+	executeAsynchronously(() -> {
+		for (AuthenticationListener authenticationListener : this.authenticationListeners) {
+			AuthenticationEvent event = new AuthenticationEvent (browser);
+			event.location = uri;
+			authenticationListener.authenticate (event);
+			if (!event.doit) {
+				args.put_Cancel(true);
+				return;
+			}
+			if (event.user != null && event.password != null) {
+				args.get_Response(ppv);
+				ICoreWebView2BasicAuthenticationResponse response = new ICoreWebView2BasicAuthenticationResponse(ppv[0]);
+				response.put_UserName(stringToWstr(event.user));
+				response.put_Password(stringToWstr(event.password));
+				return;
+			}
 		}
-		if (event.user != null && event.password != null) {
-			args.get_Response(ppv);
-			ICoreWebView2BasicAuthenticationResponse response = new ICoreWebView2BasicAuthenticationResponse(ppv[0]);
-			response.put_UserName(stringToWstr(event.user));
-			response.put_Password(stringToWstr(event.password));
-			return COM.S_OK;
-		}
-	}
+	});
 
 	return COM.S_OK;
 }
@@ -1236,9 +1242,11 @@ int handleStatusBarTextChanged(long pView, long pArgs) {
 	statusTextEvent.display = browser.getDisplay();
 	statusTextEvent.widget = browser;
 	statusTextEvent.text = text;
-	for (StatusTextListener statusTextListener : statusTextListeners) {
-		statusTextListener.changed(statusTextEvent);
-	}
+	executeAsynchronously(() -> {
+		for (StatusTextListener statusTextListener : statusTextListeners) {
+			statusTextListener.changed(statusTextEvent);
+		}
+	});
 	return COM.S_OK;
 }
 
@@ -1267,7 +1275,7 @@ int handleNavigationCompleted(long pView, long pArgs, boolean top) {
 	int[] pIsSuccess = new int[1];
 	args.get_IsSuccess(pIsSuccess);
 	if (pIsSuccess[0] != 0) {
-		browser.getDisplay().asyncExec(() -> {
+		executeAsynchronously(() -> {
 			if (browser.isDisposed()) return;
 			LocationEvent event = new LocationEvent(browser);
 			event.display = browser.getDisplay();
@@ -1284,42 +1292,66 @@ int handleNavigationCompleted(long pView, long pArgs, boolean top) {
 	return COM.S_OK;
 }
 
-void updateWindowFeatures(ICoreWebView2NewWindowRequestedEventArgs args, WindowEvent event) {
-	long[] ppv = new long[1];
-	int hr = args.get_WindowFeatures(ppv);
-	if (hr != COM.S_OK) return;
-	ICoreWebView2WindowFeatures features = new ICoreWebView2WindowFeatures(ppv[0]);
+private class WindowFeatures {
+	boolean hasPosition;
+	boolean hasSize;
+	int x, y, width, height;
+	boolean shouldDisplayMenuBar;
+	boolean shouldDisplayStatus;
+	boolean shouldDisplayToolBar;
 
-	int[] px = new int[1], py = new int[1];
-	features.get_HasPosition(px);
-	if (px[0] != 0) {
-		features.get_Left(px);
-		features.get_Top(py);
-		event.location = new Point(px[0], py[0]);
+	public WindowFeatures(ICoreWebView2NewWindowRequestedEventArgs args) {
+		long[] ppv = new long[1];
+		int hr = args.get_WindowFeatures(ppv);
+		if (hr != COM.S_OK) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		ICoreWebView2WindowFeatures features = new ICoreWebView2WindowFeatures(ppv[0]);
+		int[] px = new int[1];
+		features.get_HasPosition(px);
+		this.hasPosition = px[0] != 0;
+		if(this.hasPosition) {
+			features.get_Left(px);
+			this.x = px[0];
+			features.get_Top(px);
+			this.y = px[0];
+		}
+		features.get_HasSize(px);
+		this.hasSize = px[0] != 0;
+		if (this.hasSize) {
+			features.get_Width(px);
+			this.width = px[0];
+			features.get_Height(px);
+			this.height = px[0];
+		}
+		features.get_ShouldDisplayMenuBar(px);
+		this.shouldDisplayMenuBar = px[0] != 0;
+		features.get_ShouldDisplayStatus(px);
+		this.shouldDisplayStatus = px[0] != 0;
+		features.get_ShouldDisplayToolbar(px);
+		this.shouldDisplayToolBar = px[0] != 0;
 	}
-	features.get_HasSize(px);
-	if (px[0] != 0) {
-		features.get_Width(px);
-		features.get_Height(py);
-		event.size = new Point(px[0], py[0]);
+}
+
+void updateWindowFeatures(WindowFeatures windowFeatures, WindowEvent event) {
+	if (windowFeatures.hasPosition) {
+		event.location = new Point(windowFeatures.x, windowFeatures.y);
 	}
-	// event.addressBar = ???
-	features.get_ShouldDisplayMenuBar(px);
-	event.menuBar = px[0] != 0;
-	features.get_ShouldDisplayStatus(px);
-	event.statusBar = px[0] != 0;
-	features.get_ShouldDisplayToolbar(px);
-	event.toolBar = px[0] != 0;
+	if (windowFeatures.hasSize) {
+		event.size = new Point(windowFeatures.width, windowFeatures.height);
+	}
+	event.menuBar = windowFeatures.shouldDisplayMenuBar;
+	event.statusBar = windowFeatures.shouldDisplayStatus;
+	event.toolBar = windowFeatures.shouldDisplayToolBar;
 }
 
 int handleNewWindowRequested(long pView, long pArgs) {
 	ICoreWebView2NewWindowRequestedEventArgs args = new ICoreWebView2NewWindowRequestedEventArgs(pArgs);
 	args.AddRef();
-	long[] ppv = new long[1];
-	args.GetDeferral(ppv);
-	ICoreWebView2Deferral deferral = new ICoreWebView2Deferral(ppv[0]);
+	WindowFeatures windowFeatures = new WindowFeatures(args);
+	long[] ppszUrl = new long[1];
+	args.get_Uri(ppszUrl);
+	String url = getExposedUrl(wstrToString(ppszUrl[0], true));
 	inNewWindow = true;
-	browser.getDisplay().asyncExec(() -> {
+	executeAsynchronously(() -> {
 		try {
 			if (browser.isDisposed()) return;
 			WindowEvent openEvent = new WindowEvent(browser);
@@ -1332,30 +1364,24 @@ int handleNewWindowRequested(long pView, long pArgs) {
 			}
 			if (openEvent.browser != null && !openEvent.browser.isDisposed()) {
 				WebBrowser other = openEvent.browser.webBrowser;
-				args.put_Handled(true);
 				if (other instanceof Edge otherEdge) {
-					args.put_NewWindow(otherEdge.webViewProvider.getWebView(true).getAddress());
-
+					otherEdge.setUrl(url, null, null);
 					// Send show event to the other browser.
 					WindowEvent showEvent = new WindowEvent (other.browser);
 					showEvent.display = browser.getDisplay();
 					showEvent.widget = other.browser;
-					updateWindowFeatures(args, showEvent);
-					for (VisibilityWindowListener showListener : other.visibilityWindowListeners) {
-						showListener.show(showEvent);
-						if (other.browser.isDisposed()) return;
-					}
+					updateWindowFeatures(windowFeatures, showEvent);
+						for (VisibilityWindowListener showListener : other.visibilityWindowListeners) {
+							showListener.show(showEvent);
+							if (other.browser.isDisposed()) return;
+						}
 				}
-			} else if (openEvent.required) {
-				args.put_Handled(true);
 			}
 		} finally {
-			deferral.Complete();
-			deferral.Release();
-			args.Release();
 			inNewWindow = false;
 		}
 	});
+	args.put_Handled(true);
 	return COM.S_OK;
 }
 
@@ -1426,7 +1452,8 @@ int handleAcceleratorKeyPressed(long pView, long pArgs) {
 		}
 	} else {
 		keyEvent.type = SWT.KeyUp;
-		browser.notifyListeners (keyEvent.type, keyEvent);
+		executeAsynchronously(() -> browser.notifyListeners (keyEvent.type, keyEvent));
+
 		if (!keyEvent.doit) {
 			args.put_Handled(true);
 		}
@@ -1498,6 +1525,10 @@ static boolean isLocationForCustomText(String location) {
 @Override
 public boolean setText(String html, boolean trusted) {
 	return setWebpageData(URI_FOR_CUSTOM_TEXT_PAGE.toString(), null, null, html);
+}
+
+private void executeAsynchronously(Runnable runnable) {
+	browser.getDisplay().asyncExec(runnable);
 }
 
 private boolean setWebpageData(String url, String postData, String[] headers, String html) {

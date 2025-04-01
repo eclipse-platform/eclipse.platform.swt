@@ -739,7 +739,6 @@ public void test_LocationListener_ProgressListener_cancledLoad () {
 
 @Test
 public void test_LocationListener_LocationListener_ordered_changing () {
-	assumeFalse("Currently broken for Edge", isEdge);
 	List<String> locations = Collections.synchronizedList(new ArrayList<>());
 	browser.addLocationListener(changingAdapter(event -> {
 		locations.add(event.location);
@@ -1572,7 +1571,6 @@ public void test_setJavascriptEnabled_multipleInstances() {
 */
 @Test
 public void test_LocationListener_evaluateInCallback() {
-	assumeFalse("behavior is not (yet) supported by Edge browser", isEdge);
 
 	AtomicBoolean changingFinished = new AtomicBoolean(false);
 	AtomicBoolean changedFinished = new AtomicBoolean(false);
@@ -1622,7 +1620,6 @@ public void test_LocationListener_evaluateInCallback() {
 /** Verify that evaluation works inside an OpenWindowListener */
 @Test
 public void test_OpenWindowListener_evaluateInCallback() {
-	assumeFalse("behavior is not (yet) supported by Edge browser", isEdge);
 
 	AtomicBoolean eventFired = new AtomicBoolean(false);
 	browser.addOpenWindowListener(event -> {
@@ -2183,7 +2180,6 @@ ProgressListener callCustomFunctionUponLoad = completedAdapter(event ->	browser.
  */
 @Test
 public void test_BrowserFunction_callback () {
-	assumeFalse("Currently broken for Edge", isEdge);
 	AtomicBoolean javaCallbackExecuted = new AtomicBoolean(false);
 
 	class JavascriptCallback extends BrowserFunction { // Note: Local class defined inside method.
