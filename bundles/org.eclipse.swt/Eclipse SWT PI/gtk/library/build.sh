@@ -17,9 +17,9 @@
 
 HELP="
 Build GTK4 or GTK3 bindings and (optionally) copy them to binary repository.
-Paramaters (specified in this order):
-clean    - delete *.o and *.so files from current folder. If this is the only paramater, do nothing else.
-			But if other paramaters are given and this is the first one, then continue with other actions.
+Parameters (specified in this order):
+clean    - delete *.o and *.so files from current folder. If this is the only parameter, do nothing else.
+			But if other parameters are given and this is the first one, then continue with other actions.
 
 One of the following 3:
 -gtk3   : Build bindings with GTK3.
@@ -213,10 +213,10 @@ fi
 
 # Safety check:
 # If "install" was given as target, check that OUTPUT_DIR is a valid directory.
-for i in "$@"; do  # loop over all input paramaters
+for i in "$@"; do  # loop over all input parameters
 	if [ "$i" = "install" ]; then
 		if [ ! -d "${OUTPUT_DIR}" ]; then   # if directory not valid.
-		func_echo_error "ERROR: 'install' was passed in as paramater, but OUTPUT_DIR :"
+		func_echo_error "ERROR: 'install' was passed in as parameter, but OUTPUT_DIR :"
 		func_echo_error "(${OUTPUT_DIR}) "
 		func_echo_error "is not a valid directory."
 		func_echo_error "Exit with failure"
@@ -225,7 +225,7 @@ for i in "$@"; do  # loop over all input paramaters
 	fi
 done
 
-for i in "$@"; do  # loop over all input paramaters
+for i in "$@"; do  # loop over all input parameters
 	if [ "$i" = "--print-outputdir-and-exit" ]; then
 		# used by external scripts to find binary folder
 		echo "OUTPUT_DIR=${OUTPUT_DIR}"
@@ -243,7 +243,7 @@ if [ "x${1}" = "xclean" ]; then
 	shift
 
 	# if there are no more other parameters, exit.
-	# don't exit if there are more paramaters. Useful for one-liners like: ./build.sh clean -gtk-all install
+	# don't exit if there are more parameters. Useful for one-liners like: ./build.sh clean -gtk-all install
 	if [ "$1" = "" ]; then
 		exit $?
 	fi

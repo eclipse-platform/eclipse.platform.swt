@@ -774,7 +774,7 @@ public class MJ_Table extends MJ_root {
 	}
 
 	/**
-	 * Based on Snippet 106 with some modificaitons.
+	 * Based on Snippet 106 with some modifications.
 	 */
 	@Test
 	public void column_dynamically_added_after_shellOpened_Snippet106() {
@@ -1032,7 +1032,7 @@ public class MJ_Table extends MJ_root {
 	}
 
 	@Test
-	public void programaticScrolling_Snippet52() {
+	public void programmaticScrolling_Snippet52() {
 		Shell shell = mkShell("Table should be scrolled down to 100th item");
 		Table table = new Table (shell, SWT.BORDER | SWT.MULTI);
 		Rectangle clientArea = shell.getClientArea ();
