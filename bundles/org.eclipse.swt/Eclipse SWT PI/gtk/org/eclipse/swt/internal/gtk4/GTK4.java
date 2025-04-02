@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2021, 2024 Syntevo and others.
+ * Copyright (c) 2021, 2025 Syntevo and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -21,6 +21,10 @@ import org.eclipse.swt.internal.gtk.*;
 public class GTK4 {
 
 	public static final int GTK_POPOVER_MENU_NESTED = 1 << 0;
+
+	public static final int GTK_EVENT_SEQUENCE_NONE = 0;
+	public static final int GTK_EVENT_SEQUENCE_CLAIMED = 1;
+	public static final int GTK_EVENT_SEQUENCE_DENIED = 2;
 
 	/**
 	 * @param context cast=(GtkIMContext *)
@@ -829,5 +833,17 @@ public class GTK4 {
 	public static final native long gtk_gesture_zoom_new();
 
 	public static final native long gtk_gesture_drag_new();
+
+	/**
+	 * @param gesture cast=(GtkGesture *)
+	 * @param sequence cast=(GdkEventSequence *)
+	 * @param state cast=(GtkEventSequenceState)
+	 */
+	public static final native boolean gtk_gesture_set_sequence_state(long gesture, long sequence, int state);
+
+	/**
+	 * @param gesture cast=(GtkGesture *)
+	 */
+	public static final native long gtk_gesture_get_last_updated_sequence(long gesture);
 
 }
