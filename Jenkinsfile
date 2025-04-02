@@ -238,10 +238,10 @@ pipeline {
 						steps {
 							script {
 								def (ws, os, arch) = env.PLATFORM.split('\\.')
-								dir("jdk-download-${os}.${arch}") {
+								dir("jdk-download-${ws}.${arch}") {
 									// Fetch the JDK, which provides the C header-files and shared native libraries, against which the natives are build.
 									sh "curl ${getNativeJdkUrl(os, arch)} | tar -xzf - include/ lib/"
-									stash name:"jdk.resources.${os}.${arch}", includes: "include/,lib/"
+									stash name:"jdk.resources.${ws}.${arch}", includes: "include/,lib/"
 									deleteDir()
 								}
 								runOnNativeBuildAgent("${PLATFORM}") {
@@ -249,7 +249,7 @@ pipeline {
 									echo "OS: ${os}, ARCH: ${arch}"
 									unstash "swt.binaries.sources.${ws == 'gtk4' ? 'gtk' : ws }"
 									dir('jdk.resources') {
-										unstash "jdk.resources.${os}.${arch}"
+										unstash "jdk.resources.${ws}.${arch}"
 									}
 									withEnv(['MODEL=' + arch, "OUTPUT_DIR=${WORKSPACE}/libs", "SWT_JAVA_HOME=${WORKSPACE}/jdk.resources"]) {
 										if (isUnix()) {
