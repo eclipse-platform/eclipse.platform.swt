@@ -10876,11 +10876,14 @@ void updateSelection(int startOffset, int replacedLength, int newLength) {
  * @noreference This method is not intended to be referenced by clients.
  */
 public static void updateAndRefreshCarets(StyledText styledText, Consumer<Caret> caretUpdater) {
-	caretUpdater.accept(styledText.getCaret());
-	caretUpdater.accept(styledText.defaultCaret);
+	Set<Caret> caretSet = new HashSet<>();
+	caretSet.add(styledText.getCaret());
+	caretSet.add(styledText.defaultCaret);
 	for (Caret caret : styledText.carets) {
-		caretUpdater.accept(caret);
+		caretSet.add(caret);
 	}
+	caretSet.forEach(caretUpdater);
+
 	styledText.updateCaretVisibility();
 	styledText.setCaretLocations();
 
