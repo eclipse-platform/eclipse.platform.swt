@@ -582,10 +582,11 @@
         </filter>
     </resource>
     <resource path="Eclipse SWT/common/org/eclipse/swt/graphics/ImageGcDrawer.java" type="org.eclipse.swt.graphics.ImageGcDrawer">
-        <filter id="404000815">
+        <filter id="403984517">
             <message_arguments>
                 <message_argument value="org.eclipse.swt.graphics.ImageGcDrawer"/>
-                <message_argument value="getGcStyle()"/>
+                <message_argument value="org.eclipse.swt.graphics.ImageDrawer"/>
+                <message_argument value="withGCStyle(int, ImageDrawer)"/>
             </message_arguments>
         </filter>
     </resource>

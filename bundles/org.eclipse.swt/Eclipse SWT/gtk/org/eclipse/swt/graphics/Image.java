@@ -156,7 +156,7 @@ public final class Image extends Resource implements Drawable {
 	/**
 	 * ImageGcDrawer to provide a callback to draw on a GC for various zoom levels
 	 */
-	private ImageGcDrawer imageGcDrawer;
+	private ImageDrawer imageGcDrawer;
 
 	/**
 	 * Style flag used to differentiate normal, gray-scale and disabled images based
@@ -672,7 +672,7 @@ public Image(Device device, ImageDataProvider imageDataProvider) {
  * </ul>
  * @since 3.130
  */
-public Image(Device device, int width, int height, ImageGcDrawer imageGcDrawer) {
+public Image(Device device, int width, int height, ImageDrawer imageGcDrawer) {
 	super(device);
 	if (imageGcDrawer == null) {
 		SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -1168,11 +1168,11 @@ public ImageData getImageData (int zoom) {
 
 private ImageData drawWithImageGcDrawer(int width, int height, int zoom) {
 	Image image = new Image(device, width, height);
-	GC gc = new GC(image);
+	GC gc = new GC(image, ExtendedImageDrawer.getGCStyle(imageGcDrawer));
 	try {
 		imageGcDrawer.drawOn(gc, width, height);
 		ImageData imageData = image.getImageData(zoom);
-		imageGcDrawer.postProcess(imageData);
+		ExtendedImageDrawer.postProcess(imageGcDrawer, imageData);
 		return imageData;
 	} finally {
 		gc.dispose();

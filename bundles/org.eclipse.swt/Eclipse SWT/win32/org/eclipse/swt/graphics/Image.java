@@ -631,7 +631,7 @@ public Image(Device device, ImageDataProvider imageDataProvider) {
  * </ul>
  * @since 3.130
  */
-public Image(Device device, int width, int height, ImageGcDrawer imageGcDrawer) {
+public Image(Device device, int width, int height, ImageDrawer imageGcDrawer) {
 	super(device);
 	this.imageProvider = new ImageGcDrawerWrapper(imageGcDrawer, width, height);
 	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
@@ -2485,12 +2485,12 @@ private class ImageDataProviderWrapper extends BaseImageProviderWrapper<ImageDat
 }
 
 private class ImageGcDrawerWrapper extends DynamicImageProviderWrapper {
-	private ImageGcDrawer drawer;
+	private ImageDrawer drawer;
 	private int width;
 	private int height;
 
-	ImageGcDrawerWrapper(ImageGcDrawer imageGcDrawer, int width, int height) {
-		checkProvider(imageGcDrawer, ImageGcDrawer.class);
+	ImageGcDrawerWrapper(ImageDrawer imageGcDrawer, int width, int height) {
+		checkProvider(imageGcDrawer, ImageDrawer.class);
 		this.drawer = imageGcDrawer;
 		this.width = width;
 		this.height = height;
@@ -2511,12 +2511,12 @@ private class ImageGcDrawerWrapper extends DynamicImageProviderWrapper {
 	ImageHandle getImageMetadata(int zoom) {
 		initialNativeZoom = zoom;
 		Image image = new Image(device, width, height, zoom);
-		GC gc = new GC(image, drawer.getGcStyle());
+		GC gc = new GC(image, ExtendedImageDrawer.getGCStyle(drawer));
 		try {
 			gc.data.nativeZoom = zoom;
 			drawer.drawOn(gc, width, height);
 			ImageData imageData = image.getImageMetadata(zoom).getImageData();
-			drawer.postProcess(imageData);
+			ExtendedImageDrawer.postProcess(drawer, imageData);
 			ImageData newData = adaptImageDataIfDisabledOrGray(imageData);
 			init(newData, zoom);
 		} finally {
