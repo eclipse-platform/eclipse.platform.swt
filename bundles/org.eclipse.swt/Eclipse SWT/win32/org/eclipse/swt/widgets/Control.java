@@ -1315,7 +1315,7 @@ public Font getFont () {
 	if (font != null) return font;
 	long hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 	if (hFont == 0) hFont = defaultFont ();
-	return Font.win32_new (display, hFont, getNativeZoom());
+	return SWTFontProvider.getFont(display, hFont, getNativeZoom());
 }
 
 /**
@@ -1753,14 +1753,18 @@ public long internal_new_GC (GCData data) {
 			}
 		}
 		data.device = display;
-		data.nativeZoom = nativeZoom;
+		data.nativeZoom = getNativeZoom();
 		int foreground = getForegroundPixel ();
 		if (foreground != OS.GetTextColor (hDC)) data.foreground = foreground;
 		Control control = findBackgroundControl ();
 		if (control == null) control = this;
 		int background = control.getBackgroundPixel ();
 		if (background != OS.GetBkColor (hDC)) data.background = background;
-		data.font = font != null ? font : Font.win32_new (display, OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0));
+		if (font != null) {
+			data.font = font;
+		} else {
+			data.font = SWTFontProvider.getFont(display, OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0), data.nativeZoom);
+		}
 		data.uiState = (int)OS.SendMessage (hwnd, OS.WM_QUERYUISTATE, 0, 0);
 	}
 	return hDC;

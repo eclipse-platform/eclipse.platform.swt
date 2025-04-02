@@ -62,6 +62,21 @@ public class SWTFontProvider {
 	}
 
 	/**
+	 * Returns the font with the given fontHandle for the given device at the
+	 * specified zoom.
+	 *
+	 * <b>Note:</b> This operation is not thread-safe. It must thus always be called
+	 * from the same thread for the same device, such as the display's UI thread.
+	 *
+	 * @param device     the device to retrieve the font for, must not be {@code null}
+	 * @param fontHandle the handle to an existing font
+	 * @param zoom       the zoom for which the font shall be scaled
+	 */
+	public static Font getFont(Device device, long fontHandle, int zoom) {
+		return getFontRegistry(device).getFont(fontHandle, zoom);
+	}
+
+	/**
 	 * Disposes the font registry for the given device, if one exists.
 	 *
 	 * @param device the device to dispose the font registry for, must not be
