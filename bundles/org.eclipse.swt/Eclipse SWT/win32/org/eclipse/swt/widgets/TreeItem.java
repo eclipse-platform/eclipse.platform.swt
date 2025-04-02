@@ -1388,8 +1388,7 @@ public void setFont (Font font){
 		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	Font oldFont = this.font;
-	Shell shell = parent.getShell();
-	Font newFont = (font == null ? font : Font.win32_new(font, shell.nativeZoom));
+	Font newFont = (font == null ? font : Font.win32_new(font, getNativeZoom()));
 	if (oldFont == newFont) return;
 	this.font = newFont;
 	if (oldFont != null && oldFont.equals (font)) return;
@@ -1445,8 +1444,7 @@ public void setFont (int index, Font font) {
 	}
 	Font oldFont = cellFont [index];
 	if (oldFont == font) return;
-	Shell shell = parent.getShell();
-	cellFont [index] = font == null ? font : Font.win32_new(font, shell.nativeZoom);
+	cellFont [index] = font == null ? font : Font.win32_new(font, getNativeZoom());
 	if (oldFont != null && oldFont.equals (font)) return;
 	if (font != null) parent.customDraw = true;
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
@@ -1828,10 +1826,9 @@ private static void handleDPIChange(Widget widget, int newZoom, float scalingFac
 	}
 	Font[] cellFonts = treeItem.cellFont;
 	if (cellFonts != null) {
-		Shell shell = treeItem.parent.getShell();
 		for (int index = 0; index < cellFonts.length; index++) {
 			Font cellFont = cellFonts[index];
-			cellFonts[index] = cellFont == null ? null : Font.win32_new(cellFont, shell.nativeZoom);
+			cellFonts[index] = cellFont == null ? null : Font.win32_new(cellFont, treeItem.getNativeZoom());
 		}
 	}
 	for (TreeItem item : treeItem.getItems()) {
