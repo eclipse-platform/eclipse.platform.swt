@@ -152,7 +152,7 @@ public Font getFont () {
 	checkWidget();
 	if (font == null) {
 		long hFont = defaultFont ();
-		return Font.win32_new (display, hFont, getZoom());
+		return Font.win32_new (display, hFont, getNativeZoom());
 	}
 	return font;
 }
@@ -478,8 +478,7 @@ public void setFont (Font font) {
 	if (font != null && font.isDisposed ()) {
 		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	Shell shell = parent.getShell();
-	this.font = font == null ? null : Font.win32_new(font, shell.nativeZoom);
+	this.font = font == null ? null : Font.win32_new(font, getNativeZoom());
 	if (hasFocus ()) setIMEFont ();
 }
 

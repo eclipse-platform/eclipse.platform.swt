@@ -2690,6 +2690,10 @@ GC createNewGC(long hDC, GCData data) {
 	return GC.win32_new(hDC, data);
 }
 
+int getNativeZoom() {
+	return nativeZoom;
+}
+
 int getZoom() {
 	return DPIUtil.getZoomForAutoscaleProperty(nativeZoom);
 }
