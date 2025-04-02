@@ -629,13 +629,22 @@ public Image(Device device, ImageDataProvider imageDataProvider) {
  *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  *    <li>ERROR_NULL_ARGUMENT - if the ImageGcDrawer is null</li>
  * </ul>
- * @since 3.129
+ * @since 3.130
  */
-public Image(Device device, ImageGcDrawer imageGcDrawer, int width, int height) {
+public Image(Device device, int width, int height, ImageGcDrawer imageGcDrawer) {
 	super(device);
 	this.imageProvider = new ImageGcDrawerWrapper(imageGcDrawer, width, height);
 	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
 	init();
+}
+
+/**
+ * @since 3.129
+ * @deprecated Instead use {@link #Image(Device, int, int, ImageGcDrawer)}
+ */
+@Deprecated(forRemoval = true, since = "2025-06 (removal in 2027-06 or later)")
+public Image(Device device, ImageGcDrawer imageGcDrawer, int width, int height) {
+	this(device, width, height, imageGcDrawer);
 }
 
 private ImageData adaptImageDataIfDisabledOrGray(ImageData data) {
