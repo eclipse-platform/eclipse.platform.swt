@@ -3406,28 +3406,38 @@ void gtk_style_context_get_border (long context, int state, GtkBorder padding) {
  * Handling multi-press event on GTK4
  */
 @Override
-void gtk_gesture_press_event (long gesture, int n_press, double x, double y, long event) {
+int gtk_gesture_press_event (long gesture, int n_press, double x, double y, long event) {
 	mouseDown = true;
 
 	int eventButton = GDK.gdk_button_event_get_button(event);
 	int eventTime = GDK.gdk_event_get_time(event);
 	int eventState = GDK.gdk_event_get_modifier_state(event);
+	int result = GTK4.GTK_EVENT_SEQUENCE_NONE;
 
 	display.clickCount = n_press;
 	if (n_press == 1) {
-		sendMouseEvent(SWT.MouseDown, eventButton, n_press, 0, false, eventTime, x, y, false, eventState);
-		if ((state & MENU) == 0) {
+		boolean cancelled = sendMouseEvent(SWT.MouseDown, eventButton, n_press, 0, false, eventTime, x, y, false, eventState);
+		if (!cancelled) {
+			result = GTK4.GTK_EVENT_SEQUENCE_CLAIMED;
+		}
+		if ((state & MENU) != 0) {
 			if (eventButton == 3) {
-				showMenu ((int)x, (int)y);
+				if (showMenu ((int)x, (int)y)) {
+					result = GTK4.GTK_EVENT_SEQUENCE_CLAIMED;
+				}
 			}
 		}
 	} else if (n_press == 2) {
-		sendMouseEvent(SWT.MouseDoubleClick, eventButton, n_press, 0, false, eventTime, x, y, false, eventState);
+		boolean cancelled = sendMouseEvent(SWT.MouseDoubleClick, eventButton, n_press, 0, false, eventTime, x, y, false, eventState);
+		if (!cancelled) {
+			result = GTK4.GTK_EVENT_SEQUENCE_CLAIMED;
+		}
 	}
+	return result;
 }
 
 @Override
-void gtk_gesture_release_event (long gesture, int n_press, double x, double y, long event) {
+int gtk_gesture_release_event (long gesture, int n_press, double x, double y, long event) {
 	mouseDown = false;
 
 	double [] eventX = new double [1];
@@ -3440,8 +3450,13 @@ void gtk_gesture_release_event (long gesture, int n_press, double x, double y, l
 
 	lastInput.x = (int) eventX[0];
 	lastInput.y = (int) eventY[0];
-	if (containedInRegion(lastInput.x, lastInput.y)) return;
-	sendMouseEvent(SWT.MouseUp, eventButton, display.clickCount, 0, false, eventTime, 0, 0, false, eventState);
+	if (containedInRegion(lastInput.x, lastInput.y)) return GTK4.GTK_EVENT_SEQUENCE_NONE;
+	boolean cancelled = sendMouseEvent(SWT.MouseUp, eventButton, display.clickCount, 0, false, eventTime, 0, 0, false, eventState);
+	int result = GTK4.GTK_EVENT_SEQUENCE_NONE;
+	if (!cancelled) {
+		result = GTK4.GTK_EVENT_SEQUENCE_CLAIMED;
+	}
+	return result;
 }
 
 @Override
