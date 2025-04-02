@@ -3898,14 +3898,14 @@ void init(Drawable drawable, GCData data, long hDC) {
 		data.background = OS.GetBkColor(hDC);
 	}
 	data.state &= ~(NULL_BRUSH | NULL_PEN);
+	if (data.nativeZoom == 0) {
+		data.nativeZoom = extractZoom(hDC);
+	}
 	Font font = data.font;
 	if (font != null) {
 		data.state &= ~FONT;
 	} else {
-		data.font = Font.win32_new(device, OS.GetCurrentObject(hDC, OS.OBJ_FONT));
-	}
-	if (data.nativeZoom == 0) {
-		data.nativeZoom = extractZoom(hDC);
+		data.font = SWTFontProvider.getFont(device, OS.GetCurrentObject(hDC, OS.OBJ_FONT), data.nativeZoom);
 	}
 	Image image = data.image;
 	if (image != null) {
