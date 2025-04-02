@@ -1525,7 +1525,7 @@ LRESULT WM_PAINT (long wParam, long lParam) {
 					Control control = findBackgroundControl ();
 					if (control == null) control = this;
 					data.background = control.getBackgroundPixel ();
-					data.font = Font.win32_new(display, OS.SendMessage (handle, OS.WM_GETFONT, 0, 0), nativeZoom);
+					data.font = Font.win32_new(display, OS.SendMessage (handle, OS.WM_GETFONT, 0, 0), getNativeZoom());
 					data.uiState = (int)OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
 					if ((style & SWT.NO_BACKGROUND) != 0) {
 						/* This code is intentionally commented because it may be slow to copy bits from the screen */
