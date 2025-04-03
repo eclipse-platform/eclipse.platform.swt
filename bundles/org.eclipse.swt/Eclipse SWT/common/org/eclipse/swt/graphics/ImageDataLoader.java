@@ -37,10 +37,18 @@ class ImageDataLoader {
 		return data[0];
 	}
 
+	public static boolean canLoadAtZoom(InputStream stream, int fileZoom, int targetZoom) {
+		return ImageLoader.canLoadAtZoom(stream, fileZoom, targetZoom);
+	}
+
 	public static ElementAtZoom<ImageData> load(InputStream stream, int fileZoom, int targetZoom) {
 		List<ElementAtZoom<ImageData>> data = new ImageLoader().load(stream, fileZoom, targetZoom);
 		if (data.isEmpty()) SWT.error(SWT.ERROR_INVALID_IMAGE);
 		return data.get(0);
+	}
+
+	public static boolean canLoadAtZoom(String filename, int fileZoom, int targetZoom) {
+		return ImageLoader.canLoadAtZoom(filename, fileZoom, targetZoom);
 	}
 
 	public static ElementAtZoom<ImageData> load(String filename, int fileZoom, int targetZoom) {
