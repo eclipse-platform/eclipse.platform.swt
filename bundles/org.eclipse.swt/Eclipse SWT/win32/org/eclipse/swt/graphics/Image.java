@@ -16,6 +16,7 @@ package org.eclipse.swt.graphics;
 
 import java.io.*;
 import java.util.*;
+import java.util.function.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
@@ -2176,8 +2177,9 @@ private abstract class DynamicImageProviderWrapper extends AbstractImageProvider
 }
 
 private abstract class BaseImageProviderWrapper<T> extends DynamicImageProviderWrapper {
+	private final Map<Integer, ImageData> cachedImageData = new HashMap<>();
+
 	protected final T provider;
-	private final Map<Integer, Rectangle> zoomToBounds = new HashMap<>();
 
 	BaseImageProviderWrapper(T provider, Class<T> expectedClass) {
 		checkProvider(provider, expectedClass);
@@ -2190,17 +2192,38 @@ private abstract class BaseImageProviderWrapper<T> extends DynamicImageProviderW
 	}
 
 	@Override
+	final ImageData getImageData(int zoom) {
+		Function<Integer, ImageData> imageDataRetrival = zoomToRetrieve -> {
+			ImageHandle handle = initializeHandleFromSource(zoomToRetrieve);
+			ImageData data = handle.getImageData();
+			destroyHandleForZoom(zoomToRetrieve);
+			return data;
+		};
+		return cachedImageData.computeIfAbsent(zoom, imageDataRetrival);
+	}
+
+	@Override
+	final ImageHandle getImageMetadata(int zoom) {
+		ImageData cachedData = cachedImageData.remove(zoom);
+		if (cachedData != null) {
+			return init(cachedData, zoom);
+		}
+		return initializeHandleFromSource(zoom);
+	}
+
+	private ImageHandle initializeHandleFromSource(int zoom) {
+		ElementAtZoom<ImageData> imageDataAtZoom = loadImageData(zoom);
+		ImageData imageData = scaleImageData(imageDataAtZoom.element(), zoom, imageDataAtZoom.zoom());
+		imageData = adaptImageDataIfDisabledOrGray(imageData);
+		return init(imageData, zoom);
+	}
+
+	protected abstract ElementAtZoom<ImageData> loadImageData(int zoom);
+
+	@Override
 	protected Rectangle getBounds(int zoom) {
-		if (zoomLevelToImageHandle.containsKey(zoom)) {
-			ImageHandle imgHandle = zoomLevelToImageHandle.get(zoom);
-			return new Rectangle(0, 0, imgHandle.width, imgHandle.height);
-		}
-		if (!zoomToBounds.containsKey(zoom)) {
-			ImageData imageData = getImageData(zoom);
-			Rectangle rectangle = new Rectangle(0, 0, imageData.width, imageData.height);
-			zoomToBounds.put(zoom, rectangle);
-		}
-		return zoomToBounds.get(zoom);
+		ImageData imageData = getImageData(zoom);
+		return new Rectangle(0, 0, imageData.width, imageData.height);
 	}
 }
 
@@ -2210,7 +2233,7 @@ private class ImageFileNameProviderWrapper extends BaseImageProviderWrapper<Imag
 	}
 
 	@Override
-	ImageData getImageData(int zoom) {
+	protected ElementAtZoom<ImageData> loadImageData(int zoom) {
 		ElementAtZoom<String> fileForZoom = DPIUtil.validateAndGetImagePathAtZoom(provider, zoom);
 		ImageHandle nativeInitializedImage;
 		if (zoomLevelToImageHandle.containsKey(fileForZoom.zoom())) {
@@ -2226,23 +2249,7 @@ private class ImageFileNameProviderWrapper extends BaseImageProviderWrapper<Imag
 			imageDataAtZoom = new ElementAtZoom<>(nativeInitializedImage.getImageData(), fileForZoom.zoom());
 			destroyHandleForZoom(zoom);
 		}
-		ImageData imageData = scaleIfNecessary(imageDataAtZoom, zoom);
-		imageData = adaptImageDataIfDisabledOrGray(imageData);
-		return imageData;
-	}
-
-	private ImageData scaleIfNecessary(ElementAtZoom<ImageData> imageDataAtZoom, int zoom) {
-		if (imageDataAtZoom.zoom() != zoom) {
-			return scaleImageData(imageDataAtZoom.element(), zoom, imageDataAtZoom.zoom());
-		}
-		return imageDataAtZoom.element();
-	}
-
-	@Override
-	ImageHandle getImageMetadata(int zoom) {
-		ImageData imageData = getImageData(zoom);
-		init(imageData, zoom);
-		return zoomLevelToImageHandle.get(zoom);
+		return imageDataAtZoom;
 	}
 
 	@Override
@@ -2455,18 +2462,8 @@ private class ImageDataProviderWrapper extends BaseImageProviderWrapper<ImageDat
 	}
 
 	@Override
-	ImageData getImageData(int zoom) {
-		ElementAtZoom<ImageData> data = DPIUtil.validateAndGetImageDataAtZoom (provider, zoom);
-		return scaleImageData(data.element(), zoom, data.zoom());
-	}
-
-	@Override
-	ImageHandle getImageMetadata(int zoom) {
-		ElementAtZoom<ImageData> imageCandidate = DPIUtil.validateAndGetImageDataAtZoom (provider, zoom);
-		ImageData resizedData = scaleImageData(imageCandidate.element(), zoom, imageCandidate.zoom());
-		ImageData newData = adaptImageDataIfDisabledOrGray(resizedData);
-		init(newData, zoom);
-		return zoomLevelToImageHandle.get(zoom);
+	protected ElementAtZoom<ImageData> loadImageData(int zoom) {
+		return DPIUtil.validateAndGetImageDataAtZoom (provider, zoom);
 	}
 
 	@Override
