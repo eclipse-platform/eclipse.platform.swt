@@ -136,6 +136,10 @@ public static List<ElementAtZoom<ImageData>> load(ElementAtZoom<InputStream> is,
 	return fileFormat.loadFromStream(stream, is.zoom(), targetZoom);
 }
 
+public static boolean canLoadAtZoom(ElementAtZoom<InputStream> is, int targetZoom) {
+	return is.zoom() == targetZoom  || isDynamicallySizableFormat(is.element());
+}
+
 /**
  * Write the device independent image array stored in the specified loader
  * to the specified output stream using the specified file format.

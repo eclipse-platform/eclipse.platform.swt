@@ -20,7 +20,6 @@ import java.util.function.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.DPIUtil.*;
 import org.eclipse.swt.internal.cocoa.*;
 import org.eclipse.swt.internal.graphics.*;
 import org.eclipse.swt.internal.image.*;
@@ -692,11 +691,18 @@ public Image(Device device, ImageData source, ImageData mask) {
  */
 public Image(Device device, InputStream stream) {
 	super(device);
+	if (stream == null) {
+		SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	}
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
-		initWithSupplier(zoom -> ImageDataLoader.load(stream, FileFormat.DEFAULT_ZOOM, zoom));
+		byte[] input = stream.readAllBytes();
+		initWithSupplier(zoom -> ImageDataLoader.canLoadAtZoom(new ByteArrayInputStream(input), FileFormat.DEFAULT_ZOOM, zoom),
+				zoom -> ImageDataLoader.load(new ByteArrayInputStream(input), FileFormat.DEFAULT_ZOOM, zoom).element());
 		init();
+	} catch (IOException e) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT, e);
 	} finally {
 		if (pool != null) pool.release();
 	}
@@ -741,7 +747,10 @@ public Image(Device device, String filename) {
 	try {
 		if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 		initNative(filename);
-		if (this.handle == null) initWithSupplier(zoom -> ImageDataLoader.load(filename, FileFormat.DEFAULT_ZOOM, zoom));
+		if (this.handle == null) {
+			initWithSupplier(zoom -> ImageDataLoader.canLoadAtZoom(filename, FileFormat.DEFAULT_ZOOM, zoom),
+					zoom -> ImageDataLoader.load(filename, FileFormat.DEFAULT_ZOOM, zoom).element());
+		}
 		init();
 	} finally {
 		if (pool != null) pool.release();
@@ -795,15 +804,13 @@ public Image(Device device, ImageFileNameProvider imageFileNameProvider) {
 			id id = NSImageRep.imageRepWithContentsOfFile(NSString.stringWith(filename2x));
 			NSImageRep rep = new NSImageRep(id);
 			handle.addRepresentation(rep);
-		} else {
+		} else if (ImageDataLoader.canLoadAtZoom(filename, 100, 200)) {
 			// Try to natively scale up the image (e.g. possible if it's an SVG)
-			ElementAtZoom<ImageData> imageData2x = ImageDataLoader.load(filename, 100, 200);
-			if (imageData2x.zoom() == 200) {
-				alphaInfo_200 = new AlphaInfo();
-				NSBitmapImageRep rep = createRepresentation (imageData2x.element(), alphaInfo_200);
-				handle.addRepresentation(rep);
-				rep.release();
-			}
+			ImageData imageData2x = ImageDataLoader.load(filename, 100, 200).element();
+			alphaInfo_200 = new AlphaInfo();
+			NSBitmapImageRep rep = createRepresentation (imageData2x, alphaInfo_200);
+			handle.addRepresentation(rep);
+			rep.release();
 		}
 	} finally {
 		if (pool != null) pool.release();
@@ -1484,17 +1491,11 @@ void init(ImageData image) {
 	handle.setCacheMode(OS.NSImageCacheNever);
 }
 
-private void initWithSupplier(Function<Integer, ElementAtZoom<ImageData>> zoomToImageData) {
-	ElementAtZoom<ImageData> imageData = zoomToImageData.apply(DPIUtil.getDeviceZoom());
-	ImageData imageData2x = null;
-	if (imageData.zoom() == 200) {
-		imageData2x = imageData.element();
-	}
-	if (imageData.zoom() != 100) {
-		imageData = zoomToImageData.apply(100);
-	}
-	init(imageData.element());
-	if (imageData2x != null) {
+private void initWithSupplier(Function<Integer, Boolean> canLoadAtZoom, Function<Integer, ImageData> zoomToImageData) {
+	ImageData imageData = zoomToImageData.apply(100);
+	init(imageData);
+	if (canLoadAtZoom.apply(200)) {
+		ImageData imageData2x = zoomToImageData.apply(200);
 		alphaInfo_200 = new AlphaInfo();
 		NSBitmapImageRep rep = createRepresentation (imageData2x, alphaInfo_200);
 		handle.addRepresentation(rep);

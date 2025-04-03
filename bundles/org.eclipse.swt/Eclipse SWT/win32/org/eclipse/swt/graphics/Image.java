@@ -2235,13 +2235,20 @@ private class ImageFileNameProviderWrapper extends BaseImageProviderWrapper<Imag
 	@Override
 	protected ElementAtZoom<ImageData> loadImageData(int zoom) {
 		ElementAtZoom<String> fileForZoom = DPIUtil.validateAndGetImagePathAtZoom(provider, zoom);
+
+		// Load at appropriate zoom via loader
+		if (fileForZoom.zoom() != zoom && ImageDataLoader.canLoadAtZoom(fileForZoom.element(), fileForZoom.zoom(), zoom)) {
+			ElementAtZoom<ImageData> imageDataAtZoom = ImageDataLoader.load(fileForZoom.element(), fileForZoom.zoom(), zoom);
+			return new ElementAtZoom<>(adaptImageDataIfDisabledOrGray(imageDataAtZoom.element()), zoom);
+		}
+
+		// Load at file zoom (native or via loader) and rescale
 		ImageHandle nativeInitializedImage;
 		if (zoomLevelToImageHandle.containsKey(fileForZoom.zoom())) {
 			nativeInitializedImage = zoomLevelToImageHandle.get(fileForZoom.zoom());
 		} else {
 			nativeInitializedImage = initNative(fileForZoom.element(), fileForZoom.zoom());
 		}
-
 		ElementAtZoom<ImageData> imageDataAtZoom;
 		if (nativeInitializedImage == null) {
 			imageDataAtZoom = ImageDataLoader.load(fileForZoom.element(), fileForZoom.zoom(), zoom);

@@ -163,6 +163,11 @@ List<ElementAtZoom<ImageData>> load(InputStream stream, int fileZoom, int target
 	return images;
 }
 
+static boolean canLoadAtZoom(InputStream stream, int fileZoom, int targetZoom) {
+	if (stream == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	return FileFormat.canLoadAtZoom(new ElementAtZoom<>(stream, fileZoom), targetZoom);
+}
+
 /**
  * Loads an array of <code>ImageData</code> objects from the
  * file with the specified name. Throws an error if either
@@ -194,6 +199,16 @@ List<ElementAtZoom<ImageData>> load(String filename, int fileZoom, int targetZoo
 		SWT.error(SWT.ERROR_IO, e);
 	}
 	return null;
+}
+
+static boolean canLoadAtZoom(String filename, int fileZoom, int targetZoom) {
+	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	try (InputStream stream = new FileInputStream(filename)) {
+		return canLoadAtZoom(stream, fileZoom, targetZoom);
+	} catch (IOException e) {
+		SWT.error(SWT.ERROR_IO, e);
+	}
+	return false;
 }
 
 /**
