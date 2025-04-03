@@ -1878,14 +1878,18 @@ private abstract class AbstractImageProviderWrapper {
 
 	protected ImageHandle newImageHandle(int zoom) {
 		ImageData resizedData = getImageData(zoom);
-		if (type == SWT.ICON && resizedData.getTransparencyType() != SWT.TRANSPARENCY_MASK) {
+		return newImageHandle(resizedData, zoom);
+	}
+
+	protected final ImageHandle newImageHandle(ImageData data, int zoom) {
+		if (type == SWT.ICON && data.getTransparencyType() != SWT.TRANSPARENCY_MASK) {
 			// If the original type was an icon with transparency mask and re-scaling leads
 			// to image data without transparency mask, this will create invalid images
 			// so this fallback will "repair" the image data by explicitly passing
 			// the transparency mask created from the scaled image data
-			return initIconHandle(device, resizedData, resizedData.getTransparencyMask(), zoom);
+			return initIconHandle(device, data, data.getTransparencyMask(), zoom);
 		} else {
-			return init(resizedData, zoom);
+			return init(data, zoom);
 		}
 	}
 
@@ -1933,26 +1937,43 @@ private class ExistingImageHandleProviderWrapper extends AbstractImageProviderWr
 }
 
 private abstract class ImageFromImageDataProviderWrapper extends AbstractImageProviderWrapper {
+	private final Map<Integer, ImageData> cachedImageData = new HashMap<>();
 
 	protected abstract ElementAtZoom<ImageData> loadImageData(int zoom);
 
 	void initImage() {
 		// As the init call configured some Image attributes (e.g. type)
 		// it must be called
-		ImageData imageDataAt100 = getImageData(100);
-		init(imageDataAt100, 100);
-		destroyHandleForZoom(100);
+		getImageData(100);
 	}
 
 	@Override
 	ImageData newImageData(int zoom) {
-		if (!zoomLevelToImageHandle.isEmpty()) {
-			return getScaledImageData(zoom);
-		}
-		ElementAtZoom<ImageData> loadedImageData = loadImageData(zoom);
-		ImageData scaledImageData = DPIUtil.scaleImageData(device, loadedImageData, zoom);
-		return adaptImageDataIfDisabledOrGray(scaledImageData);
+		Function<Integer, ImageData> imageDataRetrieval = zoomToRetrieve -> {
+			ImageHandle handle = initializeHandleFromSource(zoomToRetrieve);
+			ImageData data = handle.getImageData();
+			destroyHandleForZoom(zoomToRetrieve);
+			return data;
+		};
+		return cachedImageData.computeIfAbsent(zoom, imageDataRetrieval);
 	}
+
+	@Override
+	protected ImageHandle newImageHandle(int zoom) {
+		ImageData cachedData = cachedImageData.remove(zoom);
+		if (cachedData != null) {
+			return newImageHandle(cachedData, zoom);
+		}
+		return initializeHandleFromSource(zoom);
+	}
+
+	private ImageHandle initializeHandleFromSource(int zoom) {
+		ElementAtZoom<ImageData> imageDataAtZoom = loadImageData(zoom);
+		ImageData imageData = DPIUtil.scaleImageData(device, imageDataAtZoom.element(), zoom, imageDataAtZoom.zoom());
+		imageData = adaptImageDataIfDisabledOrGray(imageData);
+		return newImageHandle(imageData, zoom);
+	}
+
 }
 
 private class PlainImageDataProviderWrapper extends ImageFromImageDataProviderWrapper {
