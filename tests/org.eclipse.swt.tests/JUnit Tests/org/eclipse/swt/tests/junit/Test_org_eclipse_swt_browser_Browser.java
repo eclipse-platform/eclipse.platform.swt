@@ -683,6 +683,9 @@ public void test_LocationListener_ProgressListener_cancledLoad () {
 	AtomicBoolean unexpectedLocationChanged = new AtomicBoolean(false);
 	AtomicBoolean unexpectedProgressCompleted = new AtomicBoolean(false);
 
+	AtomicReference<String> unexpectedLocationChangedDetails = new AtomicReference<>("(empty)");
+	AtomicReference<String> unexpectedProgressCompletedDetails = new AtomicReference<>("(empty)");
+
 	browser.addLocationListener(new LocationListener() {
 		@Override
 		public void changing(LocationEvent event) {
@@ -691,16 +694,19 @@ public void test_LocationListener_ProgressListener_cancledLoad () {
 		}
 		@Override
 		public void changed(LocationEvent event) {
-			if (event.location.length() != 0) { // See footnote 1
+			if (!event.location.isEmpty()) { // See footnote 1
 				unexpectedLocationChanged.set(true);
+				unexpectedLocationChangedDetails.set(event.location);
 			}
 		}
 	});
 
 	browser.addProgressListener(completedAdapter(event -> {
 		String location = browser.getUrl();
-		if (location.length() != 0) { // See footnote 1
+		if (!location.isEmpty()) { // See footnote 1
 			unexpectedProgressCompleted.set(true);
+			unexpectedProgressCompletedDetails.set(location);
+
 		}
 	}));
 	shell.open();
@@ -720,8 +726,8 @@ public void test_LocationListener_ProgressListener_cancledLoad () {
 	}
 	String errMsg = "\nUnexpected event fired. \n"
 			+ "LocationChanging (should be true): " + locationChanging.get() + "\n"
-			+ "LocationChanged unexpectedly (should be false): " + unexpectedLocationChanged.get() + "\n"
-			+ "ProgressChanged unexpectedly (should be false): " + unexpectedProgressCompleted.get() + "\n";
+			+ "LocationChanged unexpectedly (should be false): " + unexpectedLocationChanged.get() + (unexpectedLocationChanged.get() ? " (" +unexpectedLocationChangedDetails.get() +")": "") + "\n"
+			+ "ProgressChanged unexpectedly (should be false): " + unexpectedProgressCompleted.get() + (unexpectedProgressCompleted.get() ? " (" +unexpectedProgressCompletedDetails.get() +")": "")+ "\n";
 
 
 	assertTrue(errMsg, passed);
