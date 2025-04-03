@@ -33,4 +33,6 @@ public interface RendererFactory {
 	TabFolderRenderer createTabFolderRenderer(TabFolder tabFolder);
 
 	CoolBarRenderer createCoolBarRenderer(CoolBar coolBar);
+
+	SashRenderer createSashRenderer(Sash sash);
 }

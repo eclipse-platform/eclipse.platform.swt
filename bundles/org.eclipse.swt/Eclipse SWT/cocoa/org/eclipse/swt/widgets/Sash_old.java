@@ -40,7 +40,7 @@ import org.eclipse.swt.internal.cocoa.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * @noextend This class is not intended to be subclassed by clients.
  */
-public class Sash extends Control {
+public class Sash_old extends Control {
 	Cursor sizeCursor;
 	boolean dragging;
 	int lastX, lastY, startX, startY;
@@ -78,7 +78,7 @@ public class Sash extends Control {
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
-public Sash (Composite parent, int style) {
+public Sash_old(Composite parent, int style) {
 	super (parent, checkStyle (style));
 	int cursorStyle = (style & SWT.VERTICAL) != 0 ? SWT.CURSOR_SIZEWE : SWT.CURSOR_SIZENS;
 	sizeCursor = new Cursor (display, cursorStyle);

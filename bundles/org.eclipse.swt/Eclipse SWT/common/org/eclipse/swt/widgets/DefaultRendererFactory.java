@@ -63,4 +63,9 @@ class DefaultRendererFactory implements RendererFactory {
 	public CoolBarRenderer createCoolBarRenderer(CoolBar coolBar) {
 		return new DefaultCoolBarRenderer(coolBar);
 	}
+	
+	@Override
+	public SashRenderer createSashRenderer(Sash sash) {
+		return new DefaultSashRenderer(sash);
+	}
 }
