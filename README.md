@@ -10,7 +10,7 @@ The best known SWT-based application is [Eclipse](https://www.eclipse.org).
 ## Getting Started
 
 SWT comes with platform-specific jar files.
-Download them from https://eclipse.dev/eclipse/swt and add the jar file to your classpath.
+Download them from https://download.eclipse.org/eclipse/downloads/drops4/S-4.36M1-202504031800/ and add the jar file to your classpath.
 
 ### Example
 ![Example](example.png)
