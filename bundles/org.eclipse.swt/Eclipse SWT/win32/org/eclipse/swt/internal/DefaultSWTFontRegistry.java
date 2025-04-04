@@ -72,7 +72,8 @@ final class DefaultSWTFontRegistry implements SWTFontRegistry {
 	}
 
 	private Font registerFont(FontData fontData, Font font) {
-		fontsMap.put(fontData, font);
+		FontData clonedFontData = new FontData(fontData.toString());
+		fontsMap.put(clonedFontData, font);
 		return font;
 	}
 
