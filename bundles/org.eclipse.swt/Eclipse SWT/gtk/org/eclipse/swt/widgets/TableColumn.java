@@ -45,7 +45,7 @@ public class TableColumn extends Item {
 	long labelHandle, imageHandle, buttonHandle;
 	Table parent;
 	int modelIndex, lastButton, lastTime, lastX, lastWidth;
-	boolean customDraw, useFixedWidth;
+	boolean customDraw, showImages, useFixedWidth;
 	String toolTipText;
 
 /**
@@ -606,7 +606,7 @@ public void setAlignment (int alignment) {
 	if (index == -1 || index == 0) return;
 	style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 	style |= alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
-	parent.createRenderers (handle, modelIndex, index == 0, style);
+	parent.createRenderers (handle, modelIndex, index == 0, showImages, style);
 }
 
 void setFontDescription (long font) {
