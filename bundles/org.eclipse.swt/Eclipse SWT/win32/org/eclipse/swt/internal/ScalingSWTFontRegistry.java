@@ -130,8 +130,9 @@ final class ScalingSWTFontRegistry implements SWTFontRegistry {
 		if (customFontsKeyMap.containsKey(fontData)) {
 			container = customFontsKeyMap.get(fontData);
 		} else {
-			container = new ScaledCustomFontContainer(fontData);
-			customFontsKeyMap.put(fontData, container);
+			FontData clonedFontData = new FontData(fontData.toString());
+			container = new ScaledCustomFontContainer(clonedFontData);
+			customFontsKeyMap.put(clonedFontData, container);
 		}
 		return container.getScaledFont(zoom);
 	}

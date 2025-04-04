@@ -45,6 +45,7 @@ public void test_ConstructorLjava_lang_String() {
 	FontData fd = new FontData(SwtTestUtil.testFontName, 10, SWT.NORMAL);
 	FontData reconstructedFontData = new FontData(fd.toString());
 	assertEquals(fd, reconstructedFontData);
+	assertEquals(fd.hashCode(), reconstructedFontData.hashCode());
 }
 
 @Test
