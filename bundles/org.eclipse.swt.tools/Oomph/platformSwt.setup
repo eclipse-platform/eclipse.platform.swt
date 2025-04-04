@@ -155,64 +155,6 @@
     <repository
         url="${eclipse.latest.p2}"/>
   </setupTask>
-  <project name="website"
-      label="Website">
-    <setupTask
-        xsi:type="git:GitCloneTask"
-        id="github.clone.swt.website"
-        remoteURI="eclipse-platform/www.eclipse.org-swt"
-        pushURI="">
-      <annotation
-          source="http://www.eclipse.org/oomph/setup/InducedChoices">
-        <detail
-            key="inherit">
-          <value>github.remoteURIs</value>
-        </detail>
-        <detail
-            key="label">
-          <value>Platform Website GitHub Repository</value>
-        </detail>
-        <detail
-            key="target">
-          <value>remoteURI</value>
-        </detail>
-      </annotation>
-      <configSections
-          name="branch">
-        <properties
-            key="autoSetupRebase"
-            value="always"/>
-      </configSections>
-      <description>SWT Website</description>
-    </setupTask>
-    <setupTask
-        xsi:type="setup.targlets:TargletTask">
-      <targlet
-          name="SWT Website">
-        <requirement
-            name="*"/>
-        <sourceLocator
-            rootFolder="${github.clone.swt.website.location}"/>
-      </targlet>
-    </setupTask>
-    <setupTask
-        xsi:type="setup.workingsets:WorkingSetTask"
-        id="swt.website.workingsets">
-      <workingSet
-          name="SWT  Website">
-        <predicate
-            xsi:type="predicates:AndPredicate">
-          <operand
-              xsi:type="predicates:RepositoryPredicate"
-              project="swt"/>
-        </predicate>
-      </workingSet>
-    </setupTask>
-    <stream
-        name="master"
-        label="Master"/>
-    <description>The SWT Website</description>
-  </project>
   <stream name="master"
       label="Master"/>
   <logicalProjectContainer
