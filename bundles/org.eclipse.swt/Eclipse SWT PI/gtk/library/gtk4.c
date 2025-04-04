@@ -127,6 +127,22 @@ JNIEXPORT jlong JNICALL GTK4_NATIVE(gdk_1content_1formats_1builder_1new)
 }
 #endif
 
+#ifndef NO_gdk_1content_1formats_1get_1gtypes
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gdk_1content_1formats_1get_1gtypes)
+	(JNIEnv *env, jclass that, jlong arg0, jlongArray arg1)
+{
+	jlong *lparg1=NULL;
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gdk_1content_1formats_1get_1gtypes_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetLongArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jlong)gdk_content_formats_get_gtypes((GdkContentFormats *)arg0, (gsize *)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseLongArrayElements(env, arg1, lparg1, 0);
+	GTK4_NATIVE_EXIT(env, that, gdk_1content_1formats_1get_1gtypes_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gdk_1content_1formats_1to_1string
 JNIEXPORT jlong JNICALL GTK4_NATIVE(gdk_1content_1formats_1to_1string)
 	(JNIEnv *env, jclass that, jlong arg0)

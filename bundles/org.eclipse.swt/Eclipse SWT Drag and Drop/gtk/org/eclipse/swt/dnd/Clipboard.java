@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -570,7 +570,6 @@ public TransferData[] getAvailableTypes() {
 public TransferData[] getAvailableTypes(int clipboards) {
 	checkWidget();
 
-	//TODO: [GTK4] This currently will not work in GTK4
 	TransferData[] result = null;
 	if ((clipboards & DND.CLIPBOARD) != 0) {
 		int[] types = getAvailableClipboardTypes();
@@ -656,27 +655,36 @@ public String[] getAvailableTypeNames() {
 }
 
 private  int[] getAvailablePrimaryTypes() {
-	int[] types = new int[0];
-	long selection_data = gtk_clipboard_wait_for_contents(GTKPRIMARYCLIPBOARD, TARGET);
-	if (selection_data != 0) {
-		try {
-			int length = GTK3.gtk_selection_data_get_length(selection_data);
-			int format = GTK3.gtk_selection_data_get_format(selection_data);
-			long data = GTK3.gtk_selection_data_get_data(selection_data);
-			if (length != 0) {
-				types = new int[length * 8 / format];
-				C.memmove(types, data, length);
-			}
-		} finally {
-			GTK3.gtk_selection_data_free(selection_data);
-		}
+	if (GTK.GTK4) {
+		return gtk4_getAvailableTypes(GTKPRIMARYCLIPBOARD);
+	}
+	return gtk3_getAvailableTypes(GTKPRIMARYCLIPBOARD);
+}
+private int[] getAvailableClipboardTypes () {
+	if (GTK.GTK4) {
+		return gtk4_getAvailableTypes(GTKCLIPBOARD);
+	}
+	return gtk3_getAvailableTypes(GTKCLIPBOARD);
+}
+
+private int[] gtk4_getAvailableTypes(long clipboard) {
+	long formats = GTK4.gdk_clipboard_get_formats(clipboard);
+	long[] n_gtypes = new long[1];
+	long gtypes = GTK4.gdk_content_formats_get_gtypes(formats, n_gtypes);
+
+	int gtypes_length = (int) n_gtypes[0];
+	int[] types = new int[gtypes_length];
+	for (int i = 0 ; i < gtypes_length ; ++i) {
+		long[] ptr = new long[1];
+		C.memmove(ptr, gtypes + i * C.PTR_SIZEOF, C.PTR_SIZEOF);
+		types[i] = (int) ptr[0];
 	}
 	return types;
 }
-private int[] getAvailableClipboardTypes () {
 
+private int[] gtk3_getAvailableTypes(long clipboard) {
 	int[] types = new int[0];
-	long selection_data  = gtk_clipboard_wait_for_contents(GTKCLIPBOARD, TARGET);
+	long selection_data = gtk_clipboard_wait_for_contents(clipboard, TARGET);
 	if (selection_data != 0) {
 		try {
 			int length = GTK3.gtk_selection_data_get_length(selection_data);

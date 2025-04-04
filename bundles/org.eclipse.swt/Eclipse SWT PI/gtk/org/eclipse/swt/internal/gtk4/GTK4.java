@@ -818,6 +818,11 @@ public class GTK4 {
 	public static final native long gdk_content_provider_new_union(long[] providers, int n_providers);
 	/** @param formats cast=(GdkContentFormats *) */
 	public static final native long gdk_content_formats_to_string(long formats);
+	/**
+	 * @param formats cast=(GdkContentFormats *)
+	 * @param n_gtypes cast=(gsize *)
+	 */
+	public static final native long gdk_content_formats_get_gtypes(long formats, long[] n_gtypes);
 
 	public static final native long gtk_gesture_rotate_new();
 
