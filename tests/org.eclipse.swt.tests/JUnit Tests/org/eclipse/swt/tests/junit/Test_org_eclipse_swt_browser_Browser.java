@@ -102,8 +102,7 @@ import org.junit.runners.Parameterized.Parameters;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class Test_org_eclipse_swt_browser_Browser extends Test_org_eclipse_swt_widgets_Composite {
 
-	// TODO Reduce to reasonable value
-	private static Duration MAXIMUM_BROWSER_CREATION_TIME = Duration.ofSeconds(90);
+	private static Duration MAXIMUM_BROWSER_CREATION_TIME = Duration.ofSeconds(10);
 
 	static {
 		try {
@@ -111,7 +110,7 @@ public class Test_org_eclipse_swt_browser_Browser extends Test_org_eclipse_swt_w
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		System.setProperty("org.eclipse.swt.internal.win32.Edge.timeout", Long.toString(MAXIMUM_BROWSER_CREATION_TIME.toMillis()));
+		System.setProperty("org.eclipse.swt.internal.win32.Edge.timeout", Long.toString(Duration.ofSeconds(90).toMillis()));
 	}
 
 	// CONFIG
@@ -203,6 +202,7 @@ public void setUp() {
 	}
 	shell.setText(shellTitle);
 	setWidget(browser); // For browser to occupy the whole shell, not just half of it.
+	shell.open();
 
 	testLog = new StringBuilder("\nTest log:\n");
 	if (SwtTestUtil.isGTK) {
@@ -1439,6 +1439,7 @@ public void test_VisibilityWindowListener_eventSize() {
 @Override
 @Test
 public void test_isVisible() {
+	shell.setVisible(false);
 	// Note. This test sometimes crashes with webkit1 because shell.setVisible() calls g_main_context_iteration(). See Bug 509411
 	// To reproduce, try running test suite 20 times in a loop.
 	super.test_isVisible();
