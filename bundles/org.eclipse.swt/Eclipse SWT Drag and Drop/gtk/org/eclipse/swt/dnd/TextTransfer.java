@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -141,22 +141,22 @@ public Object nativeToJava(TransferData transferData){
 
 @Override
 protected int[] getTypeIds() {
-	if (OS.isX11()) {
-		return new int[] {UTF8_STRING_ID, COMPOUND_TEXT_ID, STRING_ID};
-	}
 	if(GTK.GTK4) {
 		return new int[] {(int) OS.G_TYPE_STRING()};
+	}
+	if (OS.isX11()) {
+		return new int[] {UTF8_STRING_ID, COMPOUND_TEXT_ID, STRING_ID};
 	}
 	return new int[] {UTF8_STRING_ID, STRING_ID, TEXT_PLAIN_UTF8_ID};
 }
 
 @Override
 protected String[] getTypeNames() {
-	if (OS.isX11()) {
-		return new String[] {UTF8_STRING, COMPOUND_TEXT, STRING};
-	}
 	if(GTK.GTK4) {
 		return new String[] {"text/plain", STRING};
+	}
+	if (OS.isX11()) {
+		return new String[] {UTF8_STRING, COMPOUND_TEXT, STRING};
 	}
 
 	return new String[] {UTF8_STRING, STRING, TEXT_PLAIN_UTF8};
