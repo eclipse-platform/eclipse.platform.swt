@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2024 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -806,7 +806,9 @@ long gtk_button_release_event (long widget, long event) {
  * @param y the y coordinate, in widget allocation coordinates
  * @param event the GdkEvent captured
  */
-void gtk_gesture_press_event(long gesture, int n_press, double x, double y, long event) {}
+int gtk_gesture_press_event(long gesture, int n_press, double x, double y, long event) {
+	return GTK4.GTK_EVENT_SEQUENCE_NONE;
+}
 
 /**
  * @param gesture the corresponding controller responsible for capturing the event
@@ -815,7 +817,9 @@ void gtk_gesture_press_event(long gesture, int n_press, double x, double y, long
  * @param y the y coordinate, in widget allocation coordinates
  * @param event the GdkEvent captured
  */
-void gtk_gesture_release_event(long gesture, int n_press, double x, double y, long event) {}
+int gtk_gesture_release_event(long gesture, int n_press, double x, double y, long event) {
+	return GTK4.GTK_EVENT_SEQUENCE_NONE;
+}
 
 /**
  * @param controller the corresponding controller responsible for capturing the event
@@ -2531,15 +2535,20 @@ boolean keyPressReleaseProc(long controller, int keyval, int keycode, int state,
 
 void gesturePressReleaseProc(long gesture, int n_press, double x, double y, long user_data) {
 	long event = GTK4.gtk_event_controller_get_current_event(gesture);
+	long sequence = GTK4.gtk_gesture_get_last_updated_sequence(gesture);
+
+	int result = GTK4.GTK_EVENT_SEQUENCE_NONE;
 
 	switch ((int)user_data) {
 		case GESTURE_PRESSED:
-			gtk_gesture_press_event(gesture, n_press, x, y, event);
+			result = gtk_gesture_press_event(gesture, n_press, x, y, event);
 			break;
 		case GESTURE_RELEASED:
-			gtk_gesture_release_event(gesture, n_press, x, y, event);
+			result = gtk_gesture_release_event(gesture, n_press, x, y, event);
 			break;
 	}
+
+	GTK4.gtk_gesture_set_sequence_state(gesture, sequence, result);
 }
 
 void leaveProc(long controller, long handle, long user_data) {

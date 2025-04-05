@@ -2222,7 +2222,7 @@ long gtk_button_release_event (long widget, long event) {
 }
 
 @Override
-void gtk_gesture_release_event(long gesture, int n_press, double x, double y, long event) {
+int gtk_gesture_release_event(long gesture, int n_press, double x, double y, long event) {
 	if (isDate() || isTime()) {
 		int button = GTK.gtk_gesture_single_get_current_button(gesture);
 
@@ -2231,7 +2231,7 @@ void gtk_gesture_release_event(long gesture, int n_press, double x, double y, lo
 		}
 	}
 
-	super.gtk_gesture_release_event(gesture, n_press, x, y, event);
+	return super.gtk_gesture_release_event(gesture, n_press, x, y, event);
 }
 
 /**

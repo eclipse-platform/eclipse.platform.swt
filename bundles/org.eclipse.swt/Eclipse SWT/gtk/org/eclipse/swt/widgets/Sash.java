@@ -170,11 +170,11 @@ void createHandle(int index) {
 }
 
 @Override
-void gtk_gesture_press_event(long gesture, int n_press, double x, double y, long event) {
-	super.gtk_gesture_press_event(gesture, n_press, x, y, event);
+int gtk_gesture_press_event(long gesture, int n_press, double x, double y, long event) {
+	int result = super.gtk_gesture_press_event(gesture, n_press, x, y, event);
 
 	int eventButton = GDK.gdk_button_event_get_button(event);
-	if (eventButton != 1 || n_press != 1) return;
+	if (eventButton != 1 || n_press != 1) return result;
 
 	startX = (int)x;
 	startY = (int)y;
@@ -197,20 +197,24 @@ void gtk_gesture_press_event(long gesture, int n_press, double x, double y, long
 	}
 	if ((parent.style & SWT.MIRRORED) != 0) jEvent.x = DPIUtil.autoScaleDown(parent.getClientWidth() - width) - jEvent.x;
 	sendSelectionEvent(SWT.Selection, jEvent, true);
-	if (isDisposed()) return;
+	if (isDisposed()) return result;
 
 	if (jEvent.doit) {
 		dragging = true;
 	}
+
+	return result;
 }
 
 @Override
-void gtk_gesture_release_event(long gesture, int n_press, double x, double y, long event) {
-	super.gtk_gesture_release_event(gesture, n_press, x, y, event);
+int gtk_gesture_release_event(long gesture, int n_press, double x, double y, long event) {
+	int result = super.gtk_gesture_release_event(gesture, n_press, x, y, event);
 
 	int eventButton = GDK.gdk_button_event_get_button(event);
-	if (eventButton != 1 || !dragging) return;
+	if (eventButton != 1 || !dragging) return result;
 	dragging = false;
+
+	return result;
 }
 
 @Override

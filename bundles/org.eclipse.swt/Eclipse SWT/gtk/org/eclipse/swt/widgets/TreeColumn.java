@@ -365,10 +365,12 @@ long gtk_clicked (long widget) {
 }
 
 @Override
-void gtk_gesture_press_event(long gesture, int n_press, double x, double y, long event) {
+int gtk_gesture_press_event(long gesture, int n_press, double x, double y, long event) {
 	boolean doubleClick = n_press >= 2 ? true : false;
 
 	sendSelectionEvent(doubleClick ? SWT.DefaultSelection : SWT.Selection);
+
+	return GTK4.GTK_EVENT_SEQUENCE_NONE;
 }
 
 @Override
