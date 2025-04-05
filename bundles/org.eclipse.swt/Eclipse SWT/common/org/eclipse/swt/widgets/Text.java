@@ -446,24 +446,31 @@ public class Text extends NativeBasedCustomScrollable {
 
 		GC gc = new GC(this);
 		String[] textLines = model.getLines();
-		int clickedLine = Math.min(Math.round(y / getLineHeight(gc)), textLines.length - 1);
+		int clickedLine = Math.min(y / getLineHeight(gc), textLines.length - 1);
 		int selectedLine = Math.min(clickedLine, textLines.length - 1);
-		String text = "";
-		if (clickedLine > selectedLine) {
-			text = textLines[selectedLine];
-		} else {
-			text = textLines[selectedLine];
-			for (int i = 0; i < text.length(); i++) {
-				Point textLocationPixel = getLocationByTextLocation(new TextLocation(selectedLine, i), gc);
+		String text = textLines[selectedLine];
+		if (clickedLine == selectedLine && text.length() > 0) {
+			int before = 0;
+			int after = text.length();
+			while (true) {
+				int middle = (before + after) / 2;
+				final int middleX = getLocationByTextLocation(new TextLocation(selectedLine, middle), gc).x;
+				if (middleX > x) {
+					after = middle;
+					continue;
+				}
 
-				if (textLocationPixel.x >= x + 5) {
-					if (i > 0) {
-						text = text.substring(0, i - 1);
-					} else {
-						text = "";
+				if (after - middle == 1) {
+					final int afterX = getLocationByTextLocation(new TextLocation(selectedLine, after), gc).x;
+					if (afterX - x < x - middleX) {
+						text = text.substring(0, after);
+					}
+					else {
+						text = text.substring(0, middle);
 					}
 					break;
 				}
+				before = middle;
 			}
 		}
 		gc.dispose();
