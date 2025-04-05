@@ -542,9 +542,11 @@ public class SkijaGC extends GCHandle {
 			return;
 		}
 		if ((flags & (SWT.TRANSPARENT | SWT.DRAW_TRANSPARENT)) == 0) {
-			int textWidth = (int) textBlob.getBounds().getWidth();
-			int fontHeight = (int) font.getMetrics().getHeight();
-			fillRectangle(x, y, textWidth, fontHeight);
+			int textWidth = Math.round(textBlob.getBounds().getWidth());
+			int fontHeight = Math.round(font.getMetrics().getHeight());
+			performDrawFilled(
+					paint -> surface.getCanvas().drawRect(new Rect(DPIUtil.autoScaleUp(x), DPIUtil.autoScaleUp(y),
+							DPIUtil.autoScaleUp(x) + textWidth, DPIUtil.autoScaleUp(y) + fontHeight), paint));
 		}
 		Point point = calculateSymbolCenterPoint(x, y);
 		performDrawText(paint -> surface.getCanvas().drawTextBlob(textBlob, point.x, point.y, paint));
