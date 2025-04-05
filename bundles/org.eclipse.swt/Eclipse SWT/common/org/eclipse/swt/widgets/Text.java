@@ -188,6 +188,7 @@ public class Text extends NativeBasedCustomScrollable {
 			case SWT.MouseUp -> Text.this.onMouseUp(event);
 			case SWT.MouseWheel -> Text.this.onMouseWheel(event);
 			case SWT.KeyDown -> Text.this.keyPressed(event);
+			case SWT.Traverse -> Text.this.onTraverse(event);
 			case SWT.FocusIn -> Text.this.focusGained(event);
 			case SWT.FocusOut -> Text.this.focusLost(event);
 			case SWT.Gesture -> Text.this.onGesture(event);
@@ -200,6 +201,7 @@ public class Text extends NativeBasedCustomScrollable {
 		addListener(SWT.MouseUp, listener);
 		addListener(SWT.MouseWheel, listener);
 		addListener(SWT.KeyDown, listener);
+		addListener(SWT.Traverse, listener);
 		addListener(SWT.FocusIn, listener);
 		addListener(SWT.FocusOut, listener);
 		addListener(SWT.Gesture, listener);
@@ -419,6 +421,17 @@ public class Text extends NativeBasedCustomScrollable {
 				model.insert(e.character);
 			}
 		}
+		}
+	}
+
+	private void onTraverse(Event e) {
+		switch (e.detail) {
+		case SWT.TRAVERSE_TAB_NEXT -> {
+			if ((style & SWT.MULTI) == 0 || (e.stateMask & SWT.MODIFIER_MASK) == 0) {
+				e.doit = false;
+			}
+		}
+		default -> e.doit = false;
 		}
 	}
 
