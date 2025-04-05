@@ -694,7 +694,7 @@ public void test_LocationListener_ProgressListener_cancledLoad () {
 		}
 		@Override
 		public void changed(LocationEvent event) {
-			if (!event.location.isEmpty()) { // See footnote 1
+			if (!event.location.isEmpty() && !event.location.equals("about:blank")) { // See footnote 1
 				unexpectedLocationChanged.set(true);
 				unexpectedLocationChangedDetails.set(event.location);
 			}
@@ -703,7 +703,7 @@ public void test_LocationListener_ProgressListener_cancledLoad () {
 
 	browser.addProgressListener(completedAdapter(event -> {
 		String location = browser.getUrl();
-		if (!location.isEmpty()) { // See footnote 1
+		if (!location.isEmpty() && !location.equals("about:blank")) { // See footnote 1
 			unexpectedProgressCompleted.set(true);
 			unexpectedProgressCompletedDetails.set(location);
 
