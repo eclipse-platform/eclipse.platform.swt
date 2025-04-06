@@ -58,6 +58,34 @@ public abstract class FileFormat {
 		} catch (NoClassDefFoundError e) { } // ignore format
 	}
 
+	public static int getImageFormatFromFileExtension(String extension) {
+		return switch (extension.toLowerCase(Locale.ROOT)) {
+		case "bmp" -> SWT.IMAGE_BMP;
+		case "gif" -> SWT.IMAGE_GIF;
+		case "ico" -> SWT.IMAGE_ICO;
+		case "jpg", "jpeg" -> SWT.IMAGE_JPEG;
+		case "png" -> SWT.IMAGE_PNG;
+		case "tiff" -> SWT.IMAGE_TIFF;
+		case "svg" -> SWT.IMAGE_SVG;
+		default -> SWT.IMAGE_UNDEFINED;
+		};
+	}
+
+	public static String getImageFileExtensionFromFormat(int format) {
+		String typeStr = switch (format) {
+		case SWT.IMAGE_BMP_RLE -> "bmp";
+		case SWT.IMAGE_BMP -> "bmp";
+		case SWT.IMAGE_GIF -> "gif";
+		case SWT.IMAGE_ICO -> "ico";
+		case SWT.IMAGE_JPEG -> "jpeg";
+		case SWT.IMAGE_PNG -> "png";
+		case SWT.IMAGE_TIFF -> "tiff";
+		case SWT.IMAGE_SVG -> "svg";
+		default -> "";
+		};
+		return typeStr;
+	}
+
 	public static final int DEFAULT_ZOOM = 100;
 
 	private static Optional<FileFormat> determineFileFormat(LEDataInputStream stream) {
