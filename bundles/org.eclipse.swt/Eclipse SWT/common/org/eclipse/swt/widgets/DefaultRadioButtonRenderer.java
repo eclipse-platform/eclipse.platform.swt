@@ -159,23 +159,24 @@ public class DefaultRadioButtonRenderer extends ButtonRenderer {
 	}
 
 	private void drawRadioButton(GC gc, int x, int y) {
+		final boolean enabled = isEnabled();
 		if (isSelected()) {
-			gc.setBackground(isEnabled() ? SELECTION_COLOR : DISABLED_COLOR);
+			gc.setBackground(enabled ? SELECTION_COLOR : DISABLED_COLOR);
 			int partialBoxBorder = 2;
 			gc.fillOval(x + partialBoxBorder, y + partialBoxBorder,
 					BOX_SIZE - 2 * partialBoxBorder + 1, BOX_SIZE - 2 * partialBoxBorder + 1);
 		}
 
-		if (!isEnabled()) {
+		if (enabled) {
+			gc.setForeground(FOREGROUND_COLOR);
+			if (isHover()) {
+				gc.setBackground(HOVER_COLOR);
+				int partialBoxBorder = isSelected() ? 4 : 0;
+				gc.fillOval(x + partialBoxBorder, y + partialBoxBorder,
+						BOX_SIZE - 2 * partialBoxBorder + 1, BOX_SIZE - 2 * partialBoxBorder + 1);
+			}
+		} else {
 			gc.setForeground(BORDER_DISABLED_COLOR);
-		} else if (isHover()) {
-			gc.setBackground(HOVER_COLOR);
-			int partialBoxBorder = isSelected() ? 4 : 0;
-			gc.fillOval(x + partialBoxBorder, y + partialBoxBorder,
-					BOX_SIZE - 2 * partialBoxBorder + 1, BOX_SIZE - 2 * partialBoxBorder + 1);
-		}
-		else {
-			gc.setForeground(BACKGROUND_COLOR);
 		}
 		gc.drawOval(x, y, BOX_SIZE, BOX_SIZE);
 	}
