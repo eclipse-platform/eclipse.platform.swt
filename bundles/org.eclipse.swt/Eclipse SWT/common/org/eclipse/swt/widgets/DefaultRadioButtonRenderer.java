@@ -144,7 +144,7 @@ public class DefaultRadioButtonRenderer extends ButtonRenderer {
 			int textTopOffset = (height - 1 - textHeight) / 2;
 			int textLeftOffset = contentArea.x + imageSpace;
 			gc.drawFocus(textLeftOffset - 2, textTopOffset, textWidth + 4,
-					textHeight);
+					textHeight - 1);
 		}
 	}
 
