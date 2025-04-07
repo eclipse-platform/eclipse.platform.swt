@@ -54,6 +54,9 @@ public class Label extends CustomControl {
 
 	private final LabelRenderer renderer;
 
+	private String text;
+	private Image image;
+
 	private boolean ignoreDispose;
 
 	/**
@@ -231,7 +234,7 @@ public class Label extends CustomControl {
 		 * the widget.
 		 */
 		// checkWidget();
-		return renderer.getImage();
+		return image;
 	}
 
 	/**
@@ -291,7 +294,6 @@ public class Label extends CustomControl {
 		 * the widget.
 		 */
 		// checkWidget();
-		final String text = renderer.getText();
 		return text != null ? text : "";
 	}
 
@@ -333,7 +335,7 @@ public class Label extends CustomControl {
 
 			@Override
 			public void getKeyboardShortcut(AccessibleEvent e) {
-				char mnemonic = _findMnemonic(renderer.getText());
+				char mnemonic = _findMnemonic(text);
 				if (mnemonic != '\0') {
 					e.result = "Alt+" + mnemonic; //$NON-NLS-1$
 				}
@@ -383,11 +385,13 @@ public class Label extends CustomControl {
 		notifyListeners(event.type, event);
 		event.type = SWT.NONE;
 
+		text = null;
+		image = null;
 		renderer.dispose();
 	}
 
 	private void onMnemonic(Event event) {
-		char mnemonic = _findMnemonic(renderer.getText());
+		char mnemonic = _findMnemonic(text);
 		if (mnemonic == '\0') {
 			return;
 		}
@@ -612,8 +616,8 @@ public class Label extends CustomControl {
 	 */
 	public void setImage(Image image) {
 		checkWidget();
-		if (image != renderer.getImage()) {
-			renderer.setImage(image);
+		if (image != this.image) {
+			this.image = image;
 			redraw();
 		}
 	}
@@ -731,8 +735,8 @@ public class Label extends CustomControl {
 		if (text == null) {
 			text = ""; //$NON-NLS-1$
 		}
-		if (!text.equals(renderer.getText())) {
-			renderer.setText(text);
+		if (!text.equals(this.text)) {
+			this.text = text;
 			redraw();
 		}
 	}

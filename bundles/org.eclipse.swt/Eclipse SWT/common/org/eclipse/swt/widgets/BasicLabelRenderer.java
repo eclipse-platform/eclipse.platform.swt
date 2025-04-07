@@ -36,8 +36,8 @@ public class BasicLabelRenderer extends LabelRenderer {
 
 	@Override
 	public Point computeDefaultSize() {
-		final String text = getText();
-		final Image image = getImage();
+		final String text = label.getText();
+		final Image image = label.getImage();
 
 		int lineWidth = 0;
 		int lineHeight = 0;
@@ -72,8 +72,8 @@ public class BasicLabelRenderer extends LabelRenderer {
 
 	@Override
 	protected void paint(GC gc, int width, int height) {
-		String text = getText();
-		Image image = getImage();
+		String text = label.getText();
+		Image image = label.getImage();
 		if ((text == null || text.isEmpty()) && image == null) {
 			return;
 		}
@@ -124,6 +124,7 @@ public class BasicLabelRenderer extends LabelRenderer {
 			x = width - getRightMargin() - extent.x;
 		}
 
+		int style = label.getStyle();
 		// draw a background image behind the text
 		try {
 			final Image backgroundImage = getBackgroundImage();
@@ -200,14 +201,13 @@ public class BasicLabelRenderer extends LabelRenderer {
 				}
 			}
 		} catch (SWTException e) {
-			if ((getStyle() & SWT.DOUBLE_BUFFERED) == 0) {
+			if ((style & SWT.DOUBLE_BUFFERED) == 0) {
 				gc.setBackground(getBackground());
 				gc.fillRectangle(0, 0, width, height);
 			}
 		}
 
 		// draw border
-		int style = getStyle();
 		if ((style & SWT.SHADOW_IN) != 0 || (style & SWT.SHADOW_OUT) != 0) {
 			paintBorder(gc, width, height);
 		}
@@ -265,7 +265,7 @@ public class BasicLabelRenderer extends LabelRenderer {
 		}
 
 		if (lines != null) {
-			gc.setForeground(isEnabled() ? label.getForeground() : DISABLED_COLOR);
+			gc.setForeground(label.isEnabled() ? label.getForeground() : DISABLED_COLOR);
 			for (String line : lines) {
 				int lineX = x;
 				if (lines.length > 1) {
@@ -292,7 +292,7 @@ public class BasicLabelRenderer extends LabelRenderer {
 		Color c1 = null;
 		Color c2 = null;
 
-		int style = getStyle();
+		int style = label.getStyle();
 		if ((style & SWT.SHADOW_IN) != 0) {
 			c1 = SHADOW_IN_COLOR1;
 			c2 = SHADOW_IN_COLOR2;

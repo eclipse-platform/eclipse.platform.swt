@@ -29,8 +29,6 @@ public abstract class LabelRenderer extends ControlRenderer {
 
 	protected static final int DEFAULT_MARGIN = 3;
 
-	private String text;
-	private Image image;
 	// The tooltip is used for two purposes - the application can set
 	// a tooltip or the tooltip can be used to display the full text when the
 	// the text has been truncated due to the label being too short.
@@ -56,22 +54,6 @@ public abstract class LabelRenderer extends ControlRenderer {
 	protected LabelRenderer(Label label) {
 		super(label);
 		this.label = label;
-	}
-
-	public String getText() {
-		return text;
-	}
-
-	public void setText(String text) {
-		this.text = text;
-	}
-
-	public Image getImage() {
-		return image;
-	}
-
-	public void setImage(Image image) {
-		this.image = image;
 	}
 
 	public int getLeftMargin() {
@@ -129,8 +111,6 @@ public abstract class LabelRenderer extends ControlRenderer {
 		gradientColors = null;
 		gradientPercents = null;
 		backgroundImage = null;
-		text = null;
-		setImage(null);
 		toolTipText = null;
 	}
 

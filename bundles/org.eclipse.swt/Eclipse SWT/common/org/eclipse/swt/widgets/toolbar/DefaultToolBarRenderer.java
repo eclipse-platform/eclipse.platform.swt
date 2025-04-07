@@ -28,12 +28,10 @@ public class DefaultToolBarRenderer extends ToolBarRenderer {
 
 	public static final Color COLOR_SEPARATOR = new Color(Display.getDefault(), 160, 160, 160);
 
-	private final ToolBar bar;
 	private int rowCount = SWT.DEFAULT;
 
 	public DefaultToolBarRenderer(ToolBar toolbar) {
 		super(toolbar);
-		this.bar = toolbar;
 	}
 
 	@Override
@@ -46,14 +44,14 @@ public class DefaultToolBarRenderer extends ToolBarRenderer {
 	}
 
 	private void render(GC gc, Point size, List<Row> rows) {
-		if (bar.isShadowOut()) {
+		if (toolBar.isShadowOut()) {
 			gc.setForeground(new Color(160, 160, 160));
 			gc.drawLine(0, 0, size.x, 0);
 		}
 
 		for (Row row : rows) {
 			for (ItemRecord itemRecord : row.items) {
-				final ToolItem item = bar.getItem(itemRecord.index());
+				final ToolItem item = toolBar.getItem(itemRecord.index());
 				item.render(gc, itemRecord.bounds());
 			}
 			if (row.hasRowSeparator) {
@@ -71,16 +69,16 @@ public class DefaultToolBarRenderer extends ToolBarRenderer {
 	private ToolBarLayout computeLayout(Point size) {
 		// Collect all item sizes
 		List<ItemRecord> itemRecords = new ArrayList<>();
-		for (int i = 0; i < bar.getItemCount(); i++) {
-			ToolItem item = bar.getItem(i);
+		for (int i = 0; i < toolBar.getItemCount(); i++) {
+			ToolItem item = toolBar.getItem(i);
 			Point preferredSize = item.getSize();
 			Rectangle initialBounds = new Rectangle(0, 0, preferredSize.x, preferredSize.y);
 			ItemRecord itemRecord = new ItemRecord(i, initialBounds, item.isSeparator());
 			itemRecords.add(itemRecord);
 		}
 
-		ToolBarLayoutGenerator generator = new ToolBarLayoutGenerator(itemRecords, size, bar.isHorizontal(),
-				bar.isWrap(), bar.isShadowOut(), bar.isRightToLeft(), bar.isFlat());
+		ToolBarLayoutGenerator generator = new ToolBarLayoutGenerator(itemRecords, size, toolBar.isHorizontal(),
+				toolBar.isWrap(), toolBar.isShadowOut(), toolBar.isRightToLeft(), toolBar.isFlat());
 
 		return generator.computeLayout();
 	}
@@ -91,7 +89,7 @@ public class DefaultToolBarRenderer extends ToolBarRenderer {
 		ToolBarLayout layout = computeLayout(new Point(widthHint, heightHint));
 
 		Point computedSize = layout.size();
-		if (bar.isBorder()) {
+		if (toolBar.isBorder()) {
 			computedSize.x += 4;
 			computedSize.y += 4;
 		}
@@ -112,7 +110,7 @@ public class DefaultToolBarRenderer extends ToolBarRenderer {
 	@Override
 	public int rowCount() {
 		if (rowCount == SWT.DEFAULT) {
-			Point size = getSize();
+			Point size = toolBar.getSize();
 			rowCount = computeLayout(size).rows().size();
 		}
 		return rowCount;

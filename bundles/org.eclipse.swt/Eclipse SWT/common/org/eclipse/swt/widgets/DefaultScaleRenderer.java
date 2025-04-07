@@ -57,9 +57,9 @@ public class DefaultScaleRenderer extends ScaleRenderer {
 
 	@Override
 	public void paint(GC gc, int width, int height) {
-		int value = getSelection();
-		int min = getMinimum();
-		int max = getMaximum();
+		int value = scale.getSelection();
+		int min = scale.getMinimum();
+		int max = scale.getMaximum();
 		int units = Math.max(1, max - min);
 		int effectiveValue = Math.min(max, Math.max(min, value));
 
@@ -90,7 +90,7 @@ public class DefaultScaleRenderer extends ScaleRenderer {
 		drawNotch(gc, lastNotch, 4);
 
 		// draw center notches
-		int unitPerPage = getPageIncrement();
+		int unitPerPage = scale.getPageIncrement();
 		double totalPixel = lastNotch - firstNotch;
 		ppu = totalPixel / units;
 		drawCenterNotches(gc, firstNotch, lastNotch, units, unitPerPage);
@@ -115,7 +115,7 @@ public class DefaultScaleRenderer extends ScaleRenderer {
 	private void drawHandle(GC gc, int value) {
 		// draw handle
 		Color handleColor;
-		if (isEnabled()) {
+		if (scale.isEnabled()) {
 			handleColor = switch (getHandleState()) {
 				case IDLE -> IDLE_COLOR;
 				case HOVER -> HOVER_COLOR;
@@ -149,7 +149,7 @@ public class DefaultScaleRenderer extends ScaleRenderer {
 	}
 
 	private boolean isRTL() {
-		return getOrientation() == SWT.RIGHT_TO_LEFT;
+		return scale.getOrientation() == SWT.RIGHT_TO_LEFT;
 	}
 
 	private void drawNotch(GC gc, int pos, int size) {
@@ -201,6 +201,6 @@ public class DefaultScaleRenderer extends ScaleRenderer {
 	}
 
 	private Point mirrorVertically(Point p) {
-		return new Point(getSize().x - p.x, p.y);
+		return new Point(scale.getSize().x - p.x, p.y);
 	}
 }

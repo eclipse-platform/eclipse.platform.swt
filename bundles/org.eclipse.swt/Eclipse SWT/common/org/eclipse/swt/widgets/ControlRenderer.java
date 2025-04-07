@@ -13,8 +13,10 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Drawing;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Point;
 
 import java.util.function.Function;
 
@@ -33,27 +35,6 @@ public abstract class ControlRenderer {
 	public final void paint(GC gc) {
 		final Point size = control.getSize();
 		paint(gc, size.x, size.y);
-	}
-
-	protected final Point getSize() {
-		return control.getSize();
-	}
-
-	protected final boolean isEnabled() {
-		return control.isEnabled();
-	}
-
-	protected final boolean hasFocus() {
-		return control.hasFocus();
-	}
-
-	protected final int getStyle() {
-		return control.getStyle();
-	}
-
-	protected final boolean hasBorder() {
-		final int style = getStyle();
-		return (style & SWT.BORDER) != 0;
 	}
 
 	protected final <T> T measure(Function<GC, T> function) {

@@ -48,7 +48,7 @@ public class DefaultSliderRenderer extends SliderRenderer {
 		gc.setBackground(slider.getBackground());
 		gc.fillRectangle(0, 0, width, height);
 
-		gc.setForeground(isEnabled() ? slider.getForeground() : DISABLED_COLOR);
+		gc.setForeground(slider.isEnabled() ? slider.getForeground() : DISABLED_COLOR);
 
 		if (slider.isVertical()) {
 			int trackX = (width - 7) / 2;
@@ -104,7 +104,7 @@ public class DefaultSliderRenderer extends SliderRenderer {
 	private void drawRoundRectWithBorder(GC gc, Rectangle rect) {
 		final int arcSize = 10;
 		gc.fillRoundRectangle(rect.x, rect.y, rect.width + 1, rect.height + 1, arcSize, arcSize);
-		if (isEnabled()) {
+		if (slider.isEnabled()) {
 			gc.drawRoundRectangle(rect.x, rect.y, rect.width, rect.height, arcSize, arcSize);
 		}
 	}

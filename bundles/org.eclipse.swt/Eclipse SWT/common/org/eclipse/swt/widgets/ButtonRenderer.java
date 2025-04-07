@@ -31,27 +31,11 @@ public abstract class ButtonRenderer extends ControlRenderer {
 		this.button = button;
 	}
 
-	protected final String getText() {
-		return button.getText();
-	}
-
-	protected final Image getImage() {
-		return button.getImage();
-	}
-
 	public void invalidateImage() {
 		if (disabledImage != null) {
 			disabledImage.dispose();
 			disabledImage = null;
 		}
-	}
-
-	protected final boolean isSelected() {
-		return button.getSelection();
-	}
-
-	protected final boolean isGrayed() {
-		return button.getGrayed();
 	}
 
 	protected final boolean isHover() {
@@ -71,8 +55,8 @@ public abstract class ButtonRenderer extends ControlRenderer {
 	}
 
 	protected final void drawImage(GC gc, int x, int y) {
-		final Image image = getImage();
-		if (isEnabled()) {
+		final Image image = button.getImage();
+		if (button.isEnabled()) {
 			gc.drawImage(image, x, y);
 		}
 		else {

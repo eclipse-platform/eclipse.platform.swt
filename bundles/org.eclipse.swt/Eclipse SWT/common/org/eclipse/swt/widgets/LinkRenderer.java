@@ -24,6 +24,10 @@ public abstract class LinkRenderer extends ControlRenderer {
 
 	public abstract Color getDefaultLinkColor();
 
+	public abstract Set<TextSegment> getLinks();
+
+	public abstract Point computeDefaultSize();
+
 	protected static final int DRAW_FLAGS = SWT.DRAW_MNEMONIC | SWT.DRAW_TAB | SWT.DRAW_TRANSPARENT
 			| SWT.DRAW_DELIMITER;
 	protected final List<List<TextSegment>> parsedText = new ArrayList<>();
@@ -153,11 +157,8 @@ public abstract class LinkRenderer extends ControlRenderer {
 		return sb.toString();
 	}
 
+	@SuppressWarnings("unused")
 	public List<List<TextSegment>> getParsedSegments() {
 		return parsedText;
 	}
-
-	public abstract Set<TextSegment> getLinks();
-
-	public abstract Point computeDefaultSize();
 }

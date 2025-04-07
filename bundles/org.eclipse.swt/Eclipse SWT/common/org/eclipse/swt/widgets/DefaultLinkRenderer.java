@@ -41,7 +41,7 @@ public class DefaultLinkRenderer extends LinkRenderer {
 		drawBackground(gc, width, height);
 
 		Color linkColor = link.getLinkForeground();
-		final boolean enabled = isEnabled();
+		final boolean enabled = link.isEnabled();
 		Color textColor = enabled ? link.getForeground() : DISABLED_COLOR;
 
 		links.clear();
@@ -109,7 +109,7 @@ public class DefaultLinkRenderer extends LinkRenderer {
 				}
 			}
 		} catch (SWTException e) {
-			if ((getStyle() & SWT.DOUBLE_BUFFERED) == 0) {
+			if ((link.getStyle() & SWT.DOUBLE_BUFFERED) == 0) {
 				gc.setBackground(background);
 				gc.fillRectangle(0, 0, width, height);
 			}

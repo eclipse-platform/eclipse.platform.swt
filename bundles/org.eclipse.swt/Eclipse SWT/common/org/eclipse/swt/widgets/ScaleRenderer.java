@@ -54,27 +54,11 @@ public abstract class ScaleRenderer extends ControlRenderer {
 	 */
 	public abstract boolean isBeforeHandle(Point position);
 
-	private final Scale scale;
+	protected final Scale scale;
 
 	protected ScaleRenderer(Scale scale) {
 		super(scale);
 		this.scale = scale;
-	}
-
-	protected int getSelection() {
-		return scale.getSelection();
-	}
-
-	protected int getMinimum() {
-		return scale.getMinimum();
-	}
-
-	protected int getMaximum() {
-		return scale.getMaximum();
-	}
-
-	protected int getPageIncrement() {
-		return scale.getPageIncrement();
 	}
 
 	protected boolean isHorizontal() {
@@ -83,9 +67,5 @@ public abstract class ScaleRenderer extends ControlRenderer {
 
 	protected Scale.HandleState getHandleState() {
 		return scale.getHandleState();
-	}
-
-	protected int getOrientation() {
-		return scale.getOrientation();
 	}
 }

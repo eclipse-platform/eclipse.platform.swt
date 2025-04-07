@@ -43,8 +43,8 @@ public class DefaultRadioButtonRenderer extends ButtonRenderer {
 	}
 
 	public Point computeDefaultSize() {
-		final String text = getText();
-		final Image image = getImage();
+		final String text = button.getText();
+		final Image image = button.getImage();
 
 		int textWidth = 0;
 		int textHeight = 0;
@@ -76,9 +76,9 @@ public class DefaultRadioButtonRenderer extends ButtonRenderer {
 
 	@Override
 	protected void paint(GC gc, int width, int height) {
-		final int style = getStyle();
-		final String text = getText();
-		final Image image = getImage();
+		final int style = button.getStyle();
+		final String text = button.getText();
+		final Image image = button.getImage();
 
 		boolean isRightAligned = (style & SWT.RIGHT) != 0;
 		boolean isCentered = (style & SWT.CENTER) != 0;
@@ -133,12 +133,12 @@ public class DefaultRadioButtonRenderer extends ButtonRenderer {
 
 		// Draw text
 		if (text != null && !text.isEmpty()) {
-			gc.setForeground(isEnabled() ? button.getForeground() : DISABLED_COLOR);
+			gc.setForeground(button.isEnabled() ? button.getForeground() : DISABLED_COLOR);
 			int textTopOffset = (height - 1 - textHeight) / 2;
 			int textLeftOffset = contentArea.x + imageSpace;
 			gc.drawText(text, textLeftOffset, textTopOffset, DRAW_FLAGS);
 		}
-		if (hasFocus()) {
+		if (button.hasFocus()) {
 			int textTopOffset = (height - 1 - textHeight) / 2;
 			int textLeftOffset = contentArea.x + imageSpace;
 			gc.drawFocus(textLeftOffset - 2, textTopOffset, textWidth + 4,
@@ -147,8 +147,9 @@ public class DefaultRadioButtonRenderer extends ButtonRenderer {
 	}
 
 	private void drawRadioButton(GC gc, int x, int y) {
-		final boolean enabled = isEnabled();
-		if (isSelected()) {
+		final boolean enabled = button.isEnabled();
+		final boolean selection = button.getSelection();
+		if (selection) {
 			gc.setBackground(enabled ? SELECTION_COLOR : DISABLED_COLOR);
 			int partialBoxBorder = 2;
 			gc.fillOval(x + partialBoxBorder, y + partialBoxBorder,
@@ -159,7 +160,7 @@ public class DefaultRadioButtonRenderer extends ButtonRenderer {
 			gc.setForeground(BOX_COLOR);
 			if (isHover()) {
 				gc.setBackground(HOVER_COLOR);
-				int partialBoxBorder = isSelected() ? 4 : 0;
+				int partialBoxBorder = selection ? 4 : 0;
 				gc.fillOval(x + partialBoxBorder, y + partialBoxBorder,
 						BOX_SIZE - 2 * partialBoxBorder + 1, BOX_SIZE - 2 * partialBoxBorder + 1);
 			}

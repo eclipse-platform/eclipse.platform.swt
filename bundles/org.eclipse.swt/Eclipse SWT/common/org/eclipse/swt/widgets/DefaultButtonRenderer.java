@@ -44,8 +44,8 @@ public class DefaultButtonRenderer extends ButtonRenderer {
 	}
 
 	public Point computeDefaultSize() {
-		final String text = getText();
-		final Image image = getImage();
+		final String text = button.getText();
+		final Image image = button.getImage();
 
 		int textWidth = 0;
 		int textHeight = 0;
@@ -80,9 +80,9 @@ public class DefaultButtonRenderer extends ButtonRenderer {
 
 	@Override
 	protected void paint(GC gc, int width, int height) {
-		final int style = getStyle();
-		final String text = getText();
-		final Image image = getImage();
+		final int style = button.getStyle();
+		final String text = button.getText();
+		final Image image = button.getImage();
 
 		boolean isRightAligned = (style & SWT.RIGHT) != 0;
 		boolean isCentered = (style & SWT.CENTER) != 0;
@@ -124,7 +124,7 @@ public class DefaultButtonRenderer extends ButtonRenderer {
 					/ 2;
 		}
 
-		boolean shiftDownRight = isPressed() || isSelected();
+		boolean shiftDownRight = isPressed() || button.getSelection();
 		// Draw image
 		if (image != null) {
 			int imageTopOffset = (height - imageHeight) / 2;
@@ -138,7 +138,7 @@ public class DefaultButtonRenderer extends ButtonRenderer {
 
 		// Draw text
 		if (text != null && !text.isEmpty()) {
-			gc.setForeground(isEnabled() ? button.getForeground() : DISABLED_COLOR);
+			gc.setForeground(button.isEnabled() ? button.getForeground() : DISABLED_COLOR);
 			int textTopOffset = (height - 1 - textHeight) / 2;
 			int textLeftOffset = contentArea.x + imageSpace;
 			if (shiftDownRight) {
@@ -147,7 +147,7 @@ public class DefaultButtonRenderer extends ButtonRenderer {
 			}
 			gc.drawText(text, textLeftOffset, textTopOffset, DRAW_FLAGS);
 		}
-		if (hasFocus()) {
+		if (button.hasFocus()) {
 			int inset = 2;
 			gc.drawFocus(inset, inset, width - 2 * inset - 1, height - 2 * inset - 1);
 		}
@@ -159,9 +159,9 @@ public class DefaultButtonRenderer extends ButtonRenderer {
 	}
 
 	private void drawPushButton(GC gc, int w, int h) {
-		final boolean isToggle = (getStyle() & SWT.TOGGLE) != 0;
-		if (isEnabled()) {
-			if (isToggle && isSelected()) {
+		final boolean isToggle = (button.getStyle() & SWT.TOGGLE) != 0;
+		if (button.isEnabled()) {
+			if (isToggle && button.getSelection()) {
 				gc.setBackground(TOGGLE_COLOR);
 			} else if (isPressed()) {
 				gc.setBackground(TOGGLE_COLOR);
@@ -171,10 +171,8 @@ public class DefaultButtonRenderer extends ButtonRenderer {
 				gc.setBackground(button.getBackground());
 			}
 			gc.fillRoundRectangle(0, 0, w, h, 6, 6);
-		}
 
-		if (isEnabled()) {
-			if (isToggle && isSelected() || isHover()) {
+			if (isToggle && button.getSelection() || isHover()) {
 				gc.setForeground(SELECTION_COLOR);
 			} else {
 				gc.setForeground(BORDER_COLOR);
@@ -185,7 +183,7 @@ public class DefaultButtonRenderer extends ButtonRenderer {
 
 		// if the button has focus, the border also changes the color
 		Color fg = gc.getForeground();
-		if (hasFocus()) {
+		if (button.hasFocus()) {
 			gc.setForeground(SELECTION_COLOR);
 		}
 		gc.drawRoundRectangle(0, 0, w - 1, h - 1, 6, 6);

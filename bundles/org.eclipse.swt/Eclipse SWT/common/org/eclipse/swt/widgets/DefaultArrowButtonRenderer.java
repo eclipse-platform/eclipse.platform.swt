@@ -26,7 +26,8 @@ public class DefaultArrowButtonRenderer extends ButtonRenderer {
 	}
 
 	public Point computeDefaultSize() {
-		int borderWidth = hasBorder() ? 8 : 0;
+		final int style = button.getStyle();
+		int borderWidth = (style & SWT.BORDER) != 0 ? 8 : 0;
 		int width = 14 + borderWidth;
 		int height = 14 + borderWidth;
 		return new Point(width, height);
@@ -34,15 +35,16 @@ public class DefaultArrowButtonRenderer extends ButtonRenderer {
 
 	@Override
 	protected void paint(GC gc, int width, int height) {
-		if (hasFocus()) {
+		final int style = button.getStyle();
+		if (button.hasFocus()) {
 			gc.drawFocus(3, 3, width - 7, height - 7);
 		}
 
-		gc.setBackground(isEnabled() ? FOREGROUND_COLOR : DISABLED_COLOR);
+		gc.setBackground(button.isEnabled() ? FOREGROUND_COLOR : DISABLED_COLOR);
 
 		int centerHeight = height / 2;
 		int centerWidth = width / 2;
-		if (hasBorder()) {
+		if ((style & SWT.BORDER) != 0) {
 			// border ruins center position...
 			centerHeight -= 2;
 			centerWidth -= 2;
@@ -50,9 +52,7 @@ public class DefaultArrowButtonRenderer extends ButtonRenderer {
 
 		// TODO: in the next version use a bezier path
 
-		int[] curve = null;
-
-		final int style = getStyle();
+		int[] curve;
 		if ((style & SWT.DOWN) != 0) {
 			curve = new int[]{centerWidth, centerHeight + 5,
 					centerWidth - 5, centerHeight - 5, centerWidth + 5,

@@ -35,7 +35,10 @@ public abstract class ToolBarRenderer extends ControlRenderer {
 	 */
 	public abstract int rowCount();
 
-	protected ToolBarRenderer(ToolBar control) {
-		super(control);
+	protected final ToolBar toolBar;
+
+	protected ToolBarRenderer(ToolBar toolBar) {
+		super(toolBar);
+		this.toolBar = toolBar;
 	}
 }
