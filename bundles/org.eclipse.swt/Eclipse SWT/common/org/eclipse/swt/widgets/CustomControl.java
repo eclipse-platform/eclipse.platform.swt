@@ -14,8 +14,7 @@
 package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.*;
 
 /**
  * Temporary API.
@@ -24,10 +23,14 @@ public abstract class CustomControl extends NativeBasedCustomControl {
 
 	protected abstract Point computeDefaultSize();
 
+	protected abstract ControlRenderer getRenderer();
+
 	private int x;
 	private int y;
 	private int width;
 	private int height;
+	protected Color background;
+	protected Color foreground;
 
 	protected CustomControl(Composite parent, int style) {
 		super(parent, style);
@@ -120,6 +123,30 @@ public abstract class CustomControl extends NativeBasedCustomControl {
 		if (parent.isEnabled()) {
 			redraw();
 		}
+	}
+
+	@Override
+	public final Color getBackground() {
+		return background != null ? background : getRenderer().getDefaultBackground();
+	}
+
+	@Override
+	public void setBackground(Color color) {
+		if (color != null && color.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+		this.background = color;
+		super.setBackground(color);
+	}
+
+	@Override
+	public final Color getForeground() {
+		return foreground != null ? foreground : getRenderer().getDefaultForeground();
+	}
+
+	@Override
+	public void setForeground(Color color) {
+		if (color != null && color.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+		this.foreground = color;
+		super.setForeground(color);
 	}
 
 	@Override

@@ -25,7 +25,7 @@ public abstract class LabelRenderer extends ControlRenderer {
 	// the ellipsis glyph on
 	// some platforms "\u2026"
 
-	private final Label label;
+	protected final Label label;
 
 	protected static final int DEFAULT_MARGIN = 3;
 

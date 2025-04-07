@@ -22,10 +22,12 @@ import org.eclipse.swt.graphics.*;
 public abstract class LinkRenderer extends ControlRenderer {
 	public abstract boolean isOverLink(int x, int y);
 
+	public abstract Color getDefaultLinkColor();
+
 	protected static final int DRAW_FLAGS = SWT.DRAW_MNEMONIC | SWT.DRAW_TAB | SWT.DRAW_TRANSPARENT
 			| SWT.DRAW_DELIMITER;
-
 	protected final List<List<TextSegment>> parsedText = new ArrayList<>();
+
 	protected Link link;
 
 	public static class TextSegment {

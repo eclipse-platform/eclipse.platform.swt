@@ -22,6 +22,10 @@ public abstract class ControlRenderer {
 
 	protected abstract void paint(GC gc, int width, int height);
 
+	public abstract Color getDefaultBackground();
+
+	public abstract Color getDefaultForeground();
+
 	private final Control control;
 
 	protected ControlRenderer(Control control) {

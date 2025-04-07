@@ -130,6 +130,11 @@ public class Label extends CustomControl {
 		initAccessible();
 	}
 
+	@Override
+	protected ControlRenderer getRenderer() {
+		return renderer;
+	}
+
 	/**
 	 * Check the style bits to ensure that no invalid styles are applied.
 	 */
@@ -441,20 +446,6 @@ public class Label extends CustomControl {
 			renderer.setAlign(align);
 			redraw();
 		}
-	}
-
-	@Override
-	public void setBackground(Color color) {
-		super.setBackground(color);
-		renderer.setBackground(color);
-		redraw();
-	}
-
-	@Override
-	public void setForeground(Color color) {
-		super.setForeground(color);
-		renderer.setForeground(getForeground());
-		redraw();
 	}
 
 	/**

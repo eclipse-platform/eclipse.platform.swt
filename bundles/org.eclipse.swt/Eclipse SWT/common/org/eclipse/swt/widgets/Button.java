@@ -158,6 +158,11 @@ public class Button extends CustomControl {
 		initializeAccessible();
 	}
 
+	@Override
+	protected ControlRenderer getRenderer() {
+		return renderer;
+	}
+
 	/**
 	 * TODO: improve this support and make it completely similar to native
 	 * windows buttons.

@@ -19,9 +19,10 @@ import org.eclipse.swt.graphics.*;
 
 public class DefaultRadioButtonRenderer extends ButtonRenderer {
 
+	private static final Color BACKGROUND_COLOR = new Color(240, 240, 240);
+	private static final Color FOREGROUND_COLOR = new Color(0, 0, 0);
 	private static final Color HOVER_COLOR = new Color(224, 238, 254);
 	private static final Color SELECTION_COLOR = new Color(0, 95, 184);
-	private static final Color TEXT_COLOR = new Color(0, 0, 0);
 	private static final Color DISABLED_COLOR = new Color(160, 160, 160);
 	private static final Color BORDER_DISABLED_COLOR = new Color(192, 192, 192);
 
@@ -134,7 +135,7 @@ public class DefaultRadioButtonRenderer extends ButtonRenderer {
 
 		// Draw text
 		if (text != null && !text.isEmpty()) {
-			gc.setForeground(isEnabled() ? TEXT_COLOR : DISABLED_COLOR);
+			gc.setForeground(isEnabled() ? button.getForeground() : DISABLED_COLOR);
 			int textTopOffset = (height - 1 - textHeight) / 2;
 			int textLeftOffset = contentArea.x + imageSpace;
 			gc.drawText(text, textLeftOffset, textTopOffset, DRAW_FLAGS);
@@ -145,6 +146,16 @@ public class DefaultRadioButtonRenderer extends ButtonRenderer {
 			gc.drawFocus(textLeftOffset - 2, textTopOffset, textWidth + 4,
 					textHeight);
 		}
+	}
+
+	@Override
+	public Color getDefaultBackground() {
+		return BACKGROUND_COLOR;
+	}
+
+	@Override
+	public Color getDefaultForeground() {
+		return FOREGROUND_COLOR;
 	}
 
 	private void drawRadioButton(GC gc, int x, int y) {
@@ -162,6 +173,9 @@ public class DefaultRadioButtonRenderer extends ButtonRenderer {
 			int partialBoxBorder = isSelected() ? 4 : 0;
 			gc.fillOval(x + partialBoxBorder, y + partialBoxBorder,
 					BOX_SIZE - 2 * partialBoxBorder + 1, BOX_SIZE - 2 * partialBoxBorder + 1);
+		}
+		else {
+			gc.setForeground(BACKGROUND_COLOR);
 		}
 		gc.drawOval(x, y, BOX_SIZE, BOX_SIZE);
 	}

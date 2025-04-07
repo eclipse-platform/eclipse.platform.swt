@@ -21,6 +21,8 @@ public class DefaultScaleRenderer extends ScaleRenderer {
 	private static final int PREFERRED_WIDTH = 170;
 	private static final int PREFERRED_HEIGHT = 42;
 
+	private static final Color BACKGROUND_COLOR = new Color(240, 240, 240);
+	private static final Color FOREGROUND_COLOR = new Color(0, 0, 0);
 	private static final Color IDLE_COLOR = new Color(0, 95, 184);
 	private static final Color HOVER_COLOR = new Color(0, 0, 0);
 	private static final Color DRAG_COLOR = new Color(204, 204, 204);
@@ -203,5 +205,15 @@ public class DefaultScaleRenderer extends ScaleRenderer {
 
 	private Point mirrorVertically(Point p) {
 		return new Point(getSize().x - p.x, p.y);
+	}
+
+	@Override
+	public Color getDefaultBackground() {
+		return BACKGROUND_COLOR;
+	}
+
+	@Override
+	public Color getDefaultForeground() {
+		return FOREGROUND_COLOR;
 	}
 }

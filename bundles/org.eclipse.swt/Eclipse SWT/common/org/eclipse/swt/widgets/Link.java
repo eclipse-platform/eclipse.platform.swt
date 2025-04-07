@@ -47,8 +47,6 @@ import org.eclipse.swt.widgets.LinkRenderer.*;
  */
 public class Link extends CustomControl {
 
-	private static final Color LINK_COLOR = new Color(0, 102, 204);
-
 	/** Left and right margins */
 	private static final int DEFAULT_MARGIN = 3;
 
@@ -134,6 +132,11 @@ public class Link extends CustomControl {
 		addListener(SWT.Dispose, listener);
 
 		initAccessible();
+	}
+
+	@Override
+	protected ControlRenderer getRenderer() {
+		return renderer;
 	}
 
 	private void onMouseUp(Event e) {
@@ -460,7 +463,7 @@ public class Link extends CustomControl {
 	 */
 	public Color getLinkForeground() {
 		checkWidget();
-		return linkColor != null ? linkColor : LINK_COLOR;
+		return linkColor != null ? linkColor : renderer.getDefaultLinkColor();
 	}
 
 	/**

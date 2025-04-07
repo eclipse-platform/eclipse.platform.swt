@@ -18,7 +18,7 @@ import org.eclipse.swt.graphics.*;
 
 public abstract class ButtonRenderer extends ControlRenderer {
 
-	private final Button button;
+	protected final Button button;
 
 	public abstract Point computeDefaultSize();
 

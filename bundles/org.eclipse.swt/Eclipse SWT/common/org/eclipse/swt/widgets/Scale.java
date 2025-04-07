@@ -130,6 +130,10 @@ public class Scale extends CustomControl {
 		renderer = rendererFactory.createScaleRenderer(this);
 	}
 
+	@Override
+	protected ControlRenderer getRenderer() {
+		return renderer;
+	}
 
 	private static int checkStyle(int style) {
 		// Do not propagate this flags to the super class

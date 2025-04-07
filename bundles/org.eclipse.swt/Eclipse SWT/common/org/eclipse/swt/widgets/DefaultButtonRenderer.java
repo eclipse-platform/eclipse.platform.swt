@@ -19,14 +19,14 @@ import org.eclipse.swt.graphics.*;
 
 public class DefaultButtonRenderer extends ButtonRenderer {
 
+	private static final Color BACKGROUND_COLOR = new Color(255, 255, 255);
+	private static final Color FOREGROUND_COLOR = new Color(0, 0, 0);
 	private static final Color HOVER_COLOR = new Color(224, 238, 254);
 	private static final Color TOGGLE_COLOR = new Color(204, 228, 247);
 	private static final Color SELECTION_COLOR = new Color(0, 95, 184);
-	private static final Color TEXT_COLOR = new Color(0, 0, 0);
 	private static final Color DISABLED_COLOR = new Color(160, 160, 160);
 	private static final Color BORDER_COLOR = new Color(160, 160, 160);
 	private static final Color BORDER_DISABLED_COLOR = new Color(192, 192, 192);
-	private static final Color PUSH_BACKGROUND_COLOR = new Color(255, 255, 255);
 
 	/**
 	 * Left and right margins
@@ -140,7 +140,7 @@ public class DefaultButtonRenderer extends ButtonRenderer {
 
 		// Draw text
 		if (text != null && !text.isEmpty()) {
-			gc.setForeground(isEnabled() ? TEXT_COLOR : DISABLED_COLOR);
+			gc.setForeground(isEnabled() ? button.getForeground() : DISABLED_COLOR);
 			int textTopOffset = (height - 1 - textHeight) / 2;
 			int textLeftOffset = contentArea.x + imageSpace;
 			if (shiftDownRight) {
@@ -155,6 +155,16 @@ public class DefaultButtonRenderer extends ButtonRenderer {
 		}
 	}
 
+	@Override
+	public Color getDefaultBackground() {
+		return BACKGROUND_COLOR;
+	}
+
+	@Override
+	public Color getDefaultForeground() {
+		return FOREGROUND_COLOR;
+	}
+
 	private void drawPushButton(GC gc, int w, int h) {
 		final boolean isToggle = (getStyle() & SWT.TOGGLE) != 0;
 		if (isEnabled()) {
@@ -165,7 +175,7 @@ public class DefaultButtonRenderer extends ButtonRenderer {
 			} else if (isHover()) {
 				gc.setBackground(HOVER_COLOR);
 			} else {
-				gc.setBackground(PUSH_BACKGROUND_COLOR);
+				gc.setBackground(button.getBackground());
 			}
 			gc.fillRoundRectangle(0, 0, w, h, 6, 6);
 		}

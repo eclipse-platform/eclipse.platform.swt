@@ -169,6 +169,11 @@ public class Slider extends CustomControl {
 		super.style |= horizontal ? SWT.HORIZONTAL : SWT.VERTICAL;
 	}
 
+	@Override
+	protected ControlRenderer getRenderer() {
+		return renderer;
+	}
+
 	private static int checkStyle(int style) {
 		// Do not propagate this flags to the super class
 		style &= ~SWT.HORIZONTAL;

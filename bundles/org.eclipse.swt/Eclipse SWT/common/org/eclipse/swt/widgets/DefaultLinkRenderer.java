@@ -21,6 +21,11 @@ import org.eclipse.swt.graphics.*;
 
 public class DefaultLinkRenderer extends LinkRenderer {
 
+	private static final Color BACKGROUND_COLOR = new Color(240, 240, 240);
+	private static final Color FOREGROUND_COLOR = new Color(0, 0, 0);
+	private static final Color DISABLED_COLOR = new Color(160, 160, 160);
+	private static final Color LINK_COLOR = new Color(0, 102, 204);
+
 	private final Set<TextSegment> links = new HashSet<>();
 
 	public DefaultLinkRenderer(Link link) {
@@ -39,6 +44,8 @@ public class DefaultLinkRenderer extends LinkRenderer {
 		drawBackground(gc, width, height);
 
 		Color linkColor = link.getLinkForeground();
+		final boolean enabled = isEnabled();
+		Color textColor = enabled ? link.getForeground() : DISABLED_COLOR;
 
 		links.clear();
 
@@ -61,11 +68,7 @@ public class DefaultLinkRenderer extends LinkRenderer {
 			for (TextSegment segment : segments) {
 				Point extent = gc.textExtent(segment.text, DRAW_FLAGS);
 
-				if (isEnabled()) {
-					gc.setForeground(segment.isLink() ? linkColor : link.getForeground());
-				} else {
-					gc.setForeground(gc.getDevice().getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW));
-				}
+				gc.setForeground(enabled && segment.isLink() ? linkColor : textColor);
 				gc.drawText(segment.text, lineX, lineY, DRAW_FLAGS);
 
 				if (segment.isLink()) {
@@ -80,6 +83,16 @@ public class DefaultLinkRenderer extends LinkRenderer {
 			}
 			lineY += gc.getFontMetrics().getHeight();
 		}
+	}
+
+	@Override
+	public Color getDefaultBackground() {
+		return BACKGROUND_COLOR;
+	}
+
+	@Override
+	public Color getDefaultForeground() {
+		return FOREGROUND_COLOR;
 	}
 
 	private void drawBackground(GC gc, int width, int height) {
@@ -163,5 +176,10 @@ public class DefaultLinkRenderer extends LinkRenderer {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public Color getDefaultLinkColor() {
+		return LINK_COLOR;
 	}
 }

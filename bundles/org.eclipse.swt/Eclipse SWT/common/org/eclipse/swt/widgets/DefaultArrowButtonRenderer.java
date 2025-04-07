@@ -19,8 +19,9 @@ import org.eclipse.swt.graphics.*;
 
 public class DefaultArrowButtonRenderer extends ButtonRenderer {
 
+	private static final Color BACKGROUND_COLOR = new Color(240, 240, 240);
+	private static final Color FOREGROUND_COLOR = new Color(0, 0, 0);
 	private static final Color DISABLED_COLOR = new Color(160, 160, 160);
-	private static final Color TEXT_COLOR = new Color(0, 0, 0);
 
 	public DefaultArrowButtonRenderer(Button button) {
 		super(button);
@@ -38,9 +39,8 @@ public class DefaultArrowButtonRenderer extends ButtonRenderer {
 		if (hasFocus()) {
 			gc.drawFocus(3, 3, width - 7, height - 7);
 		}
-		Color bg2 = gc.getBackground();
 
-		gc.setBackground(isEnabled() ? TEXT_COLOR : DISABLED_COLOR);
+		gc.setBackground(isEnabled() ? FOREGROUND_COLOR : DISABLED_COLOR);
 
 		int centerHeight = height / 2;
 		int centerWidth = width / 2;
@@ -77,6 +77,15 @@ public class DefaultArrowButtonRenderer extends ButtonRenderer {
 		}
 
 		gc.fillPolygon(curve);
-		gc.setBackground(bg2);
+	}
+
+	@Override
+	public Color getDefaultBackground() {
+		return BACKGROUND_COLOR;
+	}
+
+	@Override
+	public Color getDefaultForeground() {
+		return FOREGROUND_COLOR;
 	}
 }
