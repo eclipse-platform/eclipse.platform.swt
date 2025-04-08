@@ -81,6 +81,7 @@ class Edge extends WebBrowser {
 
 	static boolean inCallback;
 	boolean inNewWindow;
+	private boolean inEvaluate;
 	HashMap<Long, LocationEvent> navigations = new HashMap<>();
 	private boolean ignoreGotFocus;
 	private boolean ignoreFocusIn;
@@ -906,11 +907,21 @@ public Object evaluate(String script) throws SWTException {
 	// Feature in WebView2. ExecuteScript works regardless of IsScriptEnabled setting.
 	// Disallow programmatic execution manually.
 	if (!jsEnabled) return null;
-
+	if(inCallback) {
+		// Execute script, but do not wait for async call to complete as otherwise it
+		// can cause a deadlock if execute inside a WebView callback.
+		execute(script);
+		return null;
+	}
 	String script2 = "(function() {try { " + script + " } catch (e) { return '" + ERROR_ID + "' + e.message; } })();\0";
 	String[] pJson = new String[1];
-	int hr = callAndWait(pJson, completion -> webViewProvider.getWebView(true).ExecuteScript(script2.toCharArray(), completion));
-	if (hr != COM.S_OK) error(SWT.ERROR_FAILED_EVALUATE, hr);
+	inEvaluate = true;
+	try {
+		int hr = callAndWait(pJson, completion -> webViewProvider.getWebView(true).ExecuteScript(script2.toCharArray(), completion));
+		if (hr != COM.S_OK) error(SWT.ERROR_FAILED_EVALUATE, hr);
+	} finally {
+		inEvaluate = false;
+	}
 
 	Object data = JSON.parse(pJson[0]);
 	if (data instanceof String && ((String) data).startsWith(ERROR_ID)) {
@@ -1319,7 +1330,7 @@ int handleNewWindowRequested(long pView, long pArgs) {
 	args.GetDeferral(ppv);
 	ICoreWebView2Deferral deferral = new ICoreWebView2Deferral(ppv[0]);
 	inNewWindow = true;
-	browser.getDisplay().asyncExec(() -> {
+	Runnable openWindowHandler = () -> {
 		try {
 			if (browser.isDisposed()) return;
 			WindowEvent openEvent = new WindowEvent(browser);
@@ -1355,7 +1366,21 @@ int handleNewWindowRequested(long pView, long pArgs) {
 			args.Release();
 			inNewWindow = false;
 		}
-	});
+	};
+
+	// Creating a new browser instance within the same environment from inside the OpenWindowListener of another browser
+	// can lead to a deadlock. To prevent this, handlers should typically run asynchronously.
+	// However, if a new window is opened using `evaluate(window.open)`, running the handler asynchronously in that context
+	// may also result in a deadlock.
+	// Therefore, whether the listener runs synchronously or asynchronously should depend on the `inEvaluate` condition.
+	// That said, combining both situations—opening a window via `evaluate` and launching a new browser inside the OpenWindowListener—
+	// should be avoided altogether, as it significantly increases the risk of deadlocks.
+	if (inEvaluate) {
+		openWindowHandler.run();
+	} else {
+		browser.getDisplay().asyncExec(openWindowHandler);
+	}
+
 	return COM.S_OK;
 }
 
