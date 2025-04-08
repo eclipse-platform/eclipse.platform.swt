@@ -40,7 +40,7 @@ public class Library {
 	/**
 	 * SWT revision number (must be >= 0)
 	 */
-	static int REVISION = 11;
+	static int REVISION = 12;
 
 	/**
 	 * The JAVA and SWT versions
