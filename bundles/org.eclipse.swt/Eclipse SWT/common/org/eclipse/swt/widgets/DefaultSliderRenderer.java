@@ -45,11 +45,10 @@ public class DefaultSliderRenderer extends SliderRenderer {
 		int range = max - min;
 
 		// Fill background
-		Color background = slider.getBackground();
-		if (background != null) {
-			gc.setBackground(background);
-			gc.fillRectangle(0, 0, width, height);
-		}
+		gc.setBackground(slider.getBackground());
+		gc.fillRectangle(0, 0, width, height);
+
+		gc.setForeground(isEnabled() ? slider.getForeground() : DISABLED_COLOR);
 
 		if (slider.isVertical()) {
 			int trackX = (width - 7) / 2;
@@ -105,7 +104,9 @@ public class DefaultSliderRenderer extends SliderRenderer {
 	private void drawRoundRectWithBorder(GC gc, Rectangle rect) {
 		final int arcSize = 10;
 		gc.fillRoundRectangle(rect.x, rect.y, rect.width + 1, rect.height + 1, arcSize, arcSize);
-		gc.drawRoundRectangle(rect.x, rect.y, rect.width, rect.height, arcSize, arcSize);
+		if (isEnabled()) {
+			gc.drawRoundRectangle(rect.x, rect.y, rect.width, rect.height, arcSize, arcSize);
+		}
 	}
 
 	@Override
