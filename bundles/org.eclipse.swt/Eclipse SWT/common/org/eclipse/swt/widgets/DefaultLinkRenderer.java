@@ -21,9 +21,6 @@ import org.eclipse.swt.graphics.*;
 
 public class DefaultLinkRenderer extends LinkRenderer {
 
-	private static final Color BACKGROUND_COLOR = new Color(240, 240, 240);
-	private static final Color FOREGROUND_COLOR = new Color(0, 0, 0);
-	private static final Color DISABLED_COLOR = new Color(160, 160, 160);
 	private static final Color LINK_COLOR = new Color(0, 102, 204);
 
 	private final Set<TextSegment> links = new HashSet<>();
@@ -83,16 +80,6 @@ public class DefaultLinkRenderer extends LinkRenderer {
 			}
 			lineY += gc.getFontMetrics().getHeight();
 		}
-	}
-
-	@Override
-	public Color getDefaultBackground() {
-		return BACKGROUND_COLOR;
-	}
-
-	@Override
-	public Color getDefaultForeground() {
-		return FOREGROUND_COLOR;
 	}
 
 	private void drawBackground(GC gc, int width, int height) {

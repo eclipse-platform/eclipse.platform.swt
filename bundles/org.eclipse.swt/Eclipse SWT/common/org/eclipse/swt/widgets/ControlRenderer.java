@@ -20,11 +20,9 @@ import java.util.function.Function;
 
 public abstract class ControlRenderer {
 
+	protected static final Color DISABLED_COLOR = new Color(160, 160, 160);
+
 	protected abstract void paint(GC gc, int width, int height);
-
-	public abstract Color getDefaultBackground();
-
-	public abstract Color getDefaultForeground();
 
 	private final Control control;
 
@@ -64,5 +62,13 @@ public abstract class ControlRenderer {
 
 	protected final Point getTextExtent(String text, int flags) {
 		return Drawing.getTextExtent(control, text, flags);
+	}
+
+	public Color getDefaultBackground() {
+		return new Color(240, 240, 240);
+	}
+
+	public Color getDefaultForeground() {
+		return new Color(0, 0, 0);
 	}
 }

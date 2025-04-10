@@ -25,8 +25,7 @@ import org.eclipse.swt.widgets.toolbar.ToolBarLayout.*;
  * Default renderer for the ToolBar.
  */
 public class DefaultToolBarRenderer extends ToolBarRenderer {
-	private static final Color BACKGROUND_COLOR = new Color(240, 240, 240);
-	private static final Color FOREGROUND_COLOR = new Color(0, 0, 0);
+
 	public static final Color COLOR_SEPARATOR = new Color(Display.getDefault(), 160, 160, 160);
 
 	private final ToolBar bar;
@@ -117,15 +116,5 @@ public class DefaultToolBarRenderer extends ToolBarRenderer {
 			rowCount = computeLayout(size).rows().size();
 		}
 		return rowCount;
-	}
-
-	@Override
-	public Color getDefaultBackground() {
-		return BACKGROUND_COLOR;
-	}
-
-	@Override
-	public Color getDefaultForeground() {
-		return FOREGROUND_COLOR;
 	}
 }

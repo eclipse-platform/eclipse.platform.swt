@@ -19,11 +19,8 @@ import org.eclipse.swt.graphics.*;
 
 public class DefaultCheckboxRenderer extends ButtonRenderer {
 
-	private static final Color BACKGROUND_COLOR = new Color(240, 240, 240);
-	private static final Color FOREGROUND_COLOR = new Color(0, 0, 0);
 	private static final Color HOVER_COLOR = new Color(224, 238, 254);
 	private static final Color SELECTION_COLOR = new Color(0, 95, 184);
-	private static final Color DISABLED_COLOR = new Color(160, 160, 160);
 	private static final Color BORDER_DISABLED_COLOR = new Color(192, 192, 192);
 	private static final Color CHECKBOX_GRAYED_COLOR = new Color(192, 192, 192);
 	private static final Color BOX_COLOR = new Color(0, 0, 0);
@@ -148,16 +145,6 @@ public class DefaultCheckboxRenderer extends ButtonRenderer {
 			gc.drawFocus(textLeftOffset - 2, textTopOffset, textWidth + 4,
 					textHeight - 1);
 		}
-	}
-
-	@Override
-	public Color getDefaultBackground() {
-		return BACKGROUND_COLOR;
-	}
-
-	@Override
-	public Color getDefaultForeground() {
-		return FOREGROUND_COLOR;
 	}
 
 	private void drawCheckbox(GC gc, int x, int y) {

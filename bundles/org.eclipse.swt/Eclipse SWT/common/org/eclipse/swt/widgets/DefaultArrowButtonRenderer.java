@@ -19,9 +19,7 @@ import org.eclipse.swt.graphics.*;
 
 public class DefaultArrowButtonRenderer extends ButtonRenderer {
 
-	private static final Color BACKGROUND_COLOR = new Color(240, 240, 240);
 	private static final Color FOREGROUND_COLOR = new Color(0, 0, 0);
-	private static final Color DISABLED_COLOR = new Color(160, 160, 160);
 
 	public DefaultArrowButtonRenderer(Button button) {
 		super(button);
@@ -77,15 +75,5 @@ public class DefaultArrowButtonRenderer extends ButtonRenderer {
 		}
 
 		gc.fillPolygon(curve);
-	}
-
-	@Override
-	public Color getDefaultBackground() {
-		return BACKGROUND_COLOR;
-	}
-
-	@Override
-	public Color getDefaultForeground() {
-		return FOREGROUND_COLOR;
 	}
 }

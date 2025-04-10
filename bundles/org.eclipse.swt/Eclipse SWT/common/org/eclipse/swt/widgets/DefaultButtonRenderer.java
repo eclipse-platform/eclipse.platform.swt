@@ -20,11 +20,9 @@ import org.eclipse.swt.graphics.*;
 public class DefaultButtonRenderer extends ButtonRenderer {
 
 	private static final Color BACKGROUND_COLOR = new Color(255, 255, 255);
-	private static final Color FOREGROUND_COLOR = new Color(0, 0, 0);
 	private static final Color HOVER_COLOR = new Color(224, 238, 254);
 	private static final Color TOGGLE_COLOR = new Color(204, 228, 247);
 	private static final Color SELECTION_COLOR = new Color(0, 95, 184);
-	private static final Color DISABLED_COLOR = new Color(160, 160, 160);
 	private static final Color BORDER_COLOR = new Color(160, 160, 160);
 	private static final Color BORDER_DISABLED_COLOR = new Color(192, 192, 192);
 
@@ -158,11 +156,6 @@ public class DefaultButtonRenderer extends ButtonRenderer {
 	@Override
 	public Color getDefaultBackground() {
 		return BACKGROUND_COLOR;
-	}
-
-	@Override
-	public Color getDefaultForeground() {
-		return FOREGROUND_COLOR;
 	}
 
 	private void drawPushButton(GC gc, int w, int h) {

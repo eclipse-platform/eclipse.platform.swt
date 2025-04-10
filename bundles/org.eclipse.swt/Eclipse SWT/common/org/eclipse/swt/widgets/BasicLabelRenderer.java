@@ -19,9 +19,6 @@ import org.eclipse.swt.graphics.*;
 
 public class BasicLabelRenderer extends LabelRenderer {
 
-	private static final Color BACKGROUND_COLOR = new Color(240, 240, 240);
-	private static final Color FOREGROUND_COLOR = new Color(0, 0, 0);
-	private static final Color DISABLED_COLOR = new Color(160, 160, 160);
 	private static final Color SHADOW_IN_COLOR1 = new Color(160, 160, 160);
 	private static final Color SHADOW_IN_COLOR2 = new Color(255, 255, 255);
 	private static final Color SHADOW_OUT_COLOR1 = new Color(227, 227, 227);
@@ -71,16 +68,6 @@ public class BasicLabelRenderer extends LabelRenderer {
 					 + getBottomMargin();
 
 		return new Point(width, height);
-	}
-
-	@Override
-	public Color getDefaultBackground() {
-		return BACKGROUND_COLOR;
-	}
-
-	@Override
-	public Color getDefaultForeground() {
-		return FOREGROUND_COLOR;
 	}
 
 	@Override
