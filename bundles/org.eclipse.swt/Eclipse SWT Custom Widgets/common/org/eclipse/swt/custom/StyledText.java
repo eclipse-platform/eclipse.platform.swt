@@ -1593,15 +1593,14 @@ void createCaretBitmaps() {
 		leftCaretBitmap.dispose();
 	}
 	int lineHeight = renderer.getLineHeight();
-	final ImageGcDrawer leftCaretDrawer = (gc, width, height) -> {
+	leftCaretBitmap = new Image(display, caretWidth, lineHeight, (gc, width, height) -> {
 		gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
 		gc.fillRectangle(0, 0, width, height);
 		gc.setForeground(display.getSystemColor(SWT.COLOR_WHITE));
 		gc.drawLine(0,0,0,height);
 		gc.drawLine(0,0,width-1,0);
 		gc.drawLine(0,1,1,1);
-	};
-	leftCaretBitmap = new Image(display, leftCaretDrawer, caretWidth, lineHeight);
+	});
 
 	if (rightCaretBitmap != null) {
 		if (defaultCaret != null && rightCaretBitmap.equals(defaultCaret.getImage())) {
@@ -1609,16 +1608,16 @@ void createCaretBitmaps() {
 		}
 		rightCaretBitmap.dispose();
 	}
-	final ImageGcDrawer rightCaretDrawer = (gc, width, height) -> {
+	rightCaretBitmap = new Image(display, caretWidth, lineHeight, (gc, width, height) -> {
 		gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
 		gc.fillRectangle(0, 0, width, height);
 		gc.setForeground(display.getSystemColor(SWT.COLOR_WHITE));
 		gc.drawLine(width-1,0,width-1,height);
 		gc.drawLine(0,0,width-1,0);
 		gc.drawLine(width-1,1,1,1);
-	};
-	rightCaretBitmap = new Image(display, rightCaretDrawer, caretWidth, lineHeight);
+	});
 }
+
 /**
  * Moves the selected text to the clipboard.  The text will be put in the
  * clipboard in plain text, HTML, and RTF formats.
