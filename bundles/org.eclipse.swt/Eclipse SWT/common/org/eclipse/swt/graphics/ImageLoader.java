@@ -15,6 +15,8 @@
 package org.eclipse.swt.graphics;
 
 import java.io.*;
+import java.nio.file.*;
+import java.nio.file.Path;
 import java.util.*;
 
 import org.eclipse.swt.*;
@@ -133,13 +135,13 @@ void reset() {
 }
 
 /**
- * Loads an array of <code>ImageData</code> objects from the
+ * Loads an array of {@code ImageData} objects from the
  * specified input stream. Throws an error if either an error
  * occurs while loading the images, or if the images are not
  * of a supported type. Returns the loaded image data array.
  *
  * @param stream the input stream to load the images from
- * @return an array of <code>ImageData</code> objects loaded from the specified input stream
+ * @return an array of {@code ImageData} objects loaded from the specified input stream
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the stream is null</li>
@@ -169,13 +171,13 @@ static boolean canLoadAtZoom(InputStream stream, int fileZoom, int targetZoom) {
 }
 
 /**
- * Loads an array of <code>ImageData</code> objects from the
+ * Loads an array of {@code ImageData} objects from the
  * file with the specified name. Throws an error if either
  * an error occurs while loading the images, or if the images are
  * not of a supported type. Returns the loaded image data array.
  *
  * @param filename the name of the file to load the images from
- * @return an array of <code>ImageData</code> objects loaded from the specified file
+ * @return an array of {@code ImageData} objects loaded from the specified file
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the file name is null</li>
@@ -185,15 +187,41 @@ static boolean canLoadAtZoom(InputStream stream, int fileZoom, int targetZoom) {
  *    <li>ERROR_INVALID_IMAGE - if the image file contains invalid data</li>
  *    <li>ERROR_UNSUPPORTED_FORMAT - if the image file contains an unrecognized format</li>
  * </ul>
+ * @deprecated Instead use {@link #load(Path)}
  */
+@Deprecated(since = "2025-06")
 public ImageData[] load(String filename) {
-	load(filename, FileFormat.DEFAULT_ZOOM, FileFormat.DEFAULT_ZOOM);
+	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	return load(Path.of(filename));
+}
+
+/**
+ * Loads an array of {@code ImageData} objects from the
+ * file with the specified name. Throws an error if either
+ * an error occurs while loading the images, or if the images are
+ * not of a supported type. Returns the loaded image data array.
+ *
+ * @param file the name of the file to load the images from
+ * @return an array of {@code ImageData} objects loaded from the specified file
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the file name is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_IO - if an IO error occurs while reading the file</li>
+ *    <li>ERROR_INVALID_IMAGE - if the image file contains invalid data</li>
+ *    <li>ERROR_UNSUPPORTED_FORMAT - if the image file contains an unrecognized format</li>
+ * </ul>
+ * @since 3.130
+ */
+public ImageData[] load(Path file) {
+	load(file, FileFormat.DEFAULT_ZOOM, FileFormat.DEFAULT_ZOOM);
 	return data;
 }
 
-List<ElementAtZoom<ImageData>> load(String filename, int fileZoom, int targetZoom) {
-	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	try (InputStream stream = new FileInputStream(filename)) {
+List<ElementAtZoom<ImageData>> load(Path file, int fileZoom, int targetZoom) {
+	if (file == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	try (InputStream stream = Files.newInputStream(file)) {
 		return load(stream, fileZoom, targetZoom);
 	} catch (IOException e) {
 		SWT.error(SWT.ERROR_IO, e);
@@ -201,9 +229,9 @@ List<ElementAtZoom<ImageData>> load(String filename, int fileZoom, int targetZoo
 	return null;
 }
 
-static boolean canLoadAtZoom(String filename, int fileZoom, int targetZoom) {
-	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	try (InputStream stream = new FileInputStream(filename)) {
+static boolean canLoadAtZoom(Path file, int fileZoom, int targetZoom) {
+	if (file == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	try (InputStream stream = Files.newInputStream(file)) {
 		return canLoadAtZoom(stream, fileZoom, targetZoom);
 	} catch (IOException e) {
 		SWT.error(SWT.ERROR_IO, e);
@@ -279,10 +307,50 @@ public void save(OutputStream stream, int format) {
  *    <li>ERROR_INVALID_IMAGE - if the image data contains invalid data</li>
  *    <li>ERROR_UNSUPPORTED_FORMAT - if the image data cannot be saved to the requested format</li>
  * </ul>
+ * @deprecated Instead use {@link #save(Path, int)}
  */
+@Deprecated(since = "2025-06")
 public void save(String filename, int format) {
 	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	try (OutputStream stream = new FileOutputStream(filename)) {
+	save(Path.of(filename), format);
+}
+
+/**
+ * Saves the image data in this ImageLoader to a file with the specified name.
+ * The format parameter can have one of the following values:
+ * <dl>
+ * <dt>{@link SWT#IMAGE_BMP}</dt>
+ * <dd>Windows BMP file format, no compression</dd>
+ * <dt>{@link SWT#IMAGE_BMP_RLE}</dt>
+ * <dd>Windows BMP file format, RLE compression if appropriate</dd>
+ * <dt>{@link SWT#IMAGE_GIF}</dt>
+ * <dd>GIF file format</dd>
+ * <dt>{@link SWT#IMAGE_ICO}</dt>
+ * <dd>Windows ICO file format</dd>
+ * <dt>{@link SWT#IMAGE_JPEG}</dt>
+ * <dd>JPEG file format</dd>
+ * <dt>{@link SWT#IMAGE_PNG}</dt>
+ * <dd>PNG file format</dd>
+ * <dt>{@link SWT#IMAGE_TIFF}</dt>
+ * <dd>TIFF file format</dd>
+ * </dl>
+ *
+ * @param file the name of the file to write the images to
+ * @param format the format to write the images in
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the file name is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_IO - if an IO error occurs while writing to the file</li>
+ *    <li>ERROR_INVALID_IMAGE - if the image data contains invalid data</li>
+ *    <li>ERROR_UNSUPPORTED_FORMAT - if the image data cannot be saved to the requested format</li>
+ * </ul>
+ * @since 3.130
+ */
+public void save(Path file, int format) {
+	if (file == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	try (OutputStream stream = Files.newOutputStream(file)) {
 		save(stream, format);
 	} catch (IOException e) {
 		SWT.error(SWT.ERROR_IO, e);
