@@ -46,6 +46,18 @@ public interface SWTFontRegistry {
 	 */
 	Font getFont(FontData fontData, int zoom);
 
+
+	/**
+	 * Provides a font optimally suited for the specified zoom. If the handle is yet unknown to
+	 * the registry, the font will not be managed by the font registry. Only Fonts created in the
+	 * font registry are managed by it and should not be disposed of externally.
+	 *
+	 * @param fontHandle the handle to an existing font
+	 * @param zoom zoom in % of the standard resolution to determine the appropriate font
+	 * @return the font best suited for the specified zoom
+	 */
+	Font getFont(long fontHandle, int zoom);
+
 	/**
 	 * Disposes all fonts managed by the font registry.
 	 */
