@@ -25,6 +25,7 @@ public class DefaultRadioButtonRenderer extends ButtonRenderer {
 	private static final Color SELECTION_COLOR = new Color(0, 95, 184);
 	private static final Color DISABLED_COLOR = new Color(160, 160, 160);
 	private static final Color BORDER_DISABLED_COLOR = new Color(192, 192, 192);
+	private static final Color BOX_COLOR = new Color(0, 0, 0);
 
 	/**
 	 * Left and right margins
@@ -168,7 +169,7 @@ public class DefaultRadioButtonRenderer extends ButtonRenderer {
 		}
 
 		if (enabled) {
-			gc.setForeground(FOREGROUND_COLOR);
+			gc.setForeground(BOX_COLOR);
 			if (isHover()) {
 				gc.setBackground(HOVER_COLOR);
 				int partialBoxBorder = isSelected() ? 4 : 0;

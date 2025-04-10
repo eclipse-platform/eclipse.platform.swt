@@ -26,6 +26,7 @@ public class DefaultCheckboxRenderer extends ButtonRenderer {
 	private static final Color DISABLED_COLOR = new Color(160, 160, 160);
 	private static final Color BORDER_DISABLED_COLOR = new Color(192, 192, 192);
 	private static final Color CHECKBOX_GRAYED_COLOR = new Color(192, 192, 192);
+	private static final Color BOX_COLOR = new Color(0, 0, 0);
 
 	/**
 	 * Left and right margins
@@ -182,7 +183,7 @@ public class DefaultCheckboxRenderer extends ButtonRenderer {
 					BOX_SIZE / 4 - partialBoxBorder / 2);
 		}
 		else {
-			gc.setForeground(FOREGROUND_COLOR);
+			gc.setForeground(BOX_COLOR);
 		}
 		gc.drawRoundRectangle(x, y, BOX_SIZE, BOX_SIZE, 4, 4);
 	}
