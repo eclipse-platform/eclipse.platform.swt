@@ -43,7 +43,7 @@ import org.eclipse.swt.internal.gtk4.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * @noextend This class is not intended to be subclassed by clients.
  */
-public class List extends Scrollable {
+public class List_Old extends Scrollable {
 	long modelHandle;
 	int topIndex;
 	int selectionCountOnPress,selectionCountOnRelease;
@@ -81,7 +81,7 @@ public class List extends Scrollable {
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
-public List (Composite parent, int style) {
+public List_Old(Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 

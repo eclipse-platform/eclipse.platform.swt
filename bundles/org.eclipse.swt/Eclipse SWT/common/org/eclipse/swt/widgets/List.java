@@ -77,14 +77,12 @@ public class List extends Scrollable {
 		return (lineHeight > 0) ? clientArea.height / lineHeight : 0;
 	}
 
-	private void paintControl(Event e) {
+	private void paintControl(Event event) {
 		if (!isVisible()) {
 			return;
 		}
-		e.gc.setFont(getFont());
-		GC gc = e.gc != null ? e.gc : new GC(this);
-		doPaint(e.gc);
-		gc.dispose();
+
+		Drawing.drawWithGC(this, event.gc, gc -> doPaint(gc));
 	}
 
 	private void doPaint(GC gc) {
@@ -112,14 +110,24 @@ public class List extends Scrollable {
 	}
 
 	private void drawBackground(Rectangle clientArea, GC gc) {
-		gc.fillRectangle(clientArea.x, clientArea.y, clientArea.width - 1, clientArea.height - 1);
 
-		if ((style & SWT.BORDER) != 0 && isEnabled()) {
-			Color foreground = gc.getForeground();
-			gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_DARK_GRAY));
-			gc.drawLine(clientArea.x, clientArea.y + clientArea.height - 1, clientArea.x + clientArea.x + clientArea.width - 1, clientArea.y + clientArea.height - 1);
-			gc.setForeground(foreground);
+	    if ((state & Widget.PARENT_BACKGROUND) == 0) {
+
+		if (getBackground() == null) {
+		    // white is the default color for lists
+		    gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
 		}
+	    }
+
+	    gc.fillRectangle(clientArea.x, clientArea.y, clientArea.width - 1, clientArea.height - 1);
+
+	    if ((style & SWT.BORDER) != 0 && isEnabled()) {
+		Color foreground = gc.getForeground();
+		gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_DARK_GRAY));
+		gc.drawLine(clientArea.x, clientArea.y + clientArea.height - 1,
+			clientArea.x + clientArea.x + clientArea.width - 1, clientArea.y + clientArea.height - 1);
+		gc.setForeground(foreground);
+	    }
 	}
 
 	private void drawTextLine(int lineNumber, int x, int y, GC gc, Rectangle clientArea) {
@@ -404,7 +412,7 @@ public class List extends Scrollable {
 
 	public int getItemHeight() {
 		checkWidget();
-		return DPIUtil.scaleDown(getItemHeightInPixels(), getZoom());
+		return DPIUtil.autoScaleDown(getItemHeightInPixels());
 	}
 
 	public int getItemHeightInPixels() {
@@ -475,11 +483,6 @@ public class List extends Scrollable {
 	public boolean isSelected(int index) {
 		checkWidget();
 		return selectedItems.contains(index);
-	}
-
-	@Override
-	boolean isUseWsBorder() {
-		return super.isUseWsBorder() || ((display != null) && display.useWsBorderList);
 	}
 
 	public void remove(int[] indices) {

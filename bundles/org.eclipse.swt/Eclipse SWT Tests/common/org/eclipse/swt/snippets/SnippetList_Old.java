@@ -65,10 +65,8 @@ public class SnippetList_Old {
 		display.dispose();
 	}
 	static void createChildren(Composite parent) {
-		parent.setLayout(new RowLayout());
-		List_Old list = new List_Old(parent, SWT.BORDER | SWT.MULTI);
-		list.add("List item 1");
-		list.add("List item 2");
+//		parent.setLayout(new RowLayout());
+	    var list = new List_Old(parent, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
 
 		list.addSelectionListener(new SelectionListener() {
 
@@ -86,5 +84,14 @@ public class SnippetList_Old {
 
 			}
 		});
+
+		String blanks = "_!";
+		for (int i = 0; i < 10; i++) {
+		    list.add("List item " + i + blanks);
+		    blanks += "_!";
+		}
+
+		list.setSize(100, 100);
+
 	}
 }

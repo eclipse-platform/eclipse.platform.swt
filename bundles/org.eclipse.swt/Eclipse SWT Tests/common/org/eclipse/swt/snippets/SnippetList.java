@@ -65,8 +65,8 @@ public class SnippetList {
 		display.dispose();
 	}
 	static void createChildren(Composite parent) {
-		parent.setLayout(new RowLayout());
-		List list = new List(parent, SWT.BORDER | SWT.MULTI);
+//		parent.setLayout(new RowLayout());
+	    var list = new List(parent, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
 
 		list.addSelectionListener(new SelectionListener() {
 
@@ -87,6 +87,8 @@ public class SnippetList {
 
 		for (int i = 0; i < 10; i++)
 			list.add("List item " + i);
+
+		    list.setSize(100, 100);
 
 	}
 }
