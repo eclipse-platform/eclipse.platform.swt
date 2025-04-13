@@ -1,3 +1,4 @@
 https://github.com/eclipse-platform/eclipse.platform.swt/issues/1093
 Pick-up legal file unification in native fragments from: https://github.com/eclipse-platform/eclipse.platform.swt/pull/1144
 https://github.com/eclipse-platform/eclipse.platform.releng.aggregator/issues/2595
+Pick-up localization file fixes in native fragments in: https://github.com/eclipse-platform/eclipse.platform.swt/pull/2007

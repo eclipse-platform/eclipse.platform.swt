@@ -76,6 +76,11 @@
 				<artifactId>tycho-packaging-plugin</artifactId>
 				<configuration>
 					<timestampProvider>fragment-host</timestampProvider>
+					<archive>
+						<manifestEntries>
+							<Eclipse-Version>${releaseNumberSDK}</Eclipse-Version>
+						</manifestEntries>
+					</archive>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -149,6 +154,22 @@
 								</configuration>
 							</execution>
 							<execution>
+								<id>prepare-translation-files</id>
+								<phase>process-classes</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<target>
+										<!-- Prepare translationfiles for inclusion by renaming '*._properties' to '*.properties' -->
+										<move todir="${project.build.outputDirectory}" failonerror="true" preservelastmodified="true">
+											<fileset dir="${project.build.outputDirectory}" includes="**/*._properties"/>
+											<mapper type="glob" from="*._properties" to="*.properties" />
+										</move>
+									</target>
+								</configuration>
+							</execution>
+							<execution>
 								<id>package-swt-download-zip</id>
 								<phase>package</phase>
 								<goals>
@@ -158,23 +179,12 @@
 									<target>
 										<property name="temp.folder" value="${project.build.directory}/swtdownload-temp" />
 										<mkdir dir="${temp.folder}/swtdownload/" />
-										<!-- Prepare translationfiles for inclusion -->
-										<copy todir="${temp.folder}/@dot.src" failonerror="true" overwrite="true">
-											<fileset dir="${swtMainProject}/Eclipse SWT/common/" includes="**/*._properties"/>
-											<mapper type="glob" from="*._properties" to="*.properties" />
-										</copy>
 										<!-- Prepare nested swt.jar and src.jar -->
 										<property name="mavenBuiltJarName" value="${project.build.directory}/org.eclipse.swt.${ws}.${os}.${arch}-${project.version}" />
 										<copy file="${mavenBuiltJarName}.jar" tofile="${temp.folder}/swtdownload/swt.jar"/>
-										<jar jarfile="${temp.folder}/swtdownload/swt.jar" update="true" basedir="${temp.folder}/@dot.src">
-											<manifest>
-												<attribute name="Eclipse-Version" value="${releaseNumberSDK}"/>
-											</manifest>
-										</jar>
 										<zip zipfile="${temp.folder}/swtdownload/src.zip" duplicate="preserve">
 											<zipfileset src="${mavenBuiltJarName}-sources.jar" includes="**/*.sh" filemode="755"/>
 											<zipfileset src="${mavenBuiltJarName}-sources.jar" excludes="META-INF/**,OSGI-INF/**" />
-											<fileset dir="${temp.folder}/@dot.src"/>
 										</zip>
 										<!--Assemple nested SWT-zip -->
 										<zip zipfile="${project.build.directory}/swt-${buildid}-${ws}-${os}-${arch}.zip">
