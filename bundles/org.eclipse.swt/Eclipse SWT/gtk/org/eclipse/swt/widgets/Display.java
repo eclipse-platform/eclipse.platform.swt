@@ -1900,46 +1900,48 @@ public Control getCursorControl () {
 		gdkResource = gdk_device_get_surface_at_position (xDouble, yDouble);
 		x[0] = (int) xDouble[0];
 		y[0] = (int) yDouble[0];
+		if (gdkResource != 0) {
+			long gtkWindow = GTK4.gtk_native_get_for_surface(gdkResource);
+			if (gtkWindow != 0) {
+				handle = GTK4.gtk_widget_pick(gtkWindow, xDouble[0], yDouble[0], GTK4.GTK_PICK_DEFAULT);
+			}
+		}
 	} else {
 		gdkResource = gdk_device_get_window_at_position (x,y);
-	}
-	if (gdkResource != 0) {
-		if (GTK.GTK4) {
-			// TODO: GTK4 need to retrieve handle
-		} else {
+		if (gdkResource != 0) {
 			GDK.gdk_window_get_user_data (gdkResource, user_data);
-		}
-		handle = user_data [0];
-	} else {
-		// Feature in GTK. The gdk_device_get_[surface/window]_at_position() functions will not return a
-		// surface/window if the pointer is over a foreign embedded window. The fix is to use XQueryPointer
-		// to find the containing GDK window (see bug 177368.)
-		// However embedding foreign windows is not supported by the Wayland backend for GTK3 and is not
-		// supported at all on GTK4, so skip the heuristic in these situations.
-		if (OS.isWayland() || GTK.GTK4) return null;
-		long gdkDisplay = GDK.gdk_display_get_default();
-		if (OS.isX11()) {
-			GDK.gdk_x11_display_error_trap_push(gdkDisplay);
-		}
-		int[] unusedInt = new int[1];
-		long [] unusedPtr = new long [1], buffer = new long [1];
-		long xWindow, xParent = OS.XDefaultRootWindow (xDisplay);
-		do {
-			if (OS.XQueryPointer (xDisplay, xParent, unusedPtr, buffer, unusedInt, unusedInt, unusedInt, unusedInt, unusedInt) == 0) {
-				handle = 0;
-				break;
+			handle = user_data [0];
+		} else {
+			// Feature in GTK. The gdk_device_get_[surface/window]_at_position() functions will not return a
+			// surface/window if the pointer is over a foreign embedded window. The fix is to use XQueryPointer
+			// to find the containing GDK window (see bug 177368.)
+			// However embedding foreign windows is not supported by the Wayland backend for GTK3 and is not
+			// supported at all on GTK4, so skip the heuristic in these situations.
+			if (OS.isWayland() || GTK.GTK4) return null;
+			long gdkDisplay = GDK.gdk_display_get_default();
+			if (OS.isX11()) {
+				GDK.gdk_x11_display_error_trap_push(gdkDisplay);
 			}
-			if ((xWindow = buffer [0]) != 0) {
-				xParent = xWindow;
-				long gdkWindow = GDK.gdk_x11_window_lookup_for_display(gdkDisplay, xWindow);
-				if (gdkWindow != 0)	{
-					GDK.gdk_window_get_user_data (gdkWindow, user_data);
-					if (user_data[0] != 0) handle = user_data[0];
+			int[] unusedInt = new int[1];
+			long [] unusedPtr = new long [1], buffer = new long [1];
+			long xWindow, xParent = OS.XDefaultRootWindow (xDisplay);
+			do {
+				if (OS.XQueryPointer (xDisplay, xParent, unusedPtr, buffer, unusedInt, unusedInt, unusedInt, unusedInt, unusedInt) == 0) {
+					handle = 0;
+					break;
 				}
+				if ((xWindow = buffer [0]) != 0) {
+					xParent = xWindow;
+					long gdkWindow = GDK.gdk_x11_window_lookup_for_display(gdkDisplay, xWindow);
+					if (gdkWindow != 0)	{
+						GDK.gdk_window_get_user_data (gdkWindow, user_data);
+						if (user_data[0] != 0) handle = user_data[0];
+					}
+				}
+			} while (xWindow != 0);
+			if (OS.isX11()) {
+				GDK.gdk_x11_display_error_trap_pop_ignored(gdkDisplay);
 			}
-		} while (xWindow != 0);
-		if (OS.isX11()) {
-			GDK.gdk_x11_display_error_trap_pop_ignored(gdkDisplay);
 		}
 	}
 	if (handle == 0) return null;

@@ -3622,7 +3622,7 @@ void gtk4_enter_event(long controller, double x, double y, long event) {
 		char [] chars = fixMnemonic (toolTipText, false, true);
 		buffer = Converter.wcsToMbcs (chars, true);
 	}
-	long toolHandle = getShell().handle;
+	long toolHandle = handle;
 	GTK.gtk_widget_set_tooltip_text (toolHandle, buffer);
 
 	if (display.currentControl == this) return;
@@ -4044,6 +4044,7 @@ void gtk4_leave_event(long controller, long event) {
 
 	if (sendLeaveNotify() || display.getCursorControl() == null) {
 		sendMouseEvent(SWT.MouseExit, 0, 0, 0, 0, false, 0);
+		display.currentControl = null;
 	}
 }
 
