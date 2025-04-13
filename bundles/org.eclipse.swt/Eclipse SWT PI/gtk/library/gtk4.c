@@ -1614,6 +1614,18 @@ fail:
 }
 #endif
 
+#ifndef NO_gtk_1native_1get_1for_1surface
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1native_1get_1for_1surface)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1native_1get_1for_1surface_FUNC);
+	rc = (jlong)gtk_native_get_for_surface((GdkSurface *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1native_1get_1for_1surface_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1native_1get_1surface
 JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1native_1get_1surface)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -2175,6 +2187,18 @@ fail:
 	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	GTK4_NATIVE_EXIT(env, that, gtk_1widget_1measure_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1widget_1pick
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1widget_1pick)
+	(JNIEnv *env, jclass that, jlong arg0, jdouble arg1, jdouble arg2, jint arg3)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1widget_1pick_FUNC);
+	rc = (jlong)gtk_widget_pick((GtkWidget *)arg0, (double)arg1, (double)arg2, (GtkPickFlags)arg3);
+	GTK4_NATIVE_EXIT(env, that, gtk_1widget_1pick_FUNC);
+	return rc;
 }
 #endif
 

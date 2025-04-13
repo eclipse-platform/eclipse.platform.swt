@@ -26,6 +26,10 @@ public class GTK4 {
 	public static final int GTK_EVENT_SEQUENCE_CLAIMED = 1;
 	public static final int GTK_EVENT_SEQUENCE_DENIED = 2;
 
+	public static final int GTK_PICK_DEFAULT = 0;
+	public static final int GTK_PICK_INSENSITIVE = 1;
+	public static final int GTK_PICK_NON_TARGETABLE = 2;
+
 	/**
 	 * @param context cast=(GtkIMContext *)
 	 * @param event cast=(GdkEvent *)
@@ -129,6 +133,10 @@ public class GTK4 {
 
 	/* GTK Initialization */
 	public static final native boolean gtk_init_check();
+
+	/* GtkNative */
+	/** @param surface cast=(GdkSurface *) */
+	public static final native long gtk_native_get_for_surface(long surface);
 
 	/* GdkToplevel */
 	/** @param toplevel cast=(GdkToplevel *) */
@@ -667,6 +675,13 @@ public class GTK4 {
 	 * @param next_sibling cast=(GtkWidget *)
 	 */
 	public static final native void gtk_widget_insert_before(long widget, long parent, long next_sibling);
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 * @param x cast=(double)
+	 * @param y cast=(double)
+	 * @param flags cast=(GtkPickFlags)
+	 */
+	public static final native long gtk_widget_pick(long widget, double x, double y, int flags);
 
 	/* GtkComboBox */
 	/** @param combo_box cast=(GtkComboBox *) */
