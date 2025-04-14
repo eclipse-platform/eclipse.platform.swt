@@ -14,6 +14,10 @@ abstract class NativeBasedCustomScrollable extends Scrollable {
 
 	public NativeBasedCustomScrollable(Composite parent, int style) {
 		super(parent, style);
+		// this is for custom drawn widgets necessary to update the scrolling with thumb
+		// and with the arrows in the scrollbar widget. Else the position won't be
+		// updated.
+		state = state | CANVAS;
 	}
 
 }

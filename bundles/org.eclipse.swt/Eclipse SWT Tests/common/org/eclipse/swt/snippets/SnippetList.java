@@ -85,10 +85,12 @@ public class SnippetList {
 			}
 		});
 
-		for (int i = 0; i < 10; i++)
-			list.add("List item " + i);
-
-		    list.setSize(100, 100);
+		String blanks = "_!";
+		for (int i = 0; i < 100; i++) {
+		    list.add(i + " List item " + blanks);
+		    blanks += "_!";
+		}
+		list.setSize(200, 200);
 
 	}
 }

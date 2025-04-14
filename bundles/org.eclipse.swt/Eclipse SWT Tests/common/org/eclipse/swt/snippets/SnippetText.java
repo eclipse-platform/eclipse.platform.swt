@@ -30,7 +30,7 @@ public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
 	shell.setText("Snippet 12");
-	Text text = new Text (shell, SWT.BORDER | SWT.V_SCROLL);
+	Text text = new Text(shell, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
 	Rectangle clientArea = shell.getClientArea ();
 	text.setBounds (clientArea.x + 10, clientArea.y + 10, 100, 100);
 	for (int i=0; i<16; i++) {
@@ -43,6 +43,7 @@ public static void main (String [] args) {
 	System.out.println ("selection text=" + text.getSelectionText ());
 	System.out.println ("caret position=" + text.getCaretPosition ());
 	System.out.println ("caret location=" + text.getCaretLocation ());
+	text.setSize(200, 200);
 	while (!shell.isDisposed ()) {
 		if (!display.readAndDispatch ()) display.sleep ();
 	}

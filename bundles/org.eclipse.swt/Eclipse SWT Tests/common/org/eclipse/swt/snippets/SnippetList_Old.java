@@ -91,7 +91,7 @@ public class SnippetList_Old {
 		    blanks += "_!";
 		}
 
-		list.setSize(100, 100);
+		list.setSize(200, 200);
 
 	}
 }

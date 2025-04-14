@@ -8,7 +8,7 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 
-public class List extends Scrollable {
+public class List extends NativeBasedCustomScrollable {
 	static final int INSET = 3;
 	boolean addedUCC = false;
 
@@ -27,35 +27,40 @@ public class List extends Scrollable {
 	}
 
 	private void addListeners() {
-		final Listener listener = event -> {
-			switch (event.type) {
-				case SWT.Paint -> paintControl(event);
-				case SWT.MouseDown -> onMouseDown(event);
-				case SWT.MouseUp -> onMouseUp(event);
-				case SWT.MouseWheel -> onMouseWheel(event);
-				case SWT.Resize -> onResize();
-				case SWT.KeyUp -> onKeyReleased(event);
-				case SWT.Dispose -> dispose();
-			}
-		};
-		addListener(SWT.Paint, listener);
-		addListener(SWT.MouseDown, listener);
-		addListener(SWT.MouseUp, listener);
-		addListener(SWT.MouseWheel, listener);
-		addListener(SWT.KeyUp, listener);
-		addListener(SWT.Dispose, listener);
+	    final Listener listener = event -> {
+		switch (event.type) {
+		case SWT.Paint -> paintControl(event);
+		case SWT.MouseDown -> onMouseDown(event);
+		case SWT.MouseUp -> onMouseUp(event);
+		case SWT.MouseWheel -> onMouseWheel(event);
+		case SWT.Resize -> onResize();
+		case SWT.KeyUp -> onKeyReleased(event);
+		case SWT.Dispose -> dispose();
+		case SWT.Activate -> updateScrollBarWithTextSize();
+		}
+	    };
+	    addListener(SWT.Paint, listener);
+	    addListener(SWT.MouseDown, listener);
+	    addListener(SWT.MouseUp, listener);
+	    addListener(SWT.MouseWheel, listener);
+	    addListener(SWT.KeyUp, listener);
+	    addListener(SWT.Dispose, listener);
+	    addListener(SWT.Activate, listener);
 
-		ScrollBar horizontalBar = getHorizontalBar();
-		if (horizontalBar != null) {
-			horizontalBar.addListener(SWT.Selection, this::onScrollBarChange);
+	    ScrollBar horizontalBar = getHorizontalBar();
+	    if (horizontalBar != null) {
+		horizontalBar.addListener(SWT.Selection, e -> {
+		    redraw();
 		}
-		ScrollBar verticalBar = getVerticalBar();
-		if (verticalBar != null) {
-			verticalBar.addListener(SWT.Selection, e -> {
-				topIndex = verticalBar.getSelection();
-				onScrollBarChange(e);
-			});
-		}
+		);
+	    }
+	    ScrollBar verticalBar = getVerticalBar();
+	    if (verticalBar != null) {
+		verticalBar.addListener(SWT.Selection, e -> {
+		    topIndex = verticalBar.getSelection();
+		    redraw();
+		});
+	    }
 	}
 
 	private void onResize() {
@@ -322,20 +327,26 @@ public class List extends Scrollable {
 
 	private void updateScrollBarWithTextSize() {
 		Rectangle clientArea = getClientArea();
+		
+		if(clientArea.width == 0 || clientArea.height == 0)
+		    return;
+		
 		Point maxTextSize = computeTextSize();
 
 		if (verticalBar != null) {
 			int thumb = clientArea.height / getLineHeight();
-			verticalBar.setMaximum(this.items.size() - 1);
-			verticalBar.setMinimum(0);
 			verticalBar.setThumb(thumb);
+			verticalBar.setMaximum(this.items.size());
+			verticalBar.setMinimum(0);
 			verticalBar.setVisible(maxTextSize.y > clientArea.height);
+			verticalBar.setIncrement(1);
+			verticalBar.setPageIncrement(thumb);
 		}
 
 		if (horizontalBar != null) {
 			horizontalBar.setMaximum(maxTextSize.x);
 			horizontalBar.setMinimum(0);
-			horizontalBar.setThumb(clientArea.width / maxTextSize.x);
+			horizontalBar.setThumb(clientArea.width);
 			horizontalBar.setVisible(maxTextSize.x > clientArea.width);
 		}
 	}
