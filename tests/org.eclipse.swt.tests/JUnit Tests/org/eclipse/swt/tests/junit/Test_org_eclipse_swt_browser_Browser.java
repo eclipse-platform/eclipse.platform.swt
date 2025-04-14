@@ -2175,6 +2175,30 @@ public void test_evaluate_array_mixedTypes () {
 	assertTrue(message, passed);
 }
 
+/**
+ * https://github.com/eclipse-platform/eclipse.platform.swt/issues/1771
+ * https://github.com/eclipse-platform/eclipse.platform.swt/pull/1973
+ */
+@Test
+public void test_evaluate_OpeningNewWindow() throws Exception {
+	AtomicBoolean initialLoad = new AtomicBoolean();
+	AtomicBoolean openWindowListenerCalled = new AtomicBoolean();
+	browser.addProgressListener(ProgressListener.completedAdapter(e -> initialLoad.set(true)));
+	browser.addOpenWindowListener(event -> {
+		event.required = true; // block default
+		openWindowListenerCalled.set(true);
+	});
+	browser.setText("""
+			<button id="button" onClick="window.open('https://eclipse.org');">open eclipse.org</button>
+			""");
+	waitForPassCondition(initialLoad::get);
+
+	browser.evaluate("""
+				document.getElementById("button").click();
+			""");
+
+	waitForPassCondition(openWindowListenerCalled::get);
+}
 
 ProgressListener callCustomFunctionUponLoad = completedAdapter(event ->	browser.execute("callCustomFunction()"));
 
