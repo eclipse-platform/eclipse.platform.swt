@@ -823,6 +823,8 @@ public void test_OpenWindowListener_addAndRemove() {
 
 @Test
 public void test_OpenWindowListener_openHasValidEventDetails() {
+	assumeFalse("Stopped working with WebKit 2.48, see https://github.com/eclipse-platform/eclipse.platform.swt/issues/2014", SwtTestUtil.isGTK);
+
 	AtomicBoolean openFiredCorrectly = new AtomicBoolean(false);
 	final Browser browserChild = createBrowser(shell, swtBrowserSettings);
 	browser.addOpenWindowListener(event -> {
@@ -845,7 +847,7 @@ public void test_OpenWindowListener_openHasValidEventDetails() {
 /** Test that a script 'window.open()' opens a child popup shell. */
 @Test
 public void test_OpenWindowListener_open_ChildPopup() {
-	assumeFalse("Not currently working on Linux, see https://github.com/eclipse-platform/eclipse.platform.swt/issues/1564", SwtTestUtil.isGTK);
+	assumeFalse("Stopped working with WebKit 2.46, see https://github.com/eclipse-platform/eclipse.platform.swt/issues/1564", SwtTestUtil.isGTK);
 	AtomicBoolean childCompleted = new AtomicBoolean(false);
 
 	Shell childShell = new Shell(shell, SWT.None);
@@ -883,7 +885,7 @@ public void test_OpenWindowListener_open_ChildPopup() {
 /** Validate event order : Child's visibility should come before progress completed event */
 @Test
 public void test_OpenWindow_Progress_Listener_ValidateEventOrder() {
-	assumeFalse("Not currently working on Linux, see https://github.com/eclipse-platform/eclipse.platform.swt/issues/1564", SwtTestUtil.isGTK);
+	assumeFalse("Stopped working with WebKit 2.46, see https://github.com/eclipse-platform/eclipse.platform.swt/issues/1564", SwtTestUtil.isGTK);
 
 	AtomicBoolean windowOpenFired = new AtomicBoolean(false);
 	AtomicBoolean childCompleted = new AtomicBoolean(false);
@@ -1384,7 +1386,7 @@ public void test_VisibilityWindowListener_multiple_shells() {
  */
 @Test
 public void test_VisibilityWindowListener_eventSize() {
-	assumeFalse("Not currently working on Linux, see https://github.com/eclipse-platform/eclipse.platform.swt/issues/1564", SwtTestUtil.isGTK);
+	assumeFalse("Stopped working with WebKit 2.46, see https://github.com/eclipse-platform/eclipse.platform.swt/issues/1564", SwtTestUtil.isGTK);
 
 	shell.setSize(200,300);
 	AtomicBoolean childCompleted = new AtomicBoolean(false);
