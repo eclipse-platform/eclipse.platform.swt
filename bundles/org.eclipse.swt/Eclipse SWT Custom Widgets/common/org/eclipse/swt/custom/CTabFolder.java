@@ -1814,7 +1814,7 @@ void onMouse(Event event) {
 	int x = event.x, y = event.y;
 	switch (event.type) {
 		case SWT.MouseEnter: {
-			setToolTipText(null);
+			_setToolTipText(event.x, event.y);
 			break;
 		}
 		case SWT.MouseExit: {
