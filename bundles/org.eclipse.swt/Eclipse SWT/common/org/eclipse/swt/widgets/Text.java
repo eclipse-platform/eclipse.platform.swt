@@ -77,7 +77,6 @@ public class Text extends NativeBasedCustomScrollable {
 
 	int textLimit = LIMIT;
 
-	private boolean mouseDown;
 	private boolean doubleClick;
 	private TextCaret caret;
 	private int style;
@@ -366,20 +365,28 @@ public class Text extends NativeBasedCustomScrollable {
 
 	private void onMouseDown(Event e) {
 		setFocus();
+		if (e.button != 1) {
+			return;
+		}
+
 		TextLocation location = getTextLocation(e.x, e.y);
 		model.setSectionStart(location);
-		mouseDown = true;
+		setCapture(true);
 	}
 
 	private void onMouseMove(Event e) {
-		if (mouseDown) {
+		if ((e.stateMask & SWT.BUTTON1) != 0) {
 			updateSelectionEnd(e);
 		}
 	}
 
 	private void onMouseUp(Event e) {
+		if (e.button != 1) {
+			return;
+		}
+
+		setCapture(false);
 		updateSelectionEnd(e);
-		mouseDown = false;
 	}
 
 	private void updateSelectionEnd(Event e) {
