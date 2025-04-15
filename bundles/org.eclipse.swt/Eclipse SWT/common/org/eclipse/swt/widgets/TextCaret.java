@@ -293,11 +293,20 @@ class TextCaret extends Widget {
 		return isVisible;
 	}
 
+	boolean showCaret() {
+		return showHideCaret(true);
+	}
+
 	boolean hideCaret() {
-		if (!isShowing) {
+		return showHideCaret(false);
+	}
+
+	private boolean showHideCaret(boolean show) {
+		if (show == isShowing) {
 			return true;
 		}
-		isShowing = false;
+
+		isShowing = show;
 		return drawCaret();
 	}
 
@@ -344,10 +353,7 @@ class TextCaret extends Widget {
 	void releaseParent() {
 		super.releaseParent();
 		if (parent != null && this == parent.getCaret()) {
-			if (!parent.isDisposed())
-				parent.setCaret(null);
-			else
-				parent.setCaret(null);
+			parent.setCaret(null);
 		}
 	}
 
@@ -615,19 +621,8 @@ class TextCaret extends Widget {
 		if (!isFocusCaret()) {
 			return;
 		}
-		if (isVisible) {
-			showCaret();
-		} else {
-			hideCaret();
-		}
-	}
 
-	boolean showCaret() {
-		if (isShowing) {
-			return true;
-		}
-		isShowing = true;
-		return drawCaret();
+		showHideCaret(isVisible);
 	}
 
 	public void paint(GC gc) {

@@ -525,8 +525,10 @@ public class Text extends NativeBasedCustomScrollable {
 
 			drawBackground(gc, getClientArea());
 			drawText(gc, visibleArea);
-			drawSelection(gc, visibleArea);
-			drawCaret(gc, visibleArea);
+			if (isFocusControl()) {
+				drawSelection(gc, visibleArea);
+				drawCaret(gc, visibleArea);
+			}
 		});
 	}
 
@@ -1061,7 +1063,10 @@ public class Text extends NativeBasedCustomScrollable {
 
 	@Override
 	public boolean setFocus() {
-		caret.setFocus();
-		return super.setFocus();
+		final boolean focused = super.setFocus();
+		if (focused) {
+			caret.setFocus();
+		}
+		return focused;
 	}
 }
