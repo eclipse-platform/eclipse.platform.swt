@@ -111,7 +111,9 @@ LFLAGS = -shared -fPIC ${SWT_LFLAGS}
 
 # Treat all warnings as errors. If your new code produces a warning, please
 # take time to properly understand and fix/silence it as necessary.
+ifeq ($(GTK_VERSION), 3.0)
 CFLAGS += -Werror
+endif
 
 ifndef NO_STRIP
 	# -s = Remove all symbol table and relocation information from the executable.
