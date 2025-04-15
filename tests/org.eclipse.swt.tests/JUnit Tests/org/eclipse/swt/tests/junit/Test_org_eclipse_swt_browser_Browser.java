@@ -44,6 +44,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map.Entry;
@@ -824,8 +825,8 @@ public void test_OpenWindowListener_addAndRemove() {
 @Test
 public void test_OpenWindowListener_openHasValidEventDetails() {
 	AtomicBoolean openFiredCorrectly = new AtomicBoolean(false);
-	final Browser browserChild = createBrowser(shell, swtBrowserSettings);
 	browser.addOpenWindowListener(event -> {
+		final Browser browserChild = createBrowser(shell, swtBrowserSettings);
 		assertSame("Expected Browser1 instance, but have another instance", browser, event.widget);
 		assertNull("Expected event.browser to be null", event.browser);
 		openFiredCorrectly.set(true);
@@ -845,24 +846,23 @@ public void test_OpenWindowListener_openHasValidEventDetails() {
 /** Test that a script 'window.open()' opens a child popup shell. */
 @Test
 public void test_OpenWindowListener_open_ChildPopup() {
-	assumeFalse("Not currently working on Linux, see https://github.com/eclipse-platform/eclipse.platform.swt/issues/1564", SwtTestUtil.isGTK);
 	AtomicBoolean childCompleted = new AtomicBoolean(false);
 
 	Shell childShell = new Shell(shell, SWT.None);
 	childShell.setText("Child shell");
 	childShell.setLayout(new FillLayout());
-	final Browser browserChild = createBrowser(childShell, swtBrowserSettings);
 
 	browser.addOpenWindowListener(event -> {
+		Browser browserChild = createBrowser(childShell, swtBrowserSettings);
+		browserChild.addVisibilityWindowListener(showAdapter(event2 -> {
+			childShell.open();
+			browserChild.setText("Child Browser");
+		}));
+		//Triggers test to finish.
+		browserChild.addProgressListener(completedAdapter(event2 -> childCompleted.set(true)));
 		event.browser = browserChild;
 	});
 
-	browserChild.addVisibilityWindowListener(showAdapter(event -> {
-		childShell.open();
-		browserChild.setText("Child Browser");
-	}));
-	//Triggers test to finish.
-	browserChild.addProgressListener(completedAdapter(event -> childCompleted.set(true)));
 
 	shell.open();
 
@@ -883,37 +883,32 @@ public void test_OpenWindowListener_open_ChildPopup() {
 /** Validate event order : Child's visibility should come before progress completed event */
 @Test
 public void test_OpenWindow_Progress_Listener_ValidateEventOrder() {
-	assumeFalse("Not currently working on Linux, see https://github.com/eclipse-platform/eclipse.platform.swt/issues/1564", SwtTestUtil.isGTK);
 
-	AtomicBoolean windowOpenFired = new AtomicBoolean(false);
 	AtomicBoolean childCompleted = new AtomicBoolean(false);
 	AtomicBoolean visibilityShowed = new AtomicBoolean(false);
+	// there might be more than one progress event, use a linked hash set to keep the order but only track unique events
+	Set<String> eventOrder = Collections.synchronizedSet(new LinkedHashSet<String>());
 
 	Shell childShell = new Shell(shell, SWT.None);
 	childShell.setText("Child shell");
 	childShell.setLayout(new FillLayout());
-	final Browser browserChild = createBrowser(childShell, swtBrowserSettings);
 
 	browser.addOpenWindowListener(event -> {
+		final Browser browserChild = createBrowser(childShell, swtBrowserSettings);
 		event.browser = browserChild;
-		assertFalse("OpenWindowListener should have been fired first",
-				visibilityShowed.get() || childCompleted.get()); // Validate event order.
-		windowOpenFired.set(true);
+
+		browserChild.addVisibilityWindowListener(showAdapter(event2 -> {
+			eventOrder.add("Visibility.show");
+			visibilityShowed.set(true);
+			childShell.open();
+		}));
+
+		browserChild.addProgressListener(completedAdapter(event2 -> {
+			eventOrder.add("Progress.completed");
+			childCompleted.set(true); // Triggers test to finish.
+			browserChild.setText("Child Browser!");
+		}));
 	});
-
-	browserChild.addVisibilityWindowListener(showAdapter(event -> {
-		childShell.open();
-		assertTrue("Child Visibility.show should have fired before progress completed",
-				windowOpenFired.get() && !childCompleted.get()); // Validate event order.
-		visibilityShowed.set(true);
-	}));
-
-	browserChild.addProgressListener(completedAdapter(event -> {
-		assertTrue("Child's Progress Completed before parent's expected events",
-				windowOpenFired.get() && visibilityShowed.get()); // Validate event order.
-		childCompleted.set(true); // Triggers test to finish.
-		browserChild.setText("Child Browser!");
-	}));
 
 	shell.open();
 
@@ -925,14 +920,16 @@ public void test_OpenWindow_Progress_Listener_ValidateEventOrder() {
 		<body>This test uses javascript to open a new window.</body>
 		</html>""");
 
-	boolean passed = waitForPassCondition(() -> windowOpenFired.get() && visibilityShowed.get() && childCompleted.get());
+	boolean passed = waitForPassCondition(() -> visibilityShowed.get() && childCompleted.get());
 
 	String errMsg = "\nTest timed out."
 			+"\nExpected true for the below, but have:"
-			+"\nWindoOpenFired:" + windowOpenFired.get()
 			+"\nVisibilityShowed:" + visibilityShowed.get()
 			+"\nChildCompleted:" + childCompleted.get();
 	assertTrue(errMsg, passed);
+
+	assertEquals("Child Visibility.show should have fired before progress completed",
+			List.of("Visibility.show", "Progress.completed"), List.copyOf(eventOrder));
 }
 
 @Test
@@ -1384,7 +1381,6 @@ public void test_VisibilityWindowListener_multiple_shells() {
  */
 @Test
 public void test_VisibilityWindowListener_eventSize() {
-	assumeFalse("Not currently working on Linux, see https://github.com/eclipse-platform/eclipse.platform.swt/issues/1564", SwtTestUtil.isGTK);
 
 	shell.setSize(200,300);
 	AtomicBoolean childCompleted = new AtomicBoolean(false);
@@ -1394,19 +1390,18 @@ public void test_VisibilityWindowListener_eventSize() {
 	childShell.setSize(250, 350);
 	childShell.setText("Child shell");
 	childShell.setLayout(new FillLayout());
-	final Browser browserChild = createBrowser(childShell, swtBrowserSettings);
 
 	browser.addOpenWindowListener(event -> {
+		final Browser browserChild = createBrowser(childShell, swtBrowserSettings);
+		browserChild.addVisibilityWindowListener(showAdapter(event2 -> {
+			testLog.append("Visibilty show eventfired.\nEvent size: " + event2.size);
+			result.set(event2.size);
+			childShell.open();
+			childCompleted.set(true);
+		}));
 		event.browser = browserChild;
 		testLog.append("openWindowListener fired");
 	});
-
-	browserChild.addVisibilityWindowListener(showAdapter(event -> {
-		testLog.append("Visibilty show eventfired.\nEvent size: " + event.size);
-		result.set(event.size);
-		childShell.open();
-		childCompleted.set(true);
-	}));
 
 	shell.open();
 	browser.setText("""
@@ -1418,7 +1413,7 @@ public void test_VisibilityWindowListener_eventSize() {
 		</html>""");
 
 	boolean finishedWithoutTimeout = waitForPassCondition(childCompleted::get);
-	browserChild.dispose();
+	childShell.dispose();
 
 	boolean passed = false;
 	if (!SwtTestUtil.isWindows) {
