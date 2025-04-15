@@ -80,7 +80,7 @@ class Edge extends WebBrowser {
 
 	WebViewEnvironment containingEnvironment;
 
-	static boolean inCallback;
+	static int inCallback;
 	boolean inNewWindow;
 	private boolean inEvaluate;
 	HashMap<Long, LocationEvent> navigations = new HashMap<>();
@@ -235,11 +235,11 @@ static void error(int code, int hr) {
 
 static IUnknown newCallback(ICoreWebView2SwtCallback handler) {
 	long punk = COM.CreateSwtWebView2Callback((arg0, arg1) -> {
-		inCallback = true;
+		inCallback++;
 		try {
 			return handler.Invoke(arg0, arg1);
 		} finally {
-			inCallback = false;
+			inCallback--;
 		}
 	});
 	if (punk == 0) error(SWT.ERROR_NO_HANDLES, COM.E_OUTOFMEMORY);
@@ -552,7 +552,7 @@ void checkDeadlock() {
 	// and JavaScript callbacks are serialized. An event handler waiting
 	// for a completion of another handler will deadlock. Detect this
 	// situation and throw an exception instead.
-	if (inCallback || inNewWindow) {
+	if (inCallback > 0 || inNewWindow) {
 		SWT.error(SWT.ERROR_FAILED_EVALUATE, null, " [WebView2: deadlock detected]");
 	}
 }
@@ -821,7 +821,7 @@ void browserDispose(Event event) {
 		if(controller != null) {
 			// Bug in WebView2. Closing the controller from an event handler results
 			// in a crash. The fix is to delay the closure with asyncExec.
-			if (inCallback) {
+			if (inCallback > 0) {
 				ICoreWebView2Controller controller1 = controller;
 				controller.put_IsVisible(false);
 				browser.getDisplay().asyncExec(() -> {
@@ -916,7 +916,7 @@ public Object evaluate(String script) throws SWTException {
 	// Feature in WebView2. ExecuteScript works regardless of IsScriptEnabled setting.
 	// Disallow programmatic execution manually.
 	if (!jsEnabled) return null;
-	if(inCallback) {
+	if(inCallback > 0) {
 		// Execute script, but do not wait for async call to complete as otherwise it
 		// can cause a deadlock if execute inside a WebView callback.
 		execute(script);
@@ -1017,12 +1017,15 @@ long handleCallJava(int index, long bstrToken, long bstrArgsJson) {
 	String token = bstrToString(bstrToken);
 	BrowserFunction function = functions.get(index);
 	if (function != null && token.equals (function.token)) {
+		inCallback++;
 		try {
 			String argsJson = bstrToString(bstrArgsJson);
 			Object args = JSON.parse(argsJson.toCharArray());
 			result = function.function ((Object[]) args);
 		} catch (Throwable e) {
 			result = WebBrowser.CreateErrorString(e.getLocalizedMessage());
+		} finally {
+			inCallback--;
 		}
 	}
 	String json = JSON.stringify(result);

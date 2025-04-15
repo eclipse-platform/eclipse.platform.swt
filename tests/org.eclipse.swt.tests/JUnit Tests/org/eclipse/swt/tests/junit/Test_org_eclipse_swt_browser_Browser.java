@@ -2248,6 +2248,61 @@ public void test_BrowserFunction_callback () {
 }
 
 /**
+ * Test for stacked (cascaded) calls between Java and JS i.e. java calls JS
+ * which calls Java which calls JS and so on.
+ *
+ * @see https://github.com/eclipse-platform/eclipse.platform.swt/issues/1919
+ *
+ */
+@Test
+public void test_BrowserFunction_callback_stackedCalls() {
+	assumeFalse("Not currently working on Linux, see https://github.com/eclipse-platform/eclipse.platform.swt/issues/2021", SwtTestUtil.isGTK);
+	AtomicInteger javaCallbackExecuted = new AtomicInteger();
+	final int DEPTH = 5;
+
+	class DeepJavascriptCallback extends BrowserFunction { // Note: Local class defined inside method.
+		DeepJavascriptCallback(Browser browser, String name) {
+			super(browser, name);
+		}
+
+		@Override
+		public Object function(Object[] arguments) {
+			if (javaCallbackExecuted.get() < DEPTH) {
+				javaCallbackExecuted.incrementAndGet();
+				browser.evaluate("jsCallbackToJava();");
+			}
+
+			return null;
+		}
+	}
+
+	// Define a javascript function and call it
+	String htmlWithScript = """
+			<html><head>
+			<script language="JavaScript">
+			function callCustomFunction() {
+			     document.body.style.backgroundColor = 'red'
+					jsCallbackToJava()
+			}
+
+			</script>
+			</head>
+			<body> Going to make a callback to Java </body>
+			</html>
+			""";
+
+	browser.setText(htmlWithScript);
+	new DeepJavascriptCallback(browser, "jsCallbackToJava");
+
+	browser.addProgressListener(callCustomFunctionUponLoad);
+
+	shell.open();
+	boolean passed = waitForPassCondition(() -> javaCallbackExecuted.get() == DEPTH);
+	String message = "Java failed to get a callback from javascript. Test timed out";
+	assertTrue(message, passed);
+}
+
+/**
  * Test that javascript can call java and pass an integer to java.
  * loosely based on Snippet307.
  */
