@@ -15,6 +15,7 @@ import java.util.*;
 import java.util.List;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.Point;
 
 class TextModel {
 	static final String DELIMITER = "\n";
@@ -273,6 +274,41 @@ class TextModel {
 
 	int getSelectionCount() {
 		return getSelectionEnd() - getSelectionStart();
+	}
+
+	Point getWordRange(TextLocation location) {
+		final int offset = getOffset(location);
+		int from = offset;
+		while (isWordCharAt(from - 1)) {
+			from--;
+		}
+		int to = offset;
+		while (isWordCharAt(to)) {
+			to++;
+		}
+		return new Point(from, to);
+	}
+
+	Point extendWordSelection(TextLocation location, int from, int to) {
+		final int offset = getOffset(location);
+		if (offset < from) {
+			from = offset;
+			if (isWordCharAt(from)) {
+				while (isWordCharAt(from - 1)) {
+					from--;
+				}
+			}
+		} else if (offset > to) {
+			to = offset;
+			while (isWordCharAt(to)) {
+				to++;
+			}
+		}
+		return new Point(from, to);
+	}
+
+	private boolean isWordCharAt(int offset) {
+		return offset >= 0 && offset < text.length() && Character.isLetterOrDigit(text.charAt(offset));
 	}
 
 	TextLocation getCaretLocation() {

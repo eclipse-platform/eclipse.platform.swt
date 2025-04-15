@@ -77,7 +77,8 @@ public class Text extends NativeBasedCustomScrollable {
 
 	int textLimit = LIMIT;
 
-	private boolean doubleClick;
+	private boolean doubleClick = true;
+	private Point doubleClickStartRange;
 	private TextCaret caret;
 	private int style;
 	private Color backgroundColor;
@@ -368,9 +369,14 @@ public class Text extends NativeBasedCustomScrollable {
 		if (e.button != 1) {
 			return;
 		}
-
 		TextLocation location = getTextLocation(e.x, e.y);
-		model.setSectionStart(location);
+		if (e.count == 2 && doubleClick) {
+			doubleClickStartRange = model.getWordRange(location);
+			model.setSelection(doubleClickStartRange.x, doubleClickStartRange.y);
+		}
+		else {
+			model.setSectionStart(location);
+		}
 		setCapture(true);
 	}
 
@@ -387,11 +393,18 @@ public class Text extends NativeBasedCustomScrollable {
 
 		setCapture(false);
 		updateSelectionEnd(e);
+		doubleClickStartRange = null;
 	}
 
 	private void updateSelectionEnd(Event e) {
 		TextLocation location = getTextLocation(e.x, e.y);
-		model.setSelectionEnd(location);
+		if (doubleClickStartRange != null) {
+			final Point newRange = model.extendWordSelection(location, doubleClickStartRange.x, doubleClickStartRange.y);
+			model.setSelection(newRange.x, newRange.y);
+		}
+		else {
+			model.setSelectionEnd(location);
+		}
 	}
 
 	private void keyPressed(Event e) {
