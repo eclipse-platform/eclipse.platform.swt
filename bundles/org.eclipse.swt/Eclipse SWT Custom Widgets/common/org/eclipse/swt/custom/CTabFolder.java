@@ -1813,10 +1813,6 @@ void onMouse(Event event) {
 	}
 	int x = event.x, y = event.y;
 	switch (event.type) {
-		case SWT.MouseEnter: {
-			_setToolTipText(event.x, event.y);
-			break;
-		}
 		case SWT.MouseExit: {
 			for (int i=0; i<items.length; i++) {
 				CTabItem item = items[i];
@@ -1910,6 +1906,10 @@ void onMouse(Event event) {
 				return;
 			}
 			break;
+		}
+		case SWT.MouseEnter: {
+			// fall through to the "move" case, see
+			// https://github.com/eclipse-platform/eclipse.platform.swt/issues/2017
 		}
 		case SWT.MouseMove: {
 			_setToolTipText(event.x, event.y);
