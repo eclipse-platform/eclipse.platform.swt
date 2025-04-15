@@ -16,7 +16,6 @@ package org.eclipse.swt.tests.junit;
 
 
 import static org.eclipse.swt.tests.junit.SwtTestUtil.assertSWTProblem;
-import static org.eclipse.swt.tests.junit.SwtTestUtil.getPath;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -49,7 +48,9 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.DPIUtil;
 import org.eclipse.swt.widgets.Display;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.Image
@@ -58,6 +59,14 @@ import org.junit.Test;
  */
 @SuppressWarnings("restriction")
 public class Test_org_eclipse_swt_graphics_Image {
+
+	@ClassRule
+	public static TemporaryFolder tempFolder = new TemporaryFolder();
+
+	private static String getPath(String fileName) {
+		return SwtTestUtil.getPath(fileName, tempFolder);
+	}
+
 	ImageFileNameProvider imageFileNameProvider = zoom -> {
 		String fileName = switch (zoom) {
 		case 100 -> "collapseall.png";
@@ -319,11 +328,11 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String() 
 
 @Test
 public void test_ConstructorLorg_eclipse_swt_graphics_Device_ImageFileNameProvider() {
-	 Exception e;
+	Exception e;
 
 	// Null provider
 	ImageFileNameProvider provider1 = null;
-	  e = assertThrows(IllegalArgumentException.class, ()->new Image(display, provider1));
+	e = assertThrows(IllegalArgumentException.class, ()->new Image(display, provider1));
 	assertSWTProblem("Incorrect exception thrown for provider == null", SWT.ERROR_NULL_ARGUMENT, e);
 
 	// Invalid provider
