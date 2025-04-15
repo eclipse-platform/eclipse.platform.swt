@@ -20,12 +20,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -50,6 +48,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.test.Screenshots;
+import org.junit.rules.TemporaryFolder;
 
 public class SwtTestUtil {
 	/**
@@ -582,26 +581,19 @@ public static boolean hasPixelNotMatching(Image image, Color nonMatchingColor, R
 	return false;
 }
 
-public static String getPath(String fileName) {
-	URI uri;
-	String pluginPath = System.getProperty("PLUGIN_PATH");
-	if (pluginPath == null) {
-		URL url = SwtTestUtil.class.getResource(fileName);
-		assertNotNull(url, "URL == null for file " + fileName);
-		try {
-			uri = url.toURI();
-		} catch (URISyntaxException e) {
+public static String getPath(String fileName, TemporaryFolder tempFolder) {
+	Path filePath = tempFolder.getRoot().toPath().resolve("image-resources").resolve(Path.of(fileName));
+	if (!Files.isRegularFile(filePath)) {
+		// Extract resource on the classpath to a temporary file to ensure it's
+		// available as plain file, even if this bundle is packed as jar
+		try (InputStream inStream = SwtTestUtil.class.getResourceAsStream(fileName)) {
+			assertNotNull(inStream, "InputStream == null for file " + fileName);
+			Files.createDirectories(filePath.getParent());
+			Files.copy(inStream, filePath);
+		} catch (IOException e) {
 			throw new IllegalArgumentException(e);
 		}
-	} else {
-		uri = URI.create(pluginPath + "/data/" + fileName);
 	}
-	// Fallback when test is locally executed as plug-in test
-	Path path = Path.of(uri);
-	if (!Files.exists(path)) {
-		path = Path.of("data/" + fileName).toAbsolutePath();
-	}
-	assertTrue(Files.exists(path), "file not found: " + uri);
-	return path.toString();
+	return filePath.toString();
 }
 }
