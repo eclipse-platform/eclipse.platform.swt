@@ -109,7 +109,7 @@ public final class Image extends Resource implements Drawable {
 	/**
 	 * AbstractImageProvider to avail right ImageProvider (ImageDataProvider or ImageFileNameProvider)
 	 */
-	private AbstractImageProviderWrapper imageProvider;
+	private final AbstractImageProviderWrapper imageProvider;
 
 	/**
 	 * Style flag used to differentiate normal, gray-scale and disabled images based
@@ -136,16 +136,13 @@ public final class Image extends Resource implements Drawable {
 
 	private Map<Integer, ImageHandle> zoomLevelToImageHandle = new HashMap<>();
 
-/**
- * Prevents uninitialized instances from being created outside the package.
- */
-Image (Device device) {
-	this(device, DPIUtil.getNativeDeviceZoom());
-}
-
-private Image (Device device, int nativeZoom) {
+private Image (Device device, int type, long handle, int nativeZoom) {
 	super(device);
 	initialNativeZoom = nativeZoom;
+	this.type = type;
+	this.imageProvider = new ExistingImageHandleProviderWrapper(handle, nativeZoom);
+	this.isInitialized = true;
+	this.device.registerResourceWithZoomSupport(this);
 }
 
 /**
@@ -241,9 +238,7 @@ public Image(Device device, Image srcImage, int flag) {
 	initialNativeZoom = srcImage.initialNativeZoom;
 	Rectangle rect = srcImage.getBounds(getZoom());
 	this.type = srcImage.type;
-	if(srcImage.imageProvider != null) {
-		this.imageProvider = srcImage.imageProvider.createCopy(this);
-	}
+	this.imageProvider = srcImage.imageProvider.createCopy(this);
 	this.styleFlag = srcImage.styleFlag | flag;
 	long srcImageHandle = win32_getHandle(srcImage, getZoom());
 	switch (flag) {
@@ -1923,11 +1918,7 @@ public String toString () {
  * @noreference This method is not intended to be referenced by clients.
  */
 public static Image win32_new(Device device, int type, long handle, int nativeZoom) {
-	Image image = new Image(device, nativeZoom);
-	image.type = type;
-	image.new ImageHandle(handle, nativeZoom);
-	image.device.registerResourceWithZoomSupport(image);
-	return image;
+	return new Image(device, type, handle, nativeZoom);
 }
 
 private abstract class AbstractImageProviderWrapper {
@@ -1944,6 +1935,56 @@ private abstract class AbstractImageProviderWrapper {
 
 	protected void destroy() {
 		this.isDestroyed = true;
+	}
+}
+
+private class ExistingImageHandleProviderWrapper extends AbstractImageProviderWrapper {
+
+	private final int width;
+	private final int height;
+	private final long handle;
+	private final int zoomForHandle;
+
+	public ExistingImageHandleProviderWrapper(long handle, int zoomForHandle) {
+		this.handle = handle;
+		this.zoomForHandle = zoomForHandle;
+		ImageHandle imageHandle = new ImageHandle(handle, zoomForHandle);
+
+		ImageData baseData = imageHandle.getImageData();
+		this.width = DPIUtil.scaleDown(baseData.width, zoomForHandle);
+		this.height = DPIUtil.scaleDown(baseData.height, zoomForHandle);
+	}
+
+	@Override
+	protected Rectangle getBounds(int zoom) {
+		Rectangle rectangle = new Rectangle(0, 0, width, height);
+		return DPIUtil.scaleUp(rectangle, zoom);
+	}
+
+	@Override
+	ImageData getImageData(int zoom) {
+		if (zoomLevelToImageHandle.isEmpty() || zoomLevelToImageHandle.containsKey(zoom)) {
+			return getImageMetadata(zoom).getImageData();
+		}
+
+		return getScaledImageData(zoom);
+	}
+
+	@Override
+	ImageHandle getImageMetadata(int zoom) {
+		if (zoomLevelToImageHandle.containsKey(zoom)) {
+			return zoomLevelToImageHandle.get(zoom);
+		} else {
+			ImageData resizedData = getImageData(zoom);
+			ImageData newData = adaptImageDataIfDisabledOrGray(resizedData);
+			init(newData, zoom);
+			return zoomLevelToImageHandle.get(zoom);
+		}
+	}
+
+	@Override
+	AbstractImageProviderWrapper createCopy(Image image) {
+		return image.new ExistingImageHandleProviderWrapper(handle, zoomForHandle);
 	}
 }
 
