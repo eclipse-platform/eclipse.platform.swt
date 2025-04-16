@@ -41,8 +41,8 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageDataProvider;
-import org.eclipse.swt.graphics.ImageFileNameProvider;
 import org.eclipse.swt.graphics.ImageGcDrawer;
+import org.eclipse.swt.graphics.ImagePathProvider;
 import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
@@ -58,7 +58,7 @@ import org.junit.Test;
  */
 @SuppressWarnings("restriction")
 public class Test_org_eclipse_swt_graphics_Image {
-	ImageFileNameProvider imageFileNameProvider = zoom -> {
+	ImagePathProvider imageFileNameProvider = zoom -> {
 		String fileName = switch (zoom) {
 		case 100 -> "collapseall.png";
 		case 150 -> "collapseall@1.5x.png";
@@ -74,11 +74,11 @@ public class Test_org_eclipse_swt_graphics_Image {
 		case 200 -> "collapseall@2x.png";
 		default -> null;
 		};
-		return fileName != null ? new ImageData(getPath(fileName)) : null;
+		return fileName != null ? ImageData.load(getPath(fileName)) : null;
 	};
 	ImageDataProvider imageDataProvider1xOnly = zoom -> {
 		if (zoom == 100) {
-			return new ImageData(getPath("collapseall.png"));
+			return ImageData.load(getPath("collapseall.png"));
 		}
 		return null;
 	};
@@ -322,12 +322,12 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Device_ImageFileNameProvid
 	 Exception e;
 
 	// Null provider
-	ImageFileNameProvider provider1 = null;
+	 ImagePathProvider provider1 = null;
 	  e = assertThrows(IllegalArgumentException.class, ()->new Image(display, provider1));
 	assertSWTProblem("Incorrect exception thrown for provider == null", SWT.ERROR_NULL_ARGUMENT, e);
 
 	// Invalid provider
-	ImageFileNameProvider	provider2 = zoom -> null;
+	ImagePathProvider provider2 = zoom -> null;
 	e = assertThrows(IllegalArgumentException.class, ()->new Image(display, provider2));
 	assertSWTProblem("Incorrect exception thrown for provider == null", SWT.ERROR_INVALID_ARGUMENT, e);
 
@@ -335,7 +335,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Device_ImageFileNameProvid
 	Image image = new Image(display, imageFileNameProvider);
 	image.dispose();
 	// Corrupt Image provider
-	ImageFileNameProvider provider3 = zoom -> {
+	ImagePathProvider provider3 = zoom -> {
 		String fileName = switch (zoom) {
 		case 100, 150, 200 -> "corrupt.png";
 		default -> null;
@@ -346,7 +346,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Device_ImageFileNameProvid
 	assertSWTProblem("Incorrect exception thrown for provider with corrupt images", SWT.ERROR_INVALID_IMAGE, e);
 
 	// Valid provider only 100% zoom
-	ImageFileNameProvider provider4 = zoom -> {
+	ImagePathProvider provider4 = zoom -> {
 		if (zoom == 100) {
 			return getPath("collapseall.png");
 		}
@@ -374,7 +374,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Device_ImageDataProvider()
 	// Corrupt Image provider
 	ImageDataProvider provider3 = zoom -> {
 		return switch (zoom) {
-		case 100, 150, 200 -> new ImageData(getPath("corrupt.png"));
+		case 100, 150, 200 -> ImageData.load(getPath("corrupt.png"));
 		default -> null;
 		};
 	};
@@ -383,7 +383,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Device_ImageDataProvider()
 	// Valid provider only 100% zoom
 	ImageDataProvider provider4 = zoom -> {
 		if (zoom == 100) {
-			return new ImageData(getPath("collapseall.png"));
+			return ImageData.load(getPath("collapseall.png"));
 		}
 		return null;
 	};
@@ -426,7 +426,7 @@ public void test_equalsLjava_lang_Object() {
 		image1.dispose();
 	}
 
-	// ImageFileNameProvider
+	// ImageFileProvider
 	try {
 		image = new Image(display, imageFileNameProvider);
 		image1 = image;
@@ -864,7 +864,7 @@ void getImageData1() {
 	for (int i=0; i<numFormats; i++) {
 		String format = SwtTestUtil.imageFormats[i];
 		try (InputStream stream = SwtTestUtil.class.getResourceAsStream(fileName + "." + format)) {
-			ImageData data1 = new ImageData(stream);
+			ImageData data1 = ImageData.load(stream);
 			Image image = new Image(display, data1);
 			ImageData data2 = image.getImageData();
 			image.dispose();
@@ -992,8 +992,8 @@ public void test_updateWidthHeightAfterDPIChange() {
 @Test
 public void test_imageDataIsCached() {
 	assumeTrue("On-demand image creation only implemented for Windows", SwtTestUtil.isWindows);
-	String imagePath = getPath("collapseall.png");
-	ImageFileNameProvider imageFileNameProvider = __ -> {
+	Path imagePath = getPath("collapseall.png");
+	ImagePathProvider imageFileNameProvider = __ -> {
 		return imagePath;
 	};
 	Image fileNameProviderImage = new Image(display, imageFileNameProvider);
@@ -1003,13 +1003,13 @@ public void test_imageDataIsCached() {
 @Test
 public void test_imageDataSameViaDifferentProviders() {
 	assumeFalse("Cocoa generates inconsistent image data", SwtTestUtil.isCocoa);
-	String imagePath = getPath("collapseall.png");
-	ImageFileNameProvider imageFileNameProvider = __ -> {
+	Path imagePath = getPath("collapseall.png");
+	ImagePathProvider imageFileNameProvider = __ -> {
 		return imagePath;
 	};
 	ImageDataProvider dataProvider = __ -> {
-		try (InputStream imageStream = Files.newInputStream(Path.of(imagePath))) {
-			return new ImageData(imageStream);
+		try (InputStream imageStream = Files.newInputStream(imagePath)) {
+			return ImageData.load(imageStream);
 		} catch (IOException e) {
 		}
 		return null;

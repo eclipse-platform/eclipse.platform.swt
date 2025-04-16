@@ -582,7 +582,7 @@ public static boolean hasPixelNotMatching(Image image, Color nonMatchingColor, R
 	return false;
 }
 
-public static String getPath(String fileName) {
+public static Path getPath(String fileName) {
 	URI uri;
 	String pluginPath = System.getProperty("PLUGIN_PATH");
 	if (pluginPath == null) {
@@ -602,6 +602,6 @@ public static String getPath(String fileName) {
 		path = Path.of("data/" + fileName).toAbsolutePath();
 	}
 	assertTrue(Files.exists(path), "file not found: " + uri);
-	return path.toString();
+	return path;
 }
 }
