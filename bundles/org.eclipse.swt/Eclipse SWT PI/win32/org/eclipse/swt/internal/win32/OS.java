@@ -39,11 +39,11 @@ public class OS extends C {
 	/**
 	 * Values taken from https://en.wikipedia.org/wiki/List_of_Microsoft_Windows_versions
 	 */
-	public static final int WIN32_BUILD_WIN8_1 = 9600; // "Windows 8.1"
 	public static final int WIN32_BUILD_WIN10_1607 = 14393; // "Windows 10 August 2016 Update"
 	public static final int WIN32_BUILD_WIN10_1809 = 17763; // "Windows 10 October 2018 Update"
 	public static final int WIN32_BUILD_WIN10_2004 = 19041; // "Windows 10 May 2020 Update"
 	public static final int WIN32_BUILD_WIN11_21H2 = 22000; // Initial Windows 11 release
+	public static final int MINIMUM_COMPATIBLE_OS_VERSION = WIN32_BUILD_WIN10_1607;
 
 	public static final String NO_MANIFEST = "org.eclipse.swt.internal.win32.OS.NO_MANIFEST";
 
@@ -69,6 +69,8 @@ public class OS extends C {
 			WIN32_BUILD = 0;
 		}
 
+		checkCompatibleWindowsVersion(WIN32_BUILD);
+
 		/* Load the manifest to force the XP Theme */
 		if (System.getProperty (NO_MANIFEST) == null) {
 			ACTCTX pActCtx = new ACTCTX ();
@@ -91,6 +93,14 @@ public class OS extends C {
 
 		/* Get the DBCS flag */
 		IsDBLocale = OS.GetSystemMetrics (SM_IMMENABLED) != 0;
+	}
+
+	private static void checkCompatibleWindowsVersion(int current) {
+		if (OS.WIN32_BUILD < OS.MINIMUM_COMPATIBLE_OS_VERSION) {
+			System.err.println(String.format("Incompatible OS: Minimum Windows build version is %s but current is %s",
+					OS.MINIMUM_COMPATIBLE_OS_VERSION, current));
+			System.exit(0);
+		}
 	}
 
 	/* Constants */
@@ -2354,7 +2364,6 @@ public static final native long ActivateKeyboardLayout(long hkl, int Flags);
  */
 public static final native int AddFontResourceEx(char[] lpszFilename, int fl, long pdv);
 public static final native boolean AdjustWindowRectEx (RECT lpRect, int dwStyle, boolean bMenu, int dwExStyle);
-/** @method flags=dynamic */
 public static final native boolean AdjustWindowRectExForDpi (RECT lpRect, int dwStyle, boolean bMenu, int dwExStyle, int dpi);
 /** @method flags=no_gen */
 public static final native boolean AllowDarkModeForWindow(long hWnd, boolean allow);
@@ -2820,7 +2829,7 @@ public static final native long GetDlgItem (long hDlg, int nIDDlgItem);
 public static final native int GetDoubleClickTime ();
 /** @method flags=dynamic */
 public static final native int GetDpiForMonitor (long hmonitor, int dpiType, int [] dpiX, int [] dpiY);
-/** @method flags=dynamic */
+/** @param hWnd cast=(HWND) */
 public static final native int GetDpiForWindow (long hWnd);
 public static final native long GetFocus ();
 /** @param hdc cast=(HDC) */
@@ -3006,7 +3015,6 @@ public static final native long GetSysColorBrush (int nIndex);
 /** @param hWnd cast=(HWND) */
 public static final native long GetSystemMenu (long hWnd, boolean bRevert);
 public static final native int GetSystemMetrics (int nIndex);
-/** @method flags=dynamic */
 public static final native int GetSystemMetricsForDpi (int nIndex, int dpi);
 /** @param hDC cast=(HDC) */
 public static final native int GetTextColor (long hDC);
@@ -4378,12 +4386,8 @@ public static final native int SetPixel (long hdc, int X, int Y, int crColor);
 /** @param hdc cast=(HDC) */
 public static final native int SetPolyFillMode (long hdc, int iPolyFillMode);
 public static final native boolean SetProcessDPIAware ();
-/**
- * @method flags=dynamic
- * @param dpiContext cast=(DPI_AWARENESS_CONTEXT)
- */
+/** @param dpiContext cast=(DPI_AWARENESS_CONTEXT) */
 public static final native long SetThreadDpiAwarenessContext (long dpiContext);
-/** @method flags=dynamic */
 public static final native long GetThreadDpiAwarenessContext ();
 /** @method flags=no_gen */
 public static final native int SetPreferredAppMode(int mode);
@@ -4496,7 +4500,6 @@ public static final native boolean SystemParametersInfo (int uiAction, int uiPar
 public static final native boolean SystemParametersInfo (int uiAction, int uiParam, RECT pvParam, int fWinIni);
 public static final native boolean SystemParametersInfo (int uiAction, int uiParam, NONCLIENTMETRICS pvParam, int fWinIni);
 public static final native boolean SystemParametersInfo (int uiAction, int uiParam, int [] pvParam, int fWinIni);
-/** @method flags=dynamic */
 public static final native boolean SystemParametersInfoForDpi (int uiAction, int uiParam, NONCLIENTMETRICS pvParam, int fWinIni, int dpi);
 /**
  * @param lpKeyState cast=(PBYTE)
