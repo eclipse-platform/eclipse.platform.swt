@@ -257,6 +257,17 @@ public static Rectangle scaleDown(Rectangle rect, int zoom) {
 	scaledRect.y = scaledTopLeft.y;
 	scaledRect.width = scaledBottomRight.x - scaledTopLeft.x;
 	scaledRect.height = scaledBottomRight.y - scaledTopLeft.y;
+
+	int scaledDownWidth = DPIUtil.scaleDown(rect.width, zoom);
+	int scaledDownHeight = DPIUtil.scaleDown(rect.height, zoom);
+
+	// It must be ensured, that a scaled down width or height
+	// based on Rectangle x or y is not bigger than directly
+	// scaling down the width or height. Therefore the min
+	// value is used
+	scaledRect.width = Math.min(scaledRect.width, scaledDownWidth);
+	scaledRect.height = Math.min(scaledRect.height, scaledDownHeight);
+
 	return scaledRect;
 }
 /**
@@ -464,6 +475,16 @@ public static Rectangle scaleUp(Rectangle rect, int zoom) {
 	scaledRect.y = scaledTopLeft.y;
 	scaledRect.width = scaledBottomRight.x - scaledTopLeft.x;
 	scaledRect.height = scaledBottomRight.y - scaledTopLeft.y;
+
+	int scaledUpWidth = DPIUtil.scaleUp(rect.width, zoom);
+	int scaledUpHeight = DPIUtil.scaleUp(rect.height, zoom);
+
+	// It must be ensured, that a scaled up width or height
+	// based on Rectangle x or y is not smaller that directly
+	// scaling up the width or height. Therefore the max
+	// value is used
+	scaledRect.width = Math.max(scaledRect.width, scaledUpWidth);
+	scaledRect.height = Math.max(scaledRect.height, scaledUpHeight);
 	return scaledRect;
 }
 
