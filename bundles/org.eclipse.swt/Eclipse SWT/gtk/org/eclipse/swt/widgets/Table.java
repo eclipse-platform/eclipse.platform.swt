@@ -15,6 +15,9 @@
 package org.eclipse.swt.widgets;
 
 
+import java.util.*;
+import java.util.function.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
@@ -98,6 +101,7 @@ public class Table extends Composite {
 	int headerHeight;
 	boolean boundsChangedSinceLastDraw, headerVisible, wasScrolled;
 	boolean rowActivated;
+	boolean showImagesForDefaultColumn;
 
 	private long headerCSSProvider;
 
@@ -232,7 +236,7 @@ long cellDataProc (long tree_column, long cell, long tree_model, long iter, long
 		ptr [0] = 0;
 		if (isPixbuf) {
 			GTK.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_PIXBUF, ptr, -1);
-			OS.g_object_set (cell, OS.gicon, ptr [0], 0);
+			OS.g_object_set (cell, OS.pixbuf, ptr [0], 0);
 			if (ptr [0] != 0) OS.g_object_unref (ptr [0]);
 		} else {
 			GTK.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_TEXT, ptr, -1);
@@ -623,9 +627,10 @@ void createColumn (TableColumn column, int index) {
 	if (columnHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	if (index == 0 && columnCount > 0) {
 		TableColumn checkColumn = columns [0];
-		createRenderers (checkColumn.handle, checkColumn.modelIndex, false, checkColumn.style);
+		createRenderers (checkColumn.handle, checkColumn.modelIndex, false, checkColumn.showImages, checkColumn.style);
 	}
-	createRenderers (columnHandle, modelIndex, index == 0, column == null ? 0 : column.style);
+	createRenderers (columnHandle, modelIndex, index == 0,
+			column == null ? showImagesForDefaultColumn : column.showImages, column == null ? 0 : column.style);
 	if ((style & SWT.VIRTUAL) == 0 && columnCount == 0) {
 		GTK.gtk_tree_view_column_set_sizing (columnHandle, GTK.GTK_TREE_VIEW_COLUMN_GROW_ONLY);
 	} else {
@@ -717,9 +722,11 @@ void createItem (TableColumn column, int index) {
 		GTK.gtk_tree_view_column_set_sizing (column.handle, GTK.GTK_TREE_VIEW_COLUMN_FIXED);
 		GTK.gtk_tree_view_column_set_visible (column.handle, false);
 		column.modelIndex = FIRST_COLUMN;
-		createRenderers (column.handle, column.modelIndex, true, column.style);
+		createRenderers (column.handle, column.modelIndex, true, showImagesForDefaultColumn, column.style);
 		column.customDraw = firstCustomDraw;
 		firstCustomDraw = false;
+		column.showImages = showImagesForDefaultColumn;
+		showImagesForDefaultColumn = false;
 	} else {
 		createColumn (column, index);
 	}
@@ -826,7 +833,7 @@ void createItem (TableItem item, int index) {
 	items [index] = item;
 }
 
-void createRenderers (long columnHandle, int modelIndex, boolean check, int columnStyle) {
+void createRenderers (long columnHandle, int modelIndex, boolean check, boolean showImages, int columnStyle) {
 	GTK.gtk_tree_view_column_clear (columnHandle);
 	if ((style & SWT.CHECK) != 0 && check) {
 		GTK.gtk_tree_view_column_pack_start (columnHandle, checkRenderer, false);
@@ -842,13 +849,14 @@ void createRenderers (long columnHandle, int modelIndex, boolean check, int colu
 	long pixbufRenderer = ownerDraw ? OS.g_object_new (display.gtk_cell_renderer_pixbuf_get_type (), 0) : GTK.gtk_cell_renderer_pixbuf_new ();
 	if (pixbufRenderer == 0) {
 		error (SWT.ERROR_NO_HANDLES);
-	} else {
-		// set default size this size is used for calculating the icon and text positions in a table
-		if (!ownerDraw) {
-			// Set render size to 0x0 until we actually add images, fix for
-			// Bug 457196 (this applies to Tables as well).
-			GTK.gtk_cell_renderer_set_fixed_size(pixbufRenderer, 0, 0);
+	}
+	if (!ownerDraw) {
+		int width = (pixbufSizeSet && showImages) ? pixbufWidth : 1;
+		int height = -1;
+		if ((style & SWT.VIRTUAL) != 0) {
+			height = pixbufSizeSet ? pixbufHeight : 0;
 		}
+		GTK.gtk_cell_renderer_set_fixed_size(pixbufRenderer, width, height);
 	}
 	long textRenderer = ownerDraw ? OS.g_object_new (display.gtk_cell_renderer_text_get_type (), 0) : GTK.gtk_cell_renderer_text_new ();
 	if (textRenderer == 0) error (SWT.ERROR_NO_HANDLES);
@@ -1055,6 +1063,7 @@ void destroyItem (TableColumn column) {
 	long columnHandle = column.handle;
 	if (columnCount == 1) {
 		firstCustomDraw = column.customDraw;
+		showImagesForDefaultColumn = column.showImages;
 	}
 	System.arraycopy (columns, index + 1, columns, index, --columnCount - index);
 	columns [columnCount] = null;
@@ -1104,7 +1113,8 @@ void destroyItem (TableColumn column) {
 		}
 		if (index == 0) {
 			TableColumn checkColumn = columns [0];
-			createRenderers (checkColumn.handle, checkColumn.modelIndex, true, checkColumn.style);
+			createRenderers (checkColumn.handle, checkColumn.modelIndex, true, checkColumn.showImages,
+					checkColumn.style);
 		}
 	}
 	if (!searchEnabled ()) {
@@ -2574,11 +2584,12 @@ void recreateRenderers () {
 		OS.g_signal_connect_closure (checkRenderer, OS.toggled, display.getClosure (TOGGLED), false);
 	}
 	if (columnCount == 0) {
-		createRenderers (GTK.gtk_tree_view_get_column (handle, 0), Table.FIRST_COLUMN, true, 0);
+		createRenderers (GTK.gtk_tree_view_get_column (handle, 0), Table.FIRST_COLUMN, true, showImagesForDefaultColumn,
+				0);
 	} else {
 		for (int i = 0; i < columnCount; i++) {
 			TableColumn column = columns [i];
-			createRenderers (column.handle, column.modelIndex, i == 0, column.style);
+			createRenderers (column.handle, column.modelIndex, i == 0, column.showImages, column.style);
 		}
 	}
 }
@@ -4240,6 +4251,130 @@ void checkSetDataInProcessBeforeRemoval(int start, int end) {
 			throw new SWTException(message);
 		}
 	}
+}
+
+boolean initPixbufSize (Image image) {
+	if (pixbufSizeSet || image == null) {
+		return false;
+	}
+	int iWidth, iHeight;
+	if (DPIUtil.useCairoAutoScale ()) {
+		iWidth = image.getBounds ().width;
+		iHeight = image.getBounds ().height;
+	} else {
+		iWidth = image.getBoundsInPixels ().width;
+		iHeight = image.getBoundsInPixels ().height;
+	}
+	if (iWidth <= 0 || iHeight <= 0) {
+		return false;
+	}
+	pixbufSizeSet = true;
+	pixbufHeight = iHeight;
+	pixbufWidth = iWidth;
+	/*
+	 * Feature in GTK: a Table with the style SWT.VIRTUAL has fixed-height-mode
+	 * enabled. This will limit the size of any cells, including renderers. In order
+	 * to prevent images from disappearing/being cropped, we update row heights when
+	 * the first image is set. Fix for bug 480261.
+	 */
+	if ((style & SWT.VIRTUAL) != 0) {
+		initFixedRowHeight ();
+	}
+	return true;
+}
+
+private void initFixedRowHeight () {
+	long columnList = GTK.gtk_tree_view_get_columns (handle);
+	if (columnList == 0) {
+		return;
+	}
+
+	// set fixed height for all GtkCellRendererPixbufs
+	for (var colItem = columnList; colItem != 0; colItem = OS.g_list_next (colItem)) {
+		long column = OS.g_list_data (colItem);
+		long renderer = getPixbufRenderer (column);
+		if (renderer != 0) {
+			GTK.gtk_cell_renderer_set_fixed_size (renderer, 1, pixbufHeight);
+		}
+	}
+	OS.g_list_free (columnList);
+
+	/*
+	 * Change fixed height of existing rows to fit new pixbuf height.
+	 *
+	 * Wrapped in asyncExec because when this method is invoked from 'checkData()',
+	 * the 'row_changed' signal is blocked (but we need it unblocked to invalidate
+	 * existing rows).
+	 */
+	display.asyncExec ( () -> {
+		if (!isDisposed () && modelHandle != 0) {
+			/*
+			 * Reset computed 'fixed_height' to '-1'
+			 *
+			 * Note: current GTK3 (3.24.41) doesn't support setting 'fixed_height_mode' to
+			 * 'true' multiple times: each call appends additional "notify::sizing"
+			 * callbacks to columns and doesn't remove old ones.
+			 *
+			 * It's fine to use here, because this method is executed once per tree.
+			 */
+			OS.g_object_set (handle, OS.fixed_height_mode, false, 0);
+			OS.g_object_set (handle, OS.fixed_height_mode, true, 0);
+
+			// to update height of the existing rows we need to invalidate them in gtk
+			// we do that by invoking 'gtk_tree_view_row_changed' on each of row
+			int[] value = new int[1];
+			forEachChildRow (modelHandle, 0, iter -> {
+				GTK.gtk_tree_model_get (modelHandle, iter, CHECKED_COLUMN, value, -1);
+				GTK.gtk_list_store_set (modelHandle, iter, CHECKED_COLUMN, value[0], -1);
+			});
+		}
+	});
+}
+
+private static void forEachChildRow (long modelHandle, long parentIter, LongConsumer doWithIter) {
+	long iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
+	if (GTK.gtk_tree_model_iter_children (modelHandle, iter, parentIter)) {
+		do {
+			doWithIter.accept (iter);
+			forEachChildRow (modelHandle, iter, doWithIter);
+		} while (GTK.gtk_tree_model_iter_next (modelHandle, iter));
+	}
+	OS.g_free (iter);
+}
+
+boolean isShowingImagesForColumn (int columnIdx) {
+	if (columnCount == 0) {
+		Objects.checkIndex (columnIdx, 1);
+		return showImagesForDefaultColumn;
+	} else {
+		Objects.checkIndex (columnIdx, columnCount);
+		return columns[columnIdx].showImages;
+	}
+}
+
+boolean showImagesForColumn (int columnIdx) {
+	Objects.checkIndex (columnIdx, Math.max (1, columnCount));
+	if (pixbufSizeSet && !isShowingImagesForColumn (columnIdx)) {
+		long col = GTK.gtk_tree_view_get_column (handle, columnIdx);
+		if (col != 0) {
+			long pixbufRenderer = getPixbufRenderer (col);
+			if (pixbufRenderer != 0) {
+				int height = ((style & SWT.VIRTUAL) != 0) ? pixbufHeight : -1;
+				GTK.gtk_cell_renderer_set_fixed_size (pixbufRenderer, pixbufWidth, height);
+				if (columnCount == 0) {;
+					showImagesForDefaultColumn = true;
+				} else {
+					columns[columnIdx].showImages = true;
+				}
+				if (!GTK.GTK4) {
+					// update column renderers layout to add space for image width
+					GTK3.gtk_tree_view_column_queue_resize (col);
+				}
+				return true;
+			}
+		}
+	}
+	return false;
 }
 
 @Override
