@@ -37,7 +37,7 @@ public class Test_org_eclipse_swt_internal_SVGRasterizer {
 	public static TemporaryFolder tempFolder = new TemporaryFolder();
 
 	private static String getPath(String fileName) {
-		return SwtTestUtil.getPath(fileName, tempFolder);
+		return SwtTestUtil.getPath(fileName, tempFolder).toString();
 	}
 
 	@Test
