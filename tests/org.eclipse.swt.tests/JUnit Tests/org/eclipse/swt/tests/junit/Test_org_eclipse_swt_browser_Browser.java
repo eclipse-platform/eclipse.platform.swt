@@ -84,10 +84,12 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.FixMethodOrder;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
@@ -758,16 +760,11 @@ public void test_LocationListener_LocationListener_ordered_changing () {
 	assertTrue("Change of locations do not fire in order", locations.get(0).equals("about:blank") && locations.get(1).contains("testWebsiteWithTitle.html"));
 }
 
+@ClassRule
+public static TemporaryFolder tempFolder = new TemporaryFolder();
+
 private String getValidUrl() {
-	String pluginPath = System.getProperty("PLUGIN_PATH");
-	testLogAppend("PLUGIN_PATH: " + pluginPath);
-	// When test is run via Ant, URL needs to be acquired differently. In that case the PLUGIN_PATH property is set and used.
-	if (pluginPath != null) {
-		return Path.of(pluginPath, "data/testWebsiteWithTitle.html").toUri().toString();
-	} else {
-		// used when ran from Eclipse gui.
-		return Test_org_eclipse_swt_browser_Browser.class.getClassLoader().getResource("testWebsiteWithTitle.html").toString();
-	}
+	return SwtTestUtil.getPath("testWebsiteWithTitle.html", tempFolder).toUri().toString();
 }
 
 @Test

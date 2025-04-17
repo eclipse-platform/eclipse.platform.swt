@@ -581,7 +581,7 @@ public static boolean hasPixelNotMatching(Image image, Color nonMatchingColor, R
 	return false;
 }
 
-public static String getPath(String fileName, TemporaryFolder tempFolder) {
+public static Path getPath(String fileName, TemporaryFolder tempFolder) {
 	Path filePath = tempFolder.getRoot().toPath().resolve("image-resources").resolve(Path.of(fileName));
 	if (!Files.isRegularFile(filePath)) {
 		// Extract resource on the classpath to a temporary file to ensure it's
@@ -594,6 +594,6 @@ public static String getPath(String fileName, TemporaryFolder tempFolder) {
 			throw new IllegalArgumentException(e);
 		}
 	}
-	return filePath.toString();
+	return filePath;
 }
 }
