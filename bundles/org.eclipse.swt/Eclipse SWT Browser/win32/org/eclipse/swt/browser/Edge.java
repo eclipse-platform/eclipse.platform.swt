@@ -599,7 +599,7 @@ WebViewEnvironment createEnvironment() {
 					pBrowserDir, pDataDir, options.getAddress(), completion.getAddress()));
 	options.Release();
 	if (hr == OS.HRESULT_FROM_WIN32(OS.ERROR_FILE_NOT_FOUND)) {
-		SWT.error(SWT.ERROR_NOT_IMPLEMENTED, null, " [WebView2 runtime not found]");
+		SWT.error(SWT.ERROR_NOT_IMPLEMENTED, null, " [WebView2 runtime not found. For details, see https://github.com/eclipse-platform/eclipse.platform/tree/master/docs/FAQ/FAQ_How_do_I_use_Edge-IE_as_the_Browser's_underlying_renderer.md]");
 	}
 	if (hr != COM.S_OK) error(SWT.ERROR_NO_HANDLES, hr);
 	ICoreWebView2Environment environment = new ICoreWebView2Environment(ppv[0]);
