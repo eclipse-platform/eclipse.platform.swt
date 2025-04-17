@@ -47,7 +47,7 @@ public class DPIUtil {
 	private static AutoScaleMethod autoScaleMethod = AutoScaleMethod.NEAREST;
 
 	private static String autoScaleValue;
-	private static boolean useCairoAutoScale = true;
+	private static final boolean USE_CAIRO_AUTOSCALE = SWT.getPlatform().equals("gtk");
 
 	/**
 	 * System property that controls the autoScale functionality.
@@ -484,7 +484,7 @@ public static Rectangle scaleUp(Drawable drawable, Rectangle rect, int zoom) {
  * @return float scaling factor
  */
 private static float getScalingFactor(int zoom) {
-	if (useCairoAutoScale) {
+	if (USE_CAIRO_AUTOSCALE) {
 		return 1;
 	}
 	if (zoom <= 0) {
@@ -629,10 +629,6 @@ private static boolean sholdUseSmoothScaling() {
 	case "win32" -> isMonitorSpecificScalingActive();
 	default -> false;
 	};
-}
-
-public static void setUseCairoAutoScale (boolean cairoAutoScale) {
-	useCairoAutoScale = cairoAutoScale;
 }
 
 public static int getZoomForAutoscaleProperty (int nativeDeviceZoom) {

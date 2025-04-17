@@ -16,6 +16,7 @@ package org.eclipse.swt.tests.junit;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assume.assumeFalse;
 
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Point;
@@ -37,14 +38,13 @@ public class DPIUtilTests {
 
 	@Before
 	public void setup() {
+		assumeFalse("Linux uses Cairo auto scaling, thus DPIUtil scaling is disabled", SwtTestUtil.isLinux);
 		deviceZoom = DPIUtil.getDeviceZoom();
 		DPIUtil.setDeviceZoom(200);
-		DPIUtil.setUseCairoAutoScale(false);
 	}
 
 	@After
 	public void tearDown() {
-		DPIUtil.setUseCairoAutoScale(true);
 		DPIUtil.setDeviceZoom(deviceZoom);
 	}
 
