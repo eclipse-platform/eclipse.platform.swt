@@ -667,10 +667,12 @@ private static int getZoomForAutoscaleProperty (int nativeDeviceZoom, String aut
 public static void runWithAutoScaleValue(String autoScaleValue, Runnable runnable) {
 	String initialAutoScaleValue = DPIUtil.autoScaleValue;
 	DPIUtil.autoScaleValue = autoScaleValue;
+	DPIUtil.deviceZoom = getZoomForAutoscaleProperty(nativeDeviceZoom);
 	try {
 		runnable.run();
 	} finally {
 		DPIUtil.autoScaleValue = initialAutoScaleValue;
+		DPIUtil.deviceZoom = getZoomForAutoscaleProperty(nativeDeviceZoom);
 	}
 }
 
