@@ -47,7 +47,7 @@ public class DPIUtil {
 	private static AutoScaleMethod autoScaleMethod = AutoScaleMethod.NEAREST;
 
 	private static String autoScaleValue;
-	private static boolean useCairoAutoScale = false;
+	private static boolean useCairoAutoScale = true;
 
 	/**
 	 * System property that controls the autoScale functionality.
@@ -633,10 +633,6 @@ private static boolean sholdUseSmoothScaling() {
 
 public static void setUseCairoAutoScale (boolean cairoAutoScale) {
 	useCairoAutoScale = cairoAutoScale;
-}
-
-public static boolean useCairoAutoScale() {
-	return useCairoAutoScale;
 }
 
 public static int getZoomForAutoscaleProperty (int nativeDeviceZoom) {

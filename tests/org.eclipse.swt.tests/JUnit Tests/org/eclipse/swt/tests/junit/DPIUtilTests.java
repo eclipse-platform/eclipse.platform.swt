@@ -34,19 +34,17 @@ import org.junit.Test;
 public class DPIUtilTests {
 
 	private int deviceZoom;
-	private boolean useCairoAutoScale;
 
 	@Before
 	public void setup() {
 		deviceZoom = DPIUtil.getDeviceZoom();
-		useCairoAutoScale = DPIUtil.useCairoAutoScale();
 		DPIUtil.setDeviceZoom(200);
 		DPIUtil.setUseCairoAutoScale(false);
 	}
 
 	@After
 	public void tearDown() {
-		DPIUtil.setUseCairoAutoScale(useCairoAutoScale);
+		DPIUtil.setUseCairoAutoScale(true);
 		DPIUtil.setDeviceZoom(deviceZoom);
 	}
 

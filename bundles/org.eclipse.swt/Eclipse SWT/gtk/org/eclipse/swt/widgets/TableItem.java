@@ -807,12 +807,7 @@ Rectangle getTextBoundsInPixels (int index) {
 	Image image = _getImage(index);
 	int imageWidth = 0;
 	if (image != null) {
-		if (DPIUtil.useCairoAutoScale()) {
-			imageWidth = image.getBounds ().width;
-		} else {
-			imageWidth = image.getBoundsInPixels ().width;
-		}
-
+		imageWidth = image.getBounds ().width;
 	}
 	if (x [0] < imageWidth) {
 		rect.x += imageWidth;
@@ -1211,14 +1206,8 @@ public void setImage(int index, Image image) {
 	GTK.gtk_cell_renderer_get_fixed_size (pixbufRenderer, currentWidth, currentHeight);
 	if (!parent.pixbufSizeSet) {
 		if (image != null) {
-			int iWidth, iHeight;
-			if (DPIUtil.useCairoAutoScale()) {
-				iWidth = image.getBounds ().width;
-				iHeight = image.getBounds ().height;
-			} else {
-				iWidth = image.getBoundsInPixels ().width;
-				iHeight = image.getBoundsInPixels ().height;
-			}
+			int	iWidth = image.getBounds ().width;
+			int	iHeight = image.getBounds ().height;
 			if (iWidth > currentWidth [0] || iHeight > currentHeight [0]) {
 				GTK.gtk_cell_renderer_set_fixed_size (pixbufRenderer, iWidth, iHeight);
 				parent.pixbufHeight = iHeight;

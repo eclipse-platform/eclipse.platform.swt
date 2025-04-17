@@ -698,8 +698,6 @@ protected void init () {
 	this.dpi = getDPI();
 	DPIUtil.setDeviceZoom (getDeviceZoom ());
 
-	DPIUtil.setUseCairoAutoScale(true);
-
 	/* Initialize the system font slot */
 	long [] defaultFontArray = new long [1];
 	long defaultFont = 0;
