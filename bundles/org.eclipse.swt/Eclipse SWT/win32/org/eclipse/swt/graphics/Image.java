@@ -1737,6 +1737,14 @@ private ImageHandle init(ImageData i, int zoom) {
 @Override
 public long internal_new_GC (GCData data) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+
+	if(imageProvider != null && (imageProvider instanceof ImageDataProviderWrapper || imageProvider instanceof ImageFileNameProviderWrapper)) {
+		System.err.println("***WARNING: Image initialized with ImageDataProvider or ImageFileNameProvider is not supposed to be modified");
+	}
+
+	if(zoomLevelToImageHandle != null && !zoomLevelToImageHandle.isEmpty()) {
+		System.err.println("**WARNING: Images with handles created for a different zoom level should not be modified.");
+	}
 	/*
 	* Create a new GC that can draw into the image.
 	* Only supported for bitmaps.
