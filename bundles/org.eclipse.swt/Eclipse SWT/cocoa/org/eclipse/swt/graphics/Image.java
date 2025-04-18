@@ -143,7 +143,7 @@ public final class Image extends Resource implements Drawable {
 	/**
 	 * ImageGcDrawer to provide a callback to draw on a GC for various zoom levels
 	 */
-	private ImageGcDrawer imageGcDrawer;
+	private ImageDrawer imageGcDrawer;
 
 	/**
 	 * Style flag used to differentiate normal, gray-scale and disabled images based
@@ -875,9 +875,9 @@ public Image(Device device, ImageDataProvider imageDataProvider) {
  *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  *    <li>ERROR_NULL_ARGUMENT - if the ImageGcDrawer is null</li>
  * </ul>
- * @since 3.129
+ * @since 3.130
  */
-public Image(Device device, ImageGcDrawer imageGcDrawer, int width, int height) {
+public Image(Device device, int width, int height, ImageDrawer imageGcDrawer) {
 	super(device);
 	if (imageGcDrawer == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.imageGcDrawer = imageGcDrawer;
@@ -902,13 +902,22 @@ public Image(Device device, ImageGcDrawer imageGcDrawer, int width, int height) 
 	}
 }
 
-private ImageData drawWithImageGcDrawer(ImageGcDrawer imageGcDrawer, int width, int height, int zoom) {
+/**
+ * @since 3.129
+ * @deprecated Instead use {@link #Image(Device, int, int, ImageGcDrawer)}
+ */
+@Deprecated(forRemoval = true, since = "2025-06 (removal in 2027-06 or later)")
+public Image(Device device, ImageGcDrawer imageGcDrawer, int width, int height) {
+	this(device, width, height, imageGcDrawer);
+}
+
+private ImageData drawWithImageGcDrawer(ImageDrawer imageGcDrawer, int width, int height, int zoom) {
 	Image image = new Image(device, width, height);
-	GC gc = new GC(image);
+	GC gc = new GC(image, ExtendedImageDrawer.getGCStyle(imageGcDrawer));
 	try {
 		imageGcDrawer.drawOn(gc, width, height);
 		ImageData imageData = image.getImageData(zoom);
-		imageGcDrawer.postProcess(imageData);
+		ExtendedImageDrawer.postProcess(imageGcDrawer, imageData);
 		return imageData;
 	} finally {
 		gc.dispose();

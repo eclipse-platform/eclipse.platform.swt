@@ -13,6 +13,11 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
+import java.util.function.*;
+
+import org.eclipse.swt.*;
+import org.eclipse.swt.internal.image.*;
+
 /**
  * Interface to provide a callback mechanism to draw on different GC instances
  * depending on the zoom the image will be used for. A common use case is when
@@ -22,10 +27,10 @@ package org.eclipse.swt.graphics;
  * This interface needs to be implemented by client code to provide logic that
  * draws on the empty GC on demand.
  *
- * @since 3.129
+ * @since 3.130
  */
-@Deprecated(forRemoval = true, since = "2025-06 (removal in 2027-06 or later)")
-public interface ImageGcDrawer extends ImageDrawer {
+@FunctionalInterface
+public interface ImageDrawer {
 
 	/**
 	 * Draws an image on a GC for a requested zoom level.
@@ -35,16 +40,27 @@ public interface ImageGcDrawer extends ImageDrawer {
 	 * @param imageWidth  The width of the image in points to draw on
 	 * @param imageHeight The height of the image in points to draw on
 	 */
-	@Override
 	void drawOn(GC gc, int imageWidth, int imageHeight);
 
 	/**
-	 * Executes post processing on ImageData. This method will always be called
-	 * after <code>drawOn</code> and contain the resulting ImageData.
-	 *
-	 * @param imageData The resulting ImageData after <code>drawOn</code> was called
+	 * @since 3.130
 	 */
-	default void postProcess(ImageData imageData) {
+	public static ImageDrawer withGCStyle(int style, ImageDrawer drawer) {
+		if (drawer instanceof  ExtendedImageDrawer extendedDrawer) {
+			return new ExtendedImageDrawer(extendedDrawer.original(), extendedDrawer.postProcessor(), style);
+		}
+		return new ExtendedImageDrawer(drawer, null, style);
 	}
 
+	/**
+	 * @since 3.130
+	 */
+	public static ImageDrawer create(ImageDrawer drawer, Consumer<ImageData> postProcessor) {
+		if (drawer instanceof ExtendedImageDrawer extendedDrawer) {
+			return new ExtendedImageDrawer(extendedDrawer.original(), postProcessor, extendedDrawer.style());
+		}
+		return new ExtendedImageDrawer(drawer, postProcessor, SWT.NONE);
+	}
+
+	// TODO: or use some kind of builder pattern?
 }

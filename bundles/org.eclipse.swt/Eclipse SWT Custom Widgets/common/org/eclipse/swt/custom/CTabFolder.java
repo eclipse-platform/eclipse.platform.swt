@@ -734,7 +734,7 @@ Image createButtonImage(Display display, int button) {
 	final Rectangle trim = renderer.computeTrim(button, SWT.NONE, 0, 0, 0, 0);
 	final Point imageSize = new Point(size.x - trim.width, size.y - trim.height);
 	Color transColor = renderer.parent.getBackground();
-	final ImageGcDrawer imageGcDrawer = new TransparencyColorImageGcDrawer(transColor) {
+	return new Image(display, imageSize.x, imageSize.y, new TransparencyColorImageGcDrawer(transColor) {
 		@Override
 		public void drawOn(GC gc, int imageWidth, int imageHeight) {
 			Rectangle imageBounds = new Rectangle(0, 0, imageWidth, imageHeight);
@@ -742,8 +742,7 @@ Image createButtonImage(Display display, int button) {
 			gc.fillRectangle(imageBounds);
 			renderer.draw(button, SWT.NONE, imageBounds, gc);
 		}
-	};
-	return new Image(display, imageGcDrawer, imageSize.x, imageSize.y);
+	});
 }
 
 private void notifyItemCountChange() {
@@ -4007,7 +4006,8 @@ void updateBkImages(boolean colorChanged) {
 						if (colorChanged || !bounds.equals(bkImageBounds[i])) {
 							bkImageBounds[i] = bounds;
 							if (controlBkImages[i] != null) controlBkImages[i].dispose();
-							controlBkImages[i] = new Image(control.getDisplay(), (gc, imageWidth, imageHeight) -> renderer.draw(CTabFolderRenderer.PART_BACKGROUND, 0, bounds, gc), bounds.width, bounds.height);
+							controlBkImages[i] = new Image(control.getDisplay(), bounds.width, bounds.height,
+									(gc, w, h) -> renderer.draw(CTabFolderRenderer.PART_BACKGROUND, 0, bounds, gc));
 							control.setBackground(null);
 							control.setBackgroundImage(controlBkImages[i]);
 						}
