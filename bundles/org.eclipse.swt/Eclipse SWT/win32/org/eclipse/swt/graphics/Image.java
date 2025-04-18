@@ -111,7 +111,7 @@ public final class Image extends Resource implements Drawable {
 	/**
 	 * AbstractImageProvider to avail right ImageProvider (ImageDataProvider or ImageFileNameProvider)
 	 */
-	private AbstractImageProviderWrapper imageProvider;
+	private final AbstractImageProviderWrapper imageProvider;
 
 	/**
 	 * Style flag used to differentiate normal, gray-scale and disabled images based
@@ -138,16 +138,13 @@ public final class Image extends Resource implements Drawable {
 
 	private Map<Integer, ImageHandle> zoomLevelToImageHandle = new HashMap<>();
 
-/**
- * Prevents uninitialized instances from being created outside the package.
- */
-Image (Device device) {
-	this(device, DPIUtil.getNativeDeviceZoom());
-}
-
-private Image (Device device, int nativeZoom) {
+private Image (Device device, int type, long handle, int nativeZoom) {
 	super(device);
 	initialNativeZoom = nativeZoom;
+	this.type = type;
+	this.imageProvider = new ExistingImageHandleProviderWrapper(handle, nativeZoom);
+	this.isInitialized = true;
+	this.device.registerResourceWithZoomSupport(this);
 }
 
 /**
@@ -243,9 +240,7 @@ public Image(Device device, Image srcImage, int flag) {
 	initialNativeZoom = srcImage.initialNativeZoom;
 	Rectangle rect = srcImage.getBounds(getZoom());
 	this.type = srcImage.type;
-	if(srcImage.imageProvider != null) {
-		this.imageProvider = srcImage.imageProvider.createCopy(this);
-	}
+	this.imageProvider = srcImage.imageProvider.createCopy(this);
 	this.styleFlag = srcImage.styleFlag | flag;
 	long srcImageHandle = win32_getHandle(srcImage, getZoom());
 	switch (flag) {
@@ -785,23 +780,7 @@ private ImageHandle getImageMetadata(int zoom) {
 	if (zoomLevelToImageHandle.get(zoom) != null) {
 		return zoomLevelToImageHandle.get(zoom);
 	}
-	if (imageProvider != null) {
-		return imageProvider.getImageMetadata(zoom);
-	} else {
-		ImageData resizedData = getImageData(zoom);
-		ImageData newData = adaptImageDataIfDisabledOrGray(resizedData);
-		if (type == SWT.ICON && newData.getTransparencyType() != SWT.TRANSPARENCY_MASK) {
-			// If the original type was an icon with transparency mask and re-scaling leads
-			// to image data without transparency mask, this will create invalid images
-			// so this fallback will "repair" the image data by explicitly passing
-			// the transparency mask created from the scaled image data
-			initIconHandle(this.device, newData, newData.getTransparencyMask(), zoom);
-		} else {
-			init(newData, zoom);
-		}
-		init();
-	}
-	return zoomLevelToImageHandle.get(zoom);
+	return imageProvider.newImageHandle(zoom);
 }
 
 
@@ -1004,9 +983,7 @@ long [] createGdipImage(Integer zoom) {
 void destroy () {
 	device.deregisterResourceWithZoomSupport(this);
 	if (memGC != null) memGC.dispose();
-	if (this.imageProvider != null) {
-		this.imageProvider.destroy();
-	}
+	this.imageProvider.destroy();
 	destroyHandle();
 	memGC = null;
 }
@@ -1060,11 +1037,7 @@ public boolean equals (Object object) {
 	if (!(object instanceof Image)) return false;
 	Image image = (Image) object;
 	if (device != image.device || transparentPixel != image.transparentPixel || getZoom() != image.getZoom()) return false;
-	if (imageProvider != null && image.imageProvider != null) {
-		return (styleFlag == image.styleFlag) && imageProvider.equals(image.imageProvider);
-	} else {
-		return win32_getHandle(this, getZoom()) == win32_getHandle(image, getZoom());
-	}
+	return (styleFlag == image.styleFlag) && imageProvider.equals(image.imageProvider);
 }
 
 /**
@@ -1161,13 +1134,8 @@ Rectangle getBounds(int zoom) {
 		ImageHandle imageMetadata = zoomLevelToImageHandle.get(zoom);
 		Rectangle rectangle = new Rectangle(0, 0, imageMetadata.width, imageMetadata.height);
 		return DPIUtil.scaleBounds(rectangle, zoom, imageMetadata.zoom);
-	} else if (this.imageProvider != null) {
-		return this.imageProvider.getBounds(zoom);
-	} else {
-		ImageHandle imageMetadata = zoomLevelToImageHandle.values().iterator().next();
-		Rectangle rectangle = new Rectangle(0, 0, imageMetadata.width, imageMetadata.height);
-		return DPIUtil.scaleBounds(rectangle, zoom, imageMetadata.zoom);
 	}
+	return this.imageProvider.getBounds(zoom);
 }
 
 /**
@@ -1241,25 +1209,7 @@ public ImageData getImageData() {
  */
 public ImageData getImageData (int zoom) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (zoomLevelToImageHandle.containsKey(zoom)) {
-		return zoomLevelToImageHandle.get(zoom).getImageData();
-	}
-	if (imageProvider != null) {
-		return imageProvider.getImageData(zoom);
-	}
-
-	return getScaledImageData(zoom);
-}
-
-private ImageData getScaledImageData (int zoom) {
-	// if a GC is initialized with an Image (memGC != null), the image data must not be resized, because it would
-	// be a destructive operation. Therefor, always the current image data must be returned
-	if (memGC != null) {
-		return getImageDataAtCurrentZoom();
-	}
-	TreeSet<Integer> availableZooms = new TreeSet<>(zoomLevelToImageHandle.keySet());
-	int closestZoom = Optional.ofNullable(availableZooms.higher(zoom)).orElse(availableZooms.lower(zoom));
-	return scaleImageData(getImageMetadata(closestZoom).getImageData(), zoom, closestZoom);
+	return imageProvider.getImageData(zoom);
 }
 
 
@@ -1299,10 +1249,7 @@ public ImageData getImageDataAtCurrentZoom() {
  */
 @Override
 public int hashCode () {
-	if(imageProvider != null) {
-		return imageProvider.hashCode();
-	}
-	return (int)win32_getHandle(this, getZoom());
+	return imageProvider.hashCode();
 }
 
 static long createDIB(int width, int height, int depth) {
@@ -1799,10 +1746,7 @@ public void internal_dispose_GC (long hDC, GCData data) {
  */
 @Override
 public boolean isDisposed() {
-	if (this.imageProvider != null) {
-		return this.imageProvider.isDisposed();
-	}
-	return zoomLevelToImageHandle.isEmpty();
+	return this.imageProvider.isDisposed();
 }
 
 /**
@@ -1916,20 +1860,48 @@ public String toString () {
  * @noreference This method is not intended to be referenced by clients.
  */
 public static Image win32_new(Device device, int type, long handle, int nativeZoom) {
-	Image image = new Image(device, nativeZoom);
-	image.type = type;
-	image.new ImageHandle(handle, nativeZoom);
-	image.device.registerResourceWithZoomSupport(image);
-	return image;
+	return new Image(device, type, handle, nativeZoom);
 }
 
 private abstract class AbstractImageProviderWrapper {
 	private boolean isDestroyed;
 
 	protected abstract Rectangle getBounds(int zoom);
-	abstract ImageData getImageData(int zoom);
-	abstract ImageHandle getImageMetadata(int zoom);
+
+	protected final ImageData getImageData(int zoom) {
+		if (zoomLevelToImageHandle.containsKey(zoom)) {
+			return zoomLevelToImageHandle.get(zoom).getImageData();
+		}
+		return newImageData(zoom);
+	}
+
+	abstract ImageData newImageData(int zoom);
+
 	abstract AbstractImageProviderWrapper createCopy(Image image);
+
+	ImageData getScaledImageData (int zoom) {
+		// if a GC is initialized with an Image (memGC != null), the image data must not be resized, because it would
+		// be a destructive operation. Therefor, always the current image data must be returned
+		if (memGC != null) {
+			return getImageDataAtCurrentZoom();
+		}
+		TreeSet<Integer> availableZooms = new TreeSet<>(zoomLevelToImageHandle.keySet());
+		int closestZoom = Optional.ofNullable(availableZooms.higher(zoom)).orElse(availableZooms.lower(zoom));
+		return scaleImageData(getImageMetadata(closestZoom).getImageData(), zoom, closestZoom);
+	}
+
+	protected ImageHandle newImageHandle(int zoom) {
+		ImageData resizedData = getImageData(zoom);
+		if (type == SWT.ICON && resizedData.getTransparencyType() != SWT.TRANSPARENCY_MASK) {
+			// If the original type was an icon with transparency mask and re-scaling leads
+			// to image data without transparency mask, this will create invalid images
+			// so this fallback will "repair" the image data by explicitly passing
+			// the transparency mask created from the scaled image data
+			return initIconHandle(device, resizedData, resizedData.getTransparencyMask(), zoom);
+		} else {
+			return init(resizedData, zoom);
+		}
+	}
 
 	protected boolean isDisposed() {
 		return !isInitialized || isDestroyed;
@@ -1937,6 +1909,40 @@ private abstract class AbstractImageProviderWrapper {
 
 	protected void destroy() {
 		this.isDestroyed = true;
+	}
+}
+
+private class ExistingImageHandleProviderWrapper extends AbstractImageProviderWrapper {
+
+	private final int width;
+	private final int height;
+	private final long handle;
+	private final int zoomForHandle;
+
+	public ExistingImageHandleProviderWrapper(long handle, int zoomForHandle) {
+		this.handle = handle;
+		this.zoomForHandle = zoomForHandle;
+		ImageHandle imageHandle = new ImageHandle(handle, zoomForHandle);
+
+		ImageData baseData = imageHandle.getImageData();
+		this.width = DPIUtil.scaleDown(baseData.width, zoomForHandle);
+		this.height = DPIUtil.scaleDown(baseData.height, zoomForHandle);
+	}
+
+	@Override
+	protected Rectangle getBounds(int zoom) {
+		Rectangle rectangle = new Rectangle(0, 0, width, height);
+		return DPIUtil.scaleUp(rectangle, zoom);
+	}
+
+	@Override
+	ImageData newImageData(int zoom) {
+		return getScaledImageData(zoom);
+	}
+
+	@Override
+	AbstractImageProviderWrapper createCopy(Image image) {
+		return image.new ExistingImageHandleProviderWrapper(handle, zoomForHandle);
 	}
 }
 
@@ -1953,26 +1959,12 @@ private abstract class ImageFromImageDataProviderWrapper extends AbstractImagePr
 	}
 
 	@Override
-	ImageData getImageData(int zoom) {
-		if (zoomLevelToImageHandle.containsKey(zoom)) {
-			return zoomLevelToImageHandle.get(zoom).getImageData();
-		}
+	ImageData newImageData(int zoom) {
 		if (!zoomLevelToImageHandle.isEmpty()) {
 			return getScaledImageData(zoom);
 		}
 		ElementAtZoom<ImageData> loadedImageData = loadImageData(zoom);
 		return DPIUtil.scaleImageData(device, loadedImageData, zoom);
-	}
-
-	@Override
-	ImageHandle getImageMetadata(int zoom) {
-		if (zoomLevelToImageHandle.containsKey(zoom)) {
-			return zoomLevelToImageHandle.get(zoom);
-		} else  {
-			ImageData scaledImageData = getImageData(zoom);
-			ImageHandle imageHandle = init(scaledImageData, zoom);
-			return imageHandle;
-		}
 	}
 }
 
@@ -2085,29 +2077,19 @@ private class PlainImageProviderWrapper extends AbstractImageProviderWrapper {
 	}
 
 	@Override
-	ImageData getImageData(int zoom) {
-		if (zoomLevelToImageHandle.isEmpty() || zoomLevelToImageHandle.containsKey(zoom)) {
-			return getImageMetadata(zoom).getImageData();
-		}
-
+	ImageData newImageData(int zoom) {
 		return getScaledImageData(zoom);
 	}
 
 	@Override
-	ImageHandle getImageMetadata(int zoom) {
+	protected ImageHandle newImageHandle(int zoom) {
 		if (zoomLevelToImageHandle.isEmpty()) {
 			long handle = initBaseHandle(zoom);
 			ImageHandle imageHandle = new ImageHandle(handle, zoom);
 			zoomLevelToImageHandle.put(zoom, imageHandle);
 			return imageHandle;
-		} else if(zoomLevelToImageHandle.containsKey(zoom)) {
-			return zoomLevelToImageHandle.get(zoom);
-		} else {
-			ImageData resizedData = getImageData(zoom);
-			ImageData newData = adaptImageDataIfDisabledOrGray(resizedData);
-			init(newData, zoom);
-			return zoomLevelToImageHandle.get(zoom);
 		}
+		return super.newImageHandle(zoom);
 	}
 
 	private long initBaseHandle(int zoom) {
@@ -2185,7 +2167,7 @@ private abstract class BaseImageProviderWrapper<T> extends DynamicImageProviderW
 	}
 
 	@Override
-	final ImageData getImageData(int zoom) {
+	ImageData newImageData(int zoom) {
 		Function<Integer, ImageData> imageDataRetrival = zoomToRetrieve -> {
 			ImageHandle handle = initializeHandleFromSource(zoomToRetrieve);
 			ImageData data = handle.getImageData();
@@ -2195,8 +2177,9 @@ private abstract class BaseImageProviderWrapper<T> extends DynamicImageProviderW
 		return cachedImageData.computeIfAbsent(zoom, imageDataRetrival);
 	}
 
+
 	@Override
-	final ImageHandle getImageMetadata(int zoom) {
+	protected ImageHandle newImageHandle(int zoom) {
 		ImageData cachedData = cachedImageData.remove(zoom);
 		if (cachedData != null) {
 			return init(cachedData, zoom);
@@ -2491,12 +2474,12 @@ private class ImageGcDrawerWrapper extends DynamicImageProviderWrapper {
 	}
 
 	@Override
-	ImageData getImageData(int zoom) {
+	ImageData newImageData(int zoom) {
 		return getImageMetadata(zoom).getImageData();
 	}
 
 	@Override
-	ImageHandle getImageMetadata(int zoom) {
+	protected ImageHandle newImageHandle(int zoom) {
 		initialNativeZoom = zoom;
 		Image image = new Image(device, width, height, zoom);
 		GC gc = new GC(image, drawer.getGcStyle());
@@ -2506,12 +2489,11 @@ private class ImageGcDrawerWrapper extends DynamicImageProviderWrapper {
 			ImageData imageData = image.getImageMetadata(zoom).getImageData();
 			drawer.postProcess(imageData);
 			ImageData newData = adaptImageDataIfDisabledOrGray(imageData);
-			init(newData, zoom);
+			return init(newData, zoom);
 		} finally {
 			gc.dispose();
 			image.dispose();
 		}
-		return zoomLevelToImageHandle.get(zoom);
 	}
 
 	@Override
