@@ -1033,6 +1033,31 @@ public void test_imageDataSameViaDifferentProviders() {
 	dataProviderImage.dispose();
 }
 
+@Test
+public void test_imageDataSameViaProviderAndSimpleData() {
+	assumeFalse("Cocoa generates inconsistent image data", SwtTestUtil.isCocoa);
+	String imagePath = getPath("collapseall.png");
+	ImageFileNameProvider imageFileNameProvider = __ -> {
+		return imagePath;
+	};
+	ImageDataProvider dataProvider = __ -> {
+		try (InputStream imageStream = Files.newInputStream(Path.of(imagePath))) {
+			return new ImageData(imageStream);
+		} catch (IOException e) {
+		}
+		return null;
+	};
+	Image fileNameProviderImage = new Image(display, imageFileNameProvider);
+	Image dataImage = new Image(display, dataProvider.getImageData(100));
+	ImageData dataFromFileNameProviderImage = fileNameProviderImage.getImageData(100);
+	ImageData dataFromImageWithSimpleData = dataImage.getImageData(100);
+	assertEquals(0, imageDataComparator().compare(dataFromFileNameProviderImage, dataFromImageWithSimpleData));
+
+	fileNameProviderImage.dispose();
+	dataImage.dispose();
+}
+
+
 private Comparator<ImageData> imageDataComparator() {
 	return Comparator.<ImageData>comparingInt(d -> d.width) //
 			.thenComparing(d -> d.height) //

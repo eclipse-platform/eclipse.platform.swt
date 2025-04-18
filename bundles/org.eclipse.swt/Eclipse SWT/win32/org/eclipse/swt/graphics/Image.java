@@ -1244,11 +1244,7 @@ public ImageData getImageData (int zoom) {
 	if (zoomLevelToImageHandle.containsKey(zoom)) {
 		return zoomLevelToImageHandle.get(zoom).getImageData();
 	}
-	if (imageProvider != null) {
-		return imageProvider.getImageData(zoom);
-	}
-
-	return getScaledImageData(zoom);
+	return imageProvider.getImageData(zoom);
 }
 
 private ImageData getScaledImageData (int zoom) {
@@ -1941,39 +1937,43 @@ private abstract class AbstractImageProviderWrapper {
 }
 
 private abstract class ImageFromImageDataProviderWrapper extends AbstractImageProviderWrapper {
+	private final Map<Integer, ImageData> cachedImageData = new HashMap<>();
 
 	protected abstract ElementAtZoom<ImageData> loadImageData(int zoom);
 
 	void initImage() {
 		// As the init call configured some Image attributes (e.g. type)
 		// it must be called
-		ImageData imageDataAt100 = getImageData(100);
-		init(imageDataAt100, 100);
-		destroyHandleForZoom(100);
+		getImageData(100);
 	}
 
 	@Override
-	ImageData getImageData(int zoom) {
-		if (zoomLevelToImageHandle.containsKey(zoom)) {
-			return zoomLevelToImageHandle.get(zoom).getImageData();
-		}
-		if (!zoomLevelToImageHandle.isEmpty()) {
-			return getScaledImageData(zoom);
-		}
-		ElementAtZoom<ImageData> loadedImageData = loadImageData(zoom);
-		return DPIUtil.scaleImageData(device, loadedImageData, zoom);
+	final ImageData getImageData(int zoom) {
+		Function<Integer, ImageData> imageDataRetrival = zoomToRetrieve -> {
+			ImageHandle handle = initializeHandleFromSource(zoomToRetrieve);
+			ImageData data = handle.getImageData();
+			destroyHandleForZoom(zoomToRetrieve);
+			return data;
+		};
+		return cachedImageData.computeIfAbsent(zoom, imageDataRetrival);
 	}
 
 	@Override
-	ImageHandle getImageMetadata(int zoom) {
-		if (zoomLevelToImageHandle.containsKey(zoom)) {
-			return zoomLevelToImageHandle.get(zoom);
-		} else  {
-			ImageData scaledImageData = getImageData(zoom);
-			ImageHandle imageHandle = init(scaledImageData, zoom);
-			return imageHandle;
+	final ImageHandle getImageMetadata(int zoom) {
+		ImageData cachedData = cachedImageData.remove(zoom);
+		if (cachedData != null) {
+			return init(cachedData, zoom);
 		}
+		return initializeHandleFromSource(zoom);
 	}
+
+	private ImageHandle initializeHandleFromSource(int zoom) {
+		ElementAtZoom<ImageData> imageDataAtZoom = loadImageData(zoom);
+		ImageData imageData = scaleImageData(imageDataAtZoom.element(), zoom, imageDataAtZoom.zoom());
+		imageData = adaptImageDataIfDisabledOrGray(imageData);
+		return init(imageData, zoom);
+	}
+
 }
 
 private class PlainImageDataProviderWrapper extends ImageFromImageDataProviderWrapper {
