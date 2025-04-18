@@ -533,11 +533,7 @@ public class Display extends Device implements Executor {
 	private static int ICON_SIZE_AT_100 = retrieveDefaultIconSize();
 
 	private static int retrieveDefaultIconSize() {
-		if (OS.WIN32_BUILD >= OS.WIN32_BUILD_WIN10_1607) {
-			return OS.GetSystemMetricsForDpi(OS.SM_CXICON, DPIUtil.mapZoomToDPI(100));
-		} else {
-			return 32;
-		}
+		return OS.GetSystemMetricsForDpi(OS.SM_CXICON, DPIUtil.mapZoomToDPI(100));
 	}
 
 	/* Skinning support */
@@ -5396,10 +5392,6 @@ private boolean setMonitorSpecificScaling(boolean activate) {
 }
 
 private boolean setDPIAwareness(int desiredDpiAwareness) {
-	if (OS.WIN32_BUILD < OS.WIN32_BUILD_WIN10_1607) {
-		System.err.println("***WARNING: the OS version does not support setting DPI awareness.");
-		return false;
-	}
 	if (desiredDpiAwareness == OS.GetThreadDpiAwarenessContext()) {
 		return true;
 	}
