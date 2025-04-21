@@ -38,3 +38,13 @@ requires.8.namespace = org.eclipse.equinox.p2.iu
 requires.8.name = org.eclipse.swt.gtk.linux.riscv64
 requires.8.range = 0.0.0
 requires.8.filter = (&(osgi.os=linux)(osgi.ws=gtk)(osgi.arch=riscv64))
+
+requires.9.namespace = org.eclipse.equinox.p2.iu
+requires.9.name = org.eclipse.swt.gtk.freebsd.x86_64
+requires.9.range = 0.0.0
+requires.9.filter = (&(osgi.os=freebsd)(osgi.ws=gtk)(osgi.arch=x86_64))
+
+requires.10.namespace = org.eclipse.equinox.p2.iu
+requires.10.name = org.eclipse.swt.gtk.freebsd.aarch64
+requires.10.range = 0.0.0
+requires.10.filter = (&(osgi.os=freebsd)(osgi.ws=gtk)(osgi.arch=aarch64))
