@@ -807,6 +807,26 @@ public static long win32_getHandle (Image image, int zoom) {
 	return image.getImageMetadata(zoom).handle;
 }
 
+/**
+ * <b>IMPORTANT:</b> This method is not part of the public
+ * API for Image. It is marked public only so that it
+ * can be shared within the packages provided by SWT.
+ *
+ * Draws a scaled image using the GC by another image.
+ *
+ * @param gc the GC to draw on the resulting image
+ * @param original the image which is supposed to be scaled and drawn on the resulting image
+ * @param width the width of the original image
+ * @param height the height of the original image
+ * @param scaleFactor the factor with which the image is supposed to be scaled
+ *
+ * @noreference This method is not intended to be referenced by clients.
+ */
+public static void drawScaled(GC gc, Image original, int width, int height, float scaleFactor) {
+	gc.drawImage (original, 0, 0, width, height,
+			0, 0, Math.round (width * scaleFactor), Math.round (height * scaleFactor), false);
+}
+
 long [] createGdipImage() {
 	return createGdipImage(this.getZoom());
 }
@@ -1793,40 +1813,6 @@ public void setBackground(Color color) {
 	zoomLevelToImageHandle.values().forEach(imageHandle -> imageHandle.setBackground(backgroundColor));
 }
 
-private ImageData scaleImageData(final ImageData imageData, int targetZoom, int currentZoom) {
-	if (imageData == null || targetZoom == currentZoom || (device != null && !device.isAutoScalable())) return imageData;
-	float scaleFactor = (float) targetZoom / (float) currentZoom;
-	int width = imageData.width;
-	int height = imageData.height;
-	int scaledWidth = Math.round (width * scaleFactor);
-	int scaledHeight = Math.round (height * scaleFactor);
-	boolean useSmoothScaling = DPIUtil.isSmoothScalingEnabled() && imageData.getTransparencyType() != SWT.TRANSPARENCY_MASK;
-	if (useSmoothScaling) {
-		return scaleToUsingSmoothScaling(scaledWidth, scaledHeight, imageData);
-	}
-	return imageData.scaledTo (scaledWidth, scaledHeight);
-}
-
-private ImageData scaleToUsingSmoothScaling(int width, int height, ImageData imageData) {
-	Image original = new Image (device, (ImageDataProvider) zoom -> imageData);
-	/* Create a 24 bit image data with alpha channel */
-	final ImageData resultData = new ImageData (width, height, 24, new PaletteData (0xFF, 0xFF00, 0xFF0000));
-	resultData.alphaData = new byte [width * height];
-	Image resultImage = new Image (device, (ImageDataProvider) zoom -> resultData);
-	GC gc = new GC (resultImage);
-	gc.setAntialias (SWT.ON);
-	gc.drawImage (original, 0, 0, imageData.width, imageData.height,
-			/* E.g. destWidth here is effectively DPIUtil.autoScaleDown (scaledWidth), but avoiding rounding errors.
-			 * Nevertheless, we still have some rounding errors due to the point-based API GC#drawImage(..).
-			 */
-			0, 0, width, height, false);
-	gc.dispose ();
-	original.dispose ();
-	ImageData result = resultImage.getImageData (resultImage.getZoom());
-	resultImage.dispose ();
-	return result;
-}
-
 private int getZoom() {
 	return DPIUtil.getZoomForAutoscaleProperty(initialNativeZoom);
 }
@@ -1887,7 +1873,7 @@ private abstract class AbstractImageProviderWrapper {
 		}
 		TreeSet<Integer> availableZooms = new TreeSet<>(zoomLevelToImageHandle.keySet());
 		int closestZoom = Optional.ofNullable(availableZooms.higher(zoom)).orElse(availableZooms.lower(zoom));
-		return scaleImageData(getImageMetadata(closestZoom).getImageData(), zoom, closestZoom);
+		return DPIUtil.scaleImageData(device, getImageMetadata(closestZoom).getImageData(), zoom, closestZoom);
 	}
 
 	protected ImageHandle newImageHandle(int zoom) {
@@ -2197,7 +2183,7 @@ private abstract class BaseImageProviderWrapper<T> extends DynamicImageProviderW
 
 	private ImageHandle initializeHandleFromSource(int zoom) {
 		ElementAtZoom<ImageData> imageDataAtZoom = loadImageData(zoom);
-		ImageData imageData = scaleImageData(imageDataAtZoom.element(), zoom, imageDataAtZoom.zoom());
+		ImageData imageData = DPIUtil.scaleImageData (device,imageDataAtZoom.element(), zoom, imageDataAtZoom.zoom());
 		imageData = adaptImageDataIfDisabledOrGray(imageData);
 		return init(imageData, zoom);
 	}
