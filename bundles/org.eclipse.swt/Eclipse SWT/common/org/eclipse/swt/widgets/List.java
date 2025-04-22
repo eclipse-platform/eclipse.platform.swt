@@ -9,20 +9,23 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 
 public class List extends NativeBasedCustomScrollable {
-	static final int INSET = 3;
 	boolean addedUCC = false;
+	static final int INSET = 3;
 
 	private final java.util.List<String> items = new ArrayList<>();
 	private java.util.List<Integer> selectedItems = new ArrayList<>();
 
 	private int topIndex;
 	private Integer lastSelectedItem = 0;
-	private int lineHeight;
+	private boolean leftMousePressed;
+	private int leftMouseDownStartSelection = -1;
+	private DefaultListRenderer renderer;
 
 	private static final String DUMMY_ITEM_TEXT = "a";
 
 	public List(Composite parent, int style) {
 		super(parent, checkStyle(style));
+		this.renderer = new DefaultListRenderer(this);
 		addListeners();
 	}
 
@@ -37,6 +40,8 @@ public class List extends NativeBasedCustomScrollable {
 		case SWT.KeyUp -> onKeyReleased(event);
 		case SWT.Dispose -> dispose();
 		case SWT.Activate -> updateScrollBarWithTextSize();
+			case SWT.MouseMove -> onMouseMove(event);
+
 		}
 	    };
 	    addListener(SWT.Paint, listener);
@@ -46,6 +51,7 @@ public class List extends NativeBasedCustomScrollable {
 	    addListener(SWT.KeyUp, listener);
 	    addListener(SWT.Dispose, listener);
 	    addListener(SWT.Activate, listener);
+		addListener(SWT.MouseMove, listener);
 
 	    ScrollBar horizontalBar = getHorizontalBar();
 	    if (horizontalBar != null) {
@@ -63,6 +69,14 @@ public class List extends NativeBasedCustomScrollable {
 	    }
 	}
 
+	private void onMouseMove(Event event) {
+
+		if (this.leftMousePressed) {
+			toggleSelection(event);
+		}
+
+	}
+
 	private void onResize() {
 		updateScrollBarWithTextSize();
 		redraw();
@@ -77,9 +91,14 @@ public class List extends NativeBasedCustomScrollable {
 		}
 	}
 
+	@Override
+	public void redraw() {
+		super.redraw();
+	}
+
 	private int getVisibleLineCount() {
 		Rectangle clientArea = getClientArea();
-		return (lineHeight > 0) ? clientArea.height / lineHeight : 0;
+		return (getLineHeight() > 0) ? clientArea.height / getLineHeight() : 0;
 	}
 
 	private void paintControl(Event event) {
@@ -87,95 +106,9 @@ public class List extends NativeBasedCustomScrollable {
 			return;
 		}
 
-		Drawing.drawWithGC(this, event.gc, gc -> doPaint(gc));
+		Drawing.drawWithGC(this, event.gc, gc -> renderer.paint(gc));
 	}
 
-	private void doPaint(GC gc) {
-		Rectangle r = getBounds();
-		if (r.width == 0 && r.height == 0) {
-			return;
-		}
-
-		final Rectangle clientArea = getClientArea();
-		drawBackground(clientArea, gc);
-
-		if ((style & SWT.BORDER) != 0) {
-			int borderSize = getBorderWidth();
-			clientArea.x += borderSize;
-			clientArea.y += borderSize;
-		}
-
-		lineHeight = getLineHeight(gc);
-		int x = clientArea.x;
-		int y = clientArea.y;
-		for (int i = topIndex; i < this.items.size(); i++) {
-			drawTextLine(i, x, y, gc, clientArea);
-			y += lineHeight;
-		}
-	}
-
-	private void drawBackground(Rectangle clientArea, GC gc) {
-
-	    if ((state & Widget.PARENT_BACKGROUND) == 0) {
-
-		if (getBackground() == null) {
-		    // white is the default color for lists
-		    gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
-		}
-	    }
-
-	    gc.fillRectangle(clientArea.x, clientArea.y, clientArea.width - 1, clientArea.height - 1);
-
-	    if ((style & SWT.BORDER) != 0 && isEnabled()) {
-		Color foreground = gc.getForeground();
-		gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_DARK_GRAY));
-		gc.drawLine(clientArea.x, clientArea.y + clientArea.height - 1,
-			clientArea.x + clientArea.x + clientArea.width - 1, clientArea.y + clientArea.height - 1);
-		gc.setForeground(foreground);
-	    }
-	}
-
-	private void drawTextLine(int lineNumber, int x, int y, GC gc, Rectangle clientArea) {
-		String text = items.get(lineNumber);
-		Point textExtent = gc.textExtent(text);
-
-		int _x = calculateHorizontalAlignment(x, textExtent, clientArea);
-		if (horizontalBar != null) {
-			_x -= horizontalBar.getSelection();
-		}
-
-		if (isEnabled()) {
-			if (selectedItems.contains(lineNumber)) {
-				drawSelectedText(text, gc, _x, y);
-			} else {
-				gc.drawText(text, _x, y, true);
-			}
-		} else {
-			Color foreground = gc.getForeground();
-			gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_DARK_GRAY));
-			gc.drawText(text, _x, y, true);
-			gc.setForeground(foreground);
-		}
-	}
-
-	private void drawSelectedText(String text, GC gc, int _x, int _y) {
-		Color background = gc.getBackground();
-		Color foreground = gc.getForeground();
-		gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT));
-		gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION));
-		gc.drawText(text, _x, _y);
-		gc.setForeground(foreground);
-		gc.setBackground(background);
-	}
-
-	private int calculateHorizontalAlignment(int x, Point textExtent, Rectangle clientArea) {
-		if ((style & SWT.CENTER) != 0) {
-			return (clientArea.width - textExtent.x) / 2;
-		} else if ((style & SWT.RIGHT) != 0) {
-			return clientArea.width - textExtent.x;
-		}
-		return x;
-	}
 
 	private void onKeyReleased(Event event) {
 		boolean isShiftPressed = (event.stateMask & SWT.SHIFT) != 0;
@@ -224,35 +157,81 @@ public class List extends NativeBasedCustomScrollable {
 	}
 
 	private void onMouseDown(Event e) {
-	}
+		if (e.button == 1) {
+			this.leftMousePressed = true;
+			this.leftMouseDownStartSelection = getTextLocation(e.y);
 
-	private void onMouseUp(Event e) {
-		if ((e.stateMask & SWT.BUTTON1) != 0) {
 			toggleSelection(e);
 		}
 		redraw();
 	}
 
+	private void onMouseUp(Event e) {
+
+		if (e.button == 1) {
+			this.leftMousePressed = false;
+			this.leftMouseDownStartSelection = -1;
+		}
+
+	}
+
 	private void toggleSelection(Event e) {
 		int clickedLine = getTextLocation(e.y);
-		if ((e.stateMask & SWT.CTRL) != 0) {
-			if (this.selectedItems.contains(clickedLine)) {
-				this.selectedItems.remove(Integer.valueOf(clickedLine));
+
+		if (e.type == SWT.MouseMove && this.leftMousePressed && (style & SWT.MULTI) != 0) {
+
+			java.util.List<Integer> selected = new ArrayList<>();
+
+			if (clickedLine < this.leftMouseDownStartSelection) {
+
+				for (int i = this.leftMouseDownStartSelection; i >= clickedLine; i--) {
+					selected.add(i);
+				}
+
 			} else {
+				for (int i = this.leftMouseDownStartSelection; i <= clickedLine; i++) {
+					selected.add(i);
+				}
+
+			}
+
+			if (this.selectedItems.equals(selected))
+				return;
+
+			this.selectedItems.clear();
+			this.selectedItems.addAll(selected);
+
+		} else if (e.type == SWT.MouseMove && this.leftMousePressed && (style & SWT.MULTI) == 0) {
+
+			if (this.selectedItems.contains(clickedLine))
+				return;
+
+			this.selectedItems.clear();
+			this.selectedItems.add(clickedLine);
+
+		} else {
+
+			if ((e.stateMask & SWT.CTRL) != 0) {
+				if (this.selectedItems.contains(clickedLine)) {
+					// remove the object not the index.
+					this.selectedItems.remove(Integer.valueOf(clickedLine));
+				} else {
+					this.selectedItems.add(clickedLine);
+					this.lastSelectedItem = clickedLine;
+				}
+			} else {
+				this.selectedItems.clear();
 				this.selectedItems.add(clickedLine);
 				this.lastSelectedItem = clickedLine;
 			}
-		} else {
-			this.selectedItems.clear();
-			this.selectedItems.add(clickedLine);
-			this.lastSelectedItem = clickedLine;
 		}
 		sendSelectionEvent(SWT.Selection);
+		redraw();
 	}
 
 	private int getTextLocation(int selectedY) {
 		final int itemCount = items.size();
-		if (lineHeight < 1) {
+		if (getLineHeight() < 1) {
 			return itemCount - 1;
 		}
 
@@ -263,14 +242,9 @@ public class List extends NativeBasedCustomScrollable {
 			y -= borderSize;
 		}
 
-		int lineOnArea = Math.min(y / lineHeight, itemCount - 1);
+		int lineOnArea = Math.min(y / getLineHeight(), itemCount - 1);
 		int lineOfText = lineOnArea + this.topIndex;
 		return Math.min(lineOfText, itemCount - 1);
-	}
-
-	private int getLineHeight(GC gc) {
-		checkWidget();
-		return gc.getFontMetrics().getHeight();
 	}
 
 	public void add(String string) {
@@ -284,54 +258,27 @@ public class List extends NativeBasedCustomScrollable {
 
 	public int getLineHeight() {
 		checkWidget();
-		int height = lineHeight;
-		if (height == 0) {
-			GC gc = new GC(this);
-			height = getLineHeight(gc);
-			gc.dispose();
-		}
-		return height;
-	}
-
-	private Point computeTextSize() {
-		GC gc = new GC(this);
-		gc.setFont(getFont());
-		int width = 0;
-		Point size = null;
-		for (String line : this.items) {
-			size = gc.textExtent(line);
-			width = Math.max(width, size.x);
-		}
-		gc.dispose();
-		int height = size != null ? size.y * this.items.size() : 0;
-		if (horizontalBar != null) {
-			height += horizontalBar.getSize().y;
-		}
-		if (verticalBar != null) {
-			width += verticalBar.getSize().x;
-		}
-		return new Point(width, height);
+		return renderer.getLineHeight();
 	}
 
 	@Override
 	public Point computeSize(int wHint, int hHint, boolean changed) {
 		checkWidget();
-		Point size = computeTextSize();
-		if ((style & SWT.BORDER) != 0) {
-			final int borderWidth = getBorderWidth();
-			size.x += 2 * borderWidth + INSET;
-			size.y += 2 * borderWidth;
-		}
-		return size;
+
+		Point defaultSize = renderer.computeDefaultSize();
+		int width = wHint == SWT.DEFAULT ? defaultSize.x : wHint;
+		int height = hHint == SWT.DEFAULT ? defaultSize.y : hHint;
+
+		return new Point(width, height);
 	}
 
 	private void updateScrollBarWithTextSize() {
 		Rectangle clientArea = getClientArea();
-		
+
 		if(clientArea.width == 0 || clientArea.height == 0)
 		    return;
-		
-		Point maxTextSize = computeTextSize();
+
+		Point maxTextSize = renderer.computeTextSize();
 
 		if (verticalBar != null) {
 			int thumb = clientArea.height / getLineHeight();
@@ -358,6 +305,12 @@ public class List extends NativeBasedCustomScrollable {
 			error(SWT.ERROR_INVALID_RANGE);
 		this.items.add(index, string);
 		updateScrollBarWithTextSize();
+		redraw();
+	}
+
+	@Override
+	public void setEnabled(boolean enabled) {
+		super.setEnabled(enabled);
 		redraw();
 	}
 
@@ -822,5 +775,9 @@ public class List extends NativeBasedCustomScrollable {
 				Math.min(selectedIndex - centerOffset, this.items.size() - clientArea.height / lineHeight));
 
 		redraw();
+	}
+
+	public int getState() {
+		return state;
 	}
 }
