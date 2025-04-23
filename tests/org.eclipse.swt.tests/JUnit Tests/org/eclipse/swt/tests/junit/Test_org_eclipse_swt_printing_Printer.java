@@ -14,10 +14,12 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -29,7 +31,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.printing.Printer;
 import org.eclipse.swt.printing.PrinterData;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.printing.Printer
@@ -40,117 +42,87 @@ public class Test_org_eclipse_swt_printing_Printer {
 
 @Test
 public void test_Constructor() {
-	boolean exceptionThrown = false;
-	String detail = "";
 	if (Printer.getDefaultPrinterData() == null) {
 		/* There aren't any printers, so verify that the
 		 * constructor throws an ERROR_NO_HANDLES SWTError.
 		 */
-		try {
-			Printer printer = new Printer();
-			printer.dispose();
-		} catch (SWTError ex) {
-			if (ex.code == SWT.ERROR_NO_HANDLES) exceptionThrown = true;
-		}
-		assertTrue("ERROR_NO_HANDLES not thrown", exceptionThrown);
+		SWTError ex = assertThrows(SWTError.class, ()->new Printer());
+		assertEquals(SWT.ERROR_NO_HANDLES, ex.code, "ERROR_NO_HANDLES not thrown");
 	} else {
 		/* There is at least a default printer, so verify that
 		 * the constructor does not throw any exceptions.
 		 */
-		try {
-			Printer printer = new Printer();
-			printer.dispose();
-		} catch (Throwable ex) {
-			exceptionThrown = true;
-			detail = ex.getMessage();
-		}
-		assertFalse("Exception thrown: " + detail, exceptionThrown);
+		Printer printer = new Printer();
+		assertNotNull(printer );
+		printer.dispose();
 	}
 }
 
 @Test
 public void test_ConstructorLorg_eclipse_swt_printing_PrinterData() {
-	boolean exceptionThrown = false;
-	String detail = "";
 	PrinterData data = Printer.getDefaultPrinterData();
 	if (data == null) {
 		/* There aren't any printers, so verify that the
 		 * constructor throws an ERROR_NO_HANDLES SWTError.
 		 */
-		try {
-			Printer printer = new Printer(data);
-			printer.dispose();
-		} catch (SWTError ex) {
-			if (ex.code == SWT.ERROR_NO_HANDLES) exceptionThrown = true;
-		}
-		assertTrue("ERROR_NO_HANDLES not thrown", exceptionThrown);
+		SWTError ex = assertThrows(SWTError.class, ()-> new Printer(data));
+		assertEquals(SWT.ERROR_NO_HANDLES, ex.code, "ERROR_NO_HANDLES not thrown");
 	} else {
 		/* There is at least a default printer, so verify that
 		 * the constructor does not throw any exceptions.
 		 */
-		try {
-			Printer printer = new Printer(data);
-			printer.dispose();
-		} catch (Throwable ex) {
-			exceptionThrown = true;
-			detail = ex.getMessage();
-		}
-		assertFalse("Exception thrown: " + detail, exceptionThrown);
+		Printer printer = new Printer(data);
+		assertNotNull(printer);
+		printer.dispose();
 	}
 }
 
 @Test
 public void test_computeTrimIIII() {
 	PrinterData data = Printer.getDefaultPrinterData();
-	// if there aren't any printers, don't do this test
-	if (data == null) return;
+	assumeTrue (data != null, "if there aren't any printers, don't do this test");
 	Printer printer = new Printer(data);
 	Rectangle trim = printer.computeTrim(0, 0, 10, 10);
-	assertTrue("trim width or height is incorrect", trim.width >= 10 && trim.height >= 10);
+	assertTrue(trim.width >= 10 && trim.height >= 10, "trim width or height is incorrect");
 	printer.dispose();
 }
 
 @Test
 public void test_getBounds() {
 	PrinterData data = Printer.getDefaultPrinterData();
-	// if there aren't any printers, don't do this test
-	if (data == null) return;
+	assumeTrue (data != null, "if there aren't any printers, don't do this test");
 	Printer printer = new Printer(data);
 	Rectangle bounds = printer.getBounds();
-	assertTrue("bounds width or height is zero", bounds.width > 0 && bounds.height > 0);
+	assertTrue(bounds.width > 0 && bounds.height > 0, "bounds width or height is zero");
 	printer.dispose();
 }
 
 @Test
 public void test_getClientArea() {
 	PrinterData data = Printer.getDefaultPrinterData();
-	// if there aren't any printers, don't do this test
-	if (data == null) return;
+	assumeTrue (data != null, "if there aren't any printers, don't do this test");
 	Printer printer = new Printer(data);
 	Rectangle clientArea = printer.getClientArea();
-	assertTrue("clientArea width or height is zero", clientArea.width > 0 && clientArea.height > 0);
+	assertTrue(clientArea.width > 0 && clientArea.height > 0, "clientArea width or height is zero");
 	printer.dispose();
 }
 
 @Test
 public void test_getDPI() {
 	PrinterData data = Printer.getDefaultPrinterData();
-	// if there aren't any printers, don't do this test
-	if (data == null) return;
+	assumeTrue (data != null, "if there aren't any printers, don't do this test");
 	Printer printer = new Printer(data);
 	Point dpi = printer.getDPI();
-	assertTrue("dpi x or y is zero", dpi.x > 0 && dpi.y > 0);
+	assertTrue(dpi.x > 0 && dpi.y > 0, "dpi x or y is zero");
 	printer.dispose();
 }
 
 @Test
 public void test_getPrinterData() {
 	PrinterData data = Printer.getDefaultPrinterData();
-	// if there aren't any printers, don't do this test
-	if (data == null) return;
+	assumeTrue (data != null, "if there aren't any printers, don't do this test");
 	Printer printer = new Printer(data);
-	assertTrue("getPrinterData != data used in constructor",
-			data == printer.getPrinterData());
+	assertTrue(data == printer.getPrinterData(), "getPrinterData != data used in constructor");
 	printer.dispose();
 }
 
@@ -191,26 +163,24 @@ public void test_getPrinterList() {
 			});
 		}
 		PrinterData[] list = printerStream.toArray(PrinterData[]::new);
-			String printerNames = Arrays.stream(list).map(String::valueOf).collect(Collectors.joining(", "));
-		assertEquals("printer list contains items even though there are no printers, printers from list are: "+printerNames,
-				0 , list.length);
+		String printerNames = Arrays.stream(list).map(String::valueOf).collect(Collectors.joining(", "));
+		assertEquals(0 , list.length, "printer list contains items even though there are no printers, printers from list are: "+printerNames);
 	} else {
 		/* If there is at least a default printer, verify
 		 * that the printer list is not empty.
 		 */
 		PrinterData list[] = Printer.getPrinterList();
-		assertTrue("printer list is empty", list.length > 0);
+		assertTrue(list.length > 0, "printer list is empty");
 	}
 }
 
 @Test
 public void test_isAutoScalable() {
 	PrinterData data = Printer.getDefaultPrinterData();
-	// if there aren't any printers, don't do this test
-	if (data == null) return;
+	assumeTrue (data != null, "if there aren't any printers, don't do this test");
 	Printer printer = new Printer(data);
 	boolean isAutoScalable = printer.isAutoScalable();
-	assertFalse("SWT doesnot auto-scale for Printer devices", isAutoScalable);
+	assertFalse(isAutoScalable, "SWT doesnot auto-scale for Printer devices");
 	printer.dispose();
 }
 }
