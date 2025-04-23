@@ -96,12 +96,8 @@ final class ScalingSWTFontRegistry implements SWTFontRegistry {
 		}
 
 		private static boolean fetchSystemParametersInfo(NONCLIENTMETRICS info, int targetZoom) {
-			if (OS.WIN32_BUILD >= OS.WIN32_BUILD_WIN10_1607) {
-				return OS.SystemParametersInfoForDpi(OS.SPI_GETNONCLIENTMETRICS, NONCLIENTMETRICS.sizeof, info, 0,
-						DPIUtil.mapZoomToDPI(targetZoom));
-			} else {
-				return OS.SystemParametersInfo(OS.SPI_GETNONCLIENTMETRICS, 0, info, 0);
-			}
+			return OS.SystemParametersInfoForDpi(OS.SPI_GETNONCLIENTMETRICS, NONCLIENTMETRICS.sizeof, info, 0,
+					DPIUtil.mapZoomToDPI(targetZoom));
 		}
 
 		@Override

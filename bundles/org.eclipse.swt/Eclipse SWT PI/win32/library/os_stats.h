@@ -29,7 +29,6 @@ typedef enum {
 	ActivateActCtx_FUNC,
 	ActivateKeyboardLayout_FUNC,
 	AddFontResourceEx_FUNC,
-	AdjustWindowRectEx_FUNC,
 	AdjustWindowRectExForDpi_FUNC,
 	AllowDarkModeForWindow_FUNC,
 	AllowSetForegroundWindow_FUNC,
