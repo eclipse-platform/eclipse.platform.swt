@@ -14,6 +14,7 @@ Require-Bundle: org.junit;bundle-version="4.13.2",
  junit-platform-suite-api;bundle-version="1.12.0",
  junit-platform-suite-commons;bundle-version="1.12.0",
  junit-platform-suite-engine;bundle-version="1.12.0",
+ org.opentest4j;bundle-version="1.3.0",
  org.eclipse.swt;bundle-version="3.120.0",
  org.eclipse.test;bundle-version="3.6.200",
  org.eclipse.test.performance;bundle-version="3.13.0"
