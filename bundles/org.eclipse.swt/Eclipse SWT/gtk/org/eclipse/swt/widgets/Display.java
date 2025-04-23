@@ -4840,6 +4840,11 @@ void releaseDisplay () {
 		OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (pangoFontFaceClass, pangoFontFaceNewProc);
 		OS.g_type_class_unref (pangoFontFaceClass);
 		pangoFontFaceNewProc = 0;
+		long printerOptionWidgetType = GTK.gtk_printer_option_widget_get_type();
+		long printerOptionWidgetClass = OS.g_type_class_ref (printerOptionWidgetType);
+		OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (printerOptionWidgetClass, printerOptionWidgetNewProc);
+		OS.g_type_class_unref (printerOptionWidgetClass);
+		printerOptionWidgetNewProc = 0;
 	}
 
 	/* Release the sleep resources */
