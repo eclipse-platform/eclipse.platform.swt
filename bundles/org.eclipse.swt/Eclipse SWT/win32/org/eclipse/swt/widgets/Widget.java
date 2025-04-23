@@ -2699,23 +2699,11 @@ private static void handleDPIChange(Widget widget, int newZoom, float scalingFac
 }
 
 int getSystemMetrics(int nIndex) {
-	/*
-	 * DPI dependent metrics were introduced after 2016 version of windows 10
-	 */
-	if (OS.WIN32_BUILD >= OS.WIN32_BUILD_WIN10_1607) {
-		return OS.GetSystemMetricsForDpi(nIndex, DPIUtil.mapZoomToDPI(nativeZoom));
-	}
-	return OS.GetSystemMetrics(nIndex);
+	return OS.GetSystemMetricsForDpi(nIndex, DPIUtil.mapZoomToDPI(nativeZoom));
 }
 
 boolean adjustWindowRectEx(RECT lpRect, int dwStyle, boolean bMenu, int dwExStyle) {
-	/*
-	 * DPI-dependent version of the method was introduced with Windows 10 Version 1607
-	 */
-	if (OS.WIN32_BUILD >= OS.WIN32_BUILD_WIN10_1607) {
-		return OS.AdjustWindowRectExForDpi (lpRect, dwStyle, bMenu, dwExStyle, DPIUtil.mapZoomToDPI(nativeZoom));
-	}
-	return OS.AdjustWindowRectEx(lpRect, dwStyle, bMenu, dwExStyle);
+	return OS.AdjustWindowRectExForDpi (lpRect, dwStyle, bMenu, dwExStyle, DPIUtil.mapZoomToDPI(nativeZoom));
 }
 
 
