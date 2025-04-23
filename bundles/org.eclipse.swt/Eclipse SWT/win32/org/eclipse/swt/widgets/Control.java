@@ -2229,13 +2229,11 @@ public boolean print (GC gc) {
 	int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
 	OS.RedrawWindow (topHandle, null, 0, flags);
 	int printWindowFlags = 0;
-	if (OS.WIN32_BUILD >= OS.WIN32_BUILD_WIN8_1) {
-		/*
-		 * Undocumented flag in windows, which also allows the capturing
-		 * of GPU-drawn areas, e.g. an embedded Edge WebView2.
-		 */
-		printWindowFlags |= OS.PW_RENDERFULLCONTENT;
-	}
+	/*
+	 * Undocumented flag in windows, which also allows the capturing
+	 * of GPU-drawn areas, e.g. an embedded Edge WebView2.
+	 */
+	printWindowFlags |= OS.PW_RENDERFULLCONTENT;
 	printWidget (topHandle, hdc, gc, printWindowFlags);
 	if (gdipGraphics != 0) {
 		OS.RestoreDC(hdc, state);
