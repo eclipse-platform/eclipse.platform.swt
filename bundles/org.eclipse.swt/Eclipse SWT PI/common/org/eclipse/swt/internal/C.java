@@ -16,6 +16,7 @@ package org.eclipse.swt.internal;
 public class C extends Platform {
 
 	static {
+		exitIfNotLoadable();
 		Library.loadLibrary ("swt"); //$NON-NLS-1$
 	}
 
