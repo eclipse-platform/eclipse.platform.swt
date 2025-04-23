@@ -626,7 +626,10 @@ public static void setDeviceZoom (int nativeDeviceZoom) {
 private static boolean sholdUseSmoothScaling() {
 	return switch (SWT.getPlatform()) {
 	case "gtk" -> deviceZoom / 100 * 100 != deviceZoom;
-	case "win32" -> isMonitorSpecificScalingActive();
+	// FIXME the "win32" case should be uncommented as soon as the issue
+	// https://github.com/eclipse-platform/eclipse.platform.ui/issues/2910
+	// is properly fixed
+	//	case "win32" -> isMonitorSpecificScalingActive();
 	default -> false;
 	};
 }
