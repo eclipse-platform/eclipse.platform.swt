@@ -29,4 +29,6 @@ public interface RendererFactory {
 	SliderRenderer createSliderRenderer(Slider slider);
 
 	LinkRenderer createLinkRenderer(Link link);
+
+	TabFolderRenderer createTabFolderRenderer(TabFolder tabFolder);
 }

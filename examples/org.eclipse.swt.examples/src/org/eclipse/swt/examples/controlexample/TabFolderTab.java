@@ -15,9 +15,11 @@ package org.eclipse.swt.examples.controlexample;
 
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.TabFolder;
@@ -76,9 +78,11 @@ class TabFolderTab extends Tab {
 			TabItem item = new TabItem(tabFolder1, SWT.NONE);
 			item.setText(TabItems1[i]);
 			item.setToolTipText(ControlExample.getResourceString("Tooltip", TabItems1[i]));
-			Text content = new Text(tabFolder1, SWT.WRAP | SWT.MULTI);
+			Composite topComp = new Composite(tabFolder1, SWT.NONE);
+			topComp.setLayout(new FillLayout());
+			Text content = new Text(topComp, SWT.WRAP | SWT.MULTI);
 			content.setText(ControlExample.getResourceString("TabItem_content") + ": " + i);
-			item.setControl(content);
+			item.setControl(topComp);
 		}
 	}
 

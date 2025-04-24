@@ -53,4 +53,9 @@ class DefaultRendererFactory implements RendererFactory {
 	public LinkRenderer createLinkRenderer(Link link) {
 		return new DefaultLinkRenderer(link);
 	}
+
+	@Override
+	public TabFolderRenderer createTabFolderRenderer(TabFolder tabFolder) {
+		return new DefaultTabFolderRenderer(tabFolder);
+	}
 }
