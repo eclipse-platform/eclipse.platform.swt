@@ -310,7 +310,7 @@ public class Button extends CustomControl {
 
 	private void onKeyUp(Event event) {
 		if (event.character == SWT.SPACE) {
-			renderer.setPressed(true);
+			renderer.setPressed(false);
 			handleSelection();
 			redraw();
 		}
