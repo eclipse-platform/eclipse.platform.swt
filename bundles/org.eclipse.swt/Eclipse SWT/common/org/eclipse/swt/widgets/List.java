@@ -13,7 +13,7 @@ public class List extends NativeBasedCustomScrollable {
 	static final int INSET = 3;
 
 	private final java.util.List<String> items = new ArrayList<>();
-	private java.util.List<Integer> selectedItems = new ArrayList<>();
+	private final java.util.List<Integer> selectedItems = new ArrayList<>();
 
 	private int topIndex;
 	private Integer lastSelectedItem = 0;
@@ -30,51 +30,45 @@ public class List extends NativeBasedCustomScrollable {
 	}
 
 	private void addListeners() {
-	    final Listener listener = event -> {
-		switch (event.type) {
-		case SWT.Paint -> paintControl(event);
-		case SWT.MouseDown -> onMouseDown(event);
-		case SWT.MouseUp -> onMouseUp(event);
-		case SWT.MouseWheel -> onMouseWheel(event);
-		case SWT.Resize -> onResize();
-		case SWT.KeyUp -> onKeyReleased(event);
-		case SWT.Dispose -> dispose();
-		case SWT.Activate -> updateScrollBarWithTextSize();
+		final Listener listener = event -> {
+			switch (event.type) {
+			case SWT.Paint -> paintControl(event);
+			case SWT.MouseDown -> onMouseDown(event);
+			case SWT.MouseUp -> onMouseUp(event);
+			case SWT.MouseWheel -> onMouseWheel(event);
+			case SWT.Resize -> onResize();
+			case SWT.KeyUp -> onKeyReleased(event);
+			case SWT.Dispose -> dispose();
+			case SWT.Activate -> updateScrollBarWithTextSize();
 			case SWT.MouseMove -> onMouseMove(event);
-
-		}
-	    };
-	    addListener(SWT.Paint, listener);
-	    addListener(SWT.MouseDown, listener);
-	    addListener(SWT.MouseUp, listener);
-	    addListener(SWT.MouseWheel, listener);
-	    addListener(SWT.KeyUp, listener);
-	    addListener(SWT.Dispose, listener);
-	    addListener(SWT.Activate, listener);
+			}
+		};
+		addListener(SWT.Paint, listener);
+		addListener(SWT.MouseDown, listener);
+		addListener(SWT.MouseUp, listener);
+		addListener(SWT.MouseWheel, listener);
+		addListener(SWT.KeyUp, listener);
+		addListener(SWT.Dispose, listener);
+		addListener(SWT.Activate, listener);
 		addListener(SWT.MouseMove, listener);
 
-	    ScrollBar horizontalBar = getHorizontalBar();
-	    if (horizontalBar != null) {
-		horizontalBar.addListener(SWT.Selection, e -> {
-		    redraw();
+		ScrollBar horizontalBar = getHorizontalBar();
+		if (horizontalBar != null) {
+			horizontalBar.addListener(SWT.Selection, e -> redraw());
 		}
-		);
-	    }
-	    ScrollBar verticalBar = getVerticalBar();
-	    if (verticalBar != null) {
-		verticalBar.addListener(SWT.Selection, e -> {
-		    topIndex = verticalBar.getSelection();
-		    redraw();
-		});
-	    }
+		ScrollBar verticalBar = getVerticalBar();
+		if (verticalBar != null) {
+			verticalBar.addListener(SWT.Selection, e -> {
+				topIndex = verticalBar.getSelection();
+				redraw();
+			});
+		}
 	}
 
 	private void onMouseMove(Event event) {
-
 		if (this.leftMousePressed) {
 			toggleSelection(event);
 		}
-
 	}
 
 	private void onResize() {
@@ -108,7 +102,6 @@ public class List extends NativeBasedCustomScrollable {
 
 		Drawing.drawWithGC(this, event.gc, gc -> renderer.paint(gc));
 	}
-
 
 	private void onKeyReleased(Event event) {
 		boolean isShiftPressed = (event.stateMask & SWT.SHIFT) != 0;
@@ -167,50 +160,43 @@ public class List extends NativeBasedCustomScrollable {
 	}
 
 	private void onMouseUp(Event e) {
-
 		if (e.button == 1) {
 			this.leftMousePressed = false;
 			this.leftMouseDownStartSelection = -1;
 		}
-
 	}
 
 	private void toggleSelection(Event e) {
 		int clickedLine = getTextLocation(e.y);
 
 		if (e.type == SWT.MouseMove && this.leftMousePressed && (style & SWT.MULTI) != 0) {
-
 			java.util.List<Integer> selected = new ArrayList<>();
 
 			if (clickedLine < this.leftMouseDownStartSelection) {
-
 				for (int i = this.leftMouseDownStartSelection; i >= clickedLine; i--) {
 					selected.add(i);
 				}
-
 			} else {
 				for (int i = this.leftMouseDownStartSelection; i <= clickedLine; i++) {
 					selected.add(i);
 				}
-
 			}
 
-			if (this.selectedItems.equals(selected))
+			if (this.selectedItems.equals(selected)) {
 				return;
+			}
 
 			this.selectedItems.clear();
 			this.selectedItems.addAll(selected);
 
 		} else if (e.type == SWT.MouseMove && this.leftMousePressed && (style & SWT.MULTI) == 0) {
-
-			if (this.selectedItems.contains(clickedLine))
+			if (this.selectedItems.contains(clickedLine)) {
 				return;
+			}
 
 			this.selectedItems.clear();
 			this.selectedItems.add(clickedLine);
-
 		} else {
-
 			if ((e.stateMask & SWT.CTRL) != 0) {
 				if (this.selectedItems.contains(clickedLine)) {
 					// remove the object not the index.
@@ -275,8 +261,9 @@ public class List extends NativeBasedCustomScrollable {
 	private void updateScrollBarWithTextSize() {
 		Rectangle clientArea = getClientArea();
 
-		if(clientArea.width == 0 || clientArea.height == 0)
-		    return;
+		if (clientArea.width == 0 || clientArea.height == 0) {
+			return;
+		}
 
 		Point maxTextSize = renderer.computeTextSize();
 
@@ -301,8 +288,9 @@ public class List extends NativeBasedCustomScrollable {
 	public void add(String string, int index) {
 		checkWidget();
 		if (string == null) error(SWT.ERROR_NULL_ARGUMENT);
-		if (index < 0 || index > this.items.size())
+		if (index < 0 || index > this.items.size()) {
 			error(SWT.ERROR_INVALID_RANGE);
+		}
 		this.items.add(index, string);
 		updateScrollBarWithTextSize();
 		redraw();
@@ -364,8 +352,9 @@ public class List extends NativeBasedCustomScrollable {
 
 	public String getItem(int index) {
 		checkWidget();
-		if (index < 0 || index >= this.items.size())
+		if (index < 0 || index >= this.items.size()) {
 			error(SWT.ERROR_INVALID_RANGE);
+		}
 		return this.items.get(index);
 	}
 
@@ -380,22 +369,23 @@ public class List extends NativeBasedCustomScrollable {
 	}
 
 	public int getItemHeightInPixels() {
-	    checkWidget();
-	    String referenceText = this.items.isEmpty() ? DUMMY_ITEM_TEXT : this.items.get(0);
-	    GC gc = new GC(this);
-	    gc.setFont(getFont());
-	    int itemHeight = gc.textExtent(referenceText).y;
-	    gc.dispose();
-	    if (itemHeight <= 0) error(SWT.ERROR_CANNOT_GET_ITEM_HEIGHT);
-	    return itemHeight;
+		checkWidget();
+		String referenceText = this.items.isEmpty() ? DUMMY_ITEM_TEXT : this.items.get(0);
+		GC gc = new GC(this);
+		gc.setFont(getFont());
+		int itemHeight = gc.textExtent(referenceText).y;
+		gc.dispose();
+		if (itemHeight <= 0) error(SWT.ERROR_CANNOT_GET_ITEM_HEIGHT);
+		return itemHeight;
 	}
 
 	public String[] getItems() {
 		checkWidget();
 		int count = getItemCount();
 		String[] result = new String[count];
-		for (int i = 0; i < count; i++)
+		for (int i = 0; i < count; i++) {
 			result[i] = getItem(i);
+		}
 		return result;
 	}
 
@@ -438,9 +428,11 @@ public class List extends NativeBasedCustomScrollable {
 		if (string == null) error(SWT.ERROR_NULL_ARGUMENT);
 		int count = getItemCount();
 		if (!(0 <= start && start < count)) return -1;
-		for (int i = start; i < count; i++)
-			if (string.equals(getItem(i)))
+		for (int i = start; i < count; i++) {
+			if (string.equals(getItem(i))) {
 				return i;
+			}
+		}
 		return -1;
 	}
 
@@ -453,22 +445,27 @@ public class List extends NativeBasedCustomScrollable {
 		checkWidget();
 		if (indices == null) error(SWT.ERROR_NULL_ARGUMENT);
 		if (indices.length == 0) return;
-		for (int index : indices)
-			if (index < 0 || index >= this.items.size())
+		for (int index : indices) {
+			if (index < 0 || index >= this.items.size()) {
 				error(SWT.ERROR_INVALID_RANGE);
+			}
+		}
 
 		// Sort indices in descending order and remove duplicates
-	    int[] uniqueSortedIndices = IntStream.of(indices).distinct().boxed()
-	        .sorted((a, b) -> Integer.compare(b, a)).mapToInt(Integer::intValue).toArray();
+		int[] uniqueSortedIndices = IntStream.of(indices).distinct().boxed()
+				.sorted((a, b) -> Integer.compare(b, a)).mapToInt(Integer::intValue).toArray();
 
-	    for (int index : uniqueSortedIndices) this.items.remove(index);
+		for (int index : uniqueSortedIndices) {
+			this.items.remove(index);
+		}
 		redraw();
 	}
 
 	public void remove(int index) {
 		checkWidget();
-		if (index < 0 || index >= this.items.size())
+		if (index < 0 || index >= this.items.size()) {
 			error(SWT.ERROR_INVALID_ARGUMENT);
+		}
 		this.items.remove(index);
 		redraw();
 	}
@@ -492,11 +489,11 @@ public class List extends NativeBasedCustomScrollable {
 	}
 
 	public void remove(String string) {
-	    checkWidget();
-	    if (string == null) error(SWT.ERROR_NULL_ARGUMENT);
-	    int index = indexOf(string, 0);
-	    if (index == -1) error(SWT.ERROR_INVALID_ARGUMENT);
-	    remove(index);
+		checkWidget();
+		if (string == null) error(SWT.ERROR_NULL_ARGUMENT);
+		int index = indexOf(string, 0);
+		if (index == -1) error(SWT.ERROR_INVALID_ARGUMENT);
+		remove(index);
 	}
 
 	public void removeAll() {
@@ -543,21 +540,21 @@ public class List extends NativeBasedCustomScrollable {
 	}
 
 	void select(int index, boolean scroll) {
-	    if (index < 0 || index >= this.items.size()) return;
+		if (index < 0 || index >= this.items.size()) return;
 
-	    if ((this.style & SWT.SINGLE) != 0) {
-	        this.selectedItems.clear();
-	        this.selectedItems.add(index);
-	    } else {
-	        if (!this.selectedItems.contains(index)) {
-	            int insertPos = 0;
-	            while (insertPos < this.selectedItems.size() && this.selectedItems.get(insertPos) < index) insertPos++;
-	            this.selectedItems.add(insertPos, index);
-	        }
-	    }
+		if ((this.style & SWT.SINGLE) != 0) {
+			this.selectedItems.clear();
+			this.selectedItems.add(index);
+		} else {
+			if (!this.selectedItems.contains(index)) {
+				int insertPos = 0;
+				while (insertPos < this.selectedItems.size() && this.selectedItems.get(insertPos) < index) insertPos++;
+				this.selectedItems.add(insertPos, index);
+			}
+		}
 
-	    this.lastSelectedItem = index;
-	    redraw();
+		this.lastSelectedItem = index;
+		redraw();
 	}
 
 	public void select(int start, int end) {
@@ -593,8 +590,9 @@ public class List extends NativeBasedCustomScrollable {
 	}
 
 	public void selectAll() {
-		if ((style & SWT.SINGLE) != 0)
+		if ((style & SWT.SINGLE) != 0) {
 			return;
+		}
 		this.selectedItems.clear();
 		for (int i = 0; i < this.items.size(); i++) {
 			this.selectedItems.add(i);
@@ -625,8 +623,9 @@ public class List extends NativeBasedCustomScrollable {
 
 	public void setItem(int index, String string) {
 		checkWidget();
-		if (index < 0 || index >= this.items.size())
+		if (index < 0 || index >= this.items.size()) {
 			error(SWT.ERROR_INVALID_ARGUMENT);
+		}
 		if (string == null) error(SWT.ERROR_NULL_ARGUMENT);
 		this.items.set(index, string);
 		redraw();
@@ -702,8 +701,9 @@ public class List extends NativeBasedCustomScrollable {
 		if (indices == null) error(SWT.ERROR_NULL_ARGUMENT);
 		deselectAll();
 		int length = indices.length;
-		if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1))
+		if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) {
 			return;
+		}
 		select(indices, true);
 	}
 
@@ -712,14 +712,16 @@ public class List extends NativeBasedCustomScrollable {
 		if (items == null) error(SWT.ERROR_NULL_ARGUMENT);
 		deselectAll();
 		int length = items.length;
-		if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1))
+		if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) {
 			return;
+		}
 		for (int i = 0; i < this.items.size(); i++) {
 			for (String item : items) {
 				if (this.items.get(i).equals(item)) {
 					select(i);
-					if ((style & SWT.SINGLE) != 0)
+					if ((style & SWT.SINGLE) != 0) {
 						return;
+					}
 					break;
 				}
 			}
@@ -733,14 +735,14 @@ public class List extends NativeBasedCustomScrollable {
 	}
 
 	public void setSelection(int start, int end) {
-	    checkWidget();
-	    deselectAll();
-	    if (end < 0 || start > end || ((style & SWT.SINGLE) != 0 && start != end)) return;
-	    int count = this.items.size();
-	    if (count == 0 || start >= count) return;
-	    start = Math.max(0, start);
-	    end = Math.min(end, count - 1);
-	    select(start, end, true);
+		checkWidget();
+		deselectAll();
+		if (end < 0 || start > end || ((style & SWT.SINGLE) != 0 && start != end)) return;
+		int count = this.items.size();
+		if (count == 0 || start >= count) return;
+		start = Math.max(0, start);
+		end = Math.min(end, count - 1);
+		select(start, end, true);
 	}
 
 	public void setTopIndex(int index) {

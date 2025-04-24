@@ -15,7 +15,6 @@ public class DefaultListRenderer extends ListRenderer {
 
 	@Override
 	protected void paint(GC gc, int width, int height) {
-
 		Rectangle r = list.getBounds();
 		if (r.width == 0 && r.height == 0) {
 			return;
@@ -38,13 +37,10 @@ public class DefaultListRenderer extends ListRenderer {
 			drawTextLine(i, x, y, gc, clientArea);
 			y += lineHeight;
 		}
-
 	}
 
 	private void drawBackground(Rectangle clientArea, GC gc) {
-
 		if ((list.getState() & Widget.PARENT_BACKGROUND) == 0) {
-
 			if (list.getBackground() == null) {
 				// white is the default color for lists
 				gc.setBackground(list.getDisplay().getSystemColor(SWT.COLOR_WHITE));
@@ -65,7 +61,8 @@ public class DefaultListRenderer extends ListRenderer {
 	private int calculateHorizontalAlignment(int x, Point textExtent, Rectangle clientArea) {
 		if ((list.getStyle() & SWT.CENTER) != 0) {
 			return (clientArea.width - textExtent.x) / 2;
-		} else if ((list.getStyle() & SWT.RIGHT) != 0) {
+		}
+		if ((list.getStyle() & SWT.RIGHT) != 0) {
 			return clientArea.width - textExtent.x;
 		}
 		return x;
@@ -113,7 +110,6 @@ public class DefaultListRenderer extends ListRenderer {
 	}
 
 	public Point computeDefaultSize() {
-
 		Point size = computeTextSize();
 		if ((list.getStyle() & SWT.BORDER) != 0) {
 			final int borderWidth = list.getBorderWidth();
@@ -121,7 +117,6 @@ public class DefaultListRenderer extends ListRenderer {
 			size.y += 2 * borderWidth;
 		}
 		return size;
-
 	}
 
 	private Point getTextExtent(String text) {
@@ -129,7 +124,6 @@ public class DefaultListRenderer extends ListRenderer {
 	}
 
 	public Point computeTextSize() {
-
 		int width = 0;
 		Point size = null;
 		for (String line : list.getItems()) {
@@ -145,5 +139,4 @@ public class DefaultListRenderer extends ListRenderer {
 		}
 		return new Point(width, height);
 	}
-
 }
