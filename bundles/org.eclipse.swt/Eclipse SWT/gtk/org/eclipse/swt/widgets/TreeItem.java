@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -407,7 +407,7 @@ public Color getBackground (int index) {
  */
 public Rectangle getBounds (int index) {
 	checkWidget ();
-	return DPIUtil.autoScaleDown (getBoundsInPixels (index));
+	return getBoundsInPixels (index);
 }
 
 Rectangle getBoundsInPixels (int index) {
@@ -454,7 +454,7 @@ Rectangle getBoundsInPixels (int index) {
  */
 public Rectangle getBounds () {
 	checkWidget ();
-	return DPIUtil.autoScaleDown (getBoundsInPixels ());
+	return getBoundsInPixels ();
 }
 
 Rectangle getBoundsInPixels () {
@@ -694,7 +694,7 @@ public Image getImage (int index) {
  */
 public Rectangle getImageBounds (int index) {
 	checkWidget ();
-	return DPIUtil.autoScaleDown(getImageBoundsInPixels(index));
+	return getImageBoundsInPixels(index);
 }
 
 Rectangle getImageBoundsInPixels (int index) {
@@ -928,7 +928,7 @@ public String getText (int index) {
  */
 public Rectangle getTextBounds (int index) {
 	checkWidget ();
-	return DPIUtil.autoScaleDown(getTextBoundsInPixels(index));
+	return getTextBoundsInPixels(index);
 }
 
 Rectangle getTextBoundsInPixels (int index) {

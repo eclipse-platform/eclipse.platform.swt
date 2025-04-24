@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -321,7 +321,7 @@ public String getToolTipText () {
  */
 public int getWidth () {
 	checkWidget ();
-	return DPIUtil.autoScaleDown (getWidthInPixels ());
+	return getWidthInPixels ();
 }
 
 int getWidthInPixels () {
@@ -737,7 +737,7 @@ public void setToolTipText(String string) {
  */
 public void setWidth(int width) {
 	checkWidget();
-	setWidthInPixels(DPIUtil.autoScaleUp(width));
+	setWidthInPixels(width);
 }
 
 void setWidthInPixels(int width) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -232,7 +232,7 @@ public boolean getExpanded() {
  */
 public int getHeaderHeight () {
 	checkWidget ();
-	return DPIUtil.autoScaleDown (getHeaderHeightInPixels ());
+	return getHeaderHeightInPixels ();
 }
 
 int getHeaderHeightInPixels() {
@@ -256,7 +256,7 @@ int getHeaderHeightInPixels() {
  */
 public int getHeight() {
 	checkWidget();
-	return DPIUtil.autoScaleDown(height);
+	return height;
 }
 
 /**
@@ -507,7 +507,7 @@ void setForegroundRGBA (GdkRGBA rgba) {
  */
 public void setHeight (int height) {
 	checkWidget ();
-	setHeightInPixels(DPIUtil.autoScaleUp(height));
+	setHeightInPixels(height);
 }
 
 void setHeightInPixels (int height) {

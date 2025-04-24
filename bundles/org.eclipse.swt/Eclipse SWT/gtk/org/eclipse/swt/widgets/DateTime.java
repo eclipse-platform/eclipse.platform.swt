@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -627,7 +627,7 @@ void dropDownCalendar (boolean drop) {
 
 	//To display popup calendar, we need to know where the parent is relative to the whole screen.
 	Rectangle coordsRelativeToScreen = display.mapInPixels (getParent (), null, getBoundsInPixels ());
-	Rectangle displayRect = DPIUtil.autoScaleUp(getMonitor ().getClientArea ());
+	Rectangle displayRect = getMonitor ().getClientArea ();
 
 	showPopupShell (containerBounds, calendarSize, coordsRelativeToScreen, displayRect);
 
