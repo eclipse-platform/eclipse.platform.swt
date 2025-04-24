@@ -9,7 +9,6 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 
 public class List extends NativeBasedCustomScrollable {
-	boolean addedUCC = false;
 	static final int INSET = 3;
 
 	private final java.util.List<String> items = new ArrayList<>();
@@ -143,10 +142,6 @@ public class List extends NativeBasedCustomScrollable {
 	private int calculateNewIndex(int currentIndex, int offset) {
 		int newIndex = currentIndex + offset;
 		return Math.max(0, Math.min(newIndex, items.size() - 1));
-	}
-
-	private void onScrollBarChange(Event e) {
-		redraw();
 	}
 
 	private void onMouseDown(Event e) {
@@ -416,7 +411,7 @@ public class List extends NativeBasedCustomScrollable {
 
 	public int getTopIndex() {
 		checkWidget();
-		return (int) this.topIndex;
+		return this.topIndex;
 	}
 
 	public int indexOf(String string) {
@@ -600,18 +595,6 @@ public class List extends NativeBasedCustomScrollable {
 		}
 	}
 
-	void setFocusIndex(int index) {
-		checkWidget();
-		if (index < 0 || index >= this.items.size()) {
-			return;
-		}
-
-		selectedItems.clear();
-		selectedItems.add(index);
-		lastSelectedItem = index;
-		redraw();
-	}
-
 	@Override
 	public void setFont(Font font) {
 		checkWidget();
@@ -660,40 +643,6 @@ public class List extends NativeBasedCustomScrollable {
 		if (horizontalBar != null) {
 			horizontalBar.setMaximum(newWidth + INSET);
 		}
-	}
-
-	void setScrollWidth(char[] buffer, boolean grow) {
-		GC gc = new GC(this);
-		gc.setFont(getFont());
-		Point textExtent = gc.textExtent(new String(buffer));
-		gc.dispose();
-
-		setScrollWidth(textExtent.x, grow);
-	}
-
-	void setScrollWidth(int newWidth, boolean grow) {
-		newWidth += INSET;
-		int width = getCurrentScrollWidth();
-		if (grow) {
-			if (newWidth <= width) {
-				return;
-			}
-			if (horizontalBar != null) {
-				horizontalBar.setMaximum(newWidth);
-			}
-		} else {
-			if (newWidth < width) {
-				return;
-			}
-			setScrollWidth();
-		}
-	}
-
-	private int getCurrentScrollWidth() {
-		if (getHorizontalBar() != null) {
-			return getHorizontalBar().getMaximum();
-		}
-		return 0;
 	}
 
 	public void setSelection(int[] indices) {
