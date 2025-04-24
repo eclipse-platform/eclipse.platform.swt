@@ -1602,7 +1602,7 @@ TreeItem getFocusItem () {
  */
 public int getGridLineWidth () {
 	checkWidget ();
-	return DPIUtil.autoScaleDown (getGridLineWidthInPixels ());
+	return getGridLineWidthInPixels ();
 }
 
 int getGridLineWidthInPixels () {
@@ -1656,7 +1656,7 @@ public Color getHeaderForeground () {
  */
 public int getHeaderHeight () {
 	checkWidget ();
-	return DPIUtil.autoScaleDown (getHeaderHeightInPixels ());
+	return getHeaderHeightInPixels ();
 }
 
 int getHeaderHeightInPixels () {
@@ -1771,7 +1771,7 @@ public TreeItem getItem (int index) {
  */
 public TreeItem getItem (Point point) {
 	checkWidget();
-	return getItemInPixels(DPIUtil.autoScaleUp(point));
+	return getItemInPixels(point);
 }
 
 TreeItem getItemInPixels (Point point) {
@@ -1846,7 +1846,7 @@ public int getItemCount () {
  */
 public int getItemHeight () {
 	checkWidget ();
-	return DPIUtil.autoScaleDown (getItemHeightInPixels ());
+	return getItemHeightInPixels ();
 }
 
 int getItemHeightInPixels () {
@@ -3089,7 +3089,7 @@ void sendMeasureEvent (long cell, long width, long height) {
 			event.index = columnIndex;
 			event.gc = gc;
 			Rectangle eventRect = new Rectangle (0, 0, contentWidth [0], contentHeight [0]);
-			event.setBounds (DPIUtil.autoScaleDown (eventRect));
+			event.setBounds (eventRect);
 			long path = GTK.gtk_tree_model_get_path (modelHandle, iter);
 			long selection = GTK.gtk_tree_view_get_selection (handle);
 			if (GTK.gtk_tree_selection_path_is_selected (selection, path)) {
@@ -3098,7 +3098,7 @@ void sendMeasureEvent (long cell, long width, long height) {
 			GTK.gtk_tree_path_free (path);
 			sendEvent (SWT.MeasureItem, event);
 			gc.dispose ();
-			Rectangle rect = DPIUtil.autoScaleUp (event.getBounds ());
+			Rectangle rect = event.getBounds ();
 			contentWidth [0] = rect.width - imageWidth;
 			if (contentHeight [0] < rect.height) contentHeight [0] = rect.height;
 			if (width != 0) C.memmove (width, contentWidth, 4);
@@ -3248,12 +3248,9 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 				if (cr != 0) {
 					// Use the original rectangle, not the Cairo clipping for the y, width, and height values.
 					// See bug 535124.
-					Rectangle rect2 = DPIUtil.autoScaleDown(rect);
-					gc.setClipping(rect2.x, rect2.y, rect2.width, rect2.height);
+					gc.setClipping(rect.x, rect.y, rect.width, rect.height);
 				} else {
-					Rectangle rect2 = DPIUtil.autoScaleDown(rect);
-					// Caveat: rect2 is necessary because GC#setClipping(Rectangle) got broken by bug 446075
-					gc.setClipping(rect2.x, rect2.y, rect2.width, rect2.height);
+					gc.setClipping(rect.x, rect.y, rect.width, rect.height);
 				}
 
 				// SWT.PaintItem/SWT.EraseItem often expect that event.y matches
@@ -3270,7 +3267,7 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 					event.index = columnIndex;
 					event.gc = gc;
 					event.detail = drawState;
-					event.setBounds (DPIUtil.autoScaleDown (eventRect));
+					event.setBounds (eventRect);
 					sendEvent (SWT.EraseItem, event);
 				} finally {
 					Cairo.cairo_translate (cr, 0, y_offset);
@@ -3295,7 +3292,7 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 	if ((drawState & SWT.BACKGROUND) != 0 && (drawState & SWT.SELECTED) == 0) {
 		GC gc = getGC(cr);
 		gc.setBackground (item.getBackground (columnIndex));
-		gc.fillRectangle (DPIUtil.autoScaleDown (rendererRect.toRectangle ()));
+		gc.fillRectangle (rendererRect.toRectangle ());
 		gc.dispose ();
 	}
 	if ((drawState & SWT.FOREGROUND) != 0 || GTK.GTK_IS_CELL_RENDERER_TOGGLE (cell)) {
@@ -3368,9 +3365,7 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 					rect.x = getClientWidth () - rect.width - rect.x;
 				}
 
-				Rectangle rect2 = DPIUtil.autoScaleDown(rect);
-				// Caveat: rect2 is necessary because GC#setClipping(Rectangle) got broken by bug 446075
-				gc.setClipping(rect2.x, rect2.y, rect2.width, rect2.height);
+				gc.setClipping(rect.x, rect.y, rect.width, rect.height);
 
 				// SWT.PaintItem/SWT.EraseItem often expect that event.y matches
 				// what 'event.item.getBounds()' returns. The workaround is to
@@ -3386,7 +3381,7 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 					event.index = columnIndex;
 					event.gc = gc;
 					event.detail = drawState;
-					event.setBounds (DPIUtil.autoScaleDown (eventRect));
+					event.setBounds (eventRect);
 					sendEvent (SWT.PaintItem, event);
 				} finally {
 					Cairo.cairo_translate (cr, 0, y_offset);
