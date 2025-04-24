@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -440,7 +440,7 @@ public Rectangle [] getRectangles () {
 	Rectangle [] result = new Rectangle [rectangles.length];
 	for (int i = 0; i < rectangles.length; i++) {
 		Rectangle current = rectangles [i];
-		result [i] = DPIUtil.autoScaleDown (new Rectangle (current.x, current.y, current.width, current.height));
+		result [i] = new Rectangle (current.x, current.y, current.width, current.height);
 	}
 	return result;
 }
@@ -529,9 +529,9 @@ long gtk_key_press_event (long widget, long eventPtr) {
 		}
 		Event event = new Event ();
 		Rectangle eventRect = new Rectangle (oldX + xChange, oldY + yChange, 0, 0);
-		event.setBounds (DPIUtil.autoScaleDown (eventRect));
+		event.setBounds (eventRect);
 		if (parent != null && (parent.style & SWT.MIRRORED) != 0) {
-			event.x = DPIUtil.autoScaleDown (parent.getClientWidth ()) - event.width - event.x;
+			event.x = parent.getClientWidth () - event.width - event.x;
 		}
 		if ((style & SWT.RESIZE) != 0) {
 			resizeRectangles (xChange, yChange);
@@ -659,11 +659,11 @@ long gtk_mouse (int eventType, long widget, long eventPtr) {
 		Event event = new Event ();
 		if (parent == null) {
 			Rectangle eventRect = new Rectangle (newX [0], newY [0], 0, 0);
-			event.setBounds (DPIUtil.autoScaleDown (eventRect));
+			event.setBounds (eventRect);
 		} else {
 			Point screenCoord = display.mapInPixels (parent, null, newX [0], newY [0]);
 			Rectangle eventRect = new Rectangle (screenCoord.x, screenCoord.y, 0, 0);
-			event.setBounds (DPIUtil.autoScaleDown (eventRect));
+			event.setBounds (eventRect);
 		}
 		if ((style & SWT.RESIZE) != 0) {
 			resizeRectangles (newX [0] - oldX, newY [0] - oldY);
@@ -1156,10 +1156,6 @@ public void setCursor (Cursor newCursor) {
 public void setRectangles (Rectangle [] rectangles) {
 	checkWidget();
 	if (rectangles == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int length = rectangles.length;
-	for (int i = 0; i < length; i++) {
-		rectangles [i] = DPIUtil.autoScaleUp (rectangles [i]);
-	}
 	setRectanglesInPixels (rectangles);
 }
 

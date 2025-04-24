@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -16,7 +16,6 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
 
@@ -143,7 +142,7 @@ private void drawInCellEditor(long window) {
  */
 public Rectangle getBounds () {
 	checkWidget();
-	return DPIUtil.autoScaleDown(getBoundsInPixels());
+	return getBoundsInPixels();
 }
 
 Rectangle getBoundsInPixels () {
@@ -203,7 +202,7 @@ public Image getImage () {
  */
 public Point getLocation () {
 	checkWidget();
-	return DPIUtil.autoScaleDown(getLocationInPixels());
+	return getLocationInPixels();
 }
 
 Point getLocationInPixels () {
@@ -238,7 +237,7 @@ public Canvas getParent () {
  */
 public Point getSize () {
 	checkWidget();
-	return DPIUtil.autoScaleDown(getSizeInPixels());
+	return getSizeInPixels();
 }
 
 Point getSizeInPixels () {
@@ -379,7 +378,6 @@ void setBoundsInPixels (int x, int y, int width, int height) {
  */
 public void setBounds (Rectangle rect) {
 	checkWidget();
-	rect = DPIUtil.autoScaleUp(rect);
 	setBoundsInPixels(rect);
 }
 
@@ -481,7 +479,7 @@ void setLocationInPixels (int x, int y) {
  */
 public void setLocation (Point location) {
 	checkWidget();
-	setLocationInPixels (DPIUtil.autoScaleUp (location));
+	setLocationInPixels (location);
 }
 
 void setLocationInPixels (Point location) {
@@ -526,7 +524,7 @@ void setSizeInPixels (int width, int height) {
  */
 public void setSize (Point size) {
 	checkWidget();
-	setSizeInPixels(DPIUtil.autoScaleUp (size));
+	setSizeInPixels(size);
 }
 
 void setSizeInPixels (Point size) {

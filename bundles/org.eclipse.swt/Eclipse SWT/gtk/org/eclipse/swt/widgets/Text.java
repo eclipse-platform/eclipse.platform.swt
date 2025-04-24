@@ -949,7 +949,7 @@ public int getCaretLineNumber () {
  */
 public Point getCaretLocation () {
 	checkWidget ();
-	return DPIUtil.autoScaleDown(getCaretLocationInPixels());
+	return getCaretLocationInPixels();
 }
 
 Point getCaretLocationInPixels () {
@@ -1533,7 +1533,7 @@ public int getTopIndex () {
  */
 public int getTopPixel () {
 	checkWidget ();
-	return DPIUtil.autoScaleDown(getTopPixelInPixels());
+	return getTopPixelInPixels();
 }
 
 int getTopPixelInPixels () {
