@@ -663,7 +663,7 @@ void center () {
 	Rectangle parentRect = display.mapInPixels (parent, null, parent.getClientAreaInPixels());
 	int x = Math.max (parentRect.x, parentRect.x + (parentRect.width - rect.width) / 2);
 	int y = Math.max (parentRect.y, parentRect.y + (parentRect.height - rect.height) / 2);
-	Rectangle monitorRect = DPIUtil.autoScaleUp(parent.getMonitor ().getClientArea());
+	Rectangle monitorRect = parent.getMonitor ().getClientArea();
 	if (x + rect.width > monitorRect.x + monitorRect.width) {
 		x = Math.max (monitorRect.x, monitorRect.x + monitorRect.width - rect.width);
 	} else {
@@ -1296,7 +1296,7 @@ public boolean getMaximized () {
  */
 public Point getMinimumSize () {
 	checkWidget ();
-	return DPIUtil.autoScaleDown (getMinimumSizeInPixels ());
+	return getMinimumSizeInPixels ();
 }
 
 Point getMinimumSizeInPixels () {
@@ -1323,7 +1323,7 @@ Point getMinimumSizeInPixels () {
  */
 public Point getMaximumSize () {
 	checkWidget ();
-	return DPIUtil.autoScaleDown (getMaximumSizeInPixels ());
+	return getMaximumSizeInPixels ();
 }
 
 Point getMaximumSizeInPixels () {
@@ -2701,7 +2701,7 @@ void setMinimumSizeInPixels (int width, int height) {
  */
 public void setMinimumSize (Point size) {
 	checkWidget ();
-	setMinimumSizeInPixels (DPIUtil.autoScaleUp (size));
+	setMinimumSizeInPixels (size);
 }
 
 void setMinimumSizeInPixels (Point size) {
@@ -2759,7 +2759,7 @@ public void setMaximumSize (int width, int height) {
  */
 public void setMaximumSize (Point size) {
 	checkWidget ();
-	setMaximumSizeInPixels (DPIUtil.autoScaleUp (size));
+	setMaximumSizeInPixels (size);
 }
 
 void setMaximumSizeInPixels (Point size) {
@@ -2860,7 +2860,7 @@ static Region mirrorRegion (Region region) {
 	int [] nRects = new int [1];
 	long [] rects = new long [1];
 	gdk_region_get_rectangles (rgn, rects, nRects);
-	Rectangle bounds = DPIUtil.autoScaleUp(region.getBounds ());
+	Rectangle bounds = region.getBounds ();
 	cairo_rectangle_int_t rect = new cairo_rectangle_int_t();
 	for (int i = 0; i < nRects [0]; i++) {
 		Cairo.memmove (rect, rects[0] + (i * GdkRectangle.sizeof), GdkRectangle.sizeof);

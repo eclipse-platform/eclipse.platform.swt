@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2020 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -266,7 +266,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	if (layout != null) {
 		if (wHint == SWT.DEFAULT || hHint == SWT.DEFAULT) {
 			changed |= (state & LAYOUT_CHANGED) != 0;
-			size = DPIUtil.autoScaleUp(layout.computeSize (this, DPIUtil.autoScaleDown(wHint), DPIUtil.autoScaleDown(hHint), changed));
+			size = layout.computeSize (this, wHint, hHint, changed);
 			state &= ~LAYOUT_CHANGED;
 		} else {
 			size = new Point (wHint, hHint);
@@ -278,7 +278,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	}
 	if (wHint != SWT.DEFAULT) size.x = wHint;
 	if (hHint != SWT.DEFAULT) size.y = hHint;
-	Rectangle trim = DPIUtil.autoScaleUp (computeTrim (0, 0, DPIUtil.autoScaleDown(size.x), DPIUtil.autoScaleDown(size.y)));
+	Rectangle trim = computeTrim (0, 0, size.x, size.y);
 	return new Point (trim.width, trim.height);
 }
 
@@ -550,9 +550,7 @@ void deregister () {
  */
 public void drawBackground (GC gc, int x, int y, int width, int height, int offsetX, int offsetY) {
 	checkWidget();
-	Rectangle rect = DPIUtil.autoScaleUp(new Rectangle (x, y, width, height));
-	offsetX = DPIUtil.autoScaleUp(offsetX);
-	offsetY = DPIUtil.autoScaleUp(offsetY);
+	Rectangle rect = new Rectangle (x, y, width, height);
 	drawBackgroundInPixels(gc, rect.x, rect.y, rect.width, rect.height, offsetX, offsetY);
 }
 
@@ -591,7 +589,7 @@ void drawBackgroundInPixels (GC gc, int x, int y, int width, int height, int off
 		Cairo.cairo_fill (cairo);
 		Cairo.cairo_restore (cairo);
 	} else {
-		gc.fillRectangle(DPIUtil.autoScaleDown(new Rectangle(x, y, width, height)));
+		gc.fillRectangle(new Rectangle(x, y, width, height));
 
 	}
 }
@@ -1427,10 +1425,10 @@ Point minimumSize (int wHint, int hHint, boolean changed) {
 	 * Since getClientArea can be overridden by subclasses, we cannot
 	 * call getClientAreaInPixels directly.
 	 */
-	Rectangle clientArea = DPIUtil.autoScaleUp(getClientArea ());
+	Rectangle clientArea = getClientArea ();
 	int width = 0, height = 0;
 	for (int i=0; i<children.length; i++) {
-		Rectangle rect = DPIUtil.autoScaleUp(children [i].getBounds ());
+		Rectangle rect = children [i].getBounds ();
 		width = Math.max (width, rect.x - clientArea.x + rect.width);
 		height = Math.max (height, rect.y - clientArea.y + rect.height);
 	}
@@ -1446,7 +1444,7 @@ long parentingHandle () {
 void printWidget (GC gc, long drawable, int depth, int x, int y) {
 	Region oldClip = new Region (gc.getDevice ());
 	Region newClip = new Region (gc.getDevice ());
-	Point loc = DPIUtil.autoScaleDown(new Point (x, y));
+	Point loc = new Point (x, y);
 	gc.getClipping (oldClip);
 	Rectangle rect = getBounds ();
 	newClip.add (oldClip);
@@ -1457,7 +1455,7 @@ void printWidget (GC gc, long drawable, int depth, int x, int y) {
 	Point pt = display.mapInPixels (this, parent, clientRect.x, clientRect.y);
 	clientRect.x = x + pt.x - rect.x;
 	clientRect.y = y + pt.y - rect.y;
-	newClip.intersect (DPIUtil.autoScaleDown(clientRect));
+	newClip.intersect (clientRect);
 	gc.setClipping (newClip);
 	Control [] children = _getChildren ();
 	for (int i=children.length-1; i>=0; --i) {

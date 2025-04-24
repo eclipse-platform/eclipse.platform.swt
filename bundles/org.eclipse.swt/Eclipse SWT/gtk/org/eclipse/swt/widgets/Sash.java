@@ -17,7 +17,6 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.gtk3.*;
 import org.eclipse.swt.internal.gtk4.*;
@@ -191,11 +190,11 @@ int gtk_gesture_press_event(long gesture, int n_press, double x, double y, long 
 	Event jEvent = new Event();
 	jEvent.time = GDK.gdk_event_get_time(event);
 	Rectangle eventRect = new Rectangle(lastX, lastY, width, height);
-	jEvent.setBounds(DPIUtil.autoScaleDown(eventRect));
+	jEvent.setBounds(eventRect);
 	if ((style & SWT.SMOOTH) == 0) {
 		jEvent.detail = SWT.DRAG;
 	}
-	if ((parent.style & SWT.MIRRORED) != 0) jEvent.x = DPIUtil.autoScaleDown(parent.getClientWidth() - width) - jEvent.x;
+	if ((parent.style & SWT.MIRRORED) != 0) jEvent.x = parent.getClientWidth() - width - jEvent.x;
 	sendSelectionEvent(SWT.Selection, jEvent, true);
 	if (isDisposed()) return result;
 
@@ -245,15 +244,15 @@ void gtk4_motion_event(long controller, double x, double y, long event) {
 	Event jEvent = new Event();
 	jEvent.time = GDK.gdk_event_get_time(event);
 	Rectangle eventRect = new Rectangle(newX, newY, width, height);
-	jEvent.setBounds(DPIUtil.autoScaleDown(eventRect));
+	jEvent.setBounds(eventRect);
 	if ((style & SWT.SMOOTH) == 0) {
 		jEvent.detail = SWT.DRAG;
 	}
-	if ((parent.style & SWT.MIRRORED) != 0) jEvent.x = DPIUtil.autoScaleDown(parent.getClientWidth() - width) - jEvent.x;
+	if ((parent.style & SWT.MIRRORED) != 0) jEvent.x = parent.getClientWidth() - width - jEvent.x;
 	sendSelectionEvent(SWT.Selection, jEvent, true);
 	if (isDisposed()) return;
 
-	Rectangle rect = DPIUtil.autoScaleUp(jEvent.getBounds());
+	Rectangle rect = jEvent.getBounds();
 	if (jEvent.doit) {
 		lastX = rect.x;
 		lastY = rect.y;
@@ -311,13 +310,13 @@ boolean gtk4_key_press_event(long controller, int keyval, int keycode, int state
 			Event jEvent = new Event();
 			jEvent.time = GDK.gdk_event_get_time(event);
 			Rectangle eventRect = new Rectangle(newX, newY, width, height);
-			jEvent.setBounds(DPIUtil.autoScaleDown(eventRect));
-			if ((parent.style & SWT.MIRRORED) != 0) jEvent.x = DPIUtil.autoScaleDown(parent.getClientWidth() - width) - jEvent.x;
+			jEvent.setBounds(eventRect);
+			if ((parent.style & SWT.MIRRORED) != 0) jEvent.x = parent.getClientWidth() - width - jEvent.x;
 			sendSelectionEvent(SWT.Selection, jEvent, true);
 			if (isDisposed()) break;
 
 			if (jEvent.doit) {
-				Rectangle rect = DPIUtil.autoScaleUp(jEvent.getBounds());
+				Rectangle rect = jEvent.getBounds();
 				lastX = rect.x;
 				lastY = rect.y;
 				if ((parent.style & SWT.MIRRORED) != 0) lastX = parent.getClientWidth() - width  - lastX;
@@ -364,16 +363,16 @@ long gtk_button_press_event(long widget, long event) {
 	Event jEvent = new Event();
 	jEvent.time = GDK.gdk_event_get_time(event);
 	Rectangle eventRect = new Rectangle(lastX, lastY, width, height);
-	jEvent.setBounds(DPIUtil.autoScaleDown(eventRect));
+	jEvent.setBounds(eventRect);
 	if ((style & SWT.SMOOTH) == 0) {
 		jEvent.detail = SWT.DRAG;
 	}
-	if ((parent.style & SWT.MIRRORED) != 0) jEvent.x = DPIUtil.autoScaleDown(parent.getClientWidth() - width) - jEvent.x;
+	if ((parent.style & SWT.MIRRORED) != 0) jEvent.x = parent.getClientWidth() - width - jEvent.x;
 	sendSelectionEvent(SWT.Selection, jEvent, true);
 	if (isDisposed()) return 0;
 	if (jEvent.doit) {
 		dragging = true;
-		Rectangle rect = DPIUtil.autoScaleUp(jEvent.getBounds());
+		Rectangle rect = jEvent.getBounds();
 		lastX = rect.x;
 		lastY = rect.y;
 		if ((parent.style & SWT.MIRRORED) != 0) lastX = parent.getClientWidth() - width - lastX;
@@ -406,13 +405,13 @@ long gtk_button_release_event(long widget, long event) {
 	Event jEvent = new Event();
 	jEvent.time = GDK.gdk_event_get_time(event);
 	Rectangle eventRect = new Rectangle(lastX, lastY, width, height);
-	jEvent.setBounds(DPIUtil.autoScaleDown(eventRect));
-	if ((parent.style & SWT.MIRRORED) != 0) jEvent.x = DPIUtil.autoScaleDown(parent.getClientWidth() - width) - jEvent.x;
+	jEvent.setBounds(eventRect);
+	if ((parent.style & SWT.MIRRORED) != 0) jEvent.x = parent.getClientWidth() - width - jEvent.x;
 	sendSelectionEvent(SWT.Selection, jEvent, true);
 	if (isDisposed()) return result;
 	if (jEvent.doit) {
 		if ((style & SWT.SMOOTH) != 0) {
-			Rectangle rect = DPIUtil.autoScaleUp(jEvent.getBounds());
+			Rectangle rect = jEvent.getBounds();
 			setBoundsInPixels(rect.x, rect.y, width, height);
 			// widget could be disposed at this point
 		}
@@ -501,14 +500,14 @@ long gtk_key_press_event(long widget, long eventPtr) {
 			Event event = new Event();
 			event.time = GDK.gdk_event_get_time(eventPtr);
 			Rectangle eventRect = new Rectangle(newX, newY, width, height);
-			event.setBounds(DPIUtil.autoScaleDown(eventRect));
-			if ((parent.style & SWT.MIRRORED) != 0) event.x = DPIUtil.autoScaleDown(parent.getClientWidth() - width) - event.x;
+			event.setBounds(eventRect);
+			if ((parent.style & SWT.MIRRORED) != 0) event.x = parent.getClientWidth() - width - event.x;
 			sendSelectionEvent(SWT.Selection, event, true);
 			if (ptrGrabResult == GDK.GDK_GRAB_SUCCESS) gdk_pointer_ungrab(gdkResource, GDK.GDK_CURRENT_TIME);
 			if (isDisposed()) break;
 
 			if (event.doit) {
-				Rectangle rect = DPIUtil.autoScaleUp(event.getBounds());
+				Rectangle rect = event.getBounds();
 				lastX = rect.x;
 				lastY = rect.y;
 				if ((parent.style & SWT.MIRRORED) != 0) lastX = parent.getClientWidth() - width  - lastX;
@@ -590,15 +589,15 @@ long gtk_motion_notify_event(long widget, long eventPtr) {
 	Event event = new Event();
 	event.time = GDK.gdk_event_get_time(eventPtr);
 	Rectangle eventRect = new Rectangle(newX, newY, width, height);
-	event.setBounds(DPIUtil.autoScaleDown(eventRect));
+	event.setBounds(eventRect);
 	if ((style & SWT.SMOOTH) == 0) {
 		event.detail = SWT.DRAG;
 	}
-	if ((parent.style & SWT.MIRRORED) != 0) event.x = DPIUtil.autoScaleDown(parent.getClientWidth() - width) - event.x;
+	if ((parent.style & SWT.MIRRORED) != 0) event.x = parent.getClientWidth() - width - event.x;
 	sendSelectionEvent(SWT.Selection, event, true);
 	if (isDisposed()) return 0;
 
-	Rectangle rect = DPIUtil.autoScaleUp(event.getBounds());
+	Rectangle rect = event.getBounds();
 	if (event.doit) {
 		lastX = rect.x;
 		lastY = rect.y;
