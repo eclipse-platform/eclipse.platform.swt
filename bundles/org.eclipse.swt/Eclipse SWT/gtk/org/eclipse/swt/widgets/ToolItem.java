@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2020 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -407,7 +407,7 @@ public Color getBackground () {
  */
 public Rectangle getBounds () {
 	checkWidget ();
-	return DPIUtil.autoScaleDown (getBoundsInPixels ());
+	return getBoundsInPixels ();
 }
 
 Rectangle getBoundsInPixels () {
@@ -607,7 +607,7 @@ public String getToolTipText () {
  */
 public int getWidth () {
 	checkWidget ();
-	return DPIUtil.autoScaleDown (getWidthInPixels ());
+	return getWidthInPixels ();
 }
 
 int getWidthInPixels () {
@@ -659,9 +659,9 @@ long gtk_clicked (long widget) {
 						event.detail = SWT.ARROW;
 						GtkAllocation allocation = new GtkAllocation ();
 						GTK.gtk_widget_get_allocation (topHandle, allocation);
-						event.x = DPIUtil.autoScaleDown(allocation.x);
-						if ((style & SWT.MIRRORED) != 0) event.x = DPIUtil.autoScaleDown (parent.getClientWidth ()- allocation.width) - event.x;
-						event.y = DPIUtil.autoScaleDown(allocation.y + allocation.height);
+						event.x = allocation.x;
+						if ((style & SWT.MIRRORED) != 0) event.x = parent.getClientWidth ()- allocation.width - event.x;
+						event.y = allocation.y + allocation.height;
 					}
 					break;
 				}
@@ -1534,7 +1534,7 @@ public void setToolTipText(String string) {
  */
 public void setWidth (int width) {
 	checkWidget ();
-	setWidthInPixels(DPIUtil.autoScaleUp(width));
+	setWidthInPixels(width);
 }
 
 void setWidthInPixels (int width) {
