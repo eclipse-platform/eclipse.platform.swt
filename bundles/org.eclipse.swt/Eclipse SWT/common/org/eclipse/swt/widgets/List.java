@@ -19,7 +19,7 @@ public class List extends NativeBasedCustomScrollable {
 	private Integer lastSelectedItem = 0;
 	private boolean leftMousePressed;
 	private int leftMouseDownStartSelection = -1;
-	private DefaultListRenderer renderer;
+	private final ListRenderer renderer;
 
 	private static final String DUMMY_ITEM_TEXT = "a";
 

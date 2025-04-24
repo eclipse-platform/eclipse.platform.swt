@@ -1,28 +1,16 @@
 package org.eclipse.swt.widgets;
 
-import java.util.*;
-
-import org.eclipse.swt.*;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.*;
 
-public class DefaultListRenderer extends ControlRenderer {
-
-	private List list;
+public class DefaultListRenderer extends ListRenderer {
 
 	private final static int FLAGS = SWT.DRAW_DELIMITER | SWT.DRAW_TAB;
-
-	private java.util.List<Integer> lineStartPositions = new ArrayList<>();
 
 	private int lineHeight = -1;
 
 	protected DefaultListRenderer(List list) {
 		super(list);
-		this.list = list;
-	}
-
-	public int getLineHeight(GC gc) {
-		list.checkWidget();
-		return gc.getFontMetrics().getHeight();
 	}
 
 	@Override
@@ -42,14 +30,11 @@ public class DefaultListRenderer extends ControlRenderer {
 			clientArea.y += borderSize;
 		}
 
-		this.lineHeight = getLineHeight(gc);
+		this.lineHeight = gc.getFontMetrics().getHeight();
 		int x = clientArea.x;
 		int y = clientArea.y;
 
-		lineStartPositions.clear();
-
 		for (int i = list.getTopIndex(); i < list.getItems().length; i++) {
-			lineStartPositions.add(y);
 			drawTextLine(i, x, y, gc, clientArea);
 			y += lineHeight;
 		}
@@ -143,7 +128,7 @@ public class DefaultListRenderer extends ControlRenderer {
 		return Drawing.getTextExtent(list, text, FLAGS);
 	}
 
-	Point computeTextSize() {
+	public Point computeTextSize() {
 
 		int width = 0;
 		Point size = null;
