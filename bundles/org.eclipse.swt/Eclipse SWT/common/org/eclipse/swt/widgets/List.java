@@ -99,7 +99,7 @@ public class List extends NativeBasedCustomScrollable {
 			return;
 		}
 
-		Drawing.drawWithGC(this, event.gc, gc -> renderer.paint(gc));
+		Drawing.drawWithGC(this, event.gc, renderer::paint);
 	}
 
 	private void onKeyReleased(Event event) {
@@ -133,7 +133,7 @@ public class List extends NativeBasedCustomScrollable {
 
 	private void moveSelection(int offset) {
 		if (this.selectedItems.size() == 1) {
-			int currentIndex = selectedItems.iterator().next();
+			int currentIndex = selectedItems.getFirst();
 			selectedItems.clear();
 			selectedItems.add(calculateNewIndex(currentIndex, offset));
 		}
@@ -342,7 +342,7 @@ public class List extends NativeBasedCustomScrollable {
 		if (this.selectedItems.isEmpty()) {
 			return -1;
 		}
-		return this.selectedItems.get(0);
+		return this.selectedItems.getFirst();
 	}
 
 	public String getItem(int index) {
@@ -365,7 +365,7 @@ public class List extends NativeBasedCustomScrollable {
 
 	public int getItemHeightInPixels() {
 		checkWidget();
-		String referenceText = this.items.isEmpty() ? DUMMY_ITEM_TEXT : this.items.get(0);
+		String referenceText = this.items.isEmpty() ? DUMMY_ITEM_TEXT : this.items.getFirst();
 		GC gc = new GC(this);
 		gc.setFont(getFont());
 		int itemHeight = gc.textExtent(referenceText).y;
@@ -705,7 +705,7 @@ public class List extends NativeBasedCustomScrollable {
 			return;
 		}
 
-		int selectedIndex = this.selectedItems.get(0);
+		int selectedIndex = this.selectedItems.getFirst();
 
 		if (selectedIndex < 0 || selectedIndex >= this.items.size()) {
 			return;
