@@ -44,7 +44,7 @@ import org.eclipse.swt.internal.*;
  *      information</a>
  * @noextend This class is not intended to be subclassed by clients.
  */
-public class Group extends Composite {
+public class Group extends CustomComposite {
 	private String text = "";
 	private static final int CLIENT_INSET = 3;
 
@@ -100,6 +100,11 @@ public class Group extends Composite {
 		addListener(SWT.Resize, listener);
 
 		renderer = new DefaultGroupRenderer(this);
+	}
+
+	@Override
+	protected ControlRenderer getRenderer() {
+		return renderer;
 	}
 
 	private void onPaint(Event event) {

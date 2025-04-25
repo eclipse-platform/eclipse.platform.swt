@@ -52,7 +52,7 @@ import org.eclipse.swt.widgets.toolbar.*;
  *      information</a>
  * @noextend This class is not intended to be subclassed by clients.
  */
-public class ToolBar extends Composite {
+public class ToolBar extends CustomComposite {
 
 	/** The {@link ToolItem}s contained in the {@link ToolBar} */
 	private final java.util.List<ToolItem> items = new ArrayList<>();
@@ -151,6 +151,11 @@ public class ToolBar extends Composite {
 		rightToLeft = isFlag(style, SWT.RIGHT_TO_LEFT);
 
 		super.style |= vertical ? SWT.VERTICAL : SWT.HORIZONTAL;
+	}
+
+	@Override
+	protected ControlRenderer getRenderer() {
+		return renderer;
 	}
 
 	private static boolean isFlag(int style, int flag) {
