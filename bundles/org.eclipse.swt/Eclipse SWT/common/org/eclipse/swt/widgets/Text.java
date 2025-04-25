@@ -11,8 +11,12 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.events.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SegmentListener;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.graphics.*;
 
 /**
@@ -59,19 +63,11 @@ import org.eclipse.swt.graphics.*;
  */
 public class Text extends NativeBasedCustomScrollable {
 
-	private static final Color DISABLED_COLOR = new Color(160, 160, 160);
-	private static final Color TEXT_COLOR = new Color(0, 0, 0);
-	private static final Color BACKGROUND_COLOR = new Color(255, 255, 255);
-	private static final Color BORDER_COLOR = new Color(128, 128, 128);
-	private static final Color READONLY_BACKGROUND_COLOR = new Color(227, 227, 227);
-	private static final Color SELECTION_BACKGROUND_COLOR = new Color(0, 120, 215);
-	private static final Color SELECTION_TEXT_COLOR = new Color(255, 255, 255);
-
 	public static final int LIMIT = 0x7FFFFFFF;
 	public static final String DELIMITER = TextModel.DELIMITER;
 
 	private int tabs = 8;
-	private TextModel model;
+	private final TextModel model;
 	private String message;
 	private char echoChar;
 
@@ -83,6 +79,8 @@ public class Text extends NativeBasedCustomScrollable {
 	private int style;
 	private Color backgroundColor;
 	private Color foregroundColor;
+
+	private final TextRenderer renderer;
 
 	/**
 	 * Constructs a new instance of this class given its parent and a style value
@@ -139,6 +137,8 @@ public class Text extends NativeBasedCustomScrollable {
 		setCursor(display.getSystemCursor(SWT.CURSOR_IBEAM));
 
 		addListeners();
+
+		renderer = new DefaultTextRenderer(this, model);
 	}
 
 	static int checkStyle(int style) {
@@ -329,7 +329,7 @@ public class Text extends NativeBasedCustomScrollable {
 	private void keepCaretInVisibleArea() {
 		GC gc = new GC(this);
 		Point caretLocation = getLocationByOffset(model.getCaretOffset(), gc);
-		Rectangle visibleArea = getVisibleArea();
+		Rectangle visibleArea = renderer.getVisibleArea();
 
 		if (horizontalBar != null) {
 			if (caretLocation.x < visibleArea.x) {
@@ -346,7 +346,7 @@ public class Text extends NativeBasedCustomScrollable {
 			if (caretLocation.y < visibleArea.y) {
 				verticalBar.setSelection(caretLocation.y);
 			} else {
-				int maxVisibleAreaHeight = visibleArea.height - getLineHeight(gc);
+				int maxVisibleAreaHeight = visibleArea.height - renderer.getLineHeight(gc);
 				if (caretLocation.y > visibleArea.y + maxVisibleAreaHeight) {
 					verticalBar.setSelection(caretLocation.y - maxVisibleAreaHeight);
 				}
@@ -460,13 +460,13 @@ public class Text extends NativeBasedCustomScrollable {
 	}
 
 	private TextLocation getTextLocation(int selectedX, int selectedY) {
-		Rectangle visibleArea = getVisibleArea();
+		Rectangle visibleArea = renderer.getVisibleArea();
 		int x = Math.max(selectedX + visibleArea.x, 0);
 		int y = Math.max(selectedY + visibleArea.y, 0);
 
 		GC gc = new GC(this);
 		String[] textLines = model.getLines();
-		int clickedLine = Math.min(y / getLineHeight(gc), textLines.length - 1);
+		int clickedLine = Math.min(y / renderer.getLineHeight(gc), textLines.length - 1);
 		int selectedLine = Math.min(clickedLine, textLines.length - 1);
 		String text = textLines[selectedLine];
 		if (clickedLine == selectedLine && text.length() > 0) {
@@ -474,14 +474,14 @@ public class Text extends NativeBasedCustomScrollable {
 			int after = text.length();
 			while (true) {
 				int middle = (before + after) / 2;
-				final int middleX = getLocationByTextLocation(new TextLocation(selectedLine, middle), gc).x;
+				final int middleX = renderer.getLocationByTextLocation(new TextLocation(selectedLine, middle), gc).x;
 				if (middleX > x) {
 					after = middle;
 					continue;
 				}
 
 				if (after - middle == 1) {
-					final int afterX = getLocationByTextLocation(new TextLocation(selectedLine, after), gc).x;
+					final int afterX = renderer.getLocationByTextLocation(new TextLocation(selectedLine, after), gc).x;
 					if (afterX - x < x - middleX) {
 						text = text.substring(0, after);
 					}
@@ -505,7 +505,7 @@ public class Text extends NativeBasedCustomScrollable {
 
 	@Override
 	public Color getBackground() {
-		return backgroundColor != null ? backgroundColor : BACKGROUND_COLOR;
+		return backgroundColor != null ? backgroundColor : renderer.getDefaultBackground();
 	}
 
 	@Override
@@ -516,7 +516,7 @@ public class Text extends NativeBasedCustomScrollable {
 
 	@Override
 	public Color getForeground() {
-		return foregroundColor != null ? foregroundColor : TEXT_COLOR;
+		return foregroundColor != null ? foregroundColor : renderer.getDefaultForeground();
 	}
 
 	@Override
@@ -526,138 +526,13 @@ public class Text extends NativeBasedCustomScrollable {
 	}
 
 	private void paintControl(Event e) {
-		Rectangle visibleArea = getVisibleArea();
-		Drawing.drawWithGC(this, e.gc, gc -> {
-			gc.setFont(getFont());
-			gc.setForeground(getForeground());
-			gc.setBackground(getBackground());
-			if (!isEnabled()) {
-				gc.setForeground(DISABLED_COLOR);
-			}
-			if (backgroundColor != null) {
-				if (!isEnabled() || ((style & SWT.BORDER) == 1 && !getEditable())) {
-					gc.setBackground(READONLY_BACKGROUND_COLOR);
-				}
-				if ((style & SWT.BORDER) == 0 && !getEditable()) {
-					gc.setBackground(getParent().getBackground());
-				}
-			}
-
-			drawBackground(gc, getClientArea());
-			drawText(gc, visibleArea);
-			if (isFocusControl()) {
-				drawSelection(gc, visibleArea);
-				drawCaret(gc, visibleArea);
-			}
-		});
+		Drawing.drawWithGC(this, e.gc, renderer::paint);
 	}
 
 	@Override
 	public void setEnabled(boolean enabled) {
 		super.setEnabled(enabled);
 		redraw();
-	}
-
-	private void drawSelection(GC gc, Rectangle visibleArea) {
-		int textLength = model.getText().length();
-		int start = Math.min(Math.max(model.getSelectionStart(), 0), textLength);
-		int end = Math.min(Math.max(model.getSelectionEnd(), 0), textLength);
-
-		if (model.getSelectionStart() >= 0) {
-			TextLocation startLocation = model.getLocation(start);
-			TextLocation endLocation = model.getLocation(end);
-			String[] textLines = model.getLines();
-
-			Color oldForeground = gc.getForeground();
-			Color oldBackground = gc.getBackground();
-			gc.setForeground(SELECTION_TEXT_COLOR);
-			gc.setBackground(SELECTION_BACKGROUND_COLOR);
-			for (int i = startLocation.line; i <= endLocation.line; i++) {
-				TextLocation location = new TextLocation(i, 0);
-				String text = textLines[i];
-				if (i == endLocation.line) {
-					text = text.substring(0, endLocation.column);
-				}
-				if (i == startLocation.line) {
-					location.column = startLocation.column;
-					text = text.substring(startLocation.column);
-				}
-				Point locationPixel = getLocationByTextLocation(location, gc);
-				gc.drawText(text, locationPixel.x - visibleArea.x, locationPixel.y - visibleArea.y, false);
-			}
-			gc.setForeground(oldForeground);
-			gc.setBackground(oldBackground);
-		}
-	}
-
-	private void drawCaret(GC gc, Rectangle visibleArea) {
-		int caretOffset = model.getCaretOffset();
-		if (caretOffset >= 0) {
-			Point caretLocation = getLocationByOffset(model.getCaretOffset(), gc);
-			int x = caretLocation.x - visibleArea.x;
-			int y = caretLocation.y - visibleArea.y;
-			getCaret().setBounds(x, y, 1, getLineHeight(gc));
-		}
-
-		caret.paint(gc);
-	}
-
-	private void drawText(GC gc, Rectangle visibleArea) {
-		String[] lines = model.getLines();
-		for (int i = 0; i < lines.length; i++) {
-			String line = lines[i];
-			drawTextLine(line, i, visibleArea, gc);
-		}
-	}
-
-
-	private void drawTextLine(String text, int lineNumber, Rectangle visibleArea,
-			GC gc) {
-		Point completeTextExtent = gc.textExtent(text);
-		Rectangle clientArea = getClientArea();
-		int _x = 0;
-		if ((style & SWT.CENTER) != 0) {
-			_x = (clientArea.width - completeTextExtent.x) / 2;
-		} else if ((style & SWT.RIGHT) != 0) {
-			_x = clientArea.width - completeTextExtent.x;
-		}
-		_x -= visibleArea.x;
-		int _y = lineNumber * completeTextExtent.y - visibleArea.y;
-		if ((style & SWT.BORDER) != 0) {
-			_x += getBorderWidth();
-			_y += getBorderWidth();
-		}
-		gc.drawText(text, _x, _y, true);
-	}
-
-	private void drawBackground(GC gc, Rectangle clientArea) {
-		int height = clientArea.height;
-		final boolean drawLine = (style & SWT.BORDER) != 0 && getEditable() && isEnabled();
-		if (drawLine) {
-			height--;
-		}
-		gc.fillRectangle(clientArea.x, clientArea.y, clientArea.width, height);
-		if (drawLine) {
-			Color prevBackground = gc.getBackground();
-			gc.setBackground(isFocusControl() ? SELECTION_BACKGROUND_COLOR : BORDER_COLOR);
-			gc.fillRectangle(clientArea.x, clientArea.y + height, clientArea.width, 1);
-			gc.setBackground(prevBackground);
-		}
-	}
-
-	private Rectangle getVisibleArea() {
-		Rectangle clientArea = getClientArea();
-
-		ScrollBar horizontalBar = getHorizontalBar();
-		ScrollBar verticalBar = getVerticalBar();
-
-		int hOffset = (horizontalBar != null) ? horizontalBar.getSelection() : 0;
-		int vOffset = (verticalBar != null) ? verticalBar.getSelection() : 0;
-
-		clientArea.x += hOffset;
-		clientArea.y += vOffset;
-
-		return clientArea;
 	}
 
 	public String getMessage() {
@@ -738,7 +613,7 @@ public class Text extends NativeBasedCustomScrollable {
 		if ((style & SWT.SINGLE) != 0) {
 			return 0;
 		}
-		Rectangle visibleArea = getVisibleArea();
+		Rectangle visibleArea = renderer.getVisibleArea();
 		return visibleArea.y / getLineHeight();
 	}
 
@@ -747,7 +622,7 @@ public class Text extends NativeBasedCustomScrollable {
 		if ((style & SWT.SINGLE) != 0) {
 			return 0;
 		}
-		return getVisibleArea().y;
+		return renderer.getVisibleArea().y;
 	}
 
 	public void setTopIndex(int index) {
@@ -782,33 +657,8 @@ public class Text extends NativeBasedCustomScrollable {
 
 	private Point getLocationByOffset(int offset, GC gc) {
 		TextLocation textLocation = model.getLocation(offset);
-		return getLocationByTextLocation(textLocation, gc);
+		return renderer.getLocationByTextLocation(textLocation, gc);
 	}
-
-	private Point getLocationByTextLocation(TextLocation textLocation, GC gc) {
-		String completeText = model.getLines()[textLocation.line];
-		String beforeSelection = completeText.substring(0, textLocation.column);
-		gc.setFont(getFont());
-		Point completeTextExtent = gc.textExtent(completeText);
-		Point textExtent = gc.textExtent(beforeSelection);
-		int x;
-		Rectangle clientArea = getClientArea();
-		if ((style & SWT.CENTER) != 0) {
-			x = (clientArea.width - completeTextExtent.x) / 2;
-		} else if ((style & SWT.RIGHT) != 0) {
-			x = clientArea.width - completeTextExtent.x;
-		} else { // ((style & SWT.LEFT) != 0)
-			x = 0;
-		}
-		x += textExtent.x;
-		int y = textLocation.line * textExtent.y;
-		if ((style & SWT.BORDER) != 0) {
-			x += getBorderWidth();
-			y += getBorderWidth();
-		}
-		return new Point(x, y);
-	}
-
 
 	/**
 	 * Returns the character position of the caret.
@@ -907,15 +757,9 @@ public class Text extends NativeBasedCustomScrollable {
 	public int getLineHeight() {
 		checkWidget();
 		GC gc = new GC(this);
-		int height = getLineHeight(gc);
+		int height = renderer.getLineHeight(gc);
 		gc.dispose();
 		return height;
-	}
-
-	private int getLineHeight(GC gc) {
-		checkWidget();
-		String str = model.getLines()[0];
-		return gc.textExtent(str).y;
 	}
 
 	/**
