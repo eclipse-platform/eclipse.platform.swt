@@ -47,9 +47,8 @@ import org.eclipse.swt.internal.*;
 public class Group extends Composite {
 	private String text = "";
 	private static final int CLIENT_INSET = 3;
-	private final int orientation;
-	private static final int DRAW_FLAGS = SWT.DRAW_MNEMONIC | SWT.DRAW_TAB | SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER;
-	private Point textExtentCache;
+
+	private final GroupRenderer renderer;
 
 	/**
 	 * Constructs a new instance of this class given its parent and a style value
@@ -99,66 +98,12 @@ public class Group extends Composite {
 		};
 		addListener(SWT.Paint, listener);
 		addListener(SWT.Resize, listener);
-		orientation = style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
+
+		renderer = new DefaultGroupRenderer(this);
 	}
 
 	private void onPaint(Event event) {
-		Drawing.drawWithGC(this, event.gc, this::drawGroup);
-	}
-
-	private void drawGroup(GC gc) {
-		Point size = getSize();
-		int width = size.x;
-		int height = size.y;
-		if (textExtentCache == null) {
-			textExtentCache = calculateTextExtent();
-		}
-		int titleWidth = textExtentCache.x;
-		int titleHeight = textExtentCache.y;
-
-		int inset = 2;
-		int groupInset = 8;
-		int borderRadius = 6;
-		int textX = inset + groupInset;
-		int textY = titleHeight;
-		int groupWidth = width - (inset * 2);
-		int groupHeight = height - (inset * 8);
-		if (isBorderSet()) {
-			// Border has to be drawn using Skija once native border is disabled.
-			inset = (orientation == SWT.RIGHT_TO_LEFT) ? groupInset / 2 : 0;
-			groupWidth -= 1;
-			groupHeight -= groupInset / 4;
-		}
-		// Set shadow color
-		gc.setForeground(getShadowColor());
-		// Draw group border
-		gc.drawRoundRectangle(inset, (textY / 2), groupWidth, groupHeight, borderRadius, borderRadius);
-		// Draw text background (A fillRectangle to erase the part of the group border
-		// where text is drawn) and text
-		int textPosX = (orientation == SWT.RIGHT_TO_LEFT) ? groupWidth - groupInset - titleWidth : textX;
-		gc.fillRectangle(textPosX, (textY / 2), titleWidth, gc.getLineWidth() + 1);
-		gc.setForeground(getForeground());
-		gc.drawText(text, textPosX, 0, DRAW_FLAGS);
-	}
-
-	private Point calculateTextExtent() {
-		return Drawing.getTextExtent(this, text, DRAW_FLAGS);
-	}
-
-	private Color getShadowColor() {
-		if ((style & SWT.SHADOW_ETCHED_IN) != 0) {
-			return new Color(136, 136, 136);
-		}
-		if ((style & SWT.SHADOW_ETCHED_OUT) != 0) {
-			return new Color(68, 68, 68);
-		}
-		if ((style & SWT.SHADOW_IN) != 0) {
-			return new Color(102, 102, 102);
-		}
-		if ((style & SWT.SHADOW_OUT) != 0) {
-			return new Color(187, 187, 187);
-		}
-		return getForeground();
+		Drawing.drawWithGC(this, event.gc, renderer::paint);
 	}
 
 	static int checkStyle(int style) {
@@ -182,10 +127,6 @@ public class Group extends Composite {
 		return style & ~(SWT.H_SCROLL | SWT.V_SCROLL);
 	}
 
-	private boolean isBorderSet() {
-		return (style & SWT.BORDER) != 0;
-	}
-
 	@Override
 	protected void checkSubclass() {
 		if (!isValidSubclass()) {
@@ -206,12 +147,9 @@ public class Group extends Composite {
 		Layout layout = getLayout();
 		Point layoutSize = (layout != null) ? DPIUtil.autoScaleDown(size) : computeChildrenSize(changed);
 
-		if (textExtentCache == null) {
-			textExtentCache = calculateTextExtent();
-		}
-
-		int width = Math.max(10, Math.max(layoutSize.x, textExtentCache.x + CLIENT_INSET * 6));
-		int height = Math.max(10, Math.max(layoutSize.y - (CLIENT_INSET * 4), textExtentCache.y + CLIENT_INSET * 4));
+		final Point textExtent = renderer.getTextExtent();
+		int width = Math.max(10, Math.max(layoutSize.x, textExtent.x + CLIENT_INSET * 6));
+		int height = Math.max(10, Math.max(layoutSize.y - (CLIENT_INSET * 4), textExtent.y + CLIENT_INSET * 4));
 
 		return new Point(wHint != SWT.DEFAULT ? wHint : width, hHint != SWT.DEFAULT ? hHint : height);
 	}
@@ -230,12 +168,10 @@ public class Group extends Composite {
 	public Rectangle computeTrim(int x, int y, int width, int height) {
 		checkWidget();
 		Rectangle trim = super.computeTrim(x, y, width, height);
-		if (textExtentCache == null) {
-			textExtentCache = calculateTextExtent();
-		}
+		final Point textExtent = renderer.getTextExtent();
 		trim.width = width + CLIENT_INSET * 2;
 		trim.height = height + CLIENT_INSET * 2;
-		trim.height += textExtentCache.y + CLIENT_INSET * 2;
+		trim.height += textExtent.y + CLIENT_INSET * 2;
 		return DPIUtil.autoScaleUp(trim);
 	}
 
@@ -259,10 +195,8 @@ public class Group extends Composite {
 		}
 		int y = 10;
 		if (text != null && !text.isEmpty()) {
-			if (textExtentCache == null) {
-				textExtentCache = calculateTextExtent();
-			}
-			y = textExtentCache.y - 5;
+			final Point textExtent = renderer.getTextExtent();
+			y = textExtent.y - 5;
 		}
 		return new Rectangle(rect.x + CLIENT_INSET, y, Math.max(0, rect.width - CLIENT_INSET * 2),
 				Math.max(0, rect.height - CLIENT_INSET * 8));
@@ -296,7 +230,7 @@ public class Group extends Composite {
 	public void setFont(Font font) {
 		checkWidget();
 		super.setFont(font);
-		textExtentCache = null;
+		renderer.clearCache();
 	}
 
 	/**
@@ -339,7 +273,8 @@ public class Group extends Composite {
 		}
 		if (!text.equals(this.text)) {
 			this.text = text;
-			textExtentCache = null;
+
+			renderer.clearCache();
 			redraw();
 		}
 	}
