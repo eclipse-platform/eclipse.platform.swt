@@ -189,7 +189,8 @@
 							</execution>
 							<execution>
 								<id>package-swt-download-zip</id>
-								<phase>package</phase>
+								<!-- Pack this zip after the swt.jar has been signed.-->
+								<phase>verify</phase>
 								<goals>
 									<goal>run</goal>
 								</goals>
