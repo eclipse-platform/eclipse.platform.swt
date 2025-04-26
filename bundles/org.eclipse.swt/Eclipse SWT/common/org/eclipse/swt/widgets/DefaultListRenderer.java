@@ -39,12 +39,14 @@ public class DefaultListRenderer extends ListRenderer {
 		}
 	}
 
+	@Override
+	public Color getDefaultBackground() {
+		return new Color(255, 255, 255);
+	}
+
 	private void drawBackground(Rectangle clientArea, GC gc) {
 		if ((list.getState() & Widget.PARENT_BACKGROUND) == 0) {
-			if (list.getBackground() == null) {
-				// white is the default color for lists
-				gc.setBackground(list.getDisplay().getSystemColor(SWT.COLOR_WHITE));
-			}
+			gc.setBackground(list.getBackground());
 		}
 
 		gc.fillRectangle(clientArea.x, clientArea.y, clientArea.width, clientArea.height - 1);

@@ -28,6 +28,11 @@ public class List extends NativeBasedCustomScrollable {
 		addListeners();
 	}
 
+	@Override
+	protected ControlRenderer getRenderer() {
+		return renderer;
+	}
+
 	private void addListeners() {
 		final Listener listener = event -> {
 			switch (event.type) {

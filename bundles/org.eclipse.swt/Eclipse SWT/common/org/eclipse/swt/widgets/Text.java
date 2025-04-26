@@ -77,8 +77,6 @@ public class Text extends NativeBasedCustomScrollable {
 	private Point doubleClickStartRange;
 	private TextCaret caret;
 	private int style;
-	private Color backgroundColor;
-	private Color foregroundColor;
 
 	private final TextRenderer renderer;
 
@@ -139,6 +137,11 @@ public class Text extends NativeBasedCustomScrollable {
 		addListeners();
 
 		renderer = new DefaultTextRenderer(this, model);
+	}
+
+	@Override
+	protected ControlRenderer getRenderer() {
+		return renderer;
 	}
 
 	static int checkStyle(int style) {
@@ -501,28 +504,6 @@ public class Text extends NativeBasedCustomScrollable {
 
 	protected void widgetDisposed(Event e) {
 		caret.dispose();
-	}
-
-	@Override
-	public Color getBackground() {
-		return backgroundColor != null ? backgroundColor : renderer.getDefaultBackground();
-	}
-
-	@Override
-	public void setBackground(Color color) {
-		backgroundColor = color;
-		super.setBackground(color);
-	}
-
-	@Override
-	public Color getForeground() {
-		return foregroundColor != null ? foregroundColor : renderer.getDefaultForeground();
-	}
-
-	@Override
-	public void setForeground(Color color) {
-		foregroundColor = color;
-		super.setForeground(color);
 	}
 
 	private void paintControl(Event e) {
