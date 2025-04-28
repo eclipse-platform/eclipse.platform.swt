@@ -437,11 +437,14 @@ public Image(Device device, Rectangle bounds) {
  * @see #dispose()
  */
 public Image(Device device, ImageData data) {
+	this(device, DPIUtil.autoScaleUp(device, data), DPIUtil.getDeviceZoom());
+}
+
+private Image(Device device, ImageData data, int zoom) {
 	super(device);
 	if (data == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	currentDeviceZoom = DPIUtil.getDeviceZoom();
-	data = DPIUtil.autoScaleUp (device, data);
-	init(data);
+	currentDeviceZoom = zoom;
+	init(data, zoom);
 	init();
 }
 
@@ -695,9 +698,9 @@ public Image(Device device, ImageGcDrawer imageGcDrawer, int width, int height) 
 		SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	}
 	this.imageGcDrawer = imageGcDrawer;
-	currentDeviceZoom = DPIUtil.getDeviceZoom();
+	currentDeviceZoom = 100;
 	ImageData imageData = drawWithImageGcDrawer(width, height, currentDeviceZoom);
-	init (imageData);
+	init (imageData, currentDeviceZoom);
 	init ();
 }
 
@@ -1162,8 +1165,16 @@ public ImageData getImageData (int zoom) {
 }
 
 private ImageData drawWithImageGcDrawer(int width, int height, int zoom) {
-	Image image = new Image(device, width, height);
-	GC gc = new GC(image);
+	int gcStyle = imageGcDrawer.getGcStyle();
+	Image image;
+	if ((gcStyle & SWT.TRANSPARENT) != 0) {
+		final ImageData resultData = new ImageData(width, height, 24, new PaletteData (0xFF, 0xFF00, 0xFF0000));
+		resultData.alphaData = new byte [width * height];
+		image = new Image(device, resultData, zoom);
+	} else {
+		image = new Image(device, width, height);
+	}
+	GC gc = new GC(image, gcStyle);
 	try {
 		imageGcDrawer.drawOn(gc, width, height);
 		ImageData imageData = image.getImageData(zoom);
@@ -1274,6 +1285,10 @@ void init(int width, int height) {
 }
 
 void init(ImageData image) {
+	init(image, DPIUtil.getDeviceZoom());
+}
+
+void init(ImageData image, int zoom) {
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 
 	PaletteData palette = image.palette;
@@ -1286,7 +1301,7 @@ void init(ImageData image) {
 	int imageDataHeight = image.height;
 
 	// Scale dimensions of Image object to 100% scale factor
-	double scaleFactor = DPIUtil.getDeviceZoom() / 100f;
+	double scaleFactor = zoom / 100f;
 	this.width = (int) Math.round(imageDataWidth / scaleFactor);
 	this.height = (int) Math.round(imageDataHeight / scaleFactor);
 
