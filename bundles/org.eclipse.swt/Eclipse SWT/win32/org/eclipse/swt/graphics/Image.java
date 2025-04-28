@@ -380,6 +380,15 @@ public Image(Device device, ImageData data) {
 	this.device.registerResourceWithZoomSupport(this);
 }
 
+private Image(Device device, ImageData data, int zoom) {
+	super(device);
+	if (data == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	initialNativeZoom = zoom;
+	this.imageProvider = new PlainImageDataProviderWrapper(data, zoom);
+	init();
+	this.device.registerResourceWithZoomSupport(this);
+}
+
 /**
  * Constructs an instance of this class, whose type is
  * <code>SWT.ICON</code>, from the two given <code>ImageData</code>
@@ -1956,27 +1965,34 @@ private abstract class ImageFromImageDataProviderWrapper extends AbstractImagePr
 }
 
 private class PlainImageDataProviderWrapper extends ImageFromImageDataProviderWrapper {
-	private ImageData imageDataAt100;
+	private ImageData imageDataAtBaseZoom;
+	private int baseZoom;
 
 	PlainImageDataProviderWrapper(ImageData imageData) {
-		this.imageDataAt100 = (ImageData) imageData.clone();
+		this(imageData, 100);
+	}
+
+	PlainImageDataProviderWrapper(ImageData imageData, int zoom) {
+		this.imageDataAtBaseZoom = (ImageData) imageData.clone();
+		this.baseZoom = zoom;
 		initImage();
 	}
 
 	@Override
 	protected Rectangle getBounds(int zoom) {
-		Rectangle rectangle = new Rectangle(0, 0, imageDataAt100.width, imageDataAt100.height);
+		Rectangle rectangle = new Rectangle(0, 0, imageDataAtBaseZoom.width, imageDataAtBaseZoom.height);
+		rectangle = DPIUtil.scaleDown(rectangle, baseZoom);
 		return DPIUtil.scaleUp(rectangle, zoom);
 	}
 
 	@Override
 	protected ElementAtZoom<ImageData> loadImageData(int zoom) {
-		return new ElementAtZoom<>(imageDataAt100, 100);
+		return new ElementAtZoom<>(imageDataAtBaseZoom, baseZoom);
 	}
 
 	@Override
 	AbstractImageProviderWrapper createCopy(Image image) {
-		return image.new PlainImageDataProviderWrapper(this.imageDataAt100);
+		return image.new PlainImageDataProviderWrapper(this.imageDataAtBaseZoom);
 	}
 }
 
@@ -2478,8 +2494,18 @@ private class ImageGcDrawerWrapper extends DynamicImageProviderWrapper {
 	@Override
 	protected ImageHandle newImageHandle(int zoom) {
 		initialNativeZoom = zoom;
-		Image image = new Image(device, width, height, zoom);
-		GC gc = new GC(image, drawer.getGcStyle());
+		int gcStyle = drawer.getGcStyle();
+		Image image;
+		if ((gcStyle & SWT.TRANSPARENT) != 0) {
+			int scaledHeight = DPIUtil.scaleUp(height, zoom);
+			int scaledWidth = DPIUtil.scaleUp(width, zoom);
+			final ImageData resultData = new ImageData (scaledWidth, scaledHeight, 24, new PaletteData (0xFF, 0xFF00, 0xFF0000));
+			resultData.alphaData = new byte [scaledWidth * scaledHeight];
+			image = new Image(device, resultData, zoom);
+		} else {
+			image = new Image(device, width, height, zoom);
+		}
+		GC gc = new GC(image, gcStyle);
 		try {
 			gc.data.nativeZoom = zoom;
 			drawer.drawOn(gc, width, height);

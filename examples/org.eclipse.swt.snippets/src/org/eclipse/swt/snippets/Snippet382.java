@@ -64,12 +64,43 @@ public class Snippet382 {
 
 		final Display display = new Display ();
 
+		final Image imageWithFileNameProvider = new Image (display, filenameProvider);
+		final Image disabledImageWithFileNameProvider = new Image (display,imageWithFileNameProvider, SWT.IMAGE_DISABLE);
+		final Image greyImageWithFileNameProvider = new Image (display,imageWithFileNameProvider, SWT.IMAGE_GRAY);
+
+		final Image imageWithDataProvider = new Image (display, imageDataProvider);
+		final Image disabledImageWithDataProvider = new Image (display,imageWithDataProvider, SWT.IMAGE_DISABLE);
+		final Image greyImageWithDataProvider = new Image (display,imageWithDataProvider, SWT.IMAGE_GRAY);
+
+		final Image imageWithData = new Image (display, IMAGE_PATH_100);
+		final Image disabledImageWithData = new Image (display,imageWithData, SWT.IMAGE_DISABLE);
+		final Image greyImageWithData = new Image (display,imageWithData, SWT.IMAGE_GRAY);
+
 		final ImageGcDrawer imageGcDrawer = (gc, width, height) -> {
 			gc.setBackground(display.getSystemColor(SWT.COLOR_RED));
 			gc.fillRectangle(0, 0, width, height);
 			gc.setForeground(display.getSystemColor(SWT.COLOR_YELLOW));
 			gc.drawRectangle(4, 4, width - 8, height - 8);
 		};
+
+		final Image imageWithGcDrawer = new Image (display, imageGcDrawer, 16, 16);
+		final Image disabledImageWithGcDrawer = new Image (display, imageWithGcDrawer, SWT.IMAGE_DISABLE);
+		final Image greyImageWithGcDrawer = new Image (display, imageWithGcDrawer, SWT.IMAGE_GRAY);
+
+		final ImageGcDrawer transparentImageGcDrawer = new ImageGcDrawer() {
+			@Override
+			public void drawOn(GC gc, int width, int height) {
+				gc.drawImage(imageWithDataProvider, 0, 0);
+			}
+			@Override
+			public int getGcStyle() {
+				return SWT.TRANSPARENT;
+			}
+		};
+
+		final Image imageWithTransparentGcDrawer = new Image (display, transparentImageGcDrawer, 16, 16);
+		final Image disabledImageWithTransparentGcDrawer = new Image (display, imageWithTransparentGcDrawer, SWT.IMAGE_DISABLE);
+		final Image greyImageWithTransparentGcDrawer = new Image (display, imageWithTransparentGcDrawer, SWT.IMAGE_GRAY);
 
 		final Shell shell = new Shell (display);
 		shell.setText("Snippet382");
@@ -80,21 +111,7 @@ public class Snippet382 {
 				if (e.type == SWT.Paint) {
 					GC mainGC = e.gc;
 					GCData gcData = mainGC.getGCData();
-					final Image imageWithFileNameProvider = new Image (display, filenameProvider);
-					final Image disabledImageWithFileNameProvider = new Image (display,imageWithFileNameProvider, SWT.IMAGE_DISABLE);
-					final Image greyImageWithFileNameProvider = new Image (display,imageWithFileNameProvider, SWT.IMAGE_GRAY);
 
-					final Image imageWithDataProvider = new Image (display, imageDataProvider);
-					final Image disabledImageWithDataProvider = new Image (display,imageWithDataProvider, SWT.IMAGE_DISABLE);
-					final Image greyImageWithDataProvider = new Image (display,imageWithDataProvider, SWT.IMAGE_GRAY);
-
-					final Image imageWithData = new Image (display, IMAGE_PATH_100);
-					final Image disabledImageWithData = new Image (display,imageWithData, SWT.IMAGE_DISABLE);
-					final Image greyImageWithData = new Image (display,imageWithData, SWT.IMAGE_GRAY);
-
-					final Image imageWithGcDrawer = new Image (display, imageGcDrawer, 16, 16);
-					final Image disabledImageWithGcDrawer = new Image (display, imageWithGcDrawer, SWT.IMAGE_DISABLE);
-					final Image greyImageWithGcDrawer = new Image (display, imageWithGcDrawer, SWT.IMAGE_GRAY);
 
 					try {
 						drawImages(mainGC, gcData, "Normal",40, imageWithFileNameProvider);
@@ -112,6 +129,10 @@ public class Snippet382 {
 						drawImages(mainGC, gcData, "Normal", 400, imageWithGcDrawer);
 						drawImages(mainGC, gcData, "Disabled", 440, disabledImageWithGcDrawer);
 						drawImages(mainGC, gcData, "Greyed", 480, greyImageWithGcDrawer);
+
+						drawImages(mainGC, gcData, "Normal", 520, imageWithTransparentGcDrawer);
+						drawImages(mainGC, gcData, "Disabled", 560, disabledImageWithTransparentGcDrawer);
+						drawImages(mainGC, gcData, "Greyed", 600, greyImageWithTransparentGcDrawer);
 					} finally {
 						mainGC.dispose ();
 					}
@@ -130,7 +151,7 @@ public class Snippet382 {
 		};
 		shell.addListener(SWT.Paint, l);
 
-		shell.setSize(400, 550);
+		shell.setSize(400, 750);
 		shell.open ();
 		while (!shell.isDisposed ()) {
 			if (!display.readAndDispatch ()) display.sleep ();
