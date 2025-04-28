@@ -1168,6 +1168,7 @@ private ImageData drawWithImageGcDrawer(int width, int height, int zoom) {
 	int gcStyle = imageGcDrawer.getGcStyle();
 	Image image;
 	if ((gcStyle & SWT.TRANSPARENT) != 0) {
+		/* Create a 24 bit image data with alpha channel */
 		final ImageData resultData = new ImageData(width, height, 24, new PaletteData (0xFF, 0xFF00, 0xFF0000));
 		resultData.alphaData = new byte [width * height];
 		image = new Image(device, resultData, zoom);
@@ -1288,7 +1289,7 @@ void init(ImageData image) {
 	init(image, DPIUtil.getDeviceZoom());
 }
 
-void init(ImageData image, int zoom) {
+private void init(ImageData image, int zoom) {
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 
 	PaletteData palette = image.palette;
