@@ -521,10 +521,6 @@ public Image (Device device, String filename) {
 		}
 		return null;
 	});
-	if (imageProvider.getImageData(100) == null) {
-		SWT.error(SWT.ERROR_INVALID_ARGUMENT, null,
-				": [" + filename + "] returns null ImageData at 100% zoom.");
-	}
 	init();
 	this.device.registerResourceWithZoomSupport(this);
 }
@@ -562,9 +558,9 @@ public Image(Device device, ImageFileNameProvider imageFileNameProvider) {
 	super(device);
 	this.imageProvider = new ImageFileNameProviderWrapper(imageFileNameProvider);
 	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
-	if (imageProvider.getImageData(100) == null) {
+	if (imageFileNameProvider.getImagePath(100) == null) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT, null,
-				": ImageFileNameProvider [" + imageFileNameProvider + "] returns null ImageData at 100% zoom.");
+				": ImageFileNameProvider [" + imageFileNameProvider + "] returns null fileName at 100% zoom.");
 	}
 	init();
 	this.device.registerResourceWithZoomSupport(this);
@@ -2221,6 +2217,9 @@ private abstract class BaseImageProviderWrapper<T> extends DynamicImageProviderW
 private class ImageFileNameProviderWrapper extends BaseImageProviderWrapper<ImageFileNameProvider> {
 	ImageFileNameProviderWrapper(ImageFileNameProvider provider) {
 		super(provider, ImageFileNameProvider.class);
+		// Checks for the contract of the passed provider require
+		// checking for valid image data creation
+		newImageData(DPIUtil.getDeviceZoom());
 	}
 
 	@Override
