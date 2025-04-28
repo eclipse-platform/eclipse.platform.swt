@@ -906,6 +906,7 @@ private ImageData drawWithImageGcDrawer(ImageGcDrawer imageGcDrawer, int width, 
 	int gcStyle = imageGcDrawer.getGcStyle();
 	Image image;
 	if ((gcStyle & SWT.TRANSPARENT) != 0) {
+		/* Create a 24 bit image data with alpha channel */
 		final ImageData resultData = new ImageData (width, height, 24, new PaletteData (0xFF, 0xFF00, 0xFF0000));
 		resultData.alphaData = new byte [width * height];
 		image = new Image(device, resultData);

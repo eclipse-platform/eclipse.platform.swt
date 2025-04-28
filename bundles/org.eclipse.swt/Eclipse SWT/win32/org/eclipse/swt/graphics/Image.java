@@ -1972,7 +1972,7 @@ private class PlainImageDataProviderWrapper extends ImageFromImageDataProviderWr
 		this(imageData, 100);
 	}
 
-	PlainImageDataProviderWrapper(ImageData imageData, int zoom) {
+	private PlainImageDataProviderWrapper(ImageData imageData, int zoom) {
 		this.imageDataAtBaseZoom = (ImageData) imageData.clone();
 		this.baseZoom = zoom;
 		initImage();
@@ -2499,6 +2499,7 @@ private class ImageGcDrawerWrapper extends DynamicImageProviderWrapper {
 		if ((gcStyle & SWT.TRANSPARENT) != 0) {
 			int scaledHeight = DPIUtil.scaleUp(height, zoom);
 			int scaledWidth = DPIUtil.scaleUp(width, zoom);
+			/* Create a 24 bit image data with alpha channel */
 			final ImageData resultData = new ImageData (scaledWidth, scaledHeight, 24, new PaletteData (0xFF, 0xFF00, 0xFF0000));
 			resultData.alphaData = new byte [scaledWidth * scaledHeight];
 			image = new Image(device, resultData, zoom);
