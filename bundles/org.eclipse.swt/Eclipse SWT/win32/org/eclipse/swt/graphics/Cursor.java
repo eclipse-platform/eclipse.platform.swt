@@ -355,13 +355,13 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
  * Get the handle for a cursor given a zoom level.
  *
  * @param cursor the cursor
- * @param zoom zoom level (in %) of the monitor the cursor is currently in.
- *
  * @return The handle of the cursor.
  *
  * @noreference This method is not intended to be referenced by clients.
  */
-public static Long win32_getHandle (Cursor cursor, int zoom) {
+public static Long win32_getHandle (Cursor cursor) {
+	// The size of the cursor should match the zoom of the current monitor
+	int zoom = DPIUtil.getNativeDeviceZoom();
 	if (cursor.isDisposed()) {
 		return cursor.handle;
 	}
