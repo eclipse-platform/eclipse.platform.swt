@@ -306,16 +306,21 @@ private static ImageData autoScaleImageData (Device device, final ImageData imag
 	boolean useSmoothScaling = isSmoothScalingEnabled() && imageData.getTransparencyType() != SWT.TRANSPARENCY_MASK;
 	if (useSmoothScaling) {
 		Image original = new Image (device, (ImageDataProvider) zoom -> imageData);
-		/* Create a 24 bit image data with alpha channel */
-		final ImageData resultData = new ImageData (scaledWidth, scaledHeight, 24, new PaletteData (0xFF, 0xFF00, 0xFF0000));
-		resultData.alphaData = new byte [scaledWidth * scaledHeight];
-		Image resultImage = new Image (device, (ImageDataProvider) zoom -> resultData);
-		GC gc = new GC (resultImage);
-		gc.setAntialias (SWT.ON);
-		Image.drawScaled(gc, original, width, height, scaleFactor);
-		gc.dispose ();
+		ImageGcDrawer drawer =  new ImageGcDrawer() {
+			@Override
+			public void drawOn(GC gc, int imageWidth, int imageHeight) {
+				gc.setAntialias (SWT.ON);
+				Image.drawScaled(gc, original, width, height, scaleFactor);
+			};
+
+			@Override
+			public int getGcStyle() {
+				return SWT.TRANSPARENT;
+			}
+		};
+		Image resultImage = new Image (device, drawer, scaledWidth, scaledHeight);
+		ImageData result = resultImage.getImageData (100);
 		original.dispose ();
-		ImageData result = resultImage.getImageData (getDeviceZoom ());
 		resultImage.dispose ();
 		return result;
 	} else {
