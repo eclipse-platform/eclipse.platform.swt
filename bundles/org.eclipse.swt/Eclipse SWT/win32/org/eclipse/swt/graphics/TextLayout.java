@@ -705,7 +705,7 @@ long createGdipBrush(Color color, int alpha) {
  */
 public void draw (GC gc, int x, int y) {
 	checkLayout();
-	drawInPixels(gc, DPIUtil.scaleUp(getDevice(), x, getZoom(gc)), DPIUtil.scaleUp(getDevice(), y, getZoom(gc)));
+	drawInPixels(gc, x, y);
 }
 
 /**
@@ -729,11 +729,11 @@ public void draw (GC gc, int x, int y) {
  */
 public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground) {
 	checkLayout();
-	drawInPixels(gc, DPIUtil.scaleUp(getDevice(), x, getZoom(gc)), DPIUtil.scaleUp(getDevice(), y, getZoom(gc)), selectionStart, selectionEnd, selectionForeground, selectionBackground);
+	drawInPixels(gc, x, y, selectionStart, selectionEnd, selectionForeground, selectionBackground);
 }
 
-void drawInPixels (GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground) {
-	drawInPixels(gc, x, y, selectionStart, selectionEnd, selectionForeground, selectionBackground, 0);
+void drawInPixels (GC gc, int xInPoints, int yInPoints, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground) {
+	drawInPixels(gc, xInPoints, yInPoints, selectionStart, selectionEnd, selectionForeground, selectionBackground, 0);
 }
 
 /**
@@ -765,7 +765,7 @@ void drawInPixels (GC gc, int x, int y, int selectionStart, int selectionEnd, Co
  */
 public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground, int flags) {
 	checkLayout();
-	drawInPixels(gc, DPIUtil.scaleUp(getDevice(), x, getZoom(gc)), DPIUtil.scaleUp(getDevice(), y, getZoom(gc)), selectionStart, selectionEnd, selectionForeground, selectionBackground, flags);
+	drawInPixels(gc, x, y, selectionStart, selectionEnd, selectionForeground, selectionBackground, flags);
 }
 
 private int getNativeZoom(GC gc) {
@@ -783,11 +783,11 @@ private int getZoom() {
 	return DPIUtil.getZoomForAutoscaleProperty(nativeZoom);
 }
 
-void drawInPixels (GC gc, int x, int y) {
-	drawInPixels(gc, x, y, -1, -1, null, null);
+void drawInPixels (GC gc, int xInPoints, int yInPoints) {
+	drawInPixels(gc, xInPoints, yInPoints, -1, -1, null, null);
 }
 
-void drawInPixels (GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground, int flags) {
+void drawInPixels (GC gc, int xInPoints, int yInPoints, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground, int flags) {
 	computeRuns(gc);
 	if (gc == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (gc.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -795,7 +795,7 @@ void drawInPixels (GC gc, int x, int y, int selectionStart, int selectionEnd, Co
 	if (selectionBackground != null && selectionBackground.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	int length = text.length();
 	if (length == 0 && flags == 0) return;
-	y += getScaledVerticalIndent();
+	yInPoints += verticalIndentInPoints;
 	long hdc = gc.handle;
 	Rectangle clip = gc.getClippingInPixels();
 	GCData data = gc.data;
@@ -835,12 +835,15 @@ void drawInPixels (GC gc, int x, int y, int selectionStart, int selectionEnd, Co
 			selectionEnd = translateOffset(Math.min(Math.max(0, selectionEnd), length - 1));
 		}
 	}
+	int x = DPIUtil.scaleUp(getDevice(), xInPoints, getZoom(gc));
 	RECT rect = new RECT();
 	OS.SetBkMode(hdc, OS.TRANSPARENT);
 	for (int line=0; line<runs.length; line++) {
 		int drawX = x + getLineIndentInPixel(line);
-		int drawY = y + DPIUtil.scaleUp(getDevice(), lineY[line], getZoom(gc));
+		int drawY = DPIUtil.scaleUp(getDevice(), yInPoints + lineY[line], getZoom(gc));
 		StyleItem[] lineRuns = runs[line];
+		int drawYWithLineHeight = DPIUtil.scaleUp(getDevice(), yInPoints + lineY[line+1] - lineSpacingInPoints, getZoom(gc));
+		int drawYWithLineHeightWithSpacing = DPIUtil.scaleUp(getDevice(), yInPoints + lineY[line+1], getZoom(gc));
 		int lineHeight = DPIUtil.scaleUp(getDevice(), lineY[line+1] - lineY[line] - lineSpacingInPoints, getZoom(gc));
 		int lineHeightWithSpacing = DPIUtil.scaleUp(getDevice(), lineY[line+1] - lineY[line], getZoom(gc));
 		//Draw last line selection
@@ -870,7 +873,7 @@ void drawInPixels (GC gc, int x, int y, int selectionStart, int selectionEnd, Co
 					Gdip.Graphics_FillRectangle(gdipGraphics, gdipSelBackground, drawX + lineWidthInPixels[line], drawY, width, lineHeightWithSpacing);
 				} else {
 					OS.SelectObject(hdc, selBackground);
-					OS.PatBlt(hdc, drawX + lineWidthInPixels[line], drawY, width, lineHeightWithSpacing, OS.PATCOPY);
+					OS.PatBlt(hdc, drawX + lineWidthInPixels[line], drawY, width, drawYWithLineHeightWithSpacing, OS.PATCOPY);
 				}
 			}
 		}
@@ -885,9 +888,9 @@ void drawInPixels (GC gc, int x, int y, int selectionStart, int selectionEnd, Co
 			if (drawX + run.width >= clip.x) {
 				if (!run.lineBreak || run.softBreak) {
 					if (extents) {
-						OS.SetRect(rect, drawX, drawY, drawX + run.width, drawY + lineHeightWithSpacing);
+						OS.SetRect(rect, drawX, drawY, drawX + run.width, drawYWithLineHeightWithSpacing);
 					}else {
-						OS.SetRect(rect, drawX, drawY, drawX + run.width, drawY + lineHeight);
+						OS.SetRect(rect, drawX, drawY, drawX + run.width, drawYWithLineHeight);
 					}
 					if (gdip) {
 						drawRunBackgroundGDIP(run, gdipGraphics, rect, selectionStart, selectionEnd, alpha, gdipSelBackground, hasSelection);
