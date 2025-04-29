@@ -12,7 +12,5 @@ Require-Bundle: org.eclipse.core.runtime;bundle-version="3.29.0",
  org.eclipse.core.resources;bundle-version="3.4.0",
  org.eclipse.jdt.core;bundle-version="3.4.0",
  org.eclipse.ui;bundle-version="3.4.0",
- org.eclipse.jface.text;bundle-version="3.4.0",
- org.eclipse.swt.tools.base;bundle-version="3.106.0";visibility:=reexport,
- org.eclipse.swt.tools.spies;bundle-version="3.106.0";visibility:=reexport
+ org.eclipse.jface.text;bundle-version="3.4.0"
 Automatic-Module-Name: org.eclipse.swt.tools
