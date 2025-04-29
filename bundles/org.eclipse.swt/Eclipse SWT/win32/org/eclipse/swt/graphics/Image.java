@@ -18,6 +18,7 @@ import static org.eclipse.swt.internal.image.ImageColorTransformer.DEFAULT_DISAB
 
 import java.io.*;
 import java.util.*;
+import java.util.Map.*;
 import java.util.function.*;
 
 import org.eclipse.swt.*;
@@ -1005,40 +1006,30 @@ void destroy () {
 	device.deregisterResourceWithZoomSupport(this);
 	if (memGC != null) memGC.dispose();
 	this.isDestroyed = true;
-	destroyHandle();
+	destroyHandles();
 	memGC = null;
 }
 
-private void destroyHandle () {
-	for (ImageHandle imageMetadata : zoomLevelToImageHandle.values()) {
-		destroyHandle(imageMetadata.handle);
-	}
-	zoomLevelToImageHandle.clear();
+private void destroyHandles() {
+	destroyHandles(__ -> true);
 }
 
 @Override
 void destroyHandlesExcept(Set<Integer> zoomLevels) {
-	zoomLevelToImageHandle.entrySet().removeIf(entry -> {
-		final Integer zoom = entry.getKey();
-		if (!zoomLevels.contains(zoom) && zoom != DPIUtil.getZoomForAutoscaleProperty(initialNativeZoom)) {
-			destroyHandle(entry.getValue().handle);
-			return true;
-		}
-		return false;
+	destroyHandles(zoom -> {
+		return !zoomLevels.contains(zoom) && zoom != DPIUtil.getZoomForAutoscaleProperty(initialNativeZoom);
 	});
 }
-private void destroyHandleForZoom(int zoom) {
-	ImageHandle imageHandle = zoomLevelToImageHandle.remove(zoom);
-	if (imageHandle != null) {
-	     destroyHandle(imageHandle.handle);
-	}
-}
 
-private void destroyHandle(long handle) {
-	if (type == SWT.ICON) {
-		OS.DestroyIcon (handle);
-	} else {
-		OS.DeleteObject (handle);
+private void destroyHandles(Predicate<Integer> filter) {
+	Iterator<Entry<Integer, ImageHandle>> it = zoomLevelToImageHandle.entrySet().iterator();
+	while (it.hasNext()) {
+		Entry<Integer, ImageHandle> zoomToHandle = it.next();
+		if (filter.test(zoomToHandle.getKey())) {
+			ImageHandle imageHandle = zoomToHandle.getValue();
+			it.remove();
+			imageHandle.destroy();
+		}
 	}
 }
 
@@ -1940,7 +1931,7 @@ private abstract class ImageFromImageDataProviderWrapper extends AbstractImagePr
 		Function<Integer, ImageData> imageDataRetrieval = zoomToRetrieve -> {
 			ImageHandle handle = initializeHandleFromSource(zoomToRetrieve);
 			ImageData data = handle.getImageData();
-			destroyHandleForZoom(zoomToRetrieve);
+			handle.destroy();
 			return data;
 		};
 		return cachedImageData.computeIfAbsent(zoom, imageDataRetrieval);
@@ -2174,7 +2165,7 @@ private abstract class BaseImageProviderWrapper<T> extends DynamicImageProviderW
 		Function<Integer, ImageData> imageDataRetrival = zoomToRetrieve -> {
 			ImageHandle handle = initializeHandleFromSource(zoomToRetrieve);
 			ImageData data = handle.getImageData();
-			destroyHandleForZoom(zoomToRetrieve);
+			handle.destroy();
 			return data;
 		};
 		return cachedImageData.computeIfAbsent(zoom, imageDataRetrival);
@@ -2236,7 +2227,7 @@ private class ImageFileNameProviderWrapper extends BaseImageProviderWrapper<Imag
 			imageDataAtZoom = ImageDataLoader.load(fileForZoom.element(), fileForZoom.zoom(), zoom);
 		} else {
 			imageDataAtZoom = new ElementAtZoom<>(nativeInitializedImage.getImageData(), fileForZoom.zoom());
-			destroyHandleForZoom(fileForZoom.zoom());
+			nativeInitializedImage.destroy();
 		}
 		return imageDataAtZoom;
 	}
@@ -2525,7 +2516,7 @@ private class ImageGcDrawerWrapper extends DynamicImageProviderWrapper {
 }
 
 private class ImageHandle {
-	private final long handle;
+	private long handle;
 	private final int zoom;
 	private int height;
 	private int width;
@@ -2871,5 +2862,14 @@ private class ImageHandle {
 		return this.handle == 0;
 	}
 
+	private void destroy() {
+		zoomLevelToImageHandle.remove(zoom, this);
+		if (type == SWT.ICON) {
+			OS.DestroyIcon (handle);
+		} else {
+			OS.DeleteObject (handle);
+		}
+		handle = 0;
+	}
 }
 }
