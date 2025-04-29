@@ -264,7 +264,13 @@ class TextModel {
 	}
 
 	void setSelectionEnd(TextLocation location) {
-		caretOffset = selectionEnd = getOffset(location);
+		final int offset = getOffset(location);
+		if (caretOffset == offset && selectionEnd == offset) {
+			return;
+		}
+
+		caretOffset = offset;
+		selectionEnd = offset;
 		sendSelectionChanged();
 	}
 
