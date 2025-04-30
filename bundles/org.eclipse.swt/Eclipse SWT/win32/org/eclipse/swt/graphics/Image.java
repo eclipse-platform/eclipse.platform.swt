@@ -1707,6 +1707,9 @@ private long configureGC(GCData data, int zoom) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 
+	if(Device.strictChecks) {
+		checkImageTypeForValidCustomDrawing(zoom);
+	}
 	/* Create a compatible HDC for the device */
 	long hDC = device.internal_new_GC(null);
 	long imageDC = OS.CreateCompatibleDC(hDC);
@@ -1727,6 +1730,18 @@ private long configureGC(GCData data, int zoom) {
 		data.font = SWTFontProvider.getSystemFont(device, zoom);
 	}
 	return imageDC;
+}
+
+private void checkImageTypeForValidCustomDrawing(int zoom) {
+	String replacementInfo = "It should be created with an ImageGcDrawer (see SWT Snippet 384).";
+	if (imageProvider instanceof ImageDataProviderWrapper || imageProvider instanceof ImageFileNameProviderWrapper) {
+		String message = "***WARNING: Image initialized with ImageDataProvider or ImageFileNameProvider is not supposed to be modified.";
+		System.err.println(message + " " + replacementInfo);
+	} else if (!zoomLevelToImageHandle.isEmpty()
+			&& (zoomLevelToImageHandle.size() != 1 || !zoomLevelToImageHandle.containsKey(zoom))) {
+		String message = "***WARNING: Images with handles created for multiple zooms should not be modified. ";
+		System.err.println(message + " " + replacementInfo);
+	}
 }
 
 /**
