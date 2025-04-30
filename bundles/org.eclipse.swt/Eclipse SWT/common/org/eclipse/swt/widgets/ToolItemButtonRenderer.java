@@ -18,7 +18,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.widgets.ToolItem.*;
 
-public class ToolItemButtonRenderer implements ToolItemRenderer {
+class ToolItemButtonRenderer implements ToolItemRenderer {
 	private static final int DRAW_FLAGS = SWT.DRAW_MNEMONIC;
 
 	/*

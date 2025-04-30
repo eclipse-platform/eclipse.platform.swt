@@ -19,7 +19,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.ToolBarLayout.*;
 
-public class ToolBarLayoutGenerator {
+class ToolBarLayoutGenerator {
 	private final List<ItemRecord> itemRecords;
 	private final Point availableSize;
 	private final boolean horizontal;

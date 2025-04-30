@@ -13,7 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
-public class DefaultRendererFactory implements RendererFactory {
+class DefaultRendererFactory implements RendererFactory {
 	@Override
 	public ButtonRenderer createCheckboxRenderer(Button button) {
 		return new DefaultCheckboxRenderer(button);

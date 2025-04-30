@@ -17,7 +17,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.ToolItem.*;
 
-public class ToolItemDropDownRenderer implements ToolItemRenderer {
+class ToolItemDropDownRenderer implements ToolItemRenderer {
 	private static final int ARROW_PADDING = 4;
 	private static final int ARROW_WIDTH = 7;
 	private static final int ARROW_HEIGHT = 4;

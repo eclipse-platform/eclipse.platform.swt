@@ -24,7 +24,7 @@ import org.eclipse.swt.widgets.ToolBarLayout.*;
 /**
  * Default renderer for the ToolBar.
  */
-public class DefaultToolBarRenderer extends ToolBarRenderer {
+class DefaultToolBarRenderer extends ToolBarRenderer {
 
 	public static final Color COLOR_SEPARATOR = new Color(Display.getDefault(), 160, 160, 160);
 

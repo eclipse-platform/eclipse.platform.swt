@@ -16,7 +16,7 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.ToolItem.*;
 
-public class ToolItemSeparatorRenderer implements ToolItemRenderer {
+class ToolItemSeparatorRenderer implements ToolItemRenderer {
 	public static final Color COLOR_SEPARATOR = new Color(Display.getDefault(), 160, 160, 160);
 
 	private static final int EMPTY_WIDTH = 7;

@@ -17,7 +17,7 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
-public class BasicLabelRenderer extends LabelRenderer {
+class BasicLabelRenderer extends LabelRenderer {
 
 	private static final Color SHADOW_IN_COLOR1 = new Color(160, 160, 160);
 	private static final Color SHADOW_IN_COLOR2 = new Color(255, 255, 255);

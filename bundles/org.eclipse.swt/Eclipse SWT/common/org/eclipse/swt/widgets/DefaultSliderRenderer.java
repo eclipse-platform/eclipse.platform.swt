@@ -15,7 +15,7 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.graphics.*;
 
-public class DefaultSliderRenderer extends SliderRenderer {
+class DefaultSliderRenderer extends SliderRenderer {
 	private static final int PREFERRED_WIDTH = 170;
 	private static final int PREFERRED_HEIGHT = 18;
 

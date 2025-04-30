@@ -19,7 +19,7 @@ import java.util.List;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
-public class DefaultLinkRenderer extends LinkRenderer {
+class DefaultLinkRenderer extends LinkRenderer {
 
 	private static final Color LINK_COLOR = new Color(0, 102, 204);
 

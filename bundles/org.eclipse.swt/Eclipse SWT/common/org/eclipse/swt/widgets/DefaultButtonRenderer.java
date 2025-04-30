@@ -17,7 +17,7 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
-public class DefaultButtonRenderer extends ButtonRenderer {
+class DefaultButtonRenderer extends ButtonRenderer {
 
 	private static final Color BACKGROUND_COLOR = new Color(255, 255, 255);
 	private static final Color HOVER_COLOR = new Color(224, 238, 254);

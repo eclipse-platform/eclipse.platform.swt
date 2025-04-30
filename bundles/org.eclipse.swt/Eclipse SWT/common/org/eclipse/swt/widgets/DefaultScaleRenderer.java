@@ -16,7 +16,7 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
-public class DefaultScaleRenderer extends ScaleRenderer {
+class DefaultScaleRenderer extends ScaleRenderer {
 
 	private static final int PREFERRED_WIDTH = 170;
 	private static final int PREFERRED_HEIGHT = 42;
