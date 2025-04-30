@@ -2236,7 +2236,7 @@ private class ImageFileNameProviderWrapper extends BaseImageProviderWrapper<Imag
 			imageDataAtZoom = ImageDataLoader.load(fileForZoom.element(), fileForZoom.zoom(), zoom);
 		} else {
 			imageDataAtZoom = new ElementAtZoom<>(nativeInitializedImage.getImageData(), fileForZoom.zoom());
-			destroyHandleForZoom(zoom);
+			destroyHandleForZoom(fileForZoom.zoom());
 		}
 		return imageDataAtZoom;
 	}
