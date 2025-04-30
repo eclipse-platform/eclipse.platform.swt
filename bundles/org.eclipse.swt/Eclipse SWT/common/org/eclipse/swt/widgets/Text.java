@@ -361,10 +361,12 @@ public class Text extends NativeBasedCustomScrollable {
 
 	protected void focusLost(Event e) {
 		caret.killFocus();
+		redraw();
 	}
 
 	protected void focusGained(Event e) {
 		caret.setFocus();
+		redraw();
 	}
 
 	private void onMouseDown(Event e) {
