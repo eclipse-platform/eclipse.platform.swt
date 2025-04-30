@@ -11,7 +11,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.swt.widgets.toolbar;
+package org.eclipse.swt.widgets;
 
 import java.util.*;
 import java.util.List;
@@ -19,7 +19,7 @@ import java.util.List;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.widgets.toolbar.ToolBarLayout.*;
+import org.eclipse.swt.widgets.ToolBarLayout.*;
 
 /**
  * Default renderer for the ToolBar.

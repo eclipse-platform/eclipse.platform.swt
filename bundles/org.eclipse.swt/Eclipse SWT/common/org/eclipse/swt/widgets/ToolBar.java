@@ -18,7 +18,6 @@ import java.util.List;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.toolbar.*;
 
 /**
  * Instances of this class support the layout of selectable tool bar items.

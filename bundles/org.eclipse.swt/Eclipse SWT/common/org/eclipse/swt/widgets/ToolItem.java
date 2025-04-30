@@ -16,7 +16,6 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.toolbar.*;
 
 /**
  * Instances of this class represent a selectable user interface object that
