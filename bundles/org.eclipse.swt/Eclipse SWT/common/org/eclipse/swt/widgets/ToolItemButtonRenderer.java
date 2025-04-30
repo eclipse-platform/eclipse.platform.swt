@@ -38,12 +38,17 @@ class ToolItemButtonRenderer implements ToolItemRenderer {
 	private Rectangle bounds = new Rectangle(0, 0, 0, 0);
 
 	public enum ColorType {
-		BORDER_DOWN(0.4f), BORDER_HOVER(0.2f), FILL_DOWN(0.2f), FILL_HOVER(0.1f);
+		BORDER_DOWN(0.4f, DefaultToolBarRenderer.COLOR_SELECTION_BORDER),
+		BORDER_HOVER(0.2f, DefaultToolBarRenderer.COLOR_HOVER_BORDER),
+		FILL_DOWN(0.2f, DefaultToolBarRenderer.COLOR_SELECTION_BACKGROUND),
+		FILL_HOVER(0.1f, DefaultToolBarRenderer.COLOR_HOVER_BACKGROUND);
 
-		final float ratio;
+		private final float ratio;
+		private final String key;
 
-		private ColorType(float ratio) {
+		ColorType(float ratio, String key) {
 			this.ratio = ratio;
+			this.key = key;
 		}
 	}
 
@@ -126,12 +131,11 @@ class ToolItemButtonRenderer implements ToolItemRenderer {
 
 	private Color getColor(ColorType type) {
 		Color backgroundColor = item.getBackground();
-		RGB set;
-		if (backgroundColor != null) {
-			set = backgroundColor.getRGB();
-		} else {
-			set = DEFAULT_RGB;
+		if (backgroundColor == null) {
+			return bar.getDisplay().getColorProvider().getColor(type.key);
 		}
+
+		RGB set = backgroundColor.getRGB();
 
 		int red = Math.round(set.red - (set.red - TARGET_RGB.red) * type.ratio);
 		int green = Math.round(set.green - (set.green - TARGET_RGB.green) * type.ratio);

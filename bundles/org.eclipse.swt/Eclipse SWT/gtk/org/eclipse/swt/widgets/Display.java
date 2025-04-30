@@ -502,6 +502,7 @@ public class Display extends Device implements Executor {
 	static Display [] Displays = new Display [1];
 
 	/* Skinning support */
+	private ColorProvider colorProvider;
 	private RendererFactory rendererFactory;
 	Widget [] skinList = new Widget [GROW_SIZE];
 	int skinCount;
@@ -633,6 +634,7 @@ public Display () {
 public Display (DeviceData data) {
 	super (data);
 
+	colorProvider = DefaultColorProvider.createLightInstance();
 	rendererFactory = new DefaultRendererFactory();
 }
 
@@ -6318,5 +6320,25 @@ public RendererFactory getRendererFactory() {
 public void setRendererFactory(RendererFactory rendererFactory) {
 	if (rendererFactory == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.rendererFactory = rendererFactory;
+}
+
+/**
+ * Return the color provider used for custom-drawn controls.
+ * @return a non-null instance of the color provider
+ * @noreference this is still experimental API and might be removed
+ */
+public final ColorProvider getColorProvider() {
+	return colorProvider;
+}
+
+/**
+ * Set the color provider used for custom-drawn controls.
+ * @param colorProvider a non-null color provider
+ * @noreference this is still experimental API and might be removed
+ */
+public final void setColorProvider(ColorProvider colorProvider) {
+	if (colorProvider == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	this.colorProvider = colorProvider;
+	// todo: redraw all (custom-drawn) widgets
 }
 }

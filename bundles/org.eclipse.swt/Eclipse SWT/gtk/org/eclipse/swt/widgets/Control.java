@@ -6875,4 +6875,7 @@ Point getSurfaceOrigin () {
 	return success ? new Point((int)originX[0], (int)originY[0]) : new Point(0, 0);
 }
 
+protected final ColorProvider getColorProvider() {
+	return display.getColorProvider();
+}
 }

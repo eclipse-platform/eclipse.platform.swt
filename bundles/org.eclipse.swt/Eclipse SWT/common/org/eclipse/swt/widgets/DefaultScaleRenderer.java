@@ -21,10 +21,11 @@ class DefaultScaleRenderer extends ScaleRenderer {
 	private static final int PREFERRED_WIDTH = 170;
 	private static final int PREFERRED_HEIGHT = 42;
 
-	private static final Color IDLE_COLOR = new Color(0, 95, 184);
-	private static final Color HOVER_COLOR = new Color(0, 0, 0);
-	private static final Color DRAG_COLOR = new Color(204, 204, 204);
-	private static final Color LINE_COLOR = new Color(160, 160, 160);
+	static final String COLOR_HANDLE_IDLE = "scale.handle.background"; //$NON-NLS-1$
+	static final String COLOR_HANDLE_HOVER = "scale.handle.background.hover"; //$NON-NLS-1$
+	static final String COLOR_HANDLE_DRAG = "scale.handle.background.drag"; //$NON-NLS-1$
+	static final String COLOR_HANDLE_OUTLINE = "scale.handle.outline"; //$NON-NLS-1$
+	static final String COLOR_NOTCH = "scale.notch.foreground"; //$NON-NLS-1$
 
 	/**
 	 * Pixel per Unit. Ratio of how many pixels are used to display one unit of the
@@ -77,12 +78,11 @@ class DefaultScaleRenderer extends ScaleRenderer {
 			lastNotch = bar.y + bar.height - 5;
 		}
 
-		gc.fillRectangle(bar);
-		gc.setForeground(LINE_COLOR);
+		gc.setForeground(getColor(COLOR_HANDLE_OUTLINE));
 		gc.drawRectangle(bar);
 
 		// prepare for line drawing
-		gc.setForeground(LINE_COLOR);
+		gc.setForeground(getColor(COLOR_NOTCH));
 		gc.setLineWidth(1);
 
 		// draw first and last notch
@@ -113,18 +113,17 @@ class DefaultScaleRenderer extends ScaleRenderer {
 	}
 
 	private void drawHandle(GC gc, int value) {
-		// draw handle
-		Color handleColor;
+		final String colorKey;
 		if (scale.isEnabled()) {
-			handleColor = switch (getHandleState()) {
-				case IDLE -> IDLE_COLOR;
-				case HOVER -> HOVER_COLOR;
-				case DRAG -> DRAG_COLOR;
+			colorKey = switch (getHandleState()) {
+				case IDLE -> COLOR_HANDLE_IDLE;
+				case HOVER -> COLOR_HANDLE_HOVER;
+				case DRAG -> COLOR_HANDLE_DRAG;
 			};
 		} else {
-			handleColor = DISABLED_COLOR;
+			colorKey = ControlRenderer.COLOR_DISABLED;
 		}
-		gc.setBackground(handleColor);
+		gc.setBackground(getColor(colorKey));
 		handleBounds = calculateHandleBounds(value);
 		gc.fillRectangle(handleBounds);
 	}

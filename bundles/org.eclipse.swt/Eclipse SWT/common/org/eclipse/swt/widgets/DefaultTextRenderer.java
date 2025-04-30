@@ -8,13 +8,12 @@ import org.eclipse.swt.graphics.Rectangle;
 
 public class DefaultTextRenderer extends TextRenderer {
 
-	private static final Color DISABLED_COLOR = new Color(160, 160, 160);
-	private static final Color TEXT_COLOR = new Color(0, 0, 0);
-	private static final Color BACKGROUND_COLOR = new Color(255, 255, 255);
-	private static final Color BORDER_COLOR = new Color(128, 128, 128);
-	private static final Color READONLY_BACKGROUND_COLOR = new Color(227, 227, 227);
-	private static final Color SELECTION_BACKGROUND_COLOR = new Color(0, 120, 215);
-	private static final Color SELECTION_TEXT_COLOR = new Color(255, 255, 255);
+	static final String COLOR_FOREGROUND = "text.foreground"; //$NON-NLS-1$
+	static final String COLOR_BACKGROUND = "text.background"; //$NON-NLS-1$
+	static final String COLOR_BORDER = "text.border"; //$NON-NLS-1$
+	static final String COLOR_BACKGROUND_READONLY = "text.background.readonly"; //$NON-NLS-1$
+	static final String COLOR_SELECTION_BACKGROUND = "text.selection.background"; //$NON-NLS-1$
+	static final String COLOR_SELECTION_FOREGROUND = "text.selection.foreground"; //$NON-NLS-1$
 
 	public DefaultTextRenderer(Text text, TextModel model) {
 		super(text, model);
@@ -24,13 +23,13 @@ public class DefaultTextRenderer extends TextRenderer {
 	protected void paint(GC gc, int width, int height) {
 		final boolean enabled = text.isEnabled();
 		if (!enabled) {
-			gc.setForeground(DISABLED_COLOR);
+			gc.setForeground(getColor(COLOR_DISABLED));
 		}
 
 		final int style = text.getStyle();
 		final boolean editable = text.getEditable();
 		if (!enabled || ((style & SWT.BORDER) == 1 && !editable)) {
-			gc.setBackground(READONLY_BACKGROUND_COLOR);
+			gc.setBackground(getColor(COLOR_BACKGROUND_READONLY));
 		}
 
 		final Rectangle visibleArea = getVisibleArea();
@@ -46,12 +45,12 @@ public class DefaultTextRenderer extends TextRenderer {
 
 	@Override
 	public Color getDefaultBackground() {
-		return BACKGROUND_COLOR;
+		return getColor(COLOR_BACKGROUND);
 	}
 
 	@Override
 	public Color getDefaultForeground() {
-		return TEXT_COLOR;
+		return getColor(COLOR_FOREGROUND);
 	}
 
 	@Override
@@ -112,7 +111,7 @@ public class DefaultTextRenderer extends TextRenderer {
 		gc.fillRectangle(clientArea.x, clientArea.y, clientArea.width, height);
 		if (drawLine) {
 			Color prevBackground = gc.getBackground();
-			gc.setBackground(text.isFocusControl() ? SELECTION_BACKGROUND_COLOR : BORDER_COLOR);
+			gc.setBackground(getColor(text.isFocusControl() ? COLOR_SELECTION_BACKGROUND : COLOR_BORDER));
 			gc.fillRectangle(clientArea.x, clientArea.y + height, clientArea.width, 1);
 			gc.setBackground(prevBackground);
 		}
@@ -157,8 +156,8 @@ public class DefaultTextRenderer extends TextRenderer {
 
 			Color oldForeground = gc.getForeground();
 			Color oldBackground = gc.getBackground();
-			gc.setForeground(SELECTION_TEXT_COLOR);
-			gc.setBackground(SELECTION_BACKGROUND_COLOR);
+			gc.setForeground(getColor(COLOR_SELECTION_FOREGROUND));
+			gc.setBackground(getColor(COLOR_SELECTION_BACKGROUND));
 			for (int i = startLocation.line; i <= endLocation.line; i++) {
 				TextLocation location = new TextLocation(i, 0);
 				String text = textLines[i];

@@ -5880,5 +5880,9 @@ private static void resizeFont(Control control, int newZoom) {
 		control.setFont(Font.win32_new(font, newZoom));
 	}
 }
+
+protected final ColorProvider getColorProvider() {
+	return display.getColorProvider();
+}
 }
 

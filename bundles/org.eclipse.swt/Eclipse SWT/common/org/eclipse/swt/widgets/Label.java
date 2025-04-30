@@ -113,7 +113,6 @@ public class Label extends CustomControl {
 		final RendererFactory rendererFactory = parent.getDisplay().getRendererFactory();
 		renderer = rendererFactory.createLabelRenderer(this);
 		renderer.setAlign(align);
-		renderer.setForeground(getForeground());
 
 		final Listener listener = event -> {
 			switch (event.type) {

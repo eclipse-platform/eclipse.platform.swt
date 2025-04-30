@@ -22,7 +22,9 @@ import java.util.function.Function;
 
 public abstract class ControlRenderer {
 
-	protected static final Color DISABLED_COLOR = new Color(160, 160, 160);
+	protected static final String COLOR_DISABLED = "disabled"; //$NON-NLS-1$
+	public static final String COLOR_BACKGROUND = "background"; //$NON-NLS-1$
+	protected static final String COLOR_FOREGROUND = "foreground"; //$NON-NLS-1$
 
 	protected abstract void paint(GC gc, int width, int height);
 
@@ -37,6 +39,10 @@ public abstract class ControlRenderer {
 		paint(gc, size.x, size.y);
 	}
 
+	protected final Color getColor(String key) {
+		return control.getColorProvider().getColor(key);
+	}
+
 	protected final <T> T measure(Function<GC, T> function) {
 		return Drawing.measure(control, function);
 	}
@@ -46,10 +52,10 @@ public abstract class ControlRenderer {
 	}
 
 	public Color getDefaultBackground() {
-		return new Color(240, 240, 240);
+		return getColor(COLOR_BACKGROUND);
 	}
 
 	public Color getDefaultForeground() {
-		return new Color(0, 0, 0);
+		return getColor(COLOR_FOREGROUND);
 	}
 }

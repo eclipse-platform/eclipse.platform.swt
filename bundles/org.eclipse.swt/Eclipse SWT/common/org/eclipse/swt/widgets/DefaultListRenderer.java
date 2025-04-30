@@ -39,11 +39,6 @@ public class DefaultListRenderer extends ListRenderer {
 		}
 	}
 
-	@Override
-	public Color getDefaultBackground() {
-		return new Color(255, 255, 255);
-	}
-
 	private void drawBackground(Rectangle clientArea, GC gc) {
 		if ((list.getState() & Widget.PARENT_BACKGROUND) == 0) {
 			gc.setBackground(list.getBackground());
@@ -53,7 +48,7 @@ public class DefaultListRenderer extends ListRenderer {
 
 		if ((list.getStyle() & SWT.BORDER) != 0 && list.isEnabled()) {
 			Color foreground = gc.getForeground();
-			gc.setForeground(list.getDisplay().getSystemColor(SWT.COLOR_DARK_GRAY));
+			gc.setForeground(getColor(COLOR_BORDER));
 			gc.drawLine(clientArea.x, clientArea.y + clientArea.height - 1,
 					clientArea.x + clientArea.x + clientArea.width - 1, clientArea.y + clientArea.height - 1);
 			gc.setForeground(foreground);
@@ -88,7 +83,7 @@ public class DefaultListRenderer extends ListRenderer {
 			}
 		} else {
 			Color foreground = gc.getForeground();
-			gc.setForeground(list.getDisplay().getSystemColor(SWT.COLOR_DARK_GRAY));
+			gc.setForeground(getColor(COLOR_DISABLED));
 			gc.drawText(text, _x, y, true);
 
 			gc.setForeground(foreground);
@@ -98,8 +93,8 @@ public class DefaultListRenderer extends ListRenderer {
 	private void drawSelectedText(String text, GC gc, int _x, int _y, Rectangle clientArea, Point textExtent) {
 		Color background = gc.getBackground();
 		Color foreground = gc.getForeground();
-		gc.setForeground(list.getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT));
-		gc.setBackground(list.getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION));
+		gc.setForeground(getColor(COLOR_SELECTION_FOREGROUND));
+		gc.setBackground(getColor(COLOR_SELECTION_BACKGROUND));
 		gc.fillRectangle(0, _y, clientArea.width, textExtent.y);
 		gc.drawText(text, _x, _y);
 

@@ -19,11 +19,6 @@ import org.eclipse.swt.graphics.*;
 
 class BasicLabelRenderer extends LabelRenderer {
 
-	private static final Color SHADOW_IN_COLOR1 = new Color(160, 160, 160);
-	private static final Color SHADOW_IN_COLOR2 = new Color(255, 255, 255);
-	private static final Color SHADOW_OUT_COLOR1 = new Color(227, 227, 227);
-	private static final Color SHADOW_OUT_COLOR2 = new Color(160, 160, 160);
-
 	private static final int DRAW_FLAGS = SWT.DRAW_MNEMONIC | SWT.DRAW_TAB
 										  | SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER;
 
@@ -265,7 +260,7 @@ class BasicLabelRenderer extends LabelRenderer {
 		}
 
 		if (lines != null) {
-			gc.setForeground(label.isEnabled() ? label.getForeground() : DISABLED_COLOR);
+			gc.setForeground(label.isEnabled() ? label.getForeground() : getColor(COLOR_DISABLED));
 			for (String line : lines) {
 				int lineX = x;
 				if (lines.length > 1) {
@@ -294,12 +289,12 @@ class BasicLabelRenderer extends LabelRenderer {
 
 		int style = label.getStyle();
 		if ((style & SWT.SHADOW_IN) != 0) {
-			c1 = SHADOW_IN_COLOR1;
-			c2 = SHADOW_IN_COLOR2;
+			c1 = getColor(COLOR_SHADOW_IN1);
+			c2 = getColor(COLOR_SHADOW_IN2);
 		}
 		if ((style & SWT.SHADOW_OUT) != 0) {
-			c1 = SHADOW_OUT_COLOR1;
-			c2 = SHADOW_OUT_COLOR2;
+			c1 = getColor(COLOR_SHADOW_OUT1);
+			c2 = getColor(COLOR_SHADOW_OUT2);
 		}
 
 		if (c1 != null && c2 != null) {

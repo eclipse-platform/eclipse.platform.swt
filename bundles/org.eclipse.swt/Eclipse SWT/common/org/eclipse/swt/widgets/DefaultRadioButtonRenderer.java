@@ -19,11 +19,6 @@ import org.eclipse.swt.graphics.*;
 
 public class DefaultRadioButtonRenderer extends ButtonRenderer {
 
-	private static final Color HOVER_COLOR = new Color(224, 238, 254);
-	private static final Color SELECTION_COLOR = new Color(0, 95, 184);
-	private static final Color BORDER_DISABLED_COLOR = new Color(192, 192, 192);
-	private static final Color BOX_COLOR = new Color(0, 0, 0);
-
 	/**
 	 * Left and right margins
 	 */
@@ -133,7 +128,7 @@ public class DefaultRadioButtonRenderer extends ButtonRenderer {
 
 		// Draw text
 		if (text != null && !text.isEmpty()) {
-			gc.setForeground(button.isEnabled() ? button.getForeground() : DISABLED_COLOR);
+			gc.setForeground(button.isEnabled() ? button.getForeground() : getColor(COLOR_DISABLED));
 			int textTopOffset = (height - 1 - textHeight) / 2;
 			int textLeftOffset = contentArea.x + imageSpace;
 			gc.drawText(text, textLeftOffset, textTopOffset, DRAW_FLAGS);
@@ -150,22 +145,22 @@ public class DefaultRadioButtonRenderer extends ButtonRenderer {
 		final boolean enabled = button.isEnabled();
 		final boolean selection = button.getSelection();
 		if (selection) {
-			gc.setBackground(enabled ? SELECTION_COLOR : DISABLED_COLOR);
+			gc.setBackground(getColor(enabled ? COLOR_SELECTION : COLOR_DISABLED));
 			int partialBoxBorder = 2;
 			gc.fillOval(x + partialBoxBorder, y + partialBoxBorder,
 					BOX_SIZE - 2 * partialBoxBorder + 1, BOX_SIZE - 2 * partialBoxBorder + 1);
 		}
 
 		if (enabled) {
-			gc.setForeground(BOX_COLOR);
+			gc.setForeground(getColor(COLOR_BOX));
 			if (isHover()) {
-				gc.setBackground(HOVER_COLOR);
+				gc.setBackground(getColor(COLOR_HOVER));
 				int partialBoxBorder = selection ? 4 : 0;
 				gc.fillOval(x + partialBoxBorder, y + partialBoxBorder,
 						BOX_SIZE - 2 * partialBoxBorder + 1, BOX_SIZE - 2 * partialBoxBorder + 1);
 			}
 		} else {
-			gc.setForeground(BORDER_DISABLED_COLOR);
+			gc.setForeground(getColor(COLOR_BOX_DISABLED));
 		}
 		gc.drawOval(x, y, BOX_SIZE, BOX_SIZE);
 	}

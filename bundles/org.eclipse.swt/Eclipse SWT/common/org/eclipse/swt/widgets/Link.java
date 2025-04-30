@@ -434,10 +434,7 @@ public class Link extends CustomControl {
 	public void setLinkForeground(Color color) {
 		checkWidget();
 
-		if (color == null) {
-			return;
-		}
-		if (color.equals(linkColor)) {
+		if (Objects.equals(color, linkColor)) {
 			return;
 		}
 
@@ -490,7 +487,6 @@ public class Link extends CustomControl {
 		}
 		this.leftMargin = leftMargin;
 		redraw();
-
 	}
 
 	/**
@@ -529,7 +525,6 @@ public class Link extends CustomControl {
 		}
 		this.rightMargin = rightMargin;
 		redraw();
-
 	}
 
 	/**
@@ -604,7 +599,6 @@ public class Link extends CustomControl {
 		}
 		this.bottomMargin = bottomMargin;
 		redraw();
-
 	}
 
 	/**

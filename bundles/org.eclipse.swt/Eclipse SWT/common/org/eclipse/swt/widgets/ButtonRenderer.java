@@ -18,6 +18,15 @@ import org.eclipse.swt.graphics.*;
 
 public abstract class ButtonRenderer extends ControlRenderer {
 
+	static final String COLOR_HOVER = "button.background.hover"; //$NON-NLS-1$
+	static final String COLOR_TOGGLE = "button.background.toggle"; //$NON-NLS-1$
+	static final String COLOR_SELECTION = "button.background.selection"; //$NON-NLS-1$
+	static final String COLOR_OUTLINE = "button.outline"; //$NON-NLS-1$
+	static final String COLOR_OUTLINE_DISABLED = "button.outline.disabled"; //$NON-NLS-1$
+	static final String COLOR_BOX = "button.box"; //$NON-NLS-1$
+	static final String COLOR_BOX_DISABLED = "button.box.disabled"; //$NON-NLS-1$
+	static final String COLOR_GRAYED = "button.gray"; //$NON-NLS-1$
+
 	protected final Button button;
 
 	public abstract Point computeDefaultSize();

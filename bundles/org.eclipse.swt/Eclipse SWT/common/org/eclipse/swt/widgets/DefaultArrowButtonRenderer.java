@@ -19,8 +19,6 @@ import org.eclipse.swt.graphics.*;
 
 public class DefaultArrowButtonRenderer extends ButtonRenderer {
 
-	private static final Color FOREGROUND_COLOR = new Color(0, 0, 0);
-
 	public DefaultArrowButtonRenderer(Button button) {
 		super(button);
 	}
@@ -40,7 +38,7 @@ public class DefaultArrowButtonRenderer extends ButtonRenderer {
 			gc.drawFocus(3, 3, width - 7, height - 7);
 		}
 
-		gc.setBackground(button.isEnabled() ? FOREGROUND_COLOR : DISABLED_COLOR);
+		gc.setBackground(getColor(button.isEnabled() ? COLOR_FOREGROUND : COLOR_DISABLED));
 
 		int centerHeight = height / 2;
 		int centerWidth = width / 2;

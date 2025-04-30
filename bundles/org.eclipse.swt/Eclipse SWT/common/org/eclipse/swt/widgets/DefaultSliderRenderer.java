@@ -19,11 +19,11 @@ class DefaultSliderRenderer extends SliderRenderer {
 	private static final int PREFERRED_WIDTH = 170;
 	private static final int PREFERRED_HEIGHT = 18;
 
-	private static final Color TRACK_BACKGROUND = new Color(240, 240, 240);
-	private static final Color TRACK_FOREGROUND = new Color(204, 204, 204);
-	private static final Color THUMB_BACKGROUND = new Color(204, 204, 204);
-	private static final Color THUMB_FOREGROUND = new Color(133, 133, 133);
-	private static final Color THUMB_HOVER_COLOR = new Color(135, 206, 235);
+	static final String COLOR_TRACK_BACKGROUND = "slider.track.background"; //$NON-NLS-1$
+	static final String COLOR_TRACK_BORDER = "slider.track.border"; //$NON-NLS-1$
+	static final String COLOR_THUMB_BACKGROUND = "slider.thumb.background"; //$NON-NLS-1$
+	static final String COLOR_THUMB_BORDER = "slider.thumb.border"; //$NON-NLS-1$
+	static final String COLOR_THUMB_HOVER = "slider.thumb.hover"; //$NON-NLS-1$
 
 	private boolean drawTrack;
 
@@ -48,7 +48,7 @@ class DefaultSliderRenderer extends SliderRenderer {
 		gc.setBackground(slider.getBackground());
 		gc.fillRectangle(0, 0, width, height);
 
-		gc.setForeground(slider.isEnabled() ? slider.getForeground() : DISABLED_COLOR);
+		gc.setForeground(slider.isEnabled() ? slider.getForeground() : getColor(COLOR_DISABLED));
 
 		if (slider.isVertical()) {
 			int trackX = (width - 7) / 2;
@@ -84,20 +84,16 @@ class DefaultSliderRenderer extends SliderRenderer {
 			gc.drawLine(0, 0, width, 0);
 		}
 
-		gc.setForeground(TRACK_FOREGROUND);
+		gc.setForeground(getColor(COLOR_TRACK_BORDER));
 		// Draw the track
 		if (drawTrack) {
-			gc.setBackground(TRACK_BACKGROUND);
+			gc.setBackground(getColor(COLOR_TRACK_BACKGROUND));
 			drawRoundRectWithBorder(gc, trackRectangle);
 		}
 
 		// Draw the thumb
-		if (thumbHovered || isDragging) {
-			gc.setBackground(THUMB_HOVER_COLOR);
-		} else {
-			gc.setBackground(THUMB_BACKGROUND);
-		}
-		gc.setForeground(THUMB_FOREGROUND);
+		gc.setBackground(getColor(thumbHovered || isDragging ? COLOR_THUMB_HOVER : COLOR_THUMB_BACKGROUND));
+		gc.setForeground(getColor(COLOR_THUMB_BORDER));
 		drawRoundRectWithBorder(gc, thumbRectangle);
 	}
 
