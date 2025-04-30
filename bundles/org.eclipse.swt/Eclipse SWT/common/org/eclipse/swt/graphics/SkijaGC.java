@@ -655,7 +655,7 @@ public class SkijaGC extends GCHandle {
 	private static float[] convertToFloat(int[] array) {
 		float[] arrayAsFloat = new float[array.length];
 		for (int i = 0; i < array.length; i++) {
-			arrayAsFloat[i] = array[i];
+			arrayAsFloat[i] = DPIUtil.autoScaleUp(array[i]);
 		}
 		return arrayAsFloat;
 	}
