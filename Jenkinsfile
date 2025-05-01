@@ -351,7 +351,7 @@ pipeline {
 						sh '''
 							mvn clean verify \
 								--batch-mode --threads 1C -V -U -e -DforkCount=0 \
-								-Papi-check \
+								-Pbree-libs -Papi-check -Pjavadoc \
 								-Dcompare-version-with-baselines.skip=false \
 								-Dorg.eclipse.swt.tests.junit.disable.test_isLocal=true \
 								-Dmaven.test.failure.ignore=true -Dmaven.test.error.ignore=true
