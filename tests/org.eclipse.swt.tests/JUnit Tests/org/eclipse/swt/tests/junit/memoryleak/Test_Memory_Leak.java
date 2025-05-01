@@ -10,7 +10,7 @@ import org.junit.Test;
 /**
  * Test Widgets for memory leaks. Used when updating dispose logic.
  *
- * Due to lack of better alternative, the current mechanism creates & disposes a widget in a loop.
+ * Due to lack of better alternative, the current mechanism creates and disposes a widget in a loop.
  * If the test makes it to the end without crashing your system, then you have no (major?) leaks.
  *
  * Run these on demand if updating dispose logic of a particular widget.
@@ -35,7 +35,7 @@ public class Test_Memory_Leak {
 	 *
 	 * If you have a memory leak in the dispoal logic, then the loop eventually slows down and the test crashes.
 	 * You would see 'memory pressure' errors. The Java process of the jUnit would grow significantly (100's of mbs)
-	 * On my machine with Intel i7 & 16 GB of ram, this occurs at the ~420th iteration.
+	 * On my machine with Intel i7 and 16 GB of ram, this occurs at the ~420th iteration.
 	 * (although with my testing, without memory leaks, it grows a little bit (by 100mb by end of test)).
 	 */
 	@Test

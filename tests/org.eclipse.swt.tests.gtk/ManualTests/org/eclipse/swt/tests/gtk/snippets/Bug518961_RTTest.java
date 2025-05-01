@@ -26,7 +26,7 @@ import org.eclipse.swt.widgets.Shell;
  1) Uncomment line with "UNCOMMENT THIS".
  2) Get hold of nebula rich text project. (found inside org.eclipse.nebula)
    edit .classpath and add:
- <classpathentry kind="src" path="/org.eclipse.nebula.widgets.richtext"/>
+ {@code <classpathentry kind="src" path="/org.eclipse.nebula.widgets.richtext"/>}
  (This can be done via auto fix.
 
  Before Fix: When running, error messages thrown into console.

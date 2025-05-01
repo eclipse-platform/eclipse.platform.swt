@@ -17,8 +17,8 @@ package org.eclipse.swt.examples.graphics;
 /**
  * Used to perform an action after an item in a Menu has been selected.
  *
- * @see org.eclipse.swt.examples.graphics.ColorMenu.java
- * @see org.eclipse.swt.examples.graphics.GraphicsBackground.java
+ * @see org.eclipse.swt.examples.graphics.ColorMenu
+ * @see org.eclipse.swt.examples.graphics.GraphicsBackground
  */
 public interface ColorListener {
 

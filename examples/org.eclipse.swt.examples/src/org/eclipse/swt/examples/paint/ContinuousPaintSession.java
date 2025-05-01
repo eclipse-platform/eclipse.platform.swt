@@ -162,8 +162,9 @@ public abstract class ContinuousPaintSession extends BasicPaintSession {
 	/**
 	 * Draws a continuous segment from points[0] to points[1].
 	 * Assumes points[0] has been drawn already.
-	 *
-	 * @post points[0] will refer to the same point as points[1]
+	 * <ul>
+	 * <li>post-condition: points[0] will refer to the same point as points[1]</li>
+	 * </ul>
 	 */
 	protected void renderContinuousSegment() {
 		/* A lazy but effective line drawing algorithm */
@@ -239,7 +240,7 @@ public abstract class ContinuousPaintSession extends BasicPaintSession {
 
 	/**
 	 * Template method: Renders a point.
-	 * @param point, the point to render
+	 * @param point the point to render
 	 */
 	protected abstract void render(Point point);
 }

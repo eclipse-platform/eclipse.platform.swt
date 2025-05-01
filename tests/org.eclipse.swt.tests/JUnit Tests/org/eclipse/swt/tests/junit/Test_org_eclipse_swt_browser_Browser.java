@@ -1031,7 +1031,7 @@ public void test_StatusTextListener_addAndRemove() {
  * 3) Upon compleation of page load, move cursor across whole shell.
  *    (Note, in current jUnit, browser sometimes only takes up half the shell).
  * 4) StatusTextListener should get triggered. Test passes.
- * 5) Else timeout & fail.
+ * 5) Else timeout and fail.
  *
  * Set variable "debug_show_browser" to true to see this being performed at human-observable speed.
  *
@@ -2242,8 +2242,8 @@ public void test_BrowserFunction_callback () {
 /**
  * Test for stacked (cascaded) calls between Java and JS i.e. java calls JS
  * which calls Java which calls JS and so on.
- *
- * @see https://github.com/eclipse-platform/eclipse.platform.swt/issues/1919
+ * <p>
+ * See {@code https://github.com/eclipse-platform/eclipse.platform.swt/issues/1919}
  *
  */
 @Test

@@ -741,7 +741,6 @@ public static final native long realpath(byte[] path, byte[] realPath);
 public static final native long G_OBJECT_CLASS_CONSTRUCTOR(long object_class);
 /**
  * @param object_class cast=(GObjectClass *)
- * @paramOFF constructor cast=(GObject* (*) (GType, guint, GObjectConstructParam *))
  */
 public static final native void G_OBJECT_CLASS_SET_CONSTRUCTOR(long object_class, long constructor);
 /** @param xevent cast=(XEvent *) */

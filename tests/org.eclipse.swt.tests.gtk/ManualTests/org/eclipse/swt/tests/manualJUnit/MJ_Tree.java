@@ -36,7 +36,7 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
-/** Convenience class for easy copy & paste */
+/** Convenience class for easy copy &amp; paste */
 @FixMethodOrder(MethodSorters.JVM)
 public class MJ_Tree extends MJ_root {
 
