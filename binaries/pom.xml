@@ -83,6 +83,24 @@
 					</archive>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<configuration>
+					<tags combine.children="append">
+						<tag>
+							<name>field</name>
+							<placement>f</placement>
+							<head>Native field</head>
+						</tag>
+						<tag>
+							<name>method</name>
+							<placement>m</placement>
+							<head>Native method</head>
+						</tag>
+					</tags>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 

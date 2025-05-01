@@ -26,7 +26,7 @@ public class PencilTool extends ContinuousPaintSession implements PaintTool {
 	 * Constructs a pencil tool.
 	 *
 	 * @param toolSettings the new tool settings
-	 * @param getPaintSurface() the PaintSurface we will render on.
+	 * @param paintSurface the PaintSurface we will render on.
 	 */
 	public PencilTool(ToolSettings toolSettings, PaintSurface paintSurface) {
 		super(paintSurface);

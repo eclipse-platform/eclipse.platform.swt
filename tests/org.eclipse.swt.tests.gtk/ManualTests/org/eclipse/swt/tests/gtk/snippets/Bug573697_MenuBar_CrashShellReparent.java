@@ -28,11 +28,11 @@ import org.eclipse.swt.widgets.Shell;
  * destroyed {@link Decorations#accelGroup} while still in use by GTK.
  * <p>
  * Steps to reproduce:
+ * </p>
  * <ol>
  * <li>Run the snippet.</li>
  * <li>No JDK crash should occur.</li>
  * </ol>
- * </p>
  * Expected results: Standard out has text "No crash occurred.", the JDK did not crash.
  * Actual results: The JDK crashed in GTK+ method {@code g_type_check_instance()}.
  */

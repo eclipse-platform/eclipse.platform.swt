@@ -14,7 +14,9 @@
 package org.eclipse.swt.examples.paint;
 
 
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Region;
 
 /**
  * 2D Line object
@@ -28,7 +30,7 @@ public class SolidPolygonFigure extends Figure {
 	 *
 	 * @param color the color for this object
 	 * @param vertices the array of vertices making up the polygon
-	 * @param numPoint the number of valid points in the array (n >= 3)
+	 * @param numPoints the number of valid points in the array (n >= 3)
 	 */
 	public SolidPolygonFigure(Color color, Point[] vertices, int numPoints) {
 		this.color = color;

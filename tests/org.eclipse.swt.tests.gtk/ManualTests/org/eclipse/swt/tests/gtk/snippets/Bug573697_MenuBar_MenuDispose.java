@@ -27,11 +27,11 @@ import org.eclipse.swt.widgets.Shell;
  * standard error stream.
  * <p>
  * Steps to reproduce:
+ * </p>
  * <ol>
  * <li>Run the snippet.</li>
  * <li>No JDK crash should occur, no {@code GLib CRITICAL} errors should be printed on standard error stream.</li>
  * </ol>
- * </p>
  * Expected results: Standard error has no {@code GLib CRITICAL} errors, the JDK did not crash.
  * Actual results: The JDK either crashed or {@code GLib CRITICAL} errors are printed on standard error stream.
  */

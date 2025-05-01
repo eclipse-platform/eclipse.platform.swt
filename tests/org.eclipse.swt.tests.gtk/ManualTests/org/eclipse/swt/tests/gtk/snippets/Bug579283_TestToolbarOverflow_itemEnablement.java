@@ -27,10 +27,11 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
 /**
- * Description: Toolbar items in a toolbar overflow submenu (enabled with style flag {@link SWT.WRAP})
+ * Description: Toolbar items in a toolbar overflow submenu (enabled with style flag {@link SWT#WRAP})
  * do not show correct image enablement.
  * <p>
  * Steps to reproduce:
+ * </p>
  * <ol>
  * <li>Run the snippet.</li>
  * <li>Resize the {@link Shell}, so that only some of the icons are visible.</li>
@@ -40,7 +41,6 @@ import org.eclipse.swt.widgets.ToolItem;
  * <li>Click one of the overflow submenu items.</li>
  * <li>Show the overflow menu again, observe that the image of the clicked item is not changed.</li>
  * </ol>
- * </p>
  * Expected results: Images of disabled buttons should appear grayed out.
  *                   Images should change on overflow submenu item click.
  *                   Text and tooltip of an overflow submenu item should also change on click.
