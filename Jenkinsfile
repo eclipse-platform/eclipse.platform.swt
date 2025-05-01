@@ -71,7 +71,7 @@ def getNativeJdkUrl(String os, String arch) { // To update the used JDK version 
 }
 
 def getLatestGitTag() {
-	return sh(script: 'git describe --abbrev=0 --tags --match v[0-9][0-9][0-9][0-9]*', returnStdout: true).trim()
+	return sh(script: 'git describe --abbrev=0 --tags --match v[0-9][0-9][0-9][0-9]*', returnStdout: true).strip()
 }
 
 def getSWTVersions() { // must be called from the repository root
@@ -159,7 +159,7 @@ pipeline {
 							def sources = sourceFoldersProps.collectEntries{ k, src -> [ k, src.split(',').collect{ f -> '\'' + f + '\''}.join(' ') ] }
 							for(ws in allWS) {
 								def diff = sh(script: "git diff HEAD ${swtTag} ${sources.src_common} ${sources['src_' + ws]}", returnStdout: true)
-								if (!diff.trim().isEmpty()) {
+								if (!diff.strip().isEmpty()) {
 									NATIVES_CHANGED += ws
 								}
 							}
