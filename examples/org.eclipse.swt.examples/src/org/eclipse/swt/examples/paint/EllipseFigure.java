@@ -14,8 +14,10 @@
 package org.eclipse.swt.examples.paint;
 
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.Region;
 
 /**
  * 2D Ellipse object
@@ -28,7 +30,8 @@ public class EllipseFigure extends Figure {
 	 * These objects are defined by any two diametrically opposing corners of a box
 	 * bounding the ellipse.
 	 *
-	 * @param color the color for this object
+	 * @param foregroundColor the foreground color for this object
+	 * @param backgroundColor the background color for this object
 	 * @param lineStyle the line style for this object
 	 * @param x1 the virtual X coordinate of the first corner
 	 * @param y1 the virtual Y coordinate of the first corner

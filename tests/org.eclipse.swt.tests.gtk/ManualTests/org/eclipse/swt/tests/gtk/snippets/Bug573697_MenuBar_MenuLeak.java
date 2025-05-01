@@ -27,11 +27,11 @@ import org.eclipse.swt.widgets.Shell;
  * not being unreferenced.
  * <p>
  * Steps to reproduce:
+ * </p>
  * <ol>
  * <li>Run the snippet.</li>
  * <li>No native memory leak should be detected by e.g. {code valgrind} or {@code jemalloc}.</li>
  * </ol>
- * </p>
  * Expected results: No native memory leak should be detected by e.g. {code valgrind} or {@code jemalloc}.
  * Actual results: {@code jemalloc} reports a native memory leak, e.g.:
  * <pre>
