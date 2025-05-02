@@ -11,9 +11,15 @@
 package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.cocoa.*;
 
 abstract class NativeBasedCustomScrollable extends Scrollable {
+
+	protected abstract ControlRenderer getRenderer();
+
+	private Color backgroundColor;
+	private Color foregroundColor;
 
 	public NativeBasedCustomScrollable(Composite parent, int style) {
 		super(parent, style);
@@ -46,5 +52,27 @@ abstract class NativeBasedCustomScrollable extends Scrollable {
 			contentView.setAutoresizesSubviews(true);
 			view.setAutoresizingMask(OS.NSViewWidthSizable | OS.NSViewHeightSizable);
 		}
+	}
+
+	@Override
+	public final Color getBackground() {
+		return backgroundColor != null ? backgroundColor : getRenderer().getDefaultBackground();
+	}
+
+	@Override
+	public final void setBackground(Color color) {
+		backgroundColor = color;
+		super.setBackground(color);
+	}
+
+	@Override
+	public final Color getForeground() {
+		return foregroundColor != null ? foregroundColor : getRenderer().getDefaultForeground();
+	}
+
+	@Override
+	public final void setForeground(Color color) {
+		foregroundColor = color;
+		super.setForeground(color);
 	}
 }

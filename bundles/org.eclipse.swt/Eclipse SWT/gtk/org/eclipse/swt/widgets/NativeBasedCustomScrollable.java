@@ -18,8 +18,13 @@ import org.eclipse.swt.internal.gtk4.*;
 
 abstract class NativeBasedCustomScrollable extends Scrollable {
 
+	protected abstract ControlRenderer getRenderer();
+
 	long imHandle, socketHandle;
 	static final String NO_INPUT_METHOD = "org.eclipse.swt.internal.gtk.noInputMethod"; //$NON-NLS-1$
+
+	private Color backgroundColor;
+	private Color foregroundColor;
 
 	public NativeBasedCustomScrollable(Composite parent, int style) {
 		super(parent, style);
@@ -171,4 +176,25 @@ abstract class NativeBasedCustomScrollable extends Scrollable {
 		}
 	}
 
+	@Override
+	public final Color getBackground() {
+		return backgroundColor != null ? backgroundColor : getRenderer().getDefaultBackground();
+	}
+
+	@Override
+	public final void setBackground(Color color) {
+		backgroundColor = color;
+		super.setBackground(color);
+	}
+
+	@Override
+	public final Color getForeground() {
+		return foregroundColor != null ? foregroundColor : getRenderer().getDefaultForeground();
+	}
+
+	@Override
+	public final void setForeground(Color color) {
+		foregroundColor = color;
+		super.setForeground(color);
+	}
 }
