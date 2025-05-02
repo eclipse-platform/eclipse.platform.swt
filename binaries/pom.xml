@@ -91,12 +91,12 @@
 						<tag>
 							<name>field</name>
 							<placement>f</placement>
-							<head>Native field</head>
+							<head>Native code field</head>
 						</tag>
 						<tag>
 							<name>method</name>
 							<placement>m</placement>
-							<head>Native method</head>
+							<head>Native code method</head>
 						</tag>
 					</tags>
 				</configuration>
