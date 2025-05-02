@@ -527,7 +527,10 @@ private void createRepFromSourceAndApplyFlag(NSBitmapImageRep srcRep, int srcWid
  * </ul>
  *
  * @see #dispose()
+ *
+ * @deprecated use {@link Image#Image(Device, int, int)} instead
  */
+@Deprecated(since = "2025-06", forRemoval = true)
 public Image(Device device, Rectangle bounds) {
 	super(device);
 	if (bounds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);

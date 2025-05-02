@@ -55,7 +55,8 @@ public class Snippet292 {
 		button.addListener (SWT.Selection, e -> {
 			Image image = label.getImage ();
 			if (image != null) image.dispose ();
-			image = new Image (display, group.getBounds ());
+			Rectangle rect = group.getBounds();
+			image = new Image (display, rect.width, rect.height);
 			GC gc = new GC (image);
 			boolean success = group.print (gc);
 			gc.dispose ();

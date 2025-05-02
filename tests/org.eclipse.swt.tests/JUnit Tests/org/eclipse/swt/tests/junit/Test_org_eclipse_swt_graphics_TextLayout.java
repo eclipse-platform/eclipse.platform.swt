@@ -1009,7 +1009,8 @@ public void test_bug568740_multilineTextStyle() {
 private Image draw(TextLayout layout, int antialias) {
 	GC gc = null;
 	try {
-		Image image = new Image(display, layout.getBounds());
+		Rectangle rect = layout.getBounds();
+		Image image = new Image(display, rect.width, rect.height);
 		gc = new GC(image);
 		gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
 		gc.fillRectangle(image.getBounds());
