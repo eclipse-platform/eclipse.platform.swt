@@ -24,8 +24,9 @@ import org.eclipse.swt.widgets.Shell;
 
 /**
  * Description: After fixing the memory leak in bug 573697, we observed crashes
- * on shell re-parenting. In particular, {@link Decorations#fixAccelGroup()}
- * destroyed {@link Decorations#accelGroup} while still in use by GTK.
+ * on shell re-parenting. In particular, in the GTK implementation of
+ * {@link Decorations}'s the method {@code fixAccelGroup()} destroyed
+ * {@code accelGroup} while still in use by GTK.
  * <p>
  * Steps to reproduce:
  * </p>

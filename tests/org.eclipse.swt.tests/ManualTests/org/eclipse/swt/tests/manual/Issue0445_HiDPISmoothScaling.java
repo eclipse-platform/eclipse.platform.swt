@@ -42,9 +42,8 @@ import org.eclipse.swt.widgets.Shell;
  * <p>
  * On Linux you may need to run this with GDK_SCALE=2 set in the environment.
  *
- * @see <a href=
- *      "https://github.com/eclipse-platform/eclipse.platform.swt/issues/445">Issue
- *      #445</a> for details.
+ *
+ * For details see: {@code https://github.com/eclipse-platform/eclipse.platform.swt/issues/445}.
  */
 @SuppressWarnings("restriction")
 public class Issue0445_HiDPISmoothScaling {
