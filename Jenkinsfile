@@ -89,7 +89,7 @@ pipeline {
 		skipDefaultCheckout() // Specialiced checkout is performed below
 		timestamps()
 		timeout(time: 180, unit: 'MINUTES')
-		buildDiscarder(logRotator(numToKeepStr:'5'))
+		buildDiscarder(logRotator(numToKeepStr: 'master'.equals(env.BRANCH_NAME) ? '20' : '5', artifactNumToKeepStr: 'master'.equals(env.BRANCH_NAME) ? '3' : '1' ))
 		disableConcurrentBuilds(abortPrevious: true)
 	}
 	agent {
