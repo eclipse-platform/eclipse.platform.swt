@@ -19,7 +19,6 @@ import java.io.File;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.graphics.Rectangle;
@@ -54,7 +53,7 @@ public class Bug531667_CanvasPrint_does_not_work {
 
 		shell.open();
 
-		snapshot(display, composite, filename);
+		snapshot(composite, filename);
 
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch()) {
@@ -79,15 +78,11 @@ public class Bug531667_CanvasPrint_does_not_work {
 		return composite;
 	}
 
-	private static void snapshot(Display display, Composite composite, String filename) {
-		Rectangle bounds = composite.getBounds();
-		Image image = new Image(display, bounds);
-		GC gc = new GC(image);
-		composite.print(gc);
-		gc.dispose();
+	private static void snapshot(Composite composite, String filename) {
+		ImageData screenshot = SWT.takeScreenShot(composite);
 
 		ImageLoader loader = new ImageLoader();
-		loader.data = new ImageData[] { image.getImageData() };
+		loader.data = new ImageData[] { screenshot };
 		File output = new File(filename);
 		output.delete();
 		loader.save(filename, SWT.IMAGE_PNG);
