@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -317,12 +317,6 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	 * as to why it's unneeded is left as a TODO. See bug 546274.
 	 */
 	if (GTK.GTK4) return;
-	Point destination = new Point (destX, destY);
-	Rectangle srcRect = new Rectangle (x, y, width, height);
-	scrollInPixels(destination.x, destination.y, srcRect.x, srcRect.y, srcRect.width, srcRect.height, all);
-}
-
-void scrollInPixels (int destX, int destY, int x, int y, int width, int height, boolean all) {
 	if ((style & SWT.MIRRORED) != 0) {
 		int clientWidth = getClientWidth ();
 		x = clientWidth - width - x;

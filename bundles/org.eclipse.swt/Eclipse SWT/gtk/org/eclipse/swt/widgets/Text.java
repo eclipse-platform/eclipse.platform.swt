@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2021 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -949,11 +949,6 @@ public int getCaretLineNumber () {
  */
 public Point getCaretLocation () {
 	checkWidget ();
-	return getCaretLocationInPixels();
-}
-
-Point getCaretLocationInPixels () {
-	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) {
 		int index = GTK.gtk_editable_get_position (handle);
 		index = GTK3.gtk_entry_text_index_to_layout_index (handle, index);
@@ -1532,11 +1527,6 @@ public int getTopIndex () {
  * </ul>
  */
 public int getTopPixel () {
-	checkWidget ();
-	return getTopPixelInPixels();
-}
-
-int getTopPixelInPixels () {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) return 0;
 	byte [] position = new byte [ITER_SIZEOF];

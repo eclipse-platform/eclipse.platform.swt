@@ -232,11 +232,6 @@ public boolean getExpanded() {
  */
 public int getHeaderHeight () {
 	checkWidget ();
-	return getHeaderHeightInPixels ();
-}
-
-int getHeaderHeightInPixels() {
-	checkWidget();
 
 	GtkAllocation allocation = new GtkAllocation();
 	GTK.gtk_widget_get_allocation(GTK.gtk_expander_get_label_widget(handle), allocation);
@@ -506,11 +501,6 @@ void setForegroundRGBA (GdkRGBA rgba) {
  * </ul>
  */
 public void setHeight (int height) {
-	checkWidget ();
-	setHeightInPixels(height);
-}
-
-void setHeightInPixels (int height) {
 	checkWidget ();
 	if (height < 0) return;
 	this.height = height;

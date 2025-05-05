@@ -407,11 +407,6 @@ public Color getBackground () {
  */
 public Rectangle getBounds () {
 	checkWidget ();
-	return getBoundsInPixels ();
-}
-
-Rectangle getBoundsInPixels () {
-	checkWidget();
 	parent.forceResize ();
 	long topHandle = topHandle ();
 	GtkAllocation allocation = new GtkAllocation ();
@@ -607,11 +602,6 @@ public String getToolTipText () {
  */
 public int getWidth () {
 	checkWidget ();
-	return getWidthInPixels ();
-}
-
-int getWidthInPixels () {
-	checkWidget();
 	parent.forceResize ();
 	long topHandle = topHandle ();
 	GtkAllocation allocation = new GtkAllocation();
@@ -1534,11 +1524,6 @@ public void setToolTipText(String string) {
  */
 public void setWidth (int width) {
 	checkWidget ();
-	setWidthInPixels(width);
-}
-
-void setWidthInPixels (int width) {
-	checkWidget();
 	if ((style & SWT.SEPARATOR) == 0) return;
 	if (width < 0) return;
 	resizeHandle(width, (parent.style & SWT.VERTICAL) != 0 ? 6 : 15);

@@ -289,11 +289,6 @@ public int getSelection () {
  */
 public Point getSize () {
 	checkWidget ();
-	return getSizeInPixels ();
-}
-
-Point getSizeInPixels () {
-	checkWidget ();
 	if (handle == 0) return new Point (0,0);
 	GtkRequisition requisition = new GtkRequisition ();
 	gtk_widget_get_preferred_size (handle, requisition);
