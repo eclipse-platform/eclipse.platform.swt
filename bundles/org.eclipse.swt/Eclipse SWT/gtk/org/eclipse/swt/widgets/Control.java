@@ -6320,14 +6320,14 @@ boolean showMenu (int x, int y, int detail) {
 				if (temp != 0) OS.g_object_unref(temp);
 
 
-				menu.setLocationInPixels(x, y);
+				menu.setLocation(x, y);
 				menu.setVisible(true);
 
 				return true;
 			} else {
 				Rectangle rect = event.getBounds ();
 				if (rect.x != x || rect.y != y) {
-					menu.setLocationInPixels (rect.x, rect.y);
+					menu.setLocation (rect.x, rect.y);
 				}
 				menu.setVisible (true);
 				return true;

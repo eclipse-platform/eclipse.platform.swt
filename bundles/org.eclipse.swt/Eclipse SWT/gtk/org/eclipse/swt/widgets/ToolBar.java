@@ -302,15 +302,10 @@ public ToolItem getItem (int index) {
  */
 public ToolItem getItem (Point point) {
 	checkWidget();
-	return getItemInPixels(point);
-}
-
-
-ToolItem getItemInPixels (Point point) {
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
 	ToolItem[] items = getItems();
 	for (int i=0; i<items.length; i++) {
-		if (items[i].getBoundsInPixels().contains(point)) return items[i];
+		if (items[i].getBounds().contains(point)) return items[i];
 	}
 	return null;
 }

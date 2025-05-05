@@ -1081,12 +1081,6 @@ long eventSurface () {
  */
 public Point getCaretLocation () {
 	checkWidget ();
-	return getCaretLocationInPixels();
-}
-
-
-Point getCaretLocationInPixels () {
-	checkWidget ();
 	if ((style & SWT.READ_ONLY) != 0) {
 		return new Point (0, 0);
 	}
@@ -1389,12 +1383,6 @@ String getText (int start, int stop) {
  * </ul>
  */
 public int getTextHeight () {
-	checkWidget();
-	return getTextHeightInPixels();
-}
-
-
-int getTextHeightInPixels () {
 	checkWidget();
 	GtkRequisition requisition = new GtkRequisition ();
 	gtk_widget_get_preferred_size (handle, requisition);
@@ -2275,7 +2263,7 @@ void setBackgroundGdkRGBA (long context, long handle, GdkRGBA rgba) {
 @Override
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	int newHeight = height;
-	if (resize) newHeight = Math.max (getTextHeightInPixels (), height);
+	if (resize) newHeight = Math.max (getTextHeight (), height);
 	return super.setBounds (x, y, width, newHeight, move, resize);
 }
 

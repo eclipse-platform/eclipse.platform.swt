@@ -275,7 +275,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	 * based on the number of items in the table
 	 */
 	if (size.y == 0 && hHint == SWT.DEFAULT) {
-		size.y = getItemCount() * getItemHeightInPixels();
+		size.y = getItemCount() * getItemHeight();
 	}
 
 	/*
@@ -535,11 +535,6 @@ public int getItemCount () {
  * </ul>
  */
 public int getItemHeight () {
-	checkWidget();
-	return getItemHeightInPixels();
-}
-
-int getItemHeightInPixels() {
 	checkWidget();
 
 	final int BASE_ITEM_PADDING = 1;
