@@ -160,7 +160,7 @@ public class DPIUtilTests {
 	@Test
 	public void scaleDownRectangle() {
 		Rectangle valueAt200 = new Rectangle(100, 150, 10, 14);
-		Rectangle valueAt150 = new Rectangle(75, 113, 7, 11);
+		Rectangle valueAt150 = new Rectangle(75, 113, 7, 10);
 		Rectangle valueAt100 = new Rectangle(50, 75, 5, 7);
 
 		Rectangle scaledValue = DPIUtil.autoScaleDown(valueAt200);
@@ -295,7 +295,7 @@ public class DPIUtilTests {
 	@Test
 	public void scaleUpRectangle() {
 		Rectangle valueAt200 = new Rectangle(100, 150, 10, 14);
-		Rectangle valueAt150 = new Rectangle(75, 113, 8, 11);
+		Rectangle valueAt150 = new Rectangle(75, 113, 8, 10);
 		Rectangle valueAt100 = new Rectangle(50, 75, 5, 7);
 
 		Rectangle scaledValue = DPIUtil.autoScaleUp(valueAt100);
