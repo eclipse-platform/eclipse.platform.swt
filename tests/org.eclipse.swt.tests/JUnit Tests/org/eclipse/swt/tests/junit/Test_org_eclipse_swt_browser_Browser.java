@@ -1746,6 +1746,18 @@ public void test_getText_html() {
 	getText_helper(testString, testString);
 }
 
+/**
+ * Ensure getText() works even if consumer-level scripting is disabled. Needed
+ * on platforms where getText() implementation is JavaScript-based, e.g. Edge:
+ * https://github.com/eclipse-platform/eclipse.platform.swt/issues/2029
+ */
+@Test
+public void test_getText_javscriptDisabled() {
+	browser.setJavascriptEnabled(false);
+	String testString = "<html><head></head><body>hello<b>World</b></body></html>";
+	getText_helper(testString, testString);
+}
+
 /** Ensure we get webpage before javascript processed it.
  *  E.g JS would add 'style' tag to body after processing. */
 @Test
