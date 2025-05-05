@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2022 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -645,7 +645,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	 * the number of items at the root of the tree.
 	 */
 	if (hHint == SWT.DEFAULT && size.y == getHeaderHeight()) {
-		int itemHeight = getItemHeightInPixels();
+		int itemHeight = getItemHeight();
 
 		// Initialize to height of root items & header
 		size.y = getItemCount() * itemHeight + getHeaderHeight();
@@ -1320,7 +1320,7 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 		long [] path = new long [1];
 		if (GTK.gtk_gesture_drag_get_start_point(dragGesture, startX, startY)) {
 			if (getHeaderVisible()) {
-				startY[0]-= getHeaderHeightInPixels();
+				startY[0]-= getHeaderHeight();
 			}
 			if (GTK.gtk_tree_view_get_path_at_pos (handle, (int) startX[0], (int) startY[0], path, null, null, null)) {
 				if (path [0] != 0) {
@@ -1602,11 +1602,6 @@ TreeItem getFocusItem () {
  */
 public int getGridLineWidth () {
 	checkWidget ();
-	return getGridLineWidthInPixels ();
-}
-
-int getGridLineWidthInPixels () {
-	checkWidget();
 	return 0;
 }
 
@@ -1656,11 +1651,6 @@ public Color getHeaderForeground () {
  */
 public int getHeaderHeight () {
 	checkWidget ();
-	return getHeaderHeightInPixels ();
-}
-
-int getHeaderHeightInPixels () {
-	checkWidget();
 	if (!GTK.gtk_tree_view_get_headers_visible(handle)) return 0;
 
 	int height = 0;
@@ -1771,11 +1761,6 @@ public TreeItem getItem (int index) {
  */
 public TreeItem getItem (Point point) {
 	checkWidget();
-	return getItemInPixels(point);
-}
-
-TreeItem getItemInPixels (Point point) {
-	checkWidget ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
 	long [] path = new long [1];
 	GTK.gtk_widget_realize (handle);
@@ -1846,11 +1831,6 @@ public int getItemCount () {
  */
 public int getItemHeight () {
 	checkWidget ();
-	return getItemHeightInPixels ();
-}
-
-int getItemHeightInPixels () {
-	checkWidget();
 	int height = 0;
 	int itemCount = GTK.gtk_tree_model_iter_n_children(modelHandle, 0);
 
@@ -3462,7 +3442,7 @@ public void setInsertMark (TreeItem item, boolean before) {
 	}
 	if (item.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (item.parent != this) return;
-	Rectangle rect = item.getBoundsInPixels();
+	Rectangle rect = item.getBounds();
 	long [] path = new long [1];
 	GTK.gtk_widget_realize (handle);
 	if (!GTK.gtk_tree_view_get_path_at_pos(handle, rect.x, rect.y, path, null, null, null)) return;
