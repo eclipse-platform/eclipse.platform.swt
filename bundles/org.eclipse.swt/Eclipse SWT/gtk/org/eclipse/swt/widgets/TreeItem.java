@@ -407,12 +407,7 @@ public Color getBackground (int index) {
  */
 public Rectangle getBounds (int index) {
 	checkWidget ();
-	return getBoundsInPixels (index);
-}
-
-Rectangle getBoundsInPixels (int index) {
 	// TODO fully test on early and later versions of GTK
-	checkWidget();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 	long parentHandle = parent.handle;
 	long column = 0;
@@ -454,13 +449,8 @@ Rectangle getBoundsInPixels (int index) {
  */
 public Rectangle getBounds () {
 	checkWidget ();
-	return getBoundsInPixels ();
-}
-
-Rectangle getBoundsInPixels () {
 	// TODO fully test on early and later versions of GTK
 	// shifted a bit too far right on later versions of GTK - however, old Tree also had this problem
-	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 	long parentHandle = parent.handle;
 	long column = GTK.gtk_tree_view_get_column (parentHandle, 0);
@@ -694,12 +684,7 @@ public Image getImage (int index) {
  */
 public Rectangle getImageBounds (int index) {
 	checkWidget ();
-	return getImageBoundsInPixels(index);
-}
-
-Rectangle getImageBoundsInPixels (int index) {
 	// TODO fully test on early and later versions of GTK
-	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 	long parentHandle = parent.handle;
 	long column = 0;
@@ -927,11 +912,6 @@ public String getText (int index) {
  * @since 3.3
  */
 public Rectangle getTextBounds (int index) {
-	checkWidget ();
-	return getTextBoundsInPixels(index);
-}
-
-Rectangle getTextBoundsInPixels (int index) {
 	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int count = Math.max (1, parent.getColumnCount ());

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2022 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -1157,7 +1157,7 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 		long [] path = new long [1];
 		if (GTK.gtk_gesture_drag_get_start_point(dragGesture, startX, startY)) {
 			if (getHeaderVisible()) {
-				startY[0]-= getHeaderHeightInPixels();
+				startY[0]-= getHeaderHeight();
 			}
 			if (GTK.gtk_tree_view_get_path_at_pos (handle, (int) startX[0], (int) startY[0], path, null, null, null)) {
 				if (path [0] != 0) {
@@ -1434,11 +1434,6 @@ TableItem getFocusItem () {
  */
 public int getGridLineWidth () {
 	checkWidget ();
-	return getGridLineWidthInPixels ();
-}
-
-int getGridLineWidthInPixels () {
-	checkWidget();
 	return 0;
 }
 
@@ -1488,11 +1483,6 @@ public Color getHeaderForeground () {
  */
 public int getHeaderHeight () {
 	checkWidget ();
-	return getHeaderHeightInPixels ();
-}
-
-int getHeaderHeightInPixels () {
-	checkWidget();
 	if (!GTK.gtk_tree_view_get_headers_visible(handle)) return 0;
 
 	int height = 0;
@@ -1599,11 +1589,6 @@ public TableItem getItem (int index) {
  */
 public TableItem getItem (Point point) {
 	checkWidget();
-	return getItemInPixels(point);
-}
-
-TableItem getItemInPixels (Point point) {
-	checkWidget();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
 	long [] path = new long [1];
 	GTK.gtk_widget_realize (handle);
@@ -1657,11 +1642,6 @@ public int getItemCount () {
  */
 public int getItemHeight () {
 	checkWidget ();
-	return getItemHeightInPixels ();
-}
-
-int getItemHeightInPixels () {
-	checkWidget();
 	int height = 0;
 
 	if (itemCount == 0) {
