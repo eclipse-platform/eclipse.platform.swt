@@ -25,6 +25,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.internal.win32.version.*;
 
 /**
  * Instances of this class are responsible for managing the
@@ -2158,7 +2159,7 @@ public static boolean isSystemDarkTheme () {
 	/*
 	 * The registry settings, and Dark Theme itself, is present since Win10 1809
 	 */
-	if (OS.WIN32_BUILD >= OS.WIN32_BUILD_WIN10_1809) {
+	if (OsVersion.IS_WIN10_1809) {
 		int[] result = OS.readRegistryDwords(OS.HKEY_CURRENT_USER,
 				"Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize", "AppsUseLightTheme");
 		if (result!=null) {
@@ -5397,7 +5398,7 @@ private boolean setDPIAwareness(int desiredDpiAwareness) {
 	}
 	if (desiredDpiAwareness == OS.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2) {
 		// "Per Monitor V2" only available in more recent Windows version
-		boolean perMonitorV2Available = OS.WIN32_BUILD >= OS.WIN32_BUILD_WIN10_1809;
+		boolean perMonitorV2Available = OsVersion.IS_WIN10_1809;
 		if (!perMonitorV2Available) {
 			System.err.println("***WARNING: the OS version does not support DPI awareness mode PerMonitorV2.");
 			return false;

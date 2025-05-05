@@ -19,6 +19,7 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.internal.win32.version.*;
 
 /**
  * Instances of this class represent the "windows"
@@ -581,11 +582,11 @@ void createBalloonTipHandle () {
 
 void setTitleColoring() {
 	int attributeID = 0;
-	if (OS.WIN32_BUILD >= OS.WIN32_BUILD_WIN10_2004) {
+	if (OsVersion.IS_WIN10_2004) {
 		// Documented since build 20348, but was already present since build 19041
 		final int DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
 		attributeID = DWMWA_USE_IMMERSIVE_DARK_MODE;
-	} else if (OS.WIN32_BUILD >= OS.WIN32_BUILD_WIN10_1809) {
+	} else if (OsVersion.IS_WIN10_1809) {
 		// Undocumented value
 		attributeID = 19;
 	} else {
