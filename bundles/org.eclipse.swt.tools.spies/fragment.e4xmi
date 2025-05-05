@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ASCII"?>
 <fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/descriptor/basic" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmi:id="_-LZIEN9kEemzyrbiRClN6A">
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="__HWaAN9kEemzyrbiRClN6A" featurename="descriptors" parentElementId="xpath:/">
-    <elements xsi:type="basic:PartDescriptor" xmi:id="_GSP6cN9lEemzyrbiRClN6A" elementId="org.eclipse.swt.tools.spies.partdescriptor.sleak" label="Sleak" iconURI="platform:/plugin/org.eclipse.swt.tools.spies/icons/sleak.png" category="SWT Tools" closeable="true" contributionURI="bundleclass://org.eclipse.swt.tools.spies/org.eclipse.swt.tools.views.SleakView">
+    <elements xsi:type="basic:PartDescriptor" xmi:id="_GSP6cN9lEemzyrbiRClN6A" elementId="org.eclipse.swt.tools.spies.partdescriptor.sleak" label="Sleak" iconURI="platform:/plugin/org.eclipse.swt.tools.spies/icons/sleak.svg" category="SWT Tools" closeable="true" contributionURI="bundleclass://org.eclipse.swt.tools.spies/org.eclipse.swt.tools.views.SleakView">
       <persistedState key="persistState" value="true"/>
       <tags>View</tags>
     </elements>
