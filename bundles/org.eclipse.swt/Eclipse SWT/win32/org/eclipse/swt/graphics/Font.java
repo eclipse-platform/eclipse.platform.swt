@@ -62,15 +62,6 @@ public final class Font extends Resource {
 	 */
 	private final float fontHeight;
 
-/**
- * Prevents uninitialized instances from being created outside the package.
- */
-Font(Device device) {
-	super(device);
-	this.zoom = DPIUtil.getNativeDeviceZoom();
-	this.fontHeight = 0;
-}
-
 private Font(Device device, long handle, int zoom) {
 	super(device);
 	this.handle = handle;
