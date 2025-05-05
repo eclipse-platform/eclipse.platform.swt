@@ -46,9 +46,8 @@ public final class Font extends Resource {
 	 * platforms and should never be accessed from application code.
 	 * </p>
 	 *
-	 * @noreference This field is not intended to be referenced by clients.
 	 */
-	public long handle;
+	private long handle;
 
 	/**
 	 * The zoom in % of the standard resolution used for conversion of point height to pixel height
@@ -172,7 +171,8 @@ public Font(Device device, String name, int height, int style) {
 	super(device);
 	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.zoom = DPIUtil.getNativeDeviceZoom();
-	init(new FontData (name, height, style));
+	FontData fd = new FontData (name, height, style);
+	init(fd);
 	this.fontHeight = height;
 	init();
 }
@@ -181,7 +181,8 @@ public Font(Device device, String name, int height, int style) {
 	super(device);
 	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.zoom = DPIUtil.getNativeDeviceZoom();
-	init(new FontData (name, height, style));
+	FontData fd = new FontData (name, height, style);
+	init(fd);
 	this.fontHeight = height;
 	init();
 }
@@ -283,6 +284,23 @@ public boolean isDisposed() {
 public String toString () {
 	if (isDisposed()) return "Font {*DISPOSED*}";
 	return "Font {" + handle + "}";
+}
+
+/**
+ * Creates or returns a handle for the requested font.
+ * <p>
+ * <b>IMPORTANT:</b> This method is not part of the public API for
+ * <code>Font</code>. It is marked public only so that it can be shared within
+ * the packages provided by SWT. It is not available on all platforms, and
+ * should never be called from application code.
+ *
+ * @param font the font to get the handle of
+ * @return handle of the font
+ *
+ * @noreference This method is not intended to be referenced by clients.
+ */
+public static long win32_getHandle(Font font) {
+	return font.handle;
 }
 
 /**

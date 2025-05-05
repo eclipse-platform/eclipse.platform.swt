@@ -3439,7 +3439,7 @@ public void setFont (Font font) {
 	long hFont = 0;
 	if (newFont != null) {
 		if (newFont.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-		hFont = newFont.handle;
+		hFont = Font.win32_getHandle(newFont);
 	}
 	this.font = newFont;
 	if (hFont == 0) hFont = defaultFont ();
