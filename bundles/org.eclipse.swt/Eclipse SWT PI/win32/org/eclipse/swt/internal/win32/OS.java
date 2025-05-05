@@ -19,6 +19,7 @@ import java.util.*;
 
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.win32.version.*;
 import org.eclipse.swt.widgets.*;
 
 public class OS extends C {
@@ -30,18 +31,6 @@ public class OS extends C {
 	* SWT Windows flags
 	*/
 	public static final boolean IsDBLocale;
-	/**
-	 * Always reports the correct build number, regardless of manifest and
-	 * compatibility GUIDs. Note that build number alone is sufficient to
-	 * identify Windows version.
-	 */
-	public static final int WIN32_BUILD;
-	/**
-	 * Values taken from https://en.wikipedia.org/wiki/List_of_Microsoft_Windows_versions
-	 */
-	public static final int WIN32_BUILD_WIN10_1809 = 17763; // "Windows 10 October 2018 Update"
-	public static final int WIN32_BUILD_WIN10_2004 = 19041; // "Windows 10 May 2020 Update"
-	public static final int WIN32_BUILD_WIN11_21H2 = 22000; // Initial Windows 11 release
 
 	public static final String NO_MANIFEST = "org.eclipse.swt.internal.win32.OS.NO_MANIFEST";
 
@@ -53,20 +42,6 @@ public class OS extends C {
 	public static final int SM_IMMENABLED = 0x52;
 
 	static {
-		/*
-		 * Starting with Windows 10, GetVersionEx() lies about version unless
-		 * application manifest has a proper entry. RtlGetVersion() always
-		 * reports true version.
-		 */
-		OSVERSIONINFOEX osVersionInfoEx = new OSVERSIONINFOEX ();
-		osVersionInfoEx.dwOSVersionInfoSize = OSVERSIONINFOEX.sizeof;
-		if (0 == OS.RtlGetVersion (osVersionInfoEx)) {
-			WIN32_BUILD = osVersionInfoEx.dwBuildNumber;
-		} else {
-			System.err.println ("SWT: OS: Failed to detect Windows build number");
-			WIN32_BUILD = 0;
-		}
-
 		/* Load the manifest to force the XP Theme */
 		if (System.getProperty (NO_MANIFEST) == null) {
 			ACTCTX pActCtx = new ACTCTX ();
@@ -1974,7 +1949,6 @@ public static final native int NONCLIENTMETRICS_sizeof ();
 /** @method flags=const */
 public static final native int NOTIFYICONDATA_V2_SIZE ();
 public static final native int OUTLINETEXTMETRIC_sizeof ();
-public static final native int OSVERSIONINFOEX_sizeof ();
 public static final native int PAINTSTRUCT_sizeof ();
 public static final native int POINT_sizeof ();
 public static final native int PRINTDLG_sizeof ();
@@ -3964,8 +3938,6 @@ public static final native boolean ReplyMessage (long lResult);
 public static final native boolean RestoreDC (long hdc, int nSavedDC);
 /** @param hdc cast=(HDC) */
 public static final native boolean RoundRect (long hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect, int nWidth, int nHeight);
-/** @method flags=dynamic */
-public static final native int RtlGetVersion (OSVERSIONINFOEX lpVersionInformation);
 /** @param hdc cast=(HDC) */
 public static final native int SaveDC (long hdc);
 /** @param hWnd cast=(HWND) */
@@ -4616,7 +4588,7 @@ public static final native boolean DuplicateHandle(long hSourceProcessHandle, lo
 
 
 public static long OpenThemeData(long hwnd, char[] themeName, int dpi) {
-	if (OS.WIN32_BUILD >= OS.WIN32_BUILD_WIN10_1809) {
+	if (OsVersion.IS_WIN10_1809) {
 		return OS.OpenThemeDataForDpi(hwnd, themeName, dpi);
 	} else {
 		return OS.OpenThemeData(hwnd, themeName);
