@@ -16,6 +16,7 @@ package org.eclipse.swt.widgets;
 
 
 import java.io.*;
+import java.nio.file.Path;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -173,9 +174,7 @@ IShellLink createShellLink (MenuItem item) {
 				} else {
 					data = image.getImageData (DPIUtil.getDeviceZoom ());
 				}
-				ImageLoader loader = new ImageLoader ();
-				loader.data = new ImageData [] {data};
-				loader.save (icon, SWT.IMAGE_ICO);
+				data.save(Path.of(icon));
 			}
 		}
 		if (icon != null) {

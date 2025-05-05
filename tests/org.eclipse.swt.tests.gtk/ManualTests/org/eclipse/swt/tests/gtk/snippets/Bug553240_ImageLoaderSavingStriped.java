@@ -56,13 +56,8 @@ public class Bug553240_ImageLoaderSavingStriped {
 		ImageLoader loader = new ImageLoader();
 		final ImageData[] loadedImageData = loader.load("./images/map.png");
 		final ImageData tileImageData = loadedImageData[0];
-		final ImageLoader imageLoader = new ImageLoader();
-		imageLoader.data = new ImageData[] { tileImageData };
-
-		final int imageType = tileImageData.type;
 		file.delete();
-		final String imageFilePath = file.getAbsolutePath();
-		imageLoader.save(imageFilePath, imageType);
+		tileImageData.save(file.toPath());
 		text.setText(file.getAbsolutePath());
 
 		Composite composite = new Composite(shell, SWT.NONE);
