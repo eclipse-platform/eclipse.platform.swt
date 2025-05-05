@@ -6519,18 +6519,6 @@ JNIEXPORT void JNICALL OS_NATIVE(NotifyWinEvent)
 }
 #endif
 
-#ifndef NO_OSVERSIONINFOEX_1sizeof
-JNIEXPORT jint JNICALL OS_NATIVE(OSVERSIONINFOEX_1sizeof)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, OSVERSIONINFOEX_1sizeof_FUNC);
-	rc = (jint)OSVERSIONINFOEX_sizeof();
-	OS_NATIVE_EXIT(env, that, OSVERSIONINFOEX_1sizeof_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_OUTLINETEXTMETRIC_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(OUTLINETEXTMETRIC_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -7318,30 +7306,6 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(RoundRect)
 	OS_NATIVE_ENTER(env, that, RoundRect_FUNC);
 	rc = (jboolean)RoundRect((HDC)arg0, arg1, arg2, arg3, arg4, arg5, arg6);
 	OS_NATIVE_EXIT(env, that, RoundRect_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_RtlGetVersion
-JNIEXPORT jint JNICALL OS_NATIVE(RtlGetVersion)
-	(JNIEnv *env, jclass that, jobject arg0)
-{
-	OSVERSIONINFOEX _arg0, *lparg0=NULL;
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, RtlGetVersion_FUNC);
-	if (arg0) if ((lparg0 = getOSVERSIONINFOEXFields(env, arg0, &_arg0)) == NULL) goto fail;
-/*
-	rc = (jint)RtlGetVersion(lparg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, RtlGetVersion)
-		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)(OSVERSIONINFOEX *))fp)(lparg0);
-		}
-	}
-fail:
-	if (arg0 && lparg0) setOSVERSIONINFOEXFields(env, arg0, lparg0);
-	OS_NATIVE_EXIT(env, that, RtlGetVersion_FUNC);
 	return rc;
 }
 #endif
