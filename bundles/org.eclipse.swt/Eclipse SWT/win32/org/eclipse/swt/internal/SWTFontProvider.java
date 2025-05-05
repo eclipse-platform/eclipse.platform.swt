@@ -48,7 +48,7 @@ public class SWTFontProvider {
 	}
 
 	public static long getSystemFontHandle(Device device, int zoom) {
-		return getSystemFont(device, zoom).handle;
+		return Font.win32_getHandle(getSystemFont(device, zoom));
 	}
 
 	/**
@@ -67,14 +67,14 @@ public class SWTFontProvider {
 	}
 
 	public static long getFontHandle(Device device, FontData fontData, int zoom) {
-		return getFont(device, fontData, zoom).handle;
+		return Font.win32_getHandle(getFont(device, fontData, zoom));
 	}
 
 	public static long getFontHandle(Font font, int zoom) {
 		if (font == null) {
 			SWT.error(SWT.ERROR_NULL_ARGUMENT);
 		}
-		return getFont(font.getDevice(), font.getFontData()[0], zoom).handle;
+		return Font.win32_getHandle(getFont(font.getDevice(), font.getFontData()[0], zoom));
 	}
 
 	/**
