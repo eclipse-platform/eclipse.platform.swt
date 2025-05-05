@@ -2659,7 +2659,7 @@ LRESULT WM_SETCURSOR (long wParam, long lParam) {
 				RECT rect = new RECT ();
 				OS.GetClientRect (handle, rect);
 				if (OS.PtInRect (rect, pt)) {
-					OS.SetCursor (Cursor.win32_getHandle(cursor));
+					OS.SetCursor (Cursor.win32_getHandle(cursor, getNativeZoom()));
 					switch (msg) {
 						case OS.WM_LBUTTONDOWN:
 						case OS.WM_RBUTTONDOWN:
