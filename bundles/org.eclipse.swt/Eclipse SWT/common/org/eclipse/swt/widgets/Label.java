@@ -153,6 +153,11 @@ public class Label extends CustomControl {
 	}
 
 	@Override
+	boolean isTabGroup() {
+		return false;
+	}
+
+	@Override
 	boolean isTabItem() {
 		return false;
 	}
