@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -394,11 +394,6 @@ public Color getBackground (int index) {
  */
 public Rectangle getBounds (int index) {
 	checkWidget ();
-	return getBoundsInPixels (index);
-}
-
-Rectangle getBoundsInPixels (int index) {
-	checkWidget();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 	long parentHandle = parent.handle;
 	long column = 0;
@@ -602,11 +597,6 @@ public Image getImage (int index) {
  */
 public Rectangle getImageBounds (int index) {
 	checkWidget ();
-	return getImageBoundsInPixels (index);
-}
-
-Rectangle getImageBoundsInPixels (int index) {
-	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 	long parentHandle = parent.handle;
 	long column = 0;
@@ -742,11 +732,6 @@ public String getText (int index) {
  * @since 3.3
  */
 public Rectangle getTextBounds (int index) {
-	checkWidget ();
-	return getTextBoundsInPixels (index);
-}
-
-Rectangle getTextBoundsInPixels (int index) {
 	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int count = Math.max (1, parent.getColumnCount ());
