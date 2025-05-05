@@ -925,6 +925,14 @@ public Object evaluate(String script) throws SWTException {
 	// Feature in WebView2. ExecuteScript works regardless of IsScriptEnabled setting.
 	// Disallow programmatic execution manually.
 	if (!jsEnabled) return null;
+	return evaluateInternal(script);
+}
+
+/**
+ * Unconditional script execution, bypassing {@link WebBrowser#jsEnabled} flag /
+ * {@link Browser#setJavascriptEnabled(boolean)}.
+ */
+private Object evaluateInternal(String script) throws SWTException {
 	if(inCallback > 0) {
 		// Execute script, but do not wait for async call to complete as otherwise it
 		// can cause a deadlock if execute inside a WebView callback.
@@ -974,7 +982,7 @@ String getJavaCallDeclaration() {
 
 @Override
 public String getText() {
-	return (String)evaluate("return document.documentElement.outerHTML;");
+	return (String)evaluateInternal("return document.documentElement.outerHTML;");
 }
 
 @Override
