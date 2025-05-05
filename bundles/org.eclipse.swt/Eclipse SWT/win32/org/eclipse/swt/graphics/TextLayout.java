@@ -845,7 +845,7 @@ void drawInPixels (GC gc, int xInPoints, int yInPoints, int selectionStart, int 
 		int drawYWithLineHeight = DPIUtil.scaleUp(getDevice(), yInPoints + lineY[line+1] - lineSpacingInPoints, getZoom(gc));
 		int drawYWithLineHeightWithSpacing = DPIUtil.scaleUp(getDevice(), yInPoints + lineY[line+1], getZoom(gc));
 		int lineHeight = DPIUtil.scaleUp(getDevice(), lineY[line+1] - lineY[line] - lineSpacingInPoints, getZoom(gc));
-		int lineHeightWithSpacing = DPIUtil.scaleUp(getDevice(), lineY[line+1] - lineY[line], getZoom(gc));
+		int lineHeightWithSpacing = drawYWithLineHeightWithSpacing - drawY;
 		//Draw last line selection
 		boolean extents = false;
 		if ((flags & (SWT.FULL_SELECTION | SWT.DELIMITER_SELECTION)) != 0 && (hasSelection || (flags & SWT.LAST_LINE_SELECTION) != 0)) {
@@ -873,7 +873,7 @@ void drawInPixels (GC gc, int xInPoints, int yInPoints, int selectionStart, int 
 					Gdip.Graphics_FillRectangle(gdipGraphics, gdipSelBackground, drawX + lineWidthInPixels[line], drawY, width, lineHeightWithSpacing);
 				} else {
 					OS.SelectObject(hdc, selBackground);
-					OS.PatBlt(hdc, drawX + lineWidthInPixels[line], drawY, width, drawYWithLineHeightWithSpacing, OS.PATCOPY);
+					OS.PatBlt(hdc, drawX + lineWidthInPixels[line], drawY, width, lineHeightWithSpacing, OS.PATCOPY);
 				}
 			}
 		}
