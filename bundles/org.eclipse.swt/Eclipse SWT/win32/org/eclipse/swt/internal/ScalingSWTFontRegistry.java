@@ -44,7 +44,7 @@ final class ScalingSWTFontRegistry implements SWTFontRegistry {
 
 		private Font createAndCacheFont(int zoom) {
 			Font newFont = createFont(zoom);
-			customFontHandlesKeyMap.put(newFont.handle, this);
+			customFontHandlesKeyMap.put(Font.win32_getHandle(newFont), this);
 			scaledFonts.put(zoom, newFont);
 			return newFont;
 		}
