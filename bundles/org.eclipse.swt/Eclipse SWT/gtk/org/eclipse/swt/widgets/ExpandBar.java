@@ -484,11 +484,6 @@ void setOrientation (boolean create) {
  */
 public void setSpacing (int spacing) {
 	checkWidget ();
-	setSpacingInPixels(spacing);
-}
-
-void setSpacingInPixels (int spacing) {
-	checkWidget ();
 	if (spacing < 0) return;
 	if (spacing == this.spacing) return;
 	this.spacing = spacing;

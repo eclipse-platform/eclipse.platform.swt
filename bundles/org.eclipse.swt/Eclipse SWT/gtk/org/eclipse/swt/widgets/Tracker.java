@@ -445,16 +445,6 @@ public Rectangle [] getRectangles () {
 	return result;
 }
 
-Rectangle [] getRectanglesInPixels () {
-	checkWidget();
-	Rectangle [] result = new Rectangle [rectangles.length];
-	for (int i = 0; i < rectangles.length; i++) {
-		Rectangle current = rectangles [i];
-		result [i] = new Rectangle (current.x, current.y, current.width, current.height);
-	}
-	return result;
-}
-
 /**
  * Returns <code>true</code> if the rectangles are drawn with a stippled line, <code>false</code> otherwise.
  *
@@ -1154,12 +1144,6 @@ public void setCursor (Cursor newCursor) {
  * </ul>
  */
 public void setRectangles (Rectangle [] rectangles) {
-	checkWidget();
-	if (rectangles == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setRectanglesInPixels (rectangles);
-}
-
-void setRectanglesInPixels (Rectangle [] rectangles) {
 	checkWidget();
 	if (rectangles == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int length = rectangles.length;

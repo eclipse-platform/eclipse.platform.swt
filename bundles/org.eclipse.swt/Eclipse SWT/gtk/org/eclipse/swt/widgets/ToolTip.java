@@ -711,11 +711,6 @@ public void setAutoHide (boolean autoHide) {
  */
 public void setLocation (int x, int y) {
 	checkWidget ();
-	setLocation (new Point (x, y));
-}
-
-void setLocationInPixels (int x, int y) {
-	checkWidget ();
 	this.x = x;
 	this.y = y;
 	if ((style & SWT.BALLOON) != 0) {
@@ -746,13 +741,8 @@ void setLocationInPixels (int x, int y) {
  */
 public void setLocation (Point location) {
 	checkWidget ();
-	setLocationInPixels(location);
-}
-
-void setLocationInPixels (Point location) {
-	checkWidget ();
 	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setLocationInPixels (location.x, location.y);
+	setLocation (location.x, location.y);
 }
 
 /**

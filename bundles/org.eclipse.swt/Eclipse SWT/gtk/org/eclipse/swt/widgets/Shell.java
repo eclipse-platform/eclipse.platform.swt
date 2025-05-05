@@ -1296,11 +1296,6 @@ public boolean getMaximized () {
  */
 public Point getMinimumSize () {
 	checkWidget ();
-	return getMinimumSizeInPixels ();
-}
-
-Point getMinimumSizeInPixels () {
-	checkWidget ();
 	int width = Math.max (1, geometry.getMinWidth() + trimWidth ());
 	int height = Math.max (1, geometry.getMinHeight() + trimHeight ());
 	return new Point (width, height);
@@ -1323,12 +1318,6 @@ Point getMinimumSizeInPixels () {
  */
 public Point getMaximumSize () {
 	checkWidget ();
-	return getMaximumSizeInPixels ();
-}
-
-Point getMaximumSizeInPixels () {
-	checkWidget ();
-
 	int width = Math.min (Integer.MAX_VALUE, geometry.getMaxWidth() + trimWidth ());
 	int height = Math.min (Integer.MAX_VALUE, geometry.getMaxHeight() + trimHeight ());
 	return new Point (width, height);
@@ -2662,11 +2651,6 @@ public void setMinimized (boolean minimized) {
  */
 public void setMinimumSize (int width, int height) {
 	checkWidget ();
-	setMinimumSize (new Point (width, height));
-}
-
-void setMinimumSizeInPixels (int width, int height) {
-	checkWidget ();
 	geometry.setMinWidth(Math.max (width, trimWidth ()) - trimWidth ());
 	geometry.setMinHeight(Math.max (height, trimHeight ()) - trimHeight ());
 
@@ -2701,13 +2685,8 @@ void setMinimumSizeInPixels (int width, int height) {
  */
 public void setMinimumSize (Point size) {
 	checkWidget ();
-	setMinimumSizeInPixels (size);
-}
-
-void setMinimumSizeInPixels (Point size) {
-	checkWidget ();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setMinimumSizeInPixels (size.x, size.y);
+	setMinimumSize (size.x, size.y);
 }
 
 /**
@@ -2732,7 +2711,13 @@ void setMinimumSizeInPixels (Point size) {
  */
 public void setMaximumSize (int width, int height) {
 	checkWidget ();
-	setMaximumSize (new Point (width, height));
+	geometry.setMaxWidth(Math.max (width, trimWidth ()) - trimWidth ());
+	geometry.setMaxHeight(Math.max (height, trimHeight ()) - trimHeight ());
+	int hint = GDK.GDK_HINT_MAX_SIZE;
+	if (geometry.getMinWidth() > 0 || geometry.getMinHeight() > 0) {
+		hint = hint | GDK.GDK_HINT_MIN_SIZE;
+	}
+	GTK3.gtk_window_set_geometry_hints (shellHandle, 0, (GdkGeometry) geometry, hint);
 }
 
 /**
@@ -2759,24 +2744,8 @@ public void setMaximumSize (int width, int height) {
  */
 public void setMaximumSize (Point size) {
 	checkWidget ();
-	setMaximumSizeInPixels (size);
-}
-
-void setMaximumSizeInPixels (Point size) {
-	checkWidget ();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setMaximumSizeInPixels (size.x, size.y);
-}
-
-void setMaximumSizeInPixels (int width, int height) {
-	checkWidget ();
-	geometry.setMaxWidth(Math.max (width, trimWidth ()) - trimWidth ());
-	geometry.setMaxHeight(Math.max (height, trimHeight ()) - trimHeight ());
-	int hint = GDK.GDK_HINT_MAX_SIZE;
-	if (geometry.getMinWidth() > 0 || geometry.getMinHeight() > 0) {
-		hint = hint | GDK.GDK_HINT_MIN_SIZE;
-	}
-	GTK3.gtk_window_set_geometry_hints (shellHandle, 0, (GdkGeometry) geometry, hint);
+	setMaximumSize (size.x, size.y);
 }
 
 /**

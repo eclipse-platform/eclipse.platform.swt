@@ -160,11 +160,6 @@ void destroyWidget () {
  */
 public Rectangle getBounds () {
 	checkWidget ();
-	return getBoundsInPixels ();
-}
-
-Rectangle getBoundsInPixels () {
-	checkWidget();
 	GtkAllocation allocation = new GtkAllocation ();
 	GTK.gtk_widget_get_allocation (handle, allocation);
 	int x = allocation.x;
