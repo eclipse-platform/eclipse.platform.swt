@@ -1719,6 +1719,10 @@ private ImageHandle init(ImageData i, int zoom) {
  */
 @Override
 public long internal_new_GC (GCData data) {
+	return configureGC(data, 100);
+}
+
+private long configureGC(GCData data, int zoom) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	/*
 	* Create a new GC that can draw into the image.
@@ -1743,9 +1747,9 @@ public long internal_new_GC (GCData data) {
 			data.style |= SWT.LEFT_TO_RIGHT;
 		}
 		data.device = device;
-		data.nativeZoom = initialNativeZoom;
+		data.nativeZoom = zoom;
 		data.image = this;
-		data.font = SWTFontProvider.getSystemFont(device, initialNativeZoom);
+		data.font = SWTFontProvider.getSystemFont(device, zoom);
 	}
 	return imageDC;
 }
@@ -2530,7 +2534,7 @@ private class ImageGcDrawerWrapper extends DynamicImageProviderWrapper {
 		} else {
 			image = new Image(device, width, height, zoom);
 		}
-		GC gc = new GC(image, gcStyle);
+		GC gc = new GC(new DrawableWrapper(image, zoom), gcStyle);
 		try {
 			gc.data.nativeZoom = zoom;
 			drawer.drawOn(gc, width, height);
@@ -2541,6 +2545,26 @@ private class ImageGcDrawerWrapper extends DynamicImageProviderWrapper {
 		} finally {
 			gc.dispose();
 			image.dispose();
+		}
+	}
+
+	private class DrawableWrapper implements Drawable {
+		private final Image image;
+		private final int zoom;
+
+		public DrawableWrapper(Image image, int zoom) {
+			this.image = image;
+			this.zoom = zoom;
+		}
+
+		@Override
+		public long internal_new_GC(GCData data) {
+			return this.image.configureGC(data, zoom);
+		}
+
+		@Override
+		public void internal_dispose_GC(long handle, GCData data) {
+			this.image.internal_dispose_GC(handle, data);
 		}
 	}
 
