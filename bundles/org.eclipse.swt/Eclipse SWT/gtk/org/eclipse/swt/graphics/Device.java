@@ -367,10 +367,6 @@ protected void destroy () {
  */
 public Rectangle getBounds () {
 	checkDevice ();
-	return getBoundsInPixels ();
-}
-
-private Rectangle getBoundsInPixels () {
 	return new Rectangle(0, 0, 0, 0);
 }
 

@@ -327,11 +327,6 @@ public int getThumb () {
  */
 public Rectangle getThumbBounds() {
 	checkWidget();
-	return getThumbBoundsInPixels();
-}
-
-Rectangle getThumbBoundsInPixels() {
-	checkWidget();
 
 	int[] slider_start = new int[1], slider_end = new int[1];
 	long rangeHandle = GTK.GTK4 ? GTK4.gtk_widget_get_first_child(handle) : handle;
@@ -396,11 +391,6 @@ Rectangle getThumbBoundsInPixels() {
  */
 public Rectangle getThumbTrackBounds () {
 	checkWidget ();
-	return getThumbTrackBoundsInPixels();
-}
-
-Rectangle getThumbTrackBoundsInPixels () {
-	checkWidget();
 	int x = 0, y = 0, width, height;
 
 	/*

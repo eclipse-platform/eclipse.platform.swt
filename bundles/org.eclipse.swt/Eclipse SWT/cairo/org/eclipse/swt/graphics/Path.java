@@ -218,10 +218,6 @@ public Path (Device device, PathData data) {
 public void addArc(float x, float y, float width, float height, float startAngle, float arcAngle) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width == 0 || height == 0 || arcAngle == 0) return;
-	addArcInPixels(x, y, width, height, startAngle, arcAngle);
-}
-
-void addArcInPixels(float x, float y, float width, float height, float startAngle, float arcAngle) {
 	moved = true;
 	if (width == height) {
 		float angle = -startAngle * (float)Math.PI / 180;
@@ -287,10 +283,6 @@ public void addPath(Path path) {
  */
 public void addRectangle(float x, float y, float width, float height) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	addRectangleInPixels(x, y, width, height);
-}
-
-void addRectangleInPixels(float x, float y, float width, float height) {
 	moved = false;
 	Cairo.cairo_rectangle(handle, x, y, width, height);
 	closed = true;
@@ -320,13 +312,10 @@ public void addString(String string, float x, float y, Font font) {
 	// Scale up the font
 	FontData fd = font.getFontData()[0];
 	Font scaledFont = new Font(font.getDevice(), fd);
-	addStringInPixels(string, x, y, scaledFont);
-	scaledFont.dispose(); // Dispose the scaled up font
-}
-void addStringInPixels(String string, float x, float y, Font font) {
 	moved = false;
-	GC.addCairoString(handle, string, x, y, font);
+	GC.addCairoString(handle, string, x, y, scaledFont);
 	closed = true;
+	scaledFont.dispose(); // Dispose the scaled up font
 }
 
 /**
@@ -372,9 +361,6 @@ public boolean contains(float x, float y, GC gc, boolean outline) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (gc == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (gc.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	return containsInPixels(x, y, gc, outline);
-}
-boolean containsInPixels(float x, float y, GC gc, boolean outline) {
 	//TODO - see Windows
 	gc.initCairo();
 	gc.checkGC(GC.LINE_CAP | GC.LINE_JOIN | GC.LINE_STYLE | GC.LINE_WIDTH);
@@ -409,9 +395,6 @@ boolean containsInPixels(float x, float y, GC gc, boolean outline) {
  */
 public void cubicTo(float cx1, float cy1, float cx2, float cy2, float x, float y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	cubicToInPixels(cx1, cy1, cx2, cy2, x, y);
-}
-void cubicToInPixels(float cx1, float cy1, float cx2, float cy2, float x, float y) {
 	if (!moved) {
 		double[] currentX = new double[1], currentY = new double[1];
 		Cairo.cairo_get_current_point(handle, currentX, currentY);
@@ -441,9 +424,6 @@ public void getBounds(float[] bounds) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (bounds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (bounds.length < 4) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	getBoundsInPixels(bounds);
-}
-void getBoundsInPixels(float[] bounds) {
 	long copy = Cairo.cairo_copy_path(handle);
 	if (copy == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	cairo_path_t path = new cairo_path_t();
@@ -516,10 +496,6 @@ void getBoundsInPixels(float[] bounds) {
  */
 public void getCurrentPoint(float[] point) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	getCurrentPointInPixels(point);
-}
-
-void getCurrentPointInPixels(float[] point) {
 	if (point == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (point.length < 2) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	double[] x = new double[1], y = new double[1];
@@ -541,10 +517,6 @@ void getCurrentPointInPixels(float[] point) {
  */
 public PathData getPathData() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return getPathDataInPixels();
-}
-
-PathData getPathDataInPixels() {
 	long copy = Cairo.cairo_copy_path(handle);
 	if (copy == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	cairo_path_t path = new cairo_path_t();
@@ -619,9 +591,6 @@ PathData getPathDataInPixels() {
  */
 public void lineTo(float x, float y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	lineToInPixels(x, y);
-}
-void lineToInPixels(float x, float y) {
 	if (!moved) {
 		double[] currentX = new double[1], currentY = new double[1];
 		Cairo.cairo_get_current_point(handle, currentX, currentY);
@@ -646,9 +615,6 @@ void lineToInPixels(float x, float y) {
  */
 public void moveTo(float x, float y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	moveToInPixels(x, y);
-}
-void moveToInPixels(float x, float y) {
 	/*
 	* Bug in Cairo.  If cairo_move_to() is not called at the
 	* begining of a subpath, the first cairo_line_to() or
@@ -675,9 +641,6 @@ void moveToInPixels(float x, float y) {
  */
 public void quadTo(float cx, float cy, float x, float y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	quadToInPixels(cx, cy, x, y);
-}
-void quadToInPixels(float cx, float cy, float x, float y) {
 	double[] currentX = new double[1], currentY = new double[1];
 	Cairo.cairo_get_current_point(handle, currentX, currentY);
 	if (!moved) {
