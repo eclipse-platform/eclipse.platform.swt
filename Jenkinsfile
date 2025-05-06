@@ -350,7 +350,7 @@ pipeline {
 					dir('eclipse.platform.swt') {
 						sh '''
 							mvn clean verify \
-								--batch-mode --threads 1C -V -U -e -DforkCount=0 \
+								--batch-mode --threads 1C -V -U -e \
 								-Pbree-libs -Papi-check -Pjavadoc \
 								-Dcompare-version-with-baselines.skip=false \
 								-Dorg.eclipse.swt.tests.junit.disable.test_isLocal=true \
