@@ -375,7 +375,7 @@ long gtk_button_press_event (long widget, long event) {
 				oldSelectionY = temp;
 			}
 			Rectangle rect = layout.getBounds (oldSelectionX, oldSelectionY);
-			redrawInPixels (rect.x, rect.y, rect.width, rect.height, false);
+			redraw (rect.x, rect.y, rect.width, rect.height, false);
 		}
 		for (int j = 0; j < offsets.length; j++) {
 			Rectangle [] rects = getRectanglesInPixels (j);
@@ -551,7 +551,7 @@ long gtk_motion_notify_event (long widget, long event) {
 				newSelection = temp;
 			}
 			Rectangle rect = layout.getBounds (oldSelection, newSelection);
-			redrawInPixels (rect.x, rect.y, rect.width, rect.height, false);
+			redraw (rect.x, rect.y, rect.width, rect.height, false);
 		}
 	} else {
 		for (int j = 0; j < offsets.length; j++) {

@@ -1985,10 +1985,6 @@ boolean filters (int eventType) {
  * </ul>
  */
 public Point getCursorLocation() {
-	return getCursorLocationInPixels();
-}
-
-Point getCursorLocationInPixels() {
 	checkDevice();
 
 	int[] x = new int[1], y = new int[1];
@@ -4298,7 +4294,7 @@ public boolean post (Event event) {
 
 		if (type == SWT.MouseMove) {
 			Rectangle loc = event.getBounds();
-			setCursorLocationInPixels(new Point(loc.x, loc.y));
+			setCursorLocation(new Point(loc.x, loc.y));
 			return true;
 		}
 
@@ -5258,17 +5254,6 @@ public void setCursorLocation (int x, int y) {
 	setCursorLocation(new Point (x, y));
 }
 
-void setCursorLocationInPixels (Point location) {
-	long gdkDisplay = GDK.gdk_display_get_default();
-	long gdkPointer = GDK.gdk_get_pointer(gdkDisplay);
-	if (GTK.GTK4) {
-		//TODO: GTK4 no gdk_device_warp
-	} else {
-		long gdkScreen = GDK.gdk_screen_get_default();
-		GDK.gdk_device_warp(gdkPointer, gdkScreen, location.x, location.y);
-	}
-}
-
 /**
  * Sets the location of the on-screen pointer relative to the top left corner
  * of the screen.  <b>Note: It is typically considered bad practice for a
@@ -5287,7 +5272,14 @@ void setCursorLocationInPixels (Point location) {
 public void setCursorLocation (Point point) {
 	checkDevice ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setCursorLocationInPixels(point);
+	long gdkDisplay = GDK.gdk_display_get_default();
+	long gdkPointer = GDK.gdk_get_pointer(gdkDisplay);
+	if (GTK.GTK4) {
+		//TODO: GTK4 no gdk_device_warp
+	} else {
+		long gdkScreen = GDK.gdk_screen_get_default();
+		GDK.gdk_device_warp(gdkPointer, gdkScreen, point.x, point.y);
+	}
 }
 
 /**
@@ -5581,7 +5573,7 @@ void showIMWindow (Control control) {
 		OS.pango_font_description_free (fontDesc);
 		if (pangoAttrs [0] != 0) GTK.gtk_label_set_attributes (preeditLabel, pangoAttrs[0]);
 		GTK.gtk_label_set_text (preeditLabel, preeditString [0]);
-		Point point = control.toDisplayInPixels (control.getIMCaretPos ());
+		Point point = control.toDisplay (control.getIMCaretPos ());
 		GTK3.gtk_window_move (preeditWindow, point.x, point.y);
 		GtkRequisition requisition = new GtkRequisition ();
 		GTK.gtk_widget_get_preferred_size (preeditLabel, requisition, null);

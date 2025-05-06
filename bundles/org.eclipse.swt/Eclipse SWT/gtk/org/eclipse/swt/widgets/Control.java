@@ -1780,12 +1780,6 @@ public Point toDisplay (Point point) {
 	return toDisplay (point.x, point.y);
 }
 
-Point toDisplayInPixels (Point point) {
-	checkWidget();
-	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	return toDisplayInPixels (point.x, point.y);
-}
-
 /**
  * GTK4 only function to replace gdk_surface_get_origin
  * @return the origin of the Control's SWTFixed container relative to the Shell
@@ -2693,7 +2687,7 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 		//Note, input params x/y are relative, the two points below are absolute coords.
 		Point startPos = null;
 		Point currPos = null;
-		startPos = display.getCursorLocationInPixels();
+		startPos = display.getCursorLocation();
 
 		while (!quit) {
 			long eventPtr = 0;
@@ -2709,7 +2703,7 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 				if (eventPtr != 0) {
 					break;
 				} else {
-					currPos = display.getCursorLocationInPixels();
+					currPos = display.getCursorLocation();
 					dragging = GTK3.gtk_drag_check_threshold (handle,
 								startPos.x, startPos.y, currPos.x, currPos.y);
 					if (dragging) break;
@@ -4701,11 +4695,6 @@ void redraw (boolean all) {
  * @see SWT#DOUBLE_BUFFERED
  */
 public void redraw (int x, int y, int width, int height, boolean all) {
-	checkWidget();
-	redrawInPixels(x, y, width, height, all);
-}
-
-void redrawInPixels (int x, int y, int width, int height, boolean all) {
 	checkWidget();
 	if (!GTK.gtk_widget_get_visible (topHandle ())) return;
 	if ((style & SWT.MIRRORED) != 0) x = getClientWidth () - width - x;

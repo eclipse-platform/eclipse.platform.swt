@@ -550,12 +550,6 @@ void deregister () {
  */
 public void drawBackground (GC gc, int x, int y, int width, int height, int offsetX, int offsetY) {
 	checkWidget();
-	Rectangle rect = new Rectangle (x, y, width, height);
-	drawBackgroundInPixels(gc, rect.x, rect.y, rect.width, rect.height, offsetX, offsetY);
-}
-
-void drawBackgroundInPixels (GC gc, int x, int y, int width, int height, int offsetX, int offsetY) {
-	checkWidget ();
 	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	Control control = findBackgroundControl ();
