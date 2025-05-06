@@ -13,6 +13,8 @@
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 
+import java.util.function.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
@@ -65,8 +67,8 @@ public class Snippet382 {
 		final Display display = new Display ();
 
 		final Image imageWithFileNameProvider = new Image (display, filenameProvider);
-		final Image disabledImageWithFileNameProvider = new Image (display,imageWithFileNameProvider, SWT.IMAGE_DISABLE);
-		final Image greyImageWithFileNameProvider = new Image (display,imageWithFileNameProvider, SWT.IMAGE_GRAY);
+		final Supplier<Image> disabledImageWithFileNameProvider = () ->  new Image (display,imageWithFileNameProvider, SWT.IMAGE_DISABLE);
+		final Supplier<Image> greyImageWithFileNameProvider = () ->  new Image (display,imageWithFileNameProvider, SWT.IMAGE_GRAY);
 
 		final Image imageWithDataProvider = new Image (display, imageDataProvider);
 		final Image disabledImageWithDataProvider = new Image (display,imageWithDataProvider, SWT.IMAGE_DISABLE);
@@ -75,6 +77,10 @@ public class Snippet382 {
 		final Image imageWithData = new Image (display, IMAGE_PATH_100);
 		final Image disabledImageWithData = new Image (display,imageWithData, SWT.IMAGE_DISABLE);
 		final Image greyImageWithData = new Image (display,imageWithData, SWT.IMAGE_GRAY);
+
+		final Supplier<Image> imageWithDataCopy = () ->   new Image (display, imageWithDataProvider, SWT.IMAGE_COPY);
+		final Supplier<Image> disabledImageWithDataCopy = () ->  new Image (display,disabledImageWithDataProvider, SWT.IMAGE_COPY);
+		final Supplier<Image> greyImageWithDataCopy = () ->  new Image (display,greyImageWithDataProvider, SWT.IMAGE_COPY);
 
 		final ImageGcDrawer imageGcDrawer = (gc, width, height) -> {
 			gc.setBackground(display.getSystemColor(SWT.COLOR_RED));
@@ -111,42 +117,53 @@ public class Snippet382 {
 				if (e.type == SWT.Paint) {
 					GC mainGC = e.gc;
 					GCData gcData = mainGC.getGCData();
-
+					gcData.nativeZoom = 100;
 
 					try {
+						mainGC.drawText("--ImageFileNameProvider--", 20, 20);
 						drawImages(mainGC, gcData, "Normal",40, imageWithFileNameProvider);
-						drawImages(mainGC, gcData, "Disabled",80, disabledImageWithFileNameProvider);
-						drawImages(mainGC, gcData, "Greyed",120, greyImageWithFileNameProvider);
+						drawImages(mainGC, gcData, "Disabled",80, disabledImageWithFileNameProvider.get());
+						drawImages(mainGC, gcData, "Greyed",120, greyImageWithFileNameProvider.get());
 
-						drawImages(mainGC, gcData, "Normal",160, imageWithDataProvider);
-						drawImages(mainGC, gcData, "Disabled",200, disabledImageWithDataProvider);
-						drawImages(mainGC, gcData, "Greyed",240, greyImageWithDataProvider);
+						mainGC.drawText("--ImageDataProvider--", 20, 150);
+						drawImages(mainGC, gcData, "Normal",180, imageWithDataProvider);
+						drawImages(mainGC, gcData, "Disabled",220, disabledImageWithDataProvider);
+						drawImages(mainGC, gcData, "Greyed",260, greyImageWithDataProvider);
 
-						drawImages(mainGC, gcData, "Normal",280, imageWithDataProvider);
-						drawImages(mainGC, gcData, "Disabled",320, disabledImageWithData);
-						drawImages(mainGC, gcData, "Greyed",360, greyImageWithData);
+						mainGC.drawText("--Image with ImageData--", 20, 290);
+						drawImages(mainGC, gcData, "Normal",320, imageWithData);
+						drawImages(mainGC, gcData, "Disabled",360, disabledImageWithData);
+						drawImages(mainGC, gcData, "Greyed",400, greyImageWithData);
 
-						drawImages(mainGC, gcData, "Normal", 400, imageWithGcDrawer);
-						drawImages(mainGC, gcData, "Disabled", 440, disabledImageWithGcDrawer);
-						drawImages(mainGC, gcData, "Greyed", 480, greyImageWithGcDrawer);
+						mainGC.drawText("--ImageDataProvider Copy--", 20, 430);
+						drawImages(mainGC, gcData, "Normal",460, imageWithDataCopy.get());
+						drawImages(mainGC, gcData, "Disabled",500, disabledImageWithDataCopy.get());
+						drawImages(mainGC, gcData, "Greyed",540, greyImageWithDataCopy.get());
 
-						drawImages(mainGC, gcData, "Normal", 520, imageWithTransparentGcDrawer);
-						drawImages(mainGC, gcData, "Disabled", 560, disabledImageWithTransparentGcDrawer);
-						drawImages(mainGC, gcData, "Greyed", 600, greyImageWithTransparentGcDrawer);
+						mainGC.drawText("--ImageGcDrawer--", 20, 570);
+						drawImages(mainGC, gcData, "Normal", 600, imageWithGcDrawer);
+						drawImages(mainGC, gcData, "Disabled", 640, disabledImageWithGcDrawer);
+						drawImages(mainGC, gcData, "Greyed", 680, greyImageWithGcDrawer);
+
+						mainGC.drawText("--Transparent ImageGcDrawer--", 20, 710);
+						drawImages(mainGC, gcData, "Normal", 740, imageWithTransparentGcDrawer);
+						drawImages(mainGC, gcData, "Disabled", 780, disabledImageWithTransparentGcDrawer);
+						drawImages(mainGC, gcData, "Greyed", 820, greyImageWithTransparentGcDrawer);
 					} finally {
 						mainGC.dispose ();
 					}
 				}
 			}
 
-			private void drawImages(GC mainGC, GCData gcData, String text, int y, final Image imageWithFileNameProvider) {
+			private void drawImages(GC mainGC, GCData gcData, String text, int y, final Image image) {
 				gcData.nativeZoom = 100;
 				mainGC.drawText(text, 0, y);
-				mainGC.drawImage(imageWithFileNameProvider, 50, y);
+				mainGC.drawImage(image, 50, y);
 				gcData.nativeZoom = 150;
-				mainGC.drawImage(imageWithFileNameProvider, 100, (int) (y/1.5));
+				mainGC.drawImage(image, 100, (int) (y/1.5));
 				gcData.nativeZoom = 200;
-				mainGC.drawImage(imageWithFileNameProvider, 150, y/2);
+				mainGC.drawImage(image, 150, y/2);
+				gcData.nativeZoom = 100;
 			}
 		};
 		shell.addListener(SWT.Paint, l);
