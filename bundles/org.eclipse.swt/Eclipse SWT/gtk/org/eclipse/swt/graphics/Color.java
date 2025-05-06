@@ -50,10 +50,6 @@ public final class Color extends Resource {
 	public GdkRGBA handle;
 	int alpha = 0;
 
-Color() {
-	super();
-}
-
 Color(Device device) {
 	super(device);
 }
