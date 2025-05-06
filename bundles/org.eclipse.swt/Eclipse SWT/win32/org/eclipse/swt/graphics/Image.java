@@ -244,41 +244,45 @@ public Image(Device device, Image srcImage, int flag) {
 	if (srcImage == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (srcImage.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	initialNativeZoom = srcImage.initialNativeZoom;
-	Rectangle rect = srcImage.getBounds(getZoom());
 	this.type = srcImage.type;
 	this.imageProvider = srcImage.imageProvider.createCopy(this);
 	this.styleFlag = srcImage.styleFlag | flag;
-	long srcImageHandle = win32_getHandle(srcImage, getZoom());
 	switch (flag) {
 		case SWT.IMAGE_COPY: {
 			switch (type) {
 				case SWT.BITMAP:
-					/* Get the HDC for the device */
-					long hDC = device.internal_new_GC(null);
+					for (ImageHandle imageHandle : srcImage.zoomLevelToImageHandle.values()) {
+						Rectangle rect = imageHandle.getBounds();
+						long srcImageHandle = imageHandle.handle;
+						/* Get the HDC for the device */
+						long hDC = device.internal_new_GC(null);
 
-					/* Copy the bitmap */
-					long hdcSource = OS.CreateCompatibleDC(hDC);
-					long hdcDest = OS.CreateCompatibleDC(hDC);
-					long hOldSrc = OS.SelectObject(hdcSource, srcImageHandle);
-					BITMAP bm = new BITMAP();
-					OS.GetObject(srcImageHandle, BITMAP.sizeof, bm);
-					imageMetadata = new ImageHandle(OS.CreateCompatibleBitmap(hdcSource, rect.width, bm.bmBits != 0 ? -rect.height : rect.height), getZoom());
-					if (imageMetadata.handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-					long hOldDest = OS.SelectObject(hdcDest, imageMetadata.handle);
-					OS.BitBlt(hdcDest, 0, 0, rect.width, rect.height, hdcSource, 0, 0, OS.SRCCOPY);
-					OS.SelectObject(hdcSource, hOldSrc);
-					OS.SelectObject(hdcDest, hOldDest);
-					OS.DeleteDC(hdcSource);
-					OS.DeleteDC(hdcDest);
+						/* Copy the bitmap */
+						long hdcSource = OS.CreateCompatibleDC(hDC);
+						long hdcDest = OS.CreateCompatibleDC(hDC);
+						long hOldSrc = OS.SelectObject(hdcSource, srcImageHandle);
+						BITMAP bm = new BITMAP();
+						OS.GetObject(srcImageHandle, BITMAP.sizeof, bm);
+						imageMetadata = new ImageHandle(OS.CreateCompatibleBitmap(hdcSource, rect.width, bm.bmBits != 0 ? -rect.height : rect.height), imageHandle.zoom);
+						if (imageMetadata.handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+						long hOldDest = OS.SelectObject(hdcDest, imageMetadata.handle);
+						OS.BitBlt(hdcDest, 0, 0, rect.width, rect.height, hdcSource, 0, 0, OS.SRCCOPY);
+						OS.SelectObject(hdcSource, hOldSrc);
+						OS.SelectObject(hdcDest, hOldDest);
+						OS.DeleteDC(hdcSource);
+						OS.DeleteDC(hdcDest);
 
-					/* Release the HDC for the device */
-					device.internal_dispose_GC(hDC, null);
-
+						/* Release the HDC for the device */
+						device.internal_dispose_GC(hDC, null);
+					}
 					transparentPixel = srcImage.transparentPixel;
 					break;
 				case SWT.ICON:
-					imageMetadata = new ImageHandle(OS.CopyImage(srcImageHandle, OS.IMAGE_ICON, rect.width, rect.height, 0), getZoom());
-					if (imageMetadata.handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+					for (ImageHandle imageHandle : srcImage.zoomLevelToImageHandle.values()) {
+						Rectangle rect = imageHandle.getBounds();
+						imageMetadata = new ImageHandle(OS.CopyImage(imageHandle.handle, OS.IMAGE_ICON, rect.width, rect.height, 0), imageHandle.zoom);
+						if (imageMetadata.handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+					}
 					break;
 				default:
 					SWT.error(SWT.ERROR_INVALID_IMAGE);
@@ -286,15 +290,21 @@ public Image(Device device, Image srcImage, int flag) {
 			break;
 		}
 		case SWT.IMAGE_DISABLE: {
-			ImageData data = srcImage.getImageData(srcImage.getZoom());
-			ImageData newData = applyDisableImageData(data, rect.height, rect.width);
-			init (newData, getZoom());
+			for (ImageHandle imageHandle : srcImage.zoomLevelToImageHandle.values()) {
+				Rectangle rect = imageHandle.getBounds();
+				ImageData data = srcImage.getImageData(imageHandle.zoom);
+				ImageData newData = applyDisableImageData(data, rect.height, rect.width);
+				init (newData, imageHandle.zoom);
+			}
 			break;
 		}
 		case SWT.IMAGE_GRAY: {
-			ImageData data = srcImage.getImageData(srcImage.getZoom());
-			ImageData newData = applyGrayImageData(data, rect.height, rect.width);
-			init (newData, getZoom());
+			for (ImageHandle imageHandle : srcImage.zoomLevelToImageHandle.values()) {
+				Rectangle rect = imageHandle.getBounds();
+				ImageData data = srcImage.getImageData(imageHandle.zoom);
+				ImageData newData = applyGrayImageData(data, rect.height, rect.width);
+				init (newData, imageHandle.zoom);
+			}
 			break;
 		}
 		default:
@@ -2556,6 +2566,10 @@ private class ImageHandle {
 			setBackground(backgroundColor);
 		}
 		setImageMetadataForHandle(this, zoom);
+	}
+
+	public Rectangle getBounds() {
+		return new Rectangle(0, 0, width, height);
 	}
 
 	private void setBackground(RGB color) {
