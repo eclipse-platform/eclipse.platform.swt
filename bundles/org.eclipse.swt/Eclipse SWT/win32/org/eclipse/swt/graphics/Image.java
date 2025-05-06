@@ -1099,47 +1099,49 @@ public Color getBackground() {
 
 	/* Get the HDC for the device */
 	long hDC = device.internal_new_GC(null);
-	long handle = win32_getHandle(this, getZoom());
-
-	/* Compute the background color */
-	BITMAP bm = new BITMAP();
-	OS.GetObject(handle, BITMAP.sizeof, bm);
-	long hdcMem = OS.CreateCompatibleDC(hDC);
-	long hOldObject = OS.SelectObject(hdcMem, handle);
-	int red = 0, green = 0, blue = 0;
-	if (bm.bmBitsPixel <= 8)  {
-		byte[] color = new byte[4];
-		OS.GetDIBColorTable(hdcMem, transparentPixel, 1, color);
-		blue = color[0] & 0xFF;
-		green = color[1] & 0xFF;
-		red = color[2] & 0xFF;
-	} else {
-		switch (bm.bmBitsPixel) {
-			case 16:
-				blue = (transparentPixel & 0x1F) << 3;
-				green = (transparentPixel & 0x3E0) >> 2;
-				red = (transparentPixel & 0x7C00) >> 7;
-				break;
-			case 24:
-				blue = (transparentPixel & 0xFF0000) >> 16;
-				green = (transparentPixel & 0xFF00) >> 8;
-				red = transparentPixel & 0xFF;
-				break;
-			case 32:
-				blue = (transparentPixel & 0xFF000000) >>> 24;
-				green = (transparentPixel & 0xFF0000) >> 16;
-				red = (transparentPixel & 0xFF00) >> 8;
-				break;
-			default:
-				return null;
+	return applyUsingAnyHandle(imageHandle -> {
+		long handle = imageHandle.handle;
+		/* Compute the background color */
+		BITMAP bm = new BITMAP();
+		OS.GetObject(handle, BITMAP.sizeof, bm);
+		long hdcMem = OS.CreateCompatibleDC(hDC);
+		long hOldObject = OS.SelectObject(hdcMem, handle);
+		int red = 0, green = 0, blue = 0;
+		if (bm.bmBitsPixel <= 8)  {
+			byte[] color = new byte[4];
+			OS.GetDIBColorTable(hdcMem, transparentPixel, 1, color);
+			blue = color[0] & 0xFF;
+			green = color[1] & 0xFF;
+			red = color[2] & 0xFF;
+		} else {
+			switch (bm.bmBitsPixel) {
+				case 16:
+					blue = (transparentPixel & 0x1F) << 3;
+					green = (transparentPixel & 0x3E0) >> 2;
+					red = (transparentPixel & 0x7C00) >> 7;
+					break;
+				case 24:
+					blue = (transparentPixel & 0xFF0000) >> 16;
+					green = (transparentPixel & 0xFF00) >> 8;
+					red = transparentPixel & 0xFF;
+					break;
+				case 32:
+					blue = (transparentPixel & 0xFF000000) >>> 24;
+					green = (transparentPixel & 0xFF0000) >> 16;
+					red = (transparentPixel & 0xFF00) >> 8;
+					break;
+				default:
+					return null;
+			}
 		}
-	}
-	OS.SelectObject(hdcMem, hOldObject);
-	OS.DeleteDC(hdcMem);
+		OS.SelectObject(hdcMem, hOldObject);
+		OS.DeleteDC(hdcMem);
 
-	/* Release the HDC for the device */
-	device.internal_dispose_GC(hDC, null);
-	return Color.win32_new(device, (blue << 16) | (green << 8) | red);
+
+		/* Release the HDC for the device */
+		device.internal_dispose_GC(hDC, null);
+		return Color.win32_new(device, (blue << 16) | (green << 8) | red);
+	});
 }
 
 /**
@@ -1186,7 +1188,7 @@ Rectangle getBounds(int zoom) {
  */
 @Deprecated
 public Rectangle getBoundsInPixels() {
-	return getBounds(getZoom());
+	return applyUsingAnyHandle(ImageHandle::getBounds);
 }
 
 /**
@@ -1268,7 +1270,7 @@ public ImageData getImageData (int zoom) {
  */
 @Deprecated
 public ImageData getImageDataAtCurrentZoom() {
-	return getImageMetadata(getZoom()).getImageData();
+	return applyUsingAnyHandle(ImageHandle::getImageData);
 }
 
 /**
@@ -1840,6 +1842,18 @@ private int getZoom() {
 public String toString () {
 	if (isDisposed()) return "Image {*DISPOSED*}";
 	return "Image {" + zoomLevelToImageHandle + "}";
+}
+
+<T> T applyUsingAnyHandle(Function<ImageHandle, T> function) {
+	if (zoomLevelToImageHandle.isEmpty()) {
+		ImageHandle temporaryHandle = this.imageProvider.newImageHandle(DPIUtil.getDeviceZoom());
+		try {
+			return function.apply(temporaryHandle);
+		} finally {
+			temporaryHandle.destroy();
+		}
+	}
+	return function.apply(zoomLevelToImageHandle.values().iterator().next());
 }
 
 /**
