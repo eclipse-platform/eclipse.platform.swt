@@ -256,7 +256,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_io_InputStream
 
 	String firstFile = SwtTestUtil.invalidImageFilenames[0];
 	Display[] displays = { display, null };
-	for (int j = 0; j < displays.length; j++) {
+	for (Display display : displays) {
 		for (String format : SwtTestUtil.imageFormats) {
 			try (InputStream stream = SwtTestUtil.class.getResourceAsStream(firstFile + "." + format)) {
 				e = assertThrows(SWTException.class, () -> new Image(display, stream));
@@ -316,8 +316,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String() 
 	// create valid images
 	for (Display display : displays) {
 		for (String fileName : SwtTestUtil.imageFilenames) {
-			for (int i = 0; i < SwtTestUtil.imageFormats.length; i++) {
-				String format = SwtTestUtil.imageFormats[i];
+			for (String format : SwtTestUtil.imageFormats) {
 				String pathName = getPath(fileName + "." + format).toString();
 				Image image = new Image(display, pathName);
 				image.dispose();
@@ -868,10 +867,8 @@ Display display;
 /** Test implementation **/
 
 void getImageData1() {
-	int numFormats = SwtTestUtil.imageFormats.length;
 	String fileName = SwtTestUtil.imageFilenames[0];
-	for (int i=0; i<numFormats; i++) {
-		String format = SwtTestUtil.imageFormats[i];
+	for (String format : SwtTestUtil.imageFormats) {
 		try (InputStream stream = SwtTestUtil.class.getResourceAsStream(fileName + "." + format)) {
 			ImageData data1 = new ImageData(stream);
 			Image image = new Image(display, data1);
