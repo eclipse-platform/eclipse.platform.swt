@@ -12,7 +12,7 @@ You need to install the following on your system:
 
 * make
 * gcc
-* GTK3/GTK4 development files (see https://www.gtk.org/docs/installations/linux/)
+* GTK3/GTK4.x development files (see https://www.gtk.org/docs/installations/linux/)
 * Java 17 JDK (https://adoptium.net/marketplace/?version=17)
 * (optional) Webkit for GTK development files (webkit2gtk3-devel)
 
