@@ -926,13 +926,13 @@ void createItem (TreeColumn column, int index) {
 		GTK4.gtk_box_append(boxHandle, imageHandle);
 		GTK4.gtk_box_append(boxHandle, labelHandle);
 
-		GTK.gtk_widget_hide(imageHandle);
+		gtk_widget_hide(imageHandle);
 	} else {
 		GTK3.gtk_container_add (boxHandle, imageHandle);
 		GTK3.gtk_container_add (boxHandle, labelHandle);
 
-		GTK.gtk_widget_show (boxHandle);
-		GTK.gtk_widget_show (labelHandle);
+		gtk_widget_show (boxHandle);
+		gtk_widget_show (labelHandle);
 	}
 
 	column.labelHandle = labelHandle;

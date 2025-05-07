@@ -1089,5 +1089,9 @@ public class GTK3 {
 	public static final native int GdkEventWindowState_sizeof();
 	public static final native int GdkGeometry_sizeof();
 	public static final native int GdkWindowAttr_sizeof();
+	/** @param widget cast=(GtkWidget *) */
+	public static final native void gtk_widget_show(long widget);
+	/** @param widget cast=(GtkWidget *) */
+	public static final native void gtk_widget_hide(long widget);
 
 }

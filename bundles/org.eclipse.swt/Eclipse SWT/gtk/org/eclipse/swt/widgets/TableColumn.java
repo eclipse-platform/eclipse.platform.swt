@@ -463,10 +463,10 @@ public void pack () {
 	if (buttonHandle != 0) {
 		boolean hideHeader = !GTK.gtk_widget_get_visible(buttonHandle);
 		GtkRequisition requisition = new GtkRequisition ();
-		GTK.gtk_widget_show(buttonHandle);
+		gtk_widget_show(buttonHandle);
 		gtk_widget_get_preferred_size (buttonHandle, requisition);
 		if (hideHeader) {
-			GTK.gtk_widget_hide(buttonHandle);
+			gtk_widget_hide(buttonHandle);
 		}
 		width = requisition.width;
 	}
@@ -627,14 +627,14 @@ public void setImage (Image image) {
 		} else {
 			GTK3.gtk_image_set_from_surface(imageHandle, headerImageList.getSurface(imageIndex));
 		}
-		GTK.gtk_widget_show(imageHandle);
+		gtk_widget_show(imageHandle);
 	} else {
 		if (GTK.GTK4) {
 			GTK4.gtk_image_clear(imageHandle);
 		} else {
 			GTK3.gtk_image_set_from_surface(imageHandle, 0);
 		}
-		GTK.gtk_widget_hide(imageHandle);
+		gtk_widget_hide(imageHandle);
 	}
 }
 
@@ -703,9 +703,9 @@ public void setText (String string) {
 	byte [] buffer = Converter.wcsToMbcs (chars, true);
 	GTK.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
 	if (string.length () != 0) {
-		GTK.gtk_widget_show (labelHandle);
+		gtk_widget_show (labelHandle);
 	} else {
-		GTK.gtk_widget_hide (labelHandle);
+		gtk_widget_hide (labelHandle);
 	}
 }
 

@@ -654,16 +654,16 @@ public void setImage (Image image) {
 		} else {
 			GTK3.gtk_image_set_from_surface(imageHandle, image.surface);
 		}
-		GTK.gtk_widget_hide (labelHandle);
-		GTK.gtk_widget_show (imageHandle);
+		gtk_widget_hide (labelHandle);
+		gtk_widget_show (imageHandle);
 	} else {
 		if (GTK.GTK4) {
 			GTK4.gtk_picture_set_paintable(imageHandle, 0);
 		} else {
 			GTK3.gtk_image_set_from_surface(imageHandle, 0);
 		}
-		GTK.gtk_widget_show (labelHandle);
-		GTK.gtk_widget_hide (imageHandle);
+		gtk_widget_show (labelHandle);
+		gtk_widget_hide (imageHandle);
 	}
 }
 
@@ -706,8 +706,8 @@ public void setText (String string) {
 	char [] chars = fixMnemonic (string);
 	byte [] buffer = Converter.wcsToMbcs (chars, true);
 	GTK.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
-	GTK.gtk_widget_hide (imageHandle);
-	GTK.gtk_widget_show (labelHandle);
+	gtk_widget_hide (imageHandle);
+	gtk_widget_show (labelHandle);
 }
 
 @Override
@@ -719,9 +719,9 @@ void setWidgetBackground  () {
 @Override
 void showWidget () {
 	super.showWidget ();
-	if (frameHandle != 0) GTK.gtk_widget_show (frameHandle);
-	if (labelHandle != 0) GTK.gtk_widget_show (labelHandle);
-	if (boxHandle != 0) GTK.gtk_widget_show (boxHandle);
+	if (frameHandle != 0) gtk_widget_show (frameHandle);
+	if (labelHandle != 0) gtk_widget_show (labelHandle);
+	if (boxHandle != 0) gtk_widget_show (boxHandle);
 }
 
 @Override
