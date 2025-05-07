@@ -737,13 +737,13 @@ void createItem (TableColumn column, int index) {
 		GTK4.gtk_box_append(boxHandle, imageHandle);
 		GTK4.gtk_box_append(boxHandle, labelHandle);
 
-		GTK.gtk_widget_hide(imageHandle);
+		gtk_widget_hide(imageHandle);
 	} else {
 		GTK3.gtk_container_add (boxHandle, imageHandle);
 		GTK3.gtk_container_add (boxHandle, labelHandle);
 
-		GTK.gtk_widget_show (boxHandle);
-		GTK.gtk_widget_show (labelHandle);
+		gtk_widget_show (boxHandle);
+		gtk_widget_show (labelHandle);
 	}
 
 	column.labelHandle = labelHandle;
@@ -1492,9 +1492,9 @@ public int getHeaderHeight () {
 			long buttonHandle = columns[i].buttonHandle;
 			if (buttonHandle != 0) {
 				if (!GTK.gtk_widget_get_visible(buttonHandle))  {
-					GTK.gtk_widget_show(buttonHandle);
+					gtk_widget_show(buttonHandle);
 					gtk_widget_get_preferred_size(buttonHandle, requisition);
-					GTK.gtk_widget_hide(buttonHandle);
+					gtk_widget_hide(buttonHandle);
 				} else {
 					gtk_widget_get_preferred_size(buttonHandle, requisition);
 				}

@@ -836,7 +836,7 @@ public void setVisible (boolean visible) {
 	if (visible) {
 		if ((style & SWT.BALLOON) != 0) {
 			configure ();
-			GTK.gtk_widget_show (handle);
+			gtk_widget_show (handle);
 		} else {
 			long vboxHandle = parent.vboxHandle;
 			StringBuilder string = new StringBuilder (text);
@@ -854,7 +854,7 @@ public void setVisible (boolean visible) {
 		}
 	} else {
 		if ((style & SWT.BALLOON) != 0) {
-			GTK.gtk_widget_hide (handle);
+			gtk_widget_hide (handle);
 		} else {
 			long vboxHandle = parent.vboxHandle;
 			byte[] buffer = Converter.wcsToMbcs("", true);
@@ -866,7 +866,7 @@ public void setVisible (boolean visible) {
 @Override
 long timerProc (long widget) {
 	if ((style & SWT.BALLOON) != 0) {
-		GTK.gtk_widget_hide (handle);
+		gtk_widget_hide (handle);
 	}
 	return 0;
 }

@@ -2759,4 +2759,14 @@ void notifyDisposalTracker() {
 	}
 }
 
+void gtk_widget_hide(long widget) {
+	if (GTK.GTK4) GTK.gtk_widget_set_visible(widget, false);
+	else GTK3.gtk_widget_hide(widget);
+}
+
+void gtk_widget_show(long widget) {
+	if (GTK.GTK4) GTK.gtk_widget_set_visible(widget, true);
+	else GTK3.gtk_widget_show(widget);
+}
+
 }

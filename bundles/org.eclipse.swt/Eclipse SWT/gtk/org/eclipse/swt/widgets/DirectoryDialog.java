@@ -275,7 +275,7 @@ Optional<String> openNativeChooserDialog () {
 			}
 		}
 	}
-	
+
 	Optional<String> result = Optional.empty();
 	if (response == GTK.GTK_RESPONSE_ACCEPT) {
 		result = Optional.ofNullable(selectedPath);
@@ -306,7 +306,7 @@ void GTK3setNativeDialogMessage(long handle, String message) {
 		if (label == 0) error(SWT.ERROR_NO_HANDLES);
 
 		GTK3.gtk_container_add(box, label);
-		GTK.gtk_widget_show(label);
+		GTK3.gtk_widget_show(label);
 		GTK3.gtk_label_set_line_wrap(label, true);
 
 		GTK.gtk_box_set_homogeneous(box, false);

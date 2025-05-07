@@ -306,8 +306,8 @@ void createHandle (int index) {
 			GTK4.gtk_box_append(boxHandle, imageHandle);
 			GTK4.gtk_box_append(boxHandle, labelHandle);
 
-			GTK.gtk_widget_hide(imageHandle);
-			GTK.gtk_widget_hide(labelHandle);
+			gtk_widget_hide(imageHandle);
+			gtk_widget_hide(labelHandle);
 		} else {
 			labelHandle = GTK.gtk_label_new_with_mnemonic(null);
 			if (labelHandle == 0) error(SWT.ERROR_NO_HANDLES);
@@ -1316,7 +1316,7 @@ void _setImage (Image image) {
 		}
 
 		if (GTK.GTK4) {
-			GTK.gtk_widget_show(imageHandle);
+			gtk_widget_show(imageHandle);
 			long pixbuf = ImageList.createPixbuf(image);
 			long texture = GDK.gdk_texture_new_for_pixbuf(pixbuf);
 			OS.g_object_unref(pixbuf);
@@ -1327,7 +1327,7 @@ void _setImage (Image image) {
 	} else {
 		if(GTK.GTK4) {
 			GTK4.gtk_image_clear(imageHandle);
-			GTK.gtk_widget_hide(imageHandle);
+			gtk_widget_hide(imageHandle);
 		} else {
 			GTK3.gtk_image_set_from_surface(imageHandle, 0);
 		}
@@ -1429,7 +1429,7 @@ public void setText (String string) {
 	byte [] buffer = Converter.wcsToMbcs (chars, true);
 
 	if (GTK.GTK4) {
-		GTK.gtk_widget_show(labelHandle);
+		gtk_widget_show(labelHandle);
 		GTK.gtk_label_set_text_with_mnemonic(labelHandle, buffer);
 	} else {
 		GTK.gtk_label_set_text_with_mnemonic(labelHandle, buffer);
@@ -1547,9 +1547,9 @@ void showWidget (int index) {
 			}
 		}
 	} else {
-		if (handle != 0) GTK.gtk_widget_show (handle);
-		if (labelHandle != 0) GTK.gtk_widget_show (labelHandle);
-		if (imageHandle != 0) GTK.gtk_widget_show (imageHandle);
+		if (handle != 0) gtk_widget_show (handle);
+		if (labelHandle != 0) gtk_widget_show (labelHandle);
+		if (imageHandle != 0) gtk_widget_show (imageHandle);
 		GTK3.gtk_toolbar_insert(parent.handle, handle, index);
 	}
 }
