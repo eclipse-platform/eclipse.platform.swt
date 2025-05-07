@@ -240,6 +240,52 @@ public FontData(String string) {
 	}
 }
 
+
+/**
+ * Constructs a new FontData copy
+ *
+ * @param fontData the FondData object for which copy is needed to be made
+ *
+ * @exception IllegalArgumentException
+ * <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the argument is null</li>
+ * </ul>
+ * @since 3.130
+ */
+public FontData(FontData fontData) {
+	if (fontData == null)
+		SWT.error(SWT.ERROR_NULL_ARGUMENT);
+
+	if (fontData.data != null) {
+		LOGFONT newData = new LOGFONT();
+		setHeight(fontData.getHeightF());
+		newData.lfHeight = fontData.data.lfHeight;
+		newData.lfWidth = fontData.data.lfWidth;
+		newData.lfEscapement = fontData.data.lfEscapement;
+		newData.lfOrientation = fontData.data.lfOrientation;
+		newData.lfWeight = fontData.data.lfWeight;
+		newData.lfItalic = fontData.data.lfItalic;
+		newData.lfUnderline = fontData.data.lfUnderline;
+		newData.lfStrikeOut = fontData.data.lfStrikeOut;
+		newData.lfCharSet = fontData.data.lfCharSet;
+		newData.lfOutPrecision = fontData.data.lfOutPrecision;
+		newData.lfClipPrecision = fontData.data.lfClipPrecision;
+		newData.lfQuality = fontData.data.lfQuality;
+		newData.lfPitchAndFamily = fontData.data.lfPitchAndFamily;
+
+		// Deep copy of the char array lfFaceName
+		if (fontData.data.lfFaceName != null) {
+			newData.lfFaceName = new char[fontData.data.lfFaceName.length];
+			System.arraycopy(fontData.data.lfFaceName, 0, newData.lfFaceName, 0, fontData.data.lfFaceName.length);
+		}
+
+		this.data = newData;
+	} else {
+		this.data = null;
+	}
+}
+
+
 /**
  * Constructs a new font data given a font name,
  * the height of the desired font in points,
