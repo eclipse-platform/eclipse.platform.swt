@@ -55,11 +55,16 @@ public class TableColumnRenderer {
 		Point fin = new Point(0, 0);
 		int width = 0;
 		try {
-			if (getParent().getItems() != null) {
-				for (TableItem i : getParent().getItems()) {
-					Point p = i.computeCellSize(colIndex);
+			final TableItem[] items = getParent().getItems();
+			if (items != null) {
+				final boolean virtual = getParent().isVirtual();
+				for (TableItem item : items) {
+					if (virtual && !item.cached) {
+						continue;
+					}
+					Point p = item.computeCellSize(colIndex);
 					width = Math.max(width, p.x);
-					i.clearCache();
+					item.clearCache();
 				}
 			}
 
