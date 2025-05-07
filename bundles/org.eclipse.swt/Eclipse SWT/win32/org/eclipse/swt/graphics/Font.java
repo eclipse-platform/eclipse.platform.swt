@@ -189,14 +189,6 @@ public Font(Device device, String name, int height, int style) {
 	init();
 }
 
-/*public*/ Font(Device device, String name, float height, int style) {
-	super(device);
-	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.zoom = DPIUtil.getNativeDeviceZoom();
-	this.fontData =  new FontData (name, height, style);
-	this.fontHeight = height;
-	init();
-}
 @Override
 void destroy() {
 	OS.DeleteObject(handle);

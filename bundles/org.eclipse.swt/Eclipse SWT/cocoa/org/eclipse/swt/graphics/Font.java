@@ -188,12 +188,6 @@ public Font(Device device, String name, int height, int style) {
 	}
 }
 
-/*public*/ Font(Device device, String name, float height, int style) {
-	super(device);
-	init(name, height, style, null);
-	init();
-}
-
 void addTraits(NSMutableAttributedString attrStr, NSRange range) {
 	if ((extraTraits & OS.NSBoldFontMask) != 0) {
 		attrStr.addAttribute(OS.NSStrokeWidthAttributeName, NSNumber.numberWithDouble(SYNTHETIC_BOLD), range);
