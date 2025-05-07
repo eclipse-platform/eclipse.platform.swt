@@ -846,7 +846,7 @@ public class SkijaGC extends GCHandle {
 
 	@Override
 	public void setClipping(int x, int y, int width, int height) {
-		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+		setClipping(new Rectangle(x, y, width, height));
 	}
 
 	@Override
@@ -917,6 +917,10 @@ public class SkijaGC extends GCHandle {
 		} else {
 			return rect;
 		}
+	}
+
+	private Rect createScaledRectangle(Rectangle r) {
+		return createScaledRectangle(r.x, r.y, r.width, r.height);
 	}
 
 	private Rect createScaledRectangle(int x, int y, int width, int height) {
@@ -1139,8 +1143,22 @@ public class SkijaGC extends GCHandle {
 	}
 
 	@Override
-	protected void setClipping(Rectangle rect) {
-		System.err.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+	public void setClipping(Rectangle rect) {
+
+		/**
+		 * this is a minimal implementation for set clipping with skija.
+		 */
+
+		// skija seems to work with state layer which will be set on top of each other.
+		// if more layers will be used a more complex handling is necessary
+		surface.getCanvas().restore();
+		if (rect == null) {
+			return;
+		}
+
+		surface.getCanvas().save();
+		surface.getCanvas().clipRect(createScaledRectangle(rect));
+
 	}
 
 	@Override
