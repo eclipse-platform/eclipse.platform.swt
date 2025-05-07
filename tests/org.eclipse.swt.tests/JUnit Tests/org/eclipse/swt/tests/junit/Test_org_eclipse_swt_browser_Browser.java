@@ -1141,6 +1141,7 @@ public void test_setText() {
  */
 @Test
 public void test_setTextContainingScript_applicationLayerProgressListenerMustSeeUpToDateDom() {
+	assumeFalse("Toggling on Edge since I20250216-1800, see https://github.com/eclipse-platform/eclipse.platform.swt/issues/1843", isEdge);
 	AtomicBoolean completed = new AtomicBoolean();
 	browser.addProgressListener(ProgressListener.completedAdapter(event -> {
 		String script = """
