@@ -5556,7 +5556,7 @@ void showIMWindow (Control control) {
 			GTK4.gtk_window_set_child(preeditWindow, preeditLabel);
 		} else {
 			GTK3.gtk_container_add (preeditWindow, preeditLabel);
-			GTK.gtk_widget_show (preeditLabel);
+			GTK3.gtk_widget_show (preeditLabel);
 		}
 	}
 	long [] preeditString = new long [1];
@@ -5578,9 +5578,9 @@ void showIMWindow (Control control) {
 		GtkRequisition requisition = new GtkRequisition ();
 		GTK.gtk_widget_get_preferred_size (preeditLabel, requisition, null);
 		GTK3.gtk_window_resize (preeditWindow, requisition.width, requisition.height);
-		GTK.gtk_widget_show (preeditWindow);
+		GTK3.gtk_widget_show (preeditWindow);
 	} else {
-		GTK.gtk_widget_hide (preeditWindow);
+		GTK3.gtk_widget_hide (preeditWindow);
 	}
 	if (preeditString [0] != 0) OS.g_free (preeditString [0]);
 	if (pangoAttrs [0] != 0) OS.pango_attr_list_unref (pangoAttrs [0]);

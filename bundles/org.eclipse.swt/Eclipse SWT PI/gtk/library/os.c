@@ -9352,16 +9352,6 @@ JNIEXPORT jboolean JNICALL GTK_NATIVE(gtk_1widget_1has_1focus)
 }
 #endif
 
-#ifndef NO_gtk_1widget_1hide
-JNIEXPORT void JNICALL GTK_NATIVE(gtk_1widget_1hide)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	GTK_NATIVE_ENTER(env, that, gtk_1widget_1hide_FUNC);
-	gtk_widget_hide((GtkWidget *)arg0);
-	GTK_NATIVE_EXIT(env, that, gtk_1widget_1hide_FUNC);
-}
-#endif
-
 #ifndef NO_gtk_1widget_1insert_1action_1group
 JNIEXPORT void JNICALL GTK_NATIVE(gtk_1widget_1insert_1action_1group)
 	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1, jlong arg2)
@@ -9677,16 +9667,6 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1widget_1set_1visible)
 	GTK_NATIVE_ENTER(env, that, gtk_1widget_1set_1visible_FUNC);
 	gtk_widget_set_visible((GtkWidget *)arg0, (gboolean)arg1);
 	GTK_NATIVE_EXIT(env, that, gtk_1widget_1set_1visible_FUNC);
-}
-#endif
-
-#ifndef NO_gtk_1widget_1show
-JNIEXPORT void JNICALL GTK_NATIVE(gtk_1widget_1show)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	GTK_NATIVE_ENTER(env, that, gtk_1widget_1show_FUNC);
-	gtk_widget_show((GtkWidget *)arg0);
-	GTK_NATIVE_EXIT(env, that, gtk_1widget_1show_FUNC);
 }
 #endif
 

@@ -1295,28 +1295,28 @@ public void setText (String string) {
 
 private void updateWidgetsVisibility() {
 	if (text.length() == 0 && image == null) {
-		GTK.gtk_widget_hide (boxHandle);
-		GTK.gtk_widget_hide (labelHandle);
-		GTK.gtk_widget_hide (imageHandle);
+		gtk_widget_hide (boxHandle);
+		gtk_widget_hide (labelHandle);
+		gtk_widget_hide (imageHandle);
 	} else {
-		GTK.gtk_widget_show (boxHandle);
+		gtk_widget_show (boxHandle);
 		if (text.length() == 0)
-			GTK.gtk_widget_hide (labelHandle);
+			gtk_widget_hide (labelHandle);
 		else
-			GTK.gtk_widget_show (labelHandle);
+			gtk_widget_show (labelHandle);
 		if (image == null)
-			GTK.gtk_widget_hide (imageHandle);
+			gtk_widget_hide (imageHandle);
 		else
-			GTK.gtk_widget_show (imageHandle);
+			gtk_widget_show (imageHandle);
 	}
 }
 
 @Override
 void showWidget () {
 	super.showWidget ();
-	if (boxHandle != 0 && ((text != null && text.length() != 0) || image != null)) GTK.gtk_widget_show (boxHandle);
-	if (labelHandle != 0  && text != null && text.length() != 0) GTK.gtk_widget_show (labelHandle);
-	if (arrowHandle != 0) GTK.gtk_widget_show (arrowHandle);
+	if (boxHandle != 0 && ((text != null && text.length() != 0) || image != null)) gtk_widget_show (boxHandle);
+	if (labelHandle != 0  && text != null && text.length() != 0) gtk_widget_show (labelHandle);
+	if (arrowHandle != 0) gtk_widget_show (arrowHandle);
 }
 
 @Override
