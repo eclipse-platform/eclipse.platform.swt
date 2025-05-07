@@ -312,7 +312,7 @@ public String toString () {
  * @noreference This method is not intended to be referenced by clients.
  */
 public static long win32_getHandle(Font font) {
-	if (font.handle == 0 && font.fontData != null) {
+	if (font.handle == 0 && font.fontData != null && !font.isDestroyed) {
 		font.init(font.fontData);
 	}
 	return font.handle;
