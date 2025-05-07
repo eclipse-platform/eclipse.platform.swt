@@ -15,6 +15,7 @@
  *******************************************************************************/
 package org.eclipse.swt.internal;
 
+import java.util.*;
 import java.util.function.*;
 
 import org.eclipse.swt.*;
@@ -42,9 +43,20 @@ public class DPIUtil {
 	private static int deviceZoom = 100;
 	private static int nativeDeviceZoom = 100;
 
-	private static enum AutoScaleMethod { AUTO, NEAREST, SMOOTH }
-	private static AutoScaleMethod autoScaleMethodSetting = AutoScaleMethod.AUTO;
-	private static AutoScaleMethod autoScaleMethod = AutoScaleMethod.NEAREST;
+	private static enum AutoScaleMethod { AUTO, NEAREST, SMOOTH;
+
+		public static Optional<AutoScaleMethod> forString(String s) {
+			for (AutoScaleMethod v : values()) {
+				if (v.name().equalsIgnoreCase(s)) {
+					return Optional.of(v);
+				}
+			}
+			return Optional.empty();
+		}
+
+	}
+	private static final AutoScaleMethod AUTO_SCALE_METHOD_SETTING;
+	private static AutoScaleMethod autoScaleMethod;
 
 	private static String autoScaleValue;
 	private static final boolean USE_CAIRO_AUTOSCALE = SWT.getPlatform().equals("gtk");
@@ -100,13 +112,8 @@ public class DPIUtil {
 		autoScaleValue = System.getProperty (SWT_AUTOSCALE);
 
 		String value = System.getProperty (SWT_AUTOSCALE_METHOD);
-		if (value != null) {
-			if (AutoScaleMethod.NEAREST.name().equalsIgnoreCase(value)) {
-				autoScaleMethod = autoScaleMethodSetting = AutoScaleMethod.NEAREST;
-			} else if (AutoScaleMethod.SMOOTH.name().equalsIgnoreCase(value)) {
-				autoScaleMethod = autoScaleMethodSetting = AutoScaleMethod.SMOOTH;
-			}
-		}
+		AUTO_SCALE_METHOD_SETTING = AutoScaleMethod.forString(value).orElse(AutoScaleMethod.AUTO);
+		autoScaleMethod = AUTO_SCALE_METHOD_SETTING != AutoScaleMethod.AUTO ? AUTO_SCALE_METHOD_SETTING : AutoScaleMethod.NEAREST;
 	}
 
 /**
@@ -615,7 +622,7 @@ public static void setDeviceZoom (int nativeDeviceZoom) {
 
 	// in GTK, preserve the current method when switching to a 100% monitor
 	boolean preserveScalingMethod = SWT.getPlatform().equals("gtk") && deviceZoom == 100;
-	if (!preserveScalingMethod && autoScaleMethodSetting == AutoScaleMethod.AUTO) {
+	if (!preserveScalingMethod && AUTO_SCALE_METHOD_SETTING == AutoScaleMethod.AUTO) {
 		if (sholdUseSmoothScaling()) {
 			autoScaleMethod = AutoScaleMethod.SMOOTH;
 		} else {
