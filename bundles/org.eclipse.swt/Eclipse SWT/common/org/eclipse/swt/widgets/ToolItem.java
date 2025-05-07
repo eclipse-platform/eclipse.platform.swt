@@ -779,7 +779,7 @@ public class ToolItem extends Item {
 	 */
 	public void setSelection(boolean selected) {
 		checkWidget();
-		internalSelect();
+		internalSelect(false);
 	}
 
 	/**
@@ -939,8 +939,8 @@ public class ToolItem extends Item {
 		MouseState newState;
 		if (renderer.isOnButton(location)) {
 			if (mouseState == MouseState.DOWN) {
+				internalSelect(true);
 				sendEvent(SWT.Selection, new Event());
-				internalSelect();
 			}
 			newState = MouseState.HOVER;
 		} else {
@@ -955,12 +955,12 @@ public class ToolItem extends Item {
 		}
 	}
 
-	private void internalSelect() {
+	private void internalSelect(boolean sendRadioEvents) {
 		switch (this.style) {
 		case SWT.CHECK -> isSelected = !isSelected;
 		case SWT.RADIO -> {
 			isSelected = true;
-			parent.radioItemSelected(this);
+			parent.radioItemSelected(this, sendRadioEvents);
 		}
 		}
 	}
@@ -973,10 +973,15 @@ public class ToolItem extends Item {
 		return isSelected;
 	}
 
-	void internalUnselect() {
+	/**
+	 *
+	 * @return true if the selection state was changed
+	 */
+	boolean internalUnselect() {
 		if (isSelected) {
 			isSelected = false;
-			sendEvent(SWT.Selection, new Event());
+			return true;
 		}
+		return false;
 	}
 }

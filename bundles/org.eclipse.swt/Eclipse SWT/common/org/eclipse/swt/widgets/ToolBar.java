@@ -13,6 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
+
 import java.util.*;
 import java.util.List;
 
@@ -54,7 +55,7 @@ import org.eclipse.swt.graphics.*;
 public class ToolBar extends CustomComposite {
 
 	/** The {@link ToolItem}s contained in the {@link ToolBar} */
-	private final java.util.List<ToolItem> items = new ArrayList<>();
+	private final List<ToolItem> items = new ArrayList<>();
 
 	@Deprecated
 	public int itemCount;
@@ -493,7 +494,7 @@ public class ToolBar extends CustomComposite {
 		redraw();
 	}
 
-	void radioItemSelected(ToolItem selectedItem) {
+	void radioItemSelected(ToolItem selectedItem, boolean sendSelectionEventsForUnselections) {
 		int selectedIndex = getItemIndex(selectedItem);
 		if (selectedIndex < 0) {
 			return;
@@ -502,32 +503,65 @@ public class ToolBar extends CustomComposite {
 		// if a radio item is selected, we need to un-select
 		// each other radio item in the same group. A group
 		// is a uninterrupted series of items of the same type
+		var group = getOtherRadioGroupItems(selectedIndex);
 
-		// un-select each radio item before the selected one
+		List<ToolItem> deselected = new ArrayList<>();
+
+		for (var it : group) {
+			if (it.internalUnselect()) {
+				deselected.add(it);
+			}
+		}
+
+		if (sendSelectionEventsForUnselections) {
+			for (var unselected : deselected) {
+				unselected.sendEvent(SWT.Selection);
+			}
+		}
+
+	}
+
+	/**
+	 *
+	 * it is expected, that the ToolItem of selectedIndex has type SWT.RADIO
+	 *
+	 * @param selectedIndex
+	 * @return
+	 */
+	private List<ToolItem> getOtherRadioGroupItems(int selectedIndex) {
+
+		if (selectedIndex < 0)
+			return Collections.emptyList();
+
+		List<ToolItem> otherItems = new ArrayList<>();
+
 		for (int i = selectedIndex - 1; i >= 0; i--) {
 			ToolItem item = getItem(i);
 			if ((item.style & SWT.RADIO) == SWT.RADIO) {
-				item.internalUnselect();
+				otherItems.add(item);
 			} else {
 				break;
 			}
 
 		}
 
-		// un-select each radio item before the selected one
 		for (int i = selectedIndex + 1; i < getItemCount(); i++) {
 			ToolItem item = getItem(i);
 			if ((item.style & SWT.RADIO) == SWT.RADIO) {
-				item.internalUnselect();
+				otherItems.add(item);
 			} else {
 				break;
 			}
 		}
+
+		return otherItems;
 	}
+
+
 
 	@Override
 	void releaseChildren(boolean destroy) {
-		List<ToolItem> copy = List.copyOf(items);
+		List<ToolItem> copy = java.util.List.copyOf(items);
 		for (ToolItem item : copy) {
 			item.dispose();
 		}
