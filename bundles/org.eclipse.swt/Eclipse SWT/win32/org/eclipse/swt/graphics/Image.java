@@ -232,8 +232,8 @@ public Image(Device device, Image srcImage, int flag) {
 	if (srcImage == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (srcImage.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	this.type = srcImage.type;
-	this.imageProvider = srcImage.imageProvider.createCopy(this);
 	this.styleFlag = srcImage.styleFlag | flag;
+	this.imageProvider = srcImage.imageProvider.createCopy(this);
 	switch (flag) {
 		case SWT.IMAGE_COPY: {
 			switch (type) {
