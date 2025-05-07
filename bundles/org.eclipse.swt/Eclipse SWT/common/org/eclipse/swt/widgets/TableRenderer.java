@@ -4,8 +4,11 @@ import org.eclipse.swt.graphics.*;
 
 public class TableRenderer extends ControlRenderer {
 
-	protected TableRenderer(Control control) {
-		super(control);
+	protected final Table table;
+
+	protected TableRenderer(Table table) {
+		super(table);
+		this.table = table;
 	}
 
 	@Override

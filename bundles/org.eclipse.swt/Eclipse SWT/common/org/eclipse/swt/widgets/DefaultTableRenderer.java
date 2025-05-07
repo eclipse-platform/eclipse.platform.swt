@@ -4,11 +4,8 @@ import org.eclipse.swt.graphics.*;
 
 public class DefaultTableRenderer extends TableRenderer {
 
-	private Table table;
-
 	protected DefaultTableRenderer(Table table) {
 		super(table);
-		this.table = table;
 	}
 
 	@Override
