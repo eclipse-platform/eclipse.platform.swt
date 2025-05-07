@@ -146,11 +146,9 @@ public class TableColumn extends Item {
 	 */
 	public TableColumn(Table parent, int style, int index) {
 		super(parent, checkStyle(style));
-		if (index < 0)
-			error(SWT.ERROR_INVALID_RANGE);
+		if (index < 0) error(SWT.ERROR_INVALID_RANGE);
+		if (index > parent.getColumnCount()) error(SWT.ERROR_INVALID_RANGE);
 
-		if (index > parent.getColumnCount())
-			error(SWT.ERROR_INVALID_RANGE);
 		resizable = true;
 		this.parent = parent;
 		parent.createItem(this, index);
@@ -159,7 +157,6 @@ public class TableColumn extends Item {
 	@Override
 	public void dispose() {
 		super.dispose();
-
 	}
 
 	/**
@@ -230,8 +227,7 @@ public class TableColumn extends Item {
 
 	@Override
 	protected void checkSubclass() {
-		if (!isValidSubclass())
-			error(SWT.ERROR_INVALID_SUBCLASS);
+		if (!isValidSubclass()) error(SWT.ERROR_INVALID_SUBCLASS);
 	}
 
 	@Override
@@ -257,12 +253,15 @@ public class TableColumn extends Item {
 	 */
 	public int getAlignment() {
 		checkWidget();
-		if ((style & SWT.LEFT) != 0)
+		if ((style & SWT.LEFT) != 0) {
 			return SWT.LEFT;
-		if ((style & SWT.CENTER) != 0)
+		}
+		if ((style & SWT.CENTER) != 0) {
 			return SWT.CENTER;
-		if ((style & SWT.RIGHT) != 0)
+		}
+		if ((style & SWT.RIGHT) != 0) {
 			return SWT.RIGHT;
+		}
 		return SWT.LEFT;
 	}
 
@@ -371,18 +370,15 @@ public class TableColumn extends Item {
 	public int getWidth() {
 		checkWidget();
 
-		if (this.width >= 0)
-			return this.width;
-
-		return 0;
+		return Math.max(this.width, 0);
 	}
 
 	int getHeight() {
 		checkWidget();
 
-		if (this.height == -1)
+		if (this.height == -1) {
 			this.height = TableColumnRenderer.guessColumnHeight(this);
-
+		}
 
 		return this.height;
 	}
@@ -404,15 +400,11 @@ public class TableColumn extends Item {
 		checkWidget();
 
 		Point p = renderer.computeSize();
-
 		this.setWidth(p.x);
 		this.setHeight(p.y);
 
 		getParent().redraw();
-
 	}
-
-
 
 	@Override
 	void releaseHandle() {
@@ -453,10 +445,8 @@ public class TableColumn extends Item {
 	 */
 	public void removeControlListener(ControlListener listener) {
 		checkWidget();
-		if (listener == null)
-			error(SWT.ERROR_NULL_ARGUMENT);
-		if (eventTable == null)
-			return;
+		if (listener == null) error(SWT.ERROR_NULL_ARGUMENT);
+		if (eventTable == null) return;
 		eventTable.unhook(SWT.Move, listener);
 		eventTable.unhook(SWT.Resize, listener);
 	}
@@ -486,10 +476,8 @@ public class TableColumn extends Item {
 	 */
 	public void removeSelectionListener(SelectionListener listener) {
 		checkWidget();
-		if (listener == null)
-			error(SWT.ERROR_NULL_ARGUMENT);
-		if (eventTable == null)
-			return;
+		if (listener == null) error(SWT.ERROR_NULL_ARGUMENT);
+		if (eventTable == null) return;
 		eventTable.unhook(SWT.Selection, listener);
 		eventTable.unhook(SWT.DefaultSelection, listener);
 	}
@@ -516,23 +504,19 @@ public class TableColumn extends Item {
 	public void setAlignment(int alignment) {
 		checkWidget();
 
-		if ((alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) == 0)
-			return;
+		if ((alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) == 0) return;
 		int index = parent.indexOf(this);
-		if (index == -1 || index == 0)
-			return;
+		if (index == -1 || index == 0) return;
+
 		style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 		style |= alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
-
 	}
 
 	@Override
 	public void setImage(Image image) {
 		checkWidget();
+		if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 
-		if (image != null && image.isDisposed()) {
-			error(SWT.ERROR_INVALID_ARGUMENT);
-		}
 		super.setImage(image);
 		if (parent.sortColumn != this || parent.sortDirection != SWT.NONE) {
 			setImage(image, false, false);
@@ -541,8 +525,7 @@ public class TableColumn extends Item {
 
 	void setImage(Image image, boolean sort, boolean right) {
 		int index = parent.indexOf(this);
-		if (index == -1)
-			return;
+		if (index == -1) return;
 		Table.logNotImplemented();
 	}
 
@@ -596,8 +579,7 @@ public class TableColumn extends Item {
 
 	void setSortDirection(int direction) {
 		int index = parent.indexOf(this);
-		if (index == -1)
-			return;
+		if (index == -1) return;
 		Table.logNotImplemented();
 	}
 
@@ -608,7 +590,6 @@ public class TableColumn extends Item {
 		super.setText(string);
 
 		pack();
-
 	}
 
 	/**
@@ -666,89 +647,71 @@ public class TableColumn extends Item {
 	public void setWidth(int width) {
 		checkWidget();
 
-		if (width < 0)
-			return;
+		if (width < 0) return;
 		int index = parent.indexOf(this);
-		if (index == -1)
-			return;
+		if (index == -1) return;
 
 		this.width = width;
 
 		parent.getColumnsHandler().clearCache();
 
-		if (index < parent.getColumnCount() - 1)
+		if (index < parent.getColumnCount() - 1) {
 			for (int i = index + 1; i < parent.getColumnCount(); i++) {
 				parent.getColumn(i).clearCache();
 			}
+		}
 
 		redraw();
 	}
 
 	private void clearCache() {
-
 		location = null;
 		height = -1;
-
 	}
 
 	private void setHeight(int height) {
-
 		checkWidget();
 		setHeightInPixels(DPIUtil.scaleUp(height, 100));
-
 	}
 
 	private void setHeightInPixels(int height) {
-
-		if (height < 0)
-			return;
+		if (height < 0) return;
 		int index = parent.indexOf(this);
-		if (index == -1)
-			return;
+		if (index == -1) return;
 
 		this.height = height;
 	}
 
 	void updateToolTip(int index) {
 		Table.logNotImplemented();
-
 	}
 
 	Point getLocation() {
-
 		int horizontalShift = getParent().getHorizontalBar().getSelection();
 		if (this.location == null || this.horizontalShiftAtCalculation == null
-				|| this.horizontalShiftAtCalculation != horizontalShift)
+				|| this.horizontalShiftAtCalculation != horizontalShift) {
 			calculateLocation();
+		}
 
 		return this.location;
 	}
 
 	private void calculateLocation() {
-
 		var index = getParent().indexOf(this);
 		if (index == 0) {
-
 			this.horizontalShiftAtCalculation = getParent().getHorizontalBar().getSelection();
-
 			this.location = new Point(-horizontalShiftAtCalculation, 0);
 		} else {
 			var prevBounds = getParent().getColumn(index - 1).getBounds();
 			this.location = new Point(prevBounds.x + prevBounds.width, prevBounds.y);
 		}
-
 	}
 
 	void paint(GC gc) {
-
 		renderer.doPaint(gc);
-
 	}
 
-
-
 	Rectangle getBounds() {
-
 		Point l = getLocation();
 		int width = getWidth();
 		int height = getHeight();
@@ -760,6 +723,4 @@ public class TableColumn extends Item {
 		Rectangle b = getBounds();
 		getParent().redraw(b.x, b.y, b.width, b.height, true);
 	}
-
-
 }

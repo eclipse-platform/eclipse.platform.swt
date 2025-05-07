@@ -17,17 +17,13 @@ public class TableColumnRenderer {
 	/** border width */
 	private static final int DEFAULT_BORDER_WIDTH = 1;
 
-	private TableColumn column;
+	private final TableColumn column;
 
 	public TableColumnRenderer(TableColumn tableColumn) {
-
 		this.column = tableColumn;
-
 	}
 
 	void doPaint(GC gc) {
-
-
 		var b = column.getBounds();
 		gc.drawRectangle(b);
 
@@ -35,45 +31,37 @@ public class TableColumnRenderer {
 		int yPosition = b.y + DEFAULT_MARGIN_UP + DEFAULT_BORDER_WIDTH;
 
 		if (Table.FILL_TEXT_AREAS) {
-
 			var pBG = gc.getBackground();
 			gc.setBackground(column.getParent().getDisplay().getSystemColor(SWT.COLOR_DARK_GRAY));
 			var textSize = column.getParent().computeTextExtent(column.getText());
 			var rec = new Rectangle(xPosition, yPosition, textSize.x, textSize.y);
 			gc.fillRectangle(rec);
 			gc.setBackground(pBG);
-
 		}
 
-		if (Table.DRAW_TEXTS)
+		if (Table.DRAW_TEXTS) {
 			gc.drawText(column.getText(), xPosition, yPosition);
-
+		}
 	}
 
 	static int guessColumnHeight(TableColumn column) {
-
 		var textHeight = Table.guessTextHeight(column.getParent());
-
-		return textHeight + +DEFAULT_MARGIN_UP + DEFAULT_MARGIN_DOWN;
-
+		return textHeight + DEFAULT_MARGIN_UP + DEFAULT_MARGIN_DOWN;
 	}
 
 	Point computeSize() {
-
 		GC gc = new GC(getParent());
 		int colIndex = getParent().indexOf(column);
 		Point fin = new Point(0, 0);
 		int width = 0;
 		try {
-
-			if (getParent().getItems() != null)
+			if (getParent().getItems() != null) {
 				for (TableItem i : getParent().getItems()) {
-
 					Point p = i.computeCellSize(colIndex);
 					width = Math.max(width, p.x);
 					i.clearCache();
-
 				}
+			}
 
 			Point headerExt = gc.textExtent(column.getText());
 			fin.x = Math.max(headerExt.x + 2 * DEFAULT_MARGIN + 2 * DEFAULT_BORDER_WIDTH, width);
@@ -88,5 +76,4 @@ public class TableColumnRenderer {
 	private Table getParent() {
 		return column.getParent();
 	}
-
 }

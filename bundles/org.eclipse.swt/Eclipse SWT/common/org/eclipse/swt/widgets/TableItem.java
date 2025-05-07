@@ -72,8 +72,7 @@ public class TableItem extends Item {
 
 	private int itemIndex = -2;
 
-
-	private TableItemRenderer renderer = new TableItemRenderer(this);
+	private final TableItemRenderer renderer = new TableItemRenderer(this);
 
 	/**
 	 * Constructs a new instance of this class given its parent (which must be a
@@ -147,7 +146,6 @@ public class TableItem extends Item {
 		addListener(SWT.Selection, listener);
 
 		addTypedListener(new MouseTrackAdapter() {
-
 			private boolean hasMouseEntered;
 
 			@Override
@@ -166,7 +164,6 @@ public class TableItem extends Item {
 		}, SWT.MouseEnter, SWT.MouseExit);
 
 		initializeAccessible();
-
 	}
 
 	private void onPaint(Event event) {
@@ -175,16 +172,11 @@ public class TableItem extends Item {
 		}
 
 		doPaint(event.gc);
-
 	}
 
 	void doPaint(GC gc) {
-
 		renderer.doPaint(gc);
-
 	}
-
-
 
 	private boolean isVisible() {
 		return true;
@@ -212,7 +204,6 @@ public class TableItem extends Item {
 		// TODO: handle accessibility
 		// acc.addAccessibleListener(accAdapter);
 		// addListener(SWT.FocusIn, event -> acc.setFocus(ACC.CHILDID_SELF));
-
 	}
 
 	private Accessible getAccessible() {
@@ -244,7 +235,6 @@ public class TableItem extends Item {
 	}
 
 	private void onKeyReleased(Event event) {
-
 	}
 
 	private void onResize() {
@@ -264,10 +254,11 @@ public class TableItem extends Item {
 	}
 
 	private void onMouseUp(Event e) {
-		if ((e.stateMask & SWT.BUTTON1) != 0)
+		if ((e.stateMask & SWT.BUTTON1) != 0) {
 			handleSelection();
-		else
+		} else {
 			redraw();
+		}
 	}
 
 	/**
@@ -316,18 +307,16 @@ public class TableItem extends Item {
 	TableItem(Table parent, int style, int index, boolean create) {
 		super(parent, style);
 
-		if (index < 0 || index > parent.getItemCount()) {
-			error(SWT.ERROR_INVALID_RANGE);
-		}
+		if (index < 0 || index > parent.getItemCount()) error(SWT.ERROR_INVALID_RANGE);
 
 		this.parent = parent;
-		if (create)
+		if (create) {
 			parent.createItem(this, index);
+		}
 	}
 
 	static Table checkNull(Table control) {
-		if (control == null)
-			SWT.error(SWT.ERROR_NULL_ARGUMENT);
+		if (control == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 		return control;
 	}
 
@@ -350,8 +339,9 @@ public class TableItem extends Item {
 		foreground = null;
 		cellFont = null;
 		cellBackground = cellForeground = null;
-		if ((parent.style & SWT.VIRTUAL) != 0)
+		if ((parent.style & SWT.VIRTUAL) != 0) {
 			cached = false;
+		}
 	}
 
 	@Override
@@ -378,8 +368,9 @@ public class TableItem extends Item {
 	public Color getBackground() {
 		checkWidget();
 
-		if (background != null)
+		if (background != null) {
 			return background;
+		}
 
 		return getParent().getBackground();
 	}
@@ -402,11 +393,11 @@ public class TableItem extends Item {
 	 */
 	public Color getBackground(int index) {
 		checkWidget();
-		if (!parent.checkData(this, true))
-			error(SWT.ERROR_WIDGET_DISPOSED);
+		if (!parent.checkData(this, true)) error(SWT.ERROR_WIDGET_DISPOSED);
 		int count = Math.max(1, parent.getColumnCount());
-		if (0 > index || index > count - 1)
+		if (0 > index || index > count - 1) {
 			return getBackground();
+		}
 		Color cell = cellBackground != null ? cellBackground[index] : null;
 		return cell == null ? getBackground() : cell;
 	}
@@ -430,18 +421,17 @@ public class TableItem extends Item {
 	 * @since 3.2
 	 */
 	public Rectangle getBounds() {
-
 		var full = getFullBounds();
 
 		int width = full.width;
 		int x = full.x;
 
 		int shift = Table.TABLE_INITIAL_RIGHT_SHIFT;
-		if ((getParent().getStyle() & SWT.CHECK) != 0)
+		if ((getParent().getStyle() & SWT.CHECK) != 0) {
 			shift = Table.TABLE_CHECKBOX_RIGHT_SHIFT;
+		}
 
 		if (getParent().columnsExist()) {
-
 			width = width - shift;
 			width = Math.max(0, width);
 			x += shift;
@@ -450,7 +440,6 @@ public class TableItem extends Item {
 		}
 
 		return new Rectangle(x, full.y, width, full.height);
-
 	}
 
 	private int getItemIndex() {
@@ -471,41 +460,40 @@ public class TableItem extends Item {
 	 * @return the full Rectangle including a checkbox and initial pixels.
 	 */
 	public Rectangle getFullBounds() {
-
-		if (topIndexAtCalculation == getParent().getTopIndex() && bounds != null && Table.USE_CACHES)
+		if (topIndexAtCalculation == getParent().getTopIndex() && bounds != null && Table.USE_CACHES) {
 			return bounds;
+		}
 
 		this.bounds = null;
 		this.location = null;
 
 		checkWidget();
-		if (!parent.checkData(this, true))
-			error(SWT.ERROR_WIDGET_DISPOSED);
+		if (!parent.checkData(this, true)) error(SWT.ERROR_WIDGET_DISPOSED);
 		int itemIndex = getItemIndex();
-		if (itemIndex == -1)
+		if (itemIndex == -1) {
 			return new Rectangle(0, 0, 0, 0);
+		}
 
 		Point p = renderer.computeSize(false);
 
 		synchronized (getParent()) {
-			if (this.location == null)
+			if (this.location == null) {
 				calculateLocation();
+			}
 			bounds = new Rectangle(location.x, location.y, p.x, p.y);
 		}
 
 		return bounds;
-
 	}
 
 	private void calculateLocation() {
-
 		int index = getItemIndex();
 
-		if (getParent().getTopIndex() == index) {
+		final int topIndex = getParent().getTopIndex();
+		if (topIndex == index) {
 			setLocation(getParent().getTopIndexItemPosition());
-		} else if (getParent().getTopIndex() < index) {
-
-			for (int i = getParent().getTopIndex(); i < index; i = Math.min(i + 1000, index)) {
+		} else if (topIndex < index) {
+			for (int i = topIndex; i < index; i = Math.min(i + 1000, index)) {
 				var it = getParent()._getItem(i, false);
 				it.getLocation();
 			}
@@ -515,8 +503,7 @@ public class TableItem extends Item {
 			int fullHeightDiff = TableItemsHandler.getItemsHeight(prevItem);
 			setLocation(new Point(prevBounds.x, prevBounds.y + fullHeightDiff));
 		} else {
-
-			for (int i = getParent().getTopIndex(); i > index; i = Math.max(i - 1000, index)) {
+			for (int i = topIndex; i > index; i = Math.max(i - 1000, index)) {
 				var it = getParent().getItem(i);
 				it.getLocation();
 			}
@@ -526,8 +513,7 @@ public class TableItem extends Item {
 			int fullHeightDiff = TableItemsHandler.getItemsHeight(this);
 			setLocation(new Point(prevBounds.x, prevBounds.y - fullHeightDiff));
 		}
-		topIndexAtCalculation = getParent().getTopIndex();
-
+		topIndexAtCalculation = topIndex;
 	}
 
 	private void setLocation(Point l) {
@@ -535,9 +521,7 @@ public class TableItem extends Item {
 	}
 
 	Point getSize() {
-
 		return renderer.computeSize(false);
-
 	}
 
 
@@ -560,19 +544,18 @@ public class TableItem extends Item {
 	public Rectangle getBounds(int index) {
 		checkWidget();
 
-		if (!parent.checkData(this, true))
-			error(SWT.ERROR_WIDGET_DISPOSED);
+		if (!parent.checkData(this, true)) error(SWT.ERROR_WIDGET_DISPOSED);
 
 		if (parent.getColumnCount() == 0) {
-
-			if (index == 0)
+			if (index == 0) {
 				return getBounds();
+			}
 			return new Rectangle(0, 0, 0, 0);
-
 		}
 
-		if (index < 0 || index >= parent.getColumnCount())
+		if (index < 0 || index >= parent.getColumnCount()) {
 			return new Rectangle(0, 0, 0, 0);
+		}
 
 		var b = getBounds();
 		var column = parent.getColumn(index).getBounds();
@@ -584,11 +567,11 @@ public class TableItem extends Item {
 		int x = column.x;
 
 		if (index == 0) {
-
 			int shift = Table.TABLE_INITIAL_RIGHT_SHIFT;
 
-			if ((getParent().getStyle() & SWT.CHECK) != 0)
+			if ((getParent().getStyle() & SWT.CHECK) != 0) {
 				shift = Table.TABLE_CHECKBOX_RIGHT_SHIFT;
+			}
 			// reduce width by shift. This cell must be by default smaller than the others.
 			// If there is a checkbox, this also must be considered.
 			width = width - shift;
@@ -615,11 +598,8 @@ public class TableItem extends Item {
 	 */
 	public boolean getChecked() {
 		checkWidget();
-		if (!parent.checkData(this, true))
-			error(SWT.ERROR_WIDGET_DISPOSED);
-		if ((parent.style & SWT.CHECK) == 0)
-			return false;
-		return checked;
+		if (!parent.checkData(this, true)) error(SWT.ERROR_WIDGET_DISPOSED);
+		return (parent.style & SWT.CHECK) != 0 && checked;
 	}
 
 	/**
@@ -640,8 +620,7 @@ public class TableItem extends Item {
 	 */
 	public Font getFont() {
 		checkWidget();
-		if (!parent.checkData(this, true))
-			error(SWT.ERROR_WIDGET_DISPOSED);
+		if (!parent.checkData(this, true)) error(SWT.ERROR_WIDGET_DISPOSED);
 		return font != null ? font : parent.getFont();
 	}
 
@@ -664,13 +643,14 @@ public class TableItem extends Item {
 	 */
 	public Font getFont(int index) {
 		checkWidget();
-		if (!parent.checkData(this, true))
-			error(SWT.ERROR_WIDGET_DISPOSED);
+		if (!parent.checkData(this, true)) error(SWT.ERROR_WIDGET_DISPOSED);
 		int count = Math.max(1, parent.getColumnCount());
-		if (0 > index || index > count - 1)
+		if (0 > index || index > count - 1) {
 			return getFont();
-		if (cellFont == null || cellFont[index] == null)
+		}
+		if (cellFont == null || cellFont[index] == null) {
 			return getFont();
+		}
 		return cellFont[index];
 	}
 
@@ -691,10 +671,10 @@ public class TableItem extends Item {
 	 */
 	public Color getForeground() {
 		checkWidget();
-		if (!parent.checkData(this, true))
-			error(SWT.ERROR_WIDGET_DISPOSED);
-		if (foreground == null)
+		if (!parent.checkData(this, true)) error(SWT.ERROR_WIDGET_DISPOSED);
+		if (foreground == null) {
 			return parent.getForeground();
+		}
 		return foreground;
 	}
 
@@ -717,11 +697,11 @@ public class TableItem extends Item {
 	 */
 	public Color getForeground(int index) {
 		checkWidget();
-		if (!parent.checkData(this, true))
-			error(SWT.ERROR_WIDGET_DISPOSED);
+		if (!parent.checkData(this, true)) error(SWT.ERROR_WIDGET_DISPOSED);
 		int count = Math.max(1, parent.getColumnCount());
-		if (0 > index || index > count - 1)
+		if (0 > index || index > count - 1) {
 			return getForeground();
+		}
 		Color cellColor = cellForeground != null ? cellForeground[index] : null;
 		return cellColor == null ? getForeground() : cellColor;
 	}
@@ -742,18 +722,14 @@ public class TableItem extends Item {
 	 */
 	public boolean getGrayed() {
 		checkWidget();
-		if (!parent.checkData(this, true))
-			error(SWT.ERROR_WIDGET_DISPOSED);
-		if ((parent.style & SWT.CHECK) == 0)
-			return false;
-		return grayed;
+		if (!parent.checkData(this, true)) error(SWT.ERROR_WIDGET_DISPOSED);
+		return (parent.style & SWT.CHECK) != 0 && grayed;
 	}
 
 	@Override
 	public Image getImage() {
 		checkWidget();
-		if (!parent.checkData(this, true))
-			error(SWT.ERROR_WIDGET_DISPOSED);
+		if (!parent.checkData(this, true)) error(SWT.ERROR_WIDGET_DISPOSED);
 		return super.getImage();
 	}
 
@@ -774,13 +750,12 @@ public class TableItem extends Item {
 	 */
 	public Image getImage(int index) {
 		checkWidget();
-		if (!parent.checkData(this, true))
-			error(SWT.ERROR_WIDGET_DISPOSED);
-		if (index == 0)
+		if (!parent.checkData(this, true)) error(SWT.ERROR_WIDGET_DISPOSED);
+		if (index == 0) {
 			return getImage();
-		if (images != null) {
-			if (0 <= index && index < images.length)
-				return images[index];
+		}
+		if (images != null && 0 <= index && index < images.length) {
+			return images[index];
 		}
 		return null;
 	}
@@ -807,11 +782,11 @@ public class TableItem extends Item {
 	}
 
 	Rectangle getImageBoundsInPixels(int index) {
-		if (!parent.checkData(this, true))
-			error(SWT.ERROR_WIDGET_DISPOSED);
+		if (!parent.checkData(this, true)) error(SWT.ERROR_WIDGET_DISPOSED);
 		int itemIndex = getItemIndex();
-		if (itemIndex == -1)
+		if (itemIndex == -1) {
 			return new Rectangle(0, 0, 0, 0);
+		}
 
 		Table.logNotImplemented();
 
@@ -833,16 +808,14 @@ public class TableItem extends Item {
 	 */
 	public int getImageIndent() {
 		checkWidget();
-		if (!parent.checkData(this, true))
-			error(SWT.ERROR_WIDGET_DISPOSED);
+		if (!parent.checkData(this, true)) error(SWT.ERROR_WIDGET_DISPOSED);
 		return imageIndent;
 	}
 
 	@Override
 	String getNameText() {
-		if ((parent.style & SWT.VIRTUAL) != 0) {
-			if (!cached)
-				return "*virtual*"; //$NON-NLS-1$
+		if ((parent.style & SWT.VIRTUAL) != 0 && !cached) {
+			return "*virtual*"; //$NON-NLS-1$
 		}
 		return super.getNameText();
 	}
@@ -868,8 +841,7 @@ public class TableItem extends Item {
 	@Override
 	public String getText() {
 		checkWidget();
-		if (!parent.checkData(this, true))
-			error(SWT.ERROR_WIDGET_DISPOSED);
+		if (!parent.checkData(this, true)) error(SWT.ERROR_WIDGET_DISPOSED);
 		return super.getText();
 	}
 
@@ -890,10 +862,10 @@ public class TableItem extends Item {
 	 */
 	public String getText(int index) {
 		checkWidget();
-		if (!parent.checkData(this, true))
-			error(SWT.ERROR_WIDGET_DISPOSED);
-		if (index == 0)
+		if (!parent.checkData(this, true)) error(SWT.ERROR_WIDGET_DISPOSED);
+		if (index == 0) {
 			return getText();
+		}
 		if (strings != null) {
 			if (0 <= index && index < strings.length) {
 				String string = strings[index];
@@ -927,26 +899,23 @@ public class TableItem extends Item {
 	}
 
 	Rectangle getTextBoundsInPixels(int index) {
-		if (!parent.checkData(this, true))
-			error(SWT.ERROR_WIDGET_DISPOSED);
+		if (!parent.checkData(this, true)) error(SWT.ERROR_WIDGET_DISPOSED);
 		int itemIndex = getItemIndex();
-		if (itemIndex == -1)
+		if (itemIndex == -1) {
 			return new Rectangle(0, 0, 0, 0);
+		}
 		Table.logNotImplemented();
 
 		return new Rectangle(0, 0, 0, 0);
 	}
 
 	void redraw() {
-
 		var index = getItemIndex();
-		if (index < getParent().getTopIndex() || index > getParent().getLastVisibleIndex())
-			return;
+		if (index < getParent().getTopIndex() || index > getParent().getLastVisibleIndex()) return;
 
 		Rectangle b = getBounds();
 
 		if (renderer.checkboxBounds != null) {
-
 			Rectangle newRect = new Rectangle(0, 0, 0, 0);
 
 			newRect.x = renderer.checkboxBounds.x;
@@ -955,28 +924,24 @@ public class TableItem extends Item {
 			newRect.height = b.height;
 
 			b = newRect;
-
 		}
 
 		getParent().redraw(b.x, b.y, b.width, b.height, true);
-
 	}
 
 	void redraw(int column, boolean drawText, boolean drawImage) {
-
-		if (!getParent().isVisible())
-			return;
+		if (!getParent().isVisible()) return;
 
 		var index = getItemIndex();
-		if (index < getParent().getTopIndex() || index > getParent().getLastVisibleIndex())
-			return;
+		final int topIndex = getParent().getTopIndex();
+		if (index < topIndex || index > getParent().getLastVisibleIndex()) return;
 
-		if (getParent().getTopIndex() == topIndexAtCalculation && location != null) {
+		if (topIndex == topIndexAtCalculation && location != null) {
 			Rectangle b = getBounds();
 			getParent().redraw(b.x, b.y, b.width, b.height, true);
-		} else
+		} else {
 			getParent().redraw();
-
+		}
 	}
 
 	@Override
@@ -1018,17 +983,17 @@ public class TableItem extends Item {
 	 */
 	public void setBackground(Color color) {
 		checkWidget();
-		if (color != null && color.isDisposed()) {
-			error(SWT.ERROR_INVALID_ARGUMENT);
-		}
+		if (color != null && color.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 		if (color != null) {
 			parent.setCustomDraw(true);
 		}
-		if (background == color)
+		if (background == color) {
 			return;
+		}
 		background = color;
-		if ((parent.style & SWT.VIRTUAL) != 0)
+		if ((parent.style & SWT.VIRTUAL) != 0) {
 			cached = true;
+		}
 		redraw();
 	}
 
@@ -1058,12 +1023,9 @@ public class TableItem extends Item {
 	 */
 	public void setBackground(int index, Color color) {
 		checkWidget();
-		if (color != null && color.isDisposed()) {
-			error(SWT.ERROR_INVALID_ARGUMENT);
-		}
+		if (color != null && color.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 		int count = Math.max(1, parent.getColumnCount());
-		if (0 > index || index > count - 1)
-			return;
+		if (0 > index || index > count - 1) return;
 		Color cellColor = null;
 		if (color != null) {
 			parent.setCustomDraw(true);
@@ -1075,11 +1037,13 @@ public class TableItem extends Item {
 				cellBackground[i] = null;
 			}
 		}
-		if (cellBackground[index] == cellColor)
+		if (cellBackground[index] == cellColor) {
 			return;
+		}
 		cellBackground[index] = cellColor;
-		if ((parent.style & SWT.VIRTUAL) != 0)
+		if ((parent.style & SWT.VIRTUAL) != 0) {
 			cached = true;
+		}
 		redraw(index, true, true);
 	}
 
@@ -1099,17 +1063,16 @@ public class TableItem extends Item {
 	 */
 	public void setChecked(boolean checked) {
 		checkWidget();
-		if ((parent.style & SWT.CHECK) == 0)
-			return;
-		if (this.checked == checked)
-			return;
+		if ((parent.style & SWT.CHECK) == 0) return;
+		if (this.checked == checked) return;
 		setChecked(checked, false);
 	}
 
 	void setChecked(boolean checked, boolean notify) {
 		this.checked = checked;
-		if ((parent.style & SWT.VIRTUAL) != 0)
+		if ((parent.style & SWT.VIRTUAL) != 0) {
 			cached = true;
+		}
 		if (notify) {
 			Event event = new Event();
 			event.item = this;
@@ -1154,15 +1117,15 @@ public class TableItem extends Item {
 		}
 		Font oldFont = this.font;
 		Font newFont = font;
-		if (oldFont == newFont)
-			return;
+		if (oldFont == newFont) return;
 		this.font = newFont;
-		if (oldFont != null && oldFont.equals(newFont))
-			return;
-		if (font != null)
+		if (oldFont != null && oldFont.equals(newFont)) return;
+		if (font != null) {
 			parent.setCustomDraw(true);
-		if ((parent.style & SWT.VIRTUAL) != 0)
+		}
+		if ((parent.style & SWT.VIRTUAL) != 0) {
 			cached = true;
+		}
 
 		redraw();
 	}
@@ -1197,27 +1160,23 @@ public class TableItem extends Item {
 		clearCache();
 		Table.logNotImplemented();
 
-		if (font != null && font.isDisposed()) {
-			error(SWT.ERROR_INVALID_ARGUMENT);
-		}
+		if (font != null && font.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 		int count = Math.max(1, parent.getColumnCount());
-		if (0 > index || index > count - 1)
-			return;
+		if (0 > index || index > count - 1) return;
 		if (cellFont == null) {
-			if (font == null)
-				return;
+			if (font == null) return;
 			cellFont = new Font[count];
 		}
 		Font oldFont = cellFont[index];
-		if (oldFont == font)
-			return;
+		if (oldFont == font) return;
 		cellFont[index] = font;
-		if (oldFont != null && oldFont.equals(font))
-			return;
-		if (font != null)
+		if (oldFont != null && oldFont.equals(font)) return;
+		if (font != null) {
 			parent.setCustomDraw(true);
-		if ((parent.style & SWT.VIRTUAL) != 0)
+		}
+		if ((parent.style & SWT.VIRTUAL) != 0) {
 			cached = true;
+		}
 		redraw(index, true, false);
 	}
 
@@ -1245,17 +1204,15 @@ public class TableItem extends Item {
 	 */
 	public void setForeground(Color color) {
 		checkWidget();
-		if (color != null && color.isDisposed()) {
-			error(SWT.ERROR_INVALID_ARGUMENT);
-		}
+		if (color != null && color.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 		if (color != null) {
 			parent.setCustomDraw(true);
 		}
-		if (foreground == color)
-			return;
+		if (foreground == color) return;
 		foreground = color;
-		if ((parent.style & SWT.VIRTUAL) != 0)
+		if ((parent.style & SWT.VIRTUAL) != 0) {
 			cached = true;
+		}
 		redraw();
 	}
 
@@ -1285,12 +1242,9 @@ public class TableItem extends Item {
 	 */
 	public void setForeground(int index, Color color) {
 		checkWidget();
-		if (color != null && color.isDisposed()) {
-			error(SWT.ERROR_INVALID_ARGUMENT);
-		}
+		if (color != null && color.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 		int count = Math.max(1, parent.getColumnCount());
-		if (0 > index || index > count - 1)
-			return;
+		if (0 > index || index > count - 1) return;
 		Color pixel = null;
 		if (color != null) {
 			parent.setCustomDraw(true);
@@ -1302,11 +1256,11 @@ public class TableItem extends Item {
 				cellForeground[i] = null;
 			}
 		}
-		if (cellForeground[index] == pixel)
-			return;
+		if (cellForeground[index] == pixel) return;
 		cellForeground[index] = pixel;
-		if ((parent.style & SWT.VIRTUAL) != 0)
+		if ((parent.style & SWT.VIRTUAL) != 0) {
 			cached = true;
+		}
 		redraw(index, true, false);
 	}
 
@@ -1326,13 +1280,12 @@ public class TableItem extends Item {
 	 */
 	public void setGrayed(boolean grayed) {
 		checkWidget();
-		if ((parent.style & SWT.CHECK) == 0)
-			return;
-		if (this.grayed == grayed)
-			return;
+		if ((parent.style & SWT.CHECK) == 0) return;
+		if (this.grayed == grayed) return;
 		this.grayed = grayed;
-		if ((parent.style & SWT.VIRTUAL) != 0)
+		if ((parent.style & SWT.VIRTUAL) != 0) {
 			cached = true;
+		}
 		redraw();
 	}
 
@@ -1359,8 +1312,7 @@ public class TableItem extends Item {
 	 */
 	public void setImage(Image[] images) {
 		checkWidget();
-		if (images == null)
-			error(SWT.ERROR_NULL_ARGUMENT);
+		if (images == null) error(SWT.ERROR_NULL_ARGUMENT);
 		for (int i = 0; i < images.length; i++) {
 			setImage(i, images[i]);
 		}
@@ -1390,38 +1342,31 @@ public class TableItem extends Item {
 	 */
 	public void setImage(int index, Image image) {
 		checkWidget();
-		if (image != null && image.isDisposed()) {
-			error(SWT.ERROR_INVALID_ARGUMENT);
-		}
+		if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 		Image oldImage = null;
 		if (index == 0) {
-			if (image != null && image.type == SWT.ICON) {
-				if (image.equals(this.image))
-					return;
-			}
+			if (image != null && image.type == SWT.ICON && image.equals(this.image)) return;
 			oldImage = this.image;
 			super.setImage(image);
 		}
 		int count = Math.max(1, parent.getColumnCount());
-		if (0 > index || index > count - 1)
-			return;
+		if (0 > index || index > count - 1) return;
 		if (images == null && index != 0) {
 			images = new Image[count];
 			images[0] = image;
 		}
 		if (images != null) {
-			if (image != null && image.type == SWT.ICON) {
-				if (image.equals(images[index]))
-					return;
-			}
+			if (image != null && image.type == SWT.ICON && image.equals(images[index])) return;
 			oldImage = images[index];
 			images[index] = image;
 		}
-		if ((parent.style & SWT.VIRTUAL) != 0)
+		if ((parent.style & SWT.VIRTUAL) != 0) {
 			cached = true;
+		}
 
-		if (index == 0)
+		if (index == 0) {
 			parent.setScrollWidth(this, false);
+		}
 		boolean drawText = (image == null && oldImage != null) || (image != null && oldImage == null);
 
 		clearCache();
@@ -1459,10 +1404,8 @@ public class TableItem extends Item {
 
 		Table.logNotImplemented();
 
-		if (indent < 0)
-			return;
-		if (imageIndent == indent)
-			return;
+		if (indent < 0) return;
+		if (imageIndent == indent) return;
 		imageIndent = indent;
 
 		clearCache();
@@ -1494,20 +1437,18 @@ public class TableItem extends Item {
 	 */
 	public void setText(String[] strings) {
 		checkWidget();
-		if (strings == null)
-			error(SWT.ERROR_NULL_ARGUMENT);
+		if (strings == null) error(SWT.ERROR_NULL_ARGUMENT);
 		for (int i = 0; i < strings.length; i++) {
 			String string = strings[i];
-			if (string != null)
+			if (string != null) {
 				setText(i, string);
+			}
 		}
 
 		clearCache();
-
 	}
 
 	void clearCache() {
-
 		synchronized (this) {
 			renderer.clearCache();
 			this.itemIndex = -2;
@@ -1542,20 +1483,15 @@ public class TableItem extends Item {
 	 */
 	public void setText(int index, String string) {
 		checkWidget();
+		if (string == null) error(SWT.ERROR_NULL_ARGUMENT);
 
 		try {
-
-			if (string == null)
-				error(SWT.ERROR_NULL_ARGUMENT);
-
 			if (index == 0) {
-				if (string.equals(text))
-					return;
+				if (string.equals(text)) return;
 				super.setText(string);
 			}
 			int count = Math.max(1, parent.getColumnCount());
-			if (0 > index || index > count - 1)
-				return;
+			if (0 > index || index > count - 1) return;
 			if (strings == null && index != 0) {
 				strings = new String[count];
 				strings[0] = text;
@@ -1565,8 +1501,7 @@ public class TableItem extends Item {
 				strings = newStrings;
 			}
 			if (strings != null) {
-				if (string.equals(strings[index]))
-					return;
+				if (string.equals(strings[index])) return;
 				strings[index] = string;
 			}
 		} finally {
@@ -1584,19 +1519,16 @@ public class TableItem extends Item {
 	}
 
 	Point getLocation() {
-
-		if (getParent().getTopIndex() == topIndexAtCalculation && location != null)
+		if (getParent().getTopIndex() == topIndexAtCalculation && location != null) {
 			return location;
+		}
 
 		calculateLocation();
 		return location;
-
 	}
 
 	void moveTextToRightAt(int index) {
-
-		if (strings == null && images == null)
-			return;
+		if (strings == null && images == null) return;
 
 		java.util.List<String> newTexts = new ArrayList<>();
 		java.util.List<Image> newImages = new ArrayList<>();
@@ -1608,23 +1540,19 @@ public class TableItem extends Item {
 		newTexts.add("");
 		newImages.add(null);
 
-		if (strings.length >= index)
+		if (strings.length >= index) {
 			for (int k = index; k < strings.length; k++) {
-
 				newTexts.add(strings[k]);
 				newImages.add(getImage(k));
-
 			}
+		}
 
 		strings = newTexts.toArray(new String[0]);
 		images = newImages.toArray(new Image[0]);
-
 	}
 
 	void moveTextsItemsToLeft(int index) {
-
-		if (strings == null && images == null)
-			return;
+		if (strings == null && images == null) return;
 
 		if (strings != null && index > 0 && index < strings.length) {
 			java.util.List<String> newTexts = new ArrayList<>();
@@ -1639,28 +1567,18 @@ public class TableItem extends Item {
 			newImages.remove(index);
 			images = newImages.toArray(new Image[0]);
 		}
-
 	}
 
 	boolean isInCheckArea(Point p) {
-
-
-		if (renderer.checkboxBounds != null)
-			return renderer.checkboxBounds.contains(p);
-		return false;
+		return renderer.checkboxBounds != null && renderer.checkboxBounds.contains(p);
 	}
 
 	void toggleCheck() {
-
 		this.checked = !this.checked;
 		redraw();
-
 	}
 
 	public Point computeCellSize(int colIndex) {
 		return renderer.computeCellSize(colIndex);
 	}
-
-
-
 }

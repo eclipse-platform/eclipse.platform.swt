@@ -1,8 +1,6 @@
 package org.eclipse.swt.widgets;
 
-import org.eclipse.swt.graphics.*;
-
-public class TableRenderer extends ControlRenderer {
+public abstract class TableRenderer extends ControlRenderer {
 
 	protected final Table table;
 
@@ -10,11 +8,4 @@ public class TableRenderer extends ControlRenderer {
 		super(table);
 		this.table = table;
 	}
-
-	@Override
-	protected void paint(GC gc, int width, int height) {
-
-	}
-
-
 }

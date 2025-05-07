@@ -161,7 +161,7 @@ public class Table extends CustomComposite {
 
 	private int[] columnOrder;
 
-	private TableRenderer renderer = new DefaultTableRenderer(this);
+	private final TableRenderer renderer;
 
 	private Color headerBackgroundColor;
 
@@ -222,7 +222,6 @@ public class Table extends CustomComposite {
 		renderer = new DefaultTableRenderer(this);
 
 		initialize();
-
 	}
 
 	private void initialize() {
@@ -268,26 +267,23 @@ public class Table extends CustomComposite {
 		addListener(SWT.MouseWheel, listener);
 		addListener(SWT.MouseDoubleClick, listener);
 
-		if (verticalBar != null)
+		if (verticalBar != null) {
 			verticalBar.addListener(SWT.Selection, listener);
-		if (horizontalBar != null)
+		}
+		if (horizontalBar != null) {
 			horizontalBar.addListener(SWT.Selection, listener);
-
+		}
 
 		initializeAccessible();
-
 	}
 
 	private void onDoubleClick(Event event) {
-
 		itemsHandler.handleDoubleClick(event);
-
 	}
 
 	private void onMouseExit(Event event) {
 		hasMouseEntered = false;
 		redraw();
-
 	}
 
 	private void onMouseEnter(Event event) {
@@ -295,7 +291,6 @@ public class Table extends CustomComposite {
 			hasMouseEntered = true;
 			redraw();
 		}
-
 	}
 
 	private void onMouseMove(Event event) {
@@ -304,7 +299,6 @@ public class Table extends CustomComposite {
 	}
 
 	private void onScrollBar(Event event) {
-
 		ScrollBar vBar = getVerticalBar();
 
 		if (vBar != null) {
@@ -312,7 +306,6 @@ public class Table extends CustomComposite {
 			setTopIndex(vs);
 		}
 		redraw();
-
 	}
 
 	void initializeAccessible() {
@@ -336,11 +329,9 @@ public class Table extends CustomComposite {
 		};
 		acc.addAccessibleListener(accAdapter);
 		addListener(SWT.FocusIn, event -> acc.setFocus(ACC.CHILDID_SELF));
-
 	}
 
 	private void onSelection(Event event) {
-
 		if (event.widget == verticalBar) {
 			setTopIndex(verticalBar.getSelection());
 		}
@@ -362,7 +353,7 @@ public class Table extends CustomComposite {
 	}
 
 	private void onKeyDown(Event event) {
-// TODO implement all keyboard keys
+		// TODO implement all keyboard keys
 		if (event.keyCode == SWT.CTRL) {
 			this.ctrlPressed = true;
 		}
@@ -372,7 +363,6 @@ public class Table extends CustomComposite {
 		if (event.keyCode == SWT.CTRL) {
 			this.ctrlPressed = false;
 		}
-
 	}
 
 	private void onResize() {
@@ -381,10 +371,7 @@ public class Table extends CustomComposite {
 	}
 
 	void updateScrollBarWithTextSize() {
-
-		if (!this.isVisible()) {
-			return;
-		}
+		if (!this.isVisible()) return;
 
 		Rectangle ca = getClientArea();
 
@@ -396,7 +383,6 @@ public class Table extends CustomComposite {
 		var tableSize = computeDefaultSize();
 
 		if (verticalBar != null && getItemCount() > 0) {
-
 			int thumb = ca.height / getItemHeight() - 1;
 			verticalBar.setThumb(thumb);
 			verticalBar.setMaximum(getItemCount());
@@ -414,7 +400,6 @@ public class Table extends CustomComposite {
 			horizontalBar.setThumb(ca.width);
 			horizontalBar.setVisible(tableSize.x > ca.width);
 		}
-
 	}
 
 	int getColumnHeight() {
@@ -434,44 +419,37 @@ public class Table extends CustomComposite {
 		virtualItemsList.clear();
 		virtualItemCount = 0;
 
-		for (var c : columnsSet)
+		for (var c : columnsSet) {
 			c.dispose();
+		}
 
-		for (var i : itemsSet)
+		for (var i : itemsSet) {
 			i.dispose();
+		}
 	}
 
 	private void onMouseDown(Event e) {
+		if (!this.isVisible()) return;
 
-		if (!this.isVisible())
-			return;
 		Point p = new Point(e.x, e.y);
 
 		if (columnsHandler.getColumnsBounds().contains(e.x, e.y)) {
-
 			columnsHandler.handleMouseDown(e);
-
 		} else if (itemsHandler.getItemsClientArea().contains(e.x, e.y)) {
-
 			for (int i = getTopIndex(); i <= itemsHandler.getLastVisibleElementIndex(); i++) {
-
 				var it = getItem(i);
 
 				Rectangle b = it.getBounds();
-
 				if (b.contains(p)) {
-
-					if ((style & SWT.MULTI) == 0 || (this.ctrlPressed == false)) {
+					if ((style & SWT.MULTI) == 0 || !this.ctrlPressed) {
 						selectedTableItems.clear();
 						selectedTableItems.add(it);
 					} else {
-
-						if (selectedTableItems.contains(it))
+						if (selectedTableItems.contains(it)) {
 							selectedTableItems.remove(it);
-						else {
+						} else {
 							selectedTableItems.add(it);
 						}
-
 					}
 				} else {
 					if (it.isInCheckArea(p)) {
@@ -488,17 +466,15 @@ public class Table extends CustomComposite {
 	}
 
 	private void onMouseUp(Event e) {
-
 		if (columnsHandler.getColumnsBounds().contains(e.x, e.y)) {
-
 			columnsHandler.handleMouseUp(e);
-
 		}
 
-		if ((e.stateMask & SWT.BUTTON1) != 0)
+		if ((e.stateMask & SWT.BUTTON1) != 0) {
 			handleSelection();
-		else
+		} else {
 			redraw();
+		}
 	}
 
 	@Override
@@ -520,13 +496,11 @@ public class Table extends CustomComposite {
 		}
 
 		Drawing.drawWithGC(this, event.gc, renderer::paint);
-
 	}
 
 	public boolean columnsExist() {
 		return !columnsList.isEmpty();
 	}
-
 
 	TableItem _getItem(int index) {
 		return _getItem(index, true);
@@ -537,30 +511,20 @@ public class Table extends CustomComposite {
 	}
 
 	TableItem _getItem(int index, boolean create, int count) {
-
 		if (isVirtual()) {
-
 			if (index < virtualItemCount) {
-
 				var e = virtualItemsList.get(index);
-
 				if (e == null && create) {
 					e = new TableItem(this, SWT.None, index);
-
 				}
 				return e;
-
-			} else {
-				error(SWT.ERROR_INVALID_RANGE);
 			}
-
+			error(SWT.ERROR_INVALID_RANGE);
 		}
 
-		if (index >= getItemCount())
-			error(SWT.ERROR_INVALID_RANGE);
+		if (index >= getItemCount()) error(SWT.ERROR_INVALID_RANGE);
 
 		return itemsList.get(index);
-
 	}
 
 	/**
@@ -623,14 +587,12 @@ public class Table extends CustomComposite {
 	}
 
 	boolean checkData(TableItem item, boolean redraw) {
-		if ((style & SWT.VIRTUAL) == 0)
-			return true;
+		if ((style & SWT.VIRTUAL) == 0) return true;
 		return checkData(item, indexOf(item), redraw);
 	}
 
 	boolean checkData(TableItem item, int index, boolean redraw) {
-		if ((style & SWT.VIRTUAL) == 0)
-			return true;
+		if ((style & SWT.VIRTUAL) == 0) return true;
 		if (!item.cached) {
 			item.cached = true;
 			Event event = new Event();
@@ -640,12 +602,9 @@ public class Table extends CustomComposite {
 			sendEvent(SWT.SetData, event);
 			// widget could be disposed at this point
 			currentItem = null;
-			if (isDisposed() || item.isDisposed())
-				return false;
-			if (redraw) {
-				if (!setScrollWidth(item, false)) {
-					item.redraw();
-				}
+			if (isDisposed() || item.isDisposed()) return false;
+			if (redraw && !setScrollWidth(item, false)) {
+				item.redraw();
 			}
 		}
 		return true;
@@ -653,8 +612,7 @@ public class Table extends CustomComposite {
 
 	@Override
 	protected void checkSubclass() {
-		if (!isValidSubclass())
-			error(SWT.ERROR_INVALID_SUBCLASS);
+		if (!isValidSubclass()) error(SWT.ERROR_INVALID_SUBCLASS);
 	}
 
 	/**
@@ -725,14 +683,9 @@ public class Table extends CustomComposite {
 
 		int count = getItemCount();
 
-		if (start < 0 || start > count - 1)
-			error(SWT.ERROR_INVALID_RANGE);
-
-		if (end < 0 || end > count - 1)
-			error(SWT.ERROR_INVALID_RANGE);
-
-		if (end < start)
-			error(SWT.ERROR_INVALID_RANGE);
+		if (start < 0 || start > count - 1) error(SWT.ERROR_INVALID_RANGE);
+		if (end < 0 || end > count - 1) error(SWT.ERROR_INVALID_RANGE);
+		if (end < start) error(SWT.ERROR_INVALID_RANGE);
 
 		int[] indices = new int[end - start + 1];
 		for (int i = start; i <= end; i++) {
@@ -740,7 +693,6 @@ public class Table extends CustomComposite {
 		}
 
 		clear(indices);
-
 	}
 
 	/**
@@ -776,16 +728,15 @@ public class Table extends CustomComposite {
 	public void clear(int[] indices) {
 		checkWidget();
 
-		if (indices == null)
-			error(SWT.ERROR_NULL_ARGUMENT);
-		if (indices.length == 0)
-			return;
+		if (indices == null) error(SWT.ERROR_NULL_ARGUMENT);
+		if (indices.length == 0) return;
+
 		int count = getItemCount();
 		for (int i = 0; i < indices.length; i++) {
-			if (!(0 <= indices[i] && indices[i] < count)) {
-				error(SWT.ERROR_INVALID_RANGE);
-			}
-			TableItem item = _getItem(i, false);
+			final int index = indices[i];
+			if (0 > index || index >= count) error(SWT.ERROR_INVALID_RANGE);
+
+			TableItem item = _getItem(index, false);
 			if (item != null) {
 				item.clear();
 				item.redraw();
@@ -815,13 +766,14 @@ public class Table extends CustomComposite {
 	public void clearAll() {
 		checkWidget();
 
-		if (getItemCount() == 0)
-			return;
+		if (getItemCount() == 0) return;
 
 		if (isVirtual()) {
 			for (var e : virtualItemsList.entrySet()) {
-				if (e.getValue() != null)
-					e.getValue().clear();
+				final TableItem value = e.getValue();
+				if (value != null) {
+					value.clear();
+				}
 			}
 			return;
 		}
@@ -840,7 +792,6 @@ public class Table extends CustomComposite {
 	}
 
 	private Point computeDefaultSize() {
-
 		var columnsSize = columnsHandler.getSize();
 		var itemsArea = itemsHandler.getSize();
 
@@ -851,31 +802,24 @@ public class Table extends CustomComposite {
 		}
 
 		return new Point(width, columnsSize.y + itemsArea.y + scrollbarWidth);
-
 	}
 
 	void createHeaderToolTips() {
-
 		logNotImplemented();
-
 	}
 
 	void destroyItem(TableColumn column) {
-
-		if (!columnsList.contains(column))
-			return;
+		if (!columnsList.contains(column)) return;
 
 		int index = columnsList.indexOf(column);
 		columnsList.remove(column);
 		moveTextsItemsToLeft(index);
 
 		if (this.columnOrder != null) {
-
 			int[] newColOrder = new int[columnsList.size()];
 
 			boolean indexOccurred = false;
 			for (int i = 0; i < this.columnOrder.length; i++) {
-
 				int reduce = indexOccurred ? 1 : 0;
 
 				if (this.columnOrder[i] < index) {
@@ -885,58 +829,49 @@ public class Table extends CustomComposite {
 				} else {
 					indexOccurred = true;
 				}
-
 			}
 
 			this.columnOrder = newColOrder;
-
 		}
-
 	}
 
 	void createItem(TableColumn column, int index) {
-
-		if (columnsList.isEmpty())
+		if (columnsList.isEmpty()) {
 			headerVisible = true;
+		}
 
 		columnsList.add(index, column);
 
 		moveTextsItemsToRight(index);
 
-		if (getItems() != null)
+		if (getItems() != null) {
 			for (var it : getItems()) {
 				it.clearCache();
 			}
+		}
 
-		if (getItems() != null)
+		if (getItems() != null) {
 			for (var it : getItems()) {
 				it.clearCache();
 			}
+		}
 
 		if (this.columnOrder != null) {
 			var newOrder = new int[columnsList.size()];
-
-			for (int i = 0; i < this.columnOrder.length; i++) {
-
-				newOrder[i] = this.columnOrder[i];
-
-			}
+			System.arraycopy(this.columnOrder, 0, newOrder, 0, this.columnOrder.length);
 
 			for (int i = this.columnOrder.length; i < this.columnsList.size(); i++) {
 				newOrder[i] = i;
 			}
 
 			this.columnOrder = newOrder;
-
 		}
 
 		updateScrollBarWithTextSize();
 		redraw();
-
 	}
 
 	private void moveTextsItemsToRight(int index) {
-
 		for (var i : itemsList) {
 			i.moveTextToRightAt(index);
 		}
@@ -960,9 +895,7 @@ public class Table extends CustomComposite {
 	}
 
 	void createItem(TableItem item, int index) {
-
 		if (isVirtual()) {
-
 			var previous = virtualItemsList.get(index);
 			if (previous != null) {
 				virtualItemsList.remove(index);
@@ -970,11 +903,10 @@ public class Table extends CustomComposite {
 			}
 
 			virtualItemsList.put(index, item);
-
 		} else {
-			if (index < itemsList.size() - 1)
+			if (index < itemsList.size() - 1) {
 				itemsList.add(index, item);
-			else {
+			} else {
 				itemsList.add(item);
 			}
 
@@ -991,12 +923,12 @@ public class Table extends CustomComposite {
 			}
 		}
 
-		if (!isVirtual())
+		if (!isVirtual()) {
 			updateScrollBarWithTextSize();
+		}
 		if ((index >= getTopIndex() && index <= itemsHandler.getLastVisibleElementIndex())) {
 			redraw();
 		}
-
 	}
 
 	private boolean customHeaderDrawing() {
@@ -1028,19 +960,15 @@ public class Table extends CustomComposite {
 	public void deselect(int[] indices) {
 		checkWidget();
 
-		if (itemsList.isEmpty())
-			return;
+		if (itemsList.isEmpty()) return;
+		if (indices == null) error(SWT.ERROR_NULL_ARGUMENT);
+		if (indices.length == 0) return;
 
-		if (indices == null)
-			error(SWT.ERROR_NULL_ARGUMENT);
-		if (indices.length == 0)
-			return;
 		var s = new HashSet<TableItem>();
-
 		for (int i : indices) {
-
-			if (i >= 0 && i < itemsList.size())
+			if (i >= 0 && i < itemsList.size()) {
 				s.add(itemsList.get(i));
+			}
 		}
 		selectedTableItems.removeAll(s);
 	}
@@ -1064,7 +992,6 @@ public class Table extends CustomComposite {
 		checkWidget();
 
 		deselect(new int[] { index });
-
 	}
 
 	/**
@@ -1088,22 +1015,21 @@ public class Table extends CustomComposite {
 	public void deselect(int start, int end) {
 		checkWidget();
 
-		if (start > end)
-			return;
+		if (start > end) return;
 
-		if (start < 0)
+		if (start < 0) {
 			start = 0;
-		if (end >= itemsList.size())
+		}
+		if (end >= itemsList.size()) {
 			end = itemsList.size() - 1;
+		}
 
 		int[] arr = new int[end - start + 1];
-
 		for (int s = start; s <= end; s++) {
 			arr[s - start] = s;
 		}
 
 		deselect(arr);
-
 	}
 
 	/**
@@ -1122,17 +1048,14 @@ public class Table extends CustomComposite {
 
 		selectedTableItems.clear();
 		redraw();
-
 	}
 
 	void destroyItem(TableItem item) {
-
 		if (!isVirtual()) {
 			itemsList.remove(item);
 		}
 		// for virtual items, we have to take care, that these are not in
 		// virtualItemsList
-
 	}
 
 	/**
@@ -1170,8 +1093,7 @@ public class Table extends CustomComposite {
 	 */
 	public TableColumn getColumn(int index) {
 		checkWidget();
-		if (!(0 <= index && index < columnsList.size()))
-			error(SWT.ERROR_INVALID_RANGE);
+		if (0 > index || index >= columnsList.size()) error(SWT.ERROR_INVALID_RANGE);
 		return columnsList.get(index);
 	}
 
@@ -1230,8 +1152,9 @@ public class Table extends CustomComposite {
 	public int[] getColumnOrder() {
 		checkWidget();
 
-		if (columnsList.isEmpty())
+		if (columnsList.isEmpty()) {
 			return new int[0];
+		}
 
 		if (this.columnOrder == null) {
 			this.columnOrder = new int[columnsList.size()];
@@ -1239,11 +1162,9 @@ public class Table extends CustomComposite {
 			for (int i = 0; i < columnsList.size(); i++) {
 				this.columnOrder[i] = i;
 			}
-
 		}
 
 		return this.columnOrder;
-
 	}
 
 	/**
@@ -1326,11 +1247,11 @@ public class Table extends CustomComposite {
 	public Color getHeaderBackground() {
 		checkWidget();
 
-		if (headerBackgroundColor != null)
+		if (headerBackgroundColor != null) {
 			return headerBackgroundColor;
+		}
 
 		return Display.getDefault().getSystemColor(SWT.COLOR_WHITE);
-
 	}
 
 	/**
@@ -1350,8 +1271,9 @@ public class Table extends CustomComposite {
 	public Color getHeaderForeground() {
 		checkWidget();
 
-		if (this.headerForegroundColor != null)
+		if (this.headerForegroundColor != null) {
 			return this.headerForegroundColor;
+		}
 
 		return Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
 	}
@@ -1400,7 +1322,6 @@ public class Table extends CustomComposite {
 		checkWidget();
 
 		return headerVisible;
-
 	}
 
 	/**
@@ -1461,8 +1382,7 @@ public class Table extends CustomComposite {
 	 */
 	public TableItem getItem(Point point) {
 		checkWidget();
-		if (point == null)
-			error(SWT.ERROR_NULL_ARGUMENT);
+		if (point == null) error(SWT.ERROR_NULL_ARGUMENT);
 		return getItemInPixels(DPIUtil.scaleUp(point, 100));
 	}
 
@@ -1492,11 +1412,11 @@ public class Table extends CustomComposite {
 	public int getItemCount() {
 		checkWidget();
 
-		if (isVirtual())
+		if (isVirtual()) {
 			return virtualItemCount;
+		}
 
 		return itemsList.size();
-
 	}
 
 	boolean isVirtual() {
@@ -1520,8 +1440,9 @@ public class Table extends CustomComposite {
 	public int getItemHeight() {
 		checkWidget();
 
-		if (!itemsList.isEmpty())
+		if (!itemsList.isEmpty()) {
 			return itemsList.get(getTopIndex()).getBounds().height;
+		}
 
 		return TableItemRenderer.guessItemHeight(this);
 	}
@@ -1548,7 +1469,6 @@ public class Table extends CustomComposite {
 		checkWidget();
 
 		if (isVirtual()) {
-
 			var result = new TableItem[getItemCount()];
 			for (int i = 0; i < getItemCount(); i++) {
 				result[i] = _getItem(i);
@@ -1606,7 +1526,6 @@ public class Table extends CustomComposite {
 	public TableItem[] getSelection() {
 		checkWidget();
 		return selectedTableItems.toArray(new TableItem[0]);
-
 	}
 
 	/**
@@ -1644,8 +1563,7 @@ public class Table extends CustomComposite {
 	public int getSelectionIndex() {
 		checkWidget();
 
-		if (selectedTableItems.isEmpty())
-			return -1;
+		if (selectedTableItems.isEmpty()) return -1;
 		return indexOf(selectedTableItems.first());
 	}
 
@@ -1792,8 +1710,7 @@ public class Table extends CustomComposite {
 	 */
 	public int indexOf(TableColumn column) {
 		checkWidget();
-		if (column == null)
-			error(SWT.ERROR_NULL_ARGUMENT);
+		if (column == null) error(SWT.ERROR_NULL_ARGUMENT);
 		return columnsList.indexOf(column);
 	}
 
@@ -1822,12 +1739,12 @@ public class Table extends CustomComposite {
 	public int indexOf(TableItem item) {
 		checkWidget();
 
-		if (item == null)
-			error(SWT.ERROR_NULL_ARGUMENT);
+		if (item == null) error(SWT.ERROR_NULL_ARGUMENT);
 		if (isVirtual()) {
 			for (var e : virtualItemsList.entrySet()) {
-				if (item.equals(e.getValue()))
+				if (item.equals(e.getValue())) {
 					return e.getKey();
+				}
 			}
 			return -1;
 		}
@@ -1838,8 +1755,7 @@ public class Table extends CustomComposite {
 	public int[] indicesOf(TableItem[] items) {
 		checkWidget();
 
-		if (items == null)
-			return null;
+		if (items == null) return null;
 
 		int[] indexes = new int[items.length];
 		for (int currentIndex = 0; currentIndex < items.length; currentIndex++) {
@@ -1853,8 +1769,7 @@ public class Table extends CustomComposite {
 	}
 
 	boolean isOptimizedRedraw() {
-		if ((style & SWT.H_SCROLL) == 0 || (style & SWT.V_SCROLL) == 0)
-			return false;
+		if ((style & SWT.H_SCROLL) == 0 || (style & SWT.V_SCROLL) == 0) return false;
 		return !hasChildren() && !hooks(SWT.Paint) && !filters(SWT.Paint) && !customHeaderDrawing();
 	}
 
@@ -1875,8 +1790,9 @@ public class Table extends CustomComposite {
 	 */
 	public boolean isSelected(int index) {
 		for (var it : selectedTableItems) {
-			if (indexOf(it) == index)
+			if (indexOf(it) == index) {
 				return true;
+			}
 		}
 		return false;
 	}
@@ -1907,27 +1823,23 @@ public class Table extends CustomComposite {
 	public void remove(int[] indices) {
 		checkWidget();
 
-		if (indices == null)
-			error(SWT.ERROR_NULL_ARGUMENT);
+		if (indices == null) error(SWT.ERROR_NULL_ARGUMENT);
 
-		List<Integer> indicesList = new ArrayList<>();
 		var set = new HashSet<Integer>();
-		Arrays.stream(indices).forEach(e -> {
-			set.add(e);
-		});
-		indicesList.addAll(set);
+		Arrays.stream(indices).forEach(set::add);
+		List<Integer> indicesList = new ArrayList<>(set);
 		Collections.sort(indicesList);
 		for (int i = indicesList.size() - 1; i >= 0; i--) {
 			int index = indicesList.get(i);
 			if (index >= 0 && index < getItemCount()) {
 				TableItem item = _getItem(index, false);
-				if (item != null)
+				if (item != null) {
 					item.dispose();
+				}
 			} else {
 				error(SWT.ERROR_INVALID_RANGE);
 			}
 		}
-
 	}
 
 	/**
@@ -1980,12 +1892,8 @@ public class Table extends CustomComposite {
 	public void remove(int start, int end) {
 		checkWidget();
 
-		if (start > end)
-			return;
-
-		if (start < 0 || end >= getItemCount()) {
-			error(SWT.ERROR_INVALID_RANGE);
-		}
+		if (start > end) return;
+		if (start < 0 || end >= getItemCount()) error(SWT.ERROR_INVALID_RANGE);
 
 		int[] indices = new int[end - start + 1];
 		for (int i = start; i <= end; i++) {
@@ -2006,13 +1914,11 @@ public class Table extends CustomComposite {
 	 *                         </ul>
 	 */
 	public void removeAll() {
-
 		if (isVirtual()) {
-
 			var s = new HashSet<>(virtualItemsList.values());
 			virtualItemsList.clear();
 			virtualItemCount = 0;
-			s.stream().forEach(it -> it.dispose());
+			s.forEach(Widget::dispose);
 			return;
 		}
 
@@ -2044,10 +1950,8 @@ public class Table extends CustomComposite {
 	 */
 	public void removeSelectionListener(SelectionListener listener) {
 		checkWidget();
-		if (listener == null)
-			error(SWT.ERROR_NULL_ARGUMENT);
-		if (eventTable == null)
-			return;
+		if (listener == null) error(SWT.ERROR_NULL_ARGUMENT);
+		if (eventTable == null) return;
 		eventTable.unhook(SWT.Selection, listener);
 		eventTable.unhook(SWT.DefaultSelection, listener);
 	}
@@ -2083,21 +1987,17 @@ public class Table extends CustomComposite {
 	public void select(int[] indices) {
 		checkWidget();
 
-		if (indices == null)
-			error(SWT.ERROR_NULL_ARGUMENT);
+		if (indices == null) error(SWT.ERROR_NULL_ARGUMENT);
 
 		if ((style & SWT.SINGLE) != 0) {
-			if (indices.length > 1)
-				return;
+			if (indices.length > 1) return;
 			selectedTableItems.clear();
 		}
 
-		for (int i = 0; i < indices.length; i++) {
-
-			var index = indices[i];
-
-			if (index < 0 || index >= getItemCount())
+		for (int index : indices) {
+			if (index < 0 || index >= getItemCount()) {
 				continue;
+			}
 
 			var it = getItem(index);
 			if (it != null) {
@@ -2106,34 +2006,35 @@ public class Table extends CustomComposite {
 				if ((style & SWT.SINGLE) != 0) {
 					break;
 				}
-
 			}
 		}
 
 	}
 
 	boolean hasItems() {
-		if (isVirtual())
+		if (isVirtual()) {
 			return virtualItemCount > 0;
+		}
 		return !itemsList.isEmpty();
 	}
 
 	@Override
 	void reskinChildren(int flags) {
-
 		if (isVirtual()) {
 			for (var e : virtualItemsList.entrySet()) {
 				var it = e.getValue();
-				if (it != null)
+				if (it != null) {
 					it.reskin(flags);
+				}
 			}
 		} else {
 			if (hasItems()) {
 				int itemCount = getItemCount();
 				for (int i = 0; i < itemCount; i++) {
 					TableItem item = _getItem(i, false);
-					if (item != null)
+					if (item != null) {
 						item.reskin(flags);
+					}
 				}
 			}
 
@@ -2166,16 +2067,14 @@ public class Table extends CustomComposite {
 	public void select(int index) {
 		checkWidget();
 
-		if (index < 0 || index >= getItemCount())
-			return;
+		if (index < 0 || index >= getItemCount()) return;
 
-		if ((style & SWT.SINGLE) != 0)
+		if ((style & SWT.SINGLE) != 0) {
 			selectedTableItems.clear();
+		}
 
 		var selected = getItem(index);
-
-		if (selectedTableItems.contains(selected))
-			return;
+		if (selectedTableItems.contains(selected)) return;
 
 		selectedTableItems.add(getItem(index));
 	}
@@ -2208,24 +2107,16 @@ public class Table extends CustomComposite {
 	public void select(int start, int end) {
 		checkWidget();
 
-		if (itemsList.isEmpty())
-			return;
+		if (itemsList.isEmpty()) return;
+		if ((SWT.SINGLE & style) != 0 && start != end) return;
+		if (end < start) return;
+		if (end < 0) return;
 
-		if ((SWT.SINGLE & style) != 0 && start != end) {
-			return;
+		if (start < 0) {
+			start = 0;
 		}
 
-		if (end < start)
-			return;
-
-		if (end < 0)
-			return;
-
-		if (start < 0)
-			start = 0;
-
-		if (start > itemsList.size() - 1)
-			return;
+		if (start > itemsList.size() - 1) return;
 
 		if (end > itemsList.size() - 1) {
 			end = itemsList.size() - 1;
@@ -2262,16 +2153,10 @@ public class Table extends CustomComposite {
 	public void selectAll() {
 		checkWidget();
 
-		if ((style & SWT.SINGLE) != 0) {
-			return;
-		}
+		if ((style & SWT.SINGLE) != 0) return;
+		if (itemsList.isEmpty()) return;
 
-		if (itemsList.isEmpty())
-			return;
-
-		if (itemsList.size() > 0)
-			select(0, itemsList.size() - 1);
-
+		select(0, itemsList.size() - 1);
 	}
 
 	void setBackgroundTransparent(boolean transparent) {
@@ -2312,16 +2197,14 @@ public class Table extends CustomComposite {
 	public void setColumnOrder(int[] order) {
 		checkWidget();
 
-		if (order == null)
-			error(SWT.ERROR_NULL_ARGUMENT);
+		if (order == null) error(SWT.ERROR_NULL_ARGUMENT);
 //		if (order.length == 0) {
 //			this.columnOrder = null;
 //			return;
 //		}
 		int columnCount = getColumnCount();
 		if (columnCount == 0) {
-			if (order.length != 0)
-				error(SWT.ERROR_INVALID_ARGUMENT);
+			if (order.length != 0) error(SWT.ERROR_INVALID_ARGUMENT);
 			return;
 		}
 
@@ -2332,7 +2215,6 @@ public class Table extends CustomComposite {
 
 		var set = new HashSet<Integer>();
 		Arrays.stream(order).forEach(e -> {
-
 			if (e < 0 || e >= columnCount) {
 				error(SWT.ERROR_INVALID_ARGUMENT);
 			}
@@ -2340,8 +2222,7 @@ public class Table extends CustomComposite {
 			set.add(e);
 		});
 
-		if (order.length != set.size())
-			error(SWT.ERROR_INVALID_ARGUMENT);
+		if (order.length != set.size()) error(SWT.ERROR_INVALID_ARGUMENT);
 
 		this.columnOrder = order;
 	}
@@ -2360,7 +2241,6 @@ public class Table extends CustomComposite {
 	}
 
 	void setFocusIndex(int index) {
-
 		if (index < 0 || index >= getItemCount()) {
 			focusItem = null;
 			return;
@@ -2401,13 +2281,11 @@ public class Table extends CustomComposite {
 	public void setHeaderBackground(Color color) {
 		checkWidget();
 
-		if (color != null)
-			if (color.isDisposed())
-				error(SWT.ERROR_INVALID_ARGUMENT);
+		if (color != null && color.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 
-		if (this.headerBackgroundColor != color)
+		if (this.headerBackgroundColor != color) {
 			this.headerBackgroundColor = color;
-
+		}
 	}
 
 	/**
@@ -2440,12 +2318,11 @@ public class Table extends CustomComposite {
 	public void setHeaderForeground(Color color) {
 		checkWidget();
 
-		if (color != null)
-			if (color.isDisposed())
-				error(SWT.ERROR_INVALID_ARGUMENT);
+		if (color != null && color.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 
-		if (this.headerForegroundColor != color)
+		if (this.headerForegroundColor != color) {
 			this.headerForegroundColor = color;
+		}
 	}
 
 	/**
@@ -2475,12 +2352,14 @@ public class Table extends CustomComposite {
 
 			if (isVirtual()) {
 				for (var it : virtualItemsList.values()) {
-					if (it != null)
+					if (it != null) {
 						it.clearCache();
+					}
 				}
 			} else {
-				for (var it : itemsList)
+				for (var it : itemsList) {
 					it.clearCache();
+				}
 			}
 
 			columnsHandler.clearCache();
@@ -2488,7 +2367,6 @@ public class Table extends CustomComposite {
 
 			redraw();
 		}
-
 	}
 
 	/**
@@ -2511,7 +2389,6 @@ public class Table extends CustomComposite {
 
 		count = Math.max(0, count);
 		if (isVirtual()) {
-
 			boolean redraw = count > this.virtualItemCount;
 			this.virtualItemCount = count;
 
@@ -2524,29 +2401,24 @@ public class Table extends CustomComposite {
 				}
 			}
 
-			if (redraw)
+			if (redraw) {
 				this.redraw();
+			}
 
 			return;
 		}
 
-		if (count == itemsList.size())
+		if (count == itemsList.size()) {
 			return;
-
-		else if (count > itemsList.size()) {
-
+		} else if (count > itemsList.size()) {
 			for (int i = itemsList.size(); i < count; i++) {
 				new TableItem(this, SWT.None);
 			}
-
 		} else {
-
 			for (int i = itemsList.size() - 1; i >= count; i--) {
 				itemsList.get(i).dispose();
 			}
-
 		}
-
 	}
 
 	void setItemHeight(boolean fixScroll) {
@@ -2581,8 +2453,8 @@ public class Table extends CustomComposite {
 	 */
 	/* public */ void setItemHeight(int itemHeight) {
 		checkWidget();
-		if (itemHeight < -1)
-			error(SWT.ERROR_INVALID_ARGUMENT);
+		if (itemHeight < -1) error(SWT.ERROR_INVALID_ARGUMENT);
+
 		this.itemHeight = itemHeight;
 		logNotImplemented();
 		setItemHeight(true);
@@ -2616,13 +2488,11 @@ public class Table extends CustomComposite {
 	}
 
 	Point getTopIndexItemPosition() {
-
 		var columns = getColumnsArea();
 		int gridLineSize = TableItemsHandler.getGridSize(this);
 		int initialHeightPosition = columns.y + columns.height + 1;
 
 		return new Point(columns.x, initialHeightPosition + gridLineSize);
-
 	}
 
 	@Override
@@ -2636,7 +2506,6 @@ public class Table extends CustomComposite {
 	}
 
 	boolean setScrollWidth(TableItem item, boolean force) {
-
 		logNotImplemented();
 		return false;
 	}
@@ -2672,16 +2541,13 @@ public class Table extends CustomComposite {
 	 */
 	public void setSelection(int[] indices) {
 		checkWidget();
-		if (indices == null)
-			error(SWT.ERROR_NULL_ARGUMENT);
+		if (indices == null) error(SWT.ERROR_NULL_ARGUMENT);
+
 		deselectAll();
 		int length = indices.length;
-		if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1))
-			return;
+		if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
 
-		var set = new TreeSet<Integer>((o1, o2) -> {
-			return o2 - o1;
-		});
+		var set = new TreeSet<Integer>((o1, o2) -> o2 - o1);
 
 		Arrays.stream(indices).forEach(i -> {
 			if (i >= 0 && i < itemsList.size()) {
@@ -2698,8 +2564,9 @@ public class Table extends CustomComposite {
 				select(focusIndex = index);
 			}
 		}
-		if (focusIndex != -1)
+		if (focusIndex != -1) {
 			setFocusIndex(focusIndex);
+		}
 		showSelection();
 	}
 
@@ -2734,13 +2601,9 @@ public class Table extends CustomComposite {
 	public void setSelection(TableItem item) {
 		checkWidget();
 
-		if (item == null) {
-			error(SWT.ERROR_NULL_ARGUMENT);
-			return;
-		}
+		if (item == null) error(SWT.ERROR_NULL_ARGUMENT);
 
 		setSelection(new TableItem[] { item });
-
 	}
 
 	/**
@@ -2776,12 +2639,11 @@ public class Table extends CustomComposite {
 	 */
 	public void setSelection(TableItem[] items) {
 		checkWidget();
-		if (items == null)
-			error(SWT.ERROR_NULL_ARGUMENT);
+		if (items == null) error(SWT.ERROR_NULL_ARGUMENT);
+
 		deselectAll();
 		int length = items.length;
-		if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1))
-			return;
+		if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
 		int focusIndex = -1;
 		for (int i = length - 1; i >= 0; --i) {
 			int index = indexOf(items[i]);
@@ -2789,8 +2651,9 @@ public class Table extends CustomComposite {
 				select(focusIndex = index);
 			}
 		}
-		if (focusIndex != -1)
+		if (focusIndex != -1) {
 			setFocusIndex(focusIndex);
+		}
 		showSelection();
 	}
 
@@ -2816,8 +2679,9 @@ public class Table extends CustomComposite {
 		checkWidget();
 		deselectAll();
 		select(index);
-		if (index != -1)
+		if (index != -1) {
 			setFocusIndex(index);
+		}
 		showSelection();
 	}
 
@@ -2850,11 +2714,9 @@ public class Table extends CustomComposite {
 		checkWidget();
 
 		deselectAll();
-		if (end < 0 || start > end || ((style & SWT.SINGLE) != 0 && start != end))
-			return;
+		if (end < 0 || start > end || ((style & SWT.SINGLE) != 0 && start != end)) return;
 		int count = (int) getItemCount();
-		if (count == 0 || start >= count)
-			return;
+		if (count == 0 || start >= count) return;
 		start = Math.max(0, start);
 		end = Math.min(end, count - 1);
 		select(start, end);
@@ -2893,7 +2755,6 @@ public class Table extends CustomComposite {
 
 	@Override
 	public void pack() {
-
 		super.pack();
 		redraw();
 	}
@@ -2945,8 +2806,7 @@ public class Table extends CustomComposite {
 	public void setTopIndex(int index) {
 		checkWidget();
 
-		if (index == getTopIndex())
-			return;
+		if (index == getTopIndex()) return;
 
 		if (getItemCount() == 0) {
 			topIndex = 0;
@@ -2959,14 +2819,14 @@ public class Table extends CustomComposite {
 
 		topIndex = index;
 
-		if (mouseHoverElement instanceof TableItem)
+		if (mouseHoverElement instanceof TableItem) {
 			mouseHoverElement = null;
+		}
 
 		if (verticalBar != null) {
 			verticalBar.setSelection(topIndex);
 		}
 		redraw();
-
 	}
 
 	/**
@@ -2997,44 +2857,32 @@ public class Table extends CustomComposite {
 	public void showColumn(TableColumn column) {
 		checkWidget();
 
-		if (!isVisible())
-			return;
+		if (!isVisible()) return;
 
 		System.out.println("ShowColumn: " + indexOf(column));
 
-		if (column == null)
-			error(SWT.ERROR_NULL_ARGUMENT);
-		if (column.isDisposed())
-			error(SWT.ERROR_INVALID_ARGUMENT);
-		if (column.getParent() != this)
-			return;
+		if (column == null) error(SWT.ERROR_NULL_ARGUMENT);
+		if (column.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+		if (column.getParent() != this) return;
 		int index = indexOf(column);
-		if (!(0 <= index && index < getColumnCount()))
-			return;
+		if (0 > index || index >= getColumnCount()) return;
 
 		var ca = getClientArea();
 
 		int horShift = column.getBounds().x;
-
-		if (ca.x < horShift && ca.x + ca.width > horShift)
-			return;
+		if (ca.x < horShift && ca.x + ca.width > horShift) return;
 
 		if (getHorizontalBar() != null) {
 			getHorizontalBar().setSelection(getHorizontalBar().getSelection() + horShift);
 			redraw();
 		}
-
 	}
 
 	void showItem(int index) {
-
 		if (index < getTopIndex() || index > itemsHandler.getLastVisibleElementIndex()) {
-
 			setTopIndex(index);
 			redraw();
-
 		}
-
 	}
 
 	int getLastVisibleIndex() {
@@ -3068,13 +2916,13 @@ public class Table extends CustomComposite {
 	public void showItem(TableItem item) {
 		checkWidget();
 
-		if (item == null)
-			error(SWT.ERROR_NULL_ARGUMENT);
-		if (item.isDisposed())
-			error(SWT.ERROR_INVALID_ARGUMENT);
+		if (item == null) error(SWT.ERROR_NULL_ARGUMENT);
+		if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+
 		int index = indexOf(item);
-		if (index != -1)
+		if (index != -1) {
 			showItem(index);
+		}
 	}
 
 	/**
@@ -3095,8 +2943,7 @@ public class Table extends CustomComposite {
 	public void showSelection() {
 		checkWidget();
 
-		if (selectedTableItems.isEmpty())
-			return;
+		if (selectedTableItems.isEmpty()) return;
 		// TODO: check whether it is always the first selected element, which should be
 		// visible.
 
@@ -3104,7 +2951,6 @@ public class Table extends CustomComposite {
 
 		var index = indexOf(first);
 		showItem(index);
-
 	}
 
 	/* public */ void sort() {
@@ -3132,10 +2978,8 @@ public class Table extends CustomComposite {
 		 * happens, fail silently.
 		 */
 
-		if (isDisposed())
-			return;
-		if (!isValidThread())
-			error(SWT.ERROR_THREAD_INVALID_ACCESS);
+		if (isDisposed()) return;
+		if (!isValidThread()) error(SWT.ERROR_THREAD_INVALID_ACCESS);
 
 		var columnsSet = new HashSet<TableColumn>();
 		var itemsSet = new HashSet<TableItem>();
@@ -3149,33 +2993,32 @@ public class Table extends CustomComposite {
 		virtualItemsList.clear();
 		virtualItemCount = 0;
 
-		for (var c : columnsSet)
+		for (var c : columnsSet) {
 			c.dispose();
+		}
 
-		for (var i : itemsSet)
+		for (var i : itemsSet) {
 			i.dispose();
+		}
 
 		super.dispose();
 	}
 
 	static void logNotImplemented() {
-		if (LOG_NOT_IMPLEMENTED)
+		if (LOG_NOT_IMPLEMENTED) {
 			System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[1]);
-
+		}
 	}
 
 	// TODO move this heuristic somewhere else.
 	static int guessTextHeight(Table table) {
-
 		int textHeight = table.getFont().getFontData()[0].getHeight();
 		int upmeasure = (int) ((textHeight * 2.0 * 1.5 * 100) / 100.0);
 
 		return upmeasure;
-
 	}
 
 	Point computeTextExtent(String str) {
-
 		return Drawing.getTextExtent(this, str, DRAW_FLAGS);
 	}
 
@@ -3186,5 +3029,4 @@ public class Table extends CustomComposite {
 	TableItemsHandler getItemsHandler() {
 		return itemsHandler;
 	}
-
 }
