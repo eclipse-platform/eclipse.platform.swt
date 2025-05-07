@@ -703,7 +703,11 @@ public void create (Composite parent, int style) {
 
 	// (!) Note this one's a 'webContext' signal, not webview. See:
 	// https://webkitgtk.org/reference/webkit2gtk/stable/WebKitWebContext.html#WebKitWebContext-download-started
-	OS.g_signal_connect (WebKitGTK.webkit_web_context_get_default(), WebKitGTK.download_started, Proc3.getAddress (), DOWNLOAD_STARTED);
+	if (GTK.GTK4) {
+		OS.g_signal_connect (WebKitGTK.webkit_network_session_get_default(), WebKitGTK.download_started, Proc3.getAddress (), DOWNLOAD_STARTED);
+	} else {
+		OS.g_signal_connect (WebKitGTK.webkit_web_context_get_default(), WebKitGTK.download_started, Proc3.getAddress (), DOWNLOAD_STARTED);
+	}
 
 	GTK.gtk_widget_show (webView);
 	GTK.gtk_widget_show (browser.handle);

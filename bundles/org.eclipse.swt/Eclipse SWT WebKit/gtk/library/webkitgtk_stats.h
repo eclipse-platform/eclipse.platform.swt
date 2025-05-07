@@ -79,6 +79,7 @@ typedef enum {
 	webkit_1javascript_1result_1get_1value_FUNC,
 	webkit_1javascript_1result_1unref_FUNC,
 	webkit_1navigation_1policy_1decision_1get_1request_FUNC,
+	webkit_1network_1session_1get_1default_FUNC,
 	webkit_1policy_1decision_1download_FUNC,
 	webkit_1policy_1decision_1ignore_FUNC,
 	webkit_1response_1policy_1decision_1get_1request_FUNC,
