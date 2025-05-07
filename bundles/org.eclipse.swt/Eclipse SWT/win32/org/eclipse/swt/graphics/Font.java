@@ -103,7 +103,7 @@ public Font(Device device, FontData fd) {
 	super(device);
 	if (fd == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.zoom = DPIUtil.getNativeDeviceZoom();
-	this.fontData = new FontData(fd.toString());
+	this.fontData = new FontData(fd);
 	this.fontHeight = fd.height;
 	init();
 }
@@ -112,7 +112,7 @@ private Font(Device device, FontData fd, int zoom) {
 	super(device);
 	if (fd == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.zoom = zoom;
-	this.fontData = new FontData(fd.toString());
+	this.fontData = new FontData(fd);
 	this.fontHeight = fd.height;
 	init();
 }
@@ -151,7 +151,7 @@ public Font(Device device, FontData[] fds) {
 	}
 	this.zoom = DPIUtil.getNativeDeviceZoom();
 	FontData fd = fds[0];
-	this.fontData = new FontData(fd.toString());
+	this.fontData = new FontData(fd);
 	this.fontHeight = fd.height;
 	init();
 }
