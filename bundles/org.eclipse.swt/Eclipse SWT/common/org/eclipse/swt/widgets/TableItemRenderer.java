@@ -226,8 +226,9 @@ public class TableItemRenderer {
 	}
 
 	public Point computeCellSize(int colIndex) {
-		if (computedCellSizes.get(colIndex) != null) {
-			return computedCellSizes.get(colIndex);
+		final Point cellSize = computedCellSizes.get(colIndex);
+		if (cellSize != null) {
+			return cellSize;
 		}
 
 		var image = item.getImage(colIndex);
@@ -236,8 +237,9 @@ public class TableItemRenderer {
 		int width = leftMargin + rightMargin;
 
 		if (image != null) {
-			height += image.getBounds().height;
-			width += image.getBounds().width;
+			final Rectangle bounds = image.getBounds();
+			height += bounds.height;
+			width += bounds.width;
 		}
 
 		var text = item.getText(colIndex);
