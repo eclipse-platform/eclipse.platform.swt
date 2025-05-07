@@ -147,12 +147,6 @@ public Font(Device device, String name, int height, int style) {
 	init();
 }
 
-/*public*/ Font(Device device, String name, float height, int style) {
-	super(device);
-	init(name, height, style, null);
-	init();
-}
-
 @Override
 void destroy() {
 	OS.pango_font_description_free(handle);
