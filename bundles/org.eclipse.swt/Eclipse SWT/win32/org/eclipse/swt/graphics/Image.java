@@ -1691,7 +1691,7 @@ private ImageHandle init(ImageData i, int zoom) {
  */
 @Override
 public long internal_new_GC (GCData data) {
-	return configureGC(data, 100);
+	return this.imageProvider.configureGCData(data);
 }
 
 private long configureGC(GCData data, int zoom) {
@@ -1853,6 +1853,10 @@ public static Image win32_new(Device device, int type, long handle, int nativeZo
 private abstract class AbstractImageProviderWrapper {
 
 	protected abstract Rectangle getBounds(int zoom);
+
+	protected long configureGCData(GCData data) {
+		return configureGC(data, 100);
+	}
 
 	public Collection<Integer> getPreservedZoomLevels() {
 		return Collections.emptySet();
@@ -2480,6 +2484,7 @@ private class ImageGcDrawerWrapper extends DynamicImageProviderWrapper {
 	private ImageGcDrawer drawer;
 	private int width;
 	private int height;
+	private int currentZoom = 100;
 
 	ImageGcDrawerWrapper(ImageGcDrawer imageGcDrawer, int width, int height) {
 		checkProvider(imageGcDrawer, ImageGcDrawer.class);
@@ -2495,12 +2500,18 @@ private class ImageGcDrawerWrapper extends DynamicImageProviderWrapper {
 	}
 
 	@Override
+	protected long configureGCData(GCData data) {
+		return configureGC(data, currentZoom);
+	}
+
+	@Override
 	ImageData newImageData(int zoom) {
 		return getImageMetadata(zoom).getImageData();
 	}
 
 	@Override
 	protected ImageHandle newImageHandle(int zoom) {
+		currentZoom = zoom;
 		int gcStyle = drawer.getGcStyle();
 		Image image;
 		if ((gcStyle & SWT.TRANSPARENT) != 0) {
