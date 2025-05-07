@@ -57,8 +57,9 @@ public class TableItemRenderer {
 
 		Table parent = getParent();
 		if (parent.columnsExist()) {
+			final boolean paintItemEvent = parent.hooks(SWT.PaintItem);
 			for (int i = 0; i < parent.getColumnCount(); i++) {
-				drawItemCell(gc, i);
+				drawItemCell(gc, i, paintItemEvent);
 			}
 		} else {
 			drawItem(gc);
@@ -87,9 +88,21 @@ public class TableItemRenderer {
 		}
 	}
 
-	private void drawItemCell(GC gc, int columnIndex) {
+	private void drawItemCell(GC gc, int columnIndex, boolean paintItemEvent) {
 		var b = getBounds(columnIndex);
 		gc.setClipping(b);
+
+		final Table parent = getParent();
+		if (paintItemEvent) {
+			Event event = new Event();
+			event.item = item;
+			event.index = columnIndex;
+			event.gc = gc;
+			event.x = b.x;
+			event.y = b.y;
+			parent.sendEvent(SWT.PaintItem, event);
+			return;
+		}
 
 		var prevBG = gc.getBackground();
 		var bgCell = item.getBackground(columnIndex);
@@ -109,7 +122,7 @@ public class TableItemRenderer {
 			if (Table.FILL_IMAGE_AREAS) {
 				var pBG = gc.getBackground();
 
-				gc.setBackground(getParent().getDisplay().getSystemColor(SWT.COLOR_RED));
+				gc.setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_RED));
 				var imgB = image.getBounds();
 				var rec = new Rectangle(imgB.x + xPosition, imgB.y + yPosition, imgB.width, imgB.height);
 				gc.fillRectangle(rec);
@@ -134,8 +147,8 @@ public class TableItemRenderer {
 
 		if (Table.FILL_TEXT_AREAS) {
 			var pBG = gc.getBackground();
-			gc.setBackground(getParent().getDisplay().getSystemColor(SWT.COLOR_DARK_GRAY));
-			var textSize = getParent().computeTextExtent(item.getText(columnIndex));
+			gc.setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_DARK_GRAY));
+			var textSize = parent.computeTextExtent(item.getText(columnIndex));
 			var rec = new Rectangle(xPosition, yPosition, textSize.x, textSize.y);
 			gc.fillRectangle(rec);
 			gc.setBackground(pBG);
