@@ -26,6 +26,7 @@ public class TableItemRenderer {
 	Rectangle checkboxBounds;
 
 	private final Map<Integer, Point> computedCellSizes = new HashMap<>();
+	private final Map<Integer, Rectangle> internalComputedCellTextBounds = new HashMap<>();
 	private Point computedSize;
 
 	public TableItemRenderer(TableItem tableItem) {
@@ -246,8 +247,13 @@ public class TableItemRenderer {
 		if (text != null) {
 			var size = getParent().computeTextExtent(text);
 
+			var rec = new Rectangle(width, height, size.x, size.y);
+			internalComputedCellTextBounds.put(colIndex, rec);
+
 			width += size.x;
 			height += size.y;
+		} else {
+			internalComputedCellTextBounds.put(colIndex, new Rectangle(width, height, 0, 0));
 		}
 
 		if (image != null && text != null) {
@@ -334,11 +340,26 @@ public class TableItemRenderer {
 
 	public void clearCache() {
 		this.computedCellSizes.clear();
+		this.internalComputedCellTextBounds.clear();
 		computedSize = null;
 	}
 
 	public static int guessItemHeight(Table table) {
 		int textHeight = Table.guessTextHeight(table);
 		return textHeight + topMargin + bottomMargin;
+	}
+
+	public Rectangle getTextBounds(int index) {
+
+		if (internalComputedCellTextBounds.get(index) == null)
+			computeCellSize(index);
+
+
+		var internal = internalComputedCellTextBounds.get(index);
+
+		var outer = getBounds(index);
+
+		return new Rectangle(outer.x + internal.x, outer.y + internal.y, internal.width, internal.height);
+
 	}
 }

@@ -904,9 +904,8 @@ public class TableItem extends Item {
 		if (itemIndex == -1) {
 			return new Rectangle(0, 0, 0, 0);
 		}
-		Table.logNotImplemented();
 
-		return new Rectangle(0, 0, 0, 0);
+		return renderer.getTextBounds(index);
 	}
 
 	void redraw() {
