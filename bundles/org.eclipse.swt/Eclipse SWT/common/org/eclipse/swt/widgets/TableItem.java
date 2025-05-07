@@ -66,8 +66,6 @@ public class TableItem extends Item {
 	/** the alignment. Either CENTER, RIGHT, LEFT. Default is LEFT */
 	private int align = SWT.LEFT;
 
-	private Listener listener;
-
 	// TODO implement accessibility
 	private Accessible acc;
 	private AccessibleAdapter accAdapter;
@@ -121,36 +119,19 @@ public class TableItem extends Item {
 	}
 
 	private void initialize() {
-
-		listener = event -> {
+		final Listener listener = event -> {
 			switch (event.type) {
-			case SWT.Dispose:
-				onDispose(event);
-				break;
-			case SWT.MouseDown:
-				onMouseDown(event);
-				break;
-			case SWT.MouseUp:
-				onMouseUp(event);
-				break;
-			case SWT.Paint:
-				onPaint(event);
-				break;
-			case SWT.Resize:
-				onResize();
-				break;
-			case SWT.FocusIn:
-				onFocusIn();
-				break;
-			case SWT.FocusOut:
-				onFocusOut();
-				break;
-			case SWT.Traverse:
-				onTraverse(event);
-				break;
-			case SWT.Selection:
-				onSelection(event);
-				break;
+			case SWT.Dispose -> onDispose(event);
+			case SWT.MouseDown -> onMouseDown(event);
+			case SWT.MouseUp -> onMouseUp(event);
+			case SWT.Paint -> onPaint(event);
+			case SWT.Resize -> onResize();
+			case SWT.FocusIn -> onFocusIn();
+			case SWT.FocusOut -> onFocusOut();
+			case SWT.Traverse -> onTraverse(event);
+			case SWT.Selection -> onSelection(event);
+			case SWT.KeyDown -> onKeyPressed(event);
+			case SWT.KeyUp -> onKeyReleased(event);
 			}
 		};
 		addListener(SWT.Dispose, listener);
@@ -159,22 +140,11 @@ public class TableItem extends Item {
 		addListener(SWT.Paint, listener);
 		addListener(SWT.Resize, listener);
 		addListener(SWT.KeyDown, listener);
+		addListener(SWT.KeyUp, listener);
 		addListener(SWT.FocusIn, listener);
 		addListener(SWT.FocusOut, listener);
 		addListener(SWT.Traverse, listener);
 		addListener(SWT.Selection, listener);
-
-		addTypedListener(new KeyListener() {
-			@Override
-			public void keyReleased(KeyEvent e) {
-				onKeyReleased(e);
-			}
-
-			@Override
-			public void keyPressed(KeyEvent e) {
-				onKeyPressed(e);
-			}
-		}, SWT.KeyUp, SWT.KeyDown);
 
 		addTypedListener(new MouseTrackAdapter() {
 
@@ -193,8 +163,7 @@ public class TableItem extends Item {
 				hasMouseEntered = false;
 				redraw();
 			}
-
-		}, SWT.MouseEnter, SWT.MouseExit, SWT.MouseHover);
+		}, SWT.MouseEnter, SWT.MouseExit);
 
 		initializeAccessible();
 
@@ -271,10 +240,10 @@ public class TableItem extends Item {
 		redraw();
 	}
 
-	private void onKeyPressed(KeyEvent event) {
+	private void onKeyPressed(Event event) {
 	}
 
-	private void onKeyReleased(KeyEvent event) {
+	private void onKeyReleased(Event event) {
 
 	}
 

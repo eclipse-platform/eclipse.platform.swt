@@ -153,7 +153,6 @@ public class Table extends CustomComposite {
 
 	static boolean COMPRESS_ITEMS = true;
 
-	private Listener listener;
 	private Accessible acc;
 	private AccessibleAdapter accAdapter;
 	private int topIndex;
@@ -227,63 +226,26 @@ public class Table extends CustomComposite {
 	}
 
 	private void initialize() {
-
-		listener = event -> {
+		final Listener listener = event -> {
 			switch (event.type) {
-			case SWT.Dispose:
-				onDispose(event);
-				break;
-			case SWT.MouseDown:
-				onMouseDown(event);
-				break;
-			case SWT.MouseUp:
-				onMouseUp(event);
-				break;
-			case SWT.Paint:
-				onPaint(event);
-				break;
-			case SWT.Resize:
-				onResize();
-				break;
-			case SWT.FocusIn:
-				onFocusIn();
-				break;
-			case SWT.FocusOut:
-				onFocusOut();
-				break;
-			case SWT.Traverse:
-				onTraverse(event);
-				break;
-			case SWT.Selection:
-				onSelection(event);
-				break;
-			case SWT.V_SCROLL:
-				onScrollBar(event);
-				break;
-			case SWT.H_SCROLL:
-				onScrollBar(event);
-				break;
-			case SWT.MouseWheel:
-				onScrollBar(event);
-				break;
-			case SWT.KeyDown:
-				onKeyDown(event);
-				break;
-			case SWT.KeyUp:
-				onKeyUp(event);
-				break;
-			case SWT.MouseMove:
-				onMouseMove(event);
-				break;
-			case SWT.MouseEnter:
-				onMouseEnter(event);
-				break;
-			case SWT.MouseExit:
-				onMouseExit(event);
-				break;
-			case SWT.MouseDoubleClick:
-				onDoubleClick(event);
-				break;
+			case SWT.Dispose -> onDispose(event);
+			case SWT.MouseDown -> onMouseDown(event);
+			case SWT.MouseUp -> onMouseUp(event);
+			case SWT.Paint -> onPaint(event);
+			case SWT.Resize -> onResize();
+			case SWT.FocusIn -> onFocusIn();
+			case SWT.FocusOut -> onFocusOut();
+			case SWT.Traverse -> onTraverse(event);
+			case SWT.Selection -> onSelection(event);
+			case SWT.V_SCROLL -> onScrollBar(event);
+			case SWT.H_SCROLL -> onScrollBar(event);
+			case SWT.MouseWheel -> onScrollBar(event);
+			case SWT.KeyDown -> onKeyDown(event);
+			case SWT.KeyUp -> onKeyUp(event);
+			case SWT.MouseMove -> onMouseMove(event);
+			case SWT.MouseEnter -> onMouseEnter(event);
+			case SWT.MouseExit -> onMouseExit(event);
+			case SWT.MouseDoubleClick -> onDoubleClick(event);
 			}
 		};
 
