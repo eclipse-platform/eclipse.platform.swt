@@ -1832,6 +1832,22 @@ public String toString () {
 	return function.apply(zoomLevelToImageHandle.values().iterator().next());
 }
 
+void applyUsingAnyHandle(int zoom, Consumer<Long> consumer) {
+	ImageHandle imageHandle = zoomLevelToImageHandle.get(zoom);
+	if (imageHandle!= null) {
+		consumer.accept(imageHandle.handle);
+		return;
+	}
+
+	ImageHandle temporaryHandle = this.imageProvider.newImageHandle(zoom);
+	try {
+		consumer.accept(temporaryHandle.handle);
+		return;
+	} finally {
+		temporaryHandle.destroy();
+	}
+}
+
 /**
  * Invokes platform specific functionality to allocate a new image.
  * <p>
