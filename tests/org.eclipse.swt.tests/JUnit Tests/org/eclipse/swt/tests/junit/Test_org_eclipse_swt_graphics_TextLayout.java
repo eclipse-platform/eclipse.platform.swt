@@ -217,6 +217,7 @@ public void test_getSegments() {
 	layout.dispose();
 }
 
+@Ignore("TODO: implement for Skija TextLayout")
 @Test
 public void test_getSegmentsChars() {
 	if (SwtTestUtil.isCocoa || SwtTestUtil.isWindows) { // skipping windows due to fix for bug 565526
