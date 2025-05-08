@@ -1302,7 +1302,7 @@ public Point getSelection () {
 	int [] end = new int [1];
 	if (entryHandle != 0) {
 		GTK.gtk_editable_get_selection_bounds (entryHandle, start, end);
-		long ptr = GTK3.gtk_entry_get_text (entryHandle);
+		long ptr = GTK.GTK4 ? GTK4.gtk_entry_buffer_get_text(GTK4.gtk_entry_get_buffer(entryHandle)): GTK3.gtk_entry_get_text (entryHandle);
 		start[0] = (int)OS.g_utf8_offset_to_utf16_offset (ptr, start[0]);
 		end[0] = (int)OS.g_utf8_offset_to_utf16_offset (ptr, end[0]);
 	}
