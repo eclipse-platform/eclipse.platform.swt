@@ -71,6 +71,7 @@ public class ControlExample {
 		initResources();
 		parent.setLayout(new GridLayout(1, false));
 		ScrolledComposite scrollComposite = new ScrolledComposite (parent, SWT.V_SCROLL | SWT.H_SCROLL);
+		scrollComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		tabFolder = new TabFolder (scrollComposite, SWT.NONE);
 		tabs = createTabs();
 		for (Tab tab : tabs) {
