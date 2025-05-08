@@ -74,7 +74,7 @@
                 xsi:type="predicates:OrPredicate">
               <operand
                   xsi:type="predicates:NamePredicate"
-                  pattern=".*(cocoa|gtk|win32)(\.(macosx|aix|hpux|linux|solaris|win32)(\.(x86_64|ppc64|ia64|aarch64|arm|ppc64|ppc64le|s390|s390x|x86|sparcv9))?)?"/>
+                  pattern=".*(cocoa|gtk|win32)(\.(freebsd|macosx|aix|hpux|linux|solaris|win32)(\.(x86_64|ia64|aarch64|arm|ppc64|ppc64le|s390|s390x|x86|sparcv9))?)?"/>
               <operand
                   xsi:type="predicates:NamePredicate"
                   pattern="org\.eclipse\.swt\.opengl\.examples">
