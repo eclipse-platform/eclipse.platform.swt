@@ -197,4 +197,17 @@ abstract class NativeBasedCustomScrollable extends Scrollable {
 		foregroundColor = color;
 		super.setForeground(color);
 	}
+
+	@Override
+	public Rectangle getClientArea() {
+		// todo
+		Point size = getSize();
+		if (verticalBar != null) {
+			size.x -= verticalBar.getSize().x;
+		}
+		if (horizontalBar != null) {
+			size.y -= horizontalBar.getSize().y;
+		}
+		return new Rectangle(0, 0, Math.max(1, size.x), Math.max(1, size.y));
+	}
 }
