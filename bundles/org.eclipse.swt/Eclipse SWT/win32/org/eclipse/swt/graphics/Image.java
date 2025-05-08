@@ -1677,6 +1677,12 @@ private ImageHandle init(ImageData i, int zoom) {
 	}
 }
 
+private void assertCondition(boolean condition, String message) {
+    if (condition) {
+        System.err.print(message + "\nImages with custom parts should be created with an ImageGcDrawer. See https://github.com/eclipse-platform/eclipse.platform.swt/tree/master/examples/org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/Snippet384.java for supported variants.");
+    }
+}
+
 /**
  * Invokes platform specific functionality to allocate a new GC handle.
  * <p>
@@ -1707,6 +1713,10 @@ private long configureGC(GCData data, int zoom) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 
+	if(Device.strictChecks) {
+		assertCondition(imageProvider != null && (imageProvider instanceof ImageDataProviderWrapper || imageProvider instanceof ImageFileNameProviderWrapper), "Image initialized with ImageDataProvider or ImageFileNameProvider is not supposed to be modified.");
+		assertCondition(!zoomLevelToImageHandle.isEmpty() && (zoomLevelToImageHandle.size() != 1 || !zoomLevelToImageHandle.containsKey(zoom)), "Images with handles created for a different zoom level should not be modified.");
+	}
 	/* Create a compatible HDC for the device */
 	long hDC = device.internal_new_GC(null);
 	long imageDC = OS.CreateCompatibleDC(hDC);
