@@ -13,9 +13,11 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.gtk.snippets;
 
+import java.nio.file.Path;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.ImageLoader;
+import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
@@ -25,9 +27,8 @@ public class Bug545804_SVGSupport {
 
 public static void main(String[] args) {
 	Display display = new Display();
-	ImageLoader loader = new ImageLoader();
-	loader.load("./images/red_hat_fedora.svg");
-	Image image = new Image(display, loader.data[0]);
+	ImageData data = ImageData.load(Path.of("./images/red_hat_fedora.svg"));
+	Image image = new Image(display, data);
 	Shell shell = new Shell(display);
 	shell.setLayout (new GridLayout());
 	Button button = new Button(shell, SWT.PUSH);

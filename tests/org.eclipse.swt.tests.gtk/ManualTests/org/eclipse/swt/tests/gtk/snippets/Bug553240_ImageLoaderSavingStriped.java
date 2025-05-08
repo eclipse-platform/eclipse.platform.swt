@@ -13,7 +13,8 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.gtk.snippets;
 
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
@@ -39,7 +40,7 @@ public class Bug553240_ImageLoaderSavingStriped {
 	}
 
 	static void initUI() throws Exception {
-		final File file = File.createTempFile("swt", "example");
+		Path file = Files.createTempFile("swt", "example").toAbsolutePath();
 		final Display display = new Display();
 		final Shell shell = new Shell();
 
@@ -53,17 +54,13 @@ public class Bug553240_ImageLoaderSavingStriped {
 		final Text text = new Text(shell, SWT.BORDER);
 		text.setBounds(0, 50, 450, 75);
 
-		ImageLoader loader = new ImageLoader();
-		final ImageData[] loadedImageData = loader.load("./images/map.png");
-		final ImageData tileImageData = loadedImageData[0];
+		ImageData tileImageData = ImageData.load(Path.of("./images/map.png"));
 		final ImageLoader imageLoader = new ImageLoader();
 		imageLoader.data = new ImageData[] { tileImageData };
 
 		final int imageType = tileImageData.type;
-		file.delete();
-		final String imageFilePath = file.getAbsolutePath();
-		imageLoader.save(imageFilePath, imageType);
-		text.setText(file.getAbsolutePath());
+		imageLoader.save(file, imageType);
+		text.setText(file.toString());
 
 		Composite composite = new Composite(shell, SWT.NONE);
 		RowData layoutData = new RowData(256, 256);
@@ -75,11 +72,7 @@ public class Bug553240_ImageLoaderSavingStriped {
 		canvas.setLayoutData(layoutData);
 
 		canvas.addPaintListener(e -> {
-			ImageLoader canvasLoader = new ImageLoader();
-			final ImageData[] cloadedImageData = canvasLoader.load(file.getAbsolutePath());
-			final ImageData ctileImageData = cloadedImageData[0];
-			canvasLoader.data = new ImageData[] { ctileImageData };
-
+			ImageData ctileImageData = ImageData.load(file);
 			Image imageToDraw = new Image(display, ctileImageData);
 			e.gc.drawImage(imageToDraw, 0, 0);
 			imageToDraw.dispose();
@@ -93,6 +86,6 @@ public class Bug553240_ImageLoaderSavingStriped {
 				display.sleep();
 			}
 		}
-		file.delete();
+		Files.delete(file);
 	}
 }

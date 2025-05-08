@@ -14,6 +14,8 @@
 package org.eclipse.swt.tests.gtk.snippets;
 
 
+import java.nio.file.Path;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -50,7 +52,7 @@ public class Bug547557_ShellPrintGC {
 				// String filename = "/home/<user>/shell_test.png";
 				String filename = "";
 				if ((filename != null) && !filename.isEmpty()) {
-					saveImage(shell, filename, SWT.IMAGE_PNG);
+					saveImage(shell, Path.of(filename), SWT.IMAGE_PNG);
 				}
 			}
 		});
@@ -64,7 +66,7 @@ public class Bug547557_ShellPrintGC {
 		display.dispose();
 	}
 
-	private static void saveImage(Shell shell, String filename, int format) {
+	private static void saveImage(Shell shell, Path file, int format) {
 		Rectangle bounds = shell.getBounds();
 		Image image = new Image(shell.getDisplay(), bounds.width, bounds.height);
 		// Printing the client area will result in a warning and only the client area being printed
@@ -75,7 +77,7 @@ public class Bug547557_ShellPrintGC {
 		ImageData data = image.getImageData();
 		ImageLoader loader = new ImageLoader();
 		loader.data = new ImageData[] { data };
-		loader.save(filename, format);
+		loader.save(file, format);
 		image.dispose();
 	}
 }

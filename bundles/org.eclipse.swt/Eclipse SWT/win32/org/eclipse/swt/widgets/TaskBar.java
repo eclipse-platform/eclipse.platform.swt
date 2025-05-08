@@ -16,6 +16,7 @@ package org.eclipse.swt.widgets;
 
 
 import java.io.*;
+import java.nio.file.Path;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -175,7 +176,7 @@ IShellLink createShellLink (MenuItem item) {
 				}
 				ImageLoader loader = new ImageLoader ();
 				loader.data = new ImageData [] {data};
-				loader.save (icon, SWT.IMAGE_ICO);
+				loader.save(Path.of(icon), SWT.IMAGE_ICO);
 			}
 		}
 		if (icon != null) {
