@@ -60,6 +60,7 @@ public abstract class Control extends Widget implements Drawable {
 	long firstFixedHandle = 0;
 	long keyController;
 	long redrawWindow, enableWindow, provider;
+	//TODO: derive alpha from color?
 	int drawCount, backgroundAlpha = 255;
 	long dragGesture, zoomGesture, rotateGesture, panGesture;
 	Composite parent;

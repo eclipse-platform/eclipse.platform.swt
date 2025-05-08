@@ -15,6 +15,7 @@
 package org.eclipse.swt;
 
 
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.widgets.*;
 
@@ -5010,4 +5011,39 @@ static {
 		MOD4 = 0;
 	}
 }
+
+/**
+ * Takes a screenshot of the given {@code display} and returns it as image.
+ *
+ * @param display the display to take a screenshot from
+ * @return the ImageData of the screenshot taken
+ * @since 3.130
+ */
+public static ImageData takeScreenShot(Display display) {
+	return takeScreenShot(display, display, display.getBounds());
+}
+
+/**
+ * Takes a screenshot of the given {@code control} and returns it as image.
+ *
+ * @param control the control to take a screenshot from
+ * @return the ImageData of the screenshot taken
+ * @since 3.130
+ */
+public static ImageData takeScreenShot(Control control) {
+	return takeScreenShot(control, control.getDisplay(), control.getBounds());
+}
+
+private static ImageData takeScreenShot(Drawable source, Display display, Rectangle bounds) {
+	Image image = new Image(display, bounds);
+	GC gc = new GC(source);
+	try {
+		gc.copyArea(image, 0, 0);
+		return image.getImageData();
+	} finally {
+		gc.dispose();
+		image.dispose();
+	}
+}
+
 }

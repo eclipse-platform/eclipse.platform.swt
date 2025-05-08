@@ -16,8 +16,6 @@ package org.eclipse.swt.tests.gtk.snippets;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.layout.FillLayout;
@@ -72,14 +70,10 @@ public class Bug547529_ImageLoaderStriping {
 	}
 
 	private static void saveImage(Control control, String filename, int format) {
-		Image image = new Image(control.getDisplay(), control.getBounds());
-		GC gc = new GC(image);
-		control.print(gc);
-		gc.dispose();
-		ImageData data = image.getImageData();
+		ImageData screenshot = SWT.takeScreenShot(control);
+		ImageData data = screenshot;
 		ImageLoader loader = new ImageLoader();
 		loader.data = new ImageData[] { data };
 		loader.save(filename, format);
-		image.dispose();
 	}
 }
