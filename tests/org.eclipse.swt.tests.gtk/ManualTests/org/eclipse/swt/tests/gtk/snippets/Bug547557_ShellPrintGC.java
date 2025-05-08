@@ -14,13 +14,13 @@
 package org.eclipse.swt.tests.gtk.snippets;
 
 
+import java.nio.file.Path;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.ImageData;
-import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
@@ -50,7 +50,7 @@ public class Bug547557_ShellPrintGC {
 				// String filename = "/home/<user>/shell_test.png";
 				String filename = "";
 				if ((filename != null) && !filename.isEmpty()) {
-					saveImage(shell, filename, SWT.IMAGE_PNG);
+					saveImage(shell, Path.of(filename));
 				}
 			}
 		});
@@ -64,7 +64,7 @@ public class Bug547557_ShellPrintGC {
 		display.dispose();
 	}
 
-	private static void saveImage(Shell shell, String filename, int format) {
+	private static void saveImage(Shell shell, Path file) {
 		Rectangle bounds = shell.getBounds();
 		Image image = new Image(shell.getDisplay(), bounds);
 		// Printing the client area will result in a warning and only the client area being printed
@@ -72,10 +72,7 @@ public class Bug547557_ShellPrintGC {
 		GC gc = new GC(image);
 		shell.print(gc);
 		gc.dispose();
-		ImageData data = image.getImageData();
-		ImageLoader loader = new ImageLoader();
-		loader.data = new ImageData[] { data };
-		loader.save(filename, format);
+		image.getImageData().save(file);
 		image.dispose();
 	}
 }

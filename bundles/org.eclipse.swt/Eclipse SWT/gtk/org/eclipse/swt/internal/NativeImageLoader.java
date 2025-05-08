@@ -180,16 +180,7 @@ public class NativeImageLoader {
 		long name = GDK.gdk_pixbuf_format_get_name(format);
 		String nameStr = Converter.cCharPtrToJavaString(name, false);
 		OS.g_free(name);
-		return switch (nameStr) {
-		case "bmp" -> SWT.IMAGE_BMP;
-		case "gif" -> SWT.IMAGE_GIF;
-		case "ico" -> SWT.IMAGE_ICO;
-		case "jpeg" -> SWT.IMAGE_JPEG;
-		case "png" -> SWT.IMAGE_PNG;
-		case "tiff" -> SWT.IMAGE_TIFF;
-		case "svg" -> SWT.IMAGE_SVG;
-		default -> SWT.IMAGE_UNDEFINED;
-		};
+		return FileFormat.getImageFormatFromFileExtension(nameStr);
 	}
 
 	/**
@@ -351,17 +342,7 @@ public class NativeImageLoader {
 		}
 
 		// Write pixbuf to byte array and then to OutputStream
-		String typeStr = switch (format) {
-		case SWT.IMAGE_BMP_RLE -> "bmp";
-		case SWT.IMAGE_BMP -> "bmp";
-		case SWT.IMAGE_GIF -> "gif";
-		case SWT.IMAGE_ICO -> "ico";
-		case SWT.IMAGE_JPEG -> "jpeg";
-		case SWT.IMAGE_PNG -> "png";
-		case SWT.IMAGE_TIFF -> "tiff";
-		case SWT.IMAGE_SVG -> "svg";
-		default -> "";
-		};
+		String typeStr = FileFormat.getImageFileExtensionFromFormat(format);
 		byte[] type = Converter.wcsToMbcs(typeStr, true);
 
 		long[] buffer = new long[1];

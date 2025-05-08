@@ -15,9 +15,11 @@ package org.eclipse.swt.graphics;
 
 
 import java.io.*;
+import java.nio.file.Path;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.image.*;
 
 /**
  * Instances of this class are device-independent descriptions
@@ -1597,6 +1599,48 @@ public void setPixels(int x, int y, int putWidth, int[] pixels, int startIndex) 
 			return;
 	}
 	SWT.error(SWT.ERROR_UNSUPPORTED_DEPTH);
+}
+
+/**
+ * Saves this image to the specified file.
+ * The image format is derived from the file's extension and the following formats are supported:
+ * <dl>
+ * <dt>{@link SWT#IMAGE_BMP .bmp}</dt>
+ * <dd>Windows BMP file format, no compression</dd>
+ * <dt>{@link SWT#IMAGE_GIF .gif}</dt>
+ * <dd>GIF file format</dd>
+ * <dt>{@link SWT#IMAGE_ICO .ico}</dt>
+ * <dd>Windows ICO file format</dd>
+ * <dt>{@link SWT#IMAGE_JPEG .jpg or .jpeg}</dt>
+ * <dd>JPEG file format</dd>
+ * <dt>{@link SWT#IMAGE_PNG .png}</dt>
+ * <dd>PNG file format</dd>
+ * <dt>{@link SWT#IMAGE_TIFF .tiff}</dt>
+ * <dd>TIFF file format</dd>
+ * </dl>
+ *
+ * @param file the path to the file where this image is to be saved
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the file name is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_IO - if an IO error occurs while writing to the file</li>
+ *    <li>ERROR_INVALID_IMAGE - if this image data contains invalid data</li>
+ *    <li>ERROR_UNSUPPORTED_FORMAT - if the image data cannot be saved to the requested format</li>
+ * </ul>
+ * @since 3.130
+ */
+public void save(Path file) {
+	if (file == null) {
+		SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	}
+	String filename = file.getFileName().toString();
+	String extension = filename.substring(filename.lastIndexOf('.') + 1);
+	int imageFormat = FileFormat.getImageFormatFromFileExtension(extension);
+	ImageLoader loader = new ImageLoader();
+	loader.data = new ImageData[] { this };
+	loader.save(file.toString(), imageFormat);
 }
 
 /**

@@ -13,13 +13,14 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.gtk.snippets;
 
+import java.nio.file.Path;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
-import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
@@ -56,7 +57,7 @@ public class Bug547529_ImageLoaderStriping {
 				dialog.setFileName("Untitled.png");
 				String filename = dialog.open();
 				if ((filename != null) && !filename.isEmpty()) {
-					saveImage(composite, filename, SWT.IMAGE_PNG);
+					saveImage(composite, Path.of(filename));
 				}
 			}
 		});
@@ -71,15 +72,13 @@ public class Bug547529_ImageLoaderStriping {
 		display.dispose();
 	}
 
-	private static void saveImage(Control control, String filename, int format) {
+	private static void saveImage(Control control, Path file) {
 		Image image = new Image(control.getDisplay(), control.getBounds());
 		GC gc = new GC(image);
 		control.print(gc);
 		gc.dispose();
 		ImageData data = image.getImageData();
-		ImageLoader loader = new ImageLoader();
-		loader.data = new ImageData[] { data };
-		loader.save(filename, format);
+		data.save(file);
 		image.dispose();
 	}
 }
