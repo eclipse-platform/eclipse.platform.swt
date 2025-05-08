@@ -389,6 +389,7 @@ void createFileTransfer(Composite copyParent, Composite pasteParent){
 	}));
 }
 
+@SuppressWarnings("deprecation")
 void createImageTransfer(Composite copyParent, Composite pasteParent){
 	final Image[] copyImage = new Image[] {null};
 	Label l = new Label(copyParent, SWT.NONE);
