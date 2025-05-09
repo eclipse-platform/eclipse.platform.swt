@@ -110,7 +110,6 @@ class TableColumnsHandler {
 
 		int i = mouseIsOnColumnSide(event.x, event.y);
 		if (i >= 0) {
-			System.out.println("highlight Side and change cursor: " + i);
 			table.setCursor(table.getDisplay().getSystemCursor(SWT.CURSOR_SIZEWE));
 			this.columnResizePossible = i;
 		} else {

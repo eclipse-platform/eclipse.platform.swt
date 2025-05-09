@@ -51,7 +51,6 @@ public class TableItemRenderer {
 		} else if (getParent().mouseHoverElement == item) {
 			this.hovered = true;
 			gc.setBackground(getParent().getDisplay().getSystemColor(SWT.COLOR_YELLOW));
-			System.out.println("hoveredElement: " + item.getText(1));
 			gc.fillRectangle(b);
 		} else {
 			this.selected = false;
