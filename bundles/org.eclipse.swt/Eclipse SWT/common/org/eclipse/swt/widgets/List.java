@@ -371,10 +371,11 @@ public class List extends NativeBasedCustomScrollable {
 	public int getItemHeightInPixels() {
 		checkWidget();
 		String referenceText = this.items.isEmpty() ? DUMMY_ITEM_TEXT : this.items.get(0);
-		GC gc = new GC(this);
-		gc.setFont(getFont());
-		int itemHeight = gc.textExtent(referenceText).y;
-		gc.dispose();
+		Point size = Drawing.measure(this, gc -> {
+			gc.setFont(getFont());
+			return gc.textExtent(referenceText);
+		});
+		int itemHeight = size.y;
 		if (itemHeight <= 0) error(SWT.ERROR_CANNOT_GET_ITEM_HEIGHT);
 		return itemHeight;
 	}

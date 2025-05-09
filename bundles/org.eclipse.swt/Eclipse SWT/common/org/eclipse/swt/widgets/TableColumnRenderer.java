@@ -50,11 +50,10 @@ public class TableColumnRenderer {
 	}
 
 	Point computeSize() {
-		GC gc = new GC(getParent());
-		int colIndex = getParent().indexOf(column);
-		Point fin = new Point(0, 0);
-		int width = 0;
-		try {
+		return Drawing.measure(getParent(), gc -> {
+			int colIndex = getParent().indexOf(column);
+			Point fin = new Point(0, 0);
+			int width = 0;
 			final TableItem[] items = getParent().getItems();
 			if (items != null) {
 				final boolean virtual = getParent().isVirtual();
@@ -71,11 +70,8 @@ public class TableColumnRenderer {
 			Point headerExt = gc.textExtent(column.getText());
 			fin.x = Math.max(headerExt.x + 2 * DEFAULT_MARGIN + 2 * DEFAULT_BORDER_WIDTH, width);
 			fin.y = Math.max(headerExt.y + DEFAULT_MARGIN_UP + DEFAULT_MARGIN_DOWN + 2 * DEFAULT_BORDER_WIDTH, 10);
-		} finally {
-			gc.dispose();
-		}
-
-		return fin;
+			return fin;
+		});
 	}
 
 	private Table getParent() {

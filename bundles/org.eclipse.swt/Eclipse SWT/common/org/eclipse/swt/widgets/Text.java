@@ -295,33 +295,32 @@ public class Text extends NativeBasedCustomScrollable {
 	}
 
 	private Point computeTextSize() {
-		GC gc = new GC(this);
-		gc.setFont(getFont());
-		int width = 0, height = 0;
-		if ((style & SWT.SINGLE) != 0) {
-			String str = model.getLines()[0];
-			Point size = gc.textExtent(str);
-			if (str.length() > 0) {
-				width = (int) Math.ceil(size.x);
+		return Drawing.measure(this, gc -> {
+			gc.setFont(getFont());
+			int width = 0, height = 0;
+			if ((style & SWT.SINGLE) != 0) {
+				String str = model.getLines()[0];
+				Point size = gc.textExtent(str);
+				if (str.length() > 0) {
+					width = (int)Math.ceil(size.x);
+				}
+				height = (int)Math.ceil(size.y);
+			} else {
+				Point size = null;
+				for (String line : model.getLines()) {
+					size = gc.textExtent(line);
+					width = Math.max(width, size.x);
+				}
+				height = size.y * model.getLineCount();
+				if (horizontalBar != null) {
+					height += horizontalBar.getSize().y;
+				}
+				if (verticalBar != null) {
+					width += verticalBar.getSize().x;
+				}
 			}
-			height = (int) Math.ceil(size.y);
-		} else {
-			Point size = null;
-			for (String line : model.getLines()) {
-				size = gc.textExtent(line);
-				width = Math.max(width, size.x);
-			}
-			height = size.y * model.getLineCount();
-			if (horizontalBar != null) {
-				height += horizontalBar.getSize().y;
-			}
-			if (verticalBar != null) {
-				width += verticalBar.getSize().x;
-			}
-		}
-		gc.dispose();
-
-		return new Point(width, height);
+			return new Point(width, height);
+		});
 	}
 
 	private void selectionChanged() {
@@ -330,33 +329,33 @@ public class Text extends NativeBasedCustomScrollable {
 	}
 
 	private void keepCaretInVisibleArea() {
-		GC gc = new GC(this);
-		Point caretLocation = getLocationByOffset(model.getCaretOffset(), gc);
-		Rectangle visibleArea = renderer.getVisibleArea();
+		Drawing.measure(this, gc -> {
+			Point caretLocation = getLocationByOffset(model.getCaretOffset(), gc);
+			Rectangle visibleArea = renderer.getVisibleArea();
 
-		if (horizontalBar != null) {
-			if (caretLocation.x < visibleArea.x) {
-				horizontalBar.setSelection(caretLocation.x);
-			} else {
-				int maxVisibleAreaWidth = visibleArea.width - 5;
-				if (caretLocation.x > visibleArea.x + maxVisibleAreaWidth) {
-					horizontalBar.setSelection(caretLocation.x - maxVisibleAreaWidth);
+			if (horizontalBar != null) {
+				if (caretLocation.x < visibleArea.x) {
+					horizontalBar.setSelection(caretLocation.x);
+				} else {
+					int maxVisibleAreaWidth = visibleArea.width - 5;
+					if (caretLocation.x > visibleArea.x + maxVisibleAreaWidth) {
+						horizontalBar.setSelection(caretLocation.x - maxVisibleAreaWidth);
+					}
 				}
 			}
-		}
 
-		if (verticalBar != null) {
-			if (caretLocation.y < visibleArea.y) {
-				verticalBar.setSelection(caretLocation.y);
-			} else {
-				int maxVisibleAreaHeight = visibleArea.height - renderer.getLineHeight(gc);
-				if (caretLocation.y > visibleArea.y + maxVisibleAreaHeight) {
-					verticalBar.setSelection(caretLocation.y - maxVisibleAreaHeight);
+			if (verticalBar != null) {
+				if (caretLocation.y < visibleArea.y) {
+					verticalBar.setSelection(caretLocation.y);
+				} else {
+					int maxVisibleAreaHeight = visibleArea.height - renderer.getLineHeight(gc);
+					if (caretLocation.y > visibleArea.y + maxVisibleAreaHeight) {
+						verticalBar.setSelection(caretLocation.y - maxVisibleAreaHeight);
+					}
 				}
 			}
-		}
-
-		gc.dispose();
+			return null;
+		});
 	}
 
 	protected void focusLost(Event e) {
