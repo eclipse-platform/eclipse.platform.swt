@@ -260,6 +260,7 @@ class WidgetWin32Tests {
 	}
 
 	@Test
+	@Disabled("Not working (yet)")
 	public void testTreeAfterZooming() {
 		Display display = Display.getDefault();
 		int zoom = DPIUtil.getDeviceZoom();

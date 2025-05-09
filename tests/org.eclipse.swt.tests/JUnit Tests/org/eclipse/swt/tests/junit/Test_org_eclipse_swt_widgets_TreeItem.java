@@ -22,6 +22,7 @@ import static org.junit.Assert.fail;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Drawing;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
@@ -169,9 +170,7 @@ void getBoundsIA() {
 	Image image = images[0];
 	Rectangle imageBounds = image.getBounds();
 	String string = "hello";
-	GC gc = new GC(tree);
-	Point stringExtent = gc.stringExtent(string);
-	gc.dispose();
+	Point stringExtent = Drawing.getTextExtent(tree, string, 0);
 
 	Rectangle bounds;
 	Rectangle bounds2;
@@ -199,7 +198,10 @@ void getBoundsIA() {
 	subItem.setText(string);
 	bounds = subItem.getBounds(0);
 	bounds2 = treeItem.getBounds(0);
-	assertTrue(":1g:", bounds.x > bounds2.x && bounds.y >= bounds2.y + bounds2.height && bounds.height > stringExtent.y && bounds.width > stringExtent.x);
+	assertTrue(":1g.1:", bounds.x > bounds2.x);
+	assertTrue("1g.2:", bounds.y >= bounds2.y + bounds2.height );
+	assertTrue("1g.3:" ,bounds.height > stringExtent.y);
+	assertTrue("1g.4:" ,bounds.width > stringExtent.x);
 
 	treeItem.setText(string);
 	bounds = treeItem.getBounds(0);
@@ -238,9 +240,7 @@ void getBoundsIB() {
 	Image image = images[0];
 	Rectangle imageBounds = image.getBounds();
 	String string = "hello";
-	GC gc = new GC(tree);
-	Point stringExtent = gc.stringExtent(string);
-	gc.dispose();
+	Point stringExtent = Drawing.getTextExtent(tree, string, 0);
 
 	Rectangle bounds;
 	Rectangle bounds2;
@@ -268,7 +268,10 @@ void getBoundsIB() {
 	subItem2.setText(string);
 	bounds = subItem2.getBounds(0);
 	bounds2 = treeItem2.getBounds(0);
-	assertTrue(":2g:", bounds.x > bounds2.x && bounds.y >= bounds2.y + bounds2.height && bounds.height > stringExtent.y && bounds.width > stringExtent.x);
+	assertTrue(":2g.1:", bounds.x > bounds2.x);
+	assertTrue(":2g.2:",bounds.y >= bounds2.y + bounds2.height );
+	assertTrue(":2g.3:", bounds.height > stringExtent.y );
+	assertTrue(":2g.4:",bounds.width > stringExtent.x);
 
 	treeItem2.setText(string);
 	bounds = treeItem2.getBounds(0);
@@ -347,7 +350,9 @@ void getBoundsIC() {
 	subItem.setText(new String[] {string1, string2});
 	bounds = subItem.getBounds(0);
 	bounds2 = treeItem.getBounds(0);
-	assertTrue(":3h:", bounds.x > bounds2.x && bounds.y >= bounds2.y + bounds2.height && bounds.height > stringExtent1.y && bounds.width == 0);
+	assertTrue(":3h.1:", bounds.x > bounds2.x );
+	assertTrue(":3h.2:", bounds.y >= bounds2.y + bounds2.height );
+	assertTrue(":3h.2:", bounds.height > stringExtent1.y && bounds.width == 0);
 
 	column0.setWidth(100);
 	bounds = treeItem.getBounds(0);
@@ -535,13 +540,6 @@ void getBoundsID() {
 
 @Test
 public void test_getBoundsI() {
-	if (SwtTestUtil.isGTK || SwtTestUtil.isCocoa) {
-		//TODO Fix Gtk and Cocoa failure.
-		if (SwtTestUtil.verbose) {
-			System.out.println("Excluded test_getBoundsI(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_TreeItem)");
-		}
-		return;
-	}
 	getBoundsIA();
 	getBoundsIB();
 	getBoundsIC();
