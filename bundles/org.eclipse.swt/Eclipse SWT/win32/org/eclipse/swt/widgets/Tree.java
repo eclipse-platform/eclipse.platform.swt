@@ -211,7 +211,7 @@ void _addListener (int eventType, Listener listener) {
 		case SWT.PaintItem: {
 			customDraw = true;
 			style |= SWT.DOUBLE_BUFFERED;
-			if (isCustomToolTip ()) createItemToolTips ();
+			createItemToolTips ();
 			OS.SendMessage (handle, OS.TVM_SETSCROLLTIME, 0, 0);
 			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 			if (eventType == SWT.MeasureItem) {
@@ -2200,7 +2200,7 @@ void createItem (TreeItem item, long hParent, long hInsertAfter, long hItem) {
 				}
 			}
 		}
-
+		createItemToolTips ();
 		/*
 		 Note: Don't update scrollbars when drawing is disabled.
 		 This gives significant improvement for bulk insert scenarios.
@@ -2799,20 +2799,16 @@ boolean findCell (int x, int y, TreeItem [] item, int [] index, RECT [] cellRect
 			} else {
 				cellRect [0].right = Math.min (cellRect [0].right, rect.right);
 				if (OS.PtInRect (cellRect [0], pt)) {
-					if (isCustomToolTip ()) {
-						int state = (int)OS.SendMessage (handle, OS.TVM_GETITEMSTATE, lpht.hItem, OS.TVIS_SELECTED);
-						int detail = (state & OS.TVIS_SELECTED) != 0 ? SWT.SELECTED : 0;
-						Event event = sendMeasureItemEvent (item [0], order [index [0]], hDC, detail);
-						if (isDisposed () || item [0].isDisposed ()) break;
-						Rectangle boundsInPixels = DPIUtil.scaleUp(event.getBounds(), getZoom());
-						itemRect [0] = new RECT ();
-						itemRect [0].left = boundsInPixels.x;
-						itemRect [0].right = boundsInPixels.x + boundsInPixels.width;
-						itemRect [0].top = boundsInPixels.y;
-						itemRect [0].bottom = boundsInPixels.y + boundsInPixels.height;
-					} else {
-						itemRect [0] = item [0].getBounds (order [index [0]], true, false, false, false, false, hDC);
-					}
+					int state = (int)OS.SendMessage (handle, OS.TVM_GETITEMSTATE, lpht.hItem, OS.TVIS_SELECTED);
+					int detail = (state & OS.TVIS_SELECTED) != 0 ? SWT.SELECTED : 0;
+					Event event = sendMeasureItemEvent (item [0], order [index [0]], hDC, detail);
+					if (isDisposed () || item [0].isDisposed ()) break;
+					Rectangle boundsInPixels = DPIUtil.scaleUp(event.getBounds(), getZoom());
+					itemRect [0] = new RECT ();
+					itemRect [0].left = boundsInPixels.x;
+					itemRect [0].right = boundsInPixels.x + boundsInPixels.width;
+					itemRect [0].top = boundsInPixels.y;
+					itemRect [0].bottom = boundsInPixels.y + boundsInPixels.height;
 					if (itemRect [0].right > cellRect [0].right) found = true;
 					quit = true;
 				}
@@ -3835,10 +3831,6 @@ public int indexOf (TreeItem item) {
 	if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	long hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
 	return hItem == 0 ? -1 : findIndex (hItem, item.handle);
-}
-
-boolean isCustomToolTip () {
-	return hooks (SWT.MeasureItem);
 }
 
 boolean isItemSelected (NMTVCUSTOMDRAW nmcd) {
@@ -5644,16 +5636,7 @@ String toolTipText (NMTTDISPINFO hdr) {
 		TreeItem [] item = new TreeItem [1];
 		RECT [] cellRect = new RECT [1], itemRect = new RECT [1];
 		if (findCell (pt.x, pt.y, item, index, cellRect, itemRect)) {
-			String text = null;
-			if (index [0] == 0) {
-				text = item [0].text;
-			} else {
-				String[] strings = item [0].strings;
-				if (strings != null) text = strings [index [0]];
-			}
-			//TEMPORARY CODE
-			if (isCustomToolTip ()) text = " ";
-			if (text != null) return text;
+			return " ";
 		}
 	}
 	return super.toolTipText (hdr);
@@ -8157,8 +8140,7 @@ LRESULT wmNotifyToolTip (NMHDR hdr, long wParam, long lParam) {
 			if (findCell (pt.x, pt.y, item, index, cellRect, itemRect)) {
 				RECT toolRect = toolTipRect (itemRect [0]);
 				OS.MapWindowPoints (handle, 0, toolRect, 2);
-				int flags = OS.SWP_NOACTIVATE | OS.SWP_NOZORDER | OS.SWP_NOSIZE;
-				if (isCustomToolTip ()) flags &= ~OS.SWP_NOSIZE;
+				int flags = OS.SWP_NOACTIVATE | OS.SWP_NOZORDER;
 				// Retrieve the monitor containing the cursor position, as tool tip placement
 				// must occur on the same monitor to avoid potential infinite loops. When a tool tip
 				// appears on a different monitor than the cursor, the operating system may
@@ -8225,13 +8207,10 @@ private Rectangle getContainingMonitorBoundsInMultiZoomCoordinateSystem(MonitorA
 LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, long lParam) {
 	switch (nmcd.dwDrawStage) {
 		case OS.CDDS_PREPAINT: {
-			if (isCustomToolTip ()) {
-				//TEMPORARY CODE
-				//nmcd.uDrawFlags |= OS.DT_CALCRECT;
-				//OS.MoveMemory (lParam, nmcd, NMTTCUSTOMDRAW.sizeof);
-				return new LRESULT (OS.CDRF_NOTIFYPOSTPAINT | OS.CDRF_NEWFONT);
-			}
-			break;
+			//TEMPORARY CODE
+			//nmcd.uDrawFlags |= OS.DT_CALCRECT;
+			//OS.MoveMemory (lParam, nmcd, NMTTCUSTOMDRAW.sizeof);
+			return new LRESULT (OS.CDRF_NOTIFYPOSTPAINT | OS.CDRF_NEWFONT);
 		}
 		case OS.CDDS_POSTPAINT: {
 			if (OS.SendMessage (itemToolTipHandle, OS.TTM_GETCURRENTTOOL, 0, 0) != 0) {
