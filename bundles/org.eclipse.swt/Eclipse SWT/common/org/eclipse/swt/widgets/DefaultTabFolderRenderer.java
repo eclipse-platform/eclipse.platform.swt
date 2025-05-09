@@ -103,7 +103,6 @@ public class DefaultTabFolderRenderer extends TabFolderRenderer {
 						height = Math.max(height, computeSize(i, SWT.NONE, gc, wHint, hHint).y);
 					}
 				}
-				gc.dispose();
 			}
 			break;
 		case PART_MAX_BUTTON:
