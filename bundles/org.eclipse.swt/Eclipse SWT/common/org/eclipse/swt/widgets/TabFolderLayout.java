@@ -42,8 +42,10 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 		}
 	}
 
-	int width = 0, wrapHeight = 0;
-	boolean leftControl = false, rightControl = false;
+	int width = 0;
+	int wrapHeight = 0;
+	boolean leftControl = false;
+	boolean rightControl = false;
 	if (wHint == SWT.DEFAULT) {
 		for (int i = 0; i < folder.controls.length; i++) {
 			Control control = folder.controls[i];
@@ -57,10 +59,11 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 			}
 		}
 	} else {
-		Point size = new Point (wHint, hHint);
+		Point size = new Point(wHint, hHint);
 		boolean[][] positions = new boolean[1][];
 		Rectangle[] rects = folder.computeControlBounds(size, positions);
-		int minY = Integer.MAX_VALUE, maxY = 0;
+		int minY = Integer.MAX_VALUE;
+		int maxY = 0;
 		for (int i = 0; i < rects.length; i++) {
 			if (positions[0][i]) {
 				minY = Math.min(minY, rects[i].y);
@@ -76,10 +79,12 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 			}
 		}
 	}
-	if (leftControl)
+	if (leftControl) {
 		width += TabFolder.SPACING * 2;
-	if (rightControl)
+	}
+	if (rightControl) {
 		width += TabFolder.SPACING * 2;
+	}
 	tabW += width;
 
 	gc.dispose();
@@ -89,29 +94,33 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 	// preferred size of controls in tab items
 	for (TabItem item : items) {
 		Control control = item.control;
-		if (control != null && !control.isDisposed()){
-			Point size = control.computeSize (wHint, hHint, flushCache);
-			controlW = Math.max (controlW, size.x);
-			controlH = Math.max (controlH, size.y);
+		if (control != null && !control.isDisposed()) {
+			Point size = control.computeSize(wHint, hHint, flushCache);
+			controlW = Math.max(controlW, size.x);
+			controlH = Math.max(controlH, size.y);
 		}
 	}
 
 	int minWidth = Math.max(tabW, controlW + folder.marginWidth);
 	int minHeight = (folder.minimized) ? 0 : controlH + wrapHeight;
-	if (minWidth == 0)
+	if (minWidth == 0) {
 		minWidth = TabFolder.DEFAULT_WIDTH;
-	if (minHeight == 0)
+	}
+	if (minHeight == 0) {
 		minHeight = TabFolder.DEFAULT_HEIGHT;
+	}
 
 	if (wHint != SWT.DEFAULT) minWidth  = wHint;
 	if (hHint != SWT.DEFAULT) minHeight = hHint;
 
-	return new Point (minWidth, minHeight);
+	return new Point(minWidth, minHeight);
 }
+
 @Override
 protected boolean flushCache(Control control) {
 	return true;
 }
+
 @Override
 protected void layout(Composite composite, boolean flushCache) {
 	TabFolder folder = (TabFolder) composite;

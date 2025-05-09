@@ -40,7 +40,10 @@ import org.eclipse.swt.widgets.*;
  */
 public class TabItem extends Item {
 	TabFolder parent;
-	int x,y,width,height = 0;
+	int x;
+	int y;
+	int width;
+	int height;
 	Control control; // the tab page
 
 	String toolTipText;
@@ -56,8 +59,8 @@ public class TabItem extends Item {
 	Rectangle closeRect = new Rectangle(0, 0, 0, 0);
 	int closeImageState = SWT.BACKGROUND;
 	int state = SWT.NONE;
-	boolean showClose = false;
-	boolean showing = false;
+	boolean showClose;
+	boolean showing;
 
 /**
  * Constructs a new instance of this class given its parent (which must be a
@@ -136,15 +139,15 @@ public TabItem(TabFolder parent, int style) {
  * @see Widget#getStyle()
  */
 public TabItem(TabFolder parent, int style, int index) {
-	super (parent, style);
+	super(parent, style);
 	showClose = (style & SWT.CLOSE) != 0;
-	parent.createItem (this, index);
+	parent.createItem(this, index);
 }
 
 
 @Override
 public void dispose() {
-	if (isDisposed ()) return;
+	if (isDisposed()) return;
 	//if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	parent.destroyItem(this);
 	super.dispose();
@@ -166,7 +169,7 @@ public void dispose() {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public Rectangle getBounds () {
+public Rectangle getBounds() {
 	/*
 	 * This call is intentionally commented out, to allow this getter method to be
 	 * called from a thread which is different from one that created the widget.
@@ -175,6 +178,7 @@ public Rectangle getBounds () {
 	parent.runUpdate();
 	return new Rectangle(x, y, width, height);
 }
+
 /**
 * Gets the control that is displayed in the content area of the tab item.
 *
@@ -185,10 +189,11 @@ public Rectangle getBounds () {
 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
 * </ul>
 */
-public Control getControl () {
+public Control getControl() {
 	checkWidget();
 	return control;
 }
+
 /**
  * Get the image displayed in the tab if the tab is disabled.
  *
@@ -206,6 +211,7 @@ public Image getDisabledImage(){
 	checkWidget();
 	return disabledImage;
 }
+
 /**
  * Returns the foreground color that the receiver will use to paint textual information.
  *
@@ -217,8 +223,8 @@ public Image getDisabledImage(){
  * </ul>
  * @since 3.114
  */
-public Color getForeground () {
-	checkWidget ();
+public Color getForeground() {
+	checkWidget();
 	if (foreground != null) return foreground;
 	return parent.getForeground();
 }
@@ -234,8 +240,8 @@ public Color getForeground () {
  * </ul>
  * @since 3.114
  */
-public Color getSelectionForeground () {
-	checkWidget ();
+public Color getSelectionForeground() {
+	checkWidget();
 	if (selectionForeground != null) return selectionForeground;
 	return parent.getSelectionForeground();
 }
@@ -279,6 +285,7 @@ public TabFolder getParent() {
 	//checkWidget();
 	return parent;
 }
+
 /**
  * Returns <code>true</code> to indicate that the receiver's close button should be shown.
  * Otherwise return <code>false</code>. The initial value is defined by the style (SWT.CLOSE)
@@ -297,6 +304,7 @@ public boolean getShowClose() {
 	checkWidget();
 	return showClose;
 }
+
 /**
  * Returns the receiver's tool tip text, or null if it has
  * not been set.
@@ -308,7 +316,7 @@ public boolean getShowClose() {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public String getToolTipText () {
+public String getToolTipText() {
 	checkWidget();
 	if (toolTipText == null && shortenedText != null) {
 		String text = getText();
@@ -334,7 +342,7 @@ public String getToolTipText () {
  *
  * @since 3.0
  */
-public boolean isShowing () {
+public boolean isShowing() {
 	checkWidget();
 	return showing;
 }
@@ -354,20 +362,20 @@ public boolean isShowing () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public void setControl (Control control) {
+public void setControl(Control control) {
 	checkWidget();
 	if (control != null) {
-		if (control.isDisposed()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
-		if (control.getParent() != parent) SWT.error (SWT.ERROR_INVALID_PARENT);
+		if (control.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		if (control.getParent() != parent) SWT.error(SWT.ERROR_INVALID_PARENT);
 	}
 	if (this.control != null && !this.control.isDisposed()) {
 		this.control.setVisible(false);
 	}
 	this.control = control;
 	if (this.control != null) {
-		int index = parent.indexOf (this);
-		if (index == parent.getSelectionIndex ()){
-			this.control.setBounds(parent.getClientArea ());
+		int index = parent.indexOf(this);
+		if (index == parent.getSelectionIndex()){
+			this.control.setBounds(parent.getClientArea());
 			this.control.setVisible(true);
 		} else {
 			int selectedIndex = parent.getSelectionIndex();
@@ -395,15 +403,15 @@ public void setControl (Control control) {
  * @deprecated This image is not used
  */
 @Deprecated
-public void setDisabledImage (Image image) {
+public void setDisabledImage(Image image) {
 	checkWidget();
-	if (image != null && image.isDisposed ()) {
+	if (image != null && image.isDisposed()) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	this.disabledImage = image;
 }
-boolean setFocus () {
-	return control != null && !control.isDisposed() && control.setFocus ();
+boolean setFocus() {
+	return control != null && !control.isDisposed() && control.setFocus();
 }
 /**
  * Sets the font that the receiver will use to paint textual information
@@ -422,9 +430,9 @@ boolean setFocus () {
  *
  * @since 3.0
  */
-public void setFont (Font font){
+public void setFont(Font font){
 	checkWidget();
-	if (font != null && font.isDisposed ()) {
+	if (font != null && font.isDisposed()) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	if (font == null && this.font == null) return;
@@ -449,8 +457,8 @@ public void setFont (Font font){
  * </ul>
  * @since 3.114
  */
-public void setForeground (Color color) {
-	checkWidget ();
+public void setForeground(Color color) {
+	checkWidget();
 	if (color != null) {
 		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
@@ -475,8 +483,8 @@ public void setForeground (Color color) {
  * </ul>
  * @since 3.114
  */
-public void setSelectionForeground (Color color) {
-	checkWidget ();
+public void setSelectionForeground(Color color) {
+	checkWidget();
 	if (color != null) {
 		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
@@ -486,9 +494,9 @@ public void setSelectionForeground (Color color) {
 }
 
 @Override
-public void setImage (Image image) {
+public void setImage(Image image) {
 	checkWidget();
-	if (image != null && image.isDisposed ()) {
+	if (image != null && image.isDisposed()) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	Image oldImage = getImage();
@@ -533,9 +541,9 @@ public void setShowClose(boolean close) {
  * </ul>
  */
 @Override
-public void setText (String string) {
+public void setText(String string) {
 	checkWidget();
-	if (string == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (string.equals(getText())) return;
 	super.setText(string);
 	shortenedText = null;
@@ -562,9 +570,8 @@ public void setText (String string) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public void setToolTipText (String string) {
+public void setToolTipText(String string) {
 	checkWidget();
 	toolTipText = string;
 }
-
 }

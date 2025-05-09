@@ -44,14 +44,13 @@ public class DefaultTabFolderRenderer extends TabFolderRenderer {
 	void antialias(int[] shape, Color innerColor, Color outerColor, GC gc) {
 		// Don't perform anti-aliasing on Mac because the platform
 		// already does it. The simple style also does not require anti-aliasing.
-		if (parent.simple)
-			return;
+		if (parent.simple) return;
 		String platform = SWT.getPlatform();
-		if ("cocoa".equals(platform)) //$NON-NLS-1$
+		if ("cocoa".equals(platform)) { //$NON-NLS-1$
 			return;
+		}
 		// Don't perform anti-aliasing on low resolution displays
-		if (parent.getDisplay().getDepth() < 15)
-			return;
+		if (parent.getDisplay().getDepth() < 15) return;
 		if (outerColor != null) {
 			int index = 0;
 			boolean left = true;
@@ -88,7 +87,8 @@ public class DefaultTabFolderRenderer extends TabFolderRenderer {
 
 	@Override
 	protected Point computeSize(int part, int state, GC gc, int wHint, int hHint) {
-		int width = 0, height = 0;
+		int width = 0;
+		int height = 0;
 		switch (part) {
 		case PART_HEADER:
 			if (parent.fixedTabHeight != SWT.DEFAULT) {
@@ -123,8 +123,9 @@ public class DefaultTabFolderRenderer extends TabFolderRenderer {
 			if (0 <= part && part < parent.getItemCount()) {
 				updateCurves();
 				TabItem item = parent.items[part];
-				if (item.isDisposed())
+				if (item.isDisposed()) {
 					return new Point(0, 0);
+				}
 				Image image = item.getImage();
 				if (image != null && !image.isDisposed()) {
 					Rectangle bounds = image.getBounds();
@@ -134,7 +135,7 @@ public class DefaultTabFolderRenderer extends TabFolderRenderer {
 					}
 					height = bounds.height;
 				}
-				String text = null;
+				String text;
 				if ((state & MINIMUM_SIZE) != 0) {
 					int minChars = parent.minChars;
 					text = minChars == 0 ? null : item.getText();
@@ -142,8 +143,9 @@ public class DefaultTabFolderRenderer extends TabFolderRenderer {
 						if (useEllipses()) {
 							int end = minChars < ELLIPSIS.length() + 1 ? minChars : minChars - ELLIPSIS.length();
 							text = text.substring(0, end);
-							if (minChars > ELLIPSIS.length() + 1)
+							if (minChars > ELLIPSIS.length() + 1) {
 								text += ELLIPSIS;
+							}
 						} else {
 							int end = minChars;
 							text = text.substring(0, end);
@@ -153,8 +155,9 @@ public class DefaultTabFolderRenderer extends TabFolderRenderer {
 					text = item.getText();
 				}
 				if (text != null) {
-					if (width > 0)
+					if (width > 0) {
 						width += INTERNAL_SPACING;
+					}
 					if (item.font == null) {
 						Point size = gc.textExtent(text, FLAGS);
 						width += size.x;
@@ -172,8 +175,9 @@ public class DefaultTabFolderRenderer extends TabFolderRenderer {
 				if (shouldApplyLargeTextPadding(parent)) {
 					width += getLargeTextPadding(item) * 2;
 				} else if (shouldDrawCloseIcon(item)) {
-					if (width > 0)
+					if (width > 0) {
 						width += INTERNAL_SPACING;
+					}
 					width += computeSize(PART_CLOSE_BUTTON, SWT.NONE, gc, SWT.DEFAULT, SWT.DEFAULT).x;
 				}
 			}
@@ -254,8 +258,9 @@ public class DefaultTabFolderRenderer extends TabFolderRenderer {
 		case PART_BORDER:
 			x = x - borderLeft;
 			width = width + borderLeft + borderRight;
-			if (!parent.simple)
+			if (!parent.simple) {
 				width += 2; // TOP_RIGHT_CORNER needs more space
+			}
 			y = y - borderTop;
 			height = height + borderTop + borderBottom;
 			break;
@@ -309,14 +314,12 @@ public class DefaultTabFolderRenderer extends TabFolderRenderer {
 		}
 		/* compute the tabArea color */
 		outerRGB = parent.getParent().getBackground().getRGB();
-		if (outerRGB != null) {
-			RGB from = lineRGB;
-			RGB to = outerRGB;
-			int red = from.red + 2 * (to.red - from.red) / 3;
-			int green = from.green + 2 * (to.green - from.green) / 3;
-			int blue = from.blue + 2 * (to.blue - from.blue) / 3;
-			tabAreaColor = new Color(red, green, blue);
-		}
+		RGB from = lineRGB;
+		RGB to = outerRGB;
+		int red = from.red + 2 * (to.red - from.red) / 3;
+		int green = from.green + 2 * (to.green - from.green) / 3;
+		int blue = from.blue + 2 * (to.blue - from.blue) / 3;
+		tabAreaColor = new Color(red, green, blue);
 	}
 
 	/*
@@ -327,9 +330,8 @@ public class DefaultTabFolderRenderer extends TabFolderRenderer {
 	 */
 	void createSelectionHighlightGradientColors(Color start) {
 		disposeSelectionHighlightGradientColors(); // dispose if existing
-
-		if (start == null) // shouldn't happen but just to be safe
-			return;
+		// shouldn't happen but just to be safe
+		if (start == null) return;
 
 		// alloc colours for entire height to ensure it matches wherever we stop drawing
 		int fadeGradientSize = parent.tabHeight;
@@ -395,8 +397,7 @@ public class DefaultTabFolderRenderer extends TabFolderRenderer {
 			break;
 		default:
 			if (0 <= part && part < parent.getItemCount()) {
-				if (bounds.width == 0 || bounds.height == 0)
-					return;
+				if (bounds.width == 0 || bounds.height == 0) return;
 				if ((state & SWT.SELECTED) != 0) {
 					drawSelected(part, gc, bounds, state);
 				} else {
@@ -446,7 +447,8 @@ public class DefaultTabFolderRenderer extends TabFolderRenderer {
 
 	void drawBackground(GC gc, int[] shape, int x, int y, int width, int height, Color defaultBackground, Image image,
 			Color[] colors, int[] percents, boolean vertical) {
-		Region clipping = null, region = null;
+		Region clipping = null;
+		Region region = null;
 		if (shape != null) {
 			clipping = new Region();
 			gc.getClipping(clipping);
@@ -477,13 +479,15 @@ public class DefaultTabFolderRenderer extends TabFolderRenderer {
 							gc.fillRectangle(x, y, width, pos);
 						}
 						Color lastColor = colors[colors.length - 1];
-						if (lastColor == null)
+						if (lastColor == null) {
 							lastColor = defaultBackground;
+						}
 						for (int i = percents.length - 1; i >= 0; i--) {
 							gc.setForeground(lastColor);
 							lastColor = colors[i];
-							if (lastColor == null)
+							if (lastColor == null) {
 								lastColor = defaultBackground;
+							}
 							gc.setBackground(lastColor);
 							int percentage = i > 0 ? percents[i] - percents[i - 1] : percents[i];
 							int gradientHeight = percentage * height / 100;
@@ -492,14 +496,16 @@ public class DefaultTabFolderRenderer extends TabFolderRenderer {
 						}
 					} else {
 						Color lastColor = colors[0];
-						if (lastColor == null)
+						if (lastColor == null) {
 							lastColor = defaultBackground;
+						}
 						int pos = 0;
 						for (int i = 0; i < percents.length; i++) {
 							gc.setForeground(lastColor);
 							lastColor = colors[i + 1];
-							if (lastColor == null)
+							if (lastColor == null) {
 								lastColor = defaultBackground;
+							}
 							gc.setBackground(lastColor);
 							int percentage = i > 0 ? percents[i] - percents[i - 1] : percents[i];
 							int gradientHeight = percentage * height / 100;
@@ -515,14 +521,16 @@ public class DefaultTabFolderRenderer extends TabFolderRenderer {
 					y = 0;
 					height = parent.getSize().y;
 					Color lastColor = colors[0];
-					if (lastColor == null)
+					if (lastColor == null) {
 						lastColor = defaultBackground;
+					}
 					int pos = 0;
 					for (int i = 0; i < percents.length; ++i) {
 						gc.setForeground(lastColor);
 						lastColor = colors[i + 1];
-						if (lastColor == null)
+						if (lastColor == null) {
 							lastColor = defaultBackground;
+						}
 						gc.setBackground(lastColor);
 						int gradientWidth = (percents[i] * width / 100) - pos;
 						gc.fillGradientRectangle(x + pos, y, gradientWidth, height, false);
@@ -552,7 +560,6 @@ public class DefaultTabFolderRenderer extends TabFolderRenderer {
 	 * Draw the border of the tab
 	 */
 	void drawBorder(GC gc, int[] shape) {
-
 		gc.setForeground(parent.getDisplay().getSystemColor(BORDER1_COLOR));
 		gc.drawPolyline(shape);
 	}
@@ -649,8 +656,7 @@ public class DefaultTabFolderRenderer extends TabFolderRenderer {
 	}
 
 	void drawClose(GC gc, Rectangle closeRect, int closeImageState) {
-		if (closeRect.width == 0 || closeRect.height == 0)
-			return;
+		if (closeRect.width == 0 || closeRect.height == 0) return;
 
 		// draw X with length of this constant
 		final int lineLength = 8;
@@ -693,8 +699,7 @@ public class DefaultTabFolderRenderer extends TabFolderRenderer {
 	}
 
 	void drawChevron(GC gc, Rectangle chevronRect, int chevronImageState) {
-		if (chevronRect.width == 0 || chevronRect.height == 0)
-			return;
+		if (chevronRect.width == 0 || chevronRect.height == 0) return;
 		// draw chevron (10x7)
 		Display display = parent.getDisplay();
 		Font font = getChevronFont(display);
@@ -754,18 +759,13 @@ public class DefaultTabFolderRenderer extends TabFolderRenderer {
 	 */
 	void drawHighlight(GC gc, Rectangle bounds, int state, int rightEdge) {
 		// only draw for curvy tabs and only draw for top tabs
-		if (parent.simple || parent.onBottom)
-			return;
-
-		if (selectionHighlightGradientBegin == null)
-			return;
+		if (parent.simple || parent.onBottom) return;
+		if (selectionHighlightGradientBegin == null) return;
 
 		Color[] gradients = selectionHighlightGradientColorsCache;
-		if (gradients == null)
-			return;
+		if (gradients == null) return;
 		int gradientsSize = gradients.length;
-		if (gradientsSize == 0)
-			return; // shouldn't happen but just to be tidy
+		if (gradientsSize == 0) return;
 
 		int x = bounds.x;
 		int y = bounds.y;
@@ -809,15 +809,19 @@ public class DefaultTabFolderRenderer extends TabFolderRenderer {
 			lastX = rawX + rightEdgeOffset;
 			lastY = rawY + y;
 			lastColorIndex = rawY - 1;
-			if (lastColorIndex >= gradientsSize)
-				break; // can happen if tabs are unusually short and cut off the curve
+			// can happen if tabs are unusually short and cut off the curve
+			if (lastColorIndex >= gradientsSize) {
+				break;
+			}
 			gc.setForeground(gradients[lastColorIndex]);
 			gc.drawPoint(lastX, lastY);
 		}
 		// draw right diagonal line highlight
 		for (int i = lastColorIndex; i < lastColorIndex + d; i++) {
-			if (i >= gradientsSize)
-				break; // can happen if tabs are unusually short and cut off the curve
+			// can happen if tabs are unusually short and cut off the curve
+			if (i >= gradientsSize) {
+				break;
+			}
 			gc.setForeground(gradients[i]);
 			gc.drawPoint(1 + lastX++, 1 + lastY++);
 		}
@@ -829,8 +833,10 @@ public class DefaultTabFolderRenderer extends TabFolderRenderer {
 			lastX = rawX + rightEdgeOffset;
 			lastY = rawY + y;
 			lastColorIndex = rawY - 1;
-			if (lastColorIndex >= gradientsSize)
-				break; // can happen if tabs are unusually short and cut off the curve
+			// can happen if tabs are unusually short and cut off the curve
+			if (lastColorIndex >= gradientsSize) {
+				break;
+			}
 			gc.setForeground(gradients[lastColorIndex]);
 			gc.drawPoint(lastX, lastY);
 		}
@@ -867,15 +873,13 @@ public class DefaultTabFolderRenderer extends TabFolderRenderer {
 				shape[index++] = x + left[2 * i];
 				shape[index++] = y + left[2 * i + 1];
 			}
-
 		}
 
 		drawBorder(gc, shape);
 	}
 
 	void drawMaximize(GC gc, Rectangle maxRect, int maxImageState) {
-		if (maxRect.width == 0 || maxRect.height == 0)
-			return;
+		if (maxRect.width == 0 || maxRect.height == 0) return;
 		// 5x4 or 7x9
 		int x = maxRect.x + (maxRect.width - 10) / 2;
 		int y = maxRect.y + 3;
@@ -925,8 +929,7 @@ public class DefaultTabFolderRenderer extends TabFolderRenderer {
 	}
 
 	void drawMinimize(GC gc, Rectangle minRect, int minImageState) {
-		if (minRect.width == 0 || minRect.height == 0)
-			return;
+		if (minRect.width == 0 || minRect.height == 0) return;
 		// 5x4 or 9x3
 		int x = minRect.x + (minRect.width - 10) / 2;
 		int y = minRect.y + 3;
@@ -1009,11 +1012,9 @@ public class DefaultTabFolderRenderer extends TabFolderRenderer {
 
 			shape[index++] = startX;
 			shape[index++] = y + height;
-
 		}
 
 		drawBorder(gc, shape);
-
 	}
 
 	void drawSelected(int itemIndex, GC gc, Rectangle bounds, int state) {
@@ -1022,8 +1023,9 @@ public class DefaultTabFolderRenderer extends TabFolderRenderer {
 		int y = bounds.y;
 		int height = bounds.height;
 		int width = bounds.width;
-		if (!parent.simple && !parent.single)
+		if (!parent.simple && !parent.single) {
 			width -= (curveWidth - curveIndent);
+		}
 		int borderLeft = parent.borderVisible ? 1 : 0;
 		int borderRight = borderLeft;
 		int borderTop = parent.onBottom ? borderLeft : 0;
@@ -1050,8 +1052,9 @@ public class DefaultTabFolderRenderer extends TabFolderRenderer {
 			}
 
 			if (parent.single) {
-				if (!item.showing)
+				if (!item.showing) {
 					return;
+				}
 			} else {
 				// if selected tab scrolled out of view or partially out of view
 				// just draw bottom line
@@ -1121,8 +1124,9 @@ public class DefaultTabFolderRenderer extends TabFolderRenderer {
 				Rectangle clipping = gc.getClipping();
 				Rectangle clipBounds = item.getBounds();
 				clipBounds.height += 1;
-				if (parent.onBottom)
+				if (parent.onBottom) {
 					clipBounds.y -= 1;
+				}
 				boolean tabInPaint = clipping.intersects(clipBounds);
 
 				if (tabInPaint) {
@@ -1140,8 +1144,9 @@ public class DefaultTabFolderRenderer extends TabFolderRenderer {
 						yy = parent.onBottom ? y - 1 : y + 1;
 						ww = width;
 						hh = height;
-						if (!parent.single && !parent.simple)
+						if (!parent.single && !parent.simple) {
 							ww += curveWidth - curveIndent;
+						}
 						drawBackground(gc, shape, xx, yy, ww, hh, defaultBackground, image, colors, percents, vertical);
 					}
 				}
@@ -1175,14 +1180,16 @@ public class DefaultTabFolderRenderer extends TabFolderRenderer {
 						shape[2 * i + 1] -= 1;
 				}
 				Color borderColor = parent.getDisplay().getSystemColor(BORDER1_COLOR);
-				if (!borderColor.equals(lastBorderColor))
+				if (!borderColor.equals(lastBorderColor)) {
 					createAntialiasColors();
+				}
 				antialias(shape, selectedInnerColor, selectedOuterColor, gc);
 				gc.setForeground(borderColor);
 				gc.drawPolyline(shape);
 
-				if (!tabInPaint)
+				if (!tabInPaint) {
 					return;
+				}
 			}
 		}
 
@@ -1190,15 +1197,17 @@ public class DefaultTabFolderRenderer extends TabFolderRenderer {
 			// draw Image
 			Rectangle trim = computeTrim(itemIndex, SWT.NONE, 0, 0, 0, 0);
 			int xDraw = x - trim.x;
-			if (parent.single && shouldDrawCloseIcon(item))
+			if (parent.single && shouldDrawCloseIcon(item)) {
 				xDraw += item.closeRect.width;
+			}
 			Image image = item.getImage();
 			if (image != null && !image.isDisposed() && parent.showSelectedImage) {
 				Rectangle imageBounds = image.getBounds();
 				// only draw image if it won't overlap with close button
 				int maxImageWidth = rightEdge - xDraw - (trim.width + trim.x);
-				if (!parent.single && item.closeRect.width > 0)
+				if (!parent.single && item.closeRect.width > 0) {
 					maxImageWidth -= item.closeRect.width + INTERNAL_SPACING;
+				}
 				if (imageBounds.width < maxImageWidth) {
 					int imageX = xDraw;
 					int imageY = y + (height - imageBounds.height) / 2;
@@ -1211,8 +1220,9 @@ public class DefaultTabFolderRenderer extends TabFolderRenderer {
 			// draw Text
 			xDraw += getLeftTextMargin(item);
 			int textWidth = rightEdge - xDraw - (trim.width + trim.x);
-			if (!parent.single && item.closeRect.width > 0)
+			if (!parent.single && item.closeRect.width > 0) {
 				textWidth -= item.closeRect.width + INTERNAL_SPACING;
+			}
 			if (textWidth > 0) {
 				Font gcFont = gc.getFont();
 				gc.setFont(item.font == null ? parent.getFont() : item.font);
@@ -1247,8 +1257,9 @@ public class DefaultTabFolderRenderer extends TabFolderRenderer {
 					gc.setBackground(orginalBackground);
 				}
 			}
-			if (shouldDrawCloseIcon(item))
+			if (shouldDrawCloseIcon(item)) {
 				drawClose(gc, item.closeRect, item.closeImageState);
+			}
 		}
 	}
 
@@ -1278,14 +1289,16 @@ public class DefaultTabFolderRenderer extends TabFolderRenderer {
 		int selectedIndex = parent.selectedIndex;
 		int highlight_header = (style & SWT.FLAT) != 0 ? 1 : 3;
 		if (tabHeight == 0) {
-			if ((style & SWT.FLAT) != 0 && (style & SWT.BORDER) == 0)
+			if ((style & SWT.FLAT) != 0 && (style & SWT.BORDER) == 0) {
 				return;
+			}
 			int x1 = borderLeft - 1;
 			int x2 = size.x - borderRight;
 			int y1 = parent.onBottom ? size.y - borderBottom - highlight_header - 1 : borderTop + highlight_header;
 			int y2 = parent.onBottom ? size.y - borderBottom : borderTop;
-			if (borderLeft > 0 && parent.onBottom)
+			if (borderLeft > 0 && parent.onBottom) {
 				y2 -= 1;
+			}
 
 			shape = new int[] { x1, y1, x1, y2, x2, y2, x2, y1 };
 
@@ -1332,14 +1345,16 @@ public class DefaultTabFolderRenderer extends TabFolderRenderer {
 			for (int i = 0; i < left.length / 2; i++) {
 				shape[index++] = x + left[2 * i];
 				shape[index++] = y + height + left[2 * i + 1];
-				if (borderLeft == 0)
+				if (borderLeft == 0) {
 					shape[index - 1] += 1;
+				}
 			}
 			for (int i = 0; i < right.length / 2; i++) {
 				shape[index++] = x + width + right[2 * i];
 				shape[index++] = y + height + right[2 * i + 1];
-				if (borderLeft == 0)
+				if (borderLeft == 0) {
 					shape[index - 1] += 1;
+				}
 			}
 			shape[index++] = x + width;
 			shape[index++] = y - highlight_header;
@@ -1391,8 +1406,9 @@ public class DefaultTabFolderRenderer extends TabFolderRenderer {
 
 		// Draw border line
 		if (borderLeft > 0) {
-			if (!borderColor.equals(lastBorderColor))
+			if (!borderColor.equals(lastBorderColor)) {
 				createAntialiasColors();
+			}
 			antialias(shape, null, tabAreaColor, gc);
 			gc.setForeground(borderColor);
 			gc.drawPolyline(shape);
@@ -1407,19 +1423,19 @@ public class DefaultTabFolderRenderer extends TabFolderRenderer {
 		int width = bounds.width;
 
 		// Do not draw partial items
-		if (!item.showing)
-			return;
+		if (!item.showing) return;
 
 		Rectangle clipping = gc.getClipping();
-		if (!clipping.intersects(bounds))
-			return;
+		if (!clipping.intersects(bounds)) return;
 
 		if ((state & SWT.BACKGROUND) != 0) {
-			if (index > 0 && index < parent.selectedIndex)
+			if (index > 0 && index < parent.selectedIndex) {
 				drawLeftUnselectedBorder(gc, bounds, state);
+			}
 			// If it is the last one then draw a line
-			if (index > parent.selectedIndex)
+			if (index > parent.selectedIndex) {
 				drawRightUnselectedBorder(gc, bounds, state);
+			}
 		}
 
 		if ((state & SWT.FOREGROUND) != 0) {
@@ -1466,8 +1482,9 @@ public class DefaultTabFolderRenderer extends TabFolderRenderer {
 				gc.setFont(gcFont);
 			}
 			// draw close
-			if (shouldDrawCloseIcon(item))
+			if (shouldDrawCloseIcon(item)) {
 				drawClose(gc, item.closeRect, item.closeImageState);
+			}
 		}
 	}
 
@@ -1504,30 +1521,26 @@ public class DefaultTabFolderRenderer extends TabFolderRenderer {
 	 * match the highlight colors we'd compute.
 	 */
 	boolean isSelectionHighlightColorsCacheHit(Color start) {
-
-		if (selectionHighlightGradientColorsCache == null)
-			return false;
+		if (selectionHighlightGradientColorsCache == null) return false;
 
 		// this case should never happen but check to be safe before accessing array
 		// indexes
-		if (selectionHighlightGradientColorsCache.length < 2)
-			return false;
+		if (selectionHighlightGradientColorsCache.length < 2) return false;
 
 		Color highlightBegin = selectionHighlightGradientColorsCache[0];
 		Color highlightEnd = selectionHighlightGradientColorsCache[selectionHighlightGradientColorsCache.length - 1];
 
-		if (!highlightBegin.equals(start))
+		if (!highlightBegin.equals(start)) {
 			return false;
+		}
 
 		// Compare number of colours we have vs. we'd compute
-		if (selectionHighlightGradientColorsCache.length != parent.tabHeight)
+		if (selectionHighlightGradientColorsCache.length != parent.tabHeight) {
 			return false;
+		}
 
 		// Compare existing highlight end to what it would be (selectionBackground)
-		if (!highlightEnd.equals(parent.selectionBackground))
-			return false;
-
-		return true;
+		return highlightEnd.equals(parent.selectionBackground);
 	}
 
 	@Override
@@ -1546,22 +1559,20 @@ public class DefaultTabFolderRenderer extends TabFolderRenderer {
 		// we're given the highlight
 		selectionHighlightGradientBegin = null;
 
-		if (start == null)
-			return;
+		if (start == null) return;
 
 		// don't bother on low colour
-		if (parent.getDisplay().getDepth() < 15)
-			return;
+		if (parent.getDisplay().getDepth() < 15) return;
 
 		// don't bother if we don't have a background gradient
-		if (parent.selectionGradientColors.length < 2)
-			return;
+		if (parent.selectionGradientColors.length < 2) return;
 
 		// OK we know its a valid gradient now
 		selectionHighlightGradientBegin = start;
 
-		if (!isSelectionHighlightColorsCacheHit(start))
+		if (!isSelectionHighlightColorsCacheHit(start)) {
 			createSelectionHighlightGradientColors(start); // if no cache hit then compute new ones
+		}
 	}
 
 	String shortenText(GC gc, String text, int width) {
@@ -1569,8 +1580,9 @@ public class DefaultTabFolderRenderer extends TabFolderRenderer {
 	}
 
 	String shortenText(GC gc, String text, int width, String ellipses) {
-		if (gc.textExtent(text, FLAGS).x <= width)
+		if (gc.textExtent(text, FLAGS).x <= width) {
 			return text;
+		}
 		int ellipseWidth = gc.textExtent(ellipses, FLAGS).x;
 		int length = text.length();
 		TextLayout layout = new TextLayout(parent.getDisplay());
@@ -1590,11 +1602,9 @@ public class DefaultTabFolderRenderer extends TabFolderRenderer {
 
 	void updateCurves() {
 		// Temp fix for Bug 384743
-		if (this.getClass().getName().equals("org.eclipse.e4.ui.workbench.renderers.swt.CTabRendering"))
-			return;
+		if (this.getClass().getName().equals("org.eclipse.e4.ui.workbench.renderers.swt.CTabRendering")) return;
 		int tabHeight = parent.tabHeight;
-		if (tabHeight == lastTabHeight)
-			return;
+		if (tabHeight == lastTabHeight) return;
 		lastTabHeight = tabHeight;
 		if (parent.onBottom) {
 			int d = tabHeight - 12;
@@ -1631,7 +1641,6 @@ public class DefaultTabFolderRenderer extends TabFolderRenderer {
 
 	@Override
 	protected void paint(GC gc, int width, int height) {
-
 		Font font = parent.getFont();
 		Font oldFont = parent.getOldFont();
 		if (oldFont == null || !oldFont.equals(font)) {
@@ -1710,6 +1719,5 @@ public class DefaultTabFolderRenderer extends TabFolderRenderer {
 		gc.setFont(gcFont);
 		gc.setForeground(gcForeground);
 		gc.setBackground(gcBackground);
-
 	}
 }

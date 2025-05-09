@@ -160,7 +160,7 @@ public abstract class TabFolderRenderer extends ControlRenderer {
 	protected TabFolderRenderer(TabFolder parent) {
 		super(parent);
 		if (parent == null) return;
-		if (parent.isDisposed ()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+		if (parent.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		this.parent = parent;
 	}
 
@@ -286,5 +286,4 @@ public abstract class TabFolderRenderer extends ControlRenderer {
 	protected abstract void disposeSelectionHighlightGradientColors();
 
 	protected abstract void resetChevronFont();
-
 }

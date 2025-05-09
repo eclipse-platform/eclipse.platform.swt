@@ -53,7 +53,6 @@ import org.eclipse.swt.internal.*;
  *      information</a>
  * @noextend This class is not intended to be subclassed by clients.
  */
-
 public class TabFolder extends Composite {
 
 	/**
@@ -92,7 +91,7 @@ public class TabFolder extends Composite {
 	 * @deprecated drop shadow border is no longer drawn in 3.0
 	 */
 	@Deprecated
-	public static RGB borderInsideRGB  = new RGB (132, 130, 132);
+	public static RGB borderInsideRGB  = new RGB(132, 130, 132);
 	/**
 	 * Color of middle line of drop shadow border.
 	 *
@@ -102,7 +101,7 @@ public class TabFolder extends Composite {
 	 * @deprecated drop shadow border is no longer drawn in 3.0
 	 */
 	@Deprecated
-	public static RGB borderMiddleRGB  = new RGB (143, 141, 138);
+	public static RGB borderMiddleRGB  = new RGB(143, 141, 138);
 	/**
 	 * Color of outermost line of drop shadow border.
 	 *
@@ -112,7 +111,7 @@ public class TabFolder extends Composite {
 	 * @deprecated drop shadow border is no longer drawn in 3.0
 	 */
 	@Deprecated
-	public static RGB borderOutsideRGB = new RGB (171, 168, 165);
+	public static RGB borderOutsideRGB = new RGB(171, 168, 165);
 
 	/* sizing, positioning */
 	boolean onBottom = false;
@@ -125,7 +124,7 @@ public class TabFolder extends Composite {
 
 	/* item management */
 	TabFolderRenderer renderer;
-	TabItem items[] = new TabItem[0];
+	TabItem[] items = new TabItem[0];
 	/** index of the left most visible tab. */
 	int firstIndex = -1;
 	int selectedIndex = -1;
@@ -257,13 +256,11 @@ public class TabFolder extends Composite {
 	static final int SELECTION_FOREGROUND = SWT.COLOR_LIST_FOREGROUND;
 	static final int SELECTION_BACKGROUND = SWT.COLOR_LIST_BACKGROUND;
 
-	static final int FOREGROUND = SWT.COLOR_WIDGET_FOREGROUND;
-	static final int BACKGROUND = SWT.COLOR_WIDGET_BACKGROUND;
-
 	//TODO: add setter for spacing?
 	static final int SPACING = 3;
 
 	final RendererFactory rendererFactory = parent.getDisplay().getRendererFactory();
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -296,7 +293,7 @@ public class TabFolder extends Composite {
  * @see #getStyle()
  */
 public TabFolder(Composite parent, int style) {
-	super(parent, checkStyle (parent, style));
+	super(parent, checkStyle(parent, style));
 	init(style);
 }
 
@@ -450,13 +447,14 @@ static int checkStyle (Composite parent, int style) {
  */
 public void addCTabFolder2Listener(TabFolder2Listener listener) {
 	checkWidget();
-	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	// add to array
 	TabFolder2Listener[] newListeners = new TabFolder2Listener[folderListeners.length + 1];
 	System.arraycopy(folderListeners, 0, newListeners, 0, folderListeners.length);
 	folderListeners = newListeners;
 	folderListeners[folderListeners.length - 1] = listener;
 }
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when a tab item is closed.
@@ -479,7 +477,7 @@ public void addCTabFolder2Listener(TabFolder2Listener listener) {
 @Deprecated
 public void addCTabFolderListener(TabFolderListener listener) {
 	checkWidget();
-	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	// add to array
 	TabFolderListener[] newTabListeners = new TabFolderListener[tabListeners.length + 1];
 	System.arraycopy(tabListeners, 0, newTabListeners, 0, tabListeners.length);
@@ -519,7 +517,7 @@ public void addSelectionListener(SelectionListener listener) {
 	addTypedListener(listener, SWT.Selection, SWT.DefaultSelection);
 }
 
-Rectangle[] computeControlBounds (Point size, boolean[][] position) {
+Rectangle[] computeControlBounds(Point size, boolean[][] position) {
 	if (controls == null || controls.length == 0) return new Rectangle[0];
 	Rectangle[] rects = new Rectangle[controls.length];
 	for (int i = 0; i < rects.length; i++) {
@@ -707,6 +705,7 @@ Rectangle[] computeControlBounds (Point size, boolean[][] position) {
 int getControlHeight(Point ctrlSize) {
 	return fixedTabHeight == SWT.DEFAULT ?  Math.max(tabHeight - 1, ctrlSize.y) : ctrlSize.y;
 }
+
 /*
 * This class was not intended to be subclassed but this restriction
 * cannot be enforced without breaking backward compatibility.
@@ -719,7 +718,7 @@ int getControlHeight(Point ctrlSize) {
 //	}
 //}
 @Override
-public Rectangle computeTrim (int x, int y, int width, int height) {
+public Rectangle computeTrim(int x, int y, int width, int height) {
 	checkWidget();
 	Rectangle trim =  renderer.computeTrim(TabFolderRenderer.PART_BODY, SWT.NONE, x, y, width, height);
 	Point size = new Point(width, height);
@@ -761,7 +760,7 @@ private void notifyItemCountChange() {
 }
 
 void createItem(TabItem item, int index) {
-	if (0 > index || index > getItemCount ())SWT.error (SWT.ERROR_INVALID_RANGE);
+	if (0 > index || index > getItemCount()) SWT.error(SWT.ERROR_INVALID_RANGE);
 	item.parent = this;
 	TabItem[] newItems = new TabItem[items.length + 1];
 	System.arraycopy(items, 0, newItems, 0, index);
@@ -858,6 +857,7 @@ public boolean getBorderVisible() {
 	checkWidget();
 	return borderVisible;
 }
+
 ToolBar getChevron() {
 	if (chevronTb == null) {
 		chevronTb = new ToolBar(this, SWT.FLAT);
@@ -871,6 +871,7 @@ ToolBar getChevron() {
 	}
 	return chevronTb;
 }
+
 /**
  * Returns <code>true</code> if the chevron button
  * is visible when necessary.
@@ -925,10 +926,10 @@ public TabItem getItem(int index) {
 	 * called from a thread which is different from one that created the widget.
 	 */
 	//checkWidget();
-	if (index  < 0 || index >= items.length)
-		SWT.error(SWT.ERROR_INVALID_RANGE);
+	if (index  < 0 || index >= items.length) SWT.error(SWT.ERROR_INVALID_RANGE);
 	return items [index];
 }
+
 /**
  * Gets the item at a point in the widget.
  *
@@ -958,6 +959,7 @@ public TabItem getItem(Point pt) {
 	}
 	return null;
 }
+
 /**
  * Return the number of tabs in the folder.
  *
@@ -972,6 +974,7 @@ public int getItemCount(){
 	//checkWidget();
 	return items.length;
 }
+
 /**
  * Return the tab items.
  *
@@ -992,7 +995,8 @@ public TabItem[] getItems() {
 	System.arraycopy(items, 0, tabItems, 0, items.length);
 	return tabItems;
 }
-int getLeftItemEdge (GC gc, int part){
+
+int getLeftItemEdge(GC gc, int part){
 	Rectangle trim = renderer.computeTrim(part, SWT.NONE, 0, 0, 0, 0);
 	int x = -trim.x;
 	int width = 0;
@@ -1005,28 +1009,30 @@ int getLeftItemEdge (GC gc, int part){
 	x += width;
 	return Math.max(0, x);
 }
+
 /*
  * Return the lowercase of the first non-'&' character following
  * an '&' character in the given string. If there are no '&'
  * characters in the given string, return '\0'.
  */
-char _findMnemonic (String string) {
+char _findMnemonic(String string) {
 	if (string == null) return '\0';
 	int index = 0;
 	int length = string.length ();
 	do {
-		while (index < length && string.charAt (index) != '&') index++;
+		while (index < length && string.charAt(index) != '&') index++;
 		if (++index >= length) return '\0';
-		if (string.charAt (index) != '&') return Character.toLowerCase (string.charAt (index));
+		if (string.charAt(index) != '&') return Character.toLowerCase(string.charAt(index));
 		index++;
 	} while (index < length);
 	return '\0';
 }
-String stripMnemonic (String string) {
+
+String stripMnemonic(String string) {
 	int index = 0;
-	int length = string.length ();
+	int length = string.length();
 	do {
-		while ((index < length) && (string.charAt (index) != '&')) index++;
+		while ((index < length) && (string.charAt(index) != '&')) index++;
 		if (++index >= length) return string;
 		if (string.charAt (index) != '&') {
 			return string.substring(0, index-1) + string.substring(index, length);
@@ -1051,6 +1057,7 @@ public boolean getMinimized() {
 	checkWidget();
 	return minimized;
 }
+
 /**
  * Returns <code>true</code> if the minimize button
  * is visible.
@@ -1068,6 +1075,7 @@ public boolean getMinimizeVisible() {
 	checkWidget();
 	return showMin;
 }
+
 /**
  * Returns the number of characters that will
  * appear in a fully compressed tab.
@@ -1097,6 +1105,7 @@ public boolean getMaximized() {
 	checkWidget();
 	return maximized;
 }
+
 /**
  * Returns <code>true</code> if the maximize button
  * is visible.
@@ -1114,6 +1123,7 @@ public boolean getMaximizeVisible() {
 	checkWidget();
 	return showMax;
 }
+
 /**
  * Returns <code>true</code> if the receiver displays most
  * recently used tabs and <code>false</code> otherwise.
@@ -1147,6 +1157,7 @@ public boolean getMRUVisible() {
 	checkWidget();
 	return mru;
 }
+
 /**
  * Returns the receiver's renderer.
  *
@@ -1166,7 +1177,8 @@ public TabFolderRenderer getRenderer() {
 	checkWidget();
 	return renderer;
 }
-int getRightItemEdge (GC gc){
+
+int getRightItemEdge(GC gc){
 	Rectangle trim = renderer.computeTrim(TabFolderRenderer.PART_BORDER, SWT.NONE, 0, 0, 0, 0);
 	int x = getSize().x - (trim.width + trim.x);
 	int width = 0;
@@ -1181,6 +1193,7 @@ int getRightItemEdge (GC gc){
 	x -= width;
 	return Math.max(0, x);
 }
+
 /**
  * Return the selected tab item, or null if there is no selection.
  *
@@ -1204,6 +1217,7 @@ public TabItem[] getSelection() {
 
 	return selected;
 }
+
 /**
  * Returns the receiver's selection background color.
  *
@@ -1220,6 +1234,7 @@ public Color getSelectionBackground() {
 	checkWidget();
 	return selectionBackground;
 }
+
 /**
  * Returns the receiver's selection foreground color.
  *
@@ -1236,6 +1251,7 @@ public Color getSelectionForeground() {
 	checkWidget();
 	return selectionForeground;
 }
+
 /**
  * Return the index of the selected tab item, or -1 if there
  * is no selection.
@@ -1255,6 +1271,7 @@ public int getSelectionIndex() {
 	//checkWidget();
 	return selectedIndex;
 }
+
 /**
  * Returns <code>true</code> if the CTabFolder is rendered
  * with a simple, traditional shape.
@@ -1267,6 +1284,7 @@ public boolean getSimple() {
 	checkWidget();
 	return simple;
 }
+
 /**
  * Returns <code>true</code> if the CTabFolder only displays the selected tab
  * and <code>false</code> if the CTabFolder displays multiple tabs.
@@ -1292,6 +1310,7 @@ public int getStyle() {
 	if (showClose) style |= SWT.CLOSE;
 	return style;
 }
+
 /**
  * Returns the height of the tab
  *
@@ -1307,6 +1326,7 @@ public int getTabHeight(){
 	if (fixedTabHeight != SWT.DEFAULT) return fixedTabHeight;
 	return tabHeight - 1; // -1 for line drawn across top of tab //TODO: replace w/ computeTrim of tab area?
 }
+
 /**
  * Returns the position of the tab.  Possible values are SWT.TOP or SWT.BOTTOM.
  *
@@ -1321,6 +1341,7 @@ public int getTabPosition(){
 	checkWidget();
 	return onBottom ? SWT.BOTTOM : SWT.TOP;
 }
+
 /**
  * Returns the control in the top right corner of the tab folder.
  * Typically this is a close button or a composite with a menu and close button.
@@ -1338,6 +1359,7 @@ public Control getTopRight() {
 	checkWidget();
 	return topRight;
 }
+
 /**
  * Returns the alignment of the top right control.
  *
@@ -1355,6 +1377,7 @@ public int getTopRightAlignment() {
 	checkWidget();
 	return topRightAlignment;
 }
+
 /**
  * Returns <code>true</code> if the close button appears
  * when the user hovers over an unselected tabs.
@@ -1379,6 +1402,7 @@ public boolean getUnselectedImageVisible() {
 	checkWidget();
 	return showUnselectedImage;
 }
+
 /**
  * Returns <code>true</code> if an image appears
  * in selected tabs.
@@ -1391,6 +1415,7 @@ public boolean getSelectedImageVisible() {
 	checkWidget();
 	return showSelectedImage;
 }
+
 /**
  * Return the index of the specified tab or -1 if the tab is not
  * in the receiver.
@@ -1410,14 +1435,13 @@ public boolean getSelectedImageVisible() {
  */
 public int indexOf(TabItem item) {
 	checkWidget();
-	if (item == null) {
-		SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	}
+	if (item == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	for (int i = 0; i < items.length; i++) {
 		if (items[i] == item) return i;
 	}
 	return -1;
 }
+
 void initAccessible() {
 	final Accessible accessible = getAccessible();
 	accessible.addAccessibleListener(new AccessibleAdapter() {
@@ -1456,12 +1480,12 @@ void initAccessible() {
 				if (text != null) {
 					char mnemonic = _findMnemonic(text);
 					if (mnemonic != '\0') {
-						shortcut = SWT.getMessage ("SWT_Page_Mnemonic", new Object[] {Character.valueOf(mnemonic)}); //$NON-NLS-1$
+						shortcut = SWT.getMessage("SWT_Page_Mnemonic", new Object[] {Character.valueOf(mnemonic)}); //$NON-NLS-1$
 					}
 				}
 			}
 			if (childID == ACC.CHILDID_SELF) {
-				shortcut = SWT.getMessage ("SWT_SwitchPage_Shortcut"); //$NON-NLS-1$
+				shortcut = SWT.getMessage("SWT_SwitchPage_Shortcut"); //$NON-NLS-1$
 			}
 			e.result = shortcut;
 		}
@@ -1525,7 +1549,7 @@ void initAccessible() {
 			String action = null;
 			int childID = e.childID;
 			if (childID >= 0 && childID < items.length) {
-				action = SWT.getMessage ("SWT_Switch"); //$NON-NLS-1$
+				action = SWT.getMessage("SWT_Switch"); //$NON-NLS-1$
 			}
 			e.result = action;
 		}
@@ -1624,6 +1648,7 @@ void initAccessibleMinMaxTb() {
 		}
 	});
 }
+
 void initAccessibleChevronTb() {
 	chevronTb.getAccessible().addAccessibleListener(new AccessibleAdapter() {
 		@Override
@@ -1636,7 +1661,8 @@ void initAccessibleChevronTb() {
 		}
 	});
 }
-void onKeyDown (Event event) {
+
+void onKeyDown(Event event) {
 	runUpdate();
 	switch (event.keyCode) {
 		case SWT.ARROW_LEFT:
@@ -1683,10 +1709,11 @@ void onKeyDown (Event event) {
 				}
 			}
 			if (index < 0 || index >= count) return;
-			setSelection (index, true);
+			setSelection(index, true);
 			forceFocus();
 	}
 }
+
 void onDispose(Event event) {
 	removeListener(SWT.Dispose, listener);
 	notifyListeners(SWT.Dispose, event);
@@ -1754,6 +1781,7 @@ void onDispose(Event event) {
 	if (folderListeners.length != 0) folderListeners = new TabFolder2Listener[0];
 	if (tabListeners.length != 0) tabListeners = new TabFolderListener[0];
 }
+
 void onDragDetect(Event event) {
 	boolean consume = false;
 	for (TabItem item : items) {
@@ -1766,6 +1794,7 @@ void onDragDetect(Event event) {
 		event.type = SWT.None;
 	}
 }
+
 void onFocus(Event event) {
 	checkWidget();
 	if (selectedIndex >= 0) {
@@ -1774,13 +1803,14 @@ void onFocus(Event event) {
 		setSelection(0, true);
 	}
 }
-boolean onMnemonic (Event event, boolean doit) {
+
+boolean onMnemonic(Event event, boolean doit) {
 	char key = event.character;
 	for (int i = 0; i < items.length; i++) {
 		if (items[i] != null) {
-			char mnemonic = _findMnemonic (items[i].getText ());
+			char mnemonic = _findMnemonic(items[i].getText());
 			if (mnemonic != '\0') {
-				if (Character.toLowerCase (key) == mnemonic) {
+				if (Character.toLowerCase(key) == mnemonic) {
 					if (doit) {
 						setSelection(i, true);
 						forceFocus();
@@ -1792,6 +1822,7 @@ boolean onMnemonic (Event event, boolean doit) {
 	}
 	return false;
 }
+
 void onMenuDetect(Event event) {
 	if (event.detail == SWT.MENU_KEYBOARD) {
 		if (selectedIndex != -1) {
@@ -1809,6 +1840,7 @@ void onMenuDetect(Event event) {
 		}
 	}
 }
+
 void onMouseDoubleClick(Event event) {
 	if (event.button != 1 ||
 		(event.stateMask & SWT.BUTTON2) != 0 ||
@@ -1819,6 +1851,7 @@ void onMouseDoubleClick(Event event) {
 		notifyListeners(SWT.DefaultSelection, e);
 	}
 }
+
 void onMouse(Event event) {
 	if( isDisposed() ) {
 		return;
@@ -2023,6 +2056,7 @@ void onMouse(Event event) {
 		}
 	}
 }
+
 void onPageTraversal(Event event) {
 	int count = items.length;
 	if (count == 0) return;
@@ -2066,8 +2100,9 @@ void onPageTraversal(Event event) {
 			}
 		}
 	}
-	setSelection (index, true);
+	setSelection(index, true);
 }
+
 void onPaint(Event event) {
 	if (inDispose) return;
 
@@ -2109,6 +2144,7 @@ void onResize(Event event) {
 	}
 	oldSize = size;
 }
+
 void onSelection(Event event) {
 	if (hovering) {
 		hovering = false;
@@ -2152,7 +2188,8 @@ void onSelection(Event event) {
 		}
 	}
 }
-void onTraverse (Event event) {
+
+void onTraverse(Event event) {
 	if (ignoreTraverse) return;
 	runUpdate();
 	switch (event.detail) {
@@ -2189,6 +2226,7 @@ void onTraverse (Event event) {
 			break;
 	}
 }
+
 void redrawTabs() {
 	Point size = getSize();
 	Rectangle trim = renderer.computeTrim(TabFolderRenderer.PART_BODY, SWT.NONE, 0, 0, 0, 0);
@@ -2199,6 +2237,7 @@ void redrawTabs() {
 		redraw(0, 0, size.x, -trim.y - marginHeight + 1, false);
 	}
 }
+
 /**
  * Removes the listener.
  *
@@ -2219,7 +2258,7 @@ void redrawTabs() {
  */
 public void removeCTabFolder2Listener(TabFolder2Listener listener) {
 	checkWidget();
-	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (folderListeners.length == 0) return;
 	int index = -1;
 	for (int i = 0; i < folderListeners.length; i++) {
@@ -2238,6 +2277,7 @@ public void removeCTabFolder2Listener(TabFolder2Listener listener) {
 	System.arraycopy(folderListeners, index + 1, newTabListeners, index, folderListeners.length - index - 1);
 	folderListeners = newTabListeners;
 }
+
 /**
  * Removes the listener.
  *
@@ -2257,7 +2297,7 @@ public void removeCTabFolder2Listener(TabFolder2Listener listener) {
 @Deprecated
 public void removeCTabFolderListener(TabFolderListener listener) {
 	checkWidget();
-	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (tabListeners.length == 0) return;
 	int index = -1;
 	for (int i = 0; i < tabListeners.length; i++) {
@@ -2276,6 +2316,7 @@ public void removeCTabFolderListener(TabFolderListener listener) {
 	System.arraycopy(tabListeners, index + 1, newTabListeners, index, tabListeners.length - index - 1);
 	tabListeners = newTabListeners;
 }
+
 /**
  * Removes the listener from the collection of listeners who will
  * be notified when the user changes the receiver's selection.
@@ -2295,9 +2336,7 @@ public void removeCTabFolderListener(TabFolderListener listener) {
  */
 public void removeSelectionListener(SelectionListener listener) {
 	checkWidget();
-	if (listener == null) {
-		SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	}
+	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	removeTypedListener(SWT.Selection, listener);
 	removeTypedListener(SWT.DefaultSelection, listener);
 }
@@ -2311,12 +2350,13 @@ public void reskin(int flags) {
 }
 
 @Override
-public void setBackground (Color color) {
+public void setBackground(Color color) {
 	super.setBackground(color);
 	renderer.createAntialiasColors(); //TODO: need better caching strategy
 	updateBkImages(true);
 	redraw();
 }
+
 /**
  * Specify a gradient of colors to be drawn in the background of the unselected tabs.
  * For example to draw a gradient that varies from dark blue to blue and then to
@@ -2347,6 +2387,7 @@ public void setBackground (Color color) {
 public void setBackground(Color[] colors, int[] percents) {
 	setBackground(colors, percents, false);
 }
+
 /**
  * Specify a gradient of colors to be drawn in the background of the unselected tab.
  * For example to draw a vertical gradient that varies from dark blue to blue and then to
@@ -2439,12 +2480,14 @@ public void setBackground(Color[] colors, int[] percents, boolean vertical) {
 	// Refresh with the new settings
 	redraw();
 }
+
 @Override
 public void setBackgroundImage(Image image) {
 		super.setBackgroundImage(image);
 		renderer.createAntialiasColors(); //TODO: need better caching strategy
 		redraw();
 }
+
 /**
  * Toggle the visibility of the border
  *
@@ -2624,9 +2667,10 @@ private void updateChevronImage(boolean styleChange) {
 	chevronItem.setImage(chevronImage);
 	chevronCount = newCount;
 }
+
 @Override
-public boolean setFocus () {
-	checkWidget ();
+public boolean setFocus() {
+	checkWidget();
 
 	/*
 	* Feature in SWT.  When a new tab item is selected
@@ -2637,23 +2681,25 @@ public boolean setFocus () {
 	* The fix is to try to set focus on the first tab item
 	* if fixFocus() is called.
 	*/
-	Control focusControl = getDisplay().getFocusControl ();
-	boolean fixFocus = isAncestor (focusControl);
+	Control focusControl = getDisplay().getFocusControl();
+	boolean fixFocus = isAncestor(focusControl);
 	if (fixFocus && getSelection() != null) {
 		TabItem item = getSelection()[0];
 		if (item != null) {
-			if (item.setFocus ()) return true;
+			if (item.setFocus()) return true;
 		}
 	}
-	return super.setFocus ();
+	return super.setFocus();
 }
+
 /* Copy of isFocusAncestor from Control. */
-boolean isAncestor (Control control) {
+boolean isAncestor(Control control) {
 	while (control != null && control != this && !(control instanceof Shell)) {
 		control = control.getParent();
 	}
 	return control == this;
 }
+
 @Override
 public void setFont(Font font) {
 	checkWidget();
@@ -2667,8 +2713,9 @@ public void setFont(Font font) {
 	updateChevronImage(true);
 	updateFolder(REDRAW);
 }
+
 @Override
-public void setForeground (Color color) {
+public void setForeground(Color color) {
 	super.setForeground(color);
 	// Chevron painting is cached as image and only recreated if number of hidden tabs changed.
 	// To apply the new foreground color the image must be recreated with new foreground color.
@@ -2678,6 +2725,7 @@ public void setForeground (Color color) {
 	updateMinImage();
 	redraw();
 }
+
 /**
  * Display an insert marker before or after the specified tab item.
  *
@@ -2695,6 +2743,7 @@ public void setForeground (Color color) {
 public void setInsertMark(TabItem item, boolean after) {
 	checkWidget();
 }
+
 /**
  * Display an insert marker before or after the specified tab item.
  *
@@ -2719,6 +2768,7 @@ public void setInsertMark(int index, boolean after) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 }
+
 boolean setItemLocation(GC gc) {
 	boolean changed = false;
 	if (items.length == 0) return false;
@@ -2783,6 +2833,7 @@ boolean setItemLocation(GC gc) {
 	}
 	return changed;
 }
+
 /**
  * Reorder the items of the receiver.
  * @param indices an array containing the new indices for all items
@@ -2798,17 +2849,17 @@ boolean setItemLocation(GC gc) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-/*public*/ void setItemOrder (int[] indices) {
+/*public*/ void setItemOrder(int[] indices) {
 	checkWidget();
-	if (indices == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	if (indices.length != items.length) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	if (indices == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (indices.length != items.length) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	int newSelectedIndex = -1;
 	boolean[] seen = new boolean[items.length];
 	TabItem[] temp = new TabItem[items.length];
 	for (int i=0; i<indices.length; i++) {
 		int index = indices[i];
-		if (!(0 <= index && index < items.length)) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
-		if (seen[index]) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+		if (!(0 <= index && index < items.length)) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		if (seen[index]) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		seen[index] = true;
 		if (index == selectedIndex) newSelectedIndex = i;
 		temp[i] = items[index];
@@ -2817,6 +2868,7 @@ boolean setItemLocation(GC gc) {
 	selectedIndex = newSelectedIndex;
 	updateFolder(REDRAW);
 }
+
 boolean setItemSize(GC gc) {
 	boolean changed = false;
 	if (isDisposed()) return changed;
@@ -2935,6 +2987,7 @@ boolean setItemSize(GC gc) {
 	}
 	return changed;
 }
+
 /**
  * Marks the receiver's maximize button as visible if the argument is <code>true</code>,
  * and marks it invisible otherwise.
@@ -2955,6 +3008,7 @@ public void setMaximizeVisible(boolean visible) {
 	showMax = visible;
 	updateFolder(UPDATE_TAB_HEIGHT | REDRAW);
 }
+
 /**
  * Sets the layout which is associated with the receiver to be
  * the argument which may be null.
@@ -2971,10 +3025,10 @@ public void setMaximizeVisible(boolean visible) {
  * </ul>
  */
 @Override
-public void setLayout (Layout layout) {
+public void setLayout(Layout layout) {
 	checkWidget();
-	return;
 }
+
 /**
  * Sets the maximized state of the receiver.
  *
@@ -2988,7 +3042,7 @@ public void setLayout (Layout layout) {
  * @since 3.0
  */
 public void setMaximized(boolean maximize) {
-	checkWidget ();
+	checkWidget();
 	if (this.maximized == maximize) return;
 	if (maximize && this.minimized) setMinimized(false);
 	this.maximized = maximize;
@@ -2999,6 +3053,7 @@ public void setMaximized(boolean maximize) {
 		maxItem.setToolTipText(maximized ? SWT.getMessage("SWT_Restore") : SWT.getMessage("SWT_Maximize")); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 }
+
 /**
  * Marks the receiver's minimize button as visible if the argument is <code>true</code>,
  * and marks it invisible otherwise.
@@ -3019,6 +3074,7 @@ public void setMinimizeVisible(boolean visible) {
 	showMin = visible;
 	updateFolder(UPDATE_TAB_HEIGHT | REDRAW);
 }
+
 /**
  * Sets the minimized state of the receiver.
  *
@@ -3032,7 +3088,7 @@ public void setMinimizeVisible(boolean visible) {
  * @since 3.0
  */
 public void setMinimized(boolean minimize) {
-	checkWidget ();
+	checkWidget();
 	if (this.minimized == minimize) return;
 	if (minimize && this.maximized) setMaximized(false);
 	this.minimized = minimize;
@@ -3059,7 +3115,7 @@ public void setMinimized(boolean minimize) {
  * @since 3.0
  */
 public void setMinimumCharacters(int count) {
-	checkWidget ();
+	checkWidget();
 	if (count < 0) SWT.error(SWT.ERROR_INVALID_RANGE);
 	if (minChars == count) return;
 	minChars = count;
@@ -3109,6 +3165,7 @@ public void setMRUVisible(boolean show) {
 		updateFolder(REDRAW_TABS);
 	}
 }
+
 /**
  * Sets the renderer which is associated with the receiver to be
  * the argument which may be null. In the case of null, the default
@@ -3135,6 +3192,7 @@ public void setRenderer(TabFolderRenderer renderer) {
 	this.renderer = renderer;
 	updateFolder(REDRAW);
 }
+
 /**
  * Set the selection to the tab at the specified item.
  *
@@ -3155,6 +3213,7 @@ public void setSelection(TabItem item) {
 	int index = indexOf(item);
 	setSelection(index);
 }
+
 /**
  * Set the selection to the tab at the specified index.
  *
@@ -3211,6 +3270,7 @@ void setSelection(int index, boolean notify) {
 		notifyListeners(SWT.Selection, event);
 	}
 }
+
 /**
  * Sets the receiver's selection background color to the color specified
  * by the argument, or to the default system color for the control
@@ -3228,7 +3288,7 @@ void setSelection(int index, boolean notify) {
  *
  * @since 3.0
  */
-public void setSelectionBackground (Color color) {
+public void setSelectionBackground(Color color) {
 	if (inDispose) return;
 	checkWidget();
 	setSelectionHighlightGradientColor(null);
@@ -3238,6 +3298,7 @@ public void setSelectionBackground (Color color) {
 	renderer.createAntialiasColors(); //TODO:  need better caching strategy
 	if (selectedIndex > -1) redraw();
 }
+
 /**
  * Specify a gradient of colours to be draw in the background of the selected tab.
  * For example to draw a gradient that varies from dark blue to blue and then to
@@ -3266,6 +3327,7 @@ public void setSelectionBackground (Color color) {
 public void setSelectionBackground(Color[] colors, int[] percents) {
 	setSelectionBackground(colors, percents, false);
 }
+
 /**
  * Specify a gradient of colours to be draw in the background of the selected tab.
  * For example to draw a vertical gradient that varies from dark blue to blue and then to
@@ -3415,6 +3477,7 @@ public void setSelectionBackground(Image image) {
 	renderer.createAntialiasColors(); //TODO:  need better caching strategy
 	if (selectedIndex > -1) redraw();
 }
+
 /**
  * Set the foreground color of the selected tab.
  *
@@ -3425,7 +3488,7 @@ public void setSelectionBackground(Image image) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public void setSelectionForeground (Color color) {
+public void setSelectionForeground(Color color) {
 	checkWidget();
 	if (selectionForeground == color) return;
 	if (color == null) color = getDisplay().getSystemColor(SELECTION_FOREGROUND);
@@ -3448,9 +3511,7 @@ public void setSelectionForeground (Color color) {
  */
 public void setSelectionBarThickness(int thickness) {
 	checkWidget();
-	if (thickness < 0) {
-		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	}
+	if (thickness < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	this.selectionHighlightBarThickness = thickness;
 }
 
@@ -3473,6 +3534,7 @@ public void setSimple(boolean simple) {
 		updateFolder(UPDATE_TAB_HEIGHT | REDRAW);
 	}
 }
+
 /**
  * Sets the number of tabs that the CTabFolder should display
  *
@@ -3520,12 +3582,11 @@ int getControlY(Point size, Rectangle[] rects, int borderBottom, int borderTop, 
  */
 public void setTabHeight(int height) {
 	checkWidget();
-	if (height < -1) {
-		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	}
+	if (height < -1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	fixedTabHeight = height;
 	updateFolder(UPDATE_TAB_HEIGHT);
 }
+
 /**
  * Specify whether the tabs should appear along the top of the folder
  * or along the bottom of the folder.
@@ -3550,6 +3611,7 @@ public void setTabPosition(int position) {
 		updateFolder(REDRAW);
 	}
 }
+
 /**
  * Set the control that appears in the top right corner of the tab folder.
  * Typically this is a close button or a composite with a Menu and close button.
@@ -3569,6 +3631,7 @@ public void setTabPosition(int position) {
 public void setTopRight(Control control) {
 	setTopRight(control, SWT.RIGHT);
 }
+
 /**
  * Set the control that appears in the top right corner of the tab folder.
  * Typically this is a close button or a composite with a Menu and close button.
@@ -3612,7 +3675,6 @@ public void setTopRight(Control control, int alignment) {
 	updateFolder(UPDATE_TAB_HEIGHT | REDRAW);
 }
 
-
 /**
  * Specify whether the close button appears
  * when the user hovers over an unselected tabs.
@@ -3633,6 +3695,7 @@ public void setUnselectedCloseVisible(boolean visible) {
 	showUnselectedClose = visible;
 	updateFolder(REDRAW);
 }
+
 /**
  * Specify whether the image appears on unselected tabs.
  *
@@ -3652,6 +3715,7 @@ public void setUnselectedImageVisible(boolean visible) {
 	showUnselectedImage = visible;
 	updateFolder(REDRAW);
 }
+
 /**
  * Specify whether the image appears on selected tabs.
  *
@@ -3671,6 +3735,7 @@ public void setSelectedImageVisible(boolean visible) {
 	showSelectedImage = visible;
 	updateFolder(REDRAW);
 }
+
 /**
  * Shows the item.  If the item is already showing in the receiver,
  * this method simply returns.  Otherwise, the items are scrolled until
@@ -3693,7 +3758,7 @@ public void setSelectedImageVisible(boolean visible) {
  */
 public void showItem(TabItem item) {
 	checkWidget();
-	if (item == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	if (item == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	int index = indexOf(item);
 	if (index == -1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -3715,6 +3780,7 @@ public void showItem(TabItem item) {
 	if (item.showing) return;
 	updateFolder(REDRAW_TABS);
 }
+
 void showList (Rectangle rect) {
 	if (items.length == 0 || !showChevron) return;
 	if (showMenu == null || showMenu.isDisposed()) {
@@ -3765,14 +3831,14 @@ void showList (Rectangle rect) {
  *
  * @since 2.0
  */
-public void showSelection () {
-	checkWidget ();
+public void showSelection() {
+	checkWidget();
 	if (selectedIndex != -1) {
 		showItem(getSelection()[0]);
 	}
 }
 
-void _setToolTipText (int x, int y) {
+void _setToolTipText(int x, int y) {
 	String oldTip = getToolTipText();
 	String newTip = _getToolTip(x, y);
 	if (newTip == null || !newTip.equals(oldTip)) {
@@ -3784,7 +3850,7 @@ boolean updateItems() {
 	return updateItems(selectedIndex);
 }
 
-boolean updateItems (int showIndex) {
+boolean updateItems(int showIndex) {
 	GC gc = new GC(this);
 	if (!single && !mru && showIndex != -1) {
 		// make sure selected item will be showing
@@ -3868,6 +3934,7 @@ boolean updateItems (int showIndex) {
 	gc.dispose();
 	return changed;
 }
+
 boolean updateTabHeight(boolean force){
 	int oldHeight = tabHeight;
 	GC gc = new GC(this);
@@ -3877,7 +3944,7 @@ boolean updateTabHeight(boolean force){
 		for (int i = 0; i < controls.length; i++) {
 			if ((controlAlignments[i] & SWT.WRAP) == 0 && !controls[i].isDisposed() && controls[i].getVisible()) {
 				int topHeight = controls[i].computeSize(SWT.DEFAULT, SWT.DEFAULT).y;
-				topHeight +=  renderer.computeTrim(TabFolderRenderer.PART_HEADER, SWT.NONE, 0,0,0,0).height + 1;
+				topHeight +=  renderer.computeTrim(TabFolderRenderer.PART_HEADER, SWT.NONE, 0, 0, 0, 0).height + 1;
 				tabHeight = Math.max(topHeight, tabHeight);
 			}
 		}
@@ -3887,7 +3954,7 @@ boolean updateTabHeight(boolean force){
 	return true;
 }
 
-void updateFolder (int flags) {
+void updateFolder(int flags) {
 	updateFlags |= flags;
 	if (updateRun != null) return;
 	updateRun = () -> {
@@ -3968,6 +4035,7 @@ void updateBkImages(boolean colorChanged) {
 
 	}
 }
+
 String _getToolTip(int x, int y) {
 	TabItem item = getItem(new Point(x, y));
 	if (item == null) return null;
@@ -3977,6 +4045,7 @@ String _getToolTip(int x, int y) {
 	}
 	return item.getToolTipText();
 }
+
 /**
 * Set a control that can appear to the left or to the right of the folder tabs.
 * This method can also be used instead of #setTopRight(Control). To remove a tab
@@ -4050,10 +4119,10 @@ void addTabControl(Control control, int flags, int index, boolean update) {
 		index = length;
 		if (chevronTb != null && control != chevronTb) index--;
 	}
-	System.arraycopy (controls, index, controls, index + 1, length - index);
-	System.arraycopy (controlAlignments, index, controlAlignments, index + 1, length - index);
-	System.arraycopy (controlRects, index, controlRects, index + 1, length - index);
-	System.arraycopy (controlBkImages, index, controlBkImages, index + 1, length - index);
+	System.arraycopy(controls, index, controls, index + 1, length - index);
+	System.arraycopy(controlAlignments, index, controlAlignments, index + 1, length - index);
+	System.arraycopy(controlRects, index, controlRects, index + 1, length - index);
+	System.arraycopy(controlBkImages, index, controlBkImages, index + 1, length - index);
 	controls[index] = control;
 	controlAlignments[index] = flags;
 	controlRects[index] = new Rectangle(0, 0, 0, 0);
@@ -4073,12 +4142,12 @@ void addTabControl(Control control, int flags, int index, boolean update) {
 *    <li>ERROR_INVALID_ARGUMENT - if the control is not a child of this CTabFolder</li>
 * </ul>
 */
-/*public*/ void removeTabControl (Control control) {
+/*public*/ void removeTabControl(Control control) {
 	checkWidget();
-	removeTabControl (control, true);
+	removeTabControl(control, true);
 }
 
-void removeTabControl (Control control, boolean update) {
+void removeTabControl(Control control, boolean update) {
 	if (control != null && control.getParent() != this) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
@@ -4093,7 +4162,7 @@ void removeTabControl (Control control, boolean update) {
 
 	if (!control.isDisposed()) {
 		control.removeListener(SWT.Resize, listener);
-		control.setBackground (null);
+		control.setBackground(null);
 		control.setBackgroundImage((Image) null);
 		if (control instanceof Composite) ((Composite) control).setBackgroundMode(SWT.INHERIT_NONE);
 	}
@@ -4130,7 +4199,7 @@ void removeTabControl (Control control, boolean update) {
 	}
 }
 
-int getWrappedHeight (Point size) {
+int getWrappedHeight(Point size) {
 	boolean[][] positions = new boolean[1][];
 	Rectangle[] rects = computeControlBounds(size, positions);
 	int minY = Integer.MAX_VALUE, maxY = 0, wrapHeight = 0;
@@ -4162,9 +4231,9 @@ int getWrappedHeight (Point size) {
 	updateFolder(UPDATE_TAB_HEIGHT | REDRAW);
 }
 
-	boolean shouldHighlight() {
-		return this.highlight && highlightEnabled;
-	}
+boolean shouldHighlight() {
+	return this.highlight && highlightEnabled;
+}
 
 /**
  * Sets whether the selected tab is rendered as highlighted.
@@ -4210,6 +4279,7 @@ public boolean getHighlightEnabled() {
 	checkWidget();
 	return highlightEnabled;
 }
+
 /**
  * Update the cached minimize button image when color is changed.
  */
@@ -4220,6 +4290,7 @@ private void updateMinImage() {
 		minItem.setImage(minImage);
 	}
 }
+
 /**
  * Update the cached maximize button image when color is changed.
  */
