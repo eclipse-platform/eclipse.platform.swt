@@ -434,7 +434,7 @@ private void createHandleForCalendar() {
 			flags |= GTK.GTK_CALENDAR_SHOW_WEEK_NUMBERS;
 		}
 		GTK3.gtk_calendar_set_display_options(handle, flags);
-		GTK.gtk_widget_show(handle);
+		gtk_widget_show(handle);
 	}
 }
 
@@ -457,8 +457,8 @@ private void createHandleForDateWithDropDown () {
 
 		GTK3.gtk_container_add(fixedHandle, handle);
 		GTK3.gtk_container_add(handle, textEntryHandle);
-		GTK.gtk_widget_show(containerHandle);
-		GTK.gtk_widget_show(textEntryHandle);
+		gtk_widget_show(containerHandle);
+		gtk_widget_show(textEntryHandle);
 
 
 		// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,
@@ -2326,7 +2326,7 @@ void selectAll () {
 
 void hideDateTime () {
 	if (isDate () || isTime ()){
-		GTK.gtk_widget_hide (fixedHandle);
+		gtk_widget_hide (fixedHandle);
 	}
 }
 

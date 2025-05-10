@@ -1660,7 +1660,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	if (fixedHandle != 0 && handle != 0
 			&& getVisible() && !GTK.gtk_widget_get_visible(topHandle) //if SWT State is not HIDDEN, but widget is hidden on GTK side.
 			&& topHandle == fixedHandle && width > 0 && height > 0 && resize) {
-		GTK.gtk_widget_show(topHandle);
+		gtk_widget_show(topHandle);
 	}
 
 	int result = super.setBounds (x, y, width, height, move, resize);
@@ -1823,7 +1823,7 @@ public void setTabList (Control [] tabList) {
 void showWidget () {
 	super.showWidget ();
 	if (socketHandle != 0) {
-		GTK.gtk_widget_show (socketHandle);
+		gtk_widget_show (socketHandle);
 		embeddedHandle = GTK.gtk_socket_get_id (socketHandle);
 	}
 	if (scrolledHandle == 0) fixStyle (handle);

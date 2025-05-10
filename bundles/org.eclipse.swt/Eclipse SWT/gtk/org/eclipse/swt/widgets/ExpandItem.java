@@ -409,7 +409,7 @@ void resizeControl () {
 		 * to be zero, and the widget is never shown during a layout operation, similar to
 		 * Bug 487757. The fix is to show the control before setting any bounds.
 		 */
-		if (visible) GTK.gtk_widget_show(control.topHandle ());
+		if (visible) gtk_widget_show(control.topHandle ());
 		control.setBounds (x, y, width, Math.max (0, height), true, true);
 
 		control.setVisible (visible);
@@ -522,16 +522,16 @@ public void setImage (Image image) {
 		} else {
 			GTK3.gtk_image_set_from_surface(imageHandle, image.surface);
 		}
-		if (text.length () == 0) GTK.gtk_widget_hide (labelHandle);
-		GTK.gtk_widget_show(imageHandle);
+		if (text.length () == 0) gtk_widget_hide (labelHandle);
+		gtk_widget_show(imageHandle);
 	} else {
 		if (GTK.GTK4) {
 			GTK4.gtk_picture_set_paintable(imageHandle, 0);
 		} else {
 			GTK3.gtk_image_set_from_surface(imageHandle, 0);
 		}
-		GTK.gtk_widget_show(labelHandle);
-		GTK.gtk_widget_hide(imageHandle);
+		gtk_widget_show(labelHandle);
+		gtk_widget_hide(imageHandle);
 	}
 }
 
@@ -557,12 +557,12 @@ void showWidget (int index) {
 		GTK4.gtk_box_append(parent.handle, handle);
 		gtk_box_set_child_packing (parent.handle, handle, false, false, 0, GTK.GTK_PACK_START);
 	} else {
-		GTK.gtk_widget_show (handle);
-		GTK.gtk_widget_show (clientHandle);
+		gtk_widget_show (handle);
+		gtk_widget_show (clientHandle);
 		if (labelHandle != 0)
-			GTK.gtk_widget_show (labelHandle);
+			gtk_widget_show (labelHandle);
 		if (boxHandle != 0)
-			GTK.gtk_widget_show (boxHandle);
+			gtk_widget_show (boxHandle);
 		GTK3.gtk_container_add (parent.handle, handle);
 		gtk_box_set_child_packing (parent.handle, handle, false, false, 0, GTK.GTK_PACK_START);
 	}

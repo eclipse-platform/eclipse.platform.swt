@@ -401,8 +401,8 @@ public void setText (String string) {
 @Override
 void showWidget () {
 	super.showWidget ();
-	if (clientHandle != 0) GTK.gtk_widget_show (clientHandle);
-	if (labelHandle != 0) GTK.gtk_widget_show (labelHandle);
+	if (clientHandle != 0) gtk_widget_show (clientHandle);
+	if (labelHandle != 0) gtk_widget_show (labelHandle);
 }
 
 @Override

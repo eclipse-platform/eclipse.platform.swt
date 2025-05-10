@@ -1337,7 +1337,7 @@ void verifyMenuPosition (int itemCount) {
 			 * We need to "show" the menu before fetching the preferred height.
 			 * Note, this does not actually pop-up the menu.
 			 */
-			GTK.gtk_widget_show(handle);
+			gtk_widget_show(handle);
 			/*
 			 * Menus are height-for-width only: use gtk_widget_get_preferred_height()
 			 * instead of gtk_widget_get_preferred_size().

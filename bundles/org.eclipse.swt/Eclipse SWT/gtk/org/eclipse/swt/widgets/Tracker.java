@@ -839,7 +839,7 @@ public boolean open () {
 	Rectangle bounds = display.getBoundsInPixels();
 	GTK3.gtk_window_move (overlay, bounds.x, bounds.y);
 	GTK3.gtk_window_resize (overlay, bounds.width, bounds.height);
-	GTK.gtk_widget_show (overlay);
+	gtk_widget_show (overlay);
 
 	/* Tracker behaves like a Dialog with its own OS event loop. */
 	Display display = this.display;

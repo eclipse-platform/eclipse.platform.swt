@@ -17,6 +17,7 @@ import java.lang.reflect.*;
 import java.util.function.*;
 
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.gtk3.*;
 import org.eclipse.swt.widgets.*;
 
 /**
@@ -76,7 +77,11 @@ public class SyncDialogUtil {
 		if (isNativeDialog) {
 			GTK.gtk_native_dialog_show(handle);
 		} else {
-			GTK.gtk_widget_show(handle);
+			if (GTK.GTK4) {
+				GTK.gtk_widget_set_visible(handle, true);
+			} else {
+				GTK3.gtk_widget_show(handle);
+			}
 		}
 
 		while (!display.isDisposed()) {

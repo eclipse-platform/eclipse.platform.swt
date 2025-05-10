@@ -592,7 +592,7 @@ void resizeHandle (int width, int height) {
 @Override
 void showWidget () {
 	super.showWidget ();
-	if (scrolledHandle != 0) GTK.gtk_widget_show (scrolledHandle);
+	if (scrolledHandle != 0) gtk_widget_show (scrolledHandle);
 }
 
 @Override

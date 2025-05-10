@@ -2340,8 +2340,7 @@ public class GTK extends OS {
 	public static final native void gtk_widget_grab_focus(long widget);
 	/** @param widget cast=(GtkWidget *) */
 	public static final native boolean gtk_widget_has_focus(long widget);
-	/** @param widget cast=(GtkWidget *) */
-	public static final native void gtk_widget_hide(long widget);
+
 	/** @param widget cast=(GtkWidget *) */
 	public static final native boolean gtk_widget_is_focus(long widget);
 	/** @param widget cast=(GtkWidget *) */
@@ -2399,8 +2398,7 @@ public class GTK extends OS {
 	 * @param height cast=(gint)
 	 */
 	public static final native void gtk_widget_set_size_request(long widget, int width, int height);
-	/** @param widget cast=(GtkWidget *) */
-	public static final native void gtk_widget_show(long widget);
+
 	/** @param widget cast=(GtkWidget *) */
 	public static final native boolean gtk_widget_activate(long widget);
 	/** @param widget cast=(GtkWidget *) */

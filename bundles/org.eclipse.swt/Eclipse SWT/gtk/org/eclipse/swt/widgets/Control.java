@@ -1145,10 +1145,10 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 		 */
 		if (!GTK.gtk_widget_get_visible(topHandle))  {
 			Control focusControl = display.getFocusControl();
-			GTK.gtk_widget_show(topHandle);
+			gtk_widget_show(topHandle);
 			gtk_widget_get_preferred_size (topHandle, requisition);
 			gtk_widget_size_allocate(topHandle, allocation, -1);
-			GTK.gtk_widget_hide(topHandle);
+			gtk_widget_hide(topHandle);
 			/* Bug 540002: Showing and hiding widget causes original focused control to loose focus,
 			 * Reset focus to original focused control after dealing with allocation.
 			 */
@@ -1180,7 +1180,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 				}
 			}
 
-			GTK.gtk_widget_hide(topHandle);
+			gtk_widget_hide(topHandle);
 		} else {
 			if ((state & HIDDEN) == 0) {
 				if (!GTK.GTK4) {
@@ -1189,7 +1189,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 					}
 				}
 
-				GTK.gtk_widget_show(topHandle);
+				gtk_widget_show(topHandle);
 			}
 		}
 
@@ -6126,7 +6126,7 @@ public void setVisible (boolean visible) {
 			if (!GTK.GTK4) {
 				if (enableWindow != 0) GDK.gdk_window_show_unraised(enableWindow);
 			}
-			GTK.gtk_widget_show (topHandle);
+			gtk_widget_show (topHandle);
 		}
 	} else {
 		/*
@@ -6151,7 +6151,7 @@ public void setVisible (boolean visible) {
 			if (isDisposed ()) return;
 			GTK.gtk_widget_set_can_focus (topHandle, true);
 		}
-		GTK.gtk_widget_hide (topHandle);
+		gtk_widget_hide (topHandle);
 		if (isDisposed ()) return;
 		if (!GTK.GTK4) {
 			if (enableWindow != 0) GDK.gdk_window_hide(enableWindow);
@@ -6338,9 +6338,9 @@ void showWidget () {
 	} else {
 		GTK3.gtk_container_add(parentHandle, topHandle);
 	}
-	if (handle != 0 && handle != topHandle) GTK.gtk_widget_show (handle);
+	if (handle != 0 && handle != topHandle) gtk_widget_show (handle);
 	if ((state & (ZERO_WIDTH | ZERO_HEIGHT)) == 0) {
-		if (fixedHandle != 0) GTK.gtk_widget_show (fixedHandle);
+		if (fixedHandle != 0) gtk_widget_show (fixedHandle);
 	}
 	if (fixedHandle != 0) fixStyle (fixedHandle);
 }
