@@ -31,7 +31,7 @@ class RegionWin32Tests {
 	public void testRegionMustBeScaledOnHandleOfScaledZoomLevel() {
 		Display display = Display.getDefault();
 
-		int zoom = DPIUtil.getDeviceZoom();
+		int zoom = 100;
 		int scalingFactor = 2;
 
 		Region region = new Region(display);
