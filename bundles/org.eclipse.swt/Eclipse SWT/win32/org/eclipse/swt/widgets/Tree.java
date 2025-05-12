@@ -2811,7 +2811,7 @@ boolean findCell (int x, int y, TreeItem [] item, int [] index, RECT [] cellRect
 						itemRect [0].top = boundsInPixels.y;
 						itemRect [0].bottom = boundsInPixels.y + boundsInPixels.height;
 					} else {
-						itemRect [0] = item [0].getBounds (order [index [0]], true, false, false, false, false, hDC);
+						itemRect [0] = item [0].getBounds (order [index [0]], true, true, false, false, false, hDC);
 					}
 					if (itemRect [0].right > cellRect [0].right) found = true;
 					quit = true;
@@ -7397,6 +7397,8 @@ LRESULT wmNotify (NMHDR hdr, long wParam, long lParam) {
 	if (hdr.hwndFrom == itemToolTipHandle && itemToolTipHandle != 0) {
 		LRESULT result = wmNotifyToolTip (hdr, wParam, lParam);
 		if (result != null) return result;
+	} else if (hdr.code == OS.TTN_SHOW) {
+		return positionTooltip(hdr, wParam, lParam, false);
 	}
 	if (hdr.hwndFrom == hwndHeader && hwndHeader != 0) {
 		LRESULT result = wmNotifyHeader (hdr, wParam, lParam);
@@ -8145,42 +8147,53 @@ LRESULT wmNotifyToolTip (NMHDR hdr, long wParam, long lParam) {
 			return wmNotifyToolTip (nmcd, lParam);
 		}
 		case OS.TTN_SHOW: {
-			LRESULT result = super.wmNotify (hdr, wParam, lParam);
-			if (result != null) return result;
-			int pos = OS.GetMessagePos ();
-			POINT pt = new POINT();
-			OS.POINTSTOPOINT (pt, pos);
-			OS.ScreenToClient (handle, pt);
-			int [] index = new int [1];
-			TreeItem [] item = new TreeItem [1];
-			RECT [] cellRect = new RECT [1], itemRect = new RECT [1];
-			if (findCell (pt.x, pt.y, item, index, cellRect, itemRect)) {
-				RECT toolRect = toolTipRect (itemRect [0]);
-				OS.MapWindowPoints (handle, 0, toolRect, 2);
-				int flags = OS.SWP_NOACTIVATE | OS.SWP_NOZORDER | OS.SWP_NOSIZE;
-				if (isCustomToolTip ()) flags &= ~OS.SWP_NOSIZE;
-				// Retrieve the monitor containing the cursor position, as tool tip placement
-				// must occur on the same monitor to avoid potential infinite loops. When a tool tip
-				// appears on a different monitor than the cursor, the operating system may
-				// attempt to re-scale it based on that monitor's settings. This re-scaling
-				// triggers additional display messages to SWT, creating an infinite loop
-				// of positioning and re-scaling events.
-				// Refer: https://github.com/eclipse-platform/eclipse.platform.swt/issues/557
-				Point cursorLocation = display.getCursorLocation();
-				Rectangle monitorBounds = cursorLocation instanceof MonitorAwarePoint monitorAwarePoint
-						? getContainingMonitorBoundsInMultiZoomCoordinateSystem(monitorAwarePoint)
-						: getContainingMonitorBoundsInSingleZoomCoordinateSystem(cursorLocation);
-				if (monitorBounds == null) {
-					return null;
-				}
-				Rectangle adjustedTooltipBounds = fitTooltipBoundsIntoMonitor(toolRect, monitorBounds);
-				OS.SetWindowPos (itemToolTipHandle, 0, adjustedTooltipBounds.x, adjustedTooltipBounds.y, adjustedTooltipBounds.width, adjustedTooltipBounds.height, flags);
-				return LRESULT.ONE;
-			}
-			return result;
+			return positionTooltip(hdr, wParam, lParam, true);
 		}
 	}
 	return null;
+}
+
+private LRESULT positionTooltip(NMHDR hdr, long wParam, long lParam, boolean managedTooltip) {
+	LRESULT result = super.wmNotify (hdr, wParam, lParam);
+	if (result != null) return result;
+	int flags = OS.SWP_NOACTIVATE | OS.SWP_NOZORDER | OS.SWP_NOSIZE;
+	if (isCustomToolTip () || !managedTooltip) flags &= ~OS.SWP_NOSIZE;
+	int pos = OS.GetMessagePos ();
+	POINT pt = new POINT();
+	OS.POINTSTOPOINT (pt, pos);
+	OS.ScreenToClient (handle, pt);
+	int [] index = new int [1];
+	TreeItem [] item = new TreeItem [1];
+	RECT [] cellRect = new RECT [1], itemRect = new RECT [1];
+	if (findCell (pt.x, pt.y, item, index, cellRect, itemRect)) {
+		RECT toolRect = managedTooltip ? toolTipRect(itemRect [0]) : itemRect [0];
+		OS.MapWindowPoints (handle, 0, toolRect, 2);
+		// Retrieve the monitor containing the cursor position, as tool tip placement
+		// must occur on the same monitor to avoid potential infinite loops. When a tool tip
+		// appears on a different monitor than the cursor, the operating system may
+		// attempt to re-scale it based on that monitor's settings. This re-scaling
+		// triggers additional display messages to SWT, creating an infinite loop
+		// of positioning and re-scaling events.
+		// Refer: https://github.com/eclipse-platform/eclipse.platform.swt/issues/557
+		Point cursorLocation = display.getCursorLocation();
+		Rectangle monitorBounds = cursorLocation instanceof MonitorAwarePoint monitorAwarePoint
+				? getContainingMonitorBoundsInMultiZoomCoordinateSystem(monitorAwarePoint)
+				: getContainingMonitorBoundsInSingleZoomCoordinateSystem(cursorLocation);
+		if (monitorBounds != null) {
+			Rectangle adjustedTooltipBounds = fitTooltipBoundsIntoMonitor(toolRect, monitorBounds);
+			OS.SetWindowPos (hdr.hwndFrom, 0, adjustedTooltipBounds.x, adjustedTooltipBounds.y, adjustedTooltipBounds.width, adjustedTooltipBounds.height, flags);
+			result = LRESULT.ONE;
+		}
+	} else if (!managedTooltip) {
+		// If managedTooltip is false and the cursor is not over the valid part of the
+		// target cell, Windows may still try to display the default tooltip. Since we
+		// can't prevent it from showing at this point, we set its bounds to zero to
+		// effectively hide it.
+		flags |= OS.SWP_NOMOVE;
+		OS.SetWindowPos (hdr.hwndFrom, 0, 0, 0, 0, 0, flags);
+		result = LRESULT.ONE;
+	}
+	return result;
 }
 
 /**
