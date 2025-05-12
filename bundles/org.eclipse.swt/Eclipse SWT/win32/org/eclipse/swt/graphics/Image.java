@@ -1012,7 +1012,7 @@ private void destroyHandles() {
 
 @Override
 void destroyHandlesExcept(Set<Integer> zoomLevels) {
-	destroyHandles(zoom -> !zoomLevels.contains(zoom) || !this.imageProvider.getPreservedZoomLevels().contains(zoom));
+	destroyHandles(zoom -> !zoomLevels.contains(zoom) && !this.imageProvider.getPreservedZoomLevels().contains(zoom));
 }
 
 private void destroyHandles(Predicate<Integer> filter) {
@@ -1929,6 +1929,11 @@ private class ExistingImageHandleProviderWrapper extends AbstractImageProviderWr
 	@Override
 	AbstractImageProviderWrapper createCopy(Image image) {
 		return image.new ExistingImageHandleProviderWrapper(handle, zoomForHandle);
+	}
+
+	@Override
+	public Collection<Integer> getPreservedZoomLevels() {
+		return Collections.singleton(zoomForHandle);
 	}
 }
 
