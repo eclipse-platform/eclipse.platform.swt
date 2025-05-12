@@ -15,7 +15,6 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Pattern;
-import org.eclipse.swt.internal.DPIUtil;
 
 /*
  * This Snippet tests a pattern at multiple zoom levels.
@@ -33,8 +32,8 @@ public class PatternWin32ManualTest {
 	private static Display display = Display.getDefault();
 
 	public static void main (String [] args) {
-		@SuppressWarnings("restriction")
-		int zoom = DPIUtil.getDeviceZoom();
+		Shell shell = new Shell(display);
+		int zoom = shell.getNativeZoom();
 		int scalingFactor = 3;
 		int scaledZoom = zoom * scalingFactor;
 		int width = 400;

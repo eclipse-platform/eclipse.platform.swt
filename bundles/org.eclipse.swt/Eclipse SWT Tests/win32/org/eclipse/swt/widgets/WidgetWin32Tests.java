@@ -32,7 +32,7 @@ class WidgetWin32Tests {
 	public void testWidgetZoomShouldChangeOnZoomLevelChange() {
 		Display display = Display.getDefault();
 		Shell shell = new Shell(display);
-		int zoom = DPIUtil.getDeviceZoom();
+		int zoom = shell.getNativeZoom();
 		int scaledZoom = zoom * 2;
 
 		Button button = new Button(shell, SWT.PUSH);
@@ -49,10 +49,11 @@ class WidgetWin32Tests {
 	@Test
 	public void testButtonPointsAfterZooming() throws NoSuchMethodException, IllegalAccessException {
 		Display display = Display.getDefault();
-		int zoom = DPIUtil.getDeviceZoom();
+		Shell shell = new Shell(display);
+		int zoom = shell.getNativeZoom();
+
 		int scaledZoom = zoom * 2;
 
-		Shell shell = new Shell(display);
 		shell.setBounds(0, 0, 100, 160);
 		shell.setLayout(new FillLayout());
 		shell.pack();
@@ -73,7 +74,8 @@ class WidgetWin32Tests {
 	@Test
 	public void testImagePixelsWithDoubleZoomLevel() {
 		Display display = Display.getDefault();
-		int zoom = DPIUtil.getDeviceZoom();
+		Shell shell = new Shell(display);
+		int zoom = shell.getNativeZoom();
 		int scaledZoom = zoom * 2;
 
 		InputStream inputStream = WidgetWin32Tests.class.getResourceAsStream("folder.png");
@@ -99,10 +101,12 @@ class WidgetWin32Tests {
 	@Test
 	public void testButtonFontAfterZooming() {
 		Display display = Display.getDefault();
-		int zoom = DPIUtil.getDeviceZoom();
+		Shell shell = new Shell(display);
+		int zoom = shell.getNativeZoom();
+
 		int scaledZoom = zoom * 2;
 
-		Shell shell = new Shell(display);
+
 		shell.setBounds(0, 0, 100, 160);
 		shell.setLayout(new FillLayout());
 		shell.pack();
@@ -124,10 +128,11 @@ class WidgetWin32Tests {
 	@Test
 	public void testCoolItemAfterZooming() {
 		Display display = Display.getDefault();
-		int zoom = DPIUtil.getDeviceZoom();
+		Shell shell = new Shell(display);
+		int zoom = shell.getNativeZoom();
 		int scaledZoom = zoom * 2;
 
-		Shell shell = new Shell(display);
+
 		shell.setBounds(0, 0, 100, 160);
 		shell.setLayout(new FillLayout());
 		shell.pack();
@@ -163,10 +168,10 @@ class WidgetWin32Tests {
 	@Test
 	public void testExpandItemAfterZooming() {
 		Display display = Display.getDefault();
-		int zoom = DPIUtil.getDeviceZoom();
+		Shell shell = new Shell(display);
+		int zoom = shell.getNativeZoom();
 		int scaledZoom = zoom * 2;
 
-		Shell shell = new Shell(display);
 		shell.setBounds(0, 0, 100, 160);
 		shell.setLayout(new FillLayout());
 		shell.pack();
@@ -190,10 +195,10 @@ class WidgetWin32Tests {
 	@Test
 	public void testTabFolderSizeAfterZooming() {
 		Display display = Display.getDefault();
-		int zoom = DPIUtil.getDeviceZoom();
+		Shell shell = new Shell(display);
+		int zoom = shell.getNativeZoom();
 		int scaledZoom = zoom * 2;
 
-		Shell shell = new Shell(display);
 		shell.setBounds(0, 0, 100, 160);
 		shell.setLayout(new FillLayout());
 		shell.pack();
@@ -220,10 +225,10 @@ class WidgetWin32Tests {
 	@Test
 	public void testTableAfterZooming() {
 		Display display = Display.getDefault();
-		int zoom = DPIUtil.getDeviceZoom();
-		int scaledZoom = zoom * 2;
 
 		Shell shell = new Shell(display);
+		int zoom = shell.getNativeZoom();
+		int scaledZoom = zoom * 2;
 		shell.setBounds(0, 0, 100, 160);
 		shell.setLayout(new FillLayout());
 		shell.pack();
@@ -258,10 +263,10 @@ class WidgetWin32Tests {
 	@Test
 	public void testTreeAfterZooming() {
 		Display display = Display.getDefault();
-		int zoom = DPIUtil.getDeviceZoom();
+		Shell shell = new Shell(display);
+		int zoom =  shell.getNativeZoom();
 		int scaledZoom = zoom * 2;
 
-		Shell shell = new Shell(display);
 		shell.setBounds(0, 0, 100, 160);
 		shell.setLayout(new FillLayout());
 		shell.pack();
@@ -294,10 +299,10 @@ class WidgetWin32Tests {
 	@Test
 	public void testCaretInStyledTextAfterZooming() {
 		Display display = Display.getDefault();
-		int zoom = DPIUtil.getDeviceZoom();
+		Shell shell = new Shell(display);
+		int zoom = shell.getNativeZoom();
 		int scaledZoom = zoom * 2;
 
-		Shell shell = new Shell(display);
 		shell.setBounds(0, 0, 100, 160);
 		shell.setLayout(new FillLayout());
 		shell.pack();

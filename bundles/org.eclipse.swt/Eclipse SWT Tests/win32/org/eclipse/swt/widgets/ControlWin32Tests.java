@@ -80,7 +80,7 @@ class ControlWin32Tests {
 	private FontComparison updateFont(int scalingFactor) {
 		Shell shell = new Shell(Display.getDefault());
 		Control control = new Composite(shell, SWT.NONE);
-		int zoom = DPIUtil.getDeviceZoom();
+		int zoom = shell.getNativeZoom();
 		int newZoom = zoom * scalingFactor;
 
 		Font oldFont = control.getFont();

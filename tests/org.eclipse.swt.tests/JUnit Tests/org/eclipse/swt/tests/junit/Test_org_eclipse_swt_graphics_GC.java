@@ -26,6 +26,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -154,13 +155,9 @@ public void test_copyAreaIIIIII() {
 	ImageData imageData = image.getImageData();
 	PaletteData palette = imageData.palette;
 
-	if (DPIUtil.getDeviceZoom() != 100) {
-		//TODO Fix non integer scaling factors.
-		if (SwtTestUtil.verbose) {
-			System.out.println("Excluded test_copyAreaIIIIII(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_GC)");
-		}
-		return;
-	}
+	// This test verifies pixel-level color values after a copyArea() operation.
+	// Such pixel-accurate checks are only reliable at 100% zoom due to fractional scaling.
+	assumeTrue(DPIUtil.getDeviceZoom() == 100, "Skipping test due to non-100% zoom");
 
 	int pixel = imageData.getPixel(destX + 4, destY);
 	assertEquals(":a:", whiteRGB, palette.getRGB(pixel));
@@ -199,13 +196,9 @@ public void test_copyAreaIIIIII_overlapingSourceTarget() {
 	imageData = image.getImageData();
 	palette = imageData.palette;
 
-	if (DPIUtil.getDeviceZoom() != 100) {
-		//TODO Fix non integer scaling factors.
-		if (SwtTestUtil.verbose) {
-			System.out.println("Excluded test_copyAreaIIIIII(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_GC)");
-		}
-		return;
-	}
+	// This test verifies pixel-level color values after a copyArea() operation.
+	// Such pixel-accurate checks are only reliable at 100% zoom due to fractional scaling.
+	assumeTrue(DPIUtil.getDeviceZoom() == 100, "Skipping test due to non-100% zoom");
 
 	pixel = imageData.getPixel(0, 105);
 	assertEquals(redRGB, palette.getRGB(pixel));
@@ -234,14 +227,9 @@ public void test_copyAreaLorg_eclipse_swt_graphics_ImageII() {
 	ImageData imageData = image.getImageData();
 	PaletteData palette = imageData.palette;
 
-	if (DPIUtil.getDeviceZoom() != 100) {
-		//TODO Fix non integer scaling factors.
-		if (SwtTestUtil.verbose) {
-			System.out.println("Excluded test_copyAreaLorg_eclipse_swt_graphics_ImageII(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_GC)");
-		}
-		image.dispose();
-		return;
-	}
+	// This test verifies pixel-level color values after a copyArea() operation.
+	// Such pixel-accurate checks are only reliable at 100% zoom due to fractional scaling.
+	assumeTrue(DPIUtil.getDeviceZoom() == 100, "Skipping test due to non-100% zoom");
 
 	int pixel = imageData.getPixel(4, 0);
 	assertEquals(":a:", whiteRGB, palette.getRGB(pixel));
