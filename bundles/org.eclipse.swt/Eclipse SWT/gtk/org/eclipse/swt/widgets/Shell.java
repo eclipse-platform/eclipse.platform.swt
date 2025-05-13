@@ -609,7 +609,12 @@ void bringToTop (boolean force) {
 	}
 	if ((xFocus || (style & SWT.ON_TOP) != 0)) {
 		if (OS.isX11()) {
-			long gdkDisplay = GDK.gdk_window_get_display(gdkResource);
+			long gdkDisplay;
+			if (GTK.GTK4) {
+				gdkDisplay = GDK.gdk_surface_get_display(gdkResource);
+			} else {
+				gdkDisplay = GDK.gdk_window_get_display(gdkResource);
+			}
 			long xDisplay = GDK.gdk_x11_display_get_xdisplay(gdkDisplay);
 			long xWindow;
 			if (GTK.GTK4) {
