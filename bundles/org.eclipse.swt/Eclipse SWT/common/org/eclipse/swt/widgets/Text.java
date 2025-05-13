@@ -450,6 +450,7 @@ public class Text extends NativeBasedCustomScrollable {
 
 	private void onTraverse(Event e) {
 		switch (e.detail) {
+		case SWT.TRAVERSE_TAB_PREVIOUS -> e.doit = true;
 		case SWT.TRAVERSE_TAB_NEXT -> {
 			e.doit = (style & SWT.MULTI) == 0 || (e.stateMask & SWT.MODIFIER_MASK & ~SWT.SHIFT) == SWT.MOD1;
 		}
