@@ -300,23 +300,29 @@ public Object getContents(Transfer transfer, int clipboards) {
 
 	long selection_data = 0;
 	int[] typeIds = transfer.getTypeIds();
+	boolean textTransfer = transfer.getTypeNames()[0].equals("UTF8_STRING");
+	Object result = null;
 	for (int i = 0; i < typeIds.length; i++) {
 		if ((clipboards & DND.CLIPBOARD) != 0) {
 			selection_data = gtk_clipboard_wait_for_contents(GTKCLIPBOARD, typeIds[i]);
 		}
-		if (selection_data != 0) break;
-		if ((clipboards & DND.SELECTION_CLIPBOARD) != 0) {
+		if (selection_data == 0 && (clipboards & DND.SELECTION_CLIPBOARD) != 0) {
 			selection_data = gtk_clipboard_wait_for_contents(GTKPRIMARYCLIPBOARD, typeIds[i]);
 		}
+		if (selection_data != 0) {
+			TransferData tdata = new TransferData();
+			tdata.type = GTK3.gtk_selection_data_get_data_type(selection_data);
+			tdata.pValue = GTK3.gtk_selection_data_get_data(selection_data);
+			tdata.length = GTK3.gtk_selection_data_get_length(selection_data);
+			tdata.format = GTK3.gtk_selection_data_get_format(selection_data);
+			result = transfer.nativeToJava(tdata);
+			GTK3.gtk_selection_data_free(selection_data);
+			selection_data = 0;
+			if (result != null || !textTransfer) {
+				break;
+			}
+		}
 	}
-	if (selection_data == 0) return null;
-	TransferData tdata = new TransferData();
-	tdata.type = GTK3.gtk_selection_data_get_data_type(selection_data);
-	tdata.pValue = GTK3.gtk_selection_data_get_data(selection_data);
-	tdata.length = GTK3.gtk_selection_data_get_length(selection_data);
-	tdata.format = GTK3.gtk_selection_data_get_format(selection_data);
-	Object result = transfer.nativeToJava(tdata);
-	GTK3.gtk_selection_data_free(selection_data);
 	return result;
 }
 
