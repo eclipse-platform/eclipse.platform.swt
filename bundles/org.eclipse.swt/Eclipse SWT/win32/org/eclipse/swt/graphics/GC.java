@@ -986,30 +986,39 @@ public void drawImage (Image image, int srcX, int srcY, int srcWidth, int srcHei
 	if (image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 
 	int imageZoom = getZoom();
-	Rectangle src = DPIUtil.scaleUp(drawable, new Rectangle(srcX, srcY, srcWidth, srcHeight), imageZoom);
-	Rectangle dest = DPIUtil.scaleUp(drawable, new Rectangle(destX, destY, destWidth, destHeight), imageZoom);
-	if (imageZoom != 100) {
-		/*
-		 * This is a HACK! Due to rounding errors at fractional scale factors,
-		 * the coordinates may be slightly off. The workaround is to restrict
-		 * coordinates to the allowed bounds.
-		 */
-		Rectangle b = image.getBounds(imageZoom);
-		int errX = src.x + src.width - b.width;
-		int errY = src.y + src.height - b.height;
-		if (errX != 0 || errY != 0) {
-			if (errX <= imageZoom / 100 && errY <= imageZoom / 100) {
-				src.intersect(b);
-			} else {
-				SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	float imageScaleFactor = 1f*destWidth/srcWidth;
+	int scaledImageZoom = Math.round(imageZoom*imageScaleFactor);
+
+	image.applyUsingAnyHandle(scaledImageZoom, (imageHandle) -> {
+		Rectangle src = DPIUtil.scaleUp(drawable, new Rectangle(srcX, srcY, srcWidth, srcHeight), scaledImageZoom);
+		Rectangle dest = DPIUtil.scaleUp(drawable, new Rectangle(destX, destY, destWidth, destHeight), imageZoom);
+
+		if (scaledImageZoom != 100) {
+			/*
+			 * This is a HACK! Due to rounding errors at fractional scale factors,
+			 * the coordinates may be slightly off. The workaround is to restrict
+			 * coordinates to the allowed bounds.
+			 */
+			Rectangle b = image.getBounds(scaledImageZoom);
+			int errX = src.x + src.width - b.width;
+			int errY = src.y + src.height - b.height;
+			if (errX != 0 || errY != 0) {
+				if (errX <= scaledImageZoom / 100 && errY <= scaledImageZoom / 100) {
+					src.intersect(b);
+				} else {
+					SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+				}
 			}
 		}
-	}
-	drawImage(image, src.x, src.y, src.width, src.height, dest.x, dest.y, dest.width, dest.height, false);
+		drawImage(image, src.x, src.y, src.width, src.height, dest.x, dest.y, dest.width, dest.height, false, scaledImageZoom);
+	});
 }
 
 void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple) {
-	int imageZoom = getZoom();
+	drawImage(srcImage, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple, getZoom());
+}
+
+void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, int imageZoom) {
 	if (data.gdipGraphics != 0) {
 		//TODO - cache bitmap
 		long [] gdipImage = srcImage.createGdipImage(imageZoom);
