@@ -1550,8 +1550,10 @@ public void stop() {
 
 static boolean isLocationForCustomText(String location) {
 		try {
-			return URI_FOR_CUSTOM_TEXT_PAGE.equals(new URI(location));
-		} catch (URISyntaxException e) {
+			URI locationUri = new URI(location);
+			return "file".equals(locationUri.getScheme())
+					&& Path.of(URI_FOR_CUSTOM_TEXT_PAGE).equals(Path.of(locationUri));
+		} catch (URISyntaxException | IllegalArgumentException e) {
 			return false;
 		}
 }
