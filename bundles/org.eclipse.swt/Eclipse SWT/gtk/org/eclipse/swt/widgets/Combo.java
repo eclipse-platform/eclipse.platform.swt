@@ -1965,7 +1965,14 @@ long paintSurface () {
  */
 public void paste () {
 	checkWidget ();
-	if (entryHandle != 0) GTK3.gtk_editable_paste_clipboard (entryHandle);
+	if (entryHandle != 0) {
+		if (GTK.GTK4) {
+			long textHandle = GTK4.gtk_widget_get_first_child(entryHandle);
+			GTK4.gtk_widget_activate_action(textHandle, OS.action_paste_clipboard, null);
+		} else {
+			GTK3.gtk_editable_paste_clipboard (entryHandle);
+		}
+	}
 }
 
 @Override
