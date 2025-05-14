@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2022 Mat Booth and others.
+ * Copyright (c) 2022, 2025 Mat Booth and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -44,7 +44,6 @@ import org.eclipse.swt.widgets.Shell;
  *
  * For details see: {@code https://github.com/eclipse-platform/eclipse.platform.swt/issues/445}.
  */
-@SuppressWarnings("restriction")
 public class Issue0445_HiDPISmoothScaling {
 
 	public static void main(String[] args) {
