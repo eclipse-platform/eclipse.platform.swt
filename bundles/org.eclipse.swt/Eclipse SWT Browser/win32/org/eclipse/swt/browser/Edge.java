@@ -638,6 +638,7 @@ private String getDataDir(Display display) {
 
 @Override
 public void create(Composite parent, int style) {
+	// test
 	createInstance(0);
 }
 
