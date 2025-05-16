@@ -154,14 +154,6 @@ public void test_copyAreaIIIIII() {
 	ImageData imageData = image.getImageData();
 	PaletteData palette = imageData.palette;
 
-	if (DPIUtil.getDeviceZoom() != 100) {
-		//TODO Fix non integer scaling factors.
-		if (SwtTestUtil.verbose) {
-			System.out.println("Excluded test_copyAreaIIIIII(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_GC)");
-		}
-		return;
-	}
-
 	int pixel = imageData.getPixel(destX + 4, destY);
 	assertEquals(":a:", whiteRGB, palette.getRGB(pixel));
 	pixel = imageData.getPixel(destX + 6 , destY);
@@ -199,13 +191,6 @@ public void test_copyAreaIIIIII_overlapingSourceTarget() {
 	imageData = image.getImageData();
 	palette = imageData.palette;
 
-	if (DPIUtil.getDeviceZoom() != 100) {
-		//TODO Fix non integer scaling factors.
-		if (SwtTestUtil.verbose) {
-			System.out.println("Excluded test_copyAreaIIIIII(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_GC)");
-		}
-		return;
-	}
 
 	pixel = imageData.getPixel(0, 105);
 	assertEquals(redRGB, palette.getRGB(pixel));
@@ -233,15 +218,6 @@ public void test_copyAreaLorg_eclipse_swt_graphics_ImageII() {
 	gc.copyArea(image, 0, 0);
 	ImageData imageData = image.getImageData();
 	PaletteData palette = imageData.palette;
-
-	if (DPIUtil.getDeviceZoom() != 100) {
-		//TODO Fix non integer scaling factors.
-		if (SwtTestUtil.verbose) {
-			System.out.println("Excluded test_copyAreaLorg_eclipse_swt_graphics_ImageII(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_GC)");
-		}
-		image.dispose();
-		return;
-	}
 
 	int pixel = imageData.getPixel(4, 0);
 	assertEquals(":a:", whiteRGB, palette.getRGB(pixel));
