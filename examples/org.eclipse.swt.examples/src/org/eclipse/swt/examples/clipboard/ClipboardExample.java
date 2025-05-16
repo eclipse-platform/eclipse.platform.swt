@@ -30,7 +30,6 @@ import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
-import org.eclipse.swt.graphics.ImageDataProvider;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
@@ -62,38 +61,6 @@ public class ClipboardExample {
 	Label status;
 	static final int HSIZE = 100, VSIZE = 60;
 
-static final class AutoScaleImageDataProvider implements ImageDataProvider {
-	ImageData imageData;
-	int currentZoom;
-	public AutoScaleImageDataProvider (ImageData data) {
-		this.imageData = data;
-		this.currentZoom = getDeviceZoom ();
-	}
-
-	@Override
-	public ImageData getImageData (int zoom) {
-		return autoScaleImageData(imageData, zoom, currentZoom);
-	}
-
-	static ImageData autoScaleImageData (ImageData imageData, int targetZoom, int currentZoom) {
-		if (imageData == null || targetZoom == currentZoom) return imageData;
-		float scaleFactor = ((float) targetZoom)/((float) currentZoom);
-		return imageData.scaledTo (Math.round (imageData.width * scaleFactor), Math.round (imageData.height * scaleFactor));
-	}
-
-	static int getDeviceZoom () {
-		int zoom = 100;
-		String value = System.getProperty ("org.eclipse.swt.internal.deviceZoom");
-		if (value != null) {
-			try {
-				zoom = Integer.parseInt(value);
-			} catch (NumberFormatException e) {
-				e.printStackTrace();
-			}
-		}
-		return zoom;
-	}
-}
 
 public static void main( String[] args) {
 	Display display = new Display();
@@ -476,8 +443,8 @@ void createImageTransfer(Composite copyParent, Composite pasteParent){
 	b.addSelectionListener(widgetSelectedAdapter(e -> {
 		if (copyImage[0] != null) {
 			status.setText("");
-			// Fetch ImageData at current zoom and save in the clip-board.
-			clipboard.setContents(new Object[] {copyImage[0].getImageDataAtCurrentZoom()}, new Transfer[] {ImageTransfer.getInstance()});
+			// Fetch ImageData and save in the clip-board.
+			clipboard.setContents(new Object[] {copyImage[0].getImageData()}, new Transfer[] {ImageTransfer.getInstance()});
 		} else {
 			status.setText("No image to copy");
 		}
@@ -540,8 +507,7 @@ void createImageTransfer(Composite copyParent, Composite pasteParent){
 				pasteImage[0].dispose();
 			}
 			status.setText("");
-			// Consume the ImageData at current zoom as-is.
-			pasteImage[0] = new Image(e.display, new AutoScaleImageDataProvider(imageData));
+			pasteImage[0] = new Image(e.display, imageData);
 			pasteVBar.setEnabled(true);
 			pasteHBar.setEnabled(true);
 			pasteOrigin.x = 0; pasteOrigin.y = 0;
