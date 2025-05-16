@@ -890,6 +890,7 @@ public class OS extends C {
 	public static final int MF_SEPARATOR = 0x800;
 	public static final int MF_SYSMENU = 0x2000;
 	public static final int MF_UNCHECKED = 0x0;
+	public static final int MIIM_CHECKMARKS = 0x8;
 	public static final int MIIM_BITMAP = 0x80;
 	public static final int MIIM_DATA = 0x20;
 	public static final int MIIM_FTYPE = 0x100;
