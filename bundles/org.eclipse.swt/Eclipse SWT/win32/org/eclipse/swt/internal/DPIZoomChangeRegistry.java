@@ -61,7 +61,11 @@ public class DPIZoomChangeRegistry {
 		event.widget = widget;
 		event.detail = newZoom;
 		event.doit = true;
-		widget.notifyListeners(SWT.ZoomChanged, event);
+		widget.getDisplay().asyncExec(() ->  {
+			if(!widget.isDisposed()) {
+				widget.notifyListeners(SWT.ZoomChanged, event);
+			};
+		});
 	}
 
 	public static void registerHandler(DPIZoomChangeHandler zoomChangeVisitor, Class<? extends Widget> clazzToRegisterFor) {
