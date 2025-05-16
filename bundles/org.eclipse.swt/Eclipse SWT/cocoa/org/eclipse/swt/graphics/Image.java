@@ -17,6 +17,7 @@ package org.eclipse.swt.graphics;
 import static org.eclipse.swt.internal.image.ImageColorTransformer.DEFAULT_DISABLED_IMAGE_TRANSFORMER;
 
 import java.io.*;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.function.*;
 
@@ -131,9 +132,9 @@ public final class Image extends Resource implements Drawable {
 	static final int DEFAULT_SCANLINE_PAD = 4;
 
 	/**
-	 * ImageFileNameProvider to provide file names at various Zoom levels
+	 * ImageFileProvider to provide files at various Zoom levels
 	 */
-	private ImageFileNameProvider imageFileNameProvider;
+	private ImagePathProvider imageFileProvider;
 
 	/**
 	 * ImageDataProvider to provide ImageData at various Zoom levels
@@ -392,11 +393,11 @@ public Image(Device device, Image srcImage, int flag) {
 		/* Create the 100% representation for the new image from source image & apply flag */
 		createRepFromSourceAndApplyFlag(srcImage.getRepresentation (100), srcWidth, srcHeight, flag);
 
-		imageFileNameProvider = srcImage.imageFileNameProvider;
+		imageFileProvider = srcImage.imageFileProvider;
 		imageDataProvider = srcImage.imageDataProvider;
 		imageGcDrawer = srcImage.imageGcDrawer;
 		this.styleFlag = srcImage.styleFlag | flag;
-		if (imageFileNameProvider != null || imageDataProvider != null ||srcImage.imageGcDrawer != null) {
+		if (imageFileProvider != null || imageDataProvider != null ||srcImage.imageGcDrawer != null) {
 			/* If source image has 200% representation then create the 200% representation for the new image & apply flag */
 			NSBitmapImageRep rep200 = srcImage.getRepresentation (200);
 			if (rep200 != null) createRepFromSourceAndApplyFlag(rep200, srcWidth * 2, srcHeight * 2, flag);
@@ -645,18 +646,11 @@ public Image(Device device, ImageData source, ImageData mask) {
  * </p>
  * <pre>
  *     static Image loadImage (Display display, Class clazz, String string) {
- *          InputStream stream = clazz.getResourceAsStream (string);
- *          if (stream == null) return null;
- *          Image image = null;
- *          try {
- *               image = new Image (display, stream);
- *          } catch (SWTException ex) {
- *          } finally {
- *               try {
- *                    stream.close ();
- *               } catch (IOException ex) {}
- *          }
- *          return image;
+ *         try (InputStream stream = clazz.getResourceAsStream(string)){
+ *             if (stream == null) return null;
+*              return new Image (display, stream);
+ *         } catch (SWTException | IOException ex) {
+ *         }
  *     }
  * </pre>
  * <p>
@@ -691,8 +685,8 @@ public Image(Device device, InputStream stream) {
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
 		byte[] input = stream.readAllBytes();
-		initWithSupplier(zoom -> ImageDataLoader.canLoadAtZoom(new ByteArrayInputStream(input), FileFormat.DEFAULT_ZOOM, zoom),
-				zoom -> ImageDataLoader.load(new ByteArrayInputStream(input), FileFormat.DEFAULT_ZOOM, zoom).element());
+		initWithSupplier(zoom -> ImageLoader.canLoadAtZoom(new ByteArrayInputStream(input), FileFormat.DEFAULT_ZOOM, zoom),
+				zoom -> ImageData.load(new ByteArrayInputStream(input), FileFormat.DEFAULT_ZOOM, zoom).element());
 		init();
 	} catch (IOException e) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT, e);
@@ -739,10 +733,11 @@ public Image(Device device, String filename) {
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
 		if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		initNative(filename);
+		Path file = Path.of(filename);
+		initNative(file);
 		if (this.handle == null) {
-			initWithSupplier(zoom -> ImageDataLoader.canLoadAtZoom(filename, FileFormat.DEFAULT_ZOOM, zoom),
-					zoom -> ImageDataLoader.load(filename, FileFormat.DEFAULT_ZOOM, zoom).element());
+			initWithSupplier(zoom -> ImageLoader.canLoadAtZoom(file, FileFormat.DEFAULT_ZOOM, zoom),
+					zoom -> ImageData.load(file, FileFormat.DEFAULT_ZOOM, zoom).element());
 		}
 		init();
 	} finally {
@@ -778,28 +773,63 @@ public Image(Device device, String filename) {
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
  * @since 3.104
+ * @deprecated Instead use {@link #Image(Device, ImagePathProvider)}
  */
+@Deprecated(since = "2025-06")
 public Image(Device device, ImageFileNameProvider imageFileNameProvider) {
+	this(device, ImageData.asImagePathProvider(imageFileNameProvider));
+}
+
+/**
+ * Constructs an instance of this class by loading its representation
+ * from the file retrieved from the {@link ImagePathProvider}. Throws an
+ * error if an error occurs while loading the image, or if the result
+ * is an image of an unsupported type.
+ * <p>
+ * This constructor is provided for convenience for loading image as
+ * per DPI level.
+ *
+ * @param device the device on which to create the image
+ * @param imageFileProvider the {@link ImagePathProvider} object that is
+ * to be used to get the file
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the ImageFileNameProvider is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the fileName provided by ImageFileNameProvider is null at 100% zoom</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_IO - if an IO error occurs while reading from the file</li>
+ *    <li>ERROR_INVALID_IMAGE - if the image file contains invalid data </li>
+ *    <li>ERROR_UNSUPPORTED_DEPTH - if the image file describes an image with an unsupported depth</li>
+ *    <li>ERROR_UNSUPPORTED_FORMAT - if the image file contains an unrecognized format</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
+ * </ul>
+ * @since 3.130
+ */
+public Image(Device device, ImagePathProvider imageFileProvider) {
 	super(device);
-	if (imageFileNameProvider == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.imageFileNameProvider = imageFileNameProvider;
-	String filename = imageFileNameProvider.getImagePath(100);
-	if (filename == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (imageFileProvider == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	this.imageFileProvider = imageFileProvider;
+	Path file = imageFileProvider.getImagePath(100);
+	if (file == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
-		initNative(filename);
-		if (this.handle == null) init(ImageDataLoader.load(filename, 100, 100).element());
+		initNative(file);
+		if (this.handle == null) init(ImageData.load(file, 100, 100).element());
 		init();
-		String filename2x = imageFileNameProvider.getImagePath(200);
-		if (filename2x != null) {
+		Path file2x = imageFileProvider.getImagePath(200);
+		if (file2x != null) {
 			alphaInfo_200 = new AlphaInfo();
-			id id = NSImageRep.imageRepWithContentsOfFile(NSString.stringWith(filename2x));
+			id id = NSImageRep.imageRepWithContentsOfFile(NSString.stringWith(file2x.toString()));
 			NSImageRep rep = new NSImageRep(id);
 			handle.addRepresentation(rep);
-		} else if (ImageDataLoader.canLoadAtZoom(filename, 100, 200)) {
+		} else if (ImageLoader.canLoadAtZoom(file, 100, 200)) {
 			// Try to natively scale up the image (e.g. possible if it's an SVG)
-			ImageData imageData2x = ImageDataLoader.load(filename, 100, 200).element();
+			ImageData imageData2x = ImageData.load(file, 100, 200).element();
 			alphaInfo_200 = new AlphaInfo();
 			NSBitmapImageRep rep = createRepresentation (imageData2x, alphaInfo_200);
 			handle.addRepresentation(rep);
@@ -930,7 +960,7 @@ private ImageData drawWithImageGcDrawer(ImageGcDrawer imageGcDrawer, int width, 
 
 private AlphaInfo _getAlphaInfoAtCurrentZoom (NSBitmapImageRep rep) {
 	int deviceZoom = DPIUtil.getDeviceZoom();
-	if (deviceZoom != 100 && (imageFileNameProvider != null || imageDataProvider != null)) {
+	if (deviceZoom != 100 && (imageFileProvider != null || imageDataProvider != null)) {
 		if (alphaInfo_100.alphaData != null && alphaInfo_200 != null) {
 			if (alphaInfo_200.alphaData == null) initAlpha_200(rep);
 			return alphaInfo_200;
@@ -1204,8 +1234,8 @@ public boolean equals (Object object) {
 	if (device != image.device || alphaInfo_100.transparentPixel != image.alphaInfo_100.transparentPixel) return false;
 	if (imageDataProvider != null && image.imageDataProvider != null) {
 		return styleFlag == image.styleFlag && imageDataProvider.equals (image.imageDataProvider);
-	} else if (imageFileNameProvider != null && image.imageFileNameProvider != null) {
-		return styleFlag == image.styleFlag && imageFileNameProvider.equals (image.imageFileNameProvider);
+	} else if (imageFileProvider != null && image.imageFileProvider != null) {
+		return styleFlag == image.styleFlag && imageFileProvider.equals (image.imageFileProvider);
 	} else if (imageGcDrawer != null && image.imageGcDrawer != null) {
 		return styleFlag == image.styleFlag && imageGcDrawer.equals(image.imageGcDrawer) && width == image.width
 				&& height == image.height;
@@ -1443,8 +1473,8 @@ NSBitmapImageRep createImageRep(NSSize targetSize) {
 public int hashCode () {
 	if (imageDataProvider != null) {
 		return imageDataProvider.hashCode();
-	} else if (imageFileNameProvider != null) {
-		return imageFileNameProvider.hashCode();
+	} else if (imageFileProvider != null) {
+		return imageFileProvider.hashCode();
 	} else if (imageGcDrawer != null) {
 		return Objects.hash(imageGcDrawer, height, width);
 	} else {
@@ -1548,7 +1578,8 @@ void initAlpha_100(NSBitmapImageRep nativeRep) {
 
 }
 
-void initNative(String filename) {
+void initNative(Path file) {
+	String filename = file.toString();
 	NSAutoreleasePool pool = null;
 	NSImage nativeImage = null;
 

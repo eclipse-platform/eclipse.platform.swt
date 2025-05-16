@@ -13,6 +13,8 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.gtk.snippets;
 
+import java.nio.file.Path;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -57,7 +59,7 @@ public class Bug547529_ImageLoaderStriping {
 				dialog.setFileName("Untitled.png");
 				String filename = dialog.open();
 				if ((filename != null) && !filename.isEmpty()) {
-					saveImage(composite, filename, SWT.IMAGE_PNG);
+					saveImage(composite, Path.of(filename), SWT.IMAGE_PNG);
 				}
 			}
 		});
@@ -72,7 +74,7 @@ public class Bug547529_ImageLoaderStriping {
 		display.dispose();
 	}
 
-	private static void saveImage(Control control, String filename, int format) {
+	private static void saveImage(Control control, Path file, int format) {
 		Rectangle bounds = control.getBounds();
 		Image image = new Image(control.getDisplay(), bounds.width, bounds.height);
 		GC gc = new GC(image);
@@ -81,7 +83,7 @@ public class Bug547529_ImageLoaderStriping {
 		ImageData data = image.getImageData();
 		ImageLoader loader = new ImageLoader();
 		loader.data = new ImageData[] { data };
-		loader.save(filename, format);
+		loader.save(file, format);
 		image.dispose();
 	}
 }

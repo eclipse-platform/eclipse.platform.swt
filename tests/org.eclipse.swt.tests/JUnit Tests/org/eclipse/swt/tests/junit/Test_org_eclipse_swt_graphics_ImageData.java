@@ -27,6 +27,7 @@ import static org.junit.Assert.assertThrows;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -213,31 +214,32 @@ public void test_ConstructorIIILorg_eclipse_swt_graphics_PaletteDataI$B() {
 public void test_ConstructorLjava_io_InputStream() throws IOException {
 		InputStream stream = null;
 		assertThrows("No exception thrown for InputStream == null", IllegalArgumentException.class,
-				() -> new ImageData(stream));
+				() -> ImageData.load(stream));
 
 		try (InputStream stream1 = SwtTestUtil.class.getResourceAsStream("empty.txt")){
-			assertThrows("No exception thrown for invalid InputStream", SWTException.class, () ->new ImageData(stream1));
+			assertThrows("No exception thrown for invalid InputStream", SWTException.class,
+					() -> ImageData.load(stream1));
 		}
 
 		String fileName = SwtTestUtil.imageFilenames[0];
 		for (String format : SwtTestUtil.imageFormats) {
 			try (InputStream stream2 = SwtTestUtil.class.getResourceAsStream(fileName + "." + format)) {
-				new ImageData(stream2);
+				ImageData.load(stream2);
 			}
 		}
 }
 
 @Test
 public void test_ConstructorLjava_lang_String() {
-	String filename = null;
+	Path filename = null;
 	assertThrows("No exception thrown for filename == null", IllegalArgumentException.class,
-			() -> new ImageData(filename));
+			() -> ImageData.load(filename));
 }
 
 @Test
 public void test_clone() throws IOException {
 	try (InputStream stream = SwtTestUtil.class.getResourceAsStream(SwtTestUtil.imageFilenames[0] + "." + SwtTestUtil.imageFormats[0])) {
-		ImageData data1 = new ImageData(stream);
+		ImageData data1 = ImageData.load(stream);
 		ImageData data2 = (ImageData) data1.clone();
 		// imageData does not implement an equals(Object) method
 		assertEquals(":a:", data1.alpha, data2.alpha);
