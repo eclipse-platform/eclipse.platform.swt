@@ -197,6 +197,18 @@ public void test_setTabList$Lorg_eclipse_swt_widgets_Control() {
 	button2.dispose();
 }
 
+/*
+ * See https://github.com/eclipse-platform/eclipse.platform.swt/issues/2162
+ */
+@Test
+public void test_bug2162_transparentStyle() {
+	Composite c = new Composite(shell, SWT.TRANSPARENT);
+	c.addPaintListener(e -> {});
+
+	shell.setLayout(new FillLayout());
+	shell.open();
+}
+
 protected Composite getElementExpectedToHaveFocusAfterSetFocusOnParent(Composite visibleChild) {
 	return visibleChild;
 }
