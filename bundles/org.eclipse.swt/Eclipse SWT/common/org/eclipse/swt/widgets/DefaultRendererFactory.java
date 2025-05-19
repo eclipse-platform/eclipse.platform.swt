@@ -58,4 +58,9 @@ class DefaultRendererFactory implements RendererFactory {
 	public TabFolderRenderer createTabFolderRenderer(TabFolder tabFolder) {
 		return new DefaultTabFolderRenderer(tabFolder);
 	}
+
+	@Override
+	public CoolBarRenderer createCoolBarRenderer(CoolBar coolBar) {
+		return new DefaultCoolBarRenderer(coolBar);
+	}
 }
