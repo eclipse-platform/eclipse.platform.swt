@@ -1554,6 +1554,8 @@ LRESULT WM_PAINT (long wParam, long lParam) {
 			data.ps = ps;
 			data.hwnd = handle;
 			GC gc = GC.win32_new (this, data);
+
+			/* Get the system region for the paint HDC */
 			long sysRgn = 0;
 			if ((style & (SWT.DOUBLE_BUFFERED | SWT.TRANSPARENT)) != 0 || (style & SWT.NO_MERGE_PAINTS) != 0) {
 				sysRgn = OS.CreateRectRgn (0, 0, 0, 0);
@@ -1579,25 +1581,14 @@ LRESULT WM_PAINT (long wParam, long lParam) {
 				GC paintGC = null;
 				Image image = null;
 				if ((style & (SWT.DOUBLE_BUFFERED | SWT.TRANSPARENT)) != 0) {
+					image = new Image (display, width, height);
 					paintGC = gc;
-					int originalStyle = gc.getStyle();
-					ImageGcDrawer drawer = new ImageGcDrawer() {
-					    @Override
-					    public void drawOn(GC gc, int iWidth, int iHeight) {
-					    	GCData gcData = gc.getGCData ();
-							gcData.uiState = data.uiState;
-							gc.setForeground (getForeground ());
-							gc.setBackground (getBackground ());
-							gc.setFont (getFont ());
-
-					    }
-
-					    @Override
-					    public int getGcStyle() {
-					        return  originalStyle & SWT.RIGHT_TO_LEFT;
-					    }
-					};
-					image = new Image (display, drawer, width, height);
+					gc = new GC (image, paintGC.getStyle() & SWT.RIGHT_TO_LEFT);
+					GCData gcData = gc.getGCData ();
+					gcData.uiState = data.uiState;
+					gc.setForeground (getForeground ());
+					gc.setBackground (getBackground ());
+					gc.setFont (getFont ());
 					if ((style & SWT.TRANSPARENT) != 0) {
 						OS.BitBlt (gc.handle, 0, 0, width, height, paintGC.handle, ps.left, ps.top, OS.SRCCOPY);
 					}
