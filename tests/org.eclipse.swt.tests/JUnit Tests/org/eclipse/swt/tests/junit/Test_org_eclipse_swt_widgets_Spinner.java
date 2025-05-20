@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 Red Hat, Inc. and others.
+ * Copyright (c) 2000, 2025 Red Hat, Inc. and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -15,7 +15,7 @@
 package org.eclipse.swt.tests.junit;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Spinner;
@@ -37,21 +37,11 @@ public class Test_org_eclipse_swt_widgets_Spinner extends Test_org_eclipse_swt_w
 	@Override
 	@Test
 	public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
-		try {
-			spinner = new Spinner(null, 0);
-			fail("No exception thrown for parent == null");
-		}
-		catch (IllegalArgumentException e) {
-		}
-		int[] cases = {0, SWT.READ_ONLY, SWT.WRAP};
+		assertThrows("No exception thrown for parent == null", IllegalArgumentException.class,
+				() -> new Spinner(null, 0));
+		int[] cases = { 0, SWT.READ_ONLY, SWT.WRAP };
 		for (int style : cases)
 			spinner = new Spinner(shell, style);
-	}
-
-	@Override
-	@Test
-	public void test_computeSizeIIZ() {
-		// super class test is sufficient
 	}
 
 	@Test
@@ -72,13 +62,9 @@ public class Test_org_eclipse_swt_widgets_Spinner extends Test_org_eclipse_swt_w
 			spinner.setDigits(digits);
 			assertEquals(digits, spinner.getDigits());
 		}
-		try{
-			spinner.setDigits(-1);
-			fail("setDigits should have failed with illegal Argument");
-		}
-		catch(IllegalArgumentException e){
-			assertEquals(cases[cases.length-1], spinner.getDigits());
-		}
+		assertThrows("setDigits should have failed with illegal Argument", IllegalArgumentException.class,
+				() -> spinner.setDigits(-1));
+		assertEquals(cases[cases.length-1], spinner.getDigits());
 	}
 
 	@Test
@@ -132,11 +118,8 @@ public class Test_org_eclipse_swt_widgets_Spinner extends Test_org_eclipse_swt_w
 			spinner.setTextLimit(value);
 			assertEquals(value, spinner.getTextLimit());
 		}
-		try {
-			spinner.setTextLimit(0);
-			fail("setTextLimit should have caused an expection with value 0");
-		} catch (Exception e) {
-		}
+		assertThrows("setTextLimit should have caused an expection with value 0", IllegalArgumentException.class,
+				() -> spinner.setTextLimit(0));
 	}
 
 	@Test
