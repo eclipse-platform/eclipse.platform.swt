@@ -553,6 +553,14 @@ public void close () {
 	closeWidget ();
 }
 
+@Override
+void createWidget() {
+	super.createWidget ();
+	if (parent != null) {
+		this.nativeZoom = DPIUtil.mapDPIToZoom(OS.GetDpiForWindow(handle));
+	}
+}
+
 void createBalloonTipHandle () {
 	balloonTipHandle = OS.CreateWindowEx (
 		0,
