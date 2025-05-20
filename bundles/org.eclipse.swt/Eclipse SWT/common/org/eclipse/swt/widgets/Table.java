@@ -3012,10 +3012,10 @@ public class Table extends CustomComposite {
 
 	// TODO move this heuristic somewhere else.
 	static int guessTextHeight(Table table) {
-		int textHeight = table.getFont().getFontData()[0].getHeight();
-		int upmeasure = (int) ((textHeight * 2.0 * 1.5 * 100) / 100.0);
-
-		return upmeasure;
+		return Drawing.measure(table, gc -> {
+			gc.setFont(table.getFont());
+			return gc.getFontMetrics().getHeight();
+		});
 	}
 
 	Point computeTextExtent(String str) {
