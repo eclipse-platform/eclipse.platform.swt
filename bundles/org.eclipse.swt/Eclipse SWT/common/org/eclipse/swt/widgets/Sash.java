@@ -291,7 +291,9 @@ public class Sash extends CustomControl implements Listener {
 	private Shell createDragOverlay() {
 		Shell overlay = new Shell(parent.getShell(), SWT.NO_TRIM | SWT.NO_FOCUS | SWT.ON_TOP);
 		overlay.setAlpha(DRAG_OVERLAY_ALPHA);
-		overlay.setBounds(parent.toDisplay(0, 0).x, parent.toDisplay(0, 0).y, parent.getSize().x, parent.getSize().y);
+		final Point leftTop = parent.toDisplay(0, 0);
+		final Rectangle clientArea = parent.getClientArea();
+		overlay.setBounds(leftTop.x, leftTop.y, clientArea.width, clientArea.height);
 		overlay.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
 		overlay.setVisible(true);
 		return overlay;
