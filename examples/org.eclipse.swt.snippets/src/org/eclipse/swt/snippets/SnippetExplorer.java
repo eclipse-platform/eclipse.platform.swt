@@ -37,38 +37,39 @@ import org.eclipse.swt.widgets.*;
  */
 public class SnippetExplorer {
 
-	private static final String USAGE_EXPLANATION = "Welcome to the SnippetExplorer!\n"
-			+ "\n"
-			+ "This tool will help you to explore and test the large collection of SWT example Snippets. "
-			+ "You can use the text field on top to filter the Snippets by there description or Snippet number. "
-			+ "To start a Snippet you can either double click its entry, press enter or use the button below. "
-			+ "It is also possible to start multiple Snippets at once. (exact behavior depends on selected Snippet-Runner)\n"
-			+ "\n"
-			+ "It is recommended to start the Snippet Explorer connected to a console since some of the Snippets "
-			+ "print useful informations to the console or do not open a window at all.\n"
-			+ "\n"
-			+ "The Explorer supports (dependent on your OS and environment) different modes to start Snippets. Those runners are:\n"
-			+ "\n"
-			+ " \u2022 Thread Runner: Snippets are executed as threads of the Explorer.\n"
-			+ "\t- This runner is only available if the environment supports multiple Displays at the same time. (only Windows at the moment)\n"
-			+ "\t- Multiple Snippets can be run parallel using this runner.\n"
-			+ "\t- All running Snippets are closed when the explorer exits.\n"
-			+ "\t- If to many Snippets are run in parallel SWT may run out of handles.\n"
-			+ "\t- If a Snippet calls System.exit it will also force the explorer itself and all other running Snippets to exit as well.\n"
-			+ "\n"
-			+ " \u2022 Process Runner: Snippets are executed as separate processes.\n"
-			+ "\t- This runner is only available if a JRE was found which can be used to start the Snippets.\n"
-			+ "\t- Multiple Snippets can be run parallel using this runner.\n"
-			+ "\t- This runner is more likely to fail Snippet launch due to incomplete classpath or other launch problems.\n"
-			+ "\t- When the explorer exits it try to close all running Snippets but has less control over it as the Thread runner.\n"
-			+ "\t- Unlike the Thread runner the Process runner is resisted to faulty Snippets. (e.g. Snippets calling System.exit)\n"
-			+ "\n"
-			+ " \u2022 Serial Runner: Snippets are executed one after another instead of the explorer.\n"
-			+ "\t- This runner is always available.\n"
-			+ "\t- Cannot run Snippets parallel.\n"
-			+ "\t- To run Snippets the explorer gets closed, executes the selected Snippets one after another in the same JVM "
-			+ "and after the last Snippet has finished restarts the Snippet Explorer.\n"
-			+ "\t- A Snippet calling System.exit will stop the Snippet chain and the explorer itself can not restart.";
+	private static final String USAGE_EXPLANATION = """
+		Welcome to the SnippetExplorer!
+
+		This tool will help you to explore and test the large collection of SWT example Snippets. \
+		You can use the text field on top to filter the Snippets by there description or Snippet number. \
+		To start a Snippet you can either double click its entry, press enter or use the button below. \
+		It is also possible to start multiple Snippets at once. (exact behavior depends on selected Snippet-Runner)
+
+		It is recommended to start the Snippet Explorer connected to a console since some of the Snippets \
+		print useful informations to the console or do not open a window at all.
+
+		The Explorer supports (dependent on your OS and environment) different modes to start Snippets. Those runners are:
+
+		 \u2022 Thread Runner: Snippets are executed as threads of the Explorer.
+			- This runner is only available if the environment supports multiple Displays at the same time. (only Windows at the moment)
+			- Multiple Snippets can be run parallel using this runner.
+			- All running Snippets are closed when the explorer exits.
+			- If to many Snippets are run in parallel SWT may run out of handles.
+			- If a Snippet calls System.exit it will also force the explorer itself and all other running Snippets to exit as well.
+
+		 \u2022 Process Runner: Snippets are executed as separate processes.
+			- This runner is only available if a JRE was found which can be used to start the Snippets.
+			- Multiple Snippets can be run parallel using this runner.
+			- This runner is more likely to fail Snippet launch due to incomplete classpath or other launch problems.
+			- When the explorer exits it try to close all running Snippets but has less control over it as the Thread runner.
+			- Unlike the Thread runner the Process runner is resisted to faulty Snippets. (e.g. Snippets calling System.exit)
+
+		 \u2022 Serial Runner: Snippets are executed one after another instead of the explorer.
+			- This runner is always available.
+			- Cannot run Snippets parallel.
+			- To run Snippets the explorer gets closed, executes the selected Snippets one after another in the same JVM \
+		and after the last Snippet has finished restarts the Snippet Explorer.
+			- A Snippet calling System.exit will stop the Snippet chain and the explorer itself can not restart.""";
 
 	/** Max length for Snippet description in the main table. */
 	private static final int MAX_DESCRIPTION_LENGTH_IN_TABLE = 80;
@@ -235,7 +236,7 @@ public class SnippetExplorer {
 
 		createControls(shell);
 
-		final String[] columns = new String[] { "Name", "Description" };
+		final String[] columns = { "Name", "Description" };
 		for (String col : columns) {
 			final TableColumn tableCol = new TableColumn(snippetTable, SWT.NONE);
 			tableCol.setText(col);
