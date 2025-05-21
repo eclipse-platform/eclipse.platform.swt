@@ -383,6 +383,7 @@ public DragSource(Control control, int style) {
 	};
 	control.addListener(SWT.Dispose, controlListener);
 	control.addListener(SWT.DragDetect, controlListener);
+	control.addListener(SWT.ZoomChanged, e -> this.nativeZoom = e.detail);
 
 	this.addListener(SWT.Dispose, e -> DragSource.this.onDispose());
 
