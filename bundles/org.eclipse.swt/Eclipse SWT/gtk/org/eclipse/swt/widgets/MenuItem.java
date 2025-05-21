@@ -1372,53 +1372,64 @@ private MaskKeysym getMaskKeysym() {
 	int accelIndex = text.indexOf ('\t');
 	if (accelIndex == -1) return null;
 	int start = accelIndex + 1;
-	int plusIndex = text.indexOf('+', start);
-	while (plusIndex != -1) {
+	while (true) {
+		int plusIndex = text.indexOf('+', start);
+		if (plusIndex < 0 || plusIndex == text.length() - 1) {
+			break;
+		}
+
 		String maskStr = text.substring(start, plusIndex);
 		if (maskStr.equals("Ctrl")) maskKeysym.mask |= GDK.GDK_CONTROL_MASK;
 		if (maskStr.equals("Shift")) maskKeysym.mask |= GDK.GDK_SHIFT_MASK;
 		if (maskStr.equals("Alt")) maskKeysym.mask |= GDK.GDK_MOD1_MASK;
 		start = plusIndex + 1;
-		plusIndex = text.indexOf('+', start);
 	}
-	if ("Enter".equals(text.substring(start))) {
-		maskKeysym.keysym = GDK.GDK_ISO_Enter;
+	final String word = text.substring(start);
+	switch (word) {
+	case "Del", "Delete" -> maskKeysym.keysym = GDK.GDK_Delete;
+	case "Enter" -> maskKeysym.keysym = GDK.GDK_ISO_Enter;
+	case "Ins", "Insert" -> maskKeysym.keysym = GDK.GDK_Insert;
+	case "Ret", "Return" -> maskKeysym.keysym = GDK.GDK_Return;
+	case "Up" -> maskKeysym.keysym = GDK.GDK_Up;
+	case "Down" -> maskKeysym.keysym = GDK.GDK_Down;
+	case "Right" -> maskKeysym.keysym = GDK.GDK_Right;
+	case "Left" -> maskKeysym.keysym = GDK.GDK_Left;
+	case "Page Up" -> maskKeysym.keysym = GDK.GDK_Page_Up;
+	case "Page Down" -> maskKeysym.keysym = GDK.GDK_Page_Down;
+	case "Keypad +", "Numpad +" -> maskKeysym.keysym = GDK.GDK_KP_Add;
+	case "Keypad -", "Numpad -" -> maskKeysym.keysym = GDK.GDK_KP_Subtract;
+	case "Keypad *", "Numpad *" -> maskKeysym.keysym = GDK.GDK_KP_Multiply;
+	case "Keypad /", "Numpad /" -> maskKeysym.keysym = GDK.GDK_KP_Divide;
+	case "ESC", "Escape" -> maskKeysym.keysym = GDK.GDK_Escape;
+	case "Backspace" -> maskKeysym.keysym = GDK.GDK_BackSpace;
+	case "Home" -> maskKeysym.keysym = GDK.GDK_Home;
+	case "End" -> maskKeysym.keysym = GDK.GDK_End;
+	case "Tab" -> maskKeysym.keysym = GDK.GDK_Tab;
+	case "Space" -> maskKeysym.keysym = GDK.GDK_space;
+	case "F1" -> maskKeysym.keysym = GDK.GDK_F1;
+	case "F2" -> maskKeysym.keysym = GDK.GDK_F2;
+	case "F3" -> maskKeysym.keysym = GDK.GDK_F3;
+	case "F4" -> maskKeysym.keysym = GDK.GDK_F4;
+	case "F5" -> maskKeysym.keysym = GDK.GDK_F5;
+	case "F6" -> maskKeysym.keysym = GDK.GDK_F6;
+	case "F7" -> maskKeysym.keysym = GDK.GDK_F7;
+	case "F8" -> maskKeysym.keysym = GDK.GDK_F8;
+	case "F9" -> maskKeysym.keysym = GDK.GDK_F9;
+	case "F10" -> maskKeysym.keysym = GDK.GDK_F10;
+	case "F11" -> maskKeysym.keysym = GDK.GDK_F11;
+	case "F12" -> maskKeysym.keysym = GDK.GDK_F12;
+	case "F13" -> maskKeysym.keysym = GDK.GDK_F13;
+	case "F14" -> maskKeysym.keysym = GDK.GDK_F14;
+	case "F15" -> maskKeysym.keysym = GDK.GDK_F15;
+	default -> {
+		if (word.length() == 1) {
+			maskKeysym.keysym = Converter.wcsToMbcs (word.charAt(0));
+		}
 	}
-	switch (text.length() - start) {
-		case 1:
-			maskKeysym.keysym = text.charAt(start);
-			maskKeysym.keysym = Converter.wcsToMbcs ((char) maskKeysym.keysym);
-			break;
-		case 2:
-			if (text.charAt(start) == 'F') {
-				switch (text.charAt(start + 1)) {
-					case '1': maskKeysym.keysym = GDK.GDK_F1; break;
-					case '2': maskKeysym.keysym = GDK.GDK_F2; break;
-					case '3': maskKeysym.keysym = GDK.GDK_F3; break;
-					case '4': maskKeysym.keysym = GDK.GDK_F4; break;
-					case '5': maskKeysym.keysym = GDK.GDK_F5; break;
-					case '6': maskKeysym.keysym = GDK.GDK_F6; break;
-					case '7': maskKeysym.keysym = GDK.GDK_F7; break;
-					case '8': maskKeysym.keysym = GDK.GDK_F8; break;
-					case '9': maskKeysym.keysym = GDK.GDK_F9; break;
-				}
-			}
-			break;
-		case 3:
-			if (text.charAt(start) == 'F' && text.charAt(start + 1) == '1') {
-				switch (text.charAt(start + 2)) {
-					case '0': maskKeysym.keysym = GDK.GDK_F10; break;
-					case '1': maskKeysym.keysym = GDK.GDK_F11; break;
-					case '2': maskKeysym.keysym = GDK.GDK_F12; break;
-					case '3': maskKeysym.keysym = GDK.GDK_F13; break;
-					case '4': maskKeysym.keysym = GDK.GDK_F14; break;
-					case '5': maskKeysym.keysym = GDK.GDK_F15; break;
-				}
-			}
-			break;
 	}
 	return maskKeysym;
 }
+
 boolean updateAcceleratorText (boolean show) {
 	if (accelerator != 0) return false;
 	MaskKeysym maskKeysym = null;
