@@ -788,9 +788,8 @@ public class TableItem extends Item {
 			return new Rectangle(0, 0, 0, 0);
 		}
 
-		Table.logNotImplemented();
+		return renderer.getImageBounds(index);
 
-		return new Rectangle(0, 0, 0, 0);
 	}
 
 	/**

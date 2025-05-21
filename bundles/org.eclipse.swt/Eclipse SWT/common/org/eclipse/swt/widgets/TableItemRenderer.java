@@ -27,6 +27,7 @@ public class TableItemRenderer {
 
 	private final Map<Integer, Point> computedCellSizes = new HashMap<>();
 	private final Map<Integer, Rectangle> internalComputedCellTextBounds = new HashMap<>();
+	private Map<Integer, Rectangle> internalComputedCellImage = new HashMap<>();
 	private Point computedSize;
 
 	public TableItemRenderer(TableItem tableItem) {
@@ -37,6 +38,8 @@ public class TableItemRenderer {
 		Rectangle b = item.getBounds();
 
 		Color bgBefore = gc.getBackground();
+		Table parent = getParent();
+		final boolean paintItemEvent = parent.hooks(SWT.PaintItem);
 
 		if (getParent().selectedTableItems.contains(item)) {
 			this.selected = true;
@@ -48,6 +51,7 @@ public class TableItemRenderer {
 		} else if (getParent().mouseHoverElement == item) {
 			this.hovered = true;
 			gc.setBackground(getParent().getDisplay().getSystemColor(SWT.COLOR_YELLOW));
+			System.out.println("hoveredElement: " + item.getText(1));
 			gc.fillRectangle(b);
 		} else {
 			this.selected = false;
@@ -56,14 +60,35 @@ public class TableItemRenderer {
 
 		drawCheckbox(gc);
 
-		Table parent = getParent();
 		if (parent.columnsExist()) {
-			final boolean paintItemEvent = parent.hooks(SWT.PaintItem);
 			for (int i = 0; i < parent.getColumnCount(); i++) {
-				drawItemCell(gc, i, paintItemEvent);
+
+				if (paintItemEvent) {
+					b = item.getBounds(i);
+					Event event = new Event();
+					event.item = item;
+					event.index = i;
+					event.gc = gc;
+					event.x = b.x;
+					event.y = b.y;
+					// TODO MeasureItem should happen in the bounds calculation logic...
+					parent.sendEvent(SWT.MeasureItem, event);
+					parent.sendEvent(SWT.EraseItem, event);
+
+					if (this.selected) {
+						gc.setBackground(Table.SELECTION_COLOR);
+						gc.fillRectangle(b);
+					} else if (this.hovered) {
+						gc.setBackground(getParent().getDisplay().getSystemColor(SWT.COLOR_YELLOW));
+						gc.fillRectangle(b);
+					}
+
+					parent.sendEvent(SWT.PaintItem, event);
+				} else
+					drawItemCell(gc, i, paintItemEvent);
 			}
 		} else {
-			drawItem(gc);
+			drawItem(gc, paintItemEvent);
 		}
 
 		gc.setBackground(bgBefore);
@@ -74,7 +99,8 @@ public class TableItemRenderer {
 	}
 
 	private void drawCheckbox(GC gc) {
-		if ((getParent().getStyle() & SWT.CHECK) == 0) return;
+		if ((getParent().getStyle() & SWT.CHECK) == 0)
+			return;
 
 		var itemBounds = item.getFullBounds();
 
@@ -90,20 +116,9 @@ public class TableItemRenderer {
 	}
 
 	private void drawItemCell(GC gc, int columnIndex, boolean paintItemEvent) {
+		var parent = item.getParent();
 		var b = getBounds(columnIndex);
 		gc.setClipping(b);
-
-		final Table parent = getParent();
-		if (paintItemEvent) {
-			Event event = new Event();
-			event.item = item;
-			event.index = columnIndex;
-			event.gc = gc;
-			event.x = b.x;
-			event.y = b.y;
-			parent.sendEvent(SWT.PaintItem, event);
-			return;
-		}
 
 		var prevBG = gc.getBackground();
 		var bgCell = item.getBackground(columnIndex);
@@ -168,62 +183,87 @@ public class TableItemRenderer {
 		return item.getBounds(columnIndex);
 	}
 
-	private void drawItem(GC gc) {
-		var b = item.getBounds();
+	private void drawItem(GC gc, boolean paintItemEvent) {
 
-		var prevBG = gc.getBackground();
-		var bgCol = item.getBackground();
-		if (bgCol != null && !this.selected && !this.hovered) {
-			gc.setBackground(bgCol);
-			gc.fillRectangle(b);
-		}
+		var b = getBounds();
+		gc.setClipping(b);
 
-		int currentWidthPosition = b.x + leftMargin;
+		try {
 
-		int xPosition = currentWidthPosition;
-		int yPosition = b.y + topMargin;
+			final Table parent = getParent();
+			if (paintItemEvent) {
+				Event event = new Event();
+				event.item = item;
+				event.index = 0;
+				event.gc = gc;
+				event.x = b.x;
+				event.y = b.y;
+				parent.sendEvent(SWT.MeasureItem, event);
+				parent.sendEvent(SWT.EraseItem, event);
+				parent.sendEvent(SWT.PaintItem, event);
+				return;
+			}
 
-		var image = item.getImage();
-		if (image != null) {
-			if (Table.FILL_IMAGE_AREAS) {
+			var prevBG = gc.getBackground();
+			var bgCol = item.getBackground();
+			if (bgCol != null && !this.selected && !this.hovered) {
+				gc.setBackground(bgCol);
+				gc.fillRectangle(b);
+			}
+
+			int currentWidthPosition = b.x + leftMargin;
+
+			int xPosition = currentWidthPosition;
+			int yPosition = b.y + topMargin;
+
+			var image = item.getImage();
+			if (image != null) {
+				if (Table.FILL_IMAGE_AREAS) {
+					var pBG = gc.getBackground();
+					gc.setBackground(getParent().getDisplay().getSystemColor(SWT.COLOR_RED));
+					var imgB = item.getImage().getBounds();
+					var rec = new Rectangle(imgB.x + xPosition, imgB.y + yPosition, imgB.width, imgB.height);
+					gc.fillRectangle(rec);
+					gc.setBackground(pBG);
+				}
+
+				if (Table.DRAW_IMAGES) {
+					gc.drawImage(image, xPosition, yPosition);
+				}
+				currentWidthPosition += image.getBounds().width + GAP;
+			}
+
+			var prevFG = gc.getForeground();
+			var fgCol = item.getForeground();
+			if (fgCol != null && !this.selected && !this.hovered) {
+				gc.setForeground(fgCol);
+			}
+
+			xPosition = currentWidthPosition;
+			yPosition = b.y + topMargin;
+
+			if (Table.FILL_TEXT_AREAS) {
 				var pBG = gc.getBackground();
-				gc.setBackground(getParent().getDisplay().getSystemColor(SWT.COLOR_RED));
-				var imgB = item.getImage().getBounds();
-				var rec = new Rectangle(imgB.x + xPosition, imgB.y + yPosition, imgB.width, imgB.height);
+				gc.setBackground(getParent().getDisplay().getSystemColor(SWT.COLOR_DARK_GRAY));
+				var textSize = getParent().computeTextExtent(item.getText());
+				var rec = new Rectangle(xPosition, yPosition, textSize.x, textSize.y);
 				gc.fillRectangle(rec);
 				gc.setBackground(pBG);
 			}
 
-			if (Table.DRAW_IMAGES) {
-				gc.drawImage(image, xPosition, yPosition);
+			if (Table.DRAW_TEXTS) {
+				gc.drawText(item.getText(), currentWidthPosition, b.y + topMargin);
 			}
-			currentWidthPosition += image.getBounds().width + GAP;
+
+			gc.setForeground(prevFG);
+			gc.setBackground(prevBG);
+		} finally {
+			gc.setClipping((Rectangle) null);
 		}
+	}
 
-		var prevFG = gc.getForeground();
-		var fgCol = item.getForeground();
-		if (fgCol != null && !this.selected && !this.hovered) {
-			gc.setForeground(fgCol);
-		}
-
-		xPosition = currentWidthPosition;
-		yPosition = b.y + topMargin;
-
-		if (Table.FILL_TEXT_AREAS) {
-			var pBG = gc.getBackground();
-			gc.setBackground(getParent().getDisplay().getSystemColor(SWT.COLOR_DARK_GRAY));
-			var textSize = getParent().computeTextExtent(item.getText());
-			var rec = new Rectangle(xPosition, yPosition, textSize.x, textSize.y);
-			gc.fillRectangle(rec);
-			gc.setBackground(pBG);
-		}
-
-		if (Table.DRAW_TEXTS) {
-			gc.drawText(item.getText(), currentWidthPosition, b.y + topMargin);
-		}
-
-		gc.setForeground(prevFG);
-		gc.setBackground(prevBG);
+	private Rectangle getBounds() {
+		return item.getBounds();
 	}
 
 	public Point computeCellSize(int colIndex) {
@@ -239,6 +279,8 @@ public class TableItemRenderer {
 
 		if (image != null) {
 			final Rectangle bounds = image.getBounds();
+			var rec = new Rectangle(width, topMargin, bounds.width, bounds.height);
+			internalComputedCellImage.put(colIndex, rec);
 			height += bounds.height;
 			width += bounds.width;
 		}
@@ -247,7 +289,7 @@ public class TableItemRenderer {
 		if (text != null) {
 			var size = getParent().computeTextExtent(text);
 
-			var rec = new Rectangle(width, height, size.x, size.y);
+			var rec = new Rectangle(width, topMargin, size.x, size.y);
 			internalComputedCellTextBounds.put(colIndex, rec);
 
 			width += size.x;
@@ -341,6 +383,7 @@ public class TableItemRenderer {
 	public void clearCache() {
 		this.computedCellSizes.clear();
 		this.internalComputedCellTextBounds.clear();
+		this.internalComputedCellImage.clear();
 		computedSize = null;
 	}
 
@@ -354,12 +397,26 @@ public class TableItemRenderer {
 		if (internalComputedCellTextBounds.get(index) == null)
 			computeCellSize(index);
 
-
 		var internal = internalComputedCellTextBounds.get(index);
 
 		var outer = getBounds(index);
 
 		return new Rectangle(outer.x + internal.x, outer.y + internal.y, internal.width, internal.height);
 
+	}
+
+	public Rectangle getImageBounds(int index) {
+
+		if (item.getImage(index) == null)
+			return new Rectangle(0, 0, 0, 0);
+
+		if (internalComputedCellImage.get(index) == null)
+			computeCellSize(index);
+
+		var internal = internalComputedCellImage.get(index);
+
+		var outer = getBounds(index);
+
+		return new Rectangle(outer.x + internal.x, outer.y + internal.y, internal.width, internal.height);
 	}
 }
