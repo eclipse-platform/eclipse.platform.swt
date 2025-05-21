@@ -1141,7 +1141,6 @@ public void test_setText() {
  */
 @Test
 public void test_setTextContainingScript_applicationLayerProgressListenerMustSeeUpToDateDom() {
-	assumeFalse("Toggling on Edge since I20250216-1800, see https://github.com/eclipse-platform/eclipse.platform.swt/issues/1843", isEdge);
 	AtomicBoolean completed = new AtomicBoolean();
 	browser.addProgressListener(ProgressListener.completedAdapter(event -> {
 		String script = """
@@ -1162,7 +1161,7 @@ public void test_setTextContainingScript_applicationLayerProgressListenerMustSee
 	browser.setText("""
 			<html>
 				<head>
-					<script src=\"file:///does/not/really/needs/to/exist.js\"></script>
+					<script>console.log("test");</script>
 				</head>
 				<body>
 					<h1>Hello, World!</h1>
