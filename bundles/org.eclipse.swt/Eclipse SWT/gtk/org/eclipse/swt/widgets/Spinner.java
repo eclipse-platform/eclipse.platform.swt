@@ -330,7 +330,7 @@ void createHandle (int index) {
 		GTK3.gtk_widget_set_has_window(fixedHandle, true);
 		GTK3.gtk_container_add (fixedHandle, handle);
 	}
-	GTK.gtk_editable_set_editable (GTK.GTK4 ? entryHandle : handle, (style & SWT.READ_ONLY) == 0);
+	GTK.gtk_editable_set_editable (handle, (style & SWT.READ_ONLY) == 0);
 	GTK.gtk_spin_button_set_wrap (handle, (style & SWT.WRAP) != 0);
 	imContext = OS.imContextLast();
 	// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,
@@ -586,7 +586,12 @@ public String getText() {
  */
 public int getTextLimit () {
 	checkWidget ();
-	int limit = GTK.gtk_entry_get_max_length (GTK.GTK4 ? entryHandle : handle);
+	int limit;
+	if (GTK.GTK4) {
+		limit = GTK4.gtk_editable_get_max_width_chars(handle);
+	} else {
+		limit = GTK.gtk_entry_get_max_length (handle);
+	}
 	return limit == 0 ? LIMIT : limit;
 }
 
@@ -1160,7 +1165,11 @@ public void setSelection (int value) {
 public void setTextLimit (int limit) {
 	checkWidget ();
 	if (limit == 0) error (SWT.ERROR_CANNOT_BE_ZERO);
-	GTK.gtk_entry_set_max_length (GTK.GTK4 ? entryHandle : handle, limit);
+	if(GTK.GTK4) {
+		GTK4.gtk_editable_set_max_width_chars (handle, limit);
+	} else {
+		GTK.gtk_entry_set_max_length (handle, limit);
+	}
 }
 
 /**

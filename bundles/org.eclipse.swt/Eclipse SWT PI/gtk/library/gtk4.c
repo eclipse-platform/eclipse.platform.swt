@@ -707,6 +707,18 @@ JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1editable_1get_1delegate)
 }
 #endif
 
+#ifndef NO_gtk_1editable_1get_1max_1width_1chars
+JNIEXPORT jint JNICALL GTK4_NATIVE(gtk_1editable_1get_1max_1width_1chars)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jint rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1editable_1get_1max_1width_1chars_FUNC);
+	rc = (jint)gtk_editable_get_max_width_chars((GtkEditable *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1editable_1get_1max_1width_1chars_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1editable_1get_1text
 JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1editable_1get_1text)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -716,6 +728,16 @@ JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1editable_1get_1text)
 	rc = (jlong)gtk_editable_get_text((GtkEditable *)arg0);
 	GTK4_NATIVE_EXIT(env, that, gtk_1editable_1get_1text_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1editable_1set_1max_1width_1chars
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1editable_1set_1max_1width_1chars)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1editable_1set_1max_1width_1chars_FUNC);
+	gtk_editable_set_max_width_chars((GtkEditable *)arg0, (int)arg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1editable_1set_1max_1width_1chars_FUNC);
 }
 #endif
 
