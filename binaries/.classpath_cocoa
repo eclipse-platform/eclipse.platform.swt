@@ -5,7 +5,6 @@
     <classpathentry kind="src" path="Eclipse SWT/common"/>
     <classpathentry kind="src" path="Eclipse SWT Tests/common"/>
     <classpathentry kind="src" path="Eclipse SWT/emulated/bidi"/>
-    <classpathentry kind="src" path="Eclipse SWT/emulated/coolbar"/>
     <classpathentry kind="src" path="Eclipse SWT/emulated/expand"/>
     <classpathentry kind="src" path="Eclipse SWT/emulated/tooltip"/>
     <classpathentry kind="src" path="Eclipse SWT PI/common"/>
