@@ -44,3 +44,11 @@ requires.9.namespace = org.eclipse.equinox.p2.iu
 requires.9.name = org.eclipse.swt.gtk.linux.riscv64
 requires.9.range = [$version$,$version$]
 requires.9.filter = (&(osgi.os=linux)(osgi.ws=gtk)(osgi.arch=riscv64)(!(org.eclipse.swt.buildtime=true)))
+
+# Ensure that 4.36 is not installed with the 0.0.1,2024.4.0.202412101111 version of darkest dark devstyle.
+# https://github.com/eclipse-packaging/packages/issues/307
+requires.100.namespace=org.eclipse.equinox.p2.iu
+requires.100.name=com.genuitec.eclipse.theming.core.feature.feature.group
+requires.100.range = [0.0.1,2024.4.0.202412101111]
+requires.100.min = 0
+requires.100.max = 0
