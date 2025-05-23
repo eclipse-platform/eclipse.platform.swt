@@ -3,17 +3,17 @@
 ![SWT Matrix Tests](https://gist.githubusercontent.com/eclipse-releng-bot/78d110a601baa4ef777ccb472f584038/raw/71510599eb84e852f3e135aa7a3ddf33854ca716/badge.svg)
 [![License](https://img.shields.io/github/license/eclipse-platform/eclipse.platform)](https://github.com/eclipse-platform/eclipse.platform.swt/blob/master/LICENSE)
 
-# About
+# 🌟 About
 
 SWT is a cross-platform GUI library for JVM based desktop applications.
 The best known SWT-based application is [Eclipse](https://www.eclipse.org).
 
-## Getting Started
+## 🚀 Getting Started
 
 SWT comes with platform-specific jar files.
 Download them from https://download.eclipse.org/eclipse/downloads/index.html and add the jar file to your classpath.
 
-### Example
+### 🎨 Example
 ![Example](example.png)
 ```java
 import org.eclipse.swt.SWT;
@@ -80,7 +80,7 @@ The `while`-loop processes all GUI related events until the shell is disposed wh
 Before exiting, any claimed GUI resources needs to be freed.
 
 
-# Contributing to SWT
+# 🤝 Contributing to SWT
 
 Thanks for your interest in this project.
 
@@ -91,7 +91,7 @@ https://www.eclipse.org/setups/installer/?url=https://raw.githubusercontent.com/
 "Click to open Eclipse-Installer Auto Launch or drag into your running installer")
 
 
-## Developer Resources
+## 🛠️ Developer Resources
 
 See the following description for how to contribute a feature or a bug fix to SWT.
 
@@ -105,25 +105,25 @@ Also see in the SWT section of the Eclipse FAQ for more background information a
 
 - <https://github.com/eclipse-platform/eclipse.platform/blob/master/docs/FAQ/The_Official_Eclipse_FAQs.md#standard-widget-toolkit-swt>
 
-## Contributor License Agreement
+## ✍️ Contributor License Agreement
 
 Before your contribution can be accepted by the project, you need to create and electronically sign the Eclipse Foundation Contributor License Agreement (CLA).
 
 - <http://www.eclipse.org/legal/CLA.php>
 
-## Contact
+## ✨ Contact
 
 Contact the project developers via the project's "dev" list.
 
 - <https://accounts.eclipse.org/mailing-list/platform-dev>
 
-## Search for Bugs
+## 🔍 Search for Bugs
 
 SWT used to track ongoing development and issues in Bugzilla .
 
 - <https://bugs.eclipse.org/bugs/buglist.cgi?product=Platform&component=SWT>
 
-## Create a New Bug
+## 📝 Create a New Bug
 
 You can register bugs and feature requests in the GitHub Issue Tracker. Remember that contributions are always welcome!
 - [View existing SWT issues](https://github.com/eclipse-platform/eclipse.platform.swt/issues)
@@ -132,7 +132,7 @@ You can register bugs and feature requests in the GitHub Issue Tracker. Remember
 Please bear in mind that this project is almost entirely developed by volunteers. If you do not provide the implementation yourself (or pay someone to do it for you), the bug might never get fixed. If it is a serious bug, other people than you might care enough to provide a fix.
 
 
-# Prototyping on a Single, Cross-Platform SWT Implementation
+# 🌐 Prototyping on a Single, Cross-Platform SWT Implementation
 
 There is current work on evaluating the feasibility of achieving a single, OS-agnostic implementation of SWT in order to reduce maintenance efforts, enable better look and feel, and improve configurability.
 The work on these prototypes and their documentation can currently be found in a dedicated GitHub organization: https://github.com/swt-initiative31
