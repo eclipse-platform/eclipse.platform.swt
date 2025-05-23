@@ -2108,6 +2108,11 @@ private class PlainImageProviderWrapper extends AbstractImageProviderWrapper {
 	}
 
 	@Override
+	protected long configureGCData(GCData data) {
+		return configureGC(data, DPIUtil.getDeviceZoom());
+	}
+
+	@Override
 	protected Rectangle getBounds(int zoom) {
 		Rectangle rectangle = new Rectangle(0, 0, width, height);
 		return DPIUtil.scaleUp(rectangle, zoom);
