@@ -66,13 +66,13 @@ public final class Drawing {
 			originalGC = new GC(control);
 			usingTemporaryGC = true;
 		}
-		originalGC.setFont(control.getFont());
-		originalGC.setForeground(control.getForeground());
-		originalGC.setBackground(control.getBackground());
-		originalGC.setClipping(new Rectangle(0, 0, bounds.width, bounds.height));
-		originalGC.setAntialias(SWT.ON);
 
 		GC gc = createGraphicsContext(originalGC, control);
+		gc.setFont(control.getFont());
+		gc.setForeground(control.getForeground());
+		gc.setBackground(control.getBackground());
+		gc.setClipping(new Rectangle(0, 0, bounds.width, bounds.height));
+		gc.setAntialias(SWT.ON);
 
 		try {
 			drawOperation.accept(gc);
