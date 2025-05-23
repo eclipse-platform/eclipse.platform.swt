@@ -27,12 +27,12 @@ import org.eclipse.swt.widgets.Text;
  * no longer paint sliders correctly when scrolling.
  * <p>
  * Steps to reproduce:
+ * </p>
  * <ol>
  * <li>Run the snippet.</li>
  * <li>Resize the pop-up {@link Shell}, so that scrollbars can still be used.</li>
  * <li>Scroll with mouse drag, observe that the sliders of the scrollbars don't move.</li>
  * </ol>
- * </p>
  * Expected results: Scrollbar sliders move during scrolling.
  * Actual results: Scrollbar sliders don't move when scrolling.
  */

@@ -15,6 +15,7 @@
  *******************************************************************************/
 package org.eclipse.swt.internal;
 
+import java.util.*;
 import java.util.function.*;
 
 import org.eclipse.swt.*;
@@ -42,9 +43,20 @@ public class DPIUtil {
 	private static int deviceZoom = 100;
 	private static int nativeDeviceZoom = 100;
 
-	private static enum AutoScaleMethod { AUTO, NEAREST, SMOOTH }
-	private static AutoScaleMethod autoScaleMethodSetting = AutoScaleMethod.AUTO;
-	private static AutoScaleMethod autoScaleMethod = AutoScaleMethod.NEAREST;
+	private static enum AutoScaleMethod { AUTO, NEAREST, SMOOTH;
+
+		public static Optional<AutoScaleMethod> forString(String s) {
+			for (AutoScaleMethod v : values()) {
+				if (v.name().equalsIgnoreCase(s)) {
+					return Optional.of(v);
+				}
+			}
+			return Optional.empty();
+		}
+
+	}
+	private static final AutoScaleMethod AUTO_SCALE_METHOD_SETTING;
+	private static AutoScaleMethod autoScaleMethod;
 
 	private static String autoScaleValue;
 	private static final boolean USE_CAIRO_AUTOSCALE = SWT.getPlatform().equals("gtk");
@@ -100,13 +112,8 @@ public class DPIUtil {
 		autoScaleValue = System.getProperty (SWT_AUTOSCALE);
 
 		String value = System.getProperty (SWT_AUTOSCALE_METHOD);
-		if (value != null) {
-			if (AutoScaleMethod.NEAREST.name().equalsIgnoreCase(value)) {
-				autoScaleMethod = autoScaleMethodSetting = AutoScaleMethod.NEAREST;
-			} else if (AutoScaleMethod.SMOOTH.name().equalsIgnoreCase(value)) {
-				autoScaleMethod = autoScaleMethodSetting = AutoScaleMethod.SMOOTH;
-			}
-		}
+		AUTO_SCALE_METHOD_SETTING = AutoScaleMethod.forString(value).orElse(AutoScaleMethod.AUTO);
+		autoScaleMethod = AUTO_SCALE_METHOD_SETTING != AutoScaleMethod.AUTO ? AUTO_SCALE_METHOD_SETTING : AutoScaleMethod.NEAREST;
 	}
 
 /**
@@ -295,20 +302,21 @@ private static ImageData autoScaleImageData (Device device, final ImageData imag
 	boolean useSmoothScaling = isSmoothScalingEnabled() && imageData.getTransparencyType() != SWT.TRANSPARENCY_MASK;
 	if (useSmoothScaling) {
 		Image original = new Image (device, (ImageDataProvider) zoom -> imageData);
-		/* Create a 24 bit image data with alpha channel */
-		final ImageData resultData = new ImageData (scaledWidth, scaledHeight, 24, new PaletteData (0xFF, 0xFF00, 0xFF0000));
-		resultData.alphaData = new byte [scaledWidth * scaledHeight];
-		Image resultImage = new Image (device, (ImageDataProvider) zoom -> resultData);
-		GC gc = new GC (resultImage);
-		gc.setAntialias (SWT.ON);
-		gc.drawImage (original, 0, 0, autoScaleDown (width), autoScaleDown (height),
-				/* E.g. destWidth here is effectively DPIUtil.autoScaleDown (scaledWidth), but avoiding rounding errors.
-				 * Nevertheless, we still have some rounding errors due to the point-based API GC#drawImage(..).
-				 */
-				0, 0, Math.round (autoScaleDown (width * scaleFactor)), Math.round (autoScaleDown (height * scaleFactor)));
-		gc.dispose ();
+		ImageGcDrawer drawer =  new ImageGcDrawer() {
+			@Override
+			public void drawOn(GC gc, int imageWidth, int imageHeight) {
+				gc.setAntialias (SWT.ON);
+				Image.drawScaled(gc, original, width, height, scaleFactor);
+			};
+
+			@Override
+			public int getGcStyle() {
+				return SWT.TRANSPARENT;
+			}
+		};
+		Image resultImage = new Image (device, drawer, scaledWidth, scaledHeight);
+		ImageData result = resultImage.getImageData (100);
 		original.dispose ();
-		ImageData result = resultImage.getImageData (getDeviceZoom ());
 		resultImage.dispose ();
 		return result;
 	} else {
@@ -614,7 +622,7 @@ public static void setDeviceZoom (int nativeDeviceZoom) {
 
 	// in GTK, preserve the current method when switching to a 100% monitor
 	boolean preserveScalingMethod = SWT.getPlatform().equals("gtk") && deviceZoom == 100;
-	if (!preserveScalingMethod && autoScaleMethodSetting == AutoScaleMethod.AUTO) {
+	if (!preserveScalingMethod && AUTO_SCALE_METHOD_SETTING == AutoScaleMethod.AUTO) {
 		if (sholdUseSmoothScaling()) {
 			autoScaleMethod = AutoScaleMethod.SMOOTH;
 		} else {

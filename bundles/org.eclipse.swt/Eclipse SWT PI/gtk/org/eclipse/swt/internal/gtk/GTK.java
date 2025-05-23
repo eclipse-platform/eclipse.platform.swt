@@ -185,7 +185,7 @@ public class GTK extends OS {
 	public static final byte[] gtk_application_prefer_dark_theme = OS.ascii("gtk-application-prefer-dark-theme");
 
 	/** Named icons.
-	 * See https://docs.google.com/spreadsheet/pub?key=0AsPAM3pPwxagdGF4THNMMUpjUW5xMXZfdUNzMXhEa2c&output=html
+	 * See https://docs.google.com/spreadsheet/pub?key=0AsPAM3pPwxagdGF4THNMMUpjUW5xMXZfdUNzMXhEa2c&amp;output=html
 	 * See http://standards.freedesktop.org/icon-naming-spec/icon-naming-spec-latest.html#names
 	 * Icon preview tool: gtk3-icon-browser
 	 * Snippets often demonstrate usage of these. E.x 309, 258.
@@ -2340,8 +2340,7 @@ public class GTK extends OS {
 	public static final native void gtk_widget_grab_focus(long widget);
 	/** @param widget cast=(GtkWidget *) */
 	public static final native boolean gtk_widget_has_focus(long widget);
-	/** @param widget cast=(GtkWidget *) */
-	public static final native void gtk_widget_hide(long widget);
+
 	/** @param widget cast=(GtkWidget *) */
 	public static final native boolean gtk_widget_is_focus(long widget);
 	/** @param widget cast=(GtkWidget *) */
@@ -2399,8 +2398,7 @@ public class GTK extends OS {
 	 * @param height cast=(gint)
 	 */
 	public static final native void gtk_widget_set_size_request(long widget, int width, int height);
-	/** @param widget cast=(GtkWidget *) */
-	public static final native void gtk_widget_show(long widget);
+
 	/** @param widget cast=(GtkWidget *) */
 	public static final native boolean gtk_widget_activate(long widget);
 	/** @param widget cast=(GtkWidget *) */

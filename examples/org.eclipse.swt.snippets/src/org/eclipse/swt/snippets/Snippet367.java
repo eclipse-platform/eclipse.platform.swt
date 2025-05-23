@@ -36,6 +36,8 @@ public class Snippet367 {
 	private static final String IMAGE_PATH_200 = IMAGES_ROOT + IMAGE_200;
 
 	public static void main (String [] args) {
+		final Display display = new Display ();
+
 		final ImageFileNameProvider filenameProvider = zoom -> {
 			switch (zoom) {
 			case 100:
@@ -65,7 +67,17 @@ public class Snippet367 {
 			gc.drawLine(3, 3, width - 3, height - 3);
 		};
 
-		final Display display = new Display ();
+		Image imageWithDataProvider = new Image (display, imageDataProvider);
+		final ImageGcDrawer transparentImageGcDrawer = new ImageGcDrawer() {
+			@Override
+			public void drawOn(GC gc, int width, int height) {
+				gc.drawImage(imageWithDataProvider, 0, 0);
+			}
+			@Override
+			public int getGcStyle() {
+				return SWT.TRANSPARENT;
+			}
+		};
 		final Shell shell = new Shell (display);
 		shell.setText("Snippet367");
 		shell.setLayout (new GridLayout (3, false));
@@ -99,12 +111,16 @@ public class Snippet367 {
 		new Button(shell, SWT.NONE).setImage (new Image (display, filenameProvider));
 
 		new Label (shell, SWT.NONE).setText ("ImageDataProvider:");
-		new Label (shell, SWT.NONE).setImage (new Image (display, imageDataProvider));
-		new Button(shell, SWT.NONE).setImage (new Image (display, imageDataProvider));
+		new Label (shell, SWT.NONE).setImage (imageWithDataProvider);
+		new Button(shell, SWT.NONE).setImage (imageWithDataProvider);
 
 		new Label (shell, SWT.NONE).setText ("ImageGcDrawer:");
 		new Label (shell, SWT.NONE).setImage (new Image (display, imageGcDrawer, 20, 20));
 		new Button(shell, SWT.NONE).setImage (new Image (display, imageGcDrawer, 20, 20));
+
+		new Label (shell, SWT.NONE).setText ("Transparent ImageGcDrawer:");
+		new Label (shell, SWT.NONE).setImage (new Image (display, transparentImageGcDrawer, 20, 20));
+		new Button(shell, SWT.NONE).setImage (new Image (display, transparentImageGcDrawer, 20, 20));
 
 		createSeparator(shell);
 

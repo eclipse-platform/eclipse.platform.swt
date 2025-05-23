@@ -40,7 +40,7 @@ public abstract class DragPaintSession extends BasicPaintSession {
 	/**
 	 * Constructs a PaintSession.
 	 *
-	 * @param getPaintSurface() the drawing surface to use
+	 * @param paintSurface the drawing surface to use
 	 */
 	protected DragPaintSession(PaintSurface paintSurface) {
 		super(paintSurface);

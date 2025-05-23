@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -17,7 +17,6 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.gtk3.*;
 import org.eclipse.swt.internal.gtk4.*;
@@ -290,11 +289,6 @@ public int getSelection () {
  */
 public Point getSize () {
 	checkWidget ();
-	return DPIUtil.autoScaleDown (getSizeInPixels ());
-}
-
-Point getSizeInPixels () {
-	checkWidget ();
 	if (handle == 0) return new Point (0,0);
 	GtkRequisition requisition = new GtkRequisition ();
 	gtk_widget_get_preferred_size (handle, requisition);
@@ -332,11 +326,6 @@ public int getThumb () {
  * @since 3.6
  */
 public Rectangle getThumbBounds() {
-	checkWidget();
-	return DPIUtil.autoScaleDown(getThumbBoundsInPixels());
-}
-
-Rectangle getThumbBoundsInPixels() {
 	checkWidget();
 
 	int[] slider_start = new int[1], slider_end = new int[1];
@@ -402,11 +391,6 @@ Rectangle getThumbBoundsInPixels() {
  */
 public Rectangle getThumbTrackBounds () {
 	checkWidget ();
-	return DPIUtil.autoScaleDown(getThumbTrackBoundsInPixels());
-}
-
-Rectangle getThumbTrackBoundsInPixels () {
-	checkWidget();
 	int x = 0, y = 0, width, height;
 
 	/*

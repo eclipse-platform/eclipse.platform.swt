@@ -46,9 +46,8 @@ public final class Font extends Resource {
 	 * platforms and should never be accessed from application code.
 	 * </p>
 	 *
-	 * @noreference This field is not intended to be referenced by clients.
 	 */
-	public long handle;
+	private long handle;
 
 	/**
 	 * The zoom in % of the standard resolution used for conversion of point height to pixel height
@@ -57,22 +56,24 @@ public final class Font extends Resource {
 	int zoom;
 
 	/**
+	 * this field is used to mark destroyed fonts
+	 */
+	private boolean isDestroyed;
+
+	/**
+	 * this field is used to store fontData provided during initialization
+	 */
+	private final FontData fontData;
+
+	/**
 	 * Font height in points. As the conversion to pixel height involves rounding the fontHeight must
 	 * be cached.
 	 */
 	private final float fontHeight;
 
-/**
- * Prevents uninitialized instances from being created outside the package.
- */
-Font(Device device) {
-	super(device);
-	this.zoom = DPIUtil.getNativeDeviceZoom();
-	this.fontHeight = 0;
-}
-
 private Font(Device device, long handle, int zoom) {
 	super(device);
+	this.fontData = null;
 	this.handle = handle;
 	this.zoom = zoom;
 	this.fontHeight = device.computePoints(fetchLogFontData(), handle, zoom);
@@ -100,16 +101,18 @@ private Font(Device device, long handle, int zoom) {
  */
 public Font(Device device, FontData fd) {
 	super(device);
+	if (fd == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.zoom = DPIUtil.getNativeDeviceZoom();
-	init(fd);
+	this.fontData = new FontData(fd.toString());
 	this.fontHeight = fd.height;
 	init();
 }
 
 private Font(Device device, FontData fd, int zoom) {
 	super(device);
+	if (fd == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.zoom = zoom;
-	init(fd);
+	this.fontData = new FontData(fd.toString());
 	this.fontHeight = fd.height;
 	init();
 }
@@ -148,7 +151,7 @@ public Font(Device device, FontData[] fds) {
 	}
 	this.zoom = DPIUtil.getNativeDeviceZoom();
 	FontData fd = fds[0];
-	init(fds[0]);
+	this.fontData = new FontData(fd.toString());
 	this.fontHeight = fd.height;
 	init();
 }
@@ -181,23 +184,16 @@ public Font(Device device, String name, int height, int style) {
 	super(device);
 	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.zoom = DPIUtil.getNativeDeviceZoom();
-	init(new FontData (name, height, style));
+	this.fontData = new FontData (name, height, style);
 	this.fontHeight = height;
 	init();
 }
 
-/*public*/ Font(Device device, String name, float height, int style) {
-	super(device);
-	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.zoom = DPIUtil.getNativeDeviceZoom();
-	init(new FontData (name, height, style));
-	this.fontHeight = height;
-	init();
-}
 @Override
 void destroy() {
 	OS.DeleteObject(handle);
 	handle = 0;
+	isDestroyed = true;
 }
 
 /**
@@ -215,7 +211,7 @@ public boolean equals(Object object) {
 	if (object == this) return true;
 	if (!(object instanceof Font)) return false;
 	Font font = (Font) object;
-	return device == font.device && handle == font.handle;
+	return device == font.device && win32_getHandle(this) == win32_getHandle(font);
 }
 
 /**
@@ -238,7 +234,7 @@ public FontData[] getFontData() {
 
 private LOGFONT fetchLogFontData() {
 	LOGFONT logFont = new LOGFONT ();
-	OS.GetObject(handle, LOGFONT.sizeof, logFont);
+	OS.GetObject(win32_getHandle(this), LOGFONT.sizeof, logFont);
 	return logFont;
 }
 
@@ -254,7 +250,7 @@ private LOGFONT fetchLogFontData() {
  */
 @Override
 public int hashCode () {
-	return (int)handle;
+	return (int) win32_getHandle(this);
 }
 
 void init (FontData fd) {
@@ -279,7 +275,7 @@ void init (FontData fd) {
  */
 @Override
 public boolean isDisposed() {
-	return handle == 0;
+	return isDestroyed;
 }
 
 /**
@@ -292,6 +288,26 @@ public boolean isDisposed() {
 public String toString () {
 	if (isDisposed()) return "Font {*DISPOSED*}";
 	return "Font {" + handle + "}";
+}
+
+/**
+ * Creates or returns a handle for the requested font.
+ * <p>
+ * <b>IMPORTANT:</b> This method is not part of the public API for
+ * <code>Font</code>. It is marked public only so that it can be shared within
+ * the packages provided by SWT. It is not available on all platforms, and
+ * should never be called from application code.
+ *
+ * @param font the font to get the handle of
+ * @return handle of the font
+ *
+ * @noreference This method is not intended to be referenced by clients.
+ */
+public static long win32_getHandle(Font font) {
+	if (font.handle == 0 && font.fontData != null && !font.isDestroyed) {
+		font.init(font.fontData);
+	}
+	return font.handle;
 }
 
 /**

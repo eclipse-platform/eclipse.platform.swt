@@ -553,7 +553,7 @@ public Color getBackground () {
 /**
  * Returns the background color at the given column index in the receiver.
  *
- * @param index the column index
+ * @param columnIndex the column index
  * @return the background color
  *
  * @exception SWTException <ul>
@@ -605,7 +605,7 @@ Rectangle getBounds (boolean checkData) {
  * Returns a rectangle describing the receiver's size and location
  * relative to its parent at a column in the table.
  *
- * @param index the index that specifies the column
+ * @param columnIndex the index that specifies the column
  * @return the receiver's bounding column rectangle
  *
  * @exception SWTException <ul>
@@ -818,7 +818,7 @@ Font getFont (boolean checkData) {
  * Returns the font that the receiver will use to paint textual information
  * for the specified cell in this item.
  *
- * @param index the column index
+ * @param columnIndex the column index
  * @return the receiver's font
  *
  * @exception SWTException <ul>
@@ -869,7 +869,7 @@ public Color getForeground () {
  *
  * Returns the foreground color at the given column index in the receiver.
  *
- * @param index the column index
+ * @param columnIndex the column index
  * @return the foreground color
  *
  * @exception SWTException <ul>
@@ -950,7 +950,7 @@ public Image getImage () {
  * Returns the image stored at the given column index in the receiver,
  * or null if the image has not been set or if the column does not exist.
  *
- * @param index the column index
+ * @param columnIndex the column index
  * @return the image stored at the given column index in the receiver
  *
  * @exception SWTException <ul>
@@ -975,7 +975,7 @@ Image getImage (int columnIndex, boolean checkData) {
  * table.  An empty rectangle is returned if index exceeds
  * the index of the table's last column.
  *
- * @param index the index that specifies the column
+ * @param columnIndex the index that specifies the column
  * @return the receiver's bounding image rectangle
  *
  * @exception SWTException <ul>
@@ -1096,7 +1096,7 @@ public String getText () {
  * Returns the text stored at the given column index in the receiver,
  * or empty string if the text has not been set.
  *
- * @param index the column index
+ * @param columnIndex the column index
  * @return the text stored at the given column index in the receiver
  *
  * @exception SWTException <ul>
@@ -1122,7 +1122,7 @@ String getText (int columnIndex, boolean checkData) {
  * table.  An empty rectangle is returned if index exceeds
  * the index of the table's last column.
  *
- * @param index the index that specifies the column
+ * @param columnIndex the index that specifies the column
  * @return the receiver's bounding text rectangle
  *
  * @exception SWTException <ul>
@@ -1653,7 +1653,7 @@ public void setBackground (Color color) {
  * to the color specified by the argument, or to the default system color for the item
  * if the argument is null.
  *
- * @param index the column index
+ * @param columnIndex the column index
  * @param color the new color (or null)
  *
  * @exception IllegalArgumentException <ul>
@@ -1692,7 +1692,7 @@ public void setBackground (int columnIndex, Color color) {
  * Sets the checked state of the checkbox for this item.  This state change
  * only applies if the Table was created with the SWT.CHECK style.
  *
- * @param checked the new checked state of the checkbox
+ * @param value the new checked state of the checkbox
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1768,7 +1768,7 @@ public void setFont (Font font) {
  * argument, or to the default font for that kind of control if the
  * argument is null.
  *
- * @param index the column index
+ * @param columnIndex the column index
  * @param font the new font (or null)
  *
  * @exception IllegalArgumentException <ul>
@@ -1846,7 +1846,7 @@ public void setForeground (Color color) {
  * to the color specified by the argument, or to the default system color for the item
  * if the argument is null.
  *
- * @param index the column index
+ * @param columnIndex the column index
  * @param color the new color (or null)
  *
  * @exception IllegalArgumentException <ul>
@@ -1889,7 +1889,7 @@ public void setForeground (int columnIndex, Color color) {
  * Sets the grayed state of the checkbox for this item.  This state change
  * only applies if the Table was created with the SWT.CHECK style.
  *
- * @param grayed the new grayed state of the checkbox;
+ * @param value the new grayed state of the checkbox;
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1916,7 +1916,7 @@ public void setImage (Image value) {
 /**
  * Sets the image for multiple columns in the table.
  *
- * @param images the array of new images
+ * @param value the array of new images
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the array of images is null</li>
@@ -1939,8 +1939,8 @@ public void setImage (Image[] value) {
 /**
  * Sets the receiver's image at a column.
  *
- * @param index the column index
- * @param image the new image
+ * @param columnIndex the column index
+ * @param value the new image
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
@@ -2046,7 +2046,6 @@ public void setImage (int columnIndex, Image value) {
  *
  * @param indent the new indent
  *
- * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -2065,8 +2064,8 @@ public void setImageIndent (int indent) {
 /**
  * Sets the receiver's text at a column
  *
- * @param index the column index
- * @param string the new text
+ * @param columnIndex the column index
+ * @param value the new text
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the text is null</li>
@@ -2125,7 +2124,7 @@ public void setText (String value) {
 /**
  * Sets the text for multiple columns in the table.
  *
- * @param strings the array of new strings
+ * @param value the array of new strings
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the text is null</li>

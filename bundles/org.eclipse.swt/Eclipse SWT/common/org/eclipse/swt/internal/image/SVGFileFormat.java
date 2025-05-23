@@ -31,7 +31,8 @@ import org.eclipse.swt.internal.DPIUtil.*;
 public class SVGFileFormat extends FileFormat {
 
 	/** The instance of the registered {@link SVGRasterizer}. */
-	private static final SVGRasterizer RASTERIZER = ServiceLoader.load(SVGRasterizer.class).findFirst().orElse(null);
+	private static final SVGRasterizer RASTERIZER = ServiceLoader
+			.load(SVGRasterizer.class, SVGFileFormat.class.getClassLoader()).findFirst().orElse(null);
 
 	@Override
 	boolean isFileFormat(LEDataInputStream stream) throws IOException {

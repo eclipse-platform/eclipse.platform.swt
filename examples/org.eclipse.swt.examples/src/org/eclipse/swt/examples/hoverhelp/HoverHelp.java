@@ -265,7 +265,7 @@ public class HoverHelp {
 		/**
 		 * Enables customized hover help for a specified control
 		 *
-		 * @control the control on which to enable hoverhelp
+		 * @param control the control on which to enable hoverhelp
 		 */
 		public void activateHoverHelp(final Control control) {
 			/*
@@ -347,7 +347,6 @@ public class HoverHelp {
 		 * Sets the location for a hovering shell
 		 * @param shell the object that is to hover
 		 * @param position the position of a widget to hover over
-		 * @return the top-left location for a hovering box
 		 */
 		private void setHoverLocation(Shell shell, Point position) {
 			Rectangle displayBounds = shell.getDisplay().getBounds();

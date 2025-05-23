@@ -1163,6 +1163,26 @@ JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(webkit_1navigation_1policy_1decision_1g
 }
 #endif
 
+#ifndef NO_webkit_1network_1session_1get_1default
+JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(webkit_1network_1session_1get_1default)
+	(JNIEnv *env, jclass that)
+{
+	jlong rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, webkit_1network_1session_1get_1default_FUNC);
+/*
+	rc = (jlong)webkit_network_session_get_default();
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, webkit_network_session_get_default)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)())fp)();
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, webkit_1network_1session_1get_1default_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_webkit_1policy_1decision_1download
 JNIEXPORT void JNICALL WebKitGTK_NATIVE(webkit_1policy_1decision_1download)
 	(JNIEnv *env, jclass that, jlong arg0)

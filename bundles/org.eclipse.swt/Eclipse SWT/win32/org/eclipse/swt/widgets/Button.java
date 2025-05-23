@@ -20,6 +20,7 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.internal.win32.version.*;
 
 /**
  * Instances of this class represent a selectable user interface object that
@@ -1351,7 +1352,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 
 						int inset = 2;
 						int radius = 3;
-						if (useDarkModeExplorerTheme && (OS.WIN32_BUILD >= OS.WIN32_BUILD_WIN11_21H2)) {
+						if (useDarkModeExplorerTheme && OsVersion.IS_WIN11_21H2) {
 							// On Win11, Light theme and Dark theme images have different sizes
 							inset = 1;
 							radius = 4;
@@ -1362,7 +1363,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 						int r = nmcd.right - inset;
 						int b = nmcd.bottom - inset;
 
-						if (OS.WIN32_BUILD >= OS.WIN32_BUILD_WIN11_21H2) {
+						if (OsVersion.IS_WIN11_21H2) {
 							// 'RoundRect' has left/top pixel reserved for border
 							l += 1;
 							t += 1;
@@ -1488,7 +1489,7 @@ static int getThemeStateId(int style, boolean pressed, boolean enabled) {
 	 * The workaround is to use hot image in place of default.
 	 */
 	boolean hot = false;
-	if (OS.WIN32_BUILD >= OS.WIN32_BUILD_WIN11_21H2) {
+	if (OsVersion.IS_WIN11_21H2) {
 		if (!pressed && enabled) {
 			hot = true;
 		}

@@ -63,7 +63,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	int[] cases = {SWT.DROP_DOWN, SWT.SIMPLE};
 	for (int i = 0; i < cases.length; i++) {
 		combo = new Combo(shell, cases[i]);
-		assertEquals(":a:" + String.valueOf(i), cases[i], (combo.getStyle() & cases[i]));
+		assertEquals(String.valueOf(i), cases[i], (combo.getStyle() & cases[i]));
 	}
 }
 
@@ -73,11 +73,11 @@ public void test_addLjava_lang_String() {
 		combo.add(null));
 
 	combo.add("");
-	assertArrayEquals(":a:", new String[]{""}, combo.getItems());
+	assertArrayEquals(new String[]{""}, combo.getItems());
 	combo.add("");
-	assertArrayEquals(":b:", new String[]{"", ""}, combo.getItems());
+	assertArrayEquals(new String[]{"", ""}, combo.getItems());
 	combo.add("fred");
-	assertArrayEquals(":c:", new String[]{"", "", "fred"}, combo.getItems());
+	assertArrayEquals(new String[]{"", "", "fred"}, combo.getItems());
 
 }
 
@@ -179,7 +179,7 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 	assertThrows(IllegalArgumentException.class, () -> combo.addSelectionListener(null));
 	combo.addSelectionListener(listener);
 	combo.select(0);
-	assertFalse(":a:", listenerCalled);
+	assertFalse(listenerCalled);
 	combo.removeSelectionListener(listener);
 	assertThrows(IllegalArgumentException.class, () ->	combo.removeSelectionListener(null));
 }
@@ -191,7 +191,7 @@ public void test_addSelectionListenerWidgetSelectedAdapterLorg_eclipse_swt_event
 
 	combo.addSelectionListener(listener);
 	combo.select(0);
-	assertFalse(":a:", listenerCalled);
+	assertFalse(listenerCalled);
 
 	combo.removeSelectionListener(listener);
 	listenerCalled = false;
@@ -205,14 +205,14 @@ public void test_clearSelection() {
 	for (int i = 0; i < number; i++)
 		combo.add("fred" + i);
 	combo.clearSelection();
-	assertEquals(":a:",new Point(0, 0), combo.getSelection());
+	assertEquals(new Point(0, 0), combo.getSelection());
 	combo.setSelection(new Point(0, 5));
-	assertEquals(":b:",new Point(0, 0), combo.getSelection());  //nothing is selected
+	assertEquals(new Point(0, 0), combo.getSelection());  //nothing is selected
 	combo.setText("some text");
 	combo.setSelection(new Point(0, 5));
-	assertEquals(":c:",new Point(0, 5), combo.getSelection());
+	assertEquals(new Point(0, 5), combo.getSelection());
 	combo.clearSelection();
-	assertEquals(":d:", combo.getSelection().x, combo.getSelection().y);
+	assertEquals(combo.getSelection().x, combo.getSelection().y);
 }
 
 @Override
@@ -236,7 +236,7 @@ public void test_copy() {
 	combo.copy();
 	combo.setSelection(new Point(0,0));
 	combo.paste();
-	assertEquals(":a:","23123456", combo.getText());
+	assertEquals("23123456", combo.getText());
 }
 
 @Test
@@ -252,7 +252,7 @@ public void test_cut() {
 	combo.setText("123456");
 	combo.setSelection(new Point(1,3));
 	combo.cut();
-	assertEquals(":a:","1456", combo.getText());
+	assertEquals("1456", combo.getText());
 }
 
 @Test
@@ -263,7 +263,7 @@ public void test_deselectAll() {
 	combo.select(0);
 	combo.select(2);
 	combo.deselectAll();
-	assertEquals(":a:",-1, combo.getSelectionIndex());
+	assertEquals(-1, combo.getSelectionIndex());
 }
 @Test
 public void test_deselectI() {
@@ -282,9 +282,9 @@ public void test_deselectI() {
 		combo.add("fred" + i);
 	for (int i = 0; i < number; i++) {
 		combo.select(i);
-		assertEquals(":a:" + i,i, combo.getSelectionIndex());
+		assertEquals("index "+i,i, combo.getSelectionIndex());
 		combo.deselect(i);
-		assertEquals(":b:" + i,-1, combo.getSelectionIndex());
+		assertEquals("index "+i,-1, combo.getSelectionIndex());
 	}
 }
 
@@ -298,17 +298,17 @@ public void test_getChildren() {
 public void test_getItemCount() {
 	int number = 10;
 	for (int i = 0; i < number; i++) {
-		assertEquals(":a:" + i,i,  combo.getItemCount());
+		assertEquals("index "+i,i,  combo.getItemCount());
 		combo.add("fred" + i);
 	}
-	assertEquals(":aa:", number, combo.getItemCount());
+	assertEquals(number, combo.getItemCount());
 
 	for (int i = 0; i < number; i++) {
-		assertEquals(":b:" + i, number-i, combo.getItemCount());
+		assertEquals("index "+i, number-i, combo.getItemCount());
 		combo.remove(0);
 	}
 	combo.removeAll();
-	assertEquals(":c:", 0, combo.getItemCount());
+	assertEquals(0, combo.getItemCount());
 }
 
 @Test
@@ -335,10 +335,10 @@ public void test_getItems() {
 	combo.add("2");
 	combo.add("3");
 	String[] items = combo.getItems();
-	assertEquals(":a:", 3, items.length);
-	assertEquals(":a:", "1", items[0]);
-	assertEquals(":a:", "2", items[1]);
-	assertEquals(":a:", "3", items[2]);
+	assertEquals(3, items.length);
+	assertEquals("1", items[0]);
+	assertEquals("2", items[1]);
+	assertEquals("3", items[2]);
 }
 
 @Test
@@ -351,7 +351,7 @@ public void test_getSelection() {
 	combo.setText("123456");
 	combo.setSelection(new Point(1,3));
 	combo.getSelection();
-	assertEquals(":a:", new Point(1,3), combo.getSelection());
+	assertEquals(new Point(1,3), combo.getSelection());
 }
 
 @Test
@@ -403,7 +403,7 @@ public void test_getText() {
 	String[] cases = {"", "fred", "fredfred"};
 	for (int i = 0; i < cases.length; i++) {
 		combo.setText(cases[i]);
-		assertEquals(":a:" + String.valueOf(i), cases[i], combo.getText());
+		assertEquals(String.valueOf(i), cases[i], combo.getText());
 	}
 }
 
@@ -415,7 +415,7 @@ public void test_getTextHeight() {
 @Test
 public void test_getTextLimit() {
 	combo.setTextLimit(3);
-	assertEquals(":a:", 3, combo.getTextLimit());
+	assertEquals(3, combo.getTextLimit());
 }
 
 @Test
@@ -472,18 +472,18 @@ public void test_indexOfLjava_lang_StringI() {
 	for (int i = 0; i < number; i++)
 		combo.add("fred" + i);
 	for (int i = 0; i < number; i++)
-		assertEquals(":a:" + i, i, combo.indexOf("fred" + i, 0));
+		assertEquals("index " + i, i, combo.indexOf("fred" + i, 0));
 	for (int i = 0; i < number; i++)
-		assertEquals(":b:" + i, -1, combo.indexOf("fred" + i, i + 1));
+		assertEquals("index " + i, -1, combo.indexOf("fred" + i, i + 1));
 
 	for (int i = 0; i < number; i++)
 		combo.add("fred" + i);
 	for (int i = 0; i < 3; i++)
-		assertEquals(":a:" + i, i, combo.indexOf("fred" + i, 0));
+		assertEquals("index " + i, i, combo.indexOf("fred" + i, 0));
 	for (int i = 3; i < number; i++)
-		assertEquals(":b:" + i, i, combo.indexOf("fred" + i, 3));
+		assertEquals("index " + i, i, combo.indexOf("fred" + i, 3));
 	for (int i = 0; i < number; i++)
-		assertEquals(":b:" + i, i, combo.indexOf("fred" + i, i));
+		assertEquals("index " + i, i, combo.indexOf("fred" + i, i));
 }
 
 @Test
@@ -499,9 +499,9 @@ public void test_paste() {
 	combo.setText("123456");
 	combo.setSelection(new Point(1,3));
 	combo.cut();
-	assertEquals(":a:", "1456", combo.getText());
+	assertEquals("1456", combo.getText());
 	combo.paste();
-	assertEquals(":a:", "123456", combo.getText());
+	assertEquals("123456", combo.getText());
 }
 
 @Test
@@ -509,7 +509,7 @@ public void test_removeAll() {
 	combo.add("1");
 	combo.add("2");
 	combo.removeAll();
-	assertEquals(":a:", 0, combo.getItems().length);
+	assertEquals(0, combo.getItems().length);
 }
 
 @Test
@@ -671,7 +671,7 @@ public void test_selectI() {
 	combo.add("456");
 	combo.add("789");
 	combo.select(1);
-	assertEquals(":a:", 1, combo.getSelectionIndex());
+	assertEquals(1, combo.getSelectionIndex());
 
 	// indices out of range are ignored
 	combo.select(10);
@@ -857,7 +857,7 @@ public void test_setItemILjava_lang_String() {
 		combo.add("fred");
 	for (int i = 0; i < number; i++)
 		combo.setItem(i, "fred" + i);
-	assertArrayEquals(":a:", new String[]{"fred0", "fred1", "fred2", "fred3", "fred4"}, combo.getItems());
+	assertArrayEquals(new String[]{"fred0", "fred1", "fred2", "fred3", "fred4"}, combo.getItems());
 }
 
 @Test
@@ -869,17 +869,17 @@ public void test_setItems$Ljava_lang_String() {
 
 	for (int i = 0 ; i< items.length; i++){
 		combo.setItems(items[i]);
-		assertArrayEquals(":a:" + i, items[i], combo.getItems());}
+		assertArrayEquals("index" + i, items[i], combo.getItems());}
 }
 
 @Test
 public void test_setOrientationI() {
 	combo.setOrientation(SWT.RIGHT_TO_LEFT);
 	if ((combo.getStyle() & SWT.MIRRORED) != 0) {
-		assertEquals(":a:", SWT.RIGHT_TO_LEFT, combo.getOrientation());
+		assertEquals(SWT.RIGHT_TO_LEFT, combo.getOrientation());
 	}
 	combo.setOrientation(SWT.LEFT_TO_RIGHT);
-	assertEquals(":b:", SWT.LEFT_TO_RIGHT, combo.getOrientation());
+	assertEquals(SWT.LEFT_TO_RIGHT, combo.getOrientation());
 }
 
 @Test
@@ -891,10 +891,10 @@ public void test_setSelectionLorg_eclipse_swt_graphics_Point() {
 	for (int i = 0; i < number; i++)
 		combo.add("fred" + i);
 	combo.setSelection(new Point(0, 5));
-	assertEquals(":a:", new Point(0, 0), combo.getSelection());
+	assertEquals(new Point(0, 0), combo.getSelection());
 	combo.setText("some text");
 	combo.setSelection(new Point(0, 5));
-	assertEquals(":b:", new Point(0, 5), combo.getSelection());
+	assertEquals(new Point(0, 5), combo.getSelection());
 }
 
 @Test
@@ -903,7 +903,7 @@ public void test_setTextLimitI() {
 		combo.setTextLimit(0));
 
 	combo.setTextLimit(3);
-	assertEquals(":a:", 3, combo.getTextLimit());
+	assertEquals(3, combo.getTextLimit());
 }
 
 @Test
@@ -914,21 +914,21 @@ public void test_setTextLjava_lang_String() {
 	String[] cases = {"", "fred", "fred0"};
 	for (int i = 0; i < cases.length; i++) {
 		combo.setText(cases[i]);
-		assertEquals(":a:" + i, cases[i], combo.getText());
+		assertEquals("index" + i, cases[i], combo.getText());
 	}
 	for (int i = 0; i < 5; i++) {
 		combo.add("fred");
 	}
 	for (int i = 0; i < cases.length; i++) {
 		combo.setText(cases[i]);
-		assertEquals(":b:" + i,cases[i], combo.getText());
+		assertEquals("index" + i,cases[i], combo.getText());
 	}
 	for (int i = 0; i < 5; i++) {
 		combo.add("fred" + i);
 	}
 	for (int i = 0; i < cases.length; i++) {
 		combo.setText(cases[i]);
-		assertEquals(":c:" + i, cases[i], combo.getText());
+		assertEquals("index" + i, cases[i], combo.getText());
 	}
 }
 

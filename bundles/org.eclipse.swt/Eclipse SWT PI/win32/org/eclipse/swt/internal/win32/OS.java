@@ -19,6 +19,7 @@ import java.util.*;
 
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.win32.version.*;
 import org.eclipse.swt.widgets.*;
 
 public class OS extends C {
@@ -30,20 +31,6 @@ public class OS extends C {
 	* SWT Windows flags
 	*/
 	public static final boolean IsDBLocale;
-	/**
-	 * Always reports the correct build number, regardless of manifest and
-	 * compatibility GUIDs. Note that build number alone is sufficient to
-	 * identify Windows version.
-	 */
-	public static final int WIN32_BUILD;
-	/**
-	 * Values taken from https://en.wikipedia.org/wiki/List_of_Microsoft_Windows_versions
-	 */
-	public static final int WIN32_BUILD_WIN8_1 = 9600; // "Windows 8.1"
-	public static final int WIN32_BUILD_WIN10_1607 = 14393; // "Windows 10 August 2016 Update"
-	public static final int WIN32_BUILD_WIN10_1809 = 17763; // "Windows 10 October 2018 Update"
-	public static final int WIN32_BUILD_WIN10_2004 = 19041; // "Windows 10 May 2020 Update"
-	public static final int WIN32_BUILD_WIN11_21H2 = 22000; // Initial Windows 11 release
 
 	public static final String NO_MANIFEST = "org.eclipse.swt.internal.win32.OS.NO_MANIFEST";
 
@@ -55,20 +42,6 @@ public class OS extends C {
 	public static final int SM_IMMENABLED = 0x52;
 
 	static {
-		/*
-		 * Starting with Windows 10, GetVersionEx() lies about version unless
-		 * application manifest has a proper entry. RtlGetVersion() always
-		 * reports true version.
-		 */
-		OSVERSIONINFOEX osVersionInfoEx = new OSVERSIONINFOEX ();
-		osVersionInfoEx.dwOSVersionInfoSize = OSVERSIONINFOEX.sizeof;
-		if (0 == OS.RtlGetVersion (osVersionInfoEx)) {
-			WIN32_BUILD = osVersionInfoEx.dwBuildNumber;
-		} else {
-			System.err.println ("SWT: OS: Failed to detect Windows build number");
-			WIN32_BUILD = 0;
-		}
-
 		/* Load the manifest to force the XP Theme */
 		if (System.getProperty (NO_MANIFEST) == null) {
 			ACTCTX pActCtx = new ACTCTX ();
@@ -1976,7 +1949,6 @@ public static final native int NONCLIENTMETRICS_sizeof ();
 /** @method flags=const */
 public static final native int NOTIFYICONDATA_V2_SIZE ();
 public static final native int OUTLINETEXTMETRIC_sizeof ();
-public static final native int OSVERSIONINFOEX_sizeof ();
 public static final native int PAINTSTRUCT_sizeof ();
 public static final native int POINT_sizeof ();
 public static final native int PRINTDLG_sizeof ();
@@ -2353,8 +2325,6 @@ public static final native long ActivateKeyboardLayout(long hkl, int Flags);
  * @param pdv cast=(PVOID)
  */
 public static final native int AddFontResourceEx(char[] lpszFilename, int fl, long pdv);
-public static final native boolean AdjustWindowRectEx (RECT lpRect, int dwStyle, boolean bMenu, int dwExStyle);
-/** @method flags=dynamic */
 public static final native boolean AdjustWindowRectExForDpi (RECT lpRect, int dwStyle, boolean bMenu, int dwExStyle, int dpi);
 /** @method flags=no_gen */
 public static final native boolean AllowDarkModeForWindow(long hWnd, boolean allow);
@@ -3006,7 +2976,6 @@ public static final native long GetSysColorBrush (int nIndex);
 /** @param hWnd cast=(HWND) */
 public static final native long GetSystemMenu (long hWnd, boolean bRevert);
 public static final native int GetSystemMetrics (int nIndex);
-/** @method flags=dynamic */
 public static final native int GetSystemMetricsForDpi (int nIndex, int dpi);
 /** @param hDC cast=(HDC) */
 public static final native int GetTextColor (long hDC);
@@ -3969,8 +3938,6 @@ public static final native boolean ReplyMessage (long lResult);
 public static final native boolean RestoreDC (long hdc, int nSavedDC);
 /** @param hdc cast=(HDC) */
 public static final native boolean RoundRect (long hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect, int nWidth, int nHeight);
-/** @method flags=dynamic */
-public static final native int RtlGetVersion (OSVERSIONINFOEX lpVersionInformation);
 /** @param hdc cast=(HDC) */
 public static final native int SaveDC (long hdc);
 /** @param hWnd cast=(HWND) */
@@ -4496,7 +4463,6 @@ public static final native boolean SystemParametersInfo (int uiAction, int uiPar
 public static final native boolean SystemParametersInfo (int uiAction, int uiParam, RECT pvParam, int fWinIni);
 public static final native boolean SystemParametersInfo (int uiAction, int uiParam, NONCLIENTMETRICS pvParam, int fWinIni);
 public static final native boolean SystemParametersInfo (int uiAction, int uiParam, int [] pvParam, int fWinIni);
-/** @method flags=dynamic */
 public static final native boolean SystemParametersInfoForDpi (int uiAction, int uiParam, NONCLIENTMETRICS pvParam, int fWinIni, int dpi);
 /**
  * @param lpKeyState cast=(PBYTE)
@@ -4622,7 +4588,7 @@ public static final native boolean DuplicateHandle(long hSourceProcessHandle, lo
 
 
 public static long OpenThemeData(long hwnd, char[] themeName, int dpi) {
-	if (OS.WIN32_BUILD >= OS.WIN32_BUILD_WIN10_1809) {
+	if (OsVersion.IS_WIN10_1809) {
 		return OS.OpenThemeDataForDpi(hwnd, themeName, dpi);
 	} else {
 		return OS.OpenThemeData(hwnd, themeName);

@@ -20,6 +20,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageLoader;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
@@ -72,7 +73,8 @@ public class Bug547529_ImageLoaderStriping {
 	}
 
 	private static void saveImage(Control control, String filename, int format) {
-		Image image = new Image(control.getDisplay(), control.getBounds());
+		Rectangle bounds = control.getBounds();
+		Image image = new Image(control.getDisplay(), bounds.width, bounds.height);
 		GC gc = new GC(image);
 		control.print(gc);
 		gc.dispose();

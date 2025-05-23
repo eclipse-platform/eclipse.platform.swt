@@ -4534,10 +4534,8 @@ class AccessibleObject {
 		} else {
 			GDK.gdk_window_get_origin (gdkResource, origin_x, origin_y);
 		}
-		int scaledX = DPIUtil.autoScaleDown (origin_x [0]);
-		int scaledY = DPIUtil.autoScaleDown (origin_y [0]);
-		C.memmove (x, new int[] {scaledX}, 4);
-		C.memmove (y, new int[] {scaledY}, 4);
+		C.memmove (x, new int[] {origin_x [0]}, 4);
+		C.memmove (y, new int[] {origin_y [0]}, 4);
 		return 0;
 	}
 

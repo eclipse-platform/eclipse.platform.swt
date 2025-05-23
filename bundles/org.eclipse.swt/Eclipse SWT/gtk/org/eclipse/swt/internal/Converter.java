@@ -31,7 +31,7 @@ import org.eclipse.swt.internal.gtk.*;
  *
  * This class is tested via: org.eclipse.swt.tests.gtk.Test_GtkTextEncoding
  *
- * About JNI & string conversion:
+ * About JNI &amp; string conversion:
  * #############################
  * - Regular JNI String conversion usually uses a modified UTF-8, see:  https://en.wikipedia.org/wiki/UTF-8#Modified_UTF-8
  * - And in JNI, normally (env*)->GetStringUTFChars(..) is used to convert a javaString into a C string.
@@ -50,12 +50,12 @@ import org.eclipse.swt.internal.gtk.*;
  * Java uses UTF-16 Wide characters internally to represent a string.
  * C uses UTF-8 Multibyte characters (null terminated) to represent a string.
  *
- * About encoding on Linux/Gtk & it's relevance to SWT:
+ * About encoding on Linux/Gtk &amp; it's relevance to SWT:
  * ####################################################
  *
  * UTF-* = variable length encoding.
  *
- * UTF-8 = minimum is 8 bits, max is 6 bytes, but rarely goes beyond 4 bytes. Gtk & most of web uses this.
+ * UTF-8 = minimum is 8 bits, max is 6 bytes, but rarely goes beyond 4 bytes. Gtk &amp; most of web uses this.
  * UTF-16 = minimum is 16 bits. Java's string are stored this way.
  *          UTF-16 can be
  *            Big    Endian  : 65 = 00000000  01000001    # Human friendly, reads left to right.

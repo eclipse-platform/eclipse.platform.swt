@@ -59,9 +59,6 @@ public void test_ConstructorLorg_eclipse_swt_widgets_Shell(){
 /**
  * Makes the dialog visible and brings it to the front
  * of the display.
- *
- * @return the ID of the button that was selected to dismiss the
- *         message box (e.g. SWT.OK, SWT.CANCEL, etc...)
  */
 @Test
 public void test_open(){

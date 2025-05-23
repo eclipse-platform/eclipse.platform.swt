@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -1198,11 +1198,6 @@ public void setEnabled(boolean enabled) {
  */
 public void setLocation (int x, int y) {
 	checkWidget ();
-	setLocation (new Point (x, y));
-}
-
-void setLocationInPixels (int x, int y) {
-	checkWidget();
 	if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
 	this.x = x;
 	this.y = y;
@@ -1235,13 +1230,8 @@ void setLocationInPixels (int x, int y) {
  */
 public void setLocation (Point location) {
 	checkWidget ();
-	setLocationInPixels (DPIUtil.autoScaleUp (location));
-}
-
-void setLocationInPixels (Point location) {
-	checkWidget();
 	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setLocationInPixels (location.x, location.y);
+	setLocation (location.x, location.y);
 }
 
 /**
@@ -1347,7 +1337,7 @@ void verifyMenuPosition (int itemCount) {
 			 * We need to "show" the menu before fetching the preferred height.
 			 * Note, this does not actually pop-up the menu.
 			 */
-			GTK.gtk_widget_show(handle);
+			gtk_widget_show(handle);
 			/*
 			 * Menus are height-for-width only: use gtk_widget_get_preferred_height()
 			 * instead of gtk_widget_get_preferred_size().

@@ -356,7 +356,6 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
  *
  * @param cursor the cursor
  * @param zoom zoom level (in %) of the monitor the cursor is currently in.
- *
  * @return The handle of the cursor.
  *
  * @noreference This method is not intended to be referenced by clients.

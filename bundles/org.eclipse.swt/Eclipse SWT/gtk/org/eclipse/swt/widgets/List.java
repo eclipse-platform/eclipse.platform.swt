@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -275,7 +275,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	 * based on the number of items in the table
 	 */
 	if (size.y == 0 && hHint == SWT.DEFAULT) {
-		size.y = getItemCount() * getItemHeightInPixels();
+		size.y = getItemCount() * getItemHeight();
 	}
 
 	/*
@@ -535,11 +535,6 @@ public int getItemCount () {
  * </ul>
  */
 public int getItemHeight () {
-	checkWidget();
-	return DPIUtil.autoScaleDown(getItemHeightInPixels());
-}
-
-int getItemHeightInPixels() {
 	checkWidget();
 
 	final int BASE_ITEM_PADDING = 1;

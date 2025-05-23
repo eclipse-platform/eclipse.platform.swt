@@ -609,7 +609,12 @@ void bringToTop (boolean force) {
 	}
 	if ((xFocus || (style & SWT.ON_TOP) != 0)) {
 		if (OS.isX11()) {
-			long gdkDisplay = GDK.gdk_window_get_display(gdkResource);
+			long gdkDisplay;
+			if (GTK.GTK4) {
+				gdkDisplay = GDK.gdk_surface_get_display(gdkResource);
+			} else {
+				gdkDisplay = GDK.gdk_window_get_display(gdkResource);
+			}
 			long xDisplay = GDK.gdk_x11_display_get_xdisplay(gdkDisplay);
 			long xWindow;
 			if (GTK.GTK4) {
@@ -663,7 +668,7 @@ void center () {
 	Rectangle parentRect = display.mapInPixels (parent, null, parent.getClientAreaInPixels());
 	int x = Math.max (parentRect.x, parentRect.x + (parentRect.width - rect.width) / 2);
 	int y = Math.max (parentRect.y, parentRect.y + (parentRect.height - rect.height) / 2);
-	Rectangle monitorRect = DPIUtil.autoScaleUp(parent.getMonitor ().getClientArea());
+	Rectangle monitorRect = parent.getMonitor ().getClientArea();
 	if (x + rect.width > monitorRect.x + monitorRect.width) {
 		x = Math.max (monitorRect.x, monitorRect.x + monitorRect.width - rect.width);
 	} else {
@@ -1296,11 +1301,6 @@ public boolean getMaximized () {
  */
 public Point getMinimumSize () {
 	checkWidget ();
-	return DPIUtil.autoScaleDown (getMinimumSizeInPixels ());
-}
-
-Point getMinimumSizeInPixels () {
-	checkWidget ();
 	int width = Math.max (1, geometry.getMinWidth() + trimWidth ());
 	int height = Math.max (1, geometry.getMinHeight() + trimHeight ());
 	return new Point (width, height);
@@ -1323,12 +1323,6 @@ Point getMinimumSizeInPixels () {
  */
 public Point getMaximumSize () {
 	checkWidget ();
-	return DPIUtil.autoScaleDown (getMaximumSizeInPixels ());
-}
-
-Point getMaximumSizeInPixels () {
-	checkWidget ();
-
 	int width = Math.min (Integer.MAX_VALUE, geometry.getMaxWidth() + trimWidth ());
 	int height = Math.min (Integer.MAX_VALUE, geometry.getMaxHeight() + trimHeight ());
 	return new Point (width, height);
@@ -2597,7 +2591,7 @@ public void setMenuBar (Menu menu) {
 
 	if (menuBar != null) {
 		long menuHandle = menuBar.handle;
-		GTK.gtk_widget_hide (menuHandle);
+		gtk_widget_hide (menuHandle);
 
 		if (!GTK.GTK4) {
 			destroyAccelGroup();
@@ -2606,7 +2600,7 @@ public void setMenuBar (Menu menu) {
 	menuBar = menu;
 	if (menuBar != null) {
 		long menuHandle = menu.handle;
-		GTK.gtk_widget_show (menuHandle);
+		gtk_widget_show (menuHandle);
 
 		if (!GTK.GTK4) {
 			createAccelGroup();
@@ -2627,7 +2621,7 @@ public void setMinimized (boolean minimized) {
 	if (this.minimized == minimized) return;
 	super.setMinimized (minimized);
 	if(!GTK.gtk_widget_get_visible(shellHandle)) {
-		GTK.gtk_widget_show(shellHandle);
+		gtk_widget_show(shellHandle);
 	}
 	if (minimized) {
 		if (GTK.GTK4) {
@@ -2661,11 +2655,6 @@ public void setMinimized (boolean minimized) {
  * @since 3.1
  */
 public void setMinimumSize (int width, int height) {
-	checkWidget ();
-	setMinimumSize (new Point (width, height));
-}
-
-void setMinimumSizeInPixels (int width, int height) {
 	checkWidget ();
 	geometry.setMinWidth(Math.max (width, trimWidth ()) - trimWidth ());
 	geometry.setMinHeight(Math.max (height, trimHeight ()) - trimHeight ());
@@ -2701,13 +2690,8 @@ void setMinimumSizeInPixels (int width, int height) {
  */
 public void setMinimumSize (Point size) {
 	checkWidget ();
-	setMinimumSizeInPixels (DPIUtil.autoScaleUp (size));
-}
-
-void setMinimumSizeInPixels (Point size) {
-	checkWidget ();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setMinimumSizeInPixels (size.x, size.y);
+	setMinimumSize (size.x, size.y);
 }
 
 /**
@@ -2732,7 +2716,13 @@ void setMinimumSizeInPixels (Point size) {
  */
 public void setMaximumSize (int width, int height) {
 	checkWidget ();
-	setMaximumSize (new Point (width, height));
+	geometry.setMaxWidth(Math.max (width, trimWidth ()) - trimWidth ());
+	geometry.setMaxHeight(Math.max (height, trimHeight ()) - trimHeight ());
+	int hint = GDK.GDK_HINT_MAX_SIZE;
+	if (geometry.getMinWidth() > 0 || geometry.getMinHeight() > 0) {
+		hint = hint | GDK.GDK_HINT_MIN_SIZE;
+	}
+	GTK3.gtk_window_set_geometry_hints (shellHandle, 0, (GdkGeometry) geometry, hint);
 }
 
 /**
@@ -2759,24 +2749,8 @@ public void setMaximumSize (int width, int height) {
  */
 public void setMaximumSize (Point size) {
 	checkWidget ();
-	setMaximumSizeInPixels (DPIUtil.autoScaleUp (size));
-}
-
-void setMaximumSizeInPixels (Point size) {
-	checkWidget ();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setMaximumSizeInPixels (size.x, size.y);
-}
-
-void setMaximumSizeInPixels (int width, int height) {
-	checkWidget ();
-	geometry.setMaxWidth(Math.max (width, trimWidth ()) - trimWidth ());
-	geometry.setMaxHeight(Math.max (height, trimHeight ()) - trimHeight ());
-	int hint = GDK.GDK_HINT_MAX_SIZE;
-	if (geometry.getMinWidth() > 0 || geometry.getMinHeight() > 0) {
-		hint = hint | GDK.GDK_HINT_MIN_SIZE;
-	}
-	GTK3.gtk_window_set_geometry_hints (shellHandle, 0, (GdkGeometry) geometry, hint);
+	setMaximumSize (size.x, size.y);
 }
 
 /**
@@ -2860,7 +2834,7 @@ static Region mirrorRegion (Region region) {
 	int [] nRects = new int [1];
 	long [] rects = new long [1];
 	gdk_region_get_rectangles (rgn, rects, nRects);
-	Rectangle bounds = DPIUtil.autoScaleUp(region.getBounds ());
+	Rectangle bounds = region.getBounds ();
 	cairo_rectangle_int_t rect = new cairo_rectangle_int_t();
 	for (int i = 0; i < nRects [0]; i++) {
 		Cairo.memmove (rect, rects[0] + (i * GdkRectangle.sizeof), GdkRectangle.sizeof);
@@ -2960,13 +2934,13 @@ public void setVisible (boolean visible) {
 			int [] init_width = new int[1], init_height = new int[1];
 			GTK3.gtk_window_get_size(shellHandle, init_width, init_height);
 			GTK3.gtk_window_resize(shellHandle, 1, 1);
-			GTK.gtk_widget_show (shellHandle);
+			gtk_widget_show (shellHandle);
 			GTK3.gtk_window_resize(shellHandle, init_width[0], init_height[0]);
 			resizeBounds (init_width[0], init_height[0], false);
 			oldWidth = init_width[0];
 			oldHeight = init_height[0];
 		} else {
-			GTK.gtk_widget_show (shellHandle);
+			gtk_widget_show (shellHandle);
 		}
 		/**
 		 *  Feature in GTK: This handles grabbing the keyboard focus from a SWT.ON_TOP window
@@ -3036,7 +3010,7 @@ public void setVisible (boolean visible) {
 	} else {
 		fixActiveShell ();
 		checkAndUngrabFocus();
-		GTK.gtk_widget_hide (shellHandle);
+		gtk_widget_hide (shellHandle);
 		sendEvent (SWT.Hide);
 	}
 }
@@ -3095,9 +3069,9 @@ void showWidget () {
 		GTK3.gtk_container_add (shellHandle, vboxHandle);
 	}
 
-	if (scrolledHandle != 0) GTK.gtk_widget_show (scrolledHandle);
-	if (handle != 0) GTK.gtk_widget_show (handle);
-	if (vboxHandle != 0) GTK.gtk_widget_show (vboxHandle);
+	if (scrolledHandle != 0) gtk_widget_show (scrolledHandle);
+	if (handle != 0) gtk_widget_show (handle);
+	if (vboxHandle != 0) gtk_widget_show (vboxHandle);
 }
 
 @Override
@@ -3135,7 +3109,7 @@ long sizeAllocateProc (long handle, long arg0, long user_data) {
 
 @Override
 long sizeRequestProc (long handle, long arg0, long user_data) {
-	GTK.gtk_widget_hide (handle);
+	gtk_widget_hide (handle);
 	return 0;
 }
 
@@ -3263,12 +3237,12 @@ void updateMinimized (boolean minimized) {
 			if (minimized) {
 				if (shells[i].isVisible ()) {
 					shells[i].showWithParent = true;
-					GTK.gtk_widget_hide(shells[i].shellHandle);
+					gtk_widget_hide(shells[i].shellHandle);
 				}
 			} else {
 				if (shells[i].showWithParent) {
 					shells[i].showWithParent = false;
-					GTK.gtk_widget_show(shells[i].shellHandle);
+					gtk_widget_show(shells[i].shellHandle);
 				}
 			}
 		}
@@ -3350,7 +3324,7 @@ public void dispose () {
 	if (popupChild != null && popupChild.shellHandle != 0 && !popupChild.isDisposed()) {
 		popupChild.dispose();
 	}
-	GTK.gtk_widget_hide (shellHandle);
+	gtk_widget_hide (shellHandle);
 	super.dispose ();
 }
 

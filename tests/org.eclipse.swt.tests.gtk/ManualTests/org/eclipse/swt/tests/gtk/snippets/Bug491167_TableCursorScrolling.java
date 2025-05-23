@@ -15,10 +15,19 @@ package org.eclipse.swt.tests.gtk.snippets;
 
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.*;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.custom.ControlEditor;
+import org.eclipse.swt.custom.TableCursor;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
 
 /**
  * This class demonstrates TableCursor
@@ -47,8 +56,8 @@ public class Bug491167_TableCursorScrolling {
 
 	/**
 	 * Creates the main window's contents
-	 * 
-	 * @param widget.shell
+	 *
+	 * @param shell
 	 *            the main window
 	 */
 	private void createContents(Shell shell) {
@@ -128,7 +137,7 @@ public class Bug491167_TableCursorScrolling {
 
 	/**
 	 * The application entry point
-	 * 
+	 *
 	 * @param args
 	 *            the command line arguments
 	 */

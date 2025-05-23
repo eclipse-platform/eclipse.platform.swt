@@ -433,19 +433,19 @@ void createHandle(int index) {
 			}
 
 			GTK3.gtk_container_add (boxHandle, imageHandle);
-			GTK.gtk_widget_show (imageHandle);
+			gtk_widget_show (imageHandle);
 		}
 
 		if (labelHandle != 0) {
 			GTK.gtk_label_set_xalign (labelHandle, 0);
 			GTK.gtk_widget_set_halign (labelHandle, GTK.GTK_ALIGN_FILL);
 			gtk_box_pack_end (boxHandle, labelHandle, true, true, 0);
-			GTK.gtk_widget_show (labelHandle);
+			gtk_widget_show (labelHandle);
 		}
 
 		if (boxHandle != 0) {
 			GTK3.gtk_container_add (handle, boxHandle);
-			GTK.gtk_widget_show (boxHandle);
+			gtk_widget_show (boxHandle);
 		}
 
 		if ((style & SWT.SEPARATOR) == 0) {
@@ -460,7 +460,7 @@ void createHandle(int index) {
 		if (!enabled) GTK.gtk_widget_set_sensitive (parentHandle, true);
 		GTK3.gtk_menu_shell_insert (parentHandle, handle, index);
 		if (!enabled) GTK.gtk_widget_set_sensitive (parentHandle, false);
-		GTK.gtk_widget_show (handle);
+		gtk_widget_show (handle);
 	}
 }
 
@@ -1067,7 +1067,7 @@ private void _setImage (Image image) {
 				GTK3.gtk_image_set_from_surface(imageHandle, surface);
 			}
 		}
-		GTK.gtk_widget_show(imageHandle);
+		gtk_widget_show(imageHandle);
 	} else {
 		if (imageHandle != 0) {
 			if (OS.SWT_PADDED_MENU_ITEMS) {
@@ -1076,7 +1076,7 @@ private void _setImage (Image image) {
 				if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
 				GTK.gtk_image_set_pixel_size (imageHandle, 16);
 				GTK3.gtk_container_add (boxHandle, imageHandle);
-				GTK.gtk_widget_show (imageHandle);
+				gtk_widget_show (imageHandle);
 			} else {
 				GTK3.gtk_container_remove(boxHandle, imageHandle);
 				imageHandle = 0;

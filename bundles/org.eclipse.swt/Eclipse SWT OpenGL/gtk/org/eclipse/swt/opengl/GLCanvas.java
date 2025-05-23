@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -15,7 +15,6 @@ package org.eclipse.swt.opengl;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.gtk3.*;
 import org.eclipse.swt.internal.opengl.glx.*;
@@ -164,7 +163,7 @@ public GLCanvas (Composite parent, int style, GLData data) {
 			GLX.glViewport (viewport [0],viewport [1],viewport [2],viewport [3]);
 			break;
 		case SWT.Resize:
-			Rectangle clientArea = DPIUtil.autoScaleUp(getClientArea());
+			Rectangle clientArea = getClientArea();
 			GDK.gdk_window_move (glWindow, clientArea.x, clientArea.y);
 			GDK.gdk_window_resize (glWindow, clientArea.width, clientArea.height);
 			break;

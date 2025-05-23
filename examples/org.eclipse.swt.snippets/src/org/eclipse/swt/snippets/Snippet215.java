@@ -38,7 +38,8 @@ public static void main(String[] args) {
 
 		/* Take the screen shot */
 		GC gc = new GC(display);
-		final Image image = new Image(display, display.getBounds());
+		Rectangle rect = display.getBounds();
+		final Image image = new Image(display, rect.width, rect.height);
 		gc.copyArea(image, 0, 0);
 		gc.dispose();
 

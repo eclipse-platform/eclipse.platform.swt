@@ -53,13 +53,6 @@ public final class Color extends Resource {
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
-Color() {
-	super();
-}
-
-/**
- * Prevents uninitialized instances from being created outside the package.
- */
 Color(Device device) {
 	super(device);
 }

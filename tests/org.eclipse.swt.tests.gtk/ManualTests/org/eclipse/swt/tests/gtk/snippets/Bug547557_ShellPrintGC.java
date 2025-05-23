@@ -66,7 +66,7 @@ public class Bug547557_ShellPrintGC {
 
 	private static void saveImage(Shell shell, String filename, int format) {
 		Rectangle bounds = shell.getBounds();
-		Image image = new Image(shell.getDisplay(), bounds);
+		Image image = new Image(shell.getDisplay(), bounds.width, bounds.height);
 		// Printing the client area will result in a warning and only the client area being printed
 //		Image image = new Image(shell.getDisplay(), shell.getClientArea());
 		GC gc = new GC(image);

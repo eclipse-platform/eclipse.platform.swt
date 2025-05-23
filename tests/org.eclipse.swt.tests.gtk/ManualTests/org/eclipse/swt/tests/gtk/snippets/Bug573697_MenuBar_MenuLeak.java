@@ -23,15 +23,15 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 
 /**
- * Description: In bug 573697, we observed a native memory leak cased by {@link Decorations#accelGroup}
- * not being unreferenced.
+ * Description: In bug 573697, we observed a native memory leak caused in the GTK implementation of {@link Decorations}
+ * by the field {@code accelGroup} not being unreferenced.
  * <p>
  * Steps to reproduce:
+ * </p>
  * <ol>
  * <li>Run the snippet.</li>
  * <li>No native memory leak should be detected by e.g. {code valgrind} or {@code jemalloc}.</li>
  * </ol>
- * </p>
  * Expected results: No native memory leak should be detected by e.g. {code valgrind} or {@code jemalloc}.
  * Actual results: {@code jemalloc} reports a native memory leak, e.g.:
  * <pre>

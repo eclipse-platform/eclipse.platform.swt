@@ -60,9 +60,9 @@ import org.eclipse.swt.widgets.Widget;
  * instead of up-front.  This can provide significant performance improvements for
  * tables that are very large or for which <code>TableItem</code> population is
  * expensive (for example, retrieving values from an external source).
- * </p><p>
+ * </p>
  * Here is an example of using a <code>Table</code> with style <code>VIRTUAL</code>:
- * <code><pre>
+ * <pre>
  *  final Table table = new Table (parent, SWT.VIRTUAL | SWT.BORDER);
  *  table.setItemCount (1000000);
  *  table.addListener (SWT.SetData, new Listener () {
@@ -73,20 +73,20 @@ import org.eclipse.swt.widgets.Widget;
  *          System.out.println (item.getText ());
  *      }
  *  });
- * </pre></code>
- * </p><p>
+ * </pre>
+ * <p>
  * Note that although this class is a subclass of <code>Composite</code>,
  * it does not normally make sense to add <code>Control</code> children to
  * it, or set a layout on it, unless implementing something like a cell
  * editor.
- * </p><p>
+ * </p>
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>SINGLE, MULTI, CHECK, FULL_SELECTION, HIDE_SELECTION, VIRTUAL, NO_SCROLL</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Selection, DefaultSelection, SetData, MeasureItem, EraseItem, PaintItem</dd>
  * </dl>
- * </p><p>
+ * <p>
  * Note: Only one of the styles SINGLE, and MULTI may be specified.
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
@@ -3844,7 +3844,7 @@ void setHeaderImageHeight (int value) {
  * it visible may not actually cause it to be displayed.
  * </p>
  *
- * @param show the new visibility state
+ * @param value the new visibility state
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -3970,7 +3970,7 @@ boolean setItemHeight (int value) {
  * it visible may not actually cause it to be displayed.
  * </p>
  *
- * @param show the new visibility state
+ * @param value the new visibility state
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>

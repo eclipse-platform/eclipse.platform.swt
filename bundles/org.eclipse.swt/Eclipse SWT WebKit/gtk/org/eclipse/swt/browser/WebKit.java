@@ -703,10 +703,19 @@ public void create (Composite parent, int style) {
 
 	// (!) Note this one's a 'webContext' signal, not webview. See:
 	// https://webkitgtk.org/reference/webkit2gtk/stable/WebKitWebContext.html#WebKitWebContext-download-started
-	OS.g_signal_connect (WebKitGTK.webkit_web_context_get_default(), WebKitGTK.download_started, Proc3.getAddress (), DOWNLOAD_STARTED);
+	if (GTK.GTK4) {
+		OS.g_signal_connect (WebKitGTK.webkit_network_session_get_default(), WebKitGTK.download_started, Proc3.getAddress (), DOWNLOAD_STARTED);
+	} else {
+		OS.g_signal_connect (WebKitGTK.webkit_web_context_get_default(), WebKitGTK.download_started, Proc3.getAddress (), DOWNLOAD_STARTED);
+	}
 
-	GTK.gtk_widget_show (webView);
-	GTK.gtk_widget_show (browser.handle);
+	if (GTK.GTK4) {
+		GTK.gtk_widget_set_visible(webView, true);
+		GTK.gtk_widget_set_visible(browser.handle, true);
+	} else {
+		GTK3.gtk_widget_show(webView);
+		GTK3.gtk_widget_show(browser.handle);
+	}
 
 	// Webview 'title' property
 	OS.g_signal_connect (webView, WebKitGTK.notify_title, 						Proc3.getAddress (), NOTIFY_TITLE);
@@ -1835,7 +1844,7 @@ void onDispose (Event e) {
 }
 
 void onResize (Event e) {
-	Rectangle rect = DPIUtil.autoScaleUp(browser.getClientArea ());
+	Rectangle rect = browser.getClientArea ();
 	if (webView == 0)
 		return;
 	GTK.gtk_widget_set_size_request (webView, rect.width, rect.height);

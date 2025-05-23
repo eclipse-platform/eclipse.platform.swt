@@ -1031,7 +1031,7 @@ public void test_StatusTextListener_addAndRemove() {
  * 3) Upon compleation of page load, move cursor across whole shell.
  *    (Note, in current jUnit, browser sometimes only takes up half the shell).
  * 4) StatusTextListener should get triggered. Test passes.
- * 5) Else timeout & fail.
+ * 5) Else timeout and fail.
  *
  * Set variable "debug_show_browser" to true to see this being performed at human-observable speed.
  *
@@ -1141,6 +1141,7 @@ public void test_setText() {
  */
 @Test
 public void test_setTextContainingScript_applicationLayerProgressListenerMustSeeUpToDateDom() {
+	assumeFalse("Toggling on Edge since I20250216-1800, see https://github.com/eclipse-platform/eclipse.platform.swt/issues/1843", isEdge);
 	AtomicBoolean completed = new AtomicBoolean();
 	browser.addProgressListener(ProgressListener.completedAdapter(event -> {
 		String script = """
@@ -1746,6 +1747,18 @@ public void test_getText_html() {
 	getText_helper(testString, testString);
 }
 
+/**
+ * Ensure getText() works even if consumer-level scripting is disabled. Needed
+ * on platforms where getText() implementation is JavaScript-based, e.g. Edge:
+ * https://github.com/eclipse-platform/eclipse.platform.swt/issues/2029
+ */
+@Test
+public void test_getText_javscriptDisabled() {
+	browser.setJavascriptEnabled(false);
+	String testString = "<html><head></head><body>hello<b>World</b></body></html>";
+	getText_helper(testString, testString);
+}
+
 /** Ensure we get webpage before javascript processed it.
  *  E.g JS would add 'style' tag to body after processing. */
 @Test
@@ -2242,8 +2255,8 @@ public void test_BrowserFunction_callback () {
 /**
  * Test for stacked (cascaded) calls between Java and JS i.e. java calls JS
  * which calls Java which calls JS and so on.
- *
- * @see https://github.com/eclipse-platform/eclipse.platform.swt/issues/1919
+ * <p>
+ * See {@code https://github.com/eclipse-platform/eclipse.platform.swt/issues/1919}
  *
  */
 @Test

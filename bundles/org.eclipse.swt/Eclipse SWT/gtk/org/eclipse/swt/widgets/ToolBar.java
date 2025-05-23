@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -302,15 +302,10 @@ public ToolItem getItem (int index) {
  */
 public ToolItem getItem (Point point) {
 	checkWidget();
-	return getItemInPixels(DPIUtil.autoScaleUp(point));
-}
-
-
-ToolItem getItemInPixels (Point point) {
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
 	ToolItem[] items = getItems();
 	for (int i=0; i<items.length; i++) {
-		if (items[i].getBoundsInPixels().contains(point)) return items[i];
+		if (items[i].getBounds().contains(point)) return items[i];
 	}
 	return null;
 }
@@ -504,9 +499,9 @@ long menuItemSelected (long widget, ToolItem item) {
 			event.detail = SWT.ARROW;
 			GtkAllocation allocation = new GtkAllocation ();
 			GTK.gtk_widget_get_allocation (widget, allocation);
-			event.x = DPIUtil.autoScaleDown(allocation.x);
-			if ((style & SWT.MIRRORED) != 0) event.x = DPIUtil.autoScaleDown (getClientWidth () - allocation.width) - event.x;
-			event.y = DPIUtil.autoScaleDown(allocation.y + allocation.height);
+			event.x = allocation.x;
+			if ((style & SWT.MIRRORED) != 0) event.x = getClientWidth () - allocation.width - event.x;
+			event.y = allocation.y + allocation.height;
 			break;
 		case SWT.RADIO :
 			if ((style & SWT.NO_RADIO_GROUP) == 0)	item.selectRadio ();

@@ -64,7 +64,7 @@ public class PaintSurface {
 	 *     and may have SWT.V_SCROLL and/or SWT.H_SCROLL.
 	 * </p>
 	 * @param paintCanvas the Canvas object in which to render
-	 * @param paintStatus the PaintStatus object to use for providing user feedback
+	 * @param statusText the status text to use for providing user feedback
 	 * @param fillColor the color to fill the canvas with initially
 	 */
 	public PaintSurface(Canvas paintCanvas, Text statusText, Color fillColor) {
@@ -374,7 +374,7 @@ public class PaintSurface {
 	/**
 	 * Handles a horizontal scroll event
 	 *
-	 * @param scrollbar the horizontal scroll bar that posted this event
+	 * @param scrollBar the horizontal scroll bar that posted this event
 	 */
 	public void scrollHorizontally(ScrollBar scrollBar) {
 		if (image == null) return;
@@ -393,7 +393,7 @@ public class PaintSurface {
 	/**
 	 * Handles a vertical scroll event
 	 *
-	 * @param scrollbar the vertical scroll bar that posted this event
+	 * @param scrollBar the vertical scroll bar that posted this event
 	 */
 	public void scrollVertically(ScrollBar scrollBar) {
 		if (image == null) return;

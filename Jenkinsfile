@@ -71,7 +71,7 @@ def getNativeJdkUrl(String os, String arch) { // To update the used JDK version 
 }
 
 def getLatestGitTag() {
-	return sh(script: 'git describe --abbrev=0 --tags --match v[0-9][0-9][0-9][0-9]*', returnStdout: true).strip()
+	return sh(script: 'git describe --abbrev=0 --tags --match v[0-9][0-9][0-9][0-9]*', returnStdout: true).trim()
 }
 
 def getSWTVersions() { // must be called from the repository root
@@ -89,7 +89,7 @@ pipeline {
 		skipDefaultCheckout() // Specialiced checkout is performed below
 		timestamps()
 		timeout(time: 180, unit: 'MINUTES')
-		buildDiscarder(logRotator(numToKeepStr:'5'))
+		buildDiscarder(logRotator(numToKeepStr: 'master'.equals(env.BRANCH_NAME) ? '20' : '5', artifactNumToKeepStr: 'master'.equals(env.BRANCH_NAME) ? '3' : '1' ))
 		disableConcurrentBuilds(abortPrevious: true)
 	}
 	agent {
@@ -159,7 +159,7 @@ pipeline {
 							def sources = sourceFoldersProps.collectEntries{ k, src -> [ k, src.split(',').collect{ f -> '\'' + f + '\''}.join(' ') ] }
 							for(ws in allWS) {
 								def diff = sh(script: "git diff HEAD ${swtTag} ${sources.src_common} ${sources['src_' + ws]}", returnStdout: true)
-								if (!diff.strip().isEmpty()) {
+								if (!diff.trim().isEmpty()) {
 									NATIVES_CHANGED += ws
 								}
 							}
@@ -350,8 +350,8 @@ pipeline {
 					dir('eclipse.platform.swt') {
 						sh '''
 							mvn clean verify \
-								--batch-mode --threads 1C -V -U -e -DforkCount=0 \
-								-Papi-check \
+								--batch-mode --threads 1C -V -U -e \
+								-Pbree-libs -Papi-check -Pjavadoc \
 								-Dcompare-version-with-baselines.skip=false \
 								-Dorg.eclipse.swt.tests.junit.disable.test_isLocal=true \
 								-Dmaven.test.failure.ignore=true -Dmaven.test.error.ignore=true

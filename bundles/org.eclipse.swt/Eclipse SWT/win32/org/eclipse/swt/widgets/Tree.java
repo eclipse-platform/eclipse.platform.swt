@@ -62,7 +62,7 @@ import org.eclipse.swt.internal.win32.*;
  * </p>
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>SINGLE, MULTI, CHECK, FULL_SELECTION, VIRTUAL, NO_SCROLL</dd>
+ * <dd>SINGLE, MULTI, CHECK, FULL_SELECTION, VIRTUAL, NO_SCROLL, NO_SEARCH</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Selection, DefaultSelection, Collapse, Expand, SetData, MeasureItem, EraseItem, PaintItem, EmptinessChanged</dd>
  * </dl>
@@ -2811,7 +2811,7 @@ boolean findCell (int x, int y, TreeItem [] item, int [] index, RECT [] cellRect
 						itemRect [0].top = boundsInPixels.y;
 						itemRect [0].bottom = boundsInPixels.y + boundsInPixels.height;
 					} else {
-						itemRect [0] = item [0].getBounds (order [index [0]], true, false, false, false, false, hDC);
+						itemRect [0] = item [0].getBounds (order [index [0]], true, true, false, false, false, hDC);
 					}
 					if (itemRect [0].right > cellRect [0].right) found = true;
 					quit = true;
@@ -4663,7 +4663,7 @@ void setCursor () {
 	* is IDC_ARROW.
 	*/
 	Cursor cursor = findCursor ();
-	long hCursor = cursor == null ? OS.LoadCursor (0, OS.IDC_ARROW) : Cursor.win32_getHandle(cursor, getZoom());
+	long hCursor = cursor == null ? OS.LoadCursor (0, OS.IDC_ARROW) : Cursor.win32_getHandle(cursor, getNativeZoom());
 	OS.SetCursor (hCursor);
 }
 
@@ -7397,6 +7397,8 @@ LRESULT wmNotify (NMHDR hdr, long wParam, long lParam) {
 	if (hdr.hwndFrom == itemToolTipHandle && itemToolTipHandle != 0) {
 		LRESULT result = wmNotifyToolTip (hdr, wParam, lParam);
 		if (result != null) return result;
+	} else if (hdr.code == OS.TTN_SHOW) {
+		return positionTooltip(hdr, wParam, lParam, false);
 	}
 	if (hdr.hwndFrom == hwndHeader && hwndHeader != 0) {
 		LRESULT result = wmNotifyHeader (hdr, wParam, lParam);
@@ -8145,29 +8147,92 @@ LRESULT wmNotifyToolTip (NMHDR hdr, long wParam, long lParam) {
 			return wmNotifyToolTip (nmcd, lParam);
 		}
 		case OS.TTN_SHOW: {
-			LRESULT result = super.wmNotify (hdr, wParam, lParam);
-			if (result != null) return result;
-			int pos = OS.GetMessagePos ();
-			POINT pt = new POINT();
-			OS.POINTSTOPOINT (pt, pos);
-			OS.ScreenToClient (handle, pt);
-			int [] index = new int [1];
-			TreeItem [] item = new TreeItem [1];
-			RECT [] cellRect = new RECT [1], itemRect = new RECT [1];
-			if (findCell (pt.x, pt.y, item, index, cellRect, itemRect)) {
-				RECT toolRect = toolTipRect (itemRect [0]);
-				OS.MapWindowPoints (handle, 0, toolRect, 2);
-				int width = toolRect.right - toolRect.left;
-				int height = toolRect.bottom - toolRect.top;
-				int flags = OS.SWP_NOACTIVATE | OS.SWP_NOZORDER | OS.SWP_NOSIZE;
-				if (isCustomToolTip ()) flags &= ~OS.SWP_NOSIZE;
-				OS.SetWindowPos (itemToolTipHandle, 0, toolRect.left, toolRect.top, width, height, flags);
-				return LRESULT.ONE;
-			}
-			return result;
+			return positionTooltip(hdr, wParam, lParam, true);
 		}
 	}
 	return null;
+}
+
+private LRESULT positionTooltip(NMHDR hdr, long wParam, long lParam, boolean managedTooltip) {
+	LRESULT result = super.wmNotify (hdr, wParam, lParam);
+	if (result != null) return result;
+	int flags = OS.SWP_NOACTIVATE | OS.SWP_NOZORDER | OS.SWP_NOSIZE;
+	if (isCustomToolTip () || !managedTooltip) flags &= ~OS.SWP_NOSIZE;
+	int pos = OS.GetMessagePos ();
+	POINT pt = new POINT();
+	OS.POINTSTOPOINT (pt, pos);
+	OS.ScreenToClient (handle, pt);
+	int [] index = new int [1];
+	TreeItem [] item = new TreeItem [1];
+	RECT [] cellRect = new RECT [1], itemRect = new RECT [1];
+	if (findCell (pt.x, pt.y, item, index, cellRect, itemRect)) {
+		RECT toolRect = managedTooltip ? toolTipRect(itemRect [0]) : itemRect [0];
+		OS.MapWindowPoints (handle, 0, toolRect, 2);
+		// Retrieve the monitor containing the cursor position, as tool tip placement
+		// must occur on the same monitor to avoid potential infinite loops. When a tool tip
+		// appears on a different monitor than the cursor, the operating system may
+		// attempt to re-scale it based on that monitor's settings. This re-scaling
+		// triggers additional display messages to SWT, creating an infinite loop
+		// of positioning and re-scaling events.
+		// Refer: https://github.com/eclipse-platform/eclipse.platform.swt/issues/557
+		Point cursorLocation = display.getCursorLocation();
+		Rectangle monitorBounds = cursorLocation instanceof MonitorAwarePoint monitorAwarePoint
+				? getContainingMonitorBoundsInMultiZoomCoordinateSystem(monitorAwarePoint)
+				: getContainingMonitorBoundsInSingleZoomCoordinateSystem(cursorLocation);
+		if (monitorBounds != null) {
+			Rectangle adjustedTooltipBounds = fitTooltipBoundsIntoMonitor(toolRect, monitorBounds);
+			OS.SetWindowPos (hdr.hwndFrom, 0, adjustedTooltipBounds.x, adjustedTooltipBounds.y, adjustedTooltipBounds.width, adjustedTooltipBounds.height, flags);
+			result = LRESULT.ONE;
+		}
+	} else if (!managedTooltip) {
+		// If managedTooltip is false and the cursor is not over the valid part of the
+		// target cell, Windows may still try to display the default tooltip. Since we
+		// can't prevent it from showing at this point, we set its bounds to zero to
+		// effectively hide it.
+		flags |= OS.SWP_NOMOVE;
+		OS.SetWindowPos (hdr.hwndFrom, 0, 0, 0, 0, 0, flags);
+		result = LRESULT.ONE;
+	}
+	return result;
+}
+
+/**
+ * Adjust the tool tip to fit in a single monitor either by shifting its position or by adjusting it's width.
+ */
+private Rectangle fitTooltipBoundsIntoMonitor(RECT tooltipBounds, Rectangle monitorBounds) {
+	int tooltipWidth = tooltipBounds.right - tooltipBounds.left;
+	int tooltipHeight = tooltipBounds.bottom - tooltipBounds.top;
+	if (tooltipBounds.left < monitorBounds.x) {
+		tooltipBounds.left = monitorBounds.x;
+	}
+	int monitorBoundsRightEnd = monitorBounds.x + monitorBounds.width;
+	if (tooltipBounds.right > monitorBoundsRightEnd) {
+		if (tooltipWidth <= monitorBounds.width) {
+			tooltipBounds.left = monitorBoundsRightEnd - tooltipWidth;
+		} else {
+			tooltipBounds.left = monitorBounds.x;
+		}
+		tooltipWidth = monitorBoundsRightEnd - tooltipBounds.left;
+	}
+	return new Rectangle(tooltipBounds.left, tooltipBounds.top, tooltipWidth, tooltipHeight);
+}
+
+private Rectangle getContainingMonitorBoundsInSingleZoomCoordinateSystem(Point point) {
+	int zoom = getZoom();
+	point = DPIUtil.scaleUp(point, zoom);
+	for (Monitor monitor : display.getMonitors()) {
+		Rectangle monitorBounds = DPIUtil.scaleUp(monitor.getBounds(), zoom);
+		if (monitorBounds.contains(point)) {
+			return monitorBounds;
+		}
+	}
+	return null;
+}
+
+private Rectangle getContainingMonitorBoundsInMultiZoomCoordinateSystem(MonitorAwarePoint point) {
+	Monitor monitor = point.getMonitor();
+	return new Rectangle(monitor.x, monitor.y, DPIUtil.scaleUp(monitor.width, monitor.zoom),
+			DPIUtil.scaleUp(monitor.height, monitor.zoom));
 }
 
 LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, long lParam) {

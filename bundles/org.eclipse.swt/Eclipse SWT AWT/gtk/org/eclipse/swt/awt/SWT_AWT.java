@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -231,7 +231,7 @@ public static Frame new_Frame (final Composite parent) {
 				});
 				break;
 			case SWT.Resize:
-				final Rectangle clientArea = DPIUtil.autoScaleUp(parent.getClientArea());
+				final Rectangle clientArea = parent.getClientArea();
 				EventQueue.invokeLater(() -> frame[0].setSize (clientArea.width, clientArea.height));
 				break;
 		}
@@ -241,7 +241,7 @@ public static Frame new_Frame (final Composite parent) {
 
 	parent.getDisplay().asyncExec(() -> {
 		if (parent.isDisposed()) return;
-		final Rectangle clientArea = DPIUtil.autoScaleUp(parent.getClientArea());
+		final Rectangle clientArea = parent.getClientArea();
 		EventQueue.invokeLater(() -> {
 			frame[0].setSize (clientArea.width, clientArea.height);
 			frame[0].validate ();
@@ -285,7 +285,7 @@ public static Shell new_Shell (final Display display, final Canvas parent) {
 			display.syncExec (() -> {
 				if (shell.isDisposed()) return;
 				Dimension dim = parent.getSize ();
-				shell.setSize (DPIUtil.autoScaleDown(new Point(dim.width, dim.height)));
+				shell.setSize (new Point(dim.width, dim.height));
 			});
 		}
 	};

@@ -721,7 +721,7 @@ int defaultBackground () {
 }
 
 long defaultFont() {
-	return display.getSystemFont(getShell().nativeZoom).handle;
+	return SWTFontProvider.getSystemFontHandle(display, getNativeZoom());
 }
 
 int defaultForeground () {
@@ -1315,7 +1315,7 @@ public Font getFont () {
 	if (font != null) return font;
 	long hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 	if (hFont == 0) hFont = defaultFont ();
-	return Font.win32_new (display, hFont, getShell().nativeZoom);
+	return SWTFontProvider.getFont(display, hFont, getNativeZoom());
 }
 
 /**
@@ -1753,14 +1753,18 @@ public long internal_new_GC (GCData data) {
 			}
 		}
 		data.device = display;
-		data.nativeZoom = nativeZoom;
+		data.nativeZoom = getNativeZoom();
 		int foreground = getForegroundPixel ();
 		if (foreground != OS.GetTextColor (hDC)) data.foreground = foreground;
 		Control control = findBackgroundControl ();
 		if (control == null) control = this;
 		int background = control.getBackgroundPixel ();
 		if (background != OS.GetBkColor (hDC)) data.background = background;
-		data.font = font != null ? font : Font.win32_new (display, OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0));
+		if (font != null) {
+			data.font = font;
+		} else {
+			data.font = SWTFontProvider.getFont(display, OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0), data.nativeZoom);
+		}
 		data.uiState = (int)OS.SendMessage (hwnd, OS.WM_QUERYUISTATE, 0, 0);
 	}
 	return hDC;
@@ -2225,13 +2229,11 @@ public boolean print (GC gc) {
 	int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
 	OS.RedrawWindow (topHandle, null, 0, flags);
 	int printWindowFlags = 0;
-	if (OS.WIN32_BUILD >= OS.WIN32_BUILD_WIN8_1) {
-		/*
-		 * Undocumented flag in windows, which also allows the capturing
-		 * of GPU-drawn areas, e.g. an embedded Edge WebView2.
-		 */
-		printWindowFlags |= OS.PW_RENDERFULLCONTENT;
-	}
+	/*
+	 * Undocumented flag in windows, which also allows the capturing
+	 * of GPU-drawn areas, e.g. an embedded Edge WebView2.
+	 */
+	printWindowFlags |= OS.PW_RENDERFULLCONTENT;
 	printWidget (topHandle, hdc, gc, printWindowFlags);
 	if (gdipGraphics != 0) {
 		OS.RestoreDC(hdc, state);
@@ -3255,7 +3257,8 @@ void setBoundsInPixels (int x, int y, int width, int height, int flags, boolean 
 public void setBounds (Rectangle rect) {
 	checkWidget ();
 	if (rect == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setBoundsInPixels(DPIUtil.scaleUp(rect, getZoom()));
+	int zoom = autoScaleDisabled ? parent.getZoom() : getZoom();
+	setBoundsInPixels(DPIUtil.scaleUp(rect, zoom));
 }
 
 void setBoundsInPixels (Rectangle rect) {
@@ -3330,7 +3333,7 @@ public void setCursor (Cursor cursor) {
 }
 
 void setDefaultFont () {
-	long hFont = display.getSystemFont (getShell().nativeZoom).handle;
+	long hFont = SWTFontProvider.getSystemFontHandle(display, getNativeZoom());
 	OS.SendMessage (handle, OS.WM_SETFONT, hFont, 0);
 }
 
@@ -3432,12 +3435,12 @@ public void setFont (Font font) {
 	Font newFont = font;
 	if (newFont != null) {
 		if (newFont.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-		newFont = Font.win32_new(newFont, getShell().nativeZoom);
+		newFont = Font.win32_new(newFont, getNativeZoom());
 	}
 	long hFont = 0;
 	if (newFont != null) {
 		if (newFont.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-		hFont = newFont.handle;
+		hFont = Font.win32_getHandle(newFont);
 	}
 	this.font = newFont;
 	if (hFont == 0) hFont = defaultFont ();
@@ -5471,7 +5474,7 @@ LRESULT WM_SETCURSOR (long wParam, long lParam) {
 		if (control == null) return null;
 		Cursor cursor = control.findCursor ();
 		if (cursor != null) {
-			OS.SetCursor (Cursor.win32_getHandle(cursor, getZoom()));
+			OS.SetCursor (Cursor.win32_getHandle(cursor, getNativeZoom()));
 			return LRESULT.ONE;
 		}
 	}
@@ -5869,7 +5872,7 @@ private static void handleDPIChange(Widget widget, int newZoom, float scalingFac
 	if (!(widget instanceof Control control)) {
 		return;
 	}
-	resizeFont(control, control.getShell().nativeZoom);
+	resizeFont(control, control.getNativeZoom());
 
 	Image image = control.backgroundImage;
 	if (image != null) {
@@ -5890,8 +5893,7 @@ private static void resizeFont(Control control, int newZoom) {
 	if (font == null) {
 		long currentFontHandle = OS.SendMessage (control.handle, OS.WM_GETFONT, 0, 0);
 		if (currentFontHandle != 0) {
-			Font newFont  = display.getSystemFont(newZoom);
-			long newFontHandle = newFont.handle;
+			long newFontHandle = SWTFontProvider.getSystemFontHandle(display, newZoom);
 			OS.SendMessage(control.handle, OS.WM_SETFONT, newFontHandle, 1);
 		}
 	} else {

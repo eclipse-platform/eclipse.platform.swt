@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2022 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -737,13 +737,13 @@ void createItem (TableColumn column, int index) {
 		GTK4.gtk_box_append(boxHandle, imageHandle);
 		GTK4.gtk_box_append(boxHandle, labelHandle);
 
-		GTK.gtk_widget_hide(imageHandle);
+		gtk_widget_hide(imageHandle);
 	} else {
 		GTK3.gtk_container_add (boxHandle, imageHandle);
 		GTK3.gtk_container_add (boxHandle, labelHandle);
 
-		GTK.gtk_widget_show (boxHandle);
-		GTK.gtk_widget_show (labelHandle);
+		gtk_widget_show (boxHandle);
+		gtk_widget_show (labelHandle);
 	}
 
 	column.labelHandle = labelHandle;
@@ -1157,7 +1157,7 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 		long [] path = new long [1];
 		if (GTK.gtk_gesture_drag_get_start_point(dragGesture, startX, startY)) {
 			if (getHeaderVisible()) {
-				startY[0]-= getHeaderHeightInPixels();
+				startY[0]-= getHeaderHeight();
 			}
 			if (GTK.gtk_tree_view_get_path_at_pos (handle, (int) startX[0], (int) startY[0], path, null, null, null)) {
 				if (path [0] != 0) {
@@ -1434,11 +1434,6 @@ TableItem getFocusItem () {
  */
 public int getGridLineWidth () {
 	checkWidget ();
-	return DPIUtil.autoScaleDown (getGridLineWidthInPixels ());
-}
-
-int getGridLineWidthInPixels () {
-	checkWidget();
 	return 0;
 }
 
@@ -1488,11 +1483,6 @@ public Color getHeaderForeground () {
  */
 public int getHeaderHeight () {
 	checkWidget ();
-	return DPIUtil.autoScaleDown (getHeaderHeightInPixels ());
-}
-
-int getHeaderHeightInPixels () {
-	checkWidget();
 	if (!GTK.gtk_tree_view_get_headers_visible(handle)) return 0;
 
 	int height = 0;
@@ -1502,9 +1492,9 @@ int getHeaderHeightInPixels () {
 			long buttonHandle = columns[i].buttonHandle;
 			if (buttonHandle != 0) {
 				if (!GTK.gtk_widget_get_visible(buttonHandle))  {
-					GTK.gtk_widget_show(buttonHandle);
+					gtk_widget_show(buttonHandle);
 					gtk_widget_get_preferred_size(buttonHandle, requisition);
-					GTK.gtk_widget_hide(buttonHandle);
+					gtk_widget_hide(buttonHandle);
 				} else {
 					gtk_widget_get_preferred_size(buttonHandle, requisition);
 				}
@@ -1599,11 +1589,6 @@ public TableItem getItem (int index) {
  */
 public TableItem getItem (Point point) {
 	checkWidget();
-	return getItemInPixels(DPIUtil.autoScaleUp(point));
-}
-
-TableItem getItemInPixels (Point point) {
-	checkWidget();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
 	long [] path = new long [1];
 	GTK.gtk_widget_realize (handle);
@@ -1657,11 +1642,6 @@ public int getItemCount () {
  */
 public int getItemHeight () {
 	checkWidget ();
-	return DPIUtil.autoScaleDown (getItemHeightInPixels ());
-}
-
-int getItemHeightInPixels () {
-	checkWidget();
 	int height = 0;
 
 	if (itemCount == 0) {
@@ -2890,11 +2870,11 @@ void sendMeasureEvent (long cell, long width, long height) {
 			event.index = columnIndex;
 			event.gc = gc;
 			Rectangle eventRect = new Rectangle (0, 0, contentWidth [0], contentHeight [0]);
-			event.setBounds (DPIUtil.autoScaleDown (eventRect));
+			event.setBounds (eventRect);
 			if (isSelected) event.detail = SWT.SELECTED;
 			sendEvent (SWT.MeasureItem, event);
 			gc.dispose ();
-			Rectangle rect = DPIUtil.autoScaleUp (event.getBounds ());
+			Rectangle rect = event.getBounds ();
 			contentWidth [0] = rect.width - imageWidth;
 			if (contentHeight [0] < rect.height) contentHeight [0] = rect.height;
 			if (width != 0) C.memmove (width, contentWidth, 4);
@@ -3044,13 +3024,9 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 				if (cr != 0) {
 					GdkRectangle r = new GdkRectangle();
 					GDK.gdk_cairo_get_clip_rectangle(cr, r);
-					Rectangle rect2 = DPIUtil.autoScaleDown(rect);
-					// Caveat: rect2 is necessary because GC#setClipping(Rectangle) got broken by bug 446075
-					gc.setClipping(rect2.x, rect2.y, rect2.width, rect2.height);
+					gc.setClipping(rect.x, rect.y, rect.width, rect.height);
 				} else {
-					Rectangle rect2 = DPIUtil.autoScaleDown(rect);
-					// Caveat: rect2 is necessary because GC#setClipping(Rectangle) got broken by bug 446075
-					gc.setClipping(rect2.x, rect2.y, rect2.width, rect2.height);
+					gc.setClipping(rect.x, rect.y, rect.width, rect.height);
 
 				}
 
@@ -3068,7 +3044,7 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 					event.index = columnIndex;
 					event.gc = gc;
 					event.detail = drawState;
-					event.setBounds (DPIUtil.autoScaleDown (eventRect));
+					event.setBounds (eventRect);
 					sendEvent (SWT.EraseItem, event);
 				} finally {
 					Cairo.cairo_translate (cr, 0, y_offset);
@@ -3102,7 +3078,7 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 	if ((drawState & SWT.BACKGROUND) != 0 && (drawState & SWT.SELECTED) == 0) {
 		GC gc = getGC(cr);
 		gc.setBackground (item.getBackground (columnIndex));
-		gc.fillRectangle (DPIUtil.autoScaleDown (rendererRect.toRectangle ()));
+		gc.fillRectangle (rendererRect.toRectangle ());
 		gc.dispose ();
 	}
 	if ((drawState & SWT.FOREGROUND) != 0 || GTK.GTK_IS_CELL_RENDERER_TOGGLE (cell)) {
@@ -3166,9 +3142,7 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 				gc.setFont (item.getFont (columnIndex));
 				if ((style & SWT.MIRRORED) != 0) rect.x = getClientWidth () - rect.width - rect.x;
 
-				Rectangle rect2 = DPIUtil.autoScaleDown(rect);
-				// Caveat: rect2 is necessary because GC#setClipping(Rectangle) got broken by bug 446075
-				gc.setClipping(rect2.x, rect2.y, rect2.width, rect2.height);
+				gc.setClipping(rect.x, rect.y, rect.width, rect.height);
 
 				// SWT.PaintItem/SWT.EraseItem often expect that event.y matches
 				// what 'event.item.getBounds()' returns. The workaround is to
@@ -3184,7 +3158,7 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 					event.index = columnIndex;
 					event.gc = gc;
 					event.detail = drawState;
-					event.setBounds (DPIUtil.autoScaleDown (eventRect));
+					event.setBounds (eventRect);
 					sendEvent (SWT.PaintItem, event);
 				} finally {
 					Cairo.cairo_translate (cr, 0, y_offset);

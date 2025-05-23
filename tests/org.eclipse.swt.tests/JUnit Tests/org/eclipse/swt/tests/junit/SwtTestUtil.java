@@ -452,7 +452,6 @@ public static boolean waitEvent(Runnable trigger, Control control, int swtEvent,
  *                      arrive *before* you call this function, and it will
  *                      fail to receive event.
  * @param shell         the Shell to wait for
- * @return <code>true</code> if Shell became active within timeout
  */
 public static void waitShellActivate(Runnable trigger, Shell shell) {
 	final int timeoutInMsec = 3000;

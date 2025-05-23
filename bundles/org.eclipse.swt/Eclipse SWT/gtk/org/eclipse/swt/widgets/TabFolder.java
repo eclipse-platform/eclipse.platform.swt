@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -304,11 +304,11 @@ void createItem (TabItem item, int index) {
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SWITCH_PAGE);
 
 	if (GTK.GTK4) {
-		GTK.gtk_widget_hide(imageHandle);
+		gtk_widget_hide(imageHandle);
 	} else {
-		GTK.gtk_widget_show(boxHandle);
-		GTK.gtk_widget_show(labelHandle);
-		GTK.gtk_widget_show(pageHandle);
+		gtk_widget_show(boxHandle);
+		gtk_widget_show(labelHandle);
+		gtk_widget_show(pageHandle);
 	}
 
 	item.state |= HANDLE;
@@ -666,7 +666,7 @@ Point minimumSize (int wHint, int hHint, boolean flushCache) {
 			index++;
 		}
 		if (index == count) {
-			Rectangle rect = DPIUtil.autoScaleUp(child.getBounds ());
+			Rectangle rect = child.getBounds ();
 			width = Math.max (width, rect.x + rect.width);
 			height = Math.max (height, rect.y + rect.height);
 		} else {
@@ -674,7 +674,7 @@ Point minimumSize (int wHint, int hHint, boolean flushCache) {
 			 * Since computeSize can be overridden by subclasses, we cannot
 			 * call computeSizeInPixels directly.
 			 */
-			Point size = DPIUtil.autoScaleUp(child.computeSize (DPIUtil.autoScaleDown(wHint), DPIUtil.autoScaleDown(hHint), flushCache));
+			Point size = child.computeSize (wHint, hHint, flushCache);
 			width = Math.max (width, size.x);
 			height = Math.max (height, size.y);
 		}

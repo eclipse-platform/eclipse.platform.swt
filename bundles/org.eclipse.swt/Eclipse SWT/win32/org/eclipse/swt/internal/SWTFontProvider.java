@@ -16,6 +16,7 @@ package org.eclipse.swt.internal;
 import java.util.*;
 import java.util.concurrent.*;
 
+import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
@@ -46,6 +47,10 @@ public class SWTFontProvider {
 		return getFontRegistry(device).getSystemFont(zoom);
 	}
 
+	public static long getSystemFontHandle(Device device, int zoom) {
+		return Font.win32_getHandle(getSystemFont(device, zoom));
+	}
+
 	/**
 	 * Returns the font with the given font data for the given device at the
 	 * specified zoom.
@@ -59,6 +64,32 @@ public class SWTFontProvider {
 	 */
 	public static Font getFont(Device device, FontData fontData, int zoom) {
 		return getFontRegistry(device).getFont(fontData, zoom);
+	}
+
+	public static long getFontHandle(Device device, FontData fontData, int zoom) {
+		return Font.win32_getHandle(getFont(device, fontData, zoom));
+	}
+
+	public static long getFontHandle(Font font, int zoom) {
+		if (font == null) {
+			SWT.error(SWT.ERROR_NULL_ARGUMENT);
+		}
+		return Font.win32_getHandle(getFont(font.getDevice(), font.getFontData()[0], zoom));
+	}
+
+	/**
+	 * Returns the font with the given fontHandle for the given device at the
+	 * specified zoom.
+	 *
+	 * <b>Note:</b> This operation is not thread-safe. It must thus always be called
+	 * from the same thread for the same device, such as the display's UI thread.
+	 *
+	 * @param device     the device to retrieve the font for, must not be {@code null}
+	 * @param fontHandle the handle to an existing font
+	 * @param zoom       the zoom for which the font shall be scaled
+	 */
+	public static Font getFont(Device device, long fontHandle, int zoom) {
+		return getFontRegistry(device).getFont(fontHandle, zoom);
 	}
 
 	/**

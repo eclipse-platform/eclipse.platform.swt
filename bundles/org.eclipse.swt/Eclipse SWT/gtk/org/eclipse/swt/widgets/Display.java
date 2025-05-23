@@ -1774,7 +1774,7 @@ public Shell getActiveShell () {
 @Override
 public Rectangle getBounds () {
 	checkDevice ();
-	return DPIUtil.autoScaleDown (getBoundsInPixels ());
+	return getBoundsInPixels ();
 }
 
 /**
@@ -1985,10 +1985,6 @@ boolean filters (int eventType) {
  * </ul>
  */
 public Point getCursorLocation() {
-	return DPIUtil.autoScaleDown(getCursorLocationInPixels());
-}
-
-Point getCursorLocationInPixels() {
 	checkDevice();
 
 	int[] x = new int[1], y = new int[1];
@@ -2649,7 +2645,7 @@ Rectangle getWorkArea() {
 public Monitor[] getMonitors() {
 	checkDevice();
 	Monitor[] monitors = null;
-	Rectangle workArea = DPIUtil.autoScaleDown(getWorkArea ());
+	Rectangle workArea = getWorkArea ();
 	long display = GDK.gdk_display_get_default();
 	if (display != 0) {
 		int monitorCount;
@@ -2670,10 +2666,10 @@ public Monitor[] getMonitors() {
 
 				Monitor monitor = new Monitor();
 				monitor.handle = gdkMonitor;
-				monitor.x = DPIUtil.autoScaleDown(geometry.x);
-				monitor.y = DPIUtil.autoScaleDown(geometry.y);
-				monitor.width = DPIUtil.autoScaleDown(geometry.width);
-				monitor.height = DPIUtil.autoScaleDown(geometry.height);
+				monitor.x = geometry.x;
+				monitor.y = geometry.y;
+				monitor.width = geometry.width;
+				monitor.height = geometry.height;
 				if (!OS.isX11()) {
 					int scaleFactor = (int) GDK.gdk_monitor_get_scale_factor(gdkMonitor);
 					monitor.zoom = scaleFactor * 100;
@@ -2685,10 +2681,10 @@ public Monitor[] getMonitors() {
 				 * since it takes into account per-monitor trim. Not available in GTK4.
 				 */
 				if (!GTK.GTK4) GDK.gdk_monitor_get_workarea(gdkMonitor, geometry);
-				monitor.clientX = DPIUtil.autoScaleDown(geometry.x);
-				monitor.clientY = DPIUtil.autoScaleDown(geometry.y);
-				monitor.clientWidth = DPIUtil.autoScaleDown(geometry.width);
-				monitor.clientHeight = DPIUtil.autoScaleDown(geometry.height);
+				monitor.clientX = geometry.x;
+				monitor.clientY = geometry.y;
+				monitor.clientWidth = geometry.width;
+				monitor.clientHeight = geometry.height;
 
 				monitors[i] = monitor;
 			}
@@ -4016,16 +4012,16 @@ public Point map (Control from, Control to, int x, int y) {
 	Point point = new Point (x, y);
 	if (from == to) return point;
 	if (from != null) {
-		Point origin = DPIUtil.autoScaleDown (GTK.GTK4 ? from.getSurfaceOrigin() : from.getWindowOrigin ());
-		if ((from.style & SWT.MIRRORED) != 0) point.x = DPIUtil.autoScaleDown (from.getClientWidth ()) - point.x;
+		Point origin = GTK.GTK4 ? from.getSurfaceOrigin() : from.getWindowOrigin ();
+		if ((from.style & SWT.MIRRORED) != 0) point.x = from.getClientWidth () - point.x;
 		point.x += origin.x;
 		point.y += origin.y;
 	}
 	if (to != null) {
-		Point origin = DPIUtil.autoScaleDown (GTK.GTK4 ? to.getSurfaceOrigin() : to.getWindowOrigin ());
+		Point origin = GTK.GTK4 ? to.getSurfaceOrigin() : to.getWindowOrigin ();
 		point.x -= origin.x;
 		point.y -= origin.y;
-		if ((to.style & SWT.MIRRORED) != 0) point.x = DPIUtil.autoScaleDown (to.getClientWidth ()) - point.x;
+		if ((to.style & SWT.MIRRORED) != 0) point.x = to.getClientWidth () - point.x;
 	}
 	return point;
 }
@@ -4145,16 +4141,16 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
 	if (from == to) return rect;
 	boolean fromRTL = false, toRTL = false;
 	if (from != null) {
-		Point origin = DPIUtil.autoScaleDown (GTK.GTK4 ? from.getSurfaceOrigin () : from.getWindowOrigin ());
-		if (fromRTL = (from.style & SWT.MIRRORED) != 0) rect.x = DPIUtil.autoScaleDown (from.getClientWidth ()) - rect.x;
+		Point origin = GTK.GTK4 ? from.getSurfaceOrigin () : from.getWindowOrigin ();
+		if (fromRTL = (from.style & SWT.MIRRORED) != 0) rect.x = from.getClientWidth () - rect.x;
 		rect.x += origin.x;
 		rect.y += origin.y;
 	}
 	if (to != null) {
-		Point origin = DPIUtil.autoScaleDown (GTK.GTK4 ? to.getSurfaceOrigin() : to.getWindowOrigin ());
+		Point origin = GTK.GTK4 ? to.getSurfaceOrigin() : to.getWindowOrigin ();
 		rect.x -= origin.x;
 		rect.y -= origin.y;
-		if (toRTL = (to.style & SWT.MIRRORED) != 0) rect.x = DPIUtil.autoScaleDown (to.getClientWidth ()) - rect.x;
+		if (toRTL = (to.style & SWT.MIRRORED) != 0) rect.x = to.getClientWidth () - rect.x;
 	}
 
 	if (fromRTL != toRTL) rect.x -= rect.width;
@@ -4297,8 +4293,8 @@ public boolean post (Event event) {
 		int type = event.type;
 
 		if (type == SWT.MouseMove) {
-			Rectangle loc = DPIUtil.autoScaleUp(event.getBounds());
-			setCursorLocationInPixels(new Point(loc.x, loc.y));
+			Rectangle loc = event.getBounds();
+			setCursorLocation(new Point(loc.x, loc.y));
 			return true;
 		}
 
@@ -4840,6 +4836,11 @@ void releaseDisplay () {
 		OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (pangoFontFaceClass, pangoFontFaceNewProc);
 		OS.g_type_class_unref (pangoFontFaceClass);
 		pangoFontFaceNewProc = 0;
+		long printerOptionWidgetType = GTK.gtk_printer_option_widget_get_type();
+		long printerOptionWidgetClass = OS.g_type_class_ref (printerOptionWidgetType);
+		OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (printerOptionWidgetClass, printerOptionWidgetNewProc);
+		OS.g_type_class_unref (printerOptionWidgetClass);
+		printerOptionWidgetNewProc = 0;
 	}
 
 	/* Release the sleep resources */
@@ -5253,17 +5254,6 @@ public void setCursorLocation (int x, int y) {
 	setCursorLocation(new Point (x, y));
 }
 
-void setCursorLocationInPixels (Point location) {
-	long gdkDisplay = GDK.gdk_display_get_default();
-	long gdkPointer = GDK.gdk_get_pointer(gdkDisplay);
-	if (GTK.GTK4) {
-		//TODO: GTK4 no gdk_device_warp
-	} else {
-		long gdkScreen = GDK.gdk_screen_get_default();
-		GDK.gdk_device_warp(gdkPointer, gdkScreen, location.x, location.y);
-	}
-}
-
 /**
  * Sets the location of the on-screen pointer relative to the top left corner
  * of the screen.  <b>Note: It is typically considered bad practice for a
@@ -5282,8 +5272,14 @@ void setCursorLocationInPixels (Point location) {
 public void setCursorLocation (Point point) {
 	checkDevice ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	point = DPIUtil.autoScaleUp(point);
-	setCursorLocationInPixels(point);
+	long gdkDisplay = GDK.gdk_display_get_default();
+	long gdkPointer = GDK.gdk_get_pointer(gdkDisplay);
+	if (GTK.GTK4) {
+		//TODO: GTK4 no gdk_device_warp
+	} else {
+		long gdkScreen = GDK.gdk_screen_get_default();
+		GDK.gdk_device_warp(gdkPointer, gdkScreen, point.x, point.y);
+	}
 }
 
 /**
@@ -5560,7 +5556,7 @@ void showIMWindow (Control control) {
 			GTK4.gtk_window_set_child(preeditWindow, preeditLabel);
 		} else {
 			GTK3.gtk_container_add (preeditWindow, preeditLabel);
-			GTK.gtk_widget_show (preeditLabel);
+			GTK3.gtk_widget_show (preeditLabel);
 		}
 	}
 	long [] preeditString = new long [1];
@@ -5577,14 +5573,14 @@ void showIMWindow (Control control) {
 		OS.pango_font_description_free (fontDesc);
 		if (pangoAttrs [0] != 0) GTK.gtk_label_set_attributes (preeditLabel, pangoAttrs[0]);
 		GTK.gtk_label_set_text (preeditLabel, preeditString [0]);
-		Point point = control.toDisplayInPixels (control.getIMCaretPos ());
+		Point point = control.toDisplay (control.getIMCaretPos ());
 		GTK3.gtk_window_move (preeditWindow, point.x, point.y);
 		GtkRequisition requisition = new GtkRequisition ();
 		GTK.gtk_widget_get_preferred_size (preeditLabel, requisition, null);
 		GTK3.gtk_window_resize (preeditWindow, requisition.width, requisition.height);
-		GTK.gtk_widget_show (preeditWindow);
+		GTK3.gtk_widget_show (preeditWindow);
 	} else {
-		GTK.gtk_widget_hide (preeditWindow);
+		GTK3.gtk_widget_hide (preeditWindow);
 	}
 	if (preeditString [0] != 0) OS.g_free (preeditString [0]);
 	if (pangoAttrs [0] != 0) OS.pango_attr_list_unref (pangoAttrs [0]);

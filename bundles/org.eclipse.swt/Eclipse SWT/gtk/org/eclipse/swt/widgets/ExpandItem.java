@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -232,11 +232,6 @@ public boolean getExpanded() {
  */
 public int getHeaderHeight () {
 	checkWidget ();
-	return DPIUtil.autoScaleDown (getHeaderHeightInPixels ());
-}
-
-int getHeaderHeightInPixels() {
-	checkWidget();
 
 	GtkAllocation allocation = new GtkAllocation();
 	GTK.gtk_widget_get_allocation(GTK.gtk_expander_get_label_widget(handle), allocation);
@@ -256,7 +251,7 @@ int getHeaderHeightInPixels() {
  */
 public int getHeight() {
 	checkWidget();
-	return DPIUtil.autoScaleDown(height);
+	return height;
 }
 
 /**
@@ -414,7 +409,7 @@ void resizeControl () {
 		 * to be zero, and the widget is never shown during a layout operation, similar to
 		 * Bug 487757. The fix is to show the control before setting any bounds.
 		 */
-		if (visible) GTK.gtk_widget_show(control.topHandle ());
+		if (visible) gtk_widget_show(control.topHandle ());
 		control.setBounds (x, y, width, Math.max (0, height), true, true);
 
 		control.setVisible (visible);
@@ -507,11 +502,6 @@ void setForegroundRGBA (GdkRGBA rgba) {
  */
 public void setHeight (int height) {
 	checkWidget ();
-	setHeightInPixels(DPIUtil.autoScaleUp(height));
-}
-
-void setHeightInPixels (int height) {
-	checkWidget ();
 	if (height < 0) return;
 	this.height = height;
 	GTK.gtk_widget_set_size_request (clientHandle, -1, height);
@@ -532,16 +522,16 @@ public void setImage (Image image) {
 		} else {
 			GTK3.gtk_image_set_from_surface(imageHandle, image.surface);
 		}
-		if (text.length () == 0) GTK.gtk_widget_hide (labelHandle);
-		GTK.gtk_widget_show(imageHandle);
+		if (text.length () == 0) gtk_widget_hide (labelHandle);
+		gtk_widget_show(imageHandle);
 	} else {
 		if (GTK.GTK4) {
 			GTK4.gtk_picture_set_paintable(imageHandle, 0);
 		} else {
 			GTK3.gtk_image_set_from_surface(imageHandle, 0);
 		}
-		GTK.gtk_widget_show(labelHandle);
-		GTK.gtk_widget_hide(imageHandle);
+		gtk_widget_show(labelHandle);
+		gtk_widget_hide(imageHandle);
 	}
 }
 
@@ -567,12 +557,12 @@ void showWidget (int index) {
 		GTK4.gtk_box_append(parent.handle, handle);
 		gtk_box_set_child_packing (parent.handle, handle, false, false, 0, GTK.GTK_PACK_START);
 	} else {
-		GTK.gtk_widget_show (handle);
-		GTK.gtk_widget_show (clientHandle);
+		gtk_widget_show (handle);
+		gtk_widget_show (clientHandle);
 		if (labelHandle != 0)
-			GTK.gtk_widget_show (labelHandle);
+			gtk_widget_show (labelHandle);
 		if (boxHandle != 0)
-			GTK.gtk_widget_show (boxHandle);
+			gtk_widget_show (boxHandle);
 		GTK3.gtk_container_add (parent.handle, handle);
 		gtk_box_set_child_packing (parent.handle, handle, false, false, 0, GTK.GTK_PACK_START);
 	}

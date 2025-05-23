@@ -1081,12 +1081,6 @@ long eventSurface () {
  */
 public Point getCaretLocation () {
 	checkWidget ();
-	return DPIUtil.autoScaleDown(getCaretLocationInPixels());
-}
-
-
-Point getCaretLocationInPixels () {
-	checkWidget ();
 	if ((style & SWT.READ_ONLY) != 0) {
 		return new Point (0, 0);
 	}
@@ -1308,7 +1302,7 @@ public Point getSelection () {
 	int [] end = new int [1];
 	if (entryHandle != 0) {
 		GTK.gtk_editable_get_selection_bounds (entryHandle, start, end);
-		long ptr = GTK3.gtk_entry_get_text (entryHandle);
+		long ptr = GTK.GTK4 ? GTK4.gtk_entry_buffer_get_text(GTK4.gtk_entry_get_buffer(entryHandle)): GTK3.gtk_entry_get_text (entryHandle);
 		start[0] = (int)OS.g_utf8_offset_to_utf16_offset (ptr, start[0]);
 		end[0] = (int)OS.g_utf8_offset_to_utf16_offset (ptr, end[0]);
 	}
@@ -1389,12 +1383,6 @@ String getText (int start, int stop) {
  * </ul>
  */
 public int getTextHeight () {
-	checkWidget();
-	return DPIUtil.autoScaleDown(getTextHeightInPixels());
-}
-
-
-int getTextHeightInPixels () {
 	checkWidget();
 	GtkRequisition requisition = new GtkRequisition ();
 	gtk_widget_get_preferred_size (handle, requisition);
@@ -1977,7 +1965,14 @@ long paintSurface () {
  */
 public void paste () {
 	checkWidget ();
-	if (entryHandle != 0) GTK3.gtk_editable_paste_clipboard (entryHandle);
+	if (entryHandle != 0) {
+		if (GTK.GTK4) {
+			long textHandle = GTK4.gtk_widget_get_first_child(entryHandle);
+			GTK4.gtk_widget_activate_action(textHandle, OS.action_paste_clipboard, null);
+		} else {
+			GTK3.gtk_editable_paste_clipboard (entryHandle);
+		}
+	}
 }
 
 @Override
@@ -2275,7 +2270,7 @@ void setBackgroundGdkRGBA (long context, long handle, GdkRGBA rgba) {
 @Override
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	int newHeight = height;
-	if (resize) newHeight = Math.max (getTextHeightInPixels (), height);
+	if (resize) newHeight = Math.max (getTextHeight (), height);
 	return super.setBounds (x, y, width, newHeight, move, resize);
 }
 

@@ -403,7 +403,10 @@ public Image(Device device, Image srcImage, int flag) {
  * </ul>
  *
  * @see #dispose()
+ *
+ * @deprecated use {@link Image#Image(Device, int, int)} instead
  */
+@Deprecated(since = "2025-06", forRemoval = true)
 public Image(Device device, Rectangle bounds) {
 	super(device);
 	if (bounds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -437,11 +440,14 @@ public Image(Device device, Rectangle bounds) {
  * @see #dispose()
  */
 public Image(Device device, ImageData data) {
+	this(device, DPIUtil.autoScaleUp(device, data), DPIUtil.getDeviceZoom());
+}
+
+private Image(Device device, ImageData data, int zoom) {
 	super(device);
 	if (data == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	currentDeviceZoom = DPIUtil.getDeviceZoom();
-	data = DPIUtil.autoScaleUp (device, data);
-	init(data);
+	currentDeviceZoom = zoom;
+	init(data, zoom);
 	init();
 }
 
@@ -695,9 +701,9 @@ public Image(Device device, ImageGcDrawer imageGcDrawer, int width, int height) 
 		SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	}
 	this.imageGcDrawer = imageGcDrawer;
-	currentDeviceZoom = DPIUtil.getDeviceZoom();
+	currentDeviceZoom = 100;
 	ImageData imageData = drawWithImageGcDrawer(width, height, currentDeviceZoom);
-	init (imageData);
+	init (imageData, currentDeviceZoom);
 	init ();
 }
 
@@ -1162,8 +1168,17 @@ public ImageData getImageData (int zoom) {
 }
 
 private ImageData drawWithImageGcDrawer(int width, int height, int zoom) {
-	Image image = new Image(device, width, height);
-	GC gc = new GC(image);
+	int gcStyle = imageGcDrawer.getGcStyle();
+	Image image;
+	if ((gcStyle & SWT.TRANSPARENT) != 0) {
+		/* Create a 24 bit image data with alpha channel */
+		final ImageData resultData = new ImageData(width, height, 24, new PaletteData (0xFF, 0xFF00, 0xFF0000));
+		resultData.alphaData = new byte [width * height];
+		image = new Image(device, resultData, zoom);
+	} else {
+		image = new Image(device, width, height);
+	}
+	GC gc = new GC(image, gcStyle);
 	try {
 		imageGcDrawer.drawOn(gc, width, height);
 		ImageData imageData = image.getImageData(zoom);
@@ -1274,6 +1289,10 @@ void init(int width, int height) {
 }
 
 void init(ImageData image) {
+	init(image, DPIUtil.getDeviceZoom());
+}
+
+private void init(ImageData image, int zoom) {
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 
 	PaletteData palette = image.palette;
@@ -1286,7 +1305,7 @@ void init(ImageData image) {
 	int imageDataHeight = image.height;
 
 	// Scale dimensions of Image object to 100% scale factor
-	double scaleFactor = DPIUtil.getDeviceZoom() / 100f;
+	double scaleFactor = zoom / 100f;
 	this.width = (int) Math.round(imageDataWidth / scaleFactor);
 	this.height = (int) Math.round(imageDataHeight / scaleFactor);
 
@@ -1549,6 +1568,29 @@ public String toString () {
 	}
 
 	return "Image {" + surface + "}";
+}
+
+/**
+ * <b>IMPORTANT:</b> This method is not part of the public
+ * API for Image. It is marked public only so that it
+ * can be shared within the packages provided by SWT.
+ *
+ * Draws a scaled image using the GC by another image.
+ *
+ * @param gc the GC to draw on the resulting image
+ * @param original the image which is supposed to be scaled and drawn on the resulting image
+ * @param width the width of the original image
+ * @param height the height of the original image
+ * @param scaleFactor the factor with which the image is supposed to be scaled
+ *
+ * @noreference This method is not intended to be referenced by clients.
+ */
+public static void drawScaled(GC gc, Image original, int width, int height, float scaleFactor) {
+	gc.drawImage (original, 0, 0, DPIUtil.autoScaleDown (width), DPIUtil.autoScaleDown (height),
+			/* E.g. destWidth here is effectively DPIUtil.autoScaleDown (scaledWidth), but avoiding rounding errors.
+			 * Nevertheless, we still have some rounding errors due to the point-based API GC#drawImage(..).
+			 */
+			0, 0, Math.round (DPIUtil.autoScaleDown (width * scaleFactor)), Math.round (DPIUtil.autoScaleDown (height * scaleFactor)));
 }
 
 }

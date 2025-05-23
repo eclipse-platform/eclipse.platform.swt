@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -792,7 +792,7 @@ boolean setEventData(long context, int x, int y, int time, DNDEvent event) {
 		long window = GTK3.gtk_widget_get_window (control.handle);
 		GDK.gdk_window_get_origin(window, origin_x, origin_y);
 	}
-	Point coordinates = DPIUtil.autoScaleDown(new Point(origin_x[0] + x, origin_y[0] + y));
+	Point coordinates = new Point(origin_x[0] + x, origin_y[0] + y);
 
 	event.widget = this;
 	event.x = coordinates.x;

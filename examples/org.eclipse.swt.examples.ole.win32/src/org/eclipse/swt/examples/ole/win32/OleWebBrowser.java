@@ -14,7 +14,9 @@
 package org.eclipse.swt.examples.ole.win32;
 
 
-import org.eclipse.swt.ole.win32.*;
+import org.eclipse.swt.ole.win32.OLE;
+import org.eclipse.swt.ole.win32.OleAutomation;
+import org.eclipse.swt.ole.win32.Variant;
 
 /**
  * Wrapper for an OleAutomation object used to send commands
@@ -76,7 +78,6 @@ class OleWebBrowser {
 	 * </code>
 	 * 
 	 * @param oleAutomation the OleAutomation object for this control.
-	 * @param oleControlSite the OleControlSite object for this control.
 	 */
 	public OleWebBrowser(OleAutomation oleAutomation) {
 		this.oleAutomation = oleAutomation;
@@ -207,8 +208,6 @@ class OleWebBrowser {
 	
 	/**
 	 * Refreshes the currently viewed page.
-	 *
-	 * @return the platform-defined result code for the "Refresh" method invocation
 	 */
 	public void Refresh(){
 		// dispid= 4294966746, type=METHOD, name="Refresh"
@@ -219,8 +218,6 @@ class OleWebBrowser {
 	
 	/**
 	 * Aborts loading of the currnet page.
-	 *
-	 * @return the platform-defined result code for the "Stop" method invocation
 	 */
 	public void Stop() {
 		// dispid=106, type=METHOD, name="Stop"

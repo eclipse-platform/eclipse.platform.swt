@@ -96,7 +96,7 @@ public class Bug529534_CTabFolder_topRight_wrapped {
 
 	private static Image image(Display display, int shapeColor) {
 		Rectangle bounds = new Rectangle(0, 0, 16, 16);
-		Image image = new Image(display, bounds);
+		Image image = new Image(display, bounds.width, bounds.height);
 		GC gc = new GC(image);
 		gc.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
 		gc.fillRectangle(bounds);

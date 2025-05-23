@@ -29,9 +29,7 @@ import org.eclipse.swt.widgets.Shell;
  * <li>Set SWT_GTK4=1 in the environment to run on GTK4</li>
  * <li>Run the snippet</li>
  * <li>Click the menu items a few times and it will eventually crash with the
- * following segfault:</li>
- * <p>
- *
+ * following segfault:
  * <pre>
  * Native frames: (J=compiled Java code, A=aot compiled Java code, j=interpreted, Vv=VM code, C=native code)
  * C  [libgtk-4.so.1+0x213053]  gtk_shortcut_controller_remove_shortcut+0x53
@@ -40,6 +38,7 @@ import org.eclipse.swt.widgets.Shell;
  * j  org.eclipse.swt.internal.gtk4.GTK4.gtk_shortcut_controller_remove_shortcut(JJ)V+0
  * j  org.eclipse.swt.widgets.MenuItem.setAccelerator(I)V+39
  * </pre>
+ * </li>
  * </ol>
  *
  * Tested on GTK 4.6.8 (Fedora 36)

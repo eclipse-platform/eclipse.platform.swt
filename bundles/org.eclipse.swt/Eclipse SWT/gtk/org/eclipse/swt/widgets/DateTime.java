@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -434,7 +434,7 @@ private void createHandleForCalendar() {
 			flags |= GTK.GTK_CALENDAR_SHOW_WEEK_NUMBERS;
 		}
 		GTK3.gtk_calendar_set_display_options(handle, flags);
-		GTK.gtk_widget_show(handle);
+		gtk_widget_show(handle);
 	}
 }
 
@@ -457,8 +457,8 @@ private void createHandleForDateWithDropDown () {
 
 		GTK3.gtk_container_add(fixedHandle, handle);
 		GTK3.gtk_container_add(handle, textEntryHandle);
-		GTK.gtk_widget_show(containerHandle);
-		GTK.gtk_widget_show(textEntryHandle);
+		gtk_widget_show(containerHandle);
+		gtk_widget_show(textEntryHandle);
 
 
 		// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,
@@ -627,7 +627,7 @@ void dropDownCalendar (boolean drop) {
 
 	//To display popup calendar, we need to know where the parent is relative to the whole screen.
 	Rectangle coordsRelativeToScreen = display.mapInPixels (getParent (), null, getBoundsInPixels ());
-	Rectangle displayRect = DPIUtil.autoScaleUp(getMonitor ().getClientArea ());
+	Rectangle displayRect = getMonitor ().getClientArea ();
 
 	showPopupShell (containerBounds, calendarSize, coordsRelativeToScreen, displayRect);
 
@@ -2326,7 +2326,7 @@ void selectAll () {
 
 void hideDateTime () {
 	if (isDate () || isTime ()){
-		GTK.gtk_widget_hide (fixedHandle);
+		gtk_widget_hide (fixedHandle);
 	}
 }
 

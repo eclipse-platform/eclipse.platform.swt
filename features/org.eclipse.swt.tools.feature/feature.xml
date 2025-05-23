@@ -24,10 +24,6 @@
          version="0.0.0"/>
 
    <plugin
-         id="org.eclipse.swt.tools.spies"
-         version="0.0.0"/>
-
-   <plugin
          id="org.eclipse.swt.tools.base"
          version="0.0.0"/>
 

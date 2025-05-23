@@ -627,8 +627,6 @@ public void test_getSelection() {
 /**
  * Returns the number of selected items contained in the receiver.
  *
- * @return the number of selected items
- *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -2343,7 +2341,7 @@ public void test_showSelection() {
 /* custom */
 List list;
 /**
- * Test if 'deselect(u, v)' is the same as 'for (i=u; i<=v; ++i) deselect(i);'
+ * Test if {@code deselect(u, v)} is the same as {@code for (i=u; i<=v; ++i) deselect(i);}
  */
 protected void deselectII_helper(
 	String[] items,
@@ -2383,8 +2381,8 @@ protected List setSingleList() {
 	return list;
 }
 /**
- * Similar to deselectII_helper, checks if select(u, v) is the same as
- * for (i=u; i<=v; ++i) select(i)
+ * Similar to deselectII_helper, checks if {@code select(u, v)} is the same as
+ * {@code for (i=u; i<=v; ++i) select(i)}
  */
 protected void selectII_helper(
 	String[] items,

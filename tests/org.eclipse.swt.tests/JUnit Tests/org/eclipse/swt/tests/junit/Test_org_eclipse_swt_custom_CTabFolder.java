@@ -280,8 +280,8 @@ public void test_checkSize() {
  *
  * We define two {@link CTabFolder tab folders}, of which one has a nested tab folder.
  * We validate that selecting the nested tab does not break selection highlight for the top-level tabs.
- *
- * @see org.eclipse.swt.tests.manual.Bug528251_CTabFolder_nested_highlighting
+ * <p>
+ * See also {@code org.eclipse.swt.tests.manual.Bug528251_CTabFolder_nested_highlighting}
  */
 @Test
 public void test_nestedTabHighlighting () {

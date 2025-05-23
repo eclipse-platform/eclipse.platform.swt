@@ -1419,7 +1419,7 @@ LRESULT WM_GETFONT (long wParam, long lParam) {
 	if (result != null) return result;
 	long code = callWindowProc (handle, OS.WM_GETFONT, wParam, lParam);
 	if (code != 0) return new LRESULT (code);
-	return new LRESULT (font != null ? font.handle : defaultFont ());
+	return new LRESULT (font != null ? SWTFontProvider.getFontHandle(font, getNativeZoom()) : defaultFont ());
 }
 
 @Override
@@ -1525,7 +1525,7 @@ LRESULT WM_PAINT (long wParam, long lParam) {
 					Control control = findBackgroundControl ();
 					if (control == null) control = this;
 					data.background = control.getBackgroundPixel ();
-					data.font = Font.win32_new(display, OS.SendMessage (handle, OS.WM_GETFONT, 0, 0), nativeZoom);
+					data.font = SWTFontProvider.getFont(display, OS.SendMessage (handle, OS.WM_GETFONT, 0, 0), getNativeZoom());
 					data.uiState = (int)OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
 					if ((style & SWT.NO_BACKGROUND) != 0) {
 						/* This code is intentionally commented because it may be slow to copy bits from the screen */
@@ -1536,6 +1536,7 @@ LRESULT WM_PAINT (long wParam, long lParam) {
 						drawBackground (phdc [0], rect);
 					}
 					GC gc = createNewGC(phdc [0], data);
+
 					Event event = new Event ();
 					event.gc = gc;
 					event.setBounds(DPIUtil.scaleDown(new Rectangle(ps.left, ps.top, width, height), getZoom()));

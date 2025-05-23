@@ -58,7 +58,7 @@ public class GDBus {
 		 * @param inputArgs   2D array pair of Strings in the format of:  (DBUS_TYPE_*, argument_name).
 		 *                    Where argument_name is only so that it's seen by command line by user.
 		 * @param outputArgs  Same as inputArgs, but for returning values.
-		 * @param userFunction  A Function<Object[],Object[]>, that you would like to run when the user calls the method over gdbus.
+		 * @param userFunction  A Function&lt;Object[],Object[]&gt;, that you would like to run when the user calls the method over gdbus.
 		 *                      Note, input argument(s) are provided as an Object[] array. You need to cast items manually.
 		 *                      Output must always be an Object[] array or null. (E.g Object[] with only 1 element in it).
 		 *

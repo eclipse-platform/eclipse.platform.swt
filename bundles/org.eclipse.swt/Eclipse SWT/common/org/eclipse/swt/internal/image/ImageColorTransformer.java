@@ -23,17 +23,17 @@ public interface ImageColorTransformer {
 
 	public static final ImageColorTransformer DEFAULT_DISABLED_IMAGE_TRANSFORMER = switch (IMAGE_DISABLEMENT_ALGORITHM) {
 	case IMAGE_DISABLEMENT_ALGORITHM_GTK -> ImageColorTransformer.forRGB(0.5f, 0.5f, 0.5f, 0.5f);
-	case IMAGE_DISABLEMENT_ALGORITHM_DESATURATED -> ImageColorTransformer.forHSB(1.0f, 0.2f, 0.9f, 0.5f);
+	case IMAGE_DISABLEMENT_ALGORITHM_DESATURATED -> ImageColorTransformer.forSaturationBrightness(0.2f, 0.9f, 0.5f);
 	default -> ImageColorTransformer.forGrayscaledContrastBrightness(0.2f, 2.9f);
 	};
 
 	RGBA adaptPixelValue(int red, int green, int blue, int alpha);
 
-	public static ImageColorTransformer forHSB(float hueFactor, float saturationFactor, float brightnessFactor,
+	public static ImageColorTransformer forSaturationBrightness(float saturationFactor, float brightnessFactor,
 			float alphaFactor) {
 		return (red, green, blue, alpha) -> {
 			float[] hsba = new RGBA(red, green, blue, alpha).getHSBA();
-			float hue = Math.min(hueFactor * hsba[0], 1.0f);
+			float hue = hsba[0];
 			float saturation = Math.min(saturationFactor * hsba[1], 1.0f);
 			float brightness = Math.min(brightnessFactor * hsba[2], 1.0f);
 			float alphaResult = Math.min(alphaFactor * hsba[3], 255.0f);

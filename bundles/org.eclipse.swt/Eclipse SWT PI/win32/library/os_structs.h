@@ -965,18 +965,6 @@ void setNOTIFYICONDATAFields(JNIEnv *env, jobject lpObject, NOTIFYICONDATA *lpSt
 #define NOTIFYICONDATA_sizeof() 0
 #endif
 
-#ifndef NO_OSVERSIONINFOEX
-void cacheOSVERSIONINFOEXFields(JNIEnv *env, jobject lpObject);
-OSVERSIONINFOEX *getOSVERSIONINFOEXFields(JNIEnv *env, jobject lpObject, OSVERSIONINFOEX *lpStruct);
-void setOSVERSIONINFOEXFields(JNIEnv *env, jobject lpObject, OSVERSIONINFOEX *lpStruct);
-#define OSVERSIONINFOEX_sizeof() sizeof(OSVERSIONINFOEX)
-#else
-#define cacheOSVERSIONINFOEXFields(a,b)
-#define getOSVERSIONINFOEXFields(a,b,c) NULL
-#define setOSVERSIONINFOEXFields(a,b,c)
-#define OSVERSIONINFOEX_sizeof() 0
-#endif
-
 #ifndef NO_OUTLINETEXTMETRIC
 void cacheOUTLINETEXTMETRICFields(JNIEnv *env, jobject lpObject);
 OUTLINETEXTMETRIC *getOUTLINETEXTMETRICFields(JNIEnv *env, jobject lpObject, OUTLINETEXTMETRIC *lpStruct);
