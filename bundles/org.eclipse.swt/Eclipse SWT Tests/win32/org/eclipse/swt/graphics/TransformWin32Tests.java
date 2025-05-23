@@ -29,7 +29,7 @@ class TransformWin32Tests {
 	@Test
 	public void testShouldHaveDifferentHandlesAtDifferentZoomLevels() {
 		Display display = Display.getDefault();
-		int zoom = DPIUtil.getDeviceZoom();
+		int zoom = 100;
 		Transform transform = new Transform(display);
 		long scaledHandle = transform.getHandle(zoom * 2);
 		assertNotEquals("There should be different handles for different zoom levels", scaledHandle, transform.getHandle(zoom));
