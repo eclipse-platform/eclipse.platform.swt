@@ -733,9 +733,8 @@ public Rectangle computeTrim(int x, int y, int width, int height) {
 }
 
 Image createButtonImage(Display display, int button) {
-	final GC tempGC = new GC(TabFolder.this);
-	final Point size = renderer.computeSize(button, SWT.NONE, tempGC, SWT.DEFAULT, SWT.DEFAULT);
-	tempGC.dispose();
+	final Point size = Drawing.measure(TabFolder.this,
+			gc -> renderer.computeSize(button, SWT.NONE, gc, SWT.DEFAULT, SWT.DEFAULT));
 
 	final Rectangle trim = renderer.computeTrim(button, SWT.NONE, 0, 0, 0, 0);
 	final Point imageSize = new Point(size.x - trim.width, size.y - trim.height);
