@@ -587,10 +587,14 @@ public void test_LocationListener_changing() {
 @Test
 public void test_LocationListener_changed() {
 	AtomicBoolean changedFired = new AtomicBoolean(false);
-	browser.addLocationListener(changedAdapter(e ->	changedFired.set(true)));
+	browser.addLocationListener(changedAdapter(e ->	{
+			changedFired.set(true);
+			System.out.println(e.location);
+		}));
 	shell.open();
 	browser.setText("Hello world");
 	boolean passed = waitForPassCondition(changedFired::get);
+	System.out.println(browser.getUrl());
 	assertTrue("LocationListener.changed() event was never fired", passed);
 }
 @Test
@@ -658,6 +662,7 @@ public void test_LocationListener_then_ProgressListener() {
 	browser.addLocationListener(changedAdapter(event ->	locationChanged.set(true)));
 
 	browser.addProgressListener(completedAdapter(event -> {
+		System.out.println(browser.getText());
 		if (locationChanged.get()) {
 			progressChangedAfterLocationChanged.set(true);
 		}
@@ -672,7 +677,7 @@ public void test_LocationListener_then_ProgressListener() {
 			+ "Location changed: " + locationChanged.get() + "\n"
 			+ "ProgressChangedAfterLocationChanged: " + progressChangedAfterLocationChanged.get() + "\n"
 			+ "progressChanged: " + progressChanged.get();
-
+	System.out.println(browser.getText());
 	assertTrue(errorMsg, progressChangedAfterLocationChanged.get());
 }
 
@@ -995,13 +1000,14 @@ public void test_ProgressListener_completed_Called() {
 
 		@Override
 		public void changed(ProgressEvent event) {
-
+			System.out.println(browser.getText());
 		}
 	};
 	browser.addProgressListener(l);
 	browser.setText("<html><body>This test ensures that the completed listener is called.</body></html>");
 	shell.open();
 	boolean passed = waitForPassCondition(childCompleted::get);
+	System.out.println(browser.getUrl());
 	assertTrue(passed);
 }
 
