@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Copyright (c) 2012,2024 Eclipse Foundation and others.
+  Copyright (c) 2012, 2025 Eclipse Foundation and others.
   All rights reserved. This program and the accompanying materials
   are made available under the terms of the Eclipse Distribution License v1.0
   which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
   Contributors:
      Igor Fedorenko - initial implementation
      Conrad Groth - add platform specific JUnit test bundles
+     Tue Ton - support for FreeBSD
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -117,7 +118,6 @@
       <activation>
         <os>
           <family>unix</family>
-          <name>Linux</name>
         </os>
       </activation>
       <modules>
@@ -139,6 +139,11 @@
                   <os>linux</os>
                   <ws>gtk</ws>
                   <arch>ppc64le</arch>
+                </environment>
+                <environment>
+                  <os>freebsd</os>
+                  <ws>gtk</ws>
+                  <arch>x86_64</arch>
                 </environment>
               </environments>
             </configuration>
