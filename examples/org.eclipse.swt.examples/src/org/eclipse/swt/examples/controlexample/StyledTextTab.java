@@ -75,8 +75,8 @@ class StyledTextTab extends ScrollableTab {
 	Image createBitmapImage(Display display, String name) {
 		try (InputStream sourceStream = ControlExample.class.getResourceAsStream(name + ".bmp");
 				InputStream maskStream = ControlExample.class.getResourceAsStream(name + "_mask.bmp")) {
-			ImageData source = new ImageData(sourceStream);
-			ImageData mask = new ImageData(maskStream);
+			ImageData source = ImageData.load(sourceStream);
+			ImageData mask = ImageData.load(maskStream);
 			Image result = new Image(display, source, mask);
 			return result;
 		} catch (IOException e) {

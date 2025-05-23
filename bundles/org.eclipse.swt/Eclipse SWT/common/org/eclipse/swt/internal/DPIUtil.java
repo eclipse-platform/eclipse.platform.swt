@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2022 IBM Corporation and others.
+ * Copyright (c) 2022, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -15,6 +15,7 @@
  *******************************************************************************/
 package org.eclipse.swt.internal;
 
+import java.nio.file.Path;
 import java.util.*;
 import java.util.function.*;
 
@@ -567,16 +568,16 @@ public static ElementAtZoom<ImageData> validateAndGetImageDataAtZoom(ImageDataPr
  * the 100% image is returned as a fallback. If provider or fallback image is
  * not available, an error is thrown.
  */
-public static ElementAtZoom<String> validateAndGetImagePathAtZoom(ImageFileNameProvider provider, int zoom) {
+public static ElementAtZoom<Path> validateAndGetImagePathAtZoom(ImagePathProvider provider, int zoom) {
 	if (provider == null) {
 		SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	}
-	ElementAtZoom<String> imagePathAtZoom = getElementAtZoom(z -> provider.getImagePath(z), zoom);
-	if (imagePathAtZoom == null) {
+	ElementAtZoom<Path> imageAtZoom = getElementAtZoom(z -> provider.getImagePath(z), zoom);
+	if (imageAtZoom == null) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT, null,
-				": ImageFileNameProvider [" + provider + "] returns null filename at 100% zoom.");
+				": ImageFileNameProvider [" + provider + "] returns null file at 100% zoom.");
 	}
-	return imagePathAtZoom;
+	return imageAtZoom;
 }
 
 private static <T> ElementAtZoom<T> getElementAtZoom(Function<Integer, T> elementForZoomProvider, int zoom) {

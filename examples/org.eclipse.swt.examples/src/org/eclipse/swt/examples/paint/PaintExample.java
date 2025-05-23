@@ -474,7 +474,7 @@ public class PaintExample {
 					Tool tool = tool2;
 					String id = tool.group + '.' + tool.name;
 					try (InputStream sourceStream = clazz.getResourceAsStream(getResourceString(id + ".image"))) {
-						ImageData source = new ImageData(sourceStream);
+						ImageData source = ImageData.load(sourceStream);
 						ImageData mask = source.getTransparencyMask();
 						tool.image = new Image(null, source, mask);
 					}
