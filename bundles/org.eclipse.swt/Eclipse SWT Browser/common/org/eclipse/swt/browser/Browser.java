@@ -1267,4 +1267,10 @@ public void stop () {
 	checkWidget();
 	webBrowser.stop ();
 }
+
+@Override
+protected boolean embedsWin32Control () {
+	// The Edge browser embeds webView2
+	return !isDisposed() && isVisible() && "edge".equals(getBrowserType());
+}
 }
