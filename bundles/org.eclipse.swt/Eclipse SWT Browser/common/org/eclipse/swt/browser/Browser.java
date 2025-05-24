@@ -1267,4 +1267,10 @@ public void stop () {
 	checkWidget();
 	webBrowser.stop ();
 }
+
+//@Override not marked as overridden because the super method does not exist for GTK/Cocoa
+protected boolean embedsWin32Control () {
+	// The Edge browser embeds webView2
+	return !isDisposed() && isVisible() && "edge".equals(getBrowserType());
+}
 }

@@ -20,7 +20,6 @@ import java.util.stream.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.accessibility.*;
-import org.eclipse.swt.browser.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
@@ -3698,25 +3697,7 @@ public void setRedraw (boolean redraw) {
 	}
 }
 
-private boolean embedsWin32Control () {
-	if (this.isDisposed() || !this.isVisible()) {
-		return false;
-	}
-	if (this instanceof Browser browser) {
-		// The Edge browser embeds webView2
-		return "edge".equals(browser.getBrowserType());
-	}
-
-	if (this instanceof OleClientSite) {
-		// OLE objects are always embedded by windows
-		return true;
-	}
-
-	// This needs to be checked AFTER OleClientSite because OleClientSite itself is a Composite
-	if (this instanceof Composite comp) {
-		return Stream.of(comp.getChildren()).anyMatch(Control::embedsWin32Control);
-	}
-
+protected boolean embedsWin32Control () {
 	return false;
 }
 

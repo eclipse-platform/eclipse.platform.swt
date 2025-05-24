@@ -1511,4 +1511,10 @@ private SIZE xFormPixelsToHimetric(SIZE aSize) {
 	size.cy = cy;
 	return size;
 }
+
+@Override
+protected boolean embedsWin32Control () {
+	// OLE objects are always embedded by windows
+	return !isDisposed() && isVisible();
+}
 }
