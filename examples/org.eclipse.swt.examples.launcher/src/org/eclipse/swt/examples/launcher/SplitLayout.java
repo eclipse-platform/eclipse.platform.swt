@@ -20,7 +20,7 @@ import org.eclipse.swt.widgets.*;
 
 /**
  * A Layout class that automatically switches from a horizontal split to a vertical
- * split layout to accomodate changing size conditions.
+ * split layout to accommodate changing size conditions.
  * 
  * Later on we might improve this class to take into account the "preferred" size of
  * the widgets.
