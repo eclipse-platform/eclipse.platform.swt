@@ -196,7 +196,7 @@ You should learn at least:
 
 Widget is the main Widget. Everything else extends Widget. The most interesting classes are Widget, Control and Composite. Most widgets fork off of these. 
 
-As such, it is useful to be aware of fields/methods in parent classes and which methods get overriden by children. In Eclipse, you can Ctrl+click on a method to see it's super implementation, or derived implementations (this is very useful).
+As such, it is useful to be aware of fields/methods in parent classes and which methods get overridden by children. In Eclipse, you can Ctrl+click on a method to see it's super implementation, or derived implementations (this is very useful).
 
 This list below shows the widget hierarchy:
 
@@ -281,11 +281,11 @@ These are typically wrapped in a lock:
 
 **Constants and ENUMS**
 
-C constants and C Enums are delcared as plain ints. like so:
+C constants and C Enums are declared as plain ints. like so:
 
     public static final int GTK_SCROLL_STEP_UP = 6;
 
-*Note: If you need to add a C enum to OS.java, C ENUMS (Enumirations) begin at 0. Do note, that the Javadoc is parsed by the JNI parser. So be careful about what you put in there.*
+*Note: If you need to add a C enum to OS.java, C ENUMS (Enumerations) begin at 0. Do note, that the Javadoc is parsed by the JNI parser. So be careful about what you put in there.*
 
 **Static Strings translated to C-bytes**
 
@@ -441,7 +441,7 @@ C enums don't map onto Java's enums. Instead, to add an enum like GtkAlign to OS
     public static final int GTK_ALIGN_CENTER = 3;
     public static final int GTK_ALIGN_BASELINE = 4;
 
-And when you declare a function, delcare the java-doc parameter cast like this:
+And when you declare a function, declare the java-doc parameter cast like this:
 
     @param gtkalign cast=(GtkAlign)    // note (GtkAlign) with no pointer, not (GtkAlign *)
 
@@ -878,7 +878,7 @@ Now click on OK. Right click on your project -> Indexer -> Rebuild index. Now yo
 
 **Debugging GTK applications**
 
-Besides stepping through a GTK appliction, you also use the GtkInspector, which can be ran for a GTK3.14+ application to see real-time information about your running GTK application.
+Besides stepping through a GTK application, you also use the GtkInspector, which can be ran for a GTK3.14+ application to see real-time information about your running GTK application.
 
 You can set launch flags to help debug GTK apps as well as SWT snippets. Set the following global variable to get detailed frame-sizes:
 
@@ -935,7 +935,7 @@ Inside the GTK code base somewhere, set a break point in a common area:
 
     gtkmain.c:gtk_main_do_event(GdkEvent *event)         #This will be triggered an almost every GDK event
 
-Launch your SWT application. In terminal execute jps (java proccesses) and identify the PID of your SWT appplication.
+Launch your SWT application. In terminal execute jps (java processes) and identify the PID of your SWT application.
 
     lufimtse@unused-10-15-18-183 pathscripts$ jps
     357 Jps
