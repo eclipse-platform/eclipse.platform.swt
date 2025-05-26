@@ -219,6 +219,13 @@ void destroyHandlesExcept(Set<Integer> zoomLevels) {
 	});
 }
 
+Pattern copy() {
+	if (image != null) {
+		return new Pattern(device, image);
+	}
+	return new Pattern(device, baseX1, baseY1, baseX2, baseY2, color1, alpha1, color2, alpha2);
+}
+
 /**
  * Returns <code>true</code> if the Pattern has been disposed,
  * and <code>false</code> otherwise.
