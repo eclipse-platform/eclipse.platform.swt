@@ -3818,7 +3818,7 @@ public void setHeaderVisible (boolean show) {
  */
 public void setLinesVisible (boolean show) {
 	checkWidget();
-	//Note: this is overriden by the active theme in GTK3.
+	//Note: this is overridden by the active theme in GTK3.
 	GTK.gtk_tree_view_set_grid_lines (handle, show ? GTK.GTK_TREE_VIEW_GRID_LINES_VERTICAL : GTK.GTK_TREE_VIEW_GRID_LINES_NONE);
 }
 

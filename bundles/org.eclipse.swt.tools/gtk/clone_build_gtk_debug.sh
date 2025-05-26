@@ -105,7 +105,7 @@ func_echo_info "You are in: $(pwd)"
 if [ "$SILENT" == "false" ]; then
 	func_echo_input "Currently gtk is on branch:"
 	git branch
-	func_echo_input "Its reccomended to checkout a version of GTK that
+	func_echo_input "Its recommended to checkout a version of GTK that
 is found on your system, because 'master' usually requires very new upstream libraries.
 To find out which version of Gtk3 is on your system, you can check your package manager. Ex on fedora:
 sudo dnf list installed | grep '^gtk3\.'
@@ -114,7 +114,7 @@ To checkout a particular gtk branch:
   git branch -r  | grep gtk-3
   git checkout origin/gtk-3-22
 Shall I continue (y)? (You can checkout the required branch in another terminal tab.
-(To avoid seesing this message, try running this script with '-y'"
+(To avoid seeing this message, try running this script with '-y'"
 
 	read -p "[y/n]: "
 	if [ ! "$REPLY" == y ]; then
@@ -127,7 +127,7 @@ fi
 cd "$GTK_SRC_DIR"
 if [ "$NOCLEANUP" == false ]; then
 	func_echo_info "Cleanup old gtk build files.
-	This is needed if switching between gtk version to avoid compiliation issues."
+	This is needed if switching between gtk version to avoid compilation issues."
 	git clean -xdf   # remove build files.
 	git reset --hard # undo changes to existing source files.
 else

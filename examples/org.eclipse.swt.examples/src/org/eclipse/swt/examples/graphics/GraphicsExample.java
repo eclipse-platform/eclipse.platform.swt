@@ -557,7 +557,7 @@ public void redraw() {
 }
 
 /**
- * Sets wheter the canvas is double buffered or not.
+ * Sets whether the canvas is double buffered or not.
  */
 public void setDoubleBuffered(boolean doubleBuffered) {
 	dbItem.setSelection(doubleBuffered);
