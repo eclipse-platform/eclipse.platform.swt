@@ -142,7 +142,7 @@ public class StyledText extends Canvas {
 	Color foreground = null;			//
 	Clipboard clipboard;
 	boolean mouseDown = false;
-	boolean mouseDoubleClick = false;	// true=a double click ocurred. Don't do mouse swipe selection.
+	boolean mouseDoubleClick = false;	// true=a double click occurred. Don't do mouse swipe selection.
 	int autoScrollDirection = SWT.NULL;	// the direction of autoscrolling (up, down, right, left)
 	int autoScrollDistance = 0;
 	int lastTextChangeStart;			// cache data of the 
@@ -857,7 +857,7 @@ public class StyledText extends Canvas {
 		writeStyledLine(line, lineOffset, styles, lineBackground);
 	}
 	/**
-	 * Appends the specified line delmimiter to the RTF data.
+	 * Appends the specified line delimiter to the RTF data.
 	 * <p>
 	 *
 	 * @param lineDelimiter line delimiter to write as RTF.
@@ -1124,7 +1124,7 @@ public class StyledText extends Canvas {
 		}		
 	}
 	/**
-	 * Appends the specified line delmimiter to the data.
+	 * Appends the specified line delimiter to the data.
 	 * <p>
 	 *
 	 * @param lineDelimiter line delimiter to write
@@ -1290,7 +1290,7 @@ public class StyledText extends Canvas {
 		return rect.x + rect.width + leftMargin + rightMargin;
 	}
 	/**
-	 * Grows the <code>lineWidth</code> array to accomodate new line width
+	 * Grows the <code>lineWidth</code> array to accommodate new line width
 	 * information.
 	 * <p>
 	 *
@@ -2840,8 +2840,8 @@ void doMouseSelection() {
 /**
  * Returns the offset of the word at the specified offset. 
  * If the current selection extends from high index to low index 
- * (i.e., right to left, or caret is at left border of selecton on 
- * non-bidi platforms) the start offset of the word preceeding the
+ * (i.e., right to left, or caret is at left border of selection on
+ * non-bidi platforms) the start offset of the word preceding the
  * selection is returned. If the current selection extends from 
  * low index to high index the end offset of the word following 
  * the selection is returned.
@@ -3810,7 +3810,7 @@ public int getLineHeight() {
 /**
  * Returns a LineCache implementation. Depending on whether or not
  * word wrap is on this may be a line wrapping or line width 
- * calculating implementaiton.
+ * calculating implementation.
  * <p>
  * 
  * @param content StyledTextContent to create the LineCache on.
@@ -7764,7 +7764,7 @@ void showCaret(int caretLine) {
  * Scrolls the specified offset into view.
  * <p>
  *
- * @param offset offset that should be scolled into view
+ * @param offset offset that should be scrolled into view
  */
 void showOffset(int offset) {
 	int line = content.getLineAtOffset(offset);
@@ -7902,7 +7902,7 @@ void wordWrapResize(int oldClientAreaWidth) {
 	newTopIndex = content.getLineAtOffset(topOffset);
 	// topOffset is the beginning of the top line. therefore it 
 	// needs to be adjusted because in a wrapped line this is also 
-	// the end of the preceeding line.  
+	// the end of the preceding line.
 	if (newTopIndex < content.getLineCount() - 1 &&
 		topOffset == content.getOffsetAtLine(newTopIndex + 1)) {
 		newTopIndex++;
