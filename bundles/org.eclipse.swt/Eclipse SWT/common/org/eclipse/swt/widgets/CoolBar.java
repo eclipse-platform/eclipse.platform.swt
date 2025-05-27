@@ -46,7 +46,7 @@ import org.eclipse.swt.graphics.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * @noextend This class is not intended to be subclassed by clients.
  */
-public class CoolBar extends Composite {
+public class CoolBar extends CustomComposite {
 	CoolItem[][] items = new CoolItem[0][0];
 	CoolItem[] originalItems = new CoolItem[0];
 	Cursor hoverCursor, dragCursor, cursor;
@@ -131,6 +131,12 @@ public CoolBar (Composite parent, int style) {
 	final RendererFactory rendererFactory = parent.getDisplay().getRendererFactory();
 	renderer = rendererFactory.createCoolBarRenderer(this);
 }
+
+@Override
+protected ControlRenderer getRenderer() {
+	return renderer;
+}
+
 static int checkStyle (int style) {
 	style |= SWT.NO_FOCUS;
 	return (style | SWT.NO_REDRAW_RESIZE) & ~(SWT.V_SCROLL | SWT.H_SCROLL);

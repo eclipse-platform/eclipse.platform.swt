@@ -53,7 +53,7 @@ import org.eclipse.swt.internal.*;
  *      information</a>
  * @noextend This class is not intended to be subclassed by clients.
  */
-public class TabFolder extends Composite {
+public class TabFolder extends CustomComposite {
 
 	/**
 	 * marginWidth specifies the number of points of horizontal margin
@@ -1157,23 +1157,7 @@ public boolean getMRUVisible() {
 	return mru;
 }
 
-/**
- * Returns the receiver's renderer.
- *
- * @return the receiver's renderer
- *
- * @exception SWTException <ul>
- *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- *	</ul>
- *
- * @see #setRenderer(TabFolderRenderer)
- * @see TabFolderRenderer
- *
- * @since 3.6
- */
-public TabFolderRenderer getRenderer() {
-	checkWidget();
+protected TabFolderRenderer getRenderer() {
 	return renderer;
 }
 
