@@ -142,7 +142,7 @@ class DefaultLinkRenderer extends LinkRenderer {
 		if (!displayText.isEmpty()) {
 			String[] lines = displayText.split("\n", -1);
 			for (String line : lines) {
-				Point textExtent = Drawing.executeOnGC(link, gc -> {
+				Point textExtent = Drawing.measure(link, gc -> {
 					gc.setFont(link.getFont());
 					return gc.textExtent(line, DRAW_FLAGS);
 				});

@@ -269,7 +269,7 @@ class ToolItemButtonRenderer implements ToolItemRenderer {
 	}
 
 	private Point getTextSize() {
-		return Drawing.executeOnGC(bar, this::doMesureText);
+		return Drawing.measure(bar, this::doMesureText);
 	}
 
 	private Point doMesureText(GC gc) {
