@@ -46,24 +46,6 @@ public abstract class SashRenderer extends ControlRenderer {
 	}
 
 	/**
-	 * Determines if the Sash is oriented horizontally.
-	 *
-	 * @return true if the Sash is horizontal, false otherwise.
-	 */
-	protected boolean isHorizontal() {
-		return sash.isHorizontal();
-	}
-
-	/**
-	 * Checks if a drag overlay (brand) is required for the Sash.
-	 *
-	 * @return true if the drag overlay is enabled and visible, false otherwise.
-	 */
-	protected boolean isBrandRequired() {
-		return sash.dragOverlay != null && sash.dragOverlay.isEnabled() && sash.dragOverlay.isVisible();
-	}
-
-	/**
 	 * Sets the dragging state of the Sash.
 	 *
 	 * @param dragging true to indicate the Sash is being dragged, false otherwise.
@@ -75,7 +57,7 @@ public abstract class SashRenderer extends ControlRenderer {
 	 *
 	 * @return true if the Sash is being dragged, false otherwise.
 	 */
-	protected abstract boolean getDragging();
+	protected abstract boolean isDragging();
 
 	/**
 	 * Gets the bounds of the Sash.

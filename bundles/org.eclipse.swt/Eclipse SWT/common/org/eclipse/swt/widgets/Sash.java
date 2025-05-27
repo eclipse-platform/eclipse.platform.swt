@@ -299,7 +299,7 @@ public class Sash extends CustomControl {
 	private void redrawDragOverlay() {
 		dragOverlay.addListener(SWT.Paint, dragEvent -> {
 			if (bandImage != null) {
-				/** Band flicker and moves slowly using below commented API **/
+				// Band flicker and moves slowly using below commented API
 //				Drawing.drawWithGC(dragOverlay, dragEvent.gc, gc -> {
 //					gc.drawImage(bandImage, 0, 0, bandImageBounds.width, bandImageBounds.height, lastX, lastY,
 //							bandImageBounds.width, bandImageBounds.height);
@@ -321,7 +321,7 @@ public class Sash extends CustomControl {
 	 * @param event the mouse event containing details about the mouse action
 	 */
 	private void onLeftMouseUp(Event event) {
-		if (event.button != 1 || !sashRenderer.getDragging()) {
+		if (event.button != 1 || !sashRenderer.isDragging()) {
 			return;
 		}
 		sashRenderer.setDragging(false);
@@ -352,7 +352,7 @@ public class Sash extends CustomControl {
 	 * @param event the mouse event containing details about the mouse movement
 	 */
 	private void onMouseMove(Event event) {
-		boolean dragging = sashRenderer.getDragging();
+		boolean dragging = sashRenderer.isDragging();
 		boolean eventFromParent = event.widget == getParent();
 
 		Rectangle sashBounds = getBounds();
@@ -363,9 +363,7 @@ public class Sash extends CustomControl {
 				: sashBounds.contains(event.x + sashBounds.x, event.y + sashBounds.y);
 
 		if (isGTK && eventFromParent) {
-			if (eventFromParent) {
-				event = convertToSash(event);
-			}
+			event = convertToSash(event);
 		}
 		// Show resize cursor when inside bounds
 		if (insideSash && !resizeCursorEnabled) {
@@ -384,7 +382,7 @@ public class Sash extends CustomControl {
 			resizeCursorEnabled = false;
 		}
 
-		if (!sashRenderer.getDragging()) {
+		if (!sashRenderer.isDragging()) {
 			return;
 		}
 
@@ -424,7 +422,7 @@ public class Sash extends CustomControl {
 	}
 
 	private void onMouseExit(Event event) {
-		if (!sashRenderer.getDragging() && this.resizeCursorEnabled) {
+		if (!sashRenderer.isDragging() && this.resizeCursorEnabled) {
 			parent.setCursor(null);
 			setCursor(null);
 			this.resizeCursorEnabled = false;
@@ -446,7 +444,6 @@ public class Sash extends CustomControl {
 	 * @return a `Point` object representing the current x and y coordinates
 	 */
 	private Point getCurrentPoint(Event event, Rectangle sashBounds) {
-		Point currentPoint = new Point(event.x, event.y);
 		if (isSmooth()) {
 			if (event.x < sashBounds.x) {
 				event.x += sashBounds.x;
@@ -454,17 +451,17 @@ public class Sash extends CustomControl {
 			if (event.y < sashBounds.y) {
 				event.y += sashBounds.y;
 			}
-			currentPoint = new Point(event.x, event.y);
-		} else {
-			currentPoint = getDisplay().map(this, dragOverlay, event.x, event.y);
+			return new Point(event.x, event.y);
 		}
-		return currentPoint;
+
+		return getDisplay().map(this, dragOverlay, event.x, event.y);
 	}
 
 	private void asyncRedraw(Control control) {
 		Display.getDefault().asyncExec(() -> {
-			if (!control.isDisposed())
+			if (!control.isDisposed()) {
 				control.redraw();
+			}
 		});
 	}
 
@@ -478,7 +475,7 @@ public class Sash extends CustomControl {
 	private void onPaint(Event event) {
 		Rectangle sashBounds = getBounds();
 		sashRenderer.setSashBounds(sashBounds.x, sashBounds.y, sashBounds.width, sashBounds.height);
-		Drawing.drawWithGC(this, event.gc, gc -> sashRenderer.paint(gc, sashBounds.width, sashBounds.height));
+		Drawing.drawWithGC(this, event.gc, sashRenderer::paint);
 	}
 
 	/**

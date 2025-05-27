@@ -49,7 +49,7 @@ public class DefaultSashRenderer extends SashRenderer {
 	public Point computeDefaultSize() {
 		int width = 0;
 		int height = 0;
-		if (isHorizontal()) {
+		if (sash.isHorizontal()) {
 			width += DEFAULT_WIDTH;
 			height += SASH_MARGIN;
 		} else {
@@ -67,7 +67,7 @@ public class DefaultSashRenderer extends SashRenderer {
 	 */
 	@Override
 	protected void drawBand(GC gc, Rectangle bounds) {
-		if (super.isBrandRequired()) {
+		if (isBrandRequired()) {
 			drawCheckerBoardPattern(gc, bounds);
 		}
 	}
@@ -108,8 +108,7 @@ public class DefaultSashRenderer extends SashRenderer {
 	 * @return true if the Sash is being dragged; false otherwise.
 	 */
 	@Override
-	public boolean getDragging() {
-
+	public boolean isDragging() {
 		return isDragging;
 	}
 
@@ -167,8 +166,17 @@ public class DefaultSashRenderer extends SashRenderer {
 	@Override
 	protected void paint(GC gc, int width, int height) {
 		gc.setBackground(BACKGROUND_COLOR);
-		if (!super.isBrandRequired()) {
+		if (!isBrandRequired()) {
 			gc.fillRectangle(sashBounds);
 		}
+	}
+
+	/**
+	 * Checks if a drag overlay (brand) is required for the Sash.
+	 *
+	 * @return true if the drag overlay is enabled and visible, false otherwise.
+	 */
+	private boolean isBrandRequired() {
+		return sash.dragOverlay != null && sash.dragOverlay.isEnabled() && sash.dragOverlay.isVisible();
 	}
 }
