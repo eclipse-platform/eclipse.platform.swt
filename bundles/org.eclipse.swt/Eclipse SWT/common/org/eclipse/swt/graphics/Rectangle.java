@@ -45,7 +45,7 @@ import org.eclipse.swt.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 
-public sealed class Rectangle implements Serializable permits MonitorAwareRectangle {
+public sealed class Rectangle implements Serializable, Cloneable permits MonitorAwareRectangle {
 
 	/**
 	 * the x coordinate of the rectangle
@@ -354,6 +354,31 @@ public Rectangle union (Rectangle rect) {
 	rhs = rect.y + rect.height;
 	int bottom = lhs > rhs ? lhs : rhs;
 	return new Rectangle (left, top, right - left, bottom - top);
+}
+
+/**
+ * @since 3.130
+ */
+public static Rectangle of(Point topLeft, int width, int height) {
+	if(topLeft instanceof MonitorAwarePoint monitorAwareTopLeft) {
+		return new MonitorAwareRectangle(topLeft.x, topLeft.y, width, height, monitorAwareTopLeft.getMonitor());
+	}
+	return new Rectangle(topLeft.x, topLeft.y, width, height);
+}
+
+/**
+ * @since 3.130
+ */
+@Override
+public Rectangle clone() {
+	return new Rectangle(x, y, width, height);
+}
+
+/**
+ * @since 3.130
+ */
+public Rectangle cloneWith(int dx, int dy, int dWidth, int dHeight) {
+    return new Rectangle(x + dx, y + dy, width + dWidth, height + dHeight);
 }
 
 }

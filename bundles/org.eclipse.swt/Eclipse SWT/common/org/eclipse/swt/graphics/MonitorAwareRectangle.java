@@ -24,7 +24,7 @@ import org.eclipse.swt.widgets.*;
  * @since 3.129
  * @noreference This class is not intended to be referenced by clients
  */
-public final class MonitorAwareRectangle extends Rectangle {
+public final class MonitorAwareRectangle extends Rectangle implements Cloneable {
 
 	private static final long serialVersionUID = 5041911840525116925L;
 
@@ -60,5 +60,15 @@ public final class MonitorAwareRectangle extends Rectangle {
 	public int hashCode() {
 		return super.hashCode();
 	}
+
+	@Override
+    public Rectangle clone() {
+        return new MonitorAwareRectangle(x, y, width, height, monitor);
+    }
+
+    @Override
+    public Rectangle cloneWith(int dx, int dy, int dWidth, int dHeight) {
+        return new MonitorAwareRectangle(x + dx, y + dy, width + dWidth, height + dHeight, monitor);
+    }
 
 }
