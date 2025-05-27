@@ -42,7 +42,7 @@ import org.eclipse.swt.graphics.*;
  *      information</a>
  * @noextend This class is not intended to be subclassed by clients.
  */
-public class Sash extends CustomControl implements Listener {
+public class Sash extends CustomControl {
 	int startX, startY, lastX, lastY;
 	final static int INCREMENT = 1;
 	final static int PAGE_INCREMENT = 9;
@@ -53,6 +53,7 @@ public class Sash extends CustomControl implements Listener {
 	private Rectangle bandImageBounds;
 	private Cursor resizeCursor;
 	private boolean resizeCursorEnabled;
+	private final Listener listener;
 	boolean isGTK;
 
 	/**
@@ -94,38 +95,34 @@ public class Sash extends CustomControl implements Listener {
 	public Sash(Composite parent, int style) {
 		super(parent, checkStyle(style));
 		isGTK = "gtk".equals(SWT.getPlatform());
+
+		listener = event -> {
+			switch (event.type) {
+				case SWT.KeyDown -> onKeyDown(event);
+				case SWT.MouseDown -> onLeftMouseDown(event);
+				case SWT.MouseMove -> onMouseMove(event);
+				case SWT.MouseExit -> onMouseExit(event);
+				case SWT.MouseUp -> onLeftMouseUp(event);
+				case SWT.Paint -> onPaint(event);
+				case SWT.Resize -> {
+					getParent().redraw();
+					redraw();
+				}
+				case SWT.Traverse -> onTraverse(event);
+			}
+		};
+
 		int[] events = { SWT.KeyDown, SWT.MouseDown, SWT.MouseMove, SWT.MouseUp, SWT.Paint, SWT.Resize, SWT.Traverse,
 				SWT.MouseExit };
 
 		for (int eventType : events) {
-			if (isGTK) {
-				if (eventType != SWT.Paint) {
-					parent.addListener(eventType, this);
-				}
-				addListener(eventType, this);
-			} else {
-				addListener(eventType, this);
+			if (isGTK && eventType != SWT.Paint) {
+				parent.addListener(eventType, listener);
 			}
+			addListener(eventType, listener);
 		}
 		final RendererFactory rendererFactory = parent.getDisplay().getRendererFactory();
 		sashRenderer = rendererFactory.createSashRenderer(this);
-	}
-
-	@Override
-	public void handleEvent(Event event) {
-		switch (event.type) {
-		case SWT.KeyDown -> onKeyDown(event);
-		case SWT.MouseDown -> onLeftMouseDown(event);
-		case SWT.MouseMove -> onMouseMove(event);
-		case SWT.MouseExit -> onMouseExit(event);
-		case SWT.MouseUp -> onLeftMouseUp(event);
-		case SWT.Paint -> onPaint(event);
-		case SWT.Resize -> {
-			getParent().redraw();
-			redraw();
-		}
-		case SWT.Traverse -> onTraverse(event);
-		}
 	}
 
 	/**
@@ -601,12 +598,12 @@ public class Sash extends CustomControl implements Listener {
 			this.resizeCursor.dispose();
 		}
 		if (isGTK && !getParent().isDisposed()) {
-			parent.removeListener(SWT.KeyDown, this);
-			parent.removeListener(SWT.MouseDown, this);
-			parent.removeListener(SWT.MouseMove, this);
-			parent.removeListener(SWT.MouseUp, this);
-			parent.removeListener(SWT.Resize, this);
-			parent.removeListener(SWT.Traverse, this);
+			parent.removeListener(SWT.KeyDown, listener);
+			parent.removeListener(SWT.MouseDown, listener);
+			parent.removeListener(SWT.MouseMove, listener);
+			parent.removeListener(SWT.MouseUp, listener);
+			parent.removeListener(SWT.Resize, listener);
+			parent.removeListener(SWT.Traverse, listener);
 		}
 		super.dispose();
 	}
