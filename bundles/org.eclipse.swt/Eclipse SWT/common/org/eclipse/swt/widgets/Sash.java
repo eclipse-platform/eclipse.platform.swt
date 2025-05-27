@@ -602,6 +602,7 @@ public class Sash extends CustomControl {
 			parent.removeListener(SWT.MouseDown, listener);
 			parent.removeListener(SWT.MouseMove, listener);
 			parent.removeListener(SWT.MouseUp, listener);
+			parent.removeListener(SWT.MouseExit, listener);
 			parent.removeListener(SWT.Resize, listener);
 			parent.removeListener(SWT.Traverse, listener);
 		}
