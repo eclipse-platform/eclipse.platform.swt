@@ -61,4 +61,9 @@ public final class MonitorAwareRectangle extends Rectangle {
 		return super.hashCode();
 	}
 
+	@Override
+	public MonitorAwareRectangle clone() {
+		return new MonitorAwareRectangle(x, y, width, height, monitor);
+	}
+
 }

@@ -45,7 +45,7 @@ import org.eclipse.swt.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 
-public sealed class Rectangle implements Serializable permits MonitorAwareRectangle {
+public sealed class Rectangle implements Serializable, Cloneable permits MonitorAwareRectangle {
 
 	/**
 	 * the x coordinate of the rectangle
@@ -356,4 +356,44 @@ public Rectangle union (Rectangle rect) {
 	return new Rectangle (left, top, right - left, bottom - top);
 }
 
+/**
+ * Creates a new {@code Rectangle} using the specified top-left point and
+ * dimensions.
+ * <p>
+ * If the provided {@code Point} instance carries additional contextual
+ * information, an extended {@code Rectangle} type may be returned to preserve
+ * that context. Otherwise, a standard {@code Rectangle} is returned.
+ * </p>
+ *
+ * @param topLeft the top-left corner of the rectangle
+ * @param width   the width of the rectangle
+ * @param height  the height of the rectangle
+ * @return a new {@code Rectangle} instance appropriate for the given point and
+ *         dimensions
+ * @since 3.131
+ */
+public static Rectangle of(Point topLeft, int width, int height) {
+	if (topLeft instanceof MonitorAwarePoint monitorAwareTopLeft) {
+		return new MonitorAwareRectangle(topLeft.x, topLeft.y, width, height, monitorAwareTopLeft.getMonitor());
+	}
+	return new Rectangle(topLeft.x, topLeft.y, width, height);
+}
+
+/**
+ * Creates and returns a copy of this {@code Rectangle}.
+ * <p>
+ * This method performs a shallow copy of the rectangle's fields: {@code x},
+ * {@code y}, {@code width}, and {@code height}. It does not copy any
+ * subclass-specific fields, so subclasses should override this method if
+ * additional fields exist.
+ * </p>
+ *
+ * @return a new {@code Rectangle} instance with the same position and size as
+ *         this one
+ * @since 3.131
+ */
+@Override
+public Rectangle clone() {
+	return new Rectangle(x, y, width, height);
+}
 }
