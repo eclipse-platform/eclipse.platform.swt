@@ -4649,6 +4649,7 @@ class AccessibleObject {
 	}
 
 	void selectionChanged () {
+		if(GTK.GTK4) return; //TODO investigate proper way for GTK 4.x
 		OS.g_signal_emit_by_name (atkHandle, ATK.selection_changed);
 	}
 
@@ -4862,6 +4863,7 @@ class AccessibleObject {
 	}
 
 	void setFocus (int childID) {
+		if(GTK.GTK4) return; //TODO investigate proper way for GTK 4.x
 		updateChildren ();
 		AccessibleObject accObject = getChildByID (childID);
 		if (accObject != null) {
@@ -4871,10 +4873,12 @@ class AccessibleObject {
 	}
 
 	void textCaretMoved(int index) {
+		if(GTK.GTK4) return; //TODO investigate proper way for GTK 4.x
 		OS.g_signal_emit_by_name (atkHandle, ATK.text_caret_moved, index);
 	}
 
 	void textChanged(int type, int startIndex, int length) {
+		if(GTK.GTK4) return; //TODO investigate proper way for GTK 4.x
 		if (type == ACC.TEXT_DELETE) {
 			OS.g_signal_emit_by_name (atkHandle, ATK.text_changed_delete, startIndex, length);
 		} else {
@@ -4883,6 +4887,7 @@ class AccessibleObject {
 	}
 
 	void textSelectionChanged() {
+		if(GTK.GTK4) return; //TODO investigate proper way for GTK 4.x
 		OS.g_signal_emit_by_name (atkHandle, ATK.text_selection_changed);
 	}
 
