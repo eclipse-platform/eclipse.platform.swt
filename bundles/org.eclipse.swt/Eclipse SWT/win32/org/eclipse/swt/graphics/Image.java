@@ -2084,7 +2084,7 @@ private class ImageDataLoaderStreamProviderWrapper extends ImageFromImageDataPro
 
 	@Override
 	AbstractImageProviderWrapper createCopy(Image image) {
-		return new ImageDataLoaderStreamProviderWrapper(inputStreamData);
+		return image.new ImageDataLoaderStreamProviderWrapper(inputStreamData);
 	}
 }
 
