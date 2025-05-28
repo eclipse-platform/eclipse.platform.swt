@@ -36,9 +36,9 @@ import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.dnd.URLTransfer;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.ImageGcDrawer;
 import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.RowLayout;
@@ -239,18 +239,17 @@ public void testUrlTransfer() throws InterruptedException {
  * Creates a DDB test image with a uniform color applied to all pixels.
  */
 private Image createTestImage() {
-	final Image image = new Image(shell.getDisplay(), 16, 16);
 	try {
 		Color color = shell.getDisplay().getSystemColor(SWT.COLOR_DARK_BLUE);
-		GC gc = new GC(image);
-		gc.setBackground(color);
-		gc.fillRectangle(image.getBounds());
-		gc.dispose();
+		final ImageGcDrawer imageGcDrawer = (gc, width, height) -> {
+			gc.setBackground(color);
+			gc.fillRectangle(0, 0, width, height);
+		};
+		return new Image(shell.getDisplay(), imageGcDrawer, 16, 16);
 	} catch (Exception e) {
-		image.dispose();
 		fail("test image could not be initialized: " + e);
 	}
-	return image;
+	return null;
 }
 
 /**

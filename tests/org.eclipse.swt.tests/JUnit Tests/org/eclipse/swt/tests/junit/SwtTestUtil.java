@@ -504,7 +504,7 @@ public static boolean hasPixel(Control control, Color expectedColor) {
  */
 public static boolean hasPixel(Control control, Color expectedColor, Rectangle rect) {
 	GC gc = new GC(control);
-	final Image image = new Image(control.getDisplay(), control.getSize().x, control.getSize().y);
+	final Image image = new Image(control.getDisplay(), (iGc, width, height) -> {}, control.getSize().x, control.getSize().y);
 	gc.copyArea(image, 0, 0);
 	gc.dispose();
 	boolean result = hasPixel(image, expectedColor, rect);

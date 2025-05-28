@@ -14,22 +14,28 @@
 package org.eclipse.swt.tests.win32.snippets;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Device;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageGcDrawer;
 import org.eclipse.swt.layout.RowLayout;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 
 public class Bug560358_DarkMenuBar {
 	static Image createMenuImage(Device a_Device) {
-		Image result = new Image(a_Device, 16, 16);
-		GC gc = new GC(result);
+		final ImageGcDrawer imageGcDrawer = (gc, width, height) -> {
+			gc.setBackground(a_Device.getSystemColor(SWT.COLOR_BLUE));
+			gc.fillRectangle(0, 0, width, height);
 
-		gc.setBackground(a_Device.getSystemColor(SWT.COLOR_BLUE));
-		gc.fillRectangle(0, 0, 16, 16);
+			gc.setForeground(a_Device.getSystemColor(SWT.COLOR_RED));
+			gc.drawOval(4, 4, 8, 8);
+		};
+		Image result = new Image(a_Device, imageGcDrawer, 16, 16);
 
-		gc.setForeground(a_Device.getSystemColor(SWT.COLOR_RED));
-		gc.drawOval(4, 4, 8, 8);
-
-		gc.dispose();
 		return result;
 	}
 
