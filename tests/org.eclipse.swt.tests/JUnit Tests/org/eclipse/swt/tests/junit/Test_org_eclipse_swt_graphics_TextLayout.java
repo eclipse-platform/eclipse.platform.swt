@@ -26,8 +26,8 @@ import java.util.Arrays;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageGcDrawer;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.TextLayout;
@@ -938,27 +938,11 @@ public void test_getTextDirection() {
 public void test_bug568740_multilineTextStyle() {
 	Font font = null;
 	Image image = null;
-	GC gc = null;
-	TextLayout layout = null;
+	final TextLayout layout = new TextLayout(display);
+	int offset = 10;
 	try {
-		font = new Font(display, SwtTestUtil.testFontName, 16, SWT.NORMAL);
-		image = new Image(display, 200, 100);
-		gc = new GC(image);
-		gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
-		gc.fillRectangle(image.getBounds());
-		gc.setAntialias(SWT.OFF); // aa can change colors and break the test in worst case
-
-		layout = new TextLayout(display);
 		layout.setFont(font);
 		layout.setText("first line\nsecond line");
-
-		// The test has one multi-line style containing all the problematic properties
-		// in different colors and a second control style with other colors at the
-		// end of the second line. Searching for the colors anywhere would even work
-		// before the bug was fixed. So we search only in the area of the first line and
-		// if we find any of the control colors we know the search area was calculated
-		// wrong.
-
 		TextStyle style = new TextStyle();
 		style.borderStyle = SWT.BORDER_DOT;
 		style.borderColor = display.getSystemColor(SWT.COLOR_BLUE);
@@ -974,8 +958,23 @@ public void test_bug568740_multilineTextStyle() {
 		controlStyle.strikeoutColor = display.getSystemColor(SWT.COLOR_DARK_RED);
 		layout.setStyle(controlStyle, 15, 23);
 
-		int offset = 10;
-		layout.draw(gc, offset, offset);
+		font = new Font(display, SwtTestUtil.testFontName, 16, SWT.NORMAL);
+		final ImageGcDrawer gcDrawer = (gc, width, height) -> {
+			gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
+			gc.fillRectangle(0, 0, width, height);
+			gc.setAntialias(SWT.OFF); // aa can change colors and break the test in worst case
+			layout.draw(gc, offset, offset);
+
+		};
+		image = new Image(display, gcDrawer, 200, 100);
+
+
+		// The test has one multi-line style containing all the problematic properties
+		// in different colors and a second control style with other colors at the
+		// end of the second line. Searching for the colors anywhere would even work
+		// before the bug was fixed. So we search only in the area of the first line and
+		// if we find any of the control colors we know the search area was calculated
+		// wrong.
 
 		Rectangle firstLineBounds = layout.getLineBounds(0);
 		Rectangle searchRangeBorder = new Rectangle(0, 0, image.getBounds().width, offset + (int)(firstLineBounds.height * 0.3));
@@ -993,8 +992,6 @@ public void test_bug568740_multilineTextStyle() {
 	} finally {
 		if (layout != null)
 			layout.dispose();
-		if (gc != null)
-			gc.dispose();
 		if (image != null)
 			image.dispose();
 		if (font != null)
@@ -1007,21 +1004,17 @@ public void test_bug568740_multilineTextStyle() {
  * disposed by caller.
  */
 private Image draw(TextLayout layout, int antialias) {
-	GC gc = null;
-	try {
-		Rectangle rect = layout.getBounds();
-		Image image = new Image(display, rect.width, rect.height);
-		gc = new GC(image);
+	Rectangle rect = layout.getBounds();
+	final ImageGcDrawer gcDrawer = (gc, height, width) -> {
 		gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
-		gc.fillRectangle(image.getBounds());
+		gc.fillRectangle(0, 0, width, height);
 		gc.setAntialias(antialias);
-
 		layout.draw(gc, 0, 0);
-		return image;
-	} finally {
-		if (gc != null)
-			gc.dispose();
-	}
+	};
+	Image image = new Image(display, gcDrawer, rect.width, rect.height);
+
+
+	return image;
 }
 
 /**

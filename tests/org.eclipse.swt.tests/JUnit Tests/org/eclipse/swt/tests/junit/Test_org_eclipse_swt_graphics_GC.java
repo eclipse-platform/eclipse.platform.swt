@@ -36,6 +36,7 @@ import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.ImageGcDrawer;
 import org.eclipse.swt.graphics.LineAttributes;
 import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.Point;
@@ -824,9 +825,7 @@ public void test_bug1288_createGCFromImageFromNonDisplayThread() throws Interrup
 	AtomicReference<Exception> exceptionReference = new AtomicReference<>();
 	Thread thread = new Thread(() -> {
 		try {
-			Image image = new Image(null, 100, 100);
-			GC gc = new GC(image);
-			gc.dispose();
+			Image image = new Image(null, (gc, width, height) -> {}, 100, 100);
 			image.dispose();
 		} catch(Exception e) {
 			exceptionReference.set(e);
@@ -849,20 +848,16 @@ GC gc;
  * (16bpp or less).
  */
 RGB getRealRGB(Color color) {
-	Image colorImage = new Image(display, 10, 10);
-	GC imageGc = new GC(colorImage);
-	ImageData imageData;
-	PaletteData palette;
-	int pixel;
-
-	imageGc.setBackground(color);
-	imageGc.setForeground(color);
-	imageGc.fillRectangle(0, 0, 10, 10);
-	imageData = colorImage.getImageData();
-	palette = imageData.palette;
-	imageGc.dispose();
+	ImageGcDrawer gcDrawer = (imageGc, width, height) -> {
+		imageGc.setBackground(color);
+		imageGc.setForeground(color);
+		imageGc.fillRectangle(0, 0, width, height);
+	};
+	Image colorImage = new Image(display, gcDrawer, 10, 10);
+	ImageData imageData = colorImage.getImageData();
+	PaletteData palette = imageData.palette;
 	colorImage.dispose();
-	pixel = imageData.getPixel(0, 0);
+	int pixel = imageData.getPixel(0, 0);
 	return palette.getRGB(pixel);
 }
 

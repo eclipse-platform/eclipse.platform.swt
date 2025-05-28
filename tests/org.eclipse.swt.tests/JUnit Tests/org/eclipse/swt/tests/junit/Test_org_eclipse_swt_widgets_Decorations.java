@@ -71,7 +71,7 @@ public void test_getDefaultButton() {
 
 @Test
 public void test_getImage() {
-	Image[] cases = {null, new Image(null, 100, 100)};
+	Image[] cases = {null, new Image(null, (gc, width, height) -> {}, 100, 100)};
 	for (Image image : cases) {
 		decorations.setImage(image);
 		assertEquals(decorations.getImage(), image);

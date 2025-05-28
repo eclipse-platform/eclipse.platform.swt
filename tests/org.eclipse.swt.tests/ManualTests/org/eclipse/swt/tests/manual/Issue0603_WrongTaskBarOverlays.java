@@ -14,11 +14,15 @@
 
 package org.eclipse.swt.tests.manual;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.graphics.ImageGcDrawer;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TaskItem;
 
 public final class Issue0603_WrongTaskBarOverlays {
 	public static void main(String[] args) {
@@ -78,14 +82,12 @@ public final class Issue0603_WrongTaskBarOverlays {
 			}
 		});
 
-		Image image = new Image(display, 16, 16);
-		{
-			GC gc = new GC(image);
+		final ImageGcDrawer imageGcDrawer = (gc, width, height) -> {
 			gc.setBackground(display.getSystemColor(SWT.COLOR_RED));
 			gc.setForeground(display.getSystemColor(SWT.COLOR_RED));
-			gc.fillRectangle(0, 0, 16, 16);
-			gc.dispose();
-		}
+			gc.fillRectangle(0, 0, width, height);
+		};
+		Image image = new Image(display, imageGcDrawer, 16, 16);
 
 		Button chkImage = new Button(shell, SWT.CHECK);
 		chkImage.setText("Set Image overlay for me");

@@ -13,9 +13,16 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.win32.snippets;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageGcDrawer;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Canvas;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Shell;
 
 public class Bug560546_GC_drawString_vs_GC_drawText {
 	static Font fontSegoeUI;
@@ -73,39 +80,37 @@ public class Bug560546_GC_drawString_vs_GC_drawText {
 
 	static void testSpeeds(Shell shell) {
 		final int finalIterations = 20 * 1000;
-		String report = "";
+		ImageGcDrawer gcDrawer = (gc, width, height) -> {
+			String report = "";
+			for (int isFinalCalc = 0; isFinalCalc < 2; isFinalCalc++) {
+				for (int iTestString = 0; iTestString < testStrings.length; iTestString++) {
+					for (int iTestFunction = 0; iTestFunction < testFunctions.length; iTestFunction++) {
+						TestString testString = testStrings[iTestString];
+						TestFunction testFunction = testFunctions[iTestFunction];
 
-		Image image = new Image(shell.getDisplay(), 2000, 100);
-		GC gc = new GC(image);
-		for (int isFinalCalc = 0; isFinalCalc < 2; isFinalCalc++) {
-			for (int iTestString = 0; iTestString < testStrings.length; iTestString++) {
-				for (int iTestFunction = 0; iTestFunction < testFunctions.length; iTestFunction++) {
-					TestString testString = testStrings[iTestString];
-					TestFunction testFunction = testFunctions[iTestFunction];
+						// Warm up before measuring
+						final int iterations = (isFinalCalc != 0) ? finalIterations : 10;
 
-					// Warm up before measuring
-					final int iterations = (isFinalCalc != 0) ? finalIterations : 10;
+						final long time1 = System.nanoTime();
+						for (int iIteration = 0; iIteration < iterations; iIteration++) {
+							testFunction.function(gc, 0, 0, testString.string);
+						}
+						final long time2 = System.nanoTime();
 
-					final long time1 = System.nanoTime();
-					for (int iIteration = 0; iIteration < iterations; iIteration++) {
-						testFunction.function(gc, 0, 0, testString.string);
-					}
-					final long time2 = System.nanoTime();
-
-					if (isFinalCalc != 0) {
-						final double elapsed = (time2 - time1) / 1000000000.0;
-						report += String.format("%s, %s - %.3f sec\n", testString.caption, testFunction.caption, elapsed);
+						if (isFinalCalc != 0) {
+							final double elapsed = (time2 - time1) / 1000000000.0;
+							report += String.format("%s, %s - %.3f sec\n", testString.caption, testFunction.caption, elapsed);
+						}
 					}
 				}
 			}
-		}
-
-		gc.dispose();
+			MessageBox messageBox = new MessageBox(shell);
+			messageBox.setMessage(report);
+			messageBox.open();
+		};
+		Image image = new Image(shell.getDisplay(), gcDrawer, 2000, 100);
+		image.getImageData();
 		image.dispose();
-
-		MessageBox messageBox = new MessageBox(shell);
-		messageBox.setMessage(report);
-		messageBox.open();
 	}
 
 	public static void main(String[] args) {
