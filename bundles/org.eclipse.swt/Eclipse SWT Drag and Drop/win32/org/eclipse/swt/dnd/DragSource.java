@@ -380,9 +380,15 @@ public DragSource(Control control, int style) {
 				DragSource.this.drag(event);
 			}
 		}
+		if (event.type == SWT.ZoomChanged) {
+			if (!DragSource.this.isDisposed()) {
+				this.nativeZoom = event.detail;
+			}
+		}
 	};
 	control.addListener(SWT.Dispose, controlListener);
 	control.addListener(SWT.DragDetect, controlListener);
+	control.addListener(SWT.ZoomChanged, controlListener);
 
 	this.addListener(SWT.Dispose, e -> DragSource.this.onDispose());
 
