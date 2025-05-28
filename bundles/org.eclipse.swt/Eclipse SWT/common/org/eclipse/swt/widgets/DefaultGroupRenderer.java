@@ -5,6 +5,11 @@ import org.eclipse.swt.graphics.*;
 
 public class DefaultGroupRenderer extends GroupRenderer {
 
+	protected static final String COLOR_SHADOW_IN1 = "group.shadowIn1"; //$NON-NLS-1$
+	protected static final String COLOR_SHADOW_IN2 = "group.shadowIn2"; //$NON-NLS-1$
+	protected static final String COLOR_SHADOW_OUT1 = "group.shadowOut1"; //$NON-NLS-1$
+	protected static final String COLOR_SHADOW_OUT2 = "group.shadowOut2"; //$NON-NLS-1$
+
 	private static final int DRAW_FLAGS = SWT.DRAW_MNEMONIC | SWT.DRAW_TAB | SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER;
 
 	private Point textExtentCache;
@@ -43,7 +48,9 @@ public class DefaultGroupRenderer extends GroupRenderer {
 		// where text is drawn) and text
 		int textPosX = (orientation == SWT.RIGHT_TO_LEFT) ? groupWidth - groupInset - titleWidth : textX;
 		gc.fillRectangle(textPosX, (textY / 2), titleWidth, gc.getLineWidth() + 1);
-		gc.setForeground(group.getForeground());
+		if (group.isEnabled()) {
+			gc.setForeground(group.getForeground());
+		}
 		gc.drawText(group.getText(), textPosX, 0, DRAW_FLAGS);
 	}
 
@@ -61,17 +68,20 @@ public class DefaultGroupRenderer extends GroupRenderer {
 	}
 
 	private Color getShadowColor(int style) {
+		if (!group.isEnabled()) {
+			return getColor(COLOR_DISABLED);
+		}
 		if ((style & SWT.SHADOW_ETCHED_IN) != 0) {
-			return new Color(136, 136, 136);
+			return getColor(COLOR_SHADOW_IN1);
 		}
 		if ((style & SWT.SHADOW_ETCHED_OUT) != 0) {
-			return new Color(68, 68, 68);
+			return getColor(COLOR_SHADOW_OUT1);
 		}
 		if ((style & SWT.SHADOW_IN) != 0) {
-			return new Color(102, 102, 102);
+			return getColor(COLOR_SHADOW_IN2);
 		}
 		if ((style & SWT.SHADOW_OUT) != 0) {
-			return new Color(187, 187, 187);
+			return getColor(COLOR_SHADOW_OUT2);
 		}
 		return group.getForeground();
 	}
