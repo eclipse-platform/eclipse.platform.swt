@@ -222,7 +222,6 @@ public class Sash extends CustomControl {
 		}
 		Rectangle sashBounds = isGTK ? getBounds() : sashRenderer.getSashBounds();
 		if (sashBounds == null) {
-			System.out.println("Return");
 			return;
 		}
 		if (isGTK && e.widget == getParent()) {
@@ -329,8 +328,8 @@ public class Sash extends CustomControl {
 			dragOverlay.dispose();
 			dragOverlay = null;
 		}
-		Rectangle sashRecatngle = sashRenderer.getSashBounds();
-		sendSelectionEvent(new Rectangle(lastX, lastY, sashRecatngle.width, sashRecatngle.height));
+		Rectangle sashRectangle = sashRenderer.getSashBounds();
+		sendSelectionEvent(new Rectangle(lastX, lastY, sashRectangle.width, sashRectangle.height));
 
 		if (bandImage != null) {
 			bandImage.dispose();
