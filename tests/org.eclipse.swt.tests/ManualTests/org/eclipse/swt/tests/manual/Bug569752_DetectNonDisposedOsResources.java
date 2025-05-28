@@ -18,7 +18,10 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Resource;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
 
 public class Bug569752_DetectNonDisposedOsResources {
 	public static void main(String[] args) {
@@ -41,7 +44,7 @@ public class Bug569752_DetectNonDisposedOsResources {
 		Button btnTest = new Button(shell, SWT.PUSH);
 		btnTest.setText("Leak Image");
 		btnTest.addListener(SWT.Selection, event -> {
-			Image image = new Image(display, 10, 10);
+			Image image = new Image(display, (gc, height, width) -> {}, 10, 10);
 
 			if (chkDispose.getSelection())
 				image.dispose();

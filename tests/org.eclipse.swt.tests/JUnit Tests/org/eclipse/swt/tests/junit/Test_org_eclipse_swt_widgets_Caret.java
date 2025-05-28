@@ -147,7 +147,7 @@ public void test_setImageLorg_eclipse_swt_graphics_Image() {
 	caret.setImage(null);
 	assertNull(caret.getImage());
 
-	image = new Image(shell.getDisplay(), 10, 10);
+	image = new Image(shell.getDisplay(), (gc, width, height) -> {}, 10, 10);
 	caret.setImage(image);
 	assertEquals(image, caret.getImage());
 

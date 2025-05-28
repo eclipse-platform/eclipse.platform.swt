@@ -15,23 +15,30 @@
 package org.eclipse.swt.tests.manual;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.ImageGcDrawer;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Canvas;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.Shell;
 
 public class Issue0021_HdcLeak_ImageCreateGdipImage {
 	static Image makeTrasparentImage(Display display) {
-		Image image = new Image(display, 40, 40);
-		GC gc = new GC(image);
-		Rectangle bounds = image.getBounds();
 		Color transparent = new Color(display, 0x00, 0x00, 0x00);
 		Color contents = new Color(display, 0x00, 0x80, 0x00);
-		gc.setBackground(transparent);
-		gc.fillRectangle(bounds);
-		gc.setBackground(contents);
-		gc.fillOval(bounds.x, bounds.y, bounds.width, bounds.height);
-		gc.dispose();
-
+		final ImageGcDrawer imageGcDrawer = (gc, width, height) -> {
+			gc.setBackground(transparent);
+			gc.fillRectangle(0, 0, width, height);
+			gc.setBackground(contents);
+			gc.fillOval(0, 0, width, height);
+		};
+		Image image = new Image(display, imageGcDrawer, 40, 40);
 		ImageData imageData = image.getImageData();
 		imageData.transparentPixel = 0;
 		image.dispose();
