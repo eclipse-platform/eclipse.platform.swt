@@ -114,19 +114,15 @@ public CoolBar (Composite parent, int style) {
 			case SWT.Resize:          	onResize();     			break;
 		}
 	};
-	int[] events = new int[] {
-		SWT.Dispose,
-		SWT.MouseDown,
-		SWT.MouseExit,
-		SWT.MouseMove,
-		SWT.MouseUp,
-		SWT.MouseDoubleClick,
-		SWT.Paint,
-		SWT.Resize
-	};
-	for (int i = 0; i < events.length; i++) {
-		addListener(events[i], listener);
-	}
+
+	addListener(SWT.Dispose, listener);
+	addListener(SWT.MouseDown, listener);
+	addListener(SWT.MouseExit, listener);
+	addListener(SWT.MouseMove, listener);
+	addListener(SWT.MouseUp, listener);
+	addListener(SWT.MouseDoubleClick, listener);
+	addListener(SWT.Paint, listener);
+	addListener(SWT.Resize, listener);
 
 	final RendererFactory rendererFactory = parent.getDisplay().getRendererFactory();
 	renderer = rendererFactory.createCoolBarRenderer(this);
