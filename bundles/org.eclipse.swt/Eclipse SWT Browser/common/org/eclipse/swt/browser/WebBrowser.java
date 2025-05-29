@@ -368,8 +368,8 @@ public void createFunction (BrowserFunction function) {
 }
 
 /**
- * Designed to be overriden.
- * @return javaScrit code that defines the 'callJava' syntax for javascript.
+ * Designed to be overridden.
+ * @return javaScript code that defines the 'callJava' syntax for javascript.
  */
 String getJavaCallDeclaration() {
 	return    "if (!window.callJava) {\n"
@@ -393,7 +393,7 @@ public void destroyFunction (BrowserFunction function) {
 	deregisterFunction (function);
 }
 
-// Designed to be overriden by platform implementations, used for optimization and avoiding deadlocks.
+// Designed to be overridden by platform implementations, used for optimization and avoiding deadlocks.
 // Webkit2 is async, we often don't need to bother waiting for a return type if we never use it.
 void nonBlockingExecute(String script) {
 	execute(script);
