@@ -3991,6 +3991,10 @@ public void setLayoutData (Object layoutData) {
  * @param x the new x coordinate for the receiver
  * @param y the new y coordinate for the receiver
  *
+ * <p><strong>Recommended Usage:</strong> If you plan to use {@link #setSize(int, int)},
+ * call it <em>before</em> calling this method. This ensures the control is sized
+ * correctly before positioning, which helps avoid layout issues when using absolute positioning.</p>
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -4012,6 +4016,10 @@ public void setLocation (int x, int y) {
  * shell when the environment uses the Wayland protocol, nothing will happen.
  *
  * @param location the new location for the receiver
+ *
+ * <p><strong>Recommended Usage:</strong> If you plan to use {@link #setSize(int, int)},
+ * call it <em>before</em> calling this method. This ensures the control is sized
+ * correctly before positioning, which helps avoid layout issues when using absolute positioning.</p>
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
