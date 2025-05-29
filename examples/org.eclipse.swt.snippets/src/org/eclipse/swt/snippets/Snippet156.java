@@ -21,6 +21,7 @@ package org.eclipse.swt.snippets;
  */
 import java.awt.*;
 import java.awt.image.*;
+import java.nio.file.Path;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -143,8 +144,8 @@ public static void main(String[] args) {
 	shell.setText("SWT Image");
 	ImageData data;
 	if (args.length > 0) {
-		String fileName = args[0];
-		data = new ImageData(fileName);
+		Path file = Path.of(args[0]);
+		data = ImageData.load(file);
 	} else {
 		data = createSampleImage(display);
 	}

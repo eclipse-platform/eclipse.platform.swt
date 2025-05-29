@@ -13,13 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 
-/*
- * Create a ToolBar containing animated GIFs
- *
- * For a list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
- */
-import java.io.*;
+import java.nio.file.Path;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -46,12 +40,12 @@ public class Snippet288 {
 		FileDialog dialog = new FileDialog(shell, SWT.OPEN | SWT.MULTI);
 		dialog.setText("Select Multiple Animated GIFs");
 		dialog.setFilterExtensions(new String[] {"*.gif"});
-		String filename = dialog.open();
+		Path filename = Path.of(dialog.open());
 		String filenames[] = dialog.getFileNames();
 		int numToolBarItems = filenames.length;
 		if (numToolBarItems > 0) {
 			try {
-				loadAllImages(new File(filename).getParent(), filenames);
+				loadAllImages(filename.getParent(), filenames);
 			} catch (SWTException e) {
 				System.err.println("There was an error loading an image.");
 				e.printStackTrace();
@@ -81,7 +75,7 @@ public class Snippet288 {
 	}
 
 	@SuppressWarnings("unused")
-	private static void loadAllImages(String directory, String[] filenames) throws SWTException {
+	private static void loadAllImages(Path directory, String[] filenames) throws SWTException {
 		int numItems = filenames.length;
 		loader = new ImageLoader[numItems];
 		imageDataArray = new ImageData[numItems][];
@@ -90,7 +84,7 @@ public class Snippet288 {
 			loader[i] = new ImageLoader();
 			int fullWidth = loader[i].logicalScreenWidth;
 			int fullHeight = loader[i].logicalScreenHeight;
-			imageDataArray[i] = loader[i].load(directory + File.separator + filenames[i]);
+			imageDataArray[i] = loader[i].load(directory.resolve(filenames[i]));
 			int numFramesOfAnimation = imageDataArray[i].length;
 			image[i] = new Image[numFramesOfAnimation];
 			for (int j = 0; j < numFramesOfAnimation; j++) {

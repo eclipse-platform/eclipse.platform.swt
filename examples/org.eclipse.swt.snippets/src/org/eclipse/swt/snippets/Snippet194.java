@@ -19,6 +19,8 @@ package org.eclipse.swt.snippets;
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  */
+import java.nio.file.Path;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
@@ -62,7 +64,7 @@ public class Snippet194 {
 		loader.logicalScreenWidth = data[0].width;
 		loader.repeatCount = 0; // run forever
 		try {
-			loader.save("swt.gif", SWT.IMAGE_GIF);
+			loader.save(Path.of("swt.gif"), SWT.IMAGE_GIF);
 		} catch (SWTException ex) {
 			System.out.println("Error saving GIF: " + ex);
 		} finally {

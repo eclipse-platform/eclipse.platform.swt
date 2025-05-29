@@ -26,6 +26,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Path;
 import java.util.Arrays;
 
 import org.eclipse.swt.SWT;
@@ -101,9 +102,18 @@ public void test_loadLjava_io_InputStream() throws IOException {
 }
 
 @Test
+@SuppressWarnings("deprecation")
 public void test_loadLjava_lang_String() {
 	ImageLoader loader = new ImageLoader();
 	String filename = null;
+	assertThrows(IllegalArgumentException.class, () -> loader.load(filename),
+			"No exception thrown for load filename == null");
+}
+
+@Test
+public void test_loadLjava_nio_file_Path() {
+	ImageLoader loader = new ImageLoader();
+	Path filename = null;
 	assertThrows(IllegalArgumentException.class, () -> loader.load(filename),
 			"No exception thrown for load filename == null");
 }
@@ -141,10 +151,19 @@ public void test_saveLjava_io_OutputStreamI() throws IOException {
 }
 
 @Test
+@SuppressWarnings("deprecation")
 public void test_saveLjava_lang_StringI() {
 	ImageLoader loader = new ImageLoader();
 	String filename = null;
 	assertThrows(IllegalArgumentException.class, () -> loader.save(filename, 0),
+			"No exception thrown for save filename == null");
+}
+
+@Test
+public void test_saveLjava_nio_file_PathI() {
+	ImageLoader loader = new ImageLoader();
+	Path file = null;
+	assertThrows(IllegalArgumentException.class, () -> loader.save(file, 0),
 			"No exception thrown for save filename == null");
 }
 
