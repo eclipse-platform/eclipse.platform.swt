@@ -679,47 +679,24 @@ public void test_getImageData() {
 
 @Test
 public void test_getImageData_100() {
-	int zoom = DPIUtil.getDeviceZoom();
-	try {
-		DPIUtil.setDeviceZoom(100);
-		getImageData_int(100);
-	} finally {
-		DPIUtil.setDeviceZoom(zoom);
-	}
-}
+        getImageData_int(100);
+    }
 
 @Test
 public void test_getImageData_125() {
-	int zoom = DPIUtil.getDeviceZoom();
-	try {
-		DPIUtil.setDeviceZoom(125);
-		getImageData_int(125);
-	} finally {
-		DPIUtil.setDeviceZoom(zoom);
-	}
+    getImageData_int(125);
 }
 
 @Test
 public void test_getImageData_150() {
-	int zoom = DPIUtil.getDeviceZoom();
-	try {
-		DPIUtil.setDeviceZoom(150);
-		getImageData_int(150);
-	} finally {
-		DPIUtil.setDeviceZoom(zoom);
-	}
+    getImageData_int(150);
 }
 
 @Test
 public void test_getImageData_200() {
-	int zoom = DPIUtil.getDeviceZoom();
-	try {
-		DPIUtil.setDeviceZoom(200);
-		getImageData_int(200);
-	} finally {
-		DPIUtil.setDeviceZoom(zoom);
-	}
+    getImageData_int(200);
 }
+
 
 void getImageData_int(int zoom) {
 	Rectangle bounds = new Rectangle(0, 0, 10, 20);
