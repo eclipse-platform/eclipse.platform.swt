@@ -65,75 +65,23 @@ public abstract class LinkRenderer extends ControlRenderer {
 	public void parseLinkText(String text) {
 		parsedText.clear();
 
-	    List<TextSegment> currentLineSegments = new ArrayList<>();
-	    StringBuilder buffer = new StringBuilder();
-	    StringBuilder linkBuffer = new StringBuilder();
-	    String href = null;
-	    boolean inAnchor = false;
-
-		for (int i = 0; i < text.length(); i++) {
-	        char c = text.charAt(i);
-
-			if (c == '<') {
-				if (text.startsWith("<a", i)) {
-					if (buffer.length() > 0) {
-						currentLineSegments.add(new TextSegment(buffer.toString(), null));
-						buffer.setLength(0);
-					}
-					inAnchor = true;
-					href = null;
-					int hrefStart = text.indexOf("href=\"", i);
-					if (hrefStart != -1 && hrefStart < text.indexOf(">", i)) {
-						int hrefEnd = text.indexOf("\"", hrefStart + 6);
-						if (hrefEnd != -1) {
-							href = text.substring(hrefStart + 6, hrefEnd);
-							i = hrefEnd;
-						}
-					}
-					i = text.indexOf(">", i);
-					continue;
+		final List<LinkParser.Part> parts = LinkParser.parse(text);
+		List<TextSegment> currentLineSegments = new ArrayList<>();
+		for (LinkParser.Part part : parts) {
+			final String linkData = part.linkData();
+			final String[] lines = part.text().split("\\R", -1);
+			for (int i = 0; i < lines.length; i++) {
+				if (i > 0) {
+					parsedText.add(currentLineSegments);
+					currentLineSegments = new ArrayList<>();
 				}
-
-				if (inAnchor && text.startsWith("</a>", i)) {
-					final String linkText = linkBuffer.toString();
-					currentLineSegments.add(new TextSegment(linkText, href != null ? href : linkText));
-					linkBuffer.setLength(0);
-					inAnchor = false;
-					i += 3;
-					continue;
-				}
+				String line = lines[i];
+				currentLineSegments.add(new TextSegment(line, linkData));
 			}
-
-	        if (c == '\n') {
-	            if (buffer.length() > 0) {
-	                currentLineSegments.add(new TextSegment(buffer.toString(), null));
-	                buffer.setLength(0);
-	            }
-	            if (linkBuffer.length() > 0) {
-	                currentLineSegments.add(new TextSegment(linkBuffer.toString(), href));
-	                linkBuffer.setLength(0);
-	            }
-	            parsedText.add(currentLineSegments);
-	            currentLineSegments = new ArrayList<>();
-	            continue;
-	        }
-
-	        if (inAnchor) {
-	            linkBuffer.append(c);
-	        } else {
-	            buffer.append(c);
-	        }
-	    }
-
-	    if (buffer.length() > 0) {
-	        currentLineSegments.add(new TextSegment(buffer.toString(), null));
-	    }
-	    if (linkBuffer.length() > 0) {
-	        currentLineSegments.add(new TextSegment(linkBuffer.toString(), href));
-	    }
-	    if (!currentLineSegments.isEmpty()) {
-	        parsedText.add(currentLineSegments);
-	    }
+		}
+		if (currentLineSegments.size() > 0) {
+			parsedText.add(currentLineSegments);
+		}
 	}
 
 	/**
