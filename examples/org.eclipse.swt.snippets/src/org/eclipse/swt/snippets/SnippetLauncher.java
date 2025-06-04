@@ -58,14 +58,8 @@ public class SnippetLauncher {
 						System.out.println(source.substring(start, end-3));
 						boolean skip = false;
 						String platform = SWT.getPlatform();
-						if (source.contains("PocketPC")) {
-							platform = "PocketPC";
-							skip = true;
-						} else if (source.contains("OpenGL")) {
+						if (source.contains("OpenGL")) {
 							platform = "OpenGL";
-							skip = true;
-						} else if (source.contains("JavaXPCOM")) {
-							platform = "JavaXPCOM";
 							skip = true;
 						} else {
 							String [] platforms = {"win32", "gtk"};
@@ -81,7 +75,8 @@ public class SnippetLauncher {
 							System.out.println("...skipping " + platform + " example...");
 							continue;
 						}
-					} catch (Exception e) {
+					} catch (IOException e) {
+						e.printStackTrace();
 					}
 				}
 				Method method = null;
