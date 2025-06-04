@@ -300,18 +300,9 @@ Shell (Display display, Shell parent, int style, long handle, boolean embedded) 
 	if (handle != 0 && !embedded) {
 		state |= FOREIGN_HANDLE;
 	}
-
-	int shellNativeZoom;
-	if (parent != null) {
-		shellNativeZoom = parent.nativeZoom;
-	} else {
-		int mappedDPIZoom = getMonitor().getZoom();
-		shellNativeZoom = mappedDPIZoom;
-	}
-	this.nativeZoom = shellNativeZoom;
-
 	reskinWidget();
 	createWidget ();
+	this.nativeZoom = DPIUtil.mapDPIToZoom(OS.GetDpiForWindow(this.handle));
 }
 
 /**
