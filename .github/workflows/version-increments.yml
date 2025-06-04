@@ -7,7 +7,7 @@ on:
 
 jobs:
   publish-version-check-results:
-    uses: eclipse-platform/eclipse.platform.releng.aggregator/.github/workflows/publishVersionCheckResults.yml@master
+    uses: HannesWell/eclipse.platform.releng.aggregator/.github/workflows/publishVersionCheckResults.yml@update-snapshots-in-versions-workflow
     with:
       botGithubId: eclipse-platform-bot
     secrets:
