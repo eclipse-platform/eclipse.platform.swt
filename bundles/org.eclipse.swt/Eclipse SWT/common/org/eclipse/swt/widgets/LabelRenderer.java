@@ -32,7 +32,7 @@ public abstract class LabelRenderer extends ControlRenderer {
 
 	protected final Label label;
 
-	protected static final int DEFAULT_MARGIN = 3;
+	protected static final int DEFAULT_MARGIN = 0;
 
 	// The tooltip is used for two purposes - the application can set
 	// a tooltip or the tooltip can be used to display the full text when the
