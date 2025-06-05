@@ -44,7 +44,7 @@ def runOnNativeBuildAgent(String platform, Closure body) {
 
 /** Returns the download URL of the JDK against whose C headers (in the 'include/' folder) and native libraries the SWT natives are compiled.*/
 def getNativeJdkUrl(String os, String arch) { // To update the used JDK version update the URL template below
-	if('win32'.equals(os) && 'aarch64'.equals(arch)) {
+	if ('win32'.equals(os) && 'aarch64'.equals(arch)) {
 		// Temporary workaround until there are official Temurin GA releases for Windows on ARM that can be consumed through JustJ
 		dir("${WORKSPACE}/repackage-win32.aarch64-jdk") {
 			sh """
@@ -86,7 +86,7 @@ def Set NATIVES_CHANGED = []
 
 pipeline {
 	options {
-		skipDefaultCheckout() // Specialiced checkout is performed below
+		skipDefaultCheckout() // Specialized checkout is performed below
 		timestamps()
 		timeout(time: 180, unit: 'MINUTES')
 		buildDiscarder(logRotator(numToKeepStr: 'master'.equals(env.BRANCH_NAME) ? '20' : '5', artifactNumToKeepStr: 'master'.equals(env.BRANCH_NAME) ? '3' : '1' ))
@@ -117,7 +117,7 @@ pipeline {
 						def authorMail = sh(script: 'git log -1 --pretty=format:"%ce" HEAD', returnStdout: true)
 						echo 'HEAD commit author: ' + authorMail
 						if ('eclipse-releng-bot@eclipse.org'.equals(authorMail) && !params.forceNativeBuilds) {
-							// Prevent endless build-loops due to self triggering because of a previous automated build of SWT-natives and the associated updates.
+							// Prevent endless build-loops due to self triggering because of a previous automated build of natives and the associated updates.
 							currentBuild.result = 'ABORTED'
 							error('Abort build only triggered by automated SWT-natives update.')
 						}
@@ -157,7 +157,7 @@ pipeline {
 							'''
 							def sourceFoldersProps = readProperties(file: 'nativeSourceFolders.properties')
 							def sources = sourceFoldersProps.collectEntries{ k, src -> [ k, src.split(',').collect{ f -> '\'' + f + '\''}.join(' ') ] }
-							for(ws in allWS) {
+							for (ws in allWS) {
 								def diff = sh(script: "git diff HEAD ${swtTag} ${sources.src_common} ${sources['src_' + ws]}", returnStdout: true)
 								if (!diff.trim().isEmpty()) {
 									NATIVES_CHANGED += ws
@@ -175,7 +175,7 @@ pipeline {
 									sed -i -e "s/rev=${versions.rev}/rev=${versions.new_rev}/g" \
 										'bundles/org.eclipse.swt/Eclipse SWT/common/library/make_common.mak'
 								"""
-							for(ws in allWS) {
+							for (ws in allWS) {
 								if (NATIVES_CHANGED.contains(ws)) {
 								sh """
 									# Delete native binaries to be replaced by subsequent binaries build
@@ -239,7 +239,7 @@ pipeline {
 							script {
 								def (ws, os, arch) = env.PLATFORM.split('\\.')
 								dir("jdk-download-${ws}.${arch}") {
-									// Fetch the JDK, which provides the C header-files and shared native libraries, against which the natives are build.
+									// Fetch the JDK, which provides the C header files and shared native libraries against which the native code is built.
 									sh "curl ${getNativeJdkUrl(os, arch)} | tar -xzf - include/ lib/"
 									stash name:"jdk.resources.${ws}.${arch}", includes: "include/,lib/"
 									deleteDir()
@@ -382,11 +382,11 @@ pipeline {
 				sshagent(['github-bot-ssh']) {
 					dir('eclipse.platform.swt') {
 						sh """
-							# Check for the master-branch as late as possible to have as much of the same behaviour as possible
+							# Check for the master-branch as late as possible to have as much of the same behavior as possible
 							if [[ '${BRANCH_NAME}' == master ]] || [[ '${BRANCH_NAME}' =~ R[0-9]+_[0-9]+(_[0-9]+)?_maintenance ]]; then
 								if [[ ${params.skipCommit} != true ]]; then
 									
-									# Don't rebase and just fail in case another commit has been pushed to the master/maintanance branch in the meantime
+									# Don't rebase and just fail in case another commit has been pushed to the master/maintenance branch in the meantime
 									git push origin HEAD:refs/heads/${BRANCH_NAME}
 									git push origin refs/tags/${getLatestGitTag()}
 									
