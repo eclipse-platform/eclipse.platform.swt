@@ -115,10 +115,14 @@ public class CTabFolder extends Composite {
 
 	/* sizing, positioning */
 	boolean onBottom = false;
+	boolean onSide = false;
+	boolean onRight = false;
 	boolean single = false;
 	boolean simple = true;
 	int fixedTabHeight = SWT.DEFAULT;
+	int fixedTabWidth = SWT.DEFAULT;
 	int tabHeight;
+	int tabWidth;
 	int minChars = 20;
 	boolean borderVisible = false;
 
@@ -238,6 +242,7 @@ public class CTabFolder extends Composite {
 	final static int REDRAW = 1 << 1;
 	final static int REDRAW_TABS = 1 << 2;
 	final static int UPDATE_TAB_HEIGHT = 1 << 3;
+	final static int UPDATE_TAB_WIDTH = 1 << 4;
 	Runnable updateRun;
 
 	// when disposing CTabFolder, don't try to layout the items or
@@ -301,7 +306,19 @@ void init(int style) {
 	super.setLayout(new CTabFolderLayout());
 	int style2 = super.getStyle();
 	oldFont = getFont();
-	onBottom = (style2 & SWT.BOTTOM) != 0;
+	switch (style2 & (SWT.TOP | SWT.BOTTOM | SWT.LEFT | SWT.RIGHT)) {
+	case SWT.BOTTOM:
+		onBottom = true;
+		break;
+	case SWT.LEFT:
+		onSide = true;
+		break;
+	case SWT.RIGHT:
+		onSide = true;
+		onRight = true;
+		break;
+	// SWT.TOP is the default
+	}
 	showClose = (style2 & SWT.CLOSE) != 0;
 //	showMin = (style2 & SWT.MIN) != 0; - conflicts with SWT.TOP
 //	showMax = (style2 & SWT.MAX) != 0; - conflicts with SWT.BOTTOM
@@ -394,11 +411,19 @@ void onActivate(Event event) {
 }
 
 static int checkStyle (Composite parent, int style) {
-	int mask = SWT.CLOSE | SWT.TOP | SWT.BOTTOM | SWT.FLAT | SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT | SWT.SINGLE | SWT.MULTI;
+	int mask = SWT.CLOSE | SWT.TOP | SWT.BOTTOM | SWT.LEFT | SWT.RIGHT | SWT.FLAT | SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT | SWT.SINGLE | SWT.MULTI;
 	style = style & mask;
-	// TOP and BOTTOM are mutually exclusive.
+	// TOP, BOTTOM, LEFT and RIGHT are mutually exclusive.
 	// TOP is the default
-	if ((style & SWT.TOP) != 0) style = style & ~SWT.BOTTOM;
+	if ((style & SWT.TOP) != 0) {
+		style = style & ~SWT.BOTTOM & ~SWT.LEFT & ~SWT.RIGHT;
+	}
+	else if ((style & SWT.BOTTOM) != 0) {
+		style = style & ~SWT.LEFT & ~SWT.RIGHT;
+	}
+	else if ((style & SWT.LEFT) != 0) {
+		style = style & ~SWT.RIGHT;
+	}
 	// SINGLE and MULTI are mutually exclusive.
 	// MULTI is the default
 	if ((style & SWT.MULTI) != 0) style = style & ~SWT.SINGLE;
@@ -1296,6 +1321,22 @@ public int getTabHeight(){
 	return tabHeight - 1; // -1 for line drawn across top of tab //TODO: replace w/ computeTrim of tab area?
 }
 /**
+ * Returns the width of the tab
+ *
+ * @return the width of the tab
+ *
+ * @exception SWTException <ul>
+ *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ *	</ul>
+ * @since 3.130
+ */
+public int getTabWidth(){
+	checkWidget();
+	if (fixedTabWidth != SWT.DEFAULT) return fixedTabWidth;
+	return tabWidth;
+}
+/**
  * Returns the position of the tab.  Possible values are SWT.TOP or SWT.BOTTOM.
  *
  * @return the position of the tab
@@ -1307,7 +1348,7 @@ public int getTabHeight(){
  */
 public int getTabPosition(){
 	checkWidget();
-	return onBottom ? SWT.BOTTOM : SWT.TOP;
+	return onSide ? (onRight ? SWT.RIGHT : SWT.LEFT) : (onBottom ? SWT.BOTTOM : SWT.TOP);
 }
 /**
  * Returns the control in the top right corner of the tab folder.
@@ -3581,6 +3622,28 @@ public void setTabHeight(int height) {
 	updateFolder(UPDATE_TAB_HEIGHT);
 }
 /**
+ * Specify a fixed width for the tab items. If no width is specified,
+ * the default height is the width of the text or the image, whichever
+ * is greater. Specifying a width of -1 will revert to the default width.
+ *
+ * @param width the point value of the width or -1
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if called with a height of less than 0</li>
+ * </ul>
+ * @since 3.130
+ */
+public void setTabWidth(int width) {
+	checkWidget();
+	if (width < -1) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	fixedTabWidth = width;
+	updateFolder(UPDATE_TAB_WIDTH);
+}
+/**
  * Specify whether the tabs should appear along the top of the folder
  * or along the bottom of the folder.
  *
@@ -3596,11 +3659,27 @@ public void setTabHeight(int height) {
  */
 public void setTabPosition(int position) {
 	checkWidget();
-	if (position != SWT.TOP && position != SWT.BOTTOM) {
+	if (position != SWT.TOP && position != SWT.BOTTOM && position != SWT.LEFT && position != SWT.RIGHT) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	if (onBottom != (position == SWT.BOTTOM)) {
-		onBottom = position == SWT.BOTTOM;
+	int tabPosition = onSide ? (onRight ? SWT.RIGHT : SWT.LEFT) : (onBottom ? SWT.BOTTOM : SWT.TOP);
+	if (tabPosition != position) {
+		onBottom = false;
+		onSide = false;
+		onRight = false;
+		switch (position) {
+		case SWT.BOTTOM:
+			onBottom = true;
+			break;
+		case SWT.LEFT:
+			onSide = true;
+			break;
+		case SWT.RIGHT:
+			onSide = true;
+			onRight = true;
+			break;
+		// SWT.TOP is the default
+		}
 		updateFolder(REDRAW);
 	}
 }
