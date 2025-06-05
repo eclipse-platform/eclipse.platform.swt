@@ -3736,10 +3736,9 @@ long gtk_event_after (long widget, long gdkEvent) {
 		}
 		case GDK.GDK_FOCUS_CHANGE: {
 			if (!isFocusHandle (widget)) break;
-			boolean [] focusIn = new boolean [1];
 			GdkEventFocus gdkEventFocus = new GdkEventFocus ();
 			GTK3.memmove (gdkEventFocus, gdkEvent, GdkEventFocus.sizeof);
-			focusIn[0] = gdkEventFocus.in != 0;
+			boolean focusIn = gdkEventFocus.in != 0;
 
 			/*
 			 * Feature in GTK. The GTK combo box popup under some window managers
@@ -3751,7 +3750,7 @@ long gtk_event_after (long widget, long gdkEvent) {
 			 * NOTE: This code runs for all menus.
 			 */
 			Display display = this.display;
-			if (focusIn[0]) {
+			if (focusIn) {
 				if (display.ignoreFocus) {
 					display.ignoreFocus = false;
 					break;
@@ -3766,7 +3765,7 @@ long gtk_event_after (long widget, long gdkEvent) {
 					}
 				}
 			}
-			sendFocusEvent (focusIn[0] ? SWT.FocusIn : SWT.FocusOut);
+			sendFocusEvent (focusIn ? SWT.FocusIn : SWT.FocusOut);
 			break;
 		}
 	}
