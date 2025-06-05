@@ -19,6 +19,8 @@ package org.eclipse.swt.snippets;
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  */
+import java.nio.file.Path;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
@@ -64,7 +66,7 @@ public class Snippet246 {
 
 		ImageLoader loader = new ImageLoader();
 		loader.data = new ImageData[] { image.getImageData() };
-		loader.save("swt.png", SWT.IMAGE_PNG);
+		loader.save(Path.of("swt.png"), SWT.IMAGE_PNG);
 		image.dispose();
 		font.dispose();
 	}

@@ -13,9 +13,11 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.gtk.snippets;
 
+import java.nio.file.Path;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.ImageLoader;
+import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.CoolBar;
@@ -39,11 +41,11 @@ public class Bug302918_ToolItemDisabled {
 			item.setPreferredSize(item.computeSize(size.x, size.y));
 			item.setControl(button);
 		}
-		ImageLoader loader = new ImageLoader ();
-		loader.load("./images/next_nav.gif");
-		Image nav = new Image (display, loader.data[0]);
-		loader.load("./images/next_nav_dis.gif");
-		Image nav_dis = new Image (display, loader.data[0]);
+
+		ImageData data = ImageData.load(Path.of("./images/next_nav.gif"));
+		Image nav = new Image(display, data);
+		data = ImageData.load(Path.of("./images/next_nav_dis.gif"));
+		Image nav_dis = new Image(display, data);
 
 		ToolBar toolbar = new ToolBar(bar, SWT.NONE);
 		ToolItem item1 = new ToolItem(toolbar, SWT.PUSH);

@@ -15,12 +15,14 @@ package org.eclipse.swt.tests.junit;
 import static org.eclipse.swt.tests.junit.SwtTestUtil.assertSWTProblem;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.nio.file.Path;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageDataProvider;
-import org.eclipse.swt.graphics.ImageFileNameProvider;
+import org.eclipse.swt.graphics.ImagePathProvider;
 import org.eclipse.swt.widgets.Display;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -36,17 +38,17 @@ public class Test_org_eclipse_swt_internal_SVGRasterizer {
 	@ClassRule
 	public static TemporaryFolder tempFolder = new TemporaryFolder();
 
-	private static String getPath(String fileName) {
-		return SwtTestUtil.getPath(fileName, tempFolder).toString();
+	private static Path getPath(String fileName) {
+		return SwtTestUtil.getPath(fileName, tempFolder);
 	}
 
 	@Test
 	public void test_ConstructorLorg_eclipse_swt_graphics_Device_ImageFileNameProvider() {
-		ImageFileNameProvider validImageFileNameProvider = zoom -> getPath("collapseall.svg");
+		ImagePathProvider validImageFileNameProvider = zoom -> getPath("collapseall.svg");
 		Image image = new Image(Display.getDefault(), validImageFileNameProvider);
 		image.dispose();
 
-		ImageFileNameProvider corruptImageFileNameProvider = zoom -> getPath("corrupt.svg");
+		ImagePathProvider corruptImageFileNameProvider = zoom -> getPath("corrupt.svg");
 		SWTException e = assertThrows(SWTException.class,
 				() -> new Image(Display.getDefault(), corruptImageFileNameProvider));
 		assertSWTProblem("Incorrect exception thrown for provider with corrupt images", SWT.ERROR_INVALID_IMAGE, e);
@@ -56,14 +58,14 @@ public class Test_org_eclipse_swt_internal_SVGRasterizer {
 	public void test_ConstructorLorg_eclipse_swt_graphics_Device_ImageDataProvider() {
 		ImageDataProvider validImageDataProvider = zoom -> {
 			String fileName = "collapseall.svg";
-			return new ImageData(getPath(fileName));
+			return ImageData.load(getPath(fileName));
 		};
 		Image image = new Image(Display.getDefault(), validImageDataProvider);
 		image.dispose();
 
 		ImageDataProvider corruptImageDataProvider = zoom -> {
 			String fileName = "corrupt.svg";
-			return new ImageData(getPath(fileName));
+			return ImageData.load(getPath(fileName));
 		};
 		SWTException e = assertThrows(SWTException.class,
 				() -> new Image(Display.getDefault(), corruptImageDataProvider));

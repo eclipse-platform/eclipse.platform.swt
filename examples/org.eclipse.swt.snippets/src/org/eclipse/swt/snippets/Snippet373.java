@@ -13,6 +13,7 @@ package org.eclipse.swt.snippets;
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
+import java.nio.file.Path;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.custom.*;
@@ -46,19 +47,13 @@ public class Snippet373 {
 	private static final String IMAGE_PATH_100 = IMAGES_ROOT + IMAGE_100;
 	private static final String IMAGE_PATH_150 = IMAGES_ROOT + IMAGE_150;
 	private static final String IMAGE_PATH_200 = IMAGES_ROOT + IMAGE_200;
-	static final ImageFileNameProvider filenameProvider = zoom -> {
-		String path = null;
-		switch (zoom) {
-		case 150:
-			path = IMAGE_PATH_150;
-			break;
-		case 200:
-			path = IMAGE_PATH_200;
-			break;
-		default:
-			path = IMAGE_PATH_100;
-		}
-		return path;
+	static final ImagePathProvider filenameProvider = zoom -> {
+		String path = switch (zoom) {
+		case 150 -> IMAGE_PATH_150;
+		case 200 -> IMAGE_PATH_200;
+		default -> IMAGE_PATH_100;
+		};
+		return Path.of(path);
 	};
 
 	public static void main(String[] args) {

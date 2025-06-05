@@ -13,6 +13,8 @@
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 
+import java.nio.file.Path;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
@@ -31,36 +33,24 @@ public class Snippet367 {
 	private static final String IMAGE_200 = "eclipse32.png";
 	private static final String IMAGES_ROOT = "bin/org/eclipse/swt/snippets/";
 
-	private static final String IMAGE_PATH_100 = IMAGES_ROOT + IMAGE_100;
-	private static final String IMAGE_PATH_150 = IMAGES_ROOT + IMAGE_150;
-	private static final String IMAGE_PATH_200 = IMAGES_ROOT + IMAGE_200;
+	private static final Path IMAGE_PATH_100 = Path.of(IMAGES_ROOT, IMAGE_100);
+	private static final Path IMAGE_PATH_150 = Path.of(IMAGES_ROOT, IMAGE_150);
+	private static final Path IMAGE_PATH_200 = Path.of(IMAGES_ROOT, IMAGE_200);
 
 	public static void main (String [] args) {
 		final Display display = new Display ();
 
-		final ImageFileNameProvider filenameProvider = zoom -> {
-			switch (zoom) {
-			case 100:
-				return IMAGE_PATH_100;
-			case 150:
-				return IMAGE_PATH_150;
-			case 200:
-				return IMAGE_PATH_200;
-			default:
-				return null;
-			}
+		ImagePathProvider filenameProvider = zoom -> switch (zoom) {
+		case 100 -> IMAGE_PATH_100;
+		case 150 -> IMAGE_PATH_150;
+		case 200 -> IMAGE_PATH_200;
+		default -> null;
 		};
-		final ImageDataProvider imageDataProvider = zoom -> {
-			switch (zoom) {
-			case 100:
-				return new ImageData (IMAGE_PATH_100);
-			case 150:
-				return new ImageData (IMAGE_PATH_150);
-			case 200:
-				return new ImageData (IMAGE_PATH_200);
-			default:
-				return null;
-			}
+		ImageDataProvider imageDataProvider = zoom -> switch (zoom) {
+		case 100 -> ImageData.load(IMAGE_PATH_100);
+		case 150 -> ImageData.load(IMAGE_PATH_150);
+		case 200 -> ImageData.load(IMAGE_PATH_200);
+		default -> null;
 		};
 		final ImageGcDrawer imageGcDrawer = (gc, width, height) -> {
 			gc.drawRectangle(1, 1, width - 2, height - 2);
@@ -93,16 +83,16 @@ public class Snippet367 {
 		exitItem.addListener(SWT.Selection, e -> shell.close());
 
 		new Label (shell, SWT.NONE).setText (IMAGE_200 + ":");
-		new Label (shell, SWT.NONE).setImage (new Image (display, IMAGE_PATH_200));
-		new Button(shell, SWT.PUSH).setImage (new Image (display, IMAGE_PATH_200));
+		new Label (shell, SWT.NONE).setImage (new Image (display, IMAGE_PATH_200.toString()));
+		new Button(shell, SWT.PUSH).setImage (new Image (display, IMAGE_PATH_200.toString()));
 
 		new Label (shell, SWT.NONE).setText (IMAGE_150 + ":");
-		new Label (shell, SWT.NONE).setImage (new Image (display, IMAGE_PATH_150));
-		new Button(shell, SWT.NONE).setImage (new Image (display, IMAGE_PATH_150));
+		new Label (shell, SWT.NONE).setImage (new Image (display, IMAGE_PATH_150.toString()));
+		new Button(shell, SWT.NONE).setImage (new Image (display, IMAGE_PATH_150.toString()));
 
 		new Label (shell, SWT.NONE).setText (IMAGE_100 + ":");
-		new Label (shell, SWT.NONE).setImage (new Image (display, IMAGE_PATH_100));
-		new Button(shell, SWT.NONE).setImage (new Image (display, IMAGE_PATH_100));
+		new Label (shell, SWT.NONE).setImage (new Image (display, IMAGE_PATH_100.toString()));
+		new Button(shell, SWT.NONE).setImage (new Image (display, IMAGE_PATH_100.toString()));
 
 		createSeparator(shell);
 

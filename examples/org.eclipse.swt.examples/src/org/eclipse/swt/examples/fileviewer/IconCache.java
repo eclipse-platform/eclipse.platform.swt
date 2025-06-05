@@ -130,7 +130,7 @@ class IconCache {
 	 */
 	private Image createStockImage(Display display, String path) {
 		try (InputStream stream = IconCache.class.getResourceAsStream (path)) {
-			ImageData imageData = new ImageData (stream);
+			ImageData imageData = ImageData.load(stream);
 			ImageData mask = imageData.getTransparencyMask ();
 			Image result = new Image (display, imageData, mask);
 			return result;

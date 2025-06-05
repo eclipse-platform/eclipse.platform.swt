@@ -14,11 +14,14 @@
 
 package org.eclipse.swt.tests.manual;
 
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.*;
-
 import java.io.InputStream;
+
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
 
 public class Bug576334_32bpp_BMP_Colors {
 	public static void main (String[] args) {
@@ -30,7 +33,7 @@ public class Bug576334_32bpp_BMP_Colors {
 		hint.setText ("The image below shall be orange; not green");
 
 		InputStream imageStream = Bug576334_32bpp_BMP_Colors.class.getResourceAsStream ("/Bug576334_32bpp_BMP_Colors.bmp");
-		ImageData imageData = new ImageData (imageStream);
+		ImageData imageData = ImageData.load(imageStream);
 		Image image = new Image (display, imageData);
 
 		Label imageLabel = new Label (shell, 0);

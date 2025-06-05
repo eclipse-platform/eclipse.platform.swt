@@ -13,6 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 
+import java.nio.file.Path;
 import java.util.concurrent.atomic.*;
 
 import org.eclipse.swt.*;
@@ -52,7 +53,7 @@ public class Snippet141 {
 		if (fileName != null) {
 			loader = new ImageLoader();
 			try {
-				imageDataArray = loader.load(fileName);
+				imageDataArray = loader.load(Path.of(fileName));
 				if (imageDataArray.length > 1) {
 					animateThread = new Thread("Animation") {
 						@Override

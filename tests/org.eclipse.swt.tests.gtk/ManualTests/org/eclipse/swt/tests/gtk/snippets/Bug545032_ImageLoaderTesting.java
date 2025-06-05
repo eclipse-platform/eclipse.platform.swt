@@ -13,7 +13,8 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.gtk.snippets;
 
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
@@ -36,7 +37,7 @@ import org.eclipse.swt.widgets.Shell;
 public class Bug545032_ImageLoaderTesting {
 
 	public static void main(String[] args) throws Exception {
-		File file = File.createTempFile("swt", "example");
+		Path file = Files.createTempFile("swt", "example").toAbsolutePath();
 
 		Display display = new Display();
 		Shell shell = new Shell(display);
@@ -77,18 +78,16 @@ public class Bug545032_ImageLoaderTesting {
 
 		ImageLoader saver = new ImageLoader();
 		saver.data = new ImageData[] { image.getImageData() };
-		file.delete();
-		saver.save(file.getAbsolutePath(), SWT.IMAGE_PNG);
+		saver.save(file, SWT.IMAGE_PNG);
 
-		ImageLoader loader = new ImageLoader();
-		ImageData[] loaded = loader.load(file.getAbsolutePath());
-		for (ImageData imageLoadData : loaded) {
-			Label l = new Label(shell, SWT.BORDER);
-			image = new Image(display, imageLoadData);
-			l.setImage(image);
-		}
+
+		ImageData imageLoadData = ImageData.load(file);
+		Label l = new Label(shell, SWT.BORDER);
+		image = new Image(display, imageLoadData);
+		l.setImage(image);
+
 		shell.pack();
-		file.delete();
+		Files.delete(file);
 
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch()) {
