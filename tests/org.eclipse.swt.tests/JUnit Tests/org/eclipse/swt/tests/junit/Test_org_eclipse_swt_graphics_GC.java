@@ -825,7 +825,9 @@ public void test_bug1288_createGCFromImageFromNonDisplayThread() throws Interrup
 	AtomicReference<Exception> exceptionReference = new AtomicReference<>();
 	Thread thread = new Thread(() -> {
 		try {
-			Image image = new Image(null, (gc, width, height) -> {}, 100, 100);
+			Image image = new Image(null, 100, 100);
+			GC gc = new GC(image);
+			gc.dispose();
 			image.dispose();
 		} catch(Exception e) {
 			exceptionReference.set(e);

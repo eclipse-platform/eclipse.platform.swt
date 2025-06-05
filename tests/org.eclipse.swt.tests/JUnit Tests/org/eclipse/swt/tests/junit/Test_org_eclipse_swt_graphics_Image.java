@@ -101,22 +101,22 @@ public void setUp() {
 
 @Test
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceII() {
-	IllegalArgumentException e1 = assertThrows(IllegalArgumentException.class, () -> new Image(display, (gc, width, height) -> {}, -1, 10));
+	IllegalArgumentException e1 = assertThrows(IllegalArgumentException.class, () -> new Image(display, -1, 10));
 	assertSWTProblem("Incorrect exception thrown for width < 0", SWT.ERROR_INVALID_ARGUMENT, e1);
 
-	IllegalArgumentException e2 = assertThrows(IllegalArgumentException.class, () -> new Image(display, (gc, width, height) -> {}, 0, 10));
+	IllegalArgumentException e2 = assertThrows(IllegalArgumentException.class, () -> new Image(display, 0, 10));
 	assertSWTProblem("Incorrect exception thrown for width == 0", SWT.ERROR_INVALID_ARGUMENT, e2);
 
-	IllegalArgumentException e3 = assertThrows(IllegalArgumentException.class, () -> new Image(display, (gc, width, height) -> {}, 10, -20));
+	IllegalArgumentException e3 = assertThrows(IllegalArgumentException.class, () -> new Image(display, 10, -20));
 	assertSWTProblem("Incorrect exception thrown for height < 0", SWT.ERROR_INVALID_ARGUMENT, e3);
 
-	IllegalArgumentException e4 = assertThrows(IllegalArgumentException.class, () -> new Image(display, (gc, width, height) -> {}, 10, 0));
+	IllegalArgumentException e4 = assertThrows(IllegalArgumentException.class, () -> new Image(display, 10, 0));
 	assertSWTProblem("Incorrect exception thrown for height == 0", SWT.ERROR_INVALID_ARGUMENT, e4);
 
-	Image image = new Image(null, (gc, width, height) -> {}, 10, 10);
+	Image image = new Image(null, 10, 10);
 	image.dispose();
 
-	image = new Image(display, (gc, width, height) -> {}, 10, 10);
+	image = new Image(display, 10, 10);
 	image.dispose();
 }
 
@@ -563,12 +563,12 @@ public void test_getBounds() {
 
 	Image image;
 	// creates bitmap image
-	image = new Image(display, bounds.width, bounds.height);
+	image = new Image(display, (gc, width, height) -> {}, bounds.width, bounds.height);
 	Rectangle bounds1 = image.getBounds();
 	image.dispose();
 	assertEquals(bounds, bounds1);
 
-	image = new Image(display, bounds.width, bounds.height);
+	image = new Image(display, (gc, width, height) -> {},  bounds.width, bounds.height);
 	bounds1 = image.getBounds();
 	image.dispose();
 	assertEquals(bounds, bounds1);
