@@ -113,6 +113,7 @@ class BasicLabelRenderer extends LabelRenderer {
 			x = width - rightMargin - extent.x;
 		}
 
+		final Color background = label.getBackground();
 		int style = label.getStyle();
 		// draw a background image behind the text
 		try {
@@ -123,7 +124,7 @@ class BasicLabelRenderer extends LabelRenderer {
 				// draw a background image behind the text
 				Rectangle imageRect = backgroundImage.getBounds();
 				// tile image to fill space
-				gc.setBackground(getBackground());
+				gc.setBackground(background);
 				gc.fillRectangle(0, 0, width, height);
 				int xPos = 0;
 				while (xPos < width) {
@@ -172,26 +173,25 @@ class BasicLabelRenderer extends LabelRenderer {
 						}
 					}
 					if (gradientVertical && pos < height) {
-						gc.setBackground(getBackground());
+						gc.setBackground(background);
 						gc.fillRectangle(0, pos, width, height - pos);
 					}
 					if (!gradientVertical && pos < width) {
-						gc.setBackground(getBackground());
+						gc.setBackground(background);
 						gc.fillRectangle(pos, 0, width - pos, height);
 					}
 					gc.setForeground(oldForeground);
 				}
 				gc.setBackground(oldBackground);
 			} else {
-				final Color background = getBackground();
-				if (background != null && background.getAlpha() > 0) {
-					gc.setBackground(getBackground());
+				if (background.getAlpha() > 0) {
+					gc.setBackground(background);
 					gc.fillRectangle(0, 0, width, height);
 				}
 			}
 		} catch (SWTException e) {
 			if ((style & SWT.DOUBLE_BUFFERED) == 0) {
-				gc.setBackground(getBackground());
+				gc.setBackground(background);
 				gc.fillRectangle(0, 0, width, height);
 			}
 		}

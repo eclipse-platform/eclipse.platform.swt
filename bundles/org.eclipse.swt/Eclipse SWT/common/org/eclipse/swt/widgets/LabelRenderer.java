@@ -48,7 +48,6 @@ public abstract class LabelRenderer extends ControlRenderer {
 	private Color[] gradientColors;
 	private int[] gradientPercents;
 	private boolean gradientVertical;
-	private Color background;
 
 	private int leftMargin = DEFAULT_MARGIN;
 	private int topMargin = DEFAULT_MARGIN;
@@ -118,25 +117,7 @@ public abstract class LabelRenderer extends ControlRenderer {
 		toolTipText = null;
 	}
 
-	public Color getBackground() {
-		return background != null ? background : getColor(COLOR_BACKGROUND);
-	}
-
-	public void setBackground(Color color) {
-		// Are these settings the same as before?
-		if (backgroundImage == null && gradientColors == null
-			&& gradientPercents == null) {
-			if (color == null) {
-				if (background == null) {
-					return;
-				}
-			} else {
-				if (color.equals(background)) {
-					return;
-				}
-			}
-		}
-		background = color;
+	public void unsetBackgroundImageAndGradient() {
 		backgroundImage = null;
 		gradientColors = null;
 		gradientPercents = null;
@@ -179,7 +160,7 @@ public abstract class LabelRenderer extends ControlRenderer {
 		}
 
 		// Are these settings the same as before?
-		final Color background = getBackground();
+		final Color background = label.getBackground();
 		if (backgroundImage == null) {
 			if ((gradientColors != null) && (colors != null)
 				&& (gradientColors.length == colors.length)) {

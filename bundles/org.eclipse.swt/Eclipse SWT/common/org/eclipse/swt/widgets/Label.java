@@ -456,6 +456,12 @@ public class Label extends CustomControl {
 		}
 	}
 
+	@Override
+	public void setBackground(Color color) {
+		super.setBackground(color);
+		renderer.unsetBackgroundImageAndGradient();
+	}
+
 	/**
 	 * Specify a gradient of colours to be drawn in the background of the Label.
 	 * <p>
