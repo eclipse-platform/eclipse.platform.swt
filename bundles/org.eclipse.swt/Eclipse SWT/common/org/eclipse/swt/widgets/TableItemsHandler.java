@@ -173,8 +173,16 @@ class TableItemsHandler {
 				if (it.getBounds().contains(p)) {
 					Event e = new Event();
 					e.item = it;
-					e.type = SWT.MouseDoubleClick;
-					table.notifyListeners(SWT.MouseDoubleClick, e);
+					e.type = SWT.DefaultSelection;
+					e.count = event.count;
+					e.button = event.button;
+					e.doit = event.doit;
+					e.stateMask = event.stateMask;
+					e.time = event.time;
+					e.x = event.x;
+					e.y = event.y;
+
+					table.postEvent(SWT.DefaultSelection, e);
 					return;
 				}
 			}

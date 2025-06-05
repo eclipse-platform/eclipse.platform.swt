@@ -178,15 +178,26 @@ class TreeItemsHandler {
 		}
 
 		Point p = new Point(event.x, event.y);
+		var list = tree.treeItemsArrangement;
 		if (ica.contains(p)) {
 			for (int i = tree.getTopIndex(); i < Math.min(this.lastVisibleElementIndex + ITEMS_OVERLAY,
-					tree.getItemCount()); i++) {
-				TreeItem it = tree.getItem(i);
+					list.size()); i++) {
+				TreeItem it = list.get(i);
 				if (it.getBounds().contains(p)) {
+
 					Event e = new Event();
 					e.item = it;
-					e.type = SWT.MouseDoubleClick;
-					tree.notifyListeners(SWT.MouseDoubleClick, e);
+					e.type = SWT.DefaultSelection;
+					e.count = event.count;
+					e.button = event.button;
+					e.doit = event.doit;
+					e.stateMask = event.stateMask;
+					e.time = event.time;
+					e.x = event.x;
+					e.y = event.y;
+
+					tree.postEvent(SWT.DefaultSelection, e);
+
 					return;
 				}
 			}
