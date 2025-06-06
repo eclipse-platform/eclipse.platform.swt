@@ -26,7 +26,7 @@ import org.junit.jupiter.params.*;
 import org.junit.jupiter.params.provider.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class CoordinateSystemMapperTests {
+class CoordinateSystemMapperTests {
 
 	Supplier<Monitor[]> getMonitorConsumer;
 	Monitor[] monitors;
