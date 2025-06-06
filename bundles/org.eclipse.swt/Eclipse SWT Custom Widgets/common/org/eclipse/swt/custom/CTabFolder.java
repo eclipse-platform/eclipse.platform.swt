@@ -894,7 +894,10 @@ public Rectangle getClientArea() {
 	if (minimized) return new Rectangle(-trim.x, -trim.y, 0, 0);
 	int width = size.x - trim.width;
 	int height = size.y - trim.height;
-	return new Rectangle(-trim.x, -trim.y, width, height);
+	FloatAwareRectangle r = new FloatAwareRectangle(-trim.x, -trim.y, width, height);
+	r.residualWidth = -((FloatAwarePoint) size).residualX;
+	r.residualHeight = -((FloatAwarePoint) size).residualY;
+	return r;
 }
 
 /**
