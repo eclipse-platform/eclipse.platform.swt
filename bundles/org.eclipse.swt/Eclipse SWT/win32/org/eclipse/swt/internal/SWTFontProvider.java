@@ -105,10 +105,32 @@ public class SWTFontProvider {
 		}
 	}
 
-	private static SWTFontRegistry newFontRegistry(Device device) {
-		if (device instanceof Display display && display.isRescalingAtRuntime()) {
-			return new ScalingSWTFontRegistry(device);
+	private static enum FontRegistryType {
+		LEGACY, SCALING;
+
+		public static FontRegistryType fromString(String s) {
+			if (s == null) {
+				return SCALING;
+			}
+			for (FontRegistryType type : values()) {
+				if (type.name().equalsIgnoreCase(s)) {
+					return type;
+				}
+			}
+			return SCALING; // fallback to default if invalid
 		}
-		return new DefaultSWTFontRegistry(device);
+	}
+
+	private static final String SWT_FONT_REGISTRY = "swt.fontRegistry";
+
+	private static SWTFontRegistry newFontRegistry(Device device) {
+		String registryProp = System.getProperty(SWT_FONT_REGISTRY);
+		FontRegistryType fontRegistryValue = FontRegistryType.fromString(registryProp);
+		if (fontRegistryValue == FontRegistryType.LEGACY && device instanceof Display display
+				&& !display.isRescalingAtRuntime()) {
+			return new LegacySWTFontRegistry(device);
+		}
+		return new ScalingSWTFontRegistry(device);
+
 	}
 }

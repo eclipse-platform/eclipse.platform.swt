@@ -46,6 +46,7 @@ class ControlWin32Tests {
 	@Test
 	public void testDoNotScaleFontCorrectlyInNoAutoScaleSzenario() {
 		DPIUtil.setMonitorSpecificScaling(false);
+		System.setProperty("swt.fontRegistry", "LEGACY");
 		Display display = Display.getDefault();
 
 		assertFalse("Autoscale property is not set to false", display.isRescalingAtRuntime());
