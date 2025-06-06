@@ -9,7 +9,7 @@ import org.junit.jupiter.api.extension.*;
 
 @ExtendWith(PlatformSpecificExecutionExtension.class)
 @ExtendWith(ResetMonitorSpecificScalingExtension.class)
-public class DisplayWin32Test {
+class DisplayWin32Test {
 
 	@Test
 	public void monitorSpecificScaling_activate() {
