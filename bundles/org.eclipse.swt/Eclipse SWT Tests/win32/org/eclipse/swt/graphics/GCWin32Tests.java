@@ -54,12 +54,11 @@ class GCWin32Tests {
 	@Test
 	public void drawnElementsShouldScaleUpToTheRightZoomLevel() {
 		Shell shell = new Shell(Display.getDefault());
-
-		int zoom = DPIUtil.getDeviceZoom();
+		int zoom = shell.nativeZoom;
 		int scalingFactor = 2;
 		GC gc = GC.win32_new(shell, new GCData());
 		gc.getGCData().nativeZoom = zoom * scalingFactor;
 		gc.getGCData().lineWidth = 10;
-		assertEquals("DPIUtil calls with getDeviceZoom should scale to the right value", gc.getGCData().lineWidth, gc.getLineWidth() * scalingFactor, 0);
+		assertEquals("Drawn elements should scale to the right value", gc.getGCData().lineWidth, gc.getLineWidth() * scalingFactor, 0);
 	}
 }
