@@ -384,7 +384,7 @@ public void test_setImageLorg_eclipse_swt_graphics_Image() {
 	button.setImage(null);
 	assertNull(button.getImage());
 
-	image = new Image(shell.getDisplay(), 10, 10);
+	image = new Image(shell.getDisplay(), (gc, width, height) -> {}, 10, 10);
 	button.setImage(image);
 	assertEquals(image, button.getImage());
 
