@@ -233,15 +233,29 @@ static void error(int code, int hr) {
 	SWT.error(code, null, String.format(" [0x%08x]", hr));
 }
 
-static IUnknown newCallback(ICoreWebView2SwtCallback handler) {
-	long punk = COM.CreateSwtWebView2Callback((arg0, arg1) -> {
+// This class should not be replaced by a lambda and not be renamed to ensure compatibility
+// with native image generation when using GraalVM
+// See https://github.com/eclipse-platform/eclipse.platform.swt/pull/2216
+static class HandleCoreWebView2SwtCallback implements ICoreWebView2SwtCallback {
+	private final ICoreWebView2SwtCallback handler;
+
+	public HandleCoreWebView2SwtCallback(ICoreWebView2SwtCallback handler) {
+		this.handler = handler;
+	}
+
+	@Override
+	public int Invoke(long arg0, long arg1) {
 		inCallback++;
 		try {
 			return handler.Invoke(arg0, arg1);
 		} finally {
 			inCallback--;
 		}
-	});
+	}
+}
+
+static IUnknown newCallback(ICoreWebView2SwtCallback handler) {
+	long punk = COM.CreateSwtWebView2Callback(new HandleCoreWebView2SwtCallback(handler));
 	if (punk == 0) error(SWT.ERROR_NO_HANDLES, COM.E_OUTOFMEMORY);
 	return new IUnknown(punk);
 }
@@ -789,7 +803,7 @@ void setupBrowser(int hr, long pv) {
 		handler.Release();
 	}
 
-	IUnknown hostDisp = newHostObject(this::handleCallJava);
+	IUnknown hostDisp = newHostObject(new HandleCoreWebView2SwtHost(this.functions));
 	long[] hostObj = { COM.VT_DISPATCH, hostDisp.getAddress(), 0 }; // VARIANT
 	webView.AddHostObjectToScript("swt\0".toCharArray(), hostObj);
 	hostDisp.Release();
@@ -1020,24 +1034,36 @@ int handleDocumentTitleChanged(long pView, long pArgs) {
 	return COM.S_OK;
 }
 
-long handleCallJava(int index, long bstrToken, long bstrArgsJson) {
-	Object result = null;
-	String token = bstrToString(bstrToken);
-	BrowserFunction function = functions.get(index);
-	if (function != null && token.equals (function.token)) {
-		inCallback++;
-		try {
-			String argsJson = bstrToString(bstrArgsJson);
-			Object args = JSON.parse(argsJson.toCharArray());
-			result = function.function ((Object[]) args);
-		} catch (Throwable e) {
-			result = WebBrowser.CreateErrorString(e.getLocalizedMessage());
-		} finally {
-			inCallback--;
-		}
+// This class should not be replaced by a lambda and not be renamed to ensure compatibility
+// with native image generation when using GraalVM
+// See https://github.com/eclipse-platform/eclipse.platform.swt/pull/2216
+static class HandleCoreWebView2SwtHost implements ICoreWebView2SwtHost {
+	private final Map<Integer, BrowserFunction> functions;
+
+	public HandleCoreWebView2SwtHost(Map<Integer, BrowserFunction> functions) {
+		this.functions = functions;
 	}
-	String json = JSON.stringify(result);
-	return COM.SysAllocStringLen(json.toCharArray(), json.length());
+
+	@Override
+	public long CallJava(int index, long bstrToken, long bstrArgsJson) {
+		Object result = null;
+		String token = bstrToString(bstrToken);
+		BrowserFunction function = functions.get(index);
+		if (function != null && token.equals(function.token)) {
+			inCallback++;
+			try {
+				String argsJson = bstrToString(bstrArgsJson);
+				Object args = JSON.parse(argsJson.toCharArray());
+				result = function.function((Object[]) args);
+			} catch (Throwable e) {
+				result = WebBrowser.CreateErrorString(e.getLocalizedMessage());
+			} finally {
+				inCallback--;
+			}
+		}
+		String json = JSON.stringify(result);
+		return COM.SysAllocStringLen(json.toCharArray(), json.length());
+	}
 }
 
 int handleFrameNavigationStarting(long pView, long pArgs) {
