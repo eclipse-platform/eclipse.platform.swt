@@ -10,6 +10,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Tue Ton - support for FreeBSD
  *******************************************************************************/
 package org.eclipse.swt.internal;
 
@@ -69,12 +70,14 @@ static {
 static String arch() {
 	String osArch = System.getProperty("os.arch"); //$NON-NLS-1$
 	if (osArch.equals ("amd64")) return "x86_64"; //$NON-NLS-1$ $NON-NLS-2$
+	if (osArch.equals ("arm64")) return "aarch64"; //$NON-NLS-1$ $NON-NLS-2$
 	return osArch;
 }
 
 static String os() {
 	String osName = System.getProperty("os.name"); //$NON-NLS-1$
 	if (osName.equals ("Linux")) return "linux"; //$NON-NLS-1$ $NON-NLS-2$
+	if (osName.equals ("FreeBSD")) return "freebsd"; //$NON-NLS-1$ $NON-NLS-2$
 	if (osName.equals ("Mac OS X")) return "macosx"; //$NON-NLS-1$ $NON-NLS-2$
 	if (osName.startsWith ("Win")) return "win32"; //$NON-NLS-1$ $NON-NLS-2$
 	return osName;
