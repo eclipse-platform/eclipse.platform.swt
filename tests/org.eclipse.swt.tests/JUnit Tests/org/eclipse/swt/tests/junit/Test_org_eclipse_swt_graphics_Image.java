@@ -163,23 +163,23 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 	Image image;
 	IllegalArgumentException e;
 
-	e = assertThrows(IllegalArgumentException.class, () -> new Image(display, (gc, width, height) -> {}, -1, 10));
+	e = assertThrows(IllegalArgumentException.class, () -> new Image(display, -1, 10));
 	assertSWTProblem("Incorrect exception thrown for width < 0", SWT.ERROR_INVALID_ARGUMENT, e);
 
-	e = assertThrows(IllegalArgumentException.class, () -> new Image(display, (gc, width, height) -> {}, 0, 10));
+	e = assertThrows(IllegalArgumentException.class, () -> new Image(display, 0, 10));
 	assertSWTProblem("Incorrect exception thrown for width == 0", SWT.ERROR_INVALID_ARGUMENT, e);
 
-	e = assertThrows(IllegalArgumentException.class, () -> new Image(display, (gc, width, height) -> {}, 10, -1));
+	e = assertThrows(IllegalArgumentException.class, () -> new Image(display, 10, -1));
 	assertSWTProblem("Incorrect exception thrown for height < 0", SWT.ERROR_INVALID_ARGUMENT, e);
 
-	e = assertThrows(IllegalArgumentException.class, () -> new Image(display, (gc, width, height) -> {}, 10, 0));
+	e = assertThrows(IllegalArgumentException.class, () -> new Image(display, 10, 0));
 	assertSWTProblem("Incorrect exception thrown for height == 0", SWT.ERROR_INVALID_ARGUMENT, e);
 
 	// valid images
-	image = new Image(null, (gc, width, height) -> {}, 10, 10);
+	image = new Image(null, 10, 10);
 	image.dispose();
 
-	image = new Image(display, (gc, width, height) -> {}, 10, 10);
+	image = new Image(display, 10, 10);
 	image.dispose();
 }
 
@@ -585,7 +585,7 @@ public void test_getBounds() {
 @Test
 public void test_getBoundsInPixels() {
 	Rectangle initialBounds = new Rectangle(0, 0, 10, 20);
-	Image image1 = new Image(display, (gc, width, height) -> {}, initialBounds.width, initialBounds.height);
+	Image image1 = new Image(display, initialBounds.width, initialBounds.height);
 	image1.dispose();
 	SWTException e = assertThrows(SWTException.class, () -> image1.getBoundsInPixels());
 	assertSWTProblem("Incorrect exception thrown for disposed image", SWT.ERROR_GRAPHIC_DISPOSED, e);
@@ -635,7 +635,7 @@ public void test_getBoundsInPixels() {
 @Test
 public void test_getImageDataCurrentZoom() {
 	Rectangle bounds = new Rectangle(0, 0, 10, 20);
-	Image image1 = new Image(display, (gc, width, height) -> {}, bounds.width, bounds.height);
+	Image image1 = new Image(display, bounds.width, bounds.height);
 	image1.dispose();
 	SWTException e = assertThrows(SWTException.class, () -> image1.getImageDataAtCurrentZoom());
 	assertSWTProblem("Incorrect exception thrown for disposed image", SWT.ERROR_GRAPHIC_DISPOSED, e);
