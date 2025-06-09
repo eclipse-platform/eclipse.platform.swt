@@ -1394,6 +1394,11 @@ public void setRegion (Region region) {
 	long topHandle = topHandle ();
 
 	if (OS.G_OBJECT_TYPE(topHandle) == GTK.GTK_TYPE_WINDOW()) {
+		if (GTK.GTK4) {
+			//TODO gtk_widget_shape_combine_region is removed and one has to hook at the rendering layer as per
+			// https://gitlab.gnome.org/GNOME/gtk/-/commit/0ce19eed083c79c5fb4091db3ecaf528346e610f
+			return;
+		}
 		GTK3.gtk_widget_shape_combine_region(topHandle, shape_region);
 		/*
 		 * Bug in GTK: on Wayland, pixels in window outside shape_region
