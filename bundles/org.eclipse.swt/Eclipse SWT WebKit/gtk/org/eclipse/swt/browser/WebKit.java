@@ -25,6 +25,7 @@ import java.util.concurrent.atomic.*;
 import java.util.function.*;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
@@ -95,6 +96,11 @@ class WebKit extends WebBrowser {
 	String tlsErrorUriString;
 	URI tlsErrorUri;
 	String tlsErrorType;
+
+	private final ControlListener browserMoveListener = ControlListener.controlMovedAdapter(this::browserShellMoved);
+	private Point searchShellLocation;
+	private Shell searchShell;
+	private String searchText;
 
 	boolean firstLoad = true;
 	static boolean FirstCreate = true;
@@ -201,6 +207,9 @@ class WebKit extends WebBrowser {
 	/** Flag indicating whether TLS errors (like self-signed certificates) are to be ignored. */
 	static final boolean ignoreTls;
 
+	/** Flag that disables browser searching added on top of the WebKit browser. */
+	static final boolean disableBrowserSearch;
+
 	static {
 			Proc2 = new Callback (WebKit.class, "Proc", 2); //$NON-NLS-1$
 			Proc3 = new Callback (WebKit.class, "Proc", 3); //$NON-NLS-1$
@@ -248,6 +257,7 @@ class WebKit extends WebBrowser {
 				NativePendingCookies = null;
 			}
 			ignoreTls = "true".equals(System.getProperty("org.eclipse.swt.internal.webkitgtk.ignoretlserrors"));
+			disableBrowserSearch = "true".equals(System.getProperty("org.eclipse.swt.internal.webkitgtk.disableBrowserSearch"));
 	}
 
 	@Override
@@ -784,12 +794,23 @@ public void create (Composite parent, int style) {
 				onResize (event);
 				break;
 			}
+			case SWT.KeyDown: {
+				if (!disableBrowserSearch && event.keyCode == 'f' && (event.stateMask & SWT.CTRL) == SWT.CTRL) {
+					openSearchDialog();
+				}
+				break;
+			}
 		}
 	};
 	browser.addListener (SWT.Dispose, listener);
 	browser.addListener (SWT.FocusIn, listener);
 	browser.addListener (SWT.KeyDown, listener);
 	browser.addListener (SWT.Resize, listener);
+
+	browser.addDisposeListener(e -> closeSearchDialog());
+	browser.addControlListener(ControlListener.controlResizedAdapter(this::browserShellMoved));
+	browser.addControlListener(ControlListener.controlMovedAdapter(this::browserShellMoved));
+	browser.getShell().addControlListener(browserMoveListener);
 
 	/*
 	* Bug in WebKitGTK.  MouseOver/MouseLeave events are not consistently sent from
@@ -835,6 +856,9 @@ public boolean close () {
 //         false = blocks disposal. In Browser.java, user is told widget was not disposed.
 // See Snippet326.
 boolean close (boolean showPrompters) {
+	if (browser != null && !browser.isDisposed()) {
+		browser.getShell().removeControlListener(browserMoveListener);
+	}
 	// don't execute any JavaScript if it's disabled or requested to get disabled
 	// we need to check jsEnabledOnNextPage here because jsEnabled is updated asynchronously
 	// and may not reflect the proper state (bug 571746 and bug 567881)
@@ -2663,6 +2687,115 @@ private void webkit_settings_set(byte [] property, int value) {
 	}
 	long settings = WebKitGTK.webkit_web_view_get_settings (webView);
 	OS.g_object_set(settings, property, value, 0);
+}
+
+private void browserShellMoved(ControlEvent e) {
+	closeSearchDialog();
+	searchShellLocation = null;
+}
+
+private void closeSearchDialog() {
+	if (searchShell != null && !searchShell.isDisposed()) {
+		searchShellLocation = searchShell.getLocation();
+		searchShell.close();
+		if (searchText != null && webView != 0) {
+			long findController = WebKitGTK.webkit_web_view_get_find_controller(webView);
+			WebKitGTK.webkit_find_controller_search_finish(findController);
+		}
+		searchText = null;
+	}
+}
+
+private void openSearchDialog() {
+	if (webView == 0 || (searchShell != null && !searchShell.isDisposed())) {
+		return;
+	}
+	Shell browserShell = browser.getShell();
+	if (browserShell == null || browserShell.isDisposed() || (browserShell.getStyle() & SWT.TOOL) == SWT.TOOL) {
+		/*
+		 * We don't provide search capabilities for browsers in a pop-up.
+		 * We could cause issues with pop-up focus handling when the search shell is opened.
+		 */
+		return;
+	}
+	Shell shell = new Shell(browserShell, SWT.TOOL | SWT.MODELESS);
+	Rectangle browserArea = browser.getClientArea();
+	int height = 45;
+	Point location;
+	if (searchShellLocation != null) {
+		location = searchShellLocation;
+	} else {
+		location = browser.toDisplay(0, 0);
+		location.y += Math.max(0, browserArea.height - height);
+	}
+	shell.setLocation(location);
+	shell.setSize(250, height);
+	GridLayout l = new GridLayout();
+	l.marginWidth = 8;
+	l.marginHeight = 8;
+	l.numColumns = 4;
+	shell.setLayout(l);
+	Text text = new Text(shell, SWT.BORDER);
+	text.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+	Cursor defaultCursor = Display.getCurrent().getSystemCursor(SWT.CURSOR_ARROW);
+	Button next = new Button(shell, SWT.FLAT | SWT.ARROW | SWT.DOWN);
+	next.setCursor(defaultCursor);
+	Button previous = new Button(shell, SWT.FLAT | SWT.ARROW | SWT.UP);
+	previous.setCursor(defaultCursor);
+	shell.setCursor(Display.getCurrent().getSystemCursor(SWT.CURSOR_SIZEALL));
+	boolean[] mouseDown = new boolean[1];
+	int[] xPos = new int[1];
+	int[] yPos = new int[1];
+	shell.addMouseListener(new MouseAdapter() {
+		@Override
+		public void mouseUp(MouseEvent arg0) {
+			mouseDown[0] = false;
+		}
+		@Override
+		public void mouseDown(MouseEvent e) {
+			mouseDown[0] = true;
+			xPos[0] = e.x;
+			yPos[0] = e.y;
+		}
+	});
+	shell.addMouseMoveListener(e -> {
+		if (mouseDown[0]) {
+			shell.setLocation(shell.getLocation().x + (e.x - xPos[0]), shell.getLocation().y + (e.y - yPos[0]));
+		}
+	});
+	long findController = WebKitGTK.webkit_web_view_get_find_controller(webView);
+	Runnable searchNext = () -> search(findController, text::getText, WebKitGTK::webkit_find_controller_search_next);
+	Runnable searchPrevious = () -> search(findController, text::getText, WebKitGTK::webkit_find_controller_search_previous);
+	next.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> searchNext.run()));
+	previous.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> searchPrevious.run()));
+	text.addKeyListener(KeyListener.keyPressedAdapter(e -> {
+		if (e.keyCode == SWT.CR || e.keyCode == SWT.KEYPAD_CR) {
+			searchNext.run();
+		}
+	}));
+	shell.addDisposeListener(e -> {
+		searchShellLocation = searchShell.getLocation();
+		WebKitGTK.webkit_find_controller_search_finish(findController);
+		searchShell = null;
+	});
+	shell.open();
+	searchShell = shell;
+}
+
+private void search(long findController, Supplier<String> currentText, Consumer<Long> incrementSearch) {
+	int maxMatchesCount = WebKitGTK.G_MAXUINT; // TODO: how to set no max count here?
+	int searchOptions = WebKitGTK.WEBKIT_FIND_OPTIONS_WRAP_AROUND;
+	String text = currentText.get();
+	if (!text.equals(searchText)) {
+		if (searchText != null) {
+			WebKitGTK.webkit_find_controller_search_finish(findController);
+		}
+		searchText = text;
+		byte[] textToSearch = Converter.wcsToMbcs(searchText, true);
+		WebKitGTK.webkit_find_controller_search(findController, textToSearch, searchOptions, maxMatchesCount);
+	} else {
+		incrementSearch.accept(Long.valueOf(findController));
+	}
 }
 
 static Object convertToJava (long ctx, long value) {

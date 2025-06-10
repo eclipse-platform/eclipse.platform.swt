@@ -90,6 +90,9 @@ public class WebKitGTK extends C {
 	public static final int WEBKIT_USER_SCRIPT_INJECT_AT_DOCUMENT_START = 0;
 	public static final int WEBKIT_USER_CONTENT_INJECT_TOP_FRAME = 1;
 
+	public static final int G_MAXUINT = 65535;
+	public static final int WEBKIT_FIND_OPTIONS_WRAP_AROUND = 1 << 4;
+
 	/** Signals */
 
 	// Authentication.
