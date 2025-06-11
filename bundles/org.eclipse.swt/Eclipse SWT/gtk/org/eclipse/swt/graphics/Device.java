@@ -787,6 +787,9 @@ private void overrideThemeValues () {
 		if (GTK.GTK_VERSION >= OS.VERSION(3, 24, 5)) {
 			combinedCSS.append(load.apply("/org/eclipse/swt/internal/gtk/swt_theming_fixes_gtk_3_24_5.css", true));
 		}
+		if (GTK.GTK4) {
+			combinedCSS.append(load.apply("/org/eclipse/swt/internal/gtk/swt_theming_fixes_gtk_4_0_0.css", true));
+		}
 	}
 
 	// Load CSS from user-defined CSS file.
