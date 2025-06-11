@@ -19,8 +19,8 @@ import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageGcDrawer;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
@@ -37,14 +37,14 @@ public class Issue0146_CopyImageToClipBoard {
         int size = 200;
 
         // Create a simple image
-        Image image = new Image(display, size, size);
-        GC gc = new GC(image);
-        gc.setBackground(new Color(128, 255, 128));
-        gc.setForeground(new Color(0, 0, 0));
-        gc.fillRectangle(0, 0, size - 1, size - 1);
-        gc.drawRectangle(0, 0, size - 1, size - 1);
-        gc.drawText("Hello World", 10, 10);
-        gc.dispose();
+		final ImageGcDrawer imageGcDrawer = (gc, width, height) -> {
+			gc.setBackground(new Color(128, 255, 128));
+			gc.setForeground(new Color(0, 0, 0));
+			gc.fillRectangle(0, 0, size - 1, size - 1);
+			gc.drawRectangle(0, 0, size - 1, size - 1);
+			gc.drawText("Hello World", 10, 10);
+		};
+		Image image = new Image(display, imageGcDrawer, size, size);
 
         // Press the button to copy the image data to the clipboard
         Button button = new Button(shell, SWT.PUSH);
