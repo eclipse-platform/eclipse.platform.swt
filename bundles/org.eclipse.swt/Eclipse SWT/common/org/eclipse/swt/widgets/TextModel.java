@@ -367,6 +367,24 @@ class TextModel {
 		moveCaretTo(getCharCount(), updateSelection);
 	}
 
+	void moveCaretToPreviousWord(boolean updateSelection) {
+	    int offset = getCaretOffset();
+	    if (offset == 0) return;
+	    offset--;
+	    while (offset > 0 && !isWordCharAt(offset)) offset--;
+	    while (offset > 0 && isWordCharAt(offset - 1)) offset--;
+	    moveCaretTo(offset, updateSelection);
+	}
+
+	void moveCaretToNextWord(boolean updateSelection) {
+	    int offset = getCaretOffset();
+	    int len = getCharCount();
+	    if (offset >= len) return;
+	    while (offset < len && isWordCharAt(offset)) offset++;
+	    while (offset < len && !isWordCharAt(offset)) offset++;
+	    moveCaretTo(offset, updateSelection);
+	}
+
 	void addModelChangedListner(ITextModelChangedListener listener) {
 		modelChangedListeners.add(listener);
 	}
@@ -415,6 +433,17 @@ class TextModel {
 
 	public void setTextChars(char[] cs) {
 		setText(new String(cs));
+	}
+
+	void handleNewLine(int style, Text textWidget) {
+		if ((style & SWT.MULTI) != 0) {
+			insert('\n');
+		} else {
+			Event event = new Event();
+			event.type = SWT.DefaultSelection;
+			event.widget = textWidget;
+			textWidget.sendEvent(SWT.DefaultSelection, event);
+		}
 	}
 }
 

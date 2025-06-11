@@ -36,11 +36,24 @@ public class DefaultTextRenderer extends TextRenderer {
 		final Rectangle clientArea = text.getClientArea();
 
 		drawBackground(gc, clientArea, style, editable && enabled);
-		drawText(visibleArea, clientArea, style, gc);
-		if (text.isFocusControl()) {
-			drawSelection(gc, visibleArea);
-			drawCaret(gc, visibleArea);
+
+		String[] lines = text.getDisplayLines();
+		boolean isTextEmpty = lines.length == 1 && lines[0].isEmpty();
+		String message = text.getMessage();
+		if (isTextEmpty && !text.isFocusControl() && message != null && !message.isEmpty()) {
+			drawPlaceholderMessage(gc);
+		} else {
+			drawText(visibleArea, clientArea, style, gc);
+			if (text.isFocusControl()) {
+				drawSelection(gc, visibleArea);
+				drawCaret(gc, visibleArea);
+			}
 		}
+	}
+
+	private void drawPlaceholderMessage(GC gc) {
+		gc.setFont(text.getFont());
+		gc.drawText(text.getMessage(), 2, 2, true);
 	}
 
 	@Override
@@ -71,7 +84,7 @@ public class DefaultTextRenderer extends TextRenderer {
 
 	@Override
 	protected Point getLocationByTextLocation(TextLocation textLocation, GC gc) {
-		String completeText = model.getLines()[textLocation.line];
+		String completeText = text.getDisplayLines()[textLocation.line];
 		String beforeSelection = completeText.substring(0, textLocation.column);
 		gc.setFont(text.getFont());
 		Point completeTextExtent = gc.textExtent(completeText);
@@ -98,7 +111,7 @@ public class DefaultTextRenderer extends TextRenderer {
 
 	@Override
 	protected int getLineHeight(GC gc) {
-		String str = model.getLines()[0];
+		String str = text.getDisplayLines()[0];
 		return gc.textExtent(str).y;
 	}
 
@@ -118,7 +131,7 @@ public class DefaultTextRenderer extends TextRenderer {
 	}
 
 	private void drawText(Rectangle visibleArea, Rectangle clientArea, int style, GC gc) {
-		String[] lines = model.getLines();
+		String[] lines = text.getDisplayLines();
 		for (int i = 0; i < lines.length; i++) {
 			String line = lines[i];
 			drawTextLine(line, i, visibleArea, clientArea, style, gc);
@@ -145,14 +158,14 @@ public class DefaultTextRenderer extends TextRenderer {
 	}
 
 	private void drawSelection(GC gc, Rectangle visibleArea) {
-		int textLength = model.getText().length();
+		int textLength = text.getDisplayText().length();
 		int start = Math.min(Math.max(model.getSelectionStart(), 0), textLength);
 		int end = Math.min(Math.max(model.getSelectionEnd(), 0), textLength);
 
 		if (model.getSelectionStart() >= 0) {
 			TextLocation startLocation = model.getLocation(start);
 			TextLocation endLocation = model.getLocation(end);
-			String[] textLines = model.getLines();
+			String[] textLines = text.getDisplayLines();
 
 			Color oldForeground = gc.getForeground();
 			Color oldBackground = gc.getBackground();

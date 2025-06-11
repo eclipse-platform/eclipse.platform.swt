@@ -11,8 +11,11 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
+import java.util.*;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
+import org.eclipse.swt.dnd.*;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SegmentListener;
 import org.eclipse.swt.events.SelectionListener;
@@ -291,6 +294,12 @@ public class Text extends NativeBasedCustomScrollable {
 			size.x += 2 * getBorderWidth();
 			size.y += 2 * getBorderWidth();
 		}
+		if (wHint != SWT.DEFAULT) {
+			size.x = wHint;
+		}
+		if (hHint != SWT.DEFAULT) {
+			size.y = hHint;
+		}
 		return size;
 	}
 
@@ -412,12 +421,15 @@ public class Text extends NativeBasedCustomScrollable {
 	}
 
 	private void keyPressed(Event e) {
+		if (!getEditable()) return;
 		final boolean mod1Pressed = (e.stateMask & SWT.MOD1) != 0;
 		final boolean shiftPressed = (e.stateMask & SWT.SHIFT) != 0;
 		if (mod1Pressed) {
 			switch (e.keyCode) {
 			case SWT.HOME -> model.moveCaretToTextStart(shiftPressed);
 			case SWT.END -> model.moveCaretToTextEnd(shiftPressed);
+			case SWT.ARROW_LEFT -> model.moveCaretToPreviousWord(shiftPressed);
+	     	case SWT.ARROW_RIGHT -> model.moveCaretToNextWord(shiftPressed);
 			}
 			if (!shiftPressed) {
 				switch (e.keyCode) {
@@ -440,6 +452,7 @@ public class Text extends NativeBasedCustomScrollable {
 		case SWT.END -> model.moveCaretToLineEnd(shiftPressed);
 		case SWT.BS -> model.removeCharacterBeforeCaret();
 		case SWT.DEL -> model.removeCharacterAfterCaret();
+		case SWT.CR, SWT.LF -> model.handleNewLine(style, this);
 		default -> {
 			if (e.keyCode == 0 || e.character != '\0') {
 				model.insert(e.character);
@@ -757,9 +770,14 @@ public class Text extends NativeBasedCustomScrollable {
 	 */
 	public void copy() {
 		checkWidget();
-		if ((style & SWT.PASSWORD) != 0)// || echoCharacter != '\0')
-			return;
-//		copyToClipboard(model.getSelectedText().toCharArray());
+		 if ((style & SWT.PASSWORD) != 0) return;
+		    String selectedText = model.getSelectedText();
+		    if (selectedText != null && !selectedText.isEmpty()) {
+		        Clipboard clipboard = new Clipboard(getDisplay());
+		        TextTransfer textTransfer = TextTransfer.getInstance();
+		        clipboard.setContents(new Object[] { selectedText }, new Transfer[] { textTransfer });
+		        clipboard.dispose();
+		    }
 	}
 
 	public void cut() {
@@ -769,8 +787,13 @@ public class Text extends NativeBasedCustomScrollable {
 
 	public void paste() {
 		checkWidget();
-		String clipboardText = ""; // getClipboardText();
-		model.insert(clipboardText);
+	    Clipboard clipboard = new Clipboard(getDisplay());
+	    TextTransfer textTransfer = TextTransfer.getInstance();
+	    String clipboardText = (String) clipboard.getContents(textTransfer);
+	    clipboard.dispose();
+	    if (clipboardText != null && !clipboardText.isEmpty()) {
+	        model.insert(clipboardText);
+	    }
 	}
 
 	public int getSelectionCount() {
@@ -911,5 +934,40 @@ public class Text extends NativeBasedCustomScrollable {
 			caret.setFocus();
 		}
 		return focused;
+	}
+
+	private boolean isPasswordMode() {
+		return (style & SWT.PASSWORD) != 0;
+	}
+
+	private char getEffectiveEchoChar() {
+		char echo = getEchoChar();
+		return echo != 0 ? echo : '*';
+	}
+
+	private String maskText(int length, char echoChar) {
+		char[] masked = new char[length];
+		Arrays.fill(masked, echoChar);
+		return new String(masked);
+	}
+
+	String getDisplayText() {
+		if (isPasswordMode()) {
+			return maskText(model.getCharCount(), getEffectiveEchoChar());
+		}
+		return model.getText();
+	}
+
+	String[] getDisplayLines() {
+		if (isPasswordMode()) {
+			char echo = getEffectiveEchoChar();
+			String[] lines = model.getLines();
+			String[] masked = new String[lines.length];
+			for (int i = 0; i < lines.length; i++) {
+				masked[i] = maskText(lines[i].length(), echo);
+			}
+			return masked;
+		}
+		return model.getLines();
 	}
 }
