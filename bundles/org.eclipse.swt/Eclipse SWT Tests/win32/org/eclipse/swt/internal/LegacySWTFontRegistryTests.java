@@ -23,7 +23,7 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.*;
 
 @ExtendWith(PlatformSpecificExecutionExtension.class)
-class DefaultSWTFontRegistryTests {
+class LegacySWTFontRegistryTests {
 	private static String TEST_FONT = "Helvetica";
 	private Display display;
 	private SWTFontRegistry fontRegistry;
@@ -31,7 +31,7 @@ class DefaultSWTFontRegistryTests {
 	@BeforeEach
 	public void setUp() {
 		this.display = Display.getDefault();
-		this.fontRegistry = new DefaultSWTFontRegistry(display);
+		this.fontRegistry = new LegacySWTFontRegistry(display);
 	}
 
 	@AfterEach

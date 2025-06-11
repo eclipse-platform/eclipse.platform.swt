@@ -19,19 +19,25 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.win32.*;
 
 /**
- * This class is used in the win32 implementation only to support
- * unscaled fonts in multiple DPI zoom levels.
+ * <p>
+ * Formerly {@code DefaultSWTFontRegistry}, this class is deprecated. Use {@code ScalingSWTFontRegistry} instead.
+ * To temporarily fall back to legacy font behavior ({@code LegacySWTFontRegistry})
+ * (e.g., if issues arise in existing RCP products), set the system property: {@code
+ * -Dswt.fontRegistry=legacy
+ * }
+ * </p>
  *
  * As this class is only intended to be used internally via {@code SWTFontProvider},
  * it should neither be instantiated nor referenced in a client application.
  * The behavior can change any time in a future release.
  */
-final class DefaultSWTFontRegistry implements SWTFontRegistry {
+@Deprecated(forRemoval= true, since= "2025-09")
+final class LegacySWTFontRegistry implements SWTFontRegistry {
 	private static FontData KEY_SYSTEM_FONTS = new FontData();
 	private Map<FontData, Font> fontsMap = new HashMap<>();
 	private Device device;
 
-	DefaultSWTFontRegistry(Device device) {
+	LegacySWTFontRegistry(Device device) {
 		this.device = device;
 	}
 
