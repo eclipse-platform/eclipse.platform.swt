@@ -8176,8 +8176,8 @@ private LRESULT positionTooltip(NMHDR hdr, long wParam, long lParam, boolean man
 		// of positioning and re-scaling events.
 		// Refer: https://github.com/eclipse-platform/eclipse.platform.swt/issues/557
 		Point cursorLocation = display.getCursorLocation();
-		Rectangle monitorBounds = cursorLocation instanceof MonitorAwarePoint monitorAwarePoint
-				? getContainingMonitorBoundsInMultiZoomCoordinateSystem(monitorAwarePoint)
+		Rectangle monitorBounds = cursorLocation instanceof Point.WithMonitor pointWithMonitor
+				? getContainingMonitorBoundsInMultiZoomCoordinateSystem(pointWithMonitor)
 				: getContainingMonitorBoundsInSingleZoomCoordinateSystem(cursorLocation);
 		if (monitorBounds != null) {
 			Rectangle adjustedTooltipBounds = fitTooltipBoundsIntoMonitor(toolRect, monitorBounds);
@@ -8229,7 +8229,7 @@ private Rectangle getContainingMonitorBoundsInSingleZoomCoordinateSystem(Point p
 	return null;
 }
 
-private Rectangle getContainingMonitorBoundsInMultiZoomCoordinateSystem(MonitorAwarePoint point) {
+private Rectangle getContainingMonitorBoundsInMultiZoomCoordinateSystem(Point.WithMonitor point) {
 	Monitor monitor = point.getMonitor();
 	return new Rectangle(monitor.x, monitor.y, DPIUtil.scaleUp(monitor.width, monitor.zoom),
 			DPIUtil.scaleUp(monitor.height, monitor.zoom));

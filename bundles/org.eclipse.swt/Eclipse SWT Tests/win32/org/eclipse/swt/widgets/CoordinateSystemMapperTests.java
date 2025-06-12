@@ -137,7 +137,7 @@ public class CoordinateSystemMapperTests {
 	void translateRectangleInGapPartiallyInRightBackAndForthInMultiZoomShouldBeInside() {
 		MultiZoomCoordinateSystemMapper mapper = getMultiZoomCoordinateSystemMapper();
 		setupMonitors(mapper);
-		Rectangle rectInPts = new MonitorAwareRectangle(1950, 400, 150, 100, monitors[1]);
+		Rectangle rectInPts = new Rectangle.WithMonitor(1950, 400, 150, 100, monitors[1]);
 		Rectangle rectInPxs = mapper.translateToDisplayCoordinates(rectInPts, monitors[0].getZoom());
 		assertEquals(rectInPts, mapper.translateFromDisplayCoordinates(rectInPxs, monitors[0].getZoom()));
 	}
@@ -223,7 +223,7 @@ public class CoordinateSystemMapperTests {
 		if (mapper instanceof SingleZoomCoordinateSystemMapper) {
 			return new Point(x, y);
 		} else {
-			return new MonitorAwarePoint(x, y, monitor);
+			return new Point.WithMonitor(x, y, monitor);
 		}
 	}
 
@@ -231,7 +231,7 @@ public class CoordinateSystemMapperTests {
 		if (mapper instanceof SingleZoomCoordinateSystemMapper) {
 			return new Rectangle(x, y, width, height);
 		} else {
-			return new MonitorAwareRectangle(x, y, width, height, monitor);
+			return new Rectangle.WithMonitor(x, y, width, height, monitor);
 		}
 	}
 
