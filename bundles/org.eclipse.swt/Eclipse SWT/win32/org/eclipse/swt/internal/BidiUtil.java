@@ -17,7 +17,6 @@ package org.eclipse.swt.internal;
 import java.util.*;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.widgets.*;
 /*
@@ -92,7 +91,7 @@ public class BidiUtil {
  * @param runnable the code that should be executed when a keyboard language change
  *  occurs
  */
-public static void addLanguageListener (long hwnd, Runnable runnable) {
+private static void addLanguageListener (long hwnd, Runnable runnable) {
 	languageMap.put(new LONG(hwnd), runnable);
 	subclass(hwnd);
 }
@@ -113,259 +112,7 @@ static long EnumSystemLanguageGroupsProc(long lpLangGrpId, long lpLangGrpIdStrin
 	}
 	return 1;
 }
-/**
- * Wraps the ExtTextOut function.
- *
- * @param gc the gc to use for rendering
- * @param renderBuffer the glyphs to render as an array of characters
- * @param renderDx the width of each glyph in renderBuffer
- * @param x x position to start rendering
- * @param y y position to start rendering
- */
-public static void drawGlyphs(GC gc, char[] renderBuffer, int[] renderDx, int x, int y) {
-	int length = renderDx.length;
-	if (OS.GetLayout (gc.handle) != 0) {
-		reverse(renderDx);
-		renderDx[length-1]--;               //fixes bug 40006
-		reverse(renderBuffer);
-	}
-	// render transparently to avoid overlapping segments. fixes bug 40006
-	int oldBkMode = OS.SetBkMode(gc.handle, OS.TRANSPARENT);
-	OS.ExtTextOut(gc.handle, x, y, ETO_GLYPH_INDEX , null, renderBuffer, renderBuffer.length, renderDx);
-	OS.SetBkMode(gc.handle, oldBkMode);
-}
-/**
- * Return ordering and rendering information for the given text.  Wraps the GetFontLanguageInfo
- * and GetCharacterPlacement functions.
- *
- * @param gc the GC to use for measuring of this line, input parameter
- * @param text text that bidi data should be calculated for, input parameter
- * @param order an array of integers representing the visual position of each character in
- *  the text array, output parameter
- * @param classBuffer an array of integers representing the type (e.g., ARABIC, HEBREW,
- *  LOCALNUMBER) of each character in the text array, input/output parameter
- * @param dx an array of integers representing the pixel width of each glyph in the returned
- *  glyph buffer, output parameter
- * @param flags an integer representing rendering flag information, input parameter
- * @param offsets text segments that should be measured and reordered separately, input
- *  parameter. See org.eclipse.swt.custom.BidiSegmentEvent for details.
- * @return buffer with the glyphs that should be rendered for the given text
- */
-public static char[] getRenderInfo(GC gc, String text, int[] order, byte[] classBuffer, int[] dx, int flags, int [] offsets) {
-	int fontLanguageInfo = OS.GetFontLanguageInfo(gc.handle);
-	long hHeap = OS.GetProcessHeap();
-	boolean isRightOriented = OS.GetLayout(gc.handle) != 0;
-	char [] textBuffer = text.toCharArray();
-	int byteCount = textBuffer.length;
-	boolean linkBefore = (flags & LINKBEFORE) == LINKBEFORE;
-	boolean linkAfter = (flags & LINKAFTER) == LINKAFTER;
 
-	GCP_RESULTS result = new GCP_RESULTS();
-	result.lStructSize = GCP_RESULTS.sizeof;
-	result.nGlyphs = byteCount;
-	long lpOrder = result.lpOrder = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, byteCount * 4);
-	long lpDx = result.lpDx = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, byteCount * 4);
-	long lpClass = result.lpClass = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-	long lpGlyphs = result.lpGlyphs = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, byteCount * 2);
-
-	// set required dwFlags
-	int dwFlags = 0;
-	int glyphFlags = 0;
-	// Always reorder.  We assume that if we are calling this function we're
-	// on a platform that supports bidi.  Fixes 20690.
-	dwFlags |= GCP_REORDER;
-	if ((fontLanguageInfo & GCP_LIGATE) == GCP_LIGATE) {
-		dwFlags |= GCP_LIGATE;
-		glyphFlags |= 0;
-	}
-	if ((fontLanguageInfo & GCP_GLYPHSHAPE) == GCP_GLYPHSHAPE) {
-		dwFlags |= GCP_GLYPHSHAPE;
-		if (linkBefore) {
-			glyphFlags |= GCPGLYPH_LINKBEFORE;
-		}
-		if (linkAfter) {
-			glyphFlags |= GCPGLYPH_LINKAFTER;
-		}
-	}
-	byte[] lpGlyphs2;
-	if (linkBefore || linkAfter) {
-		lpGlyphs2 = new byte[2];
-		lpGlyphs2[0]=(byte)glyphFlags;
-		lpGlyphs2[1]=(byte)(glyphFlags >> 8);
-	}
-	else {
-		lpGlyphs2 = new byte[] {(byte) glyphFlags};
-	}
-	OS.MoveMemory(result.lpGlyphs, lpGlyphs2, lpGlyphs2.length);
-
-	if ((flags & CLASSIN) == CLASSIN) {
-		// set classification values for the substring
-		dwFlags |= GCP_CLASSIN;
-		OS.MoveMemory(result.lpClass, classBuffer, classBuffer.length);
-	}
-
-	char[] glyphBuffer = new char[result.nGlyphs];
-	int glyphCount = 0;
-	for (int i=0; i<offsets.length-1; i++) {
-		int offset = offsets [i];
-		int length = offsets [i+1] - offsets [i];
-
-		// The number of glyphs expected is <= length (segment length);
-		// the actual number returned may be less in case of Arabic ligatures.
-		result.nGlyphs = length;
-		text.getChars(offset, offset + length, textBuffer, 0);
-		OS.GetCharacterPlacement(gc.handle, textBuffer, length, 0, result, dwFlags);
-
-		if (dx != null) {
-			int [] dx2 = new int [result.nGlyphs];
-			OS.MoveMemory(dx2, result.lpDx, dx2.length * 4);
-			if (isRightOriented) {
-				reverse(dx2);
-			}
-			System.arraycopy (dx2, 0, dx, glyphCount, dx2.length);
-		}
-		if (order != null) {
-			int [] order2 = new int [length];
-			OS.MoveMemory(order2, result.lpOrder, order2.length * 4);
-			translateOrder(order2, glyphCount, isRightOriented);
-			System.arraycopy (order2, 0, order, offset, length);
-		}
-		if (classBuffer != null) {
-			byte [] classBuffer2 = new byte [length];
-			OS.MoveMemory(classBuffer2, result.lpClass, classBuffer2.length);
-			System.arraycopy (classBuffer2, 0, classBuffer, offset, length);
-		}
-		char[] glyphBuffer2 = new char[result.nGlyphs];
-		OS.MoveMemory(glyphBuffer2, result.lpGlyphs, glyphBuffer2.length * 2);
-		if (isRightOriented) {
-			reverse(glyphBuffer2);
-		}
-		System.arraycopy (glyphBuffer2, 0, glyphBuffer, glyphCount, glyphBuffer2.length);
-		glyphCount += glyphBuffer2.length;
-
-		// We concatenate successive results of calls to GCP.
-		// For Arabic, it is the only good method since the number of output
-		// glyphs might be less than the number of input characters.
-		// This assumes that the whole line is built by successive adjacent
-		// segments without overlapping.
-		result.lpOrder += length * 4;
-		result.lpDx += length * 4;
-		result.lpClass += length;
-		result.lpGlyphs += glyphBuffer2.length * 2;
-	}
-
-	/* Free the memory that was allocated. */
-	OS.HeapFree(hHeap, 0, lpGlyphs);
-	OS.HeapFree(hHeap, 0, lpClass);
-	OS.HeapFree(hHeap, 0, lpDx);
-	OS.HeapFree(hHeap, 0, lpOrder);
-	return glyphBuffer;
-}
-/**
- * Return bidi ordering information for the given text.  Does not return rendering
- * information (e.g., glyphs, glyph distances).  Use this method when you only need
- * ordering information.  Doing so will improve performance.  Wraps the
- * GetFontLanguageInfo and GetCharacterPlacement functions.
- *
- * @param gc the GC to use for measuring of this line, input parameter
- * @param text text that bidi data should be calculated for, input parameter
- * @param order an array of integers representing the visual position of each character in
- *  the text array, output parameter
- * @param classBuffer an array of integers representing the type (e.g., ARABIC, HEBREW,
- *  LOCALNUMBER) of each character in the text array, input/output parameter
- * @param flags an integer representing rendering flag information, input parameter
- * @param offsets text segments that should be measured and reordered separately, input
- *  parameter. See org.eclipse.swt.custom.BidiSegmentEvent for details.
- */
-public static void getOrderInfo(GC gc, String text, int[] order, byte[] classBuffer, int flags, int [] offsets) {
-	int fontLanguageInfo = OS.GetFontLanguageInfo(gc.handle);
-	long hHeap = OS.GetProcessHeap();
-	char [] textBuffer = text.toCharArray();
-	int byteCount = textBuffer.length;
-	boolean isRightOriented = OS.GetLayout(gc.handle) != 0;
-
-	GCP_RESULTS result = new GCP_RESULTS();
-	result.lStructSize = GCP_RESULTS.sizeof;
-	result.nGlyphs = byteCount;
-	long lpOrder = result.lpOrder = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, byteCount * 4);
-	long lpClass = result.lpClass = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-
-	// set required dwFlags, these values will affect how the text gets rendered and
-	// ordered
-	int dwFlags = 0;
-	// Always reorder.  We assume that if we are calling this function we're
-	// on a platform that supports bidi.  Fixes 20690.
-	dwFlags |= GCP_REORDER;
-	if ((fontLanguageInfo & GCP_LIGATE) == GCP_LIGATE) {
-		dwFlags |= GCP_LIGATE;
-	}
-	if ((fontLanguageInfo & GCP_GLYPHSHAPE) == GCP_GLYPHSHAPE) {
-		dwFlags |= GCP_GLYPHSHAPE;
-	}
-	if ((flags & CLASSIN) == CLASSIN) {
-		// set classification values for the substring, classification values
-		// can be specified on input
-		dwFlags |= GCP_CLASSIN;
-		OS.MoveMemory(result.lpClass, classBuffer, classBuffer.length);
-	}
-
-	int glyphCount = 0;
-	for (int i=0; i<offsets.length-1; i++) {
-		int offset = offsets [i];
-		int length = offsets [i+1] - offsets [i];
-		// The number of glyphs expected is <= length (segment length);
-		// the actual number returned may be less in case of Arabic ligatures.
-		result.nGlyphs = length;
-		text.getChars(offset, offset + length, textBuffer, 0);
-		OS.GetCharacterPlacement(gc.handle, textBuffer, length, 0, result, dwFlags);
-
-		if (order != null) {
-			int [] order2 = new int [length];
-			OS.MoveMemory(order2, result.lpOrder, order2.length * 4);
-			translateOrder(order2, glyphCount, isRightOriented);
-			System.arraycopy (order2, 0, order, offset, length);
-		}
-		if (classBuffer != null) {
-			byte [] classBuffer2 = new byte [length];
-			OS.MoveMemory(classBuffer2, result.lpClass, classBuffer2.length);
-			System.arraycopy (classBuffer2, 0, classBuffer, offset, length);
-		}
-		glyphCount += result.nGlyphs;
-
-		// We concatenate successive results of calls to GCP.
-		// For Arabic, it is the only good method since the number of output
-		// glyphs might be less than the number of input characters.
-		// This assumes that the whole line is built by successive adjacent
-		// segments without overlapping.
-		result.lpOrder += length * 4;
-		result.lpClass += length;
-	}
-
-	/* Free the memory that was allocated. */
-	OS.HeapFree(hHeap, 0, lpClass);
-	OS.HeapFree(hHeap, 0, lpOrder);
-}
-/**
- * Return bidi attribute information for the font in the specified gc.
- *
- * @param gc the gc to query
- * @return bitwise OR of the REORDER, LIGATE and GLYPHSHAPE flags
- * 	defined by this class.
- */
-public static int getFontBidiAttributes(GC gc) {
-	int fontStyle = 0;
-	int fontLanguageInfo = OS.GetFontLanguageInfo(gc.handle);
-	if (((fontLanguageInfo & GCP_REORDER) != 0)) {
-		fontStyle |= REORDER;
-	}
-	if (((fontLanguageInfo & GCP_LIGATE) != 0)) {
-		fontStyle |= LIGATE;
-	}
-	if (((fontLanguageInfo & GCP_GLYPHSHAPE) != 0)) {
-		fontStyle |= GLYPHSHAPE;
-	}
-	return fontStyle;
-}
 /**
  * Return the active keyboard language type.
  *
@@ -381,7 +128,7 @@ public static int getKeyboardLanguage() {
  *
  * @return integer array with an entry for each installed language
  */
-static long[] getKeyboardLanguageList() {
+private static long[] getKeyboardLanguageList() {
 	int maxSize = 10;
 	long[] tempList = new long[maxSize];
 	int size = OS.GetKeyboardLayoutList(maxSize, tempList);
@@ -389,10 +136,12 @@ static long[] getKeyboardLanguageList() {
 	System.arraycopy(tempList, 0, list, 0, size);
 	return list;
 }
-static boolean isBidiLang(long lang) {
+
+private static boolean isBidiLang(long lang) {
 	int id = OS.PRIMARYLANGID(OS.LOWORD(lang));
 	return id == LANG_ARABIC || id == LANG_HEBREW || id == LANG_FARSI;
 }
+
 /**
  * Return whether or not the platform supports a bidi language.  Determine this
  * by looking at the languages that are installed.
@@ -426,7 +175,7 @@ public static boolean isBidiPlatform() {
  *
  * @return true if bidi is supported, false otherwise.
  */
-public static boolean isKeyboardBidi() {
+private static boolean isKeyboardBidi() {
 	for (long language : getKeyboardLanguageList()) {
 		if (isBidiLang(language)) {
 			return true;
@@ -439,7 +188,7 @@ public static boolean isKeyboardBidi() {
  *
  * @param hwnd the handle of the Control that is listening for keyboard language changes
  */
-public static void removeLanguageListener (long hwnd) {
+private static void removeLanguageListener (long hwnd) {
 	languageMap.remove(new LONG(hwnd));
 	unsubclass(hwnd);
 }
@@ -476,7 +225,7 @@ public static int resolveTextDirection(String text) {
 	return textDirection;
 }
 
-static int getStrongDirection(byte directionality) {
+private static int getStrongDirection(byte directionality) {
 	switch (directionality) {
 	// Strong bidirectional character types in the Unicode specification:
 	case Character.DIRECTIONALITY_LEFT_TO_RIGHT:
@@ -534,34 +283,13 @@ public static void setKeyboardLanguage(int language) {
 		}
 	}
 }
-/**
- * Sets the orientation (writing order) of the specified control. Text will
- * be right aligned for right to left writing order.
- *
- * @param hwnd the handle of the Control to change the orientation of
- * @param orientation one of SWT.RIGHT_TO_LEFT or SWT.LEFT_TO_RIGHT
- * @return true if the orientation was changed, false if the orientation
- * 	could not be changed
- */
-public static boolean setOrientation (long hwnd, int orientation) {
-	int bits = OS.GetWindowLong (hwnd, OS.GWL_EXSTYLE);
-	if ((orientation & SWT.RIGHT_TO_LEFT) != 0) {
-		bits |= OS.WS_EX_LAYOUTRTL;
-	} else {
-		bits &= ~OS.WS_EX_LAYOUTRTL;
-	}
-	OS.SetWindowLong (hwnd, OS.GWL_EXSTYLE, bits);
-	return true;
-}
-public static boolean setOrientation (Control control, int orientation) {
-	return setOrientation(control.handle, orientation);
-}
+
 /**
  * Override the window proc.
  *
  * @param hwnd control to override the window proc of
  */
-static void subclass(long hwnd) {
+private static void subclass(long hwnd) {
 	LONG key = new LONG(hwnd);
 	if (oldProcMap.get(key) == null) {
 		long oldProc = OS.GetWindowLongPtr(hwnd, OS.GWLP_WNDPROC);
@@ -569,59 +297,13 @@ static void subclass(long hwnd) {
 		OS.SetWindowLongPtr(hwnd, OS.GWLP_WNDPROC, callback.getAddress());
 	}
 }
-/**
- *  Reverse the character array.  Used for right orientation.
- *
- * @param charArray character array to reverse
- */
-static void reverse(char[] charArray) {
-	int length = charArray.length;
-	for (int i = 0; i <= (length  - 1) / 2; i++) {
-		char tmp = charArray[i];
-		charArray[i] = charArray[length - 1 - i];
-		charArray[length - 1 - i] = tmp;
-	}
-}
-/**
- *  Reverse the integer array.  Used for right orientation.
- *
- * @param intArray integer array to reverse
- */
-static void reverse(int[] intArray) {
-	int length = intArray.length;
-	for (int i = 0; i <= (length  - 1) / 2; i++) {
-		int tmp = intArray[i];
-		intArray[i] = intArray[length - 1 - i];
-		intArray[length - 1 - i] = tmp;
-	}
-}
-/**
- * Adjust the order array so that it is relative to the start of the line.  Also reverse the order array if the orientation
- * is to the right.
- *
- * @param orderArray  integer array of order values to translate
- * @param glyphCount  number of glyphs that have been processed for the current line
- * @param isRightOriented  flag indicating whether or not current orientation is to the right
-*/
-static void translateOrder(int[] orderArray, int glyphCount, boolean isRightOriented) {
-	int maxOrder = 0;
-	int length = orderArray.length;
-	if (isRightOriented) {
-		for (int i=0; i<length; i++) {
-			maxOrder = Math.max(maxOrder, orderArray[i]);
-		}
-	}
-	for (int i=0; i<length; i++) {
-		if (isRightOriented) orderArray[i] = maxOrder - orderArray[i];
-		orderArray [i] += glyphCount;
-	}
-}
+
 /**
  * Remove the overridden the window proc.
  *
  * @param hwnd control to remove the window proc override for
  */
-static void unsubclass(long hwnd) {
+private static void unsubclass(long hwnd) {
 	LONG key = new LONG(hwnd);
 	if (languageMap.get(key) == null) {
 		LONG proc = oldProcMap.remove(key);
