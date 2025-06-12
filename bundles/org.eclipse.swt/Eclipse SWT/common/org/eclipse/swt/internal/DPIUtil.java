@@ -228,11 +228,11 @@ public static Point autoScaleDown(Point point) {
 
 public static Point scaleDown(Point point, int zoom) {
 	if (zoom == 100 || point == null) return point;
+	Point.OfFloat fPoint = FloatAwareGeometryFactory.createFrom(point);
 	float scaleFactor = getScalingFactor(zoom);
-	Point scaledPoint = new Point (0,0);
-	scaledPoint.x = Math.round (point.x / scaleFactor);
-	scaledPoint.y = Math.round (point.y / scaleFactor);
-	return scaledPoint;
+	float scaledX = fPoint.getX() / scaleFactor;
+	float scaledY = fPoint.getY() / scaleFactor;
+	return new Point.OfFloat(scaledX, scaledY);
 }
 
 /**
@@ -255,16 +255,7 @@ public static Rectangle autoScaleDown(Rectangle rect) {
 }
 
 public static Rectangle scaleDown(Rectangle rect, int zoom) {
-	if (zoom == 100 || rect == null) return rect;
-	Rectangle scaledRect = new Rectangle (0,0,0,0);
-	Point scaledTopLeft = scaleDown(new Point (rect.x, rect.y), zoom);
-	Point scaledBottomRight = scaleDown(new Point (rect.x + rect.width, rect.y + rect.height), zoom);
-
-	scaledRect.x = scaledTopLeft.x;
-	scaledRect.y = scaledTopLeft.y;
-	scaledRect.width = scaledBottomRight.x - scaledTopLeft.x;
-	scaledRect.height = scaledBottomRight.y - scaledTopLeft.y;
-	return scaledRect;
+	return scaleBounds(rect, 100, zoom);
 }
 /**
  * Returns a new scaled down Rectangle if enabled for Drawable class.
@@ -333,13 +324,13 @@ public static boolean isSmoothScalingEnabled() {
  */
 public static Rectangle scaleBounds (Rectangle rect, int targetZoom, int currentZoom) {
 	if (rect == null || targetZoom == currentZoom) return rect;
+	Rectangle.OfFloat fRect = FloatAwareGeometryFactory.createFrom(rect);
 	float scaleFactor = ((float)targetZoom) / (float)currentZoom;
-	Rectangle returnRect = new Rectangle (0,0,0,0);
-	returnRect.x = Math.round (rect.x * scaleFactor);
-	returnRect.y = Math.round (rect.y * scaleFactor);
-	returnRect.width = Math.round (rect.width * scaleFactor);
-	returnRect.height = Math.round (rect.height * scaleFactor);
-	return returnRect;
+	float scaledX = fRect.getX() * scaleFactor;
+	float scaledY = fRect.getY() * scaleFactor;
+	float scaledWidth = fRect.getWidth() * scaleFactor;
+	float scaledHeight = fRect.getHeight() * scaleFactor;
+	return new Rectangle.OfFloat(scaledX, scaledY, scaledWidth, scaledHeight);
 }
 
 /**
@@ -436,11 +427,11 @@ public static Point autoScaleUp(Point point) {
 
 public static Point scaleUp(Point point, int zoom) {
 	if (zoom == 100 || point == null) return point;
+	Point.OfFloat fPoint = FloatAwareGeometryFactory.createFrom(point);
 	float scaleFactor = getScalingFactor(zoom);
-	Point scaledPoint = new Point(0,0);
-	scaledPoint.x = Math.round (point.x * scaleFactor);
-	scaledPoint.y = Math.round (point.y * scaleFactor);
-	return scaledPoint;
+	float scaledX = fPoint.getX() * scaleFactor;
+	float scaledY = fPoint.getY() * scaleFactor;
+	return new Point.OfFloat(scaledX, scaledY);
 }
 
 /**
@@ -463,16 +454,7 @@ public static Rectangle autoScaleUp(Rectangle rect) {
 }
 
 public static Rectangle scaleUp(Rectangle rect, int zoom) {
-	if (zoom == 100 || rect == null) return rect;
-	Rectangle scaledRect = new Rectangle(0,0,0,0);
-	Point scaledTopLeft = scaleUp (new Point(rect.x, rect.y), zoom);
-	Point scaledBottomRight = scaleUp (new Point(rect.x + rect.width, rect.y + rect.height), zoom);
-
-	scaledRect.x = scaledTopLeft.x;
-	scaledRect.y = scaledTopLeft.y;
-	scaledRect.width = scaledBottomRight.x - scaledTopLeft.x;
-	scaledRect.height = scaledBottomRight.y - scaledTopLeft.y;
-	return scaledRect;
+	return scaleBounds(rect, zoom, 100);
 }
 
 /**
@@ -749,6 +731,22 @@ public static final class AutoScaleImageDataProvider implements ImageDataProvide
 	@Override
 	public ImageData getImageData(int zoom) {
 		return DPIUtil.scaleImageData(device, imageData, zoom, currentZoom);
+	}
+}
+
+private class FloatAwareGeometryFactory {
+	static Rectangle.OfFloat createFrom(Rectangle rectangle) {
+		if (rectangle instanceof Rectangle.OfFloat) {
+			return (Rectangle.OfFloat) rectangle;
+		}
+		return new Rectangle.OfFloat(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+	}
+
+	static Point.OfFloat createFrom(Point point) {
+		if (point instanceof Point.OfFloat) {
+			return (Point.OfFloat) point;
+		}
+		return new Point.OfFloat(point.x, point.y);
 	}
 }
 }
