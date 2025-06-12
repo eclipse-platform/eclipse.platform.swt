@@ -8,6 +8,8 @@
 SWT is a cross-platform GUI library for JVM based desktop applications.
 The best known SWT-based application is [Eclipse](https://www.eclipse.org).
 
+A sample change in a paragraph
+
 ## Getting Started
 
 SWT comes with platform-specific jar files.
@@ -79,6 +81,7 @@ Finally, we set the window's size determines by its child controls and open the 
 The `while`-loop processes all GUI related events until the shell is disposed which happens when closing.
 Before exiting, any claimed GUI resources needs to be freed.
 
+An other sample change in a paragraph
 
 # Contributing to SWT
 
