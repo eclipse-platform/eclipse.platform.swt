@@ -37,6 +37,7 @@ import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.ImageGcDrawer;
 import org.eclipse.swt.graphics.LineAttributes;
 import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.Point;
@@ -837,20 +838,16 @@ GC gc;
  * (16bpp or less).
  */
 RGB getRealRGB(Color color) {
-	Image colorImage = new Image(display, 10, 10);
-	GC imageGc = new GC(colorImage);
-	ImageData imageData;
-	PaletteData palette;
-	int pixel;
-
-	imageGc.setBackground(color);
-	imageGc.setForeground(color);
-	imageGc.fillRectangle(0, 0, 10, 10);
-	imageData = colorImage.getImageData();
-	palette = imageData.palette;
-	imageGc.dispose();
+	ImageGcDrawer gcDrawer = (imageGc, width, height) -> {
+		imageGc.setBackground(color);
+		imageGc.setForeground(color);
+		imageGc.fillRectangle(0, 0, width, height);
+	};
+	Image colorImage = new Image(display, gcDrawer, 10, 10);
+	ImageData imageData = colorImage.getImageData();
+	PaletteData palette = imageData.palette;
 	colorImage.dispose();
-	pixel = imageData.getPixel(0, 0);
+	int pixel = imageData.getPixel(0, 0);
 	return palette.getRGB(pixel);
 }
 
