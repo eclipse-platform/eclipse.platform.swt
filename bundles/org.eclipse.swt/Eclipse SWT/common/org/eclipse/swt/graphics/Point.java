@@ -43,7 +43,7 @@ import org.eclipse.swt.widgets.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 
-public sealed class Point implements Serializable permits Point.WithMonitor {
+public sealed class Point implements Serializable permits Point.OfFloat {
 
 	/**
 	 * the x coordinate of the point
@@ -120,6 +120,48 @@ public String toString () {
 
 /**
  * Instances of this class represent {@link org.eclipse.swt.graphics.Point}
+ * objects with the fields capable of storing more precise value in float.
+ *
+ * @since 3.131
+ * @noreference This class is not intended to be referenced by clients
+ */
+public static sealed class OfFloat extends Point permits Point.WithMonitor {
+
+	private static final long serialVersionUID = -1862062276431597053L;
+
+	public float residualX, residualY;
+
+	public OfFloat(int x, int y) {
+		super(x, y);
+	}
+
+	public OfFloat(float x, float y) {
+		super(Math.round(x), Math.round(y));
+		this.residualX = x - this.x;
+		this.residualY = y - this.y;
+	}
+
+	public float getX() {
+		return x + residualX;
+	}
+
+	public float getY() {
+		return y + residualY;
+	}
+
+	public void setX(float x) {
+		this.x = Math.round(x);
+		this.residualX = x - this.x;
+	}
+
+	public void setY(float y) {
+		this.y = Math.round(y);
+		this.residualY = y - this.y;
+	}
+}
+
+/**
+ * Instances of this class represent {@link org.eclipse.swt.graphics.Point.OfFloat}
  * objects along with the context of the monitor in relation to which they are
  * placed on the display. The monitor awareness makes it easy to scale and
  * translate the points between pixels and points.
@@ -127,7 +169,7 @@ public String toString () {
  * @since 3.131
  * @noreference This class is not intended to be referenced by clients
  */
-public static final class WithMonitor extends Point {
+public static final class WithMonitor extends Point.OfFloat {
 
 	private static final long serialVersionUID = 6077427420686999194L;
 
@@ -155,4 +197,3 @@ public static final class WithMonitor extends Point {
 }
 
 }
-
