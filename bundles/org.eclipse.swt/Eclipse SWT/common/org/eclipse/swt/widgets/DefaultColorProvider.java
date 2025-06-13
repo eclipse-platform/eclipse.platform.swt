@@ -66,6 +66,8 @@ public final class DefaultColorProvider implements ColorProvider {
 		p.put(LabelRenderer.COLOR_SHADOW_OUT1, white);
 		p.put(LabelRenderer.COLOR_SHADOW_OUT2, gray160);
 
+		p.put(DefaultLinkRenderer.COLOR_LINK, hsb(baseHue, 1, 0.6f));
+
 		return p;
 	}
 
@@ -110,6 +112,8 @@ public final class DefaultColorProvider implements ColorProvider {
 		p.put(LabelRenderer.COLOR_SHADOW_IN2, gray80);
 		p.put(LabelRenderer.COLOR_SHADOW_OUT1, gray80);
 		p.put(LabelRenderer.COLOR_SHADOW_OUT2, black);
+
+		p.put(DefaultLinkRenderer.COLOR_LINK, hsb(baseHue, 0.3f, 0.8f));
 
 		return p;
 	}

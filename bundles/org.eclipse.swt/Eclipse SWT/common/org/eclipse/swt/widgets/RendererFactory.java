@@ -23,4 +23,6 @@ public interface RendererFactory {
 	ButtonRenderer createPushToggleButtonRenderer(Button button);
 
 	LabelRenderer createLabelRenderer(Label label);
+
+	LinkRenderer createLinkRenderer(Link link);
 }
