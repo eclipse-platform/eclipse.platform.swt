@@ -68,6 +68,11 @@ public final class DefaultColorProvider implements ColorProvider {
 
 		p.put(DefaultLinkRenderer.COLOR_LINK, hsb(baseHue, 1, 0.6f));
 
+		p.put(DefaultListRenderer.COLOR_BACKGROUND, backgroundInput);
+		p.put(DefaultListRenderer.COLOR_BORDER, gray160);
+		p.put(DefaultListRenderer.COLOR_SELECTION_BACKGROUND, selectionBackground);
+		p.put(DefaultListRenderer.COLOR_SELECTION_FOREGROUND, selectionForeground);
+
 		return p;
 	}
 
@@ -114,6 +119,11 @@ public final class DefaultColorProvider implements ColorProvider {
 		p.put(LabelRenderer.COLOR_SHADOW_OUT2, black);
 
 		p.put(DefaultLinkRenderer.COLOR_LINK, hsb(baseHue, 0.3f, 0.8f));
+
+		p.put(DefaultListRenderer.COLOR_BACKGROUND, backgroundInput);
+		p.put(DefaultListRenderer.COLOR_BORDER, gray80);
+		p.put(DefaultListRenderer.COLOR_SELECTION_BACKGROUND, selectionBackground);
+		p.put(DefaultListRenderer.COLOR_SELECTION_FOREGROUND, selectionForeground);
 
 		return p;
 	}
