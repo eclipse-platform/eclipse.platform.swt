@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -55,6 +55,7 @@ public class ExpandBar extends Composite {
 	Color foreground;
 	Listener listener;
 	boolean inDispose;
+	private ExpandBarRenderer renderer;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -115,6 +116,9 @@ public ExpandBar (Composite parent, int style) {
 	if (verticalBar != null) {
 		verticalBar.addListener (SWT.Selection, event -> onScroll (event));
 	}
+
+	final RendererFactory rendererFactory = parent.getDisplay().getRendererFactory();
+	renderer = rendererFactory.createExpandBarRenderer(this);
 }
 
 /**
@@ -547,11 +551,7 @@ void onMouseUp (Event event) {
 }
 
 void onPaint (Event event) {
-	boolean hasFocus = isFocusControl ();
-	for (int i = 0; i < itemCount; i++) {
-		ExpandItem item = items [i];
-		item.drawItem (event.gc, hasFocus && item == focusItem);
-	}
+	renderer.paint(event.gc);
 }
 
 void onResize () {
@@ -580,5 +580,4 @@ void onTraverse (Event event) {
 			break;
 	}
 }
-
 }

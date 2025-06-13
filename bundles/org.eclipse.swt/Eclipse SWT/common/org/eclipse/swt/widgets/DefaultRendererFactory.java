@@ -58,4 +58,9 @@ class DefaultRendererFactory implements RendererFactory {
 	public CoolBarRenderer createCoolBarRenderer(CoolBar coolBar) {
 		return new DefaultCoolBarRenderer(coolBar);
 	}
+
+	@Override
+	public ExpandBarRenderer createExpandBarRenderer(ExpandBar expandBar) {
+		return new DefaultExpandBarRenderer(expandBar);
+	}
 }

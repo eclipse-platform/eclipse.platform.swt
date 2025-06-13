@@ -31,4 +31,6 @@ public interface RendererFactory {
 	LinkRenderer createLinkRenderer(Link link);
 
 	CoolBarRenderer createCoolBarRenderer(CoolBar coolBar);
+
+	ExpandBarRenderer createExpandBarRenderer(ExpandBar expandBar);
 }
