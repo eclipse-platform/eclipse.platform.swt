@@ -63,6 +63,9 @@ import org.eclipse.swt.internal.win32.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class Text extends Scrollable {
+
+	private static final TCHAR LabelClass = new TCHAR (0, "STATIC", true);
+
 	int tabs, oldStart, oldEnd;
 	boolean doubleClick, ignoreModify, ignoreVerify, ignoreCharacter, allowPasswordChar;
 	String message;
@@ -341,7 +344,7 @@ void createHandle () {
 		if ((style & SWT.ICON_SEARCH) != 0) {
 			long hwndSearch = OS.CreateWindowEx (
 				0,
-				Label.LabelClass,
+				LabelClass,
 				null,
 				OS.WS_CHILD | OS.WS_VISIBLE | OS.WS_CLIPSIBLINGS | OS.SS_OWNERDRAW,
 				0, 0, 0, 0,
@@ -355,7 +358,7 @@ void createHandle () {
 			state |= TRACK_MOUSE;
 			long hwndCancel = OS.CreateWindowEx (
 				0,
-				Label.LabelClass, null,
+				LabelClass, null,
 				OS.WS_CHILD | OS.WS_CLIPSIBLINGS | OS.SS_OWNERDRAW,
 				0, 0, 0, 0,
 				handle,

@@ -33,4 +33,9 @@ class DefaultRendererFactory implements RendererFactory {
 	public ButtonRenderer createPushToggleButtonRenderer(Button button) {
 		return new DefaultButtonRenderer(button);
 	}
+
+	@Override
+	public LabelRenderer createLabelRenderer(Label label) {
+		return new BasicLabelRenderer(label);
+	}
 }

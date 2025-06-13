@@ -61,6 +61,11 @@ public final class DefaultColorProvider implements ColorProvider {
 
 		p.put(DefaultButtonRenderer.COLOR_BACKGROUND, white);
 
+		p.put(LabelRenderer.COLOR_SHADOW_IN1, gray160);
+		p.put(LabelRenderer.COLOR_SHADOW_IN2, white);
+		p.put(LabelRenderer.COLOR_SHADOW_OUT1, white);
+		p.put(LabelRenderer.COLOR_SHADOW_OUT2, gray160);
+
 		return p;
 	}
 
@@ -100,6 +105,11 @@ public final class DefaultColorProvider implements ColorProvider {
 		p.put(ButtonRenderer.COLOR_GRAYED, gray128);
 
 		p.put(DefaultButtonRenderer.COLOR_BACKGROUND, gray64);
+
+		p.put(LabelRenderer.COLOR_SHADOW_IN1, black);
+		p.put(LabelRenderer.COLOR_SHADOW_IN2, gray80);
+		p.put(LabelRenderer.COLOR_SHADOW_OUT1, gray80);
+		p.put(LabelRenderer.COLOR_SHADOW_OUT2, black);
 
 		return p;
 	}
