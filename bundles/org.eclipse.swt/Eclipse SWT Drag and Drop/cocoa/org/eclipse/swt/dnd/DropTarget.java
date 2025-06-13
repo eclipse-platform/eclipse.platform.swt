@@ -780,25 +780,25 @@ long outlineView_validateDrop_proposedItem_proposedChildIndex(long id, long sel,
 	if (feedback == 0 || childItem == null) {
 		widget.setDropItem(null, -1);
 	} else {
-		if ((feedback & DND.FEEDBACK_SELECT) != 0) {
-			widget.setDropItem(childItem.handle, -1);
-		} else {
-			TreeItem parentItem = childItem.getParentItem();
-			int childIndex;
-			id parentID = null;
-			if (parentItem != null) {
-				parentID = parentItem.handle;
-				childIndex = parentItem.indexOf(childItem);
-			} else {
-				childIndex = ((Tree)getControl()).indexOf(childItem);
-			}
-			if ((feedback & DND.FEEDBACK_INSERT_AFTER) != 0) {
-				widget.setDropItem(parentID, childIndex + 1);
-			}
-			if ((feedback & DND.FEEDBACK_INSERT_BEFORE) != 0) {
-				widget.setDropItem(parentID, childIndex);
-			}
-		}
+//		if ((feedback & DND.FEEDBACK_SELECT) != 0) {
+//			widget.setDropItem(childItem.handle, -1);
+//		} else {
+//			TreeItem parentItem = childItem.getParentItem();
+//			int childIndex;
+//			id parentID = null;
+//			if (parentItem != null) {
+//				parentID = parentItem.handle;
+//				childIndex = parentItem.indexOf(childItem);
+//			} else {
+//				childIndex = ((Tree)getControl()).indexOf(childItem);
+//			}
+//			if ((feedback & DND.FEEDBACK_INSERT_AFTER) != 0) {
+//				widget.setDropItem(parentID, childIndex + 1);
+//			}
+//			if ((feedback & DND.FEEDBACK_INSERT_BEFORE) != 0) {
+//				widget.setDropItem(parentID, childIndex);
+//			}
+//		}
 	}
 
 	return opToOsOp(selectedOperation);
