@@ -1213,26 +1213,6 @@ static Image createIcon (Image image, int zoom) {
 	return Image.win32_new (device, SWT.ICON, hIcon, zoom);
 }
 
-long getTextSearchIcon(int size) {
-	if (!sizeToSearchIconHandle.containsKey(size)) {
-		int searchIconResource = textUseDarkthemeIcons ? Text.IDI_SEARCH_DARKTHEME : Text.IDI_SEARCH;
-	    long iconHandle = OS.LoadImage (OS.GetLibraryHandle (), searchIconResource, OS.IMAGE_ICON, size, size, 0);
-	    if (iconHandle == 0) error(SWT.ERROR_NO_HANDLES);
-	    sizeToSearchIconHandle.put(size, iconHandle);
-	}
-    return sizeToSearchIconHandle.get(size);
-}
-
-long getTextCancelIcon(int size) {
-	if (!sizeToCancelIconHandle.containsKey(size)) {
-		int searchIconResource = textUseDarkthemeIcons ? Text.IDI_CANCEL_DARKTHEME : Text.IDI_CANCEL;
-	    long iconHandle = OS.LoadImage (OS.GetLibraryHandle (), searchIconResource, OS.IMAGE_ICON, size, size, 0);
-	    if (iconHandle == 0) error(SWT.ERROR_NO_HANDLES);
-	    sizeToCancelIconHandle.put(size, iconHandle);
-	}
-    return sizeToCancelIconHandle.get(size);
-}
-
 static void deregister (Display display) {
 	synchronized (Device.class) {
 		for (int i=0; i<Displays.length; i++) {

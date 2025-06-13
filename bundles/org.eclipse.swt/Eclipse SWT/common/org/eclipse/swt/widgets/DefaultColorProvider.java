@@ -50,6 +50,13 @@ public final class DefaultColorProvider implements ColorProvider {
 		p.put(ControlRenderer.COLOR_FOREGROUND, foreground);
 		p.put(ControlRenderer.COLOR_DISABLED, gray160);
 
+		p.put(DefaultTextRenderer.COLOR_BACKGROUND, backgroundInput);
+		p.put(DefaultTextRenderer.COLOR_BACKGROUND_READONLY, gray240);
+		p.put(DefaultTextRenderer.COLOR_FOREGROUND, foreground);
+		p.put(DefaultTextRenderer.COLOR_SELECTION_BACKGROUND, selectionBackground);
+		p.put(DefaultTextRenderer.COLOR_SELECTION_FOREGROUND, selectionForeground);
+		p.put(DefaultTextRenderer.COLOR_BORDER, gray128);
+
 		p.put(ButtonRenderer.COLOR_HOVER, hsb(baseHue, 0.1f, 1));
 		p.put(ButtonRenderer.COLOR_TOGGLE, hsb(baseHue, 0.2f, 0.96f));
 		p.put(ButtonRenderer.COLOR_SELECTION, selection);
@@ -123,6 +130,13 @@ public final class DefaultColorProvider implements ColorProvider {
 		p.put(ControlRenderer.COLOR_BACKGROUND, backgroundPanel);
 		p.put(ControlRenderer.COLOR_FOREGROUND, foreground);
 		p.put(ControlRenderer.COLOR_DISABLED, gray160);
+
+		p.put(DefaultTextRenderer.COLOR_BACKGROUND, backgroundInput);
+		p.put(DefaultTextRenderer.COLOR_BACKGROUND_READONLY, backgroundPanel);
+		p.put(DefaultTextRenderer.COLOR_FOREGROUND, foreground);
+		p.put(DefaultTextRenderer.COLOR_SELECTION_BACKGROUND, selectionBackground);
+		p.put(DefaultTextRenderer.COLOR_SELECTION_FOREGROUND, selectionForeground);
+		p.put(DefaultTextRenderer.COLOR_BORDER, gray128);
 
 		p.put(ButtonRenderer.COLOR_HOVER, gray80);
 		p.put(ButtonRenderer.COLOR_TOGGLE, gray128);

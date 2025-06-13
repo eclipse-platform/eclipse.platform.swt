@@ -503,6 +503,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int width = 0, height = 0;
 	GC gc = new GC (text);
+	// { fix for regression introduced in ddd18629
+	gc.setFont(text.getFont());
+	// }
 	int spacer = gc.stringExtent (" ").x; //$NON-NLS-1$
 	int textWidth = gc.stringExtent (text.getText ()).x;
 	for (String item : list.getItems ()) {
