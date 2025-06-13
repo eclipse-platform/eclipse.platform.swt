@@ -85,6 +85,13 @@ public final class DefaultColorProvider implements ColorProvider {
 		p.put(DefaultSliderRenderer.COLOR_THUMB_BORDER, gray128);
 		p.put(DefaultSliderRenderer.COLOR_THUMB_HOVER, hsb(baseHue, 0.3f, 1));
 
+		p.put(DefaultToolBarRenderer.COLOR_SEPARATOR, gray160);
+		p.put(DefaultToolBarRenderer.COLOR_SHADOW_OUT, gray160);
+		p.put(DefaultToolBarRenderer.COLOR_HOVER_BACKGROUND, hsb(baseHue, 0.2f, 1));
+		p.put(DefaultToolBarRenderer.COLOR_HOVER_BORDER, hsb(baseHue, 0.3f, 1));
+		p.put(DefaultToolBarRenderer.COLOR_SELECTION_BACKGROUND, hsb(baseHue, 0.3f, 1));
+		p.put(DefaultToolBarRenderer.COLOR_SELECTION_BORDER, hsb(baseHue, 0.5f, 1));
+
 		return p;
 	}
 
@@ -149,6 +156,12 @@ public final class DefaultColorProvider implements ColorProvider {
 		p.put(DefaultSliderRenderer.COLOR_THUMB_BORDER, gray128);
 		p.put(DefaultSliderRenderer.COLOR_THUMB_HOVER, selection);
 
+		p.put(DefaultToolBarRenderer.COLOR_SEPARATOR, gray160);
+		p.put(DefaultToolBarRenderer.COLOR_SHADOW_OUT, gray160);
+		p.put(DefaultToolBarRenderer.COLOR_HOVER_BACKGROUND, gray80);
+		p.put(DefaultToolBarRenderer.COLOR_HOVER_BORDER, gray128);
+		p.put(DefaultToolBarRenderer.COLOR_SELECTION_BACKGROUND, gray128);
+		p.put(DefaultToolBarRenderer.COLOR_SELECTION_BORDER, gray160);
 		return p;
 	}
 
