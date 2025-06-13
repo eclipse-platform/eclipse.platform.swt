@@ -79,6 +79,12 @@ public final class DefaultColorProvider implements ColorProvider {
 		p.put(DefaultScaleRenderer.COLOR_HANDLE_OUTLINE, gray160);
 		p.put(DefaultScaleRenderer.COLOR_NOTCH, gray160);
 
+		p.put(DefaultSliderRenderer.COLOR_TRACK_BACKGROUND, gray240);
+		p.put(DefaultSliderRenderer.COLOR_TRACK_BORDER, gray204);
+		p.put(DefaultSliderRenderer.COLOR_THUMB_BACKGROUND, gray204);
+		p.put(DefaultSliderRenderer.COLOR_THUMB_BORDER, gray128);
+		p.put(DefaultSliderRenderer.COLOR_THUMB_HOVER, hsb(baseHue, 0.3f, 1));
+
 		return p;
 	}
 
@@ -136,6 +142,12 @@ public final class DefaultColorProvider implements ColorProvider {
 		p.put(DefaultScaleRenderer.COLOR_HANDLE_DRAG, gray128);
 		p.put(DefaultScaleRenderer.COLOR_HANDLE_OUTLINE, gray128);
 		p.put(DefaultScaleRenderer.COLOR_NOTCH, gray128);
+
+		p.put(DefaultSliderRenderer.COLOR_TRACK_BACKGROUND, gray30);
+		p.put(DefaultSliderRenderer.COLOR_TRACK_BORDER, gray64);
+		p.put(DefaultSliderRenderer.COLOR_THUMB_BACKGROUND, gray64);
+		p.put(DefaultSliderRenderer.COLOR_THUMB_BORDER, gray128);
+		p.put(DefaultSliderRenderer.COLOR_THUMB_HOVER, selection);
 
 		return p;
 	}
