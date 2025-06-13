@@ -50,6 +50,17 @@ public final class DefaultColorProvider implements ColorProvider {
 		p.put(ControlRenderer.COLOR_FOREGROUND, foreground);
 		p.put(ControlRenderer.COLOR_DISABLED, gray160);
 
+		p.put(ButtonRenderer.COLOR_HOVER, hsb(baseHue, 0.1f, 1));
+		p.put(ButtonRenderer.COLOR_TOGGLE, hsb(baseHue, 0.2f, 0.96f));
+		p.put(ButtonRenderer.COLOR_SELECTION, selection);
+		p.put(ButtonRenderer.COLOR_OUTLINE, gray160);
+		p.put(ButtonRenderer.COLOR_OUTLINE_DISABLED, gray192);
+		p.put(ButtonRenderer.COLOR_BOX, gray128);
+		p.put(ButtonRenderer.COLOR_BOX_DISABLED, gray160);
+		p.put(ButtonRenderer.COLOR_GRAYED, gray192);
+
+		p.put(DefaultButtonRenderer.COLOR_BACKGROUND, white);
+
 		return p;
 	}
 
@@ -78,6 +89,17 @@ public final class DefaultColorProvider implements ColorProvider {
 		p.put(ControlRenderer.COLOR_BACKGROUND, backgroundPanel);
 		p.put(ControlRenderer.COLOR_FOREGROUND, foreground);
 		p.put(ControlRenderer.COLOR_DISABLED, gray160);
+
+		p.put(ButtonRenderer.COLOR_HOVER, gray80);
+		p.put(ButtonRenderer.COLOR_TOGGLE, gray128);
+		p.put(ButtonRenderer.COLOR_SELECTION, selection);
+		p.put(ButtonRenderer.COLOR_OUTLINE, gray128);
+		p.put(ButtonRenderer.COLOR_OUTLINE_DISABLED, gray80);
+		p.put(ButtonRenderer.COLOR_BOX, gray204);
+		p.put(ButtonRenderer.COLOR_BOX_DISABLED, gray160);
+		p.put(ButtonRenderer.COLOR_GRAYED, gray128);
+
+		p.put(DefaultButtonRenderer.COLOR_BACKGROUND, gray64);
 
 		return p;
 	}

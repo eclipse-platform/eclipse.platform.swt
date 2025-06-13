@@ -14,4 +14,23 @@
 package org.eclipse.swt.widgets;
 
 class DefaultRendererFactory implements RendererFactory {
+	@Override
+	public ButtonRenderer createCheckboxRenderer(Button button) {
+		return new DefaultCheckboxRenderer(button);
+	}
+
+	@Override
+	public ButtonRenderer createRadioButtonRenderer(Button button) {
+		return new DefaultRadioButtonRenderer(button);
+	}
+
+	@Override
+	public ButtonRenderer createArrowButtonRenderer(Button button) {
+		return new DefaultArrowButtonRenderer(button);
+	}
+
+	@Override
+	public ButtonRenderer createPushToggleButtonRenderer(Button button) {
+		return new DefaultButtonRenderer(button);
+	}
 }
