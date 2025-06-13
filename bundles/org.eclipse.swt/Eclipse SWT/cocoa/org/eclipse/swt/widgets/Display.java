@@ -2508,10 +2508,10 @@ protected void init () {
 
 /**
  * Checks if the native item height should be enforced as a minimum (which is true by default).
- * 
+ *
  * Newer version of macOS may use a default item height in Table, Tree and List
  * controls that is larger than what is traditionally expected.
- * 
+ *
  * Enforcing the default height as a minimum may break existing assumptions and
  * render UI elements with a padding that may be considered too large.
  */
@@ -5580,7 +5580,8 @@ long applicationNextEventMatchingMask (long id, long sel, long mask, long expira
 			if (dequeue != 0 && currentCombo != null && !currentCombo.isDisposed()) {
 				NSEvent nsEvent = new NSEvent(result);
 				if (nsEvent.type() == OS.NSKeyDown) {
-					currentCombo.sendTrackingKeyEvent(nsEvent, SWT.KeyDown);
+					// TODO: replace with platform independent event.
+					//currentCombo.sendTrackingKeyEvent(nsEvent, SWT.KeyDown);
 				}
 			}
 			if (dequeue != 0 && trackingControl != null && !trackingControl.isDisposed()) {

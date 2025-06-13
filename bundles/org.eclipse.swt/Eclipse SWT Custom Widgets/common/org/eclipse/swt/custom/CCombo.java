@@ -100,7 +100,7 @@ public class CCombo extends Composite {
  * @see Widget#getStyle()
  */
 public CCombo (Composite parent, int style) {
-	super (parent, style = checkStyle (style));
+	super(parent, (style = checkStyle(style)) | SWT.BORDER);
 	_shell = super.getShell ();
 
 	listener = event -> {
@@ -154,14 +154,22 @@ public CCombo (Composite parent, int style) {
 		}
 	};
 
-	int [] comboEvents = {SWT.Dispose, SWT.FocusIn, SWT.Move, SWT.Resize, SWT.FocusOut};
-	for (int comboEvent : comboEvents)
-		this.addListener (comboEvent, listener);
+	this.addListener (SWT.Move, listener);
+	this.addListener (SWT.Resize, listener);
+	this.addListener (SWT.FocusIn, listener);
+	this.addListener (SWT.FocusOut, listener);
+	this.addListener (SWT.Dispose, listener);
 
-	int [] arrowEvents = {SWT.DragDetect, SWT.MouseDown, SWT.MouseEnter, SWT.MouseExit, SWT.MouseHover,
-		SWT.MouseMove, SWT.MouseUp, SWT.MouseWheel, SWT.Selection, SWT.FocusIn};
-	for (int arrowEvent : arrowEvents)
-		arrow.addListener (arrowEvent, listener);
+	arrow.addListener (SWT.DragDetect, listener);
+	arrow.addListener (SWT.MouseDown, listener);
+	arrow.addListener (SWT.MouseEnter, listener);
+	arrow.addListener (SWT.MouseExit, listener);
+	arrow.addListener (SWT.MouseHover, listener);
+	arrow.addListener (SWT.MouseMove, listener);
+	arrow.addListener (SWT.MouseUp, listener);
+	arrow.addListener (SWT.MouseWheel, listener);
+	arrow.addListener (SWT.Selection, listener);
+	arrow.addListener (SWT.FocusIn, listener);
 
 	createPopup(null, -1);
 	if ((style & SWT.SIMPLE) == 0) {
@@ -221,11 +229,23 @@ void createText(int comboStyle) {
 		internalLayout(true);
 	}
 
-	int [] textEvents = {SWT.DefaultSelection, SWT.DragDetect, SWT.KeyDown, SWT.KeyUp, SWT.MenuDetect, SWT.Modify,
-			SWT.MouseDown, SWT.MouseUp, SWT.MouseDoubleClick, SWT.MouseEnter, SWT.MouseExit, SWT.MouseHover,
-			SWT.MouseMove, SWT.MouseWheel, SWT.Traverse, SWT.FocusIn, SWT.Verify};
-	for (int textEvent : textEvents)
-		text.addListener (textEvent, listener);
+	text.addListener (SWT.DefaultSelection, listener);
+	text.addListener (SWT.DragDetect, listener);
+	text.addListener (SWT.KeyDown, listener);
+	text.addListener (SWT.KeyUp, listener);
+	text.addListener (SWT.MenuDetect, listener);
+	text.addListener (SWT.Modify, listener);
+	text.addListener (SWT.MouseDown, listener);
+	text.addListener (SWT.MouseUp, listener);
+	text.addListener (SWT.MouseDoubleClick, listener);
+	text.addListener (SWT.MouseEnter, listener);
+	text.addListener (SWT.MouseExit, listener);
+	text.addListener (SWT.MouseHover, listener);
+	text.addListener (SWT.MouseMove, listener);
+	text.addListener (SWT.MouseWheel, listener);
+	text.addListener (SWT.Traverse, listener);
+	text.addListener (SWT.FocusIn, listener);
+	text.addListener (SWT.Verify, listener);
 }
 /**
  * Adds the argument to the end of the receiver's list.
@@ -530,12 +550,17 @@ void createPopup(String[] items, int selectionIndex) {
 	if (foreground != null) list.setForeground (foreground);
 	if (background != null) list.setBackground (background);
 
-	int [] popupEvents = {SWT.Close, SWT.Paint};
-	for (int popupEvent : popupEvents)
-		popup.addListener (popupEvent, listener);
-	int [] listEvents = {SWT.MouseUp, SWT.Selection, SWT.Traverse, SWT.KeyDown, SWT.KeyUp, SWT.FocusIn, SWT.FocusOut, SWT.Dispose};
-	for (int listEvent : listEvents)
-		list.addListener (listEvent, listener);
+	popup.addListener(SWT.Close, listener);
+	popup.addListener(SWT.Paint, listener);
+
+	list.addListener(SWT.MouseUp, listener);
+	list.addListener(SWT.Selection, listener);
+	list.addListener(SWT.Traverse, listener);
+	list.addListener(SWT.KeyDown, listener);
+	list.addListener(SWT.KeyUp, listener);
+	list.addListener(SWT.FocusIn, listener);
+	list.addListener(SWT.FocusOut, listener);
+	list.addListener(SWT.Dispose, listener);
 
 	if (items != null) list.setItems (items);
 	if (selectionIndex != -1) list.setSelection (selectionIndex);
@@ -1628,7 +1653,7 @@ public void setItem (int index, String string) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public void setItems (String [] items) {
+public void setItems (String... items) {
 	checkWidget ();
 	list.setItems (items);
 	if (!text.getEditable ()) text.setText (""); //$NON-NLS-1$
