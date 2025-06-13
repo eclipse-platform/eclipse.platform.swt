@@ -1063,6 +1063,9 @@ void setBoundsInPixels (int x, int y, int width, int height, int flags, boolean 
 		state &= ~(RESIZE_OCCURRED | MOVE_OCCURRED);
 		state |= RESIZE_DEFERRED | MOVE_DEFERRED;
 	}
+	if (x == this.x && this.y == y && this.width == width && this.height == height && this.flags == flags) {
+		return;
+	}
 	super.setBoundsInPixels (x, y, width, height, flags, defer);
 	if (!defer && (state & CANVAS) != 0) {
 		boolean wasMoved = (state & MOVE_OCCURRED) != 0;
