@@ -35,6 +35,11 @@ class DefaultRendererFactory implements RendererFactory {
 	}
 
 	@Override
+	public ScaleRenderer createScaleRenderer(Scale scale) {
+		return new DefaultScaleRenderer(scale);
+	}
+
+	@Override
 	public LabelRenderer createLabelRenderer(Label label) {
 		return new BasicLabelRenderer(label);
 	}

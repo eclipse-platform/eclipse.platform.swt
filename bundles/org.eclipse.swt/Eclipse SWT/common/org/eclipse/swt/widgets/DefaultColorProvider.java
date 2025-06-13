@@ -73,6 +73,12 @@ public final class DefaultColorProvider implements ColorProvider {
 		p.put(DefaultListRenderer.COLOR_SELECTION_BACKGROUND, selectionBackground);
 		p.put(DefaultListRenderer.COLOR_SELECTION_FOREGROUND, selectionForeground);
 
+		p.put(DefaultScaleRenderer.COLOR_HANDLE_IDLE, selection);
+		p.put(DefaultScaleRenderer.COLOR_HANDLE_HOVER, black);
+		p.put(DefaultScaleRenderer.COLOR_HANDLE_DRAG, gray204);
+		p.put(DefaultScaleRenderer.COLOR_HANDLE_OUTLINE, gray160);
+		p.put(DefaultScaleRenderer.COLOR_NOTCH, gray160);
+
 		return p;
 	}
 
@@ -124,6 +130,12 @@ public final class DefaultColorProvider implements ColorProvider {
 		p.put(DefaultListRenderer.COLOR_BORDER, gray80);
 		p.put(DefaultListRenderer.COLOR_SELECTION_BACKGROUND, selectionBackground);
 		p.put(DefaultListRenderer.COLOR_SELECTION_FOREGROUND, selectionForeground);
+
+		p.put(DefaultScaleRenderer.COLOR_HANDLE_IDLE, selection);
+		p.put(DefaultScaleRenderer.COLOR_HANDLE_HOVER, gray204);
+		p.put(DefaultScaleRenderer.COLOR_HANDLE_DRAG, gray128);
+		p.put(DefaultScaleRenderer.COLOR_HANDLE_OUTLINE, gray128);
+		p.put(DefaultScaleRenderer.COLOR_NOTCH, gray128);
 
 		return p;
 	}
