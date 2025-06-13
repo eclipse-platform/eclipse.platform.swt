@@ -828,7 +828,9 @@ void createHandle (int index) {
 			gtk_container_set_border_width(shellHandle, 1);
 		}
 		if ((style & SWT.TOOL) != 0) {
-			GTK3.gtk_window_set_type_hint(shellHandle, GDK.GDK_WINDOW_TYPE_HINT_UTILITY);
+			if (!GTK.GTK4) {
+				GTK3.gtk_window_set_type_hint(shellHandle, GDK.GDK_WINDOW_TYPE_HINT_UTILITY);
+			}
 		}
 		if ((style & SWT.NO_TRIM) != 0) {
 			GTK.gtk_window_set_decorated(shellHandle, false);
