@@ -51,6 +51,8 @@ public class CoolItem extends Item {
 	private static final int CHEVRON_LEFT_MARGIN = 2;
 	private static final int CHEVRON_IMAGE_WIDTH = 8;	//Width to draw the double arrow
 
+	static final int MARGIN = 4;
+
 	ToolBar chevron;
 	boolean wrap;
 	Image arrowImage = null;
@@ -361,6 +363,28 @@ public Point getPreferredSize () {
 	checkWidget();
 	return parent.fixPoint(preferredWidth, preferredHeight);
 }
+
+Point getPreferredSizeInPixels() {
+	int index = parent.indexOf(this);
+	if (index == -1) {
+		return new Point(0, 0);
+	}
+
+	Control control = getControl();
+	if (control == null || control.isDisposed()) {
+		return new Point(0, 0);
+	}
+
+	Point controlSize = control.computeSize(SWT.DEFAULT, SWT.DEFAULT, true);
+	int width = controlSize.x + MARGIN;
+	int height = controlSize.y;
+
+	if ((parent.getStyle() & SWT.VERTICAL) != 0) {
+		return new Point(height, width); // Swap if vertical
+	}
+	return new Point(width, height);
+}
+
 /**
  * Returns a point describing the receiver's size. The
  * x coordinate of the result is the width of the receiver.

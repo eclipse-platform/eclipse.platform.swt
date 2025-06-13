@@ -10,6 +10,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Raghunandana Murthappa (Advantest) - SkiJa migration
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
@@ -45,7 +46,7 @@ import org.eclipse.swt.graphics.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * @noextend This class is not intended to be subclassed by clients.
  */
-public class CoolBar extends Composite {
+public class CoolBar extends CustomComposite {
 	CoolItem[][] items = new CoolItem[0][0];
 	CoolItem[] originalItems = new CoolItem[0];
 	Cursor hoverCursor, dragCursor, cursor;
@@ -57,6 +58,8 @@ public class CoolBar extends Composite {
 	static final int CLICK_DISTANCE = 3;
 	static final int DEFAULT_COOLBAR_WIDTH = 0;
 	static final int DEFAULT_COOLBAR_HEIGHT = 0;
+
+	private final CoolBarRenderer renderer;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -111,20 +114,25 @@ public CoolBar (Composite parent, int style) {
 			case SWT.Resize:          	onResize();     			break;
 		}
 	};
-	int[] events = new int[] {
-		SWT.Dispose,
-		SWT.MouseDown,
-		SWT.MouseExit,
-		SWT.MouseMove,
-		SWT.MouseUp,
-		SWT.MouseDoubleClick,
-		SWT.Paint,
-		SWT.Resize
-	};
-	for (int i = 0; i < events.length; i++) {
-		addListener(events[i], listener);
-	}
+
+	addListener(SWT.Dispose, listener);
+	addListener(SWT.MouseDown, listener);
+	addListener(SWT.MouseExit, listener);
+	addListener(SWT.MouseMove, listener);
+	addListener(SWT.MouseUp, listener);
+	addListener(SWT.MouseDoubleClick, listener);
+	addListener(SWT.Paint, listener);
+	addListener(SWT.Resize, listener);
+
+	final RendererFactory rendererFactory = parent.getDisplay().getRendererFactory();
+	renderer = rendererFactory.createCoolBarRenderer(this);
 }
+
+@Override
+protected ControlRenderer getRenderer() {
+	return renderer;
+}
+
 static int checkStyle (int style) {
 	style |= SWT.NO_FOCUS;
 	return (style | SWT.NO_REDRAW_RESIZE) & ~(SWT.V_SCROLL | SWT.H_SCROLL);
@@ -694,74 +702,7 @@ void onMouseDoubleClick(Event event) {
 	fixEvent(event);
 }
 void onPaint(Event event) {
-	GC gc = event.gc;
-	if (items.length == 0) return;
-	Color shadowColor = display.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW);
-	Color highlightColor = display.getSystemColor(SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW);
-	boolean vertical = (style & SWT.VERTICAL) != 0;
-	boolean flat = (style & SWT.FLAT) != 0;
-	int stopX = getWidth();
-	Rectangle rect;
-	Rectangle clipping = gc.getClipping();
-	for (int row = 0; row < items.length; row++) {
-		Rectangle bounds = new Rectangle(0, 0, 0, 0);
-		for (int i = 0; i < items[row].length; i++) {
-			bounds = items[row][i].internalGetBounds();
-			rect = fixRectangle(bounds.x, bounds.y, bounds.width, bounds.height);
-			if (!clipping.intersects(rect)) continue;
-			boolean nativeGripper = false;
-
-			/* Draw gripper. */
-			if (!isLocked) {
-				rect = fixRectangle(bounds.x, bounds.y, CoolItem.MINIMUM_WIDTH, bounds.height);
-				if (!flat) 	nativeGripper = drawGripper(gc, rect.x, rect.y, rect.width, rect.height, vertical);
-				if (!nativeGripper) {
-					int grabberTrim = 2;
-					int grabberHeight = bounds.height - (2 * grabberTrim) - 1;
-					gc.setForeground(shadowColor);
-					rect = fixRectangle(
-							bounds.x + CoolItem.MARGIN_WIDTH,
-							bounds.y + grabberTrim,
-							2,
-							grabberHeight);
-					gc.drawRectangle(rect);
-					gc.setForeground(highlightColor);
-					rect = fixRectangle(
-							bounds.x + CoolItem.MARGIN_WIDTH,
-							bounds.y + grabberTrim + 1,
-							bounds.x + CoolItem.MARGIN_WIDTH,
-							bounds.y + grabberTrim + grabberHeight - 1);
-					gc.drawLine(rect.x, rect.y, rect.width, rect.height);
-					rect = fixRectangle(
-							bounds.x + CoolItem.MARGIN_WIDTH,
-							bounds.y + grabberTrim,
-							bounds.x + CoolItem.MARGIN_WIDTH + 1,
-							bounds.y + grabberTrim);
-					gc.drawLine(rect.x, rect.y, rect.width, rect.height);
-				}
-			}
-
-			/* Draw separator. */
-			if (!flat && !nativeGripper && i != 0) {
-				gc.setForeground(shadowColor);
-				rect = fixRectangle(bounds.x, bounds.y, bounds.x, bounds.y + bounds.height - 1);
-				gc.drawLine(rect.x, rect.y, rect.width, rect.height);
-				gc.setForeground(highlightColor);
-				rect = fixRectangle(bounds.x + 1, bounds.y, bounds.x + 1, bounds.y + bounds.height - 1);
-				gc.drawLine(rect.x, rect.y, rect.width, rect.height);
-			}
-		}
-		if (!flat && row + 1 < items.length) {
-			/* Draw row separator. */
-			int separatorY = bounds.y + bounds.height;
-			gc.setForeground(shadowColor);
-			rect = fixRectangle(0, separatorY, stopX, separatorY);
-			gc.drawLine(rect.x, rect.y, rect.width, rect.height);
-			gc.setForeground(highlightColor);
-			rect = fixRectangle(0, separatorY + 1, stopX, separatorY + 1);
-			gc.drawLine(rect.x, rect.y, rect.width, rect.height);
-		}
-	}
+	renderer.paint(event.gc);
 }
 void onResize () {
 	layoutItems ();
