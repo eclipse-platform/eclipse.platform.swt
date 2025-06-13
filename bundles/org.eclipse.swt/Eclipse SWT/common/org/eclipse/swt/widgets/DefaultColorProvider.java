@@ -71,6 +71,11 @@ public final class DefaultColorProvider implements ColorProvider {
 		p.put(DefaultCoolBarRenderer.COLOR_SHADOW_NORMAL, gray160);
 		p.put(DefaultCoolBarRenderer.COLOR_SHADOW_HIGHLIGHT, white);
 
+		p.put(DefaultGroupRenderer.COLOR_SHADOW_IN1, gray160);
+		p.put(DefaultGroupRenderer.COLOR_SHADOW_IN2, gray128);
+		p.put(DefaultGroupRenderer.COLOR_SHADOW_OUT1, gray64);
+		p.put(DefaultGroupRenderer.COLOR_SHADOW_OUT2, gray192);
+
 		p.put(LabelRenderer.COLOR_SHADOW_IN1, gray160);
 		p.put(LabelRenderer.COLOR_SHADOW_IN2, white);
 		p.put(LabelRenderer.COLOR_SHADOW_OUT1, white);
@@ -151,6 +156,11 @@ public final class DefaultColorProvider implements ColorProvider {
 
 		p.put(DefaultCoolBarRenderer.COLOR_SHADOW_NORMAL, gray80);
 		p.put(DefaultCoolBarRenderer.COLOR_SHADOW_HIGHLIGHT, gray128);
+
+		p.put(DefaultGroupRenderer.COLOR_SHADOW_IN1, gray128);
+		p.put(DefaultGroupRenderer.COLOR_SHADOW_IN2, gray80);
+		p.put(DefaultGroupRenderer.COLOR_SHADOW_OUT1, gray64);
+		p.put(DefaultGroupRenderer.COLOR_SHADOW_OUT2, gray192);
 
 		p.put(LabelRenderer.COLOR_SHADOW_IN1, black);
 		p.put(LabelRenderer.COLOR_SHADOW_IN2, gray80);
