@@ -49,6 +49,16 @@ public class DPIZoomChangeRegistry {
 		if (widget == null) {
 			return;
 		}
+		extracted(widget, newZoom, scalingFactor);
+		Event event = new Event();
+		event.type = SWT.ZoomChanged;
+		event.widget = widget;
+		event.detail = newZoom;
+		event.doit = true;
+		widget.notifyListeners(SWT.ZoomChanged, event);
+	}
+
+	private static void extracted(Widget widget, int newZoom, float scalingFactor) {
 		for (Entry<Class<? extends Widget>, DPIZoomChangeHandler> entry : dpiZoomChangeHandlers.entrySet()) {
 			Class<? extends Widget> clazz = entry.getKey();
 			DPIZoomChangeHandler handler = entry.getValue();
@@ -56,12 +66,6 @@ public class DPIZoomChangeRegistry {
 				handler.handleDPIChange(widget, newZoom, scalingFactor);
 			}
 		}
-		Event event = new Event();
-		event.type = SWT.ZoomChanged;
-		event.widget = widget;
-		event.detail = newZoom;
-		event.doit = true;
-		widget.notifyListeners(SWT.ZoomChanged, event);
 	}
 
 	public static void registerHandler(DPIZoomChangeHandler zoomChangeVisitor, Class<? extends Widget> clazzToRegisterFor) {
