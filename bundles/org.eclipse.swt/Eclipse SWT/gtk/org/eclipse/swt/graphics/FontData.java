@@ -185,6 +185,35 @@ public FontData(String string) {
 }
 
 /**
+ * Constructs a deep copy of the given font data object.
+ *
+ * @param fontData the FontData object to copy
+ *
+ * @exception IllegalArgumentException
+ * <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the argument is null</li>
+ * </ul>
+ * @since 3.131
+ */
+public FontData(FontData fontData) {
+	if (fontData == null) {
+		SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	}
+
+	this.name = fontData.name;
+	this.height = fontData.height;
+	this.style = fontData.style;
+	this.lang = fontData.lang;
+	this.country = fontData.country;
+	this.variant = fontData.variant;
+
+	if (fontData.string != null) {
+		this.string = new byte[fontData.string.length];
+		System.arraycopy(fontData.string, 0, this.string, 0, fontData.string.length);
+	}
+}
+
+/**
  * Constructs a new font data given a font name,
  * the height of the desired font in points,
  * and a font style.
