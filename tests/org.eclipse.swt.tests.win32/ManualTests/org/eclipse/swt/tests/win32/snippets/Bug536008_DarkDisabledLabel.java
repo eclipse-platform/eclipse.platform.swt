@@ -13,15 +13,24 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.win32.snippets;
 
+import java.util.function.Consumer;
+
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageGcDrawer;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.RowLayout;
-import org.eclipse.swt.widgets.*;
-
-import java.util.function.Consumer;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
 
 public class Bug536008_DarkDisabledLabel {
 	static void moveControl(Control control, Point point) {
@@ -73,17 +82,13 @@ public class Bug536008_DarkDisabledLabel {
 		int cx = 60;
 		int cy = 60;
 		int nRow = 0;
-
-		Image image = new Image(display, cx / 2, cy / 2);
-		{
-			GC gc = new GC(image);
+		final ImageGcDrawer imageGcDrawer = (gc, width, height) -> {
 			gc.setBackground(backColor);
 			gc.setForeground(foreColor);
-
-			Rectangle imageBounds = image.getBounds();
-			gc.fillRectangle(imageBounds);
-			gc.drawOval(imageBounds.x, imageBounds.y, imageBounds.width - 1, imageBounds.height - 1);
-		}
+			gc.fillRectangle(0, 0, width, height);
+			gc.drawOval(0, 0, width - 1, height - 1);
+		};
+		Image image = new Image(display, imageGcDrawer, cx / 2, cy / 2);
 
 		FillLayout fillLayout = new FillLayout();
 		fillLayout.marginWidth = 10;

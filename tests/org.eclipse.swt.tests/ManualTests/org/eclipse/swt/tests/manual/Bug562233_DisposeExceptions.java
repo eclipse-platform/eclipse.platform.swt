@@ -16,8 +16,8 @@ package org.eclipse.swt.tests.manual;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageGcDrawer;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -249,11 +249,11 @@ public class Bug562233_DisposeExceptions {
 			);
 
 			// Make a small image
-			Image image = new Image (display, 16, 16);
-			GC gc = new GC(image);
-			gc.setBackground (display.getSystemColor (SWT.COLOR_BLUE));
-			gc.fillRectangle (0, 0, 16, 16);
-			gc.dispose ();
+			final ImageGcDrawer imageGcDrawer = (gc, width, height) -> {
+				gc.setBackground (display.getSystemColor (SWT.COLOR_BLUE));
+				gc.fillRectangle (0, 0, width, height);
+			};
+			Image image = new Image (display, imageGcDrawer, 16, 16);
 
 			// And a Table to use it
 			Table table = new Table(shell, 0);
