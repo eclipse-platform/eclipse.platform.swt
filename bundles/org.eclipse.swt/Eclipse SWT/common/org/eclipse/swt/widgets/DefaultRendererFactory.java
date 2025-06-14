@@ -60,6 +60,11 @@ class DefaultRendererFactory implements RendererFactory {
 	}
 
 	@Override
+	public SashRenderer createSashRenderer(Sash sash) {
+		return new DefaultSashRenderer(sash);
+	}
+
+	@Override
 	public ExpandBarRenderer createExpandBarRenderer(ExpandBar expandBar) {
 		return new DefaultExpandBarRenderer(expandBar);
 	}
