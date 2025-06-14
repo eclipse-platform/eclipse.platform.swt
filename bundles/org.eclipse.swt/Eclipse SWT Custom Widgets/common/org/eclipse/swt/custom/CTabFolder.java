@@ -892,9 +892,10 @@ public Rectangle getClientArea() {
 		trim.height += wrapHeight;
 	}
 	if (minimized) return new Rectangle(-trim.x, -trim.y, 0, 0);
-	int width = size.x - trim.width;
-	int height = size.y - trim.height;
-	return new Rectangle(-trim.x, -trim.y, width, height);
+	float width = ((Point.OfFloat) size).getX() - trim.width;
+	float height = ((Point.OfFloat) size).getY() - trim.height;
+	Rectangle.OfFloat r = new Rectangle.OfFloat(-trim.x, -trim.y, width, height);
+	return r;
 }
 
 /**
