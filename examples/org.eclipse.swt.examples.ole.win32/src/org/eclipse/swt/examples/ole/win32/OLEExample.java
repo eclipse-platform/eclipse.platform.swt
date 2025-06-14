@@ -159,8 +159,8 @@ public class OLEExample {
 						OleAutomation player = new OleAutomation(clientSite);
 						int playURL[] = player.getIDsOfNames(new String[] { "URL" });
 						if (playURL != null) {
-							boolean suceeded = player.setProperty(playURL[0], new Variant(fileName));
-							if (!suceeded)
+							boolean succeeded = player.setProperty(playURL[0], new Variant(fileName));
+							if (!succeeded)
 								disposeClient();
 						} else {
 							disposeClient();
