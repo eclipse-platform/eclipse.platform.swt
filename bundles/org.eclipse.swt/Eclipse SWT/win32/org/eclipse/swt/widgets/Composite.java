@@ -1581,14 +1581,25 @@ LRESULT WM_PAINT (long wParam, long lParam) {
 				GC paintGC = null;
 				Image image = null;
 				if ((style & (SWT.DOUBLE_BUFFERED | SWT.TRANSPARENT)) != 0) {
-					image = new Image (display, width, height);
 					paintGC = gc;
-					gc = new GC (image, paintGC.getStyle() & SWT.RIGHT_TO_LEFT);
-					GCData gcData = gc.getGCData ();
-					gcData.uiState = data.uiState;
-					gc.setForeground (getForeground ());
-					gc.setBackground (getBackground ());
-					gc.setFont (getFont ());
+					int originalStyle = gc.getStyle();
+					ImageGcDrawer drawer = new ImageGcDrawer() {
+					    @Override
+					    public void drawOn(GC gc, int iWidth, int iHeight) {
+					    		GCData gcData = gc.getGCData ();
+							gcData.uiState = data.uiState;
+							gc.setForeground (getForeground ());
+							gc.setBackground (getBackground ());
+							gc.setFont (getFont ());
+					    }
+
+					    @Override
+					    public int getGcStyle() {
+					        return  originalStyle & SWT.RIGHT_TO_LEFT;
+					    }
+					};
+					image = new Image (display, drawer, width, height);
+					gc = new GC(image, originalStyle & SWT.RIGHT_TO_LEFT);
 					if ((style & SWT.TRANSPARENT) != 0) {
 						OS.BitBlt (gc.handle, 0, 0, width, height, paintGC.handle, ps.left, ps.top, OS.SRCCOPY);
 					}
@@ -1598,6 +1609,16 @@ LRESULT WM_PAINT (long wParam, long lParam) {
 					OS.SetMetaRgn (gc.handle);
 					OS.SetWindowOrgEx (gc.handle, ps.left, ps.top, null);
 					OS.SetBrushOrgEx (gc.handle, ps.left, ps.top, null);
+
+					if ((style & (SWT.NO_BACKGROUND | SWT.TRANSPARENT)) != 0) {
+						/* This code is intentionally commented because it may be slow to copy bits from the screen */
+						//newPaintGC.copyArea (image, ps.left, ps.top);
+					} else {
+						RECT rect = new RECT ();
+						OS.SetRect (rect, ps.left, ps.top, ps.right, ps.bottom);
+						drawBackground (gc.handle, rect);
+					}
+
 					if ((style & (SWT.NO_BACKGROUND | SWT.TRANSPARENT)) != 0) {
 						/* This code is intentionally commented because it may be slow to copy bits from the screen */
 						//paintGC.copyArea (image, ps.left, ps.top);
@@ -1642,10 +1663,10 @@ LRESULT WM_PAINT (long wParam, long lParam) {
 						GCData gcData = gc.getGCData ();
 						if (gcData.focusDrawn && !isDisposed ()) updateUIState ();
 					}
-					gc.dispose();
 					if (!isDisposed ()) {
 						paintGC.drawImage (image, DPIUtil.scaleDown(ps.left, zoom), DPIUtil.scaleDown(ps.top, zoom));
 					}
+					gc.dispose();
 					image.dispose ();
 					gc = paintGC;
 				}
