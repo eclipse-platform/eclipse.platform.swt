@@ -46,7 +46,7 @@ import org.eclipse.swt.internal.cocoa.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * @noextend This class is not intended to be subclassed by clients.
  */
-public abstract class Control extends Widget implements Drawable {
+public abstract class Control extends ControlCommon implements Drawable {
 	/**
 	 * the handle to the OS resource
 	 * (Warning: This field is platform dependent)

@@ -106,7 +106,7 @@ import org.eclipse.swt.internal.win32.version.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * @noextend This class is not intended to be subclassed by clients.
  */
-public class Display extends Device implements Executor {
+public class Display extends DisplayCommon implements Executor {
 
 	/**
 	 * the handle to the OS message queue
