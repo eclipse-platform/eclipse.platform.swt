@@ -572,7 +572,7 @@ public Image(Device device, ImageData data) {
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
-		init(data);
+		init(data, 100);
 		init();
 	} finally {
 		if (pool != null) pool.release();
@@ -623,7 +623,7 @@ public Image(Device device, ImageData source, ImageData mask) {
 		ImageData image = new ImageData(source.width, source.height, source.depth, source.palette, source.scanlinePad, source.data);
 		image.maskPad = mask.scanlinePad;
 		image.maskData = mask.data;
-		init(image);
+		init(image, 100);
 	} finally {
 		if (pool != null) pool.release();
 	}
@@ -789,7 +789,7 @@ public Image(Device device, ImageFileNameProvider imageFileNameProvider) {
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
 		initNative(filename);
-		if (this.handle == null) init(ImageDataLoader.load(filename, 100, 100).element());
+		if (this.handle == null) init(ImageDataLoader.load(filename, 100, 100).element(), 100);
 		init();
 		String filename2x = imageFileNameProvider.getImagePath(200);
 		if (filename2x != null) {
@@ -848,7 +848,7 @@ public Image(Device device, ImageDataProvider imageDataProvider) {
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
-		init (data);
+		init (data, 100);
 		init ();
 		ImageData data2x = imageDataProvider.getImageData (200);
 		if (data2x != null) {
@@ -886,20 +886,13 @@ public Image(Device device, ImageGcDrawer imageGcDrawer, int width, int height) 
 	this.imageGcDrawer = imageGcDrawer;
 	this.width = width;
 	this.height = height;
-	ImageData data = drawWithImageGcDrawer(imageGcDrawer, width, height, 100);
+	ImageData data = drawWithImageGcDrawer(imageGcDrawer, width, height, DPIUtil.getDeviceZoom());
 	if (data == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
-		init (data);
+		init (data, DPIUtil.getDeviceZoom());
 		init ();
-		ImageData data2x = drawWithImageGcDrawer(imageGcDrawer, width, height, 200);
-		if (data2x != null) {
-			alphaInfo_200 = new AlphaInfo();
-			NSBitmapImageRep rep = createRepresentation (data2x, alphaInfo_200);
-			handle.addRepresentation(rep);
-			rep.release();
-		}
 	} finally {
 		if (pool != null) pool.release();
 	}
@@ -1474,7 +1467,7 @@ void init(int width, int height) {
 	if (alphaInfo_100 == null) alphaInfo_100 = new AlphaInfo();
 }
 
-void init(ImageData image) {
+void init(ImageData image, int imageZoom) {
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 
 	if (handle != null) handle.release();
@@ -1484,8 +1477,8 @@ void init(ImageData image) {
 	size.width = width;
 	size.height = height;
 	handle = handle.initWithSize(size);
-	this.width = image.width;
-	this.height = image.height;
+	this.width = image.width * 100 / imageZoom;
+	this.height = image.height * 100 / imageZoom;
 	if (alphaInfo_100 == null) alphaInfo_100 = new AlphaInfo();
 	NSBitmapImageRep rep = createRepresentation(image, alphaInfo_100);
 	handle.addRepresentation(rep);
@@ -1495,7 +1488,7 @@ void init(ImageData image) {
 
 private void initWithSupplier(Function<Integer, Boolean> canLoadAtZoom, Function<Integer, ImageData> zoomToImageData) {
 	ImageData imageData = zoomToImageData.apply(100);
-	init(imageData);
+	init(imageData, 100);
 	if (canLoadAtZoom.apply(200)) {
 		ImageData imageData2x = zoomToImageData.apply(200);
 		alphaInfo_200 = new AlphaInfo();

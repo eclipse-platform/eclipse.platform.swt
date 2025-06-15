@@ -25,6 +25,7 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeFalse;
 import static org.junit.Assume.assumeTrue;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -1075,6 +1076,34 @@ public void test_imageDataSameViaProviderAndSimpleData() {
 	dataImage.dispose();
 }
 
+/**
+ * See https://github.com/eclipse-platform/eclipse.platform.ui/issues/3039
+ */
+@Test
+public void test_gcOnImageGcDrawer_imageDataAtNonDeviceZoom() {
+	int originalDeviceZoom = DPIUtil.getDeviceZoom();
+	int deviceZoom = 200;
+	int nonDeviceZoom = 100;
+	DPIUtil.setDeviceZoom(deviceZoom);
+
+	ImageGcDrawer blueDrawer = (gc, width, height) -> {
+		gc.setBackground(display.getSystemColor(SWT.COLOR_BLUE));
+		gc.fillRectangle(0, 0, width, height);
+	};
+	Image image = new Image(display, blueDrawer, 1, 1);
+	int bluePixelValue = image.getImageData(nonDeviceZoom).getPixel(0, 0);
+
+	GC redOverwritingGc = new GC(image);
+	try {
+		redOverwritingGc.setBackground(display.getSystemColor(SWT.COLOR_RED));
+		redOverwritingGc.fillRectangle(0, 0, 1, 1);
+		assertNotEquals(bluePixelValue, image.getImageData(nonDeviceZoom).getPixel(0, 0));
+	} finally {
+		redOverwritingGc.dispose();
+		image.dispose();
+		DPIUtil.setDeviceZoom(originalDeviceZoom);
+	}
+}
 
 private Comparator<ImageData> imageDataComparator() {
 	return Comparator.<ImageData>comparingInt(d -> d.width) //
@@ -1095,3 +1124,4 @@ private Comparator<ImageData> imageDataComparator() {
 }
 
 }
+
