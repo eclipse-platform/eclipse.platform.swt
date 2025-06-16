@@ -1075,6 +1075,39 @@ public void test_imageDataSameViaProviderAndSimpleData() {
 	dataImage.dispose();
 }
 
+@Test
+public void test_ImageWithImageGcDrawerWrapper() {
+	Image image = new Image(display, 16, 16);
+	GC gc = new GC(image);
+	gc.setBackground(display.getSystemColor(SWT.COLOR_RED));
+	gc.setForeground(display.getSystemColor(SWT.COLOR_RED));
+	gc.fillRectangle(0, 0, 16, 16);
+	gc.dispose();
+	image.getImageData().transparentPixel = display.getSystemColor(SWT.COLOR_BLACK).getAlpha();
+	ImageData imageDataForSimpleImageWithGcOperation = image.getImageData();
+
+	final ImageGcDrawer imageGcDrawerWithPostProcess = new ImageGcDrawer() {
+		@Override
+		public void drawOn(GC gc, int width, int height) {
+			gc.setBackground(display.getSystemColor(SWT.COLOR_RED));
+			gc.setForeground(display.getSystemColor(SWT.COLOR_RED));
+			gc.fillRectangle(0, 0, 16, 16);
+		}
+
+		@Override
+		public void postProcess(ImageData imageData) {
+			imageData.transparentPixel = display.getSystemColor(SWT.COLOR_BLACK).getAlpha();
+		}
+	};
+	Image imageWithGCDrawerWrapper = new Image(display, imageGcDrawerWithPostProcess, 16, 16);
+	ImageData imageDataForImageWithGcDrawer = imageWithGCDrawerWrapper.getImageData();
+
+	assertEquals(0, imageDataComparator().compare(imageDataForSimpleImageWithGcOperation, imageDataForImageWithGcDrawer));
+
+	image.dispose();
+	imageWithGCDrawerWrapper.dispose();
+}
+
 
 private Comparator<ImageData> imageDataComparator() {
 	return Comparator.<ImageData>comparingInt(d -> d.width) //
