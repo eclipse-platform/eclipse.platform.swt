@@ -35,6 +35,8 @@ interface CoordinateSystemMapper {
 
 	Rectangle translateToDisplayCoordinates(Rectangle rect, int zoom);
 
+	Rectangle getContainingMonitorBoundsInPixels(Point point);
+
 	void setCursorLocation(int x, int y);
 
 	Point getCursorLocation();

@@ -1724,6 +1724,28 @@ public Point getCursorLocation () {
 	return coordinateSystemMapper.getCursorLocation();
 }
 
+Rectangle fitRectangleBoundsIntoMonitorWithCursor(RECT rect) {
+	Rectangle monitorBounds = coordinateSystemMapper.getContainingMonitorBoundsInPixels(getCursorLocation());
+	if (monitorBounds == null) {
+		return null;
+	}
+	int rectWidth = rect.right - rect.left;
+	int rectHeight = rect.bottom - rect.top;
+	if (rect.left < monitorBounds.x) {
+		rect.left = monitorBounds.x;
+	}
+	int monitorBoundsRightEnd = monitorBounds.x + monitorBounds.width;
+	if (rect.right > monitorBoundsRightEnd) {
+		if (rectWidth <= monitorBounds.width) {
+			rect.left = monitorBoundsRightEnd - rectWidth;
+		} else {
+			rect.left = monitorBounds.x;
+		}
+		rectWidth = monitorBoundsRightEnd - rect.left;
+	}
+	return new Rectangle(rect.left, rect.top, rectWidth, rectHeight);
+}
+
 Point getCursorLocationInPixels () {
 	POINT pt = new POINT ();
 	OS.GetCursorPos (pt);
