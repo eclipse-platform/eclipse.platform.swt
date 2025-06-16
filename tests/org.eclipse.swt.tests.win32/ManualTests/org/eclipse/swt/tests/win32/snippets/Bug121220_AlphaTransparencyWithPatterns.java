@@ -2,8 +2,8 @@ package org.eclipse.swt.tests.win32.snippets;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageGcDrawer;
 import org.eclipse.swt.graphics.Pattern;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
@@ -16,16 +16,15 @@ public class Bug121220_AlphaTransparencyWithPatterns {
 		Shell shell = new Shell(disp);
 		shell.setSize(400, 300);
 		shell.setText("Pattern with alpha");
-		Image image = new Image(disp, 50, 50);
-		{
-			GC gc = new GC(image);
+		final ImageGcDrawer imageGcDrawer = (gc, width, height) -> {
 			gc.setForeground(new Color(null, 255, 0, 0));
 			gc.drawLine(0, 0, 49, 49);
 			gc.drawLine(0, 49, 49, 0);
 			gc.setForeground(new Color(null, 0, 0, 200));
 			gc.drawString("Pat", 5, 5);
-			gc.dispose();
-		}
+		};
+		Image image = new Image(disp, imageGcDrawer, 50, 50);
+
 		final Pattern pat = new Pattern(disp, image);
 		shell.addPaintListener(e -> {
 

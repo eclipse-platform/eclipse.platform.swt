@@ -17,8 +17,8 @@ package org.eclipse.swt.tests.manual;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageGcDrawer;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.RowLayout;
@@ -96,13 +96,13 @@ public class Bug529534_CTabFolder_topRight_wrapped {
 
 	private static Image image(Display display, int shapeColor) {
 		Rectangle bounds = new Rectangle(0, 0, 16, 16);
-		Image image = new Image(display, bounds.width, bounds.height);
-		GC gc = new GC(image);
-		gc.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
-		gc.fillRectangle(bounds);
-		gc.setBackground(display.getSystemColor(shapeColor));
-		gc.fillOval(bounds.x, bounds.y, bounds.width, bounds.height);
-		gc.dispose();
+		final ImageGcDrawer imageGcDrawer = (gc, width, height) -> {
+			gc.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
+			gc.fillRectangle(bounds);
+			gc.setBackground(display.getSystemColor(shapeColor));
+			gc.fillOval(bounds.x, bounds.y, bounds.width, bounds.height);
+		};
+		Image image = new Image(display, imageGcDrawer, bounds.width, bounds.height);
 		return image;
 	}
 }
