@@ -105,4 +105,17 @@ class SingleZoomCoordinateSystemMapper implements CoordinateSystemMapper {
 	public void setCursorLocation(int x, int y) {
 		display.setCursorLocationInPixels(DPIUtil.autoScaleUp(x), DPIUtil.autoScaleUp(y));
 	}
+
+	@Override
+	public Rectangle getContainingMonitorBoundsInPixels(Point point) {
+		int zoom = DPIUtil.getDeviceZoom();
+		point = DPIUtil.scaleUp(point, zoom);
+		for (Monitor monitor : display.getMonitors()) {
+			Rectangle monitorBounds = DPIUtil.scaleUp(monitor.getBounds(), zoom);
+			if (monitorBounds.contains(point)) {
+				return monitorBounds;
+			}
+		}
+		return null;
+	}
 }

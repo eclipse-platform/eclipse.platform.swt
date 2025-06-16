@@ -271,4 +271,11 @@ class MultiZoomCoordinateSystemMapper implements CoordinateSystemMapper {
 		return DPIUtil.getZoomForAutoscaleProperty(monitor.zoom);
 	}
 
+	@Override
+	public Rectangle getContainingMonitorBoundsInPixels(Point point) {
+		Monitor monitor = point instanceof MonitorAwarePoint monitorAwarePoint ? monitorAwarePoint.getMonitor()
+				: getContainingMonitorForPoints(point.x, point.y);
+		return getMonitorClientAreaInPixels(monitor);
+	}
+
 }
