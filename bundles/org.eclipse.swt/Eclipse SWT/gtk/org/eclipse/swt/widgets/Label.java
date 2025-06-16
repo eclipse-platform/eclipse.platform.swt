@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -256,7 +256,7 @@ void createHandle (int index) {
 			labelHandle = GTK.gtk_label_new_with_mnemonic(null);
 			if (labelHandle == 0) error(SWT.ERROR_NO_HANDLES);
 
-			imageHandle = GTK4.gtk_picture_new();
+			imageHandle = GTK.gtk_image_new();
 			if (imageHandle == 0) error(SWT.ERROR_NO_HANDLES);
 
 			GTK4.gtk_box_append(handle, labelHandle);
@@ -650,7 +650,7 @@ public void setImage (Image image) {
 			long pixbuf = ImageList.createPixbuf(image);
 			long texture = GDK.gdk_texture_new_for_pixbuf(pixbuf);
 			OS.g_object_unref(pixbuf);
-			GTK4.gtk_picture_set_paintable(imageHandle, texture);
+			GTK4.gtk_image_set_from_paintable(imageHandle, texture);
 		} else {
 			GTK3.gtk_image_set_from_surface(imageHandle, image.surface);
 		}
@@ -658,7 +658,7 @@ public void setImage (Image image) {
 		gtk_widget_show (imageHandle);
 	} else {
 		if (GTK.GTK4) {
-			GTK4.gtk_picture_set_paintable(imageHandle, 0);
+			GTK4.gtk_image_set_from_paintable(imageHandle, 0);
 		} else {
 			GTK3.gtk_image_set_from_surface(imageHandle, 0);
 		}
