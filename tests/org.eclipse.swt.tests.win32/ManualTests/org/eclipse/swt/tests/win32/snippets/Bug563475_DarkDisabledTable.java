@@ -15,9 +15,9 @@ package org.eclipse.swt.tests.win32.snippets;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.ImageGcDrawer;
 import org.eclipse.swt.internal.win32.OS;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -52,14 +52,13 @@ public class Bug563475_DarkDisabledTable {
 	static Image createImage(Display display) {
 		Color transparentColor = display.getSystemColor(SWT.COLOR_BLACK);
 
-		Image image = new Image(display, 16, 16);
-
-		GC gc = new GC(image);
-		gc.setBackground(transparentColor);
-		gc.fillRectangle(image.getBounds());
-		gc.setBackground(display.getSystemColor(SWT.COLOR_BLUE));
-		gc.fillRectangle(6, 6, 4, 4);
-		gc.dispose();
+		final ImageGcDrawer imageGcDrawer = (gc, width, height) -> {
+			gc.setBackground(transparentColor);
+			gc.fillRectangle(0, 0, width, height);
+			gc.setBackground(display.getSystemColor(SWT.COLOR_BLUE));
+			gc.fillRectangle(6, 6, 4, 4);
+		};
+		Image image = new Image(display, imageGcDrawer, 16, 16);
 
 		return image;
 	}
@@ -67,7 +66,7 @@ public class Bug563475_DarkDisabledTable {
 	static Image createItemImage(Display display) {
 		Image image = createImage(display);
 		ImageData imageData = image.getImageData();
-		imageData.transparentPixel = imageData.getPixel(0, 0);
+		imageData.transparentPixel = display.getSystemColor(SWT.COLOR_BLACK).getAlpha();
 
 		Image result = new Image(display, imageData);
 		image.dispose();

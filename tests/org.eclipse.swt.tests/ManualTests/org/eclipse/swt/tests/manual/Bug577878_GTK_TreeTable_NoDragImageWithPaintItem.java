@@ -14,11 +14,29 @@
 
 package org.eclipse.swt.tests.manual;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.dnd.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DragSource;
+import org.eclipse.swt.dnd.DragSourceAdapter;
+import org.eclipse.swt.dnd.TextTransfer;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Device;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageGcDrawer;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeColumn;
+import org.eclipse.swt.widgets.TreeItem;
 
 public final class Bug577878_GTK_TreeTable_NoDragImageWithPaintItem {
 	static final int NUM_ROWS = 100;
@@ -31,17 +49,15 @@ public final class Bug577878_GTK_TreeTable_NoDragImageWithPaintItem {
 	}
 
 	static Image makeItemImage(Device device, int iRow) {
-		Image image = new Image(device, IMG_CX, IMG_CY);
-		GC gc = new GC(image);
-		gc.setBackground(new Color(100,255,100));
-		gc.fillRectangle(0, 0, IMG_CX-1, IMG_CY-1);
-		gc.drawRectangle(0, 0, IMG_CX-1, IMG_CY-1);
-
 		String text = Integer.toString(iRow);
-		Point textSize = gc.stringExtent(text);
-		gc.drawText(text, (IMG_CX - textSize.x) / 2, (IMG_CY - textSize.y) / 2);
-
-		gc.dispose();
+		final ImageGcDrawer imageGcDrawer = (gc, width, height) -> {
+			gc.setBackground(new Color(100,255,100));
+			gc.fillRectangle(0, 0, width-1, height-1);
+			gc.drawRectangle(0, 0, width-1, height-1);
+			Point textSize = gc.stringExtent(text);
+			gc.drawText(text, (IMG_CX - textSize.x) / 2, (IMG_CY - textSize.y) / 2);
+		};
+		Image image = new Image(device, imageGcDrawer, IMG_CX, IMG_CY);
 		return image;
 	}
 
