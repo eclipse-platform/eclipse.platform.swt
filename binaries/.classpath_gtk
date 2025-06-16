@@ -18,6 +18,7 @@
 	<classpathentry kind="src" path="Eclipse SWT Accessibility/common"/>
 	<classpathentry kind="src" path="Eclipse SWT AWT/gtk"/>
 	<classpathentry kind="src" path="Eclipse SWT AWT/common"/>
+	<classpathentry kind="src" path="Eclipse SWT Controls/gtk"/>
 	<classpathentry kind="src" path="Eclipse SWT Drag and Drop/gtk"/>
 	<classpathentry kind="src" path="Eclipse SWT Drag and Drop/common"/>
 	<classpathentry kind="src" path="Eclipse SWT Printing/gtk"/>
