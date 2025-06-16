@@ -3947,9 +3947,9 @@ void init(Drawable drawable, GCData data, long hDC) {
 	if (data.nativeZoom == 0) {
 		data.nativeZoom = extractZoom(hDC);
 	}
-	Font font = data.font;
-	if (font != null) {
+	if (data.font != null) {
 		data.state &= ~FONT;
+		data.font = Font.win32_new(data.font, data.nativeZoom);
 	} else {
 		data.font = SWTFontProvider.getFont(device, OS.GetCurrentObject(hDC, OS.OBJ_FONT), data.nativeZoom);
 	}
