@@ -44,7 +44,9 @@ final class ScalingSWTFontRegistry implements SWTFontRegistry {
 
 		private Font createAndCacheFont(int zoom) {
 			Font newFont = createFont(zoom);
-			customFontHandlesKeyMap.put(Font.win32_getHandle(newFont), this);
+			FontData clonedFontData = new FontData(newFont.getFontData()[0]);
+			fontsKeyMap.put(clonedFontData, this);
+			fontHandlesKeyMap.put(Font.win32_getHandle(newFont), this);
 			scaledFonts.put(zoom, newFont);
 			return newFont;
 		}
@@ -108,8 +110,8 @@ final class ScalingSWTFontRegistry implements SWTFontRegistry {
 	}
 
 	private ScaledFontContainer systemFontContainer;
-	private Map<FontData, ScaledFontContainer> customFontsKeyMap = new HashMap<>();
-	private Map<Long, ScaledFontContainer> customFontHandlesKeyMap = new HashMap<>();
+	private Map<FontData, ScaledFontContainer> fontsKeyMap = new HashMap<>();
+	private Map<Long, ScaledFontContainer> fontHandlesKeyMap = new HashMap<>();
 	private Device device;
 
 	ScalingSWTFontRegistry(Device device) {
@@ -125,27 +127,26 @@ final class ScalingSWTFontRegistry implements SWTFontRegistry {
 	@Override
 	public Font getFont(FontData fontData, int zoom) {
 		ScaledFontContainer container;
-		if (customFontsKeyMap.containsKey(fontData)) {
-			container = customFontsKeyMap.get(fontData);
+		if (fontsKeyMap.containsKey(fontData)) {
+			container = fontsKeyMap.get(fontData);
 		} else {
 			FontData clonedFontData = new FontData(fontData);
 			container = new ScaledCustomFontContainer(clonedFontData);
-			customFontsKeyMap.put(clonedFontData, container);
 		}
 		return container.getScaledFont(zoom);
 	}
 
 	@Override
 	public Font getFont(long fontHandle, int zoom) {
-		if (customFontHandlesKeyMap.containsKey(fontHandle)) {
-			return customFontHandlesKeyMap.get(fontHandle).getScaledFont(zoom);
+		if (fontHandlesKeyMap.containsKey(fontHandle)) {
+			return fontHandlesKeyMap.get(fontHandle).getScaledFont(zoom);
 		}
 		return Font.win32_new(device, fontHandle, zoom);
 	}
 
 	@Override
 	public void dispose() {
-		customFontsKeyMap.values().forEach(ScaledFontContainer::dispose);
-		customFontsKeyMap.clear();
+		fontsKeyMap.values().forEach(ScaledFontContainer::dispose);
+		fontsKeyMap.clear();
 	}
 }

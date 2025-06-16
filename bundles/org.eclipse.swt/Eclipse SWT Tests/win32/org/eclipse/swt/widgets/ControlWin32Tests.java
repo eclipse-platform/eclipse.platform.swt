@@ -44,6 +44,17 @@ class ControlWin32Tests {
 	}
 
 	@Test
+	public void testSetFontWithMonitorSpecificScalingEnabled() {
+		DPIUtil.setMonitorSpecificScaling(true);
+		Display display = Display.getDefault();
+		Image colorImage = new Image(display, 10, 10);
+		GC gc = new GC(colorImage);
+		gc.setFont(display.getSystemFont());
+		Font font = gc.getFont();
+		assertEquals(display.getSystemFont(), font);
+	}
+
+	@Test
 	public void testDoNotScaleFontCorrectlyInNoAutoScaleSzenario() {
 		DPIUtil.setMonitorSpecificScaling(false);
 		Display display = Display.getDefault();
