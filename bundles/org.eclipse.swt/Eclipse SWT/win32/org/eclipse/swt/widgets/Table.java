@@ -7158,82 +7158,77 @@ LRESULT wmNotifyToolTip (NMHDR hdr, long wParam, long lParam) {
 		case OS.TTN_SHOW: {
 			LRESULT result = super.wmNotify (hdr, wParam, lParam);
 			if (result != null) return result;
-			if (hdr.code != OS.TTN_SHOW) tipRequested = true;
-			long code = callWindowProc (handle, OS.WM_NOTIFY, wParam, lParam);
-			if (hdr.code != OS.TTN_SHOW) tipRequested = false;
 			if (toolTipText != null) break;
-			if (isCustomToolTip ()) {
-				LVHITTESTINFO pinfo = new LVHITTESTINFO ();
-				int pos = OS.GetMessagePos ();
-				POINT pt = new POINT();
-				OS.POINTSTOPOINT (pt, pos);
-				OS.ScreenToClient (handle, pt);
-				pinfo.x = pt.x;
-				pinfo.y = pt.y;
-				/*
-				*  Bug in Windows.  When LVM_SUBITEMHITTEST is used to hittest
-				*  a point that is above the table, instead of returning -1 to
-				*  indicate that the hittest failed, a negative index is returned.
-				*  The fix is to consider any value that is negative a failure.
-				*/
-				if (OS.SendMessage (handle, OS.LVM_SUBITEMHITTEST, 0, pinfo) >= 0) {
-					TableItem item = _getItem (pinfo.iItem);
-					long hDC = OS.GetDC (handle);
-					long oldFont = 0, newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
-					if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
-					long hFont = item.fontHandle (pinfo.iSubItem);
-					if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
-					Event event = sendMeasureItemEvent (item, pinfo.iItem, pinfo.iSubItem, hDC);
-					if (!isDisposed () && !item.isDisposed ()) {
-						RECT itemRect = new RECT ();
-						Rectangle boundsInPixels = DPIUtil.scaleUp(event.getBounds(), getZoom());
-						OS.SetRect (itemRect, boundsInPixels.x, boundsInPixels.y, boundsInPixels.x + boundsInPixels.width, boundsInPixels.y + boundsInPixels.height);
-						if (hdr.code == OS.TTN_SHOW) {
-							RECT toolRect = toolTipRect (itemRect);
-							OS.MapWindowPoints (handle, 0, toolRect, 2);
-							long hwndToolTip = OS.SendMessage (handle, OS.LVM_GETTOOLTIPS, 0, 0);
-							int flags = OS.SWP_NOACTIVATE | OS.SWP_NOZORDER;
-							int width = toolRect.right - toolRect.left, height = toolRect.bottom - toolRect.top;
-							OS.SetWindowPos (hwndToolTip, 0, toolRect.left , toolRect.top, width, height, flags);
-						} else {
-							NMTTDISPINFO lpnmtdi = new NMTTDISPINFO ();
-							OS.MoveMemory (lpnmtdi, lParam, NMTTDISPINFO.sizeof);
-							if (lpnmtdi.lpszText != 0) {
-								OS.MoveMemory (lpnmtdi.lpszText, new char [1], 2);
-								OS.MoveMemory (lParam, lpnmtdi, NMTTDISPINFO.sizeof);
-							}
-							RECT cellRect = item.getBounds (pinfo.iItem, pinfo.iSubItem, true, true, true, true, hDC);
-							RECT clientRect = new RECT ();
-							OS.GetClientRect (handle, clientRect);
-							if (itemRect.right > cellRect.right || itemRect.right > clientRect.right) {
-								//TEMPORARY CODE
-								String string = " ";
-//								String string = null;
-//								if (pinfo.iSubItem == 0) {
-//									string = item.text;
-//								} else {
-//									String [] strings  = item.strings;
-//									if (strings != null) string = strings [pinfo.iSubItem];
-//								}
-								if (string != null) {
-									Shell shell = getShell ();
-									char [] chars = new char [string.length () + 1];
-									string.getChars (0, string.length (), chars, 0);
-									shell.setToolTipText (lpnmtdi, chars);
-									OS.MoveMemory (lParam, lpnmtdi, NMTTDISPINFO.sizeof);
-								}
-							}
-						}
-					}
-					if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
-					if (newFont != 0) OS.SelectObject (hDC, oldFont);
-					OS.ReleaseDC (handle, hDC);
-				}
-			}
-			return new LRESULT (code);
+			result = positionTooltip(hdr, lParam);
+			return result;
 		}
 	}
 	return null;
+}
+
+private LRESULT positionTooltip(NMHDR hdr, long lParam) {
+	LRESULT result = null;
+	LVHITTESTINFO pinfo = new LVHITTESTINFO ();
+	int pos = OS.GetMessagePos ();
+	POINT pt = new POINT();
+	OS.POINTSTOPOINT (pt, pos);
+	OS.ScreenToClient (handle, pt);
+	pinfo.x = pt.x;
+	pinfo.y = pt.y;
+	/*
+	*  Bug in Windows.  When LVM_SUBITEMHITTEST is used to hittest
+	*  a point that is above the table, instead of returning -1 to
+	*  indicate that the hittest failed, a negative index is returned.
+	*  The fix is to consider any value that is negative a failure.
+	*/
+	if (OS.SendMessage (handle, OS.LVM_SUBITEMHITTEST, 0, pinfo) >= 0) {
+		TableItem item = _getItem (pinfo.iItem);
+		long hDC = OS.GetDC (handle);
+		long oldFont = 0, newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+		if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
+		long hFont = item.fontHandle (pinfo.iSubItem);
+		if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
+		Event event = sendMeasureItemEvent (item, pinfo.iItem, pinfo.iSubItem, hDC);
+		if (!isDisposed () && !item.isDisposed ()) {
+			RECT itemRect = new RECT ();
+			Rectangle boundsInPixels = DPIUtil.scaleUp(event.getBounds(), getZoom());
+			OS.SetRect (itemRect, boundsInPixels.x, boundsInPixels.y, boundsInPixels.x + boundsInPixels.width, boundsInPixels.y + boundsInPixels.height);
+			if (hdr.code == OS.TTN_SHOW) {
+				RECT toolRect = isCustomToolTip() ? toolTipRect (itemRect) : itemRect;
+				OS.MapWindowPoints (handle, 0, toolRect, 2);
+				long hwndToolTip = OS.SendMessage (handle, OS.LVM_GETTOOLTIPS, 0, 0);
+				int flags = OS.SWP_NOACTIVATE | OS.SWP_NOZORDER;
+				Rectangle adjustedTooltipBounds = getDisplay().fitRectangleBoundsIntoMonitorWithCursor(toolRect);
+				OS.SetWindowPos(hwndToolTip, 0, adjustedTooltipBounds.x, adjustedTooltipBounds.y,
+						adjustedTooltipBounds.width, adjustedTooltipBounds.height, flags);
+				result = LRESULT.ONE;
+			} else if (isCustomToolTip()) {
+				NMTTDISPINFO lpnmtdi = new NMTTDISPINFO ();
+				OS.MoveMemory (lpnmtdi, lParam, NMTTDISPINFO.sizeof);
+				if (lpnmtdi.lpszText != 0) {
+					OS.MoveMemory (lpnmtdi.lpszText, new char [1], 2);
+					OS.MoveMemory (lParam, lpnmtdi, NMTTDISPINFO.sizeof);
+				}
+				RECT cellRect = item.getBounds (pinfo.iItem, pinfo.iSubItem, true, true, true, true, hDC);
+				RECT clientRect = new RECT ();
+				OS.GetClientRect (handle, clientRect);
+				if (itemRect.right > cellRect.right || itemRect.right > clientRect.right) {
+					//TEMPORARY CODE
+					String string = " ";
+					Shell shell = getShell ();
+					char [] chars = new char [string.length () + 1];
+					string.getChars (0, string.length (), chars, 0);
+					shell.setToolTipText (lpnmtdi, chars);
+					OS.MoveMemory (lParam, lpnmtdi, NMTTDISPINFO.sizeof);
+					result = LRESULT.ONE;
+				}
+			}
+		}
+		if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
+		if (newFont != 0) OS.SelectObject (hDC, oldFont);
+		OS.ReleaseDC (handle, hDC);
+	}
+	return result;
 }
 
 LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, long lParam) {
