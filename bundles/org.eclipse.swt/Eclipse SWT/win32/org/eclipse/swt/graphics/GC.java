@@ -63,7 +63,7 @@ import org.eclipse.swt.widgets.*;
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Examples: GraphicsExample, PaintExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
-public final class GC extends Resource {
+public sealed class GC extends Resource permits SkijaGC {
 
 	/**
 	 * the handle to the OS device context
@@ -109,7 +109,7 @@ public final class GC extends Resource {
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
-GC() {
+protected GC() {
 }
 
 /**
@@ -5132,6 +5132,16 @@ public static GC win32_new(Drawable drawable, GCData data) {
 	return gc;
 }
 
+public static GC skiagc_new(Drawable drawable,GCData data) {
+
+	SkijaGC gc = new SkijaGC();
+	long hDC = drawable.internal_new_GC(data);
+	gc.device = data.device;
+	gc.init(drawable, data, hDC);
+	return gc;
+
+}
+
 /**
  * Invokes platform specific functionality to wrap a graphics context.
  * <p>
@@ -5187,7 +5197,7 @@ private static int sin(int angle, int length) {
 	return (int)(Math.sin(angle * (Math.PI/180)) * length);
 }
 
-private int getZoom() {
+protected int getZoom() {
 	return DPIUtil.getZoomForAutoscaleProperty(data.nativeZoom);
 }
 

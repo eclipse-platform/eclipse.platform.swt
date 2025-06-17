@@ -66,7 +66,8 @@ public abstract class Widget {
 	 */
 	public int nativeZoom;
 	boolean autoScaleDisabled = false;
-	int style, state;
+	int style;
+	protected int state;
 	Display display;
 	EventTable eventTable;
 	Object data;
@@ -98,7 +99,7 @@ public abstract class Widget {
 
 	/* More global widget state flags */
 	static final int TRACK_MOUSE	= 1<<13;
-	static final int FOREIGN_HANDLE	= 1<<14;
+	protected static final int FOREIGN_HANDLE	= 1<<14;
 	static final int DRAG_DETECT	= 1<<15;
 
 	/* Move and resize state flags */
