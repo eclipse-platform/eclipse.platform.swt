@@ -45,6 +45,7 @@ public interface ImageGcDrawer {
 	 * @param imageData The resulting ImageData after <code>drawOn</code> was called
 	 */
 	default void postProcess(ImageData imageData) {
+		imageData.data = null;
 	}
 
 	/**
