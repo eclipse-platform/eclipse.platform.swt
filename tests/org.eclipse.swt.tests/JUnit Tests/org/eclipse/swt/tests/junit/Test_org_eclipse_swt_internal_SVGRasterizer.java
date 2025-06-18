@@ -55,15 +55,23 @@ public class Test_org_eclipse_swt_internal_SVGRasterizer {
 	@Test
 	public void test_ConstructorLorg_eclipse_swt_graphics_Device_ImageDataProvider() {
 		ImageDataProvider validImageDataProvider = zoom -> {
-			String fileName = "collapseall.svg";
-			return new ImageData(getPath(fileName));
+			if (zoom == 100) {
+				String fileName = "collapseall.svg";
+				return new ImageData(getPath(fileName));
+			} else {
+				return null;
+			}
 		};
 		Image image = new Image(Display.getDefault(), validImageDataProvider);
 		image.dispose();
 
 		ImageDataProvider corruptImageDataProvider = zoom -> {
-			String fileName = "corrupt.svg";
-			return new ImageData(getPath(fileName));
+			if (zoom == 100) {
+				String fileName = "corrupt.svg";
+				return new ImageData(getPath(fileName));
+			} else {
+				return null;
+			}
 		};
 		SWTException e = assertThrows(SWTException.class,
 				() -> new Image(Display.getDefault(), corruptImageDataProvider));

@@ -24,6 +24,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,8 +33,10 @@ import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.ImageDataProvider;
 import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.tests.graphics.ImageDataTestHelper;
@@ -797,6 +800,25 @@ public void test_setAlphasIII$BI() {
 	ex = assertThrows("No exception thrown for putWidth < 0", IllegalArgumentException.class,
 		() -> imageData.setAlphas(0, 1, -1, alphaData, OFFSET));
 	assertSWTProblem("Incorrect exception thrown for putWidth < 0", SWT.ERROR_INVALID_ARGUMENT, ex);
+}
+
+@Test
+public void test_drawImageFailsWithNonScalingImageDataProviderWhenstrictCheckEnabled() {
+	Display display = Display.getDefault();
+	GC gc = new GC(display);
+	try {
+		ImageDataProvider wrongDataProvider = (zoom) -> new ImageData(16, 16, 32, new PaletteData());
+		Image image = new Image(display, wrongDataProvider);
+		gc.drawImage(image, 0, 0, 16, 16, 0, 0, 16, 16);
+		image.dispose();
+		if (System.getProperty("org.eclipse.swt.internal.enableStrictChecks") != null) {
+			fail("Expected an exception due to non-linearly scaled image data provider");
+		}
+	} catch (IllegalArgumentException | SWTException e) {
+	} finally {
+		gc.dispose();
+		display.dispose();
+	}
 }
 
 @Test
