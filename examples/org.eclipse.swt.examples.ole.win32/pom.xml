@@ -20,7 +20,7 @@
     <relativePath>../../</relativePath>
   </parent>
   <artifactId>org.eclipse.swt.examples.ole.win32</artifactId>
-  <version>3.109.300-SNAPSHOT</version>
+  <version>3.109.400-SNAPSHOT</version>
   <packaging>eclipse-plugin</packaging>
 
   <build>
