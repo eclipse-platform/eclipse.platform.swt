@@ -2561,6 +2561,10 @@ private class ImageGcDrawerWrapper extends DynamicImageProviderWrapper {
 			drawer.drawOn(gc, width, height);
 			ImageData imageData = Image.this.getImageMetadata(zoom).getImageData();
 			drawer.postProcess(imageData);
+			if(imageData.data != null) {
+				zoomLevelToImageHandle.get(zoom).destroy();
+				init(imageData, zoom);
+			}
 			return zoomLevelToImageHandle.get(zoom);
 		} finally {
 			gc.dispose();
