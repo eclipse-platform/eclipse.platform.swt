@@ -1026,7 +1026,10 @@ private int calculateZoomForImage(int gcZoom, int srcWidth, int srcHeight, int d
 
 private void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY,
 		int destWidth, int destHeight, int imageZoom, int scaledImageZoom) {
-	Rectangle src = DPIUtil.scaleUp(drawable, new Rectangle(srcX, srcY, srcWidth, srcHeight), scaledImageZoom);
+	Rectangle scaledBounds = image.getBounds(scaledImageZoom);
+	Rectangle unScaledBound = image.getBounds();
+	float scalingFactor = (float) scaledBounds.height / unScaledBound.height;
+	Rectangle src = DPIUtil.scaleUp(drawable, new Rectangle(srcX, srcY, srcWidth, srcHeight),(int) (scalingFactor * 100));
 	Rectangle dest = DPIUtil.scaleUp(drawable, new Rectangle(destX, destY, destWidth, destHeight), imageZoom);
 	if (scaledImageZoom != 100) {
 		/*
@@ -1034,12 +1037,11 @@ private void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHei
 		 * the coordinates may be slightly off. The workaround is to restrict
 		 * coordinates to the allowed bounds.
 		 */
-		Rectangle b = image.getBounds(scaledImageZoom);
-		int errX = src.x + src.width - b.width;
-		int errY = src.y + src.height - b.height;
+		int errX = src.x + src.width - scaledBounds.width;
+		int errY = src.y + src.height - scaledBounds.height;
 		if (errX != 0 || errY != 0) {
 			if (errX <= scaledImageZoom / 100 && errY <= scaledImageZoom / 100) {
-				src.intersect(b);
+				src.intersect(scaledBounds);
 			} else {
 				SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 			}
