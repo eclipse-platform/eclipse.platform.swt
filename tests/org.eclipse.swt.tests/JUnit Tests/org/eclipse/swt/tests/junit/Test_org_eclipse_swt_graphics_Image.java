@@ -1043,13 +1043,15 @@ public void test_imageDataIsCached() {
 public void test_imageDataSameViaDifferentProviders() {
 	assumeFalse("Cocoa generates inconsistent image data", SwtTestUtil.isCocoa);
 	String imagePath = getPath("collapseall.png");
-	ImageFileNameProvider imageFileNameProvider = __ -> {
-		return imagePath;
+	ImageFileNameProvider imageFileNameProvider = zoom -> {
+		return (zoom == 100) ? imagePath : null;
 	};
-	ImageDataProvider dataProvider = __ -> {
-		try (InputStream imageStream = Files.newInputStream(Path.of(imagePath))) {
-			return new ImageData(imageStream);
-		} catch (IOException e) {
+	ImageDataProvider dataProvider = zoom -> {
+		if (zoom == 100) {
+			try (InputStream imageStream = Files.newInputStream(Path.of(imagePath))) {
+				return new ImageData(imageStream);
+			} catch (IOException e) {
+			}
 		}
 		return null;
 	};
