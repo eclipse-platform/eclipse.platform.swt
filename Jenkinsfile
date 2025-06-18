@@ -113,28 +113,18 @@ pipeline {
 			steps {
 				dir('eclipse.platform.swt') {
 					checkout scm
-					script {
-						def authorMail = sh(script: 'git log -1 --pretty=format:"%ce" HEAD', returnStdout: true)
-						echo 'HEAD commit author: ' + authorMail
-						def buildBotMail = 'platform-bot@eclipse.org'
-						if (buildBotMail.equals(authorMail) && !params.forceNativeBuilds) {
-							// Prevent endless build-loops due to self triggering because of a previous automated build of natives and the associated updates.
-							currentBuild.result = 'ABORTED'
-							error('Abort build only triggered by automated SWT-natives update.')
-						}
-						sh """
+					sh '''
 						java -version
 						git version
 						git lfs version
-						git config --global user.email '${buildBotMail}'
+						git config --global user.email 'platform-bot@eclipse.org'
 						git config --global user.name 'Eclipse Platform Bot'
 						git config --unset core.hooksPath # Jenkins disables hooks by default as security feature, but we need the hooks for LFS
 						git lfs update # Install Git LFS hooks in repository, which has been skipped due to the initially nulled hookspath
 						git lfs pull
 						git fetch --all --tags --quiet
 						git remote set-url --push origin git@github.com:eclipse-platform/eclipse.platform.swt.git
-						"""
-					}
+					'''
 				}
 			}
 		}
