@@ -121,14 +121,14 @@ public class JSVGRasterizer implements SVGRasterizer {
 		int width = rasterizedImage.getWidth();
 		int height = rasterizedImage.getHeight();
 		int[] pixels = ((DataBufferInt) rasterizedImage.getRaster().getDataBuffer()).getData();
-		PaletteData paletteData = new PaletteData(0x00FF0000, 0x0000FF00, 0x000000FF);
-		ImageData imageData = new ImageData(width, height, 32, paletteData);
+		PaletteData paletteData = new PaletteData(0xFF0000, 0x00FF00, 0x0000FF);
+		ImageData imageData = new ImageData(width, height, 24, paletteData);
 		int index = 0;
 		for (int y = 0; y < imageData.height; y++) {
 			for (int x = 0; x < imageData.width; x++) {
 				int alpha = (pixels[index] >> 24) & 0xFF;
 				imageData.setAlpha(x, y, alpha);
-				imageData.setPixel(x, y, pixels[index++]);
+				imageData.setPixel(x, y, pixels[index++] & 0x00FFFFFF);
 			}
 		}
 		return imageData;
