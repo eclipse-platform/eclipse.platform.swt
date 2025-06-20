@@ -36,6 +36,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.ImageGcDrawer;
 import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
@@ -503,8 +504,9 @@ public static boolean hasPixel(Control control, Color expectedColor) {
  *         widget
  */
 public static boolean hasPixel(Control control, Color expectedColor, Rectangle rect) {
+	ImageGcDrawer noOpGcDrawer = (gc, height, width) -> {};
 	GC gc = new GC(control);
-	final Image image = new Image(control.getDisplay(), control.getSize().x, control.getSize().y);
+	final Image image = new Image(control.getDisplay(), noOpGcDrawer, control.getSize().x, control.getSize().y);
 	gc.copyArea(image, 0, 0);
 	gc.dispose();
 	boolean result = hasPixel(image, expectedColor, rect);
