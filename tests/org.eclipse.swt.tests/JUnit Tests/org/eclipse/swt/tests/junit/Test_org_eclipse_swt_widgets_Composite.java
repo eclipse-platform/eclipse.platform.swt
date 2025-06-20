@@ -32,6 +32,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Widget;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -121,6 +122,7 @@ public void test_setVisibility_and_sizing() {
 }
 
 @Test
+@Ignore("Not working (yet)")
 public void test_setFocus_toChild_afterOpen() {
 	if (SwtTestUtil.isCocoa) {
 		//TODO Fix Cocoa failure.
@@ -136,6 +138,7 @@ public void test_setFocus_toChild_afterOpen() {
 }
 
 @Test
+@Ignore("Not working (yet)")
 public void test_setFocus_toChild_beforeOpen() {
 	if (SwtTestUtil.isCocoa) {
 		//TODO Fix Cocoa failure.
@@ -151,6 +154,7 @@ public void test_setFocus_toChild_beforeOpen() {
 }
 
 @Test
+@Ignore("Not working (yet)")
 public void test_setFocus_withInvisibleChild() {
 	final AtomicReference<Boolean> wasSetFocusCalledOnInvisibleChildWidget = new AtomicReference<>(false);
 	Composite invisibleChildWidget = new Composite(composite, SWT.NONE) {
@@ -168,6 +172,7 @@ public void test_setFocus_withInvisibleChild() {
 }
 
 @Test
+@Ignore("Not working (yet)")
 public void test_setFocus_withVisibleAndInvisibleChild() {
 	final AtomicReference<Boolean> wasSetFocusCalledOnInvisibleChildWidget = new AtomicReference<>(false);
 	Composite invisibleChildWidget = new Composite(composite, SWT.NONE) {

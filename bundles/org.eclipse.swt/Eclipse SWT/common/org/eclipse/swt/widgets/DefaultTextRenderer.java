@@ -21,8 +21,6 @@ public class DefaultTextRenderer extends TextRenderer {
 
 	@Override
 	protected void paint(GC gc, int width, int height) {
-		gc.setFont(text.getFont());
-
 		final boolean enabled = text.isEnabled();
 		if (!enabled) {
 			gc.setForeground(getColor(COLOR_DISABLED));

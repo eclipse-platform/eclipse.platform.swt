@@ -485,11 +485,11 @@ public void setDefaultButton (Button button) {
 	}
 	if (button == defaultButton) return;
 	defaultButton = button;
-	NSButtonCell cell = null;
-	if (defaultButton != null && (defaultButton.style & SWT.PUSH) != 0) {
-		cell = new NSButtonCell (((NSButton)defaultButton.view).cell ());
-	}
-	view.window().setDefaultButtonCell (cell);
+//	NSButtonCell cell = null;
+//	if (defaultButton != null && (defaultButton.style & SWT.PUSH) != 0) {
+//		cell = new NSButtonCell (((NSButton)defaultButton.view).cell ());
+//	}
+//	view.window().setDefaultButtonCell (cell);
 	display.updateDefaultButton();
 }
 

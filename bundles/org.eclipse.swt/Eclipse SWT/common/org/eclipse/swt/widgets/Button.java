@@ -324,7 +324,7 @@ public class Button extends CustomControl {
 		if (!isVisible()) {
 			return;
 		}
-		renderer.paint(event.gc);
+		Drawing.drawWithGC(this, event.gc, renderer::paint);
 	}
 
 	private void onDispose(Event event) {

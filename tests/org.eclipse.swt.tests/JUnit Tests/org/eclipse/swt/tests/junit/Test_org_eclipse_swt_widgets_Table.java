@@ -22,6 +22,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
@@ -1245,6 +1246,7 @@ public void test_selectII() {
 	assertArrayEquals(new int[]{0, 2, 7, 10, 14}, table.getSelectionIndices());
 
 	table.select(4, 10);
+	System.out.println(Arrays.toString(table.getSelectionIndices()));
 	assertArrayEquals(new int[]{0, 2, 4, 5, 6, 7, 8, 9, 10, 14}, table.getSelectionIndices());
 
 	table.select(4, 14);
@@ -1913,5 +1915,36 @@ public void test_setTopIndex() {
 	}
 	shell.setVisible(false);
 	assertEquals(5, table.getTopIndex());
+}
+
+@Test
+public void testDisposeStillValidColumn() {
+	assertEquals(0, table.getColumnCount());
+	assertEquals(0, table.getItemCount());
+
+	final TableColumn column = new TableColumn(table, SWT.LEFT);
+	column.setText("Column");
+	column.setWidth(40);
+
+	new TableItem(table, SWT.LEFT)
+			.setText("item");
+
+	boolean[] disposeInvoked = new boolean[1];
+	table.addListener(SWT.Dispose, event -> {
+		// the columns and items must be disposed *after* the table sent the dispose event
+		final TableColumn column0 = table.getColumn(0);
+		assertEquals("Column", column0.getText());
+
+		final TableItem item0 = table.getItem(0);
+		assertEquals("item", item0.getText());
+
+		disposeInvoked[0] = true;
+	});
+
+	table.setSize(50, 50);
+	shell.open();
+	// will dispose the table:
+	setWidget(null);
+	assertTrue(disposeInvoked[0]);
 }
 }

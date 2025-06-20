@@ -104,7 +104,7 @@ public class List extends NativeBasedCustomScrollable {
 			return;
 		}
 
-		renderer.paint(event.gc);
+		Drawing.drawWithGC(this, event.gc, gc -> renderer.paint(gc));
 	}
 
 	private void onKeyReleased(Event event) {
@@ -371,14 +371,10 @@ public class List extends NativeBasedCustomScrollable {
 	public int getItemHeightInPixels() {
 		checkWidget();
 		String referenceText = this.items.isEmpty() ? DUMMY_ITEM_TEXT : this.items.get(0);
-		final GC gc = new GC(this);
-		Point size;
-		try {
+		Point size = Drawing.measure(this, gc -> {
 			gc.setFont(getFont());
-			size = gc.textExtent(referenceText);
-		} finally {
-			gc.dispose();
-		}
+			return gc.textExtent(referenceText);
+		});
 		int itemHeight = size.y;
 		if (itemHeight <= 0) error(SWT.ERROR_CANNOT_GET_ITEM_HEIGHT);
 		return itemHeight;

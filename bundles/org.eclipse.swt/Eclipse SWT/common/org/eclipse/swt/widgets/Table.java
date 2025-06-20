@@ -496,7 +496,7 @@ public class Table extends CustomComposite {
 			return;
 		}
 
-		renderer.paint(event.gc);
+		Drawing.drawWithGC(this, event.gc, renderer::paint);
 	}
 
 	public boolean columnsExist() {
@@ -2973,22 +2973,14 @@ public class Table extends CustomComposite {
 
 	// TODO move this heuristic somewhere else.
 	static int guessTextHeight(Table table) {
-		final GC gc = new GC(table);
-		try {
+		return Drawing.measure(table, gc -> {
 			gc.setFont(table.getFont());
 			return gc.getFontMetrics().getHeight();
-		} finally {
-			gc.dispose();
-		}
+		});
 	}
 
 	Point computeTextExtent(String str) {
-		final GC gc = new GC(this);
-		try {
-			return gc.textExtent(str, DRAW_FLAGS);
-		} finally {
-			gc.dispose();
-		}
+		return Drawing.getTextExtent(this, str, DRAW_FLAGS);
 	}
 
 	TableColumnsHandler getColumnsHandler() {

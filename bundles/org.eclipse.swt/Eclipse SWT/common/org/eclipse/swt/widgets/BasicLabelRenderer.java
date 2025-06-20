@@ -113,88 +113,8 @@ class BasicLabelRenderer extends LabelRenderer {
 			x = width - rightMargin - extent.x;
 		}
 
-		final Color background = label.getBackground();
 		int style = label.getStyle();
-		// draw a background image behind the text
-		try {
-			final Image backgroundImage = getBackgroundImage();
-			final Color[] gradientColors = getGradientColors();
-			final int[] gradientPercents = getGradientPercents();
-			if (backgroundImage != null) {
-				// draw a background image behind the text
-				Rectangle imageRect = backgroundImage.getBounds();
-				// tile image to fill space
-				gc.setBackground(background);
-				gc.fillRectangle(0, 0, width, height);
-				int xPos = 0;
-				while (xPos < width) {
-					int yPos = 0;
-					while (yPos < height) {
-						gc.drawImage(backgroundImage, xPos, yPos);
-						yPos += imageRect.height;
-					}
-					xPos += imageRect.width;
-				}
-			} else if (gradientColors != null) {
-				// draw a gradient behind the text
-				final Color oldBackground = gc.getBackground();
-				if (gradientColors.length == 1) {
-					if (gradientColors[0] != null) {
-						gc.setBackground(gradientColors[0]);
-					}
-					gc.fillRectangle(0, 0, width, height);
-				} else {
-					final boolean gradientVertical = isGradientVertical();
-					final Color oldForeground = gc.getForeground();
-					Color lastColor = gradientColors[0];
-					if (lastColor == null) {
-						lastColor = oldBackground;
-					}
-					int pos = 0;
-					for (int i = 0; i < gradientPercents.length; ++i) {
-						gc.setForeground(lastColor);
-						lastColor = gradientColors[i + 1];
-						if (lastColor == null) {
-							lastColor = oldBackground;
-						}
-						gc.setBackground(lastColor);
-						if (gradientVertical) {
-							final int gradientHeight = (gradientPercents[i]
-														* height / 100) - pos;
-							gc.fillGradientRectangle(0, pos, width,
-									gradientHeight, true);
-							pos += gradientHeight;
-						} else {
-							final int gradientWidth = (gradientPercents[i]
-													   * width / 100) - pos;
-							gc.fillGradientRectangle(pos, 0, gradientWidth,
-									height, false);
-							pos += gradientWidth;
-						}
-					}
-					if (gradientVertical && pos < height) {
-						gc.setBackground(background);
-						gc.fillRectangle(0, pos, width, height - pos);
-					}
-					if (!gradientVertical && pos < width) {
-						gc.setBackground(background);
-						gc.fillRectangle(pos, 0, width - pos, height);
-					}
-					gc.setForeground(oldForeground);
-				}
-				gc.setBackground(oldBackground);
-			} else {
-				if (background.getAlpha() > 0) {
-					gc.setBackground(background);
-					gc.fillRectangle(0, 0, width, height);
-				}
-			}
-		} catch (SWTException e) {
-			if ((style & SWT.DOUBLE_BUFFERED) == 0) {
-				gc.setBackground(background);
-				gc.fillRectangle(0, 0, width, height);
-			}
-		}
+		drawBackground(gc, width, height, style);
 
 		// draw border
 		if ((style & SWT.SHADOW_IN) != 0 || (style & SWT.SHADOW_OUT) != 0) {
@@ -267,6 +187,99 @@ class BasicLabelRenderer extends LabelRenderer {
 				gc.drawText(line, lineX, lineY, DRAW_FLAGS);
 				lineY += lineHeight;
 			}
+		}
+	}
+
+	private void drawBackground(GC gc, int width, int height, int style) {
+		final Color background = label.getBackground();
+		final Image backgroundImage = getBackgroundImage();
+		final Color[] gradientColors = getGradientColors();
+		final int[] gradientPercents = getGradientPercents();
+		// draw a background image behind the text
+		try {
+			if (backgroundImage != null) {
+				drawBackgroundImage(gc, width, height, backgroundImage, background);
+			} else if (gradientColors != null) {
+				drawBackgroundGradient(gc, width, height, gradientColors, gradientPercents, background);
+			} else {
+				fillBackground(gc, width, height, background);
+			}
+		} catch (SWTException e) {
+			if ((style & SWT.DOUBLE_BUFFERED) == 0) {
+				fillBackground(gc, width, height, background);
+			}
+		}
+	}
+
+	private void drawBackgroundImage(GC gc, int width, int height, Image backgroundImage, Color background) {
+		// draw a background image behind the text
+		Rectangle imageRect = backgroundImage.getBounds();
+		// tile image to fill space
+		gc.setBackground(background);
+		gc.fillRectangle(0, 0, width, height);
+		int xPos = 0;
+		while (xPos < width) {
+			int yPos = 0;
+			while (yPos < height) {
+				gc.drawImage(backgroundImage, xPos, yPos);
+				yPos += imageRect.height;
+			}
+			xPos += imageRect.width;
+		}
+	}
+
+	private void drawBackgroundGradient(GC gc, int width, int height, Color[] gradientColors, int[] gradientPercents, Color background) {
+		final Color oldBackground = gc.getBackground();
+		if (gradientColors.length == 1) {
+			if (gradientColors[0] != null) {
+				gc.setBackground(gradientColors[0]);
+			}
+			gc.fillRectangle(0, 0, width, height);
+		} else {
+			final boolean gradientVertical = isGradientVertical();
+			final Color oldForeground = gc.getForeground();
+			Color lastColor = gradientColors[0];
+			if (lastColor == null) {
+				lastColor = oldBackground;
+			}
+			int pos = 0;
+			for (int i = 0; i < gradientPercents.length; ++i) {
+				gc.setForeground(lastColor);
+				lastColor = gradientColors[i + 1];
+				if (lastColor == null) {
+					lastColor = oldBackground;
+				}
+				gc.setBackground(lastColor);
+				if (gradientVertical) {
+					final int gradientHeight = (gradientPercents[i]
+					                            * height / 100) - pos;
+					gc.fillGradientRectangle(0, pos, width,
+					                         gradientHeight, true);
+					pos += gradientHeight;
+				} else {
+					final int gradientWidth = (gradientPercents[i]
+					                           * width / 100) - pos;
+					gc.fillGradientRectangle(pos, 0, gradientWidth,
+					                         height, false);
+					pos += gradientWidth;
+				}
+			}
+			if (gradientVertical && pos < height) {
+				gc.setBackground(background);
+				gc.fillRectangle(0, pos, width, height - pos);
+			}
+			if (!gradientVertical && pos < width) {
+				gc.setBackground(background);
+				gc.fillRectangle(pos, 0, width - pos, height);
+			}
+			gc.setForeground(oldForeground);
+		}
+	}
+
+	private void fillBackground(GC gc, int width, int height, Color background) {
+		if (background.getAlpha() > 0) {
+			gc.setBackground(background);
+			gc.fillRectangle(0, 0, width, height);
 		}
 	}
 

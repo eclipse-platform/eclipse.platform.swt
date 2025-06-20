@@ -733,13 +733,8 @@ public Rectangle computeTrim(int x, int y, int width, int height) {
 }
 
 Image createButtonImage(Display display, int button) {
-	final GC gc = new GC(this);
-	final Point size;
-	try {
-			size = renderer.computeSize(button, SWT.NONE, gc, SWT.DEFAULT, SWT.DEFAULT);
-	} finally {
-		gc.dispose();
-	}
+	final Point size = Drawing.measure(TabFolder.this,
+			gc -> renderer.computeSize(button, SWT.NONE, gc, SWT.DEFAULT, SWT.DEFAULT));
 
 	final Rectangle trim = renderer.computeTrim(button, SWT.NONE, 0, 0, 0, 0);
 	final Point imageSize = new Point(size.x - trim.width, size.y - trim.height);
@@ -2094,7 +2089,8 @@ void onPageTraversal(Event event) {
 void onPaint(Event event) {
 	if (inDispose) return;
 
-	renderer.paint(event.gc);
+	Point size = getSize();
+	Drawing.drawWithGC(this, event.gc, gc -> renderer.paint(gc, size.x, size.y));
 	// Select 0th tab after paint.
 	if (selectedIndex == -1) {
 		setSelection(0);
@@ -3838,8 +3834,7 @@ boolean updateItems() {
 }
 
 boolean updateItems(int showIndex) {
-	final GC gc = new GC(this);
-	try {
+	return Drawing.measure(this, gc -> {
 		if (!single && !mru && showIndex != -1) {
 			// make sure selected item will be showing
 			int firstIndex = showIndex;
@@ -3919,20 +3914,12 @@ boolean updateItems(int showIndex) {
 			_setToolTipText(pt.x, pt.y);
 		}
 		return changed;
-	} finally {
-		gc.dispose();
-	}
+	});
 }
 
 boolean updateTabHeight(boolean force){
 	int oldHeight = tabHeight;
-	final GC gc = new GC(this);
-	final Point size;
-	try {
-		size = renderer.computeSize(TabFolderRenderer.PART_HEADER, SWT.NONE, gc, SWT.DEFAULT, SWT.DEFAULT);
-	} finally {
-		gc.dispose();
-	}
+	Point size = Drawing.measure(this, gc -> renderer.computeSize(TabFolderRenderer.PART_HEADER, SWT.NONE, gc, SWT.DEFAULT, SWT.DEFAULT));
 	tabHeight = size.y;
 	if (fixedTabHeight == SWT.DEFAULT && controls != null && controls.length > 0) {
 		for (int i = 0; i < controls.length; i++) {

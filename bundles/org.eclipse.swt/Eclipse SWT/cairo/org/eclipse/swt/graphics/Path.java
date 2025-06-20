@@ -313,7 +313,7 @@ public void addString(String string, float x, float y, Font font) {
 	FontData fd = font.getFontData()[0];
 	Font scaledFont = new Font(font.getDevice(), fd);
 	moved = false;
-	GC.addCairoString(handle, string, x, y, scaledFont);
+	NativeGC.addCairoString(handle, string, x, y, scaledFont);
 	closed = true;
 	scaledFont.dispose(); // Dispose the scaled up font
 }
@@ -361,11 +361,14 @@ public boolean contains(float x, float y, GC gc, boolean outline) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (gc == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (gc.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	//TODO - see Windows
+	return containsInPixels(x, y, (NativeGC) gc.innerGC, outline);
+}
+
+boolean containsInPixels(float x, float y, NativeGC gc, boolean outline) {
 	gc.initCairo();
 	gc.checkGC(GC.LINE_CAP | GC.LINE_JOIN | GC.LINE_STYLE | GC.LINE_WIDTH);
 	boolean result = false;
-	long cairo = gc.data.cairo;
+	long cairo = gc.getGCData().cairo;
 	long copy = Cairo.cairo_copy_path(handle);
 	if (copy == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	Cairo.cairo_append_path(cairo, copy);

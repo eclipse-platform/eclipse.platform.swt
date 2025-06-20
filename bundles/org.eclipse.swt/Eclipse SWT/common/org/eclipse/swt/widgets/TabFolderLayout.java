@@ -28,8 +28,7 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 	TabItem[] items = folder.items;
 	TabFolderRenderer renderer = folder.renderer;
 	// preferred width of tab area to show all tabs
-	final GC gc = new GC(folder);
-	try {
+	return Drawing.measure(folder, gc -> {
 		int tabW = 0;
 		int selectedIndex = folder.selectedIndex;
 		if (selectedIndex == -1) selectedIndex = 0;
@@ -113,9 +112,7 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 		if (hHint != SWT.DEFAULT) minHeight = hHint;
 
 		return new Point(minWidth, minHeight);
-	} finally {
-		gc.dispose();
-	}
+	});
 }
 
 @Override

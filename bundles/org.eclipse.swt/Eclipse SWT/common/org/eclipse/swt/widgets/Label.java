@@ -424,7 +424,7 @@ public class Label extends CustomControl {
 	}
 
 	private void onPaint(Event event) {
-		renderer.paint(event.gc);
+		Drawing.drawWithGC(this, event.gc, renderer::paint);
 	}
 
 

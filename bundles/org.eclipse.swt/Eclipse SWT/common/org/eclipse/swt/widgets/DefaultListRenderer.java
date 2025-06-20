@@ -33,7 +33,6 @@ public class DefaultListRenderer extends ListRenderer {
 		int x = clientArea.x;
 		int y = clientArea.y;
 
-		gc.setForeground(getColor(COLOR_FOREGROUND));
 		for (int i = list.getTopIndex(); i < list.getItems().length; i++) {
 			drawTextLine(i, x, y, gc, clientArea);
 			y += lineHeight;

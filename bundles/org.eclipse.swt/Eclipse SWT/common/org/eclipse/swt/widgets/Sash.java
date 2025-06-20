@@ -271,11 +271,10 @@ public class Sash extends CustomControl {
 		bandImage = new Image(getDisplay(), bandImageBounds);
 
 		GC gc = new GC(bandImage);
-		try {
-			sashRenderer.drawBand(gc, bandImageBounds);
-		} finally {
-			gc.dispose();
-		}
+		Drawing.drawWithGC(this, gc, g -> {
+			sashRenderer.drawBand(g, bandImageBounds);
+		});
+		gc.dispose();
 	}
 
 	private Event sendSelectionEvent(Rectangle sashBounds) {
@@ -475,7 +474,7 @@ public class Sash extends CustomControl {
 	private void onPaint(Event event) {
 		Rectangle sashBounds = getBounds();
 		sashRenderer.setSashBounds(sashBounds.x, sashBounds.y, sashBounds.width, sashBounds.height);
-		sashRenderer.paint(event.gc);
+		Drawing.drawWithGC(this, event.gc, sashRenderer::paint);
 	}
 
 	/**

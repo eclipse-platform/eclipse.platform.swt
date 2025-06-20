@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2025 Vector Informatik GmbH and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -7,12 +7,11 @@
  * https://www.eclipse.org/legal/epl-2.0/
  *
  * SPDX-License-Identifier: EPL-2.0
- *
- * Contributors:
- *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
+
+import java.util.*;
 
 /**
  * Instances of this class provide measurement information
@@ -25,55 +24,13 @@ package org.eclipse.swt.graphics;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public final class FontMetrics {
-	int ascent, descent, leading, height;
-	double averageCharWidth;
 
-FontMetrics() {
-}
+	FontMetricsHandle innerFontMetrics;
 
-/**
- * Convenience method to make a copy of receiver.
- */
-FontMetrics makeCopy () {
-	FontMetrics fontMetrics = new FontMetrics();
-	fontMetrics.ascent = this.ascent;
-	fontMetrics.descent = this.descent;
-	fontMetrics.averageCharWidth = this.averageCharWidth;
-	fontMetrics.leading = this.leading;
-	fontMetrics.height = this.height;
-	return fontMetrics;
-}
-
-public static FontMetrics cocoa_new (int ascent, int descent, int averageCharWidth, int leading, int height) {
-	FontMetrics fontMetrics = new FontMetrics();
-	fontMetrics.ascent = ascent;
-	fontMetrics.descent = descent;
-	fontMetrics.averageCharWidth = averageCharWidth;
-	fontMetrics.leading = leading;
-	fontMetrics.height = height;
-	return fontMetrics;
-}
-
-/**
- * Invokes platform specific functionality to allocate a new FontMetrics.
- * <p>
- * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
- * API for <code>FontMetrics</code>. It is marked public only so that it
- * can be shared within the packages provided by SWT. It is not
- * available on all platforms, and should never be called from
- * application code.
- * </p>
- *
- * @noreference This method is not intended to be referenced by clients.
- */
-public static FontMetrics cocoa_new (int ascent, int descent, double averageCharWidth, int leading, int height) {
-	FontMetrics fontMetrics = new FontMetrics();
-	fontMetrics.ascent = ascent;
-	fontMetrics.descent = descent;
-	fontMetrics.averageCharWidth = averageCharWidth;
-	fontMetrics.leading = leading;
-	fontMetrics.height = height;
-	return fontMetrics;
+	/**
+	 * Prevents instances from being created outside the package.
+	 */
+	FontMetrics() {
 }
 
 /**
@@ -89,9 +46,12 @@ public static FontMetrics cocoa_new (int ascent, int descent, double averageChar
 @Override
 public boolean equals (Object object) {
 	if (object == this) return true;
-	if (!(object instanceof FontMetrics metrics)) return false;
-	return ascent == metrics.ascent && descent == metrics.descent && leading == metrics.leading &&
-		height == metrics.height && (Double.compare (averageCharWidth, metrics.averageCharWidth) == 0);
+	if (!(object instanceof FontMetrics))
+		return false;
+
+	FontMetrics f = (FontMetrics) object;
+
+	return Objects.equals(f.innerFontMetrics, innerFontMetrics);
 }
 
 /**
@@ -103,7 +63,8 @@ public boolean equals (Object object) {
  * @return the ascent of the font
  */
 public int getAscent() {
-	return ascent;
+
+	return innerFontMetrics.getAscent();
 }
 
 /**
@@ -113,8 +74,8 @@ public int getAscent() {
  * @return the average character width of the font
  * @since 3.107
  */
-public double getAverageCharacterWidth () {
-	return averageCharWidth;
+public double getAverageCharacterWidth() {
+	return innerFontMetrics.getAverageCharacterWidth();
 }
 
 /**
@@ -126,7 +87,7 @@ public double getAverageCharacterWidth () {
  */
 @Deprecated
 public int getAverageCharWidth() {
-	return (int) averageCharWidth;
+	return innerFontMetrics.getAverageCharWidth();
 }
 
 /**
@@ -138,7 +99,7 @@ public int getAverageCharWidth() {
  * @return the descent of the font
  */
 public int getDescent() {
-	return descent;
+	return innerFontMetrics.getDescent();
 }
 
 /**
@@ -153,7 +114,7 @@ public int getDescent() {
  * @see #getLeading
  */
 public int getHeight() {
-	return height;
+	return innerFontMetrics.getHeight();
 }
 
 /**
@@ -164,7 +125,7 @@ public int getHeight() {
  * @return the leading space of the font
  */
 public int getLeading() {
-	return leading;
+	return innerFontMetrics.getLeading();
 }
 
 /**
@@ -179,25 +140,44 @@ public int getLeading() {
  */
 @Override
 public int hashCode() {
-	return ascent ^ descent ^ Double.hashCode (averageCharWidth) ^ leading ^ height;
+	return innerFontMetrics.hashCode();
 }
 
-String getName () {
-	String string = getClass ().getName ();
-	int index = string.lastIndexOf ('.');
-	if (index == -1) return string;
-	return string.substring (index + 1, string.length ());
+public static FontMetrics cocoa_new(int ascent, int descent, int averageCharWidth, int leading, int height) {
+	NativeFontMetrics nativeFontMetrics = NativeFontMetrics.cocoa_new(ascent, descent, averageCharWidth, leading,
+			height);
+	FontMetrics fm = new FontMetrics();
+	fm.innerFontMetrics = nativeFontMetrics;
+	return fm;
 }
 
-@Override
-public String toString() {
-	return getName() +
-		"{"
-		+ " ascent=" + ascent
-		+ " descent=" + descent
-		+ " averageCharWidth=" + averageCharWidth
-		+ " leading=" + leading
-		+ " height=" + height
-		+ "}";
+/**
+ * Convenience method to make a copy of receiver.
+ */
+FontMetrics makeCopy() {
+	NativeFontMetrics nativeFontMetrics = ((NativeFontMetrics) innerFontMetrics).makeCopy();
+	FontMetrics fm = new FontMetrics();
+	fm.innerFontMetrics = nativeFontMetrics;
+	return fm;
 }
+
+/**
+ * Invokes platform specific functionality to allocate a new FontMetrics.
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the public API for
+ * <code>FontMetrics</code>. It is marked public only so that it can be shared
+ * within the packages provided by SWT. It is not available on all platforms,
+ * and should never be called from application code.
+ * </p>
+ *
+ * @noreference This method is not intended to be referenced by clients.
+ */
+public static FontMetrics cocoa_new(int ascent, int descent, double averageCharWidth, int leading, int height) {
+	NativeFontMetrics nativeFontMetrics = NativeFontMetrics.cocoa_new(ascent, descent, averageCharWidth, leading,
+			height);
+	FontMetrics fm = new FontMetrics();
+	fm.innerFontMetrics = nativeFontMetrics;
+	return fm;
+}
+
 }

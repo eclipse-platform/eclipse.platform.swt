@@ -68,7 +68,7 @@ public abstract class Widget {
 	boolean autoScaleDisabled = false;
 	int style, state;
 	Display display;
-	EventTable eventTable;
+	protected EventTable eventTable;
 	Object data;
 
 	/* Global state flags */
@@ -507,7 +507,7 @@ void error (int code) {
 	SWT.error(code);
 }
 
-boolean filters (int eventType) {
+protected boolean filters (int eventType) {
 	return display.filters (eventType);
 }
 
@@ -751,7 +751,7 @@ public int getStyle () {
  *
  * @see #isListening
  */
-boolean hooks (int eventType) {
+protected boolean hooks (int eventType) {
 	if (eventTable == null) return false;
 	return eventTable.hooks (eventType);
 }
@@ -1215,11 +1215,11 @@ void sendEvent (Event event) {
 	}
 }
 
-void sendEvent (int eventType) {
+protected void sendEvent (int eventType) {
 	sendEvent (eventType, null, true);
 }
 
-void sendEvent (int eventType, Event event) {
+protected void sendEvent (int eventType, Event event) {
 	sendEvent (eventType, event, true);
 }
 
@@ -2357,7 +2357,8 @@ LRESULT wmPaint (long hwnd, long wParam, long lParam) {
 		int width = rect.right - rect.left;
 		int height = rect.bottom - rect.top;
 		if (width != 0 && height != 0) {
-			long hDC = gc.handle;
+			NativeGC ngc = (NativeGC) gc.innerGC;
+			long hDC = ngc.handle;
 			OS.SelectClipRgn (hDC, rgn);
 			OS.SetMetaRgn (hDC);
 			Event event = new Event ();
@@ -2730,5 +2731,11 @@ boolean adjustWindowRectEx(RECT lpRect, int dwStyle, boolean bMenu, int dwExStyl
 	return OS.AdjustWindowRectExForDpi (lpRect, dwStyle, bMenu, dwExStyle, DPIUtil.mapZoomToDPI(nativeZoom));
 }
 
+
+void copyToClipboard(char[] buffer) {
+	// maybe with AWT this can be done for every OS.
+	System.out.println(
+			"WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+}
 
 }

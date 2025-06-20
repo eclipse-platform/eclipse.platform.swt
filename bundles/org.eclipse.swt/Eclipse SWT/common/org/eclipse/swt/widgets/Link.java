@@ -329,7 +329,7 @@ public class Link extends CustomControl {
 		if (size.x == 0 || size.y == 0) {
 			return;
 		}
-		renderer.paint(event.gc);
+		Drawing.drawWithGC(this, event.gc, gc -> renderer.paint(gc, size.x, size.y));
 		links = renderer.getLinks();
 	}
 

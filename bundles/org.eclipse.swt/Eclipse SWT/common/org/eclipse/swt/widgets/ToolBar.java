@@ -281,7 +281,7 @@ public class ToolBar extends CustomComposite {
 			return;
 		}
 
-		renderer.paint(event.gc);
+		Drawing.drawWithGC(this, event.gc, gc -> renderer.paint(gc, size.x, size.y));
 	}
 
 	/**

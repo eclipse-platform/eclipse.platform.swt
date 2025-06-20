@@ -295,8 +295,7 @@ public class Text extends NativeBasedCustomScrollable {
 	}
 
 	private Point computeTextSize() {
-		final GC gc = new GC(this);
-		try {
+		return Drawing.measure(this, gc -> {
 			gc.setFont(getFont());
 			int width = 0, height = 0;
 			if ((style & SWT.SINGLE) != 0) {
@@ -321,9 +320,7 @@ public class Text extends NativeBasedCustomScrollable {
 				}
 			}
 			return new Point(width, height);
-		} finally {
-			gc.dispose();
-		}
+		});
 	}
 
 	private void selectionChanged() {
@@ -332,8 +329,7 @@ public class Text extends NativeBasedCustomScrollable {
 	}
 
 	private void keepCaretInVisibleArea() {
-		final GC gc = new GC(this);
-		try {
+		Drawing.measure(this, gc -> {
 			Point caretLocation = getLocationByOffset(model.getCaretOffset(), gc);
 			Rectangle visibleArea = renderer.getVisibleArea();
 
@@ -358,9 +354,8 @@ public class Text extends NativeBasedCustomScrollable {
 					}
 				}
 			}
-		} finally {
-			gc.dispose();
-		};
+			return null;
+		});
 	}
 
 	protected void focusLost(Event e) {
@@ -472,8 +467,7 @@ public class Text extends NativeBasedCustomScrollable {
 		int x = Math.max(selectedX + visibleArea.x, 0);
 		int y = Math.max(selectedY + visibleArea.y, 0);
 
-		final GC gc = new GC(this);
-		try {
+		return Drawing.measure(this, gc -> {
 			String[] textLines = model.getLines();
 			int clickedLine = Math.min(y / renderer.getLineHeight(gc), textLines.length - 1);
 			int selectedLine = Math.min(clickedLine, textLines.length - 1);
@@ -503,9 +497,7 @@ public class Text extends NativeBasedCustomScrollable {
 				}
 			}
 			return new TextLocation(clickedLine, text.length());
-		} finally {
-			gc.dispose();
-		}
+		});
 	}
 
 	protected void widgetDisposed(Event e) {
@@ -513,7 +505,7 @@ public class Text extends NativeBasedCustomScrollable {
 	}
 
 	private void paintControl(Event e) {
-		renderer.paint(e.gc);
+		Drawing.drawWithGC(this, e.gc, renderer::paint);
 	}
 
 	@Override

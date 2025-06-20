@@ -67,7 +67,7 @@ public abstract class Widget {
 	public long handle;
 	int style, state;
 	Display display;
-	EventTable eventTable;
+	protected EventTable eventTable;
 	Object data;
 
 	/* Global state flags
@@ -1194,7 +1194,7 @@ long filterProc(long xEvent, long gdkEvent, long data2) {
 	return 0;
 }
 
-boolean filters (int eventType) {
+protected boolean filters(int eventType) {
 	return display.filters (eventType);
 }
 
@@ -1330,7 +1330,7 @@ void hookEvents () {
  *
  * @see #isListening
  */
-boolean hooks (int eventType) {
+protected boolean hooks(int eventType) {
 	if (eventTable == null) return false;
 	return eventTable.hooks (eventType);
 }
@@ -1657,11 +1657,11 @@ void sendEvent (Event event) {
 	}
 }
 
-void sendEvent (int eventType) {
+protected void sendEvent(int eventType) {
 	sendEvent (eventType, null, true);
 }
 
-void sendEvent (int eventType, Event event) {
+protected void sendEvent(int eventType, Event event) {
 	sendEvent (eventType, event, true);
 }
 

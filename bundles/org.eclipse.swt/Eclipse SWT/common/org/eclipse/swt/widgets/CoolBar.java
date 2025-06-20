@@ -702,7 +702,7 @@ void onMouseDoubleClick(Event event) {
 	fixEvent(event);
 }
 void onPaint(Event event) {
-	renderer.paint(event.gc);
+	Drawing.drawWithGC(this, event.gc, renderer::paint);
 }
 void onResize () {
 	layoutItems ();

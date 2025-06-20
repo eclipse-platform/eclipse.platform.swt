@@ -128,7 +128,7 @@ public final class Image extends Resource implements Drawable {
 	/**
 	 * The GC the image is currently selected in.
 	 */
-	GC memGC;
+	NativeGC memGC;
 
 	/**
 	 * The width of the image.

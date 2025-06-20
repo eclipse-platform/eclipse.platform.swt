@@ -503,7 +503,7 @@ public class Tree extends CustomComposite {
 	}
 
 	private void onPaint(Event event) {
-		renderer.paint(event.gc);
+		Drawing.drawWithGC(this, event.gc, renderer::paint);
 	}
 
 	public boolean columnsExist() {
@@ -3245,23 +3245,14 @@ public class Tree extends CustomComposite {
 
 	// TODO move this heuristic somewhere else.
 	static int guessTextHeight(Tree tree) {
-		final GC gc = new GC(tree);
-		try {
+		return Drawing.measure(tree, gc -> {
 			gc.setFont(tree.getFont());
 			return gc.getFontMetrics().getHeight();
-		} finally {
-			gc.dispose();
-		}
+		});
 	}
 
 	Point computeTextExtent(String str) {
-		final GC gc = new GC(this);
-		try {
-			gc.setFont(getFont());
-			return gc.textExtent(str, DRAW_FLAGS);
-		} finally {
-			gc.dispose();
-		}
+		return Drawing.getTextExtent(this, str, DRAW_FLAGS);
 	}
 
 	TreeColumnsHandler getColumnsHandler() {

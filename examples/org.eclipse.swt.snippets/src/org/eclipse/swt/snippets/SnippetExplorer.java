@@ -361,13 +361,14 @@ public class SnippetExplorer {
 		runnerMapping.add(null);
 		runnerCombo.setData(runnerMapping);
 		runnerCombo.addListener(SWT.Modify, event -> {
-			if (runnerMapping.size() > runnerCombo.getSelectionIndex()) {
+			if (runnerMapping.size() > runnerCombo.getSelectionIndex() && runnerCombo.getSelectionIndex() >= 0) {
 				snippetRunner = runnerMapping.get(runnerCombo.getSelectionIndex());
 			} else {
 				System.err.println("Unknown runner index " + runnerCombo.getSelectionIndex());
 			}
 		});
 		runnerCombo.select(0);
+		snippetRunner = runnerMapping.get(0);
 
 		infoTabs = new TabFolder(rightContainer, SWT.TOP);
 		infoTabs.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));

@@ -260,7 +260,7 @@ public class Slider extends CustomControl {
 		}
 
 		Rectangle drawingArea = getBounds();
-		renderer.paint(event.gc);
+		Drawing.drawWithGC(this, event.gc, renderer::paint);
 		this.drawWidth = drawingArea.width;
 		this.drawHeight = drawingArea.height;
 		this.thumbRectangle = renderer.getThumbRectangle();

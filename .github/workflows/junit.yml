@@ -61,19 +61,19 @@ jobs:
               ;;
           esac
 
-      - name: Create badge
-        if: github.ref == 'refs/heads/master'
-        uses: emibcn/badge-action@808173dd03e2f30c980d03ee49e181626088eee8
-        with:
-          label: Tests
-          status: '${{ fromJSON( steps.test-results.outputs.json ).stats.tests }} tests, ${{ fromJSON( steps.test-results.outputs.json ).stats.runs }} runs: ${{ fromJSON( steps.test-results.outputs.json ).conclusion }}'
-          color: ${{ env.BADGE_COLOR }}
-          path: badge.svg
+      # - name: Create badge
+      #   if: github.ref == 'refs/heads/master'
+      #   uses: emibcn/badge-action@808173dd03e2f30c980d03ee49e181626088eee8
+      #   with:
+      #     label: Tests
+      #     status: '${{ fromJSON( steps.test-results.outputs.json ).stats.tests }} tests, ${{ fromJSON( steps.test-results.outputs.json ).stats.runs }} runs: ${{ fromJSON( steps.test-results.outputs.json ).conclusion }}'
+      #     color: ${{ env.BADGE_COLOR }}
+      #     path: badge.svg
 
-      - name: Upload badge to Gist
-        if: github.ref == 'refs/heads/master'
-        uses: andymckay/append-gist-action@ab30bf28df67017c7ad696500b218558c7c04db3
-        with:
-          token: ${{ secrets.GIST_TOKEN }}
-          gistURL: https://gist.githubusercontent.com/eclipse-releng-bot/78d110a601baa4ef777ccb472f584038
-          file: badge.svg
+      # - name: Upload badge to Gist
+      #   if: github.ref == 'refs/heads/master'
+      #   uses: andymckay/append-gist-action@ab30bf28df67017c7ad696500b218558c7c04db3
+      #   with:
+      #     token: ${{ secrets.GIST_TOKEN }}
+      #     gistURL: https://gist.githubusercontent.com/eclipse-releng-bot/78d110a601baa4ef777ccb472f584038
+      #     file: badge.svg

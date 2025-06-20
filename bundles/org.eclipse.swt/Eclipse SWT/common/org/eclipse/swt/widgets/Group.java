@@ -108,7 +108,7 @@ public class Group extends CustomComposite {
 	}
 
 	private void onPaint(Event event) {
-		renderer.paint(event.gc);
+		Drawing.drawWithGC(this, event.gc, renderer::paint);
 	}
 
 	static int checkStyle(int style) {

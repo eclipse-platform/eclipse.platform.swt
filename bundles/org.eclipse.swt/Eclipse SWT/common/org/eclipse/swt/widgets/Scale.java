@@ -307,7 +307,7 @@ public class Scale extends CustomControl {
 			return;
 		}
 
-		renderer.paint(event.gc);
+		Drawing.drawWithGC(this, event.gc, renderer::paint);
 	}
 
 	@Override

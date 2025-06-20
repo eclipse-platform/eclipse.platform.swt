@@ -130,7 +130,7 @@ class ButtonTab extends AlignableTab {
 		button1 = new Button(textButtonGroup, style);
 		button1.setText(ControlExample.getResourceString("One"));
 		button2 = new Button(textButtonGroup, style);
-		button2.setText(ControlExample.getResourceString("Two"));
+		button2.setText(ControlExample.getResourceString("Tjo"));
 		button3 = new Button(textButtonGroup, style);
 		if (wrapButton.getSelection ()) {
 			button3.setText (ControlExample.getResourceString("Wrap_Text"));

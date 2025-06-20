@@ -39,6 +39,8 @@ import org.junit.platform.suite.api.Suite;
 		Test_org_eclipse_swt_graphics_TextLayout.class,
 		Test_org_eclipse_swt_graphics_ImageLoader.class,
 		Test_org_eclipse_swt_graphics_ImageLoaderEvent.class,
-		Test_org_eclipse_swt_graphics_Transform.class })
+		Test_org_eclipse_swt_graphics_Transform.class,
+		SkijaGCTest.class,
+})
 public class AllGraphicsTests {
 }

@@ -298,8 +298,9 @@ public boolean contains (float x, float y, GC gc, boolean outline) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (gc == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (gc.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	NativeGC ngc = (NativeGC) gc.innerGC;
 	return applyUsingAnyHandle(handle -> {
-		return handle.contains(x, y, gc, outline);
+		return handle.contains(x, y, ngc, outline);
 	});
 }
 
@@ -515,13 +516,13 @@ private static class PathHandle {
 		this.zoom = zoom;
 	}
 
-	boolean contains (float x, float y, GC gc, boolean outline) {
+	boolean contains (float x, float y, NativeGC gc, boolean outline) {
 		float xInPixels = DPIUtil.scaleUp(device, x, zoom);
 		float yInPixels = DPIUtil.scaleUp(device, y, zoom);
 		return containsInPixels(xInPixels, yInPixels, gc, outline);
 	}
 
-	private boolean containsInPixels(float x, float y, GC gc, boolean outline) {
+	private boolean containsInPixels(float x, float y, NativeGC gc, boolean outline) {
 		//TODO - should use GC transformation
 		gc.initGdip();
 		gc.checkGC(GC.LINE_CAP | GC.LINE_JOIN | GC.LINE_STYLE | GC.LINE_WIDTH);
@@ -763,7 +764,7 @@ private class AddStringOperation implements Operation {
 		char[] buffer = string.toCharArray();
 		long hDC = device.internal_new_GC(null);
 		long [] family = new long [1];
-		long gdipFont = GC.createGdipFont(hDC, SWTFontProvider.getFontHandle(device, this.fontData, zoom), 0, device.fontCollection, family, null);
+		long gdipFont = NativeGC.createGdipFont(hDC, SWTFontProvider.getFontHandle(device, this.fontData, zoom), 0, device.fontCollection, family, null);
 		PointF point = new PointF();
 		point.X = x - (Gdip.Font_GetSize(gdipFont) / 6);
 		point.Y = y;

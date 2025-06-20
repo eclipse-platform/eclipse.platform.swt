@@ -50,8 +50,7 @@ public class TreeColumnRenderer {
 	}
 
 	Point computeSize() {
-		final GC gc = new GC(getParent());
-		try {
+		return Drawing.measure(getParent(), gc -> {
 			int colIndex = getParent().indexOf(column);
 			Point fin = new Point(0, 0);
 			int width = 0;
@@ -72,9 +71,7 @@ public class TreeColumnRenderer {
 			fin.x = Math.max(headerExt.x + 2 * DEFAULT_MARGIN + 2 * DEFAULT_BORDER_WIDTH, width);
 			fin.y = Math.max(headerExt.y + DEFAULT_MARGIN_UP + DEFAULT_MARGIN_DOWN + 2 * DEFAULT_BORDER_WIDTH, 10);
 			return fin;
-		} finally {
-			gc.dispose();
-		}
+		});
 	}
 
 	private Tree getParent() {

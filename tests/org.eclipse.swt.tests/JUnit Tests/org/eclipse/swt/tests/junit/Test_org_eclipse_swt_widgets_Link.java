@@ -183,4 +183,39 @@ public void test_setLinkForegroundLorg_eclipse_swt_graphics_Color() {
 	link.setLinkForeground(null);
 	assertNotEquals(color, link.getForeground());
 }
+
+// DefaultLinkRenderer is not public
+//@Test
+//public void testparseLinkText() {
+//	String linkText = "Start  <a  href=\"targetLink\">click here</a>\n\n\n\ntest <a href=\"targetLink1\">targetline1\n\ntargetline2</a> same as line anchor\n\nLast line";
+//	String expDisplayText = "Start  click here\n"
+//			+ "\n"
+//			+ "\n"
+//			+ "\n"
+//			+ "test targetline1\n"
+//			+ "\n"
+//			+ "targetline2 same as line anchor\n"
+//			+ "\n"
+//			+ "Last line";
+//	LinkRenderer defLinkRendrer = new DefaultLinkRenderer(null);
+//	defLinkRendrer.parseLinkText(linkText);
+//	List<List<TextSegment>> parsedText = defLinkRendrer.getParsedSegments();
+//	String actual = defLinkRendrer.getLinkDisplayText();
+//	assertEquals("Incorrect display message: ", expDisplayText, actual);
+//
+//	int numberOfLines = expDisplayText.split("\n", -1).length;
+//	assertEquals("Incorrect number of segments: ", numberOfLines, parsedText.size());
+//
+//	assertTrue("First line second segment must be a link: ", parsedText.get(0).get(1).isLink());
+//	assertEquals("First line incorrect link display text: ", "click here", parsedText.get(0).get(1).text);
+//	assertEquals("First line incorrect link data: ", "targetLink", parsedText.get(0).get(1).linkData);
+//
+//	assertTrue("Fifth line second segment must be a link: ", parsedText.get(4).get(1).isLink());
+//	assertEquals("Fifth line incorrect link display text: ", "targetline1", parsedText.get(4).get(1).text);
+//	assertEquals("Fifth line incorrect link data: ", "targetLink1", parsedText.get(4).get(1).linkData);
+//
+//	assertTrue("Seventh line first segment must be a link: ", parsedText.get(6).get(0).isLink());
+//	assertEquals("Seventh line incorrect link display text: ", "targetline2", parsedText.get(6).get(0).text);
+//	assertEquals("Seventh line incorrect link data: ", "targetLink1", parsedText.get(6).get(0).linkData);
+//}
 }

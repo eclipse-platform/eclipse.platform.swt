@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2020 IBM Corporation and others.
+ * Copyright (c) 2025 Vector Informatik GmbH and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -7,11 +7,10 @@
  * https://www.eclipse.org/legal/epl-2.0/
  *
  * SPDX-License-Identifier: EPL-2.0
- *
- * Contributors:
- *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.graphics;
+
+import java.util.*;
 
 /**
  * Instances of this class provide measurement information
@@ -24,9 +23,17 @@ package org.eclipse.swt.graphics;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public final class FontMetrics {
-	int ascentInPoints, descentInPoints, averageCharWidthInPoints;
 
+	FontMetricsHandle innerFontMetrics;
+
+	/**
+	 * Prevents instances from being created outside the package.
+	 */
 FontMetrics() {
+}
+
+FontMetrics(NativeFontMetrics ifm) {
+	this.innerFontMetrics = ifm;
 }
 
 /**
@@ -43,9 +50,10 @@ FontMetrics() {
 public boolean equals (Object object) {
 	if (object == this) return true;
 	if (!(object instanceof FontMetrics)) return false;
-	FontMetrics metrics = (FontMetrics)object;
-	return ascentInPoints == metrics.ascentInPoints && descentInPoints == metrics.descentInPoints &&
-		averageCharWidthInPoints == metrics.averageCharWidthInPoints;
+
+	FontMetrics f = (FontMetrics) object;
+
+	return Objects.equals(f.innerFontMetrics, innerFontMetrics);
 }
 
 /**
@@ -57,7 +65,8 @@ public boolean equals (Object object) {
  * @return the ascent of the font
  */
 public int getAscent() {
-	return ascentInPoints;
+
+	return innerFontMetrics.getAscent();
 }
 
 /**
@@ -68,7 +77,7 @@ public int getAscent() {
  * @since 3.107
  */
 public double getAverageCharacterWidth() {
-	return getAverageCharWidth();
+	return innerFontMetrics.getAverageCharacterWidth();
 }
 
 /**
@@ -80,7 +89,7 @@ public double getAverageCharacterWidth() {
  */
 @Deprecated
 public int getAverageCharWidth() {
-	return averageCharWidthInPoints;
+	return innerFontMetrics.getAverageCharWidth();
 }
 
 /**
@@ -92,7 +101,7 @@ public int getAverageCharWidth() {
  * @return the descent of the font
  */
 public int getDescent() {
-	return descentInPoints;
+	return innerFontMetrics.getDescent();
 }
 
 /**
@@ -107,7 +116,7 @@ public int getDescent() {
  * @see #getLeading
  */
 public int getHeight() {
-	return ascentInPoints + descentInPoints;
+	return innerFontMetrics.getHeight();
 }
 
 /**
@@ -118,7 +127,7 @@ public int getHeight() {
  * @return the leading space of the font
  */
 public int getLeading() {
-	return 0; // Pango has no concept of "leading"
+	return innerFontMetrics.getLeading();
 }
 
 /**
@@ -133,7 +142,7 @@ public int getLeading() {
  */
 @Override
 public int hashCode() {
-	return ascentInPoints ^ descentInPoints ^ averageCharWidthInPoints;
+	return innerFontMetrics.hashCode();
 }
 
 }

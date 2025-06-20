@@ -14,6 +14,7 @@
 package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Drawing;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 
@@ -43,19 +44,11 @@ public abstract class ControlRenderer {
 	}
 
 	protected final <T> T measure(Function<GC, T> function) {
-		final GC gc = new GC(control);
-		try {
-			return function.apply(gc);
-		} finally {
-			gc.dispose();
-		}
+		return Drawing.measure(control, function);
 	}
 
 	protected final Point getTextExtent(String text, int flags) {
-		return measure(gc -> {
-			gc.setFont(control.getFont());
-			return gc.textExtent(text, flags);
-		});
+		return Drawing.getTextExtent(control, text, flags);
 	}
 
 	public Color getDefaultBackground() {
