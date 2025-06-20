@@ -23,3 +23,11 @@ tab {
 	padding-left: 6px;
 	padding-right: 6px;
 }
+
+check, radio {
+	margin: 0 2px;
+}
+
+combobox button.combo box arrow {
+	margin: 0 2px;
+}
