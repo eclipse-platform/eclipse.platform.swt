@@ -58,4 +58,19 @@ public final class GCData {
 	public float gdipXOffset, gdipYOffset;
 	public int uiState = 0;
 	public boolean focusDrawn;
+
+	void copyTo(GCData originalData) {
+		originalData.device = device;
+		originalData.style = style;
+		originalData.foreground = foreground;
+		originalData.background = background;
+		originalData.font = font;
+		originalData.nativeZoom = nativeZoom;
+		originalData.image = image;
+		originalData.ps = ps;
+		originalData.layout = layout;
+		originalData.hwnd = hwnd;
+		originalData.uiState = uiState;
+		originalData.focusDrawn = focusDrawn;
+	}
 }
