@@ -547,7 +547,8 @@ public void test_equalsLjava_lang_Object() {
 
 @Test
 public void test_getBackground() {
-	Image image = new Image(display, (gc, width, height) -> {}, 10, 10);
+	ImageGcDrawer noOpGcDrawer = (gc, width, height) -> {};
+	Image image = new Image(display, noOpGcDrawer, 10, 10);
 	image.dispose();
 	SWTException e = assertThrows(SWTException.class, () -> image.getBackground());
 	assertSWTProblem("Incorrect exception thrown for disposed image", SWT.ERROR_GRAPHIC_DISPOSED, e);
@@ -556,20 +557,21 @@ public void test_getBackground() {
 
 @Test
 public void test_getBounds() {
+	ImageGcDrawer noOpGcDrawer = (gc, width, height) -> {};
 	Rectangle bounds = new Rectangle(0, 0, 10, 20);
-	Image image1 = new Image(display, (gc, width, height) -> {}, bounds.width, bounds.height);
+	Image image1 = new Image(display, noOpGcDrawer, bounds.width, bounds.height);
 	image1.dispose();
 	SWTException e = assertThrows(SWTException.class, () -> image1.getBounds());
 	assertSWTProblem("Incorrect exception thrown for disposed image", SWT.ERROR_GRAPHIC_DISPOSED, e);
 
 	Image image;
 	// creates bitmap image
-	image = new Image(display, (gc, width, height) -> {}, bounds.width, bounds.height);
+	image = new Image(display, noOpGcDrawer, bounds.width, bounds.height);
 	Rectangle bounds1 = image.getBounds();
 	image.dispose();
 	assertEquals(bounds, bounds1);
 
-	image = new Image(display, (gc, width, height) -> {},  bounds.width, bounds.height);
+	image = new Image(display, noOpGcDrawer,  bounds.width, bounds.height);
 	bounds1 = image.getBounds();
 	image.dispose();
 	assertEquals(bounds, bounds1);
@@ -779,9 +781,9 @@ public static Rectangle scaleBounds (Rectangle rect, int targetZoom, int current
 public void test_hashCode() {
 	Image image = null;
 	Image image1 = null;
-
+	ImageGcDrawer noOpGcDrawer = (gc, width, height) -> {};
 	try {
-		image = new Image(display, (gc, width, height) -> {}, 10, 10);
+		image = new Image(display, noOpGcDrawer, 10, 10);
 		image1 = image;
 
 		assertEquals(image1.hashCode(), image.hashCode());
@@ -842,14 +844,15 @@ public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 			"Excluded test_setBackgroundLorg_eclipse_swt_graphics_Color(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_Image)",
 			SwtTestUtil.isGTK);
 	// TODO Fix GTK failure.
-	Image image1 = new Image(display, (gc, width, height) -> {}, 10, 10);
+	ImageGcDrawer noOpGcDrawer = (gc, width, height) -> {};
+	Image image1 = new Image(display, noOpGcDrawer, 10, 10);
 	try {
 		IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> image1.setBackground(null));
 		assertSWTProblem("Incorrect exception thrown for color == null", SWT.ERROR_NULL_ARGUMENT, e);
 	} finally {
 		image1.dispose();
 	}
-	Image image2 = new Image(display, (gc, width, height) -> {}, 10, 10);
+	Image image2 = new Image(display, noOpGcDrawer, 10, 10);
 	Color color2 = new Color(255, 255, 255);
 	color2.dispose();
 	try {
@@ -858,14 +861,14 @@ public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 	} finally {
 		image2.dispose();
 	}
-	Image image3 = new Image(display, (gc, width, height) -> {}, 10, 10);
+	Image image3 = new Image(display, noOpGcDrawer, 10, 10);
 	image3.dispose();
 	Color color3 = new Color(255, 255, 255);
 	SWTException e = assertThrows(SWTException.class, () -> image3.setBackground(color3));
 	assertSWTProblem("Incorrect exception thrown for disposed image", SWT.ERROR_GRAPHIC_DISPOSED, e);
 
 	// this image does not have a transparent pixel by default so setBackground has no effect
-	Image image4 = new Image(display, (gc, width, height) -> {}, 10, 10);
+	Image image4 = new Image(display, noOpGcDrawer, 10, 10);
 	image4.setBackground(display.getSystemColor(SWT.COLOR_GREEN));
 	Color color4 = image4.getBackground();
 	assertNull("background color should be null for non-transparent image", color4);
@@ -884,7 +887,8 @@ public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 
 @Test
 public void test_toString() {
-	Image image = new Image(display, (gc, width, height) -> {}, 10, 10);
+	ImageGcDrawer noOpGcDrawer = (gc, width, height) -> {};
+	Image image = new Image(display, noOpGcDrawer, 10, 10);
 	try {
 		assertNotNull(image.toString());
 		assertTrue(image.toString().length() > 0);
@@ -983,7 +987,6 @@ public void test_bug566545_efficientGrayscaleImage() {
 
 	Image imageIndexed = new Image(display, imageDataIndexed);
 	Image imageDirect = new Image(display, imageDataDirect);
-
 	ImageGcDrawer gcDrawer1 = (gc, iWidth, iHeight) -> {
 		gc.drawImage(imageIndexed, 0, 0);
 	};
@@ -1006,10 +1009,11 @@ public void test_bug566545_efficientGrayscaleImage() {
 
 @Test
 public void test_updateWidthHeightAfterDPIChange() {
+	ImageGcDrawer noOpGcDrawer = (gc, width, height) -> {};
 	int deviceZoom = DPIUtil.getDeviceZoom();
 	try {
 		Rectangle imageSize = new Rectangle(0, 0, 16, 16);
-		Image baseImage = new Image(display, (gc, width, height) -> {}, imageSize.width, imageSize.height);
+		Image baseImage = new Image(display, noOpGcDrawer, imageSize.width, imageSize.height);
 		GC gc = new GC(display);
 		gc.drawImage(baseImage, 10, 10);
 		assertEquals("Base image size differs unexpectedly", imageSize, baseImage.getBounds());
