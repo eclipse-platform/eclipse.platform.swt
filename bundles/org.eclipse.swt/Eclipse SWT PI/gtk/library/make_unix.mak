@@ -1,5 +1,5 @@
 #*******************************************************************************
-# Copyright (c) 2000, 2016 IBM Corporation and others.
+# Copyright (c) 2000, 2025 IBM Corporation and others.
 #
 # This program and the accompanying materials
 # are made available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,10 @@
 #
 # Contributors:
 #     IBM Corporation - initial API and implementation
+#     Tue Ton - support for FreeBSD
 #*******************************************************************************
 
-# Makefile for creating SWT libraries for Linux GTK
+# Makefile for creating SWT libraries for Linux & FreeBSD GTK
 
 # assumes these variables are set in the environment from which make is run
 #	SWT_JAVA_HOME
@@ -102,12 +103,30 @@ GLX_OBJECTS = swt.o glx.o glx_structs.o glx_stats.o
 CFLAGS := $(CFLAGS) \
 		$(SWT_DEBUG) \
 		$(SWT_WEBKIT_DEBUG) \
-		-DLINUX -DGTK \
+		-DGTK \
 		-I$(SWT_JAVA_HOME)/include \
-		-I$(SWT_JAVA_HOME)/include/linux \
 		-std=gnu17 \
 		${SWT_PTR_CFLAGS}
 LFLAGS = -shared -fPIC ${SWT_LFLAGS}
+
+ifdef FREEBSD_OS
+ifeq ($(GTK_VERSION), 4.0)
+freebsd_gtk_prefix = `pkg-config --variable=prefix gtk4`
+else
+freebsd_gtk_prefix = `pkg-config --variable=prefix gtk+-3.0`
+endif
+CFLAGS := $(CFLAGS) \
+		-DFREEBSD \
+		-Wno-deprecated-non-prototype \
+		-Wno-deprecated-declarations \
+		-I$(freebsd_gtk_prefix)/include \
+		-I$(SWT_JAVA_HOME)/include/freebsd
+LFLAGS := $(LFLAGS) -L$(freebsd_gtk_prefix)/lib
+else
+CFLAGS := $(CFLAGS) \
+		-DLINUX \
+		-I$(SWT_JAVA_HOME)/include/linux
+endif
 
 # Treat all warnings as errors. If your new code produces a warning, please
 # take time to properly understand and fix/silence it as necessary.
