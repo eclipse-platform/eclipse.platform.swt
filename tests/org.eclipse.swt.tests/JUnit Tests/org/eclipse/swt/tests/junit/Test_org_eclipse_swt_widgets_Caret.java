@@ -24,6 +24,7 @@ import static org.junit.Assert.fail;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageGcDrawer;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Caret;
@@ -147,7 +148,8 @@ public void test_setImageLorg_eclipse_swt_graphics_Image() {
 	caret.setImage(null);
 	assertNull(caret.getImage());
 
-	image = new Image(shell.getDisplay(), 10, 10);
+	ImageGcDrawer noOpGcDrawer = (gc, width, height) -> {};
+	image = new Image(shell.getDisplay(), noOpGcDrawer, 10, 10);
 	caret.setImage(image);
 	assertEquals(image, caret.getImage());
 
