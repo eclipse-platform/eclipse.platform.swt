@@ -101,32 +101,52 @@ public void test_setFileNameLjava_lang_String() {
 
 @Test
 public void test_setFilterExtensions$Ljava_lang_String() {
+	fileDialog.setFilterExtensions("txt");
+	String[] filters = fileDialog.getFilterExtensions();
+	assertEquals(1, filters.length);
+	assertEquals("txt", filters[0]);
 	fileDialog.setFilterExtensions(new String[] {"txt","java"});
-	String filters[] = fileDialog.getFilterExtensions();
+	filters = fileDialog.getFilterExtensions();
 	assertEquals(2, filters.length);
 	assertEquals("txt", filters[0]);
 	assertEquals("java", filters[1]);
 	fileDialog.setFilterExtensions(new String[] {""});
 	filters = fileDialog.getFilterExtensions();
 	assertEquals(1, filters.length);
-	fileDialog.setFilterExtensions(null);
+	fileDialog.setFilterExtensions();
+	filters = fileDialog.getFilterExtensions();
+	assertEquals(0, filters.length);
+	fileDialog.setFilterExtensions((String[])null);
 	filters = fileDialog.getFilterExtensions();
 	assertNull(filters);
+	fileDialog.setFilterExtensions(new String[0]);
+	filters = fileDialog.getFilterExtensions();
+	assertEquals(0, filters.length);
 }
 
 @Test
 public void test_setFilterNames$Ljava_lang_String() {
+	fileDialog.setFilterNames("a.txt");
+	String[] filters = fileDialog.getFilterNames();
+	assertEquals(1, filters.length);
+	assertEquals("a.txt", filters[0]);
 	fileDialog.setFilterNames(new String[] {"a.txt","b.java"});
-	String filters[] = fileDialog.getFilterNames();
+	filters = fileDialog.getFilterNames();
 	assertEquals(2, filters.length);
 	assertEquals("a.txt", filters[0]);
 	assertEquals("b.java", filters[1]);
 	fileDialog.setFilterNames(new String[] {""});
 	filters = fileDialog.getFilterNames();
 	assertEquals(1, filters.length);
-	fileDialog.setFilterNames(null);
+	fileDialog.setFilterNames();
+	filters = fileDialog.getFilterNames();
+	assertEquals(0,filters.length);
+	fileDialog.setFilterNames((String[])null);
 	filters = fileDialog.getFilterNames();
 	assertNull(filters);
+	fileDialog.setFilterNames(new String[0]);
+	filters = fileDialog.getFilterNames();
+	assertEquals(0,filters.length);
 }
 
 @Test

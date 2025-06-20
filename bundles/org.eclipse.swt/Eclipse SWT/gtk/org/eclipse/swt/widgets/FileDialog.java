@@ -745,7 +745,7 @@ public void setFileName (String string) {
  * @see #setFilterNames to specify the user-friendly
  * names corresponding to the extensions
  */
-public void setFilterExtensions (String [] extensions) {
+public void setFilterExtensions (String... extensions) {
 	filterExtensions = extensions;
 }
 /**
@@ -781,7 +781,7 @@ public void setFilterIndex (int index) {
  *
  * @see #setFilterExtensions
  */
-public void setFilterNames (String [] names) {
+public void setFilterNames (String... names) {
 	filterNames = names;
 }
 /**
