@@ -29,6 +29,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageGcDrawer;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -384,7 +385,8 @@ public void test_setImageLorg_eclipse_swt_graphics_Image() {
 	button.setImage(null);
 	assertNull(button.getImage());
 
-	image = new Image(shell.getDisplay(), 10, 10);
+	ImageGcDrawer noOpGcDrawer = (gc, width, height) -> {};
+	image = new Image(shell.getDisplay(), noOpGcDrawer, 10, 10);
 	button.setImage(image);
 	assertEquals(image, button.getImage());
 

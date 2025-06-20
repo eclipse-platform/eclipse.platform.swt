@@ -18,6 +18,7 @@ import static org.junit.Assert.fail;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageGcDrawer;
 import org.eclipse.swt.widgets.Label;
 import org.junit.Before;
 import org.junit.Test;
@@ -71,7 +72,8 @@ public void test_getAlignment(){
 
 @Test
 public void test_getImage(){
-	Image[] cases = {null, new Image(null, 100, 100)};
+	ImageGcDrawer noOpGcDrawer = (gc, width, height) -> {};
+	Image[] cases = {null, new Image(null, noOpGcDrawer, 100, 100)};
 	for (Image image : cases) {
 		label.setImage(image);
 		assertEquals(label.getImage(), image);

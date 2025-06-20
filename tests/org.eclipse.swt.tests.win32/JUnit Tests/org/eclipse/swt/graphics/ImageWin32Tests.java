@@ -39,7 +39,8 @@ public class ImageWin32Tests {
 
 	@Test
 	public void testImageDataForDifferentFractionalZoomsShouldBeDifferent() {
-		Image image = new Image(display, 10, 10);
+		ImageGcDrawer noOpGcDrawer = (gc, height, width) -> {};
+		Image image = new Image(display, noOpGcDrawer, 10, 10);
 		int zoom1 = 125;
 		int zoom2 = 150;
 		ImageData imageDataAtZoom1 = image.getImageData(zoom1);
@@ -52,9 +53,10 @@ public class ImageWin32Tests {
 
 	@Test
 	public void testImageShouldHaveDimesionAsPerZoomLevel() {
+		ImageGcDrawer noOpGcDrawer = (gc, height, width) -> {};
 		int zoom = DPIUtil.getDeviceZoom();
 		int scalingFactor = 2;
-		Image image = new Image(display, 10, 10);
+		Image image = new Image(display, noOpGcDrawer, 10, 10);
 		try {
 			ImageData baseImageData = image.getImageData(zoom);
 			assertEquals("Width should equal the initial width on the same zoom", 10, baseImageData.width);
