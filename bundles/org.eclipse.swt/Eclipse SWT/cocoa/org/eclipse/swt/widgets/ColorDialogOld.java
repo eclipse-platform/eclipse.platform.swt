@@ -35,7 +35,7 @@ import org.eclipse.swt.internal.cocoa.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * @noextend This class is not intended to be subclassed by clients.
  */
-public class ColorDialog extends Dialog {
+public class ColorDialogOld extends Dialog {
 	RGB rgb;
 	RGB [] rgbs;
 	boolean selected;
@@ -57,7 +57,7 @@ public class ColorDialog extends Dialog {
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
-public ColorDialog(Shell parent) {
+public ColorDialogOld(Shell parent) {
 	this(parent, SWT.APPLICATION_MODAL);
 }
 
@@ -89,7 +89,7 @@ public ColorDialog(Shell parent) {
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
-public ColorDialog(Shell parent, int style) {
+public ColorDialogOld(Shell parent, int style) {
 	super (parent, checkStyle (parent, style));
 	checkSubclass ();
 }
