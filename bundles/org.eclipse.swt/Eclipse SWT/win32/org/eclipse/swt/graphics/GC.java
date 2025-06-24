@@ -15,6 +15,7 @@ package org.eclipse.swt.graphics;
 
 
 import java.util.*;
+import java.util.List;
 import java.util.stream.*;
 
 import org.eclipse.swt.*;
@@ -81,6 +82,9 @@ public final class GC extends Resource {
 
 	Drawable drawable;
 	GCData data;
+	private final GCData originalData = new GCData();
+
+	private final List<Operation> operations = new ArrayList<>();
 
 	static final int FOREGROUND = 1 << 0;
 	static final int BACKGROUND = 1 << 1;
@@ -172,6 +176,7 @@ public GC(Drawable drawable, int style) {
 	if (drawable == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	GCData data = new GCData ();
 	data.style = checkStyle(style);
+	data.copyTo(originalData);
 	long hDC = drawable.internal_new_GC(data);
 	Device device = data.device;
 	if (device == null) device = Device.getDevice();
@@ -483,7 +488,7 @@ public void copyArea (Image image, int x, int y) {
 	checkNonDisposed();
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (image.type != SWT.BITMAP || image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	applyOperationForExistingHandle(new CopyAreaToImageOperation(image, x, y));
+	storeAndApplyOperationForExistingHandle(new CopyAreaToImageOperation(image, x, y));
 }
 
 private class CopyAreaToImageOperation extends Operation {
@@ -557,7 +562,7 @@ public void copyArea (int srcX, int srcY, int width, int height, int destX, int 
  */
 public void copyArea (int srcX, int srcY, int width, int height, int destX, int destY, boolean paint) {
 	checkNonDisposed();
-	applyOperationForExistingHandle(new CopyAreaOperation(new Rectangle(srcX, srcY, width, height), new Rectangle(destX, destY, width, height), paint));
+	storeAndApplyOperationForExistingHandle(new CopyAreaOperation(new Rectangle(srcX, srcY, width, height), new Rectangle(destX, destY, width, height), paint));
 }
 
 private class CopyAreaOperation extends Operation {
@@ -819,7 +824,7 @@ void disposeGdip() {
  */
 public void drawArc (int x, int y, int width, int height, int startAngle, int arcAngle) {
 	checkNonDisposed();
-	applyOperationForExistingHandle(new DrawArcOperation(new Rectangle(x, y, width, height), startAngle, arcAngle));
+	storeAndApplyOperationForExistingHandle(new DrawArcOperation(new Rectangle(x, y, width, height), startAngle, arcAngle));
 }
 
 private class DrawArcOperation extends Operation {
@@ -915,7 +920,7 @@ private void drawArcInPixels (int x, int y, int width, int height, int startAngl
  */
 public void drawFocus (int x, int y, int width, int height) {
 	checkNonDisposed();
-	applyOperationForExistingHandle(new DrawFocusOperation(new Rectangle(x, y, width, height)));
+	storeAndApplyOperationForExistingHandle(new DrawFocusOperation(new Rectangle(x, y, width, height)));
 }
 
 private class DrawFocusOperation extends Operation {
@@ -1005,7 +1010,7 @@ public void drawImage (Image image, int x, int y) {
 	checkNonDisposed();
 	if (image == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	applyOperationForExistingHandle(new DrawImageOperation(image, new Point(x, y)));
+	storeAndApplyOperationForExistingHandle(new DrawImageOperation(image, new Point(x, y)));
 }
 
 private class DrawImageOperation extends Operation {
@@ -1069,11 +1074,11 @@ public void drawImage (Image image, int srcX, int srcY, int srcWidth, int srcHei
 	if (image == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 
-	applyOperationForExistingHandle(new DrawScalingImageToImageOperation(image, new Rectangle(srcX, srcY, srcWidth, srcHeight), new Rectangle(destX, destY, destWidth, destHeight)));
+	storeAndApplyOperationForExistingHandle(new DrawScalingImageToImageOperation(image, new Rectangle(srcX, srcY, srcWidth, srcHeight), new Rectangle(destX, destY, destWidth, destHeight)));
 }
 
 void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple) {
-	applyOperationForExistingHandle(new DrawImageToImageOperation(srcImage, new Rectangle(srcX, srcY, srcWidth, srcHeight), new Rectangle(destX, destY, destWidth, destHeight), simple));
+	storeAndApplyOperationForExistingHandle(new DrawImageToImageOperation(srcImage, new Rectangle(srcX, srcY, srcWidth, srcHeight), new Rectangle(destX, destY, destWidth, destHeight), simple));
 }
 
 private class DrawScalingImageToImageOperation extends Operation {
@@ -1815,7 +1820,7 @@ private void drawBitmapColor(long imageHandle, int srcX, int srcY, int srcWidth,
  */
 public void drawLine (int x1, int y1, int x2, int y2) {
 	checkNonDisposed();
-	applyOperationForExistingHandle(new DrawLineOperation(x1, y1, x2, y2));
+	storeAndApplyOperationForExistingHandle(new DrawLineOperation(x1, y1, x2, y2));
 }
 
 private class DrawLineOperation extends Operation {
@@ -1881,7 +1886,7 @@ private void drawLineInPixels (int x1, int y1, int x2, int y2) {
  */
 public void drawOval (int x, int y, int width, int height) {
 	checkNonDisposed();
-	applyOperationForExistingHandle(new DrawOvalOperation(new Rectangle(x, y, width, height)));
+	storeAndApplyOperationForExistingHandle(new DrawOvalOperation(new Rectangle(x, y, width, height)));
 }
 
 private class DrawOvalOperation extends Operation {
@@ -1940,7 +1945,7 @@ public void drawPath (Path path) {
 	checkNonDisposed();
 	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (path.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	applyOperationForExistingHandle(new DrawPathOperation(path));
+	storeAndApplyOperationForExistingHandle(new DrawPathOperation(path));
 }
 
 private class DrawPathOperation extends Operation {
@@ -1983,7 +1988,7 @@ private class DrawPathOperation extends Operation {
  */
 public void drawPoint (int x, int y) {
 	checkNonDisposed();
-	applyOperationForExistingHandle(new DrawPointOperation(x, y));
+	storeAndApplyOperationForExistingHandle(new DrawPointOperation(x, y));
 }
 
 private class DrawPointOperation extends Operation {
@@ -2029,7 +2034,7 @@ private void drawPointInPixels (int x, int y) {
 public void drawPolygon (int[] pointArray) {
 	checkNonDisposed();
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	applyOperationForExistingHandle(new DrawPolygonOperation(pointArray));
+	storeAndApplyOperationForExistingHandle(new DrawPolygonOperation(pointArray));
 }
 
 private class DrawPolygonOperation extends Operation {
@@ -2091,7 +2096,7 @@ private void drawPolygonInPixels(int[] pointArray) {
 public void drawPolyline (int[] pointArray) {
 	checkNonDisposed();
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	applyOperationForExistingHandle(new DrawPolylineOperation(pointArray));
+	storeAndApplyOperationForExistingHandle(new DrawPolylineOperation(pointArray));
 }
 
 private class DrawPolylineOperation extends Operation {
@@ -2156,7 +2161,7 @@ private void drawPolylineInPixels(int[] pointArray) {
  */
 public void drawRectangle (int x, int y, int width, int height) {
 	checkNonDisposed();
-	applyOperationForExistingHandle(new DrawRectangleOperation(new Rectangle(x, y, width, height)));
+	storeAndApplyOperationForExistingHandle(new DrawRectangleOperation(new Rectangle(x, y, width, height)));
 }
 
 private class DrawRectangleOperation extends Operation {
@@ -2225,7 +2230,7 @@ private void drawRectangleInPixels (int x, int y, int width, int height) {
 public void drawRectangle (Rectangle rect) {
 	checkNonDisposed();
 	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	applyOperationForExistingHandle(new DrawRectangleOperation(rect));
+	storeAndApplyOperationForExistingHandle(new DrawRectangleOperation(rect));
 }
 
 /**
@@ -2251,7 +2256,7 @@ public void drawRectangle (Rectangle rect) {
  */
 public void drawRoundRectangle (int x, int y, int width, int height, int arcWidth, int arcHeight) {
 	checkNonDisposed();
-	applyOperationForExistingHandle(new DrawRoundRectangleOperation(new Rectangle(x, y, width, height), arcWidth, arcHeight));
+	storeAndApplyOperationForExistingHandle(new DrawRoundRectangleOperation(new Rectangle(x, y, width, height), arcWidth, arcHeight));
 }
 
 private class DrawRoundRectangleOperation extends Operation {
@@ -2363,7 +2368,7 @@ private void drawRoundRectangleGdip (long gdipGraphics, long pen, int x, int y, 
  */
 public void drawString (String string, int x, int y) {
 	checkNonDisposed();
-	applyOperationForExistingHandle(new DrawStringOperation(string, new Point(x, y), false));
+	storeAndApplyOperationForExistingHandle(new DrawStringOperation(string, new Point(x, y), false));
 }
 
 /**
@@ -2397,7 +2402,7 @@ public void drawString (String string, int x, int y, boolean isTransparent) {
 	checkNonDisposed();
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (string.isEmpty()) return;
-	applyOperationForExistingHandle(new DrawStringOperation(string, new Point(x, y), isTransparent));
+	storeAndApplyOperationForExistingHandle(new DrawStringOperation(string, new Point(x, y), isTransparent));
 }
 
 private class DrawStringOperation extends Operation {
@@ -2504,7 +2509,7 @@ public void drawText (String string, int x, int y) {
 	checkNonDisposed();
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (string.isEmpty()) return;
-	applyOperationForExistingHandle(new DrawTextOperation(string, new Point(x, y), SWT.DRAW_DELIMITER | SWT.DRAW_TAB));
+	storeAndApplyOperationForExistingHandle(new DrawTextOperation(string, new Point(x, y), SWT.DRAW_DELIMITER | SWT.DRAW_TAB));
 }
 
 /**
@@ -2537,7 +2542,7 @@ public void drawText (String string, int x, int y, boolean isTransparent) {
 	if (string.isEmpty()) return;
 	int flags = SWT.DRAW_DELIMITER | SWT.DRAW_TAB;
 	if (isTransparent) flags |= SWT.DRAW_TRANSPARENT;
-	applyOperationForExistingHandle(new DrawTextOperation(string, new Point(x, y), flags));
+	storeAndApplyOperationForExistingHandle(new DrawTextOperation(string, new Point(x, y), flags));
 }
 
 /**
@@ -2583,7 +2588,7 @@ public void drawText (String string, int x, int y, int flags) {
 	checkNonDisposed();
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (string.isEmpty()) return;
-	applyOperationForExistingHandle(new DrawTextOperation(string, new Point(x, y), flags));
+	storeAndApplyOperationForExistingHandle(new DrawTextOperation(string, new Point(x, y), flags));
 }
 
 private class DrawTextOperation extends Operation {
@@ -2976,7 +2981,7 @@ public boolean equals (Object object) {
  */
 public void fillArc (int x, int y, int width, int height, int startAngle, int arcAngle) {
 	checkNonDisposed();
-	applyOperationForExistingHandle(new FillArcOperation(new Rectangle(x, y, width, height), startAngle, arcAngle));
+	storeAndApplyOperationForExistingHandle(new FillArcOperation(new Rectangle(x, y, width, height), startAngle, arcAngle));
 }
 
 private class FillArcOperation extends Operation {
@@ -3070,7 +3075,7 @@ private void fillArcInPixels (int x, int y, int width, int height, int startAngl
  */
 public void fillGradientRectangle (int x, int y, int width, int height, boolean vertical) {
 	checkNonDisposed();
-	applyOperationForExistingHandle(new FillGradientRectangleOperation(new Rectangle(x, y, width, height), vertical));
+	storeAndApplyOperationForExistingHandle(new FillGradientRectangleOperation(new Rectangle(x, y, width, height), vertical));
 }
 
 private class FillGradientRectangleOperation extends FillRectangleOperation {
@@ -3199,7 +3204,7 @@ private void fillGradientRectangleInPixels(int x, int y, int width, int height, 
  */
 public void fillOval (int x, int y, int width, int height) {
 	checkNonDisposed();
-	applyOperationForExistingHandle(new FillOvalOperation(new Rectangle(x, y, width, height)));
+	storeAndApplyOperationForExistingHandle(new FillOvalOperation(new Rectangle(x, y, width, height)));
 }
 
 private class FillOvalOperation extends Operation {
@@ -3254,7 +3259,7 @@ public void fillPath (Path path) {
 	checkNonDisposed();
 	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (path.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	applyOperationForExistingHandle(new FillPathOperation(path));
+	storeAndApplyOperationForExistingHandle(new FillPathOperation(path));
 }
 
 private class FillPathOperation extends Operation {
@@ -3299,7 +3304,7 @@ private class FillPathOperation extends Operation {
 public void fillPolygon (int[] pointArray) {
 	checkNonDisposed();
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	applyOperationForExistingHandle(new FillPolygonOperation(pointArray));
+	storeAndApplyOperationForExistingHandle(new FillPolygonOperation(pointArray));
 }
 
 private class FillPolygonOperation extends Operation {
@@ -3361,7 +3366,7 @@ private void fillPolygonInPixels (int[] pointArray) {
  * @see #drawRectangle(int, int, int, int)
  */
 public void fillRectangle (int x, int y, int width, int height) {
-	applyOperationForExistingHandle(new FillRectangleOperation(new Rectangle(x, y, width, height)));
+	storeAndApplyOperationForExistingHandle(new FillRectangleOperation(new Rectangle(x, y, width, height)));
 }
 
 private class FillRectangleOperation extends Operation {
@@ -3415,7 +3420,7 @@ void fillRectangleInPixels (int x, int y, int width, int height) {
 public void fillRectangle (Rectangle rect) {
 	checkNonDisposed();
 	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	applyOperationForExistingHandle(new FillRectangleOperation(rect));
+	storeAndApplyOperationForExistingHandle(new FillRectangleOperation(rect));
 }
 
 /**
@@ -3437,7 +3442,7 @@ public void fillRectangle (Rectangle rect) {
  */
 public void fillRoundRectangle (int x, int y, int width, int height, int arcWidth, int arcHeight) {
 	checkNonDisposed();
-	applyOperationForExistingHandle(new FillRoundRectangleOperation(new Rectangle(x, y, width, height), arcWidth, arcHeight));
+	storeAndApplyOperationForExistingHandle(new FillRoundRectangleOperation(new Rectangle(x, y, width, height), arcWidth, arcHeight));
 }
 
 private class FillRoundRectangleOperation extends Operation {
@@ -4459,7 +4464,7 @@ private float measureSpace(long font, long format) {
  */
 public void setAdvanced(boolean advanced) {
 	checkNonDisposed();
-	applyOperationForExistingHandle(new SetAdvancedOperation(advanced));
+	storeAndApplyOperationForExistingHandle(new SetAdvancedOperation(advanced));
 }
 
 private class SetAdvancedOperation extends Operation {
@@ -4517,7 +4522,7 @@ private class SetAdvancedOperation extends Operation {
  */
 public void setAntialias(int antialias) {
 	checkNonDisposed();
-	applyOperationForExistingHandle(new SetAntialiasOperation(antialias));
+	storeAndApplyOperationForExistingHandle(new SetAntialiasOperation(antialias));
 }
 
 private class SetAntialiasOperation extends Operation {
@@ -4571,7 +4576,7 @@ private class SetAntialiasOperation extends Operation {
  */
 public void setAlpha(int alpha) {
 	checkNonDisposed();
-	applyOperationForExistingHandle(new SetAlphaOperation(alpha));
+	storeAndApplyOperationForExistingHandle(new SetAlphaOperation(alpha));
 }
 
 private class SetAlphaOperation extends Operation {
@@ -4617,7 +4622,7 @@ public void setBackground (Color color) {
 	checkNonDisposed();
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	applyOperationForExistingHandle(new SetBackgroundOperation(color));
+	storeAndApplyOperationForExistingHandle(new SetBackgroundOperation(color));
 }
 
 private class SetBackgroundOperation extends Operation {
@@ -4663,7 +4668,7 @@ private class SetBackgroundOperation extends Operation {
 public void setBackgroundPattern (Pattern pattern) {
 	checkNonDisposed();
 	if (pattern != null && pattern.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	applyOperationForExistingHandle(new SetBackgroundPatternOperation(pattern));
+	storeAndApplyOperationForExistingHandle(new SetBackgroundPatternOperation(pattern));
 }
 
 private class SetBackgroundPatternOperation extends Operation {
@@ -4689,7 +4694,7 @@ private class SetBackgroundPatternOperation extends Operation {
 
 private void setClipping(long clipRgn) {
 	checkNonDisposed();
-	applyOperationForExistingHandle(new SetClippingRegionOperation(clipRgn));
+	storeAndApplyOperationForExistingHandle(new SetClippingRegionOperation(clipRgn));
 }
 
 private class SetClippingRegionOperation extends Operation {
@@ -4745,7 +4750,7 @@ private void setClippingRegion(long hRgn) {
  */
 public void setClipping (int x, int y, int width, int height) {
 	checkNonDisposed();
-	applyOperationForExistingHandle(new SetClippingOperation(new Rectangle(x, y, width, height)));
+	storeAndApplyOperationForExistingHandle(new SetClippingOperation(new Rectangle(x, y, width, height)));
 }
 
 private class SetClippingOperation extends Operation {
@@ -4798,7 +4803,7 @@ private void setClippingInPixels (int x, int y, int width, int height) {
 public void setClipping (Path path) {
 	checkNonDisposed();
 	if (path != null && path.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	applyOperationForExistingHandle(new SetClippingPathOperation(path));
+	storeAndApplyOperationForExistingHandle(new SetClippingPathOperation(path));
 }
 
 private class SetClippingPathOperation extends Operation {
@@ -4841,7 +4846,7 @@ public void setClipping (Rectangle rect) {
 	if (rect == null) {
 		setClipping(0);
 	} else {
-		applyOperationForExistingHandle(new SetClippingOperation(rect));
+		storeAndApplyOperationForExistingHandle(new SetClippingOperation(rect));
 	}
 }
 
@@ -4885,7 +4890,7 @@ public void setClipping (Region region) {
  */
 public void setFillRule(int rule) {
 	checkNonDisposed();
-	applyOperationForExistingHandle(new SetFillRuleOperation(rule));
+	storeAndApplyOperationForExistingHandle(new SetFillRuleOperation(rule));
 }
 
 private class SetFillRuleOperation extends Operation {
@@ -4926,7 +4931,7 @@ private class SetFillRuleOperation extends Operation {
 public void setFont (Font font) {
 	checkNonDisposed();
 	if (font != null && font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	applyOperationForExistingHandle(new SetFontOperation(font));
+	storeAndApplyOperationForExistingHandle(new SetFontOperation(font));
 }
 
 private class SetFontOperation extends Operation {
@@ -4961,7 +4966,7 @@ public void setForeground (Color color) {
 	checkNonDisposed();
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	applyOperationForExistingHandle(new SetForegroundOperation(color));
+	storeAndApplyOperationForExistingHandle(new SetForegroundOperation(color));
 }
 
 private class SetForegroundOperation extends Operation {
@@ -5006,7 +5011,7 @@ private class SetForegroundOperation extends Operation {
 public void setForegroundPattern (Pattern pattern) {
 	checkNonDisposed();
 	if (pattern != null && pattern.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	applyOperationForExistingHandle(new SetForegroundPatternOperation(pattern));
+	storeAndApplyOperationForExistingHandle(new SetForegroundPatternOperation(pattern));
 }
 
 private class SetForegroundPatternOperation extends Operation {
@@ -5058,7 +5063,7 @@ private class SetForegroundPatternOperation extends Operation {
  */
 public void setInterpolation(int interpolation) {
 	checkNonDisposed();
-	applyOperationForExistingHandle(new SetInterpolationOperation(interpolation));
+	storeAndApplyOperationForExistingHandle(new SetInterpolationOperation(interpolation));
 }
 
 private class SetInterpolationOperation extends Operation {
@@ -5112,7 +5117,7 @@ private class SetInterpolationOperation extends Operation {
 public void setLineAttributes (LineAttributes attributes) {
 	if (attributes == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	checkNonDisposed();
-	applyOperationForExistingHandle(new SetLineAttributesOperation(attributes));
+	storeAndApplyOperationForExistingHandle(new SetLineAttributesOperation(attributes));
 }
 
 private class SetLineAttributesOperation extends Operation {
@@ -5242,7 +5247,7 @@ private void setLineAttributesInPixels (LineAttributes attributes) {
  */
 public void setLineCap(int cap) {
 	checkNonDisposed();
-	applyOperationForExistingHandle(new SetLineCapOperation(cap));
+	storeAndApplyOperationForExistingHandle(new SetLineCapOperation(cap));
 }
 
 private class SetLineCapOperation extends Operation {
@@ -5287,7 +5292,7 @@ private class SetLineCapOperation extends Operation {
  */
 public void setLineDash(int[] dashes) {
 	checkNonDisposed();
-	applyOperationForExistingHandle(new SetLineDashOperation(dashes));
+	storeAndApplyOperationForExistingHandle(new SetLineDashOperation(dashes));
 }
 
 private class SetLineDashOperation extends Operation {
@@ -5339,7 +5344,7 @@ private class SetLineDashOperation extends Operation {
  */
 public void setLineJoin(int join) {
 	checkNonDisposed();
-	applyOperationForExistingHandle(new SetLineJoinOperation(join));
+	storeAndApplyOperationForExistingHandle(new SetLineJoinOperation(join));
 }
 
 private class SetLineJoinOperation extends Operation {
@@ -5382,7 +5387,7 @@ private class SetLineJoinOperation extends Operation {
  */
 public void setLineStyle(int lineStyle) {
 	checkNonDisposed();
-	applyOperationForExistingHandle(new SetLineStyleOperation(lineStyle));
+	storeAndApplyOperationForExistingHandle(new SetLineStyleOperation(lineStyle));
 }
 
 private class SetLineStyleOperation extends Operation {
@@ -5436,7 +5441,7 @@ private class SetLineStyleOperation extends Operation {
  */
 public void setLineWidth(int lineWidth) {
 	checkNonDisposed();
-	applyOperationForExistingHandle(new SetLineWidthOperation(lineWidth));
+	storeAndApplyOperationForExistingHandle(new SetLineWidthOperation(lineWidth));
 }
 
 private class SetLineWidthOperation extends Operation {
@@ -5475,7 +5480,7 @@ private void setLineWidthInPixels(int lineWidth) {
  */
 public void setXORMode(boolean xor) {
 	checkNonDisposed();
-	applyOperationForExistingHandle(new SetXORModeOperation(xor));
+	storeAndApplyOperationForExistingHandle(new SetXORModeOperation(xor));
 }
 
 private class SetXORModeOperation extends Operation {
@@ -5521,7 +5526,7 @@ private class SetXORModeOperation extends Operation {
  */
 public void setTextAntialias(int antialias) {
 	checkNonDisposed();
-	applyOperationForExistingHandle(new SetTextAntialiasOperation(antialias));
+	storeAndApplyOperationForExistingHandle(new SetTextAntialiasOperation(antialias));
 }
 
 private class SetTextAntialiasOperation extends Operation {
@@ -5588,7 +5593,7 @@ private class SetTextAntialiasOperation extends Operation {
 public void setTransform(Transform transform) {
 	checkNonDisposed();
 	if (transform != null && transform.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	applyOperationForExistingHandle(new SetTransformOperation(transform));
+	storeAndApplyOperationForExistingHandle(new SetTransformOperation(transform));
 }
 
 private class SetTransformOperation extends Operation {
@@ -5747,6 +5752,17 @@ Point textExtentInPixels(String string, int flags) {
 	return new Point(rect.right, rect.bottom);
 }
 
+void refreshFor(Drawable drawable, int zoom) {
+	if (drawable == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (zoom == getZoom()) {
+		return;
+	}
+	destroy();
+	GCData newData = new GCData();
+	originalData.copyTo(newData);
+	createGcHandle(drawable, newData, zoom);
+}
+
 /**
  * Returns a string containing a concise, human-readable
  * description of the receiver.
@@ -5778,6 +5794,7 @@ public String toString () {
  */
 public static GC win32_new(Drawable drawable, GCData data) {
 	GC gc = new GC();
+	data.copyTo(gc.originalData);
 	long hDC = drawable.internal_new_GC(data);
 	gc.device = data.device;
 	gc.init(drawable, data, hDC);
@@ -5809,6 +5826,7 @@ public static GC win32_new(long hDC, GCData data) {
 	if ((flags & OS.LAYOUT_RTL) != 0) {
 		data.style |= SWT.RIGHT_TO_LEFT | SWT.MIRRORED;
 	}
+	data.copyTo(gc.originalData);
 	gc.init(null, data, hDC);
 	return gc;
 }
@@ -5843,8 +5861,19 @@ int getZoom() {
 	return DPIUtil.getZoomForAutoscaleProperty(data.nativeZoom);
 }
 
-private void applyOperationForExistingHandle(Operation operation) {
+private void storeAndApplyOperationForExistingHandle(Operation operation) {
+	operations.add(operation);
 	operation.apply();
+}
+
+private void createGcHandle(Drawable drawable, GCData newData, int nativeZoom) {
+	newData.nativeZoom = nativeZoom;
+	long newHandle = drawable.internal_new_GC(newData);
+	if (newHandle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	init(drawable, newData, newHandle);
+	for (Operation operation : operations) {
+		operation.apply();
+	}
 }
 
 private abstract class Operation {
