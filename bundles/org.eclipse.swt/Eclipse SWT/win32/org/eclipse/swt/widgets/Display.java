@@ -5404,7 +5404,7 @@ public boolean setRescalingAtRuntime(boolean activate) {
 
 private boolean setMonitorSpecificScaling(boolean activate) {
 	int desiredApiAwareness = activate ? OS.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 : OS.DPI_AWARENESS_CONTEXT_SYSTEM_AWARE;
-	if (setDPIAwareness(desiredApiAwareness)) {
+	if (Win32DPIUtils.setDPIAwareness(desiredApiAwareness)) {
 		rescalingAtRuntime = activate;
 		coordinateSystemMapper = activate ? new MultiZoomCoordinateSystemMapper(this, this::getMonitors) : new SingleZoomCoordinateSystemMapper(this);
 		// dispose a existing font registry for the default display
@@ -5414,38 +5414,12 @@ private boolean setMonitorSpecificScaling(boolean activate) {
 	return false;
 }
 
-private boolean setDPIAwareness(int desiredDpiAwareness) {
-	if (desiredDpiAwareness == OS.GetThreadDpiAwarenessContext()) {
-		return true;
-	}
-	if (desiredDpiAwareness == OS.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2) {
-		// "Per Monitor V2" only available in more recent Windows version
-		boolean perMonitorV2Available = OsVersion.IS_WIN10_1809;
-		if (!perMonitorV2Available) {
-			System.err.println("***WARNING: the OS version does not support DPI awareness mode PerMonitorV2.");
-			return false;
-		}
-	}
-	long setDpiAwarenessResult = OS.SetThreadDpiAwarenessContext(desiredDpiAwareness);
-	if (setDpiAwarenessResult == 0L) {
-		System.err.println("***WARNING: setting DPI awareness failed.");
-		return false;
-	}
-	return true;
-}
-
 private void runWithProperDPIAwareness(Runnable operation) {
 	if (isRescalingAtRuntime()) {
-		// refreshing is only necessary, when monitor specific scaling is active
-		long previousDPIAwareness = OS.GetThreadDpiAwarenessContext();
-		if (!setDPIAwareness(OS.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2)) {
-			// awareness was not changed, so no need to reset it
-			previousDPIAwareness = 0;
-		}
-		operation.run();
-		if (previousDPIAwareness > 0) {
-			OS.SetThreadDpiAwarenessContext(previousDPIAwareness);
-		}
+		Win32DPIUtils.runWithProperDPIAwareness(() -> {
+			operation.run();
+			return true;
+		});
 	} else {
 		operation.run();
 	}

@@ -242,29 +242,35 @@ void createCOMInterfaces() {
 		public long method2(long[] args) {return Release();}
 		@Override
 		public long method3(long[] args) {
-			if (args.length == 5) {
-				return DragEnter(args[0], (int)args[1], (int)args[2], (int)args[3], args[4]);
-			} else {
-				return DragEnter_64(args[0], (int)args[1], args[2], args[3]);
-			}
+			return Win32DPIUtils.runWithProperDPIAwareness(() -> {
+				if (args.length == 5) {
+					return DragEnter(args[0], (int)args[1], (int)args[2], (int)args[3], args[4]);
+				} else {
+					return DragEnter_64(args[0], (int)args[1], args[2], args[3]);
+				}
+			});
 		}
 		@Override
 		public long method4(long[] args) {
-			if (args.length == 4) {
-				return DragOver((int)args[0], (int)args[1], (int)args[2], args[3]);
-			} else {
-				return DragOver_64((int)args[0], args[1], args[2]);
-			}
+			return Win32DPIUtils.runWithProperDPIAwareness(() -> {
+				if (args.length == 4) {
+					return DragOver((int)args[0], (int)args[1], (int)args[2], args[3]);
+				} else {
+					return DragOver_64((int)args[0], args[1], args[2]);
+				}
+			});
 		}
 		@Override
 		public long method5(long[] args) {return DragLeave();}
 		@Override
 		public long method6(long[] args) {
-			if (args.length == 5) {
-				return Drop(args[0], (int)args[1], (int)args[2], (int)args[3], args[4]);
-			} else {
-				return Drop_64(args[0], (int)args[1], args[2], args[3]);
-			}
+			return Win32DPIUtils.runWithProperDPIAwareness(() -> {
+				if (args.length == 5) {
+					return Drop(args[0], (int)args[1], (int)args[2], (int)args[3], args[4]);
+				} else {
+					return Drop_64(args[0], (int)args[1], args[2], args[3]);
+				}
+			});
 		}
 	};
 }
