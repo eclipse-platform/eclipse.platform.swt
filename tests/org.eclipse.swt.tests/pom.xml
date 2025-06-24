@@ -88,5 +88,39 @@
 		</dependencies>
       </plugin>
     </plugins>
+
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>com.gradle</groupId>
+          <artifactId>develocity-maven-extension</artifactId>
+          <configuration>
+            <develocity>
+              <plugins>
+                <plugin>
+                  <groupId>org.apache.maven.plugins</groupId>
+                  <artifactId>maven-surefire-plugin</artifactId>
+                  <inputs>
+                    <fileSets>
+                      <fileSet>
+                        <name>user.home</name>
+                        <paths>
+                          <path>${project.build.directory}</path>
+                        </paths>
+                        <normalization>
+                          <strategy>RELATIVE_PATH</strategy>
+                          <ignoreEmptyDirectories>true</ignoreEmptyDirectories>
+                          <ignoreLineEndings>true</ignoreLineEndings>
+                        </normalization>
+                      </fileSet>
+                    </fileSets>
+                  </inputs>
+                </plugin>
+              </plugins>
+            </develocity>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
   </build>
 </project>
