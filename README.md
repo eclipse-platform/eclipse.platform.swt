@@ -16,11 +16,11 @@ Note that the current development does not target all platforms (Windows, MacOS,
 
 ### Setup
 
-The prototype is currently based on the Eclipse release 2025-03.
+The prototype is currently based on the Eclipse release 2025-06.
 
-1. Set up a Eclipse IDE for Committers 2025-03, e.g.:
-   - [Eclipse IDE for Committers 2025-03](https://www.eclipse.org/downloads/packages/release/2025-03/r/eclipse-ide-eclipse-committers)
-   - [Eclipse SDK Development Environment](https://github.com/eclipse-platform/eclipse.platform?tab=readme-ov-file#how-to-contribute) using product version "4.34 - 2025-03" in the installer
+1. Set up a Eclipse IDE for Committers 2025-06, e.g.:
+   - [Eclipse IDE for Committers 2025-06](https://www.eclipse.org/downloads/packages/release/2025-06/r/eclipse-ide-eclipse-committers)
+   - [Eclipse SDK Development Environment](https://github.com/eclipse-platform/eclipse.platform?tab=readme-ov-file#how-to-contribute) using product version "4.35 - 2025-06" in the installer
 2. Clone this repository
 3. Start the downloaded IDE and import the following projects:
    - The SWT bundle `org.eclipse.swt`
@@ -53,11 +53,22 @@ The Eclipse application that starts will automatically use the custom-drawn widg
 
 ## State
 
-Note that this is work-in-progress prototyping work. The implementation is not (supposed to be) production ready.
+Note that this is work-in-progress prototyping work. 
+The implementation is not (supposed to be) production ready.
 Currently, there are (at least partial) custom implementations for the following basic widgets:
 - Button
 - Label
 - Text
+- Combo
+- Sash
+- Group
+- TabFolder
+- Table
+- Tree
+- List
+- Scale
+- CoolBar
+- Link
 - Combo
 
 For rendering, the custom-drawn widgets only rely on the functionalities of the `GC`, such a drawing text and primitives like lines.
