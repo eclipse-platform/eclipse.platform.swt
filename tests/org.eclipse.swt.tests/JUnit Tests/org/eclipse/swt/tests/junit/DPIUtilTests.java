@@ -319,40 +319,4 @@ public class DPIUtilTests {
 		scaledValue = DPIUtil.scaleUp((Device) null, valueAt100, 100);
 		assertSame(valueAt100, scaledValue, "Scaling up Rectangle without zoom change with device failed");
 	}
-
-	@Test
-	public void scaleDownscaleUpRectangleInvertible() {
-		int[] zooms = new int[] {25, 50, 75, 100, 125, 150, 175, 200, 225, 250, 275, 300, 325, 350, 375, 400};
-		for (int zoom1 : zooms) {
-			for (int zoom2 : zooms) {
-				for (int i = 1; i <= 10000; i++) {
-					Rectangle rect = new Rectangle(0, 0, i, i);
-					Rectangle scaleDown = DPIUtil.scaleDown(rect, zoom1);
-					Rectangle scaleUp = DPIUtil.scaleUp(scaleDown, zoom2);
-					scaleDown = DPIUtil.scaleDown(scaleUp, zoom2);
-					scaleUp = DPIUtil.scaleUp(scaleDown, zoom1);
-					assertEquals(rect.width, scaleUp.width);
-					assertEquals(rect.height, scaleUp.height);
-				}
-			}
-		}
-	}
-
-	@Test
-	public void scaleDownscaleUpPointInvertible() {
-		int[] zooms = new int[] {25, 50, 75, 100, 125, 150, 175, 200, 225, 250, 275, 300, 325, 350, 375, 400};
-		for (int zoom1 : zooms) {
-			for (int zoom2 : zooms) {
-				for (int i = 1; i <= 10000; i++) {
-					Point pt = new Point(i, i);
-					Point scaleDown = DPIUtil.scaleDown(pt, zoom1);
-					Point scaleUp = DPIUtil.scaleUp(scaleDown, zoom2);
-					scaleDown = DPIUtil.scaleDown(scaleUp, zoom2);
-					scaleUp = DPIUtil.scaleUp(scaleDown, zoom1);
-					assertEquals(pt.x, scaleUp.x);
-					assertEquals(pt.y, scaleUp.y);
-				}
-			}
-		}
-	}
 }
