@@ -79,7 +79,6 @@ public class Text extends NativeBasedCustomScrollable {
 	private boolean doubleClick = true;
 	private Point doubleClickStartRange;
 	private TextCaret caret;
-	private int style;
 
 	private final TextRenderer renderer;
 
@@ -129,7 +128,6 @@ public class Text extends NativeBasedCustomScrollable {
 	 */
 	public Text(Composite parent, int style) {
 		super(parent, checkStyle(style) & ~SWT.BORDER);
-		this.style = style;
 		model = new TextModel();
 		message = "";
 
