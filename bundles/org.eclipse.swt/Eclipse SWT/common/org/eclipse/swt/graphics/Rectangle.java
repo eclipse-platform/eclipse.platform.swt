@@ -17,7 +17,6 @@ package org.eclipse.swt.graphics;
 import java.io.*;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
 
 /**
  * Instances of this class represent rectangular areas in an
@@ -46,7 +45,7 @@ import org.eclipse.swt.widgets.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 
-public sealed class Rectangle implements Serializable, Cloneable permits Rectangle.WithMonitor {
+public sealed class Rectangle implements Serializable, Cloneable permits MonitorAwareRectangle {
 
 	/**
 	 * the x coordinate of the rectangle
@@ -374,8 +373,8 @@ public Rectangle union (Rectangle rect) {
  * @since 3.131
  */
 public static Rectangle of(Point topLeft, int width, int height) {
-	if (topLeft instanceof Point.WithMonitor monitorAwareTopLeft) {
-		return new Rectangle.WithMonitor(topLeft.x, topLeft.y, width, height, monitorAwareTopLeft.getMonitor());
+	if (topLeft instanceof MonitorAwarePoint monitorAwareTopLeft) {
+		return new MonitorAwareRectangle(topLeft.x, topLeft.y, width, height, monitorAwareTopLeft.getMonitor());
 	}
 	return new Rectangle(topLeft.x, topLeft.y, width, height);
 }
@@ -396,48 +395,5 @@ public static Rectangle of(Point topLeft, int width, int height) {
 @Override
 public Rectangle clone() {
 	return new Rectangle(x, y, width, height);
-}
-
-/**
- * Instances of this class represent {@link org.eclipse.swt.graphics.Rectangle}
- * objects along with the context of the monitor in relation to which they are
- * placed on the display. The monitor awareness makes it easy to scale and
- * translate the rectangles between pixels and points.
- *
- * @since 3.131
- * @noreference This class is not intended to be referenced by clients
- */
-public static final class WithMonitor extends Rectangle {
-
-	private static final long serialVersionUID = 5041911840525116925L;
-
-	private final Monitor monitor;
-
-	/**
-	 * Constructs a new Rectangle.WithMonitor
-	 *
-	 * @param x the x coordinate of the top left corner of the rectangle
-	 * @param y the y coordinate of the top left corner of the rectangle
-	 * @param width the width of the rectangle
-	 * @param height the height of the rectangle
-	 * @param monitor the monitor with whose context the rectangle is created
-	 */
-	public WithMonitor(int x, int y, int width, int height, Monitor monitor) {
-		super(x, y, width, height);
-		this.monitor = monitor;
-	}
-
-	/**
-	 * {@return the monitor with whose context the instance is created}
-	 */
-	public Monitor getMonitor() {
-		return monitor;
-	}
-
-	@Override
-	public Rectangle.WithMonitor clone() {
-		return new Rectangle.WithMonitor(x, y, width, height, monitor);
-	}
-
 }
 }
