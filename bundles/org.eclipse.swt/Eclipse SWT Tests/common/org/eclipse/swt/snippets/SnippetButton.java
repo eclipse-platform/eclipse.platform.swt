@@ -42,15 +42,15 @@ public class SnippetButton {
 		// pressed
 		// shell.setDefaultButton(button);
 
-		{
-			var out = ImageUtils.createGenericImage(new SkijaImageDataProvider(img)).getImageData(ZOOM);
-			var button = new Button(shell, SWT.PUSH);
-			button.addListener(SWT.Selection, event -> System.out.println("Click!!!"));
-			button.setImage(new Image(display, out));
-			button.setText("Button Question Icon");
-			button.setSize(133, 150);
-			button.setLocation(200, 200);
-		}
+//		{
+//			var out = ImageUtils.createGenericImage(new SkijaImageDataProvider(img)).getImageData(ZOOM);
+//			var button = new Button(shell, SWT.PUSH);
+//			button.addListener(SWT.Selection, event -> System.out.println("Click!!!"));
+//			button.setImage(new Image(display, out));
+//			button.setText("Button Question Icon");
+//			button.setSize(133, 150);
+//			button.setLocation(200, 200);
+//		}
 		{
 			Image image2 = new Image(display, new Rectangle(0, 0, 5, 5));
 			var b2 = image2.getBounds();
@@ -93,25 +93,25 @@ public class SnippetButton {
 			button.setImage(image3);
 		}
 
-		{
-			Image image3 = new Image(display, 5, 5);
-			var b3 = image3.getBounds();
-			var gc3 = new GC(image3);
-			gc3.setBackground(display.getSystemColor(SWT.COLOR_BLUE));
-			gc3.fillRectangle(b3);
-			var button = new Button(shell, SWT.PUSH);
-			button.addListener(SWT.Selection, event -> System.out.println("Click!!!"));
-
-			// When the shell is active and the user presses ENTER, the button is
-			// pressed
-			// shell.setDefaultButton(button);
-
-			button.setImage(ImageUtils.createGenericImage(new SkijaImageDataProvider(image3.getImageData())));
-			button.setText("Button Blue");
-			button.setSize(100, 100);
-			button.setLocation(300, 300);
-			button.setImage(image3);
-		}
+//		{
+//			Image image3 = new Image(display, 5, 5);
+//			var b3 = image3.getBounds();
+//			var gc3 = new GC(image3);
+//			gc3.setBackground(display.getSystemColor(SWT.COLOR_BLUE));
+//			gc3.fillRectangle(b3);
+//			var button = new Button(shell, SWT.PUSH);
+//			button.addListener(SWT.Selection, event -> System.out.println("Click!!!"));
+//
+//			// When the shell is active and the user presses ENTER, the button is
+//			// pressed
+//			// shell.setDefaultButton(button);
+//
+//			button.setImage(ImageUtils.createGenericImage(new SkijaImageDataProvider(image3.getImageData())));
+//			button.setText("Button Blue");
+//			button.setSize(100, 100);
+//			button.setLocation(300, 300);
+//			button.setImage(image3);
+//		}
 
 		shell.setSize(300, 500);
 		shell.open();
