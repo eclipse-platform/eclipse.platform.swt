@@ -16,8 +16,6 @@ package org.eclipse.swt.graphics;
 
 import java.io.*;
 
-import org.eclipse.swt.widgets.*;
-
 /**
  * Instances of this class represent places on the (x, y)
  * coordinate plane.
@@ -43,7 +41,7 @@ import org.eclipse.swt.widgets.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 
-public sealed class Point implements Serializable permits Point.WithMonitor {
+public sealed class Point implements Serializable permits MonitorAwarePoint {
 
 	/**
 	 * the x coordinate of the point
@@ -116,42 +114,6 @@ public int hashCode () {
 @Override
 public String toString () {
 	return "Point {" + x + ", " + y + "}"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-}
-
-/**
- * Instances of this class represent {@link org.eclipse.swt.graphics.Point}
- * objects along with the context of the monitor in relation to which they are
- * placed on the display. The monitor awareness makes it easy to scale and
- * translate the points between pixels and points.
- *
- * @since 3.131
- * @noreference This class is not intended to be referenced by clients
- */
-public static final class WithMonitor extends Point {
-
-	private static final long serialVersionUID = 6077427420686999194L;
-
-	private final Monitor monitor;
-
-	/**
-	 * Constructs a new Point.WithMonitor
-	 *
-	 * @param x       the x coordinate of the point
-	 * @param y       the y coordinate of the point
-	 * @param monitor the monitor with whose context the point is created
-	 */
-	public WithMonitor(int x, int y, Monitor monitor) {
-		super(x, y);
-		this.monitor = monitor;
-	}
-
-	/**
-	 * {@return the monitor with whose context the instance is created}
-	 */
-	public Monitor getMonitor() {
-		return monitor;
-	}
-
 }
 
 }
