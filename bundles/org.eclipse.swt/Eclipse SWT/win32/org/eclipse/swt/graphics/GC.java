@@ -990,7 +990,7 @@ public void drawImage (Image image, int srcX, int srcY, int srcWidth, int srcHei
 	if (image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 
 	int gcZoom = getZoom();
-	int srcImageZoom = calculateZoomForImage(gcZoom, srcWidth, srcHeight, destWidth, destHeight);
+	int srcImageZoom = calculateZoomForImage(image, gcZoom, srcWidth, srcHeight, destWidth, destHeight);
 	drawImage(image, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, gcZoom, srcImageZoom);
 }
 
@@ -1003,25 +1003,29 @@ private Collection<Integer> getAllCurrentMonitorZooms() {
 	return Collections.emptySet();
 }
 
-private int calculateZoomForImage(int gcZoom, int srcWidth, int srcHeight, int destWidth, int destHeight) {
-	if (srcWidth == 1 && srcHeight == 1) {
-		// One pixel images can use the GC zoom
-		return gcZoom;
-	}
-	if (destWidth == srcWidth && destHeight == srcHeight) {
-		// unscaled images can use the GC zoom
-		return gcZoom;
-	}
-
+private int calculateZoomForImage(Image image, int gcZoom, int srcWidth, int srcHeight, int destWidth, int destHeight) {
+	int scaledImageZoom;
 	float imageScaleFactor = 1f * destWidth / srcWidth;
 	int imageZoom = Math.round(gcZoom * imageScaleFactor);
-	if (getAllCurrentMonitorZooms().contains(imageZoom)) {
-		return imageZoom;
+	if (srcWidth == 1 && srcHeight == 1) {
+		// One pixel images can use the GC zoom
+		scaledImageZoom = gcZoom;
+	} else if (destWidth == srcWidth && destHeight == srcHeight) {
+		// unscaled images can use the GC zoom
+		scaledImageZoom = gcZoom;
+	} else if (getAllCurrentMonitorZooms().contains(imageZoom)) {
+		scaledImageZoom = imageZoom;
+	} else if (imageZoom > 150) {
+		scaledImageZoom = 200;
+	} else {
+		scaledImageZoom = 100;
 	}
-	if (imageZoom > 150) {
-		return 200;
-	}
-	return 100;
+	Rectangle scaledBounds = image.getBounds(scaledImageZoom);
+	Rectangle unScaledBound = image.getBounds();
+	// validates if the image bounds are scaled up correctly as per required zoom, if it is not zoom is returned as per actual scaling factor.
+	float scalingFactor = (float) scaledBounds.height / unScaledBound.height;
+	scaledImageZoom = (int) (scalingFactor * 100);
+	return scaledImageZoom;
 }
 
 private void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY,
