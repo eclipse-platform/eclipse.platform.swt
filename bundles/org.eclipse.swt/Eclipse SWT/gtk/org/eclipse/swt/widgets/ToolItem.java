@@ -762,18 +762,28 @@ long gtk_enter_notify_event (long widget, long event) {
 		if (imageList != null) {
 			int index = imageList.indexOf(hotImage);
 			if (index != -1 && imageHandle != 0) {
-				if (GTK.GTK4) {
-					long pixbuf = ImageList.createPixbuf(hotImage);
-					long texture = GDK.gdk_texture_new_for_pixbuf(pixbuf);
-					OS.g_object_unref(pixbuf);
-					GTK4.gtk_image_set_from_paintable(imageHandle, texture);
-				} else {
-					GTK3.gtk_image_set_from_surface(imageHandle, imageList.getSurface(index));
-				}
+				GTK3.gtk_image_set_from_surface(imageHandle, imageList.getSurface(index));
 			}
 		}
 	}
 	return 0;
+}
+
+@Override
+void gtk4_enter_event(long controller, double x, double y, long event) {
+	drawHotImage = (parent.style & SWT.FLAT) != 0 && hotImage != null;
+	if (drawHotImage) {
+		ImageList imageList = parent.imageList;
+		if (imageList != null) {
+			int index = imageList.indexOf(hotImage);
+			if (index != -1 && imageHandle != 0) {
+				long pixbuf = ImageList.createPixbuf(hotImage);
+				long texture = GDK.gdk_texture_new_for_pixbuf(pixbuf);
+				OS.g_object_unref(pixbuf);
+				GTK4.gtk_image_set_from_paintable(imageHandle, texture);
+			}
+		}
+	}
 }
 
 @Override
@@ -826,19 +836,31 @@ long gtk_leave_notify_event (long widget, long event) {
 			if (imageList != null) {
 				int index = imageList.indexOf(image);
 				if (index != -1 && imageHandle != 0) {
-					if (GTK.GTK4) {
-						long pixbuf = ImageList.createPixbuf(image);
-						long texture = GDK.gdk_texture_new_for_pixbuf(pixbuf);
-						OS.g_object_unref(pixbuf);
-						GTK4.gtk_image_set_from_paintable(imageHandle, texture);
-					} else {
-						GTK3.gtk_image_set_from_surface(imageHandle, imageList.getSurface(index));
-					}
+					GTK3.gtk_image_set_from_surface(imageHandle, imageList.getSurface(index));
 				}
 			}
 		}
 	}
 	return 0;
+}
+
+@Override
+void gtk4_leave_event(long controller, long event) {
+	if (drawHotImage) {
+		drawHotImage = false;
+		if (image != null) {
+			ImageList imageList = parent.imageList;
+			if (imageList != null) {
+				int index = imageList.indexOf(image);
+				if (index != -1 && imageHandle != 0) {
+					long pixbuf = ImageList.createPixbuf(image);
+					long texture = GDK.gdk_texture_new_for_pixbuf(pixbuf);
+					OS.g_object_unref(pixbuf);
+					GTK4.gtk_image_set_from_paintable(imageHandle, texture);
+				}
+			}
+		}
+	}
 }
 
 @Override
