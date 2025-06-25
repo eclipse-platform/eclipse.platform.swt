@@ -589,7 +589,10 @@ long gtk_switch_page(long notebook, long page, int page_num) {
 
 	if (GTK.GTK4) {
 		Control control = item.getControl();
-		control.setBoundsInPixels(getClientAreaInPixels());
+		if (control != null && !control.isDisposed()) {
+			control.setBoundsInPixels(getClientAreaInPixels());
+			control.setVisible(true);
+		}
 	} else {
 		int index = GTK.gtk_notebook_get_current_page(handle);
 		if (index != -1) {
