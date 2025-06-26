@@ -13,13 +13,17 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
+import org.eclipse.swt.*;
+
 class BrowserFactory {
 
 WebBrowser createWebBrowser (int style) {
 	boolean webkitInstalled = WebKit.IsInstalled ();
 	if (!webkitInstalled) return null;
 
-	return new WebKit ();
+	WebKit webKit = new WebKit ();
+	webKit.enableSearch = (style & SWT.SEARCH) == SWT.SEARCH;
+	return webKit;
 }
 
 }

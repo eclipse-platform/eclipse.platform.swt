@@ -1558,6 +1558,7 @@ public class SWT {
 	 * <p><b>Used By:</b></p>
 	 * <ul>
 	 * <li><code>Text</code></li>
+	 * <li><code>Browser</code> (WebKit and GTK only)</li>
 	 * </ul>
 	 *
 	 * @since 3.3
