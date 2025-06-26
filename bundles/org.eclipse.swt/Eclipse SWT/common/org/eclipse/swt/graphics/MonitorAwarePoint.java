@@ -26,9 +26,23 @@ import org.eclipse.swt.widgets.*;
  */
 public final class MonitorAwarePoint extends Point {
 
-	private static final long serialVersionUID = 6077427420686999194L;
+	private static final long serialVersionUID = 7516155847004716654L;
+
+	public float residualX, residualY;
 
 	private final Monitor monitor;
+
+	public MonitorAwarePoint(int x, int y) {
+		this(x, y, null);
+	}
+
+	public MonitorAwarePoint(float x, float y, Monitor monitor) {
+		super(Math.round(x), Math.round(y));
+		this.residualX = x - this.x;
+		this.residualY = y - this.y;
+		this.monitor = monitor;
+	}
+
 
 	/**
 	 * Constructs a new MonitorAwarePoint
@@ -58,5 +72,22 @@ public final class MonitorAwarePoint extends Point {
 	public int hashCode() {
 		return super.hashCode();
 	}
+	
+	public float getX() {
+		return x + residualX;
+	}
 
+	public float getY() {
+		return y + residualY;
+	}
+
+	public void setX(float x) {
+		this.x = Math.round(x);
+		this.residualX = x - this.x;
+	}
+
+	public void setY(float y) {
+		this.y = Math.round(y);
+		this.residualY = y - this.y;
+	}
 }

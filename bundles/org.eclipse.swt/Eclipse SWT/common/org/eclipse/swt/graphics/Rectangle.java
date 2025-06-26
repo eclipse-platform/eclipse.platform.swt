@@ -374,7 +374,7 @@ public Rectangle union (Rectangle rect) {
  */
 public static Rectangle of(Point topLeft, int width, int height) {
 	if (topLeft instanceof MonitorAwarePoint monitorAwareTopLeft) {
-		return new MonitorAwareRectangle(topLeft.x, topLeft.y, width, height, monitorAwareTopLeft.getMonitor());
+		return new MonitorAwareRectangle(monitorAwareTopLeft.getX(), monitorAwareTopLeft.getY(), width, height, monitorAwareTopLeft.getMonitor());
 	}
 	return new Rectangle(topLeft.x, topLeft.y, width, height);
 }
