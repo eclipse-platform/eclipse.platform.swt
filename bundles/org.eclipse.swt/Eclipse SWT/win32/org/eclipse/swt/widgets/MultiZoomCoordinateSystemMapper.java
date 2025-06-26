@@ -98,19 +98,19 @@ class MultiZoomCoordinateSystemMapper implements CoordinateSystemMapper {
 
 	@Override
 	public Point translateToDisplayCoordinates(Point point, int zoom) {
-		Monitor monitor = point instanceof MonitorAwarePoint monitorAwarePoint ? monitorAwarePoint.getMonitor() : null;
+		Monitor monitor = point instanceof Point.WithMonitor pointWithMonitor ? pointWithMonitor.getMonitor() : null;
 		return translateLocationInPointsToPixels(point.x, point.y, monitor);
 	}
 
 	@Override
 	public Rectangle translateFromDisplayCoordinates(Rectangle rect, int zoom) {
-		Monitor monitor = rect instanceof MonitorAwareRectangle monitorAwareRect ? monitorAwareRect.getMonitor() : null;
+		Monitor monitor = rect instanceof Rectangle.WithMonitor rectWithMonitor ? rectWithMonitor.getMonitor() : null;
 		return translateRectangleInPixelsToPoints(rect.x, rect.y, rect.width, rect.height, monitor);
 	}
 
 	@Override
 	public Rectangle translateToDisplayCoordinates(Rectangle rect, int zoom) {
-		Monitor monitor = rect instanceof MonitorAwareRectangle monitorAwareRect ? monitorAwareRect.getMonitor() : null;
+		Monitor monitor = rect instanceof Rectangle.WithMonitor rectWithMonitor ? rectWithMonitor.getMonitor() : null;
 		return translateRectangleInPointsToPixels(rect.x, rect.y, rect.width, rect.height, monitor);
 	}
 
@@ -152,7 +152,7 @@ class MultiZoomCoordinateSystemMapper implements CoordinateSystemMapper {
 		Point topLeft = getPointFromPixels(monitor, x, y);
 		int width = DPIUtil.scaleDown(widthInPixels, zoom);
 		int height = DPIUtil.scaleDown(heightInPixels, zoom);
-		MonitorAwareRectangle rect = new MonitorAwareRectangle(topLeft.x, topLeft.y, width, height, monitor);
+		Rectangle.WithMonitor rect = new Rectangle.WithMonitor(topLeft.x, topLeft.y, width, height, monitor);
 		return rect;
 	}
 
@@ -264,7 +264,7 @@ class MultiZoomCoordinateSystemMapper implements CoordinateSystemMapper {
 		int zoom = getApplicableMonitorZoom(monitor);
 		int mappedX = DPIUtil.scaleDown(x - monitor.clientX, zoom) + monitor.clientX;
 		int mappedY = DPIUtil.scaleDown(y - monitor.clientY, zoom) + monitor.clientY;
-		return new MonitorAwarePoint(mappedX, mappedY, monitor);
+		return new Point.WithMonitor(mappedX, mappedY, monitor);
 	}
 
 	private int getApplicableMonitorZoom(Monitor monitor) {
@@ -273,7 +273,7 @@ class MultiZoomCoordinateSystemMapper implements CoordinateSystemMapper {
 
 	@Override
 	public Rectangle getContainingMonitorBoundsInPixels(Point point) {
-		Monitor monitor = point instanceof MonitorAwarePoint monitorAwarePoint ? monitorAwarePoint.getMonitor()
+		Monitor monitor = point instanceof Point.WithMonitor monitorAwarePoint ? monitorAwarePoint.getMonitor()
 				: getContainingMonitorForPoints(point.x, point.y);
 		return getMonitorClientAreaInPixels(monitor);
 	}
