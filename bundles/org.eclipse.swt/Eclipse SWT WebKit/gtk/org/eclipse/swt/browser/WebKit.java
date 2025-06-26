@@ -101,6 +101,8 @@ class WebKit extends WebBrowser {
 	private Point searchShellLocation;
 	private Shell searchShell;
 	private String searchText;
+	boolean enableSearch;
+
 
 	boolean firstLoad = true;
 	static boolean FirstCreate = true;
@@ -208,7 +210,7 @@ class WebKit extends WebBrowser {
 	static final boolean ignoreTls;
 
 	/** Flag that disables browser searching added on top of the WebKit browser. */
-	static final boolean disableBrowserSearch;
+	static final boolean disableBrowserSearchGlobally;
 
 	static {
 			Proc2 = new Callback (WebKit.class, "Proc", 2); //$NON-NLS-1$
@@ -257,7 +259,7 @@ class WebKit extends WebBrowser {
 				NativePendingCookies = null;
 			}
 			ignoreTls = "true".equals(System.getProperty("org.eclipse.swt.internal.webkitgtk.ignoretlserrors"));
-			disableBrowserSearch = "true".equals(System.getProperty("org.eclipse.swt.internal.webkitgtk.disableBrowserSearch"));
+			disableBrowserSearchGlobally = "true".equals(System.getProperty("org.eclipse.swt.internal.webkitgtk.disableBrowserSearch"));
 	}
 
 	@Override
@@ -795,7 +797,7 @@ public void create (Composite parent, int style) {
 				break;
 			}
 			case SWT.KeyDown: {
-				if (!disableBrowserSearch && event.keyCode == 'f' && (event.stateMask & SWT.CTRL) == SWT.CTRL) {
+				if (!disableBrowserSearchGlobally && enableSearch && event.keyCode == 'f' && (event.stateMask & SWT.CTRL) == SWT.CTRL) {
 					openSearchDialog();
 				}
 				break;
@@ -2711,13 +2713,6 @@ private void openSearchDialog() {
 		return;
 	}
 	Shell browserShell = browser.getShell();
-	if (browserShell == null || browserShell.isDisposed() || (browserShell.getStyle() & SWT.TOOL) == SWT.TOOL) {
-		/*
-		 * We don't provide search capabilities for browsers in a pop-up.
-		 * We could cause issues with pop-up focus handling when the search shell is opened.
-		 */
-		return;
-	}
 	Shell shell = new Shell(browserShell, SWT.TOOL | SWT.MODELESS);
 	Rectangle browserArea = browser.getClientArea();
 	int height = 45;
