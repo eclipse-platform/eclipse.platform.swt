@@ -15,6 +15,13 @@
  *     Hannes Wellmann - Streamline entire SWT build and replace ANT-scripts by Maven, Jenkins-Pipeline and single-source Java scripts
   *******************************************************************************/
 
+def secrets = [
+    [path: 'cbi/eclipse.platform/develocity.eclipse.org', secretValues: [
+            [envVar: 'DEVELOCITY_ACCESS_KEY', vaultKey: 'api-token']
+        ]
+    ]
+]
+
 def runOnNativeBuildAgent(String platform, Closure body) {
 	def final nativeBuildStageName = 'Build SWT-native binaries'
 	def dockerImage = null
@@ -336,15 +343,17 @@ pipeline {
 		stage('Build') {
 			steps {
 				xvnc(useXauthority: true) {
-					dir('eclipse.platform.swt') {
-						sh '''
-							mvn clean verify \
-								--batch-mode --threads 1C -V -U -e \
-								-Pbree-libs -Papi-check -Pjavadoc \
-								-Dcompare-version-with-baselines.skip=false \
-								-Dorg.eclipse.swt.tests.junit.disable.test_isLocal=true \
-								-Dmaven.test.failure.ignore=true -Dmaven.test.error.ignore=true
-						'''
+					withVault([vaultSecrets: secrets]) {
+						dir('eclipse.platform.swt') {
+							sh '''
+								mvn clean verify \
+									--batch-mode --threads 1C -V -U -e \
+									-Pbree-libs -Papi-check -Pjavadoc \
+									-Dcompare-version-with-baselines.skip=false \
+									-Dorg.eclipse.swt.tests.junit.disable.test_isLocal=true \
+									-Dmaven.test.failure.ignore=false -Dmaven.test.error.ignore=false
+							'''
+						}
 					}
 				}
 			}

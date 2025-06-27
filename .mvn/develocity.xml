@@ -15,7 +15,7 @@
   <server>
     <url>https://develocity-staging.eclipse.org</url>
   </server>
-  <projectId>eclipse.platform.swt</projectId>
+  <projectId>eclipse.platform</projectId>
   <buildScan>
     <obfuscation>
       <ipAddresses>0.0.0.0</ipAddresses>
