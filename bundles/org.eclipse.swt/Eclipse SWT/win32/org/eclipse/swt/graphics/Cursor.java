@@ -69,6 +69,7 @@ public final class Cursor extends Resource {
 	private HashMap<Integer, Long> zoomLevelToHandle = new HashMap<>();
 
 	boolean isIcon;
+	private final ImageDataProvider imageDataProvider;
 	private final ImageData source;
 	private final ImageData mask;
 	private final int hotspotX;
@@ -79,6 +80,7 @@ public final class Cursor extends Resource {
 Cursor(Device device) {
 	super(device);
 	this.source = null;
+	this.imageDataProvider = null;
 	this.mask = null;
 	this.hotspotX = -1;
 	this.hotspotY = -1;
@@ -204,6 +206,7 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 	this.mask = mask;
 	this.hotspotX = hotspotX;
 	this.hotspotY = hotspotY;
+	this.imageDataProvider = null;
 	if (source == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (mask == null) {
 		if (source.getTransparencyType() != SWT.TRANSPARENCY_MASK) {
@@ -271,6 +274,11 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 	this.mask = null;
 	this.hotspotX = hotspotX;
 	this.hotspotY = hotspotY;
+	this.imageDataProvider = null;
+	setupCursorFromImageData(source);
+}
+
+private void setupCursorFromImageData(ImageData source) {
 	if (source == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	/* Check the hotspots */
 	if (hotspotX >= source.width || hotspotX < 0 ||
@@ -346,6 +354,46 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 }
 
 /**
+ * Constructs a new cursor given a device, image describing
+ * the desired cursor appearance, and the x and y coordinates of
+ * the <em>hotspot</em> (that is, the point within the area
+ * covered by the cursor which is considered to be where the
+ * on-screen pointer is "pointing").
+ * <p>
+ * You must dispose the cursor when it is no longer required.
+ * </p>
+ *
+ * @param device the device on which to allocate the cursor
+ * @param imageDataProvider the ImageDataProvider for the cursor
+ * @param hotspotX the x coordinate of the cursor's hotspot
+ * @param hotspotY the y coordinate of the cursor's hotspot
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the image is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the hotspot is outside the bounds of the
+ * 		 image</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES - if a handle could not be obtained for cursor creation</li>
+ * </ul>
+ *
+ * @see #dispose()
+ *
+ * @since 3.131
+ */
+public Cursor(Device device, ImageDataProvider imageDataProvider, int hotspotX, int hotspotY) {
+	super(device);
+	if (imageDataProvider == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	this.imageDataProvider = imageDataProvider;
+	this.source = imageDataProvider.getImageData(100);
+	this.mask = null;
+	this.hotspotX = hotspotX;
+	this.hotspotY = hotspotY;
+	setupCursorFromImageData(this.source);
+}
+
+/**
  * <b>IMPORTANT:</b> This method is not part of the public
  * API for Image. It is marked public only so that it
  * can be shared within the packages provided by SWT. It is not
@@ -371,7 +419,13 @@ public static Long win32_getHandle (Cursor cursor, int zoom) {
 	if (cursor.source == null) {
 		cursor.setHandleForZoomLevel(cursor.handle, zoom);
 	} else {
-		ImageData source = DPIUtil.scaleImageData(cursor.device, cursor.source, zoom, DEFAULT_ZOOM);
+		ImageData source;
+		if (cursor.imageDataProvider != null) {
+			source = DPIUtil.validateAndGetImageDataAtZoom(cursor.imageDataProvider, zoom).element();
+		}
+		else {
+			source = DPIUtil.scaleImageData(cursor.device, cursor.source, zoom, DEFAULT_ZOOM);
+		}
 		if (cursor.isIcon) {
 			Cursor newCursor = new Cursor(cursor.device, source, cursor.hotspotX, cursor.hotspotY);
 			cursor.setHandleForZoomLevel(newCursor.handle, zoom);
