@@ -8,4 +8,28 @@
             </message_arguments>
         </filter>
     </resource>
+	<resource path="META-INF/MANIFEST.MF">
+        <filter comment="See https://github.com/eclipse-platform/eclipse.platform.swt/issues/62" id="923795461">
+            <message_arguments>
+                <message_argument value="3.131.0"/>
+                <message_argument value="3.130.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="META-INF/MANIFEST.MF" type="org.eclipse.swt.graphics.MonitorAwarePoint">
+        <filter comment="See https://github.com/eclipse-platform/eclipse.platform.swt/issues/62" id="305324134">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.MonitorAwarePoint"/>
+                <message_argument value="org.eclipse.swt_3.131.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="META-INF/MANIFEST.MF" type="org.eclipse.swt.graphics.MonitorAwareRectangle">
+        <filter comment="See https://github.com/eclipse-platform/eclipse.platform.swt/issues/62" id="305324134">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.MonitorAwareRectangle"/>
+                <message_argument value="org.eclipse.swt_3.131.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
 </component>
