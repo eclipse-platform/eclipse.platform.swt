@@ -9,3 +9,4 @@ pom.tycho
 
 /binaries/org.eclipse.swt.*/src/
 tmpdir/
+.mvn/.develocity/develocity-workspace-id
