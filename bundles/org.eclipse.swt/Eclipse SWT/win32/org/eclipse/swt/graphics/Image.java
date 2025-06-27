@@ -610,8 +610,27 @@ public Image(Device device, ImageDataProvider imageDataProvider) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT, null,
 				": ImageDataProvider [" + imageDataProvider + "] returns null ImageData at 100% zoom.");
 	}
+	if (Device.strictChecks) {
+		validateLinearScaling(imageDataProvider);
+	}
 	init();
 	this.device.registerResourceWithZoomSupport(this);
+}
+
+private void validateLinearScaling(ImageDataProvider provider) {
+	final int zoom100 = 100;
+	final int zoom200 = 200;
+	final int scaleFactor =  zoom200 / zoom100;
+	ImageData data100 = provider.getImageData(zoom100);
+	ImageData data200 = provider.getImageData(zoom200);
+
+	if (data200 == null) {
+		return;
+	}
+
+	if (data200.width != scaleFactor * data100.width || data200.height != scaleFactor * data100.height) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT, null, "ImageData should be linearly scaled across zooms.");
+	}
 }
 
 /**

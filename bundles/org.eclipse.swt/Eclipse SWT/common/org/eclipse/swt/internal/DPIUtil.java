@@ -301,7 +301,12 @@ private static ImageData autoScaleImageData (Device device, final ImageData imag
 	int scaledHeight = Math.round (height * scaleFactor);
 	boolean useSmoothScaling = isSmoothScalingEnabled() && imageData.getTransparencyType() != SWT.TRANSPARENCY_MASK;
 	if (useSmoothScaling) {
-		Image original = new Image (device, (ImageDataProvider) zoom -> imageData);
+		Image original = new Image(device, (ImageDataProvider) zoom -> {
+			if (zoom == 100) {
+				return imageData;
+			}
+			return null;
+		});
 		ImageGcDrawer drawer =  new ImageGcDrawer() {
 			@Override
 			public void drawOn(GC gc, int imageWidth, int imageHeight) {
