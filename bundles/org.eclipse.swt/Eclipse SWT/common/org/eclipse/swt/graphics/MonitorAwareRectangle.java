@@ -26,21 +26,31 @@ import org.eclipse.swt.widgets.*;
  */
 public final class MonitorAwareRectangle extends Rectangle {
 
-	private static final long serialVersionUID = 5041911840525116925L;
+	private static final long serialVersionUID = -54807918875027527L;
+
+	private float residualX, residualY, residualWidth, residualHeight;
 
 	private final Monitor monitor;
 
-	/**
-	 * Constructs a new MonitorAwareRectangle
-	 *
-	 * @param x the x coordinate of the top left corner of the rectangle
-	 * @param y the y coordinate of the top left corner of the rectangle
-	 * @param width the width of the rectangle
-	 * @param height the height of the rectangle
-	 * @param monitor the monitor with whose context the rectangle is created
-	 */
+	public MonitorAwareRectangle(int x, int y, int width, int height) {
+		this(x, y, width, height, null);
+	}
+
+	public MonitorAwareRectangle(float x, float y, float width, float height) {
+		this(x, y, width, height, null);
+	}
+
 	public MonitorAwareRectangle(int x, int y, int width, int height, Monitor monitor) {
 		super(x, y, width, height);
+		this.monitor = monitor;
+	}
+
+	MonitorAwareRectangle(float x, float y, float width, float height, Monitor monitor) {
+		super(Math.round(x), Math.round(y), Math.round(width), Math.round(height));
+		this.residualX = x - this.x;
+		this.residualY = y - this.y;
+		this.residualWidth = width - this.width;
+		this.residualHeight = height - this.height;
 		this.monitor = monitor;
 	}
 
@@ -60,10 +70,46 @@ public final class MonitorAwareRectangle extends Rectangle {
 	public int hashCode() {
 		return super.hashCode();
 	}
-
+	
 	@Override
 	public MonitorAwareRectangle clone() {
-		return new MonitorAwareRectangle(x, y, width, height, monitor);
+		return new MonitorAwareRectangle(getX(), getY(), getWidth(), getHeight(), monitor);
+	}
+
+	public float getX() {
+		return x + residualX;
+	}
+
+	public float getY() {
+		return y + residualY;
+	}
+
+	public float getWidth() {
+		return width + residualWidth;
+	}
+
+	public float getHeight() {
+		return height + residualHeight;
+	}
+
+	public void setX(float x) {
+		this.x = Math.round(x);
+		this.residualX = x - this.x;
+	}
+
+	public void setY(float y) {
+		this.y = Math.round(y);
+		this.residualY = y - this.y;
+	}
+
+	public void setWidth(float width) {
+		this.width = Math.round(width);
+		this.residualWidth = width - this.width;
+	}
+
+	public void setHeight(float height) {
+		this.height = Math.round(height);
+		this.residualHeight = height - this.height;
 	}
 
 }
