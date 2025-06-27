@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageGcDrawer;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Decorations;
@@ -71,7 +72,8 @@ public void test_getDefaultButton() {
 
 @Test
 public void test_getImage() {
-	Image[] cases = {null, new Image(null, 100, 100)};
+	ImageGcDrawer noOpGcDrawer = (gc, width, height) -> {};
+	Image[] cases = {null, new Image(null, noOpGcDrawer, 100, 100)};
 	for (Image image : cases) {
 		decorations.setImage(image);
 		assertEquals(decorations.getImage(), image);
