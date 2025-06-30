@@ -2807,10 +2807,10 @@ void fillArcInPixels (int x, int y, int width, int height, int startAngle, int a
  */
 public void fillGradientRectangle (int x, int y, int width, int height, boolean vertical) {
 	Rectangle rect = DPIUtil.scaleUp(drawable, new Rectangle(x, y, width, height), getZoom());
-	fillGradientRectangleInPixels(rect.x, rect.y, rect.width, rect.height, vertical);
+	fillGradientRectangleInPixels(rect.x, rect.y, rect.width, rect.height, vertical, getZoom());
 }
 
-void fillGradientRectangleInPixels(int x, int y, int width, int height, boolean vertical) {
+void fillGradientRectangleInPixels(int x, int y, int width, int height, boolean vertical, int zoom) {
 	checkNonDisposed();
 	if (width == 0 || height == 0) return;
 
@@ -2901,7 +2901,7 @@ void fillGradientRectangleInPixels(int x, int y, int width, int height, boolean 
 	final int bitResolution = (depth >= 24) ? 8 : (depth >= 15) ? 5 : 0;
 	ImageData.fillGradientRectangle(this, data.device,
 		x, y, width, height, vertical, fromRGB, toRGB,
-		bitResolution, bitResolution, bitResolution);
+		bitResolution, bitResolution, bitResolution, zoom);
 }
 
 /**

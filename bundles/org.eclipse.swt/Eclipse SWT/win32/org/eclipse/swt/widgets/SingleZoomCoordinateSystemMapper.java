@@ -72,7 +72,7 @@ class SingleZoomCoordinateSystemMapper implements CoordinateSystemMapper {
 
 	@Override
 	public Rectangle mapMonitorBounds(Rectangle rect, int zoom) {
-		return DPIUtil.autoScaleDown(rect);
+		return DPIUtil.scaleDown(rect, zoom);
 	}
 
 	@Override
@@ -97,13 +97,15 @@ class SingleZoomCoordinateSystemMapper implements CoordinateSystemMapper {
 
 	@Override
 	public Point getCursorLocation() {
+		int zoom = DPIUtil.getDeviceZoom();
 		Point cursorLocationInPixels = display.getCursorLocationInPixels();
-		return DPIUtil.autoScaleDown(cursorLocationInPixels);
+		return DPIUtil.scaleDown(cursorLocationInPixels, zoom);
 	}
 
 	@Override
 	public void setCursorLocation(int x, int y) {
-		display.setCursorLocationInPixels(DPIUtil.autoScaleUp(x), DPIUtil.autoScaleUp(y));
+		int zoom = DPIUtil.getDeviceZoom();
+		display.setCursorLocationInPixels(DPIUtil.scaleUp(x, zoom), DPIUtil.scaleUp(y, zoom));
 	}
 
 	@Override

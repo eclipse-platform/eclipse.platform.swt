@@ -1822,11 +1822,11 @@ public String toString () {
  * @noreference This method is not intended to be referenced by clients.
  */
 public static void drawScaled(GC gc, Image original, int width, int height, float scaleFactor) {
-	gc.drawImage (original, 0, 0, DPIUtil.autoScaleDown (width), DPIUtil.autoScaleDown (height),
+	gc.drawImage (original, 0, 0, CocoaDPIUtil.autoScaleDown (width), CocoaDPIUtil.autoScaleDown (height),
 			/* E.g. destWidth here is effectively DPIUtil.autoScaleDown (scaledWidth), but avoiding rounding errors.
 			 * Nevertheless, we still have some rounding errors due to the point-based API GC#drawImage(..).
 			 */
-			0, 0, Math.round (DPIUtil.autoScaleDown (width * scaleFactor)), Math.round (DPIUtil.autoScaleDown (height * scaleFactor)));
+			0, 0, Math.round (CocoaDPIUtil.autoScaleDown (width * scaleFactor)), Math.round (CocoaDPIUtil.autoScaleDown (height * scaleFactor)));
 }
 
 }

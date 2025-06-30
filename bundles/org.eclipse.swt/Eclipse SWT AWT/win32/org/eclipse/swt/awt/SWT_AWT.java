@@ -286,7 +286,6 @@ public static Shell new_Shell (final Display display, final Canvas parent) {
 		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e);
 	}
 	if (handle == 0) SWT.error (SWT.ERROR_INVALID_ARGUMENT, null, " [peer not created]");
-
 	final Shell shell = Shell.win32_new (display, handle);
 	final ComponentListener listener = new ComponentAdapter () {
 		@Override
@@ -294,7 +293,7 @@ public static Shell new_Shell (final Display display, final Canvas parent) {
 			display.syncExec (() -> {
 				if (shell.isDisposed()) return;
 				Dimension dim = parent.getSize ();
-				shell.setSize(DPIUtil.autoScaleDown(new Point(dim.width, dim.height))); // To Points
+				shell.setSize(DPIUtil.scaleDown(new Point(dim.width, dim.height), DPIUtil.getDeviceZoom())); // To Points
 			});
 		}
 	};
