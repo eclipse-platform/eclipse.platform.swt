@@ -214,7 +214,7 @@ Image(Device device) {
  */
 public Image(Device device, int width, int height) {
 	super(device);
-	Point size = GtkDPIUtil.autoScaleUp(new Point(width, height));
+	Point size = new Point(width, height);
 	currentDeviceZoom = DPIUtil.getDeviceZoom();
 	init(size.x, size.y);
 	init();
@@ -411,8 +411,7 @@ public Image(Device device, Rectangle bounds) {
 	super(device);
 	if (bounds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	currentDeviceZoom = DPIUtil.getDeviceZoom();
-	Rectangle bounds1 = GtkDPIUtil.autoScaleUp (bounds);
-	init(bounds1.width, bounds1.height);
+	init(bounds.width, bounds.height);
 	init();
 }
 
@@ -997,7 +996,7 @@ public Color getBackground() {
  */
 public Rectangle getBounds() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return GtkDPIUtil.autoScaleDown(getBoundsInPixels());
+	return getBoundsInPixels();
 }
 
 /**
@@ -1586,11 +1585,11 @@ public String toString () {
  * @noreference This method is not intended to be referenced by clients.
  */
 public static void drawScaled(GC gc, Image original, int width, int height, float scaleFactor) {
-	gc.drawImage (original, 0, 0, GtkDPIUtil.autoScaleDown (width), GtkDPIUtil.autoScaleDown (height),
+	gc.drawImage (original, 0, 0, width, height,
 			/* E.g. destWidth here is effectively DPIUtil.autoScaleDown (scaledWidth), but avoiding rounding errors.
 			 * Nevertheless, we still have some rounding errors due to the point-based API GC#drawImage(..).
 			 */
-			0, 0, Math.round (GtkDPIUtil.autoScaleDown (width * scaleFactor)), Math.round (GtkDPIUtil.autoScaleDown (height * scaleFactor)));
+			0, 0, Math.round (width * scaleFactor), Math.round (height * scaleFactor));
 }
 
 }
