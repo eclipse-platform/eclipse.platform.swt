@@ -73,10 +73,23 @@ class BasicLabelRenderer extends LabelRenderer {
 		final int bottomMargin = getBottomMargin();
 
 		int availableWidth = Math.max(0, width - leftMargin - rightMargin);
-		String[] lines = text.isEmpty() ? null : splitString(text);
+		String[] lines = null;
 		Point extent = getTotalSize(gc, image, text);
 		boolean shortenText = false;
-		if (lines != null && extent.x > availableWidth) {
+		boolean wrap =isWrap();
+		TextLayout layout=null;
+		try {
+		if (!text.isEmpty()) {
+			if (wrap) {
+				layout = new TextLayout(label.getDisplay());
+				layout.setFont(gc.getFont());
+				layout.setText(text);
+				layout.setWidth(availableWidth);
+			} else {
+				lines = splitString(text);
+			}
+		}
+		if (!wrap && lines != null && extent.x > availableWidth) {
 			if (image != null) {
 				image = null;
 				extent = getTotalSize(gc, null, text);
@@ -86,11 +99,14 @@ class BasicLabelRenderer extends LabelRenderer {
 			}
 		}
 
-		if (shortenText) {
+		if (wrap && shortenText) {
+			if (layout != null) {
+				lines = extractWrappedLines(layout, text);
+			}
 			extent.x = 0;
 			for (int i = 0; i < lines.length; i++) {
 				int lineWidth = gc.textExtent(lines[i], DRAW_FLAGS).x;
-				if (lineWidth > availableWidth) {
+				if (lineWidth > availableWidth /* && !wrap */) {
 					lines[i] = shortenText(gc, lines[i], availableWidth, DRAW_FLAGS);
 					lineWidth = getTotalSize(gc, null, lines[i]).x;
 				}
@@ -134,8 +150,10 @@ class BasicLabelRenderer extends LabelRenderer {
 		if (image != null) {
 			imageRect = image.getBounds();
 			imageHeight = imageRect.height;
-		}
-		if (lines != null) {
+		}if (wrap && layout != null) {
+			lineHeight = layout.getLineBounds(0).height;
+			textHeight = layout.getBounds().height;
+		} else if (lines != null) {
 			lineHeight = gc.getFontMetrics().getHeight();
 			textHeight = lines.length * lineHeight;
 		}
@@ -163,7 +181,16 @@ class BasicLabelRenderer extends LabelRenderer {
 		}
 
 		// draw the text
-		if (lines != null) {
+		if (wrap && layout != null) {
+			int lineY = topMargin;
+			if (textHeight < imageHeight) {
+				lineY = (imageHeight - textHeight) / 2;
+			}
+			gc.setForeground(label.isEnabled() ? label.getForeground() : getColor(COLOR_DISABLED));
+			gc.setAntialias(SWT.ON);
+			gc.setTextAntialias(SWT.ON);
+			layout.draw(gc, x, lineY);
+		} else if (lines != null) {
 			// we draw the label at the top.
 			int lineY = topMargin;
 
@@ -186,6 +213,11 @@ class BasicLabelRenderer extends LabelRenderer {
 				}
 				gc.drawText(line, lineX, lineY, DRAW_FLAGS);
 				lineY += lineHeight;
+			}
+		}
+	} finally {
+			if (layout != null) {
+				layout.dispose();
 			}
 		}
 	}
@@ -364,5 +396,44 @@ class BasicLabelRenderer extends LabelRenderer {
 		gc.setForeground(topleft);
 		gc.drawLine(x, y, x + w - 1, y);
 		gc.drawLine(x, y, x, y + h - 1);
+	}
+
+	/**
+     * Extracts wrapped lines from a TextLayout for the given text.
+     */
+    private static String[] extractWrappedLines(TextLayout layout, String text) {
+        if (layout == null || text == null){
+        	return new String[0];
+        }
+        int[] lineOffsets = layout.getLineOffsets();
+        int lineCount = layout.getLineCount();
+        String[] lines = new String[lineCount];
+        for (int i = 0; i < lineCount; i++) {
+            int start = lineOffsets[i];
+            int end = (i + 1 < lineOffsets.length) ? lineOffsets[i + 1] : text.length();
+            String line = text.substring(start, end).replaceAll("\n$", "");
+            lines[i] = line;
+        }
+        return lines;
+    }
+
+	@Override
+	protected String shortenText(GC gc, String t, int width, int drawFlags) {
+		if (isWrap()) {
+			TextLayout layout = new TextLayout(label.getDisplay());
+			layout.setFont(gc.getFont());
+			layout.setText(t);
+			layout.setWidth(width);
+			String[] lines = extractWrappedLines(layout, t);
+			StringBuilder wrapped = new StringBuilder();
+			for (int i = 0; i < lines.length; i++) {
+				if (i > 0) wrapped.append("\n");
+				wrapped.append(lines[i]);
+			}
+			layout.dispose();
+			return wrapped.toString();
+		} else {
+			return super.shortenText(gc, t, width, drawFlags);
+		}
 	}
 }

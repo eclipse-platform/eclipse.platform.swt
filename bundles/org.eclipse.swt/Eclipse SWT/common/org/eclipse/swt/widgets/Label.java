@@ -57,7 +57,8 @@ public class Label extends CustomControl {
 	private String text;
 	private Image image;
 
-	private boolean ignoreDispose;
+    private boolean ignoreDispose;
+    private final boolean wrap;
 
 	/**
 	 * Constructs a new instance of this class given its parent and a style
@@ -98,6 +99,7 @@ public class Label extends CustomControl {
 	public Label(Composite parent, int style) {
 		super(parent, checkStyle(style));
 		this.style |= SWT.DOUBLE_BUFFERED;
+		this.wrap = (style & SWT.WRAP) != 0;
 		if ((style & (SWT.CENTER | SWT.RIGHT)) == 0) {
 			style |= SWT.LEFT;
 		}
@@ -113,6 +115,7 @@ public class Label extends CustomControl {
 		final RendererFactory rendererFactory = parent.getDisplay().getRendererFactory();
 		renderer = rendererFactory.createLabelRenderer(this);
 		renderer.setAlign(align);
+		renderer.setWrap(wrap);
 
 		final Listener listener = event -> {
 			switch (event.type) {
@@ -322,6 +325,14 @@ public class Label extends CustomControl {
 		 */
 		// checkWidget();
 		return renderer.getTopMargin();
+	}
+
+	/**
+	 * Returns true if the label wraps text (SWT.WRAP), false otherwise.
+	 * @return true if wrap is enabled
+	 */
+	public boolean getWrap() {
+		return wrap;
 	}
 
 	private void initAccessible() {

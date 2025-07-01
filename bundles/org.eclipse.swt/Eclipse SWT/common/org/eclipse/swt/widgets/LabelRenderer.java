@@ -54,6 +54,8 @@ public abstract class LabelRenderer extends ControlRenderer {
 	private int rightMargin = DEFAULT_MARGIN;
 	private int bottomMargin = DEFAULT_MARGIN;
 
+	private boolean wrap = false;
+
 	protected LabelRenderer(Label label) {
 		super(label);
 		this.label = label;
@@ -226,6 +228,13 @@ public abstract class LabelRenderer extends ControlRenderer {
 		this.align = align;
 	}
 
+	public void setWrap(boolean wrap) {
+		this.wrap = wrap;
+	}
+
+	public boolean isWrap() {
+		return wrap;
+	}
 	/**
 	 * Shorten the given text <code>t</code> so that its length doesn't exceed
 	 * the given width. The default implementation replaces characters in the
