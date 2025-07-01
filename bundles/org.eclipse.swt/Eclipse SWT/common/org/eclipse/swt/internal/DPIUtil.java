@@ -284,7 +284,7 @@ public static ImageData scaleImageData (Device device, final ElementAtZoom<Image
 	return scaleImageData(device, elementAtZoom.element(), targetZoom, elementAtZoom.zoom());
 }
 
-private static ImageData autoScaleImageData (Device device, final ImageData imageData, float scaleFactor) {
+public static ImageData autoScaleImageData (Device device, final ImageData imageData, float scaleFactor) {
 	// Guards are already implemented in callers: if (deviceZoom == 100 || imageData == null || scaleFactor == 1.0f) return imageData;
 	int width = imageData.width;
 	int height = imageData.height;
