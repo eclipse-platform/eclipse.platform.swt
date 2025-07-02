@@ -1708,7 +1708,7 @@ boolean showMenu (int x, int y, int detail) {
 	if (!event.doit) return true;
 	Menu menu = getMenu ();
 	if (menu != null && !menu.isDisposed ()) {
-		Point locInPixels = DPIUtil.scaleUp(event.getLocation(), getZoom()); // In Pixels
+		Point locInPixels = Win32DPIUtils.scaleUp(event.getLocation(), getZoom()); // In Pixels
 		if (x != locInPixels.x || y != locInPixels.y) {
 			menu.setLocation (event.getLocation());
 		}
@@ -2362,7 +2362,7 @@ LRESULT wmPaint (long hwnd, long wParam, long lParam) {
 			OS.SetMetaRgn (hDC);
 			Event event = new Event ();
 			event.gc = gc;
-			event.setBounds(DPIUtil.scaleDown(new Rectangle(rect.left, rect.top, width, height), getZoom()));
+			event.setBounds(Win32DPIUtils.scaleDown(new Rectangle(rect.left, rect.top, width, height), getZoom()));
 			sendEvent (SWT.Paint, event);
 			// widget could be disposed at this point
 			event.gc = null;

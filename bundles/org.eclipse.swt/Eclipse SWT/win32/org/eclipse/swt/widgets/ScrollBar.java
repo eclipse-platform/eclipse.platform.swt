@@ -355,7 +355,7 @@ public int getSelection () {
  */
 public Point getSize () {
 	checkWidget();
-	return DPIUtil.scaleDown(getSizeInPixels(), getZoom());
+	return Win32DPIUtils.scaleDown(getSizeInPixels(), getZoom());
 }
 
 Point getSizeInPixels () {
@@ -412,7 +412,7 @@ public int getThumb () {
  */
 public Rectangle getThumbBounds () {
 	checkWidget();
-	return DPIUtil.scaleDown(getThumbBoundsInPixels(), getZoom());
+	return Win32DPIUtils.scaleDown(getThumbBoundsInPixels(), getZoom());
 }
 
 Rectangle getThumbBoundsInPixels () {
@@ -458,7 +458,7 @@ Rectangle getThumbBoundsInPixels () {
  */
 public Rectangle getThumbTrackBounds () {
 	checkWidget();
-	return DPIUtil.scaleDown(getThumbTrackBoundsInPixels(), getZoom());
+	return Win32DPIUtils.scaleDown(getThumbTrackBoundsInPixels(), getZoom());
 }
 
 Rectangle getThumbTrackBoundsInPixels () {

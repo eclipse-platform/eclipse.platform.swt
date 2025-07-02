@@ -16,7 +16,6 @@ package org.eclipse.swt.dnd;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.DPIUtil.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.widgets.*;
 
@@ -146,7 +145,7 @@ public class TreeDragSourceEffect extends DragSourceEffect {
 					data.transparentPixel = shdi.crColorKey << 8;
 				}
 				Display display = control.getDisplay ();
-				dragSourceImage = new Image (display, new AutoScaleImageDataProvider(display, data, DPIUtil.getZoomForAutoscaleProperty(control.nativeZoom)));
+				dragSourceImage = new Image (display, new Win32DPIUtils.AutoScaleImageDataProvider(display, data, DPIUtil.getZoomForAutoscaleProperty(control.nativeZoom)));
 				OS.SelectObject (memHdc, oldMemBitmap);
 				OS.DeleteDC (memHdc);
 				OS.DeleteObject (memDib);

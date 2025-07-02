@@ -9,3 +9,4 @@ Require-Bundle: org.junit;bundle-version="4.12.0",
 Eclipse-BundleShape: dir
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Automatic-Module-Name: org.eclipse.swt.tests.win32
+Import-Package: org.junit.jupiter.api;version="[5.13.0,6.0.0)"
