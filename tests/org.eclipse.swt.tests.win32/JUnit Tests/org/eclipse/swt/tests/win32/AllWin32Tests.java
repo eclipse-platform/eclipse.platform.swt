@@ -27,7 +27,8 @@ import org.junit.runners.Suite;
 	Test_org_eclipse_swt_dnd_DND.class,
 	Test_org_eclipse_swt_events_KeyEvent.class,
 	Test_org_eclipse_swt_widgets_Display.class,
-	TestTreeColumn.class
+	TestTreeColumn.class,
+	Win32DPIUtilTests.class
 })
 
 public class AllWin32Tests {

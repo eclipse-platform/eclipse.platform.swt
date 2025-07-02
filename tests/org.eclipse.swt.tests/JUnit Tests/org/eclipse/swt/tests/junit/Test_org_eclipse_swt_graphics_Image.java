@@ -631,7 +631,7 @@ public void test_getBoundsInPixels() {
 	bounds = image.getBounds();
 	image.dispose();
 	assertEquals("Image.getBounds method doesn't return original bounds.", initialBounds, bounds);
-	assertEquals("Image.getBoundsInPixels method doesn't return bounds in Pixel values for ImageGcDrawer.", initialBounds, boundsInPixels);
+	assertEquals("Image.getBoundsInPixels method doesn't return bounds in Pixel values for ImageGcDrawer.",initialBounds, boundsInPixels);
 }
 
 @SuppressWarnings("deprecation")
@@ -657,7 +657,7 @@ public void test_getImageDataCurrentZoom() {
 	imageDataAtCurrentZoom = image.getImageDataAtCurrentZoom();
 	image.dispose();
 	boundsAtCurrentZoom = new Rectangle(0, 0, imageDataAtCurrentZoom.width, imageDataAtCurrentZoom.height);
-	assertEquals(":b: Size of ImageData returned from Image.getImageDataAtCurrentZoom method doesn't return matches with bounds in Pixel values.", boundsAtCurrentZoom, bounds);
+	assertEquals(":b: Size of ImageData returned from Image.getImageDataAtCurrentZoom method doesn't return matches with bounds in Pixel values.", boundsAtCurrentZoom,bounds);
 
 	// create image with FileNameProvider
 	image = new Image(display, imageFileNameProvider);
