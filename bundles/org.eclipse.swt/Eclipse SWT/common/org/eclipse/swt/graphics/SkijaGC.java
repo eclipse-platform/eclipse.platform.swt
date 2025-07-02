@@ -561,6 +561,9 @@ public class SkijaGC extends GCHandle {
 		if (text == null) {
 			return;
 		}
+		if (text.contains("\t")) {
+			text = expandTabs(text, x);
+		}
 		TextBlob textBlob = buildTextBlob(text);
 		if (textBlob == null) {
 			return;
@@ -576,6 +579,43 @@ public class SkijaGC extends GCHandle {
 		performDrawText(paint -> surface.getCanvas().drawTextBlob(textBlob, point.x, point.y, paint));
 	}
 
+    /**
+     * Expands tab characters (\t) in the text to position-dependent spaces, so that
+     * the next character aligns to the next tab stop (every 8 average character widths by default).
+     * The expansion is based on the current x position and the average character width of the font.
+     *
+     * @param text The input text containing tab characters
+     * @param startX The starting x position in pixels (used to calculate tab alignment)
+     * @return The text with tabs expanded to spaces, aligned to the next tab stop
+     */
+	private String expandTabs(String text, int startX) {
+		StringBuilder result = new StringBuilder();
+		int currentX = 0;
+		int spaceWidth = textExtent(" ").x;
+		float _avgCharWidth = skiaFont.getMetrics()._avgCharWidth;
+		int avgCharWidth = (int) _avgCharWidth;
+		if (avgCharWidth <= 0) {
+			avgCharWidth = spaceWidth > 0 ? spaceWidth : 1;
+		}
+		int tabSpacingPx = 8 * avgCharWidth;
+		for (int i = 0; i < text.length(); i++) {
+			char ch = text.charAt(i);
+			if (ch == '\t') {
+				int offsetInTab = tabSpacingPx > 0 ? (currentX - startX) % tabSpacingPx : 0;
+				int nextTabX = currentX + (tabSpacingPx - offsetInTab);
+				while (currentX < nextTabX) {
+					result.append(' ');
+					currentX += textExtent(" ").x;
+				}
+			} else {
+				String s = String.valueOf(ch);
+				int charWidth = textExtent(s).x;
+				result.append(ch);
+				currentX += charWidth;
+			}
+		}
+		return result.toString();
+	}
 	// y position in drawTextBlob() is the text baseline, e.g., the bottom of "T"
 	// but the middle of "y"
 	// So center a base symbol (like "T") in the desired text box (according to
@@ -1373,5 +1413,4 @@ public class SkijaGC extends GCHandle {
 			int destWidth, int destHeight, boolean simple) {
 		// TODO Auto-generated method stub
 	}
-
 }
