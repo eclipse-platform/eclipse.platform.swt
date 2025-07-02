@@ -359,7 +359,7 @@ public void pack () {
 				Event event = parent.sendMeasureItemEvent (item, index, hDC, detail);
 				if (isDisposed () || parent.isDisposed ()) break;
 				Rectangle bounds = event.getBounds();
-				itemRight = DPIUtil.scaleUp(bounds.x + bounds.width, getZoom());
+				itemRight = Win32DPIUtils.scaleUp(bounds.x + bounds.width, getZoom());
 			} else {
 				long hFont = item.fontHandle (index);
 				if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
@@ -385,7 +385,7 @@ public void pack () {
 			headerImage = image;
 		}
 		if (headerImage != null) {
-			Rectangle bounds = DPIUtil.scaleUp(headerImage.getBounds(), getZoom());
+			Rectangle bounds = Win32DPIUtils.scaleUp(headerImage.getBounds(), getZoom());
 			headerWidth += bounds.width;
 		}
 		int margin = 0;
@@ -717,7 +717,7 @@ public void setToolTipText (String string) {
  */
 public void setWidth (int width) {
 	checkWidget ();
-	setWidthInPixels(DPIUtil.scaleUp(width, getZoom()));
+	setWidthInPixels(Win32DPIUtils.scaleUp(width, getZoom()));
 }
 
 void setWidthInPixels (int width) {
