@@ -500,6 +500,7 @@ public class List extends NativeBasedCustomScrollable {
 	public void removeAll() {
 		checkWidget();
 		this.items.clear();
+		this.selectedItems.clear();
 		redraw();
 	}
 

@@ -42,6 +42,7 @@ public class CCaret extends Widget {
 	int blinkRate;
 	Image image;
 	Font font;
+	boolean parentReleased = false;
 
 	static final int DEFAULT_WIDTH	= 1;
 
@@ -276,12 +277,13 @@ boolean isFocusCaret () {
 void killFocus () {
 	if (display.currentCaret != this) return;
 	display.setCurrentCaret (null);
-	if (isVisible) hideCaret ();
+	if (isVisible && !parentReleased) hideCaret ();
 }
 
 @Override
 void releaseParent () {
 	super.releaseParent ();
+	parentReleased = true;
 	if (parent != null && this == parent.caret) {
 		if (!parent.isDisposed()) parent.setCaret (null);
 		else parent.caret = null;

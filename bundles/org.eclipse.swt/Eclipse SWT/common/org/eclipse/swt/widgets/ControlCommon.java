@@ -13,7 +13,11 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
+import org.eclipse.swt.*;
+
 abstract class ControlCommon extends Widget {
+
+	private boolean disposed;
 
 	protected ControlCommon() {
 	}
@@ -25,4 +29,5 @@ abstract class ControlCommon extends Widget {
 	protected final ColorProvider getColorProvider() {
 		return display.getColorProvider();
 	}
+
 }

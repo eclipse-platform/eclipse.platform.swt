@@ -798,6 +798,17 @@ public class SkijaGC extends GCHandle {
 			ps.add(new io.github.humbleui.types.Point(x, y));
 		}
 
+		// fill up the polygone for drawing triangles.
+		if (ps.size() % 3 != 0 && ps.size() != 0) {
+			if (ps.size() % 3 == 1) {
+				ps.add(ps.get(0));
+				ps.add(ps.get(1));
+			}
+			if (ps.size() % 3 == 2) {
+				ps.add(ps.get(0));
+			}
+		}
+
 		performDrawFilled(paint -> surface.getCanvas().drawTriangles(ps.toArray(new io.github.humbleui.types.Point[0]),
 				null, paint));
 	}
