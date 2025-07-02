@@ -405,7 +405,7 @@ public Rectangle [] getRectangles () {
 	checkWidget();
 	Rectangle [] result = getRectanglesInPixels();
 	for (int i = 0; i < result.length; i++) {
-		result[i] = DPIUtil.scaleDown(result[i], getZoom());
+		result[i] = Win32DPIUtils.scaleDown(result[i], getZoom());
 	}
 	return result;
 }
@@ -846,7 +846,7 @@ public void setRectangles (Rectangle [] rectangles) {
 	if (rectangles == null) error (SWT.ERROR_NULL_ARGUMENT);
 	Rectangle [] rectanglesInPixels = new Rectangle [rectangles.length];
 	for (int i = 0; i < rectangles.length; i++) {
-		rectanglesInPixels [i] = DPIUtil.scaleUp (rectangles [i], getZoom());
+		rectanglesInPixels [i] = Win32DPIUtils.scaleUp (rectangles [i], getZoom());
 	}
 	setRectanglesInPixels (rectanglesInPixels);
 }

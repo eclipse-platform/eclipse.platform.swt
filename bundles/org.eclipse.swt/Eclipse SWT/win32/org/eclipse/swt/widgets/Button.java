@@ -297,7 +297,7 @@ int computeLeftMargin () {
 	if ((style & (SWT.PUSH | SWT.TOGGLE)) == 0) return MARGIN;
 	int margin = 0;
 	if (image != null && text.length () != 0) {
-		Rectangle bounds = DPIUtil.scaleBounds(image.getBounds(), this.getZoom(), 100);
+		Rectangle bounds = Win32DPIUtils.scaleBounds(image.getBounds(), this.getZoom(), 100);
 		margin += bounds.width + MARGIN * 2;
 		long oldFont = 0;
 		long hDC = OS.GetDC (handle);
@@ -359,13 +359,13 @@ int computeLeftMargin () {
 			boolean hasImage = image != null, hasText = true;
 			if (hasImage) {
 				if (image != null) {
-					Rectangle rect = DPIUtil.scaleBounds(image.getBounds(), this.getZoom(), 100);
+					Rectangle rect = Win32DPIUtils.scaleBounds(image.getBounds(), this.getZoom(), 100);
 					width = rect.width;
 					if (hasText && text.length () != 0) {
-						width += DPIUtil.scaleUp(MARGIN * 2, getZoom());;
+						width += Win32DPIUtils.scaleUp(MARGIN * 2, getZoom());;
 					}
 					height = rect.height;
-					extra = DPIUtil.scaleUp(MARGIN * 2, getZoom());;
+					extra = Win32DPIUtils.scaleUp(MARGIN * 2, getZoom());;
 				}
 			}
 			if (hasText) {
@@ -379,7 +379,7 @@ int computeLeftMargin () {
 				if (length == 0) {
 					height = Math.max (height, lptm.tmHeight);
 				} else {
-					extra = Math.max (DPIUtil.scaleUp(MARGIN * 2, getZoom()), lptm.tmAveCharWidth);
+					extra = Math.max (Win32DPIUtils.scaleUp(MARGIN * 2, getZoom()), lptm.tmAveCharWidth);
 					char [] buffer = text.toCharArray ();
 					RECT rect = new RECT ();
 					int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE;
@@ -1315,7 +1315,7 @@ private int getCheckboxTextOffset(long hdc) {
 		OS.GetThemePartSize(display.hButtonTheme(nativeZoom), hdc, OS.BP_CHECKBOX, OS.CBS_UNCHECKEDNORMAL, null, OS.TS_TRUE, size);
 		result += size.cx;
 	} else {
-		result += DPIUtil.scaleUp(13, nativeZoom);
+		result += Win32DPIUtils.scaleUp(13, nativeZoom);
 	}
 
 	// Windows uses half width of '0' as checkbox-to-text distance.
@@ -1392,7 +1392,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 							GC gc = createNewGC(nmcd.hdc, data);
 
 							int margin = computeLeftMargin();
-							Rectangle imageBounds = DPIUtil.scaleBounds(image.getBounds(), this.getZoom(), 100);
+							Rectangle imageBounds = Win32DPIUtils.scaleBounds(image.getBounds(), this.getZoom(), 100);
 							int imageWidth = imageBounds.width;
 							left += (imageWidth + (isRadioOrCheck() ? 2 * MARGIN : MARGIN)); // for SWT.RIGHT_TO_LEFT right and left are inverted
 

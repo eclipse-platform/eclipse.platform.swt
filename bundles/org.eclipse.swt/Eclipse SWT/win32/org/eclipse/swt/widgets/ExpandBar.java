@@ -561,7 +561,7 @@ void setScrollbar () {
  */
 public void setSpacing (int spacing) {
 	checkWidget ();
-	setSpacingInPixels(DPIUtil.scaleUp(spacing, getZoom()));
+	setSpacingInPixels(Win32DPIUtils.scaleUp(spacing, getZoom()));
 }
 
 void setSpacingInPixels (int spacing) {
@@ -789,7 +789,7 @@ LRESULT WM_PAINT (long wParam, long lParam) {
 			if (hooks (SWT.Paint) || filters (SWT.Paint)) {
 				Event event = new Event ();
 				event.gc = gc;
-				event.setBounds(DPIUtil.scaleDown(new Rectangle(rect.left, rect.top, width, height), getZoom()));
+				event.setBounds(Win32DPIUtils.scaleDown(new Rectangle(rect.left, rect.top, width, height), getZoom()));
 				sendEvent (SWT.Paint, event);
 				event.gc = null;
 			}

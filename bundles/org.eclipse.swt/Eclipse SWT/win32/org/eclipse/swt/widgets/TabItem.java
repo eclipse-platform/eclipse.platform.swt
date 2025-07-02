@@ -191,7 +191,7 @@ public Control getControl () {
  */
 public Rectangle getBounds () {
 	checkWidget();
-	return DPIUtil.scaleDown(getBoundsInPixels(), getZoom());
+	return Win32DPIUtils.scaleDown(getBoundsInPixels(), getZoom());
 }
 
 Rectangle getBoundsInPixels() {

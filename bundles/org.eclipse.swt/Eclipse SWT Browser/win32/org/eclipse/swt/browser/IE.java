@@ -1880,7 +1880,7 @@ void handleDOMEvent (OleEvent e) {
 	int screenY = pVarResult.getInt();
 	pVarResult.dispose();
 
-	Point position = DPIUtil.scaleDown(new Point(screenX, screenY), DPIUtil.getDeviceZoom()); // To Points
+	Point position = Win32DPIUtils.scaleDown(new Point(screenX, screenY), DPIUtil.getDeviceZoom()); // To Points
 	position = browser.getDisplay().map(null, browser, position);
 	newEvent.x = position.x; newEvent.y = position.y;
 

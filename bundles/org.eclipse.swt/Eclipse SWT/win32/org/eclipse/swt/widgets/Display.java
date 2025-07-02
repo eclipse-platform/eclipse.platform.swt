@@ -1592,7 +1592,7 @@ public Menu getMenuBar () {
 @Override
 public Rectangle getBounds() {
 	checkDevice ();
-	return DPIUtil.scaleDown(getBoundsInPixels(), DPIUtil.getDeviceZoom());
+	return Win32DPIUtils.scaleDown(getBoundsInPixels(), DPIUtil.getDeviceZoom());
 }
 
 Rectangle getBoundsInPixels () {
@@ -1665,7 +1665,7 @@ int getClickCount (int type, int button, long hwnd, long lParam) {
 @Override
 public Rectangle getClientArea () {
 	checkDevice ();
-	return DPIUtil.scaleDown(getClientAreaInPixels(), DPIUtil.getDeviceZoom());
+	return Win32DPIUtils.scaleDown(getClientAreaInPixels(), DPIUtil.getDeviceZoom());
 }
 
 Rectangle getClientAreaInPixels () {
@@ -2608,7 +2608,7 @@ public Image getSystemImage (int id) {
 
 private ImageDataProvider getImageDataProviderForIcon(int iconName) {
 	return zoom -> {
-		int scaledIconSize = DPIUtil.scaleUp(ICON_SIZE_AT_100, zoom);
+		int scaledIconSize = Win32DPIUtils.scaleUp(ICON_SIZE_AT_100, zoom);
 		long [] hIcon = new long [1];
 		OS.LoadIconWithScaleDown(0, iconName, scaledIconSize, scaledIconSize, hIcon);
 		Image image = Image.win32_new (this, SWT.ICON, hIcon[0], zoom);
@@ -3639,7 +3639,7 @@ public boolean post (Event event) {
 					int y = OS.GetSystemMetrics (OS.SM_YVIRTUALSCREEN);
 					int width = OS.GetSystemMetrics (OS.SM_CXVIRTUALSCREEN);
 					int height = OS.GetSystemMetrics (OS.SM_CYVIRTUALSCREEN);
-					Point loc = DPIUtil.scaleUp(event.getLocation(), getDeviceZoom());
+					Point loc = Win32DPIUtils.scaleUp(event.getLocation(), getDeviceZoom());
 					inputs.dx = ((loc.x - x) * 65535 + width - 2) / (width - 1);
 					inputs.dy = ((loc.y - y) * 65535 + height - 2) / (height - 1);
 				} else {

@@ -420,7 +420,7 @@ long EnumFontFamProc (long lpelfe, long lpntme, long FontType, long lParam) {
  */
 public Rectangle getBounds() {
 	checkDevice ();
-	return DPIUtil.scaleDown(getBoundsInPixels(), getDeviceZoom());
+	return Win32DPIUtils.scaleDown(getBoundsInPixels(), getDeviceZoom());
 }
 
 private Rectangle getBoundsInPixels () {
@@ -527,7 +527,7 @@ public Point getDPI () {
 	int dpiX = OS.GetDeviceCaps (hDC, OS.LOGPIXELSX);
 	int dpiY = OS.GetDeviceCaps (hDC, OS.LOGPIXELSY);
 	internal_dispose_GC (hDC, null);
-	return DPIUtil.scaleDown(new Point (dpiX, dpiY), DPIUtil.getZoomForAutoscaleProperty(getDeviceZoom()));
+	return Win32DPIUtils.scaleDown(new Point (dpiX, dpiY), DPIUtil.getZoomForAutoscaleProperty(getDeviceZoom()));
 }
 
 /**

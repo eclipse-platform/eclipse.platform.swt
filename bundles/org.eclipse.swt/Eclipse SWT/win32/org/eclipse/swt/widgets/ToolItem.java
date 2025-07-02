@@ -235,7 +235,7 @@ void destroyWidget () {
  */
 public Rectangle getBounds () {
 	checkWidget();
-	return DPIUtil.scaleDown(getBoundsInPixels(), getZoom());
+	return Win32DPIUtils.scaleDown(getBoundsInPixels(), getZoom());
 }
 
 Rectangle getBoundsInPixels () {
@@ -1076,7 +1076,7 @@ public void setToolTipText (String string) {
  */
 public void setWidth (int width) {
 	checkWidget();
-	setWidthInPixels(DPIUtil.scaleUp(width, getZoom()));
+	setWidthInPixels(Win32DPIUtils.scaleUp(width, getZoom()));
 }
 
 void setWidthInPixels (int width) {
@@ -1103,7 +1103,7 @@ void updateImages (boolean enabled) {
 	ImageList hotImageList = parent.getHotImageList ();
 	ImageList disabledImageList = parent.getDisabledImageList();
 	if (info.iImage == OS.I_IMAGENONE) {
-		Rectangle bounds = DPIUtil.scaleBounds(image.getBounds(), getParent().getZoom(), 100);
+		Rectangle bounds = Win32DPIUtils.scaleBounds(image.getBounds(), getParent().getZoom(), 100);
 		int listStyle = parent.style & SWT.RIGHT_TO_LEFT;
 		if (imageList == null) {
 			imageList = display.getImageListToolBar (listStyle, bounds.width, bounds.height, getZoom());
