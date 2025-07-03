@@ -101,7 +101,8 @@ public class CCombo extends Composite {
  * @see Widget#getStyle()
  */
 public CCombo (Composite parent, int style) {
-	super (parent, style = checkStyle (style));
+	// border necessary for skia drawn combo box. 
+	super(parent, style = checkStyle(style) | SWT.BORDER);
 	_shell = super.getShell ();
 
 	listener = event -> {
