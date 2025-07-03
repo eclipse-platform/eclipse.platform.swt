@@ -327,14 +327,6 @@ public class Label extends CustomControl {
 		return renderer.getTopMargin();
 	}
 
-	/**
-	 * Returns true if the label wraps text (SWT.WRAP), false otherwise.
-	 * @return true if wrap is enabled
-	 */
-	public boolean getWrap() {
-		return wrap;
-	}
-
 	private void initAccessible() {
 		Accessible accessible = getAccessible();
 		accessible.addAccessibleListener(new AccessibleAdapter() {

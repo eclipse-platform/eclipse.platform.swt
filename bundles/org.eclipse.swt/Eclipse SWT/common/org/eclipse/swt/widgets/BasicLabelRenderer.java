@@ -80,7 +80,7 @@ class BasicLabelRenderer extends LabelRenderer {
 		TextLayout layout=null;
 		try {
 		if (!text.isEmpty()) {
-			if (wrap) {
+			if (wrap && false /* word wrap not possible textlayout insufficient */ ) {
 				layout = new TextLayout(label.getDisplay());
 				layout.setFont(gc.getFont());
 				layout.setText(text);
@@ -181,6 +181,8 @@ class BasicLabelRenderer extends LabelRenderer {
 		}
 
 		// draw the text
+		// TextLayout is currently insufficient for label drawing.
+		layout = null;
 		if (wrap && layout != null) {
 			int lineY = topMargin;
 			if (textHeight < imageHeight) {
@@ -189,7 +191,7 @@ class BasicLabelRenderer extends LabelRenderer {
 			gc.setForeground(label.isEnabled() ? label.getForeground() : getColor(COLOR_DISABLED));
 			gc.setAntialias(SWT.ON);
 			gc.setTextAntialias(SWT.ON);
-			layout.draw(gc, x, lineY);
+			layout.draw(gc, x, lineY, -1, -1, null, null, DRAW_FLAGS);
 		} else if (lines != null) {
 			// we draw the label at the top.
 			int lineY = topMargin;
