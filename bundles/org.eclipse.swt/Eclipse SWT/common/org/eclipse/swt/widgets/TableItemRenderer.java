@@ -19,6 +19,7 @@ public class TableItemRenderer {
 	private static final int rightMargin = DEFAULT_MARGIN;
 	private static final int topMargin = DEFAULT_MARGIN_UP_DOWN;
 	private static final int bottomMargin = DEFAULT_MARGIN_UP_DOWN;
+	private static final int BOX_SIZE = 12;
 
 	private final TableItem item;
 	private boolean selected;
@@ -103,15 +104,11 @@ public class TableItemRenderer {
 
 		var itemBounds = item.getFullBounds();
 
-		this.checkboxBounds = new Rectangle(itemBounds.x + 5, itemBounds.y + 3, 20, 20);
+		this.checkboxBounds = new Rectangle(itemBounds.x + 5, itemBounds.y + 3, BOX_SIZE, BOX_SIZE);
 
-		gc.drawRectangle(this.checkboxBounds);
-		if (item.getChecked()) {
-			gc.drawLine(this.checkboxBounds.x, this.checkboxBounds.y, this.checkboxBounds.x + this.checkboxBounds.width,
-					this.checkboxBounds.y + this.checkboxBounds.height);
-			gc.drawLine(this.checkboxBounds.x + this.checkboxBounds.width, this.checkboxBounds.y, this.checkboxBounds.x,
-					this.checkboxBounds.y + this.checkboxBounds.height);
-		}
+		CheckBoxPainter.paintCheckbox(gc, checkboxBounds.x, checkboxBounds.y, item.getParent().isEnabled(),
+				item.getChecked(), item.getGrayed(), BOX_SIZE, item.getParent().getColorProvider());
+
 	}
 
 	private void drawItemCell(GC gc, int columnIndex, boolean paintItemEvent) {

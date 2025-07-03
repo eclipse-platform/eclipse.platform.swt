@@ -7,11 +7,7 @@ import org.eclipse.swt.graphics.*;
 
 public class TreeItemRenderer {
 
-	static final String COLOR_SELECTION = "button.background.selection"; //$NON-NLS-1$
-	static final String COLOR_BOX = "button.box"; //$NON-NLS-1$
-	static final String COLOR_BOX_DISABLED = "button.box.disabled"; //$NON-NLS-1$
-	static final String COLOR_GRAYED = "button.gray"; //$NON-NLS-1$
-	protected static final String COLOR_DISABLED = "disabled"; //$NON-NLS-1$
+
 
 	/** Gap between icon and text */
 	private static final int GAP = 3;
@@ -189,31 +185,14 @@ public class TreeItemRenderer {
 		var prevB = gc.getBackground();
 
 		var checkboxBounds = getCheckboxRectangle();
-		drawCheckbox(gc, checkboxBounds.x, checkboxBounds.y);
 
+		CheckBoxPainter.paintCheckbox(gc, checkboxBounds.x, checkboxBounds.y, item.getParent().isEnabled(),
+				item.getChecked(), item.getGrayed(), BOX_SIZE, item.getParent().getColorProvider());
 		gc.setForeground(prevF);
 		gc.setBackground(prevB);
 	}
 
-	private void drawCheckbox(GC gc, int x, int y) {
-		final boolean enabled = item.getParent().isEnabled();
-		final boolean selection = item.getChecked();
-		if (selection) {
-			gc.setBackground(
-					getColor(enabled ? item.getGrayed() ? COLOR_GRAYED : COLOR_SELECTION : COLOR_DISABLED));
-			int partialBoxBorder = 2;
-			gc.fillRoundRectangle(x + partialBoxBorder, y + partialBoxBorder, BOX_SIZE - 2 * partialBoxBorder + 1,
-					BOX_SIZE - 2 * partialBoxBorder + 1, BOX_SIZE / 4 - partialBoxBorder / 2,
-					BOX_SIZE / 4 - partialBoxBorder / 2);
-		}
 
-		gc.setForeground(getColor(enabled ? COLOR_BOX : COLOR_BOX_DISABLED));
-		gc.drawRoundRectangle(x, y, BOX_SIZE, BOX_SIZE, 4, 4);
-	}
-
-	private Color getColor(String colorString) {
-		return item.getParent().getRenderer().getColor(colorString);
-	}
 
 	private void drawItemCell(GC gc, int columnIndex, boolean paintItemEvent) {
 		if (paintItemEvent) {

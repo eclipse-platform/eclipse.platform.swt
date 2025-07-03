@@ -37,6 +37,7 @@ public class DefaultCheckboxRenderer extends ButtonRenderer {
 		super(button);
 	}
 
+	@Override
 	public Point computeDefaultSize() {
 		final String text = button.getText();
 		final Image image = button.getImage();
@@ -82,7 +83,9 @@ public class DefaultCheckboxRenderer extends ButtonRenderer {
 		int boxSpace = BOX_SIZE + SPACING;
 		int boxLeftOffset = LEFT_MARGIN;
 		int boxTopOffset = (height - 1 - BOX_SIZE) / 2;
-		drawCheckbox(gc, boxLeftOffset, boxTopOffset);
+
+		CheckBoxPainter.paintCheckbox(gc, boxLeftOffset, boxTopOffset, button.isEnabled(), button.getSelection(),
+				button.getGrayed(), BOX_SIZE, button.getColorProvider());
 
 		gc.setAntialias(initialAntiAlias);
 		gc.setAdvanced(false);
