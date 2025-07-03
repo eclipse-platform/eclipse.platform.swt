@@ -158,21 +158,22 @@ public class Sash extends CustomControl {
 		case SWT.ARROW_LEFT, SWT.ARROW_RIGHT, SWT.ARROW_UP, SWT.ARROW_DOWN -> true;
 		default -> false;
 		};
-
-		boolean isRelevantKey = (!isArrowKey || (isHorizontal() && (key == SWT.ARROW_UP || key == SWT.ARROW_DOWN))
-				|| (!isHorizontal() && (key == SWT.ARROW_LEFT || key == SWT.ARROW_RIGHT)));
+		// Only move sash if Arrow key is pressed (with or without Ctrl)
+		if (!isArrowKey) {
+			return;
+		}
+		boolean isRelevantKey = (isHorizontal() && (key == SWT.ARROW_UP || key == SWT.ARROW_DOWN))
+				|| (!isHorizontal() && (key == SWT.ARROW_LEFT || key == SWT.ARROW_RIGHT));
 		if (!isRelevantKey) {
 			return;
 		}
 		int step = sashStepCalculation(keyEvent);
-		Rectangle sashBounds = sashRenderer.getSashBounds();
+		Rectangle sashBounds = isGTK ? getBounds() : sashRenderer.getSashBounds();
 		Point newSashPosition = calculateNewSashPosition(step, sashBounds);
 
 		if (newSashPosition.x == sashBounds.x && newSashPosition.y == sashBounds.y) {
 			return;
 		}
-
-		Display.getCurrent().setCursorLocation(newSashPosition.x, newSashPosition.y);
 		Event selectionEvent = sendSelectionEvent(
 				new Rectangle(newSashPosition.x, newSashPosition.y, sashBounds.width, sashBounds.height));
 		if (selectionEvent.doit) {
