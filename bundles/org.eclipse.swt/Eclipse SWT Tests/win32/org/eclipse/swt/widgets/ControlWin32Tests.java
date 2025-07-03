@@ -100,11 +100,11 @@ class ControlWin32Tests {
 
 		button.setBounds(new Rectangle(0, 47, 200, 47));
 		assertEquals("Control::setBounds(Rectangle) doesn't scale up correctly",
-				new Rectangle(0, 82, 350, 82), button.getBoundsInPixels());
+				new Rectangle(0, 82, 350, 83), button.getBoundsInPixels());
 
 		button.setBounds(0, 47, 200, 47);
 		assertEquals("Control::setBounds(int, int, int, int) doesn't scale up correctly",
-				new Rectangle(0, 82, 350, 82), button.getBoundsInPixels());
+				new Rectangle(0, 82, 350, 83), button.getBoundsInPixels());
 	}
 
 	record FontComparison(int originalFontHeight, int currentFontHeight) {

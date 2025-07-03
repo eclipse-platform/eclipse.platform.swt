@@ -202,7 +202,7 @@ public class Win32DPIUtilTests {
 	@Test
 	public void scaleUpRectangle() {
 		Rectangle valueAt200 = new Rectangle(100, 150, 10, 14);
-		Rectangle valueAt150 = new Rectangle(75, 113, 8, 11);
+		Rectangle valueAt150 = new Rectangle(75, 113, 8, 10);
 		Rectangle valueAt100 = new Rectangle(50, 75, 5, 7);
 
 		Rectangle scaledValue = Win32DPIUtils.pointToPixel(valueAt100, 200);
@@ -225,7 +225,7 @@ public class Win32DPIUtilTests {
 		for (int zoom1 : zooms) {
 			for (int zoom2 : zooms) {
 				for (int i = 1; i <= 10000; i++) {
-					Rectangle rect = new Rectangle(0, 0, i, i);
+					Rectangle rect = new Rectangle.OfFloat(0, 0, i, i);
 					Rectangle scaleDown = Win32DPIUtils.pixelToPoint(rect, zoom1);
 					Rectangle scaleUp = Win32DPIUtils.pointToPixel(scaleDown, zoom2);
 					scaleDown = Win32DPIUtils.pixelToPoint(scaleUp, zoom2);
