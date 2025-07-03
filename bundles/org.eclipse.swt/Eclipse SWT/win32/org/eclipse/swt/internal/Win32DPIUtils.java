@@ -108,6 +108,20 @@ public class Win32DPIUtils {
 	}
 
 	public static Rectangle pixelToPoint(Rectangle rect, int zoom) {
+		if (zoom == 100 || rect == null) return rect;
+		if (rect instanceof Rectangle.OfFloat rectOfFloat) return pixelToPoint(rectOfFloat, zoom);
+		Rectangle scaledRect = new Rectangle.OfFloat (0,0,0,0);
+		Point scaledTopLeft = pixelToPoint(new Point (rect.x, rect.y), zoom);
+		Point scaledBottomRight = pixelToPoint(new Point (rect.x + rect.width, rect.y + rect.height), zoom);
+
+		scaledRect.x = scaledTopLeft.x;
+		scaledRect.y = scaledTopLeft.y;
+		scaledRect.width = scaledBottomRight.x - scaledTopLeft.x;
+		scaledRect.height = scaledBottomRight.y - scaledTopLeft.y;
+		return scaledRect;
+	}
+
+	private static Rectangle pixelToPoint(Rectangle.OfFloat rect, int zoom) {
 		return scaleBounds(rect, 100, zoom);
 	}
 
@@ -120,6 +134,21 @@ public class Win32DPIUtils {
 	 * Returns a new rectangle as per the scaleFactor.
 	 */
 	public static Rectangle scaleBounds (Rectangle rect, int targetZoom, int currentZoom) {
+		if (rect == null || targetZoom == currentZoom) return rect;
+		if (rect instanceof Rectangle.OfFloat rectOfFloat) return scaleBounds(rectOfFloat, targetZoom, currentZoom);
+		float scaleFactor = ((float)targetZoom) / (float)currentZoom;
+		Rectangle returnRect = new Rectangle.OfFloat (0,0,0,0);
+		returnRect.x = Math.round (rect.x * scaleFactor);
+		returnRect.y = Math.round (rect.y * scaleFactor);
+		returnRect.width = Math.round (rect.width * scaleFactor);
+		returnRect.height = Math.round (rect.height * scaleFactor);
+		return returnRect;
+	}
+
+	/**
+	 * Returns a new rectangle as per the scaleFactor.
+	 */
+	private static Rectangle scaleBounds (Rectangle.OfFloat rect, int targetZoom, int currentZoom) {
 		if (rect == null || targetZoom == currentZoom) return rect;
 		Rectangle.OfFloat fRect = FloatAwareGeometryFactory.createFrom(rect);
 		float scaleFactor = DPIUtil.getScalingFactor(targetZoom, currentZoom);
@@ -185,6 +214,20 @@ public class Win32DPIUtils {
 	}
 
 	public static Rectangle pointToPixel(Rectangle rect, int zoom) {
+		if (zoom == 100 || rect == null) return rect;
+		if (rect instanceof Rectangle.OfFloat rectOfFloat) return pointToPixel(rectOfFloat, zoom);
+		Rectangle scaledRect = new Rectangle.OfFloat(0,0,0,0);
+		Point scaledTopLeft = pointToPixel (new Point(rect.x, rect.y), zoom);
+		Point scaledBottomRight = pointToPixel (new Point(rect.x + rect.width, rect.y + rect.height), zoom);
+
+		scaledRect.x = scaledTopLeft.x;
+		scaledRect.y = scaledTopLeft.y;
+		scaledRect.width = scaledBottomRight.x - scaledTopLeft.x;
+		scaledRect.height = scaledBottomRight.y - scaledTopLeft.y;
+		return scaledRect;
+	}
+
+	private static Rectangle pointToPixel(Rectangle.OfFloat rect, int zoom) {
 		return scaleBounds(rect, zoom, 100);
 	}
 
