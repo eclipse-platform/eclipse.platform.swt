@@ -3089,11 +3089,11 @@ private class FillGradientRectangleOperation extends FillRectangleOperation {
 	@Override
 	void apply() {
 		Rectangle rect = DPIUtil.scaleUp(drawable, rectangle, getZoom());
-		fillGradientRectangleInPixels(rect.x, rect.y, rect.width, rect.height, vertical);
+		fillGradientRectangleInPixels(rect.x, rect.y, rect.width, rect.height, vertical, getZoom());
 	}
 }
 
-private void fillGradientRectangleInPixels(int x, int y, int width, int height, boolean vertical) {
+private void fillGradientRectangleInPixels(int x, int y, int width, int height, boolean vertical, int zoom) {
 	if (width == 0 || height == 0) return;
 
 	RGB backgroundRGB, foregroundRGB;
@@ -3183,7 +3183,7 @@ private void fillGradientRectangleInPixels(int x, int y, int width, int height, 
 	final int bitResolution = (depth >= 24) ? 8 : (depth >= 15) ? 5 : 0;
 	ImageData.fillGradientRectangle(this, data.device,
 		x, y, width, height, vertical, fromRGB, toRGB,
-		bitResolution, bitResolution, bitResolution);
+		bitResolution, bitResolution, bitResolution, zoom);
 }
 
 /**

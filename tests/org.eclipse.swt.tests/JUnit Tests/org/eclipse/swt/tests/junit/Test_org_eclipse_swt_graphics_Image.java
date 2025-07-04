@@ -600,7 +600,7 @@ public void test_getBoundsInPixels() {
 	Rectangle bounds = image.getBounds();
 	image.dispose();
 	assertEquals("Image.getBounds method doesn't return original bounds.", initialBounds, bounds);
-	assertEquals("Image.getBoundsInPixels method doesn't return bounds in Pixel values.", DPIUtil.autoScaleUp(initialBounds), boundsInPixels);
+	assertEquals("Image.getBoundsInPixels method doesn't return bounds in Pixel values.", initialBounds, boundsInPixels);
 
 	// create icon image
 	ImageData imageData = new ImageData(initialBounds.width, initialBounds.height, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
@@ -609,21 +609,21 @@ public void test_getBoundsInPixels() {
 	bounds = image.getBounds();
 	image.dispose();
 	assertEquals("Image.getBounds method doesn't return original bounds.", initialBounds, bounds);
-	assertEquals("Image.getBoundsInPixels method doesn't return bounds in Pixel values.", DPIUtil.autoScaleUp(initialBounds), boundsInPixels);
+	assertEquals("Image.getBoundsInPixels method doesn't return bounds in Pixel values.", initialBounds, boundsInPixels);
 
 	// create image with FileNameProvider
 	image = new Image(display, imageFileNameProvider);
 	boundsInPixels = image.getBoundsInPixels();
 	bounds = image.getBounds();
 	image.dispose();
-	assertEquals("Image.getBoundsInPixels method doesn't return bounds in Pixel values.", DPIUtil.autoScaleUp(bounds), boundsInPixels);
+	assertEquals("Image.getBoundsInPixels method doesn't return bounds in Pixel values.", bounds, boundsInPixels);
 
 	// create image with ImageDataProvider
 	image = new Image(display, imageDataProvider);
 	boundsInPixels = image.getBoundsInPixels();
 	bounds = image.getBounds();
 	image.dispose();
-	assertEquals("Image.getBoundsInPixels method doesn't return bounds in Pixel values.", DPIUtil.autoScaleUp(bounds), boundsInPixels);
+	assertEquals("Image.getBoundsInPixels method doesn't return bounds in Pixel values.", bounds, boundsInPixels);
 
 	// create image with ImageGcDrawer
 	image = new Image(display, imageGcDrawer, initialBounds.width, initialBounds.height);
@@ -631,7 +631,7 @@ public void test_getBoundsInPixels() {
 	bounds = image.getBounds();
 	image.dispose();
 	assertEquals("Image.getBounds method doesn't return original bounds.", initialBounds, bounds);
-	assertEquals("Image.getBoundsInPixels method doesn't return bounds in Pixel values for ImageGcDrawer.", DPIUtil.autoScaleUp(initialBounds), boundsInPixels);
+	assertEquals("Image.getBoundsInPixels method doesn't return bounds in Pixel values for ImageGcDrawer.", initialBounds, boundsInPixels);
 }
 
 @SuppressWarnings("deprecation")
@@ -649,7 +649,7 @@ public void test_getImageDataCurrentZoom() {
 	ImageData imageDataAtCurrentZoom = image.getImageDataAtCurrentZoom();
 	image.dispose();
 	Rectangle boundsAtCurrentZoom = new Rectangle(0, 0, imageDataAtCurrentZoom.width, imageDataAtCurrentZoom.height);
-	assertEquals(":a: Size of ImageData returned from Image.getImageDataAtCurrentZoom method doesn't return matches with bounds in Pixel values.", boundsAtCurrentZoom, DPIUtil.autoScaleUp(bounds));
+	assertEquals(":a: Size of ImageData returned from Image.getImageDataAtCurrentZoom method doesn't return matches with bounds in Pixel values.", boundsAtCurrentZoom, bounds);
 
 	// create icon image and compare size of imageData
 	ImageData imageData = new ImageData(bounds.width, bounds.height, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
@@ -657,7 +657,7 @@ public void test_getImageDataCurrentZoom() {
 	imageDataAtCurrentZoom = image.getImageDataAtCurrentZoom();
 	image.dispose();
 	boundsAtCurrentZoom = new Rectangle(0, 0, imageDataAtCurrentZoom.width, imageDataAtCurrentZoom.height);
-	assertEquals(":b: Size of ImageData returned from Image.getImageDataAtCurrentZoom method doesn't return matches with bounds in Pixel values.", boundsAtCurrentZoom, DPIUtil.autoScaleUp(bounds));
+	assertEquals(":b: Size of ImageData returned from Image.getImageDataAtCurrentZoom method doesn't return matches with bounds in Pixel values.", boundsAtCurrentZoom, bounds);
 
 	// create image with FileNameProvider
 	image = new Image(display, imageFileNameProvider);
@@ -665,7 +665,7 @@ public void test_getImageDataCurrentZoom() {
 	boundsAtCurrentZoom = new Rectangle(0, 0, imageDataAtCurrentZoom.width, imageDataAtCurrentZoom.height);
 	bounds = image.getBounds();
 	image.dispose();
-	assertEquals(":c: Size of ImageData returned from Image.getImageDataAtCurrentZoom method doesn't return matches with bounds in Pixel values.", boundsAtCurrentZoom, DPIUtil.autoScaleUp(bounds));
+	assertEquals(":c: Size of ImageData returned from Image.getImageDataAtCurrentZoom method doesn't return matches with bounds in Pixel values.", boundsAtCurrentZoom, bounds);
 
 	// create image with ImageDataProvider
 	image = new Image(display, imageDataProvider);
@@ -673,7 +673,7 @@ public void test_getImageDataCurrentZoom() {
 	boundsAtCurrentZoom = new Rectangle(0, 0, imageDataAtCurrentZoom.width, imageDataAtCurrentZoom.height);
 	bounds = image.getBounds();
 	image.dispose();
-	assertEquals(":d: Size of ImageData returned from Image.getImageDataAtCurrentZoom method doesn't return matches with bounds in Pixel values.", boundsAtCurrentZoom, DPIUtil.autoScaleUp(bounds));
+	assertEquals(":d: Size of ImageData returned from Image.getImageDataAtCurrentZoom method doesn't return matches with bounds in Pixel values.", boundsAtCurrentZoom, bounds);
 }
 
 @Test
