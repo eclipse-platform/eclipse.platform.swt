@@ -1252,7 +1252,7 @@ LRESULT wmMeasureChild (long wParam, long lParam) {
 		if (parent.needsMenuCallback()) {
 			Point point = calculateRenderedTextSize();
 			int menuZoom = getDisplay().isRescalingAtRuntime() ? super.getZoom() : getMonitorZoom();
-			struct.itemHeight = DPIUtil.scaleUp(point.y, menuZoom);
+			struct.itemHeight = Win32DPIUtils.scaleUp(point.y, menuZoom);
 			/*
 			 * Weirdness in Windows. Setting `HBMMENU_CALLBACK` causes
 			 * item sizes to mean something else. It seems that it is
@@ -1262,7 +1262,7 @@ LRESULT wmMeasureChild (long wParam, long lParam) {
 			 * that value of 5 works well in matching text to mnemonic.
 			 */
 			int horizontalSpaceImage = this.image != null ? this.image.getBounds().width + IMAGE_TEXT_GAP: 0;
-			struct.itemWidth = DPIUtil.scaleUp(LEFT_TEXT_MARGIN + point.x - WINDOWS_OVERHEAD + horizontalSpaceImage, menuZoom);
+			struct.itemWidth = Win32DPIUtils.scaleUp(LEFT_TEXT_MARGIN + point.x - WINDOWS_OVERHEAD + horizontalSpaceImage, menuZoom);
 			OS.MoveMemory (lParam, struct, MEASUREITEMSTRUCT.sizeof);
 			return null;
 		}
@@ -1270,7 +1270,7 @@ LRESULT wmMeasureChild (long wParam, long lParam) {
 
 	int width = 0, height = 0;
 	if (image != null) {
-		Rectangle rect = DPIUtil.scaleUp(image.getBounds(), getZoom());
+		Rectangle rect = Win32DPIUtils.scaleUp(image.getBounds(), getZoom());
 		width = rect.width;
 		height = rect.height;
 	} else {
@@ -1292,7 +1292,7 @@ LRESULT wmMeasureChild (long wParam, long lParam) {
 		if ((lpcmi.dwStyle & OS.MNS_CHECKORBMP) == 0) {
 			for (MenuItem item : parent.getItems ()) {
 				if (item.image != null) {
-					Rectangle rect = DPIUtil.scaleUp(item.image.getBounds(), getZoom());
+					Rectangle rect = Win32DPIUtils.scaleUp(item.image.getBounds(), getZoom());
 					width = Math.max (width, rect.width);
 				}
 			}
@@ -1326,7 +1326,7 @@ private Point calculateRenderedTextSize() {
 			// GC calculated height of 15px, scales down with adjusted zoom of 100% and returns 15pt -> should be 10pt
 			// this calculation is corrected by the following line
 			// This is the only place, where the GC needs to use the native zoom to do that, therefore it is fixed only here
-			points = DPIUtil.scaleDown(DPIUtil.scaleUp(points, adjustedPrimaryMonitorZoom), primaryMonitorZoom);
+			points = Win32DPIUtils.scaleDown(Win32DPIUtils.scaleUp(points, adjustedPrimaryMonitorZoom), primaryMonitorZoom);
 		}
 	}
 	return points;

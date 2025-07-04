@@ -524,13 +524,13 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 							}
 							if (image != null) {
 								Rectangle bounds = image.getBounds (); // Points
-								if (size == null) size = DPIUtil.scaleDown (getImageSize (), zoom); // To Points
+								if (size == null) size = Win32DPIUtils.scaleDown (getImageSize (), zoom); // To Points
 								if (!ignoreDrawForeground) {
 									GCData data = new GCData();
 									data.device = display;
 									GC gc = createNewGC(hDC, data);
 									RECT iconRect = item.getBounds (index, false, true, false, false, true, hDC); // Pixels
-									gc.setClipping (DPIUtil.scaleDown(new Rectangle(iconRect.left, iconRect.top, iconRect.right - iconRect.left, iconRect.bottom - iconRect.top), zoom));
+									gc.setClipping (Win32DPIUtils.scaleDown(new Rectangle(iconRect.left, iconRect.top, iconRect.right - iconRect.left, iconRect.bottom - iconRect.top), zoom));
 									gc.drawImage (image, 0, 0, bounds.width, bounds.height, DPIUtil.scaleDown(iconRect.left, zoom), DPIUtil.scaleDown(iconRect.top, zoom), size.x, size.y);
 									OS.SelectClipRgn (hDC, 0);
 									gc.dispose ();
@@ -646,7 +646,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 								}
 							}
 						}
-						Rectangle bounds = DPIUtil.scaleDown(new Rectangle (cellRect.left, cellRect.top, cellRect.right - cellRect.left, cellRect.bottom - cellRect.top), getZoom());
+						Rectangle bounds = Win32DPIUtils.scaleDown(new Rectangle (cellRect.left, cellRect.top, cellRect.right - cellRect.left, cellRect.bottom - cellRect.top), getZoom());
 						event.setBounds (bounds);
 						gc.setClipping (bounds);
 						sendEvent (SWT.EraseItem, event);
@@ -762,20 +762,20 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 					int offset = i != 0 ? INSET : INSET + 2;
 					if (image != null) {
 						Rectangle bounds = image.getBounds (); // Points
-						if (size == null) size = DPIUtil.scaleDown (getImageSize (), zoom); // To Points
+						if (size == null) size = Win32DPIUtils.scaleDown (getImageSize (), zoom); // To Points
 						if (!ignoreDrawForeground) {
 							//int y1 = rect.top + (index == 0 ? (getItemHeight () - size.y) / 2 : 0);
-							int y1 = rect.top + DPIUtil.scaleUp((getItemHeight () - size.y) / 2, zoom);
+							int y1 = rect.top + Win32DPIUtils.scaleUp((getItemHeight () - size.y) / 2, zoom);
 							int x1 = Math.max (rect.left, rect.left - inset + 1);
 							GCData data = new GCData();
 							data.device = display;
 							GC gc = createNewGC(hDC, data);
-							gc.setClipping (DPIUtil.scaleDown(new Rectangle(x1, rect.top, rect.right - x1, rect.bottom - rect.top), zoom));
+							gc.setClipping (Win32DPIUtils.scaleDown(new Rectangle(x1, rect.top, rect.right - x1, rect.bottom - rect.top), zoom));
 							gc.drawImage (image, 0, 0, bounds.width, bounds.height, DPIUtil.scaleDown(x1, zoom), DPIUtil.scaleDown(y1, zoom), size.x, size.y);
 							OS.SelectClipRgn (hDC, 0);
 							gc.dispose ();
 						}
-						OS.SetRect (rect, rect.left + DPIUtil.scaleUp(size.x, zoom) + offset, rect.top, rect.right - inset, rect.bottom);
+						OS.SetRect (rect, rect.left + Win32DPIUtils.scaleUp(size.x, zoom) + offset, rect.top, rect.right - inset, rect.bottom);
 					} else {
 						if (i == 0) {
 							if (OS.SendMessage (handle, OS.TVM_GETIMAGELIST, OS.TVSIL_NORMAL, 0) != 0) {
@@ -864,11 +864,11 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 						}
 					}
 				}
-				event.setBounds(DPIUtil.scaleDown(new Rectangle(itemRect.left, itemRect.top, itemRect.right - itemRect.left, itemRect.bottom - itemRect.top), getZoom()));
+				event.setBounds(Win32DPIUtils.scaleDown(new Rectangle(itemRect.left, itemRect.top, itemRect.right - itemRect.left, itemRect.bottom - itemRect.top), getZoom()));
 				RECT cellRect = item.getBounds (index, true, true, true, true, true, hDC);
 				int cellWidth = cellRect.right - cellRect.left;
 				int cellHeight = cellRect.bottom - cellRect.top;
-				gc.setClipping (DPIUtil.scaleDown(new Rectangle(cellRect.left, cellRect.top, cellWidth, cellHeight), zoom));
+				gc.setClipping (Win32DPIUtils.scaleDown(new Rectangle(cellRect.left, cellRect.top, cellWidth, cellHeight), zoom));
 				sendEvent (SWT.PaintItem, event);
 				if (data.focusDrawn) focusRect = null;
 				event.gc = null;
@@ -1031,7 +1031,7 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 		Rectangle boundsInPixels = null;
 		if (hooks (SWT.MeasureItem)) {
 			measureEvent = sendMeasureItemEvent (item, index, hDC, selected ? SWT.SELECTED : 0);
-			boundsInPixels = DPIUtil.scaleUp(measureEvent.getBounds(), getZoom());
+			boundsInPixels = Win32DPIUtils.scaleUp(measureEvent.getBounds(), getZoom());
 			if (isDisposed () || item.isDisposed ()) return null;
 		}
 		selectionForeground = -1;
@@ -1085,7 +1085,7 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 					}
 				}
 			}
-			Rectangle bounds = DPIUtil.scaleDown(new Rectangle (cellRect.left, cellRect.top, cellRect.right - cellRect.left, cellRect.bottom - cellRect.top), getZoom());
+			Rectangle bounds = Win32DPIUtils.scaleDown(new Rectangle (cellRect.left, cellRect.top, cellRect.right - cellRect.left, cellRect.bottom - cellRect.top), getZoom());
 			event.setBounds (bounds);
 			gc.setClipping (bounds);
 			sendEvent (SWT.EraseItem, event);
@@ -2804,7 +2804,7 @@ boolean findCell (int x, int y, TreeItem [] item, int [] index, RECT [] cellRect
 						int detail = (state & OS.TVIS_SELECTED) != 0 ? SWT.SELECTED : 0;
 						Event event = sendMeasureItemEvent (item [0], order [index [0]], hDC, detail);
 						if (isDisposed () || item [0].isDisposed ()) break;
-						Rectangle boundsInPixels = DPIUtil.scaleUp(event.getBounds(), getZoom());
+						Rectangle boundsInPixels = Win32DPIUtils.scaleUp(event.getBounds(), getZoom());
 						itemRect [0] = new RECT ();
 						itemRect [0].left = boundsInPixels.x;
 						itemRect [0].right = boundsInPixels.x + boundsInPixels.width;
@@ -3287,7 +3287,7 @@ TreeItem getItem (NMTVCUSTOMDRAW nmcd) {
 public TreeItem getItem (Point point) {
 	checkWidget ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	return getItemInPixels(DPIUtil.scaleUp(point, getZoom()));
+	return getItemInPixels(Win32DPIUtils.scaleUp(point, getZoom()));
 }
 
 TreeItem getItemInPixels (Point point) {
@@ -3730,7 +3730,7 @@ boolean hitTestSelection (long hItem, int x, int y) {
 	int state = (int)OS.SendMessage (handle, OS.TVM_GETITEMSTATE, hItem, OS.TVIS_SELECTED);
 	int detail = (state & OS.TVIS_SELECTED) != 0 ? SWT.SELECTED : 0;
 	Event event = sendMeasureItemEvent (item, order [index [0]], hDC, detail);
-	if (DPIUtil.scaleUp(event.getBounds(), getZoom()).contains (x, y)) result = true;
+	if (Win32DPIUtils.scaleUp(event.getBounds(), getZoom()).contains (x, y)) result = true;
 	if (newFont != 0) OS.SelectObject (hDC, oldFont);
 	OS.ReleaseDC (handle, hDC);
 //	if (isDisposed () || item.isDisposed ()) return false;
@@ -3740,7 +3740,7 @@ boolean hitTestSelection (long hItem, int x, int y) {
 int imageIndex (Image image, int index) {
 	if (image == null) return OS.I_IMAGENONE;
 	if (imageList == null) {
-		Rectangle bounds = DPIUtil.scaleBounds(image.getBounds(), this.getZoom(), 100);
+		Rectangle bounds = Win32DPIUtils.scaleBounds(image.getBounds(), this.getZoom(), 100);
 		imageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, bounds.width, bounds.height, getZoom());
 	}
 	int imageIndex = imageList.indexOf (image);
@@ -3764,7 +3764,7 @@ int imageIndex (Image image, int index) {
 int imageIndexHeader (Image image) {
 	if (image == null) return OS.I_IMAGENONE;
 	if (headerImageList == null) {
-		Rectangle bounds = DPIUtil.scaleBounds(image.getBounds(), this.getZoom(), 100);
+		Rectangle bounds = Win32DPIUtils.scaleBounds(image.getBounds(), this.getZoom(), 100);
 		headerImageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, bounds.width, bounds.height, getZoom());
 		int index = headerImageList.indexOf (image);
 		if (index == -1) index = headerImageList.add (image);
@@ -4530,7 +4530,7 @@ Event sendEraseItemEvent (TreeItem item, NMTTCUSTOMDRAW nmcd, int column, RECT c
 	event.index = column;
 	event.gc = gc;
 	event.detail |= SWT.FOREGROUND;
-	event.setBounds(DPIUtil.scaleDown(new Rectangle(cellRect.left, cellRect.top, cellRect.right - cellRect.left, cellRect.bottom - cellRect.top), getZoom()));
+	event.setBounds(Win32DPIUtils.scaleDown(new Rectangle(cellRect.left, cellRect.top, cellRect.right - cellRect.left, cellRect.bottom - cellRect.top), getZoom()));
 	//gc.setClipping (event.x, event.y, event.width, event.height);
 	sendEvent (SWT.EraseItem, event);
 	event.gc = null;
@@ -4551,14 +4551,14 @@ Event sendMeasureItemEvent (TreeItem item, int index, long hDC, int detail) {
 	event.item = item;
 	event.gc = gc;
 	event.index = index;
-	event.setBounds(DPIUtil.scaleDown(new Rectangle(itemRect.left, itemRect.top, itemRect.right - itemRect.left, itemRect.bottom - itemRect.top), getZoom()));
+	event.setBounds(Win32DPIUtils.scaleDown(new Rectangle(itemRect.left, itemRect.top, itemRect.right - itemRect.left, itemRect.bottom - itemRect.top), getZoom()));
 	event.detail = detail;
 	sendEvent (SWT.MeasureItem, event);
 	event.gc = null;
 	gc.dispose ();
 	OS.RestoreDC (hDC, nSavedDC);
 	if (isDisposed () || item.isDisposed ()) return null;
-	Rectangle rect = DPIUtil.scaleUp(event.getBounds(), getZoom());
+	Rectangle rect = Win32DPIUtils.scaleUp(event.getBounds(), getZoom());
 	if (hwndHeader != 0) {
 		if (columnCount == 0) {
 			if (rect.x + rect.width > scrollWidth) {
@@ -4586,7 +4586,7 @@ Event sendPaintItemEvent (TreeItem item, NMTTCUSTOMDRAW nmcd, int column, RECT i
 	event.index = column;
 	event.gc = gc;
 	event.detail |= SWT.FOREGROUND;
-	event.setBounds(DPIUtil.scaleDown(new Rectangle(itemRect.left, itemRect.top, itemRect.right - itemRect.left, itemRect.bottom - itemRect.top), getZoom()));
+	event.setBounds(Win32DPIUtils.scaleDown(new Rectangle(itemRect.left, itemRect.top, itemRect.right - itemRect.left, itemRect.bottom - itemRect.top), getZoom()));
 	//gc.setClipping (cellRect.left, cellRect.top, cellWidth, cellHeight);
 	sendEvent (SWT.PaintItem, event);
 	event.gc = null;
@@ -5371,7 +5371,7 @@ public void setTopItem (TreeItem item) {
  * In a Tree without imageList, the indent also controls the chevron (glyph) size.
  */
 private void calculateAndApplyIndentSize() {
-	int indent = DPIUtil.scaleUp(DEFAULT_INDENT, nativeZoom);
+	int indent = Win32DPIUtils.scaleUp(DEFAULT_INDENT, nativeZoom);
 	OS.SendMessage(handle, OS.TVM_SETINDENT, indent, 0);
 }
 
@@ -7152,7 +7152,7 @@ LRESULT WM_PAINT (long wParam, long lParam) {
 				if (hooksPaint) {
 					Event event = new Event ();
 					event.gc = gc;
-					event.setBounds(DPIUtil.scaleDown(new Rectangle(ps.left, ps.top, ps.right - ps.left, ps.bottom - ps.top), getZoom()));
+					event.setBounds(Win32DPIUtils.scaleDown(new Rectangle(ps.left, ps.top, ps.right - ps.left, ps.bottom - ps.top), getZoom()));
 					sendEvent (SWT.Paint, event);
 					// widget could be disposed at this point
 					event.gc = null;
@@ -7886,7 +7886,7 @@ LRESULT wmNotifyHeader (NMHDR hdr, long wParam, long lParam) {
 							 * Sort indicator size needs to scale as per the Native Windows OS DPI level
 							 * when header is custom drawn. For more details refer bug 537097.
 							 */
-							int leg = DPIUtil.scaleUp(3, nativeZoom);
+							int leg = Win32DPIUtils.scaleUp(3, nativeZoom);
 							if (sortDirection == SWT.UP) {
 								OS.Polyline(nmcd.hdc, new int[] {center-leg, 1+leg, center+1, 0}, 2);
 								OS.Polyline(nmcd.hdc, new int[] {center+leg, 1+leg, center-1, 0}, 2);
@@ -7931,7 +7931,7 @@ LRESULT wmNotifyHeader (NMHDR hdr, long wParam, long lParam) {
 							data.device = display;
 							GC gc = createNewGC(nmcd.hdc, data);
 							int zoom = getZoom();
-							Rectangle imageBounds = DPIUtil.scaleBounds(columns[i].image.getBounds(), zoom, 100);
+							Rectangle imageBounds = Win32DPIUtils.scaleBounds(columns[i].image.getBounds(), zoom, 100);
 							int y = Math.max (0, (nmcd.bottom - imageBounds.height) / 2);
 							gc.drawImage (columns[i].image, DPIUtil.scaleDown(x, zoom), DPIUtil.scaleDown(y, zoom));
 							x += imageBounds.width + 12;

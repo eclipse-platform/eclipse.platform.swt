@@ -2613,31 +2613,31 @@ static void buildDitheredGradientChannel(int from, int to, int steps,
 static void fillGradientRectangle(GC gc, Device device,
 	int x, int y, int width, int height, boolean vertical,
 	RGB fromRGB, RGB toRGB,
-	int redBits, int greenBits, int blueBits) {
+	int redBits, int greenBits, int blueBits, int zoom) {
 	/* Create the bitmap and tile it */
 	ImageData band = createGradientBand(width, height, vertical,
 		fromRGB, toRGB, redBits, greenBits, blueBits);
 	Image image = new Image(device, band);
 	if ((band.width == 1) || (band.height == 1)) {
-			gc.drawImage(image, 0, 0, DPIUtil.autoScaleDown(band.width), DPIUtil.autoScaleDown(band.height),
-					DPIUtil.autoScaleDown(x), DPIUtil.autoScaleDown(y), DPIUtil.autoScaleDown(width),
-					DPIUtil.autoScaleDown(height));
+			gc.drawImage(image, 0, 0, DPIUtil.scaleDown(band.width, zoom), DPIUtil.scaleDown(band.height, zoom),
+					DPIUtil.scaleDown(x, zoom), DPIUtil.scaleDown(y, zoom), DPIUtil.scaleDown(width, zoom),
+					DPIUtil.scaleDown(height, zoom));
 		} else {
 		if (vertical) {
 			for (int dx = 0; dx < width; dx += band.width) {
 				int blitWidth = width - dx;
 				if (blitWidth > band.width) blitWidth = band.width;
-					gc.drawImage(image, 0, 0, DPIUtil.autoScaleDown(blitWidth), DPIUtil.autoScaleDown(band.height),
-							DPIUtil.autoScaleDown(dx + x), DPIUtil.autoScaleDown(y), DPIUtil.autoScaleDown(blitWidth),
-							DPIUtil.autoScaleDown(band.height));
+					gc.drawImage(image, 0, 0, DPIUtil.scaleDown(blitWidth, zoom), DPIUtil.scaleDown(band.height, zoom),
+							DPIUtil.scaleDown(dx + x, zoom), DPIUtil.scaleDown(y, zoom), DPIUtil.scaleDown(blitWidth, zoom),
+							DPIUtil.scaleDown(band.height, zoom));
 				}
 		} else {
 			for (int dy = 0; dy < height; dy += band.height) {
 				int blitHeight = height - dy;
 				if (blitHeight > band.height) blitHeight = band.height;
-					gc.drawImage(image, 0, 0, DPIUtil.autoScaleDown(band.width), DPIUtil.autoScaleDown(blitHeight),
-							DPIUtil.autoScaleDown(x), DPIUtil.autoScaleDown(dy + y), DPIUtil.autoScaleDown(band.width),
-							DPIUtil.autoScaleDown(blitHeight));
+					gc.drawImage(image, 0, 0, DPIUtil.scaleDown(band.width, zoom), DPIUtil.scaleDown(blitHeight, zoom),
+							DPIUtil.scaleDown(x, zoom), DPIUtil.scaleDown(dy + y, zoom), DPIUtil.scaleDown(band.width, zoom),
+							DPIUtil.scaleDown(blitHeight, zoom));
 				}
 		}
 	}

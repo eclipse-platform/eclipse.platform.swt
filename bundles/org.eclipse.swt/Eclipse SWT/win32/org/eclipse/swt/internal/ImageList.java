@@ -58,7 +58,7 @@ public int add (Image image) {
 		index++;
 	}
 	if (count == 0) {
-		Rectangle rect = DPIUtil.scaleBounds(image.getBounds(), zoom, 100);
+		Rectangle rect = Win32DPIUtils.scaleBounds(image.getBounds(), zoom, 100);
 		OS.ImageList_SetIconSize (handle, rect.width, rect.height);
 	}
 	setForAllHandles(index, image, count);
@@ -332,8 +332,8 @@ public int getStyle () {
 
 public long getHandle(int targetZoom) {
 	if (!zoomToHandle.containsKey(targetZoom)) {
-		int scaledWidth = DPIUtil.scaleUp(DPIUtil.scaleDown(width, this.zoom), targetZoom);
-		int scaledHeight = DPIUtil.scaleUp(DPIUtil.scaleDown(height, this.zoom), targetZoom);
+		int scaledWidth = Win32DPIUtils.scaleUp(DPIUtil.scaleDown(width, this.zoom), targetZoom);
+		int scaledHeight = Win32DPIUtils.scaleUp(DPIUtil.scaleDown(height, this.zoom), targetZoom);
 		long newImageListHandle = OS.ImageList_Create(scaledWidth, scaledHeight, flags, 16, 16);
 		int count = OS.ImageList_GetImageCount (handle);
 		for (int i = 0; i < count; i++) {

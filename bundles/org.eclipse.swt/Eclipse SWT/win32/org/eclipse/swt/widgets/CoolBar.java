@@ -412,7 +412,7 @@ int getMargin (int index) {
 	}
 	if ((style & SWT.FLAT) == 0) {
 		if (!isLastItemOfRow (index)) {
-			margin += DPIUtil.scaleUp(SEPARATOR_WIDTH, getZoom());
+			margin += Win32DPIUtils.scaleUp(SEPARATOR_WIDTH, getZoom());
 		}
 	}
 	return margin;
@@ -549,7 +549,7 @@ public Point [] getItemSizes () {
 	Point [] sizes = getItemSizesInPixels();
 	if (sizes != null) {
 		for (int i = 0; i < sizes.length; i++) {
-			sizes[i] = DPIUtil.scaleDown(sizes[i], getZoom());
+			sizes[i] = Win32DPIUtils.scaleDown(sizes[i], getZoom());
 		}
 	}
 	return sizes;
@@ -809,7 +809,7 @@ public void setItemLayout (int [] itemOrder, int [] wrapIndices, Point [] sizes)
 	if (sizes == null) error (SWT.ERROR_NULL_ARGUMENT);
 	Point [] sizesInPoints = new Point [sizes.length];
 	for (int i = 0; i < sizes.length; i++) {
-		sizesInPoints[i] = DPIUtil.scaleUp(sizes[i], getZoom());
+		sizesInPoints[i] = Win32DPIUtils.scaleUp(sizes[i], getZoom());
 	}
 	setItemLayoutInPixels (itemOrder, wrapIndices, sizesInPoints);
 }
