@@ -1592,7 +1592,7 @@ public Menu getMenuBar () {
 @Override
 public Rectangle getBounds() {
 	checkDevice ();
-	return DPIUtil.autoScaleDown(getBoundsInPixels());
+	return DPIUtil.scaleDown(getBoundsInPixels(), DPIUtil.getDeviceZoom());
 }
 
 Rectangle getBoundsInPixels () {
@@ -1665,7 +1665,7 @@ int getClickCount (int type, int button, long hwnd, long lParam) {
 @Override
 public Rectangle getClientArea () {
 	checkDevice ();
-	return DPIUtil.autoScaleDown(getClientAreaInPixels());
+	return DPIUtil.scaleDown(getClientAreaInPixels(), DPIUtil.getDeviceZoom());
 }
 
 Rectangle getClientAreaInPixels () {
