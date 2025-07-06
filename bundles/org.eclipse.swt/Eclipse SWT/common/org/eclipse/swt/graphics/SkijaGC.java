@@ -913,6 +913,10 @@ public class SkijaGC extends GCHandle {
 		if (SWT.getPlatform().equals("win32")) {
 			fontSize *= skijaFont.getSize() / Display.getDefault().getSystemFont().getFontData()[0].getHeight();
 		}
+		if (SWT.getPlatform().equals("gtk")) {
+			// SWT's font size is in points, 1pt = 1/72 inch, adjust skija font size to this
+			fontSize = (fontSize * Display.getDefault().getDPI().y) / 72;
+		}
 		skijaFont.setSize(fontSize);
 		skijaFont.setEdging(FontEdging.SUBPIXEL_ANTI_ALIAS);
 		skijaFont.setSubpixel(true);
