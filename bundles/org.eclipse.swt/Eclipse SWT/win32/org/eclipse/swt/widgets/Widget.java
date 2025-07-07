@@ -65,10 +65,11 @@ public abstract class Widget {
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public int nativeZoom;
-	boolean autoScaleDisabled = false;
+	// autoScale does not work properly in Skia-SWT.
+	boolean autoScaleDisabled = true;
 	int style, state;
 	Display display;
-	protected EventTable eventTable;
+	EventTable eventTable;
 	Object data;
 
 	/* Global state flags */
@@ -507,7 +508,7 @@ void error (int code) {
 	SWT.error(code);
 }
 
-protected boolean filters (int eventType) {
+boolean filters (int eventType) {
 	return display.filters (eventType);
 }
 
@@ -751,7 +752,7 @@ public int getStyle () {
  *
  * @see #isListening
  */
-protected boolean hooks (int eventType) {
+boolean hooks (int eventType) {
 	if (eventTable == null) return false;
 	return eventTable.hooks (eventType);
 }
@@ -1215,11 +1216,11 @@ void sendEvent (Event event) {
 	}
 }
 
-protected void sendEvent (int eventType) {
+void sendEvent (int eventType) {
 	sendEvent (eventType, null, true);
 }
 
-protected void sendEvent (int eventType, Event event) {
+void sendEvent (int eventType, Event event) {
 	sendEvent (eventType, event, true);
 }
 
@@ -2357,8 +2358,7 @@ LRESULT wmPaint (long hwnd, long wParam, long lParam) {
 		int width = rect.right - rect.left;
 		int height = rect.bottom - rect.top;
 		if (width != 0 && height != 0) {
-			NativeGC ngc = (NativeGC) gc.innerGC;
-			long hDC = ngc.handle;
+			long hDC = NativeGC.get(gc).handle;
 			OS.SelectClipRgn (hDC, rgn);
 			OS.SetMetaRgn (hDC);
 			Event event = new Event ();
@@ -2731,11 +2731,5 @@ boolean adjustWindowRectEx(RECT lpRect, int dwStyle, boolean bMenu, int dwExStyl
 	return OS.AdjustWindowRectExForDpi (lpRect, dwStyle, bMenu, dwExStyle, DPIUtil.mapZoomToDPI(nativeZoom));
 }
 
-
-void copyToClipboard(char[] buffer) {
-	// maybe with AWT this can be done for every OS.
-	System.out.println(
-			"WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
-}
 
 }

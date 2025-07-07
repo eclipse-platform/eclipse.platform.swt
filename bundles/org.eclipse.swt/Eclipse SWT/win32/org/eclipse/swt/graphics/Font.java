@@ -47,7 +47,7 @@ public final class Font extends Resource {
 	 * </p>
 	 *
 	 */
-	private long handle;
+	long handle;
 
 	/**
 	 * The zoom in % of the standard resolution used for conversion of point height to pixel height
