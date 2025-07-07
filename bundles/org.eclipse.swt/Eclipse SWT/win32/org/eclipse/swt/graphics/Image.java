@@ -1243,7 +1243,7 @@ public ImageData getImageData (int zoom) {
  *             multiple monitors with different DPIs, hence deprecated. Use
  *             {@link #getImageData(int)} instead.
  */
-@Deprecated
+@Deprecated(since = "2025-09", forRemoval = true)
 public ImageData getImageDataAtCurrentZoom() {
 	return applyUsingAnyHandle(ImageHandle::getImageData);
 }
