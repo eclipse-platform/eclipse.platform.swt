@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -16,10 +16,9 @@ package org.eclipse.swt.examples.controlexample;
 
 import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
@@ -118,18 +117,12 @@ class BrowserTab extends Tab {
 		} else if (lastText != null) {
 			browser.setText(lastText);
 		} else {
-			StringBuilder sb= new StringBuilder(300);
-
-			try (InputStream htmlStream = ControlExample.class.getResourceAsStream("browser-content.html");
-					BufferedReader br = new BufferedReader(new InputStreamReader(htmlStream))) {
-				int read = 0;
-				while ((read = br.read()) != -1)
-					sb.append((char) read);
+			try (InputStream htmlStream = ControlExample.class.getResourceAsStream("browser-content.html")) {
+				browser.setText( new String (htmlStream.readAllBytes(), StandardCharsets.UTF_8));
 			} catch (IOException e) {
 				log(e.getMessage());
+				browser.setText("Loading failed, see log for details!");
 			}
-			String text= sb.toString();
-			browser.setText(text);
 		}
 		lastText = lastUrl = null;
 	}
@@ -227,16 +220,6 @@ class BrowserTab extends Tab {
 			}
 		}
 		super.disposeExampleWidgets();
-	}
-
-	public static String getContents(InputStream in) throws IOException {
-		StringBuilder sb= new StringBuilder(300);
-		try (BufferedReader br= new BufferedReader(new InputStreamReader(in))) {
-			int read= 0;
-			while ((read= br.read()) != -1)
-				sb.append((char) read);
-		}
-		return sb.toString();
 	}
 
 	/**
