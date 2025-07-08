@@ -1306,7 +1306,7 @@ public Rectangle getBounds() {
  * @deprecated This API doesn't serve the purpose in an environment having
  *             multiple monitors with different DPIs, hence deprecated.
  */
-@Deprecated
+@Deprecated(since = "2025-09", forRemoval = true)
 public Rectangle getBoundsInPixels() {
 	Rectangle bounds = getBounds();
 	int scaleFactor = (int) NSScreen.mainScreen().backingScaleFactor();
