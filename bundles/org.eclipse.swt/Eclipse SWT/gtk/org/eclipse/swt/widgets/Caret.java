@@ -143,7 +143,7 @@ private void drawInCellEditor(long window) {
 public Rectangle getBounds () {
 	checkWidget();
 	if (image != null) {
-		Rectangle rect = image.getBoundsInPixels ();
+		Rectangle rect = image.getBounds();
 		return new Rectangle (x, y, rect.width, rect.height);
 	} else {
 		if (width == 0) {
@@ -228,7 +228,7 @@ public Canvas getParent () {
 public Point getSize () {
 	checkWidget();
 	if (image != null) {
-		Rectangle rect = image.getBoundsInPixels ();
+		Rectangle rect = image.getBounds();
 		return new Point (rect.width, rect.height);
 	} else {
 		if (width == 0) {

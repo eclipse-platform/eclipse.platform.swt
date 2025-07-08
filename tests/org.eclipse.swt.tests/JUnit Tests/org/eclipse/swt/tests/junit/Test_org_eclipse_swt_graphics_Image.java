@@ -584,7 +584,7 @@ public void test_getBounds() {
 	assertEquals(bounds, bounds1);
 }
 
-@SuppressWarnings("deprecation")
+@SuppressWarnings("removal")
 @Test
 public void test_getBoundsInPixels() {
 	Rectangle initialBounds = new Rectangle(0, 0, 10, 20);
