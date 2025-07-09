@@ -194,11 +194,7 @@ void drawBackground (Control control, long gdkResource, long cr, int x, int y, i
 			cairo_rectangle_int_t regionRect = new cairo_rectangle_int_t ();
 			int [] fetchedHeight = new int [1];
 			int [] fetchedWidth = new int [1];
-			if (GTK.GTK4) {
-				gdk_surface_get_size(gdkResource, fetchedWidth, fetchedHeight);
-			} else {
-				gdk_window_get_size(gdkResource, fetchedWidth, fetchedHeight);
-			}
+			gdk_surface_get_size(gdkResource, fetchedWidth, fetchedHeight);
 			regionRect.x = 0;
 			regionRect.y = 0;
 			regionRect.width = fetchedWidth[0];
