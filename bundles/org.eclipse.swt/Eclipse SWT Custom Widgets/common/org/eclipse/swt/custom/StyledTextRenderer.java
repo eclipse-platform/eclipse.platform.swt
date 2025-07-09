@@ -184,7 +184,7 @@ class StyledTextRenderer {
 		}
 	}
 
-	private record LineDrawInfo(int index, TextLayout layout, String text, int offset, int height) {
+	private record LineDrawInfo(int index, TextLayout layout, String text, int offset, float height) {
 
 	}
 
@@ -466,7 +466,7 @@ private LineDrawInfo makeLineDrawInfo(int lineIndex) {
 	TextLayout layout = getTextLayout(lineIndex);
 	String text = content.getLine(lineIndex);
 	int offset = content.getOffsetAtLine(lineIndex);
-	int height = layout.getBounds().height;
+	float height = layout.getBounds().getHeight();
 	return new LineDrawInfo(lineIndex, layout, text, offset, height);
 }
 
@@ -482,6 +482,11 @@ int drawLines(int startLine, int endLine, int begX, int begY, int endY, GC gc, C
 	// painting. While this doesn't sound like a good thing to do, yet
 	// still, I'd rather stay safe.
 	final boolean drawBackBeforeFore = (fixedLineMetrics != null);
+
+
+//	Rectangle bounds = styledText.getClientArea();
+//	gc.setBackground(widgetBackground);
+//	styledText.drawBackground(gc, bounds.x, bounds.y, bounds.width, bounds.height);
 
 	if (drawBackBeforeFore) {
 		// Cache drawing information
@@ -515,18 +520,18 @@ int drawLines(int startLine, int endLine, int begX, int begY, int endY, GC gc, C
 		return y - begY;
 	}
 
-	int y = begY;
+	float y = begY;
 	for (int iLine = startLine; y < endY && iLine < endLine; iLine++) {
 		LineDrawInfo lineInfo = makeLineDrawInfo(iLine);
 		drawLineBackground(lineInfo, y, gc, widgetBackground);
-		drawLineForeground(lineInfo, begX, y, gc, widgetForeground);
+		drawLineForeground(lineInfo, begX, (int) y, gc, widgetForeground);
 		disposeTextLayout(lineInfo.layout);
-		y += lineInfo.height;
+		y += lineInfo.height;			// Culprit
 	}
-	return y - begY;
+	return (int) y - begY;
 }
 
-private void drawLineBackground(LineDrawInfo lineInfo, int paintY, GC gc, Color widgetBackground) {
+private void drawLineBackground(LineDrawInfo lineInfo, float paintY, GC gc, Color widgetBackground) {
 	Rectangle client = styledText.getClientArea();
 	Color lineBackground = getLineBackground(lineInfo.index, null);
 	StyledTextEvent event = styledText.getLineBackgroundData(lineInfo.offset, lineInfo.text);
@@ -536,13 +541,13 @@ private void drawLineBackground(LineDrawInfo lineInfo, int paintY, GC gc, Color 
 	if (lineBackground != null) {
 		if (verticalIndent > 0) {
 			gc.setBackground(widgetBackground);
-			gc.fillRectangle(client.x, paintY, client.width, verticalIndent);
+			gc.fillRectangle(new Rectangle.OfFloat(client.x, paintY, client.width, verticalIndent));
 		}
 		gc.setBackground(lineBackground);
-		gc.fillRectangle(client.x, paintY + verticalIndent, client.width, lineInfo.height - verticalIndent);
+		gc.fillRectangle(new Rectangle.OfFloat(client.x, paintY + verticalIndent, client.width, lineInfo.height - verticalIndent));
 	} else {
 		gc.setBackground(widgetBackground);
-		styledText.drawBackground(gc, client.x, paintY, client.width, lineInfo.height);
+		styledText.drawBackground(gc, new Rectangle.OfFloat(client.x, paintY, client.width, lineInfo.height));
 	}
 }
 

@@ -2405,6 +2405,13 @@ public void drawString (String string, int x, int y, boolean isTransparent) {
 	storeAndApplyOperationForExistingHandle(new DrawStringOperation(string, new Point(x, y), isTransparent));
 }
 
+public void drawString (String string, Point.OfFloat point, boolean isTransparent) {
+	checkNonDisposed();
+	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (string.isEmpty()) return;
+	storeAndApplyOperationForExistingHandle(new DrawStringOperation(string, point, isTransparent));
+}
+
 private class DrawStringOperation extends Operation {
 	private final String string;
 	private final Point location;

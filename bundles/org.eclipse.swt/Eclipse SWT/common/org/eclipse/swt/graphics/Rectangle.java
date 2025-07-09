@@ -87,6 +87,28 @@ public Rectangle (int x, int y, int width, int height) {
 	this.height = height;
 }
 
+
+
+public float getX() {
+	return x;
+}
+
+
+public float getY() {
+	return y;
+}
+
+
+public float getWidth() {
+	return width;
+}
+
+
+public float getHeight() {
+	return height;
+}
+
+
 /**
  * Destructively replaces the x, y, width and height values
  * in the receiver with ones which represent the union of the
@@ -424,18 +446,22 @@ public static sealed class OfFloat extends Rectangle permits Rectangle.WithMonit
 		this.residualHeight = height - this.height;
 	}
 
+	@Override
 	public float getX() {
 		return x + residualX;
 	}
 
+	@Override
 	public float getY() {
 		return y + residualY;
 	}
 
+	@Override
 	public float getWidth() {
 		return width + residualWidth;
 	}
 
+	@Override
 	public float getHeight() {
 		return height + residualHeight;
 	}
