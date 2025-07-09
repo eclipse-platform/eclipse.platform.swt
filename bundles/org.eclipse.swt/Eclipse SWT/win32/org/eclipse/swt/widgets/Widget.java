@@ -66,7 +66,7 @@ public abstract class Widget {
 	 */
 	public int nativeZoom;
 	// autoScale does not work properly in Skia-SWT.
-	boolean autoScaleDisabled = true;
+	boolean autoScaleDisabled = false;
 	int style, state;
 	Display display;
 	EventTable eventTable;
