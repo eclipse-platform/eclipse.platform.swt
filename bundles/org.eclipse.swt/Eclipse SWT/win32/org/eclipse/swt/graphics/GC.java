@@ -4943,7 +4943,7 @@ private class SetFontOperation extends Operation {
 
 	@Override
 	void apply() {
-		data.font = font != null ? SWTFontProvider.getFont(device, font.getFontData()[0], data.nativeZoom) : SWTFontProvider.getSystemFont(device, data.nativeZoom);
+		data.font = font != null ? SWTFontProvider.getFont(font.getDevice(), font.getFontData()[0], data.nativeZoom) : SWTFontProvider.getSystemFont(device, data.nativeZoom);
 		data.state &= ~FONT;
 	}
 }
