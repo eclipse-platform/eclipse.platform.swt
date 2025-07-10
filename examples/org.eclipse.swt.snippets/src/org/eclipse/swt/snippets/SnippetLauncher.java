@@ -24,6 +24,8 @@ package org.eclipse.swt.snippets;
  */
 import java.io.*;
 import java.lang.reflect.*;
+import java.nio.charset.*;
+import java.nio.file.*;
 
 import org.eclipse.swt.*;
 
@@ -47,15 +49,13 @@ public class SnippetLauncher {
 			if (clazz != null) {
 				System.out.println("\n" + clazz.getName());
 				if (hasSource) {
-					File sourceFile = new File(sourceDir, className + ".java");
-					try (FileReader reader = new FileReader(sourceFile);){
-						char [] buffer = new char [(int)sourceFile.length()];
-						reader.read(buffer);
-						String source = String.valueOf(buffer);
+					Path sourceFile = Path.of(sourceDir.getPath(), className + ".java");
+					try {
+						String source = Files.readString(sourceFile, StandardCharsets.UTF_8);
 						int start = source.indexOf("package");
 						start = source.indexOf("/*", start);
 						int end = source.indexOf("* For a list of all");
-						System.out.println(source.substring(start, end-3));
+						System.out.println(source.substring(start+3, end-3));
 						boolean skip = false;
 						String platform = SWT.getPlatform();
 						if (source.contains("OpenGL")) {
