@@ -29,12 +29,20 @@ public class Snippet56 {
 		final Display display = new Display();
 		Shell shell = new Shell(display);
 		shell.setText("Snippet 56");
-		final ProgressBar bar = new ProgressBar(shell, SWT.SMOOTH);
-		Rectangle clientArea = shell.getClientArea ();
-		bar.setBounds (clientArea.x, clientArea.y, 200, 32);
+//		var bar = new ProgressBar_Old(shell, SWT.INDETERMINATE);
+		var bar = new ProgressBar(shell, SWT.SMOOTH | SWT.VERTICAL | SWT.INDETERMINATE);
+
+		bar.setState(SWT.ERROR);
+		Rectangle ca = shell.getClientArea();
+		bar.setBounds(ca.x, ca.y, 200, 32);
 		bar.setMaximum(100);
 		shell.open();
 		final int maximum = bar.getMaximum();
+
+		Button b = new Button(shell, SWT.NONE);
+		b.setText("Text");
+		b.setBounds(ca.x, ca.y + 40, 200, 30);
+
 		new Thread() {
 			@Override
 			public void run() {

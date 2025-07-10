@@ -40,7 +40,7 @@ import org.eclipse.swt.internal.gtk3.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * @noextend This class is not intended to be subclassed by clients.
  */
-public class ProgressBar extends Control {
+public class ProgressBar_Old extends Control {
 	int timerId, minimum = 0, maximum = 100, selection = 0;
 	static final int DELAY = 100;
 
@@ -75,7 +75,7 @@ public class ProgressBar extends Control {
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
-public ProgressBar(Composite parent, int style) {
+public ProgressBar_Old(Composite parent, int style) {
 	super(parent, checkStyle(style));
 }
 

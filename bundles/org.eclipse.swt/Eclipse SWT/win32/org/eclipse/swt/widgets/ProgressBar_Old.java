@@ -39,7 +39,7 @@ import org.eclipse.swt.graphics.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * @noextend This class is not intended to be subclassed by clients.
  */
-public class ProgressBar extends Control {
+public class ProgressBar_Old extends Control {
 	static final int DELAY = 100;
 	static final int TIMER_ID = 100;
 	static final int MINIMUM_WIDTH = 100;
@@ -103,7 +103,7 @@ public class ProgressBar extends Control {
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
-public ProgressBar (Composite parent, int style) {
+public ProgressBar_Old(Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
