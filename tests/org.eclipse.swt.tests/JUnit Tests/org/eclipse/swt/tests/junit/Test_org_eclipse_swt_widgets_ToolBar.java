@@ -15,8 +15,8 @@ package org.eclipse.swt.tests.junit;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,12 +45,7 @@ public void setUp() {
 @Override
 @Test
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
-	try {
-		new ToolBar(null, 0);
-		fail("No exception thrown for parent == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for parent == null", IllegalArgumentException.class, () -> new ToolBar(null, 0));
 }
 
 @Override
@@ -84,17 +79,12 @@ public void test_getItemI() {
 	}
 
 	toolBar = new ToolBar(shell, 0);
-	number = 5;
 	items = new ToolItem[number];
 	for (int i = 0; i<number ; i++){
 		items[i] = new ToolItem(toolBar, 0);
 	}
-	try {
-		toolBar.getItem(number);
-		fail("No exception thrown for illegal index argument");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for illegal index argument", IllegalArgumentException.class, ()->
+		toolBar.getItem(number));
 }
 
 @Test
@@ -159,12 +149,8 @@ public void test_indexOfLorg_eclipse_swt_widgets_ToolItem() {
 		tis[i] = new ToolItem(toolBar, 0);
 	}
 	for (int i = 0; i<number ; i++){
-		try {
-			toolBar.indexOf(null);
-			fail("No exception thrown for toolItem == null");
-		}
-		catch (IllegalArgumentException e) {
-		}
+		assertThrows("No exception thrown for toolItem == null", IllegalArgumentException.class,
+				() -> toolBar.indexOf(null));
 	}
 }
 
