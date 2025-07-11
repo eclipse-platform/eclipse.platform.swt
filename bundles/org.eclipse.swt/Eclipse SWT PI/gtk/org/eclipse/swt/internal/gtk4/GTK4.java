@@ -196,17 +196,25 @@ public class GTK4 {
 	public static final native long gdk_content_formats_builder_free_to_formats(long builder);
 
 	/* GtkFileChooser */
-	/** @param chooser cast=(GtkFileChooser *) */
+	/**
+	 * @method flags=ignore_deprecations
+	 * @param chooser cast=(GtkFileChooser *)
+	 */
 	public static final native long gtk_file_chooser_get_files(long chooser);
-	/** @param chooser cast=(GtkFileChooser *) */
+	/**
+	 * @method flags=ignore_deprecations
+	 * @param chooser cast=(GtkFileChooser *)
+	 */
 	public static final native long gtk_file_chooser_get_file(long chooser);
 	/**
+	 * @method flags=ignore_deprecations
 	 * @param chooser cast=(GtkFileChooser *)
 	 * @param file cast=(GFile *)
 	 * @param error cast=(GError **)
 	 */
 	public static final native boolean gtk_file_chooser_set_current_folder(long chooser, long file, long error);
 	/**
+	 * @method flags=ignore_deprecations
 	 * @param chooser cast=(GtkFileChooser *)
 	 * @param file cast=(GFile *)
 	 * @param error cast=(GError **)

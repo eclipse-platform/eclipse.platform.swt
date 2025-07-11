@@ -474,6 +474,7 @@ public class GTK extends OS {
 
 	/* GtkColorChooser Interface */
 	/**
+	 * @method flags=ignore_deprecations
 	 * @param chooser cast=(GtkColorChooser *)
 	 * @param orientation cast=(GtkOrientation)
 	 * @param colors_per_line cast=(gint)
@@ -482,25 +483,30 @@ public class GTK extends OS {
 	 */
 	public static final native void gtk_color_chooser_add_palette(long chooser, int orientation, int colors_per_line, int n_colors, long colors);
 	/**
+	 * @method flags=ignore_deprecations
 	 * @param chooser cast=(GtkColorChooser *)
 	 * @param use_alpha cast=(gboolean)
 	 */
 	public static final native void gtk_color_chooser_set_use_alpha(long chooser, boolean use_alpha);
 	/**
+	 * @method flags=ignore_deprecations
 	 * @param chooser cast=(GtkColorChooser *)
 	 */
 	public static final native boolean gtk_color_chooser_get_use_alpha(long chooser);
 	/**
+	 * @method flags=ignore_deprecations
 	 * @param chooser cast=(GtkColorChooser *)
 	 * @param color cast=(GdkRGBA *)
 	 */
 	public static final native void gtk_color_chooser_set_rgba(long chooser, GdkRGBA color);
 	/**
+	 * @method flags=ignore_deprecations
 	 * @param chooser cast=(GtkColorChooser *)
 	 * @param color cast=(GdkRGBA *)
 	 */
 	public static final native void gtk_color_chooser_get_rgba(long chooser, GdkRGBA color);
 	/**
+	 * @method flags=ignore_deprecations
 	 * @param title cast=(const gchar *)
 	 * @param parent cast=(GtkWindow *)
 	 */
@@ -703,23 +709,30 @@ public class GTK extends OS {
 
 	/* GtkFileChooser */
 	/**
+	 * @method flags=ignore_deprecations
 	 * @param chooser cast=(GtkFileChooser *)
 	 * @param filter cast=(GtkFileFilter *)
 	 */
 	public static final native void gtk_file_chooser_add_filter(long chooser, long filter);
-	/** @param chooser cast=(GtkFileChooser *) */
+	/**
+	 * @method flags=ignore_deprecations
+	 * @param chooser cast=(GtkFileChooser *)
+	 */
 	public static final native long gtk_file_chooser_get_filter(long chooser);
 	/**
+	 * @method flags=ignore_deprecations
 	 * @param chooser cast=(GtkFileChooser *)
 	 * @param name cast=(const gchar *)
 	 */
 	public static final native void gtk_file_chooser_set_current_name(long chooser, byte[] name);
 	/**
+	 * @method flags=ignore_deprecations
 	 * @param chooser cast=(GtkFileChooser *)
 	 * @param filter cast=(GtkFileFilter *)
 	 */
 	public static final native void gtk_file_chooser_set_filter(long chooser, long filter);
 	/**
+	 * @method flags=ignore_deprecations
 	 * @param chooser cast=(GtkFileChooser *)
 	 * @param select_multiple cast=(gboolean)
 	 */
@@ -812,15 +825,20 @@ public class GTK extends OS {
 
 	/* GtkFontChooserDialog */
 	/**
+	 * @method flags=ignore_deprecations
 	 * @param title cast=(const gchar *)
 	 * @param parent cast=(GtkWindow *)
 	 */
 	public static final native long gtk_font_chooser_dialog_new(byte[] title, long parent);
 
 	/* GtkFontChooser Interface */
-	/** @param fontchooser cast=(GtkFontChooser *) */
+	/**
+	 * @method flags=ignore_deprecations
+	 * @param fontchooser cast=(GtkFontChooser *)
+	 */
 	public static final native long gtk_font_chooser_get_font(long fontchooser);
 	/**
+	 * @method flags=ignore_deprecations
 	 * @param fsd cast=(GtkFontChooser *)
 	 * @param fontname cast=(const gchar *)
 	 */
