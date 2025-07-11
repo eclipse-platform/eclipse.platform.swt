@@ -296,7 +296,7 @@ public class DPIUtilTests {
 	@Test
 	public void scaleUpRectangle() {
 		Rectangle valueAt200 = new Rectangle(100, 150, 10, 14);
-		Rectangle valueAt150 = new Rectangle(75, 113, 8, 11);
+		Rectangle valueAt150 = new Rectangle(75, 113, 8, 10);
 		Rectangle valueAt100 = new Rectangle(50, 75, 5, 7);
 
 		Rectangle scaledValue = DPIUtil.autoScaleUp(valueAt100);
@@ -321,12 +321,12 @@ public class DPIUtilTests {
 	}
 
 	@Test
-	public void scaleDownscaleUpRectangleInvertible() {
+	public void scaleDownscaleUpRectangleOfFloatInvertible() {
 		int[] zooms = new int[] {25, 50, 75, 100, 125, 150, 175, 200, 225, 250, 275, 300, 325, 350, 375, 400};
 		for (int zoom1 : zooms) {
 			for (int zoom2 : zooms) {
 				for (int i = 1; i <= 10000; i++) {
-					Rectangle rect = new Rectangle(0, 0, i, i);
+					Rectangle rect = new Rectangle.OfFloat(0, 0, i, i);
 					Rectangle scaleDown = DPIUtil.scaleDown(rect, zoom1);
 					Rectangle scaleUp = DPIUtil.scaleUp(scaleDown, zoom2);
 					scaleDown = DPIUtil.scaleDown(scaleUp, zoom2);

@@ -255,6 +255,20 @@ public static Rectangle autoScaleDown(Rectangle rect) {
 }
 
 public static Rectangle scaleDown(Rectangle rect, int zoom) {
+	if (zoom == 100 || rect == null) return rect;
+	if (rect instanceof Rectangle.OfFloat rectOfFloat) return scaleDown(rectOfFloat, zoom);
+	Rectangle scaledRect = new Rectangle.OfFloat (0,0,0,0);
+	Point scaledTopLeft = scaleDown(new Point (rect.x, rect.y), zoom);
+	Point scaledBottomRight = scaleDown(new Point (rect.x + rect.width, rect.y + rect.height), zoom);
+
+	scaledRect.x = scaledTopLeft.x;
+	scaledRect.y = scaledTopLeft.y;
+	scaledRect.width = scaledBottomRight.x - scaledTopLeft.x;
+	scaledRect.height = scaledBottomRight.y - scaledTopLeft.y;
+	return scaledRect;
+}
+
+public static Rectangle scaleDown(Rectangle.OfFloat rect, int zoom) {
 	return scaleBounds(rect, 100, zoom);
 }
 /**
@@ -323,6 +337,21 @@ public static boolean isSmoothScalingEnabled() {
  * Returns a new rectangle as per the scaleFactor.
  */
 public static Rectangle scaleBounds (Rectangle rect, int targetZoom, int currentZoom) {
+	if (rect == null || targetZoom == currentZoom) return rect;
+	if (rect instanceof Rectangle.OfFloat rectOfFloat) return scaleBounds(rectOfFloat, targetZoom, currentZoom);
+	float scaleFactor = ((float)targetZoom) / (float)currentZoom;
+	Rectangle returnRect = new Rectangle.OfFloat (0,0,0,0);
+	returnRect.x = Math.round (rect.x * scaleFactor);
+	returnRect.y = Math.round (rect.y * scaleFactor);
+	returnRect.width = Math.round (rect.width * scaleFactor);
+	returnRect.height = Math.round (rect.height * scaleFactor);
+	return returnRect;
+}
+
+/**
+ * Returns a new rectangle as per the scaleFactor.
+ */
+public static Rectangle scaleBounds (Rectangle.OfFloat rect, int targetZoom, int currentZoom) {
 	if (rect == null || targetZoom == currentZoom) return rect;
 	Rectangle.OfFloat fRect = FloatAwareGeometryFactory.createFrom(rect);
 	float scaleFactor = getScalingFactor(targetZoom, currentZoom);
@@ -454,6 +483,20 @@ public static Rectangle autoScaleUp(Rectangle rect) {
 }
 
 public static Rectangle scaleUp(Rectangle rect, int zoom) {
+	if (zoom == 100 || rect == null) return rect;
+	if (rect instanceof Rectangle.OfFloat rectOfFloat) return scaleUp(rectOfFloat, zoom);
+	Rectangle scaledRect = new Rectangle.OfFloat(0,0,0,0);
+	Point scaledTopLeft = scaleUp (new Point(rect.x, rect.y), zoom);
+	Point scaledBottomRight = scaleUp (new Point(rect.x + rect.width, rect.y + rect.height), zoom);
+
+	scaledRect.x = scaledTopLeft.x;
+	scaledRect.y = scaledTopLeft.y;
+	scaledRect.width = scaledBottomRight.x - scaledTopLeft.x;
+	scaledRect.height = scaledBottomRight.y - scaledTopLeft.y;
+	return scaledRect;
+}
+
+public static Rectangle scaleUp(Rectangle.OfFloat rect, int zoom) {
 	return scaleBounds(rect, zoom, 100);
 }
 
