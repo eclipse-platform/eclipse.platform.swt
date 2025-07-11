@@ -870,6 +870,7 @@ JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1expander_1set_1child)
 #endif
 
 #ifndef NO_gtk_1file_1chooser_1get_1file
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1file_1chooser_1get_1file)
 	(JNIEnv *env, jclass that, jlong arg0)
 {
@@ -879,9 +880,11 @@ JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1file_1chooser_1get_1file)
 	GTK4_NATIVE_EXIT(env, that, gtk_1file_1chooser_1get_1file_FUNC);
 	return rc;
 }
+G_GNUC_END_IGNORE_DEPRECATIONS
 #endif
 
 #ifndef NO_gtk_1file_1chooser_1get_1files
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1file_1chooser_1get_1files)
 	(JNIEnv *env, jclass that, jlong arg0)
 {
@@ -891,9 +894,11 @@ JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1file_1chooser_1get_1files)
 	GTK4_NATIVE_EXIT(env, that, gtk_1file_1chooser_1get_1files_FUNC);
 	return rc;
 }
+G_GNUC_END_IGNORE_DEPRECATIONS
 #endif
 
 #ifndef NO_gtk_1file_1chooser_1set_1current_1folder
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 JNIEXPORT jboolean JNICALL GTK4_NATIVE(gtk_1file_1chooser_1set_1current_1folder)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2)
 {
@@ -903,9 +908,11 @@ JNIEXPORT jboolean JNICALL GTK4_NATIVE(gtk_1file_1chooser_1set_1current_1folder)
 	GTK4_NATIVE_EXIT(env, that, gtk_1file_1chooser_1set_1current_1folder_FUNC);
 	return rc;
 }
+G_GNUC_END_IGNORE_DEPRECATIONS
 #endif
 
 #ifndef NO_gtk_1file_1chooser_1set_1file
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 JNIEXPORT jboolean JNICALL GTK4_NATIVE(gtk_1file_1chooser_1set_1file)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2)
 {
@@ -915,6 +922,7 @@ JNIEXPORT jboolean JNICALL GTK4_NATIVE(gtk_1file_1chooser_1set_1file)
 	GTK4_NATIVE_EXIT(env, that, gtk_1file_1chooser_1set_1file_FUNC);
 	return rc;
 }
+G_GNUC_END_IGNORE_DEPRECATIONS
 #endif
 
 #ifndef NO_gtk_1file_1dialog_1get_1default_1filter

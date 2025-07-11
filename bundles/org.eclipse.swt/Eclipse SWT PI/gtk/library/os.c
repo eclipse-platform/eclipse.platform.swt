@@ -4079,6 +4079,7 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1check_1version)
 #endif
 
 #ifndef NO_gtk_1color_1chooser_1add_1palette
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 JNIEXPORT void JNICALL GTK_NATIVE(gtk_1color_1chooser_1add_1palette)
 	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jint arg2, jint arg3, jlong arg4)
 {
@@ -4086,9 +4087,11 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1color_1chooser_1add_1palette)
 	gtk_color_chooser_add_palette((GtkColorChooser *)arg0, (GtkOrientation)arg1, (gint)arg2, (gint)arg3, (GdkRGBA *)arg4);
 	GTK_NATIVE_EXIT(env, that, gtk_1color_1chooser_1add_1palette_FUNC);
 }
+G_GNUC_END_IGNORE_DEPRECATIONS
 #endif
 
 #ifndef NO_gtk_1color_1chooser_1dialog_1new
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1color_1chooser_1dialog_1new)
 	(JNIEnv *env, jclass that, jbyteArray arg0, jlong arg1)
 {
@@ -4102,9 +4105,11 @@ fail:
 	GTK_NATIVE_EXIT(env, that, gtk_1color_1chooser_1dialog_1new_FUNC);
 	return rc;
 }
+G_GNUC_END_IGNORE_DEPRECATIONS
 #endif
 
 #ifndef NO_gtk_1color_1chooser_1get_1rgba
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 JNIEXPORT void JNICALL GTK_NATIVE(gtk_1color_1chooser_1get_1rgba)
 	(JNIEnv *env, jclass that, jlong arg0, jobject arg1)
 {
@@ -4116,9 +4121,11 @@ fail:
 	if (arg1 && lparg1) setGdkRGBAFields(env, arg1, lparg1);
 	GTK_NATIVE_EXIT(env, that, gtk_1color_1chooser_1get_1rgba_FUNC);
 }
+G_GNUC_END_IGNORE_DEPRECATIONS
 #endif
 
 #ifndef NO_gtk_1color_1chooser_1get_1use_1alpha
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 JNIEXPORT jboolean JNICALL GTK_NATIVE(gtk_1color_1chooser_1get_1use_1alpha)
 	(JNIEnv *env, jclass that, jlong arg0)
 {
@@ -4128,9 +4135,11 @@ JNIEXPORT jboolean JNICALL GTK_NATIVE(gtk_1color_1chooser_1get_1use_1alpha)
 	GTK_NATIVE_EXIT(env, that, gtk_1color_1chooser_1get_1use_1alpha_FUNC);
 	return rc;
 }
+G_GNUC_END_IGNORE_DEPRECATIONS
 #endif
 
 #ifndef NO_gtk_1color_1chooser_1set_1rgba
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 JNIEXPORT void JNICALL GTK_NATIVE(gtk_1color_1chooser_1set_1rgba)
 	(JNIEnv *env, jclass that, jlong arg0, jobject arg1)
 {
@@ -4142,9 +4151,11 @@ fail:
 	if (arg1 && lparg1) setGdkRGBAFields(env, arg1, lparg1);
 	GTK_NATIVE_EXIT(env, that, gtk_1color_1chooser_1set_1rgba_FUNC);
 }
+G_GNUC_END_IGNORE_DEPRECATIONS
 #endif
 
 #ifndef NO_gtk_1color_1chooser_1set_1use_1alpha
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 JNIEXPORT void JNICALL GTK_NATIVE(gtk_1color_1chooser_1set_1use_1alpha)
 	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
 {
@@ -4152,6 +4163,7 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1color_1chooser_1set_1use_1alpha)
 	gtk_color_chooser_set_use_alpha((GtkColorChooser *)arg0, (gboolean)arg1);
 	GTK_NATIVE_EXIT(env, that, gtk_1color_1chooser_1set_1use_1alpha_FUNC);
 }
+G_GNUC_END_IGNORE_DEPRECATIONS
 #endif
 
 #ifndef NO_gtk_1combo_1box_1get_1active
@@ -4730,6 +4742,7 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1expander_1set_1label_1widget)
 #endif
 
 #ifndef NO_gtk_1file_1chooser_1add_1filter
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 JNIEXPORT void JNICALL GTK_NATIVE(gtk_1file_1chooser_1add_1filter)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
 {
@@ -4737,9 +4750,11 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1file_1chooser_1add_1filter)
 	gtk_file_chooser_add_filter((GtkFileChooser *)arg0, (GtkFileFilter *)arg1);
 	GTK_NATIVE_EXIT(env, that, gtk_1file_1chooser_1add_1filter_FUNC);
 }
+G_GNUC_END_IGNORE_DEPRECATIONS
 #endif
 
 #ifndef NO_gtk_1file_1chooser_1get_1filter
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1file_1chooser_1get_1filter)
 	(JNIEnv *env, jclass that, jlong arg0)
 {
@@ -4749,6 +4764,7 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1file_1chooser_1get_1filter)
 	GTK_NATIVE_EXIT(env, that, gtk_1file_1chooser_1get_1filter_FUNC);
 	return rc;
 }
+G_GNUC_END_IGNORE_DEPRECATIONS
 #endif
 
 #ifndef NO_gtk_1file_1chooser_1native_1new
@@ -4782,6 +4798,7 @@ fail:
 #endif
 
 #ifndef NO_gtk_1file_1chooser_1set_1current_1name
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 JNIEXPORT void JNICALL GTK_NATIVE(gtk_1file_1chooser_1set_1current_1name)
 	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1)
 {
@@ -4793,9 +4810,11 @@ fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	GTK_NATIVE_EXIT(env, that, gtk_1file_1chooser_1set_1current_1name_FUNC);
 }
+G_GNUC_END_IGNORE_DEPRECATIONS
 #endif
 
 #ifndef NO_gtk_1file_1chooser_1set_1filter
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 JNIEXPORT void JNICALL GTK_NATIVE(gtk_1file_1chooser_1set_1filter)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
 {
@@ -4803,9 +4822,11 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1file_1chooser_1set_1filter)
 	gtk_file_chooser_set_filter((GtkFileChooser *)arg0, (GtkFileFilter *)arg1);
 	GTK_NATIVE_EXIT(env, that, gtk_1file_1chooser_1set_1filter_FUNC);
 }
+G_GNUC_END_IGNORE_DEPRECATIONS
 #endif
 
 #ifndef NO_gtk_1file_1chooser_1set_1select_1multiple
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 JNIEXPORT void JNICALL GTK_NATIVE(gtk_1file_1chooser_1set_1select_1multiple)
 	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
 {
@@ -4813,6 +4834,7 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1file_1chooser_1set_1select_1multiple)
 	gtk_file_chooser_set_select_multiple((GtkFileChooser *)arg0, (gboolean)arg1);
 	GTK_NATIVE_EXIT(env, that, gtk_1file_1chooser_1set_1select_1multiple_FUNC);
 }
+G_GNUC_END_IGNORE_DEPRECATIONS
 #endif
 
 #ifndef NO_gtk_1file_1filter_1add_1pattern
@@ -4868,6 +4890,7 @@ fail:
 #endif
 
 #ifndef NO_gtk_1font_1chooser_1dialog_1new
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1font_1chooser_1dialog_1new)
 	(JNIEnv *env, jclass that, jbyteArray arg0, jlong arg1)
 {
@@ -4881,9 +4904,11 @@ fail:
 	GTK_NATIVE_EXIT(env, that, gtk_1font_1chooser_1dialog_1new_FUNC);
 	return rc;
 }
+G_GNUC_END_IGNORE_DEPRECATIONS
 #endif
 
 #ifndef NO_gtk_1font_1chooser_1get_1font
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1font_1chooser_1get_1font)
 	(JNIEnv *env, jclass that, jlong arg0)
 {
@@ -4893,9 +4918,11 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1font_1chooser_1get_1font)
 	GTK_NATIVE_EXIT(env, that, gtk_1font_1chooser_1get_1font_FUNC);
 	return rc;
 }
+G_GNUC_END_IGNORE_DEPRECATIONS
 #endif
 
 #ifndef NO_gtk_1font_1chooser_1set_1font
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 JNIEXPORT void JNICALL GTK_NATIVE(gtk_1font_1chooser_1set_1font)
 	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1)
 {
@@ -4907,6 +4934,7 @@ fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	GTK_NATIVE_EXIT(env, that, gtk_1font_1chooser_1set_1font_FUNC);
 }
+G_GNUC_END_IGNORE_DEPRECATIONS
 #endif
 
 #ifndef NO_gtk_1frame_1get_1label_1widget
