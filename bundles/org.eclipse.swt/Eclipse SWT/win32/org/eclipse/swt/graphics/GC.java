@@ -5644,7 +5644,7 @@ private class SetTransformOperation extends Operation {
  */
 public Point stringExtent (String string) {
 	if (string == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	return DPIUtil.scaleDown(drawable, stringExtentInPixels(string), getZoom());
+	return DPIUtil.scaleDown(drawable, stringExtentInPixels(string), data.font.zoom);
 }
 
 Point stringExtentInPixels (String string) {
@@ -5724,7 +5724,7 @@ public Point textExtent (String string) {
  * </ul>
  */
 public Point textExtent (String string, int flags) {
-	return DPIUtil.scaleDown(drawable, textExtentInPixels(string, flags), getZoom());
+	return DPIUtil.scaleDown(drawable, textExtentInPixels(string, flags), data.font.zoom);
 }
 
 Point textExtentInPixels(String string, int flags) {
