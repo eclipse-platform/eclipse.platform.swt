@@ -1043,7 +1043,7 @@ public boolean getMaximized () {
  */
 public Point getMaximumSize () {
 	checkWidget ();
-	return DPIUtil.scaleDown(getMaximumSizeInPixels(), getZoom());
+	return Win32DPIUtils.scaleDown(getMaximumSizeInPixels(), getZoom());
 }
 
 Point getMaximumSizeInPixels () {
@@ -1084,7 +1084,7 @@ Point getMaximumSizeInPixels () {
  */
 public Point getMinimumSize () {
 	checkWidget ();
-	return DPIUtil.scaleDown(getMinimumSizeInPixels(), getZoom());
+	return Win32DPIUtils.scaleDown(getMinimumSizeInPixels(), getZoom());
 }
 
 Point getMinimumSizeInPixels () {
@@ -1592,8 +1592,8 @@ public void setBounds(Rectangle rect) {
 	// the WM_DPICHANGED event processing. So to avoid duplicate scaling, we always
 	// have to scale width and height with the zoom of the original monitor (still
 	// returned by getZoom()) here.
-	setBoundsInPixels(boundsInPixels.x, boundsInPixels.y, DPIUtil.scaleUp(rect.width, getZoom()),
-			DPIUtil.scaleUp(rect.height, getZoom()));
+	setBoundsInPixels(boundsInPixels.x, boundsInPixels.y, Win32DPIUtils.scaleUp(rect.width, getZoom()),
+			Win32DPIUtils.scaleUp(rect.height, getZoom()));
 }
 
 @Override
@@ -1769,7 +1769,7 @@ public void setImeInputMode (int mode) {
 public void setMaximumSize (int width, int height) {
 	checkWidget ();
 	int zoom = getZoom();
-	setMaximumSizeInPixels(DPIUtil.scaleUp(width, zoom), DPIUtil.scaleUp(height, zoom));
+	setMaximumSizeInPixels(Win32DPIUtils.scaleUp(width, zoom), Win32DPIUtils.scaleUp(height, zoom));
 }
 
 /**
@@ -1797,7 +1797,7 @@ public void setMaximumSize (int width, int height) {
 public void setMaximumSize (Point size) {
 	checkWidget ();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
-	size = DPIUtil.scaleUp(size, getZoom());
+	size = Win32DPIUtils.scaleUp(size, getZoom());
 	setMaximumSizeInPixels(size.x, size.y);
 }
 
@@ -1844,7 +1844,7 @@ void setMaximumSizeInPixels (int width, int height) {
 public void setMinimumSize (int width, int height) {
 	checkWidget ();
 	int zoom = getZoom();
-	setMinimumSizeInPixels(DPIUtil.scaleUp(width, zoom), DPIUtil.scaleUp(height, zoom));
+	setMinimumSizeInPixels(Win32DPIUtils.scaleUp(width, zoom), Win32DPIUtils.scaleUp(height, zoom));
 }
 
 void setMinimumSizeInPixels (int width, int height) {
@@ -1892,7 +1892,7 @@ void setMinimumSizeInPixels (int width, int height) {
 public void setMinimumSize (Point size) {
 	checkWidget ();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
-	size = DPIUtil.scaleUp(size, getZoom());
+	size = Win32DPIUtils.scaleUp(size, getZoom());
 	setMinimumSizeInPixels(size.x, size.y);
 }
 

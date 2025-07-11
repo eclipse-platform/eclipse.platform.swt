@@ -59,7 +59,6 @@ public class DPIUtil {
 	private static AutoScaleMethod autoScaleMethod;
 
 	private static String autoScaleValue;
-	private static final boolean USE_CAIRO_AUTOSCALE = SWT.getPlatform().equals("gtk");
 
 	/**
 	 * System property that controls the autoScale functionality.
@@ -116,65 +115,6 @@ public class DPIUtil {
 		autoScaleMethod = AUTO_SCALE_METHOD_SETTING != AutoScaleMethod.AUTO ? AUTO_SCALE_METHOD_SETTING : AutoScaleMethod.NEAREST;
 	}
 
-/**
- * Auto-scale down ImageData
- */
-public static ImageData autoScaleDown (Device device, final ImageData imageData) {
-	if (deviceZoom == 100 || imageData == null || (device != null && !device.isAutoScalable())) return imageData;
-	float scaleFactor = 1.0f / getScalingFactor (deviceZoom);
-	return autoScaleImageData(device, imageData, scaleFactor);
-}
-
-public static int[] autoScaleDown(int[] pointArray) {
-	if (deviceZoom == 100 || pointArray == null) return pointArray;
-	float scaleFactor = getScalingFactor (deviceZoom);
-	int [] returnArray = new int[pointArray.length];
-	for (int i = 0; i < pointArray.length; i++) {
-		returnArray [i] =  Math.round (pointArray [i] / scaleFactor);
-	}
-	return returnArray;
-}
-
-public static int[] autoScaleDown(Drawable drawable, int[] pointArray) {
-	if (drawable != null && !drawable.isAutoScalable ()) return pointArray;
-	return autoScaleDown (pointArray);
-}
-
-/**
- * Auto-scale down float array dimensions.
- */
-public static float[] autoScaleDown(float size[]) {
-	return scaleDown(size, deviceZoom);
-}
-
-public static float[] scaleDown(float size[], int zoom) {
-	if (zoom == 100 || size == null) return size;
-	float scaleFactor = getScalingFactor (zoom);
-	float scaledSize[] = new float[size.length];
-	for (int i = 0; i < scaledSize.length; i++) {
-		scaledSize[i] = size[i] / scaleFactor;
-	}
-	return scaledSize;
-}
-
-/**
- * Auto-scale down float array dimensions if enabled for Drawable class.
- */
-public static float[] autoScaleDown(Drawable drawable, float size[]) {
-	return scaleDown(drawable, size, deviceZoom);
-}
-
-public static float[] scaleDown(Drawable drawable, float size[], int zoom) {
-	if (drawable != null && !drawable.isAutoScalable()) return size;
-	return scaleDown(size, zoom);
-}
-
-/**
- * Auto-scale down int dimensions.
- */
-public static int autoScaleDown(int size) {
-	return scaleDown(size, deviceZoom);
-}
 
 public static int scaleDown(int size, int zoom) {
 	if (zoom == 100 || size == SWT.DEFAULT) return size;
@@ -182,24 +122,6 @@ public static int scaleDown(int size, int zoom) {
 	return Math.round (size / scaleFactor);
 }
 
-/**
- * Auto-scale down int dimensions if enabled for Drawable class.
- */
-public static int autoScaleDown(Drawable drawable, int size) {
-	return scaleDown(drawable, size, deviceZoom);
-}
-
-public static int scaleDown(Drawable drawable, int size, int zoom) {
-	if (drawable != null && !drawable.isAutoScalable()) return size;
-	return scaleDown (size, zoom);
-}
-
-/**
- * Auto-scale down float dimensions.
- */
-public static float autoScaleDown(float size) {
-	return scaleDown(size, deviceZoom);
-}
 
 public static float scaleDown(float size, int zoom) {
 	if (zoom == 100 || size == SWT.DEFAULT) return size;
@@ -207,68 +129,6 @@ public static float scaleDown(float size, int zoom) {
 	return (size / scaleFactor);
 }
 
-/**
- * Auto-scale down float dimensions if enabled for Drawable class.
- */
-public static float autoScaleDown(Drawable drawable, float size) {
-	return scaleDown (drawable, size, deviceZoom);
-}
-
-public static float scaleDown(Drawable drawable, float size, int zoom) {
-	if (drawable != null && !drawable.isAutoScalable()) return size;
-	return scaleDown (size, zoom);
-}
-
-/**
- * Returns a new scaled down Point.
- */
-public static Point autoScaleDown(Point point) {
-	return scaleDown(point, deviceZoom);
-}
-
-public static Point scaleDown(Point point, int zoom) {
-	if (zoom == 100 || point == null) return point;
-	Point.OfFloat fPoint = FloatAwareGeometryFactory.createFrom(point);
-	float scaleFactor = getScalingFactor(zoom);
-	float scaledX = fPoint.getX() / scaleFactor;
-	float scaledY = fPoint.getY() / scaleFactor;
-	return new Point.OfFloat(scaledX, scaledY);
-}
-
-/**
- * Returns a new scaled down Point if enabled for Drawable class.
- */
-public static Point autoScaleDown(Drawable drawable, Point point) {
-	return scaleDown(drawable, point, deviceZoom);
-}
-
-public static Point scaleDown(Drawable drawable, Point point, int zoom) {
-	if (drawable != null && !drawable.isAutoScalable()) return point;
-	return scaleDown (point, zoom);
-}
-
-/**
- * Returns a new scaled down Rectangle.
- */
-public static Rectangle autoScaleDown(Rectangle rect) {
-	return scaleDown(rect, deviceZoom);
-}
-
-public static Rectangle scaleDown(Rectangle rect, int zoom) {
-	return scaleBounds(rect, 100, zoom);
-}
-/**
- * Returns a new scaled down Rectangle if enabled for Drawable class.
- */
-public static Rectangle autoScaleDown(Drawable drawable, Rectangle rect) {
-	if (drawable != null && !drawable.isAutoScalable()) return rect;
-	return scaleDown(rect, deviceZoom);
-}
-
-public static Rectangle scaleDown(Drawable drawable, Rectangle rect, int zoom) {
-	if (drawable != null && !drawable.isAutoScalable()) return rect;
-	return scaleDown (rect, zoom);
-}
 
 /**
  * Auto-scale image with ImageData
@@ -320,20 +180,7 @@ public static boolean isSmoothScalingEnabled() {
 }
 
 /**
- * Returns a new rectangle as per the scaleFactor.
- */
-public static Rectangle scaleBounds (Rectangle rect, int targetZoom, int currentZoom) {
-	if (rect == null || targetZoom == currentZoom) return rect;
-	Rectangle.OfFloat fRect = FloatAwareGeometryFactory.createFrom(rect);
-	float scaleFactor = getScalingFactor(targetZoom, currentZoom);
-	float scaledX = fRect.getX() * scaleFactor;
-	float scaledY = fRect.getY() * scaleFactor;
-	float scaledWidth = fRect.getWidth() * scaleFactor;
-	float scaledHeight = fRect.getHeight() * scaleFactor;
-	return new Rectangle.OfFloat(scaledX, scaledY, scaledWidth, scaledHeight);
-}
 
-/**
  * Auto-scale ImageData to device zoom that are at given zoom factor.
  */
 public static ImageData autoScaleImageData (Device device, final ImageData imageData, int imageDataZoomFactor) {
@@ -342,145 +189,17 @@ public static ImageData autoScaleImageData (Device device, final ImageData image
 	return autoScaleImageData(device, imageData, scaleFactor);
 }
 
-/**
- * Auto-scale up ImageData to device zoom that is at 100%.
- */
-public static ImageData autoScaleUp (Device device, final ImageData imageData) {
-	return autoScaleImageData(device, imageData, 100);
-}
-
-public static int[] autoScaleUp(int[] pointArray) {
-	return scaleUp(pointArray, deviceZoom);
-}
-
-public static int[] scaleUp(int[] pointArray, int zoom) {
-	if (zoom == 100 || pointArray == null) return pointArray;
-	float scaleFactor = getScalingFactor(zoom);
-	int[] returnArray = new int[pointArray.length];
-	for (int i = 0; i < pointArray.length; i++) {
-		returnArray [i] =  Math.round (pointArray [i] * scaleFactor);
-	}
-	return returnArray;
-}
-
-public static int[] autoScaleUp(Drawable drawable, int[] pointArray) {
-	return scaleUp(drawable, pointArray, deviceZoom);
-}
-
-public static int[] scaleUp(Drawable drawable, int[] pointArray, int zoom) {
-	if (drawable != null && !drawable.isAutoScalable()) return pointArray;
-	return scaleUp (pointArray, zoom);
-}
-/**
- * Auto-scale up int dimensions.
- */
-public static int autoScaleUp(int size) {
-	return scaleUp(size, deviceZoom);
-}
-
-/**
- * Auto-scale up int dimensions to match the given zoom level
- */
-public static int scaleUp(int size, int zoom) {
-	if (zoom == 100 || size == SWT.DEFAULT) return size;
-	float scaleFactor = getScalingFactor(zoom);
-	return Math.round (size * scaleFactor);
-}
-
-/**
- * Auto-scale up int dimensions if enabled for Drawable class.
- */
-public static int autoScaleUp(Drawable drawable, int size) {
-	return scaleUp(drawable, size, deviceZoom);
-}
-
-public static int scaleUp(Drawable drawable, int size, int zoom) {
-	if (drawable != null && !drawable.isAutoScalable()) return size;
-	return scaleUp (size, zoom);
-}
-
-public static float autoScaleUp(float size) {
-	return scaleUp(size, deviceZoom);
-}
-
-public static float scaleUp(float size, int zoom) {
-	if (zoom == 100 || size == SWT.DEFAULT) return size;
-	float scaleFactor = getScalingFactor(zoom);
-	return (size * scaleFactor);
-}
-
-public static float autoScaleUp(Drawable drawable, float size) {
-	return scaleUp(drawable, size, deviceZoom);
-}
-
-public static float scaleUp(Drawable drawable, float size, int zoom) {
-	if (drawable != null && !drawable.isAutoScalable()) return size;
-	return scaleUp (size, zoom);
-}
-
-/**
- * Returns a new scaled up Point.
- */
-public static Point autoScaleUp(Point point) {
-	return scaleUp(point, deviceZoom);
-}
-
-public static Point scaleUp(Point point, int zoom) {
-	if (zoom == 100 || point == null) return point;
-	Point.OfFloat fPoint = FloatAwareGeometryFactory.createFrom(point);
-	float scaleFactor = getScalingFactor(zoom);
-	float scaledX = fPoint.getX() * scaleFactor;
-	float scaledY = fPoint.getY() * scaleFactor;
-	return new Point.OfFloat(scaledX, scaledY);
-}
-
-/**
- * Returns a new scaled up Point if enabled for Drawable class.
- */
-public static Point autoScaleUp(Drawable drawable, Point point) {
-	return scaleUp (drawable, point, deviceZoom);
-}
-
-public static Point scaleUp(Drawable drawable, Point point, int zoom) {
-	if (drawable != null && !drawable.isAutoScalable()) return point;
-	return scaleUp (point, zoom);
-}
-
-/**
- * Returns a new scaled up Rectangle.
- */
-public static Rectangle autoScaleUp(Rectangle rect) {
-	return scaleUp(rect, deviceZoom);
-}
-
-public static Rectangle scaleUp(Rectangle rect, int zoom) {
-	return scaleBounds(rect, zoom, 100);
-}
-
-/**
- * Returns a new scaled up Rectangle if enabled for Drawable class.
- */
-public static Rectangle autoScaleUp(Drawable drawable, Rectangle rect) {
-	return scaleUp(drawable, rect, deviceZoom);
-}
-
-public static Rectangle scaleUp(Drawable drawable, Rectangle rect, int zoom) {
-	if (drawable != null && !drawable.isAutoScalable()) return rect;
-	return scaleUp (rect, zoom);
-}
 
 /**
  * Returns scaling factor from the given device zoom
  * @return float scaling factor
  */
-private static float getScalingFactor(int zoom) {
+public static float getScalingFactor(int zoom) {
 	return getScalingFactor(zoom, 100);
 }
 
-private static float getScalingFactor(int targetZoom, int currentZoom) {
-	if (USE_CAIRO_AUTOSCALE) {
-		return 1;
-	}
+
+public static float getScalingFactor(int targetZoom, int currentZoom) {
 	if (targetZoom <= 0) {
 		targetZoom = deviceZoom;
 	}
@@ -720,37 +439,4 @@ private static boolean isSupportedAutoScaleForMonitorSpecificScaling() {
 	return false;
 }
 
-/**
- * AutoScale ImageDataProvider.
- */
-public static final class AutoScaleImageDataProvider implements ImageDataProvider {
-	Device device;
-	ImageData imageData;
-	int currentZoom;
-	public AutoScaleImageDataProvider(Device device, ImageData data, int zoom){
-		this.device = device;
-		this.imageData = data;
-		this.currentZoom = zoom;
-	}
-	@Override
-	public ImageData getImageData(int zoom) {
-		return DPIUtil.scaleImageData(device, imageData, zoom, currentZoom);
-	}
-}
-
-private class FloatAwareGeometryFactory {
-	static Rectangle.OfFloat createFrom(Rectangle rectangle) {
-		if (rectangle instanceof Rectangle.OfFloat) {
-			return (Rectangle.OfFloat) rectangle;
-		}
-		return new Rectangle.OfFloat(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
-	}
-
-	static Point.OfFloat createFrom(Point point) {
-		if (point instanceof Point.OfFloat) {
-			return (Point.OfFloat) point;
-		}
-		return new Point.OfFloat(point.x, point.y);
-	}
-}
 }

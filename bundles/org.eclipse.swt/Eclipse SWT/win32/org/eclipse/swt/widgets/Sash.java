@@ -244,7 +244,7 @@ LRESULT WM_KEYDOWN (long wParam, long lParam) {
 			OS.SetCursorPos (cursorPt.x, cursorPt.y);
 
 			Event event = new Event ();
-			event.setBounds(DPIUtil.scaleDown(new Rectangle(newX, newY, width, height), getZoom()));
+			event.setBounds(Win32DPIUtils.scaleDown(new Rectangle(newX, newY, width, height), getZoom()));
 			sendSelectionEvent  (SWT.Selection, event, true);
 			if (isDisposed ()) return LRESULT.ZERO;
 			if (event.doit) {
@@ -284,7 +284,7 @@ LRESULT WM_LBUTTONDOWN (long wParam, long lParam) {
 
 	/* The event must be sent because doit flag is used */
 	Event event = new Event ();
-	event.setBounds(DPIUtil.scaleDown(new Rectangle(lastX, lastY, width, height), getZoom()));
+	event.setBounds(Win32DPIUtils.scaleDown(new Rectangle(lastX, lastY, width, height), getZoom()));
 	if ((style & SWT.SMOOTH) == 0) {
 		event.detail = SWT.DRAG;
 	}
@@ -292,7 +292,7 @@ LRESULT WM_LBUTTONDOWN (long wParam, long lParam) {
 	if (isDisposed ()) return LRESULT.ZERO;
 
 	/* Draw the banding rectangle */
-	Rectangle boundsInPixels = DPIUtil.scaleUp(event.getBounds(), getZoom());
+	Rectangle boundsInPixels = Win32DPIUtils.scaleUp(event.getBounds(), getZoom());
 	if (event.doit) {
 		dragging = true;
 		lastX = boundsInPixels.x;
@@ -325,7 +325,7 @@ LRESULT WM_LBUTTONUP (long wParam, long lParam) {
 
 	/* The event must be sent because doit flag is used */
 	Event event = new Event ();
-	event.setBounds(DPIUtil.scaleDown(new Rectangle(lastX, lastY, width, height), getZoom()));
+	event.setBounds(Win32DPIUtils.scaleDown(new Rectangle(lastX, lastY, width, height), getZoom()));
 	drawBand (lastX, lastY, width, height);
 	sendSelectionEvent (SWT.Selection, event, true);
 	if (isDisposed ()) return result;
@@ -369,7 +369,7 @@ LRESULT WM_MOUSEMOVE (long wParam, long lParam) {
 	int zoom = getZoom();
 	/* The event must be sent because doit flag is used */
 	Event event = new Event ();
-	event.setBounds(DPIUtil.scaleDown(new Rectangle(newX, newY, width, height), zoom));
+	event.setBounds(Win32DPIUtils.scaleDown(new Rectangle(newX, newY, width, height), zoom));
 	if ((style & SWT.SMOOTH) == 0) {
 		event.detail = SWT.DRAG;
 	}
@@ -377,8 +377,8 @@ LRESULT WM_MOUSEMOVE (long wParam, long lParam) {
 	if (isDisposed ()) return LRESULT.ZERO;
 	if (event.doit) {
 		Rectangle bounds = event.getBounds();
-		lastX = DPIUtil.scaleUp(bounds.x, zoom);
-		lastY = DPIUtil.scaleUp(bounds.y, zoom);
+		lastX = Win32DPIUtils.scaleUp(bounds.x, zoom);
+		lastY = Win32DPIUtils.scaleUp(bounds.y, zoom);
 	}
 	int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
 	OS.RedrawWindow (hwndTrack, null, 0, flags);
