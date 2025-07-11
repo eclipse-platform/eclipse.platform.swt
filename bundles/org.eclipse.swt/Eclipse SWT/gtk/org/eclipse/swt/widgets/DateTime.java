@@ -1944,7 +1944,12 @@ void setText(String dateTimeText) {
 		byte[] dateTimeConverted = Converter.javaStringToCString(dateTimeText);
 
 		if (GTK.GTK4) {
-			GTK.gtk_entry_buffer_set_text(GTK4.gtk_text_get_buffer(textEntryHandle), dateTimeConverted, dateTimeText.length());
+			if (isDateWithDropDownButton()) {
+				GTK.gtk_entry_buffer_set_text(GTK4.gtk_text_get_buffer(textEntryHandle), dateTimeConverted, dateTimeText.length());
+			} else {
+				GTK4.gtk_editable_set_max_width_chars(handle, dateTimeText.length());
+				GTK4.gtk_editable_set_text(handle, dateTimeConverted);
+			}
 		} else {
 			//note, this is ignored if the control is in a fill-layout.
 			GTK3.gtk_entry_set_width_chars(textEntryHandle, dateTimeText.length());
