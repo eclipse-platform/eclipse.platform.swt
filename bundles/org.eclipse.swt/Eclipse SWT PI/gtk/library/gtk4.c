@@ -741,6 +741,20 @@ JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1editable_1set_1max_1width_1chars)
 }
 #endif
 
+#ifndef NO_gtk_1editable_1set_1text
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1editable_1set_1text)
+	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	GTK4_NATIVE_ENTER(env, that, gtk_1editable_1set_1text_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	gtk_editable_set_text((GtkEditable *)arg0, (const gchar *)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1editable_1set_1text_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1entry_1buffer_1get_1text
 JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1entry_1buffer_1get_1text)
 	(JNIEnv *env, jclass that, jlong arg0)
