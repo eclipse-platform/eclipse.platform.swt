@@ -634,7 +634,7 @@ public void test_getBoundsInPixels() {
 	assertEquals("Image.getBoundsInPixels method doesn't return bounds in Pixel values for ImageGcDrawer.", DPIUtil.autoScaleUp(initialBounds), boundsInPixels);
 }
 
-@SuppressWarnings("deprecation")
+@SuppressWarnings("removal")
 @Test
 public void test_getImageDataCurrentZoom() {
 	Rectangle bounds = new Rectangle(0, 0, 10, 20);
