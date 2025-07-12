@@ -3183,7 +3183,7 @@ private void fillGradientRectangleInPixels(int x, int y, int width, int height, 
 	final int bitResolution = (depth >= 24) ? 8 : (depth >= 15) ? 5 : 0;
 	ImageData.fillGradientRectangle(this, data.device,
 		x, y, width, height, vertical, fromRGB, toRGB,
-		bitResolution, bitResolution, bitResolution);
+		bitResolution, bitResolution, bitResolution, getZoom());
 }
 
 /**
