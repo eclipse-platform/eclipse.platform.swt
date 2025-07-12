@@ -1799,7 +1799,8 @@ public Rectangle getBounds () {
 			width = Math.max(width, DPIUtil.scaleDown(lineWidthInPixels[line], getZoom()) + getLineIndent(line));
 		}
 	}
-	return new Rectangle (0, 0, width, lineY[lineY.length - 1] + getVerticalIndent());
+	float height = DPIUtil.scaleDown((float) Math.round(DPIUtil.scaleUp(lineY[lineY.length - 1] + getVerticalIndent(), getZoom())), getZoom());
+	return new Rectangle.OfFloat (0, 0, width, height);
 }
 
 /**

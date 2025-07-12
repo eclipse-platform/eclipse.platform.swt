@@ -69,6 +69,16 @@ public Point (int x, int y) {
 	this.y = y;
 }
 
+public float getX() {
+	return x;
+}
+
+public float getY() {
+	return y;
+}
+
+
+
 /**
  * Compares the argument to the receiver, and returns true
  * if they represent the <em>same</em> object using a class
@@ -142,10 +152,12 @@ public static sealed class OfFloat extends Point permits Point.WithMonitor {
 		this.residualY = y - this.y;
 	}
 
+	@Override
 	public float getX() {
 		return x + residualX;
 	}
 
+	@Override
 	public float getY() {
 		return y + residualY;
 	}
