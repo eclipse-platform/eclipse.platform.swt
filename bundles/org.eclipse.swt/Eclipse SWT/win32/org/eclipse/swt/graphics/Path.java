@@ -516,8 +516,8 @@ private static class PathHandle {
 	}
 
 	boolean contains (float x, float y, GC gc, boolean outline) {
-		float xInPixels = Win32DPIUtils.scaleUp(device, x, zoom);
-		float yInPixels = Win32DPIUtils.scaleUp(device, y, zoom);
+		float xInPixels = Win32DPIUtils.pointToPixel(device, x, zoom);
+		float yInPixels = Win32DPIUtils.pointToPixel(device, y, zoom);
 		return containsInPixels(xInPixels, yInPixels, gc, outline);
 	}
 
@@ -540,7 +540,7 @@ private static class PathHandle {
 
 	void fillBounds (float[] bounds) {
 		getBoundsInPixels(bounds);
-		float[] scaledbounds= Win32DPIUtils.scaleDown(device, bounds, zoom);
+		float[] scaledbounds= Win32DPIUtils.pixelToPoint(device, bounds, zoom);
 		System.arraycopy(scaledbounds, 0, bounds, 0, 4);
 	}
 
@@ -555,7 +555,7 @@ private static class PathHandle {
 
 	void fillCurrentPoint (float[] point) {
 		getCurrentPointInPixels(point);
-		float[] scaledpoint= Win32DPIUtils.scaleDown(device, point, zoom);
+		float[] scaledpoint= Win32DPIUtils.pixelToPoint(device, point, zoom);
 		System.arraycopy(scaledpoint, 0, point, 0, 2);
 	}
 
@@ -566,7 +566,7 @@ private static class PathHandle {
 
 	PathData getPathData() {
 		PathData result = getPathDataInPixels();
-		result.points = Win32DPIUtils.scaleDown(device, result.points, zoom);
+		result.points = Win32DPIUtils.pixelToPoint(device, result.points, zoom);
 		return result;
 	}
 
@@ -643,10 +643,10 @@ private class AddArcOperation implements Operation {
 		if (width == 0 || height == 0 || arcAngle == 0) return;
 		int zoom = pathHandle.zoom;
 		Drawable drawable = getDevice();
-		float xInPixels = Win32DPIUtils.scaleUp(drawable, x, zoom);
-		float yInPixels = Win32DPIUtils.scaleUp(drawable, y, zoom);
-		float widthInPixels = Win32DPIUtils.scaleUp(drawable, width, zoom);
-		float heightInPixels = Win32DPIUtils.scaleUp(drawable, height, zoom);
+		float xInPixels = Win32DPIUtils.pointToPixel(drawable, x, zoom);
+		float yInPixels = Win32DPIUtils.pointToPixel(drawable, y, zoom);
+		float widthInPixels = Win32DPIUtils.pointToPixel(drawable, width, zoom);
+		float heightInPixels = Win32DPIUtils.pointToPixel(drawable, height, zoom);
 		addArcInPixels(pathHandle, xInPixels, yInPixels, widthInPixels, heightInPixels, startAngle, arcAngle);
 	}
 
@@ -695,10 +695,10 @@ private class AddRectangleOperation implements Operation {
 	public void apply(PathHandle pathHandle) {
 		int zoom = pathHandle.zoom;
 		Drawable drawable = getDevice();
-		float xInPixels = Win32DPIUtils.scaleUp(drawable, x, zoom);
-		float yInPixels = Win32DPIUtils.scaleUp(drawable, y, zoom);
-		float widthInPixels = Win32DPIUtils.scaleUp(drawable, width, zoom);
-		float heightInPixels = Win32DPIUtils.scaleUp(drawable, height, zoom);
+		float xInPixels = Win32DPIUtils.pointToPixel(drawable, x, zoom);
+		float yInPixels = Win32DPIUtils.pointToPixel(drawable, y, zoom);
+		float widthInPixels = Win32DPIUtils.pointToPixel(drawable, width, zoom);
+		float heightInPixels = Win32DPIUtils.pointToPixel(drawable, height, zoom);
 		addRectangleInPixels(pathHandle, xInPixels, yInPixels, widthInPixels, heightInPixels);
 	}
 
@@ -751,8 +751,8 @@ private class AddStringOperation implements Operation {
 	public void apply(PathHandle pathHandle) {
 		int zoom = pathHandle.zoom;
 		Drawable drawable = getDevice();
-		float xInPixels = Win32DPIUtils.scaleUp(drawable, x, zoom);
-		float yInPixels = Win32DPIUtils.scaleUp(drawable, y, zoom);
+		float xInPixels = Win32DPIUtils.pointToPixel(drawable, x, zoom);
+		float yInPixels = Win32DPIUtils.pointToPixel(drawable, y, zoom);
 		addStringInPixels(pathHandle, xInPixels, yInPixels);
 	}
 
@@ -825,12 +825,12 @@ private class CubicToOperation implements Operation {
 	public void apply(PathHandle pathHandle) {
 		int zoom = pathHandle.zoom;
 		Drawable drawable = getDevice();
-		float cx1InPixels = Win32DPIUtils.scaleUp(drawable, cx1, zoom);
-		float cy1InPixels = Win32DPIUtils.scaleUp(drawable, cy1, zoom);
-		float cx2InPixels = Win32DPIUtils.scaleUp(drawable, cx2, zoom);
-		float cy2InPixels = Win32DPIUtils.scaleUp(drawable, cy2, zoom);
-		float xInPixels = Win32DPIUtils.scaleUp(drawable, x, zoom);
-		float yInPixels = Win32DPIUtils.scaleUp(drawable, y, zoom);
+		float cx1InPixels = Win32DPIUtils.pointToPixel(drawable, cx1, zoom);
+		float cy1InPixels = Win32DPIUtils.pointToPixel(drawable, cy1, zoom);
+		float cx2InPixels = Win32DPIUtils.pointToPixel(drawable, cx2, zoom);
+		float cy2InPixels = Win32DPIUtils.pointToPixel(drawable, cy2, zoom);
+		float xInPixels = Win32DPIUtils.pointToPixel(drawable, x, zoom);
+		float yInPixels = Win32DPIUtils.pointToPixel(drawable, y, zoom);
 		cubicToInPixels(pathHandle, cx1InPixels, cy1InPixels, cx2InPixels, cy2InPixels, xInPixels, yInPixels);
 	}
 
@@ -855,7 +855,7 @@ private class LineToOperation implements Operation {
 	public void apply(PathHandle pathHandle) {
 		int zoom = pathHandle.zoom;
 		Drawable drawable = getDevice();
-		lineToInPixels(pathHandle, Win32DPIUtils.scaleUp(drawable, x, zoom), Win32DPIUtils.scaleUp(drawable, y, zoom));
+		lineToInPixels(pathHandle, Win32DPIUtils.pointToPixel(drawable, x, zoom), Win32DPIUtils.pointToPixel(drawable, y, zoom));
 	}
 
 	private void lineToInPixels(PathHandle pathHandle, float x, float y) {
@@ -879,7 +879,7 @@ private class MoveToOperation implements Operation {
 	public void apply(PathHandle pathHandle) {
 		int zoom = pathHandle.zoom;
 		Drawable drawable = getDevice();
-		moveToInPixels(pathHandle, Win32DPIUtils.scaleUp(drawable, x, zoom), Win32DPIUtils.scaleUp(drawable, y, zoom));
+		moveToInPixels(pathHandle, Win32DPIUtils.pointToPixel(drawable, x, zoom), Win32DPIUtils.pointToPixel(drawable, y, zoom));
 	}
 
 	void moveToInPixels(PathHandle pathHandle, float x, float y) {
@@ -909,10 +909,10 @@ private class QuadToOperation implements Operation {
 	public void apply(PathHandle pathHandle) {
 		Drawable drawable = getDevice();
 		int zoom = pathHandle.zoom;
-		float cxInPixels = Win32DPIUtils.scaleUp(drawable, cx, zoom);
-		float cyInPixels = Win32DPIUtils.scaleUp(drawable, cy, zoom);
-		float xInPixels = Win32DPIUtils.scaleUp(drawable, x, zoom);
-		float yInPixels = Win32DPIUtils.scaleUp(drawable, y, zoom);
+		float cxInPixels = Win32DPIUtils.pointToPixel(drawable, cx, zoom);
+		float cyInPixels = Win32DPIUtils.pointToPixel(drawable, cy, zoom);
+		float xInPixels = Win32DPIUtils.pointToPixel(drawable, x, zoom);
+		float yInPixels = Win32DPIUtils.pointToPixel(drawable, y, zoom);
 		quadToInPixels(pathHandle, cxInPixels, cyInPixels, xInPixels, yInPixels);
 	}
 

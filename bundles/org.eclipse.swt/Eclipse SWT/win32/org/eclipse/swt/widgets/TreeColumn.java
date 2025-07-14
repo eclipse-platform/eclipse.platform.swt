@@ -311,7 +311,7 @@ public String getToolTipText () {
  */
 public int getWidth () {
 	checkWidget ();
-	return DPIUtil.scaleDown(getWidthInPixels(), getZoom());
+	return DPIUtil.pixelToPoint(getWidthInPixels(), getZoom());
 }
 
 int getWidthInPixels () {
@@ -359,7 +359,7 @@ public void pack () {
 				Event event = parent.sendMeasureItemEvent (item, index, hDC, detail);
 				if (isDisposed () || parent.isDisposed ()) break;
 				Rectangle bounds = event.getBounds();
-				itemRight = Win32DPIUtils.scaleUp(bounds.x + bounds.width, getZoom());
+				itemRight = Win32DPIUtils.pointToPixel(bounds.x + bounds.width, getZoom());
 			} else {
 				long hFont = item.fontHandle (index);
 				if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
@@ -385,7 +385,7 @@ public void pack () {
 			headerImage = image;
 		}
 		if (headerImage != null) {
-			Rectangle bounds = Win32DPIUtils.scaleUp(headerImage.getBounds(), getZoom());
+			Rectangle bounds = Win32DPIUtils.pointToPixel(headerImage.getBounds(), getZoom());
 			headerWidth += bounds.width;
 		}
 		int margin = 0;
@@ -717,7 +717,7 @@ public void setToolTipText (String string) {
  */
 public void setWidth (int width) {
 	checkWidget ();
-	setWidthInPixels(Win32DPIUtils.scaleUp(width, getZoom()));
+	setWidthInPixels(Win32DPIUtils.pointToPixel(width, getZoom()));
 }
 
 void setWidthInPixels (int width) {

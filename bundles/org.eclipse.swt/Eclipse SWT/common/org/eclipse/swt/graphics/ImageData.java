@@ -2620,25 +2620,25 @@ static void fillGradientRectangle(GC gc, Device device,
 		fromRGB, toRGB, redBits, greenBits, blueBits);
 	Image image = new Image(device, band);
 	if ((band.width == 1) || (band.height == 1)) {
-			gc.drawImage(image, 0, 0, DPIUtil.scaleDown(band.width, zoom), DPIUtil.scaleDown(band.height, zoom),
-					DPIUtil.scaleDown(x, zoom), DPIUtil.scaleDown(y, zoom), DPIUtil.scaleDown(width, zoom),
-					DPIUtil.scaleDown(height, zoom));
+			gc.drawImage(image, 0, 0, DPIUtil.pixelToPoint(band.width, zoom), DPIUtil.pixelToPoint(band.height, zoom),
+					DPIUtil.pixelToPoint(x, zoom), DPIUtil.pixelToPoint(y, zoom), DPIUtil.pixelToPoint(width, zoom),
+					DPIUtil.pixelToPoint(height, zoom));
 		} else {
 		if (vertical) {
 			for (int dx = 0; dx < width; dx += band.width) {
 				int blitWidth = width - dx;
 				if (blitWidth > band.width) blitWidth = band.width;
-					gc.drawImage(image, 0, 0, DPIUtil.scaleDown(blitWidth, zoom), DPIUtil.scaleDown(band.height, zoom),
-							DPIUtil.scaleDown(dx + x, zoom), DPIUtil.scaleDown(y, zoom), DPIUtil.scaleDown(blitWidth, zoom),
-							DPIUtil.scaleDown(band.height, zoom));
+					gc.drawImage(image, 0, 0, DPIUtil.pixelToPoint(blitWidth, zoom), DPIUtil.pixelToPoint(band.height, zoom),
+							DPIUtil.pixelToPoint(dx + x, zoom), DPIUtil.pixelToPoint(y, zoom), DPIUtil.pixelToPoint(blitWidth, zoom),
+							DPIUtil.pixelToPoint(band.height, zoom));
 				}
 		} else {
 			for (int dy = 0; dy < height; dy += band.height) {
 				int blitHeight = height - dy;
 				if (blitHeight > band.height) blitHeight = band.height;
-					gc.drawImage(image, 0, 0, DPIUtil.scaleDown(band.width, zoom), DPIUtil.scaleDown(blitHeight, zoom),
-							DPIUtil.scaleDown(x, zoom), DPIUtil.scaleDown(dy + y, zoom), DPIUtil.scaleDown(band.width, zoom),
-							DPIUtil.scaleDown(blitHeight, zoom));
+					gc.drawImage(image, 0, 0, DPIUtil.pixelToPoint(band.width, zoom), DPIUtil.pixelToPoint(blitHeight, zoom),
+							DPIUtil.pixelToPoint(x, zoom), DPIUtil.pixelToPoint(dy + y, zoom), DPIUtil.pixelToPoint(band.width, zoom),
+							DPIUtil.pixelToPoint(blitHeight, zoom));
 				}
 		}
 	}

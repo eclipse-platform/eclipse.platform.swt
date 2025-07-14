@@ -320,8 +320,8 @@ int ShowContextMenu(int dwID, long ppt, long pcmdtReserved, long pdispReserved) 
 	Event event = new Event();
 	POINT pt = new POINT();
 	OS.MoveMemory(pt, ppt, POINT.sizeof);
-	pt.x = DPIUtil.scaleDown(pt.x, DPIUtil.getDeviceZoom()); // To Points
-	pt.y = DPIUtil.scaleDown(pt.y, DPIUtil.getDeviceZoom()); // To Points
+	pt.x = DPIUtil.pixelToPoint(pt.x, DPIUtil.getDeviceZoom()); // To Points
+	pt.y = DPIUtil.pixelToPoint(pt.y, DPIUtil.getDeviceZoom()); // To Points
 	event.x = pt.x;
 	event.y = pt.y;
 	browser.notifyListeners(SWT.MenuDetect, event);

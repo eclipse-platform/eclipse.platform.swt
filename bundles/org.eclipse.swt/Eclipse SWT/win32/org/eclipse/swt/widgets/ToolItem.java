@@ -235,7 +235,7 @@ void destroyWidget () {
  */
 public Rectangle getBounds () {
 	checkWidget();
-	return Win32DPIUtils.scaleDown(getBoundsInPixels(), getZoom());
+	return Win32DPIUtils.pixelToPoint(getBoundsInPixels(), getZoom());
 }
 
 Rectangle getBoundsInPixels () {
@@ -448,7 +448,7 @@ public String getToolTipText () {
  */
 public int getWidth () {
 	checkWidget();
-	return DPIUtil.scaleDown(getWidthInPixels(), getZoom());
+	return DPIUtil.pixelToPoint(getWidthInPixels(), getZoom());
 }
 
 int getWidthInPixels () {
@@ -1076,7 +1076,7 @@ public void setToolTipText (String string) {
  */
 public void setWidth (int width) {
 	checkWidget();
-	setWidthInPixels(Win32DPIUtils.scaleUp(width, getZoom()));
+	setWidthInPixels(Win32DPIUtils.pointToPixel(width, getZoom()));
 }
 
 void setWidthInPixels (int width) {

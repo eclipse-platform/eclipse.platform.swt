@@ -570,7 +570,7 @@ public ToolItem getItem (int index) {
 public ToolItem getItem (Point point) {
 	checkWidget ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	return getItemInPixels(Win32DPIUtils.scaleUp(point, getZoom()));
+	return getItemInPixels(Win32DPIUtils.pointToPixel(point, getZoom()));
 }
 
 ToolItem getItemInPixels (Point point) {
@@ -1651,7 +1651,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 				RECT rect = new RECT ();
 				OS.SendMessage (handle, OS.TB_GETITEMRECT, index, rect);
 				int zoom = getZoom();
-				event.setLocation(DPIUtil.scaleDown(rect.left, zoom), DPIUtil.scaleDown(rect.bottom, zoom));
+				event.setLocation(DPIUtil.pixelToPoint(rect.left, zoom), DPIUtil.pixelToPoint(rect.bottom, zoom));
 				child.sendSelectionEvent (SWT.Selection, event, false);
 			}
 			break;

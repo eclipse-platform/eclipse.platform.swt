@@ -116,14 +116,14 @@ public class DPIUtil {
 	}
 
 
-public static int scaleDown(int size, int zoom) {
+public static int pixelToPoint(int size, int zoom) {
 	if (zoom == 100 || size == SWT.DEFAULT) return size;
 	float scaleFactor = getScalingFactor (zoom);
 	return Math.round (size / scaleFactor);
 }
 
 
-public static float scaleDown(float size, int zoom) {
+public static float pixelToPoint(float size, int zoom) {
 	if (zoom == 100 || size == SWT.DEFAULT) return size;
 	float scaleFactor = getScalingFactor (zoom);
 	return (size / scaleFactor);

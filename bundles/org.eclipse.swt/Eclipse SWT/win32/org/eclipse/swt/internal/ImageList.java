@@ -332,8 +332,8 @@ public int getStyle () {
 
 public long getHandle(int targetZoom) {
 	if (!zoomToHandle.containsKey(targetZoom)) {
-		int scaledWidth = Win32DPIUtils.scaleUp(DPIUtil.scaleDown(width, this.zoom), targetZoom);
-		int scaledHeight = Win32DPIUtils.scaleUp(DPIUtil.scaleDown(height, this.zoom), targetZoom);
+		int scaledWidth = Win32DPIUtils.pointToPixel(DPIUtil.pixelToPoint(width, this.zoom), targetZoom);
+		int scaledHeight = Win32DPIUtils.pointToPixel(DPIUtil.pixelToPoint(height, this.zoom), targetZoom);
 		long newImageListHandle = OS.ImageList_Create(scaledWidth, scaledHeight, flags, 16, 16);
 		int count = OS.ImageList_GetImageCount (handle);
 		for (int i = 0; i < count; i++) {

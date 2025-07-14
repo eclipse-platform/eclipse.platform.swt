@@ -473,7 +473,7 @@ public int getItemCount () {
  */
 public int getItemHeight () {
 	checkWidget ();
-	return DPIUtil.scaleDown(getItemHeightInPixels(), getZoom());
+	return DPIUtil.pixelToPoint(getItemHeightInPixels(), getZoom());
 }
 
 int getItemHeightInPixels () {
@@ -1564,7 +1564,7 @@ void updateMenuLocation (Event event) {
 	}
 	Point pt = toDisplayInPixels (x, y);
 	int zoom = getZoom();
-	event.setLocation(DPIUtil.scaleDown(pt.x, zoom), DPIUtil.scaleDown(pt.y, zoom));
+	event.setLocation(DPIUtil.pixelToPoint(pt.x, zoom), DPIUtil.pixelToPoint(pt.y, zoom));
 }
 
 @Override

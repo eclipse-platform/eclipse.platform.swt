@@ -1254,14 +1254,14 @@ int handleContextMenuRequested(long pView, long pArgs) {
 	//   to PIXEL coordinates with the real native zoom value
 	//   independent from the swt.autoScale property:
 	Point pt = new Point( //
-			Win32DPIUtils.scaleUp(win32Point.x, DPIUtil.getNativeDeviceZoom()), //
-			Win32DPIUtils.scaleUp(win32Point.y, DPIUtil.getNativeDeviceZoom()));
+			Win32DPIUtils.pointToPixel(win32Point.x, DPIUtil.getNativeDeviceZoom()), //
+			Win32DPIUtils.pointToPixel(win32Point.y, DPIUtil.getNativeDeviceZoom()));
 	// - then, scale back down from PIXEL to DISPLAY coordinates, taking
 	//   swt.autoScale property into account
 	//   which is also later considered in Menu#setLocation()
 	pt = new Point( //
-			DPIUtil.scaleDown(pt.x, DPIUtil.getZoomForAutoscaleProperty(browser.getShell().nativeZoom)), //
-			DPIUtil.scaleDown(pt.y, DPIUtil.getZoomForAutoscaleProperty(browser.getShell().nativeZoom)));
+			DPIUtil.pixelToPoint(pt.x, DPIUtil.getZoomForAutoscaleProperty(browser.getShell().nativeZoom)), //
+			DPIUtil.pixelToPoint(pt.y, DPIUtil.getZoomForAutoscaleProperty(browser.getShell().nativeZoom)));
 	// - finally, translate the POINT from widget-relative
 	//   to DISPLAY-relative coordinates
 	pt = browser.toDisplay(pt.x, pt.y);

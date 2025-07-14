@@ -1921,14 +1921,14 @@ private class ExistingImageHandleProviderWrapper extends AbstractImageProviderWr
 		ImageHandle imageHandle = new ImageHandle(handle, zoomForHandle);
 
 		ImageData baseData = imageHandle.getImageData();
-		this.width = DPIUtil.scaleDown(baseData.width, zoomForHandle);
-		this.height = DPIUtil.scaleDown(baseData.height, zoomForHandle);
+		this.width = DPIUtil.pixelToPoint(baseData.width, zoomForHandle);
+		this.height = DPIUtil.pixelToPoint(baseData.height, zoomForHandle);
 	}
 
 	@Override
 	protected Rectangle getBounds(int zoom) {
 		Rectangle rectangle = new Rectangle(0, 0, width, height);
-		return Win32DPIUtils.scaleUp(rectangle, zoom);
+		return Win32DPIUtils.pointToPixel(rectangle, zoom);
 	}
 
 	@Override
@@ -2004,8 +2004,8 @@ private class PlainImageDataProviderWrapper extends ImageFromImageDataProviderWr
 	@Override
 	protected Rectangle getBounds(int zoom) {
 		Rectangle rectangle = new Rectangle(0, 0, imageDataAtBaseZoom.width, imageDataAtBaseZoom.height);
-		rectangle = Win32DPIUtils.scaleDown(rectangle, baseZoom);
-		return Win32DPIUtils.scaleUp(rectangle, zoom);
+		rectangle = Win32DPIUtils.pixelToPoint(rectangle, baseZoom);
+		return Win32DPIUtils.pointToPixel(rectangle, zoom);
 	}
 
 	@Override
@@ -2032,7 +2032,7 @@ private class MaskedImageDataProviderWrapper extends ImageFromImageDataProviderW
 	@Override
 	protected Rectangle getBounds(int zoom) {
 		Rectangle rectangle = new Rectangle(0, 0, srcAt100.width, srcAt100.height);
-		return Win32DPIUtils.scaleUp(rectangle, zoom);
+		return Win32DPIUtils.pointToPixel(rectangle, zoom);
 	}
 
 	@Override
@@ -2110,7 +2110,7 @@ private class PlainImageProviderWrapper extends AbstractImageProviderWrapper {
 	@Override
 	protected Rectangle getBounds(int zoom) {
 		Rectangle rectangle = new Rectangle(0, 0, width, height);
-		return Win32DPIUtils.scaleUp(rectangle, zoom);
+		return Win32DPIUtils.pointToPixel(rectangle, zoom);
 	}
 
 	@Override
@@ -2154,8 +2154,8 @@ private class PlainImageProviderWrapper extends AbstractImageProviderWrapper {
 
 	private long initHandle(int zoom) {
 		if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-		int scaledWidth = Win32DPIUtils.scaleUp (width, zoom);
-		int scaledHeight = Win32DPIUtils.scaleUp (height, zoom);
+		int scaledWidth = Win32DPIUtils.pointToPixel (width, zoom);
+		int scaledHeight = Win32DPIUtils.pointToPixel (height, zoom);
 		long hDC = device.internal_new_GC(null);
 		long newHandle = OS.CreateCompatibleBitmap(hDC, scaledWidth, scaledHeight);
 		/*
@@ -2553,8 +2553,8 @@ private class ImageGcDrawerWrapper extends DynamicImageProviderWrapper {
 		int gcStyle = drawer.getGcStyle();
 		Image image;
 		if ((gcStyle & SWT.TRANSPARENT) != 0) {
-			int scaledHeight = Win32DPIUtils.scaleUp(height, zoom);
-			int scaledWidth = Win32DPIUtils.scaleUp(width, zoom);
+			int scaledHeight = Win32DPIUtils.pointToPixel(height, zoom);
+			int scaledWidth = Win32DPIUtils.pointToPixel(width, zoom);
 			/* Create a 24 bit image data with alpha channel */
 			final ImageData resultData = new ImageData (scaledWidth, scaledHeight, 24, new PaletteData (0xFF, 0xFF00, 0xFF0000));
 			resultData.alphaData = new byte [scaledWidth * scaledHeight];

@@ -505,8 +505,8 @@ private class CopyAreaToImageOperation extends Operation {
 	@Override
 	void apply() {
 		int zoom = getZoom();
-		int scaledX = Win32DPIUtils.scaleUp(drawable, this.x, zoom);
-		int scaledY = Win32DPIUtils.scaleUp(drawable, this.y, zoom);
+		int scaledX = Win32DPIUtils.pointToPixel(drawable, this.x, zoom);
+		int scaledY = Win32DPIUtils.pointToPixel(drawable, this.y, zoom);
 		copyAreaInPixels(this.image, scaledX, scaledY);
 	}
 }
@@ -579,8 +579,8 @@ private class CopyAreaOperation extends Operation {
 	@Override
 	void apply() {
 		int zoom = getZoom();
-		Rectangle sourceRect = Win32DPIUtils.scaleUp(drawable, source, zoom);
-		Rectangle destRect = Win32DPIUtils.scaleUp(drawable, destination, zoom);
+		Rectangle sourceRect = Win32DPIUtils.pointToPixel(drawable, source, zoom);
+		Rectangle destRect = Win32DPIUtils.pointToPixel(drawable, destination, zoom);
 		copyAreaInPixels(sourceRect.x, sourceRect.y, sourceRect.width, sourceRect.height, destRect.x, destRect.y, paint);
 	}
 }
@@ -839,7 +839,7 @@ private class DrawArcOperation extends Operation {
 	}
 	@Override
 	void apply() {
-		Rectangle rect = Win32DPIUtils.scaleUp(drawable, rectangle, getZoom());
+		Rectangle rect = Win32DPIUtils.pointToPixel(drawable, rectangle, getZoom());
 		drawArcInPixels(rect.x, rect.y, rect.width, rect.height, startAngle, arcAngle);
 	}
 }
@@ -932,7 +932,7 @@ private class DrawFocusOperation extends Operation {
 
 	@Override
 	void apply() {
-		Rectangle rect = Win32DPIUtils.scaleUp(drawable, rectangle, getZoom());
+		Rectangle rect = Win32DPIUtils.pointToPixel(drawable, rectangle, getZoom());
 		drawFocusInPixels(rect.x, rect.y, rect.width, rect.height);
 	}
 }
@@ -1024,7 +1024,7 @@ private class DrawImageOperation extends Operation {
 
 	@Override
 	void apply() {
-		drawImageInPixels(this.image, Win32DPIUtils.scaleUp(drawable, this.location, getZoom()));
+		drawImageInPixels(this.image, Win32DPIUtils.pointToPixel(drawable, this.location, getZoom()));
 	}
 
 	private void drawImageInPixels(Image image, Point location) {
@@ -1132,8 +1132,8 @@ private class DrawScalingImageToImageOperation extends Operation {
 
 private void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY,
 		int destWidth, int destHeight, int imageZoom, int scaledImageZoom) {
-	Rectangle src = Win32DPIUtils.scaleUp(drawable, new Rectangle(srcX, srcY, srcWidth, srcHeight), scaledImageZoom);
-	Rectangle dest = Win32DPIUtils.scaleUp(drawable, new Rectangle(destX, destY, destWidth, destHeight), imageZoom);
+	Rectangle src = Win32DPIUtils.pointToPixel(drawable, new Rectangle(srcX, srcY, srcWidth, srcHeight), scaledImageZoom);
+	Rectangle dest = Win32DPIUtils.pointToPixel(drawable, new Rectangle(destX, destY, destWidth, destHeight), imageZoom);
 	if (scaledImageZoom != 100) {
 		/*
 		 * This is a HACK! Due to rounding errors at fractional scale factors,
@@ -1835,8 +1835,8 @@ private class DrawLineOperation extends Operation {
 	@Override
 	void apply() {
 		int deviceZoom = getZoom();
-		Point startInPixels = Win32DPIUtils.scaleUp (drawable, start, deviceZoom);
-		Point endInPixels = Win32DPIUtils.scaleUp (drawable, end, deviceZoom);
+		Point startInPixels = Win32DPIUtils.pointToPixel (drawable, start, deviceZoom);
+		Point endInPixels = Win32DPIUtils.pointToPixel (drawable, end, deviceZoom);
 		drawLineInPixels(startInPixels.x, startInPixels.y, endInPixels.x, endInPixels.y);
 	}
 }
@@ -1898,7 +1898,7 @@ private class DrawOvalOperation extends Operation {
 
 	@Override
 	void apply() {
-		Rectangle boundsInPixels = Win32DPIUtils.scaleUp(drawable, bounds, getZoom());
+		Rectangle boundsInPixels = Win32DPIUtils.pointToPixel(drawable, bounds, getZoom());
 		drawOvalInPixels(boundsInPixels.x, boundsInPixels.y, boundsInPixels.width, boundsInPixels.height);
 	}
 }
@@ -2000,7 +2000,7 @@ private class DrawPointOperation extends Operation {
 
 	@Override
 	void apply() {
-		Point scaleUpLocation = Win32DPIUtils.scaleUp(location, getZoom());
+		Point scaleUpLocation = Win32DPIUtils.pointToPixel(location, getZoom());
 		drawPointInPixels(scaleUpLocation.x, scaleUpLocation.y);
 	}
 }
@@ -2046,7 +2046,7 @@ private class DrawPolygonOperation extends Operation {
 
 	@Override
 	void apply() {
-		drawPolygonInPixels(Win32DPIUtils.scaleUp(drawable, pointArray, getZoom()));
+		drawPolygonInPixels(Win32DPIUtils.pointToPixel(drawable, pointArray, getZoom()));
 	}
 }
 
@@ -2108,7 +2108,7 @@ private class DrawPolylineOperation extends Operation {
 
 	@Override
 	void apply() {
-		drawPolylineInPixels(Win32DPIUtils.scaleUp(drawable, pointArray, getZoom()));
+		drawPolylineInPixels(Win32DPIUtils.pointToPixel(drawable, pointArray, getZoom()));
 	}
 }
 
@@ -2173,7 +2173,7 @@ private class DrawRectangleOperation extends Operation {
 
 	@Override
 	void apply() {
-		Rectangle rect = Win32DPIUtils.scaleUp(drawable, rectangle, getZoom());
+		Rectangle rect = Win32DPIUtils.pointToPixel(drawable, rectangle, getZoom());
 		drawRectangleInPixels(rect.x, rect.y, rect.width, rect.height);
 	}
 }
@@ -2273,9 +2273,9 @@ private class DrawRoundRectangleOperation extends Operation {
 	@Override
 	void apply() {
 		int zoom = getZoom();
-		Rectangle rect = Win32DPIUtils.scaleUp(drawable, rectangle, zoom);
-		int scaledArcWidth = Win32DPIUtils.scaleUp (drawable, arcWidth, zoom);
-		int scaledArcHeight = Win32DPIUtils.scaleUp (drawable, arcHeight, zoom);
+		Rectangle rect = Win32DPIUtils.pointToPixel(drawable, rectangle, zoom);
+		int scaledArcWidth = Win32DPIUtils.pointToPixel (drawable, arcWidth, zoom);
+		int scaledArcHeight = Win32DPIUtils.pointToPixel (drawable, arcHeight, zoom);
 		drawRoundRectangleInPixels(rect.x, rect.y, rect.width, rect.height, scaledArcWidth, scaledArcHeight);
 	}
 }
@@ -2418,7 +2418,7 @@ private class DrawStringOperation extends Operation {
 
 	@Override
 	void apply() {
-		Point scaledLocation = Win32DPIUtils.scaleUp(drawable, location, getZoom());
+		Point scaledLocation = Win32DPIUtils.pointToPixel(drawable, location, getZoom());
 		drawStringInPixels(string, scaledLocation.x, scaledLocation.y, isTransparent);
 	}
 }
@@ -2604,7 +2604,7 @@ private class DrawTextOperation extends Operation {
 
 	@Override
 	void apply() {
-		Point scaledLocation = Win32DPIUtils.scaleUp(drawable, location, getZoom());
+		Point scaledLocation = Win32DPIUtils.pointToPixel(drawable, location, getZoom());
 		drawTextInPixels(string, scaledLocation.x, scaledLocation.y, flags);
 	}
 }
@@ -2997,7 +2997,7 @@ private class FillArcOperation extends Operation {
 
 	@Override
 	void apply() {
-		Rectangle rect = Win32DPIUtils.scaleUp(drawable, bounds, getZoom());
+		Rectangle rect = Win32DPIUtils.pointToPixel(drawable, bounds, getZoom());
 		fillArcInPixels(rect.x, rect.y, rect.width, rect.height, startAngle, arcAngle);
 	}
 }
@@ -3088,7 +3088,7 @@ private class FillGradientRectangleOperation extends FillRectangleOperation {
 
 	@Override
 	void apply() {
-		Rectangle rect = Win32DPIUtils.scaleUp(drawable, rectangle, getZoom());
+		Rectangle rect = Win32DPIUtils.pointToPixel(drawable, rectangle, getZoom());
 		fillGradientRectangleInPixels(rect.x, rect.y, rect.width, rect.height, vertical, getZoom());
 	}
 }
@@ -3216,7 +3216,7 @@ private class FillOvalOperation extends Operation {
 
 	@Override
 	void apply() {
-		Rectangle rect = Win32DPIUtils.scaleUp(drawable, bounds, getZoom());
+		Rectangle rect = Win32DPIUtils.pointToPixel(drawable, bounds, getZoom());
 		fillOvalInPixels(rect.x, rect.y, rect.width, rect.height);
 	}
 }
@@ -3316,7 +3316,7 @@ private class FillPolygonOperation extends Operation {
 
 	@Override
 	void apply() {
-		fillPolygonInPixels(Win32DPIUtils.scaleUp(drawable, pointArray, getZoom()));
+		fillPolygonInPixels(Win32DPIUtils.pointToPixel(drawable, pointArray, getZoom()));
 	}
 }
 
@@ -3378,7 +3378,7 @@ private class FillRectangleOperation extends Operation {
 
 	@Override
 	void apply() {
-		Rectangle scaledBounds = Win32DPIUtils.scaleUp(drawable, rectangle, getZoom());
+		Rectangle scaledBounds = Win32DPIUtils.pointToPixel(drawable, rectangle, getZoom());
 		fillRectangleInPixels(scaledBounds.x, scaledBounds.y, scaledBounds.width, scaledBounds.height);
 	}
 }
@@ -3459,9 +3459,9 @@ private class FillRoundRectangleOperation extends Operation {
 	@Override
 	void apply() {
 		int zoom = getZoom();
-		Rectangle rect = Win32DPIUtils.scaleUp(drawable, rectangle, zoom);
-		int scaledArcWidth = Win32DPIUtils.scaleUp (drawable, arcWidth, zoom);
-		int scaledArcHeight = Win32DPIUtils.scaleUp (drawable, arcHeight, zoom);
+		Rectangle rect = Win32DPIUtils.pointToPixel(drawable, rectangle, zoom);
+		int scaledArcWidth = Win32DPIUtils.pointToPixel (drawable, arcWidth, zoom);
+		int scaledArcHeight = Win32DPIUtils.pointToPixel (drawable, arcHeight, zoom);
 		fillRoundRectangleInPixels(rect.x, rect.y, rect.width, rect.height, scaledArcWidth, scaledArcHeight);
 	}
 }
@@ -3721,7 +3721,7 @@ public int getCharWidth(char ch) {
  * </ul>
  */
 public Rectangle getClipping () {
-	return Win32DPIUtils.scaleDown(drawable, getClippingInPixels(), getZoom());
+	return Win32DPIUtils.pixelToPoint(drawable, getClippingInPixels(), getZoom());
 }
 
 Rectangle getClippingInPixels() {
@@ -3980,9 +3980,9 @@ public int getInterpolation() {
 public LineAttributes getLineAttributes () {
 	LineAttributes attributes = getLineAttributesInPixels();
 	int deviceZoom = getZoom();
-	attributes.width = Win32DPIUtils.scaleDown(drawable, attributes.width, deviceZoom);
+	attributes.width = Win32DPIUtils.pixelToPoint(drawable, attributes.width, deviceZoom);
 	if(attributes.dash != null) {
-		attributes.dash = Win32DPIUtils.scaleDown(drawable, attributes.dash, deviceZoom);
+		attributes.dash = Win32DPIUtils.pixelToPoint(drawable, attributes.dash, deviceZoom);
 	}
 	return attributes;
 }
@@ -4033,7 +4033,7 @@ public int[] getLineDash() {
 	int[] lineDashes = new int[data.lineDashes.length];
 	int deviceZoom = getZoom();
 	for (int i = 0; i < lineDashes.length; i++) {
-		lineDashes[i] = Win32DPIUtils.scaleDown(drawable, (int)data.lineDashes[i], deviceZoom);
+		lineDashes[i] = Win32DPIUtils.pixelToPoint(drawable, (int)data.lineDashes[i], deviceZoom);
 	}
 	return lineDashes;
 }
@@ -4086,7 +4086,7 @@ public int getLineStyle() {
  * </ul>
  */
 public int getLineWidth () {
-	return Win32DPIUtils.scaleDown(drawable, getLineWidthInPixels(), getZoom());
+	return Win32DPIUtils.pixelToPoint(drawable, getLineWidthInPixels(), getZoom());
 }
 
 int getLineWidthInPixels() {
@@ -4762,7 +4762,7 @@ private class SetClippingOperation extends Operation {
 
 	@Override
 	void apply() {
-		Rectangle rect = Win32DPIUtils.scaleUp(drawable, rectangle, getZoom());
+		Rectangle rect = Win32DPIUtils.pointToPixel(drawable, rectangle, getZoom());
 		setClippingInPixels(rect.x, rect.y, rect.width, rect.height);
 	}
 }
@@ -5129,7 +5129,7 @@ private class SetLineAttributesOperation extends Operation {
 
 	@Override
 	void apply() {
-		attributes.width = Win32DPIUtils.scaleUp(drawable, attributes.width, getZoom());
+		attributes.width = Win32DPIUtils.pointToPixel(drawable, attributes.width, getZoom());
 		setLineAttributesInPixels(attributes);
 	}
 }
@@ -5195,7 +5195,7 @@ private void setLineAttributesInPixels (LineAttributes attributes) {
 			float[] newDashes = new float[dashes.length];
 			int deviceZoom = getZoom();
 			for (int i = 0; i < newDashes.length; i++) {
-				newDashes[i] = Win32DPIUtils.scaleUp(drawable, dashes[i], deviceZoom);
+				newDashes[i] = Win32DPIUtils.pointToPixel(drawable, dashes[i], deviceZoom);
 			}
 			dashes = newDashes;
 			mask |= LINE_STYLE;
@@ -5311,7 +5311,7 @@ private class SetLineDashOperation extends Operation {
 			int deviceZoom = getZoom();
 			for (int i = 0; i < dashes.length; i++) {
 				if (dashes[i] <= 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-				newDashes[i] = Win32DPIUtils.scaleUp(drawable, (float) dashes[i], deviceZoom);
+				newDashes[i] = Win32DPIUtils.pointToPixel(drawable, (float) dashes[i], deviceZoom);
 				if (!changed && lineDashes[i] != newDashes[i]) changed = true;
 			}
 			if (!changed) return;
@@ -5453,7 +5453,7 @@ private class SetLineWidthOperation extends Operation {
 
 	@Override
 	void apply() {
-		int lineWidth = Win32DPIUtils.scaleUp (drawable, width, getZoom());
+		int lineWidth = Win32DPIUtils.pointToPixel (drawable, width, getZoom());
 		setLineWidthInPixels(lineWidth);
 	}
 }
@@ -5644,7 +5644,7 @@ private class SetTransformOperation extends Operation {
  */
 public Point stringExtent (String string) {
 	if (string == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	return Win32DPIUtils.scaleDown(drawable, stringExtentInPixels(string), data.font.zoom);
+	return Win32DPIUtils.pixelToPoint(drawable, stringExtentInPixels(string), data.font.zoom);
 }
 
 Point stringExtentInPixels (String string) {
@@ -5689,7 +5689,7 @@ Point stringExtentInPixels (String string) {
  * </ul>
  */
 public Point textExtent (String string) {
-	return Win32DPIUtils.scaleDown(drawable, textExtentInPixels(string, SWT.DRAW_DELIMITER | SWT.DRAW_TAB), getZoom());
+	return Win32DPIUtils.pixelToPoint(drawable, textExtentInPixels(string, SWT.DRAW_DELIMITER | SWT.DRAW_TAB), getZoom());
 }
 
 /**
@@ -5724,7 +5724,7 @@ public Point textExtent (String string) {
  * </ul>
  */
 public Point textExtent (String string, int flags) {
-	return Win32DPIUtils.scaleDown(drawable, textExtentInPixels(string, flags), data.font.zoom);
+	return Win32DPIUtils.pixelToPoint(drawable, textExtentInPixels(string, flags), data.font.zoom);
 }
 
 Point textExtentInPixels(String string, int flags) {

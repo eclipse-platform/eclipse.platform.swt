@@ -986,7 +986,7 @@ public int getCaretLineNumber () {
  */
 public Point getCaretLocation () {
 	checkWidget ();
-	return Win32DPIUtils.scaleDown(getCaretLocationInPixels(), getZoom());
+	return Win32DPIUtils.pixelToPoint(getCaretLocationInPixels(), getZoom());
 }
 
 Point getCaretLocationInPixels () {
@@ -1211,7 +1211,7 @@ public String getLineDelimiter () {
  */
 public int getLineHeight () {
 	checkWidget ();
-	return DPIUtil.scaleDown(getLineHeightInPixels (), getZoom());
+	return DPIUtil.pixelToPoint(getLineHeightInPixels (), getZoom());
 }
 
 int getLineHeightInPixels () {
@@ -1554,7 +1554,7 @@ public int getTopIndex () {
  */
 public int getTopPixel () {
 	checkWidget ();
-	return DPIUtil.scaleDown(getTopPixelInPixels(), getZoom());
+	return DPIUtil.pixelToPoint(getTopPixelInPixels(), getZoom());
 }
 
 int getTopPixelInPixels () {
@@ -2489,7 +2489,7 @@ int untranslateOffset (int offset) {
 void updateMenuLocation (Event event) {
 	Point pointInPixels = display.mapInPixels (this, null, getCaretLocationInPixels ());
 	int zoom = getZoom();
-	event.setLocation(DPIUtil.scaleDown(pointInPixels.x, zoom), DPIUtil.scaleDown(pointInPixels.y + getLineHeightInPixels (), zoom));
+	event.setLocation(DPIUtil.pixelToPoint(pointInPixels.x, zoom), DPIUtil.pixelToPoint(pointInPixels.y + getLineHeightInPixels (), zoom));
 }
 
 @Override

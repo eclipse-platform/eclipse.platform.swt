@@ -412,7 +412,7 @@ int getMargin (int index) {
 	}
 	if ((style & SWT.FLAT) == 0) {
 		if (!isLastItemOfRow (index)) {
-			margin += Win32DPIUtils.scaleUp(SEPARATOR_WIDTH, getZoom());
+			margin += Win32DPIUtils.pointToPixel(SEPARATOR_WIDTH, getZoom());
 		}
 	}
 	return margin;
@@ -549,7 +549,7 @@ public Point [] getItemSizes () {
 	Point [] sizes = getItemSizesInPixels();
 	if (sizes != null) {
 		for (int i = 0; i < sizes.length; i++) {
-			sizes[i] = Win32DPIUtils.scaleDown(sizes[i], getZoom());
+			sizes[i] = Win32DPIUtils.pixelToPoint(sizes[i], getZoom());
 		}
 	}
 	return sizes;
@@ -809,7 +809,7 @@ public void setItemLayout (int [] itemOrder, int [] wrapIndices, Point [] sizes)
 	if (sizes == null) error (SWT.ERROR_NULL_ARGUMENT);
 	Point [] sizesInPoints = new Point [sizes.length];
 	for (int i = 0; i < sizes.length; i++) {
-		sizesInPoints[i] = Win32DPIUtils.scaleUp(sizes[i], getZoom());
+		sizesInPoints[i] = Win32DPIUtils.pointToPixel(sizes[i], getZoom());
 	}
 	setItemLayoutInPixels (itemOrder, wrapIndices, sizesInPoints);
 }
@@ -1175,9 +1175,9 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 				event.detail = SWT.ARROW;
 				int zoom = getZoom();
 				if ((style & SWT.VERTICAL) != 0) {
-					event.setLocation(DPIUtil.scaleDown(lpnm.right, zoom), DPIUtil.scaleDown(lpnm.top, zoom));
+					event.setLocation(DPIUtil.pixelToPoint(lpnm.right, zoom), DPIUtil.pixelToPoint(lpnm.top, zoom));
 				} else {
-					event.setLocation(DPIUtil.scaleDown(lpnm.left, zoom), DPIUtil.scaleDown(lpnm.bottom, zoom));
+					event.setLocation(DPIUtil.pixelToPoint(lpnm.left, zoom), DPIUtil.pixelToPoint(lpnm.bottom, zoom));
 				}
 				item.sendSelectionEvent(SWT.Selection, event, false);
 			}
