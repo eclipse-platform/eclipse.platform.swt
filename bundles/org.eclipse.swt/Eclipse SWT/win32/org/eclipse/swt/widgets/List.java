@@ -265,7 +265,7 @@ static int checkStyle (int style) {
 	if ((style & SWT.H_SCROLL) != 0) {
 		height += getSystemMetrics (OS.SM_CYHSCROLL);
 	}
-	return new Point (width, height);
+	return new Point.OfFloat (width, height);
 }
 
 @Override

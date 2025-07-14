@@ -194,7 +194,7 @@ protected void checkSubclass () {
 	if (hHint != SWT.DEFAULT) height = hHint;
 	height += border * 2;
 	width += border * 2;
-	return new Point (width, height);
+	return new Point.OfFloat (width, height);
 }
 
 @Override
@@ -557,7 +557,7 @@ public Point [] getItemSizes () {
 
 Point [] getItemSizesInPixels () {
 	int count = (int)OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
-	Point [] sizes = new Point [count];
+	Point [] sizes = new Point.OfFloat [count];
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
 	rbBand.cbSize = REBARBANDINFO.sizeof;
 	rbBand.fMask = OS.RBBIM_CHILDSIZE;
@@ -572,9 +572,9 @@ Point [] getItemSizesInPixels () {
 		rect.right += margins.cxRightWidth;
 		if (!isLastItemOfRow(i)) rect.right += separator;
 		if ((style & SWT.VERTICAL) != 0) {
-			sizes [i] = new Point (rbBand.cyChild, rect.right - rect.left);
+			sizes [i] = new Point.OfFloat (rbBand.cyChild, rect.right - rect.left);
 		} else {
-			sizes [i] = new Point (rect.right - rect.left, rbBand.cyChild);
+			sizes [i] = new Point.OfFloat (rect.right - rect.left, rbBand.cyChild);
 		}
 	}
 	return sizes;

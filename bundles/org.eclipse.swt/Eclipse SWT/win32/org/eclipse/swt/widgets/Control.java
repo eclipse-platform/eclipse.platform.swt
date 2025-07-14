@@ -631,7 +631,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	int border = getBorderWidthInPixels ();
 	width += border * 2;
 	height += border * 2;
-	return new Point (width, height);
+	return new Point.OfFloat (width, height);
 }
 
 Widget computeTabGroup () {
@@ -1210,7 +1210,7 @@ Rectangle getBoundsInPixels () {
 	OS.MapWindowPoints (0, hwndParent, rect, 2);
 	int width = rect.right - rect.left;
 	int height =  rect.bottom - rect.top;
-	return new Rectangle (rect.left, rect.top, width, height);
+	return new Rectangle.OfFloat (rect.left, rect.top, width, height);
 }
 
 int getCodePage () {
@@ -1381,7 +1381,7 @@ Point getLocationInPixels () {
 	OS.GetWindowRect (topHandle (), rect);
 	long hwndParent = parent == null ? 0 : parent.handle;
 	OS.MapWindowPoints (0, hwndParent, rect, 2);
-	return new Point (rect.left, rect.top);
+	return new Point.OfFloat (rect.left, rect.top);
 }
 
 /**
@@ -1537,7 +1537,7 @@ Point getSizeInPixels () {
 	OS.GetWindowRect (topHandle (), rect);
 	int width = rect.right - rect.left;
 	int height = rect.bottom - rect.top;
-	return new Point (width, height);
+	return new Point.OfFloat (width, height);
 }
 
 /**
@@ -2450,7 +2450,7 @@ public void redraw (int x, int y, int width, int height, boolean all) {
 	checkWidget ();
 	int zoom = getZoom();
 	if (width <= 0 || height <= 0) return;
-	Rectangle rectangle = Win32DPIUtils.pointToPixel(new Rectangle(x, y, width, height), zoom);
+	Rectangle rectangle = Win32DPIUtils.pointToPixel(new Rectangle.OfFloat(x, y, width, height), zoom);
 
 	RECT rect = new RECT ();
 	OS.SetRect (rect, rectangle.x, rectangle.y, rectangle.x + rectangle.width, rectangle.y + rectangle.height);
@@ -3186,7 +3186,7 @@ void setBackgroundPixel (int pixel) {
  * </ul>
  */
 public void setBounds(int x, int y, int width, int height) {
-	setBounds(new Rectangle(x, y, width, height));
+	setBounds(new Rectangle.OfFloat(x, y, width, height));
 }
 
 void setBoundsInPixels (int x, int y, int width, int height) {
@@ -3264,7 +3264,7 @@ public void setBounds (Rectangle rect) {
 	checkWidget ();
 	if (rect == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int zoom = autoScaleDisabled ? parent.getZoom() : getZoom();
-	setBoundsInPixels(Win32DPIUtils.pointToPixel(rect, zoom));
+	setBoundsInPixels(Win32DPIUtils.pointToPixel(Rectangle.OfFloat.from(rect), zoom));
 }
 
 void setBoundsInPixels (Rectangle rect) {
@@ -4029,7 +4029,7 @@ void subclass () {
 public Point toControl (int x, int y) {
 	checkWidget ();
 	int zoom = getZoom();
-	Point displayPointInPixels = getDisplay().translateToDisplayCoordinates(new Point(x, y), zoom);
+	Point displayPointInPixels = getDisplay().translateToDisplayCoordinates(new Point.OfFloat(x, y), zoom);
 	final Point controlPointInPixels = toControlInPixels(displayPointInPixels.x, displayPointInPixels.y);
 	return Win32DPIUtils.pixelToPoint(controlPointInPixels, zoom);
 }
@@ -4038,7 +4038,7 @@ Point toControlInPixels (int x, int y) {
 	POINT pt = new POINT ();
 	pt.x = x;  pt.y = y;
 	OS.ScreenToClient (handle, pt);
-	return new Point (pt.x, pt.y);
+	return new Point.OfFloat (pt.x, pt.y);
 }
 
 /**
@@ -4098,7 +4098,7 @@ Point toDisplayInPixels (int x, int y) {
 	POINT pt = new POINT ();
 	pt.x = x;  pt.y = y;
 	OS.ClientToScreen (handle, pt);
-	return new Point (pt.x, pt.y);
+	return new Point.OfFloat (pt.x, pt.y);
 }
 
 /**

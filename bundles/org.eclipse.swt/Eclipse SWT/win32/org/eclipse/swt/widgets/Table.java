@@ -1484,7 +1484,7 @@ public void clearAll () {
 	if ((style & SWT.H_SCROLL) != 0) {
 		height += getSystemMetrics (OS.SM_CYHSCROLL);
 	}
-	return new Point (width, height);
+	return new Point.OfFloat (width, height);
 }
 
 @Override
@@ -3484,7 +3484,7 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, long lParam, Event
 	if (drawHot) event.detail |= SWT.HOT;
 	if (drawSelected) event.detail |= SWT.SELECTED;
 	if (drawBackground) event.detail |= SWT.BACKGROUND;
-	Rectangle bounds = Win32DPIUtils.pixelToPoint(new Rectangle (cellRect.left, cellRect.top, cellRect.right - cellRect.left, cellRect.bottom - cellRect.top), getZoom());
+	Rectangle bounds = Win32DPIUtils.pixelToPoint(new Rectangle.OfFloat (cellRect.left, cellRect.top, cellRect.right - cellRect.left, cellRect.bottom - cellRect.top), getZoom());
 	event.setBounds (bounds);
 	gc.setClipping (bounds);
 	sendEvent (SWT.EraseItem, event);
@@ -7297,7 +7297,7 @@ LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, long lParam) {
 					if (image != null) {
 						Rectangle rect = Win32DPIUtils.pointToPixel(image.getBounds(), getZoom());
 						RECT imageRect = item.getBounds (pinfo.iItem, pinfo.iSubItem, false, true, false, false, hDC);
-						Point size = imageList == null ? new Point (rect.width, rect.height) : imageList.getImageSize ();
+						Point size = imageList == null ? new Point.OfFloat (rect.width, rect.height) : imageList.getImageSize ();
 						int y = imageRect.top + Math.max (0, (imageRect.bottom - imageRect.top - size.y) / 2);
 						int zoom = getZoom();
 						rect = Win32DPIUtils.pixelToPoint(rect, zoom);

@@ -160,7 +160,7 @@ static int checkStyle (int style) {
 	}
 	if (wHint != SWT.DEFAULT) width = wHint + (border * 2);
 	if (hHint != SWT.DEFAULT) height = hHint + (border * 2);
-	return new Point (width, height);
+	return new Point.OfFloat (width, height);
 }
 
 @Override

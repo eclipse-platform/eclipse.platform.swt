@@ -748,7 +748,7 @@ public void clearSelection () {
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
 	Rectangle trim = computeTrimInPixels (0, 0, width, height);
-	return new Point (trim.width, trim.height);
+	return new Point.OfFloat (trim.width, trim.height);
 }
 
 @Override Rectangle computeTrimInPixels (int x, int y, int width, int height) {
@@ -1030,7 +1030,7 @@ Point getCaretLocationInPixels () {
 			OS.SendMessage (handle, OS.EM_SETSEL, start [0], end [0]);
 		}
 	}
-	return new Point (OS.GET_X_LPARAM (caretPos), OS.GET_Y_LPARAM (caretPos));
+	return new Point.OfFloat (OS.GET_X_LPARAM (caretPos), OS.GET_Y_LPARAM (caretPos));
 }
 
 /**
@@ -1313,7 +1313,7 @@ public Point getSelection () {
 	checkWidget ();
 	int [] start = new int [1], end = new int [1];
 	OS.SendMessage (handle, OS.EM_GETSEL, start, end);
-	return new Point (untranslateOffset (start [0]), untranslateOffset (end [0]));
+	return new Point.OfFloat (untranslateOffset (start [0]), untranslateOffset (end [0]));
 }
 
 /**

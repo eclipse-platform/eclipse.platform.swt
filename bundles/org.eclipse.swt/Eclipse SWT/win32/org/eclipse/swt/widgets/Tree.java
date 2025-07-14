@@ -530,7 +530,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 									data.device = display;
 									GC gc = createNewGC(hDC, data);
 									RECT iconRect = item.getBounds (index, false, true, false, false, true, hDC); // Pixels
-									gc.setClipping (Win32DPIUtils.pixelToPoint(new Rectangle(iconRect.left, iconRect.top, iconRect.right - iconRect.left, iconRect.bottom - iconRect.top), zoom));
+									gc.setClipping (Win32DPIUtils.pixelToPoint(new Rectangle.OfFloat(iconRect.left, iconRect.top, iconRect.right - iconRect.left, iconRect.bottom - iconRect.top), zoom));
 									gc.drawImage (image, 0, 0, bounds.width, bounds.height, DPIUtil.pixelToPoint(iconRect.left, zoom), DPIUtil.pixelToPoint(iconRect.top, zoom), size.x, size.y);
 									OS.SelectClipRgn (hDC, 0);
 									gc.dispose ();
@@ -1865,7 +1865,7 @@ long CompareFunc (long lParam1, long lParam2, long lParamSort) {
 	if ((style & SWT.H_SCROLL) != 0) {
 		height += getSystemMetrics (OS.SM_CYHSCROLL);
 	}
-	return new Point (width, height);
+	return new Point.OfFloat (width, height);
 }
 
 @Override
@@ -3059,7 +3059,7 @@ public boolean getHeaderVisible () {
 
 Point getImageSize () {
 	if (imageList != null) return imageList.getImageSize ();
-	return new Point (0, getItemHeightInPixels ());
+	return new Point.OfFloat (0, getItemHeightInPixels ());
 }
 
 long getBottomItem () {

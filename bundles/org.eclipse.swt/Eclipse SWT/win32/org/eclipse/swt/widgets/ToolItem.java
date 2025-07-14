@@ -245,7 +245,7 @@ Rectangle getBoundsInPixels () {
 	OS.SendMessage (hwnd, OS.TB_GETITEMRECT, index, rect);
 	int width = rect.right - rect.left;
 	int height = rect.bottom - rect.top;
-	return new Rectangle (rect.left, rect.top, width, height);
+	return new Rectangle.OfFloat (rect.left, rect.top, width, height);
 }
 
 /**

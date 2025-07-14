@@ -382,7 +382,7 @@ Rectangle getBoundsInPixels () {
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	RECT rect = getBounds (0, true, false, false);
 	int width = rect.right - rect.left, height = rect.bottom - rect.top;
-	return new Rectangle (rect.left, rect.top, width, height);
+	return new Rectangle.OfFloat (rect.left, rect.top, width, height);
 }
 
 /**
@@ -408,7 +408,7 @@ Rectangle getBoundsInPixels (int index) {
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	RECT rect = getBounds (index, true, true, true);
 	int width = rect.right - rect.left, height = rect.bottom - rect.top;
-	return new Rectangle (rect.left, rect.top, width, height);
+	return new Rectangle.OfFloat (rect.left, rect.top, width, height);
 }
 
 RECT getBounds (int index, boolean getText, boolean getImage, boolean fullText) {
@@ -824,7 +824,7 @@ Rectangle getImageBoundsInPixels (int index) {
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	RECT rect = getBounds (index, false, true, false);
 	int width = rect.right - rect.left, height = rect.bottom - rect.top;
-	return new Rectangle (rect.left, rect.top, width, height);
+	return new Rectangle.OfFloat (rect.left, rect.top, width, height);
 }
 
 /**
@@ -923,7 +923,7 @@ Rectangle getTextBoundsInPixels (int index) {
 	rect.right = rect.right - Tree.INSET + 1; // Add 1 px margin to avoid truncation of text seen with "Segoe UI" font
 	int width = Math.max (0, rect.right - rect.left);
 	int height = Math.max (0, rect.bottom - rect.top);
-	return new Rectangle (rect.left, rect.top, width, height);
+	return new Rectangle.OfFloat (rect.left, rect.top, width, height);
 }
 
 /**

@@ -127,15 +127,15 @@ public Rectangle getBounds () {
 Rectangle getBoundsInPixels () {
 	if (image != null) {
 		Rectangle rect = Win32DPIUtils.pointToPixel(image.getBounds(), getZoom());
-		return new Rectangle (getXInPixels(), getYInPixels(), rect.width, rect.height);
+		return new Rectangle.OfFloat (getXInPixels(), getYInPixels(), rect.width, rect.height);
 	}
 	if (width == 0) {
 		int [] buffer = new int [1];
 		if (OS.SystemParametersInfo (OS.SPI_GETCARETWIDTH, 0, buffer, 0)) {
-			return new Rectangle (getXInPixels(), getYInPixels(), buffer [0], getHeightInPixels());
+			return new Rectangle.OfFloat (getXInPixels(), getYInPixels(), buffer [0], getHeightInPixels());
 		}
 	}
-	return new Rectangle (getXInPixels(), getYInPixels(), getWidthInPixels(), getHeightInPixels());
+	return new Rectangle.OfFloat (getXInPixels(), getYInPixels(), getWidthInPixels(), getHeightInPixels());
 }
 
 /**
@@ -185,7 +185,7 @@ public Image getImage () {
  */
 public Point getLocation () {
 	checkWidget();
-	return new Point (x, y);
+	return new Point.OfFloat (x, y);
 }
 
 /**
@@ -221,15 +221,15 @@ public Point getSize () {
 Point getSizeInPixels () {
 	if (image != null) {
 		Rectangle rect = Win32DPIUtils.pointToPixel(image.getBounds(), getZoom());
-		return new Point (rect.width, rect.height);
+		return new Point.OfFloat  (rect.width, rect.height);
 	}
 	if (width == 0) {
 		int [] buffer = new int [1];
 		if (OS.SystemParametersInfo (OS.SPI_GETCARETWIDTH, 0, buffer, 0)) {
-			return new Point (buffer [0], getHeightInPixels());
+			return new Point.OfFloat (buffer [0], getHeightInPixels());
 		}
 	}
-	return new Point (getWidthInPixels(), getHeightInPixels());
+	return new Point.OfFloat (getWidthInPixels(), getHeightInPixels());
 }
 
 private int getWidthInPixels() {

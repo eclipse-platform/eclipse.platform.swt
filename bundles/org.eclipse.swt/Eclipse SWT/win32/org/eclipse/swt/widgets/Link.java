@@ -188,7 +188,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	int border = getBorderWidthInPixels ();
 	width += border * 2;
 	height += border * 2;
-	return new Point (width, height);
+	return new Point.OfFloat (width, height);
 }
 
 @Override

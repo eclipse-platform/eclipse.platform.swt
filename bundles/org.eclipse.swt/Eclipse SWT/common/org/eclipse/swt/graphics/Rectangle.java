@@ -460,6 +460,11 @@ public static sealed class OfFloat extends Rectangle permits Rectangle.WithMonit
 		this.residualHeight = height - this.height;
 	}
 
+	public static Rectangle.OfFloat from(Rectangle rectangle) {
+		if(rectangle instanceof Rectangle.OfFloat rectangleOfFloat) return rectangleOfFloat;
+		return new Rectangle.OfFloat(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+	}
+
 }
 
 /**

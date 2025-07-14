@@ -210,7 +210,7 @@ protected void checkSubclass () {
 	rect.top -= border;  rect.bottom += border;
 	int newWidth = rect.right - rect.left;
 	int newHeight = rect.bottom - rect.top;
-	return new Rectangle (rect.left, rect.top, newWidth, newHeight);
+	return new Rectangle.OfFloat (rect.left, rect.top, newWidth, newHeight);
 }
 
 void createItem (TabItem item, int index) {
@@ -316,7 +316,7 @@ Control findThemeControl () {
 	OS.SendMessage (handle, OS.TCM_ADJUSTRECT, 0, rect);
 	int width = rect.right - rect.left;
 	int height = rect.bottom - rect.top;
-	return new Rectangle (rect.left, rect.top, width, height);
+	return new Rectangle.OfFloat (rect.left, rect.top, width, height);
 }
 
 /**
@@ -523,7 +523,7 @@ Point minimumSize (int wHint, int hHint, boolean flushCache) {
 			height = Math.max (height, size.y);
 		}
 	}
-	return new Point (width, height);
+	return new Point.OfFloat (width, height);
 }
 
 @Override

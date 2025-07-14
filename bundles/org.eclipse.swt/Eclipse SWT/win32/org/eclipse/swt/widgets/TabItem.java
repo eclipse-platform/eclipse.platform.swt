@@ -199,7 +199,7 @@ Rectangle getBoundsInPixels() {
 	if (index == -1) return new Rectangle (0, 0, 0, 0);
 	RECT itemRect = new RECT ();
 	OS.SendMessage (parent.handle, OS.TCM_GETITEMRECT, index, itemRect);
-	return new Rectangle(itemRect.left, itemRect.top, itemRect.right - itemRect.left, itemRect.bottom - itemRect.top);
+	return new Rectangle.OfFloat(itemRect.left, itemRect.top, itemRect.right - itemRect.left, itemRect.bottom - itemRect.top);
 }
 
 /**
