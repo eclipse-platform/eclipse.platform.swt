@@ -19,6 +19,10 @@ public abstract class CustomComposite extends Composite {
 	protected CustomComposite(Composite parent, int style) {
 		super(parent, style);
 	}
+	
+	boolean isNativeScrollable(){
+		return false;
+	}
 
 	@Override
 	public final Color getBackground() {
@@ -139,5 +143,4 @@ public abstract class CustomComposite extends Composite {
 			redraw();
 		}
 	}
-
 }

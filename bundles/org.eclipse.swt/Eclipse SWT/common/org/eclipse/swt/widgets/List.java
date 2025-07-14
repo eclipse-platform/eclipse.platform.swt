@@ -150,6 +150,11 @@ public class List extends NativeBasedCustomScrollable {
 	}
 
 	private void onMouseDown(Event e) {
+		
+		// current workaround in order to prevent events which come for the scrollbars
+		if(!getClientArea().contains(e.x, e.y))
+			return;
+		
 		if (e.button == 1) {
 			this.leftMousePressed = true;
 			this.leftMouseDownStartSelection = getTextLocation(e.y);

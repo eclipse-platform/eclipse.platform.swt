@@ -1686,7 +1686,23 @@ LRESULT WM_PAINT (long wParam, long lParam) {
 			}
 		}
 	}
+	
+	drawScrollBars();
+	
 	return LRESULT.ZERO;
+}
+
+private void drawScrollBars() {
+	GCData data = new GCData ();
+	data.hwnd = handle;
+	GC gc = new_GC (data);
+	if (gc != null) {
+		if(verticalBar != null)
+			verticalBar.drawBar(gc);
+		if(horizontalBar != null)
+			horizontalBar.drawBar(gc);
+		gc.dispose ();
+	}
 }
 
 @Override

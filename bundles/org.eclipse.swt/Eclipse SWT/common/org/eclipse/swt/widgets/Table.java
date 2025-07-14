@@ -432,8 +432,13 @@ public class Table extends CustomComposite {
 	private void onMouseDown(Event e) {
 		if (!this.isVisible()) return;
 
+		// current workaround in order to prevent events which come for the scrollbars
+		if(!getClientArea().contains(e.x, e.y))
+			return;
+		
+		
 		Point p = new Point(e.x, e.y);
-
+		
 		if (columnsHandler.getColumnsBounds().contains(e.x, e.y)) {
 			columnsHandler.handleMouseDown(e);
 		} else if (itemsHandler.getItemsClientArea().contains(e.x, e.y)) {

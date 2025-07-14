@@ -540,7 +540,6 @@ public boolean isVisible () {
 
 @Override
 void releaseHandle () {
-	scrollBar.releaseHandle ();
 	parent = null;
 }
 

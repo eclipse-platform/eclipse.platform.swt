@@ -13,7 +13,7 @@ public class SnippetTable {
 		Shell shell = new Shell(display);
 		shell.setText("Snippet 35");
 		Table table = new Table(shell,
-				SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
+				SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL );
 		for (int i = 0; i < 500; i++) {
 			TableItem item = new TableItem(table, 0);
 			item.setText("Item " + i);

@@ -84,6 +84,24 @@ public class SnippetList {
 
 			}
 		});
+		
+		if(list.getVerticalBar() != null)
+			list.getVerticalBar().addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				
+				System.out.println("widgetSelected");
+				printData(e.widget);
+				
+				
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+		});
+		
 
 		String blanks = "_!";
 		for (int i = 0; i < 100; i++) {
@@ -92,5 +110,24 @@ public class SnippetList {
 		}
 		list.setSize(200, 200);
 
+	}
+	protected static void printData(Widget widget) {
+		
+		ScrollBar sb = (ScrollBar) widget;
+		
+		System.out.println("-------------------");
+		System.out.println("min:"+sb.getMinimum());
+		System.out.println("max:"+sb.getMaximum());
+		System.out.println("sel:"+sb.getSelection());
+		System.out.println("thumb:"+sb.getThumb());
+		System.out.println("thumbBounds:"+sb.getThumbBounds());
+		System.out.println("thumbTrackBounds:"+sb.getThumbTrackBounds());
+		System.out.println("inc:"+sb.getIncrement());
+		System.out.println("incPage:"+sb.getPageIncrement());
+		System.out.println("visible:"+sb.getVisible());
+		System.out.println("enabled:"+sb.getEnabled());
+		System.out.println("-------------------");
+		
+		
 	}
 }

@@ -26,6 +26,10 @@ abstract class NativeBasedCustomScrollable extends Scrollable {
 		// updated.
 		state = state | CANVAS;
 	}
+	
+	boolean isNativeScrollable(){
+		return false;
+	}
 
 	@Override
 	public final Color getBackground() {

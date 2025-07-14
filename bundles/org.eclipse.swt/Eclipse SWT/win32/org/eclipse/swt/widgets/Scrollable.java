@@ -39,6 +39,10 @@ import org.eclipse.swt.internal.win32.*;
 public abstract class Scrollable extends Control {
 	ScrollBar horizontalBar, verticalBar;
 
+	boolean isNativeScrollable(){
+		return true;
+	}
+	
 	/**
 	 * The regular expression used to determine the string which should be deleted
 	 * when Ctrl+Bs is hit.
@@ -210,7 +214,34 @@ void destroyScrollBar (int type) {
  */
 public Rectangle getClientArea () {
 	checkWidget ();
-	return DPIUtil.scaleDown(getClientAreaInPixels(), getZoom());
+	
+	if(isNativeScrollable())
+		return DPIUtil.scaleDown(getClientAreaInPixels(), getZoom());
+	
+	var b = getBounds();
+	if((style & SWT.V_SCROLL )!= 0 && (style & SWT.H_SCROLL )!= 0 )
+	{
+		return new Rectangle(0, 0, b.width - 10, b.height -10 );
+		
+	}
+	
+	if((style & SWT.V_SCROLL )!= 0   )
+	{
+		return new Rectangle(0, 0, b.width - 10, b.height  );
+		
+	}
+	
+	if(  (style & SWT.H_SCROLL )!= 0 )
+	{
+		return new Rectangle(0, 0, b.width , b.height -10 );
+		
+	}
+	
+	return b;
+	
+	
+	
+	
 }
 
 Rectangle getClientAreaInPixels () {
@@ -342,9 +373,13 @@ long scrolledHandle () {
 @Override
 int widgetStyle () {
 	int bits = super.widgetStyle () | OS.WS_TABSTOP;
-	if ((style & SWT.H_SCROLL) != 0) bits |= OS.WS_HSCROLL;
-	if ((style & SWT.V_SCROLL) != 0) bits |= OS.WS_VSCROLL;
+	
+	if(isNativeScrollable()) {
+		if ((style & SWT.H_SCROLL) != 0) bits |= OS.WS_HSCROLL;
+		if ((style & SWT.V_SCROLL) != 0) bits |= OS.WS_VSCROLL;
+	}
 	return bits;
+	
 }
 
 @Override
@@ -388,6 +423,7 @@ LRESULT WM_SIZE (long wParam, long lParam) {
 
 @Override
 LRESULT WM_VSCROLL (long wParam, long lParam) {
+	
 	LRESULT result = super.WM_VSCROLL (wParam, lParam);
 	if (result != null) return result;
 	if (verticalBar != null && lParam == 0) {
@@ -396,7 +432,30 @@ LRESULT WM_VSCROLL (long wParam, long lParam) {
 	return result;
 }
 
+LRESULT wmPaint (long hwnd, long wParam, long lParam) {
+	
+	if(isNativeScrollable())
+		return super.wmPaint(hwnd, wParam, lParam);
+	
+	 var res = super.wmPaint (hwnd, wParam, lParam);
+	
+		GCData data = new GCData ();
+		data.hwnd = hwnd;
+		GC gc = new_GC (data);
+		if (gc != null) {
+			if(verticalBar != null)
+				verticalBar.drawBar(gc);
+			if(horizontalBar != null)
+				horizontalBar.drawBar(gc);
+			gc.dispose ();
+		}
+	
+	return res;
+}
+
+
 LRESULT wmScrollWheel (boolean update, long wParam, long lParam, boolean horzWheel) {
+	
 	LRESULT result = horzWheel ? super.WM_MOUSEHWHEEL(wParam, lParam) : super.WM_MOUSEWHEEL(wParam, lParam);
 	if (result != null) return result;
 	/*
@@ -430,6 +489,15 @@ LRESULT wmScrollWheel (boolean update, long wParam, long lParam, boolean horzWhe
 		OS.GetScrollInfo (handle, bar.scrollBarType (), info);
 		info.nPos -= wheelData.count;
 		OS.SetScrollInfo (handle, bar.scrollBarType (), info, true);
+		
+		if( !isNativeScrollable() ) {
+			if(vertical)
+				verticalBar.setSelection(-wheelData.count + verticalBar.getSelection());
+			else {
+				horizontalBar.setSelection(-wheelData.count + horizontalBar.getSelection());
+			}
+		}
+		
 
 		int msg = vertical ? OS.WM_VSCROLL : OS.WM_HSCROLL;
 		OS.SendMessage (handle, msg, OS.SB_THUMBPOSITION, 0);
@@ -471,6 +539,7 @@ LRESULT wmScrollWheel (boolean update, long wParam, long lParam, boolean horzWhe
 
 LRESULT wmScroll (ScrollBar bar, boolean update, long hwnd, int msg, long wParam, long lParam) {
 	LRESULT result = null;
+	
 	if (update) {
 		int type = msg == OS.WM_HSCROLL ? OS.SB_HORZ : OS.SB_VERT;
 		SCROLLINFO info = new SCROLLINFO ();
