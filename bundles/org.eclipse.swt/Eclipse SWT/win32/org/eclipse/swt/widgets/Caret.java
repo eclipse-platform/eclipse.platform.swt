@@ -121,12 +121,12 @@ long defaultFont () {
  */
 public Rectangle getBounds () {
 	checkWidget();
-	return Win32DPIUtils.scaleDown(getBoundsInPixels(), getZoom());
+	return Win32DPIUtils.pixelToPoint(getBoundsInPixels(), getZoom());
 }
 
 Rectangle getBoundsInPixels () {
 	if (image != null) {
-		Rectangle rect = Win32DPIUtils.scaleUp(image.getBounds(), getZoom());
+		Rectangle rect = Win32DPIUtils.pointToPixel(image.getBounds(), getZoom());
 		return new Rectangle (getXInPixels(), getYInPixels(), rect.width, rect.height);
 	}
 	if (width == 0) {
@@ -215,12 +215,12 @@ public Canvas getParent () {
  */
 public Point getSize () {
 	checkWidget();
-	return Win32DPIUtils.scaleDown(getSizeInPixels(), getZoom());
+	return Win32DPIUtils.pixelToPoint(getSizeInPixels(), getZoom());
 }
 
 Point getSizeInPixels () {
 	if (image != null) {
-		Rectangle rect = Win32DPIUtils.scaleUp(image.getBounds(), getZoom());
+		Rectangle rect = Win32DPIUtils.pointToPixel(image.getBounds(), getZoom());
 		return new Point (rect.width, rect.height);
 	}
 	if (width == 0) {
@@ -233,19 +233,19 @@ Point getSizeInPixels () {
 }
 
 private int getWidthInPixels() {
-	return Win32DPIUtils.scaleUp(width, getZoom());
+	return Win32DPIUtils.pointToPixel(width, getZoom());
 }
 
 private int getHeightInPixels() {
-	return Win32DPIUtils.scaleUp(height, getZoom());
+	return Win32DPIUtils.pointToPixel(height, getZoom());
 }
 
 private int getXInPixels() {
-	return Win32DPIUtils.scaleUp(x, getZoom());
+	return Win32DPIUtils.pointToPixel(x, getZoom());
 }
 
 private int getYInPixels() {
-	return Win32DPIUtils.scaleUp(y, getZoom());
+	return Win32DPIUtils.pointToPixel(y, getZoom());
 }
 
 /**

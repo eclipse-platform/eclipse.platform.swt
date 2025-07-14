@@ -309,7 +309,7 @@ public String getToolTipText () {
  */
 public int getWidth () {
 	checkWidget ();
-	return DPIUtil.scaleDown(getWidthInPixels(), getZoom());
+	return DPIUtil.pixelToPoint(getWidthInPixels(), getZoom());
 }
 
 int getWidthInPixels () {
@@ -413,7 +413,7 @@ public void pack () {
 		if (parent.sortColumn == this && parent.sortDirection != SWT.NONE) {
 			headerWidth += Table.SORT_WIDTH;
 		} else if (image != null) {
-			Rectangle bounds = Win32DPIUtils.scaleUp(image.getBounds(), getZoom());
+			Rectangle bounds = Win32DPIUtils.pointToPixel(image.getBounds(), getZoom());
 			headerWidth += bounds.width;
 		}
 		long hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
@@ -440,7 +440,7 @@ public void pack () {
 				if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
 				if (isDisposed () || parent.isDisposed ()) break;
 				Rectangle bounds = event.getBounds();
-				columnWidth = Math.max (columnWidth, Win32DPIUtils.scaleUp(bounds.x + bounds.width, getZoom()) - headerRect.left);
+				columnWidth = Math.max (columnWidth, Win32DPIUtils.pointToPixel(bounds.x + bounds.width, getZoom()) - headerRect.left);
 			}
 		}
 		if (newFont != 0) OS.SelectObject (hDC, oldFont);
@@ -854,7 +854,7 @@ public void setToolTipText (String string) {
  */
 public void setWidth (int width) {
 	checkWidget ();
-	setWidthInPixels(Win32DPIUtils.scaleUp(width, getZoom()));
+	setWidthInPixels(Win32DPIUtils.pointToPixel(width, getZoom()));
 }
 
 void setWidthInPixels (int width) {

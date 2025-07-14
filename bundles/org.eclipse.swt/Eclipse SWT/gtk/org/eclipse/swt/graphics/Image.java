@@ -439,7 +439,7 @@ public Image(Device device, Rectangle bounds) {
  * @see #dispose()
  */
 public Image(Device device, ImageData data) {
-	this(device, GtkDPIUtil.autoScaleUp(device, data), DPIUtil.getDeviceZoom());
+	this(device, GtkDPIUtil.pointToPixel(device, data), DPIUtil.getDeviceZoom());
 }
 
 private Image(Device device, ImageData data, int zoom) {
@@ -488,8 +488,8 @@ public Image(Device device, ImageData source, ImageData mask) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	currentDeviceZoom = DPIUtil.getDeviceZoom();
-	source = GtkDPIUtil.autoScaleUp (device, source);
-	mask = GtkDPIUtil.autoScaleUp (device, mask);
+	source = GtkDPIUtil.pointToPixel (device, source);
+	mask = GtkDPIUtil.pointToPixel (device, mask);
 	mask = ImageData.convertMask (mask);
 	ImageData image = new ImageData(source.width, source.height, source.depth, source.palette, source.scanlinePad, source.data);
 	image.maskPad = mask.scanlinePad;
@@ -1597,7 +1597,7 @@ private final class GtkDPIUtil {
 	/**
 	 * Auto-scale up ImageData to device zoom that is at 100%.
 	 */
-	public static ImageData autoScaleUp (Device device, final ImageData imageData) {
+	public static ImageData pointToPixel (Device device, final ImageData imageData) {
 		int imageDataZoomFactor = 100;
 		if (DPIUtil.getDeviceZoom() == imageDataZoomFactor || imageData == null || (device != null && !device.isAutoScalable())) return imageData;
 		float scaleFactor = (float) DPIUtil.getDeviceZoom() / imageDataZoomFactor;

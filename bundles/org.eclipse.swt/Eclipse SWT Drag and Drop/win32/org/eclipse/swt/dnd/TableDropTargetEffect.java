@@ -151,7 +151,7 @@ public class TableDropTargetEffect extends DropTargetEffect {
 		int effect = checkEffect(event.feedback);
 		long handle = table.handle;
 		Point coordinates = new Point(event.x, event.y);
-		coordinates = Win32DPIUtils.scaleUp(table.toControl(coordinates), DPIUtil.getZoomForAutoscaleProperty(table.nativeZoom)); // To Pixels
+		coordinates = Win32DPIUtils.pointToPixel(table.toControl(coordinates), DPIUtil.getZoomForAutoscaleProperty(table.nativeZoom)); // To Pixels
 		LVHITTESTINFO pinfo = new LVHITTESTINFO();
 		pinfo.x = coordinates.x;
 		pinfo.y = coordinates.y;

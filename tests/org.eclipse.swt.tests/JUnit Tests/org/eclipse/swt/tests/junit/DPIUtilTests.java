@@ -34,11 +34,11 @@ public class DPIUtilTests {
 		int valueAt200 = 10;
 		int valueAt150 = 7;
 		int valueAt100 = 5;
-		int scaledValue = DPIUtil.scaleDown(valueAt200, 200);
+		int scaledValue = DPIUtil.pixelToPoint(valueAt200, 200);
 		assertEquals(valueAt100, scaledValue, "Scaling down integer from 200 failed");
-		scaledValue = DPIUtil.scaleDown(valueAt150, 150);
+		scaledValue = DPIUtil.pixelToPoint(valueAt150, 150);
 		assertEquals(valueAt100, scaledValue, "Scaling down integer from 150 failed");
-		scaledValue = DPIUtil.scaleDown(valueAt100, 100);
+		scaledValue = DPIUtil.pixelToPoint(valueAt100, 100);
 		assertSame(valueAt100, scaledValue, "Scaling down integer without zoom change failed");
 	}
 
@@ -47,11 +47,11 @@ public class DPIUtilTests {
 		float valueAt200 = 10f;
 		float valueAt150 = 7.5f;
 		float valueAt100 = 5f;
-		float scaledValue = DPIUtil.scaleDown(valueAt200, 200);
+		float scaledValue = DPIUtil.pixelToPoint(valueAt200, 200);
 		assertEquals(valueAt100, scaledValue, .001f, "Scaling down float from 200 failed");
-		scaledValue = DPIUtil.scaleDown(valueAt150, 150);
+		scaledValue = DPIUtil.pixelToPoint(valueAt150, 150);
 		assertEquals(valueAt100, scaledValue, .001f, "Scaling down float from 150 failed");
-		scaledValue = DPIUtil.scaleDown(valueAt100, 100);
+		scaledValue = DPIUtil.pixelToPoint(valueAt100, 100);
 		assertEquals(valueAt100, scaledValue, .001f, "Scaling down float without zoom change failed");
 	}
 

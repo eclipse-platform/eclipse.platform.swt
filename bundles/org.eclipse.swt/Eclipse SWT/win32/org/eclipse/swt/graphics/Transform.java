@@ -190,8 +190,8 @@ public void getElements(float[] elements) {
 		Gdip.Matrix_GetElements(transformHandle.handle, elements);
 		Drawable drawable = getDevice();
 		int zoom = transformHandle.zoom;
-		elements[4] = Win32DPIUtils.scaleDown(drawable, elements[4], zoom);
-		elements[5] = Win32DPIUtils.scaleDown(drawable, elements[5], zoom);
+		elements[4] = Win32DPIUtils.pixelToPoint(drawable, elements[4], zoom);
+		elements[5] = Win32DPIUtils.pixelToPoint(drawable, elements[5], zoom);
 		return true;
 	});
 }
@@ -372,11 +372,11 @@ public void transform(float[] pointArray) {
 	applyUsingAnyHandle(transformHandle -> {
 		int length = pointArray.length;
 		for (int i = 0; i < length; i++) {
-			pointArray[i] = Win32DPIUtils.scaleUp(drawable, pointArray[i], transformHandle.zoom);
+			pointArray[i] = Win32DPIUtils.pointToPixel(drawable, pointArray[i], transformHandle.zoom);
 		}
 		Gdip.Matrix_TransformPoints(transformHandle.handle, pointArray, length / 2);
 		for (int i = 0; i < length; i++) {
-			pointArray[i] = Win32DPIUtils.scaleDown(drawable, pointArray[i], transformHandle.zoom);
+			pointArray[i] = Win32DPIUtils.pixelToPoint(drawable, pointArray[i], transformHandle.zoom);
 		}
 		return pointArray;
 	});
@@ -428,7 +428,7 @@ private class MultiplyOperation implements Operation {
 	public void apply(TransformHandle transformHandle) {
 		long handle = transformHandle.handle;
 		int zoom = transformHandle.zoom;
-		long newHandle = Gdip.Matrix_new(elements[0], elements[1], elements[2], elements[3], Win32DPIUtils.scaleUp(elements[4], zoom), Win32DPIUtils.scaleUp(elements[5], zoom));
+		long newHandle = Gdip.Matrix_new(elements[0], elements[1], elements[2], elements[3], Win32DPIUtils.pointToPixel(elements[4], zoom), Win32DPIUtils.pointToPixel(elements[5], zoom));
 		if (newHandle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		try {
 			Gdip.Matrix_Multiply(handle, newHandle, Gdip.MatrixOrderPrepend);
@@ -476,7 +476,7 @@ private class SetElementsOperation implements Operation {
 		Drawable drawable = getDevice();
 		long handle = transformHandle.handle;
 		int zoom = transformHandle.zoom;
-		Gdip.Matrix_SetElements(handle, m11, m12, m21, m22, Win32DPIUtils.scaleUp(drawable, dx, zoom), Win32DPIUtils.scaleUp(drawable, dy, zoom));
+		Gdip.Matrix_SetElements(handle, m11, m12, m21, m22, Win32DPIUtils.pointToPixel(drawable, dx, zoom), Win32DPIUtils.pointToPixel(drawable, dy, zoom));
 	}
 }
 
@@ -502,7 +502,7 @@ private class TranslateOperation implements Operation {
 		Drawable drawable = getDevice();
 		long handle = transformHandle.handle;
 		int zoom = transformHandle.zoom;
-		Gdip.Matrix_Translate(handle, Win32DPIUtils.scaleUp(drawable, offsetX, zoom), Win32DPIUtils.scaleUp(drawable, offsetY, zoom), Gdip.MatrixOrderPrepend);
+		Gdip.Matrix_Translate(handle, Win32DPIUtils.pointToPixel(drawable, offsetX, zoom), Win32DPIUtils.pointToPixel(drawable, offsetY, zoom), Gdip.MatrixOrderPrepend);
 	}
 }
 

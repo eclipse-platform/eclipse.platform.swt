@@ -358,7 +358,7 @@ public void setAutoHide (boolean autoHide) {
 public void setLocation (int x, int y) {
 	checkWidget ();
 	int zoom = getZoom();
-	setLocationInPixels(Win32DPIUtils.scaleUp(x, zoom), Win32DPIUtils.scaleUp(y, zoom));
+	setLocationInPixels(Win32DPIUtils.pointToPixel(x, zoom), Win32DPIUtils.pointToPixel(y, zoom));
 }
 
 void setLocationInPixels (int x, int y) {
@@ -393,7 +393,7 @@ void setLocationInPixels (int x, int y) {
 public void setLocation (Point location) {
 	checkWidget ();
 	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);
-	location = Win32DPIUtils.scaleUp(location, getZoom());
+	location = Win32DPIUtils.pointToPixel(location, getZoom());
 	setLocationInPixels(location.x, location.y);
 }
 

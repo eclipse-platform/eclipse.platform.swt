@@ -362,10 +362,10 @@ int computeLeftMargin () {
 					Rectangle rect = Win32DPIUtils.scaleBounds(image.getBounds(), this.getZoom(), 100);
 					width = rect.width;
 					if (hasText && text.length () != 0) {
-						width += Win32DPIUtils.scaleUp(MARGIN * 2, getZoom());;
+						width += Win32DPIUtils.pointToPixel(MARGIN * 2, getZoom());;
 					}
 					height = rect.height;
-					extra = Win32DPIUtils.scaleUp(MARGIN * 2, getZoom());;
+					extra = Win32DPIUtils.pointToPixel(MARGIN * 2, getZoom());;
 				}
 			}
 			if (hasText) {
@@ -379,7 +379,7 @@ int computeLeftMargin () {
 				if (length == 0) {
 					height = Math.max (height, lptm.tmHeight);
 				} else {
-					extra = Math.max (Win32DPIUtils.scaleUp(MARGIN * 2, getZoom()), lptm.tmAveCharWidth);
+					extra = Math.max (Win32DPIUtils.pointToPixel(MARGIN * 2, getZoom()), lptm.tmAveCharWidth);
 					char [] buffer = text.toCharArray ();
 					RECT rect = new RECT ();
 					int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE;
@@ -1315,7 +1315,7 @@ private int getCheckboxTextOffset(long hdc) {
 		OS.GetThemePartSize(display.hButtonTheme(nativeZoom), hdc, OS.BP_CHECKBOX, OS.CBS_UNCHECKEDNORMAL, null, OS.TS_TRUE, size);
 		result += size.cx;
 	} else {
-		result += Win32DPIUtils.scaleUp(13, nativeZoom);
+		result += Win32DPIUtils.pointToPixel(13, nativeZoom);
 	}
 
 	// Windows uses half width of '0' as checkbox-to-text distance.
@@ -1399,7 +1399,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 							int x = margin + (isRadioOrCheck() ? radioOrCheckTextPadding : 3);
 							int y = Math.max (0, (nmcd.bottom - imageBounds.height) / 2);
 							int zoom = getZoom();
-							gc.drawImage (image, DPIUtil.scaleDown(x, zoom), DPIUtil.scaleDown(y, zoom));
+							gc.drawImage (image, DPIUtil.pixelToPoint(x, zoom), DPIUtil.pixelToPoint(y, zoom));
 							gc.dispose ();
 						}
 

@@ -1216,22 +1216,22 @@ LRESULT wmDrawChild(long wParam, long lParam) {
 			}
 			Rectangle menuItemBounds = this.getBounds();
 
-			int fillMenuWidth =  DPIUtil.scaleDown(menuItemBounds.width, zoom);
-			int fillMenuHeight = DPIUtil.scaleDown(menuItemBounds.height, zoom);
-			menuItemArea = new Rectangle(DPIUtil.scaleDown(x, zoom), DPIUtil.scaleDown(struct.top, zoom), fillMenuWidth, fillMenuHeight);
+			int fillMenuWidth =  DPIUtil.pixelToPoint(menuItemBounds.width, zoom);
+			int fillMenuHeight = DPIUtil.pixelToPoint(menuItemBounds.height, zoom);
+			menuItemArea = new Rectangle(DPIUtil.pixelToPoint(x, zoom), DPIUtil.pixelToPoint(struct.top, zoom), fillMenuWidth, fillMenuHeight);
 
 			gc.setForeground(isInactive ? display.getSystemColor(SWT.COLOR_GRAY) : display.getSystemColor(SWT.COLOR_WHITE));
 			gc.setBackground(isSelected ? display.getSystemColor(SWT.COLOR_DARK_GRAY) : parent.getBackground());
 			gc.fillRectangle(menuItemArea);
 
-			int xPositionText = LEFT_TEXT_MARGIN + DPIUtil.scaleDown(x, zoom) + (this.image != null ? this.image.getBounds().width + IMAGE_TEXT_GAP : 0);
-			int yPositionText = DPIUtil.scaleDown(struct.top, zoom) + MARGIN_HEIGHT;
+			int xPositionText = LEFT_TEXT_MARGIN + DPIUtil.pixelToPoint(x, zoom) + (this.image != null ? this.image.getBounds().width + IMAGE_TEXT_GAP : 0);
+			int yPositionText = DPIUtil.pixelToPoint(struct.top, zoom) + MARGIN_HEIGHT;
 			gc.drawText(drawnText, xPositionText, yPositionText, flags);
 		}
 		if (image != null) {
 			Image image = getEnabled() ? this.image : new Image(display, this.image, SWT.IMAGE_DISABLE);
 			int gap = (menuItemArea.height - image.getBounds().height) / 2;
-			gc.drawImage(image, LEFT_TEXT_MARGIN + DPIUtil.scaleDown(x, zoom), gap + DPIUtil.scaleDown(struct.top, zoom));
+			gc.drawImage(image, LEFT_TEXT_MARGIN + DPIUtil.pixelToPoint(x, zoom), gap + DPIUtil.pixelToPoint(struct.top, zoom));
 			if (this.image != image) {
 				image.dispose();
 			}
@@ -1252,7 +1252,7 @@ LRESULT wmMeasureChild (long wParam, long lParam) {
 		if (parent.needsMenuCallback()) {
 			Point point = calculateRenderedTextSize();
 			int menuZoom = getDisplay().isRescalingAtRuntime() ? super.getZoom() : getMonitorZoom();
-			struct.itemHeight = Win32DPIUtils.scaleUp(point.y, menuZoom);
+			struct.itemHeight = Win32DPIUtils.pointToPixel(point.y, menuZoom);
 			/*
 			 * Weirdness in Windows. Setting `HBMMENU_CALLBACK` causes
 			 * item sizes to mean something else. It seems that it is
@@ -1262,7 +1262,7 @@ LRESULT wmMeasureChild (long wParam, long lParam) {
 			 * that value of 5 works well in matching text to mnemonic.
 			 */
 			int horizontalSpaceImage = this.image != null ? this.image.getBounds().width + IMAGE_TEXT_GAP: 0;
-			struct.itemWidth = Win32DPIUtils.scaleUp(LEFT_TEXT_MARGIN + point.x - WINDOWS_OVERHEAD + horizontalSpaceImage, menuZoom);
+			struct.itemWidth = Win32DPIUtils.pointToPixel(LEFT_TEXT_MARGIN + point.x - WINDOWS_OVERHEAD + horizontalSpaceImage, menuZoom);
 			OS.MoveMemory (lParam, struct, MEASUREITEMSTRUCT.sizeof);
 			return null;
 		}
@@ -1270,7 +1270,7 @@ LRESULT wmMeasureChild (long wParam, long lParam) {
 
 	int width = 0, height = 0;
 	if (image != null) {
-		Rectangle rect = Win32DPIUtils.scaleUp(image.getBounds(), getZoom());
+		Rectangle rect = Win32DPIUtils.pointToPixel(image.getBounds(), getZoom());
 		width = rect.width;
 		height = rect.height;
 	} else {
@@ -1292,7 +1292,7 @@ LRESULT wmMeasureChild (long wParam, long lParam) {
 		if ((lpcmi.dwStyle & OS.MNS_CHECKORBMP) == 0) {
 			for (MenuItem item : parent.getItems ()) {
 				if (item.image != null) {
-					Rectangle rect = Win32DPIUtils.scaleUp(item.image.getBounds(), getZoom());
+					Rectangle rect = Win32DPIUtils.pointToPixel(item.image.getBounds(), getZoom());
 					width = Math.max (width, rect.width);
 				}
 			}
@@ -1326,7 +1326,7 @@ private Point calculateRenderedTextSize() {
 			// GC calculated height of 15px, scales down with adjusted zoom of 100% and returns 15pt -> should be 10pt
 			// this calculation is corrected by the following line
 			// This is the only place, where the GC needs to use the native zoom to do that, therefore it is fixed only here
-			points = Win32DPIUtils.scaleDown(Win32DPIUtils.scaleUp(points, adjustedPrimaryMonitorZoom), primaryMonitorZoom);
+			points = Win32DPIUtils.pixelToPoint(Win32DPIUtils.pointToPixel(points, adjustedPrimaryMonitorZoom), primaryMonitorZoom);
 		}
 	}
 	return points;

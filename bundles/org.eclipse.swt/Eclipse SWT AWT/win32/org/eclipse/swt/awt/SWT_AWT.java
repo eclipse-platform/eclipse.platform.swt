@@ -250,7 +250,7 @@ public static Frame new_Frame (final Composite parent) {
 
 	parent.getDisplay().asyncExec(() -> {
 		if (parent.isDisposed()) return;
-		final Rectangle clientArea = Win32DPIUtils.scaleUp(parent.getClientArea(), DPIUtil.getZoomForAutoscaleProperty(parent.nativeZoom)); // To Pixels
+		final Rectangle clientArea = Win32DPIUtils.pointToPixel(parent.getClientArea(), DPIUtil.getZoomForAutoscaleProperty(parent.nativeZoom)); // To Pixels
 		EventQueue.invokeLater(() -> {
 			frame.setSize (clientArea.width, clientArea.height);
 			frame.validate ();
@@ -293,7 +293,7 @@ public static Shell new_Shell (final Display display, final Canvas parent) {
 			display.syncExec (() -> {
 				if (shell.isDisposed()) return;
 				Dimension dim = parent.getSize ();
-				shell.setSize(Win32DPIUtils.scaleDown(new Point(dim.width, dim.height), DPIUtil.getDeviceZoom())); // To Points
+				shell.setSize(Win32DPIUtils.pixelToPoint(new Point(dim.width, dim.height), DPIUtil.getDeviceZoom())); // To Points
 			});
 		}
 	};

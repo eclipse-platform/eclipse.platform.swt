@@ -193,8 +193,8 @@ public boolean contains (int x, int y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return applyUsingAnyHandle(regionHandle -> {
 		int zoom = regionHandle.zoom();
-		int xInPixels = Win32DPIUtils.scaleUp(x, zoom);
-		int yInPixels = Win32DPIUtils.scaleUp(y, zoom);
+		int xInPixels = Win32DPIUtils.pointToPixel(x, zoom);
+		int yInPixels = Win32DPIUtils.pointToPixel(y, zoom);
 		return containsInPixels(regionHandle.handle(), xInPixels, yInPixels);
 	});
 }
@@ -223,7 +223,7 @@ public boolean contains (Point pt) {
 	if (pt == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	return applyUsingAnyHandle(regionHandle -> {
 		int zoom = regionHandle.zoom();
-		Point p = Win32DPIUtils.scaleUp(pt, zoom);
+		Point p = Win32DPIUtils.pointToPixel(pt, zoom);
 		return containsInPixels(regionHandle.handle(), p.x, p.y);
 	});
 }
@@ -280,7 +280,7 @@ public boolean equals (Object object) {
 public Rectangle getBounds () {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return applyUsingAnyHandle(regionHandle -> {
-		return Win32DPIUtils.scaleDown(getBoundsInPixels(regionHandle.handle()), regionHandle.zoom());
+		return Win32DPIUtils.pixelToPoint(getBoundsInPixels(regionHandle.handle()), regionHandle.zoom());
 	});
 }
 
@@ -427,7 +427,7 @@ public boolean intersects (Rectangle rect) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	return applyUsingAnyHandle(regionHandle -> {
-		Rectangle r = Win32DPIUtils.scaleUp(rect, regionHandle.zoom());
+		Rectangle r = Win32DPIUtils.pointToPixel(rect, regionHandle.zoom());
 		return intersectsInPixels(regionHandle.handle(), r.x, r.y, r.width, r.height);
 	});
 }
@@ -761,7 +761,7 @@ private static class OperationWithRectangle extends Operation {
 	}
 
 	private Rectangle getScaledRectangle(int zoom) {
-		return Win32DPIUtils.scaleUp(data, zoom);
+		return Win32DPIUtils.pointToPixel(data, zoom);
 	}
 
 }
@@ -809,7 +809,7 @@ private static class OperationWithArray extends Operation {
 	}
 
 	private int[] getScaledPoints(int zoom) {
-		return Win32DPIUtils.scaleUp(data, zoom);
+		return Win32DPIUtils.pointToPixel(data, zoom);
 	}
 }
 
@@ -838,7 +838,7 @@ private static class OperationWithPoint extends Operation {
 
 	@Override
 	void translate(long handle, int zoom) {
-		Point pt = Win32DPIUtils.scaleUp((Point) data, zoom);
+		Point pt = Win32DPIUtils.pointToPixel((Point) data, zoom);
 		OS.OffsetRgn (handle, pt.x, pt.y);
 	}
 

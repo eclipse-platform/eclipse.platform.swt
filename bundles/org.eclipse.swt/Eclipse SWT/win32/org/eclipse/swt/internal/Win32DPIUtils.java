@@ -68,7 +68,7 @@ public class Win32DPIUtils {
 		}
 	}
 
-	public static float[] scaleDown(float size[], int zoom) {
+	public static float[] pixelToPoint(float size[], int zoom) {
 		if (zoom == 100 || size == null) return size;
 		float scaleFactor = DPIUtil.getScalingFactor (zoom);
 		float scaledSize[] = new float[size.length];
@@ -78,22 +78,22 @@ public class Win32DPIUtils {
 		return scaledSize;
 	}
 
-	public static float[] scaleDown(Drawable drawable, float size[], int zoom) {
+	public static float[] pixelToPoint(Drawable drawable, float size[], int zoom) {
 		if (drawable != null && !drawable.isAutoScalable()) return size;
-		return scaleDown(size, zoom);
+		return pixelToPoint(size, zoom);
 	}
 
-	public static int scaleDown(Drawable drawable, int size, int zoom) {
+	public static int pixelToPoint(Drawable drawable, int size, int zoom) {
 		if (drawable != null && !drawable.isAutoScalable()) return size;
-		return DPIUtil.scaleDown (size, zoom);
+		return DPIUtil.pixelToPoint (size, zoom);
 	}
 
-	public static float scaleDown(Drawable drawable, float size, int zoom) {
+	public static float pixelToPoint(Drawable drawable, float size, int zoom) {
 		if (drawable != null && !drawable.isAutoScalable()) return size;
-		return DPIUtil.scaleDown (size, zoom);
+		return DPIUtil.pixelToPoint (size, zoom);
 	}
 
-	public static Point scaleDown(Point point, int zoom) {
+	public static Point pixelToPoint(Point point, int zoom) {
 		if (zoom == 100 || point == null) return point;
 		Point.OfFloat fPoint = FloatAwareGeometryFactory.createFrom(point);
 		float scaleFactor = DPIUtil.getScalingFactor(zoom);
@@ -102,18 +102,18 @@ public class Win32DPIUtils {
 		return new Point.OfFloat(scaledX, scaledY);
 	}
 
-	public static Point scaleDown(Drawable drawable, Point point, int zoom) {
+	public static Point pixelToPoint(Drawable drawable, Point point, int zoom) {
 		if (drawable != null && !drawable.isAutoScalable()) return point;
-		return scaleDown (point, zoom);
+		return pixelToPoint (point, zoom);
 	}
 
-	public static Rectangle scaleDown(Rectangle rect, int zoom) {
+	public static Rectangle pixelToPoint(Rectangle rect, int zoom) {
 		return scaleBounds(rect, 100, zoom);
 	}
 
-	public static Rectangle scaleDown(Drawable drawable, Rectangle rect, int zoom) {
+	public static Rectangle pixelToPoint(Drawable drawable, Rectangle rect, int zoom) {
 		if (drawable != null && !drawable.isAutoScalable()) return rect;
-		return scaleDown (rect, zoom);
+		return pixelToPoint (rect, zoom);
 	}
 
 	/**
@@ -130,7 +130,7 @@ public class Win32DPIUtils {
 		return new Rectangle.OfFloat(scaledX, scaledY, scaledWidth, scaledHeight);
 	}
 
-	public static int[] scaleUp(int[] pointArray, int zoom) {
+	public static int[] pointToPixel(int[] pointArray, int zoom) {
 		if (zoom == 100 || pointArray == null) return pointArray;
 		float scaleFactor = DPIUtil.getScalingFactor(zoom);
 		int[] returnArray = new int[pointArray.length];
@@ -140,37 +140,37 @@ public class Win32DPIUtils {
 		return returnArray;
 	}
 
-	public static int[] scaleUp(Drawable drawable, int[] pointArray, int zoom) {
+	public static int[] pointToPixel(Drawable drawable, int[] pointArray, int zoom) {
 		if (drawable != null && !drawable.isAutoScalable()) return pointArray;
-		return scaleUp (pointArray, zoom);
+		return pointToPixel (pointArray, zoom);
 	}
 
 	/**
 	 * Auto-scale up int dimensions to match the given zoom level
 	 */
-	public static int scaleUp(int size, int zoom) {
+	public static int pointToPixel(int size, int zoom) {
 		if (zoom == 100 || size == SWT.DEFAULT) return size;
 		float scaleFactor = DPIUtil.getScalingFactor(zoom);
 		return Math.round (size * scaleFactor);
 	}
 
-	public static int scaleUp(Drawable drawable, int size, int zoom) {
+	public static int pointToPixel(Drawable drawable, int size, int zoom) {
 		if (drawable != null && !drawable.isAutoScalable()) return size;
-		return scaleUp (size, zoom);
+		return pointToPixel (size, zoom);
 	}
 
-	public static float scaleUp(float size, int zoom) {
+	public static float pointToPixel(float size, int zoom) {
 		if (zoom == 100 || size == SWT.DEFAULT) return size;
 		float scaleFactor = DPIUtil.getScalingFactor(zoom);
 		return (size * scaleFactor);
 	}
 
-	public static float scaleUp(Drawable drawable, float size, int zoom) {
+	public static float pointToPixel(Drawable drawable, float size, int zoom) {
 		if (drawable != null && !drawable.isAutoScalable()) return size;
-		return scaleUp (size, zoom);
+		return pointToPixel (size, zoom);
 	}
 
-	public static Point scaleUp(Point point, int zoom) {
+	public static Point pointToPixel(Point point, int zoom) {
 		if (zoom == 100 || point == null) return point;
 		Point.OfFloat fPoint = FloatAwareGeometryFactory.createFrom(point);
 		float scaleFactor = DPIUtil.getScalingFactor(zoom);
@@ -179,18 +179,18 @@ public class Win32DPIUtils {
 		return new Point.OfFloat(scaledX, scaledY);
 	}
 
-	public static Point scaleUp(Drawable drawable, Point point, int zoom) {
+	public static Point pointToPixel(Drawable drawable, Point point, int zoom) {
 		if (drawable != null && !drawable.isAutoScalable()) return point;
-		return scaleUp (point, zoom);
+		return pointToPixel (point, zoom);
 	}
 
-	public static Rectangle scaleUp(Rectangle rect, int zoom) {
+	public static Rectangle pointToPixel(Rectangle rect, int zoom) {
 		return scaleBounds(rect, zoom, 100);
 	}
 
-	public static Rectangle scaleUp(Drawable drawable, Rectangle rect, int zoom) {
+	public static Rectangle pointToPixel(Drawable drawable, Rectangle rect, int zoom) {
 		if (drawable != null && !drawable.isAutoScalable()) return rect;
-		return scaleUp (rect, zoom);
+		return pointToPixel (rect, zoom);
 	}
 
 	/**

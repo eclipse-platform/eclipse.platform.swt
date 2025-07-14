@@ -41,79 +41,79 @@ class SingleZoomCoordinateSystemMapper implements CoordinateSystemMapper {
 	@Override
 	public Point map(Control from, Control to, Point point) {
 		int zoom = getZoomLevelForMapping(from, to);
-		point = Win32DPIUtils.scaleUp(point, zoom);
-		return Win32DPIUtils.scaleDown(display.mapInPixels(from, to, point), zoom);
+		point = Win32DPIUtils.pointToPixel(point, zoom);
+		return Win32DPIUtils.pixelToPoint(display.mapInPixels(from, to, point), zoom);
 	}
 
 	@Override
 	public Rectangle map(Control from, Control to, Rectangle rectangle) {
 		int zoom = getZoomLevelForMapping(from, to);
-		rectangle = Win32DPIUtils.scaleUp(rectangle, zoom);
-		return Win32DPIUtils.scaleDown(display.mapInPixels(from, to, rectangle), zoom);
+		rectangle = Win32DPIUtils.pointToPixel(rectangle, zoom);
+		return Win32DPIUtils.pixelToPoint(display.mapInPixels(from, to, rectangle), zoom);
 	}
 
 	@Override
 	public Point map(Control from, Control to, int x, int y) {
 		int zoom = getZoomLevelForMapping(from, to);
-		x = Win32DPIUtils.scaleUp(x, zoom);
-		y = Win32DPIUtils.scaleUp(y, zoom);
-		return Win32DPIUtils.scaleDown(display.mapInPixels(from, to, x, y), zoom);
+		x = Win32DPIUtils.pointToPixel(x, zoom);
+		y = Win32DPIUtils.pointToPixel(y, zoom);
+		return Win32DPIUtils.pixelToPoint(display.mapInPixels(from, to, x, y), zoom);
 	}
 
 	@Override
 	public Rectangle map(Control from, Control to, int x, int y, int width, int height) {
 		int zoom = getZoomLevelForMapping(from, to);
-		x = Win32DPIUtils.scaleUp(x, zoom);
-		y = Win32DPIUtils.scaleUp(y, zoom);
-		width = Win32DPIUtils.scaleUp(width, zoom);
-		height = Win32DPIUtils.scaleUp(height, zoom);
-		return Win32DPIUtils.scaleDown(display.mapInPixels(from, to, x, y, width, height), zoom);
+		x = Win32DPIUtils.pointToPixel(x, zoom);
+		y = Win32DPIUtils.pointToPixel(y, zoom);
+		width = Win32DPIUtils.pointToPixel(width, zoom);
+		height = Win32DPIUtils.pointToPixel(height, zoom);
+		return Win32DPIUtils.pixelToPoint(display.mapInPixels(from, to, x, y, width, height), zoom);
 	}
 
 	@Override
 	public Rectangle mapMonitorBounds(Rectangle rect, int zoom) {
-		return Win32DPIUtils.scaleDown(rect, zoom);
+		return Win32DPIUtils.pixelToPoint(rect, zoom);
 	}
 
 	@Override
 	public Point translateFromDisplayCoordinates(Point point, int zoom) {
-		return Win32DPIUtils.scaleDown(point, zoom);
+		return Win32DPIUtils.pixelToPoint(point, zoom);
 	}
 
 	@Override
 	public Point translateToDisplayCoordinates(Point point, int zoom) {
-		return Win32DPIUtils.scaleUp(point, zoom);
+		return Win32DPIUtils.pointToPixel(point, zoom);
 	}
 
 	@Override
 	public Rectangle translateFromDisplayCoordinates(Rectangle rect, int zoom) {
-		return Win32DPIUtils.scaleDown(rect, zoom);
+		return Win32DPIUtils.pixelToPoint(rect, zoom);
 	}
 
 	@Override
 	public Rectangle translateToDisplayCoordinates(Rectangle rect, int zoom) {
-		return Win32DPIUtils.scaleUp(rect, zoom);
+		return Win32DPIUtils.pointToPixel(rect, zoom);
 	}
 
 	@Override
 	public Point getCursorLocation() {
 		int zoom = DPIUtil.getDeviceZoom();
 		Point cursorLocationInPixels = display.getCursorLocationInPixels();
-		return Win32DPIUtils.scaleDown(cursorLocationInPixels, zoom);
+		return Win32DPIUtils.pixelToPoint(cursorLocationInPixels, zoom);
 	}
 
 	@Override
 	public void setCursorLocation(int x, int y) {
 		int zoom = DPIUtil.getDeviceZoom();
-		display.setCursorLocationInPixels(Win32DPIUtils.scaleUp(x, zoom), Win32DPIUtils.scaleUp(y, zoom));
+		display.setCursorLocationInPixels(Win32DPIUtils.pointToPixel(x, zoom), Win32DPIUtils.pointToPixel(y, zoom));
 	}
 
 	@Override
 	public Rectangle getContainingMonitorBoundsInPixels(Point point) {
 		int zoom = DPIUtil.getDeviceZoom();
-		point = Win32DPIUtils.scaleUp(point, zoom);
+		point = Win32DPIUtils.pointToPixel(point, zoom);
 		for (Monitor monitor : display.getMonitors()) {
-			Rectangle monitorBounds = Win32DPIUtils.scaleUp(monitor.getBounds(), zoom);
+			Rectangle monitorBounds = Win32DPIUtils.pointToPixel(monitor.getBounds(), zoom);
 			if (monitorBounds.contains(point)) {
 				return monitorBounds;
 			}

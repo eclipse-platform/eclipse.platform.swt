@@ -405,7 +405,7 @@ public Rectangle [] getRectangles () {
 	checkWidget();
 	Rectangle [] result = getRectanglesInPixels();
 	for (int i = 0; i < result.length; i++) {
-		result[i] = Win32DPIUtils.scaleDown(result[i], getZoom());
+		result[i] = Win32DPIUtils.pixelToPoint(result[i], getZoom());
 	}
 	return result;
 }
@@ -846,7 +846,7 @@ public void setRectangles (Rectangle [] rectangles) {
 	if (rectangles == null) error (SWT.ERROR_NULL_ARGUMENT);
 	Rectangle [] rectanglesInPixels = new Rectangle [rectangles.length];
 	for (int i = 0; i < rectangles.length; i++) {
-		rectanglesInPixels [i] = Win32DPIUtils.scaleUp (rectangles [i], getZoom());
+		rectanglesInPixels [i] = Win32DPIUtils.pointToPixel (rectangles [i], getZoom());
 	}
 	setRectanglesInPixels (rectanglesInPixels);
 }
@@ -999,7 +999,7 @@ LRESULT wmKeyDown (long hwnd, long wParam, long lParam) {
 			rectsToErase [i] = new Rectangle (current.x, current.y, current.width, current.height);
 		}
 		Event event = new Event ();
-		event.setLocation(DPIUtil.scaleDown(oldX + xChange, getZoom()), DPIUtil.scaleDown(oldY + yChange, getZoom()));
+		event.setLocation(DPIUtil.pixelToPoint(oldX + xChange, getZoom()), DPIUtil.pixelToPoint(oldY + yChange, getZoom()));
 		Point cursorPos;
 		if ((style & SWT.RESIZE) != 0) {
 			resizeRectangles (xChange, yChange);
@@ -1120,7 +1120,7 @@ LRESULT wmMouse (int message, long wParam, long lParam) {
 		}
 		Event event = new Event ();
 		int zoom = getZoom();
-		event.setLocation(DPIUtil.scaleDown(newX, zoom), DPIUtil.scaleDown(newY, zoom));
+		event.setLocation(DPIUtil.pixelToPoint(newX, zoom), DPIUtil.pixelToPoint(newY, zoom));
 		if ((style & SWT.RESIZE) != 0) {
 			if (isMirrored) {
 				resizeRectangles (oldX - newX, newY - oldY);

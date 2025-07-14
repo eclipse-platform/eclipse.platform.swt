@@ -104,7 +104,7 @@ public Canvas (Composite parent, int style) {
  */
 public void drawBackground (GC gc, int x, int y, int width, int height) {
 	int zoom = getZoom();
-	Rectangle rectangle = Win32DPIUtils.scaleUp(new Rectangle(x, y, width, height), zoom);
+	Rectangle rectangle = Win32DPIUtils.pointToPixel(new Rectangle(x, y, width, height), zoom);
 	drawBackgroundInPixels(gc, rectangle.x, rectangle.y, rectangle.width, rectangle.height, 0, 0);
 }
 
@@ -198,9 +198,9 @@ void reskinChildren (int flags) {
 public void scroll (int destX, int destY, int x, int y, int width, int height, boolean all) {
 	checkWidget ();
 	int zoom = getZoom();
-	destX = Win32DPIUtils.scaleUp(destX, zoom);
-	destY = Win32DPIUtils.scaleUp(destY, zoom);
-	Rectangle rectangle = Win32DPIUtils.scaleUp(new Rectangle(x, y, width, height), zoom);
+	destX = Win32DPIUtils.pointToPixel(destX, zoom);
+	destY = Win32DPIUtils.pointToPixel(destY, zoom);
+	Rectangle rectangle = Win32DPIUtils.pointToPixel(new Rectangle(x, y, width, height), zoom);
 	scrollInPixels(destX, destY, rectangle.x, rectangle.y, rectangle.width, rectangle.height, all);
 }
 

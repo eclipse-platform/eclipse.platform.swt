@@ -379,10 +379,10 @@ void computeRuns (GC gc) {
 	}
 	SCRIPT_LOGATTR logAttr = new SCRIPT_LOGATTR();
 	SCRIPT_PROPERTIES properties = new SCRIPT_PROPERTIES();
-	int wrapIndentInPixels = Win32DPIUtils.scaleUp(wrapIndent, getZoom(gc));
-	int indentInPixels = Win32DPIUtils.scaleUp(indent, getZoom(gc));
-	int wrapWidthInPixels = Win32DPIUtils.scaleUp(wrapWidth, getZoom(gc));
-	int[] tabsInPixels = Win32DPIUtils.scaleUp(tabs, getZoom(gc));
+	int wrapIndentInPixels = Win32DPIUtils.pointToPixel(wrapIndent, getZoom(gc));
+	int indentInPixels = Win32DPIUtils.pointToPixel(indent, getZoom(gc));
+	int wrapWidthInPixels = Win32DPIUtils.pointToPixel(wrapWidth, getZoom(gc));
+	int[] tabsInPixels = Win32DPIUtils.pointToPixel(tabs, getZoom(gc));
 	int lineWidth = indentInPixels, lineStart = 0, lineCount = 1;
 	for (int i=0; i<allRuns.length - 1; i++) {
 		StyleItem run = allRuns[i];
@@ -549,8 +549,8 @@ void computeRuns (GC gc) {
 				TEXTMETRIC lptm = new TEXTMETRIC();
 				OS.SelectObject(srcHdc, getItemFont(run, gc));
 				metricsAdapter.GetTextMetrics(srcHdc, lptm);
-				run.ascentInPoints = Win32DPIUtils.scaleDown(getDevice(), lptm.tmAscent, getZoom(gc));
-				run.descentInPoints = Win32DPIUtils.scaleDown(getDevice(), lptm.tmDescent, getZoom(gc));
+				run.ascentInPoints = Win32DPIUtils.pixelToPoint(getDevice(), lptm.tmAscent, getZoom(gc));
+				run.descentInPoints = Win32DPIUtils.pixelToPoint(getDevice(), lptm.tmDescent, getZoom(gc));
 				ascentInPoints = Math.max(ascentInPoints, run.ascentInPoints);
 				descentInPoints = Math.max(descentInPoints, run.descentInPoints);
 			}
@@ -835,16 +835,16 @@ void drawInPixels (GC gc, int xInPoints, int yInPoints, int selectionStart, int 
 			selectionEnd = translateOffset(Math.min(Math.max(0, selectionEnd), length - 1));
 		}
 	}
-	int x = Win32DPIUtils.scaleUp(getDevice(), xInPoints, getZoom(gc));
+	int x = Win32DPIUtils.pointToPixel(getDevice(), xInPoints, getZoom(gc));
 	RECT rect = new RECT();
 	OS.SetBkMode(hdc, OS.TRANSPARENT);
 	for (int line=0; line<runs.length; line++) {
 		int drawX = x + getLineIndentInPixel(line);
-		int drawY = Win32DPIUtils.scaleUp(getDevice(), yInPoints + lineY[line], getZoom(gc));
+		int drawY = Win32DPIUtils.pointToPixel(getDevice(), yInPoints + lineY[line], getZoom(gc));
 		StyleItem[] lineRuns = runs[line];
-		int drawYWithLineHeight = Win32DPIUtils.scaleUp(getDevice(), yInPoints + lineY[line+1] - lineSpacingInPoints, getZoom(gc));
-		int drawYWithLineHeightWithSpacing = Win32DPIUtils.scaleUp(getDevice(), yInPoints + lineY[line+1], getZoom(gc));
-		int lineHeight = Win32DPIUtils.scaleUp(getDevice(), lineY[line+1] - lineY[line] - lineSpacingInPoints, getZoom(gc));
+		int drawYWithLineHeight = Win32DPIUtils.pointToPixel(getDevice(), yInPoints + lineY[line+1] - lineSpacingInPoints, getZoom(gc));
+		int drawYWithLineHeightWithSpacing = Win32DPIUtils.pointToPixel(getDevice(), yInPoints + lineY[line+1], getZoom(gc));
+		int lineHeight = Win32DPIUtils.pointToPixel(getDevice(), lineY[line+1] - lineY[line] - lineSpacingInPoints, getZoom(gc));
 		int lineHeightWithSpacing = drawYWithLineHeightWithSpacing - drawY;
 		//Draw last line selection
 		boolean extents = false;
@@ -903,10 +903,10 @@ void drawInPixels (GC gc, int xInPoints, int yInPoints, int selectionStart, int 
 		}
 
 		//Draw the text, underline, strikeout, and border of the runs in the line
-		int baselineInPixels = Math.max(0, Win32DPIUtils.scaleUp(getDevice(), ascent, getZoom(gc)));
+		int baselineInPixels = Math.max(0, Win32DPIUtils.pointToPixel(getDevice(), ascent, getZoom(gc)));
 		int lineUnderlinePos = 0;
 		for (StyleItem run : lineRuns) {
-			baselineInPixels = Math.max(baselineInPixels, Win32DPIUtils.scaleUp(getDevice(), run.ascentInPoints, getZoom(gc)));
+			baselineInPixels = Math.max(baselineInPixels, Win32DPIUtils.pointToPixel(getDevice(), run.ascentInPoints, getZoom(gc)));
 			lineUnderlinePos = Math.min(lineUnderlinePos, run.underlinePos);
 		}
 		RECT borderClip = null, underlineClip = null, strikeoutClip = null, pRect = null;
@@ -1186,7 +1186,7 @@ RECT drawRunText(GC gc, long hdc, StyleItem run, RECT rect, int baselineInPixels
 	boolean partialSelection = hasSelection && !fullSelection && !(selectionStart > end || run.start > selectionEnd);
 	int offset = (orientation & SWT.RIGHT_TO_LEFT) != 0 ? -1 : 0;
 	int x = rect.left + offset;
-	int y = rect.top + (baselineInPixels - Win32DPIUtils.scaleUp(getDevice(), run.ascentInPoints, getZoom(gc)));
+	int y = rect.top + (baselineInPixels - Win32DPIUtils.pointToPixel(getDevice(), run.ascentInPoints, getZoom(gc)));
 	long hFont = getItemFont(run, gc);
 	OS.SelectObject(hdc, hFont);
 	if (fullSelection) {
@@ -1217,7 +1217,7 @@ RECT drawRunTextGDIP(GC gc, long graphics, StyleItem run, RECT rect, long gdipFo
 	// rendering (such as ScriptTextOut()) which put top of the character
 	// at requested position.
 	int drawY = rect.top + baselineInPixels;
-	if (run.style != null && run.style.rise != 0) drawY -= Win32DPIUtils.scaleUp(getDevice(), run.style.rise, getZoom(gc));
+	if (run.style != null && run.style.rise != 0) drawY -= Win32DPIUtils.pointToPixel(getDevice(), run.style.rise, getZoom(gc));
 
 	int drawX = rect.left;
 	long brush = color;
@@ -1369,7 +1369,7 @@ RECT drawStrikeout(GC gc, long hdc, int x, int baselineInPixels, StyleItem[] lin
 			}
 		}
 		RECT rect = new RECT();
-		int riseInPixels = Win32DPIUtils.scaleUp(getDevice(), style.rise, getZoom(gc));
+		int riseInPixels = Win32DPIUtils.pointToPixel(getDevice(), style.rise, getZoom(gc));
 		OS.SetRect(rect, x + left, baselineInPixels - run.strikeoutPos - riseInPixels, x + run.x + run.width, baselineInPixels - run.strikeoutPos + run.strikeoutThickness - riseInPixels);
 		long brush = OS.CreateSolidBrush(color);
 		OS.FillRect(hdc, rect, brush);
@@ -1419,7 +1419,7 @@ RECT drawStrikeoutGDIP(GC gc, long graphics, int x, int baselineInPixels, StyleI
 				}
 			}
 		}
-		int riseInPixels = Win32DPIUtils.scaleUp(getDevice(), style.rise, getZoom(gc));
+		int riseInPixels = Win32DPIUtils.pointToPixel(getDevice(), style.rise, getZoom(gc));
 		if (clipRect != null) {
 			int gstate = Gdip.Graphics_Save(graphics);
 			if (clipRect.left == -1) clipRect.left = 0;
@@ -1477,7 +1477,7 @@ RECT drawUnderline(GC gc, long hdc, int x, int baselineInPixels, int lineUnderli
 			}
 		}
 		RECT rect = new RECT();
-		int riseInPixels = Win32DPIUtils.scaleUp(getDevice(), style.rise, getZoom(gc));
+		int riseInPixels = Win32DPIUtils.pointToPixel(getDevice(), style.rise, getZoom(gc));
 		OS.SetRect(rect, x + left, baselineInPixels - lineUnderlinePos - riseInPixels, x + run.x + run.width, baselineInPixels - lineUnderlinePos + run.underlineThickness - riseInPixels);
 		if (clipRect != null) {
 			if (clipRect.left == -1) clipRect.left = 0;
@@ -1553,7 +1553,7 @@ RECT drawUnderline(GC gc, long hdc, int x, int baselineInPixels, int lineUnderli
 				int penStyle = style.underlineStyle == UNDERLINE_IME_DASH ? OS.PS_DASH : OS.PS_DOT;
 				long pen = OS.CreatePen(penStyle, 1, color);
 				long oldPen = OS.SelectObject(hdc, pen);
-				int descentInPixels = Win32DPIUtils.scaleUp(getDevice(), run.descentInPoints, getZoom(gc));
+				int descentInPixels = Win32DPIUtils.pointToPixel(getDevice(), run.descentInPoints, getZoom(gc));
 				OS.SetRect(rect, rect.left, baselineInPixels + descentInPixels, rect.right, baselineInPixels + descentInPixels + run.underlineThickness);
 				OS.MoveToEx(hdc, rect.left, rect.top, 0);
 				OS.LineTo(hdc, rect.right, rect.top);
@@ -1609,7 +1609,7 @@ RECT drawUnderlineGDIP (GC gc, long graphics, int x, int baselineInPixels, int l
 			}
 		}
 		RECT rect = new RECT();
-		int riseInPixels = Win32DPIUtils.scaleUp(getDevice(), style.rise, getZoom(gc));
+		int riseInPixels = Win32DPIUtils.pointToPixel(getDevice(), style.rise, getZoom(gc));
 		OS.SetRect(rect, x + left, baselineInPixels - lineUnderlinePos - riseInPixels, x + run.x + run.width, baselineInPixels - lineUnderlinePos + run.underlineThickness - riseInPixels);
 		Rect gdipRect = null;
 		if (clipRect != null) {
@@ -1705,7 +1705,7 @@ RECT drawUnderlineGDIP (GC gc, long graphics, int x, int baselineInPixels, int l
 					gstate = Gdip.Graphics_Save(graphics);
 					Gdip.Graphics_SetClip(graphics, gdipRect, Gdip.CombineModeExclude);
 				}
-				int descentInPixels = Win32DPIUtils.scaleUp(getDevice(), run.descentInPoints, getZoom(gc));
+				int descentInPixels = Win32DPIUtils.pointToPixel(getDevice(), run.descentInPoints, getZoom(gc));
 				Gdip.Graphics_DrawLine(graphics, pen, rect.left, baselineInPixels + descentInPixels, run.width - run.length, baselineInPixels + descentInPixels);
 				if (gdipRect != null) {
 					Gdip.Graphics_Restore(graphics, gstate);
@@ -1796,7 +1796,7 @@ public Rectangle getBounds () {
 		width = wrapWidth;
 	} else {
 		for (int line=0; line<runs.length; line++) {
-			width = Math.max(width, DPIUtil.scaleDown(lineWidthInPixels[line], getZoom()) + getLineIndent(line));
+			width = Math.max(width, DPIUtil.pixelToPoint(lineWidthInPixels[line], getZoom()) + getLineIndent(line));
 		}
 	}
 	return new Rectangle (0, 0, width, lineY[lineY.length - 1] + getVerticalIndent());
@@ -1818,7 +1818,7 @@ public Rectangle getBounds () {
  */
 public Rectangle getBounds (int start, int end) {
 	checkLayout();
-	return Win32DPIUtils.scaleDown(getDevice(), getBoundsInPixels(start, end), getZoom(null));
+	return Win32DPIUtils.pixelToPoint(getDevice(), getBoundsInPixels(start, end), getZoom(null));
 }
 
 Rectangle getBoundsInPixels (int start, int end) {
@@ -1864,7 +1864,7 @@ Rectangle getBoundsInPixels (int start, int end) {
 			int cx = 0;
 			if (run.style != null && run.style.metrics != null) {
 				GlyphMetrics metrics = run.style.metrics;
-				cx = Win32DPIUtils.scaleUp(getDevice(), metrics.width, getZoom()) * (start - run.start);
+				cx = Win32DPIUtils.pointToPixel(getDevice(), metrics.width, getZoom()) * (start - run.start);
 			} else if (!run.tab) {
 				int iX = ScriptCPtoX(start - run.start, false, run);
 				cx = isRTL ? run.width - iX : iX;
@@ -1879,7 +1879,7 @@ Rectangle getBoundsInPixels (int start, int end) {
 			int cx = run.width;
 			if (run.style != null && run.style.metrics != null) {
 				GlyphMetrics metrics = run.style.metrics;
-				cx = Win32DPIUtils.scaleUp(getDevice(), metrics.width, getZoom()) * (end - run.start + 1);
+				cx = Win32DPIUtils.pointToPixel(getDevice(), metrics.width, getZoom()) * (end - run.start + 1);
 			} else if (!run.tab) {
 				int iX = ScriptCPtoX(end - run.start, true, run);
 				cx = isRTL ? run.width - iX : iX;
@@ -1896,8 +1896,8 @@ Rectangle getBoundsInPixels (int start, int end) {
 		}
 		left = Math.min(left, runLead);
 		right = Math.max(right, runTrail);
-		top = Math.min(top, Win32DPIUtils.scaleUp(lineY[lineIndex], getZoom(null)));
-		bottom = Math.max(bottom, Win32DPIUtils.scaleUp(lineY[lineIndex + 1] - lineSpacingInPoints, getZoom(null)));
+		top = Math.min(top, Win32DPIUtils.pointToPixel(lineY[lineIndex], getZoom(null)));
+		bottom = Math.max(bottom, Win32DPIUtils.pointToPixel(lineY[lineIndex + 1] - lineSpacingInPoints, getZoom(null)));
 	}
 	return new Rectangle(left, top, right - left, bottom - top + getScaledVerticalIndent());
 }
@@ -2023,16 +2023,16 @@ public int getLevel (int offset) {
  */
 public Rectangle getLineBounds (int lineIndex) {
 	checkLayout();
-	return Win32DPIUtils.scaleDown(getDevice(), getLineBoundsInPixels(lineIndex), getZoom());
+	return Win32DPIUtils.pixelToPoint(getDevice(), getLineBoundsInPixels(lineIndex), getZoom());
 }
 
 Rectangle getLineBoundsInPixels(int lineIndex) {
 	computeRuns(null);
 	if (!(0 <= lineIndex && lineIndex < runs.length)) SWT.error(SWT.ERROR_INVALID_RANGE);
 	int x = getLineIndentInPixel(lineIndex);
-	int y = Win32DPIUtils.scaleUp(getDevice(), lineY[lineIndex], getZoom());
+	int y = Win32DPIUtils.pointToPixel(getDevice(), lineY[lineIndex], getZoom());
 	int width = lineWidthInPixels[lineIndex];
-	int height = Win32DPIUtils.scaleUp(getDevice(), lineY[lineIndex + 1] - lineY[lineIndex] - lineSpacingInPoints, getZoom());
+	int height = Win32DPIUtils.pointToPixel(getDevice(), lineY[lineIndex + 1] - lineY[lineIndex] - lineSpacingInPoints, getZoom());
 	return new Rectangle (x, y, width, height);
 }
 
@@ -2053,18 +2053,18 @@ public int getLineCount () {
 }
 
 int getLineIndent(int lineIndex) {
-	return DPIUtil.scaleDown(getLineIndentInPixel(lineIndex), getZoom());
+	return DPIUtil.pixelToPoint(getLineIndentInPixel(lineIndex), getZoom());
 }
 
 int getLineIndentInPixel (int lineIndex) {
-	int lineIndent = Win32DPIUtils.scaleUp(wrapIndent, getZoom());
+	int lineIndent = Win32DPIUtils.pointToPixel(wrapIndent, getZoom());
 	if (lineIndex == 0) {
-		lineIndent = Win32DPIUtils.scaleUp(indent, getZoom());
+		lineIndent = Win32DPIUtils.pointToPixel(indent, getZoom());
 	} else {
 		StyleItem[] previousLine = runs[lineIndex - 1];
 		StyleItem previousRun = previousLine[previousLine.length - 1];
 		if (previousRun.lineBreak && !previousRun.softBreak) {
-			lineIndent = Win32DPIUtils.scaleUp(indent, getZoom());
+			lineIndent = Win32DPIUtils.pointToPixel(indent, getZoom());
 		}
 	}
 	if (wrapWidth != -1) {
@@ -2078,8 +2078,8 @@ int getLineIndentInPixel (int lineIndex) {
 		if (partialLine) {
 			int lineWidth = this.lineWidthInPixels[lineIndex] + lineIndent;
 			switch (alignment) {
-				case SWT.CENTER: lineIndent += (Win32DPIUtils.scaleUp(wrapWidth, getZoom()) - lineWidth) / 2; break;
-				case SWT.RIGHT: lineIndent += Win32DPIUtils.scaleUp(wrapWidth, getZoom()) - lineWidth; break;
+				case SWT.CENTER: lineIndent += (Win32DPIUtils.pointToPixel(wrapWidth, getZoom()) - lineWidth) / 2; break;
+				case SWT.RIGHT: lineIndent += Win32DPIUtils.pointToPixel(wrapWidth, getZoom()) - lineWidth; break;
 			}
 		}
 	}
@@ -2140,9 +2140,9 @@ public FontMetrics getLineMetrics (int lineIndex) {
 	metricsAdapter.GetTextMetrics(srcHdc, lptm);
 	OS.DeleteDC(srcHdc);
 	device.internal_dispose_GC(hDC, null);
-	int ascentInPoints = Math.max(Win32DPIUtils.scaleDown(this.device, lptm.tmAscent, zoom), this.ascent);
-	int descentInPoints = Math.max(Win32DPIUtils.scaleDown(this.device, lptm.tmDescent, zoom), this.descent);
-	int leadingInPoints = Win32DPIUtils.scaleDown(this.device, lptm.tmInternalLeading, zoom);
+	int ascentInPoints = Math.max(Win32DPIUtils.pixelToPoint(this.device, lptm.tmAscent, zoom), this.ascent);
+	int descentInPoints = Math.max(Win32DPIUtils.pixelToPoint(this.device, lptm.tmDescent, zoom), this.descent);
+	int leadingInPoints = Win32DPIUtils.pixelToPoint(this.device, lptm.tmInternalLeading, zoom);
 	if (text.length() != 0) {
 		for (StyleItem run : runs[lineIndex]) {
 			if (run.ascentInPoints > ascentInPoints) {
@@ -2152,10 +2152,10 @@ public FontMetrics getLineMetrics (int lineIndex) {
 			descentInPoints = Math.max(descentInPoints, run.descentInPoints);
 		}
 	}
-	lptm.tmAscent = Win32DPIUtils.scaleUp(this.device, ascentInPoints, zoom);
-	lptm.tmDescent = Win32DPIUtils.scaleUp(this.device, descentInPoints, zoom);
-	lptm.tmHeight = Win32DPIUtils.scaleUp(this.device, ascentInPoints + descentInPoints, zoom);
-	lptm.tmInternalLeading = Win32DPIUtils.scaleUp(this.device, leadingInPoints, zoom);
+	lptm.tmAscent = Win32DPIUtils.pointToPixel(this.device, ascentInPoints, zoom);
+	lptm.tmDescent = Win32DPIUtils.pointToPixel(this.device, descentInPoints, zoom);
+	lptm.tmHeight = Win32DPIUtils.pointToPixel(this.device, ascentInPoints + descentInPoints, zoom);
+	lptm.tmInternalLeading = Win32DPIUtils.pointToPixel(this.device, leadingInPoints, zoom);
 	lptm.tmAveCharWidth = 0;
 	return FontMetrics.win32_new(lptm, nativeZoom);
 }
@@ -2199,7 +2199,7 @@ public int[] getLineOffsets () {
  */
 public Point getLocation (int offset, boolean trailing) {
 	checkLayout();
-	return Win32DPIUtils.scaleDown(getDevice(), getLocationInPixels(offset, trailing), getZoom());
+	return Win32DPIUtils.pixelToPoint(getDevice(), getLocationInPixels(offset, trailing), getZoom());
 }
 
 Point getLocationInPixels (int offset, boolean trailing) {
@@ -2214,7 +2214,7 @@ Point getLocationInPixels (int offset, boolean trailing) {
 	}
 	line = Math.min(line, runs.length - 1);
 	if (offset == length) {
-		return new Point(getLineIndentInPixel(line) + lineWidthInPixels[line], Win32DPIUtils.scaleUp(getDevice(), lineY[line], getZoom()));
+		return new Point(getLineIndentInPixel(line) + lineWidthInPixels[line], Win32DPIUtils.pointToPixel(getDevice(), lineY[line], getZoom()));
 	}
 	/* For trailing use the low surrogate and for lead use the high surrogate */
 	char ch = segmentsText.charAt(offset);
@@ -2250,7 +2250,7 @@ Point getLocationInPixels (int offset, boolean trailing) {
 			int width;
 			if (run.style != null && run.style.metrics != null) {
 				GlyphMetrics metrics = run.style.metrics;
-				width = Win32DPIUtils.scaleUp(getDevice(), metrics.width, getZoom()) * (offset - run.start + (trailing ? 1 : 0));
+				width = Win32DPIUtils.pointToPixel(getDevice(), metrics.width, getZoom()) * (offset - run.start + (trailing ? 1 : 0));
 			} else if (run.tab) {
 				width = (trailing || (offset == length)) ? run.width : 0;
 			} else {
@@ -2258,7 +2258,7 @@ Point getLocationInPixels (int offset, boolean trailing) {
 				final int iX = ScriptCPtoX(runOffset, trailing, run);
 				width = (orientation & SWT.RIGHT_TO_LEFT) != 0 ? run.width - iX : iX;
 			}
-			return new Point(run.x + width, Win32DPIUtils.scaleUp(getDevice(), lineY[line], getZoom()) + getScaledVerticalIndent());
+			return new Point(run.x + width, Win32DPIUtils.pointToPixel(getDevice(), lineY[line], getZoom()) + getScaledVerticalIndent());
 		}
 	}
 	return new Point(0, 0);
@@ -2409,7 +2409,7 @@ int _getOffset(int offset, int movement, boolean forward) {
  */
 public int getOffset (Point point, int[] trailing) {
 	checkLayout();
-	if (point == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);	return getOffsetInPixels(Win32DPIUtils.scaleUp(getDevice(), point, getZoom()), trailing);
+	if (point == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);	return getOffsetInPixels(Win32DPIUtils.pointToPixel(getDevice(), point, getZoom()), trailing);
 }
 
 int getOffsetInPixels (Point point, int[] trailing) {
@@ -2441,7 +2441,7 @@ int getOffsetInPixels (Point point, int[] trailing) {
  */
 public int getOffset (int x, int y, int[] trailing) {
 	checkLayout();
-	return getOffsetInPixels(Win32DPIUtils.scaleUp(getDevice(), x, getZoom()), Win32DPIUtils.scaleUp(getDevice(), y, getZoom()), trailing);
+	return getOffsetInPixels(Win32DPIUtils.pointToPixel(getDevice(), x, getZoom()), Win32DPIUtils.pointToPixel(getDevice(), y, getZoom()), trailing);
 }
 
 int getOffsetInPixels (int x, int y, int[] trailing) {
@@ -2450,7 +2450,7 @@ int getOffsetInPixels (int x, int y, int[] trailing) {
 	int line;
 	int lineCount = runs.length;
 	for (line=0; line<lineCount; line++) {
-		if (Win32DPIUtils.scaleUp(getDevice(), lineY[line + 1], getZoom()) > y) break;
+		if (Win32DPIUtils.pointToPixel(getDevice(), lineY[line + 1], getZoom()) > y) break;
 	}
 	line = Math.min(line, runs.length - 1);
 	StyleItem[] lineRuns = runs[line];
@@ -2472,7 +2472,7 @@ int getOffsetInPixels (int x, int y, int[] trailing) {
 			if (run.style != null && run.style.metrics != null) {
 				GlyphMetrics metrics = run.style.metrics;
 				if (metrics.width > 0) {
-					final int metricsWidthInPixels = Win32DPIUtils.scaleUp(getDevice(), metrics.width, getZoom());
+					final int metricsWidthInPixels = Win32DPIUtils.pointToPixel(getDevice(), metrics.width, getZoom());
 					if (trailing != null) {
 						trailing[0] = (xRun % metricsWidthInPixels < metricsWidthInPixels / 2) ? 0 : 1;
 					}
@@ -2709,7 +2709,7 @@ private int getScaledVerticalIndent() {
 	if (verticalIndentInPoints == 0) {
 		return verticalIndentInPoints;
 	}
-	return Win32DPIUtils.scaleUp(getDevice(), verticalIndentInPoints, getZoom());
+	return Win32DPIUtils.pointToPixel(getDevice(), verticalIndentInPoints, getZoom());
 }
 
 /**
@@ -3918,7 +3918,7 @@ void shape (GC  gc, final long hdc, final StyleItem run) {
 			 *  equals zero for FFFC (possibly other unicode code points), the fix
 			 *  is to make sure the glyph is at least one pixel wide.
 			 */
-			run.width = Win32DPIUtils.scaleUp(getDevice(), metrics.width, getZoom()) * Math.max (1, run.glyphCount);
+			run.width = Win32DPIUtils.pointToPixel(getDevice(), metrics.width, getZoom()) * Math.max (1, run.glyphCount);
 			run.ascentInPoints = metrics.ascent;
 			run.descentInPoints = metrics.descent;
 			run.leadingInPoints = 0;
@@ -3930,9 +3930,9 @@ void shape (GC  gc, final long hdc, final StyleItem run) {
 				lptm = new TEXTMETRIC();
 				metricsAdapter.GetTextMetrics(hdc, lptm);
 			}
-			run.ascentInPoints = Win32DPIUtils.scaleDown(getDevice(), lptm.tmAscent, getZoom(gc));
-			run.descentInPoints = Win32DPIUtils.scaleDown(getDevice(), lptm.tmDescent, getZoom(gc));
-			run.leadingInPoints = Win32DPIUtils.scaleDown(getDevice(), lptm.tmInternalLeading, getZoom(gc));
+			run.ascentInPoints = Win32DPIUtils.pixelToPoint(getDevice(), lptm.tmAscent, getZoom(gc));
+			run.descentInPoints = Win32DPIUtils.pixelToPoint(getDevice(), lptm.tmDescent, getZoom(gc));
+			run.leadingInPoints = Win32DPIUtils.pixelToPoint(getDevice(), lptm.tmInternalLeading, getZoom(gc));
 		}
 		if (lotm != null) {
 			run.underlinePos = lotm.otmsUnderscorePosition;
@@ -3942,7 +3942,7 @@ void shape (GC  gc, final long hdc, final StyleItem run) {
 		} else {
 			run.underlinePos = 1;
 			run.underlineThickness = 1;
-			run.strikeoutPos = Win32DPIUtils.scaleUp(getDevice(), run.ascentInPoints, getZoom(gc)) / 2;
+			run.strikeoutPos = Win32DPIUtils.pointToPixel(getDevice(), run.ascentInPoints, getZoom(gc)) / 2;
 			run.strikeoutThickness = 1;
 		}
 		run.ascentInPoints += style.rise;
@@ -3950,9 +3950,9 @@ void shape (GC  gc, final long hdc, final StyleItem run) {
 	} else {
 		TEXTMETRIC lptm = new TEXTMETRIC();
 		metricsAdapter.GetTextMetrics(hdc, lptm);
-		run.ascentInPoints = Win32DPIUtils.scaleDown(getDevice(), lptm.tmAscent, getZoom(gc));
-		run.descentInPoints = Win32DPIUtils.scaleDown(getDevice(), lptm.tmDescent, getZoom(gc));
-		run.leadingInPoints = Win32DPIUtils.scaleDown(getDevice(), lptm.tmInternalLeading, getZoom(gc));
+		run.ascentInPoints = Win32DPIUtils.pixelToPoint(getDevice(), lptm.tmAscent, getZoom(gc));
+		run.descentInPoints = Win32DPIUtils.pixelToPoint(getDevice(), lptm.tmDescent, getZoom(gc));
+		run.leadingInPoints = Win32DPIUtils.pixelToPoint(getDevice(), lptm.tmInternalLeading, getZoom(gc));
 	}
 }
 
