@@ -121,7 +121,7 @@ long callWindowProc (long hwnd, int msg, long wParam, long lParam) {
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
 	int zoom = getZoom();
-	Rectangle rectangle = Win32DPIUtils.pointToPixel(new Rectangle(x, y, width, height), zoom);
+	Rectangle rectangle = Win32DPIUtils.pointToPixel(new Rectangle.OfFloat(x, y, width, height), zoom);
 	return Win32DPIUtils.pixelToPoint(computeTrimInPixels(rectangle.x, rectangle.y, rectangle.width, rectangle.height), zoom);
 }
 
@@ -135,7 +135,7 @@ Rectangle computeTrimInPixels (int x, int y, int width, int height) {
 	if (horizontalBar != null) rect.bottom += getSystemMetrics (OS.SM_CYHSCROLL);
 	if (verticalBar != null) rect.right += getSystemMetrics (OS.SM_CXVSCROLL);
 	int nWidth = rect.right - rect.left, nHeight = rect.bottom - rect.top;
-	return new Rectangle (rect.left, rect.top, nWidth, nHeight);
+	return new Rectangle.OfFloat (rect.left, rect.top, nWidth, nHeight);
 }
 
 @Override
@@ -227,7 +227,7 @@ Rectangle getClientAreaInPixels () {
 		x = -rect.left;
 		y = -rect.top;
 	}
-	return new Rectangle (x, y, width, height);
+	return new Rectangle.OfFloat (x, y, width, height);
 }
 
 /**

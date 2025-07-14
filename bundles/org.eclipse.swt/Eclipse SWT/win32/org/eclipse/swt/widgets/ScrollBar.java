@@ -205,7 +205,7 @@ Rectangle getBounds () {
 		width = getSystemMetrics (OS.SM_CXVSCROLL);
 		height = rect.bottom - rect.top;
 	}
-	return new Rectangle (x, y, width, height);
+	return new Rectangle.OfFloat (x, y, width, height);
 }
 
 /**
@@ -370,7 +370,7 @@ Point getSizeInPixels () {
 		width = getSystemMetrics (OS.SM_CXVSCROLL);
 		height = rect.bottom - rect.top;
 	}
-	return new Point (width, height);
+	return new Point.OfFloat (width, height);
 }
 
 /**
@@ -439,7 +439,7 @@ Rectangle getThumbBoundsInPixels () {
 	rect.right = x + width;
 	rect.bottom = y + height;
 	OS.MapWindowPoints (0, parent.handle, rect, 2);
-	return new Rectangle(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
+	return new Rectangle.OfFloat(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
 }
 
 /**
@@ -499,7 +499,7 @@ Rectangle getThumbTrackBoundsInPixels () {
 	rect.right = x + width;
 	rect.bottom = y + height;
 	OS.MapWindowPoints (0, parent.handle, rect, 2);
-	return new Rectangle(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
+	return new Rectangle.OfFloat(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
 }
 
 /**

@@ -201,7 +201,7 @@ Point computeSizeInPixels (int wHint, int hHint) {
 	} else {
 		width += parent.getMargin (index);
 	}
-	return new Point (width, height);
+	return new Point.OfFloat (width, height);
 }
 
 @Override
@@ -242,9 +242,9 @@ Rectangle getBoundsInPixels () {
 	int width = rect.right - rect.left;
 	int height = rect.bottom - rect.top;
 	if ((parent.style & SWT.VERTICAL) != 0) {
-		return new Rectangle (rect.top, rect.left, height, width);
+		return new Rectangle.OfFloat (rect.top, rect.left, height, width);
 	}
-	return new Rectangle (rect.left, rect.top, width, height);
+	return new Rectangle.OfFloat (rect.left, rect.top, width, height);
 }
 
 Rectangle getClientArea () {
@@ -272,7 +272,7 @@ Rectangle getClientArea () {
 		OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, rbBand);
 		width = width - rbBand.cxHeader + 1;
 	}
-	return new Rectangle (x, y, Math.max (0, width), Math.max (0, height));
+	return new Rectangle.OfFloat (x, y, Math.max (0, width), Math.max (0, height));
 }
 
 /**
@@ -396,9 +396,9 @@ Point getPreferredSizeInPixels () {
 	OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, rbBand);
 	int width = rbBand.cxIdeal + parent.getMargin (index);
 	if ((parent.style & SWT.VERTICAL) != 0) {
-		return new Point (rbBand.cyMaxChild, width);
+		return new Point.OfFloat (rbBand.cyMaxChild, width);
 	}
-	return new Point (width, rbBand.cyMaxChild);
+	return new Point.OfFloat (width, rbBand.cyMaxChild);
 }
 
 /**
@@ -502,9 +502,9 @@ Point getSizeInPixels() {
 	int width = rect.right - rect.left;
 	int height = rect.bottom - rect.top;
 	if ((parent.style & SWT.VERTICAL) != 0) {
-		return new Point (height, width);
+		return new Point.OfFloat (height, width);
 	}
-	return new Point (width, height);
+	return new Point.OfFloat (width, height);
 }
 
 /**
@@ -623,9 +623,9 @@ Point getMinimumSizeInPixels () {
 	rbBand.fMask = OS.RBBIM_CHILDSIZE;
 	OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, rbBand);
 	if ((parent.style & SWT.VERTICAL) != 0) {
-		return new Point (rbBand.cyMinChild, rbBand.cxMinChild);
+		return new Point.OfFloat (rbBand.cyMinChild, rbBand.cxMinChild);
 	}
-	return new Point (rbBand.cxMinChild, rbBand.cyMinChild);
+	return new Point.OfFloat (rbBand.cxMinChild, rbBand.cyMinChild);
 }
 
 /**

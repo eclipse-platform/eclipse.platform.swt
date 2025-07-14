@@ -1188,7 +1188,7 @@ public void setEnabled (boolean enabled) {
  * </ul>
  */
 public void setLocation (int x, int y) {
-	setLocation(new Point(x, y));
+	setLocation(new Point.OfFloat(x, y));
 }
 
 void setLocationInPixels (int x, int y) {
