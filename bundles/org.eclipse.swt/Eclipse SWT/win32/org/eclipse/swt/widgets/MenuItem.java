@@ -19,6 +19,7 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.internal.win32.version.*;
 
 /**
  * Instances of this class represent a selectable user interface object
@@ -42,6 +43,8 @@ import org.eclipse.swt.internal.win32.*;
 public class MenuItem extends Item {
 	Menu parent, menu;
 	long hBitmap;
+	Image imageSelected;
+	long hBitmapSelected;
 	int id, accelerator, userId;
 	ToolTip itemToolTip;
 	/* Image margin. */
@@ -53,6 +56,11 @@ public class MenuItem extends Item {
 	// value in wmMeasureChild is increased by a fixed value (in points) when wmDrawChild is called
 	// This static is used to mitigate this increase
 	private final static int WINDOWS_OVERHEAD = 6;
+	// Workaround for: selection indicator is missing for menu item with image on Win11 (#501)
+	// 0= off/system behavior; 1= no image if selected; 2= with overlay marker (default)
+	private final static int CUSTOM_SELECTION_IMAGE = (OsVersion.IS_WIN11_21H2) ?
+			Integer.getInteger("org.eclipse.swt.internal.win32.menu.customSelectionImage", 2) : 0;
+
 	static {
 		DPIZoomChangeRegistry.registerHandler(MenuItem::handleDPIChange, MenuItem.class);
 	}
@@ -543,6 +551,12 @@ void releaseWidget () {
 	super.releaseWidget ();
 	if (hBitmap != 0) OS.DeleteObject (hBitmap);
 	hBitmap = 0;
+	if (hBitmapSelected != 0) OS.DeleteObject (hBitmapSelected);
+	hBitmapSelected = 0;
+	if (imageSelected != null) {
+		imageSelected.dispose();
+		imageSelected = null;
+	}
 	if (accelerator != 0) {
 		parent.destroyAccelerators ();
 	}
@@ -774,6 +788,18 @@ public void setImage (Image image) {
 	if (this.image == image) return;
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setImage (image);
+	if (imageSelected != null) {
+		imageSelected.dispose();
+		imageSelected = null;
+	}
+	if ((style & (SWT.CHECK | SWT.RADIO)) != 0 && CUSTOM_SELECTION_IMAGE > 1
+			&& image != null && getSelection()) {
+		initCustomSelectedImage();
+	}
+	updateImage();
+}
+
+private void updateImage () {
 	MENUITEMINFO info = new MENUITEMINFO ();
 	info.cbSize = MENUITEMINFO.sizeof;
 	info.fMask = OS.MIIM_BITMAP;
@@ -781,7 +807,15 @@ public void setImage (Image image) {
 		info.hbmpItem = OS.HBMMENU_CALLBACK;
 	} else {
 		if (OS.IsAppThemed ()) {
-			info.hbmpItem = hBitmap = getMenuItemIconBitmapHandle(image);
+			hBitmap = getMenuItemIconBitmapHandle(image);
+			if ((style & (SWT.CHECK | SWT.RADIO)) != 0 && CUSTOM_SELECTION_IMAGE > 0) {
+				info.fMask |= OS.MIIM_CHECKMARKS;
+				info.hbmpUnchecked = hBitmap;
+				info.hbmpChecked = getMenuItemIconSelectedBitmapHandle();
+			}
+			else {
+				info.hbmpItem = hBitmap;
+			}
 		} else {
 			info.hbmpItem = image != null ? OS.HBMMENU_CALLBACK : 0;
 		}
@@ -791,16 +825,92 @@ public void setImage (Image image) {
 	parent.redraw ();
 }
 
+private void initCustomSelectedImage() {
+	Image image = this.image;
+	if (image == null) {
+		return;
+	}
+	Rectangle imageBounds = image.getBounds();
+	Color foregroundColor = increaseContrast((display.menuBarForegroundPixel != -1) ? Color.win32_new (this.display, display.menuBarForegroundPixel) : parent.getForeground());
+	Color backgroundColor = increaseContrast((display.menuBarBackgroundPixel != -1) ? Color.win32_new (this.display, display.menuBarBackgroundPixel) : parent.getBackground());
+	ImageGcDrawer drawer = new ImageGcDrawer() {
+		@Override
+		public int getGcStyle() {
+			return SWT.TRANSPARENT;
+		}
+
+		@Override
+		public void drawOn(GC gc, int imageWidth, int imageHeight) {
+			gc.setAdvanced(true);
+			gc.drawImage(image, imageWidth - imageBounds.width, (imageHeight - imageBounds.height) / 2);
+			gc.setAntialias(SWT.ON);
+			int x = imageWidth - 16;
+			int y = imageHeight / 2 - 8;
+			if ((style & SWT.CHECK) != 0) {
+				drawCheck(gc, foregroundColor, backgroundColor, x, y);
+			}
+			else {
+				drawRadio(gc, foregroundColor, backgroundColor, x, y);
+			}
+		}
+	};
+	imageSelected = new Image(image.getDevice(), drawer,
+			Math.max(imageBounds.width, 16), Math.max(imageBounds.height, 16));
+}
+
+private void drawCheck(GC gc, Color foregroundColor, Color backgroundColor, int x, int y) {
+	int[] points = new int[] { x + 4, y + 10, x + 6, y + 12, x + 12, y + 6 };
+	gc.setLineStyle(SWT.LINE_SOLID);
+	gc.setForeground(backgroundColor);
+	gc.setLineCap(SWT.CAP_ROUND);
+	gc.setLineJoin(SWT.JOIN_ROUND);
+	gc.setAlpha(127);
+	gc.setLineWidth(6);
+	gc.drawPolyline(points);
+	gc.setLineJoin(SWT.JOIN_MITER);
+	gc.setAlpha(255);
+	gc.setLineWidth(3);
+	gc.drawPolyline(points);
+	gc.setForeground(foregroundColor);
+	gc.setLineWidth(1);
+	gc.setLineCap(SWT.CAP_FLAT);
+	gc.drawPolyline(points);
+}
+
+private void drawRadio(GC gc, Color foregroundColor, Color backgroundColor, int x, int y) {
+	gc.setBackground(backgroundColor);
+	gc.setAlpha(127);
+	gc.fillOval(x + 4, y + 5, 8, 8);
+	gc.setAlpha(255);
+	gc.fillOval(x + 5, y + 6, 6, 6);
+	gc.setBackground(foregroundColor);
+	gc.fillOval(x + 6, y + 7, 4, 4);
+}
+
+private Color increaseContrast(Color color) {
+	return (color.getRed() + color.getGreen() + color.getBlue() > 127 * 3) ? display.getSystemColor(SWT.COLOR_WHITE) : color;
+}
+
 private long getMenuItemIconBitmapHandle(Image image) {
 	if (image == null) {
 		return 0;
 	}
 	if (hBitmap != 0) OS.DeleteObject (hBitmap);
-	int zoom = adaptZoomForMenuItem(getZoom());
+	int zoom = adaptZoomForMenuItem(getZoom(), image);
 	return Display.create32bitDIB (image, zoom);
 }
 
-private int adaptZoomForMenuItem(int currentZoom) {
+private long getMenuItemIconSelectedBitmapHandle() {
+	Image image = imageSelected;
+	if (image == null) {
+		return 0;
+	}
+	if (hBitmapSelected != 0) OS.DeleteObject (hBitmapSelected);
+	int zoom = adaptZoomForMenuItem(getZoom(), image);
+	return hBitmapSelected = Display.create32bitDIB (image, zoom);
+}
+
+private int adaptZoomForMenuItem(int currentZoom, Image image) {
 	int primaryMonitorZoomAtAppStartUp = getPrimaryMonitorZoomAtStartup();
 	/*
 	 * Windows has inconsistent behavior when setting the size of MenuItem image and
@@ -985,6 +1095,14 @@ public void setSelection (boolean selected) {
 	if (!success) error (SWT.ERROR_CANNOT_SET_SELECTION);
 	info.fState &= ~OS.MFS_CHECKED;
 	if (selected) info.fState |= OS.MFS_CHECKED;
+
+	if (selected && CUSTOM_SELECTION_IMAGE > 1 && hBitmap != 0 && imageSelected == null) {
+		initCustomSelectedImage();
+		info.fMask |= OS.MIIM_CHECKMARKS;
+		info.hbmpUnchecked = hBitmap;
+		info.hbmpChecked = getMenuItemIconSelectedBitmapHandle();
+	}
+
 	success = OS.SetMenuItemInfo (hMenu, id, false, info);
 	if (!success) {
 		/*
@@ -1350,12 +1468,9 @@ private static void handleDPIChange(Widget widget, int newZoom, float scalingFac
 	if (!(widget instanceof MenuItem menuItem)) {
 		return;
 	}
-	// Refresh the image
-	Image menuItemImage = menuItem.getImage();
-	if (menuItemImage != null) {
-		Image currentImage = menuItemImage;
-		menuItem.image = null;
-		menuItem.setImage (currentImage);
+	// Refresh the image(s)
+	if (menuItem.getImage() != null) {
+		((MenuItem)menuItem).updateImage();
 	}
 	// Refresh the sub menu
 	Menu subMenu = menuItem.getMenu();
