@@ -421,7 +421,9 @@ public static Long win32_getHandle (Cursor cursor, int zoom) {
 	} else {
 		ImageData source;
 		if (cursor.imageDataProvider != null) {
-			source = DPIUtil.validateAndGetImageDataAtZoom(cursor.imageDataProvider, zoom).element();
+			Image tempImage = new Image(cursor.getDevice(), cursor.imageDataProvider);
+			source = tempImage.getImageData(zoom);
+			tempImage.dispose();
 		}
 		else {
 			source = DPIUtil.scaleImageData(cursor.device, cursor.source, zoom, DEFAULT_ZOOM);
