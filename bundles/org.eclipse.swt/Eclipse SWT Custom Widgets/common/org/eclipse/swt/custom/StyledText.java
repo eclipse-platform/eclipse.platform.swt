@@ -1077,31 +1077,50 @@ void calculateTopIndex(int delta) {
 			}
 		}
 	} else {
+		int lineCount = content.getLineCount();
 		if (delta >= 0) {
 			delta -= topIndexY;
 			int lineIndex = topIndex;
-			int lineCount = content.getLineCount();
 			while (lineIndex < lineCount) {
 				if (delta <= 0) break;
-				delta -= renderer.getCachedLineHeight(lineIndex++);
+				if (lineIndex >= 0 && lineIndex < lineCount) {
+					delta -= renderer.getCachedLineHeight(lineIndex);
+				}
+				lineIndex++;
 			}
-			if (lineIndex < lineCount && -delta + renderer.getCachedLineHeight(lineIndex) <= clientAreaHeight - topMargin - bottomMargin) {
+			int lineHeight = 0;
+			if (lineIndex >= 0 && lineIndex < lineCount) {
+				lineHeight = renderer.getCachedLineHeight(lineIndex);
+			}
+			if (lineIndex < lineCount && -delta + lineHeight <= clientAreaHeight - topMargin - bottomMargin) {
 				topIndex = lineIndex;
 				topIndexY = -delta;
 			} else {
 				topIndex = lineIndex - 1;
-				topIndexY = -renderer.getCachedLineHeight(topIndex) - delta;
+				int topIndexHeight = 0;
+				if (topIndex >= 0 && topIndex < lineCount) {
+					topIndexHeight = renderer.getCachedLineHeight(topIndex);
+				}
+				topIndexY = -topIndexHeight - delta;
 			}
 		} else {
 			delta -= topIndexY;
 			int lineIndex = topIndex;
 			while (lineIndex > 0) {
-				int lineHeight = renderer.getCachedLineHeight(lineIndex - 1);
+				int previousLineIndex = lineIndex - 1;
+				int lineHeight = 0;
+				if (previousLineIndex >= 0 && previousLineIndex < lineCount) {
+					lineHeight = renderer.getCachedLineHeight(previousLineIndex);
+				}
 				if (delta + lineHeight > 0) break;
 				delta += lineHeight;
 				lineIndex--;
 			}
-			if (lineIndex == 0 || -delta + renderer.getCachedLineHeight(lineIndex) <= clientAreaHeight - topMargin - bottomMargin) {
+			int lineHeight = 0;
+			if (lineIndex >= 0 && lineIndex < lineCount) {
+				lineHeight = renderer.getCachedLineHeight(lineIndex);
+			}
+			if (lineIndex == 0 || -delta + lineHeight <= clientAreaHeight - topMargin - bottomMargin) {
 				topIndex = lineIndex;
 				topIndexY = - delta;
 			} else {
@@ -1378,11 +1397,18 @@ int getAvailableHeightAbove(int height) {
 	if (maxHeight == -1) {
 		int lineIndex = topIndex - 1;
 		maxHeight = -topIndexY;
+		int lineCount = content.getLineCount();
 		if (topIndexY > 0) {
-			maxHeight += renderer.getLineHeight(lineIndex--);
+			if (lineIndex >= 0 && lineIndex < lineCount) {
+				maxHeight += renderer.getLineHeight(lineIndex);
+			}
+			lineIndex--;
 		}
 		while (height > maxHeight && lineIndex >= 0) {
-			maxHeight += renderer.getLineHeight(lineIndex--);
+			if (lineIndex >= 0 && lineIndex < lineCount) {
+				maxHeight += renderer.getLineHeight(lineIndex);
+			}
+			lineIndex--;
 		}
 	}
 	return Math.min(height, maxHeight);
@@ -3877,10 +3903,16 @@ public int getLinePixel(int lineIndex) {
 	int height = topIndexY;
 	if (lineIndex > topIndex) {
 		for (int i = topIndex; i < lineIndex; i++) {
+			if (i < 0 || i >= lineCount) {
+				continue;
+			}
 			height += renderer.getLineHeight(i);
 		}
 	} else {
 		for (int i = topIndex - 1; i >= lineIndex; i--) {
+			if (i < 0 || i >= lineCount) {
+				continue;
+			}
 			height -= renderer.getLineHeight(i);
 		}
 	}
@@ -3914,10 +3946,18 @@ public int getLineIndex(int y) {
 		}
 	} else {
 		int lineCount = content.getLineCount();
-		int lineHeight = renderer.getLineHeight(line);
+		int lineHeight = 0;
+		if (line>=0 && line<lineCount) {
+			lineHeight = renderer.getLineHeight(line);
+		}
 		while (y - lineHeight >= topIndexY && line < lineCount - 1) {
 			y -= lineHeight;
-			lineHeight = renderer.getLineHeight(++line);
+			++line;
+			if (line >= 0 && line < lineCount) {
+				lineHeight = renderer.getLineHeight(line);
+			}else {
+				lineHeight = 0;
+			}
 		}
 	}
 	return line;
