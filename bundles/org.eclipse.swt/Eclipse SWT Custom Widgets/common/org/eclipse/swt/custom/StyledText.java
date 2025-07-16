@@ -10879,10 +10879,12 @@ public static void updateAndRefreshCarets(StyledText styledText, Consumer<Caret>
 	Set<Caret> caretSet = new HashSet<>();
 	caretSet.add(styledText.getCaret());
 	caretSet.add(styledText.defaultCaret);
-	for (Caret caret : styledText.carets) {
-		caretSet.add(caret);
+	if (styledText.carets != null) {
+		for (Caret caret : styledText.carets) {
+			caretSet.add(caret);
+		}
 	}
-	caretSet.forEach(caretUpdater);
+	caretSet.stream().filter(Objects::nonNull).forEach(caretUpdater);
 
 	styledText.updateCaretVisibility();
 	styledText.setCaretLocations();
