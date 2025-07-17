@@ -7188,23 +7188,21 @@ private LRESULT positionTooltip(NMHDR hdr, long lParam) {
 		if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
 		long hFont = item.fontHandle (pinfo.iSubItem);
 		if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
-		Event event = sendMeasureItemEvent (item, pinfo.iItem, pinfo.iSubItem, hDC);
-		if (!isDisposed () && !item.isDisposed ()) {
-			RECT itemRect = new RECT ();
-			Rectangle boundsInPixels = Win32DPIUtils.pointToPixel(event.getBounds(), getZoom());
-			OS.SetRect (itemRect, boundsInPixels.x, boundsInPixels.y, boundsInPixels.x + boundsInPixels.width, boundsInPixels.y + boundsInPixels.height);
+		if (!isDisposed() && !item.isDisposed()) {
 			if (hdr.code == OS.TTN_SHOW) {
-				RECT toolRect = isCustomToolTip() ? toolTipRect (itemRect) : itemRect;
-				OS.MapWindowPoints (handle, 0, toolRect, 2);
-				long hwndToolTip = OS.SendMessage (handle, OS.LVM_GETTOOLTIPS, 0, 0);
+				RECT itemRect = getItemBounds(pinfo, item, hDC);
+				RECT toolRect = isCustomToolTip() ? toolTipRect(itemRect) : itemRect;
+				OS.MapWindowPoints(handle, 0, toolRect, 2);
+				long hwndToolTip = OS.SendMessage(handle, OS.LVM_GETTOOLTIPS, 0, 0);
 				int flags = OS.SWP_NOACTIVATE | OS.SWP_NOZORDER;
 				Rectangle adjustedTooltipBounds = getDisplay().fitRectangleBoundsIntoMonitorWithCursor(toolRect);
 				OS.SetWindowPos(hwndToolTip, 0, adjustedTooltipBounds.x, adjustedTooltipBounds.y,
 						adjustedTooltipBounds.width, adjustedTooltipBounds.height, flags);
 				result = LRESULT.ONE;
 			} else if (isCustomToolTip()) {
-				NMTTDISPINFO lpnmtdi = new NMTTDISPINFO ();
-				OS.MoveMemory (lpnmtdi, lParam, NMTTDISPINFO.sizeof);
+				RECT itemRect = getItemBounds(pinfo, item, hDC);
+				NMTTDISPINFO lpnmtdi = new NMTTDISPINFO();
+				OS.MoveMemory(lpnmtdi, lParam, NMTTDISPINFO.sizeof);
 				if (lpnmtdi.lpszText != 0) {
 					OS.MoveMemory (lpnmtdi.lpszText, new char [1], 2);
 					OS.MoveMemory (lParam, lpnmtdi, NMTTDISPINFO.sizeof);
@@ -7229,6 +7227,15 @@ private LRESULT positionTooltip(NMHDR hdr, long lParam) {
 		OS.ReleaseDC (handle, hDC);
 	}
 	return result;
+}
+
+private RECT getItemBounds(LVHITTESTINFO pinfo, TableItem item, long hDC) {
+	Event event = sendMeasureItemEvent(item, pinfo.iItem, pinfo.iSubItem, hDC);
+	RECT itemRect = new RECT();
+	Rectangle boundsInPixels = Win32DPIUtils.pointToPixel(event.getBounds(), getZoom());
+	OS.SetRect(itemRect, boundsInPixels.x, boundsInPixels.y, boundsInPixels.x + boundsInPixels.width,
+			boundsInPixels.y + boundsInPixels.height);
+	return itemRect;
 }
 
 LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, long lParam) {
