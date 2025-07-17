@@ -2651,7 +2651,7 @@ LRESULT WM_SETCURSOR (long wParam, long lParam) {
 				RECT rect = new RECT ();
 				OS.GetClientRect (handle, rect);
 				if (OS.PtInRect (rect, pt)) {
-					OS.SetCursor (Cursor.win32_getHandle(cursor, getNativeZoom()));
+					OS.SetCursor (Cursor.win32_getHandle(cursor, DPIUtil.getZoomForAutoscaleProperty(getNativeZoom())));
 					switch (msg) {
 						case OS.WM_LBUTTONDOWN:
 						case OS.WM_RBUTTONDOWN:
