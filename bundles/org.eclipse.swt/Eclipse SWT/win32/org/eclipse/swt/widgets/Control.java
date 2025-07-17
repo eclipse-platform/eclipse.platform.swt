@@ -5480,7 +5480,7 @@ LRESULT WM_SETCURSOR (long wParam, long lParam) {
 		if (control == null) return null;
 		Cursor cursor = control.findCursor ();
 		if (cursor != null) {
-			OS.SetCursor (Cursor.win32_getHandle(cursor, getNativeZoom()));
+			OS.SetCursor (Cursor.win32_getHandle(cursor, DPIUtil.getZoomForAutoscaleProperty(getNativeZoom())));
 			return LRESULT.ONE;
 		}
 	}
