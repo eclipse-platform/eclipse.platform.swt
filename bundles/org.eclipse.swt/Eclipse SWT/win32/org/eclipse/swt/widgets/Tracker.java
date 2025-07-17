@@ -823,7 +823,7 @@ public void setCursor(Cursor newCursor) {
 	checkWidget();
 	clientCursor = newCursor;
 	if (newCursor != null) {
-		if (inEvent) OS.SetCursor (Cursor.win32_getHandle(clientCursor, getNativeZoom()));
+		if (inEvent) OS.SetCursor (Cursor.win32_getHandle(clientCursor, DPIUtil.getZoomForAutoscaleProperty(getNativeZoom())));
 	}
 }
 
@@ -892,7 +892,7 @@ long transparentProc (long hwnd, long msg, long wParam, long lParam) {
 			break;
 		case OS.WM_SETCURSOR:
 			if (clientCursor != null) {
-				OS.SetCursor (Cursor.win32_getHandle(clientCursor, getNativeZoom()));
+				OS.SetCursor (Cursor.win32_getHandle(clientCursor, DPIUtil.getZoomForAutoscaleProperty(getNativeZoom())));
 				return 1;
 			}
 			if (resizeCursor != 0) {
