@@ -1986,4 +1986,17 @@ private static void handleDPIChange(Widget widget, int newZoom, float scalingFac
 	}
 	composite.redrawInPixels (null, true);
 }
+
+@Override
+protected boolean embedsWin32Control () {
+	if (isDisposed() || !isVisible()) {
+		return false;
+	}
+	for (Control child : getChildren()) {
+		if (child.embedsWin32Control()) {
+			return true;
+		}
+	}
+	return false;
+}
 }
