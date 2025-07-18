@@ -108,6 +108,12 @@ public void drawBackground (GC gc, int x, int y, int width, int height) {
 	drawBackgroundInPixels(gc, rectangle.x, rectangle.y, rectangle.width, rectangle.height, 0, 0);
 }
 
+public void drawBackground (GC gc, Rectangle rectangle) {
+	int zoom = getZoom();
+	Rectangle scaledRectangle = DPIUtil.scaleUp(rectangle, zoom);
+	drawBackgroundInPixels(gc, scaledRectangle.x, scaledRectangle.y, scaledRectangle.width, scaledRectangle.height, 0, 0);
+}
+
 /**
  * Returns the caret.
  * <p>

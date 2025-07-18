@@ -3886,6 +3886,31 @@ public int getLinePixel(int lineIndex) {
 	}
 	return height + topMargin;
 }
+
+public float getLinePixelFloat(int lineIndex) {
+	checkWidget();
+	int zoom = DPIUtil.getZoomForAutoscaleProperty(nativeZoom);
+	int lineCount = content.getLineCount();
+	lineIndex = Math.max(0, Math.min(lineCount, lineIndex));
+	if (isFixedLineHeight()) {
+		int lineHeight = renderer.getLineHeight();
+		float lh = DPIUtil.scaleDown((float) DPIUtil.scaleUp(lineHeight, zoom), zoom);
+		return lineIndex * lh - getVerticalScrollOffset() + topMargin;
+	}
+	if (lineIndex == topIndex)
+		return topIndexY + topMargin;
+	int height = topIndexY;
+	if (lineIndex > topIndex) {
+		for (int i = topIndex; i < lineIndex; i++) {
+			height += DPIUtil.scaleDown((float) DPIUtil.scaleUp(renderer.getLineHeight(i), zoom), zoom);
+		}
+	} else {
+		for (int i = topIndex - 1; i >= lineIndex; i--) {
+			height -= DPIUtil.scaleDown((float) DPIUtil.scaleUp(renderer.getLineHeight(i), zoom), zoom);
+		}
+	}
+	return height + topMargin;
+}
 /**
  * Returns the line index for a y, relative to the client area.
  * The line index returned is always in the range 0..lineCount - 1.
