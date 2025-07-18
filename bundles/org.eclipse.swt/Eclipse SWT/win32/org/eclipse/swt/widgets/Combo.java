@@ -667,7 +667,7 @@ public void clearSelection () {
 	if ((style & SWT.SIMPLE) != 0 && (style & SWT.H_SCROLL) != 0) {
 		height += getSystemMetrics (OS.SM_CYHSCROLL);
 	}
-	return new Point (width, height);
+	return new Point.OfFloat (width, height);
 }
 
 /**
@@ -960,7 +960,7 @@ Point getCaretLocationInPixels () {
 	point.x = OS.GET_X_LPARAM (caretPos);
 	point.y = OS.GET_Y_LPARAM (caretPos);
 	OS.MapWindowPoints (hwndText, handle, point, 1);
-	return new Point (point.x, point.y);
+	return new Point.OfFloat (point.x, point.y);
 }
 
 /**
@@ -1283,11 +1283,11 @@ String getSegmentsText (String text, Event event) {
 public Point getSelection () {
 	checkWidget ();
 	if ((style & SWT.DROP_DOWN) != 0 && (style & SWT.READ_ONLY) != 0) {
-		return new Point (0, OS.GetWindowTextLength (handle));
+		return new Point.OfFloat (0, OS.GetWindowTextLength (handle));
 	}
 	int [] start = new int [1], end = new int [1];
 	OS.SendMessage (handle, OS.CB_GETEDITSEL, start, end);
-	return new Point (untranslateOffset (start [0]), untranslateOffset (end [0]));
+	return new Point.OfFloat (untranslateOffset (start [0]), untranslateOffset (end [0]));
 }
 
 /**

@@ -2362,7 +2362,7 @@ LRESULT wmPaint (long hwnd, long wParam, long lParam) {
 			OS.SetMetaRgn (hDC);
 			Event event = new Event ();
 			event.gc = gc;
-			event.setBounds(Win32DPIUtils.pixelToPoint(new Rectangle(rect.left, rect.top, width, height), getZoom()));
+			event.setBounds(Win32DPIUtils.pixelToPoint(new Rectangle.OfFloat(rect.left, rect.top, width, height), getZoom()));
 			sendEvent (SWT.Paint, event);
 			// widget could be disposed at this point
 			event.gc = null;

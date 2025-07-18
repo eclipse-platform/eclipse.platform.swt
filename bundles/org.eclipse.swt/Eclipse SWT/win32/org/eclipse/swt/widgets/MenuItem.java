@@ -344,7 +344,7 @@ public int getAccelerator () {
 		int y = info2.top - info1.top;
 		int width = info2.right - info2.left;
 		int height = info2.bottom - info2.top;
-		return new Rectangle (x, y, width, height);
+		return new Rectangle.OfFloat (x, y, width, height);
 	} else {
 		long hMenu = parent.handle;
 		RECT rect1 = new RECT ();
@@ -359,7 +359,7 @@ public int getAccelerator () {
 		int y = rect2.top - rect1.top + 2;
 		int width = rect2.right - rect2.left;
 		int height = rect2.bottom - rect2.top;
-		return new Rectangle (x, y, width, height);
+		return new Rectangle.OfFloat (x, y, width, height);
 	}
 }
 

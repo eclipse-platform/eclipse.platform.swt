@@ -924,7 +924,7 @@ public int getAlpha () {
 	OS.GetWindowRect (handle, rect);
 	int width = rect.right - rect.left;
 	int height = rect.bottom - rect.top;
-	return new Rectangle (rect.left, rect.top, width, height);
+	return new Rectangle.OfFloat (rect.left, rect.top, width, height);
 }
 
 ToolTip getCurrentToolTip () {
@@ -1017,7 +1017,7 @@ public int getImeInputMode () {
 	if (OS.IsIconic (handle)) return super.getLocationInPixels ();
 	RECT rect = new RECT ();
 	OS.GetWindowRect (handle, rect);
-	return new Point (rect.left, rect.top);
+	return new Point.OfFloat (rect.left, rect.top);
 }
 
 @Override
@@ -1064,7 +1064,7 @@ Point getMaximumSizeInPixels () {
 			height = Math.min (height, rect.bottom - rect.top);
 		}
 	}
-	return new Point (width,  height);
+	return new Point.OfFloat (width,  height);
 }
 
 /**
@@ -1105,7 +1105,7 @@ Point getMinimumSizeInPixels () {
 			height = Math.max (height, rect.bottom - rect.top);
 		}
 	}
-	return new Point (width,  height);
+	return new Point.OfFloat (width,  height);
 }
 
 /**
@@ -1157,7 +1157,7 @@ public Shell getShell () {
 	OS.GetWindowRect (handle, rect);
 	int width = rect.right - rect.left;
 	int height = rect.bottom - rect.top;
-	return new Point (width, height);
+	return new Point.OfFloat (width, height);
 }
 
 /**
@@ -1580,7 +1580,7 @@ public void setLocation(Point location) {
 
 @Override
 public void setLocation(int x, int y) {
-	setLocation(new Point(x, y));
+	setLocation(new Point.OfFloat(x, y));
 }
 
 @Override
@@ -1598,7 +1598,7 @@ public void setBounds(Rectangle rect) {
 
 @Override
 public void setBounds(int x, int y, int width, int height) {
-	setBounds(new Rectangle(x, y, width, height));
+	setBounds(new Rectangle.OfFloat(x, y, width, height));
 }
 
 @Override
@@ -2276,7 +2276,7 @@ Rectangle getClientRectInWindow () {
 	RECT clientRect = new RECT ();
 	OS.GetClientRect (handle, clientRect);
 
-	return new Rectangle(
+	return new Rectangle.OfFloat(
 			clientWindowLT.x + clientRect.left,
 			clientWindowLT.y + clientRect.top,
 			clientRect.right - clientRect.left,
