@@ -1172,9 +1172,8 @@ public class ImageAnalyzer {
 			if (printerData == null) return;
 
 			Printer printer = new Printer(printerData);
-			Point screenDPI = display.getDPI();
 			Point printerDPI = printer.getDPI();
-			int scaleFactor = printerDPI.x / screenDPI.x;
+			int scaleFactor = printerDPI.x / 100;
 			Rectangle trim = printer.computeTrim(0, 0, 0, 0);
 			if (printer.startJob(currentName)) {
 				if (printer.startPage()) {

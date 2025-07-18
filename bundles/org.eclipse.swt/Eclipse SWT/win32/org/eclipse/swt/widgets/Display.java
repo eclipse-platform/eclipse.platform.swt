@@ -2037,6 +2037,12 @@ public Point [] getIconSizes () {
 	};
 }
 
+@Deprecated
+@Override
+public Point getDPI () {
+	return super.getDPI();
+}
+
 ImageList getImageList (int style, int width, int height, int zoom) {
 	if (imageList == null) imageList = new ImageList [4];
 
