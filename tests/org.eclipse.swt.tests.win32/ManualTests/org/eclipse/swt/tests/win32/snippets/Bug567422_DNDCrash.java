@@ -13,9 +13,9 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.win32.snippets;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,9 +37,9 @@ import org.eclipse.swt.tests.win32.SwtWin32TestUtil;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Shell;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runners.MethodSorters;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 
 /**
  * This one is primary a manual test because it is platform dependent, kind of
@@ -47,7 +47,7 @@ import org.junit.runners.MethodSorters;
  * grabs the mouse while testing. Apart from that the test runs automatically.
  * Just start and see if the JVM crashes.
  */
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+@TestMethodOrder(MethodOrderer.MethodName.class)
 @SuppressWarnings("restriction")
 public class Bug567422_DNDCrash {
 
@@ -114,7 +114,7 @@ public class Bug567422_DNDCrash {
 			} catch (InterruptedException e) {
 				fail("Initialization interrupted");
 			}
-			assertTrue("Shell not visible.", shell.isVisible());
+			assertTrue(shell.isVisible(), "Shell not visible.");
 
 			Transfer transfer = TextTransfer.getInstance();
 			AtomicBoolean dropped = new AtomicBoolean(false);
@@ -182,8 +182,8 @@ public class Bug567422_DNDCrash {
 					postDragAndDropEvents(shell);
 					SwtWin32TestUtil.processEvents(shell.getDisplay(), 1000, dropped::get);
 				} while (!dropped.get() && --dragDropTries > 0);
-				assertTrue("No drop received.", dropped.get());
-				assertNotNull("No data was dropped.", droppedData.get());
+				assertTrue(dropped.get(), "No drop received.");
+				assertNotNull(droppedData.get(), "No data was dropped.");
 
 				if (mode == TestMode.UNCOMMON && (i % testBatchSize) == 0) {
 					for (IDataObject dataObject : dataObjects) {
@@ -214,7 +214,7 @@ public class Bug567422_DNDCrash {
 	 */
 	private static void postDragAndDropEvents(Shell shell) {
 		shell.forceActive();
-		assertTrue("Test shell requires input focus.", shell.forceFocus());
+		assertTrue(shell.forceFocus(), "Test shell requires input focus.");
 		Event event = new Event();
 		Point pt = shell.toDisplay(50, 50);
 		event.x = pt.x;

@@ -13,7 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.win32;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
 
@@ -25,10 +25,9 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.rules.TestName;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.TestInfo;
 
 /**
  * Supporting code for testing keyboard layouts
@@ -46,8 +45,7 @@ public class KeyboardLayoutTest {
 	boolean collectKeyErrors;
 	ArrayList<AssertionError> keyErrors;
 
-	@Rule
-	public TestName testName = new TestName();
+	private String testName;
 
 	// Hardware scan codes, with names according to English US layout
 	protected enum UsScan {
@@ -222,8 +220,9 @@ public class KeyboardLayoutTest {
 		A___,
 	};
 
-	@Before
-	public void setUp() {
+	@BeforeEach
+	public void setUp(TestInfo testInfo) {
+		this.testName = testInfo.getDisplayName();
 		display = new Display();
 		shell = new Shell();
 
@@ -253,7 +252,7 @@ public class KeyboardLayoutTest {
 		shell.forceFocus();
 	}
 
-	@After
+	@AfterEach
 	public void tearDown() {
 		if (shell != null) {
 			shell.dispose();
@@ -496,7 +495,7 @@ public class KeyboardLayoutTest {
 			if (keyErrors == null)
 				keyErrors = new ArrayList<>();
 
-			System.out.println(testName.getMethodName() + " : " + error.getMessage());
+			System.out.println(testName + " : " + error.getMessage());
 			keyErrors.add(error);
 		}
 	}

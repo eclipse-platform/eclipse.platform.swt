@@ -22,7 +22,8 @@ import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.Win32DPIUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
 /**
  * Automated Test Suite for class org.eclipse.swt.internal.Win32DPIUtils
  *

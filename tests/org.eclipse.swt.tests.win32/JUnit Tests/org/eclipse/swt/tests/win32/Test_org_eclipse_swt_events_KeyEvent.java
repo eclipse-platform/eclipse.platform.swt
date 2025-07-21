@@ -16,8 +16,8 @@ package org.eclipse.swt.tests.win32;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.internal.win32.OS;
 import org.eclipse.swt.widgets.Event;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.events.KeyEvent
@@ -166,7 +166,7 @@ public class Test_org_eclipse_swt_events_KeyEvent extends KeyboardLayoutTest {
 	/**
 	 * Extensive test for English US layout
 	 */
-	@Test
+	@org.junit.jupiter.api.Test
 	public void testEnglishUs_stdKeys() {
 		// This table intentionally provides "naive" expected values. Actual
 		// expected values have some discrepancies from that, see code below.
@@ -921,7 +921,7 @@ public class Test_org_eclipse_swt_events_KeyEvent extends KeyboardLayoutTest {
 	 * release that isn't paired with key press (due to RegisterHotKey()
 	 * or hook or pressing in other app and releasing in SWT).
 	 */
-	@Ignore("Have been broken for ages, maybe not worth fixing")
+	@Disabled("Have been broken for ages, maybe not worth fixing")
 	@Test
 	public void testEnglishUs_unpairedKeyUp() {
 		runWithLayout(LAYOUT_ENGLISH_US, () -> {
@@ -959,7 +959,7 @@ public class Test_org_eclipse_swt_events_KeyEvent extends KeyboardLayoutTest {
 	 * released first. Specifically, it didn't produce SWT.KeyUp for 'C' at all,
 	 * and also produced SWT.KeyUp for 'Ctrl' with incorrect 'character = 0x03'.
 	 */
-	@Ignore("Have been broken for ages, maybe not worth fixing")
+	@Disabled("Have been broken for ages, maybe not worth fixing")
 	@Test
 	public void testEnglishUs_unorderedCtrlC() {
 		runWithLayout(LAYOUT_ENGLISH_US, () -> {
@@ -981,7 +981,7 @@ public class Test_org_eclipse_swt_events_KeyEvent extends KeyboardLayoutTest {
 	 * Not yet fixed: SWT doesn't report second SWT.KeyUp when two letters
 	 * were pressed and released out of order
 	 */
-	@Ignore("Have been broken for ages, maybe not worth fixing")
+	@Disabled("Have been broken for ages, maybe not worth fixing")
 	@Test
 	public void testEnglishUs_multipleLetters() {
 		runWithLayout(LAYOUT_ENGLISH_US, () -> {
