@@ -17,24 +17,16 @@ package org.eclipse.swt.tests.win32;
 import org.eclipse.swt.graphics.ImageWin32Tests;
 import org.eclipse.swt.tests.win32.widgets.TestTreeColumn;
 import org.eclipse.swt.tests.win32.widgets.Test_org_eclipse_swt_widgets_Display;
-import org.junit.runner.JUnitCore;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import org.junit.platform.suite.api.SelectClasses;
+import org.junit.platform.suite.api.Suite;
 
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-	ImageWin32Tests.class,
-	Test_org_eclipse_swt_dnd_DND.class,
-	Test_org_eclipse_swt_events_KeyEvent.class,
-	Test_org_eclipse_swt_widgets_Display.class,
-	TestTreeColumn.class,
-	Win32DPIUtilTests.class
-})
-
+@Suite
+@SelectClasses({ ImageWin32Tests.class, //
+		Test_org_eclipse_swt_dnd_DND.class, //
+		Test_org_eclipse_swt_events_KeyEvent.class, //
+		Test_org_eclipse_swt_widgets_Display.class, //
+		TestTreeColumn.class, //
+		Win32DPIUtilTests.class })
 public class AllWin32Tests {
-
-	public static void main(String[] args) {
-		JUnitCore.main(AllWin32Tests.class.getName());
-	}
 
 }

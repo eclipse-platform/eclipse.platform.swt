@@ -14,13 +14,13 @@
 package org.eclipse.swt.graphics;
 
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import org.eclipse.swt.internal.DPIUtil;
 import org.eclipse.swt.widgets.Display;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Automated Tests for class org.eclipse.swt.graphics.Image
@@ -32,7 +32,7 @@ import org.junit.Test;
 public class ImageWin32Tests {
 	private Display display;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		display = Display.getDefault();
 	}
@@ -45,10 +45,10 @@ public class ImageWin32Tests {
 		int zoom2 = 150;
 		ImageData imageDataAtZoom1 = image.getImageData(zoom1);
 		ImageData imageDataAtZoom2 = image.getImageData(zoom2);
-		assertNotEquals("ImageData::height should not be the same for imageData at different zoom levels",
-				imageDataAtZoom1.height, imageDataAtZoom2.height);
-		assertNotEquals("ImageData::width should not be the same for imageData at different zoom levels",
-				imageDataAtZoom1.width, imageDataAtZoom2.width);
+		assertNotEquals(imageDataAtZoom1.height, imageDataAtZoom2.height,
+				"ImageData::height should not be the same for imageData at different zoom levels");
+		assertNotEquals(imageDataAtZoom1.width, imageDataAtZoom2.width,
+				"ImageData::width should not be the same for imageData at different zoom levels");
 	}
 
 	@Test
@@ -59,11 +59,12 @@ public class ImageWin32Tests {
 		Image image = new Image(display, noOpGcDrawer, 10, 10);
 		try {
 			ImageData baseImageData = image.getImageData(zoom);
-			assertEquals("Width should equal the initial width on the same zoom", 10, baseImageData.width);
+			assertEquals(10, baseImageData.width, "Width should equal the initial width on the same zoom");
 			ImageData scaledImageData = image.getImageData(zoom * scalingFactor);
-			assertEquals("Width should be doubled on doubled zoom", 10*2, scaledImageData.width);
+			assertEquals(10*2, scaledImageData.width, "Width should be doubled on doubled zoom");
 		} finally {
 			image.dispose();
 		}
-}
+	}
+
 }

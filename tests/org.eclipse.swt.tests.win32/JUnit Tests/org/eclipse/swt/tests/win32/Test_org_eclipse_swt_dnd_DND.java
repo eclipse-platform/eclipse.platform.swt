@@ -13,11 +13,11 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.win32;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -45,9 +45,9 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Shell;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Some simple tests for drag and drop.
@@ -64,7 +64,7 @@ public class Test_org_eclipse_swt_dnd_DND {
 
 private Shell shell;
 
-@Before
+@BeforeEach
 public void setUp() {
 	shell = new Shell();
 	shell.setLayout(new RowLayout());
@@ -75,10 +75,10 @@ public void setUp() {
 	} catch (InterruptedException e) {
 		fail("Initialization interrupted");
 	}
-	assertTrue("Shell not visible.", shell.isVisible());
+	assertTrue(shell.isVisible(), "Shell not visible.");
 }
 
-@After
+@AfterEach
 public void tearDown() {
 	Display display = shell.getDisplay();
 	display.dispose();
@@ -108,7 +108,7 @@ public void testByteArrayTransfer() throws InterruptedException {
 			return new int[] { TEST_ID };
 		}
 	}, drag);
-	assertArrayEquals("Drop received other data as we dragged.", drag, drop);
+	assertArrayEquals(drag, drop, "Drop received other data as we dragged.");
 }
 
 /**
@@ -120,7 +120,7 @@ public void testFileTransfer() throws InterruptedException {
 	final String[] drop;
 
 	drop = testTransferRoundtrip(FileTransfer.getInstance(), drag);
-	assertArrayEquals("Drop received other data as we dragged.", drag, drop);
+	assertArrayEquals(drag, drop, "Drop received other data as we dragged.");
 }
 
 /**
@@ -132,7 +132,7 @@ public void testHtmlTransfer() throws InterruptedException {
 	final String drop;
 
 	drop = testTransferRoundtrip(HTMLTransfer.getInstance(), drag);
-	assertEquals("Drop received other data as we dragged.", drag, drop);
+	assertEquals(drag, drop, "Drop received other data as we dragged.");
 }
 
 /**
@@ -208,7 +208,7 @@ public void testRtfTransfer() throws InterruptedException {
 	final String drop;
 
 	drop = testTransferRoundtrip(RTFTransfer.getInstance(), drag);
-	assertEquals("Drop received other data as we dragged.", drag, drop);
+	assertEquals(drag, drop, "Drop received other data as we dragged.");
 }
 
 /**
@@ -220,7 +220,7 @@ public void testTextTransfer() throws InterruptedException {
 	final String drop;
 
 	drop = testTransferRoundtrip(TextTransfer.getInstance(), drag);
-	assertEquals("Drop received other data as we dragged.", drag, drop);
+	assertEquals(drag, drop, "Drop received other data as we dragged.");
 }
 
 /**
@@ -232,7 +232,7 @@ public void testUrlTransfer() throws InterruptedException {
 	final String drop;
 
 	drop = testTransferRoundtrip(URLTransfer.getInstance(), drag);
-	assertEquals("Drop received other data as we dragged.", drag, drop);
+	assertEquals(drag, drop, "Drop received other data as we dragged.");
 }
 
 /**
@@ -267,17 +267,17 @@ private Image createTestImage() {
  */
 // This method is necessary because ImageData has no custom equals method and the default one isn't sufficient.
 private void assertImageDataEqualsIgoringAlphaInData(final ImageData expected, final ImageData actual) {
-	assertNotNull("expected data must not be null", expected);
-	assertNotNull("actual data must not be null", actual);
+	assertNotNull(expected, "expected data must not be null");
+	assertNotNull(actual, "actual data must not be null");
 	if (expected == actual) {
 		return;
 	}
-	assertEquals("height of expected image is different from actual image", expected.height, actual.height);
+	assertEquals(expected.height, actual.height, "height of expected image is different from actual image");
 	// Alpha values are taken from alpha data, so ignore whether data depth is 24 or 32 bits
 	int expectedNormalizedDepth = expected.depth == 32 ? 24 : expected.depth;
 	int actualNormalizedDepth = expected.depth == 32 ? 24 : expected.depth;
-	assertEquals("depth of image data to compare must be equal", expectedNormalizedDepth, actualNormalizedDepth);
-	assertEquals("width of expected image is different from actual image", expected.width, actual.width);
+	assertEquals(expectedNormalizedDepth, actualNormalizedDepth, "depth of image data to compare must be equal");
+	assertEquals(expected.width, actual.width, "width of expected image is different from actual image");
 
 	for (int y = 0; y < expected.height; y++) {
 		for (int x = 0; x < expected.width; x++) {
@@ -285,10 +285,10 @@ private void assertImageDataEqualsIgoringAlphaInData(final ImageData expected, f
 			// => alpha stored in ImageData.alphaData
 			String expectedPixel = String.format("0x%08X", expected.getPixel(x, y) >> (expected.depth == 32 ? 8 : 0));
 			String actualPixel = String.format("0x%08X", actual.getPixel(x, y) >> (actual.depth == 32 ? 8 : 0));
-			assertEquals("actual pixel at x=" + x + " y=" + y + " is different from expected pixel", expectedPixel, actualPixel);
+			assertEquals(expectedPixel, actualPixel, "actual pixel at x=" + x + " y=" + y + " is different from expected pixel");
 			int expectedAlpha = expected.getAlpha(x, y);
 			int actualAlpha = actual.getAlpha(x, y);
-			assertEquals("actual pixel alpha at x=" + x + " y=" + y + " is different from expected pixel", expectedAlpha, actualAlpha);
+			assertEquals(expectedAlpha, actualAlpha, "actual pixel alpha at x=" + x + " y=" + y + " is different from expected pixel");
 		}
 	}
 }
@@ -327,8 +327,8 @@ private <T> T testTransferRoundtrip(Transfer transfer, T data) throws Interrupte
 		SwtWin32TestUtil.processEvents(shell.getDisplay(), 2000, dropped::get);
 	} while(!dropped.get() && --maxTries > 0);
 
-	assertTrue("No drop received.", dropped.get());
-	assertNotNull("No data was dropped.", droppedData.get());
+	assertTrue(dropped.get(), "No drop received.");
+	assertNotNull(droppedData.get(), "No data was dropped.");
 
 	return droppedData.get();
 }
@@ -341,7 +341,7 @@ private <T> T testTransferRoundtrip(Transfer transfer, T data) throws Interrupte
  */
 private void postDragAndDropEvents() {
 	shell.forceActive();
-	assertTrue("Test shell requires input focus.", shell.forceFocus());
+	assertTrue(shell.forceFocus(), "Test shell requires input focus.");
 	Event event = new Event();
 	Point pt = shell.toDisplay(50, 50);
 	event.x = pt.x;
