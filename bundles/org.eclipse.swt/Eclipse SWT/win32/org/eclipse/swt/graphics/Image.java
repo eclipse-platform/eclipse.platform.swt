@@ -1707,7 +1707,7 @@ private long configureGC(GCData data, int zoom) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 
-	if (Device.strictChecks) {
+	if(Device.strictChecks) {
 		checkImageTypeForValidCustomDrawing(zoom);
 	}
 	/* Create a compatible HDC for the device */
@@ -1885,6 +1885,11 @@ private abstract class AbstractImageProviderWrapper {
 	abstract AbstractImageProviderWrapper createCopy(Image image);
 
 	ImageData getScaledImageData (int zoom) {
+		// if a GC is initialized with an Image (memGC != null), the image data must not be resized, because it would
+		// be a destructive operation. Therefor, always the current image data must be returned
+		if (memGC != null) {
+			return getImageDataAtCurrentZoom();
+		}
 		TreeSet<Integer> availableZooms = new TreeSet<>(zoomLevelToImageHandle.keySet());
 		int closestZoom = Optional.ofNullable(availableZooms.higher(zoom)).orElse(availableZooms.lower(zoom));
 		return DPIUtil.scaleImageData(device, getImageMetadata(closestZoom).getImageData(), zoom, closestZoom);
@@ -2118,11 +2123,6 @@ private class PlainImageProviderWrapper extends AbstractImageProviderWrapper {
 		if (zoomLevelToImageHandle.isEmpty()) {
 			return createBaseHandle(zoom).getImageData();
 		}
-		// if a GC is initialized with an Image (memGC != null), the image data must not be resized, because it would
-		// be a destructive operation. Therefor, a new handle is created for the requested zoom
-		if (memGC != null) {
-			return newImageHandle(zoom).getImageData();
-		}
 		return getScaledImageData(zoom);
 	}
 
@@ -2131,28 +2131,18 @@ private class PlainImageProviderWrapper extends AbstractImageProviderWrapper {
 		if (zoomLevelToImageHandle.isEmpty()) {
 			return createBaseHandle(zoom);
 		}
-		if (memGC != null) {
-			GC currentGC = memGC;
-			memGC = null;
-			createHandle(zoom);
-			currentGC.refreshFor(new DrawableWrapper(Image.this, zoom), zoom);
-			return zoomLevelToImageHandle.get(zoom);
-		}
 		return super.newImageHandle(zoom);
 	}
-	private ImageHandle createBaseHandle(int zoom) {
-		baseZoom = zoom;
-		return createHandle(zoom);
-	}
 
-	private ImageHandle createHandle(int zoom) {
-		long handle = initHandle(zoom);
+	private ImageHandle createBaseHandle(int zoom) {
+		long handle = initBaseHandle(zoom);
+		baseZoom = zoom;
 		ImageHandle imageHandle = new ImageHandle(handle, zoom);
 		zoomLevelToImageHandle.put(zoom, imageHandle);
 		return imageHandle;
 	}
 
-	private long initHandle(int zoom) {
+	private long initBaseHandle(int zoom) {
 		if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 		int scaledWidth = Win32DPIUtils.pointToPixel (width, zoom);
 		int scaledHeight = Win32DPIUtils.pointToPixel (height, zoom);
@@ -2564,6 +2554,7 @@ private class ImageGcDrawerWrapper extends DynamicImageProviderWrapper {
 		}
 		GC gc = new GC(new DrawableWrapper(image, zoom), gcStyle);
 		try {
+			gc.data.nativeZoom = zoom;
 			drawer.drawOn(gc, width, height);
 			ImageData imageData = image.getImageMetadata(zoom).getImageData();
 			drawer.postProcess(imageData);
@@ -2572,6 +2563,26 @@ private class ImageGcDrawerWrapper extends DynamicImageProviderWrapper {
 		} finally {
 			gc.dispose();
 			image.dispose();
+		}
+	}
+
+	private class DrawableWrapper implements Drawable {
+		private final Image image;
+		private final int zoom;
+
+		public DrawableWrapper(Image image, int zoom) {
+			this.image = image;
+			this.zoom = zoom;
+		}
+
+		@Override
+		public long internal_new_GC(GCData data) {
+			return this.image.configureGC(data, zoom);
+		}
+
+		@Override
+		public void internal_dispose_GC(long handle, GCData data) {
+			this.image.internal_dispose_GC(handle, data);
 		}
 	}
 
@@ -2594,26 +2605,6 @@ private class ImageGcDrawerWrapper extends DynamicImageProviderWrapper {
 	public boolean equals(Object otherProvider) {
 		return otherProvider instanceof ImageGcDrawerWrapper aip && getProvider().equals(aip.getProvider())
 				&& width == aip.width && height == aip.height;
-	}
-}
-
-private static class DrawableWrapper implements Drawable {
-	private final Image image;
-	private final int zoom;
-
-	public DrawableWrapper(Image image, int zoom) {
-		this.image = image;
-		this.zoom = zoom;
-	}
-
-	@Override
-	public long internal_new_GC(GCData data) {
-		return this.image.configureGC(data, zoom);
-	}
-
-	@Override
-	public void internal_dispose_GC(long handle, GCData data) {
-		this.image.internal_dispose_GC(handle, data);
 	}
 }
 
