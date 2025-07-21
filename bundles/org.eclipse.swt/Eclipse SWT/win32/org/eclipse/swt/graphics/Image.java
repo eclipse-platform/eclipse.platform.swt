@@ -139,6 +139,8 @@ public final class Image extends Resource implements Drawable {
 
 	private Map<Integer, ImageHandle> zoomLevelToImageHandle = new HashMap<>();
 
+	private List<Consumer<Image>> onDisposeListeners;
+
 private Image (Device device, int type, long handle, int nativeZoom) {
 	super(device);
 	this.type = type;
@@ -995,6 +997,21 @@ long [] createGdipImage(Integer zoom) {
 		default: SWT.error(SWT.ERROR_INVALID_IMAGE);
 	}
 	return null;
+}
+
+void addOnDisposeListener(Consumer<Image> onDisposeListener) {
+	if (onDisposeListeners == null) {
+		onDisposeListeners = new ArrayList<>();
+	}
+	onDisposeListeners.add(onDisposeListener);
+}
+
+@Override
+public void dispose() {
+	if (onDisposeListeners != null) {
+		onDisposeListeners.forEach(listener -> listener.accept(this));
+	}
+	super.dispose();
 }
 
 @Override

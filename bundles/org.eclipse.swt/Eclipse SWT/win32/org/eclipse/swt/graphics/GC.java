@@ -491,13 +491,38 @@ public void copyArea (Image image, int x, int y) {
 	storeAndApplyOperationForExistingHandle(new CopyAreaToImageOperation(image, x, y));
 }
 
-private class CopyAreaToImageOperation extends Operation {
-	private final Image image;
+private abstract class ImageOperation extends Operation {
+	private Image image;
+
+	ImageOperation(Image image) {
+		setImage(image);
+		image.addOnDisposeListener(this::setCopyOfImage);
+	}
+
+	private void setImage(Image image) {
+		this.image = image;
+	}
+
+	private void setCopyOfImage(Image image) {
+		if (!GC.this.isDisposed()) {
+			Image copiedImage = new Image(image.device, image, SWT.IMAGE_COPY);
+			setImage(copiedImage);
+			registerForDisposal(copiedImage);
+		}
+	}
+
+	protected Image getImage() {
+		return image;
+	}
+
+}
+
+private class CopyAreaToImageOperation extends ImageOperation {
 	private final int x;
 	private final int y;
 
 	CopyAreaToImageOperation(Image image, int x, int y) {
-		this.image = image;
+		super(image);
 		this.x = x;
 		this.y = y;
 	}
@@ -507,7 +532,7 @@ private class CopyAreaToImageOperation extends Operation {
 		int zoom = getZoom();
 		int scaledX = Win32DPIUtils.pointToPixel(drawable, this.x, zoom);
 		int scaledY = Win32DPIUtils.pointToPixel(drawable, this.y, zoom);
-		copyAreaInPixels(this.image, scaledX, scaledY);
+		copyAreaInPixels(getImage(), scaledX, scaledY);
 	}
 }
 
@@ -1013,18 +1038,17 @@ public void drawImage (Image image, int x, int y) {
 	storeAndApplyOperationForExistingHandle(new DrawImageOperation(image, new Point(x, y)));
 }
 
-private class DrawImageOperation extends Operation {
-	private final Image image;
+private class DrawImageOperation extends ImageOperation {
 	private final Point location;
 
 	DrawImageOperation(Image image, Point location) {
-		this.image = image;
+		super(image);
 		this.location = location;
 	}
 
 	@Override
 	void apply() {
-		drawImageInPixels(this.image, Win32DPIUtils.pointToPixel(drawable, this.location, getZoom()));
+		drawImageInPixels(getImage(), Win32DPIUtils.pointToPixel(drawable, this.location, getZoom()));
 	}
 
 	private void drawImageInPixels(Image image, Point location) {
@@ -1081,13 +1105,12 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 	storeAndApplyOperationForExistingHandle(new DrawImageToImageOperation(srcImage, new Rectangle(srcX, srcY, srcWidth, srcHeight), new Rectangle(destX, destY, destWidth, destHeight), simple));
 }
 
-private class DrawScalingImageToImageOperation extends Operation {
-	private final Image image;
+private class DrawScalingImageToImageOperation extends ImageOperation {
 	private final Rectangle source;
 	private final Rectangle destination;
 
 	DrawScalingImageToImageOperation(Image image, Rectangle source, Rectangle destination) {
-		this.image = image;
+		super(image);
 		this.source = source;
 		this.destination = destination;
 	}
@@ -1096,7 +1119,7 @@ private class DrawScalingImageToImageOperation extends Operation {
 	void apply() {
 		int gcZoom = getZoom();
 		int srcImageZoom = calculateZoomForImage(gcZoom, source.width, source.height, destination.width, destination.height);
-		drawImage(image, source.x, source.y, source.width, source.height, destination.x, destination.y, destination.width, destination.height, gcZoom, srcImageZoom);
+		drawImage(getImage(), source.x, source.y, source.width, source.height, destination.x, destination.y, destination.width, destination.height, gcZoom, srcImageZoom);
 	}
 
 	private Collection<Integer> getAllCurrentMonitorZooms() {
@@ -1154,14 +1177,13 @@ private void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHei
 	drawImage(image, src.x, src.y, src.width, src.height, dest.x, dest.y, dest.width, dest.height, false, scaledImageZoom);
 }
 
-private class DrawImageToImageOperation extends Operation {
-	private final Image image;
+private class DrawImageToImageOperation extends ImageOperation {
 	private final Rectangle source;
 	private final Rectangle destination;
 	private final boolean simple;
 
 	DrawImageToImageOperation(Image image, Rectangle source, Rectangle destination, boolean simple) {
-		this.image = image;
+		super(image);
 		this.source = source;
 		this.destination = destination;
 		this.simple = simple;
@@ -1169,7 +1191,7 @@ private class DrawImageToImageOperation extends Operation {
 
 	@Override
 	void apply() {
-		drawImage(image, source.x, source.y, source.width, source.height, destination.x, destination.y, destination.width, destination.height, simple, getZoom());
+		drawImage(getImage(), source.x, source.y, source.width, source.height, destination.x, destination.y, destination.width, destination.height, simple, getZoom());
 	}
 }
 
