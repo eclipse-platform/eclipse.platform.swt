@@ -1958,14 +1958,20 @@ private class DrawPathOperation extends Operation {
 	@Override
 	void apply() {
 		Path path = new Path(device, pathData);
-		long pathHandle = path.getHandle(getZoom());
-		if (pathHandle == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-		initGdip();
-		checkGC(DRAW);
-		long gdipGraphics = data.gdipGraphics;
-		Gdip.Graphics_TranslateTransform(gdipGraphics, data.gdipXOffset, data.gdipYOffset, Gdip.MatrixOrderPrepend);
-		Gdip.Graphics_DrawPath(gdipGraphics, data.gdipPen, pathHandle);
-		Gdip.Graphics_TranslateTransform(gdipGraphics, -data.gdipXOffset, -data.gdipYOffset, Gdip.MatrixOrderPrepend);
+		try {
+			long pathHandle = path.getHandle(getZoom());
+			if (pathHandle == 0)
+				SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+			initGdip();
+			checkGC(DRAW);
+			long gdipGraphics = data.gdipGraphics;
+			Gdip.Graphics_TranslateTransform(gdipGraphics, data.gdipXOffset, data.gdipYOffset, Gdip.MatrixOrderPrepend);
+			Gdip.Graphics_DrawPath(gdipGraphics, data.gdipPen, pathHandle);
+			Gdip.Graphics_TranslateTransform(gdipGraphics, -data.gdipXOffset, -data.gdipYOffset,
+					Gdip.MatrixOrderPrepend);
+		} finally {
+			path.dispose();
+		}
 	}
 }
 
@@ -3272,13 +3278,18 @@ private class FillPathOperation extends Operation {
 	@Override
 	void apply() {
 		Path path = new Path(device, pathData);
-		long pathHandle = path.getHandle(getZoom());
-		if (pathHandle == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-		initGdip();
-		checkGC(FILL);
-		int mode = OS.GetPolyFillMode(handle) == OS.WINDING ? Gdip.FillModeWinding : Gdip.FillModeAlternate;
-		Gdip.GraphicsPath_SetFillMode(pathHandle, mode);
-		Gdip.Graphics_FillPath(data.gdipGraphics, data.gdipBrush, pathHandle);
+		try {
+			long pathHandle = path.getHandle(getZoom());
+			if (pathHandle == 0)
+				SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+			initGdip();
+			checkGC(FILL);
+			int mode = OS.GetPolyFillMode(handle) == OS.WINDING ? Gdip.FillModeWinding : Gdip.FillModeAlternate;
+			Gdip.GraphicsPath_SetFillMode(pathHandle, mode);
+			Gdip.Graphics_FillPath(data.gdipGraphics, data.gdipBrush, pathHandle);
+		} finally {
+			path.dispose();
+		}
 	}
 }
 
@@ -4629,7 +4640,9 @@ private class SetBackgroundOperation extends Operation {
 	private final Color color;
 
 	SetBackgroundOperation(Color color) {
-		this.color = color;
+		RGB rgb = color.getRGB();
+		this.color = new Color(color.getDevice(), rgb);
+		registerForDisposal(this.color);
 	}
 
 	@Override
@@ -4676,6 +4689,7 @@ private class SetBackgroundPatternOperation extends Operation {
 
 	SetBackgroundPatternOperation(Pattern pattern) {
 		this.pattern = pattern == null ? null : pattern.copy();
+		registerForDisposal(this.pattern);
 	}
 
 	@Override
@@ -4938,7 +4952,8 @@ private class SetFontOperation extends Operation {
 	private final Font font;
 
 	SetFontOperation(Font font) {
-		this.font = font;
+		this.font = new Font(font.getDevice(), font.getFontData());
+		registerForDisposal(this.font);
 	}
 
 	@Override
@@ -4973,7 +4988,9 @@ private class SetForegroundOperation extends Operation {
 	private final Color color;
 
 	SetForegroundOperation(Color color) {
-		this.color = color;
+		RGB rgb = color.getRGB();
+		this.color = new Color(color.getDevice(), rgb);
+		registerForDisposal(this.color);
 	}
 
 	@Override
@@ -5019,6 +5036,7 @@ private class SetForegroundPatternOperation extends Operation {
 
 	SetForegroundPatternOperation(Pattern pattern) {
 		this.pattern = pattern == null ? null : pattern.copy();
+		registerForDisposal(this.pattern);
 	}
 
 	@Override
@@ -5604,6 +5622,7 @@ private class SetTransformOperation extends Operation {
 			float[] elements = new float[6];
 			transform.getElements(elements);
 			this.transform = new Transform(device, elements[0], elements[1], elements[2], elements[3], elements[4], elements[5]);
+			registerForDisposal(this.transform);
 		} else {
 			this.transform = null;
 		}
@@ -5876,8 +5895,36 @@ private void createGcHandle(Drawable drawable, GCData newData, int nativeZoom) {
 	}
 }
 
+
+@Override
+public void dispose() {
+    super.dispose();
+    disposeOperations();
+}
+
+private void disposeOperations() {
+    for (Operation op : operations) {
+        op.disposeAll();
+    }
+    operations.clear();
+}
+
 private abstract class Operation {
+	private final List<Resource> disposables = new ArrayList<>();
 	abstract void apply();
+
+	protected void registerForDisposal(Resource resource) {
+		if (resource != null) {
+			disposables.add(resource);
+		}
+	}
+
+	void disposeAll() {
+		for (Resource r : disposables) {
+			r.dispose();
+		}
+		disposables.clear();
+	}
 }
 }
 
