@@ -4730,19 +4730,21 @@ private class SetBackgroundPatternOperation extends Operation {
 
 private void setClipping(long clipRgn) {
 	checkNonDisposed();
-	storeAndApplyOperationForExistingHandle(new SetClippingRegionOperation(clipRgn));
+	setClippingRegion(clipRgn);
 }
 
 private class SetClippingRegionOperation extends Operation {
-	private final long clipRgn;
+	private final Region clipRgn;
 
-	SetClippingRegionOperation(long clipRgn) {
-		this.clipRgn = clipRgn;
+	SetClippingRegionOperation(Region clipRgn) {
+		this.clipRgn = clipRgn != null ? clipRgn.copy() : null;
+		registerForDisposal(this.clipRgn);
 	}
 
 	@Override
 	void apply() {
-		setClippingRegion(clipRgn);
+		// Reset clipping if clipRgn is null.
+		setClippingRegion(clipRgn != null ? Region.win32_getHandle(clipRgn, getZoom()) : 0);
 	}
 }
 
@@ -4880,7 +4882,7 @@ private class SetClippingPathOperation extends Operation {
 public void setClipping (Rectangle rect) {
 	checkNonDisposed();
 	if (rect == null) {
-		setClipping(0);
+		storeAndApplyOperationForExistingHandle(new SetClippingRegionOperation(null));
 	} else {
 		storeAndApplyOperationForExistingHandle(new SetClippingOperation(rect));
 	}
@@ -4905,7 +4907,7 @@ public void setClipping (Rectangle rect) {
 public void setClipping (Region region) {
 	checkNonDisposed();
 	if (region != null && region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	setClipping(region != null ? Region.win32_getHandle(region, getZoom()) : 0);
+	storeAndApplyOperationForExistingHandle(new SetClippingRegionOperation(region));
 }
 
 /**
