@@ -105,6 +105,7 @@ public Font(Device device, FontData fd) {
 	this.zoom = DPIUtil.getNativeDeviceZoom();
 	this.fontData = new FontData(fd);
 	this.fontHeight = fd.height;
+	this.handle = SWTFontProvider.getFontHandle(this, this.zoom);
 	init();
 }
 
@@ -153,6 +154,7 @@ public Font(Device device, FontData[] fds) {
 	FontData fd = fds[0];
 	this.fontData = new FontData(fd);
 	this.fontHeight = fd.height;
+	this.handle = SWTFontProvider.getFontHandle(this, this.zoom);
 	init();
 }
 
@@ -186,7 +188,13 @@ public Font(Device device, String name, int height, int style) {
 	this.zoom = DPIUtil.getNativeDeviceZoom();
 	this.fontData = new FontData (name, height, style);
 	this.fontHeight = height;
+	this.handle = SWTFontProvider.getFontHandle(this, this.zoom);
 	init();
+}
+
+@Override
+void init() {
+	super.init();
 }
 
 @Override
@@ -402,9 +410,6 @@ public static Font win32_new(Device device, FontData fontData, int zoom) {
  * @since 3.126
  */
 public static Font win32_new(Font font, int targetZoom) {
-	if (targetZoom == font.zoom) {
-		return font;
-	}
 	return SWTFontProvider.getFont(font.getDevice(), font.getFontData()[0], targetZoom);
 }
 }
