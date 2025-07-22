@@ -644,6 +644,12 @@ private RegionHandle getRegionHandle(int zoom) {
 	return zoomToHandle.get(zoom);
 }
 
+Region copy() {
+	Region region = new Region();
+	region.operations.addAll(operations);
+	return region;
+}
+
 /**
  * <b>IMPORTANT:</b> This method is not part of the public
  * API for Image. It is marked public only so that it
