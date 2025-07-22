@@ -320,19 +320,21 @@ LRESULT WM_LBUTTONUP (long wParam, long lParam) {
 	dragging = false;
 	RECT rect = new RECT ();
 	OS.GetWindowRect (handle, rect);
-	int width = rect.right - rect.left;
-	int height = rect.bottom - rect.top;
+	int widthInPixels = rect.right - rect.left;
+	int heightInPixels = rect.bottom - rect.top;
 
 	/* The event must be sent because doit flag is used */
 	Event event = new Event ();
-	event.setBounds(Win32DPIUtils.pixelToPoint(new Rectangle(lastX, lastY, width, height), getZoom()));
-	drawBand (lastX, lastY, width, height);
+	event.setBounds(Win32DPIUtils.pixelToPoint(new Rectangle(lastX, lastY, widthInPixels, heightInPixels), getZoom()));
+	drawBand (lastX, lastY, widthInPixels, heightInPixels);
 	sendSelectionEvent (SWT.Selection, event, true);
 	if (isDisposed ()) return result;
 	Rectangle bounds = event.getBounds();
 	if (event.doit) {
 		if ((style & SWT.SMOOTH) != 0) {
-			setBounds (bounds.x, bounds.y, width, height);
+			int xInPixels = Win32DPIUtils.pointToPixel(bounds.x, getZoom());
+			int yInPixels = Win32DPIUtils.pointToPixel(bounds.y, getZoom());
+			setBoundsInPixels (xInPixels, yInPixels, widthInPixels, heightInPixels);
 			// widget could be disposed at this point
 		}
 	}
