@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2021 Nikita Nemkin
+ * Copyright (c) 2021, 2025 Nikita Nemkin and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -63,7 +63,6 @@ public class Bug569468_GtkLafSync {
 				e.printStackTrace();
 			}
 			int[] counter1 = new int[1];
-			@SuppressWarnings("serial")
 			JButton button1 = new JButton("Swing Button #9999") {
 
 				@Override
