@@ -3421,8 +3421,8 @@ int gtk_gesture_press_event (long gesture, int n_press, double x, double y, long
 		if (!cancelled) {
 			result = GTK4.GTK_EVENT_SEQUENCE_CLAIMED;
 		}
-		if ((state & MENU) != 0) {
-			if (eventButton == 3) {
+		if (eventButton == 3) {
+			if ((state & MENU) != 0 || menu != null) {
 				if (showMenu ((int)x, (int)y)) {
 					result = GTK4.GTK_EVENT_SEQUENCE_CLAIMED;
 				}
@@ -3430,13 +3430,13 @@ int gtk_gesture_press_event (long gesture, int n_press, double x, double y, long
 		}
 	} else if (n_press >= 2) {
 		boolean cancelled = sendMouseEvent(SWT.MouseDoubleClick, eventButton, n_press, 0, false, eventTime, x, y, false, eventState);
-		
-		//Issue 344, DoubleClick event currently unsupported below sendMouseEvent(). Until DoubleClickSupport is 
+
+		//Issue 344, DoubleClick event currently unsupported below sendMouseEvent(). Until DoubleClickSupport is
 		//added this will catch failed events and try MouseDown instead.
 		if (cancelled) {
 			cancelled = sendMouseEvent(SWT.MouseDown, eventButton, n_press, 0, false, eventTime, x, y, false, eventState);
 		}
-		
+
 		if (!cancelled) {
 			result = GTK4.GTK_EVENT_SEQUENCE_CLAIMED;
 		}
@@ -4240,18 +4240,10 @@ long gtk_motion_notify_event (long widget, long event) {
 }
 
 @Override
-long gtk_popup_menu (long widget) {
+long gtk3_popup_menu (long widget) {
 	if (!hasFocus()) return 0;
 	int [] x = new int [1], y = new int [1];
-	if (GTK.GTK4) {
-		/*
-		 * TODO: calling gdk_window_get_device_position() with a 0
-		 * for the GdkWindow uses gdk_get_default_root_window(),
-		 * which doesn't exist on GTK4.
-		 */
-	} else {
-		display.getWindowPointerPosition (0, x, y, null);
-	}
+	display.getWindowPointerPosition (0, x, y, null);
 	return showMenu (x [0], y [0], SWT.MENU_KEYBOARD) ? 1 : 0;
 }
 

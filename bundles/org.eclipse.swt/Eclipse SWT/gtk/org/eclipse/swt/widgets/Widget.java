@@ -1061,7 +1061,7 @@ long gtk_populate_popup (long widget, long menu) {
 	return 0;
 }
 
-long gtk_popup_menu (long widget) {
+long gtk3_popup_menu (long widget) {
 	return 0;
 }
 
@@ -2592,7 +2592,7 @@ long windowProc (long handle, long user_data) {
 		case MAP: return gtk_map (handle);
 		case MONTH_CHANGED: return gtk_month_changed (handle);
 		case OUTPUT: return gtk_output (handle);
-		case POPUP_MENU: return gtk_popup_menu (handle);
+		case POPUP_MENU: return gtk3_popup_menu (handle);
 		case PREEDIT_CHANGED: return gtk_preedit_changed (handle);
 		case REALIZE: return gtk_realize (handle);
 		case START_INTERACTIVE_SEARCH: return gtk_start_interactive_search (handle);
