@@ -638,13 +638,15 @@ public void test_setLineAttributes$I() {
 	float[] dashes = new float[] { 1.2f, 3.3f };
 	float dashOffset = 3.3f;
 	float miterLimit = 2.6f;
-	gc.setLineAttributes(new LineAttributes(width, cap, join, style, dashes, dashOffset, miterLimit));
+	LineAttributes passedLineAttributes = new LineAttributes(width, cap, join, style, dashes, dashOffset, miterLimit);
+	gc.setLineAttributes(passedLineAttributes);
 	assertEquals("unexpected line width", width, gc.getLineWidth());
 	assertEquals("unexpected line cap", cap, gc.getLineCap());
 	assertEquals("unexpected line join", join, gc.getLineJoin());
 	assertEquals("unexpected line style", style, gc.getLineStyle());
 	assertEquals("actual line attributes differ from the ones that have been set",
 			new LineAttributes(width, cap, join, style, dashes, dashOffset, miterLimit), gc.getLineAttributes());
+	assertEquals("setter call changed line width", width, passedLineAttributes.width, 0.0f);
 
 	gc.setLineAttributes(new LineAttributes(1));
 	assertEquals(new LineAttributes(1), gc.getLineAttributes());
@@ -853,7 +855,9 @@ RGB getRealRGB(Color color) {
 
 private void executeWithNonDefaultDeviceZoom(Runnable executable) {
 	int previousDeviceZoom = DPIUtil.getDeviceZoom();
-	DPIUtil.setDeviceZoom(150);
+	DPIUtil.setDeviceZoom(200);
+	gc.dispose();
+	gc = new GC(image);
 	try {
 		executable.run();
 	} finally {
