@@ -14,6 +14,7 @@
 package org.eclipse.swt.graphics;
 
 
+import java.lang.ref.*;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -61,7 +62,7 @@ public abstract class Device implements Drawable {
 	String[] loadedFonts;
 
 	volatile boolean disposed;
-	private Set<Resource> resourcesWithZoomSupport  = ConcurrentHashMap.newKeySet();
+	private Set<ResourceReference> resourcesWithZoomSupport = ConcurrentHashMap.newKeySet();
 
 	/*
 	* TEMPORARY CODE. When a graphics object is
@@ -964,11 +965,11 @@ protected int getDeviceZoom () {
 }
 
 void registerResourceWithZoomSupport(Resource resource) {
-	resourcesWithZoomSupport.add(resource);
+	resourcesWithZoomSupport.add(new ResourceReference(resource));
 }
 
 void deregisterResourceWithZoomSupport(Resource resource) {
-	resourcesWithZoomSupport.remove(resource);
+	resourcesWithZoomSupport.remove(new ResourceReference(resource));
 }
 
 /**
@@ -982,8 +983,37 @@ public static void win32_destroyUnusedHandles(Display display) {
 	for (Monitor monitor : display.getMonitors()) {
 	    availableZoomLevels.add(DPIUtil.getZoomForAutoscaleProperty(monitor.getZoom()));
 	}
-	for (Resource resource: ((Device) display).resourcesWithZoomSupport) {
+	Set<ResourceReference> resources = ((Device) display).resourcesWithZoomSupport;
+	Iterator<ResourceReference> iterator = resources.iterator();
+
+	while (iterator.hasNext()) {
+		ResourceReference ref = iterator.next();
+		Resource resource = ref.get();
+		if (resource == null) {
+			iterator.remove(); // Clean up dead reference.
+			continue;
+		}
 		resource.destroyHandlesExcept(availableZoomLevels);
+	}
+}
+
+private static class ResourceReference extends WeakReference<Resource> {
+
+	public ResourceReference(Resource referent) {
+		super(referent);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if(this == obj) return true;
+		if (!(obj instanceof ResourceReference passedResource)) return false;
+		return Objects.equals(this.get(), passedResource.get());
+	}
+
+	@Override
+	public int hashCode() {
+		Resource resource = this.get();
+		return resource != null ? resource.hashCode() : 0;
 	}
 }
 }
