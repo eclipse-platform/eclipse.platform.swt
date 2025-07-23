@@ -56,6 +56,8 @@ public class Browser extends Composite {
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.browser."; //$NON-NLS-1$
 	static final String PROPERTY_DEFAULTTYPE = "org.eclipse.swt.browser.DefaultType"; //$NON-NLS-1$
 
+	static final String WEBIEW_UNAVAILABLE_DISABLED = "org.eclipse.swt.browser.DisableWebViewUnavailableDialog"; //$NON-NLS-1$
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -144,7 +146,7 @@ private class WebViewUnavailableDialog {
 	private static final DialogOption CANCEL_OPTION = new DialogOption(SWT.CANCEL, "Cancel");
 
 	private static final String DIALOG_TITLE = "Default browser engine not available";
-	private static final String DIALOG_MESSAGE = "Microsoft Edge (WebView2) is not available. Do you want to use the legacy Internet Explorer?\n\nNote: It is necessary to reopen browsers for the change to take effect.";
+	private static final String DIALOG_MESSAGE = "Microsoft Edge (WebView2) is not available. Do you want to use the legacy Internet Explorer?\n\nNote: It is necessary to reopen browsers for the change to take effect and the effect will be lost at next application start. For information on how to permanently switch to Internet Explorer, press the \"Information\" button.";
 	private static final String FAQ_URL = "https://github.com/eclipse-platform/eclipse.platform/tree/master/docs/FAQ/FAQ_How_do_I_use_Edge-IE_as_the_Browser's_underlying_renderer.md";
 
 	private static final int DIALOG_OPTION_FLAGS = USE_IE_OPTION.index | MORE_INFORMATION_OPTION.index | CANCEL_OPTION.index;
@@ -156,7 +158,8 @@ private class WebViewUnavailableDialog {
 	private static boolean shownOnce;
 
 	static void showAsync(Shell parentShell) {
-		if (shownOnce) {
+		if (shownOnce || Boolean.getBoolean(WEBIEW_UNAVAILABLE_DISABLED)) {
+			shownOnce = true;
 			return;
 		}
 		shownOnce = true;
