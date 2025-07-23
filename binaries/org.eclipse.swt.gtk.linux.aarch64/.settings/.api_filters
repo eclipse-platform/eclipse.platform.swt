@@ -8,4 +8,20 @@
             </message_arguments>
         </filter>
     </resource>
+     <resource path="Eclipse SWT/common/org/eclipse/swt/graphics/MonitorAwarePoint.java" type="org.eclipse.swt.graphics.MonitorAwarePoint">
+        <filter id="305365105">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.MonitorAwarePoint"/>
+                <message_argument value="org.eclipse.swt.gtk.linux.aarch64_3.131.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="Eclipse SWT/common/org/eclipse/swt/graphics/MonitorAwareRectangle.java" type="org.eclipse.swt.graphics.MonitorAwareRectangle">
+        <filter id="305365105">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.MonitorAwareRectangle"/>
+                <message_argument value="org.eclipse.swt.gtk.linux.aarch64_3.131.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
 </component>
