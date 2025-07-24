@@ -5015,8 +5015,7 @@ private class SetFontOperation extends Operation {
 	private final Font font;
 
 	SetFontOperation(Font font) {
-		this.font = new Font(font.getDevice(), font.getFontData());
-		registerForDisposal(this.font);
+		this.font = font != null ? SWTFontProvider.getFont(font.getDevice(), font.getFontData()[0], data.nativeZoom) : null;
 	}
 
 	@Override
