@@ -605,6 +605,9 @@ public void test_setClippingLorg_eclipse_swt_graphics_Rectangle() {
 
 @Test
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
+	gc.setFont(null);
+	assertEquals(shell.getDisplay().getSystemFont(), gc.getFont());
+
 	gc.setFont(shell.getDisplay().getSystemFont());
 	Font font = gc.getFont();
 	assertEquals(shell.getDisplay().getSystemFont(), font);
