@@ -646,6 +646,10 @@ private RegionHandle getRegionHandle(int zoom) {
 
 Region copy() {
 	Region region = new Region();
+	this.zoomToHandle.forEach((zoom, regionHandle) -> {
+		long handleCopy = win32_getHandle(region, zoom);
+		OS.CombineRgn(handleCopy, regionHandle.handle, 0, OS.RGN_COPY);
+	});
 	region.operations.addAll(operations);
 	return region;
 }
