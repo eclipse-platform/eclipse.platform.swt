@@ -70,6 +70,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.BidiUtil;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.printing.Printer;
@@ -77,6 +78,7 @@ import org.eclipse.swt.widgets.Caret;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.ScrollBar;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Widget;
 import org.junit.Assume;
 import org.junit.Before;
@@ -191,6 +193,35 @@ public void test_getTextBounds() {
 		assertTrue(r.width > 0);
 		assertTrue(r.height > 0);
 	}finally {
+		text.dispose();
+	}
+}
+
+@Test
+public void test_replaceTextRangeWithVariableHeight() {
+	shell.setLayout(new FillLayout());
+	StyledText styledText = new StyledText(shell, SWT.BORDER | SWT.V_SCROLL);
+	Text text = new Text(shell, SWT.BORDER);
+	try {
+		String lines = IntStream.range(0, 10)
+				.collect(StringBuilder::new, (s, i) -> s.append("line " + (i + 1) + "\n"), StringBuilder::append).toString();
+		styledText.setText(lines);
+		StyleRange style = new StyleRange();
+		style.start = 0;
+		style.length = lines.length();
+		style.font = styledText.getFont(); // To make the line-height non-fixed
+		styledText.setStyleRange(style);
+
+		shell.setSize(100, 3 * styledText.getLineHeight());
+		shell.open();
+
+		text.setFocus();
+		styledText.setTopIndex(styledText.getLineCount() - 1);
+		assertFalse(styledText.isFocusControl());
+		// ensure no IllegalArgumentException is thrown when styledText control has not the focus and the text is replaced
+		styledText.replaceTextRange(0, styledText.getCharCount(), "");
+	}finally {
+		styledText.dispose();
 		text.dispose();
 	}
 }
