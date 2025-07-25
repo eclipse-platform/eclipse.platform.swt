@@ -46,8 +46,7 @@ import org.eclipse.swt.widgets.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 
-@SuppressWarnings("removal")
-public sealed class Rectangle implements Serializable, Cloneable permits MonitorAwareRectangle, Rectangle.OfFloat {
+public sealed class Rectangle implements Serializable, Cloneable permits Rectangle.OfFloat {
 
 	/**
 	 * the x coordinate of the rectangle
