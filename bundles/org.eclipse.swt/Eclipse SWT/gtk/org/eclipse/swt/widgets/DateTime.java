@@ -2445,10 +2445,10 @@ private static FieldPosition getFieldPosition(Field field, AttributedCharacterIt
 }
 
 /**
- * Check if the given {@link FieldPosition} are considdered "the same", this is
+ * Check if the given {@link FieldPosition} are considered "the same", this is
  * when both are not <code>null</code> and reference the same
  * {@link java.text.Format.Field} attribute, or both of them have no
- * fieldattribute and have the same position
+ * field attribute and have the same position
  *
  * @param p1
  *            first position to compare
@@ -2489,7 +2489,7 @@ private static int getCalendarField(FieldPosition fieldPosition) {
 /**
  * Extracts the calendarfield transforming HOUR1 types to HOUR0
  *
- * @return the calendarfield coresponding to the {@link Field}
+ * @return the calendarfield corresponding to the {@link Field}
  */
 private static int getCalendarField(Field field) {
 	if (Field.HOUR1.equals(field)) {

@@ -56,7 +56,7 @@ import org.eclipse.swt.internal.*;
 /**
  * This class contains native functions for various libraries.
  *
- * Any dynamic functions must be manually linked to their corresponding library. See os_cutom.h  #define FUNC_LIB_* LIB_*
+ * Any dynamic functions must be manually linked to their corresponding library. See os_custom.h  #define FUNC_LIB_* LIB_*
  */
 public class OS extends C {
 	/** OS Constants */

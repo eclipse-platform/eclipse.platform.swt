@@ -299,7 +299,7 @@ public static String byteToStringViaHeuristic(byte [] bytes) {
 		charDecoder.onUnmappableCharacter(CodingErrorAction.REPORT);
 		String text = charDecoder.decode(ByteBuffer.wrap(bytes)).toString();
 
-		// No exception thrown means that we have valid UTF-8 "bit string". However, valid UTF-8 bit string doesn't mean it's the corect decoding.
+		// No exception thrown means that we have valid UTF-8 "bit string". However, valid UTF-8 bit string doesn't mean it's the correct decoding.
 		// We have assert correctness via an educated guess
 		boolean probablyUTF8 = true;
 
