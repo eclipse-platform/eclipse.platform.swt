@@ -700,7 +700,7 @@ private IUnknown createControllerInitializationCallback(int previousAttempts) {
 				createInstance(previousAttempts + 1);
 			} else {
 				SWT.error(SWT.ERROR_UNSPECIFIED, null,
-						String.format(" Aborting Edge initialiation after %d retries with result %d", MAXIMUM_CREATION_RETRIES, result));
+						String.format(" Aborting Edge initialization after %d retries with result %d", MAXIMUM_CREATION_RETRIES, result));
 			}
 			break;
 		}

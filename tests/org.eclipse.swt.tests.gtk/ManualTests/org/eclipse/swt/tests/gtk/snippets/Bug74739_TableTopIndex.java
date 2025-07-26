@@ -117,7 +117,7 @@ public class Bug74739_TableTopIndex {
 			}
 		});
 		// Hide the TableCursor when the user hits the "MOD1" or "MOD2" key.
-		// This alows the user to select multiple items in the widget.table.
+		// This allows the user to select multiple items in the widget.table.
 		cursor.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {

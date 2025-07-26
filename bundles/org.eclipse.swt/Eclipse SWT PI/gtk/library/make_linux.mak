@@ -117,7 +117,7 @@ endif
 
 ifndef NO_STRIP
 	# -s = Remove all symbol table and relocation information from the executable.
-	#      i.e, more efficent code, but removes debug information. Should not be used if you want to debug.
+	#      i.e, more efficient code, but removes debug information. Should not be used if you want to debug.
 	#      https://gcc.gnu.org/onlinedocs/gcc/Link-Options.html#Link-Options
 	#      http://stackoverflow.com/questions/14175040/effects-of-removing-all-symbol-table-and-relocation-information-from-an-executab
 	AWT_LFLAGS := $(AWT_LFLAGS) -s

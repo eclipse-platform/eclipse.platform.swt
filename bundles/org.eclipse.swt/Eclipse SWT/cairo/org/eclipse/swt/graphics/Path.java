@@ -617,7 +617,7 @@ public void moveTo(float x, float y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	/*
 	* Bug in Cairo.  If cairo_move_to() is not called at the
-	* begining of a subpath, the first cairo_line_to() or
+	* beginning of a subpath, the first cairo_line_to() or
 	* cairo_curve_to() segment do not output anything.  The fix
 	* is to detect that the app did not call cairo_move_to()
 	* before those calls and call it explicitly.
