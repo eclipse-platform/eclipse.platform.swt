@@ -93,7 +93,7 @@ public class DND {
 	/**
 	 * Drag and Drop Operation: During a dragEnter event or a dragOperationChanged, if no modifier keys
 	 * are pressed, the operation is set to DROP_DEFAULT.  The application can choose what the default
-	 * operation should be by setting a new value in the operation field.  If no value is choosen, the
+	 * operation should be by setting a new value in the operation field.  If no value is chosen, the
 	 * default operation for the platform will be selected (value is 1 &lt;&lt; 4).
 	 *
 	 * @see DropTargetListener#dragEnter

@@ -33,7 +33,7 @@ Upon completion of this document, hopefully you will know SWT-fu (as in kung-fu)
 
 **Knowledge Pre-requisites**
 
-* Solid Java knowledge: from class inheritence to multi-threading
+* Solid Java knowledge: from class inheritance to multi-threading
 * Some C experience: know thy pointers and make files
 * GTK background highly recommended but can be learned
 * Eclipse: knowing how to use Eclipse is quite essential. But you don't have to know about JFace/PlatformUI/RCP development internals
@@ -70,7 +70,7 @@ To develop SWT itself, being able to run SWT using the changes made to the sourc
 **Add the SWT project to the build path**
 
 In order to run snippets with the SWT source code, you will need to add the SWT project to the snippets' project build path. To do this:
-* Right click the SWT snippets project in the Package Exlporer
+* Right click the SWT snippets project in the Package Exporter
 * Select "Properties"
 * Select "Java Build Path" on the right hand side
 * Select the "Projects" tab and click "Add..."
@@ -710,7 +710,7 @@ Eclipse has a plugin/perspective called "C/C++ Development Tools" or CDT. This i
 **Getting started**
 
 If you are using Fedora Eclipse you can install the CDT using dnf:
-  sudo dnf install eclispe-cdt
+  sudo dnf install eclipse-cdt
 
 Alternatively if you are using upstream Eclipse, you can get it from the CDT update site: https://eclipse.org/cdt/downloads.php
 
@@ -743,7 +743,7 @@ You should try all of the above:
 
 **Import GTK source code into Eclipse for browsing**
 
-You can pull GTK sources and tie them into your Eclipse, so that you can navigate/read the source code easier. I then use the GTK source code as a way of reading GTK API. Compared to the web-documentation, reading the source code allows you to quickly jump to struct definitions and see examples of how/where functions are called via call-hierachy.
+You can pull GTK sources and tie them into your Eclipse, so that you can navigate/read the source code easier. I then use the GTK source code as a way of reading GTK API. Compared to the web-documentation, reading the source code allows you to quickly jump to struct definitions and see examples of how/where functions are called via call-hierarchy.
 
 You also see how certain objects 'relate' to each other, which you sometimes don't see in the web-documentation. You will often find that many functions are just wrappers around other functions. The most frequent use-case is when I write a GTK snippet, I can just jump to the function definition and read the documentation without plowing through the web-documents.
 
@@ -840,7 +840,7 @@ You should now be able to create your project.
 
 Normally, if you create a GTK project you include the "usr/include/gtk+" paths. The problem with that is that "/usr/include/gtk" only contains header files, not the .c source code files from the GitHub repo. As such you won't be able to see the "guts" of GTK, which are often very useful and essential for when you're debugging SWT.
 
-If you point your include to the GTK GitHub repo instead, then it might not compile unless you go thourgh the effort to compile the related libs (GLib/pixbuf etc…), which is quite a bit of effort. I.e, it's easier to use the GTK that is build in with your system for compilation.
+If you point your include to the GTK GitHub repo instead, then it might not compile unless you go through the effort to compile the related libs (GLib/pixbuf etc…), which is quite a bit of effort. I.e, it's easier to use the GTK that is build in with your system for compilation.
 
 The solution (which at least works for me) is to point the compiler to the system "usr/include" path (1*) and point the indexer to the GTK GitHub repository (2*). This way, when you are compiling, all will compile well and when you are writing code you easy quick-lookup to the GTK source code without having to compile all of this business.
 
@@ -958,7 +958,7 @@ SWT keeps its source code in one place, but during a project clean-up & rebuild,
 
 As such, to make changes that have an impact on the code, you need to edit code in the src folder, but to debug you need to open the source code from the binary folder.
 
-To make matters more complicated, during a rebuild, SWT tools will erase the whole binary folder and re-create it. This means that if you imported the folder as a project, the pointer to that folder is lost and the project 'dissapers' from Eclipse. However, there is a way to get around it. You can create a project in some other folder and add a link the SWT binary folder as a source. This way the project survives re-builds.
+To make matters more complicated, during a rebuild, SWT tools will erase the whole binary folder and re-create it. This means that if you imported the folder as a project, the pointer to that folder is lost and the project 'disappears' from Eclipse. However, there is a way to get around it. You can create a project in some other folder and add a link the SWT binary folder as a source. This way the project survives re-builds.
 
 
 Source code lies here: (e.g for changes to source code):

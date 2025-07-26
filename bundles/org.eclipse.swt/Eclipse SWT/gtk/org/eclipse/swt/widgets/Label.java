@@ -200,7 +200,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	* tall as the font height.
 	*
 	* NOTE: This work around does not fix the case when there are
-	* muliple lines of text.
+	* multiple lines of text.
 	*/
 	if (hHint == SWT.DEFAULT && labelHandle != 0) {
 		long layout = GTK.gtk_label_get_layout (labelHandle);

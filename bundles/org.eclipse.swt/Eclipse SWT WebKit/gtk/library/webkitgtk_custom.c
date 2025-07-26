@@ -56,7 +56,7 @@ int fps_cached = 0;
 		}
 
 void initFPs() {
-	// Example of a dynamic function initilization.
+	// Example of a dynamic function initialization.
 //	INIT_WEBKIT_FP(webkit_web_view_run_javascript_finish);
 
 	fps_cached = 1;

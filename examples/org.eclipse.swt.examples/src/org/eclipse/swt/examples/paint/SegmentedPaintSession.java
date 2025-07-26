@@ -21,7 +21,7 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Point;
 
 /**
- * The superclass for paint tools that contruct objects from individually
+ * The superclass for paint tools that construct objects from individually
  * picked segments.
  */
 public abstract class SegmentedPaintSession extends BasicPaintSession {

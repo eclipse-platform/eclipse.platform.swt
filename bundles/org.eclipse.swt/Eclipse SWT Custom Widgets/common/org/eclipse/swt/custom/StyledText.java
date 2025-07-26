@@ -8986,7 +8986,7 @@ public void setKeyBinding(int key, int action) {
 	int keyInt = key & SWT.KEY_MASK;
 	char keyChar = (char)keyInt;
 	/**
-	 * Bug 440535: Make sure the key getting mapped to letter is in defiened
+	 * Bug 440535: Make sure the key getting mapped to letter is in defined
 	 * character range and filter out incorrect int to char typecasting. For
 	 * Example: SWT.KEYPAD_CR int gets wrongly type-cast to char letter 'p'
 	 */

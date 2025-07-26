@@ -123,7 +123,7 @@ public class Bug505418_Listeners_evals {
 
 			@Override
 			public void completed(ProgressEvent event) {
-				System.out.println("compleated!! " + event.current);
+				System.out.println("completed!! " + event.current);
 				evalTest(browser, "");
 			}
 

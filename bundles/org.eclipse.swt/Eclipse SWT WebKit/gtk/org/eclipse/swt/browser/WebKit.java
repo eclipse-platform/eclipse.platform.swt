@@ -959,7 +959,7 @@ private static class Webkit2AsyncToSync {
 	/** Object used to return data from callback to original call */
 	private static class Webkit2AsyncReturnObj {
 		boolean callbackFinished = false;
-		Object returnValue = null; // As note, if browser is disposed during excution, null is returned.
+		Object returnValue = null; // As note, if browser is disposed during execution, null is returned.
 
 		/** 0=no error. >0 means error. **/
 		int errorNum = 0;
@@ -2210,7 +2210,7 @@ long webkit_create_web_view (long web_view, long frame) {
 		parentBrowser = browser;
 		fireOpenWindowListeners.run();// Permit evaluate()/execute() to execute scripts in listener, but do not provide return value.
 	} catch (Exception e) {
-		throw e; // rethrow execption if thrown, but decrement counter first.
+		throw e; // rethrow exception if thrown, but decrement counter first.
 	} finally {
 		parentBrowser = null;
 		nonBlockingEvaluate--;

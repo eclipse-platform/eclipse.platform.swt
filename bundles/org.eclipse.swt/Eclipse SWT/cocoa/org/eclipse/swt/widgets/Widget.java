@@ -76,7 +76,7 @@ public abstract class Widget {
 	/* The preferred size of a child has changed */
 	static final int LAYOUT_CHANGED = 1<<13;
 
-	/* A layout was requested in this widget hierachy */
+	/* A layout was requested in this widget hierarchy */
 	static final int LAYOUT_CHILD = 1<<14;
 
 	/* More global state flags */
