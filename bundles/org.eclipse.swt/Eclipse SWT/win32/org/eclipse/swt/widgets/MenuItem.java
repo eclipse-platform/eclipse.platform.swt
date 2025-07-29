@@ -1291,7 +1291,7 @@ GC createNewGC(long hDC, GCData data) {
 }
 
 private int getMonitorZoom() {
-	return getMenu().getShell().getMonitor().zoom;
+	return getParent().getShell().getMonitor().zoom;
 }
 
 private int getMenuZoom() {
@@ -1425,7 +1425,7 @@ LRESULT wmMeasureChild (long wParam, long lParam) {
 }
 
 private Point calculateRenderedTextSize() {
-	GC gc = new GC(this.getMenu().getShell());
+	GC gc = new GC(this.getParent().getShell());
 	String textWithoutMnemonicCharacter = getText().replace("&", "");
 	Point points = gc.textExtent(textWithoutMnemonicCharacter);
 	gc.dispose();
