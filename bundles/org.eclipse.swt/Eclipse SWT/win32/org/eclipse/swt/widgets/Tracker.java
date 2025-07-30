@@ -205,7 +205,7 @@ Point adjustMoveCursor () {
 		OS.ClientToScreen (parent.handle, pt);
 	}
 	OS.SetCursorPos (pt.x, pt.y);
-	return new Point (pt.x, pt.y);
+	return new Point.OfFloat (pt.x, pt.y);
 }
 
 Point adjustResizeCursor () {
@@ -280,7 +280,7 @@ Point adjustResizeCursor () {
 		resizeCursor = newCursor;
 	}
 
-	return new Point (pt.x, pt.y);
+	return new Point.OfFloat (pt.x, pt.y);
 }
 
 static int checkStyle (int style) {
@@ -320,7 +320,7 @@ Rectangle computeBounds () {
 		if (rectBottom > yMax) yMax = rectBottom;
 	}
 
-	return new Rectangle (xMin, yMin, xMax - xMin, yMax - yMin);
+	return new Rectangle.OfFloat (xMin, yMin, xMax - xMin, yMax - yMin);
 }
 
 Rectangle [] computeProportions (Rectangle [] rects) {
@@ -341,7 +341,7 @@ Rectangle [] computeProportions (Rectangle [] rects) {
 			} else {
 				height = 100;
 			}
-			result [i] = new Rectangle (x, y, width, height);
+			result [i] = new Rectangle.OfFloat (x, y, width, height);
 		}
 	}
 	return result;
@@ -414,7 +414,7 @@ Rectangle [] getRectanglesInPixels () {
 	Rectangle [] result = new Rectangle [rectangles.length];
 	for (int i = 0; i < rectangles.length; i++) {
 		Rectangle current = rectangles [i];
-		result [i] = new Rectangle (current.x, current.y, current.width, current.height);
+		result [i] = Rectangle.OfFloat.from(current);
 	}
 	return result;
 }
@@ -556,7 +556,7 @@ public boolean open () {
 	if (mouseDown) {
 		POINT pt = new POINT ();
 		OS.GetCursorPos (pt);
-		cursorPos = new Point (pt.x, pt.y);
+		cursorPos = new Point.OfFloat (pt.x, pt.y);
 	} else {
 		if ((style & SWT.RESIZE) != 0) {
 			cursorPos = adjustResizeCursor ();
@@ -799,7 +799,7 @@ void resizeRectangles (int xChange, int yChange) {
 	Rectangle [] newRects = new Rectangle [rectangles.length];
 	for (int i = 0; i < rectangles.length; i++) {
 		Rectangle proportion = proportions[i];
-		newRects[i] = new Rectangle (
+		newRects[i] = new Rectangle.OfFloat (
 			proportion.x * bounds.width / 100 + bounds.x,
 			proportion.y * bounds.height / 100 + bounds.y,
 			proportion.width * bounds.width / 100,
@@ -856,7 +856,7 @@ void setRectanglesInPixels (Rectangle [] rectangles) {
 	for (int i = 0; i < rectangles.length; i++) {
 		Rectangle current = rectangles [i];
 		if (current == null) error (SWT.ERROR_NULL_ARGUMENT);
-		this.rectangles [i] = new Rectangle (current.x, current.y, current.width, current.height);
+		this.rectangles [i] = Rectangle.OfFloat.from(current);
 	}
 	proportions = computeProportions (rectangles);
 }
@@ -996,7 +996,7 @@ LRESULT wmKeyDown (long hwnd, long wParam, long lParam) {
 		Rectangle [] rectsToErase = new Rectangle [rectangles.length];
 		for (int i = 0; i < rectangles.length; i++) {
 			Rectangle current = rectangles [i];
-			rectsToErase [i] = new Rectangle (current.x, current.y, current.width, current.height);
+			rectsToErase [i] = Rectangle.OfFloat.from(current);
 		}
 		Event event = new Event ();
 		event.setLocation(DPIUtil.pixelToPoint(oldX + xChange, getZoom()), DPIUtil.pixelToPoint(oldY + yChange, getZoom()));
@@ -1116,7 +1116,7 @@ LRESULT wmMouse (int message, long wParam, long lParam) {
 		Rectangle [] rectsToErase = new Rectangle [rectangles.length];
 		for (int i = 0; i < rectangles.length; i++) {
 			Rectangle current = rectangles [i];
-			rectsToErase [i] = new Rectangle (current.x, current.y, current.width, current.height);
+			rectsToErase [i] = new Rectangle.OfFloat (current.x, current.y, current.width, current.height);
 		}
 		Event event = new Event ();
 		int zoom = getZoom();

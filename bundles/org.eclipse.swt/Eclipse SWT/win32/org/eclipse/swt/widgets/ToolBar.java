@@ -213,7 +213,7 @@ void clearSizeCache(boolean changed) {
 	int count = (int)OS.SendMessage (handle, OS.TB_BUTTONCOUNT, 0, 0);
 	if (count == this._count && wHint == this._wHint && hHint == this._hHint) {
 		// Return already cached values calculated previously
-		return new Point (_width, _height);
+		return new Point.OfFloat (_width, _height);
 	}
 	this._count = count;
 	this._wHint = wHint;
@@ -279,7 +279,7 @@ void clearSizeCache(boolean changed) {
 	 */
 	this._width = width;
 	this._height = height;
-	return new Point (width, height);
+	return new Point.OfFloat (width, height);
 }
 
 @Override Rectangle computeTrimInPixels (int x, int y, int width, int height) {

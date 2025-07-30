@@ -144,7 +144,7 @@ static int checkStyle (int style) {
 		if (wHint != SWT.DEFAULT) width = wHint;
 		if (hHint != SWT.DEFAULT) height = hHint;
 		width += border * 2; height += border * 2;
-		return new Point (width, height);
+		return new Point.OfFloat (width, height);
 	}
 	if (isImageMode) {
 		Rectangle rect = Win32DPIUtils.scaleBounds(image.getBounds(), this.getZoom(), 100);
@@ -179,7 +179,7 @@ static int checkStyle (int style) {
 	if (hHint != SWT.DEFAULT) height = hHint;
 	width += border * 2;
 	height += border * 2;
-	return new Point (width, height);
+	return new Point.OfFloat (width, height);
 }
 
 @Override

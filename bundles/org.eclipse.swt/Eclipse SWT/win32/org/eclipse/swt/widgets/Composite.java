@@ -221,7 +221,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 			int zoom = getZoom();
 			size = Win32DPIUtils.pointToPixel(layout.computeSize (this, DPIUtil.pixelToPoint(wHint, zoom), DPIUtil.pixelToPoint(hHint, zoom), changed), zoom);
 		} else {
-			size = new Point (wHint, hHint);
+			size = new Point.OfFloat (wHint, hHint);
 		}
 	} else {
 		size = minimumSize (wHint, hHint, changed);
@@ -236,7 +236,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	 */
 	int zoom = getZoom();
 	Rectangle trim = Win32DPIUtils.pointToPixel(computeTrim (0, 0, DPIUtil.pixelToPoint(size.x, zoom), DPIUtil.pixelToPoint(size.y, zoom)), zoom);
-	return new Point (trim.width, trim.height);
+	return new Point.OfFloat (trim.width, trim.height);
 }
 
 /**
@@ -356,7 +356,7 @@ int applyThemeBackground () {
 public void drawBackground (GC gc, int x, int y, int width, int height, int offsetX, int offsetY) {
 	checkWidget ();
 	int zoom = getZoom();
-	Rectangle rectangle = Win32DPIUtils.pointToPixel(new Rectangle(x, y, width, height), zoom);
+	Rectangle rectangle = Win32DPIUtils.pointToPixel(new Rectangle.OfFloat(x, y, width, height), zoom);
 	offsetX = Win32DPIUtils.pointToPixel(offsetX, zoom);
 	offsetY = Win32DPIUtils.pointToPixel(offsetY, zoom);
 	drawBackgroundInPixels(gc, rectangle.x, rectangle.y, rectangle.width, rectangle.height, offsetX, offsetY);
@@ -886,7 +886,7 @@ Point minimumSize (int wHint, int hHint, boolean changed) {
 		width = Math.max (width, rect.x - clientArea.x + rect.width);
 		height = Math.max (height, rect.y - clientArea.y + rect.height);
 	}
-	return new Point (width, height);
+	return new Point.OfFloat (width, height);
 }
 
 @Override
@@ -1539,7 +1539,7 @@ LRESULT WM_PAINT (long wParam, long lParam) {
 
 					Event event = new Event ();
 					event.gc = gc;
-					event.setBounds(Win32DPIUtils.pixelToPoint(new Rectangle(ps.left, ps.top, width, height), getZoom()));
+					event.setBounds(Win32DPIUtils.pixelToPoint(new Rectangle.OfFloat(ps.left, ps.top, width, height), getZoom()));
 					sendEvent (SWT.Paint, event);
 					if (data.focusDrawn && !isDisposed ()) updateUIState ();
 					gc.dispose ();
@@ -1622,7 +1622,7 @@ LRESULT WM_PAINT (long wParam, long lParam) {
 						if ((style & (SWT.DOUBLE_BUFFERED | SWT.NO_BACKGROUND | SWT.TRANSPARENT)) == 0) {
 							drawBackground (gc.handle, rect);
 						}
-						event.setBounds(Win32DPIUtils.pixelToPoint(new Rectangle(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top), zoom));
+						event.setBounds(Win32DPIUtils.pixelToPoint(new Rectangle.OfFloat(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top), zoom));
 						event.count = count - 1 - i;
 						sendEvent (SWT.Paint, event);
 					}
@@ -1632,7 +1632,7 @@ LRESULT WM_PAINT (long wParam, long lParam) {
 						OS.SetRect (rect, ps.left, ps.top, ps.right, ps.bottom);
 						drawBackground (gc.handle, rect);
 					}
-					event.setBounds(Win32DPIUtils.pixelToPoint(new Rectangle(ps.left, ps.top, width, height), zoom));
+					event.setBounds(Win32DPIUtils.pixelToPoint(new Rectangle.OfFloat(ps.left, ps.top, width, height), zoom));
 					sendEvent (SWT.Paint, event);
 				}
 				// widget could be disposed at this point
@@ -1707,7 +1707,7 @@ LRESULT WM_PRINTCLIENT (long wParam, long lParam) {
 			GC gc = createNewGC(wParam, data);
 			Event event = new Event ();
 			event.gc = gc;
-			event.setBounds(Win32DPIUtils.pixelToPoint(new Rectangle(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top), getZoom()));
+			event.setBounds(Win32DPIUtils.pixelToPoint(new Rectangle.OfFloat(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top), getZoom()));
 			sendEvent (SWT.Paint, event);
 			event.gc = null;
 			gc.dispose ();
