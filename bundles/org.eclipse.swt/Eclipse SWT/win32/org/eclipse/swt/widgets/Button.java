@@ -22,6 +22,7 @@ import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.internal.win32.version.*;
 
+
 /**
  * Instances of this class represent a selectable user interface object that
  * issues notification when pressed and released.
@@ -264,8 +265,16 @@ long callWindowProc (long hwnd, int msg, long wParam, long lParam) {
 	if (handle == 0) return 0;
 	return OS.CallWindowProc (ButtonProc, hwnd, msg, wParam, lParam);
 }
+//COMMAND_LINK ? SWT.COMMAND : 0
+private static final StyleProcessor STYLE_PROCESSOR = new StyleProcessor()
+.oneOf("PUSH, ARROW, CHECK, RADIO, TOGGLE")
+.ifOneOf("PUSH, TOGGLE").thenOneOf("CENTER, LEFT, RIGHT")
+.ifOneOf("CHECK, RADIO").thenOneOf("LEFT, RIGHT, CENTER")
+.ifOneOf("ARROW").thenOneOf("UP, DOWN, LEFT, RIGHT");
 
 static int checkStyle (int style) {
+	System.out.println("Testing the Style Processor");
+	System.out.println(STYLE_PROCESSOR.process(style));
 	style = checkBits (style, SWT.PUSH, SWT.ARROW, SWT.CHECK, SWT.RADIO, SWT.TOGGLE, COMMAND_LINK ? SWT.COMMAND : 0);
 	if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0) {
 		return checkBits (style, SWT.CENTER, SWT.LEFT, SWT.RIGHT, 0, 0, 0);
@@ -278,6 +287,8 @@ static int checkStyle (int style) {
 		return checkBits (style, SWT.UP, SWT.DOWN, SWT.LEFT, SWT.RIGHT, 0, 0);
 	}
 	return style;
+
+
 }
 
 void click () {
