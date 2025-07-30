@@ -108,7 +108,7 @@ public class DPIUtil {
 	 */
 	private static final String SWT_AUTOSCALE_UPDATE_ON_RUNTIME = "swt.autoScale.updateOnRuntime";
 	static {
-		autoScaleValue = System.getProperty (SWT_AUTOSCALE);
+		setAutoScaleValue(System.getProperty (SWT_AUTOSCALE));
 
 		String value = System.getProperty (SWT_AUTOSCALE_METHOD);
 		AUTO_SCALE_METHOD_SETTING = AutoScaleMethod.forString(value).orElse(AutoScaleMethod.AUTO);
@@ -153,12 +153,11 @@ public static ImageData autoScaleImageData (Device device, final ImageData image
 	int defaultZoomLevel = 100;
 	boolean useSmoothScaling = isSmoothScalingEnabled() && imageData.getTransparencyType() != SWT.TRANSPARENCY_MASK;
 	if (useSmoothScaling) {
-		Image original = new Image(device, (ImageDataProvider) zoom -> (zoom == defaultZoomLevel) ? imageData : null);
 		ImageGcDrawer drawer =  new ImageGcDrawer() {
 			@Override
 			public void drawOn(GC gc, int imageWidth, int imageHeight) {
 				gc.setAntialias (SWT.ON);
-				Image.drawScaled(gc, original, width, height, scaleFactor);
+				Image.drawScaled(gc, imageData, width, height, scaleFactor);
 			};
 
 			@Override
@@ -168,7 +167,6 @@ public static ImageData autoScaleImageData (Device device, final ImageData image
 		};
 		Image resultImage = new Image (device, drawer, scaledWidth, scaledHeight);
 		ImageData result = resultImage.getImageData (defaultZoomLevel);
-		original.dispose ();
 		resultImage.dispose ();
 		return result;
 	} else {
@@ -392,6 +390,10 @@ public static void runWithAutoScaleValue(String autoScaleValue, Runnable runnabl
 
 public static void setMonitorSpecificScaling(boolean activate) {
 	System.setProperty(SWT_AUTOSCALE_UPDATE_ON_RUNTIME, Boolean.toString(activate));
+}
+
+public static void setAutoScaleValue(String autoScaleValue) {
+	DPIUtil.autoScaleValue = autoScaleValue;
 }
 
 public static boolean isMonitorSpecificScalingActive() {
