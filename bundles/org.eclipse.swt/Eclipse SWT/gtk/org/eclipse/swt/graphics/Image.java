@@ -1572,22 +1572,24 @@ public String toString () {
  * API for Image. It is marked public only so that it
  * can be shared within the packages provided by SWT.
  *
- * Draws a scaled image using the GC by another image.
+ * Draws a scaled image using the GC for a given imageData.
  *
  * @param gc the GC to draw on the resulting image
- * @param original the image which is supposed to be scaled and drawn on the resulting image
+ * @param imageData the imageData which is used to draw the scaled Image
  * @param width the width of the original image
  * @param height the height of the original image
  * @param scaleFactor the factor with which the image is supposed to be scaled
  *
  * @noreference This method is not intended to be referenced by clients.
  */
-public static void drawScaled(GC gc, Image original, int width, int height, float scaleFactor) {
-	gc.drawImage (original, 0, 0, width, height,
+public static void drawScaled(GC gc, ImageData imageData, int width, int height, float scaleFactor) {
+	Image imageToDraw = new Image(gc.device, (ImageDataProvider) zoom -> imageData);
+	gc.drawImage (imageToDraw, 0, 0, width, height,
 			/* E.g. destWidth here is effectively DPIUtil.autoScaleDown (scaledWidth), but avoiding rounding errors.
 			 * Nevertheless, we still have some rounding errors due to the point-based API GC#drawImage(..).
 			 */
 			0, 0, Math.round (width * scaleFactor), Math.round (height * scaleFactor));
+	imageToDraw.dispose();
 }
 
 private final class GtkDPIUtil {
