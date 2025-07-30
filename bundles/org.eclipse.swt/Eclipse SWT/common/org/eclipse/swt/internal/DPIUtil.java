@@ -153,12 +153,11 @@ public static ImageData autoScaleImageData (Device device, final ImageData image
 	int defaultZoomLevel = 100;
 	boolean useSmoothScaling = isSmoothScalingEnabled() && imageData.getTransparencyType() != SWT.TRANSPARENCY_MASK;
 	if (useSmoothScaling) {
-		Image original = new Image(device, (ImageDataProvider) zoom -> (zoom == defaultZoomLevel) ? imageData : null);
 		ImageGcDrawer drawer =  new ImageGcDrawer() {
 			@Override
 			public void drawOn(GC gc, int imageWidth, int imageHeight) {
 				gc.setAntialias (SWT.ON);
-				Image.drawScaled(gc, original, width, height, scaleFactor);
+				Image.drawScaled(gc, imageData, width, height, scaleFactor);
 			};
 
 			@Override
@@ -168,7 +167,6 @@ public static ImageData autoScaleImageData (Device device, final ImageData image
 		};
 		Image resultImage = new Image (device, drawer, scaledWidth, scaledHeight);
 		ImageData result = resultImage.getImageData (defaultZoomLevel);
-		original.dispose ();
 		resultImage.dispose ();
 		return result;
 	} else {

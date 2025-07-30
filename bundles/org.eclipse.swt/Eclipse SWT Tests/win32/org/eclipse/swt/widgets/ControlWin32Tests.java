@@ -14,12 +14,15 @@
 package org.eclipse.swt.widgets;
 
 import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.*;
+import org.junit.jupiter.params.*;
+import org.junit.jupiter.params.provider.*;
 
 /**
  * Automated Tests for class org.eclipse.swt.widgets.Control for Windows
@@ -105,6 +108,28 @@ class ControlWin32Tests {
 		button.setBounds(0, 47, 200, 47);
 		assertEquals("Control::setBounds(int, int, int, int) doesn't scale up correctly",
 				new Rectangle(0, 82, 350, 83), button.getBoundsInPixels());
+	}
+
+	@ParameterizedTest
+	@CsvSource({ "0.5, 100, true", "1.0, 200, true", "2.0, 200, true", "2.0, quarter, true", "0.5, 100, false",
+			"1.0, 200, false", "2.0, 200, false", "2.0, quarter, false", })
+	public void testAutoScaleImageData(float scaleFactor, String autoScale, boolean monitorSpecificScaling) {
+		DPIUtil.setMonitorSpecificScaling(monitorSpecificScaling);
+		DPIUtil.runWithAutoScaleValue(autoScale, () -> {
+			Display display = new Display();
+			try {
+				ImageData imageData = new ImageData(100, 100, 1, new PaletteData(new RGB(0, 0, 0)));
+				int width = imageData.width;
+				int height = imageData.height;
+				int scaledWidth = Math.round(width * scaleFactor);
+				int scaledHeight = Math.round(height * scaleFactor);
+				ImageData scaledImageData = DPIUtil.autoScaleImageData(display, imageData, scaleFactor);
+				assertEquals(scaledWidth, scaledImageData.width);
+				assertEquals(scaledHeight, scaledImageData.height);
+			} finally {
+				display.dispose();
+			}
+		});
 	}
 
 	record FontComparison(int originalFontHeight, int currentFontHeight) {
