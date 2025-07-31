@@ -232,12 +232,17 @@ public class Win32DPIUtils {
 		return pointToPixel(new Point.OfFloat(floatPoint.getX(), floatPoint.getY(), mode), zoom);
 	}
 
-	private static Point.OfFloat pointToPixel(Point.OfFloat point, int zoom) {
+	private static Point.OfFloat pointToPixelOfFloat(Point.OfFloat point, int zoom) {
 		Point.OfFloat scaledPoint = point.clone();
 		float scaleFactor = DPIUtil.getScalingFactor(zoom);
 		scaledPoint.setX(point.getX() * scaleFactor);
 		scaledPoint.setY(point.getY() * scaleFactor);
 		return scaledPoint;
+	}
+
+	private static Point pointToPixel(Point.OfFloat point, int zoom) {
+		Point scaledPoint = pointToPixelOfFloat(point, zoom);
+		return new Point(scaledPoint.x, scaledPoint.y);
 	}
 
 	public static Point pointToPixelAsSize(Drawable drawable, Point point, int zoom) {
@@ -276,13 +281,14 @@ public class Win32DPIUtils {
 			return scaleBounds(rect, zoom, 100);
 		}
 		Rectangle.OfFloat floatRect = Rectangle.OfFloat.from(rect);
-		Point.OfFloat scaledTopLeft = pointToPixel(floatRect.getTopLeft(), zoom);
-		Point.OfFloat scaledBottomRight = pointToPixel(floatRect.getBottomRight(), zoom);
+		Point.OfFloat scaledTopLeft = pointToPixelOfFloat(floatRect.getTopLeft(), zoom);
+		Point.OfFloat scaledBottomRight = pointToPixelOfFloat(floatRect.getBottomRight(), zoom);
 		float scaledX = scaledTopLeft.x;
 		float scaleyY = scaledTopLeft.y;
 		float scaledWidth = scaledBottomRight.x - scaledTopLeft.x;
 		float scaledHeight = scaledBottomRight.y - scaledTopLeft.y;
-		return new Rectangle.OfFloat(scaledX, scaleyY, scaledWidth, scaledHeight, RoundingMode.ROUND, sizeRounding);
+		Rectangle scaledRectangle = new Rectangle.OfFloat(scaledX, scaleyY, scaledWidth, scaledHeight, RoundingMode.ROUND, sizeRounding);
+		return new Rectangle(scaledRectangle.x, scaledRectangle.y, scaledRectangle.width, scaledRectangle.height);
 	}
 
 	public static Rectangle pointToPixel(Drawable drawable, Rectangle rect, int zoom) {
