@@ -74,6 +74,9 @@ public class SWTFontProvider {
 		if (font == null) {
 			SWT.error(SWT.ERROR_NULL_ARGUMENT);
 		}
+		if (font.isDisposed()) {
+			return 0;
+		}
 		return Font.win32_getHandle(getFont(font.getDevice(), font.getFontData()[0], zoom));
 	}
 
