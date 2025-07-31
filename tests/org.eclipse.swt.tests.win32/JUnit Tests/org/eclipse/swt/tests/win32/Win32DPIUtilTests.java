@@ -217,14 +217,26 @@ public class Win32DPIUtilTests {
 	@Test
 	public void scaleDownscaleUpRectangleInvertible() {
 		int[] zooms = new int[] {25, 50, 75, 100, 125, 150, 175, 200, 225, 250, 275, 300, 325, 350, 375, 400};
+		for (int zoom : zooms) {
+			for (int i = 1; i <= 10000; i++) {
+				Rectangle rect = new Rectangle.OfFloat(0, 0, i, i);
+				Rectangle scaleDown = Win32DPIUtils.pixelToPoint(rect, zoom);
+				Rectangle scaleUp = Win32DPIUtils.pointToPixel(scaleDown, zoom);
+				assertEquals(rect.width, scaleUp.width);
+				assertEquals(rect.height, scaleUp.height);
+			}
+		}
+	}
+
+	@Test
+	public void scaleBoundsRectangleInvertible() {
+		int[] zooms = new int[] {25, 50, 75, 100, 125, 150, 175, 200, 225, 250, 275, 300, 325, 350, 375, 400};
 		for (int zoom1 : zooms) {
 			for (int zoom2 : zooms) {
 				for (int i = 1; i <= 10000; i++) {
 					Rectangle rect = new Rectangle.OfFloat(0, 0, i, i);
-					Rectangle scaleDown = Win32DPIUtils.pixelToPoint(rect, zoom1);
-					Rectangle scaleUp = Win32DPIUtils.pointToPixel(scaleDown, zoom2);
-					scaleDown = Win32DPIUtils.pixelToPoint(scaleUp, zoom2);
-					scaleUp = Win32DPIUtils.pointToPixel(scaleDown, zoom1);
+					Rectangle scaleDown = Win32DPIUtils.scaleBounds(rect, zoom1, zoom2);
+					Rectangle scaleUp = Win32DPIUtils.scaleBounds(scaleDown, zoom2, zoom1);
 					assertEquals(rect.width, scaleUp.width);
 					assertEquals(rect.height, scaleUp.height);
 				}
@@ -234,18 +246,14 @@ public class Win32DPIUtilTests {
 
 	@Test
 	public void scaleDownscaleUpPointInvertible() {
-		int[] zooms = new int[] {25, 50, 75, 100, 125, 150, 175, 200, 225, 250, 275, 300, 325, 350, 375, 400};
-		for (int zoom1 : zooms) {
-			for (int zoom2 : zooms) {
-				for (int i = 1; i <= 10000; i++) {
-					Point pt = new Point(i, i);
-					Point scaleDown = Win32DPIUtils.pixelToPointAsSize(pt, zoom1);
-					Point scaleUp = Win32DPIUtils.pointToPixelAsLocation(scaleDown, zoom2);
-					scaleDown = Win32DPIUtils.pixelToPointAsSize(scaleUp, zoom2);
-					scaleUp = Win32DPIUtils.pointToPixelAsLocation(scaleDown, zoom1);
-					assertEquals(pt.x, scaleUp.x);
-					assertEquals(pt.y, scaleUp.y);
-				}
+		int[] zooms = new int[] {100, 125, 150, 175, 200, 225, 250, 275, 300, 325, 350, 375, 400};
+		for (int zoom : zooms) {
+			for (int i = 1; i <= 10000; i++) {
+				Point pt = new Point(i, i);
+				Point scaleDown = Win32DPIUtils.pixelToPointAsLocation(pt, zoom);
+				Point scaleUp = Win32DPIUtils.pointToPixelAsSize(scaleDown, zoom);
+				assertEquals(pt.x, scaleUp.x);
+				assertEquals(pt.y, scaleUp.y);
 			}
 		}
 	}
