@@ -626,7 +626,20 @@ void applySegments () {
 	ignoreVerify = oldIgnoreVerify;
 }
 
+private static StyleProcessor STYLE_PROCESSOR = new StyleProcessor();
+
+static {
+	StyleProcessor processor = new StyleProcessor();
+	
+	processor.oneof("SINGLE, MULTI").oneof("LEFT, CENTER, RIGHT").ifOneOf("SEARCH")
+	.thenSomeOf("SINGLE, BORDER").ifOneOf("MULTI").thenSomeOf("H_SCROLL, V_SCROLL, WRAP")
+	.ifOneOf("SINGLE").thenSomeOf("PASSWORD");
+
+	STYLE_PROCESSOR = processor;
+}
+
 static int checkStyle (int style) {
+	System.out.println(STYLE_PROCESSOR.process(style));
 	if ((style & SWT.SINGLE) != 0 && (style & SWT.MULTI) != 0) {
 		style &= ~SWT.MULTI;
 	}
