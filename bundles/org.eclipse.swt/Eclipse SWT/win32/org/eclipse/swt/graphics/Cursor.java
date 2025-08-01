@@ -135,6 +135,11 @@ Cursor(Device device) {
  */
 public Cursor(Device device, int style) {
 	this(device);
+	this.handle = setupCursorFromStyle(style);
+	init();
+}
+
+private static long setupCursorFromStyle(int style) {
 	long lpCursorName = 0;
 	switch (style) {
 		case SWT.CURSOR_HAND: 		lpCursorName = OS.IDC_HAND; break;
@@ -162,9 +167,9 @@ public Cursor(Device device, int style) {
 		default:
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	handle = OS.LoadCursor(0, lpCursorName);
+	long handle = OS.LoadCursor(0, lpCursorName);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	init();
+	return handle;
 }
 
 /**
@@ -207,6 +212,12 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 	this.hotspotX = hotspotX;
 	this.hotspotY = hotspotY;
 	this.imageDataProvider = null;
+	this.handle = setupCursorFromImageData(source, mask, hotspotX, hotspotY);
+	init();
+	this.device.registerResourceWithZoomSupport(this);
+}
+
+private static long setupCursorFromImageData(ImageData source, ImageData mask, int hotspotX, int hotspotY) {
 	if (source == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (mask == null) {
 		if (source.getTransparencyType() != SWT.TRANSPARENCY_MASK) {
@@ -233,10 +244,9 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 
 	/* Create the cursor */
 	long hInst = OS.GetModuleHandle(null);
-	handle = OS.CreateCursor(hInst, hotspotX, hotspotY, source.width, source.height, sourceData, maskData);
+	long handle = OS.CreateCursor(hInst, hotspotX, hotspotY, source.width, source.height, sourceData, maskData);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	init();
-	this.device.registerResourceWithZoomSupport(this);
+	return handle;
 }
 
 /**
@@ -275,10 +285,13 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 	this.hotspotX = hotspotX;
 	this.hotspotY = hotspotY;
 	this.imageDataProvider = null;
-	setupCursorFromImageData(source);
+	this.handle = setupCursorFromImageData(device, source, hotspotX, hotspotY);
+	isIcon = true;
+	init();
+	this.device.registerResourceWithZoomSupport(this);
 }
 
-private void setupCursorFromImageData(ImageData source) {
+private static long setupCursorFromImageData(Device device, ImageData source, int hotspotX, int hotspotY) {
 	if (source == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	/* Check the hotspots */
 	if (hotspotX >= source.width || hotspotX < 0 ||
@@ -333,7 +346,7 @@ private void setupCursorFromImageData(ImageData source) {
 		if (hMask == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	} else {
 		ImageData mask = source.getTransparencyMask();
-		long [] result = Image.initIcon(this.device, source, mask);
+		long [] result = Image.initIcon(device, source, mask);
 		hBitmap = result[0];
 		hMask = result[1];
 	}
@@ -344,13 +357,12 @@ private void setupCursorFromImageData(ImageData source) {
 	info.hbmMask = hMask;
 	info.xHotspot = hotspotX;
 	info.yHotspot = hotspotY;
-	handle = OS.CreateIconIndirect(info);
+	long handle = OS.CreateIconIndirect(info);
 	OS.DeleteObject(hBitmap);
 	OS.DeleteObject(hMask);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	isIcon = true;
-	init();
-	this.device.registerResourceWithZoomSupport(this);
+
+	return handle;
 }
 
 /**
@@ -390,7 +402,10 @@ public Cursor(Device device, ImageDataProvider imageDataProvider, int hotspotX, 
 	this.mask = null;
 	this.hotspotX = hotspotX;
 	this.hotspotY = hotspotY;
-	setupCursorFromImageData(this.source);
+	this.handle = setupCursorFromImageData(device, this.source, hotspotX, hotspotY);
+	isIcon = true;
+	init();
+	this.device.registerResourceWithZoomSupport(this);
 }
 
 /**
