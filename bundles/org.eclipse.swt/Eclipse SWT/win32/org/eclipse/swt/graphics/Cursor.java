@@ -50,18 +50,6 @@ import org.eclipse.swt.internal.win32.*;
 public final class Cursor extends Resource {
 
 	/**
-	 * the handle to the OS cursor resource
-	 * (Warning: This field is platform dependent)
-	 * <p>
-	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
-	 * public API. It is marked public only so that it can be shared
-	 * within the packages provided by SWT. It is not available on all
-	 * platforms and should never be accessed from application code.
-	 * </p>
-	 *
-	 */
-	private long handle;
-	/**
 	 * Attribute to cache current native zoom level
 	 */
 	private static final int DEFAULT_ZOOM = 100;
@@ -74,6 +62,8 @@ public final class Cursor extends Resource {
 	private final ImageData mask;
 	private final int hotspotX;
 	private final int hotspotY;
+	private boolean isDestroyed;
+	private Integer style;
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
@@ -135,7 +125,9 @@ Cursor(Device device) {
  */
 public Cursor(Device device, int style) {
 	this(device);
-	this.handle = setupCursorFromStyle(style);
+	this.style = style;
+	long handle = setupCursorFromStyle(style);
+	zoomLevelToHandle.put(DEFAULT_ZOOM, handle);
 	init();
 }
 
@@ -179,7 +171,8 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 	this.hotspotX = hotspotX;
 	this.hotspotY = hotspotY;
 	this.imageDataProvider = null;
-	this.handle = setupCursorFromImageData(source, mask, hotspotX, hotspotY);
+	long handle = setupCursorFromImageData(source, mask, hotspotX, hotspotY);
+	zoomLevelToHandle.put(DEFAULT_ZOOM, handle);
 	init();
 	this.device.registerResourceWithZoomSupport(this);
 }
@@ -220,8 +213,9 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 	this.hotspotX = hotspotX;
 	this.hotspotY = hotspotY;
 	this.imageDataProvider = null;
-	this.handle = setupCursorFromImageData(device, source, hotspotX, hotspotY);
+	long handle = setupCursorFromImageData(device, source, hotspotX, hotspotY);
 	isIcon = true;
+	zoomLevelToHandle.put(DEFAULT_ZOOM, handle);
 	init();
 	this.device.registerResourceWithZoomSupport(this);
 }
@@ -263,8 +257,9 @@ public Cursor(Device device, ImageDataProvider imageDataProvider, int hotspotX, 
 	this.mask = null;
 	this.hotspotX = hotspotX;
 	this.hotspotY = hotspotY;
-	this.handle = setupCursorFromImageData(device, this.source, hotspotX, hotspotY);
+	long handle = setupCursorFromImageData(device, this.source, hotspotX, hotspotY);
 	isIcon = true;
+	zoomLevelToHandle.put(DEFAULT_ZOOM, handle);
 	init();
 	this.device.registerResourceWithZoomSupport(this);
 }
@@ -424,41 +419,40 @@ private static long setupCursorFromImageData(ImageData source, ImageData mask, i
  * @noreference This method is not intended to be referenced by clients.
  */
 public static Long win32_getHandle (Cursor cursor, int zoom) {
-	if (cursor.isDisposed()) {
-		return cursor.handle;
+	if(cursor.zoomLevelToHandle.size() == 0) {
+		return 0L;
 	}
 	if (cursor.zoomLevelToHandle.get(zoom) != null) {
 		return cursor.zoomLevelToHandle.get(zoom);
 	}
 
-	if (cursor.source == null) {
-		cursor.setHandleForZoomLevel(cursor.handle, zoom);
+	if (cursor.style != null) {
+		// we don't need to pass zoom in this case. LoadCursor will always return scaled cursor even though handle value will be same for all zoom levels.
+		long handle = setupCursorFromStyle(cursor.style);
+		cursor.setHandleForZoomLevel(handle, zoom);
 	} else {
 		ImageData source;
 		if (cursor.imageDataProvider != null) {
 			Image tempImage = new Image(cursor.getDevice(), cursor.imageDataProvider);
 			source = tempImage.getImageData(zoom);
 			tempImage.dispose();
-		}
-		else {
-			source = DPIUtil.scaleImageData(cursor.device, cursor.source, zoom, DEFAULT_ZOOM);
-		}
-		if (cursor.isIcon) {
-			Cursor newCursor = new Cursor(cursor.device, source, Win32DPIUtils.pointToPixel(cursor.hotspotX, zoom), Win32DPIUtils.pointToPixel(cursor.hotspotY, zoom));
-			cursor.setHandleForZoomLevel(newCursor.handle, zoom);
 		} else {
-			ImageData mask = DPIUtil.scaleImageData(cursor.device, cursor.mask, zoom, DEFAULT_ZOOM);
-			Cursor newCursor = new Cursor(cursor.device, source, mask, Win32DPIUtils.pointToPixel(cursor.hotspotX, zoom), Win32DPIUtils.pointToPixel(cursor.hotspotY, zoom));
-			cursor.setHandleForZoomLevel(newCursor.handle, zoom);
+			source = DPIUtil.scaleImageData(cursor.getDevice(), cursor.source, zoom, DEFAULT_ZOOM);
+		}
+
+		if (cursor.isIcon) {
+			long handle = setupCursorFromImageData(cursor.getDevice(), source, Win32DPIUtils.pointToPixel(cursor.hotspotX, zoom), Win32DPIUtils.pointToPixel(cursor.hotspotY, zoom));
+			cursor.setHandleForZoomLevel(handle, zoom);
+		} else {
+			ImageData mask = DPIUtil.scaleImageData(cursor.getDevice(), cursor.mask, zoom, DEFAULT_ZOOM);
+			long handle = setupCursorFromImageData(source, mask, Win32DPIUtils.pointToPixel(cursor.hotspotX, zoom), Win32DPIUtils.pointToPixel(cursor.hotspotY, zoom));
+			cursor.setHandleForZoomLevel(handle, zoom);
 		}
 	}
 	return cursor.zoomLevelToHandle.get(zoom);
 }
 
 private void setHandleForZoomLevel(long handle, Integer zoom) {
-	if (this.handle == 0) {
-		this.handle = handle;	// Set handle for default zoom level
-	}
 	if (zoom != null && !zoomLevelToHandle.containsKey(zoom)) {
 		zoomLevelToHandle.put(zoom, handle);
 	}
@@ -480,6 +474,7 @@ void destroy () {
 //	}
 	device.deregisterResourceWithZoomSupport(this);
 	destroyHandle();
+	this.isDestroyed = true;
 }
 
 private void destroyHandle () {
@@ -487,7 +482,6 @@ private void destroyHandle () {
 		destroyHandle(handle);
 	}
 	zoomLevelToHandle.clear();
-	handle = 0;
 }
 
 private void destroyHandle(long handle) {
@@ -521,7 +515,7 @@ public boolean equals (Object object) {
 	if (object == this) return true;
 	if (!(object instanceof Cursor)) return false;
 	Cursor cursor = (Cursor) object;
-	return device == cursor.device && handle == cursor.handle;
+	return device == cursor.device && win32_getHandle(this, DEFAULT_ZOOM) == win32_getHandle(cursor, DEFAULT_ZOOM);
 }
 
 /**
@@ -536,7 +530,7 @@ public boolean equals (Object object) {
  */
 @Override
 public int hashCode () {
-	return (int)handle;
+	return this.zoomLevelToHandle.get(DEFAULT_ZOOM) != null? this.zoomLevelToHandle.get(DEFAULT_ZOOM).intValue() : 0;
 }
 
 /**
@@ -551,7 +545,7 @@ public int hashCode () {
  */
 @Override
 public boolean isDisposed() {
-	return handle == 0;
+	return isDestroyed;
 }
 
 /**
@@ -563,7 +557,7 @@ public boolean isDisposed() {
 @Override
 public String toString () {
 	if (isDisposed()) return "Cursor {*DISPOSED*}";
-	return "Cursor {" + handle + "}";
+	return "Cursor {" + zoomLevelToHandle + "}";
 }
 
 @Override
