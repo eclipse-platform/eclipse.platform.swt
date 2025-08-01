@@ -15,6 +15,8 @@
 package org.eclipse.swt.widgets;
 
 
+import java.util.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
@@ -265,16 +267,25 @@ long callWindowProc (long hwnd, int msg, long wParam, long lParam) {
 	if (handle == 0) return 0;
 	return OS.CallWindowProc (ButtonProc, hwnd, msg, wParam, lParam);
 }
-//COMMAND_LINK ? SWT.COMMAND : 0
-private static final StyleProcessor STYLE_PROCESSOR = new StyleProcessor()
-.oneOf("PUSH, ARROW, CHECK, RADIO, TOGGLE")
-.ifOneOf("PUSH, TOGGLE").thenOneOf("CENTER, LEFT, RIGHT")
-.ifOneOf("CHECK, RADIO").thenOneOf("LEFT, RIGHT, CENTER")
-.ifOneOf("ARROW").thenOneOf("UP, DOWN, LEFT, RIGHT");
+
+private static StyleProcessor STYLE_PROCESSOR = new StyleProcessor();
+
+static {
+	StyleProcessor processor = new StyleProcessor();
+
+	if (COMMAND_LINK) {
+		processor.oneOf("PUSH, ARROW, CHECK, RADIO, TOGGLE, SWT.COMMAND");
+	} else {
+		processor.oneOf("PUSH, ARROW, CHECK, RADIO, TOGGLE");
+	}
+	processor.ifOneOf("PUSH, TOGGLE").thenOneOf("CENTER, LEFT, RIGHT")
+	.ifOneOf("CHECK, RADIO").thenOneOf("LEFT, RIGHT, CENTER")
+	.ifOneOf("ARROW").thenOneOf("UP, DOWN, LEFT, RIGHT");
+
+	STYLE_PROCESSOR = processor;
+}
 
 static int checkStyle (int style) {
-	System.out.println("Testing the Style Processor");
-	System.out.println(STYLE_PROCESSOR.process(style));
 	style = checkBits (style, SWT.PUSH, SWT.ARROW, SWT.CHECK, SWT.RADIO, SWT.TOGGLE, COMMAND_LINK ? SWT.COMMAND : 0);
 	if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0) {
 		return checkBits (style, SWT.CENTER, SWT.LEFT, SWT.RIGHT, 0, 0, 0);
@@ -288,7 +299,14 @@ static int checkStyle (int style) {
 	}
 	return style;
 
-
+}
+/**
+ * test
+ * @return ArrayList<String> styles
+ * @since 3.131
+ */
+public ArrayList<String> getStyles() {
+	return STYLE_PROCESSOR.process(this.style);
 }
 
 void click () {

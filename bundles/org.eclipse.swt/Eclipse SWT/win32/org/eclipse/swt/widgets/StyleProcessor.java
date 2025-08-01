@@ -9,7 +9,6 @@ public class StyleProcessor {
 	private ArrayList<ArrayList<String>> ifOneArr = new ArrayList<>();
 	private ArrayList<ArrayList<String>> thenOneArr = new ArrayList<>();
 
-
 	// Just add styles you want to detect — no validation
 	public StyleProcessor oneOf(String styles) {
 		String[] tempHolder = styles.split(", ");
@@ -41,9 +40,9 @@ public class StyleProcessor {
 		return this;
 	}
 
-//	 Given a style bitmask, return or print the styles that are set
+
 	public ArrayList<String> process(int style) {
-		System.out.println("Int Style" + style);
+//		System.out.println("Int Style" + style);
 		ArrayList<String> finalList = new ArrayList<>();
 
 		for (String s: oneOfArr) {
@@ -53,6 +52,7 @@ public class StyleProcessor {
 					break;
 				}
 			} catch (NoSuchFieldException | IllegalAccessException e) {
+				System.out.println("Invalid Style: " + s);
 				e.printStackTrace(); // or handle gracefully
 			}
 		}
@@ -61,16 +61,26 @@ public class StyleProcessor {
 
 			for (String s2: ifOneArr.get(i)) {
 				try {
-					if ((style & SWT.class.getField(s2).getInt(null)) != 0) {
-						for (String s3: thenOneArr.get(i)) {
-							if ((style & SWT.class.getField(s3).getInt(null)) != 0) {
-								finalList.add(s3);
-								break;
+					//Made it into a variable to make the it easy to read
+					int flag = SWT.class.getField(s2).getInt(null);
+					
+					if ((style & flag)  != 0 ) {
+						//Checks if the s2 (String) is inside the oneOfArr 
+						if (oneOfArr.contains(s2)) {
+						
+							for (String s3: thenOneArr.get(i)) {
+								if ((style & SWT.class.getField(s3).getInt(null)) != 0) {
+									finalList.add(s3);
+									break;
+								}
 							}
+							break;
+						} else {
+							System.out.println("Not inside the oneArr: " + s2);
 						}
-						break;
 					}
 				} catch (NoSuchFieldException | IllegalAccessException e) {
+					System.out.println("Invalid Style: " + s2);
 					e.printStackTrace();
 				}
 			}
