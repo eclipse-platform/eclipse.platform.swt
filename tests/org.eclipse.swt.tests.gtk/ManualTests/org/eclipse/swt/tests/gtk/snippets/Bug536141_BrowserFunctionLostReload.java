@@ -111,7 +111,7 @@ public class Bug536141_BrowserFunctionLostReload {
 		});
 		shell.open();
 		System.out.println("INSTRUCTIONS: pressing the \"Create function\" button will create a function called theJavaFunction2.");
-		System.out.println("Pressing the \"Destroy function\" button will destory the function called theJavaFunction.");
+		System.out.println("Pressing the \"Destroy function\" button will destroy the function called theJavaFunction.");
 		System.out.println("To test that theJavaFunction2 was created, add the \"2\""
 				+ " at the end of theJavaFunction in the console and press enter.");
 		System.out.println("To test that theJavaFunction was deleted, remove the \"2\""

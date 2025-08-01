@@ -442,10 +442,10 @@ public void setControl (Control control) {
 	if (control != null) {
 		//454940 ExpandBar DND fix.
 		//Reparenting on the GTK side.
-		//Proper hierachy on gtk side is required for DND to function properly.
+		//Proper hierarchy on gtk side is required for DND to function properly.
 		//As ExpandItem's child can be created before the ExpandItem, our only
 		//option is to reparent the child upon the setControl(..) call.
-		//This is simmilar to TabFolder.
+		//This is similar to TabFolder.
 		Control.gtk_widget_reparent (control, clientHandle);
 	}
 	parent.layoutItems();

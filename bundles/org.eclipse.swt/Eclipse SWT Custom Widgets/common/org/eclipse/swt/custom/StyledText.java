@@ -1077,31 +1077,47 @@ void calculateTopIndex(int delta) {
 			}
 		}
 	} else {
+		int lineCount = content.getLineCount();
 		if (delta >= 0) {
 			delta -= topIndexY;
-			int lineIndex = topIndex;
-			int lineCount = content.getLineCount();
+			int lineIndex = Math.max(0, topIndex);
 			while (lineIndex < lineCount) {
 				if (delta <= 0) break;
-				delta -= renderer.getCachedLineHeight(lineIndex++);
+				delta -= renderer.getCachedLineHeight(lineIndex);
+				lineIndex++;
 			}
-			if (lineIndex < lineCount && -delta + renderer.getCachedLineHeight(lineIndex) <= clientAreaHeight - topMargin - bottomMargin) {
+			int lineHeight = 0;
+			if (lineExists(lineIndex)) {
+				lineHeight = renderer.getCachedLineHeight(lineIndex);
+			}
+			if (lineIndex < lineCount && -delta + lineHeight <= clientAreaHeight - topMargin - bottomMargin) {
 				topIndex = lineIndex;
 				topIndexY = -delta;
 			} else {
 				topIndex = lineIndex - 1;
-				topIndexY = -renderer.getCachedLineHeight(topIndex) - delta;
+				if (lineExists(topIndex)) {
+					topIndexY = -renderer.getCachedLineHeight(topIndex);
+				}
+				topIndexY -= delta;
 			}
 		} else {
 			delta -= topIndexY;
 			int lineIndex = topIndex;
 			while (lineIndex > 0) {
-				int lineHeight = renderer.getCachedLineHeight(lineIndex - 1);
+				int previousLineIndex = lineIndex - 1;
+				int lineHeight = 0;
+				if (lineExists(previousLineIndex)) {
+					lineHeight = renderer.getCachedLineHeight(previousLineIndex);
+				}
 				if (delta + lineHeight > 0) break;
 				delta += lineHeight;
 				lineIndex--;
 			}
-			if (lineIndex == 0 || -delta + renderer.getCachedLineHeight(lineIndex) <= clientAreaHeight - topMargin - bottomMargin) {
+			int lineHeight = 0;
+			if (lineExists(lineIndex)) {
+				lineHeight = renderer.getCachedLineHeight(lineIndex);
+			}
+			if (lineIndex == 0 || -delta + lineHeight <= clientAreaHeight - topMargin - bottomMargin) {
 				topIndex = lineIndex;
 				topIndexY = - delta;
 			} else {
@@ -1379,13 +1395,23 @@ int getAvailableHeightAbove(int height) {
 		int lineIndex = topIndex - 1;
 		maxHeight = -topIndexY;
 		if (topIndexY > 0) {
-			maxHeight += renderer.getLineHeight(lineIndex--);
+			if (lineExists(lineIndex)) {
+				maxHeight += renderer.getLineHeight(lineIndex);
+			}
+			lineIndex--;
 		}
 		while (height > maxHeight && lineIndex >= 0) {
-			maxHeight += renderer.getLineHeight(lineIndex--);
+			if (lineExists(lineIndex)) {
+				maxHeight += renderer.getLineHeight(lineIndex);
+			}
+			lineIndex--;
 		}
 	}
 	return Math.min(height, maxHeight);
+}
+private boolean lineExists(int lineNumber) {
+	int lineCount = content.getLineCount();
+	return lineNumber >= 0 && lineNumber < lineCount;
 }
 int getAvailableHeightBellow(int height) {
 	int partialBottomIndex = getPartialBottomIndex();
@@ -3876,11 +3902,13 @@ public int getLinePixel(int lineIndex) {
 		return topIndexY + topMargin;
 	int height = topIndexY;
 	if (lineIndex > topIndex) {
-		for (int i = topIndex; i < lineIndex; i++) {
+		for (int i = Math.max(topIndex, 0); i < Math.min(lineIndex, lineCount); i++) {
 			height += renderer.getLineHeight(i);
 		}
 	} else {
-		for (int i = topIndex - 1; i >= lineIndex; i--) {
+		int lastLineToConsider = Math.min(topIndex - 1, lineCount - 1);
+		int firstLineToConsider = Math.max(0, lineIndex);
+		for (int i = firstLineToConsider; i <= lastLineToConsider; i++) {
 			height -= renderer.getLineHeight(i);
 		}
 	}
@@ -3914,10 +3942,18 @@ public int getLineIndex(int y) {
 		}
 	} else {
 		int lineCount = content.getLineCount();
-		int lineHeight = renderer.getLineHeight(line);
+		int lineHeight = 0;
+		if (lineExists(line)) {
+			lineHeight = renderer.getLineHeight(line);
+		}
 		while (y - lineHeight >= topIndexY && line < lineCount - 1) {
 			y -= lineHeight;
-			lineHeight = renderer.getLineHeight(++line);
+			++line;
+			if (lineExists(line)) {
+				lineHeight = renderer.getLineHeight(line);
+			}else {
+				lineHeight = 0;
+			}
 		}
 	}
 	return line;
@@ -7818,7 +7854,7 @@ void resetCache(SortedSet<Integer> lines) {
 	int maxLineIndex = renderer.maxWidthLineIndex;
 	renderer.reset(lines);
 	renderer.calculateClientArea();
-	if (0 <= maxLineIndex && maxLineIndex < content.getLineCount()) {
+	if (lineExists(maxLineIndex)) {
 		renderer.calculate(maxLineIndex, 1);
 	}
 	setScrollBars(true);
@@ -7833,7 +7869,7 @@ void resetCache(int firstLine, int count) {
 	int maxLineIndex = renderer.maxWidthLineIndex;
 	renderer.reset(firstLine, count);
 	renderer.calculateClientArea();
-	if (0 <= maxLineIndex && maxLineIndex < content.getLineCount()) {
+	if (lineExists(maxLineIndex)) {
 		renderer.calculate(maxLineIndex, 1);
 	}
 	setScrollBars(true);
@@ -8986,7 +9022,7 @@ public void setKeyBinding(int key, int action) {
 	int keyInt = key & SWT.KEY_MASK;
 	char keyChar = (char)keyInt;
 	/**
-	 * Bug 440535: Make sure the key getting mapped to letter is in defiened
+	 * Bug 440535: Make sure the key getting mapped to letter is in defined
 	 * character range and filter out incorrect int to char typecasting. For
 	 * Example: SWT.KEYPAD_CR int gets wrongly type-cast to char letter 'p'
 	 */

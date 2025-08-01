@@ -3790,6 +3790,44 @@ public void getClipping (Region region) {
 	checkNonDisposed();
 	if (region == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (region.isDisposed()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	storeAndApplyOperationForExistingHandle(new GetClippingOperation(region));
+}
+
+private class GetClippingOperation extends Operation {
+	private final Map<Integer, Long> zoomToRegionHandle = new HashMap<>();
+
+	public GetClippingOperation(Region region) {
+		region.set(zoom -> {
+			if (!zoomToRegionHandle.containsKey(zoom)) {
+				System.err.println("No clipping handle for zoom " + zoom + " has been created on this GC");
+				return zoomToRegionHandle.values().iterator().next();
+			}
+			return zoomToRegionHandle.get(zoom);
+		}, getZoom());
+	}
+
+	// Whenever the GC handle is recalculated for a new zoom, we compute and store the clipping
+	// at the times when getClipping(Region) was originally called, such that the region to which
+	// that clipping is set can retrieve it from the storage when required.
+	@Override
+	void apply() {
+		zoomToRegionHandle.computeIfAbsent(getZoom(), __ -> getClippingRegion());
+	}
+
+	@Override
+	void disposeAll() {
+		for (long handle : zoomToRegionHandle.values()) {
+			OS.DeleteObject(handle);
+		}
+		super.disposeAll();
+	}
+}
+
+/**
+ * @return a region handle with the current clipping region of this GC
+ */
+private long getClippingRegion () {
+	long regionHandle = OS.CreateRectRgn(0, 0, 0, 0);
 	long gdipGraphics = data.gdipGraphics;
 	if (gdipGraphics != 0) {
 		long rgn = Gdip.Region_new();
@@ -3799,7 +3837,7 @@ public void getClipping (Region region) {
 			Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeNone);
 			Gdip.Graphics_GetVisibleClipBounds(gdipGraphics, rect);
 			Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeHalf);
-			OS.SetRectRgn(Region.win32_getHandle(region, getZoom()), rect.X, rect.Y, rect.X + rect.Width, rect.Y + rect.Height);
+			OS.SetRectRgn(regionHandle, rect.X, rect.Y, rect.X + rect.Width, rect.Y + rect.Height);
 		} else {
 			long matrix = Gdip.Matrix_new(1, 0, 0, 1, 0, 0);
 			long identity = Gdip.Matrix_new(1, 0, 0, 1, 0, 0);
@@ -3812,26 +3850,26 @@ public void getClipping (Region region) {
 			POINT pt = new POINT ();
 			OS.GetWindowOrgEx (handle, pt);
 			OS.OffsetRgn (hRgn, pt.x, pt.y);
-			OS.CombineRgn(Region.win32_getHandle(region, getZoom()), hRgn, 0, OS.RGN_COPY);
+			OS.CombineRgn(regionHandle, hRgn, 0, OS.RGN_COPY);
 			OS.DeleteObject(hRgn);
 		}
 		Gdip.Region_delete(rgn);
-		return;
+		return regionHandle;
 	}
 	POINT pt = new POINT ();
 	OS.GetWindowOrgEx (handle, pt);
-	int result = OS.GetClipRgn (handle, Region.win32_getHandle(region, getZoom()));
+	int result = OS.GetClipRgn (handle, regionHandle);
 	if (result != 1) {
 		RECT rect = new RECT();
 		OS.GetClipBox(handle, rect);
-		OS.SetRectRgn(Region.win32_getHandle(region, getZoom()), rect.left, rect.top, rect.right, rect.bottom);
+		OS.SetRectRgn(regionHandle, rect.left, rect.top, rect.right, rect.bottom);
 	} else {
-		OS.OffsetRgn (Region.win32_getHandle(region, getZoom()), pt.x, pt.y);
+		OS.OffsetRgn (regionHandle, pt.x, pt.y);
 	}
 	long metaRgn = OS.CreateRectRgn (0, 0, 0, 0);
 	if (OS.GetMetaRgn (handle, metaRgn) != 0) {
 		OS.OffsetRgn (metaRgn, pt.x, pt.y);
-		OS.CombineRgn (Region.win32_getHandle(region, getZoom()), metaRgn, Region.win32_getHandle(region, getZoom()), OS.RGN_AND);
+		OS.CombineRgn (regionHandle, metaRgn, regionHandle, OS.RGN_AND);
 	}
 	OS.DeleteObject(metaRgn);
 	long hwnd = data.hwnd;
@@ -3848,10 +3886,11 @@ public void getClipping (Region region) {
 			}
 			OS.MapWindowPoints (0, hwnd, pt, 1);
 			OS.OffsetRgn (sysRgn, pt.x, pt.y);
-			OS.CombineRgn (Region.win32_getHandle(region, getZoom()), sysRgn, Region.win32_getHandle(region, getZoom()), OS.RGN_AND);
+			OS.CombineRgn (regionHandle, sysRgn, regionHandle, OS.RGN_AND);
 		}
 		OS.DeleteObject(sysRgn);
 	}
+	return regionHandle;
 }
 
 long getFgBrush() {
@@ -4976,8 +5015,7 @@ private class SetFontOperation extends Operation {
 	private final Font font;
 
 	SetFontOperation(Font font) {
-		this.font = new Font(font.getDevice(), font.getFontData());
-		registerForDisposal(this.font);
+		this.font = font != null ? SWTFontProvider.getFont(font.getDevice(), font.getFontData()[0], data.nativeZoom) : null;
 	}
 
 	@Override

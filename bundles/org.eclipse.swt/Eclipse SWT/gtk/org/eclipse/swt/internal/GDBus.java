@@ -171,7 +171,7 @@ public class GDBus {
 				0); // user_data_free_func
 
 		if (owner_id == 0) {
-			System.err.println("SWT GDBus: Failed to aquire bus name: " + serviceName);
+			System.err.println("SWT GDBus: Failed to acquire bus name: " + serviceName);
 		}
 	}
 
@@ -263,7 +263,7 @@ public class GDBus {
 
 	@SuppressWarnings("unused") // Callback Only called directly by JNI.
 	private static long onNameAcquired (long connection, long name, long user_data) {
-		// Currently not used, but can be used if acquring the gdbus name should trigger something to load.
+		// Currently not used, but can be used if acquiring the gdbus name should trigger something to load.
 		return 0;
 	}
 

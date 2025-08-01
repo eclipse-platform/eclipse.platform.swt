@@ -563,26 +563,4 @@ void destroyHandlesExcept(Set<Integer> zoomLevels) {
 	});
 }
 
-/**
- * Invokes platform specific functionality to allocate a new cursor.
- * <p>
- * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
- * API for <code>Cursor</code>. It is marked public only so that it
- * can be shared within the packages provided by SWT. It is not
- * available on all platforms, and should never be called from
- * application code.
- * </p>
- *
- * @param device the device on which to allocate the color
- * @param handle the handle for the cursor
- * @return a new cursor object containing the specified device and handle
- *
- * @noreference This method is not intended to be referenced by clients.
- */
-public static Cursor win32_new(Device device, int handle) {
-	Cursor cursor = new Cursor(device);
-	cursor.handle = handle;
-	return cursor;
-}
-
 }

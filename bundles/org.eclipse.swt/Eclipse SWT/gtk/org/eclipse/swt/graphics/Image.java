@@ -215,7 +215,6 @@ Image(Device device) {
 public Image(Device device, int width, int height) {
 	super(device);
 	Point size = new Point(width, height);
-	currentDeviceZoom = DPIUtil.getDeviceZoom();
 	init(size.x, size.y);
 	init();
 }
@@ -410,7 +409,6 @@ public Image(Device device, Image srcImage, int flag) {
 public Image(Device device, Rectangle bounds) {
 	super(device);
 	if (bounds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	currentDeviceZoom = DPIUtil.getDeviceZoom();
 	init(bounds.width, bounds.height);
 	init();
 }

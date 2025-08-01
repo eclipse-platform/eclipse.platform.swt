@@ -43,8 +43,7 @@ import org.eclipse.swt.widgets.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 
-@SuppressWarnings("removal")
-public sealed class Point implements Serializable permits MonitorAwarePoint, Point.OfFloat {
+public sealed class Point implements Serializable permits Point.OfFloat {
 
 	/**
 	 * the x coordinate of the point

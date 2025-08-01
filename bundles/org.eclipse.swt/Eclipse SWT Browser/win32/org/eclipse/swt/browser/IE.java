@@ -295,7 +295,7 @@ public void create(Composite parent, int style) {
 		if (version == 0) {
 			if (IEVersion != 0) {
 				/*
-				 * By default in Embedded IE the docuemntMode is Quirks(5)
+				 * By default in Embedded IE the documentMode is Quirks(5)
 				 * mode unless !DOCTYPE directives is defined in the HTML.
 				 * As per MSDN IE8 and onwards, there is a way we could hint
 				 * embedded IE to use current documentMode via appropriate

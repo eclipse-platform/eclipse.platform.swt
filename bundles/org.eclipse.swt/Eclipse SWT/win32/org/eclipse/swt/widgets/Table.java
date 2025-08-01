@@ -4610,7 +4610,7 @@ void setItemHeight (boolean fixScroll) {
 	if (itemHeight == -1) {
 		/*
 		* Feature in Windows.  Windows has no API to restore the
-		* defualt item height for a table.  The fix is to use
+		* default item height for a table.  The fix is to use
 		* WM_SETFONT which recomputes and assigns the default item
 		* height.
 		*/

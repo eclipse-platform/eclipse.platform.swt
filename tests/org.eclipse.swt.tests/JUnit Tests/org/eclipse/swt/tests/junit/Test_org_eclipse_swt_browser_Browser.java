@@ -684,9 +684,9 @@ public void test_LocationListener_then_ProgressListener() {
 
 @Test
 /**
- * "event.doit = false" in Location.changing() should stop 'Loction.changed & progress.completed' from getting fired.
+ * "event.doit = false" in Location.changing() should stop 'Location.changed & progress.completed' from getting fired.
  */
-public void test_LocationListener_ProgressListener_cancledLoad () {
+public void test_LocationListener_ProgressListener_canceledLoad () {
 
 	AtomicBoolean locationChanging = new AtomicBoolean(false);
 	AtomicBoolean unexpectedLocationChanged = new AtomicBoolean(false);
@@ -1037,7 +1037,7 @@ public void test_StatusTextListener_addAndRemove() {
  * Logic:
  * 1) Create a page that has a hyper link (covering the whole page)
  * 2) Move shell to top left corner
- * 3) Upon compleation of page load, move cursor across whole shell.
+ * 3) Upon completion of page load, move cursor across whole shell.
  *    (Note, in current jUnit, browser sometimes only takes up half the shell).
  * 4) StatusTextListener should get triggered. Test passes.
  * 5) Else timeout and fail.
@@ -1471,7 +1471,7 @@ public void test_setUrlWithNullArg() {
 /**
  * Logic:
  * - Load a page. Turn off javascript (which takes effect on next pageload)
- * - Load a second page. Try to execute some javascript. If javascript is exectuted then fail.
+ * - Load a second page. Try to execute some javascript. If javascript is executed then fail.
  */
 @Test
 public void test_setJavascriptEnabled() {
@@ -1761,7 +1761,7 @@ public void test_getText_html() {
  * https://github.com/eclipse-platform/eclipse.platform.swt/issues/2029
  */
 @Test
-public void test_getText_javscriptDisabled() {
+public void test_getText_javascriptDisabled() {
 	browser.setJavascriptEnabled(false);
 	String testString = "<html><head></head><body>hello<b>World</b></body></html>";
 	getText_helper(testString, testString);
@@ -1979,7 +1979,7 @@ public void test_evaluate_boolean() {
  */
 @Test
 public void test_evaluate_null() {
-	// Boolen only used as dummy placeholder so the object is not null.
+	// Boolean only used as dummy placeholder so the object is not null.
 	final AtomicReference<Object> returnValue = new AtomicReference<>(true);
 	browser.addProgressListener(completedAdapter(event -> {
 		returnValue.set(false);

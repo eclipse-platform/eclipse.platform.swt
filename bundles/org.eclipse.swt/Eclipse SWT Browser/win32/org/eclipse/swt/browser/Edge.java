@@ -662,7 +662,9 @@ private void createInstance(int previousAttempts) {
 	int hr = containingEnvironment.environment().QueryInterface(COM.IID_ICoreWebView2Environment2, ppv);
 	if (hr == COM.S_OK) environment2 = new ICoreWebView2Environment2(ppv[0]);
 	// The webview calls are queued to be executed when it is done executing the current task.
-	containingEnvironment.environment().CreateCoreWebView2Controller(browser.handle, createControllerInitializationCallback(previousAttempts));
+	IUnknown controllerInitializationHandler = createControllerInitializationCallback(previousAttempts);
+	containingEnvironment.environment().CreateCoreWebView2Controller(browser.handle, controllerInitializationHandler);
+	controllerInitializationHandler.Release();
 }
 
 private IUnknown createControllerInitializationCallback(int previousAttempts) {
@@ -700,7 +702,7 @@ private IUnknown createControllerInitializationCallback(int previousAttempts) {
 				createInstance(previousAttempts + 1);
 			} else {
 				SWT.error(SWT.ERROR_UNSPECIFIED, null,
-						String.format(" Aborting Edge initialiation after %d retries with result %d", MAXIMUM_CREATION_RETRIES, result));
+						String.format(" Aborting Edge initialization after %d retries with result %d", MAXIMUM_CREATION_RETRIES, result));
 			}
 			break;
 		}

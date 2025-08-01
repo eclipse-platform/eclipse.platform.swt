@@ -2521,7 +2521,7 @@ private boolean initUseNativeItemHeight() {
 
 private static NSString getAwtRunLoopMode() {
 	// Special run loop mode mode used by AWT enters when it only wants related messages processed.
-	// The name of this mode is a defacto contract established by the JavaNativeFoundation (JNF) libary.
+	// The name of this mode is a defacto contract established by the JavaNativeFoundation (JNF) library.
 	// It could be accessed via OS.objc_lookUpClass("JNFRunLoop").
 	//
 	// However, in JDK 11.0.12 / 13.0.8 / 15.0.4 / 17 this broke:
@@ -3566,7 +3566,7 @@ public boolean post(Event event) {
 				}
 
 				/**
-				 * Bug(?) in UCKeyTranslate:  If event.keyCode doesn't map to a valid SWT constant and event.characer is 0 we still need to post an event.
+				 * Bug(?) in UCKeyTranslate:  If event.keyCode doesn't map to a valid SWT constant and event.character is 0 we still need to post an event.
 				 * In Carbon, KeyTranslate eventually found a key that generated 0 but UCKeyTranslate never generates 0.
 				 * When that happens, post an event from key 127, which does nothing.
 				 */
