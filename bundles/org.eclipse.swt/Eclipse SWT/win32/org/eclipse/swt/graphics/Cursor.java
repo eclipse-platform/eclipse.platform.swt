@@ -135,35 +135,7 @@ Cursor(Device device) {
  */
 public Cursor(Device device, int style) {
 	this(device);
-	long lpCursorName = 0;
-	switch (style) {
-		case SWT.CURSOR_HAND: 		lpCursorName = OS.IDC_HAND; break;
-		case SWT.CURSOR_ARROW: 		lpCursorName = OS.IDC_ARROW; break;
-		case SWT.CURSOR_WAIT: 		lpCursorName = OS.IDC_WAIT; break;
-		case SWT.CURSOR_CROSS: 		lpCursorName = OS.IDC_CROSS; break;
-		case SWT.CURSOR_APPSTARTING: 	lpCursorName = OS.IDC_APPSTARTING; break;
-		case SWT.CURSOR_HELP: 		lpCursorName = OS.IDC_HELP; break;
-		case SWT.CURSOR_SIZEALL: 	lpCursorName = OS.IDC_SIZEALL; break;
-		case SWT.CURSOR_SIZENESW: 	lpCursorName = OS.IDC_SIZENESW; break;
-		case SWT.CURSOR_SIZENS: 	lpCursorName = OS.IDC_SIZENS; break;
-		case SWT.CURSOR_SIZENWSE: 	lpCursorName = OS.IDC_SIZENWSE; break;
-		case SWT.CURSOR_SIZEWE: 	lpCursorName = OS.IDC_SIZEWE; break;
-		case SWT.CURSOR_SIZEN: 		lpCursorName = OS.IDC_SIZENS; break;
-		case SWT.CURSOR_SIZES: 		lpCursorName = OS.IDC_SIZENS; break;
-		case SWT.CURSOR_SIZEE: 		lpCursorName = OS.IDC_SIZEWE; break;
-		case SWT.CURSOR_SIZEW: 		lpCursorName = OS.IDC_SIZEWE; break;
-		case SWT.CURSOR_SIZENE: 	lpCursorName = OS.IDC_SIZENESW; break;
-		case SWT.CURSOR_SIZESE: 	lpCursorName = OS.IDC_SIZENWSE; break;
-		case SWT.CURSOR_SIZESW: 	lpCursorName = OS.IDC_SIZENESW; break;
-		case SWT.CURSOR_SIZENW: 	lpCursorName = OS.IDC_SIZENWSE; break;
-		case SWT.CURSOR_UPARROW: 	lpCursorName = OS.IDC_UPARROW; break;
-		case SWT.CURSOR_IBEAM: 		lpCursorName = OS.IDC_IBEAM; break;
-		case SWT.CURSOR_NO: 		lpCursorName = OS.IDC_NO; break;
-		default:
-			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	}
-	handle = OS.LoadCursor(0, lpCursorName);
-	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	this.handle = setupCursorFromStyle(style);
 	init();
 }
 
@@ -207,34 +179,7 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 	this.hotspotX = hotspotX;
 	this.hotspotY = hotspotY;
 	this.imageDataProvider = null;
-	if (source == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (mask == null) {
-		if (source.getTransparencyType() != SWT.TRANSPARENCY_MASK) {
-			SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		}
-		mask = source.getTransparencyMask();
-	}
-	/* Check the bounds. Mask must be the same size as source */
-	if (mask.width != source.width || mask.height != source.height) {
-		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	}
-	/* Check the hotspots */
-	if (hotspotX >= source.width || hotspotX < 0 ||
-		hotspotY >= source.height || hotspotY < 0) {
-		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	}
-	/* Convert depth to 1 */
-	mask = ImageData.convertMask(mask);
-	source = ImageData.convertMask(source);
-
-	/* Make sure source and mask scanline pad is 2 */
-	byte[] sourceData = ImageData.convertPad(source.data, source.width, source.height, source.depth, source.scanlinePad, 2);
-	byte[] maskData = ImageData.convertPad(mask.data, mask.width, mask.height, mask.depth, mask.scanlinePad, 2);
-
-	/* Create the cursor */
-	long hInst = OS.GetModuleHandle(null);
-	handle = OS.CreateCursor(hInst, hotspotX, hotspotY, source.width, source.height, sourceData, maskData);
-	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	this.handle = setupCursorFromImageData(source, mask, hotspotX, hotspotY);
 	init();
 	this.device.registerResourceWithZoomSupport(this);
 }
@@ -275,10 +220,89 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 	this.hotspotX = hotspotX;
 	this.hotspotY = hotspotY;
 	this.imageDataProvider = null;
-	setupCursorFromImageData(source);
+	this.handle = setupCursorFromImageData(device, source, hotspotX, hotspotY);
+	isIcon = true;
+	init();
+	this.device.registerResourceWithZoomSupport(this);
 }
 
-private void setupCursorFromImageData(ImageData source) {
+/**
+ * Constructs a new cursor given a device, image describing
+ * the desired cursor appearance, and the x and y coordinates of
+ * the <em>hotspot</em> (that is, the point within the area
+ * covered by the cursor which is considered to be where the
+ * on-screen pointer is "pointing").
+ * <p>
+ * You must dispose the cursor when it is no longer required.
+ * </p>
+ *
+ * @param device the device on which to allocate the cursor
+ * @param imageDataProvider the ImageDataProvider for the cursor
+ * @param hotspotX the x coordinate of the cursor's hotspot
+ * @param hotspotY the y coordinate of the cursor's hotspot
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the image is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the hotspot is outside the bounds of the
+ * 		 image</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES - if a handle could not be obtained for cursor creation</li>
+ * </ul>
+ *
+ * @see #dispose()
+ *
+ * @since 3.131
+ */
+public Cursor(Device device, ImageDataProvider imageDataProvider, int hotspotX, int hotspotY) {
+	super(device);
+	if (imageDataProvider == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	this.imageDataProvider = imageDataProvider;
+	this.source = imageDataProvider.getImageData(100);
+	this.mask = null;
+	this.hotspotX = hotspotX;
+	this.hotspotY = hotspotY;
+	this.handle = setupCursorFromImageData(device, this.source, hotspotX, hotspotY);
+	isIcon = true;
+	init();
+	this.device.registerResourceWithZoomSupport(this);
+}
+
+private static long setupCursorFromStyle(int style) {
+	long lpCursorName = 0;
+	switch (style) {
+		case SWT.CURSOR_HAND: 		lpCursorName = OS.IDC_HAND; break;
+		case SWT.CURSOR_ARROW: 		lpCursorName = OS.IDC_ARROW; break;
+		case SWT.CURSOR_WAIT: 		lpCursorName = OS.IDC_WAIT; break;
+		case SWT.CURSOR_CROSS: 		lpCursorName = OS.IDC_CROSS; break;
+		case SWT.CURSOR_APPSTARTING: 	lpCursorName = OS.IDC_APPSTARTING; break;
+		case SWT.CURSOR_HELP: 		lpCursorName = OS.IDC_HELP; break;
+		case SWT.CURSOR_SIZEALL: 	lpCursorName = OS.IDC_SIZEALL; break;
+		case SWT.CURSOR_SIZENESW: 	lpCursorName = OS.IDC_SIZENESW; break;
+		case SWT.CURSOR_SIZENS: 	lpCursorName = OS.IDC_SIZENS; break;
+		case SWT.CURSOR_SIZENWSE: 	lpCursorName = OS.IDC_SIZENWSE; break;
+		case SWT.CURSOR_SIZEWE: 	lpCursorName = OS.IDC_SIZEWE; break;
+		case SWT.CURSOR_SIZEN: 		lpCursorName = OS.IDC_SIZENS; break;
+		case SWT.CURSOR_SIZES: 		lpCursorName = OS.IDC_SIZENS; break;
+		case SWT.CURSOR_SIZEE: 		lpCursorName = OS.IDC_SIZEWE; break;
+		case SWT.CURSOR_SIZEW: 		lpCursorName = OS.IDC_SIZEWE; break;
+		case SWT.CURSOR_SIZENE: 	lpCursorName = OS.IDC_SIZENESW; break;
+		case SWT.CURSOR_SIZESE: 	lpCursorName = OS.IDC_SIZENWSE; break;
+		case SWT.CURSOR_SIZESW: 	lpCursorName = OS.IDC_SIZENESW; break;
+		case SWT.CURSOR_SIZENW: 	lpCursorName = OS.IDC_SIZENWSE; break;
+		case SWT.CURSOR_UPARROW: 	lpCursorName = OS.IDC_UPARROW; break;
+		case SWT.CURSOR_IBEAM: 		lpCursorName = OS.IDC_IBEAM; break;
+		case SWT.CURSOR_NO: 		lpCursorName = OS.IDC_NO; break;
+		default:
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	long handle = OS.LoadCursor(0, lpCursorName);
+	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	return handle;
+}
+
+private static long setupCursorFromImageData(Device device, ImageData source, int hotspotX, int hotspotY) {
 	if (source == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	/* Check the hotspots */
 	if (hotspotX >= source.width || hotspotX < 0 ||
@@ -333,7 +357,7 @@ private void setupCursorFromImageData(ImageData source) {
 		if (hMask == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	} else {
 		ImageData mask = source.getTransparencyMask();
-		long [] result = Image.initIcon(this.device, source, mask);
+		long [] result = Image.initIcon(device, source, mask);
 		hBitmap = result[0];
 		hMask = result[1];
 	}
@@ -344,53 +368,44 @@ private void setupCursorFromImageData(ImageData source) {
 	info.hbmMask = hMask;
 	info.xHotspot = hotspotX;
 	info.yHotspot = hotspotY;
-	handle = OS.CreateIconIndirect(info);
+	long handle = OS.CreateIconIndirect(info);
 	OS.DeleteObject(hBitmap);
 	OS.DeleteObject(hMask);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	isIcon = true;
-	init();
-	this.device.registerResourceWithZoomSupport(this);
+
+	return handle;
 }
 
-/**
- * Constructs a new cursor given a device, image describing
- * the desired cursor appearance, and the x and y coordinates of
- * the <em>hotspot</em> (that is, the point within the area
- * covered by the cursor which is considered to be where the
- * on-screen pointer is "pointing").
- * <p>
- * You must dispose the cursor when it is no longer required.
- * </p>
- *
- * @param device the device on which to allocate the cursor
- * @param imageDataProvider the ImageDataProvider for the cursor
- * @param hotspotX the x coordinate of the cursor's hotspot
- * @param hotspotY the y coordinate of the cursor's hotspot
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
- *    <li>ERROR_NULL_ARGUMENT - if the image is null</li>
- *    <li>ERROR_INVALID_ARGUMENT - if the hotspot is outside the bounds of the
- * 		 image</li>
- * </ul>
- * @exception SWTError <ul>
- *    <li>ERROR_NO_HANDLES - if a handle could not be obtained for cursor creation</li>
- * </ul>
- *
- * @see #dispose()
- *
- * @since 3.131
- */
-public Cursor(Device device, ImageDataProvider imageDataProvider, int hotspotX, int hotspotY) {
-	super(device);
-	if (imageDataProvider == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.imageDataProvider = imageDataProvider;
-	this.source = imageDataProvider.getImageData(100);
-	this.mask = null;
-	this.hotspotX = hotspotX;
-	this.hotspotY = hotspotY;
-	setupCursorFromImageData(this.source);
+private static long setupCursorFromImageData(ImageData source, ImageData mask, int hotspotX, int hotspotY) {
+	if (source == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (mask == null) {
+		if (source.getTransparencyType() != SWT.TRANSPARENCY_MASK) {
+			SWT.error(SWT.ERROR_NULL_ARGUMENT);
+		}
+		mask = source.getTransparencyMask();
+	}
+	/* Check the bounds. Mask must be the same size as source */
+	if (mask.width != source.width || mask.height != source.height) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	/* Check the hotspots */
+	if (hotspotX >= source.width || hotspotX < 0 ||
+		hotspotY >= source.height || hotspotY < 0) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	/* Convert depth to 1 */
+	mask = ImageData.convertMask(mask);
+	source = ImageData.convertMask(source);
+
+	/* Make sure source and mask scanline pad is 2 */
+	byte[] sourceData = ImageData.convertPad(source.data, source.width, source.height, source.depth, source.scanlinePad, 2);
+	byte[] maskData = ImageData.convertPad(mask.data, mask.width, mask.height, mask.depth, mask.scanlinePad, 2);
+
+	/* Create the cursor */
+	long hInst = OS.GetModuleHandle(null);
+	long handle = OS.CreateCursor(hInst, hotspotX, hotspotY, source.width, source.height, sourceData, maskData);
+	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	return handle;
 }
 
 /**
