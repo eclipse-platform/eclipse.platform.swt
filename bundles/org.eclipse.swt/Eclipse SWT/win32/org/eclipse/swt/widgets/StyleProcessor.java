@@ -20,14 +20,14 @@ public class StyleProcessor {
 	}
 
 	private ArrayList<Rule> rules = new ArrayList<>();
-	private ArrayList<String> oneOfArr = new ArrayList<>();
+	private ArrayList<ArrayList<String>> oneOfArr = new ArrayList<>();
 	private ArrayList<String> someOfArr = new ArrayList<>();
 	private Rule currentRule = null;
 
 	public StyleProcessor oneOf(String styles) {
 		String[] tempHolder = styles.split(", ");
 
-		oneOfArr.addAll(Arrays.asList(tempHolder));
+		oneOfArr.add(new ArrayList<>(Arrays.asList(tempHolder)));
 
 		return this;
 	}
@@ -70,17 +70,18 @@ public class StyleProcessor {
 
 	public ArrayList<String> process(int style) {
 	    ArrayList<String> finalList = new ArrayList<>();
-
-	    for (String s : oneOfArr) {
-	        try {
-	            if ((style & SWT.class.getField(s).getInt(null)) != 0) {
-	                finalList.add(s);
-	                break;
-	            }
-	        } catch (NoSuchFieldException | IllegalAccessException e) {
-	            System.out.println("Invalid Style: " + s);
-	            e.printStackTrace();
-	        }
+	    for (ArrayList<String> a: oneOfArr) {
+		    for (String s: a) {
+		        try {
+		            if ((style & SWT.class.getField(s).getInt(null)) != 0) {
+		                finalList.add(s);
+		                break;
+		            }
+		        } catch (NoSuchFieldException | IllegalAccessException e) {
+		            System.out.println("Invalid Style: " + s);
+		            e.printStackTrace();
+		        }
+		    }
 	    }
 
 	    for (String s : someOfArr) {
