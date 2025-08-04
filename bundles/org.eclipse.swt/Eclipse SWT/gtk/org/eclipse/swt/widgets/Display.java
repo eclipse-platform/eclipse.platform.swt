@@ -2519,6 +2519,10 @@ public Control getFocusControl () {
  */
 public boolean getHighContrast () {
 	checkDevice ();
+	String gtkThemeName= OS.getThemeName();
+	if (gtkThemeName.contains("HighContrast") || gtkThemeName.contains("ContrastHigh")) {
+		return true;
+	}
 	return false;
 }
 
