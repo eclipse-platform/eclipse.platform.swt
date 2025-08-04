@@ -631,8 +631,8 @@ private static StyleProcessor STYLE_PROCESSOR = new StyleProcessor();
 static {
 	StyleProcessor processor = new StyleProcessor();
 	
-	processor.oneof("SINGLE, MULTI").oneof("LEFT, CENTER, RIGHT").ifOneOf("SEARCH")
-	.thenSomeOf("SINGLE, BORDER").ifOneOf("MULTI").thenSomeOf("H_SCROLL, V_SCROLL, WRAP")
+	processor.oneof("SINGLE, MULTI").oneof("LEFT, CENTER, RIGHT")
+	.someOf("BORDER, SEARCH").ifOneOf("MULTI").thenSomeOf("H_SCROLL, V_SCROLL, WRAP")
 	.ifOneOf("SINGLE").thenSomeOf("PASSWORD");
 
 	STYLE_PROCESSOR = processor;
