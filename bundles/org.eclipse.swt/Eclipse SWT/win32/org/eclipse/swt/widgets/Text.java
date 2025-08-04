@@ -631,10 +631,11 @@ private static StyleProcessor STYLE_PROCESSOR = new StyleProcessor();
 static {
 	StyleProcessor processor = new StyleProcessor();
 	
-	processor.oneof("SINGLE, MULTI").oneof("LEFT, CENTER, RIGHT")
+	processor.oneOf("SINGLE, MULTI")
+	.oneOf("LEFT, CENTER, RIGHT")
 	.someOf("BORDER, SEARCH").ifOneOf("MULTI").thenSomeOf("H_SCROLL, V_SCROLL, WRAP")
 	.ifOneOf("SINGLE").thenSomeOf("PASSWORD");
-
+	
 	STYLE_PROCESSOR = processor;
 }
 
@@ -662,6 +663,15 @@ static int checkStyle (int style) {
 	if ((style & (SWT.SINGLE | SWT.MULTI)) != 0) return style;
 	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) return style | SWT.MULTI;
 	return style | SWT.SINGLE;
+}
+
+/**
+ * test
+ * @return ArrayList<String> styles
+ * @since 3.131
+ */
+public ArrayList<String> getStyles() {
+	return STYLE_PROCESSOR.process(this.style);
 }
 
 void clearSegments (boolean applyText) {

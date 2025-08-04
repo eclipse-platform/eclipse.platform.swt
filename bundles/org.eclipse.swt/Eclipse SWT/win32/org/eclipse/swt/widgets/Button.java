@@ -274,7 +274,7 @@ static {
 	StyleProcessor processor = new StyleProcessor();
 
 	if (COMMAND_LINK) {
-		processor.oneOf("PUSH, ARROW, CHECK, RADIO, TOGGLE, SWT.COMMAND");
+		processor.someOf("COMMAND");
 	} else {
 		processor.oneOf("PUSH, ARROW, CHECK, RADIO, TOGGLE");
 	}
