@@ -24,7 +24,7 @@ public final class WithMonitorSpecificScalingExtension extends ResetMonitorSpeci
 	@Override
 	public void beforeEach(ExtensionContext context) throws Exception {
 		super.beforeEach(context);
-		DPIUtil.setMonitorSpecificScaling(true);
+		Win32DPIUtils.setMonitorSpecificScaling(true);
 	}
 
 }

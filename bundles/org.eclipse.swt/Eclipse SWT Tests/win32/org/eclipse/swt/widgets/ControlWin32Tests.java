@@ -36,7 +36,7 @@ class ControlWin32Tests {
 
 	@Test
 	public void testScaleFontCorrectlyInAutoScaleScenario() {
-		DPIUtil.setMonitorSpecificScaling(true);
+		Win32DPIUtils.setMonitorSpecificScaling(true);
 		Display display = Display.getDefault();
 
 		assertTrue("Autoscale property is not set to true", display.isRescalingAtRuntime());
@@ -48,7 +48,7 @@ class ControlWin32Tests {
 
 	@Test
 	public void testSetFontWithMonitorSpecificScalingEnabled() {
-		DPIUtil.setMonitorSpecificScaling(true);
+		Win32DPIUtils.setMonitorSpecificScaling(true);
 		Display display = Display.getDefault();
 		Image colorImage = new Image(display, 10, 10);
 		GC gc = new GC(colorImage);
@@ -59,7 +59,7 @@ class ControlWin32Tests {
 
 	@Test
 	public void testScaleFontCorrectlyInNoAutoScaleScenario() {
-		DPIUtil.setMonitorSpecificScaling(false);
+		Win32DPIUtils.setMonitorSpecificScaling(false);
 		Display display = Display.getDefault();
 
 		assertFalse("Autoscale property is not set to false", display.isRescalingAtRuntime());
@@ -71,7 +71,7 @@ class ControlWin32Tests {
 
 	@Test
 	public void testDoNotScaleFontInNoAutoScaleScenarioWithLegacyFontRegistry() {
-		DPIUtil.setMonitorSpecificScaling(false);
+		Win32DPIUtils.setMonitorSpecificScaling(false);
 		String originalValue = System.getProperty("swt.fontRegistry");
 		System.setProperty("swt.fontRegistry", "legacy");
 		try {
@@ -93,7 +93,7 @@ class ControlWin32Tests {
 
 	@Test
 	public void testCorrectScaleUpUsingDifferentSetBoundsMethod() {
-		DPIUtil.setMonitorSpecificScaling(true);
+		Win32DPIUtils.setMonitorSpecificScaling(true);
 		Display display = Display.getDefault();
 		Shell shell = new Shell(display);
 		Button button = new Button(shell, SWT.PUSH);
@@ -114,7 +114,7 @@ class ControlWin32Tests {
 	@CsvSource({ "0.5, 100, true", "1.0, 200, true", "2.0, 200, true", "2.0, quarter, true", "0.5, 100, false",
 			"1.0, 200, false", "2.0, 200, false", "2.0, quarter, false", })
 	public void testAutoScaleImageData(float scaleFactor, String autoScale, boolean monitorSpecificScaling) {
-		DPIUtil.setMonitorSpecificScaling(monitorSpecificScaling);
+		Win32DPIUtils.setMonitorSpecificScaling(monitorSpecificScaling);
 		DPIUtil.runWithAutoScaleValue(autoScale, () -> {
 			Display display = new Display();
 			try {

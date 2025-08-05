@@ -13,7 +13,7 @@ class DisplayWin32Test {
 
 	@Test
 	public void monitorSpecificScaling_activate() {
-		DPIUtil.setMonitorSpecificScaling(true);
+		Win32DPIUtils.setMonitorSpecificScaling(true);
 		Display display = Display.getDefault();
 		assertTrue(display.isRescalingAtRuntime());
 		assertEquals(OS.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2, OS.GetThreadDpiAwarenessContext());
@@ -21,7 +21,7 @@ class DisplayWin32Test {
 
 	@Test
 	public void monitorSpecificScaling_deactivate() {
-		DPIUtil.setMonitorSpecificScaling(false);
+		Win32DPIUtils.setMonitorSpecificScaling(false);
 		Display display = Display.getDefault();
 		assertFalse(display.isRescalingAtRuntime());
 	}
