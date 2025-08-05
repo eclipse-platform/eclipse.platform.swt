@@ -1763,7 +1763,7 @@ public long internal_new_GC (GCData data) {
 		if (font != null) {
 			data.font = font;
 		} else {
-			data.font = SWTFontProvider.getFont(display, OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0), data.nativeZoom);
+			data.font = SWTFontProvider.getFont(display, OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0), DPIUtil.getFontZoomForAutoscaleProperty(data.nativeZoom));
 		}
 		data.uiState = (int)OS.SendMessage (hwnd, OS.WM_QUERYUISTATE, 0, 0);
 	}

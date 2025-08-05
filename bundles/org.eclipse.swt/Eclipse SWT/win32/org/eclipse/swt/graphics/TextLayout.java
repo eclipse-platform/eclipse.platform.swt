@@ -67,7 +67,7 @@ public final class TextLayout extends Resource {
 
 	private MetricsAdapter metricsAdapter = new MetricsAdapter();
 
-	int nativeZoom = DPIUtil.getNativeDeviceZoom();
+	int fontZoom = DPIUtil.getFontZoomForAutoscaleProperty(DPIUtil.getNativeDeviceZoom());
 
 	static final char LTR_MARK = '\u200E', RTL_MARK = '\u200F';
 	static final int SCRIPT_VISATTR_SIZEOF = 2;
@@ -363,9 +363,9 @@ void checkLayout () {
 * 	Break paragraphs into lines, wraps the text, and initialize caches.
 */
 void computeRuns (GC gc) {
-	int newNativeZoom = getNativeZoom(gc);
-	if (nativeZoom != newNativeZoom) {
-		nativeZoom = newNativeZoom;
+	int newFontZoom = getFontZoom(gc);
+	if (fontZoom != newFontZoom) {
+		fontZoom = newFontZoom;
 		freeRuns();
 	}
 	if (runs != null) return;
@@ -768,19 +768,19 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 	drawInPixels(gc, x, y, selectionStart, selectionEnd, selectionForeground, selectionBackground, flags);
 }
 
-private int getNativeZoom(GC gc) {
+private int getFontZoom(GC gc) {
 	if (gc != null) {
-		return gc.data.nativeZoom;
+		return DPIUtil.getFontZoomForAutoscaleProperty(gc.data.nativeZoom);
 	}
-	return nativeZoom;
+	return fontZoom;
 }
 
 private int getZoom(GC gc){
-	return DPIUtil.getZoomForAutoscaleProperty(getNativeZoom(gc));
+	return DPIUtil.getZoomForAutoscaleProperty(getFontZoom(gc));
 }
 
 private int getZoom() {
-	return DPIUtil.getZoomForAutoscaleProperty(nativeZoom);
+	return DPIUtil.getZoomForAutoscaleProperty(fontZoom);
 }
 
 void drawInPixels (GC gc, int xInPoints, int yInPoints) {
@@ -1970,7 +1970,7 @@ public boolean getJustify () {
 
 long getItemFont (StyleItem item, GC gc) {
 	if (item.fallbackFont != 0) return item.fallbackFont;
-	final int zoom = getNativeZoom(gc);
+	final int zoom = getFontZoom(gc);
 	if (item.style != null && item.style.font != null) {
 		return SWTFontProvider.getFontHandle(item.style.font, zoom);
 	}
@@ -2157,7 +2157,7 @@ public FontMetrics getLineMetrics (int lineIndex) {
 	lptm.tmHeight = Win32DPIUtils.pointToPixel(this.device, ascentInPoints + descentInPoints, zoom);
 	lptm.tmInternalLeading = Win32DPIUtils.pointToPixel(this.device, leadingInPoints, zoom);
 	lptm.tmAveCharWidth = 0;
-	return FontMetrics.win32_new(lptm, nativeZoom);
+	return FontMetrics.win32_new(lptm, fontZoom);
 }
 
 /**
@@ -3258,7 +3258,7 @@ public void setFont (Font font) {
 	Font oldFont = this.font;
 	if (oldFont == font) return;
 	this.font = font;
-	this.nativeZoom = this.font == null ? nativeZoom : this.font.zoom;
+	this.fontZoom = this.font == null ? fontZoom : this.font.zoom;
 	if (oldFont != null && oldFont.equals(font)) return;
 	freeRuns();
 }

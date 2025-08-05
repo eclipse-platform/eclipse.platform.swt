@@ -66,7 +66,7 @@ class TextLayoutWin32Tests {
 		scaledLayout.setText(text);
 		Rectangle scaledBounds = scaledLayout.getBounds();
 
-		assertNotEquals(layout.nativeZoom, scaledLayout.nativeZoom, "The native zoom for the TextLayouts must differ");
+		assertNotEquals(layout.fontZoom, scaledLayout.fontZoom, "The font zooms for the TextLayouts must differ");
 		assertEquals(unscaledBounds.height, scaledBounds.height, 1, "The public API for getBounds with vertical indent > 0 should give a similar result for any zoom level");
 	}
 
