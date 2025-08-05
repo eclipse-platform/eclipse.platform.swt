@@ -338,6 +338,7 @@ public class OS extends C {
 	public static final byte[] mnemonic_activate = ascii("mnemonic-activate");
 	public static final byte[] month_changed = ascii("month-changed");
 	public static final byte[] next_month = ascii("next-month");
+	public static final byte[] notify_gtk_theme = ascii("notify::gtk-theme-name");
 	public static final byte[] prev_month = ascii("prev-month");
 	public static final byte[] next_year = ascii("next-year");
 	public static final byte[] prev_year = ascii("prev-year");
