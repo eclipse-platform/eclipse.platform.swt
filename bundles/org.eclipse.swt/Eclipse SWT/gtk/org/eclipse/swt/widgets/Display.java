@@ -497,6 +497,10 @@ public class Display extends Device implements Executor {
 	long keysChangedProc;
 	Callback keysChangedCallback;
 
+	/* Settings "changed" callback */
+	long settingsChangedProc;
+	Callback settingsChangedCallback;
+
 	/* Multiple Displays. */
 	static Display Default;
 	static Display [] Displays = new Display [1];
@@ -1323,7 +1327,11 @@ void createDisplay (DeviceData data) {
 	} else {
 		keymap = GDK.gdk_keymap_get_for_display(display);
 		OS.g_signal_connect (keymap, OS.keys_changed, keysChangedProc, 0);
-	}
+		}
+
+	settingsChangedCallback = new Callback (this, "settingsChangedProc", 3); //$NON-NLS-1$
+	settingsChangedProc = settingsChangedCallback.getAddress ();
+	OS.g_signal_connect (GTK.gtk_settings_get_default(), OS.notify_gtk_theme, settingsChangedProc, 0);
 }
 
 /**
@@ -1400,6 +1408,14 @@ Map<Integer, Integer> getGroupKeysCount () {
  */
 long keysChangedProc (long keymap, long user_data) {
 	latinKeyGroup = findLatinKeyGroup ();
+	return 0;
+}
+
+/**
+ * GtkSettings 'changed' event handler.
+ */
+long settingsChangedProc (long settings, long key, long user_data) {
+	settingsChanged = true;
 	return 0;
 }
 
@@ -4817,6 +4833,10 @@ void releaseDisplay () {
 	/* Dispose the "keys-changed" callback */
 	keysChangedCallback.dispose(); keysChangedCallback = null;
 	keysChangedProc = 0;
+
+	/* Dispose the settings "changed" callback */
+	settingsChangedCallback.dispose(); settingsChangedCallback = null;
+	settingsChangedProc = 0;
 
 	/* Dispose subclass */
 	if (!GTK.GTK4) {
