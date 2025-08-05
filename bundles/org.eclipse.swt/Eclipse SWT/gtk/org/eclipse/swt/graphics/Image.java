@@ -1592,17 +1592,4 @@ public static void drawScaled(GC gc, ImageData imageData, int width, int height,
 	imageToDraw.dispose();
 }
 
-private final class GtkDPIUtil {
-
-	/**
-	 * Auto-scale up ImageData to device zoom that is at 100%.
-	 */
-	public static ImageData pointToPixel (Device device, final ImageData imageData) {
-		int imageDataZoomFactor = 100;
-		if (DPIUtil.getDeviceZoom() == imageDataZoomFactor || imageData == null || (device != null && !device.isAutoScalable())) return imageData;
-		float scaleFactor = (float) DPIUtil.getDeviceZoom() / imageDataZoomFactor;
-		return DPIUtil.autoScaleImageData(device, imageData, scaleFactor);
-	}
-}
-
 }

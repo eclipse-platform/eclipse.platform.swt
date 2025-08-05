@@ -1831,22 +1831,5 @@ public static void drawScaled(GC gc, ImageData imageData, int width, int height,
 	imageToDraw.dispose();
 }
 
-private final class CocoaDPIUtil {
-
-	/**
-	 * Auto-scale down int dimensions.
-	 */
-	public static int pixelToPoint(int size) {
-		return DPIUtil.pixelToPoint(size, DPIUtil.getDeviceZoom());
-	}
-
-	/**
-	 * Auto-scale down float dimensions.
-	 */
-	public static float pixelToPoint(float size) {
-		return DPIUtil.pixelToPoint(size, DPIUtil.getDeviceZoom());
-	}
-}
-
 }
 
