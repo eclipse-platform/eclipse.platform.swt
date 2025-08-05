@@ -292,8 +292,8 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 	/* Column widths */
 	int availableWidth = width - horizontalSpacing * (columnCount - 1) - (marginLeft + marginWidth * 2 + marginRight);
 	int expandCount = 0;
-	int [] widths = new int [columnCount];
-	int [] minWidths = new int [columnCount];
+	float [] widths = new float [columnCount];
+	float [] minWidths = new float [columnCount];
 	boolean [] expandColumn = new boolean [columnCount];
 	for (int j=0; j<columnCount; j++) {
 		for (int i=0; i<rowCount; i++) {
@@ -301,7 +301,7 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 			if (data != null) {
 				int hSpan = Math.max (1, Math.min (data.horizontalSpan, columnCount));
 				if (hSpan == 1) {
-					int w = data.cacheWidth + data.horizontalIndent;
+					float w = data.cacheWidth + data.horizontalIndent;
 					widths [j] = Math.max (widths [j], w);
 					if (data.grabExcessHorizontalSpace) {
 						if (!expandColumn [j]) expandCount++;
@@ -330,27 +330,23 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 						expandCount++;
 						expandColumn [j] = true;
 					}
-					int w = data.cacheWidth + data.horizontalIndent - spanWidth - (hSpan - 1) * horizontalSpacing;
+					float w = data.cacheWidth + data.horizontalIndent - spanWidth - (hSpan - 1) * horizontalSpacing;
 					if (w > 0) {
 						if (makeColumnsEqualWidth) {
-							int equalWidth = (w + spanWidth) / hSpan;
-							int remainder = (w + spanWidth) % hSpan, last = -1;
+							float equalWidth = (w + spanWidth) / hSpan;
 							for (int k = 0; k < hSpan; k++) {
-								widths [last=j-k] = Math.max (equalWidth, widths [j-k]);
+								widths [j-k] = Math.max (equalWidth, widths [j-k]);
 							}
-							if (last > -1) widths [last] += remainder;
 						} else {
 							if (spanExpandCount == 0) {
 								widths [j] += w;
 							} else {
-								int delta = w / spanExpandCount;
-								int remainder = w % spanExpandCount, last = -1;
+								float delta = w / spanExpandCount;
 								for (int k = 0; k < hSpan; k++) {
 									if (expandColumn [j-k]) {
-										widths [last=j-k] += delta;
+										widths [j-k] += delta;
 									}
 								}
-								if (last > -1) widths [last] += remainder;
 							}
 						}
 					}
@@ -361,14 +357,12 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 							if (spanExpandCount == 0) {
 								minWidths [j] += w;
 							} else {
-								int delta = w / spanExpandCount;
-								int remainder = w % spanExpandCount, last = -1;
+								float delta = w / spanExpandCount;
 								for (int k = 0; k < hSpan; k++) {
 									if (expandColumn [j-k]) {
-										minWidths [last=j-k] += delta;
+										minWidths [j-k] += delta;
 									}
 								}
-								if (last > -1) minWidths [last] += remainder;
 							}
 						}
 					}
@@ -377,8 +371,8 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 		}
 	}
 	if (makeColumnsEqualWidth) {
-		int minColumnWidth = 0;
-		int columnWidth = 0;
+		float minColumnWidth = 0;
+		float columnWidth = 0;
 		for (int i=0; i<columnCount; i++) {
 			minColumnWidth = Math.max (minColumnWidth, minWidths [i]);
 			columnWidth = Math.max (columnWidth, widths [i]);
@@ -424,20 +418,18 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 										spanWidth += widths [j-k];
 										if (expandColumn [j-k]) spanExpandCount++;
 									}
-									int w = !data.grabExcessHorizontalSpace || data.minimumWidth == SWT.DEFAULT ? data.cacheWidth : data.minimumWidth;
+									float w = !data.grabExcessHorizontalSpace || data.minimumWidth == SWT.DEFAULT ? data.cacheWidth : data.minimumWidth;
 									w += data.horizontalIndent - spanWidth - (hSpan - 1) * horizontalSpacing;
 									if (w > 0) {
 										if (spanExpandCount == 0) {
 											widths [j] += w;
 										} else {
-											int delta2 = w / spanExpandCount;
-											int remainder2 = w % spanExpandCount, last2 = -1;
+											float delta2 = w / spanExpandCount;
 											for (int k = 0; k < hSpan; k++) {
 												if (expandColumn [j-k]) {
-													widths [last2=j-k] += delta2;
+													widths [j-k] += delta2;
 												}
 											}
-											if (last2 > -1) widths [last2] += remainder2;
 										}
 									}
 								}
@@ -499,8 +491,8 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 	/* Row heights */
 	int availableHeight = height - verticalSpacing * (rowCount - 1) - (marginTop + marginHeight * 2 + marginBottom);
 	expandCount = 0;
-	int [] heights = new int [rowCount];
-	int [] minHeights = new int [rowCount];
+	float [] heights = new float [rowCount];
+	float [] minHeights = new float [rowCount];
 	boolean [] expandRow = new boolean [rowCount];
 	for (int i=0; i<rowCount; i++) {
 		for (int j=0; j<columnCount; j++) {
@@ -508,7 +500,7 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 			if (data != null) {
 				int vSpan = Math.max (1, Math.min (data.verticalSpan, rowCount));
 				if (vSpan == 1) {
-					int h = data.cacheHeight + data.verticalIndent;
+					float h = data.cacheHeight + data.verticalIndent;
 					heights [i] = Math.max (heights [i], h);
 					if (data.grabExcessVerticalSpace) {
 						if (!expandRow [i]) expandCount++;
@@ -537,19 +529,17 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 						expandCount++;
 						expandRow [i] = true;
 					}
-					int h = data.cacheHeight + data.verticalIndent - spanHeight - (vSpan - 1) * verticalSpacing;
+					float h = data.cacheHeight + data.verticalIndent - spanHeight - (vSpan - 1) * verticalSpacing;
 					if (h > 0) {
 						if (spanExpandCount == 0) {
 							heights [i] += h;
 						} else {
-							int delta = h / spanExpandCount;
-							int remainder = h % spanExpandCount, last = -1;
+							float delta = h / spanExpandCount;
 							for (int k = 0; k < vSpan; k++) {
 								if (expandRow [i-k]) {
-									heights [last=i-k] += delta;
+									heights [i-k] += delta;
 								}
 							}
-							if (last > -1) heights [last] += remainder;
 						}
 					}
 					if (!data.grabExcessVerticalSpace || data.minimumHeight != 0) {
@@ -559,14 +549,12 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 							if (spanExpandCount == 0) {
 								minHeights [i] += h;
 							} else {
-								int delta = h / spanExpandCount;
-								int remainder = h % spanExpandCount, last = -1;
+								float delta = h / spanExpandCount;
 								for (int k = 0; k < vSpan; k++) {
 									if (expandRow [i-k]) {
-										minHeights [last=i-k] += delta;
+										minHeights [i-k] += delta;
 									}
 								}
-								if (last > -1) minHeights [last] += remainder;
 							}
 						}
 					}
@@ -609,20 +597,18 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 									spanHeight += heights [i-k];
 									if (expandRow [i-k]) spanExpandCount++;
 								}
-								int h = !data.grabExcessVerticalSpace || data.minimumHeight == SWT.DEFAULT ? data.cacheHeight : data.minimumHeight;
+								float h = !data.grabExcessVerticalSpace || data.minimumHeight == SWT.DEFAULT ? data.cacheHeight : data.minimumHeight;
 								h += data.verticalIndent - spanHeight - (vSpan - 1) * verticalSpacing;
 								if (h > 0) {
 									if (spanExpandCount == 0) {
 										heights [i] += h;
 									} else {
-										int delta2 = h / spanExpandCount;
-										int remainder2 = h % spanExpandCount, last2 = -1;
+										float delta2 = h / spanExpandCount;
 										for (int k = 0; k < vSpan; k++) {
 											if (expandRow [i-k]) {
-												heights [last2=i-k] += delta2;
+												heights [i-k] += delta2;
 											}
 										}
-										if (last2 > -1) heights [last2] += remainder2;
 									}
 								}
 							}
@@ -651,7 +637,7 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 				if (data != null) {
 					int hSpan = Math.max (1, Math.min (data.horizontalSpan, columnCount));
 					int vSpan = Math.max (1, data.verticalSpan);
-					int cellWidth = 0, cellHeight = 0;
+					float cellWidth = 0, cellHeight = 0;
 					for (int k=0; k<hSpan; k++) {
 						cellWidth += widths [j+k];
 					}
@@ -660,7 +646,7 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 					}
 					cellWidth += horizontalSpacing * (hSpan - 1);
 					int childX = gridX + data.horizontalIndent;
-					int childWidth = Math.min (data.cacheWidth, cellWidth);
+					float childWidth = Math.min (data.cacheWidth, cellWidth);
 					switch (data.horizontalAlignment) {
 						case SWT.CENTER:
 						case GridData.CENTER:
@@ -677,7 +663,7 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 					}
 					cellHeight += verticalSpacing * (vSpan - 1);
 					int childY = gridY + data.verticalIndent;
-					int childHeight = Math.min (data.cacheHeight, cellHeight);
+					float childHeight = Math.min (data.cacheHeight, cellHeight);
 					switch (data.verticalAlignment) {
 						case SWT.CENTER:
 						case GridData.CENTER:
@@ -694,7 +680,7 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 					}
 					Control child = grid [i][j];
 					if (child != null) {
-						child.setBounds (childX, childY, childWidth, childHeight);
+						child.setBounds (new Rectangle.OfFloat(childX, childY, childWidth, childHeight));
 					}
 				}
 				gridX += widths [j] + horizontalSpacing;
@@ -708,8 +694,8 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 		flush [i].cacheWidth = flush [i].cacheHeight = -1;
 	}
 
-	int totalDefaultWidth = 0;
-	int totalDefaultHeight = 0;
+	float totalDefaultWidth = 0;
+	float totalDefaultHeight = 0;
 	for (int i=0; i<columnCount; i++) {
 		totalDefaultWidth += widths [i];
 	}
@@ -718,7 +704,7 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 	}
 	totalDefaultWidth += horizontalSpacing * (columnCount - 1) + marginLeft + marginWidth * 2 + marginRight;
 	totalDefaultHeight += verticalSpacing * (rowCount - 1) + marginTop + marginHeight * 2 + marginBottom;
-	return new Point (totalDefaultWidth, totalDefaultHeight);
+	return new Point.OfFloat (totalDefaultWidth, totalDefaultHeight);
 }
 
 String getName () {
