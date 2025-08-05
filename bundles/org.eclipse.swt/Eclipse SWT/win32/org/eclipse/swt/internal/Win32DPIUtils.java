@@ -237,6 +237,85 @@ public class Win32DPIUtils {
 	}
 
 	/**
+	 * Auto-scale image with ImageData
+	 */
+	public static ImageData scaleImageData (Device device, final ImageData imageData, int targetZoom, int currentZoom) {
+		if (imageData == null || targetZoom == currentZoom || (device != null && !device.isAutoScalable())) return imageData;
+		float scaleFactor = (float) targetZoom / (float) currentZoom;
+		return DPIUtil.autoScaleImageData(device, imageData, scaleFactor);
+	}
+
+	public static ImageData scaleImageData (Device device, final DPIUtil.ElementAtZoom<ImageData> elementAtZoom, int targetZoom) {
+		return scaleImageData(device, elementAtZoom.element(), targetZoom, elementAtZoom.zoom());
+	}
+
+	/**
+	 * Gets ImageData that are appropriate for the specified zoom level together
+	 * with the zoom level at which the image data are. If there is an image at the
+	 * specified zoom level, it is returned. Otherwise the next larger image at 150%
+	 * and 200% is returned, if existing. If none of these is found, the 100% image
+	 * is returned as a fallback. If provider or fallback image is not available, an
+	 * error is thrown.
+	 */
+	public static DPIUtil.ElementAtZoom<ImageData> validateAndGetImageDataAtZoom(ImageDataProvider provider, int zoom) {
+		if (provider == null) {
+			SWT.error(SWT.ERROR_NULL_ARGUMENT);
+		}
+		DPIUtil.ElementAtZoom<ImageData> imageDataAtZoom = getElementAtZoom(z -> provider.getImageData(z), zoom);
+		if (imageDataAtZoom == null) {
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT, null,
+					": ImageDataProvider [" + provider + "] returns null ImageData at 100% zoom.");
+		}
+		return imageDataAtZoom;
+	}
+
+	/**
+	 * Gets the image file path that are appropriate for the specified zoom level
+	 * together with the zoom level at which the image data are. If there is an
+	 * image at the specified zoom level, it is returned. Otherwise the next larger
+	 * image at 150% and 200% is returned, if existing. If none of these is found,
+	 * the 100% image is returned as a fallback. If provider or fallback image is
+	 * not available, an error is thrown.
+	 */
+	public static DPIUtil.ElementAtZoom<String> validateAndGetImagePathAtZoom(ImageFileNameProvider provider, int zoom) {
+		if (provider == null) {
+			SWT.error(SWT.ERROR_NULL_ARGUMENT);
+		}
+		DPIUtil.ElementAtZoom<String> imagePathAtZoom = getElementAtZoom(z -> provider.getImagePath(z), zoom);
+		if (imagePathAtZoom == null) {
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT, null,
+					": ImageFileNameProvider [" + provider + "] returns null filename at 100% zoom.");
+		}
+		return imagePathAtZoom;
+	}
+
+	private static <T> DPIUtil.ElementAtZoom<T> getElementAtZoom(Function<Integer, T> elementForZoomProvider, int zoom) {
+		T dataAtOriginalZoom = elementForZoomProvider.apply(zoom);
+		if (dataAtOriginalZoom != null) {
+			return new DPIUtil.ElementAtZoom<>(dataAtOriginalZoom, zoom);
+		}
+		if (zoom > 100 && zoom <= 150) {
+			T dataAt150Percent = elementForZoomProvider.apply(150);
+			if (dataAt150Percent != null) {
+				return new DPIUtil.ElementAtZoom<>(dataAt150Percent, 150);
+			}
+		}
+		if (zoom > 100) {
+			T dataAt200Percent = elementForZoomProvider.apply(200);
+			if (dataAt200Percent != null) {
+				return new DPIUtil.ElementAtZoom<>(dataAt200Percent, 200);
+			}
+		}
+		if (zoom != 100) {
+			T dataAt100Percent = elementForZoomProvider.apply(100);
+			if (dataAt100Percent != null) {
+				return new DPIUtil.ElementAtZoom<>(dataAt100Percent, 100);
+			}
+		}
+		return null;
+	}
+
+	/**
 	 * AutoScale ImageDataProvider.
 	 */
 	public static final class AutoScaleImageDataProvider implements ImageDataProvider {
@@ -250,7 +329,7 @@ public class Win32DPIUtils {
 		}
 		@Override
 		public ImageData getImageData(int zoom) {
-			return DPIUtil.scaleImageData(device, imageData, zoom, currentZoom);
+			return scaleImageData(device, imageData, zoom, currentZoom);
 		}
 	}
 

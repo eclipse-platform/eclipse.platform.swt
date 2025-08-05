@@ -123,7 +123,7 @@ class ControlWin32Tests {
 				int height = imageData.height;
 				int scaledWidth = Math.round(width * scaleFactor);
 				int scaledHeight = Math.round(height * scaleFactor);
-				ImageData scaledImageData = DPIUtil.autoScaleImageData(display, imageData, scaleFactor);
+				ImageData scaledImageData = Win32DPIUtils.autoScaleImageData(display, imageData, scaleFactor);
 				assertEquals(scaledWidth, scaledImageData.width);
 				assertEquals(scaledHeight, scaledImageData.height);
 			} finally {

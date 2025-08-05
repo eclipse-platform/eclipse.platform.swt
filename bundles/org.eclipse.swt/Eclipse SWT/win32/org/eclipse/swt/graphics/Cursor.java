@@ -441,13 +441,13 @@ public static Long win32_getHandle (Cursor cursor, int zoom) {
 			tempImage.dispose();
 		}
 		else {
-			source = DPIUtil.scaleImageData(cursor.device, cursor.source, zoom, DEFAULT_ZOOM);
+			source = Win32DPIUtils.scaleImageData(cursor.device, cursor.source, zoom, DEFAULT_ZOOM);
 		}
 		if (cursor.isIcon) {
 			Cursor newCursor = new Cursor(cursor.device, source, Win32DPIUtils.pointToPixel(cursor.hotspotX, zoom), Win32DPIUtils.pointToPixel(cursor.hotspotY, zoom));
 			cursor.setHandleForZoomLevel(newCursor.handle, zoom);
 		} else {
-			ImageData mask = DPIUtil.scaleImageData(cursor.device, cursor.mask, zoom, DEFAULT_ZOOM);
+			ImageData mask = Win32DPIUtils.scaleImageData(cursor.device, cursor.mask, zoom, DEFAULT_ZOOM);
 			Cursor newCursor = new Cursor(cursor.device, source, mask, Win32DPIUtils.pointToPixel(cursor.hotspotX, zoom), Win32DPIUtils.pointToPixel(cursor.hotspotY, zoom));
 			cursor.setHandleForZoomLevel(newCursor.handle, zoom);
 		}

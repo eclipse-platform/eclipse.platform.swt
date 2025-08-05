@@ -1932,7 +1932,7 @@ private abstract class AbstractImageProviderWrapper {
 	ImageData getScaledImageData (int zoom) {
 		TreeSet<Integer> availableZooms = new TreeSet<>(zoomLevelToImageHandle.keySet());
 		int closestZoom = Optional.ofNullable(availableZooms.higher(zoom)).orElse(availableZooms.lower(zoom));
-		return DPIUtil.scaleImageData(device, getImageMetadata(closestZoom).getImageData(), zoom, closestZoom);
+		return Win32DPIUtils.scaleImageData(device, getImageMetadata(closestZoom).getImageData(), zoom, closestZoom);
 	}
 
 	protected ImageHandle newImageHandle(int zoom) {
@@ -2025,7 +2025,7 @@ private abstract class ImageFromImageDataProviderWrapper extends AbstractImagePr
 
 	private ImageHandle initializeHandleFromSource(int zoom) {
 		ElementAtZoom<ImageData> imageDataAtZoom = loadImageData(zoom);
-		ImageData imageData = DPIUtil.scaleImageData(device, imageDataAtZoom.element(), zoom, imageDataAtZoom.zoom());
+		ImageData imageData = Win32DPIUtils.scaleImageData(device, imageDataAtZoom.element(), zoom, imageDataAtZoom.zoom());
 		imageData = adaptImageDataIfDisabledOrGray(imageData);
 		return newImageHandle(imageData, zoom);
 	}
@@ -2082,8 +2082,8 @@ private class MaskedImageDataProviderWrapper extends ImageFromImageDataProviderW
 
 	@Override
 	protected ElementAtZoom<ImageData> loadImageData(int zoom) {
-		ImageData scaledSource = DPIUtil.scaleImageData(device, srcAt100, zoom, 100);
-		ImageData scaledMask = DPIUtil.scaleImageData(device, maskAt100, zoom, 100);
+		ImageData scaledSource = Win32DPIUtils.scaleImageData(device, srcAt100, zoom, 100);
+		ImageData scaledMask = Win32DPIUtils.scaleImageData(device, maskAt100, zoom, 100);
 		scaledMask = ImageData.convertMask(scaledMask);
 		ImageData mergedData = applyMask(scaledSource, scaledMask);
 		return new ElementAtZoom<>(mergedData, zoom);
@@ -2294,7 +2294,7 @@ private abstract class BaseImageProviderWrapper<T> extends DynamicImageProviderW
 
 	private ImageHandle initializeHandleFromSource(int zoom) {
 		ElementAtZoom<ImageData> imageDataAtZoom = loadImageData(zoom);
-		ImageData imageData = DPIUtil.scaleImageData (device,imageDataAtZoom.element(), zoom, imageDataAtZoom.zoom());
+		ImageData imageData = Win32DPIUtils.scaleImageData (device,imageDataAtZoom.element(), zoom, imageDataAtZoom.zoom());
 		imageData = adaptImageDataIfDisabledOrGray(imageData);
 		return init(imageData, zoom);
 	}
@@ -2318,7 +2318,7 @@ private class ImageFileNameProviderWrapper extends BaseImageProviderWrapper<Imag
 
 	@Override
 	protected ElementAtZoom<ImageData> loadImageData(int zoom) {
-		ElementAtZoom<String> fileForZoom = DPIUtil.validateAndGetImagePathAtZoom(provider, zoom);
+		ElementAtZoom<String> fileForZoom = Win32DPIUtils.validateAndGetImagePathAtZoom(provider, zoom);
 
 		// Load at appropriate zoom via loader
 		if (fileForZoom.zoom() != zoom && ImageDataLoader.canLoadAtZoom(fileForZoom.element(), fileForZoom.zoom(), zoom)) {
@@ -2554,7 +2554,7 @@ private class ImageDataProviderWrapper extends BaseImageProviderWrapper<ImageDat
 
 	@Override
 	protected ElementAtZoom<ImageData> loadImageData(int zoom) {
-		return DPIUtil.validateAndGetImageDataAtZoom (provider, zoom);
+		return Win32DPIUtils.validateAndGetImageDataAtZoom (provider, zoom);
 	}
 
 	@Override
