@@ -79,7 +79,6 @@ public class StyleProcessor {
 		            }
 		        } catch (NoSuchFieldException | IllegalAccessException e) {
 		            System.out.println("Invalid Style: " + s);
-		            e.printStackTrace();
 		        }
 		    }
 	    }
@@ -91,7 +90,6 @@ public class StyleProcessor {
 	            }
 	        } catch (NoSuchFieldException | IllegalAccessException e) {
 	            System.out.println("Invalid Style: " + s);
-	            e.printStackTrace();
 	        }
 	    }
 
@@ -107,7 +105,6 @@ public class StyleProcessor {
 	                }
 	            } catch (NoSuchFieldException | IllegalAccessException e) {
 	                System.out.println("Invalid condition: " + condition);
-	                e.printStackTrace();
 	            }
 	        }
 
@@ -121,7 +118,6 @@ public class StyleProcessor {
 	                    }
 	                } catch (NoSuchFieldException | IllegalAccessException e) {
 	                    System.out.println("Invalid thenOneOf: " + s);
-	                    e.printStackTrace();
 	                }
 	            }
 
@@ -132,8 +128,7 @@ public class StyleProcessor {
 	                        finalList.add(s);
 	                    }
 	                } catch (NoSuchFieldException | IllegalAccessException e) {
-	                    System.out.println("Invalid thenSomeOf: " + s);
-	                    e.printStackTrace();
+	                    System.out.println("Invalid thenSomeOf: " + s);;
 	                }
 	            }
 	        }
