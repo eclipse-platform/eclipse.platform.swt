@@ -540,8 +540,8 @@ private ToolItem showChevron() {
  */
 private ToolItem getChevron(CTabFolder tabFolder) {
 	for (Control child : tabFolder.getChildren()) {
-		if (child instanceof ToolBar) {
-			for (ToolItem toolItem : ((ToolBar)child).getItems()) {
+		if (child instanceof ToolBar toolBar) {
+			for (ToolItem toolItem : toolBar.getItems()) {
 				if ((toolItem.getStyle() & SWT.PUSH) != 0
 						&& toolItem.getText().isEmpty()
 						&& SWT.getMessage("SWT_ShowList").equals(toolItem.getToolTipText())
@@ -561,25 +561,25 @@ private void checkElementOverlap(CTabFolder tabFolder) {
 	subControls.addAll(Arrays.asList(tabFolder.getItems()));
 	for (int i = 0; i < subControls.size(); i++) {
 		Rectangle boundsA = null;
-		if (subControls.get(i) instanceof Control) {
-			if (!((Control) subControls.get(i)).isVisible())
+		if (subControls.get(i) instanceof Control c) {
+			if (!c.isVisible())
 				continue;
-			boundsA = ((Control) subControls.get(i)).getBounds();
-		} else if (subControls.get(i) instanceof CTabItem) {
-			if (!((CTabItem) subControls.get(i)).isShowing())
+			boundsA = c.getBounds();
+		} else if (subControls.get(i) instanceof CTabItem cTab) {
+			if (!cTab.isShowing())
 				continue;
-			boundsA = ((CTabItem) subControls.get(i)).getBounds();
+			boundsA = cTab.getBounds();
 		}
 		for (int j = i + 1; j < subControls.size(); j++) {
 			Rectangle boundsB = null;
-			if (subControls.get(j) instanceof Control) {
-				if (!((Control) subControls.get(j)).isVisible())
+			if (subControls.get(j) instanceof Control c) {
+				if (!c.isVisible())
 					continue;
-				boundsB = ((Control) subControls.get(j)).getBounds();
-			} else if (subControls.get(j) instanceof CTabItem) {
-				if (!((CTabItem) subControls.get(j)).isShowing())
+				boundsB = c.getBounds();
+			} else if (subControls.get(j) instanceof CTabItem cTab) {
+				if (!cTab.isShowing())
 					continue;
-				boundsB = ((CTabItem) subControls.get(j)).getBounds();
+				boundsB = cTab.getBounds();
 			}
 			assertFalse("Overlap between <" + subControls.get(i) + "> and <" + subControls.get(j) + ">\n" + boundsA
 					+ " overlaps " + boundsB, boundsA.intersects(boundsB));
@@ -608,8 +608,8 @@ private void assertTabElementsInLine() {
 	List<Rectangle> tabBarElementBounds = new ArrayList<>();
 	Arrays.stream(ctabFolder.getItems()).filter(CTabItem::isShowing).map(this::getBoundsInShell).forEach(tabBarElementBounds::add);
 	for (Control child : ctabFolder.getChildren()) {
-		if (child instanceof ToolBar) {
-			for (ToolItem toolItem : ((ToolBar)child).getItems()) {
+		if (child instanceof ToolBar toolBarChild) {
+			for (ToolItem toolItem : toolBarChild.getItems()) {
 				if (toolItem.getImage() != null) {
 					tabBarElementBounds.add(getBoundsInShell(toolItem));
 				}
@@ -632,15 +632,15 @@ private void assertTabElementsInLine() {
 private Rectangle getBoundsInShell(Widget control) {
 	Control parent;
 	Rectangle bounds;
-	if (control instanceof Control) {
-		parent = ((Control)control).getParent();
-		bounds = ((Control)control).getBounds();
-	} else if (control instanceof CTabItem) {
-		parent = ((CTabItem)control).getParent();
-		bounds = ((CTabItem)control).getBounds();
-	} else if (control instanceof ToolItem) {
-		parent = ((ToolItem)control).getParent();
-		bounds = ((ToolItem)control).getBounds();
+	if (control instanceof Control c) {
+		parent = c.getParent();
+		bounds = c.getBounds();
+	} else if (control instanceof CTabItem cTab) {
+		parent = cTab.getParent();
+		bounds = cTab.getBounds();
+	} else if (control instanceof ToolItem toolItem) {
+		parent = toolItem.getParent();
+		bounds = toolItem.getBounds();
 	} else {
 		throw new UnsupportedOperationException("Widget must provide bounds and parent");
 	}
