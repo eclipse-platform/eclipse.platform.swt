@@ -108,15 +108,10 @@ public class SWTFontProvider {
 		}
 	}
 
-	private static final String SWT_FONT_REGISTRY = "swt.fontRegistry";
-
-	@SuppressWarnings("removal")
 	private static SWTFontRegistry newFontRegistry(Device device) {
-		if ("legacy".equalsIgnoreCase(System.getProperty(SWT_FONT_REGISTRY)) && device instanceof Display display
-				&& !display.isRescalingAtRuntime()) {
-			return new LegacySWTFontRegistry(device);
+		if (device instanceof Display display && display.isRescalingAtRuntime()) {
+			return new ScalingSWTFontRegistry(device);
 		}
-		return new ScalingSWTFontRegistry(device);
-
+		return new DefaultSWTFontRegistry(device);
 	}
 }

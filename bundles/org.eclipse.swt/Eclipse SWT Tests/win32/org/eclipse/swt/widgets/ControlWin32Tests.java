@@ -35,7 +35,7 @@ import org.junit.jupiter.params.provider.*;
 class ControlWin32Tests {
 
 	@Test
-	public void testScaleFontCorrectlyInAutoScaleScenario() {
+	public void testScaleFontCorrectlyInAutoScaleSzenario() {
 		DPIUtil.setMonitorSpecificScaling(true);
 		Display display = Display.getDefault();
 
@@ -58,37 +58,15 @@ class ControlWin32Tests {
 	}
 
 	@Test
-	public void testScaleFontCorrectlyInNoAutoScaleScenario() {
+	public void testDoNotScaleFontCorrectlyInNoAutoScaleSzenario() {
 		DPIUtil.setMonitorSpecificScaling(false);
 		Display display = Display.getDefault();
 
 		assertFalse("Autoscale property is not set to false", display.isRescalingAtRuntime());
 		int scalingFactor = 2;
 		FontComparison fontComparison = updateFont(scalingFactor);
-		assertEquals("Font height in pixels is not adjusted according to the scale factor",
-				fontComparison.originalFontHeight * scalingFactor, fontComparison.currentFontHeight);
-	}
-
-	@Test
-	public void testDoNotScaleFontInNoAutoScaleScenarioWithLegacyFontRegistry() {
-		DPIUtil.setMonitorSpecificScaling(false);
-		String originalValue = System.getProperty("swt.fontRegistry");
-		System.setProperty("swt.fontRegistry", "legacy");
-		try {
-			Display display = Display.getDefault();
-
-			assertFalse("Autoscale property is not set to false", display.isRescalingAtRuntime());
-			int scalingFactor = 2;
-			FontComparison fontComparison = updateFont(scalingFactor);
-			assertEquals("Font height in pixels is different when setting the same font again",
-					fontComparison.originalFontHeight, fontComparison.currentFontHeight);
-		} finally {
-			if (originalValue != null) {
-				System.setProperty("swt.fontRegistry", originalValue);
-			} else {
-				System.clearProperty("swt.fontRegistry");
-			}
-		}
+		assertEquals("Font height in pixels is different when setting the same font again",
+				fontComparison.originalFontHeight, fontComparison.currentFontHeight);
 	}
 
 	@Test
