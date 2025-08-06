@@ -1253,7 +1253,7 @@ private void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int src
 		}
 		return;
 	}
-	long imageHandle = Image.win32_getHandle(srcImage, imageZoom);
+	long imageHandle = srcImage.getHandle(imageZoom, data.nativeZoom);
 	switch (srcImage.type) {
 		case SWT.BITMAP:
 			drawBitmap(srcImage, imageHandle, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple);

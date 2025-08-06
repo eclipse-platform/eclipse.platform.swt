@@ -835,6 +835,13 @@ public static long win32_getHandle (Image image, int zoom) {
 	return image.getImageMetadata(new ZoomContext(zoom)).handle;
 }
 
+long getHandle (int targetZoom, int nativeZoom) {
+	if (isDisposed()) {
+		return 0L;
+	}
+	return getImageMetadata(new ZoomContext(targetZoom, nativeZoom)).handle;
+}
+
 /**
  * <b>IMPORTANT:</b> This method is not part of the public
  * API for Image. It is marked public only so that it
@@ -2305,7 +2312,7 @@ private abstract class BaseImageProviderWrapper<T> extends DynamicImageProviderW
 
 	private ImageHandle initializeHandleFromSource(int zoom) {
 		ElementAtZoom<ImageData> imageDataAtZoom = loadImageData(zoom);
-		ImageData imageData = DPIUtil.scaleImageData (device,imageDataAtZoom.element(), zoom, imageDataAtZoom.zoom());
+		ImageData imageData = DPIUtil.scaleImageData (device, imageDataAtZoom.element(), zoom, imageDataAtZoom.zoom());
 		imageData = adaptImageDataIfDisabledOrGray(imageData);
 		return init(imageData, zoom);
 	}
