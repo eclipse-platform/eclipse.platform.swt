@@ -223,6 +223,26 @@ public static int mapZoomToDPI (int zoom) {
 	return roundedDpi;
 }
 
+public static void validateLinearScaling(ImageDataProvider provider) {
+	final int baseZoom = 100;
+	final int scaledZoom = 200;
+	final int scaleFactor = scaledZoom / baseZoom;
+	ImageData baseImageData = provider.getImageData(baseZoom);
+	ImageData scaledImageData = provider.getImageData(scaledZoom);
+
+	if (scaledImageData == null) {
+		return;
+	}
+
+	if (scaledImageData.width != scaleFactor * baseImageData.width
+			|| scaledImageData.height != scaleFactor * baseImageData.height) {
+		System.err.println(String.format(
+				"***WARNING: ImageData should be linearly scaled across zooms but size is (%d, %d) at 100%% and (%d, %d) at 200%%.",
+				baseImageData.width, baseImageData.height, scaledImageData.width, scaledImageData.height));
+		new Error().printStackTrace(System.err);
+	}
+}
+
 /**
  * Represents an element, such as some image data, at a specific zoom level.
  *
