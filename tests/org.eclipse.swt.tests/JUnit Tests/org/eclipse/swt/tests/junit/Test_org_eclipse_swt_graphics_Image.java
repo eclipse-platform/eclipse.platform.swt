@@ -395,6 +395,8 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Device_ImageFileNameProvid
 	image.dispose();
 }
 
+
+
 @Test
 public void test_ConstructorLorg_eclipse_swt_graphics_Device_ImageDataProvider() {
 	Exception e;
@@ -427,6 +429,23 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Device_ImageDataProvider()
 		return null;
 	};
 	image = new Image(display, provider4);
+	image.dispose();
+
+	ImageDataProvider provider5 = zoom -> {
+		return null;
+	};
+	e = assertThrows(IllegalArgumentException.class, () -> new Image(display, provider5));
+	assertSWTProblem("Incorrect exception thrown for provider == null", SWT.ERROR_INVALID_ARGUMENT, e);
+	image.dispose();
+
+	ImageDataProvider provider6 = zoom -> {
+		if (zoom == 200) {
+			return new ImageData(getPath("collapseall.png"));
+		}
+		return null;
+	};
+	e = assertThrows(IllegalArgumentException.class, () -> new Image(display, provider6));
+	assertSWTProblem("Incorrect exception thrown for provider == null", SWT.ERROR_INVALID_ARGUMENT, e);
 	image.dispose();
 }
 
