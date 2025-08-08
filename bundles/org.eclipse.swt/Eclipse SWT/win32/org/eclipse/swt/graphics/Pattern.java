@@ -261,10 +261,10 @@ private class BasePatternHandle extends PatternHandle {
 	@Override
 	long createHandle(int zoom) {
 		long handle;
-		float x1 = Win32DPIUtils.pointToPixel(baseX1, zoom);
-		float y1 = Win32DPIUtils.pointToPixel(baseY1, zoom);
-		float x2 = Win32DPIUtils.pointToPixel(baseX2, zoom);
-		float y2 = Win32DPIUtils.pointToPixel(baseY2, zoom);
+		float x1 = DPIUtil.pointToPixel(baseX1, zoom);
+		float y1 = DPIUtil.pointToPixel(baseY1, zoom);
+		float x2 = DPIUtil.pointToPixel(baseX2, zoom);
+		float y2 = DPIUtil.pointToPixel(baseY2, zoom);
 		if (color1 == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 		if (color1.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		if (color2 == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);

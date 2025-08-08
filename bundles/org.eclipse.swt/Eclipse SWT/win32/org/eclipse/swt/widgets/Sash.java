@@ -332,8 +332,8 @@ LRESULT WM_LBUTTONUP (long wParam, long lParam) {
 	Rectangle bounds = event.getBounds();
 	if (event.doit) {
 		if ((style & SWT.SMOOTH) != 0) {
-			int xInPixels = Win32DPIUtils.pointToPixel(bounds.x, getZoom());
-			int yInPixels = Win32DPIUtils.pointToPixel(bounds.y, getZoom());
+			int xInPixels = DPIUtil.pointToPixel(bounds.x, getZoom());
+			int yInPixels = DPIUtil.pointToPixel(bounds.y, getZoom());
 			setBoundsInPixels (xInPixels, yInPixels, widthInPixels, heightInPixels);
 			// widget could be disposed at this point
 		}
@@ -379,8 +379,8 @@ LRESULT WM_MOUSEMOVE (long wParam, long lParam) {
 	if (isDisposed ()) return LRESULT.ZERO;
 	if (event.doit) {
 		Rectangle bounds = event.getBounds();
-		lastX = Win32DPIUtils.pointToPixel(bounds.x, zoom);
-		lastY = Win32DPIUtils.pointToPixel(bounds.y, zoom);
+		lastX = DPIUtil.pointToPixel(bounds.x, zoom);
+		lastY = DPIUtil.pointToPixel(bounds.y, zoom);
 	}
 	int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
 	OS.RedrawWindow (hwndTrack, null, 0, flags);

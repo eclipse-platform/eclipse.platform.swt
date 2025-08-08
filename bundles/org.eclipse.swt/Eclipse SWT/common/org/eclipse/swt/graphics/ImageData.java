@@ -2617,8 +2617,8 @@ static void fillGradientRectangle(GC gc, Device device,
 	int redBits, int greenBits, int blueBits, int zoom) {
 	/* Create the bitmap and tile it */
 	ImageDataProvider imageDataProvider = imageZoom -> {
-		int scaledWidth = Win32DPIUtils.pointToPixel(width, imageZoom);
-		int scaledHeight = Win32DPIUtils.pointToPixel(height, imageZoom);
+		int scaledWidth = DPIUtil.pointToPixel(width, imageZoom);
+		int scaledHeight = DPIUtil.pointToPixel(height, imageZoom);
 		return createGradientBand(scaledWidth, scaledHeight, vertical, fromRGB, toRGB, redBits, greenBits,
 				blueBits);
 	};

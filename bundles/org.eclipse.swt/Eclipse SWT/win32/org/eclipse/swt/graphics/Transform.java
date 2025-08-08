@@ -428,7 +428,7 @@ private class MultiplyOperation implements Operation {
 	public void apply(TransformHandle transformHandle) {
 		long handle = transformHandle.handle;
 		int zoom = transformHandle.zoom;
-		long newHandle = Gdip.Matrix_new(elements[0], elements[1], elements[2], elements[3], Win32DPIUtils.pointToPixel(elements[4], zoom), Win32DPIUtils.pointToPixel(elements[5], zoom));
+		long newHandle = Gdip.Matrix_new(elements[0], elements[1], elements[2], elements[3], DPIUtil.pointToPixel(elements[4], zoom), DPIUtil.pointToPixel(elements[5], zoom));
 		if (newHandle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		try {
 			Gdip.Matrix_Multiply(handle, newHandle, Gdip.MatrixOrderPrepend);
