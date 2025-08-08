@@ -2690,7 +2690,7 @@ public Monitor[] getMonitors() {
 				monitor.y = geometry.y;
 				monitor.width = geometry.width;
 				monitor.height = geometry.height;
-				if (!OS.isX11()) {
+				if (!OS.isX11() || GTK.GTK4) {
 					int scaleFactor = (int) GDK.gdk_monitor_get_scale_factor(gdkMonitor);
 					monitor.zoom = scaleFactor * 100;
 				} else {
