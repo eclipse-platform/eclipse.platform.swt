@@ -1099,8 +1099,12 @@ protected int getDeviceZoom() {
 		monitor = GDK.gdk_display_get_monitor_at_point(display, 0, 0);
 	}
 
-	int scale = GDK.gdk_monitor_get_scale_factor(monitor);
-	dpi = dpi * scale;
+	// GDK can return null monitor in some cases thus play safe
+	// See https://gitlab.gnome.org/GNOME/gtk/-/issues/5075 for details
+	if (monitor != 0) {
+		int scale = GDK.gdk_monitor_get_scale_factor(monitor);
+		dpi = dpi * scale;
+	}
 
 	return DPIUtil.mapDPIToZoom (dpi);
 }
