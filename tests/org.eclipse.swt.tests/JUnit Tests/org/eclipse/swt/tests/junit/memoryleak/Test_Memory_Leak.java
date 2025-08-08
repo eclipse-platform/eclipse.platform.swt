@@ -5,7 +5,7 @@ import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test Widgets for memory leaks. Used when updating dispose logic.
