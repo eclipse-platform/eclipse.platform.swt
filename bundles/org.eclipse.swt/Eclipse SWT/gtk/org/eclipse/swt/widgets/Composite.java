@@ -445,8 +445,7 @@ void fixClippings () {
 	if (fixClipHandle == 0 || fixClipMap.isEmpty()) {
 		return;
 	} else {
-		Control [] children = _getChildren();
-		for (Control child : children) {
+		for (Control child : _getChildren()) {
 			if (fixClipMap.containsKey(child)) {
 				long [] childHandles = fixClipMap.get(child);
 				for (long widget : childHandles) {
@@ -604,9 +603,7 @@ Composite findDeferredControl () {
 Menu [] findMenus (Control control) {
 	if (control == this) return new Menu [0];
 	Menu result [] = super.findMenus (control);
-	Control [] children = _getChildren ();
-	for (int i=0; i<children.length; i++) {
-		Control child = children [i];
+	for (Control child : _getChildren ()) {
 		Menu [] menuList = child.findMenus (control);
 		if (menuList.length != 0) {
 			Menu [] newResult = new Menu [result.length + menuList.length];
@@ -621,9 +618,8 @@ Menu [] findMenus (Control control) {
 @Override
 void fixChildren (Shell newShell, Shell oldShell, Decorations newDecorations, Decorations oldDecorations, Menu [] menus) {
 	super.fixChildren (newShell, oldShell, newDecorations, oldDecorations, menus);
-	Control [] children = _getChildren ();
-	for (int i=0; i<children.length; i++) {
-		children [i].fixChildren (newShell, oldShell, newDecorations, oldDecorations, menus);
+	for (Control child : _getChildren ()) {
+		child.fixChildren (newShell, oldShell, newDecorations, oldDecorations, menus);
 	}
 }
 
@@ -638,9 +634,8 @@ void fixParentGdkResource() {
 
 @Override
 void fixModal(long group, long modalGroup)  {
-	Control[] controls = _getChildren ();
-	for (int i = 0; i < controls.length; i++) {
-		controls[i].fixModal (group, modalGroup);
+	for (Control control : _getChildren ()) {
+		control.fixModal (group, modalGroup);
 	}
 }
 
@@ -648,9 +643,8 @@ void fixModal(long group, long modalGroup)  {
 void fixStyle () {
 	super.fixStyle ();
 	if (scrolledHandle == 0) fixStyle (handle);
-	Control[] children = _getChildren ();
-	for (int i = 0; i < children.length; i++) {
-		children [i].fixStyle ();
+	for (Control child : _getChildren ()) {
+		child.fixStyle ();
 	}
 }
 
@@ -865,14 +859,14 @@ public Control [] getTabList () {
 	if (tabList == null) {
 		int count = 0;
 		Control [] list =_getChildren ();
-		for (int i=0; i<list.length; i++) {
-			if (list [i].isTabGroup ()) count++;
+		for (Control element : list) {
+			if (element.isTabGroup ()) count++;
 		}
 		tabList = new Control [count];
 		int index = 0;
-		for (int i=0; i<list.length; i++) {
-			if (list [i].isTabGroup ()) {
-				tabList [index++] = list [i];
+		for (Control element : list) {
+			if (element.isTabGroup ()) {
+				tabList [index++] = element;
 			}
 		}
 	}
@@ -1337,9 +1331,8 @@ void markLayout (boolean changed, boolean all) {
 		if (changed) state |= LAYOUT_CHANGED;
 	}
 	if (all) {
-		Control [] children = _getChildren ();
-		for (int i=0; i<children.length; i++) {
-			children [i].markLayout (changed, all);
+		for (Control child : _getChildren ()) {
+			child.markLayout (changed, all);
 		}
 	}
 }
@@ -1380,9 +1373,7 @@ void moveBelow (long child, long sibling) {
 
 @Override
 void moveChildren(int oldWidth) {
-	Control[] children = _getChildren ();
-	for (int i = 0; i < children.length; i++) {
-		Control child = children[i];
+	for (Control child : _getChildren ()) {
 		long topHandle = child.topHandle ();
 		GtkAllocation allocation = new GtkAllocation();
 		GTK.gtk_widget_get_allocation (topHandle, allocation);
@@ -1416,15 +1407,14 @@ void moveChildren(int oldWidth) {
 }
 
 Point minimumSize (int wHint, int hHint, boolean changed) {
-	Control [] children = _getChildren ();
 	/*
 	 * Since getClientArea can be overridden by subclasses, we cannot
 	 * call getClientAreaInPixels directly.
 	 */
 	Rectangle clientArea = getClientArea ();
 	int width = 0, height = 0;
-	for (int i=0; i<children.length; i++) {
-		Rectangle rect = children [i].getBounds ();
+	for (Control child : _getChildren ()) {
+		Rectangle rect = child.getBounds ();
 		width = Math.max (width, rect.x - clientArea.x + rect.width);
 		height = Math.max (height, rect.y - clientArea.y + rect.height);
 	}
@@ -1543,9 +1533,7 @@ void propagateDraw (long container, long cairo) {
 @Override
 void redrawChildren () {
 	super.redrawChildren ();
-	Control [] children = _getChildren ();
-	for (int i = 0; i < children.length; i++) {
-		Control child = children [i];
+	for (Control child : _getChildren ()) {
 		if ((child.state & PARENT_BACKGROUND) != 0) {
 			child.redrawWidget (0, 0, 0, 0, true, false, true);
 			child.redrawChildren ();
@@ -1598,9 +1586,7 @@ void removeControl (Control control) {
 @Override
 void reskinChildren (int flags) {
 	super.reskinChildren (flags);
-	Control [] children = _getChildren ();
-	for (int i=0; i<children.length; i++) {
-		Control child = children [i];
+	for (Control child : _getChildren ()) {
 		if (child != null) child.reskin (flags);
 	}
 }
@@ -1633,9 +1619,8 @@ void resizeHandle (int width, int height) {
 public void setBackgroundMode (int mode) {
 	checkWidget ();
 	backgroundMode = mode;
-	Control[] children = _getChildren ();
-	for (int i = 0; i < children.length; i++) {
-		children [i].updateBackgroundMode ();
+	for (Control child : _getChildren ()) {
+		child.updateBackgroundMode ();
 	}
 }
 
@@ -1676,9 +1661,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 @Override
 public boolean setFocus () {
 	checkWidget();
-	Control [] children = _getChildren ();
-	for (int i=0; i<children.length; i++) {
-		Control child = children [i];
+	for (Control child : _getChildren ()) {
 		if (child.getVisible () && child.setFocus ()) return true;
 	}
 	return super.setFocus ();
@@ -1741,9 +1724,8 @@ void setOrientation (boolean create) {
 	if (!create) {
 		int flags = SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT;
 		int orientation = style & flags;
-		Control [] children = _getChildren ();
-		for (int i=0; i<children.length; i++) {
-			children[i].setOrientation (orientation);
+		for (Control child : _getChildren ()) {
+			child.setOrientation (orientation);
 		}
 		if (((style & SWT.RIGHT_TO_LEFT) != 0) != ((style & SWT.MIRRORED) != 0)) {
 			moveChildren (-1);
@@ -1768,9 +1750,7 @@ boolean setTabGroupFocus (boolean next) {
 	if ((state & CANVAS) != 0) takeFocus = hooksKeys ();
 	if (socketHandle != 0) takeFocus = true;
 	if (takeFocus  && setTabItemFocus (next)) return true;
-	Control [] children = _getChildren ();
-	for (int i=0; i<children.length; i++) {
-		Control child = children [i];
+	for (Control child : _getChildren ()) {
 		/*
 		 * It is unlikely but possible that a child is disposed at this point, for more
 		 * details refer bug 381668.
@@ -1840,9 +1820,7 @@ boolean checkSubwindow () {
 boolean translateMnemonic (Event event, Control control) {
 	if (super.translateMnemonic (event, control)) return true;
 	if (control != null) {
-		Control [] children = _getChildren ();
-		for (int i=0; i<children.length; i++) {
-			Control child = children [i];
+		for (Control child : _getChildren ()) {
 			if (child.translateMnemonic (event, control)) return true;
 		}
 	}
@@ -1867,9 +1845,8 @@ boolean translateTraversal (long event) {
 @Override
 void updateBackgroundMode () {
 	super.updateBackgroundMode ();
-	Control [] children = _getChildren ();
-	for (int i = 0; i < children.length; i++) {
-		children [i].updateBackgroundMode ();
+	for (Control child : _getChildren ()) {
+		child.updateBackgroundMode ();
 	}
 }
 
@@ -1888,9 +1865,8 @@ void updateLayout (boolean all) {
 	}
 	if (all) {
 		state &= ~LAYOUT_CHILD;
-		Control [] children = _getChildren ();
-		for (int i=0; i<children.length; i++) {
-			children [i].updateLayout (all);
+		for (Control child : _getChildren ()) {
+			child.updateLayout (all);
 		}
 	}
 }
