@@ -15,14 +15,14 @@
 package org.eclipse.swt.tests.junit;
 
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.LineBackgroundListener;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Shell;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.custom.LineBackgroundListener
@@ -33,7 +33,7 @@ public class Test_org_eclipse_swt_custom_LineBackgroundListener {
 	Shell shell;
 	StyledText styledText;
 
-@Before
+@BeforeEach
 public void setUp() {
 	shell = new Shell();
 	styledText = new StyledText(shell, SWT.NULL);
@@ -43,8 +43,8 @@ public void setUp() {
 @Test
 public void test_lineGetBackgroundLorg_eclipse_swt_custom_LineBackgroundEvent() {
 	LineBackgroundListener listener = event -> {
-		assertEquals(":1:", 0, event.lineOffset);
-		assertEquals(":2:", "0123456789", event.lineText);
+		assertEquals(0, event.lineOffset);
+		assertEquals("0123456789", event.lineText);
 	};
 	styledText.addLineBackgroundListener(listener);
 	styledText.setText("0123456789");

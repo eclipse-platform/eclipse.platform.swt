@@ -13,9 +13,9 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
@@ -29,7 +29,7 @@ import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class Test_org_eclipse_swt_custom_BusyIndicator {
 
