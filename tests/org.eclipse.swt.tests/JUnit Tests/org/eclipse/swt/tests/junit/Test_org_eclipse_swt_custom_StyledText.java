@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2022 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -28,8 +28,6 @@ import static org.junit.Assume.assumeFalse;
 
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
@@ -67,7 +65,6 @@ import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.GlyphMetrics;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.BidiUtil;
 import org.eclipse.swt.layout.FillLayout;
@@ -93,14 +90,13 @@ import org.junit.Test;
 public class Test_org_eclipse_swt_custom_StyledText extends Test_org_eclipse_swt_widgets_Canvas {
 
 StyledText text;
-final static RGB RED = new RGB(255,0,0);
-final static RGB BLUE = new RGB(0,0,255);
-final static RGB GREEN = new RGB(0,255,0);
-final static RGB YELLOW = new RGB(255,255,0);
-final static RGB CYAN = new RGB(0,255,255);
-final static RGB PURPLE = new RGB(255,0,255);
+final static Color RED = new Color(255,0,0);
+final static Color BLUE = new Color(0,0,255);
+final static Color GREEN = new Color(0,255,0);
+final static Color YELLOW = new Color(255,255,0);
+final static Color CYAN = new Color(0,255,255);
+final static Color PURPLE = new Color(255,0,255);
 final static String PLATFORM_LINE_DELIMITER = System.lineSeparator();
-Map<RGB, Color> colors = new HashMap<>();
 private boolean listenerCalled;
 private boolean listener2Called;
 
@@ -108,7 +104,6 @@ private boolean listener2Called;
 @Before
 public void setUp() {
 	super.setUp();
-	initializeColors();
 	text = new StyledText(shell, SWT.NULL);
 	setWidget(text);
 }
@@ -134,29 +129,15 @@ boolean isBidiCaret() {
 	return BidiUtil.isBidiPlatform();
 }
 // this method must not be public so that the auto-gen tool keeps it
-private StyleRange getStyle(int start, int length, RGB fg, RGB bg) {
+private StyleRange getStyle(int start, int length, Color fg, Color bg) {
 	StyleRange style = new StyleRange();
 	style.start = start;
 	style.length = length;
-	if (fg != null) style.foreground = getColor(fg);
+	if (fg != null) style.foreground = fg;
 	else style.foreground = null;
-	if (bg != null) style.background = getColor(bg);
+	if (bg != null) style.background = bg;
 	else style.background = null;
 	return style;
-}
-// this method must not be public so that the auto-gen tool keeps it
-private Color getColor(RGB rgb) {
-	return colors.get(rgb);
-}
-// this method must not be public so that the auto-gen tool keeps it
-protected void initializeColors() {
-	Display display = Display.getDefault();
-	colors.put(RED, new Color (display, RED));
-	colors.put(BLUE, new Color (display, BLUE));
-	colors.put(GREEN, new Color (display, GREEN));
-	colors.put(YELLOW, new Color (display, YELLOW));
-	colors.put(CYAN, new Color (display, CYAN));
-	colors.put(PURPLE, new Color (display, PURPLE));
 }
 
 @Override
@@ -1088,10 +1069,10 @@ public void test_getLineBackgroundI() {
 	String textString = "L1\nL2\nL3\nL4";
 	text.setText(textString);
 	assertNull(":1:", text.getLineBackground(0));
-	text.setLineBackground(1,1,getColor(YELLOW));
-	text.setLineBackground(2,1,getColor(BLUE));
-	assertEquals(":1:", getColor(YELLOW), text.getLineBackground(1));
-	assertEquals(":1:", getColor(BLUE), text.getLineBackground(2));
+	text.setLineBackground(1,1,YELLOW);
+	text.setLineBackground(2,1,BLUE);
+	assertEquals(":1:", YELLOW, text.getLineBackground(1));
+	assertEquals(":1:", BLUE, text.getLineBackground(2));
 }
 
 @Test
@@ -1706,14 +1687,14 @@ public void test_getSelection(){
 @Test
 public void test_getSelectionBackground() {
 	assertNotNull(":1:", text.getSelectionBackground());
-	text.setSelectionBackground(getColor(YELLOW));
-	assertEquals(":1:", getColor(YELLOW), text.getSelectionBackground());
+	text.setSelectionBackground(YELLOW);
+	assertEquals(":1:", YELLOW, text.getSelectionBackground());
 }
 @Test
 public void test_getSelectionForeground() {
 	assertNotNull(":1:", text.getSelectionForeground());
-	text.setSelectionForeground(getColor(RED));
-	assertEquals(":1:", getColor(RED), text.getSelectionForeground());
+	text.setSelectionForeground(RED);
+	assertEquals(":1:", RED, text.getSelectionForeground());
 }
 @Test
 public void test_getSelectionRange() {
@@ -1822,7 +1803,7 @@ public void test_getStyleRangeAtOffsetI() {
 	int styleStart = 0;
 	int styleLength = 5;
 	int i;
-	StyleRange style = new StyleRange(styleStart, styleLength, getColor(BLUE), getColor(RED), SWT.BOLD);
+	StyleRange style = new StyleRange(styleStart, styleLength, BLUE, RED, SWT.BOLD);
 
 	assertThrows("offset out of range no text", IllegalArgumentException.class, () -> text.getStyleRangeAtOffset(0));
 
@@ -1840,7 +1821,7 @@ public void test_getStyleRangeAtOffsetI() {
 	assertNull(text.getStyleRangeAtOffset(i));
 
 	// test offset at line delimiter
-	style = new StyleRange(5, 2, null, getColor(BLUE), SWT.NORMAL);
+	style = new StyleRange(5, 2, null, BLUE, SWT.NORMAL);
 	text.setStyleRange(style);
 	style.length = 1;
 	assertEquals(style, text.getStyleRangeAtOffset(5));
@@ -3281,14 +3262,14 @@ public void test_setEnabled(){
 	assertEquals(enabledFg, text.getForeground());
 
 	// Test color preservation
-	text.setBackground(getColor(BLUE));
-	text.setForeground(getColor(RED));
+	text.setBackground(BLUE);
+	text.setForeground(RED);
 	text.setEnabled(false);
-	assertEquals(getColor(BLUE), text.getBackground());
-	assertEquals(getColor(RED), text.getForeground());
+	assertEquals(BLUE, text.getBackground());
+	assertEquals(RED, text.getForeground());
 	text.setEnabled(true);
-	assertEquals(getColor(BLUE), text.getBackground());
-	assertEquals(getColor(RED), text.getForeground());
+	assertEquals(BLUE, text.getBackground());
+	assertEquals(RED, text.getForeground());
 
 	// Test color reset
 	text.setBackground(null);
@@ -3300,10 +3281,10 @@ public void test_setEnabled(){
 	text.setForeground(null);
 	assertEquals(disabledBg, text.getBackground());
 	assertEquals(disabledFg, text.getForeground());
-	text.setBackground(getColor(GREEN));
-	text.setForeground(getColor(CYAN));
-	assertEquals(getColor(GREEN), text.getBackground());
-	assertEquals(getColor(CYAN), text.getForeground());
+	text.setBackground(GREEN);
+	text.setForeground(CYAN);
+	assertEquals(GREEN, text.getBackground());
+	assertEquals(CYAN, text.getForeground());
 	text.setBackground(null);
 	text.setForeground(null);
 	assertEquals(disabledBg, text.getBackground());
@@ -3409,125 +3390,125 @@ public void test_setLineBackgroundIILorg_eclipse_swt_graphics_Color(){
 
 	textString = "L1\nL2\nL3\nL4";
 	text.setText(textString);
-	text.setLineBackground(0,1,getColor(RED));
-	text.setLineBackground(1,1,getColor(YELLOW));
-	text.setLineBackground(2,1,getColor(BLUE));
-	text.setLineBackground(3,1,getColor(GREEN));
+	text.setLineBackground(0,1,RED);
+	text.setLineBackground(1,1,YELLOW);
+	text.setLineBackground(2,1,BLUE);
+	text.setLineBackground(3,1,GREEN);
 	text.replaceTextRange(1,5,"");
-	assertEquals(":0a:", getColor(RED), text.getLineBackground(0));
-	assertEquals(":0a:", getColor(GREEN), text.getLineBackground(1));
+	assertEquals(":0a:", RED, text.getLineBackground(0));
+	assertEquals(":0a:", GREEN, text.getLineBackground(1));
 	text.setText(textString);
-	text.setLineBackground(0,1,getColor(RED));
-	text.setLineBackground(1,1,getColor(YELLOW));
-	text.setLineBackground(2,1,getColor(BLUE));
-	text.setLineBackground(3,1,getColor(GREEN));
+	text.setLineBackground(0,1,RED);
+	text.setLineBackground(1,1,YELLOW);
+	text.setLineBackground(2,1,BLUE);
+	text.setLineBackground(3,1,GREEN);
 	text.replaceTextRange(0,4,"");
-	assertEquals(":0b:", getColor(YELLOW), text.getLineBackground(0));
-	assertEquals(":0b:", getColor(BLUE), text.getLineBackground(1));
-	assertEquals(":0b:", getColor(GREEN), text.getLineBackground(2));
+	assertEquals(":0b:", YELLOW, text.getLineBackground(0));
+	assertEquals(":0b:", BLUE, text.getLineBackground(1));
+	assertEquals(":0b:", GREEN, text.getLineBackground(2));
 	text.setText(textString);
-	text.setLineBackground(0,1,getColor(RED));
-	text.setLineBackground(1,1,getColor(YELLOW));
-	text.setLineBackground(2,1,getColor(BLUE));
-	text.setLineBackground(3,1,getColor(GREEN));
+	text.setLineBackground(0,1,RED);
+	text.setLineBackground(1,1,YELLOW);
+	text.setLineBackground(2,1,BLUE);
+	text.setLineBackground(3,1,GREEN);
 	text.replaceTextRange(1,1,"");
-	assertEquals(":0c:", getColor(RED), text.getLineBackground(0));
-	assertEquals(":0c:", getColor(YELLOW), text.getLineBackground(1));
-	assertEquals(":0c:", getColor(BLUE), text.getLineBackground(2));
-	assertEquals(":0c:", getColor(GREEN), text.getLineBackground(3));
+	assertEquals(":0c:", RED, text.getLineBackground(0));
+	assertEquals(":0c:", YELLOW, text.getLineBackground(1));
+	assertEquals(":0c:", BLUE, text.getLineBackground(2));
+	assertEquals(":0c:", GREEN, text.getLineBackground(3));
 	text.setText(textString);
-	text.setLineBackground(0,1,getColor(RED));
-	text.setLineBackground(1,1,getColor(YELLOW));
-	text.setLineBackground(2,1,getColor(BLUE));
-	text.setLineBackground(3,1,getColor(GREEN));
+	text.setLineBackground(0,1,RED);
+	text.setLineBackground(1,1,YELLOW);
+	text.setLineBackground(2,1,BLUE);
+	text.setLineBackground(3,1,GREEN);
 	text.replaceTextRange(0,6,"");
-	assertEquals(":0d:", getColor(BLUE), text.getLineBackground(0));
-	assertEquals(":0d:", getColor(GREEN), text.getLineBackground(1));
+	assertEquals(":0d:", BLUE, text.getLineBackground(0));
+	assertEquals(":0d:", GREEN, text.getLineBackground(1));
 	text.setText(textString);
-	text.setLineBackground(0,1,getColor(RED));
-	text.setLineBackground(1,1,getColor(YELLOW));
-	text.setLineBackground(2,1,getColor(BLUE));
-	text.setLineBackground(3,1,getColor(GREEN));
+	text.setLineBackground(0,1,RED);
+	text.setLineBackground(1,1,YELLOW);
+	text.setLineBackground(2,1,BLUE);
+	text.setLineBackground(3,1,GREEN);
 	text.replaceTextRange(1,3,"");
-	assertEquals(":0e:", getColor(RED), text.getLineBackground(0));
-	assertEquals(":0e:", getColor(BLUE), text.getLineBackground(1));
-	assertEquals(":0e:", getColor(GREEN), text.getLineBackground(2));
+	assertEquals(":0e:", RED, text.getLineBackground(0));
+	assertEquals(":0e:", BLUE, text.getLineBackground(1));
+	assertEquals(":0e:", GREEN, text.getLineBackground(2));
 
 	textString = "L1\nL2";
 	text.setText(textString);
-	text.setLineBackground(0,1,getColor(RED));
-	text.setLineBackground(1,1,getColor(YELLOW));
+	text.setLineBackground(0,1,RED);
+	text.setLineBackground(1,1,YELLOW);
 	text.replaceTextRange(1,4,"");
-	assertEquals(":0a1:", getColor(RED), text.getLineBackground(0));
+	assertEquals(":0a1:", RED, text.getLineBackground(0));
 	text.setText(textString);
-	text.setLineBackground(0,1,getColor(RED));
-	text.setLineBackground(1,1,getColor(YELLOW));
+	text.setLineBackground(0,1,RED);
+	text.setLineBackground(1,1,YELLOW);
 	text.replaceTextRange(0,4,"");
-	assertEquals(":0b1:", getColor(YELLOW), text.getLineBackground(0));
+	assertEquals(":0b1:", YELLOW, text.getLineBackground(0));
 	text.setText(textString);
-	text.setLineBackground(0,1,getColor(RED));
-	text.setLineBackground(1,1,getColor(YELLOW));
+	text.setLineBackground(0,1,RED);
+	text.setLineBackground(1,1,YELLOW);
 	text.replaceTextRange(1,1,"");
-	assertEquals(":0c1:", getColor(RED), text.getLineBackground(0));
-	assertEquals(":0c1:", getColor(YELLOW), text.getLineBackground(1));
+	assertEquals(":0c1:", RED, text.getLineBackground(0));
+	assertEquals(":0c1:", YELLOW, text.getLineBackground(1));
 	text.setText(textString);
-	text.setLineBackground(0,1,getColor(RED));
-	text.setLineBackground(1,1,getColor(YELLOW));
+	text.setLineBackground(0,1,RED);
+	text.setLineBackground(1,1,YELLOW);
 	text.replaceTextRange(0,5,"");
 	assertNull(":0d1:", text.getLineBackground(0));
 	text.setText(textString);
-	text.setLineBackground(0,1,getColor(RED));
-	text.setLineBackground(1,1,getColor(YELLOW));
+	text.setLineBackground(0,1,RED);
+	text.setLineBackground(1,1,YELLOW);
 	text.replaceTextRange(1,3,"");
-	assertEquals(":0e1:", getColor(RED), text.getLineBackground(0));
+	assertEquals(":0e1:", RED, text.getLineBackground(0));
 	assertNull(":0e1:", text.getLineBackground(1));
 	textString = "L1\nL2";
 	text.setText(textString);
-	text.setLineBackground(1,1,getColor(YELLOW));
+	text.setLineBackground(1,1,YELLOW);
 	text.replaceTextRange(1,4,"");
 	assertNull(":0f1:", text.getLineBackground(0));
 	text.setText(textString+"\n");
-	text.setLineBackground(0,1,getColor(RED));
-	text.setLineBackground(1,1,getColor(YELLOW));
+	text.setLineBackground(0,1,RED);
+	text.setLineBackground(1,1,YELLOW);
 	text.replaceTextRange(0,6,"");
 	assertNull(":0g1:", text.getLineBackground(0));
 
 	text.setText(textString);
-	text.setLineBackground(0,0,getColor(RED));
+	text.setLineBackground(0,0,RED);
 	assertNull(":1:", text.getLineBackground(0));
-	text.setLineBackground(0,1,getColor(RED));
-	assertEquals(":1:", getColor(RED), text.getLineBackground(0));
+	text.setLineBackground(0,1,RED);
+	assertEquals(":1:", RED, text.getLineBackground(0));
 
 	textString = "New Line1\nNew Line2\nNew Line3\nNew Line4";
 	text.setText(textString);
-	text.setLineBackground(0,2,getColor(RED));
-	text.setLineBackground(2,2,getColor(YELLOW));
+	text.setLineBackground(0,2,RED);
+	text.setLineBackground(2,2,YELLOW);
 	text.replaceTextRange(0,0,"\n");
 	assertNull(":2:", text.getLineBackground(0));
-	assertEquals(":2:", getColor(RED), text.getLineBackground(1));
-	assertEquals(":2:", getColor(RED), text.getLineBackground(2));
-	assertEquals(":2:", getColor(YELLOW), text.getLineBackground(3));
-	assertEquals(":2:", getColor(YELLOW), text.getLineBackground(4));
+	assertEquals(":2:", RED, text.getLineBackground(1));
+	assertEquals(":2:", RED, text.getLineBackground(2));
+	assertEquals(":2:", YELLOW, text.getLineBackground(3));
+	assertEquals(":2:", YELLOW, text.getLineBackground(4));
 
 	textString = "New Line1\nNew Line2\nNew Line3\nNew Line4";
 	text.setText(textString);
-	text.setLineBackground(0,2,getColor(RED));
-	text.setLineBackground(2,2,getColor(YELLOW));
+	text.setLineBackground(0,2,RED);
+	text.setLineBackground(2,2,YELLOW);
 	text.replaceTextRange(0,20,"");
-	assertEquals(":3:", getColor(YELLOW), text.getLineBackground(0));
-	assertEquals(":3:", getColor(YELLOW), text.getLineBackground(1));
+	assertEquals(":3:", YELLOW, text.getLineBackground(0));
+	assertEquals(":3:", YELLOW, text.getLineBackground(1));
 
 	textString = "Line1\nLine2\nLine3\nLine4";
 	text.setText(textString);
-	text.setLineBackground(0,1,getColor(RED));
-	text.setLineBackground(2,1,getColor(YELLOW));
+	text.setLineBackground(0,1,RED);
+	text.setLineBackground(2,1,YELLOW);
 	text.replaceTextRange(0,18,"");
 	assertNull(":4:", text.getLineBackground(0));
 
 	textString = "Line1\nLine2\nLine3\nLine4";
 	text.setText(textString);
-	text.setLineBackground(0,1,getColor(RED));
-	text.setLineBackground(2,1,getColor(YELLOW));
+	text.setLineBackground(0,1,RED);
+	text.setLineBackground(2,1,YELLOW);
 	text.replaceTextRange(0,18,"L1\nL2\nL3\n");
 	assertNull(":5:", text.getLineBackground(0));
 	assertNull(":5:", text.getLineBackground(1));
@@ -3536,32 +3517,32 @@ public void test_setLineBackgroundIILorg_eclipse_swt_graphics_Color(){
 
 	textString = "Line1\nLine2\nLine3\nLine4";
 	text.setText(textString);
-	text.setLineBackground(0,1,getColor(RED));
-	text.setLineBackground(1,1,getColor(YELLOW));
-	text.setLineBackground(2,1,getColor(BLUE));
-	text.setLineBackground(3,1,getColor(GREEN));
+	text.setLineBackground(0,1,RED);
+	text.setLineBackground(1,1,YELLOW);
+	text.setLineBackground(2,1,BLUE);
+	text.setLineBackground(3,1,GREEN);
 	text.replaceTextRange(3,9,"L1\nL2\n");
-	assertEquals(":6a:", getColor(RED), text.getLineBackground(0));
+	assertEquals(":6a:", RED, text.getLineBackground(0));
 	assertNull(":6a:", text.getLineBackground(1));
 	textString = "Line1\nLine2\nLine3\nLine4";
 	text.setText(textString);
-	text.setLineBackground(0,1,getColor(RED));
-	text.setLineBackground(1,1,getColor(YELLOW));
-	text.setLineBackground(2,1,getColor(BLUE));
-	text.setLineBackground(3,1,getColor(GREEN));
+	text.setLineBackground(0,1,RED);
+	text.setLineBackground(1,1,YELLOW);
+	text.setLineBackground(2,1,BLUE);
+	text.setLineBackground(3,1,GREEN);
 	text.replaceTextRange(11,11,"L3\nL4");
 	assertNull(":6b:", text.getLineBackground(2));
 	assertNull(":6b:", text.getLineBackground(3));
 
 	textString = "Line1\nLine2\nLine3\nLine4";
 	text.setText(textString);
-	text.setLineBackground(0,1,getColor(RED));
-	text.setLineBackground(1,1,getColor(YELLOW));
-	text.setLineBackground(2,1,getColor(BLUE));
-	text.setLineBackground(3,1,getColor(GREEN));
+	text.setLineBackground(0,1,RED);
+	text.setLineBackground(1,1,YELLOW);
+	text.setLineBackground(2,1,BLUE);
+	text.setLineBackground(3,1,GREEN);
 	text.replaceTextRange(0,18,"L1\n");
 	assertNull(":7:", text.getLineBackground(0));
-	assertEquals(":7:", getColor(GREEN), text.getLineBackground(1));
+	assertEquals(":7:", GREEN, text.getLineBackground(1));
 }
 
 @Test
@@ -3726,16 +3707,16 @@ public void test_addSelectionListener() {
 
 @Test
 public void test_setSelectionBackgroundLorg_eclipse_swt_graphics_Color(){
-	text.setSelectionBackground(getColor(YELLOW));
-	assertEquals(":1a:", getColor(YELLOW), text.getSelectionBackground());
+	text.setSelectionBackground(YELLOW);
+	assertEquals(":1a:", YELLOW, text.getSelectionBackground());
 	text.setSelectionBackground(null);
 	assertEquals(":1b:", text.getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION), text.getSelectionBackground());
 }
 
 @Test
 public void test_setSelectionForegroundLorg_eclipse_swt_graphics_Color(){
-	text.setSelectionForeground(getColor(RED));
-	assertEquals(":1a:", getColor(RED), text.getSelectionForeground());
+	text.setSelectionForeground(RED);
+	assertEquals(":1a:", RED, text.getSelectionForeground());
 	text.setSelectionForeground(null);
 	assertEquals(":1b:", text.getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT), text.getSelectionForeground());
 }
@@ -4598,8 +4579,8 @@ public void test_setStyleRangeLorg_eclipse_swt_custom_StyleRange(){
 @Test
 public void test_setStyleRanges$Lorg_eclipse_swt_custom_StyleRange() {
 	StyleRange[] ranges = new StyleRange[] {
-		new StyleRange(0, 1, getColor(RED), null),
-		new StyleRange(2, 1, getColor(RED), null)};
+		new StyleRange(0, 1, RED, null),
+		new StyleRange(2, 1, RED, null)};
 
 	text.setText("Line0\r\n");
 	assertThrows(IllegalArgumentException.class, () -> text.setStyleRanges(null));
@@ -5415,7 +5396,7 @@ public void test_lineStyleListener_styles_render() throws InterruptedException {
 	final LineStyleListener listener = (LineStyleEvent event) -> {
 		event.styles = styles.toArray(new StyleRange[0]);
 	};
-	testLineStyleListener("0123456789\n123456789\n123456789", listener, () -> hasPixel(text, getColor(GREEN)));
+	testLineStyleListener("0123456789\n123456789\n123456789", listener, () -> hasPixel(text, GREEN));
 
 	// Bug 549110: test styling from LineStyleListener which include tab character with metrics
 	final StyleRange tabStyle = new StyleRange();
@@ -5423,7 +5404,7 @@ public void test_lineStyleListener_styles_render() throws InterruptedException {
 	tabStyle.length = 1;
 	tabStyle.metrics = new GlyphMetrics(0, 0, 100);
 	styles.add(tabStyle);
-	testLineStyleListener("0123456789\n1234\t6789\n123456789", listener, () -> hasPixel(text, getColor(GREEN)));
+	testLineStyleListener("0123456789\n1234\t6789\n123456789", listener, () -> hasPixel(text, GREEN));
 }
 
 /**
@@ -5437,7 +5418,7 @@ public void test_lineStyleListener_stylesAndRanges_render() throws InterruptedEx
 		event.styles =  new StyleRange[] { style, style, style, style };
 		event.ranges = new int[] {0,2, 4,1, 7,7, 17,13};
 	};
-	testLineStyleListener("0123456789\n123456789\n123456789", listener, () -> hasPixel(text, getColor(GREEN)));
+	testLineStyleListener("0123456789\n123456789\n123456789", listener, () -> hasPixel(text, GREEN));
 
 	// Bug 549110: test styling from LineStyleListener which include tab character with metrics
 	listener = (LineStyleEvent event) -> {
@@ -5449,7 +5430,7 @@ public void test_lineStyleListener_stylesAndRanges_render() throws InterruptedEx
 		event.styles =  new StyleRange[] { style, style, style, tabStyle, style };
 		event.ranges = new int[] {0,2, 4,1, 7,7, 15,1, 17,13};
 	};
-	testLineStyleListener("0123456789\n1234\t6789\n123456789", listener, () -> hasPixel(text, getColor(GREEN)));
+	testLineStyleListener("0123456789\n1234\t6789\n123456789", listener, () -> hasPixel(text, GREEN));
 }
 
 /**
@@ -5466,7 +5447,7 @@ public void test_lineStyleListener_invalidStyles_render() throws InterruptedExce
 			getStyle(40, 8, null, GREEN),
 		};
 	};
-	testLineStyleListener("0123456789\n123456789", listener, () -> hasPixel(text, getColor(GREEN)));
+	testLineStyleListener("0123456789\n123456789", listener, () -> hasPixel(text, GREEN));
 
 	// Bug 549110: test styling from LineStyleListener which include tab character with metrics
 	final StyleRange tabStyle = new StyleRange();
@@ -5647,11 +5628,11 @@ public void test_GlyphMetricsOnTab_Bug549110() throws InterruptedException {
 	text.pack();
 	SwtTestUtil.processEvents(1000,
 			() -> hasPixel(text, text.getBackground())
-					&& !hasPixel(text, getColor(RED))
-					&& !hasPixel(text, getColor(BLUE)));
+					&& !hasPixel(text, RED)
+					&& !hasPixel(text, BLUE));
 	assertTrue(hasPixel(text, text.getBackground()));
-	assertFalse(hasPixel(text, getColor(RED)));
-	assertFalse(hasPixel(text, getColor(BLUE)));
+	assertFalse(hasPixel(text, RED));
+	assertFalse(hasPixel(text, BLUE));
 
 	final StyleRange styleR = getStyle(0, 1, null, RED);
 	final StyleRange styleB = getStyle(4, 1, null, BLUE);
@@ -5661,9 +5642,9 @@ public void test_GlyphMetricsOnTab_Bug549110() throws InterruptedException {
 	tabStyle.metrics = new GlyphMetrics(0, 0, 100);
 	text.replaceStyleRanges(0, text.getText().length(), new StyleRange[] { styleR, tabStyle, styleB });
 	text.pack();
-	SwtTestUtil.processEvents(1000, () -> hasPixel(text, getColor(RED)) && hasPixel(text, getColor(BLUE)));
-	assertTrue("Wrong style before tab", hasPixel(text, getColor(RED)));
-	assertTrue("Wrong style after tab", hasPixel(text, getColor(BLUE)));
+	SwtTestUtil.processEvents(1000, () -> hasPixel(text, RED) && hasPixel(text, BLUE));
+	assertTrue("Wrong style before tab", hasPixel(text, RED));
+	assertTrue("Wrong style after tab", hasPixel(text, BLUE));
 }
 
 @Test
@@ -5722,7 +5703,7 @@ public void test_bug551335_lostStyles() throws InterruptedException {
 	shell.pack();
 
 	StyleRange style = new StyleRange();
-	style.background = getColor(BLUE);
+	style.background = BLUE;
 	style.length = 3;
 
 	StyleRange[] styles = new StyleRange[3];
@@ -5742,7 +5723,7 @@ public void test_bug551335_lostStyles() throws InterruptedException {
 	}
 	BooleanSupplier testAllLinesStyled = () -> {
 		for (Rectangle testArea : testAreas) {
-			if (!hasPixel(text, getColor(BLUE), testArea)) {
+			if (!hasPixel(text, BLUE, testArea)) {
 				return false;
 			}
 		}
@@ -5750,7 +5731,7 @@ public void test_bug551335_lostStyles() throws InterruptedException {
 	};
 	BooleanSupplier testUnstyledText = () -> {
 		for (Rectangle testArea : testAreas) {
-			if (hasPixel(text, getColor(BLUE), testArea)) {
+			if (hasPixel(text, BLUE, testArea)) {
 				return false;
 			}
 		}
