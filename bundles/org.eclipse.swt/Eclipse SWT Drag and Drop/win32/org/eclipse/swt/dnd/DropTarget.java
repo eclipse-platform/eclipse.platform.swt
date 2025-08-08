@@ -242,7 +242,7 @@ void createCOMInterfaces() {
 		public long method2(long[] args) {return Release();}
 		@Override
 		public long method3(long[] args) {
-			return Win32DPIUtils.runWithProperDPIAwareness(() -> {
+			return Win32DPIUtils.runWithProperDPIAwareness(getDisplay(), () -> {
 				if (args.length == 5) {
 					return DragEnter(args[0], (int)args[1], (int)args[2], (int)args[3], args[4]);
 				} else {
@@ -252,7 +252,7 @@ void createCOMInterfaces() {
 		}
 		@Override
 		public long method4(long[] args) {
-			return Win32DPIUtils.runWithProperDPIAwareness(() -> {
+			return Win32DPIUtils.runWithProperDPIAwareness(getDisplay(), () -> {
 				if (args.length == 4) {
 					return DragOver((int)args[0], (int)args[1], (int)args[2], args[3]);
 				} else {
@@ -264,7 +264,7 @@ void createCOMInterfaces() {
 		public long method5(long[] args) {return DragLeave();}
 		@Override
 		public long method6(long[] args) {
-			return Win32DPIUtils.runWithProperDPIAwareness(() -> {
+			return Win32DPIUtils.runWithProperDPIAwareness(getDisplay(), () -> {
 				if (args.length == 5) {
 					return Drop(args[0], (int)args[1], (int)args[2], (int)args[3], args[4]);
 				} else {
