@@ -18,14 +18,15 @@ import static org.eclipse.swt.tests.junit.SwtTestUtil.assertSWTProblem;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -48,10 +49,9 @@ import org.eclipse.swt.internal.DPIUtil;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.junit.After;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.GC
@@ -61,7 +61,7 @@ import org.junit.Test;
 @SuppressWarnings("restriction")
 public class Test_org_eclipse_swt_graphics_GC {
 
-@Before
+@BeforeEach
 public void setUp() {
 	display = Display.getDefault();
 	shell = new Shell(display);
@@ -70,7 +70,7 @@ public void setUp() {
 	gc = new GC(image);
 }
 
-@After
+@AfterEach
 public void tearDown() {
 	gc.dispose();
 	image.dispose();
@@ -79,54 +79,52 @@ public void tearDown() {
 
 @Test
 public void test_ConstructorLorg_eclipse_swt_graphics_Drawable() {
-	try {
-		GC gc = new GC(null);
-		gc.dispose();
-		fail("No exception thrown for drawable == null");
-	} catch (IllegalArgumentException e) {
-		assertSWTProblem("Incorrect exception thrown for drawable == null", SWT.ERROR_NULL_ARGUMENT, e);
-	}
+	IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> new GC(null),
+			"No exception thrown for drawable == null");
+	assertSWTProblem("Incorrect exception thrown for drawable == null", SWT.ERROR_NULL_ARGUMENT, e);
 
-	Image image = null;
-	GC gc1 = null, gc2 = null;
-	try {
-		image = new Image(display, 10, 10);
-		gc1 = new GC(image);
-		gc2 = new GC(image);
-		fail("No exception thrown for more than one GC on one image");
-	} catch (IllegalArgumentException e) {
-		assertSWTProblem("Incorrect exception thrown for more than one GC on one image", SWT.ERROR_INVALID_ARGUMENT, e);
-	} finally {
-		if (image != null) image.dispose();
-		if (gc1 != null) gc1.dispose();
-		if (gc2 != null) gc2.dispose();
-	}
+	IllegalArgumentException e1 = assertThrows(IllegalArgumentException.class, () -> {
+		Image image = null;
+		GC gc1 = null, gc2 = null;
+		try {
+			image = new Image(display, 10, 10);
+			gc1 = new GC(image);
+			gc2 = new GC(image);
+		} finally {
+			if (image != null)
+				image.dispose();
+			if (gc1 != null)
+				gc1.dispose();
+			if (gc2 != null)
+				gc2.dispose();
+		}
+	}, "No exception thrown for more than one GC on one image");
+	assertSWTProblem("Incorrect exception thrown for more than one GC on one image", SWT.ERROR_INVALID_ARGUMENT, e1);
 }
 
 @Test
 public void test_ConstructorLorg_eclipse_swt_graphics_DrawableI() {
-	try {
-		GC gc = new GC(null, SWT.LEFT_TO_RIGHT);
-		gc.dispose();
-		fail("No exception thrown for drawable == null");
-	} catch (IllegalArgumentException e) {
-		assertSWTProblem("Incorrect exception thrown for drawable == null", SWT.ERROR_NULL_ARGUMENT, e);
-	}
+	IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> new GC(null, SWT.LEFT_TO_RIGHT),
+			"No exception thrown for drawable == null");
+	assertSWTProblem("Incorrect exception thrown for drawable == null", SWT.ERROR_NULL_ARGUMENT, e);
 
-	Image image = null;
-	GC gc1 = null, gc2 = null;
-	try {
-		image = new Image(display, 10, 10);
-		gc1 = new GC(image, SWT.RIGHT_TO_LEFT);
-		gc2 = new GC(image, SWT.LEFT_TO_RIGHT);
-		fail("No exception thrown for more than one GC on one image");
-	} catch (IllegalArgumentException e) {
-		assertSWTProblem("Incorrect exception thrown for more than one GC on one image", SWT.ERROR_INVALID_ARGUMENT, e);
-	} finally {
-		if (image != null) image.dispose();
-		if (gc1 != null) gc1.dispose();
-		if (gc2 != null) gc2.dispose();
-	}
+	IllegalArgumentException e1 = assertThrows(IllegalArgumentException.class, () -> {
+		Image image = null;
+		GC gc1 = null, gc2 = null;
+		try {
+			image = new Image(display, 10, 10);
+			new GC(image, SWT.RIGHT_TO_LEFT);
+			new GC(image, SWT.LEFT_TO_RIGHT);
+		} finally {
+			if (image != null)
+				image.dispose();
+			if (gc1 != null)
+				gc1.dispose();
+			if (gc2 != null)
+				gc2.dispose();
+		}
+	}, "No exception thrown for more than one GC on one image");
+	assertSWTProblem("Incorrect exception thrown for more than one GC on one image", SWT.ERROR_INVALID_ARGUMENT, e1);
 
 	Canvas canvas = new Canvas(shell, SWT.NULL);
 	GC testGC = new GC(canvas, SWT.RIGHT_TO_LEFT);
@@ -138,6 +136,10 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DrawableI() {
 
 @Test
 public void test_copyAreaIIIIII() {
+	// This test verifies pixel-level color values after a copyArea() operation.
+	// Such pixel-accurate checks are only reliable at 100% zoom due to fractional scaling.
+	assumeTrue(DPIUtil.getDeviceZoom() == 100, "Skipping test due to non-100% zoom");
+
 	Color white = display.getSystemColor(SWT.COLOR_WHITE);
 	Color blue = display.getSystemColor(SWT.COLOR_BLUE);
 	RGB whiteRGB = getRealRGB(white);
@@ -156,22 +158,22 @@ public void test_copyAreaIIIIII() {
 	ImageData imageData = image.getImageData();
 	PaletteData palette = imageData.palette;
 
-	// This test verifies pixel-level color values after a copyArea() operation.
-	// Such pixel-accurate checks are only reliable at 100% zoom due to fractional scaling.
-	assumeTrue(DPIUtil.getDeviceZoom() == 100, "Skipping test due to non-100% zoom");
-
 	int pixel = imageData.getPixel(destX + 4, destY);
-	assertEquals(":a:", whiteRGB, palette.getRGB(pixel));
+	assertEquals(whiteRGB, palette.getRGB(pixel));
 	pixel = imageData.getPixel(destX + 6 , destY);
-	assertEquals(":b:", blueRGB, palette.getRGB(pixel));
+	assertEquals(blueRGB, palette.getRGB(pixel));
 	pixel = imageData.getPixel(destX + 10, destY);
-	assertEquals(":c:", blueRGB, palette.getRGB(pixel));
+	assertEquals(blueRGB, palette.getRGB(pixel));
 	pixel = imageData.getPixel(destX + 12, destY);
-	assertEquals(":d:", whiteRGB, palette.getRGB(pixel));
+	assertEquals(whiteRGB, palette.getRGB(pixel));
 }
 
 @Test
 public void test_copyAreaIIIIII_overlapingSourceTarget() {
+	// This test verifies pixel-level color values after a copyArea() operation.
+	// Such pixel-accurate checks are only reliable at 100% zoom due to fractional scaling.
+	assumeTrue(DPIUtil.getDeviceZoom() == 100, "Skipping test due to non-100% zoom");
+
 	Color red= display.getSystemColor(SWT.COLOR_RED);
 	Color blue = display.getSystemColor(SWT.COLOR_BLUE);
 	RGB redRGB = getRealRGB(red);
@@ -197,10 +199,6 @@ public void test_copyAreaIIIIII_overlapingSourceTarget() {
 	imageData = image.getImageData();
 	palette = imageData.palette;
 
-	// This test verifies pixel-level color values after a copyArea() operation.
-	// Such pixel-accurate checks are only reliable at 100% zoom due to fractional scaling.
-	assumeTrue(DPIUtil.getDeviceZoom() == 100, "Skipping test due to non-100% zoom");
-
 	pixel = imageData.getPixel(0, 105);
 	assertEquals(redRGB, palette.getRGB(pixel));
 	pixel = imageData.getPixel(0, 145);
@@ -214,6 +212,10 @@ public void test_copyAreaIIIIII_overlapingSourceTarget() {
 
 @Test
 public void test_copyAreaLorg_eclipse_swt_graphics_ImageII() {
+	// This test verifies pixel-level color values after a copyArea() operation.
+	// Such pixel-accurate checks are only reliable at 100% zoom due to fractional scaling.
+	assumeTrue(DPIUtil.getDeviceZoom() == 100, "Skipping test due to non-100% zoom");
+
 	Color white = display.getSystemColor(SWT.COLOR_WHITE);
 	Color blue = display.getSystemColor(SWT.COLOR_BLUE);
 	RGB whiteRGB = getRealRGB(white);
@@ -228,18 +230,14 @@ public void test_copyAreaLorg_eclipse_swt_graphics_ImageII() {
 	ImageData imageData = image.getImageData();
 	PaletteData palette = imageData.palette;
 
-	// This test verifies pixel-level color values after a copyArea() operation.
-	// Such pixel-accurate checks are only reliable at 100% zoom due to fractional scaling.
-	assumeTrue(DPIUtil.getDeviceZoom() == 100, "Skipping test due to non-100% zoom");
-
 	int pixel = imageData.getPixel(4, 0);
-	assertEquals(":a:", whiteRGB, palette.getRGB(pixel));
+	assertEquals(whiteRGB, palette.getRGB(pixel));
 	pixel = imageData.getPixel(5, 0);
-	assertEquals(":b:", blueRGB, palette.getRGB(pixel));
+	assertEquals(blueRGB, palette.getRGB(pixel));
 	pixel = imageData.getPixel(10, 0);
-	assertEquals(":c:", blueRGB, palette.getRGB(pixel));
+	assertEquals(blueRGB, palette.getRGB(pixel));
 	pixel = imageData.getPixel(11, 0);
-	assertEquals(":d:", whiteRGB, palette.getRGB(pixel));
+	assertEquals(whiteRGB, palette.getRGB(pixel));
 	image.dispose();
 }
 
@@ -288,12 +286,7 @@ public void test_drawImageLorg_eclipse_swt_graphics_ImageII() {
 	gc.drawImage(image, 100, 100);
 	gc.drawImage(imageTransparent, 130, 100);
 	gc.drawImage(imageAlpha, 160, 100);
-	try {
-		gc.drawImage(null, 100, 100);
-		fail("No exception thrown");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> gc.drawImage(null, 100, 100));
 	image.dispose();
 	imageTransparent.dispose();
 	imageAlpha.dispose();
@@ -329,12 +322,7 @@ public void test_drawImageLorg_eclipse_swt_graphics_ImageIIIIIIII() {
 	gc.drawImage(image, 10, 5, 20, 15, 100, 120, 50, 60);
 	gc.drawImage(imageTransparent, 10, 5, 20, 15, 100, 120, 10, 10);
 	gc.drawImage(imageAlpha, 10, 5, 20, 15, 100, 120, 20, 15);
-	try {
-		gc.drawImage(null, 10, 5, 20, 15, 100, 120, 50, 60);
-		fail("No exception thrown"); //should never get here
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> gc.drawImage(null, 10, 5, 20, 15, 100, 120, 50, 60));
 	image.dispose();
 	imageAlpha.dispose();
 	imageTransparent.dispose();
@@ -551,18 +539,11 @@ public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 	Color color = new Color(255, 0, 0);
 	gc.setBackground(color);
 	assertEquals(color, gc.getBackground());
-	try {
-		gc.setBackground(null);
-		fail("No exception thrown for null color");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> gc.setBackground(null), "No exception thrown for null color");
 	assertEquals(gc.getBackground(),gc.getBackground());
 	color.dispose();
-	try {
-		gc.setBackground(color);
-		fail("No exception thrown for color disposed");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> gc.setBackground(color),
+			"No exception thrown for color disposed");
 }
 
 @Test
@@ -618,18 +599,11 @@ public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
 	Color color = new Color(255, 0, 0);
 	gc.setForeground(color);
 	assertEquals(color, gc.getForeground());
-	try {
-		gc.setForeground(null);
-		fail("No exception thrown for null color");
-	} catch (IllegalArgumentException e) {
-	}
-	assertEquals(gc.getForeground(),gc.getForeground());
+	assertThrows(IllegalArgumentException.class, () -> gc.setForeground(null), "No exception thrown for null color");
+	assertEquals(gc.getForeground(), gc.getForeground());
 	color.dispose();
-	try {
-		gc.setForeground(color);
-		fail("No exception thrown for color disposed");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> gc.setForeground(color),
+			"No exception thrown for color disposed");
 }
 
 @Test
@@ -643,13 +617,12 @@ public void test_setLineAttributes$I() {
 	float miterLimit = 2.6f;
 	LineAttributes passedLineAttributes = new LineAttributes(width, cap, join, style, dashes, dashOffset, miterLimit);
 	gc.setLineAttributes(passedLineAttributes);
-	assertEquals("unexpected line width", width, gc.getLineWidth());
-	assertEquals("unexpected line cap", cap, gc.getLineCap());
-	assertEquals("unexpected line join", join, gc.getLineJoin());
-	assertEquals("unexpected line style", style, gc.getLineStyle());
-	assertEquals("actual line attributes differ from the ones that have been set",
-			new LineAttributes(width, cap, join, style, dashes, dashOffset, miterLimit), gc.getLineAttributes());
-	assertEquals("setter call changed line width", width, passedLineAttributes.width, 0.0f);
+	assertEquals(width, gc.getLineWidth(), "unexpected line width");
+	assertEquals(cap, gc.getLineCap(), "unexpected line cap");
+	assertEquals(join, gc.getLineJoin(), "unexpected line join");
+	assertEquals(style, gc.getLineStyle(), "unexpected line style");
+	assertEquals(new LineAttributes(width, cap, join, style, dashes, dashOffset, miterLimit), gc.getLineAttributes(), "actual line attributes differ from the ones that have been set");
+	assertEquals(width, passedLineAttributes.width, 0.0f, "setter call changed line width");
 
 	gc.setLineAttributes(new LineAttributes(1));
 	assertEquals(new LineAttributes(1), gc.getLineAttributes());
@@ -684,12 +657,12 @@ public void test_setLineWidthI() {
 
 @Test
 public void test_setLineWidthI_withDeviceScaling() {
-	executeWithNonDefaultDeviceZoom(() -> test_setLineWidthI());
+	executeWithNonDefaultDeviceZoom(this::test_setLineWidthI);
 }
 
 @Test
 public void test_setLineDash$I() {
-	int[] dashes = new int[] { 5, 1, 3 };
+	int[] dashes = { 5, 1, 3 };
 	gc.setLineDash(dashes);
 	assertArrayEquals(dashes, gc.getLineDash());
 	gc.setLineDash(null);
@@ -698,7 +671,7 @@ public void test_setLineDash$I() {
 
 @Test
 public void test_setLineDash$I_withDeviceScaling() {
-	executeWithNonDefaultDeviceZoom(() -> test_setLineDash$I());
+	executeWithNonDefaultDeviceZoom(this::test_setLineDash$I);
 }
 
 @Test
@@ -739,7 +712,7 @@ public void test_toString() {
 
 @Test
 public void test_bug493455_drawImageAlpha_srcPos() {
-	Assume.assumeFalse("https://github.com/eclipse-platform/eclipse.platform.swt/issues/40 causes test to fail on Mac", SwtTestUtil.isCocoa);
+	assumeFalse(SwtTestUtil.isCocoa, "https://github.com/eclipse-platform/eclipse.platform.swt/issues/40 causes test to fail on Mac");
 	RGB red = new RGB(255, 0, 0);
 	RGB green = new RGB(0, 255, 0);
 
@@ -828,7 +801,7 @@ public void test_bug1288_createGCFromImageFromNonDisplayThread() throws Interrup
 	});
 	thread.start();
 	thread.join();
-	assertNull("Creating a GC from an Image without a device threw an exception", exceptionReference.get());
+	assertNull(exceptionReference.get(), "Creating a GC from an Image without a device threw an exception");
 }
 
 /* custom */
