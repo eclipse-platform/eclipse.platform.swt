@@ -224,6 +224,21 @@ public static int mapZoomToDPI (int zoom) {
 }
 
 /**
+ * Auto-scale up int dimensions to match the given zoom level
+ */
+public static int pointToPixel(int size, int zoom) {
+	if (zoom == 100 || size == SWT.DEFAULT) return size;
+	float scaleFactor = getScalingFactor(zoom);
+	return Math.round (size * scaleFactor);
+}
+
+public static float pointToPixel(float size, int zoom) {
+	if (zoom == 100 || size == SWT.DEFAULT) return size;
+	float scaleFactor = getScalingFactor(zoom);
+	return (size * scaleFactor);
+}
+
+/**
  * Represents an element, such as some image data, at a specific zoom level.
  *
  * @param <T> type of the element to be presented, e.g., {@link ImageData}
