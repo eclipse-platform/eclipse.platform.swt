@@ -221,7 +221,8 @@ public class Win32DPIUtils {
 		float scaleFactor = DPIUtil.getScalingFactor(zoom);
 		float scaledX = fPoint.getX() * scaleFactor;
 		float scaledY = fPoint.getY() * scaleFactor;
-		return new Point.OfFloat(scaledX, scaledY);
+		Point scaledPoint = new Point.OfFloat(scaledX, scaledY);
+		return new Point.OfFloat(scaledPoint.x, scaledPoint.y);
 	}
 
 	public static Point pointToPixel(Drawable drawable, Point point, int zoom) {
@@ -244,7 +245,8 @@ public class Win32DPIUtils {
 	}
 
 	private static Rectangle pointToPixel(Rectangle.OfFloat rect, int zoom) {
-		return scaleBounds(rect, zoom, 100);
+		Rectangle scaledRectangle = scaleBounds(rect, zoom, 100);
+		return new Rectangle.OfFloat(scaledRectangle.x, scaledRectangle.y, scaledRectangle.width, scaledRectangle.height);
 	}
 
 	public static Rectangle pointToPixel(Drawable drawable, Rectangle rect, int zoom) {
