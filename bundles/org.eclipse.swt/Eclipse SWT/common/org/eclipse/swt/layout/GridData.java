@@ -398,9 +398,11 @@ public final class GridData {
 	 */
 	public static final int FILL_BOTH = FILL_VERTICAL | FILL_HORIZONTAL;
 
-	int cacheWidth = -1, cacheHeight = -1;
-	int defaultWhint, defaultHhint, defaultWidth = -1, defaultHeight = -1;
-	int currentWhint, currentHhint, currentWidth = -1, currentHeight = -1;
+	Point.OfFloat cacheSize = new Point.OfFloat(SWT.DEFAULT, SWT.DEFAULT);
+	Point.OfFloat defaultHint = new Point.OfFloat(SWT.DEFAULT, SWT.DEFAULT);
+	Point.OfFloat defaultSize = new Point.OfFloat(SWT.DEFAULT, SWT.DEFAULT);
+	Point.OfFloat currentHint = new Point.OfFloat(SWT.DEFAULT, SWT.DEFAULT);
+	Point.OfFloat currentSize = new Point.OfFloat(SWT.DEFAULT, SWT.DEFAULT);
 
 /**
  * Constructs a new instance of GridData using
@@ -487,34 +489,28 @@ public GridData (int width, int height) {
 }
 
 void computeSize (Control control, int wHint, int hHint, boolean flushCache) {
-	if (cacheWidth != -1 && cacheHeight != -1) return;
+	if (cacheSize.x != -1 && cacheSize.y != -1) return;
 	if (wHint == this.widthHint && hHint == this.heightHint) {
-		if (defaultWidth == -1 || defaultHeight == -1 || wHint != defaultWhint || hHint != defaultHhint) {
+		if (defaultSize.x == -1 || defaultSize.y == -1 || wHint != defaultHint.x || hHint != defaultHint.y) {
 			Point size = control.computeSize (wHint, hHint, flushCache);
-			defaultWhint = wHint;
-			defaultHhint = hHint;
-			defaultWidth = size.x;
-			defaultHeight = size.y;
+			defaultHint = new Point.OfFloat(wHint, hHint);
+			defaultSize = Point.OfFloat.from(size);
 		}
-		cacheWidth = defaultWidth;
-		cacheHeight = defaultHeight;
+		cacheSize = Point.OfFloat.from(defaultSize);
 		return;
 	}
-	if (currentWidth == -1 || currentHeight == -1 || wHint != currentWhint || hHint != currentHhint) {
+	if (currentSize.x == -1 || currentSize.y == -1 || wHint != currentHint.x || hHint != currentHint.y) {
 		Point size = control.computeSize (wHint, hHint, flushCache);
-		currentWhint = wHint;
-		currentHhint = hHint;
-		currentWidth = size.x;
-		currentHeight = size.y;
+		currentHint = new Point.OfFloat(wHint, hHint);
+		currentSize = Point.OfFloat.from(size);
 	}
-	cacheWidth = currentWidth;
-	cacheHeight = currentHeight;
+	cacheSize = Point.OfFloat.from(currentSize);
 }
 
 void flushCache () {
-	cacheWidth = cacheHeight = -1;
-	defaultWidth = defaultHeight = -1;
-	currentWidth = currentHeight = -1;
+	cacheSize = new Point.OfFloat(-1, -1);
+	defaultSize = new Point.OfFloat(-1, -1);
+	currentSize = new Point.OfFloat(-1, -1);
 }
 
 String getName () {
