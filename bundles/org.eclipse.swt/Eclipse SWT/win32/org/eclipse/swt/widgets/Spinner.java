@@ -301,7 +301,7 @@ void addVerifyListener (VerifyListener listener) {
 	}
 
 	Rectangle trim = computeTrimInPixels (0, 0, width, height);
-	return new Point (trim.width, trim.height);
+	return new Point.OfFloat (trim.width, trim.height);
 }
 
 @Override Rectangle computeTrimInPixels (int x, int y, int width, int height) {
@@ -340,7 +340,7 @@ void addVerifyListener (VerifyListener listener) {
 		height += 2;
 	}
 	width += getSystemMetrics (OS.SM_CXVSCROLL);
-	return new Rectangle (x, y, width, height);
+	return new Rectangle.OfFloat (x, y, width, height);
 }
 
 /**

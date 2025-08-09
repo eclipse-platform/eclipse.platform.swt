@@ -1600,13 +1600,13 @@ Rectangle getBoundsInPixels () {
 	if (OS.GetSystemMetrics (OS.SM_CMONITORS) < 2) {
 		int width = OS.GetSystemMetrics (OS.SM_CXSCREEN);
 		int height = OS.GetSystemMetrics (OS.SM_CYSCREEN);
-		return new Rectangle (0, 0, width, height);
+		return new Rectangle.OfFloat (0, 0, width, height);
 	}
 	int x = OS.GetSystemMetrics (OS.SM_XVIRTUALSCREEN);
 	int y = OS.GetSystemMetrics (OS.SM_YVIRTUALSCREEN);
 	int width = OS.GetSystemMetrics (OS.SM_CXVIRTUALSCREEN);
 	int height = OS.GetSystemMetrics (OS.SM_CYVIRTUALSCREEN);
-	return new Rectangle (x, y, width, height);
+	return new Rectangle.OfFloat (x, y, width, height);
 }
 
 /**
@@ -1675,13 +1675,13 @@ Rectangle getClientAreaInPixels () {
 		OS.SystemParametersInfo (OS.SPI_GETWORKAREA, 0, rect, 0);
 		int width = rect.right - rect.left;
 		int height = rect.bottom - rect.top;
-		return new Rectangle (rect.left, rect.top, width, height);
+		return new Rectangle.OfFloat (rect.left, rect.top, width, height);
 	}
 	int x = OS.GetSystemMetrics (OS.SM_XVIRTUALSCREEN);
 	int y = OS.GetSystemMetrics (OS.SM_YVIRTUALSCREEN);
 	int width = OS.GetSystemMetrics (OS.SM_CXVIRTUALSCREEN);
 	int height = OS.GetSystemMetrics (OS.SM_CYVIRTUALSCREEN);
-	return new Rectangle (x, y, width, height);
+	return new Rectangle.OfFloat (x, y, width, height);
 }
 
 Control getControl (long handle) {
@@ -1743,13 +1743,13 @@ Rectangle fitRectangleBoundsIntoMonitorWithCursor(RECT rect) {
 		}
 		rectWidth = monitorBoundsRightEnd - rect.left;
 	}
-	return new Rectangle(rect.left, rect.top, rectWidth, rectHeight);
+	return new Rectangle.OfFloat(rect.left, rect.top, rectWidth, rectHeight);
 }
 
 Point getCursorLocationInPixels () {
 	POINT pt = new POINT ();
 	OS.GetCursorPos (pt);
-	return new Point (pt.x, pt.y);
+	return new Point.OfFloat (pt.x, pt.y);
 }
 
 /**
@@ -1767,7 +1767,7 @@ Point getCursorLocationInPixels () {
 public Point [] getCursorSizes () {
 	checkDevice ();
 	return new Point [] {
-		new Point (OS.GetSystemMetrics (OS.SM_CXCURSOR), OS.GetSystemMetrics (OS.SM_CYCURSOR))};
+		new Point.OfFloat (OS.GetSystemMetrics (OS.SM_CXCURSOR), OS.GetSystemMetrics (OS.SM_CYCURSOR))};
 }
 
 /**
@@ -2032,8 +2032,8 @@ public int getIconDepth () {
 public Point [] getIconSizes () {
 	checkDevice ();
 	return new Point [] {
-		new Point (OS.GetSystemMetrics (OS.SM_CXSMICON), OS.GetSystemMetrics (OS.SM_CYSMICON)),
-		new Point (OS.GetSystemMetrics (OS.SM_CXICON), OS.GetSystemMetrics (OS.SM_CYICON)),
+		new Point.OfFloat (OS.GetSystemMetrics (OS.SM_CXSMICON), OS.GetSystemMetrics (OS.SM_CYSMICON)),
+		new Point.OfFloat (OS.GetSystemMetrics (OS.SM_CXICON), OS.GetSystemMetrics (OS.SM_CYICON)),
 	};
 }
 
@@ -2222,8 +2222,8 @@ Monitor getMonitor (long hmonitor) {
 	OS.GetMonitorInfo (hmonitor, lpmi);
 	Monitor monitor = new Monitor ();
 	monitor.handle = hmonitor;
-	Rectangle boundsInPixels = new Rectangle(lpmi.rcMonitor_left, lpmi.rcMonitor_top, lpmi.rcMonitor_right - lpmi.rcMonitor_left,lpmi.rcMonitor_bottom - lpmi.rcMonitor_top);
-	Rectangle clientAreaInPixels = new Rectangle(lpmi.rcWork_left, lpmi.rcWork_top, lpmi.rcWork_right - lpmi.rcWork_left, lpmi.rcWork_bottom - lpmi.rcWork_top);
+	Rectangle boundsInPixels = new Rectangle.OfFloat(lpmi.rcMonitor_left, lpmi.rcMonitor_top, lpmi.rcMonitor_right - lpmi.rcMonitor_left,lpmi.rcMonitor_bottom - lpmi.rcMonitor_top);
+	Rectangle clientAreaInPixels = new Rectangle.OfFloat(lpmi.rcWork_left, lpmi.rcWork_top, lpmi.rcWork_right - lpmi.rcWork_left, lpmi.rcWork_bottom - lpmi.rcWork_top);
 	int [] dpiX = new int[1];
 	int [] dpiY = new int[1];
 	int result = OS.GetDpiForMonitor (monitor.handle, OS.MDT_EFFECTIVE_DPI, dpiX, dpiY);
@@ -3051,14 +3051,14 @@ public Point map (Control from, Control to, int x, int y) {
 Point mapInPixels (Control from, Control to, int x, int y) {
 	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
-	if (from == to) return new Point (x, y);
+	if (from == to) return new Point.OfFloat (x, y);
 	long hwndFrom = from != null ? from.handle : 0;
 	long hwndTo = to != null ? to.handle : 0;
 	POINT point = new POINT ();
 	point.x = x;
 	point.y = y;
 	OS.MapWindowPoints (hwndFrom, hwndTo, point, 1);
-	return new Point (point.x, point.y);
+	return new Point.OfFloat (point.x, point.y);
 }
 
 /**
@@ -3153,7 +3153,7 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
 Rectangle mapInPixels (Control from, Control to, int x, int y, int width, int height) {
 	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
-	if (from == to) return new Rectangle (x, y, width, height);
+	if (from == to) return new Rectangle.OfFloat (x, y, width, height);
 	long hwndFrom = from != null ? from.handle : 0;
 	long hwndTo = to != null ? to.handle : 0;
 	RECT rect = new RECT ();
@@ -3162,7 +3162,7 @@ Rectangle mapInPixels (Control from, Control to, int x, int y, int width, int he
 	rect.right = x + width;
 	rect.bottom = y + height;
 	OS.MapWindowPoints (hwndFrom, hwndTo, rect, 2);
-	return new Rectangle (rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
+	return new Rectangle.OfFloat (rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
 }
 
 Point translateFromDisplayCoordinates(Point point, int zoom) {

@@ -175,7 +175,7 @@ static int checkStyle (int style) {
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
 	Rectangle trim = computeTrimInPixels (0, 0, width, height);
-	return new Point (trim.width, trim.height);
+	return new Point.OfFloat (trim.width, trim.height);
 }
 
 @Override
@@ -789,7 +789,7 @@ LRESULT WM_PAINT (long wParam, long lParam) {
 			if (hooks (SWT.Paint) || filters (SWT.Paint)) {
 				Event event = new Event ();
 				event.gc = gc;
-				event.setBounds(Win32DPIUtils.pixelToPoint(new Rectangle(rect.left, rect.top, width, height), getZoom()));
+				event.setBounds(Win32DPIUtils.pixelToPoint(new Rectangle.OfFloat(rect.left, rect.top, width, height), getZoom()));
 				sendEvent (SWT.Paint, event);
 				event.gc = null;
 			}
