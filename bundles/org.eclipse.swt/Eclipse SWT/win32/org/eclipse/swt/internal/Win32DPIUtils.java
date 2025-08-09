@@ -19,6 +19,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.internal.win32.version.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * This class is used in the win32 implementation only to provide
@@ -68,8 +69,11 @@ public class Win32DPIUtils {
 		return true;
 	}
 
-	public static <T> T runWithProperDPIAwareness(Supplier<T> operation) {
-		// refreshing is only necessary, when monitor specific scaling is active
+	public static <T> T runWithProperDPIAwareness(Display display, Supplier<T> operation) {
+		// only with monitor-specific scaling enabled, the main thread's DPI awareness may be adapted
+		if (!display.isRescalingAtRuntime()) {
+			return operation.get();
+		}
 		long previousDPIAwareness = OS.GetThreadDpiAwarenessContext();
 		try {
 			if (!setDPIAwareness(OS.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2)) {

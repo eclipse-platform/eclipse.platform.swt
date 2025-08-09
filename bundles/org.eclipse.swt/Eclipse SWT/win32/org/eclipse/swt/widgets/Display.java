@@ -1461,7 +1461,7 @@ public Widget findWidget (Widget widget, long id) {
 
 long foregroundIdleProc (long code, long wParam, long lParam) {
 	if (code >= 0) {
-		Runnable processMessages = () -> {
+		Supplier<Boolean> processMessages = () -> {
 			sendPostExternalEventDispatchEvent ();
 			if (runMessagesInIdle) {
 				if (runMessagesInMessageProc) {
@@ -1487,6 +1487,7 @@ long foregroundIdleProc (long code, long wParam, long lParam) {
 			int flags = OS.PM_NOREMOVE | OS.PM_NOYIELD | OS.PM_QS_INPUT;
 			if (!OS.PeekMessage (msg, 0, 0, 0, flags)) wakeThread ();
 			sendPreExternalEventDispatchEvent ();
+			return true;
 		};
 		if (!synchronizer.isMessagesEmpty()) {
 			// Windows hooks will inherit the thread DPI awareness from
@@ -1495,7 +1496,7 @@ long foregroundIdleProc (long code, long wParam, long lParam) {
 			// This requires to reset the thread DPi awareness to make
 			// sure, all UI updates caused by this will be executed
 			// with the correct DPI awareness
-			runWithProperDPIAwareness(processMessages);
+			Win32DPIUtils.runWithProperDPIAwareness(this, processMessages);
 		}
 	}
 	return OS.CallNextHookEx (idleHook, (int)code, wParam, lParam);
@@ -3478,10 +3479,11 @@ long msgFilterProc (long code, long wParam, long lParam) {
 				// This requires to reset the thread DPi awareness to make
 				// sure, all UI updates caused by this will be executed
 				// with the correct DPI awareness
-				runWithProperDPIAwareness(() -> {
+				Win32DPIUtils.runWithProperDPIAwareness(this, () -> {
 					if (!OS.PeekMessage (msg, 0, 0, 0, flags)) {
 						if (runAsyncMessages (false)) wakeThread ();
 					}
+					return true;
 				});
 			}
 			break;
@@ -5414,14 +5416,4 @@ private boolean setMonitorSpecificScaling(boolean activate) {
 	return false;
 }
 
-private void runWithProperDPIAwareness(Runnable operation) {
-	if (isRescalingAtRuntime()) {
-		Win32DPIUtils.runWithProperDPIAwareness(() -> {
-			operation.run();
-			return true;
-		});
-	} else {
-		operation.run();
-	}
-}
 }
