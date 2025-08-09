@@ -5805,7 +5805,7 @@ public Point textExtent (String string) {
  * </ul>
  */
 public Point textExtent (String string, int flags) {
-	return Win32DPIUtils.pixelToPoint(drawable, textExtentInPixels(string, flags), data.font.zoom);
+	return Win32DPIUtils.pixelToPoint(drawable, textExtentInPixels(string, flags), getZoom());
 }
 
 Point textExtentInPixels(String string, int flags) {
