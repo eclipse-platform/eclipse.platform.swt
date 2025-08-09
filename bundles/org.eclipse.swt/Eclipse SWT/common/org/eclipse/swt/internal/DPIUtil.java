@@ -57,8 +57,7 @@ public class DPIUtil {
 	}
 	private static final AutoScaleMethod AUTO_SCALE_METHOD_SETTING;
 	private static AutoScaleMethod autoScaleMethod;
-
-	private static String autoScaleValue;
+	private static AutoScaleConfig autoScaleConfig;
 
 	/**
 	 * System property that controls the autoScale functionality.
@@ -97,20 +96,40 @@ public class DPIUtil {
 	private static final String SWT_AUTOSCALE_METHOD = "swt.autoScale.method";
 
 	static {
-		autoScaleValue = System.getProperty (SWT_AUTOSCALE);
-
+		setAutoScaleValue(System.getProperty (SWT_AUTOSCALE));
 		String value = System.getProperty (SWT_AUTOSCALE_METHOD);
 		AUTO_SCALE_METHOD_SETTING = AutoScaleMethod.forString(value).orElse(AutoScaleMethod.AUTO);
 		autoScaleMethod = AUTO_SCALE_METHOD_SETTING != AutoScaleMethod.AUTO ? AUTO_SCALE_METHOD_SETTING : AutoScaleMethod.NEAREST;
 	}
 
 static String getAutoScaleValue() {
-	return autoScaleValue;
+	return autoScaleConfig.value;
 }
 
 static void setAutoScaleValue(String autoScaleValueArg) {
-	autoScaleValue = autoScaleValueArg;
+	autoScaleConfig = new AutoScaleConfig(autoScaleValueArg);
 }
+
+	private static final class AutoScaleConfig {
+		private final String value;
+		private final boolean useAutoScaledFontZoom;
+
+		AutoScaleConfig(String value) {
+			this.value = value;
+			useAutoScaledFontZoom = isIntegerAutoScale(value);
+		}
+
+		private static boolean isIntegerAutoScale(String value) {
+			if (value == null)
+				return false;
+			try {
+				Integer.parseInt(value);
+				return true;
+			} catch (NumberFormatException e) {
+				return false;
+			}
+		}
+	}
 
 public static int pixelToPoint(int size, int zoom) {
 	if (zoom == 100 || size == SWT.DEFAULT) return size;
@@ -343,7 +362,15 @@ static void setUseSmoothScalingByDefaultProvider(UseSmoothScalingProvider provid
 }
 
 public static int getZoomForAutoscaleProperty (int nativeDeviceZoom) {
-	return getZoomForAutoscaleProperty(nativeDeviceZoom, autoScaleValue);
+	return getZoomForAutoscaleProperty(nativeDeviceZoom, autoScaleConfig.value);
+}
+
+public static int getFontZoomForAutoscaleProperty(int nativeDeviceZoom) {
+	if (autoScaleConfig.useAutoScaledFontZoom ) {
+		return getZoomForAutoscaleProperty(nativeDeviceZoom);
+	} else {
+		return nativeDeviceZoom;
+	}
 }
 
 private static int getZoomForAutoscaleProperty (int nativeDeviceZoom, String autoScaleValue) {
@@ -376,13 +403,13 @@ private static int getZoomForAutoscaleProperty (int nativeDeviceZoom, String aut
 }
 
 public static void runWithAutoScaleValue(String autoScaleValue, Runnable runnable) {
-	String initialAutoScaleValue = DPIUtil.autoScaleValue;
-	DPIUtil.autoScaleValue = autoScaleValue;
+	String initialAutoScaleValue = autoScaleConfig.value;
+	setAutoScaleValue(autoScaleValue);
 	DPIUtil.deviceZoom = getZoomForAutoscaleProperty(nativeDeviceZoom);
 	try {
 		runnable.run();
 	} finally {
-		DPIUtil.autoScaleValue = initialAutoScaleValue;
+		setAutoScaleValue(initialAutoScaleValue);
 		DPIUtil.deviceZoom = getZoomForAutoscaleProperty(nativeDeviceZoom);
 	}
 }
