@@ -613,30 +613,10 @@ public Image(Device device, ImageDataProvider imageDataProvider) {
 				": ImageDataProvider [" + imageDataProvider + "] returns null ImageData at 100% zoom.");
 	}
 	if (Device.strictChecks) {
-		validateLinearScaling(imageDataProvider);
+		DPIUtil.validateLinearScaling(imageDataProvider);
 	}
 	init();
 	this.device.registerResourceWithZoomSupport(this);
-}
-
-private void validateLinearScaling(ImageDataProvider provider) {
-	final int baseZoom = 100;
-	final int scaledZoom = 200;
-	final int scaleFactor = scaledZoom / baseZoom;
-	ImageData baseImageData = provider.getImageData(baseZoom);
-	ImageData scaledImageData = provider.getImageData(scaledZoom);
-
-	if (scaledImageData == null) {
-		return;
-	}
-
-	if (scaledImageData.width != scaleFactor * baseImageData.width
-			|| scaledImageData.height != scaleFactor * baseImageData.height) {
-		System.err.println(String.format(
-				"***WARNING: ImageData should be linearly scaled across zooms but size is (%d, %d) at 100%% and (%d, %d) at 200%%.",
-				baseImageData.width, baseImageData.height, scaledImageData.width, scaledImageData.height));
-		new Error().printStackTrace(System.err);
-	}
 }
 
 /**

@@ -33,6 +33,7 @@ import org.eclipse.swt.internal.gtk4.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public abstract class Device implements Drawable {
+	protected static boolean strictChecks = System.getProperty("org.eclipse.swt.internal.enableStrictChecks") != null;
 	/**
 	 * @noreference This field is not intended to be referenced by clients.
 	 * @since 3.105

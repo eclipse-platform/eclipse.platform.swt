@@ -850,6 +850,9 @@ public Image(Device device, ImageDataProvider imageDataProvider) {
 	try {
 		init (data, 100);
 		init ();
+		if (Device.strictChecks) {
+			DPIUtil.validateLinearScaling(imageDataProvider);
+		}
 		ImageData data2x = imageDataProvider.getImageData (200);
 		if (data2x != null) {
 			alphaInfo_200 = new AlphaInfo();
@@ -1822,12 +1825,15 @@ public String toString () {
  * @noreference This method is not intended to be referenced by clients.
  */
 public static void drawScaled(GC gc, ImageData imageData, int width, int height, float scaleFactor) {
+	boolean originalStrictChecks = Device.strictChecks;
+	Device.strictChecks = false;
 	Image imageToDraw = new Image(gc.device, (ImageDataProvider) zoom ->  imageData);
 	gc.drawImage (imageToDraw, 0, 0, CocoaDPIUtil.pixelToPoint (width), CocoaDPIUtil.pixelToPoint (height),
 			/* E.g. destWidth here is effectively DPIUtil.autoScaleDown (scaledWidth), but avoiding rounding errors.
 			 * Nevertheless, we still have some rounding errors due to the point-based API GC#drawImage(..).
 			 */
 			0, 0, Math.round (CocoaDPIUtil.pixelToPoint (width * scaleFactor)), Math.round (CocoaDPIUtil.pixelToPoint (height * scaleFactor)));
+	Device.strictChecks = originalStrictChecks;
 	imageToDraw.dispose();
 }
 
