@@ -4829,11 +4829,13 @@ void destroyWidget() {
 		// Remove widget from hierarchy  by removing it from parent container
 		if (parent != null) {
 			long currHandle = topHandle();
-			if(GTK.GTK_IS_WINDOW(currHandle)) {
+
+			if (GTK.GTK_IS_WINDOW(currHandle)) {
 				GTK4.gtk_window_destroy(currHandle);
-			}
-			else {
-				OS.swt_fixed_remove(parent.parentingHandle(), fixedHandle);
+			} else {
+				if (fixedHandle != 0) {
+					OS.swt_fixed_remove(parent.parentingHandle(), fixedHandle);
+				}
 			}
 		}
 		releaseHandle();
