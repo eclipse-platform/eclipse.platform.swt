@@ -66,10 +66,9 @@ public final class Cursor extends Resource {
 	 */
 	private static final int DEFAULT_ZOOM = 100;
 
-	private HashMap<Integer, Long> zoomLevelToHandle = new HashMap<>();
+	private HashMap<Integer, CursorHandle> zoomLevelToHandle = new HashMap<>();
 
 	private final CursorHandleProvider cursorHandleProvider;
-	boolean isIcon;
 
 /**
  * Constructs a new cursor given a device and a style
@@ -120,7 +119,7 @@ public final class Cursor extends Resource {
 public Cursor(Device device, int style) {
 	super(device);
 	this.cursorHandleProvider = new StyleCursorHandleProvider(style);
-	this.handle = this.cursorHandleProvider.createHandle(device, DEFAULT_ZOOM);
+	this.handle = this.cursorHandleProvider.createHandle(device, DEFAULT_ZOOM).getHandle();
 	init();
 	this.device.registerResourceWithZoomSupport(this);
 }
@@ -161,12 +160,12 @@ public Cursor(Device device, int style) {
 public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int hotspotY) {
 	super(device);
 	this.cursorHandleProvider = new ImageDataWithMaskCursorHandleProvider(source, mask, hotspotX, hotspotY);
-	this.handle = this.cursorHandleProvider.createHandle(device, DEFAULT_ZOOM);
+	this.handle = this.cursorHandleProvider.createHandle(device, DEFAULT_ZOOM).getHandle();
 	init();
 	this.device.registerResourceWithZoomSupport(this);
 }
 
-private static long setupCursorFromImageData(ImageData source, ImageData mask, int hotspotX, int hotspotY) {
+private static CursorHandle setupCursorFromImageData(ImageData source, ImageData mask, int hotspotX, int hotspotY) {
 	if (source == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (mask == null) {
 		if (source.getTransparencyType() != SWT.TRANSPARENCY_MASK) {
@@ -195,7 +194,7 @@ private static long setupCursorFromImageData(ImageData source, ImageData mask, i
 	long hInst = OS.GetModuleHandle(null);
 	long handle = OS.CreateCursor(hInst, hotspotX, hotspotY, source.width, source.height, sourceData, maskData);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	return handle;
+	return new CustomCursorHandle(handle);
 }
 
 /**
@@ -230,13 +229,12 @@ private static long setupCursorFromImageData(ImageData source, ImageData mask, i
 public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 	super(device);
 	this.cursorHandleProvider = new ImageDataCursorHandleProvider(source, hotspotX, hotspotY);
-	isIcon = true;
-	this.handle = this.cursorHandleProvider.createHandle(device, DEFAULT_ZOOM);
+	this.handle = this.cursorHandleProvider.createHandle(device, DEFAULT_ZOOM).getHandle();
 	init();
 	this.device.registerResourceWithZoomSupport(this);
 }
 
-private static long setupCursorFromImageData(Device device, ImageData source, int hotspotX, int hotspotY) {
+private static CursorHandle setupCursorFromImageData(Device device, ImageData source, int hotspotX, int hotspotY) {
 	if (source == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	/* Check the hotspots */
 	if (hotspotX >= source.width || hotspotX < 0 ||
@@ -307,7 +305,7 @@ private static long setupCursorFromImageData(Device device, ImageData source, in
 	OS.DeleteObject(hMask);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 
-	return handle;
+	return new IconCursorHandle(handle);
 }
 
 /**
@@ -343,8 +341,7 @@ public Cursor(Device device, ImageDataProvider imageDataProvider, int hotspotX, 
 	super(device);
 	if (imageDataProvider == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.cursorHandleProvider = new ImageDataProviderCursorHandleProvider(imageDataProvider, hotspotX, hotspotY);
-	isIcon = true;
-	this.handle = this.cursorHandleProvider.createHandle(device, DEFAULT_ZOOM);
+	this.handle = this.cursorHandleProvider.createHandle(device, DEFAULT_ZOOM).getHandle();
 	init();
 	this.device.registerResourceWithZoomSupport(this);
 }
@@ -369,18 +366,18 @@ public static Long win32_getHandle (Cursor cursor, int zoom) {
 		return cursor.handle;
 	}
 	if (cursor.zoomLevelToHandle.get(zoom) != null) {
-		return cursor.zoomLevelToHandle.get(zoom);
+		return cursor.zoomLevelToHandle.get(zoom).getHandle();
 	}
 
-	long handle = cursor.cursorHandleProvider.createHandle(cursor.device, zoom);
+	CursorHandle handle = cursor.cursorHandleProvider.createHandle(cursor.device, zoom);
 	cursor.setHandleForZoomLevel(handle, zoom);
 
-	return cursor.zoomLevelToHandle.get(zoom);
+	return cursor.zoomLevelToHandle.get(zoom).getHandle();
 }
 
-private void setHandleForZoomLevel(long handle, Integer zoom) {
+private void setHandleForZoomLevel(CursorHandle handle, Integer zoom) {
 	if (this.handle == 0) {
-		this.handle = handle;	// Set handle for default zoom level
+		this.handle = handle.getHandle();	// Set handle for default zoom level
 	}
 	if (zoom != null && !zoomLevelToHandle.containsKey(zoom)) {
 		zoomLevelToHandle.put(zoom, handle);
@@ -406,27 +403,11 @@ void destroy () {
 }
 
 private void destroyHandle () {
-	for (Long handle : zoomLevelToHandle.values()) {
-		destroyHandle(handle);
+	for (CursorHandle handle : zoomLevelToHandle.values()) {
+		handle.destroy();
 	}
 	zoomLevelToHandle.clear();
 	handle = 0;
-}
-
-private void destroyHandle(long handle) {
-	if (isIcon) {
-		OS.DestroyIcon(handle);
-	} else {
-		/*
-		* The MSDN states that one should not destroy a shared
-		* cursor, that is, one obtained from LoadCursor.
-		* However, it does not appear to do any harm, so rather
-		* than keep track of how a cursor was created, we just
-		* destroy them all. If this causes problems in the future,
-		* put the flag back in.
-		*/
-		OS.DestroyCursor(handle);
-	}
 }
 
 /**
@@ -494,15 +475,59 @@ void destroyHandlesExcept(Set<Integer> zoomLevels) {
 	zoomLevelToHandle.entrySet().removeIf(entry -> {
 		final Integer zoom = entry.getKey();
 		if (!zoomLevels.contains(zoom) && zoom != DPIUtil.getZoomForAutoscaleProperty(DEFAULT_ZOOM)) {
-			destroyHandle(entry.getValue());
+			entry.getValue().destroy();
 			return true;
 		}
 		return false;
 	});
 }
 
+private static abstract class CursorHandle {
+	private final long handle;
+
+	public CursorHandle(long handle) {
+		this.handle = handle;
+	}
+
+	long getHandle() {
+		return handle;
+	}
+
+	abstract void destroy();
+}
+
+private static class IconCursorHandle extends CursorHandle {
+	public IconCursorHandle(long handle) {
+		super(handle);
+	}
+
+	@Override
+	void destroy() {
+		OS.DestroyIcon(getHandle());
+	}
+}
+
+private static class CustomCursorHandle extends CursorHandle {
+	public CustomCursorHandle(long handle) {
+		super(handle);
+	}
+
+	@Override
+	void destroy() {
+		/*
+		* The MSDN states that one should not destroy a shared
+		* cursor, that is, one obtained from LoadCursor.
+		* However, it does not appear to do any harm, so rather
+		* than keep track of how a cursor was created, we just
+		* destroy them all. If this causes problems in the future,
+		* put the flag back in.
+		*/
+		OS.DestroyCursor(getHandle());
+	}
+}
+
 private static interface CursorHandleProvider {
-	long createHandle(Device device, int zoom);
+	CursorHandle createHandle(Device device, int zoom);
 }
 
 private static class StyleCursorHandleProvider implements CursorHandleProvider {
@@ -513,12 +538,12 @@ private static class StyleCursorHandleProvider implements CursorHandleProvider {
 	}
 
 	@Override
-	public long createHandle(Device device, int zoom) {
+	public CursorHandle createHandle(Device device, int zoom) {
 		// zoom ignored, LoadCursor handles scaling internally
 		return setupCursorFromStyle(this.style);
 	}
 
-	private static final long setupCursorFromStyle(int style) {
+	private static final CursorHandle setupCursorFromStyle(int style) {
 		long lpCursorName = 0;
 		switch (style) {
 		case SWT.CURSOR_HAND:
@@ -594,7 +619,7 @@ private static class StyleCursorHandleProvider implements CursorHandleProvider {
 		if (handle == 0) {
 			SWT.error(SWT.ERROR_NO_HANDLES);
 		}
-		return handle;
+		return new CustomCursorHandle(handle);
 	}
 }
 
@@ -625,7 +650,7 @@ private static class ImageDataProviderCursorHandleProvider extends HotspotAwareC
 	}
 
 	@Override
-	public long createHandle(Device device, int zoom) {
+	public CursorHandle createHandle(Device device, int zoom) {
 		ImageData source;
 		if (zoom == DEFAULT_ZOOM) {
 			source = this.provider.getImageData(DEFAULT_ZOOM);
@@ -647,7 +672,7 @@ private static class ImageDataCursorHandleProvider extends HotspotAwareCursorHan
 	}
 
 	@Override
-	public long createHandle(Device device, int zoom) {
+	public CursorHandle createHandle(Device device, int zoom) {
 		ImageData scaledSource = DPIUtil.scaleImageData(device, this.source, zoom, DEFAULT_ZOOM);
 		return setupCursorFromImageData(device, scaledSource, getHotpotXInPixels(zoom),
 				getHotpotYInPixels(zoom));
@@ -663,7 +688,7 @@ private static class ImageDataWithMaskCursorHandleProvider extends ImageDataCurs
 	}
 
 	@Override
-	public long createHandle(Device device, int zoom) {
+	public CursorHandle createHandle(Device device, int zoom) {
 		ImageData scaledSource = DPIUtil.scaleImageData(device, this.source, zoom, DEFAULT_ZOOM);
 		ImageData scaledMask = this.mask != null ? DPIUtil.scaleImageData(device, mask, zoom, DEFAULT_ZOOM)
 				: null;
