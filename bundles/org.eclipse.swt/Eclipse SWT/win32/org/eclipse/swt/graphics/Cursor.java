@@ -598,15 +598,30 @@ private static class StyleCursorHandleProvider implements CursorHandleProvider {
 	}
 }
 
-private static class ImageDataProviderCursorHandleProvider implements CursorHandleProvider {
-	private final ImageDataProvider provider;
+private static abstract class HotspotAwareCursorHandleProvider implements CursorHandleProvider {
 	private final int hotspotX;
 	private final int hotspotY;
 
-	public ImageDataProviderCursorHandleProvider(ImageDataProvider provider, int hotspotX, int hotspotY) {
-		this.provider = provider;
+	public HotspotAwareCursorHandleProvider(int hotspotX, int hotspotY) {
 		this.hotspotX = hotspotX;
 		this.hotspotY = hotspotY;
+	}
+
+	protected final int getHotpotXInPixels(int zoom) {
+		return Win32DPIUtils.pointToPixel(hotspotX, zoom);
+	}
+
+	protected final int getHotpotYInPixels(int zoom) {
+		return Win32DPIUtils.pointToPixel(hotspotY, zoom);
+	}
+}
+
+private static class ImageDataProviderCursorHandleProvider extends HotspotAwareCursorHandleProvider {
+	private final ImageDataProvider provider;
+
+	public ImageDataProviderCursorHandleProvider(ImageDataProvider provider, int hotspotX, int hotspotY) {
+		super(hotspotX, hotspotY);
+		this.provider = provider;
 	}
 
 	@Override
@@ -619,36 +634,31 @@ private static class ImageDataProviderCursorHandleProvider implements CursorHand
 			source = tempImage.getImageData(zoom);
 			tempImage.dispose();
 		}
-		int hotspotXInPixels = Win32DPIUtils.pointToPixel(hotspotX, zoom);
-		int hotspotYInPixels = Win32DPIUtils.pointToPixel(hotspotY, zoom);
-		return setupCursorFromImageData(cursor.device, source, hotspotXInPixels, hotspotYInPixels);
+		return setupCursorFromImageData(cursor.device, source, getHotpotXInPixels(zoom), getHotpotYInPixels(zoom));
 	}
 }
 
-private static class ImageDataCursorHandleProvider implements CursorHandleProvider {
+private static class ImageDataCursorHandleProvider extends HotspotAwareCursorHandleProvider {
 	private final ImageData source;
 	private final ImageData mask;
-	private final int hotspotX;
-	private final int hotspotY;
 
 	public ImageDataCursorHandleProvider(ImageData source, ImageData mask, int hotspotX, int hotspotY) {
+		super(hotspotX, hotspotY);
 		this.source = source;
 		this.mask = mask;
-		this.hotspotX = hotspotX;
-		this.hotspotY = hotspotY;
 	}
 
 	@Override
 	public long createHandle(Cursor cursor, int zoom) {
 		ImageData scaledSource = DPIUtil.scaleImageData(cursor.device, this.source, zoom, DEFAULT_ZOOM);
-		int hotspotXInPixels = Win32DPIUtils.pointToPixel(hotspotX, zoom);
-		int hotspotYInPixels = Win32DPIUtils.pointToPixel(hotspotY, zoom);
 		if (cursor.isIcon) {
-			return setupCursorFromImageData(cursor.device, scaledSource, hotspotXInPixels, hotspotYInPixels);
+			return setupCursorFromImageData(cursor.device, scaledSource, getHotpotXInPixels(zoom),
+					getHotpotYInPixels(zoom));
 		} else {
 			ImageData scaledMask = this.mask != null ? DPIUtil.scaleImageData(cursor.device, mask, zoom, DEFAULT_ZOOM)
 					: null;
-			return setupCursorFromImageData(scaledSource, scaledMask, hotspotXInPixels, hotspotYInPixels);
+			return setupCursorFromImageData(scaledSource, scaledMask, getHotpotXInPixels(zoom),
+					getHotpotYInPixels(zoom));
 		}
 	}
 }
