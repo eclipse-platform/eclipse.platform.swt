@@ -120,7 +120,7 @@ public final class Cursor extends Resource {
 public Cursor(Device device, int style) {
 	super(device);
 	this.cursorHandleProvider = new StyleCursorHandleProvider(style);
-	this.handle = this.cursorHandleProvider.createHandle(this, DEFAULT_ZOOM);
+	this.handle = this.cursorHandleProvider.createHandle(device, DEFAULT_ZOOM);
 	init();
 	this.device.registerResourceWithZoomSupport(this);
 }
@@ -160,8 +160,8 @@ public Cursor(Device device, int style) {
  */
 public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int hotspotY) {
 	super(device);
-	this.cursorHandleProvider = new ImageDataCursorHandleProvider(source, mask, hotspotX, hotspotY);
-	this.handle = this.cursorHandleProvider.createHandle(this, DEFAULT_ZOOM);
+	this.cursorHandleProvider = new ImageDataWithMaskCursorHandleProvider(source, mask, hotspotX, hotspotY);
+	this.handle = this.cursorHandleProvider.createHandle(device, DEFAULT_ZOOM);
 	init();
 	this.device.registerResourceWithZoomSupport(this);
 }
@@ -229,9 +229,9 @@ private static long setupCursorFromImageData(ImageData source, ImageData mask, i
  */
 public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 	super(device);
-	this.cursorHandleProvider = new ImageDataCursorHandleProvider(source, null, hotspotX, hotspotY);
+	this.cursorHandleProvider = new ImageDataCursorHandleProvider(source, hotspotX, hotspotY);
 	isIcon = true;
-	this.handle = this.cursorHandleProvider.createHandle(this, DEFAULT_ZOOM);
+	this.handle = this.cursorHandleProvider.createHandle(device, DEFAULT_ZOOM);
 	init();
 	this.device.registerResourceWithZoomSupport(this);
 }
@@ -344,7 +344,7 @@ public Cursor(Device device, ImageDataProvider imageDataProvider, int hotspotX, 
 	if (imageDataProvider == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.cursorHandleProvider = new ImageDataProviderCursorHandleProvider(imageDataProvider, hotspotX, hotspotY);
 	isIcon = true;
-	this.handle = this.cursorHandleProvider.createHandle(this, DEFAULT_ZOOM);
+	this.handle = this.cursorHandleProvider.createHandle(device, DEFAULT_ZOOM);
 	init();
 	this.device.registerResourceWithZoomSupport(this);
 }
@@ -372,7 +372,7 @@ public static Long win32_getHandle (Cursor cursor, int zoom) {
 		return cursor.zoomLevelToHandle.get(zoom);
 	}
 
-	long handle = cursor.cursorHandleProvider.createHandle(cursor, zoom);
+	long handle = cursor.cursorHandleProvider.createHandle(cursor.device, zoom);
 	cursor.setHandleForZoomLevel(handle, zoom);
 
 	return cursor.zoomLevelToHandle.get(zoom);
@@ -502,7 +502,7 @@ void destroyHandlesExcept(Set<Integer> zoomLevels) {
 }
 
 private static interface CursorHandleProvider {
-	long createHandle(Cursor cursor, int zoom);
+	long createHandle(Device device, int zoom);
 }
 
 private static class StyleCursorHandleProvider implements CursorHandleProvider {
@@ -513,7 +513,7 @@ private static class StyleCursorHandleProvider implements CursorHandleProvider {
 	}
 
 	@Override
-	public long createHandle(Cursor cursor, int zoom) {
+	public long createHandle(Device device, int zoom) {
 		// zoom ignored, LoadCursor handles scaling internally
 		return setupCursorFromStyle(this.style);
 	}
@@ -625,41 +625,49 @@ private static class ImageDataProviderCursorHandleProvider extends HotspotAwareC
 	}
 
 	@Override
-	public long createHandle(Cursor cursor, int zoom) {
+	public long createHandle(Device device, int zoom) {
 		ImageData source;
 		if (zoom == DEFAULT_ZOOM) {
 			source = this.provider.getImageData(DEFAULT_ZOOM);
 		} else {
-			Image tempImage = new Image(cursor.device, this.provider);
+			Image tempImage = new Image(device, this.provider);
 			source = tempImage.getImageData(zoom);
 			tempImage.dispose();
 		}
-		return setupCursorFromImageData(cursor.device, source, getHotpotXInPixels(zoom), getHotpotYInPixels(zoom));
+		return setupCursorFromImageData(device, source, getHotpotXInPixels(zoom), getHotpotYInPixels(zoom));
 	}
 }
 
 private static class ImageDataCursorHandleProvider extends HotspotAwareCursorHandleProvider {
-	private final ImageData source;
-	private final ImageData mask;
+	protected final ImageData source;
 
-	public ImageDataCursorHandleProvider(ImageData source, ImageData mask, int hotspotX, int hotspotY) {
+	public ImageDataCursorHandleProvider(ImageData source, int hotspotX, int hotspotY) {
 		super(hotspotX, hotspotY);
 		this.source = source;
+	}
+
+	@Override
+	public long createHandle(Device device, int zoom) {
+		ImageData scaledSource = DPIUtil.scaleImageData(device, this.source, zoom, DEFAULT_ZOOM);
+		return setupCursorFromImageData(device, scaledSource, getHotpotXInPixels(zoom),
+				getHotpotYInPixels(zoom));
+	}
+}
+
+private static class ImageDataWithMaskCursorHandleProvider extends ImageDataCursorHandleProvider {
+	private final ImageData mask;
+
+	public ImageDataWithMaskCursorHandleProvider(ImageData source, ImageData mask, int hotspotX, int hotspotY) {
+		super(source, hotspotX, hotspotY);
 		this.mask = mask;
 	}
 
 	@Override
-	public long createHandle(Cursor cursor, int zoom) {
-		ImageData scaledSource = DPIUtil.scaleImageData(cursor.device, this.source, zoom, DEFAULT_ZOOM);
-		if (cursor.isIcon) {
-			return setupCursorFromImageData(cursor.device, scaledSource, getHotpotXInPixels(zoom),
-					getHotpotYInPixels(zoom));
-		} else {
-			ImageData scaledMask = this.mask != null ? DPIUtil.scaleImageData(cursor.device, mask, zoom, DEFAULT_ZOOM)
-					: null;
-			return setupCursorFromImageData(scaledSource, scaledMask, getHotpotXInPixels(zoom),
-					getHotpotYInPixels(zoom));
-		}
+	public long createHandle(Device device, int zoom) {
+		ImageData scaledSource = DPIUtil.scaleImageData(device, this.source, zoom, DEFAULT_ZOOM);
+		ImageData scaledMask = this.mask != null ? DPIUtil.scaleImageData(device, mask, zoom, DEFAULT_ZOOM)
+				: null;
+		return setupCursorFromImageData(scaledSource, scaledMask, getHotpotXInPixels(zoom), getHotpotYInPixels(zoom));
 	}
 }
 
