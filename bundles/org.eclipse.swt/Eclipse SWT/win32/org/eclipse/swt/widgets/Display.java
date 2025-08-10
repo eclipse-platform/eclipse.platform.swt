@@ -2608,7 +2608,7 @@ public Image getSystemImage (int id) {
 
 private ImageDataProvider getImageDataProviderForIcon(int iconName) {
 	return zoom -> {
-		int scaledIconSize = Win32DPIUtils.pointToPixel(ICON_SIZE_AT_100, zoom);
+		int scaledIconSize = DPIUtil.pointToPixel(ICON_SIZE_AT_100, zoom);
 		long [] hIcon = new long [1];
 		OS.LoadIconWithScaleDown(0, iconName, scaledIconSize, scaledIconSize, hIcon);
 		Image image = Image.win32_new (this, SWT.ICON, hIcon[0], zoom);
