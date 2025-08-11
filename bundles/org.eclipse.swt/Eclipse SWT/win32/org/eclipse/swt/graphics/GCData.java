@@ -48,6 +48,7 @@ public final class GCData {
 	public float lineMiterLimit = 10;
 	public int alpha = 0xFF;
 	public int nativeZoom;
+	int imageZoom;
 
 	public Image image;
 	public PAINTSTRUCT ps;
@@ -67,6 +68,7 @@ public final class GCData {
 		originalData.font = font;
 		originalData.nativeZoom = nativeZoom;
 		originalData.image = image;
+		originalData.imageZoom = imageZoom;
 		originalData.ps = ps;
 		originalData.layout = layout;
 		originalData.hwnd = hwnd;
