@@ -809,10 +809,15 @@ private ImageHandle getImageMetadata(ZoomContext zoomContext) {
  * @noreference This method is not intended to be referenced by clients.
  */
 public static long win32_getHandle (Image image, int zoom) {
-	if (image.isDisposed()) {
+	return image.getHandle(zoom, zoom);
+}
+
+long getHandle (int targetZoom, int nativeZoom) {
+	if (isDisposed()) {
 		return 0L;
 	}
-	return image.getImageMetadata(new ZoomContext(zoom)).handle;
+	ZoomContext zoomContext = imageProvider.getFittingZoomContext(targetZoom, nativeZoom);
+	return getImageMetadata(zoomContext).handle;
 }
 
 /**
@@ -1752,6 +1757,7 @@ private long configureGC(GCData data, ZoomContext zoomContext) {
 		}
 		data.device = device;
 		data.nativeZoom = zoomContext.nativeZoom();
+		data.imageZoom = zoomContext.targetZoom();
 		data.image = this;
 		data.font = SWTFontProvider.getSystemFont(device, zoomContext.nativeZoom());
 	}
@@ -1912,6 +1918,10 @@ private record ZoomContext(int targetZoom, int nativeZoom) {
 private abstract class AbstractImageProviderWrapper {
 
 	protected abstract Rectangle getBounds(int zoom);
+
+	protected ZoomContext getFittingZoomContext(int targetZoom, int nativeZoom) {
+		return new ZoomContext(targetZoom);
+	}
 
 	protected long configureGCData(GCData data) {
 		return configureGC(data, new ZoomContext(100));
@@ -2139,13 +2149,21 @@ private class PlainImageProviderWrapper extends AbstractImageProviderWrapper {
 	}
 
 	@Override
+	protected ZoomContext getFittingZoomContext(int targetZoom, int nativeZoom) {
+		if (memGC != null) {
+			return new ZoomContext(targetZoom, nativeZoom);
+		}
+		return super.getFittingZoomContext(targetZoom, nativeZoom);
+	}
+
+	@Override
 	public Collection<Integer> getPreservedZoomLevels() {
 		return Collections.singleton(baseZoom);
 	}
 
 	@Override
 	protected long configureGCData(GCData data) {
-		return configureGC(data, new ZoomContext(DPIUtil.getDeviceZoom()));
+		return configureGC(data, new ZoomContext(DPIUtil.getDeviceZoom(), DPIUtil.getNativeDeviceZoom()));
 	}
 
 	@Override
@@ -2575,6 +2593,11 @@ private class ImageGcDrawerWrapper extends DynamicImageProviderWrapper {
 		this.drawer = imageGcDrawer;
 		this.width = width;
 		this.height = height;
+	}
+
+	@Override
+	protected ZoomContext getFittingZoomContext(int targetZoom, int nativeZoom) {
+		return new ZoomContext(targetZoom, nativeZoom);
 	}
 
 	@Override
