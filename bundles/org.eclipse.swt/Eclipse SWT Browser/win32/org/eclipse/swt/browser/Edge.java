@@ -840,7 +840,7 @@ void browserDispose(Event event) {
 			if (inCallback > 0) {
 				ICoreWebView2Controller controller1 = controller;
 				controller.put_IsVisible(false);
-				browser.getDisplay().asyncExec(() -> {
+				asyncExec(() -> {
 					controller1.Close();
 					controller1.Release();
 				});
@@ -1004,7 +1004,7 @@ private String getExposedUrl(String url) {
 }
 
 int handleCloseRequested(long pView, long pArgs) {
-	browser.getDisplay().asyncExec(() -> {
+	asyncExec(() -> {
 		if (browser.isDisposed()) return;
 		WindowEvent event = new WindowEvent(browser);
 		event.display = browser.getDisplay();
@@ -1022,7 +1022,7 @@ int handleDocumentTitleChanged(long pView, long pArgs) {
 	long[] ppsz = new long[1];
 	webViewProvider.getWebView(false).get_DocumentTitle(ppsz);
 	String title = wstrToString(ppsz[0], true);
-	browser.getDisplay().asyncExec(() -> {
+	asyncExec(() -> {
 		if (browser.isDisposed()) return;
 		TitleEvent event = new TitleEvent(browser);
 		event.display = browser.getDisplay();
@@ -1152,7 +1152,7 @@ int handleSourceChanged(long pView, long pArgs) {
 		} else {
 			location = url;
 		}
-		browser.getDisplay().asyncExec(() -> {
+		asyncExec(() -> {
 			if (browser.isDisposed()) return;
 			LocationEvent event = new LocationEvent(browser);
 			event.display = browser.getDisplay();
@@ -1169,7 +1169,7 @@ int handleSourceChanged(long pView, long pArgs) {
 }
 
 void sendProgressCompleted() {
-	browser.getDisplay().asyncExec(() -> {
+	asyncExec(() -> {
 		if (browser.isDisposed()) return;
 		ProgressEvent event = new ProgressEvent(browser);
 		event.display = browser.getDisplay();
@@ -1326,7 +1326,7 @@ int handleNavigationCompleted(long pView, long pArgs, boolean top) {
 	int[] pIsSuccess = new int[1];
 	args.get_IsSuccess(pIsSuccess);
 	if (pIsSuccess[0] != 0) {
-		browser.getDisplay().asyncExec(() -> {
+		asyncExec(() -> {
 			if (browser.isDisposed()) return;
 			LocationEvent event = new LocationEvent(browser);
 			event.display = browser.getDisplay();
@@ -1426,10 +1426,15 @@ int handleNewWindowRequested(long pView, long pArgs) {
 	if (inEvaluate) {
 		openWindowHandler.run();
 	} else {
-		browser.getDisplay().asyncExec(openWindowHandler);
+		asyncExec(openWindowHandler);
 	}
 
 	return COM.S_OK;
+}
+
+private void asyncExec(Runnable r) {
+	if (browser.isDisposed()) return;
+	browser.getDisplay().asyncExec(r);
 }
 
 int handleGotFocus(long pView, long pArg) {
