@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -15,9 +15,9 @@
 package org.eclipse.swt.tests.junit;
 
 import static org.eclipse.swt.tests.junit.SwtTestUtil.assertSWTProblem;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -25,8 +25,8 @@ import java.util.Set;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Display;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.program.Program
@@ -35,8 +35,8 @@ import org.junit.Test;
  */
 public class Test_org_eclipse_swt_program_Program {
 
-@Before
-public void setUp() {
+@BeforeAll
+public static void setUp() {
 	Display.getDefault();
 }
 
@@ -60,20 +60,16 @@ public void test_executeLjava_lang_String() {
 	// This test is incomplete because a true test of execute would open
 	// an application that cannot be programmatically closed.
 
-	try {
-		Program[] programs = Program.getPrograms();
-		if (programs != null && programs.length > 0) {
+	Program[] programs = Program.getPrograms();
+	if (programs != null && programs.length > 0) {
 
-			// Cannot test empty string argument because it may launch something.
-			//boolean result = programs[0].execute("");
-			//assertFalse(result);
+		// Cannot test empty string argument because it may launch something.
+		//boolean result = programs[0].execute("");
+		//assertFalse(result);
 
-			// test null argument
+		// test null argument
 
-			programs[0].execute(null);
-			fail("Failed to throw ERROR_NULL_ARGUMENT");
-		}
-	} catch (IllegalArgumentException e) {
+		IllegalArgumentException e = assertThrows(IllegalArgumentException.class,()-> programs[0].execute(null), "Failed to throw ERROR_NULL_ARGUMENT");
 		assertSWTProblem("Failed to throw ERROR_NULL_ARGUMENT", SWT.ERROR_NULL_ARGUMENT, e);
 	}
 }
@@ -89,16 +85,9 @@ public void test_findProgramLjava_lang_String() {
 		}
 	}
 
-	try {
-		Program.findProgram(null);
-		fail("Failed to throw ERROR_NULL_ARGUMENT");
-	} catch (IllegalArgumentException e) {
-		assertSWTProblem("Failed to throw ERROR_NULL_ARGUMENT", SWT.ERROR_NULL_ARGUMENT, e);
-	} catch (Exception e) {
-		fail("Invalid Exception thrown of type "+e.getClass());
-	} catch (Error e) {
-		fail("Invalid Error thrown of type "+e.getClass());
-	}
+	IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> Program.findProgram(null),
+			"Failed to throw ERROR_NULL_ARGUMENT");
+	assertSWTProblem("Failed to throw ERROR_NULL_ARGUMENT", SWT.ERROR_NULL_ARGUMENT, e);
 }
 
 @Test
@@ -158,12 +147,7 @@ public void test_getPrograms() {
 		assertNotNull(program);
 
 		// test if the list contains same objects multiple times
-		if (lookup.contains(program)) {
-			fail("Duplicated list entry for " + program);
-		}
-		else {
-			lookup.add(program);
-		}
+		assertTrue (lookup.add(program), "Duplicated list entry for " + program);
 	}
 }
 
@@ -177,12 +161,9 @@ public void test_launchLjava_lang_String() {
 
 	// test null argument
 
-	try {
-		Program.launch(null);
-		fail("Failed to throw ERROR_NULL_ARGUMENT");
-	} catch (IllegalArgumentException e) {
-		assertSWTProblem("Failed to throw ERROR_NULL_ARGUMENT", SWT.ERROR_NULL_ARGUMENT, e);
-	}
+	IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> Program.launch(null),
+			"Failed to throw ERROR_NULL_ARGUMENT");
+	assertSWTProblem("Failed to throw ERROR_NULL_ARGUMENT", SWT.ERROR_NULL_ARGUMENT, e);
 }
 
 @Test
