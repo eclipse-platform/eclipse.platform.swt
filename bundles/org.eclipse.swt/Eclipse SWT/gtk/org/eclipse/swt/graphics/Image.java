@@ -1169,24 +1169,22 @@ public ImageData getImageData (int zoom) {
 
 private ImageData drawWithImageGcDrawer(int width, int height, int zoom) {
 	int gcStyle = imageGcDrawer.getGcStyle();
-	Image image;
 	if ((gcStyle & SWT.TRANSPARENT) != 0) {
 		/* Create a 24 bit image data with alpha channel */
 		final ImageData resultData = new ImageData(width, height, 24, new PaletteData (0xFF, 0xFF00, 0xFF0000));
 		resultData.alphaData = new byte [width * height];
-		image = new Image(device, resultData, zoom);
+		init(resultData, zoom);
 	} else {
-		image = new Image(device, width, height);
+		init(width, height);
 	}
-	GC gc = new GC(image, gcStyle);
+	GC gc = new GC(Image.this, gcStyle);
 	try {
 		imageGcDrawer.drawOn(gc, width, height);
-		ImageData imageData = image.getImageData(zoom);
+		ImageData imageData = Image.this.getImageData(zoom);
 		imageGcDrawer.postProcess(imageData);
 		return imageData;
 	} finally {
 		gc.dispose();
-		image.dispose();
 	}
 }
 

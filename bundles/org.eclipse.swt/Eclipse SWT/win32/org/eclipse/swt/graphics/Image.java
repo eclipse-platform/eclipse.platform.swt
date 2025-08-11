@@ -380,14 +380,6 @@ public Image(Device device, ImageData data) {
 	this.device.registerResourceWithZoomSupport(this);
 }
 
-private Image(Device device, ImageData data, int zoom) {
-	super(device);
-	if (data == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.imageProvider = new PlainImageDataProviderWrapper(data, zoom);
-	init();
-	this.device.registerResourceWithZoomSupport(this);
-}
-
 /**
  * Constructs an instance of this class, whose type is
  * <code>SWT.ICON</code>, from the two given <code>ImageData</code>
@@ -1957,6 +1949,46 @@ private abstract class AbstractImageProviderWrapper {
 			return init(data, zoomContext.targetZoom());
 		}
 	}
+
+	protected final ImageHandle createHandle(int width, int height, int zoom) {
+		long handle = initHandle(width, height, zoom);
+		ImageHandle imageHandle = new ImageHandle(handle, zoom);
+		zoomLevelToImageHandle.put(zoom, imageHandle);
+		return imageHandle;
+	}
+
+	private long initHandle(int width, int height, int zoom) {
+		if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+		int scaledWidth = Win32DPIUtils.pointToPixel (width, zoom);
+		int scaledHeight = Win32DPIUtils.pointToPixel (height, zoom);
+		long hDC = device.internal_new_GC(null);
+		long newHandle = OS.CreateCompatibleBitmap(hDC, scaledWidth, scaledHeight);
+		/*
+		* Feature in Windows.  CreateCompatibleBitmap() may fail
+		* for large images.  The fix is to create a DIB section
+		* in that case.
+		*/
+		if (newHandle == 0) {
+			int bits = OS.GetDeviceCaps(hDC, OS.BITSPIXEL);
+			int planes = OS.GetDeviceCaps(hDC, OS.PLANES);
+			int depth = bits * planes;
+			if (depth < 16) depth = 16;
+			if (depth > 24) depth = 24;
+			newHandle = createDIB(scaledWidth, scaledHeight, depth);
+		}
+		if (newHandle != 0) {
+			long memDC = OS.CreateCompatibleDC(hDC);
+			long hOldBitmap = OS.SelectObject(memDC, newHandle);
+			OS.PatBlt(memDC, 0, 0, scaledWidth, scaledHeight, OS.PATCOPY);
+			OS.SelectObject(memDC, hOldBitmap);
+			OS.DeleteDC(memDC);
+		}
+		device.internal_dispose_GC(hDC, null);
+		if (newHandle == 0) {
+			SWT.error(SWT.ERROR_NO_HANDLES, null, device.getLastError());
+		}
+		return newHandle;
+	}
 }
 
 private class ExistingImageHandleProviderWrapper extends AbstractImageProviderWrapper {
@@ -2196,7 +2228,7 @@ private class PlainImageProviderWrapper extends AbstractImageProviderWrapper {
 			if (memGC.getZoom() != targetZoom) {
 				GC currentGC = memGC;
 				memGC = null;
-				createHandle(targetZoom);
+				createHandle(this.width, this.height, targetZoom);
 				currentGC.refreshFor(new DrawableWrapper(Image.this, zoomContext));
 			}
 			return zoomLevelToImageHandle.get(targetZoom);
@@ -2205,47 +2237,7 @@ private class PlainImageProviderWrapper extends AbstractImageProviderWrapper {
 	}
 	private ImageHandle createBaseHandle(int zoom) {
 		baseZoom = zoom;
-		return createHandle(zoom);
-	}
-
-	private ImageHandle createHandle(int zoom) {
-		long handle = initHandle(zoom);
-		ImageHandle imageHandle = new ImageHandle(handle, zoom);
-		zoomLevelToImageHandle.put(zoom, imageHandle);
-		return imageHandle;
-	}
-
-	private long initHandle(int zoom) {
-		if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-		int scaledWidth = Win32DPIUtils.pointToPixel (width, zoom);
-		int scaledHeight = Win32DPIUtils.pointToPixel (height, zoom);
-		long hDC = device.internal_new_GC(null);
-		long newHandle = OS.CreateCompatibleBitmap(hDC, scaledWidth, scaledHeight);
-		/*
-		* Feature in Windows.  CreateCompatibleBitmap() may fail
-		* for large images.  The fix is to create a DIB section
-		* in that case.
-		*/
-		if (newHandle == 0) {
-			int bits = OS.GetDeviceCaps(hDC, OS.BITSPIXEL);
-			int planes = OS.GetDeviceCaps(hDC, OS.PLANES);
-			int depth = bits * planes;
-			if (depth < 16) depth = 16;
-			if (depth > 24) depth = 24;
-			newHandle = createDIB(scaledWidth, scaledHeight, depth);
-		}
-		if (newHandle != 0) {
-			long memDC = OS.CreateCompatibleDC(hDC);
-			long hOldBitmap = OS.SelectObject(memDC, newHandle);
-			OS.PatBlt(memDC, 0, 0, scaledWidth, scaledHeight, OS.PATCOPY);
-			OS.SelectObject(memDC, hOldBitmap);
-			OS.DeleteDC(memDC);
-		}
-		device.internal_dispose_GC(hDC, null);
-		if (newHandle == 0) {
-			SWT.error(SWT.ERROR_NO_HANDLES, null, device.getLastError());
-		}
-		return newHandle;
+		return createHandle(this.width, this.height, zoom);
 	}
 
 	@Override
@@ -2621,27 +2613,26 @@ private class ImageGcDrawerWrapper extends DynamicImageProviderWrapper {
 		currentZoom = zoomContext;
 		int targetZoom = zoomContext.targetZoom();
 		int gcStyle = drawer.getGcStyle();
-		Image image;
 		if ((gcStyle & SWT.TRANSPARENT) != 0) {
 			int scaledHeight = Win32DPIUtils.pointToPixel(height, targetZoom);
 			int scaledWidth = Win32DPIUtils.pointToPixel(width, targetZoom);
 			/* Create a 24 bit image data with alpha channel */
 			final ImageData resultData = new ImageData (scaledWidth, scaledHeight, 24, new PaletteData (0xFF, 0xFF00, 0xFF0000));
 			resultData.alphaData = new byte [scaledWidth * scaledHeight];
-			image = new Image(device, resultData, targetZoom);
+			init(resultData, targetZoom);
 		} else {
-			image = new Image(device, width, height);
+			createHandle(width, height, targetZoom);
 		}
-		GC gc = new GC(new DrawableWrapper(image, zoomContext), gcStyle);
+		GC gc = new GC(new DrawableWrapper(Image.this, zoomContext), gcStyle);
 		try {
 			drawer.drawOn(gc, width, height);
-			ImageData imageData = image.getImageData(targetZoom);
+			ImageData imageData = Image.this.getImageData(targetZoom);
 			drawer.postProcess(imageData);
-			ImageData newData = adaptImageDataIfDisabledOrGray(imageData);
-			return init(newData, targetZoom);
+			zoomLevelToImageHandle.get(targetZoom).destroy();
+			init(imageData, targetZoom);
+			return zoomLevelToImageHandle.get(targetZoom);
 		} finally {
 			gc.dispose();
-			image.dispose();
 		}
 	}
 
