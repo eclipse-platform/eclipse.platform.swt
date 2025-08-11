@@ -116,8 +116,6 @@ import org.eclipse.swt.internal.gtk4.*;
  */
 public class Display extends Device implements Executor {
 
-	static boolean strictChecks = System.getProperty("org.eclipse.swt.internal.enableStrictChecks") != null;
-
 	private static final int SLOT_IN_USE = -2;
 	private static final int LAST_TABLE_INDEX = -1;
 
@@ -880,12 +878,12 @@ void addWidget (long handle, Widget widget) {
 		widgetTable = newWidgetTable;
 	}
 	int index = freeSlot + 1;
-	if(strictChecks) {
+	StrictChecks.runIfStrictChecksEnabled(() -> {
 		long data = OS.g_object_get_qdata (handle, SWT_OBJECT_INDEX);
 		if(data > 0 && data != index) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT, null, ". Potential leak of " + widget + debugInfoForIndex(data - 1));
 		}
-	}
+	});
 	OS.g_object_set_qdata (handle, SWT_OBJECT_INDEX, index);
 	int oldSlot = freeSlot;
 	freeSlot = indexTable[oldSlot];

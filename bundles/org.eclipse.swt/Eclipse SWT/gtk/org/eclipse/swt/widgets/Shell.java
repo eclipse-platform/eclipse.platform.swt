@@ -3258,14 +3258,14 @@ void deregister () {
 	if(shellHandle != 0 && !(disposed instanceof Shell)) {
 		SWT.error(SWT.ERROR_INVALID_RETURN_VALUE, null, ". Wrong widgetTable entry: " + disposed + " removed for shell: " + this + display.dumpWidgetTableInfo());
 	}
-	if(Display.strictChecks) {
+	StrictChecks.runIfStrictChecksEnabled(() -> {
 		Shell[] shells = display.getShells();
 		for (Shell shell : shells) {
 			if(shell == this) {
 				SWT.error(SWT.ERROR_INVALID_RETURN_VALUE, null, ". Disposed shell still in the widgetTable: " + this + display.dumpWidgetTableInfo());
 			}
 		}
-	}
+	});
 }
 
 boolean requiresUngrab () {

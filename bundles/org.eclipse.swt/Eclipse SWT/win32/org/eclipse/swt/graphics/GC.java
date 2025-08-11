@@ -210,9 +210,9 @@ private void validateGCState() {
 }
 
 void checkGC(int mask) {
-	if (Device.strictChecks) {
+	StrictChecks.runIfStrictChecksEnabled(() -> {
 		validateGCState();
-	}
+	});
 	int state = data.state;
 	if ((state & mask) == mask) return;
 	state = (state ^ mask) & mask;
@@ -4402,10 +4402,10 @@ private void init(Drawable drawable, GCData data, long hDC) {
 }
 
 private static int extractZoom(long hDC) {
-	if (Device.strictChecks) {
+	StrictChecks.runIfStrictChecksEnabled(() -> {
 		System.err.println("***WARNING: GC is initialized with a missing zoom. This indicates an "
 				+ "incompatible custom Drawable implementation.");
-	}
+	});
 	long hwnd = OS.WindowFromDC(hDC);
 	long parentWindow = OS.GetAncestor(hwnd, OS.GA_ROOT);
 	long monitorParent = OS.MonitorFromWindow(parentWindow, OS.MONITOR_DEFAULTTONEAREST);
