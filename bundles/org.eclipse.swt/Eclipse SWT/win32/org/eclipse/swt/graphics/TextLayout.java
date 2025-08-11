@@ -2135,7 +2135,7 @@ public FontMetrics getLineMetrics (int lineIndex) {
 	long srcHdc = OS.CreateCompatibleDC(hDC);
 	TEXTMETRIC lptm = new TEXTMETRIC();
 	final int zoom = getZoom();
-	long availableFont = font != null ? SWTFontProvider.getFontHandle(font, zoom) : SWTFontProvider.getSystemFontHandle(device, zoom);
+	long availableFont = font != null ? SWTFontProvider.getFontHandle(font, nativeZoom) : SWTFontProvider.getSystemFontHandle(device, nativeZoom);
 	OS.SelectObject(srcHdc, availableFont);
 	metricsAdapter.GetTextMetrics(srcHdc, lptm);
 	OS.DeleteDC(srcHdc);
