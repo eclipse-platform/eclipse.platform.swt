@@ -5833,15 +5833,12 @@ Point textExtentInPixels(String string, int flags) {
 	return new Point(rect.right, rect.bottom);
 }
 
-void refreshFor(Drawable drawable, int zoom) {
+void refreshFor(Drawable drawable) {
 	if (drawable == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (zoom == getZoom()) {
-		return;
-	}
 	destroy();
 	GCData newData = new GCData();
 	originalData.copyTo(newData);
-	createGcHandle(drawable, newData, zoom);
+	createGcHandle(drawable, newData);
 }
 
 /**
@@ -5947,8 +5944,7 @@ private void storeAndApplyOperationForExistingHandle(Operation operation) {
 	operation.apply();
 }
 
-private void createGcHandle(Drawable drawable, GCData newData, int nativeZoom) {
-	newData.nativeZoom = nativeZoom;
+private void createGcHandle(Drawable drawable, GCData newData) {
 	long newHandle = drawable.internal_new_GC(newData);
 	if (newHandle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	init(drawable, newData, newHandle);
