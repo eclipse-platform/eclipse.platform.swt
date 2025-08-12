@@ -50,18 +50,6 @@ import org.eclipse.swt.internal.win32.*;
 public final class Cursor extends Resource {
 
 	/**
-	 * the handle to the OS cursor resource
-	 * (Warning: This field is platform dependent)
-	 * <p>
-	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
-	 * public API. It is marked public only so that it can be shared
-	 * within the packages provided by SWT. It is not available on all
-	 * platforms and should never be accessed from application code.
-	 * </p>
-	 *
-	 */
-	private long handle;
-	/**
 	 * Attribute to cache current native zoom level
 	 */
 	private static final int DEFAULT_ZOOM = 100;
@@ -69,6 +57,8 @@ public final class Cursor extends Resource {
 	private HashMap<Integer, CursorHandle> zoomLevelToHandle = new HashMap<>();
 
 	private final CursorHandleProvider cursorHandleProvider;
+
+	private boolean isDestroyed;
 
 /**
  * Constructs a new cursor given a device and a style
@@ -119,7 +109,6 @@ public final class Cursor extends Resource {
 public Cursor(Device device, int style) {
 	super(device);
 	this.cursorHandleProvider = new StyleCursorHandleProvider(style);
-	this.handle = this.cursorHandleProvider.createHandle(device, DEFAULT_ZOOM).getHandle();
 	init();
 	this.device.registerResourceWithZoomSupport(this);
 }
@@ -160,7 +149,6 @@ public Cursor(Device device, int style) {
 public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int hotspotY) {
 	super(device);
 	this.cursorHandleProvider = new ImageDataWithMaskCursorHandleProvider(source, mask, hotspotX, hotspotY);
-	this.handle = this.cursorHandleProvider.createHandle(device, DEFAULT_ZOOM).getHandle();
 	init();
 	this.device.registerResourceWithZoomSupport(this);
 }
@@ -229,7 +217,6 @@ private static CursorHandle setupCursorFromImageData(ImageData source, ImageData
 public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 	super(device);
 	this.cursorHandleProvider = new ImageDataCursorHandleProvider(source, hotspotX, hotspotY);
-	this.handle = this.cursorHandleProvider.createHandle(device, DEFAULT_ZOOM).getHandle();
 	init();
 	this.device.registerResourceWithZoomSupport(this);
 }
@@ -341,7 +328,6 @@ public Cursor(Device device, ImageDataProvider imageDataProvider, int hotspotX, 
 	super(device);
 	if (imageDataProvider == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.cursorHandleProvider = new ImageDataProviderCursorHandleProvider(imageDataProvider, hotspotX, hotspotY);
-	this.handle = this.cursorHandleProvider.createHandle(device, DEFAULT_ZOOM).getHandle();
 	init();
 	this.device.registerResourceWithZoomSupport(this);
 }
@@ -363,7 +349,7 @@ public Cursor(Device device, ImageDataProvider imageDataProvider, int hotspotX, 
  */
 public static Long win32_getHandle (Cursor cursor, int zoom) {
 	if (cursor.isDisposed()) {
-		return cursor.handle;
+		return 0L;
 	}
 	if (cursor.zoomLevelToHandle.get(zoom) != null) {
 		return cursor.zoomLevelToHandle.get(zoom).getHandle();
@@ -376,9 +362,6 @@ public static Long win32_getHandle (Cursor cursor, int zoom) {
 }
 
 private void setHandleForZoomLevel(CursorHandle handle, Integer zoom) {
-	if (this.handle == 0) {
-		this.handle = handle.getHandle();	// Set handle for default zoom level
-	}
 	if (zoom != null && !zoomLevelToHandle.containsKey(zoom)) {
 		zoomLevelToHandle.put(zoom, handle);
 	}
@@ -407,7 +390,7 @@ private void destroyHandle () {
 		handle.destroy();
 	}
 	zoomLevelToHandle.clear();
-	handle = 0;
+	this.isDestroyed = true;
 }
 
 /**
@@ -425,7 +408,7 @@ public boolean equals (Object object) {
 	if (object == this) return true;
 	if (!(object instanceof Cursor)) return false;
 	Cursor cursor = (Cursor) object;
-	return device == cursor.device && handle == cursor.handle;
+	return device == cursor.device && win32_getHandle(this, DEFAULT_ZOOM) == win32_getHandle(cursor, DEFAULT_ZOOM);
 }
 
 /**
@@ -440,7 +423,7 @@ public boolean equals (Object object) {
  */
 @Override
 public int hashCode () {
-	return (int)handle;
+	return win32_getHandle(this, DEFAULT_ZOOM).intValue();
 }
 
 /**
@@ -455,7 +438,7 @@ public int hashCode () {
  */
 @Override
 public boolean isDisposed() {
-	return handle == 0;
+	return isDestroyed;
 }
 
 /**
@@ -467,7 +450,7 @@ public boolean isDisposed() {
 @Override
 public String toString () {
 	if (isDisposed()) return "Cursor {*DISPOSED*}";
-	return "Cursor {" + handle + "}";
+	return "Cursor {" + zoomLevelToHandle + "}";
 }
 
 @Override
@@ -531,19 +514,23 @@ private static interface CursorHandleProvider {
 }
 
 private static class StyleCursorHandleProvider implements CursorHandleProvider {
-	private final int style;
+	private final long lpCursorName;
 
 	public StyleCursorHandleProvider(int style) {
-		this.style = style;
+		this.lpCursorName = setupCursorFromStyle(style);
 	}
 
 	@Override
 	public CursorHandle createHandle(Device device, int zoom) {
 		// zoom ignored, LoadCursor handles scaling internally
-		return setupCursorFromStyle(this.style);
+		long handle = OS.LoadCursor(0, lpCursorName);
+		if (handle == 0) {
+			SWT.error(SWT.ERROR_NO_HANDLES);
+		}
+		return new CustomCursorHandle(handle);
 	}
 
-	private static final CursorHandle setupCursorFromStyle(int style) {
+	private static final long setupCursorFromStyle(int style) {
 		long lpCursorName = 0;
 		switch (style) {
 		case SWT.CURSOR_HAND:
@@ -615,11 +602,7 @@ private static class StyleCursorHandleProvider implements CursorHandleProvider {
 		default:
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		}
-		long handle = OS.LoadCursor(0, lpCursorName);
-		if (handle == 0) {
-			SWT.error(SWT.ERROR_NO_HANDLES);
-		}
-		return new CustomCursorHandle(handle);
+		return lpCursorName;
 	}
 }
 
@@ -646,6 +629,13 @@ private static class ImageDataProviderCursorHandleProvider extends HotspotAwareC
 
 	public ImageDataProviderCursorHandleProvider(ImageDataProvider provider, int hotspotX, int hotspotY) {
 		super(hotspotX, hotspotY);
+		ImageData source = provider.getImageData(DEFAULT_ZOOM);
+		if (source == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+		/* Check the hotspots */
+		if (hotspotX >= source.width || hotspotX < 0 ||
+			hotspotY >= source.height || hotspotY < 0) {
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		}
 		this.provider = provider;
 	}
 
@@ -668,6 +658,12 @@ private static class ImageDataCursorHandleProvider extends HotspotAwareCursorHan
 
 	public ImageDataCursorHandleProvider(ImageData source, int hotspotX, int hotspotY) {
 		super(hotspotX, hotspotY);
+		if (source == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+		/* Check the hotspots */
+		if (hotspotX >= source.width || hotspotX < 0 ||
+			hotspotY >= source.height || hotspotY < 0) {
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		}
 		this.source = source;
 	}
 
@@ -684,6 +680,16 @@ private static class ImageDataWithMaskCursorHandleProvider extends ImageDataCurs
 
 	public ImageDataWithMaskCursorHandleProvider(ImageData source, ImageData mask, int hotspotX, int hotspotY) {
 		super(source, hotspotX, hotspotY);
+		if (mask == null) {
+			if (source.getTransparencyType() != SWT.TRANSPARENCY_MASK) {
+				SWT.error(SWT.ERROR_NULL_ARGUMENT);
+			}
+			mask = source.getTransparencyMask();
+		}
+		/* Check the bounds. Mask must be the same size as source */
+		if (mask.width != source.width || mask.height != source.height) {
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		}
 		this.mask = mask;
 	}
 
