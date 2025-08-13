@@ -2527,7 +2527,9 @@ void setInitialBounds() {
 			long display = GDK.gdk_display_get_default();
 			if (display != 0) {
 				long monitor = GDK.gdk_display_get_monitor_at_surface(display, paintSurface());
-				GDK.gdk_monitor_get_geometry(monitor, dest);
+				if (monitor != 0) {
+					GDK.gdk_monitor_get_geometry(monitor, dest);
+				}
 				width = (int) (dest.width * SHELL_TO_MONITOR_RATIO);
 				height = (int) (dest.height * SHELL_TO_MONITOR_RATIO);
 			}
