@@ -16,6 +16,7 @@ package org.eclipse.swt.tests.junit;
 
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -28,6 +29,8 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageDataProvider;
 import org.eclipse.swt.graphics.ImageLoader;
+import org.eclipse.swt.graphics.PaletteData;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 import org.junit.Before;
 import org.junit.Test;
@@ -170,6 +173,66 @@ public void test_ConstructorWithImageDataProvider() {
 		fail("No exception thrown when ImageDataProvider is null");
 	} catch (IllegalArgumentException e) {
 	}
+}
+
+@Test
+public void test_InvalidArgumentsForAllConstructors() {
+	ImageData source = new ImageData(16, 16, 1, new PaletteData(new RGB[] { new RGB(0, 0, 0) }));
+	ImageData mask = new ImageData(16, 16, 1, new PaletteData(new RGB[] { new RGB(0, 0, 0) }));
+
+	assertThrows("IllegalArgumentException Expected: when wrong style was provided", IllegalArgumentException.class,
+			() -> {
+				Cursor cursor = new Cursor(Display.getDefault(), -99);
+				cursor.dispose();
+			});
+
+	assertThrows("IllegalArgumentException Expected: when source is null", IllegalArgumentException.class, () -> {
+		Cursor cursorFromImageAndMask = new Cursor(Display.getDefault(), null, mask, 0, 0);
+		cursorFromImageAndMask.dispose();
+	});
+
+	assertThrows("IllegalArgumentException Expected: when mask is null and source doesn't heve a mask",
+			IllegalArgumentException.class, () -> {
+				Cursor cursorFromImageAndMask = new Cursor(Display.getDefault(), source, null, 0, 0);
+				cursorFromImageAndMask.dispose();
+			});
+
+	assertThrows("IllegalArgumentException Expected: when source and the mask are not the same size",
+			IllegalArgumentException.class, () -> {
+				ImageData source32 = new ImageData(32, 32, 1, new PaletteData(new RGB[] { new RGB(0, 0, 0) }));
+				ImageData mask16 = new ImageData(16, 16, 1, new PaletteData(new RGB[] { new RGB(0, 0, 0) }));
+
+				Cursor cursorFromImageAndMask = new Cursor(Display.getDefault(), source32, mask16, 0, 0);
+				cursorFromImageAndMask.dispose();
+			});
+
+	assertThrows("IllegalArgumentException Expected: when hotspot is outside the bounds of the image",
+			IllegalArgumentException.class, () -> {
+				Cursor cursorFromImageAndMask = new Cursor(Display.getDefault(), source, mask, 18, 18);
+				cursorFromImageAndMask.dispose();
+			});
+
+	assertThrows("IllegalArgumentException Expected: when source image data is null", IllegalArgumentException.class,
+			() -> {
+				ImageData nullImageData = null;
+				Cursor cursorFromSourceOnly = new Cursor(Display.getDefault(), nullImageData, 0, 0);
+				cursorFromSourceOnly.dispose();
+			});
+
+	assertThrows("IllegalArgumentException Expected: when ImageDataProvider is null", IllegalArgumentException.class,
+			() -> {
+				ImageDataProvider provider = null;
+				Cursor cursorFromProvider = new Cursor(Display.getDefault(), provider, 0, 0);
+				cursorFromProvider.dispose();
+			});
+
+	assertThrows("IllegalArgumentException Expected: when source in ImageDataProvider is null",
+			IllegalArgumentException.class, () -> {
+				ImageData nullSource = null;
+				ImageDataProvider provider = zoom -> nullSource;
+				Cursor cursorFromProvider = new Cursor(Display.getDefault(), provider, 0, 0);
+				cursorFromProvider.dispose();
+			});
 }
 
 @Test
