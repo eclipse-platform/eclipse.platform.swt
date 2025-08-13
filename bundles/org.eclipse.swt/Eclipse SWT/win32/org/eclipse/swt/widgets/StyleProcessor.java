@@ -4,7 +4,7 @@ import java.util.*;
 
 import org.eclipse.swt.*;
 
-public class StyleProcessor {
+class StyleProcessor {
 
 
 	private static class Rule {

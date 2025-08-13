@@ -14,7 +14,7 @@
 package org.eclipse.swt.widgets;
 
 
-import java.util.*;
+import java.util.List;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
@@ -670,7 +670,7 @@ static int checkStyle (int style) {
  * @return ArrayList<String> styles
  * @since 3.131
  */
-public ArrayList<String> getStyles() {
+List<String> getStyles() {
 	return STYLE_PROCESSOR.process(this.style);
 }
 
