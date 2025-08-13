@@ -12,8 +12,6 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.widgets;
-
-
 import java.util.List;
 
 import org.eclipse.swt.*;
@@ -630,12 +628,12 @@ private static StyleProcessor STYLE_PROCESSOR = new StyleProcessor();
 
 static {
 	StyleProcessor processor = new StyleProcessor();
-	
+
 	processor.oneOf("SINGLE, MULTI")
 	.oneOf("LEFT, CENTER, RIGHT")
 	.someOf("BORDER, SEARCH").ifOneOf("MULTI").thenSomeOf("H_SCROLL, V_SCROLL, WRAP")
 	.ifOneOf("SINGLE").thenSomeOf("PASSWORD");
-	
+
 	STYLE_PROCESSOR = processor;
 }
 
@@ -664,7 +662,6 @@ static int checkStyle (int style) {
 	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) return style | SWT.MULTI;
 	return style | SWT.SINGLE;
 }
-
 
 List<String> getStyles() {
 	return STYLE_PROCESSOR.process(this.style);

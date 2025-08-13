@@ -13,8 +13,6 @@
  *     Conrad Groth - Bug 23837 [FEEP] Button, do not respect foreground and background color on Windows
  *******************************************************************************/
 package org.eclipse.swt.widgets;
-
-
 import java.util.List;
 
 import org.eclipse.swt.*;
