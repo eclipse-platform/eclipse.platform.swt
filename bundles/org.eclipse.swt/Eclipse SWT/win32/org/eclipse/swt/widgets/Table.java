@@ -2849,8 +2849,8 @@ int imageIndex (Image image, int column) {
 		setSubImagesVisible (true);
 	}
 	if (imageList == null) {
-		Rectangle bounds = Win32DPIUtils.scaleBounds(image.getBounds(), this.getZoom(), 100);
-		imageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, bounds.width, bounds.height, getZoom());
+		Rectangle boundsInPoints = image.getBounds();
+		imageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, boundsInPoints.width, boundsInPoints.height, getZoom());
 		int index = imageList.indexOf (image);
 		if (index == -1) index = imageList.add (image);
 		long hImageList = imageList.getHandle(getZoom());
@@ -2889,8 +2889,8 @@ int imageIndex (Image image, int column) {
 int imageIndexHeader (Image image) {
 	if (image == null) return OS.I_IMAGENONE;
 	if (headerImageList == null) {
-		Rectangle bounds = Win32DPIUtils.scaleBounds(image.getBounds(), this.getZoom(), 100);
-		headerImageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, bounds.width, bounds.height, getZoom());
+		Rectangle boundsInPoints = image.getBounds();
+		headerImageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, boundsInPoints.width, boundsInPoints.height, getZoom());
 		int index = headerImageList.indexOf (image);
 		if (index == -1) index = headerImageList.add (image);
 		long hImageList = headerImageList.getHandle(getZoom());
@@ -5576,9 +5576,9 @@ void updateOrientation () {
 	}
 	if ((style & SWT.CHECK) != 0) fixCheckboxImageListColor (false);
 	if (imageList != null) {
-		Point size = imageList.getImageSize ();
+		Point sizeInPoints = imageList.getImageSize();
 		display.releaseImageList (imageList);
-		imageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, size.x, size.y, getZoom());
+		imageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, sizeInPoints.x, sizeInPoints.y, getZoom());
 		int count = (int)OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 		for (int i = 0; i < count; i++) {
 			TableItem item = _getItem (i, false);
@@ -5595,9 +5595,9 @@ void updateOrientation () {
 	}
 	if (hwndHeader != 0) {
 		if (headerImageList != null) {
-			Point size = headerImageList.getImageSize ();
+			Point sizeInPoints = headerImageList.getImageSize();
 			display.releaseImageList (headerImageList);
-			headerImageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, size.x, size.y, getZoom());
+			headerImageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, sizeInPoints.x, sizeInPoints.y, getZoom());
 			if (columns != null) {
 				for (int i = 0; i < columns.length; i++) {
 					TableColumn column = columns [i];
@@ -7297,7 +7297,7 @@ LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, long lParam) {
 					if (image != null) {
 						Rectangle rect = Win32DPIUtils.pointToPixel(image.getBounds(), getZoom());
 						RECT imageRect = item.getBounds (pinfo.iItem, pinfo.iSubItem, false, true, false, false, hDC);
-						Point size = imageList == null ? new Point (rect.width, rect.height) : imageList.getImageSize ();
+						Point size = imageList == null ? new Point (rect.width, rect.height) : Win32DPIUtils.pointToPixel(imageList.getImageSize(), getZoom());
 						int y = imageRect.top + Math.max (0, (imageRect.bottom - imageRect.top - size.y) / 2);
 						int zoom = getZoom();
 						rect = Win32DPIUtils.pixelToPoint(rect, zoom);

@@ -3058,7 +3058,7 @@ public boolean getHeaderVisible () {
 }
 
 Point getImageSize () {
-	if (imageList != null) return imageList.getImageSize ();
+	if (imageList != null) return Win32DPIUtils.pointToPixel(imageList.getImageSize(), getZoom());
 	return new Point (0, getItemHeightInPixels ());
 }
 
@@ -3740,8 +3740,8 @@ boolean hitTestSelection (long hItem, int x, int y) {
 int imageIndex (Image image, int index) {
 	if (image == null) return OS.I_IMAGENONE;
 	if (imageList == null) {
-		Rectangle bounds = Win32DPIUtils.scaleBounds(image.getBounds(), this.getZoom(), 100);
-		imageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, bounds.width, bounds.height, getZoom());
+		Rectangle boundsInPoints = image.getBounds();
+		imageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, boundsInPoints.width, boundsInPoints.height, getZoom());
 	}
 	int imageIndex = imageList.indexOf (image);
 	if (imageIndex == -1) imageIndex = imageList.add (image);
@@ -3764,8 +3764,8 @@ int imageIndex (Image image, int index) {
 int imageIndexHeader (Image image) {
 	if (image == null) return OS.I_IMAGENONE;
 	if (headerImageList == null) {
-		Rectangle bounds = Win32DPIUtils.scaleBounds(image.getBounds(), this.getZoom(), 100);
-		headerImageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, bounds.width, bounds.height, getZoom());
+		Rectangle boundsInPoints = image.getBounds();
+		headerImageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, boundsInPoints.width, boundsInPoints.height, getZoom());
 		int index = headerImageList.indexOf (image);
 		if (index == -1) index = headerImageList.add (image);
 		long hImageList = headerImageList.getHandle(getZoom());
@@ -5791,9 +5791,9 @@ void updateOrientation () {
 	}
 	if ((style & SWT.CHECK) != 0) setCheckboxImageList ();
 	if (imageList != null) {
-		Point size = imageList.getImageSize ();
+		Point sizeInPoints = imageList.getImageSize();
 		display.releaseImageList (imageList);
-		imageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, size.x, size.y, getZoom());
+		imageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, sizeInPoints.x, sizeInPoints.y, getZoom());
 		for (TreeItem item : items) {
 			if (item != null) {
 				Image image = item.image;
@@ -5808,9 +5808,9 @@ void updateOrientation () {
 	}
 	if (hwndHeader != 0) {
 		if (headerImageList != null) {
-			Point size = headerImageList.getImageSize ();
+			Point sizeInPoints = headerImageList.getImageSize();
 			display.releaseImageList (headerImageList);
-			headerImageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, size.x, size.y, getZoom());
+			headerImageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, sizeInPoints.x, sizeInPoints.y, getZoom());
 			if (columns != null) {
 				for (int i = 0; i < columns.length; i++) {
 					TreeColumn column = columns[i];

@@ -1272,10 +1272,10 @@ String toolTipText (NMTTDISPINFO hdr) {
 void updateOrientation () {
 	super.updateOrientation ();
 	if (imageList != null) {
-		Point size = imageList.getImageSize ();
-		ImageList newImageList = display.getImageListToolBar (style & SWT.RIGHT_TO_LEFT, size.x, size.y, getZoom());
-		ImageList newHotImageList = display.getImageListToolBarHot (style & SWT.RIGHT_TO_LEFT, size.x, size.y, getZoom());
-		ImageList newDisabledImageList = display.getImageListToolBarDisabled (style & SWT.RIGHT_TO_LEFT, size.x, size.y, getZoom());
+		Point sizeInPoints = imageList.getImageSize();
+		ImageList newImageList = display.getImageListToolBar (style & SWT.RIGHT_TO_LEFT, sizeInPoints.x, sizeInPoints.y, getZoom());
+		ImageList newHotImageList = display.getImageListToolBarHot (style & SWT.RIGHT_TO_LEFT, sizeInPoints.x, sizeInPoints.y, getZoom());
+		ImageList newDisabledImageList = display.getImageListToolBarDisabled (style & SWT.RIGHT_TO_LEFT, sizeInPoints.x, sizeInPoints.y, getZoom());
 		TBBUTTONINFO info = new TBBUTTONINFO ();
 		info.cbSize = TBBUTTONINFO.sizeof;
 		info.dwMask = OS.TBIF_IMAGE;
