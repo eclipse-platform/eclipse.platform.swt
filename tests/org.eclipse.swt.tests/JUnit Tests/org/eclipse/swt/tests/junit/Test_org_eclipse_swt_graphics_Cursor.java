@@ -154,6 +154,8 @@ public void test_ConstructorWithImageDataProvider() {
 	Image sourceImage = new Image(display, 10, 10);
 	Cursor cursor = new Cursor(display, sourceImage::getImageData, 0, 0);
 	cursor.dispose();
+	cursor = new Cursor(null, sourceImage::getImageData, 0, 0);
+	cursor.dispose();
 	sourceImage.dispose();
 
 	assertThrows("No exception thrown when ImageDataProvider is null",
