@@ -119,7 +119,7 @@ public final class Cursor extends Resource {
 public Cursor(Device device, int style) {
 	super(device);
 	this.cursorHandleProvider = new StyleCursorHandleProvider(style);
-	this.handle = this.cursorHandleProvider.createHandle(device, DEFAULT_ZOOM).getHandle();
+	this.handle = this.cursorHandleProvider.createHandle(this.device, DEFAULT_ZOOM).getHandle();
 	init();
 	this.device.registerResourceWithZoomSupport(this);
 }
@@ -160,7 +160,7 @@ public Cursor(Device device, int style) {
 public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int hotspotY) {
 	super(device);
 	this.cursorHandleProvider = new ImageDataWithMaskCursorHandleProvider(source, mask, hotspotX, hotspotY);
-	this.handle = this.cursorHandleProvider.createHandle(device, DEFAULT_ZOOM).getHandle();
+	this.handle = this.cursorHandleProvider.createHandle(this.device, DEFAULT_ZOOM).getHandle();
 	init();
 	this.device.registerResourceWithZoomSupport(this);
 }
@@ -229,7 +229,7 @@ private static CursorHandle setupCursorFromImageData(ImageData source, ImageData
 public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 	super(device);
 	this.cursorHandleProvider = new ImageDataCursorHandleProvider(source, hotspotX, hotspotY);
-	this.handle = this.cursorHandleProvider.createHandle(device, DEFAULT_ZOOM).getHandle();
+	this.handle = this.cursorHandleProvider.createHandle(this.device, DEFAULT_ZOOM).getHandle();
 	init();
 	this.device.registerResourceWithZoomSupport(this);
 }
@@ -341,7 +341,7 @@ public Cursor(Device device, ImageDataProvider imageDataProvider, int hotspotX, 
 	super(device);
 	if (imageDataProvider == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.cursorHandleProvider = new ImageDataProviderCursorHandleProvider(imageDataProvider, hotspotX, hotspotY);
-	this.handle = this.cursorHandleProvider.createHandle(device, DEFAULT_ZOOM).getHandle();
+	this.handle = this.cursorHandleProvider.createHandle(this.device, DEFAULT_ZOOM).getHandle();
 	init();
 	this.device.registerResourceWithZoomSupport(this);
 }
