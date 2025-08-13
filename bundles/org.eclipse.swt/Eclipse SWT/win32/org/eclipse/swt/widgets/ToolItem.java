@@ -1103,16 +1103,16 @@ void updateImages (boolean enabled) {
 	ImageList hotImageList = parent.getHotImageList ();
 	ImageList disabledImageList = parent.getDisabledImageList();
 	if (info.iImage == OS.I_IMAGENONE) {
-		Rectangle bounds = Win32DPIUtils.scaleBounds(image.getBounds(), getParent().getZoom(), 100);
+		Rectangle boundsInPoints = image.getBounds();
 		int listStyle = parent.style & SWT.RIGHT_TO_LEFT;
 		if (imageList == null) {
-			imageList = display.getImageListToolBar (listStyle, bounds.width, bounds.height, getZoom());
+			imageList = display.getImageListToolBar (listStyle, boundsInPoints.width, boundsInPoints.height, getZoom());
 		}
 		if (disabledImageList == null) {
-			disabledImageList = display.getImageListToolBarDisabled (listStyle, bounds.width, bounds.height, getZoom());
+			disabledImageList = display.getImageListToolBarDisabled (listStyle, boundsInPoints.width, boundsInPoints.height, getZoom());
 		}
 		if (hotImageList == null) {
-			hotImageList = display.getImageListToolBarHot (listStyle, bounds.width, bounds.height, getZoom());
+			hotImageList = display.getImageListToolBarHot (listStyle, boundsInPoints.width, boundsInPoints.height, getZoom());
 		}
 		Image disabled = disabledImage;
 		if (disabledImage == null) {

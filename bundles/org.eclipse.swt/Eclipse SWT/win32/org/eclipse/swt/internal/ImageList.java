@@ -359,10 +359,14 @@ private void addPlaceholderImageToImageList(long imageListHandle, int bitmapWidt
 	OS.ReleaseDC(0, hDC);
 }
 
+/**
+ *
+ * {@return size of Images in the ImageList in points}
+ */
 public Point getImageSize() {
 	int [] cx = new int [1], cy = new int [1];
 	OS.ImageList_GetIconSize (handle, cx, cy);
-	return new Point (cx [0], cy [0]);
+	return Win32DPIUtils.pixelToPoint(new Point (cx [0], cy [0]), zoom);
 }
 
 public int indexOf (Image image) {
