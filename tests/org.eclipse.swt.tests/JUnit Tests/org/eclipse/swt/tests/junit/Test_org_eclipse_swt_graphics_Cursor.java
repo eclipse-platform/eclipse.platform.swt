@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -16,8 +16,8 @@ package org.eclipse.swt.tests.junit;
 
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -120,20 +120,12 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceI() {
 	cursor.dispose();
 
 	// illegal argument, style > SWT.CURSOR_HAND (21)
-	try {
-		cursor = new Cursor(display, 100);
-		cursor.dispose();
-		fail("No exception thrown for style > SWT.CURSOR_HAND (21)");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for style > SWT.CURSOR_HAND (21)",
+			IllegalArgumentException.class, () -> new Cursor(display, 100));
 
 	// illegal argument, style < 0
-	try {
-		cursor = new Cursor(display, -100);
-		cursor.dispose();
-		fail("No exception thrown for style < 0");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for style < 0",
+			IllegalArgumentException.class, () -> new Cursor(display, -100));
 }
 
 @Test
@@ -164,12 +156,8 @@ public void test_ConstructorWithImageDataProvider() {
 	cursor.dispose();
 	sourceImage.dispose();
 
-	try {
-		cursor = new Cursor(display, (ImageDataProvider) null, 0, 0);
-		cursor.dispose();
-		fail("No exception thrown when ImageDataProvider is null");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown when ImageDataProvider is null",
+			IllegalArgumentException.class, () -> new Cursor(display, (ImageDataProvider) null, 0, 0));
 }
 
 @Test
