@@ -311,7 +311,7 @@ Control computeTabRoot () {
 			OS.SendMessage (handle, OS.WM_NCCALCSIZE, 0, testRect);
 		}
 	}
-	return new Rectangle (rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
+	return new Rectangle.OfFloat (rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
 }
 
 void createAccelerators () {
@@ -415,11 +415,11 @@ void fixDecorations (Decorations newDecorations, Control control, Menu [] menus)
 		if ((lpwndpl.flags & OS.WPF_RESTORETOMAXIMIZED) != 0) {
 			int width = maxRect.right - maxRect.left;
 			int height = maxRect.bottom - maxRect.top;
-			return new Rectangle (maxRect.left, maxRect.top, width, height);
+			return new Rectangle.OfFloat (maxRect.left, maxRect.top, width, height);
 		}
 		int width = lpwndpl.right - lpwndpl.left;
 		int height = lpwndpl.bottom - lpwndpl.top;
-		return new Rectangle (lpwndpl.left, lpwndpl.top, width, height);
+		return new Rectangle.OfFloat (lpwndpl.left, lpwndpl.top, width, height);
 	}
 	return super.getBoundsInPixels ();
 }
@@ -431,7 +431,7 @@ void fixDecorations (Decorations newDecorations, Control control, Menu [] menus)
 		lpwndpl.length = WINDOWPLACEMENT.sizeof;
 		OS.GetWindowPlacement (handle, lpwndpl);
 		if ((lpwndpl.flags & OS.WPF_RESTORETOMAXIMIZED) != 0) {
-			return new Rectangle (0, 0, oldWidth, oldHeight);
+			return new Rectangle.OfFloat (0, 0, oldWidth, oldHeight);
 		}
 		int width = lpwndpl.right - lpwndpl.left;
 		int height = lpwndpl.bottom - lpwndpl.top;
@@ -455,7 +455,7 @@ void fixDecorations (Decorations newDecorations, Control control, Menu [] menus)
 		adjustWindowRectEx(rect, bits1, hasMenu, bits2);
 		width = Math.max (0, width - (rect.right - rect.left));
 		height = Math.max (0, height - (rect.bottom - rect.top));
-		return new Rectangle (0, 0, width, height);
+		return new Rectangle.OfFloat (0, 0, width, height);
 	}
 	return super.getClientAreaInPixels ();
 }
@@ -547,9 +547,9 @@ public Image [] getImages () {
 		lpwndpl.length = WINDOWPLACEMENT.sizeof;
 		OS.GetWindowPlacement (handle, lpwndpl);
 		if ((lpwndpl.flags & OS.WPF_RESTORETOMAXIMIZED) != 0) {
-			return new Point (maxRect.left, maxRect.top);
+			return new Point.OfFloat (maxRect.left, maxRect.top);
 		}
-		return new Point (lpwndpl.left, lpwndpl.top);
+		return new Point.OfFloat (lpwndpl.left, lpwndpl.top);
 	}
 	return super.getLocationInPixels ();
 }
@@ -622,11 +622,11 @@ String getNameText () {
 		if ((lpwndpl.flags & OS.WPF_RESTORETOMAXIMIZED) != 0) {
 			int width = maxRect.right - maxRect.left;
 			int height = maxRect.bottom - maxRect.top;
-			return new Point (width, height);
+			return new Point.OfFloat (width, height);
 		}
 		int width = lpwndpl.right - lpwndpl.left;
 		int height = lpwndpl.bottom - lpwndpl.top;
-		return new Point (width, height);
+		return new Point.OfFloat (width, height);
 	}
 	return super.getSizeInPixels ();
 }

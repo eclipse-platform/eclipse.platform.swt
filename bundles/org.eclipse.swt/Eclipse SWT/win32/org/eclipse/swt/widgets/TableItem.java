@@ -227,7 +227,7 @@ Rectangle getBoundsInPixels () {
 	if (itemIndex == -1) return new Rectangle (0, 0, 0, 0);
 	RECT rect = getBounds (itemIndex, 0, true, false, false);
 	int width = rect.right - rect.left, height = rect.bottom - rect.top;
-	return new Rectangle (rect.left, rect.top, width, height);
+	return new Rectangle.OfFloat (rect.left, rect.top, width, height);
 }
 
 /**
@@ -253,7 +253,7 @@ Rectangle getBoundsInPixels (int index) {
 	if (itemIndex == -1) return new Rectangle (0, 0, 0, 0);
 	RECT rect = getBounds (itemIndex, index, true, true, true);
 	int width = rect.right - rect.left, height = rect.bottom - rect.top;
-	return new Rectangle (rect.left, rect.top, width, height);
+	return new Rectangle.OfFloat (rect.left, rect.top, width, height);
 }
 
 RECT getBounds (int row, int column, boolean getText, boolean getImage, boolean fullText) {
@@ -599,7 +599,7 @@ Rectangle getImageBoundsInPixels (int index) {
 	if (itemIndex == -1) return new Rectangle (0, 0, 0, 0);
 	RECT rect = getBounds (itemIndex, index, false, true, false);
 	int width = rect.right - rect.left, height = rect.bottom - rect.top;
-	return new Rectangle (rect.left, rect.top, width, height);
+	return new Rectangle.OfFloat (rect.left, rect.top, width, height);
 }
 
 /**
@@ -705,7 +705,7 @@ Rectangle getTextBoundsInPixels (int index) {
 	rect.right = rect.right - Table.INSET;
 	int width = Math.max (0, rect.right - rect.left);
 	int height = Math.max (0, rect.bottom - rect.top);
-	return new Rectangle (rect.left, rect.top, width, height);
+	return new Rectangle.OfFloat (rect.left, rect.top, width, height);
 }
 
 void redraw () {

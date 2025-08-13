@@ -137,7 +137,7 @@ static int checkStyle (int style) {
 	}
 	if (wHint != SWT.DEFAULT) width = wHint + (border * 2);
 	if (hHint != SWT.DEFAULT) height = hHint + (border * 2);
-	return new Point (width, height);
+	return new Point.OfFloat (width, height);
 }
 
 void drawBand (int x, int y, int width, int height) {
@@ -244,7 +244,7 @@ LRESULT WM_KEYDOWN (long wParam, long lParam) {
 			OS.SetCursorPos (cursorPt.x, cursorPt.y);
 
 			Event event = new Event ();
-			event.setBounds(Win32DPIUtils.pixelToPoint(new Rectangle(newX, newY, width, height), getZoom()));
+			event.setBounds(Win32DPIUtils.pixelToPoint(new Rectangle.OfFloat(newX, newY, width, height), getZoom()));
 			sendSelectionEvent  (SWT.Selection, event, true);
 			if (isDisposed ()) return LRESULT.ZERO;
 			if (event.doit) {
