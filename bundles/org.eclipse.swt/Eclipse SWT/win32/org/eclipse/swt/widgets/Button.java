@@ -301,8 +301,6 @@ static int checkStyle (int style) {
 
 }
 
-
-@SuppressWarnings("unused")
 List<String> getStyles() {
 	return STYLE_PROCESSOR.process(this.style);
 }

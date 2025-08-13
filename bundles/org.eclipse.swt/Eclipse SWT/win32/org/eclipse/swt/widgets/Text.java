@@ -665,11 +665,7 @@ static int checkStyle (int style) {
 	return style | SWT.SINGLE;
 }
 
-/**
- * test
- * @return ArrayList<String> styles
- * @since 3.131
- */
+
 List<String> getStyles() {
 	return STYLE_PROCESSOR.process(this.style);
 }
