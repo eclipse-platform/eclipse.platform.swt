@@ -896,7 +896,7 @@ private long getMenuItemIconBitmapHandle(Image image) {
 		return 0;
 	}
 	if (hBitmap != 0) OS.DeleteObject (hBitmap);
-	int zoom = adaptZoomForMenuItem(getZoom(), image);
+	int zoom = adaptZoomForMenuItem(nativeZoom, image);
 	return Display.create32bitDIB (image, zoom);
 }
 
@@ -906,7 +906,7 @@ private long getMenuItemIconSelectedBitmapHandle() {
 		return 0;
 	}
 	if (hBitmapSelected != 0) OS.DeleteObject (hBitmapSelected);
-	int zoom = adaptZoomForMenuItem(getZoom(), image);
+	int zoom = adaptZoomForMenuItem(nativeZoom, image);
 	return hBitmapSelected = Display.create32bitDIB (image, zoom);
 }
 
