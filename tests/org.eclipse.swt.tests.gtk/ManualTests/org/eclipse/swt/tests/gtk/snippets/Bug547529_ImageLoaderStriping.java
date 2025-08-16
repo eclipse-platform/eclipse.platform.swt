@@ -14,8 +14,7 @@
 package org.eclipse.swt.tests.gtk.snippets;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
@@ -48,19 +47,16 @@ public class Bug547529_ImageLoaderStriping {
 
 		Button button = new Button(composite, SWT.PUSH);
 		button.setText("Take Snapshot...");
-		button.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				FileDialog dialog = new FileDialog(shell, SWT.SAVE);
-				dialog.setFilterExtensions(new String[] { "*.png" });
-				dialog.setFilterIndex(0);
-				dialog.setFileName("Untitled.png");
-				String filename = dialog.open();
-				if ((filename != null) && !filename.isEmpty()) {
-					saveImage(composite, filename, SWT.IMAGE_PNG);
-				}
+		button.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+			FileDialog dialog = new FileDialog(shell, SWT.SAVE);
+			dialog.setFilterExtensions(new String[] { "*.png" });
+			dialog.setFilterIndex(0);
+			dialog.setFileName("Untitled.png");
+			String filename = dialog.open();
+			if ((filename != null) && !filename.isEmpty()) {
+				saveImage(composite, filename, SWT.IMAGE_PNG);
 			}
-		});
+		}));
 
 		shell.pack();
 		shell.open();

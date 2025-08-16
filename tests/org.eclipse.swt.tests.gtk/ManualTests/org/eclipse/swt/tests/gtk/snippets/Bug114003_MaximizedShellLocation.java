@@ -15,8 +15,7 @@ package org.eclipse.swt.tests.gtk.snippets;
 
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
@@ -35,39 +34,21 @@ public class Bug114003_MaximizedShellLocation
 		b.setLayoutData (new RowData (100, SWT.DEFAULT));
 
 		b.setText("hide");
-		b.addSelectionListener(new SelectionAdapter()
-		{
-
-			@Override
-			public void widgetSelected(SelectionEvent arg0)
-			{
-				shell.setVisible(false);
-				new Thread()
-				{
-					@Override
-					public void run()
-					{
-						try
-						{
-							Thread.sleep(4000);
-						}
-						catch (InterruptedException e)
-						{
-						}
-						
-						Display.getDefault().asyncExec(new Runnable()
-						{
-							@Override
-							public void run()
-							{
-								shell.setVisible(true);
-							}
-						});
-						
+		b.addSelectionListener(SelectionListener.widgetSelectedAdapter(arg0 -> {
+			shell.setVisible(false);
+			new Thread() {
+				@Override
+				public void run() {
+					try {
+						Thread.sleep(4000);
+					} catch (InterruptedException e) {
 					}
-				}.start();
-			}
-		});
+
+					Display.getDefault().asyncExec(() -> shell.setVisible(true));
+
+				}
+			}.start();
+		}));
 
 		shell.open();
 		while (!shell.isDisposed())

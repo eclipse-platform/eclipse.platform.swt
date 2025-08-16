@@ -19,9 +19,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -37,18 +35,15 @@ public static void main(String[] args) {
 	final Shell shell = new Shell (display);
 	shell.setLayout (new GridLayout());
 	final Table table = new Table (shell, SWT.VIRTUAL | SWT.BORDER);
-	table.addListener (SWT.SetData, new Listener () {
-		@Override
-		public void handleEvent (Event event) {
-			TableItem item = (TableItem) event.item;
-			int index = table.indexOf (item);
-			item.setText (0, "Item " + index);
+	table.addListener(SWT.SetData, event -> {
+		TableItem item = (TableItem) event.item;
+		int index = table.indexOf (item);
+		item.setText (0, "Item " + index);
 
-			for (int i = 1; i <= 10; i++) {
-				item.setText(i, index + " test " + i);
-			}
-
+		for (int i = 1; i <= 10; i++) {
+			item.setText(i, index + " test " + i);
 		}
+
 	});
 
 	GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
@@ -68,15 +63,12 @@ public static void main(String[] args) {
 
 
 	final Label label = new Label(shell, SWT.NONE);
-	button.addListener (SWT.Selection, new Listener () {
-		@Override
-		public void handleEvent (Event event) {
-			long t1 = System.currentTimeMillis ();
-			table.setItemCount (COUNT);
-			long t2 = System.currentTimeMillis ();
-			label.setText ("Items: " + COUNT + ", Time: " + (t2 - t1) + " (ms)");
-			shell.layout ();
-		}
+	button.addListener (SWT.Selection, event -> {
+		long t1 = System.currentTimeMillis ();
+		table.setItemCount (COUNT);
+		long t2 = System.currentTimeMillis ();
+		label.setText ("Items: " + COUNT + ", Time: " + (t2 - t1) + " (ms)");
+		shell.layout ();
 	});
 
 	for (TableColumn column: table.getColumns()) {

@@ -14,8 +14,7 @@
 package org.eclipse.swt.tests.gtk.snippets;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.MenuAdapter;
-import org.eclipse.swt.events.MenuEvent;
+import org.eclipse.swt.events.MenuListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Display;
@@ -46,13 +45,10 @@ public class Bug436841_FocusActivateEventContextMenu {
 		showInItem.setText("Show In");
 		Menu showInMenu = new Menu(menu);
 		showInItem.setMenu(showInMenu);
-		showInMenu.addMenuListener(new MenuAdapter() {
-			@Override
-			public void menuShown(MenuEvent e) {
-				Shell activeShell = display.getActiveShell();
-				System.out.println("menuShown: activeShell == " + activeShell);
-			}
-		});
+		showInMenu.addMenuListener(MenuListener.menuShownAdapter(e -> {
+			Shell activeShell = display.getActiveShell();
+			System.out.println("menuShown: activeShell == " + activeShell);
+		}));
 
 		display.addFilter(SWT.FocusIn, event -> new Exception("FocusIn: " + event.widget).printStackTrace());
 

@@ -15,8 +15,6 @@ package org.eclipse.swt.tests.gtk.snippets;
 
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -31,16 +29,11 @@ public class Bug500664_ToolTipWrongMonitor {
 		SWT.V_SCROLL);
 			text.setBounds(10,10,150,150);
 			text.setText("TextField");
-			text.addModifyListener(new ModifyListener(){
-
-				@Override
-				public void modifyText(ModifyEvent e) {
-					ToolTip t = new ToolTip(shell, SWT.BALLOON);
-					t.setText("Balloon widget.tooltip");
-					t.setLocation(shell.getLocation());
-					t.setVisible(true);
-				}
-
+			text.addModifyListener(e -> {
+				ToolTip t = new ToolTip(shell, SWT.BALLOON);
+				t.setText("Balloon widget.tooltip");
+				t.setLocation(shell.getLocation());
+				t.setVisible(true);
 			});
 			shell.open();
 			while (!shell.isDisposed()) {

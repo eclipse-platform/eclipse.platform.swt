@@ -15,9 +15,6 @@ package org.eclipse.swt.tests.gtk.snippets;
 
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.MouseMoveListener;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
@@ -39,10 +36,7 @@ public class Bug85131_ToolTipSetNull
 		shell.setLayout( new FillLayout() );
 		
 		final Canvas canvas = new Canvas( shell, SWT.NONE );
-		canvas.addPaintListener( new PaintListener() {
-		@Override
-		public void paintControl(PaintEvent e)
-		{
+		canvas.addPaintListener( e -> {
 			Rectangle r = canvas.getClientArea();
 			int wm = r.width/8, w2 = r.width/2;
 			int hm = r.height/8;
@@ -52,34 +46,29 @@ public class Bug85131_ToolTipSetNull
 			e.gc.fillRectangle( 0,hm,w2,rh);
 			e.gc.setBackground( new Color(0,0,200) );
 			e.gc.fillRectangle( w2,hm+hm,rw+wm,rh-hm);
-		}
 		});
-		canvas.addMouseMoveListener( new MouseMoveListener() {
-			@Override
-			public void mouseMove(org.eclipse.swt.events.MouseEvent 
-e) {
-				int mx = e.x;
-				int my = e.y;
-				
-				Rectangle r = canvas.getClientArea();
-				int wm = r.width/8, w2 = r.width/2;
-				int hm = r.height/8;
-				int rw = w2-wm, rh = r.height-2*hm;
-				
-				String tip = null;
-				if( mx>=0 && mx <= 0+w2 && my >= hm && my <= hm+rh )
-				{
-					tip = "Red Rectangle";
-				}
-				else if( mx>=w2 && mx <= w2+rw+wm && my >= hm+hm && my <= 
-hm+rh )
-				{
-					tip = "Blue Rectangle";
-				}
-System.out.println("setToolTipText("+tip+")"); 
-				canvas.setToolTipText( tip );
-			}
-		});
+		canvas.addMouseMoveListener( e -> {
+						int mx = e.x;
+						int my = e.y;
+						
+						Rectangle r = canvas.getClientArea();
+						int wm = r.width/8, w2 = r.width/2;
+						int hm = r.height/8;
+						int rw = w2-wm, rh = r.height-2*hm;
+						
+						String tip = null;
+						if( mx>=0 && mx <= 0+w2 && my >= hm && my <= hm+rh )
+						{
+							tip = "Red Rectangle";
+						}
+						else if( mx>=w2 && mx <= w2+rw+wm && my >= hm+hm && my <= 
+		hm+rh )
+						{
+							tip = "Blue Rectangle";
+						}
+		System.out.println("setToolTipText("+tip+")"); 
+						canvas.setToolTipText( tip );
+					});
 
 		shell.setSize( 300, 200 );
 		shell.open();

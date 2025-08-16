@@ -34,14 +34,11 @@ public class Bug133039_MeasureItemRemoval {
 			public void handleEvent(Event event) {
 				tree.removeListener(SWT.MeasureItem, this); // <---
 				event.height *= 4;
-				display.asyncExec(new Runnable() {	/* asyncExec works around GP */
-					@Override
-					public void run() {
-						final TreeItem item0 = new TreeItem(tree, SWT.NONE);
-						final TreeItem item1 = new TreeItem(tree, SWT.NONE);
-						item0.setText(new String[] {"item 1"});
-						item1.setText(new String[] {"item 2"});
-					}
+				display.asyncExec(() -> {
+					final TreeItem item0 = new TreeItem(tree, SWT.NONE);
+					final TreeItem item1 = new TreeItem(tree, SWT.NONE);
+					item0.setText(new String[] {"item 1"});
+					item1.setText(new String[] {"item 2"});
 				});
 			}
 		};

@@ -16,8 +16,6 @@ package org.eclipse.swt.tests.gtk.snippets;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
@@ -31,12 +29,9 @@ public class Bug133037_TreeWarnings {
 		shell.setBounds(10, 10, 200, 200);
 		final Tree tree = new Tree(shell, SWT.NONE);
 		tree.setBounds(10,10,150,150);
-		tree.addListener(SWT.MeasureItem, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				new TreeColumn(tree, SWT.NONE).setWidth(100);
-				new TreeItem(tree, SWT.NONE);
-			}
+		tree.addListener(SWT.MeasureItem, event -> {
+			new TreeColumn(tree, SWT.NONE).setWidth(100);
+			new TreeItem(tree, SWT.NONE);
 		});
 		new TreeItem(tree, SWT.NONE);
 		shell.open();

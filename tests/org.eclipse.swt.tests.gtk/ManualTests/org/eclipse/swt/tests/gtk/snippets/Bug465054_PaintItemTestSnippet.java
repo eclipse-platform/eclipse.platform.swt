@@ -18,8 +18,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
@@ -36,16 +34,13 @@ public class Bug465054_PaintItemTestSnippet {
 			new TreeItem(tree, SWT.NONE).setText("setText " + i);
 		}
 
-		tree.addListener(SWT.PaintItem, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				System.out.println("PaintItem");
-				Rectangle bounds = ((TreeItem) event.item).getBounds(event.index);
-				event.gc.fillRectangle(bounds.x, bounds.y, bounds.width, bounds.height);
-				event.gc.drawText(((TreeItem) event.item).getText(), bounds.x, bounds.y, true);
-			}
+		tree.addListener(SWT.PaintItem, event -> {
+			System.out.println("PaintItem");
+			Rectangle bounds = ((TreeItem) event.item).getBounds(event.index);
+			event.gc.fillRectangle(bounds.x, bounds.y, bounds.width, bounds.height);
+			event.gc.drawText(((TreeItem) event.item).getText(), bounds.x, bounds.y, true);
 		});
-		
+
 
 		shellMain.open();
 

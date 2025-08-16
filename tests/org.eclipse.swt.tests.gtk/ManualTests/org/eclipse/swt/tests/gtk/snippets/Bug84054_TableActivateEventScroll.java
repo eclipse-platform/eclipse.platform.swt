@@ -16,8 +16,6 @@ package org.eclipse.swt.tests.gtk.snippets;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
@@ -39,37 +37,13 @@ public class Bug84054_TableActivateEventScroll {
 			new TableItem(table2, SWT.NONE).setText("item " + i);
 		}
 		
-		table.addListener(SWT.Activate, new Listener() {
-
-			@Override
-			public void handleEvent(Event arg0) {
-				System.out.println(" 1 activated");
-				
-			}});
+		table.addListener(SWT.Activate, arg0 -> System.out.println(" 1 activated"));
 		
-		table.addListener(SWT.Deactivate, new Listener() {
-
-			@Override
-			public void handleEvent(Event arg0) {
-				System.out.println(" 1 deactivated");
-				
-			}});
+		table.addListener(SWT.Deactivate, arg0 -> System.out.println(" 1 deactivated"));
 		
-		table2.addListener(SWT.Activate, new Listener() {
-
-			@Override
-			public void handleEvent(Event arg0) {
-				System.out.println(" 2 activated");
-				
-			}});
+		table2.addListener(SWT.Activate, arg0 -> System.out.println(" 2 activated"));
 		
-		table2.addListener(SWT.Deactivate, new Listener() {
-
-			@Override
-			public void handleEvent(Event arg0) {
-				System.out.println(" 2 deactivated");
-				
-			}});
+		table2.addListener(SWT.Deactivate, arg0 -> System.out.println(" 2 deactivated"));
 		
 		shell.open();
 		

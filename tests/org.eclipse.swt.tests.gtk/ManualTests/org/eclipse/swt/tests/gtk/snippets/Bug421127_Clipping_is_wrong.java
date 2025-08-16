@@ -20,7 +20,6 @@ import java.util.Arrays;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.GCData;
@@ -97,22 +96,8 @@ public class Bug421127_Clipping_is_wrong {
 			final Canvas canvas = new Canvas(square, SWT.BORDER);
 			final Canvas text = new Canvas(square, SWT.BORDER);
 
-			class PaintCanvas implements PaintListener {
-				@Override
-				public void paintControl(PaintEvent event) {
-					paintCanvas(event, canvas);
-				}
-			}
-
-			class PrintClipping implements PaintListener {
-				@Override
-				public void paintControl(PaintEvent event) {
-					clippingText(event, text);
-				}
-			}
-
-			canvas.addPaintListener(new PaintCanvas());
-			text.addPaintListener(new PrintClipping());
+			canvas.addPaintListener(event -> paintCanvas(event, canvas));
+			text.addPaintListener(event -> clippingText(event, text));
 		}
 
 		return squares;

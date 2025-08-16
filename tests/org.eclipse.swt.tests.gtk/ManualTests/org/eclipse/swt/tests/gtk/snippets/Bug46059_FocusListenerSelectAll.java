@@ -16,7 +16,6 @@ package org.eclipse.swt.tests.gtk.snippets;
 
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Display;
@@ -31,17 +30,7 @@ public class Bug46059_FocusListenerSelectAll {
 		shell.setLayout(new RowLayout());
 		final Text text1 = new Text(shell, SWT.NULL);
 		text1.setText("Set focus, but select all fails."); //$NON-NLS-1$
-		text1.addFocusListener(new FocusListener() {
-			@Override
-			public void focusGained(FocusEvent e) {
-				text1.setSelection(0, text1.getText().length());
-			}
-
-			@Override
-			public void focusLost(FocusEvent e) {
-				// Do nothing.
-			}
-		});
+		text1.addFocusListener(FocusListener.focusGainedAdapter(e -> text1.setSelection(0, text1.getText().length())));
 		final Text text2 = new Text(shell, SWT.NULL);
 		text2.setText("Use me to change focus."); //$NON-NLS-1$
 		text2.setFocus();

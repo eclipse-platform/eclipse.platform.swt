@@ -14,7 +14,10 @@
 package org.eclipse.swt.tests.gtk.snippets;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 
 public class Bug197785_TextSelectionBehavior
 {
@@ -32,21 +35,17 @@ public class Bug197785_TextSelectionBehavior
 		Button b = new Button(shell, SWT.PUSH);
 		b.setText("Push me");
 		b.setBounds(5, 200, 50, 20);
-		b.addListener(SWT.Selection, new Listener(){
-			@Override
-		public void handleEvent(Event e)
-			{
-			
-				text.setSelection(10, 20);
-				String test = "11\n12\n13\n14\n15";
-				System.out.println(test);
-				text.insert(test);
-				// Alternative to try:
-//        	widget.text.setSelection(0, text1.getCharCount());
-				System.out.println("Caret line number " + text.getCaretLineNumber());
-				System.out.println("Caret position " + text.getCaretPosition());
+		b.addListener(SWT.Selection, e -> {
 
-			}
+			text.setSelection(10, 20);
+			String test = "11\n12\n13\n14\n15";
+			System.out.println(test);
+			text.insert(test);
+			// Alternative to try:
+//        	widget.text.setSelection(0, text1.getCharCount());
+			System.out.println("Caret line number " + text.getCaretLineNumber());
+			System.out.println("Caret position " + text.getCaretPosition());
+
 		});
 
 		shell.pack();

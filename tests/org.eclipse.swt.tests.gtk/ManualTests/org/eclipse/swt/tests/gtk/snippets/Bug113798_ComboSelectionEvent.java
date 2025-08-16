@@ -15,8 +15,7 @@ package org.eclipse.swt.tests.gtk.snippets;
 
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
@@ -34,12 +33,7 @@ public class Bug113798_ComboSelectionEvent {
 		Combo combo = new Combo(shell, SWT.READ_ONLY);
 		combo.setItems(new String[] { "A", "A", "B", "C" });
 		combo.setSize(200, 200);
-		combo.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				System.out.println("Widget selected");
-			}
-		});
+		combo.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> System.out.println("Widget selected")));
 		shell.pack();
 		shell.open();
 		while (!shell.isDisposed()) {

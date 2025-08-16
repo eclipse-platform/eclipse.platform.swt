@@ -13,12 +13,9 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.gtk.snippets;
 
-
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
@@ -56,20 +53,12 @@ public class Bug510803_TabFolder_editable_table_brokenGtk3 {
 
 //		 Listeners that make typing into Table edit controls. Useful to test
 //		 functionality, but errors occur without the listeners also.
-		table.addMouseListener(new MouseAdapter() {
-		@Override
-		public void mouseUp(MouseEvent e) {
-		cellEditorText.setFocus();
-		}
-		});
+		table.addMouseListener(MouseListener.mouseUpAdapter(e -> cellEditorText.setFocus()));
 
-		cellEditorText.addKeyListener(new KeyAdapter() {
-		@Override
-		public void keyPressed(KeyEvent e) {
-		TableItem selectedItem = table.getSelection()[0];
-		selectedItem.setText(selectedItem.getText() + e.character);
-		}
-		});
+		cellEditorText.addKeyListener(KeyListener.keyPressedAdapter(e -> {
+			TableItem selectedItem = table.getSelection()[0];
+			selectedItem.setText(selectedItem.getText() + e.character);
+		}));
 
 		// Location of setControl() method call has an impact.
 		// If it's before 'Text' creation, no errors are thrown into the

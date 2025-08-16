@@ -16,8 +16,6 @@ package org.eclipse.swt.tests.gtk.snippets;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
@@ -32,12 +30,7 @@ public class Bug97723_TreeHoverParent {
 		new TreeColumn(tree, SWT.NONE).setWidth(100);
 		new TreeColumn(tree, SWT.NONE).setWidth(100);
 		shell.open();
-		shell.addListener(SWT.MouseHover, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				System.out.println("hover");
-			}
-		});
+		shell.addListener(SWT.MouseHover, event -> System.out.println("hover"));
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch()) display.sleep();
 		}

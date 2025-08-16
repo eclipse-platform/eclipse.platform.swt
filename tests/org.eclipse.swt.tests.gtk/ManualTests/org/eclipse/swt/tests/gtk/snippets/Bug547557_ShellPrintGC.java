@@ -15,8 +15,7 @@ package org.eclipse.swt.tests.gtk.snippets;
 
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
@@ -43,17 +42,14 @@ public class Bug547557_ShellPrintGC {
 
 		Button button = new Button(shell, SWT.PUSH);
 		button.setText("Take Snapshot...");
-		button.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				// Add your path here i.e.:
-				// String filename = "/home/<user>/shell_test.png";
-				String filename = "";
-				if ((filename != null) && !filename.isEmpty()) {
-					saveImage(shell, filename, SWT.IMAGE_PNG);
-				}
+		button.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+			// Add your path here i.e.:
+			// String filename = "/home/<user>/shell_test.png";
+			String filename = "";
+			if ((filename != null) && !filename.isEmpty()) {
+				saveImage(shell, filename, SWT.IMAGE_PNG);
 			}
-		});
+		}));
 		shell.pack();
 		shell.open();
 		while (!shell.isDisposed()) {

@@ -15,8 +15,7 @@ package org.eclipse.swt.tests.gtk.snippets;
 
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -31,9 +30,9 @@ public class Bug517633_SpinnerDouble {
 	int originalValue;
 
 	Button apply;
-	
+
 	Spinner spinner;
-	
+
 	public Control createContent(Composite aParent) {
 		Composite container = new Composite(aParent, SWT.NONE);
 		container.setLayout(new GridLayout());
@@ -49,17 +48,10 @@ public class Bug517633_SpinnerDouble {
 		apply.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false));
 		apply.setText("Apply Changes");
 		setInput(originalValue);
-		spinner.addSelectionListener(new SelectionAdapter() {
-			
-			@Override
-			public void widgetSelected(SelectionEvent aEvent) {
-				updateButtons();
-			}
-			
-		});
+		spinner.addSelectionListener(SelectionListener.widgetSelectedAdapter(aEvent -> updateButtons()));
 		return container;
 	}
-	
+
 	public void setInput(int aValue) {
 		originalValue = aValue;
 		if ((spinner != null) && !spinner.isDisposed()) {
@@ -67,11 +59,11 @@ public class Bug517633_SpinnerDouble {
 			updateButtons();
 		}
 	}
-	
+
 	protected void updateButtons() {
 		apply.setEnabled(spinner.getSelection() != originalValue);
 	}
-	
+
 	public static void main(String[] args) {
 		Display display = new Display();
 		Shell shell = new Shell(display);
@@ -88,5 +80,5 @@ public class Bug517633_SpinnerDouble {
 			display.readAndDispatch();
 		}
 	}
-	
+
 }

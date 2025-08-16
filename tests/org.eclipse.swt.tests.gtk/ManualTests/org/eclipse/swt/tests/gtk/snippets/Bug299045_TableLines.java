@@ -14,10 +14,16 @@
 package org.eclipse.swt.tests.gtk.snippets;
 
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 
 public class Bug299045_TableLines {
 
@@ -40,44 +46,42 @@ public class Bug299045_TableLines {
 			TableItem item = new TableItem(table, SWT.NONE);
 			item.setText(new String[] {"item " + i + " a", "item " + i + " Bug510183_javadocHang", "item " + i + " c"});
 		}
-		Listener paintListener = new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				switch(event.type) {
-				case SWT.MeasureItem: {
-					Rectangle rect = image.getBounds();
-					event.width += rect.width;
-					event.height = Math.max(event.height, rect.height + 2);
-					break;
-				}
-				case SWT.EraseItem: {
-					event.detail &= ~SWT.FOREGROUND;
-					event.detail &= ~SWT.BACKGROUND;
-					event.detail &= ~SWT.SELECTED;
-					event.detail &= ~SWT.FOCUSED;
-					event.detail &= ~SWT.HOT;
-					event.doit = false;
-					break;
-				}
-				case SWT.PaintItem: {
-					Rectangle rect = image.getBounds();
-					
+		Listener paintListener = event -> {
+			switch (event.type) {
+			case SWT.MeasureItem: {
+				Rectangle rect = image.getBounds();
+				event.width += rect.width;
+				event.height = Math.max(event.height, rect.height + 2);
+				break;
+			}
+			case SWT.EraseItem: {
+				event.detail &= ~SWT.FOREGROUND;
+				event.detail &= ~SWT.BACKGROUND;
+				event.detail &= ~SWT.SELECTED;
+				event.detail &= ~SWT.FOCUSED;
+				event.detail &= ~SWT.HOT;
+				event.doit = false;
+				break;
+			}
+			case SWT.PaintItem: {
+				Rectangle rect = image.getBounds();
+
 				// shouldn't we subtract rect.width?
-				// it looks like the event.width value set in the SWT.MeasureItem wasn't retained... 
-					int x = event.x + event.width /*- rect.width*/;
-					int offset = Math.max(0, (event.height - rect.height) / 2);
-					event.gc.drawImage(image, x, event.y + offset);
-					
-					// draws only a blue background filling up the entire cell
+				// it looks like the event.width value set in the SWT.MeasureItem wasn't
+				// retained...
+				int x = event.x + event.width /*- rect.width*/;
+				int offset = Math.max(0, (event.height - rect.height) / 2);
+				event.gc.drawImage(image, x, event.y + offset);
+
+				// draws only a blue background filling up the entire cell
 //                    Color blue = display.getSystemColor(SWT.COLOR_BLUE);
 //                    event.gc.setBackground(blue);
 //                    int adhocOffset = 2;
 //                    event.gc.fillRectangle(event.x - adhocOffset, event.y,
 //                            event.width + rect.width + adhocOffset, event.height);
-					
-					break;
-				}
-				}
+
+				break;
+			}
 			}
 		};
 		table.addListener(SWT.MeasureItem, paintListener);
@@ -93,11 +97,11 @@ public class Bug299045_TableLines {
 			if(!display.readAndDispatch())
 				display.sleep();
 		}
-		
+
 		// this is incorrect, the graphics.image wasn't allocated by the user!
 //        if(graphics.image != null)
 //            graphics.image.dispose();
-		
+
 		display.dispose();
 	}
 }

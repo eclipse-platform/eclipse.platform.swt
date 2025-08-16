@@ -17,8 +17,7 @@ package org.eclipse.swt.tests.gtk.snippets;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -61,15 +60,13 @@ public class Bug306067_DesktopEffectShellEvent {
 		// create the button
 		button = new Button(shell, SWT.PUSH);
 		button.setText("Open");
-		button.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				if (!dropDownShell.isVisible()) {
-					System.out.println("Open button entering widgetSelected event handler and will show the dropdown shell");
-					showDropDown();
-				}
+		button.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+			if (!dropDownShell.isVisible()) {
+				System.out
+						.println("Open button entering widgetSelected event handler and will show the dropdown shell");
+				showDropDown();
 			}
-		});
+		}));
 
 		button.addMouseListener(new MouseAdapter() {
 

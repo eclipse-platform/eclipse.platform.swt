@@ -17,8 +17,6 @@ package org.eclipse.swt.tests.gtk.snippets;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.TextLayout;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 
 public class Bug304020_TextLayoutPerformance {
@@ -31,16 +29,13 @@ public class Bug304020_TextLayoutPerformance {
 		layout.setText(BIG_TEXT);
 		layout.setWidth(600);
 
-		shell.addListener(SWT.Paint, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				event.gc.setAntialias(SWT.ON);
-				long start = System.currentTimeMillis();
-				for (int i = 0; i < 10000; i++) {
-					layout.draw(event.gc, 10, 20);
-				}
-				System.out.println((System.currentTimeMillis() - start) / 1000);
+		shell.addListener(SWT.Paint, event -> {
+			event.gc.setAntialias(SWT.ON);
+			long start = System.currentTimeMillis();
+			for (int i = 0; i < 10000; i++) {
+				layout.draw(event.gc, 10, 20);
 			}
+			System.out.println((System.currentTimeMillis() - start) / 1000);
 		});
 
 		shell.open();

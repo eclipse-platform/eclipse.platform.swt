@@ -15,7 +15,6 @@ package org.eclipse.swt.tests.gtk.snippets;
 
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ScrollBar;
@@ -30,14 +29,8 @@ public class Bug83833_SetTopIndexSelectionEvent {
 		Table table = new Table(shell, SWT.NONE);
 		ScrollBar scrollBar = table.getVerticalBar();
 		scrollBar.setEnabled(false);
-		scrollBar.addSelectionListener(new SelectionListener() {
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {}
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				System.out.println("Selection event");
-			}
-		});
+		scrollBar.addSelectionListener(
+				SelectionListener.widgetSelectedAdapter(e -> System.out.println("Selection event")));
 		for(int i = 0; i < 500; i++) {
 			TableItem item = new TableItem(table, SWT.NONE);
 			item.setText(0, "This is item " + i);

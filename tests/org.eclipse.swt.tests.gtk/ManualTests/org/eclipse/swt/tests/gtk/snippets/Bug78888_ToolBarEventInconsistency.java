@@ -19,11 +19,7 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.TraverseEvent;
-import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
@@ -37,12 +33,7 @@ public class Bug78888_ToolBarEventInconsistency {
 		bar.setBounds(10,10,150,30);
 		ToolItem item = new ToolItem(bar, SWT.PUSH);
 		item.setText("&item 1");
-		bar.addTraverseListener(new TraverseListener() {
-			@Override
-			public void keyTraversed(TraverseEvent e) {
-				System.out.println("traverse");
-			}
-		});
+		bar.addTraverseListener(e -> System.out.println("traverse"));
 		bar.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(MouseEvent e) {
@@ -53,12 +44,7 @@ public class Bug78888_ToolBarEventInconsistency {
 				System.out.println("mouse up");
 			}
 		});
-		item.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				System.out.println("selection");
-			}
-		});
+		item.addListener(SWT.Selection, event -> System.out.println("selection"));
 		bar.addKeyListener(new KeyListener() {
 			@Override
 			public void keyPressed(KeyEvent e) {
