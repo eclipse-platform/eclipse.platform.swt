@@ -57,11 +57,11 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runners.MethodSorters;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)  // To make it easier for human to go through the tests. Same order makes tests easier to recognize.
+@TestMethodOrder(MethodOrderer.MethodName.class)  // To make it easier for human to go through the tests. Same order makes tests easier to recognize.
 public class MJ_Table extends MJ_root {
 
 	// Shared elements:
@@ -112,7 +112,7 @@ public class MJ_Table extends MJ_root {
 	 */
 	@Test
 	public void ownerDrawn_cheese_single_col () {
-		knownToBeBrokenGtk3("Cheese on gtk3"); // z for warning
+//		knownToBeBrokenGtk3("Cheese on gtk3"); // z for warning
 		Shell shell = mkShell("Expected: There should be no cheese in the items. Move over shouldn't cheese out. See javadoc for screenshot");
 		shell.setLayout(new FillLayout(SWT.VERTICAL));
 

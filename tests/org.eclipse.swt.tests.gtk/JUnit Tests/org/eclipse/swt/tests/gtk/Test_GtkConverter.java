@@ -14,13 +14,13 @@
  */
 package org.eclipse.swt.tests.gtk;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.nio.charset.StandardCharsets;
 
 import org.eclipse.swt.internal.Converter;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 /**
  *  Good source for UTF-8 code points for testing:
@@ -144,7 +144,7 @@ public class Test_GtkConverter {
 	 * This test is documented, but is currently known to fail.
 	 *
 	 */
-	@Ignore
+	@Disabled
 	@Test
 	public void test_Heuristic_specialSingleCases() {
 		byte [] testBytes = "Ё".getBytes(StandardCharsets.UTF_16LE);
