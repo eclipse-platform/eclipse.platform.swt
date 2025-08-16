@@ -32,12 +32,12 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runners.MethodSorters;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 
 /** Convenience class for easy copy &amp; paste */
-@FixMethodOrder(MethodSorters.JVM)
+@TestMethodOrder(MethodOrderer.MethodName.class)
 public class MJ_Tree extends MJ_root {
 
 
