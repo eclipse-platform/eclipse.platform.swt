@@ -14,8 +14,12 @@
 package org.eclipse.swt.tests.gtk.snippets;
 
 
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 
 
 public class Bug399522_TreeColumnNumber {
@@ -26,15 +30,10 @@ public static void main(String[] args) {
 	final Table table = new Table(shell, SWT.BORDER);
 	new TableItem(table, SWT.NONE).setText("Item1");
 	new TableColumn(table, SWT.NONE);
-	
+
 	table.setSize(200, 200);
-	
-	shell.addListener(SWT.MouseDown, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			System.out.println(table.computeSize(-1, -1));
-		}
-	});
+
+	shell.addListener(SWT.MouseDown, event -> System.out.println(table.computeSize(-1, -1)));
 
 	shell.setSize(300, 300);
 	shell.open();

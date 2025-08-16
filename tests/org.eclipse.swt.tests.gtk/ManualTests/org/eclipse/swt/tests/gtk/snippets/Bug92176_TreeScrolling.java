@@ -17,8 +17,6 @@ package org.eclipse.swt.tests.gtk.snippets;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
@@ -50,12 +48,7 @@ public class Bug92176_TreeScrolling {
 		Button button = new Button(shell, SWT.PUSH);
 		button.setBounds(120,0,50,20);
 		button.setText("show");
-		button.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(Event e) {
-				tree.showItem(items[45]);
-			}
-		});
+		button.addListener(SWT.Selection, e -> tree.showItem(items[45]));
 
 		shell.open();
 		while (!shell.isDisposed()) {

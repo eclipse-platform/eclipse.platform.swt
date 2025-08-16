@@ -15,8 +15,7 @@ package org.eclipse.swt.tests.gtk.snippets;
 
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.RowLayout;
@@ -34,12 +33,7 @@ public static void main(String[] args) {
 
 	final Button button = new Button(shell, SWT.PUSH);
 	button.setText("Show");
-	button.addSelectionListener(new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			showHover(shell, button);
-		}
-	});
+	button.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> showHover(shell, button)));
 	shell.setBounds(100, 100, 300, 200);
 
 	shell.open();

@@ -26,9 +26,8 @@ import org.eclipse.swt.dnd.DragSource;
 import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.DragSourceListener;
 import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.DropTargetAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
-import org.eclipse.swt.dnd.DropTargetListener;
-import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.dnd.URLTransfer;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Rectangle;
@@ -90,7 +89,7 @@ public static void main (String [] args) {
 public static void setDragSource (final Label label) {
 	int operations = DND.DROP_MOVE | DND.DROP_COPY | DND.DROP_LINK;
 	final DragSource source = new DragSource (label, operations);
-	source.setTransfer(new Transfer[] {URLTransfer.getInstance()});
+	source.setTransfer(URLTransfer.getInstance());
 	source.addDragListener (new DragSourceListener () {
 		@Override
 		public void dragStart(DragSourceEvent e) {
@@ -108,8 +107,8 @@ public static void setDragSource (final Label label) {
 public static void setDropTargetForLabel (final Label control) {
 	int operations = DND.DROP_MOVE | DND.DROP_COPY | DND.DROP_LINK;
 	DropTarget target = new DropTarget(control, operations);
-	target.setTransfer(new Transfer[] {URLTransfer.getInstance()});
-	target.addDropListener (new DropTargetListener() {
+	target.setTransfer(URLTransfer.getInstance());
+	target.addDropListener(new DropTargetAdapter() {
 		@Override
 		public void dragEnter(DropTargetEvent e) {
 			System.out.println("dragEnter="+control.getText());
@@ -136,23 +135,13 @@ public static void setDropTargetForLabel (final Label control) {
 			System.out.println("dragLeave="+control.getText());
 
 		}
-		@Override
-		public void dragOver(DropTargetEvent arg0) {
-			// TODO Auto-generated method stub
-
-		}
-		@Override
-		public void dropAccept(DropTargetEvent arg0) {
-			// TODO Auto-generated method stub
-
-		}
 	});
 }
 public static void setDropTarget (final Control control) {
 	int operations = DND.DROP_MOVE | DND.DROP_COPY | DND.DROP_LINK;
 	DropTarget target = new DropTarget(control, operations);
-	target.setTransfer(new Transfer[] {URLTransfer.getInstance()});
-	target.addDropListener (new DropTargetListener() {
+	target.setTransfer(URLTransfer.getInstance());
+	target.addDropListener(new DropTargetAdapter() {
 		@Override
 		public void dragEnter(DropTargetEvent e) {
 			System.out.println("dragEnter=composite");
@@ -177,16 +166,6 @@ public static void setDropTarget (final Control control) {
 		public void dragLeave(DropTargetEvent arg0) {
 			// TODO Auto-generated method stub
 			System.out.println("dragLeave=composite");
-
-		}
-		@Override
-		public void dragOver(DropTargetEvent arg0) {
-			// TODO Auto-generated method stub
-
-		}
-		@Override
-		public void dropAccept(DropTargetEvent arg0) {
-			// TODO Auto-generated method stub
 
 		}
 	});

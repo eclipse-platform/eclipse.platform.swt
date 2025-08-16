@@ -42,7 +42,7 @@ public class Bug287038_TableKeyEvent {
 			TableColumn column = new TableColumn(table, SWT.NONE);
 			column.setWidth(100);
 		}
-		String[] itemsToAdd = new String[] {
+		String[] itemsToAdd = {
 				"Cheese", "Potatoes", "Rocks", "Bacon", "Tree", "Forest", "Chocolate", "Broccoli", "Turnip",
 				"Squash", "Carrot"
 		};

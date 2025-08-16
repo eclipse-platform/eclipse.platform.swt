@@ -15,8 +15,7 @@
 package org.eclipse.swt.tests.gtk.snippets;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
@@ -55,22 +54,19 @@ public class Bug541720_PackClear {
 			}
 		}
 		table.setItemCount(NUM_ROW);
-		table.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseDoubleClick(MouseEvent e) {
-				Point pt = new Point(e.x, e.y);
-				TableItem item = table.getItem(pt);
-				if (item == null) {
-					return;
-				}
-				for (int col = 0; col < NUM_COL; col++) {
-					if (item.getBounds(col).contains(pt)) {
-						TableColumn column = table.getColumns()[col];
-						column.pack();
-					}
+		table.addMouseListener(MouseListener.mouseDoubleClickAdapter(e -> {
+			Point pt = new Point(e.x, e.y);
+			TableItem item = table.getItem(pt);
+			if (item == null) {
+				return;
+			}
+			for (int col = 0; col < NUM_COL; col++) {
+				if (item.getBounds(col).contains(pt)) {
+					TableColumn column = table.getColumns()[col];
+					column.pack();
 				}
 			}
-		});
+		}));
 		shell.pack();
 		shell.open();
 		while (!shell.isDisposed()) {

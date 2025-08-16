@@ -17,10 +17,7 @@ package org.eclipse.swt.tests.gtk.snippets;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.BrowserFunction;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -60,24 +57,17 @@ public class Bug536141_BrowserFunctionLostReload {
 		data = new GridData(SWT.FILL, SWT.FILL, true, true);
 		browser.setLayoutData(data);
 
-		jsConsole.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if (e.keyCode == 13) { // 13 = Enter
-					browser.execute(jsConsole.getText());
-				}
+		jsConsole.addKeyListener(KeyListener.keyPressedAdapter(e -> {
+			if (e.keyCode == 13) { // 13 = Enter
+				browser.execute(jsConsole.getText());
 			}
-		});
+		}));
 
 		Button loadNewPage = new Button(shell, SWT.PUSH);
 		loadNewPage.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
 		loadNewPage.setText("Load new page");
-		loadNewPage.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				browser.setText("New page!" + count++);
-			}
-		});
+		loadNewPage.addSelectionListener(
+				SelectionListener.widgetSelectedAdapter(e -> browser.setText("New page!" + count++)));
 
 
 		// BrowserFunction Code
@@ -86,29 +76,19 @@ public class Bug536141_BrowserFunctionLostReload {
 		Button create = new Button (shell, SWT.PUSH);
 		create.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
 		create.setText("Create function");
-		create.addSelectionListener(new SelectionListener () {
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {}
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				System.out.println("creating function");
-				@SuppressWarnings("unused")
-				final BrowserFunction function2 = new CustomFunction (browser, "theJavaFunction2");
-			}
-		});
+		create.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+			System.out.println("creating function");
+			@SuppressWarnings("unused")
+			final BrowserFunction function2 = new CustomFunction(browser, "theJavaFunction2");
+		}));
 
 		Button destroy = new Button (shell, SWT.PUSH);
 		destroy.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
 		destroy.setText("Destroy function");
-		destroy.addSelectionListener(new SelectionListener () {
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {}
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				System.out.println("destroying function");
-				function.dispose();
-			}
-		});
+		destroy.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+			System.out.println("destroying function");
+			function.dispose();
+		}));
 		shell.open();
 		System.out.println("INSTRUCTIONS: pressing the \"Create function\" button will create a function called theJavaFunction2.");
 		System.out.println("Pressing the \"Destroy function\" button will destroy the function called theJavaFunction.");
@@ -130,8 +110,7 @@ public class Bug536141_BrowserFunctionLostReload {
 		@Override
 		public Object function (Object[] arguments) {
 			System.out.println ("theJavaFunction() called from javascript with args:");
-			for (int i = 0; i < arguments.length; i++) {
-				Object arg = arguments[i];
+			for (Object arg : arguments) {
 				if (arg == null) {
 					System.out.println ("\t-->null");
 				} else {

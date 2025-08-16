@@ -54,13 +54,10 @@ public class Bug516674_control_focus
 		Thread thread = new Thread() {
 			@Override
 			public void run() {
-				Display.getDefault().syncExec(new Runnable() {
-					@Override
-					public void run() {
-						text.getShell().forceActive();
-						text.getShell().forceFocus();
-						text.forceFocus();
-					}
+				Display.getDefault().syncExec(() -> {
+					text.getShell().forceActive();
+					text.getShell().forceFocus();
+					text.forceFocus();
 				});
 
 				try {

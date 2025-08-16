@@ -15,8 +15,7 @@ package org.eclipse.swt.tests.gtk.snippets;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.browser.VisibilityWindowAdapter;
-import org.eclipse.swt.browser.WindowEvent;
+import org.eclipse.swt.browser.VisibilityWindowListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -43,13 +42,10 @@ public class Bug579257_new_webkit_window {
 			Shell newWindowShell = new Shell(shell, SWT.SHELL_TRIM);
 			newWindowShell.setLayout(new FillLayout());
 			Browser newWindowBrowser = new Browser(newWindowShell, SWT.NONE);
-			newWindowBrowser.addVisibilityWindowListener(new VisibilityWindowAdapter() {
-				@Override
-				public void show(WindowEvent e) {
-					newWindowShell.setSize(400, 200);
-					newWindowShell.open();
-				}
-			});
+			newWindowBrowser.addVisibilityWindowListener(VisibilityWindowListener.showAdapter(e -> {
+				newWindowShell.setSize(400, 200);
+				newWindowShell.open();
+			}));
 			event.browser = newWindowBrowser;
 		});
 

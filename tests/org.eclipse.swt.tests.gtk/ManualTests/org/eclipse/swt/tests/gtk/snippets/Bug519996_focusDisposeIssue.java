@@ -16,8 +16,7 @@ package org.eclipse.swt.tests.gtk.snippets;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
@@ -33,13 +32,10 @@ public class Bug519996_focusDisposeIssue {
 
 		Button button = new Button(shell, SWT.PUSH);
 		button.setText("focus and close");
-		button.addSelectionListener(new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
+		button.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
 			combo.setFocus();
 			shell.close();
-		}
-		});
+		}));
 
 		shell.layout();
 		shell.open();

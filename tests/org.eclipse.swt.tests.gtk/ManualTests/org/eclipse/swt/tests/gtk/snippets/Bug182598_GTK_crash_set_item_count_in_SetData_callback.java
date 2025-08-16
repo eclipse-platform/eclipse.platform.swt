@@ -13,7 +13,6 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.gtk.snippets;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Button;
@@ -58,16 +57,7 @@ public class Bug182598_GTK_crash_set_item_count_in_SetData_callback {
 
 		Button button = new Button(shell, SWT.NONE);
 		button.setText("Tree.clearAll()");
-		button.addSelectionListener(new SelectionListener() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				tree.clearAll(true);
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-		});
+		button.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> tree.clearAll(true)));
 
 		shell.open();
 

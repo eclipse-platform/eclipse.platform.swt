@@ -15,8 +15,7 @@ package org.eclipse.swt.tests.gtk.snippets;
 
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -44,18 +43,16 @@ public class Bug500924_tabfolder_dispose_crash {
 		Button btn1 = new Button(shell, SWT.PUSH);
 		btn1.setText("Show/Hide tab1");
 		btn1.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,false));
-		btn1.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
+		btn1.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
 				TabItem[] arr = folder.getItems();
-				for (int a = 0; a < arr.length; a++) {
-					Control ctrl = arr[a].getControl();
-					arr[a].setControl(null);
+				for (TabItem element : arr) {
+					Control ctrl = element.getControl();
+					element.setControl(null);
 					ctrl.dispose();
-					arr[a].dispose();
+					element.dispose();
 				}
 			}
-		});
+		));
 
 		folder = new TabFolder(shell, SWT.NONE);
 		folder.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,true));

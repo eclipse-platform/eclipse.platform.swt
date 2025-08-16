@@ -47,19 +47,16 @@ public class Bug292459_ToolTipFlicker {
 
 		Timer timer = new Timer(true);
 		timer.schedule(new TimerTask() {
-		@Override
-		public void run() {
-			display.asyncExec(new Runnable() {
 			@Override
 			public void run() {
-				// make Label's widget.tooltip flicker by setting it to the same widget.text
-				test2.setToolTipText(test2.getToolTipText());
+				display.asyncExec(() -> {
+					// make Label's widget.tooltip flicker by setting it to the same widget.text
+					test2.setToolTipText(test2.getToolTipText());
 
-				// make CLabel's widget.tooltip flicker just by invoking doPaint
-				test3.redraw();
+					// make CLabel's widget.tooltip flicker just by invoking doPaint
+					test3.redraw();
+				});
 			}
-			});
-		}
 		}, 1000, 1000);
 
 		while (!shell.isDisposed()) {

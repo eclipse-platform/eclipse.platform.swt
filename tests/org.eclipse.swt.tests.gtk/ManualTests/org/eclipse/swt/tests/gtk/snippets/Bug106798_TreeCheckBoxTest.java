@@ -18,8 +18,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -43,16 +41,12 @@ public class Bug106798_TreeCheckBoxTest {
 				| SWT.FULL_SELECTION);
 		table.setHeaderVisible(true);
 		table.setLayoutData(new GridData(GridData.FILL_BOTH));
-		table.addListener(SWT.SetData, new Listener() {
-
-			@Override
-			public void handleEvent(Event event) {
-				TableItem item = (TableItem) event.item;
-				int index = table.indexOf(item);
-				boolean checked = myModel[index];
-				item.setChecked(checked);
-				item.setText(0, "Row " + index + ": " + checked);
-			}
+		table.addListener(SWT.SetData, event -> {
+			TableItem item = (TableItem) event.item;
+			int index = table.indexOf(item);
+			boolean checked = myModel[index];
+			item.setChecked(checked);
+			item.setText(0, "Row " + index + ": " + checked);
 		});
 
 		TableColumn tableColumn = new TableColumn(table, SWT.LEFT);
@@ -62,17 +56,14 @@ public class Bug106798_TreeCheckBoxTest {
 		table.setItemCount(myModel.length);
 		table.clearAll();
 
-		table.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(Event e) {
-				if (e.detail == SWT.CHECK) {
-					TableItem item = (TableItem) e.item;
-					int index = table.indexOf(item);
-					boolean isChecked = item.getChecked();
-					myModel[index] = isChecked;
-					myModel[index / 2] = isChecked;
-					table.clear(new int[] { index, index / 2 });
-				}
+		table.addListener(SWT.Selection, e -> {
+			if (e.detail == SWT.CHECK) {
+				TableItem item = (TableItem) e.item;
+				int index = table.indexOf(item);
+				boolean isChecked = item.getChecked();
+				myModel[index] = isChecked;
+				myModel[index / 2] = isChecked;
+				table.clear(new int[] { index, index / 2 });
 			}
 		});
 

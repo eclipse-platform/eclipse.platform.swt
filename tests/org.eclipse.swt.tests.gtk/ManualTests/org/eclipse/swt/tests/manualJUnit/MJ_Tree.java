@@ -19,8 +19,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ControlAdapter;
-import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
@@ -366,42 +365,33 @@ public class MJ_Tree extends MJ_root {
 				System.err.println("COL_SIZE_ERROR 2 Expected:" + c2w + " actual:" + column2.getWidth());
 		};
 
-		comp.addControlListener(new ControlAdapter()
-		{
-			@Override
-			public void controlResized(ControlEvent e)
-			{
-				Rectangle area = tree.getParent().getClientArea();
-				Point preferredSize = tree.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-				int width = area.width - 2 * tree.getBorderWidth();
-				if (preferredSize.y > area.height)
-				{
-					// Subtract the scrollbar width from the total column width
-					// if a vertical scrollbar will be required
-					Point vBarSize = tree.getVerticalBar().getSize();
-					width -= vBarSize.x;
-				}
-				Point oldSize = tree.getSize();
-				if (oldSize.x > area.width)
-				{
-					// tree is getting smaller so make the columns
-					// smaller first and then resize the tree to
-					// match the client area width
-					setColumnWidths.accept(width);
-					tree.setSize(area.width, area.height);
-				}
-				else
-				{
-					// tree is getting bigger so make the tree
-					// bigger first and then make the columns wider
-					// to match the client area width
-					tree.setSize(area.width, area.height);
-					setColumnWidths.accept(width);
-				}
+		comp.addControlListener(ControlListener.controlResizedAdapter(e -> {
+			Rectangle area = tree.getParent().getClientArea();
+			Point preferredSize = tree.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+			int width = area.width - 2 * tree.getBorderWidth();
+			if (preferredSize.y > area.height) {
+				// Subtract the scrollbar width from the total column width
+				// if a vertical scrollbar will be required
+				Point vBarSize = tree.getVerticalBar().getSize();
+				width -= vBarSize.x;
 			}
-			});
-			shell.open();
-			mainLoop(shell);
+			Point oldSize = tree.getSize();
+			if (oldSize.x > area.width) {
+				// tree is getting smaller so make the columns
+				// smaller first and then resize the tree to
+				// match the client area width
+				setColumnWidths.accept(width);
+				tree.setSize(area.width, area.height);
+			} else {
+				// tree is getting bigger so make the tree
+				// bigger first and then make the columns wider
+				// to match the client area width
+				tree.setSize(area.width, area.height);
+				setColumnWidths.accept(width);
+			}
+		}));
+		shell.open();
+		mainLoop(shell);
 	}
 
 	@Test

@@ -14,8 +14,7 @@
 package org.eclipse.swt.tests.gtk.snippets;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ControlAdapter;
-import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
@@ -125,12 +124,7 @@ public class Bug546940_TableSizingIssues {
 		shell.setText("Table, never resized");
 		shell.pack();
 		shell.open();
-		shell.addControlListener(new ControlAdapter() {
-			@Override
-			public void controlResized(ControlEvent e) {
-				shell.setText("Table, has been resized");
-			}
-		});
+		shell.addControlListener(ControlListener.controlResizedAdapter(e -> shell.setText("Table, has been resized")));
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch()) {
 				display.sleep();

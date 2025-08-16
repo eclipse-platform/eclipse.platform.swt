@@ -21,8 +21,6 @@ import org.eclipse.swt.browser.LocationListener;
 import org.eclipse.swt.browser.ProgressEvent;
 import org.eclipse.swt.browser.ProgressListener;
 import org.eclipse.swt.browser.VisibilityWindowListener;
-import org.eclipse.swt.browser.WindowEvent;
-import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Button;
@@ -52,45 +50,31 @@ public class Bug505418_Listeners_evals {
 		Button button = new Button(shell, SWT.PUSH);
 		final Browser browser = new Browser(shell, SWT.NONE);
 		button.setText("Click to increase count.");
-		button.addMouseListener(new MouseListener() {
-			@Override
-			public void mouseUp(MouseEvent e) {}
-			@Override
-			public void mouseDown(MouseEvent e) {
-				shell.setText("Count: " + count++);
-			}
-			@Override
-			public void mouseDoubleClick(MouseEvent e) {}
-		});
+		button.addMouseListener(MouseListener.mouseDownAdapter(e -> shell.setText("Count: " + count++)));
 
 		browser.setText("<html><title>Snippet</title><body><a href=\"https://eclipse.org/\">Eclipse.org  Disposing on link change causes hang</a></body></html>");
-		browser.addProgressListener(new ProgressListener() {
-			@Override
-			public void completed(ProgressEvent event) {
-				browser.addLocationListener(new LocationListener() {
-					@Override
-					public void changing(LocationEvent event) {
-						System.out.println ("changing...");
+		browser.addProgressListener(ProgressListener.completedAdapter(event -> {
+			browser.addLocationListener(new LocationListener() {
+				@Override
+				public void changing(LocationEvent event) {
+					System.out.println("changing...");
 
-						String value = (String)browser.evaluate("return 'Changing eval...'");
-						System.out.println("changing returned: " + value);
+					String value = (String) browser.evaluate("return 'Changing eval...'");
+					System.out.println("changing returned: " + value);
 
 //						widget.browser.evaluate("return 'Changing eval...'");
 
 //						event.doit = false; // Stop page load.
-					}
+				}
 
-					@Override
-					public void changed(LocationEvent event) {
-						System.out.print("Changed!");
-						String value = (String)browser.evaluate("return 'finished callback'");
-						System.out.println("Changed returned: " + value);
-					}
-				});
-			}
-			@Override
-			public void changed(ProgressEvent event) {}
-		});
+				@Override
+				public void changed(LocationEvent event) {
+					System.out.print("Changed!");
+					String value = (String) browser.evaluate("return 'finished callback'");
+					System.out.println("Changed returned: " + value);
+				}
+			});
+		}));
 
 		shell.open();
 		while (!shell.isDisposed()) {
@@ -107,16 +91,7 @@ public class Bug505418_Listeners_evals {
 		Button button = new Button(shell, SWT.PUSH);
 		final Browser browser = new Browser(shell, SWT.NONE);
 		button.setText("Click to increase count.");
-		button.addMouseListener(new MouseListener() {
-			@Override
-			public void mouseUp(MouseEvent e) {}
-			@Override
-			public void mouseDown(MouseEvent e) {
-				shell.setText("Count: " + count++);
-			}
-			@Override
-			public void mouseDoubleClick(MouseEvent e) {}
-		});
+		button.addMouseListener(MouseListener.mouseDownAdapter(e -> shell.setText("Count: " + count++)));
 
 		browser.setText("<html><title>Snippet</title><body><a href=\"https://eclipse.org/\">Eclipse.org  Disposing on link change causes hang</a></body></html>");
 		browser.addProgressListener(new ProgressListener() {
@@ -150,16 +125,7 @@ public class Bug505418_Listeners_evals {
 		Button button = new Button(shell, SWT.PUSH);
 		final Browser browser = new Browser(shell, SWT.NONE);
 		button.setText("Click to increase count.");
-		button.addMouseListener(new MouseListener() {
-			@Override
-			public void mouseUp(MouseEvent e) {}
-			@Override
-			public void mouseDown(MouseEvent e) {
-				shell.setText("Count: " + count++);
-			}
-			@Override
-			public void mouseDoubleClick(MouseEvent e) {}
-		});
+		button.addMouseListener(MouseListener.mouseDownAdapter(e -> shell.setText("Count: " + count++)));
 
 		browser.setText("<html><title>Snippet</title><body><a href=\"https://eclipse.org/\">Eclipse.org  Disposing on link change causes hang</a></body></html>");
 		browser.addStatusTextListener(event -> {
@@ -183,32 +149,10 @@ public class Bug505418_Listeners_evals {
 		Button closeBrowserButton = new Button(shell, SWT.PUSH);
 		final Browser browser = new Browser(shell, SWT.NONE);
 		closeBrowserButton.setText("Close widget.browser button");
-		closeBrowserButton.addMouseListener(new MouseListener() {
-			@Override
-			public void mouseUp(MouseEvent e) {
-			}
-
-			@Override
-			public void mouseDown(MouseEvent e) {
-				browser.execute("window.close()");
-			}
-
-			@Override
-			public void mouseDoubleClick(MouseEvent e) {
-			}
-		});
+		closeBrowserButton.addMouseListener(MouseListener.mouseDownAdapter(e -> browser.execute("window.close()")));
 
 		button.setText("Click to increase count.");
-		button.addMouseListener(new MouseListener() {
-			@Override
-			public void mouseUp(MouseEvent e) {}
-			@Override
-			public void mouseDown(MouseEvent e) {
-				shell.setText("Count: " + count++);
-			}
-			@Override
-			public void mouseDoubleClick(MouseEvent e) {}
-		});
+		button.addMouseListener(MouseListener.mouseDownAdapter(e -> shell.setText("Count: " + count++)));
 		browser.setText("<html><title>Snippet</title><body><a href=\"https://eclipse.org/\">Eclipse.org  Disposing on link change causes hang</a></body></html>");
 		browser.addCloseWindowListener(event -> {
 			System.out.println("closing...");
@@ -231,32 +175,10 @@ public class Bug505418_Listeners_evals {
 		Button closeBrowserButton = new Button(shell, SWT.PUSH);
 		final Browser browser = new Browser(shell, SWT.NONE);
 		closeBrowserButton.setText("Close widget.browser button");
-		closeBrowserButton.addMouseListener(new MouseListener() {
-			@Override
-			public void mouseUp(MouseEvent e) {
-			}
-
-			@Override
-			public void mouseDown(MouseEvent e) {
-				browser.execute("window.open()");
-			}
-
-			@Override
-			public void mouseDoubleClick(MouseEvent e) {
-			}
-		});
+		closeBrowserButton.addMouseListener(MouseListener.mouseDownAdapter(e -> browser.execute("window.open()")));
 
 		button.setText("Click to increase count.");
-		button.addMouseListener(new MouseListener() {
-			@Override
-			public void mouseUp(MouseEvent e) {}
-			@Override
-			public void mouseDown(MouseEvent e) {
-				shell.setText("Count: " + count++);
-			}
-			@Override
-			public void mouseDoubleClick(MouseEvent e) {}
-		});
+		button.addMouseListener(MouseListener.mouseDownAdapter(e -> shell.setText("Count: " + count++)));
 		browser.setText("<html><title>Snippet</title><body><a href=\"https://eclipse.org/\">Eclipse.org  Disposing on link change causes hang</a></body></html>");
 		browser.addOpenWindowListener(event -> {
 			System.out.println("opening...");
@@ -282,16 +204,7 @@ public class Bug505418_Listeners_evals {
 		});
 
 		button.setText("Click to increase count.");
-		button.addMouseListener(new MouseListener() {
-			@Override
-			public void mouseUp(MouseEvent e) {}
-			@Override
-			public void mouseDown(MouseEvent e) {
-				shell.setText("Count: " + count++);
-			}
-			@Override
-			public void mouseDoubleClick(MouseEvent e) {}
-		});
+		button.addMouseListener(MouseListener.mouseDownAdapter(e -> shell.setText("Count: " + count++)));
 		browser.setText("<html><title>Snippet</title><body><a href=\"https://eclipse.org/\">Eclipse.org  Disposing on link change causes hang</a></body></html>");
 		shell.open();
 		while (!shell.isDisposed()) {
@@ -312,49 +225,21 @@ public class Bug505418_Listeners_evals {
 		final Shell shell2 = new Shell(display);
 		shell2.setLayout(new FillLayout());
 		final Browser browser2 = new Browser(shell2, SWT.NONE);
-		browser2.addVisibilityWindowListener(new VisibilityWindowListener() {
-
-			@Override
-			public void show(WindowEvent event) {
-				System.out.println("showing...");
-				shell2.open();
-				evalTest(browser2, "browse2 show");
-				evalTest(browser, "browse1 show");
-			}
-
-			@Override
-			public void hide(WindowEvent event) {
-			}
-		});
+		browser2.addVisibilityWindowListener(VisibilityWindowListener.showAdapter(event -> {
+			System.out.println("showing...");
+			shell2.open();
+			evalTest(browser2, "browse2 show");
+			evalTest(browser, "browse1 show");
+		}));
 
 		closeBrowserButton.setText("Close widget.browser button");
-		closeBrowserButton.addMouseListener(new MouseListener() {
-			@Override
-			public void mouseUp(MouseEvent e) {
-			}
-
-			@Override
-			public void mouseDown(MouseEvent e) {
-				browser.execute("document.body.style.backgroundColor = 'red'");
-				browser.execute("window.open('https://www.google.com', 'Dialog')");
-			}
-
-			@Override
-			public void mouseDoubleClick(MouseEvent e) {
-			}
-		});
+		closeBrowserButton.addMouseListener(MouseListener.mouseDownAdapter(e -> {
+			browser.execute("document.body.style.backgroundColor = 'red'");
+			browser.execute("window.open('https://www.google.com', 'Dialog')");
+		}));
 
 		button.setText("Click to increase count.");
-		button.addMouseListener(new MouseListener() {
-			@Override
-			public void mouseUp(MouseEvent e) {}
-			@Override
-			public void mouseDown(MouseEvent e) {
-				shell.setText("Count: " + count++);
-			}
-			@Override
-			public void mouseDoubleClick(MouseEvent e) {}
-		});
+		button.addMouseListener(MouseListener.mouseDownAdapter(e -> shell.setText("Count: " + count++)));
 		browser.setText("<html><title>Snippet</title><body><a href=\"https://eclipse.org/\">Eclipse.org  Disposing on link change causes hang</a></body></html>");
 		browser.addOpenWindowListener(event -> {
 			System.out.println("opening...");

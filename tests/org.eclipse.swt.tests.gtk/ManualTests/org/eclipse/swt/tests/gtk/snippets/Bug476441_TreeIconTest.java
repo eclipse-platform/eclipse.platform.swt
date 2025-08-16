@@ -20,8 +20,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
@@ -59,20 +57,17 @@ public class Bug476441_TreeIconTest {
 			lastItem = newItem;
 		}
 
-		tree.addListener(SWT.PaintItem, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				TreeItem item = (TreeItem)event.item;
-				Rectangle ib = item.getImageBounds(0);
+		tree.addListener(SWT.PaintItem, event -> {
+			TreeItem item = (TreeItem)event.item;
+			Rectangle ib = item.getImageBounds(0);
 //				You can add an offset here to make the issue more visible:
 //				event.gc.drawImage(xImage, ib.x, ib.y + 10);
-				event.gc.drawImage(xImage, ib.x, ib.y);
-				
-				Rectangle tb = item.getTextBounds(0);
+			event.gc.drawImage(xImage, ib.x, ib.y);
+			
+			Rectangle tb = item.getTextBounds(0);
 //				You can add an offset here to make the issue more visible:
 //				event.gc.drawText(item.getText(), tb.x + 10, tb.y);
-				event.gc.drawText(item.getText(), tb.x, tb.y);
-			}
+			event.gc.drawText(item.getText(), tb.x, tb.y);
 		});
 
 		shell.pack();

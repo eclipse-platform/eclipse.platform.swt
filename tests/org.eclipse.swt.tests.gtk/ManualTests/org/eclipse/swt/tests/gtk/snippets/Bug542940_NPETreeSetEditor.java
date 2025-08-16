@@ -2,10 +2,8 @@ package org.eclipse.swt.tests.gtk.snippets;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TreeEditor;
-import org.eclipse.swt.events.FocusAdapter;
-import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
@@ -39,42 +37,33 @@ public class Bug542940_NPETreeSetEditor {
 		editor.horizontalAlignment = SWT.LEFT;
 		editor.grabHorizontal = true;
 
-		tree.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent event) {
-				if (event.keyCode == SWT.F2 && tree.getSelectionCount() == 1) {
-					final TreeItem item = tree.getSelection()[0];
+		tree.addKeyListener(KeyListener.keyPressedAdapter(event -> {
+			if (event.keyCode == SWT.F2 && tree.getSelectionCount() == 1) {
+				final TreeItem item = tree.getSelection()[0];
 
-					final Text text = new Text(tree, SWT.NONE);
+				final Text text = new Text(tree, SWT.NONE);
 //					text.setBounds(0, 0, 1, 1);
-					text.setText(item.getText());
-					text.selectAll();
-					text.setFocus();
+				text.setText(item.getText());
+				text.selectAll();
+				text.setFocus();
 
-					text.addFocusListener(new FocusAdapter() {
-						@Override
-						public void focusLost(FocusEvent event) {
-							item.setText(text.getText());
-							text.dispose();
-						}
-					});
+				text.addFocusListener(FocusListener.focusLostAdapter(f -> {
+					item.setText(text.getText());
+					text.dispose();
+				}));
 
-					text.addKeyListener(new KeyAdapter() {
-						@Override
-						public void keyPressed(KeyEvent event) {
-							switch (event.keyCode) {
-							case SWT.CR:
-								item.setText(text.getText());
-							case SWT.ESC:
-								text.dispose();
-								break;
-							}
-						}
-					});
-					editor.setEditor(text, item);
-				}
+				text.addKeyListener(KeyListener.keyPressedAdapter(e -> {
+					switch (e.keyCode) {
+					case SWT.CR:
+						item.setText(text.getText());
+					case SWT.ESC:
+						text.dispose();
+						break;
+					}
+				}));
+				editor.setEditor(text, item);
 			}
-		});
+		}));
 
 		shell.open();
 		while (!shell.isDisposed()) {

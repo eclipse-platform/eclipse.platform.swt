@@ -14,8 +14,7 @@
 package org.eclipse.swt.tests.gtk.snippets;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
@@ -48,22 +47,15 @@ public class Bug127132_VirtualTablePackNPE {
 
 		final Table table = new Table(shell, SWT.VIRTUAL | SWT.BORDER | SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL);
 		button.setText("Change content");
-		button.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				table.setItemCount(table.getItemCount() == COUNT1 ? COUNT2 : COUNT1);
-			}
-		});
+		button.addSelectionListener(SelectionListener
+				.widgetSelectedAdapter(e -> table.setItemCount(table.getItemCount() == COUNT1 ? COUNT2 : COUNT1)));
 
 		packButton.setText("Pack");
-		packButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				for (TableColumn c : table.getColumns()) {
-					c.pack();
-				}
+		packButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+			for (TableColumn c : table.getColumns()) {
+				c.pack();
 			}
-		});
+		}));
 
 		table.setHeaderVisible(true);
 		final Listener listener = event -> {

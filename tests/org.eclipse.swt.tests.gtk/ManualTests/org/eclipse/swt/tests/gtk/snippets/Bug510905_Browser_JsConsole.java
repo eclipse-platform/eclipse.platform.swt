@@ -17,10 +17,8 @@ package org.eclipse.swt.tests.gtk.snippets;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.BrowserFunction;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -59,24 +57,17 @@ public class Bug510905_Browser_JsConsole {
 		data = new GridData(SWT.FILL, SWT.FILL, true, true);
 		browser.setLayoutData(data);
 
-		jsConsole.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if (e.keyCode == 13) { // 13 = Enter
-					browser.execute(jsConsole.getText());
-				}
+		jsConsole.addKeyListener(KeyListener.keyPressedAdapter(e -> {
+			if (e.keyCode == 13) { // 13 = Enter
+				browser.execute(jsConsole.getText());
 			}
-		});
+		}));
 
 		Button loadNewPage = new Button(shell, SWT.PUSH);
 		loadNewPage.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
 		loadNewPage.setText("Load new Page");
-		loadNewPage.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				browser.setText("New page!" + count++);
-			}
-		});
+		loadNewPage.addSelectionListener(
+				SelectionListener.widgetSelectedAdapter(e -> browser.setText("New page!" + count++)));
 
 
 		// BrowserFunction Code
@@ -98,8 +89,7 @@ public class Bug510905_Browser_JsConsole {
 		@Override
 		public Object function (Object[] arguments) {
 			System.out.println ("theJavaFunction() called from javascript with args:");
-			for (int i = 0; i < arguments.length; i++) {
-				Object arg = arguments[i];
+			for (Object arg : arguments) {
 				if (arg == null) {
 					System.out.println ("\t-->null");
 				} else {

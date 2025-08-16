@@ -15,8 +15,7 @@ package org.eclipse.swt.tests.gtk.snippets;
 
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Display;
@@ -30,13 +29,7 @@ public class Bug517214_ComboReadOnlyWrongText {
 	combo.setItems ("Alpha");
 	Rectangle clientArea = shell.getClientArea ();
 	combo.setBounds (clientArea.x, clientArea.y, 200, 200);
-	MouseAdapter clickListener = new MouseAdapter() {
-		@Override
-		public void mouseDown(MouseEvent e) {
-			System.out.println("hello");
-		}
-	};
-	shell.addMouseListener(clickListener);
+	shell.addMouseListener(MouseListener.mouseDownAdapter(e -> System.out.println("hello")));
 	shell.pack ();
 	shell.open ();
 	while (!shell.isDisposed ()) {

@@ -25,13 +25,9 @@ import java.util.function.Consumer;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
-import org.eclipse.swt.events.ControlAdapter;
-import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.events.ShellAdapter;
-import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.events.ShellListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontMetrics;
@@ -48,7 +44,6 @@ import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ScrollBar;
@@ -112,7 +107,7 @@ public class MJ_Table extends MJ_root {
 	 */
 	@Test
 	public void ownerDrawn_cheese_single_col () {
-//		knownToBeBrokenGtk3("Cheese on gtk3"); // z for warning
+		knownToBeBrokenGtk3("Cheese on gtk3"); // z for warning
 		Shell shell = mkShell("Expected: There should be no cheese in the items. Move over shouldn't cheese out. See javadoc for screenshot");
 		shell.setLayout(new FillLayout(SWT.VERTICAL));
 
@@ -389,40 +384,31 @@ public class MJ_Table extends MJ_root {
 				System.err.println("COL_SIZE_ERROR 2 Expected:" + c2w + " actual:" + column2.getWidth());
 		};
 
-		comp.addControlListener(new ControlAdapter()
-		{
-			@Override
-			public void controlResized(ControlEvent e)
-			{
-				Rectangle area = table.getParent().getClientArea();
-				Point preferredSize = table.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-				int width = area.width - 2 * table.getBorderWidth();
-				if (preferredSize.y > area.height)
-				{
-					// Subtract the scrollbar width from the total column width
-					// if a vertical scrollbar will be required
-					Point vBarSize = table.getVerticalBar().getSize();
-					width -= vBarSize.x;
-				}
-				Point oldSize = table.getSize();
-				if (oldSize.x > area.width)
-				{
-					// table is getting smaller so make the columns
-					// smaller first and then resize the table to
-					// match the client area width
-					setColumnWidths.accept(width);
-					table.setSize(area.width, area.height);
-				}
-				else
-				{
-					// table is getting bigger so make the table
-					// bigger first and then make the columns wider
-					// to match the client area width
-					table.setSize(area.width, area.height);
-					setColumnWidths.accept(width);
-				}
+		comp.addControlListener(ControlListener.controlResizedAdapter(e -> {
+			Rectangle area = table.getParent().getClientArea();
+			Point preferredSize = table.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+			int width = area.width - 2 * table.getBorderWidth();
+			if (preferredSize.y > area.height) {
+				// Subtract the scrollbar width from the total column width
+				// if a vertical scrollbar will be required
+				Point vBarSize = table.getVerticalBar().getSize();
+				width -= vBarSize.x;
 			}
-		});
+			Point oldSize = table.getSize();
+			if (oldSize.x > area.width) {
+				// table is getting smaller so make the columns
+				// smaller first and then resize the table to
+				// match the client area width
+				setColumnWidths.accept(width);
+				table.setSize(area.width, area.height);
+			} else {
+				// table is getting bigger so make the table
+				// bigger first and then make the columns wider
+				// to match the client area width
+				table.setSize(area.width, area.height);
+				setColumnWidths.accept(width);
+			}
+		}));
 		shell.open();
 		mainLoop(shell);
 	}
@@ -524,31 +510,28 @@ public class MJ_Table extends MJ_root {
 		 * Therefore, it is critical for performance that these methods be
 		 * as efficient as possible.
 		 */
-		table.addListener(SWT.PaintItem, new Listener() {
+		table.addListener(SWT.PaintItem, event -> {
 			int[] percents = new int[] {50, 30, 5, 15};
-			@Override
-			public void handleEvent(Event event) {
-				if (event.index == 1) {
-					GC gc = event.gc;
-					TableItem item = (TableItem)event.item;
-					int index = table.indexOf(item);
-					int percent = percents[index];
-					Color foreground = gc.getForeground();
-					Color background = gc.getBackground();
-					gc.setForeground(display.getSystemColor(SWT.COLOR_RED));
-					gc.setBackground(display.getSystemColor(SWT.COLOR_YELLOW));
-					int width = (column2.getWidth() - 1) * percent / 100;
-					gc.fillGradientRectangle(event.x, event.y, width, event.height, true);
-					Rectangle rect2 = new Rectangle(event.x, event.y, width-1, event.height-1);
-					gc.drawRectangle(rect2);
-					gc.setForeground(display.getSystemColor(SWT.COLOR_LIST_FOREGROUND));
-					String text = percent+"%";
-					Point size = event.gc.textExtent(text);
-					int offset = Math.max(0, (event.height - size.y) / 2);
-					gc.drawText(text, event.x+2, event.y+offset, true);
-					gc.setForeground(background);
-					gc.setBackground(foreground);
-				}
+			if (event.index == 1) {
+				GC gc = event.gc;
+				TableItem item = (TableItem)event.item;
+				int index = table.indexOf(item);
+				int percent = percents[index];
+				Color foreground = gc.getForeground();
+				Color background = gc.getBackground();
+				gc.setForeground(display.getSystemColor(SWT.COLOR_RED));
+				gc.setBackground(display.getSystemColor(SWT.COLOR_YELLOW));
+				int width = (column2.getWidth() - 1) * percent / 100;
+				gc.fillGradientRectangle(event.x, event.y, width, event.height, true);
+				Rectangle rect2 = new Rectangle(event.x, event.y, width-1, event.height-1);
+				gc.drawRectangle(rect2);
+				gc.setForeground(display.getSystemColor(SWT.COLOR_LIST_FOREGROUND));
+				String text = percent+"%";
+				Point size = event.gc.textExtent(text);
+				int offset = Math.max(0, (event.height - size.y) / 2);
+				gc.drawText(text, event.x+2, event.y+offset, true);
+				gc.setForeground(background);
+				gc.setBackground(foreground);
 			}
 		});
 		shell.setSize (SWIDTH, SHEIGHT);
@@ -676,17 +659,14 @@ public class MJ_Table extends MJ_root {
 		});
 		table.setLayoutData (new RowData (shell.getBounds().width - 100, 400));
 		final Label label2 = new Label(shell, SWT.NONE);
-		shell.addShellListener( new ShellAdapter() {
-			@Override
-			public void shellActivated(ShellEvent e) {
-				System.out.println("activated");
-				long t1 = System.currentTimeMillis ();
-				table.setItemCount (COUNT);
-				long t2 = System.currentTimeMillis ();
-				label2.setText ("Items: " + COUNT + ", Time: " + (t2 - t1) + " (ms)");
-				shell.layout ();
-			}
-		});
+		shell.addShellListener(ShellListener.shellActivatedAdapter(e -> {
+			System.out.println("activated");
+			long t1 = System.currentTimeMillis();
+			table.setItemCount(COUNT);
+			long t2 = System.currentTimeMillis();
+			label2.setText("Items: " + COUNT + ", Time: " + (t2 - t1) + " (ms)");
+			shell.layout();
+		}));
 		shell.open ();
 		mainLoop(shell);
 	}
@@ -799,22 +779,19 @@ public class MJ_Table extends MJ_root {
 		button.setText ("Insert Column " + index + "a");
 
 		AtomicBoolean columnAdded = new AtomicBoolean(false);
-		shell.addShellListener(new ShellAdapter() {
-			@Override
-			public void shellActivated(ShellEvent e) {
-				if (!columnAdded.get()) {
-					columnAdded.set(true);
-					TableColumn column = new TableColumn (table, SWT.NONE, index);
-					column.setImage(display.getSystemImage(SWT.ICON_WARNING)); //added to make it easier to spot in a test.
-					column.setText ("Column " + index + " added after shellopen");
-					TableItem [] items = table.getItems ();
-					for (int i=0; i<items.length; i++) {
-						items [i].setText (index, "Item " + i + " added");
-					}
-					column.pack ();
+		shell.addShellListener(ShellListener.shellActivatedAdapter(e -> {
+			if (!columnAdded.get()) {
+				columnAdded.set(true);
+				TableColumn column = new TableColumn(table, SWT.NONE, index);
+				column.setImage(display.getSystemImage(SWT.ICON_WARNING)); // added to make it easier to spot in a test.
+				column.setText("Column " + index + " added after shellopen");
+				TableItem[] items = table.getItems();
+				for (int i = 0; i < items.length; i++) {
+					items[i].setText(index, "Item " + i + " added");
 				}
+				column.pack();
 			}
-		});
+		}));
 
 		shell.setSize (SWIDTH, SHEIGHT);
 		Rectangle shellClientArea = shell.getClientArea();
@@ -1356,18 +1333,12 @@ public class MJ_Table extends MJ_root {
 			fixCount.run();
 		});
 
-		shell.addControlListener(new ControlAdapter() {
-			@Override
-			public void controlResized(ControlEvent e) {
-				fixCount.run();
-			}
-		});
-		shell.addShellListener(new ShellAdapter() {
-			@Override
-			public void shellActivated(ShellEvent e) {
-				fixCount.run();
-			}
-		});
+		shell.addControlListener(ControlListener.controlMovedAdapter(e -> {
+			fixCount.run();
+		}));
+		shell.addShellListener(ShellListener.shellActivatedAdapter(e -> {
+			fixCount.run();
+		}));
 		// setSize(..)_ affects bug/snippet behaviour.
 		shell.setSize(1160, 820); //820 => ~15 items or so, depending on your theme.
 		shell.open();
@@ -1391,15 +1362,9 @@ public class MJ_Table extends MJ_root {
 			Button button = new Button (table, SWT.NONE);
 			button.setText("hello world " + i);
 			button.setVisible(true);
-			button.addSelectionListener(new SelectionListener() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					System.out.println("Button pressed");
-				}
-				@Override
-				public void widgetDefaultSelected(SelectionEvent e) {
-				}
-			});
+			button.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+				System.out.println("Button pressed");
+			}));
 			TableEditor editor = new TableEditor (table);
 			editor.grabHorizontal = editor.grabVertical = true;
 			editor.setEditor (button, item, 0);

@@ -16,8 +16,6 @@ package org.eclipse.swt.tests.gtk.snippets;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -39,30 +37,27 @@ public static void main(String[] args) {
 	column.setText("1");
 	column.setWidth(120);
 	new TableItem(table, SWT.NONE).setText(new String[] {"abc","def"});
-	shell.addListener(SWT.MouseDown, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			if (counter == 0) {
-				System.out.println("setRedraw(false)");
-				table.setRedraw(false);
-				counter++;
-				return;
-			}
-			if (counter == 1) {
-				System.out.println("setHeaderVisible(true): overwrites item");
-				table.setHeaderVisible(false);
-				//widget.table.setColumnOrder(new int[] {1,0});
-				counter++;
-				return;
-			}
-			if (counter == 2) {
-				System.out.println("setRedraw(true), item reappears");
-				table.setRedraw(true);
-				counter++;
-				return;
-			}
-			System.out.println("nothing left to do");
+	shell.addListener(SWT.MouseDown, event -> {
+		if (counter == 0) {
+			System.out.println("setRedraw(false)");
+			table.setRedraw(false);
+			counter++;
+			return;
 		}
+		if (counter == 1) {
+			System.out.println("setHeaderVisible(true): overwrites item");
+			table.setHeaderVisible(false);
+			//widget.table.setColumnOrder(new int[] {1,0});
+			counter++;
+			return;
+		}
+		if (counter == 2) {
+			System.out.println("setRedraw(true), item reappears");
+			table.setRedraw(true);
+			counter++;
+			return;
+		}
+		System.out.println("nothing left to do");
 	});
 	shell.open();
 	while (!shell.isDisposed()) {

@@ -14,9 +14,13 @@
 package org.eclipse.swt.tests.gtk.snippets;
 
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.layout.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 public class Bug236863_VirtualPerformance {
 	static final int ROWS = 3000000;
 	public static void main (String [] args) {
@@ -25,12 +29,9 @@ public class Bug236863_VirtualPerformance {
 		shell.setLayout (new FillLayout ());
 		final Table table = new Table (shell, SWT.VIRTUAL);
 		table.setHeaderVisible (true);
-		table.addListener (SWT.SetData, new Listener () {
-			@Override
-			public void handleEvent (Event e) {
-				TableItem item = (TableItem) e.item;
-				item.setText ("test");
-			}
+		table.addListener(SWT.SetData, e -> {
+			TableItem item = (TableItem) e.item;
+			item.setText("test");
 		});
 		TableColumn column = new TableColumn (table, SWT.NONE);
 		column.setText ("Column 1");

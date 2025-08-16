@@ -17,8 +17,6 @@ package org.eclipse.swt.tests.gtk.snippets;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
@@ -40,12 +38,7 @@ public class Bug479200_MenuTest {
 		editItem.setMenu (submenu);
 
 		MenuItem item = new MenuItem (submenu, SWT.PUSH);
-		item.addListener (SWT.Selection, new Listener () {
-			@Override
-			public void handleEvent (Event e) {
-				t.selectAll();
-			}
-		});
+		item.addListener (SWT.Selection, e -> t.selectAll());
 		item.setText ("Select &All\tCtrl+A");
 		item.setAccelerator (SWT.MOD1 + 'A');
 		
