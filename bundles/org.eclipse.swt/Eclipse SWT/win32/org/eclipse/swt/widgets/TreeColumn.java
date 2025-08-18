@@ -380,7 +380,7 @@ public void pack () {
 	if (image != null || parent.sortColumn == this) {
 		Image headerImage = null;
 		if (parent.sortColumn == this && parent.sortDirection != SWT.NONE) {
-			headerWidth += Tree.SORT_WIDTH;
+			headerWidth += Win32DPIUtils.pointToPixel(Tree.SORT_WIDTH, getZoom()) ;
 		} else {
 			headerImage = image;
 		}
