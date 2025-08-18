@@ -1862,6 +1862,7 @@ public class OS extends C {
 	public static final int WM_XBUTTONDBLCLK = 0x020D;
 	public static final int XBUTTON1 = 0x1;
 	public static final int XBUTTON2 = 0x2;
+	public static final int DWMWA_EXTENDED_FRAME_BOUNDS = 9;
 
 public static int VERSION (int major, int minor) {
 	return major << 16 | minor;
@@ -3022,6 +3023,10 @@ public static final native boolean GetWindowOrgEx (long hdc, POINT lpPoint);
 public static final native boolean GetWindowPlacement (long hWnd, WINDOWPLACEMENT lpwndpl);
 /** @param hWnd cast=(HWND) */
 public static final native boolean GetWindowRect (long hWnd, RECT lpRect);
+/**
+ * @param hwnd cast=(HWND)
+ * */
+public static final native int DwmGetWindowAttribute (long hwnd, int dwAttribute, RECT pvAttribute, int cbAttribute);
 /**
  * @param hWnd cast=(HWND)
  * @param hRgn cast=(HRGN)
