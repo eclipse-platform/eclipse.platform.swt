@@ -2017,7 +2017,7 @@ private abstract class ImageFromImageDataProviderWrapper extends AbstractImagePr
 			handle.destroy();
 			return data;
 		};
-		return cachedImageData.computeIfAbsent(zoomContext.targetZoom(), imageDataRetrieval);
+		return (ImageData) cachedImageData.computeIfAbsent(zoomContext.targetZoom(), imageDataRetrieval).clone();
 	}
 
 	@Override
@@ -2297,7 +2297,7 @@ private abstract class BaseImageProviderWrapper<T> extends DynamicImageProviderW
 			handle.destroy();
 			return data;
 		};
-		return cachedImageData.computeIfAbsent(zoomContext.targetZoom(), imageDataRetrival);
+		return (ImageData) cachedImageData.computeIfAbsent(zoomContext.targetZoom(), imageDataRetrival).clone();
 	}
 
 

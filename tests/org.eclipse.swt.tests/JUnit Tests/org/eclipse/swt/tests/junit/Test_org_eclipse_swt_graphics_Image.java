@@ -20,7 +20,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeFalse;
@@ -33,6 +32,8 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 import org.eclipse.swt.SWT;
@@ -684,6 +685,25 @@ public void test_getImageData() {
 }
 
 @Test
+public void test_getImageData_changingImageDataDoesNotAffectImage() {
+	List<Image> images = List.of( //
+			new Image(display, imageFileNameProvider), //
+			new Image(display, imageDataProvider), //
+			new Image(display, new ImageData(10, 10, 32, new PaletteData(0xff0000, 0xff00, 0xff))) //
+	);
+
+	try {
+		for (Image image : images) {
+			ImageData originalImageData = image.getImageData();
+			originalImageData.setPixel(0, 0, originalImageData.getPixel(0, 0) + 1);
+			assertNotEquals(image.getImageData().getPixel(0, 0), originalImageData.getPixel(0, 0));
+		}
+	} finally {
+		images.forEach(Image::dispose);
+	}
+}
+
+@Test
 public void test_getImageData_100() {
         getImageData_int(100);
     }
@@ -1032,11 +1052,17 @@ public void test_updateWidthHeightAfterDPIChange() {
 public void test_imageDataIsCached() {
 	assumeTrue("On-demand image creation only implemented for Windows", SwtTestUtil.isWindows);
 	String imagePath = getPath("collapseall.png");
+	AtomicInteger callCount = new AtomicInteger();
 	ImageFileNameProvider imageFileNameProvider = __ -> {
+		callCount.incrementAndGet();
 		return imagePath;
 	};
 	Image fileNameProviderImage = new Image(display, imageFileNameProvider);
-	assertSame(fileNameProviderImage.getImageData(100), fileNameProviderImage.getImageData(100));
+	callCount.set(0);
+	fileNameProviderImage.getImageData(100);
+	fileNameProviderImage.getImageData(100);
+	fileNameProviderImage.getImageData(100);
+	assertEquals(0, callCount.get());
 }
 
 @Test
