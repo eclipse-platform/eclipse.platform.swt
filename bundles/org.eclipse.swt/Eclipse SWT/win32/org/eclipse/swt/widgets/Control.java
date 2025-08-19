@@ -4028,10 +4028,9 @@ void subclass () {
  */
 public Point toControl (int x, int y) {
 	checkWidget ();
-	int zoom = getZoom();
-	Point displayPointInPixels = getDisplay().translateToDisplayCoordinates(new Point(x, y), zoom);
+	Point displayPointInPixels = getDisplay().translateToDisplayCoordinates(new Point(x, y));
 	final Point controlPointInPixels = toControlInPixels(displayPointInPixels.x, displayPointInPixels.y);
-	return Win32DPIUtils.pixelToPoint(controlPointInPixels, zoom);
+	return Win32DPIUtils.pixelToPoint(controlPointInPixels, getZoom());
 }
 
 Point toControlInPixels (int x, int y) {
@@ -4091,7 +4090,7 @@ public Point toDisplay (int x, int y) {
 	checkWidget ();
 	int zoom = getZoom();
 	Point displayPointInPixels = toDisplayInPixels(Win32DPIUtils.pointToPixel(x, zoom), Win32DPIUtils.pointToPixel(y, zoom));
-	return getDisplay().translateFromDisplayCoordinates(displayPointInPixels, zoom);
+	return getDisplay().translateFromDisplayCoordinates(displayPointInPixels);
 }
 
 Point toDisplayInPixels (int x, int y) {

@@ -92,24 +92,24 @@ class MultiZoomCoordinateSystemMapper implements CoordinateSystemMapper {
 	}
 
 	@Override
-	public Point translateFromDisplayCoordinates(Point point, int zoom) {
+	public Point translateFromDisplayCoordinates(Point point) {
 		return translateLocationInPixelsToPoints(point.x, point.y);
 	}
 
 	@Override
-	public Point translateToDisplayCoordinates(Point point, int zoom) {
+	public Point translateToDisplayCoordinates(Point point) {
 		Monitor monitor = point instanceof Point.WithMonitor pointWithMonitor ? pointWithMonitor.getMonitor() : null;
 		return translateLocationInPointsToPixels(point.x, point.y, monitor);
 	}
 
 	@Override
-	public Rectangle translateFromDisplayCoordinates(Rectangle rect, int zoom) {
+	public Rectangle translateFromDisplayCoordinates(Rectangle rect) {
 		Monitor monitor = rect instanceof Rectangle.WithMonitor rectWithMonitor ? rectWithMonitor.getMonitor() : null;
 		return translateRectangleInPixelsToPoints(rect.x, rect.y, rect.width, rect.height, monitor);
 	}
 
 	@Override
-	public Rectangle translateToDisplayCoordinates(Rectangle rect, int zoom) {
+	public Rectangle translateToDisplayCoordinates(Rectangle rect) {
 		Monitor monitor = rect instanceof Rectangle.WithMonitor rectWithMonitor ? rectWithMonitor.getMonitor() : null;
 		return translateRectangleInPointsToPixels(rect.x, rect.y, rect.width, rect.height, monitor);
 	}
