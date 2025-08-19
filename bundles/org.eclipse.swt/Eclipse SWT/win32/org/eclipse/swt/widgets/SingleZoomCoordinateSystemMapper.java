@@ -76,22 +76,22 @@ class SingleZoomCoordinateSystemMapper implements CoordinateSystemMapper {
 	}
 
 	@Override
-	public Point translateFromDisplayCoordinates(Point point, int zoom) {
+	public Point translateFromDisplayCoordinates(Point point) {
 		return Win32DPIUtils.pixelToPoint(point, DPIUtil.getDeviceZoom());
 	}
 
 	@Override
-	public Point translateToDisplayCoordinates(Point point, int zoom) {
+	public Point translateToDisplayCoordinates(Point point) {
 		return Win32DPIUtils.pointToPixel(point, DPIUtil.getDeviceZoom());
 	}
 
 	@Override
-	public Rectangle translateFromDisplayCoordinates(Rectangle rect, int zoom) {
+	public Rectangle translateFromDisplayCoordinates(Rectangle rect) {
 		return Win32DPIUtils.pixelToPoint(rect, DPIUtil.getDeviceZoom());
 	}
 
 	@Override
-	public Rectangle translateToDisplayCoordinates(Rectangle rect, int zoom) {
+	public Rectangle translateToDisplayCoordinates(Rectangle rect) {
 		return Win32DPIUtils.pointToPixel(rect, DPIUtil.getDeviceZoom());
 	}
 
