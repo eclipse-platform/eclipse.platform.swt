@@ -53,7 +53,11 @@ public class DPIZoomChangeRegistry {
 			Class<? extends Widget> clazz = entry.getKey();
 			DPIZoomChangeHandler handler = entry.getValue();
 			if (clazz.isInstance(widget)) {
-				handler.handleDPIChange(widget, newZoom, scalingFactor);
+				try {
+					handler.handleDPIChange(widget, newZoom, scalingFactor);
+				} catch (RuntimeException ex) {
+					widget.getDisplay().getRuntimeExceptionHandler().accept(ex);
+				}
 			}
 		}
 		Event event = new Event();
