@@ -1015,9 +1015,13 @@ public int getImeInputMode () {
 
 @Override Point getLocationInPixels () {
 	if (OS.IsIconic (handle)) return super.getLocationInPixels ();
-	RECT rect = new RECT ();
-	OS.GetWindowRect (handle, rect);
-	return new Point (rect.left, rect.top);
+	RECT rect = new RECT();
+	OS.GetWindowRect(handle, rect);
+	int hr = OS.DwmGetWindowAttribute(handle, OS.DWMWA_EXTENDED_FRAME_BOUNDS, rect, RECT.sizeof);
+	if (hr != 0) {
+		OS.GetWindowRect(handle, rect);
+	}
+	return new Point(rect.left, rect.top);
 }
 
 @Override
