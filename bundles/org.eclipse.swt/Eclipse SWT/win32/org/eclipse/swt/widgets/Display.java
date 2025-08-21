@@ -3166,20 +3166,20 @@ Rectangle mapInPixels (Control from, Control to, int x, int y, int width, int he
 	return new Rectangle (rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
 }
 
-Point translateFromDisplayCoordinates(Point point, int zoom) {
-	return coordinateSystemMapper.translateFromDisplayCoordinates(point, zoom);
+Point translateFromDisplayCoordinates(Point point) {
+	return coordinateSystemMapper.translateFromDisplayCoordinates(point);
 }
 
-Point translateToDisplayCoordinates(Point point, int zoom) {
-	return coordinateSystemMapper.translateToDisplayCoordinates(point, zoom);
+Point translateToDisplayCoordinates(Point point) {
+	return coordinateSystemMapper.translateToDisplayCoordinates(point);
 }
 
-Rectangle translateFromDisplayCoordinates(Rectangle rect, int zoom) {
-	return coordinateSystemMapper.translateFromDisplayCoordinates(rect, zoom);
+Rectangle translateFromDisplayCoordinates(Rectangle rect) {
+	return coordinateSystemMapper.translateFromDisplayCoordinates(rect);
 }
 
-Rectangle translateToDisplayCoordinates(Rectangle rect, int zoom) {
-	return coordinateSystemMapper.translateToDisplayCoordinates(rect, zoom);
+Rectangle translateToDisplayCoordinates(Rectangle rect) {
+	return coordinateSystemMapper.translateToDisplayCoordinates(rect);
 }
 
 long messageProc (long hwnd, long msg, long wParam, long lParam) {
