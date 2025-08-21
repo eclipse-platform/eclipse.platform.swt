@@ -5,3 +5,8 @@ button {
 	min-height: 0px;
 	min-width: 0px;
 }
+
+scrollbar slider {
+	min-height: 8px;
+	min-width: 8px;
+}
