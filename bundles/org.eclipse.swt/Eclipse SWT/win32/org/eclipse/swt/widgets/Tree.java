@@ -467,8 +467,8 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 					if (explorerTheme) {
 						if (hooks (SWT.EraseItem)) {
 							RECT itemRect = item.getBounds (index, true, true, false, false, true, hDC);
-							itemRect.left -= EXPLORER_EXTRA;
-							itemRect.right += EXPLORER_EXTRA + 1;
+							itemRect.left -= Win32DPIUtils.pointToPixel(EXPLORER_EXTRA, getZoom());
+							itemRect.right += Win32DPIUtils.pointToPixel(EXPLORER_EXTRA, getZoom()) + 1;
 							pClipRect.left = itemRect.left;
 							pClipRect.right = itemRect.right;
 							if (columnCount > 0 && hwndHeader != 0) {
@@ -1135,11 +1135,11 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 						if (measureEvent != null) {
 							pRect.right = Math.min (pClipRect.right, boundsInPixels.x + boundsInPixels.width);
 						} else {
-							pRect.right += EXPLORER_EXTRA;
-							pClipRect.right += EXPLORER_EXTRA;
+							pRect.right += Win32DPIUtils.pointToPixel(EXPLORER_EXTRA, getZoom());
+							pClipRect.right += Win32DPIUtils.pointToPixel(EXPLORER_EXTRA, getZoom());
 						}
-						pRect.left -= EXPLORER_EXTRA;
-						pClipRect.left -= EXPLORER_EXTRA;
+						pRect.left -= Win32DPIUtils.pointToPixel(EXPLORER_EXTRA, getZoom());
+						pClipRect.left -= Win32DPIUtils.pointToPixel(EXPLORER_EXTRA, getZoom());
 						long hTheme = OS.OpenThemeData (handle, Display.TREEVIEW, getZoom());
 						int iStateId = selected ? OS.TREIS_SELECTED : OS.TREIS_HOT;
 						if (OS.GetFocus () != handle && selected && !hot) iStateId = OS.TREIS_SELECTEDNOTFOCUS;
@@ -1208,8 +1208,8 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 			OS.SaveDC (hDC);
 			OS.SelectClipRgn (hDC, 0);
 			if (explorerTheme) {
-				itemRect.left -= EXPLORER_EXTRA;
-				itemRect.right += EXPLORER_EXTRA;
+				itemRect.left -= Win32DPIUtils.pointToPixel(EXPLORER_EXTRA, getZoom());
+				itemRect.right += Win32DPIUtils.pointToPixel(EXPLORER_EXTRA, getZoom());
 			}
 			//TODO - bug in Windows selection or SWT itemRect
 			/*if (selected)*/ itemRect.right++;
