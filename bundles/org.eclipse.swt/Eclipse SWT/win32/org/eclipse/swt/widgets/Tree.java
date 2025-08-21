@@ -5035,7 +5035,7 @@ void setScrollWidth (int width) {
 		}
 	}
 	if (horizontalBar != null) {
-		horizontalBar.setIncrement (INCREMENT);
+		horizontalBar.setIncrement (Win32DPIUtils.pointToPixel(INCREMENT, getZoom()));
 		horizontalBar.setPageIncrement (info.nPage);
 	}
 	OS.GetClientRect (hwndParent, rect);
