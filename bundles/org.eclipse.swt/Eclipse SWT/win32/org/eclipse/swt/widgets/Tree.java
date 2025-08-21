@@ -6071,8 +6071,9 @@ long windowProc (long hwnd, int msg, long wParam, long lParam) {
 			RECT clientRect = new RECT ();
 			OS.GetClientRect(handle, clientRect);
 			RECT rect = items [0].getBounds (0, true, true, false);
+			int dragImageSizeInPixels = Win32DPIUtils.pointToPixel(DRAG_IMAGE_SIZE, getZoom());
 			if ((style & SWT.FULL_SELECTION) != 0) {
-				int width = DRAG_IMAGE_SIZE;
+				int width = dragImageSizeInPixels;
 				rect.left = Math.max (clientRect.left, mousePos.x - width / 2);
 				if (clientRect.right > rect.left + width) {
 					rect.right = rect.left + width;
@@ -6086,7 +6087,7 @@ long windowProc (long hwnd, int msg, long wParam, long lParam) {
 			}
 			long hRgn = OS.CreateRectRgn (rect.left, rect.top, rect.right, rect.bottom);
 			for (int i = 1; i < count; i++) {
-				if (rect.bottom - rect.top > DRAG_IMAGE_SIZE) break;
+				if (rect.bottom - rect.top > dragImageSizeInPixels) break;
 				if (rect.bottom > clientRect.bottom) break;
 				RECT itemRect = items[i].getBounds (0, true, true, false);
 				if ((style & SWT.FULL_SELECTION) != 0) {
