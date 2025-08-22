@@ -398,7 +398,7 @@ public void pack () {
 	}
 	if (newFont != 0) OS.SelectObject (hDC, oldFont);
 	OS.ReleaseDC (hwnd, hDC);
-	int gridWidth = parent.linesVisible ? Tree.GRID_WIDTH : 0;
+	int gridWidth = parent.linesVisible ? parent.getGridLineWidthInPixels() : 0;
 	setWidthInPixels (Math.max (headerWidth, columnWidth + gridWidth));
 }
 

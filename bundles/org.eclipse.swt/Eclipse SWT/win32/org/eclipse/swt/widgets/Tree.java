@@ -2964,11 +2964,11 @@ TreeItem getFocusItem () {
  */
 public int getGridLineWidth () {
 	checkWidget ();
-	return DPIUtil.pixelToPoint(getGridLineWidthInPixels (), getZoom());
+	return GRID_WIDTH;
 }
 
 int getGridLineWidthInPixels () {
-	return GRID_WIDTH;
+	return Win32DPIUtils.pointToPixel(GRID_WIDTH, getZoom());
 }
 
 /**
@@ -8060,7 +8060,7 @@ LRESULT wmNotifyHeader (NMHDR hdr, long wParam, long lParam) {
 					int deltaX = newItem.cxy - oldItem.cxy;
 					RECT headerRect = new RECT ();
 					OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, phdn.iItem, headerRect);
-					int gridWidth = linesVisible ? GRID_WIDTH : 0;
+					int gridWidth = linesVisible ? getGridLineWidthInPixels() : 0;
 					rect.left = headerRect.right - gridWidth;
 					int newX = rect.left + deltaX;
 					rect.right = Math.max (rect.right, rect.left + Math.abs (deltaX));
@@ -8239,7 +8239,7 @@ LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, long lParam) {
 						}
 						if (drawForeground) {
 							int nSavedDC = OS.SaveDC (nmcd.hdc);
-							int gridWidth = getLinesVisible () ? Table.GRID_WIDTH : 0;
+							int gridWidth = getLinesVisible () ? getGridLineWidthInPixels() : 0;
 							RECT insetRect = toolTipInset (cellRect [0]);
 							OS.SetWindowOrgEx (nmcd.hdc, insetRect.left, insetRect.top, null);
 							GCData data = new GCData ();
