@@ -132,7 +132,6 @@ public class Tree extends Composite {
 		TreeProc = lpWndClass.lpfnWndProc;
 		OS.GetClassInfo (0, HeaderClass, lpWndClass);
 		HeaderProc = lpWndClass.lpfnWndProc;
-		DPIZoomChangeRegistry.registerHandler(Tree::handleDPIChange, Tree.class);
 	}
 
 /**
@@ -8292,40 +8291,39 @@ LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, long lParam) {
 	return null;
 }
 
-private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
-	if (!(widget instanceof Tree tree)) {
-		return;
-	}
-	Display display = tree.getDisplay();
+@Override
+void handleDPIChange(Event event, float scalingFactor) {
+	super.handleDPIChange(event, scalingFactor);
+	Display display = getDisplay();
 	// Reset ImageList
-	if (tree.headerImageList != null) {
-		display.releaseImageList(tree.headerImageList);
-		tree.headerImageList = null;
+	if (headerImageList != null) {
+		display.releaseImageList(headerImageList);
+		headerImageList = null;
 	}
-	if (tree.imageList != null) {
-		display.releaseImageList(tree.imageList);
+	if (imageList != null) {
+		display.releaseImageList(imageList);
 		// Reset the Imagelist of the OS as well; Will be recalculated when updating items
-		OS.SendMessage (tree.handle, OS.TVM_SETIMAGELIST, 0, 0);
-		tree.imageList = null;
+		OS.SendMessage (handle, OS.TVM_SETIMAGELIST, 0, 0);
+		imageList = null;
 	}
 
 	// if the item height was set at least once programmatically with TVM_SETITEMHEIGHT,
 	// the item height of the tree is not managed by the OS anymore e.g. when the zoom
 	// on the monitor is changed, the height of the item will stay at the fixed size.
 	// Resetting it will re-enable the default behavior again
-	tree.setItemHeight(-1);
+	setItemHeight(-1);
 
-	for (TreeColumn treeColumn : tree.getColumns()) {
-		DPIZoomChangeRegistry.applyChange(treeColumn, newZoom, scalingFactor);
+	for (TreeColumn treeColumn : getColumns()) {
+		treeColumn.sendZoomChangedEvent(event, getShell());
 	}
-	for (TreeItem item : tree.getItems()) {
-		DPIZoomChangeRegistry.applyChange(item, newZoom, scalingFactor);
+	for (TreeItem item : getItems()) {
+		item.sendZoomChangedEvent(event, getShell());
 	}
 
-	tree.calculateAndApplyIndentSize();
-	tree.updateOrientation();
-	tree.setScrollWidth();
+	calculateAndApplyIndentSize();
+	updateOrientation();
+	setScrollWidth();
 	// Reset of CheckBox Size required (if SWT.Check is not set, this is a no-op)
-	tree.setCheckboxImageList();
+	setCheckboxImageList();
 }
 }

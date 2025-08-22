@@ -57,10 +57,6 @@ public class Composite extends Scrollable {
 
 	static final int TOOLTIP_LIMIT = 4096;
 
-	static {
-		DPIZoomChangeRegistry.registerHandler(Composite::handleDPIChange, Composite.class);
-	}
-
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
@@ -1977,13 +1973,12 @@ public String toString() {
 	return super.toString() + " [layout=" + layout + "]";
 }
 
-private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
-	if (!(widget instanceof Composite composite)) {
-		return;
+@Override
+void handleDPIChange(Event event, float scalingFactor) {
+	super.handleDPIChange(event, scalingFactor);
+	for (Control child : getChildren()) {
+		child.sendZoomChangedEvent(event, getShell());
 	}
-	for (Control child : composite.getChildren()) {
-		DPIZoomChangeRegistry.applyChange(child, newZoom, scalingFactor);
-	}
-	composite.redrawInPixels (null, true);
+//	redrawInPixels (null, true);
 }
 }

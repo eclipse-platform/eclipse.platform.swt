@@ -75,6 +75,9 @@ public abstract class Item extends Widget {
 public Item (Widget parent, int style) {
 	super (parent, style);
 	text = "";
+	this.addListener(SWT.ZoomChanged, event -> {
+		handleItemDPIChange(event);
+	});
 }
 
 /**
@@ -222,6 +225,15 @@ boolean updateTextDirection(int textDirection) {
 		return true;
 	}
 	return textDirection == AUTO_TEXT_DIRECTION;
+}
+
+
+private void handleItemDPIChange(Event event) {
+	// Refresh the image
+	Image image = getImage();
+	if (image != null) {
+		setImage(image);
+	}
 }
 
 }

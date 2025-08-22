@@ -19,7 +19,6 @@ package org.eclipse.swt.custom;
 
 
 import java.util.*;
-import java.util.function.*;
 import java.util.stream.*;
 
 import org.eclipse.swt.*;
@@ -759,6 +758,9 @@ public StyledText(Composite parent, int style) {
 	initializeAccessible();
 	setData("DEFAULT_DROP_TARGET_EFFECT", new StyledTextDropTargetEffect(this));
 	if (IS_MAC) setData(STYLEDTEXT_KEY);
+	addListener(SWT.ZoomChanged, event -> {
+		handleStyledTextDPIChange(event);
+	});
 }
 /**
  * Adds an extended modify listener. An ExtendedModify event is sent by the
@@ -10901,29 +10903,21 @@ void updateSelection(int startOffset, int replacedLength, int newLength) {
 	setCaretLocations();
 }
 
-/**
- * The method accepts a StyledText and a callback which takes
- * all the carets of the StyledText as the argument and executes it.
- * The caret is refreshed after the execution of the callback.
- *
- * @param styledText the StyledText to get the carets from
- * @param caretUpdater the callback which works with the carets
- *
- * @noreference This method is not intended to be referenced by clients.
- */
-public static void updateAndRefreshCarets(StyledText styledText, Consumer<Caret> caretUpdater) {
+private void handleStyledTextDPIChange(Event event) {
 	Set<Caret> caretSet = new HashSet<>();
-	caretSet.add(styledText.getCaret());
-	caretSet.add(styledText.defaultCaret);
-	if (styledText.carets != null) {
-		for (Caret caret : styledText.carets) {
+	caretSet.add(getCaret());
+	caretSet.add(defaultCaret);
+	if (carets != null) {
+		for (Caret caret : carets) {
 			caretSet.add(caret);
 		}
 	}
-	caretSet.stream().filter(Objects::nonNull).forEach(caretUpdater);
-
-	styledText.updateCaretVisibility();
-	styledText.setCaretLocations();
+	caretSet.stream().filter(Objects::nonNull).forEach(caretToRefresh -> {
+		((Caret) caretToRefresh).notifyListeners(SWT.ZoomChanged, event);
+		Caret.win32_setHeight(caretToRefresh, getLineHeight());
+	});
+	updateCaretVisibility();
+	setCaretLocations();
 
 }
 

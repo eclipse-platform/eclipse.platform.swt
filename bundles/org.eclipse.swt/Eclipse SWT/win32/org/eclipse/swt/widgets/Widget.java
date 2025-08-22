@@ -15,6 +15,7 @@
 package org.eclipse.swt.widgets;
 
 import java.util.*;
+import java.util.concurrent.atomic.*;
 import java.util.stream.*;
 
 import org.eclipse.swt.*;
@@ -142,7 +143,6 @@ public abstract class Widget {
 		icce.dwSize = INITCOMMONCONTROLSEX.sizeof;
 		icce.dwICC = 0xffff;
 		OS.InitCommonControlsEx (icce);
-		DPIZoomChangeRegistry.registerHandler(Widget::handleDPIChange, Widget.class);
 	}
 
 /**
@@ -191,6 +191,14 @@ public Widget (Widget parent, int style) {
 	reskinWidget ();
 	notifyCreationTracker();
 	this.setData(DATA_NATIVE_ZOOM, this.nativeZoom);
+	registerDPIChangeListener();
+}
+
+void registerDPIChangeListener() {
+	this.addListener(SWT.ZoomChanged, event -> {
+		float scalingFactor = 1f * DPIUtil.getZoomForAutoscaleProperty(event.detail) / DPIUtil.getZoomForAutoscaleProperty(nativeZoom);
+		handleDPIChange(event, scalingFactor);
+	});
 }
 
 void _addListener (int eventType, Listener listener) {
@@ -2717,9 +2725,26 @@ int getZoom() {
 	return DPIUtil.getZoomForAutoscaleProperty(nativeZoom);
 }
 
-private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
-	widget.nativeZoom = newZoom;
-	widget.setData(DATA_NATIVE_ZOOM, newZoom);
+void handleDPIChange(Event event, float scalingFactor) {
+	int newZoom = event.detail;
+	this.nativeZoom = newZoom;
+	this.setData(DATA_NATIVE_ZOOM, newZoom);
+}
+
+void sendZoomChangedEvent(Event event, Shell shell) {
+	AtomicInteger handleDPIChangedScheduledTasksCount = (AtomicInteger) event.data;
+	handleDPIChangedScheduledTasksCount.incrementAndGet();
+	getDisplay().asyncExec(() -> {
+		try {
+			if(!this.isDisposed()) {
+				notifyListeners(SWT.ZoomChanged, event);
+			}
+		} finally {
+			if (handleDPIChangedScheduledTasksCount.decrementAndGet() <= 0) {
+				shell.WM_SIZE(0, 0);
+			}
+		}
+	});
 }
 
 int getSystemMetrics(int nIndex) {

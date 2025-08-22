@@ -113,7 +113,6 @@ public class Table extends Composite {
 		TableProc = lpWndClass.lpfnWndProc;
 		OS.GetClassInfo (0, HeaderClass, lpWndClass);
 		HeaderProc = lpWndClass.lpfnWndProc;
-		DPIZoomChangeRegistry.registerHandler(Table::handleDPIChange, Table.class);
 	}
 
 /**
@@ -7334,49 +7333,48 @@ LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, long lParam) {
 	return null;
 }
 
-private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
-	if (!(widget instanceof Table table)) {
-		return;
-	}
-	table.settingItemHeight = true;
+@Override
+void handleDPIChange(Event event, float scalingFactor) {
+	super.handleDPIChange(event, scalingFactor);
+	settingItemHeight = true;
 	var scrollWidth = 0;
 	// Request ScrollWidth
-	if (table.getColumns().length == 0) {
-		scrollWidth = Math.round(OS.SendMessage (table.handle, OS.LVM_GETCOLUMNWIDTH, 0, 0)*scalingFactor);
+	if (getColumns().length == 0) {
+		scrollWidth = Math.round(OS.SendMessage (handle, OS.LVM_GETCOLUMNWIDTH, 0, 0) * scalingFactor);
 	}
 
-	Display display = table.getDisplay();
-	ImageList headerImageList = table.headerImageList;
+	Display display = getDisplay();
+	ImageList headerImageList = this.headerImageList;
 	// Reset ImageList
 	if (headerImageList != null) {
 		display.releaseImageList(headerImageList);
-		table.headerImageList = null;
+		headerImageList = null;
 	}
 
-	ImageList imageList = table.imageList;
+	ImageList imageList = this.imageList;
 	if (imageList != null) {
 		display.releaseImageList(imageList);
-		table.imageList = null;
+		imageList = null;
 	}
 
 	// if the item height was set at least once programmatically with CDDS_SUBITEMPREPAINT,
 	// the item height of the table is not managed by the OS anymore e.g. when the zoom
 	// on the monitor is changed, the height of the item will stay at the fixed size.
 	// Resetting it will re-enable the default behavior again
-	table.setItemHeight(-1);
+	setItemHeight(-1);
 
-	for (TableItem item : table.getItems()) {
-		DPIZoomChangeRegistry.applyChange(item, newZoom, scalingFactor);
+	for (TableItem item : getItems()) {
+		item.sendZoomChangedEvent(event, getShell());
 	}
-	for (TableColumn tableColumn : table.getColumns()) {
-		DPIZoomChangeRegistry.applyChange(tableColumn, newZoom, scalingFactor);
+	for (TableColumn tableColumn : getColumns()) {
+		tableColumn.sendZoomChangedEvent(event, getShell());
 	}
 
-	if (table.getColumns().length == 0 && scrollWidth != 0) {
+	if (getColumns().length == 0 && scrollWidth != 0) {
 		// Update scrollbar width if no columns are available
-		 table.setScrollWidth(scrollWidth);
+		 setScrollWidth(scrollWidth);
 	}
-	 table.fixCheckboxImageListColor (true);
-	 table.settingItemHeight = false;
+	 fixCheckboxImageListColor (true);
+	 settingItemHeight = false;
 }
 }

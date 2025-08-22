@@ -60,10 +60,6 @@ public class TreeItem extends Item {
 	int background = -1, foreground = -1;
 	int [] cellBackground, cellForeground;
 
-	static {
-		DPIZoomChangeRegistry.registerHandler(TreeItem::handleDPIChange, TreeItem.class);
-	}
-
 /**
  * Constructs <code>TreeItem</code> and <em>inserts</em> it into <code>Tree</code>.
  * Item is inserted as last direct child of the tree.
@@ -1816,23 +1812,21 @@ String getNameText () {
 	return super.getNameText ();
 }
 
-private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
-	if (!(widget instanceof TreeItem treeItem)) {
-		return;
-	}
-	Font font = treeItem.font;
+@Override
+void handleDPIChange(Event event, float scalingFactor) {
+	super.handleDPIChange(event, scalingFactor);
 	if (font != null) {
-		treeItem.setFont(font);
+		setFont(font);
 	}
-	Font[] cellFonts = treeItem.cellFont;
+	Font[] cellFonts = cellFont;
 	if (cellFonts != null) {
 		for (int index = 0; index < cellFonts.length; index++) {
 			Font cellFont = cellFonts[index];
-			cellFonts[index] = cellFont == null ? null : Font.win32_new(cellFont, treeItem.getNativeZoom());
+			cellFonts[index] = cellFont == null ? null : Font.win32_new(cellFont, getNativeZoom());
 		}
 	}
-	for (TreeItem item : treeItem.getItems()) {
-		DPIZoomChangeRegistry.applyChange(item, newZoom, scalingFactor);
+	for (TreeItem item : getItems()) {
+		item.sendZoomChangedEvent(event, getParent().getShell());
 	}
 }
 }

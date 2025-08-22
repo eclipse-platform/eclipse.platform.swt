@@ -148,7 +148,6 @@ public class Shell extends Decorations {
 		WNDCLASS lpWndClass = new WNDCLASS ();
 		OS.GetClassInfo (0, DialogClass, lpWndClass);
 		DialogProc = lpWndClass.lpfnWndProc;
-		DPIZoomChangeRegistry.registerHandler(Shell::handleDPIChange, Shell.class);
 	}
 
 /**
@@ -303,6 +302,7 @@ Shell (Display display, Shell parent, int style, long handle, boolean embedded) 
 	reskinWidget();
 	createWidget ();
 	this.nativeZoom = DPIUtil.mapDPIToZoom(OS.GetDpiForWindow(this.handle));
+	registerDPIChangeListener();
 }
 
 /**
@@ -2719,10 +2719,9 @@ LRESULT WM_WINDOWPOSCHANGING (long wParam, long lParam) {
 	return result;
 }
 
-private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
-	if (!(widget instanceof Shell shell)) {
-		return;
-	}
-	shell.layout (null, SWT.DEFER | SWT.ALL | SWT.CHANGED);
+@Override
+void handleDPIChange(Event event, float scalingFactor) {
+	super.handleDPIChange(event, scalingFactor);
+	layout (null, SWT.DEFER | SWT.ALL | SWT.CHANGED);
 }
 }
