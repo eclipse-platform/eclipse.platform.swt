@@ -173,6 +173,9 @@ public CCombo (Composite parent, int style) {
 	}
 
 	initAccessible();
+	addListener(SWT.ZoomChanged, event -> {
+		handleCComboDPIChange(event);
+	});
 }
 static int checkStyle (int style) {
 	int mask = SWT.BORDER | SWT.READ_ONLY | SWT.FLAT | SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT | SWT.LEAD | SWT.CENTER | SWT.TRAIL;
@@ -2026,19 +2029,24 @@ public boolean traverse(int event){
 	return super.traverse(event);
 }
 
+private void handleCComboDPIChange(Event event) {
+	updateAndRefreshChildren(childWidget -> {
+		childWidget.notifyListeners(SWT.ZoomChanged, event);
+	});
+}
+
 /**
  * The method accepts a combo and a callback which takes
  * all the child of the CCombo as the argument and executes it.
  * All children are refreshed after the execution of the callback.
  *
- * @noreference This method is not intended to be referenced by clients.
  * @param combo the Combo to get the children widget from
  * @param childUpdater the callback which works with the child widgets
  */
-public static void updateAndRefreshChildren(CCombo combo, Consumer<Widget> childUpdater) {
-	childUpdater.accept(combo.text);
-	childUpdater.accept(combo.list);
-	childUpdater.accept(combo.arrow);
-	childUpdater.accept(combo.popup);
+private void updateAndRefreshChildren(Consumer<Widget> childUpdater) {
+	childUpdater.accept(text);
+	childUpdater.accept(list);
+	childUpdater.accept(arrow);
+	childUpdater.accept(popup);
 }
 }
