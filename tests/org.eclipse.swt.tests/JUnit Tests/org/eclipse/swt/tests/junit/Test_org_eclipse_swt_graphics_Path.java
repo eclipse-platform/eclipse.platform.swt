@@ -13,15 +13,18 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.fail;
-import static org.junit.Assume.assumeFalse;
+
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 import org.eclipse.swt.graphics.Path;
 import org.eclipse.swt.graphics.PathData;
 import org.eclipse.swt.widgets.Display;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.Path
@@ -32,7 +35,7 @@ public class Test_org_eclipse_swt_graphics_Path {
 
 	private Display display;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		display = Display.getDefault();
 	}
@@ -40,15 +43,13 @@ public class Test_org_eclipse_swt_graphics_Path {
 	@Test
 	public void createTransform() {
 		Path path = new Path(display);
-		if (path.isDisposed()) {
-			fail("Constructor for Path didn't initialize");
-		}
+		assertFalse(path.isDisposed(), "Constructor for Path didn't initialize");
 		path.dispose();
 	}
 
 	@Test
 	public void testClonePath() {
-		assumeFalse("Not currently working on macOS, cloning the path leads to not equal pathData.", SwtTestUtil.isCocoa);
+		assumeFalse(SwtTestUtil.isCocoa, "Not currently working on macOS, cloning the path leads to not equal pathData.");
 
 		Display display = Display.getDefault();
 
@@ -77,16 +78,12 @@ public class Test_org_eclipse_swt_graphics_Path {
 	public void disposePath() {
 		Path path = new Path(display);
 		path.addArc(0, 0, 10, 10, 0, 90);
-		if (path.isDisposed()) {
-			fail("Path should not be in the disposed state");
-		}
+		assertFalse(path.isDisposed(),"Path should not be in the disposed state");
 
 		// dispose twice as this is allowed
 		for (int i = 0; i < 2; i++) {
 			path.dispose();
-			if (!path.isDisposed()) {
-				fail("Path should be in the disposed state");
-			}
+			assertTrue(path.isDisposed(),"Path should be in the disposed state");
 		}
 	}
 
@@ -95,22 +92,19 @@ public class Test_org_eclipse_swt_graphics_Path {
 		Path path = new Path(display);
 		String s = path.toString();
 
-		if (s == null || s.length() == 0) {
-			fail("toString returns null or empty string");
-		}
+		assertNotNull (s);
+		assertFalse(s.isEmpty());
 
 		path.addArc(0, 0, 10, 10, 0, 90);
 		s = path.toString();
 
-		if (s == null || s.length() == 0) {
-			fail("toString returns null or empty string");
-		}
+		assertNotNull (s);
+		assertFalse(s.isEmpty());
 
 		path.dispose();
 		s = path.toString();
 
-		if (s == null || s.length() == 0) {
-			fail("toString returns null or empty string");
-		}
+		assertNotNull (s);
+		assertFalse(s.isEmpty());
 	}
 }
