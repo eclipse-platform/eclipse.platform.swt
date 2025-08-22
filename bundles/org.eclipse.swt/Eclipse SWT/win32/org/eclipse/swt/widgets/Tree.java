@@ -2960,11 +2960,11 @@ TreeItem getFocusItem () {
  */
 public int getGridLineWidth () {
 	checkWidget ();
-	return DPIUtil.pixelToPoint(getGridLineWidthInPixels (), getZoom());
+	return GRID_WIDTH;
 }
 
 int getGridLineWidthInPixels () {
-	return GRID_WIDTH;
+	return Win32DPIUtils.pointToPixel(GRID_WIDTH, getZoom());
 }
 
 /**
@@ -8055,7 +8055,7 @@ LRESULT wmNotifyHeader (NMHDR hdr, long wParam, long lParam) {
 					int deltaX = newItem.cxy - oldItem.cxy;
 					RECT headerRect = new RECT ();
 					OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, phdn.iItem, headerRect);
-					int gridWidth = linesVisible ? GRID_WIDTH : 0;
+					int gridWidth = linesVisible ? Win32DPIUtils.pointToPixel(GRID_WIDTH, getZoom()) : 0;
 					rect.left = headerRect.right - gridWidth;
 					int newX = rect.left + deltaX;
 					rect.right = Math.max (rect.right, rect.left + Math.abs (deltaX));
