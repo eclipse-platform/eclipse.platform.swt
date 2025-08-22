@@ -4959,8 +4959,9 @@ LRESULT WM_DESTROY (long wParam, long lParam) {
 void handleMonitorSpecificDpiChange(int newNativeZoom, Rectangle newBoundsInPixels) {
 	float scalingFactor = 1f * DPIUtil.getZoomForAutoscaleProperty(newNativeZoom) / DPIUtil.getZoomForAutoscaleProperty(nativeZoom);
 	DPIUtil.setDeviceZoom (newNativeZoom);
-	DPIZoomChangeRegistry.applyChange(this, newNativeZoom, scalingFactor);
 	this.setBoundsInPixels(newBoundsInPixels.x, newBoundsInPixels.y, newBoundsInPixels.width, newBoundsInPixels.height);
+	DPIZoomChangeRegistry.applyChange(this, newNativeZoom, scalingFactor);
+
 }
 
 LRESULT WM_DPICHANGED (long wParam, long lParam) {
