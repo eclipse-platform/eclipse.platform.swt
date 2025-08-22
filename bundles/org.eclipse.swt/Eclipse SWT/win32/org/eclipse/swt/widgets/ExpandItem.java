@@ -48,10 +48,6 @@ public class ExpandItem extends Item {
 	static final int BORDER = 1;
 	static final int CHEVRON_SIZE = 24;
 
-	static {
-		DPIZoomChangeRegistry.registerHandler(ExpandItem::handleDPIChange, ExpandItem.class);
-	}
-
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -532,14 +528,13 @@ public void setText (String string) {
 	redraw (true);
 }
 
-private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
-	if (!(widget instanceof ExpandItem item)) {
-		return;
-	}
-	if (item.height != 0 || item.width != 0) {
-		int newWidth = Math.round(item.width * scalingFactor);
-		int newHeight = Math.round(item.height * scalingFactor);
-		item.setBoundsInPixels(item.x, item.y, newWidth, newHeight, true, true);
+@Override
+void handleDPIChange(Event event, float scalingFactor) {
+	super.handleDPIChange(event, scalingFactor);
+	if (height != 0 || width != 0) {
+		int newWidth = Math.round(width * scalingFactor);
+		int newHeight = Math.round(height * scalingFactor);
+		setBoundsInPixels(x, y, newWidth, newHeight, true, true);
 	}
 }
 }
