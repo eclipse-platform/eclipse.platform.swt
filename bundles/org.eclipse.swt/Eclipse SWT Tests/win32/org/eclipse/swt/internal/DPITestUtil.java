@@ -13,6 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.internal;
 
+import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 
 public final class DPITestUtil {
@@ -22,8 +23,12 @@ public final class DPITestUtil {
 
 	public static void changeDPIZoom (Shell shell, int nativeZoom) {
 		DPIUtil.setDeviceZoom(nativeZoom);
-		float scalingFactor = 1f * DPIUtil.getZoomForAutoscaleProperty(nativeZoom) / DPIUtil.getZoomForAutoscaleProperty(shell.nativeZoom);
-		DPIZoomChangeRegistry.applyChange(shell, nativeZoom, scalingFactor);
+		Event event = new Event();
+		event.type = SWT.ZoomChanged;
+		event.widget = shell;
+		event.detail = nativeZoom;
+		event.doit = true;
+		shell.notifyListeners(SWT.ZoomChanged, event);
 	}
 
 }

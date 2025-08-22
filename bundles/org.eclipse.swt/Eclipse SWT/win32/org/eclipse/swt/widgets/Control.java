@@ -54,10 +54,6 @@ import org.eclipse.swt.ole.win32.*;
  */
 public abstract class Control extends Widget implements Drawable {
 
-	static {
-		DPIZoomChangeRegistry.registerHandler(Control::handleDPIChange, Control.class);
-	}
-
 	/**
 	 * the handle to the OS resource
 	 * (Warning: This field is platform dependent)
@@ -4759,10 +4755,9 @@ public boolean setParent (Composite parent) {
 	this.parent = parent;
 	// If parent changed, zoom level might need to be adjusted
 	if (parent.nativeZoom != nativeZoom) {
-		int oldZoom = nativeZoom;
 		int newZoom = parent.nativeZoom;
-		float scalingFactor = 1f * newZoom / oldZoom;
-		DPIZoomChangeRegistry.applyChange(this, newZoom, scalingFactor);
+		Event zoomChangedEvent = createZoomChangedEvent(newZoom);
+		notifyListeners(SWT.ZoomChanged, zoomChangedEvent);
 	}
 	int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE;
 	OS.SetWindowPos (topHandle, OS.HWND_BOTTOM, 0, 0, 0, 0, flags);
@@ -4956,10 +4951,19 @@ LRESULT WM_DESTROY (long wParam, long lParam) {
 }
 
 void handleMonitorSpecificDpiChange(int newNativeZoom, Rectangle newBoundsInPixels) {
-	float scalingFactor = 1f * DPIUtil.getZoomForAutoscaleProperty(newNativeZoom) / DPIUtil.getZoomForAutoscaleProperty(nativeZoom);
 	DPIUtil.setDeviceZoom (newNativeZoom);
-	DPIZoomChangeRegistry.applyChange(this, newNativeZoom, scalingFactor);
+	Event zoomChangedEvent = createZoomChangedEvent(newNativeZoom);
+	notifyListeners(SWT.ZoomChanged, zoomChangedEvent);
 	this.setBoundsInPixels(newBoundsInPixels.x, newBoundsInPixels.y, newBoundsInPixels.width, newBoundsInPixels.height);
+}
+
+private Event createZoomChangedEvent(int zoom) {
+	Event event = new Event();
+	event.type = SWT.ZoomChanged;
+	event.widget = this;
+	event.detail = zoom;
+	event.doit = true;
+	return event;
 }
 
 LRESULT WM_DPICHANGED (long wParam, long lParam) {
@@ -5873,22 +5877,21 @@ LRESULT wmScrollChild (long wParam, long lParam) {
 }
 
 
-private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
-	if (!(widget instanceof Control control)) {
-		return;
-	}
-	resizeFont(control, control.getNativeZoom());
+@Override
+void handleDPIChange(Event event, float scalingFactor) {
+	super.handleDPIChange(event, scalingFactor);
+	resizeFont(this, getNativeZoom());
 
-	Image image = control.backgroundImage;
+	Image image = backgroundImage;
 	if (image != null) {
 		if (image.isDisposed()) {
-			control.setBackgroundImage(null);
+			setBackgroundImage(null);
 		} else {
-			control.setBackgroundImage(image);
+			setBackgroundImage(image);
 		}
 	}
-	if (control.getRegion() != null) {
-		control.setRegion(control.getRegion());
+	if (getRegion() != null) {
+		setRegion(getRegion());
 	}
 }
 

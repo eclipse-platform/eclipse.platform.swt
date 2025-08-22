@@ -16,7 +16,6 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 
 /**
@@ -111,10 +110,6 @@ public class Decorations extends Canvas {
 	int oldX = OS.CW_USEDEFAULT, oldY = OS.CW_USEDEFAULT;
 	int oldWidth = OS.CW_USEDEFAULT, oldHeight = OS.CW_USEDEFAULT;
 	RECT maxRect = new RECT();
-
-	static {
-		DPIZoomChangeRegistry.registerHandler(Decorations::handleDPIChange, Decorations.class);
-	}
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -1710,26 +1705,29 @@ LRESULT WM_WINDOWPOSCHANGING (long wParam, long lParam) {
 	return result;
 }
 
-private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
-	if (!(widget instanceof Decorations decorations)) {
-		return;
-	}
-
-	Image image = decorations.getImage();
+@Override
+void handleDPIChange(Event event, float scalingFactor) {
+	super.handleDPIChange(event, scalingFactor);
+	Image image = getImage();
 	if (image != null) {
-		decorations.setImage(image);
+		setImage(image);
 	}
 
-	Image[] images = decorations.getImages();
+	Image[] images = getImages();
 	if (images != null && images.length > 0) {
-		decorations.setImages(images);
+		setImages(images);
 	}
 
-	DPIZoomChangeRegistry.applyChange(decorations.getMenuBar(), newZoom, scalingFactor);
+	Menu menuBar = getMenuBar();
+	if (menuBar != null) {
+		menuBar.notifyListeners(SWT.ZoomChanged, event);
+	}
 
-	if (decorations.menus != null) {
-		for (Menu menu : decorations.menus) {
-			DPIZoomChangeRegistry.applyChange(menu, newZoom, scalingFactor);
+	if (menus != null) {
+		for (Menu menu : menus) {
+			if (menu != null) {
+				menu.notifyListeners(SWT.ZoomChanged, event);
+			}
 		}
 	}
 }

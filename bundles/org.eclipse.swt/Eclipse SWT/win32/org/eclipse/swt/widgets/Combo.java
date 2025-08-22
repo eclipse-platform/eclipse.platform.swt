@@ -104,7 +104,6 @@ public class Combo extends Composite {
 		WNDCLASS lpWndClass = new WNDCLASS ();
 		OS.GetClassInfo (0, ComboClass, lpWndClass);
 		ComboProc = lpWndClass.lpfnWndProc;
-		DPIZoomChangeRegistry.registerHandler(Combo::handleDPIChange, Combo.class);
 	}
 
 	/* Undocumented values. Remained the same at least between Win7 and Win10 */
@@ -3359,13 +3358,12 @@ LRESULT wmSysKeyDown (long hwnd, long wParam, long lParam) {
 	return result;
 }
 
-private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
-	if (!(widget instanceof Combo combo)) {
-		return;
-	}
-	if ((combo.style & SWT.H_SCROLL) != 0) {
-		combo.scrollWidth = 0;
-		combo.setScrollWidth();
+@Override
+void handleDPIChange(Event event, float scalingFactor) {
+	super.handleDPIChange(event, scalingFactor);
+	if ((style & SWT.H_SCROLL) != 0) {
+		scrollWidth = 0;
+		setScrollWidth();
 	}
 }
 }
