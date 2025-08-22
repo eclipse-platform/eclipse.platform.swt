@@ -4543,6 +4543,13 @@ public boolean readAndDispatch () {
 	return isDisposed () || runAsyncMessages (false);
 }
 
+void processEvents() {
+	if (!isDisposed()) {
+		while (readAndDispatch()) {
+		}
+	}
+}
+
 static void register (Display display) {
 	synchronized (Device.class) {
 		for (int i=0; i<Displays.length; i++) {
