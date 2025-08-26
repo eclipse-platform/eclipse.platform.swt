@@ -3545,6 +3545,7 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, long lParam, Event
 			boolean backgroundWanted = !ignoreDrawHot || drawDrophilited || (!ignoreDrawSelection && clrSelectionBk != -1);
 
 			if (backgroundWanted) {
+				int explorerExtraInPixels = Win32DPIUtils.pointToPixel(EXPLORER_EXTRA, getZoom());
 				RECT pClipRect = new RECT ();
 				OS.SetRect (pClipRect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
 				RECT rect = new RECT ();
@@ -3561,10 +3562,10 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, long lParam, Event
 					OS.MapWindowPoints (hwndHeader, handle, headerRect, 2);
 					rect.left = headerRect.left;
 					pClipRect.left = cellRect.left;
-					pClipRect.right += EXPLORER_EXTRA;
+					pClipRect.right += explorerExtraInPixels;
 				} else {
-					rect.right += EXPLORER_EXTRA;
-					pClipRect.right += EXPLORER_EXTRA;
+					rect.right += explorerExtraInPixels;
+					pClipRect.right += explorerExtraInPixels;
 				}
 				long hTheme = OS.OpenThemeData (handle, Display.TREEVIEW, getZoom());
 				int iStateId = selected ? OS.LISS_SELECTED : OS.LISS_HOT;
@@ -4880,7 +4881,7 @@ boolean setScrollWidth (TableItem item, boolean force) {
 			*/
 			newWidth++;
 		}
-		newWidth += INSET * 2 + VISTA_EXTRA;
+		newWidth += INSET * 2 + Win32DPIUtils.pointToPixel(VISTA_EXTRA, getZoom());
 		int oldWidth = (int)OS.SendMessage (handle, OS.LVM_GETCOLUMNWIDTH, 0, 0);
 		if (newWidth > oldWidth) {
 			setScrollWidth (newWidth);
