@@ -401,8 +401,8 @@ public void pack () {
 	long hwnd = parent.handle;
 	int oldWidth = (int)OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
 	TCHAR buffer = new TCHAR (parent.getCodePage (), text, true);
-	int headerWidth = (int)OS.SendMessage (hwnd, OS.LVM_GETSTRINGWIDTH, 0, buffer) + Table.HEADER_MARGIN;
-	if (OS.IsAppThemed ()) headerWidth += Table.HEADER_EXTRA;
+	int headerWidth = (int) (OS.SendMessage (hwnd, OS.LVM_GETSTRINGWIDTH, 0, buffer) + Win32DPIUtils.pointToPixel(Table.HEADER_MARGIN, getZoom()));
+	if (OS.IsAppThemed ()) headerWidth += Win32DPIUtils.pointToPixel(Table.HEADER_EXTRA, getZoom());
 	boolean hasHeaderImage = false;
 	if (image != null) {
 		hasHeaderImage = true;
