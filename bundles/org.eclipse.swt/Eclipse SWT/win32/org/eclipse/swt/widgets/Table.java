@@ -2334,11 +2334,11 @@ int getFocusIndex () {
  */
 public int getGridLineWidth () {
 	checkWidget ();
-	return DPIUtil.pixelToPoint(getGridLineWidthInPixels(), getZoom());
+	return GRID_WIDTH;
 }
 
 int getGridLineWidthInPixels () {
-	return GRID_WIDTH;
+	return Win32DPIUtils.pointToPixel(GRID_WIDTH, getZoom());
 }
 
 /**
@@ -5308,7 +5308,7 @@ public void showColumn (TableColumn column) {
 		OS.GetScrollInfo (handle, OS.SB_HORZ, info);
 		int newPos = info.nPos;
 		if (newPos < oldPos) {
-			rect.right = oldPos - newPos + GRID_WIDTH;
+			rect.right = oldPos - newPos + getGridLineWidthInPixels();
 			OS.InvalidateRect (handle, rect, true);
 		}
 	}
@@ -6353,7 +6353,7 @@ LRESULT WM_HSCROLL (long wParam, long lParam) {
 		if (newPos < oldPos) {
 			RECT rect = new RECT ();
 			OS.GetClientRect (handle, rect);
-			rect.right = oldPos - newPos + GRID_WIDTH;
+			rect.right = oldPos - newPos + getGridLineWidthInPixels();
 			OS.InvalidateRect (handle, rect, true);
 		}
 	}
@@ -6462,9 +6462,9 @@ LRESULT WM_VSCROLL (long wParam, long lParam) {
 				long oneItem = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, 1, 0);
 				int itemHeight = OS.HIWORD (oneItem) - OS.HIWORD (empty);
 				if (code == OS.SB_LINEDOWN) {
-					clientRect.top = clientRect.bottom - itemHeight - GRID_WIDTH;
+					clientRect.top = clientRect.bottom - itemHeight - getGridLineWidthInPixels();
 				} else {
-					clientRect.bottom = clientRect.top + itemHeight + GRID_WIDTH;
+					clientRect.bottom = clientRect.top + itemHeight + getGridLineWidthInPixels();
 				}
 				OS.InvalidateRect (handle, clientRect, true);
 				break;
@@ -7283,7 +7283,7 @@ LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, long lParam) {
 				}
 				if (drawForeground) {
 					int nSavedDC = OS.SaveDC (nmcd.hdc);
-					int gridWidth = getLinesVisible () ? Table.GRID_WIDTH : 0;
+					int gridWidth = getLinesVisible () ? getGridLineWidthInPixels() : 0;
 					RECT insetRect = toolTipInset (cellRect);
 					OS.SetWindowOrgEx (nmcd.hdc, insetRect.left, insetRect.top, null);
 					GCData data = new GCData ();
