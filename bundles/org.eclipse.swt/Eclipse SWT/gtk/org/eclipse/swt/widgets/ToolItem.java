@@ -1228,8 +1228,9 @@ private void _setEnabledOrDisabledImage() {
 		} else {
 			_setImage(disabledImage);
 		}
+	} else {
+		_setImage(image);
 	}
-	if (enabled && image != null) _setImage(image);
 }
 
 boolean setFocus () {
