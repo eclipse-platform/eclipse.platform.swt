@@ -888,11 +888,11 @@ private void setImages (Image image, Image [] images) {
 	if (smallIcon != null) {
 		switch (smallIcon.type) {
 			case SWT.BITMAP:
-				smallImage = Display.createIcon (smallIcon, getZoom());
-				hSmallIcon = Image.win32_getHandle(smallImage, getZoom());
+				smallImage = Display.createIcon (smallIcon, 100);
+				hSmallIcon = Image.win32_getHandle(smallImage, 100);
 				break;
 			case SWT.ICON:
-				hSmallIcon = Image.win32_getHandle(smallIcon, getZoom());
+				hSmallIcon = Image.win32_getHandle(smallIcon, 100);
 				break;
 		}
 	}
@@ -900,11 +900,11 @@ private void setImages (Image image, Image [] images) {
 	if (largeIcon != null) {
 		switch (largeIcon.type) {
 			case SWT.BITMAP:
-				largeImage = Display.createIcon (largeIcon, getZoom());
-				hLargeIcon = Image.win32_getHandle(largeImage, getZoom());
+				largeImage = Display.createIcon (largeIcon, 100);
+				hLargeIcon = Image.win32_getHandle(largeImage, 100);
 				break;
 			case SWT.ICON:
-				hLargeIcon = Image.win32_getHandle(largeIcon, getZoom());
+				hLargeIcon = Image.win32_getHandle(largeIcon, 100);
 				break;
 		}
 	}
