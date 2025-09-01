@@ -306,6 +306,13 @@ public class Win32DPIUtils {
 		return updateOnRuntimeValue;
 	}
 
+	public static int getPrimaryMonitorZoomAtStartup() {
+		long hDC = OS.GetDC(0);
+		int dpi = OS.GetDeviceCaps(hDC, OS.LOGPIXELSX);
+		OS.ReleaseDC(0, hDC);
+		return DPIUtil.mapDPIToZoom(dpi);
+	}
+
 	/**
 	 * AutoScale ImageDataProvider.
 	 */
