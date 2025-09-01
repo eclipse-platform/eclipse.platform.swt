@@ -51,11 +51,8 @@ public class CommonWidgetsDPIChangeHandlers {
 		if (!(widget instanceof StyledText styledText)) {
 			return;
 		}
-
-
 		StyledText.updateAndRefreshCarets(styledText, caretToRefresh -> {
 			DPIZoomChangeRegistry.applyChange(caretToRefresh, newZoom, scalingFactor);
-			Caret.win32_setHeight(caretToRefresh, styledText.getLineHeight());
 		});
 	}
 	private static void handleCComboDPIChange(Widget widget, int newZoom, float scalingFactor) {
