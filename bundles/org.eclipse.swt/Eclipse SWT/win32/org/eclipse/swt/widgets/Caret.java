@@ -14,6 +14,8 @@
 package org.eclipse.swt.widgets;
 
 
+import java.util.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
@@ -130,12 +132,22 @@ Rectangle getBoundsInPixels () {
 		return new Rectangle (getXInPixels(), getYInPixels(), rect.width, rect.height);
 	}
 	if (width == 0) {
-		int [] buffer = new int [1];
-		if (OS.SystemParametersInfo (OS.SPI_GETCARETWIDTH, 0, buffer, 0)) {
-			return new Rectangle (getXInPixels(), getYInPixels(), buffer [0], getHeightInPixels());
+		OptionalInt widthInPixels = getSystemCaretWidthInPixelsForCurrentMonitor();
+		if (widthInPixels.isPresent()) {
+			return new Rectangle (getXInPixels(), getYInPixels(), widthInPixels.getAsInt(), getHeightInPixels());
 		}
 	}
 	return new Rectangle (getXInPixels(), getYInPixels(), getWidthInPixels(), getHeightInPixels());
+}
+
+private OptionalInt getSystemCaretWidthInPixelsForCurrentMonitor() {
+	int [] buffer = new int [1];
+	if (OS.SystemParametersInfo (OS.SPI_GETCARETWIDTH, 0, buffer, 0)) {
+		int width = DPIUtil.pixelToPoint(buffer [0], Win32DPIUtils.getPrimaryMonitorZoomAtStartup());
+		int widthInPixels = Win32DPIUtils.pointToPixel(width, getNativeZoom());
+		return OptionalInt.of(widthInPixels);
+	}
+	return OptionalInt.empty();
 }
 
 /**
@@ -224,9 +236,9 @@ Point getSizeInPixels () {
 		return new Point (rect.width, rect.height);
 	}
 	if (width == 0) {
-		int [] buffer = new int [1];
-		if (OS.SystemParametersInfo (OS.SPI_GETCARETWIDTH, 0, buffer, 0)) {
-			return new Point (buffer [0], getHeightInPixels());
+		OptionalInt widthInPixels = getSystemCaretWidthInPixelsForCurrentMonitor();
+		if (widthInPixels.isPresent()) {
+			return new Point (widthInPixels.getAsInt(), getHeightInPixels());
 		}
 	}
 	return new Point (getWidthInPixels(), getHeightInPixels());
@@ -368,9 +380,9 @@ void resize () {
 	long hBitmap = image != null ? Image.win32_getHandle(image, getZoom()) : 0;
 	int widthInPixels = this.getWidthInPixels();
 	if (image == null && widthInPixels == 0) {
-		int [] buffer = new int [1];
-		if (OS.SystemParametersInfo (OS.SPI_GETCARETWIDTH, 0, buffer, 0)) {
-			widthInPixels = buffer [0];
+		OptionalInt systemCaretWidthInPixelsForCurrentMonitor = getSystemCaretWidthInPixelsForCurrentMonitor();
+		if (systemCaretWidthInPixelsForCurrentMonitor.isPresent()) {
+			widthInPixels = systemCaretWidthInPixelsForCurrentMonitor.getAsInt();
 		}
 	}
 	OS.CreateCaret (hwnd, hBitmap, widthInPixels, getHeightInPixels());
@@ -447,9 +459,9 @@ void setFocus () {
 	if (image != null) hBitmap = Image.win32_getHandle(image, getZoom());
 	int widthInPixels = this.getWidthInPixels();
 	if (image == null && widthInPixels == 0) {
-		int [] buffer = new int [1];
-		if (OS.SystemParametersInfo (OS.SPI_GETCARETWIDTH, 0, buffer, 0)) {
-			widthInPixels = buffer [0];
+		OptionalInt systemCaretWidthInPixelsForCurrentMonitor = getSystemCaretWidthInPixelsForCurrentMonitor();
+		if (systemCaretWidthInPixelsForCurrentMonitor.isPresent()) {
+			widthInPixels = systemCaretWidthInPixelsForCurrentMonitor.getAsInt();
 		}
 	}
 	OS.CreateCaret (hwnd, hBitmap, widthInPixels, getHeightInPixels());

@@ -911,7 +911,7 @@ private long getMenuItemIconSelectedBitmapHandle() {
 }
 
 private int adaptZoomForMenuItem(int currentZoom, Image image) {
-	int primaryMonitorZoomAtAppStartUp = getPrimaryMonitorZoomAtStartup();
+	int primaryMonitorZoomAtAppStartUp = Win32DPIUtils.getPrimaryMonitorZoomAtStartup();
 	/*
 	 * Windows has inconsistent behavior when setting the size of MenuItem image and
 	 * hence we need to adjust the size of the images as per different kind of zoom
@@ -938,13 +938,6 @@ private static boolean isHalfZoom(int zoom) {
 
 private static boolean isQuarterZoom(int zoom) {
 	return zoom % 10 != 0 && zoom % 25 == 0;
-}
-
-private static int getPrimaryMonitorZoomAtStartup() {
-	long hDC = OS.GetDC(0);
-	int dpi = OS.GetDeviceCaps(hDC, OS.LOGPIXELSX);
-	OS.ReleaseDC(0, hDC);
-	return DPIUtil.mapDPIToZoom(dpi);
 }
 
 /**
