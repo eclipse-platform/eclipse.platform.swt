@@ -4465,6 +4465,7 @@ public static final native boolean SystemParametersInfo (int uiAction, int uiPar
 public static final native boolean SystemParametersInfo (int uiAction, int uiParam, NONCLIENTMETRICS pvParam, int fWinIni);
 public static final native boolean SystemParametersInfo (int uiAction, int uiParam, int [] pvParam, int fWinIni);
 public static final native boolean SystemParametersInfoForDpi (int uiAction, int uiParam, NONCLIENTMETRICS pvParam, int fWinIni, int dpi);
+public static final native boolean SystemParametersInfoForDpi (int uiAction, int uiParam, int [] pvParam, int fWinIni, int dpi);
 /**
  * @param lpKeyState cast=(PBYTE)
  * @param pwszBuff cast=(LPWSTR)
