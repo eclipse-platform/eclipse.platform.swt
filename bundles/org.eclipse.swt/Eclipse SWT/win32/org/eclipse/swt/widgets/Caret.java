@@ -688,6 +688,7 @@ private static void handleDPIChange(Widget widget, int newZoom, float scalingFac
 	if (caret.font != null) {
 		caret.setFont(caret.font);
 	}
+	caret.resize();
 }
 }
 
