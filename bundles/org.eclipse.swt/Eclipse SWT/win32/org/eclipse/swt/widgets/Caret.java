@@ -658,29 +658,6 @@ public void setVisible (boolean visible) {
 	}
 }
 
-/**
- * <b>IMPORTANT:</b> This method is not part of the public
- * API for Image. It is marked public only so that it
- * can be shared within the packages provided by SWT. It is not
- * available on all platforms, and should never be called from
- * application code.
- *
- * Sets the height o the caret in points.
- *
- * @param caret the caret to set the height of
- * @param height the height of caret to be set in points.
- *
- * @noreference This method is not intended to be referenced by clients.
- */
-public static void win32_setHeight(Caret caret, int height) {
-	caret.checkWidget();
-	if(caret.height != height) {
-		caret.height = height;
-		caret.resized = true;
-	}
-	if(caret.isVisible && caret.hasFocus()) caret.resize();
-}
-
 private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
 	if (!(widget instanceof Caret caret)) {
 		return;
@@ -694,6 +671,7 @@ private static void handleDPIChange(Widget widget, int newZoom, float scalingFac
 	if (caret.font != null) {
 		caret.setFont(caret.font);
 	}
+	if (caret.isVisible && caret.hasFocus ()) caret.resize();
 }
 }
 
