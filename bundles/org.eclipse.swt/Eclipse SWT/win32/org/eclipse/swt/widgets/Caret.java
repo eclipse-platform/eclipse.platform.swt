@@ -132,7 +132,9 @@ Rectangle getBoundsInPixels () {
 	if (width == 0) {
 		int [] buffer = new int [1];
 		if (OS.SystemParametersInfo (OS.SPI_GETCARETWIDTH, 0, buffer, 0)) {
-			return new Rectangle (getXInPixels(), getYInPixels(), buffer [0], getHeightInPixels());
+			int width = DPIUtil.pixelToPoint(buffer [0], Win32DPIUtils.getPrimaryMonitorZoomAtStartup());
+			int widthInPixels = Win32DPIUtils.pointToPixel(width, getNativeZoom());
+			return new Rectangle (getXInPixels(), getYInPixels(), widthInPixels, getHeightInPixels());
 		}
 	}
 	return new Rectangle (getXInPixels(), getYInPixels(), getWidthInPixels(), getHeightInPixels());
@@ -226,7 +228,9 @@ Point getSizeInPixels () {
 	if (width == 0) {
 		int [] buffer = new int [1];
 		if (OS.SystemParametersInfo (OS.SPI_GETCARETWIDTH, 0, buffer, 0)) {
-			return new Point (buffer [0], getHeightInPixels());
+			int width = DPIUtil.pixelToPoint(buffer [0], Win32DPIUtils.getPrimaryMonitorZoomAtStartup());
+			int widthInPixels = Win32DPIUtils.pointToPixel(width, getNativeZoom());
+			return new Point (widthInPixels, getHeightInPixels());
 		}
 	}
 	return new Point (getWidthInPixels(), getHeightInPixels());
@@ -370,7 +374,8 @@ void resize () {
 	if (image == null && widthInPixels == 0) {
 		int [] buffer = new int [1];
 		if (OS.SystemParametersInfo (OS.SPI_GETCARETWIDTH, 0, buffer, 0)) {
-			widthInPixels = buffer [0];
+			int width = DPIUtil.pixelToPoint(buffer [0], Win32DPIUtils.getPrimaryMonitorZoomAtStartup());
+			widthInPixels = Win32DPIUtils.pointToPixel(width, getNativeZoom());
 		}
 	}
 	OS.CreateCaret (hwnd, hBitmap, widthInPixels, getHeightInPixels());
@@ -449,7 +454,8 @@ void setFocus () {
 	if (image == null && widthInPixels == 0) {
 		int [] buffer = new int [1];
 		if (OS.SystemParametersInfo (OS.SPI_GETCARETWIDTH, 0, buffer, 0)) {
-			widthInPixels = buffer [0];
+			int width = DPIUtil.pixelToPoint(buffer [0], Win32DPIUtils.getPrimaryMonitorZoomAtStartup());
+			widthInPixels = Win32DPIUtils.pointToPixel(width, getNativeZoom());
 		}
 	}
 	OS.CreateCaret (hwnd, hBitmap, widthInPixels, getHeightInPixels());
