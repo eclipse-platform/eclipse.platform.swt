@@ -408,14 +408,10 @@ public void pack () {
 	int headerWidth = (int)OS.SendMessage (hwnd, OS.LVM_GETSTRINGWIDTH, 0, buffer) + Table.HEADER_MARGIN;
 	if (OS.IsAppThemed ()) headerWidth += Table.HEADER_EXTRA;
 	boolean hasHeaderImage = false;
-	if (image != null || parent.sortColumn == this) {
+	if (image != null) {
 		hasHeaderImage = true;
-		if (parent.sortColumn == this && parent.sortDirection != SWT.NONE) {
-			headerWidth += Win32DPIUtils.pointToPixel(Table.SORT_WIDTH, getZoom());
-		} else if (image != null) {
-			Rectangle bounds = Win32DPIUtils.pointToPixel(image.getBounds(), getZoom());
-			headerWidth += bounds.width;
-		}
+		Rectangle bounds = Win32DPIUtils.pointToPixel(image.getBounds(), getZoom());
+		headerWidth += bounds.width;
 		long hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
 		int margin = (int)OS.SendMessage (hwndHeader, OS.HDM_GETBITMAPMARGIN, 0, 0);
 		headerWidth += margin * 4;
