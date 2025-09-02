@@ -114,7 +114,6 @@ public class Tree extends Composite {
 	static final int TIMER_MAX_COUNT = 8;
 	static final int INSET = 3;
 	static final int GRID_WIDTH = 1;
-	static final int SORT_WIDTH = 10;
 	static final int HEADER_MARGIN = 12;
 	static final int HEADER_EXTRA = 3;
 	static final int INCREMENT = 5;

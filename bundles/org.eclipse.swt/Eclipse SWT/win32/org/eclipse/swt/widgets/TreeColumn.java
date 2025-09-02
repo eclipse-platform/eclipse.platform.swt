@@ -377,17 +377,9 @@ public void pack () {
 	OS.DrawText (hDC, buffer, buffer.length, rect, flags);
 	int headerWidth = rect.right - rect.left + Win32DPIUtils.pointToPixel(Tree.HEADER_MARGIN, getZoom());
 	if (OS.IsAppThemed ()) headerWidth += Win32DPIUtils.pointToPixel(Tree.HEADER_EXTRA, getZoom());
-	if (image != null || parent.sortColumn == this) {
-		Image headerImage = null;
-		if (parent.sortColumn == this && parent.sortDirection != SWT.NONE) {
-			headerWidth += Win32DPIUtils.pointToPixel(Tree.SORT_WIDTH, getZoom()) ;
-		} else {
-			headerImage = image;
-		}
-		if (headerImage != null) {
-			Rectangle bounds = Win32DPIUtils.pointToPixel(headerImage.getBounds(), getZoom());
-			headerWidth += bounds.width;
-		}
+	if (image != null) {
+		Rectangle bounds = Win32DPIUtils.pointToPixel(image.getBounds(), getZoom());
+		headerWidth += bounds.width;
 		int margin = 0;
 		if (hwndHeader != 0) {
 			margin = (int)OS.SendMessage (hwndHeader, OS.HDM_GETBITMAPMARGIN, 0, 0);
