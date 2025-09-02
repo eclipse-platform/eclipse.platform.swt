@@ -276,7 +276,7 @@ static int checkStyle (int style) {
 long cellDataProc (long tree_column, long cell, long tree_model, long iter, long data) {
 	if (cell == ignoreCell) return 0;
 	TreeItem item = _getItem (iter);
-	if (item.isDisposed()) {
+	if (item == null || item.isDisposed()) {
 		return 0;
 	}
 	if (item != null) OS.g_object_set_qdata (cell, Display.SWT_OBJECT_INDEX2, item.handle);

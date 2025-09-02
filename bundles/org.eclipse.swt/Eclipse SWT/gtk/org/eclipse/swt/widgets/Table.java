@@ -200,7 +200,7 @@ long cellDataProc (long tree_column, long cell, long tree_model, long iter, long
 	C.memmove (index, GTK.gtk_tree_path_get_indices (path), 4);
 	TableItem item = _getItem (index[0]);
 	GTK.gtk_tree_path_free (path);
-	if (item.isDisposed()) {
+	if (item == null || item.isDisposed()) {
 		return 0;
 	}
 	if (item != null) OS.g_object_set_qdata (cell, Display.SWT_OBJECT_INDEX2, item.handle);
