@@ -158,6 +158,13 @@ public static sealed class OfFloat extends Point permits Point.WithMonitor {
 		this.y = Math.round(y);
 		this.residualY = y - this.y;
 	}
+
+	public static Point.OfFloat from(Point point) {
+		if (point instanceof Point.OfFloat pointOfFloat) {
+			return new Point.OfFloat(pointOfFloat.getX(), pointOfFloat.getY());
+		}
+		return new Point.OfFloat(point.x, point.y);
+	}
 }
 
 /**
