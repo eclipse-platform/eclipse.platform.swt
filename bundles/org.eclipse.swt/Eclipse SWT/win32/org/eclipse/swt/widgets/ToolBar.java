@@ -62,7 +62,6 @@ public class ToolBar extends Composite {
 		WNDCLASS lpWndClass = new WNDCLASS ();
 		OS.GetClassInfo (0, ToolBarClass, lpWndClass);
 		ToolBarProc = lpWndClass.lpfnWndProc;
-		DPIZoomChangeRegistry.registerHandler(ToolBar::handleDPIChange, ToolBar.class);
 	}
 
 	/*
@@ -1746,11 +1745,10 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 	return super.wmNotifyChild (hdr, wParam, lParam);
 }
 
-private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
-	if (!(widget instanceof ToolBar toolBar)) {
-		return;
-	}
-	ToolItem[] toolItems = toolBar._getItems();
+@Override
+void handleDPIChange(Event event, float scalingFactor) {
+	super.handleDPIChange(event, scalingFactor);
+	ToolItem[] toolItems = _getItems();
 	var seperatorWidth = new int[toolItems.length];
 	int itemCount = toolItems.length;
 
@@ -1765,21 +1763,21 @@ private static void handleDPIChange(Widget widget, int newZoom, float scalingFac
 	Stack<ToolItemData> buttondata = new Stack<>();
 	for (int i = itemCount - 1; i >= 0; i--) {
 		TBBUTTON lpButton = new TBBUTTON ();
-		OS.SendMessage (toolBar.handle, OS.TB_GETBUTTON, i, lpButton);
+		OS.SendMessage (handle, OS.TB_GETBUTTON, i, lpButton);
 		ToolItem item = toolItems[i];
 		if ((item.style & SWT.SEPARATOR) != 0 && item.getControl() != null) {
 			// Take note of widths of separators with control, so they can be resized
 			// at the end
 			seperatorWidth[i] = item.getWidth();
 		}
-		DPIZoomChangeRegistry.applyChange(item, newZoom, scalingFactor);
+		item.sendZoomChangedEvent(event, getShell());
 		buttondata.push(new ToolItemData(item, lpButton));
-		OS.SendMessage(toolBar.handle, OS.TB_DELETEBUTTON, i, 0);
+		OS.SendMessage(handle, OS.TB_DELETEBUTTON, i, 0);
 	}
-	OS.SendMessage(toolBar.handle, OS.TB_BUTTONSTRUCTSIZE, TBBUTTON.sizeof, 0);
+	OS.SendMessage(handle, OS.TB_BUTTONSTRUCTSIZE, TBBUTTON.sizeof, 0);
 	while (!buttondata.isEmpty()) {
 		ToolItemData itemData = buttondata.pop();
-		OS.SendMessage(toolBar.handle, OS.TB_ADDBUTTONS, 1, itemData.button);
+		OS.SendMessage(handle, OS.TB_ADDBUTTONS, 1, itemData.button);
 		ToolItem item = itemData.toolItem;
 		if (item != null) {
 			// The text is not retained correctly, so we need to reset it
@@ -1800,10 +1798,10 @@ private static void handleDPIChange(Widget widget, int newZoom, float scalingFac
 	}
 
 	// Refresh the image lists so the image list for the correct zoom is used
-	toolBar.setImageList(toolBar.getImageList());
-	toolBar.setDisabledImageList(toolBar.getDisabledImageList());
-	toolBar.setHotImageList(toolBar.getHotImageList());
-	OS.SendMessage(toolBar.handle, OS.TB_AUTOSIZE, 0, 0);
-	toolBar.layout(true);
+	setImageList(getImageList());
+	setDisabledImageList(getDisabledImageList());
+	setHotImageList(getHotImageList());
+	OS.SendMessage(handle, OS.TB_AUTOSIZE, 0, 0);
+	layout(true);
 }
 }

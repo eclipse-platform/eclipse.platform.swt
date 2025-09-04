@@ -61,10 +61,6 @@ public class MenuItem extends Item {
 	private final static int CUSTOM_SELECTION_IMAGE = (OsVersion.IS_WIN11_21H2) ?
 			Integer.getInteger("org.eclipse.swt.internal.win32.menu.customSelectionImage", 2) : 0;
 
-	static {
-		DPIZoomChangeRegistry.registerHandler(MenuItem::handleDPIChange, MenuItem.class);
-	}
-
 /**
  * Constructs a new instance of this class given its parent
  * (which must be a <code>Menu</code>) and a style value
@@ -1464,18 +1460,17 @@ private static final class MenuItemToolTip extends ToolTip {
 
 }
 
-private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
-	if (!(widget instanceof MenuItem menuItem)) {
-		return;
-	}
+@Override
+void handleDPIChange(Event event, float scalingFactor) {
+	super.handleDPIChange(event, scalingFactor);
 	// Refresh the image(s)
-	if (menuItem.getImage() != null) {
-		((MenuItem)menuItem).updateImage();
+	if (getImage() != null) {
+		updateImage();
 	}
 	// Refresh the sub menu
-	Menu subMenu = menuItem.getMenu();
+	Menu subMenu = getMenu();
 	if (subMenu != null) {
-		DPIZoomChangeRegistry.applyChange(subMenu, newZoom, scalingFactor);
+		subMenu.sendZoomChangedEvent(event, subMenu.getShell());
 	}
 }
 }

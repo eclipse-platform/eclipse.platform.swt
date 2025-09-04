@@ -49,10 +49,6 @@ public class Caret extends Widget {
 	Font font;
 	LOGFONT oldFont;
 
-static {
-	DPIZoomChangeRegistry.registerHandler(Caret::handleDPIChange, Caret.class);
-}
-
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -669,18 +665,16 @@ public static void win32_setHeight(Caret caret, int height) {
 	if(caret.isVisible && caret.hasFocus()) caret.resize();
 }
 
-private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
-	if (!(widget instanceof Caret caret)) {
-		return;
-	}
-
-	Image image = caret.getImage();
+@Override
+void handleDPIChange(Event event, float scalingFactor) {
+	super.handleDPIChange(event, scalingFactor);
+	Image image = getImage();
 	if (image != null) {
-		caret.setImage(image);
+		setImage(image);
 	}
 
-	if (caret.font != null) {
-		caret.setFont(caret.font);
+	if (font != null) {
+		setFont(font);
 	}
 }
 }
