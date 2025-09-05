@@ -146,6 +146,16 @@ public static ImageData autoScaleImageData (Device device, final ImageData image
 	int height = imageData.height;
 	int scaledWidth = Math.round (width * scaleFactor);
 	int scaledHeight = Math.round (height * scaleFactor);
+	return scaleImage(device, imageData, Image::drawAtTargetSize, width, height, scaledWidth, scaledHeight);
+}
+
+@FunctionalInterface
+private interface ImageDrawFunction {
+	void draw(GC gc, ImageData imageData, int originalWidth, int originalHeight, int targetWidth, int targetHeight);
+}
+
+private static ImageData scaleImage(Device device, final ImageData imageData, ImageDrawFunction drawFunction, int width, int height,
+		int scaledWidth, int scaledHeight) {
 	int defaultZoomLevel = 100;
 	boolean useSmoothScaling = isSmoothScalingEnabled() && imageData.getTransparencyType() != SWT.TRANSPARENCY_MASK;
 	if (useSmoothScaling) {
@@ -153,7 +163,7 @@ public static ImageData autoScaleImageData (Device device, final ImageData image
 			@Override
 			public void drawOn(GC gc, int imageWidth, int imageHeight) {
 				gc.setAntialias (SWT.ON);
-				Image.drawScaled(gc, imageData, width, height, scaleFactor);
+				drawFunction.draw(gc, imageData, width, height, imageWidth, imageHeight);
 			};
 
 			@Override
@@ -168,6 +178,10 @@ public static ImageData autoScaleImageData (Device device, final ImageData image
 	} else {
 		return imageData.scaledTo (scaledWidth, scaledHeight);
 	}
+}
+
+public static ImageData autoScaleImageData(Device device, final ImageData imageData, int targetWidth, int targetHeight) {
+	return scaleImage(device, imageData, Image::drawAtTargetSize, imageData.width, imageData.height, targetWidth, targetHeight);
 }
 
 public static boolean isSmoothScalingEnabled() {

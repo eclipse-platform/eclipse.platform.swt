@@ -41,20 +41,32 @@ class ImageDataLoader {
 		return ImageLoader.canLoadAtZoom(stream, fileZoom, targetZoom);
 	}
 
-	public static ElementAtZoom<ImageData> load(InputStream stream, int fileZoom, int targetZoom) {
-		List<ElementAtZoom<ImageData>> data = new ImageLoader().load(stream, fileZoom, targetZoom);
-		if (data.isEmpty()) SWT.error(SWT.ERROR_INVALID_IMAGE);
-		return data.get(0);
-	}
-
 	public static boolean canLoadAtZoom(String filename, int fileZoom, int targetZoom) {
 		return ImageLoader.canLoadAtZoom(filename, fileZoom, targetZoom);
 	}
 
-	public static ElementAtZoom<ImageData> load(String filename, int fileZoom, int targetZoom) {
-		List<ElementAtZoom<ImageData>> data = new ImageLoader().load(filename, fileZoom, targetZoom);
+	public static ElementAtZoom<ImageData> loadByZoom(InputStream stream, int fileZoom, int targetZoom) {
+		List<ElementAtZoom<ImageData>> data = new ImageLoader().loadByZoom(stream, fileZoom, targetZoom);
 		if (data.isEmpty()) SWT.error(SWT.ERROR_INVALID_IMAGE);
 		return data.get(0);
+	}
+
+	public static ElementAtZoom<ImageData> loadByZoom(String filename, int fileZoom, int targetZoom) {
+		List<ElementAtZoom<ImageData>> data = new ImageLoader().loadByZoom(filename, fileZoom, targetZoom);
+		if (data.isEmpty()) SWT.error(SWT.ERROR_INVALID_IMAGE);
+		return data.get(0);
+	}
+
+	public static ImageData loadByTargetSize(InputStream stream, int targetWidth, int targetHeight) {
+		ImageData data = new ImageLoader().loadByTargetSize(stream, targetWidth, targetHeight);
+		if (data == null) SWT.error(SWT.ERROR_INVALID_IMAGE);
+		return data;
+	}
+
+	public static ImageData loadByTargetSize(String filename, int targetWidth, int targetHeight) {
+		ImageData data = new ImageLoader().loadByTargetSize(filename, targetWidth, targetHeight);
+		if (data == null) SWT.error(SWT.ERROR_INVALID_IMAGE);
+		return data;
 	}
 
 }
