@@ -375,12 +375,12 @@ public void pack () {
 	int flags = OS.DT_CALCRECT | OS.DT_NOPREFIX;
 	char [] buffer = text.toCharArray ();
 	OS.DrawText (hDC, buffer, buffer.length, rect, flags);
-	int headerWidth = rect.right - rect.left + Tree.HEADER_MARGIN;
-	if (OS.IsAppThemed ()) headerWidth += Tree.HEADER_EXTRA;
+	int headerWidth = rect.right - rect.left + Win32DPIUtils.pointToPixel(Tree.HEADER_MARGIN, getZoom());
+	if (OS.IsAppThemed ()) headerWidth += Win32DPIUtils.pointToPixel(Tree.HEADER_EXTRA, getZoom());
 	if (image != null || parent.sortColumn == this) {
 		Image headerImage = null;
 		if (parent.sortColumn == this && parent.sortDirection != SWT.NONE) {
-			headerWidth += Tree.SORT_WIDTH;
+			headerWidth += Win32DPIUtils.pointToPixel(Tree.SORT_WIDTH, getZoom()) ;
 		} else {
 			headerImage = image;
 		}
@@ -398,7 +398,7 @@ public void pack () {
 	}
 	if (newFont != 0) OS.SelectObject (hDC, oldFont);
 	OS.ReleaseDC (hwnd, hDC);
-	int gridWidth = parent.linesVisible ? Tree.GRID_WIDTH : 0;
+	int gridWidth = parent.linesVisible ? parent.getGridLineWidthInPixels() : 0;
 	setWidthInPixels (Math.max (headerWidth, columnWidth + gridWidth));
 }
 

@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.eclipse.swt.svg
-Bundle-Version: 3.130.100.qualifier
+Bundle-Version: 3.130.200.qualifier
 Automatic-Module-Name: org.eclipse.swt.svg
 Bundle-Name: %fragmentName
 Bundle-Vendor: %providerName

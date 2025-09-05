@@ -986,8 +986,9 @@ private void _setEnabledOrDisabledImage() {
 			defaultDisableImage = new Image(getDisplay(), image, SWT.IMAGE_DISABLE);
 		}
 		_setImage(defaultDisableImage);
+	} else {
+		_setImage(image);
 	}
-	if (enabled && image != null) _setImage(image);
 }
 
 /**

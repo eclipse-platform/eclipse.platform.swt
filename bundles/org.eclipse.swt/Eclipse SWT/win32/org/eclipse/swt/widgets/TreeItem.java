@@ -530,7 +530,7 @@ RECT getBounds (int index, boolean getText, boolean getImage, boolean fullText, 
 			}
 		}
 	}
-	int gridWidth = parent.linesVisible && columnCount != 0 ? Tree.GRID_WIDTH : 0;
+	int gridWidth = parent.linesVisible && columnCount != 0 ? parent.getGridLineWidthInPixels() : 0;
 	if (getText || !getImage) {
 		rect.right = Math.max (rect.left, rect.right - gridWidth);
 	}

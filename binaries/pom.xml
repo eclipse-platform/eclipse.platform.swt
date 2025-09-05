@@ -19,7 +19,7 @@
 	<parent>
 		<groupId>org.eclipse.platform</groupId>
 		<artifactId>eclipse.platform.swt</artifactId>
-		<version>4.37.0-SNAPSHOT</version>
+		<version>4.38.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>eclipse.platform.swt.binaries</artifactId>

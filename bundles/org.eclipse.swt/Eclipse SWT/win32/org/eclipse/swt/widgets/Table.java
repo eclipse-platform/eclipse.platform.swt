@@ -2334,11 +2334,11 @@ int getFocusIndex () {
  */
 public int getGridLineWidth () {
 	checkWidget ();
-	return DPIUtil.pixelToPoint(getGridLineWidthInPixels(), getZoom());
+	return GRID_WIDTH;
 }
 
 int getGridLineWidthInPixels () {
-	return GRID_WIDTH;
+	return Win32DPIUtils.pointToPixel(GRID_WIDTH, getZoom());
 }
 
 /**
@@ -5308,7 +5308,7 @@ public void showColumn (TableColumn column) {
 		OS.GetScrollInfo (handle, OS.SB_HORZ, info);
 		int newPos = info.nPos;
 		if (newPos < oldPos) {
-			rect.right = oldPos - newPos + GRID_WIDTH;
+			rect.right = oldPos - newPos + getGridLineWidthInPixels();
 			OS.InvalidateRect (handle, rect, true);
 		}
 	}
@@ -5745,8 +5745,9 @@ long windowProc (long hwnd, int msg, long wParam, long lParam) {
 		OS.GetClientRect (handle, clientRect);
 		TableItem item = _getItem (selection);
 		RECT rect = item.getBounds (selection, 0, true, true, true);
+		int dragImageSizeInPixel = Win32DPIUtils.pointToPixel(DRAG_IMAGE_SIZE, getZoom());
 		if ((style & SWT.FULL_SELECTION) != 0) {
-			int width = DRAG_IMAGE_SIZE;
+			int width = dragImageSizeInPixel;
 			rect.left = Math.max (clientRect.left, mousePos.x - width / 2);
 			if (clientRect.right > rect.left + width) {
 				rect.right = rect.left + width;
@@ -5757,7 +5758,7 @@ long windowProc (long hwnd, int msg, long wParam, long lParam) {
 		}
 		long hRgn = OS.CreateRectRgn (rect.left, rect.top, rect.right, rect.bottom);
 		while ((selection = (int)OS.SendMessage (handle, OS.LVM_GETNEXTITEM, selection, OS.LVNI_SELECTED)) != -1) {
-			if (rect.bottom - rect.top > DRAG_IMAGE_SIZE) break;
+			if (rect.bottom - rect.top > dragImageSizeInPixel) break;
 			if (rect.bottom > clientRect.bottom) break;
 			RECT itemRect = item.getBounds (selection, 0, true, true, true);
 			long rectRgn = OS.CreateRectRgn (rect.left, itemRect.top, rect.right, itemRect.bottom);
@@ -6352,7 +6353,7 @@ LRESULT WM_HSCROLL (long wParam, long lParam) {
 		if (newPos < oldPos) {
 			RECT rect = new RECT ();
 			OS.GetClientRect (handle, rect);
-			rect.right = oldPos - newPos + GRID_WIDTH;
+			rect.right = oldPos - newPos + getGridLineWidthInPixels();
 			OS.InvalidateRect (handle, rect, true);
 		}
 	}
@@ -6461,9 +6462,9 @@ LRESULT WM_VSCROLL (long wParam, long lParam) {
 				long oneItem = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, 1, 0);
 				int itemHeight = OS.HIWORD (oneItem) - OS.HIWORD (empty);
 				if (code == OS.SB_LINEDOWN) {
-					clientRect.top = clientRect.bottom - itemHeight - GRID_WIDTH;
+					clientRect.top = clientRect.bottom - itemHeight - getGridLineWidthInPixels();
 				} else {
-					clientRect.bottom = clientRect.top + itemHeight + GRID_WIDTH;
+					clientRect.bottom = clientRect.top + itemHeight + getGridLineWidthInPixels();
 				}
 				OS.InvalidateRect (handle, clientRect, true);
 				break;
@@ -7282,7 +7283,7 @@ LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, long lParam) {
 				}
 				if (drawForeground) {
 					int nSavedDC = OS.SaveDC (nmcd.hdc);
-					int gridWidth = getLinesVisible () ? Table.GRID_WIDTH : 0;
+					int gridWidth = getLinesVisible () ? getGridLineWidthInPixels() : 0;
 					RECT insetRect = toolTipInset (cellRect);
 					OS.SetWindowOrgEx (nmcd.hdc, insetRect.left, insetRect.top, null);
 					GCData data = new GCData ();

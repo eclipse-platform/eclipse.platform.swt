@@ -10728,6 +10728,18 @@ JNIEXPORT jlong JNICALL OS_NATIVE(g_1app_1info_1get_1all)
 }
 #endif
 
+#ifndef NO_g_1app_1info_1get_1commandline
+JNIEXPORT jlong JNICALL OS_NATIVE(g_1app_1info_1get_1commandline)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, g_1app_1info_1get_1commandline_FUNC);
+	rc = (jlong)g_app_info_get_commandline((GAppInfo *)arg0);
+	OS_NATIVE_EXIT(env, that, g_1app_1info_1get_1commandline_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_g_1app_1info_1get_1default_1for_1type
 JNIEXPORT jlong JNICALL OS_NATIVE(g_1app_1info_1get_1default_1for_1type)
 	(JNIEnv *env, jclass that, jbyteArray arg0, jboolean arg1)

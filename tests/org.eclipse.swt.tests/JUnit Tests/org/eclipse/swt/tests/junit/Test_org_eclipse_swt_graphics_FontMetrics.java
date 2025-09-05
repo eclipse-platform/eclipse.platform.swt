@@ -14,17 +14,16 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.FontMetrics
@@ -33,14 +32,14 @@ import org.junit.Test;
  */
 public class Test_org_eclipse_swt_graphics_FontMetrics {
 
-@Before
+@BeforeEach
 public void setUp() {
 	display = Display.getDefault();
 	shell = new Shell(display);
 	gc = new GC(shell);
 }
 
-@After
+@AfterEach
 public void tearDown() {
 	gc.dispose();
 	shell.dispose();

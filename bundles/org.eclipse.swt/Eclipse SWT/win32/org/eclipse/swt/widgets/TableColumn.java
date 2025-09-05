@@ -411,7 +411,7 @@ public void pack () {
 	if (image != null || parent.sortColumn == this) {
 		hasHeaderImage = true;
 		if (parent.sortColumn == this && parent.sortDirection != SWT.NONE) {
-			headerWidth += Table.SORT_WIDTH;
+			headerWidth += Win32DPIUtils.pointToPixel(Table.SORT_WIDTH, getZoom());
 		} else if (image != null) {
 			Rectangle bounds = Win32DPIUtils.pointToPixel(image.getBounds(), getZoom());
 			headerWidth += bounds.width;

@@ -14,14 +14,13 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.eclipse.swt.graphics.Point;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.Point
@@ -50,21 +49,21 @@ public void test_ConstructorII() {
 public void test_equalsLjava_lang_Object() {
 	Point p1 = new Point(5, 5);
 	Point p2 = new Point(5, 5);
-	assertTrue("Points should be equal", p1.equals(p2));
+	assertTrue(p1.equals(p2), "Points should be equal");
 
 	p1 = new Point(-5, -5);
 	p2 = new Point(-5, -5);
-	assertTrue("Points should be equal", p1.equals(p2));
+	assertTrue(p1.equals(p2), "Points should be equal");
 
 	p2 = new Point(3, 4);
-	assertFalse("Points should not be equal", p1.equals(p2));
+	assertFalse(p1.equals(p2), "Points should not be equal");
 }
 
 @Test
 public void test_hashCode() {
 	Point p1 = new Point(5, 5);
 	Point p2 = new Point(5, 5);
-	assertEquals("Points should have the same hashCode", p2.hashCode(), p1.hashCode());
+	assertEquals(p2.hashCode(), p1.hashCode(), "Points should have the same hashCode");
 }
 
 @Test

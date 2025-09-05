@@ -14,17 +14,17 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Locale;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.FontData;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.FontData
@@ -76,18 +76,12 @@ public void test_ConstructorLjava_lang_StringII() {
 	new FontData(SwtTestUtil.testFontName, 10, SWT.BOLD | SWT.ITALIC);
 
 	// illegal argument, name == null
-	try {
-		new FontData(null, 10, SWT.NORMAL);
-		fail("No exception thrown for name == null");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> new FontData(null, 10, SWT.NORMAL),
+			"No exception thrown for name == null");
 
 	// illegal argument, height < 0
-	try {
-		new FontData(SwtTestUtil.testFontName, -10, SWT.NORMAL);
-		fail("No exception thrown for height < 0");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class,
+			() -> new FontData(SwtTestUtil.testFontName, -10, SWT.NORMAL),"No exception thrown for height < 0");
 }
 
 @Test
@@ -124,28 +118,28 @@ public void test_setHeightI() {
 	FontData fontData = new FontData(SwtTestUtil.testFontName, 10, SWT.NORMAL);
 	for (int height = 0; height < 1000; height++) {
 		fontData.setHeight(height);
-		assertEquals("Wrong height", fontData.getHeight(), height);
+		assertEquals(fontData.getHeight(), height, "Wrong height");
 	}
 
 	// valid bold font data for various heights
 	fontData = new FontData(SwtTestUtil.testFontName, 10, SWT.BOLD);
 	for (int height = 0; height < 1000; height++) {
 		fontData.setHeight(height);
-		assertEquals("Wrong height", fontData.getHeight(), height);
+		assertEquals(fontData.getHeight(), height, "Wrong height");
 	}
 
 	// valid italic font data for various heights
 	fontData = new FontData(SwtTestUtil.testFontName, 10, SWT.ITALIC);
 	for (int height = 0; height < 1000; height++) {
 		fontData.setHeight(height);
-		assertEquals("Wrong height", fontData.getHeight(), height);
+		assertEquals(fontData.getHeight(), height, "Wrong height");
 	}
 
 	// valid bold italic font data for various heights
 	fontData = new FontData(SwtTestUtil.testFontName, 10, SWT.BOLD | SWT.ITALIC);
 	for (int height = 0; height < 1000; height++) {
 		fontData.setHeight(height);
-		assertEquals("Wrong height", fontData.getHeight(), height);
+		assertEquals(fontData.getHeight(), height, "Wrong height");
 	}
 }
 
@@ -162,28 +156,25 @@ public void test_setNameLjava_lang_String() {
 	// Test Font.setName(String name)
 	// valid name
 	FontData fontData = new FontData(SwtTestUtil.testFontName, 10, SWT.NORMAL);
-	assertEquals("Wrong name", fontData.getName(), SwtTestUtil.testFontName);
+	assertEquals(fontData.getName(), SwtTestUtil.testFontName);
 
 	// valid name (unknown name, but valid)
 	fontData.setName("bad-font");
-	assertEquals("Wrong name", fontData.getName(), "bad-font");
+	assertEquals(fontData.getName(), "bad-font");
 
 	// valid name (empty string, but valid)
 	// only on windows
 	if (SwtTestUtil.isWindows) {
 		fontData.setName("");
-		assertEquals("Wrong name", fontData.getName(), "");
+		assertEquals(fontData.getName(), "");
 	}
 
 	// valid name
 	fontData.setName(SwtTestUtil.testFontName);
-	assertEquals("Wrong name", fontData.getName(), SwtTestUtil.testFontName);
+	assertEquals(fontData.getName(), SwtTestUtil.testFontName);
 	// illegal argument, name == null
-	try {
-		fontData.setName(null);
-		fail("No exception thrown for name == null");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, ()->
+		fontData.setName(null),"No exception thrown for name == null");
 }
 
 @Test
@@ -192,23 +183,23 @@ public void test_setStyleI() {
 	for (int height = 0; height < 1000; height++) {
 		// valid normal font data
 		FontData fontData = new FontData(SwtTestUtil.testFontName, height, SWT.NORMAL);
-		assertEquals("Wrong style", fontData.getStyle(), SWT.NORMAL);
+		assertEquals(fontData.getStyle(), SWT.NORMAL, "Wrong style");
 
 		// valid bold font data
 		fontData.setStyle(SWT.BOLD);
-		assertEquals("Wrong style", fontData.getStyle(), SWT.BOLD);
+		assertEquals(fontData.getStyle(), SWT.BOLD, "Wrong style");
 
 		// valid italic font data
 		fontData.setStyle(SWT.ITALIC);
-		assertEquals("Wrong style", fontData.getStyle(), SWT.ITALIC);
+		assertEquals(fontData.getStyle(), SWT.ITALIC, "Wrong style");
 
 		// valid bold italic font data
 		fontData.setStyle(SWT.ITALIC | SWT.BOLD);
-		assertEquals("Wrong style", fontData.getStyle(), SWT.BOLD | SWT.ITALIC);
+		assertEquals(fontData.getStyle(), SWT.BOLD | SWT.ITALIC, "Wrong style");
 
 		// valid normal font data
 		fontData.setStyle(SWT.NORMAL);
-		assertEquals("Wrong style", fontData.getStyle(), SWT.NORMAL);
+		assertEquals(fontData.getStyle(), SWT.NORMAL, "Wrong style");
 	}
 }
 

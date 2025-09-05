@@ -8,19 +8,145 @@
             </message_arguments>
         </filter>
     </resource>
-     <resource path="Eclipse SWT/common/org/eclipse/swt/graphics/MonitorAwarePoint.java" type="org.eclipse.swt.graphics.MonitorAwarePoint">
-        <filter id="305365105">
+    <resource path="Eclipse SWT/common/org/eclipse/swt/graphics/Point.java" type="org.eclipse.swt.graphics.Point$OfFloat">
+        <filter id="338944126">
             <message_arguments>
-                <message_argument value="org.eclipse.swt.graphics.MonitorAwarePoint"/>
-                <message_argument value="org.eclipse.swt.gtk.linux.riscv64_3.131.0"/>
+                <message_argument value="org.eclipse.swt.graphics.Point.OfFloat"/>
+                <message_argument value="getX()"/>
+            </message_arguments>
+        </filter>
+        <filter id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.Point.OfFloat"/>
+                <message_argument value="getY()"/>
+            </message_arguments>
+        </filter>
+        <filter id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.Point.OfFloat"/>
+                <message_argument value="setX(float)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.Point.OfFloat"/>
+                <message_argument value="setY(float)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338948223">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.Point.OfFloat"/>
+                <message_argument value="OfFloat(float, float)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338948223">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.Point.OfFloat"/>
+                <message_argument value="OfFloat(int, int)"/>
             </message_arguments>
         </filter>
     </resource>
-    <resource path="Eclipse SWT/common/org/eclipse/swt/graphics/MonitorAwareRectangle.java" type="org.eclipse.swt.graphics.MonitorAwareRectangle">
-        <filter id="305365105">
+    <resource path="Eclipse SWT/common/org/eclipse/swt/graphics/Point.java" type="org.eclipse.swt.graphics.Point$WithMonitor">
+        <filter id="338944126">
             <message_arguments>
-                <message_argument value="org.eclipse.swt.graphics.MonitorAwareRectangle"/>
-                <message_argument value="org.eclipse.swt.gtk.linux.riscv64_3.131.0"/>
+                <message_argument value="org.eclipse.swt.graphics.Point.WithMonitor"/>
+                <message_argument value="getMonitor()"/>
+            </message_arguments>
+        </filter>
+        <filter id="338948223">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.Point.WithMonitor"/>
+                <message_argument value="WithMonitor(int, int, Monitor)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="Eclipse SWT/common/org/eclipse/swt/graphics/Rectangle.java" type="org.eclipse.swt.graphics.Rectangle$OfFloat">
+        <filter id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.Rectangle.OfFloat"/>
+                <message_argument value="getHeight()"/>
+            </message_arguments>
+        </filter>
+        <filter id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.Rectangle.OfFloat"/>
+                <message_argument value="getWidth()"/>
+            </message_arguments>
+        </filter>
+        <filter id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.Rectangle.OfFloat"/>
+                <message_argument value="getX()"/>
+            </message_arguments>
+        </filter>
+        <filter id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.Rectangle.OfFloat"/>
+                <message_argument value="getY()"/>
+            </message_arguments>
+        </filter>
+        <filter id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.Rectangle.OfFloat"/>
+                <message_argument value="setHeight(float)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.Rectangle.OfFloat"/>
+                <message_argument value="setWidth(float)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.Rectangle.OfFloat"/>
+                <message_argument value="setX(float)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.Rectangle.OfFloat"/>
+                <message_argument value="setY(float)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338948223">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.Rectangle.OfFloat"/>
+                <message_argument value="OfFloat(float, float, float, float)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338948223">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.Rectangle.OfFloat"/>
+                <message_argument value="OfFloat(int, int, int, int)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="Eclipse SWT/common/org/eclipse/swt/graphics/Rectangle.java" type="org.eclipse.swt.graphics.Rectangle$WithMonitor">
+        <filter id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.Rectangle.WithMonitor"/>
+                <message_argument value="clone()"/>
+            </message_arguments>
+        </filter>
+        <filter id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.Rectangle.WithMonitor"/>
+                <message_argument value="getMonitor()"/>
+            </message_arguments>
+        </filter>
+        <filter id="338948223">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.Rectangle.WithMonitor"/>
+                <message_argument value="WithMonitor(int, int, int, int, Monitor)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="Eclipse SWT/gtk/org/eclipse/swt/widgets/Composite.java" type="org.eclipse.swt.widgets.Composite">
+        <filter id="576778288">
+            <message_arguments>
+                <message_argument value="Scrollable"/>
+                <message_argument value="Composite"/>
             </message_arguments>
         </filter>
     </resource>
