@@ -1,7 +1,5 @@
 package org.eclipse.swt.snippets;
 
-import java.io.*;
-
 import org.eclipse.swt.*;
 import org.eclipse.swt.custom.*;
 import org.eclipse.swt.graphics.*;
@@ -54,23 +52,71 @@ public class Snippet386 {
         };
     }
 
-    private static ImageDataProvider createImageDataProvider(String fileName) {
-        return new ImageDataProvider() {
-            @Override
-            public ImageData getImageData(int zoom) {
-                try (InputStream stream = new FileInputStream(fileName)) {
-                	if(zoom==100)
-                	return new ImageData (fileName);
-                	else
-                		return new ImageData ("resources/Snippet384/images/civil-icon.png");
-                    //return NativeImageLoader.load(new ElementAtZoom<>(stream, 100), new ImageLoader(), 100).get(0).element();
-                } catch (IOException e) {
-                    SWT.error(SWT.ERROR_IO, e);
-                }
-                return null;
-            }
-        };
-    }
+	private static ImageDataProvider createImageDataProvider(String fileName) {
+		return new ImageDataAtSizeProvider() {
+			@Override
+			public ImageData getImageData(int zoomLevel) {
+				int scaleFactor = zoomLevel / 100;
+				int baseWidth = 100;
+				int baseHeight = 100;
+				return getImageData(baseWidth * scaleFactor, baseHeight * scaleFactor);
+			}
+
+			@Override
+			public ImageData getImageData(int width, int height) {
+				Display display = Display.getDefault();
+
+				// Step 1: Determine font size based on height and zoom
+				int fontSize = (int) Math.round(height / 100.0);
+				if (fontSize <= 0)
+					fontSize = 1;
+				Font font = new Font(display, "Arial", fontSize, SWT.NORMAL);
+
+				// Step 2: Measure text size
+				Image tmp = new Image(display, 1, 1);
+				GC measureGC = new GC(tmp);
+				measureGC.setFont(font);
+				String text = "abcd";
+				Point textExtent = measureGC.textExtent(text);
+				measureGC.dispose();
+				tmp.dispose();
+
+				// Step 3: Scale font to fit requested width/height
+				double scaleX = (double) width / textExtent.x;
+				double scaleY = (double) height / textExtent.y;
+				double scale = Math.min(scaleX, scaleY);
+
+				fontSize = Math.max(1, (int) (fontSize * scale));
+				font.dispose();
+				font = new Font(display, "Arial", fontSize, SWT.NORMAL);
+
+				// Step 4: Create image of requested size
+				Image image = new Image(display, width, height);
+				GC gc = new GC(image);
+				gc.setFont(font);
+				gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
+				gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
+				gc.fillRectangle(image.getBounds());
+
+				// Step 5: Draw line and text
+				gc.setLineWidth(Math.max(1, width / 20)); // thickness relative to image height
+				gc.drawLine(0, 0, width / 2, height); // example diagonal line
+				Point newTextExtent = gc.textExtent(text);
+				int x = (width - newTextExtent.x) / 2; // center horizontally
+				int y = (height - newTextExtent.y) / 2; // center vertically
+				gc.drawText(text, x, y, true);
+
+				gc.dispose();
+
+				ImageData data = image.getImageData();
+
+				image.dispose();
+				font.dispose();
+
+				return data;
+			}
+		};
+	}
 
     static class Slice {
         String name;
@@ -94,7 +140,7 @@ public class Snippet386 {
         scrolledComposite.setExpandVertical(true);
 
         int boxW = 400;
-        int boxH = 500;
+        int boxH = 400;
         int gap = 20;
         int titleHeight = 20;
         int descHeight = 40; // description row height

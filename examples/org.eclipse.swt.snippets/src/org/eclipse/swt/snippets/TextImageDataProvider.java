@@ -93,10 +93,10 @@ public ImageData getImageData(int width, int height) {
             Image image = new Image(display, provider);
             System.out.println(image.getBounds().width+"ssssss"+image.getBounds().height);
             e.gc.drawImage(image, 0, 0);
-            e.gc.drawImage(image, 100, 0);
-            e.gc.drawImage(image, 0, 0, image.getBounds().width, image.getBounds().height, 0,200, 200, 200);
-            e.gc.drawImage(image, 0, 0, image.getBounds().width, image.getBounds().height, 0,400, 100, 100);
-            e.gc.drawImage(image, 0, 0, image.getBounds().width, image.getBounds().height, 100,400, 500, 500);
+//            e.gc.drawImage(image, 100, 0);
+//            e.gc.drawImage(image, 0, 0, image.getBounds().width, image.getBounds().height, 0,200, 200, 200);
+           e.gc.drawImage(image, 0, 0, image.getBounds().width, image.getBounds().height, 0,400, 100, 200);
+            e.gc.drawImage(image, 0, 0, image.getBounds().width, image.getBounds().height,0,600, 200, 100);
             image.dispose();
         });
 

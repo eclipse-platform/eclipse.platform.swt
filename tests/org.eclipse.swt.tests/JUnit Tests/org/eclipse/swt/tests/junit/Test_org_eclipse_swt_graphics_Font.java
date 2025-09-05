@@ -14,20 +14,20 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Display;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.Font
@@ -38,7 +38,7 @@ public class Test_org_eclipse_swt_graphics_Font {
 
 Display display;
 
-@Before
+@BeforeEach
 public void setUp() {
 	display = Display.getDefault();
 }
@@ -48,67 +48,23 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Device$Lorg_eclipse_swt_gr
 
 	// null  device argument
 
-	boolean exceptionThrown = false;
-	try {
-		FontData[] data = new FontData[1];
-		Font font = new Font(null,data);
-		font.dispose();
-	} catch (IllegalArgumentException e) {
-		exceptionThrown = true;
-	}
-	assertTrue(exceptionThrown);
+	assertThrows(IllegalArgumentException.class, ()-> new Font(null,new FontData[1]));
 
 	// null data argument
 
-	exceptionThrown = false;
-	try {
-		FontData[] data = null;
-		Font font = new Font(display,data);
-		font.dispose();
-	} catch (IllegalArgumentException e) {
-		exceptionThrown = true;
-	}
-	assertTrue(exceptionThrown);
+	assertThrows(IllegalArgumentException.class, ()-> new Font(display,(FontData[])null));
 
 	// zero length data array
 
-	exceptionThrown = false;
-	try {
-		FontData[] data = new FontData[0];
-		Font font = new Font(display,data);
-		font.dispose();
-	} catch (IllegalArgumentException e) {
-		exceptionThrown = true;
-	}
-	assertTrue(exceptionThrown);
+	assertThrows(IllegalArgumentException.class, ()-> new Font(display,new FontData[0]));
 
 	// null data element
 
-	exceptionThrown = false;
-	try {
-		FontData[] data = {
-			null,
-			new FontData()
-		};
-		Font font = new Font(display,data);
-		font.dispose();
-	} catch (IllegalArgumentException e) {
-		exceptionThrown = true;
-	}
-	assertTrue("null data element 0",exceptionThrown);
+	assertThrows(IllegalArgumentException.class, () -> new Font(display, new FontData[] { null, new FontData() }),
+			"null data element 0");
 
-	exceptionThrown = false;
-	try {
-		FontData[] data = {
-			new FontData(),
-			null
-		};
-		Font font = new Font(display,data);
-		font.dispose();
-	} catch (IllegalArgumentException e) {
-		exceptionThrown = true;
-	}
-	assertTrue("null data element 1",exceptionThrown);
+	assertThrows(IllegalArgumentException.class, () -> new Font(display, new FontData[] { new FontData(), null }),
+			"null data element 0");
 }
 
 @Test
@@ -217,20 +173,12 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_StringII(
 	font.dispose();
 
 	// illegal argument, name == null
-	try {
-		font = new Font(display, null, 10, SWT.NORMAL);
-		font.dispose();
-		fail("No exception thrown for name == null");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> new Font(display, null, 10, SWT.NORMAL),
+			"No exception thrown for name == null");
 
 	// illegal argument, height < 0
-	try {
-		font = new Font(display, SwtTestUtil.testFontName, -10, SWT.NORMAL);
-		font.dispose();
-		fail("No exception thrown for height < 0");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> new Font(display, SwtTestUtil.testFontName, -10, SWT.NORMAL),
+			"No exception thrown for height < 0");
 }
 
 @Test
@@ -248,12 +196,12 @@ public void test_equalsLjava_lang_Object() {
 	Font otherFont = new Font(display, SwtTestUtil.testFontName, 20, SWT.NORMAL);
 	try {
 		// Test Font.equals(Object)
-		assertFalse("!font.equals((Object)null)", font.equals((Object)null));
+		assertFalse(font.equals((Object)null), "!font.equals((Object)null)");
 
 		// Test Font.equals(Font)
-		assertFalse("!font.equals((Font)null)", font.equals((Font)null));
-		assertTrue("font.equals(font)", font.equals(font));
-		assertFalse("!font.equals(otherFont)", font.equals(otherFont));
+		assertFalse(font.equals((Font)null), "!font.equals((Font)null)");
+		assertTrue(font.equals(font), "font.equals(font)");
+		assertFalse(font.equals(otherFont), "!font.equals(otherFont)");
 	} finally {
 		font.dispose();
 		otherFont.dispose();
@@ -267,10 +215,10 @@ public void test_getFontData() {
 	Font font = new Font(display, SwtTestUtil.testFontName, 10, SWT.NORMAL);
 	try {
 		FontData fontData[] = font.getFontData();
-		assertTrue("No font data", fontData != null && fontData.length > 0);
-		assertEquals("Wrong font name", SwtTestUtil.testFontName, fontData[0].getName());
-		assertEquals("Wrong font height", 10, fontData[0].getHeight());
-		assertEquals("Wrong font style", SWT.NORMAL, fontData[0].getStyle());
+		assertTrue(fontData != null && fontData.length > 0, "No font data");
+		assertEquals(SwtTestUtil.testFontName, fontData[0].getName(), "Wrong font name");
+		assertEquals(10, fontData[0].getHeight(), "Wrong font height");
+		assertEquals(SWT.NORMAL, fontData[0].getStyle(), "Wrong font style");
 	} finally {
 		font.dispose();
 	}
@@ -279,10 +227,10 @@ public void test_getFontData() {
 	font = new Font(display, SwtTestUtil.testFontName, 20, SWT.BOLD);
 	try {
 		FontData fontData[] = font.getFontData();
-		assertTrue("No font data", fontData != null && fontData.length > 0);
-		assertEquals("Wrong font name", SwtTestUtil.testFontName, fontData[0].getName());
-		assertEquals("Wrong font height", 20, fontData[0].getHeight());
-		assertEquals("Wrong font style", SWT.BOLD, fontData[0].getStyle());
+		assertTrue(fontData != null && fontData.length > 0, "No font data");
+		assertEquals(SwtTestUtil.testFontName, fontData[0].getName(), "Wrong font name");
+		assertEquals(20, fontData[0].getHeight(), "Wrong font height");
+		assertEquals(SWT.BOLD, fontData[0].getStyle(), "Wrong font style");
 	} finally {
 		font.dispose();
 	}
@@ -291,10 +239,9 @@ public void test_getFontData() {
 	font = new Font(display, SwtTestUtil.testFontName, 30, SWT.ITALIC);
 	try {
 		FontData fontData[] = font.getFontData();
-		assertTrue("No font data", fontData != null && fontData.length > 0);
-//		assertEquals("Wrong font name", SwtTestUtil.testFontName, fontData[0].getName());
-		assertEquals("Wrong font height", 30, fontData[0].getHeight());
-		assertEquals("Wrong font style", SWT.ITALIC, fontData[0].getStyle());
+		assertTrue(fontData != null && fontData.length > 0, "No font data");
+		assertEquals(30, fontData[0].getHeight(), "Wrong font height");
+		assertEquals(SWT.ITALIC, fontData[0].getStyle(), "Wrong font style");
 	} finally {
 		font.dispose();
 	}
@@ -304,10 +251,9 @@ public void test_getFontData() {
 	try {
 		FontData fontData[] = font.getFontData();
 		font.dispose();
-		assertTrue("No font data", fontData != null && fontData.length > 0);
-//		assertEquals("Wrong font name", SwtTestUtil.testFontName, fontData[0].getName());
-		assertEquals("Wrong font height", 40, fontData[0].getHeight());
-		assertEquals("Wrong font style", SWT.BOLD | SWT.ITALIC, fontData[0].getStyle());
+		assertTrue(fontData != null && fontData.length > 0, "No font data");
+		assertEquals(40, fontData[0].getHeight(), "Wrong font height");
+		assertEquals(SWT.BOLD | SWT.ITALIC, fontData[0].getStyle(), "Wrong font style");
 	} finally {
 		font.dispose();
 	}
@@ -316,10 +262,9 @@ public void test_getFontData() {
 	font = new Font(display, "bad-font", 10, SWT.NORMAL);
 	try {
 		FontData fontData[] = font.getFontData();
-		assertTrue("No font data", fontData != null && fontData.length > 0);
-//		assertEquals("Wrong font name", "bad-font", fontData[0].getName());
-		assertEquals("Wrong font height", 10, fontData[0].getHeight());
-		assertEquals("Wrong font style", SWT.NORMAL, fontData[0].getStyle());
+		assertTrue(fontData != null && fontData.length > 0, "No font data");
+		assertEquals(10, fontData[0].getHeight(), "No font data");
+		assertEquals(SWT.NORMAL, fontData[0].getStyle(), "Wrong font style");
 	} finally {
 		font.dispose();
 	}
@@ -341,11 +286,11 @@ public void test_isDisposed() {
 	// Test Font.isDisposed() false
 	Font font = new Font(display, SwtTestUtil.testFontName, 10, SWT.NORMAL);
 	try {
-		assertFalse("Font should not be disposed", font.isDisposed());
+		assertFalse(font.isDisposed(), "Font should not be disposed");
 	} finally {
 		// Test Font.isDisposed() true
 		font.dispose();
-		assertTrue("Font should be disposed", font.isDisposed());
+		assertTrue(font.isDisposed(), "Font should be disposed");
 	}
 }
 

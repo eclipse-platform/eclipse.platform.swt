@@ -467,8 +467,9 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 					if (explorerTheme) {
 						if (hooks (SWT.EraseItem)) {
 							RECT itemRect = item.getBounds (index, true, true, false, false, true, hDC);
-							itemRect.left -= EXPLORER_EXTRA;
-							itemRect.right += EXPLORER_EXTRA + 1;
+							int explorerExtraInPixels = Win32DPIUtils.pointToPixel(EXPLORER_EXTRA, zoom);
+							itemRect.left -= explorerExtraInPixels;
+							itemRect.right += explorerExtraInPixels + 1;
 							pClipRect.left = itemRect.left;
 							pClipRect.right = itemRect.right;
 							if (columnCount > 0 && hwndHeader != 0) {
@@ -1129,17 +1130,19 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 					selectionForeground = clrText = OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
 				}
 				if (explorerTheme) {
+					int zoom = getZoom();
 					if ((style & SWT.FULL_SELECTION) == 0) {
 						RECT pRect = item.getBounds (index, true, true, false, false, false, hDC);
 						RECT pClipRect = item.getBounds (index, true, true, true, false, true, hDC);
+						int explorerExtraInPixels = Win32DPIUtils.pointToPixel(EXPLORER_EXTRA, zoom);
 						if (measureEvent != null) {
 							pRect.right = Math.min (pClipRect.right, boundsInPixels.x + boundsInPixels.width);
 						} else {
-							pRect.right += EXPLORER_EXTRA;
-							pClipRect.right += EXPLORER_EXTRA;
+							pRect.right += explorerExtraInPixels;
+							pClipRect.right += explorerExtraInPixels;
 						}
-						pRect.left -= EXPLORER_EXTRA;
-						pClipRect.left -= EXPLORER_EXTRA;
+						pRect.left -= explorerExtraInPixels;
+						pClipRect.left -= explorerExtraInPixels;
 						long hTheme = OS.OpenThemeData (handle, Display.TREEVIEW, getZoom());
 						int iStateId = selected ? OS.TREIS_SELECTED : OS.TREIS_HOT;
 						if (OS.GetFocus () != handle && selected && !hot) iStateId = OS.TREIS_SELECTEDNOTFOCUS;
@@ -1208,8 +1211,9 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 			OS.SaveDC (hDC);
 			OS.SelectClipRgn (hDC, 0);
 			if (explorerTheme) {
-				itemRect.left -= EXPLORER_EXTRA;
-				itemRect.right += EXPLORER_EXTRA;
+				int explorerExtraInPixels = Win32DPIUtils.pointToPixel(EXPLORER_EXTRA, getZoom());
+				itemRect.left -= explorerExtraInPixels;
+				itemRect.right += explorerExtraInPixels;
 			}
 			//TODO - bug in Windows selection or SWT itemRect
 			/*if (selected)*/ itemRect.right++;
@@ -2960,11 +2964,11 @@ TreeItem getFocusItem () {
  */
 public int getGridLineWidth () {
 	checkWidget ();
-	return DPIUtil.pixelToPoint(getGridLineWidthInPixels (), getZoom());
+	return GRID_WIDTH;
 }
 
 int getGridLineWidthInPixels () {
-	return GRID_WIDTH;
+	return Win32DPIUtils.pointToPixel(GRID_WIDTH, getZoom());
 }
 
 /**
@@ -5035,7 +5039,7 @@ void setScrollWidth (int width) {
 		}
 	}
 	if (horizontalBar != null) {
-		horizontalBar.setIncrement (INCREMENT);
+		horizontalBar.setIncrement (Win32DPIUtils.pointToPixel(INCREMENT, getZoom()));
 		horizontalBar.setPageIncrement (info.nPage);
 	}
 	OS.GetClientRect (hwndParent, rect);
@@ -6071,8 +6075,9 @@ long windowProc (long hwnd, int msg, long wParam, long lParam) {
 			RECT clientRect = new RECT ();
 			OS.GetClientRect(handle, clientRect);
 			RECT rect = items [0].getBounds (0, true, true, false);
+			int dragImageSizeInPixels = Win32DPIUtils.pointToPixel(DRAG_IMAGE_SIZE, getZoom());
 			if ((style & SWT.FULL_SELECTION) != 0) {
-				int width = DRAG_IMAGE_SIZE;
+				int width = dragImageSizeInPixels;
 				rect.left = Math.max (clientRect.left, mousePos.x - width / 2);
 				if (clientRect.right > rect.left + width) {
 					rect.right = rect.left + width;
@@ -6086,7 +6091,7 @@ long windowProc (long hwnd, int msg, long wParam, long lParam) {
 			}
 			long hRgn = OS.CreateRectRgn (rect.left, rect.top, rect.right, rect.bottom);
 			for (int i = 1; i < count; i++) {
-				if (rect.bottom - rect.top > DRAG_IMAGE_SIZE) break;
+				if (rect.bottom - rect.top > dragImageSizeInPixels) break;
 				if (rect.bottom > clientRect.bottom) break;
 				RECT itemRect = items[i].getBounds (0, true, true, false);
 				if ((style & SWT.FULL_SELECTION) != 0) {
@@ -8055,7 +8060,7 @@ LRESULT wmNotifyHeader (NMHDR hdr, long wParam, long lParam) {
 					int deltaX = newItem.cxy - oldItem.cxy;
 					RECT headerRect = new RECT ();
 					OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, phdn.iItem, headerRect);
-					int gridWidth = linesVisible ? GRID_WIDTH : 0;
+					int gridWidth = linesVisible ? getGridLineWidthInPixels() : 0;
 					rect.left = headerRect.right - gridWidth;
 					int newX = rect.left + deltaX;
 					rect.right = Math.max (rect.right, rect.left + Math.abs (deltaX));
@@ -8234,7 +8239,7 @@ LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, long lParam) {
 						}
 						if (drawForeground) {
 							int nSavedDC = OS.SaveDC (nmcd.hdc);
-							int gridWidth = getLinesVisible () ? Table.GRID_WIDTH : 0;
+							int gridWidth = getLinesVisible () ? getGridLineWidthInPixels() : 0;
 							RECT insetRect = toolTipInset (cellRect [0]);
 							OS.SetWindowOrgEx (nmcd.hdc, insetRect.left, insetRect.top, null);
 							GCData data = new GCData ();

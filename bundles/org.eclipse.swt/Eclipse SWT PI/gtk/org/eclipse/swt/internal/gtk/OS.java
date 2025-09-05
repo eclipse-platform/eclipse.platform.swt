@@ -870,6 +870,10 @@ public static final native long g_app_info_get_all();
 /**
  * @param appInfo cast=(GAppInfo *)
  */
+public static final native long g_app_info_get_commandline(long appInfo);
+/**
+ * @param appInfo cast=(GAppInfo *)
+ */
 public static final native long g_app_info_get_executable(long appInfo);
 /**
  * @param appInfo cast=(GAppInfo *)

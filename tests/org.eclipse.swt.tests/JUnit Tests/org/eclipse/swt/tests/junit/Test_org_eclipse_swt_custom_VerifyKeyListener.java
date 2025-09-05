@@ -15,16 +15,16 @@
 package org.eclipse.swt.tests.junit;
 
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.custom.VerifyKeyListener;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Shell;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.custom.VerifyKeyListener
@@ -36,7 +36,7 @@ public class Test_org_eclipse_swt_custom_VerifyKeyListener {
 	StyledText styledText;
 	int verify = -1;
 
-@Before
+@BeforeEach
 public void setUp() {
 	shell = new Shell();
 	styledText = new StyledText(shell, SWT.NULL);
@@ -53,14 +53,14 @@ public void test_verifyKeyLorg_eclipse_swt_events_VerifyEvent() {
 	Event e = new Event();
 	e.character = 'a';
 	styledText.notifyListeners(SWT.KeyDown, e);
-	assertEquals(":1:", "a", styledText.getText());
+	assertEquals("a", styledText.getText());
 
 	verify = 2;
 	styledText.setText("");
 	e = new Event();
 	e.character = 'a';
 	styledText.notifyListeners(SWT.KeyDown, e);
-	assertTrue(":2:", styledText.getText().isEmpty());
+	assertTrue(styledText.getText().isEmpty());
 	styledText.removeVerifyKeyListener(listener);
 }
 }
