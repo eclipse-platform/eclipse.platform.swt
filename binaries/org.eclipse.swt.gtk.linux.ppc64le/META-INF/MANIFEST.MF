@@ -3,7 +3,7 @@ Fragment-Host: org.eclipse.swt;bundle-version="[3.128.0,4.0.0)"
 Bundle-Name: %fragmentName
 Bundle-Vendor: %providerName
 Bundle-SymbolicName: org.eclipse.swt.gtk.linux.ppc64le;singleton:=true
-Bundle-Version: 3.131.0.qualifier
+Bundle-Version: 3.132.0.qualifier
 Bundle-ManifestVersion: 2
 Bundle-Localization: fragment
 Export-Package: 
