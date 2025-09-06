@@ -130,6 +130,7 @@ typedef enum {
 	DrawThemeBackground_FUNC,
 	DrawThemeText_FUNC,
 	DuplicateHandle_FUNC,
+	DwmGetWindowAttribute_FUNC,
 	DwmSetWindowAttribute_FUNC,
 	EMREXTCREATEFONTINDIRECTW_1sizeof_FUNC,
 	EMR_1sizeof_FUNC,
