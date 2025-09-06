@@ -249,36 +249,7 @@ public FontData open () {
 		if (success) {
 			LOGFONT logFont = new LOGFONT();
 			OS.MoveMemory(logFont, lpLogFont, LOGFONT.sizeof);
-
-			/*
-			 * This will not work on multiple screens or for printing. Should use DC for the
-			 * proper device.
-			 */
-			int logPixelsY = getDPI();
-			int pixels = 0;
-			long hDC = OS.GetDC(0);
-			if (logFont.lfHeight > 0) {
-				/*
-				 * Feature in Windows. If the lfHeight of the LOGFONT structure is positive, the
-				 * lfHeight measures the height of the entire cell, including internal leading,
-				 * in logical units. Since the height of a font in points does not include the
-				 * internal leading, we must subtract the internal leading, which requires a
-				 * TEXTMETRIC, which in turn requires font creation.
-				 */
-				long hFont = OS.CreateFontIndirect(logFont);
-				long oldFont = OS.SelectObject(hDC, hFont);
-				TEXTMETRIC lptm = new TEXTMETRIC();
-				OS.GetTextMetrics(hDC, lptm);
-				OS.SelectObject(hDC, oldFont);
-				OS.DeleteObject(hFont);
-				pixels = logFont.lfHeight - lptm.tmInternalLeading;
-			} else {
-				pixels = -logFont.lfHeight;
-			}
-			OS.ReleaseDC(0, hDC);
-
-			float points = pixels * 72f / logPixelsY;
-			fontData = FontData.win32_new(logFont, points);
+			fontData = FontData.win32_new(logFont, lpcf.iPointSize / 10f);
 			if (effectsVisible) {
 				int red = lpcf.rgbColors & 0xFF;
 				int green = (lpcf.rgbColors >> 8) & 0xFF;
