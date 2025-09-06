@@ -945,12 +945,22 @@ private static int findIndexOfClosest(ImageData[] imageData, int targetWidth, in
 }
 
 private static boolean isCloserThan(ImageData dataToTest, ImageData referenceData, int targetWidth, int targetDepth) {
-	int diffWidthToTest = Math.abs(dataToTest.width - targetWidth);
-	int diffReferenceWidth = Math.abs(referenceData.width - targetWidth);
-
-	// The closer the width the better
-	if (diffWidthToTest != diffReferenceWidth)
-		return diffWidthToTest < diffReferenceWidth;
+	// image is considered best-sized if width is nearest to target
+	// but scale down is better than scale up, thus count difference to target width
+	// of scaled-up image as 1.5 times
+	int widthDifferenceOfTestData = dataToTest.width - targetWidth;
+	if (widthDifferenceOfTestData < 0) {
+		widthDifferenceOfTestData *= -1.5;
+	}
+	int widthDifferenceOfReferenceData = referenceData.width - targetWidth;
+	if (widthDifferenceOfReferenceData < 0) {
+		widthDifferenceOfReferenceData *= -1.5;
+	}
+	if (widthDifferenceOfTestData < widthDifferenceOfReferenceData) {
+		return true;
+	} else if (widthDifferenceOfTestData > widthDifferenceOfReferenceData) {
+		return false;
+	}
 
 	int transparencyToTest = dataToTest.getTransparencyType();
 	int referenceTransparency = referenceData.getTransparencyType();
