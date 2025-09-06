@@ -20,7 +20,7 @@
     <relativePath>../../local-build/local-build-parent/</relativePath>
   </parent>
   <artifactId>org.eclipse.swt.tests</artifactId>
-  <version>3.107.900-SNAPSHOT</version>
+  <version>3.107.1000-SNAPSHOT</version>
   <packaging>eclipse-test-plugin</packaging>
   <properties>
     <tycho.testArgLine></tycho.testArgLine>
