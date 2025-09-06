@@ -2553,6 +2553,13 @@ Font getSystemFont (int zoom) {
 	return systemFont;
 }
 
+static int getPrimaryMonitorZoomAtStartup() {
+	long hDC = OS.GetDC(0);
+	int dpi = OS.GetDeviceCaps(hDC, OS.LOGPIXELSX);
+	OS.ReleaseDC(0, hDC);
+	return DPIUtil.mapDPIToZoom(dpi);
+}
+
 /**
  * Returns the matching standard platform image for the given
  * constant, which should be one of the icon constants

@@ -10912,6 +10912,8 @@ void updateSelection(int startOffset, int replacedLength, int newLength) {
  * @noreference This method is not intended to be referenced by clients.
  */
 public static void updateAndRefreshCarets(StyledText styledText, Consumer<Caret> caretUpdater) {
+	styledText.updateCaretVisibility();
+	styledText.setCaretLocations();
 	Set<Caret> caretSet = new HashSet<>();
 	caretSet.add(styledText.getCaret());
 	caretSet.add(styledText.defaultCaret);
@@ -10921,9 +10923,6 @@ public static void updateAndRefreshCarets(StyledText styledText, Consumer<Caret>
 		}
 	}
 	caretSet.stream().filter(Objects::nonNull).forEach(caretUpdater);
-
-	styledText.updateCaretVisibility();
-	styledText.setCaretLocations();
 
 }
 
