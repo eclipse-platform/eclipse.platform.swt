@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Eclipse SWT Tests
 Bundle-SymbolicName: org.eclipse.swt.tests
-Bundle-Version: 3.107.900.qualifier
+Bundle-Version: 3.107.1000.qualifier
 Bundle-Vendor: Eclipse.org
 Export-Package: org.eclipse.swt.tests.junit,
  org.eclipse.swt.tests.junit.performance
