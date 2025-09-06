@@ -398,9 +398,9 @@ public final class GridData {
 	 */
 	public static final int FILL_BOTH = FILL_VERTICAL | FILL_HORIZONTAL;
 
-	int cacheWidth = -1, cacheHeight = -1;
-	int defaultWhint, defaultHhint, defaultWidth = -1, defaultHeight = -1;
-	int currentWhint, currentHhint, currentWidth = -1, currentHeight = -1;
+	float cacheWidth = -1, cacheHeight = -1;
+	int defaultWhint, defaultHhint, currentWhint, currentHhint;
+	float defaultWidth = -1, defaultHeight = -1, currentWidth = -1, currentHeight = -1;
 
 /**
  * Constructs a new instance of GridData using
@@ -493,19 +493,20 @@ void computeSize (Control control, int wHint, int hHint, boolean flushCache) {
 			Point size = control.computeSize (wHint, hHint, flushCache);
 			defaultWhint = wHint;
 			defaultHhint = hHint;
-			defaultWidth = size.x;
-			defaultHeight = size.y;
+			Point.OfFloat defaultSize = Point.OfFloat.from(size);
+			defaultWidth = defaultSize.getX();
+			defaultHeight = defaultSize.getY();
 		}
 		cacheWidth = defaultWidth;
 		cacheHeight = defaultHeight;
 		return;
 	}
 	if (currentWidth == -1 || currentHeight == -1 || wHint != currentWhint || hHint != currentHhint) {
-		Point size = control.computeSize (wHint, hHint, flushCache);
+		Point.OfFloat size = Point.OfFloat.from(control.computeSize (wHint, hHint, flushCache));
 		currentWhint = wHint;
 		currentHhint = hHint;
-		currentWidth = size.x;
-		currentHeight = size.y;
+		currentWidth = size.getX();
+		currentHeight = size.getY();
 	}
 	cacheWidth = currentWidth;
 	cacheHeight = currentHeight;
