@@ -300,7 +300,7 @@ RECT getBounds (int row, int column, boolean getText, boolean getImage, boolean 
 					}
 				}
 				if (!getImage) rect.left = rect.right;
-				rect.right += width + Table.INSET * 2;
+				rect.right += width + Win32DPIUtils.pointToPixel(Table.INSET * 2, getZoom());
 			}
 		} else {
 			if (getText) {
@@ -377,7 +377,7 @@ RECT getBounds (int row, int column, boolean getText, boolean getImage, boolean 
 					iconRect.top = column;
 					iconRect.left = OS.LVIR_ICON;
 					if (OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, iconRect) != 0) {
-						rect.left = iconRect.right + Table.INSET / 2;
+						rect.left = iconRect.right + Win32DPIUtils.pointToPixel(Table.INSET / 2, getZoom());
 					}
 				}
 			} else {
@@ -404,7 +404,7 @@ RECT getBounds (int row, int column, boolean getText, boolean getImage, boolean 
 					char [] buffer = string.toCharArray ();
 					int flags = OS.DT_NOPREFIX | OS.DT_SINGLELINE | OS.DT_CALCRECT;
 					OS.DrawText (hDC, buffer, buffer.length, textRect, flags);
-					rect.right += textRect.right - textRect.left + Table.INSET * 3 + 2;
+					rect.right += textRect.right - textRect.left + Win32DPIUtils.pointToPixel(Table.INSET * 3 + 2, getZoom());
 				}
 			}
 		}
@@ -700,9 +700,9 @@ Rectangle getTextBoundsInPixels (int index) {
 	if (itemIndex == -1) return new Rectangle (0, 0, 0, 0);
 	RECT rect = getBounds (itemIndex, index, true, false, true);
 	rect.left += 2;
-	if (index != 0) rect.left += Table.INSET;
+	if (index != 0) rect.left += Win32DPIUtils.pointToPixel(Table.INSET, getZoom());
 	rect.left = Math.min (rect.left, rect.right);
-	rect.right = rect.right - Table.INSET;
+	rect.right = rect.right - Win32DPIUtils.pointToPixel(Table.INSET, getZoom());
 	int width = Math.max (0, rect.right - rect.left);
 	int height = Math.max (0, rect.bottom - rect.top);
 	return new Rectangle (rect.left, rect.top, width, height);
