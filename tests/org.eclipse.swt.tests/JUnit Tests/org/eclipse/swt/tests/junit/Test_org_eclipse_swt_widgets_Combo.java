@@ -34,6 +34,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Display;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -236,6 +237,11 @@ public void test_copy() {
 	combo.copy();
 	combo.setSelection(new Point(0,0));
 	combo.paste();
+	// Spin the event loop to let GTK process the clipboard + entry update
+	Display display = combo.getDisplay();
+	while (display.readAndDispatch()) {
+	    // loop until no more events
+	}
 	assertEquals("23123456", combo.getText());
 }
 
@@ -501,6 +507,11 @@ public void test_paste() {
 	combo.cut();
 	assertEquals("1456", combo.getText());
 	combo.paste();
+	// Spin the event loop to let GTK process the clipboard + entry update
+	Display display = combo.getDisplay();
+	while (display.readAndDispatch()) {
+	    // loop until no more events
+	}
 	assertEquals("123456", combo.getText());
 }
 
