@@ -1,8 +1,12 @@
 package org.eclipse.swt.snippets;
 
+import java.io.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.custom.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.DPIUtil.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
@@ -11,23 +15,22 @@ public class Snippet386 {
     public static void main(String[] args) {
         Display display = new Display();
 
-        // Load all images
         Image[] images = new Image[] {
             new Image(display, createImageFileNameProvider("resources/Snippet386/collapseall.png")),
-            new Image(display, createImageDataProvider("resources/Snippet386/collapseall.svg")),
             new Image(display, createImageFileNameProvider("resources/Snippet386/collapseall.svg")),
-            new Image(display, createImageDataProvider("resources/Snippet386/collapseall.png"))
+            new Image(display, createImageDataProviderWithImageLoader()),
+            new Image(display, createImageDataProvider()),
+            new Image(display, createImageDataAtSizeProvider())
         };
 
-        // Descriptions for each image (rows)
         String[] descriptions = new String[] {
-            "ImageFileNameProvider with SVGs scaled by SVG rasterization",
-            "ImageDataProvider with SVGs scaled by SVG rasterization",
             "ImageFileNameProvider with PNGs scaled destructively",
-            "ImageDataProvider with PNGs scaled destructively"
+            "ImageFileNameProvider with SVGs scaled by SVG rasterization",
+            "ImageDataAtSizeProvider loading svgs with NativeImageLoader",
+            "ImageDataProvider with fixed font size for a given zoom",
+            "ImageDataAtSizeProvider which scales font size based on target height and width"
         };
 
-        // Slice names (columns)
         Slice[] slices = {
             new Slice("Full", 0.0, 0.0, 1.0, 1.0),
             new Slice("Top Half", 0.0, 0.0, 1.0, 0.5),
@@ -40,91 +43,110 @@ public class Snippet386 {
         createShellWithImages(display, images, descriptions, slices, "Snippet 386 - Flipped Layout");
     }
 
-
-
     private static ImageFileNameProvider createImageFileNameProvider(String fileName) {
-        return new ImageFileNameProvider() {
+        return zoom -> fileName;
+    }
 
+    private static ImageDataProvider createImageDataProviderWithImageLoader() {
+		return new ImageDataAtSizeProvider() {
+			@SuppressWarnings("restriction")
+			@Override
+			public ImageData getImageData(int targetWidth, int targetHeight) {
+				try (InputStream stream = new FileInputStream("resources/Snippet386/collapseall.svg")) {
+					return NativeImageLoader.load(stream, new ImageLoader(), targetWidth, targetHeight);
+				} catch (IOException e) {
+					SWT.error(SWT.ERROR_IO, e);
+				}
+				return null;
+			}
+
+			@SuppressWarnings("restriction")
+			@Override
+			public ImageData getImageData(int zoom) {
+				try (InputStream stream = new FileInputStream("resources/Snippet386/collapseall.svg")) {
+					return NativeImageLoader.load(new ElementAtZoom<>(stream, 100), new ImageLoader(), zoom).get(0).element();
+				} catch (IOException e) {
+					SWT.error(SWT.ERROR_IO, e);
+				}
+				return null;
+			}
+		};
+	}
+
+    private static ImageDataProvider createImageDataProvider() {
+        return new ImageDataProvider() {
             @Override
-            public String getImagePath(int zoom) {
-                return fileName;
+            public ImageData getImageData(int zoomLevel) {
+                int scaleFactor = zoomLevel / 100;
+                return createScaledTextImageData(100 * scaleFactor, 100 * scaleFactor);
             }
         };
     }
 
-	private static ImageDataProvider createImageDataProvider(String fileName) {
-		return new ImageDataAtSizeProvider() {
-			@Override
-			public ImageData getImageData(int zoomLevel) {
-				int scaleFactor = zoomLevel / 100;
-				int baseWidth = 100;
-				int baseHeight = 100;
-				return getImageData(baseWidth * scaleFactor, baseHeight * scaleFactor);
-			}
+    private static ImageDataProvider createImageDataAtSizeProvider() {
+        return new ImageDataAtSizeProvider() {
+            @Override
+            public ImageData getImageData(int zoomLevel) {
+                int scaleFactor = zoomLevel / 100;
+                return createScaledTextImageData(100 * scaleFactor, 100 * scaleFactor);
+            }
 
-			@Override
-			public ImageData getImageData(int width, int height) {
-				Display display = Display.getDefault();
+            @Override
+            public ImageData getImageData(int width, int height) {
+                return createScaledTextImageData(width, height);
+            }
+        };
+    }
 
-				// Step 1: Determine font size based on height and zoom
-				int fontSize = (int) Math.round(height / 100.0);
-				if (fontSize <= 0)
-					fontSize = 1;
-				Font font = new Font(display, "Arial", fontSize, SWT.NORMAL);
+    private static ImageData createScaledTextImageData(int width, int height) {
+        Display display = Display.getDefault();
+        String text = "abcd";
 
-				// Step 2: Measure text size
-				Image tmp = new Image(display, 1, 1);
-				GC measureGC = new GC(tmp);
-				measureGC.setFont(font);
-				String text = "abcd";
-				Point textExtent = measureGC.textExtent(text);
-				measureGC.dispose();
-				tmp.dispose();
+        int fontSize = Math.max(1, height / 100);
+        Font font = new Font(display, "Arial", fontSize, SWT.NORMAL);
 
-				// Step 3: Scale font to fit requested width/height
-				double scaleX = (double) width / textExtent.x;
-				double scaleY = (double) height / textExtent.y;
-				double scale = Math.min(scaleX, scaleY);
+        Image tmp = new Image(display, 1, 1);
+        GC measureGC = new GC(tmp);
+        measureGC.setFont(font);
+        Point textExtent = measureGC.textExtent(text);
+        measureGC.dispose();
+        tmp.dispose();
 
-				fontSize = Math.max(1, (int) (fontSize * scale));
-				font.dispose();
-				font = new Font(display, "Arial", fontSize, SWT.NORMAL);
+        double scale = Math.min((double) width / textExtent.x, (double) height / textExtent.y);
+        font.dispose();
+        font = new Font(display, "Arial", Math.max(1, (int) (fontSize * scale)), SWT.NORMAL);
 
-				// Step 4: Create image of requested size
-				Image image = new Image(display, width, height);
-				GC gc = new GC(image);
-				gc.setFont(font);
-				gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
-				gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
-				gc.fillRectangle(image.getBounds());
+        Image image = new Image(display, width, height);
+        GC gc = new GC(image);
+        gc.setFont(font);
+        gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
+        gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
+        gc.fillRectangle(image.getBounds());
 
-				// Step 5: Draw line and text
-				gc.setLineWidth(Math.max(1, width / 20)); // thickness relative to image height
-				gc.drawLine(0, 0, width / 2, height); // example diagonal line
-				Point newTextExtent = gc.textExtent(text);
-				int x = (width - newTextExtent.x) / 2; // center horizontally
-				int y = (height - newTextExtent.y) / 2; // center vertically
-				gc.drawText(text, x, y, true);
+        gc.setLineWidth(Math.max(1, width / 20));
+        gc.drawLine(0, 0, width / 2, height);
 
-				gc.dispose();
+        Point newTextExtent = gc.textExtent(text);
+        gc.drawText(text, (width - newTextExtent.x) / 2, (height - newTextExtent.y) / 2, true);
 
-				ImageData data = image.getImageData();
+        gc.dispose();
+        ImageData data = image.getImageData();
 
-				image.dispose();
-				font.dispose();
+        image.dispose();
+        font.dispose();
 
-				return data;
-			}
-		};
-	}
+        return data;
+    }
 
     static class Slice {
         String name;
         double xFrac, yFrac, wFrac, hFrac;
         Slice(String name, double x, double y, double w, double h) {
             this.name = name;
-            this.xFrac = x; this.yFrac = y;
-            this.wFrac = w; this.hFrac = h;
+            this.xFrac = x;
+            this.yFrac = y;
+            this.wFrac = w;
+            this.hFrac = h;
         }
     }
 
@@ -139,42 +161,41 @@ public class Snippet386 {
         scrolledComposite.setExpandHorizontal(true);
         scrolledComposite.setExpandVertical(true);
 
-        int boxW = 400;
-        int boxH = 400;
-        int gap = 20;
-        int titleHeight = 20;
-        int descHeight = 40; // description row height
-        int sliceHeaderHeight = 30; // column header height
+        int boxW = 200, boxH = 200, gap = 20;
+        int titleHeight = 20, descHeight = 40, sliceHeaderHeight = 30;
 
-        int rows = images.length; // one row per image
-        int cols = slices.length;  // one column per slice
+        int rows = images.length;
+        int cols = slices.length;
 
-        int canvasWidth = (boxW + gap) * cols + gap; // extra gap for row headers
+        int canvasWidth = (boxW + gap) * cols + gap;
         int canvasHeight = (boxH + titleHeight + gap) * rows + descHeight + sliceHeaderHeight;
         canvas.setSize(canvasWidth, canvasHeight);
         scrolledComposite.setMinSize(canvasWidth, canvasHeight);
 
         canvas.addListener(SWT.Paint, e -> {
-
-            // Draw column headers (slice names)
+            // Column headers
             for (int col = 0; col < cols; col++) {
-                int x = col * (boxW + gap) + gap; // leave gap for row header
+                int x = col * (boxW + gap) + gap;
+                Font font = new Font(display, "Arial", 18, SWT.NORMAL);
+                e.gc.setFont(font);
                 e.gc.drawText(slices[col].name, x, 0, true);
+                font.dispose();
+
             }
 
-            // Draw each row (image type)
+            // Rows
             for (int row = 0; row < rows; row++) {
                 Image image = images[row];
                 Rectangle rect = image.getBounds();
-
                 int y = row * (boxH + titleHeight + gap) + descHeight + sliceHeaderHeight;
 
-                // Draw row description
-                e.gc.drawText(descriptions[row], 0, y, true);
+                Font font = new Font(display, "Arial", 18, SWT.NORMAL);
+                e.gc.setFont(font);
+                e.gc.drawText(descriptions[row], 0, y - 10, true);
+                font.dispose();
 
                 for (int col = 0; col < cols; col++) {
                     Slice s = slices[col];
-
                     int x = col * (boxW + gap) + gap;
 
                     int srcX = (int) (rect.width * s.xFrac);
@@ -182,12 +203,12 @@ public class Snippet386 {
                     int srcW = (int) (rect.width * s.wFrac);
                     int srcH = (int) (rect.height * s.hFrac);
 
-                    // Draw box
                     int boxTop = y + titleHeight;
                     e.gc.drawRectangle(x, boxTop, boxW, boxH);
 
-                    // Draw image slice
+
                     e.gc.drawImage(image, srcX, srcY, srcW, srcH, x, boxTop, boxW, boxH);
+
                 }
             }
         });

@@ -872,7 +872,7 @@ public static void drawAtTargetSize(GC gc, ImageData imageData, int width, int h
 
 	StrictChecks.runWithStrictChecksDisabled(() -> {
 		Image imageToDraw = new Image(gc.device, (ImageDataProvider) zoom -> imageData);
-		gc.drawImage(imageToDraw, 0, 0, width, height, 0, 0, targetHeight,
+		gc.drawImage(imageToDraw, 0, 0, width, height, 0, 0, targetWidth,
 				targetHeight, false);
 		imageToDraw.dispose();
 	});
@@ -1999,7 +1999,6 @@ private abstract class AbstractImageProviderWrapper {
 		int imageZoomForWidth = Math.round(100 * targetWidth / bounds.width);
 		int imageZoomForHeight = Math.round(100 * targetHeight / bounds.height);
 		int imageZoom = Math.max(imageZoomForWidth, imageZoomForHeight);
-		System.out.println(imageZoom);
 		if (getAllCurrentMonitorZooms().contains(imageZoom)) {
 			return getImageData(imageZoom);
 		}
