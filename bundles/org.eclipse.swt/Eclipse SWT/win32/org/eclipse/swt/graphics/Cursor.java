@@ -19,6 +19,7 @@ import java.util.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.internal.win32.version.*;
 
 /**
  * Instances of this class manage operating system resources that
@@ -349,6 +350,35 @@ private void setHandleForZoomLevel(CursorHandle handle, Integer zoom) {
 	}
 }
 
+/**
+ * Retrieves the scaling factor of the mouse pointer size as set in Windows
+ * 10/11 "Settings &gt; Accessibility &gt; Mouse pointer and touch &gt; Size".
+ * <p>
+ * This method reads the "CursorBaseSize" registry value under
+ * {@code HKEY_CURRENT_USER\Control Panel\Cursors}. If this registry value
+ * exists (introduced in Windows 10 version 1809 for accessibility cursor
+ * scaling), the method computes the scale factor by dividing the base size by
+ * the default system cursor size (32px). If the registry value is not present
+ * or cannot be read, the method returns {@code 1} indicating default size.
+ * <p>
+ * <strong>Note:</strong> This approach is only valid for Windows 10 1809+ with
+ * the modern accessibility pointer setting. For classic themes or older Windows
+ * versions, this value may not be present or honored.
+ *
+ * @return the cursor scaling factor (e.g., 1 for default size, 2 for double
+ *         size, etc.)
+ */
+
+private static int getPointerSizeScaleFactor() {
+	if (OsVersion.IS_WIN10_1809) {
+		int[] cursorBaseSize = OS.readRegistryDwords(OS.HKEY_CURRENT_USER, "Control Panel\\Cursors", "CursorBaseSize");
+		if (cursorBaseSize != null && cursorBaseSize.length > 0 && cursorBaseSize[0] > 0) {
+			return cursorBaseSize[0] / 32;
+		}
+	}
+	return 1;
+}
+
 @Override
 void destroy () {
 	device.deregisterResourceWithZoomSupport(this);
@@ -635,7 +665,8 @@ private static class ImageDataCursorHandleProvider extends HotspotAwareCursorHan
 
 	@Override
 	public CursorHandle createHandle(Device device, int zoom) {
-		ImageData scaledSource = DPIUtil.scaleImageData(device, this.source, zoom, DEFAULT_ZOOM);
+		int accessibilityFactor = getPointerSizeScaleFactor();
+		ImageData scaledSource = DPIUtil.scaleImageData(device, this.source, zoom * accessibilityFactor, DEFAULT_ZOOM);
 		return setupCursorFromImageData(device, scaledSource, getHotpotXInPixels(zoom),
 				getHotpotYInPixels(zoom));
 	}
