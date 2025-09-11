@@ -68,4 +68,33 @@ class JSVGRasterizerTest {
 		assertEquals(SWT.ERROR_INVALID_IMAGE, exception.code);
 	}
 
+	@Test
+	void testRasterizeWithTargetSize() {
+		ImageData data = rasterizer.rasterizeSVG(svgStream(svgString), 300, 150);
+		assertEquals(300, data.width);
+		assertEquals(150, data.height);
+	}
+
+	@Test
+	void testRasterizeWithTargetSizeHavingInvalidHeight() {
+		assertThrows(IllegalArgumentException.class, () -> {
+			rasterizer.rasterizeSVG(svgStream(svgString), -1, 150);
+		});
+	}
+
+	@Test
+	void testRasterizeWithTargetSizeHavingInvalidWidth() {
+		assertThrows(IllegalArgumentException.class, () -> {
+			rasterizer.rasterizeSVG(svgStream(svgString), 150, -1);
+		});
+	}
+
+	@Test
+	void testRasterizeWithTargetSizeWithInvalidSVG() {
+		SWTException exception = assertThrows(SWTException.class, () -> {
+			rasterizer.rasterizeSVG(invalidSvg, 150, 150);
+		});
+		assertEquals(SWT.ERROR_INVALID_IMAGE, exception.code);
+	}
+
 }

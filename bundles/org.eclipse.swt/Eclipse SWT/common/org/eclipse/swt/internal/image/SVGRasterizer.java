@@ -41,4 +41,24 @@ public interface SVGRasterizer {
 	 * </ul>
 	 */
 	public ImageData rasterizeSVG(InputStream stream, int zoom);
+
+	/**
+	 * Rasterizes an SVG image from the provided {@code InputStream} into a raster
+	 * image of the specified width and height.
+	 *
+	 * @param stream the SVG image as an {@link InputStream}.
+	 * @param width  the width of the rasterized image in pixels (must be positive).
+	 * @param height the height of the rasterized image in pixels (must be positive).
+	 * @return the {@link ImageData} for the rasterized image.
+	 *
+	 * @exception SWTException
+	 * <ul>
+	 *    <li>ERROR_INVALID_IMAGE - if the SVG cannot be loaded</li>
+	 * </ul>
+	 * @exception IllegalArgumentException
+	 * <ul>
+	 *    <li>ERROR_INVALID_ARGUMENT - if the width or height is less than zero</li>
+	 * </ul>
+	 */
+	public ImageData rasterizeSVG(InputStream stream, int width, int height);
 }
