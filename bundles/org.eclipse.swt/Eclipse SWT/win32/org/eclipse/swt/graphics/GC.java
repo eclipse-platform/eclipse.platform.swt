@@ -16,6 +16,7 @@ package org.eclipse.swt.graphics;
 
 import java.util.*;
 import java.util.List;
+import java.util.function.*;
 import java.util.stream.*;
 
 import org.eclipse.swt.*;
@@ -494,9 +495,11 @@ public void copyArea (Image image, int x, int y) {
 private abstract class ImageOperation extends Operation {
 	private Image image;
 
+	private final Consumer<Image> disposeCallback = this::setCopyOfImage;
+
 	ImageOperation(Image image) {
 		setImage(image);
-		image.addOnDisposeListener(this::setCopyOfImage);
+		image.addOnDisposeListener(disposeCallback);
 	}
 
 	private void setImage(Image image) {
@@ -515,6 +518,11 @@ private abstract class ImageOperation extends Operation {
 		return image;
 	}
 
+	@Override
+	void disposeAll() {
+		image.removeOnDisposeListener(disposeCallback);
+		super.disposeAll();
+	}
 }
 
 private class CopyAreaToImageOperation extends ImageOperation {
