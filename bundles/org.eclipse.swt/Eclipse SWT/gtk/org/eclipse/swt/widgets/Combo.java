@@ -494,12 +494,6 @@ Point computeNativeSize (long h, int wHint, int hHint, boolean changed) {
  * <p>
  * The current selection is copied to the clipboard.
  * </p>
- * <p>
- * <strong>Note:</strong> Copy data to the Clipboard may be asynchronous. This
- * means that the new clipboard content may not be immediately available right
- * after calling this method. To ensure the update is visible, use
- * {@link Display#asyncExec(Runnable)} before accessing the clipboard data.
- * </p>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>

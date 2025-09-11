@@ -288,6 +288,11 @@ public void test_copy() {
 
 	text.setText("");
 	text.paste();
+	// Spin the event loop to let GTK process the clipboard + entry update
+	Display display = text.getDisplay();
+	while (display.readAndDispatch()) {
+	    // loop until no more events
+	}
 	assertEquals("00000", text.getText());
 
 	// tests a SINGLE line text editor
@@ -307,6 +312,9 @@ public void test_copy() {
 
 	text.setText("");
 	text.paste();
+	while (display.readAndDispatch()) {
+	    // loop until no more events
+	}
 	assertEquals("00000", text.getText());
 }
 
