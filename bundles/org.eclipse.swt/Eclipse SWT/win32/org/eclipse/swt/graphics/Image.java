@@ -1020,10 +1020,18 @@ void addOnDisposeListener(Consumer<Image> onDisposeListener) {
 	onDisposeListeners.add(onDisposeListener);
 }
 
+void removeOnDisposeListener(Consumer<Image> onDisposeListener) {
+	if (onDisposeListeners == null) {
+		return;
+	}
+	onDisposeListeners.remove(onDisposeListener);
+}
+
 @Override
 public void dispose() {
 	if (onDisposeListeners != null) {
 		onDisposeListeners.forEach(listener -> listener.accept(this));
+		onDisposeListeners.clear();
 	}
 	super.dispose();
 }

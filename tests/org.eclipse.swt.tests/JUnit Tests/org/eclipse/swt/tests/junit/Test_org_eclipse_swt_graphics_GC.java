@@ -29,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
+import java.lang.ref.WeakReference;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.swt.SWT;
@@ -802,6 +803,24 @@ public void test_bug1288_createGCFromImageFromNonDisplayThread() throws Interrup
 	thread.start();
 	thread.join();
 	assertNull(exceptionReference.get(), "Creating a GC from an Image without a device threw an exception");
+}
+
+// Tests that a GC instance is cleaned from memory after it was disposed.
+// Primarily supposed to test that the operations (currently only implemented for Windows) do not produce any leaks.
+@Test
+public void test_noMemoryLeakAfterDispose() {
+	GC testGC = new GC(display);
+	Image image = new Image(display, 1, 1);
+	testGC.setFont(display.getSystemFont());
+	testGC.setClipping(new Rectangle(0, 0, 2, 2));
+	testGC.drawImage(image, 0, 0);
+	testGC.drawText("Test", 0, 0);
+	testGC.drawLine(0, 0, 5, 5);
+	WeakReference<GC> testGCReference = new WeakReference<>(testGC);
+	testGC.dispose();
+	testGC = null;
+	System.gc();
+	assertNull(testGCReference.get());
 }
 
 /* custom */
