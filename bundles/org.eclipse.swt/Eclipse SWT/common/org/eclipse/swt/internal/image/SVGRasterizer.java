@@ -14,6 +14,7 @@ package org.eclipse.swt.internal.image;
 
 import java.io.*;
 
+import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
 /**
@@ -31,5 +32,20 @@ public interface SVGRasterizer {
 	 * @return the {@link ImageData} for the rasterized image, or {@code null} if
 	 *         the input is not a valid SVG file or cannot be processed.
 	 */
-	public ImageData rasterizeSVG(InputStream stream, int zoom) throws IOException;
+	public ImageData rasterizeSVG(InputStream stream, int zoom);
+
+	/**
+	 * Rasterizes an SVG image from the provided {@code InputStream} into a
+	 * raster image of the specified width and height.
+	 *
+	 * If {@code width} or {@code height}
+	 * is zero or negative, this method throws an {@link SWT#ERROR_INVALID_ARGUMENT}.
+	 *
+	 * @param stream the SVG image as an {@link InputStream}.
+	 * @param width the width of the rasterized image in pixels (must be positive).
+	 * @param height the height of the rasterized image in pixels (must be positive).
+	 * @return the {@link ImageData} for the rasterized image, or {@code null} if
+	 *         the input is not a valid SVG file or cannot be processed.
+	 */
+	public ImageData rasterizeSVG(InputStream stream, int width, int height);
 }
