@@ -1510,6 +1510,22 @@ fail:
 }
 #endif
 
+#ifndef NO_DwmGetWindowAttribute
+JNIEXPORT jint JNICALL OS_NATIVE(DwmGetWindowAttribute)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jobject arg2, jint arg3)
+{
+	RECT _arg2, *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, DwmGetWindowAttribute_FUNC);
+	if (arg2) if ((lparg2 = getRECTFields(env, arg2, &_arg2)) == NULL) goto fail;
+	rc = (jint)DwmGetWindowAttribute((HWND)arg0, arg1, lparg2, arg3);
+fail:
+	if (arg2 && lparg2) setRECTFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, DwmGetWindowAttribute_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_DwmSetWindowAttribute
 JNIEXPORT jboolean JNICALL OS_NATIVE(DwmSetWindowAttribute)
 	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jintArray arg2, jint arg3)
