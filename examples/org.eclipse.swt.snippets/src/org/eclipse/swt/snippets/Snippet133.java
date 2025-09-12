@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ package org.eclipse.swt.snippets;
 import static org.eclipse.swt.events.SelectionListener.*;
 
 import java.io.*;
+import java.nio.file.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -109,16 +110,8 @@ public class Snippet133 {
 			return;
 
 		File file = new File(name);
-		try (FileInputStream stream = new FileInputStream(file.getPath())) {
-			Reader in = new BufferedReader(new InputStreamReader(stream));
-			char[] readBuffer = new char[2048];
-			StringBuilder buffer = new StringBuilder((int) file.length());
-			int n;
-			while ((n = in.read(readBuffer)) > 0) {
-				buffer.append(readBuffer, 0, n);
-			}
-			textString = buffer.toString();
-			stream.close();
+		try {
+			textString = Files.readString(file.toPath());
 		} catch (FileNotFoundException e) {
 			MessageBox box = new MessageBox(shell, SWT.ICON_ERROR);
 			box.setMessage("File not found:\n" + name);
