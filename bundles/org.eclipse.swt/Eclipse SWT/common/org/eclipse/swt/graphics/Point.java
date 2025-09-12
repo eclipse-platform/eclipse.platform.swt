@@ -16,6 +16,7 @@ package org.eclipse.swt.graphics;
 
 import java.io.*;
 
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.widgets.*;
 
 /**
@@ -144,8 +145,8 @@ public static sealed class OfFloat extends Point permits Point.WithMonitor {
 		super(x, y);
 	}
 
-	public OfFloat(float x, float y) {
-		super(Math.round(x), Math.round(y));
+	public OfFloat(float x, float y, RoundingMode mode) {
+		super(mode.round(x), mode.round(y));
 		this.residualX = x - this.x;
 		this.residualY = y - this.y;
 	}
