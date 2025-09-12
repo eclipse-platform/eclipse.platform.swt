@@ -186,15 +186,15 @@ public class Win32DPIUtilTests {
 		Point valueAt150 = new Point(8, 11);
 		Point valueAt100 = new Point(5, 7);
 
-		Point scaledValue = Win32DPIUtils.pointToPixel(valueAt100, 200);
+		Point scaledValue = Win32DPIUtils.pointToPixelAsLocation(valueAt100, 200);
 		assertEquals(valueAt200, scaledValue, "Scaling up Point to 200 failed");
 		scaledValue = Win32DPIUtils.pointToPixel((Device) null, valueAt100, 200);
 		assertEquals(valueAt200, scaledValue, "Scaling up Point to 200 with device failed");
-		scaledValue = Win32DPIUtils.pointToPixel(valueAt100, 150);
+		scaledValue = Win32DPIUtils.pointToPixelAsLocation(valueAt100, 150);
 		assertEquals(valueAt150, scaledValue, "Scaling up Point to 150 failed");
 		scaledValue = Win32DPIUtils.pointToPixel((Device) null, valueAt100, 150);
 		assertEquals(valueAt150, scaledValue, "Scaling up Point to 150 with device failed");
-		scaledValue = Win32DPIUtils.pointToPixel(valueAt100, 100);
+		scaledValue = Win32DPIUtils.pointToPixelAsLocation(valueAt100, 100);
 		assertSame(valueAt100, scaledValue, "Scaling up Point without zoom change failed");
 		scaledValue = Win32DPIUtils.pointToPixel((Device) null, valueAt100, 100);
 		assertSame(valueAt100, scaledValue, "Scaling up Point without zoom change with device failed");
@@ -246,9 +246,9 @@ public class Win32DPIUtilTests {
 				for (int i = 1; i <= 10000; i++) {
 					Point pt = new Point(i, i);
 					Point scaleDown = Win32DPIUtils.pixelToPoint(pt, zoom1);
-					Point scaleUp = Win32DPIUtils.pointToPixel(scaleDown, zoom2);
+					Point scaleUp = Win32DPIUtils.pointToPixelAsLocation(scaleDown, zoom2);
 					scaleDown = Win32DPIUtils.pixelToPoint(scaleUp, zoom2);
-					scaleUp = Win32DPIUtils.pointToPixel(scaleDown, zoom1);
+					scaleUp = Win32DPIUtils.pointToPixelAsLocation(scaleDown, zoom1);
 					assertEquals(pt.x, scaleUp.x);
 					assertEquals(pt.y, scaleUp.y);
 				}

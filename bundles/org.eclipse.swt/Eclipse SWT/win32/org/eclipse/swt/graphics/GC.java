@@ -2039,7 +2039,7 @@ private class DrawPointOperation extends Operation {
 
 	@Override
 	void apply() {
-		Point scaleUpLocation = Win32DPIUtils.pointToPixel(location, getZoom());
+		Point scaleUpLocation = Win32DPIUtils.pointToPixelAsLocation(location, getZoom());
 		drawPointInPixels(scaleUpLocation.x, scaleUpLocation.y);
 	}
 }

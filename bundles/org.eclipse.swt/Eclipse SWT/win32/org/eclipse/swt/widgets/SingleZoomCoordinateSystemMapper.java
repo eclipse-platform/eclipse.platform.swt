@@ -41,7 +41,7 @@ class SingleZoomCoordinateSystemMapper implements CoordinateSystemMapper {
 	@Override
 	public Point map(Control from, Control to, Point point) {
 		int zoom = getZoomLevelForMapping(from, to);
-		point = Win32DPIUtils.pointToPixel(point, zoom);
+		point = Win32DPIUtils.pointToPixelAsLocation(point, zoom);
 		return Win32DPIUtils.pixelToPoint(display.mapInPixels(from, to, point), zoom);
 	}
 
@@ -82,7 +82,7 @@ class SingleZoomCoordinateSystemMapper implements CoordinateSystemMapper {
 
 	@Override
 	public Point translateToDisplayCoordinates(Point point) {
-		return Win32DPIUtils.pointToPixel(point, DPIUtil.getDeviceZoom());
+		return Win32DPIUtils.pointToPixelAsLocation(point, DPIUtil.getDeviceZoom());
 	}
 
 	@Override
@@ -111,7 +111,7 @@ class SingleZoomCoordinateSystemMapper implements CoordinateSystemMapper {
 	@Override
 	public Rectangle getContainingMonitorBoundsInPixels(Point point) {
 		int zoom = DPIUtil.getDeviceZoom();
-		point = Win32DPIUtils.pointToPixel(point, zoom);
+		point = Win32DPIUtils.pointToPixelAsLocation(point, zoom);
 		for (Monitor monitor : display.getMonitors()) {
 			Rectangle monitorBounds = Win32DPIUtils.pointToPixel(monitor.getBounds(), zoom);
 			if (monitorBounds.contains(point)) {

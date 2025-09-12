@@ -569,7 +569,7 @@ public ToolItem getItem (int index) {
 public ToolItem getItem (Point point) {
 	checkWidget ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	return getItemInPixels(Win32DPIUtils.pointToPixel(point, getZoom()));
+	return getItemInPixels(Win32DPIUtils.pointToPixelAsLocation(point, getZoom()));
 }
 
 ToolItem getItemInPixels (Point point) {

@@ -2474,7 +2474,7 @@ public TableItem getItem (int index) {
 public TableItem getItem (Point point) {
 	checkWidget ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	return getItemInPixels (Win32DPIUtils.pointToPixel(point, getZoom()));
+	return getItemInPixels (Win32DPIUtils.pointToPixelAsLocation(point, getZoom()));
 }
 
 TableItem getItemInPixels (Point point) {
@@ -7297,7 +7297,7 @@ LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, long lParam) {
 					if (image != null) {
 						Rectangle rect = Win32DPIUtils.pointToPixel(image.getBounds(), getZoom());
 						RECT imageRect = item.getBounds (pinfo.iItem, pinfo.iSubItem, false, true, false, false, hDC);
-						Point size = imageList == null ? new Point (rect.width, rect.height) : Win32DPIUtils.pointToPixel(imageList.getImageSize(), getZoom());
+						Point size = imageList == null ? new Point (rect.width, rect.height) : Win32DPIUtils.pointToPixelAsSize(imageList.getImageSize(), getZoom());
 						int y = imageRect.top + Math.max (0, (imageRect.bottom - imageRect.top - size.y) / 2);
 						int zoom = getZoom();
 						rect = Win32DPIUtils.pixelToPoint(rect, zoom);

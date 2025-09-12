@@ -51,11 +51,11 @@ class MultiZoomCoordinateSystemMapper implements CoordinateSystemMapper {
 					getPixelsFromPoint(to.getShell().getMonitor(), x, y));
 			mappedPointInPoints = Win32DPIUtils.pixelToPoint(mappedPointInpixels, to.getZoom());
 		} else if (to == null) {
-			Point mappedPointInpixels = display.mapInPixels(from, to, Win32DPIUtils.pointToPixel(new Point(x, y), from.getZoom()));
+			Point mappedPointInpixels = display.mapInPixels(from, to, Win32DPIUtils.pointToPixelAsLocation(new Point(x, y), from.getZoom()));
 			mappedPointInPoints = getPointFromPixels(from.getShell().getMonitor(), mappedPointInpixels.x,
 					mappedPointInpixels.y);
 		} else {
-			Point mappedPointInpixels = display.mapInPixels(from, to, Win32DPIUtils.pointToPixel(new Point(x, y), from.getZoom()));
+			Point mappedPointInpixels = display.mapInPixels(from, to, Win32DPIUtils.pointToPixelAsLocation(new Point(x, y), from.getZoom()));
 			mappedPointInPoints = Win32DPIUtils.pixelToPoint(mappedPointInpixels, to.getZoom());
 		}
 		return mappedPointInPoints;

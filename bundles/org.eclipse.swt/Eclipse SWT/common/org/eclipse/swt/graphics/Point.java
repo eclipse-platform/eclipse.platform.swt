@@ -16,6 +16,7 @@ package org.eclipse.swt.graphics;
 
 import java.io.*;
 
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.widgets.*;
 
 /**
@@ -138,14 +139,20 @@ public static sealed class OfFloat extends Point permits Point.WithMonitor {
 
 	private static final long serialVersionUID = -1862062276431597053L;
 
-	public float residualX, residualY;
+	private float residualX, residualY;
+	private RoundingMode roundingMode;
 
 	public OfFloat(int x, int y) {
 		super(x, y);
 	}
 
 	public OfFloat(float x, float y) {
-		super(Math.round(x), Math.round(y));
+		this(x, y, RoundingMode.ROUND);
+	}
+
+	public OfFloat(float x, float y, RoundingMode roundingMode) {
+		super(roundingMode.round(x), roundingMode.round(y));
+		this.roundingMode = roundingMode;
 		this.residualX = x - this.x;
 		this.residualY = y - this.y;
 	}
@@ -159,12 +166,12 @@ public static sealed class OfFloat extends Point permits Point.WithMonitor {
 	}
 
 	public void setX(float x) {
-		this.x = Math.round(x);
+		this.x = roundingMode.round(x);
 		this.residualX = x - this.x;
 	}
 
 	public void setY(float y) {
-		this.y = Math.round(y);
+		this.y = roundingMode.round(y);
 		this.residualY = y - this.y;
 	}
 

@@ -215,7 +215,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 			changed |= (state & LAYOUT_CHANGED) != 0;
 			state &= ~LAYOUT_CHANGED;
 			int zoom = getZoom();
-			size = Win32DPIUtils.pointToPixel(layout.computeSize (this, DPIUtil.pixelToPoint(wHint, zoom), DPIUtil.pixelToPoint(hHint, zoom), changed), zoom);
+			size = Win32DPIUtils.pointToPixelAsSize(layout.computeSize (this, DPIUtil.pixelToPoint(wHint, zoom), DPIUtil.pixelToPoint(hHint, zoom), changed), zoom);
 		} else {
 			size = new Point (wHint, hHint);
 		}

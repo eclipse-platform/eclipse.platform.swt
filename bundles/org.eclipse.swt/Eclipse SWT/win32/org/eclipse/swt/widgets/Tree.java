@@ -3060,7 +3060,7 @@ public boolean getHeaderVisible () {
 }
 
 Point getImageSize () {
-	if (imageList != null) return Win32DPIUtils.pointToPixel(imageList.getImageSize(), getZoom());
+	if (imageList != null) return Win32DPIUtils.pointToPixelAsSize(imageList.getImageSize(), getZoom());
 	return new Point (0, getItemHeightInPixels ());
 }
 
@@ -3289,7 +3289,7 @@ TreeItem getItem (NMTVCUSTOMDRAW nmcd) {
 public TreeItem getItem (Point point) {
 	checkWidget ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	return getItemInPixels(Win32DPIUtils.pointToPixel(point, getZoom()));
+	return getItemInPixels(Win32DPIUtils.pointToPixelAsLocation(point, getZoom()));
 }
 
 TreeItem getItemInPixels (Point point) {
