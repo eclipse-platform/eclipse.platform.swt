@@ -115,7 +115,7 @@ public class Win32DPIUtils {
 
 	public static Point pixelToPoint(Point point, int zoom) {
 		if (zoom == 100 || point == null) return point;
-		Point.OfFloat fPoint = FloatAwareGeometryFactory.createFrom(point);
+		Point.OfFloat fPoint = Point.OfFloat.from(point);
 		float scaleFactor = DPIUtil.getScalingFactor(zoom);
 		float scaledX = fPoint.getX() / scaleFactor;
 		float scaledY = fPoint.getY() / scaleFactor;
@@ -170,7 +170,7 @@ public class Win32DPIUtils {
 	 */
 	private static Rectangle scaleBounds (Rectangle.OfFloat rect, int targetZoom, int currentZoom) {
 		if (rect == null || targetZoom == currentZoom) return rect;
-		Rectangle.OfFloat fRect = FloatAwareGeometryFactory.createFrom(rect);
+		Rectangle.OfFloat fRect = Rectangle.OfFloat.from(rect);
 		float scaleFactor = DPIUtil.getScalingFactor(targetZoom, currentZoom);
 		float scaledX = fRect.getX() * scaleFactor;
 		float scaledY = fRect.getY() * scaleFactor;
@@ -221,7 +221,7 @@ public class Win32DPIUtils {
 
 	public static Point pointToPixel(Point point, int zoom) {
 		if (zoom == 100 || point == null) return point;
-		Point.OfFloat fPoint = FloatAwareGeometryFactory.createFrom(point);
+		Point.OfFloat fPoint = Point.OfFloat.from(point);
 		float scaleFactor = DPIUtil.getScalingFactor(zoom);
 		float scaledX = fPoint.getX() * scaleFactor;
 		float scaledY = fPoint.getY() * scaleFactor;
@@ -328,22 +328,6 @@ public class Win32DPIUtils {
 		@Override
 		public ImageData getImageData(int zoom) {
 			return DPIUtil.scaleImageData(device, imageData, zoom, currentZoom);
-		}
-	}
-
-	private class FloatAwareGeometryFactory {
-		static Rectangle.OfFloat createFrom(Rectangle rectangle) {
-			if (rectangle instanceof Rectangle.OfFloat) {
-				return (Rectangle.OfFloat) rectangle;
-			}
-			return new Rectangle.OfFloat(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
-		}
-
-		static Point.OfFloat createFrom(Point point) {
-			if (point instanceof Point.OfFloat) {
-				return (Point.OfFloat) point;
-			}
-			return new Point.OfFloat(point.x, point.y);
 		}
 	}
 }

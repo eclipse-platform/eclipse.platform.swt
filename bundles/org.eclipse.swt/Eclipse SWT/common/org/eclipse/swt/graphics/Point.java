@@ -43,7 +43,7 @@ import org.eclipse.swt.widgets.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 
-public sealed class Point implements Serializable permits Point.OfFloat {
+public sealed class Point implements Serializable, Cloneable permits Point.OfFloat {
 
 	/**
 	 * the x coordinate of the point
@@ -119,6 +119,15 @@ public String toString () {
 }
 
 /**
+ * Creates and returns a shallow copy of this {@code Point}.
+ * @since 3.132
+ */
+@Override
+public Point clone() {
+	return new Point(x, y);
+}
+
+/**
  * Instances of this class represent {@link org.eclipse.swt.graphics.Point}
  * objects with the fields capable of storing more precise value in float.
  *
@@ -158,6 +167,21 @@ public static sealed class OfFloat extends Point permits Point.WithMonitor {
 		this.y = Math.round(y);
 		this.residualY = y - this.y;
 	}
+
+	@Override
+	public Point.OfFloat clone() {
+		return new Point.OfFloat(getX(), getY());
+	}
+
+	/**
+	 * Creates a shallow copy of the provided point as a Point.OfFloat instance.
+	 */
+	public static Point.OfFloat from(Point point) {
+		if (point instanceof Point.OfFloat pointOfFloat) {
+			return pointOfFloat.clone();
+		}
+		return new Point.OfFloat(point.x, point.y);
+	}
 }
 
 /**
@@ -187,6 +211,11 @@ public static final class WithMonitor extends Point.OfFloat {
 		this.monitor = monitor;
 	}
 
+	private WithMonitor(float x, float y, Monitor monitor) {
+		super(x, y);
+		this.monitor = monitor;
+	}
+
 	/**
 	 * {@return the monitor with whose context the instance is created}
 	 */
@@ -194,6 +223,10 @@ public static final class WithMonitor extends Point.OfFloat {
 		return monitor;
 	}
 
+	@Override
+	public Point.WithMonitor clone() {
+		return new WithMonitor(getX(), getY(), monitor);
+	}
 }
 
 }
