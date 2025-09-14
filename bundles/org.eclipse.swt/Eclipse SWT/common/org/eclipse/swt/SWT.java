@@ -3326,6 +3326,30 @@ public class SWT {
 	public static final int PRINT_SCREEN = KEYCODE_BIT + 87;
 
 	/**
+	 * Keyboard event constant representing the copy
+	 * key (value is (1&lt;&lt;24)+88).
+	 *
+	 * @since 3.132
+	 */
+	public static final int COPY = KEYCODE_BIT + 88;
+
+	/**
+	 * Keyboard event constant representing the cut
+	 * key (value is (1&lt;&lt;24)+89).
+	 *
+	 * @since 3.132
+	 */
+	public static final int CUT = KEYCODE_BIT + 89;
+
+	/**
+	 * Keyboard event constant representing the paste
+	 * key (value is (1&lt;&lt;24)+90).
+	 *
+	 * @since 3.132
+	 */
+	public static final int PASTE = KEYCODE_BIT + 90;
+
+	/**
 	 * The <code>MessageBox</code> style constant for error icon
 	 * behavior (value is 1).
 	 */
