@@ -56,6 +56,18 @@ public class SVGFileFormat extends FileFormat {
 	}
 
 	@Override
+	ImageData loadFromByteStreamBySize(int width, int height) {
+		if (RASTERIZER == null) {
+			SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT, null, " [No SVG rasterizer found]");
+		}
+		if (width <= 0 || height <= 0) {
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT, null, " [Cannot rasterize SVG for width or height <= 0]");
+		}
+		ImageData rasterizedImageData = RASTERIZER.rasterizeSVG(inputStream, width, height);
+		return rasterizedImageData;
+	}
+
+	@Override
 	void unloadIntoByteStream(ImageLoader loader) {
 		throw new UnsupportedOperationException();
 	}

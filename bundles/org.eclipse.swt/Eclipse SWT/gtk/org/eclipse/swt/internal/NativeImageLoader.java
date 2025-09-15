@@ -142,6 +142,10 @@ public class NativeImageLoader {
 		return Arrays.stream(imgDataArray).map(data -> new ElementAtZoom<>(data, streamAtZoom.zoom())).toList();
 	}
 
+	public static ImageData load(InputStream streamAtZoom, ImageLoader imageLoader, int width, int height) {
+		return FileFormat.load(streamAtZoom, imageLoader, width, height);
+	}
+
 	/**
 	 * Return true if the image is an interlaced PNG file. This is used to check
 	 * whether ImageLoaderEvent should be fired when loading images.
