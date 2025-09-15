@@ -1148,6 +1148,9 @@ private class DrawScalingImageToImageOperation extends ImageOperation {
 			// unscaled images can use the GC zoom
 			return gcZoom;
 		}
+		if (!drawable.isAutoScalable()) {
+			return gcZoom;
+		}
 
 		float imageScaleFactor = 1f * destWidth / srcWidth;
 		int imageZoom = Math.round(gcZoom * imageScaleFactor);

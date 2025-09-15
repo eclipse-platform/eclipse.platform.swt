@@ -247,6 +247,55 @@ public void test_dispose() {
 	gc.dispose();
 }
 
+
+@Test
+public void test_drawImage_nonAutoScalableGC_bug_2504() {
+	Shell shell = new Shell(display);
+    float targetScale = 2f;
+    int srcSize = 50;
+    Image image = new Image(display, srcSize, srcSize);
+    GC gcSrc = new GC(image);
+    gcSrc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
+    gcSrc.fillRectangle(0, 0, srcSize, srcSize);
+    gcSrc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
+    gcSrc.fillRectangle(2, 2, srcSize - 4, srcSize - 4);
+    gcSrc.dispose();
+
+    Rectangle bounds = image.getBounds();
+
+    Canvas canvas = new Canvas(shell, SWT.NONE) {
+        @Override
+        public boolean isAutoScalable() {
+            return false;
+        }
+    };
+
+    int canvasWidth = Math.round(bounds.width * targetScale);
+    int canvasHeight = Math.round(bounds.height * targetScale);
+    canvas.setSize(canvasWidth, canvasHeight);
+    canvas.addPaintListener(e -> {
+        e.gc.drawImage(image, 0, 0, bounds.width, bounds.height,
+                       0, 0, canvasWidth, canvasHeight);
+    });
+
+    shell.open();
+    Image target = new Image(display, canvasWidth, canvasHeight);
+    GC gcCopy = new GC(canvas);
+    gcCopy.copyArea(target, 0, 0);
+    gcCopy.dispose();
+
+    ImageData data = target.getImageData();
+
+    int bottomRightX = canvasWidth - 1;
+    int bottomRightY = canvasHeight - 1;
+    RGB bottomRight = data.palette.getRGB(data.getPixel(bottomRightX, bottomRightY));
+    RGB black = new RGB(0, 0, 0);
+    assertEquals( black, bottomRight, "Bottom-right pixel is not black! when source GC is not autoScalable");
+	shell.dispose();
+    target.dispose();
+    image.dispose();
+}
+
 @Test
 public void test_drawArcIIIIII() {
 	gc.drawArc(10, 20, 50, 25, 90, 90);
