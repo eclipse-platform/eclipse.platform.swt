@@ -9315,7 +9315,7 @@ public void setLineVerticalIndent(int lineIndex, int verticalLineIndent) {
 	}
 	int initialTopPixel = getTopPixel();
 	int initialTopIndex = getPartialTopIndex();
-	int initialBottomIndex = getPartialBottomIndex();
+	int initialBottomIndex = getPartialBottomIndex() + 2 /* include two more additional lines to fix scrolling issue eclipse-platform/eclipse.platform.swt#2512 */;
 	int verticalIndentDiff = verticalLineIndent - previousVerticalIndent;
 	renderer.setLineVerticalIndent(lineIndex, verticalLineIndent);
 	this.hasVerticalIndent = verticalLineIndent != 0 || renderer.hasVerticalIndent();
@@ -9332,8 +9332,8 @@ public void setLineVerticalIndent(int lineIndex, int verticalLineIndent) {
 		}
 	} else {
 		resetCache(lineIndex, 1);
-		if((initialTopIndex == 0) && (initialBottomIndex == (content.getLineCount() - 1))) { // not scrollable editor
-		    setCaretLocations();
+		if ((initialTopIndex == 0) && (initialBottomIndex == (content.getLineCount() - 1))) { // not scrollable editor
+			setCaretLocations();
 			redrawLines(lineIndex, getBottomIndex() - lineIndex + 1, true);
 		} else if (getFirstCaretLine() >= initialTopIndex && getFirstCaretLine() <= initialBottomIndex) { // caret line with caret mustn't move
 			if (getFirstCaretLine() < lineIndex) {
