@@ -2127,7 +2127,7 @@ private class ImageDataLoaderStreamProviderWrapper extends ImageFromImageDataPro
 
 	@Override
 	protected ElementAtZoom<ImageData> loadImageData(int zoom) {
-		return ImageDataLoader.load(new ByteArrayInputStream(inputStreamData), FileFormat.DEFAULT_ZOOM, zoom);
+		return ImageDataLoader.loadByZoom(new ByteArrayInputStream(inputStreamData), FileFormat.DEFAULT_ZOOM, zoom);
 	}
 
 	@Override
@@ -2349,7 +2349,7 @@ private class ImageFileNameProviderWrapper extends BaseImageProviderWrapper<Imag
 
 		// Load at appropriate zoom via loader
 		if (fileForZoom.zoom() != zoom && ImageDataLoader.canLoadAtZoom(fileForZoom.element(), fileForZoom.zoom(), zoom)) {
-			ElementAtZoom<ImageData> imageDataAtZoom = ImageDataLoader.load(fileForZoom.element(), fileForZoom.zoom(), zoom);
+			ElementAtZoom<ImageData> imageDataAtZoom = ImageDataLoader.loadByZoom(fileForZoom.element(), fileForZoom.zoom(), zoom);
 			return new ElementAtZoom<>(imageDataAtZoom.element(), zoom);
 		}
 
@@ -2362,7 +2362,7 @@ private class ImageFileNameProviderWrapper extends BaseImageProviderWrapper<Imag
 		}
 		ElementAtZoom<ImageData> imageDataAtZoom;
 		if (nativeInitializedImage == null) {
-			imageDataAtZoom = ImageDataLoader.load(fileForZoom.element(), fileForZoom.zoom(), zoom);
+			imageDataAtZoom = ImageDataLoader.loadByZoom(fileForZoom.element(), fileForZoom.zoom(), zoom);
 		} else {
 			imageDataAtZoom = new ElementAtZoom<>(nativeInitializedImage.getImageData(), fileForZoom.zoom());
 			nativeInitializedImage.destroy();

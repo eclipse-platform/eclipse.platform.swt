@@ -692,7 +692,7 @@ public Image(Device device, InputStream stream) {
 	try {
 		byte[] input = stream.readAllBytes();
 		initWithSupplier(zoom -> ImageDataLoader.canLoadAtZoom(new ByteArrayInputStream(input), FileFormat.DEFAULT_ZOOM, zoom),
-				zoom -> ImageDataLoader.load(new ByteArrayInputStream(input), FileFormat.DEFAULT_ZOOM, zoom).element());
+				zoom -> ImageDataLoader.loadByZoom(new ByteArrayInputStream(input), FileFormat.DEFAULT_ZOOM, zoom).element());
 		init();
 	} catch (IOException e) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT, e);
@@ -742,7 +742,7 @@ public Image(Device device, String filename) {
 		initNative(filename);
 		if (this.handle == null) {
 			initWithSupplier(zoom -> ImageDataLoader.canLoadAtZoom(filename, FileFormat.DEFAULT_ZOOM, zoom),
-					zoom -> ImageDataLoader.load(filename, FileFormat.DEFAULT_ZOOM, zoom).element());
+					zoom -> ImageDataLoader.loadByZoom(filename, FileFormat.DEFAULT_ZOOM, zoom).element());
 		}
 		init();
 	} finally {
@@ -789,7 +789,7 @@ public Image(Device device, ImageFileNameProvider imageFileNameProvider) {
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
 		initNative(filename);
-		if (this.handle == null) init(ImageDataLoader.load(filename, 100, 100).element(), 100);
+		if (this.handle == null) init(ImageDataLoader.loadByZoom(filename, 100, 100).element(), 100);
 		init();
 		String filename2x = imageFileNameProvider.getImagePath(200);
 		if (filename2x != null) {
@@ -799,7 +799,7 @@ public Image(Device device, ImageFileNameProvider imageFileNameProvider) {
 			handle.addRepresentation(rep);
 		} else if (ImageDataLoader.canLoadAtZoom(filename, 100, 200)) {
 			// Try to natively scale up the image (e.g. possible if it's an SVG)
-			ImageData imageData2x = ImageDataLoader.load(filename, 100, 200).element();
+			ImageData imageData2x = ImageDataLoader.loadByZoom(filename, 100, 200).element();
 			alphaInfo_200 = new AlphaInfo();
 			NSBitmapImageRep rep = createRepresentation (imageData2x, alphaInfo_200);
 			handle.addRepresentation(rep);
