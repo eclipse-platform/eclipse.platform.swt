@@ -4265,11 +4265,19 @@ public int getOrientation () {
  */
 int getPartialBottomIndex() {
 	if (isFixedLineHeight()) {
-		int lineHeight = renderer.getLineHeight();
-		int partialLineCount = Compatibility.ceil(clientAreaHeight, lineHeight);
-		return Math.max(0, Math.min(content.getLineCount(), topIndex + partialLineCount) - 1);
+		return getPartialBottomIndexFixedLineHeight();
 	}
 	return getLineIndex(clientAreaHeight - bottomMargin);
+}
+/**
+ * Returns the index of the last partially visible line assuming a fixed line height.
+ *
+ * @return index of the last partially visible line.
+ */
+private int getPartialBottomIndexFixedLineHeight() {
+	int lineHeight = renderer.getLineHeight();
+	int partialLineCount = Compatibility.ceil(clientAreaHeight, lineHeight);
+	return Math.max(0, Math.min(content.getLineCount(), topIndex + partialLineCount) - 1);
 }
 /**
  * Returns the index of the first partially visible line.
@@ -9315,7 +9323,8 @@ public void setLineVerticalIndent(int lineIndex, int verticalLineIndent) {
 	}
 	int initialTopPixel = getTopPixel();
 	int initialTopIndex = getPartialTopIndex();
-	int initialBottomIndex = getPartialBottomIndex();
+	// use getPartialBottomIndexFixedLineHeight to include more additional lines to fix scrolling issue eclipse-platform/eclipse.platform.swt#2512
+	int initialBottomIndex = getPartialBottomIndexFixedLineHeight();
 	int verticalIndentDiff = verticalLineIndent - previousVerticalIndent;
 	renderer.setLineVerticalIndent(lineIndex, verticalLineIndent);
 	this.hasVerticalIndent = verticalLineIndent != 0 || renderer.hasVerticalIndent();
@@ -9332,8 +9341,8 @@ public void setLineVerticalIndent(int lineIndex, int verticalLineIndent) {
 		}
 	} else {
 		resetCache(lineIndex, 1);
-		if((initialTopIndex == 0) && (initialBottomIndex == (content.getLineCount() - 1))) { // not scrollable editor
-		    setCaretLocations();
+		if ((initialTopIndex == 0) && (initialBottomIndex == (content.getLineCount() - 1))) { // not scrollable editor
+			setCaretLocations();
 			redrawLines(lineIndex, getBottomIndex() - lineIndex + 1, true);
 		} else if (getFirstCaretLine() >= initialTopIndex && getFirstCaretLine() <= initialBottomIndex) { // caret line with caret mustn't move
 			if (getFirstCaretLine() < lineIndex) {
