@@ -820,6 +820,27 @@ long getHandle (int targetZoom, int nativeZoom) {
 	return getImageMetadata(zoomContext).handle;
 }
 
+@FunctionalInterface
+interface HandleAtSizeConsumer {
+	void accept(long imageHandle, Point handleSize);
+}
+
+void executeOnImageHandleAtSize(HandleAtSizeConsumer handleAtSizeConsumer, int widthHint, int heightHint) {
+	ImageData imageData;
+	imageData = this.imageProvider.loadImageDataAtSize(widthHint, heightHint);
+	executeOnImageHandle(handleAtSizeConsumer, imageData);
+}
+
+private void executeOnImageHandle(HandleAtSizeConsumer handleAtSizeConsumer, ImageData imageData) {
+	ImageHandle handleContainer = init(imageData, -1);
+	long tempHandle = handleContainer.handle;
+	try {
+		handleAtSizeConsumer.accept(tempHandle, new Point(imageData.width, imageData.height));
+	} finally {
+		handleContainer.destroy();
+	}
+}
+
 /**
  * <b>IMPORTANT:</b> This method is not part of the public
  * API for Image. It is marked public only so that it
@@ -829,24 +850,29 @@ long getHandle (int targetZoom, int nativeZoom) {
  *
  * @param gc the GC to draw on the resulting image
  * @param imageData the imageData which is used to draw the scaled Image
- * @param width the width of the original image
- * @param height the height of the original image
- * @param scaleFactor the factor with which the image is supposed to be scaled
+ * @param width the width to which the image is supposed to be scaled
+ * @param height the height to which the image is supposed to be scaled
  *
  * @noreference This method is not intended to be referenced by clients.
  */
-public static void drawScaled(GC gc, ImageData imageData, int width, int height, float scaleFactor) {
+public static void drawAtSize(GC gc, ImageData imageData, int width, int height) {
 
 	StrictChecks.runWithStrictChecksDisabled(() -> {
 		Image imageToDraw = new Image(gc.device, (ImageDataProvider) zoom -> imageData);
-		gc.drawImage(imageToDraw, 0, 0, width, height, 0, 0, Math.round(width * scaleFactor),
-				Math.round(height * scaleFactor), false);
+		gc.drawImage(imageToDraw, 0, 0, imageData.width, imageData.height, 0, 0, width,
+				height, false);
 		imageToDraw.dispose();
 	});
 }
 
+
+
 long [] createGdipImage(Integer zoom) {
 	long handle = Image.win32_getHandle(this, zoom);
+	return createGdipImageFromHandle(handle);
+}
+
+long[] createGdipImageFromHandle(long handle) {
 	switch (type) {
 		case SWT.BITMAP: {
 			BITMAP bm = new BITMAP();
@@ -1956,8 +1982,28 @@ private abstract class AbstractImageProviderWrapper {
 		return new ElementAtZoom<>(getImageMetadata(new ZoomContext(closestZoom)).getImageData(), closestZoom);
 	}
 
+	public ImageData loadImageDataAtSize(int widthHint, int heightHint) {
+		Optional<ImageData> exact = loadImageDataAtExactSize(widthHint, heightHint);
+		if (exact.isPresent()) {
+			return adaptImageDataIfDisabledOrGray(exact.get());
+		}
+		return loadImageDataClosestTo(widthHint, heightHint);
+	}
+
+	private ImageData loadImageDataClosestTo(int targetWidth, int targetHeight) {
+		Rectangle bounds = getBounds(100);
+		int imageZoomForWidth = 100 * targetWidth / bounds.width;
+		int imageZoomForHeight = 100 * targetHeight / bounds.height;
+		int imageZoom = DPIUtil.getZoomForAutoscaleProperty(Math.max(imageZoomForWidth, imageZoomForHeight));
+		return loadImageData(imageZoom).element();
+	}
+
+	protected Optional<ImageData> loadImageDataAtExactSize(int width, int height) {
+		return Optional.empty(); // exact size not available
+	}
+
 	protected ImageHandle newImageHandle(ZoomContext zoomContext) {
-		ImageData resizedData = getImageData(zoomContext.targetZoom());
+		ImageData resizedData = getScaledImageData (zoomContext.targetZoom());
 		return newImageHandle(resizedData, zoomContext);
 	}
 
@@ -1999,7 +2045,7 @@ private class ExistingImageHandleProviderWrapper extends AbstractImageProviderWr
 
 	@Override
 	ImageData newImageData(ZoomContext zoomContext) {
-		return getScaledImageData(zoomContext.targetZoom());
+		return getImageData(zoomContext.targetZoom());
 	}
 
 	@Override
@@ -2054,7 +2100,6 @@ private abstract class ImageFromImageDataProviderWrapper extends AbstractImagePr
 		imageData = adaptImageDataIfDisabledOrGray(imageData);
 		return newImageHandle(imageData, zoomContext);
 	}
-
 }
 
 private class PlainImageDataProviderWrapper extends ImageFromImageDataProviderWrapper {
@@ -2150,6 +2195,15 @@ private class ImageDataLoaderStreamProviderWrapper extends ImageFromImageDataPro
 	@Override
 	AbstractImageProviderWrapper createCopy(Image image) {
 		return image.new ImageDataLoaderStreamProviderWrapper(inputStreamData);
+	}
+
+	@Override
+	protected Optional<ImageData> loadImageDataAtExactSize(int targetWidth, int targetHeight) {
+		if (ImageDataLoader.isDynamicallySizable(new ByteArrayInputStream(this.inputStreamData))) {
+			ImageData imageDataAtSize = ImageDataLoader.loadBySize(new ByteArrayInputStream(this.inputStreamData), targetWidth, targetHeight);
+			return Optional.of(imageDataAtSize);
+		}
+		return Optional.empty();
 	}
 }
 
@@ -2323,7 +2377,6 @@ private abstract class BaseImageProviderWrapper<T> extends DynamicImageProviderW
 		};
 		return (ImageData) cachedImageData.computeIfAbsent(zoomContext.targetZoom(), imageDataRetrival).clone();
 	}
-
 
 	@Override
 	protected ImageHandle newImageHandle(ZoomContext zoomContext) {
@@ -2587,6 +2640,16 @@ private class ImageFileNameProviderWrapper extends BaseImageProviderWrapper<Imag
 		}
 		return handle;
 	}
+
+	@Override
+	protected Optional<ImageData> loadImageDataAtExactSize(int targetWidth, int targetHeight) {
+		String fileName = DPIUtil.validateAndGetImagePathAtZoom(this.provider, 100).element();
+		if (ImageDataLoader.isDynamicallySizable(fileName)) {
+			ImageData imageDataAtSize = ImageDataLoader.loadBySize(fileName, targetWidth, targetHeight);
+			return Optional.of(imageDataAtSize);
+		}
+		return Optional.empty();
+	}
 }
 
 private class ImageDataProviderWrapper extends BaseImageProviderWrapper<ImageDataProvider> {
@@ -2602,6 +2665,19 @@ private class ImageDataProviderWrapper extends BaseImageProviderWrapper<ImageDat
 	@Override
 	ImageDataProviderWrapper createCopy(Image image) {
 		return image.new ImageDataProviderWrapper(provider);
+	}
+
+	@Override
+	protected Optional<ImageData> loadImageDataAtExactSize(int targetWidth, int targetHeight) {
+		if (provider instanceof ImageDataAtSizeProvider imageDataAtSizeProvider) {
+			ImageData imageData = imageDataAtSizeProvider.getImageData(targetWidth, targetHeight);
+			if (imageData == null) {
+				SWT.error(SWT.ERROR_INVALID_ARGUMENT, null,
+						" ImageDataAtSizeProvider returned null for width=" + targetWidth + ", height=" + targetHeight);
+			}
+			return Optional.of(imageData);
+		}
+		return Optional.empty();
 	}
 }
 
