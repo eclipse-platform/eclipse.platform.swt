@@ -154,25 +154,6 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 	this.device.registerResourceWithZoomSupport(this);
 }
 
-private static CursorHandle setupCursorFromImageData(ImageData source, ImageData mask, int hotspotX, int hotspotY) {
-	if (mask == null) {
-		mask = source.getTransparencyMask();
-	}
-	/* Convert depth to 1 */
-	mask = ImageData.convertMask(mask);
-	source = ImageData.convertMask(source);
-
-	/* Make sure source and mask scanline pad is 2 */
-	byte[] sourceData = ImageData.convertPad(source.data, source.width, source.height, source.depth, source.scanlinePad, 2);
-	byte[] maskData = ImageData.convertPad(mask.data, mask.width, mask.height, mask.depth, mask.scanlinePad, 2);
-
-	/* Create the cursor */
-	long hInst = OS.GetModuleHandle(null);
-	long handle = OS.CreateCursor(hInst, hotspotX, hotspotY, source.width, source.height, sourceData, maskData);
-	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	return new CustomCursorHandle(handle);
-}
-
 /**
  * Constructs a new cursor given a device, image data describing
  * the desired cursor appearance, and the x and y coordinates of
@@ -209,7 +190,7 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 	this.device.registerResourceWithZoomSupport(this);
 }
 
-private static CursorHandle setupCursorFromImageData(Device device, ImageData source, int hotspotX, int hotspotY) {
+private static CursorHandle setupCursorFromImageData(Device device, ImageData source, ImageData maskData, int hotspotX, int hotspotY) {
 	if (source == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	long hBitmap = 0;
 	long hMask = 0;
@@ -255,10 +236,21 @@ private static CursorHandle setupCursorFromImageData(Device device, ImageData so
 			}
 		}
 		OS.MoveMemory(dibBM.bmBits, srcData, srcData.length);
-		hMask = OS.CreateBitmap(source.width, source.height, 1, 1, new byte[(((source.width + 7) / 8) + 3) / 4 * 4 * source.height]);
+		if (maskData != null) {
+			long[] maskResult = Image.initIcon(device, maskData, maskData);
+			hMask = maskResult[1];
+		} else {
+			hMask = OS.CreateBitmap(source.width, source.height, 1, 1,
+					new byte[(((source.width + 7) / 8) + 3) / 4 * 4 * source.height]);
+		}
 		if (hMask == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	} else {
-		ImageData mask = source.getTransparencyMask();
+		ImageData mask;
+		if(maskData != null) {
+			mask = maskData;
+		} else {
+			mask = source.getTransparencyMask();
+		}
 		long [] result = Image.initIcon(device, source, mask);
 		hBitmap = result[0];
 		hMask = result[1];
@@ -653,7 +645,7 @@ private static class ImageDataProviderCursorHandleProvider extends HotspotAwareC
 			source = tempImage.getImageData(zoom);
 			tempImage.dispose();
 		}
-		return setupCursorFromImageData(device, source, getHotpotXInPixels(zoom), getHotpotYInPixels(zoom));
+		return setupCursorFromImageData(device, source, null, getHotpotXInPixels(zoom), getHotpotYInPixels(zoom));
 	}
 }
 
@@ -671,7 +663,7 @@ private static class ImageDataCursorHandleProvider extends HotspotAwareCursorHan
 	public CursorHandle createHandle(Device device, int zoom) {
 		int accessibilityFactor = getPointerSizeScaleFactor();
 		ImageData scaledSource = DPIUtil.scaleImageData(device, this.source, zoom * accessibilityFactor, DEFAULT_ZOOM);
-		return setupCursorFromImageData(device, scaledSource, getHotpotXInPixels(zoom),
+		return setupCursorFromImageData(device, scaledSource, null, getHotpotXInPixels(zoom),
 				getHotpotYInPixels(zoom));
 	}
 }
@@ -701,10 +693,10 @@ private static class ImageDataWithMaskCursorHandleProvider extends ImageDataCurs
 
 	@Override
 	public CursorHandle createHandle(Device device, int zoom) {
-		ImageData scaledSource = DPIUtil.scaleImageData(device, this.source, zoom, DEFAULT_ZOOM);
-		ImageData scaledMask = this.mask != null ? DPIUtil.scaleImageData(device, mask, zoom, DEFAULT_ZOOM)
-				: null;
-		return setupCursorFromImageData(scaledSource, scaledMask, getHotpotXInPixels(zoom), getHotpotYInPixels(zoom));
+		float zoomFactor = (getPointerSizeScaleFactor() * zoom) / 100f;
+		ImageData scaledSource =  this.source.scaledTo((int) (this.source.width * zoomFactor), (int) (this.source.height * zoomFactor));
+		ImageData scaledMask = this.mask!= null? this.mask.scaledTo((int) (this.mask.width * zoomFactor), (int) (this.mask.height * zoomFactor)) : null;
+		return setupCursorFromImageData(device, scaledSource, scaledMask, getHotpotXInPixels(zoom), getHotpotYInPixels(zoom));
 	}
 }
 
