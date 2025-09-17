@@ -82,6 +82,8 @@ public abstract class Control extends Widget implements Drawable {
 	Font font;
 	int drawCount, foreground, background, backgroundAlpha = 255;
 
+	private static final String DATA_NATIVE_ZOOM = "NATIVE_ZOOM";
+
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
@@ -1256,6 +1258,15 @@ String getClipboardText () {
 public Cursor getCursor () {
 	checkWidget ();
 	return cursor;
+}
+
+@Override
+public Object getData(String key) {
+	if (DATA_NATIVE_ZOOM.equals(key)) {
+		Shell shell = getShell();
+		return shell == null ? null : shell.nativeZoom;
+	}
+	return super.getData(key);
 }
 
 /**
