@@ -134,7 +134,6 @@ public abstract class Widget {
 	static final int AUTO_TEXT_DIRECTION = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 
 	private static final String DATA_AUTOSCALE_DISABLED = "AUTOSCALE_DISABLED";
-	private static final String DATA_NATIVE_ZOOM = "NATIVE_ZOOM";
 
 	/* Initialize the Common Controls DLL */
 	static {
@@ -189,7 +188,6 @@ public Widget (Widget parent, int style) {
 	display = parent.display;
 	reskinWidget ();
 	notifyCreationTracker();
-	this.setData(DATA_NATIVE_ZOOM, this.nativeZoom);
 	registerDPIChangeListener();
 }
 
@@ -2727,9 +2725,7 @@ int getZoom() {
 }
 
 void handleDPIChange(Event event, float scalingFactor) {
-	int newZoom = event.detail;
-	this.nativeZoom = newZoom;
-	this.setData(DATA_NATIVE_ZOOM, newZoom);
+	this.nativeZoom = event.detail;
 }
 
 int getSystemMetrics(int nIndex) {

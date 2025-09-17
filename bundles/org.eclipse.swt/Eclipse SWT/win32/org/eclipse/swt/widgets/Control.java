@@ -82,6 +82,7 @@ public abstract class Control extends Widget implements Drawable {
 	/** Cache for currently processed DPI change event to be able to cancel it if a new one is triggered */
 	Event currentDpiChangeEvent;
 
+	private static final String DATA_SHELL_ZOOM = "SHELL_ZOOM";
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
@@ -1258,6 +1259,15 @@ String getClipboardText () {
 public Cursor getCursor () {
 	checkWidget ();
 	return cursor;
+}
+
+@Override
+public Object getData(String key) {
+	if (DATA_SHELL_ZOOM.equals(key)) {
+		Shell shell = getShell();
+		return shell == null ? null : shell.nativeZoom;
+	}
+	return super.getData(key);
 }
 
 /**
