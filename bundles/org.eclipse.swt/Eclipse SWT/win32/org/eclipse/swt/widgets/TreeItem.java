@@ -1825,7 +1825,7 @@ void handleDPIChange(Event event, float scalingFactor) {
 		}
 	}
 	for (TreeItem item : getItems()) {
-		item.notifyListeners(SWT.ZoomChanged, event);
+		item.sendZoomChangedEvent(event, getParent().getShell());
 	}
 }
 }

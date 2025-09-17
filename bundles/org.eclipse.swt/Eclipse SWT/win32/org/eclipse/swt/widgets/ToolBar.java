@@ -1770,7 +1770,7 @@ void handleDPIChange(Event event, float scalingFactor) {
 			// at the end
 			seperatorWidth[i] = item.getWidth();
 		}
-		item.notifyListeners(SWT.ZoomChanged, event);
+		item.sendZoomChangedEvent(event, getShell());
 		buttondata.push(new ToolItemData(item, lpButton));
 		OS.SendMessage(handle, OS.TB_DELETEBUTTON, i, 0);
 	}

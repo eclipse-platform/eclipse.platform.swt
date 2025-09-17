@@ -7365,10 +7365,10 @@ void handleDPIChange(Event event, float scalingFactor) {
 	setItemHeight(-1);
 
 	for (TableItem item : getItems()) {
-		item.notifyListeners(SWT.ZoomChanged, event);
+		item.sendZoomChangedEvent(event, getShell());
 	}
 	for (TableColumn tableColumn : getColumns()) {
-		tableColumn.notifyListeners(SWT.ZoomChanged, event);
+		tableColumn.sendZoomChangedEvent(event, getShell());
 	}
 
 	if (getColumns().length == 0 && scrollWidth != 0) {

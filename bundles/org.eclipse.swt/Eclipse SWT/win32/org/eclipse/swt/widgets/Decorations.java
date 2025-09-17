@@ -1720,13 +1720,13 @@ void handleDPIChange(Event event, float scalingFactor) {
 
 	Menu menuBar = getMenuBar();
 	if(menuBar != null) {
-		menuBar.notifyListeners(SWT.ZoomChanged, event);
+		menuBar.sendZoomChangedEvent(event, getShell());
 	}
 
 	if (menus != null) {
 		for (Menu menu : menus) {
 			if(menu != null) {
-				menu.notifyListeners(SWT.ZoomChanged, event);
+				menu.sendZoomChangedEvent(event, getShell());
 			}
 		}
 	}

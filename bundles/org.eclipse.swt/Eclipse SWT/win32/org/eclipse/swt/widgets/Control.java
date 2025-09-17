@@ -4758,7 +4758,7 @@ public boolean setParent (Composite parent) {
 	if (parent.nativeZoom != nativeZoom) {
 		int newZoom = parent.nativeZoom;
 		Event zoomChangedEvent = createZoomChangedEvent(newZoom);
-		notifyListeners(SWT.ZoomChanged, zoomChangedEvent);
+		sendZoomChangedEvent(zoomChangedEvent, getShell());
 	}
 	int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE;
 	OS.SetWindowPos (topHandle, OS.HWND_BOTTOM, 0, 0, 0, 0, flags);
@@ -4954,7 +4954,7 @@ LRESULT WM_DESTROY (long wParam, long lParam) {
 void handleMonitorSpecificDpiChange(int newNativeZoom, Rectangle newBoundsInPixels) {
 	DPIUtil.setDeviceZoom (newNativeZoom);
 	Event zoomChangedEvent = createZoomChangedEvent(newNativeZoom);
-	notifyListeners(SWT.ZoomChanged, zoomChangedEvent);
+	sendZoomChangedEvent(zoomChangedEvent, getShell());
 	this.setBoundsInPixels(newBoundsInPixels.x, newBoundsInPixels.y, newBoundsInPixels.width, newBoundsInPixels.height);
 }
 
