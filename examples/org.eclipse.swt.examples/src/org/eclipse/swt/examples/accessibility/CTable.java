@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2022 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -410,8 +410,8 @@ public void clear (int [] indices) {
 	checkWidget ();
 	if (indices == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (indices.length == 0) return;
-	for (int i = 0; i < indices.length; i++) {
-		if (!(0 <= indices [i] && indices [i] < itemsCount)) {
+	for (int index : indices) {
+		if (!(0 <= index && index < itemsCount)) {
 			SWT.error (SWT.ERROR_INVALID_RANGE);
 		}
 	}
