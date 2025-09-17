@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -19,5 +19,5 @@ public interface PaintTool extends PaintSession {
 	 *
 	 * @param toolSettings the new tool settings
 	 */
-	public void set(ToolSettings toolSettings);
+	void set(ToolSettings toolSettings);
 }

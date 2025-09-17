@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -617,8 +617,7 @@ void startAnimationTimer() {
 			if (canvas.isDisposed()) return;
 			int timeout = TIMER;
 			GraphicsTab tab = getTab();
-			if (tab instanceof AnimatedGraphicsTab) {
-				AnimatedGraphicsTab animTab = (AnimatedGraphicsTab) tab;
+			if (tab instanceof AnimatedGraphicsTab animTab) {
 				if (animate && animTab.getAnimation()) {
 					Rectangle rect = canvas.getClientArea();
 					animTab.next(rect.width, rect.height);

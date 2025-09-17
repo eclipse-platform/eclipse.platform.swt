@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -166,12 +166,12 @@ public class HoverHelp {
 		ToolBar bar = new ToolBar (frame, SWT.BORDER);
 		for (int i=0; i<5; i++) {
 			ToolItem item = new ToolItem (bar, SWT.PUSH);
-			item.setText (getResourceString("ToolItem.text", new Object[] { Integer.valueOf(i) }));
+			item.setText (getResourceString("ToolItem.text", Integer.valueOf(i)));
 			item.setData ("TIP_TEXT", getResourceString("ToolItem.tooltip",
-				new Object[] { item.getText(), helpKey }));
+				item.getText(), helpKey));
 			item.setData ("TIP_HELPTEXTHANDLER", (ToolTipHelpTextHandler) widget -> {
 				Item item1 = (Item) widget;
-				return getResourceString("ToolItem.help", new Object[] { item1.getText() });
+				return getResourceString("ToolItem.help", item1.getText());
 			});
 		}
 		GridData gridData = new GridData();
@@ -182,14 +182,14 @@ public class HoverHelp {
 		Table table = new Table (frame, SWT.BORDER);
 		for (int i=0; i<4; i++) {
 			TableItem item = new TableItem (table, SWT.PUSH);
-			item.setText (getResourceString("Item", new Object[] { Integer.valueOf(i) }));
+			item.setText (getResourceString("Item", Integer.valueOf(i)));
 			item.setData ("TIP_IMAGE", images[hhiInformation]);
-			item.setText (getResourceString("TableItem.text", new Object[] { Integer.valueOf(i) }));
+			item.setText (getResourceString("TableItem.text", Integer.valueOf(i)));
 			item.setData ("TIP_TEXT", getResourceString("TableItem.tooltip",
-				new Object[] { item.getText(), helpKey }));
+				item.getText(), helpKey));
 			item.setData ("TIP_HELPTEXTHANDLER", (ToolTipHelpTextHandler) widget -> {
 				Item item1 = (Item) widget;
-				return getResourceString("TableItem.help", new Object[] { item1.getText() });
+				return getResourceString("TableItem.help", item1.getText());
 			});
 		}
 		table.setLayoutData(new GridData(GridData.VERTICAL_ALIGN_FILL));
@@ -198,14 +198,14 @@ public class HoverHelp {
 		Tree tree = new Tree (frame, SWT.BORDER);
 		for (int i=0; i<4; i++) {
 			TreeItem item = new TreeItem (tree, SWT.PUSH);
-			item.setText (getResourceString("Item", new Object[] { Integer.valueOf(i) }));
+			item.setText (getResourceString("Item", Integer.valueOf(i)));
 			item.setData ("TIP_IMAGE", images[hhiWarning]);
-			item.setText (getResourceString("TreeItem.text", new Object[] { Integer.valueOf(i) }));
+			item.setText (getResourceString("TreeItem.text", Integer.valueOf(i)));
 			item.setData ("TIP_TEXT", getResourceString("TreeItem.tooltip",
-				new Object[] { item.getText(), helpKey}));
+				item.getText(), helpKey));
 			item.setData ("TIP_HELPTEXTHANDLER", (ToolTipHelpTextHandler) widget -> {
 				Item item1 = (Item) widget;
-				return getResourceString("TreeItem.help", new Object[] { item1.getText() });
+				return getResourceString("TreeItem.help", item1.getText());
 			});
 		}
 		tree.setLayoutData(new GridData(GridData.VERTICAL_ALIGN_FILL));
@@ -289,16 +289,13 @@ public class HoverHelp {
 				public void mouseHover (MouseEvent event) {
 					Point pt = new Point (event.x, event.y);
 					Widget widget = event.widget;
-					if (widget instanceof ToolBar) {
-						ToolBar w = (ToolBar) widget;
+					if (widget instanceof ToolBar w) {
 						widget = w.getItem (pt);
 					}
-					if (widget instanceof Table) {
-						Table w = (Table) widget;
+					if (widget instanceof Table w) {
 						widget = w.getItem (pt);
 					}
-					if (widget instanceof Tree) {
-						Tree w = (Tree) widget;
+					if (widget instanceof Tree w) {
 						widget = w.getItem (pt);
 					}
 					if (widget == null) {
@@ -366,6 +363,6 @@ public class HoverHelp {
 		 * @param widget the widget that is under help
 		 * @return a help text string
 		 */
-		public String getHelpText(Widget widget);
+		String getHelpText(Widget widget);
 	}
 }
