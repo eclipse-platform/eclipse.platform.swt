@@ -16,6 +16,7 @@ package org.eclipse.swt.widgets;
 
 
 import java.util.*;
+import java.util.concurrent.atomic.*;
 import java.util.stream.*;
 
 import org.eclipse.swt.*;
@@ -77,6 +78,9 @@ public abstract class Control extends Widget implements Drawable {
 	Region region;
 	Font font;
 	int drawCount, foreground, background, backgroundAlpha = 255;
+
+	/** Cache for currently processed DPI change event to be able to cancel it if a new one is triggered */
+	Event currentDpiChangeEvent;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -4760,7 +4764,10 @@ public boolean setParent (Composite parent) {
 	if (parent.nativeZoom != nativeZoom) {
 		int newZoom = parent.nativeZoom;
 		Event zoomChangedEvent = createZoomChangedEvent(newZoom);
-		notifyListeners(SWT.ZoomChanged, zoomChangedEvent);
+		if (currentDpiChangeEvent != null) {
+			currentDpiChangeEvent.doit = false;
+		}
+		sendZoomChangedEvent(zoomChangedEvent, getShell());
 	}
 	int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE;
 	OS.SetWindowPos (topHandle, OS.HWND_BOTTOM, 0, 0, 0, 0, flags);
@@ -4953,19 +4960,24 @@ LRESULT WM_DESTROY (long wParam, long lParam) {
 	return null;
 }
 
-void handleMonitorSpecificDpiChange(int newNativeZoom, Rectangle newBoundsInPixels) {
+private void handleMonitorSpecificDpiChange(int newNativeZoom, Rectangle newBoundsInPixels) {
 	DPIUtil.setDeviceZoom (newNativeZoom);
 	Event zoomChangedEvent = createZoomChangedEvent(newNativeZoom);
+	if (currentDpiChangeEvent != null) {
+		currentDpiChangeEvent.doit = false;
+	}
+	currentDpiChangeEvent = zoomChangedEvent;
 	notifyListeners(SWT.ZoomChanged, zoomChangedEvent);
 	this.setBoundsInPixels(newBoundsInPixels.x, newBoundsInPixels.y, newBoundsInPixels.width, newBoundsInPixels.height);
 }
 
-private Event createZoomChangedEvent(int zoom) {
+Event createZoomChangedEvent(int zoom) {
 	Event event = new Event();
 	event.type = SWT.ZoomChanged;
 	event.widget = this;
 	event.detail = zoom;
 	event.doit = true;
+	event.data = new DPIChangeExecution();
 	return event;
 }
 
@@ -4974,12 +4986,10 @@ LRESULT WM_DPICHANGED (long wParam, long lParam) {
 	int newNativeZoom = DPIUtil.mapDPIToZoom (OS.HIWORD (wParam));
 	if (getDisplay().isRescalingAtRuntime()) {
 		Device.win32_destroyUnusedHandles(getDisplay());
-		if (newNativeZoom != nativeZoom) {
-			RECT rect = new RECT ();
-			COM.MoveMemory(rect, lParam, RECT.sizeof);
-			handleMonitorSpecificDpiChange(newNativeZoom, new Rectangle(rect.left, rect.top, rect.right - rect.left, rect.bottom-rect.top));
-			return LRESULT.ZERO;
-		}
+		RECT rect = new RECT ();
+		COM.MoveMemory(rect, lParam, RECT.sizeof);
+		handleMonitorSpecificDpiChange(newNativeZoom, new Rectangle(rect.left, rect.top, rect.right - rect.left, rect.bottom-rect.top));
+		return LRESULT.ZERO;
 	} else {
 		int newZoom = DPIUtil.getZoomForAutoscaleProperty (newNativeZoom);
 		int oldZoom = DPIUtil.getZoomForAutoscaleProperty (nativeZoom);
@@ -5879,6 +5889,62 @@ LRESULT wmScrollChild (long wParam, long lParam) {
 	return null;
 }
 
+static class DPIChangeExecution {
+	AtomicInteger taskCount = new AtomicInteger();
+	private boolean asyncExec = true;
+
+	private void process(Control control, Runnable operation) {
+		boolean currentAsyncExec = asyncExec;
+		if (control instanceof Composite comp) {
+			// do not execute the DPI change asynchronously, if there is no
+			// layout manager available otherwise size calculations could lead
+			// to wrong results, because no final layout will be triggered
+			asyncExec &= (comp.layout != null);
+		}
+		if (asyncExec) {
+			control.getDisplay().asyncExec(operation::run);
+		} else {
+			operation.run();
+		}
+		// resetting it prevents to break asynchronous execution when the synchronous
+		// DPI change handling is finished
+		asyncExec = currentAsyncExec;
+	}
+
+	private void increment() {
+		taskCount.incrementAndGet();
+	}
+
+	private boolean decrement() {
+		return taskCount.decrementAndGet() <= 0;
+	}
+}
+
+void sendZoomChangedEvent(Event event, Shell shell) {
+	this.currentDpiChangeEvent = event;
+	if (event.data instanceof DPIChangeExecution dpiExecData) {
+		dpiExecData.increment();
+		dpiExecData.process(this, () -> {
+			try {
+				if (!this.isDisposed() && event.doit) {
+					notifyListeners(SWT.ZoomChanged, event);
+				}
+			} finally {
+				if (shell.isDisposed()) {
+					return;
+				}
+				if (dpiExecData.decrement()) {
+					if (event == currentDpiChangeEvent) {
+						currentDpiChangeEvent = null;
+					}
+					if (event.doit) {
+						shell.WM_SIZE(0, 0);
+					}
+				}
+			}
+		});
+	}
+}
 
 @Override
 void handleDPIChange(Event event, float scalingFactor) {
