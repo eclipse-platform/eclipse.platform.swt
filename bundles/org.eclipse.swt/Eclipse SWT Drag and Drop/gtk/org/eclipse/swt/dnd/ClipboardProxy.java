@@ -139,11 +139,11 @@ long getFunc(long clipboard, long selection_data, long info, long user_data_or_o
 	if (index == -1) return 0;
 	Object[] data = (clipboard == Clipboard.GTKCLIPBOARD) ? clipboardData : primaryClipboardData;
 	types[index].javaToNative(data[index], tdata);
-	if (tdata.format < 8 || tdata.format % 8 != 0) {
+	if (tdata.gtk3().format < 8 || tdata.gtk3().format % 8 != 0) {
 		return 0;
 	}
-	GTK3.gtk_selection_data_set(selection_data, tdata.type, tdata.format, tdata.pValue, tdata.length);
-	OS.g_free(tdata.pValue);
+	GTK3.gtk_selection_data_set(selection_data, tdata.type, tdata.gtk3().format, tdata.gtk3().pValue, tdata.gtk3().length);
+	OS.g_free(tdata.gtk3().pValue);
 	return 1;
 }
 

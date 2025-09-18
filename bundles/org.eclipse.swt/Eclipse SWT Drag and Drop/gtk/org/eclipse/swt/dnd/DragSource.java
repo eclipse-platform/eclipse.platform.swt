@@ -516,9 +516,9 @@ void dragGetData(long widget, long context, long selection_data,  int info, int 
 
 	TransferData transferData = new TransferData();
 	transferData.type = target;
-	transferData.pValue = data;
-	transferData.length = length;
-	transferData.format = format;
+	transferData.gtk3().pValue = data;
+	transferData.gtk3().length = length;
+	transferData.gtk3().format = format;
 
 	DNDEvent event = new DNDEvent();
 	event.widget = this;
@@ -536,9 +536,9 @@ void dragGetData(long widget, long context, long selection_data,  int info, int 
 	}
 	if (transfer == null) return;
 	transfer.javaToNative(event.data, transferData);
-	if (transferData.result != 1) return;
-	GTK3.gtk_selection_data_set(selection_data, transferData.type, transferData.format, transferData.pValue, transferData.length);
-	OS.g_free(transferData.pValue);
+	if (transferData.gtk3().result != 1) return;
+	GTK3.gtk_selection_data_set(selection_data, transferData.type, transferData.gtk3().format, transferData.gtk3().pValue, transferData.gtk3().length);
+	OS.g_free(transferData.gtk3().pValue);
 	return;
 }
 

@@ -312,9 +312,9 @@ public Object getContents(Transfer transfer, int clipboards) {
 		if (selection_data != 0) {
 			TransferData tdata = new TransferData();
 			tdata.type = GTK3.gtk_selection_data_get_data_type(selection_data);
-			tdata.pValue = GTK3.gtk_selection_data_get_data(selection_data);
-			tdata.length = GTK3.gtk_selection_data_get_length(selection_data);
-			tdata.format = GTK3.gtk_selection_data_get_format(selection_data);
+			tdata.gtk3().pValue = GTK3.gtk_selection_data_get_data(selection_data);
+			tdata.gtk3().length = GTK3.gtk_selection_data_get_length(selection_data);
+			tdata.gtk3().format = GTK3.gtk_selection_data_get_format(selection_data);
 			result = transfer.nativeToJava(tdata);
 			GTK3.gtk_selection_data_free(selection_data);
 			selection_data = 0;

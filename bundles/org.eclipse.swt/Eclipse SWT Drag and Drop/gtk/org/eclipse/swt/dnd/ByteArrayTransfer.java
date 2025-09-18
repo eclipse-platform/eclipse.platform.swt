@@ -156,7 +156,7 @@ public boolean isSupportedType(TransferData transferData){
  */
 @Override
 protected void javaToNative (Object object, TransferData transferData) {
-	transferData.result = 0;
+	transferData.gtk3().result = 0;
 	if (!checkByteArray(object) || !isSupportedType(transferData)) {
 		DND.error(DND.ERROR_INVALID_DATA);
 	}
@@ -165,10 +165,10 @@ protected void javaToNative (Object object, TransferData transferData) {
 	long pValue = OS.g_malloc(buffer.length);
 	if (pValue == 0) return;
 	C.memmove(pValue, buffer, buffer.length);
-	transferData.length = buffer.length;
-	transferData.format = 8;
-	transferData.pValue = pValue;
-	transferData.result = 1;
+	transferData.gtk3().length = buffer.length;
+	transferData.gtk3().format = 8;
+	transferData.gtk3().pValue = pValue;
+	transferData.gtk3().result = 1;
 }
 
 /**
@@ -183,11 +183,11 @@ protected void javaToNative (Object object, TransferData transferData) {
  */
 @Override
 protected Object nativeToJava(TransferData transferData) {
-	if ( !isSupportedType(transferData) || transferData.pValue == 0) return null;
-	int size = transferData.format * transferData.length / 8;
+	if ( !isSupportedType(transferData) || transferData.gtk3().pValue == 0) return null;
+	int size = transferData.gtk3().format * transferData.gtk3().length / 8;
 	if (size == 0) return null;
 	byte[] buffer = new byte[size];
-	C.memmove(buffer, transferData.pValue, size);
+	C.memmove(buffer, transferData.gtk3().pValue, size);
 	return buffer;
 }
 

@@ -61,7 +61,7 @@ public static HTMLTransfer getInstance () {
  */
 @Override
 public void javaToNative (Object object, TransferData transferData){
-	transferData.result = 0;
+	transferData.gtk3().result = 0;
 	if (!checkHTML(object) || !isSupportedType(transferData)) {
 		DND.error(DND.ERROR_INVALID_DATA);
 	}
@@ -71,10 +71,10 @@ public void javaToNative (Object object, TransferData transferData){
 	long pValue = OS.g_malloc(byteCount);
 	if (pValue == 0) return;
 	C.memmove(pValue, utf8, byteCount);
-	transferData.length = byteCount;
-	transferData.format = 8;
-	transferData.pValue = pValue;
-	transferData.result = 1;
+	transferData.gtk3().length = byteCount;
+	transferData.gtk3().format = 8;
+	transferData.gtk3().pValue = pValue;
+	transferData.gtk3().result = 1;
 }
 
 /**
@@ -89,21 +89,21 @@ public void javaToNative (Object object, TransferData transferData){
  */
 @Override
 public Object nativeToJava(TransferData transferData){
-	if ( !isSupportedType(transferData) ||  transferData.pValue == 0 ) return null;
+	if ( !isSupportedType(transferData) ||  transferData.gtk3().pValue == 0 ) return null;
 	/* Ensure byteCount is a multiple of 2 bytes */
-	int size = (transferData.format * transferData.length / 8) / 2 * 2;
+	int size = (transferData.gtk3().format * transferData.gtk3().length / 8) / 2 * 2;
 	if (size <= 0) return null;
 	char[] bom = new char[1]; // look for a Byte Order Mark
-	if (size > 1) C.memmove (bom, transferData.pValue, 2);
+	if (size > 1) C.memmove (bom, transferData.gtk3().pValue, 2);
 	String string;
 	if (bom[0] == '\ufeff' || bom[0] == '\ufffe') {
 		// utf16
 		char[] chars = new char [size/2];
-		C.memmove (chars, transferData.pValue, size);
+		C.memmove (chars, transferData.gtk3().pValue, size);
 		string = new String (chars);
 	} else {
 		byte[] utf8 = new byte[size];
-		C.memmove(utf8, transferData.pValue, size);
+		C.memmove(utf8, transferData.gtk3().pValue, size);
 		// convert utf8 byte array to a unicode string
 		char [] unicode = org.eclipse.swt.internal.Converter.mbcsToWcs (utf8);
 		string = new String (unicode);

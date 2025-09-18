@@ -111,14 +111,14 @@ public void javaToNative(Object object, TransferData transferData) {
 		if (type == null) return;
 		GDK.gdk_pixbuf_save_to_bufferv(pixbuf, buffer, len, type, null, null, null);
 		OS.g_object_unref(pixbuf);
-		transferData.pValue = buffer[0];
-		transferData.length = (int)(len[0] + 3) / 4 * 4;
-		transferData.result = 1;
+		transferData.gtk3().pValue = buffer[0];
+		transferData.gtk3().length = (int)(len[0] + 3) / 4 * 4;
+		transferData.gtk3().result = 1;
 		// The following value has been changed from 32 to 8 as a simple fix for #146
 		// See https://www.cc.gatech.edu/data_files/public/doc/gtk/tutorial/gtk_tut-16.html where it states:
 		// "The format field is actually important here - the X server uses it to figure out whether the data
 		// needs to be byte-swapped or not. Usually it will be 8 - i.e. a character - or 32 - i.e. a. integer."
-		transferData.format = 8;
+		transferData.gtk3().format = 8;
 	}
 	image.dispose();
 }
@@ -136,10 +136,10 @@ public void javaToNative(Object object, TransferData transferData) {
 @Override
 public Object nativeToJava(TransferData transferData) {
 	ImageData imgData = null;
-	if (transferData.length > 0) {
+	if (transferData.gtk3().length > 0) {
 		long loader = GDK.gdk_pixbuf_loader_new();
 		try {
-			GDK.gdk_pixbuf_loader_write(loader, transferData.pValue, transferData.length, null);
+			GDK.gdk_pixbuf_loader_write(loader, transferData.gtk3().pValue, transferData.gtk3().length, null);
 			GDK.gdk_pixbuf_loader_close(loader, null);
 			long pixbuf = GDK.gdk_pixbuf_loader_get_pixbuf(loader);
 			if (pixbuf != 0) {

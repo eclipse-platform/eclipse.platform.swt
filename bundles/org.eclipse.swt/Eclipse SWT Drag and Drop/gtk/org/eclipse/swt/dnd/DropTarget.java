@@ -358,9 +358,9 @@ void drag_data_received ( long widget, long context, int x, int y, long selectio
 	long type = GTK3.gtk_selection_data_get_data_type(selection_data);
 	if (data != 0) {
 		transferData.type = type;
-		transferData.length = length;
-		transferData.pValue = data;
-		transferData.format = format;
+		transferData.gtk3().length = length;
+		transferData.gtk3().pValue = data;
+		transferData.gtk3().format = format;
 		for (int i = 0; i < transferAgents.length; i++) {
 			Transfer transfer = transferAgents[i];
 			if (transfer != null && transfer.isSupportedType(transferData)) {
