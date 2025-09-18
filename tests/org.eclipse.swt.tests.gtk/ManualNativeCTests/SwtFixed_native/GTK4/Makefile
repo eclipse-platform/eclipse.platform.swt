@@ -1,5 +1,5 @@
-CFLAGS = `pkg-config --cflags gtk+-4.0` -g
-LIBS = `pkg-config --libs gtk+-4.0`
+CFLAGS = `pkg-config --cflags gtk4` -g
+LIBS = `pkg-config --libs gtk4`
 OBJ = simple_button_app.o os_custom.o
 
 simple_button_app: $(OBJ)
