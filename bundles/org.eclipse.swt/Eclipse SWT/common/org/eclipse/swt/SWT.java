@@ -3328,6 +3328,7 @@ public class SWT {
 	/**
 	 * Keyboard event constant representing the copy
 	 * key (value is (1&lt;&lt;24)+88).
+	 * This event is currently only supported on GTK.
 	 *
 	 * @since 3.132
 	 */
@@ -3336,6 +3337,7 @@ public class SWT {
 	/**
 	 * Keyboard event constant representing the cut
 	 * key (value is (1&lt;&lt;24)+89).
+	 * This event is currently only supported on GTK.
 	 *
 	 * @since 3.132
 	 */
@@ -3344,6 +3346,7 @@ public class SWT {
 	/**
 	 * Keyboard event constant representing the paste
 	 * key (value is (1&lt;&lt;24)+90).
+	 * This event is currently only supported on GTK.
 	 *
 	 * @since 3.132
 	 */
