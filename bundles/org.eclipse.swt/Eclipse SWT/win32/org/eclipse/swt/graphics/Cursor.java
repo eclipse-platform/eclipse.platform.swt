@@ -19,6 +19,7 @@ import java.util.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.internal.win32.version.*;
 
 /**
  * Instances of this class manage operating system resources that
@@ -153,25 +154,6 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 	this.device.registerResourceWithZoomSupport(this);
 }
 
-private static CursorHandle setupCursorFromImageData(ImageData source, ImageData mask, int hotspotX, int hotspotY) {
-	if (mask == null) {
-		mask = source.getTransparencyMask();
-	}
-	/* Convert depth to 1 */
-	mask = ImageData.convertMask(mask);
-	source = ImageData.convertMask(source);
-
-	/* Make sure source and mask scanline pad is 2 */
-	byte[] sourceData = ImageData.convertPad(source.data, source.width, source.height, source.depth, source.scanlinePad, 2);
-	byte[] maskData = ImageData.convertPad(mask.data, mask.width, mask.height, mask.depth, mask.scanlinePad, 2);
-
-	/* Create the cursor */
-	long hInst = OS.GetModuleHandle(null);
-	long handle = OS.CreateCursor(hInst, hotspotX, hotspotY, source.width, source.height, sourceData, maskData);
-	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	return new CustomCursorHandle(handle);
-}
-
 /**
  * Constructs a new cursor given a device, image data describing
  * the desired cursor appearance, and the x and y coordinates of
@@ -208,7 +190,7 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 	this.device.registerResourceWithZoomSupport(this);
 }
 
-private static CursorHandle setupCursorFromImageData(Device device, ImageData source, int hotspotX, int hotspotY) {
+private static CursorHandle setupCursorFromImageData(Device device, ImageData source, ImageData maskData, int hotspotX, int hotspotY) {
 	if (source == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	long hBitmap = 0;
 	long hMask = 0;
@@ -254,10 +236,21 @@ private static CursorHandle setupCursorFromImageData(Device device, ImageData so
 			}
 		}
 		OS.MoveMemory(dibBM.bmBits, srcData, srcData.length);
-		hMask = OS.CreateBitmap(source.width, source.height, 1, 1, new byte[(((source.width + 7) / 8) + 3) / 4 * 4 * source.height]);
+		if (maskData != null) {
+			long[] maskResult = Image.initIcon(device, maskData, maskData);
+			hMask = maskResult[1];
+		} else {
+			hMask = OS.CreateBitmap(source.width, source.height, 1, 1,
+					new byte[(((source.width + 7) / 8) + 3) / 4 * 4 * source.height]);
+		}
 		if (hMask == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	} else {
-		ImageData mask = source.getTransparencyMask();
+		ImageData mask;
+		if(maskData != null) {
+			mask = maskData;
+		} else {
+			mask = source.getTransparencyMask();
+		}
 		long [] result = Image.initIcon(device, source, mask);
 		hBitmap = result[0];
 		hMask = result[1];
@@ -347,6 +340,39 @@ private void setHandleForZoomLevel(CursorHandle handle, Integer zoom) {
 	if (zoom != null && !zoomLevelToHandle.containsKey(zoom)) {
 		zoomLevelToHandle.put(zoom, handle);
 	}
+}
+
+/**
+ * Retrieves the scaling factor of the mouse pointer size as set in Windows
+ * 10/11 "Settings &gt; Accessibility &gt; Mouse pointer and touch &gt; Size".
+ * <p>
+ * This method reads the "CursorBaseSize" registry value under
+ * {@code HKEY_CURRENT_USER\Control Panel\Cursors}. If this registry value
+ * exists (introduced in Windows 10 version 1809 for accessibility cursor
+ * scaling), the method computes the scale factor by dividing the base size by
+ * the default system cursor size (32px). If the registry value is not present
+ * or cannot be read, the method returns {@code 1} indicating default size.
+ * <p>
+ * <strong>Note:</strong> This approach is only valid for Windows 10 1809+ with
+ * the modern accessibility pointer setting. For classic themes or older Windows
+ * versions, this value may not be present or honored.
+ *
+ * @return the cursor scaling factor (e.g., 1 for default size, 2 for double
+ *         size, etc.)
+ */
+
+private static int getPointerSizeScaleFactor() {
+	final int defaultCursorSize = 32;
+	int scaleFactor = 1; // Default: standard size
+
+	if (OsVersion.IS_WIN10_1809) {
+		int[] cursorBaseSize = OS.readRegistryDwords(OS.HKEY_CURRENT_USER, "Control Panel\\Cursors", "CursorBaseSize");
+		if (cursorBaseSize != null && cursorBaseSize.length > 0 && cursorBaseSize[0] > 0) {
+			scaleFactor = cursorBaseSize[0] / defaultCursorSize;
+		}
+	}
+
+	return scaleFactor;
 }
 
 @Override
@@ -619,7 +645,7 @@ private static class ImageDataProviderCursorHandleProvider extends HotspotAwareC
 			source = tempImage.getImageData(zoom);
 			tempImage.dispose();
 		}
-		return setupCursorFromImageData(device, source, getHotpotXInPixels(zoom), getHotpotYInPixels(zoom));
+		return setupCursorFromImageData(device, source, null, getHotpotXInPixels(zoom), getHotpotYInPixels(zoom));
 	}
 }
 
@@ -635,8 +661,9 @@ private static class ImageDataCursorHandleProvider extends HotspotAwareCursorHan
 
 	@Override
 	public CursorHandle createHandle(Device device, int zoom) {
-		ImageData scaledSource = DPIUtil.scaleImageData(device, this.source, zoom, DEFAULT_ZOOM);
-		return setupCursorFromImageData(device, scaledSource, getHotpotXInPixels(zoom),
+		int accessibilityFactor = getPointerSizeScaleFactor();
+		ImageData scaledSource = DPIUtil.scaleImageData(device, this.source, zoom * accessibilityFactor, DEFAULT_ZOOM);
+		return setupCursorFromImageData(device, scaledSource, null, getHotpotXInPixels(zoom),
 				getHotpotYInPixels(zoom));
 	}
 }
@@ -666,10 +693,10 @@ private static class ImageDataWithMaskCursorHandleProvider extends ImageDataCurs
 
 	@Override
 	public CursorHandle createHandle(Device device, int zoom) {
-		ImageData scaledSource = DPIUtil.scaleImageData(device, this.source, zoom, DEFAULT_ZOOM);
-		ImageData scaledMask = this.mask != null ? DPIUtil.scaleImageData(device, mask, zoom, DEFAULT_ZOOM)
-				: null;
-		return setupCursorFromImageData(scaledSource, scaledMask, getHotpotXInPixels(zoom), getHotpotYInPixels(zoom));
+		float zoomFactor = (getPointerSizeScaleFactor() * zoom) / 100f;
+		ImageData scaledSource =  this.source.scaledTo((int) (this.source.width * zoomFactor), (int) (this.source.height * zoomFactor));
+		ImageData scaledMask = this.mask!= null? this.mask.scaledTo((int) (this.mask.width * zoomFactor), (int) (this.mask.height * zoomFactor)) : null;
+		return setupCursorFromImageData(device, scaledSource, scaledMask, getHotpotXInPixels(zoom), getHotpotYInPixels(zoom));
 	}
 }
 
