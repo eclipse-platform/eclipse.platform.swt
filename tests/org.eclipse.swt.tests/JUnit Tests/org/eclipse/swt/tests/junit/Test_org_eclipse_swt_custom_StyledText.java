@@ -4691,6 +4691,48 @@ public void test_verticalIndent_changeRelativeBounds() {
 	assertEquals(0, text.getTopPixel());
 }
 
+/**
+ * test fix for eclipse-platform/eclipse.platform.swt#2512
+ */
+@Test
+public void test_verticalIndent_resetsCacheForAllLinesAssumingLowestLineHeight() throws Exception {
+	text.dispose();
+	text = new StyledText(shell, SWT.V_SCROLL);
+	setWidget(text);
+	shell.setVisible(true);
+	var str = new StringBuilder();
+	for (int i = 0; i < 200; i++) {
+		str.append("line ").append(i).append("\n");
+	}
+	text.setText(str.toString());
+	text.setSize(500, 200);
+
+	var m = StyledText.class.getDeclaredMethod("getPartialBottomIndex");
+	m.setAccessible(true);
+	int bottomIndex = (int) m.invoke(text);
+
+	text.setLineVerticalIndent(1, 5 * text.getLineHeight());
+	while (Display.getDefault().readAndDispatch()) {
+	}
+	for (int i = 1; i >= 0; i--) {
+		int lineNr = bottomIndex - i;
+		text.setLineVerticalIndent(lineNr, 2 * text.getLineHeight());
+	}
+	for (int i = 1; i >= 0; i--) {
+		int lineNr = bottomIndex - i;
+		var field = StyledText.class.getDeclaredField("renderer");
+		field.setAccessible(true);
+		Object renderer = field.get(text);
+		m = renderer.getClass().getDeclaredMethod("getLineSize", int.class);
+		m.setAccessible(true);
+		Object lineSize = m.invoke(renderer, lineNr);
+		field = lineSize.getClass().getDeclaredField("height");
+		field.setAccessible(true);
+		int height = (int) field.get(lineSize);
+		assertEquals("resetCache is not called for line "+lineNr+" after setLineVerticalIndent",-1, height);
+	}
+}
+
 @Test
 public void test_verticalIndent_keepsCurrentCaretAndLinePosition() {
 	text.dispose();
