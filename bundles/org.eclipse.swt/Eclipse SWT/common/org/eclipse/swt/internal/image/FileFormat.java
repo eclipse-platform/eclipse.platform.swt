@@ -73,7 +73,16 @@ public abstract class FileFormat {
 	private static final int MAX_SIGNATURE_BYTES = 18 + 2; // e.g. Win-BMP or OS2-BMP plus a safety-margin
 
 	public static boolean isDynamicallySizableFormat(InputStream is) {
-		Optional<FileFormat> format = determineFileFormat(new LEDataInputStream(is, MAX_SIGNATURE_BYTES));
+		if (!is.markSupported()) {
+	        is = new BufferedInputStream(is);
+	    }
+		is.mark(MAX_SIGNATURE_BYTES);
+	    Optional<FileFormat> format = determineFileFormat(new LEDataInputStream(is, MAX_SIGNATURE_BYTES));
+	    try {
+			is.reset();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		return format.isPresent() && !(format.get() instanceof StaticImageFileFormat);
 	}
 
@@ -84,6 +93,11 @@ public abstract class FileFormat {
 		@Override
 		List<ElementAtZoom<ImageData>> loadFromByteStream(int fileZoom, int targetZoom) {
 			return Arrays.stream(loadFromByteStream()).map(d -> new ElementAtZoom<>(d, fileZoom)).toList();
+		}
+
+		@Override
+		ImageData loadFromByteStreamByTargetSize(int targetWidth, int targetHeight) {
+			return loadFromByteStream()[0];
 		}
 	}
 
@@ -104,6 +118,8 @@ public abstract class FileFormat {
 	 */
 	abstract List<ElementAtZoom<ImageData>> loadFromByteStream(int fileZoom, int targetZoom);
 
+	abstract ImageData loadFromByteStreamByTargetSize(int targetWidth, int targetHeight);
+
 /**
  * Read the specified input stream, and return the
  * device independent image array represented by the stream.
@@ -112,6 +128,20 @@ public List<ElementAtZoom<ImageData>> loadFromStream(LEDataInputStream stream, i
 	try {
 		inputStream = stream;
 		return loadFromByteStream(fileZoom, targetZoom);
+	} catch (Exception e) {
+		if (e instanceof IOException) {
+			SWT.error(SWT.ERROR_IO, e);
+		} else {
+			SWT.error(SWT.ERROR_INVALID_IMAGE, e);
+		}
+		return null;
+	}
+}
+
+public ImageData loadFromStreamByTargetSize(LEDataInputStream stream, int targetWidth, int targetHeight) {
+	try {
+		inputStream = stream;
+		return loadFromByteStreamByTargetSize(targetWidth, targetHeight);
 	} catch (Exception e) {
 		if (e instanceof IOException) {
 			SWT.error(SWT.ERROR_IO, e);
@@ -134,6 +164,16 @@ public static List<ElementAtZoom<ImageData>> load(ElementAtZoom<InputStream> is,
 	});
 	fileFormat.loader = loader;
 	return fileFormat.loadFromStream(stream, is.zoom(), targetZoom);
+}
+
+public static ImageData load(InputStream is, ImageLoader loader, int targetWidth, int targetHeight) {
+	LEDataInputStream stream = new LEDataInputStream(is);
+	FileFormat fileFormat = determineFileFormat(stream).orElseGet(() -> {
+		SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT);
+		return null;
+	});
+	fileFormat.loader = loader;
+	return fileFormat.loadFromStreamByTargetSize(stream, targetWidth, targetHeight);
 }
 
 public static boolean canLoadAtZoom(ElementAtZoom<InputStream> is, int targetZoom) {

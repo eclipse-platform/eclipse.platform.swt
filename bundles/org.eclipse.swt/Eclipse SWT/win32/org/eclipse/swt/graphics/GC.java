@@ -1061,7 +1061,8 @@ private class DrawImageOperation extends ImageOperation {
 
 	private void drawImageInPixels(Image image, Point location) {
 		if (image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-		drawImage(image, 0, 0, -1, -1, location.x, location.y, -1, -1, true, getZoom());
+		long handle = Image.win32_getHandle(image, getZoom());
+		drawImage(image, 0, 0, -1, -1, location.x, location.y, -1, -1, true, handle);
 	}
 }
 
@@ -1099,7 +1100,10 @@ private class DrawImageOperation extends ImageOperation {
  */
 public void drawImage (Image image, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight) {
 	checkNonDisposed();
-	if (srcWidth == 0 || srcHeight == 0 || destWidth == 0 || destHeight == 0) return;
+	if (image == null && (srcWidth == 0 || srcHeight == 0)) return;
+	// Skip drawing only if exactly one source dimension is zero
+	if ((srcWidth == 0) ^ (srcHeight == 0)) return;
+	if (destWidth == 0 || destHeight == 0) return;
 	if (srcX < 0 || srcY < 0 || srcWidth < 0 || srcHeight < 0 || destWidth < 0 || destHeight < 0) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
@@ -1164,8 +1168,8 @@ private class DrawScalingImageToImageOperation extends ImageOperation {
 private void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY,
 		int destWidth, int destHeight, int imageZoom, int scaledImageZoom) {
 	Rectangle src = Win32DPIUtils.pointToPixel(drawable, new Rectangle(srcX, srcY, srcWidth, srcHeight), scaledImageZoom);
-	Rectangle dest = Win32DPIUtils.pointToPixel(drawable, new Rectangle(destX, destY, destWidth, destHeight), imageZoom);
-	if (scaledImageZoom != 100) {
+	Rectangle destPixels = Win32DPIUtils.pointToPixel(drawable, new Rectangle(destX, destY, destWidth, destHeight), imageZoom);
+	if (scaledImageZoom % 100 != 0) {
 		/*
 		 * This is a HACK! Due to rounding errors at fractional scale factors,
 		 * the coordinates may be slightly off. The workaround is to restrict
@@ -1182,7 +1186,46 @@ private void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHei
 			}
 		}
 	}
-	drawImage(image, src.x, src.y, src.width, src.height, dest.x, dest.y, dest.width, dest.height, false, scaledImageZoom);
+	int targetWidth;
+	int targetHeight;
+	Rectangle scaledSrc;
+	if (srcWidth == 0 && srcHeight == 0) {
+		scaledSrc = new Rectangle(srcX, srcY, srcWidth, srcHeight);
+		targetWidth = destWidth;
+		targetHeight = destHeight;
+	} else {
+		float widthScalingFactor = (float) destWidth / srcWidth;
+		float heightScalingFactor = (float) destHeight / srcHeight;
+		Rectangle fullImageBounds = image.getBounds();
+		targetWidth = Math.round(fullImageBounds.width * widthScalingFactor);
+		targetHeight = Math.round(fullImageBounds.height * heightScalingFactor);
+
+		scaledSrc = new Rectangle(Math.round(src.x * widthScalingFactor),
+				Math.round(src.y * heightScalingFactor), Math.round(src.width * widthScalingFactor),
+				Math.round(src.height * heightScalingFactor));
+	}
+	Point targetSize = Win32DPIUtils.pointToPixel(drawable, new Point(targetWidth, targetHeight), scaledImageZoom);
+	image.executeOnImageHandleAtSizeOrZoom((tempHandle, handleSize) -> {
+		Rectangle srcRect = computeSourceRectangle(handleSize, targetSize, scaledSrc, src);
+		drawImage(image, srcRect.x, srcRect.y, srcRect.width, srcRect.height, destPixels.x, destPixels.y, destPixels.width,
+				destPixels.height, false, tempHandle);
+	}, targetSize.x, targetSize.y, scaledImageZoom);
+}
+
+/**
+ * Selects the source rectangle for drawing. If the requested width matches the image size,
+ * uses the scaled rectangle, otherwise the unscaled one.
+ */
+private Rectangle computeSourceRectangle(Point imageSize, Point requestedSize, Rectangle scaledSrc,
+		Rectangle unScaledSrc) {
+	Rectangle src = (imageSize == requestedSize) ? scaledSrc : unScaledSrc;
+	// If both width and height are zero, use the full image
+	// (avoids forcing a getBounds() call inside drawImage)
+	if (src.width == 0 && src.height == 0) {
+		return new Rectangle(0, 0, imageSize.x, imageSize.y);
+	}
+	System.out.println("src"+src);
+	return src;
 }
 
 private class DrawImageToImageOperation extends ImageOperation {
@@ -1199,18 +1242,20 @@ private class DrawImageToImageOperation extends ImageOperation {
 
 	@Override
 	void apply() {
-		drawImage(getImage(), source.x, source.y, source.width, source.height, destination.x, destination.y, destination.width, destination.height, simple, getZoom());
+		long handle = Image.win32_getHandle(getImage(), getZoom());
+		drawImage(getImage(), source.x, source.y, source.width, source.height, destination.x, destination.y, destination.width, destination.height, simple, handle);
 	}
 }
 
-private void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, int imageZoom) {
+private void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, long tempImageHandle) {
 	if (data.gdipGraphics != 0) {
 		//TODO - cache bitmap
-		long [] gdipImage = srcImage.createGdipImage(imageZoom);
+		long [] gdipImage = srcImage.createGdipImageFromHandle(tempImageHandle);
+		BITMAP bm = new BITMAP();
+		OS.GetObject(tempImageHandle, BITMAP.sizeof, bm);
 		long img = gdipImage[0];
 		int imgWidth = Gdip.Image_GetWidth(img);
 		int imgHeight = Gdip.Image_GetHeight(img);
-
 		if (simple) {
 			srcWidth = destWidth = imgWidth;
 			srcHeight = destHeight = imgHeight;
@@ -1261,13 +1306,13 @@ private void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int src
 		}
 		return;
 	}
-	long imageHandle = srcImage.getHandle(imageZoom, data.nativeZoom);
 	switch (srcImage.type) {
 		case SWT.BITMAP:
-			drawBitmap(srcImage, imageHandle, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple);
+			drawBitmap(srcImage, tempImageHandle, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight,
+					simple);
 			break;
 		case SWT.ICON:
-			drawIcon(imageHandle, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple);
+			drawIcon(tempImageHandle, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple);
 			break;
 	}
 }
