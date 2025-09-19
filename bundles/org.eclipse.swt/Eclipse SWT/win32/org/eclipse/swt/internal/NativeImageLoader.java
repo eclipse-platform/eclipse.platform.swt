@@ -26,6 +26,10 @@ public class NativeImageLoader {
 		return FileFormat.load(streamAtZoom, imageLoader, targetZoom);
 	}
 
+	public static ImageData load(InputStream streamAtZoom, ImageLoader imageLoader, int targetWidth, int targetHeight) {
+		return FileFormat.load(streamAtZoom, imageLoader, targetWidth, targetHeight);
+	}
+
 	public static void save(OutputStream stream, int format, ImageLoader imageLoader) {
 		FileFormat.save(stream, format, imageLoader);
 	}

@@ -151,16 +151,24 @@ void reset() {
  * </ul>
  */
 public ImageData[] load(InputStream stream) {
-	load(stream, FileFormat.DEFAULT_ZOOM, FileFormat.DEFAULT_ZOOM);
+	loadByZoom(stream, FileFormat.DEFAULT_ZOOM, FileFormat.DEFAULT_ZOOM);
 	return data;
 }
 
-List<ElementAtZoom<ImageData>> load(InputStream stream, int fileZoom, int targetZoom) {
+List<ElementAtZoom<ImageData>> loadByZoom(InputStream stream, int fileZoom, int targetZoom) {
 	if (stream == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	reset();
 	List<ElementAtZoom<ImageData>> images = NativeImageLoader.load(new ElementAtZoom<>(stream, fileZoom), this, targetZoom);
 	data = images.stream().map(ElementAtZoom::element).toArray(ImageData[]::new);
 	return images;
+}
+
+ImageData loadByTargetSize(InputStream stream, int targetWidth, int targetHeight) {
+	if (stream == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	reset();
+	ImageData image = NativeImageLoader.load(stream, this, targetWidth, targetHeight);
+	data = new ImageData[] {image};
+	return image;
 }
 
 static boolean canLoadAtZoom(InputStream stream, int fileZoom, int targetZoom) {
@@ -187,14 +195,24 @@ static boolean canLoadAtZoom(InputStream stream, int fileZoom, int targetZoom) {
  * </ul>
  */
 public ImageData[] load(String filename) {
-	load(filename, FileFormat.DEFAULT_ZOOM, FileFormat.DEFAULT_ZOOM);
+	loadByZoom(filename, FileFormat.DEFAULT_ZOOM, FileFormat.DEFAULT_ZOOM);
 	return data;
 }
 
-List<ElementAtZoom<ImageData>> load(String filename, int fileZoom, int targetZoom) {
+List<ElementAtZoom<ImageData>> loadByZoom(String filename, int fileZoom, int targetZoom) {
 	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	try (InputStream stream = new FileInputStream(filename)) {
-		return load(stream, fileZoom, targetZoom);
+		return loadByZoom(stream, fileZoom, targetZoom);
+	} catch (IOException e) {
+		SWT.error(SWT.ERROR_IO, e);
+	}
+	return null;
+}
+
+ImageData loadByTargetSize(String filename, int targetWidth, int targetHeight) {
+	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	try (InputStream stream = new FileInputStream(filename)) {
+		return loadByTargetSize(stream, targetWidth, targetHeight);
 	} catch (IOException e) {
 		SWT.error(SWT.ERROR_IO, e);
 	}
