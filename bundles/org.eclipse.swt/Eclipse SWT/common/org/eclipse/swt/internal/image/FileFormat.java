@@ -73,7 +73,16 @@ public abstract class FileFormat {
 	private static final int MAX_SIGNATURE_BYTES = 18 + 2; // e.g. Win-BMP or OS2-BMP plus a safety-margin
 
 	public static boolean isDynamicallySizableFormat(InputStream is) {
-		Optional<FileFormat> format = determineFileFormat(new LEDataInputStream(is, MAX_SIGNATURE_BYTES));
+		if (!is.markSupported()) {
+	        is = new BufferedInputStream(is);
+	    }
+		is.mark(MAX_SIGNATURE_BYTES);
+	    Optional<FileFormat> format = determineFileFormat(new LEDataInputStream(is, MAX_SIGNATURE_BYTES));
+	    try {
+			is.reset();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		return format.isPresent() && !(format.get() instanceof StaticImageFileFormat);
 	}
 
