@@ -114,12 +114,17 @@ public class Win32DPIUtils {
 	}
 
 	public static Point pixelToPoint(Point point, int zoom) {
+		//TODO actually all callers should explicitly state what mode the want!
+		return pixelToPoint(point, zoom, RoundingMode.ROUND);
+	}
+
+	public static Point pixelToPoint(Point point, int zoom, RoundingMode mode) {
 		if (zoom == 100 || point == null) return point;
 		Point.OfFloat fPoint = Point.OfFloat.from(point);
 		float scaleFactor = DPIUtil.getScalingFactor(zoom);
 		float scaledX = fPoint.getX() / scaleFactor;
 		float scaledY = fPoint.getY() / scaleFactor;
-		return new Point.OfFloat(scaledX, scaledY);
+		return new Point.OfFloat(scaledX, scaledY, mode);
 	}
 
 	public static Point pixelToPoint(Drawable drawable, Point point, int zoom) {
@@ -225,7 +230,7 @@ public class Win32DPIUtils {
 		float scaleFactor = DPIUtil.getScalingFactor(zoom);
 		float scaledX = fPoint.getX() * scaleFactor;
 		float scaledY = fPoint.getY() * scaleFactor;
-		return new Point.OfFloat(scaledX, scaledY);
+		return new Point.OfFloat(scaledX, scaledY, RoundingMode.ROUND);
 	}
 
 	public static Point pointToPixel(Drawable drawable, Point point, int zoom) {
