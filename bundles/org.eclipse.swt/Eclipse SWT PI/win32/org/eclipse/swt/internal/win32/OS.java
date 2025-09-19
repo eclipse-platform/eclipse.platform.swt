@@ -380,6 +380,7 @@ public class OS extends C {
 	public static final int DTS_SHORTDATEFORMAT = 0x0000;
 	public static final int DTS_TIMEFORMAT = 0x0009;
 	public static final int DTS_UPDOWN = 0x0001;
+	public static final int DWMWA_EXTENDED_FRAME_BOUNDS = 9;
 	public static final int E_POINTER = 0x80004003;
 	public static final int EBP_NORMALGROUPBACKGROUND = 5;
 	public static final int EBP_NORMALGROUPCOLLAPSE = 6;
@@ -3022,6 +3023,8 @@ public static final native boolean GetWindowOrgEx (long hdc, POINT lpPoint);
 public static final native boolean GetWindowPlacement (long hWnd, WINDOWPLACEMENT lpwndpl);
 /** @param hWnd cast=(HWND) */
 public static final native boolean GetWindowRect (long hWnd, RECT lpRect);
+/** @param hwnd cast=(HWND) */
+public static final native int DwmGetWindowAttribute (long hwnd, int dwAttribute, RECT pvAttribute, int cbAttribute);
 /**
  * @param hWnd cast=(HWND)
  * @param hRgn cast=(HRGN)
