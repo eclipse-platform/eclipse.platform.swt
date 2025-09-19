@@ -4860,7 +4860,7 @@ boolean setScrollWidth (TableItem item, boolean force) {
 		if (hStateList != 0) {
 			int [] cx = new int [1], cy = new int [1];
 			OS.ImageList_GetIconSize (hStateList, cx, cy);
-			newWidth += cx [0] + INSET;
+			newWidth += cx [0] + Win32DPIUtils.pointToPixel(INSET, getZoom());
 		}
 		long hImageList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_SMALL, 0);
 		if (hImageList != 0) {
@@ -4880,7 +4880,7 @@ boolean setScrollWidth (TableItem item, boolean force) {
 			*/
 			newWidth++;
 		}
-		newWidth += INSET * 2 + Win32DPIUtils.pointToPixel(VISTA_EXTRA, getZoom());
+		newWidth += Win32DPIUtils.pointToPixel(INSET * 2, getZoom()) + Win32DPIUtils.pointToPixel(VISTA_EXTRA, getZoom());
 		int oldWidth = (int)OS.SendMessage (handle, OS.LVM_GETCOLUMNWIDTH, 0, 0);
 		if (newWidth > oldWidth) {
 			setScrollWidth (newWidth);
@@ -6962,7 +6962,7 @@ LRESULT wmNotifyHeader (NMHDR hdr, long wParam, long lParam) {
 							}
 						}
 
-						int x = rects[i].left + INSET + 2;
+						int x = rects[i].left + Win32DPIUtils.pointToPixel(INSET + 2, getZoom());
 						if (columns[i].image != null) {
 							GCData data = new GCData();
 							data.device = display;
@@ -7303,9 +7303,9 @@ LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, long lParam) {
 						int zoom = getZoom();
 						rect = Win32DPIUtils.pixelToPoint(rect, zoom);
 						gc.drawImage (image, rect.x, rect.y, rect.width, rect.height, DPIUtil.pixelToPoint(x, zoom), DPIUtil.pixelToPoint(y, zoom), DPIUtil.pixelToPoint(size.x, zoom), DPIUtil.pixelToPoint(size.y, zoom));
-						x += size.x + INSET + (pinfo.iSubItem == 0 ? -2 : 4);
+						x += size.x + Win32DPIUtils.pointToPixel(INSET + (pinfo.iSubItem == 0 ? -2 : 4), zoom);
 					} else {
-						x += INSET + 2;
+						x += Win32DPIUtils.pointToPixel(INSET + 2, getZoom());
 					}
 					String string = item.getText (pinfo.iSubItem);
 					if (string != null) {
