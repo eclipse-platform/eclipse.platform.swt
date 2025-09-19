@@ -1453,7 +1453,7 @@ private void init(ImageData image, int zoom) {
 public long internal_new_GC (GCData data) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (type != SWT.BITMAP) {
-		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT, null, "The type is " + type);
 	}
 
 	if(memGC != null) {
