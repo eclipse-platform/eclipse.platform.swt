@@ -142,7 +142,6 @@ public abstract class Widget {
 		icce.dwSize = INITCOMMONCONTROLSEX.sizeof;
 		icce.dwICC = 0xffff;
 		OS.InitCommonControlsEx (icce);
-		DPIZoomChangeRegistry.registerHandler(Widget::handleDPIChange, Widget.class);
 	}
 
 /**
@@ -191,6 +190,14 @@ public Widget (Widget parent, int style) {
 	reskinWidget ();
 	notifyCreationTracker();
 	this.setData(DATA_NATIVE_ZOOM, this.nativeZoom);
+	registerDPIChangeListener();
+}
+
+void registerDPIChangeListener() {
+	this.addListener(SWT.ZoomChanged, event -> {
+		float scalingFactor = 1f * DPIUtil.getZoomForAutoscaleProperty(event.detail) / DPIUtil.getZoomForAutoscaleProperty(nativeZoom);
+		handleDPIChange(event, scalingFactor);
+	});
 }
 
 void _addListener (int eventType, Listener listener) {
@@ -2717,9 +2724,10 @@ int getZoom() {
 	return DPIUtil.getZoomForAutoscaleProperty(nativeZoom);
 }
 
-private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
-	widget.nativeZoom = newZoom;
-	widget.setData(DATA_NATIVE_ZOOM, newZoom);
+void handleDPIChange(Event event, float scalingFactor) {
+	int newZoom = event.detail;
+	this.nativeZoom = newZoom;
+	this.setData(DATA_NATIVE_ZOOM, newZoom);
 }
 
 int getSystemMetrics(int nIndex) {
