@@ -1452,7 +1452,11 @@ private void init(ImageData image, int zoom) {
 @Override
 public long internal_new_GC (GCData data) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (type != SWT.BITMAP || memGC != null) {
+	if (type != SWT.BITMAP) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+
+	if(memGC != null) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	long gc = Cairo.cairo_create(surface);
