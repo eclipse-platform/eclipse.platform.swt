@@ -20,7 +20,7 @@
         <relativePath>../../</relativePath>
     </parent>
     <artifactId>org.eclipse.swt</artifactId>
-    <version>3.131.100-SNAPSHOT</version>
+    <version>3.132.0-SNAPSHOT</version>
     <packaging>eclipse-plugin</packaging>
 
     <properties>
