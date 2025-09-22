@@ -924,7 +924,7 @@ public int getAlpha () {
 	OS.GetWindowRect (handle, rect);
 	int width = rect.right - rect.left;
 	int height = rect.bottom - rect.top;
-	return new Rectangle (rect.left, rect.top, width, height);
+	return new Rectangle.WithMonitor (rect.left, rect.top, width, height, getMonitor());
 }
 
 ToolTip getCurrentToolTip () {
@@ -1017,7 +1017,7 @@ public int getImeInputMode () {
 	if (OS.IsIconic (handle)) return super.getLocationInPixels ();
 	RECT rect = new RECT ();
 	OS.GetWindowRect (handle, rect);
-	return new Point (rect.left, rect.top);
+	return new Point.WithMonitor (rect.left, rect.top, getMonitor());
 }
 
 @Override
