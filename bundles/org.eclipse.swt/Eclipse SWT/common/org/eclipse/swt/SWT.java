@@ -3330,7 +3330,7 @@ public class SWT {
 	 * key (value is (1&lt;&lt;24)+88).
 	 * This event is currently only supported on GTK.
 	 *
-	 * @since 3.132
+	 * @since 3.131
 	 */
 	public static final int COPY = KEYCODE_BIT + 88;
 
@@ -3339,7 +3339,7 @@ public class SWT {
 	 * key (value is (1&lt;&lt;24)+89).
 	 * This event is currently only supported on GTK.
 	 *
-	 * @since 3.132
+	 * @since 3.131
 	 */
 	public static final int CUT = KEYCODE_BIT + 89;
 
@@ -3348,7 +3348,7 @@ public class SWT {
 	 * key (value is (1&lt;&lt;24)+90).
 	 * This event is currently only supported on GTK.
 	 *
-	 * @since 3.132
+	 * @since 3.131
 	 */
 	public static final int PASTE = KEYCODE_BIT + 90;
 
