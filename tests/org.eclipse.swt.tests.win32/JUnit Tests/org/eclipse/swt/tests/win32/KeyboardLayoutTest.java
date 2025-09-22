@@ -249,11 +249,14 @@ public class KeyboardLayoutTest {
 
 		shell.setSize(100, 100);
 		shell.open();
+		shell.forceActive();
 		shell.forceFocus();
+		processEvents();
 	}
 
 	@AfterEach
 	public void tearDown() {
+		emulateScanCode(UsScan.Esc);
 		if (shell != null) {
 			shell.dispose();
 		}
@@ -360,6 +363,11 @@ public class KeyboardLayoutTest {
 		// Note that `Shell.isFocusControl()` still returns `true` even if a
 		// different app is focused
 		if (shell.handle != OS.GetForegroundWindow()) {
+			System.out.println("handle of current shell: " + OS.GetForegroundWindow());
+			System.out.println("handle of tracked shell: " + shell.handle);
+			for (Shell shell : display.getShells()) {
+				System.out.println(shell.handle + ": " + shell.toString());
+			}
 			fail("Test Shell lost focus (did you use keyboard/mouse while the test was running?)");
 		}
 	}
@@ -501,6 +509,7 @@ public class KeyboardLayoutTest {
 	}
 
 	protected void expectKeyEvents(String testName, Runnable runnable, Event... expectEvents) {
+		shell.forceActive();
 		events.clear();
 		runnable.run();
 
