@@ -93,7 +93,8 @@ class MultiZoomCoordinateSystemMapper implements CoordinateSystemMapper {
 
 	@Override
 	public Point translateFromDisplayCoordinates(Point point) {
-		return translateLocationInPixelsToPoints(point.x, point.y);
+		Monitor monitor = point instanceof Point.WithMonitor pointWithMonitor ? pointWithMonitor.getMonitor() : null;
+		return translateLocationInPixelsToPoints(point.x, point.y, monitor);
 	}
 
 	@Override
@@ -117,7 +118,7 @@ class MultiZoomCoordinateSystemMapper implements CoordinateSystemMapper {
 	@Override
 	public Point getCursorLocation() {
 		Point cursorLocationInPixels = display.getCursorLocationInPixels();
-		return translateLocationInPixelsToPoints(cursorLocationInPixels.x, cursorLocationInPixels.y);
+		return translateLocationInPixelsToPoints(cursorLocationInPixels.x, cursorLocationInPixels.y, null);
 	}
 
 	@Override
@@ -131,8 +132,10 @@ class MultiZoomCoordinateSystemMapper implements CoordinateSystemMapper {
 		return getPixelsFromPoint(monitor, x, y);
 	}
 
-	private Point translateLocationInPixelsToPoints(int x, int y) {
-		Monitor monitor = getContainingMonitorForPixels(x, y);
+	private Point translateLocationInPixelsToPoints(int x, int y, Monitor monitor) {
+		if (monitor == null) {
+			monitor = getContainingMonitorForPixels(x, y);
+		}
 		return getPointFromPixels(monitor, x, y);
 	}
 

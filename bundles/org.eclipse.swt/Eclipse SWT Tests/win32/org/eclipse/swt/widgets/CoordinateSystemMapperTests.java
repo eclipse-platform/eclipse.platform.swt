@@ -218,6 +218,31 @@ class CoordinateSystemMapperTests {
 		assertEquals(rectInPts, mapper.translateFromDisplayCoordinates(rectInPxs));
 	}
 
+	@ParameterizedTest
+	@MethodSource("provideCoordinateSystemMappers")
+	void translateBoundsToSecondMonitor(CoordinateSystemMapper mapper) {
+		final int OFFSET = 30;
+		final int SIZE = OFFSET * 3;
+		setupMonitors(mapper);
+		Rectangle currentPosition = new Rectangle.WithMonitor(monitors[1].getClientArea().x - OFFSET, 0, SIZE, SIZE,
+				monitors[1]);
+		Rectangle result = mapper.translateFromDisplayCoordinates(currentPosition);
+		assertTrue(monitors[1].getClientArea().intersects(result));
+	}
+
+	@ParameterizedTest
+	@MethodSource("provideCoordinateSystemMappers")
+	void translatePointsToSecondMonitor(CoordinateSystemMapper mapper) {
+		final int OFFSET = 30;
+		final int SIZE = OFFSET * 3;
+		setupMonitors(mapper);
+		Point currentPosition = new Point.WithMonitor(monitors[1].getClientArea().x - OFFSET, 0, monitors[1]);
+		Point size = new Point(SIZE, SIZE);
+		Point result = mapper.translateFromDisplayCoordinates(currentPosition);
+		Rectangle resultRect = new Rectangle(result.x, result.y, size.x, size.y);
+		assertTrue(monitors[1].getClientArea().intersects(resultRect));
+	}
+
 	private Point createExpectedPoint(CoordinateSystemMapper mapper, int x, int y, Monitor monitor) {
 		if (mapper instanceof SingleZoomCoordinateSystemMapper) {
 			return new Point(x, y);
