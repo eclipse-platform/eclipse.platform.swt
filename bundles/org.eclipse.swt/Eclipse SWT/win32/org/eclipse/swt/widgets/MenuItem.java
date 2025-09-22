@@ -807,6 +807,7 @@ private void updateImage () {
 		info.hbmpItem = OS.HBMMENU_CALLBACK;
 	} else {
 		if (OS.IsAppThemed ()) {
+			if (hBitmap != 0) OS.DeleteObject (hBitmap);
 			hBitmap = getMenuItemIconBitmapHandle(image);
 			if ((style & (SWT.CHECK | SWT.RADIO)) != 0 && CUSTOM_SELECTION_IMAGE > 0) {
 				info.fMask |= OS.MIIM_CHECKMARKS;
@@ -895,7 +896,6 @@ private long getMenuItemIconBitmapHandle(Image image) {
 	if (image == null) {
 		return 0;
 	}
-	if (hBitmap != 0) OS.DeleteObject (hBitmap);
 	int zoom = adaptZoomForMenuItem(nativeZoom, image);
 	return Display.create32bitDIB (image, zoom);
 }
