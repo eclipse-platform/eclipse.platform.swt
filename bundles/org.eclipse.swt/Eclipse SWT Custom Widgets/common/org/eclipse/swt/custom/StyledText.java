@@ -10935,4 +10935,13 @@ public static void updateAndRefreshCarets(StyledText styledText, Consumer<Caret>
 
 }
 
+@Override
+public Object getData(String key) {
+	if ("StyledText.htmlText".equals(key)) {
+		HTMLWriter htmlWriter = new HTMLWriter(this, 0, content.getCharCount(), content);
+		return getPlatformDelimitedText(htmlWriter);
+	}
+	return super.getData(key);
+}
+
 }
