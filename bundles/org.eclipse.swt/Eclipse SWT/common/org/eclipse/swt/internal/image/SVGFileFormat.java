@@ -51,13 +51,8 @@ public class SVGFileFormat extends FileFormat {
 		if (targetZoom <= 0) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT, null, " [Cannot rasterize SVG for zoom <= 0]");
 		}
-		try {
-			ImageData rasterizedImageData = RASTERIZER.rasterizeSVG(inputStream, 100 * targetZoom / fileZoom);
-			return List.of(new ElementAtZoom<>(rasterizedImageData, targetZoom));
-		} catch (IOException e) {
-			SWT.error(SWT.ERROR_INVALID_IMAGE, e);
-			return List.of();
-		}
+		ImageData rasterizedImageData = RASTERIZER.rasterizeSVG(inputStream, 100 * targetZoom / fileZoom);
+		return List.of(new ElementAtZoom<>(rasterizedImageData, targetZoom));
 	}
 
 	@Override

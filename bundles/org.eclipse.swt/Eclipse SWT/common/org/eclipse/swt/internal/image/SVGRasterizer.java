@@ -14,6 +14,7 @@ package org.eclipse.swt.internal.image;
 
 import java.io.*;
 
+import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
 /**
@@ -26,10 +27,18 @@ public interface SVGRasterizer {
 	 * specified zoom.
 	 *
 	 * @param stream the SVG image as an {@link InputStream}.
-	 * @param zoom   the scaling factor (in percent) e.g. {@code 200} for doubled
-	 *               size. This value must be greater zero.
-	 * @return the {@link ImageData} for the rasterized image, or {@code null} if
-	 *         the input is not a valid SVG file or cannot be processed.
+	 * @param zoom   the scaling percentage (e.g., 100 = original size, 200 = double size).
+	 *  	   This value must be greater zero.
+	 * @return the {@link ImageData} for the rasterized image.
+	 *
+	 * @exception SWTException
+	 * <ul>
+	 *    <li>ERROR_INVALID_IMAGE - if the SVG cannot be loaded</li>
+	 * </ul>
+	 * @exception IllegalArgumentException
+	 * <ul>
+	 *    <li>ERROR_INVALID_ARGUMENT - if the zoom is less than zero</li>
+	 * </ul>
 	 */
-	public ImageData rasterizeSVG(InputStream stream, int zoom) throws IOException;
+	public ImageData rasterizeSVG(InputStream stream, int zoom);
 }
