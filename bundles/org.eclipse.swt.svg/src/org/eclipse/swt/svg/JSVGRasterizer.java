@@ -35,7 +35,6 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints.Key;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
@@ -71,7 +70,10 @@ public class JSVGRasterizer implements SVGRasterizer {
 	);
 
 	@Override
-	public ImageData rasterizeSVG(InputStream inputStream, int zoom) throws IOException {
+	public ImageData rasterizeSVG(InputStream inputStream, int zoom) {
+		if (zoom < 0) {
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		}
 		SVGDocument svgDocument = loadSVG(inputStream);
 		if (svgDocument == null) {
 			SWT.error(SWT.ERROR_INVALID_IMAGE);
