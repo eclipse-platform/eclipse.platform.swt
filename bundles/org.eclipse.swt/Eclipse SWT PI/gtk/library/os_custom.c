@@ -2187,3 +2187,48 @@ void swt_debug_on_fatal_warnings() {
 	  gtk_parse_args(&argcount, &arg2);
 }
 #endif
+
+/**
+ * Convert an array of Java strings to an array of char *
+ */
+char **
+swt_getArrayOfStringsUTF(JNIEnv *env, jobjectArray javaArray) {
+    jsize length = (*env)->GetArrayLength(env, javaArray);
+
+    char **cStrings = (char **)malloc((length + 1) * sizeof(char*));
+    if (!cStrings) {
+		return NULL;
+	}
+
+    for (jsize i = 0; i < length; i++) {
+        jstring jstr = (jstring)(*env)->GetObjectArrayElement(env, javaArray, i);
+        if (jstr) {
+	        const char *utfStr = (*env)->GetStringUTFChars(env, jstr, 0);
+
+	        cStrings[i] = strdup(utfStr);
+
+	        (*env)->ReleaseStringUTFChars(env, jstr, utfStr);
+	        (*env)->DeleteLocalRef(env, jstr);
+        } else {
+	        cStrings[i] = NULL;
+        }
+    }
+
+    cStrings[length] = NULL;
+    return cStrings;
+}
+
+/**
+ * Free the memory allocated by swt_getArrayOfStringsUTF
+ */
+void
+swt_releaseArrayOfStringsUTF(JNIEnv *env, jobjectArray javaArray, char **cStrings) {
+    jsize length = (*env)->GetArrayLength(env, javaArray);
+
+    for (jsize i = 0; i < length; i++) {
+		if (cStrings[i]) {
+			free(cStrings[i]);
+		}
+    }
+    free(cStrings);
+}
