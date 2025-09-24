@@ -34,7 +34,7 @@ import org.junit.platform.suite.api.Suite;
 		Test_org_eclipse_swt_custom_LineStyleListener.class, //
 		Test_org_eclipse_swt_custom_StyleRange.class, //
 		Test_org_eclipse_swt_custom_StyledText.class, //
-		// Failing test: Test_org_eclipse_swt_custom_StyledTextContent.class, //
+		Test_org_eclipse_swt_custom_StyledTextContent.class, //
 		Test_org_eclipse_swt_custom_StyledTextLineSpacingProvider.class, //
 		Test_org_eclipse_swt_custom_StyledText_VariableLineHeight.class, //
 		Test_org_eclipse_swt_custom_StyledText_multiCaretsSelections.class, //
