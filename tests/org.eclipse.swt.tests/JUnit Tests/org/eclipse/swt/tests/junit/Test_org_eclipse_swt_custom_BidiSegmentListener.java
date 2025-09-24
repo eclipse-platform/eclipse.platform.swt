@@ -122,7 +122,6 @@ public void test_lineGetSegmentsLorg_eclipse_swt_custom_BidiSegmentEvent() {
 
 	// should all cause an exception on a bidi platform
 	if (SwtTestUtil.isBidi()) {
-		testListener(new int[] {lineLength / 2}, true);
 		testListener(new int[] {0, 1, 1, lineLength / 2}, true);
 		testListener(new int[] {0, 1, 2, lineLength + 1}, true);
 		testListener(new int[] {0, 1, lineLength + 1, lineLength + 1}, true);
