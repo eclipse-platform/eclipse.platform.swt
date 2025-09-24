@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
  *
  * @see org.eclipse.swt.widgets.Dialog
  */
-public class Test_org_eclipse_swt_widgets_Dialog {
+public abstract class Test_org_eclipse_swt_widgets_Dialog {
 
 @BeforeEach
 public void setUp() {

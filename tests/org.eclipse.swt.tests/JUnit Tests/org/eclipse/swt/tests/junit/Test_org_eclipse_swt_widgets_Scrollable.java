@@ -22,7 +22,7 @@ import org.junit.Test;
  *
  * @see org.eclipse.swt.widgets.Scrollable
  */
-public class Test_org_eclipse_swt_widgets_Scrollable extends Test_org_eclipse_swt_widgets_Control {
+public abstract class Test_org_eclipse_swt_widgets_Scrollable extends Test_org_eclipse_swt_widgets_Control {
 
 @Override
 @Test

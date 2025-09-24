@@ -39,7 +39,7 @@ import org.junit.Test;
  *
  * @see org.eclipse.swt.widgets.Decorations
  */
-public class Test_org_eclipse_swt_widgets_Decorations extends Test_org_eclipse_swt_widgets_Canvas {
+public abstract class Test_org_eclipse_swt_widgets_Decorations extends Test_org_eclipse_swt_widgets_Canvas {
 
 @Override
 @Test
