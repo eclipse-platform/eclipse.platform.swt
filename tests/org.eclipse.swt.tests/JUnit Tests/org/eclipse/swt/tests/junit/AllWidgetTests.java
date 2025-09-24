@@ -23,22 +23,31 @@ import org.junit.platform.suite.api.Suite;
 @Suite
 @SelectClasses({ //
 		// Sorted list of tests
+		// Failing test: Test_org_eclipse_swt_custom_BidiSegmentListener.class, //
 		Test_org_eclipse_swt_custom_BusyIndicator.class, //
 		Test_org_eclipse_swt_custom_CCombo.class, //
 		Test_org_eclipse_swt_custom_CLabel.class, //
 		Test_org_eclipse_swt_custom_CTabFolder.class, //
 		Test_org_eclipse_swt_custom_CTabItem.class, //
+		Test_org_eclipse_swt_custom_ExtendedModifyListener.class, //
+		Test_org_eclipse_swt_custom_LineBackgroundListener.class, //
+		Test_org_eclipse_swt_custom_LineStyleListener.class, //
 		Test_org_eclipse_swt_custom_StyleRange.class, //
 		Test_org_eclipse_swt_custom_StyledText.class, //
+		// Failing test: Test_org_eclipse_swt_custom_StyledTextContent.class, //
 		Test_org_eclipse_swt_custom_StyledTextLineSpacingProvider.class, //
 		Test_org_eclipse_swt_custom_StyledText_VariableLineHeight.class, //
 		Test_org_eclipse_swt_custom_StyledText_multiCaretsSelections.class, //
+		Test_org_eclipse_swt_custom_TextChangeListener.class, //
+		Test_org_eclipse_swt_custom_VerifyKeyListener.class, //
 		Test_org_eclipse_swt_widgets_Button.class, //
 		Test_org_eclipse_swt_widgets_Canvas.class, //
 		Test_org_eclipse_swt_widgets_Caret.class, //
 		Test_org_eclipse_swt_widgets_ColorDialog.class, //
 		Test_org_eclipse_swt_widgets_Combo.class, //
 		Test_org_eclipse_swt_widgets_Composite.class, //
+		Test_org_eclipse_swt_widgets_CoolBar.class, //
+		// Failing test: Test_org_eclipse_swt_widgets_CoolItem.class, //
 		Test_org_eclipse_swt_widgets_DateTime.class, //
 		Test_org_eclipse_swt_widgets_DirectoryDialog.class, //
 		Test_org_eclipse_swt_widgets_Event.class, //
@@ -71,6 +80,7 @@ import org.junit.platform.suite.api.Suite;
 		Test_org_eclipse_swt_widgets_ToolBar.class, //
 		Test_org_eclipse_swt_widgets_ToolItem.class, //
 		Test_org_eclipse_swt_widgets_Tree.class, //
+		Test_org_eclipse_swt_widgets_TreeColumn.class, //
 		Test_org_eclipse_swt_widgets_TreeItem.class, //
 })
 public class AllWidgetTests {

@@ -33,7 +33,7 @@ import org.junit.Test;
  *
  * @see org.eclipse.swt.widgets.Item
  */
-public class Test_org_eclipse_swt_widgets_Item extends Test_org_eclipse_swt_widgets_Widget {
+public abstract class Test_org_eclipse_swt_widgets_Item extends Test_org_eclipse_swt_widgets_Widget {
 
 @Override
 @Before
