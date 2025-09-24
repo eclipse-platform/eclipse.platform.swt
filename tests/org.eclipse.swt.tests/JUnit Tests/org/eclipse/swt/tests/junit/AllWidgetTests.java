@@ -23,7 +23,7 @@ import org.junit.platform.suite.api.Suite;
 @Suite
 @SelectClasses({ //
 		// Sorted list of tests
-		// Failing test: Test_org_eclipse_swt_custom_BidiSegmentListener.class, //
+		Test_org_eclipse_swt_custom_BidiSegmentListener.class, //
 		Test_org_eclipse_swt_custom_BusyIndicator.class, //
 		Test_org_eclipse_swt_custom_CCombo.class, //
 		Test_org_eclipse_swt_custom_CLabel.class, //
