@@ -45,12 +45,12 @@ public class ClipboardTest extends JFrame {
 	private static final class LocalHostOnlySocketFactory extends RMISocketFactory {
 		@Override
 		public ServerSocket createServerSocket(int port) throws IOException {
-		    return new ServerSocket(port, 50, InetAddress.getLoopbackAddress());
+			return new ServerSocket(port, 50, InetAddress.getLoopbackAddress());
 		}
 
 		@Override
 		public Socket createSocket(String host, int port) throws IOException {
-		    return new Socket(InetAddress.getLoopbackAddress(), port);
+			return new Socket(InetAddress.getLoopbackAddress(), port);
 		}
 	}
 
@@ -62,8 +62,6 @@ public class ClipboardTest extends JFrame {
 		super("ClipboardTest");
 		commands = new ClipboardCommandsImpl(this);
 		rmiRegistry.rebind(ClipboardCommands.ID, commands);
-
-
 
 		textArea = new JTextArea(10, 40);
 		JScrollPane scrollPane = new JScrollPane(textArea);
@@ -111,15 +109,13 @@ public class ClipboardTest extends JFrame {
 	}
 
 	public static void main(String[] args) throws IOException {
-        System.setProperty("java.rmi.server.hostname", "127.0.0.1");
+		System.setProperty("java.rmi.server.hostname", "127.0.0.1");
 
-        // Make sure RMI is localhost only
-        RMISocketFactory.setSocketFactory(new LocalHostOnlySocketFactory());
+		// Make sure RMI is localhost only
+		RMISocketFactory.setSocketFactory(new LocalHostOnlySocketFactory());
 		int chosenPort = getAvailablePort();
 		rmiRegistry = LocateRegistry.createRegistry(chosenPort);
 		System.out.println(ClipboardCommands.PORT_MESSAGE + chosenPort);
-
-
 
 		SwingUtilities.invokeLater(() -> {
 			try {

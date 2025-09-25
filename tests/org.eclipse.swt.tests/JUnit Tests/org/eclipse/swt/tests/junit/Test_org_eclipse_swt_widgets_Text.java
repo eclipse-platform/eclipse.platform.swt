@@ -35,6 +35,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Widget;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -49,7 +50,8 @@ public class Test_org_eclipse_swt_widgets_Text extends Test_org_eclipse_swt_widg
 public void setUp() {
 	super.setUp();
 	shell.pack();
-	shell.open();
+//	shell.open();
+	SwtTestUtil.openShell(shell);
 	makeCleanEnvironment(false); // use multi-line by default
 }
 
@@ -263,6 +265,7 @@ public void test_computeSizeIIZ() {
 	// super class test is sufficient
 }
 
+@Tag("clipboard")
 @Test
 public void test_copy() {
 	if (SwtTestUtil.isCocoa) {
@@ -928,8 +931,9 @@ public void test_isVisible() {
 	assertFalse(control.isVisible());
 }
 
+@Tag("clipboard")
 @Test
-public void test_paste() {
+public void test_paste() throws InterruptedException {
 	if (SwtTestUtil.isCocoa) {
 		// TODO Fix Cocoa failure.
 		if (SwtTestUtil.verbose) {
@@ -942,12 +946,16 @@ public void test_paste() {
 	text.setSelection(2, 4);
 	assertEquals("01234567890", text.getText());
 	text.copy();
+	SwtTestUtil.processEvents(100, null);
 	text.setSelection(0);
 	text.paste();
+	SwtTestUtil.processEvents(1000, () -> "2301234567890".equals(text.getText()));
 	assertEquals("2301234567890", text.getText());
 	text.copy();
+	SwtTestUtil.processEvents(100, null);
 	text.setSelection(3);
 	text.paste();
+	SwtTestUtil.processEvents(1000, () -> "230231234567890".equals(text.getText()));
 	assertEquals("230231234567890", text.getText());
 
 	text.setText("0" + delimiterString + "1");
@@ -955,7 +963,9 @@ public void test_paste() {
 	text.copy();
 	text.setSelection(0);
 	text.paste();
-	assertEquals("0" + delimiterString + "1" + "0" + delimiterString + "1", text.getText());
+	String expected = "0" + delimiterString + "1" + "0" + delimiterString + "1";
+	SwtTestUtil.processEvents(1000, () -> expected.equals(text.getText()));
+	assertEquals(expected, text.getText());
 
 	// tests a SINGLE line text editor
 	makeCleanEnvironment(true);
@@ -966,10 +976,12 @@ public void test_paste() {
 	text.copy();
 	text.setSelection(0);
 	text.paste();
+	SwtTestUtil.processEvents(1000, () -> "2301234567890".equals(text.getText()));
 	assertEquals("2301234567890", text.getText());
 	text.copy();
 	text.setSelection(3);
 	text.paste();
+	SwtTestUtil.processEvents(1000, () -> "230231234567890".equals(text.getText()));
 	assertEquals("230231234567890", text.getText());
 
 	// tests a SINGLE line text editor
@@ -981,8 +993,11 @@ public void test_paste() {
 	text.setSelection(0);
 	text.paste();
 
-	if (SwtTestUtil.fCheckSWTPolicy)
+	if (SwtTestUtil.fCheckSWTPolicy) {
+		String expected2 = "0" + delimiterString + "1" + "0" + delimiterString + "1";
+		SwtTestUtil.processEvents(1000, () -> expected2.equals(text.getText()));
 		assertEquals("0" + delimiterString + "1" + "0" + delimiterString + "1", text.getText());
+	}
 }
 
 @Test
@@ -1429,6 +1444,7 @@ public void test_consistency_DragDetect () {
 	consistencyEvent(30, 10, 50, 0, ConsistencyUtility.MOUSE_DRAG);
 }
 
+@Tag("clipboard")
 @Test
 public void test_consistency_Segments () {
 	if (SwtTestUtil.isCocoa) {
