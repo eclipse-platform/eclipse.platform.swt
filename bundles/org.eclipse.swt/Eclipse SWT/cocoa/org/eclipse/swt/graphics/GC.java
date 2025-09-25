@@ -1189,11 +1189,67 @@ public void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeig
 	drawImage(image, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, false);
 }
 
+/**
+ * Draws the full source image into a specified rectangular area in the
+ * receiver. The image will be stretched or shrunk as needed to exactly fit the
+ * destination rectangle.
+ *
+ * @param image      the source image
+ * @param destX      the x coordinate in the destination
+ * @param destY      the y coordinate in the destination
+ * @param destWidth  the width in points of the destination rectangle
+ * @param destHeight the height in points of the destination rectangle
+ *
+ * @exception IllegalArgumentException
+ *                                     <ul>
+ *                                     <li>ERROR_NULL_ARGUMENT - if the image is
+ *                                     null</li>
+ *                                     <li>ERROR_INVALID_ARGUMENT - if the image
+ *                                     has been disposed</li>
+ *                                     <li>ERROR_INVALID_ARGUMENT - if any of
+ *                                     the width or height arguments are
+ *                                     negative.
+ *                                     </ul>
+ * @exception SWTException
+ *                                     <ul>
+ *                                     <li>ERROR_GRAPHIC_DISPOSED - if the
+ *                                     receiver has been disposed</li>
+ *                                     </ul>
+ * @exception SWTError
+ *                                     <ul>
+ *                                     <li>ERROR_NO_HANDLES - if no handles are
+ *                                     available to perform the operation</li>
+ *                                     </ul>
+ * @since 3.132
+ */
+public void drawImage(Image image, int destX, int destY, int destWidth, int destHeight) {
+	if (handle == null) {
+		SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	}
+	if (destWidth == 0 || destHeight == 0) {
+		return;
+	}
+	if (destWidth < 0 || destHeight < 0) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	if (image == null) {
+		SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	}
+	if (image.isDisposed()) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	drawImage(image, 0, 0, 0, 0, destX, destY, destWidth, destHeight, false);
+}
+
 void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple) {
 	NSImage imageHandle = srcImage.handle;
 	NSSize size = imageHandle.size();
 	int imgWidth = (int)size.width;
 	int imgHeight = (int)size.height;
+	if (srcWidth == 0 && srcHeight == 0) {
+		srcWidth = imgWidth;
+		srcHeight = imgHeight;
+	}
 	if (simple) {
 		srcWidth = destWidth = imgWidth;
 		srcHeight = destHeight = imgHeight;
