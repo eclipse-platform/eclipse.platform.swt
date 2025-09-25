@@ -155,7 +155,85 @@ public class OS extends C {
 	}
 
 	/** Constants */
+	/* enum GFileError */
+	public static final int G_FILE_ERROR_EXIST = 0;
+	public static final int G_FILE_ERROR_ISDIR = 1;
+	public static final int G_FILE_ERROR_ACCES = 2;
+	public static final int G_FILE_ERROR_NAMETOOLONG = 3;
+	public static final int G_FILE_ERROR_NOENT = 4;
+	public static final int G_FILE_ERROR_NOTDIR = 5;
+	public static final int G_FILE_ERROR_NXIO = 6;
+	public static final int G_FILE_ERROR_NODEV = 7;
+	public static final int G_FILE_ERROR_ROFS = 8;
+	public static final int G_FILE_ERROR_TXTBSY = 9;
+	public static final int G_FILE_ERROR_FAULT = 10;
+	public static final int G_FILE_ERROR_LOOP = 11;
+	public static final int G_FILE_ERROR_NOSPC = 12;
+	public static final int G_FILE_ERROR_NOMEM = 13;
+	public static final int G_FILE_ERROR_MFILE = 14;
+	public static final int G_FILE_ERROR_NFILE = 15;
+	public static final int G_FILE_ERROR_BADF = 16;
+	public static final int G_FILE_ERROR_INVAL = 17;
+	public static final int G_FILE_ERROR_PIPE = 18;
+	public static final int G_FILE_ERROR_AGAIN = 19;
+	public static final int G_FILE_ERROR_INTR = 20;
 	public static final int G_FILE_ERROR_IO = 21;
+	public static final int G_FILE_ERROR_PERM = 22;
+	public static final int G_FILE_ERROR_NOSYS = 23;
+	public static final int G_FILE_ERROR_FAILED = 24;
+
+	/* enum GIOErrorEnum */
+	public static final int G_IO_ERROR_FAILED = 0;
+	public static final int G_IO_ERROR_NOT_FOUND = 1;
+	public static final int G_IO_ERROR_EXISTS = 2;
+	public static final int G_IO_ERROR_IS_DIRECTORY = 3;
+	public static final int G_IO_ERROR_NOT_DIRECTORY = 4;
+	public static final int G_IO_ERROR_NOT_EMPTY = 5;
+	public static final int G_IO_ERROR_NOT_REGULAR_FILE = 6;
+	public static final int G_IO_ERROR_NOT_SYMBOLIC_LINK = 7;
+	public static final int G_IO_ERROR_NOT_MOUNTABLE_FILE = 8;
+	public static final int G_IO_ERROR_FILENAME_TOO_LONG = 9;
+	public static final int G_IO_ERROR_INVALID_FILENAME = 10;
+	public static final int G_IO_ERROR_TOO_MANY_LINKS = 11;
+	public static final int G_IO_ERROR_NO_SPACE = 12;
+	public static final int G_IO_ERROR_INVALID_ARGUMENT = 13;
+	public static final int G_IO_ERROR_PERMISSION_DENIED = 14;
+	public static final int G_IO_ERROR_NOT_SUPPORTED = 15;
+	public static final int G_IO_ERROR_NOT_MOUNTED = 16;
+	public static final int G_IO_ERROR_ALREADY_MOUNTED = 17;
+	public static final int G_IO_ERROR_CLOSED = 18;
+	public static final int G_IO_ERROR_CANCELLED = 19;
+	public static final int G_IO_ERROR_PENDING = 20;
+	public static final int G_IO_ERROR_READ_ONLY = 21;
+	public static final int G_IO_ERROR_CANT_CREATE_BACKUP = 22;
+	public static final int G_IO_ERROR_WRONG_ETAG = 23;
+	public static final int G_IO_ERROR_TIMED_OUT = 24;
+	public static final int G_IO_ERROR_WOULD_RECURSE = 25;
+	public static final int G_IO_ERROR_BUSY = 26;
+	public static final int G_IO_ERROR_WOULD_BLOCK = 27;
+	public static final int G_IO_ERROR_HOST_NOT_FOUND = 28;
+	public static final int G_IO_ERROR_WOULD_MERGE = 29;
+	public static final int G_IO_ERROR_FAILED_HANDLED = 30;
+	public static final int G_IO_ERROR_TOO_MANY_OPEN_FILES = 31;
+	public static final int G_IO_ERROR_NOT_INITIALIZED = 32;
+	public static final int G_IO_ERROR_ADDRESS_IN_USE = 33;
+	public static final int G_IO_ERROR_PARTIAL_INPUT = 34;
+	public static final int G_IO_ERROR_INVALID_DATA = 35;
+	public static final int G_IO_ERROR_DBUS_ERROR = 36;
+	public static final int G_IO_ERROR_HOST_UNREACHABLE = 37;
+	public static final int G_IO_ERROR_NETWORK_UNREACHABLE = 38;
+	public static final int G_IO_ERROR_CONNECTION_REFUSED = 39;
+	public static final int G_IO_ERROR_PROXY_FAILED = 40;
+	public static final int G_IO_ERROR_PROXY_AUTH_FAILED = 41;
+	public static final int G_IO_ERROR_PROXY_NEED_AUTH = 42;
+	public static final int G_IO_ERROR_PROXY_NOT_ALLOWED = 43;
+	public static final int G_IO_ERROR_BROKEN_PIPE = 44;
+	public static final int G_IO_ERROR_CONNECTION_CLOSED = G_IO_ERROR_BROKEN_PIPE;
+	public static final int G_IO_ERROR_NOT_CONNECTED = 45;
+	public static final int G_IO_ERROR_MESSAGE_TOO_LARGE = 46;
+	public static final int G_IO_ERROR_NO_SUCH_DEVICE = 47;
+	public static final int G_IO_ERROR_DESTINATION_UNSET = 48;
+
 	public static final int G_FILE_TEST_IS_DIR = 1 << 2;
 	public static final int G_FILE_TEST_IS_EXECUTABLE = 1 << 3;
 	public static final int G_SIGNAL_MATCH_DATA = 1 << 4;
@@ -165,6 +243,10 @@ public class OS extends C {
 	public static final int G_LOG_LEVEL_MASK = 0xfffffffc;
 	public static final int G_APP_INFO_CREATE_NONE = 0;
 	public static final int G_APP_INFO_CREATE_SUPPORTS_URIS  = (1 << 1);
+	public static final int G_OUTPUT_STREAM_SPLICE_NONE = 0;
+	public static final int G_OUTPUT_STREAM_SPLICE_CLOSE_SOURCE = (1 << 0);
+	public static final int G_OUTPUT_STREAM_SPLICE_CLOSE_TARGET = (1 << 1);
+	public static final int G_PRIORITY_DEFAULT = 0;
 	public static final int GTK_TYPE_TEXT_BUFFER = 21;
 	public static final int PANGO_ALIGN_LEFT = 0;
 	public static final int PANGO_ALIGN_CENTER = 1;
@@ -567,6 +649,33 @@ public class OS extends C {
 	/* custom version of g_utf8 for 16 bit */
 	public static final native long g_utf16_offset_to_utf8_offset(long str, long offset);
 
+	/**
+	 * Creates a GType for the given name. The name must be unique for the lifetime
+	 * of the process.
+	 *
+	 * This gives a unique GType to register in GTK4's serializers.
+	 *
+	 * @param name The name of the type - must be unique
+	 * @return the new GType - the data is owned by GTK and must not be freed
+	 * @method flags=no_gen
+	 * @category custom
+	 */
+	// TODO this is too generic a name - this method is only for use with ContentProvider
+	public static final native long register_gtype_for_name(String name);
+
+	/**
+	 * Creates a GValue for the given GType, when that GType was created by
+	 * {@link #register_gtype_for_name(String)}
+	 *
+	 * @param gtype the type created with {@link #register_gtype_for_name(String)}
+	 * @param value a non-zero value to store in the gvalue of type gtype
+	 * @return the new GValue - the data is owned by the caller of the method
+	 * @method flags=no_gen
+	 * @category custom
+	 */
+	// TODO this is too generic a name - this method is only for use with ContentProvider
+	public static final native long create_gvalue(long gtype, long value);
+
 	/** CUSTOM_CODE END */
 
 	/**
@@ -847,6 +956,8 @@ public static final native long G_TYPE_INT();
 /** @method flags=const */
 public static final native long G_TYPE_INT64();
 public static final native long G_VALUE_TYPE(long value);
+public static final native long G_VALUE_TYPE_NAME(long value);
+public static final native boolean G_IS_VALUE(long value);
 public static final native long G_OBJECT_TYPE(long instance);
 /** @method flags=const */
 public static final native long G_TYPE_STRING();
@@ -932,6 +1043,7 @@ public static final native boolean g_content_type_equals(long type1, byte[] type
  */
 public static final native boolean g_content_type_is_a(long type, byte[] supertype);
 public static final native int g_file_error_quark();
+public static final native int g_io_error_quark();
 /**
  * @param info cast=(GFileInfo *)
  */
@@ -1333,6 +1445,11 @@ public static final native void g_type_class_unref(long g_class);
 /** @param iface cast=(gpointer) */
 public static final native long g_type_interface_peek_parent(long iface);
 /**
+ * @param g_type cast=(GType)
+ * @return char * that must be freed
+ */
+public static final native long g_type_name(long g_type);
+/**
  * @param type cast=(GType)
  * @param is_a_type cast=(GType)
  */
@@ -1410,6 +1527,11 @@ public static final native long g_value_get_object (long value);
 public static final native void g_value_unset (long value);
 /** @param value cast=(const GValue *) */
 public static final native long g_value_peek_pointer(long value);
+/** @param value cast=(const GValue *) */
+public static final native long g_value_get_boxed(long value);
+/** @param value cast=(const GValue *) */
+public static final native long g_value_get_gtype(long value);
+
 /**
  * @param variable cast=(const gchar *),flags=no_out
  */
@@ -2331,4 +2453,71 @@ public static final native long g_list_model_get_item(long list, int position);
  */
 public static final native long g_memory_input_stream_new_from_data(long data, long len, long destroy);
 
+/**
+ * @param stream cast=(GOutputStream*)
+ * @param source cast=(GInputStream *)
+ * @param flags cast=(GOutputStreamSpliceFlags)
+ * @param io_priority cast=(int)
+ * @param cancellable cast=(GCancellable *)
+ * @param callback cast=(GAsyncReadyCallback)
+ * @param user_data cast=(gpointer)
+ */
+public static final native void g_output_stream_splice_async(long stream, long source, int flags, int io_priority, long cancellable, long callback, long user_data);
+/**
+ * @param stream cast=(GOutputStream*)
+ * @param result cast=(GAsyncResult*)
+ * @param error cast=(GError**)
+ */
+public static final native long g_output_stream_splice_finish(long stream, long result, long[] error);
+/**
+ *
+ */
+public static final native long g_memory_output_stream_new_resizable();
+/**
+ * @param ostream cast=(GMemoryOutputStream*)
+ */
+public static final native long g_memory_output_stream_get_data(long ostream);
+/**
+ * @param ostream cast=(GMemoryOutputStream*)
+ */
+public static final native long g_memory_output_stream_get_size(long ostream);
+/**
+ * @param ostream cast=(GMemoryOutputStream*)
+ */
+public static final native long g_memory_output_stream_get_data_size(long ostream);
+/**
+ * @param ostream cast=(GMemoryOutputStream*)
+ */
+public static final native long g_memory_output_stream_steal_data(long ostream);
+/**
+ * @param ostream cast=(GMemoryOutputStream*)
+ */
+public static final native long g_memory_output_stream_steal_as_bytes(long ostream);
+/**
+ * @param stream cast=(GOutputStream*)
+ * @param buffer cast=(void*)
+ * @param count cast=(gsize)
+ * @param bytes_written cast=(gsize*)
+ * @param cancellable cast=(GCancellable*)
+ * @param error cast=(GError**)
+ */
+public static final native boolean g_output_stream_write_all(long stream, long buffer, long count, long[] bytes_written, long cancellable, long[] error);
+/**
+ * @param stream cast=(GOutputStream*)
+ * @param buffer cast=(void*)
+ * @param count cast=(gsize)
+ * @param io_priority cast=(int)
+ * @param cancellable cast=(GCancellable*)
+ * @param callback cast=(GAsyncReadyCallback)
+ * @param user_data cast=(gpointer)
+ */
+public static final native void g_output_stream_write_all_async(long stream, long buffer, long count, int io_priority, long cancellable, long callback, long user_data);
+/**
+ *
+ * @param stream cast=(GOutputStream*)
+ * @param result cast=(GAsyncResult*)
+ * @param bytes_written cast=(gsize*)
+ * @param error cast=(GError**)
+ */
+public static final native boolean g_output_stream_write_all_finish(long stream, long result, long[] bytes_written, long[] error);
 }

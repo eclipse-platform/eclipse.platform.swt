@@ -42,11 +42,13 @@ public class TextTransfer extends ByteArrayTransfer {
 	private static final String COMPOUND_TEXT = "COMPOUND_TEXT"; //$NON-NLS-1$
 	private static final String UTF8_STRING = "UTF8_STRING"; //$NON-NLS-1$
 	private static final String STRING = "STRING"; //$NON-NLS-1$
+	private static final String TEXT_PLAIN = "text/plain"; //RFC-1341
 	private static final String TEXT_PLAIN_UTF8 = "text/plain;charset=utf-8"; //RFC-1341
-	private static final int COMPOUND_TEXT_ID = GTK.GTK4 ? 0 : registerType(COMPOUND_TEXT);
-	private static final int UTF8_STRING_ID = GTK.GTK4 ? 0 : registerType(UTF8_STRING);
-	private static final int STRING_ID = GTK.GTK4 ? 0 : registerType(STRING);
-	private static final int TEXT_PLAIN_UTF8_ID = GTK.GTK4 ? 0 : registerType(TEXT_PLAIN_UTF8);
+	private static final int COMPOUND_TEXT_ID = registerType(COMPOUND_TEXT);
+	private static final int UTF8_STRING_ID = registerType(UTF8_STRING);
+	private static final int STRING_ID = registerType(STRING);
+	private static final int TEXT_PLAIN_ID = registerType(TEXT_PLAIN);
+	private static final int TEXT_PLAIN_UTF8_ID = registerType(TEXT_PLAIN_UTF8);
 
 private TextTransfer() {}
 
@@ -71,6 +73,10 @@ public static TextTransfer getInstance () {
  */
 @Override
 public void javaToNative (Object object, TransferData transferData) {
+	if (GTK.GTK4) {
+		javaToNativeGTK4(object, transferData);
+		return;
+	}
 	transferData.result = 0;
 	if (!checkText(object) || !isSupportedType(transferData)) {
 		DND.error(DND.ERROR_INVALID_DATA);
@@ -111,6 +117,13 @@ public void javaToNative (Object object, TransferData transferData) {
 }
 
 
+private void javaToNativeGTK4(Object object, TransferData transferData) {
+	if (!checkText(object) || !isSupportedType(transferData)) {
+		DND.error(DND.ERROR_INVALID_DATA);
+	}
+	super.javaToNative(Converter.wcsToMbcs((String) object, false), transferData);
+}
+
 /**
  * This implementation of <code>nativeToJava</code> converts a platform specific
  * representation of plain text to a java <code>String</code>.
@@ -122,6 +135,8 @@ public void javaToNative (Object object, TransferData transferData) {
  */
 @Override
 public Object nativeToJava(TransferData transferData){
+	if (GTK.GTK4) return nativeToJavaGTK4(transferData);
+
 	if (!isSupportedType(transferData) ||  transferData.pValue == 0) return null;
 	long [] list = new long [1];
 	int count = GDK.gdk_text_property_to_utf8_list_for_display(GDK.gdk_display_get_default(), transferData.type, transferData.format, transferData.pValue, transferData.length, list);
@@ -139,10 +154,18 @@ public Object nativeToJava(TransferData transferData){
 	return (end == -1) ? string : string.substring(0, end);
 }
 
+private Object nativeToJavaGTK4(TransferData transferData) {
+	Object buffer = super.nativeToJava(transferData);
+	if (buffer instanceof byte[] bytes) {
+		return new String(Converter.mbcsToWcs(bytes));
+	}
+	return null;
+}
+
 @Override
 protected int[] getTypeIds() {
 	if(GTK.GTK4) {
-		return new int[] {(int) OS.G_TYPE_STRING()};
+		return new int[] {TEXT_PLAIN_UTF8_ID, TEXT_PLAIN_ID, STRING_ID};
 	}
 	if (OS.isX11()) {
 		return new int[] {UTF8_STRING_ID, COMPOUND_TEXT_ID, STRING_ID};
@@ -153,7 +176,7 @@ protected int[] getTypeIds() {
 @Override
 protected String[] getTypeNames() {
 	if(GTK.GTK4) {
-		return new String[] {"text/plain", STRING};
+		return new String[] {TEXT_PLAIN_UTF8, TEXT_PLAIN, STRING};
 	}
 	if (OS.isX11()) {
 		return new String[] {UTF8_STRING, COMPOUND_TEXT, STRING};
