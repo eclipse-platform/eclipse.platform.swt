@@ -458,7 +458,7 @@ public void test_getImeInputMode() {
 @Test
 public void test_getLocation() {
 	//Setting location for Windows is not supported in GTK4
-	if (isGTK4()) {
+	if (SwtTestUtil.isGTK4) {
 		return;
 	}
 	shell.setLocation(10,15);
@@ -1007,7 +1007,7 @@ public void test_Issue450_NoShellActivateOnSetFocus() {
 @Override
 public void test_setLocationLorg_eclipse_swt_graphics_Point() {
 	//Setting location for Windows is not supported in GTK4
-	if (isGTK4()) {
+	if (SwtTestUtil.isGTK4) {
 		return;
 	}
 	super.test_setLocationLorg_eclipse_swt_graphics_Point();
@@ -1016,14 +1016,9 @@ public void test_setLocationLorg_eclipse_swt_graphics_Point() {
 @Override
 public void test_setLocationII() {
 	//Setting location for Windows is not supported in GTK4
-	if (isGTK4()) {
+	if (SwtTestUtil.isGTK4) {
 		return;
 	}
 	super.test_setLocationII();
-}
-
-public static boolean isGTK4() {
-    String gtkVersion = System.getProperty("org.eclipse.swt.internal.gtk.version", "");
-    return SwtTestUtil.isGTK && gtkVersion.startsWith("4");
 }
 }

@@ -43,6 +43,7 @@ import org.junit.platform.suite.api.Suite;
 		Test_org_eclipse_swt_accessibility_AccessibleControlEvent.class, //
 		Test_org_eclipse_swt_accessibility_AccessibleEvent.class, //
 		Test_org_eclipse_swt_accessibility_AccessibleTextEvent.class, //
+		Test_org_eclipse_swt_dnd_Clipboard.class,
 		Test_org_eclipse_swt_events_ArmEvent.class, //
 		Test_org_eclipse_swt_events_ControlEvent.class, //
 		Test_org_eclipse_swt_events_DisposeEvent.class, //
