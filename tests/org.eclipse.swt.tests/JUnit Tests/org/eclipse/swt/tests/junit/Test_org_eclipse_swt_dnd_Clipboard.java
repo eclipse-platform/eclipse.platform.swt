@@ -12,6 +12,7 @@ package org.eclipse.swt.tests.junit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -168,7 +169,7 @@ public class Test_org_eclipse_swt_dnd_Clipboard {
 		});
 		assertNotEquals(0, port);
 		Registry reg = LocateRegistry.getRegistry("127.0.0.1", port);
-		long stopTime = System.currentTimeMillis() + 1000;
+		long stopTime = System.currentTimeMillis() + 10000;
 		do {
 			try {
 				remote = (ClipboardCommands) reg.lookup(ClipboardCommands.ID);
@@ -177,6 +178,7 @@ public class Test_org_eclipse_swt_dnd_Clipboard {
 				// try again because the remote app probably hasn't bound yet
 			}
 		} while (System.currentTimeMillis() < stopTime);
+		assertNotNull(remote);
 
 		// Run a no-op on the Swing event loop so that we know it is idle
 		// and we can continue startup
