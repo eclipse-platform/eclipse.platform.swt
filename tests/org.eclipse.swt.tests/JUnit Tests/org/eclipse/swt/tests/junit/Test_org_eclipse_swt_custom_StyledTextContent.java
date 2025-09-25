@@ -15,8 +15,8 @@
 package org.eclipse.swt.tests.junit;
 
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
@@ -24,8 +24,8 @@ import org.eclipse.swt.custom.StyledTextContent;
 import org.eclipse.swt.custom.TextChangeListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Shell;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.custom.StyledTextContent
@@ -85,7 +85,7 @@ public class Test_org_eclipse_swt_custom_StyledTextContent {
 	Shell shell;
 	StyledText styledText;
 
-@Before
+@BeforeEach
 public void setUp() {
 	shell = new Shell();
 	styledText = new StyledText(shell, SWT.NULL);
@@ -94,51 +94,51 @@ public void setUp() {
 
 @Test
 public void test_getCharCount() {
-	assertEquals(":a:", INITIAL_TEXT.length(), styledText.getCharCount());
+	assertEquals(INITIAL_TEXT.length(), styledText.getCharCount());
 }
 
 @Test
 public void test_getLineAtOffsetI() {
-	assertEquals(":c:", 0, styledText.getLineAtOffset(0));
+	assertEquals(0, styledText.getLineAtOffset(0));
 }
 
 @Test
 public void test_getLineCount() {
-	assertEquals(":d:", 1, styledText.getLineCount());
+	assertEquals(1, styledText.getLineCount());
 }
 
 @Test
 public void test_getLineDelimiter() {
-	assertEquals(":e:", "getLineDelimiter", styledText.getLineDelimiter());
+	assertEquals("getLineDelimiter", styledText.getLineDelimiter());
 }
 
 @Test
 public void test_getLineI() {
 	// will indirectly cause getLine to be called
-	assertEquals(":b:", new Point(0,0), styledText.getLocationAtOffset(0));
+	assertEquals(new Point(0,0), styledText.getLocationAtOffset(0));
 }
 
 @Test
 public void test_getOffsetAtLineI() {
 	// will indirectly cause getOffsetAtLine to be called
-	assertEquals(":f:", new Point(0,0), styledText.getLocationAtOffset(0));
+	assertEquals(new Point(0,0), styledText.getLocationAtOffset(0));
 }
 
 @Test
 public void test_getTextRangeII() {
-	assertTrue(":g:", styledText.getTextRange(0,0).isEmpty());
+	assertTrue(styledText.getTextRange(0,0).isEmpty());
 }
 
 @Test
 public void test_replaceTextRangeIILjava_lang_String() {
 	styledText.replaceTextRange(0,0,"test1");
-	assertEquals(":h:", "test1" + INITIAL_TEXT, styledText.getText());
+	assertEquals("test1" + INITIAL_TEXT, styledText.getText());
 }
 
 @Test
 public void test_setTextLjava_lang_String() {
 	styledText.replaceTextRange(0,0,"test2");
-	assertEquals(":i:", "test2" + INITIAL_TEXT, styledText.getText());
+	assertEquals("test2" + INITIAL_TEXT, styledText.getText());
 }
 
 }
