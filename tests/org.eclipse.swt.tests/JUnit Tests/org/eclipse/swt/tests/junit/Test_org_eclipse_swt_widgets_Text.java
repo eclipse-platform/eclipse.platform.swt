@@ -18,8 +18,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
-import java.time.Instant;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SegmentListener;
@@ -1552,10 +1550,14 @@ private void doSegmentsTest (boolean isListening) {
  * Bug 565164 - SWT.BS event no longer working
  */
 @Test
-public void test_backspaceAndDelete() {
+public void test_backspaceAndDelete() throws InterruptedException {
 	shell.open();
 	text.setSize(10, 50);
-	final Instant timeOut = Instant.now().plusSeconds(10);
+	// The display.post needs to successfully obtain the focused window (at least on GTK3)
+	// so we can send events to it. This processEvents gives SWT/GTK time to draw/focus/etc
+	// the window so that org.eclipse.swt.widgets.Display.findFocusedWindow()
+	// returns non-zero
+	SwtTestUtil.processEvents();
 
 	Display display = Display.getDefault();
 
@@ -1564,28 +1566,16 @@ public void test_backspaceAndDelete() {
 	Event backspace = keyEvent(SWT.BS, SWT.KeyDown, display.getFocusControl());
 	Event backspaceUp = keyEvent(SWT.BS, SWT.KeyUp, display.getFocusControl());
 
-	display.post(a);
-	display.post(aUp);
+	assertTrue(display.post(a));
+	assertTrue(display.post(aUp));
 
-	while (Instant.now().isBefore(timeOut)) {
-		if (text.getText().length() == 1) break;
+	SwtTestUtil.processEvents(10000, () -> text.getText().length() == 1);
+	assertEquals(1, text.getText().length());
 
-		if (!shell.isDisposed()) {
-			display.readAndDispatch();
-		}
-	}
+	assertTrue(display.post(backspace));
+	assertTrue(display.post(backspaceUp));
 
-	display.post(backspace);
-	display.post(backspaceUp);
-
-	while (Instant.now().isBefore(timeOut)) {
-		if (text.getText().length() == 0) break;
-
-		if (!shell.isDisposed()) {
-			display.readAndDispatch();
-		}
-	}
-
+	SwtTestUtil.processEvents(10000, () -> text.getText().length() == 0);
 	assertEquals(0, text.getText().length());
 }
 

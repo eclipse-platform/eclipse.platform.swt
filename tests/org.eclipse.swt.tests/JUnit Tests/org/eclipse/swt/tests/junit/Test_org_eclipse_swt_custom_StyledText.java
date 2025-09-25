@@ -26,7 +26,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeFalse;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.function.BooleanSupplier;
@@ -5856,38 +5855,32 @@ public void test_arrowDownKeepsPositionAfterNewLine() {
  * Bug 565164 - SWT.BS event no longer working
  */
 @Test
-public void test_backspaceAndDelete() {
+public void test_backspaceAndDelete() throws InterruptedException {
 	shell.open();
 	text.setSize(10, 50);
-	final Instant timeOut = Instant.now().plusSeconds(10);
+	// The display.post needs to successfully obtain the focused window (at least on GTK3)
+	// so we can send events to it. This processEvents gives SWT/GTK time to draw/focus/etc
+	// the window so that org.eclipse.swt.widgets.Display.findFocusedWindow()
+	// returns non-zero
+	SwtTestUtil.processEvents();
 
 	Display display = Display.getDefault();
 
 	Event a = keyEvent('a', SWT.KeyDown, display.getFocusControl());
 	Event aUp = keyEvent('a', SWT.KeyUp, display.getFocusControl());
+	Event backspace = keyEvent(SWT.BS, SWT.KeyDown, display.getFocusControl());
+	Event backspaceUp = keyEvent(SWT.BS, SWT.KeyUp, display.getFocusControl());
 
-	display.post(a);
-	display.post(aUp);
+	assertTrue(display.post(a));
+	assertTrue(display.post(aUp));
 
-	while (Instant.now().isBefore(timeOut)) {
-		if (text.getText().length() == 1) break;
+	SwtTestUtil.processEvents(10000, () -> text.getText().length() == 1);
+	assertEquals(1, text.getText().length());
 
-		if (!shell.isDisposed()) {
-			display.readAndDispatch();
-		}
-	}
+	assertTrue(display.post(backspace));
+	assertTrue(display.post(backspaceUp));
 
-	// Simulate the backspace, ensuring that the caret is in the correct position
-	text.invokeAction(ST.DELETE_PREVIOUS);
-
-	while (Instant.now().isBefore(timeOut)) {
-		if (text.getText().length() == 0) break;
-
-		if (!shell.isDisposed()) {
-			display.readAndDispatch();
-		}
-	}
-
+	SwtTestUtil.processEvents(10000, () -> text.getText().length() == 0);
 	assertEquals(0, text.getText().length());
 }
 
