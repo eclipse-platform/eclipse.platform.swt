@@ -1109,6 +1109,58 @@ public void drawImage (Image image, int srcX, int srcY, int srcWidth, int srcHei
 	storeAndApplyOperationForExistingHandle(new DrawScalingImageToImageOperation(image, new Rectangle(srcX, srcY, srcWidth, srcHeight), new Rectangle(destX, destY, destWidth, destHeight)));
 }
 
+/**
+ * Draws the full source image into a specified rectangular area in the
+ * receiver. The image will be stretched or shrunk as needed to exactly fit the
+ * destination rectangle.
+ *
+ * @param image      the source image
+ * @param destX      the x coordinate in the destination
+ * @param destY      the y coordinate in the destination
+ * @param destWidth  the width in points of the destination rectangle
+ * @param destHeight the height in points of the destination rectangle
+ *
+ * @exception IllegalArgumentException
+ *                                     <ul>
+ *                                     <li>ERROR_NULL_ARGUMENT - if the image is
+ *                                     null</li>
+ *                                     <li>ERROR_INVALID_ARGUMENT - if the image
+ *                                     has been disposed</li>
+ *                                     <li>ERROR_INVALID_ARGUMENT - if any of
+ *                                     the width or height arguments are
+ *                                     negative.
+ *                                     </ul>
+ * @exception SWTException
+ *                                     <ul>
+ *                                     <li>ERROR_GRAPHIC_DISPOSED - if the
+ *                                     receiver has been disposed</li>
+ *                                     </ul>
+ * @exception SWTError
+ *                                     <ul>
+ *                                     <li>ERROR_NO_HANDLES - if no handles are
+ *                                     available to perform the operation</li>
+ *                                     </ul>
+ * @since 3.132
+ */
+public void drawImage(Image image, int destX, int destY, int destWidth, int destHeight) {
+	checkNonDisposed();
+	if (destWidth == 0 || destHeight == 0) {
+		return;
+	}
+	if (destWidth < 0 || destHeight < 0) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	if (image == null) {
+		SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	}
+	if (image.isDisposed()) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+
+	storeAndApplyOperationForExistingHandle(new DrawScalingImageToImageOperation(image, new Rectangle(0, 0, 0, 0),
+			new Rectangle(destX, destY, destWidth, destHeight)));
+}
+
 void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple) {
 	storeAndApplyOperationForExistingHandle(new DrawImageToImageOperation(srcImage, new Rectangle(srcX, srcY, srcWidth, srcHeight), new Rectangle(destX, destY, destWidth, destHeight), simple));
 }
@@ -1213,7 +1265,10 @@ private void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int src
 		long img = gdipImage[0];
 		int imgWidth = Gdip.Image_GetWidth(img);
 		int imgHeight = Gdip.Image_GetHeight(img);
-
+		if (srcWidth == 0 && srcHeight == 0) {
+			srcWidth = imgWidth;
+			srcHeight = imgHeight;
+		}
 		if (simple) {
 			srcWidth = destWidth = imgWidth;
 			srcHeight = destHeight = imgHeight;
@@ -1315,6 +1370,10 @@ private void drawIcon(long imageHandle, int srcX, int srcY, int srcWidth, int sr
 	OS.GetObject(hBitmap, BITMAP.sizeof, bm);
 	int iconWidth = bm.bmWidth, iconHeight = bm.bmHeight;
 	if (hBitmap == srcIconInfo.hbmMask) iconHeight /= 2;
+	if (srcWidth == 0 && srcHeight == 0) {
+		srcWidth = iconWidth;
+		srcHeight = iconHeight;
+	}
 
 	if (simple) {
 		srcWidth = destWidth = iconWidth;
@@ -1410,6 +1469,10 @@ private void drawBitmap(Image srcImage, long imageHandle, int srcX, int srcY, in
 	OS.GetObject(imageHandle, BITMAP.sizeof, bm);
 	int imgWidth = bm.bmWidth;
 	int imgHeight = bm.bmHeight;
+	if (srcWidth == 0 && srcHeight == 0) {
+		srcWidth = imgWidth;
+		srcHeight = imgHeight;
+	}
 	if (simple) {
 		srcWidth = destWidth = imgWidth;
 		srcHeight = destHeight = imgHeight;

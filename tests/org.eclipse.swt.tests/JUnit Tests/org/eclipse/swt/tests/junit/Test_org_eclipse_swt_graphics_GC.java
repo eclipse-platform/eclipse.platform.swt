@@ -308,12 +308,28 @@ public void test_drawFocusIIII() {
 	gc.drawFocus(1, 1, 50, 25);
 }
 
-@Test
-public void test_drawImageLorg_eclipse_swt_graphics_ImageII() {
+private static class TestImages {
+    final Image normal;
+    final Image transparent;
+    final Image alpha;
+
+    TestImages(Image normal, Image transparent, Image alpha) {
+        this.normal = normal;
+        this.transparent = transparent;
+        this.alpha = alpha;
+    }
+
+    void dispose() {
+        normal.dispose();
+        transparent.dispose();
+        alpha.dispose();
+    }
+}
+
+private TestImages createTestImages(Display display) {
 	Color c1 = new Color(255, 0, 0);
 	Color c2 = new Color(0, 0, 0);
 	Color c3 = new Color(255, 255, 0);
-
 	PaletteData paletteData = new PaletteData(c1.getRGB(), c2.getRGB(), c3.getRGB());
 	ImageData data = new ImageData(30,30, 8, paletteData);
 	for (int y = 0; y < data.height; y++) {
@@ -334,50 +350,43 @@ public void test_drawImageLorg_eclipse_swt_graphics_ImageII() {
 		}
 	}
 	Image imageAlpha = new Image(display, data);
+    c1.dispose();
+    c2.dispose();
+    c3.dispose();
+    return new TestImages(image, imageTransparent, imageAlpha);
+}
 
-	gc.drawImage(image, 100, 100);
-	gc.drawImage(imageTransparent, 130, 100);
-	gc.drawImage(imageAlpha, 160, 100);
+
+@Test
+public void test_drawImageLorg_eclipse_swt_graphics_ImageII() {
+	TestImages images = createTestImages(display);
+
+	gc.drawImage(images.normal, 100, 100);
+	gc.drawImage(images.transparent, 130, 100);
+	gc.drawImage(images.alpha, 160, 100);
 	assertThrows(IllegalArgumentException.class, () -> gc.drawImage(null, 100, 100));
-	image.dispose();
-	imageTransparent.dispose();
-	imageAlpha.dispose();
+	images.dispose();
 }
 
 @Test
 public void test_drawImageLorg_eclipse_swt_graphics_ImageIIIIIIII() {
-	Color c1 = new Color(255, 0, 0);
-	Color c2 = new Color(0, 0, 0);
-	Color c3 = new Color(255, 255, 0);
-
-	PaletteData paletteData = new PaletteData(c1.getRGB(), c2.getRGB(), c3.getRGB());
-	ImageData data = new ImageData(30,30, 8, paletteData);
-	for (int y = 0; y < data.height; y++) {
-		for (int x = 0; x < data.width; x++) {
-			if (x > y) data.setPixel(x, y, paletteData.getPixel(c1.getRGB()));
-			else if (x < y) data.setPixel(x, y, paletteData.getPixel(c2.getRGB()));
-			else data.setPixel(x, y, paletteData.getPixel(c3.getRGB()));
-		}
-	}
-	Image image = new Image(display, data);
-	data = image.getImageData();
-	data.transparentPixel = paletteData.getPixel(c1.getRGB());
-	Image imageTransparent = new Image(display, data);
-	data.transparentPixel = -1;
-	for (int y = 0; y < data.height; y++) {
-		for (int x = 0; x < data.width; x++) {
-			data.setAlpha(x, y, 127);
-		}
-	}
-	Image imageAlpha = new Image(display, data);
-
-	gc.drawImage(image, 10, 5, 20, 15, 100, 120, 50, 60);
-	gc.drawImage(imageTransparent, 10, 5, 20, 15, 100, 120, 10, 10);
-	gc.drawImage(imageAlpha, 10, 5, 20, 15, 100, 120, 20, 15);
+	TestImages images = createTestImages(display);
+	gc.drawImage(images.normal, 10, 5, 20, 15, 100, 120, 50, 60);
+	gc.drawImage(images.transparent, 10, 5, 20, 15, 100, 120, 10, 10);
+	gc.drawImage(images.alpha, 10, 5, 20, 15, 100, 120, 20, 15);
 	assertThrows(IllegalArgumentException.class, () -> gc.drawImage(null, 10, 5, 20, 15, 100, 120, 50, 60));
-	image.dispose();
-	imageAlpha.dispose();
-	imageTransparent.dispose();
+	images.dispose();
+}
+
+
+@Test
+public void test_drawImageLorg_eclipse_swt_graphics_ImageIIII() {
+	TestImages images = createTestImages(display);
+	gc.drawImage(images.normal, 100, 120, 50, 60);
+	gc.drawImage(images.transparent, 100, 120, 10, 10);
+	gc.drawImage(images.alpha, 100, 120, 20, 15);
+	assertThrows(IllegalArgumentException.class, () -> gc.drawImage(null, 100, 120, 50, 60));
+	images.dispose();
 }
 
 @Test
