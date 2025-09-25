@@ -1575,6 +1575,8 @@ public void test_backspaceAndDelete() {
 		}
 	}
 
+	assertEquals(1, text.getText().length());
+
 	display.post(backspace);
 	display.post(backspaceUp);
 

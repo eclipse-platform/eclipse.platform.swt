@@ -5877,6 +5877,8 @@ public void test_backspaceAndDelete() {
 		}
 	}
 
+	assertEquals(1, text.getText().length());
+
 	// Simulate the backspace, ensuring that the caret is in the correct position
 	text.invokeAction(ST.DELETE_PREVIOUS);
 
