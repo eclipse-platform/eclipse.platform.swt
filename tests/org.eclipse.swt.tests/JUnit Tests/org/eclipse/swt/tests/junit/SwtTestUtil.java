@@ -105,7 +105,8 @@ public class SwtTestUtil {
 
 	public final static boolean isX11 = isGTK
 			&& "x11".equals(System.getProperty("org.eclipse.swt.internal.gdk.backend"));
-
+	public final static boolean isGTK4 = isGTK
+			&& System.getProperty("org.eclipse.swt.internal.gtk.version", "").startsWith("4");
 
 	/**
 	 * The palette used by images. See {@link #getAllPixels(Image)} and {@link #createImage}
@@ -400,12 +401,15 @@ public static void processEvents(int timeoutMs, BooleanSupplier breakCondition) 
 	long targetTimestamp = System.currentTimeMillis() + timeoutMs;
 	Display display = Display.getCurrent();
 	while (!breakCondition.getAsBoolean()) {
-		if (!display.readAndDispatch()) {
-			if (System.currentTimeMillis() < targetTimestamp) {
-				Thread.sleep(50);
-			} else {
+		while (display.readAndDispatch()) {
+			if (System.currentTimeMillis() >= targetTimestamp) {
 				return;
 			}
+		}
+		if (System.currentTimeMillis() < targetTimestamp) {
+			Thread.sleep(50);
+		} else {
+			return;
 		}
 	}
 }
@@ -583,18 +587,24 @@ public static boolean hasPixelNotMatching(Image image, Color nonMatchingColor, R
 }
 
 public static Path getPath(String fileName, TemporaryFolder tempFolder) {
-	Path filePath = tempFolder.getRoot().toPath().resolve("image-resources").resolve(Path.of(fileName));
-	if (!Files.isRegularFile(filePath)) {
+	Path path = tempFolder.getRoot().toPath();
+	Path filePath = path.resolve("image-resources").resolve(Path.of(fileName));
+	return getPath(fileName, filePath);
+}
+
+public static Path getPath(String sourceFilename, Path destinationPath) {
+	if (!Files.isRegularFile(destinationPath)) {
 		// Extract resource on the classpath to a temporary file to ensure it's
 		// available as plain file, even if this bundle is packed as jar
-		try (InputStream inStream = SwtTestUtil.class.getResourceAsStream(fileName)) {
-			assertNotNull(inStream, "InputStream == null for file " + fileName);
-			Files.createDirectories(filePath.getParent());
-			Files.copy(inStream, filePath);
+		try (InputStream inStream = SwtTestUtil.class.getResourceAsStream(sourceFilename)) {
+			assertNotNull(inStream, "InputStream == null for file " + sourceFilename);
+			Files.createDirectories(destinationPath.getParent());
+			Files.copy(inStream, destinationPath);
 		} catch (IOException e) {
 			throw new IllegalArgumentException(e);
 		}
 	}
-	return filePath;
+	return destinationPath;
 }
+
 }

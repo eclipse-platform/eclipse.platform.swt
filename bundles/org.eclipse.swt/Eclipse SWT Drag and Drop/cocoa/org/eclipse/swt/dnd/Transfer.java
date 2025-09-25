@@ -136,7 +136,10 @@ public static int registerType(String formatName) {
 	int index = 1;
 	while (index < TYPES.length) {
 		String type = TYPES[index];
-		if (type != null && formatName.equals(type)) {
+		if (type == null) {
+			break;
+		}
+		if (formatName.equals(type)) {
 			return index;
 		}
 		index++;
