@@ -13,6 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
+import org.eclipse.swt.dnd.TransferData.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 
@@ -63,7 +64,11 @@ public static RTFTransfer getInstance () {
  */
 @Override
 public void javaToNative (Object object, TransferData transferData){
-	transferData.result = 0;
+	if (GTK.GTK4) {
+		javaToNativeGTK4(object, transferData);
+		return;
+	}
+	transferData.gtk3().result = 0;
 	if (!checkRTF(object) || !isSupportedType(transferData)) {
 		DND.error(DND.ERROR_INVALID_DATA);
 	}
@@ -72,10 +77,18 @@ public void javaToNative (Object object, TransferData transferData){
 	long pValue = OS.g_malloc(buffer.length);
 	if (pValue == 0) return;
 	C.memmove(pValue, buffer, buffer.length);
-	transferData.length = buffer.length - 1;
-	transferData.format = 8;
-	transferData.pValue = pValue;
-	transferData.result = 1;
+	transferData.gtk3().length = buffer.length - 1;
+	transferData.gtk3().format = 8;
+	transferData.gtk3().pValue = pValue;
+	transferData.gtk3().result = 1;
+}
+
+
+private void javaToNativeGTK4(Object object, TransferData transferData) {
+	if (!checkRTF(object) || !isSupportedType(transferData)) {
+		DND.error(DND.ERROR_INVALID_DATA);
+	}
+	super.javaToNative(Converter.wcsToMbcs((String) object, false), transferData);
 }
 
 /**
@@ -90,15 +103,27 @@ public void javaToNative (Object object, TransferData transferData){
  */
 @Override
 public Object nativeToJava(TransferData transferData){
-	if ( !isSupportedType(transferData) ||  transferData.pValue == 0 ) return null;
-	int size = transferData.format * transferData.length / 8;
+	if (GTK.GTK4) return nativeToJavaGTK4(transferData);
+
+	if ( !isSupportedType(transferData) ||  transferData.gtk3().pValue == 0 ) return null;
+	int size = transferData.gtk3().format * transferData.gtk3().length / 8;
 	if (size == 0) return null;
 	byte[] buffer = new byte[size];
-	C.memmove(buffer, transferData.pValue, size);
+	C.memmove(buffer, transferData.gtk3().pValue, size);
 	char [] chars = Converter.mbcsToWcs (buffer);
 	String string = new String (chars);
 	int end = string.indexOf('\0');
 	return (end == -1) ? string : string.substring(0, end);
+}
+
+private Object nativeToJavaGTK4(TransferData transferData) {
+	TransferDataGTK4 data = transferData.gtk4();
+	if (!isSupportedType(transferData) ||  data.deserializer == null) return null;
+	Object buffer = super.nativeToJava(transferData);
+	if (buffer instanceof byte[] bytes) {
+		return new String(Converter.mbcsToWcs(bytes));
+	}
+	return null;
 }
 
 @Override

@@ -69,7 +69,7 @@ public static FileTransfer getInstance () {
  */
 @Override
 public void javaToNative(Object object, TransferData transferData) {
-	transferData.result = 0;
+	transferData.gtk3().result = 0;
 	if (!checkFile(object) || !isSupportedType(transferData)) {
 		DND.error(DND.ERROR_INVALID_DATA);
 	}
@@ -119,10 +119,10 @@ public void javaToNative(Object object, TransferData transferData) {
 	long ptr = OS.g_malloc(buffer.length+1);
 	C.memset(ptr, '\0', buffer.length+1);
 	C.memmove(ptr, buffer, buffer.length);
-	transferData.pValue = ptr;
-	transferData.length = buffer.length;
-	transferData.format = 8;
-	transferData.result = 1;
+	transferData.gtk3().pValue = ptr;
+	transferData.gtk3().length = buffer.length;
+	transferData.gtk3().format = 8;
+	transferData.gtk3().result = 1;
 }
 /**
  * This implementation of <code>nativeToJava</code> converts a platform specific
@@ -137,10 +137,10 @@ public void javaToNative(Object object, TransferData transferData) {
  */
 @Override
 public Object nativeToJava(TransferData transferData) {
-	if ( !isSupportedType(transferData) ||  transferData.pValue == 0 ||  transferData.length <= 0 ) return null;
-	int length = transferData.length;
+	if ( !isSupportedType(transferData) ||  transferData.gtk3().pValue == 0 ||  transferData.gtk3().length <= 0 ) return null;
+	int length = transferData.gtk3().length;
 	byte[] temp = new byte[length];
-	C.memmove(temp, transferData.pValue, length);
+	C.memmove(temp, transferData.gtk3().pValue, length);
 	boolean gnomeList = transferData.type == GNOME_LIST_ID;
 	int sepLength = gnomeList ? 1 : 2;
 	long [] files = new long [0];

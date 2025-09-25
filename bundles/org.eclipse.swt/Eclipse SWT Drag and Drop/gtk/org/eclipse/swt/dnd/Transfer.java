@@ -34,6 +34,22 @@ import org.eclipse.swt.internal.gtk.*;
  */
 public abstract class Transfer {
 
+private static int nextId = 1;
+/**
+ * Unique id of the transfer type. Used by GTK4 implementation to map
+ * data in the C/GTK side back to Java.
+ */
+/* package */ final int id;
+/**
+ * GType registered with GDK for this transfer. Every Transfer type
+ * is associated with a GType so that SWT knows which transfer to use
+ */
+/* package */ long gtype;
+
+public Transfer() {
+	id = nextId++;
+}
+
 /**
  * Returns a list of the platform specific data types that can be converted using
  * this transfer agent.
@@ -133,6 +149,10 @@ abstract protected Object nativeToJava(TransferData transferData);
  * @return the unique identifier associated with this data type
  */
 public static int registerType(String formatName){
+	if (GTK.GTK4) {
+		return ContentProviders.getInstance().registerType(formatName);
+	}
+
 	if (formatName == null) return GDK.GDK_NONE;
 	byte[] buffer = Converter.wcsToMbcs(formatName, true);
 	return (int)GDK.gdk_atom_intern(buffer, false);

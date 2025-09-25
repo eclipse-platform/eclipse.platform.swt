@@ -2187,3 +2187,79 @@ void swt_debug_on_fatal_warnings() {
 	  gtk_parse_args(&argcount, &arg2);
 }
 #endif
+
+/**
+ * Convert an array of Java strings to an array of char *
+ */
+char **
+swt_getArrayOfStringsUTF(JNIEnv *env, jobjectArray javaArray) {
+    jsize length = (*env)->GetArrayLength(env, javaArray);
+
+    char **cStrings = (char **)malloc((length + 1) * sizeof(char*));
+    if (!cStrings) {
+		return NULL;
+	}
+
+    for (jsize i = 0; i < length; i++) {
+        jstring jstr = (jstring)(*env)->GetObjectArrayElement(env, javaArray, i);
+        if (jstr) {
+	        const char *utfStr = (*env)->GetStringUTFChars(env, jstr, 0);
+
+	        cStrings[i] = strdup(utfStr);
+
+	        (*env)->ReleaseStringUTFChars(env, jstr, utfStr);
+	        (*env)->DeleteLocalRef(env, jstr);
+        } else {
+	        cStrings[i] = NULL;
+        }
+    }
+
+    cStrings[length] = NULL;
+    return cStrings;
+}
+
+/**
+ * Free the memory allocated by swt_getArrayOfStringsUTF
+ */
+void
+swt_releaseArrayOfStringsUTF(JNIEnv *env, jobjectArray javaArray, char **cStrings) {
+    jsize length = (*env)->GetArrayLength(env, javaArray);
+
+    for (jsize i = 0; i < length; i++) {
+		if (cStrings[i]) {
+			free(cStrings[i]);
+		}
+    }
+    free(cStrings);
+}
+
+static void *string_boxed_copy(void *ptr) {
+    return ptr;
+}
+
+static void string_boxed_free(void *ptr) {
+}
+
+JNIEXPORT jlong JNICALL OS_NATIVE(register_1gtype_1for_1name)
+	(JNIEnv *env, jclass that, jstring name)
+{
+	long rc;
+	const char *lpname = NULL;
+	OS_NATIVE_ENTER(env, that, register_1gtype_1for_1name_FUNC)
+	if (name) lpname= (const char *) (*env)->GetStringUTFChars(env, name, NULL);
+	rc = g_boxed_type_register_static(lpname, string_boxed_copy, string_boxed_free);
+	if (name && lpname) (*env)->ReleaseStringUTFChars(env, name, lpname);
+	OS_NATIVE_EXIT(env, that, register_1gtype_1for_1name_FUNC)
+	return rc;
+}
+
+JNIEXPORT jlong JNICALL OS_NATIVE(create_1gvalue)
+	(JNIEnv *env, jclass that, jlong gtype, jlong value)
+{
+	OS_NATIVE_ENTER(env, that, create_1gvalue_FUNC)
+	GValue *v = g_new0 (GValue, 1);
+	g_value_init(v, (GType)gtype);
+	g_value_take_boxed(v, (void *)value);
+	OS_NATIVE_EXIT(env, that, create_1gvalue_FUNC)
+	return (jlong)v;
+}

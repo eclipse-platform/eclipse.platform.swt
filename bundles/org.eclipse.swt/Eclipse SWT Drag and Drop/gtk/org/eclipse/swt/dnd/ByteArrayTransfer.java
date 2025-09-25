@@ -13,6 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
+import org.eclipse.swt.dnd.TransferData.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 
@@ -136,10 +137,20 @@ public TransferData[] getSupportedTypes() {
 
 @Override
 public boolean isSupportedType(TransferData transferData){
+	if (GTK.GTK4) return isSupportedTypeGTK4(transferData);
 	if (transferData == null) return false;
 	int[] types = getTypeIds();
 	for (int i = 0; i < types.length; i++) {
 		if (transferData.type == types[i]) return true;
+	}
+	return false;
+}
+
+private boolean isSupportedTypeGTK4(TransferData transferData) {
+	if (transferData == null) return false;
+	int[] types = getTypeIds();
+	for (int i = 0; i < types.length; i++) {
+		if (transferData.gtk4().type == types[i]) return true;
 	}
 	return false;
 }
@@ -156,7 +167,11 @@ public boolean isSupportedType(TransferData transferData){
  */
 @Override
 protected void javaToNative (Object object, TransferData transferData) {
-	transferData.result = 0;
+	if (GTK.GTK4) {
+		javaToNativeGTK4(object, transferData);
+		return;
+	}
+	transferData.gtk3().result = 0;
 	if (!checkByteArray(object) || !isSupportedType(transferData)) {
 		DND.error(DND.ERROR_INVALID_DATA);
 	}
@@ -165,10 +180,59 @@ protected void javaToNative (Object object, TransferData transferData) {
 	long pValue = OS.g_malloc(buffer.length);
 	if (pValue == 0) return;
 	C.memmove(pValue, buffer, buffer.length);
-	transferData.length = buffer.length;
-	transferData.format = 8;
-	transferData.pValue = pValue;
-	transferData.result = 1;
+	transferData.gtk3().length = buffer.length;
+	transferData.gtk3().format = 8;
+	transferData.gtk3().pValue = pValue;
+	transferData.gtk3().result = 1;
+}
+
+private void javaToNativeGTK4(Object object, TransferData transferData) {
+	if (!checkByteArray(object) || !isSupportedType(transferData)) {
+		DND.error(DND.ERROR_INVALID_DATA);
+	}
+	byte[] buffer = (byte[]) object;
+	if (buffer.length == 0) {
+		return;
+	}
+	TransferDataGTK4 data = transferData.gtk4();
+	GdkContentSerializer serializer = data.serializer;
+
+	long pValue = OS.g_malloc(buffer.length);
+	if (pValue == 0) {
+		return;
+	}
+	C.memmove(pValue, buffer, buffer.length);
+
+// Sync version - this won't work if the other end of the stream is in our process (such as a Clipboard.getContents call).
+//	long[] error = new long[1];
+//	boolean finish = OS.g_output_stream_write_all(serializer.output_stream(), pValue, buffer.length, null,
+//			serializer.cancellable(), error);
+//	if (!finish) {
+//		serializer.return_error(error[0]);
+//	} else {
+//		serializer.return_success();
+//	}
+// Async version:
+	new AsyncFinishUtil().run(data.display, new AsyncReadyCallback() {
+		@Override
+		public void async(long result) {
+			OS.g_output_stream_write_all_async(serializer.output_stream(), pValue, buffer.length, serializer.priority(),
+					serializer.cancellable(), result, 0);
+		}
+
+		@Override
+		public long await(long result) {
+			long[] error = new long[1];
+			boolean finish = OS.g_output_stream_write_all_finish(serializer.output_stream(), result, null, error);
+			if (!finish) {
+				serializer.return_error(error[0]);
+			} else {
+				serializer.return_success();
+			}
+			OS.g_free(pValue);
+			return 0;
+		}
+	});
 }
 
 /**
@@ -183,12 +247,54 @@ protected void javaToNative (Object object, TransferData transferData) {
  */
 @Override
 protected Object nativeToJava(TransferData transferData) {
-	if ( !isSupportedType(transferData) || transferData.pValue == 0) return null;
-	int size = transferData.format * transferData.length / 8;
+	if (GTK.GTK4) return nativeToJavaGTK4(transferData);
+	if ( !isSupportedType(transferData) || transferData.gtk3().pValue == 0) return null;
+	int size = transferData.gtk3().format * transferData.gtk3().length / 8;
 	if (size == 0) return null;
 	byte[] buffer = new byte[size];
-	C.memmove(buffer, transferData.pValue, size);
+	C.memmove(buffer, transferData.gtk3().pValue, size);
 	return buffer;
+}
+
+private Object nativeToJavaGTK4(TransferData transferData) {
+	TransferDataGTK4 data = transferData.gtk4();
+	if (!isSupportedType(transferData) || data.deserializer == null)
+		return null;
+
+	GdkContentDeserializer deserializer = data.deserializer;
+	long memoryStream = OS.g_memory_output_stream_new_resizable();
+	System.out.println("About to run g_output_stream_splice_async");
+	boolean success = new SyncFinishUtil<Boolean>().run(data.display, new SyncFinishCallback<Boolean>() {
+		@Override
+		public void async(long result) {
+			OS.g_output_stream_splice_async(memoryStream, deserializer.input_stream(),
+					OS.G_OUTPUT_STREAM_SPLICE_CLOSE_SOURCE | OS.G_OUTPUT_STREAM_SPLICE_CLOSE_TARGET,
+					deserializer.priority(), deserializer.cancellable(), result, 0);
+		}
+
+		@Override
+		public Boolean await(long result) {
+			long[] error = new long[1];
+			long spliced = OS.g_output_stream_splice_finish(memoryStream, result, null);
+			if (spliced < 0) {
+				deserializer.return_error(error[0]);
+				return false;
+			} else {
+				deserializer.return_success();
+				return true;
+			}
+		}
+	});
+
+	if (success) {
+		long data_size = OS.g_memory_output_stream_get_data_size(memoryStream);
+		long dataPtr = OS.g_memory_output_stream_get_data(memoryStream);
+		byte[] buffer = new byte[(int)data_size];
+		C.memmove(buffer, dataPtr, data_size);
+		return buffer;
+	}
+
+	return null;
 }
 
 boolean checkByteArray(Object object) {
