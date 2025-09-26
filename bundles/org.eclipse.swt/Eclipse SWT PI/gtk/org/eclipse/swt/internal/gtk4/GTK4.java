@@ -75,6 +75,17 @@ public class GTK4 {
 	 * @param child cast=(GtkWidget *)
 	 * @param sibling cast=(GtkWidget *)
 	 */
+	public static final native void gtk_box_reorder_child_after(long box, long child, long sibling);
+	/**
+	 * @param box cast=(GtkBox *)
+	 * @param child cast=(GtkWidget *)
+	 */
+	public static final native void gtk_box_remove(long box, long child);
+	/**
+	 * @param box cast=(GtkBox *)
+	 * @param child cast=(GtkWidget *)
+	 * @param sibling cast=(GtkWidget *)
+	 */
 	public static final native void gtk_box_insert_child_after(long box, long child, long sibling);
 
 	/* GtkCalendar */
@@ -724,6 +735,8 @@ public class GTK4 {
 	public static final native void gtk_image_set_from_paintable(long image, long paintable);
 	/** @param icon_name cast=(const char *) */
 	public static final native long gtk_image_new_from_icon_name(byte[] icon_name);
+	/** @param paintable cast=(GdkPaintable *) */
+	public static final native long gtk_image_new_from_paintable(long paintable);
 	/**
 	 * @param image cast=(GtkImage *)
 	 * @param icon_name cast=(const gchar *)
@@ -882,5 +895,4 @@ public class GTK4 {
 	 * @param gesture cast=(GtkGesture *)
 	 */
 	public static final native long gtk_gesture_get_last_updated_sequence(long gesture);
-
 }

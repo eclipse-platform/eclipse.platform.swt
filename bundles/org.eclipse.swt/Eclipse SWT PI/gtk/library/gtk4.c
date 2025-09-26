@@ -319,6 +319,26 @@ JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1box_1prepend)
 }
 #endif
 
+#ifndef NO_gtk_1box_1remove
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1box_1remove)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1box_1remove_FUNC);
+	gtk_box_remove((GtkBox *)arg0, (GtkWidget *)arg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1box_1remove_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1box_1reorder_1child_1after
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1box_1reorder_1child_1after)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1box_1reorder_1child_1after_FUNC);
+	gtk_box_reorder_child_after((GtkBox *)arg0, (GtkWidget *)arg1, (GtkWidget *)arg2);
+	GTK4_NATIVE_EXIT(env, that, gtk_1box_1reorder_1child_1after_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1button_1new_1from_1icon_1name
 JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1button_1new_1from_1icon_1name)
 	(JNIEnv *env, jclass that, jbyteArray arg0)
@@ -1557,6 +1577,18 @@ JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1image_1new_1from_1icon_1name)
 fail:
 	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	GTK4_NATIVE_EXIT(env, that, gtk_1image_1new_1from_1icon_1name_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1image_1new_1from_1paintable
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1image_1new_1from_1paintable)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1image_1new_1from_1paintable_FUNC);
+	rc = (jlong)gtk_image_new_from_paintable((GdkPaintable *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1image_1new_1from_1paintable_FUNC);
 	return rc;
 }
 #endif
