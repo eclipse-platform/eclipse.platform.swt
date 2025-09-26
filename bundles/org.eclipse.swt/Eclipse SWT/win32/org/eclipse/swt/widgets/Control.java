@@ -618,7 +618,7 @@ public Point computeSize (int wHint, int hHint, boolean changed){
 	hHint = (hHint != SWT.DEFAULT ? Win32DPIUtils.pointToPixel(hHint, zoom) : hHint);
 	//We should never return a size that is to small, RoundingMode.UP ensures we at worst case report
 	//a size that is a bit too large by half a point
-	return Win32DPIUtils.pixelToPoint(computeSizeInPixels(wHint, hHint, changed), zoom, RoundingMode.UP);
+	return Win32DPIUtils.pixelToPointAsSize(computeSizeInPixels(wHint, hHint, changed), zoom);
 }
 
 Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
@@ -1371,7 +1371,7 @@ public Object getLayoutData () {
 public Point getLocation () {
 	checkWidget ();
 	//For a location the closest point values is okay
-	return Win32DPIUtils.pixelToPoint(getLocationInPixels(), getZoom(), RoundingMode.ROUND);
+	return Win32DPIUtils.pixelToPointAsLocation(getLocationInPixels(), getZoom());
 }
 
 Point getLocationInPixels () {
@@ -1527,7 +1527,7 @@ public Shell getShell () {
  */
 public Point getSize (){
 	checkWidget ();
-	return Win32DPIUtils.pixelToPoint(getSizeInPixels (), getZoom(), RoundingMode.UP);
+	return Win32DPIUtils.pixelToPointAsSize(getSizeInPixels (), getZoom());
 }
 
 Point getSizeInPixels () {
@@ -4029,7 +4029,7 @@ public Point toControl (int x, int y) {
 	checkWidget ();
 	Point displayPointInPixels = getDisplay().translateToDisplayCoordinates(new Point(x, y));
 	final Point controlPointInPixels = toControlInPixels(displayPointInPixels.x, displayPointInPixels.y);
-	return Win32DPIUtils.pixelToPoint(controlPointInPixels, getZoom(), RoundingMode.ROUND);
+	return Win32DPIUtils.pixelToPointAsLocation(controlPointInPixels, getZoom());
 }
 
 Point toControlInPixels (int x, int y) {

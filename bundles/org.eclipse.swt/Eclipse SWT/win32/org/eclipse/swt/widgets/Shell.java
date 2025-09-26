@@ -1043,7 +1043,7 @@ public boolean getMaximized () {
  */
 public Point getMaximumSize () {
 	checkWidget ();
-	return Win32DPIUtils.pixelToPoint(getMaximumSizeInPixels(), getZoom());
+	return Win32DPIUtils.pixelToPointAsSize(getMaximumSizeInPixels(), getZoom());
 }
 
 Point getMaximumSizeInPixels () {
@@ -1084,7 +1084,7 @@ Point getMaximumSizeInPixels () {
  */
 public Point getMinimumSize () {
 	checkWidget ();
-	return Win32DPIUtils.pixelToPoint(getMinimumSizeInPixels(), getZoom());
+	return Win32DPIUtils.pixelToPointAsSize(getMinimumSizeInPixels(), getZoom());
 }
 
 Point getMinimumSizeInPixels () {

@@ -523,7 +523,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 							}
 							if (image != null) {
 								Rectangle bounds = image.getBounds (); // Points
-								if (size == null) size = Win32DPIUtils.pixelToPoint (getImageSize (), zoom); // To Points
+								if (size == null) size = Win32DPIUtils.pixelToPointAsSize (getImageSize (), zoom); // To Points
 								if (!ignoreDrawForeground) {
 									GCData data = new GCData();
 									data.device = display;
@@ -761,7 +761,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 					int offset = i != 0 ? Win32DPIUtils.pointToPixel(INSET, zoom) : Win32DPIUtils.pointToPixel(INSET + 2, zoom);
 					if (image != null) {
 						Rectangle bounds = image.getBounds (); // Points
-						if (size == null) size = Win32DPIUtils.pixelToPoint (getImageSize (), zoom); // To Points
+						if (size == null) size = Win32DPIUtils.pixelToPointAsSize (getImageSize (), zoom); // To Points
 						if (!ignoreDrawForeground) {
 							//int y1 = rect.top + (index == 0 ? (getItemHeight () - size.y) / 2 : 0);
 							int y1 = rect.top + Win32DPIUtils.pointToPixel((getItemHeight () - size.y) / 2, zoom);

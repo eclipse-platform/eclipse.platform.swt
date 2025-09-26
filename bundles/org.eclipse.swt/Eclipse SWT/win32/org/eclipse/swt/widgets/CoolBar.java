@@ -548,7 +548,7 @@ public Point [] getItemSizes () {
 	Point [] sizes = getItemSizesInPixels();
 	if (sizes != null) {
 		for (int i = 0; i < sizes.length; i++) {
-			sizes[i] = Win32DPIUtils.pixelToPoint(sizes[i], getZoom());
+			sizes[i] = Win32DPIUtils.pixelToPointAsSize(sizes[i], getZoom());
 		}
 	}
 	return sizes;

@@ -42,7 +42,7 @@ class SingleZoomCoordinateSystemMapper implements CoordinateSystemMapper {
 	public Point map(Control from, Control to, Point point) {
 		int zoom = getZoomLevelForMapping(from, to);
 		point = Win32DPIUtils.pointToPixelAsLocation(point, zoom);
-		return Win32DPIUtils.pixelToPoint(display.mapInPixels(from, to, point), zoom);
+		return Win32DPIUtils.pixelToPointAsLocation(display.mapInPixels(from, to, point), zoom);
 	}
 
 	@Override
@@ -57,7 +57,7 @@ class SingleZoomCoordinateSystemMapper implements CoordinateSystemMapper {
 		int zoom = getZoomLevelForMapping(from, to);
 		x = Win32DPIUtils.pointToPixel(x, zoom);
 		y = Win32DPIUtils.pointToPixel(y, zoom);
-		return Win32DPIUtils.pixelToPoint(display.mapInPixels(from, to, x, y), zoom);
+		return Win32DPIUtils.pixelToPointAsLocation(display.mapInPixels(from, to, x, y), zoom);
 	}
 
 	@Override
@@ -77,7 +77,7 @@ class SingleZoomCoordinateSystemMapper implements CoordinateSystemMapper {
 
 	@Override
 	public Point translateFromDisplayCoordinates(Point point) {
-		return Win32DPIUtils.pixelToPoint(point, DPIUtil.getDeviceZoom());
+		return Win32DPIUtils.pixelToPointAsLocation(point, DPIUtil.getDeviceZoom());
 	}
 
 	@Override
@@ -99,7 +99,7 @@ class SingleZoomCoordinateSystemMapper implements CoordinateSystemMapper {
 	public Point getCursorLocation() {
 		int zoom = DPIUtil.getDeviceZoom();
 		Point cursorLocationInPixels = display.getCursorLocationInPixels();
-		return Win32DPIUtils.pixelToPoint(cursorLocationInPixels, zoom);
+		return Win32DPIUtils.pixelToPointAsLocation(cursorLocationInPixels, zoom);
 	}
 
 	@Override

@@ -188,7 +188,7 @@ public Point computeSize (int wHint, int hHint) {
 	int zoom = getZoom();
 	wHint = (wHint != SWT.DEFAULT ? Win32DPIUtils.pointToPixel(wHint, zoom) : wHint);
 	hHint = (hHint != SWT.DEFAULT ? Win32DPIUtils.pointToPixel(hHint, zoom) : hHint);
-	return Win32DPIUtils.pixelToPoint(computeSizeInPixels(wHint, hHint), zoom);
+	return Win32DPIUtils.pixelToPointAsSize(computeSizeInPixels(wHint, hHint), zoom);
 }
 Point computeSizeInPixels (int wHint, int hHint) {
 	int index = parent.indexOf (this);
@@ -383,7 +383,7 @@ public void setControl (Control control) {
  */
 public Point getPreferredSize () {
 	checkWidget ();
-	return Win32DPIUtils.pixelToPoint(getPreferredSizeInPixels(), getZoom());
+	return Win32DPIUtils.pixelToPointAsSize(getPreferredSizeInPixels(), getZoom());
 }
 
 Point getPreferredSizeInPixels () {
@@ -483,7 +483,7 @@ public void setPreferredSize (Point size) {
  */
 public Point getSize () {
 	checkWidget ();
-	return Win32DPIUtils.pixelToPoint(getSizeInPixels(), getZoom());
+	return Win32DPIUtils.pixelToPointAsSize(getSizeInPixels(), getZoom());
 }
 
 Point getSizeInPixels() {
@@ -611,7 +611,7 @@ public void setSize (Point size) {
  */
 public Point getMinimumSize () {
 	checkWidget ();
-	return Win32DPIUtils.pixelToPoint(getMinimumSizeInPixels(), getZoom());
+	return Win32DPIUtils.pixelToPointAsSize(getMinimumSizeInPixels(), getZoom());
 }
 
 Point getMinimumSizeInPixels () {
