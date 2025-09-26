@@ -15,6 +15,7 @@
 package org.eclipse.swt.widgets;
 
 import java.util.*;
+import java.util.concurrent.atomic.*;
 import java.util.stream.*;
 
 import org.eclipse.swt.*;
@@ -2728,6 +2729,25 @@ void handleDPIChange(Event event, float scalingFactor) {
 	int newZoom = event.detail;
 	this.nativeZoom = newZoom;
 	this.setData(DATA_NATIVE_ZOOM, newZoom);
+}
+
+void sendZoomChangedEvent(Event event, Shell shell) {
+	AtomicInteger handleDPIChangedScheduledTasksCount = (AtomicInteger) event.data;
+	handleDPIChangedScheduledTasksCount.incrementAndGet();
+	getDisplay().asyncExec(() -> {
+		try {
+			if (!this.isDisposed()) {
+				notifyListeners(SWT.ZoomChanged, event);
+			}
+		} finally {
+			if (shell.isDisposed()) {
+				return;
+			}
+			if (handleDPIChangedScheduledTasksCount.decrementAndGet() <= 0) {
+				shell.WM_SIZE(0, 0);
+			}
+		}
+	});
 }
 
 int getSystemMetrics(int nIndex) {
