@@ -16,7 +16,6 @@ package org.eclipse.swt.graphics;
 
 import java.io.*;
 
-import org.eclipse.swt.internal.*;
 import org.eclipse.swt.widgets.*;
 
 /**
@@ -132,7 +131,7 @@ public Point clone() {
  * Instances of this class represent {@link org.eclipse.swt.graphics.Point}
  * objects with the fields capable of storing more precise value in float.
  *
- * @since 3.131
+ * @since 3.132
  * @noreference This class is not intended to be referenced by clients
  */
 public static sealed class OfFloat extends Point permits Point.WithMonitor {
