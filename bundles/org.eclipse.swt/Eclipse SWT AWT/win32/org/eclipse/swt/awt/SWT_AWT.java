@@ -293,7 +293,7 @@ public static Shell new_Shell (final Display display, final Canvas parent) {
 			display.syncExec (() -> {
 				if (shell.isDisposed()) return;
 				Dimension dim = parent.getSize ();
-				shell.setSize(Win32DPIUtils.pixelToPoint(new Point(dim.width, dim.height), DPIUtil.getDeviceZoom())); // To Points
+				shell.setSize(Win32DPIUtils.pixelToPointAsSize(new Point(dim.width, dim.height), DPIUtil.getDeviceZoom())); // To Points
 			});
 		}
 	};

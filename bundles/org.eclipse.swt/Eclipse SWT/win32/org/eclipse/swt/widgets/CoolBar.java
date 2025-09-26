@@ -548,7 +548,7 @@ public Point [] getItemSizes () {
 	Point [] sizes = getItemSizesInPixels();
 	if (sizes != null) {
 		for (int i = 0; i < sizes.length; i++) {
-			sizes[i] = Win32DPIUtils.pixelToPoint(sizes[i], getZoom());
+			sizes[i] = Win32DPIUtils.pixelToPointAsSize(sizes[i], getZoom());
 		}
 	}
 	return sizes;
@@ -808,7 +808,7 @@ public void setItemLayout (int [] itemOrder, int [] wrapIndices, Point [] sizes)
 	if (sizes == null) error (SWT.ERROR_NULL_ARGUMENT);
 	Point [] sizesInPoints = new Point [sizes.length];
 	for (int i = 0; i < sizes.length; i++) {
-		sizesInPoints[i] = Win32DPIUtils.pointToPixel(sizes[i], getZoom());
+		sizesInPoints[i] = Win32DPIUtils.pointToPixelAsSize(sizes[i], getZoom());
 	}
 	setItemLayoutInPixels (itemOrder, wrapIndices, sizesInPoints);
 }

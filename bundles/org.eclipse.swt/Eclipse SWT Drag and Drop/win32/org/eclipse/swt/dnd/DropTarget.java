@@ -410,7 +410,7 @@ private Point convertPixelToPoint(int xInPixels, int yInPixels) {
 	if (this.control == null) {
 		// If there is no control for context, the behavior remains as before
 		int zoom = DPIUtil.getZoomForAutoscaleProperty(this.nativeZoom);
-		return Win32DPIUtils.pixelToPoint(new Point(xInPixels, yInPixels), zoom);
+		return Win32DPIUtils.pixelToPointAsLocation(new Point(xInPixels, yInPixels), zoom);
 	}
 	int zoom = DPIUtil.getZoomForAutoscaleProperty(this.control.nativeZoom);
 	// There is no API to convert absolute values in pixels to display relative
@@ -419,7 +419,7 @@ private Point convertPixelToPoint(int xInPixels, int yInPixels) {
 	POINT pt = new POINT ();
 	pt.x = xInPixels;  pt.y = yInPixels;
 	OS.ScreenToClient (this.control.handle, pt);
-	Point p = Win32DPIUtils.pixelToPoint(new Point (pt.x, pt.y), zoom);
+	Point p = Win32DPIUtils.pixelToPointAsLocation(new Point (pt.x, pt.y), zoom);
 	return this.control.toDisplay(p);
 }
 

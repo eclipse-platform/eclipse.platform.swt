@@ -1056,7 +1056,7 @@ private class DrawImageOperation extends ImageOperation {
 
 	@Override
 	void apply() {
-		drawImageInPixels(getImage(), Win32DPIUtils.pointToPixel(drawable, this.location, getZoom()));
+		drawImageInPixels(getImage(), Win32DPIUtils.pointToPixelAsLocation(drawable, this.location, getZoom()));
 	}
 
 	private void drawImageInPixels(Image image, Point location) {
@@ -1868,8 +1868,8 @@ private class DrawLineOperation extends Operation {
 	@Override
 	void apply() {
 		int deviceZoom = getZoom();
-		Point startInPixels = Win32DPIUtils.pointToPixel (drawable, start, deviceZoom);
-		Point endInPixels = Win32DPIUtils.pointToPixel (drawable, end, deviceZoom);
+		Point startInPixels = Win32DPIUtils.pointToPixelAsLocation (drawable, start, deviceZoom);
+		Point endInPixels = Win32DPIUtils.pointToPixelAsLocation (drawable, end, deviceZoom);
 		drawLineInPixels(startInPixels.x, startInPixels.y, endInPixels.x, endInPixels.y);
 	}
 }
@@ -2039,7 +2039,7 @@ private class DrawPointOperation extends Operation {
 
 	@Override
 	void apply() {
-		Point scaleUpLocation = Win32DPIUtils.pointToPixel(location, getZoom());
+		Point scaleUpLocation = Win32DPIUtils.pointToPixelAsLocation(location, getZoom());
 		drawPointInPixels(scaleUpLocation.x, scaleUpLocation.y);
 	}
 }
@@ -2457,7 +2457,7 @@ private class DrawStringOperation extends Operation {
 
 	@Override
 	void apply() {
-		Point scaledLocation = Win32DPIUtils.pointToPixel(drawable, location, getZoom());
+		Point scaledLocation = Win32DPIUtils.pointToPixelAsLocation(drawable, location, getZoom());
 		drawStringInPixels(string, scaledLocation.x, scaledLocation.y, isTransparent);
 	}
 }
@@ -2643,7 +2643,7 @@ private class DrawTextOperation extends Operation {
 
 	@Override
 	void apply() {
-		Point scaledLocation = Win32DPIUtils.pointToPixel(drawable, location, getZoom());
+		Point scaledLocation = Win32DPIUtils.pointToPixelAsLocation(drawable, location, getZoom());
 		drawTextInPixels(string, scaledLocation.x, scaledLocation.y, flags);
 	}
 }
@@ -5736,7 +5736,7 @@ private class SetTransformOperation extends Operation {
  */
 public Point stringExtent (String string) {
 	if (string == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	return Win32DPIUtils.pixelToPoint(drawable, stringExtentInPixels(string), getZoom());
+	return Win32DPIUtils.pixelToPointAsSize(drawable, stringExtentInPixels(string), getZoom());
 }
 
 Point stringExtentInPixels (String string) {
@@ -5781,7 +5781,7 @@ Point stringExtentInPixels (String string) {
  * </ul>
  */
 public Point textExtent (String string) {
-	return Win32DPIUtils.pixelToPoint(drawable, textExtentInPixels(string, SWT.DRAW_DELIMITER | SWT.DRAW_TAB), getZoom());
+	return Win32DPIUtils.pixelToPointAsSize(drawable, textExtentInPixels(string, SWT.DRAW_DELIMITER | SWT.DRAW_TAB), getZoom());
 }
 
 /**
@@ -5816,7 +5816,7 @@ public Point textExtent (String string) {
  * </ul>
  */
 public Point textExtent (String string, int flags) {
-	return Win32DPIUtils.pixelToPoint(drawable, textExtentInPixels(string, flags), getZoom());
+	return Win32DPIUtils.pixelToPointAsSize(drawable, textExtentInPixels(string, flags), getZoom());
 }
 
 Point textExtentInPixels(String string, int flags) {

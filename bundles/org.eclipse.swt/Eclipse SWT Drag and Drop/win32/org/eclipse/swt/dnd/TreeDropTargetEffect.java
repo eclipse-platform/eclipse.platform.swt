@@ -165,7 +165,7 @@ public class TreeDropTargetEffect extends DropTargetEffect {
 		int effect = checkEffect(event.feedback);
 		long handle = tree.handle;
 		Point coordinates = new Point(event.x, event.y);
-		coordinates = Win32DPIUtils.pointToPixel(tree.toControl(coordinates), DPIUtil.getZoomForAutoscaleProperty(tree.nativeZoom)); // To Pixels
+		coordinates = Win32DPIUtils.pointToPixelAsLocation(tree.toControl(coordinates), DPIUtil.getZoomForAutoscaleProperty(tree.nativeZoom)); // To Pixels
 		TVHITTESTINFO lpht = new TVHITTESTINFO ();
 		lpht.x = coordinates.x;
 		lpht.y = coordinates.y;

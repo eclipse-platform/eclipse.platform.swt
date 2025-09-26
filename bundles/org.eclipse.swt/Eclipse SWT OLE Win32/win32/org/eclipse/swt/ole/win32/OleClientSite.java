@@ -987,7 +987,7 @@ private int OnInPlaceDeactivate() {
 	return COM.S_OK;
 }
 private int OnPosRectChange(long lprcPosRect) {
-	Point size = Win32DPIUtils.pointToPixel(getSize(), DPIUtil.getZoomForAutoscaleProperty(nativeZoom)); // To Pixels
+	Point size = Win32DPIUtils.pointToPixelAsSize(getSize(), DPIUtil.getZoomForAutoscaleProperty(nativeZoom)); // To Pixels
 	setExtent(size.x, size.y);
 	return COM.S_OK;
 }

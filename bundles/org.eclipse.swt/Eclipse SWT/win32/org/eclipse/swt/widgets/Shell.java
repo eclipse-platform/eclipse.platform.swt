@@ -1043,7 +1043,7 @@ public boolean getMaximized () {
  */
 public Point getMaximumSize () {
 	checkWidget ();
-	return Win32DPIUtils.pixelToPoint(getMaximumSizeInPixels(), getZoom());
+	return Win32DPIUtils.pixelToPointAsSize(getMaximumSizeInPixels(), getZoom());
 }
 
 Point getMaximumSizeInPixels () {
@@ -1084,7 +1084,7 @@ Point getMaximumSizeInPixels () {
  */
 public Point getMinimumSize () {
 	checkWidget ();
-	return Win32DPIUtils.pixelToPoint(getMinimumSizeInPixels(), getZoom());
+	return Win32DPIUtils.pixelToPointAsSize(getMinimumSizeInPixels(), getZoom());
 }
 
 Point getMinimumSizeInPixels () {
@@ -1797,7 +1797,7 @@ public void setMaximumSize (int width, int height) {
 public void setMaximumSize (Point size) {
 	checkWidget ();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
-	size = Win32DPIUtils.pointToPixel(size, getZoom());
+	size = Win32DPIUtils.pointToPixelAsSize(size, getZoom());
 	setMaximumSizeInPixels(size.x, size.y);
 }
 
@@ -1892,7 +1892,7 @@ void setMinimumSizeInPixels (int width, int height) {
 public void setMinimumSize (Point size) {
 	checkWidget ();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
-	size = Win32DPIUtils.pointToPixel(size, getZoom());
+	size = Win32DPIUtils.pointToPixelAsSize(size, getZoom());
 	setMinimumSizeInPixels(size.x, size.y);
 }
 
