@@ -1148,7 +1148,7 @@ private class DrawScalingImageToImageOperation extends ImageOperation {
 			// unscaled images can use the GC zoom
 			return gcZoom;
 		}
-		if (!drawable.isAutoScalable()) {
+		if (drawable != null && !drawable.isAutoScalable()) {
 			return gcZoom;
 		}
 
