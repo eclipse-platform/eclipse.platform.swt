@@ -1820,11 +1820,12 @@ public String toString () {
  * @param imageData the imageData which is used to draw the scaled Image
  * @param width the width of the original image
  * @param height the height of the original image
- * @param scaleFactor the factor with which the image is supposed to be scaled
+ * @param targetWidth the width to which the image is supposed to be scaled
+ * @param targetHeight the height to which the image is supposed to be scaled
  *
  * @noreference This method is not intended to be referenced by clients.
  */
-public static void drawScaled(GC gc, ImageData imageData, int width, int height, float scaleFactor) {
+public static void drawAtTargetSize(GC gc, ImageData imageData, int width, int height, int targetWidth, int targetHeight) {
 	StrictChecks.runWithStrictChecksDisabled(() -> {
 		Image imageToDraw = new Image(gc.device, (ImageDataProvider) zoom -> imageData);
 		gc.drawImage(imageToDraw, 0, 0, CocoaDPIUtil.pixelToPoint(width), CocoaDPIUtil.pixelToPoint(height),
@@ -1833,8 +1834,7 @@ public static void drawScaled(GC gc, ImageData imageData, int width, int height,
 				 * avoiding rounding errors. Nevertheless, we still have some rounding errors
 				 * due to the point-based API GC#drawImage(..).
 				 */
-				0, 0, Math.round(CocoaDPIUtil.pixelToPoint(width * scaleFactor)),
-				Math.round(CocoaDPIUtil.pixelToPoint(height * scaleFactor)));
+				0, 0, targetWidth, targetHeight);
 		imageToDraw.dispose();
 	});
 }

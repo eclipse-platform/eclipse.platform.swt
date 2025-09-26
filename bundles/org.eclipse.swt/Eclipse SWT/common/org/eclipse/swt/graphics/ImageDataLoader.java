@@ -45,6 +45,14 @@ class ImageDataLoader {
 		return ImageLoader.canLoadAtZoom(filename, fileZoom, targetZoom);
 	}
 
+	static boolean isDynamicallySizable(String filename) {
+		return ImageLoader.isDynamicallySizable(filename);
+	}
+
+	static boolean isDynamicallySizable(InputStream stream) {
+		return ImageLoader.isDynamicallySizable(stream);
+	}
+
 	public static ElementAtZoom<ImageData> loadByZoom(InputStream stream, int fileZoom, int targetZoom) {
 		List<ElementAtZoom<ImageData>> data = new ImageLoader().loadByZoom(stream, fileZoom, targetZoom);
 		if (data.isEmpty()) SWT.error(SWT.ERROR_INVALID_IMAGE);
