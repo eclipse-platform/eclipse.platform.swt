@@ -15,16 +15,17 @@
 package org.eclipse.swt.tests.junit;
 
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ExtendedModifyListener;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Shell;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.custom.ExtendedModifyListener
@@ -36,7 +37,7 @@ public class Test_org_eclipse_swt_custom_ExtendedModifyListener {
 	StyledText styledText;
 	int verify = -1;
 
-@Before
+@BeforeEach
 public void setUp() {
 	shell = new Shell();
 	styledText = new StyledText(shell, SWT.NULL);
@@ -48,115 +49,107 @@ public void test_modifyTextLorg_eclipse_swt_custom_ExtendedModifyEvent() {
 	ExtendedModifyListener listener = event -> {
 		switch(verify) {
 			case 1 : {
-				assertEquals(":1a:", 0, event.start);
-				assertEquals(":1b:", 1, event.length);
-				assertTrue(":1c:", event.replacedText.isEmpty());
+				assertEquals(0, event.start);
+				assertEquals(1, event.length);
+				assertTrue(event.replacedText.isEmpty());
 				break;
 			}
 			case 2 : {
-				assertEquals(":2a:", 0, event.start);
-				assertEquals(":2b:", 1, event.length);
-				assertEquals(":2c:", "\n\n", event.replacedText);
+				assertEquals(0, event.start);
+				assertEquals(1, event.length);
+				assertEquals("\n\n", event.replacedText);
 				break;
 			}
 			case 3 : {
-				assertEquals(":3a:", 0, event.start);
-				assertEquals(":3b:", 2, event.length);
-				assertEquals(":3c:", "a", event.replacedText);
+				assertEquals(0, event.start);
+				assertEquals(2, event.length);
+				assertEquals("a", event.replacedText);
 				break;
 			}
 			case 4: {
-				assertTrue(":4:", false);
+				fail();
 				break;
 			}
 			case 5 : {
-				assertEquals(":5a:", 0, event.start);
-				assertEquals(":5b:", 1, event.length);
-				assertTrue(":5c:", event.replacedText.isEmpty());
+				assertEquals(0, event.start);
+				assertEquals(1, event.length);
+				assertTrue(event.replacedText.isEmpty());
 				break;
 			}
 			case 6 : {
-				assertEquals(":6a:", 21, event.start);
-				assertEquals(":6b:", 0, event.length);
-				assertEquals(":6c:", "\nline 4", event.replacedText);
+				assertEquals(21, event.start);
+				assertEquals(0, event.length);
+				assertEquals("\nline 4", event.replacedText);
 				break;
 			}
 			case 7 : {
-				assertEquals(":7a:", 5, event.start);
-				assertEquals(":7b:", 0, event.length);
-				assertEquals(":7c:", "is a test", event.replacedText);
+				assertEquals(5, event.start);
+				assertEquals(0, event.length);
+				assertEquals("is a test", event.replacedText);
 				break;
 			}
 			case 8 : {
-				assertEquals(":8a:", 7, event.start);
-				assertEquals(":8b:", 0, event.length);
-				assertEquals(":8c:", "\r\n", event.replacedText);
+				assertEquals(7, event.start);
+				assertEquals(0, event.length);
+				assertEquals("\r\n", event.replacedText);
 				break;
 			}
 			case 9 : {
-				assertEquals(":9a:", 2, event.start);
-				assertEquals(":9b:", 4, event.length);
-				assertEquals(":9c:", "\r\n", event.replacedText);
+				assertEquals(2, event.start);
+				assertEquals(4, event.length);
+				assertEquals("\r\n", event.replacedText);
 				break;
 			}
-			case 10:{
-				assertTrue(":10:", false);
-				break;
-			}
-			case 11: {
-				assertTrue(":11:", false);
+			case 10, 11:{
+				fail();
 				break;
 			}
 			case 12: {
-				assertEquals(":12a:", 3, event.start);
-				assertEquals(":12b:", 1, event.length);
-				assertTrue(":12c:", event.replacedText.isEmpty());
+				assertEquals(3, event.start);
+				assertEquals(1, event.length);
+				assertTrue(event.replacedText.isEmpty());
 				break;
 			}
 			case 13: {
-				assertEquals(":13a:", 2, event.start);
-				assertEquals(":13b:", 1, event.length);
-				assertTrue(":13c:", event.replacedText.isEmpty());
+				assertEquals(2, event.start);
+				assertEquals(1, event.length);
+				assertTrue(event.replacedText.isEmpty());
 				break;
 			}
 			case 14: {
-				assertTrue(":14:", false);
+				fail();
 				break;
 			}
 			case 15: {
-				assertEquals(":15a:", 2, event.start);
-				assertEquals(":15b:", 6, event.length);
-				assertEquals(":15c:", "\r\n", event.replacedText);
+				assertEquals(2, event.start);
+				assertEquals(6, event.length);
+				assertEquals("\r\n", event.replacedText);
 				break;
 			}
-			case 16:{
-				assertTrue(":16:", false);
-				break;
-			}
-			case 17: {
-				assertTrue(":17:", false);
+			case 16, 17:{
+				fail();
 				break;
 			}
 			case 18: {
-				assertEquals(":18a:", 3, event.start);
-				assertEquals(":18b:", 7, event.length);
-				assertTrue(":18c:", event.replacedText.isEmpty());
+				assertEquals(3, event.start);
+				assertEquals(7, event.length);
+				assertTrue(event.replacedText.isEmpty());
 				break;
 			}
 			case 19: {
-				assertEquals(":19a:", 2, event.start);
-				assertEquals(":19b:", 7, event.length);
-				assertTrue(":19c:", event.replacedText.isEmpty());
+				assertEquals(2, event.start);
+				assertEquals(7, event.length);
+				assertTrue(event.replacedText.isEmpty());
 				break;
 			}
 			case 20: {
-				assertTrue(":20:", false);
+				assertTrue(false);
 				break;
 			}
 			case 21: {
-				assertEquals(":21a:", 0, event.start);
-				assertEquals(":21b:", 16, event.length);
-				assertEquals(":21c:", "L1\r\nL2\r\nL3\r\nL4\r\n", event.replacedText);
+				assertEquals(0, event.start);
+				assertEquals(16, event.length);
+				assertEquals("L1\r\nL2\r\nL3\r\nL4\r\n", event.replacedText);
 				break;
 			}
 		}

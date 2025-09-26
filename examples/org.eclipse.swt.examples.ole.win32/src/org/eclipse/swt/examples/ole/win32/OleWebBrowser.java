@@ -56,7 +56,7 @@ class OleWebBrowser {
 	public static final int FrameBeforeNavigate   = 200; // Fired when a new hyperlink is being navigated to in a frame.
 	public static final int FrameNavigateComplete = 201; // Fired when a new hyperlink is being navigated to in a frame.
 	public static final int FrameNewWindow        = 204; // Fired when a new window should be created.
-	public static final int Quit                  = 103; // Fired when application is quiting.
+	public static final int Quit                  = 103; // Fired when application is quitting.
 	public static final int WindowMove            = 109; // Fired when window has been moved.
 	public static final int WindowResize          = 110; // Fired when window has been sized.
 	public static final int WindowActivate        = 111; // Fired when window has been activated.
@@ -217,7 +217,7 @@ class OleWebBrowser {
 	}
 	
 	/**
-	 * Aborts loading of the currnet page.
+	 * Aborts loading of the current page.
 	 */
 	public void Stop() {
 		// dispid=106, type=METHOD, name="Stop"

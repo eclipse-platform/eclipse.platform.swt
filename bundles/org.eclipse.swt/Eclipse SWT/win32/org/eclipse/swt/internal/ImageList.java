@@ -51,14 +51,12 @@ public int add (Image image) {
 	int count = OS.ImageList_GetImageCount (handle);
 	int index = 0;
 	while (index < count) {
-		if (images [index] != null) {
-			if (images [index].isDisposed ()) images [index] = null;
-		}
-		if (images [index] == null) break;
+		Image imageAtIndex = getOrClearIfDisposed(index);
+		if (imageAtIndex == null) break;
 		index++;
 	}
 	if (count == 0) {
-		Rectangle rect = DPIUtil.scaleBounds(image.getBounds(), zoom, 100);
+		Rectangle rect = Win32DPIUtils.scaleBounds(image.getBounds(), zoom, 100);
 		OS.ImageList_SetIconSize (handle, rect.width, rect.height);
 	}
 	setForAllHandles(index, image, count);
@@ -69,6 +67,13 @@ public int add (Image image) {
 	}
 	images [index] = image;
 	return index;
+}
+
+private Image getOrClearIfDisposed(int index) {
+	if (images[index] != null && images[index].isDisposed()) {
+		images[index] = null;
+	}
+	return images[index];
 }
 
 public int addRef() {
@@ -332,12 +337,12 @@ public int getStyle () {
 
 public long getHandle(int targetZoom) {
 	if (!zoomToHandle.containsKey(targetZoom)) {
-		int scaledWidth = DPIUtil.scaleUp(DPIUtil.scaleDown(width, this.zoom), targetZoom);
-		int scaledHeight = DPIUtil.scaleUp(DPIUtil.scaleDown(height, this.zoom), targetZoom);
+		int scaledWidth = Win32DPIUtils.pointToPixel(DPIUtil.pixelToPoint(width, this.zoom), targetZoom);
+		int scaledHeight = Win32DPIUtils.pointToPixel(DPIUtil.pixelToPoint(height, this.zoom), targetZoom);
 		long newImageListHandle = OS.ImageList_Create(scaledWidth, scaledHeight, flags, 16, 16);
 		int count = OS.ImageList_GetImageCount (handle);
 		for (int i = 0; i < count; i++) {
-			Image image = images[i];
+			Image image = getOrClearIfDisposed(i);
 			if (image != null) {
 				set(i, image, i, newImageListHandle, targetZoom);
 			} else {
@@ -359,18 +364,22 @@ private void addPlaceholderImageToImageList(long imageListHandle, int bitmapWidt
 	OS.ReleaseDC(0, hDC);
 }
 
+/**
+ *
+ * {@return size of Images in the ImageList in points}
+ */
 public Point getImageSize() {
 	int [] cx = new int [1], cy = new int [1];
 	OS.ImageList_GetIconSize (handle, cx, cy);
-	return new Point (cx [0], cy [0]);
+	return Win32DPIUtils.pixelToPoint(new Point (cx [0], cy [0]), zoom);
 }
 
 public int indexOf (Image image) {
 	int count = OS.ImageList_GetImageCount (handle);
 	for (int i=0; i<count; i++) {
-		if (images [i] != null) {
-			if (images [i].isDisposed ()) images [i] = null;
-			if (images [i] != null && images [i].equals (image)) return i;
+		Image potentialMatch = getOrClearIfDisposed(i);
+		if (potentialMatch != null && potentialMatch.equals(image)) {
+			return i;
 		}
 	}
 	return -1;
@@ -476,9 +485,9 @@ public int size () {
 	int result = 0;
 	int count = OS.ImageList_GetImageCount (handle);
 	for (int i=0; i<count; i++) {
-		if (images [i] != null) {
-			if (images [i].isDisposed ()) images [i] = null;
-			if (images [i] != null) result++;
+		Image image = getOrClearIfDisposed(i);
+		if (image != null) {
+			result++;
 		}
 	}
 	return result;

@@ -17,8 +17,7 @@ package org.eclipse.swt.tests.gtk.snippets;
  * A handy snippet to test hanging File/Directory dialogs
  */
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.DirectoryDialog;
@@ -40,27 +39,21 @@ public class Issue1062_FileChooserNativeDialog {
 
 		Button button = new Button(shell, 0);
 		button.setText("Open File Dialog");
-		button.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				FileDialog dialog = new FileDialog(shell, SWT.OPEN);
-				dialog.setText("Right click to open a menu and after that try to close dialog");
-				String string = dialog.open();
-				System.out.println("Selected: " + string);
-			}
-		});
+		button.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+			FileDialog dialog = new FileDialog(shell, SWT.OPEN);
+			dialog.setText("Right click to open a menu and after that try to close dialog");
+			String string = dialog.open();
+			System.out.println("Selected: " + string);
+		}));
 
 		button = new Button(shell, 0);
 		button.setText("Open Directory Dialog");
-		button.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				DirectoryDialog dialog = new DirectoryDialog(shell, SWT.OPEN);
-				dialog.setText("Right click to open a menu and after that try to close dialog");
-				String string = dialog.open();
-				System.out.println("Selected: " + string);
-			}
-		});
+		button.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+			DirectoryDialog dialog = new DirectoryDialog(shell, SWT.OPEN);
+			dialog.setText("Right click to open a menu and after that try to close dialog");
+			String string = dialog.open();
+			System.out.println("Selected: " + string);
+		}));
 
 		shell.setSize(400, 200);
 		shell.open();

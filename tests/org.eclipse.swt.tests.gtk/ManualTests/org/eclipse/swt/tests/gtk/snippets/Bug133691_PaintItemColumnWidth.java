@@ -17,8 +17,6 @@ package org.eclipse.swt.tests.gtk.snippets;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
@@ -40,17 +38,9 @@ public class Bug133691_PaintItemColumnWidth {
 		Button button = new Button(shell, SWT.PUSH);
 		button.setBounds(10,230,200,30);
 		button.setText("Add PaintItem Listener");
-		button.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				tree.addListener(SWT.PaintItem, new Listener() {	// <---
-					@Override
-					public void handleEvent(Event event) {
-						// do nothing
-					}
-				});
-			}
-		});
+		button.addListener(SWT.Selection, event -> tree.addListener(SWT.PaintItem, event1 -> {
+			// do nothing
+		}));
 		shell.open();
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch()) display.sleep();

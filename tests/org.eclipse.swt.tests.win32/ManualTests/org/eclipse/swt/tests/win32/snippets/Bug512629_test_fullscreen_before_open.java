@@ -13,8 +13,8 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.win32.snippets;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.function.Function;
 
@@ -23,9 +23,9 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Shell;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Manual test to check a bunch of uncommon combinations of shell open/hide and
@@ -37,12 +37,12 @@ public class Bug512629_test_fullscreen_before_open {
 	Shell shell;
 	Shell testShell;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		shell = new Shell();
 	}
 
-	@After
+	@AfterEach
 	public void tearDown() {
 		shell.getDisplay().dispose();
 	}
@@ -116,12 +116,12 @@ public class Bug512629_test_fullscreen_before_open {
 			for (int shellStyle : new int[] { SWT.SHELL_TRIM, SWT.DIALOG_TRIM, SWT.NO_TRIM, SWT.BORDER }) {
 				createShell(shellStyle);
 				setFullscreenAndOpen.run();
-				assertTrue("Not fullscreen.", looksLikeFullscreen.apply(testShell));
-				assertFalse("Not fullscreen.", hasTrimming.apply(testShell));
+				assertTrue(looksLikeFullscreen.apply(testShell), "Not fullscreen.");
+				assertFalse(hasTrimming.apply(testShell), "Not fullscreen.");
 				assertTrue(testShell.getFullScreen());
 				assertFalse(testShell.getMaximized());
 				testShell.setFullScreen(false);
-				assertTrue("Window not restored.", looksLikeNormalWindow.apply(testShell));
+				assertTrue(looksLikeNormalWindow.apply(testShell), "Window not restored.");
 				assertTrue(hasTrimming.apply(testShell) == ((shellStyle & SWT.TITLE) != 0));
 				assertFalse(testShell.getFullScreen());
 				assertFalse(testShell.getMaximized());
@@ -130,12 +130,12 @@ public class Bug512629_test_fullscreen_before_open {
 				testShell.setMaximized(true);
 				assertTrue(testShell.getMaximized());
 				setFullscreenAndOpen.run();
-				assertTrue("Not fullscreen.", looksLikeFullscreen.apply(testShell));
-				assertFalse("Not fullscreen.", hasTrimming.apply(testShell));
+				assertTrue(looksLikeFullscreen.apply(testShell), "Not fullscreen.");
+				assertFalse(hasTrimming.apply(testShell), "Not fullscreen.");
 				assertTrue(testShell.getFullScreen());
 				assertFalse(testShell.getMaximized());
 				testShell.setFullScreen(false);
-				assertTrue("Not maximized.", looksLikeMaximizedWindow.apply(testShell));
+				assertTrue(looksLikeMaximizedWindow.apply(testShell), "Not maximized.");
 				assertTrue(hasTrimming.apply(testShell) == ((shellStyle & SWT.TITLE) != 0));
 				assertFalse(testShell.getFullScreen());
 				assertTrue(testShell.getMaximized());
@@ -145,8 +145,8 @@ public class Bug512629_test_fullscreen_before_open {
 		createShell(SWT.SHELL_TRIM);
 		testShell.setFullScreen(false);
 		testShell.open();
-		assertTrue("Window not restored.", looksLikeNormalWindow.apply(testShell));
-		assertTrue("Lost trimming.", hasTrimming.apply(testShell));
+		assertTrue(looksLikeNormalWindow.apply(testShell), "Window not restored.");
+		assertTrue(hasTrimming.apply(testShell), "Lost trimming.");
 		assertFalse(testShell.getFullScreen());
 		assertFalse(testShell.getMaximized());
 	}

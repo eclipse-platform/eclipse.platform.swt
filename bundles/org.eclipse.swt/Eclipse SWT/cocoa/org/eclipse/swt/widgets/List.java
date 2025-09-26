@@ -25,7 +25,7 @@ import org.eclipse.swt.internal.cocoa.*;
  * when a string is selected.  A list may be single or multi select.
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>SINGLE, MULTI</dd>
+ * <dd>SINGLE, MULTI, NO_SEARCH</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Selection, DefaultSelection</dd>
  * </dl>

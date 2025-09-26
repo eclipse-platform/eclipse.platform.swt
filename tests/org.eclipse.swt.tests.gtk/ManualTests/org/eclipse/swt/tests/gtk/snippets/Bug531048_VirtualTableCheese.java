@@ -15,8 +15,7 @@
 package org.eclipse.swt.tests.gtk.snippets;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
@@ -50,12 +49,8 @@ public class Bug531048_VirtualTableCheese {
 		final Button button = new Button(shell, SWT.NONE);
 		final Table table = new Table(shell, SWT.VIRTUAL | SWT.BORDER | SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL);
 		button.setText("Change content");
-		button.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				table.setItemCount(table.getItemCount() == COUNT1 ? COUNT2 : COUNT1);
-			}
-		});
+		button.addSelectionListener(SelectionListener
+				.widgetSelectedAdapter(e -> table.setItemCount(table.getItemCount() == COUNT1 ? COUNT2 : COUNT1)));
 
 		table.setHeaderVisible(true);
 		final Listener listener = event -> {

@@ -18,8 +18,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -40,12 +39,9 @@ public class Bug521506_FakeClick {
 
 		Button button = new Button(shell, SWT.PUSH);
 		button.setText("Test Button"); //$NON-NLS-1$
-		button.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				System.err.println("TEST BUTTON CLICKED"); //$NON-NLS-1$
-			}
-		});
+		button.addSelectionListener(
+				SelectionListener.widgetSelectedAdapter(e -> System.err.println("TEST BUTTON CLICKED") //$NON-NLS-1$
+				));
 
 		// create shell menu bar
 		final Menu menuBar = new Menu(shell, SWT.BAR);
@@ -58,12 +54,8 @@ public class Bug521506_FakeClick {
 
 		MenuItem clickItem = new MenuItem(menu, SWT.PUSH);
 		clickItem.setText("Item"); //$NON-NLS-1$
-		clickItem.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				System.err.println("ITEM CLICKED"); //$NON-NLS-1$
-			}
-		});
+		clickItem.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> System.err.println("ITEM CLICKED") //$NON-NLS-1$
+		));
 
 		shell.setMenuBar(menuBar);
 

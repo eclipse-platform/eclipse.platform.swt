@@ -97,7 +97,7 @@ public boolean equals (Object object) {
  * @return the ascent of the font
  */
 public int getAscent() {
-	return DPIUtil.scaleDown(handle.tmAscent - handle.tmInternalLeading, getZoom());
+	return DPIUtil.pixelToPoint(handle.tmAscent - handle.tmInternalLeading, getZoom());
 }
 
 /**
@@ -120,7 +120,7 @@ public double getAverageCharacterWidth() {
  */
 @Deprecated
 public int getAverageCharWidth() {
-	return DPIUtil.scaleDown(handle.tmAveCharWidth, getZoom());
+	return DPIUtil.pixelToPoint(handle.tmAveCharWidth, getZoom());
 }
 
 /**
@@ -132,7 +132,7 @@ public int getAverageCharWidth() {
  * @return the descent of the font
  */
 public int getDescent() {
-	return DPIUtil.scaleDown(handle.tmDescent, getZoom());
+	return DPIUtil.pixelToPoint(handle.tmDescent, getZoom());
 }
 
 /**
@@ -147,7 +147,7 @@ public int getDescent() {
  * @see #getLeading
  */
 public int getHeight() {
-	return DPIUtil.scaleDown(handle.tmHeight, getZoom());
+	return DPIUtil.pixelToPoint(handle.tmHeight, getZoom());
 }
 
 /**

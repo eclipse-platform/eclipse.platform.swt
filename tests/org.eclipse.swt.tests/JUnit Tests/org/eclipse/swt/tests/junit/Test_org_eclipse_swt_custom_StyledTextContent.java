@@ -15,8 +15,8 @@
 package org.eclipse.swt.tests.junit;
 
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
@@ -24,8 +24,8 @@ import org.eclipse.swt.custom.StyledTextContent;
 import org.eclipse.swt.custom.TextChangeListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Shell;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.custom.StyledTextContent
@@ -33,21 +33,21 @@ import org.junit.Test;
  * @see org.eclipse.swt.custom.StyledTextContent
  */
 public class Test_org_eclipse_swt_custom_StyledTextContent {
-	int XINSET = 0;
+	private static final String INITIAL_TEXT = "initial text";
 
 	static class ContentImplementation implements StyledTextContent {
-		String textContent = "";
+		String textContent = INITIAL_TEXT;
 
 		@Override
 		public void addTextChangeListener(TextChangeListener listener){
 		}
 		@Override
 		public int getCharCount() {
-			return 0;
+			return textContent.length();
 		}
 		@Override
 		public String getLine(int lineIndex) {
-			return "getLine";
+			return textContent;
 		}
 		@Override
 		public int getLineAtOffset(int offset) {
@@ -55,7 +55,7 @@ public class Test_org_eclipse_swt_custom_StyledTextContent {
 		}
 		@Override
 		public int getLineCount() {
-			return 0;
+			return 1;
 		}
 		@Override
 		public String getLineDelimiter() {
@@ -67,14 +67,14 @@ public class Test_org_eclipse_swt_custom_StyledTextContent {
 		}
 		@Override
 		public String getTextRange(int start, int length) {
-			return textContent;
+			return textContent.substring(start, start + length);
 		}
 		@Override
 		public void removeTextChangeListener(TextChangeListener listener) {
 		}
 		@Override
 		public void replaceTextRange(int start, int replaceLength, String text) {
-			textContent = text;
+			textContent = textContent.substring(0, start) +text + textContent.substring(start + replaceLength);
 		}
 		@Override
 		public void setText(String text) {
@@ -85,10 +85,8 @@ public class Test_org_eclipse_swt_custom_StyledTextContent {
 	Shell shell;
 	StyledText styledText;
 
-@Before
+@BeforeEach
 public void setUp() {
-	if (SwtTestUtil.isBidi()) XINSET = 2;
-	else XINSET = 0;
 	shell = new Shell();
 	styledText = new StyledText(shell, SWT.NULL);
 	styledText.setContent(content);
@@ -96,51 +94,51 @@ public void setUp() {
 
 @Test
 public void test_getCharCount() {
-	assertEquals(":a:", 0, styledText.getCharCount());
+	assertEquals(INITIAL_TEXT.length(), styledText.getCharCount());
 }
 
 @Test
 public void test_getLineAtOffsetI() {
-	assertEquals(":c:", 0, styledText.getLineAtOffset(0));
+	assertEquals(0, styledText.getLineAtOffset(0));
 }
 
 @Test
 public void test_getLineCount() {
-	assertEquals(":d:", 1, styledText.getLineCount());
+	assertEquals(1, styledText.getLineCount());
 }
 
 @Test
 public void test_getLineDelimiter() {
-	assertEquals(":e:", "getLineDelimiter", styledText.getLineDelimiter());
+	assertEquals("getLineDelimiter", styledText.getLineDelimiter());
 }
 
 @Test
 public void test_getLineI() {
 	// will indirectly cause getLine to be called
-	assertEquals(":b:", new Point(XINSET,0), styledText.getLocationAtOffset(0));
+	assertEquals(new Point(0,0), styledText.getLocationAtOffset(0));
 }
 
 @Test
 public void test_getOffsetAtLineI() {
 	// will indirectly cause getOffsetAtLine to be called
-	assertEquals(":f:", new Point(XINSET,0), styledText.getLocationAtOffset(0));
+	assertEquals(new Point(0,0), styledText.getLocationAtOffset(0));
 }
 
 @Test
 public void test_getTextRangeII() {
-	assertTrue(":g:", styledText.getTextRange(0,0).isEmpty());
+	assertTrue(styledText.getTextRange(0,0).isEmpty());
 }
 
 @Test
 public void test_replaceTextRangeIILjava_lang_String() {
 	styledText.replaceTextRange(0,0,"test1");
-	assertEquals(":h:", "test1", styledText.getText());
+	assertEquals("test1" + INITIAL_TEXT, styledText.getText());
 }
 
 @Test
 public void test_setTextLjava_lang_String() {
 	styledText.replaceTextRange(0,0,"test2");
-	assertEquals(":i:", "test2", styledText.getText());
+	assertEquals("test2" + INITIAL_TEXT, styledText.getText());
 }
 
 }

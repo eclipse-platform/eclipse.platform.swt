@@ -108,6 +108,17 @@ public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	font.dispose();
 }
 
+@Test
+public void test_CaretWithDisposedFontDoesNotThrowException_issue2323() {
+	Caret caret = new Caret(canvas, SWT.NONE);
+	Font font = new Font(canvas.getDisplay(), "Default", 10, SWT.BOLD);
+	shell.open();
+	caret.setFont(font);
+	font.dispose();
+	canvas.setFocus();
+	canvas.setCaret(caret);
+}
+
 /* custom*/
 @Test
 public void test_consistency_MenuDetect() {

@@ -48,10 +48,6 @@ public class ExpandItem extends Item {
 	static final int BORDER = 1;
 	static final int CHEVRON_SIZE = 24;
 
-	static {
-		DPIZoomChangeRegistry.registerHandler(ExpandItem::handleDPIChange, ExpandItem.class);
-	}
-
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -186,8 +182,8 @@ void drawItem (GC gc, long hTheme, RECT clipRect, boolean drawFocus) {
 	long hDC = gc.handle;
 	int headerHeightinPixels = getHeaderHeightInPixels();
 	int zoom = getZoom();
-	int imageHeightInPixels = DPIUtil.scaleUp(imageHeight, zoom);
-	int imageWidthInPixels = DPIUtil.scaleUp(imageWidth, zoom);
+	int imageHeightInPixels = Win32DPIUtils.pointToPixel(imageHeight, zoom);
+	int imageWidthInPixels = Win32DPIUtils.pointToPixel(imageWidth, zoom);
 
 	RECT rect = new RECT ();
 	OS.SetRect (rect, x, y, x + width, y + headerHeightinPixels);
@@ -200,8 +196,8 @@ void drawItem (GC gc, long hTheme, RECT clipRect, boolean drawFocus) {
 	}
 	if (image != null) {
 		rect.left += ExpandItem.TEXT_INSET;
-		int yInPoints = DPIUtil.scaleDown(rect.top + ((headerHeightinPixels - imageHeightInPixels) / 2), zoom);
-		gc.drawImage (image, DPIUtil.scaleDown(rect.left, zoom), yInPoints);
+		int yInPoints = DPIUtil.pixelToPoint(rect.top + ((headerHeightinPixels - imageHeightInPixels) / 2), zoom);
+		gc.drawImage (image, DPIUtil.pixelToPoint(rect.left, zoom), yInPoints);
 		rect.left += imageWidthInPixels;
 	}
 	if (text.length () > 0) {
@@ -306,12 +302,12 @@ public boolean getExpanded () {
  */
 public int getHeaderHeight () {
 	checkWidget ();
-	return DPIUtil.scaleDown(getHeaderHeightInPixels(), getZoom());
+	return DPIUtil.pixelToPoint(getHeaderHeightInPixels(), getZoom());
 }
 
 int getHeaderHeightInPixels () {
 	int headerHeightInPixels = parent.getBandHeight();
-	int imageHeightInPixels = DPIUtil.scaleUp(imageHeight, getZoom());
+	int imageHeightInPixels = Win32DPIUtils.pointToPixel(imageHeight, getZoom());
 	int imageHeaderDiff = headerHeightInPixels - imageHeightInPixels;
 	if (imageHeaderDiff < IMAGE_MARGIN) {
 		headerHeightInPixels = imageHeightInPixels + IMAGE_MARGIN;
@@ -331,7 +327,7 @@ int getHeaderHeightInPixels () {
  */
 public int getHeight () {
 	checkWidget ();
-	return DPIUtil.scaleDown(getHeightInPixels(), getZoom());
+	return DPIUtil.pixelToPoint(getHeightInPixels(), getZoom());
 }
 
 int getHeightInPixels () {
@@ -380,8 +376,8 @@ void redraw (boolean all) {
 	long parentHandle = parent.handle;
 	int headerHeightInPixels = getHeaderHeightInPixels();
 	int zoom = getZoom();
-	int imageHeightInPixels = DPIUtil.scaleUp(imageHeight, zoom);
-	int imageWidthInPixels = DPIUtil.scaleUp(imageWidth, zoom);
+	int imageHeightInPixels = Win32DPIUtils.pointToPixel(imageHeight, zoom);
+	int imageWidthInPixels = Win32DPIUtils.pointToPixel(imageWidth, zoom);
 	RECT rect = new RECT ();
 	int left = all ? x : x + width - headerHeightInPixels;
 	OS.SetRect (rect, left, y, x + width, y + headerHeightInPixels);
@@ -496,7 +492,7 @@ public void setExpanded (boolean expanded) {
  */
 public void setHeight (int height) {
 	checkWidget ();
-	setHeightInPixels(DPIUtil.scaleUp(height, getZoom()));
+	setHeightInPixels(Win32DPIUtils.pointToPixel(height, getZoom()));
 }
 
 void setHeightInPixels (int height) {
@@ -532,14 +528,13 @@ public void setText (String string) {
 	redraw (true);
 }
 
-private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
-	if (!(widget instanceof ExpandItem item)) {
-		return;
-	}
-	if (item.height != 0 || item.width != 0) {
-		int newWidth = Math.round(item.width * scalingFactor);
-		int newHeight = Math.round(item.height * scalingFactor);
-		item.setBoundsInPixels(item.x, item.y, newWidth, newHeight, true, true);
+@Override
+void handleDPIChange(Event event, float scalingFactor) {
+	super.handleDPIChange(event, scalingFactor);
+	if (height != 0 || width != 0) {
+		int newWidth = Math.round(width * scalingFactor);
+		int newHeight = Math.round(height * scalingFactor);
+		setBoundsInPixels(x, y, newWidth, newHeight, true, true);
 	}
 }
 }

@@ -425,9 +425,7 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	Cairo.cairo_region_destroy (copyRegion);
 	Cairo.cairo_region_destroy (invalidateRegion);
 	if (all) {
-		Control [] children = _getChildren ();
-		for (int i=0; i<children.length; i++) {
-			Control child = children [i];
+		for (Control child : _getChildren ()) {
 			Rectangle rect = child.getBoundsInPixels ();
 			if (Math.min(x + width, rect.x + rect.width) >= Math.max (x, rect.x) &&
 				Math.min(y + height, rect.y + rect.height) >= Math.max (y, rect.y)) {

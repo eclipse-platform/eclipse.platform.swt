@@ -235,7 +235,7 @@ void destroyWidget () {
  */
 public Rectangle getBounds () {
 	checkWidget();
-	return DPIUtil.scaleDown(getBoundsInPixels(), getZoom());
+	return Win32DPIUtils.pixelToPoint(getBoundsInPixels(), getZoom());
 }
 
 Rectangle getBoundsInPixels () {
@@ -448,7 +448,7 @@ public String getToolTipText () {
  */
 public int getWidth () {
 	checkWidget();
-	return DPIUtil.scaleDown(getWidthInPixels(), getZoom());
+	return DPIUtil.pixelToPoint(getWidthInPixels(), getZoom());
 }
 
 int getWidthInPixels () {
@@ -1076,7 +1076,7 @@ public void setToolTipText (String string) {
  */
 public void setWidth (int width) {
 	checkWidget();
-	setWidthInPixels(DPIUtil.scaleUp(width, getZoom()));
+	setWidthInPixels(Win32DPIUtils.pointToPixel(width, getZoom()));
 }
 
 void setWidthInPixels (int width) {
@@ -1103,16 +1103,16 @@ void updateImages (boolean enabled) {
 	ImageList hotImageList = parent.getHotImageList ();
 	ImageList disabledImageList = parent.getDisabledImageList();
 	if (info.iImage == OS.I_IMAGENONE) {
-		Rectangle bounds = DPIUtil.scaleBounds(image.getBounds(), getParent().getZoom(), 100);
+		Rectangle boundsInPoints = image.getBounds();
 		int listStyle = parent.style & SWT.RIGHT_TO_LEFT;
 		if (imageList == null) {
-			imageList = display.getImageListToolBar (listStyle, bounds.width, bounds.height, getZoom());
+			imageList = display.getImageListToolBar (listStyle, boundsInPoints.width, boundsInPoints.height, getZoom());
 		}
 		if (disabledImageList == null) {
-			disabledImageList = display.getImageListToolBarDisabled (listStyle, bounds.width, bounds.height, getZoom());
+			disabledImageList = display.getImageListToolBarDisabled (listStyle, boundsInPoints.width, boundsInPoints.height, getZoom());
 		}
 		if (hotImageList == null) {
-			hotImageList = display.getImageListToolBarHot (listStyle, bounds.width, bounds.height, getZoom());
+			hotImageList = display.getImageListToolBarHot (listStyle, boundsInPoints.width, boundsInPoints.height, getZoom());
 		}
 		Image disabled = disabledImage;
 		if (disabledImage == null) {

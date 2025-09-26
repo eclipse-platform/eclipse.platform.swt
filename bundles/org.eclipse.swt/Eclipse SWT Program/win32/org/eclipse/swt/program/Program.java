@@ -417,7 +417,7 @@ private ImageData getImageDataUsingExtension(int zoom) {
 	if (extension != null) {
 		// OS.SHGetFileInfo is System DPI-aware, hence it retrieves the icon with zoom
 		// of primary monitor at the application startup
-		int initialNativeZoom = getPrimaryMonitorZoomAtStartup();
+		int initialNativeZoom = Win32DPIUtils.getPrimaryMonitorZoomAtStartup();
 		SHFILEINFO shfi = new SHFILEINFO ();
 		int flags = OS.SHGFI_ICON | OS.SHGFI_USEFILEATTRIBUTES;
 		boolean useLargeIcon = 100 * zoom /  initialNativeZoom >= 200;
@@ -437,13 +437,6 @@ private ImageData getImageDataUsingExtension(int zoom) {
 		}
 	}
 	return null;
-}
-
-private int getPrimaryMonitorZoomAtStartup() {
-	long hDC = OS.GetDC(0);
-	int dpi = OS.GetDeviceCaps(hDC, OS.LOGPIXELSX);
-	OS.ReleaseDC(0, hDC);
-	return DPIUtil.mapDPIToZoom(dpi);
 }
 
 /**

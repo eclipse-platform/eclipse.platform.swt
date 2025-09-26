@@ -35,7 +35,6 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints.Key;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
@@ -71,33 +70,49 @@ public class JSVGRasterizer implements SVGRasterizer {
 	);
 
 	@Override
-	public ImageData rasterizeSVG(InputStream inputStream, int zoom) throws IOException {
-		SVGDocument svgDocument = loadSVG(inputStream);
-		if (svgDocument == null) {
-			SWT.error(SWT.ERROR_INVALID_IMAGE);
+	public ImageData rasterizeSVG(InputStream inputStream, int zoom) {
+		if (zoom < 0) {
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		}
+		SVGDocument svgDocument = loadAndValidateSVG(inputStream);
 		BufferedImage rasterizedImage = renderSVG(svgDocument, zoom);
 		return convertToSWTImageData(rasterizedImage);
 	}
 
-	private SVGDocument loadSVG(InputStream inputStream) {
-		return SVG_LOADER.load(inputStream, null, LoaderContext.createDefault());
+	@Override
+	public ImageData rasterizeSVG(InputStream inputStream, int width, int height) {
+		SVGDocument svgDocument = loadAndValidateSVG(inputStream);
+		BufferedImage rasterizedImage = renderSVG(svgDocument, width, height);
+		return convertToSWTImageData(rasterizedImage);
+	}
+	
+	private SVGDocument loadAndValidateSVG(InputStream inputStream) {
+		SVGDocument svgDocument = SVG_LOADER.load(inputStream, null, LoaderContext.createDefault());
+		if (svgDocument == null) {
+			SWT.error(SWT.ERROR_INVALID_IMAGE);
+		}
+		return svgDocument;
 	}
 
 	private BufferedImage renderSVG(SVGDocument svgDocument, int zoom) {
+		FloatSize sourceImageSize = svgDocument.size();
 		float scalingFactor = zoom / 100.0f;
-		BufferedImage image = createImageBase(svgDocument, scalingFactor);
-		Graphics2D g = configureRenderingOptions(scalingFactor, image);
+		int targetImageWidth = calculateTargetWidth(scalingFactor, sourceImageSize);
+		int targetImageHeight = calculateTargetHeight(scalingFactor, sourceImageSize);
+		return renderSVG(svgDocument, targetImageWidth, targetImageHeight);
+	}
+	
+	private BufferedImage renderSVG(SVGDocument svgDocument, int width, int height) {
+		if (width <= 0 || height <= 0) {
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		}
+		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		float widthScalingFactor = width / svgDocument.size().width;
+		float heightScalingFactor = height / svgDocument.size().height;
+		Graphics2D g = configureRenderingOptions(widthScalingFactor, heightScalingFactor, image);
 		svgDocument.render(null, g);
 		g.dispose();
 		return image;
-	}
-
-	private BufferedImage createImageBase(SVGDocument svgDocument, float scalingFactor) {
-		FloatSize sourceImageSize = svgDocument.size();
-		int targetImageWidth = calculateTargetWidth(scalingFactor, sourceImageSize);
-		int targetImageHeight = calculateTargetHeight(scalingFactor, sourceImageSize);
-		return new BufferedImage(targetImageWidth, targetImageHeight, BufferedImage.TYPE_INT_ARGB);
 	}
 
 	private int calculateTargetWidth(float scalingFactor, FloatSize sourceImageSize) {
@@ -110,10 +125,11 @@ public class JSVGRasterizer implements SVGRasterizer {
 		return (int) Math.round(sourceImageHeight * scalingFactor);
 	}
 
-	private Graphics2D configureRenderingOptions(float scalingFactor, BufferedImage image) {
+	private Graphics2D configureRenderingOptions(float widthScalingFactor, float heightScalingFactor,
+			BufferedImage image) {
 		Graphics2D g = image.createGraphics();
 		g.setRenderingHints(RENDERING_HINTS);
-		g.scale(scalingFactor, scalingFactor);
+		g.scale(widthScalingFactor, heightScalingFactor);
 		return g;
 	}
 
@@ -121,14 +137,14 @@ public class JSVGRasterizer implements SVGRasterizer {
 		int width = rasterizedImage.getWidth();
 		int height = rasterizedImage.getHeight();
 		int[] pixels = ((DataBufferInt) rasterizedImage.getRaster().getDataBuffer()).getData();
-		PaletteData paletteData = new PaletteData(0x00FF0000, 0x0000FF00, 0x000000FF);
-		ImageData imageData = new ImageData(width, height, 32, paletteData);
+		PaletteData paletteData = new PaletteData(0xFF0000, 0x00FF00, 0x0000FF);
+		ImageData imageData = new ImageData(width, height, 24, paletteData);
 		int index = 0;
 		for (int y = 0; y < imageData.height; y++) {
 			for (int x = 0; x < imageData.width; x++) {
 				int alpha = (pixels[index] >> 24) & 0xFF;
 				imageData.setAlpha(x, y, alpha);
-				imageData.setPixel(x, y, pixels[index++]);
+				imageData.setPixel(x, y, pixels[index++] & 0x00FFFFFF);
 			}
 		}
 		return imageData;

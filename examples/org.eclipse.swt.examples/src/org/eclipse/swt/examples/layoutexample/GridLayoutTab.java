@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -143,7 +143,7 @@ class GridLayoutTab extends Tab {
 			heightText.setText(data.get(index)[HEIGHT_COL]);
 			createTextEditor(heightText, heightEditor, HEIGHT_COL);
 
-			String[] alignValues = new String[] { "BEGINNING", "CENTER", "END", "FILL" };
+			String[] alignValues = { "BEGINNING", "CENTER", "END", "FILL" };
 			hAlign = new CCombo(table, SWT.NONE);
 			hAlign.setItems(alignValues);
 			hAlign.setText(newItem.getText(HALIGN_COL));

@@ -148,7 +148,10 @@ public String getTypeSignature2() {
 	if (name.equals("Ljava/lang/String;")) return "jstring";
 	if (name.equals("Ljava/lang/Class;")) return "jclass";
 	if (isArray()) {
-		return getComponentType().getTypeSignature2() + "Array";
+		if (getComponentType().isPrimitive()) {
+			return getComponentType().getTypeSignature2() + "Array";
+		}
+		return "jobjectArray";
 	}
 	return "jobject";
 }

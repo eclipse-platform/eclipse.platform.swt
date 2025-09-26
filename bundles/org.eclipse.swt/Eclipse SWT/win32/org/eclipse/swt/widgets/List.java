@@ -26,7 +26,7 @@ import org.eclipse.swt.internal.win32.*;
  * when a string is selected.  A list may be single or multi select.
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>SINGLE, MULTI</dd>
+ * <dd>SINGLE, MULTI, NO_SEARCH</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Selection, DefaultSelection</dd>
  * </dl>
@@ -50,7 +50,6 @@ public class List extends Scrollable {
 		WNDCLASS lpWndClass = new WNDCLASS ();
 		OS.GetClassInfo (0, ListClass, lpWndClass);
 		ListProc = lpWndClass.lpfnWndProc;
-		DPIZoomChangeRegistry.registerHandler(List::handleDPIChange, List.class);
 	}
 
 /**
@@ -473,7 +472,7 @@ public int getItemCount () {
  */
 public int getItemHeight () {
 	checkWidget ();
-	return DPIUtil.scaleDown(getItemHeightInPixels(), getZoom());
+	return DPIUtil.pixelToPoint(getItemHeightInPixels(), getZoom());
 }
 
 int getItemHeightInPixels () {
@@ -1564,7 +1563,7 @@ void updateMenuLocation (Event event) {
 	}
 	Point pt = toDisplayInPixels (x, y);
 	int zoom = getZoom();
-	event.setLocation(DPIUtil.scaleDown(pt.x, zoom), DPIUtil.scaleDown(pt.y, zoom));
+	event.setLocation(DPIUtil.pixelToPoint(pt.x, zoom), DPIUtil.pixelToPoint(pt.y, zoom));
 }
 
 @Override
@@ -1852,13 +1851,12 @@ LRESULT wmCommandChild (long wParam, long lParam) {
 	return super.wmCommandChild (wParam, lParam);
 }
 
-private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
-	if (!(widget instanceof List list)) {
-		return;
-	}
-	if((list.style & SWT.H_SCROLL) != 0) {
+@Override
+void handleDPIChange(Event event, float scalingFactor) {
+	super.handleDPIChange(event, scalingFactor);
+	if((style & SWT.H_SCROLL) != 0) {
 		// Recalculate the Scroll width, as length of items has changed
-		list.setScrollWidth();
+		setScrollWidth();
 	}
 }
 }

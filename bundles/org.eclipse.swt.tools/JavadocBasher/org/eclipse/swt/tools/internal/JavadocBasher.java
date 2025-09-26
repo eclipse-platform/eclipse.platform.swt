@@ -1,6 +1,7 @@
 package org.eclipse.swt.tools.internal;
 
 import java.io.*;
+import java.nio.file.*;
 import java.util.*;
 import java.util.Map.*;
 
@@ -125,7 +126,7 @@ public class JavadocBasher {
 				basher.bashJavaSourceTree(source, target, out);
 				List<String> bashedList = basher.getBashed();
 				basher.status("Bashed", bashedList, targetSubdir);
-				if (bashedList.size() > 0) {
+				if (!bashedList.isEmpty()) {
 					totalBashed += bashedList.size();
 					if (fVerbose)
 						basher.status("Didn't change", basher.getUnchanged(),
@@ -152,26 +153,17 @@ public class JavadocBasher {
 	}
 
 	char[] readFile(File file) {
-		try (Reader in = new FileReader(file)) {
-			CharArrayWriter storage = new CharArrayWriter();
-			char[] chars = new char[8192];
-			int read = in.read(chars);
-			while (read > 0) {
-				storage.write(chars, 0, read);
-				storage.flush();
-				read = in.read(chars);
-			}
-			return storage.toCharArray();
+		try {
+			return Files.readString(file.toPath()).toCharArray();
 		} catch (IOException ioe) {
 			System.out.println("*** Could not read " + file);
 		}
 		return null;
 	}
 
-	void writeFile(char[] contents, File file) {
-		try (Writer out = new FileWriter(file)) {
-			out.write(contents);
-			out.flush();
+	void writeFile(String contents, File file) {
+		try {
+			Files.writeString(file.toPath(), contents);
 		} catch (IOException ioe) {
 			System.out.println("*** Could not write to " + file);
 			if (fVerbose) {
@@ -196,11 +188,8 @@ public class JavadocBasher {
 
 		String[] list = sourceDir.list();
 		if (list != null) {
-			int count = list.length;
-			for (int i = 0; i < count; i++) {
-				String filename = list[i];
-				if (filename.equals("CVS") || filename.equals("internal")
-						|| filename.equals("library"))
+			for (String filename: list) {
+				if (filename.equals("internal") || filename.equals("library"))
 					continue;
 				File source = new File(sourceDir, filename);
 				File target = new File(targetDir, filename);
@@ -238,14 +227,14 @@ public class JavadocBasher {
 		ASTParser parser = ASTParser.newParser(AST.getJLSLatest());
 		final Document sourceDocument = new Document(new String(contents));
 		parser.setSource(contents);
-		CompilationUnit sourceUnit = (CompilationUnit)parser.createAST(null);
+		ASTNode sourceUnit = parser.createAST(null);
 
 		contents = readFile(target);
 		if (contents == null) return;
 		String targetContents = new String(contents);
 		final Document targetDocument = new Document(targetContents);
 		parser.setSource(contents);
-		CompilationUnit targetUnit = (CompilationUnit)parser.createAST(null);
+		ASTNode targetUnit = parser.createAST(null);
 
 		final HashMap<String, String> comments = new HashMap<>();
 		sourceUnit.accept(new ASTVisitor() {
@@ -395,7 +384,7 @@ public class JavadocBasher {
 		 * c) names that are in the filter list are never API,
 		 * 		or they are old API that is defined in the super on some platforms
 		 */
-		if (comments.size() > 0) {
+		if (!comments.isEmpty()) {
 			String [] filter = new String [] {
 				"Color.win32_newDeviceint",
 				"Cursor.win32_newDeviceint",
@@ -447,7 +436,7 @@ public class JavadocBasher {
 			};
 			for (Entry<String, String> entry: comments.entrySet()) {
 				String name = entry.getKey();
-				if (entry.getValue().length() > 0){
+				if (!entry.getValue().isEmpty()){
 					int i = 0;
 					for (i = 0; i < filter.length; i++) {
 						if (name.equals(filter[i])) break;
@@ -462,7 +451,7 @@ public class JavadocBasher {
 		String newContents = targetDocument.get();
 		if (!targetContents.equals(newContents)) {
 			if (makeDirectory(out.getParentFile())) {
-				writeFile(newContents.toCharArray(), out);
+				writeFile(newContents, out);
 				fBashed.add(target.toString());
 			} else {
 				System.out.println("*** Could not create " + out.getParent());

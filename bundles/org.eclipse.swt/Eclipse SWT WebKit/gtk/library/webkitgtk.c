@@ -965,6 +965,88 @@ fail:
 }
 #endif
 
+#ifndef NO_webkit_1find_1controller_1search
+JNIEXPORT void JNICALL WebKitGTK_NATIVE(webkit_1find_1controller_1search)
+	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1, jint arg2, jint arg3)
+{
+	jbyte *lparg1=NULL;
+	WebKitGTK_NATIVE_ENTER(env, that, webkit_1find_1controller_1search_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+/*
+	webkit_find_controller_search(arg0, lparg1, arg2, arg3);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, webkit_find_controller_search)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jlong, jbyte *, jint, jint))fp)(arg0, lparg1, arg2, arg3);
+		}
+	}
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	WebKitGTK_NATIVE_EXIT(env, that, webkit_1find_1controller_1search_FUNC);
+}
+#endif
+
+#ifndef NO_webkit_1find_1controller_1search_1finish
+JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(webkit_1find_1controller_1search_1finish)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, webkit_1find_1controller_1search_1finish_FUNC);
+/*
+	rc = (jlong)webkit_find_controller_search_finish(arg0);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, webkit_find_controller_search_finish)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong))fp)(arg0);
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, webkit_1find_1controller_1search_1finish_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_webkit_1find_1controller_1search_1next
+JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(webkit_1find_1controller_1search_1next)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, webkit_1find_1controller_1search_1next_FUNC);
+/*
+	rc = (jlong)webkit_find_controller_search_next(arg0);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, webkit_find_controller_search_next)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong))fp)(arg0);
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, webkit_1find_1controller_1search_1next_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_webkit_1find_1controller_1search_1previous
+JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(webkit_1find_1controller_1search_1previous)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, webkit_1find_1controller_1search_1previous_FUNC);
+/*
+	rc = (jlong)webkit_find_controller_search_previous(arg0);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, webkit_find_controller_search_previous)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong))fp)(arg0);
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, webkit_1find_1controller_1search_1previous_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_webkit_1get_1major_1version
 JNIEXPORT jint JNICALL WebKitGTK_NATIVE(webkit_1get_1major_1version)
 	(JNIEnv *env, jclass that)
@@ -1832,6 +1914,26 @@ JNIEXPORT jdouble JNICALL WebKitGTK_NATIVE(webkit_1web_1view_1get_1estimated_1lo
 		}
 	}
 	WebKitGTK_NATIVE_EXIT(env, that, webkit_1web_1view_1get_1estimated_1load_1progress_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_webkit_1web_1view_1get_1find_1controller
+JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(webkit_1web_1view_1get_1find_1controller)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, webkit_1web_1view_1get_1find_1controller_FUNC);
+/*
+	rc = (jlong)webkit_web_view_get_find_controller(arg0);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, webkit_web_view_get_find_controller)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong))fp)(arg0);
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, webkit_1web_1view_1get_1find_1controller_FUNC);
 	return rc;
 }
 #endif

@@ -54,10 +54,6 @@ import org.eclipse.swt.ole.win32.*;
  */
 public abstract class Control extends Widget implements Drawable {
 
-	static {
-		DPIZoomChangeRegistry.registerHandler(Control::handleDPIChange, Control.class);
-	}
-
 	/**
 	 * the handle to the OS resource
 	 * (Warning: This field is platform dependent)
@@ -618,9 +614,9 @@ public Point computeSize (int wHint, int hHint) {
 public Point computeSize (int wHint, int hHint, boolean changed){
 	checkWidget ();
 	int zoom = getZoom();
-	wHint = (wHint != SWT.DEFAULT ? DPIUtil.scaleUp(wHint, zoom) : wHint);
-	hHint = (hHint != SWT.DEFAULT ? DPIUtil.scaleUp(hHint, zoom) : hHint);
-	return DPIUtil.scaleDown(computeSizeInPixels(wHint, hHint, changed), zoom);
+	wHint = (wHint != SWT.DEFAULT ? Win32DPIUtils.pointToPixel(wHint, zoom) : wHint);
+	hHint = (hHint != SWT.DEFAULT ? Win32DPIUtils.pointToPixel(hHint, zoom) : hHint);
+	return Win32DPIUtils.pixelToPoint(computeSizeInPixels(wHint, hHint, changed), zoom);
 }
 
 Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
@@ -782,7 +778,7 @@ public boolean dragDetect (Event event) {
 	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
 	Point loc = event.getLocation();
 	int zoom = getZoom();
-	return dragDetect (event.button, event.count, event.stateMask, DPIUtil.scaleUp(loc.x, zoom), DPIUtil.scaleUp(loc.y, zoom));
+	return dragDetect (event.button, event.count, event.stateMask, Win32DPIUtils.pointToPixel(loc.x, zoom), Win32DPIUtils.pointToPixel(loc.y, zoom));
 }
 
 /**
@@ -825,7 +821,7 @@ public boolean dragDetect (MouseEvent event) {
 	checkWidget ();
 	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int zoom = getZoom();
-	return dragDetect (event.button, event.count, event.stateMask, DPIUtil.scaleUp(event.x, zoom), DPIUtil.scaleUp(event.y, zoom)); // To Pixels
+	return dragDetect (event.button, event.count, event.stateMask, Win32DPIUtils.pointToPixel(event.x, zoom), Win32DPIUtils.pointToPixel(event.y, zoom)); // To Pixels
 }
 
 boolean dragDetect (int button, int count, int stateMask, int x, int y) {
@@ -1159,7 +1155,7 @@ int getBackgroundPixel () {
  */
 public int getBorderWidth () {
 	checkWidget ();
-	return DPIUtil.scaleDown(getBorderWidthInPixels (), getZoom());
+	return DPIUtil.pixelToPoint(getBorderWidthInPixels (), getZoom());
 }
 
 int getBorderWidthInPixels () {
@@ -1199,7 +1195,7 @@ int getBorderWidthInPixels () {
  */
 public Rectangle getBounds (){
 	checkWidget ();
-	return DPIUtil.scaleDown(getBoundsInPixels (), getZoom());
+	return Win32DPIUtils.pixelToPoint(getBoundsInPixels (), getZoom());
 }
 
 Rectangle getBoundsInPixels () {
@@ -1372,7 +1368,7 @@ public Object getLayoutData () {
  */
 public Point getLocation () {
 	checkWidget ();
-	return DPIUtil.scaleDown(getLocationInPixels(), getZoom());
+	return Win32DPIUtils.pixelToPoint(getLocationInPixels(), getZoom());
 }
 
 Point getLocationInPixels () {
@@ -1528,7 +1524,7 @@ public Shell getShell () {
  */
 public Point getSize (){
 	checkWidget ();
-	return DPIUtil.scaleDown(getSizeInPixels (), getZoom());
+	return Win32DPIUtils.pixelToPoint(getSizeInPixels (), getZoom());
 }
 
 Point getSizeInPixels () {
@@ -1987,10 +1983,10 @@ void mapEvent (long hwnd, Event event) {
 		POINT point = new POINT ();
 		Point loc = event.getLocation();
 		int zoom = getZoom();
-		point.x = DPIUtil.scaleUp(loc.x, zoom);
-		point.y = DPIUtil.scaleUp(loc.y, zoom);
+		point.x = Win32DPIUtils.pointToPixel(loc.x, zoom);
+		point.y = Win32DPIUtils.pointToPixel(loc.y, zoom);
 		OS.MapWindowPoints (hwnd, handle, point, 1);
-		event.setLocation(DPIUtil.scaleDown(point.x, zoom), DPIUtil.scaleDown(point.y, zoom));
+		event.setLocation(DPIUtil.pixelToPoint(point.x, zoom), DPIUtil.pixelToPoint(point.y, zoom));
 	}
 }
 
@@ -2450,7 +2446,7 @@ public void redraw (int x, int y, int width, int height, boolean all) {
 	checkWidget ();
 	int zoom = getZoom();
 	if (width <= 0 || height <= 0) return;
-	Rectangle rectangle = DPIUtil.scaleUp(new Rectangle(x, y, width, height), zoom);
+	Rectangle rectangle = Win32DPIUtils.pointToPixel(new Rectangle(x, y, width, height), zoom);
 
 	RECT rect = new RECT ();
 	OS.SetRect (rect, rectangle.x, rectangle.y, rectangle.x + rectangle.width, rectangle.y + rectangle.height);
@@ -2952,7 +2948,7 @@ boolean sendGestureEvent (GESTUREINFO gi) {
 	Point globalPt = new Point(gi.x, gi.y);
 	Point point = toControlInPixels(globalPt.x, globalPt.y);
 	int zoom = getZoom();
-	event.setLocation(DPIUtil.scaleDown(point.x, zoom), DPIUtil.scaleDown(point.y, zoom));
+	event.setLocation(DPIUtil.pixelToPoint(point.x, zoom), DPIUtil.pixelToPoint(point.y, zoom));
 	switch (gi.dwID) {
 		case OS.GID_ZOOM:
 			type = SWT.Gesture;
@@ -3033,7 +3029,7 @@ void sendTouchEvent (TOUCHINPUT touchInput []) {
 	OS.GetCursorPos (pt);
 	OS.ScreenToClient (handle, pt);
 	int zoom = getZoom();
-	event.setLocation(DPIUtil.scaleDown(pt.x, zoom), DPIUtil.scaleDown(pt.y, zoom));
+	event.setLocation(DPIUtil.pixelToPoint(pt.x, zoom), DPIUtil.pixelToPoint(pt.y, zoom));
 	Touch [] touches = new Touch [touchInput.length];
 	Monitor monitor = getMonitor ();
 	for (int i = 0; i < touchInput.length; i++) {
@@ -3071,6 +3067,9 @@ void setBackground () {
  * if the argument is null.
  * <p>
  * Note: This operation is a hint and may be overridden by the platform.
+ * </p>
+ * <p>
+ * Note: The background color can be overridden by setting a background image.
  * </p>
  * @param color the new color (or null)
  *
@@ -3113,6 +3112,9 @@ private void _setBackground (Color color) {
  * <p>
  * Note: This operation is a hint and may be overridden by the platform.
  * For example, on Windows the background of a Button cannot be changed.
+ * </p>
+ * <p>
+ * Note: Setting a background image overrides a set background color.
  * </p>
  * @param image the new image (or null)
  *
@@ -3257,7 +3259,8 @@ void setBoundsInPixels (int x, int y, int width, int height, int flags, boolean 
 public void setBounds (Rectangle rect) {
 	checkWidget ();
 	if (rect == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setBoundsInPixels(DPIUtil.scaleUp(rect, getZoom()));
+	int zoom = autoScaleDisabled ? parent.getZoom() : getZoom();
+	setBoundsInPixels(Win32DPIUtils.pointToPixel(rect, zoom));
 }
 
 void setBoundsInPixels (Rectangle rect) {
@@ -3515,8 +3518,8 @@ public void setLayoutData (Object layoutData) {
 public void setLocation (int x, int y) {
 	checkWidget ();
 	int zoom = getZoom();
-	x = DPIUtil.scaleUp(x, zoom);
-	y = DPIUtil.scaleUp(y, zoom);
+	x = Win32DPIUtils.pointToPixel(x, zoom);
+	y = Win32DPIUtils.pointToPixel(y, zoom);
 	setLocationInPixels(x, y);
 }
 
@@ -3545,7 +3548,7 @@ void setLocationInPixels (int x, int y) {
 public void setLocation (Point location) {
 	checkWidget ();
 	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);
-	location = DPIUtil.scaleUp(location, getZoom());
+	location = Win32DPIUtils.pointToPixel(location, getZoom());
 	setLocationInPixels(location.x, location.y);
 }
 
@@ -3772,8 +3775,8 @@ public void setRegion (Region region) {
 public void setSize (int width, int height) {
 	checkWidget ();
 	int zoom = getZoom();
-	width = DPIUtil.scaleUp(width, zoom);
-	height = DPIUtil.scaleUp(height, zoom);
+	width = Win32DPIUtils.pointToPixel(width, zoom);
+	height = Win32DPIUtils.pointToPixel(height, zoom);
 	setSizeInPixels(width, height);
 }
 
@@ -3808,7 +3811,7 @@ void setSizeInPixels (int width, int height) {
 public void setSize (Point size) {
 	checkWidget ();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
-	size = DPIUtil.scaleUp(size, getZoom());
+	size = Win32DPIUtils.pointToPixel(size, getZoom());
 	setSizeInPixels(size.x, size.y);
 }
 
@@ -4021,10 +4024,9 @@ void subclass () {
  */
 public Point toControl (int x, int y) {
 	checkWidget ();
-	int zoom = getZoom();
-	Point displayPointInPixels = getDisplay().translateToDisplayCoordinates(new Point(x, y), zoom);
+	Point displayPointInPixels = getDisplay().translateToDisplayCoordinates(new Point(x, y));
 	final Point controlPointInPixels = toControlInPixels(displayPointInPixels.x, displayPointInPixels.y);
-	return DPIUtil.scaleDown(controlPointInPixels, zoom);
+	return Win32DPIUtils.pixelToPoint(controlPointInPixels, getZoom());
 }
 
 Point toControlInPixels (int x, int y) {
@@ -4083,8 +4085,8 @@ public Point toControl (Point point) {
 public Point toDisplay (int x, int y) {
 	checkWidget ();
 	int zoom = getZoom();
-	Point displayPointInPixels = toDisplayInPixels(DPIUtil.scaleUp(x, zoom), DPIUtil.scaleUp(y, zoom));
-	return getDisplay().translateFromDisplayCoordinates(displayPointInPixels, zoom);
+	Point displayPointInPixels = toDisplayInPixels(Win32DPIUtils.pointToPixel(x, zoom), Win32DPIUtils.pointToPixel(y, zoom));
+	return getDisplay().translateFromDisplayCoordinates(displayPointInPixels);
 }
 
 Point toDisplayInPixels (int x, int y) {
@@ -4753,10 +4755,9 @@ public boolean setParent (Composite parent) {
 	this.parent = parent;
 	// If parent changed, zoom level might need to be adjusted
 	if (parent.nativeZoom != nativeZoom) {
-		int oldZoom = nativeZoom;
 		int newZoom = parent.nativeZoom;
-		float scalingFactor = 1f * newZoom / oldZoom;
-		DPIZoomChangeRegistry.applyChange(this, newZoom, scalingFactor);
+		Event zoomChangedEvent = createZoomChangedEvent(newZoom);
+		notifyListeners(SWT.ZoomChanged, zoomChangedEvent);
 	}
 	int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE;
 	OS.SetWindowPos (topHandle, OS.HWND_BOTTOM, 0, 0, 0, 0, flags);
@@ -4950,10 +4951,19 @@ LRESULT WM_DESTROY (long wParam, long lParam) {
 }
 
 void handleMonitorSpecificDpiChange(int newNativeZoom, Rectangle newBoundsInPixels) {
-	float scalingFactor = 1f * DPIUtil.getZoomForAutoscaleProperty(newNativeZoom) / DPIUtil.getZoomForAutoscaleProperty(nativeZoom);
 	DPIUtil.setDeviceZoom (newNativeZoom);
-	DPIZoomChangeRegistry.applyChange(this, newNativeZoom, scalingFactor);
+	Event zoomChangedEvent = createZoomChangedEvent(newNativeZoom);
+	notifyListeners(SWT.ZoomChanged, zoomChangedEvent);
 	this.setBoundsInPixels(newBoundsInPixels.x, newBoundsInPixels.y, newBoundsInPixels.width, newBoundsInPixels.height);
+}
+
+private Event createZoomChangedEvent(int zoom) {
+	Event event = new Event();
+	event.type = SWT.ZoomChanged;
+	event.widget = this;
+	event.detail = zoom;
+	event.doit = true;
+	return event;
 }
 
 LRESULT WM_DPICHANGED (long wParam, long lParam) {
@@ -5473,7 +5483,7 @@ LRESULT WM_SETCURSOR (long wParam, long lParam) {
 		if (control == null) return null;
 		Cursor cursor = control.findCursor ();
 		if (cursor != null) {
-			OS.SetCursor (Cursor.win32_getHandle(cursor, getNativeZoom()));
+			OS.SetCursor (Cursor.win32_getHandle(cursor, DPIUtil.getZoomForAutoscaleProperty(getNativeZoom())));
 			return LRESULT.ONE;
 		}
 	}
@@ -5677,7 +5687,7 @@ LRESULT WM_TABLET_FLICK (long wParam, long lParam) {
 			break;
 	}
 	int zoom = getZoom();
-	event.setLocation(DPIUtil.scaleDown(fPoint.x, zoom), DPIUtil.scaleDown(fPoint.y, zoom));
+	event.setLocation(DPIUtil.pixelToPoint(fPoint.x, zoom), DPIUtil.pixelToPoint(fPoint.y, zoom));
 	event.type = SWT.Gesture;
 	event.detail = SWT.GESTURE_SWIPE;
 	setInputState (event, SWT.Gesture);
@@ -5867,22 +5877,21 @@ LRESULT wmScrollChild (long wParam, long lParam) {
 }
 
 
-private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
-	if (!(widget instanceof Control control)) {
-		return;
-	}
-	resizeFont(control, control.getNativeZoom());
+@Override
+void handleDPIChange(Event event, float scalingFactor) {
+	super.handleDPIChange(event, scalingFactor);
+	resizeFont(this, getNativeZoom());
 
-	Image image = control.backgroundImage;
+	Image image = backgroundImage;
 	if (image != null) {
 		if (image.isDisposed()) {
-			control.setBackgroundImage(null);
+			setBackgroundImage(null);
 		} else {
-			control.setBackgroundImage(image);
+			setBackgroundImage(image);
 		}
 	}
-	if (control.getRegion() != null) {
-		control.setRegion(control.getRegion());
+	if (getRegion() != null) {
+		setRegion(getRegion());
 	}
 }
 

@@ -39,12 +39,9 @@ public class Bug69650_FocusLostWhenWidgetDisposed {
 		
 		final Text text2 = new Text(shell, SWT.BORDER);
 		text2.setBounds(80, 80, 200, 40);
-		text2.addListener(SWT.KeyDown, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				System.out.println("ok, here goes");
-				text2.dispose();
-			}
+		text2.addListener(SWT.KeyDown, event -> {
+			System.out.println("ok, here goes");
+			text2.dispose();
 		});
 		
 		shell.open();

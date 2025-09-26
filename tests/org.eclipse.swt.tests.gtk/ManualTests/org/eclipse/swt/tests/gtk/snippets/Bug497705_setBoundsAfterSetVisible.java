@@ -14,7 +14,8 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.gtk.snippets;
 
-import static org.junit.Assert.assertTrue;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -26,9 +27,9 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
 /**
@@ -55,7 +56,7 @@ public class Bug497705_setBoundsAfterSetVisible {
 	private Rectangle bounds;
 	Control testControl;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		display = Display.getDefault();
 		shell = new Shell(display);
@@ -183,7 +184,7 @@ public class Bug497705_setBoundsAfterSetVisible {
 		verifyBounds();
 	}
 
-	@After
+	@AfterEach
 	public void tearDown() {
 		if (debugShowWidget) {
 			if (!passed) System.err.println(log.toString());
@@ -195,7 +196,7 @@ public class Bug497705_setBoundsAfterSetVisible {
 			}
 			display.dispose();
 		}
-		assertTrue(log.toString(), passed);
+		assertTrue(passed, log.toString());
 	}
 
 	private void verifyBounds() {

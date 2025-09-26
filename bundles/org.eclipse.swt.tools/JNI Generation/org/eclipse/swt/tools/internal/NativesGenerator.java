@@ -299,6 +299,14 @@ boolean generateGetParameter(JNIParameter param, boolean critical, int indent) {
 				output(iStr);
 				output(", NULL)");
 			}
+		} else if (componentType.isType("java.lang.String")) {
+			if (param.getFlag(FLAG_UNICODE)) {
+				throw new Error("not done");
+			}
+
+			output("swt_getArrayOfStringsUTF(env, arg");
+			output(iStr);
+			output(")");
 		} else {
 			throw new Error("not done");
 		}
@@ -381,6 +389,16 @@ void generateSetParameter(JNIParameter param, boolean critical) {
 				output("0");
 			}
 			output(");");
+		} else if (componentType.isType("java.lang.String")) {
+			if (param.getFlag(FLAG_UNICODE)) {
+				throw new Error("not done");
+			}
+
+			output("swt_releaseArrayOfStringsUTF(env, arg");
+			output(iStr);
+			output(", lparg");
+			output(iStr);
+			output(");");
 		} else {
 			throw new Error("not done");
 		}
@@ -452,6 +470,12 @@ boolean generateLocalVars(JNIParameter[] params, JNIType returnType) {
 				output(componentType.getTypeSignature2());
 				output(" *lparg" + i);
 				output("=NULL;");
+			} else if (componentType.isType("java.lang.String")) {
+				if (param.getFlag(FLAG_UNICODE)) {
+					output("jchar **lparg" + i + "=NULL");
+				} else {
+					output("char **lparg" + i+ "=NULL");
+				}
 			} else {
 				throw new Error("not done");
 			}

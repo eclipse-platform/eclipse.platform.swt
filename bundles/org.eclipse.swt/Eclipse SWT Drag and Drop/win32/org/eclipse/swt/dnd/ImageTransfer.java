@@ -15,7 +15,6 @@ package org.eclipse.swt.dnd;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.internal.win32.*;
 
@@ -184,8 +183,9 @@ public Object nativeToJava(TransferData transferData) {
 					pSourceBits -= scanline;
 				}
 			}
-			Image image = Image.win32_new(null, SWT.BITMAP, memDib, DPIUtil.getNativeDeviceZoom());
-			ImageData data = image.getImageData (DPIUtil.getDeviceZoom ());
+			final int DEFAULT_IMAGE_STORAGE_ZOOM = 100;
+			Image image = Image.win32_new(null, SWT.BITMAP, memDib, DEFAULT_IMAGE_STORAGE_ZOOM);
+			ImageData data = image.getImageData ();
 			OS.DeleteObject(memDib);
 			image.dispose();
 			return data;

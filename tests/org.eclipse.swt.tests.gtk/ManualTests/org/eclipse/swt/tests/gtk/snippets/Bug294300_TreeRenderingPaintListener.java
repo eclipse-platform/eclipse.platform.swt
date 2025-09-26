@@ -14,8 +14,7 @@
 package org.eclipse.swt.tests.gtk.snippets;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
@@ -161,12 +160,8 @@ public class Bug294300_TreeRenderingPaintListener implements Listener {
 		final Bug294300_TreeRenderingPaintListener painer = new Bug294300_TreeRenderingPaintListener(tree);
 		final Button button = new Button(shell, SWT.CHECK);
 		button.setText("Enable custom painter");
-		button.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				painer.setListeners(button.getSelection());
-			}
-		});
+		button.addSelectionListener(
+				SelectionListener.widgetSelectedAdapter(e -> painer.setListeners(button.getSelection())));
 
 		shell.open();
 		while (!shell.isDisposed()) {

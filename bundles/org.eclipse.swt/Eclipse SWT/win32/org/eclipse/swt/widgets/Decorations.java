@@ -16,7 +16,6 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 
 /**
@@ -111,10 +110,6 @@ public class Decorations extends Canvas {
 	int oldX = OS.CW_USEDEFAULT, oldY = OS.CW_USEDEFAULT;
 	int oldWidth = OS.CW_USEDEFAULT, oldHeight = OS.CW_USEDEFAULT;
 	RECT maxRect = new RECT();
-
-	static {
-		DPIZoomChangeRegistry.registerHandler(Decorations::handleDPIChange, Decorations.class);
-	}
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -888,11 +883,11 @@ private void setImages (Image image, Image [] images) {
 	if (smallIcon != null) {
 		switch (smallIcon.type) {
 			case SWT.BITMAP:
-				smallImage = Display.createIcon (smallIcon, getZoom());
-				hSmallIcon = Image.win32_getHandle(smallImage, getZoom());
+				smallImage = Display.createIcon (smallIcon, 100);
+				hSmallIcon = Image.win32_getHandle(smallImage, 100);
 				break;
 			case SWT.ICON:
-				hSmallIcon = Image.win32_getHandle(smallIcon, getZoom());
+				hSmallIcon = Image.win32_getHandle(smallIcon, 100);
 				break;
 		}
 	}
@@ -900,11 +895,11 @@ private void setImages (Image image, Image [] images) {
 	if (largeIcon != null) {
 		switch (largeIcon.type) {
 			case SWT.BITMAP:
-				largeImage = Display.createIcon (largeIcon, getZoom());
-				hLargeIcon = Image.win32_getHandle(largeImage, getZoom());
+				largeImage = Display.createIcon (largeIcon, 100);
+				hLargeIcon = Image.win32_getHandle(largeImage, 100);
 				break;
 			case SWT.ICON:
-				hLargeIcon = Image.win32_getHandle(largeIcon, getZoom());
+				hLargeIcon = Image.win32_getHandle(largeIcon, 100);
 				break;
 		}
 	}
@@ -945,12 +940,22 @@ private static int findIndexOfClosest(ImageData[] imageData, int targetWidth, in
 }
 
 private static boolean isCloserThan(ImageData dataToTest, ImageData referenceData, int targetWidth, int targetDepth) {
-	int diffWidthToTest = Math.abs(dataToTest.width - targetWidth);
-	int diffReferenceWidth = Math.abs(referenceData.width - targetWidth);
-
-	// The closer the width the better
-	if (diffWidthToTest != diffReferenceWidth)
-		return diffWidthToTest < diffReferenceWidth;
+	// image is considered best-sized if width is nearest to target
+	// but scale down is better than scale up, thus count difference to target width
+	// of scaled-up image as 1.5 times
+	int widthDifferenceOfTestData = dataToTest.width - targetWidth;
+	if (widthDifferenceOfTestData < 0) {
+		widthDifferenceOfTestData *= -1.5;
+	}
+	int widthDifferenceOfReferenceData = referenceData.width - targetWidth;
+	if (widthDifferenceOfReferenceData < 0) {
+		widthDifferenceOfReferenceData *= -1.5;
+	}
+	if (widthDifferenceOfTestData < widthDifferenceOfReferenceData) {
+		return true;
+	} else if (widthDifferenceOfTestData > widthDifferenceOfReferenceData) {
+		return false;
+	}
 
 	int transparencyToTest = dataToTest.getTransparencyType();
 	int referenceTransparency = referenceData.getTransparencyType();
@@ -1700,26 +1705,29 @@ LRESULT WM_WINDOWPOSCHANGING (long wParam, long lParam) {
 	return result;
 }
 
-private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
-	if (!(widget instanceof Decorations decorations)) {
-		return;
-	}
-
-	Image image = decorations.getImage();
+@Override
+void handleDPIChange(Event event, float scalingFactor) {
+	super.handleDPIChange(event, scalingFactor);
+	Image image = getImage();
 	if (image != null) {
-		decorations.setImage(image);
+		setImage(image);
 	}
 
-	Image[] images = decorations.getImages();
+	Image[] images = getImages();
 	if (images != null && images.length > 0) {
-		decorations.setImages(images);
+		setImages(images);
 	}
 
-	DPIZoomChangeRegistry.applyChange(decorations.getMenuBar(), newZoom, scalingFactor);
+	Menu menuBar = getMenuBar();
+	if (menuBar != null) {
+		menuBar.notifyListeners(SWT.ZoomChanged, event);
+	}
 
-	if (decorations.menus != null) {
-		for (Menu menu : decorations.menus) {
-			DPIZoomChangeRegistry.applyChange(menu, newZoom, scalingFactor);
+	if (menus != null) {
+		for (Menu menu : menus) {
+			if (menu != null) {
+				menu.notifyListeners(SWT.ZoomChanged, event);
+			}
 		}
 	}
 }

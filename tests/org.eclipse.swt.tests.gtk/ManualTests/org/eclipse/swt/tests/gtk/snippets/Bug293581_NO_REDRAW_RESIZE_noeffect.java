@@ -19,8 +19,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 
 public class Bug293581_NO_REDRAW_RESIZE_noeffect {
@@ -35,12 +33,7 @@ public class Bug293581_NO_REDRAW_RESIZE_noeffect {
 		shell.setBackgroundMode(SWT.INHERIT_DEFAULT);
 		shell.setBackgroundImage(image);
 		Canvas canvas = new Canvas(shell, SWT.NO_REDRAW_RESIZE);
-		canvas.addListener(SWT.Paint, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				event.gc.drawString(String.valueOf(counter++), 0, 0);
-			}
-		});
+		canvas.addListener(SWT.Paint, event -> event.gc.drawString(String.valueOf(counter++), 0, 0));
 		shell.setBounds(10,10,200,200);
 		shell.open();
 		while (!shell.isDisposed()) {

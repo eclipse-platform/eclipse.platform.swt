@@ -91,7 +91,10 @@ public String getTypeSignature2() {
 	if (clazz == String.class) return "jstring";
 	if (clazz == Class.class) return "jclass";
 	if (clazz.isArray()) {
-		return getComponentType().getTypeSignature2() + "Array";
+		if (getComponentType().isPrimitive()) {
+			return getComponentType().getTypeSignature2() + "Array";
+		}
+		return "jobjectArray";
 	}
 	return "jobject";
 }

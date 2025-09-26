@@ -14,14 +14,14 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.eclipse.swt.accessibility.AccessibleTextEvent;
 import org.eclipse.swt.widgets.Shell;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.accessibility.AccessibleTextEvent
@@ -30,12 +30,12 @@ import org.junit.Test;
  */
 public class Test_org_eclipse_swt_accessibility_AccessibleTextEvent {
 
-@Before
+@BeforeEach
 public void setUp() {
 	shell = new Shell();
 }
 
-@After
+@AfterEach
 public void tearDown() {
 	shell.dispose();
 }
@@ -55,7 +55,7 @@ public void test_ConstructorLjava_lang_Object() {
 public void test_toString() {
 	AccessibleTextEvent event = new AccessibleTextEvent(shell.getAccessible());
 	assertNotNull(event.toString());
-	assertTrue(event.toString().length() > 0);
+	assertFalse(event.toString().isEmpty());
 }
 /* custom */
 public Shell shell;

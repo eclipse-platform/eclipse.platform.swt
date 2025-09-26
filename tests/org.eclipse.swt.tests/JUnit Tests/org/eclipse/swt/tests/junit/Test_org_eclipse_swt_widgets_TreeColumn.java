@@ -17,6 +17,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeFalse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -108,6 +109,7 @@ public void test_addSelectionListenerWidgetSelectedAdapterLorg_eclipse_swt_event
 
 @Test
 public void test_getWidth() {
+	assumeFalse("getWidth() checks below fail on macOS", SwtTestUtil.isCocoa);
 	int testWidth = 42;
 
 //	try {

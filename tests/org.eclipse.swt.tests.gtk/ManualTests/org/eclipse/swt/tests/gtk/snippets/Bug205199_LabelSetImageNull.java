@@ -15,8 +15,7 @@ package org.eclipse.swt.tests.gtk.snippets;
 
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
@@ -54,31 +53,19 @@ public class Bug205199_LabelSetImageNull
 		this.label = new Label(shell,SWT.NONE);
 		Button button = new Button(shell,SWT.PUSH);
 		button.setText("click Me");
-		button.addSelectionListener(
-			new SelectionAdapter()
-			{
-				@Override
-				public void widgetSelected(SelectionEvent e)
-				{
-					if (state == 0)
-					{
-						label.setImage(image);
-						label.setText("1. widget.text");
-					}
-					else if (state == 1)
-					{
-						label.setText("2. widget.text");
-						label.setImage(image);
-					}
-					else if (state == 2)
-					{
-						label.setText("3. widget.text");
-						label.setImage(null);
-					}
-					state++;
-				}
+		button.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+			if (state == 0) {
+				label.setImage(image);
+				label.setText("1. widget.text");
+			} else if (state == 1) {
+				label.setText("2. widget.text");
+				label.setImage(image);
+			} else if (state == 2) {
+				label.setText("3. widget.text");
+				label.setImage(null);
 			}
-		);
+			state++;
+		}));
 
 		shell.open();
 		while (!shell.isDisposed())

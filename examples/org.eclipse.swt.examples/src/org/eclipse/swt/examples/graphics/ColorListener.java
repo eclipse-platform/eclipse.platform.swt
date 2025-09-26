@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006 IBM Corporation and others.
+ * Copyright (c) 2006, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -22,6 +22,6 @@ package org.eclipse.swt.examples.graphics;
  */
 public interface ColorListener {
 
-	public void setColor(GraphicsBackground gb);
+	void setColor(GraphicsBackground gb);
 
 }

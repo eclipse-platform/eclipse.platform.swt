@@ -41,68 +41,83 @@ class SingleZoomCoordinateSystemMapper implements CoordinateSystemMapper {
 	@Override
 	public Point map(Control from, Control to, Point point) {
 		int zoom = getZoomLevelForMapping(from, to);
-		point = DPIUtil.scaleUp(point, zoom);
-		return DPIUtil.scaleDown(display.mapInPixels(from, to, point), zoom);
+		point = Win32DPIUtils.pointToPixel(point, zoom);
+		return Win32DPIUtils.pixelToPoint(display.mapInPixels(from, to, point), zoom);
 	}
 
 	@Override
 	public Rectangle map(Control from, Control to, Rectangle rectangle) {
 		int zoom = getZoomLevelForMapping(from, to);
-		rectangle = DPIUtil.scaleUp(rectangle, zoom);
-		return DPIUtil.scaleDown(display.mapInPixels(from, to, rectangle), zoom);
+		rectangle = Win32DPIUtils.pointToPixel(rectangle, zoom);
+		return Win32DPIUtils.pixelToPoint(display.mapInPixels(from, to, rectangle), zoom);
 	}
 
 	@Override
 	public Point map(Control from, Control to, int x, int y) {
 		int zoom = getZoomLevelForMapping(from, to);
-		x = DPIUtil.scaleUp(x, zoom);
-		y = DPIUtil.scaleUp(y, zoom);
-		return DPIUtil.scaleDown(display.mapInPixels(from, to, x, y), zoom);
+		x = Win32DPIUtils.pointToPixel(x, zoom);
+		y = Win32DPIUtils.pointToPixel(y, zoom);
+		return Win32DPIUtils.pixelToPoint(display.mapInPixels(from, to, x, y), zoom);
 	}
 
 	@Override
 	public Rectangle map(Control from, Control to, int x, int y, int width, int height) {
 		int zoom = getZoomLevelForMapping(from, to);
-		x = DPIUtil.scaleUp(x, zoom);
-		y = DPIUtil.scaleUp(y, zoom);
-		width = DPIUtil.scaleUp(width, zoom);
-		height = DPIUtil.scaleUp(height, zoom);
-		return DPIUtil.scaleDown(display.mapInPixels(from, to, x, y, width, height), zoom);
+		x = Win32DPIUtils.pointToPixel(x, zoom);
+		y = Win32DPIUtils.pointToPixel(y, zoom);
+		width = Win32DPIUtils.pointToPixel(width, zoom);
+		height = Win32DPIUtils.pointToPixel(height, zoom);
+		return Win32DPIUtils.pixelToPoint(display.mapInPixels(from, to, x, y, width, height), zoom);
 	}
 
 	@Override
 	public Rectangle mapMonitorBounds(Rectangle rect, int zoom) {
-		return DPIUtil.autoScaleDown(rect);
+		return Win32DPIUtils.pixelToPoint(rect, zoom);
 	}
 
 	@Override
-	public Point translateFromDisplayCoordinates(Point point, int zoom) {
-		return DPIUtil.scaleDown(point, zoom);
+	public Point translateFromDisplayCoordinates(Point point) {
+		return Win32DPIUtils.pixelToPoint(point, DPIUtil.getDeviceZoom());
 	}
 
 	@Override
-	public Point translateToDisplayCoordinates(Point point, int zoom) {
-		return DPIUtil.scaleUp(point, zoom);
+	public Point translateToDisplayCoordinates(Point point) {
+		return Win32DPIUtils.pointToPixel(point, DPIUtil.getDeviceZoom());
 	}
 
 	@Override
-	public Rectangle translateFromDisplayCoordinates(Rectangle rect, int zoom) {
-		return DPIUtil.scaleDown(rect, zoom);
+	public Rectangle translateFromDisplayCoordinates(Rectangle rect) {
+		return Win32DPIUtils.pixelToPoint(rect, DPIUtil.getDeviceZoom());
 	}
 
 	@Override
-	public Rectangle translateToDisplayCoordinates(Rectangle rect, int zoom) {
-		return DPIUtil.scaleUp(rect, zoom);
+	public Rectangle translateToDisplayCoordinates(Rectangle rect) {
+		return Win32DPIUtils.pointToPixel(rect, DPIUtil.getDeviceZoom());
 	}
 
 	@Override
 	public Point getCursorLocation() {
+		int zoom = DPIUtil.getDeviceZoom();
 		Point cursorLocationInPixels = display.getCursorLocationInPixels();
-		return DPIUtil.autoScaleDown(cursorLocationInPixels);
+		return Win32DPIUtils.pixelToPoint(cursorLocationInPixels, zoom);
 	}
 
 	@Override
 	public void setCursorLocation(int x, int y) {
-		display.setCursorLocationInPixels(DPIUtil.autoScaleUp(x), DPIUtil.autoScaleUp(y));
+		int zoom = DPIUtil.getDeviceZoom();
+		display.setCursorLocationInPixels(Win32DPIUtils.pointToPixel(x, zoom), Win32DPIUtils.pointToPixel(y, zoom));
+	}
+
+	@Override
+	public Rectangle getContainingMonitorBoundsInPixels(Point point) {
+		int zoom = DPIUtil.getDeviceZoom();
+		point = Win32DPIUtils.pointToPixel(point, zoom);
+		for (Monitor monitor : display.getMonitors()) {
+			Rectangle monitorBounds = Win32DPIUtils.pointToPixel(monitor.getBounds(), zoom);
+			if (monitorBounds.contains(point)) {
+				return monitorBounds;
+			}
+		}
+		return null;
 	}
 }

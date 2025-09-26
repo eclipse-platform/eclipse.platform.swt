@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -15,13 +15,10 @@ package org.eclipse.swt.examples.javaviewer;
 
 import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.nio.file.Files;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
@@ -145,26 +142,14 @@ void open(String name) {
 	}
 
 	try {
-		FileInputStream stream= new FileInputStream(file.getPath());
-		try (Reader in = new BufferedReader(new InputStreamReader(stream))) {
-
-			char[] readBuffer= new char[2048];
-			StringBuilder buffer= new StringBuilder((int) file.length());
-			int n;
-			while ((n = in.read(readBuffer)) > 0) {
-				buffer.append(readBuffer, 0, n);
-			}
-			textString = buffer.toString();
-			stream.close();
-		} catch (IOException e) {
-			// Err_file_io
-			String message = MessageFormat.format(resources.getString("Err_file_io"), file.getName());
-			displayError(message);
-			return;
-		}
-	}
-	catch (FileNotFoundException e) {
+		textString = Files.readString(file.toPath());
+	} catch (FileNotFoundException e) {
 		String message = MessageFormat.format(resources.getString("Err_not_found"), file.getName());
+		displayError(message);
+		return;
+	} catch (IOException e) {
+		// Err_file_io
+		String message = MessageFormat.format(resources.getString("Err_file_io"), file.getName());
 		displayError(message);
 		return;
 	}

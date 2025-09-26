@@ -876,6 +876,7 @@ typedef enum {
 	g_1action_1map_1remove_1action_FUNC,
 	g_1app_1info_1create_1from_1commandline_FUNC,
 	g_1app_1info_1get_1all_FUNC,
+	g_1app_1info_1get_1commandline_FUNC,
 	g_1app_1info_1get_1default_1for_1type_FUNC,
 	g_1app_1info_1get_1executable_FUNC,
 	g_1app_1info_1get_1icon_FUNC,

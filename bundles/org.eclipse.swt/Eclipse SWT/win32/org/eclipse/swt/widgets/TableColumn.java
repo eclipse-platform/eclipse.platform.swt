@@ -44,10 +44,6 @@ public class TableColumn extends Item {
 	String toolTipText;
 	int id;
 
-	static {
-		DPIZoomChangeRegistry.registerHandler(TableColumn::handleDPIChange, TableColumn.class);
-	}
-
 /**
  * Constructs a new instance of this class given its parent
  * (which must be a <code>Table</code>) and a style value
@@ -309,7 +305,7 @@ public String getToolTipText () {
  */
 public int getWidth () {
 	checkWidget ();
-	return DPIUtil.scaleDown(getWidthInPixels(), getZoom());
+	return DPIUtil.pixelToPoint(getWidthInPixels(), getZoom());
 }
 
 int getWidthInPixels () {
@@ -408,14 +404,10 @@ public void pack () {
 	int headerWidth = (int)OS.SendMessage (hwnd, OS.LVM_GETSTRINGWIDTH, 0, buffer) + Table.HEADER_MARGIN;
 	if (OS.IsAppThemed ()) headerWidth += Table.HEADER_EXTRA;
 	boolean hasHeaderImage = false;
-	if (image != null || parent.sortColumn == this) {
+	if (image != null) {
 		hasHeaderImage = true;
-		if (parent.sortColumn == this && parent.sortDirection != SWT.NONE) {
-			headerWidth += Table.SORT_WIDTH;
-		} else if (image != null) {
-			Rectangle bounds = DPIUtil.scaleUp(image.getBounds(), getZoom());
-			headerWidth += bounds.width;
-		}
+		Rectangle bounds = Win32DPIUtils.pointToPixel(image.getBounds(), getZoom());
+		headerWidth += bounds.width;
 		long hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
 		int margin = (int)OS.SendMessage (hwndHeader, OS.HDM_GETBITMAPMARGIN, 0, 0);
 		headerWidth += margin * 4;
@@ -440,7 +432,7 @@ public void pack () {
 				if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
 				if (isDisposed () || parent.isDisposed ()) break;
 				Rectangle bounds = event.getBounds();
-				columnWidth = Math.max (columnWidth, DPIUtil.scaleUp(bounds.x + bounds.width, getZoom()) - headerRect.left);
+				columnWidth = Math.max (columnWidth, Win32DPIUtils.pointToPixel(bounds.x + bounds.width, getZoom()) - headerRect.left);
 			}
 		}
 		if (newFont != 0) OS.SelectObject (hDC, oldFont);
@@ -854,7 +846,7 @@ public void setToolTipText (String string) {
  */
 public void setWidth (int width) {
 	checkWidget ();
-	setWidthInPixels(DPIUtil.scaleUp(width, getZoom()));
+	setWidthInPixels(Win32DPIUtils.pointToPixel(width, getZoom()));
 }
 
 void setWidthInPixels (int width) {
@@ -887,20 +879,19 @@ void updateToolTip (int index) {
 	}
 }
 
-private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
-	if (!(widget instanceof TableColumn tableColumn)) {
-		return;
-	}
-	Table table = tableColumn.getParent();
+@Override
+void handleDPIChange(Event event, float scalingFactor) {
+	super.handleDPIChange(event, scalingFactor);
+	Table table = getParent();
 	boolean ignoreColumnResize = table.ignoreColumnResize;
 	table.ignoreColumnResize = true;
-	final int newColumnWidth = Math.round(tableColumn.getWidthInPixels() * scalingFactor);
-	tableColumn.setWidthInPixels(newColumnWidth);
+	final int newColumnWidth = Math.round(getWidthInPixels() * scalingFactor);
+	setWidthInPixels(newColumnWidth);
 	table.ignoreColumnResize = ignoreColumnResize;
 
-	Image image = tableColumn.getImage();
+	Image image = getImage();
 	if (image != null) {
-		tableColumn.setImage(image);
+		setImage(image);
 	}
 }
 }

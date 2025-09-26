@@ -43,6 +43,8 @@ public final class Region extends Resource {
 
 	private boolean isDestroyed;
 
+	private int temporaryHandleZoomHint = 0;
+
 /**
  * Constructs a new empty region.
  * <p>
@@ -171,8 +173,15 @@ public void add (Region region) {
 	if (region == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (!region.operations.isEmpty()) {
+		adoptTemporaryHandleZoomHint(region);
 		final Operation operation = new OperationWithRegion(Operation::add, region.operations);
 		storeAndApplyOperationForAllHandles(operation);
+	}
+}
+
+private void adoptTemporaryHandleZoomHint(Region region) {
+	if (temporaryHandleZoomHint == 0 && region.temporaryHandleZoomHint != 0) {
+		this.temporaryHandleZoomHint = region.temporaryHandleZoomHint;
 	}
 }
 
@@ -193,8 +202,8 @@ public boolean contains (int x, int y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return applyUsingAnyHandle(regionHandle -> {
 		int zoom = regionHandle.zoom();
-		int xInPixels = DPIUtil.scaleUp(x, zoom);
-		int yInPixels = DPIUtil.scaleUp(y, zoom);
+		int xInPixels = Win32DPIUtils.pointToPixel(x, zoom);
+		int yInPixels = Win32DPIUtils.pointToPixel(y, zoom);
 		return containsInPixels(regionHandle.handle(), xInPixels, yInPixels);
 	});
 }
@@ -223,7 +232,7 @@ public boolean contains (Point pt) {
 	if (pt == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	return applyUsingAnyHandle(regionHandle -> {
 		int zoom = regionHandle.zoom();
-		Point p = DPIUtil.scaleUp(pt, zoom);
+		Point p = Win32DPIUtils.pointToPixel(pt, zoom);
 		return containsInPixels(regionHandle.handle(), p.x, p.y);
 	});
 }
@@ -280,7 +289,7 @@ public boolean equals (Object object) {
 public Rectangle getBounds () {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return applyUsingAnyHandle(regionHandle -> {
-		return DPIUtil.scaleDown(getBoundsInPixels(regionHandle.handle()), regionHandle.zoom());
+		return Win32DPIUtils.pixelToPoint(getBoundsInPixels(regionHandle.handle()), regionHandle.zoom());
 	});
 }
 
@@ -373,6 +382,7 @@ public void intersect (Region region) {
 	if (region == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (!region.operations.isEmpty()) {
+		adoptTemporaryHandleZoomHint(region);
 		final Operation operation = new OperationWithRegion(Operation::intersect, region.operations);
 		storeAndApplyOperationForAllHandles(operation);
 	}
@@ -427,7 +437,7 @@ public boolean intersects (Rectangle rect) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	return applyUsingAnyHandle(regionHandle -> {
-		Rectangle r = DPIUtil.scaleUp(rect, regionHandle.zoom());
+		Rectangle r = Win32DPIUtils.pointToPixel(rect, regionHandle.zoom());
 		return intersectsInPixels(regionHandle.handle(), r.x, r.y, r.width, r.height);
 	});
 }
@@ -466,6 +476,21 @@ public boolean isEmpty () {
 		if (result == OS.NULLREGION) return true;
 		return ((rect.right - rect.left) <= 0) || ((rect.bottom - rect.top) <= 0);
 	});
+}
+
+/**
+ * Specific method for {@link GC#getClipping(Region)} because the current GC
+ * clipping settings at that specific point in time of executing the getClipping
+ * method need to be stored.
+ * <p>
+ * The context zoom is used as a hint for the case of creating temporary
+ * handles, such that they can be created for a zoom for which we know that the
+ * supplier is capable of providing a proper handle.
+ */
+void set(Function<Integer, Long> handleForZoomSupplier, int contextZoom) {
+	this.temporaryHandleZoomHint = contextZoom;
+	final Operation operation = new OperationWithRegionHandle(Operation::set, handleForZoomSupplier);
+	storeAndApplyOperationForAllHandles(operation);
 }
 
 /**
@@ -559,6 +584,7 @@ public void subtract (Region region) {
 	if (region == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (!region.operations.isEmpty()) {
+		adoptTemporaryHandleZoomHint(region);
 		final Operation operation = new OperationWithRegion(Operation::subtract, region.operations);
 		storeAndApplyOperationForAllHandles(operation);
 	}
@@ -612,7 +638,8 @@ private void storeAndApplyOperationForAllHandles(Operation operation) {
 
 private <T> T applyUsingAnyHandle(Function<RegionHandle, T> function) {
 	if (zoomToHandle.isEmpty()) {
-		return applyUsingTemporaryHandle(device.getDeviceZoom(), operations, function);
+		int temporaryHandleZoom = temporaryHandleZoomHint != 0 ? temporaryHandleZoomHint : device.getDeviceZoom();
+		return applyUsingTemporaryHandle(temporaryHandleZoom, operations, function);
 	}
 	return function.apply(zoomToHandle.values().iterator().next());
 }
@@ -642,6 +669,13 @@ private RegionHandle getRegionHandle(int zoom) {
 		zoomToHandle.put(zoom, regionHandle);
 	}
 	return zoomToHandle.get(zoom);
+}
+
+Region copy() {
+	Region region = new Region();
+	region.temporaryHandleZoomHint = temporaryHandleZoomHint;
+	region.operations.addAll(operations);
+	return region;
 }
 
 /**
@@ -699,6 +733,8 @@ private abstract static class Operation {
 		operationStrategy.apply(this, regionHandle.handle(), regionHandle.zoom());
 	}
 
+	abstract void set(long handle, int zoom);
+
 	abstract void add(long handle, int zoom);
 
 	abstract void subtract(long handle, int zoom);
@@ -714,6 +750,11 @@ private static class OperationWithRectangle extends Operation {
 	OperationWithRectangle(OperationStrategy operationStrategy, Rectangle data) {
 		super(operationStrategy);
 		this.data = data;
+	}
+
+	@Override
+	void set(long handle, int zoom) {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -761,7 +802,7 @@ private static class OperationWithRectangle extends Operation {
 	}
 
 	private Rectangle getScaledRectangle(int zoom) {
-		return DPIUtil.scaleUp(data, zoom);
+		return Win32DPIUtils.pointToPixel(data, zoom);
 	}
 
 }
@@ -772,6 +813,11 @@ private static class OperationWithArray extends Operation {
 	public OperationWithArray(OperationStrategy operationStrategy, int[] data) {
 		super(operationStrategy);
 		this.data = data;
+	}
+
+	@Override
+	void set(long handle, int zoom) {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -809,7 +855,7 @@ private static class OperationWithArray extends Operation {
 	}
 
 	private int[] getScaledPoints(int zoom) {
-		return DPIUtil.scaleUp(data, zoom);
+		return Win32DPIUtils.pointToPixel(data, zoom);
 	}
 }
 
@@ -819,6 +865,11 @@ private static class OperationWithPoint extends Operation {
 	public OperationWithPoint(OperationStrategy operationStrategy, Point data) {
 		super(operationStrategy);
 		this.data = data;
+	}
+
+	@Override
+	void set(long handle, int zoom) {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -838,7 +889,7 @@ private static class OperationWithPoint extends Operation {
 
 	@Override
 	void translate(long handle, int zoom) {
-		Point pt = DPIUtil.scaleUp((Point) data, zoom);
+		Point pt = Win32DPIUtils.pointToPixel((Point) data, zoom);
 		OS.OffsetRgn (handle, pt.x, pt.y);
 	}
 
@@ -850,6 +901,11 @@ private static class OperationWithRegion extends Operation {
 	OperationWithRegion(OperationStrategy operationStrategy, List<Operation> operations) {
 		super(operationStrategy);
 		this.operations = List.copyOf(operations);
+	}
+
+	@Override
+	void set(long handle, int zoom) {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -877,5 +933,41 @@ private static class OperationWithRegion extends Operation {
 	void translate(long handle, int zoom) {
 		throw new UnsupportedOperationException();
 	}
+
+}
+
+private static class OperationWithRegionHandle extends Operation {
+	private final Function<Integer, Long> handleForZoomProvider;
+
+	OperationWithRegionHandle(OperationStrategy operationStrategy, Function<Integer, Long> handleForZoomSupplier) {
+		super(operationStrategy);
+		this.handleForZoomProvider = handleForZoomSupplier;
+	}
+
+	@Override
+	void set(long handle, int zoom) {
+		OS.CombineRgn(handle, handleForZoomProvider.apply(zoom), 0, OS.RGN_COPY);
+	}
+
+	@Override
+	void subtract(long handle, int zoom) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	void intersect(long handle, int zoom) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	void translate(long handle, int zoom) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	void add(long handle, int zoom) {
+		throw new UnsupportedOperationException();
+	}
+
 }
 }

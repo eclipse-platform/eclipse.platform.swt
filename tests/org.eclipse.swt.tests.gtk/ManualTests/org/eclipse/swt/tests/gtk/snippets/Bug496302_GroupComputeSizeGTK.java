@@ -15,8 +15,7 @@ package org.eclipse.swt.tests.gtk.snippets;
 
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -79,10 +78,10 @@ public class Bug496302_GroupComputeSizeGTK {
 
 		final Combo combo = new Combo(group, SWT.DROP_DOWN | SWT.READ_ONLY);
 		combo.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
-		combo.setItems(new String[] { "A", "B", "C" }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		combo.setItems("A", "B", "C"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		combo.select(0);
 	}
-	
+
 	private static void createGroupSmall(final Composite parent) {
 		groupSmall = new Group(parent, SWT.NONE);
 		groupSmall.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
@@ -107,7 +106,7 @@ public class Bug496302_GroupComputeSizeGTK {
 
 		final Combo combo = new Combo(composite, SWT.DROP_DOWN | SWT.READ_ONLY);
 		combo.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
-		combo.setItems(new String[] { "A", "B", "C" }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		combo.setItems("A", "B", "C"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		combo.select(0);
 	}
 
@@ -115,17 +114,14 @@ public class Bug496302_GroupComputeSizeGTK {
 		final Button button = new Button(parent, SWT.PUSH);
 		button.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
 		button.setText("Compute Size"); //$NON-NLS-1$
-		button.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(final SelectionEvent e) {
-				textComposite.setText("" + composite.computeSize(SWT.DEFAULT, SWT.DEFAULT)); //$NON-NLS-1$
-				textGroup.setText("" + group.computeSize(SWT.DEFAULT, SWT.DEFAULT)); //$NON-NLS-1$
-				textGroupSmall.setText("" + groupSmall.computeSize(SWT.DEFAULT, SWT.DEFAULT)); //$NON-NLS-1$
-				composite.pack();
-				group.pack();
-				groupSmall.pack();
-			}
-		});
+		button.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+			textComposite.setText("" + composite.computeSize(SWT.DEFAULT, SWT.DEFAULT)); //$NON-NLS-1$
+			textGroup.setText("" + group.computeSize(SWT.DEFAULT, SWT.DEFAULT)); //$NON-NLS-1$
+			textGroupSmall.setText("" + groupSmall.computeSize(SWT.DEFAULT, SWT.DEFAULT)); //$NON-NLS-1$
+			composite.pack();
+			group.pack();
+			groupSmall.pack();
+		}));
 
 	}
 }

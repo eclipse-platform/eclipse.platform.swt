@@ -17,8 +17,6 @@ package org.eclipse.swt.tests.gtk.snippets;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
@@ -34,22 +32,16 @@ public class Bug292413_MissingSWTFocused {
 		for (int i = 0; i < 9; i++) {
 			new TreeItem(tree, SWT.NONE).setText("item " + i);
 		}
-		tree.addListener(SWT.EraseItem, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				System.out.println("EraseItem event");
-				if ((event.detail & SWT.FOCUSED) != 0) {
-					System.out.println("item has focus: " + ((TreeItem)event.item).getText());
-				}
+		tree.addListener(SWT.EraseItem, event -> {
+			System.out.println("EraseItem event");
+			if ((event.detail & SWT.FOCUSED) != 0) {
+				System.out.println("item has focus: " + ((TreeItem) event.item).getText());
 			}
 		});
-		tree.addListener(SWT.PaintItem, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				System.out.println("PaintItem event");
-				if ((event.detail & SWT.FOCUSED) != 0) {
-					System.out.println("item has focus: " + ((TreeItem)event.item).getText());
-				}
+		tree.addListener(SWT.PaintItem, event -> {
+			System.out.println("PaintItem event");
+			if ((event.detail & SWT.FOCUSED) != 0) {
+				System.out.println("item has focus: " + ((TreeItem) event.item).getText());
 			}
 		});
 		shell.open();

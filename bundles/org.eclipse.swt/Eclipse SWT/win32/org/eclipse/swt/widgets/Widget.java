@@ -65,6 +65,7 @@ public abstract class Widget {
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public int nativeZoom;
+	boolean autoScaleDisabled = false;
 	int style, state;
 	Display display;
 	EventTable eventTable;
@@ -132,13 +133,15 @@ public abstract class Widget {
 	/* Bidi flag and for auto text direction */
 	static final int AUTO_TEXT_DIRECTION = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 
+	private static final String DATA_AUTOSCALE_DISABLED = "AUTOSCALE_DISABLED";
+	private static final String DATA_NATIVE_ZOOM = "NATIVE_ZOOM";
+
 	/* Initialize the Common Controls DLL */
 	static {
 		INITCOMMONCONTROLSEX icce = new INITCOMMONCONTROLSEX ();
 		icce.dwSize = INITCOMMONCONTROLSEX.sizeof;
 		icce.dwICC = 0xffff;
 		OS.InitCommonControlsEx (icce);
-		DPIZoomChangeRegistry.registerHandler(Widget::handleDPIChange, Widget.class);
 	}
 
 /**
@@ -182,9 +185,19 @@ public Widget (Widget parent, int style) {
 	checkParent (parent);
 	this.style = style;
 	this.nativeZoom = parent != null ? parent.nativeZoom : DPIUtil.getNativeDeviceZoom();
+	this.autoScaleDisabled = parent.autoScaleDisabled;
 	display = parent.display;
 	reskinWidget ();
 	notifyCreationTracker();
+	this.setData(DATA_NATIVE_ZOOM, this.nativeZoom);
+	registerDPIChangeListener();
+}
+
+void registerDPIChangeListener() {
+	this.addListener(SWT.ZoomChanged, event -> {
+		float scalingFactor = 1f * DPIUtil.getZoomForAutoscaleProperty(event.detail) / DPIUtil.getZoomForAutoscaleProperty(nativeZoom);
+		handleDPIChange(event, scalingFactor);
+	});
 }
 
 void _addListener (int eventType, Listener listener) {
@@ -1184,7 +1197,7 @@ boolean sendDragEvent (int button, int x, int y) {
 	Event event = new Event ();
 	event.button = button;
 	int zoom = getZoom();
-	event.setLocation(DPIUtil.scaleDown(x, zoom), DPIUtil.scaleDown(y, zoom));
+	event.setLocation(DPIUtil.pixelToPoint(x, zoom), DPIUtil.pixelToPoint(y, zoom));
 	setInputState (event, SWT.DragDetect);
 	postEvent (SWT.DragDetect, event);
 	if (isDisposed ()) return false;
@@ -1195,7 +1208,7 @@ boolean sendDragEvent (int button, int stateMask, int x, int y) {
 	Event event = new Event ();
 	event.button = button;
 	int zoom = getZoom();
-	event.setLocation(DPIUtil.scaleDown(x, zoom), DPIUtil.scaleDown(y, zoom));
+	event.setLocation(DPIUtil.pixelToPoint(x, zoom), DPIUtil.pixelToPoint(y, zoom));
 	event.stateMask = stateMask;
 	postEvent (SWT.DragDetect, event);
 	if (isDisposed ()) return false;
@@ -1272,7 +1285,7 @@ boolean sendMouseEvent (int type, int button, int count, int detail, boolean sen
 	event.detail = detail;
 	event.count = count;
 	int zoom = getZoom();
-	event.setLocation(DPIUtil.scaleDown(OS.GET_X_LPARAM (lParam), zoom), DPIUtil.scaleDown(OS.GET_Y_LPARAM (lParam), zoom));
+	event.setLocation(DPIUtil.pixelToPoint(OS.GET_X_LPARAM (lParam), zoom), DPIUtil.pixelToPoint(OS.GET_Y_LPARAM (lParam), zoom));
 	setInputState (event, type);
 	mapEvent (hwnd, event);
 	if (send) {
@@ -1457,6 +1470,10 @@ public void setData (String key, Object value) {
 		}
 	}
 	if (key.equals(SWT.SKIN_CLASS) || key.equals(SWT.SKIN_ID)) this.reskin(SWT.ALL);
+
+	if (DATA_AUTOSCALE_DISABLED.equals(key)) {
+		autoScaleDisabled = Boolean.parseBoolean(value.toString());
+	}
 }
 
 boolean sendFocusEvent (int type) {
@@ -1686,7 +1703,7 @@ boolean showMenu (int x, int y) {
 
 boolean showMenu (int x, int y, int detail) {
 	Event event = new Event ();
-	Point mappedLocation = getDisplay().translateFromDisplayCoordinates(new Point(x, y), getZoom());
+	Point mappedLocation = getDisplay().translateFromDisplayCoordinates(new Point(x, y));
 	event.setLocation(mappedLocation.x, mappedLocation.y);
 	event.detail = detail;
 	if (event.detail == SWT.MENU_KEYBOARD) {
@@ -1698,7 +1715,7 @@ boolean showMenu (int x, int y, int detail) {
 	if (!event.doit) return true;
 	Menu menu = getMenu ();
 	if (menu != null && !menu.isDisposed ()) {
-		Point locInPixels = DPIUtil.scaleUp(event.getLocation(), getZoom()); // In Pixels
+		Point locInPixels = Win32DPIUtils.pointToPixel(event.getLocation(), getZoom()); // In Pixels
 		if (x != locInPixels.x || y != locInPixels.y) {
 			menu.setLocation (event.getLocation());
 		}
@@ -2352,7 +2369,7 @@ LRESULT wmPaint (long hwnd, long wParam, long lParam) {
 			OS.SetMetaRgn (hDC);
 			Event event = new Event ();
 			event.gc = gc;
-			event.setBounds(DPIUtil.scaleDown(new Rectangle(rect.left, rect.top, width, height), getZoom()));
+			event.setBounds(Win32DPIUtils.pixelToPoint(new Rectangle(rect.left, rect.top, width, height), getZoom()));
 			sendEvent (SWT.Paint, event);
 			// widget could be disposed at this point
 			event.gc = null;
@@ -2686,20 +2703,31 @@ void notifyDisposalTracker() {
 }
 
 GC createNewGC(long hDC, GCData data) {
-	data.nativeZoom = nativeZoom;
+	data.nativeZoom = getNativeZoom();
+	if (autoScaleDisabled && data.font != null) {
+		data.font = SWTFontProvider.getFont(display, data.font.getFontData()[0], 100);
+	}
 	return GC.win32_new(hDC, data);
 }
 
 int getNativeZoom() {
+	if (autoScaleDisabled) {
+		return 100;
+	}
 	return nativeZoom;
 }
 
 int getZoom() {
+	if (autoScaleDisabled) {
+		return 100;
+	}
 	return DPIUtil.getZoomForAutoscaleProperty(nativeZoom);
 }
 
-private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
-	widget.nativeZoom = newZoom;
+void handleDPIChange(Event event, float scalingFactor) {
+	int newZoom = event.detail;
+	this.nativeZoom = newZoom;
+	this.setData(DATA_NATIVE_ZOOM, newZoom);
 }
 
 int getSystemMetrics(int nIndex) {

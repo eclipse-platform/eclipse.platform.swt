@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018 Red Hat and others. All rights reserved.
+ * Copyright (c) 2018, 2025 Red Hat and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -23,7 +23,6 @@ activate (GtkApplication *app,
 
   GtkWidget *window;
   GtkWidget *button;
-  GtkWidget *button_box;
   GtkWidget *vbox;
   GtkWidget *fixed;
   GtkWidget *scrolled;
@@ -33,20 +32,18 @@ activate (GtkApplication *app,
   gtk_window_set_default_size (GTK_WINDOW (window), 200, 200);
 
   vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-  scrolled = gtk_scrolled_window_new (NULL, NULL);
-  gtk_container_add (GTK_CONTAINER (vbox), scrolled);
+  scrolled = gtk_scrolled_window_new ();
+  gtk_box_append (GTK_BOX(vbox), scrolled);
 
-  fixed = swt_fixed_new ();
-  gtk_container_add (GTK_CONTAINER (scrolled), fixed);
+  fixed = g_object_new(swt_fixed_get_type(), 0);
+  gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW(scrolled), fixed);
 
-  button_box = gtk_button_box_new (GTK_ORIENTATION_HORIZONTAL);
 
   button = gtk_button_new_with_label ("Hello");
-  gtk_container_add (GTK_CONTAINER (button_box), button);
-  gtk_container_add (GTK_CONTAINER (fixed), button_box);
-  gtk_container_add (GTK_CONTAINER (window), vbox);
+  swt_fixed_add (SWT_FIXED (fixed), button);
+  gtk_window_set_child (GTK_WINDOW (window), vbox);
 
-  gtk_widget_show (window);
+  gtk_window_present (GTK_WINDOW(window));
 }
 
 int
@@ -57,7 +54,7 @@ main (int    argc,
   GtkApplication *app;
   int status;
 
-  app = gtk_application_new ("org.gtk.example", G_APPLICATION_FLAGS_NONE);
+  app = gtk_application_new ("org.gtk.example", G_APPLICATION_DEFAULT_FLAGS);
   g_signal_connect (app, "activate", G_CALLBACK (activate), NULL);
   status = g_application_run (G_APPLICATION (app), argc, argv);
   g_object_unref (app);

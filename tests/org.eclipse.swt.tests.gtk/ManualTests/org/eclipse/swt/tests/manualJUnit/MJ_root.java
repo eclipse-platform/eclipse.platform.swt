@@ -16,17 +16,16 @@
 
 package org.eclipse.swt.tests.manualJUnit;
 
-import static org.junit.Assert.fail;
-import static org.junit.Assume.assumeTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.rules.TestName;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.TestInfo;
 
 /**
  * Some tests can't be automated and have to be tested manually by visual inspection.
@@ -52,15 +51,16 @@ public class MJ_root {
 	/** Default Shell values */
 	final int SWIDTH = 1200;
 	final int SHEIGHT = 800;
-
+	private TestInfo testInfo;
 	Display display;
-	@Before //each test.
-	public void setUp() {
+	@BeforeEach //each test.
+	public void setUp(TestInfo testInfo) {
 		display = new Display();
 		display.addFilter(SWT.KeyDown, globalTestValidatorViaKeyboard);
+		this.testInfo = testInfo;
 	}
 
-	@After
+	@AfterEach
 	public void tearDown() {
 		if (!display.isDisposed()) { // pass = shell is disposed.
 			display.dispose();
@@ -102,10 +102,8 @@ public class MJ_root {
 		}
 	};
 
-	@Rule
-	public TestName testName = new TestName();
 	private String getCurrentTestName() {
-		return testName.getMethodName ();
+		return testInfo.getDisplayName();
 	}
 
 

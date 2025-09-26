@@ -1944,7 +1944,12 @@ void setText(String dateTimeText) {
 		byte[] dateTimeConverted = Converter.javaStringToCString(dateTimeText);
 
 		if (GTK.GTK4) {
-			GTK.gtk_entry_buffer_set_text(GTK4.gtk_text_get_buffer(textEntryHandle), dateTimeConverted, dateTimeText.length());
+			if (isDateWithDropDownButton()) {
+				GTK.gtk_entry_buffer_set_text(GTK4.gtk_text_get_buffer(textEntryHandle), dateTimeConverted, dateTimeText.length());
+			} else {
+				GTK4.gtk_editable_set_max_width_chars(handle, dateTimeText.length());
+				GTK4.gtk_editable_set_text(handle, dateTimeConverted);
+			}
 		} else {
 			//note, this is ignored if the control is in a fill-layout.
 			GTK3.gtk_entry_set_width_chars(textEntryHandle, dateTimeText.length());
@@ -2440,10 +2445,10 @@ private static FieldPosition getFieldPosition(Field field, AttributedCharacterIt
 }
 
 /**
- * Check if the given {@link FieldPosition} are considdered "the same", this is
+ * Check if the given {@link FieldPosition} are considered "the same", this is
  * when both are not <code>null</code> and reference the same
  * {@link java.text.Format.Field} attribute, or both of them have no
- * fieldattribute and have the same position
+ * field attribute and have the same position
  *
  * @param p1
  *            first position to compare
@@ -2484,7 +2489,7 @@ private static int getCalendarField(FieldPosition fieldPosition) {
 /**
  * Extracts the calendarfield transforming HOUR1 types to HOUR0
  *
- * @return the calendarfield coresponding to the {@link Field}
+ * @return the calendarfield corresponding to the {@link Field}
  */
 private static int getCalendarField(Field field) {
 	if (Field.HOUR1.equals(field)) {

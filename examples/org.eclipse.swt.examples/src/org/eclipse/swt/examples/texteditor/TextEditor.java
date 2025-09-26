@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2000, 2022 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -13,6 +13,8 @@
  *******************************************************************************/
 package org.eclipse.swt.examples.texteditor;
 
+import static org.eclipse.swt.SWT.BOLD;
+import static org.eclipse.swt.SWT.ITALIC;
 import static org.eclipse.swt.events.MenuListener.menuShownAdapter;
 import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
 
@@ -35,8 +37,7 @@ import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
-import org.eclipse.swt.events.MenuAdapter;
-import org.eclipse.swt.events.MenuEvent;
+import org.eclipse.swt.events.MenuListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.VerifyEvent;
@@ -101,8 +102,6 @@ public class TextEditor {
 
 	static final int BULLET_WIDTH = 40;
 	static final int MARGIN = 5;
-	static final int BOLD = SWT.BOLD;
-	static final int ITALIC = SWT.ITALIC;
 	static final int FONT_STYLE = BOLD | ITALIC;
 	static final int STRIKEOUT = 1 << 3;
 	static final int FOREGROUND = 1 << 4;
@@ -257,12 +256,7 @@ public class TextEditor {
 		saveItem.setText(getResourceString("Save_menuitem")); //$NON-NLS-1$
 		saveItem.addSelectionListener(widgetSelectedAdapter(event -> saveFile()));
 
-		fileMenu.addMenuListener(new MenuAdapter() {
-			@Override
-			public void menuShown(MenuEvent event){
-				saveItem.setEnabled(fileName != null);
-			}
-		});
+		fileMenu.addMenuListener(MenuListener.menuShownAdapter(e -> saveItem.setEnabled(fileName != null)));
 
 		MenuItem saveAsItem = new MenuItem(fileMenu, SWT.PUSH);
 		saveAsItem.setText(getResourceString("SaveAs_menuitem")); //$NON-NLS-1$
@@ -869,8 +863,8 @@ public class TextEditor {
 
 			Object data = rangeToDispose.data;
 			if (data != null) {
-				if (data instanceof Image) ((Image)data).dispose();
-				if (data instanceof Control) ((Control)data).dispose();
+				if (data instanceof Image image) image.dispose();
+				if (data instanceof Control control) control.dispose();
 			}
 		}
 	}
@@ -1037,14 +1031,12 @@ public class TextEditor {
 		GC gc = event.gc;
 		StyleRange style = event.style;
 		Object data = style.data;
-		if (data instanceof Image) {
-			Image image = (Image)data;
+		if (data instanceof Image image) {
 			int x = event.x;
 			int y = event.y + event.ascent - style.metrics.ascent;
 			gc.drawImage(image, x, y);
 		}
-		if (data instanceof Control) {
-			Control control = (Control)data;
+		if (data instanceof Control control) {
 			Point pt = control.getSize();
 			int x = event.x + MARGIN;
 			int y = event.y + event.ascent - 2 * pt.y / 3;
@@ -1109,8 +1101,8 @@ public class TextEditor {
 			for (StyleRange style : styles) {
 				Object data = style.data;
 				if (data != null) {
-					if (data instanceof Image) ((Image)data).dispose();
-					if (data instanceof Control) ((Control)data).dispose();
+					if (data instanceof Image image) image.dispose();
+					if (data instanceof Control control) control.dispose();
 				}
 			}
 		});

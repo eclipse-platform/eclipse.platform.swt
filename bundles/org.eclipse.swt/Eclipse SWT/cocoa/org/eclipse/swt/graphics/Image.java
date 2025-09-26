@@ -572,7 +572,7 @@ public Image(Device device, ImageData data) {
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
-		init(data);
+		init(data, 100);
 		init();
 	} finally {
 		if (pool != null) pool.release();
@@ -623,7 +623,7 @@ public Image(Device device, ImageData source, ImageData mask) {
 		ImageData image = new ImageData(source.width, source.height, source.depth, source.palette, source.scanlinePad, source.data);
 		image.maskPad = mask.scanlinePad;
 		image.maskData = mask.data;
-		init(image);
+		init(image, 100);
 	} finally {
 		if (pool != null) pool.release();
 	}
@@ -692,7 +692,7 @@ public Image(Device device, InputStream stream) {
 	try {
 		byte[] input = stream.readAllBytes();
 		initWithSupplier(zoom -> ImageDataLoader.canLoadAtZoom(new ByteArrayInputStream(input), FileFormat.DEFAULT_ZOOM, zoom),
-				zoom -> ImageDataLoader.load(new ByteArrayInputStream(input), FileFormat.DEFAULT_ZOOM, zoom).element());
+				zoom -> ImageDataLoader.loadByZoom(new ByteArrayInputStream(input), FileFormat.DEFAULT_ZOOM, zoom).element());
 		init();
 	} catch (IOException e) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT, e);
@@ -742,7 +742,7 @@ public Image(Device device, String filename) {
 		initNative(filename);
 		if (this.handle == null) {
 			initWithSupplier(zoom -> ImageDataLoader.canLoadAtZoom(filename, FileFormat.DEFAULT_ZOOM, zoom),
-					zoom -> ImageDataLoader.load(filename, FileFormat.DEFAULT_ZOOM, zoom).element());
+					zoom -> ImageDataLoader.loadByZoom(filename, FileFormat.DEFAULT_ZOOM, zoom).element());
 		}
 		init();
 	} finally {
@@ -789,7 +789,7 @@ public Image(Device device, ImageFileNameProvider imageFileNameProvider) {
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
 		initNative(filename);
-		if (this.handle == null) init(ImageDataLoader.load(filename, 100, 100).element());
+		if (this.handle == null) init(ImageDataLoader.loadByZoom(filename, 100, 100).element(), 100);
 		init();
 		String filename2x = imageFileNameProvider.getImagePath(200);
 		if (filename2x != null) {
@@ -799,7 +799,7 @@ public Image(Device device, ImageFileNameProvider imageFileNameProvider) {
 			handle.addRepresentation(rep);
 		} else if (ImageDataLoader.canLoadAtZoom(filename, 100, 200)) {
 			// Try to natively scale up the image (e.g. possible if it's an SVG)
-			ImageData imageData2x = ImageDataLoader.load(filename, 100, 200).element();
+			ImageData imageData2x = ImageDataLoader.loadByZoom(filename, 100, 200).element();
 			alphaInfo_200 = new AlphaInfo();
 			NSBitmapImageRep rep = createRepresentation (imageData2x, alphaInfo_200);
 			handle.addRepresentation(rep);
@@ -848,8 +848,11 @@ public Image(Device device, ImageDataProvider imageDataProvider) {
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
-		init (data);
+		init (data, 100);
 		init ();
+		StrictChecks.runIfStrictChecksEnabled(() -> {
+			DPIUtil.validateLinearScaling(imageDataProvider);
+		});
 		ImageData data2x = imageDataProvider.getImageData (200);
 		if (data2x != null) {
 			alphaInfo_200 = new AlphaInfo();
@@ -886,20 +889,13 @@ public Image(Device device, ImageGcDrawer imageGcDrawer, int width, int height) 
 	this.imageGcDrawer = imageGcDrawer;
 	this.width = width;
 	this.height = height;
-	ImageData data = drawWithImageGcDrawer(imageGcDrawer, width, height, 100);
+	ImageData data = drawWithImageGcDrawer(imageGcDrawer, width, height, DPIUtil.getDeviceZoom());
 	if (data == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
-		init (data);
+		init (data, DPIUtil.getDeviceZoom());
 		init ();
-		ImageData data2x = drawWithImageGcDrawer(imageGcDrawer, width, height, 200);
-		if (data2x != null) {
-			alphaInfo_200 = new AlphaInfo();
-			NSBitmapImageRep rep = createRepresentation (data2x, alphaInfo_200);
-			handle.addRepresentation(rep);
-			rep.release();
-		}
 	} finally {
 		if (pool != null) pool.release();
 	}
@@ -1313,7 +1309,7 @@ public Rectangle getBounds() {
  * @deprecated This API doesn't serve the purpose in an environment having
  *             multiple monitors with different DPIs, hence deprecated.
  */
-@Deprecated
+@Deprecated(since = "2025-09", forRemoval = true)
 public Rectangle getBoundsInPixels() {
 	Rectangle bounds = getBounds();
 	int scaleFactor = (int) NSScreen.mainScreen().backingScaleFactor();
@@ -1360,7 +1356,7 @@ public ImageData getImageData() {
  *             multiple monitors with different DPIs, hence deprecated. Use
  *             {@link #getImageData(int)} instead.
  */
-@Deprecated
+@Deprecated(since = "2025-09", forRemoval = true)
 public ImageData getImageDataAtCurrentZoom() {
 	return getImageData(DPIUtil.getDeviceZoom());
 }
@@ -1474,7 +1470,7 @@ void init(int width, int height) {
 	if (alphaInfo_100 == null) alphaInfo_100 = new AlphaInfo();
 }
 
-void init(ImageData image) {
+void init(ImageData image, int imageZoom) {
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 
 	if (handle != null) handle.release();
@@ -1484,8 +1480,8 @@ void init(ImageData image) {
 	size.width = width;
 	size.height = height;
 	handle = handle.initWithSize(size);
-	this.width = image.width;
-	this.height = image.height;
+	this.width = image.width * 100 / imageZoom;
+	this.height = image.height * 100 / imageZoom;
 	if (alphaInfo_100 == null) alphaInfo_100 = new AlphaInfo();
 	NSBitmapImageRep rep = createRepresentation(image, alphaInfo_100);
 	handle.addRepresentation(rep);
@@ -1495,7 +1491,7 @@ void init(ImageData image) {
 
 private void initWithSupplier(Function<Integer, Boolean> canLoadAtZoom, Function<Integer, ImageData> zoomToImageData) {
 	ImageData imageData = zoomToImageData.apply(100);
-	init(imageData);
+	init(imageData, 100);
 	if (canLoadAtZoom.apply(200)) {
 		ImageData imageData2x = zoomToImageData.apply(200);
 		alphaInfo_200 = new AlphaInfo();
@@ -1818,22 +1814,29 @@ public String toString () {
  * API for Image. It is marked public only so that it
  * can be shared within the packages provided by SWT.
  *
- * Draws a scaled image using the GC by another image.
+ * Draws a scaled image using the GC for a given imageData.
  *
  * @param gc the GC to draw on the resulting image
- * @param original the image which is supposed to be scaled and drawn on the resulting image
+ * @param imageData the imageData which is used to draw the scaled Image
  * @param width the width of the original image
  * @param height the height of the original image
  * @param scaleFactor the factor with which the image is supposed to be scaled
  *
  * @noreference This method is not intended to be referenced by clients.
  */
-public static void drawScaled(GC gc, Image original, int width, int height, float scaleFactor) {
-	gc.drawImage (original, 0, 0, DPIUtil.autoScaleDown (width), DPIUtil.autoScaleDown (height),
-			/* E.g. destWidth here is effectively DPIUtil.autoScaleDown (scaledWidth), but avoiding rounding errors.
-			 * Nevertheless, we still have some rounding errors due to the point-based API GC#drawImage(..).
-			 */
-			0, 0, Math.round (DPIUtil.autoScaleDown (width * scaleFactor)), Math.round (DPIUtil.autoScaleDown (height * scaleFactor)));
+public static void drawScaled(GC gc, ImageData imageData, int width, int height, float scaleFactor) {
+	StrictChecks.runWithStrictChecksDisabled(() -> {
+		Image imageToDraw = new Image(gc.device, (ImageDataProvider) zoom -> imageData);
+		gc.drawImage(imageToDraw, 0, 0, CocoaDPIUtil.pixelToPoint(width), CocoaDPIUtil.pixelToPoint(height),
+				/*
+				 * E.g. destWidth here is effectively DPIUtil.autoScaleDown (scaledWidth), but
+				 * avoiding rounding errors. Nevertheless, we still have some rounding errors
+				 * due to the point-based API GC#drawImage(..).
+				 */
+				0, 0, Math.round(CocoaDPIUtil.pixelToPoint(width * scaleFactor)),
+				Math.round(CocoaDPIUtil.pixelToPoint(height * scaleFactor)));
+		imageToDraw.dispose();
+	});
 }
 
 }

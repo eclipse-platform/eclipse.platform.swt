@@ -34,23 +34,19 @@ typedef struct _SwtFixedClass SwtFixedClass;
 
 struct _SwtFixed
 {
-  GtkContainer container;
-
-  /*< private >*/
-  SwtFixedPrivate *priv;
+  GtkWidget container;
 };
 
 struct _SwtFixedClass
 {
-  GtkContainerClass parent_class;
+  GtkWidgetClass parent_class;
 };
 
 GType swt_fixed_get_type (void) G_GNUC_CONST;
 GtkWidget *swt_fixed_new(void);
 
-void swt_fixed_restack(SwtFixed *fixed, GtkWidget *widget, GtkWidget *sibling, gboolean above);
-void swt_fixed_move(SwtFixed *fixed, GtkWidget *widget, gint x, gint y);
-void swt_fixed_resize(SwtFixed *fixed, GtkWidget *widget, gint width, gint height);
+void swt_fixed_add(SwtFixed* fixed, GtkWidget* widget);
+void swt_fixed_remove(SwtFixed* fixed, GtkWidget* widget);
 
 #endif
 #endif /* OS_CUSTOM_H */

@@ -15,8 +15,7 @@
 package org.eclipse.swt.tests.gtk.snippets;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
@@ -44,21 +43,16 @@ public final class Bug483791_setBackgroundGC {
 
 		final Button b = new Button(shell, SWT.PUSH);
 		b.setText("CLICK");
-		b.addSelectionListener(new SelectionAdapter() {
-
-			@Override
-			public void widgetSelected(SelectionEvent arg0) {
-				l.setBackground(display.getSystemColor(SWT.COLOR_CYAN));
-				// these don't help
-				/*
-				l.redraw();
-				l.update();
-				 */
-				MessageBox mb = new MessageBox(shell);
-				mb.setMessage("Background should not override GC drawing, but it does");
-				mb.open();
-			}
-		});
+		b.addSelectionListener(SelectionListener.widgetSelectedAdapter(arg0 -> {
+			l.setBackground(display.getSystemColor(SWT.COLOR_CYAN));
+			// these don't help
+			/*
+			 * l.redraw(); l.update();
+			 */
+			MessageBox mb = new MessageBox(shell);
+			mb.setMessage("Background should not override GC drawing, but it does");
+			mb.open();
+		}));
 
 		shell.open();
 		while (!shell.isDisposed()) {

@@ -14,9 +14,9 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.eclipse.swt.accessibility.Accessible;
 import org.eclipse.swt.accessibility.AccessibleControlEvent;
@@ -26,9 +26,9 @@ import org.eclipse.swt.accessibility.AccessibleListener;
 import org.eclipse.swt.accessibility.AccessibleTextEvent;
 import org.eclipse.swt.accessibility.AccessibleTextListener;
 import org.eclipse.swt.widgets.Shell;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.accessibility.Accessible
@@ -37,13 +37,13 @@ import org.junit.Test;
  */
 public class Test_org_eclipse_swt_accessibility_Accessible {
 
-@Before
+@BeforeEach
 public void setUp() {
 	shell = new Shell();
 	accessible = shell.getAccessible();
 }
 
-@After
+@AfterEach
 public void tearDown() {
 	assertFalse(shell.isDisposed());
 	shell.dispose();

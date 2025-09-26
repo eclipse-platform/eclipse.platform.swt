@@ -112,7 +112,6 @@ public class Text extends Scrollable {
 		WNDCLASS lpWndClass = new WNDCLASS ();
 		OS.GetClassInfo (0, EditClass, lpWndClass);
 		EditProc = lpWndClass.lpfnWndProc;
-		DPIZoomChangeRegistry.registerHandler(Text::handleDPIChange, Text.class);
 	}
 
 /**
@@ -986,7 +985,7 @@ public int getCaretLineNumber () {
  */
 public Point getCaretLocation () {
 	checkWidget ();
-	return DPIUtil.scaleDown(getCaretLocationInPixels(), getZoom());
+	return Win32DPIUtils.pixelToPoint(getCaretLocationInPixels(), getZoom());
 }
 
 Point getCaretLocationInPixels () {
@@ -1211,7 +1210,7 @@ public String getLineDelimiter () {
  */
 public int getLineHeight () {
 	checkWidget ();
-	return DPIUtil.scaleDown(getLineHeightInPixels (), getZoom());
+	return DPIUtil.pixelToPoint(getLineHeightInPixels (), getZoom());
 }
 
 int getLineHeightInPixels () {
@@ -1554,7 +1553,7 @@ public int getTopIndex () {
  */
 public int getTopPixel () {
 	checkWidget ();
-	return DPIUtil.scaleDown(getTopPixelInPixels(), getZoom());
+	return DPIUtil.pixelToPoint(getTopPixelInPixels(), getZoom());
 }
 
 int getTopPixelInPixels () {
@@ -2489,7 +2488,7 @@ int untranslateOffset (int offset) {
 void updateMenuLocation (Event event) {
 	Point pointInPixels = display.mapInPixels (this, null, getCaretLocationInPixels ());
 	int zoom = getZoom();
-	event.setLocation(DPIUtil.scaleDown(pointInPixels.x, zoom), DPIUtil.scaleDown(pointInPixels.y + getLineHeightInPixels (), zoom));
+	event.setLocation(DPIUtil.pixelToPoint(pointInPixels.x, zoom), DPIUtil.pixelToPoint(pointInPixels.y + getLineHeightInPixels (), zoom));
 }
 
 @Override
@@ -3149,10 +3148,9 @@ LRESULT wmKeyDown (long hwnd, long wParam, long lParam) {
 	return result;
 }
 
-private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
-	if (!(widget instanceof Text text)) {
-		return;
-	}
-	text.setMargins();
+@Override
+void handleDPIChange(Event event, float scalingFactor) {
+	super.handleDPIChange(event, scalingFactor);
+	setMargins();
 }
 }

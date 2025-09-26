@@ -38,7 +38,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 /*
- * Title: Bug 548661 - [GTK] DND from SWT to embbedded AWT frame is broken. Verify that
+ * Title: Bug 548661 - [GTK] DND from SWT to embedded AWT frame is broken. Verify that
  * How to run: launch snippet, drag the button "Drag Source" onto the button "Swing Target"
  * Bug description: no drag events are reported in the console.
  * Expected results: drag enter and drop/drag exit are reported according to user actions.

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018 Red Hat and others. All rights reserved.
+ * Copyright (c) 2018, 2025 Red Hat and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -14,21 +14,14 @@
  */
 package org.eclipse.swt.tests.gtk;
 
-import org.junit.runner.JUnitCore;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import org.junit.platform.suite.api.SelectClasses;
+import org.junit.platform.suite.api.Suite;
 
-
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-		// Test.class be added here.
+@Suite
+@SelectClasses({
 	Test_GtkConverter.class
 })
 
 public class AllGTKTests {
-
-	public static void main(String[] args) {
-		JUnitCore.main(AllGTKTests.class.getName()); // Enable once a test is added.
-	}
 
 }

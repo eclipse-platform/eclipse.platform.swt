@@ -591,7 +591,10 @@ public void test_LocationListener_changed() {
 	shell.open();
 	browser.setText("Hello world");
 	boolean passed = waitForPassCondition(changedFired::get);
-	assertTrue("LocationListener.changed() event was never fired", passed);
+	String errorMsg = String.format(
+			"LocationListener.changed() event was never fired. Browser URL after waitForPassCondition: %s",
+			browser.getUrl());
+	assertTrue(errorMsg, passed);
 }
 @Test
 public void test_LocationListener_changed_twoSetTextCycles() {
@@ -654,10 +657,12 @@ public void test_LocationListener_then_ProgressListener() {
 	AtomicBoolean locationChanged = new AtomicBoolean(false);
 	AtomicBoolean progressChanged = new AtomicBoolean(false);
 	AtomicBoolean progressChangedAfterLocationChanged = new AtomicBoolean(false);
+	AtomicReference<String> browserTextOnCompletedEvent = new AtomicReference<>();
 
 	browser.addLocationListener(changedAdapter(event ->	locationChanged.set(true)));
 
 	browser.addProgressListener(completedAdapter(event -> {
+		browserTextOnCompletedEvent.set(browser.getText());
 		if (locationChanged.get()) {
 			progressChangedAfterLocationChanged.set(true);
 		}
@@ -671,16 +676,17 @@ public void test_LocationListener_then_ProgressListener() {
 	String errorMsg = "\nUnexpected listener states. Expecting true for all, but have:\n"
 			+ "Location changed: " + locationChanged.get() + "\n"
 			+ "ProgressChangedAfterLocationChanged: " + progressChangedAfterLocationChanged.get() + "\n"
-			+ "progressChanged: " + progressChanged.get();
-
+			+ "progressChanged: " + progressChanged.get() + "\n"
+			+ "browser text on completed event: " + browserTextOnCompletedEvent.get() + "\n"
+			+ "browser text after waitForPassCondition: " + browser.getText();
 	assertTrue(errorMsg, progressChangedAfterLocationChanged.get());
 }
 
 @Test
 /**
- * "event.doit = false" in Location.changing() should stop 'Loction.changed & progress.completed' from getting fired.
+ * "event.doit = false" in Location.changing() should stop 'Location.changed & progress.completed' from getting fired.
  */
-public void test_LocationListener_ProgressListener_cancledLoad () {
+public void test_LocationListener_ProgressListener_canceledLoad () {
 
 	AtomicBoolean locationChanging = new AtomicBoolean(false);
 	AtomicBoolean unexpectedLocationChanged = new AtomicBoolean(false);
@@ -986,6 +992,7 @@ public void test_ProgressListener_addAndRemove() {
 @Test
 public void test_ProgressListener_completed_Called() {
 	AtomicBoolean childCompleted = new AtomicBoolean(false);
+	AtomicReference<String> browserTextOnChangedEvent = new AtomicReference<>();
 	ProgressListener l = new ProgressListener() {
 
 		@Override
@@ -995,14 +1002,16 @@ public void test_ProgressListener_completed_Called() {
 
 		@Override
 		public void changed(ProgressEvent event) {
-
+			browserTextOnChangedEvent.set(browser.getText());
 		}
 	};
 	browser.addProgressListener(l);
 	browser.setText("<html><body>This test ensures that the completed listener is called.</body></html>");
 	shell.open();
 	boolean passed = waitForPassCondition(childCompleted::get);
-	assertTrue(passed);
+	String errorMsg = "Browser text before completed: " + browserTextOnChangedEvent.get() +
+					"\nBrowser text after completed: " + browser.getText();
+	assertTrue(errorMsg, passed);
 }
 
 @Test
@@ -1028,7 +1037,7 @@ public void test_StatusTextListener_addAndRemove() {
  * Logic:
  * 1) Create a page that has a hyper link (covering the whole page)
  * 2) Move shell to top left corner
- * 3) Upon compleation of page load, move cursor across whole shell.
+ * 3) Upon completion of page load, move cursor across whole shell.
  *    (Note, in current jUnit, browser sometimes only takes up half the shell).
  * 4) StatusTextListener should get triggered. Test passes.
  * 5) Else timeout and fail.
@@ -1141,7 +1150,6 @@ public void test_setText() {
  */
 @Test
 public void test_setTextContainingScript_applicationLayerProgressListenerMustSeeUpToDateDom() {
-	assumeFalse("Toggling on Edge since I20250216-1800, see https://github.com/eclipse-platform/eclipse.platform.swt/issues/1843", isEdge);
 	AtomicBoolean completed = new AtomicBoolean();
 	browser.addProgressListener(ProgressListener.completedAdapter(event -> {
 		String script = """
@@ -1162,7 +1170,7 @@ public void test_setTextContainingScript_applicationLayerProgressListenerMustSee
 	browser.setText("""
 			<html>
 				<head>
-					<script src=\"file:///does/not/really/needs/to/exist.js\"></script>
+					<script>console.log("test");</script>
 				</head>
 				<body>
 					<h1>Hello, World!</h1>
@@ -1463,7 +1471,7 @@ public void test_setUrlWithNullArg() {
 /**
  * Logic:
  * - Load a page. Turn off javascript (which takes effect on next pageload)
- * - Load a second page. Try to execute some javascript. If javascript is exectuted then fail.
+ * - Load a second page. Try to execute some javascript. If javascript is executed then fail.
  */
 @Test
 public void test_setJavascriptEnabled() {
@@ -1753,7 +1761,7 @@ public void test_getText_html() {
  * https://github.com/eclipse-platform/eclipse.platform.swt/issues/2029
  */
 @Test
-public void test_getText_javscriptDisabled() {
+public void test_getText_javascriptDisabled() {
 	browser.setJavascriptEnabled(false);
 	String testString = "<html><head></head><body>hello<b>World</b></body></html>";
 	getText_helper(testString, testString);
@@ -1971,7 +1979,7 @@ public void test_evaluate_boolean() {
  */
 @Test
 public void test_evaluate_null() {
-	// Boolen only used as dummy placeholder so the object is not null.
+	// Boolean only used as dummy placeholder so the object is not null.
 	final AtomicReference<Object> returnValue = new AtomicReference<>(true);
 	browser.addProgressListener(completedAdapter(event -> {
 		returnValue.set(false);

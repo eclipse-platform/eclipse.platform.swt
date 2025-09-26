@@ -19,8 +19,6 @@ import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.TreeEditor;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
@@ -42,35 +40,32 @@ public class Bug373183_gdkwindowprocessupdatesCrash {
 			column.setWidth(100);
 		}
 
-		String[] rowTexts = new String[] { "aa", "bb", "cc", "aa", "bb", "cc"};
+		String[] rowTexts = { "aa", "bb", "cc", "aa", "bb", "cc"};
 
 //		String[] rowTexts = new String[] { "aa", "bb", "cc", "aa", "bb", "cc",
 //				"aa", "bb", "cc", "aa", "bb", "cc", "aa", "bb", "cc"};
 
 		tree.setData(rowTexts);
-		tree.addListener(SWT.SetData, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				TreeItem item = (TreeItem) event.item;
-				String rowText = null;
-				String[] rowTexts = (String[]) tree.getData();
-				
-				rowText = rowTexts[event.index];
-				item.setText(rowText.toString());
-				item.setText(1, rowText.toString());
+		tree.addListener(SWT.SetData, event -> {
+			TreeItem item = (TreeItem) event.item;
+			String rowText = null;
+			String[] rowTexts1 = (String[]) tree.getData();
 
-				final TreeEditor editor = new TreeEditor(tree);
-				editor.horizontalAlignment = SWT.LEFT;
-				editor.grabHorizontal = true;
-				editor.minimumWidth = 50;
-				
+			rowText = rowTexts1[event.index];
+			item.setText(rowText.toString());
+			item.setText(1, rowText.toString());
 
-				CCombo newEditor = new CCombo(tree, SWT.NONE);
-				newEditor.setText(item.getText(EDITABLECOLUMN));
+			final TreeEditor editor = new TreeEditor(tree);
+			editor.horizontalAlignment = SWT.LEFT;
+			editor.grabHorizontal = true;
+			editor.minimumWidth = 50;
 
-				newEditor.setFocus();
-				editor.setEditor(newEditor, item, EDITABLECOLUMN);
-			}
+
+			CCombo newEditor = new CCombo(tree, SWT.NONE);
+			newEditor.setText(item.getText(EDITABLECOLUMN));
+
+			newEditor.setFocus();
+			editor.setEditor(newEditor, item, EDITABLECOLUMN);
 		});
 		tree.setItemCount(rowTexts.length);
 
@@ -82,6 +77,6 @@ public class Bug373183_gdkwindowprocessupdatesCrash {
 		}
 		display.dispose();
 	}
-	
+
 	final static int EDITABLECOLUMN = 1;
 }

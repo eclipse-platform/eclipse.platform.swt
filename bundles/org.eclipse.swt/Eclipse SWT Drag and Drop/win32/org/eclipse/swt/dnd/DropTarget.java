@@ -242,29 +242,35 @@ void createCOMInterfaces() {
 		public long method2(long[] args) {return Release();}
 		@Override
 		public long method3(long[] args) {
-			if (args.length == 5) {
-				return DragEnter(args[0], (int)args[1], (int)args[2], (int)args[3], args[4]);
-			} else {
-				return DragEnter_64(args[0], (int)args[1], args[2], args[3]);
-			}
+			return Win32DPIUtils.runWithProperDPIAwareness(getDisplay(), () -> {
+				if (args.length == 5) {
+					return DragEnter(args[0], (int)args[1], (int)args[2], (int)args[3], args[4]);
+				} else {
+					return DragEnter_64(args[0], (int)args[1], args[2], args[3]);
+				}
+			});
 		}
 		@Override
 		public long method4(long[] args) {
-			if (args.length == 4) {
-				return DragOver((int)args[0], (int)args[1], (int)args[2], args[3]);
-			} else {
-				return DragOver_64((int)args[0], args[1], args[2]);
-			}
+			return Win32DPIUtils.runWithProperDPIAwareness(getDisplay(), () -> {
+				if (args.length == 4) {
+					return DragOver((int)args[0], (int)args[1], (int)args[2], args[3]);
+				} else {
+					return DragOver_64((int)args[0], args[1], args[2]);
+				}
+			});
 		}
 		@Override
 		public long method5(long[] args) {return DragLeave();}
 		@Override
 		public long method6(long[] args) {
-			if (args.length == 5) {
-				return Drop(args[0], (int)args[1], (int)args[2], (int)args[3], args[4]);
-			} else {
-				return Drop_64(args[0], (int)args[1], args[2], args[3]);
-			}
+			return Win32DPIUtils.runWithProperDPIAwareness(getDisplay(), () -> {
+				if (args.length == 5) {
+					return Drop(args[0], (int)args[1], (int)args[2], (int)args[3], args[4]);
+				} else {
+					return Drop_64(args[0], (int)args[1], args[2], args[3]);
+				}
+			});
 		}
 	};
 }
@@ -404,7 +410,7 @@ private Point convertPixelToPoint(int xInPixels, int yInPixels) {
 	if (this.control == null) {
 		// If there is no control for context, the behavior remains as before
 		int zoom = DPIUtil.getZoomForAutoscaleProperty(this.nativeZoom);
-		return DPIUtil.scaleDown(new Point(xInPixels, yInPixels), zoom);
+		return Win32DPIUtils.pixelToPoint(new Point(xInPixels, yInPixels), zoom);
 	}
 	int zoom = DPIUtil.getZoomForAutoscaleProperty(this.control.nativeZoom);
 	// There is no API to convert absolute values in pixels to display relative
@@ -413,7 +419,7 @@ private Point convertPixelToPoint(int xInPixels, int yInPixels) {
 	POINT pt = new POINT ();
 	pt.x = xInPixels;  pt.y = yInPixels;
 	OS.ScreenToClient (this.control.handle, pt);
-	Point p = DPIUtil.scaleDown(new Point (pt.x, pt.y), zoom);
+	Point p = Win32DPIUtils.pixelToPoint(new Point (pt.x, pt.y), zoom);
 	return this.control.toDisplay(p);
 }
 

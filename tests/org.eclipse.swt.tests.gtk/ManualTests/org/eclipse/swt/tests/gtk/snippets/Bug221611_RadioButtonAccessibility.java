@@ -15,8 +15,7 @@
 package org.eclipse.swt.tests.gtk.snippets;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -45,12 +44,7 @@ public class Bug221611_RadioButtonAccessibility {
 		button1.setText("Button 1");
 		Button button2 = new Button(parent, SWT.RADIO);
 		button2.setText("Button 2");
-		button2.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				((Button) e.widget).getAccessible();
-			}
-		});
+		button2.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> ((Button) e.widget).getAccessible()));
 		Button button3 = new Button(parent, SWT.RADIO);
 		button3.setText("Button 3");
 		Button button4 = new Button(parent, SWT.RADIO);

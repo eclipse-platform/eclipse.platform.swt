@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -16,16 +16,20 @@ package org.eclipse.swt.tests.junit;
 
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Cursor;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.ImageDataProvider;
 import org.eclipse.swt.graphics.ImageLoader;
+import org.eclipse.swt.graphics.PaletteData;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 import org.junit.Before;
 import org.junit.Test;
@@ -118,20 +122,12 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceI() {
 	cursor.dispose();
 
 	// illegal argument, style > SWT.CURSOR_HAND (21)
-	try {
-		cursor = new Cursor(display, 100);
-		cursor.dispose();
-		fail("No exception thrown for style > SWT.CURSOR_HAND (21)");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for style > SWT.CURSOR_HAND (21)",
+			IllegalArgumentException.class, () -> new Cursor(display, 100));
 
 	// illegal argument, style < 0
-	try {
-		cursor = new Cursor(display, -100);
-		cursor.dispose();
-		fail("No exception thrown for style < 0");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for style < 0",
+			IllegalArgumentException.class, () -> new Cursor(display, -100));
 }
 
 @Test
@@ -151,6 +147,81 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 			// continue;
 		}
 	}
+}
+
+@Test
+public void test_ConstructorWithImageDataProvider() {
+	// Test new Cursor(Device device, ImageData source, ImageData mask, int
+	// hotspotX, int hotspotY)
+	Image sourceImage = new Image(display, 10, 10);
+	Cursor cursor = new Cursor(display, sourceImage::getImageData, 0, 0);
+	cursor.dispose();
+	cursor = new Cursor(null, sourceImage::getImageData, 0, 0);
+	cursor.dispose();
+	sourceImage.dispose();
+
+	assertThrows("No exception thrown when ImageDataProvider is null",
+			IllegalArgumentException.class, () -> new Cursor(display, (ImageDataProvider) null, 0, 0));
+}
+
+@Test
+public void test_InvalidArgumentsForAllConstructors() {
+	ImageData source = new ImageData(16, 16, 1, new PaletteData(new RGB[] { new RGB(0, 0, 0) }));
+	ImageData mask = new ImageData(16, 16, 1, new PaletteData(new RGB[] { new RGB(0, 0, 0) }));
+
+	assertThrows("When wrong style was provided", IllegalArgumentException.class,
+			() -> {
+				Cursor cursor = new Cursor(Display.getDefault(), -99);
+				cursor.dispose();
+			});
+
+	assertThrows("When source is null", IllegalArgumentException.class, () -> {
+		Cursor cursorFromImageAndMask = new Cursor(Display.getDefault(), null, mask, 0, 0);
+		cursorFromImageAndMask.dispose();
+	});
+
+	assertThrows("When mask is null and source doesn't heve a mask",
+			IllegalArgumentException.class, () -> {
+				Cursor cursorFromImageAndMask = new Cursor(Display.getDefault(), source, null, 0, 0);
+				cursorFromImageAndMask.dispose();
+			});
+
+	assertThrows("When source and the mask are not the same size",
+			IllegalArgumentException.class, () -> {
+				ImageData source32 = new ImageData(32, 32, 1, new PaletteData(new RGB[] { new RGB(0, 0, 0) }));
+				ImageData mask16 = new ImageData(16, 16, 1, new PaletteData(new RGB[] { new RGB(0, 0, 0) }));
+
+				Cursor cursorFromImageAndMask = new Cursor(Display.getDefault(), source32, mask16, 0, 0);
+				cursorFromImageAndMask.dispose();
+			});
+
+	assertThrows("When hotspot is outside the bounds of the image",
+			IllegalArgumentException.class, () -> {
+				Cursor cursorFromImageAndMask = new Cursor(Display.getDefault(), source, mask, 18, 18);
+				cursorFromImageAndMask.dispose();
+			});
+
+	assertThrows("When source image data is null", IllegalArgumentException.class,
+			() -> {
+				ImageData nullImageData = null;
+				Cursor cursorFromSourceOnly = new Cursor(Display.getDefault(), nullImageData, 0, 0);
+				cursorFromSourceOnly.dispose();
+			});
+
+	assertThrows("When ImageDataProvider is null", IllegalArgumentException.class,
+			() -> {
+				ImageDataProvider provider = null;
+				Cursor cursorFromProvider = new Cursor(Display.getDefault(), provider, 0, 0);
+				cursorFromProvider.dispose();
+			});
+
+	assertThrows("When source in ImageDataProvider is null",
+			IllegalArgumentException.class, () -> {
+				ImageData nullSource = null;
+				ImageDataProvider provider = zoom -> nullSource;
+				Cursor cursorFromProvider = new Cursor(Display.getDefault(), provider, 0, 0);
+				cursorFromProvider.dispose();
+			});
 }
 
 @Test

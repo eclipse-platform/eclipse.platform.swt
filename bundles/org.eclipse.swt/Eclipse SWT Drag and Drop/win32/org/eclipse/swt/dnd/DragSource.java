@@ -380,9 +380,15 @@ public DragSource(Control control, int style) {
 				DragSource.this.drag(event);
 			}
 		}
+		if (event.type == SWT.ZoomChanged) {
+			if (!DragSource.this.isDisposed()) {
+				this.nativeZoom = event.detail;
+			}
+		}
 	};
 	control.addListener(SWT.Dispose, controlListener);
 	control.addListener(SWT.DragDetect, controlListener);
+	control.addListener(SWT.ZoomChanged, controlListener);
 
 	this.addListener(SWT.Dispose, e -> DragSource.this.onDispose());
 
@@ -504,7 +510,7 @@ private void drag(Event dragEvent) {
 		int offsetX = event.offsetX;
 		hwndDrag = topControl.handle;
 		if ((topControl.getStyle() & SWT.RIGHT_TO_LEFT) != 0) {
-			offsetX = DPIUtil.scaleUp(image.getBounds(), zoom).width - offsetX;
+			offsetX = Win32DPIUtils.pointToPixel(image.getBounds(), zoom).width - offsetX;
 			RECT rect = new RECT ();
 			OS.GetClientRect (topControl.handle, rect);
 			hwndDrag = OS.CreateWindowEx (
@@ -532,8 +538,8 @@ private void drag(Event dragEvent) {
 		int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
 		OS.RedrawWindow (topControl.handle, null, 0, flags);
 		POINT pt = new POINT ();
-		pt.x = DPIUtil.scaleUp(dragEvent.x, zoom);// To Pixels
-		pt.y = DPIUtil.scaleUp(dragEvent.y, zoom);// To Pixels
+		pt.x = Win32DPIUtils.pointToPixel(dragEvent.x, zoom);// To Pixels
+		pt.y = Win32DPIUtils.pointToPixel(dragEvent.y, zoom);// To Pixels
 		OS.MapWindowPoints (control.handle, 0, pt, 1);
 		RECT rect = new RECT ();
 		OS.GetWindowRect (hwndDrag, rect);

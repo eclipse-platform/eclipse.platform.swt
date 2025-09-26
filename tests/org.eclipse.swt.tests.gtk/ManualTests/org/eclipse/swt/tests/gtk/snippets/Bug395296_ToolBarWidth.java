@@ -15,8 +15,7 @@
 package org.eclipse.swt.tests.gtk.snippets;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -76,16 +75,13 @@ public final class Bug395296_ToolBarWidth {
 	private static void addButton(Composite parent, final String label) {
 		Button bt = new Button(parent, SWT.PUSH);
 		bt.setText(label);
-		bt.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				if (item4 != null) {
-					item4.dispose();
-				}
-				item4 = new ToolItem(tb, SWT.NONE);
-				item4.setText(label);
+		bt.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+			if (item4 != null) {
+				item4.dispose();
 			}
-		});
+			item4 = new ToolItem(tb, SWT.NONE);
+			item4.setText(label);
+		}));
 	}
 
 }

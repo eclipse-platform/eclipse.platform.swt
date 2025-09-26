@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 import java.util.function.*;
+import java.util.stream.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -88,8 +89,33 @@ class Edge extends WebBrowser {
 	private boolean ignoreFocusIn;
 	private String lastCustomText;
 
+	private boolean atLeastOneTopNavigationCompleted;
 	private static record CursorPosition(Point location, boolean isInsideBrowser) {};
 	private CursorPosition previousCursorPosition = new CursorPosition(new Point(0, 0), false);
+
+	private static final String WEBMESSAGE_KIND_MOUSE_RELATED_DOM_EVENT = "mouse-related-dom-event";
+	private static final String EVENT_MOUSEDOWN = "mousedown"; //$NON-NLS-1$
+	private static final String EVENT_MOUSEUP = "mouseup"; //$NON-NLS-1$
+	private static final String EVENT_MOUSEMOVE = "mousemove"; //$NON-NLS-1$
+	private static final String EVENT_MOUSEOVER = "mouseover"; //$NON-NLS-1$
+	private static final String EVENT_MOUSEOUT = "mouseout"; //$NON-NLS-1$
+	private static final String EVENT_DRAGSTART = "dragstart"; //$NON-NLS-1$
+	private static final String EVENT_DRAGEND = "dragend"; //$NON-NLS-1$
+	private static final String EVENT_DOUBLECLICK = "dblclick"; //$NON-NLS-1$
+	private static final String EVENT_MOUSEWHEEL = "wheel"; //$NON-NLS-1$
+	private static final Set<String> MOUSE_RELATED_DOM_EVENTS = Set.of( //
+			EVENT_MOUSEDOWN, EVENT_MOUSEUP, //
+			EVENT_MOUSEMOVE, //
+			EVENT_MOUSEOVER, EVENT_MOUSEOUT, //
+			EVENT_DRAGSTART, EVENT_DRAGEND, //
+			EVENT_DOUBLECLICK, //
+			EVENT_MOUSEWHEEL//
+	);
+	private static record MouseRelatedDomEvent(String eventType, boolean altKey, boolean ctrlKey, boolean shiftKey,
+			long clientX, long clientY, long button, boolean fromElementSet, boolean toElementSet, long deltaY) {
+	}
+	private int lastMouseMoveX;
+	private int lastMouseMoveY;
 
 	static {
 		NativeClearSessions = () -> {
@@ -233,15 +259,29 @@ static void error(int code, int hr) {
 	SWT.error(code, null, String.format(" [0x%08x]", hr));
 }
 
-static IUnknown newCallback(ICoreWebView2SwtCallback handler) {
-	long punk = COM.CreateSwtWebView2Callback((arg0, arg1) -> {
+// This class should not be replaced by a lambda and not be renamed to ensure compatibility
+// with native image generation when using GraalVM
+// See https://github.com/eclipse-platform/eclipse.platform.swt/pull/2216
+static class HandleCoreWebView2SwtCallback implements ICoreWebView2SwtCallback {
+	private final ICoreWebView2SwtCallback handler;
+
+	public HandleCoreWebView2SwtCallback(ICoreWebView2SwtCallback handler) {
+		this.handler = handler;
+	}
+
+	@Override
+	public int Invoke(long arg0, long arg1) {
 		inCallback++;
 		try {
 			return handler.Invoke(arg0, arg1);
 		} finally {
 			inCallback--;
 		}
-	});
+	}
+}
+
+static IUnknown newCallback(ICoreWebView2SwtCallback handler) {
+	long punk = COM.CreateSwtWebView2Callback(new HandleCoreWebView2SwtCallback(handler));
 	if (punk == 0) error(SWT.ERROR_NO_HANDLES, COM.E_OUTOFMEMORY);
 	return new IUnknown(punk);
 }
@@ -648,7 +688,9 @@ private void createInstance(int previousAttempts) {
 	int hr = containingEnvironment.environment().QueryInterface(COM.IID_ICoreWebView2Environment2, ppv);
 	if (hr == COM.S_OK) environment2 = new ICoreWebView2Environment2(ppv[0]);
 	// The webview calls are queued to be executed when it is done executing the current task.
-	containingEnvironment.environment().CreateCoreWebView2Controller(browser.handle, createControllerInitializationCallback(previousAttempts));
+	IUnknown controllerInitializationHandler = createControllerInitializationCallback(previousAttempts);
+	containingEnvironment.environment().CreateCoreWebView2Controller(browser.handle, controllerInitializationHandler);
+	controllerInitializationHandler.Release();
 }
 
 private IUnknown createControllerInitializationCallback(int previousAttempts) {
@@ -686,7 +728,7 @@ private IUnknown createControllerInitializationCallback(int previousAttempts) {
 				createInstance(previousAttempts + 1);
 			} else {
 				SWT.error(SWT.ERROR_UNSPECIFIED, null,
-						String.format(" Aborting Edge initialiation after %d retries with result %d", MAXIMUM_CREATION_RETRIES, result));
+						String.format(" Aborting Edge initialization after %d retries with result %d", MAXIMUM_CREATION_RETRIES, result));
 			}
 			break;
 		}
@@ -759,6 +801,9 @@ void setupBrowser(int hr, long pv) {
 	handler = newCallback(this::handleSourceChanged);
 	webView.add_SourceChanged(handler, token);
 	handler.Release();
+	handler = newCallback(this::handleWebMessageReceived);
+	webView.add_WebMessageReceived(handler, token);
+	handler.Release();
 	handler = newCallback(this::handleMoveFocusRequested);
 	controller.add_MoveFocusRequested(handler, token);
 	handler.Release();
@@ -789,7 +834,7 @@ void setupBrowser(int hr, long pv) {
 		handler.Release();
 	}
 
-	IUnknown hostDisp = newHostObject(this::handleCallJava);
+	IUnknown hostDisp = newHostObject(new HandleCoreWebView2SwtHost(this.functions));
 	long[] hostObj = { COM.VT_DISPATCH, hostDisp.getAddress(), 0 }; // VARIANT
 	webView.AddHostObjectToScript("swt\0".toCharArray(), hostObj);
 	hostDisp.Release();
@@ -798,7 +843,7 @@ void setupBrowser(int hr, long pv) {
 	browser.addListener(SWT.FocusIn, this::browserFocusIn);
 	browser.addListener(SWT.Resize, this::browserResize);
 	browser.addListener(SWT.Move, this::browserMove);
-	scheduleMouseMovementHandling();
+	scheduleFallbackMouseMovementHandlingIfNeeded();
 
 	// Sometimes when the shell of the browser is opened before the browser is
 	// initialized, nothing is drawn on the shell. We need browserResize to force
@@ -824,7 +869,7 @@ void browserDispose(Event event) {
 			if (inCallback > 0) {
 				ICoreWebView2Controller controller1 = controller;
 				controller.put_IsVisible(false);
-				browser.getDisplay().asyncExec(() -> {
+				asyncExec(() -> {
 					controller1.Close();
 					controller1.Release();
 				});
@@ -865,19 +910,27 @@ void browserResize(Event event) {
 	controller.put_IsVisible(true);
 }
 
-private void scheduleMouseMovementHandling() {
+/**
+ * We need the fallback whenever javascript is *not* enabled, but also for fresh
+ * Edge instances until the first javascript-enabled page has successfully
+ * loaded.
+ */
+private void scheduleFallbackMouseMovementHandlingIfNeeded() {
+	if (atLeastOneTopNavigationCompleted && jsEnabled) {
+		return;
+	}
 	browser.getDisplay().timerExec(100, () -> {
 		if (browser.isDisposed()) {
 			return;
 		}
 		if (browser.isVisible() && hasDisplayFocus()) {
-			handleMouseMovement();
+			handleFallbackMouseMovement();
 		}
-		scheduleMouseMovementHandling();
+		scheduleFallbackMouseMovementHandlingIfNeeded();
 	});
 }
 
-private void handleMouseMovement() {
+private void handleFallbackMouseMovement() {
 	final Point currentCursorLocation = browser.getDisplay().getCursorLocation();
 	Point cursorLocationInControlCoordinate = browser.toControl(currentCursorLocation);
 	boolean isCursorInsideBrowser = browser.getBounds().contains(cursorLocationInControlCoordinate);
@@ -953,6 +1006,14 @@ public boolean execute(String script) {
 	// Feature in WebView2. ExecuteScript works regardless of IsScriptEnabled setting.
 	// Disallow programmatic execution manually.
 	if (!jsEnabled) return false;
+	return executeInternal(script);
+}
+
+/**
+ * Unconditional script execution, bypassing {@link WebBrowser#jsEnabled} flag /
+ * {@link Browser#setJavascriptEnabled(boolean)}.
+ */
+private boolean executeInternal(String script) {
 	IUnknown completion = newCallback((long result, long json) -> COM.S_OK);
 	int hr = webViewProvider.getWebView(true).ExecuteScript(stringToWstr(script), completion);
 	completion.Release();
@@ -988,7 +1049,7 @@ private String getExposedUrl(String url) {
 }
 
 int handleCloseRequested(long pView, long pArgs) {
-	browser.getDisplay().asyncExec(() -> {
+	asyncExec(() -> {
 		if (browser.isDisposed()) return;
 		WindowEvent event = new WindowEvent(browser);
 		event.display = browser.getDisplay();
@@ -1006,7 +1067,7 @@ int handleDocumentTitleChanged(long pView, long pArgs) {
 	long[] ppsz = new long[1];
 	webViewProvider.getWebView(false).get_DocumentTitle(ppsz);
 	String title = wstrToString(ppsz[0], true);
-	browser.getDisplay().asyncExec(() -> {
+	asyncExec(() -> {
 		if (browser.isDisposed()) return;
 		TitleEvent event = new TitleEvent(browser);
 		event.display = browser.getDisplay();
@@ -1020,24 +1081,36 @@ int handleDocumentTitleChanged(long pView, long pArgs) {
 	return COM.S_OK;
 }
 
-long handleCallJava(int index, long bstrToken, long bstrArgsJson) {
-	Object result = null;
-	String token = bstrToString(bstrToken);
-	BrowserFunction function = functions.get(index);
-	if (function != null && token.equals (function.token)) {
-		inCallback++;
-		try {
-			String argsJson = bstrToString(bstrArgsJson);
-			Object args = JSON.parse(argsJson.toCharArray());
-			result = function.function ((Object[]) args);
-		} catch (Throwable e) {
-			result = WebBrowser.CreateErrorString(e.getLocalizedMessage());
-		} finally {
-			inCallback--;
-		}
+// This class should not be replaced by a lambda and not be renamed to ensure compatibility
+// with native image generation when using GraalVM
+// See https://github.com/eclipse-platform/eclipse.platform.swt/pull/2216
+static class HandleCoreWebView2SwtHost implements ICoreWebView2SwtHost {
+	private final Map<Integer, BrowserFunction> functions;
+
+	public HandleCoreWebView2SwtHost(Map<Integer, BrowserFunction> functions) {
+		this.functions = functions;
 	}
-	String json = JSON.stringify(result);
-	return COM.SysAllocStringLen(json.toCharArray(), json.length());
+
+	@Override
+	public long CallJava(int index, long bstrToken, long bstrArgsJson) {
+		Object result = null;
+		String token = bstrToString(bstrToken);
+		BrowserFunction function = functions.get(index);
+		if (function != null && token.equals(function.token)) {
+			inCallback++;
+			try {
+				String argsJson = bstrToString(bstrArgsJson);
+				Object args = JSON.parse(argsJson.toCharArray());
+				result = function.function((Object[]) args);
+			} catch (Throwable e) {
+				result = WebBrowser.CreateErrorString(e.getLocalizedMessage());
+			} finally {
+				inCallback--;
+			}
+		}
+		String json = JSON.stringify(result);
+		return COM.SysAllocStringLen(json.toCharArray(), json.length());
+	}
 }
 
 int handleFrameNavigationStarting(long pView, long pArgs) {
@@ -1070,8 +1143,7 @@ int handleNavigationStarting(long pView, long pArgs, boolean top) {
 	// will be eventually cleared again in handleNavigationCompleted().
 	navigations.put(pNavId[0], event);
 	if (event.doit) {
-		jsEnabled = jsEnabledOnNextPage;
-		settings.put_IsScriptEnabled(jsEnabled);
+		settings.put_IsScriptEnabled(jsEnabledOnNextPage);
 		// Register browser functions in the new document.
 		if (!functions.isEmpty()) {
 			StringBuilder sb = new StringBuilder();
@@ -1124,7 +1196,7 @@ int handleSourceChanged(long pView, long pArgs) {
 		} else {
 			location = url;
 		}
-		browser.getDisplay().asyncExec(() -> {
+		asyncExec(() -> {
 			if (browser.isDisposed()) return;
 			LocationEvent event = new LocationEvent(browser);
 			event.display = browser.getDisplay();
@@ -1141,7 +1213,7 @@ int handleSourceChanged(long pView, long pArgs) {
 }
 
 void sendProgressCompleted() {
-	browser.getDisplay().asyncExec(() -> {
+	asyncExec(() -> {
 		if (browser.isDisposed()) return;
 		ProgressEvent event = new ProgressEvent(browser);
 		event.display = browser.getDisplay();
@@ -1173,6 +1245,29 @@ int handleDOMContentLoaded(long pView, long pArgs) {
 			sendProgressCompleted();
 		}
 	}
+	executeInternal(
+			"""
+			const events = [%%events%%];
+			events.forEach(eventType => {
+				window.addEventListener(eventType, function(event) {
+					window.chrome.webview.postMessage([
+						'%%webmessagekind%%',
+						eventType,
+						event.altKey,
+						event.ctrlKey,
+						event.shiftKey,
+						event.clientX,
+						event.clientY,
+						event.button,
+						"fromElement" in event && event.fromElement != null,
+						"toElement" in event && event.toElement != null,
+						"deltaY" in event ? event.deltaY : 0,
+						]);
+				});
+			});
+			""" //
+			.replace("%%events%%", MOUSE_RELATED_DOM_EVENTS.stream().map(x -> "'" + x + "'").collect(Collectors.joining(", "))) //
+			.replace("%%webmessagekind%%", WEBMESSAGE_KIND_MOUSE_RELATED_DOM_EVENT));
 	return COM.S_OK;
 }
 
@@ -1228,14 +1323,14 @@ int handleContextMenuRequested(long pView, long pArgs) {
 	//   to PIXEL coordinates with the real native zoom value
 	//   independent from the swt.autoScale property:
 	Point pt = new Point( //
-			DPIUtil.scaleUp(win32Point.x, DPIUtil.getNativeDeviceZoom()), //
-			DPIUtil.scaleUp(win32Point.y, DPIUtil.getNativeDeviceZoom()));
+			Win32DPIUtils.pointToPixel(win32Point.x, DPIUtil.getNativeDeviceZoom()), //
+			Win32DPIUtils.pointToPixel(win32Point.y, DPIUtil.getNativeDeviceZoom()));
 	// - then, scale back down from PIXEL to DISPLAY coordinates, taking
 	//   swt.autoScale property into account
 	//   which is also later considered in Menu#setLocation()
 	pt = new Point( //
-			DPIUtil.scaleDown(pt.x, DPIUtil.getZoomForAutoscaleProperty(browser.getShell().nativeZoom)), //
-			DPIUtil.scaleDown(pt.y, DPIUtil.getZoomForAutoscaleProperty(browser.getShell().nativeZoom)));
+			DPIUtil.pixelToPoint(pt.x, DPIUtil.getZoomForAutoscaleProperty(browser.getShell().nativeZoom)), //
+			DPIUtil.pixelToPoint(pt.y, DPIUtil.getZoomForAutoscaleProperty(browser.getShell().nativeZoom)));
 	// - finally, translate the POINT from widget-relative
 	//   to DISPLAY-relative coordinates
 	pt = browser.toDisplay(pt.x, pt.y);
@@ -1295,10 +1390,15 @@ int handleNavigationCompleted(long pView, long pArgs, boolean top) {
 		// ProgressListener.completed from here.
 		sendProgressCompleted();
 	}
+	if (top) {
+		jsEnabled = jsEnabledOnNextPage;
+		atLeastOneTopNavigationCompleted = true;
+		scheduleFallbackMouseMovementHandlingIfNeeded();
+	}
 	int[] pIsSuccess = new int[1];
 	args.get_IsSuccess(pIsSuccess);
 	if (pIsSuccess[0] != 0) {
-		browser.getDisplay().asyncExec(() -> {
+		asyncExec(() -> {
 			if (browser.isDisposed()) return;
 			LocationEvent event = new LocationEvent(browser);
 			event.display = browser.getDisplay();
@@ -1398,10 +1498,15 @@ int handleNewWindowRequested(long pView, long pArgs) {
 	if (inEvaluate) {
 		openWindowHandler.run();
 	} else {
-		browser.getDisplay().asyncExec(openWindowHandler);
+		asyncExec(openWindowHandler);
 	}
 
 	return COM.S_OK;
+}
+
+private void asyncExec(Runnable r) {
+	if (browser.isDisposed()) return;
+	browser.getDisplay().asyncExec(r);
 }
 
 int handleGotFocus(long pView, long pArg) {
@@ -1496,6 +1601,136 @@ int handleMoveFocusRequested(long pView, long pArgs) {
 	return COM.S_OK;
 }
 
+int handleWebMessageReceived(long pView, long pArgs) {
+	ICoreWebView2WebMessageReceivedEventArgs args = new ICoreWebView2WebMessageReceivedEventArgs(pArgs);
+	long[] ppszWebMessageJson = new long[1];
+	int hr = args.get_WebMessageAsJson(ppszWebMessageJson);
+	if (hr != COM.S_OK) return hr;
+	try {
+		String webMessageJson = wstrToString(ppszWebMessageJson[0], true);
+		Object[] data = (Object[]) JSON.parse(webMessageJson);
+		if (WEBMESSAGE_KIND_MOUSE_RELATED_DOM_EVENT.equals(data[0])) {
+			MouseRelatedDomEvent mouseRelatedDomEvent = new MouseRelatedDomEvent( //
+					(String) data[1], //
+					(boolean) data[2], //
+					(boolean) data[3], //
+					(boolean) data[4], //
+					Math.round((double) data[5]), //
+					Math.round((double) data[6]), //
+					Math.round((double) data[7]), //
+					(boolean) data[8], //
+					(boolean) data[9], //
+					Math.round((double) data[10]) //
+			);
+			handleMouseRelatedDomEvent(mouseRelatedDomEvent);
+		}
+	} catch (Exception e) {
+		System.err.println(e);
+	}
+	return COM.S_OK;
+}
+
+/**
+ * Insipired by the mouse-event related parts of
+ * {@link IE#handleDOMEvent(org.eclipse.swt.ole.win32.OleEvent)}
+ */
+private void handleMouseRelatedDomEvent(MouseRelatedDomEvent domEvent) {
+	String eventType = domEvent.eventType();
+
+	/*
+	 * Feature in Edge. MouseOver/MouseOut events are fired any time the mouse enters
+	 * or exits any element within the Browser.  To ensure that SWT events are only
+	 * fired for mouse movements into or out of the Browser, do not fire an event if
+	 * the element being exited (on MouseOver) or entered (on MouseExit) is within
+	 * the Browser.
+	 */
+	if (eventType.equals(EVENT_MOUSEOVER)) {
+		if (domEvent.fromElementSet()) {
+			return;
+		}
+	}
+	if (eventType.equals(EVENT_MOUSEOUT)) {
+		if (domEvent.toElementSet()) {
+			return;
+		}
+	}
+
+	int mask = 0;
+	Event newEvent = new Event();
+	newEvent.widget = browser;
+	newEvent.x = (int) domEvent.clientX(); newEvent.y = (int) domEvent.clientY();
+	if (domEvent.ctrlKey()) mask |= SWT.CTRL;
+	if (domEvent.altKey()) mask |= SWT.ALT;
+	if (domEvent.shiftKey()) mask |= SWT.SHIFT;
+	newEvent.stateMask = mask;
+
+	int button = (int) domEvent.button();
+	switch (button) {
+		case 1: button = 1; break;
+		case 2: button = 3; break;
+		case 4: button = 2; break;
+	}
+
+	if (eventType.equals(EVENT_MOUSEDOWN)) {
+		newEvent.type = SWT.MouseDown;
+		newEvent.button = button;
+		newEvent.count = 1;
+	} else if (eventType.equals(EVENT_MOUSEUP) || eventType.equals(EVENT_DRAGEND)) {
+		newEvent.type = SWT.MouseUp;
+		newEvent.button = button != 0 ? button : 1;	/* button assumed to be 1 for dragends */
+		newEvent.count = 1;
+		switch (newEvent.button) {
+			case 1: newEvent.stateMask |= SWT.BUTTON1; break;
+			case 2: newEvent.stateMask |= SWT.BUTTON2; break;
+			case 3: newEvent.stateMask |= SWT.BUTTON3; break;
+			case 4: newEvent.stateMask |= SWT.BUTTON4; break;
+			case 5: newEvent.stateMask |= SWT.BUTTON5; break;
+		}
+	} else if (eventType.equals(EVENT_MOUSEWHEEL)) {
+		newEvent.type = SWT.MouseWheel;
+		// Chromium/Edge uses deltaMode DOM_DELTA_PIXEL which
+		// - has a different sign than the legacy MouseWheelEvent wheelDelta
+		// - depends on the zoom of the browser
+		// https://github.com/w3c/uievents/issues/181
+		// The literal value of deltaY is therefore useless.
+		// Instead, we simply use the sign for the direction and combine
+		// it with the internal hard-coded value of '3 lines'.
+		newEvent.count = domEvent.deltaY() > 0 ? -3 : 3;
+	} else if (eventType.equals(EVENT_MOUSEMOVE)) {
+		/*
+		* Feature in Edge.  Spurious and redundant mousemove events are often received.  The workaround
+		* is to not fire MouseMove events whose x and y values match the last MouseMove.
+		*/
+		if (newEvent.x == lastMouseMoveX && newEvent.y == lastMouseMoveY) {
+			return;
+		}
+		newEvent.type = SWT.MouseMove;
+		lastMouseMoveX = newEvent.x; lastMouseMoveY = newEvent.y;
+	} else if (eventType.equals(EVENT_MOUSEOVER)) {
+		newEvent.type = SWT.MouseEnter;
+	} else if (eventType.equals(EVENT_MOUSEOUT)) {
+		newEvent.type = SWT.MouseExit;
+	} else if (eventType.equals(EVENT_DRAGSTART)) {
+		newEvent.type = SWT.DragDetect;
+		newEvent.button = 1;	/* button assumed to be 1 for dragstarts */
+		newEvent.stateMask |= SWT.BUTTON1;
+	}
+
+	browser.notifyListeners(newEvent.type, newEvent);
+
+	if (eventType.equals(EVENT_DOUBLECLICK)) {
+		newEvent = new Event ();
+		newEvent.widget = browser;
+		newEvent.type = SWT.MouseDoubleClick;
+		newEvent.x = (int) domEvent.clientX(); newEvent.y = (int) domEvent.clientY();
+		newEvent.stateMask = mask;
+		newEvent.type = SWT.MouseDoubleClick;
+		newEvent.button = 1; /* dblclick only comes for button 1 and does not set the button property */
+		newEvent.count = 2;
+		browser.notifyListeners (newEvent.type, newEvent);
+	}
+}
+
 @Override
 public boolean isBackEnabled() {
 	int[] pval = new int[1];
@@ -1534,8 +1769,10 @@ public void stop() {
 
 static boolean isLocationForCustomText(String location) {
 		try {
-			return URI_FOR_CUSTOM_TEXT_PAGE.equals(new URI(location));
-		} catch (URISyntaxException e) {
+			URI locationUri = new URI(location);
+			return "file".equals(locationUri.getScheme())
+					&& Path.of(URI_FOR_CUSTOM_TEXT_PAGE).equals(Path.of(locationUri));
+		} catch (URISyntaxException | IllegalArgumentException e) {
 			return false;
 		}
 }

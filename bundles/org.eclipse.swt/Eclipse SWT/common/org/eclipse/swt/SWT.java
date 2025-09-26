@@ -1015,6 +1015,10 @@ public class SWT {
 	 * support dynamic DPI changes. This event is currently sent on Windows 10 and GTK
 	 * only.
 	 * </p>
+	 * <p>
+	 * Note: Event.detail: The new zoom value, e.g. 100, 125, 250, 175, etc. The
+	 * Event.detail must not be modified by consumers.
+	 * </p>
 	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
@@ -1558,6 +1562,7 @@ public class SWT {
 	 * <p><b>Used By:</b></p>
 	 * <ul>
 	 * <li><code>Text</code></li>
+	 * <li><code>Browser</code> (WebKit and GTK only)</li>
 	 * </ul>
 	 *
 	 * @since 3.3

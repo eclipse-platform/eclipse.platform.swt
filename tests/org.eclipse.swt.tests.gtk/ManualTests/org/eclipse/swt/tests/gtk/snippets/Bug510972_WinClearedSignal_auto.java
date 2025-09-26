@@ -17,7 +17,6 @@ package org.eclipse.swt.tests.gtk.snippets;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.BrowserFunction;
-import org.eclipse.swt.browser.ProgressEvent;
 import org.eclipse.swt.browser.ProgressListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
@@ -31,7 +30,7 @@ public class Bug510972_WinClearedSignal_auto {
 		final Shell shell = new Shell(display);
 		shell.setLayout(new FillLayout());
 		final Browser browser = new Browser(shell, SWT.NONE);
-		
+
 		class CustomFunction extends BrowserFunction { // Note: Local class defined inside method.
 			CustomFunction(Browser browser, String name) {
 				super(browser, name);
@@ -52,21 +51,14 @@ public class Bug510972_WinClearedSignal_auto {
 		browser.setText("1st (initial) page load");
 		new CustomFunction(browser, "callCustomFunction");
 		browser.execute("callCustomFunction()");
-		
-		
-		browser.addProgressListener(new ProgressListener() {
-			@Override
-			public void completed(ProgressEvent event) {
-				System.out.println("load finished.");
-				browser.execute("document.body.style.backgroundColor = 'red'");
-				browser.execute("callCustomFunction()");
-			}
-			
-			@Override
-			public void changed(ProgressEvent event) {
-			}
-		});
-		
+
+
+		browser.addProgressListener(ProgressListener.completedAdapter(event -> {
+			System.out.println("load finished.");
+			browser.execute("document.body.style.backgroundColor = 'red'");
+			browser.execute("callCustomFunction()");
+		}));
+
 		shell.open();
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch())

@@ -762,18 +762,28 @@ long gtk_enter_notify_event (long widget, long event) {
 		if (imageList != null) {
 			int index = imageList.indexOf(hotImage);
 			if (index != -1 && imageHandle != 0) {
-				if (GTK.GTK4) {
-					long pixbuf = ImageList.createPixbuf(hotImage);
-					long texture = GDK.gdk_texture_new_for_pixbuf(pixbuf);
-					OS.g_object_unref(pixbuf);
-					GTK4.gtk_image_set_from_paintable(imageHandle, texture);
-				} else {
-					GTK3.gtk_image_set_from_surface(imageHandle, imageList.getSurface(index));
-				}
+				GTK3.gtk_image_set_from_surface(imageHandle, imageList.getSurface(index));
 			}
 		}
 	}
 	return 0;
+}
+
+@Override
+void gtk4_enter_event(long controller, double x, double y, long event) {
+	drawHotImage = (parent.style & SWT.FLAT) != 0 && hotImage != null;
+	if (drawHotImage) {
+		ImageList imageList = parent.imageList;
+		if (imageList != null) {
+			int index = imageList.indexOf(hotImage);
+			if (index != -1 && imageHandle != 0) {
+				long pixbuf = ImageList.createPixbuf(hotImage);
+				long texture = GDK.gdk_texture_new_for_pixbuf(pixbuf);
+				OS.g_object_unref(pixbuf);
+				GTK4.gtk_image_set_from_paintable(imageHandle, texture);
+			}
+		}
+	}
 }
 
 @Override
@@ -826,19 +836,31 @@ long gtk_leave_notify_event (long widget, long event) {
 			if (imageList != null) {
 				int index = imageList.indexOf(image);
 				if (index != -1 && imageHandle != 0) {
-					if (GTK.GTK4) {
-						long pixbuf = ImageList.createPixbuf(image);
-						long texture = GDK.gdk_texture_new_for_pixbuf(pixbuf);
-						OS.g_object_unref(pixbuf);
-						GTK4.gtk_image_set_from_paintable(imageHandle, texture);
-					} else {
-						GTK3.gtk_image_set_from_surface(imageHandle, imageList.getSurface(index));
-					}
+					GTK3.gtk_image_set_from_surface(imageHandle, imageList.getSurface(index));
 				}
 			}
 		}
 	}
 	return 0;
+}
+
+@Override
+void gtk4_leave_event(long controller, long event) {
+	if (drawHotImage) {
+		drawHotImage = false;
+		if (image != null) {
+			ImageList imageList = parent.imageList;
+			if (imageList != null) {
+				int index = imageList.indexOf(image);
+				if (index != -1 && imageHandle != 0) {
+					long pixbuf = ImageList.createPixbuf(image);
+					long texture = GDK.gdk_texture_new_for_pixbuf(pixbuf);
+					OS.g_object_unref(pixbuf);
+					GTK4.gtk_image_set_from_paintable(imageHandle, texture);
+				}
+			}
+		}
+	}
 }
 
 @Override
@@ -1206,8 +1228,9 @@ private void _setEnabledOrDisabledImage() {
 		} else {
 			_setImage(disabledImage);
 		}
+	} else {
+		_setImage(image);
 	}
-	if (enabled && image != null) _setImage(image);
 }
 
 boolean setFocus () {
@@ -1560,17 +1583,29 @@ void updateStyle () {
 	if (provider == 0) {
 		provider = GTK.gtk_css_provider_new ();
 		if ((style & SWT.DROP_DOWN) != 0) {
-			long box = GTK3.gtk_bin_get_child (handle);
-			long list = GTK3.gtk_container_get_children (box);
-			for (int i = 0; i < 2; i++) {
-				long child = OS.g_list_nth_data(list, i);
-				long context = GTK.gtk_widget_get_style_context (child);
-				GTK.gtk_style_context_add_provider (context, provider, GTK.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+			if (GTK.GTK4) {
+				long context = GTK.gtk_widget_get_style_context(boxHandle);
+				GTK.gtk_style_context_add_provider(context, provider, GTK.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+				context = GTK.gtk_widget_get_style_context(arrowHandle);
+				GTK.gtk_style_context_add_provider(context, provider, GTK.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+			} else {
+				long box = GTK3.gtk_bin_get_child(handle);
+				long list = GTK3.gtk_container_get_children(box);
+				for (int i = 0; i < 2; i++) {
+					long child = OS.g_list_nth_data(list, i);
+					long context = GTK.gtk_widget_get_style_context(child);
+					GTK.gtk_style_context_add_provider(context, provider, GTK.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+				}
+				OS.g_list_free(list);
 			}
-			OS.g_list_free(list);
 		} else {
-			long child = GTK3.gtk_bin_get_child (handle);
-			long context = GTK.gtk_widget_get_style_context (child);
+			long context;
+			if (GTK.GTK4) {
+				context = GTK.gtk_widget_get_style_context (handle);
+			} else {
+				long child = GTK3.gtk_bin_get_child (handle);
+				context = GTK.gtk_widget_get_style_context (child);
+			}
 			GTK.gtk_style_context_add_provider (context, provider, GTK.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 		}
 		OS.g_object_unref (provider);

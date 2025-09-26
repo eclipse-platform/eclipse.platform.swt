@@ -13,11 +13,12 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.win32;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.eclipse.swt.tests.win32.SwtWin32TestUtil.assertImageDataEqualsIgnoringAlphaInData;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -36,18 +37,18 @@ import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.dnd.URLTransfer;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.ImageGcDrawer;
 import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Shell;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Some simple tests for drag and drop.
@@ -64,7 +65,7 @@ public class Test_org_eclipse_swt_dnd_DND {
 
 private Shell shell;
 
-@Before
+@BeforeEach
 public void setUp() {
 	shell = new Shell();
 	shell.setLayout(new RowLayout());
@@ -75,10 +76,10 @@ public void setUp() {
 	} catch (InterruptedException e) {
 		fail("Initialization interrupted");
 	}
-	assertTrue("Shell not visible.", shell.isVisible());
+	assertTrue(shell.isVisible(), "Shell not visible.");
 }
 
-@After
+@AfterEach
 public void tearDown() {
 	Display display = shell.getDisplay();
 	display.dispose();
@@ -108,7 +109,7 @@ public void testByteArrayTransfer() throws InterruptedException {
 			return new int[] { TEST_ID };
 		}
 	}, drag);
-	assertArrayEquals("Drop received other data as we dragged.", drag, drop);
+	assertArrayEquals(drag, drop, "Drop received other data as we dragged.");
 }
 
 /**
@@ -120,7 +121,7 @@ public void testFileTransfer() throws InterruptedException {
 	final String[] drop;
 
 	drop = testTransferRoundtrip(FileTransfer.getInstance(), drag);
-	assertArrayEquals("Drop received other data as we dragged.", drag, drop);
+	assertArrayEquals(drag, drop, "Drop received other data as we dragged.");
 }
 
 /**
@@ -132,7 +133,7 @@ public void testHtmlTransfer() throws InterruptedException {
 	final String drop;
 
 	drop = testTransferRoundtrip(HTMLTransfer.getInstance(), drag);
-	assertEquals("Drop received other data as we dragged.", drag, drop);
+	assertEquals(drag, drop, "Drop received other data as we dragged.");
 }
 
 /**
@@ -144,7 +145,7 @@ public void testImageTransfer_fromImage() throws InterruptedException {
 	try {
 		final ImageData drag = image.getImageData();
 		final ImageData drop = testTransferRoundtrip(ImageTransfer.getInstance(), drag);
-		assertImageDataEqualsIgoringAlphaInData(drag, drop);
+		assertImageDataEqualsIgnoringAlphaInData(drag, drop);
 	} finally {
 		image.dispose();
 	}
@@ -159,7 +160,7 @@ public void testImageTransfer_fromCopiedImage() throws InterruptedException {
 	try {
 		final ImageData drag = new Image(shell.getDisplay(), image, SWT.IMAGE_COPY).getImageData();
 		final ImageData drop = testTransferRoundtrip(ImageTransfer.getInstance(), drag);
-		assertImageDataEqualsIgoringAlphaInData(drag, drop);
+		assertImageDataEqualsIgnoringAlphaInData(drag, drop);
 	} finally {
 		image.dispose();
 	}
@@ -176,7 +177,7 @@ public void testImageTransfer_fromImageData() throws InterruptedException {
 	}
 	final ImageData drag = imageData;
 	final ImageData drop = testTransferRoundtrip(ImageTransfer.getInstance(), drag);
-	assertImageDataEqualsIgoringAlphaInData(drag, drop);
+	assertImageDataEqualsIgnoringAlphaInData(drag, drop);
 }
 
 /**
@@ -190,7 +191,7 @@ public void testImageTransfer_fromImageDataFromImage() throws InterruptedExcepti
 		try {
 			final ImageData drag = imageFromImageData.getImageData();
 			final ImageData drop = testTransferRoundtrip(ImageTransfer.getInstance(), drag);
-			assertImageDataEqualsIgoringAlphaInData(drag, drop);
+			assertImageDataEqualsIgnoringAlphaInData(drag, drop);
 		} finally {
 			imageFromImageData.dispose();
 		}
@@ -208,7 +209,7 @@ public void testRtfTransfer() throws InterruptedException {
 	final String drop;
 
 	drop = testTransferRoundtrip(RTFTransfer.getInstance(), drag);
-	assertEquals("Drop received other data as we dragged.", drag, drop);
+	assertEquals(drag, drop, "Drop received other data as we dragged.");
 }
 
 /**
@@ -220,7 +221,7 @@ public void testTextTransfer() throws InterruptedException {
 	final String drop;
 
 	drop = testTransferRoundtrip(TextTransfer.getInstance(), drag);
-	assertEquals("Drop received other data as we dragged.", drag, drop);
+	assertEquals(drag, drop, "Drop received other data as we dragged.");
 }
 
 /**
@@ -232,66 +233,24 @@ public void testUrlTransfer() throws InterruptedException {
 	final String drop;
 
 	drop = testTransferRoundtrip(URLTransfer.getInstance(), drag);
-	assertEquals("Drop received other data as we dragged.", drag, drop);
+	assertEquals(drag, drop, "Drop received other data as we dragged.");
 }
 
 /**
  * Creates a DDB test image with a uniform color applied to all pixels.
  */
 private Image createTestImage() {
-	final Image image = new Image(shell.getDisplay(), 16, 16);
 	try {
 		Color color = shell.getDisplay().getSystemColor(SWT.COLOR_DARK_BLUE);
-		GC gc = new GC(image);
-		gc.setBackground(color);
-		gc.fillRectangle(image.getBounds());
-		gc.dispose();
+		final ImageGcDrawer imageGcDrawer = (gc, width, height) -> {
+			gc.setBackground(color);
+			gc.fillRectangle(0, 0, width, height);
+		};
+		return new Image(shell.getDisplay(), imageGcDrawer, 16, 16);
 	} catch (Exception e) {
-		image.dispose();
 		fail("test image could not be initialized: " + e);
 	}
-	return image;
-}
-
-/**
- * Asserts that both given ImageData are equal, i.e. that:
- * <ul>
- *   <li>depths are equal (considering 24/32 bit as equals since alpha data is stored separately)</li>
- *   <li>width and height are equal</li>
- *   <li>all pixel RGB values are equal</li>
- *   <li>all pixel alpha values in the alphaData are equal</li>
- * </ul>
- * In case any of these properties differ, the test will fail.
- *
- * @param expected the expected ImageData
- * @param actual the actual ImageData
- */
-// This method is necessary because ImageData has no custom equals method and the default one isn't sufficient.
-private void assertImageDataEqualsIgoringAlphaInData(final ImageData expected, final ImageData actual) {
-	assertNotNull("expected data must not be null", expected);
-	assertNotNull("actual data must not be null", actual);
-	if (expected == actual) {
-		return;
-	}
-	assertEquals("height of expected image is different from actual image", expected.height, actual.height);
-	// Alpha values are taken from alpha data, so ignore whether data depth is 24 or 32 bits
-	int expectedNormalizedDepth = expected.depth == 32 ? 24 : expected.depth;
-	int actualNormalizedDepth = expected.depth == 32 ? 24 : expected.depth;
-	assertEquals("depth of image data to compare must be equal", expectedNormalizedDepth, actualNormalizedDepth);
-	assertEquals("width of expected image is different from actual image", expected.width, actual.width);
-
-	for (int y = 0; y < expected.height; y++) {
-		for (int x = 0; x < expected.width; x++) {
-			// FIXME win32: dragged ALPHA=FF, dropped ALPHA=00, but other transparencyType
-			// => alpha stored in ImageData.alphaData
-			String expectedPixel = String.format("0x%08X", expected.getPixel(x, y) >> (expected.depth == 32 ? 8 : 0));
-			String actualPixel = String.format("0x%08X", actual.getPixel(x, y) >> (actual.depth == 32 ? 8 : 0));
-			assertEquals("actual pixel at x=" + x + " y=" + y + " is different from expected pixel", expectedPixel, actualPixel);
-			int expectedAlpha = expected.getAlpha(x, y);
-			int actualAlpha = actual.getAlpha(x, y);
-			assertEquals("actual pixel alpha at x=" + x + " y=" + y + " is different from expected pixel", expectedAlpha, actualAlpha);
-		}
-	}
+	return null;
 }
 
 /**
@@ -328,8 +287,8 @@ private <T> T testTransferRoundtrip(Transfer transfer, T data) throws Interrupte
 		SwtWin32TestUtil.processEvents(shell.getDisplay(), 2000, dropped::get);
 	} while(!dropped.get() && --maxTries > 0);
 
-	assertTrue("No drop received.", dropped.get());
-	assertNotNull("No data was dropped.", droppedData.get());
+	assertTrue(dropped.get(), "No drop received.");
+	assertNotNull(droppedData.get(), "No data was dropped.");
 
 	return droppedData.get();
 }
@@ -342,7 +301,7 @@ private <T> T testTransferRoundtrip(Transfer transfer, T data) throws Interrupte
  */
 private void postDragAndDropEvents() {
 	shell.forceActive();
-	assertTrue("Test shell requires input focus.", shell.forceFocus());
+	assertTrue(shell.forceFocus(), "Test shell requires input focus.");
 	Event event = new Event();
 	Point pt = shell.toDisplay(50, 50);
 	event.x = pt.x;

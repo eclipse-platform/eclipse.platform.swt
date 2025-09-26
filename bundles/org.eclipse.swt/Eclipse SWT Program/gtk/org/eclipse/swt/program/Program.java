@@ -304,7 +304,19 @@ static Program gio_getProgram (long application) {
 		if (length > 0) {
 			buffer = new byte [length];
 			C.memmove (buffer, applicationCommand, length);
-			program.command = new String (Converter.mbcsToWcs (buffer));
+			String command = new String (Converter.mbcsToWcs (buffer));
+			if (command.equals("/usr/bin/flatpak") || command.equals("env")) {
+				long applicationCommandLine = OS.g_app_info_get_commandline(application);
+				if (applicationCommandLine != 0) {
+					length = C.strlen (applicationCommandLine);
+					if (length > 0) {
+						buffer = new byte [length];
+						C.memmove (buffer, applicationCommandLine, length);
+						command = new String (Converter.mbcsToWcs (buffer));
+					}
+				}
+			}
+			program.command = command ;
 		}
 	}
 	program.gioExpectUri = OS.g_app_info_supports_uris(application);

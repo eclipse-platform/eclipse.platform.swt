@@ -17,12 +17,12 @@ package org.eclipse.swt.tests.manualJUnit;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Shell;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runners.MethodSorters;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 
 /** Convenience class for easy copy &amp; paste */
-@FixMethodOrder(MethodSorters.JVM)
+@TestMethodOrder(MethodOrderer.MethodName.class)
 public class MJ_Template extends MJ_root {
 
 	@Test

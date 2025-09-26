@@ -18,7 +18,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 
@@ -33,19 +32,13 @@ public class Bug185538_ComboNoFocus {
 		combo.setItems(new String[] { "do nothing", "dispose this widget.combo" });
 		Point size = combo.computeSize(-1, -1);
 		combo.setBounds(5, 5, size.x, size.y);
-		combo.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				if (combo.getSelectionIndex() == 1)
-					combo.dispose();
-			}
+		combo.addListener(SWT.Selection, event -> {
+			if (combo.getSelectionIndex() == 1)
+				combo.dispose();
 		});
-		Listener listener = new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				String type = event.type == SWT.FocusIn ? "FocusIn" : "FocusOut";
-				System.out.println(type + " " + event.widget);
-			}
+		Listener listener = event -> {
+			String type = event.type == SWT.FocusIn ? "FocusIn" : "FocusOut";
+			System.out.println(type + " " + event.widget);
 		};
 		shell.addListener(SWT.FocusIn, listener);
 		shell.addListener(SWT.FocusOut, listener);
@@ -62,5 +55,5 @@ public class Bug185538_ComboNoFocus {
 		}
 		display.dispose();
 	}
-	
+
 }

@@ -214,8 +214,7 @@ Image(Device device) {
  */
 public Image(Device device, int width, int height) {
 	super(device);
-	Point size = DPIUtil.autoScaleUp(new Point(width, height));
-	currentDeviceZoom = DPIUtil.getDeviceZoom();
+	Point size = new Point(width, height);
 	init(size.x, size.y);
 	init();
 }
@@ -410,9 +409,7 @@ public Image(Device device, Image srcImage, int flag) {
 public Image(Device device, Rectangle bounds) {
 	super(device);
 	if (bounds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	currentDeviceZoom = DPIUtil.getDeviceZoom();
-	Rectangle bounds1 = DPIUtil.autoScaleUp (bounds);
-	init(bounds1.width, bounds1.height);
+	init(bounds.width, bounds.height);
 	init();
 }
 
@@ -440,7 +437,7 @@ public Image(Device device, Rectangle bounds) {
  * @see #dispose()
  */
 public Image(Device device, ImageData data) {
-	this(device, DPIUtil.autoScaleUp(device, data), DPIUtil.getDeviceZoom());
+	this(device, GtkDPIUtil.pointToPixel(device, data), DPIUtil.getDeviceZoom());
 }
 
 private Image(Device device, ImageData data, int zoom) {
@@ -489,8 +486,8 @@ public Image(Device device, ImageData source, ImageData mask) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	currentDeviceZoom = DPIUtil.getDeviceZoom();
-	source = DPIUtil.autoScaleUp (device, source);
-	mask = DPIUtil.autoScaleUp (device, mask);
+	source = GtkDPIUtil.pointToPixel (device, source);
+	mask = GtkDPIUtil.pointToPixel (device, mask);
 	mask = ImageData.convertMask (mask);
 	ImageData image = new ImageData(source.width, source.height, source.depth, source.palette, source.scanlinePad, source.data);
 	image.maskPad = mask.scanlinePad;
@@ -555,7 +552,7 @@ public Image(Device device, ImageData source, ImageData mask) {
 public Image(Device device, InputStream stream) {
 	super(device);
 	currentDeviceZoom = DPIUtil.getDeviceZoom();
-	ElementAtZoom<ImageData> image = ImageDataLoader.load(stream, FileFormat.DEFAULT_ZOOM, currentDeviceZoom);
+	ElementAtZoom<ImageData> image = ImageDataLoader.loadByZoom(stream, FileFormat.DEFAULT_ZOOM, currentDeviceZoom);
 	ImageData data = DPIUtil.scaleImageData(device, image, currentDeviceZoom);
 	init(data);
 	init();
@@ -597,7 +594,7 @@ public Image(Device device, String filename) {
 	super(device);
 	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	currentDeviceZoom = DPIUtil.getDeviceZoom();
-	ElementAtZoom<ImageData> image = ImageDataLoader.load(filename, FileFormat.DEFAULT_ZOOM, currentDeviceZoom);
+	ElementAtZoom<ImageData> image = ImageDataLoader.loadByZoom(filename, FileFormat.DEFAULT_ZOOM, currentDeviceZoom);
 	ImageData data = DPIUtil.scaleImageData(device, image, currentDeviceZoom);
 	init(data);
 	init();
@@ -675,6 +672,9 @@ public Image(Device device, ImageDataProvider imageDataProvider) {
 	currentDeviceZoom = DPIUtil.getDeviceZoom();
 	initFromImageDataProvider(currentDeviceZoom);
 	init ();
+	StrictChecks.runIfStrictChecksEnabled(() -> {
+		DPIUtil.validateLinearScaling(imageDataProvider);
+	});
 }
 
 /**
@@ -785,7 +785,7 @@ private void initFromFileNameProvider(int zoom) {
 		initNative(fileForZoom.element());
 	}
 	if (this.surface == 0) {
-		ElementAtZoom<ImageData> imageDataAtZoom = ImageDataLoader.load(fileForZoom.element(), fileForZoom.zoom(), zoom);
+		ElementAtZoom<ImageData> imageDataAtZoom = ImageDataLoader.loadByZoom(fileForZoom.element(), fileForZoom.zoom(), zoom);
 		ImageData imageData = imageDataAtZoom.element();
 		if (imageDataAtZoom.zoom() != zoom) {
 			imageData = DPIUtil.scaleImageData(device, imageDataAtZoom, zoom);
@@ -997,7 +997,7 @@ public Color getBackground() {
  */
 public Rectangle getBounds() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return DPIUtil.autoScaleDown(getBoundsInPixels());
+	return getBoundsInPixels();
 }
 
 /**
@@ -1015,7 +1015,7 @@ public Rectangle getBounds() {
  * @deprecated This API doesn't serve the purpose in an environment having
  *             multiple monitors with different DPIs, hence deprecated.
  */
-@Deprecated
+@Deprecated(since = "2025-09", forRemoval = true)
 public Rectangle getBoundsInPixels() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width != -1 && height != -1) {
@@ -1065,7 +1065,7 @@ public ImageData getImageData () {
  *             multiple monitors with different DPIs, hence deprecated. Use
  *             {@link #getImageData(int)} instead.
  */
-@Deprecated
+@Deprecated(since = "2025-09", forRemoval = true)
 public ImageData getImageDataAtCurrentZoom () {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 
@@ -1575,22 +1575,28 @@ public String toString () {
  * API for Image. It is marked public only so that it
  * can be shared within the packages provided by SWT.
  *
- * Draws a scaled image using the GC by another image.
+ * Draws a scaled image using the GC for a given imageData.
  *
  * @param gc the GC to draw on the resulting image
- * @param original the image which is supposed to be scaled and drawn on the resulting image
+ * @param imageData the imageData which is used to draw the scaled Image
  * @param width the width of the original image
  * @param height the height of the original image
  * @param scaleFactor the factor with which the image is supposed to be scaled
  *
  * @noreference This method is not intended to be referenced by clients.
  */
-public static void drawScaled(GC gc, Image original, int width, int height, float scaleFactor) {
-	gc.drawImage (original, 0, 0, DPIUtil.autoScaleDown (width), DPIUtil.autoScaleDown (height),
-			/* E.g. destWidth here is effectively DPIUtil.autoScaleDown (scaledWidth), but avoiding rounding errors.
-			 * Nevertheless, we still have some rounding errors due to the point-based API GC#drawImage(..).
-			 */
-			0, 0, Math.round (DPIUtil.autoScaleDown (width * scaleFactor)), Math.round (DPIUtil.autoScaleDown (height * scaleFactor)));
+public static void drawScaled(GC gc, ImageData imageData, int width, int height, float scaleFactor) {
+	StrictChecks.runWithStrictChecksDisabled(() -> {
+		Image imageToDraw = new Image(gc.device, (ImageDataProvider) zoom -> imageData);
+		gc.drawImage(imageToDraw, 0, 0, width, height,
+				/*
+				 * E.g. destWidth here is effectively DPIUtil.autoScaleDown (scaledWidth), but
+				 * avoiding rounding errors. Nevertheless, we still have some rounding errors
+				 * due to the point-based API GC#drawImage(..).
+				 */
+				0, 0, Math.round(width * scaleFactor), Math.round(height * scaleFactor));
+		imageToDraw.dispose();
+	});
 }
 
 }

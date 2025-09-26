@@ -20,8 +20,7 @@ package org.eclipse.swt.tests.gtk.snippets;
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -47,15 +46,12 @@ public class Bug395296_LongerText {
 
 		Button setItemText = new Button(shell, SWT.PUSH);
 		setItemText.setText("Set Item Text");
-		setItemText.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				String text = textEntry.getText();
-				if (itemChange != null) {
-					itemChange.setText(text);
-				}
+		setItemText.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+			String text = textEntry.getText();
+			if (itemChange != null) {
+				itemChange.setText(text);
 			}
-		});
+		}));
 
 		bar = new ToolBar (shell, SWT.WRAP);
 		for (int i=0; i<3; i++) {

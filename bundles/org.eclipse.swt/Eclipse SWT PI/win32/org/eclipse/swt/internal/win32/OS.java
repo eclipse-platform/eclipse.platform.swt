@@ -890,6 +890,7 @@ public class OS extends C {
 	public static final int MF_SEPARATOR = 0x800;
 	public static final int MF_SYSMENU = 0x2000;
 	public static final int MF_UNCHECKED = 0x0;
+	public static final int MIIM_CHECKMARKS = 0x8;
 	public static final int MIIM_BITMAP = 0x80;
 	public static final int MIIM_DATA = 0x20;
 	public static final int MIIM_FTYPE = 0x100;
@@ -4464,6 +4465,7 @@ public static final native boolean SystemParametersInfo (int uiAction, int uiPar
 public static final native boolean SystemParametersInfo (int uiAction, int uiParam, NONCLIENTMETRICS pvParam, int fWinIni);
 public static final native boolean SystemParametersInfo (int uiAction, int uiParam, int [] pvParam, int fWinIni);
 public static final native boolean SystemParametersInfoForDpi (int uiAction, int uiParam, NONCLIENTMETRICS pvParam, int fWinIni, int dpi);
+public static final native boolean SystemParametersInfoForDpi (int uiAction, int uiParam, int [] pvParam, int fWinIni, int dpi);
 /**
  * @param lpKeyState cast=(PBYTE)
  * @param pwszBuff cast=(LPWSTR)

@@ -13,7 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.win32.widgets;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -24,7 +24,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class TestTreeColumn {
 

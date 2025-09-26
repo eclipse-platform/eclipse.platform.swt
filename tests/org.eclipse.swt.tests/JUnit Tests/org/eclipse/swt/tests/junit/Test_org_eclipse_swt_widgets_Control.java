@@ -19,6 +19,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
@@ -640,12 +641,8 @@ public void test_setBackgroundAlphaLorg_eclipse_swt_graphics_Color() {
 public void test_setBackgroundDisposedColorLorg_eclipse_swt_graphics_Color() {
 	Color color = new Color(255, 0, 0);
 	color.dispose();
-	try {
-		control.setBackground(color);
-		fail("setting a disposed color object with Control.setBackground(Color) should throw an exception");
-	} catch (IllegalArgumentException e) {
-		// expected, since the color is disposed
-	}
+	assertThrows("setting a disposed color object with Control.setBackground(Color) should throw an exception",
+			IllegalArgumentException.class, () -> control.setBackground(color));
 }
 @Test
 public void test_setBoundsIIII() {
@@ -665,12 +662,8 @@ public void test_setBoundsLorg_eclipse_swt_graphics_Rectangle() {
 	control.setBounds(new Rectangle(20, 30, 40, 50));
 	assertNotEquals(new Rectangle(10, 20, 30, 40), control.getBounds());
 
-	try {
-		control.setBounds(null);
-		fail("No exception thrown for rectangle == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for rectangle == null", IllegalArgumentException.class,
+			() -> control.setBounds(null));
 
 	control.setBounds(new Rectangle(10, 20, 30, 40));
 }
@@ -735,12 +728,9 @@ public void test_setFontLorg_eclipse_swt_graphics_Font() {
 
 	control.setFont(null);
 	font.dispose();
-	try {
-		control.setFont(font);
-		control.setFont(null);
-		fail("No exception thrown for disposed font");
-	} catch (IllegalArgumentException e) {
-	}
+	Font f = font;
+	assertThrows("No exception thrown for disposed font", IllegalArgumentException.class, () -> control.setFont(f));
+	control.setFont(null);
 }
 @Test
 public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
@@ -775,12 +765,8 @@ public void test_setForegroundAlphaLorg_eclipse_swt_graphics_Color() {
 public void test_setForegroundDisposedColorLorg_eclipse_swt_graphics_Color() {
 	Color color = new Color(255, 0, 0);
 	color.dispose();
-	try {
-		control.setForeground(color);
-		fail("setting a disposed color object with Control.setForeground(Color) should throw an exception");
-	} catch (IllegalArgumentException e) {
-		// expected, since the color is disposed
-	}
+	assertThrows("setting a disposed color object with Control.setForeground(Color) should throw an exception",
+			IllegalArgumentException.class, () -> control.setForeground(color));
 }
 @Test
 public void test_setLayoutDataLjava_lang_Object() {
@@ -808,12 +794,8 @@ public void test_setLocationII() {
 }
 @Test
 public void test_setLocationLorg_eclipse_swt_graphics_Point() {
-	try {
-		control.setLocation(null);
-		fail("No exception thrown for location == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for location == null", IllegalArgumentException.class,
+			() -> control.setLocation(null));
 
 	Point loc = new Point(30, 40);
 	control.setLocation(loc);
@@ -881,12 +863,7 @@ public void test_setSizeLorg_eclipse_swt_graphics_Point() {
 	control.setSize(new Point(30, 40));
 	assertEquals(new Point(30, 40), control.getSize());
 
-	try {
-		control.setSize(null);
-		fail("No exception thrown for size == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for size == null", IllegalArgumentException.class, () -> control.setSize(null));
 
 	control.setSize(new Point(0, 0));
 
@@ -921,12 +898,8 @@ public void test_toControlII() {
 public void test_toControlLorg_eclipse_swt_graphics_Point() {
 	Point controlCoords = control.toControl(new Point(0, 0));
 	assertEquals(new Point(0, 0), control.toDisplay(controlCoords));
-	try {
-		control.toControl(null);
-		fail("No exception thrown for size == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for point == null", IllegalArgumentException.class,
+			() -> control.toControl(null));
 }
 @Test
 public void test_toDisplayII() {
@@ -937,12 +910,8 @@ public void test_toDisplayII() {
 public void test_toDisplayLorg_eclipse_swt_graphics_Point() {
 	Point displayCoords = control.toDisplay(new Point(0, 0));
 	assertEquals(new Point(0, 0), control.toControl(displayCoords));
-	try {
-		control.toDisplay(null);
-		fail("No exception thrown for size == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for display == null", IllegalArgumentException.class,
+			() -> control.toDisplay(null));
 }
 @Test
 public void test_traverseI() {

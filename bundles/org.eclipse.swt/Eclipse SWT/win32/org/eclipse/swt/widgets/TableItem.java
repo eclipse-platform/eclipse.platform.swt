@@ -46,10 +46,6 @@ public class TableItem extends Item {
 	int imageIndent, background = -1, foreground = -1;
 	int [] cellBackground, cellForeground;
 
-	static {
-		DPIZoomChangeRegistry.registerHandler(TableItem::handleDPIChange, TableItem.class);
-	}
-
 /**
  * Constructs a new instance of this class given its parent
  * (which must be a <code>Table</code>) and a style value
@@ -218,7 +214,7 @@ public Color getBackground (int index) {
  */
 public Rectangle getBounds () {
 	checkWidget();
-	return DPIUtil.scaleDown(getBoundsInPixels(), getZoom());
+	return Win32DPIUtils.pixelToPoint(getBoundsInPixels(), getZoom());
 }
 
 Rectangle getBoundsInPixels () {
@@ -244,7 +240,7 @@ Rectangle getBoundsInPixels () {
  */
 public Rectangle getBounds (int index) {
 	checkWidget();
-	return DPIUtil.scaleDown(getBoundsInPixels(index), getZoom());
+	return Win32DPIUtils.pixelToPoint(getBoundsInPixels(index), getZoom());
 }
 
 Rectangle getBoundsInPixels (int index) {
@@ -300,7 +296,7 @@ RECT getBounds (int row, int column, boolean getText, boolean getImage, boolean 
 					}
 				}
 				if (!getImage) rect.left = rect.right;
-				rect.right += width + Table.INSET * 2;
+				rect.right += width + Win32DPIUtils.pointToPixel(Table.INSET * 2, getZoom());
 			}
 		} else {
 			if (getText) {
@@ -377,7 +373,7 @@ RECT getBounds (int row, int column, boolean getText, boolean getImage, boolean 
 					iconRect.top = column;
 					iconRect.left = OS.LVIR_ICON;
 					if (OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, iconRect) != 0) {
-						rect.left = iconRect.right + Table.INSET / 2;
+						rect.left = iconRect.right + Win32DPIUtils.pointToPixel(Table.INSET / 2, getZoom());
 					}
 				}
 			} else {
@@ -404,7 +400,7 @@ RECT getBounds (int row, int column, boolean getText, boolean getImage, boolean 
 					char [] buffer = string.toCharArray ();
 					int flags = OS.DT_NOPREFIX | OS.DT_SINGLELINE | OS.DT_CALCRECT;
 					OS.DrawText (hDC, buffer, buffer.length, textRect, flags);
-					rect.right += textRect.right - textRect.left + Table.INSET * 3 + 2;
+					rect.right += textRect.right - textRect.left + Win32DPIUtils.pointToPixel(Table.INSET * 3 + 2, getZoom());
 				}
 			}
 		}
@@ -415,7 +411,7 @@ RECT getBounds (int row, int column, boolean getText, boolean getImage, boolean 
 	* the grid width when the grid is visible.  The fix is to
 	* move the top of the rectangle up by the grid width.
 	*/
-	int gridWidth = parent.getLinesVisible () ? Table.GRID_WIDTH : 0;
+	int gridWidth = parent.getLinesVisible () ? parent.getGridLineWidthInPixels() : 0;
 	rect.top -= gridWidth;
 	if (column != 0) rect.left += gridWidth;
 	rect.right = Math.max (rect.right, rect.left);
@@ -590,7 +586,7 @@ public Image getImage (int index) {
  */
 public Rectangle getImageBounds (int index) {
 	checkWidget();
-	return DPIUtil.scaleDown(getImageBoundsInPixels(index), getZoom());
+	return Win32DPIUtils.pixelToPoint(getImageBoundsInPixels(index), getZoom());
 }
 
 Rectangle getImageBoundsInPixels (int index) {
@@ -691,7 +687,7 @@ public String getText (int index) {
  */
 public Rectangle getTextBounds (int index) {
 	checkWidget();
-	return DPIUtil.scaleDown(getTextBoundsInPixels(index), getZoom());
+	return Win32DPIUtils.pixelToPoint(getTextBoundsInPixels(index), getZoom());
 }
 
 Rectangle getTextBoundsInPixels (int index) {
@@ -700,9 +696,9 @@ Rectangle getTextBoundsInPixels (int index) {
 	if (itemIndex == -1) return new Rectangle (0, 0, 0, 0);
 	RECT rect = getBounds (itemIndex, index, true, false, true);
 	rect.left += 2;
-	if (index != 0) rect.left += Table.INSET;
+	if (index != 0) rect.left += Win32DPIUtils.pointToPixel(Table.INSET, getZoom());
 	rect.left = Math.min (rect.left, rect.right);
-	rect.right = rect.right - Table.INSET;
+	rect.right = rect.right - Win32DPIUtils.pointToPixel(Table.INSET, getZoom());
 	int width = Math.max (0, rect.right - rect.left);
 	int height = Math.max (0, rect.bottom - rect.top);
 	return new Rectangle (rect.left, rect.top, width, height);
@@ -1271,19 +1267,17 @@ public void setText (String string) {
 	setText (0, string);
 }
 
-private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
-	if (!(widget instanceof TableItem tableItem)) {
-		return;
-	}
-	Font font = tableItem.font;
+@Override
+void handleDPIChange(Event event, float scalingFactor) {
+	super.handleDPIChange(event, scalingFactor);
 	if (font != null) {
-		tableItem.setFont(tableItem.font);
+		setFont(font);
 	}
-	Font[] cellFonts = tableItem.cellFont;
+	Font[] cellFonts = cellFont;
 	if (cellFonts != null) {
 		for (int index = 0; index < cellFonts.length; index++) {
 			Font cellFont = cellFonts[index];
-			cellFonts[index] = cellFont == null ? null : Font.win32_new(cellFont, tableItem.getNativeZoom());
+			cellFonts[index] = cellFont == null ? null : Font.win32_new(cellFont, getNativeZoom());
 		}
 	}
 }

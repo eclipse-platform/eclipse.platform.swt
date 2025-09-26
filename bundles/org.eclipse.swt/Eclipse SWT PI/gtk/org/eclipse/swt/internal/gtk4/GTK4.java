@@ -140,7 +140,11 @@ public class GTK4 {
 	 * @param chars cast=(int)
 	 */
 	public static final native void gtk_editable_set_max_width_chars(long editable, int chars);
-
+	/**
+	 * @param editable cast=(GtkEditable *)
+	 * @param text cast=(const gchar *)
+	 */
+	public static final native void gtk_editable_set_text(long editable, byte[] text);
 	/* GtkPicture */
 	public static final native long gtk_picture_new();
 	/**
@@ -207,17 +211,25 @@ public class GTK4 {
 	public static final native long gdk_content_formats_builder_free_to_formats(long builder);
 
 	/* GtkFileChooser */
-	/** @param chooser cast=(GtkFileChooser *) */
+	/**
+	 * @method flags=ignore_deprecations
+	 * @param chooser cast=(GtkFileChooser *)
+	 */
 	public static final native long gtk_file_chooser_get_files(long chooser);
-	/** @param chooser cast=(GtkFileChooser *) */
+	/**
+	 * @method flags=ignore_deprecations
+	 * @param chooser cast=(GtkFileChooser *)
+	 */
 	public static final native long gtk_file_chooser_get_file(long chooser);
 	/**
+	 * @method flags=ignore_deprecations
 	 * @param chooser cast=(GtkFileChooser *)
 	 * @param file cast=(GFile *)
 	 * @param error cast=(GError **)
 	 */
 	public static final native boolean gtk_file_chooser_set_current_folder(long chooser, long file, long error);
 	/**
+	 * @method flags=ignore_deprecations
 	 * @param chooser cast=(GtkFileChooser *)
 	 * @param file cast=(GFile *)
 	 * @param error cast=(GError **)

@@ -20,25 +20,28 @@ import org.junit.platform.suite.api.Suite;
  * Suite for testing all of the graphics test cases.
  */
 @Suite
-@SelectClasses({ Test_org_eclipse_swt_graphics_Color.class,
-		Test_org_eclipse_swt_graphics_Cursor.class,
-		Test_org_eclipse_swt_graphics_DeviceData.class,
-		Test_org_eclipse_swt_graphics_Font.class,
-		Test_org_eclipse_swt_graphics_FontData.class,
-		Test_org_eclipse_swt_graphics_FontMetrics.class,
-		Test_org_eclipse_swt_graphics_GC.class,
-		Test_org_eclipse_swt_graphics_Image.class,
-		Test_org_eclipse_swt_graphics_ImageData.class,
-		Test_org_eclipse_swt_graphics_PaletteData.class,
-		Test_org_eclipse_swt_graphics_Path.class,
-		Test_org_eclipse_swt_graphics_Point.class,
-		Test_org_eclipse_swt_graphics_Rectangle.class,
-		Test_org_eclipse_swt_graphics_Region.class,
-		Test_org_eclipse_swt_graphics_RGB.class,
-		Test_org_eclipse_swt_graphics_RGBA.class,
-		Test_org_eclipse_swt_graphics_TextLayout.class,
-		Test_org_eclipse_swt_graphics_ImageLoader.class,
-		Test_org_eclipse_swt_graphics_ImageLoaderEvent.class,
-		Test_org_eclipse_swt_graphics_Transform.class })
+@SelectClasses({ //
+		// Sorted list of tests
+		Test_org_eclipse_swt_graphics_Color.class, //
+		Test_org_eclipse_swt_graphics_Cursor.class, //
+		Test_org_eclipse_swt_graphics_DeviceData.class, //
+		Test_org_eclipse_swt_graphics_Font.class, //
+		Test_org_eclipse_swt_graphics_FontData.class, //
+		Test_org_eclipse_swt_graphics_FontMetrics.class, //
+		Test_org_eclipse_swt_graphics_GC.class, //
+		Test_org_eclipse_swt_graphics_Image.class, //
+		Test_org_eclipse_swt_graphics_ImageData.class, //
+		Test_org_eclipse_swt_graphics_ImageLoader.class, //
+		Test_org_eclipse_swt_graphics_ImageLoaderEvent.class, //
+		Test_org_eclipse_swt_graphics_PaletteData.class, //
+		Test_org_eclipse_swt_graphics_Path.class, //
+		Test_org_eclipse_swt_graphics_Point.class, //
+		Test_org_eclipse_swt_graphics_RGB.class, //
+		Test_org_eclipse_swt_graphics_RGBA.class, //
+		Test_org_eclipse_swt_graphics_Rectangle.class, //
+		Test_org_eclipse_swt_graphics_Region.class, //
+		Test_org_eclipse_swt_graphics_TextLayout.class, //
+		Test_org_eclipse_swt_graphics_Transform.class, //
+})
 public class AllGraphicsTests {
 }

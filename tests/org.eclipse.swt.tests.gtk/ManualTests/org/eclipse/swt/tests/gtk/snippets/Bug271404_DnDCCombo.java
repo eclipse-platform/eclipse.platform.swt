@@ -32,8 +32,6 @@ import org.eclipse.swt.widgets.Shell;
 
 public class Bug271404_DnDCCombo
 {
-	
-	
 
 	public static void main( String[] args )
 	{
@@ -41,7 +39,7 @@ public class Bug271404_DnDCCombo
 		GridLayout gl = new GridLayout();
 		gl.numColumns = 2;
 		shell.setLayout( gl );
-		
+
 		final Label text = new Label( shell, SWT.BORDER );
 		GridData gd = new GridData( );
 		gd.widthHint = 100;
@@ -53,10 +51,10 @@ public class Bug271404_DnDCCombo
 		ds.setTransfer( new Transfer[]{
 			SimpleTextTransfer.getInstance( )
 		} );
-		ds.addDragListener( new DragSourceAdapter( ) {
+		ds.addDragListener(new DragSourceAdapter() {
 
 			@Override
-			public void dragSetData( DragSourceEvent event )
+			public void dragSetData(DragSourceEvent event)
 			{
 				event.data = text.getText( );
 			}
@@ -66,7 +64,7 @@ public class Bug271404_DnDCCombo
 		gd = new GridData( GridData.FILL_HORIZONTAL );
 		gd.widthHint = 150;
 		combo.setLayoutData( gd );
-		
+
 
 		DropTarget dt = new DropTarget( combo, DND.DROP_MOVE );
 		dt.setTransfer( new Transfer[]{

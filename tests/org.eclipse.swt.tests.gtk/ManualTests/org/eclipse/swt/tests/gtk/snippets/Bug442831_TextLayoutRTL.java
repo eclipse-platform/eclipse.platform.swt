@@ -14,8 +14,7 @@
 package org.eclipse.swt.tests.gtk.snippets;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.TextLayout;
@@ -70,12 +69,7 @@ public class Bug442831_TextLayoutRTL {
 		shell.setText("SWT Application");
 
 		btnRightToLeft = new Button(shell, SWT.CHECK);
-		btnRightToLeft.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				update();
-			}
-		});
+		btnRightToLeft.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> update()));
 		btnRightToLeft.setBounds(643, 30, 134, 25);
 		btnRightToLeft.setData("name", "btnRightToLeft");
 		btnRightToLeft.setText("RTL");

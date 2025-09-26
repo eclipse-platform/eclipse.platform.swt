@@ -14,8 +14,7 @@
 package org.eclipse.swt.tests.gtk.snippets;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ControlAdapter;
-import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Display;
@@ -49,12 +48,7 @@ public class Bug449000_TableDrawingColumnMoved {
 		column3.setText("Column 3");
 		column3.setMoveable(true);
 
-		column3.addControlListener(new ControlAdapter() {
-			@Override
-			public void controlResized(ControlEvent e) {
-				table.getClientArea();
-			}
-		});
+		column3.addControlListener(ControlListener.controlResizedAdapter(e -> table.getClientArea()));
 
 		TableItem item = new TableItem(table, SWT.NONE);
 		item.setText(new String[] { "column 1 widget.text", "column 2 widget.text",

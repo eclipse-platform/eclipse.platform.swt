@@ -17,8 +17,6 @@ package org.eclipse.swt.tests.gtk.snippets;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
@@ -46,26 +44,20 @@ public class Bug494619TreeDefaultSelectionEvent {
 			}
 		}
 
-		tree.addListener(SWT.KeyDown, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				//32 in hex = 0x20 - space
-				//13 in hex = 0xD - enter.
-				if (event.keyCode == 0x20 && (event.stateMask & SWT.MODIFIER_MASK) == 0) {
-					System.out.println("KeyDown event. Handle space");
-					event.doit = true;
-				} else if (event.keyCode == 0xD && (event.stateMask & SWT.MODIFIER_MASK) == 0) {
-					System.out.println("KeyDown event. Handle enter");
-				}
+		tree.addListener(SWT.KeyDown, event -> {
+			//32 in hex = 0x20 - space
+			//13 in hex = 0xD - enter.
+			if (event.keyCode == 0x20 && (event.stateMask & SWT.MODIFIER_MASK) == 0) {
+				System.out.println("KeyDown event. Handle space");
+				event.doit = true;
+			} else if (event.keyCode == 0xD && (event.stateMask & SWT.MODIFIER_MASK) == 0) {
+				System.out.println("KeyDown event. Handle enter");
 			}
 		});
-		tree.addListener(SWT.DefaultSelection, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
+		tree.addListener(SWT.DefaultSelection, event -> {
 
-				System.out.println(event.keyCode);
-				System.out.println("Default Selection event. Handle enter or double-click");
-			}
+			System.out.println(event.keyCode);
+			System.out.println("Default Selection event. Handle enter or double-click");
 		});
 
 		shell.setSize(200, 200);

@@ -17,15 +17,15 @@ package org.eclipse.swt.tests.gtk.snippets;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSource;
+import org.eclipse.swt.dnd.DragSourceAdapter;
 import org.eclipse.swt.dnd.DragSourceEvent;
-import org.eclipse.swt.dnd.DragSourceListener;
 import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.DropTargetAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
-import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.dnd.TransferData;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridLayout;
@@ -69,22 +69,19 @@ public class Bug186038_DNDActivateEvent {
 		// create the button1 and when it is hovered, display the dropdown
 		final Button button1 = new Button(shell, SWT.PUSH);
 		button1.setText("Drop target");
-		button1.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				if (!dropDownShell.isVisible()) {
-					showDropDown(button1, dropDownShell);
-				}
+		button1.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+			if (!dropDownShell.isVisible()) {
+				showDropDown(button1, dropDownShell);
 			}
-		});
+		}));
 
 		int operations = DND.DROP_COPY | DND.DROP_DEFAULT;
 		DropTarget target = new DropTarget(button1, operations);
 		// Provide data in Text format
-		Transfer[] types = new Transfer[] { TextTransfer.getInstance() };
+		Transfer[] types = { TextTransfer.getInstance() };
 		target.setTransfer(types);
 
-		target.addDropListener(new DropTargetListener() {
+		target.addDropListener(new DropTargetAdapter() {
 			@Override
 			public void dragEnter(DropTargetEvent event) {
 				if (event.detail == DND.DROP_DEFAULT) {
@@ -94,9 +91,9 @@ public class Bug186038_DNDActivateEvent {
 						event.detail = DND.DROP_NONE;
 					}
 				}
-				for (int i = 0; i < event.dataTypes.length; i++) {
-					if (TextTransfer.getInstance().isSupportedType(event.dataTypes[i])) {
-						event.currentDataType = event.dataTypes[i];
+				for (TransferData dataType : event.dataTypes) {
+					if (TextTransfer.getInstance().isSupportedType(dataType)) {
+						event.currentDataType = dataType;
 						if (event.detail != DND.DROP_COPY) {
 							event.detail = DND.DROP_NONE;
 						}
@@ -112,19 +109,6 @@ public class Bug186038_DNDActivateEvent {
 				if (!dropDownShell.isVisible()) {
 					showDropDown(button1, dropDownShell);
 				}
-			}
-
-			@Override
-			public void dragOperationChanged(DropTargetEvent event) {
-
-			}
-
-			@Override
-			public void dragLeave(DropTargetEvent event) {
-			}
-
-			@Override
-			public void dropAccept(DropTargetEvent event) {
 			}
 
 			@Override
@@ -146,7 +130,7 @@ public class Bug186038_DNDActivateEvent {
 		// Provide data in Text format
 		source.setTransfer(types);
 
-		source.addDragListener(new DragSourceListener() {
+		source.addDragListener(new DragSourceAdapter() {
 			@Override
 			public void dragStart(DragSourceEvent event) {
 				if (button2.getText().length() == 0) {
@@ -162,10 +146,6 @@ public class Bug186038_DNDActivateEvent {
 				}
 			}
 
-			@Override
-			public void dragFinished(DragSourceEvent event) {
-
-			}
 		});
 
 		shell.setSize(300, 300);

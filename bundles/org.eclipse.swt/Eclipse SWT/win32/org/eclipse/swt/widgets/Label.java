@@ -63,7 +63,6 @@ public class Label extends Control {
 		WNDCLASS lpWndClass = new WNDCLASS ();
 		OS.GetClassInfo (0, LabelClass, lpWndClass);
 		LabelProc = lpWndClass.lpfnWndProc;
-		DPIZoomChangeRegistry.registerHandler(Label::handleDPIChange, Label.class);
 	}
 
 /**
@@ -147,7 +146,7 @@ static int checkStyle (int style) {
 		return new Point (width, height);
 	}
 	if (isImageMode) {
-		Rectangle rect = DPIUtil.scaleBounds(image.getBounds(), this.getZoom(), 100);
+		Rectangle rect = Win32DPIUtils.scaleBounds(image.getBounds(), this.getZoom(), 100);
 		width += rect.width;
 		height += rect.height;
 	} else {
@@ -554,7 +553,7 @@ void wmDrawChildImage(DRAWITEMSTRUCT struct) {
 	if (width == 0 || height == 0) return;
 
 	int zoom = getZoom();
-	Rectangle imageRect = DPIUtil.scaleBounds(image.getBounds(), zoom, 100);
+	Rectangle imageRect = Win32DPIUtils.scaleBounds(image.getBounds(), zoom, 100);
 
 	int x = 0;
 	if ((style & SWT.CENTER) != 0) {
@@ -567,7 +566,7 @@ void wmDrawChildImage(DRAWITEMSTRUCT struct) {
 	data.device = display;
 	GC gc = createNewGC(struct.hDC, data);
 	Image image = getEnabled () ? this.image : new Image (display, this.image, SWT.IMAGE_DISABLE);
-	gc.drawImage (image, DPIUtil.scaleDown(x, zoom), DPIUtil.scaleDown(Math.max (0, (height - imageRect.height) / 2), zoom));
+	gc.drawImage (image, DPIUtil.pixelToPoint(x, zoom), DPIUtil.pixelToPoint(Math.max (0, (height - imageRect.height) / 2), zoom));
 	if (image != this.image) image.dispose ();
 	gc.dispose ();
 }
@@ -621,13 +620,12 @@ LRESULT wmDrawChild (long wParam, long lParam) {
 	return null;
 }
 
-private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
-	if (!(widget instanceof Label label)) {
-		return;
-	}
-	Image image = label.getImage();
+@Override
+void handleDPIChange(Event event, float scalingFactor) {
+	super.handleDPIChange(event, scalingFactor);
+	Image image = getImage();
 	if (image != null) {
-		label.setImage(image);
+		setImage(image);
 	}
 }
 }

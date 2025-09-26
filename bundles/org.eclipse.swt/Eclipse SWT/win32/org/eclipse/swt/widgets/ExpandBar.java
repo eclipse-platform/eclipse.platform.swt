@@ -55,10 +55,6 @@ public class ExpandBar extends Composite {
 	int yCurrentScroll;
 	long hFont;
 
-	static {
-		DPIZoomChangeRegistry.registerHandler(ExpandBar::handleDPIChange, ExpandBar.class);
-	}
-
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -391,7 +387,7 @@ public ExpandItem [] getItems () {
  */
 public int getSpacing () {
 	checkWidget ();
-	return DPIUtil.scaleDown(getSpacingInPixels (), getZoom());
+	return DPIUtil.pixelToPoint(getSpacingInPixels (), getZoom());
 }
 
 int getSpacingInPixels () {
@@ -561,7 +557,7 @@ void setScrollbar () {
  */
 public void setSpacing (int spacing) {
 	checkWidget ();
-	setSpacingInPixels(DPIUtil.scaleUp(spacing, getZoom()));
+	setSpacingInPixels(Win32DPIUtils.pointToPixel(spacing, getZoom()));
 }
 
 void setSpacingInPixels (int spacing) {
@@ -789,7 +785,7 @@ LRESULT WM_PAINT (long wParam, long lParam) {
 			if (hooks (SWT.Paint) || filters (SWT.Paint)) {
 				Event event = new Event ();
 				event.gc = gc;
-				event.setBounds(DPIUtil.scaleDown(new Rectangle(rect.left, rect.top, width, height), getZoom()));
+				event.setBounds(Win32DPIUtils.pixelToPoint(new Rectangle(rect.left, rect.top, width, height), getZoom()));
 				sendEvent (SWT.Paint, event);
 				event.gc = null;
 			}
@@ -871,14 +867,13 @@ LRESULT wmScroll (ScrollBar bar, boolean update, long hwnd, int msg, long wParam
 	return result;
 }
 
-private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
-	if (!(widget instanceof ExpandBar expandBar)) {
-		return;
+@Override
+void handleDPIChange(Event event, float scalingFactor) {
+	super.handleDPIChange(event, scalingFactor);
+	for (ExpandItem item : getItems()) {
+		item.notifyListeners(SWT.ZoomChanged, event);
 	}
-	for (ExpandItem item : expandBar.getItems()) {
-		DPIZoomChangeRegistry.applyChange(item, newZoom, scalingFactor);
-	}
-	expandBar.layoutItems(0, true);
-	expandBar.redraw();
+	layoutItems(0, true);
+	redraw();
 }
 }

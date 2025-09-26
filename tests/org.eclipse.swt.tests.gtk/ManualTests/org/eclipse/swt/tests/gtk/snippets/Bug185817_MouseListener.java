@@ -1,6 +1,5 @@
 package org.eclipse.swt.tests.gtk.snippets;
 
-
 /*******************************************************************************
  * Copyright (c) 2000, 2018 IBM Corporation and others.
  *
@@ -23,9 +22,7 @@ package org.eclipse.swt.tests.gtk.snippets;
  */
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
-import org.eclipse.swt.events.FocusAdapter;
-import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
@@ -62,82 +59,37 @@ public static void main(String[] args) {
 		// editing the second column
 		final int EDITABLECOLUMN = 1;
 
-		table.addMouseListener(new MouseListener() {
+		table.addMouseListener(MouseListener.mouseDownAdapter(e -> {
+			if (e.count == 2) {
+				System.err.println("STARTING UP THE EDITOR");
+				// Clean up any previous editor control
+				Control oldEditor = editor.getEditor();
+				if (oldEditor != null)
+					oldEditor.dispose();
 
-				@Override
-				public void mouseDoubleClick(MouseEvent e) {
-//                	 // Clean up any previous editor control
-//                    Control oldEditor = editor.getEditor();
-//                    if (oldEditor != null) oldEditor.dispose();
-//
-//                    // Identify the selected row
-//                    TableItem item = (TableItem)widget.table.getItem(new Point(e.x,e.y));
-//                    if (item == null) return;
-//
-//                    // The control that will be the editor must be a child of the Table
-//                    Text newEditor = new Text(widget.table, SWT.NONE);
-//                    newEditor.setText(item.getText(EDITABLECOLUMN));
-//                    newEditor.addModifyListener(new ModifyListener() {
-//                            public void modifyText(ModifyEvent me) {
-//                                    Text widget.text = (Text)editor.getEditor();
-//                                    editor.getItem().setText(EDITABLECOLUMN,widget.text.getText());
-//                            }
-//                    });
-//                    newEditor.selectAll();
-//                    newEditor.setFocus();
-//                    editor.setEditor(newEditor, item, EDITABLECOLUMN);
-//                    newEditor.addFocusListener(new FocusAdapter() {
-//
-//						public void focusLost(FocusEvent e) {
-//							Control oldEditor = editor.getEditor();
-//	                        if (oldEditor != null) oldEditor.dispose();
-//						}
-//
-//                    });
-				}
+				// Identify the selected row
+				TableItem item = table.getItem(new Point(e.x, e.y));
+				if (item == null)
+					return;
 
-				@Override
-				public void mouseDown(MouseEvent e) {
-					if( e.count == 2 ) {
-						System.err.println("STARTING UP THE EDITOR");
-						// Clean up any previous editor control
-						Control oldEditor = editor.getEditor();
-						if (oldEditor != null) oldEditor.dispose();
-
-						// Identify the selected row
-						TableItem item = table.getItem(new Point(e.x,e.y));
-						if (item == null) return;
-
-						// The control that will be the editor must be a child of the Table
-						Text newEditor = new Text(table, SWT.NONE);
-						newEditor.setText(item.getText(EDITABLECOLUMN));
-						newEditor.addModifyListener(me -> {
-								Text text = (Text)editor.getEditor();
-								editor.getItem().setText(EDITABLECOLUMN,text.getText());
-						});
-						newEditor.selectAll();
-						newEditor.setFocus();
-						editor.setEditor(newEditor, item, EDITABLECOLUMN);
-						newEditor.addFocusListener(new FocusAdapter() {
-
-							@Override
-							public void focusLost(FocusEvent e) {
-								System.err.println("LOOSING FOCUS");
-								Control oldEditor = editor.getEditor();
-								if (oldEditor != null) oldEditor.dispose();
-							}
-
-						});
-					}
-				}
-
-				@Override
-				public void mouseUp(MouseEvent e) {
-						// TODO Auto-generated method stub
-
-				}
-
-		});
+				// The control that will be the editor must be a child of the Table
+				Text newEditor = new Text(table, SWT.NONE);
+				newEditor.setText(item.getText(EDITABLECOLUMN));
+				newEditor.addModifyListener(me -> {
+					Text text = (Text) editor.getEditor();
+					editor.getItem().setText(EDITABLECOLUMN, text.getText());
+				});
+				newEditor.selectAll();
+				newEditor.setFocus();
+				editor.setEditor(newEditor, item, EDITABLECOLUMN);
+				newEditor.addFocusListener(FocusListener.focusLostAdapter(e1 -> {
+					System.err.println("LOOSING FOCUS");
+					Control oldEditor1 = editor.getEditor();
+					if (oldEditor1 != null)
+						oldEditor1.dispose();
+				}));
+			}
+		}));
 
 		shell.setSize(300, 300);
 		shell.open();

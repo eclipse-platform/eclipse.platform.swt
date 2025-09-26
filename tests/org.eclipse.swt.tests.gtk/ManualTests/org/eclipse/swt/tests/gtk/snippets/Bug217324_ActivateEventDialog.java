@@ -15,31 +15,18 @@ package org.eclipse.swt.tests.gtk.snippets;
 
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 
 public class Bug217324_ActivateEventDialog
 {
-	
+
 	public static void main(String[] args)
 	{
 		Display display = new Display();
-		display.addFilter(SWT.Activate, new Listener()
-		{
-			@Override
-			public void handleEvent(Event event)
-			{
-				System.out.println("activate: " + event);
-			}
-		});
+		display.addFilter(SWT.Activate, event -> System.out.println("activate: " + event));
 
-		display.addFilter(SWT.Deactivate, new Listener()
-		{
-			@Override
-			public void handleEvent(Event event)
-			{
-				System.out.println("deactivate: " + event);
-			}
-		});
+		display.addFilter(SWT.Deactivate, event -> System.out.println("deactivate: " + event));
 
 		Shell shell = new Shell(display);
 		shell.setText("Shell");

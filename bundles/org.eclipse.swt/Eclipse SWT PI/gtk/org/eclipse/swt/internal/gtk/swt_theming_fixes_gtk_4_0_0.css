@@ -1,0 +1,7 @@
+button.toggle {
+	padding: 0px;
+}
+button {
+	min-height: 0px;
+	min-width: 0px;
+}

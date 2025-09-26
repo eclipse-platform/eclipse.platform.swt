@@ -20,11 +20,15 @@ package org.eclipse.swt.tests.gtk.snippets;
  * For a widget.list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  */
-import org.eclipse.swt.*;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 
 public class Bug262971_EraseItemNotSentScrolling {
 
@@ -41,9 +45,9 @@ public class Bug262971_EraseItemNotSentScrolling {
 		table.setLayoutData(data);
 		String[] titles = { " ", "C", "!", "Description", "Resource",
 				"In Folder", "Location" };
-		for (int i = 0; i < titles.length; i++) {
+		for (String title : titles) {
 			TableColumn column = new TableColumn(table, SWT.NONE);
-			column.setText(titles[i]);
+			column.setText(title);
 		}
 		int count = 128;
 		for (int i = 0; i < count; i++) {
@@ -59,29 +63,17 @@ public class Bug262971_EraseItemNotSentScrolling {
 		for (int i = 0; i < titles.length; i++) {
 			table.getColumn(i).pack();
 		}
-		
+
 		//Listeners
-		
-		table.addListener(SWT.EraseItem, new Listener() {
 
-			@Override
-			public void handleEvent(Event event) {
-				if (event.index ==1)
-				System.out.println("x = " + event.y + "\t" + "y = " + event.y);
-			}});
-		
-		table.getHorizontalBar().addSelectionListener(new SelectionListener() {
+		table.addListener(SWT.EraseItem, event -> {
+			if (event.index ==1)
+			System.out.println("x = " + event.y + "\t" + "y = " + event.y);
+		});
 
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
+		table.getHorizontalBar().addSelectionListener(
+				SelectionListener.widgetSelectedAdapter(e -> System.out.println("scroll.selection")));
 
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				System.out.println("scroll.selection");
-				
-			}});
-		
 		shell.pack();
 		shell.open();
 		while (!shell.isDisposed()) {

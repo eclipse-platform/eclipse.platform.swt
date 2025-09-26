@@ -16,8 +16,7 @@ package org.eclipse.swt.tests.gtk.snippets;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -56,26 +55,22 @@ public class Bug71990_SlowTablePack {
 		final Table t1 = makeTable(c1);
 		final Table t2 = makeTable(c2);
 
-		button.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				long st = System.currentTimeMillis();
+		button.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+			long st = System.currentTimeMillis();
 
-				if (layout.topControl == c1) {
-					layout.topControl = c2;
-					makeColumns(t2, false);
-				} else {
-					layout.topControl = c1;
-					makeColumns(t1, false);
-				}
-
-				parent.layout();
-
-				System.out.println("Layout: "
-						+ (System.currentTimeMillis() - st));
-
+			if (layout.topControl == c1) {
+				layout.topControl = c2;
+				makeColumns(t2, false);
+			} else {
+				layout.topControl = c1;
+				makeColumns(t1, false);
 			}
-		});
+
+			parent.layout();
+
+			System.out.println("Layout: " + (System.currentTimeMillis() - st));
+
+		}));
 
 		layout.topControl = c1;
 
@@ -102,9 +97,9 @@ public class Bug71990_SlowTablePack {
 		table.setHeaderVisible(true);
 		String[] titles = { " ", "C", "!", "Description", "Resource",
 				"In Folder", "Location" };
-		for (int i = 0; i < titles.length; i++) {
+		for (String title : titles) {
 			TableColumn column = new TableColumn(table, SWT.NULL);
-			column.setText(titles[i]);
+			column.setText(title);
 		}
 		makeColumns(table, true);
 		table.pack();

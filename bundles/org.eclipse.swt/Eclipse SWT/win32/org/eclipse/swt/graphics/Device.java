@@ -14,6 +14,7 @@
 package org.eclipse.swt.graphics;
 
 
+import java.lang.ref.*;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -32,8 +33,6 @@ import org.eclipse.swt.widgets.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public abstract class Device implements Drawable {
-
-	static boolean strictChecks = System.getProperty("org.eclipse.swt.internal.enableStrictChecks") != null;
 
 	/* Debugging */
 	public static boolean DEBUG;
@@ -61,7 +60,7 @@ public abstract class Device implements Drawable {
 	String[] loadedFonts;
 
 	volatile boolean disposed;
-	private Set<Resource> resourcesWithZoomSupport  = ConcurrentHashMap.newKeySet();
+	private Set<ResourceReference> resourcesWithZoomSupport = ConcurrentHashMap.newKeySet();
 
 	/*
 	* TEMPORARY CODE. When a graphics object is
@@ -420,7 +419,7 @@ long EnumFontFamProc (long lpelfe, long lpntme, long FontType, long lParam) {
  */
 public Rectangle getBounds() {
 	checkDevice ();
-	return DPIUtil.scaleDown(getBoundsInPixels(), getDeviceZoom());
+	return Win32DPIUtils.pixelToPoint(getBoundsInPixels(), getDeviceZoom());
 }
 
 private Rectangle getBoundsInPixels () {
@@ -527,7 +526,7 @@ public Point getDPI () {
 	int dpiX = OS.GetDeviceCaps (hDC, OS.LOGPIXELSX);
 	int dpiY = OS.GetDeviceCaps (hDC, OS.LOGPIXELSY);
 	internal_dispose_GC (hDC, null);
-	return DPIUtil.scaleDown(new Point (dpiX, dpiY), DPIUtil.getZoomForAutoscaleProperty(getDeviceZoom()));
+	return Win32DPIUtils.pixelToPoint(new Point (dpiX, dpiY), DPIUtil.getZoomForAutoscaleProperty(getDeviceZoom()));
 }
 
 /**
@@ -964,11 +963,11 @@ protected int getDeviceZoom () {
 }
 
 void registerResourceWithZoomSupport(Resource resource) {
-	resourcesWithZoomSupport.add(resource);
+	resourcesWithZoomSupport.add(new ResourceReference(resource));
 }
 
 void deregisterResourceWithZoomSupport(Resource resource) {
-	resourcesWithZoomSupport.remove(resource);
+	resourcesWithZoomSupport.remove(new ResourceReference(resource));
 }
 
 /**
@@ -982,8 +981,37 @@ public static void win32_destroyUnusedHandles(Display display) {
 	for (Monitor monitor : display.getMonitors()) {
 	    availableZoomLevels.add(DPIUtil.getZoomForAutoscaleProperty(monitor.getZoom()));
 	}
-	for (Resource resource: ((Device) display).resourcesWithZoomSupport) {
+	Set<ResourceReference> resources = ((Device) display).resourcesWithZoomSupport;
+	Iterator<ResourceReference> iterator = resources.iterator();
+
+	while (iterator.hasNext()) {
+		ResourceReference ref = iterator.next();
+		Resource resource = ref.get();
+		if (resource == null) {
+			iterator.remove(); // Clean up dead reference.
+			continue;
+		}
 		resource.destroyHandlesExcept(availableZoomLevels);
+	}
+}
+
+private static class ResourceReference extends WeakReference<Resource> {
+
+	public ResourceReference(Resource referent) {
+		super(referent);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if(this == obj) return true;
+		if (!(obj instanceof ResourceReference passedResource)) return false;
+		return Objects.equals(this.get(), passedResource.get());
+	}
+
+	@Override
+	public int hashCode() {
+		Resource resource = this.get();
+		return resource != null ? resource.hashCode() : 0;
 	}
 }
 }

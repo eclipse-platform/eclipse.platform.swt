@@ -15,8 +15,8 @@ package org.eclipse.swt.tests.manual;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageGcDrawer;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -55,12 +55,12 @@ public class Bug205199_Label_Image_vs_Text {
 		Composite container = new Composite(shell, SWT.NONE);
 		container.setLayout(new RowLayout(SWT.HORIZONTAL));
 
-		Image image = new Image(display, 32, 32);
-		Color color = display.getSystemColor(SWT.COLOR_DARK_GREEN);
-		GC gc = new GC(image);
-		gc.setBackground(color);
-		gc.fillRectangle(image.getBounds());
-		gc.dispose();
+		final ImageGcDrawer imageGcDrawer = (gc, width, height) -> {
+			Color color = display.getSystemColor(SWT.COLOR_DARK_GREEN);
+			gc.setBackground(color);
+			gc.fillRectangle(0, 0, width, height);
+		};
+		Image image = new Image(display, imageGcDrawer, 32, 32);
 
 		Label labelText = new Label(container, SWT.NONE);
 		Label labelImage = new Label(container, SWT.NONE);

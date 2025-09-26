@@ -31,7 +31,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
 import org.eclipse.swt.SWTException;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
+import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 
 /**
  * Automated Test Suite for class {@link org.eclipse.swt.SWT}.
@@ -114,7 +114,7 @@ public class Test_org_eclipse_swt_SWT {
 	 * GitHub Pull Requests.
 	 */
 	@Test
-	@EnabledIfSystemProperty(named = "org.eclipse.swt.tests.junit.disable.test_isLocal", matches = "true")
+	@DisabledIfSystemProperty(named = "org.eclipse.swt.tests.junit.disable.test_isLocal", matches = "true")
 	public void test_isLocal() {
 		String swtPath = pathFromClass(SWT.class);
 		String tstPath = pathFromClass(Test_org_eclipse_swt_SWT.class);

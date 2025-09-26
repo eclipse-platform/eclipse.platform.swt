@@ -187,4 +187,7 @@ jlong call_accessible_object_function (const char *method_name, const char *meth
 void swt_set_lock_functions();
 void swt_debug_on_fatal_warnings() ;
 
+char **swt_getArrayOfStringsUTF(JNIEnv *env, jobjectArray javaArray);
+void swt_releaseArrayOfStringsUTF(JNIEnv *env, jobjectArray javaArray, char **cStrings);
+
 #endif /* ORG_ECLIPSE_SWT_GTK_OS_CUSTOM_H (include guard, this should be the last line) */

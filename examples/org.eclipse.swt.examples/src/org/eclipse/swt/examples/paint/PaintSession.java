@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -27,21 +27,21 @@ public interface PaintSession extends MouseListener, MouseMoveListener {
 	 *
 	 * @return the associated PaintSurface
 	 */
-	public PaintSurface getPaintSurface();
+	PaintSurface getPaintSurface();
 
 	/**
 	 * Activates the session.
 	 *
 	 * Note: When overriding this method, call super.beginSession() at method start.
 	 */
-	public abstract void beginSession();
+	void beginSession();
 
 	/**
 	 * Deactivates the session.
 	 *
 	 * Note: When overriding this method, call super.endSession() at method exit.
 	 */
-	public abstract void endSession();
+	void endSession();
 
 	/**
 	 * Resets the session.
@@ -49,7 +49,7 @@ public interface PaintSession extends MouseListener, MouseMoveListener {
 	 *
 	 * Note: When overriding this method, call super.resetSession() at method exit.
 	 */
-	public abstract void resetSession();
+	void resetSession();
 
 
 	/**
@@ -57,5 +57,5 @@ public interface PaintSession extends MouseListener, MouseMoveListener {
 	 *
 	 * @return the localized name of this tool
 	 */
-	public String getDisplayName();
+	String getDisplayName();
 }

@@ -32,7 +32,7 @@ class WidgetWin32Tests {
 	public void testWidgetZoomShouldChangeOnZoomLevelChange() {
 		Display display = Display.getDefault();
 		Shell shell = new Shell(display);
-		int zoom = DPIUtil.getDeviceZoom();
+		int zoom = shell.getNativeZoom();
 		int scaledZoom = zoom * 2;
 
 		Button button = new Button(shell, SWT.PUSH);
@@ -49,22 +49,20 @@ class WidgetWin32Tests {
 	@Test
 	public void testButtonPointsAfterZooming() throws NoSuchMethodException, IllegalAccessException {
 		Display display = Display.getDefault();
-		int zoom = DPIUtil.getDeviceZoom();
+		Shell shell = new Shell(display);
+		int zoom = shell.getNativeZoom();
+
 		int scaledZoom = zoom * 2;
 
-		Shell shell = new Shell(display);
 		shell.setBounds(0, 0, 100, 160);
-		shell.setLayout(new FillLayout());
-		shell.pack();
 
 		Button button = new Button(shell, SWT.PUSH);
 		button.setText("Button");
 		button.setBounds(0, 0, 100, 200);
-		Point sizeBeforeEvent = button.getSize();
-		Point p1 = button.computeSizeInPixels(sizeBeforeEvent.x, sizeBeforeEvent.y, false);
+		Point p1 = button.getSize();
+
 		DPITestUtil.changeDPIZoom(shell, scaledZoom);
-		Point sizeAfterEvent = button.getSize();
-		Point p2 = button.computeSizeInPixels(sizeAfterEvent.x, sizeAfterEvent.y, false);
+		Point p2 = button.getSize();
 
 		assertEquals("Width should be half in points after zooming to 200", p1.x / 2 , p2.x);
 		assertEquals("Height should be half in points after zooming to 200", p1.y / 2, p2.y);
@@ -73,7 +71,8 @@ class WidgetWin32Tests {
 	@Test
 	public void testImagePixelsWithDoubleZoomLevel() {
 		Display display = Display.getDefault();
-		int zoom = DPIUtil.getDeviceZoom();
+		Shell shell = new Shell(display);
+		int zoom = shell.getNativeZoom();
 		int scaledZoom = zoom * 2;
 
 		InputStream inputStream = WidgetWin32Tests.class.getResourceAsStream("folder.png");
@@ -99,10 +98,12 @@ class WidgetWin32Tests {
 	@Test
 	public void testButtonFontAfterZooming() {
 		Display display = Display.getDefault();
-		int zoom = DPIUtil.getDeviceZoom();
+		Shell shell = new Shell(display);
+		int zoom = shell.getNativeZoom();
+
 		int scaledZoom = zoom * 2;
 
-		Shell shell = new Shell(display);
+
 		shell.setBounds(0, 0, 100, 160);
 		shell.setLayout(new FillLayout());
 		shell.pack();
@@ -124,13 +125,12 @@ class WidgetWin32Tests {
 	@Test
 	public void testCoolItemAfterZooming() {
 		Display display = Display.getDefault();
-		int zoom = DPIUtil.getDeviceZoom();
+		Shell shell = new Shell(display);
+		int zoom = shell.getNativeZoom();
 		int scaledZoom = zoom * 2;
 
-		Shell shell = new Shell(display);
+
 		shell.setBounds(0, 0, 100, 160);
-		shell.setLayout(new FillLayout());
-		shell.pack();
 
 		CoolBar coolBar = new CoolBar(shell, SWT.NONE);
 		CoolItem item1 = new CoolItem(coolBar, SWT.NONE);
@@ -163,10 +163,10 @@ class WidgetWin32Tests {
 	@Test
 	public void testExpandItemAfterZooming() {
 		Display display = Display.getDefault();
-		int zoom = DPIUtil.getDeviceZoom();
+		Shell shell = new Shell(display);
+		int zoom = shell.getNativeZoom();
 		int scaledZoom = zoom * 2;
 
-		Shell shell = new Shell(display);
 		shell.setBounds(0, 0, 100, 160);
 		shell.setLayout(new FillLayout());
 		shell.pack();
@@ -190,13 +190,11 @@ class WidgetWin32Tests {
 	@Test
 	public void testTabFolderSizeAfterZooming() {
 		Display display = Display.getDefault();
-		int zoom = DPIUtil.getDeviceZoom();
+		Shell shell = new Shell(display);
+		int zoom = shell.getNativeZoom();
 		int scaledZoom = zoom * 2;
 
-		Shell shell = new Shell(display);
 		shell.setBounds(0, 0, 100, 160);
-		shell.setLayout(new FillLayout());
-		shell.pack();
 
 		TabFolder tabFolder = new TabFolder(shell, SWT.NONE);
 		tabFolder.setBounds(20, 20, 360, 240);
@@ -220,10 +218,10 @@ class WidgetWin32Tests {
 	@Test
 	public void testTableAfterZooming() {
 		Display display = Display.getDefault();
-		int zoom = DPIUtil.getDeviceZoom();
-		int scaledZoom = zoom * 2;
 
 		Shell shell = new Shell(display);
+		int zoom = shell.getNativeZoom();
+		int scaledZoom = zoom * 2;
 		shell.setBounds(0, 0, 100, 160);
 		shell.setLayout(new FillLayout());
 		shell.pack();
@@ -258,10 +256,10 @@ class WidgetWin32Tests {
 	@Test
 	public void testTreeAfterZooming() {
 		Display display = Display.getDefault();
-		int zoom = DPIUtil.getDeviceZoom();
+		Shell shell = new Shell(display);
+		int zoom =  shell.getNativeZoom();
 		int scaledZoom = zoom * 2;
 
-		Shell shell = new Shell(display);
 		shell.setBounds(0, 0, 100, 160);
 		shell.setLayout(new FillLayout());
 		shell.pack();
@@ -294,10 +292,10 @@ class WidgetWin32Tests {
 	@Test
 	public void testCaretInStyledTextAfterZooming() {
 		Display display = Display.getDefault();
-		int zoom = DPIUtil.getDeviceZoom();
+		Shell shell = new Shell(display);
+		int zoom = shell.getNativeZoom();
 		int scaledZoom = zoom * 2;
 
-		Shell shell = new Shell(display);
 		shell.setBounds(0, 0, 100, 160);
 		shell.setLayout(new FillLayout());
 		shell.pack();

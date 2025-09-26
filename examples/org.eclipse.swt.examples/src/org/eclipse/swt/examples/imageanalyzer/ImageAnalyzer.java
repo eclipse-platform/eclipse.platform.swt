@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2021 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -2082,14 +2082,12 @@ public class ImageAnalyzer {
 		String message = createMsg(bundle.getString("Error"), operation, filename);
 		String errorMessage = "";
 		if (e != null) {
-			if (e instanceof SWTException) {
-				SWTException swte = (SWTException) e;
+			if (e instanceof SWTException swte) {
 				errorMessage = swte.getMessage();
 				if (swte.throwable != null) {
 					errorMessage += ":\n" + swte.throwable.toString();
 				}
-			} else if (e instanceof SWTError) {
-				SWTError swte = (SWTError) e;
+			} else if (e instanceof SWTError swte) {
 				errorMessage = swte.getMessage();
 				if (swte.throwable != null) {
 					errorMessage += ":\n" + swte.throwable.toString();

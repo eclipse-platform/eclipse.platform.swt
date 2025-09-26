@@ -56,7 +56,7 @@ import org.eclipse.swt.internal.*;
 /**
  * This class contains native functions for various libraries.
  *
- * Any dynamic functions must be manually linked to their corresponding library. See os_cutom.h  #define FUNC_LIB_* LIB_*
+ * Any dynamic functions must be manually linked to their corresponding library. See os_custom.h  #define FUNC_LIB_* LIB_*
  */
 public class OS extends C {
 	/** OS Constants */
@@ -338,6 +338,7 @@ public class OS extends C {
 	public static final byte[] mnemonic_activate = ascii("mnemonic-activate");
 	public static final byte[] month_changed = ascii("month-changed");
 	public static final byte[] next_month = ascii("next-month");
+	public static final byte[] notify_gtk_theme = ascii("notify::gtk-theme-name");
 	public static final byte[] prev_month = ascii("prev-month");
 	public static final byte[] next_year = ascii("next-year");
 	public static final byte[] prev_year = ascii("prev-year");
@@ -866,6 +867,10 @@ public static final native long PANGO_TYPE_LAYOUT();
  */
 public static final native long g_app_info_create_from_commandline(byte[] commandline, byte[] applName, long flags, long error);
 public static final native long g_app_info_get_all();
+/**
+ * @param appInfo cast=(GAppInfo *)
+ */
+public static final native long g_app_info_get_commandline(long appInfo);
 /**
  * @param appInfo cast=(GAppInfo *)
  */

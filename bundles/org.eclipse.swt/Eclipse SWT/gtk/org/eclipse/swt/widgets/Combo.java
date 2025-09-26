@@ -494,7 +494,6 @@ Point computeNativeSize (long h, int wHint, int hHint, boolean changed) {
  * <p>
  * The current selection is copied to the clipboard.
  * </p>
- *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1955,7 +1954,12 @@ long paintSurface () {
  * The selected text is deleted from the widget
  * and new text inserted from the clipboard.
  * </p>
- *
+ * <p>
+ * <strong>Note:</strong> Pasting data to controls may occurs asynchronously. The widget
+ * text may not reflect the updated value immediately after calling this method.
+ * The new text will appear once pending events are processed in the event loop.
+ * Use {@link Display#asyncExec(Runnable)} before accessing <code>getText()</code>.
+ * </p>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1965,7 +1969,14 @@ long paintSurface () {
  */
 public void paste () {
 	checkWidget ();
-	if (entryHandle != 0) GTK3.gtk_editable_paste_clipboard (entryHandle);
+	if (entryHandle != 0) {
+		if (GTK.GTK4) {
+			long textHandle = GTK4.gtk_widget_get_first_child(entryHandle);
+			GTK4.gtk_widget_activate_action(textHandle, OS.action_paste_clipboard, null);
+		} else {
+			GTK3.gtk_editable_paste_clipboard (entryHandle);
+		}
+	}
 }
 
 @Override

@@ -16,10 +16,14 @@ package org.eclipse.swt.tests.gtk.snippets;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TreeEditor;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeColumn;
+import org.eclipse.swt.widgets.TreeItem;
 
 public class Bug480926_CellEditorPosition {
 	public static void main(String[] args) {
@@ -46,20 +50,14 @@ public class Bug480926_CellEditorPosition {
 		treeEditor.horizontalAlignment = SWT.LEFT;
 		treeEditor.grabHorizontal = true;
 
-		tree.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseUp(MouseEvent e) {
-				TreeItem item = tree.getSelection()[0];
-				Text text = new Text(tree, SWT.NONE);
-				treeEditor.setEditor(text, item, 1);
-			}
-		});
+		tree.addMouseListener(MouseListener.mouseUpAdapter(e -> {
+			TreeItem item1 = tree.getSelection()[0];
+			Text text = new Text(tree, SWT.NONE);
+			treeEditor.setEditor(text, item1, 1);
+		}));
 
-		tree.addListener(SWT.PaintItem, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
+		tree.addListener(SWT.PaintItem, event -> {
 
-			}
 		});
 
 		shell.setSize(600, 400);

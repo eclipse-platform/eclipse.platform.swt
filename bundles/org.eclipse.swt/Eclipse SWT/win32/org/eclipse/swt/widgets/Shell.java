@@ -148,7 +148,6 @@ public class Shell extends Decorations {
 		WNDCLASS lpWndClass = new WNDCLASS ();
 		OS.GetClassInfo (0, DialogClass, lpWndClass);
 		DialogProc = lpWndClass.lpfnWndProc;
-		DPIZoomChangeRegistry.registerHandler(Shell::handleDPIChange, Shell.class);
 	}
 
 /**
@@ -300,18 +299,10 @@ Shell (Display display, Shell parent, int style, long handle, boolean embedded) 
 	if (handle != 0 && !embedded) {
 		state |= FOREIGN_HANDLE;
 	}
-
-	int shellNativeZoom;
-	if (parent != null) {
-		shellNativeZoom = parent.nativeZoom;
-	} else {
-		int mappedDPIZoom = getMonitor().getZoom();
-		shellNativeZoom = mappedDPIZoom;
-	}
-	this.nativeZoom = shellNativeZoom;
-
 	reskinWidget();
 	createWidget ();
+	this.nativeZoom = DPIUtil.mapDPIToZoom(OS.GetDpiForWindow(this.handle));
+	registerDPIChangeListener();	/* Register the DPI change handler here since it does not call Widget constructor which registers the DPI change listener. */
 }
 
 /**
@@ -1052,7 +1043,7 @@ public boolean getMaximized () {
  */
 public Point getMaximumSize () {
 	checkWidget ();
-	return DPIUtil.scaleDown(getMaximumSizeInPixels(), getZoom());
+	return Win32DPIUtils.pixelToPoint(getMaximumSizeInPixels(), getZoom());
 }
 
 Point getMaximumSizeInPixels () {
@@ -1093,7 +1084,7 @@ Point getMaximumSizeInPixels () {
  */
 public Point getMinimumSize () {
 	checkWidget ();
-	return DPIUtil.scaleDown(getMinimumSizeInPixels(), getZoom());
+	return Win32DPIUtils.pixelToPoint(getMinimumSizeInPixels(), getZoom());
 }
 
 Point getMinimumSizeInPixels () {
@@ -1570,20 +1561,20 @@ public void setAlpha (int alpha) {
 @Override
 public Rectangle getBounds() {
 	checkWidget ();
-	return getDisplay().translateFromDisplayCoordinates(getBoundsInPixels(), getZoom());
+	return getDisplay().translateFromDisplayCoordinates(getBoundsInPixels());
 }
 
 @Override
 public Point getLocation() {
 	checkWidget ();
-	return getDisplay().translateFromDisplayCoordinates(getLocationInPixels(), getZoom());
+	return getDisplay().translateFromDisplayCoordinates(getLocationInPixels());
 }
 
 @Override
 public void setLocation(Point location) {
 	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);
 	checkWidget ();
-	Point locationInPixels = getDisplay().translateToDisplayCoordinates(location, getZoom());
+	Point locationInPixels = getDisplay().translateToDisplayCoordinates(location);
 	setLocationInPixels(locationInPixels.x, locationInPixels.y);
 }
 
@@ -1596,13 +1587,13 @@ public void setLocation(int x, int y) {
 public void setBounds(Rectangle rect) {
 	if (rect == null) error (SWT.ERROR_NULL_ARGUMENT);
 	checkWidget ();
-	Rectangle boundsInPixels = getDisplay().translateToDisplayCoordinates(rect, getZoom());
+	Rectangle boundsInPixels = getDisplay().translateToDisplayCoordinates(rect);
 	// The scaling of the width and height in case of a monitor change is handled by
 	// the WM_DPICHANGED event processing. So to avoid duplicate scaling, we always
 	// have to scale width and height with the zoom of the original monitor (still
 	// returned by getZoom()) here.
-	setBoundsInPixels(boundsInPixels.x, boundsInPixels.y, DPIUtil.scaleUp(rect.width, getZoom()),
-			DPIUtil.scaleUp(rect.height, getZoom()));
+	setBoundsInPixels(boundsInPixels.x, boundsInPixels.y, Win32DPIUtils.pointToPixel(rect.width, getZoom()),
+			Win32DPIUtils.pointToPixel(rect.height, getZoom()));
 }
 
 @Override
@@ -1778,7 +1769,7 @@ public void setImeInputMode (int mode) {
 public void setMaximumSize (int width, int height) {
 	checkWidget ();
 	int zoom = getZoom();
-	setMaximumSizeInPixels(DPIUtil.scaleUp(width, zoom), DPIUtil.scaleUp(height, zoom));
+	setMaximumSizeInPixels(Win32DPIUtils.pointToPixel(width, zoom), Win32DPIUtils.pointToPixel(height, zoom));
 }
 
 /**
@@ -1806,7 +1797,7 @@ public void setMaximumSize (int width, int height) {
 public void setMaximumSize (Point size) {
 	checkWidget ();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
-	size = DPIUtil.scaleUp(size, getZoom());
+	size = Win32DPIUtils.pointToPixel(size, getZoom());
 	setMaximumSizeInPixels(size.x, size.y);
 }
 
@@ -1853,7 +1844,7 @@ void setMaximumSizeInPixels (int width, int height) {
 public void setMinimumSize (int width, int height) {
 	checkWidget ();
 	int zoom = getZoom();
-	setMinimumSizeInPixels(DPIUtil.scaleUp(width, zoom), DPIUtil.scaleUp(height, zoom));
+	setMinimumSizeInPixels(Win32DPIUtils.pointToPixel(width, zoom), Win32DPIUtils.pointToPixel(height, zoom));
 }
 
 void setMinimumSizeInPixels (int width, int height) {
@@ -1901,7 +1892,7 @@ void setMinimumSizeInPixels (int width, int height) {
 public void setMinimumSize (Point size) {
 	checkWidget ();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
-	size = DPIUtil.scaleUp(size, getZoom());
+	size = Win32DPIUtils.pointToPixel(size, getZoom());
 	setMinimumSizeInPixels(size.x, size.y);
 }
 
@@ -2660,7 +2651,7 @@ LRESULT WM_SETCURSOR (long wParam, long lParam) {
 				RECT rect = new RECT ();
 				OS.GetClientRect (handle, rect);
 				if (OS.PtInRect (rect, pt)) {
-					OS.SetCursor (Cursor.win32_getHandle(cursor, getNativeZoom()));
+					OS.SetCursor (Cursor.win32_getHandle(cursor, DPIUtil.getZoomForAutoscaleProperty(getNativeZoom())));
 					switch (msg) {
 						case OS.WM_LBUTTONDOWN:
 						case OS.WM_RBUTTONDOWN:
@@ -2729,29 +2720,8 @@ LRESULT WM_WINDOWPOSCHANGING (long wParam, long lParam) {
 }
 
 @Override
-LRESULT WM_WINDOWPOSCHANGED (long wParam, long lParam) {
-	LRESULT result = super.WM_WINDOWPOSCHANGED(wParam, lParam);
-	// When the process is started with System DPI awareness and
-	// only the thread is PerMonitorV2 aware, there are some scenarios, when the
-	// OS does not send a DPI change event when a child Shell is positioned and
-	// opened on another monitor as its parent Shell. To work around that limitation
-	// this check is added to trigger a dpi change event if an unexpected DPI value is
-	// detected.
-	if (display.isRescalingAtRuntime()) {
-		int dpiForWindow = DPIUtil.mapDPIToZoom(OS.GetDpiForWindow(getShell().handle));
-		if (dpiForWindow != nativeZoom) {
-			WINDOWPOS lpwp = new WINDOWPOS ();
-			OS.MoveMemory (lpwp, lParam, WINDOWPOS.sizeof);
-			handleMonitorSpecificDpiChange(dpiForWindow, new Rectangle(lpwp.x, lpwp.y, lpwp.cx, lpwp.cy));
-		}
-	}
-	return result;
-}
-
-private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
-	if (!(widget instanceof Shell shell)) {
-		return;
-	}
-	shell.layout (null, SWT.DEFER | SWT.ALL | SWT.CHANGED);
+void handleDPIChange(Event event, float scalingFactor) {
+	super.handleDPIChange(event, scalingFactor);
+	layout (null, SWT.DEFER | SWT.ALL | SWT.CHANGED);
 }
 }

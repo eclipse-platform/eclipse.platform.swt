@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2022 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -17,14 +17,15 @@ import static org.eclipse.swt.events.MenuListener.menuShownAdapter;
 import static org.eclipse.swt.events.SelectionListener.widgetDefaultSelectedAdapter;
 import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import org.eclipse.swt.SWT;
@@ -287,18 +288,9 @@ private void openAddressBook() {
 	Cursor waitCursor = shell.getDisplay().getSystemCursor(SWT.CURSOR_WAIT);
 	shell.setCursor(waitCursor);
 
-	String[] data = new String[0];
-	try (FileReader fileReader = new FileReader(file.getAbsolutePath());
-			BufferedReader bufferedReader = new BufferedReader(fileReader);){
-
-		String nextLine = bufferedReader.readLine();
-		while (nextLine != null){
-			String[] newData = new String[data.length + 1];
-			System.arraycopy(data, 0, newData, 0, data.length);
-			newData[data.length] = nextLine;
-			data = newData;
-			nextLine = bufferedReader.readLine();
-		}
+	List<String> data = new ArrayList<>();
+	try {
+		data = Files.readAllLines(file.toPath());
 	} catch(FileNotFoundException e) {
 		displayError(resAddressBook.getString("File_not_found") + "\n" + file.getName());
 		return;
@@ -309,13 +301,13 @@ private void openAddressBook() {
 		shell.setCursor(null);
 	}
 
-	String[][] tableInfo = new String[data.length][table.getColumnCount()];
+	String[][] tableInfo = new String[data.size()][table.getColumnCount()];
 	int writeIndex = 0;
 	for (String element : data) {
 		String[] line = decodeLine(element);
 		if (line != null) tableInfo[writeIndex++] = line;
 	}
-	if (writeIndex != data.length) {
+	if (writeIndex != data.size()) {
 		String[][] result = new String[writeIndex][table.getColumnCount()];
 		System.arraycopy(tableInfo, 0, result, 0, writeIndex);
 		tableInfo = result;
@@ -346,10 +338,8 @@ private boolean save() {
 		lines[i] = encodeLine(itemText);
 	}
 
-	try (FileWriter fileWriter = new FileWriter(file.getAbsolutePath(), false);){
-		for (String line : lines) {
-			fileWriter.write(line);
-		}
+	try {
+		Files.write(file.toPath(), List.of(lines), StandardOpenOption.TRUNCATE_EXISTING);
 	} catch(FileNotFoundException e) {
 		displayError(resAddressBook.getString("File_not_found") + "\n" + file.getName());
 		return false;

@@ -90,6 +90,9 @@ public class WebKitGTK extends C {
 	public static final int WEBKIT_USER_SCRIPT_INJECT_AT_DOCUMENT_START = 0;
 	public static final int WEBKIT_USER_CONTENT_INJECT_TOP_FRAME = 1;
 
+	public static final int G_MAXUINT = 65535;
+	public static final int WEBKIT_FIND_OPTIONS_WRAP_AROUND = 1 << 4;
+
 	/** Signals */
 
 	// Authentication.
@@ -420,8 +423,6 @@ public static final native long webkit_web_view_get_window_properties(long webVi
  */
 public static final native void webkit_window_properties_get_geometry(long webKitWindowProperties, GdkRectangle rectangle);
 
-
-
 /** @method flags=dynamic */
 public static final native void webkit_web_view_go_back(long web_view);
 
@@ -534,6 +535,23 @@ public static final native long webkit_user_script_new (byte[] source, int injec
 
 /** @method flags=dynamic */
 public static final native void webkit_user_script_unref (long user_script);
+
+
+/** @method flags=dynamic */
+public static final native long webkit_web_view_get_find_controller(long webView);
+
+/** @method flags=dynamic */
+/* 			    void webkit_find_controller_search (WebKitFindController *find_controller, const gchar *search_text, guint32 find_options, guint max_match_count); **/
+public static final native void webkit_find_controller_search(long findController, byte[] textToSearch, int options, int max_match_count);
+
+/** @method flags=dynamic */
+public static final native long webkit_find_controller_search_next(long findController);
+
+/** @method flags=dynamic */
+public static final native long webkit_find_controller_search_previous(long findController);
+
+/** @method flags=dynamic */
+public static final native long webkit_find_controller_search_finish(long findController);
 
 /* --------------------- start SWT natives --------------------- */
 public static final native int GdkRectangle_sizeof();

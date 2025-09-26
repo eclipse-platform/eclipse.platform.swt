@@ -787,6 +787,9 @@ private void overrideThemeValues () {
 		if (GTK.GTK_VERSION >= OS.VERSION(3, 24, 5)) {
 			combinedCSS.append(load.apply("/org/eclipse/swt/internal/gtk/swt_theming_fixes_gtk_3_24_5.css", true));
 		}
+		if (GTK.GTK4) {
+			combinedCSS.append(load.apply("/org/eclipse/swt/internal/gtk/swt_theming_fixes_gtk_4_0_0.css", true));
+		}
 	}
 
 	// Load CSS from user-defined CSS file.
@@ -1096,8 +1099,12 @@ protected int getDeviceZoom() {
 		monitor = GDK.gdk_display_get_monitor_at_point(display, 0, 0);
 	}
 
-	int scale = GDK.gdk_monitor_get_scale_factor(monitor);
-	dpi = dpi * scale;
+	// GDK can return null monitor in some cases thus play safe
+	// See https://gitlab.gnome.org/GNOME/gtk/-/issues/5075 for details
+	if (monitor != 0) {
+		int scale = GDK.gdk_monitor_get_scale_factor(monitor);
+		dpi = dpi * scale;
+	}
 
 	return DPIUtil.mapDPIToZoom (dpi);
 }

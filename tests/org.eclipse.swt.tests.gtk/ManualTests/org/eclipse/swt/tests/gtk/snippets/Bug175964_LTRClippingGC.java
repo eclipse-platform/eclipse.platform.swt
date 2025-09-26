@@ -15,23 +15,28 @@ package org.eclipse.swt.tests.gtk.snippets;
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 //package org.eclipse.swt.snippets;
-/* 
+/*
  * Small modifications to test the clipping for an RTL widget.tree.
- * 
+ *
  * Tree example snippet: Images on the right side of the TreeItem
  *
  * For a widget.list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.2
  */
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeColumn;
+import org.eclipse.swt.widgets.TreeItem;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
-
-public class Bug175964_LTRClippingGC {	
+public class Bug175964_LTRClippingGC {
 	static Color lightGray;
 public static void main(String [] args) {
 	Display display = new Display();
@@ -42,11 +47,11 @@ public static void main(String [] args) {
 	shell.setLayout(new FillLayout ());
 	Tree tree = new Tree(shell, SWT.MULTI | SWT.FULL_SELECTION | SWT.RIGHT_TO_LEFT);
 	tree.setHeaderVisible(true);
-	tree.setLinesVisible(true);			
+	tree.setLinesVisible(true);
 	int columnCount = 1;//4;
 	for(int i = 0; i < columnCount; i++) {
 		TreeColumn column = new TreeColumn(tree, SWT.NONE);
-		column.setText("Column " + i);	
+		column.setText("Column " + i);
 	}
 	int itemCount = 3;
 	for (int i=0; i<itemCount; i++) {
@@ -75,34 +80,31 @@ public static void main(String [] args) {
 	 * Therefore, it is critical for performance that these methods be
 	 * as efficient as possible.
 	 */
-	Listener paintListener = new Listener() {
-		@Override
-		public void handleEvent(Event event) {			
-			switch(event.type) {
+	Listener paintListener = event -> {
+		switch (event.type) {
 //				case SWT.MeasureItem: {
 //					Rectangle rect = graphics.image.getBounds();
 //					event.width += rect.width;
 //					event.height = Math.max(event.height, rect.height + 2);
 //					break;
 //				}
-				case SWT.PaintItem: {
+		case SWT.PaintItem: {
 //					int x = event.x + event.width;
 //					Rectangle rect = graphics.image.getBounds();
 //					int offset = Math.max(0, (event.height - rect.height) / 2);
 //					event.gc.drawImage(graphics.image, x, event.y + offset);
-					event.gc.setBackground(lightGray);
-					event.gc.fillRectangle(event.gc.getClipping());
-					break;
-				}
+			event.gc.setBackground(lightGray);
+			event.gc.fillRectangle(event.gc.getClipping());
+			break;
 			}
 		}
-	};		
+	};
 	tree.addListener(SWT.MeasureItem, paintListener);
-	tree.addListener(SWT.PaintItem, paintListener);		
+	tree.addListener(SWT.PaintItem, paintListener);
 
 	for(int i = 0; i < columnCount; i++) {
 		tree.getColumn(i).pack();
-	}	
+	}
 	shell.setSize(500, 200);
 	shell.open();
 	while(!shell.isDisposed ()) {

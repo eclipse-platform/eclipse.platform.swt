@@ -14,8 +14,10 @@
 package org.eclipse.swt.tests.gtk.snippets;
 
 
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.events.ShellAdapter;
+import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 
 public class Bug286244_ShellActivateLoop {
 
@@ -26,19 +28,15 @@ public class Bug286244_ShellActivateLoop {
 			@Override
 			public void shellDeactivated(ShellEvent e) {
 				System.out.println("shellDeactivated()");
-				display.timerExec(2000, new Runnable() {
-					@Override
-					public void run() {
-						System.out.println("forcing active");
-						shell.forceActive();
-						System.out.println("widget.shell is active: "
-								+ (display.getActiveShell() == shell));
-						System.out.println("forced active");
-						try {
-							Thread.sleep(5000);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
+				display.timerExec(2000, () -> {
+					System.out.println("forcing active");
+					shell.forceActive();
+					System.out.println("widget.shell is active: " + (display.getActiveShell() == shell));
+					System.out.println("forced active");
+					try {
+						Thread.sleep(5000);
+					} catch (InterruptedException e1) {
+						e1.printStackTrace();
 					}
 				});
 			}

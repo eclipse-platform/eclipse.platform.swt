@@ -15,8 +15,7 @@
 package org.eclipse.swt.tests.gtk.snippets;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
@@ -62,18 +61,14 @@ public class Bug514483_getCursorLocation
 		Shell childShell = new Shell(shell, SWT.ON_TOP);
 		childShell.setBackground(display.getSystemColor(SWT.COLOR_DARK_YELLOW));
 
-		MouseAdapter clickListener = new MouseAdapter() {
-			@Override
-			public void mouseDown(MouseEvent e) {
-				Point loc = display.getCursorLocation();
-				resultLbl.setText(loc.toString());
-				if (loc.x > 300 && loc.x < 700 && loc.y > 300 && loc.y < 700) // give user some slack.
-					resultLbl.setBackground(display.getSystemColor(SWT.COLOR_GREEN));
-				else
-					resultLbl.setBackground(display.getSystemColor(SWT.COLOR_RED));
-			}
-		};
-		childShell.addMouseListener(clickListener);
+		childShell.addMouseListener(MouseListener.mouseDownAdapter(e -> {
+			Point loc = display.getCursorLocation();
+			resultLbl.setText(loc.toString());
+			if (loc.x > 300 && loc.x < 700 && loc.y > 300 && loc.y < 700) // give user some slack.
+				resultLbl.setBackground(display.getSystemColor(SWT.COLOR_GREEN));
+			else
+				resultLbl.setBackground(display.getSystemColor(SWT.COLOR_RED));
+		}));
 
 //		display.addFilter(SWT.KeyDown, new Listener() {
 //			  public void handleEvent(Event e) {

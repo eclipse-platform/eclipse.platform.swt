@@ -14,8 +14,7 @@
 package org.eclipse.swt.tests.gtk.snippets;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Path;
 import org.eclipse.swt.graphics.PathData;
@@ -107,17 +106,12 @@ public class Bug475784_TransparentComposite extends Shell
 		gdDataButton.verticalAlignment = SWT.BOTTOM;
 		gdDataButton.grabExcessVerticalSpace = true;
 		btnNewButton.setLayoutData(gdDataButton);
-		btnNewButton.addSelectionListener(new SelectionAdapter()
-		{
-			@Override
-			public void widgetSelected(SelectionEvent e)
-			{
-				int width = composite.getSize().x;
-				int height = composite.getSize().y - btnNewButton.getSize().y - 10;
-				overlay.setSize(width, height);
-				overlay.setVisible(!overlay.isVisible());
-			}
-		});
+		btnNewButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+			int width = composite.getSize().x;
+			int height = composite.getSize().y - btnNewButton.getSize().y - 10;
+			overlay.setSize(width, height);
+			overlay.setVisible(!overlay.isVisible());
+		}));
 		overlay.moveAbove(null);
 		overlay.addPaintListener(e -> {
 				e.gc.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_YELLOW));
@@ -176,9 +170,8 @@ public class Bug475784_TransparentComposite extends Shell
 	public static void loadPath(Region region, float[] points, byte[] types)
 	{
 		int start = 0, end = 0;
-		for (int i = 0; i < types.length; i++)
-		{
-			switch (types[i])
+		for (byte type : types) {
+			switch (type)
 			{
 				case SWT.PATH_MOVE_TO:
 				{

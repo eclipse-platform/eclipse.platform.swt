@@ -20,8 +20,6 @@ import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
@@ -49,12 +47,7 @@ public class Bug354842_PecoTestSnippet {
 
 		shell.setLayout(new FillLayout());
 
-		folder.addListener(SWT.Paint, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				System.out.println("Paint");
-			}
-		});
+		folder.addListener(SWT.Paint, event -> System.out.println("Paint"));
 
 		shell.setSize(300, 300);
 		shell.open();

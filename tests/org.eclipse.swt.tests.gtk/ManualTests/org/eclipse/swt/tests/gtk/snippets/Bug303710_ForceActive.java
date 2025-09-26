@@ -13,8 +13,6 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.gtk.snippets;
 
-
-
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
@@ -28,7 +26,7 @@ public class Bug303710_ForceActive {
 		final int time = 500;
 		Runnable timer = new Runnable() {
 			@Override
-	public void run() {
+			public void run() {
 				Point point = display.getCursorLocation();
 				Rectangle rect = shell.getBounds();
 				if (rect.contains(point)) {

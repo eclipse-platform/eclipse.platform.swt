@@ -609,7 +609,12 @@ void bringToTop (boolean force) {
 	}
 	if ((xFocus || (style & SWT.ON_TOP) != 0)) {
 		if (OS.isX11()) {
-			long gdkDisplay = GDK.gdk_window_get_display(gdkResource);
+			long gdkDisplay;
+			if (GTK.GTK4) {
+				gdkDisplay = GDK.gdk_surface_get_display(gdkResource);
+			} else {
+				gdkDisplay = GDK.gdk_window_get_display(gdkResource);
+			}
 			long xDisplay = GDK.gdk_x11_display_get_xdisplay(gdkDisplay);
 			long xWindow;
 			if (GTK.GTK4) {
@@ -823,7 +828,9 @@ void createHandle (int index) {
 			gtk_container_set_border_width(shellHandle, 1);
 		}
 		if ((style & SWT.TOOL) != 0) {
-			GTK3.gtk_window_set_type_hint(shellHandle, GDK.GDK_WINDOW_TYPE_HINT_UTILITY);
+			if (!GTK.GTK4) {
+				GTK3.gtk_window_set_type_hint(shellHandle, GDK.GDK_WINDOW_TYPE_HINT_UTILITY);
+			}
 		}
 		if ((style & SWT.NO_TRIM) != 0) {
 			GTK.gtk_window_set_decorated(shellHandle, false);
@@ -1849,9 +1856,11 @@ long gtk_size_allocate (long widget, long allocation) {
 			long display = GDK.gdk_display_get_default();
 			long monitor = GDK.gdk_display_get_monitor_at_surface(display, paintSurface());
 			GDK.gdk_monitor_get_geometry(monitor, monitorSize);
-			long header = GTK4.gtk_widget_get_next_sibling(GTK4.gtk_widget_get_first_child(shellHandle));
+			long header = GTK4.gtk_window_get_titlebar(shellHandle);
 			int[] headerNaturalHeight = new int[1];
-			GTK4.gtk_widget_measure(header, GTK.GTK_ORIENTATION_VERTICAL, -1, null, headerNaturalHeight, null, null);
+			if (header != 0) {
+				GTK4.gtk_widget_measure(header, GTK.GTK_ORIENTATION_VERTICAL, 0, null, headerNaturalHeight, null, null);
+			}
 			widthA[0] = monitorSize.width;
 			heightA[0] = monitorSize.height - headerNaturalHeight[0];
 		}
@@ -2364,9 +2373,11 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 				 * On GTK4, GtkWindow size includes the header bar. In order to keep window size allocation of the client area
 				 * consistent with previous versions of SWT, we need to include the header bar height in addition to the given height value.
 				 */
-				long header = GTK4.gtk_widget_get_next_sibling(GTK4.gtk_widget_get_first_child(shellHandle));
+				long header = GTK4.gtk_window_get_titlebar(shellHandle);
 				int[] headerNaturalHeight = new int[1];
-				GTK4.gtk_widget_measure(header, GTK.GTK_ORIENTATION_VERTICAL, -1, null, headerNaturalHeight, null, null);
+				if (header != 0) {
+					GTK4.gtk_widget_measure(header, GTK.GTK_ORIENTATION_VERTICAL, 0, null, headerNaturalHeight, null, null);
+				}
 				GTK.gtk_window_set_default_size(shellHandle, width, height + headerNaturalHeight[0]);
 			} else {
 				GTK3.gtk_window_resize (shellHandle, width, height);
@@ -2520,7 +2531,9 @@ void setInitialBounds() {
 			long display = GDK.gdk_display_get_default();
 			if (display != 0) {
 				long monitor = GDK.gdk_display_get_monitor_at_surface(display, paintSurface());
-				GDK.gdk_monitor_get_geometry(monitor, dest);
+				if (monitor != 0) {
+					GDK.gdk_monitor_get_geometry(monitor, dest);
+				}
 				width = (int) (dest.width * SHELL_TO_MONITOR_RATIO);
 				height = (int) (dest.height * SHELL_TO_MONITOR_RATIO);
 			}
@@ -3251,14 +3264,14 @@ void deregister () {
 	if(shellHandle != 0 && !(disposed instanceof Shell)) {
 		SWT.error(SWT.ERROR_INVALID_RETURN_VALUE, null, ". Wrong widgetTable entry: " + disposed + " removed for shell: " + this + display.dumpWidgetTableInfo());
 	}
-	if(Display.strictChecks) {
+	StrictChecks.runIfStrictChecksEnabled(() -> {
 		Shell[] shells = display.getShells();
 		for (Shell shell : shells) {
 			if(shell == this) {
 				SWT.error(SWT.ERROR_INVALID_RETURN_VALUE, null, ". Disposed shell still in the widgetTable: " + this + display.dumpWidgetTableInfo());
 			}
 		}
-	}
+	});
 }
 
 boolean requiresUngrab () {

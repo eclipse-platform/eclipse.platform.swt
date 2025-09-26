@@ -46,10 +46,6 @@ public class TreeColumn extends Item {
 	String toolTipText;
 	int id;
 
-	static {
-		DPIZoomChangeRegistry.registerHandler(TreeColumn::handleDPIChange, TreeColumn.class);
-	}
-
 /**
  * Constructs a new instance of this class given its parent
  * (which must be a <code>Tree</code>) and a style value
@@ -311,7 +307,7 @@ public String getToolTipText () {
  */
 public int getWidth () {
 	checkWidget ();
-	return DPIUtil.scaleDown(getWidthInPixels(), getZoom());
+	return DPIUtil.pixelToPoint(getWidthInPixels(), getZoom());
 }
 
 int getWidthInPixels () {
@@ -359,7 +355,7 @@ public void pack () {
 				Event event = parent.sendMeasureItemEvent (item, index, hDC, detail);
 				if (isDisposed () || parent.isDisposed ()) break;
 				Rectangle bounds = event.getBounds();
-				itemRight = DPIUtil.scaleUp(bounds.x + bounds.width, getZoom());
+				itemRight = Win32DPIUtils.pointToPixel(bounds.x + bounds.width, getZoom());
 			} else {
 				long hFont = item.fontHandle (index);
 				if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
@@ -375,19 +371,11 @@ public void pack () {
 	int flags = OS.DT_CALCRECT | OS.DT_NOPREFIX;
 	char [] buffer = text.toCharArray ();
 	OS.DrawText (hDC, buffer, buffer.length, rect, flags);
-	int headerWidth = rect.right - rect.left + Tree.HEADER_MARGIN;
-	if (OS.IsAppThemed ()) headerWidth += Tree.HEADER_EXTRA;
-	if (image != null || parent.sortColumn == this) {
-		Image headerImage = null;
-		if (parent.sortColumn == this && parent.sortDirection != SWT.NONE) {
-			headerWidth += Tree.SORT_WIDTH;
-		} else {
-			headerImage = image;
-		}
-		if (headerImage != null) {
-			Rectangle bounds = DPIUtil.scaleUp(headerImage.getBounds(), getZoom());
-			headerWidth += bounds.width;
-		}
+	int headerWidth = rect.right - rect.left + Win32DPIUtils.pointToPixel(Tree.HEADER_MARGIN, getZoom());
+	if (OS.IsAppThemed ()) headerWidth += Win32DPIUtils.pointToPixel(Tree.HEADER_EXTRA, getZoom());
+	if (image != null) {
+		Rectangle bounds = Win32DPIUtils.pointToPixel(image.getBounds(), getZoom());
+		headerWidth += bounds.width;
 		int margin = 0;
 		if (hwndHeader != 0) {
 			margin = (int)OS.SendMessage (hwndHeader, OS.HDM_GETBITMAPMARGIN, 0, 0);
@@ -398,7 +386,7 @@ public void pack () {
 	}
 	if (newFont != 0) OS.SelectObject (hDC, oldFont);
 	OS.ReleaseDC (hwnd, hDC);
-	int gridWidth = parent.linesVisible ? Tree.GRID_WIDTH : 0;
+	int gridWidth = parent.linesVisible ? parent.getGridLineWidthInPixels() : 0;
 	setWidthInPixels (Math.max (headerWidth, columnWidth + gridWidth));
 }
 
@@ -717,7 +705,7 @@ public void setToolTipText (String string) {
  */
 public void setWidth (int width) {
 	checkWidget ();
-	setWidthInPixels(DPIUtil.scaleUp(width, getZoom()));
+	setWidthInPixels(Win32DPIUtils.pointToPixel(width, getZoom()));
 }
 
 void setWidthInPixels (int width) {
@@ -760,20 +748,18 @@ void updateToolTip (int index) {
 	}
 }
 
-private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
-	if (!(widget instanceof TreeColumn treeColumn)) {
-		return;
-	}
-	Tree tree = treeColumn.getParent();
+@Override
+void handleDPIChange(Event event, float scalingFactor) {
+	super.handleDPIChange(event, scalingFactor);
+	Tree tree = getParent();
 	boolean ignoreColumnResize = tree.ignoreColumnResize;
 	tree.ignoreColumnResize = true;
-	final int newColumnWidth = Math.round(treeColumn.getWidthInPixels() * scalingFactor);
-	treeColumn.setWidthInPixels(newColumnWidth);
+	final int newColumnWidth = Math.round(getWidthInPixels() * scalingFactor);
+	setWidthInPixels(newColumnWidth);
 	tree.ignoreColumnResize = ignoreColumnResize;
 
-	Image image = treeColumn.image;
 	if (image != null) {
-		treeColumn.setImage(image);
+		setImage(image);
 	}
 }
 }

@@ -288,6 +288,11 @@ public void test_copy() {
 
 	text.setText("");
 	text.paste();
+	// Spin the event loop to let GTK process the clipboard + entry update
+	Display display = text.getDisplay();
+	while (display.readAndDispatch()) {
+	    // loop until no more events
+	}
 	assertEquals("00000", text.getText());
 
 	// tests a SINGLE line text editor
@@ -307,6 +312,9 @@ public void test_copy() {
 
 	text.setText("");
 	text.paste();
+	while (display.readAndDispatch()) {
+	    // loop until no more events
+	}
 	assertEquals("00000", text.getText());
 }
 
@@ -515,8 +523,10 @@ public void test_getLineCount() {
 public void test_getLineDelimiter() {
 	String platform = SWT.getPlatform();
 	String delimiter = text.getLineDelimiter();
-	if (platform.equals("win32")) {
-		assertEquals("\r\n", delimiter);
+	switch(platform) {
+		case "win32" -> assertEquals("\r\n", delimiter);
+		case "cocoa" -> assertEquals ("\r", delimiter);
+		default-> assertEquals("\n", delimiter);
 	}
 }
 
@@ -1083,12 +1093,9 @@ public void test_setEditableZ() {
 @Test
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	FontData fontData = text.getFont().getFontData()[0];
-	int lineHeight;
-	Font font;
-
-	font = new Font(text.getDisplay(), fontData.getName(), 8, fontData.getStyle());
+	Font font = new Font(text.getDisplay(), fontData.getName(), 8, fontData.getStyle());
 	text.setFont(font);
-	lineHeight = text.getLineHeight();
+	int lineHeight = text.getLineHeight();
 	text.setFont(null);
 	font.dispose();
 	font = new Font(text.getDisplay(), fontData.getName(), 12, fontData.getStyle());

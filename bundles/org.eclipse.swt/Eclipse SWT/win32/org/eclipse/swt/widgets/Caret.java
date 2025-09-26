@@ -14,6 +14,8 @@
 package org.eclipse.swt.widgets;
 
 
+import java.util.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
@@ -48,10 +50,6 @@ public class Caret extends Widget {
 	Image image;
 	Font font;
 	LOGFONT oldFont;
-
-static {
-	DPIZoomChangeRegistry.registerHandler(Caret::handleDPIChange, Caret.class);
-}
 
 /**
  * Constructs a new instance of this class given its parent
@@ -121,21 +119,31 @@ long defaultFont () {
  */
 public Rectangle getBounds () {
 	checkWidget();
-	return DPIUtil.scaleDown(getBoundsInPixels(), getZoom());
+	return Win32DPIUtils.pixelToPoint(getBoundsInPixels(), getZoom());
 }
 
 Rectangle getBoundsInPixels () {
 	if (image != null) {
-		Rectangle rect = DPIUtil.scaleUp(image.getBounds(), getZoom());
+		Rectangle rect = Win32DPIUtils.pointToPixel(image.getBounds(), getZoom());
 		return new Rectangle (getXInPixels(), getYInPixels(), rect.width, rect.height);
 	}
 	if (width == 0) {
-		int [] buffer = new int [1];
-		if (OS.SystemParametersInfo (OS.SPI_GETCARETWIDTH, 0, buffer, 0)) {
-			return new Rectangle (getXInPixels(), getYInPixels(), buffer [0], getHeightInPixels());
+		OptionalInt widthInPixels = getSystemCaretWidthInPixelsForCurrentMonitor();
+		if (widthInPixels.isPresent()) {
+			return new Rectangle (getXInPixels(), getYInPixels(), widthInPixels.getAsInt(), getHeightInPixels());
 		}
 	}
 	return new Rectangle (getXInPixels(), getYInPixels(), getWidthInPixels(), getHeightInPixels());
+}
+
+private OptionalInt getSystemCaretWidthInPixelsForCurrentMonitor() {
+	int [] buffer = new int [1];
+	if (OS.SystemParametersInfo (OS.SPI_GETCARETWIDTH, 0, buffer, 0)) {
+		int width = DPIUtil.pixelToPoint(buffer [0], Win32DPIUtils.getPrimaryMonitorZoomAtStartup());
+		int widthInPixels = Win32DPIUtils.pointToPixel(width, getNativeZoom());
+		return OptionalInt.of(widthInPixels);
+	}
+	return OptionalInt.empty();
 }
 
 /**
@@ -215,37 +223,37 @@ public Canvas getParent () {
  */
 public Point getSize () {
 	checkWidget();
-	return DPIUtil.scaleDown(getSizeInPixels(), getZoom());
+	return Win32DPIUtils.pixelToPoint(getSizeInPixels(), getZoom());
 }
 
 Point getSizeInPixels () {
 	if (image != null) {
-		Rectangle rect = DPIUtil.scaleUp(image.getBounds(), getZoom());
+		Rectangle rect = Win32DPIUtils.pointToPixel(image.getBounds(), getZoom());
 		return new Point (rect.width, rect.height);
 	}
 	if (width == 0) {
-		int [] buffer = new int [1];
-		if (OS.SystemParametersInfo (OS.SPI_GETCARETWIDTH, 0, buffer, 0)) {
-			return new Point (buffer [0], getHeightInPixels());
+		OptionalInt widthInPixels = getSystemCaretWidthInPixelsForCurrentMonitor();
+		if (widthInPixels.isPresent()) {
+			return new Point (widthInPixels.getAsInt(), getHeightInPixels());
 		}
 	}
 	return new Point (getWidthInPixels(), getHeightInPixels());
 }
 
 private int getWidthInPixels() {
-	return DPIUtil.scaleUp(width, getZoom());
+	return Win32DPIUtils.pointToPixel(width, getZoom());
 }
 
 private int getHeightInPixels() {
-	return DPIUtil.scaleUp(height, getZoom());
+	return Win32DPIUtils.pointToPixel(height, getZoom());
 }
 
 private int getXInPixels() {
-	return DPIUtil.scaleUp(x, getZoom());
+	return Win32DPIUtils.pointToPixel(x, getZoom());
 }
 
 private int getYInPixels() {
-	return DPIUtil.scaleUp(y, getZoom());
+	return Win32DPIUtils.pointToPixel(y, getZoom());
 }
 
 /**
@@ -368,9 +376,9 @@ void resize () {
 	long hBitmap = image != null ? Image.win32_getHandle(image, getZoom()) : 0;
 	int widthInPixels = this.getWidthInPixels();
 	if (image == null && widthInPixels == 0) {
-		int [] buffer = new int [1];
-		if (OS.SystemParametersInfo (OS.SPI_GETCARETWIDTH, 0, buffer, 0)) {
-			widthInPixels = buffer [0];
+		OptionalInt systemCaretWidthInPixelsForCurrentMonitor = getSystemCaretWidthInPixelsForCurrentMonitor();
+		if (systemCaretWidthInPixelsForCurrentMonitor.isPresent()) {
+			widthInPixels = systemCaretWidthInPixelsForCurrentMonitor.getAsInt();
 		}
 	}
 	OS.CreateCaret (hwnd, hBitmap, widthInPixels, getHeightInPixels());
@@ -447,9 +455,9 @@ void setFocus () {
 	if (image != null) hBitmap = Image.win32_getHandle(image, getZoom());
 	int widthInPixels = this.getWidthInPixels();
 	if (image == null && widthInPixels == 0) {
-		int [] buffer = new int [1];
-		if (OS.SystemParametersInfo (OS.SPI_GETCARETWIDTH, 0, buffer, 0)) {
-			widthInPixels = buffer [0];
+		OptionalInt systemCaretWidthInPixelsForCurrentMonitor = getSystemCaretWidthInPixelsForCurrentMonitor();
+		if (systemCaretWidthInPixelsForCurrentMonitor.isPresent()) {
+			widthInPixels = systemCaretWidthInPixelsForCurrentMonitor.getAsInt();
 		}
 	}
 	OS.CreateCaret (hwnd, hBitmap, widthInPixels, getHeightInPixels());
@@ -646,42 +654,18 @@ public void setVisible (boolean visible) {
 	}
 }
 
-/**
- * <b>IMPORTANT:</b> This method is not part of the public
- * API for Image. It is marked public only so that it
- * can be shared within the packages provided by SWT. It is not
- * available on all platforms, and should never be called from
- * application code.
- *
- * Sets the height o the caret in points.
- *
- * @param caret the caret to set the height of
- * @param height the height of caret to be set in points.
- *
- * @noreference This method is not intended to be referenced by clients.
- */
-public static void win32_setHeight(Caret caret, int height) {
-	caret.checkWidget();
-	if(caret.height != height) {
-		caret.height = height;
-		caret.resized = true;
-	}
-	if(caret.isVisible && caret.hasFocus()) caret.resize();
-}
-
-private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
-	if (!(widget instanceof Caret caret)) {
-		return;
-	}
-
-	Image image = caret.getImage();
+@Override
+void handleDPIChange(Event event, float scalingFactor) {
+	super.handleDPIChange(event, scalingFactor);
+	Image image = getImage();
 	if (image != null) {
-		caret.setImage(image);
+		setImage(image);
 	}
 
-	if (caret.font != null) {
-		caret.setFont(caret.font);
+	if (font != null) {
+		setFont(font);
 	}
+	if (isVisible && hasFocus ()) resize();
 }
 }
 

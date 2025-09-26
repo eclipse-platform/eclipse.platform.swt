@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -81,7 +81,7 @@ class SashFormTab extends Tab {
 		list2.setItems (ListData1);
 		text = new Text (form, SWT.MULTI | SWT.BORDER);
 		text.setText (ControlExample.getResourceString("Multi_line")); //$NON-NLS-1$
-		form.setWeights(new int[] {1, 1, 1});
+		form.setWeights(1, 1, 1);
 	}
 	/**
 	 * Creates the "Style" group.

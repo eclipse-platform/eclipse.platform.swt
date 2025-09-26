@@ -18,7 +18,6 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
@@ -36,26 +35,19 @@ public class Bug532941_WaylandWindowNoParent {
 		final TableColumn tableColumn = new TableColumn(table, SWT.LEFT);
 		tableColumn.setText("Column");
 
-		final Listener listener = new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				if (event.type == SWT.MeasureItem) {
-					final Point size = event.gc.stringExtent(getText(event));
-					event.width = size.x;
-					event.height = size.y;
-				} else if (event.type == SWT.PaintItem) {
-					event.gc.drawString(getText(event), event.x, event.y);
-				} else if (event.type == SWT.SetData) {
-					event.item.setData("Row " + event.index);
-				} else if (event.type == SWT.MouseDown) {
-					if (event.button == 3) {
-						shell.dispose();
-					}
+		final Listener listener = event -> {
+			if (event.type == SWT.MeasureItem) {
+				final Point size = event.gc.stringExtent(String.valueOf(event.item.getData()));
+				event.width = size.x;
+				event.height = size.y;
+			} else if (event.type == SWT.PaintItem) {
+				event.gc.drawString(String.valueOf(event.item.getData()), event.x, event.y);
+			} else if (event.type == SWT.SetData) {
+				event.item.setData("Row " + event.index);
+			} else if (event.type == SWT.MouseDown) {
+				if (event.button == 3) {
+					shell.dispose();
 				}
-			}
-
-			private String getText(Event event) {
-				return String.valueOf(event.item.getData());
 			}
 		};
 		table.addListener(SWT.SetData, listener);
