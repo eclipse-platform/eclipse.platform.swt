@@ -3195,6 +3195,11 @@ void setBoundsInPixels (int x, int y, int width, int height, int flags) {
 }
 
 void setBoundsInPixels (int x, int y, int width, int height, int flags, boolean defer) {
+	long lol = topHandle ();
+	if(x == this.x && this.y == y && this.width == width && this.height == height && this.flags == flags) {
+//		System.out.println("yo " + lol);
+		return;
+	}
 	if (findImageControl () != null) {
 		if (backgroundImage == null) flags |= OS.SWP_NOCOPYBITS;
 	} else {
@@ -3204,7 +3209,8 @@ void setBoundsInPixels (int x, int y, int width, int height, int flags, boolean 
 			}
 		}
 	}
-	long topHandle = topHandle ();
+	long topHandle = lol;
+//	System.out.println(topHandle);
 	if (defer && parent != null) {
 		forceResize ();
 		if (parent.lpwp != null) {
@@ -3231,7 +3237,11 @@ void setBoundsInPixels (int x, int y, int width, int height, int flags, boolean 
 		}
 	}
 	OS.SetWindowPos (topHandle, 0, x, y, width, height, flags);
+	this.x = x;
+	this.y = y;this.width = width; this.height = height; this.flags = flags;
 }
+
+int x, y, width, height, flags;
 
 /**
  * Sets the receiver's size and location in points to the rectangular
