@@ -319,6 +319,16 @@ JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1box_1prepend)
 }
 #endif
 
+#ifndef NO_gtk_1box_1remove
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1box_1remove)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1box_1remove_FUNC);
+	gtk_box_remove((GtkBox *)arg0, (GtkWidget *)arg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1box_1remove_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1button_1new_1from_1icon_1name
 JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1button_1new_1from_1icon_1name)
 	(JNIEnv *env, jclass that, jbyteArray arg0)
@@ -707,6 +717,18 @@ JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1editable_1get_1delegate)
 }
 #endif
 
+#ifndef NO_gtk_1editable_1get_1max_1width_1chars
+JNIEXPORT jint JNICALL GTK4_NATIVE(gtk_1editable_1get_1max_1width_1chars)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jint rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1editable_1get_1max_1width_1chars_FUNC);
+	rc = (jint)gtk_editable_get_max_width_chars((GtkEditable *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1editable_1get_1max_1width_1chars_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1editable_1get_1text
 JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1editable_1get_1text)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -716,6 +738,16 @@ JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1editable_1get_1text)
 	rc = (jlong)gtk_editable_get_text((GtkEditable *)arg0);
 	GTK4_NATIVE_EXIT(env, that, gtk_1editable_1get_1text_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1editable_1set_1max_1width_1chars
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1editable_1set_1max_1width_1chars)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1editable_1set_1max_1width_1chars_FUNC);
+	gtk_editable_set_max_width_chars((GtkEditable *)arg0, (int)arg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1editable_1set_1max_1width_1chars_FUNC);
 }
 #endif
 
@@ -1708,6 +1740,16 @@ JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1popover_1set_1has_1arrow)
 	GTK4_NATIVE_ENTER(env, that, gtk_1popover_1set_1has_1arrow_FUNC);
 	gtk_popover_set_has_arrow((GtkPopover *)arg0, arg1);
 	GTK4_NATIVE_EXIT(env, that, gtk_1popover_1set_1has_1arrow_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1reorder_1child_1after
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1reorder_1child_1after)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1reorder_1child_1after_FUNC);
+	gtk_reorder_child_after((GtkBox *)arg0, (GtkWidget *)arg1, (GtkWidget *)arg2);
+	GTK4_NATIVE_EXIT(env, that, gtk_1reorder_1child_1after_FUNC);
 }
 #endif
 

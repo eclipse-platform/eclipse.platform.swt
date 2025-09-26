@@ -75,6 +75,17 @@ public class GTK4 {
 	 * @param child cast=(GtkWidget *)
 	 * @param sibling cast=(GtkWidget *)
 	 */
+	public static final native void gtk_reorder_child_after(long box, long child, long sibling);
+	/**
+	 * @param box cast=(GtkBox *)
+	 * @param child cast=(GtkWidget *)
+	 */
+	public static final native void gtk_box_remove(long box, long child);
+	/**
+	 * @param box cast=(GtkBox *)
+	 * @param child cast=(GtkWidget *)
+	 * @param sibling cast=(GtkWidget *)
+	 */
 	public static final native void gtk_box_insert_child_after(long box, long child, long sibling);
 
 	/* GtkCalendar */
@@ -120,6 +131,15 @@ public class GTK4 {
 	public static final native long gtk_editable_get_text(long editable);
 	/** @param editable cast=(GtkEditable *) */
 	public static final native long gtk_editable_get_delegate(long editable);
+	/**
+	 * @param editable cast=(GtkEditable *)
+	 */
+	public static final native int gtk_editable_get_max_width_chars(long editable);
+	/**
+	 * @param editable cast=(GtkEditable *)
+	 * @param chars cast=(int)
+	 */
+	public static final native void gtk_editable_set_max_width_chars(long editable, int chars);
 
 	/* GtkPicture */
 	public static final native long gtk_picture_new();
@@ -860,5 +880,4 @@ public class GTK4 {
 	 * @param gesture cast=(GtkGesture *)
 	 */
 	public static final native long gtk_gesture_get_last_updated_sequence(long gesture);
-
 }
