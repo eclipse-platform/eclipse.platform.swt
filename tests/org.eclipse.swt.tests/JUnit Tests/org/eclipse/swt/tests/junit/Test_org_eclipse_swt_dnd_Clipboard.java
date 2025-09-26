@@ -15,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -22,6 +23,7 @@ import java.lang.ProcessBuilder.Redirect;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.List;
@@ -51,6 +53,7 @@ import clipboard.ClipboardCommands;
  */
 public class Test_org_eclipse_swt_dnd_Clipboard {
 
+	private static final int DEFAULT_TIMEOUT_MS = 10000;
 	@TempDir
 	static Path tempFolder;
 	static int uniqueId = 1;
@@ -168,16 +171,40 @@ public class Test_org_eclipse_swt_dnd_Clipboard {
 			throw new RuntimeException("Failed to get port");
 		});
 		assertNotEquals(0, port);
-		Registry reg = LocateRegistry.getRegistry("127.0.0.1", port);
-		long stopTime = System.currentTimeMillis() + 10000;
-		do {
+		try {
+			Registry reg = LocateRegistry.getRegistry("127.0.0.1", port);
+			long stopTime = System.currentTimeMillis() + DEFAULT_TIMEOUT_MS;
+			do {
+				try {
+					remote = (ClipboardCommands) reg.lookup(ClipboardCommands.ID);
+					break;
+				} catch (NotBoundException e) {
+					// try again because the remote app probably hasn't bound yet
+				}
+			} while (System.currentTimeMillis() < stopTime);
+		} catch (RemoteException e) {
+
+			Integer exitValue = null;
+			boolean waitFor = false;
 			try {
-				remote = (ClipboardCommands) reg.lookup(ClipboardCommands.ID);
-				break;
-			} catch (NotBoundException e) {
-				// try again because the remote app probably hasn't bound yet
+				waitFor = remoteClipboardProcess.waitFor(5, TimeUnit.SECONDS);
+				if (waitFor) {
+					exitValue = remoteClipboardProcess.exitValue();
+				}
+			} catch (InterruptedException e1) {
+				Thread.interrupted();
 			}
-		} while (System.currentTimeMillis() < stopTime);
+
+			String message = "Failed to get remote clipboards command, this seems to happen on macOS on I-build tests. Exception: "
+					+ e.toString() + " waitFor: " + waitFor + " exitValue: " + exitValue;
+
+			// Give some diagnostic information to help track down why this fails on build
+			// machine. We only hard error on Linux, for other platforms we allow test to
+			// just be skipped until we track down what is causing
+			// https://github.com/eclipse-platform/eclipse.platform.swt/issues/2553
+			assumeTrue(SwtTestUtil.isGTK, message);
+			throw new RuntimeException(message, e);
+		}
 		assertNotNull(remote);
 
 		// Run a no-op on the Swing event loop so that we know it is idle
@@ -318,7 +345,7 @@ public class Test_org_eclipse_swt_dnd_Clipboard {
 	 * the thread completes, or until a timeout is reached.
 	 */
 	private <T> T runOperationInThread(ExceptionalSupplier<T> supplier) throws RuntimeException {
-		return runOperationInThread(2000, supplier);
+		return runOperationInThread(DEFAULT_TIMEOUT_MS, supplier);
 	}
 
 	/**
