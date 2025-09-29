@@ -1715,7 +1715,7 @@ boolean showMenu (int x, int y, int detail) {
 	if (!event.doit) return true;
 	Menu menu = getMenu ();
 	if (menu != null && !menu.isDisposed ()) {
-		Point locInPixels = Win32DPIUtils.pointToPixel(event.getLocation(), getZoom()); // In Pixels
+		Point locInPixels = Win32DPIUtils.pointToPixelAsLocation(event.getLocation(), getZoom()); // In Pixels
 		if (x != locInPixels.x || y != locInPixels.y) {
 			menu.setLocation (event.getLocation());
 		}

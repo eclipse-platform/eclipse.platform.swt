@@ -910,7 +910,7 @@ boolean dragDetect (long hwnd, int x, int y, boolean filter, boolean [] detect, 
  */
 public Point getCaretLocation () {
 	checkWidget ();
-	return Win32DPIUtils.pixelToPoint(getCaretLocationInPixels(), getZoom());
+	return Win32DPIUtils.pixelToPointAsLocation(getCaretLocationInPixels(), getZoom());
 }
 
 Point getCaretLocationInPixels () {

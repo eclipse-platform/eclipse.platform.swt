@@ -517,7 +517,7 @@ Point minimumSize (int wHint, int hHint, boolean flushCache) {
 			 * Since computeSize can be overridden by subclasses, we cannot
 			 * call computeSizeInPixels directly.
 			 */
-			Point size = Win32DPIUtils.pointToPixel(child.computeSize (DPIUtil.pixelToPoint(wHint, zoom), DPIUtil.pixelToPoint(hHint, zoom), flushCache), zoom);
+			Point size = Win32DPIUtils.pointToPixelAsSize(child.computeSize (DPIUtil.pixelToPoint(wHint, zoom), DPIUtil.pixelToPoint(hHint, zoom), flushCache), zoom);
 			width = Math.max (width, size.x);
 			height = Math.max (height, size.y);
 		}

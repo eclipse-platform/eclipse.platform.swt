@@ -2199,7 +2199,7 @@ public int[] getLineOffsets () {
  */
 public Point getLocation (int offset, boolean trailing) {
 	checkLayout();
-	return Win32DPIUtils.pixelToPoint(getDevice(), getLocationInPixels(offset, trailing), getZoom());
+	return Win32DPIUtils.pixelToPointAsLocation(getDevice(), getLocationInPixels(offset, trailing), getZoom());
 }
 
 Point getLocationInPixels (int offset, boolean trailing) {
@@ -2409,7 +2409,7 @@ int _getOffset(int offset, int movement, boolean forward) {
  */
 public int getOffset (Point point, int[] trailing) {
 	checkLayout();
-	if (point == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);	return getOffsetInPixels(Win32DPIUtils.pointToPixel(getDevice(), point, getZoom()), trailing);
+	if (point == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);	return getOffsetInPixels(Win32DPIUtils.pointToPixelAsLocation(getDevice(), point, getZoom()), trailing);
 }
 
 int getOffsetInPixels (Point point, int[] trailing) {

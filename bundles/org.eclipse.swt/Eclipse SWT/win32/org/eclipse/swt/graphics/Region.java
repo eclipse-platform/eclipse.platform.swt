@@ -232,7 +232,7 @@ public boolean contains (Point pt) {
 	if (pt == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	return applyUsingAnyHandle(regionHandle -> {
 		int zoom = regionHandle.zoom();
-		Point p = Win32DPIUtils.pointToPixel(pt, zoom);
+		Point p = Win32DPIUtils.pointToPixelAsLocation(pt, zoom);
 		return containsInPixels(regionHandle.handle(), p.x, p.y);
 	});
 }
@@ -889,7 +889,7 @@ private static class OperationWithPoint extends Operation {
 
 	@Override
 	void translate(long handle, int zoom) {
-		Point pt = Win32DPIUtils.pointToPixel((Point) data, zoom);
+		Point pt = Win32DPIUtils.pointToPixelAsLocation((Point) data, zoom);
 		OS.OffsetRgn (handle, pt.x, pt.y);
 	}
 

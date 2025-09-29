@@ -616,7 +616,9 @@ public Point computeSize (int wHint, int hHint, boolean changed){
 	int zoom = getZoom();
 	wHint = (wHint != SWT.DEFAULT ? Win32DPIUtils.pointToPixel(wHint, zoom) : wHint);
 	hHint = (hHint != SWT.DEFAULT ? Win32DPIUtils.pointToPixel(hHint, zoom) : hHint);
-	return Win32DPIUtils.pixelToPoint(computeSizeInPixels(wHint, hHint, changed), zoom);
+	//We should never return a size that is to small, RoundingMode.UP ensures we at worst case report
+	//a size that is a bit too large by half a point
+	return Win32DPIUtils.pixelToPointAsSize(computeSizeInPixels(wHint, hHint, changed), zoom);
 }
 
 Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
@@ -1368,7 +1370,8 @@ public Object getLayoutData () {
  */
 public Point getLocation () {
 	checkWidget ();
-	return Win32DPIUtils.pixelToPoint(getLocationInPixels(), getZoom());
+	//For a location the closest point values is okay
+	return Win32DPIUtils.pixelToPointAsLocation(getLocationInPixels(), getZoom());
 }
 
 Point getLocationInPixels () {
@@ -1524,7 +1527,7 @@ public Shell getShell () {
  */
 public Point getSize (){
 	checkWidget ();
-	return Win32DPIUtils.pixelToPoint(getSizeInPixels (), getZoom());
+	return Win32DPIUtils.pixelToPointAsSize(getSizeInPixels (), getZoom());
 }
 
 Point getSizeInPixels () {
@@ -3548,7 +3551,7 @@ void setLocationInPixels (int x, int y) {
 public void setLocation (Point location) {
 	checkWidget ();
 	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);
-	location = Win32DPIUtils.pointToPixel(location, getZoom());
+	location = Win32DPIUtils.pointToPixelAsLocation(location, getZoom());
 	setLocationInPixels(location.x, location.y);
 }
 
@@ -3811,7 +3814,7 @@ void setSizeInPixels (int width, int height) {
 public void setSize (Point size) {
 	checkWidget ();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
-	size = Win32DPIUtils.pointToPixel(size, getZoom());
+	size = Win32DPIUtils.pointToPixelAsSize(size, getZoom());
 	setSizeInPixels(size.x, size.y);
 }
 
@@ -4026,7 +4029,7 @@ public Point toControl (int x, int y) {
 	checkWidget ();
 	Point displayPointInPixels = getDisplay().translateToDisplayCoordinates(new Point(x, y));
 	final Point controlPointInPixels = toControlInPixels(displayPointInPixels.x, displayPointInPixels.y);
-	return Win32DPIUtils.pixelToPoint(controlPointInPixels, getZoom());
+	return Win32DPIUtils.pixelToPointAsLocation(controlPointInPixels, getZoom());
 }
 
 Point toControlInPixels (int x, int y) {

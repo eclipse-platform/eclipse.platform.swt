@@ -526,7 +526,7 @@ public Point getDPI () {
 	int dpiX = OS.GetDeviceCaps (hDC, OS.LOGPIXELSX);
 	int dpiY = OS.GetDeviceCaps (hDC, OS.LOGPIXELSY);
 	internal_dispose_GC (hDC, null);
-	return Win32DPIUtils.pixelToPoint(new Point (dpiX, dpiY), DPIUtil.getZoomForAutoscaleProperty(getDeviceZoom()));
+	return Win32DPIUtils.pixelToPointAsLocation(new Point (dpiX, dpiY), DPIUtil.getZoomForAutoscaleProperty(getDeviceZoom()));
 }
 
 /**
