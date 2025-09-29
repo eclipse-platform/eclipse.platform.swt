@@ -985,7 +985,7 @@ public int getCaretLineNumber () {
  */
 public Point getCaretLocation () {
 	checkWidget ();
-	return Win32DPIUtils.pixelToPoint(getCaretLocationInPixels(), getZoom());
+	return Win32DPIUtils.pixelToPointAsLocation(getCaretLocationInPixels(), getZoom());
 }
 
 Point getCaretLocationInPixels () {

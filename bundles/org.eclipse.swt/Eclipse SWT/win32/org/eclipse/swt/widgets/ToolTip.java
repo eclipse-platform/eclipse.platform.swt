@@ -393,7 +393,7 @@ void setLocationInPixels (int x, int y) {
 public void setLocation (Point location) {
 	checkWidget ();
 	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);
-	location = Win32DPIUtils.pointToPixel(location, getZoom());
+	location = Win32DPIUtils.pointToPixelAsLocation(location, getZoom());
 	setLocationInPixels(location.x, location.y);
 }
 

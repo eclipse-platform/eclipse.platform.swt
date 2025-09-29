@@ -1433,7 +1433,7 @@ private Point calculateRenderedTextSize() {
 			// GC calculated height of 15px, scales down with adjusted zoom of 100% and returns 15pt -> should be 10pt
 			// this calculation is corrected by the following line
 			// This is the only place, where the GC needs to use the native zoom to do that, therefore it is fixed only here
-			points = Win32DPIUtils.pixelToPoint(Win32DPIUtils.pointToPixel(points, adjustedPrimaryMonitorZoom), primaryMonitorZoom);
+			points = Win32DPIUtils.pixelToPointAsSize(Win32DPIUtils.pointToPixelAsSize(points, adjustedPrimaryMonitorZoom), primaryMonitorZoom);
 		}
 	}
 	return points;

@@ -355,7 +355,7 @@ public int getSelection () {
  */
 public Point getSize () {
 	checkWidget();
-	return Win32DPIUtils.pixelToPoint(getSizeInPixels(), getZoom());
+	return Win32DPIUtils.pixelToPointAsSize(getSizeInPixels(), getZoom());
 }
 
 Point getSizeInPixels () {

@@ -188,7 +188,7 @@ public Point computeSize (int wHint, int hHint) {
 	int zoom = getZoom();
 	wHint = (wHint != SWT.DEFAULT ? Win32DPIUtils.pointToPixel(wHint, zoom) : wHint);
 	hHint = (hHint != SWT.DEFAULT ? Win32DPIUtils.pointToPixel(hHint, zoom) : hHint);
-	return Win32DPIUtils.pixelToPoint(computeSizeInPixels(wHint, hHint), zoom);
+	return Win32DPIUtils.pixelToPointAsSize(computeSizeInPixels(wHint, hHint), zoom);
 }
 Point computeSizeInPixels (int wHint, int hHint) {
 	int index = parent.indexOf (this);
@@ -383,7 +383,7 @@ public void setControl (Control control) {
  */
 public Point getPreferredSize () {
 	checkWidget ();
-	return Win32DPIUtils.pixelToPoint(getPreferredSizeInPixels(), getZoom());
+	return Win32DPIUtils.pixelToPointAsSize(getPreferredSizeInPixels(), getZoom());
 }
 
 Point getPreferredSizeInPixels () {
@@ -464,7 +464,7 @@ void setPreferredSizeInPixels (int width, int height) {
 public void setPreferredSize (Point size) {
 	checkWidget ();
 	if (size == null) error(SWT.ERROR_NULL_ARGUMENT);
-	size = Win32DPIUtils.pointToPixel(size, getZoom());
+	size = Win32DPIUtils.pointToPixelAsSize(size, getZoom());
 	setPreferredSizeInPixels(size.x, size.y);
 }
 
@@ -483,7 +483,7 @@ public void setPreferredSize (Point size) {
  */
 public Point getSize () {
 	checkWidget ();
-	return Win32DPIUtils.pixelToPoint(getSizeInPixels(), getZoom());
+	return Win32DPIUtils.pixelToPointAsSize(getSizeInPixels(), getZoom());
 }
 
 Point getSizeInPixels() {
@@ -592,7 +592,7 @@ void setSizeInPixels (int width, int height) {
 public void setSize (Point size) {
 	checkWidget ();
 	if (size == null) error(SWT.ERROR_NULL_ARGUMENT);
-	size = Win32DPIUtils.pointToPixel(size, getZoom());
+	size = Win32DPIUtils.pointToPixelAsSize(size, getZoom());
 	setSizeInPixels(size.x, size.y);
 }
 
@@ -611,7 +611,7 @@ public void setSize (Point size) {
  */
 public Point getMinimumSize () {
 	checkWidget ();
-	return Win32DPIUtils.pixelToPoint(getMinimumSizeInPixels(), getZoom());
+	return Win32DPIUtils.pixelToPointAsSize(getMinimumSizeInPixels(), getZoom());
 }
 
 Point getMinimumSizeInPixels () {
@@ -695,7 +695,7 @@ void setMinimumSizeInPixels (int width, int height) {
 public void setMinimumSize (Point size) {
 	checkWidget ();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
-	size = Win32DPIUtils.pointToPixel(size, getZoom());
+	size = Win32DPIUtils.pointToPixelAsSize(size, getZoom());
 	setMinimumSizeInPixels(size.x, size.y);
 }
 
