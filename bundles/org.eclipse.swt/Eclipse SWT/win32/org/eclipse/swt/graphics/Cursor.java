@@ -352,14 +352,14 @@ private void setHandleForZoomLevel(CursorHandle handle, Integer zoom) {
  *         size, etc.)
  */
 
-private static int getPointerSizeScaleFactor() {
+private static float getPointerSizeScaleFactor() {
 	if (OsVersion.IS_WIN10_1809) {
 		int[] cursorBaseSize = OS.readRegistryDwords(OS.HKEY_CURRENT_USER, "Control Panel\\Cursors", "CursorBaseSize");
 		if (cursorBaseSize != null && cursorBaseSize.length > 0 && cursorBaseSize[0] > 0) {
-			return cursorBaseSize[0] / 32;
+			return cursorBaseSize[0] / 32.0f;
 		}
 	}
-	return 1;
+	return 1.0f;
 }
 
 @Override
@@ -648,8 +648,9 @@ private static class ImageDataCursorHandleProvider extends HotspotAwareCursorHan
 
 	@Override
 	public CursorHandle createHandle(Device device, int zoom) {
-		int accessibilityFactor = getPointerSizeScaleFactor();
-		ImageData scaledSource = DPIUtil.scaleImageData(device, this.source, zoom * accessibilityFactor, DEFAULT_ZOOM);
+		float accessibilityFactor = getPointerSizeScaleFactor();
+		int scaledZoom = (int) (zoom * accessibilityFactor);
+		ImageData scaledSource = DPIUtil.scaleImageData(device, this.source, scaledZoom, DEFAULT_ZOOM);
 		return setupCursorFromImageData(device, scaledSource, null, getHotpotXInPixels(zoom),
 				getHotpotYInPixels(zoom));
 	}
@@ -680,8 +681,10 @@ private static class ImageDataWithMaskCursorHandleProvider extends ImageDataCurs
 
 	@Override
 	public CursorHandle createHandle(Device device, int zoom) {
-		ImageData scaledSource = DPIUtil.scaleImageData(device, this.source, getPointerSizeScaleFactor() * zoom, DEFAULT_ZOOM);
-		ImageData scaledMask = this.mask != null ? DPIUtil.scaleImageData(device, mask, getPointerSizeScaleFactor() * zoom, DEFAULT_ZOOM)
+		float accessibilityFactor = getPointerSizeScaleFactor();
+		int scaledZoom = (int) (zoom * accessibilityFactor);
+		ImageData scaledSource = DPIUtil.scaleImageData(device, this.source, scaledZoom, DEFAULT_ZOOM);
+		ImageData scaledMask = this.mask != null ? DPIUtil.scaleImageData(device, mask, scaledZoom, DEFAULT_ZOOM)
 				: null;
 
 		return setupCursorFromImageData(device, scaledSource, scaledMask, getHotpotXInPixels(zoom),
