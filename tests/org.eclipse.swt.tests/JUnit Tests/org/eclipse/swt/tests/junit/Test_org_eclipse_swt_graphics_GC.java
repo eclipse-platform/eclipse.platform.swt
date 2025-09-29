@@ -279,6 +279,8 @@ public void test_drawImage_nonAutoScalableGC_bug_2504() {
     });
 
     shell.open();
+    while (display.readAndDispatch()) {
+    }
     Image target = new Image(display, canvasWidth, canvasHeight);
     GC gcCopy = new GC(canvas);
     gcCopy.copyArea(target, 0, 0);
