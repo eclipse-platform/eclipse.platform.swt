@@ -1171,7 +1171,6 @@ void forceResize (int width, int height) {
 			if (validTranslation && !isMappedToPopup()) {
 				allocation.x += window_offset_x[0];
 				allocation.y += window_offset_y[0];
-				allocation.height -= window_offset_y[0];
 			}
 		} else {
 			int [] dest_x = new int[1];
