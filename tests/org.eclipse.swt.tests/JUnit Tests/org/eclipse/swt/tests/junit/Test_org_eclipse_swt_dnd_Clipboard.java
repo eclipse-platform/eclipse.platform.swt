@@ -221,9 +221,11 @@ public class Test_org_eclipse_swt_dnd_Clipboard {
 		} finally {
 			if (remoteClipboardProcess != null) {
 				try {
-					remoteClipboardProcess.waitFor(1, TimeUnit.SECONDS);
+					remoteClipboardProcess.destroy();
+					assertTrue(remoteClipboardProcess.waitFor(10, TimeUnit.SECONDS));
 				} finally {
 					remoteClipboardProcess.destroyForcibly();
+					assertTrue(remoteClipboardProcess.waitFor(10, TimeUnit.SECONDS));
 					remoteClipboardProcess = null;
 				}
 			}

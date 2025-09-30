@@ -43,6 +43,18 @@ public class ClipboardCommandsImpl extends UnicastRemoteObject implements Clipbo
 			clipboardTest.log("stop()");
 			clipboardTest.dispose();
 		});
+		// Force the test program to quit, but after a short delay so that
+		// the return value of stop can make it back to the caller and
+		// the JUnit test may destroy the process before this sleep
+		// expires anyway
+		SwingUtilities.invokeLater(() -> {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				Thread.interrupted();
+			}
+			System.exit(0);
+		});
 	}
 
 	@Override
