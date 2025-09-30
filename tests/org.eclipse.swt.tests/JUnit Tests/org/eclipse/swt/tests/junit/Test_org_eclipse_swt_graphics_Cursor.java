@@ -140,6 +140,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 			ImageData source = loader.load(stream)[0];
 			ImageData mask = source.getTransparencyMask();
 			if (mask != null && (source.depth == 1)) {
+				@SuppressWarnings("deprecation")
 				Cursor cursor = new Cursor(display, source, mask, 0, 0);
 				cursor.dispose();
 			}
@@ -176,12 +177,14 @@ public void test_InvalidArgumentsForAllConstructors() {
 			});
 
 	assertThrows("When source is null", IllegalArgumentException.class, () -> {
+		@SuppressWarnings("deprecation")
 		Cursor cursorFromImageAndMask = new Cursor(Display.getDefault(), null, mask, 0, 0);
 		cursorFromImageAndMask.dispose();
 	});
 
 	assertThrows("When mask is null and source doesn't heve a mask",
 			IllegalArgumentException.class, () -> {
+				@SuppressWarnings("deprecation")
 				Cursor cursorFromImageAndMask = new Cursor(Display.getDefault(), source, null, 0, 0);
 				cursorFromImageAndMask.dispose();
 			});
@@ -191,12 +194,14 @@ public void test_InvalidArgumentsForAllConstructors() {
 				ImageData source32 = new ImageData(32, 32, 1, new PaletteData(new RGB[] { new RGB(0, 0, 0) }));
 				ImageData mask16 = new ImageData(16, 16, 1, new PaletteData(new RGB[] { new RGB(0, 0, 0) }));
 
+				@SuppressWarnings("deprecation")
 				Cursor cursorFromImageAndMask = new Cursor(Display.getDefault(), source32, mask16, 0, 0);
 				cursorFromImageAndMask.dispose();
 			});
 
 	assertThrows("When hotspot is outside the bounds of the image",
 			IllegalArgumentException.class, () -> {
+				@SuppressWarnings("deprecation")
 				Cursor cursorFromImageAndMask = new Cursor(Display.getDefault(), source, mask, 18, 18);
 				cursorFromImageAndMask.dispose();
 			});

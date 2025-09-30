@@ -184,7 +184,10 @@ public Cursor(Device device, int style) {
  * </ul>
  *
  * @see #dispose()
+ *
+ * @deprecated Use {@link #Cursor(Device, ImageDataProvider, int, int)} instead.
  */
+@Deprecated
 public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int hotspotY) {
 	super(device);
 	if (source == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
