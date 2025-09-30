@@ -2330,8 +2330,14 @@ private abstract class BaseImageProviderWrapper<T> extends DynamicImageProviderW
 
 	@Override
 	protected Rectangle getBounds(int zoom) {
-		ImageData imageData = getImageData(zoom);
-		return new Rectangle(0, 0, imageData.width, imageData.height);
+		if (cachedImageData.containsKey(zoom)) {
+			ImageData imageData = cachedImageData.get(zoom);
+			return new Rectangle(0, 0, imageData.width, imageData.height);
+		}
+		ElementAtZoom<ImageData> imageDataAtZoom = loadImageData(zoom);
+		ImageData imageData = imageDataAtZoom.element();
+		Rectangle currentSize = new Rectangle(0, 0, imageData.width, imageData.height);
+		return Win32DPIUtils.scaleBounds(currentSize, zoom, imageDataAtZoom.zoom());
 	}
 }
 
