@@ -184,15 +184,15 @@ public boolean equals(Object object) {
  */
 public FontData[] getFontData() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-
+	final int DOTS_PER_INCH = 96;
 	long family = OS.pango_font_description_get_family(handle);
 	int length = C.strlen(family);
 	byte[] buffer = new byte[length];
 	C.memmove(buffer, family, length);
 	String name = new String(Converter.mbcsToWcs(buffer));
 	float height = (float)OS.pango_font_description_get_size(handle) / OS.PANGO_SCALE;
-	Point dpi = device.dpi, screenDPI = device.getScreenDPI();
-	float size = height * screenDPI.y / dpi.y;
+	Point dpi = device.dpi;
+	float size = height * DOTS_PER_INCH / dpi.y;
 	int pangoStyle = OS.pango_font_description_get_style(handle);
 	int pangoWeight = OS.pango_font_description_get_weight(handle);
 	int style = SWT.NORMAL;
@@ -254,8 +254,9 @@ public int hashCode() {
 void init(String name, float height, int style, byte[] fontString) {
 	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	Point dpi = device.dpi, screenDPI = device.getScreenDPI();
-	float size = height * dpi.y / screenDPI.y;
+	final int DOTS_PER_INCH = 96;
+	Point dpi = device.dpi;
+	float size = height * dpi.y / DOTS_PER_INCH;
 	if (fontString != null) {
 		handle = OS.pango_font_description_from_string (fontString);
 		if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);

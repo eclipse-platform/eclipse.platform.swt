@@ -244,6 +244,7 @@ public boolean equals(Object object) {
  */
 public FontData[] getFontData() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	final int DOTS_PER_INCH = 72;
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
@@ -258,8 +259,8 @@ public FontData[] getFontData() {
 		if ((traits & OS.NSBoldFontMask) != 0) style |= SWT.BOLD;
 		if ((extraTraits & OS.NSItalicFontMask) != 0) style |= SWT.ITALIC;
 		if ((extraTraits & OS.NSBoldFontMask) != 0) style |= SWT.BOLD;
-		Point dpi = device.dpi, screenDPI = device.getScreenDPI();
-		FontData data = new FontData(name, (float)handle.pointSize() * screenDPI.y / dpi.y, style);
+		Point dpi = device.dpi;
+		FontData data = new FontData(name, (float)handle.pointSize() * DOTS_PER_INCH / dpi.y, style);
 		data.nsName = nsName;
 		return new FontData[]{data};
 	} finally {
@@ -312,8 +313,9 @@ public int hashCode() {
 void init(String name, float height, int style, String nsName) {
 	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	Point dpi = device.dpi, screenDPI = device.getScreenDPI();
-	float size = height * dpi.y / screenDPI.y;
+	final int DOTS_PER_INCH = 72;
+	Point dpi = device.dpi;
+	float size = height * dpi.y / DOTS_PER_INCH;
 	NSFont systemFont = NSFont.systemFontOfSize(size);
 	NSFont boldSystemFont = NSFont.boldSystemFontOfSize(size);
 	String systemFontName = systemFont.familyName().getString();

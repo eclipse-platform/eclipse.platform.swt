@@ -391,7 +391,18 @@ public int getDepth () {
  * @exception SWTException <ul>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
+ *
+ * @deprecated <p>This method returns a single global DPI value
+ * that does not reflect per-monitor DPI settings on modern operating systems.
+ * In environments with different scaling factors across monitors, it may provide
+ * a misleading or meaningless result, as it does not correspond to the actual DPI
+ * of any specific monitor.</p>
+ *
+ * <p>Note: While deprecated for general {@code Device} instances like {@code Display},
+ * this method may still be validly used when called on a {@code Printer} instance,
+ * where a single global DPI value is meaningful and expected.</p>
  */
+@Deprecated
 public Point getDPI () {
 	checkDevice ();
 	return getScreenDPI();
@@ -611,8 +622,9 @@ protected void init () {
 	/* Initialize the system font slot */
 	boolean smallFonts = System.getProperty("org.eclipse.swt.internal.carbon.smallFonts") != null;
 	double systemFontSize = smallFonts ? NSFont.smallSystemFontSize() : NSFont.systemFontSize();
-	Point dpi = this.dpi = getDPI(), screenDPI = getScreenDPI();
-	NSFont font = NSFont.systemFontOfSize(systemFontSize * dpi.y / screenDPI.y);
+	final int DOTS_PER_INCH = 72;
+	Point dpi = this.dpi = getDPI();
+	NSFont font = NSFont.systemFontOfSize(systemFontSize * dpi.y / DOTS_PER_INCH);
 	font.retain();
 	systemFont = Font.cocoa_new(this, font);
 }

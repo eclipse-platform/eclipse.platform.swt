@@ -5053,7 +5053,8 @@ String debugInfoForIndex(long index) {
 }
 
 void dpiChanged(int newScaleFactor) {
-	DPIUtil.setDeviceZoom (DPIUtil.mapDPIToZoom(getDPI().x * newScaleFactor));
+	final int DOTS_PER_INCH = 96;
+	DPIUtil.setDeviceZoom (DPIUtil.mapDPIToZoom(DOTS_PER_INCH * newScaleFactor));
 	Shell[] shells = getShells();
 	for (int i = 0; i < shells.length; i++) {
 		shells[i].layout(true, true);
