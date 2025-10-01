@@ -1939,14 +1939,21 @@ private abstract class AbstractImageProviderWrapper {
 		return Collections.emptySet();
 	}
 
+	protected abstract ElementAtZoom<ImageData> loadImageData(int zoom);
+
 	abstract ImageData newImageData(ZoomContext zoomContext);
 
 	abstract AbstractImageProviderWrapper createCopy(Image image);
 
 	ImageData getScaledImageData (int zoom) {
+		ElementAtZoom<ImageData> closestAvailableImageData = getClosestAvailableImageData(zoom);
+		return DPIUtil.scaleImageData(device, closestAvailableImageData.element(), zoom, closestAvailableImageData.zoom());
+	}
+
+	ElementAtZoom<ImageData> getClosestAvailableImageData(int zoom) {
 		TreeSet<Integer> availableZooms = new TreeSet<>(zoomLevelToImageHandle.keySet());
 		int closestZoom = Optional.ofNullable(availableZooms.higher(zoom)).orElse(availableZooms.lower(zoom));
-		return DPIUtil.scaleImageData(device, getImageMetadata(new ZoomContext(closestZoom)).getImageData(), zoom, closestZoom);
+		return new ElementAtZoom<>(getImageMetadata(new ZoomContext(closestZoom)).getImageData(), closestZoom);
 	}
 
 	protected ImageHandle newImageHandle(ZoomContext zoomContext) {
@@ -2004,12 +2011,16 @@ private class ExistingImageHandleProviderWrapper extends AbstractImageProviderWr
 	public Collection<Integer> getPreservedZoomLevels() {
 		return Collections.singleton(zoomForHandle);
 	}
+
+	@Override
+	protected ElementAtZoom<ImageData> loadImageData(int zoom) {
+		return getClosestAvailableImageData(zoom);
+	}
 }
 
 private abstract class ImageFromImageDataProviderWrapper extends AbstractImageProviderWrapper {
 	private final Map<Integer, ImageData> cachedImageData = new HashMap<>();
 
-	protected abstract ElementAtZoom<ImageData> loadImageData(int zoom);
 
 	void initImage() {
 		// As the init call configured some Image attributes (e.g. type)
@@ -2195,6 +2206,11 @@ private class PlainImageProviderWrapper extends AbstractImageProviderWrapper {
 	}
 
 	@Override
+	protected ElementAtZoom<ImageData> loadImageData(int zoom) {
+		return getClosestAvailableImageData(zoom);
+	}
+
+	@Override
 	protected ImageHandle newImageHandle(ZoomContext zoomContext) {
 		int targetZoom = zoomContext.targetZoom();
 		if (zoomLevelToImageHandle.isEmpty()) {
@@ -2326,7 +2342,6 @@ private abstract class BaseImageProviderWrapper<T> extends DynamicImageProviderW
 		return init(imageData, zoom);
 	}
 
-	protected abstract ElementAtZoom<ImageData> loadImageData(int zoom);
 
 	@Override
 	protected Rectangle getBounds(int zoom) {
@@ -2621,7 +2636,12 @@ private class ImageGcDrawerWrapper extends DynamicImageProviderWrapper {
 
 	@Override
 	ImageData newImageData(ZoomContext zoomContext) {
-		return getImageMetadata(zoomContext).getImageData();
+		return loadImageData(zoomContext.targetZoom).element();
+	}
+
+	@Override
+	protected ElementAtZoom<ImageData> loadImageData(int zoom) {
+		return new ElementAtZoom<>(getImageMetadata(new ZoomContext(zoom)).getImageData(), zoom);
 	}
 
 	@Override
