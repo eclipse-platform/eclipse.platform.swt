@@ -17,6 +17,7 @@ package org.eclipse.swt.tests.junit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.eclipse.swt.SWT;
@@ -49,7 +50,6 @@ public void tearDown() {
 	shell.dispose();
 }
 private void testListener(final int[] segments, boolean exceptionExpected) {
-	boolean exceptionThrown = false;
 	BidiSegmentListener listener = event -> {
 		assertEquals(0, event.lineOffset, " incorrect BidiSegmentEvent");
 		assertEquals(line, event.lineText, " incorrect BidiSegmentEvent");
@@ -59,18 +59,22 @@ private void testListener(final int[] segments, boolean exceptionExpected) {
 	};
 
 	listenerCalled = false;
-	try {
-		text.addBidiSegmentListener(listener);
-		text.getLocationAtOffset(0);
-	} catch (IllegalArgumentException e) {
-		exceptionThrown = true;
-	} finally {
-		text.removeBidiSegmentListener(listener);
-	}
 	if (exceptionExpected) {
-		assertTrue(exceptionThrown, " expected exception not thrown");
+		assertThrows(IllegalArgumentException.class, () -> {
+			text.addBidiSegmentListener(listener);
+			try {
+				text.getLocationAtOffset(0);
+			} finally {
+				text.removeBidiSegmentListener(listener);
+			}
+		}, " expected exception not thrown");
 	} else {
-		assertFalse(exceptionThrown, " unexpected exception thrown");
+		text.addBidiSegmentListener(listener);
+		try {
+			text.getLocationAtOffset(0);
+		} finally {
+			text.removeBidiSegmentListener(listener);
+		}
 	}
 	if (SwtTestUtil.isBidi()) {
 		assertTrue(listenerCalled, " listener not called");
@@ -79,7 +83,6 @@ private void testListener(final int[] segments, boolean exceptionExpected) {
 	}
 }
 private void testStyleRangeSegmenting(final int[] segments, int[] boldRanges) {
-	boolean exceptionThrown = false;
 	BidiSegmentListener listener = event -> {
 		assertEquals(0, event.lineOffset, " incorrect BidiSegmentEvent");
 		assertEquals(line, event.lineText, " incorrect BidiSegmentEvent");
@@ -89,20 +92,17 @@ private void testStyleRangeSegmenting(final int[] segments, int[] boldRanges) {
 	};
 
 	listenerCalled = false;
+	text.addBidiSegmentListener(listener);
 	try {
-		text.addBidiSegmentListener(listener);
 		text.setStyleRange(null);
 		for (int i = 0; i < boldRanges.length; i += 2) {
 			StyleRange styleRange = new StyleRange(boldRanges[i], boldRanges[i + 1], null, null, SWT.BOLD);
 			text.setStyleRange(styleRange);
 		}
 		text.getLocationAtOffset(0);
-	} catch (IllegalArgumentException e) {
-		exceptionThrown = true;
 	} finally {
 		text.removeBidiSegmentListener(listener);
 	}
-	assertFalse(exceptionThrown, " unexpected exception thrown");
 	if (SwtTestUtil.isBidi()) {
 		assertTrue(listenerCalled, " listener not called");
 	} else {
