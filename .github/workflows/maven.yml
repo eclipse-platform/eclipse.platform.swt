@@ -99,3 +99,9 @@ jobs:
         path: |
           ${{ github.workspace }}/**/target/surefire-reports/*.xml
           ${{ github.workspace }}/**/hs_err_pid*.log
+    - name: Upload screenshots
+      if: always()
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+      with:
+        name: screenshots
+        path: tests/org.eclipse.swt.tests.win32/screenshots

@@ -18,7 +18,6 @@ import org.eclipse.swt.internal.win32.OS;
 import org.eclipse.swt.widgets.Event;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.events.KeyEvent
@@ -26,7 +25,6 @@ import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
  * @see org.eclipse.swt.events.KeyEvent
  */
 @SuppressWarnings("restriction")
-@DisabledIfEnvironmentVariable(named = "GITHUB_ACTIONS", matches = "true", disabledReason = "Windows Server 2025 incompatibility: https://github.com/eclipse-platform/eclipse.platform.swt/issues/2516")
 public class Test_org_eclipse_swt_events_KeyEvent extends KeyboardLayoutTest {
 	// Windows layouts suitable for 'LoadKeyboardLayout()', obtained from 'GetKeyboardLayoutName()'
 	static char[] LAYOUT_BENGALI        = "00020445\0".toCharArray();

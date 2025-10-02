@@ -15,9 +15,16 @@ package org.eclipse.swt.tests.win32;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.internal.win32.INPUT;
 import org.eclipse.swt.internal.win32.KEYBDINPUT;
 import org.eclipse.swt.internal.win32.OS;
@@ -221,9 +228,21 @@ public class KeyboardLayoutTest {
 	};
 
 	@BeforeEach
-	public void setUp(TestInfo testInfo) {
+	public void setUp(TestInfo testInfo) throws IOException {
 		this.testName = testInfo.getDisplayName();
 		display = new Display();
+		GC gc = new GC(display);
+		Image image = new Image(display, display.getBounds().width, display.getBounds().height);
+		gc.copyArea(image, 0, 0);
+		ImageLoader loader = new ImageLoader();
+		loader.data = new ImageData[]  {image.getImageData()  };
+		File folder = new File("screenshots");
+		if (!folder.exists()) {
+			Files.createDirectory(folder.toPath());
+		}
+		String filePath = folder.getAbsolutePath();
+		loader.save(filePath + "/" + testName + ".png", SWT.IMAGE_PNG);
+
 		shell = new Shell();
 
 		Listener listener = event -> {
