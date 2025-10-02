@@ -17,6 +17,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyListener;
@@ -1551,6 +1552,9 @@ private void doSegmentsTest (boolean isListening) {
  */
 @Test
 public void test_backspaceAndDelete() throws InterruptedException {
+	assumeTrue(
+			"Display.post tests only run successfully on GitHub actions - see https://github.com/eclipse-platform/eclipse.platform.swt/issues/2571",
+			Boolean.parseBoolean(System.getenv("GITHUB_ACTIONS")));
 	shell.open();
 	text.setSize(10, 50);
 	// The display.post needs to successfully obtain the focused window (at least on GTK3)

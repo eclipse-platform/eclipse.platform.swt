@@ -25,6 +25,7 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeFalse;
+import static org.junit.Assume.assumeTrue;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -79,6 +80,7 @@ import org.eclipse.swt.widgets.Widget;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.custom.StyledText
@@ -5897,7 +5899,11 @@ public void test_arrowDownKeepsPositionAfterNewLine() {
  * Bug 565164 - SWT.BS event no longer working
  */
 @Test
+@EnabledIfEnvironmentVariable(named = "GITHUB_ACTIONS", matches = "true", disabledReason = "Display.post tests only run successfully on GitHub actions - see https://github.com/eclipse-platform/eclipse.platform.swt/issues/2571")
 public void test_backspaceAndDelete() throws InterruptedException {
+	assumeTrue(
+			"Display.post tests only run successfully on GitHub actions - see https://github.com/eclipse-platform/eclipse.platform.swt/issues/2571",
+			Boolean.parseBoolean(System.getenv("GITHUB_ACTIONS")));
 	shell.open();
 	text.setSize(10, 50);
 	// The display.post needs to successfully obtain the focused window (at least on GTK3)
