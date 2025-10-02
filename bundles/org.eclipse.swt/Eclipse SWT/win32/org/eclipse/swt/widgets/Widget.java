@@ -194,10 +194,12 @@ public Widget (Widget parent, int style) {
 }
 
 void registerDPIChangeListener() {
-	this.addListener(SWT.ZoomChanged, event -> {
-		float scalingFactor = 1f * DPIUtil.getZoomForAutoscaleProperty(event.detail) / DPIUtil.getZoomForAutoscaleProperty(nativeZoom);
-		handleDPIChange(event, scalingFactor);
-	});
+	if (display.isRescalingAtRuntime()) {
+		this.addListener(SWT.ZoomChanged, event -> {
+			float scalingFactor = 1f * DPIUtil.getZoomForAutoscaleProperty(event.detail) / DPIUtil.getZoomForAutoscaleProperty(nativeZoom);
+			handleDPIChange(event, scalingFactor);
+		});
+	}
 }
 
 void _addListener (int eventType, Listener listener) {
