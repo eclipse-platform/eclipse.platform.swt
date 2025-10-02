@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -18,8 +18,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
@@ -52,12 +53,7 @@ public void setUp() {
 
 @Test
 public void test_ConstructorLorg_eclipse_swt_widgets_CanvasI() {
-	try {
-		new Caret(null, 0);
-		fail("No exception thrown for parent == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for null parent", IllegalArgumentException.class, () -> new Caret(null, 0));
 }
 
 @Test
@@ -75,7 +71,7 @@ public void test_getBounds() {
 public void test_getParent() {
 	assertEquals(canvas, caret.getParent());
 
-	assertTrue(caret.getDisplay()==shell.getDisplay());
+	assertSame(caret.getDisplay(),shell.getDisplay());
 }
 
 @Test
@@ -108,59 +104,46 @@ public void test_setBoundsIIII() {
 
 @Test
 public void test_setBoundsLorg_eclipse_swt_graphics_Rectangle() {
-	caret.setBounds(new Rectangle(0,0,30,30));
+	caret.setBounds(new Rectangle(0, 0, 30, 30));
 
-	try {
-		caret.setBounds(null);
-		fail("No exception thrown for bounds == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for bounds == null", IllegalArgumentException.class, () -> caret.setBounds(null));
 }
 
 @Test
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
-	Font font = caret.getFont();
-	caret.setFont(font);
-	assertEquals(font, caret.getFont());
+	Font font1 = caret.getFont();
+	caret.setFont(font1);
+	assertEquals(font1, caret.getFont());
 	caret.setFont(null);
 
-	font = new Font(caret.getDisplay(), SwtTestUtil.testFontName, 10, SWT.NORMAL);
+	Font font = new Font(caret.getDisplay(), SwtTestUtil.testFontName, 10, SWT.NORMAL);
 	caret.setFont(font);
 	assertEquals(font, caret.getFont());
 
 	caret.setFont(null);
 	font.dispose();
-	try {
-		caret.setFont(font);
-		caret.setFont(null);
-		fail("No exception thrown for disposed font");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for disposed font", IllegalArgumentException.class, () -> caret.setFont(font));
+	caret.setFont(null);
 }
 
 @Test
 public void test_setImageLorg_eclipse_swt_graphics_Image() {
-	Image image = caret.getImage();
-	caret.setImage(image);
-	assertEquals(image, caret.getImage());
+	Image image1 = caret.getImage();
+	caret.setImage(image1);
+	assertEquals(image1, caret.getImage());
 
 	caret.setImage(null);
 	assertNull(caret.getImage());
 
 	ImageGcDrawer noOpGcDrawer = (gc, width, height) -> {};
-	image = new Image(shell.getDisplay(), noOpGcDrawer, 10, 10);
+	Image image = new Image(shell.getDisplay(), noOpGcDrawer, 10, 10);
 	caret.setImage(image);
 	assertEquals(image, caret.getImage());
 
 	caret.setImage(null);
 	image.dispose();
-	try {
-		caret.setImage(image);
-		caret.setImage(null);
-		fail("No exception thrown for disposed image");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for disposed image", IllegalArgumentException.class, () -> caret.setImage(image));
+	caret.setImage(null);
 }
 
 @Test
