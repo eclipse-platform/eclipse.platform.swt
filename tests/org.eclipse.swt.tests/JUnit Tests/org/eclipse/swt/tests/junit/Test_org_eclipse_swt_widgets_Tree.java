@@ -13,6 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import static java.lang.System.currentTimeMillis;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -27,6 +28,7 @@ import java.util.List;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.TreeListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
@@ -966,6 +968,58 @@ public void test_Virtual() {
 	assertTrue("SetData callback count not in range: " + dataCounter[0],
 			dataCounter[0] > visibleCount / 2 && dataCounter[0] <= visibleCount * 3);
 }
+
+/** Ensure setText() and setImage() can be set from SetData handler.
+@see https://github.com/eclipse-platform/eclipse.platform.swt/issues/678
+**/
+@Test
+public void test_setData() {
+	tree.dispose();
+	disposedIntentionally = true;
+	Image image = new Image(Display.getCurrent(), 20, 20);
+	try {
+		shell.setSize(200, 200);
+		shell.setLayout(new FillLayout());
+		shell.open();
+		waitUntilIdle();
+		for (int i = 0; i < 200; i++) {
+			Tree tree = new Tree(shell, SWT.VIRTUAL);
+			tree.addListener(SWT.SetData, e -> {
+				TreeItem item = (TreeItem) e.item;
+				item.setText(0, "A");
+				item.setImage(image); // <-- this is the critical line!
+			});
+			waitUntilIdle(); // slightly increase crash probability by preventing unrelated background processing on the next line
+			tree.setItemCount(1);
+
+			waitUntilIdle(); // may crash while processing asynchronous events
+
+			assertEquals("A", tree.getItem(0).getText(0));
+			assertEquals(image, tree.getItem(0).getImage());
+			tree.dispose();
+		}
+	} finally {
+		image.dispose();
+	}
+}
+
+private void waitUntilIdle() {
+	long lastActive = currentTimeMillis();
+	while (true) {
+		if (Thread.interrupted()) {
+			throw new AssertionError();
+		}
+		if (Display.getCurrent().readAndDispatch()) {
+			lastActive = currentTimeMillis();
+		} else {
+			if (lastActive + 10 < currentTimeMillis()) {
+				return;
+			}
+			Thread.yield();
+		}
+	}
+}
+
 
 @Test
 public void test_emptinessChanged() {
