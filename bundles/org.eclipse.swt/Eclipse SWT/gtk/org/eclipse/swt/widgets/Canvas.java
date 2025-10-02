@@ -264,8 +264,10 @@ void gtk4_focus_window_event(long handle, long event) {
 	if(event == SWT.FocusIn) {
 		gtk_focus_in_event (handle, event);
 		if (caret != null) caret.setFocus ();
+	} else {
+		gtk_focus_out_event(handle, event);
+		if (caret != null) caret.killFocus();
 	}
-	else gtk_focus_out_event(handle, event);
 }
 
 @Override
