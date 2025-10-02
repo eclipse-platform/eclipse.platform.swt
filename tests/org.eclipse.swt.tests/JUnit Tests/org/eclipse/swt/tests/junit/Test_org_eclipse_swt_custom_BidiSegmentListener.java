@@ -60,16 +60,19 @@ private void testListener(final int[] segments, boolean exceptionExpected) {
 
 	listenerCalled = false;
 	text.addBidiSegmentListener(listener);
-	if (exceptionExpected) {
-		assertThrows(IllegalArgumentException.class, () -> text.getLocationAtOffset(0), " expected exception not thrown");
-	} else {
-		text.getLocationAtOffset(0);
-	}
-	text.removeBidiSegmentListener(listener);
-	if (SwtTestUtil.isBidi()) {
-		assertTrue(listenerCalled, " listener not called");
-	} else {
-		assertFalse(listenerCalled, " listener called when it shouldn't be");
+	try {
+		if (exceptionExpected) {
+			assertThrows(IllegalArgumentException.class, () -> text.getLocationAtOffset(0), " expected exception not thrown");
+		} else {
+			text.getLocationAtOffset(0);
+		}
+		if (SwtTestUtil.isBidi()) {
+			assertTrue(listenerCalled, " listener not called");
+		} else {
+			assertFalse(listenerCalled, " listener called when it shouldn't be");
+		}
+	} finally {
+		text.removeBidiSegmentListener(listener);
 	}
 }
 private void testStyleRangeSegmenting(final int[] segments, int[] boldRanges) {
