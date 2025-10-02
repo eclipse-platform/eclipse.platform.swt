@@ -260,14 +260,15 @@ long gtk_focus_out_event (long widget, long event) {
 }
 
 @Override
-void gtk4_focus_window_event(long handle, long event) {
-	if(event == SWT.FocusIn) {
-		gtk_focus_in_event (handle, event);
-		if (caret != null) caret.setFocus ();
-	} else {
-		gtk_focus_out_event(handle, event);
-		if (caret != null) caret.killFocus();
-	}
+void gtk4_focus_enter_event(long handle, long event) {
+	super.gtk4_focus_enter_event (handle, event);
+	if (caret != null) caret.setFocus ();
+}
+
+@Override
+void gtk4_focus_leave_event(long handle, long event) {
+	super.gtk4_focus_leave_event (handle, event);
+	if (caret != null) caret.setFocus ();
 }
 
 @Override
