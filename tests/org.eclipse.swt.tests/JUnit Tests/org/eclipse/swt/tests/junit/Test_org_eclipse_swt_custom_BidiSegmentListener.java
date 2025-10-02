@@ -59,23 +59,13 @@ private void testListener(final int[] segments, boolean exceptionExpected) {
 	};
 
 	listenerCalled = false;
+	text.addBidiSegmentListener(listener);
 	if (exceptionExpected) {
-		assertThrows(IllegalArgumentException.class, () -> {
-			text.addBidiSegmentListener(listener);
-			try {
-				text.getLocationAtOffset(0);
-			} finally {
-				text.removeBidiSegmentListener(listener);
-			}
-		}, " expected exception not thrown");
+		assertThrows(IllegalArgumentException.class, () -> text.getLocationAtOffset(0), " expected exception not thrown");
 	} else {
-		text.addBidiSegmentListener(listener);
-		try {
-			text.getLocationAtOffset(0);
-		} finally {
-			text.removeBidiSegmentListener(listener);
-		}
+		text.getLocationAtOffset(0);
 	}
+	text.removeBidiSegmentListener(listener);
 	if (SwtTestUtil.isBidi()) {
 		assertTrue(listenerCalled, " listener not called");
 	} else {
