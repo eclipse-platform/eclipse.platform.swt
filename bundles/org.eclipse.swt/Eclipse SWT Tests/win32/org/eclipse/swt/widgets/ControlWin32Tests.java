@@ -58,15 +58,15 @@ class ControlWin32Tests {
 	}
 
 	@Test
-	public void testScaleFontCorrectlyInNoAutoScaleScenario() {
+	public void testDoNotScaleFontInNoAutoScaleScenario() {
 		Win32DPIUtils.setMonitorSpecificScaling(false);
 		Display display = Display.getDefault();
 
 		assertFalse("Autoscale property is not set to false", display.isRescalingAtRuntime());
 		int scalingFactor = 2;
 		FontComparison fontComparison = updateFont(scalingFactor);
-		assertEquals("Font height in pixels is not adjusted according to the scale factor",
-				fontComparison.originalFontHeight * scalingFactor, fontComparison.currentFontHeight);
+		assertEquals("Font height in pixels is different when setting the same font again",
+				fontComparison.originalFontHeight, fontComparison.currentFontHeight);
 	}
 
 	@Test
