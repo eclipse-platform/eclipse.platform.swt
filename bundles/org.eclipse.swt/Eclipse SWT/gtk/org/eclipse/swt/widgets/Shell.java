@@ -133,6 +133,7 @@ public class Shell extends Decorations {
 	boolean ignoreFocusOut, ignoreFocusIn;
 	boolean ignoreFocusOutAfterGrab, grabbedFocus;
 	Region originalRegion;
+	long gdkSurfaceNotifyStateHandler, gdkSurfaceComputeSizeHandler;
 
 	static final int MAXIMUM_TRIM = 128;
 	static final int BORDER = 3;
@@ -965,8 +966,8 @@ void hookEvents () {
 		// Replaced "window-state-event" with GdkSurface "notify::state", pass shellHandle as user_data
 		GTK.gtk_widget_realize(shellHandle);
 		long gdkSurface = gtk_widget_get_surface (shellHandle);
-		OS.g_signal_connect (gdkSurface, OS.notify_state, display.notifyProc, shellHandle);
-		OS.g_signal_connect (gdkSurface, OS.compute_size, display.computeSizeProc, shellHandle);
+		gdkSurfaceNotifyStateHandler = OS.g_signal_connect (gdkSurface, OS.notify_state, display.notifyProc, shellHandle);
+		gdkSurfaceComputeSizeHandler = OS.g_signal_connect (gdkSurface, OS.compute_size, display.computeSizeProc, shellHandle);
 		OS.g_signal_connect(shellHandle, OS.notify_default_height, display.notifyProc, Widget.NOTIFY_DEFAULT_HEIGHT);
 		OS.g_signal_connect(shellHandle, OS.notify_default_width, display.notifyProc, Widget.NOTIFY_DEFAULT_WIDTH);
 		OS.g_signal_connect(shellHandle, OS.notify_maximized, display.notifyProc, Widget.NOTIFY_MAXIMIZED);
@@ -3431,6 +3432,20 @@ void releaseWidget () {
 	if (group != 0) OS.g_object_unref (group);
 	group = modalGroup = 0;
 	lastActive = null;
+	// Disconnect GdkSurface signal handlers for GTK4
+	if (GTK.GTK4 && shellHandle != 0) {
+		long gdkSurface = gtk_widget_get_surface(shellHandle);
+		if (gdkSurface != 0) {
+			if (gdkSurfaceNotifyStateHandler != 0) {
+				OS.g_signal_handler_disconnect(gdkSurface, gdkSurfaceNotifyStateHandler);
+				gdkSurfaceNotifyStateHandler = 0;
+			}
+			if (gdkSurfaceComputeSizeHandler != 0) {
+				OS.g_signal_handler_disconnect(gdkSurface, gdkSurfaceComputeSizeHandler);
+				gdkSurfaceComputeSizeHandler = 0;
+			}
+		}
+	}
 	if (regionToDispose != null) {
 		regionToDispose.dispose();
 	}

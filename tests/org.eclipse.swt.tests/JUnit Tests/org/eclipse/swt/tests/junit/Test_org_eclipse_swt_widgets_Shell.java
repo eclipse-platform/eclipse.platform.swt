@@ -1004,6 +1004,22 @@ public void test_Issue450_NoShellActivateOnSetFocus() {
 	}
 }
 
+@Test
+public void test_createAndDisposeMultipleShells() {
+	// Test for GTK4 crash when creating and disposing many shells
+	// See https://github.com/eclipse-platform/eclipse.platform.swt/issues/XXXX
+	Display display = shell.getDisplay();
+	for (int i = 0; i < 100; i++) {
+		Shell testShell = new Shell(display);
+		testShell.open();
+		while (display.readAndDispatch()) {
+			// Process events
+		}
+		testShell.close();
+		testShell.dispose();
+	}
+}
+
 @Override
 public void test_setLocationLorg_eclipse_swt_graphics_Point() {
 	//Setting location for Windows is not supported in GTK4
