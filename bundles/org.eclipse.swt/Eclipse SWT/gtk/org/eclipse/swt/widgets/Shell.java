@@ -3433,17 +3433,21 @@ void releaseWidget () {
 	group = modalGroup = 0;
 	lastActive = null;
 	// Disconnect GdkSurface signal handlers for GTK4
-	if (GTK.GTK4 && shellHandle != 0) {
-		long gdkSurface = gtk_widget_get_surface(shellHandle);
-		if (gdkSurface != 0) {
-			if (gdkSurfaceNotifyStateHandler != 0) {
-				OS.g_signal_handler_disconnect(gdkSurface, gdkSurfaceNotifyStateHandler);
-				gdkSurfaceNotifyStateHandler = 0;
+	if (GTK.GTK4 && shellHandle != 0 && GTK.gtk_widget_get_realized(shellHandle)) {
+		try {
+			long gdkSurface = GTK4.gtk_native_get_surface(GTK4.gtk_widget_get_native(shellHandle));
+			if (gdkSurface != 0) {
+				if (gdkSurfaceNotifyStateHandler != 0) {
+					OS.g_signal_handler_disconnect(gdkSurface, gdkSurfaceNotifyStateHandler);
+					gdkSurfaceNotifyStateHandler = 0;
+				}
+				if (gdkSurfaceComputeSizeHandler != 0) {
+					OS.g_signal_handler_disconnect(gdkSurface, gdkSurfaceComputeSizeHandler);
+					gdkSurfaceComputeSizeHandler = 0;
+				}
 			}
-			if (gdkSurfaceComputeSizeHandler != 0) {
-				OS.g_signal_handler_disconnect(gdkSurface, gdkSurfaceComputeSizeHandler);
-				gdkSurfaceComputeSizeHandler = 0;
-			}
+		} catch (Throwable t) {
+			// Ignore errors during cleanup - widget may already be partially destroyed
 		}
 	}
 	if (regionToDispose != null) {
