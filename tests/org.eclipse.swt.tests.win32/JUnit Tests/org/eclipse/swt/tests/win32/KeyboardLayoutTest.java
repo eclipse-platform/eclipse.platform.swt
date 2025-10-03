@@ -273,6 +273,7 @@ public class KeyboardLayoutTest {
 
 	@AfterEach
 	public void tearDown() {
+		emulateScanCode(UsScan.Esc);
 		if (shell != null) {
 			shell.dispose();
 		}
