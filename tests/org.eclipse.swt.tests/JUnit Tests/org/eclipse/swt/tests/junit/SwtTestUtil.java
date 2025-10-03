@@ -14,12 +14,10 @@
 package org.eclipse.swt.tests.junit;
 
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -49,7 +47,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.test.Screenshots;
-import org.junit.rules.TemporaryFolder;
 
 public class SwtTestUtil {
 	/**
@@ -130,19 +127,19 @@ public class SwtTestUtil {
 public static void assertSWTProblem(String message, int expectedCode, Throwable actualThrowable) {
 	if (actualThrowable instanceof SWTError) {
 		SWTError error = (SWTError) actualThrowable;
-		assertEquals(message, expectedCode, error.code);
+		assertEquals(expectedCode, error.code, message);
 	} else if (actualThrowable instanceof SWTException) {
 		SWTException exception = (SWTException) actualThrowable;
-		assertEquals(message, expectedCode, exception.code);
+		assertEquals(expectedCode, exception.code, message);
 	} else {
 		try {
 			SWT.error(expectedCode);
 		} catch (Throwable expectedThrowable) {
 			if (actualThrowable.getMessage().length() > expectedThrowable.getMessage().length()) {
-				assertTrue(message, actualThrowable.getMessage().startsWith(expectedThrowable.getMessage()));
+				assertTrue(actualThrowable.getMessage().startsWith(expectedThrowable.getMessage()), message);
 			}
 			else {
-				assertEquals(message, expectedThrowable.getMessage(), actualThrowable.getMessage());
+				assertEquals(expectedThrowable.getMessage(), actualThrowable.getMessage(), message);
 			}
 		}
 	}
@@ -369,7 +366,7 @@ public static void assertSimilarBrightness(String message, int expected, int act
 		// 2) and ensure  brightness is within 12.5% of the range.
 		double expectedIntensity = getBrightness(expected);
 		double actualIntensity = getBrightness(actual);
-		assertEquals(message, expectedIntensity, actualIntensity, 255f / 8);
+		assertEquals(expectedIntensity, actualIntensity, 255f / 8, message);
 	}
 }
 
@@ -478,7 +475,7 @@ public static void waitShellActivate(Runnable trigger, Shell shell) {
 	// Something went wrong? Get more info to diagnose
 	Screenshots.takeScreenshot(SwtTestUtil.class, "waitShellActivate-" + System.currentTimeMillis());
 	dumpShellState(System.out);
-	assertThat("Shell did not activate", shell.getDisplay().getActiveShell(), is(shell));
+	assertEquals(shell.getDisplay().getActiveShell(), shell, "Shell did not activate");
 	fail("SWT.Activate was not received but Shell is (incorrectly?) reported active");
 }
 
@@ -586,13 +583,12 @@ public static boolean hasPixelNotMatching(Image image, Color nonMatchingColor, R
 	return false;
 }
 
-public static Path getPath(String fileName, TemporaryFolder tempFolder) {
-	Path path = tempFolder.getRoot().toPath();
-	Path filePath = path.resolve("image-resources").resolve(Path.of(fileName));
-	return getPath(fileName, filePath);
+public static Path getPath(String fileName, Path tempFolder) {
+	Path filePath = tempFolder.resolve("image-resources").resolve(Path.of(fileName));
+	return copyFile(fileName, filePath);
 }
 
-public static Path getPath(String sourceFilename, Path destinationPath) {
+public static Path copyFile(String sourceFilename, Path destinationPath) {
 	if (!Files.isRegularFile(destinationPath)) {
 		// Extract resource on the classpath to a temporary file to ensure it's
 		// available as plain file, even if this bundle is packed as jar

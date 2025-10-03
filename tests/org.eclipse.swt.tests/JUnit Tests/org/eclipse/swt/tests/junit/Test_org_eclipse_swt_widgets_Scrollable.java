@@ -15,7 +15,7 @@ package org.eclipse.swt.tests.junit;
 
 import org.eclipse.swt.widgets.Scrollable;
 import org.eclipse.swt.widgets.Widget;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Scrollable

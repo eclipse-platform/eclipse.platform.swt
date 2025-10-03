@@ -13,12 +13,12 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ArmListener;
@@ -28,8 +28,8 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.MenuItem
@@ -39,7 +39,7 @@ import org.junit.Test;
 public class Test_org_eclipse_swt_widgets_MenuItem extends Test_org_eclipse_swt_widgets_Item {
 
 @Override
-@Before
+@BeforeEach
 public void setUp() {
 	super.setUp();
 	menu = new Menu(shell);
@@ -85,15 +85,13 @@ public void test_addArmListenerLorg_eclipse_swt_events_ArmListener() {
 	listenerCalled = false;
 	ArmListener listener = e -> listenerCalled = true;
 
-	assertThrows("No exception thrown for addArmListener with null argument", IllegalArgumentException.class,
-			() -> menuItem.addArmListener(null));
+	assertThrows(IllegalArgumentException.class, () -> menuItem.addArmListener(null));
 
 	menuItem.addArmListener(listener);
 	menuItem.notifyListeners(SWT.Arm, new Event());
 	assertTrue(listenerCalled);
 
-	assertThrows("No exception thrown for removeArmListener with null argument", IllegalArgumentException.class,
-			() -> menuItem.removeArmListener(null));
+	assertThrows(IllegalArgumentException.class, () -> menuItem.removeArmListener(null));
 	listenerCalled = false;
 	menuItem.removeArmListener(listener);
 	menuItem.notifyListeners(SWT.Arm, new Event());
@@ -105,15 +103,13 @@ public void test_addHelpListenerLorg_eclipse_swt_events_HelpListener() {
 	listenerCalled = false;
 	HelpListener listener = e -> listenerCalled = true;
 
-	assertThrows("No exception thrown for addHelpListener with null argument", IllegalArgumentException.class,
-			() -> menuItem.addHelpListener(null));
+	assertThrows(IllegalArgumentException.class, () -> menuItem.addHelpListener(null));
 
 	menuItem.addHelpListener(listener);
 	menuItem.notifyListeners(SWT.Help, new Event());
 	assertTrue(listenerCalled);
 
-	assertThrows("No exception thrown for removeHelpListener with null argument", IllegalArgumentException.class,
-			() -> menuItem.removeHelpListener(null));
+	assertThrows(IllegalArgumentException.class, () -> menuItem.removeHelpListener(null));
 	listenerCalled = false;
 	menuItem.removeHelpListener(listener);
 	menuItem.notifyListeners(SWT.Help, new Event());
@@ -133,15 +129,13 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 		}
 	};
 
-	assertThrows("No exception thrown for addSelectionListener with null argument", IllegalArgumentException.class,
-			() -> menuItem.addSelectionListener(null));
+	assertThrows(IllegalArgumentException.class, () -> menuItem.addSelectionListener(null));
 
 	menuItem.addSelectionListener(listener);
 	menuItem.notifyListeners(SWT.Selection, new Event());
 	assertTrue(listenerCalled);
 
-	assertThrows("No exception thrown for removeSelectionListener with null argument", IllegalArgumentException.class,
-			() -> menuItem.removeSelectionListener(null));
+	assertThrows(IllegalArgumentException.class, () -> menuItem.removeSelectionListener(null));
 	listenerCalled = false;
 	menuItem.removeSelectionListener(listener);
 	menuItem.notifyListeners(SWT.Selection, new Event());

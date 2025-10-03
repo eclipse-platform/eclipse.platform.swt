@@ -15,8 +15,8 @@ package org.eclipse.swt.tests.junit;
 
 
 import org.eclipse.swt.custom.CLabel;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.custom.CLabel
@@ -26,7 +26,7 @@ import org.junit.Test;
 public class Test_org_eclipse_swt_custom_CLabel extends Test_org_eclipse_swt_widgets_Canvas {
 
 @Override
-@Before
+@BeforeEach
 public void setUp() {
 	super.setUp();
 	label = new CLabel(shell, 0);

@@ -13,13 +13,13 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Group;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Group
@@ -29,7 +29,7 @@ import org.junit.Test;
 public class Test_org_eclipse_swt_widgets_Group extends Test_org_eclipse_swt_widgets_Composite {
 
 @Override
-@Before
+@BeforeEach
 public void setUp() {
 	super.setUp();
 	group = new Group(shell, 0);
@@ -66,7 +66,7 @@ public void test_setTextLjava_lang_String() {
 	String[] cases = {"", "some text", "ldkashdoehufweovcnhslvhregojebckreavbkuhxbiufvcyhbifuyewvbiureyd.,cmnesljliewjfchvbwoifivbeworixuieurvbiuvbohflksjeahfcliureafgyciabelitvyrwtlicuyrtliureybcliuyreuceyvbliureybct"};
 	for (int i = 0; i < cases.length; i++) {
 		group.setText(cases[i]);
-		assertEquals("case: " + String.valueOf(i), cases[i], group.getText());
+		assertEquals(cases[i], group.getText());
 	}
 }
 

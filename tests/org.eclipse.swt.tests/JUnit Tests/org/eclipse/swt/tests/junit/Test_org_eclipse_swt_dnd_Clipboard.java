@@ -149,7 +149,7 @@ public class Test_org_eclipse_swt_dnd_Clipboard {
 				"ClipboardTest$LocalHostOnlySocketFactory" //
 		).forEach((f) -> {
 			// extract the files and put them in the temp directory
-			SwtTestUtil.getPath("/clipboard/" + f + ".class",
+			SwtTestUtil.copyFile("/clipboard/" + f + ".class",
 					remoteClipboardTempDir.resolve("clipboard/" + f + ".class"));
 		});
 

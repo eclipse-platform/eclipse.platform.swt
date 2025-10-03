@@ -13,11 +13,10 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -31,8 +30,9 @@ import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Widget;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Composite
@@ -44,7 +44,7 @@ public class Test_org_eclipse_swt_widgets_Composite extends Test_org_eclipse_swt
 Composite composite;
 
 @Override
-@Before
+@BeforeEach
 public void setUp() {
 	super.setUp();
 	composite = new Composite(shell, 0);
@@ -68,24 +68,24 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 
 @Test
 public void test_getChildren() {
-	assertArrayEquals(":a:", new Control[]{}, composite.getChildren());
+	assertArrayEquals(new Control[]{}, composite.getChildren());
 	Composite c1 = new Composite(composite, 0);
-	assertArrayEquals(":b:", new Control[]{c1}, composite.getChildren());
+	assertArrayEquals(new Control[]{c1}, composite.getChildren());
 
 	List c2 = new List(composite, 0);
-	assertArrayEquals(":c:", new Control[]{c1, c2}, composite.getChildren());
+	assertArrayEquals(new Control[]{c1, c2}, composite.getChildren());
 
 	Button c3 = new Button(composite, 0);
-	assertArrayEquals(":d:", new Control[]{c1, c2, c3}, composite.getChildren());
+	assertArrayEquals(new Control[]{c1, c2, c3}, composite.getChildren());
 
 	c2.dispose();
-	assertArrayEquals(":e:", new Control[]{c1, c3}, composite.getChildren());
+	assertArrayEquals(new Control[]{c1, c3}, composite.getChildren());
 
 	Control[] children = composite.getChildren();
 	for (Control element : children)
 		element.dispose();
 
-	assertArrayEquals(":f:", new Control[]{}, composite.getChildren());
+	assertArrayEquals(new Control[]{}, composite.getChildren());
 }
 
 
@@ -115,8 +115,7 @@ public void test_setVisibility_and_sizing() {
 //    System.out.println("Button size: " + button.getSize().toString());			  // >> 500,463
 
 	Point compSize = visibilityComposite.getSize();
-	assertTrue("Composite should be aprox 500 by 463 px, but instead it is: " + compSize.toString(),
-			compSize.x > 100 && compSize.y > 100); // If this is 1x1 or 0x0 then there was some fault in layout.
+	assertTrue(compSize.x > 100 && compSize.y > 100); // If this is 1x1 or 0x0 then there was some fault in layout.
 	visibilityShell.dispose();
 }
 
@@ -132,7 +131,7 @@ public void test_setFocus_toChild_afterOpen() {
 	Text focusChild = new Text(composite, SWT.NONE);
 	SwtTestUtil.waitShellActivate(shell::open, shell);
 	composite.setFocus();
-	assertTrue("First child widget should have focus", focusChild.isFocusControl());
+	assertTrue(focusChild.isFocusControl());
 }
 
 @Test
@@ -147,7 +146,7 @@ public void test_setFocus_toChild_beforeOpen() {
 	Text focusChild = new Text(composite, SWT.NONE);
 	composite.setFocus();
 	SwtTestUtil.waitShellActivate(shell::open, shell);
-	assertTrue("First child widget should have focus", focusChild.isFocusControl());
+	assertTrue(focusChild.isFocusControl());
 }
 
 @Test
@@ -164,7 +163,7 @@ public void test_setFocus_withInvisibleChild() {
 	SwtTestUtil.waitShellActivate(shell::open, shell);
 
 	composite.setFocus();
-	assertFalse("Composite should not try to set focus on invisible child", wasSetFocusCalledOnInvisibleChildWidget.get());
+	assertFalse(wasSetFocusCalledOnInvisibleChildWidget.get());
 }
 
 @Test
@@ -182,8 +181,8 @@ public void test_setFocus_withVisibleAndInvisibleChild() {
 	SwtTestUtil.waitShellActivate(shell::open, shell);
 
 	composite.setFocus();
-	assertFalse("Composite should not try to set focus on invisible child", wasSetFocusCalledOnInvisibleChildWidget.get());
-	assertTrue("Visible child widget should have focus", getElementExpectedToHaveFocusAfterSetFocusOnParent(visibleChildWidget).isFocusControl());
+	assertFalse(wasSetFocusCalledOnInvisibleChildWidget.get());
+	assertTrue(getElementExpectedToHaveFocusAfterSetFocusOnParent(visibleChildWidget).isFocusControl());
 }
 
 @Test

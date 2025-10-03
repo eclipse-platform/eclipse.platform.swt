@@ -13,11 +13,11 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,7 +32,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Decorations;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Widget;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Decorations
@@ -59,15 +59,15 @@ public void test_computeTrimIIII() {
 @Test
 public void test_getClientArea() {
 	Rectangle rect = decorations.getClientArea();
-	assertTrue(":a:", rect.height >= 0);
-	assertTrue(":b:", rect.width >= 0);
+	assertTrue(rect.height >= 0);
+	assertTrue(rect.width >= 0);
 }
 
 @Test
 public void test_getDefaultButton() {
 	Button button = new Button(decorations, SWT.PUSH);
 	decorations.setDefaultButton(button);
-	assertTrue(":a:", decorations.getDefaultButton() == button);
+	assertTrue(decorations.getDefaultButton() == button);
 }
 
 @Test
@@ -86,22 +86,22 @@ public void test_getImage() {
 @Test
 public void test_getLocation() {
 	decorations.setLocation(10,15);
-	assertEquals(":a:", 10, decorations.getLocation().x);
-	assertEquals(":b:", 15, decorations.getLocation().y);
+	assertEquals(10, decorations.getLocation().x);
+	assertEquals(15, decorations.getLocation().y);
 }
 
 @Test
 public void test_getMenuBar() {
-	assertNull(":a:", decorations.getMenuBar());
+	assertNull(decorations.getMenuBar());
 	Menu bar = new Menu (decorations, SWT.BAR);
 	decorations.setMenuBar (bar);
-	assertTrue(":b:", decorations.getMenuBar() == bar);
+	assertTrue(decorations.getMenuBar() == bar);
 }
 
 @Test
 public void test_getText() {
 	decorations.setText("test");
-	assertEquals(":a:", "test", decorations.getText());
+	assertEquals("test", decorations.getText());
 }
 
 @Override
@@ -116,7 +116,7 @@ public void test_setDefaultButtonLorg_eclipse_swt_widgets_Button() {
 	assertNull(decorations.getDefaultButton());
 	Button button = new Button(decorations, SWT.NULL);
 	decorations.setDefaultButton(button);
-	assertTrue("button not default", decorations.getDefaultButton() == button);
+	assertTrue(decorations.getDefaultButton() == button);
 	if (SwtTestUtil.fCheckBogusTestCases) {
 		decorations.setDefaultButton(null);
 		assertNull(decorations.getDefaultButton());
@@ -125,23 +125,23 @@ public void test_setDefaultButtonLorg_eclipse_swt_widgets_Button() {
 
 @Test
 public void test_setImageLorg_eclipse_swt_graphics_Image() {
-	assertNull(":a:", decorations.getImage());
+	assertNull(decorations.getImage());
 	loadImages();
 	decorations.setImage(images.get(0));
-	assertTrue(":b:", images.get(0) == decorations.getImage());
-	assertTrue(":c:", images.get(1) != decorations.getImage());
+	assertTrue(images.get(0) == decorations.getImage());
+	assertTrue(images.get(1) != decorations.getImage());
 	decorations.setImage(null);
-	assertNull(":d:", decorations.getImage());
+	assertNull(decorations.getImage());
 	freeImages();
 }
 
 @Test
 public void test_setMaximizedZ() {
 	decorations.setMaximized(false);
-	assertFalse(":1:", decorations.getMaximized());
+	assertFalse(decorations.getMaximized());
 	decorations.setMaximized(true);
-	assertTrue(":2:", decorations.getMaximized());
-	assertFalse(":3:", decorations.getMinimized());
+	assertTrue(decorations.getMaximized());
+	assertFalse(decorations.getMinimized());
 }
 
 @Test
@@ -149,7 +149,7 @@ public void test_setMenuBarLorg_eclipse_swt_widgets_Menu() {
 	assertNull(decorations.getMenu());
 	Menu testMenu = new Menu(decorations);
 	decorations.setMenu(testMenu);
-	assertTrue("Incorrect menu", decorations.getMenu() == testMenu);
+	assertTrue(decorations.getMenu() == testMenu);
 	decorations.setMenu(null);
 	assertNull(decorations.getMenu());
 }
@@ -157,10 +157,10 @@ public void test_setMenuBarLorg_eclipse_swt_widgets_Menu() {
 @Test
 public void test_setMinimizedZ() {
 	decorations.setMinimized(false);
-	assertFalse(":1:", decorations.getMinimized());
+	assertFalse(decorations.getMinimized());
 	decorations.setMinimized(true);
-	assertTrue(":2:", decorations.getMinimized());
-	assertFalse(":3:", decorations.getMaximized());
+	assertTrue(decorations.getMinimized());
+	assertFalse(decorations.getMaximized());
 }
 
 @Test
@@ -174,9 +174,9 @@ public void test_setTextLjava_lang_String() {
 
 	String testStr = "test string";
 	decorations.setText(testStr);
-	assertEquals("a", testStr, decorations.getText());
+	assertEquals(testStr, decorations.getText());
 	decorations.setText("");
-	assertTrue("b", decorations.getText().isEmpty());
+	assertTrue(decorations.getText().isEmpty());
 	try {
 		decorations.setText(null);
 		fail("No exception thrown for string == null");

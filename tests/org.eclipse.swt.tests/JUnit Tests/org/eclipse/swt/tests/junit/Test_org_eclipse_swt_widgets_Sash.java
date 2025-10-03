@@ -13,13 +13,14 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import static org.junit.Assert.fail;
+
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Sash;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Sash
@@ -29,7 +30,7 @@ import org.junit.Test;
 public class Test_org_eclipse_swt_widgets_Sash extends Test_org_eclipse_swt_widgets_Control {
 
 @Override
-@Before
+@BeforeEach
 public void setUp() {
 	super.setUp();
 	sash = new Sash(shell, 0);

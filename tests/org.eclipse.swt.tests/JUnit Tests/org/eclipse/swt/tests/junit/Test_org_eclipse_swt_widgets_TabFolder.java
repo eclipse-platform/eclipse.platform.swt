@@ -13,10 +13,10 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,8 +28,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.TabFolder
@@ -39,7 +39,7 @@ import org.junit.Test;
 public class Test_org_eclipse_swt_widgets_TabFolder extends Test_org_eclipse_swt_widgets_Composite {
 
 @Override
-@Before
+@BeforeEach
 public void setUp() {
 	super.setUp();
 	makeCleanEnvironment();
@@ -92,7 +92,7 @@ public void test_getClientArea() {
 public void test_getItemCount() {
 	int number = 10;
 	for (int i = 0; i<number ; i++){
-		assertEquals(":a:" + i, i, tabFolder.getItemCount());
+		assertEquals(i, tabFolder.getItemCount());
 		new TabItem(tabFolder, 0);
 	}
 }
@@ -106,7 +106,7 @@ public void test_getItemI() {
 	}
 
 	for (int i = 0; i < number; i++) {
-		assertEquals(":a:" + String.valueOf(i), items[i], tabFolder.getItem(i));
+		assertEquals(items[i], tabFolder.getItem(i));
 	}
 	try {
 		tabFolder.getItem(number);
@@ -182,10 +182,10 @@ public void test_getSelection() {
 	for (int i = 0; i<number ; i++){
 		tis[i] = new TabItem(tabFolder, 0);
 	}
-	assertEquals(":a:", tis[0], tabFolder.getSelection()[0]);
+	assertEquals(tis[0], tabFolder.getSelection()[0]);
 	for (int i = 0; i<number ; i++){
 		tabFolder.setSelection(i);
-		assertEquals(":b:" + i, tis[i], tabFolder.getSelection()[0]);
+		assertEquals(tis[i], tabFolder.getSelection()[0]);
 	}
 }
 
@@ -196,16 +196,16 @@ public void test_getSelectionIndex() {
 	for (int i = 0; i < number; i++)
 		items[i] = new TabItem(tabFolder, 0);
 
-	assertEquals(":a:", 0, tabFolder.getSelectionIndex());
+	assertEquals(0, tabFolder.getSelectionIndex());
 
 	tabFolder.setSelection(new TabItem[]{items[2], items[number-1], items[10]});
-	assertEquals(":b:", 2, tabFolder.getSelectionIndex());
+	assertEquals(2, tabFolder.getSelectionIndex());
 
 	tabFolder.setSelection(items);
-	assertEquals(":c:", 0, tabFolder.getSelectionIndex());
+	assertEquals(0, tabFolder.getSelectionIndex());
 
 	tabFolder.setSelection(items[2]);
-	assertEquals(":d:", 2, tabFolder.getSelectionIndex());
+	assertEquals(2, tabFolder.getSelectionIndex());
 }
 
 @Test
@@ -216,7 +216,7 @@ public void test_indexOfLorg_eclipse_swt_widgets_TabItem() {
 		tis[i] = new TabItem(tabFolder, 0);
 	}
 	for (int i = 0; i<number ; i++){
-		assertTrue(":a:" + i, tabFolder.indexOf(tis[i])==i);
+		assertTrue(tabFolder.indexOf(tis[i])==i);
 	}
 
 	//
@@ -253,14 +253,14 @@ public void test_indexOfLorg_eclipse_swt_widgets_TabItem() {
 	}
 
 	for (int i = 0; i < number; i++) {
-		assertTrue(":a:" + String.valueOf(i), tabFolder.indexOf(items_2[i])==-1);
+		assertTrue(tabFolder.indexOf(items_2[i])==-1);
 	}
 
 	//
 	TabFolder tabFolder2 = new TabFolder(shell, SWT.NULL);
 	TabItem tabItem = new TabItem(tabFolder2, SWT.NULL);
 
-	assertTrue(":a:", tabFolder.indexOf(tabItem) == -1);
+	assertTrue(tabFolder.indexOf(tabItem) == -1);
 }
 
 @Test
@@ -302,7 +302,7 @@ public void test_setSelectionI() {
 
 	for (int i = 0; i<number ; i++){
 		new TabItem(tabFolder, 0);
-		assertEquals("i=" + i, 0, tabFolder.getSelectionIndex());
+		assertEquals(0, tabFolder.getSelectionIndex());
 	}
 
 	//

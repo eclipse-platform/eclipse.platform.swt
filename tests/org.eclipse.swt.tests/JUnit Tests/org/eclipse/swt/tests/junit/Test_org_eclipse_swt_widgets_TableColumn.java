@@ -13,10 +13,10 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
@@ -26,8 +26,8 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.TableColumn
@@ -37,7 +37,7 @@ import org.junit.Test;
 public class Test_org_eclipse_swt_widgets_TableColumn extends Test_org_eclipse_swt_widgets_Item {
 
 @Override
-@Before
+@BeforeEach
 public void setUp() {
 	super.setUp();
 	table = new Table(shell, SWT.SINGLE);
@@ -120,13 +120,13 @@ public void test_getWidth() {
 //	}
 
 	tableColumn.setWidth(0);
-	assertEquals(":a: width=" + tableColumn.getWidth() + " should be=" + 0, 0, tableColumn.getWidth());
+	assertEquals(0, tableColumn.getWidth());
 
 	tableColumn.setWidth(testWidth);
-	assertEquals(":b: width=" + tableColumn.getWidth() + " should be=" + testWidth, testWidth, tableColumn.getWidth());
+	assertEquals(testWidth, tableColumn.getWidth());
 
 	tableColumn.setWidth(testWidth);
-	assertEquals(":c: width=" + tableColumn.getWidth() + " should be=" + testWidth, testWidth, tableColumn.getWidth());
+	assertEquals(testWidth, tableColumn.getWidth());
 }
 
 @Test
@@ -150,25 +150,23 @@ public void test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListene
 public void test_setAlignmentI() {
 	TableColumn column2;
 
-	assertEquals(":a:", SWT.LEFT, tableColumn.getAlignment());
+	assertEquals(SWT.LEFT, tableColumn.getAlignment());
 
 	tableColumn.setAlignment(-1);
-	assertEquals(":b:", SWT.LEFT, tableColumn.getAlignment());
+	assertEquals(SWT.LEFT, tableColumn.getAlignment());
 
 	tableColumn.setAlignment(SWT.RIGHT);
-	assertEquals(
-			":c: Should not be allowed to set alignment of the first column",
-			SWT.LEFT, tableColumn.getAlignment());
+	assertEquals(SWT.LEFT, tableColumn.getAlignment());
 
 	column2 = new TableColumn(table, SWT.NULL);
 	column2.setAlignment(SWT.RIGHT);
-	assertEquals(":d:", SWT.RIGHT, column2.getAlignment());
+	assertEquals(SWT.RIGHT, column2.getAlignment());
 
 	column2.setAlignment(SWT.CENTER);
-	assertEquals(":e:", SWT.CENTER, column2.getAlignment());
+	assertEquals(SWT.CENTER, column2.getAlignment());
 
 	column2.setAlignment(SWT.LEFT);
-	assertEquals(":f:", SWT.LEFT, column2.getAlignment());
+	assertEquals(SWT.LEFT, column2.getAlignment());
 }
 
 @Override
@@ -178,16 +176,16 @@ public void test_setImageLorg_eclipse_swt_graphics_Image() {
 
 @Test
 public void test_setMoveableZ() {
-	assertFalse(":a:", tableColumn.getMoveable());
+	assertFalse(tableColumn.getMoveable());
 
 	tableColumn.setMoveable(true);
-	assertTrue(":b:", tableColumn.getMoveable());
+	assertTrue(tableColumn.getMoveable());
 
 	tableColumn.setMoveable(true);
-	assertTrue(":c:", tableColumn.getMoveable());
+	assertTrue(tableColumn.getMoveable());
 
 	tableColumn.setMoveable(false);
-	assertFalse(":d:", tableColumn.getMoveable());
+	assertFalse(tableColumn.getMoveable());
 
 	TableColumn tableColumn2 = new TableColumn(tableColumn.getParent(), SWT.NONE);
 	tableColumn2.dispose();
@@ -203,25 +201,25 @@ public void test_setMoveableZ() {
 
 @Test
 public void test_setResizableZ() {
-	assertTrue(":a:", tableColumn.getResizable());
+	assertTrue(tableColumn.getResizable());
 
 	tableColumn.setResizable(false);
-	assertFalse(":b:", tableColumn.getResizable());
+	assertFalse(tableColumn.getResizable());
 
 	tableColumn.setResizable(false);
-	assertFalse(":c:", tableColumn.getResizable());
+	assertFalse(tableColumn.getResizable());
 
 	tableColumn.setResizable(true);
-	assertTrue(":d:", tableColumn.getResizable());
+	assertTrue(tableColumn.getResizable());
 }
 
 @Override
 @Test
 public void test_setTextLjava_lang_String() {
-	assertEquals(":a:", tableColumn.getText(), "");
+	assertEquals(tableColumn.getText(), "");
 
 	tableColumn.setText("text");
-	assertEquals(":b:", tableColumn.getText(), "text");
+	assertEquals(tableColumn.getText(), "text");
 
 	try {
 		tableColumn.setText(null);

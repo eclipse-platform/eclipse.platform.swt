@@ -15,9 +15,6 @@
 package org.eclipse.swt.tests.junit;
 
 import static org.eclipse.swt.tests.junit.SwtTestUtil.assertSWTProblem;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -839,8 +836,8 @@ public void test_drawLine_noSingularitiesIn45DregreeRotation() {
 		gc.setTransform(rotation);
 		gc.drawLine(centerPixel, centerPixel, centerPixel + 1, centerPixel);
 
-		assertThat("line is not drawn with 45 degree rotation",
-				image.getImageData().getPixel(centerPixel, centerPixel), not(is(-1)));
+		assertNotEquals(-1,
+				image.getImageData().getPixel(centerPixel, centerPixel), "line is not drawn with 45 degree rotation");
 	} finally {
 		rotation.dispose();
 		gc.dispose();

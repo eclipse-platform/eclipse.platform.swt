@@ -14,7 +14,7 @@
 
 package org.eclipse.swt.tests.graphics;
 
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

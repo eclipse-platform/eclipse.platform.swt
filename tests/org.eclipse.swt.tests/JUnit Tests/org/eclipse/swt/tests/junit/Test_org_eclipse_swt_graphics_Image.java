@@ -16,15 +16,15 @@ package org.eclipse.swt.tests.junit;
 
 
 import static org.eclipse.swt.tests.junit.SwtTestUtil.assertSWTProblem;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeFalse;
-import static org.junit.Assume.assumeTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -50,10 +50,10 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.DPIUtil;
 import org.eclipse.swt.widgets.Display;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.Image
@@ -63,8 +63,8 @@ import org.junit.rules.TemporaryFolder;
 @SuppressWarnings("restriction")
 public class Test_org_eclipse_swt_graphics_Image {
 
-	@ClassRule
-	public static TemporaryFolder tempFolder = new TemporaryFolder();
+	@TempDir
+	static Path tempFolder;
 
 	private static String getPath(String fileName) {
 		return SwtTestUtil.getPath(fileName, tempFolder).toString();
@@ -96,7 +96,7 @@ public class Test_org_eclipse_swt_graphics_Image {
 	};
 ImageGcDrawer imageGcDrawer = (gc, width, height) -> {};
 
-@Before
+@BeforeEach
 public void setUp() {
 	display = Display.getDefault();
 }
@@ -584,7 +584,6 @@ public void test_getBounds() {
 	image.dispose();
 	assertEquals(bounds, bounds1);
 }
-
 @SuppressWarnings("removal")
 @Test
 public void test_getBoundsInPixels() {
@@ -600,8 +599,8 @@ public void test_getBoundsInPixels() {
 	Rectangle boundsInPixels = image.getBoundsInPixels();
 	Rectangle bounds = image.getBounds();
 	image.dispose();
-	assertEquals("Image.getBounds method doesn't return original bounds.", initialBounds, bounds);
-	assertEquals("Image.getBoundsInPixels method doesn't return bounds in Pixel values.", initialBounds, boundsInPixels);
+	assertEquals(initialBounds, bounds);
+	assertEquals(initialBounds, boundsInPixels);
 
 	// create icon image
 	ImageData imageData = new ImageData(initialBounds.width, initialBounds.height, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
@@ -609,30 +608,30 @@ public void test_getBoundsInPixels() {
 	boundsInPixels = image.getBoundsInPixels();
 	bounds = image.getBounds();
 	image.dispose();
-	assertEquals("Image.getBounds method doesn't return original bounds.", initialBounds, bounds);
-	assertEquals("Image.getBoundsInPixels method doesn't return bounds in Pixel values.", initialBounds, boundsInPixels);
+	assertEquals(initialBounds, bounds);
+	assertEquals(initialBounds, boundsInPixels);
 
 	// create image with FileNameProvider
 	image = new Image(display, imageFileNameProvider);
 	boundsInPixels = image.getBoundsInPixels();
 	bounds = image.getBounds();
 	image.dispose();
-	assertEquals("Image.getBoundsInPixels method doesn't return bounds in Pixel values.", bounds, boundsInPixels);
+	assertEquals(bounds, boundsInPixels);
 
 	// create image with ImageDataProvider
 	image = new Image(display, imageDataProvider);
 	boundsInPixels = image.getBoundsInPixels();
 	bounds = image.getBounds();
 	image.dispose();
-	assertEquals("Image.getBoundsInPixels method doesn't return bounds in Pixel values.", bounds, boundsInPixels);
+	assertEquals(bounds, boundsInPixels);
 
 	// create image with ImageGcDrawer
 	image = new Image(display, imageGcDrawer, initialBounds.width, initialBounds.height);
 	boundsInPixels = image.getBoundsInPixels();
 	bounds = image.getBounds();
 	image.dispose();
-	assertEquals("Image.getBounds method doesn't return original bounds.", initialBounds, bounds);
-	assertEquals("Image.getBoundsInPixels method doesn't return bounds in Pixel values for ImageGcDrawer.", initialBounds, boundsInPixels);
+	assertEquals(initialBounds, bounds);
+	assertEquals(initialBounds, boundsInPixels);
 }
 
 @SuppressWarnings("removal")
@@ -650,7 +649,7 @@ public void test_getImageDataCurrentZoom() {
 	ImageData imageDataAtCurrentZoom = image.getImageDataAtCurrentZoom();
 	image.dispose();
 	Rectangle boundsAtCurrentZoom = new Rectangle(0, 0, imageDataAtCurrentZoom.width, imageDataAtCurrentZoom.height);
-	assertEquals(":a: Size of ImageData returned from Image.getImageDataAtCurrentZoom method doesn't return matches with bounds in Pixel values.", boundsAtCurrentZoom, bounds);
+	assertEquals(boundsAtCurrentZoom, bounds);
 
 	// create icon image and compare size of imageData
 	ImageData imageData = new ImageData(bounds.width, bounds.height, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
@@ -658,7 +657,7 @@ public void test_getImageDataCurrentZoom() {
 	imageDataAtCurrentZoom = image.getImageDataAtCurrentZoom();
 	image.dispose();
 	boundsAtCurrentZoom = new Rectangle(0, 0, imageDataAtCurrentZoom.width, imageDataAtCurrentZoom.height);
-	assertEquals(":b: Size of ImageData returned from Image.getImageDataAtCurrentZoom method doesn't return matches with bounds in Pixel values.", boundsAtCurrentZoom, bounds);
+	assertEquals(boundsAtCurrentZoom, bounds);
 
 	// create image with FileNameProvider
 	image = new Image(display, imageFileNameProvider);
@@ -666,7 +665,7 @@ public void test_getImageDataCurrentZoom() {
 	boundsAtCurrentZoom = new Rectangle(0, 0, imageDataAtCurrentZoom.width, imageDataAtCurrentZoom.height);
 	bounds = image.getBounds();
 	image.dispose();
-	assertEquals(":c: Size of ImageData returned from Image.getImageDataAtCurrentZoom method doesn't return matches with bounds in Pixel values.", boundsAtCurrentZoom, bounds);
+	assertEquals(boundsAtCurrentZoom, bounds);
 
 	// create image with ImageDataProvider
 	image = new Image(display, imageDataProvider);
@@ -674,7 +673,7 @@ public void test_getImageDataCurrentZoom() {
 	boundsAtCurrentZoom = new Rectangle(0, 0, imageDataAtCurrentZoom.width, imageDataAtCurrentZoom.height);
 	bounds = image.getBounds();
 	image.dispose();
-	assertEquals(":d: Size of ImageData returned from Image.getImageDataAtCurrentZoom method doesn't return matches with bounds in Pixel values.", boundsAtCurrentZoom, bounds);
+	assertEquals(boundsAtCurrentZoom, bounds);
 }
 
 @Test
@@ -730,7 +729,7 @@ void getImageData_int(int zoom) {
 	ImageData imageDataAtZoom = image.getImageData(zoom);
 	image.dispose();
 	Rectangle boundsAtZoom = new Rectangle(0, 0, imageDataAtZoom.width, imageDataAtZoom.height);
-	assertEquals(":a: Size of ImageData returned from Image.getImageData(int) method doesn't return matches with bounds in Pixel values.", scaleBounds(bounds, zoom, 100), boundsAtZoom);
+	assertEquals(scaleBounds(bounds, zoom, 100), boundsAtZoom);
 
 	// creates second bitmap image and compare size of imageData
 	image = new Image(display, bounds.width, bounds.height);
@@ -738,14 +737,14 @@ void getImageData_int(int zoom) {
 	boundsAtZoom = new Rectangle(0, 0, imageDataAtZoom.width, imageDataAtZoom.height);
 	bounds = image.getBounds();
 	image.dispose();
-	assertEquals(":a: Size of ImageData returned from Image.getImageData(int) method doesn't return matches with bounds in Pixel values.", scaleBounds(bounds, zoom, 100), boundsAtZoom);
+	assertEquals(scaleBounds(bounds, zoom, 100), boundsAtZoom);
 
 	// creates bitmap image with GCDrawer and compare size of imageData
 	image = new Image(display, (gc, width, height) -> {}, bounds.width, bounds.height);
 	imageDataAtZoom = image.getImageData(zoom);
 	image.dispose();
 	boundsAtZoom = new Rectangle(0, 0, imageDataAtZoom.width, imageDataAtZoom.height);
-	assertEquals(":a: Size of ImageData returned from Image.getImageData(int) method doesn't return matches with bounds in Pixel values.", scaleBounds(bounds, zoom, 100), boundsAtZoom);
+	assertEquals(scaleBounds(bounds, zoom, 100), boundsAtZoom);
 
 	// create icon image and compare size of imageData
 	ImageData imageData = new ImageData(bounds.width, bounds.height, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
@@ -753,7 +752,7 @@ void getImageData_int(int zoom) {
 	imageDataAtZoom = image.getImageData(zoom);
 	image.dispose();
 	boundsAtZoom = new Rectangle(0, 0, imageDataAtZoom.width, imageDataAtZoom.height);
-	assertEquals(":b: Size of ImageData returned from Image.getImageData(int) method doesn't return matches with bounds in Pixel values.", scaleBounds(bounds, zoom, 100), boundsAtZoom);
+	assertEquals(scaleBounds(bounds, zoom, 100), boundsAtZoom);
 
 	// create image with FileNameProvider
 	image = new Image(display, imageFileNameProvider);
@@ -761,7 +760,7 @@ void getImageData_int(int zoom) {
 	boundsAtZoom = new Rectangle(0, 0, imageDataAtZoom.width, imageDataAtZoom.height);
 	bounds = image.getBounds();
 	image.dispose();
-	assertEquals(":c: Size of ImageData returned from Image.getImageData(int) method doesn't return matches with bounds in Pixel values.", scaleBounds(bounds, zoom, 100), boundsAtZoom);
+	assertEquals(scaleBounds(bounds, zoom, 100), boundsAtZoom);
 
 	// create image with ImageDataProvider
 	image = new Image(display, imageDataProvider);
@@ -769,7 +768,7 @@ void getImageData_int(int zoom) {
 	boundsAtZoom = new Rectangle(0, 0, imageDataAtZoom.width, imageDataAtZoom.height);
 	bounds = image.getBounds();
 	image.dispose();
-	assertEquals(":d: Size of ImageData returned from Image.getImageData(int) method doesn't return matches with bounds in Pixel values.", scaleBounds(bounds, zoom, 100), boundsAtZoom);
+	assertEquals(scaleBounds(bounds, zoom, 100), boundsAtZoom);
 
 	// create image with ImageDataProvider that only has 1x data
 	image = new Image(display, imageDataProvider1xOnly);
@@ -777,7 +776,7 @@ void getImageData_int(int zoom) {
 	boundsAtZoom = new Rectangle(0, 0, imageDataAtZoom.width, imageDataAtZoom.height);
 	bounds = image.getBounds();
 	image.dispose();
-	assertEquals(":d: Size of ImageData returned from Image.getImageData(int) method doesn't return matches with bounds in Pixel values.", scaleBounds(bounds, zoom, 100), boundsAtZoom);
+	assertEquals(scaleBounds(bounds, zoom, 100), boundsAtZoom);
 }
 
 public static Rectangle scaleBounds (Rectangle rect, int targetZoom, int currentZoom) {
@@ -853,9 +852,8 @@ public void test_isDisposed() {
 
 @Test
 public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
-	assumeFalse(
-			"Excluded test_setBackgroundLorg_eclipse_swt_graphics_Color(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_Image)",
-			SwtTestUtil.isGTK);
+	assumeFalse(SwtTestUtil.isGTK,
+			"Excluded test_setBackgroundLorg_eclipse_swt_graphics_Color(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_Image)");
 	// TODO Fix GTK failure.
 	ImageGcDrawer noOpGcDrawer = (gc, width, height) -> {};
 	Image image1 = new Image(display, noOpGcDrawer, 10, 10);
@@ -884,7 +882,7 @@ public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 	Image image4 = new Image(display, noOpGcDrawer, 10, 10);
 	image4.setBackground(display.getSystemColor(SWT.COLOR_GREEN));
 	Color color4 = image4.getBackground();
-	assertNull("background color should be null for non-transparent image", color4);
+	assertNull(color4);
 	image4.dispose();
 
 	// create an image with transparency and then set the background color
@@ -894,7 +892,7 @@ public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 	Image image5 = new Image(display, imageData);
 	image5.setBackground(display.getSystemColor(SWT.COLOR_GREEN));
 	Color color5 = image5.getBackground();
-	assertEquals("background color should have been set to green", display.getSystemColor(SWT.COLOR_GREEN), color5);
+	assertEquals(display.getSystemColor(SWT.COLOR_GREEN), color5);
 	image5.dispose();
 }
 
@@ -924,8 +922,8 @@ public void test_getImageData_fromFiles() {
 			Image image = new Image(display, data1);
 			ImageData data2 = image.getImageData();
 			image.dispose();
-			assertEquals("Image width should be the same", data1.width, data2.width);
-			assertEquals("Image height should be the same", data1.height, data2.height);
+			assertEquals(data1.width, data2.width);
+			assertEquals(data1.height, data2.height);
 		} catch (IOException e) {
 			// continue;
 		}
@@ -979,7 +977,7 @@ private static PaletteData assertAllPixelsHaveColor(ImageData imageData, Color e
 		for (int y = 0; y < imageData.height; y++) {
 			int pixel = imageData.getPixel(x, y);
 			RGB rgb = newPalette.getRGB(pixel);
-			assertEquals("pixel at x=" + x + " y=" + y + " does not have expected color", expectedColor.getRGB(), rgb);
+			assertEquals(expectedColor.getRGB(), rgb);
 		}
 	}
 	return newPalette;
@@ -1052,11 +1050,11 @@ public void test_updateWidthHeightAfterDPIChange() {
 		Image baseImage = new Image(display, noOpGcDrawer, imageSize.width, imageSize.height);
 		GC gc = new GC(display);
 		gc.drawImage(baseImage, 10, 10);
-		assertEquals("Base image size differs unexpectedly", imageSize, baseImage.getBounds());
+		assertEquals(imageSize, baseImage.getBounds());
 
 		DPIUtil.setDeviceZoom(deviceZoom * 2);
 		gc.drawImage(baseImage, 10, 10);
-		assertEquals("Image size at 100% must always stay the same despite the zoom factor", imageSize, baseImage.getBounds());
+		assertEquals(imageSize, baseImage.getBounds());
 		gc.dispose();
 		baseImage.dispose();
 	} finally {
@@ -1066,7 +1064,7 @@ public void test_updateWidthHeightAfterDPIChange() {
 
 @Test
 public void test_imageDataIsCached() {
-	assumeTrue("On-demand image creation only implemented for Windows", SwtTestUtil.isWindows);
+	assumeTrue(SwtTestUtil.isWindows, "On-demand image creation only implemented for Windows");
 	String imagePath = getPath("collapseall.png");
 	AtomicInteger callCount = new AtomicInteger();
 	ImageFileNameProvider imageFileNameProvider = __ -> {
@@ -1083,7 +1081,7 @@ public void test_imageDataIsCached() {
 
 @Test
 public void test_imageDataSameViaDifferentProviders() {
-	assumeFalse("Cocoa generates inconsistent image data", SwtTestUtil.isCocoa);
+	assumeFalse(SwtTestUtil.isCocoa, "Cocoa generates inconsistent image data");
 	String imagePath = getPath("collapseall.png");
 	ImageFileNameProvider imageFileNameProvider = zoom -> {
 		return (zoom == 100) ? imagePath : null;
@@ -1109,7 +1107,7 @@ public void test_imageDataSameViaDifferentProviders() {
 
 @Test
 public void test_imageDataSameViaProviderAndSimpleData() {
-	assumeFalse("Cocoa generates inconsistent image data", SwtTestUtil.isCocoa);
+	assumeFalse(SwtTestUtil.isCocoa, "Cocoa generates inconsistent image data");
 	String imagePath = getPath("collapseall.png");
 	ImageFileNameProvider imageFileNameProvider = __ -> {
 		return imagePath;

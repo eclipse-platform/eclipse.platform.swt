@@ -13,10 +13,10 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,8 +24,8 @@ import java.util.List;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.ToolBar
@@ -35,7 +35,7 @@ import org.junit.Test;
 public class Test_org_eclipse_swt_widgets_ToolBar extends Test_org_eclipse_swt_widgets_Composite {
 
 @Override
-@Before
+@BeforeEach
 public void setUp() {
 	super.setUp();
 	toolBar = new ToolBar(shell, 0);
@@ -45,7 +45,7 @@ public void setUp() {
 @Override
 @Test
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
-	assertThrows("No exception thrown for parent == null", IllegalArgumentException.class, () -> new ToolBar(null, 0));
+	assertThrows(IllegalArgumentException.class, () -> new ToolBar(null, 0));
 }
 
 @Override
@@ -62,7 +62,7 @@ public void test_computeTrimIIII() {
 public void test_getItemCount() {
 	int number = 10;
 	for (int i = 0; i<number ; i++){
-		assertEquals(":a:" + i, i, toolBar.getItemCount());
+		assertEquals(i, toolBar.getItemCount());
 		new ToolItem(toolBar, 0);
 	}
 }
@@ -75,7 +75,7 @@ public void test_getItemI() {
 		items[i] = new ToolItem(toolBar, 0);
 	}
 	for (int i = 0; i<number ; i++){
-		assertTrue(":a:", toolBar.getItem(i)==items[i]);
+		assertTrue(toolBar.getItem(i)==items[i]);
 	}
 
 	toolBar = new ToolBar(shell, 0);
@@ -83,8 +83,8 @@ public void test_getItemI() {
 	for (int i = 0; i<number ; i++){
 		items[i] = new ToolItem(toolBar, 0);
 	}
-	assertThrows("No exception thrown for illegal index argument", IllegalArgumentException.class, ()->
-		toolBar.getItem(number));
+	assertThrows(IllegalArgumentException.class, ()->
+	toolBar.getItem(number));
 }
 
 @Test
@@ -121,7 +121,7 @@ public void test_getRowCount() {
 	for (int i = 0; i<number ; i++){
 		items[i] = new ToolItem(toolBar, 0);
 	}
-	assertEquals(":a:" + toolBar.getRowCount(), number, toolBar.getRowCount()); //????  because of Size(0, 0)
+	assertEquals(number, toolBar.getRowCount()); //????  because of Size(0, 0)
 
 	toolBar = new ToolBar(shell, 0);
 	number = 5;
@@ -129,7 +129,7 @@ public void test_getRowCount() {
 	for (int i = 0; i<number ; i++){
 		items[i] = new ToolItem(toolBar, 0);
 	}
-	assertEquals(":a:", 1, toolBar.getRowCount());
+	assertEquals(1, toolBar.getRowCount());
 }
 
 @Test
@@ -140,7 +140,7 @@ public void test_indexOfLorg_eclipse_swt_widgets_ToolItem() {
 		tis[i] = new ToolItem(toolBar, 0);
 	}
 	for (int i = 0; i<number ; i++){
-		assertTrue(":a:" + i, toolBar.indexOf(tis[i])==i);
+		assertTrue(toolBar.indexOf(tis[i])==i);
 	}
 
 	number = 10;
@@ -149,8 +149,7 @@ public void test_indexOfLorg_eclipse_swt_widgets_ToolItem() {
 		tis[i] = new ToolItem(toolBar, 0);
 	}
 	for (int i = 0; i<number ; i++){
-		assertThrows("No exception thrown for toolItem == null", IllegalArgumentException.class,
-				() -> toolBar.indexOf(null));
+		assertThrows(IllegalArgumentException.class, () -> toolBar.indexOf(null));
 	}
 }
 

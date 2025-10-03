@@ -14,15 +14,15 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.Region;
 import org.eclipse.swt.widgets.Display;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.Region
@@ -31,7 +31,7 @@ import org.junit.Test;
  */
 public class Test_org_eclipse_swt_graphics_Region {
 
-@Before
+@BeforeEach
 public void setUp() {
 	display = Display.getDefault();
 }

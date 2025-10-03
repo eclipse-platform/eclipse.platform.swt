@@ -15,13 +15,13 @@
 package org.eclipse.swt.tests.junit;
 
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.graphics.ImageLoaderEvent;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.ImageLoaderEvent

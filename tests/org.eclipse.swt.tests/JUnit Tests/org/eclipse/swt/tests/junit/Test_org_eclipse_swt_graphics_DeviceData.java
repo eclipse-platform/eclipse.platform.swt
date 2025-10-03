@@ -16,7 +16,7 @@ package org.eclipse.swt.tests.junit;
 
 
 import org.eclipse.swt.graphics.DeviceData;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.DeviceData

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2025 Kichwa Coders Canada, Inc.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -7,20 +7,12 @@
  * https://www.eclipse.org/legal/epl-2.0/
  *
  * SPDX-License-Identifier: EPL-2.0
- *
- * Contributors:
- *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.swt.tests.junit;
+package org.eclipse.swt.tests.junit.performance;
 
+public class Test_org_eclipse_swt_widgets_Tree_Binary extends Test_org_eclipse_swt_widgets_Tree {
 
-import org.junit.platform.suite.api.SelectClasses;
-import org.junit.platform.suite.api.Suite;
-
-@Suite
-@SelectClasses({
-	Test_org_eclipse_swt_browser_Browser.class,
-	Test_org_eclipse_swt_browser_Browser_IE.class
-})
-public class AllBrowserTests {
+	public Test_org_eclipse_swt_widgets_Tree_Binary() {
+		super(Shape.BINARY, false);
+	}
 }
