@@ -15,11 +15,11 @@
 package org.eclipse.swt.tests.junit;
 
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -36,7 +36,7 @@ import org.eclipse.swt.graphics.ImageLoaderEvent;
 import org.eclipse.swt.graphics.ImageLoaderListener;
 import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.widgets.Display;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.ImageLoader
@@ -57,28 +57,28 @@ public void test_addImageLoaderListenerLorg_eclipse_swt_graphics_ImageLoaderList
 
 	assertThrows(IllegalArgumentException.class, () -> loader.addImageLoaderListener(null),
 			"No exception thrown for addImageLoaderListener with null argument");
-	assertFalse(":a:", loader.hasListeners());
+	assertFalse(loader.hasListeners());
 	loader.addImageLoaderListener(loaderListener);
-	assertTrue(":b:", loader.hasListeners());
+	assertTrue(loader.hasListeners());
 
 	loaderListenerCalled = false;
 	try (InputStream stream = SwtTestUtil.class.getResourceAsStream("interlaced_target.png")) {
 		loader.load(stream);
 	}
-	assertTrue(":c:", loaderListenerCalled);
+	assertTrue(loaderListenerCalled);
 
 	loaderListenerCalled = false;
 	try (InputStream stream = SwtTestUtil.class.getResourceAsStream("target.png")) {
 		loader.load(stream);
 	}
-	assertFalse(":d:", loaderListenerCalled);
+	assertFalse(loaderListenerCalled);
 
 	loaderListenerCalled = false;
 	loader.notifyListeners(new ImageLoaderEvent(loader, loader.data[0], 0, true));
-	assertTrue(":e:", loaderListenerCalled);
+	assertTrue(loaderListenerCalled);
 
 	loader.removeImageLoaderListener(loaderListener);
-	assertFalse(":f:", loader.hasListeners());
+	assertFalse(loader.hasListeners());
 }
 
 @Test
@@ -204,7 +204,7 @@ public void test_bug547529() {
 		ImageLoader loader = new ImageLoader();
 		loader.load(inputStream);
 		ImageData[] loadedData = loader.data;
-		assertEquals("ImageLoader loaded incorrect number of ImageData objects", 1, loadedData.length);
+		assertEquals(1, loadedData.length);
 		byte[] loadedBytes = loadedData[0].data;
 		assertArrayEquals(savedBytes, loadedBytes);
 	} finally {

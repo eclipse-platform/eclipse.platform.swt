@@ -14,13 +14,13 @@
 package org.eclipse.swt.tests.junit;
 
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
@@ -29,8 +29,8 @@ import org.eclipse.swt.graphics.ImageGcDrawer;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Caret;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Caret
@@ -43,7 +43,7 @@ Canvas canvas;
 Caret caret;
 
 @Override
-@Before
+@BeforeEach
 public void setUp() {
 	super.setUp();
 	canvas = new Canvas(shell, SWT.NULL);
@@ -53,7 +53,7 @@ public void setUp() {
 
 @Test
 public void test_ConstructorLorg_eclipse_swt_widgets_CanvasI() {
-	assertThrows("No exception thrown for null parent", IllegalArgumentException.class, () -> new Caret(null, 0));
+	assertThrows(IllegalArgumentException.class, () -> new Caret(null, 0));
 }
 
 @Test
@@ -106,7 +106,7 @@ public void test_setBoundsIIII() {
 public void test_setBoundsLorg_eclipse_swt_graphics_Rectangle() {
 	caret.setBounds(new Rectangle(0, 0, 30, 30));
 
-	assertThrows("No exception thrown for bounds == null", IllegalArgumentException.class, () -> caret.setBounds(null));
+	assertThrows(IllegalArgumentException.class, () -> caret.setBounds(null));
 }
 
 @Test
@@ -122,7 +122,7 @@ public void test_setFontLorg_eclipse_swt_graphics_Font() {
 
 	caret.setFont(null);
 	font.dispose();
-	assertThrows("No exception thrown for disposed font", IllegalArgumentException.class, () -> caret.setFont(font));
+	assertThrows(IllegalArgumentException.class, () -> caret.setFont(font));
 	caret.setFont(null);
 }
 
@@ -142,16 +142,16 @@ public void test_setImageLorg_eclipse_swt_graphics_Image() {
 
 	caret.setImage(null);
 	image.dispose();
-	assertThrows("No exception thrown for disposed image", IllegalArgumentException.class, () -> caret.setImage(image));
+	assertThrows(IllegalArgumentException.class, () -> caret.setImage(image));
 	caret.setImage(null);
 }
 
 @Test
 public void test_setVisibleZ() {
 	caret.setVisible(true);
-	assertTrue("Caret should be visible", caret.getVisible());
+	assertTrue(caret.getVisible());
 
 	caret.setVisible(false);
-	assertFalse("Caret should not be visible", caret.getVisible());
+	assertFalse(caret.getVisible());
 }
 }

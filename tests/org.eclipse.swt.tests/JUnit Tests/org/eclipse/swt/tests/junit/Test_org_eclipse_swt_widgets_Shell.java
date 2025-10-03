@@ -13,14 +13,15 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,9 +42,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Shell
@@ -55,7 +55,7 @@ public class Test_org_eclipse_swt_widgets_Shell extends Test_org_eclipse_swt_wid
 private static final boolean IS_GTK_BUG_445900 = SwtTestUtil.isGTK;
 
 @Override
-@Before
+@BeforeEach
 public void setUp() {
 	super.setUp();
 	testShell = new Shell(shell, SWT.NULL);
@@ -66,7 +66,7 @@ public void setUp() {
 @Test
 public void test_Constructor() {
 	Shell newShell = new Shell();
-	assertNotNull("a: ", newShell.getDisplay());
+	assertNotNull(newShell.getDisplay());
 	newShell.dispose();
 }
 
@@ -78,7 +78,7 @@ public void test_ConstructorI() {
 	Shell newShell;
 	for (int i = 0; i < cases.length; i++) {
 		newShell = new Shell(cases[i]);
-		assertEquals("a " + i, shell.getDisplay(), newShell.getDisplay());
+		assertEquals(shell.getDisplay(), newShell.getDisplay());
 		assertNotEquals(0, newShell.getStyle() & cases[i]);
 		newShell.dispose();
 	}
@@ -88,7 +88,7 @@ public void test_ConstructorI() {
 public void test_ConstructorLorg_eclipse_swt_widgets_Display() {
 	Display display = shell.getDisplay();
 	Shell newShell = new Shell(display);
-	assertEquals("a: ", display, newShell.getDisplay());
+	assertEquals(display, newShell.getDisplay());
 	newShell.dispose();
 }
 
@@ -100,7 +100,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_DisplayI() {
 	Display display = shell.getDisplay();
 	for (int i = 0; i < cases.length; i++) {
 		newShell = new Shell(display, cases[i]);
-		assertEquals("a " + i, shell.getDisplay(), newShell.getDisplay());
+		assertEquals(shell.getDisplay(), newShell.getDisplay());
 		newShell.dispose();
 	}
 }
@@ -108,7 +108,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_DisplayI() {
 @Test
 public void test_ConstructorLorg_eclipse_swt_widgets_Shell() {
 	Shell newShell = new Shell(shell);
-	assertEquals("a: ", shell, newShell.getParent());
+	assertEquals(shell, newShell.getParent());
 	newShell.dispose();
 }
 
@@ -120,7 +120,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_ShellI() {
 	Shell newShell;
 	for (int i = 0; i < cases.length; i++) {
 		newShell = new Shell(shell, cases[i]);
-		assertEquals("a: " + i, shell, newShell.getParent());
+		assertEquals(shell, newShell.getParent());
 		newShell.dispose();
 	}
 }
@@ -153,7 +153,7 @@ public void test_addShellListenerLorg_eclipse_swt_events_ShellListener() {
 	catch (IllegalArgumentException e) {
 		exceptionThrown = true;
 	}
-	assertTrue("Expected exception not thrown", exceptionThrown);
+	assertTrue(exceptionThrown);
 	exceptionThrown = false;
 	shell.addShellListener(listener);
 	shell.forceActive();
@@ -171,7 +171,7 @@ public void test_addShellListenerLorg_eclipse_swt_events_ShellListener() {
 	catch (IllegalArgumentException e) {
 		exceptionThrown = true;
 	}
-	assertTrue("Expected exception not thrown", exceptionThrown);
+	assertTrue(exceptionThrown);
 }
 
 @Test
@@ -441,17 +441,17 @@ public void test_forceActive() {
 
 @Test
 public void test_getEnabled() {
-	assertTrue(":a0:", shell.getEnabled());
+	assertTrue(shell.getEnabled());
 	shell.setEnabled(false);
-	assertTrue(":a:", !shell.getEnabled());
+	assertTrue(!shell.getEnabled());
 	shell.setEnabled(true);
-	assertTrue(":b:", shell.getEnabled());
+	assertTrue(shell.getEnabled());
 }
 
 @Test
 public void test_getImeInputMode() {
 	int mode = shell.getImeInputMode();
-	assertTrue(":a:", mode >= 0);
+	assertTrue(mode >= 0);
 }
 
 @Override
@@ -462,46 +462,46 @@ public void test_getLocation() {
 		return;
 	}
 	shell.setLocation(10,15);
-	assertEquals(":a:", 10, shell.getLocation().x);
-	assertEquals(":b:", 15, shell.getLocation().y);
+	assertEquals(10, shell.getLocation().x);
+	assertEquals(15, shell.getLocation().y);
 }
 
 @Override
 @Test
 public void test_getShell() {
-	assertEquals(":a:", shell, shell.getShell());
+	assertEquals(shell, shell.getShell());
 	Shell shell_1 = new Shell(shell);
-	assertEquals(":b:", shell_1, shell_1.getShell());
+	assertEquals(shell_1, shell_1.getShell());
 	shell_1.dispose();
 }
 
 @Test
 public void test_getShells() {
 	int num = shell.getShells().length;
-	assertEquals(":a:", 1, num);
+	assertEquals(1, num);
 	Shell shell_1 = new Shell(shell);
 	num = shell.getShells().length;
-	assertEquals(":b:", 2, num);
+	assertEquals(2, num);
 	shell_1.dispose();
 	num = shell.getShells().length;
-	assertEquals(":c:", 1, num);
+	assertEquals(1, num);
 }
 
 @Override
 @Test
 public void test_isEnabled() {
-	assertTrue(":a:", shell.isEnabled());
+	assertTrue(shell.isEnabled());
 	shell.setEnabled(false);
-	assertTrue(":b:", !shell.isEnabled());
+	assertTrue(!shell.isEnabled());
 	if (SwtTestUtil.fCheckBogusTestCases)
-		assertTrue(":b1:", !testShell.isEnabled());
+		assertTrue(!testShell.isEnabled());
 	shell.setEnabled(true);
-	assertTrue(":c:", shell.isEnabled());
-	assertTrue(":a:", testShell.isEnabled());
+	assertTrue(shell.isEnabled());
+	assertTrue(testShell.isEnabled());
 	testShell.setEnabled(false);
-	assertTrue(":b:", !testShell.isEnabled());
+	assertTrue(!testShell.isEnabled());
 	testShell.setEnabled(true);
-	assertTrue(":c:", testShell.isEnabled());
+	assertTrue(testShell.isEnabled());
 }
 
 @Test
@@ -526,28 +526,28 @@ public void test_setActive() {
 	/* Test setActive for visible shell. */
 	shell.setVisible(true);
 	shell.setActive();
-	assertTrue("visible shell was not made active", shell.getDisplay().getActiveShell() == shell);
+	assertTrue(shell.getDisplay().getActiveShell() == shell);
 
 	/* Test setActive for visible dialog shell. */
 	shell2.setActive();
 	testShell.setBounds(shell.getBounds());
 	testShell.setVisible(true);
 	testShell.setActive();
-	assertTrue("visible dialog shell was not made active", testShell.getDisplay().getActiveShell() == testShell);
+	assertTrue(testShell.getDisplay().getActiveShell() == testShell);
 
 	/* Test setActive for non-visible shell. */
 	shell2.setActive();
 	shell.setVisible(false);
 	shell.setActive();
 	shell2.setText("Shell2: Not active");
-	assertTrue("non-visible shell was made active", shell.getDisplay().getActiveShell() != shell);
+	assertTrue(shell.getDisplay().getActiveShell() != shell);
 
 	/* Test setActive for non-visible dialog shell. */
 	shell2.setActive();
 	testShell.setVisible(false);
 	testShell.setActive();
 	shell2.setText("Shell2: Not active");
-	assertTrue("non-visible dialog shell was made active", testShell.getDisplay().getActiveShell() != testShell);
+	assertTrue(testShell.getDisplay().getActiveShell() != testShell);
 
 	shell2.dispose();
 }
@@ -561,16 +561,16 @@ public void test_setEnabledZ() {
 @Test
 public void test_setImeInputModeI() {
 	shell.setImeInputMode(SWT.NONE);
-	assertEquals(":a:", SWT.NONE, shell.getImeInputMode());
+	assertEquals(SWT.NONE, shell.getImeInputMode());
 }
 
 @Override
 @Test
 public void test_setVisibleZ() {
 	shell.setVisible(false);
-	assertTrue(":a:", !shell.isVisible());
+	assertTrue(!shell.isVisible());
 	shell.setVisible(true);
-	assertTrue(":b:", shell.isVisible());
+	assertTrue(shell.isVisible());
 }
 
 
@@ -586,11 +586,11 @@ public void test_getParent () {
 @Test
 public void test_getStyle() {
 	// overriding Widget.test_getStyle
-	assertTrue("testShell not modeless", (testShell.getStyle () & SWT.MODELESS) == SWT.MODELESS);
+	assertTrue((testShell.getStyle () & SWT.MODELESS) == SWT.MODELESS);
 	int[] cases = {SWT.MODELESS, SWT.PRIMARY_MODAL, SWT.APPLICATION_MODAL, SWT.SYSTEM_MODAL};
 	for (int i = 0; i < cases.length; i++) {
 		Shell testShell2 = new Shell(shell, cases[i]);
-		assertTrue("shell " + i, (testShell2.getStyle () & cases[i]) == cases[i]);
+		assertTrue((testShell2.getStyle () & cases[i]) == cases[i]);
 		testShell2.dispose();
 	}
 }
@@ -606,11 +606,11 @@ public void test_isVisible() {
 
 	testShell.setVisible(true);
 	shell.setVisible(true);
-	assertTrue("shell.isVisible() a:", shell.isVisible());
+	assertTrue(shell.isVisible());
 	shell.setVisible(false);
-	assertTrue("shell.isVisible() b:", !shell.isVisible());
+	assertTrue(!shell.isVisible());
 	if (SwtTestUtil.fCheckBogusTestCases)
-		assertTrue("testShell.isVisible() c:", !testShell.isVisible());
+		assertTrue(!testShell.isVisible());
 }
 
 @Override
@@ -704,7 +704,7 @@ public void test_setBounds() throws Exception {
 			}
 		}
 		if (log.length() > 0) {
-			Assert.fail(log.toString());
+			fail(log.toString());
 		}
 	}
 }
@@ -721,21 +721,21 @@ public void a_test_setRegion() {
 	Region region = new Region();
 	region.add(new Rectangle(10, 20, 100, 200));
 	// test shell without style SWT.NO_TRIM
-	assertNull(":a:", shell.getRegion());
+	assertNull(shell.getRegion());
 	shell.setRegion(region);
-	assertNull(":b:", shell.getRegion());
+	assertNull(shell.getRegion());
 	shell.setRegion(null);
-	assertNull(":c:", shell.getRegion());
+	assertNull(shell.getRegion());
 	// test shell with style SWT.NO_TRIM
 	Display display = shell.getDisplay();
 	Shell shell2 = new Shell(display, SWT.NO_TRIM);
-	assertNull(":d:", shell2.getRegion());
+	assertNull(shell2.getRegion());
 	shell2.setRegion(region);
-	assertEquals(":e:", region, shell2.getRegion());
+	assertEquals(region, shell2.getRegion());
 	region.dispose();
-	assertTrue(":f:", shell2.getRegion().isDisposed());
+	assertTrue(shell2.getRegion().isDisposed());
 	shell2.setRegion(null);
-	assertNull(":g:", shell2.getRegion());
+	assertNull(shell2.getRegion());
 }
 @Override
 @Test
@@ -842,7 +842,7 @@ public void test_consistency_Open() {
 		}
 		setUp();
 		String[] results = events.toArray(new String[events.size()]);
-		assertArrayEquals(getTestName() + " event ordering", temp, results);
+		assertArrayEquals(temp, results);
 	}
 }
 
@@ -952,24 +952,24 @@ public void test_Issue450_NoShellActivateOnSetFocus() {
 
 		// System.out.println("open 1st shell");
 		SwtTestUtil.waitShellActivate(shell1::open, shell1);
-		assertSame("expecting the 1st shell to be activated", display.getActiveShell(), shell1);
-		assertTrue("expecting the 1st text field to be focused in the 1st shell", text11.isFocusControl());
+		assertSame(display.getActiveShell(), shell1);
+		assertTrue(text11.isFocusControl());
 
 		// System.out.println("open 2nd shell");
 		SwtTestUtil.waitShellActivate(shell2::open, shell2);
-		assertSame("expecting the 2nd shell to be activated", display.getActiveShell(), shell2);
-		assertTrue("expecting the 1st text field in 2nd shell to be focused", text21.isFocusControl());
+		assertSame(display.getActiveShell(), shell2);
+		assertTrue(text21.isFocusControl());
 
 		// System.out.println("setting focus to 2nd text field in 1st (unactivated) shell");
 		text12.setFocus();
-		assertSame("expecting the 2nd shell to remain activated", display.getActiveShell(), shell2);
+		assertSame(display.getActiveShell(), shell2);
 
 		// System.out.println("activating 1st shell");
 		// Fails here for Linux (21.04+ or Manjaro starting ~July 2023)? Check Bug 575712
 		// workaround: set env-var GDK_BACKEND=x11
 		SwtTestUtil.waitShellActivate(shell1::setActive, shell1);
-		assertSame("expecting the 1st shell to be activated", display.getActiveShell(), shell1);
-		assertTrue("expecting the the 1st shell to have remembered the previous setFocus and with the shell activation setting it to the 2nd text field", text12.isFocusControl());
+		assertSame(display.getActiveShell(), shell1);
+		assertTrue(text12.isFocusControl());
 
 		// System.out.println("disposing 1st shell");
 		SwtTestUtil.waitShellActivate(
@@ -983,13 +983,13 @@ public void test_Issue450_NoShellActivateOnSetFocus() {
 			},
 			shell2
 		);
-		assertSame("expecting the 2nd shell to be activated after the 1st, active has been disposed", display.getActiveShell(), shell2);
-		assertTrue("expecting the 1st text field in the 2nd shell to still have the focus because it hasn't been changed", text21.isFocusControl());
+		assertSame(display.getActiveShell(), shell2);
+		assertTrue(text21.isFocusControl());
 
 		// System.out.println("setting the focus to the 2nd text field");
 		text22.setFocus();
-		assertSame("expecting the 2nd shell to remain activated", display.getActiveShell(), shell2);
-		assertTrue("expecting the 2nd text field to have received the focus", text22.isFocusControl());
+		assertSame(display.getActiveShell(), shell2);
+		assertTrue(text22.isFocusControl());
 
 		// System.out.println("disposing the 2nd shell, too");
 		shell2.dispose();
@@ -1004,6 +1004,7 @@ public void test_Issue450_NoShellActivateOnSetFocus() {
 	}
 }
 
+@Test
 @Override
 public void test_setLocationLorg_eclipse_swt_graphics_Point() {
 	//Setting location for Windows is not supported in GTK4
@@ -1013,6 +1014,7 @@ public void test_setLocationLorg_eclipse_swt_graphics_Point() {
 	super.test_setLocationLorg_eclipse_swt_graphics_Point();
 }
 
+@Test
 @Override
 public void test_setLocationII() {
 	//Setting location for Windows is not supported in GTK4

@@ -13,11 +13,11 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,8 +28,8 @@ import org.eclipse.swt.events.ExpandListener;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.ExpandBar;
 import org.eclipse.swt.widgets.ExpandItem;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.ExpandBar
@@ -39,7 +39,7 @@ import org.junit.Test;
 public class Test_org_eclipse_swt_widgets_ExpandBar extends Test_org_eclipse_swt_widgets_Composite {
 
 @Override
-@Before
+@BeforeEach
 public void setUp() {
 	super.setUp();
 	expandBar = new ExpandBar(shell, 0);
@@ -68,11 +68,11 @@ public void test_addExpandListenerLorg_eclipse_swt_events_ExpandListener() {
 
 	expandBar.addExpandListener(expandListener);
 	expandBar.notifyListeners(SWT.Expand, new Event());
-	assertTrue(":a:", listenerCalled[0]);
+	assertTrue(listenerCalled[0]);
 
 	listenerCalled[0] = false;
 	expandBar.notifyListeners(SWT.Collapse, new Event());
-	assertTrue(":b:", listenerCalled[0]);
+	assertTrue(listenerCalled[0]);
 
 	try {
 		expandBar.removeExpandListener(null);
@@ -149,7 +149,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 public void test_getItemCount() {
 	int number = 10;
 	for (int i = 0; i < number; i++) {
-		assertEquals(":a:" + i, i, expandBar.getItemCount());
+		assertEquals(i, expandBar.getItemCount());
 		new ExpandItem(expandBar, 0);
 	}
 }
@@ -162,7 +162,7 @@ public void test_getItemI() {
 		items[i] = new ExpandItem(expandBar, 0);
 	}
 	for (int i = 0; i<number ; i++){
-		assertTrue(":a:", expandBar.getItem(i)==items[i]);
+		assertTrue(expandBar.getItem(i)==items[i]);
 	}
 
 	expandBar = new ExpandBar(shell, 0);
@@ -206,7 +206,7 @@ public void test_indexOfLorg_eclipse_swt_widgets_ExpandItem() {
 		items[i] = new ExpandItem(expandBar, 0);
 	}
 	for (int i = 0; i < number; i++) {
-		assertTrue(":a:" + i, expandBar.indexOf(items[i] ) == i);
+		assertTrue(expandBar.indexOf(items[i] ) == i);
 	}
 
 	items = new ExpandItem[number];

@@ -14,14 +14,15 @@
 package org.eclipse.swt.tests.junit;
 
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.ToolItem
@@ -31,7 +32,7 @@ import org.junit.Test;
 public class Test_org_eclipse_swt_widgets_ToolItem extends Test_org_eclipse_swt_widgets_Item {
 
 @Override
-@Before
+@BeforeEach
 public void setUp() {
 	super.setUp();
 	toolBar = new ToolBar(shell, 0);
@@ -52,9 +53,9 @@ public void test_ConstructorLorg_eclipse_swt_widgets_ToolBarI() {
 @Test
 public void test_getToolTipText() {
 	toolItem.setToolTipText("fred");
-	assertEquals(":a:", "fred", toolItem.getToolTipText());
+	assertEquals("fred", toolItem.getToolTipText());
 	toolItem.setToolTipText("fredttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt");
-	assertEquals(":a:", "fredttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt", toolItem.getToolTipText());
+	assertEquals("fredttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt", toolItem.getToolTipText());
 }
 
 @Override

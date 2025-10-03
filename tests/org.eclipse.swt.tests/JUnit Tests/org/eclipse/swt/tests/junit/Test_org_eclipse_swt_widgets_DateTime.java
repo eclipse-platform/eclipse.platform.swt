@@ -13,15 +13,13 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeTrue;
 
-import java.util.Arrays;
-import java.util.Collection;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -29,40 +27,32 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Event;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.DateTime
  *
  * @see org.eclipse.swt.widgets.DateTime
  */
-@RunWith(value = Parameterized.class)
-public class Test_org_eclipse_swt_widgets_DateTime extends Test_org_eclipse_swt_widgets_Control {
+public abstract class Test_org_eclipse_swt_widgets_DateTime extends Test_org_eclipse_swt_widgets_Control {
 	static final int JAN = 0, FEB = 1, AUG = 7, NOV = 10;
 	DateTime datetime;
-	int style = SWT.DATE;
-
-	@Parameters
-	public static Collection<Object[]> data() {
-		Object[][] data = new Object[][] { { SWT.DATE }, { SWT.TIME}, { SWT.CALENDAR }};
-		return Arrays.asList(data);
-	}
+	private int style;
 
 public Test_org_eclipse_swt_widgets_DateTime(int style) {
 	this.style = style;
 }
 
 @Override
-@Before
+@BeforeEach
 public void setUp() {
 	super.setUp();
 	datetime = new DateTime(shell, style);
 	setWidget(datetime);
 }
+
 
 @Override
 @Test
@@ -95,7 +85,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 
 	new DateTime(shell, SWT.DROP_DOWN);
 
-	assertThrows("No exception thrown for parent == null", IllegalArgumentException.class, () -> new DateTime(null, 0));
+	assertThrows(IllegalArgumentException.class, () -> new DateTime(null, 0));
 }
 
 @Test
@@ -112,15 +102,13 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 		}
 	};
 
-	assertThrows("No exception thrown for addSelectionListener with null argument", IllegalArgumentException.class,
-			() -> datetime.addSelectionListener(null));
+	assertThrows(IllegalArgumentException.class, () -> datetime.addSelectionListener(null));
 
 	datetime.addSelectionListener(listener);
 	datetime.notifyListeners(SWT.Selection, new Event());
 	assertTrue(listenerCalled);
 
-	assertThrows("No exception thrown for removeSelectionListener with null argument", IllegalArgumentException.class,
-			() -> datetime.removeSelectionListener(null));
+	assertThrows(IllegalArgumentException.class, () -> datetime.removeSelectionListener(null));
 
 	listenerCalled = false;
 	datetime.removeSelectionListener(listener);
@@ -148,26 +136,20 @@ public void test_setBackgroundCalendarDateTime() {
 	DateTime calendar = new DateTime(shell, SWT.CALENDAR);
 	Color color = new Color(255, 0, 0);
 	calendar.setBackground(color);
-	assertEquals("getBackground not equal after setBackground for SWT.CALENDAR DateTime",
-			color, calendar.getBackground());
+	assertEquals(color, calendar.getBackground());
 	calendar.setBackground(null);
-	assertNotEquals("getBackground unchanged after setBackground(null) for SWT.CALENDAR DateTime",
-			color, calendar.getBackground());
+	assertNotEquals(color, calendar.getBackground());
 	color = new Color(255, 0, 0, 0);
 	calendar.setBackground(color);
-	assertEquals("getBackground not equal after setBackground with 0 alpha for SWT.CALENDAR DateTime",
-			color, calendar.getBackground());
+	assertEquals(color, calendar.getBackground());
 	calendar.setBackground(null);
-	assertNotEquals("getBackground unchanged after setBackground(null) with 0 alpha for SWT.CALENDAR DateTime",
-			color, calendar.getBackground());
+	assertNotEquals(color, calendar.getBackground());
 	if ("gtk".equals(SWT.getPlatform ())) {
 		Color fg = new Color(0, 255, 0);
 		calendar.setBackground(color);
 		calendar.setForeground(fg);
-		assertEquals("Setting a foreground disrupted the background color for SWT.CALENDAR DateTime",
-				color, calendar.getBackground());
-		assertEquals("Setting a foreground onto an SWT.CALENDAR DateTime with a background failed",
-				fg, calendar.getForeground());
+		assertEquals(color, calendar.getBackground());
+		assertEquals(fg, calendar.getForeground());
 	}
 	calendar.dispose();
 }
@@ -189,26 +171,20 @@ public void test_setBackgroundTimeDateTime() {
 	DateTime time = new DateTime(shell, SWT.TIME);
 	Color color = new Color(255, 0, 0);
 	time.setBackground(color);
-	assertEquals("getBackground not equal after setBackground for SWT.TIME DateTime",
-			color, time.getBackground());
+	assertEquals(color, time.getBackground());
 	time.setBackground(null);
-	assertNotEquals("getBackground unchanged after setBackground(null) for SWT.TIME DateTime",
-			color, time.getBackground());
+	assertNotEquals(color, time.getBackground());
 	color = new Color(255, 0, 0, 0);
 	time.setBackground(color);
-	assertEquals("getBackground not equal after setBackground with 0 alpha for SWT.TIME DateTime",
-			color, time.getBackground());
+	assertEquals(color, time.getBackground());
 	time.setBackground(null);
-	assertNotEquals("getBackground unchanged after setBackground(null) with 0 alpha for SWT.TIME DateTime",
-			color, time.getBackground());
+	assertNotEquals(color, time.getBackground());
 	if ("gtk".equals(SWT.getPlatform ())) {
 		Color fg = new Color(0, 255, 0);
 		time.setBackground(color);
 		time.setForeground(fg);
-		assertEquals("Setting a foreground disrupted the background color for SWT.TIME DateTime",
-				color, time.getBackground());
-		assertEquals("Setting a foreground onto an SWT.TIME DateTime with a background failed",
-				fg, time.getForeground());
+		assertEquals(color, time.getBackground());
+		assertEquals(fg, time.getForeground());
 	}
 	time.dispose();
 }
@@ -230,26 +206,20 @@ public void test_setBackgroundDateDateTime() {
 	DateTime date = new DateTime(shell, SWT.DATE);
 	Color color = new Color(255, 0, 0);
 	date.setBackground(color);
-	assertEquals("getBackground not equal after setBackground for SWT.DATE DateTime",
-			color, date.getBackground());
+	assertEquals(color, date.getBackground());
 	date.setBackground(null);
-	assertNotEquals("getBackground unchanged after setBackground(null) for SWT.DATE DateTime",
-			color, date.getBackground());
+	assertNotEquals(color, date.getBackground());
 	color = new Color(255, 0, 0, 0);
 	date.setBackground(color);
-	assertEquals("getBackground not equal after setBackground with 0 alpha for SWT.DATE DateTime",
-			color, date.getBackground());
+	assertEquals(color, date.getBackground());
 	date.setBackground(null);
-	assertNotEquals("getBackground unchanged after setBackground(null) with 0 alpha for SWT.DATE DateTime",
-			color, date.getBackground());
+	assertNotEquals(color, date.getBackground());
 	if ("gtk".equals(SWT.getPlatform ())) {
 		Color fg = new Color(0, 255, 0);
 		date.setBackground(color);
 		date.setForeground(fg);
-		assertEquals("Setting a foreground disrupted the background color for SWT.DATE DateTime",
-				color, date.getBackground());
-		assertEquals("Setting a foreground onto an SWT.DATE DateTime with a background failed",
-				fg, date.getForeground());
+		assertEquals(color, date.getBackground());
+		assertEquals(fg, date.getForeground());
 	}
 	date.dispose();
 }
@@ -404,10 +374,8 @@ public void test_setForegroundCalendarDateTime() {
 		Color bg = new Color(0, 255, 0);
 		calendar.setForeground(color);
 		calendar.setBackground(bg);
-		assertEquals("Setting a background disrupted the foreground color for SWT.CALENDAR DateTime",
-				color, calendar.getForeground());
-		assertEquals("Setting a background onto an SWT.CALENDAR DateTime with a foreground failed",
-				bg, calendar.getBackground());
+		assertEquals(color, calendar.getForeground());
+		assertEquals(bg, calendar.getBackground());
 	}
 	calendar.dispose();
 }
@@ -415,8 +383,8 @@ public void test_setForegroundCalendarDateTime() {
 @Test
 public void test_setForegroundAlphaCalendarDateTime() {
 	DateTime calendar = new DateTime(shell, SWT.CALENDAR);
-	assumeTrue("Alpha support for foreground colors does not exist on Win32",
-			SwtTestUtil.isCocoa || SwtTestUtil.isGTK);
+	assumeTrue(SwtTestUtil.isCocoa || SwtTestUtil.isGTK,
+			"Alpha support for foreground colors does not exist on Win32");
 	Color color = new Color (255, 0, 0, 0);
 	calendar.setForeground(color);
 	assertEquals(color, calendar.getForeground());
@@ -438,10 +406,8 @@ public void test_setForegroundTimeDateTime() {
 		Color bg = new Color(0, 255, 0);
 		time.setForeground(color);
 		time.setBackground(bg);
-		assertEquals("Setting a background disrupted the foreground color for SWT.TIME DateTime",
-				color, time.getForeground());
-		assertEquals("Setting a background onto an SWT.TIME DateTime with a foreground failed",
-				bg, time.getBackground());
+		assertEquals(color, time.getForeground());
+		assertEquals(bg, time.getBackground());
 	}
 	time.dispose();
 }
@@ -449,8 +415,8 @@ public void test_setForegroundTimeDateTime() {
 @Test
 public void test_setForegroundAlphaTimeDateTime() {
 	DateTime time = new DateTime(shell, SWT.TIME);
-	assumeTrue("Alpha support for foreground colors does not exist Win32",
-			SwtTestUtil.isCocoa || SwtTestUtil.isGTK);
+	assumeTrue(SwtTestUtil.isCocoa || SwtTestUtil.isGTK,
+			"Alpha support for foreground colors does not exist on Win32");
 	Color color = new Color (255, 0, 0, 0);
 	time.setForeground(color);
 	assertEquals(color, time.getForeground());
@@ -472,10 +438,8 @@ public void test_setForegroundDateDateTime() {
 		Color bg = new Color(0, 255, 0);
 		date.setForeground(color);
 		date.setBackground(bg);
-		assertEquals("Setting a background disrupted the foreground color for SWT.DATE DateTime",
-				color, date.getForeground());
-		assertEquals("Setting a background onto an SWT.DATE DateTime with a foreground failed",
-				bg, date.getBackground());
+		assertEquals(color, date.getForeground());
+		assertEquals(bg, date.getBackground());
 	}
 	date.dispose();
 }
@@ -483,8 +447,8 @@ public void test_setForegroundDateDateTime() {
 @Test
 public void test_setForegroundAlphaDateDateTime() {
 	DateTime date = new DateTime(shell, SWT.DATE);
-	assumeTrue("Alpha support for foreground colors does not exist on Win32",
-			SwtTestUtil.isCocoa || SwtTestUtil.isGTK);
+	assumeTrue(SwtTestUtil.isCocoa || SwtTestUtil.isGTK,
+			"Alpha support for foreground colors does not exist on Win32");
 	Color color = new Color (255, 0, 0, 0);
 	date.setForeground(color);
 	assertEquals(color, date.getForeground());

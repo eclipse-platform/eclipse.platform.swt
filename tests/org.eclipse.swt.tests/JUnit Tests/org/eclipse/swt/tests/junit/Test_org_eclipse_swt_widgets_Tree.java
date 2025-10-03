@@ -13,13 +13,13 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,8 +33,9 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Tree
@@ -46,7 +47,7 @@ public class Test_org_eclipse_swt_widgets_Tree extends Test_org_eclipse_swt_widg
 private Tree tree;
 
 @Override
-@Before
+@BeforeEach
 public void setUp() {
 	super.setUp();
 	tree = new Tree(shell, SWT.MULTI);
@@ -201,9 +202,9 @@ public void test_getHeaderHeight() {
 
 @Test
 public void test_getItemHeight() {
-	assertTrue(":a: Item height is 0", tree.getItemHeight() > 0);
+	assertTrue(tree.getItemHeight() > 0);
 	new TreeItem(tree, 0);
-	assertTrue(":b: Item height is 0", tree.getItemHeight() > 0);
+	assertTrue(tree.getItemHeight() > 0);
 }
 
 @Test
@@ -214,7 +215,7 @@ public void test_getItemI() {
 		items[i] = new TreeItem(tree, 0);
 
 	for (int i = 0; i < number; i++)
-		assertEquals("i=" + i, items[i], tree.getItem(i));
+		assertEquals(items[i], tree.getItem(i));
 	try {
 		tree.getItem(number);
 		fail("No exception thrown for illegal index argument");
@@ -958,13 +959,12 @@ public void test_Virtual() {
 	// temp code to capture screenshot
 	if (SwtTestUtil.isCocoa) {
 		// check if setData is called for root item
-		assertTrue("SetData not called for top item", top[0] != null);
+		assertTrue(top[0] != null);
 	}
 
 
 	// the "* 3" allows some surplus for platforms that pre-fetch items to improve scrolling performance:
-	assertTrue("SetData callback count not in range: " + dataCounter[0],
-			dataCounter[0] > visibleCount / 2 && dataCounter[0] <= visibleCount * 3);
+	assertTrue(dataCounter[0] > visibleCount / 2 && dataCounter[0] <= visibleCount * 3);
 }
 
 @Test

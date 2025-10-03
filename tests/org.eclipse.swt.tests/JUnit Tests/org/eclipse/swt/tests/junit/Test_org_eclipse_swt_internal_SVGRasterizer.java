@@ -15,6 +15,8 @@ package org.eclipse.swt.tests.junit;
 import static org.eclipse.swt.tests.junit.SwtTestUtil.assertSWTProblem;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.nio.file.Path;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.Image;
@@ -22,9 +24,9 @@ import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageDataProvider;
 import org.eclipse.swt.graphics.ImageFileNameProvider;
 import org.eclipse.swt.widgets.Display;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
 
 /**
  * When executed locally (outside Tycho build), this tests needs to be run as
@@ -33,8 +35,8 @@ import org.junit.rules.TemporaryFolder;
  */
 public class Test_org_eclipse_swt_internal_SVGRasterizer {
 
-	@ClassRule
-	public static TemporaryFolder tempFolder = new TemporaryFolder();
+	@TempDir
+	static Path tempFolder;
 
 	private static String getPath(String fileName) {
 		return SwtTestUtil.getPath(fileName, tempFolder).toString();

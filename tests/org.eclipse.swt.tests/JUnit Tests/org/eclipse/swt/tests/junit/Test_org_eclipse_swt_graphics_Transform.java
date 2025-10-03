@@ -13,13 +13,13 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.widgets.Display;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.Transform
@@ -27,10 +27,9 @@ import org.junit.Test;
  * @see org.eclipse.swt.graphics.Transform
  */
 public class Test_org_eclipse_swt_graphics_Transform {
-
 	private Display display;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		display = Display.getDefault();
 	}
@@ -56,7 +55,7 @@ public class Test_org_eclipse_swt_graphics_Transform {
 		transformDisposed.dispose();
 		float [] elements = new float[6];
 		transform.getElements(elements);
-		assertEquals("Multiply of transforms failed.", 30, elements[4], 0.01);
+		assertEquals(30, elements[4], 0.01);
 		transform.dispose();
 	}
 

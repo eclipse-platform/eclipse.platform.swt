@@ -15,9 +15,10 @@
 package org.eclipse.swt.tests.junit;
 
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,8 +32,8 @@ import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.Cursor
@@ -41,7 +42,8 @@ import org.junit.Test;
  */
 public class Test_org_eclipse_swt_graphics_Cursor {
 
-@Before
+
+@BeforeEach
 public void setUp() {
 	display = Display.getDefault();
 }
@@ -122,12 +124,10 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceI() {
 	cursor.dispose();
 
 	// illegal argument, style > SWT.CURSOR_HAND (21)
-	assertThrows("No exception thrown for style > SWT.CURSOR_HAND (21)",
-			IllegalArgumentException.class, () -> new Cursor(display, 100));
+	assertThrows(IllegalArgumentException.class, () -> new Cursor(display, 100));
 
 	// illegal argument, style < 0
-	assertThrows("No exception thrown for style < 0",
-			IllegalArgumentException.class, () -> new Cursor(display, -100));
+	assertThrows(IllegalArgumentException.class, () -> new Cursor(display, -100));
 }
 
 @Test
@@ -161,8 +161,7 @@ public void test_ConstructorWithImageDataProvider() {
 	cursor.dispose();
 	sourceImage.dispose();
 
-	assertThrows("No exception thrown when ImageDataProvider is null",
-			IllegalArgumentException.class, () -> new Cursor(display, (ImageDataProvider) null, 0, 0));
+	assertThrows(IllegalArgumentException.class, () -> new Cursor(display, (ImageDataProvider) null, 0, 0));
 }
 
 @Test
@@ -170,63 +169,56 @@ public void test_InvalidArgumentsForAllConstructors() {
 	ImageData source = new ImageData(16, 16, 1, new PaletteData(new RGB[] { new RGB(0, 0, 0) }));
 	ImageData mask = new ImageData(16, 16, 1, new PaletteData(new RGB[] { new RGB(0, 0, 0) }));
 
-	assertThrows("When wrong style was provided", IllegalArgumentException.class,
-			() -> {
-				Cursor cursor = new Cursor(Display.getDefault(), -99);
-				cursor.dispose();
-			});
+	assertThrows(IllegalArgumentException.class, () -> {
+		Cursor cursor = new Cursor(Display.getDefault(), -99);
+		cursor.dispose();
+	});
 
-	assertThrows("When source is null", IllegalArgumentException.class, () -> {
+	assertThrows(IllegalArgumentException.class, () -> {
 		@SuppressWarnings("deprecation")
 		Cursor cursorFromImageAndMask = new Cursor(Display.getDefault(), null, mask, 0, 0);
 		cursorFromImageAndMask.dispose();
 	});
 
-	assertThrows("When mask is null and source doesn't heve a mask",
-			IllegalArgumentException.class, () -> {
-				@SuppressWarnings("deprecation")
-				Cursor cursorFromImageAndMask = new Cursor(Display.getDefault(), source, null, 0, 0);
-				cursorFromImageAndMask.dispose();
-			});
+	assertThrows(IllegalArgumentException.class, () -> {
+		@SuppressWarnings("deprecation")
+		Cursor cursorFromImageAndMask = new Cursor(Display.getDefault(), source, null, 0, 0);
+		cursorFromImageAndMask.dispose();
+	});
 
-	assertThrows("When source and the mask are not the same size",
-			IllegalArgumentException.class, () -> {
-				ImageData source32 = new ImageData(32, 32, 1, new PaletteData(new RGB[] { new RGB(0, 0, 0) }));
-				ImageData mask16 = new ImageData(16, 16, 1, new PaletteData(new RGB[] { new RGB(0, 0, 0) }));
+	assertThrows(IllegalArgumentException.class, () -> {
+		ImageData source32 = new ImageData(32, 32, 1, new PaletteData(new RGB[] { new RGB(0, 0, 0) }));
+		ImageData mask16 = new ImageData(16, 16, 1, new PaletteData(new RGB[] { new RGB(0, 0, 0) }));
 
-				@SuppressWarnings("deprecation")
-				Cursor cursorFromImageAndMask = new Cursor(Display.getDefault(), source32, mask16, 0, 0);
-				cursorFromImageAndMask.dispose();
-			});
+		@SuppressWarnings("deprecation")
+		Cursor cursorFromImageAndMask = new Cursor(Display.getDefault(), source32, mask16, 0, 0);
+		cursorFromImageAndMask.dispose();
+	});
 
-	assertThrows("When hotspot is outside the bounds of the image",
-			IllegalArgumentException.class, () -> {
-				@SuppressWarnings("deprecation")
-				Cursor cursorFromImageAndMask = new Cursor(Display.getDefault(), source, mask, 18, 18);
-				cursorFromImageAndMask.dispose();
-			});
+	assertThrows(IllegalArgumentException.class, () -> {
+		@SuppressWarnings("deprecation")
+		Cursor cursorFromImageAndMask = new Cursor(Display.getDefault(), source, mask, 18, 18);
+		cursorFromImageAndMask.dispose();
+	});
 
-	assertThrows("When source image data is null", IllegalArgumentException.class,
-			() -> {
-				ImageData nullImageData = null;
-				Cursor cursorFromSourceOnly = new Cursor(Display.getDefault(), nullImageData, 0, 0);
-				cursorFromSourceOnly.dispose();
-			});
+	assertThrows(IllegalArgumentException.class, () -> {
+		ImageData nullImageData = null;
+		Cursor cursorFromSourceOnly = new Cursor(Display.getDefault(), nullImageData, 0, 0);
+		cursorFromSourceOnly.dispose();
+	});
 
-	assertThrows("When ImageDataProvider is null", IllegalArgumentException.class,
-			() -> {
-				ImageDataProvider provider = null;
-				Cursor cursorFromProvider = new Cursor(Display.getDefault(), provider, 0, 0);
-				cursorFromProvider.dispose();
-			});
+	assertThrows(IllegalArgumentException.class, () -> {
+		ImageDataProvider provider = null;
+		Cursor cursorFromProvider = new Cursor(Display.getDefault(), provider, 0, 0);
+		cursorFromProvider.dispose();
+	});
 
-	assertThrows("When source in ImageDataProvider is null",
-			IllegalArgumentException.class, () -> {
-				ImageData nullSource = null;
-				ImageDataProvider provider = zoom -> nullSource;
-				Cursor cursorFromProvider = new Cursor(Display.getDefault(), provider, 0, 0);
-				cursorFromProvider.dispose();
-			});
+	assertThrows(IllegalArgumentException.class, () -> {
+		ImageData nullSource = null;
+		ImageDataProvider provider = zoom -> nullSource;
+		Cursor cursorFromProvider = new Cursor(Display.getDefault(), provider, 0, 0);
+		cursorFromProvider.dispose();
+	});
 }
 
 @Test
@@ -239,12 +231,12 @@ public void test_equalsLjava_lang_Object() {
 	Cursor otherCursor = new Cursor(display, SWT.CURSOR_CROSS);
 	try {
 		// Test Cursor.equals(Object)
-		assertTrue("!cursor.equals((Object)null)", !cursor.equals((Object)null));
+		assertTrue(!cursor.equals((Object)null));
 
 		// Test Cursor.equals(Cursor)
-		assertTrue("!cursor.equals((Cursor)null)", !cursor.equals((Cursor)null));
-		assertTrue("cursor.equals(cursor)", cursor.equals(cursor));
-		assertTrue("!cursor.equals(otherCursor)", !cursor.equals(otherCursor));
+		assertTrue(!cursor.equals((Cursor)null));
+		assertTrue(cursor.equals(cursor));
+		assertTrue(!cursor.equals(otherCursor));
 	} finally {
 		cursor.dispose();
 		otherCursor.dispose();
@@ -256,11 +248,11 @@ public void test_isDisposed() {
 	// Test Cursor.isDisposed() false
 	Cursor cursor = new Cursor(display, SWT.CURSOR_WAIT);
 	try {
-		assertTrue("Cursor should not be disposed", !cursor.isDisposed());
+		assertTrue(!cursor.isDisposed());
 	} finally {
 		// Test Cursor.isDisposed() true
 		cursor.dispose();
-		assertTrue("Cursor should be disposed", cursor.isDisposed());
+		assertTrue(cursor.isDisposed());
 	}
 }
 

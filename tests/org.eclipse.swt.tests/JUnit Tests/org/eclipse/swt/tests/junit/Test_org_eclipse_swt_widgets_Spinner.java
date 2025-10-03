@@ -14,20 +14,20 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Spinner;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class Test_org_eclipse_swt_widgets_Spinner extends Test_org_eclipse_swt_widgets_Composite {
 
 	Spinner spinner;
 
 	@Override
-	@Before
+	@BeforeEach
 	public void setUp() {
 		super.setUp();
 		spinner = new Spinner(shell, 0);
@@ -37,8 +37,7 @@ public class Test_org_eclipse_swt_widgets_Spinner extends Test_org_eclipse_swt_w
 	@Override
 	@Test
 	public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
-		assertThrows("No exception thrown for parent == null", IllegalArgumentException.class,
-				() -> new Spinner(null, 0));
+		assertThrows(IllegalArgumentException.class, () -> new Spinner(null, 0));
 		int[] cases = { 0, SWT.READ_ONLY, SWT.WRAP };
 		for (int style : cases)
 			spinner = new Spinner(shell, style);
@@ -62,8 +61,7 @@ public class Test_org_eclipse_swt_widgets_Spinner extends Test_org_eclipse_swt_w
 			spinner.setDigits(digits);
 			assertEquals(digits, spinner.getDigits());
 		}
-		assertThrows("setDigits should have failed with illegal Argument", IllegalArgumentException.class,
-				() -> spinner.setDigits(-1));
+		assertThrows(IllegalArgumentException.class, () -> spinner.setDigits(-1));
 		assertEquals(cases[cases.length-1], spinner.getDigits());
 	}
 
@@ -118,8 +116,7 @@ public class Test_org_eclipse_swt_widgets_Spinner extends Test_org_eclipse_swt_w
 			spinner.setTextLimit(value);
 			assertEquals(value, spinner.getTextLimit());
 		}
-		assertThrows("setTextLimit should have caused an expection with value 0", IllegalArgumentException.class,
-				() -> spinner.setTextLimit(0));
+		assertThrows(IllegalArgumentException.class, () -> spinner.setTextLimit(0));
 	}
 
 	@Test
@@ -133,12 +130,12 @@ public class Test_org_eclipse_swt_widgets_Spinner extends Test_org_eclipse_swt_w
 		int [] pageIncrement = {50,5,6,100};
 		for (int i=0;i<cases;i++){
 			spinner.setValues(selection[i], minimum[i], maximum[i], digits[i], increment[i], pageIncrement[i]);
-			assertEquals("i=" + i, selection[i], spinner.getSelection());
-			assertEquals("i=" + i, minimum[i], spinner.getMinimum());
-			assertEquals("i=" + i, maximum[i], spinner.getMaximum());
-			assertEquals("i=" + i, digits[i], spinner.getDigits());
-			assertEquals("i=" + i, increment[i], spinner.getIncrement());
-			assertEquals("i=" + i, pageIncrement[i], spinner.getPageIncrement());
+			assertEquals(selection[i], spinner.getSelection());
+			assertEquals(minimum[i], spinner.getMinimum());
+			assertEquals(maximum[i], spinner.getMaximum());
+			assertEquals(digits[i], spinner.getDigits());
+			assertEquals(increment[i], spinner.getIncrement());
+			assertEquals(pageIncrement[i], spinner.getPageIncrement());
 		}
 
 		// set invalid values. The last values should be preserved

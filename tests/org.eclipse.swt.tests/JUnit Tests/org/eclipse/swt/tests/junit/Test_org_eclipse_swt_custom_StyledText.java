@@ -15,17 +15,17 @@ package org.eclipse.swt.tests.junit;
 
 
 import static org.eclipse.swt.tests.junit.SwtTestUtil.hasPixel;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.junit.Assume.assumeFalse;
-import static org.junit.Assume.assumeTrue;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -77,10 +77,8 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Widget;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.custom.StyledText
@@ -102,7 +100,7 @@ private boolean listenerCalled;
 private boolean listener2Called;
 
 @Override
-@Before
+@BeforeEach
 public void setUp() {
 	super.setUp();
 	text = new StyledText(shell, SWT.NULL);
@@ -207,9 +205,9 @@ public void test_addExtendedModifyListenerLorg_eclipse_swt_custom_ExtendedModify
 	final String line = "Line1";
 	ExtendedModifyListener listener = event -> {
 		listenerCalled = true;
-		assertEquals("ExtendedModify event data invalid", 0, event.start);
-		assertEquals("ExtendedModify event data invalid", line.length(), event.length);
-		assertEquals("ExtendedModify event data invalid", "", event.replacedText);
+		assertEquals(0, event.start);
+		assertEquals(line.length(), event.length);
+		assertEquals("", event.replacedText);
 	};
 
 	assertThrows(IllegalArgumentException.class, ()->
@@ -220,41 +218,41 @@ public void test_addExtendedModifyListenerLorg_eclipse_swt_custom_ExtendedModify
 
 	listenerCalled = false;
 	text.append(line);
-	assertTrue("append does not send event", listenerCalled);
+	assertTrue(listenerCalled);
 
 	listenerCalled = false;
 	text.insert(line);
-	assertTrue("replaceTextRange does not send event", listenerCalled);
+	assertTrue(listenerCalled);
 
 	listenerCalled = false;
 	text.removeExtendedModifyListener(listener);
 	listener = event -> {
 		listenerCalled = true;
-		assertEquals("ExtendedModify event data invalid", 0, event.start);
-		assertEquals("ExtendedModify event data invalid", line.length(), event.length);
-		assertEquals("ExtendedModify event data invalid", line.substring(0, 1), event.replacedText);
+		assertEquals(0, event.start);
+		assertEquals(line.length(), event.length);
+		assertEquals(line.substring(0, 1), event.replacedText);
 	};
 	text.addExtendedModifyListener(listener);
 	text.replaceTextRange(0, 1, line);
-	assertTrue("replaceTextRange does not send event", listenerCalled);
+	assertTrue(listenerCalled);
 
 	listenerCalled = false;
 	text.removeExtendedModifyListener(listener);
 	listener = event -> {
 		listenerCalled = true;
-		assertEquals("ExtendedModify event data invalid", 0, event.start);
-		assertEquals("ExtendedModify event data invalid", line.length(), event.length);
-		assertEquals("ExtendedModify event data invalid", line + line.substring(1, line.length()) + line, event.replacedText);
+		assertEquals(0, event.start);
+		assertEquals(line.length(), event.length);
+		assertEquals(line + line.substring(1, line.length()) + line, event.replacedText);
 	};
 	text.addExtendedModifyListener(listener);
 	text.setText(line);
-	assertTrue("setText does not send event", listenerCalled);
+	assertTrue(listenerCalled);
 
 	listenerCalled = false;
 	text.removeExtendedModifyListener(listener);
 	// cause StyledText to call the listener.
 	text.setText(line);
-	assertFalse("Listener not removed", listenerCalled);
+	assertFalse(listenerCalled);
 }
 
 @Test
@@ -289,20 +287,20 @@ public void test_addBidiSegmentListenerLorg_eclipse_swt_custom_BidiSegmentListen
 	// cause StyledText to call the BidiSegmentListener.
 	text.getLocationAtOffset(0);
 	if (SwtTestUtil.isBidi()) {
-		assertTrue("Listener not called", listenerCalled);
+		assertTrue(listenerCalled);
 	} else {
-		assertFalse("Listener called when it shouldn't be", listenerCalled);
+		assertFalse(listenerCalled);
 	}
 	listenerCalled = false;
 	text.removeBidiSegmentListener(listener);
 	// cause StyledText to call the BidiSegmentListener.
 	text.getLocationAtOffset(0);
-	assertFalse("Listener not removed", listenerCalled);
+	assertFalse(listenerCalled);
 }
 
-@Test(expected=IllegalArgumentException.class)
+@Test
 public void test_addCaretListener_passingNullThrowsException() {
-	text.addCaretListener(null);
+	assertThrows(IllegalArgumentException.class, () -> text.addCaretListener(null));
 }
 
 @Test
@@ -312,7 +310,7 @@ public void test_addCaretListener_CaretListenerCalled() {
 	text.setText("Line1");
 	text.addCaretListener(listener);
 	text.setCaretOffset(1);
-	assertTrue("Listener not called", listenerCalled);
+	assertTrue(listenerCalled);
 }
 
 @Test
@@ -322,7 +320,7 @@ public void test_removeCaretListener_CaretListenerNotCalled() {
 	text.addCaretListener(listener);
 	text.removeCaretListener(listener);
 	text.setCaretOffset(1);
-	assertFalse("Listener not removed", listenerCalled);
+	assertFalse(listenerCalled);
 }
 
 @Test
@@ -339,7 +337,7 @@ public void test_addLineBackgroundListenerLorg_eclipse_swt_custom_LineBackground
 	// cause StyledText to call the listener.
 	text.setSelection(0, text.getCharCount());
 	text.copy();
-	assertTrue("Listener not called", listenerCalled);
+	assertTrue(listenerCalled);
 
 	listenerCalled = false;
 	text.removeLineBackgroundListener(listener);
@@ -347,7 +345,7 @@ public void test_addLineBackgroundListenerLorg_eclipse_swt_custom_LineBackground
 	text.setText(line);
 	text.setSelection(0, text.getCharCount());
 	text.copy();
-	assertFalse("Listener not removed", listenerCalled);
+	assertFalse(listenerCalled);
 }
 
 @Test
@@ -363,7 +361,7 @@ public void test_addLineStyleListenerLorg_eclipse_swt_custom_LineStyleListener()
 	// cause StyledText to call the listener.
 	text.setSelection(0, text.getCharCount());
 	text.copy();
-	assertTrue("Listener not called", listenerCalled);
+	assertTrue(listenerCalled);
 
 	listenerCalled = false;
 	text.removeLineStyleListener(listener);
@@ -371,7 +369,7 @@ public void test_addLineStyleListenerLorg_eclipse_swt_custom_LineStyleListener()
 	text.setText(line);
 	text.setSelection(0, text.getCharCount());
 	text.copy();
-	assertFalse("Listener not removed", listenerCalled);
+	assertFalse(listenerCalled);
 }
 
 @Test
@@ -386,25 +384,25 @@ public void test_addModifyListenerLorg_eclipse_swt_events_ModifyListener() {
 
 	listenerCalled = false;
 	text.append(line);
-	assertTrue("append does not send event", listenerCalled);
+	assertTrue(listenerCalled);
 
 	listenerCalled = false;
 	text.insert(line);
-	assertTrue("replaceTextRange does not send event", listenerCalled);
+	assertTrue(listenerCalled);
 
 	listenerCalled = false;
 	text.replaceTextRange(0, 1, line);
-	assertTrue("replaceTextRange does not send event", listenerCalled);
+	assertTrue(listenerCalled);
 
 	listenerCalled = false;
 	text.setText(line);
-	assertTrue("setText does not send event", listenerCalled);
+	assertTrue(listenerCalled);
 
 	listenerCalled = false;
 	text.removeModifyListener(listener);
 	// cause StyledText to call the listener.
 	text.setText(line);
-	assertFalse("Listener not removed", listenerCalled);
+	assertFalse(listenerCalled);
 }
 
 @Test
@@ -429,16 +427,16 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 	text.addSelectionListener(listener);
 	// cause StyledText to call the listener.
 	text.invokeAction(ST.SELECT_LINE_END);
-	assertTrue("Listener not called", listenerCalled);
-	assertFalse("Listener called unexpectedly", listener2Called);
+	assertTrue(listenerCalled);
+	assertFalse(listener2Called);
 
 	listenerCalled = false;
 	listener2Called = false;
 	text.removeSelectionListener(listener);
 	// cause StyledText to call the listener.
 	text.invokeAction(ST.SELECT_LINE_END);
-	assertFalse("Listener not removed", listenerCalled);
-	assertFalse("Listener called unexpectedly", listener2Called);
+	assertFalse(listenerCalled);
+	assertFalse(listener2Called);
 }
 
 
@@ -452,13 +450,13 @@ public void test_addSelectionListenerWidgetSelectedAdapterLorg_eclipse_swt_event
 	text.addSelectionListener(listener);
 	// cause StyledText to call the listener.
 	text.invokeAction(ST.SELECT_LINE_END);
-	assertTrue("Listener not called", listenerCalled);
+	assertTrue(listenerCalled);
 
 	listenerCalled = false;
 	text.removeSelectionListener(listener);
 	// cause StyledText to call the listener.
 	text.invokeAction(ST.SELECT_LINE_END);
-	assertFalse("Listener not removed", listenerCalled);
+	assertFalse(listenerCalled);
 }
 
 @Test
@@ -471,13 +469,13 @@ public void test_addSelectionListenerWidgetDefaultSelectedAdapterLorg_eclipse_sw
 	text.addSelectionListener(listener);
 	// cause StyledText to call the listener.
 	text.invokeAction(ST.SELECT_LINE_END);
-	assertFalse("Listener called unexpectedly", listener2Called);
+	assertFalse(listener2Called);
 
 	listener2Called = false;
 	text.removeSelectionListener(listener);
 	// cause StyledText to call the listener.
 	text.invokeAction(ST.SELECT_LINE_END);
-	assertFalse("Listener called unexpectedly", listener2Called);
+	assertFalse(listener2Called);
 }
 
 @Test
@@ -499,9 +497,9 @@ public void test_addVerifyListenerLorg_eclipse_swt_events_VerifyListener() {
 	final int textLength;
 	VerifyListener listener = event -> {
 		listenerCalled = true;
-		assertEquals("Verify event data invalid", 0, event.start);
-		assertEquals("Verify event data invalid", 0, event.end);
-		assertEquals("Verify event data invalid", line, event.text);
+		assertEquals(0, event.start);
+		assertEquals(0, event.end);
+		assertEquals(line, event.text);
 		event.start = 2;
 		event.end = 5;
 		event.text = newLine;
@@ -514,21 +512,21 @@ public void test_addVerifyListenerLorg_eclipse_swt_events_VerifyListener() {
 
 	listenerCalled = false;
 	text.append(line);
-	assertTrue("append does not send event", listenerCalled);
-	assertEquals("Listener failed", newLine, text.getText());
+	assertTrue(listenerCalled);
+	assertEquals(newLine, text.getText());
 
 	listenerCalled = false;
 	text.insert(line);
-	assertTrue("replaceTextRange does not send event", listenerCalled);
-	assertEquals("Listener failed", newLine + newLine, text.getText());
+	assertTrue(listenerCalled);
+	assertEquals(newLine + newLine, text.getText());
 
 	listenerCalled = false;
 	text.removeVerifyListener(listener);
 	listener = event -> {
 		listenerCalled = true;
-		assertEquals("Verify event data invalid", 0, event.start);
-		assertEquals("Verify event data invalid", 1, event.end);
-		assertEquals("Verify event data invalid", line, event.text);
+		assertEquals(0, event.start);
+		assertEquals(1, event.end);
+		assertEquals(line, event.text);
 		event.start = 2;
 		event.end = 5;
 		event.text = newLine;
@@ -536,51 +534,51 @@ public void test_addVerifyListenerLorg_eclipse_swt_events_VerifyListener() {
 	text.addVerifyListener(listener);
 	textLength = text.getCharCount() - 1 + newLine.length();
 	text.replaceTextRange(0, 1, line);
-	assertTrue("replaceTextRange does not send event", listenerCalled);
-	assertEquals("Listener failed", newLine + newLine.substring(1, newLine.length()) + newLine, text.getText());
+	assertTrue(listenerCalled);
+	assertEquals(newLine + newLine.substring(1, newLine.length()) + newLine, text.getText());
 
 	listenerCalled = false;
 	text.removeVerifyListener(listener);
 	listener = event -> {
 		listenerCalled = true;
-		assertEquals("Verify event data invalid", 0, event.start);
-		assertEquals("Verify event data invalid", textLength, event.end);
-		assertEquals("Verify event data invalid", line, event.text);
+		assertEquals(0, event.start);
+		assertEquals(textLength, event.end);
+		assertEquals(line, event.text);
 		event.start = 2;
 		event.end = 5;
 		event.text = newLine;
 	};
 	text.addVerifyListener(listener);
 	text.setText(line);
-	assertTrue("setText does not send event", listenerCalled);
-	assertEquals("Listener failed", newLine, text.getText());
+	assertTrue(listenerCalled);
+	assertEquals(newLine, text.getText());
 
 	text.removeVerifyListener(listener);
 
 	listenerCalled = false;
 	listener = event -> {
 		listenerCalled = true;
-		assertEquals("Verify event data invalid", 2, event.start);
-		assertEquals("Verify event data invalid", newLine.length(), event.end);
-		assertEquals("Verify event data invalid", line, event.text);
+		assertEquals(2, event.start);
+		assertEquals(newLine.length(), event.end);
+		assertEquals(line, event.text);
 		event.doit = false;
 	};
 	text.addVerifyListener(listener);
 	// cause StyledText to call the listener.
 	text.replaceTextRange(2, text.getCharCount() - 2, line);
-	assertTrue("Listener not called", listenerCalled);
-	assertEquals("Listener failed", newLine, text.getText());
+	assertTrue(listenerCalled);
+	assertEquals(newLine, text.getText());
 
 	listenerCalled = false;
 	text.removeVerifyListener(listener);
 	// cause StyledText to call the listener.
 	text.setText(line);
-	assertFalse("Listener not removed", listenerCalled);
+	assertFalse(listenerCalled);
 }
 
-@Test(expected=IllegalArgumentException.class)
+@Test
 public void test_addWordMovementListener_passingNullThrowsException() {
-	text.addWordMovementListener(null);
+	assertThrows(IllegalArgumentException.class, () -> text.addWordMovementListener(null));
 }
 
 @Test
@@ -591,8 +589,8 @@ public void test_addWordMovementListener_invokeActionSelectWordNextCallsGetNextO
 	text.setText("Word0 Word1 Word2");
 	text.addWordMovementListener(listener);
 	text.invokeAction(ST.SELECT_WORD_NEXT);
-	assertFalse("Listener unexpectantly called", listenerCalled);
-	assertTrue("Listener not called", listener2Called);
+	assertFalse(listenerCalled);
+	assertTrue(listener2Called);
 }
 
 @Test
@@ -603,8 +601,8 @@ public void test_addWordMovementListener_invokeActionSelectWordPreviousCallsGetP
 	text.setText("Word0 Word1 Word2");
 	text.addWordMovementListener(listener);
 	text.invokeAction(ST.SELECT_WORD_PREVIOUS);
-	assertTrue("Listener not called", listenerCalled);
-	assertFalse("Listener unexpectantly called", listener2Called);
+	assertTrue(listenerCalled);
+	assertFalse(listener2Called);
 }
 
 @Test
@@ -617,8 +615,8 @@ public void test_removeWordMovementListener_invokeActionSelectWordCallsNoMethods
 	text.removeWordMovementListener(listener);
 	text.invokeAction(ST.SELECT_WORD_NEXT);
 	text.invokeAction(ST.SELECT_WORD_PREVIOUS);
-	assertFalse("Listener unexpectantly called", listenerCalled);
-	assertFalse("Listener unexpectantly called", listener2Called);
+	assertFalse(listenerCalled);
+	assertFalse(listener2Called);
 }
 
 private class RecordingMovementListener implements MovementListener {
@@ -638,24 +636,24 @@ public void test_appendLjava_lang_String() {
 	String line = "Line1";
 
 	text.append(line);
-	assertEquals("append to empty text", line, text.getText());
+	assertEquals(line, text.getText());
 
-	assertThrows("append null string", IllegalArgumentException.class, () -> text.append(null));
+	assertThrows(IllegalArgumentException.class, () -> text.append(null));
 
 	text.append("");
-	assertEquals("append empty string", line, text.getText());
+	assertEquals(line, text.getText());
 
 	text.append(line);
-	assertEquals("append non-empty string", line + line, text.getText());
+	assertEquals(line + line, text.getText());
 
 	text.setText("");
 	String text2 = "line\r";
 	text.append(text2);
-	assertEquals("append string ending with line delimiter", text2, text.getText());
+	assertEquals(text2, text.getText());
 
 	String text3 = "line\r\nline3";
 	text.append(text3);
-	assertEquals("append multi line string", text2 + text3, text.getText());
+	assertEquals(text2 + text3, text.getText());
 }
 
 @Override
@@ -1307,19 +1305,19 @@ public void test_getLocationAtOffsetI(){
 	final int XINSET = isBidiCaret() ? 2 : 0;
 
 	assertEquals(new Point(XINSET, 0), text.getLocationAtOffset(0));
-	assertThrows("No exception thrown for offset == -1", IllegalArgumentException.class, () ->
-		text.getLocationAtOffset(-1));
+	assertThrows(IllegalArgumentException.class, () ->
+	text.getLocationAtOffset(-1));
 
-	assertThrows("No exception thrown for illegal offset argument", IllegalArgumentException.class, () ->
-		text.getLocationAtOffset(100));
+	assertThrows(IllegalArgumentException.class, () ->
+	text.getLocationAtOffset(100));
 
 	text.setText("Line0\r\nLine1");
 	assertTrue(text.getLocationAtOffset(4).x > 0 && text.getLocationAtOffset(4).y == 0);
 	assertTrue(text.getLocationAtOffset(6).x > 0 && text.getLocationAtOffset(6).y == 0);
 	// x location will == StyledText x inset on bidi platforms
 	assertTrue(text.getLocationAtOffset(7).x == XINSET && text.getLocationAtOffset(7).y > 0);
-	assertThrows("No exception thrown for illegal offset argument", IllegalArgumentException.class, () ->
-		text.getLocationAtOffset(13));
+	assertThrows(IllegalArgumentException.class, () ->
+	text.getLocationAtOffset(13));
 
 	text.setTopIndex(1);
 	assertTrue(text.getLocationAtOffset(4).x > 0 && text.getLocationAtOffset(4).y < 0);
@@ -1414,14 +1412,14 @@ public void test_getOffsetAtPointLorg_eclipse_swt_graphics_Point() {
 }
 
 void testStyles (String msg, int[] resultRanges, int[] expectedRanges, StyleRange[] resultStyles, StyleRange[] expectedStyles) {
-	assertNotNull("resultRanges is null on: " + msg, resultRanges);
-	assertNotNull("expectedRanges is null on: " + msg, expectedRanges);
-	assertNotNull("resultStyles is null on: " + msg, resultStyles);
-	assertNotNull("expectedStyles is null on: " + msg, expectedStyles);
-	assertEquals("result ranges and styles length don't match on: " + msg, resultRanges.length, resultStyles.length * 2);
-	assertEquals("expected ranges and styles length don't match on: " + msg, expectedRanges.length, expectedStyles.length * 2);
-	assertArrayEquals("expected and result ranges are differnt on: " + msg, expectedRanges, resultRanges);
-	assertArrayEquals("expected and result styles are differnt on: " + msg, expectedStyles, resultStyles);
+	assertNotNull(resultRanges);
+	assertNotNull(expectedRanges);
+	assertNotNull(resultStyles);
+	assertNotNull(expectedStyles);
+	assertEquals(resultRanges.length, resultStyles.length * 2);
+	assertEquals(expectedRanges.length, expectedStyles.length * 2);
+	assertArrayEquals(expectedRanges, resultRanges);
+	assertArrayEquals(expectedStyles, resultStyles);
 }
 
 @Test
@@ -1800,12 +1798,11 @@ public void test_getStyleRangeAtOffsetI() {
 	int i;
 	StyleRange style = new StyleRange(styleStart, styleLength, BLUE, RED, SWT.BOLD);
 
-	assertThrows("offset out of range no text", IllegalArgumentException.class, () -> text.getStyleRangeAtOffset(0));
+	assertThrows(IllegalArgumentException.class, () -> text.getStyleRangeAtOffset(0));
 
 	text.setText(line);
-	assertThrows("offset out of range negative", IllegalArgumentException.class, () -> text.getStyleRangeAtOffset(-1));
-	assertThrows("offset out of range positive", IllegalArgumentException.class,
-			() -> text.getStyleRangeAtOffset(line.length()));
+	assertThrows(IllegalArgumentException.class, () -> text.getStyleRangeAtOffset(-1));
+	assertThrows(IllegalArgumentException.class, () -> text.getStyleRangeAtOffset(line.length()));
 
 	text.setStyleRange(style);
 	style.length = 1;
@@ -2063,8 +2060,7 @@ public void test_getWordWrap() {
 @Test
 public void test_insertLjava_lang_String(){
 	String delimiterString = "\n";
-	assertThrows("No exception thrown for string == null", IllegalArgumentException.class,
-		() -> text.insert(null));
+	assertThrows(IllegalArgumentException.class, () -> text.insert(null));
 	assertTrue(text.getText().isEmpty());
 	text.insert("");
 	assertTrue(text.getText().isEmpty());
@@ -2377,8 +2373,8 @@ public void test_printLorg_eclipse_swt_printing_Printer() {
 	// if there aren't any printers, don't do this test
 	if (Printer.getDefaultPrinterData() == null) return;
 
-	assertThrows("no exception thrown for print(null)", IllegalArgumentException.class, () ->
-		text.print((Printer) null));
+	assertThrows(IllegalArgumentException.class, () ->
+	text.print((Printer) null));
 
 	Printer printer = new Printer();
 	text.print(printer); // don't run the runnable, to save paper
@@ -4731,7 +4727,7 @@ public void test_verticalIndent_resetsCacheForAllLinesAssumingLowestLineHeight()
 		field = lineSize.getClass().getDeclaredField("height");
 		field.setAccessible(true);
 		int height = (int) field.get(lineSize);
-		assertEquals("resetCache is not called for line "+lineNr+" after setLineVerticalIndent",-1, height);
+		assertEquals(-1, height);
 	}
 }
 
@@ -4764,14 +4760,14 @@ public void test_verticalIndent_keepsCurrentCaretAndLinePosition() {
 	text.setLineVerticalIndent(line, INDENT);
 	assertEquals(caretLocation, text.getCaret().getLocation());
 	assertEquals(offsetLocation, text.getLocationAtOffset(offset));
-	assertEquals("vertical scroll should have been updated", initialTopPixel + INDENT, text.getTopPixel());
+	assertEquals(initialTopPixel + INDENT, text.getTopPixel());
 	assertEquals(scrollMini, scrollbar.getMinimum());
 	assertEquals(scrollMaxi + INDENT, scrollbar.getMaximum());
 	assertEquals(scrollOffset + INDENT, scrollbar.getSelection());
 	text.setLineVerticalIndent(line, 0);
 	assertEquals(caretLocation, text.getCaret().getLocation());
 	assertEquals(offsetLocation, text.getLocationAtOffset(offset));
-	assertEquals("vertical scroll should have been restored", initialTopPixel, text.getTopPixel());
+	assertEquals(initialTopPixel, text.getTopPixel());
 	assertEquals(scrollMini, scrollbar.getMinimum());
 	assertEquals(scrollMaxi, scrollbar.getMaximum());
 	assertEquals(scrollOffset, scrollbar.getSelection());
@@ -4780,14 +4776,14 @@ public void test_verticalIndent_keepsCurrentCaretAndLinePosition() {
 	text.setLineVerticalIndent(0, INDENT);
 	assertEquals(caretLocation, text.getCaret().getLocation());
 	assertEquals(offsetLocation, text.getLocationAtOffset(offset));
-	assertEquals("vertical scroll should have been updated", initialTopPixel + INDENT, text.getTopPixel());
+	assertEquals(initialTopPixel + INDENT, text.getTopPixel());
 	assertEquals(scrollMini, scrollbar.getMinimum());
 	assertEquals(scrollMaxi + INDENT, scrollbar.getMaximum());
 	assertEquals(scrollOffset + INDENT, scrollbar.getSelection());
 	text.setLineVerticalIndent(0, 0);
 	assertEquals(caretLocation, text.getCaret().getLocation());
 	assertEquals(offsetLocation, text.getLocationAtOffset(offset));
-	assertEquals("vertical scroll should have been updated", initialTopPixel, text.getTopPixel());
+	assertEquals(initialTopPixel, text.getTopPixel());
 	assertEquals(scrollMini, scrollbar.getMinimum());
 	assertEquals(scrollMaxi, scrollbar.getMaximum());
 	assertEquals(scrollOffset, scrollbar.getSelection());
@@ -4797,31 +4793,31 @@ public void test_verticalIndent_keepsCurrentCaretAndLinePosition() {
 	text.setLineVerticalIndent(nextInvisibleLine, INDENT);
 	assertEquals(caretLocation, text.getCaret().getLocation());
 	assertEquals(offsetLocation, text.getLocationAtOffset(offset));
-	assertEquals("Vertical scroll shouldn't be modified",initialTopPixel, text.getTopPixel());
+	assertEquals(initialTopPixel, text.getTopPixel());
 	text.setLineVerticalIndent(nextInvisibleLine, 0);
 	assertEquals(caretLocation, text.getCaret().getLocation());
 	assertEquals(offsetLocation, text.getLocationAtOffset(offset));
-	assertEquals("Vertical scroll shouldn't be modified",initialTopPixel, text.getTopPixel());
+	assertEquals(initialTopPixel, text.getTopPixel());
 
 	// above active line, in visible area
 	text.setLineVerticalIndent(line - 2, INDENT);
 	assertEquals(caretLocation, text.getCaret().getLocation());
 	assertEquals(offsetLocation, text.getLocationAtOffset(offset));
-	assertEquals("Vertical scroll should have been updated",initialTopPixel + INDENT, text.getTopPixel());
+	assertEquals(initialTopPixel + INDENT, text.getTopPixel());
 	text.setLineVerticalIndent(line - 2, 0);
 	assertEquals(caretLocation, text.getCaret().getLocation());
 	assertEquals(offsetLocation, text.getLocationAtOffset(offset));
-	assertEquals("Vertical scroll should have been restored",initialTopPixel, text.getTopPixel());
+	assertEquals(initialTopPixel, text.getTopPixel());
 
 	// below active line, in visible area
 	text.setLineVerticalIndent(line + 2, INDENT);
 	assertEquals(caretLocation, text.getCaret().getLocation());
 	assertEquals(offsetLocation, text.getLocationAtOffset(offset));
-	assertEquals("Vertical scroll shouldn't be modified",initialTopPixel, text.getTopPixel());
+	assertEquals(initialTopPixel, text.getTopPixel());
 	text.setLineVerticalIndent(line + 2, 0);
 	assertEquals(caretLocation, text.getCaret().getLocation());
 	assertEquals(offsetLocation, text.getLocationAtOffset(offset));
-	assertEquals("Vertical scroll shouldn't be modified",initialTopPixel, text.getTopPixel());
+	assertEquals(initialTopPixel, text.getTopPixel());
 }
 
 @Test
@@ -4842,8 +4838,8 @@ public void test_notFixedLineHeightDoesntChangeLinePixelIfUnnecessary() {
 	shell.setVisible(true);
 	shell.forceActive();
 	text.setVisible(true);
-	assertTrue("setFocus failed",text.setFocus());
-	assertTrue("text has not focus",text.isFocusControl());
+	assertTrue(text.setFocus());
+	assertTrue(text.isFocusControl());
 	text.replaceTextRange(0, 1, "X");
 	assertEquals(0, text.getTopIndex());
 	assertEquals(0, text.getLinePixel(0));
@@ -4947,7 +4943,7 @@ public void test_caretSizeAndPositionVariableGlyphMetrics() {
 	text.setCaretOffset(0);
 	assertEquals(text.getLineHeight(), text.getCaret().getSize().y);
 	// See https://github.com/eclipse-platform/eclipse.platform.swt/issues/294
-	assumeFalse("Test fails on Linux: expected:<87> but was:<174>", SwtTestUtil.isLinux);
+	assumeFalse(SwtTestUtil.isLinux, "Test fails on Linux: expected:<87> but was:<174>");
 	// +5: caret takes 5 more pixels
 	assertEquals(text.getLineHeight(0) - text.getCaret().getSize().y, text.getCaret().getBounds().y);
 	text.setCaretOffset(1);
@@ -5278,12 +5274,11 @@ public void test_cutTextInBlockSelection() {
 	text.setBlockSelectionBounds(0, 0, lowerRight.x, lowerRight.y + 1);
 	text.cut();
 
-	assertTrue(text.getText(),
-			text.getText()
-					.startsWith(" Test Selection" + System.lineSeparator()
-							+ " Test Selection" + System.lineSeparator()
-							+ " Test Selection" + System.lineSeparator()
-							+ "Sample Test Selection" + System.lineSeparator()));
+	assertTrue(text.getText()
+	.startsWith(" Test Selection" + System.lineSeparator()
+			+ " Test Selection" + System.lineSeparator()
+			+ " Test Selection" + System.lineSeparator()
+			+ "Sample Test Selection" + System.lineSeparator()));
 }
 
 @Test
@@ -5298,12 +5293,11 @@ public void test_pasteInsertsTextInBlockSelectionAsBlock() {
 	text.setCaretOffset(0);
 	text.paste();
 
-	assertTrue(text.getText(),
-			text.getText()
-					.startsWith("Sample" + blockSelectionTestTextOneLine()
-							+ "Sample" + blockSelectionTestTextOneLine()
-							+ "Sample" + blockSelectionTestTextOneLine()
-							+ blockSelectionTestTextOneLine()));
+	assertTrue(text.getText()
+	.startsWith("Sample" + blockSelectionTestTextOneLine()
+			+ "Sample" + blockSelectionTestTextOneLine()
+			+ "Sample" + blockSelectionTestTextOneLine()
+			+ blockSelectionTestTextOneLine()));
 }
 
 @Test
@@ -5316,12 +5310,11 @@ public void test_cutAndPasteInBlockSelection() {
 	text.cut();
 	text.paste();
 
-	assertTrue(text.getText(),
-			text.getText()
-					.startsWith(blockSelectionTestTextOneLine()
-							+ blockSelectionTestTextOneLine()
-							+ blockSelectionTestTextOneLine()
-							+ blockSelectionTestTextOneLine()));
+	assertTrue(text.getText()
+	.startsWith(blockSelectionTestTextOneLine()
+			+ blockSelectionTestTextOneLine()
+			+ blockSelectionTestTextOneLine()
+			+ blockSelectionTestTextOneLine()));
 }
 
 @Test
@@ -5384,15 +5377,15 @@ public void test_insertInBlockSelection() {
 	text.setSelection(6, 6 + blockSelectionTestTextOneLine().length());
 	text.insert("Foo" + System.lineSeparator() + "Foo" + System.lineSeparator());
 
-	assertTrue(text.getText(), text.getText()
-			.startsWith("SampleFoo Test Selection" + System.lineSeparator()
-					+ "SampleFoo Test Selection" + System.lineSeparator() + "Sample Test Selection"
-					+ System.lineSeparator()));
+	assertTrue(text.getText()
+	.startsWith("SampleFoo Test Selection" + System.lineSeparator()
+			+ "SampleFoo Test Selection" + System.lineSeparator() + "Sample Test Selection"
+			+ System.lineSeparator()));
 }
 
 @Test
 public void test_setStyleRanges_render() throws InterruptedException {
-	Assume.assumeFalse("Bug 553090 causes test to fail on Mac", SwtTestUtil.isCocoa);
+	assumeFalse(SwtTestUtil.isCocoa, "Bug 553090 prevents test to work on Mac");
 	shell.setVisible(true);
 	text.setText("abc");
 	text.setMargins(0, 0, 0, 0);
@@ -5422,7 +5415,7 @@ public void test_setStyleRanges_render() throws InterruptedException {
  */
 @Test
 public void test_lineStyleListener_styles_render() throws InterruptedException {
-	Assume.assumeFalse("Bug 536588 prevents test to work on Mac", SwtTestUtil.isCocoa);
+	assumeFalse(SwtTestUtil.isCocoa, "Bug 536588 prevents test to work on Mac");
 	final ArrayList<StyleRange> styles = new ArrayList<>();
 	styles.add(getStyle(0, 2, null, GREEN));
 	styles.add(getStyle(4, 1, null, GREEN));
@@ -5447,7 +5440,7 @@ public void test_lineStyleListener_styles_render() throws InterruptedException {
  */
 @Test
 public void test_lineStyleListener_stylesAndRanges_render() throws InterruptedException {
-	Assume.assumeFalse("Bug 536588 prevents test to work on Mac", SwtTestUtil.isCocoa);
+	assumeFalse(SwtTestUtil.isCocoa, "Bug 536588 prevents test to work on Mac");
 	LineStyleListener listener = (LineStyleEvent event) -> {
 		final StyleRange style = getStyle(0, 0, null, GREEN);
 		event.styles =  new StyleRange[] { style, style, style, style };
@@ -5473,7 +5466,7 @@ public void test_lineStyleListener_stylesAndRanges_render() throws InterruptedEx
  */
 @Test
 public void test_lineStyleListener_invalidStyles_render() throws InterruptedException {
-	Assume.assumeFalse("Bug 536588 prevents test to work on Mac", SwtTestUtil.isCocoa);
+	assumeFalse(SwtTestUtil.isCocoa, "Bug 536588 prevents test to work on Mac");
 	LineStyleListener listener = (LineStyleEvent event) -> {
 		event.styles = new StyleRange[] {
 			getStyle(-10, 4, null, GREEN),
@@ -5510,7 +5503,7 @@ private void testLineStyleListener(String content, LineStyleListener listener, B
 		text.setMargins(0, 0, 0, 0);
 		text.pack();
 		SwtTestUtil.processEvents(1000, evaluation);
-		assertTrue("Text not styled correctly.", evaluation.getAsBoolean());
+		assertTrue(evaluation.getAsBoolean());
 	} finally {
 		text.removeLineStyleListener(listener);
 	}
@@ -5616,16 +5609,16 @@ protected void rtfCopy() {
 	text.copy();
 
 	// The listener is invoked twice for each line, once for RTF and once for HTML.
-	assertEquals("not all lines tested for RTF & HTML copy", 2 * text.getLineCount(), linesCalled[0]);
+	assertEquals(2 * text.getLineCount(), linesCalled[0]);
 
 	Clipboard clipboard = new Clipboard(text.getDisplay());
 	RTFTransfer rtfTranfer = RTFTransfer.getInstance();
 	String clipboardText = (String) clipboard.getContents(rtfTranfer);
-	assertTrue("RTF copy failed", clipboardText.length() > 0);
+	assertTrue(clipboardText.length() > 0);
 
 	HTMLTransfer htmlTranfer = HTMLTransfer.getInstance();
 	clipboardText = (String) clipboard.getContents(htmlTranfer);
-	assertTrue("HTML copy failed", clipboardText.length() > 0);
+	assertTrue(clipboardText.length() > 0);
 
 	clipboard.dispose();
 	text.removeLineStyleListener(listener);
@@ -5656,7 +5649,7 @@ public void test_consistency_DragDetect () {
  */
 @Test
 public void test_GlyphMetricsOnTab_Bug549110() throws InterruptedException {
-	Assume.assumeFalse("Bug 536588 prevents test to work on Mac", SwtTestUtil.isCocoa);
+	assumeFalse(SwtTestUtil.isCocoa, "Bug 536588 prevents test to work on Mac");
 	shell.setVisible(true);
 	text.setText("ab\tcde");
 	text.setMargins(0, 0, 0, 0);
@@ -5678,8 +5671,8 @@ public void test_GlyphMetricsOnTab_Bug549110() throws InterruptedException {
 	text.replaceStyleRanges(0, text.getText().length(), new StyleRange[] { styleR, tabStyle, styleB });
 	text.pack();
 	SwtTestUtil.processEvents(1000, () -> hasPixel(text, RED) && hasPixel(text, BLUE));
-	assertTrue("Wrong style before tab", hasPixel(text, RED));
-	assertTrue("Wrong style after tab", hasPixel(text, BLUE));
+	assertTrue(hasPixel(text, RED));
+	assertTrue(hasPixel(text, BLUE));
 }
 
 @Test
@@ -5694,7 +5687,7 @@ public void test_GlyphMetricsOnTab() {
 	int tabWidthWithGlyphMetrics = text.getTextBounds(0, 0).width;
 	assertEquals(range.metrics.width, tabWidthWithGlyphMetrics);
 	Rectangle boundsWithGlyphMetrics = text.getTextBounds(0, text.getText().length() - 1);
-	assertEquals("Style should change text bounds", boundsWithoutGlyphMetrics.width - tabWidthWithoutGlyphMetrics + tabWidthWithGlyphMetrics, boundsWithGlyphMetrics.width);
+	assertEquals(boundsWithoutGlyphMetrics.width - tabWidthWithoutGlyphMetrics + tabWidthWithGlyphMetrics, boundsWithGlyphMetrics.width);
 }
 
 /**
@@ -5720,7 +5713,7 @@ public void test_InsertWhenDisabled() {
 	text.insert("[inserted]");
 	String actualText = text.getText();
 	String expectedText = "some [inserted] text";
-	assertEquals("Wrong insert in disabled StyledText", expectedText, actualText);
+	assertEquals(expectedText, actualText);
 }
 
 /**
@@ -5730,7 +5723,7 @@ public void test_InsertWhenDisabled() {
  */
 @Test
 public void test_bug551335_lostStyles() throws InterruptedException {
-	Assume.assumeFalse("Bug 536588 prevents test to work on Mac", SwtTestUtil.isCocoa);
+	assumeFalse(SwtTestUtil.isCocoa, "Bug 536588 prevents test to work on Mac");
 	shell.setVisible(true);
 	text.setText("012345678\n012345678\n0123456789");
 	text.setMargins(0, 0, 0, 0);
@@ -5820,7 +5813,7 @@ public void test_bug551335_lostStyles() throws InterruptedException {
  */
 @Test
 public void test_clipboardCarryover() {
-	assumeFalse("Disabled on Mac because similar clipboard tests are also disabled.", SwtTestUtil.isCocoa);
+	assumeFalse(SwtTestUtil.isCocoa, "Disabled on Mac because similar clipboard tests are also disabled.");
 
 	String content = "StyledText-" + Math.abs(new Random().nextInt());
 	text.setText(content);
@@ -5831,13 +5824,13 @@ public void test_clipboardCarryover() {
 	text = new StyledText(shell, SWT.NONE);
 	setWidget(text);
 	text.paste();
-	assertEquals("Lost clipboard content", content, text.getText());
-	assertEquals("Clipboard content got some unexpected styling", 0, text.getStyleRanges().length);
+	assertEquals(content, text.getText());
+	assertEquals(0, text.getStyleRanges().length);
 
 	Clipboard clipboard = new Clipboard(text.getDisplay());
 	RTFTransfer rtfTranfer = RTFTransfer.getInstance();
 	String clipboardText = (String) clipboard.getContents(rtfTranfer);
-	assertTrue("RTF copy failed", clipboardText.length() > 0);
+	assertTrue(clipboardText.length() > 0);
 }
 
 /**
@@ -5899,11 +5892,9 @@ public void test_arrowDownKeepsPositionAfterNewLine() {
  * Bug 565164 - SWT.BS event no longer working
  */
 @Test
-@EnabledIfEnvironmentVariable(named = "GITHUB_ACTIONS", matches = "true", disabledReason = "Display.post tests only run successfully on GitHub actions - see https://github.com/eclipse-platform/eclipse.platform.swt/issues/2571")
 public void test_backspaceAndDelete() throws InterruptedException {
-	assumeTrue(
-			"Display.post tests only run successfully on GitHub actions - see https://github.com/eclipse-platform/eclipse.platform.swt/issues/2571",
-			Boolean.parseBoolean(System.getenv("GITHUB_ACTIONS")));
+	assumeTrue(Boolean.parseBoolean(System.getenv("GITHUB_ACTIONS")),
+			"Display.post tests only run successfully on GitHub actions - see https://github.com/eclipse-platform/eclipse.platform.swt/issues/2571");
 	shell.open();
 	text.setSize(10, 50);
 	// The display.post needs to successfully obtain the focused window (at least on GTK3)
@@ -5938,14 +5929,11 @@ public void test_backspaceAndDelete() throws InterruptedException {
 @Test
 public void test_replaceTextRange_isInsideCRLF() {
 	text.setText("0123\r\n6789");
-	assertThrows("Exception shall be thrown when splitting CRLF", IllegalArgumentException.class,
-			() -> text.replaceTextRange(5, 0, "x"));
+	assertThrows(IllegalArgumentException.class, () -> text.replaceTextRange(5, 0, "x"));
 
-	assertThrows("Exception shall be thrown when splitting CRLF", IllegalArgumentException.class,
-			() -> text.replaceTextRange(0, 5, "x"));
+	assertThrows(IllegalArgumentException.class, () -> text.replaceTextRange(0, 5, "x"));
 
-	assertThrows("Exception shall be thrown when splitting CRLF", IllegalArgumentException.class,
-			() -> text.replaceTextRange(5, 5, "x"));
+	assertThrows(IllegalArgumentException.class, () -> text.replaceTextRange(5, 5, "x"));
 
 	// Shouldn't throw when CR/LF were already on different lines
 	text.setText("0\r2\n4");
@@ -5983,8 +5971,8 @@ public void test_rangeSelectionKeepsCaret() {
 	text.setSelection(initialOffset, initialOffset - 3);
 	assertEquals(13, text.getCaretOffset());
 	text.invokeAction(ST.SELECT_LINE_DOWN);
-	assertEquals("Selection does not start from caret", initialOffset, text.getSelection().x);
-	assertNotEquals("Selection is not left-to-right", text.getSelection().x, text.getCaretOffset());
+	assertEquals(initialOffset, text.getSelection().x);
+	assertNotEquals(text.getSelection().x, text.getCaretOffset());
 }
 
 @Test

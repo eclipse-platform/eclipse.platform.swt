@@ -13,17 +13,17 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.ScrollBar;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.ScrollBar
@@ -33,7 +33,7 @@ import org.junit.Test;
 public class Test_org_eclipse_swt_widgets_ScrollBar extends Test_org_eclipse_swt_widgets_Widget {
 
 @Override
-@Before
+@BeforeEach
 public void setUp() {
 	super.setUp();
 	canvas = new Canvas(shell, SWT.H_SCROLL);
@@ -63,7 +63,7 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 	assertThrows(IllegalArgumentException.class, () ->scrollBar.addSelectionListener(null));
 	scrollBar.addSelectionListener(listener);
 	scrollBar.setSelection(100);
-	assertEquals(":a:", false, listenerCalled);
+	assertEquals(false, listenerCalled);
 	scrollBar.removeSelectionListener(listener);
 	assertThrows(IllegalArgumentException.class, () ->scrollBar.removeSelectionListener(null));
 }
@@ -75,7 +75,7 @@ public void test_addSelectionListenerWidgetSelectedAdapterLorg_eclipse_swt_event
 
 	scrollBar.addSelectionListener(listener);
 	scrollBar.setSelection(100);
-	assertEquals(":a:", false, listenerCalled);
+	assertEquals(false, listenerCalled);
 	scrollBar.removeSelectionListener(listener);
 }
 
@@ -191,12 +191,12 @@ public void test_setThumbI(){
 @Test
 public void test_setValuesIIIIII() {
 	scrollBar.setValues(10, 10, 50, 2, 5, 10);
-	assertEquals(":a:", 10, scrollBar.getSelection());
-	assertEquals(":b:", 10, scrollBar.getMinimum());
-	assertEquals(":c:", 50, scrollBar.getMaximum());
-	assertEquals(":d:", 2, scrollBar.getThumb());
-	assertEquals(":e:", 5, scrollBar.getIncrement());
-	assertEquals(":f:", 10, scrollBar.getPageIncrement());
+	assertEquals(10, scrollBar.getSelection());
+	assertEquals(10, scrollBar.getMinimum());
+	assertEquals(50, scrollBar.getMaximum());
+	assertEquals(2, scrollBar.getThumb());
+	assertEquals(5, scrollBar.getIncrement());
+	assertEquals(10, scrollBar.getPageIncrement());
 }
 
 @Test
@@ -232,10 +232,10 @@ private void report(String call, int set, int minExpected, int maxExpected, int 
 }
 // this method must be private or protected so the auto-gen tool keeps it
 private void check(String call, int minExpected, int maxExpected, int selectionExpected, int thumbExpected) {
-	assertEquals(call+" max ", maxExpected, scrollBar.getMaximum());
-	assertEquals(call+" min ", minExpected, scrollBar.getMinimum());
-	assertEquals(call+" sel ", selectionExpected, scrollBar.getSelection());
-	assertEquals(call+" thmb ", thumbExpected, scrollBar.getThumb());
+	assertEquals(maxExpected, scrollBar.getMaximum());
+	assertEquals(minExpected, scrollBar.getMinimum());
+	assertEquals(selectionExpected, scrollBar.getSelection());
+	assertEquals(thumbExpected, scrollBar.getThumb());
 }
 // this method must be private or protected so the auto-gen tool keeps it
 private int[][] getSetThumbValues() {

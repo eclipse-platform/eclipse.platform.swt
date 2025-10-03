@@ -13,17 +13,17 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Slider;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Slider
@@ -33,7 +33,7 @@ import org.junit.Test;
 public class Test_org_eclipse_swt_widgets_Slider extends Test_org_eclipse_swt_widgets_Control {
 
 @Override
-@Before
+@BeforeEach
 public void setUp() {
 	super.setUp();
 	slider = new Slider(shell, 0);
@@ -78,11 +78,11 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 	catch (IllegalArgumentException e) {
 		exceptionThrown = true;
 	}
-	assertTrue("Expected exception not thrown", exceptionThrown);
+	assertTrue(exceptionThrown);
 	exceptionThrown = false;
 	slider.addSelectionListener(listener);
 	slider.setSelection(0);
-	assertFalse(":a:", listenerCalled);
+	assertFalse(listenerCalled);
 	slider.removeSelectionListener(listener);
 	try {
 		slider.removeSelectionListener(null);
@@ -90,7 +90,7 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 	catch (IllegalArgumentException e) {
 		exceptionThrown = true;
 	}
-	assertTrue("Expected exception not thrown", exceptionThrown);
+	assertTrue(exceptionThrown);
 }
 
 @Test
@@ -100,7 +100,7 @@ public void test_addSelectionListenerWidgetSelectedAdapterLorg_eclipse_swt_event
 
 	slider.addSelectionListener(listener);
 	slider.setSelection(0);
-	assertFalse(":a:", listenerCalled);
+	assertFalse(listenerCalled);
 	slider.removeSelectionListener(listener);
 }
 
@@ -116,36 +116,36 @@ public void test_getIncrement() {
 	for (int i=0; i<cases.length; i++)
 	{
 		slider.setIncrement(cases[i]);
-		assertEquals("case:" + String.valueOf(i), cases[i], slider.getIncrement());
+		assertEquals(cases[i], slider.getIncrement());
 	}
 }
 
 @Test
 public void test_getMaximum() {
 	slider.setMaximum(2000);
-	assertEquals(":a:", 2000, slider.getMaximum());
+	assertEquals(2000, slider.getMaximum());
 	slider.setMaximum(20);
-	assertEquals(":b:", 20, slider.getMaximum());
+	assertEquals(20, slider.getMaximum());
 	slider.setMaximum(-1);
-	assertEquals(":c:", 20, slider.getMaximum());
+	assertEquals(20, slider.getMaximum());
 	slider.setMaximum(0);
-	assertEquals(":d:", 20, slider.getMaximum());
+	assertEquals(20, slider.getMaximum());
 	slider.setMaximum(10);
-	assertEquals(":d:", 10, slider.getMaximum());
+	assertEquals(10, slider.getMaximum());
 }
 
 @Test
 public void test_getMinimum() {
 	slider.setMinimum(5);
-	assertEquals(":a:", 5, slider.getMinimum());
+	assertEquals(5, slider.getMinimum());
 	slider.setMinimum(20);
-	assertEquals(":b:", 20, slider.getMinimum());
+	assertEquals(20, slider.getMinimum());
 	slider.setMinimum(-1);
-	assertEquals(":c:", 20, slider.getMinimum());
+	assertEquals(20, slider.getMinimum());
 	slider.setMinimum(0);
-	assertEquals(":d:", 0, slider.getMinimum());
+	assertEquals(0, slider.getMinimum());
 	slider.setMinimum(10);
-	assertEquals(":d:", 10, slider.getMinimum());
+	assertEquals(10, slider.getMinimum());
 }
 
 @Test
@@ -154,14 +154,14 @@ public void test_getPageIncrement() {
 	for (int i=0; i<cases.length; i++)
 	{
 		slider.setPageIncrement(cases[i]);
-		assertEquals("case: " + String.valueOf(i), cases[i], slider.getPageIncrement());
+		assertEquals(cases[i], slider.getPageIncrement());
 	}
 }
 
 @Test
 public void test_getSelection() {
 	slider.setSelection(10);
-	assertEquals(":a:", 10, slider.getSelection());
+	assertEquals(10, slider.getSelection());
 
 }
 
@@ -203,7 +203,7 @@ public void test_setMinimumI() {
 @Test
 public void test_setPageIncrementI() {
 	slider.setPageIncrement(3);
-	assertEquals(":a:", 3, slider.getPageIncrement());
+	assertEquals(3, slider.getPageIncrement());
 }
 
 @Test
@@ -233,12 +233,12 @@ public void test_setThumbI() {
 @Test
 public void test_setValuesIIIIII() {
 	slider.setValues(10, 10, 50, 2, 5, 10);
-	assertEquals(":a:", 10, slider.getSelection());
-	assertEquals(":b:", 10, slider.getMinimum());
-	assertEquals(":c:", 50, slider.getMaximum());
-	assertEquals(":d:", 2, slider.getThumb());
-	assertEquals(":e:", 5, slider.getIncrement());
-	assertEquals(":f:", 10, slider.getPageIncrement());
+	assertEquals(10, slider.getSelection());
+	assertEquals(10, slider.getMinimum());
+	assertEquals(50, slider.getMaximum());
+	assertEquals(2, slider.getThumb());
+	assertEquals(5, slider.getIncrement());
+	assertEquals(10, slider.getPageIncrement());
 }
 
 
@@ -272,10 +272,10 @@ private void report(String call, int set, int minExpected, int maxExpected, int 
 }
 // this method must be private or protected so the auto-gen tool keeps it
 private void check(String call, int minExpected, int maxExpected, int selectionExpected, int thumbExpected) {
-	assertEquals(call+" max ", maxExpected, slider.getMaximum());
-	assertEquals(call+" min ", minExpected, slider.getMinimum());
-	assertEquals(call+" sel ", selectionExpected, slider.getSelection());
-	assertEquals(call+" thmb ", thumbExpected, slider.getThumb());
+	assertEquals(maxExpected, slider.getMaximum());
+	assertEquals(minExpected, slider.getMinimum());
+	assertEquals(selectionExpected, slider.getSelection());
+	assertEquals(thumbExpected, slider.getThumb());
 }
 // this method must be private or protected so the auto-gen tool keeps it
 private int[][] getSetThumbValues() {

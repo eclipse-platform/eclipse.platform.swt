@@ -13,12 +13,12 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.HelpListener;
@@ -30,8 +30,8 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Menu
@@ -41,7 +41,7 @@ import org.junit.Test;
 public class Test_org_eclipse_swt_widgets_Menu extends Test_org_eclipse_swt_widgets_Widget {
 
 @Override
-@Before
+@BeforeEach
 public void setUp() {
 	super.setUp();
 	menu = new Menu(shell);
@@ -138,11 +138,11 @@ public void test_addMenuListenerLorg_eclipse_swt_events_MenuListener() {
 
 	menu.addMenuListener(menuListener);
 	menu.notifyListeners(SWT.Show, new Event());
-	assertTrue(":a:", listenerCalled);
+	assertTrue(listenerCalled);
 
 	listenerCalled = false;
 	menu.notifyListeners(SWT.Hide, new Event());
-	assertTrue(":b:", listenerCalled);
+	assertTrue(listenerCalled);
 
 	try {
 		menu.removeMenuListener(null);
@@ -229,16 +229,16 @@ public void test_getItems() {
 	for (int i = 0; i<number ; i++){
 		items[i] = new MenuItem(menu, 0);
 	}
-	assertArrayEquals(":a:", items, menu.getItems());
+	assertArrayEquals(items, menu.getItems());
 
 	menu.getItems()[0].dispose();
-	assertArrayEquals(":b:", new MenuItem[]{items[1], items[2], items[3], items[4]}, menu.getItems());
+	assertArrayEquals(new MenuItem[]{items[1], items[2], items[3], items[4]}, menu.getItems());
 
 	menu.getItems()[3].dispose();
-	assertArrayEquals(":c:", new MenuItem[]{items[1], items[2], items[3]}, menu.getItems());
+	assertArrayEquals(new MenuItem[]{items[1], items[2], items[3]}, menu.getItems());
 
 	menu.getItems()[1].dispose();
-	assertArrayEquals(":d:", new MenuItem[]{items[1], items[3]}, menu.getItems());
+	assertArrayEquals(new MenuItem[]{items[1], items[3]}, menu.getItems());
 }
 
 @Test
@@ -296,10 +296,10 @@ public void test_setDefaultItemLorg_eclipse_swt_widgets_MenuItem() {
 	MenuItem mItem1 = new MenuItem(menu, SWT.NULL);
 	menu.setDefaultItem(mItem0);
 	assertEquals(menu.getDefaultItem(), mItem0);
-	assertTrue("After setDefaultItem(mItem0):", menu.getDefaultItem() != mItem1);
+	assertTrue(menu.getDefaultItem() != mItem1);
 	menu.setDefaultItem(mItem1);
 	assertEquals(menu.getDefaultItem(), mItem1);
-	assertTrue("After setDefaultItem(mItem1):", menu.getDefaultItem() != mItem0);
+	assertTrue(menu.getDefaultItem() != mItem0);
 }
 
 @Test

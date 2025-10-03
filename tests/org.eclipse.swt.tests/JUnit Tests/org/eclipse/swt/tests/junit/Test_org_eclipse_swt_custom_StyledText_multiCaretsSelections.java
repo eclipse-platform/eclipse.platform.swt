@@ -13,8 +13,9 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ST;
@@ -25,11 +26,13 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.test.Screenshots;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestWatcher;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.opentest4j.IncompleteExecutionException;
+
 
 /**
  * Automated Test Suite for class org.eclipse.swt.custom.StyledText with
@@ -43,19 +46,35 @@ public class Test_org_eclipse_swt_custom_StyledText_multiCaretsSelections {
 	StyledText text;
 	GC gc;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		shell = new Shell();
 		text = new StyledText(shell, SWT.NULL);
 		gc = new GC(text);
 	}
 
-	@Rule
-	public TestWatcher screenshotRule = Screenshots.onFailure(() -> this.shell);
 
-	@After
+	@RegisterExtension
+	AfterTestExecutionCallback afterTestExecutionCallback = context -> {
+		context.getExecutionException().ifPresent((e) -> {
+			// If this is an assumption failed or otherwise
+			// skipped test, don't take a screenshot
+			if (!(e instanceof IncompleteExecutionException)) {
+				String screenshot = Screenshots.takeScreenshot(context.getTestClass().get(), context.getDisplayName());
+				e.addSuppressed((new Throwable("Screenshot written to " + screenshot)));
+			}
+		});
+	};
+
+	@AfterEach
 	public void tearDown() {
 		gc.dispose();
+		if (shell == null) {
+			return;
+		}
+		if (shell != null && !shell.isDisposed()) {
+			shell.dispose();
+		}
 	}
 	@Test
 	public void test_MultiSelectionEdit() {

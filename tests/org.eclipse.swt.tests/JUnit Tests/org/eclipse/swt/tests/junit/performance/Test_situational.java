@@ -13,6 +13,8 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit.performance;
 
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
@@ -40,9 +42,8 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.test.performance.Dimension;
 import org.eclipse.test.performance.Performance;
 import org.eclipse.test.performance.PerformanceMeter;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Automated Performance Test Suite for class org.eclipse.swt.graphics.Color
@@ -52,7 +53,7 @@ import org.junit.Test;
 @SuppressWarnings("restriction")
 public class Test_situational extends SwtPerformanceTestCase {
 
-@Before
+@BeforeEach
 public void setUp() {
 	display = Display.getDefault();
 }
@@ -73,7 +74,7 @@ public void setUp() {
  */
 @Test
 public void test_createComposites() {
-	Assume.assumeFalse("https://github.com/eclipse-platform/eclipse.platform.swt/issues/912 Very slow on Mac OS", Platform.PLATFORM.equalsIgnoreCase("cocoa"));
+	assumeFalse(Platform.PLATFORM.equalsIgnoreCase("cocoa"), "https://github.com/eclipse-platform/eclipse.platform.swt/issues/912 Very slow on Mac OS");
 	PerformanceMeter meter = createMeter("Create composites");
 	int samples;
 

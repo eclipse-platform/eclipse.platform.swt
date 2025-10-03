@@ -13,7 +13,8 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit.performance;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,18 +35,12 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestName;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 
-@RunWith(Parameterized.class)
-public class Test_org_eclipse_swt_widgets_Tree {
+public abstract class Test_org_eclipse_swt_widgets_Tree {
 	enum Shape {
 		BINARY {
 			@Override
@@ -143,35 +138,29 @@ public class Test_org_eclipse_swt_widgets_Tree {
 		protected abstract TreeItem lastItem(Tree tree);
 	}
 
-	@Rule
-	public final TestName name = new TestName();
 	private final boolean virtual;
 	private final Shape shape;
 	private final Shell shell = new Shell();
 	private final Font font = new Font(shell.getDisplay(), "Arial", 5, 5);
 	private final Color foreground = shell.getDisplay().getSystemColor(SWT.COLOR_GREEN);
 	private final Color background = shell.getDisplay().getSystemColor(SWT.COLOR_BLACK);
-
-	@Parameters(name = "Shape: {0}, virtual: {1}")
-	public static Iterable<Object[]> data() {
-		return Arrays.asList(new Object[][] { { Shape.STAR, false }, { Shape.STAR, true }, { Shape.BINARY, false },
-				{ Shape.BINARY, true }, });
-	}
+	private TestInfo testInfo;
 
 	public Test_org_eclipse_swt_widgets_Tree(Shape shape, boolean virtual) {
 		this.shape = Objects.requireNonNull(shape);
 		this.virtual = virtual;
 	}
 
-	@Before
-	public void setUp() {
+	@BeforeEach
+	public void setUp(TestInfo testInfo) {
+		this.testInfo = testInfo;
 		shell.setSize(500, 500);
 		shell.setLayout(new FillLayout());
 		// Make tree visible to make GTK request updates
 		SwtTestUtil.openShell(shell);
 	}
 
-	@After
+	@AfterEach
 	public void teardown() {
 		font.dispose();
 		shell.dispose();
@@ -191,7 +180,7 @@ public class Test_org_eclipse_swt_widgets_Tree {
 			return measureNanos(() -> {
 				int[] count = new int[] { 0 };
 				breadthFirstTraverse(tree, item -> count[0]++);
-				Assert.assertEquals(n, count[0]);
+				assertEquals(n, count[0]);
 			});
 		});
 	}
@@ -310,7 +299,7 @@ public class Test_org_eclipse_swt_widgets_Tree {
 
 	/** Ensure that given function grows within acceptable polynomial degree */
 	private void assertMaximumDegree(double maximumDegree, IntFunction<Double> function) {
-		shell.setText(name.getMethodName());
+		shell.setText(testInfo.getDisplayName());
 		clearShell();
 		int elementCount[] = new int[] { 10000, 100000 };
 		function.apply(elementCount[0]); // warmup
@@ -323,8 +312,8 @@ public class Test_org_eclipse_swt_widgets_Tree {
 		String error = String.format(
 				"Execution time should grow as %f degree polynom. \nTime for %d elements: %f ns\nTime for %d elements: %f ns\nRatio: %f\nDegree: %f\n",
 				maximumDegree, elementCount[0], elapsed[0], elementCount[1], elapsed[1], ratio, degree);
-		System.out.println(name.getMethodName() + "\n" + error);
-		assertTrue(error, (elapsed[1] <= 100 && elapsed[0] <= 100) || degree < maximumDegree);
+		System.out.println(testInfo.getDisplayName() + "\n" + error);
+		assertTrue((elapsed[1] <= 100 && elapsed[0] <= 100) || degree < maximumDegree, error);
 	}
 
 	private double measureNanos(Runnable runnable) {
