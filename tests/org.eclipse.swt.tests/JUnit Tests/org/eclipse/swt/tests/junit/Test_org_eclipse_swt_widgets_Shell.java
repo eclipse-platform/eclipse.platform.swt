@@ -22,10 +22,12 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -653,21 +655,48 @@ public void test_setBoundsLorg_eclipse_swt_graphics_Rectangle() {
  * events when opening context menu. Only applicable on GTK x11.
  */
 @Test
-public void test_activateEventSend() {
-	if (SwtTestUtil.isGTK && SwtTestUtil.isX11) {
-		Shell testShell = new Shell(shell, SWT.SHELL_TRIM);
-		testShell.addListener(SWT.Activate, e -> {
-			listenerCalled = true;
-			});
-		testShell.open();
-		int[] styles = {SWT.ON_TOP, SWT.APPLICATION_MODAL, SWT.PRIMARY_MODAL, SWT.SYSTEM_MODAL, SWT.NO_TRIM, SWT.BORDER, SWT.SHELL_TRIM};
-		for (int style : styles) {
-			Shell childShell = new Shell(testShell, style);
-			listenerCalled = false;
-			childShell.open();
-			childShell.dispose();
-			assertTrue(listenerCalled);
-		}
+public void test_activateEventSend() throws InterruptedException {
+	assumeTrue((SwtTestUtil.isGTK && SwtTestUtil.isX11) || SwtTestUtil.isGTK4,
+			"Feature only works on GTK3 in x11 or GTK4 - https://bugs.eclipse.org/436841");
+
+	AtomicBoolean activateCalled = new AtomicBoolean();
+	AtomicBoolean deactivateCalled = new AtomicBoolean();
+	AtomicBoolean focusInCalled = new AtomicBoolean();
+	AtomicBoolean focusOutCalled = new AtomicBoolean();
+	Shell testShell = new Shell(shell, SWT.SHELL_TRIM);
+	testShell.addListener(SWT.Activate, e -> {
+		activateCalled.set(true);
+	});
+	testShell.addListener(SWT.FocusIn, e -> {
+		focusInCalled.set(true);
+	});
+	testShell.addListener(SWT.Deactivate, e -> {
+		deactivateCalled.set(true);
+	});
+	testShell.addListener(SWT.FocusOut, e -> {
+		focusOutCalled.set(true);
+	});
+	activateCalled.set(false);
+	testShell.open();
+	SwtTestUtil.processEvents(10000, () -> activateCalled.get() && focusInCalled.get());
+	assertTrue(activateCalled.get());
+	assertTrue(focusInCalled.get());
+	int[] styles = { SWT.ON_TOP, SWT.APPLICATION_MODAL, SWT.PRIMARY_MODAL, SWT.SYSTEM_MODAL, SWT.NO_TRIM, SWT.BORDER,
+			SWT.SHELL_TRIM };
+	for (int style : styles) {
+		deactivateCalled.set(false);
+		focusOutCalled.set(false);
+		Shell childShell = new Shell(testShell, style);
+		childShell.open();
+		SwtTestUtil.processEvents(10000, () -> deactivateCalled.get() && focusOutCalled.get());
+		assertTrue(deactivateCalled.get());
+		assertTrue(focusOutCalled.get());
+		activateCalled.set(false);
+		focusInCalled.set(false);
+		childShell.dispose();
+		SwtTestUtil.processEvents(10000, () -> activateCalled.get() && focusInCalled.get());
+		assertTrue(activateCalled.get());
+		assertTrue(focusInCalled.get());
 	}
 }
 
