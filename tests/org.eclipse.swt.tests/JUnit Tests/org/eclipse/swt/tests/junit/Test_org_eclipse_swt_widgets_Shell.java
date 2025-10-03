@@ -460,7 +460,7 @@ public void test_getImeInputMode() {
 @Test
 public void test_getLocation() {
 	//Setting location for Windows is not supported in GTK4
-	if (SwtTestUtil.isGTK4) {
+	if (SwtTestUtil.isGTK4()) {
 		return;
 	}
 	shell.setLocation(10,15);
@@ -656,7 +656,7 @@ public void test_setBoundsLorg_eclipse_swt_graphics_Rectangle() {
  */
 @Test
 public void test_activateEventSend() throws InterruptedException {
-	assumeTrue((SwtTestUtil.isGTK && SwtTestUtil.isX11) || SwtTestUtil.isGTK4,
+	assumeTrue((SwtTestUtil.isGTK && SwtTestUtil.isX11()) || SwtTestUtil.isGTK4(),
 			"Feature only works on GTK3 in x11 or GTK4 - https://bugs.eclipse.org/436841");
 
 	AtomicBoolean activateCalled = new AtomicBoolean();
@@ -708,7 +708,7 @@ public void test_activateEventSend() throws InterruptedException {
  */
 @Test
 public void test_setBounds() throws Exception {
-	if (SwtTestUtil.isX11) {
+	if (SwtTestUtil.isX11()) {
 		Rectangle bounds = new Rectangle(100, 200, 200, 200);
 		Rectangle bounds2 = new Rectangle(150, 250, 250, 250);
 
@@ -1037,7 +1037,7 @@ public void test_Issue450_NoShellActivateOnSetFocus() {
 @Override
 public void test_setLocationLorg_eclipse_swt_graphics_Point() {
 	//Setting location for Windows is not supported in GTK4
-	if (SwtTestUtil.isGTK4) {
+	if (SwtTestUtil.isGTK4()) {
 		return;
 	}
 	super.test_setLocationLorg_eclipse_swt_graphics_Point();
@@ -1047,7 +1047,7 @@ public void test_setLocationLorg_eclipse_swt_graphics_Point() {
 @Override
 public void test_setLocationII() {
 	//Setting location for Windows is not supported in GTK4
-	if (SwtTestUtil.isGTK4) {
+	if (SwtTestUtil.isGTK4()) {
 		return;
 	}
 	super.test_setLocationII();
