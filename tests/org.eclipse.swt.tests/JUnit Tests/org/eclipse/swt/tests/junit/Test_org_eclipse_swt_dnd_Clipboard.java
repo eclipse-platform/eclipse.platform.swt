@@ -351,7 +351,7 @@ public class Test_org_eclipse_swt_dnd_Clipboard {
 			String result = runOperationInThread(remote::getStringContents);
 			assertEquals(helloWorld, result);
 		} catch (Exception | AssertionError e) {
-			if (SwtTestUtil.isGTK4 && !SwtTestUtil.isX11) {
+			if (SwtTestUtil.isGTK4 && !SwtTestUtil.isX11.getAsBoolean()) {
 				// TODO make the code + test stable
 				throw new RuntimeException(
 						"This test is really unstable on wayland backend, at least with Ubuntu 25.04", e);

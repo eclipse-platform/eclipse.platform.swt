@@ -103,7 +103,16 @@ public class SwtTestUtil {
 	/** Useful if you want some tests not to run on Jenkins with user "genie.platform" */
 	public final static boolean isRunningOnContinousIntegration = isGTK && ("genie.platform".equalsIgnoreCase(System.getProperty("user.name")));
 
-	public final static boolean isX11 = isGTK
+	/**
+	 * The value of org.eclipse.swt.internal.gdk.backend is not set until a display
+	 * is created at least once since this value is assigned in the Display
+	 * constructor. Normally tests are run in such an order that SwtTestUtil isn't
+	 * accessed until after the first Display is created.
+	 *
+	 * Rather than requiring all users of SwtTestUtil to be careful with their access,
+	 * instead defer checking x11 by using a supplier to defer getting the value.
+	 */
+	public final static BooleanSupplier isX11 = () -> isGTK
 			&& "x11".equals(System.getProperty("org.eclipse.swt.internal.gdk.backend"));
 	public final static boolean isGTK4 = isGTK
 			&& System.getProperty("org.eclipse.swt.internal.gtk.version", "").startsWith("4");
