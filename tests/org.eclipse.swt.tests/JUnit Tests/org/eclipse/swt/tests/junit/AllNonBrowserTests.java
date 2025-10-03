@@ -39,6 +39,7 @@ import org.junit.platform.suite.api.Suite;
 		// Rest of tests alphabetically
 		DPIUtilTests.class, //
 		JSVGRasterizerTest.class, //
+		OpenShellManyManyTimesTest.class, //
 		Test_org_eclipse_swt_accessibility_Accessible.class, //
 		Test_org_eclipse_swt_accessibility_AccessibleControlEvent.class, //
 		Test_org_eclipse_swt_accessibility_AccessibleEvent.class, //
