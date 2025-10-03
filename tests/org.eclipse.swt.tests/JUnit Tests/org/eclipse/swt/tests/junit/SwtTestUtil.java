@@ -100,10 +100,49 @@ public class SwtTestUtil {
 	/** Useful if you want some tests not to run on Jenkins with user "genie.platform" */
 	public final static boolean isRunningOnContinousIntegration = isGTK && ("genie.platform".equalsIgnoreCase(System.getProperty("user.name")));
 
-	public final static boolean isX11 = isGTK
-			&& "x11".equals(System.getProperty("org.eclipse.swt.internal.gdk.backend"));
-	public final static boolean isGTK4 = isGTK
-			&& System.getProperty("org.eclipse.swt.internal.gtk.version", "").startsWith("4");
+	/**
+	 * Return whether running on x11. This is dynamically set at runtime and cannot
+	 * be accessed before the corresponding property is initialized in Display.
+	 *
+	 * <strong>Note:</strong> this method still must be called after the first
+	 * Display is created to be valid
+	 */
+	public final static boolean isX11() {
+		if (!isGTK) {
+			return false;
+		}
+		String backend = System.getProperty("org.eclipse.swt.internal.gdk.backend");
+
+		if ("x11".equals(backend)) {
+			return true;
+		} else if ("wayland".equals(backend)) {
+			return false;
+		}
+		fail("org.eclipse.swt.internal.gdk.backend System property is not set yet. Create a new Display before calling isX11");
+		throw new IllegalStateException("unreachable");
+	}
+
+	/**
+	 * Return whether running on GTK4. This is dynamically set at runtime and cannot
+	 * be accessed before the corresponding property is initialized in OS.
+	 *
+	 * <strong>Note:</strong> this method still must be called after the static
+	 * block of OS is run.
+	 */
+	public final static boolean isGTK4() {
+		if (!isGTK) {
+			return false;
+		}
+
+		String version = System.getProperty("org.eclipse.swt.internal.gtk.version", "");
+		if (version.startsWith("4")) {
+			return true;
+		} else if (!version.isBlank()) {
+			return false;
+		}
+		fail("org.eclipse.swt.internal.gtk.version System property is not set yet. Create a new Display (or otherwise access OS) before calling isGTK4");
+		throw new IllegalStateException("unreachable");
+	}
 
 	/**
 	 * The palette used by images. See {@link #getAllPixels(Image)} and {@link #createImage}

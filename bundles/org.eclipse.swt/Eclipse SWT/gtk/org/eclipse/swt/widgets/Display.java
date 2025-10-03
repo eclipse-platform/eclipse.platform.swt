@@ -1209,8 +1209,13 @@ void createDisplay (DeviceData data) {
 	themeDark = checkAndSetThemeDetails(themeName);
 	if (OS.isX11()) {
 		xDisplay = GTK.GTK4 ? 0 : GDK.gdk_x11_get_default_xdisplay();
-		// set GDK backend if we are on X11
 		System.setProperty("org.eclipse.swt.internal.gdk.backend", "x11");
+	} else if (OS.isWayland()) {
+		System.setProperty("org.eclipse.swt.internal.gdk.backend", "wayland");
+	} else {
+		// If other items are added in the future this should be changed
+		// from unknown to real value.
+		System.setProperty("org.eclipse.swt.internal.gdk.backend", "unknown");
 	}
 	if (OS.SWT_DEBUG) Device.DEBUG = true;
 	if (!GTK.GTK4) {
