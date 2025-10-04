@@ -3426,6 +3426,10 @@ int gtk_gesture_press_event (long gesture, int n_press, double x, double y, long
 				if (showMenu ((int)x, (int)y)) {
 					result = GTK4.GTK_EVENT_SEQUENCE_CLAIMED;
 				}
+			} else if ((state & MENU) == 0) {
+				if (showMenu((int) x, (int) y)) {
+					result = GTK4.GTK_EVENT_SEQUENCE_CLAIMED;
+				}
 			}
 		}
 	} else if (n_press >= 2) {
