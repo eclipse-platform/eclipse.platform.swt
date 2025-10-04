@@ -654,7 +654,7 @@ public void test_setBoundsLorg_eclipse_swt_graphics_Rectangle() {
  */
 @Test
 public void test_activateEventSend() {
-	if (SwtTestUtil.isGTK && SwtTestUtil.isX11) {
+	if (SwtTestUtil.isGTK && SwtTestUtil.isX11.getAsBoolean()) {
 		Shell testShell = new Shell(shell, SWT.SHELL_TRIM);
 		testShell.addListener(SWT.Activate, e -> {
 			listenerCalled = true;
@@ -679,7 +679,7 @@ public void test_activateEventSend() {
  */
 @Test
 public void test_setBounds() throws Exception {
-	if (SwtTestUtil.isX11) {
+	if (SwtTestUtil.isX11.getAsBoolean()) {
 		Rectangle bounds = new Rectangle(100, 200, 200, 200);
 		Rectangle bounds2 = new Rectangle(150, 250, 250, 250);
 
