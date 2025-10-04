@@ -684,12 +684,16 @@ private static class ImageDataWithMaskCursorHandleProvider extends ImageDataCurs
 
 	@Override
 	public CursorHandle createHandle(Device device, int zoom) {
-		float accessibilityFactor = getPointerSizeScaleFactor();
-		int scaledZoom = (int) (zoom * accessibilityFactor);
-		ImageData scaledSource = DPIUtil.scaleImageData(device, this.source, scaledZoom, DEFAULT_ZOOM);
-		ImageData scaledMask = this.mask != null ? DPIUtil.scaleImageData(device, mask, scaledZoom, DEFAULT_ZOOM)
-				: null;
-
+		float scaledZoomFactor = zoom * getPointerSizeScaleFactor() / 100f;
+		int scaledSourceWidth = Math.round(this.source.width * scaledZoomFactor);
+		int scaledSourceHeight = Math.round(this.source.height * scaledZoomFactor);
+		ImageData scaledSource = this.source.scaledTo(scaledSourceWidth, scaledSourceHeight);
+		ImageData scaledMask = null;
+		if (this.mask != null) {
+			int scaledMaskWidth = Math.round(this.mask.width * scaledZoomFactor);
+			int scaledMaskHeight = Math.round(this.mask.height * scaledZoomFactor);
+			scaledMask = this.mask.scaledTo(scaledMaskWidth, scaledMaskHeight);
+		}
 		return setupCursorFromImageData(device, scaledSource, scaledMask, getHotpotXInPixels(zoom),
 				getHotpotYInPixels(zoom));
 	}
