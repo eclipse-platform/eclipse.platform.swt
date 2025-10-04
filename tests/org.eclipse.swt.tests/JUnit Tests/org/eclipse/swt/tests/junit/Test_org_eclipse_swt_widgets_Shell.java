@@ -653,7 +653,7 @@ public void test_setBoundsLorg_eclipse_swt_graphics_Rectangle() {
  * events when opening context menu. Only applicable on GTK x11.
  */
 @Test
-public void test_activateEventSend() {
+public void test_activateEventSend() throws InterruptedException {
 	if (SwtTestUtil.isGTK && SwtTestUtil.isX11) {
 		Shell testShell = new Shell(shell, SWT.SHELL_TRIM);
 		testShell.addListener(SWT.Activate, e -> {
@@ -666,6 +666,7 @@ public void test_activateEventSend() {
 			listenerCalled = false;
 			childShell.open();
 			childShell.dispose();
+			SwtTestUtil.processEvents(1000, () -> listenerCalled);
 			assertTrue(listenerCalled);
 		}
 	}
