@@ -44,7 +44,7 @@ import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.internal.image.SVGRasterizer;
 
 import com.github.weisj.jsvg.SVGDocument;
-import com.github.weisj.jsvg.geometry.size.FloatSize;
+import com.github.weisj.jsvg.view.FloatSize;
 import com.github.weisj.jsvg.parser.LoaderContext;
 import com.github.weisj.jsvg.parser.SVGLoader;
 
