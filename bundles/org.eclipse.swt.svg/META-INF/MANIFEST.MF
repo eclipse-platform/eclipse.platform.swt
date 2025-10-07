@@ -11,5 +11,5 @@ Fragment-Host: org.eclipse.swt
 Import-Package: com.github.weisj.jsvg;version="[2.0.0,3.0.0)",
  com.github.weisj.jsvg.parser;version="[2.0.0,3.0.0)",
  com.github.weisj.jsvg.view;version="[2.0.0,3.0.0)"
-Export-Package: org.eclipse.swt.svg
+Export-Package: org.eclipse.swt.svg;x-internal:=true
 Provide-Capability: eclipse.swt;image.format="svg";version:Version="1.0"
