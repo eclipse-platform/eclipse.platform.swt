@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -39,8 +39,7 @@ public static void main (String [] args) {
 		for (Composite composite : composites) {
 			Control [] children = composite.getChildren ();
 			for (Control child : children) {
-				if (child instanceof Button) {
-					Button button1 = (Button) child;
+				if (child instanceof Button button1) {
 					if ((button1.getStyle () & SWT.RADIO) != 0) button1.setSelection (false);
 				}
 			}

@@ -243,7 +243,7 @@ public class Snippet384 {
 	}
 
 	@FunctionalInterface
-	public static interface PixelTransformer {
+	public interface PixelTransformer {
 		RGBA transform(RGBA originalRgba);
 	}
 

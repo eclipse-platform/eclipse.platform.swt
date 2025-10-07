@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -47,7 +47,7 @@ public static void main (String [] args) {
 	child3.setLayout(new FillLayout());
 	new Label(child3,SWT.PUSH).setText("Label in pane3");
 
-	form.setWeights(new int[] {30,40,30});
+	form.setWeights(30, 40, 30);
 	shell.open ();
 	while (!shell.isDisposed ()) {
 		if (!display.readAndDispatch ()) display.sleep ();

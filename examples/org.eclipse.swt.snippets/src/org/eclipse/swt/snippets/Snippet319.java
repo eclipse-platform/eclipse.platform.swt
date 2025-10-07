@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -102,8 +102,7 @@ public void go() {
 	 * in a different context then the drop will not be accepted.
 	 */
 	FlavorMap map = SystemFlavorMap.getDefaultFlavorMap();
-	if (map instanceof SystemFlavorMap) {
-		SystemFlavorMap systemMap = (SystemFlavorMap)map;
+	if (map instanceof SystemFlavorMap systemMap) {
 		systemMap.addFlavorForUnencodedNative(MIME_TYPE, flavor);
 	}
 

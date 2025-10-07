@@ -199,7 +199,7 @@ public class Snippet386 {
 				}
 
 				ImageData mask = new ImageData(IMAGE_SIZE_IN_POINTS, IMAGE_SIZE_IN_POINTS, 1,
-						new PaletteData(new RGB[] { new RGB(0, 0, 0), new RGB(255, 255, 255) }));
+						new PaletteData(new RGB(0, 0, 0), new RGB(255, 255, 255)));
 				for (int x = 0; x < IMAGE_SIZE_IN_POINTS; x++) {
 					for (int y = 0; y < IMAGE_SIZE_IN_POINTS; y++) {
 						mask.setPixel(x, y, x % 2);
