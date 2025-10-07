@@ -71,8 +71,10 @@
 #endif
 #if !GTK_CHECK_VERSION(4,0,0)
 #include <gdk/gdkx.h>
+#include <gdk/gdkwayland.h>
 #else
 #include <gdk/x11/gdkx.h>
+#include <gdk/wayland/gdkwayland.h>
 #endif
 #else
 

@@ -706,7 +706,7 @@ public static int VERSION(int major, int minor, int micro) {
 }
 
 public static boolean isWayland () {
-	return !isX11 ();
+	return OS.GDK_WINDOWING_WAYLAND() && GDK.GDK_IS_WAYLAND_DISPLAY(GDK.gdk_display_get_default());
 }
 
 public static boolean isX11 () {

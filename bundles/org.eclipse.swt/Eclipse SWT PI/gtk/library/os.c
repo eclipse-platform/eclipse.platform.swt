@@ -53,6 +53,18 @@ JNIEXPORT jlong JNICALL GDK_NATIVE(GDK_1EVENT_1WINDOW)
 }
 #endif
 
+#ifndef NO_GDK_1IS_1WAYLAND_1DISPLAY
+JNIEXPORT jboolean JNICALL GDK_NATIVE(GDK_1IS_1WAYLAND_1DISPLAY)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jboolean rc = 0;
+	GDK_NATIVE_ENTER(env, that, GDK_1IS_1WAYLAND_1DISPLAY_FUNC);
+	rc = (jboolean)GDK_IS_WAYLAND_DISPLAY((GdkDisplay *)arg0);
+	GDK_NATIVE_EXIT(env, that, GDK_1IS_1WAYLAND_1DISPLAY_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GDK_1IS_1X11_1DISPLAY
 JNIEXPORT jboolean JNICALL GDK_NATIVE(GDK_1IS_1X11_1DISPLAY)
 	(JNIEnv *env, jclass that, jlong arg0)

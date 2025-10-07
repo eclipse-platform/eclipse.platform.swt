@@ -247,6 +247,8 @@ public class GDK extends OS {
 	/** @param event cast=(GdkEventAny *) */
 	public static final native long GDK_EVENT_WINDOW(long event);
 	/** @param display cast=(GdkDisplay *) */
+	public static final native boolean GDK_IS_WAYLAND_DISPLAY(long display);
+	/** @param display cast=(GdkDisplay *) */
 	public static final native boolean GDK_IS_X11_DISPLAY(long display);
 	/** @method flags=const */
 	public static final native long GDK_TYPE_RGBA();
