@@ -13,16 +13,16 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.junit.Assume.assumeTrue;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,8 +59,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Monitor;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Widget;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Base Test for widgets of type org.eclipse.swt.widgets.Control
@@ -478,7 +477,7 @@ public void test_computeSizeIIZ() {
 @Test
 public void test_getAccessible() {
 	Accessible accessible = control.getAccessible();
-	assertNotNull(":a:", accessible);
+	assertNotNull(accessible);
 }
 @Test
 public void test_getBorderWidth() {
@@ -533,11 +532,11 @@ public void test_isFocusControl() {
 	assertFalse(control.isFocusControl());
 	SwtTestUtil.waitShellActivate(shell::open, shell);
 	assertEquals(shell, shell.getDisplay().getActiveShell());
-	assertEquals("Unexpected focus", control.forceFocus(), control.isFocusControl());
+	assertEquals(control.forceFocus(), control.isFocusControl());
 }
 @Test
 public void test_isReparentable() {
-	assertTrue ("isReparentable", control.isReparentable());
+	assertTrue(control.isReparentable());
 }
 @Test
 public void test_isVisible() {
@@ -549,9 +548,9 @@ public void test_isVisible() {
 
 	control.setVisible(true);
 	shell.setVisible(true);
-	assertTrue("Window should be visible", control.isVisible());
+	assertTrue(control.isVisible());
 	shell.setVisible(false);
-	assertFalse("Window should not be visible", control.isVisible());
+	assertFalse(control.isVisible());
 }
 @Test
 public void test_moveAboveLorg_eclipse_swt_widgets_Control() {
@@ -608,23 +607,23 @@ public void test_requestLayoutL() {
 public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 	Color color = new Color(255, 0, 0);
 	control.setBackground(color);
-	assertEquals("getBackground not equal color after setBackground(color) for " + control, color, control.getBackground());
+	assertEquals(color, control.getBackground());
 	control.setBackground(null);
-	assertNotEquals("getBackground unchanged after setBackground(null) for" + control,
+	assertNotEquals(
 			color, control.getBackground());
 	color = new Color(255, 0, 0, 0);
 	control.setBackground(color);
-	assertEquals("getBackground not equal color after setBackground(color) with 0 alpha for " + control + " " + control.getBackground(), color, control.getBackground());
+	assertEquals(color, control.getBackground());
 	control.setBackground(null);
-	assertNotEquals("getBackground unchanged after setBackground(null) alpha for " + control + " " + control.getBackground() + " " + control,
+	assertNotEquals(
 			color, control.getBackground());
 	if ("gtk".equals(SWT.getPlatform ())) {
 		Color fg = new Color(0, 255, 0);
 		control.setBackground(color);
 		control.setForeground(fg);
-		assertEquals("Setting a foreground disrupted the background color for " + control,
+		assertEquals(
 				color, control.getBackground());
-		assertEquals("Setting a foreground onto a widget with a background failed for " + control,
+		assertEquals(
 				fg, control.getForeground());
 	}
 }
@@ -641,7 +640,7 @@ public void test_setBackgroundAlphaLorg_eclipse_swt_graphics_Color() {
 public void test_setBackgroundDisposedColorLorg_eclipse_swt_graphics_Color() {
 	Color color = new Color(255, 0, 0);
 	color.dispose();
-	assertThrows("setting a disposed color object with Control.setBackground(Color) should throw an exception",
+	assertThrows(
 			IllegalArgumentException.class, () -> control.setBackground(color));
 }
 @Test
@@ -662,7 +661,7 @@ public void test_setBoundsLorg_eclipse_swt_graphics_Rectangle() {
 	control.setBounds(new Rectangle(20, 30, 40, 50));
 	assertNotEquals(new Rectangle(10, 20, 30, 40), control.getBounds());
 
-	assertThrows("No exception thrown for rectangle == null", IllegalArgumentException.class,
+	assertThrows(IllegalArgumentException.class,
 			() -> control.setBounds(null));
 
 	control.setBounds(new Rectangle(10, 20, 30, 40));
@@ -707,8 +706,7 @@ public void test_setTextDirection() {
 		expectedDirections[2] = control.getOrientation ();
 		for (int j = directions.length; j-- > 0;) {
 			control.setTextDirection (directions [j]);
-			assertEquals("orientation: " + orientations [i] + ", text direction: " + directions [j],
-					control.getTextDirection(), expectedDirections [j]);
+			assertEquals(control.getTextDirection(), expectedDirections [j]);
 		}
 	}
 }
@@ -729,7 +727,7 @@ public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	control.setFont(null);
 	font.dispose();
 	Font f = font;
-	assertThrows("No exception thrown for disposed font", IllegalArgumentException.class, () -> control.setFont(f));
+	assertThrows(IllegalArgumentException.class, () -> control.setFont(f));
 	control.setFont(null);
 }
 @Test
@@ -743,16 +741,15 @@ public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
 		Color bg = new Color(0, 255, 0);
 		control.setForeground(color);
 		control.setBackground(bg);
-		assertEquals("Setting a background disrupted the foreground color for " + control,
+		assertEquals(
 				color, control.getForeground());
-		assertEquals("Setting a background onto a widget with a foreground failed for " + control,
+		assertEquals(
 				bg, control.getBackground());
 	}
 }
 @Test
 public void test_setForegroundAlphaLorg_eclipse_swt_graphics_Color() {
-	assumeTrue("Alpha support for foreground colors does not exist on Win32",
-			SwtTestUtil.isCocoa || SwtTestUtil.isGTK);
+	assumeTrue(SwtTestUtil.isCocoa || SwtTestUtil.isGTK, "Alpha support for foreground colors does not exist on Win32");
 	Color color = new Color (255, 0, 0, 0);
 	control.setForeground(color);
 	assertEquals(color, control.getForeground());
@@ -765,7 +762,7 @@ public void test_setForegroundAlphaLorg_eclipse_swt_graphics_Color() {
 public void test_setForegroundDisposedColorLorg_eclipse_swt_graphics_Color() {
 	Color color = new Color(255, 0, 0);
 	color.dispose();
-	assertThrows("setting a disposed color object with Control.setForeground(Color) should throw an exception",
+	assertThrows(
 			IllegalArgumentException.class, () -> control.setForeground(color));
 }
 @Test
@@ -794,7 +791,7 @@ public void test_setLocationII() {
 }
 @Test
 public void test_setLocationLorg_eclipse_swt_graphics_Point() {
-	assertThrows("No exception thrown for location == null", IllegalArgumentException.class,
+	assertThrows(IllegalArgumentException.class,
 			() -> control.setLocation(null));
 
 	Point loc = new Point(30, 40);
@@ -863,7 +860,7 @@ public void test_setSizeLorg_eclipse_swt_graphics_Point() {
 	control.setSize(new Point(30, 40));
 	assertEquals(new Point(30, 40), control.getSize());
 
-	assertThrows("No exception thrown for size == null", IllegalArgumentException.class, () -> control.setSize(null));
+	assertThrows(IllegalArgumentException.class, () -> control.setSize(null));
 
 	control.setSize(new Point(0, 0));
 
@@ -898,7 +895,7 @@ public void test_toControlII() {
 public void test_toControlLorg_eclipse_swt_graphics_Point() {
 	Point controlCoords = control.toControl(new Point(0, 0));
 	assertEquals(new Point(0, 0), control.toDisplay(controlCoords));
-	assertThrows("No exception thrown for point == null", IllegalArgumentException.class,
+	assertThrows(IllegalArgumentException.class,
 			() -> control.toControl(null));
 }
 @Test
@@ -910,7 +907,7 @@ public void test_toDisplayII() {
 public void test_toDisplayLorg_eclipse_swt_graphics_Point() {
 	Point displayCoords = control.toDisplay(new Point(0, 0));
 	assertEquals(new Point(0, 0), control.toControl(displayCoords));
-	assertThrows("No exception thrown for display == null", IllegalArgumentException.class,
+	assertThrows(IllegalArgumentException.class,
 			() -> control.toDisplay(null));
 }
 @Test
@@ -1006,38 +1003,38 @@ protected void consistencyEvent(final int paramA, final int paramB,
 				display.wake();
 				switch(method) {
 					case ConsistencyUtility.MOUSE_CLICK:
-						Assert.assertTrue(test,
+						assertTrue(
 							ConsistencyUtility.postClick(display, pt[0], paramC));
 						if(paramD == ConsistencyUtility.ESCAPE_MENU) {
-							Assert.assertTrue(test,
+							assertTrue(
 								ConsistencyUtility.postClick(display, pt[1], 1));
 						}
 						break;
 					case ConsistencyUtility.MOUSE_DOUBLECLICK:
-						Assert.assertTrue(test,
+						assertTrue(
 								ConsistencyUtility.postDoubleClick(display, pt[0], paramC));
 						break;
 					case ConsistencyUtility.KEY_PRESS:
-						Assert.assertTrue(test,
+						assertTrue(
 							ConsistencyUtility.postKeyPress(display, paramA, paramB));
 						break;
 					case ConsistencyUtility.DOUBLE_KEY_PRESS:
-						Assert.assertTrue(test,
+						assertTrue(
 							ConsistencyUtility.postDoubleKeyPress(display, paramA, paramB, paramC, paramD));
 						break;
 					case ConsistencyUtility.MOUSE_DRAG:
-						Assert.assertTrue(test,
+						assertTrue(
 							ConsistencyUtility.postDrag(display,
 									pt[0], pt[1]));
 						break;
 					case ConsistencyUtility.SELECTION:
 
-						Assert.assertTrue(test,
+						assertTrue(
 							ConsistencyUtility.postSelection(display,
 									pt[0], pt[1]));
 						break;
 					case ConsistencyUtility.SHELL_ICONIFY:
-						Assert.assertTrue(test,
+						assertTrue(
 							ConsistencyUtility.postShellIconify(display, pt[1], paramA));
 						if(control instanceof Shell) {
 							display.syncExec(() -> ((Shell)control).setMinimized(false));
@@ -1055,7 +1052,7 @@ protected void consistencyEvent(final int paramA, final int paramB,
 		setUp();
 		String[] results = new String[events.size()];
 		results = events.toArray(results);
-		assertArrayEquals(test + " event ordering", expectedEvents, results);
+		assertArrayEquals(expectedEvents, results);
 	}
 }
 

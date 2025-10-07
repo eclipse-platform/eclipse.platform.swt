@@ -175,6 +175,13 @@ long gtk_draw (long widget, long cairo) {
 	return result;
 }
 
+@Override
+void gtk4_draw (long widget, long cairo, Rectangle bounds) {
+	if ((state & OBSCURED) != 0) return;
+	super.gtk4_draw (widget, cairo, bounds);
+	drawCaretInFocus(widget, cairo);
+}
+
 void drawCaretInFocus(long widget, long cairo) {
 	/*
 	 *  blink is needed to be checked as gtk_draw() signals sent from other parts of the canvas
@@ -197,7 +204,9 @@ private void drawCaret(long widget, long cairo) {
 		Cairo.cairo_save(cairo);
 
 		if (caret.image != null && !caret.image.isDisposed() && caret.image.mask == 0) {
-			Cairo.cairo_set_source_rgb(cairo, 1, 1, 1);
+			if (!GTK.GTK4) {
+				Cairo.cairo_set_source_rgb(cairo, 1, 1, 1);
+			}
 			Cairo.cairo_set_operator(cairo, Cairo.CAIRO_OPERATOR_DIFFERENCE);
 			long surface = Cairo.cairo_get_target(cairo);
 			int nWidth = 0;
@@ -215,7 +224,9 @@ private void drawCaret(long widget, long cairo) {
 			Cairo.cairo_set_source_surface(cairo, caret.image.surface, 0, 0);
 			Cairo.cairo_paint(cairo);
 		} else {
-			Cairo.cairo_set_source_rgb(cairo, 1, 1, 1);
+			if (!GTK.GTK4) {
+				Cairo.cairo_set_source_rgb(cairo, 1, 1, 1);
+			}
 			Cairo.cairo_set_operator(cairo, Cairo.CAIRO_OPERATOR_DIFFERENCE);
 			int nWidth = caret.width, nHeight = caret.height;
 			if (nWidth <= 0) nWidth = Caret.DEFAULT_WIDTH;
@@ -246,6 +257,18 @@ long gtk_focus_out_event (long widget, long event) {
 	long result = super.gtk_focus_out_event (widget, event);
 	if (caret != null) caret.killFocus ();
 	return result;
+}
+
+@Override
+void gtk4_focus_enter_event(long handle, long event) {
+	super.gtk4_focus_enter_event (handle, event);
+	if (caret != null) caret.setFocus ();
+}
+
+@Override
+void gtk4_focus_leave_event(long handle, long event) {
+	super.gtk4_focus_leave_event (handle, event);
+	if (caret != null) caret.setFocus ();
 }
 
 @Override

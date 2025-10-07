@@ -14,9 +14,9 @@
 package org.eclipse.swt.tests.junit;
 
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
@@ -24,8 +24,8 @@ import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Caret;
 import org.eclipse.swt.widgets.Widget;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Canvas
@@ -37,7 +37,7 @@ public class Test_org_eclipse_swt_widgets_Canvas extends Test_org_eclipse_swt_wi
 Canvas canvas;
 
 @Override
-@Before
+@BeforeEach
 public void setUp() {
 	super.setUp();
 	canvas = new Canvas(shell, 0);
@@ -90,11 +90,11 @@ public void test_setCaretLorg_eclipse_swt_widgets_Caret() {
 	}
 	for (int i = 0; i < number; i++) {
 		canvas.setCaret(carets[i]);
-		assertEquals("Caret # " + i + "not set properly", canvas.getCaret(), carets[i]);
+		assertEquals(canvas.getCaret(), carets[i]);
 	}
 
 	canvas.setCaret(null);
-	assertNull("Caret should be null" , canvas.getCaret());
+	assertNull(canvas.getCaret());
 }
 
 @Override
@@ -103,7 +103,7 @@ public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	FontData fontData = canvas.getFont().getFontData()[0];
 	Font font = new Font(canvas.getDisplay(), fontData.getName(), 8, fontData.getStyle());
 	canvas.setFont(font);
-	assertEquals(":a:", font, canvas.getFont());
+	assertEquals(font, canvas.getFont());
 	canvas.setFont(null);
 	font.dispose();
 }

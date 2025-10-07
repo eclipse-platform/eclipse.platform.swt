@@ -12,19 +12,19 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.ExpandBar;
 import org.eclipse.swt.widgets.ExpandItem;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.ToolItem
@@ -34,7 +34,7 @@ import org.junit.Test;
 public class Test_org_eclipse_swt_widgets_ExpandItem extends Test_org_eclipse_swt_widgets_Item {
 
 @Override
-@Before
+@BeforeEach
 public void setUp() {
 	super.setUp();
 	expandBar = new ExpandBar(shell, 0);

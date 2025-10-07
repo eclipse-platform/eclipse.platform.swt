@@ -13,6 +13,8 @@
  */
 package org.eclipse.swt.tests.junit;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
@@ -20,10 +22,9 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.TextLayout;
 import org.eclipse.swt.widgets.Shell;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.custom.StyledText to check there is no regression with Bug 530019
@@ -35,14 +36,14 @@ public class Test_org_eclipse_swt_custom_StyledText_VariableLineHeight {
 	Shell shell;
 	StyledText styledText;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		shell = new Shell();
 		styledText = new StyledText(shell, SWT.NULL);
 		styledText.setLineSpacingProvider(l -> 0);
 	}
 
-	@After
+	@AfterEach
 	public void tearDown() {
 		shell.dispose();
 	}
@@ -255,7 +256,7 @@ public class Test_org_eclipse_swt_custom_StyledText_VariableLineHeight {
 			layout.dispose();
 		}
 		int actual = styledText.getLinePixel(lineIndex + 1) - styledText.getLinePixel(lineIndex) - fontHeight;
-		Assert.assertEquals(expected, actual);
+		assertEquals(expected, actual);
 	}
 
 }

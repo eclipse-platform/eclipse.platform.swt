@@ -14,7 +14,7 @@
 package org.eclipse.swt.tests.junit;
 
 import org.eclipse.swt.widgets.Tracker;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Tracker
@@ -24,7 +24,7 @@ import org.junit.Before;
 public class Test_org_eclipse_swt_widgets_Tracker extends Test_org_eclipse_swt_widgets_Widget {
 
 @Override
-@Before
+@BeforeEach
 public void setUp() {
 	super.setUp();
 	tracker = new Tracker(shell, 0);

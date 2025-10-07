@@ -13,10 +13,10 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.function.BiFunction;
 
@@ -64,12 +64,12 @@ public class ImageTestUtil {
 	public static void assertImagesEqual(ImageData[] expected, ImageData[] actual) {
 		assertNotNull(expected);
 		assertNotNull(actual);
-		assertEquals("Different number of frames.", expected.length, actual.length);
+		assertEquals(expected.length, actual.length, "Different number of frames.");
 		BiFunction<String, Integer, String> formatMsg = (msg, i) -> expected.length == 1 ? msg + "."
 				: msg + " in frame " + i + ".";
 		for (int i = 0; i < expected.length; i++) {
-			assertEquals(formatMsg.apply("Different width", i), expected[i].width, actual[i].width);
-			assertEquals(formatMsg.apply("Different height", i), expected[i].height, actual[i].height);
+			assertEquals(expected[i].width, actual[i].width, formatMsg.apply("Different width", i));
+			assertEquals(expected[i].height, actual[i].height, formatMsg.apply("Different height", i));
 			// improve performance in case the frame has a global fixed alpha value
 			int expectedFixAlpha = getEffectiveAlpha(expected[i], -1, -1);
 			int actualFixAlpha = getEffectiveAlpha(actual[i], -1, -1);
@@ -79,15 +79,15 @@ public class ImageTestUtil {
 				expected[i].getPixels(0, y, expected[i].width, expectedLine, 0);
 				actual[i].getPixels(0, y, actual[i].width, actualLine, 0);
 				for (int x = 0; x < expected[i].width; x++) {
-					assertEquals(formatMsg.apply("Different color at x=" + x + ", y=" + y, i),
-							expected[i].palette.getRGB(expectedLine[x]), actual[i].palette.getRGB(actualLine[x]));
+					assertEquals(expected[i].palette.getRGB(expectedLine[x]), actual[i].palette.getRGB(actualLine[x]),
+							formatMsg.apply("Different color at x=" + x + ", y=" + y, i));
 					int expectedAlpha = expectedFixAlpha < 0 ? getEffectiveAlpha(expected[i], x, y) : expectedFixAlpha;
 					int actualAlpha = actualFixAlpha < 0 ? getEffectiveAlpha(actual[i], x, y) : actualFixAlpha;
 					if (expectedAlpha != actualAlpha) {
-						assertEquals(formatMsg.apply("Different alpha at x=" + x + ", y=" + y, i), expectedAlpha,
-								actualAlpha);
+						assertEquals(expectedAlpha, actualAlpha,
+								formatMsg.apply("Different alpha at x=" + x + ", y=" + y, i));
 					}
-					assertNotEquals(formatMsg.apply("Invalid alpha at x=" + x + ", y=" + y, i), -1, actualAlpha);
+					assertNotEquals(-1, actualAlpha, formatMsg.apply("Invalid alpha at x=" + x + ", y=" + y, i));
 				}
 			}
 		}

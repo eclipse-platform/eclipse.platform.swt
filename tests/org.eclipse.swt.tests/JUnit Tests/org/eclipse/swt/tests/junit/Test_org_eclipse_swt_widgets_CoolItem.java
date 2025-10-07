@@ -14,10 +14,10 @@
 package org.eclipse.swt.tests.junit;
 
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
@@ -26,8 +26,9 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.CoolBar;
 import org.eclipse.swt.widgets.CoolItem;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.CoolItem
@@ -37,7 +38,7 @@ import org.junit.Test;
 public class Test_org_eclipse_swt_widgets_CoolItem extends Test_org_eclipse_swt_widgets_Item {
 
 @Override
-@Before
+@BeforeEach
 public void setUp() {
 	super.setUp();
 	CoolBar coolBar = new CoolBar(shell, 0);

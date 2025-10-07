@@ -13,11 +13,11 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.junit.Assume.assumeFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,8 +29,8 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.TreeColumn
@@ -40,7 +40,7 @@ import org.junit.Test;
 public class Test_org_eclipse_swt_widgets_TreeColumn extends Test_org_eclipse_swt_widgets_Item {
 
 @Override
-@Before
+@BeforeEach
 public void setUp() {
 	super.setUp();
 	tree = new Tree(shell, SWT.SINGLE);
@@ -109,7 +109,7 @@ public void test_addSelectionListenerWidgetSelectedAdapterLorg_eclipse_swt_event
 
 @Test
 public void test_getWidth() {
-	assumeFalse("getWidth() checks below fail on macOS", SwtTestUtil.isCocoa);
+	assumeFalse(SwtTestUtil.isCocoa, "getWidth() checks below fail on macOS");
 	int testWidth = 42;
 
 //	try {
@@ -124,13 +124,13 @@ public void test_getWidth() {
 //	}
 
 	treeColumn.setWidth(0);
-	assertEquals(":a: width=" + treeColumn.getWidth() + " should be=" + 0, 0, treeColumn.getWidth());
+	assertEquals(0, treeColumn.getWidth());
 
 	treeColumn.setWidth(testWidth);
-	assertEquals(":b: width=" + treeColumn.getWidth() + " should be=" + testWidth, testWidth, treeColumn.getWidth());
+	assertEquals(testWidth, treeColumn.getWidth());
 
 	treeColumn.setWidth(testWidth);
-	assertEquals(":c: width=" + treeColumn.getWidth() + " should be=" + testWidth, testWidth, treeColumn.getWidth());
+	assertEquals(testWidth, treeColumn.getWidth());
 }
 
 @Test
@@ -154,25 +154,23 @@ public void test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListene
 public void test_setAlignmentI() {
 	TreeColumn column2;
 
-	assertEquals(":a:", SWT.LEFT, treeColumn.getAlignment());
+	assertEquals(SWT.LEFT, treeColumn.getAlignment());
 
 	treeColumn.setAlignment(-1);
-	assertEquals(":b:", SWT.LEFT, treeColumn.getAlignment());
+	assertEquals(SWT.LEFT, treeColumn.getAlignment());
 
 	treeColumn.setAlignment(SWT.RIGHT);
-	assertEquals(
-			":c: Should not be allowed to set alignment of the first column",
-			SWT.LEFT, treeColumn.getAlignment());
+	assertEquals(SWT.LEFT, treeColumn.getAlignment());
 
 	column2 = new TreeColumn(tree, SWT.NULL);
 	column2.setAlignment(SWT.RIGHT);
-	assertEquals(":d:", SWT.RIGHT, column2.getAlignment());
+	assertEquals(SWT.RIGHT, column2.getAlignment());
 
 	column2.setAlignment(SWT.CENTER);
-	assertEquals(":e:", SWT.CENTER, column2.getAlignment());
+	assertEquals(SWT.CENTER, column2.getAlignment());
 
 	column2.setAlignment(SWT.LEFT);
-	assertEquals(":f:", SWT.LEFT, column2.getAlignment());
+	assertEquals(SWT.LEFT, column2.getAlignment());
 }
 
 @Override
@@ -182,25 +180,25 @@ public void test_setImageLorg_eclipse_swt_graphics_Image() {
 
 @Test
 public void test_setResizableZ() {
-	assertTrue(":a:", treeColumn.getResizable());
+	assertTrue(treeColumn.getResizable());
 
 	treeColumn.setResizable(false);
-	assertFalse(":b:", treeColumn.getResizable());
+	assertFalse(treeColumn.getResizable());
 
 	treeColumn.setResizable(false);
-	assertFalse(":c:", treeColumn.getResizable());
+	assertFalse(treeColumn.getResizable());
 
 	treeColumn.setResizable(true);
-	assertTrue(":d:", treeColumn.getResizable());
+	assertTrue(treeColumn.getResizable());
 }
 
 @Override
 @Test
 public void test_setTextLjava_lang_String() {
-	assertEquals(":a:", treeColumn.getText(), "");
+	assertEquals(treeColumn.getText(), "");
 
 	treeColumn.setText("text");
-	assertEquals(":b:", treeColumn.getText(), "text");
+	assertEquals(treeColumn.getText(), "text");
 
 	try {
 		treeColumn.setText(null);

@@ -14,12 +14,12 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 
@@ -33,14 +33,14 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.TextLayout;
 import org.eclipse.swt.graphics.TextStyle;
 import org.eclipse.swt.widgets.Display;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
 public class Test_org_eclipse_swt_graphics_TextLayout {
 	Display display;
 
-@Before
+@BeforeEach
 public void setUp() {
 	display = Display.getDefault();
 }
@@ -56,11 +56,11 @@ public void test_getLevel() {
 //	assertEquals(0, layout.getLevel(4)); //bug in windows (uniscribe)
 	assertEquals(1, layout.getLevel(5));
 	assertEquals(1, layout.getLevel(6));
-	if (!SwtTestUtil.isWindows) assertEquals(2, layout.getLevel(7));  // skipping windows due to fix for bug 565526
+	if (!SwtTestUtil.isWindows)
+		assertEquals(2, layout.getLevel(7));  // skipping windows due to fix for bug 565526
 	assertEquals(0, layout.getLevel(9));
-	assertThrows("invalid range expection expected", IllegalArgumentException.class, () -> layout.getLevel(-1));
-	assertThrows("invalid range expection expected", IllegalArgumentException.class,
-			() -> layout.getLevel(text.length() + 1));
+	assertThrows(IllegalArgumentException.class, () -> layout.getLevel(-1));
+	assertThrows(IllegalArgumentException.class, () -> layout.getLevel(text.length() + 1));
 	layout.dispose();
 }
 
@@ -73,12 +73,12 @@ public void test_getSegments() {
 	for (int i = 0; i < segments.length; i++) {
 		String m = messages[i];
 		layout.setSegments(segments[i]);
-		assertEquals(m, 1, layout.getNextOffset(0, SWT.MOVEMENT_CLUSTER));
-		assertEquals(m, 2, layout.getNextOffset(1, SWT.MOVEMENT_CLUSTER));
-		assertEquals(m, 2, layout.getNextOffset(2, SWT.MOVEMENT_CLUSTER));
-		assertEquals(m, 1, layout.getPreviousOffset(2, SWT.MOVEMENT_CLUSTER));
-		assertEquals(m, 0, layout.getPreviousOffset(1, SWT.MOVEMENT_CLUSTER));
-		assertEquals(m, 0, layout.getPreviousOffset(0, SWT.MOVEMENT_CLUSTER));
+		assertEquals(1, layout.getNextOffset(0, SWT.MOVEMENT_CLUSTER), m);
+		assertEquals(2, layout.getNextOffset(1, SWT.MOVEMENT_CLUSTER), m);
+		assertEquals(2, layout.getNextOffset(2, SWT.MOVEMENT_CLUSTER), m);
+		assertEquals(1, layout.getPreviousOffset(2, SWT.MOVEMENT_CLUSTER), m);
+		assertEquals(0, layout.getPreviousOffset(1, SWT.MOVEMENT_CLUSTER), m);
+		assertEquals(0, layout.getPreviousOffset(0, SWT.MOVEMENT_CLUSTER), m);
 	}
 
 	// Bug 295513
@@ -162,15 +162,15 @@ public void test_getSegments() {
 		layout.setSegments(new int[] { length});
 		trailing = new int [1];
 		int width = layout.getBounds().width + 20;
-		assertEquals("hit test to the left", 0, layout.getOffset(0, 0, trailing));
-		assertEquals("hit test to the left (trailing)", 0, trailing[0]);
-		assertEquals("hit test to the right", length - 1, layout.getOffset(width, 0, trailing));
-		assertEquals("hit test to the right (trailing)", 1, trailing[0]);
+		assertEquals(0, layout.getOffset(0, 0, trailing));
+		assertEquals(0, trailing[0]);
+		assertEquals(length - 1, layout.getOffset(width, 0, trailing));
+		assertEquals(1, trailing[0]);
 		layout.setSegmentsChars(new char[] { '*' });
-		assertEquals("hit test to the left", 0, layout.getOffset(0, 0, trailing));
-		assertEquals("hit test to the left (trailing)", 0, trailing[0]);
-		assertEquals("hit test to the right", length - 1, layout.getOffset(width, 0, trailing));
-		assertEquals("hit test to the right (trailing)", 1, trailing[0]);
+		assertEquals(0, layout.getOffset(0, 0, trailing));
+		assertEquals(0, trailing[0]);
+		assertEquals(length - 1, layout.getOffset(width, 0, trailing));
+		assertEquals(1, trailing[0]);
 	}
 
 	/* wrong: internal testing */
@@ -265,9 +265,9 @@ public void test_getSegmentsChars() {
 	for (int i = 0; i < segments.length; i++) {
 		layout.setSegments(segments[i]);
 		layout.setSegmentsChars(chars[i]);
-		assertArrayEquals("Test line offsets" + ": group: " + i, offsets, layout.getLineOffsets());
+		assertArrayEquals(offsets, layout.getLineOffsets(), messages[i]);
 		for (int j = 0; j < textLength; j++) {
-			assertEquals(messages[i] + ": group: " + i + ", index: " + j, levels[i][j], layout.getLevel(j));
+			assertEquals(levels[i][j], layout.getLevel(j), messages[i]);
 		}
 	}
 	layout.dispose();
@@ -330,9 +330,9 @@ public void test_getLineIndex() {
 	assertEquals(1, layout.getLineIndex(12));
 	assertEquals(1, layout.getLineIndex(14));
 	assertEquals(2, layout.getLineIndex(15));
-	assertThrows("invalid range expection expected", IllegalArgumentException.class, ()-> layout.getLineIndex(-1));
-	assertThrows("invalid range expection expected", IllegalArgumentException.class, ()->
-		layout.getLineIndex(text.length() + 1));
+	assertThrows(IllegalArgumentException.class, ()-> layout.getLineIndex(-1));
+	assertThrows(IllegalArgumentException.class, ()->
+	layout.getLineIndex(text.length() + 1));
 	layout.dispose();
 }
 
@@ -371,8 +371,8 @@ public void test_getLineBounds() {
 	assertEquals(100, newRect1.x);
 	assertEquals(bounds.height, rect0.height + rect1.height + rect2.height);
 
-	assertThrows("invalid range expection expected", IllegalArgumentException.class, () -> layout.getLineBounds(-1));
-	assertThrows("invalid range expection expected", IllegalArgumentException.class, () -> layout.getLineBounds(3));
+	assertThrows(IllegalArgumentException.class, () -> layout.getLineBounds(-1));
+	assertThrows(IllegalArgumentException.class, () -> layout.getLineBounds(3));
 	layout.dispose();
 }
 
@@ -762,12 +762,12 @@ public void test_getNextOffset2() {
 	for (int i = 0; i < segments.length; i++) {
 		String m = messages[i];
 		layout.setSegments(segments[i]);
-		assertEquals(m, 1, layout.getNextOffset(0, SWT.MOVEMENT_CLUSTER));
-		assertEquals(m, 4, layout.getNextOffset(1, SWT.MOVEMENT_CLUSTER));
-		assertEquals(m, 5, layout.getNextOffset(4, SWT.MOVEMENT_CLUSTER));
-		assertEquals(m, 4, layout.getPreviousOffset(5, SWT.MOVEMENT_CLUSTER));
-		assertEquals(m, 1, layout.getPreviousOffset(4, SWT.MOVEMENT_CLUSTER));
-		assertEquals(m, 0, layout.getPreviousOffset(1, SWT.MOVEMENT_CLUSTER));
+		assertEquals(1, layout.getNextOffset(0, SWT.MOVEMENT_CLUSTER), m);
+		assertEquals(4, layout.getNextOffset(1, SWT.MOVEMENT_CLUSTER), m);
+		assertEquals(5, layout.getNextOffset(4, SWT.MOVEMENT_CLUSTER), m);
+		assertEquals(4, layout.getPreviousOffset(5, SWT.MOVEMENT_CLUSTER), m);
+		assertEquals(1, layout.getPreviousOffset(4, SWT.MOVEMENT_CLUSTER), m);
+		assertEquals(0, layout.getPreviousOffset(1, SWT.MOVEMENT_CLUSTER), m);
 	}
 	layout.dispose();
 }
@@ -781,7 +781,7 @@ public void test_getLineSpacing() {
 	assertEquals(Short.MAX_VALUE, layout.getSpacing());
 	layout.setSpacing(50);
 	assertEquals(50, layout.getSpacing());
-	assertThrows("invalid range expection expected", IllegalArgumentException.class, ()->layout.setSpacing(-1));
+	assertThrows(IllegalArgumentException.class, ()->layout.setSpacing(-1));
 	assertEquals(50, layout.getSpacing());
 	layout.setSpacing(0);
 	assertEquals(0, layout.getSpacing());
@@ -858,7 +858,8 @@ public void test_getOffset() {
 	assertEquals(1, trailing[0]);
 	point = layout.getLocation(4, true);
 	assertEquals(2, layout.getOffset(point.x - 1, 0, trailing));
-	if (!isCocoa) assertEquals(1, trailing[0]);
+	if (!isCocoa)
+		assertEquals(1, trailing[0]);
 	point = layout.getLocation(4, false);
 	assertEquals(3, layout.getOffset(point.x + 1, 0, trailing));
 	assertEquals(1, trailing[0]);
@@ -919,12 +920,10 @@ public void test_getTextDirection() {
 				layout.setTextDirection(direction);
 			}
 			if (direction == SWT.NONE || direction == -1) {
-				assertEquals("orientation: " + orientation + ", text direction: " + direction,
-						layout.getTextDirection(), prevDirection);
+				assertEquals(layout.getTextDirection(), prevDirection);
 			} else {
 				prevDirection = direction;
-				assertEquals("orientation: " + orientation + ", text direction: " + direction,
-						layout.getTextDirection(), direction);
+				assertEquals(layout.getTextDirection(), direction);
 			}
 		}
 	}
@@ -981,14 +980,14 @@ public void test_bug568740_multilineTextStyle() {
 		Rectangle searchRangeStrike = new Rectangle(0, 0, image.getBounds().width, offset + (int)(firstLineBounds.height * 1.0));
 		Rectangle searchRangeUnder = new Rectangle(0, 0, image.getBounds().width, offset + (int)(firstLineBounds.height * 1.3));
 
-		assertFalse("Invalid test range for border test. Fix test!", SwtTestUtil.hasPixel(image, display.getSystemColor(SWT.COLOR_DARK_BLUE), searchRangeBorder));
-		assertTrue("Found no border style in first line", SwtTestUtil.hasPixel(image, display.getSystemColor(SWT.COLOR_BLUE), searchRangeBorder));
+		assertFalse(SwtTestUtil.hasPixel(image, display.getSystemColor(SWT.COLOR_DARK_BLUE), searchRangeBorder));
+		assertTrue(SwtTestUtil.hasPixel(image, display.getSystemColor(SWT.COLOR_BLUE), searchRangeBorder));
 
-		assertFalse("Invalid test range for strikeout test. Fix test!", SwtTestUtil.hasPixel(image, display.getSystemColor(SWT.COLOR_DARK_RED), searchRangeStrike));
-		assertTrue("Found no strikeout style in first line", SwtTestUtil.hasPixel(image, display.getSystemColor(SWT.COLOR_RED), searchRangeStrike));
+		assertFalse(SwtTestUtil.hasPixel(image, display.getSystemColor(SWT.COLOR_DARK_RED), searchRangeStrike));
+		assertTrue(SwtTestUtil.hasPixel(image, display.getSystemColor(SWT.COLOR_RED), searchRangeStrike));
 
-		assertFalse("Invalid test range for underline test. Fix test!", SwtTestUtil.hasPixel(image, display.getSystemColor(SWT.COLOR_DARK_GREEN), searchRangeUnder));
-		assertTrue("Found no underline style in first line", SwtTestUtil.hasPixel(image, display.getSystemColor(SWT.COLOR_GREEN), searchRangeUnder));
+		assertFalse(SwtTestUtil.hasPixel(image, display.getSystemColor(SWT.COLOR_DARK_GREEN), searchRangeUnder));
+		assertTrue(SwtTestUtil.hasPixel(image, display.getSystemColor(SWT.COLOR_GREEN), searchRangeUnder));
 	} finally {
 		if (layout != null)
 			layout.dispose();
@@ -1035,8 +1034,7 @@ private int[][] draw(String input, int antialias) {
 		layout.setText(input);
 		image = draw(layout, antialias);
 //		SwtTestUtil.debugDisplayImage(image);
-		assertTrue("Found no drawn pixels, nothing at all was drawn!",
-		SwtTestUtil.hasPixelNotMatching(image, display.getSystemColor(SWT.COLOR_WHITE), image.getBounds()));
+		assertTrue(SwtTestUtil.hasPixelNotMatching(image, display.getSystemColor(SWT.COLOR_WHITE), image.getBounds()));
 		return SwtTestUtil.getAllPixels(image);
 
 	} finally {

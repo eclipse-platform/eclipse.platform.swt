@@ -15,9 +15,6 @@
 package org.eclipse.swt.tests.junit;
 
 import static org.eclipse.swt.tests.junit.SwtTestUtil.assertSWTProblem;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -30,6 +27,7 @@ import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.lang.ref.WeakReference;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.swt.SWT;
@@ -249,7 +247,7 @@ public void test_dispose() {
 
 
 @Test
-public void test_drawImage_nonAutoScalableGC_bug_2504() {
+public void test_drawImage_nonAutoScalableGC_bug_2504() throws InterruptedException {
 	Shell shell = new Shell(display);
     float targetScale = 2f;
     int srcSize = 50;
@@ -273,15 +271,18 @@ public void test_drawImage_nonAutoScalableGC_bug_2504() {
     int canvasWidth = Math.round(bounds.width * targetScale);
     int canvasHeight = Math.round(bounds.height * targetScale);
     canvas.setSize(canvasWidth, canvasHeight);
+    AtomicBoolean paintListenerCalled = new AtomicBoolean();
     canvas.addPaintListener(e -> {
         e.gc.drawImage(image, 0, 0, bounds.width, bounds.height,
                        0, 0, canvasWidth, canvasHeight);
+        paintListenerCalled.set(true);
     });
 
     shell.open();
-    while (display.readAndDispatch()) {
-    }
-    Image target = new Image(display, canvasWidth, canvasHeight);
+	int timeoutMillis = 2000;
+	SwtTestUtil.processEvents(timeoutMillis, () -> paintListenerCalled.get());
+	assertTrue(paintListenerCalled.get(), "paint listener was never called");
+	Image target = new Image(display, canvasWidth, canvasHeight);
     GC gcCopy = new GC(canvas);
     gcCopy.copyArea(target, 0, 0);
     gcCopy.dispose();
@@ -835,8 +836,8 @@ public void test_drawLine_noSingularitiesIn45DregreeRotation() {
 		gc.setTransform(rotation);
 		gc.drawLine(centerPixel, centerPixel, centerPixel + 1, centerPixel);
 
-		assertThat("line is not drawn with 45 degree rotation",
-				image.getImageData().getPixel(centerPixel, centerPixel), not(is(-1)));
+		assertNotEquals(-1,
+				image.getImageData().getPixel(centerPixel, centerPixel), "line is not drawn with 45 degree rotation");
 	} finally {
 		rotation.dispose();
 		gc.dispose();

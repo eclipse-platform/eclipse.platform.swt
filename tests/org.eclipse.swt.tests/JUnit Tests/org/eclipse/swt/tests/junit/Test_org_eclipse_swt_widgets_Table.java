@@ -14,12 +14,12 @@
 package org.eclipse.swt.tests.junit;
 
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,8 +31,8 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Table
@@ -42,7 +42,7 @@ import org.junit.Test;
 public class Test_org_eclipse_swt_widgets_Table extends Test_org_eclipse_swt_widgets_Composite {
 
 @Override
-@Before
+@BeforeEach
 public void setUp() {
 	super.setUp();
 	makeCleanEnvironment(false); // by default, use multi-select table.
@@ -341,7 +341,7 @@ public void test_getItemCount() {
 		for (int i = 0; i < cases[j]; i++) {
 			new TableItem(table, 0);
 		}
-		assertEquals("j="+ j, cases[j], table.getItemCount());
+		assertEquals(cases[j], table.getItemCount());
 		table.removeAll();
 	}
 
@@ -351,16 +351,16 @@ public void test_getItemCount() {
 		for (int i = 0; i < cases[j]; i++) {
 			new TableItem(table, 0);
 		}
-		assertEquals("j="+ j, cases[j], table.getItemCount());
+		assertEquals(cases[j], table.getItemCount());
 		table.removeAll();
 	}
 }
 
 @Test
 public void test_getItemHeight() {
-	assertTrue(":a: Item height <= 0", table.getItemHeight() > 0);
+	assertTrue(table.getItemHeight() > 0);
 	new TableItem(table, 0);
-	assertTrue(":b: Item height <= 0", table.getItemHeight() > 0);
+	assertTrue(table.getItemHeight() > 0);
 }
 
 @Test
@@ -371,7 +371,7 @@ public void test_getItemI() {
 		items[i] = new TableItem(table, 0);
 
 	for (int i = 0; i < number; i++)
-		assertEquals("i=" + i, items[i], table.getItem(i));
+		assertEquals(items[i], table.getItem(i));
 	try {
 		table.getItem(number);
 		fail("No exception thrown for illegal index argument");
@@ -392,7 +392,7 @@ public void test_getItemI() {
 	for (int i = 0; i < number; i++)
 		items[i] = new TableItem(table, 0);
 	for (int i = 0; i < number; i++) {
-		assertEquals("i=" + i, items[i], table.getItem(i));
+		assertEquals(items[i], table.getItem(i));
 	}
 	try {
 		table.getItem(number);
@@ -416,7 +416,7 @@ public void test_getItems() {
 		for (int i = 0; i < cases[j]; i++) {
 			new TableItem(table, 0);
 		}
-		assertEquals("j=" + j, cases[j], table.getItems().length);
+		assertEquals(cases[j], table.getItems().length);
 		table.removeAll();
 	}
 
@@ -427,7 +427,7 @@ public void test_getItems() {
 		}
 		TableItem[] items = table.getItems();
 		for (int i = 0; i < items.length; i++) {
-			assertEquals("j=" + j + ", i=" + i, String.valueOf(i), items[i].getText());
+			assertEquals(String.valueOf(i), items[i].getText());
 		}
 		table.removeAll();
 	}
@@ -439,7 +439,7 @@ public void test_getItems() {
 		for (int i = 0; i < cases[j]; i++) {
 			new TableItem(table, 0);
 		}
-		assertEquals("j=" + j, cases[j], table.getItems().length);
+		assertEquals(cases[j], table.getItems().length);
 		table.removeAll();
 	}
 
@@ -452,7 +452,7 @@ public void test_getItems() {
 		}
 		TableItem[] items = table.getItems();
 		for (int i = 0; i < items.length; i++) {
-			assertEquals("j=" + j + ", i=" + i, String.valueOf(i), items[i].getText());
+			assertEquals(String.valueOf(i), items[i].getText());
 		}
 		table.removeAll();
 	}
@@ -657,7 +657,7 @@ public void test_indexOfLorg_eclipse_swt_widgets_TableItem() {
 	}
 
 	for (int i = 0; i < number; i++) {
-		assertEquals("i=" + i, -1, table.indexOf(items_2[i]));
+		assertEquals(-1, table.indexOf(items_2[i]));
 	}
 
 	// note: SWT.SINGLE
@@ -707,7 +707,7 @@ public void test_indexOfLorg_eclipse_swt_widgets_TableItem() {
 	}
 
 	for (int i = 0; i < number; i++) {
-		assertEquals("i=" + i, -1, table.indexOf(items_2[i]));
+		assertEquals(-1, table.indexOf(items_2[i]));
 	}
 }
 
@@ -718,27 +718,27 @@ public void test_isSelectedI() {
 	for (int i = 0; i < number; i++)
 		items[i] = new TableItem(table, 0);
 	for (int i = 0; i < number; i++)
-		assertTrue(":a:" + i, !table.isSelected(i));
+		assertTrue(!table.isSelected(i));
 	table.setSelection(new TableItem[] {items[2], items[number-1], items[10]});
 	for (int i = 0; i < number; i++) {
 		if (i == 2 || i == number-1 || i == 10)
-			assertTrue(":b:" + i, table.isSelected(i));
+			assertTrue(table.isSelected(i));
 		else
-			assertTrue(":b:" + i, !table.isSelected(i));
+			assertTrue(!table.isSelected(i));
 	}
 
 	table.setSelection(items[0]);
 	for (int i = 0; i < number; i++) {
 		if (i == 0)
-			assertTrue(":b:" + i, table.isSelected(i));
+			assertTrue(table.isSelected(i));
 		else
-			assertTrue(":b:" + i, !table.isSelected(i));
+			assertTrue(!table.isSelected(i));
 	}
 
 
 	table.setSelection(items);
 	for (int i = 0; i < number; i++)
-		assertTrue(":c:" + i, table.isSelected(i));
+		assertTrue(table.isSelected(i));
 
 	// note: SWT.SINGLE
 	makeCleanEnvironment(true);
@@ -746,18 +746,18 @@ public void test_isSelectedI() {
 	for (int i = 0; i < number; i++)
 		items[i] = new TableItem(table, 0);
 	for (int i = 0; i < number; i++)
-		assertTrue(":d:" + i, !table.isSelected(i));
+		assertTrue(!table.isSelected(i));
 	table.setSelection(new TableItem[] {items[10]});
 	for (int i = 0; i < number; i++) {
 		if (i == 10)
-			assertTrue(":e:" + i, table.isSelected(i));
+			assertTrue(table.isSelected(i));
 		else
-			assertTrue(":e:" + i, !table.isSelected(i));
+			assertTrue(!table.isSelected(i));
 	}
 
 	table.setSelection(items);
 	for (int i = 0; i < number; i++){
-		assertTrue(":f:" + i, !table.isSelected(i));
+		assertTrue(!table.isSelected(i));
 	}
 }
 
@@ -795,24 +795,24 @@ public void test_remove$I() {
 	for (int i = 0; i < number; i++)
 		items[i] = new TableItem(table, 0);
 
-	assertTrue(":a:", !items[2].isDisposed());
+	assertTrue(!items[2].isDisposed());
 	table.remove(new int[] {2});
-	assertTrue(":b:", items[2].isDisposed());
+	assertTrue(items[2].isDisposed());
 	assertEquals(number-1, table.getItemCount());
 
-	assertTrue(":c:", !items[number-1].isDisposed());
+	assertTrue(!items[number-1].isDisposed());
 	table.remove(new int[] {number-2});
-	assertTrue(":d:", items[number-1].isDisposed());
+	assertTrue(items[number-1].isDisposed());
 	assertEquals(number-2, table.getItemCount());
 
-	assertTrue(":e:", !items[3].isDisposed());
+	assertTrue(!items[3].isDisposed());
 	table.remove(new int[] {2});
-	assertTrue(":f:", items[3].isDisposed());
+	assertTrue(items[3].isDisposed());
 	assertEquals(number-3, table.getItemCount());
 
-	assertTrue(":g:", !items[0].isDisposed());
+	assertTrue(!items[0].isDisposed());
 	table.remove(new int[] {0});
-	assertTrue(":h:", items[0].isDisposed());
+	assertTrue(items[0].isDisposed());
 	assertEquals(number-4, table.getItemCount());
 }
 
@@ -1893,8 +1893,7 @@ public void test_Virtual() {
 		}
 	}
 	// the "* 3" allows some surplus for platforms that pre-fetch items to improve scrolling performance:
-	assertTrue("SetData callback count not in range: " + dataCounter[0],
-			dataCounter[0] > visibleCount / 2 && dataCounter[0] <= visibleCount * 3);
+	assertTrue(dataCounter[0] > visibleCount / 2 && dataCounter[0] <= visibleCount * 3);
 }
 
 @Test

@@ -18,10 +18,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.ProcessBuilder.Redirect;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -40,7 +44,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
 import clipboard.ClipboardCommands;
 
@@ -54,8 +57,6 @@ import clipboard.ClipboardCommands;
 public class Test_org_eclipse_swt_dnd_Clipboard {
 
 	private static final int DEFAULT_TIMEOUT_MS = 10000;
-	@TempDir
-	static Path tempFolder;
 	static int uniqueId = 1;
 	private Display display;
 	private Shell shell;
@@ -64,6 +65,7 @@ public class Test_org_eclipse_swt_dnd_Clipboard {
 	private RTFTransfer rtfTransfer;
 	private ClipboardCommands remote;
 	private Process remoteClipboardProcess;
+	private Path remoteClipboardTempDir;
 
 	@BeforeEach
 	public void setUp() {
@@ -139,6 +141,7 @@ public class Test_org_eclipse_swt_dnd_Clipboard {
 		 * If the ClipboardTest starts to get more complicated, or other tests want to
 		 * replicate this design element, then refactoring this is an option.
 		 */
+		remoteClipboardTempDir = Files.createTempDirectory("swt-test-Clipboard");
 		List.of( //
 				"ClipboardTest", //
 				"ClipboardCommands", //
@@ -146,14 +149,16 @@ public class Test_org_eclipse_swt_dnd_Clipboard {
 				"ClipboardTest$LocalHostOnlySocketFactory" //
 		).forEach((f) -> {
 			// extract the files and put them in the temp directory
-			SwtTestUtil.getPath("/clipboard/" + f + ".class", tempFolder.resolve("clipboard/" + f + ".class"));
+			SwtTestUtil.copyFile("/clipboard/" + f + ".class",
+					remoteClipboardTempDir.resolve("clipboard/" + f + ".class"));
 		});
 
 		String javaHome = System.getProperty("java.home");
 		String javaExe = javaHome + "/bin/java" + (SwtTestUtil.isWindowsOS ? ".exe" : "");
 		assertTrue(Files.exists(Path.of(javaExe)));
 
-		ProcessBuilder pb = new ProcessBuilder(javaExe, "clipboard.ClipboardTest").directory(tempFolder.toFile());
+		ProcessBuilder pb = new ProcessBuilder(javaExe, "clipboard.ClipboardTest")
+				.directory(remoteClipboardTempDir.toFile());
 		pb.inheritIO();
 		pb.redirectOutput(Redirect.PIPE);
 		remoteClipboardProcess = pb.start();
@@ -214,6 +219,41 @@ public class Test_org_eclipse_swt_dnd_Clipboard {
 
 	private void stopRemoteClipboardCommands() throws Exception {
 		try {
+			stopRemoteProcess();
+		} finally {
+			deleteRemoteTempDir();
+		}
+	}
+
+	private void deleteRemoteTempDir() {
+		if (remoteClipboardTempDir != null) {
+			// At this point the process is ideally destroyed - or at least the test will
+			// report a failure if it isn't. Clean up the extracted files, but don't
+			// fail test if we fail to delete
+			try {
+				Files.walkFileTree(remoteClipboardTempDir, new SimpleFileVisitor<Path>() {
+					@Override
+					public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+						Files.delete(file);
+						return FileVisitResult.CONTINUE;
+					}
+
+					@Override
+					public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+						Files.delete(dir);
+						return FileVisitResult.CONTINUE;
+					}
+				});
+			} catch (IOException e) {
+				System.err.println("SWT Warning: Failed to clean up temp directory " + remoteClipboardTempDir
+						+ " Error:" + e.toString());
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void stopRemoteProcess() throws RemoteException, InterruptedException {
+		try {
 			if (remote != null) {
 				remote.stop();
 				remote = null;
@@ -221,9 +261,11 @@ public class Test_org_eclipse_swt_dnd_Clipboard {
 		} finally {
 			if (remoteClipboardProcess != null) {
 				try {
-					remoteClipboardProcess.waitFor(1, TimeUnit.SECONDS);
+					remoteClipboardProcess.destroy();
+					assertTrue(remoteClipboardProcess.waitFor(10, TimeUnit.SECONDS));
 				} finally {
 					remoteClipboardProcess.destroyForcibly();
+					assertTrue(remoteClipboardProcess.waitFor(10, TimeUnit.SECONDS));
 					remoteClipboardProcess = null;
 				}
 			}

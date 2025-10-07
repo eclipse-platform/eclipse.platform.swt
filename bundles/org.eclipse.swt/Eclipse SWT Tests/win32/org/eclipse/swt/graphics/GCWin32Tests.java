@@ -28,12 +28,12 @@ import org.junit.jupiter.api.extension.*;
 class GCWin32Tests {
 
 	@Test
-	public void gcZoomLevelMustChangeOnShellZoomChange() {
+	public void gcZoomLevelMustChangeOnShellZoomChange() throws Exception {
 		checkGcZoomLevelOnCanvas(DPIUtil.getNativeDeviceZoom());
 		checkGcZoomLevelOnCanvas(DPIUtil.getNativeDeviceZoom()*2);
 	}
 
-	private void checkGcZoomLevelOnCanvas(int expectedZoom) {
+	private void checkGcZoomLevelOnCanvas(int expectedZoom) throws Exception {
 		Display display = Display.getDefault();
 		Shell shell = new Shell(display);
 		CompletableFuture<Integer> gcNativeZoom = new CompletableFuture<>();
@@ -47,7 +47,8 @@ class GCWin32Tests {
 
 		DPITestUtil.changeDPIZoom(shell, expectedZoom);
 		canvas.update();
-		assertEquals("GCData must have a zoom level equal to the actual zoom level of the widget/shell", expectedZoom, (int) gcNativeZoom.join());
+		int returnedZoom = (int) gcNativeZoom.get(10000, TimeUnit.SECONDS);
+		assertEquals("GCData must have a zoom level equal to the actual zoom level of the widget/shell", expectedZoom, returnedZoom);
 		shell.dispose();
 	}
 

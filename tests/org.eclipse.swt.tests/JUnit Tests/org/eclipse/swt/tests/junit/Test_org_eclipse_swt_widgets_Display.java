@@ -48,6 +48,7 @@ import org.eclipse.test.Screenshots;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Display
@@ -1064,15 +1065,8 @@ public void test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_Con
 }
 
 @Test
+@EnabledIfEnvironmentVariable(named = "GITHUB_ACTIONS", matches = "true", disabledReason = "Display.post tests only run successfully on GitHub actions - see https://github.com/eclipse-platform/eclipse.platform.swt/issues/2571")
 public void test_postLorg_eclipse_swt_widgets_Event() {
-	if (SwtTestUtil.isGTK || SwtTestUtil.isCocoa || SwtTestUtil.isWindows ) {
-		//TODO Fix/revisit GTK, Cocoa and Win10 failure test-case via bug 553754
-		if (SwtTestUtil.verbose) {
-			System.out.println("Excluded test_postLorg_eclipse_swt_widgets_Event(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Display)");
-		}
-		return;
-	}
-
 	final int KEYCODE = SWT.SHIFT;
 
 	Display display = new Display();
@@ -1088,13 +1082,19 @@ public void test_postLorg_eclipse_swt_widgets_Event() {
 		shell.setBounds(display.getBounds());
 		shell.open();
 
+		// The display.post needs to successfully obtain the focused window (at least on GTK3)
+		// so we can send events to it. This processEvents gives SWT/GTK time to draw/focus/etc
+		// the window so that org.eclipse.swt.widgets.Display.findFocusedWindow()
+		// returns non-zero
+		SwtTestUtil.processEvents();
+
 		Event event;
 
 		// Test key events (down/up)
 		event = new Event();
 		event.type = SWT.KeyDown;
 		event.keyCode = -1;  // bogus key code; default 0 character
-		assertTrue(display.post(event), "Display#post failed, probably because screen is not rendered (bug 407862)");  //$NON-NLS-1$
+		assertTrue(display.post(event), "Display#post failed, probably because screen is not rendered (bug 407862) or because Shell is not focussed");  //$NON-NLS-1$
 		// don't test KeyDown/KeyUp with a character to avoid sending to
 		// random window if test shell looses focus
 
@@ -1121,14 +1121,22 @@ public void test_postLorg_eclipse_swt_widgets_Event() {
 
 		event = new Event();
 		event.type = SWT.MouseDown;
-		assertFalse(display.post(event));  // missing button
+		if (!SwtTestUtil.isGTK) {
+			// GTK's post implementation has long allowed a button value of 0, the
+			// behavior of posting an event with button == 0 is undefined on GTK
+			assertFalse(display.post(event));  // missing button
+		}
 		event.button = 1;
 		shell.setFocus();
 		assertTrue(display.post(event));
 
 		event = new Event();
 		event.type = SWT.MouseUp;
-		assertFalse(display.post(event));  // missing button
+		if (!SwtTestUtil.isGTK) {
+			// GTK's post implementation has long allowed a button value of 0, the
+			// behavior of posting an event with button == 0 is undefined on GTK
+			assertFalse(display.post(event));  // missing button
+		}
 		event.button = 1;
 		shell.setFocus();
 		assertTrue(display.post(event));

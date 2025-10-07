@@ -1579,22 +1579,21 @@ public String toString () {
  *
  * @param gc the GC to draw on the resulting image
  * @param imageData the imageData which is used to draw the scaled Image
- * @param width the width of the original image
- * @param height the height of the original image
- * @param scaleFactor the factor with which the image is supposed to be scaled
+ * @param width the width to which the image is supposed to be scaled
+ * @param height the height to which the image is supposed to be scaled
  *
  * @noreference This method is not intended to be referenced by clients.
  */
-public static void drawScaled(GC gc, ImageData imageData, int width, int height, float scaleFactor) {
+public static void drawAtSize(GC gc, ImageData imageData, int width, int height) {
 	StrictChecks.runWithStrictChecksDisabled(() -> {
 		Image imageToDraw = new Image(gc.device, (ImageDataProvider) zoom -> imageData);
-		gc.drawImage(imageToDraw, 0, 0, width, height,
+		gc.drawImage(imageToDraw, 0, 0, imageData.width, imageData.height,
 				/*
 				 * E.g. destWidth here is effectively DPIUtil.autoScaleDown (scaledWidth), but
 				 * avoiding rounding errors. Nevertheless, we still have some rounding errors
 				 * due to the point-based API GC#drawImage(..).
 				 */
-				0, 0, Math.round(width * scaleFactor), Math.round(height * scaleFactor));
+				0, 0, width, height);
 		imageToDraw.dispose();
 	});
 }

@@ -229,6 +229,19 @@ static boolean canLoadAtZoom(String filename, int fileZoom, int targetZoom) {
 	return false;
 }
 
+static boolean isDynamicallySizable(String filename) {
+	try (InputStream stream = new FileInputStream(filename)) {
+		return FileFormat.isDynamicallySizableFormat(stream);
+	} catch (IOException e) {
+		SWT.error(SWT.ERROR_IO, e);
+	}
+	return false;
+}
+
+static boolean isDynamicallySizable(InputStream stream) {
+	return FileFormat.isDynamicallySizableFormat(stream);
+}
+
 /**
  * Saves the image data in this ImageLoader to the specified stream.
  * The format parameter can have one of the following values:

@@ -1977,7 +1977,7 @@ public String toString() {
 void handleDPIChange(Event event, float scalingFactor) {
 	super.handleDPIChange(event, scalingFactor);
 	for (Control child : getChildren()) {
-		child.notifyListeners(SWT.ZoomChanged, event);
+		child.sendZoomChangedEvent(event, getShell());
 	}
 }
 }

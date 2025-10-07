@@ -13,14 +13,14 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.graphics.Color;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.custom.CTabItem
@@ -33,7 +33,7 @@ public class Test_org_eclipse_swt_custom_CTabItem extends Test_org_eclipse_swt_w
 	CTabItem cTabItem;
 
 @Override
-@Before
+@BeforeEach
 public void setUp() {
 	super.setUp();
 	cTabFolder = new CTabFolder(shell, SWT.NONE);

@@ -13,14 +13,16 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.Optional;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeListener;
@@ -31,12 +33,14 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Widget;
-import org.eclipse.test.Screenshots.ScreenshotOnFailure;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestName;
+import org.eclipse.test.Screenshots;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
+import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.opentest4j.IncompleteExecutionException;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Widget
@@ -53,33 +57,46 @@ abstract class Test_org_eclipse_swt_widgets_Widget{
 	 * Set this to true if the unit test intentionally disposed its widget as part of the test
 	 */
 	boolean disposedIntentionally;
-	@Rule public TestName name = new TestName();
+	private TestInfo testInfo;
 
-@Before
+@BeforeEach
+protected void setupBase(TestInfo testInfo) {
+	this.testInfo = testInfo;
+}
+
+@BeforeEach
 public void setUp() {
 	shell = new Shell();
 }
 
-@Rule
-public ScreenshotOnFailure screenshotRule = new ScreenshotOnFailure(()-> this.shell) {
-	@Override
-	public void dispose() {
-		Display display = null;
-		if (!disposedIntentionally) {
-			assertFalse(shell.isDisposed());
-			display = shell.getDisplay();
+@RegisterExtension
+AfterTestExecutionCallback afterTestExecutionCallback = context -> {
+	context.getExecutionException().ifPresent((e) -> {
+		// If this is an assumption failed or otherwise
+		// skipped test, don't take a screenshot
+		if (!(e instanceof IncompleteExecutionException)) {
+			String screenshot = Screenshots.takeScreenshot(context.getTestClass().get(), context.getDisplayName());
+			e.addSuppressed((new Throwable("Screenshot written to " + screenshot)));
 		}
-		super.dispose();
-		afterDispose(display);
-	}
+	});
 };
 
-@After
+@AfterEach
 public void tearDown() {
 	if (widget != null) {
 		assertEquals(disposedIntentionally, widget.isDisposed());
 	}
+	Display display = null;
+	if (!disposedIntentionally) {
+		assertFalse(shell.isDisposed());
+		display = shell.getDisplay();
+	}
+	if (shell != null && !shell.isDisposed()) {
+		shell.dispose();
+	}
+	afterDispose(display);
 }
+
 protected void afterDispose(Display display) {
 	if (widget != null) {
 		assertTrue(widget.isDisposed());
@@ -219,7 +236,9 @@ protected void hookExpectedEvents(Widget w, String[] types, final java.util.List
 }
 
 protected String getTestName() {
-	String test = "" + name.getMethodName();
+	Optional<Method> testMethod = testInfo.getTestMethod();
+	assertTrue(testMethod.isPresent());
+	String test = testMethod.get().getName();
 	int index = test.lastIndexOf('_');
 	if(index != -1)
 		test = test.substring(index+1);
