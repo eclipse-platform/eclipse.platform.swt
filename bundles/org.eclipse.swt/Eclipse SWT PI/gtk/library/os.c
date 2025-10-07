@@ -1495,6 +1495,7 @@ G_GNUC_END_IGNORE_DEPRECATIONS
 #endif
 
 #ifndef NO_gdk_1pixbuf_1animation_1get_1static_1image
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1pixbuf_1animation_1get_1static_1image)
 	(JNIEnv *env, jclass that, jlong arg0)
 {
@@ -1504,9 +1505,11 @@ JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1pixbuf_1animation_1get_1static_1image)
 	GDK_NATIVE_EXIT(env, that, gdk_1pixbuf_1animation_1get_1static_1image_FUNC);
 	return rc;
 }
+G_GNUC_END_IGNORE_DEPRECATIONS
 #endif
 
 #ifndef NO_gdk_1pixbuf_1animation_1is_1static_1image
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 JNIEXPORT jboolean JNICALL GDK_NATIVE(gdk_1pixbuf_1animation_1is_1static_1image)
 	(JNIEnv *env, jclass that, jlong arg0)
 {
@@ -1516,6 +1519,7 @@ JNIEXPORT jboolean JNICALL GDK_NATIVE(gdk_1pixbuf_1animation_1is_1static_1image)
 	GDK_NATIVE_EXIT(env, that, gdk_1pixbuf_1animation_1is_1static_1image_FUNC);
 	return rc;
 }
+G_GNUC_END_IGNORE_DEPRECATIONS
 #endif
 
 #ifndef NO_gdk_1pixbuf_1animation_1iter_1advance
@@ -1533,6 +1537,7 @@ G_GNUC_END_IGNORE_DEPRECATIONS
 #endif
 
 #ifndef NO_gdk_1pixbuf_1animation_1iter_1get_1delay_1time
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 JNIEXPORT jint JNICALL GDK_NATIVE(gdk_1pixbuf_1animation_1iter_1get_1delay_1time)
 	(JNIEnv *env, jclass that, jlong arg0)
 {
@@ -1542,9 +1547,11 @@ JNIEXPORT jint JNICALL GDK_NATIVE(gdk_1pixbuf_1animation_1iter_1get_1delay_1time
 	GDK_NATIVE_EXIT(env, that, gdk_1pixbuf_1animation_1iter_1get_1delay_1time_FUNC);
 	return rc;
 }
+G_GNUC_END_IGNORE_DEPRECATIONS
 #endif
 
 #ifndef NO_gdk_1pixbuf_1animation_1iter_1get_1pixbuf
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1pixbuf_1animation_1iter_1get_1pixbuf)
 	(JNIEnv *env, jclass that, jlong arg0)
 {
@@ -1554,6 +1561,7 @@ JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1pixbuf_1animation_1iter_1get_1pixbuf)
 	GDK_NATIVE_EXIT(env, that, gdk_1pixbuf_1animation_1iter_1get_1pixbuf_FUNC);
 	return rc;
 }
+G_GNUC_END_IGNORE_DEPRECATIONS
 #endif
 
 #ifndef NO_gdk_1pixbuf_1copy
@@ -1751,6 +1759,7 @@ fail:
 #endif
 
 #ifndef NO_gdk_1pixbuf_1loader_1get_1animation
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1pixbuf_1loader_1get_1animation)
 	(JNIEnv *env, jclass that, jlong arg0)
 {
@@ -1760,6 +1769,7 @@ JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1pixbuf_1loader_1get_1animation)
 	GDK_NATIVE_EXIT(env, that, gdk_1pixbuf_1loader_1get_1animation_FUNC);
 	return rc;
 }
+G_GNUC_END_IGNORE_DEPRECATIONS
 #endif
 
 #ifndef NO_gdk_1pixbuf_1loader_1get_1format
