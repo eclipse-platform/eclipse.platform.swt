@@ -3534,7 +3534,7 @@ public void setLayoutData (Object layoutData) {
  */
 public void setLocation (int x, int y) {
 	checkWidget ();
-	int zoom = getZoom();
+	int zoom = autoScaleDisabled ? parent.getZoom() : getZoom();
 	x = Win32DPIUtils.pointToPixel(x, zoom);
 	y = Win32DPIUtils.pointToPixel(y, zoom);
 	setLocationInPixels(x, y);
@@ -3791,7 +3791,7 @@ public void setRegion (Region region) {
  */
 public void setSize (int width, int height) {
 	checkWidget ();
-	int zoom = getZoom();
+	int zoom = autoScaleDisabled ? parent.getZoom() : getZoom();
 	width = Win32DPIUtils.pointToPixel(width, zoom);
 	height = Win32DPIUtils.pointToPixel(height, zoom);
 	setSizeInPixels(width, height);
