@@ -1,5 +1,3 @@
-package org.eclipse.swt.snippets;
-
 /*******************************************************************************
  * Copyright (c) 2018 IBM Corporation and others.
  *
@@ -13,6 +11,7 @@ package org.eclipse.swt.snippets;
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
+package org.eclipse.swt.snippets;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.custom.*;
@@ -83,18 +82,15 @@ public class Snippet373 {
 		shell.setLayout(new RowLayout(SWT.VERTICAL));
 		shell.setLocation(100, 100);
 		shell.setSize(500, 600);
-		shell.addListener(SWT.ZoomChanged, new Listener() {
-			@Override
-			public void handleEvent(Event e) {
-				if (display.getPrimaryMonitor().equals(shell.getMonitor())) {
-					MessageBox box = new MessageBox(shell, SWT.PRIMARY_MODAL | SWT.OK | SWT.CANCEL);
-					box.setText(shell.getText());
-					box.setMessage("DPI changed, do you want to exit & restart ?");
-					e.doit = (box.open() == SWT.OK);
-					if (e.doit) {
-						shell.close();
-						System.out.println("Program exit.");
-					}
+		shell.addListener(SWT.ZoomChanged, e -> {
+			if (display.getPrimaryMonitor().equals(shell.getMonitor())) {
+				MessageBox box = new MessageBox(shell, SWT.PRIMARY_MODAL | SWT.OK | SWT.CANCEL);
+				box.setText(shell.getText());
+				box.setMessage("DPI changed, do you want to exit & restart ?");
+				e.doit = (box.open() == SWT.OK);
+				if (e.doit) {
+					shell.close();
+					System.out.println("Program exit.");
 				}
 			}
 		});
