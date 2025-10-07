@@ -625,11 +625,20 @@ public class GDK extends OS {
 	 */
 	public static final native long gdk_pango_layout_get_clip_region(long layout, int x_origin, int y_origin, int[] index_ranges, int n_ranges);
 
-	/** @param animation cast=(GdkPixbufAnimation *) */
+	/**
+	 * @param animation cast=(GdkPixbufAnimation *)
+	 * @method flags=ignore_deprecations
+	 */
 	public static final native boolean gdk_pixbuf_animation_is_static_image(long animation);
-	/** @param iter cast=(GdkPixbufAnimationIter *) */
+	/**
+	 * @param iter cast=(GdkPixbufAnimationIter *)
+	 * @method flags=ignore_deprecations
+	 */
 	public static final native int gdk_pixbuf_animation_iter_get_delay_time(long iter);
-	/** @param iter cast=(GdkPixbufAnimationIter *) */
+	/**
+	 * @param iter cast=(GdkPixbufAnimationIter *)
+	 * @method flags=ignore_deprecations
+	 */
 	public static final native long gdk_pixbuf_animation_iter_get_pixbuf(long iter);
 	/**
 	 * @method flags=ignore_deprecations
@@ -643,7 +652,10 @@ public class GDK extends OS {
 	 * @param start_time cast=(const GTimeVal *)
 	 */
 	public static final native long gdk_pixbuf_animation_get_iter(long animation, long start_time);
-	/** @param animation cast=(GdkPixbufAnimation *) */
+	/**
+	 * @param animation cast=(GdkPixbufAnimation *)
+	 * @method flags=ignore_deprecations
+	 */
 	public static final native long gdk_pixbuf_animation_get_static_image(long animation);
 	/**
 	 * @param src_pixbuf cast=(GdkPixbuf *)
@@ -670,7 +682,10 @@ public class GDK extends OS {
 	public static final native long gdk_pixbuf_loader_get_format(long loader);
 	/** @param format cast=(GdkPixbufFormat *) */
 	public static final native long gdk_pixbuf_format_get_name(long format);
-	/** @param loader cast=(GdkPixbufLoader *) */
+	/**
+	 * @param loader cast=(GdkPixbufLoader *)
+	 * @method flags=ignore_deprecations
+	 */
 	public static final native long gdk_pixbuf_loader_get_animation(long loader);
 	/**
 	 * @param data cast=(const guchar *)
