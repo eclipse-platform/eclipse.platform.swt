@@ -557,7 +557,7 @@ void setScrollbar () {
  */
 public void setSpacing (int spacing) {
 	checkWidget ();
-	setSpacingInPixels(Win32DPIUtils.pointToPixel(spacing, getZoom()));
+	setSpacingInPixels(DPIUtil.pointToPixel(spacing, getZoom()));
 }
 
 void setSpacingInPixels (int spacing) {

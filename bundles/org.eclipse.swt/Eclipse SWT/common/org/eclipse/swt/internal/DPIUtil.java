@@ -258,6 +258,15 @@ public static void validateLinearScaling(ImageDataProvider provider) {
 }
 
 /**
+ * Auto-scale up int dimensions to match the given zoom level
+ */
+public static int pointToPixel(int size, int zoom) {
+	if (zoom == 100 || size == SWT.DEFAULT) return size;
+	float scaleFactor = getScalingFactor(zoom);
+	return Math.round (size * scaleFactor);
+}
+
+/**
  * Represents an element, such as some image data, at a specific zoom level.
  *
  * @param <T> type of the element to be presented, e.g., {@link ImageData}

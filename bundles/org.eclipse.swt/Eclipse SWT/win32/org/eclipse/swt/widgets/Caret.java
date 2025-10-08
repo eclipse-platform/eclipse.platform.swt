@@ -140,7 +140,7 @@ private OptionalInt getSystemCaretWidthInPixelsForCurrentMonitor() {
 	int [] buffer = new int [1];
 	if (OS.SystemParametersInfo (OS.SPI_GETCARETWIDTH, 0, buffer, 0)) {
 		int width = DPIUtil.pixelToPoint(buffer [0], Win32DPIUtils.getPrimaryMonitorZoomAtStartup());
-		int widthInPixels = Win32DPIUtils.pointToPixel(width, getNativeZoom());
+		int widthInPixels = DPIUtil.pointToPixel(width, getNativeZoom());
 		return OptionalInt.of(widthInPixels);
 	}
 	return OptionalInt.empty();
@@ -241,19 +241,19 @@ Point getSizeInPixels () {
 }
 
 private int getWidthInPixels() {
-	return Win32DPIUtils.pointToPixel(width, getZoom());
+	return DPIUtil.pointToPixel(width, getZoom());
 }
 
 private int getHeightInPixels() {
-	return Win32DPIUtils.pointToPixel(height, getZoom());
+	return DPIUtil.pointToPixel(height, getZoom());
 }
 
 private int getXInPixels() {
-	return Win32DPIUtils.pointToPixel(x, getZoom());
+	return DPIUtil.pointToPixel(x, getZoom());
 }
 
 private int getYInPixels() {
-	return Win32DPIUtils.pointToPixel(y, getZoom());
+	return DPIUtil.pointToPixel(y, getZoom());
 }
 
 /**

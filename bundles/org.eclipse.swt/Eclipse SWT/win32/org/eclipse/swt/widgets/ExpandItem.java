@@ -182,8 +182,8 @@ void drawItem (GC gc, long hTheme, RECT clipRect, boolean drawFocus) {
 	long hDC = gc.handle;
 	int headerHeightinPixels = getHeaderHeightInPixels();
 	int zoom = getZoom();
-	int imageHeightInPixels = Win32DPIUtils.pointToPixel(imageHeight, zoom);
-	int imageWidthInPixels = Win32DPIUtils.pointToPixel(imageWidth, zoom);
+	int imageHeightInPixels = DPIUtil.pointToPixel(imageHeight, zoom);
+	int imageWidthInPixels = DPIUtil.pointToPixel(imageWidth, zoom);
 
 	RECT rect = new RECT ();
 	OS.SetRect (rect, x, y, x + width, y + headerHeightinPixels);
@@ -307,7 +307,7 @@ public int getHeaderHeight () {
 
 int getHeaderHeightInPixels () {
 	int headerHeightInPixels = parent.getBandHeight();
-	int imageHeightInPixels = Win32DPIUtils.pointToPixel(imageHeight, getZoom());
+	int imageHeightInPixels = DPIUtil.pointToPixel(imageHeight, getZoom());
 	int imageHeaderDiff = headerHeightInPixels - imageHeightInPixels;
 	if (imageHeaderDiff < IMAGE_MARGIN) {
 		headerHeightInPixels = imageHeightInPixels + IMAGE_MARGIN;
@@ -376,8 +376,8 @@ void redraw (boolean all) {
 	long parentHandle = parent.handle;
 	int headerHeightInPixels = getHeaderHeightInPixels();
 	int zoom = getZoom();
-	int imageHeightInPixels = Win32DPIUtils.pointToPixel(imageHeight, zoom);
-	int imageWidthInPixels = Win32DPIUtils.pointToPixel(imageWidth, zoom);
+	int imageHeightInPixels = DPIUtil.pointToPixel(imageHeight, zoom);
+	int imageWidthInPixels = DPIUtil.pointToPixel(imageWidth, zoom);
 	RECT rect = new RECT ();
 	int left = all ? x : x + width - headerHeightInPixels;
 	OS.SetRect (rect, left, y, x + width, y + headerHeightInPixels);
@@ -492,7 +492,7 @@ public void setExpanded (boolean expanded) {
  */
 public void setHeight (int height) {
 	checkWidget ();
-	setHeightInPixels(Win32DPIUtils.pointToPixel(height, getZoom()));
+	setHeightInPixels(DPIUtil.pointToPixel(height, getZoom()));
 }
 
 void setHeightInPixels (int height) {

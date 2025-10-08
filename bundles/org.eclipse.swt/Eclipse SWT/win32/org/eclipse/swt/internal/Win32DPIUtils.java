@@ -207,18 +207,9 @@ public class Win32DPIUtils {
 		return pointToPixel (pointArray, zoom);
 	}
 
-	/**
-	 * Auto-scale up int dimensions to match the given zoom level
-	 */
-	public static int pointToPixel(int size, int zoom) {
-		if (zoom == 100 || size == SWT.DEFAULT) return size;
-		float scaleFactor = DPIUtil.getScalingFactor(zoom);
-		return Math.round (size * scaleFactor);
-	}
-
 	public static int pointToPixel(Drawable drawable, int size, int zoom) {
 		if (drawable != null && !drawable.isAutoScalable()) return size;
-		return pointToPixel (size, zoom);
+		return DPIUtil.pointToPixel (size, zoom);
 	}
 
 	public static float pointToPixel(float size, int zoom) {
