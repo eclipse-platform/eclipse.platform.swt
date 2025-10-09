@@ -205,8 +205,9 @@ public class Snippet386 {
 						mask.setPixel(x, y, x % 2);
 					}
 				}
-
-				return new Cursor(display, source, mask, IMAGE_SIZE_IN_POINTS / 2, IMAGE_SIZE_IN_POINTS / 2);
+				@SuppressWarnings("deprecation")
+				Cursor cursor = new Cursor(display, source, mask, IMAGE_SIZE_IN_POINTS / 2, IMAGE_SIZE_IN_POINTS / 2);
+				return cursor;
 			}
 			case 2:
 				RGB red = new RGB(255, 0, 0);
