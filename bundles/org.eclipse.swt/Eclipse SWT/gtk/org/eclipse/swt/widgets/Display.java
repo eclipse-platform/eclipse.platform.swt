@@ -510,7 +510,7 @@ public class Display extends Device implements Executor {
 	/* Package name */
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.widgets."; //$NON-NLS-1$
 	/* System property to control beep sounds */
-	static final String BEEP_ENABLED = "swt.beep";
+	public static final boolean BEEP_ENABLED = !"off".equalsIgnoreCase(System.getProperty("swt.beep"));
 	/* This code is intentionally commented.
 	 * ".class" can not be used on CLDC.
 	 */
@@ -990,7 +990,7 @@ public void execute(Runnable runnable) {
  */
 public void beep () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!"off".equalsIgnoreCase(System.getProperty(BEEP_ENABLED))) {
+	if (BEEP_ENABLED) {
 		GDK.gdk_display_beep(GDK.gdk_display_get_default());
 	}
 }
