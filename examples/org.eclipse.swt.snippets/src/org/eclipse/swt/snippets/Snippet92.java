@@ -48,6 +48,7 @@ public static void main (String [] args) {
 		}
 	}
 	//Create cursor
+	@SuppressWarnings("deprecation")
 	Cursor cursor = new Cursor(display, sourceData, maskData, 10, 10);
 
 	Shell shell = new Shell(display);
