@@ -2057,7 +2057,7 @@ ImageList getImageList (int style, int width, int height, int zoom) {
 		imageList = newList;
 	}
 
-	ImageList list = new ImageList (style, Win32DPIUtils.pointToPixel(width, zoom), Win32DPIUtils.pointToPixel(height, zoom), zoom);
+	ImageList list = new ImageList (style, DPIUtil.pointToPixel(width, zoom), DPIUtil.pointToPixel(height, zoom), zoom);
 	imageList [i] = list;
 	list.addRef();
 	return list;
@@ -2087,7 +2087,7 @@ ImageList getImageListToolBar (int style, int width, int height, int zoom) {
 		toolImageList = newList;
 	}
 
-	ImageList list = new ImageList (style, Win32DPIUtils.pointToPixel(width, zoom), Win32DPIUtils.pointToPixel(height, zoom), zoom);
+	ImageList list = new ImageList (style, DPIUtil.pointToPixel(width, zoom), DPIUtil.pointToPixel(height, zoom), zoom);
 	toolImageList [i] = list;
 	list.addRef();
 	return list;
@@ -2117,7 +2117,7 @@ ImageList getImageListToolBarDisabled (int style, int width, int height, int zoo
 		toolDisabledImageList = newList;
 	}
 
-	ImageList list = new ImageList (style, Win32DPIUtils.pointToPixel(width, zoom), Win32DPIUtils.pointToPixel(height, zoom), zoom);
+	ImageList list = new ImageList (style, DPIUtil.pointToPixel(width, zoom), DPIUtil.pointToPixel(height, zoom), zoom);
 	toolDisabledImageList [i] = list;
 	list.addRef();
 	return list;
@@ -2147,7 +2147,7 @@ ImageList getImageListToolBarHot (int style, int width, int height, int zoom) {
 		toolHotImageList = newList;
 	}
 
-	ImageList list = new ImageList (style, Win32DPIUtils.pointToPixel(width, zoom), Win32DPIUtils.pointToPixel(height, zoom), zoom);
+	ImageList list = new ImageList (style, DPIUtil.pointToPixel(width, zoom), DPIUtil.pointToPixel(height, zoom), zoom);
 	toolHotImageList [i] = list;
 	list.addRef();
 	return list;
@@ -2604,7 +2604,7 @@ public Image getSystemImage (int id) {
 
 private ImageDataProvider getImageDataProviderForIcon(int iconName) {
 	return zoom -> {
-		int scaledIconSize = Win32DPIUtils.pointToPixel(ICON_SIZE_AT_100, zoom);
+		int scaledIconSize = DPIUtil.pointToPixel(ICON_SIZE_AT_100, zoom);
 		long [] hIcon = new long [1];
 		OS.LoadIconWithScaleDown(0, iconName, scaledIconSize, scaledIconSize, hIcon);
 		Image image = Image.win32_new (this, SWT.ICON, hIcon[0], zoom);

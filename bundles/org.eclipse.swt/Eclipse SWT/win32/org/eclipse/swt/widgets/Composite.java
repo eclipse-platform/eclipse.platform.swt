@@ -353,8 +353,8 @@ public void drawBackground (GC gc, int x, int y, int width, int height, int offs
 	checkWidget ();
 	int zoom = getZoom();
 	Rectangle rectangle = Win32DPIUtils.pointToPixel(new Rectangle(x, y, width, height), zoom);
-	offsetX = Win32DPIUtils.pointToPixel(offsetX, zoom);
-	offsetY = Win32DPIUtils.pointToPixel(offsetY, zoom);
+	offsetX = DPIUtil.pointToPixel(offsetX, zoom);
+	offsetY = DPIUtil.pointToPixel(offsetY, zoom);
 	drawBackgroundInPixels(gc, rectangle.x, rectangle.y, rectangle.width, rectangle.height, offsetX, offsetY);
 }
 
