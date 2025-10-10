@@ -1473,6 +1473,7 @@ public void setData (String key, Object value) {
 
 	if (DATA_AUTOSCALE_DISABLED.equals(key)) {
 		autoScaleDisabled = Boolean.parseBoolean(value.toString());
+		this.nativeZoom = 100;
 	}
 }
 
@@ -2711,9 +2712,6 @@ GC createNewGC(long hDC, GCData data) {
 }
 
 int getNativeZoom() {
-	if (autoScaleDisabled) {
-		return 100;
-	}
 	return nativeZoom;
 }
 
@@ -2725,7 +2723,7 @@ int getZoom() {
 }
 
 void handleDPIChange(Event event, float scalingFactor) {
-	this.nativeZoom = event.detail;
+	this.nativeZoom = this.autoScaleDisabled ? 100 : event.detail;;
 }
 
 int getSystemMetrics(int nIndex) {
