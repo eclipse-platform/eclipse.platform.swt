@@ -1425,7 +1425,11 @@ private static HandleForImageDataContainer init(Device device, ImageData i) {
 		i = indexToDirect(i, 24, newPalette, ImageData.MSB_FIRST);
 	}
 
-	boolean hasAlpha = i.alpha != -1 || i.alphaData != null;
+	if (i.transparentPixel != -1 && !hasAlpha(i)) {
+		i = promoteTo8BitAlpha(i);
+	}
+
+	boolean hasAlpha = hasAlpha(i);
 
 	/*
 	 * Windows supports 16-bit mask of (0x7C00, 0x3E0, 0x1F),
@@ -1609,6 +1613,33 @@ private static HandleForImageDataContainer init(Device device, ImageData i) {
 	} else {
 		return new HandleForImageDataContainer(SWT.BITMAP, i, new long []{hDib});
 	}
+}
+
+private static boolean hasAlpha(ImageData i) {
+	return i.alpha != -1 || i.alphaData != null;
+}
+
+private static ImageData promoteTo8BitAlpha(ImageData src) {
+	if (src.alphaData != null || src.alpha != -1) {
+		return src;
+	}
+
+	PaletteData palette = src.palette;
+	ImageData dst = new ImageData(src.width, src.height, 32, new PaletteData(0xFF0000, 0xFF00, 0xFF));
+
+	for (int y = 0; y < src.height; y++) {
+		for (int x = 0; x < src.width; x++) {
+			int pixel = src.getPixel(x, y);
+			RGB rgb = palette.getRGB(pixel);
+			int alpha = 255;
+			if (src.transparentPixel != -1 && pixel == src.transparentPixel) {
+				alpha = 0;
+			}
+			dst.setPixel(x, y, dst.palette.getPixel(rgb));
+			dst.setAlpha(x, y, alpha);
+		}
+	}
+	return dst;
 }
 
 private void setImageMetadataForHandle(ImageHandle imageMetadata, Integer zoom) {
