@@ -15,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.BufferedReader;
@@ -57,7 +58,7 @@ import clipboard.ClipboardCommands;
 public class Test_org_eclipse_swt_dnd_Clipboard {
 
 	private static final int DEFAULT_TIMEOUT_MS = 10000;
-	static int uniqueId = 1;
+	private static int uniqueId = 1;
 	private Display display;
 	private Shell shell;
 	private Clipboard clipboard;
@@ -79,18 +80,6 @@ public class Test_org_eclipse_swt_dnd_Clipboard {
 		rtfTransfer = RTFTransfer.getInstance();
 	}
 
-	private void sleep() throws InterruptedException {
-		if (SwtTestUtil.isGTK4) {
-			/**
-			 * TODO remove all uses of sleep and change them to processEvents with the
-			 * suitable conditional, or entirely remove them
-			 */
-			SwtTestUtil.processEvents(100, null);
-		} else {
-			SwtTestUtil.processEvents();
-		}
-	}
-
 	/**
 	 * Note: Wayland backend does not allow access to system clipboard from
 	 * non-focussed windows. So we have to create/open and focus a window here so
@@ -100,7 +89,12 @@ public class Test_org_eclipse_swt_dnd_Clipboard {
 		shell = new Shell(display);
 		shell.open();
 		shell.setFocus();
-		sleep();
+		// A single "processEvents" iteration is insufficient, therefore we run for
+		// 100ms.
+		// As best as I can tell, once window manager gets focus (at least on wayland)
+		// additional events can arrive that need to be processed before the clipboard
+		// contents can be set.
+		SwtTestUtil.processEvents(100, null);
 	}
 
 	/**
@@ -112,12 +106,10 @@ public class Test_org_eclipse_swt_dnd_Clipboard {
 		startRemoteClipboardCommands();
 		remote.setFocus();
 		remote.waitUntilReady();
-		sleep();
 	}
 
 	@AfterEach
 	public void tearDown() throws Exception {
-		sleep();
 		try {
 			stopRemoteClipboardCommands();
 		} finally {
@@ -337,14 +329,13 @@ public class Test_org_eclipse_swt_dnd_Clipboard {
 		assertEquals(helloWorldRtf, clipboard.getContents(rtfTransfer));
 	}
 
-	@Test
+	@RepeatedTest(value = 5)
 	public void test_setContents() throws Exception {
 		try {
 			openAndFocusShell();
 			String helloWorld = getUniqueTestString();
 
 			clipboard.setContents(new Object[] { helloWorld }, new Transfer[] { textTransfer });
-			sleep();
 
 			openAndFocusRemote();
 			SwtTestUtil.processEvents(1000, () -> helloWorld.equals(runOperationInThread(remote::getStringContents)));
@@ -352,9 +343,12 @@ public class Test_org_eclipse_swt_dnd_Clipboard {
 			assertEquals(helloWorld, result);
 		} catch (Exception | AssertionError e) {
 			if (SwtTestUtil.isGTK4 && !SwtTestUtil.isX11) {
-				// TODO make the code + test stable
-				throw new RuntimeException(
-						"This test is really unstable on wayland backend, at least with Ubuntu 25.04", e);
+				// If this fails consistently
+				fail("""
+						Wayland + GTK probably didn't know that the the shell had sufficient focus to copy to clipboard.
+						Consider increasing how long processEvents is run for in openAndFocusShell
+					""",
+						e);
 			}
 			throw e;
 		}
