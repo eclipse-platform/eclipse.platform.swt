@@ -230,6 +230,50 @@ public void test_beep() {
 }
 
 @Test
+public void test_beep_disabled() {
+	String originalValue = System.getProperty("swt.beep");
+	try {
+		System.setProperty("swt.beep", "off");
+		Display display = new Display();
+		try {
+			// Should not beep when property is "off"
+			display.beep();
+		} finally {
+			display.dispose();
+		}
+	} finally {
+		// Restore original value
+		if (originalValue != null) {
+			System.setProperty("swt.beep", originalValue);
+		} else {
+			System.clearProperty("swt.beep");
+		}
+	}
+}
+
+@Test
+public void test_beep_enabled() {
+	String originalValue = System.getProperty("swt.beep");
+	try {
+		System.setProperty("swt.beep", "on");
+		Display display = new Display();
+		try {
+			// Should beep when property is "on"
+			display.beep();
+		} finally {
+			display.dispose();
+		}
+	} finally {
+		// Restore original value
+		if (originalValue != null) {
+			System.setProperty("swt.beep", originalValue);
+		} else {
+			System.clearProperty("swt.beep");
+		}
+	}
+}
+
+@Test
 public void test_close() {
 	Display display = new Display();
 	display.close();
