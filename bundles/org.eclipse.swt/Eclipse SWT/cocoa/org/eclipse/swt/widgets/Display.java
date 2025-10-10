@@ -116,6 +116,8 @@ public class Display extends Device implements Executor {
 	APPEARANCE appAppearance;
 	/* System property to be set for SWT application to use the system's theme */
 	static final String USE_SYSTEM_THEME = "org.eclipse.swt.display.useSystemTheme";
+	/* System property to control beep sounds */
+	static final String BEEP_ENABLED = "swt.beep";
 
 	/* Windows and Events */
 	Event [] eventQueue;
@@ -671,7 +673,9 @@ public void execute(Runnable runnable) {
  */
 public void beep () {
 	checkDevice ();
-	OS.NSBeep ();
+	if (!"off".equalsIgnoreCase(System.getProperty(BEEP_ENABLED))) {
+		OS.NSBeep ();
+	}
 }
 
 void cascadeWindow (NSWindow window, NSScreen screen) {
