@@ -141,6 +141,31 @@ public final class Image extends Resource implements Drawable {
 
 	private List<Consumer<Image>> onDisposeListeners;
 
+	private record CachedHandle(ImageHandle handleContainer, int requestedWidth, int requestedHeight, int handleWidth,
+			int handleHeight) {
+
+		public void destroy() {
+			if (handleContainer != null) {
+				handleContainer.destroy();
+			}
+		}
+
+		public boolean isReusable(int height, int width) {
+			return (requestedHeight == height && requestedWidth == width)
+					|| (handleHeight == height && handleWidth == width);
+
+		}
+
+		public long getHandle() {
+			if (handleContainer != null) {
+				return handleContainer.handle;
+			}
+			return -1;
+		}
+	};
+
+	CachedHandle lastRequestedHandle = new CachedHandle(null, SWT.DEFAULT, SWT.DEFAULT, SWT.DEFAULT, SWT.DEFAULT);
+
 private Image (Device device, int type, long handle, int nativeZoom) {
 	super(device);
 	this.type = type;
@@ -828,17 +853,14 @@ interface HandleAtSizeConsumer {
 void executeOnImageHandleAtSize(HandleAtSizeConsumer handleAtSizeConsumer, int widthHint, int heightHint) {
 	ImageData imageData;
 	imageData = this.imageProvider.loadImageDataAtSize(widthHint, heightHint);
-	executeOnImageHandle(handleAtSizeConsumer, imageData);
-}
-
-private void executeOnImageHandle(HandleAtSizeConsumer handleAtSizeConsumer, ImageData imageData) {
-	ImageHandle handleContainer = init(imageData, -1);
-	long tempHandle = handleContainer.handle;
-	try {
-		handleAtSizeConsumer.accept(tempHandle, new Point(imageData.width, imageData.height));
-	} finally {
-		handleContainer.destroy();
+	if (!lastRequestedHandle.isReusable(heightHint, widthHint)) {
+		lastRequestedHandle.destroy();
+		ImageHandle handleContainer = init(imageData, -1);
+		lastRequestedHandle = new CachedHandle(handleContainer, widthHint, heightHint, imageData.width,
+				imageData.height);
 	}
+	handleAtSizeConsumer.accept(lastRequestedHandle.getHandle(),
+			new Point(lastRequestedHandle.handleWidth, lastRequestedHandle.handleHeight));
 }
 
 /**
@@ -1090,6 +1112,7 @@ private void destroyHandles(Predicate<Integer> filter) {
 			imageHandle.destroy();
 		}
 	}
+	lastRequestedHandle.destroy();
 }
 
 /**
