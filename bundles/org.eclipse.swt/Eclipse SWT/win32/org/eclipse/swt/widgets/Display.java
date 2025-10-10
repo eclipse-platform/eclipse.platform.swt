@@ -225,7 +225,7 @@ public class Display extends Device implements Executor {
 	static final String USE_WS_BORDER_TEXT_KEY       = "org.eclipse.swt.internal.win32.Text.use_WS_BORDER"; //$NON-NLS-1$
 	boolean useWsBorderText = false;
 	/* System property to control beep sounds */
-	static final String BEEP_ENABLED = "swt.beep";
+	public static final boolean BEEP_ENABLED = !"off".equalsIgnoreCase(System.getProperty("swt.beep"));
 	/**
 	 * Changes the color of Table header's column delimiters.
 	 * Only affects custom-drawn header, that is when background/foreground header color is set.
@@ -854,7 +854,7 @@ public void execute(Runnable runnable) {
  */
 public void beep () {
 	checkDevice ();
-	if (!"off".equalsIgnoreCase(System.getProperty(BEEP_ENABLED))) {
+	if (BEEP_ENABLED) {
 		OS.MessageBeep (OS.MB_OK);
 	}
 }
