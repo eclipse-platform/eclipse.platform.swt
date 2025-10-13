@@ -940,7 +940,6 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 	}
 	long cairo = data.cairo;
 	if (data.alpha != 0) {
-		srcImage.createSurface();
 		Cairo.cairo_save(cairo);
 		if ((data.style & SWT.MIRRORED) != 0) {
 			Cairo.cairo_scale(cairo, -1f,  1);
