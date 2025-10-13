@@ -532,13 +532,13 @@ long panel_userEnteredFilename_confirmed (long id, long sel, long sender, long f
 	 * for validation and show the replace existing file dialog, if required.
 	 */
 	if (okFlag == 0) return filename;
+	
+	NSString filenameStr = new NSString(filename);
+	String correctExtension = null;
+	
 	/*
-	 * On newer macOS versions (Sequoia/Tahoe), the filter selection change callback
-	 * may not be called before this method, so we need to update selectedExtension
-	 * based on the current popup selection to ensure we append the correct extension.
-	 * 
-	 * We need to get the popup from the panel's accessory view rather than using
-	 * the cached instance variable, as the delegate callback may have a different context.
+	 * On newer macOS versions (Sequoia/Tahoe), we need to read the current filter selection
+	 * directly from the accessory view to ensure we use the correct extension.
 	 */
 	NSView accessoryView = panel.accessoryView();
 	if (accessoryView != null && accessoryView.isKindOfClass(OS.class_NSPopUpButton)) {
@@ -562,16 +562,31 @@ long panel_userEnteredFilename_confirmed (long id, long sel, long sender, long f
 					if (i != -1 && ((i + 1) < filter.length())) {
 						filter = filter.substring(i + 1);
 					}
-					selectedExtension = filter;
-				} else {
-					selectedExtension = null;
+					correctExtension = filter;
 				}
 			}
 		}
 	}
-	NSString filenameWithExtension = new NSString(filename);
-	filenameWithExtension = appendSelectedExtension(filenameWithExtension);
-	return filenameWithExtension.id;
+	
+	/*
+	 * On newer macOS, the filename might already have an incorrect extension appended by the system.
+	 * We need to remove any existing extension and append the correct one based on the selected filter.
+	 */
+	if (correctExtension != null) {
+		NSString currentExt = filenameStr.pathExtension();
+		if (currentExt != null && currentExt.length() > 0) {
+			// Remove the existing extension
+			filenameStr = filenameStr.stringByDeletingPathExtension();
+		}
+		// Append the correct extension
+		filenameStr = filenameStr.stringByAppendingPathExtension(NSString.stringWith(correctExtension));
+		selectedExtension = correctExtension;
+	} else {
+		// Fallback to original logic if we couldn't determine the correct extension
+		selectedExtension = null;
+	}
+	
+	return filenameStr.id;
 }
 
 void releaseHandles() {
