@@ -536,8 +536,39 @@ long panel_userEnteredFilename_confirmed (long id, long sel, long sender, long f
 	 * On newer macOS versions (Sequoia/Tahoe), the filter selection change callback
 	 * may not be called before this method, so we need to update selectedExtension
 	 * based on the current popup selection to ensure we append the correct extension.
+	 * 
+	 * We need to get the popup from the panel's accessory view rather than using
+	 * the cached instance variable, as the delegate callback may have a different context.
 	 */
-	getSelectedExtensions();
+	NSView accessoryView = panel.accessoryView();
+	if (accessoryView != null && accessoryView.isKindOfClass(OS.class_NSPopUpButton)) {
+		NSPopUpButton currentPopup = new NSPopUpButton(accessoryView.id);
+		int currentFilterIndex = (int)currentPopup.indexOfSelectedItem();
+		if (filterExtensions != null && 0 <= currentFilterIndex && currentFilterIndex < filterExtensions.length) {
+			String exts = filterExtensions[currentFilterIndex];
+			int index = exts.indexOf(EXTENSION_SEPARATOR);
+			String[] extensions = index != -1 ? exts.split(";") : new String[] {exts};
+			if (extensions.length > 0) {
+				String ext = extensions[0];
+				String filter = ext.trim();
+				if (!filter.equals("*") && !filter.equals("*.*")) {
+					if (filter.startsWith("*.")) {
+						filter = filter.substring(2);
+					} else if (filter.startsWith(".")) {
+						filter = filter.substring(1);
+					}
+					// Handle multi-part extensions
+					int i = filter.lastIndexOf(".");
+					if (i != -1 && ((i + 1) < filter.length())) {
+						filter = filter.substring(i + 1);
+					}
+					selectedExtension = filter;
+				} else {
+					selectedExtension = null;
+				}
+			}
+		}
+	}
 	NSString filenameWithExtension = new NSString(filename);
 	filenameWithExtension = appendSelectedExtension(filenameWithExtension);
 	return filenameWithExtension.id;
