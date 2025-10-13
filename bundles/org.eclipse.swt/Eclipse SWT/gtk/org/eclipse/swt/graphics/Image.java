@@ -909,10 +909,6 @@ void createMask() {
 	C.memmove(surfaceData, srcData, srcData.length);
 }
 
-void createSurface() {
-	if (surface != 0) return;
-}
-
 /**
  * Destroy the receiver's mask if it exists.
  */
