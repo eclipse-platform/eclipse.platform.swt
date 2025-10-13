@@ -532,6 +532,12 @@ long panel_userEnteredFilename_confirmed (long id, long sel, long sender, long f
 	 * for validation and show the replace existing file dialog, if required.
 	 */
 	if (okFlag == 0) return filename;
+	/*
+	 * On newer macOS versions (Sequoia/Tahoe), the filter selection change callback
+	 * may not be called before this method, so we need to update selectedExtension
+	 * based on the current popup selection to ensure we append the correct extension.
+	 */
+	getSelectedExtensions();
 	NSString filenameWithExtension = new NSString(filename);
 	filenameWithExtension = appendSelectedExtension(filenameWithExtension);
 	return filenameWithExtension.id;
