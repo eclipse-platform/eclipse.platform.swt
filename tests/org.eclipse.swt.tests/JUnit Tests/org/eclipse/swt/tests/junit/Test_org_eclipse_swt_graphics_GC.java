@@ -54,7 +54,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledOnOs;
+import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -442,7 +442,7 @@ public void test_drawImageLorg_eclipse_swt_graphics_ImageIIII_ImageDataProvider(
 }
 
 @Test
-@EnabledOnOs(value = OS.WINDOWS)
+@DisabledOnOs(value = OS.LINUX)
 public void test_drawImageLorg_eclipse_swt_graphics_ImageIIII_ImageDataAtSizeProvider_invalid() {
 	ImageDataAtSizeProvider provider = new ImageDataAtSizeProvider() {
 		@Override
@@ -469,7 +469,7 @@ public void test_drawImageLorg_eclipse_swt_graphics_ImageIIII_ImageDataAtSizePro
 
 @ParameterizedTest
 @ValueSource(ints = {SWT.IMAGE_COPY, SWT.IMAGE_DISABLE, SWT.IMAGE_GRAY, -1})
-@EnabledOnOs(value = OS.WINDOWS)
+@DisabledOnOs(value = OS.LINUX)
 public void test_drawImageLorg_eclipse_swt_graphics_ImageIIII_ImageDataAtSizeProvider(int styleFlag) {
 	int width = 50;
 	int height = 70;

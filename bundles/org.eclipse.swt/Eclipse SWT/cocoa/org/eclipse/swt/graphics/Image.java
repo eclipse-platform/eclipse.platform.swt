@@ -14,6 +14,7 @@
 package org.eclipse.swt.graphics;
 
 
+import static org.eclipse.swt.internal.DPIUtil.pointToPixel;
 import static org.eclipse.swt.internal.image.ImageColorTransformer.DEFAULT_DISABLED_IMAGE_TRANSFORMER;
 
 import java.io.*;
@@ -1177,6 +1178,7 @@ private NSBitmapImageRep createRepresentation(ImageData imageData, AlphaInfo alp
 
 @Override
 void destroy() {
+	cachedImageAtSize.destroy();
 	if (memGC != null) memGC.dispose();
 	handle.release();
 	handle = null;
@@ -1835,6 +1837,74 @@ public static void drawAtSize(GC gc, ImageData imageData, int width, int height)
 				0, 0,  Math.round(CocoaDPIUtil.pixelToPoint(width)),  Math.round(CocoaDPIUtil.pixelToPoint(height)));
 		imageToDraw.dispose();
 	});
+}
+
+void executeOnImageAtSizeBestFittingSize(Consumer<Image> imageAtBestFittingSizeConsumer, int destWidth, int destHeight) {
+	Optional<Image> imageAtSize = cachedImageAtSize.refresh(destWidth, destHeight);
+	imageAtBestFittingSizeConsumer.accept(imageAtSize.orElse(this));
+}
+
+private CachedImageAtSize cachedImageAtSize = new CachedImageAtSize();
+
+private class CachedImageAtSize {
+	private Image image;
+
+	public void destroy() {
+		if (image != null) {
+			image.dispose();
+			image = null;
+		}
+	}
+
+	private Optional<Image> refresh(int destWidth, int destHeight) {
+		int scaledWidth = pointToPixel(destWidth, DPIUtil.getDeviceZoom());
+		int scaledHeight = pointToPixel(destHeight, DPIUtil.getDeviceZoom());
+		if (isReusable(scaledWidth, scaledHeight)) {
+			return Optional.of(image);
+		} else {
+			destroy();
+			Optional<Image> imageAtSize = loadImageAtSize(scaledWidth, scaledHeight);
+			image = imageAtSize.orElse(null);
+			return imageAtSize;
+		}
+	}
+
+	private boolean isReusable(int width, int height) {
+		return image != null && image.height == height && image.width == width;
+	}
+
+	private Optional<Image> loadImageAtSize(int destWidth, int destHeight) {
+		Optional<ImageData> imageData = loadImageDataAtExactSize(destWidth, destHeight);
+		if (imageData.isEmpty()) {
+			return Optional.empty();
+		}
+		Image image = new Image(device, imageData.get());
+		if (styleFlag != SWT.IMAGE_COPY) {
+			NSBitmapImageRep representation = image.getRepresentation(100);
+			image.createRepFromSourceAndApplyFlag(representation, destWidth, destHeight, styleFlag);
+			image.handle.removeRepresentation(representation);
+		}
+		return Optional.of(image);
+	}
+
+	private Optional<ImageData> loadImageDataAtExactSize(int targetWidth, int targetHeight) {
+		if (imageDataProvider instanceof ImageDataAtSizeProvider imageDataAtSizeProvider) {
+			ImageData imageData = imageDataAtSizeProvider.getImageData(targetWidth, targetHeight);
+			if (imageData == null) {
+				SWT.error(SWT.ERROR_INVALID_ARGUMENT, null,
+						" ImageDataAtSizeProvider returned null for width=" + targetWidth + ", height=" + targetHeight);
+			}
+			return Optional.of(imageData);
+		}
+		if (imageFileNameProvider != null) {
+			String fileName = DPIUtil.validateAndGetImagePathAtZoom(imageFileNameProvider, 100).element();
+			if (ImageDataLoader.isDynamicallySizable(fileName)) {
+				ImageData imageDataAtSize = ImageDataLoader.loadBySize(fileName, targetWidth, targetHeight);
+				return Optional.of(imageDataAtSize);
+			}
+		}
+		return Optional.empty();
+	}
 }
 
 }
