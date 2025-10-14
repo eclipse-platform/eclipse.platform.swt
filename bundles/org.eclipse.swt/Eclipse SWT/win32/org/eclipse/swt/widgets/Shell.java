@@ -1592,8 +1592,8 @@ public void setBounds(Rectangle rect) {
 	// the WM_DPICHANGED event processing. So to avoid duplicate scaling, we always
 	// have to scale width and height with the zoom of the original monitor (still
 	// returned by getZoom()) here.
-	setBoundsInPixels(boundsInPixels.x, boundsInPixels.y, Win32DPIUtils.pointToPixel(rect.width, getZoom()),
-			Win32DPIUtils.pointToPixel(rect.height, getZoom()));
+	setBoundsInPixels(boundsInPixels.x, boundsInPixels.y, DPIUtil.pointToPixel(rect.width, getZoom()),
+			DPIUtil.pointToPixel(rect.height, getZoom()));
 }
 
 @Override
@@ -1769,7 +1769,7 @@ public void setImeInputMode (int mode) {
 public void setMaximumSize (int width, int height) {
 	checkWidget ();
 	int zoom = getZoom();
-	setMaximumSizeInPixels(Win32DPIUtils.pointToPixel(width, zoom), Win32DPIUtils.pointToPixel(height, zoom));
+	setMaximumSizeInPixels(DPIUtil.pointToPixel(width, zoom), DPIUtil.pointToPixel(height, zoom));
 }
 
 /**
@@ -1844,7 +1844,7 @@ void setMaximumSizeInPixels (int width, int height) {
 public void setMinimumSize (int width, int height) {
 	checkWidget ();
 	int zoom = getZoom();
-	setMinimumSizeInPixels(Win32DPIUtils.pointToPixel(width, zoom), Win32DPIUtils.pointToPixel(height, zoom));
+	setMinimumSizeInPixels(DPIUtil.pointToPixel(width, zoom), DPIUtil.pointToPixel(height, zoom));
 }
 
 void setMinimumSizeInPixels (int width, int height) {

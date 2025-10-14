@@ -24,15 +24,6 @@ import org.eclipse.swt.graphics.*;
 /**
  * This class hold common constants and utility functions w.r.t. to SWT high DPI
  * functionality.
- * <p>
- * The {@code autoScaleUp(..)} methods convert from API coordinates (in
- * SWT points) to internal high DPI coordinates (in pixels) that interface with
- * native widgets.
- * </p>
- * <p>
- * The {@code autoScaleDown(..)} convert from high DPI pixels to API coordinates
- * (in SWT points).
- * </p>
  *
  * @since 3.105
  */
@@ -255,6 +246,12 @@ public static void validateLinearScaling(ImageDataProvider provider) {
 				baseImageData.width, baseImageData.height, scaledImageData.width, scaledImageData.height));
 		new Error().printStackTrace(System.err);
 	}
+}
+
+public static int pointToPixel(int size, int zoom) {
+	if (zoom == 100 || size == SWT.DEFAULT) return size;
+	float scaleFactor = getScalingFactor(zoom);
+	return Math.round (size * scaleFactor);
 }
 
 /**

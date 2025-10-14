@@ -55,4 +55,17 @@ public class DPIUtilTests {
 		assertEquals(valueAt100, scaledValue, .001f, "Scaling down float without zoom change failed");
 	}
 
+	@Test
+	public void scaleUpInteger() {
+		int valueAt200 = 10;
+		int valueAt150 = 8;
+		int valueAt100 = 5;
+		int scaledValue = DPIUtil.pointToPixel(valueAt100, 200);
+		assertEquals(valueAt200, scaledValue, "Scaling up integer to 200 failed");
+		scaledValue = DPIUtil.pointToPixel(valueAt100, 150);
+		assertEquals(valueAt150, scaledValue, "Scaling up integer to 150 failed");
+		scaledValue = DPIUtil.pointToPixel(valueAt100, 100);
+		assertSame(valueAt100, scaledValue, "Scaling up integer without zoom change failed");
+	}
+
 }

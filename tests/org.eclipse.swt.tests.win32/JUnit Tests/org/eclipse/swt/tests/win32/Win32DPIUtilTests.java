@@ -146,16 +146,10 @@ public class Win32DPIUtilTests {
 		int valueAt150 = 8;
 		int valueAt100 = 5;
 
-		int scaledValue = Win32DPIUtils.pointToPixel(valueAt100, 200);
-		assertEquals(valueAt200, scaledValue, "Scaling up integer to 200 failed");
-		scaledValue = Win32DPIUtils.pointToPixel((Device) null, valueAt100, 200);
+		int scaledValue = Win32DPIUtils.pointToPixel((Device) null, valueAt100, 200);
 		assertEquals(valueAt200, scaledValue, "Scaling up integer to 200 with device failed");
-		scaledValue = Win32DPIUtils.pointToPixel(valueAt100, 150);
-		assertEquals(valueAt150, scaledValue, "Scaling up integer to 150 failed");
 		scaledValue = Win32DPIUtils.pointToPixel((Device) null, valueAt100, 150);
 		assertEquals(valueAt150, scaledValue, "Scaling up integer to 150 with device failed");
-		scaledValue = Win32DPIUtils.pointToPixel(valueAt100, 100);
-		assertSame(valueAt100, scaledValue, "Scaling up integer without zoom change failed");
 		scaledValue = Win32DPIUtils.pointToPixel((Device) null, valueAt100, 100);
 		assertSame(valueAt100, scaledValue,"Scaling up integer without zoom change with device failed");
 	}

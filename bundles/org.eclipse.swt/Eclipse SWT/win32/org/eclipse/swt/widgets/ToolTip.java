@@ -358,7 +358,7 @@ public void setAutoHide (boolean autoHide) {
 public void setLocation (int x, int y) {
 	checkWidget ();
 	int zoom = getZoom();
-	setLocationInPixels(Win32DPIUtils.pointToPixel(x, zoom), Win32DPIUtils.pointToPixel(y, zoom));
+	setLocationInPixels(DPIUtil.pointToPixel(x, zoom), DPIUtil.pointToPixel(y, zoom));
 }
 
 void setLocationInPixels (int x, int y) {

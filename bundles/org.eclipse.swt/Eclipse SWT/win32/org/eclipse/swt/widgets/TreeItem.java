@@ -440,7 +440,7 @@ RECT getBounds (int index, boolean getText, boolean getImage, boolean fullText, 
 		if (getImage && !fullImage) {
 			if (OS.SendMessage (hwnd, OS.TVM_GETIMAGELIST, OS.TVSIL_NORMAL, 0) != 0) {
 				Point size = parent.getImageSize ();
-				rect.left -= size.x + Win32DPIUtils.pointToPixel(Tree.INSET, getZoom());
+				rect.left -= size.x + DPIUtil.pointToPixel(Tree.INSET, getZoom());
 				if (!getText) rect.right = rect.left + size.x;
 			} else {
 				if (!getText) rect.right = rect.left;
@@ -492,7 +492,7 @@ RECT getBounds (int index, boolean getText, boolean getImage, boolean fullText, 
 			}
 			if (getText) {
 				if (fullText && clip) {
-					rect.left = rect.right + Win32DPIUtils.pointToPixel(Tree.INSET, getZoom());
+					rect.left = rect.right + DPIUtil.pointToPixel(Tree.INSET, getZoom());
 					rect.right = headerRect.right;
 				} else {
 					String string = index == 0 ? text : strings != null ? strings [index] : null;
@@ -513,10 +513,10 @@ RECT getBounds (int index, boolean getText, boolean getImage, boolean fullText, 
 							OS.ReleaseDC (hwnd, hNewDC);
 						}
 						if (getImage) {
-							rect.right += textRect.right - textRect.left + Win32DPIUtils.pointToPixel(Tree.INSET * 3, getZoom());
+							rect.right += textRect.right - textRect.left + DPIUtil.pointToPixel(Tree.INSET * 3, getZoom());
 						} else {
-							rect.left = rect.right + Win32DPIUtils.pointToPixel(Tree.INSET, getZoom());
-							rect.right = rect.left + (textRect.right - textRect.left) + Win32DPIUtils.pointToPixel(Tree.INSET, getZoom());
+							rect.left = rect.right + DPIUtil.pointToPixel(Tree.INSET, getZoom());
+							rect.right = rect.left + (textRect.right - textRect.left) + DPIUtil.pointToPixel(Tree.INSET, getZoom());
 						}
 					}
 				}
@@ -915,7 +915,7 @@ Rectangle getTextBoundsInPixels (int index) {
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	RECT rect = getBounds (index, true, false, true);
 	rect.left = Math.min (rect.left, rect.right);
-	rect.right = rect.right + Win32DPIUtils.pointToPixel(Tree.INSET, getZoom()); // Add INSET margin to avoid truncation of text seen with "Segoe UI" font
+	rect.right = rect.right + DPIUtil.pointToPixel(Tree.INSET, getZoom()); // Add INSET margin to avoid truncation of text seen with "Segoe UI" font
 	int width = Math.max (0, rect.right - rect.left);
 	int height = Math.max (0, rect.bottom - rect.top);
 	return new Rectangle (rect.left, rect.top, width, height);

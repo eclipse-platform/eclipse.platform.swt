@@ -143,8 +143,8 @@ class MultiZoomCoordinateSystemMapper implements CoordinateSystemMapper {
 		monitor = getValidMonitorIfApplicable(x, y, width, height, monitor);
 		Point topLeft = getPixelsFromPoint(monitor, x, y);
 		int zoom = getApplicableMonitorZoom(monitor);
-		int widthInPixels = Win32DPIUtils.pointToPixel(width, zoom);
-		int heightInPixels = Win32DPIUtils.pointToPixel(height, zoom);
+		int widthInPixels = DPIUtil.pointToPixel(width, zoom);
+		int heightInPixels = DPIUtil.pointToPixel(height, zoom);
 		return new Rectangle(topLeft.x, topLeft.y, widthInPixels, heightInPixels);
 	}
 
@@ -204,8 +204,8 @@ class MultiZoomCoordinateSystemMapper implements CoordinateSystemMapper {
 		for (Monitor currentMonitor : monitors) {
 			// Obtain the rectangle in pixels per monitor for absolute comparison
 			Point topLeftOfRectangle = getPixelsFromPoint(currentMonitor, x, y);
-			int widthInPixels = Win32DPIUtils.pointToPixel(width, getApplicableMonitorZoom(currentMonitor));
-			int heightInPixels = Win32DPIUtils.pointToPixel(height, getApplicableMonitorZoom(currentMonitor));
+			int widthInPixels = DPIUtil.pointToPixel(width, getApplicableMonitorZoom(currentMonitor));
+			int heightInPixels = DPIUtil.pointToPixel(height, getApplicableMonitorZoom(currentMonitor));
 			Rectangle boundsInPixel = new Rectangle(topLeftOfRectangle.x, topLeftOfRectangle.y, widthInPixels, heightInPixels);
 			Rectangle clientArea = getMonitorClientAreaInPixels(currentMonitor);
 			Rectangle intersection = clientArea.intersection(boundsInPixel);
@@ -251,15 +251,15 @@ class MultiZoomCoordinateSystemMapper implements CoordinateSystemMapper {
 
 	private Rectangle getMonitorClientAreaInPixels(Monitor monitor) {
 		int zoom = getApplicableMonitorZoom(monitor);
-		int widthInPixels = Win32DPIUtils.pointToPixel(monitor.clientWidth, zoom);
-		int heightInPixels = Win32DPIUtils.pointToPixel(monitor.clientHeight, zoom);
+		int widthInPixels = DPIUtil.pointToPixel(monitor.clientWidth, zoom);
+		int heightInPixels = DPIUtil.pointToPixel(monitor.clientHeight, zoom);
 		return new Rectangle(monitor.clientX, monitor.clientY, widthInPixels, heightInPixels);
 	}
 
 	private Point getPixelsFromPoint(Monitor monitor, int x, int y) {
 		int zoom = getApplicableMonitorZoom(monitor);
-		int mappedX = Win32DPIUtils.pointToPixel(x - monitor.clientX, zoom) + monitor.clientX;
-		int mappedY = Win32DPIUtils.pointToPixel(y - monitor.clientY, zoom) + monitor.clientY;
+		int mappedX = DPIUtil.pointToPixel(x - monitor.clientX, zoom) + monitor.clientX;
+		int mappedY = DPIUtil.pointToPixel(y - monitor.clientY, zoom) + monitor.clientY;
 		return new Point(mappedX, mappedY);
 	}
 

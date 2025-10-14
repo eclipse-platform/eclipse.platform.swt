@@ -379,9 +379,9 @@ void computeRuns (GC gc) {
 	}
 	SCRIPT_LOGATTR logAttr = new SCRIPT_LOGATTR();
 	SCRIPT_PROPERTIES properties = new SCRIPT_PROPERTIES();
-	int wrapIndentInPixels = Win32DPIUtils.pointToPixel(wrapIndent, getZoom(gc));
-	int indentInPixels = Win32DPIUtils.pointToPixel(indent, getZoom(gc));
-	int wrapWidthInPixels = Win32DPIUtils.pointToPixel(wrapWidth, getZoom(gc));
+	int wrapIndentInPixels = DPIUtil.pointToPixel(wrapIndent, getZoom(gc));
+	int indentInPixels = DPIUtil.pointToPixel(indent, getZoom(gc));
+	int wrapWidthInPixels = DPIUtil.pointToPixel(wrapWidth, getZoom(gc));
 	int[] tabsInPixels = Win32DPIUtils.pointToPixel(tabs, getZoom(gc));
 	int lineWidth = indentInPixels, lineStart = 0, lineCount = 1;
 	for (int i=0; i<allRuns.length - 1; i++) {
@@ -1896,8 +1896,8 @@ Rectangle getBoundsInPixels (int start, int end) {
 		}
 		left = Math.min(left, runLead);
 		right = Math.max(right, runTrail);
-		top = Math.min(top, Win32DPIUtils.pointToPixel(lineY[lineIndex], getZoom(null)));
-		bottom = Math.max(bottom, Win32DPIUtils.pointToPixel(lineY[lineIndex + 1] - lineSpacingInPoints, getZoom(null)));
+		top = Math.min(top, DPIUtil.pointToPixel(lineY[lineIndex], getZoom(null)));
+		bottom = Math.max(bottom, DPIUtil.pointToPixel(lineY[lineIndex + 1] - lineSpacingInPoints, getZoom(null)));
 	}
 	return new Rectangle(left, top, right - left, bottom - top + getScaledVerticalIndent());
 }
@@ -2057,14 +2057,14 @@ int getLineIndent(int lineIndex) {
 }
 
 int getLineIndentInPixel (int lineIndex) {
-	int lineIndent = Win32DPIUtils.pointToPixel(wrapIndent, getZoom());
+	int lineIndent = DPIUtil.pointToPixel(wrapIndent, getZoom());
 	if (lineIndex == 0) {
-		lineIndent = Win32DPIUtils.pointToPixel(indent, getZoom());
+		lineIndent = DPIUtil.pointToPixel(indent, getZoom());
 	} else {
 		StyleItem[] previousLine = runs[lineIndex - 1];
 		StyleItem previousRun = previousLine[previousLine.length - 1];
 		if (previousRun.lineBreak && !previousRun.softBreak) {
-			lineIndent = Win32DPIUtils.pointToPixel(indent, getZoom());
+			lineIndent = DPIUtil.pointToPixel(indent, getZoom());
 		}
 	}
 	if (wrapWidth != -1) {
@@ -2078,8 +2078,8 @@ int getLineIndentInPixel (int lineIndex) {
 		if (partialLine) {
 			int lineWidth = this.lineWidthInPixels[lineIndex] + lineIndent;
 			switch (alignment) {
-				case SWT.CENTER: lineIndent += (Win32DPIUtils.pointToPixel(wrapWidth, getZoom()) - lineWidth) / 2; break;
-				case SWT.RIGHT: lineIndent += Win32DPIUtils.pointToPixel(wrapWidth, getZoom()) - lineWidth; break;
+				case SWT.CENTER: lineIndent += (DPIUtil.pointToPixel(wrapWidth, getZoom()) - lineWidth) / 2; break;
+				case SWT.RIGHT: lineIndent += DPIUtil.pointToPixel(wrapWidth, getZoom()) - lineWidth; break;
 			}
 		}
 	}
