@@ -3716,7 +3716,7 @@ boolean checkSubwindow () {
 }
 
 @Override
-long gtk_event_after (long widget, long gdkEvent) {
+long gtk3_event_after (long widget, long gdkEvent) {
 	int eventType = GDK.gdk_event_get_event_type(gdkEvent);
 	eventType = fixGdkEventTypeValues(eventType);
 	switch (eventType) {
