@@ -548,17 +548,13 @@ long gtk_value_changed (long range) {
 }
 
 @Override
-long gtk_event_after (long widget, long gdkEvent) {
+long gtk3_event_after (long widget, long gdkEvent) {
 	int eventType = GDK.gdk_event_get_event_type(gdkEvent);
 	eventType = Control.fixGdkEventTypeValues(eventType);
 	switch (eventType) {
 		case GDK.GDK_BUTTON_RELEASE: {
 			int [] eventButton = new int [1];
-			if (GTK.GTK4) {
-				eventButton[0] = GDK.gdk_button_event_get_button(gdkEvent);
-			} else {
-				GDK.gdk_event_get_button(gdkEvent, eventButton);
-			}
+			GDK.gdk_event_get_button(gdkEvent, eventButton);
 
 			if (eventButton[0] == 1 && detail == GTK.GTK_SCROLL_JUMP) {
 				if (!dragSent) {
@@ -573,7 +569,7 @@ long gtk_event_after (long widget, long gdkEvent) {
 			break;
 		}
 	}
-	return super.gtk_event_after (widget, gdkEvent);
+	return super.gtk3_event_after (widget, gdkEvent);
 }
 
 @Override

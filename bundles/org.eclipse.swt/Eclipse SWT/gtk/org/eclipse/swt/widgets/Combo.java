@@ -1660,7 +1660,7 @@ long gtk_draw (long widget, long cairo) {
 }
 
 @Override
-long gtk_event_after (long widget, long gdkEvent)  {
+long gtk3_event_after (long widget, long gdkEvent)  {
 	/*
 	* Feature in GTK. Depending on where the user clicks, GTK prevents
 	* the left mouse button event from being propagated. The fix is to
@@ -1680,13 +1680,8 @@ long gtk_event_after (long widget, long gdkEvent)  {
 		case GDK.GDK_BUTTON_PRESS: {
 			int [] eventButton = new int [1];
 			int [] eventState = new int [1];
-			if (GTK.GTK4) {
-				eventButton[0] = GDK.gdk_button_event_get_button(gdkEvent);
-				eventState[0] = GDK.gdk_event_get_modifier_state(gdkEvent);
-			} else {
-				GDK.gdk_event_get_button(gdkEvent, eventButton);
-				GDK.gdk_event_get_state(gdkEvent, eventState);
-			}
+			GDK.gdk_event_get_button(gdkEvent, eventButton);
+			GDK.gdk_event_get_state(gdkEvent, eventState);
 
 			int eventTime = GDK.gdk_event_get_time(gdkEvent);
 
@@ -1707,13 +1702,9 @@ long gtk_event_after (long widget, long gdkEvent)  {
 		case GDK.GDK_FOCUS_CHANGE: {
 			if ((style & SWT.READ_ONLY) == 0) {
 				boolean [] focusIn = new boolean [1];
-				if (GTK.GTK4) {
-					focusIn[0] = GDK.gdk_focus_event_get_in(gdkEvent);
-				} else {
-					GdkEventFocus gdkEventFocus = new GdkEventFocus ();
-					GTK3.memmove (gdkEventFocus, gdkEvent, GdkEventFocus.sizeof);
-					focusIn[0] = gdkEventFocus.in != 0;
-				}
+				GdkEventFocus gdkEventFocus = new GdkEventFocus ();
+				GTK3.memmove (gdkEventFocus, gdkEvent, GdkEventFocus.sizeof);
+				focusIn[0] = gdkEventFocus.in != 0;
 				if (focusIn[0]) {
 					GTK.gtk_widget_set_focus_on_click(handle, false);
 				} else {
@@ -1723,7 +1714,7 @@ long gtk_event_after (long widget, long gdkEvent)  {
 			break;
 		}
 	}
-	return super.gtk_event_after(widget, gdkEvent);
+	return super.gtk3_event_after(widget, gdkEvent);
 }
 
 @Override

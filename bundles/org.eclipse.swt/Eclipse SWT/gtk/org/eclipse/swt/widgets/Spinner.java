@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -742,9 +742,9 @@ long gtk_delete_text (long widget, long start_pos, long end_pos) {
 }
 
 @Override
-long gtk_event_after (long widget, long gdkEvent) {
+long gtk3_event_after (long widget, long gdkEvent) {
 	if (cursor != null) setCursor (cursor.handle);
-	return super.gtk_event_after (widget, gdkEvent);
+	return super.gtk3_event_after (widget, gdkEvent);
 }
 
 @Override

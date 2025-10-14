@@ -1718,7 +1718,7 @@ long gtk_delete_text (long widget, long start_pos, long end_pos) {
 }
 
 @Override
-long gtk_event_after (long widget, long gdkEvent) {
+long gtk3_event_after (long widget, long gdkEvent) {
 	if (cursor != null) setCursor (cursor.handle);
 	/*
 	* Feature in GTK.  The gtk-entry-select-on-focus property is a global
@@ -1732,13 +1732,9 @@ long gtk_event_after (long widget, long gdkEvent) {
 		switch (eventType) {
 			case GDK.GDK_FOCUS_CHANGE:
 				boolean [] focusIn = new boolean [1];
-				if (GTK.GTK4) {
-					focusIn[0] = GDK.gdk_focus_event_get_in(gdkEvent);
-				} else {
-					GdkEventFocus gdkEventFocus = new GdkEventFocus ();
-					GTK3.memmove (gdkEventFocus, gdkEvent, GdkEventFocus.sizeof);
-					focusIn[0] = gdkEventFocus.in != 0;
-				}
+				GdkEventFocus gdkEventFocus = new GdkEventFocus ();
+				GTK3.memmove (gdkEventFocus, gdkEvent, GdkEventFocus.sizeof);
+				focusIn[0] = gdkEventFocus.in != 0;
 				if (focusIn[0]) {
 					long settings = GTK.gtk_settings_get_default ();
 					OS.g_object_set (settings, GTK.gtk_entry_select_on_focus, true, 0);
@@ -1746,7 +1742,7 @@ long gtk_event_after (long widget, long gdkEvent) {
 				break;
 		}
 	}
-	return super.gtk_event_after (widget, gdkEvent);
+	return super.gtk3_event_after (widget, gdkEvent);
 }
 
 @Override

@@ -950,7 +950,7 @@ long gtk_enter_notify_event (long widget, long event) {
 	return 0;
 }
 
-long gtk_event_after (long widget, long event) {
+long gtk3_event_after (long widget, long event) {
 	return 0;
 }
 
@@ -2626,7 +2626,7 @@ long windowProc (long handle, long arg0, long user_data) {
 		case CONFIGURE_EVENT: return gtk_configure_event (handle, arg0);
 		case DELETE_EVENT: return gtk_delete_event (handle, arg0);
 		case ENTER_NOTIFY_EVENT: return gtk_enter_notify_event (handle, arg0);
-		case EVENT_AFTER: return gtk_event_after (handle, arg0);
+		case EVENT_AFTER: return gtk3_event_after (handle, arg0);
 		case EXPOSE_EVENT: {
 			if (!GTK.GTK_IS_CONTAINER (handle)) {
 				return gtk_draw (handle, arg0);

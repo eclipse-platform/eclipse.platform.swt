@@ -445,8 +445,8 @@ long gtk_draw (long widget, long cairo) {
 }
 
 @Override
-long gtk_event_after (long widget, long gdkEvent) {
-	long result = super.gtk_event_after (widget, gdkEvent);
+long gtk3_event_after (long widget, long gdkEvent) {
+	long result = super.gtk3_event_after (widget, gdkEvent);
 	int eventType = GDK.gdk_event_get_event_type(gdkEvent);
 	switch (eventType) {
 		case GDK.GDK_FOCUS_CHANGE:
