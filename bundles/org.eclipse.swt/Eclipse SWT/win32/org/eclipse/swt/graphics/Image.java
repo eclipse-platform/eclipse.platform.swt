@@ -136,30 +136,66 @@ public final class Image extends Resource implements Drawable {
 
 	private List<Consumer<Image>> onDisposeListeners;
 
-	private record CachedHandle(ImageHandle handleContainer, int requestedWidth, int requestedHeight) {
+	private class HandleAtSize {
+		private ImageHandle handleContainer = null;
+		private int requestedWidth = -1;
+		private int requestedHeight = -1;
 
 		public void destroy() {
-			if (handleContainer != null) {
+			if (handleContainer != null && !zoomLevelToImageHandle.containsValue(handleContainer)) {
 				handleContainer.destroy();
 			}
+			handleContainer = null;
+			requestedWidth = -1;
+			requestedHeight = -1;
 		}
 
-		public boolean isReusable(int height, int width) {
-			if(handleContainer == null) {
+		public ImageHandle refresh(int width, int height) {
+			if (!isReusable(width, height)) {
+				destroy();
+				requestedWidth = width;
+				requestedHeight = height;
+				handleContainer = createHandleAtExactSize(width, height)
+						.orElseGet(() -> getOrCreateImageHandleAtClosestSize(width, height));
+			}
+			return handleContainer;
+		}
+
+		private boolean isReusable(int width, int height) {
+			if (handleContainer == null || handleContainer.isDisposed()) {
 				return false;
 			}
 			return (requestedHeight == height && requestedWidth == width)
 					|| (handleContainer.height == height && handleContainer.width == width);
-
 		}
 
-		public ImageHandle getHandle() {
-			return handleContainer;
+		private Optional<ImageHandle> createHandleAtExactSize(int width, int height) {
+			Optional<ImageData> imageData = imageProvider.loadImageDataAtExactSize(width, height);
+			if (imageData.isPresent()) {
+				ImageData adaptedData = adaptImageDataIfDisabledOrGray(imageData.get());
+				ImageHandle imageHandle = init(adaptedData, -1);
+				return Optional.of(imageHandle);
+			}
+			return Optional.empty();
 		}
-	};
 
-	// Initialize lastRequestedHandle with -1 for size-related fields to indicate uninitialized values
-	CachedHandle lastRequestedHandle = new CachedHandle(null, -1, -1);
+		private ImageHandle getOrCreateImageHandleAtClosestSize(int widthHint, int heightHint) {
+			Rectangle bounds = getBounds(100);
+			int imageZoomForWidth = 100 * widthHint / bounds.width;
+			int imageZoomForHeight = 100 * heightHint / bounds.height;
+			int imageZoom = DPIUtil.getZoomForAutoscaleProperty(Math.max(imageZoomForWidth, imageZoomForHeight));
+			ImageHandle bestFittingHandle = zoomLevelToImageHandle.get(imageZoom);
+			if (bestFittingHandle == null) {
+				ImageData bestFittingImageData = imageProvider.loadImageData(imageZoom).element();
+				ImageData adaptedData = adaptImageDataIfDisabledOrGray(bestFittingImageData);
+				bestFittingHandle = init(adaptedData, -1);
+			}
+			return bestFittingHandle;
+		}
+
+	}
+
+	private final HandleAtSize lastRequestedHandle = new HandleAtSize();
 
 private Image (Device device, int type, long handle, int nativeZoom) {
 	super(device);
@@ -840,14 +876,8 @@ ImageHandle getHandle (int targetZoom, int nativeZoom) {
 }
 
 void executeOnImageHandleAtBestFittingSize(Consumer<ImageHandle> handleAtSizeConsumer, int widthHint, int heightHint) {
-	if (!lastRequestedHandle.isReusable(heightHint, widthHint)) {
-		ImageData imageData;
-		imageData = this.imageProvider.loadImageDataAtSize(widthHint, heightHint);
-		lastRequestedHandle.destroy();
-		ImageHandle handleContainer = init(imageData, -1);
-		lastRequestedHandle = new CachedHandle(handleContainer, widthHint, heightHint);
-	}
-	handleAtSizeConsumer.accept(lastRequestedHandle.getHandle());
+	ImageHandle imageHandle = lastRequestedHandle.refresh(widthHint, heightHint);
+	handleAtSizeConsumer.accept(imageHandle);
 }
 
 /**
@@ -1083,8 +1113,8 @@ void destroy () {
 }
 
 private void destroyHandles() {
-	destroyHandles(__ -> true);
 	lastRequestedHandle.destroy();
+	destroyHandles(__ -> true);
 }
 
 @Override
@@ -1990,22 +2020,6 @@ private abstract class AbstractImageProviderWrapper {
 		TreeSet<Integer> availableZooms = new TreeSet<>(zoomLevelToImageHandle.keySet());
 		int closestZoom = Optional.ofNullable(availableZooms.higher(zoom)).orElse(availableZooms.lower(zoom));
 		return new ElementAtZoom<>(getImageMetadata(new ZoomContext(closestZoom)).getImageData(), closestZoom);
-	}
-
-	public ImageData loadImageDataAtSize(int widthHint, int heightHint) {
-		Optional<ImageData> exact = loadImageDataAtExactSize(widthHint, heightHint);
-		if (exact.isPresent()) {
-			return adaptImageDataIfDisabledOrGray(exact.get());
-		}
-		return loadImageDataClosestTo(widthHint, heightHint);
-	}
-
-	private ImageData loadImageDataClosestTo(int targetWidth, int targetHeight) {
-		Rectangle bounds = getBounds(100);
-		int imageZoomForWidth = 100 * targetWidth / bounds.width;
-		int imageZoomForHeight = 100 * targetHeight / bounds.height;
-		int imageZoom = DPIUtil.getZoomForAutoscaleProperty(Math.max(imageZoomForWidth, imageZoomForHeight));
-		return loadImageData(imageZoom).element();
 	}
 
 	protected Optional<ImageData> loadImageDataAtExactSize(int width, int height) {
