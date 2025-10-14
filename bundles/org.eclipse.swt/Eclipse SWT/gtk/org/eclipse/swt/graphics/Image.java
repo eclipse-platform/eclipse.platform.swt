@@ -18,6 +18,7 @@ import static org.eclipse.swt.internal.image.ImageColorTransformer.DEFAULT_DISAB
 
 import java.io.*;
 import java.util.*;
+import java.util.function.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
@@ -927,6 +928,74 @@ void destroy() {
 	if (surface != 0) Cairo.cairo_surface_destroy(surface);
 	surface = mask = 0;
 	memGC = null;
+}
+
+private CachedImageAtSize cachedImageAtSize = new CachedImageAtSize();
+
+private class CachedImageAtSize {
+	private Image image;
+
+	public void destroy() {
+		if (image != null) {
+			image.dispose();
+			image = null;
+		}
+	}
+
+	private Optional<Image> refresh(int destWidth, int destHeight) {
+		int scaledWidth = DPIUtil.pointToPixel(destWidth, DPIUtil.getDeviceZoom());
+		int scaledHeight = DPIUtil.pointToPixel(destHeight, DPIUtil.getDeviceZoom());
+		if (isReusable(scaledWidth, scaledHeight)) {
+			return Optional.of(image);
+		} else {
+			destroy();
+			Optional<Image> imageAtSize = loadImageAtSize(scaledWidth, scaledHeight);
+			image = imageAtSize.orElse(null);
+			return imageAtSize;
+		}
+	}
+
+	private boolean isReusable(int width, int height) {
+		return image != null && image.height == height && image.width == width;
+	}
+
+	private Optional<Image> loadImageAtSize(int destWidth, int destHeight) {
+		Optional<ImageData> imageData = loadImageDataAtExactSize(destWidth, destHeight);
+		if (imageData.isEmpty()) {
+			return Optional.empty();
+		}
+		Image image = new Image(device, imageData.get(), DPIUtil.getDeviceZoom());
+		if (styleFlag != SWT.IMAGE_COPY) {
+			Image styledImage = new Image(device, image, styleFlag);
+			image.dispose();
+			image = styledImage;
+		}
+		return Optional.of(image);
+	}
+
+	private Optional<ImageData> loadImageDataAtExactSize(int targetWidth, int targetHeight) {
+		if (imageDataProvider instanceof ImageDataAtSizeProvider imageDataAtSizeProvider) {
+			ImageData imageData = imageDataAtSizeProvider.getImageData(targetWidth, targetHeight);
+			if (imageData == null) {
+				SWT.error(SWT.ERROR_INVALID_ARGUMENT, null,
+						" ImageDataAtSizeProvider returned null for width=" + targetWidth + ", height=" + targetHeight);
+			}
+			return Optional.of(imageData);
+		}
+		if (imageFileNameProvider != null) {
+			String fileName = DPIUtil.validateAndGetImagePathAtZoom(imageFileNameProvider, 100).element();
+			if (ImageDataLoader.isDynamicallySizable(fileName)) {
+				ImageData imageDataAtSize = ImageDataLoader.loadBySize(fileName, targetWidth, targetHeight);
+				return Optional.of(imageDataAtSize);
+			}
+		}
+		return Optional.empty();
+	}
+}
+
+void executeOnImageAtSize(Consumer<Image> imageAtBestFittingSizeConsumer, int destWidth, int destHeight) {
+	Optional<Image> imageAtSize = cachedImageAtSize.refresh(destWidth, destHeight);
+	imageAtBestFittingSizeConsumer.accept(imageAtSize.orElse(this));
 }
 
 /**
