@@ -3441,6 +3441,17 @@ boolean isBundled () {
 	return false;
 }
 
+boolean isBundledIconSet () {
+	NSBundle mainBundle = NSBundle.mainBundle();
+	if (mainBundle != null) {
+		NSDictionary info = mainBundle.infoDictionary();
+		if (info != null) {
+			return info.objectForKey(NSString.stringWith("CFBundleIconName")) != null || info.objectForKey(NSString.stringWith("CFBundleIconFile")) != null ;
+		}
+	}
+	return false;
+}
+
 static boolean isValidClass (Class<?> clazz) {
 	String name = clazz.getName ();
 	int index = name.lastIndexOf ('.');
