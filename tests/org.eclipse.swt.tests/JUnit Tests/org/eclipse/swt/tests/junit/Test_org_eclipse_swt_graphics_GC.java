@@ -14,6 +14,7 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import static org.eclipse.swt.internal.DPIUtil.pointToPixel;
 import static org.eclipse.swt.tests.junit.SwtTestUtil.assertSWTProblem;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -37,6 +38,8 @@ import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.ImageDataAtSizeProvider;
+import org.eclipse.swt.graphics.ImageDataProvider;
 import org.eclipse.swt.graphics.ImageGcDrawer;
 import org.eclipse.swt.graphics.LineAttributes;
 import org.eclipse.swt.graphics.PaletteData;
@@ -51,6 +54,10 @@ import org.eclipse.swt.widgets.Shell;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledOnOs;
+import org.junit.jupiter.api.condition.OS;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.GC
@@ -388,6 +395,155 @@ public void test_drawImageLorg_eclipse_swt_graphics_ImageIIII() {
 	gc.drawImage(images.alpha, 100, 120, 20, 15);
 	assertThrows(IllegalArgumentException.class, () -> gc.drawImage(null, 100, 120, 50, 60));
 	images.dispose();
+}
+
+@Test
+public void test_drawImageLorg_eclipse_swt_graphics_ImageIIII_ImageDataProvider() {
+	int width = 32;
+	int height = 48;
+	Image drawToImage = new Image(display, width, height);
+	GC gc = new GC(drawToImage);
+	gc.setAntialias(SWT.OFF);
+	RGB drawnRgb = new RGB(255, 255, 255);
+	RGB undrawnRgb = new RGB(0, 0, 0);
+	ImageDataProvider imageDataProvider = zoom -> {
+		if (zoom != 100) {
+			return null;
+		}
+		PaletteData palette = new PaletteData(0xFF0000, 0xFF00, 0xFF);
+		ImageData imageData = new ImageData(16, 16, 32, palette);
+		int drawnPixel = palette.getPixel(drawnRgb);
+		for (int i = 0; i < 16; i++) {
+			imageData.setPixel(i, 0, drawnPixel);
+			imageData.setPixel(i, 15, drawnPixel);
+			imageData.setPixel(0, i, drawnPixel);
+			imageData.setPixel(15, i, drawnPixel);
+		}
+		return imageData;
+	};
+	Image image = new Image(display, imageDataProvider);
+	try {
+		gc.drawImage(image, 0, 0, width, height);
+		int zoom = DPIUtil.getDeviceZoom();
+		ImageData printedImageData = drawToImage.getImageData(zoom);
+		PaletteData printedPalette = printedImageData.palette;
+		// Expect that image is blurry scaled to the desired extents
+		assertEquals(drawnRgb, printedPalette.getRGB(printedImageData.getPixel(0, 0)));
+		assertNotEquals(undrawnRgb, printedPalette.getRGB(printedImageData.getPixel(1, 1)));
+		assertNotEquals(undrawnRgb, printedPalette.getRGB(printedImageData.getPixel(1, 2)));
+		assertEquals(undrawnRgb, printedPalette.getRGB(printedImageData.getPixel(pointToPixel(width, zoom) / 2, pointToPixel(height, zoom) / 2)));
+		assertNotEquals(undrawnRgb, printedPalette.getRGB(printedImageData.getPixel(pointToPixel(width, zoom) - 2, pointToPixel(height, zoom) - 3)));
+		assertNotEquals(undrawnRgb, printedPalette.getRGB(printedImageData.getPixel(pointToPixel(width, zoom) - 2, pointToPixel(height, zoom) - 2)));
+		assertEquals(drawnRgb, printedPalette.getRGB(printedImageData.getPixel(pointToPixel(width, zoom) - 1, pointToPixel(height, zoom) - 1)));
+	} finally {
+		image.dispose();
+		drawToImage.dispose();
+	}
+}
+
+@Test
+@EnabledOnOs(value = OS.WINDOWS)
+public void test_drawImageLorg_eclipse_swt_graphics_ImageIIII_ImageDataAtSizeProvider_invalid() {
+	ImageDataAtSizeProvider provider = new ImageDataAtSizeProvider() {
+		@Override
+		public ImageData getImageData(int zoom) {
+			return new ImageData(1, 1, 32, new PaletteData(0xFF0000, 0xFF00, 0xFF));
+		}
+
+		@Override
+		public ImageData getImageData(int width, int height) {
+			return null;
+		}
+	};
+	Image image = new Image(display, provider);
+	Image drawToImage = new Image(display, 1, 1);
+	try {
+		GC gc = new GC(drawToImage);
+		Exception e = assertThrows(IllegalArgumentException.class, () -> gc.drawImage(image, 0, 0, 1, 1));
+		assertSWTProblem("Incorrect exception thrown for provider == null", SWT.ERROR_INVALID_ARGUMENT, e);
+	} finally {
+		image.dispose();
+		drawToImage.dispose();
+	}
+}
+
+@ParameterizedTest
+@ValueSource(ints = {SWT.IMAGE_COPY, SWT.IMAGE_DISABLE, SWT.IMAGE_GRAY, -1})
+@EnabledOnOs(value = OS.WINDOWS)
+public void test_drawImageLorg_eclipse_swt_graphics_ImageIIII_ImageDataAtSizeProvider(int styleFlag) {
+	int width = 50;
+	int height = 70;
+	Image drawToImage = new Image(display, width, height);
+	GC gc = new GC(drawToImage);
+	gc.setAntialias(SWT.OFF);
+	RGB drawnRgb = new RGB(255, 255, 255);
+	RGB undrawnRgb = new RGB(0, 0, 0);
+	ImageDataAtSizeProvider imageDataAtSizeProvider = new ImageDataAtSizeProvider() {
+		@Override
+		public ImageData getImageData(int width, int height) {
+			PaletteData palette = new PaletteData(0xFF0000, 0xFF00, 0xFF);
+			int drawnPixel = palette.getPixel(drawnRgb);
+			ImageData imageData = new ImageData(width, height, 32, palette);
+			for (int i = 0; i < width; i++) {
+				imageData.setPixel(i, 0, drawnPixel);
+				imageData.setPixel(i, height - 1, drawnPixel);
+			}
+			for (int i = 0; i < height; i++) {
+				imageData.setPixel(0, i, drawnPixel);
+				imageData.setPixel(width - 1, i, drawnPixel);
+			}
+			return imageData;
+		}
+		@Override
+		public ImageData getImageData(int zoom) {
+			return new ImageData(1, 1, 32, new PaletteData(0xFF0000, 0xFF00, 0xFF));
+		}
+	};
+	Image image = styleImage(new Image(display, imageDataAtSizeProvider), styleFlag);
+
+	try {
+		gc.drawImage(image, 0, 0, width, height);
+		int zoom = DPIUtil.getDeviceZoom();
+		ImageData printedImageData = drawToImage.getImageData(zoom);
+		PaletteData printedPalette = printedImageData.palette;
+		RGB styledDrawnRgb = getStyledRgb(drawnRgb, styleFlag);
+		RGB styledUndrawnRgb = getStyledRgb(undrawnRgb, styleFlag);
+		assertEquals(styledDrawnRgb, printedPalette.getRGB(printedImageData.getPixel(0, 0)));
+		assertEquals(styledUndrawnRgb, printedPalette.getRGB(printedImageData.getPixel(1, 1)));
+		assertEquals(styledUndrawnRgb, printedPalette.getRGB(printedImageData.getPixel(pointToPixel(width, zoom) / 2, pointToPixel(height, zoom) / 2)));
+		assertEquals(styledUndrawnRgb, printedPalette.getRGB(printedImageData.getPixel(pointToPixel(width, zoom) - 2, pointToPixel(height, zoom) - 2)));
+		assertEquals(styledDrawnRgb, printedPalette.getRGB(printedImageData.getPixel(pointToPixel(width, zoom) - 4, pointToPixel(height, zoom) - 1)));
+	} finally {
+		image.dispose();
+		drawToImage.dispose();
+	}
+}
+
+private Image styleImage(Image image, int styleFlag) {
+	if (styleFlag == -1) {
+		return image;
+	}
+	Image styledImage = new Image(display, image, styleFlag);
+	image.dispose();
+	return styledImage;
+}
+
+private RGB getStyledRgb(RGB rgb, int styleFlag) {
+	if (styleFlag == -1) {
+		return rgb;
+	}
+	PaletteData palette = new PaletteData(0xFF0000, 0xFF00, 0xFF);
+	ImageData referenceData = new ImageData(1, 1, 32, palette);
+	referenceData.setPixel(0, 0, palette.getPixel(rgb));
+	Image referenceImage = new Image(display, referenceData);
+	Image styledReferenceImage = new Image(display, referenceImage, styleFlag);
+	try {
+		ImageData styledmageData = styledReferenceImage.getImageData();
+		return styledmageData.palette.getRGB(styledmageData.getPixel(0, 0));
+	} finally {
+		styledReferenceImage.dispose();
+		referenceImage.dispose();
+	}
 }
 
 @Test
