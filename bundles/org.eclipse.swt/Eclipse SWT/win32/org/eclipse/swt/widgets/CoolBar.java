@@ -411,7 +411,7 @@ int getMargin (int index) {
 	}
 	if ((style & SWT.FLAT) == 0) {
 		if (!isLastItemOfRow (index)) {
-			margin += Win32DPIUtils.pointToPixel(SEPARATOR_WIDTH, getZoom());
+			margin += DPIUtil.pointToPixel(SEPARATOR_WIDTH, getZoom());
 		}
 	}
 	return margin;

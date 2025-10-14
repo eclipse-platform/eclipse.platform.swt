@@ -2336,7 +2336,7 @@ public int getGridLineWidth () {
 }
 
 int getGridLineWidthInPixels () {
-	return Win32DPIUtils.pointToPixel(GRID_WIDTH, getZoom());
+	return DPIUtil.pointToPixel(GRID_WIDTH, getZoom());
 }
 
 /**
@@ -3543,7 +3543,7 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, long lParam, Event
 			boolean backgroundWanted = !ignoreDrawHot || drawDrophilited || (!ignoreDrawSelection && clrSelectionBk != -1);
 
 			if (backgroundWanted) {
-				int explorerExtraInPixels = Win32DPIUtils.pointToPixel(EXPLORER_EXTRA, getZoom());
+				int explorerExtraInPixels = DPIUtil.pointToPixel(EXPLORER_EXTRA, getZoom());
 				RECT pClipRect = new RECT ();
 				OS.SetRect (pClipRect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
 				RECT rect = new RECT ();
@@ -4859,7 +4859,7 @@ boolean setScrollWidth (TableItem item, boolean force) {
 		if (hStateList != 0) {
 			int [] cx = new int [1], cy = new int [1];
 			OS.ImageList_GetIconSize (hStateList, cx, cy);
-			newWidth += cx [0] + Win32DPIUtils.pointToPixel(INSET, getZoom());
+			newWidth += cx [0] + DPIUtil.pointToPixel(INSET, getZoom());
 		}
 		long hImageList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_SMALL, 0);
 		if (hImageList != 0) {
@@ -4879,7 +4879,7 @@ boolean setScrollWidth (TableItem item, boolean force) {
 			*/
 			newWidth++;
 		}
-		newWidth += Win32DPIUtils.pointToPixel(INSET * 2, getZoom()) + Win32DPIUtils.pointToPixel(VISTA_EXTRA, getZoom());
+		newWidth += DPIUtil.pointToPixel(INSET * 2, getZoom()) + DPIUtil.pointToPixel(VISTA_EXTRA, getZoom());
 		int oldWidth = (int)OS.SendMessage (handle, OS.LVM_GETCOLUMNWIDTH, 0, 0);
 		if (newWidth > oldWidth) {
 			setScrollWidth (newWidth);
@@ -5744,7 +5744,7 @@ long windowProc (long hwnd, int msg, long wParam, long lParam) {
 		OS.GetClientRect (handle, clientRect);
 		TableItem item = _getItem (selection);
 		RECT rect = item.getBounds (selection, 0, true, true, true);
-		int dragImageSizeInPixel = Win32DPIUtils.pointToPixel(DRAG_IMAGE_SIZE, getZoom());
+		int dragImageSizeInPixel = DPIUtil.pointToPixel(DRAG_IMAGE_SIZE, getZoom());
 		if ((style & SWT.FULL_SELECTION) != 0) {
 			int width = dragImageSizeInPixel;
 			rect.left = Math.max (clientRect.left, mousePos.x - width / 2);
@@ -6915,7 +6915,7 @@ LRESULT wmNotifyHeader (NMHDR hdr, long wParam, long lParam) {
 							 * Sort indicator size needs to scale as per the Native Windows OS DPI level
 							 * when header is custom drawn. For more details refer bug 537097.
 							 */
-							int leg = Win32DPIUtils.pointToPixel(3, nativeZoom);
+							int leg = DPIUtil.pointToPixel(3, nativeZoom);
 							if (sortDirection == SWT.UP) {
 								OS.Polyline(nmcd.hdc, new int[] {center-leg, 1+leg, center+1, 0}, 2);
 								OS.Polyline(nmcd.hdc, new int[] {center+leg, 1+leg, center-1, 0}, 2);
@@ -6961,7 +6961,7 @@ LRESULT wmNotifyHeader (NMHDR hdr, long wParam, long lParam) {
 							}
 						}
 
-						int x = rects[i].left + Win32DPIUtils.pointToPixel(INSET + 2, getZoom());
+						int x = rects[i].left + DPIUtil.pointToPixel(INSET + 2, getZoom());
 						if (columns[i].image != null) {
 							GCData data = new GCData();
 							data.device = display;
@@ -7302,9 +7302,9 @@ LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, long lParam) {
 						int zoom = getZoom();
 						rect = Win32DPIUtils.pixelToPoint(rect, zoom);
 						gc.drawImage (image, rect.x, rect.y, rect.width, rect.height, DPIUtil.pixelToPoint(x, zoom), DPIUtil.pixelToPoint(y, zoom), DPIUtil.pixelToPoint(size.x, zoom), DPIUtil.pixelToPoint(size.y, zoom));
-						x += size.x + Win32DPIUtils.pointToPixel(INSET + (pinfo.iSubItem == 0 ? -2 : 4), zoom);
+						x += size.x + DPIUtil.pointToPixel(INSET + (pinfo.iSubItem == 0 ? -2 : 4), zoom);
 					} else {
-						x += Win32DPIUtils.pointToPixel(INSET + 2, getZoom());
+						x += DPIUtil.pointToPixel(INSET + 2, getZoom());
 					}
 					String string = item.getText (pinfo.iSubItem);
 					if (string != null) {

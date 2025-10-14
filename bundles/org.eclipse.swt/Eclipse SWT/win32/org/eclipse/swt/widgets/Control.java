@@ -619,8 +619,8 @@ public Point computeSize (int wHint, int hHint) {
 public Point computeSize (int wHint, int hHint, boolean changed){
 	checkWidget ();
 	int zoom = getZoom();
-	wHint = (wHint != SWT.DEFAULT ? Win32DPIUtils.pointToPixel(wHint, zoom) : wHint);
-	hHint = (hHint != SWT.DEFAULT ? Win32DPIUtils.pointToPixel(hHint, zoom) : hHint);
+	wHint = (wHint != SWT.DEFAULT ? DPIUtil.pointToPixel(wHint, zoom) : wHint);
+	hHint = (hHint != SWT.DEFAULT ? DPIUtil.pointToPixel(hHint, zoom) : hHint);
 	//We should never return a size that is to small, RoundingMode.UP ensures we at worst case report
 	//a size that is a bit too large by half a point
 	return Win32DPIUtils.pixelToPointAsSize(computeSizeInPixels(wHint, hHint, changed), zoom);
@@ -785,7 +785,7 @@ public boolean dragDetect (Event event) {
 	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
 	Point loc = event.getLocation();
 	int zoom = getZoom();
-	return dragDetect (event.button, event.count, event.stateMask, Win32DPIUtils.pointToPixel(loc.x, zoom), Win32DPIUtils.pointToPixel(loc.y, zoom));
+	return dragDetect (event.button, event.count, event.stateMask, DPIUtil.pointToPixel(loc.x, zoom), DPIUtil.pointToPixel(loc.y, zoom));
 }
 
 /**
@@ -828,7 +828,7 @@ public boolean dragDetect (MouseEvent event) {
 	checkWidget ();
 	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int zoom = getZoom();
-	return dragDetect (event.button, event.count, event.stateMask, Win32DPIUtils.pointToPixel(event.x, zoom), Win32DPIUtils.pointToPixel(event.y, zoom)); // To Pixels
+	return dragDetect (event.button, event.count, event.stateMask, DPIUtil.pointToPixel(event.x, zoom), DPIUtil.pointToPixel(event.y, zoom)); // To Pixels
 }
 
 boolean dragDetect (int button, int count, int stateMask, int x, int y) {
@@ -2000,8 +2000,8 @@ void mapEvent (long hwnd, Event event) {
 		POINT point = new POINT ();
 		Point loc = event.getLocation();
 		int zoom = getZoom();
-		point.x = Win32DPIUtils.pointToPixel(loc.x, zoom);
-		point.y = Win32DPIUtils.pointToPixel(loc.y, zoom);
+		point.x = DPIUtil.pointToPixel(loc.x, zoom);
+		point.y = DPIUtil.pointToPixel(loc.y, zoom);
 		OS.MapWindowPoints (hwnd, handle, point, 1);
 		event.setLocation(DPIUtil.pixelToPoint(point.x, zoom), DPIUtil.pixelToPoint(point.y, zoom));
 	}
@@ -3535,8 +3535,8 @@ public void setLayoutData (Object layoutData) {
 public void setLocation (int x, int y) {
 	checkWidget ();
 	int zoom = getZoom();
-	x = Win32DPIUtils.pointToPixel(x, zoom);
-	y = Win32DPIUtils.pointToPixel(y, zoom);
+	x = DPIUtil.pointToPixel(x, zoom);
+	y = DPIUtil.pointToPixel(y, zoom);
 	setLocationInPixels(x, y);
 }
 
@@ -3792,8 +3792,8 @@ public void setRegion (Region region) {
 public void setSize (int width, int height) {
 	checkWidget ();
 	int zoom = getZoom();
-	width = Win32DPIUtils.pointToPixel(width, zoom);
-	height = Win32DPIUtils.pointToPixel(height, zoom);
+	width = DPIUtil.pointToPixel(width, zoom);
+	height = DPIUtil.pointToPixel(height, zoom);
 	setSizeInPixels(width, height);
 }
 
@@ -4102,7 +4102,7 @@ public Point toControl (Point point) {
 public Point toDisplay (int x, int y) {
 	checkWidget ();
 	int zoom = getZoom();
-	Point displayPointInPixels = toDisplayInPixels(Win32DPIUtils.pointToPixel(x, zoom), Win32DPIUtils.pointToPixel(y, zoom));
+	Point displayPointInPixels = toDisplayInPixels(DPIUtil.pointToPixel(x, zoom), DPIUtil.pointToPixel(y, zoom));
 	return getDisplay().translateFromDisplayCoordinates(displayPointInPixels);
 }
 

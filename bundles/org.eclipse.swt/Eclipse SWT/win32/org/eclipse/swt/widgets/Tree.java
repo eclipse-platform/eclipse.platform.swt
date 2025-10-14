@@ -465,7 +465,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 					if (explorerTheme) {
 						if (hooks (SWT.EraseItem)) {
 							RECT itemRect = item.getBounds (index, true, true, false, false, true, hDC);
-							int explorerExtraInPixels = Win32DPIUtils.pointToPixel(EXPLORER_EXTRA, zoom);
+							int explorerExtraInPixels = DPIUtil.pointToPixel(EXPLORER_EXTRA, zoom);
 							itemRect.left -= explorerExtraInPixels;
 							itemRect.right += explorerExtraInPixels + 1;
 							pClipRect.left = itemRect.left;
@@ -748,7 +748,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 						}
 					}
 				}
-				rect.left += Win32DPIUtils.pointToPixel(INSET - 1, zoom) ;
+				rect.left += DPIUtil.pointToPixel(INSET - 1, zoom) ;
 				if (drawImage) {
 					Image image = null;
 					if (index == 0) {
@@ -757,14 +757,14 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 						Image [] images  = item.images;
 						if (images != null) image = images [index];
 					}
-					int inset = i != 0 ? Win32DPIUtils.pointToPixel(INSET, zoom) : 0;
-					int offset = i != 0 ? Win32DPIUtils.pointToPixel(INSET, zoom) : Win32DPIUtils.pointToPixel(INSET + 2, zoom);
+					int inset = i != 0 ? DPIUtil.pointToPixel(INSET, zoom) : 0;
+					int offset = i != 0 ? DPIUtil.pointToPixel(INSET, zoom) : DPIUtil.pointToPixel(INSET + 2, zoom);
 					if (image != null) {
 						Rectangle bounds = image.getBounds (); // Points
 						if (size == null) size = Win32DPIUtils.pixelToPointAsSize (getImageSize (), zoom); // To Points
 						if (!ignoreDrawForeground) {
 							//int y1 = rect.top + (index == 0 ? (getItemHeight () - size.y) / 2 : 0);
-							int y1 = rect.top + Win32DPIUtils.pointToPixel((getItemHeight () - size.y) / 2, zoom);
+							int y1 = rect.top + DPIUtil.pointToPixel((getItemHeight () - size.y) / 2, zoom);
 							int x1 = Math.max (rect.left, rect.left - inset + 1);
 							GCData data = new GCData();
 							data.device = display;
@@ -774,7 +774,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 							OS.SelectClipRgn (hDC, 0);
 							gc.dispose ();
 						}
-						OS.SetRect (rect, rect.left + Win32DPIUtils.pointToPixel(size.x, zoom) + offset, rect.top, rect.right - inset, rect.bottom);
+						OS.SetRect (rect, rect.left + DPIUtil.pointToPixel(size.x, zoom) + offset, rect.top, rect.right - inset, rect.bottom);
 					} else {
 						if (i == 0) {
 							if (OS.SendMessage (handle, OS.TVM_GETIMAGELIST, OS.TVSIL_NORMAL, 0) != 0) {
@@ -1132,7 +1132,7 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 					if ((style & SWT.FULL_SELECTION) == 0) {
 						RECT pRect = item.getBounds (index, true, true, false, false, false, hDC);
 						RECT pClipRect = item.getBounds (index, true, true, true, false, true, hDC);
-						int explorerExtraInPixels = Win32DPIUtils.pointToPixel(EXPLORER_EXTRA, zoom);
+						int explorerExtraInPixels = DPIUtil.pointToPixel(EXPLORER_EXTRA, zoom);
 						if (measureEvent != null) {
 							pRect.right = Math.min (pClipRect.right, boundsInPixels.x + boundsInPixels.width);
 						} else {
@@ -1209,7 +1209,7 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 			OS.SaveDC (hDC);
 			OS.SelectClipRgn (hDC, 0);
 			if (explorerTheme) {
-				int explorerExtraInPixels = Win32DPIUtils.pointToPixel(EXPLORER_EXTRA, getZoom());
+				int explorerExtraInPixels = DPIUtil.pointToPixel(EXPLORER_EXTRA, getZoom());
 				itemRect.left -= explorerExtraInPixels;
 				itemRect.right += explorerExtraInPixels;
 			}
@@ -2966,7 +2966,7 @@ public int getGridLineWidth () {
 }
 
 int getGridLineWidthInPixels () {
-	return Win32DPIUtils.pointToPixel(GRID_WIDTH, getZoom());
+	return DPIUtil.pointToPixel(GRID_WIDTH, getZoom());
 }
 
 /**
@@ -5037,7 +5037,7 @@ void setScrollWidth (int width) {
 		}
 	}
 	if (horizontalBar != null) {
-		horizontalBar.setIncrement (Win32DPIUtils.pointToPixel(INCREMENT, getZoom()));
+		horizontalBar.setIncrement (DPIUtil.pointToPixel(INCREMENT, getZoom()));
 		horizontalBar.setPageIncrement (info.nPage);
 	}
 	OS.GetClientRect (hwndParent, rect);
@@ -5373,7 +5373,7 @@ public void setTopItem (TreeItem item) {
  * In a Tree without imageList, the indent also controls the chevron (glyph) size.
  */
 private void calculateAndApplyIndentSize() {
-	int indent = Win32DPIUtils.pointToPixel(DEFAULT_INDENT, nativeZoom);
+	int indent = DPIUtil.pointToPixel(DEFAULT_INDENT, nativeZoom);
 	OS.SendMessage(handle, OS.TVM_SETINDENT, indent, 0);
 }
 
@@ -5486,7 +5486,7 @@ public void showColumn (TreeColumn column) {
 			SCROLLINFO info = new SCROLLINFO();
 			info.cbSize = SCROLLINFO.sizeof;
 			info.fMask = OS.SIF_POS;
-			info.nPos = Math.max(0, headerRect.left - Win32DPIUtils.pointToPixel(INSET / 2, getZoom()));
+			info.nPos = Math.max(0, headerRect.left - DPIUtil.pointToPixel(INSET / 2, getZoom()));
 			OS.SetScrollInfo(hwndParent, OS.SB_HORZ, info, true);
 			setScrollWidth();
 		} else if (scrollBecauseRight) {
@@ -5500,8 +5500,8 @@ public void showColumn (TreeColumn column) {
 			// info.nPos + wideRect = headerRect.left + wideHeader
 			// info.nPos = headerRect.left + wideHeader - wideRect
 			info.nPos = Math.max(0, wideHeader + headerRect.left - wideRect
-					- Win32DPIUtils.pointToPixel(INSET / 2, getZoom()) );
-			info.nPos = Math.min(rect.right - Win32DPIUtils.pointToPixel(INSET / 2, getZoom()), info.nPos);
+					- DPIUtil.pointToPixel(INSET / 2, getZoom()) );
+			info.nPos = Math.min(rect.right - DPIUtil.pointToPixel(INSET / 2, getZoom()), info.nPos);
 
 			OS.SetScrollInfo(hwndParent, OS.SB_HORZ, info, true);
 			setScrollWidth();
@@ -6073,7 +6073,7 @@ long windowProc (long hwnd, int msg, long wParam, long lParam) {
 			RECT clientRect = new RECT ();
 			OS.GetClientRect(handle, clientRect);
 			RECT rect = items [0].getBounds (0, true, true, false);
-			int dragImageSizeInPixels = Win32DPIUtils.pointToPixel(DRAG_IMAGE_SIZE, getZoom());
+			int dragImageSizeInPixels = DPIUtil.pointToPixel(DRAG_IMAGE_SIZE, getZoom());
 			if ((style & SWT.FULL_SELECTION) != 0) {
 				int width = dragImageSizeInPixels;
 				rect.left = Math.max (clientRect.left, mousePos.x - width / 2);
@@ -7889,7 +7889,7 @@ LRESULT wmNotifyHeader (NMHDR hdr, long wParam, long lParam) {
 							 * Sort indicator size needs to scale as per the Native Windows OS DPI level
 							 * when header is custom drawn. For more details refer bug 537097.
 							 */
-							int leg = Win32DPIUtils.pointToPixel(3, nativeZoom);
+							int leg = DPIUtil.pointToPixel(3, nativeZoom);
 							if (sortDirection == SWT.UP) {
 								OS.Polyline(nmcd.hdc, new int[] {center-leg, 1+leg, center+1, 0}, 2);
 								OS.Polyline(nmcd.hdc, new int[] {center+leg, 1+leg, center-1, 0}, 2);
@@ -7928,7 +7928,7 @@ LRESULT wmNotifyHeader (NMHDR hdr, long wParam, long lParam) {
 							}
 						}
 
-						int x = rects[i].left + Win32DPIUtils.pointToPixel(INSET + 2, getZoom());
+						int x = rects[i].left + DPIUtil.pointToPixel(INSET + 2, getZoom());
 						if (columns[i].image != null) {
 							GCData data = new GCData();
 							data.device = display;
@@ -8246,7 +8246,7 @@ LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, long lParam) {
 							data.background = OS.GetBkColor (nmcd.hdc);
 							data.font = Font.win32_new (display, hFont);
 							GC gc = createNewGC(nmcd.hdc, data);
-							int x = cellRect [0].left + Win32DPIUtils.pointToPixel(INSET, getZoom());
+							int x = cellRect [0].left + DPIUtil.pointToPixel(INSET, getZoom());
 							if (index [0] != 0) x -= gridWidth;
 							Image image = item [0].getImage (index [0]);
 							if (image != null || index [0] == 0) {
@@ -8257,11 +8257,11 @@ LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, long lParam) {
 									Rectangle rect = image.getBounds (); // Points
 									int zoom = getZoom();
 									gc.drawImage (image, rect.x, rect.y, rect.width, rect.height, DPIUtil.pixelToPoint(x, zoom), DPIUtil.pixelToPoint(imageRect.top, zoom), DPIUtil.pixelToPoint(size.x, zoom), DPIUtil.pixelToPoint(size.y, zoom));
-									x += Win32DPIUtils.pointToPixel(INSET, getZoom()) + (index [0] == 0 ? 1 : 0);
+									x += DPIUtil.pointToPixel(INSET, getZoom()) + (index [0] == 0 ? 1 : 0);
 								}
 								x += size.x;
 							} else {
-								x += Win32DPIUtils.pointToPixel(INSET, getZoom());
+								x += DPIUtil.pointToPixel(INSET, getZoom());
 							}
 							String string = item [0].getText (index [0]);
 							if (string != null) {

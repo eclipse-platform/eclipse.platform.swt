@@ -198,8 +198,8 @@ void reskinChildren (int flags) {
 public void scroll (int destX, int destY, int x, int y, int width, int height, boolean all) {
 	checkWidget ();
 	int zoom = getZoom();
-	destX = Win32DPIUtils.pointToPixel(destX, zoom);
-	destY = Win32DPIUtils.pointToPixel(destY, zoom);
+	destX = DPIUtil.pointToPixel(destX, zoom);
+	destY = DPIUtil.pointToPixel(destY, zoom);
 	Rectangle rectangle = Win32DPIUtils.pointToPixel(new Rectangle(x, y, width, height), zoom);
 	scrollInPixels(destX, destY, rectangle.x, rectangle.y, rectangle.width, rectangle.height, all);
 }

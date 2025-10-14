@@ -538,8 +538,8 @@ private void drag(Event dragEvent) {
 		int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
 		OS.RedrawWindow (topControl.handle, null, 0, flags);
 		POINT pt = new POINT ();
-		pt.x = Win32DPIUtils.pointToPixel(dragEvent.x, zoom);// To Pixels
-		pt.y = Win32DPIUtils.pointToPixel(dragEvent.y, zoom);// To Pixels
+		pt.x = DPIUtil.pointToPixel(dragEvent.x, zoom);// To Pixels
+		pt.y = DPIUtil.pointToPixel(dragEvent.y, zoom);// To Pixels
 		OS.MapWindowPoints (control.handle, 0, pt, 1);
 		RECT rect = new RECT ();
 		OS.GetWindowRect (hwndDrag, rect);
