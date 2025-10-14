@@ -5940,13 +5940,13 @@ void sendZoomChangedEvent(Event event, Shell shell) {
 					notifyListeners(SWT.ZoomChanged, event);
 				}
 			} finally {
+				if (event == currentDpiChangeEvent) {
+					currentDpiChangeEvent = null;
+				}
 				if (shell.isDisposed()) {
 					return;
 				}
 				if (dpiExecData.decrement()) {
-					if (event == currentDpiChangeEvent) {
-						currentDpiChangeEvent = null;
-					}
 					if (event.doit) {
 						shell.WM_SIZE(0, 0);
 					}
