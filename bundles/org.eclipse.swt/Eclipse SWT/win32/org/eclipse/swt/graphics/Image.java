@@ -1636,8 +1636,8 @@ private static HandleForImageDataContainer init(Device device, ImageData i) {
 	}
 }
 
-private void setImageMetadataForHandle(ImageHandle imageMetadata, Integer zoom) {
-	if (zoom == null)
+private void setImageMetadataForHandle(ImageHandle imageMetadata, int zoom) {
+	if (zoom == -1)
 		return;
 	if (zoomLevelToImageHandle.containsKey(zoom)) {
 		SWT.error(SWT.ERROR_ITEM_NOT_ADDED);
