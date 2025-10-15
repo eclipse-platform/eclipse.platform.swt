@@ -1783,7 +1783,7 @@ long gtk_motion_notify_event (long widget, long event) {
 }
 
 @Override
-long gtk_key_press_event (long widget, long event) {
+long gtk3_key_press_event (long widget, long event) {
 	if (widget == shellHandle) {
 		/* Stop menu mnemonics when the shell is disabled */
 		if ((state & DISABLED) != 0) return 1;
@@ -1812,7 +1812,7 @@ long gtk_key_press_event (long widget, long event) {
 
 						int mask = GTK.gtk_accelerator_get_default_mod_mask ();
 						if (key[0] == keyval [0] && (state[0] & mask) == (mods [0] & mask)) {
-							return focusControl.gtk_key_press_event (focusControl.focusHandle (), event);
+							return focusControl.gtk3_key_press_event (focusControl.focusHandle (), event);
 						}
 					}
 				}
@@ -1820,7 +1820,7 @@ long gtk_key_press_event (long widget, long event) {
 		}
 		return 0;
 	}
-	return super.gtk_key_press_event (widget, event);
+	return super.gtk3_key_press_event (widget, event);
 }
 
 @Override

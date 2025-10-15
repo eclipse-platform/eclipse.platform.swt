@@ -3994,7 +3994,7 @@ boolean gtk4_key_press_event(long controller, int keyval, int keycode, int state
 }
 
 @Override
-long gtk_key_press_event (long widget, long event) {
+long gtk3_key_press_event (long widget, long event) {
 	int [] eventKeyval = new int [1];
 	GDK.gdk_event_get_keyval(event, eventKeyval);
 
@@ -4021,7 +4021,7 @@ long gtk_key_press_event (long widget, long event) {
 	if (translateTraversal (event)) return 1;
 	// widget could be disposed at this point
 	if (isDisposed ()) return 0;
-	return super.gtk_key_press_event (widget, event);
+	return super.gtk3_key_press_event (widget, event);
 }
 
 @Override
@@ -4037,13 +4037,13 @@ void gtk4_key_release_event(long controller, int keyval, int keycode, int state,
 }
 
 @Override
-long gtk_key_release_event (long widget, long event) {
+long gtk3_key_release_event (long widget, long event) {
 	if (!hasFocus ()) return 0;
 	long imHandle = imHandle ();
 	if (imHandle != 0) {
 		if (GTK3.gtk_im_context_filter_keypress(imHandle, event)) return 1;
 	}
-	return super.gtk_key_release_event (widget, event);
+	return super.gtk3_key_release_event (widget, event);
 }
 
 @Override

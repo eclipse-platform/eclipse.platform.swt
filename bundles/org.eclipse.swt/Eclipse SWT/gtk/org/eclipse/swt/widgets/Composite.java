@@ -915,8 +915,8 @@ boolean gtk4_key_press_event(long controller, int keyval, int keycode, int state
 }
 
 @Override
-long gtk_key_press_event (long widget, long event) {
-	long result = super.gtk_key_press_event (widget, event);
+long gtk3_key_press_event (long widget, long event) {
+	long result = super.gtk3_key_press_event (widget, event);
 	if (result != 0) return result;
 	/*
 	* Feature in GTK.  The default behavior when the return key

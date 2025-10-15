@@ -795,8 +795,8 @@ long gtk_insert_text (long widget, long new_text, long new_text_length, long pos
 }
 
 @Override
-long gtk_key_press_event (long widget, long event) {
-	long result = super.gtk_key_press_event (widget, event);
+long gtk3_key_press_event (long widget, long event) {
+	long result = super.gtk3_key_press_event (widget, event);
 	if (result != 0) fixIM ();
 	if (gdkEventKey == -1) result = 1;
 	gdkEventKey = 0;
