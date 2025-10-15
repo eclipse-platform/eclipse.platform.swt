@@ -1773,8 +1773,8 @@ long gtk_insert_text (long widget, long new_text, long new_text_length, long pos
 }
 
 @Override
-long gtk_key_press_event (long widget, long event) {
-	long result = super.gtk_key_press_event (widget, event);
+long gtk3_key_press_event (long widget, long event) {
+	long result = super.gtk3_key_press_event (widget, event);
 	if (result != 0) {
 		gdkEventKey = 0;
 		fixIM ();
@@ -1786,11 +1786,7 @@ long gtk_key_press_event (long widget, long event) {
 		int oldIndex = GTK.gtk_combo_box_get_active (handle);
 		int newIndex = oldIndex;
 		int [] eventKeyval = new int [1];
-		if (GTK.GTK4) {
-			eventKeyval[0] = GDK.gdk_key_event_get_keyval(event);
-		} else {
-			GDK.gdk_event_get_keyval(event, eventKeyval);
-		}
+		GDK.gdk_event_get_keyval(event, eventKeyval);
 
 		switch (eventKeyval[0]) {
 			case GDK.GDK_Down:

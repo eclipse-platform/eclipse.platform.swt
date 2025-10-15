@@ -474,19 +474,14 @@ long gtk_button_release_event (long widget, long event) {
 }
 
 @Override
-long gtk_key_press_event (long widget, long eventPtr) {
-	long result = super.gtk_key_press_event (widget, eventPtr);
+long gtk3_key_press_event (long widget, long eventPtr) {
+	long result = super.gtk3_key_press_event (widget, eventPtr);
 	if (result != 0) return result;
 
 	int [] state = new int [1];
 	int [] keyval = new int [1];
-	if (GTK.GTK4) {
-		state[0] = GDK.gdk_event_get_modifier_state(eventPtr);
-		keyval[0] = GDK.gdk_key_event_get_keyval(eventPtr);
-	} else {
-		GDK.gdk_event_get_state(eventPtr, state);
-		GDK.gdk_event_get_keyval(eventPtr, keyval);
-	}
+	GDK.gdk_event_get_state(eventPtr, state);
+	GDK.gdk_event_get_keyval(eventPtr, keyval);
 
 	int stepSize = ((state[0] & GDK.GDK_CONTROL_MASK) != 0) ? STEPSIZE_SMALL : STEPSIZE_LARGE;
 	int xChange = 0, yChange = 0;
@@ -923,8 +918,8 @@ boolean processEvent (long eventPtr) {
 	switch (eventType) {
 		case GDK.GDK_MOTION_NOTIFY: gtk_motion_notify_event (widget, eventPtr); break;
 		case GDK.GDK_BUTTON_RELEASE: gtk_button_release_event (widget, eventPtr); break;
-		case GDK.GDK_KEY_PRESS: gtk_key_press_event (widget, eventPtr); break;
-		case GDK.GDK_KEY_RELEASE: gtk_key_release_event (widget, eventPtr); break;
+		case GDK.GDK_KEY_PRESS: gtk3_key_press_event (widget, eventPtr); break;
+		case GDK.GDK_KEY_RELEASE: gtk3_key_release_event (widget, eventPtr); break;
 		case GDK.GDK_BUTTON_PRESS:
 		case GDK.GDK_2BUTTON_PRESS:
 		case GDK.GDK_3BUTTON_PRESS:

@@ -1843,22 +1843,17 @@ long gtk_insert_text (long widget, long new_text, long new_text_length, long pos
 }
 
 @Override
-long gtk_key_press_event (long widget, long event) {
+long gtk3_key_press_event (long widget, long event) {
 	boolean handleSegments = false, segmentsCleared = false;
 	if (hooks (SWT.Segments) || filters (SWT.Segments)) {
 		int length = 0;
 		int [] state = new int[1];
 
-		if (GTK.GTK4) {
-			/* TODO: GTK4 no access to key event string */
-			state[0] = GDK.gdk_event_get_modifier_state(event);
-		} else {
-			GDK.gdk_event_get_state(event, state);
+		GDK.gdk_event_get_state(event, state);
 
-			GdkEventKey gdkEvent = new GdkEventKey ();
-			GTK3.memmove(gdkEvent, event, GdkEventKey.sizeof);
-			length = gdkEvent.length;
-		}
+		GdkEventKey gdkEvent = new GdkEventKey ();
+		GTK3.memmove(gdkEvent, event, GdkEventKey.sizeof);
+		length = gdkEvent.length;
 
 		if (length > 0 && (state[0] & (GDK.GDK_MOD1_MASK | GDK.GDK_CONTROL_MASK)) == 0) {
 			handleSegments = true;
@@ -1868,7 +1863,7 @@ long gtk_key_press_event (long widget, long event) {
 			}
 		}
 	}
-	long result = super.gtk_key_press_event (widget, event);
+	long result = super.gtk3_key_press_event (widget, event);
 	if (result != 0) fixIM ();
 	if (gdkEventKey == -1) result = 1;
 	gdkEventKey = 0;

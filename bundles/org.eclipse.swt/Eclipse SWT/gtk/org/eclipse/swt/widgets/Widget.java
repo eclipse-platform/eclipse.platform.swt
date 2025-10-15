@@ -996,11 +996,11 @@ long gtk_insert_text (long widget, long new_text, long new_text_length, long pos
 	return 0;
 }
 
-long gtk_key_press_event (long widget, long event) {
+long gtk3_key_press_event (long widget, long event) {
 	return sendKeyEvent (SWT.KeyDown, event) ? 0 : 1;
 }
 
-long gtk_key_release_event (long widget, long event) {
+long gtk3_key_release_event (long widget, long event) {
 	return sendKeyEvent (SWT.KeyUp, event) ? 0 : 1;
 }
 
@@ -2636,8 +2636,8 @@ long windowProc (long handle, long arg0, long user_data) {
 		case FOCUS: return gtk_focus (handle, arg0);
 		case FOCUS_IN_EVENT: return gtk_focus_in_event (handle, arg0);
 		case FOCUS_OUT_EVENT: return gtk_focus_out_event (handle, arg0);
-		case KEY_PRESS_EVENT: return gtk_key_press_event (handle, arg0);
-		case KEY_RELEASE_EVENT: return gtk_key_release_event (handle, arg0);
+		case KEY_PRESS_EVENT: return gtk3_key_press_event (handle, arg0);
+		case KEY_RELEASE_EVENT: return gtk3_key_release_event (handle, arg0);
 		case INPUT: return gtk_input (handle, arg0);
 		case LEAVE_NOTIFY_EVENT: return gtk_leave_notify_event (handle, arg0);
 		case MAP_EVENT: return gtk_map_event (handle, arg0);

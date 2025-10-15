@@ -312,9 +312,9 @@ public int getSpacing () {
 }
 
 @Override
-long gtk_key_press_event (long widget, long event) {
+long gtk3_key_press_event (long widget, long event) {
 	if (!hasFocus ()) return 0;
-	long result = super.gtk_key_press_event (widget, event);
+	long result = super.gtk3_key_press_event (widget, event);
 	if (result != 0) return result;
 	int index = 0;
 	while (index < itemCount) {

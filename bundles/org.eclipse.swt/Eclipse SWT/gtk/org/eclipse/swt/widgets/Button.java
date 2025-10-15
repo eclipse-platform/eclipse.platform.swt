@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2023 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -674,8 +674,8 @@ boolean gtk4_key_press_event(long controller, int keyval, int keycode, int state
 }
 
 @Override
-long gtk_key_press_event (long widget, long event) {
-	long result = super.gtk_key_press_event (widget, event);
+long gtk3_key_press_event (long widget, long event) {
+	long result = super.gtk3_key_press_event (widget, event);
 	if (result != 0) return result;
 	if ((style & SWT.RADIO) != 0) {
 		selected  = getSelection ();

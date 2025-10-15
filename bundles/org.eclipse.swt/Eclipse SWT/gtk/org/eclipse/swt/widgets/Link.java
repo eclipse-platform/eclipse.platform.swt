@@ -487,8 +487,8 @@ boolean gtk4_key_press_event(long controller, int keyval, int keycode, int state
 }
 
 @Override
-long gtk_key_press_event (long widget, long eventPtr) {
-	long result = super.gtk_key_press_event (widget, eventPtr);
+long gtk3_key_press_event (long widget, long eventPtr) {
+	long result = super.gtk3_key_press_event (widget, eventPtr);
 	if (result != 0) return result;
 	if (focusIndex == -1) return result;
 
