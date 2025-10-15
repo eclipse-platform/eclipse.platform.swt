@@ -355,7 +355,7 @@ public void pack () {
 				Event event = parent.sendMeasureItemEvent (item, index, hDC, detail);
 				if (isDisposed () || parent.isDisposed ()) break;
 				Rectangle bounds = event.getBounds();
-				itemRight = Win32DPIUtils.pointToPixel(bounds.x + bounds.width, getZoom());
+				itemRight = DPIUtil.pointToPixel(bounds.x + bounds.width, getZoom());
 			} else {
 				long hFont = item.fontHandle (index);
 				if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
@@ -371,8 +371,8 @@ public void pack () {
 	int flags = OS.DT_CALCRECT | OS.DT_NOPREFIX;
 	char [] buffer = text.toCharArray ();
 	OS.DrawText (hDC, buffer, buffer.length, rect, flags);
-	int headerWidth = rect.right - rect.left + Win32DPIUtils.pointToPixel(Tree.HEADER_MARGIN, getZoom());
-	if (OS.IsAppThemed ()) headerWidth += Win32DPIUtils.pointToPixel(Tree.HEADER_EXTRA, getZoom());
+	int headerWidth = rect.right - rect.left + DPIUtil.pointToPixel(Tree.HEADER_MARGIN, getZoom());
+	if (OS.IsAppThemed ()) headerWidth += DPIUtil.pointToPixel(Tree.HEADER_EXTRA, getZoom());
 	if (image != null) {
 		Rectangle bounds = Win32DPIUtils.pointToPixel(image.getBounds(), getZoom());
 		headerWidth += bounds.width;
@@ -705,7 +705,7 @@ public void setToolTipText (String string) {
  */
 public void setWidth (int width) {
 	checkWidget ();
-	setWidthInPixels(Win32DPIUtils.pointToPixel(width, getZoom()));
+	setWidthInPixels(DPIUtil.pointToPixel(width, getZoom()));
 }
 
 void setWidthInPixels (int width) {

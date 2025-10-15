@@ -360,10 +360,10 @@ int computeLeftMargin () {
 					Rectangle rect = Win32DPIUtils.scaleBounds(image.getBounds(), this.getZoom(), 100);
 					width = rect.width;
 					if (hasText && text.length () != 0) {
-						width += Win32DPIUtils.pointToPixel(MARGIN * 2, getZoom());;
+						width += DPIUtil.pointToPixel(MARGIN * 2, getZoom());;
 					}
 					height = rect.height;
-					extra = Win32DPIUtils.pointToPixel(MARGIN * 2, getZoom());;
+					extra = DPIUtil.pointToPixel(MARGIN * 2, getZoom());;
 				}
 			}
 			if (hasText) {
@@ -377,7 +377,7 @@ int computeLeftMargin () {
 				if (length == 0) {
 					height = Math.max (height, lptm.tmHeight);
 				} else {
-					extra = Math.max (Win32DPIUtils.pointToPixel(MARGIN * 2, getZoom()), lptm.tmAveCharWidth);
+					extra = Math.max (DPIUtil.pointToPixel(MARGIN * 2, getZoom()), lptm.tmAveCharWidth);
 					char [] buffer = text.toCharArray ();
 					RECT rect = new RECT ();
 					int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE;
@@ -1313,7 +1313,7 @@ private int getCheckboxTextOffset(long hdc) {
 		OS.GetThemePartSize(display.hButtonTheme(nativeZoom), hdc, OS.BP_CHECKBOX, OS.CBS_UNCHECKEDNORMAL, null, OS.TS_TRUE, size);
 		result += size.cx;
 	} else {
-		result += Win32DPIUtils.pointToPixel(13, nativeZoom);
+		result += DPIUtil.pointToPixel(13, nativeZoom);
 	}
 
 	// Windows uses half width of '0' as checkbox-to-text distance.

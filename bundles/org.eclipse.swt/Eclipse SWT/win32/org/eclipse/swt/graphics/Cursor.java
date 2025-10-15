@@ -598,11 +598,11 @@ private static abstract class HotspotAwareCursorHandleProvider implements Cursor
 	}
 
 	protected final int getHotpotXInPixels(int zoom) {
-		return Win32DPIUtils.pointToPixel(hotspotX, zoom);
+		return DPIUtil.pointToPixel(hotspotX, zoom);
 	}
 
 	protected final int getHotpotYInPixels(int zoom) {
-		return Win32DPIUtils.pointToPixel(hotspotY, zoom);
+		return DPIUtil.pointToPixel(hotspotY, zoom);
 	}
 
 	protected static final void validateHotspotInsideImage(ImageData source, int hotspotX, int hotspotY) {

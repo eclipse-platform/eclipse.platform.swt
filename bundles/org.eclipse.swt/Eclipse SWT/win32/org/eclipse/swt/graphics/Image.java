@@ -2320,8 +2320,8 @@ private class PlainImageProviderWrapper extends AbstractImageProviderWrapper {
 
 	private long initHandle(int zoom) {
 		if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-		int scaledWidth = Win32DPIUtils.pointToPixel (width, zoom);
-		int scaledHeight = Win32DPIUtils.pointToPixel (height, zoom);
+		int scaledWidth = DPIUtil.pointToPixel (width, zoom);
+		int scaledHeight = DPIUtil.pointToPixel (height, zoom);
 		long hDC = device.internal_new_GC(null);
 		long newHandle = OS.CreateCompatibleBitmap(hDC, scaledWidth, scaledHeight);
 		/*
@@ -2752,8 +2752,8 @@ private class ImageGcDrawerWrapper extends DynamicImageProviderWrapper {
 		int gcStyle = drawer.getGcStyle();
 		Image image;
 		if ((gcStyle & SWT.TRANSPARENT) != 0) {
-			int scaledHeight = Win32DPIUtils.pointToPixel(height, targetZoom);
-			int scaledWidth = Win32DPIUtils.pointToPixel(width, targetZoom);
+			int scaledHeight = DPIUtil.pointToPixel(height, targetZoom);
+			int scaledWidth = DPIUtil.pointToPixel(width, targetZoom);
 			/* Create a 24 bit image data with alpha channel */
 			final ImageData resultData = new ImageData (scaledWidth, scaledHeight, 24, new PaletteData (0xFF, 0xFF00, 0xFF0000));
 			resultData.alphaData = new byte [scaledWidth * scaledHeight];

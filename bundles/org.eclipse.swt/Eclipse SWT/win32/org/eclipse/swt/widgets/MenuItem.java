@@ -1359,7 +1359,7 @@ LRESULT wmMeasureChild (long wParam, long lParam) {
 		if (parent.needsMenuCallback()) {
 			Point point = calculateRenderedTextSize();
 			int menuZoom = getDisplay().isRescalingAtRuntime() ? super.getZoom() : getMonitorZoom();
-			struct.itemHeight = Win32DPIUtils.pointToPixel(point.y, menuZoom);
+			struct.itemHeight = DPIUtil.pointToPixel(point.y, menuZoom);
 			/*
 			 * Weirdness in Windows. Setting `HBMMENU_CALLBACK` causes
 			 * item sizes to mean something else. It seems that it is
@@ -1369,7 +1369,7 @@ LRESULT wmMeasureChild (long wParam, long lParam) {
 			 * that value of 5 works well in matching text to mnemonic.
 			 */
 			int horizontalSpaceImage = this.image != null ? this.image.getBounds().width + IMAGE_TEXT_GAP: 0;
-			struct.itemWidth = Win32DPIUtils.pointToPixel(LEFT_TEXT_MARGIN + point.x - WINDOWS_OVERHEAD + horizontalSpaceImage, menuZoom);
+			struct.itemWidth = DPIUtil.pointToPixel(LEFT_TEXT_MARGIN + point.x - WINDOWS_OVERHEAD + horizontalSpaceImage, menuZoom);
 			OS.MoveMemory (lParam, struct, MEASUREITEMSTRUCT.sizeof);
 			return null;
 		}
