@@ -4801,12 +4801,9 @@ public boolean setParent (Composite parent) {
 	if (OS.SetParent (topHandle, parent.handle) == 0) return false;
 	this.parent = parent;
 	// If parent changed, zoom level might need to be adjusted
-	if (parent.nativeZoom != nativeZoom) {
-		int newZoom = parent.nativeZoom;
-		Event zoomChangedEvent = createZoomChangedEvent(newZoom);
-		if (currentDpiChangeEvent != null) {
-			currentDpiChangeEvent.doit = false;
-		}
+	int newZoom = parent.nativeZoom;
+	if (newZoom != nativeZoom) {
+		Event zoomChangedEvent = createZoomChangedEvent(newZoom, false);
 		sendZoomChangedEvent(zoomChangedEvent, getShell());
 	}
 	int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE;
@@ -5019,7 +5016,10 @@ LRESULT WM_DESTROY (long wParam, long lParam) {
 
 private void handleMonitorSpecificDpiChange(int newNativeZoom, Rectangle newBoundsInPixels) {
 	DPIUtil.setDeviceZoom (newNativeZoom);
-	Event zoomChangedEvent = createZoomChangedEvent(newNativeZoom);
+	// Do not process DPI change for child shells asynchronous to avoid relayouting when
+	// repositioning the child shell to a different monitor upon opening
+	boolean processDpiChangeAsynchronous = getShell().getParent() == null;
+	Event zoomChangedEvent = createZoomChangedEvent(newNativeZoom, processDpiChangeAsynchronous);
 	if (currentDpiChangeEvent != null) {
 		currentDpiChangeEvent.doit = false;
 	}
@@ -5028,13 +5028,15 @@ private void handleMonitorSpecificDpiChange(int newNativeZoom, Rectangle newBoun
 	this.setBoundsInPixels(newBoundsInPixels.x, newBoundsInPixels.y, newBoundsInPixels.width, newBoundsInPixels.height);
 }
 
-Event createZoomChangedEvent(int zoom) {
+Event createZoomChangedEvent(int zoom, boolean asyncExec) {
 	Event event = new Event();
 	event.type = SWT.ZoomChanged;
 	event.widget = this;
 	event.detail = zoom;
 	event.doit = true;
-	event.data = new DPIChangeExecution();
+	DPIChangeExecution dpiChangeExecution = new DPIChangeExecution();
+	dpiChangeExecution.asyncExec = asyncExec;
+	event.data = dpiChangeExecution;
 	return event;
 }
 

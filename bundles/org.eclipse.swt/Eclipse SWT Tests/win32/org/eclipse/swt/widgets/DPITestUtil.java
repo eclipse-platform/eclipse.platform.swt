@@ -28,7 +28,7 @@ public final class DPITestUtil {
 
 	public static void changeDPIZoom (Shell shell, int nativeZoom) {
 		DPIUtil.setDeviceZoom(nativeZoom);
-		Event event = shell.createZoomChangedEvent(nativeZoom);
+		Event event = shell.createZoomChangedEvent(nativeZoom, true);
 		shell.sendZoomChangedEvent(event, shell);
 		DPIChangeExecution data = (DPIChangeExecution) event.data;
 		waitForDPIChange(shell, TIMEOUT_MILLIS, data.taskCount);
