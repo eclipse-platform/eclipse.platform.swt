@@ -78,11 +78,14 @@ public abstract class Control extends Widget implements Drawable {
 	Region region;
 	Font font;
 	int drawCount, foreground, background, backgroundAlpha = 255;
+	boolean autoScaleDisabled = false;
 
 	/** Cache for currently processed DPI change event to be able to cancel it if a new one is triggered */
 	Event currentDpiChangeEvent;
 
 	private static final String DATA_SHELL_ZOOM = "SHELL_ZOOM";
+
+	private static final String DATA_AUTOSCALE_DISABLED = "AUTOSCALE_DISABLED";
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
@@ -122,6 +125,7 @@ Control () {
 public Control (Composite parent, int style) {
 	super (parent, style);
 	this.parent = parent;
+	this.autoScaleDisabled = parent.autoScaleDisabled;
 	createWidget ();
 }
 
@@ -1281,6 +1285,19 @@ public Object getData(String key) {
 		return shell == null ? null : shell.nativeZoom;
 	}
 	return super.getData(key);
+}
+
+@Override
+public void setData(String key, Object value) {
+	super.setData(key, value);
+	if (DATA_AUTOSCALE_DISABLED.equals(key)) {
+		autoScaleDisabled = Boolean.parseBoolean(value.toString());
+		if (autoScaleDisabled) {
+			this.nativeZoom = 100;
+		} else {
+			this.nativeZoom = (int) getData(DATA_SHELL_ZOOM);
+		}
+	}
 }
 
 /**
@@ -3547,7 +3564,7 @@ public void setLayoutData (Object layoutData) {
  */
 public void setLocation (int x, int y) {
 	checkWidget ();
-	int zoom = getZoom();
+	int zoom = autoScaleDisabled ? parent.getZoom() : getZoom();
 	x = DPIUtil.pointToPixel(x, zoom);
 	y = DPIUtil.pointToPixel(y, zoom);
 	setLocationInPixels(x, y);
@@ -3804,7 +3821,7 @@ public void setRegion (Region region) {
  */
 public void setSize (int width, int height) {
 	checkWidget ();
-	int zoom = getZoom();
+	int zoom = autoScaleDisabled ? parent.getZoom() : getZoom();
 	width = DPIUtil.pointToPixel(width, zoom);
 	height = DPIUtil.pointToPixel(height, zoom);
 	setSizeInPixels(width, height);
@@ -4796,6 +4813,23 @@ public boolean setParent (Composite parent) {
 	OS.SetWindowPos (topHandle, OS.HWND_BOTTOM, 0, 0, 0, 0, flags);
 	reskin (SWT.ALL);
 	return true;
+}
+
+@Override
+GC createNewGC(long hDC, GCData data) {
+	data.nativeZoom = getNativeZoom();
+	if (autoScaleDisabled && data.font != null) {
+		data.font = SWTFontProvider.getFont(display, data.font.getFontData()[0], 100);
+	}
+	return GC.win32_new(hDC, data);
+}
+
+@Override
+int getZoom() {
+	if (autoScaleDisabled) {
+		return 100;
+	}
+	return super.getZoom();
 }
 
 abstract TCHAR windowClass ();
@@ -5972,6 +6006,9 @@ void sendZoomChangedEvent(Event event, Shell shell) {
 @Override
 void handleDPIChange(Event event, float scalingFactor) {
 	super.handleDPIChange(event, scalingFactor);
+	if (this.autoScaleDisabled) {
+		this.nativeZoom = 100;
+	}
 	resizeFont(this, getNativeZoom());
 
 	Image image = backgroundImage;
