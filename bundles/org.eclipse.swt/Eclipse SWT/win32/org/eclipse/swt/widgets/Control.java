@@ -26,7 +26,6 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gdip.*;
-import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.ole.win32.*;
 
@@ -79,9 +78,6 @@ public abstract class Control extends Widget implements Drawable {
 	Font font;
 	int drawCount, foreground, background, backgroundAlpha = 255;
 	boolean autoScaleDisabled = false;
-
-	/** Cache for currently processed DPI change event to be able to cancel it if a new one is triggered */
-	Event currentDpiChangeEvent;
 
 	private static final String DATA_SHELL_ZOOM = "SHELL_ZOOM";
 
@@ -5014,20 +5010,6 @@ LRESULT WM_DESTROY (long wParam, long lParam) {
 	return null;
 }
 
-private void handleMonitorSpecificDpiChange(int newNativeZoom, Rectangle newBoundsInPixels) {
-	DPIUtil.setDeviceZoom (newNativeZoom);
-	// Do not process DPI change for child shells asynchronous to avoid relayouting when
-	// repositioning the child shell to a different monitor upon opening
-	boolean processDpiChangeAsynchronous = getShell().getParent() == null;
-	Event zoomChangedEvent = createZoomChangedEvent(newNativeZoom, processDpiChangeAsynchronous);
-	if (currentDpiChangeEvent != null) {
-		currentDpiChangeEvent.doit = false;
-	}
-	currentDpiChangeEvent = zoomChangedEvent;
-	notifyListeners(SWT.ZoomChanged, zoomChangedEvent);
-	this.setBoundsInPixels(newBoundsInPixels.x, newBoundsInPixels.y, newBoundsInPixels.width, newBoundsInPixels.height);
-}
-
 Event createZoomChangedEvent(int zoom, boolean asyncExec) {
 	Event event = new Event();
 	event.type = SWT.ZoomChanged;
@@ -5040,38 +5022,12 @@ Event createZoomChangedEvent(int zoom, boolean asyncExec) {
 	return event;
 }
 
-LRESULT WM_DPICHANGED (long wParam, long lParam) {
-	// Map DPI to Zoom and compare
-	int newNativeZoom = DPIUtil.mapDPIToZoom (OS.HIWORD (wParam));
-	if (getDisplay().isRescalingAtRuntime()) {
-		Device.win32_destroyUnusedHandles(getDisplay());
-		RECT rect = new RECT ();
-		COM.MoveMemory(rect, lParam, RECT.sizeof);
-		handleMonitorSpecificDpiChange(newNativeZoom, new Rectangle(rect.left, rect.top, rect.right - rect.left, rect.bottom-rect.top));
-		return LRESULT.ZERO;
-	} else {
-		int newZoom = DPIUtil.getZoomForAutoscaleProperty (newNativeZoom);
-		int oldZoom = DPIUtil.getZoomForAutoscaleProperty (nativeZoom);
-		if (newZoom != oldZoom) {
-			// Throw the DPI change event if zoom value changes
-			Event event = new Event();
-			event.type = SWT.ZoomChanged;
-			event.widget = this;
-			event.detail = DPIUtil.getZoomForAutoscaleProperty(newNativeZoom);
-			event.doit = true;
-			notifyListeners(SWT.ZoomChanged, event);
-			return LRESULT.ZERO;
-		}
-	}
-	return LRESULT.ONE;
+LRESULT WM_DPICHANGED(long wParam, long lParam) {
+	return null;
 }
 
-LRESULT WM_DISPLAYCHANGE (long wParam, long lParam) {
-	if (getDisplay().isRescalingAtRuntime()) {
-		Device.win32_destroyUnusedHandles(getDisplay());
-		return LRESULT.ZERO;
-	}
-	return LRESULT.ONE;
+LRESULT WM_DISPLAYCHANGE(long wParam, long lParam) {
+	return null;
 }
 
 LRESULT WM_DRAWITEM (long wParam, long lParam) {
@@ -5980,7 +5936,6 @@ static class DPIChangeExecution {
 }
 
 void sendZoomChangedEvent(Event event, Shell shell) {
-	this.currentDpiChangeEvent = event;
 	if (event.data instanceof DPIChangeExecution dpiExecData) {
 		dpiExecData.increment();
 		dpiExecData.process(this, () -> {
@@ -5993,9 +5948,6 @@ void sendZoomChangedEvent(Event event, Shell shell) {
 					return;
 				}
 				if (dpiExecData.decrement()) {
-					if (event == currentDpiChangeEvent) {
-						currentDpiChangeEvent = null;
-					}
 					if (event.doit) {
 						shell.WM_SIZE(0, 0);
 					}
