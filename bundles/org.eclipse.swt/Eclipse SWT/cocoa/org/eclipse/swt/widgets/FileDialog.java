@@ -144,7 +144,12 @@ private NSString appendSelectedExtension (NSString filename) {
 		NSString ext = filename.pathExtension();
 		if (ext == null || ext.length() == 0) {
 			filename = filename.stringByAppendingPathExtension(NSString.stringWith(extension));
-		}
+		}else if (!ext.getString().equalsIgnoreCase(extension)) {
+        	NSString originalName = filename.stringByDeletingPathExtension();
+        	NSString newFilename = originalName.stringByAppendingPathExtension(NSString.stringWith(extension));
+        	filename = newFilename;
+
+    }
 	}
 	return filename;
 }
