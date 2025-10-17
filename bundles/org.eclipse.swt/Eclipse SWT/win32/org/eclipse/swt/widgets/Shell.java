@@ -18,6 +18,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.internal.win32.version.*;
 
@@ -149,6 +150,10 @@ public class Shell extends Decorations {
 		OS.GetClassInfo (0, DialogClass, lpWndClass);
 		DialogProc = lpWndClass.lpfnWndProc;
 	}
+
+	/** Cache for currently processed DPI change event to be able to cancel it if a new one is triggered */
+	Event lastDpiChangeEvent;
+
 
 /**
  * Constructs a new instance of this class. This is equivalent
@@ -2440,6 +2445,57 @@ LRESULT WM_DESTROY (long wParam, long lParam) {
 		release (false);
 	}
 	return result;
+}
+
+@Override
+LRESULT WM_DISPLAYCHANGE (long wParam, long lParam) {
+	if (getDisplay().isRescalingAtRuntime()) {
+		Device.win32_destroyUnusedHandles(getDisplay());
+		return LRESULT.ZERO;
+	}
+	return LRESULT.ONE;
+}
+
+@Override
+LRESULT WM_DPICHANGED (long wParam, long lParam) {
+	// Map DPI to Zoom and compare
+	int newNativeZoom = DPIUtil.mapDPIToZoom (OS.HIWORD (wParam));
+	if (getDisplay().isRescalingAtRuntime()) {
+		Device.win32_destroyUnusedHandles(getDisplay());
+		RECT rect = new RECT ();
+		COM.MoveMemory(rect, lParam, RECT.sizeof);
+		Rectangle newBoundsInPixels = new Rectangle(rect.left, rect.top, rect.right - rect.left, rect.bottom-rect.top);
+		handleMonitorSpecificDpiChange(newNativeZoom, newBoundsInPixels);
+		return LRESULT.ZERO;
+	} else {
+		int newZoom = DPIUtil.getZoomForAutoscaleProperty (newNativeZoom);
+		int oldZoom = DPIUtil.getZoomForAutoscaleProperty (nativeZoom);
+		if (newZoom != oldZoom) {
+			// Throw the DPI change event if zoom value changes
+			Event event = new Event();
+			event.type = SWT.ZoomChanged;
+			event.widget = this;
+			event.detail = DPIUtil.getZoomForAutoscaleProperty(newNativeZoom);
+			event.doit = true;
+			notifyListeners(SWT.ZoomChanged, event);
+			return LRESULT.ZERO;
+		}
+	}
+	return LRESULT.ONE;
+}
+
+private void handleMonitorSpecificDpiChange(int newNativeZoom, Rectangle newBoundsInPixels) {
+	DPIUtil.setDeviceZoom (newNativeZoom);
+	// Do not process DPI change for child shells asynchronous to avoid relayouting when
+	// repositioning the child shell to a different monitor upon opening
+	boolean processDpiChangeAsynchronous = getParent() == null;
+	Event zoomChangedEvent = createZoomChangedEvent(newNativeZoom, processDpiChangeAsynchronous);
+	if (lastDpiChangeEvent != null) {
+		lastDpiChangeEvent.doit = false;
+	}
+	lastDpiChangeEvent = zoomChangedEvent;
+	notifyListeners(SWT.ZoomChanged, zoomChangedEvent);
+	this.setBoundsInPixels(newBoundsInPixels.x, newBoundsInPixels.y, newBoundsInPixels.width, newBoundsInPixels.height);
 }
 
 @Override
