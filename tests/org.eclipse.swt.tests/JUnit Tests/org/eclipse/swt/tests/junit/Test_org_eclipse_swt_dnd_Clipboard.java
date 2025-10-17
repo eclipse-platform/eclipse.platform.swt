@@ -31,10 +31,12 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
 import org.eclipse.swt.dnd.Clipboard;
+import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.RTFTransfer;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
@@ -425,5 +427,34 @@ public class Test_org_eclipse_swt_dnd_Clipboard {
 		@SuppressWarnings("unchecked")
 		T result = (T) supplierValue[0];
 		return result;
+	}
+
+	@Test
+	public void test_getContentsAsync() throws Exception {
+		openAndFocusRemote();
+		String helloWorld = getUniqueTestString();
+		remote.setContents(helloWorld);
+
+		openAndFocusShell();
+
+		// Multiple ways of using the API
+		// 1: Spin the event loop manually waiting for future to complete
+		CompletableFuture<Object> future = clipboard.getContentsAsync(textTransfer, DND.CLIPBOARD);
+		SwtTestUtil.processEvents(1000, () -> {
+			return future.isDone();
+		});
+		assertEquals(helloWorld, future.get());
+
+		// 2: Use CompletableFuture's features to chain
+		Object[] result = new Object[] { null };
+		CompletableFuture<Object> chained = clipboard.getContentsAsync(textTransfer, DND.CLIPBOARD);
+		chained.thenAccept(object -> result[0] = object);
+		// Within the test we need to process the event loop so the async can complete,
+		// but in applications the method that calls getContentsAsync can return to the
+		// main event loop iterations.
+		SwtTestUtil.processEvents(1000, () -> {
+			return result[0] != null;
+		});
+		assertEquals(helloWorld, result[0]);
 	}
 }
