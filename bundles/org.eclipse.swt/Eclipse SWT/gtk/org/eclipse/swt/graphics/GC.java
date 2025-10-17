@@ -913,7 +913,7 @@ public void drawImage(Image image, int destX, int destY, int destWidth, int dest
 	if (image.isDisposed()) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	drawImage(image, 0, 0, 0, 0, destX, destY, destWidth, destHeight, false);
+	image.executeOnImageAtSize(imageAtSize -> drawImage(imageAtSize, 0, 0, 0, 0, destX, destY, destWidth, destHeight, false), destWidth, destHeight);
 }
 
 void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple) {
