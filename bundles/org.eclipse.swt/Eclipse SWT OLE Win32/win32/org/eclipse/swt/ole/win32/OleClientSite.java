@@ -55,6 +55,7 @@ public class OleClientSite extends Composite {
 	private COMObject  iOleInPlaceSite;
 	private COMObject  iOleDocumentSite;
 
+	/** @noreference This field is not intended to be referenced by clients. */
 	protected GUID appClsid;
 	private GUID objClsid;
 	private int  refCount;
@@ -63,14 +64,21 @@ public class OleClientSite extends Composite {
 	protected OleFrame frame;
 
 	// Access to the embedded/linked Ole Object
+	/** @noreference This field is not intended to be referenced by clients. */
 	protected IUnknown                  objIUnknown;
+	/** @noreference This field is not intended to be referenced by clients. */
 	protected IOleObject                 objIOleObject;
+	/** @noreference This field is not intended to be referenced by clients. */
 	protected IViewObject2             objIViewObject2;
+	/** @noreference This field is not intended to be referenced by clients. */
 	protected IOleInPlaceObject     objIOleInPlaceObject;
+	/** @noreference This field is not intended to be referenced by clients. */
 	protected IOleCommandTarget objIOleCommandTarget;
+	/** @noreference This field is not intended to be referenced by clients. */
 	protected IOleDocumentView    objDocumentView;
 
 	// Related storage information
+	/** @noreference This field is not intended to be referenced by clients. */
 	protected IStorage tempStorage;     // IStorage interface of the receiver
 
 	// Internal state and style information
@@ -578,6 +586,11 @@ protected void createCOMInterfaces() {
 		public long method3(long[] args) {return ActivateMe(args[0]);}
 	};
 }
+
+/**
+ * @noreference This method is not intended to be referenced by clients.
+ * @nooverride This method is not intended to be re-implemented or extended by clients.
+ */
 protected IStorage createTempStorage() {
 	long[] tempStorage = new long[1];
 	int grfMode = COM.STGM_READWRITE | COM.STGM_SHARE_EXCLUSIVE | COM.STGM_DELETEONRELEASE;
@@ -701,6 +714,10 @@ IDispatch getAutomationObject() {
 		return null;
 	return new IDispatch(ppvObject[0]);
 }
+/**
+ * @noreference This method is not intended to be referenced by clients.
+ * @nooverride This method is not intended to be re-implemented or extended by clients.
+ */
 protected GUID getClassID(String clientName) {
 	// create a GUID struct to hold the result
 	GUID guid = new GUID();
