@@ -105,11 +105,6 @@ public final class Image extends Resource implements Drawable {
 	private boolean isDestroyed;
 
 	/**
-	 * specifies the transparent pixel
-	 */
-	int transparentPixel = -1, transparentColor = -1;
-
-	/**
 	 * the GC which is drawing on the image
 	 */
 	GC memGC;
@@ -158,11 +153,8 @@ public final class Image extends Resource implements Drawable {
 
 		}
 
-		public long getHandle() {
-			if (handleContainer != null) {
-				return handleContainer.handle;
-			}
-			return -1;
+		public ImageHandle getHandle() {
+			return handleContainer;
 		}
 	};
 
@@ -288,11 +280,11 @@ public Image(Device device, Image srcImage, int flag) {
 						OS.SelectObject(hdcDest, hOldDest);
 						OS.DeleteDC(hdcSource);
 						OS.DeleteDC(hdcDest);
+						imageMetadata.transparentPixel = imageHandle.transparentPixel;
 
 						/* Release the HDC for the device */
 						device.internal_dispose_GC(hDC, null);
 					}
-					transparentPixel = srcImage.transparentPixel;
 					break;
 				case SWT.ICON:
 					for (ImageHandle imageHandle : srcImage.zoomLevelToImageHandle.values()) {
@@ -837,20 +829,20 @@ private ImageHandle getImageMetadata(ZoomContext zoomContext) {
  * @noreference This method is not intended to be referenced by clients.
  */
 public static long win32_getHandle (Image image, int zoom) {
-	return image.getHandle(zoom, zoom);
+	return image.getHandle(zoom, zoom).handle;
 }
 
-long getHandle (int targetZoom, int nativeZoom) {
+ImageHandle getHandle (int targetZoom, int nativeZoom) {
 	if (isDisposed()) {
-		return 0L;
+		return null;
 	}
 	ZoomContext zoomContext = imageProvider.getFittingZoomContext(targetZoom, nativeZoom);
-	return getImageMetadata(zoomContext).handle;
+	return getImageMetadata(zoomContext);
 }
 
 @FunctionalInterface
 interface HandleAtSizeConsumer {
-	void accept(long imageHandle, Point handleSize);
+	void accept(ImageHandle imageHandle, Point handleSize);
 }
 
 void executeOnImageHandleAtSize(HandleAtSizeConsumer handleAtSizeConsumer, int widthHint, int heightHint) {
@@ -892,11 +884,13 @@ public static void drawAtSize(GC gc, ImageData imageData, int width, int height)
 
 
 long [] createGdipImage(Integer zoom) {
-	long handle = Image.win32_getHandle(this, zoom);
+	ImageHandle handle = this.getHandle(zoom, zoom);
 	return createGdipImageFromHandle(handle);
 }
 
-long[] createGdipImageFromHandle(long handle) {
+long[] createGdipImageFromHandle(ImageHandle imageHandle) {
+	long handle = imageHandle.handle;
+	int transparentPixel = imageHandle.transparentPixel;
 	switch (type) {
 		case SWT.BITMAP: {
 			BITMAP bm = new BITMAP();
@@ -1132,7 +1126,7 @@ public boolean equals (Object object) {
 	if (object == this) return true;
 	if (!(object instanceof Image)) return false;
 	Image image = (Image) object;
-	if (device != image.device || transparentPixel != image.transparentPixel) return false;
+	if (device != image.device) return false;
 	return (styleFlag == image.styleFlag) && imageProvider.equals(image.imageProvider);
 }
 
@@ -1156,7 +1150,7 @@ public boolean equals (Object object) {
  */
 public Color getBackground() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (transparentPixel == -1) return null;
+	if (this.getImageData().transparentPixel == -1) return null;
 	if (backgroundColor != null) {
 		// if a background color was set explicitly, we use the cached color directly
 		return Color.win32_new(device, (backgroundColor.blue << 16) | (backgroundColor.green << 8) | backgroundColor.red);
@@ -1164,49 +1158,52 @@ public Color getBackground() {
 
 	/* Get the HDC for the device */
 	long hDC = device.internal_new_GC(null);
-	return applyUsingAnyHandle(imageHandle -> {
-		long handle = imageHandle.handle;
-		/* Compute the background color */
-		BITMAP bm = new BITMAP();
-		OS.GetObject(handle, BITMAP.sizeof, bm);
-		long hdcMem = OS.CreateCompatibleDC(hDC);
-		long hOldObject = OS.SelectObject(hdcMem, handle);
-		int red = 0, green = 0, blue = 0;
-		if (bm.bmBitsPixel <= 8)  {
-			byte[] color = new byte[4];
-			OS.GetDIBColorTable(hdcMem, transparentPixel, 1, color);
-			blue = color[0] & 0xFF;
-			green = color[1] & 0xFF;
-			red = color[2] & 0xFF;
-		} else {
-			switch (bm.bmBitsPixel) {
-				case 16:
-					blue = (transparentPixel & 0x1F) << 3;
-					green = (transparentPixel & 0x3E0) >> 2;
-					red = (transparentPixel & 0x7C00) >> 7;
-					break;
-				case 24:
-					blue = (transparentPixel & 0xFF0000) >> 16;
-					green = (transparentPixel & 0xFF00) >> 8;
-					red = transparentPixel & 0xFF;
-					break;
-				case 32:
-					blue = (transparentPixel & 0xFF000000) >>> 24;
-					green = (transparentPixel & 0xFF0000) >> 16;
-					red = (transparentPixel & 0xFF00) >> 8;
-					break;
-				default:
-					return null;
-			}
+
+	ImageHandle imageHandle = this.getHandle(100, 100);
+
+	if (imageHandle.transparentPixel == -1)
+		return null;
+	long handle = imageHandle.handle;
+	int transparentPixel = imageHandle.transparentPixel;
+	/* Compute the background color */
+	BITMAP bm = new BITMAP();
+	OS.GetObject(handle, BITMAP.sizeof, bm);
+	long hdcMem = OS.CreateCompatibleDC(hDC);
+	long hOldObject = OS.SelectObject(hdcMem, handle);
+	int red = 0, green = 0, blue = 0;
+	if (bm.bmBitsPixel <= 8) {
+		byte[] color = new byte[4];
+		OS.GetDIBColorTable(hdcMem, transparentPixel, 1, color);
+		blue = color[0] & 0xFF;
+		green = color[1] & 0xFF;
+		red = color[2] & 0xFF;
+	} else {
+		switch (bm.bmBitsPixel) {
+		case 16:
+			blue = (transparentPixel & 0x1F) << 3;
+			green = (transparentPixel & 0x3E0) >> 2;
+			red = (transparentPixel & 0x7C00) >> 7;
+			break;
+		case 24:
+			blue = (transparentPixel & 0xFF0000) >> 16;
+			green = (transparentPixel & 0xFF00) >> 8;
+			red = transparentPixel & 0xFF;
+			break;
+		case 32:
+			blue = (transparentPixel & 0xFF000000) >>> 24;
+			green = (transparentPixel & 0xFF0000) >> 16;
+			red = (transparentPixel & 0xFF00) >> 8;
+			break;
+		default:
+			return null;
 		}
-		OS.SelectObject(hdcMem, hOldObject);
-		OS.DeleteDC(hdcMem);
+	}
+	OS.SelectObject(hdcMem, hOldObject);
+	OS.DeleteDC(hdcMem);
 
-
-		/* Release the HDC for the device */
-		device.internal_dispose_GC(hDC, null);
-		return Color.win32_new(device, (blue << 16) | (green << 8) | red);
-	});
+	/* Release the HDC for the device */
+	device.internal_dispose_GC(hDC, null);
+	return Color.win32_new(device, (blue << 16) | (green << 8) | red);
 }
 
 /**
@@ -1667,8 +1664,7 @@ private ImageHandle initIconHandle(long[] handles, int zoom) {
 
 private ImageHandle initBitmapHandle(ImageData imageData, long handle, Integer zoom) {
 	type = SWT.BITMAP;
-	transparentPixel = imageData.transparentPixel;
-	return new ImageHandle(handle, zoom);
+	return new ImageHandle(handle, zoom, imageData.transparentPixel);
 }
 
 static long [] initIcon(Device device, ImageData source, ImageData mask) {
@@ -1908,10 +1904,7 @@ public void setBackground(Color color) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	if (transparentPixel == -1) return;
-	transparentColor = -1;
 	backgroundColor = color.getRGB();
-	zoomLevelToImageHandle.values().forEach(imageHandle -> imageHandle.setBackground(backgroundColor));
 }
 
 /**
@@ -2465,7 +2458,7 @@ private class ImageFileNameProviderWrapper extends BaseImageProviderWrapper<Imag
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(provider, styleFlag, transparentPixel);
+		return Objects.hash(provider, styleFlag);
 	}
 
 	@Override
@@ -2816,15 +2809,24 @@ private static class DrawableWrapper implements Drawable {
 	}
 }
 
-private class ImageHandle {
-	private long handle;
+class ImageHandle {
+	long handle;
 	private final int zoom;
 	private int height;
 	private int width;
+	/**
+	 * specifies the transparent pixel
+	 */
+	int transparentPixel = -1, transparentColor = -1;
 
 	public ImageHandle(long handle, int zoom) {
+		this(handle, zoom, -1);
+	}
+
+	ImageHandle(long handle, int zoom, int transparentPixel) {
 		this.handle = handle;
 		this.zoom = zoom;
+		this.transparentPixel = transparentPixel;
 		updateBoundsInPixelsFromNative();
 		if (backgroundColor != null) {
 			setBackground(backgroundColor);
