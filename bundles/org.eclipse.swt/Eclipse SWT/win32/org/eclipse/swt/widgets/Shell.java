@@ -645,6 +645,18 @@ void createHandle () {
 	}
 }
 
+@Override
+Point getInitialLocation() {
+	long hwndParent = widgetParent ();
+	// Set it to be near the top-left corner of the parent shell by default
+	if (hwndParent != 0) {
+		RECT rect = new RECT();
+		OS.GetWindowRect(hwndParent, rect);
+		return new Point(rect.left + 100, rect.top + 100);
+	}
+	return super.getInitialLocation();
+}
+
 void createMenuItemToolTipHandle() {
 	menuItemToolTipHandle = createToolTipHandle (0);
 }

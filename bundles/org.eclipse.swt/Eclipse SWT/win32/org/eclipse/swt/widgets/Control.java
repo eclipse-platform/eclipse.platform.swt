@@ -672,25 +672,13 @@ Widget [] computeTabList () {
 
 void createHandle () {
 	long hwndParent = widgetParent ();
-
-	int x=OS.CW_USEDEFAULT;
-	int y=0;
-
-	// Set it to be near the top-left corner of the parent shell by default
-	if (hwndParent != 0) {
-		RECT rect = new RECT();
-		OS.GetWindowRect(hwndParent, rect);
-
-		x = rect.left + 100;
-		y = rect.top + 100;
-	}
-
+	Point initialLocation = getInitialLocation();
 	handle = OS.CreateWindowEx (
 		widgetExtStyle (),
 		windowClass (),
 		null,
 		widgetStyle (),
-		x, y, OS.CW_USEDEFAULT, 0,
+		initialLocation.x, initialLocation.y, OS.CW_USEDEFAULT, 0,
 		hwndParent,
 		0,
 		OS.GetModuleHandle (null),
@@ -700,6 +688,10 @@ void createHandle () {
 	if ((bits & OS.WS_CHILD) != 0) {
 		OS.SetWindowLongPtr (handle, OS.GWLP_ID, handle);
 	}
+}
+
+Point getInitialLocation() {
+	return new Point(OS.CW_USEDEFAULT, 0);
 }
 
 void checkGesture () {
