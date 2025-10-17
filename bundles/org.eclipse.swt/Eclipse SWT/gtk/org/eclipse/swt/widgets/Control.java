@@ -4160,13 +4160,13 @@ long gtk_motion_notify_event (long widget, long event) {
 	// See comment in #dragDetect()
 	if ((dragDetectionQueue != null) && OS.isWayland()) {
 		boolean dragging = false;
-		if ((state & DRAG_DETECT) != 0 && wantDragDropDetection ()) {
-				boolean [] consume = new boolean [1];
-				if (dragDetect ((int) eventX[0], (int) eventY[0], true, true, consume)) {
-					dragging = true;
-					if (consume [0]) result = 1;
-				if (isDisposed ()) return 1;
-			} else {
+		if ((state & DRAG_DETECT) != 0 && wantDragDropDetection()) {
+			boolean[] consume = new boolean[1];
+			if (dragDetect((int)eventX[0], (int)eventY[0], true, true, consume)) {
+				dragging = true;
+				if (isDisposed()) {
+					return 1;
+				}
 			}
 		}
 		if (dragging) {
