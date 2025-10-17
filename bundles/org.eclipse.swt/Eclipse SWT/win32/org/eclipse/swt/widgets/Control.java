@@ -1282,7 +1282,7 @@ public Cursor getCursor () {
 public Object getData(String key) {
 	if (DATA_SHELL_ZOOM.equals(key)) {
 		Shell shell = getShell();
-		return shell == null ? null : shell.nativeZoom;
+		return shell == null ? null : DPIUtil.mapDPIToZoom(OS.GetDpiForWindow(shell.handle));
 	}
 	return super.getData(key);
 }
