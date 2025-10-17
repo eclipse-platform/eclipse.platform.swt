@@ -3298,7 +3298,7 @@ void setBoundsInPixels (int x, int y, int width, int height, int flags, boolean 
 public void setBounds (Rectangle rect) {
 	checkWidget ();
 	if (rect == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int zoom = autoScaleDisabled ? parent.getZoom() : getZoom();
+	int zoom = autoScaleDisabled && parent != null ? parent.getZoom() : getZoom();
 	setBoundsInPixels(Win32DPIUtils.pointToPixel(rect, zoom));
 }
 
@@ -3556,7 +3556,7 @@ public void setLayoutData (Object layoutData) {
  */
 public void setLocation (int x, int y) {
 	checkWidget ();
-	int zoom = autoScaleDisabled ? parent.getZoom() : getZoom();
+	int zoom = autoScaleDisabled && parent != null ? parent.getZoom() : getZoom();
 	x = DPIUtil.pointToPixel(x, zoom);
 	y = DPIUtil.pointToPixel(y, zoom);
 	setLocationInPixels(x, y);
@@ -3813,7 +3813,7 @@ public void setRegion (Region region) {
  */
 public void setSize (int width, int height) {
 	checkWidget ();
-	int zoom = autoScaleDisabled ? parent.getZoom() : getZoom();
+	int zoom = autoScaleDisabled && parent != null ? parent.getZoom() : getZoom();
 	width = DPIUtil.pointToPixel(width, zoom);
 	height = DPIUtil.pointToPixel(height, zoom);
 	setSizeInPixels(width, height);
