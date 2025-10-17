@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -14,9 +14,9 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.eclipse.swt.SWT;
@@ -49,7 +49,6 @@ public void tearDown() {
 	shell.dispose();
 }
 private void testListener(final int[] segments, boolean exceptionExpected) {
-	boolean exceptionThrown = false;
 	BidiSegmentListener listener = event -> {
 		assertEquals(0, event.lineOffset, " incorrect BidiSegmentEvent");
 		assertEquals(line, event.lineText, " incorrect BidiSegmentEvent");
@@ -60,17 +59,18 @@ private void testListener(final int[] segments, boolean exceptionExpected) {
 
 	listenerCalled = false;
 	try {
-		text.addBidiSegmentListener(listener);
-		text.getLocationAtOffset(0);
-	} catch (IllegalArgumentException e) {
-		exceptionThrown = true;
+		if (exceptionExpected) {
+			assertThrows(IllegalArgumentException.class, () -> {
+				text.addBidiSegmentListener(listener);
+				text.getLocationAtOffset(0);
+			});
+		} else {
+			text.addBidiSegmentListener(listener);
+			text.getLocationAtOffset(0);
+		}
+
 	} finally {
 		text.removeBidiSegmentListener(listener);
-	}
-	if (exceptionExpected) {
-		assertTrue(exceptionThrown, " expected exception not thrown");
-	} else {
-		assertFalse(exceptionThrown, " unexpected exception thrown");
 	}
 	if (SwtTestUtil.isBidi()) {
 		assertTrue(listenerCalled, " listener not called");
@@ -79,7 +79,6 @@ private void testListener(final int[] segments, boolean exceptionExpected) {
 	}
 }
 private void testStyleRangeSegmenting(final int[] segments, int[] boldRanges) {
-	boolean exceptionThrown = false;
 	BidiSegmentListener listener = event -> {
 		assertEquals(0, event.lineOffset, " incorrect BidiSegmentEvent");
 		assertEquals(line, event.lineText, " incorrect BidiSegmentEvent");
@@ -97,12 +96,9 @@ private void testStyleRangeSegmenting(final int[] segments, int[] boldRanges) {
 			text.setStyleRange(styleRange);
 		}
 		text.getLocationAtOffset(0);
-	} catch (IllegalArgumentException e) {
-		exceptionThrown = true;
 	} finally {
 		text.removeBidiSegmentListener(listener);
 	}
-	assertFalse(exceptionThrown, " unexpected exception thrown");
 	if (SwtTestUtil.isBidi()) {
 		assertTrue(listenerCalled, " listener not called");
 	} else {
