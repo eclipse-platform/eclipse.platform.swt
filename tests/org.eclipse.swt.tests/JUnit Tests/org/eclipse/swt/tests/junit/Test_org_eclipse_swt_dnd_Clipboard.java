@@ -15,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.DND;
@@ -234,5 +235,35 @@ public class Test_org_eclipse_swt_dnd_Clipboard {
 				SwtTestUtil.runOperationInThread(() -> remote.getStringContents(DND.CLIPBOARD)));
 		assertEquals(helloWorldSelection,
 				SwtTestUtil.runOperationInThread(() -> remote.getStringContents(DND.SELECTION_CLIPBOARD)));
+	}
+
+	@ParameterizedTest
+	@MethodSource("supportedClipboardIds")
+	public void test_getContentsAsync(int clipboardId) throws Exception {
+		openAndFocusRemote();
+		String helloWorld = getUniqueTestString();
+		remote.setContents(helloWorld, clipboardId);
+
+		openAndFocusShell();
+
+		// Multiple ways of using the API
+		// 1: Spin the event loop manually waiting for future to complete
+		CompletableFuture<Object> future = clipboard.getContentsAsync(textTransfer, clipboardId);
+		SwtTestUtil.processEvents(1000, () -> {
+			return future.isDone();
+		});
+		assertEquals(helloWorld, future.get());
+
+		// 2: Use CompletableFuture's features to chain
+		Object[] result = new Object[] { null };
+		CompletableFuture<Object> chained = clipboard.getContentsAsync(textTransfer, clipboardId);
+		chained.thenAccept(object -> result[0] = object);
+		// Within the test we need to process the event loop so the async can complete,
+		// but in applications the method that calls getContentsAsync can return to the
+		// main event loop iterations.
+		SwtTestUtil.processEvents(1000, () -> {
+			return result[0] != null;
+		});
+		assertEquals(helloWorld, result[0]);
 	}
 }

@@ -164,13 +164,14 @@ void createTextTransfer(Composite copyParent, Composite pasteParent) {
 	b = new Button(pasteParent, SWT.PUSH);
 	b.setText("Paste");
 	b.addSelectionListener(widgetSelectedAdapter(e -> {
-		String textData = (String)clipboard.getContents(TextTransfer.getInstance());
-		if (textData != null && textData.length() > 0) {
-			status.setText("");
-			pasteText.setText("begin paste>"+textData+"<end paste");
-		} else {
-			status.setText("No text to paste");
-		}
+		clipboard.getContentsAsync(TextTransfer.getInstance()).thenAccept((contents) -> {
+			if (contents instanceof String textData && textData.length() > 0) {
+				status.setText("");
+				pasteText.setText("begin paste>"+textData+"<end paste");
+			} else {
+				status.setText("No text to paste");
+			}
+		});
 	}));
 }
 void createRTFTransfer(Composite copyParent, Composite pasteParent){
@@ -225,13 +226,14 @@ void createRTFTransfer(Composite copyParent, Composite pasteParent){
 	b = new Button(pasteParent, SWT.PUSH);
 	b.setText("Paste");
 	b.addSelectionListener(widgetSelectedAdapter(e -> {
-		String textData = (String)clipboard.getContents(RTFTransfer.getInstance());
-		if (textData != null && textData.length() > 0) {
-			status.setText("");
-			pasteRtfText.setText("start paste>"+textData+"<end paste");
-		} else {
-			status.setText("No RTF to paste");
-		}
+		clipboard.getContentsAsync(RTFTransfer.getInstance()).thenAccept((contents) -> {
+			if (contents instanceof String textData && textData.length() > 0) {
+				status.setText("");
+				pasteRtfText.setText("start paste>"+textData+"<end paste");
+			} else {
+				status.setText("No RTF to paste");
+			}
+		});
 	}));
 }
 void createHTMLTransfer(Composite copyParent, Composite pasteParent){
@@ -266,13 +268,14 @@ void createHTMLTransfer(Composite copyParent, Composite pasteParent){
 	b = new Button(pasteParent, SWT.PUSH);
 	b.setText("Paste");
 	b.addSelectionListener(widgetSelectedAdapter(e -> {
-		String textData = (String)clipboard.getContents(HTMLTransfer.getInstance());
-		if (textData != null && textData.length() > 0) {
-			status.setText("");
-			pasteHtmlText.setText("start paste>"+textData+"<end paste");
-		} else {
-			status.setText("No HTML to paste");
-		}
+		clipboard.getContentsAsync(HTMLTransfer.getInstance()).thenAccept((contents) -> {
+			if (contents instanceof String textData && textData.length() > 0) {
+				status.setText("");
+				pasteHtmlText.setText("start paste>"+textData+"<end paste");
+			} else {
+				status.setText("No HTML to paste");
+			}
+		});
 	}));
 }
 void createFileTransfer(Composite copyParent, Composite pasteParent){
@@ -342,17 +345,18 @@ void createFileTransfer(Composite copyParent, Composite pasteParent){
 	b = new Button(pasteParent, SWT.PUSH);
 	b.setText("Paste");
 	b.addSelectionListener(widgetSelectedAdapter(e -> {
-		String[] textData = (String[])clipboard.getContents(FileTransfer.getInstance());
-		if (textData != null && textData.length > 0) {
-			status.setText("");
-			pasteFileTable.removeAll();
-			for (String element : textData) {
-				TableItem item = new TableItem(pasteFileTable, SWT.NONE);
-				item.setText(element);
+		clipboard.getContentsAsync(FileTransfer.getInstance()).thenAccept((contents) -> {
+			if (contents instanceof String[] textData && textData.length > 0) {
+				status.setText("");
+				pasteFileTable.removeAll();
+				for (String element : textData) {
+					TableItem item = new TableItem(pasteFileTable, SWT.NONE);
+					item.setText(element);
+				}
+			} else {
+				status.setText("No file to paste");
 			}
-		} else {
-			status.setText("No file to paste");
-		}
+		});
 	}));
 }
 
@@ -500,30 +504,31 @@ void createImageTransfer(Composite copyParent, Composite pasteParent){
 	b = new Button(pasteParent, SWT.PUSH);
 	b.setText("Paste");
 	b.addSelectionListener(widgetSelectedAdapter(e -> {
-		ImageData imageData =(ImageData)clipboard.getContents(ImageTransfer.getInstance());
-		if (imageData != null) {
-			if (pasteImage[0] != null) {
-				System.out.println("PasteImage");
-				pasteImage[0].dispose();
+		clipboard.getContentsAsync(ImageTransfer.getInstance()).thenAccept((contents) -> {
+			if (contents instanceof ImageData imageData) {
+				if (pasteImage[0] != null) {
+					System.out.println("PasteImage");
+					pasteImage[0].dispose();
+				}
+				status.setText("");
+				pasteImage[0] = new Image(e.display, imageData);
+				pasteVBar.setEnabled(true);
+				pasteHBar.setEnabled(true);
+				pasteOrigin.x = 0; pasteOrigin.y = 0;
+				Rectangle rect = pasteImage[0].getBounds();
+				Rectangle client = pasteImageCanvas.getClientArea();
+				pasteHBar.setMaximum(rect.width);
+				pasteVBar.setMaximum(rect.height);
+				pasteHBar.setThumb(Math.min(rect.width, client.width));
+				pasteVBar.setThumb(Math.min(rect.height, client.height));
+				pasteImageCanvas.scroll(0, 0, 0, 0, rect.width, rect.height, true);
+				pasteVBar.setSelection(0);
+				pasteHBar.setSelection(0);
+				pasteImageCanvas.redraw();
+			} else {
+				status.setText("No image to paste");
 			}
-			status.setText("");
-			pasteImage[0] = new Image(e.display, imageData);
-			pasteVBar.setEnabled(true);
-			pasteHBar.setEnabled(true);
-			pasteOrigin.x = 0; pasteOrigin.y = 0;
-			Rectangle rect = pasteImage[0].getBounds();
-			Rectangle client = pasteImageCanvas.getClientArea();
-			pasteHBar.setMaximum(rect.width);
-			pasteVBar.setMaximum(rect.height);
-			pasteHBar.setThumb(Math.min(rect.width, client.width));
-			pasteVBar.setThumb(Math.min(rect.height, client.height));
-			pasteImageCanvas.scroll(0, 0, 0, 0, rect.width, rect.height, true);
-			pasteVBar.setSelection(0);
-			pasteHBar.setSelection(0);
-			pasteImageCanvas.redraw();
-		} else {
-			status.setText("No image to paste");
-		}
+		});
 	}));
 }
 void createMyTransfer(Composite copyParent, Composite pasteParent){
