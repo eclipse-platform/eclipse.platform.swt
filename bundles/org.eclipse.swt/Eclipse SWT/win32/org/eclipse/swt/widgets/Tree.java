@@ -4665,7 +4665,7 @@ void setCursor () {
 	* is IDC_ARROW.
 	*/
 	Cursor cursor = findCursor ();
-	long hCursor = cursor == null ? OS.LoadCursor (0, OS.IDC_ARROW) : Cursor.win32_getHandle(cursor, DPIUtil.getZoomForAutoscaleProperty(getNativeZoom()));
+	long hCursor = cursor == null ? OS.LoadCursor (0, OS.IDC_ARROW) : Cursor.win32_getHandle(cursor, DPIUtil.getZoomForAutoscaleProperty(getShellZoom()));
 	OS.SetCursor (hCursor);
 }
 
