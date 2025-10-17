@@ -1283,7 +1283,7 @@ public void setData(String key, Object value) {
 		if (autoScaleDisabled) {
 			this.nativeZoom = 100;
 		} else {
-			this.nativeZoom = (int) getData(DATA_SHELL_ZOOM);
+			this.nativeZoom = getShellZoom();
 		}
 	}
 }
@@ -4817,6 +4817,13 @@ int getZoom() {
 	return super.getZoom();
 }
 
+int getShellZoom() {
+	if (getData(DATA_SHELL_ZOOM) instanceof Integer shellZoom) {
+		return shellZoom;
+	}
+	return nativeZoom;
+}
+
 abstract TCHAR windowClass ();
 
 abstract long windowProc ();
@@ -5503,7 +5510,7 @@ LRESULT WM_SETCURSOR (long wParam, long lParam) {
 		if (control == null) return null;
 		Cursor cursor = control.findCursor ();
 		if (cursor != null) {
-			OS.SetCursor (Cursor.win32_getHandle(cursor, DPIUtil.getZoomForAutoscaleProperty(getNativeZoom())));
+			OS.SetCursor (Cursor.win32_getHandle(cursor, DPIUtil.getZoomForAutoscaleProperty(getShellZoom())));
 			return LRESULT.ONE;
 		}
 	}
