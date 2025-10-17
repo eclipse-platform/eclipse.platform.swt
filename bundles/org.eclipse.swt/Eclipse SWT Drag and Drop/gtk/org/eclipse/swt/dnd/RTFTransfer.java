@@ -34,11 +34,11 @@ public class RTFTransfer extends ByteArrayTransfer {
 
 	private static RTFTransfer _instance = new RTFTransfer();
 	private static final String TEXT_RTF = "text/rtf"; //$NON-NLS-1$
-	private static final int TEXT_RTF_ID = GTK.GTK4 ? 0 : registerType(TEXT_RTF);
+	private static final int TEXT_RTF_ID = registerType(TEXT_RTF);
 	private static final String TEXT_RTF2 = "TEXT/RTF"; //$NON-NLS-1$
-	private static final int TEXT_RTF2_ID = GTK.GTK4 ? 0 : registerType(TEXT_RTF2);
+	private static final int TEXT_RTF2_ID = registerType(TEXT_RTF2);
 	private static final String APPLICATION_RTF = "application/rtf"; //$NON-NLS-1$
-	private static final int APPLICATION_RTF_ID = GTK.GTK4 ? 0 : registerType(APPLICATION_RTF);
+	private static final int APPLICATION_RTF_ID = registerType(APPLICATION_RTF);
 
 private RTFTransfer() {}
 
@@ -63,6 +63,10 @@ public static RTFTransfer getInstance () {
  */
 @Override
 public void javaToNative (Object object, TransferData transferData){
+	if (GTK.GTK4) {
+		javaToNativeGTK4(object, transferData);
+		return;
+	}
 	transferData.result = 0;
 	if (!checkRTF(object) || !isSupportedType(transferData)) {
 		DND.error(DND.ERROR_INVALID_DATA);
@@ -78,6 +82,14 @@ public void javaToNative (Object object, TransferData transferData){
 	transferData.result = 1;
 }
 
+
+private void javaToNativeGTK4(Object object, TransferData transferData) {
+	if (!checkRTF(object) || !isSupportedType(transferData)) {
+		DND.error(DND.ERROR_INVALID_DATA);
+	}
+	super.javaToNative(Converter.wcsToMbcs((String) object, false), transferData);
+}
+
 /**
  * This implementation of <code>nativeToJava</code> converts a platform specific
  * representation of RTF text to a java <code>String</code>.
@@ -90,6 +102,8 @@ public void javaToNative (Object object, TransferData transferData){
  */
 @Override
 public Object nativeToJava(TransferData transferData){
+	if (GTK.GTK4) return nativeToJavaGTK4(transferData);
+
 	if ( !isSupportedType(transferData) ||  transferData.pValue == 0 ) return null;
 	int size = transferData.format * transferData.length / 8;
 	if (size == 0) return null;
@@ -101,19 +115,21 @@ public Object nativeToJava(TransferData transferData){
 	return (end == -1) ? string : string.substring(0, end);
 }
 
+private Object nativeToJavaGTK4(TransferData transferData) {
+	Object buffer = super.nativeToJava(transferData);
+	if (buffer instanceof byte[] bytes) {
+		return new String(Converter.mbcsToWcs(bytes));
+	}
+	return null;
+}
+
 @Override
 protected int[] getTypeIds() {
-	if(GTK.GTK4) {
-		return new int[] {(int) OS.G_TYPE_STRING()};
-	}
 	return new int[] {TEXT_RTF_ID, TEXT_RTF2_ID, APPLICATION_RTF_ID};
 }
 
 @Override
 protected String[] getTypeNames() {
-	if(GTK.GTK4) {
-		return new String[] {TEXT_RTF};
-	}
 	return new String[] {TEXT_RTF, TEXT_RTF2, APPLICATION_RTF};
 }
 

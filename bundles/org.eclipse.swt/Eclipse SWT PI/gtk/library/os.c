@@ -10069,6 +10069,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(GValue_1sizeof)
 }
 #endif
 
+#ifndef NO_G_1IS_1VALUE
+JNIEXPORT jboolean JNICALL OS_NATIVE(G_1IS_1VALUE)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, G_1IS_1VALUE_FUNC);
+	rc = (jboolean)G_IS_VALUE(arg0);
+	OS_NATIVE_EXIT(env, that, G_1IS_1VALUE_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_G_1OBJECT_1CLASS_1CONSTRUCTOR
 JNIEXPORT jlong JNICALL OS_NATIVE(G_1OBJECT_1CLASS_1CONSTRUCTOR)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -10187,6 +10199,18 @@ JNIEXPORT jlong JNICALL OS_NATIVE(G_1TYPE_1INT64)
 }
 #endif
 
+#ifndef NO_G_1TYPE_1INVALID
+JNIEXPORT jlong JNICALL OS_NATIVE(G_1TYPE_1INVALID)
+	(JNIEnv *env, jclass that)
+{
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, G_1TYPE_1INVALID_FUNC);
+	rc = (jlong)G_TYPE_INVALID;
+	OS_NATIVE_EXIT(env, that, G_1TYPE_1INVALID_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_G_1TYPE_1LONG
 JNIEXPORT jlong JNICALL OS_NATIVE(G_1TYPE_1LONG)
 	(JNIEnv *env, jclass that)
@@ -10219,6 +10243,18 @@ JNIEXPORT jlong JNICALL OS_NATIVE(G_1VALUE_1TYPE)
 	OS_NATIVE_ENTER(env, that, G_1VALUE_1TYPE_FUNC);
 	rc = (jlong)G_VALUE_TYPE(arg0);
 	OS_NATIVE_EXIT(env, that, G_1VALUE_1TYPE_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_G_1VALUE_1TYPE_1NAME
+JNIEXPORT jlong JNICALL OS_NATIVE(G_1VALUE_1TYPE_1NAME)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, G_1VALUE_1TYPE_1NAME_FUNC);
+	rc = (jlong)G_VALUE_TYPE_NAME(arg0);
+	OS_NATIVE_EXIT(env, that, G_1VALUE_1TYPE_1NAME_FUNC);
 	return rc;
 }
 #endif
@@ -11168,6 +11204,22 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(g_1error_1matches)
 }
 #endif
 
+#ifndef NO_g_1error_1new_1literal
+JNIEXPORT jlong JNICALL OS_NATIVE(g_1error_1new_1literal)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jstring arg2)
+{
+	const char *lparg2= NULL;
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, g_1error_1new_1literal_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetStringUTFChars(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jlong)g_error_new_literal((GQuark)arg0, (gint)arg1, lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseStringUTFChars(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, g_1error_1new_1literal_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_g_1file_1error_1quark
 JNIEXPORT jint JNICALL OS_NATIVE(g_1file_1error_1quark)
 	(JNIEnv *env, jclass that)
@@ -11464,6 +11516,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(g_1idle_1add)
 	OS_NATIVE_ENTER(env, that, g_1idle_1add_FUNC);
 	rc = (jint)g_idle_add((GSourceFunc)arg0, (gpointer)arg1);
 	OS_NATIVE_EXIT(env, that, g_1idle_1add_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_g_1io_1error_1quark
+JNIEXPORT jint JNICALL OS_NATIVE(g_1io_1error_1quark)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, g_1io_1error_1quark_FUNC);
+	rc = (jint)g_io_error_quark();
+	OS_NATIVE_EXIT(env, that, g_1io_1error_1quark_FUNC);
 	return rc;
 }
 #endif
@@ -11780,6 +11844,78 @@ JNIEXPORT jlong JNICALL OS_NATIVE(g_1memory_1input_1stream_1new_1from_1data)
 	OS_NATIVE_ENTER(env, that, g_1memory_1input_1stream_1new_1from_1data_FUNC);
 	rc = (jlong)g_memory_input_stream_new_from_data((const void *)arg0, (gssize)arg1, (GDestroyNotify)arg2);
 	OS_NATIVE_EXIT(env, that, g_1memory_1input_1stream_1new_1from_1data_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_g_1memory_1output_1stream_1get_1data
+JNIEXPORT jlong JNICALL OS_NATIVE(g_1memory_1output_1stream_1get_1data)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, g_1memory_1output_1stream_1get_1data_FUNC);
+	rc = (jlong)g_memory_output_stream_get_data((GMemoryOutputStream*)arg0);
+	OS_NATIVE_EXIT(env, that, g_1memory_1output_1stream_1get_1data_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_g_1memory_1output_1stream_1get_1data_1size
+JNIEXPORT jlong JNICALL OS_NATIVE(g_1memory_1output_1stream_1get_1data_1size)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, g_1memory_1output_1stream_1get_1data_1size_FUNC);
+	rc = (jlong)g_memory_output_stream_get_data_size((GMemoryOutputStream*)arg0);
+	OS_NATIVE_EXIT(env, that, g_1memory_1output_1stream_1get_1data_1size_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_g_1memory_1output_1stream_1get_1size
+JNIEXPORT jlong JNICALL OS_NATIVE(g_1memory_1output_1stream_1get_1size)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, g_1memory_1output_1stream_1get_1size_FUNC);
+	rc = (jlong)g_memory_output_stream_get_size((GMemoryOutputStream*)arg0);
+	OS_NATIVE_EXIT(env, that, g_1memory_1output_1stream_1get_1size_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_g_1memory_1output_1stream_1new_1resizable
+JNIEXPORT jlong JNICALL OS_NATIVE(g_1memory_1output_1stream_1new_1resizable)
+	(JNIEnv *env, jclass that)
+{
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, g_1memory_1output_1stream_1new_1resizable_FUNC);
+	rc = (jlong)g_memory_output_stream_new_resizable();
+	OS_NATIVE_EXIT(env, that, g_1memory_1output_1stream_1new_1resizable_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_g_1memory_1output_1stream_1steal_1as_1bytes
+JNIEXPORT jlong JNICALL OS_NATIVE(g_1memory_1output_1stream_1steal_1as_1bytes)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, g_1memory_1output_1stream_1steal_1as_1bytes_FUNC);
+	rc = (jlong)g_memory_output_stream_steal_as_bytes((GMemoryOutputStream*)arg0);
+	OS_NATIVE_EXIT(env, that, g_1memory_1output_1stream_1steal_1as_1bytes_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_g_1memory_1output_1stream_1steal_1data
+JNIEXPORT jlong JNICALL OS_NATIVE(g_1memory_1output_1stream_1steal_1data)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, g_1memory_1output_1stream_1steal_1data_FUNC);
+	rc = (jlong)g_memory_output_stream_steal_data((GMemoryOutputStream*)arg0);
+	OS_NATIVE_EXIT(env, that, g_1memory_1output_1stream_1steal_1data_FUNC);
 	return rc;
 }
 #endif
@@ -12111,6 +12247,80 @@ JNIEXPORT void JNICALL OS_NATIVE(g_1object_1unref)
 	OS_NATIVE_ENTER(env, that, g_1object_1unref_FUNC);
 	g_object_unref((gpointer)arg0);
 	OS_NATIVE_EXIT(env, that, g_1object_1unref_FUNC);
+}
+#endif
+
+#ifndef NO_g_1output_1stream_1splice_1async
+JNIEXPORT void JNICALL OS_NATIVE(g_1output_1stream_1splice_1async)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jint arg2, jint arg3, jlong arg4, jlong arg5, jlong arg6)
+{
+	OS_NATIVE_ENTER(env, that, g_1output_1stream_1splice_1async_FUNC);
+	g_output_stream_splice_async((GOutputStream*)arg0, (GInputStream *)arg1, (GOutputStreamSpliceFlags)arg2, (int)arg3, (GCancellable *)arg4, (GAsyncReadyCallback)arg5, (gpointer)arg6);
+	OS_NATIVE_EXIT(env, that, g_1output_1stream_1splice_1async_FUNC);
+}
+#endif
+
+#ifndef NO_g_1output_1stream_1splice_1finish
+JNIEXPORT jlong JNICALL OS_NATIVE(g_1output_1stream_1splice_1finish)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlongArray arg2)
+{
+	jlong *lparg2=NULL;
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, g_1output_1stream_1splice_1finish_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jlong)g_output_stream_splice_finish((GOutputStream*)arg0, (GAsyncResult*)arg1, (GError**)lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseLongArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, g_1output_1stream_1splice_1finish_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_g_1output_1stream_1write_1all
+JNIEXPORT jboolean JNICALL OS_NATIVE(g_1output_1stream_1write_1all)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2, jlongArray arg3, jlong arg4, jlongArray arg5)
+{
+	jlong *lparg3=NULL;
+	jlong *lparg5=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, g_1output_1stream_1write_1all_FUNC);
+	if (arg3) if ((lparg3 = (*env)->GetLongArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = (*env)->GetLongArrayElements(env, arg5, NULL)) == NULL) goto fail;
+	rc = (jboolean)g_output_stream_write_all((GOutputStream*)arg0, (void*)arg1, (gsize)arg2, (gsize*)lparg3, (GCancellable*)arg4, (GError**)lparg5);
+fail:
+	if (arg5 && lparg5) (*env)->ReleaseLongArrayElements(env, arg5, lparg5, 0);
+	if (arg3 && lparg3) (*env)->ReleaseLongArrayElements(env, arg3, lparg3, 0);
+	OS_NATIVE_EXIT(env, that, g_1output_1stream_1write_1all_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_g_1output_1stream_1write_1all_1async
+JNIEXPORT void JNICALL OS_NATIVE(g_1output_1stream_1write_1all_1async)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2, jint arg3, jlong arg4, jlong arg5, jlong arg6)
+{
+	OS_NATIVE_ENTER(env, that, g_1output_1stream_1write_1all_1async_FUNC);
+	g_output_stream_write_all_async((GOutputStream*)arg0, (void*)arg1, (gsize)arg2, (int)arg3, (GCancellable*)arg4, (GAsyncReadyCallback)arg5, (gpointer)arg6);
+	OS_NATIVE_EXIT(env, that, g_1output_1stream_1write_1all_1async_FUNC);
+}
+#endif
+
+#ifndef NO_g_1output_1stream_1write_1all_1finish
+JNIEXPORT jboolean JNICALL OS_NATIVE(g_1output_1stream_1write_1all_1finish)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlongArray arg2, jlongArray arg3)
+{
+	jlong *lparg2=NULL;
+	jlong *lparg3=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, g_1output_1stream_1write_1all_1finish_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetLongArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	rc = (jboolean)g_output_stream_write_all_finish((GOutputStream*)arg0, (GAsyncResult*)arg1, (gsize*)lparg2, (GError**)lparg3);
+fail:
+	if (arg3 && lparg3) (*env)->ReleaseLongArrayElements(env, arg3, lparg3, 0);
+	if (arg2 && lparg2) (*env)->ReleaseLongArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, g_1output_1stream_1write_1all_1finish_FUNC);
+	return rc;
 }
 #endif
 
@@ -12616,6 +12826,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(g_1type_1is_1a)
 }
 #endif
 
+#ifndef NO_g_1type_1name
+JNIEXPORT jlong JNICALL OS_NATIVE(g_1type_1name)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, g_1type_1name_FUNC);
+	rc = (jlong)g_type_name((GType)arg0);
+	OS_NATIVE_EXIT(env, that, g_1type_1name_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_g_1type_1parent
 JNIEXPORT jlong JNICALL OS_NATIVE(g_1type_1parent)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -12841,6 +13063,18 @@ fail:
 }
 #endif
 
+#ifndef NO_g_1value_1get_1boxed
+JNIEXPORT jlong JNICALL OS_NATIVE(g_1value_1get_1boxed)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, g_1value_1get_1boxed_FUNC);
+	rc = (jlong)g_value_get_boxed((const GValue *)arg0);
+	OS_NATIVE_EXIT(env, that, g_1value_1get_1boxed_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_g_1value_1get_1double
 JNIEXPORT jdouble JNICALL OS_NATIVE(g_1value_1get_1double)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -12861,6 +13095,18 @@ JNIEXPORT jfloat JNICALL OS_NATIVE(g_1value_1get_1float)
 	OS_NATIVE_ENTER(env, that, g_1value_1get_1float_FUNC);
 	rc = (jfloat)g_value_get_float((GValue *)arg0);
 	OS_NATIVE_EXIT(env, that, g_1value_1get_1float_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_g_1value_1get_1gtype
+JNIEXPORT jlong JNICALL OS_NATIVE(g_1value_1get_1gtype)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, g_1value_1get_1gtype_FUNC);
+	rc = (jlong)g_value_get_gtype((const GValue *)arg0);
+	OS_NATIVE_EXIT(env, that, g_1value_1get_1gtype_FUNC);
 	return rc;
 }
 #endif
@@ -12988,6 +13234,16 @@ JNIEXPORT void JNICALL OS_NATIVE(g_1value_1set_1string)
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, g_1value_1set_1string_FUNC);
+}
+#endif
+
+#ifndef NO_g_1value_1take_1boxed
+JNIEXPORT void JNICALL OS_NATIVE(g_1value_1take_1boxed)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	OS_NATIVE_ENTER(env, that, g_1value_1take_1boxed_FUNC);
+	g_value_take_boxed((GValue *)arg0, (gconstpointer)arg1);
+	OS_NATIVE_EXIT(env, that, g_1value_1take_1boxed_FUNC);
 }
 #endif
 

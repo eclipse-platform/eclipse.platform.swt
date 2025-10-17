@@ -13,7 +13,6 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
-
 /**
  * The <code>TransferData</code> class is a platform specific data structure for
  * describing the type and the contents of data being converted by a transfer agent.
@@ -71,7 +70,7 @@ public class TransferData {
 	 * platforms and should never be accessed from application code.
 	 * </p>
 	 *
-	 * This is most commonly 8 bits.
+	 * This is most commonly 8 bits, and on GTK4 is always 8 bits.
 	 *
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
@@ -107,5 +106,4 @@ public class TransferData {
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public int result;
-
 }
