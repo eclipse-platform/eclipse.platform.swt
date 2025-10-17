@@ -26,7 +26,7 @@ import org.junit.platform.suite.api.Suite;
 /**
  * Suite for running most SWT test cases (all except for browser tests).
  */
-@Suite
+@Suite(failIfNoTests = false)
 @SelectClasses({ //
 		// Basic tests
 		Test_org_eclipse_swt_SWT.class, //

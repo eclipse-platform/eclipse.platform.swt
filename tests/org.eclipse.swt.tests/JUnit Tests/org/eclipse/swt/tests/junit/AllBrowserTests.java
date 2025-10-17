@@ -17,7 +17,7 @@ package org.eclipse.swt.tests.junit;
 import org.junit.platform.suite.api.SelectClasses;
 import org.junit.platform.suite.api.Suite;
 
-@Suite
+@Suite(failIfNoTests = false)
 @SelectClasses({
 	Test_org_eclipse_swt_browser_Browser.class,
 	Test_org_eclipse_swt_browser_Browser_IE.class

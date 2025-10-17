@@ -20,7 +20,7 @@ import org.junit.platform.suite.api.Suite;
 /**
  * Suite for running all SWT test cases.
  */
-@Suite
+@Suite(failIfNoTests = false)
 @SelectClasses({
 	AllNonBrowserTests.class,
 	AllBrowserTests.class

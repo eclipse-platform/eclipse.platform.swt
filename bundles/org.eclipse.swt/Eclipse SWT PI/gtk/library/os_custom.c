@@ -2232,3 +2232,34 @@ swt_releaseArrayOfStringsUTF(JNIEnv *env, jobjectArray javaArray, char **cString
     }
     free(cStrings);
 }
+
+static void *content_providers_copy(void *ptr) {
+    return ptr;
+}
+
+static void content_providers_free(void *ptr) {
+}
+
+JNIEXPORT jlong JNICALL OS_NATIVE(content_1providers_1create_1gtype)
+	(JNIEnv *env, jclass that, jstring name)
+{
+	long rc;
+	const char *lpname = NULL;
+	OS_NATIVE_ENTER(env, that, content_1providers_1create_1gtype_FUNC)
+	if (name) lpname= (const char *) (*env)->GetStringUTFChars(env, name, NULL);
+	rc = g_boxed_type_register_static(lpname, content_providers_copy, content_providers_free);
+	if (name && lpname) (*env)->ReleaseStringUTFChars(env, name, lpname);
+	OS_NATIVE_EXIT(env, that, content_1providers_1create_1gtype_FUNC)
+	return rc;
+}
+
+JNIEXPORT jlong JNICALL OS_NATIVE(content_1providers_1create_1gvalue)
+	(JNIEnv *env, jclass that, jlong gtype, jlong value)
+{
+	OS_NATIVE_ENTER(env, that, content_1providers_1create_1gvalue_FUNC)
+	GValue *v = g_new0 (GValue, 1);
+	g_value_init(v, (GType)gtype);
+	g_value_take_boxed(v, (void *)value);
+	OS_NATIVE_EXIT(env, that, content_1providers_1create_1gvalue_FUNC)
+	return (jlong)v;
+}
