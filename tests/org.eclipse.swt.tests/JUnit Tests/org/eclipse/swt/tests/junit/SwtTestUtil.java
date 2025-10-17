@@ -24,6 +24,9 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BooleanSupplier;
 
@@ -203,7 +206,12 @@ public static boolean isBidi() {
 public static void openShell(Shell shell) {
 	if (shell != null && !shell.getVisible()) {
 		if (isGTK) {
-			waitEvent(() -> shell.open(), shell, SWT.Paint, 1000);
+			if (isGTK4()) {
+				waitAllEvents(() -> shell.open(), shell, Set.of(SWT.Paint, SWT.Activate, SWT.FocusIn), 1000);
+			} else {
+				waitEvent(() -> shell.open(), shell, SWT.Paint, 1000);
+			}
+			processEvents();
 		} else {
 			shell.open();
 		}
@@ -486,6 +494,45 @@ public static boolean waitEvent(Runnable trigger, Control control, int swtEvent,
 }
 
 /**
+ * Wait until specified control receives all the specified event.
+ *
+ * @param trigger       may be null. Code that is expected to send event.
+ *                      Note that if you trigger it outside, then event may
+ *                      arrive *before* you call this function, and it will
+ *                      fail to receive event.
+ * @param control       control expected to receive the event
+ * @param swtEvents     events, such as SWT.Paint
+ * @param timeoutMsec   how long to wait for event
+ * @return <code>true</code> if event was received
+ */
+public static boolean waitAllEvents(Runnable trigger, Control control, Set<Integer> swtEvents, int timeoutMsec) {
+	Map<Integer, Listener> eventsLeftToReceive = new HashMap<>();
+	for (Integer swtEvent : swtEvents) {
+		Listener listener = event -> {
+			control.removeListener(swtEvent, eventsLeftToReceive.get(swtEvent));
+			eventsLeftToReceive.remove(swtEvent);
+		};
+		eventsLeftToReceive.put(swtEvent, listener);
+		control.addListener(swtEvent, listener);
+	}
+	try {
+		if (trigger != null)
+			trigger.run();
+
+		long start = System.currentTimeMillis();
+		while (!eventsLeftToReceive.isEmpty()) {
+			if (System.currentTimeMillis() - start > timeoutMsec)
+				return false;
+			processEvents();
+		}
+	} finally {
+		eventsLeftToReceive.forEach((swtEvent, listener) -> control.removeListener(swtEvent, listener));
+	}
+
+	return true;
+}
+
+/**
  * Wait until specified Shell becomes active, or internal timeout elapses.
  *
  * @param trigger       may be null. Code that causes Shell to become active.
@@ -642,4 +689,57 @@ public static Path copyFile(String sourceFilename, Path destinationPath) {
 	return destinationPath;
 }
 
+@FunctionalInterface
+public interface ExceptionalSupplier<T> {
+	T get() throws Exception;
+}
+
+/**
+ * When running some operations, such as requesting remote process read the
+ * clipboard, we need to have the event queue processing otherwise the remote
+ * won't be able to read our clipboard contribution.
+ *
+ * This method starts the supplier in a new thread and runs the event loop until
+ * the thread completes, or until a timeout is reached.
+ */
+static <T> T runOperationInThread(ExceptionalSupplier<T> supplier) throws RuntimeException {
+	return runOperationInThread(10000, supplier);
+}
+
+/**
+ * When running some operations, such as requesting remote process read the
+ * clipboard, we need to have the event queue processing otherwise the remote
+ * won't be able to read our clipboard contribution.
+ *
+ * This method starts the supplier in a new thread and runs the event loop until
+ * the thread completes, or until a timeout is reached.
+ */
+static <T> T runOperationInThread(int timeoutMs, ExceptionalSupplier<T> supplier) throws RuntimeException {
+	Object[] supplierValue = new Object[1];
+	Exception[] supplierException = new Exception[1];
+	Runnable task = () -> {
+		try {
+			supplierValue[0] = supplier.get();
+		} catch (Exception e) {
+			supplierValue[0] = null;
+			supplierException[0] = e;
+		}
+	};
+	Thread thread = new Thread(task, SwtTestUtil.class.getName() + ".runOperationInThread");
+	thread.setDaemon(true);
+	thread.start();
+	BooleanSupplier done = () -> !thread.isAlive();
+	try {
+		processEvents(timeoutMs, done);
+	} catch (InterruptedException e) {
+		throw new RuntimeException("Failed while running thread", e);
+	}
+	assertTrue(done.getAsBoolean());
+	if (supplierException[0] != null) {
+		throw new RuntimeException("Failed while running thread", supplierException[0]);
+	}
+	@SuppressWarnings("unchecked")
+	T result = (T) supplierValue[0];
+	return result;
+}
 }

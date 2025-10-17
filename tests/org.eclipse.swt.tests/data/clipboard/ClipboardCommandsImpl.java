@@ -58,27 +58,40 @@ public class ClipboardCommandsImpl extends UnicastRemoteObject implements Clipbo
 	}
 
 	@Override
-	public void setContents(String text) throws RemoteException {
+	public void setContents(String text, int clipboardId) throws RemoteException {
 		invokeAndWait(() -> {
-			clipboardTest.log("setContents(\"" + text + "\")");
+			String display = text == null ? "null" : ("\"" + text + "\"");
+			clipboardTest.log("setContents(" + display + ", " + clipboardId + ")");
 			StringSelection selection = new StringSelection(text);
-			Toolkit.getDefaultToolkit().getSystemClipboard().setContents(selection, null);
+			getClipboard(clipboardId).setContents(selection, null);
 
 		});
 	}
 
+	private Clipboard getClipboard(int clipboardId) {
+		Clipboard clipboard;
+		if (clipboardId == SELECTION_CLIPBOARD) {
+			clipboard = Toolkit.getDefaultToolkit().getSystemSelection();
+		} else if (clipboardId == CLIPBOARD) {
+			clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+		} else {
+			throw new RuntimeException("Invalid clipboardId " + clipboardId);
+		}
+		return clipboard;
+	}
+
 	@Override
-	public String getStringContents() throws RemoteException {
+	public String getStringContents(int clipboardId) throws RemoteException {
 		String[] data = new String[] { null };
 		invokeAndWait(() -> {
-			Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+			Clipboard clipboard = getClipboard(clipboardId);
 			try {
 				data[0] = (String) clipboard.getData(DataFlavor.stringFlavor);
-				clipboardTest.log("getStringContents() returned " + data[0]);
+				clipboardTest.log("getStringContents(" + clipboardId + ") returned " + data[0]);
 			} catch (Exception e) {
 				data[0] = null;
 				DataFlavor[] availableDataFlavors = clipboard.getAvailableDataFlavors();
-				clipboardTest.log("getStringContents() threw " + e.toString()
+				clipboardTest.log("getStringContents(" + clipboardId + ") threw " + e.toString()
 						+ " and returned null. The clipboard had availableDataFlavors = "
 						+ Arrays.asList(availableDataFlavors));
 			}
