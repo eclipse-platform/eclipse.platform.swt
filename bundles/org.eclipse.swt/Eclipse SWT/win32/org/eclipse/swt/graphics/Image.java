@@ -2028,7 +2028,7 @@ private abstract class AbstractImageProviderWrapper {
 	}
 
 	protected ImageHandle newImageHandle(ZoomContext zoomContext) {
-		ImageData resizedData = getScaledImageData (zoomContext.targetZoom());
+		ImageData resizedData = getImageData (zoomContext.targetZoom());
 		return newImageHandle(resizedData, zoomContext);
 	}
 
@@ -2070,7 +2070,7 @@ private class ExistingImageHandleProviderWrapper extends AbstractImageProviderWr
 
 	@Override
 	ImageData newImageData(ZoomContext zoomContext) {
-		return getImageData(zoomContext.targetZoom());
+		return getScaledImageData(zoomContext.targetZoom());
 	}
 
 	@Override
