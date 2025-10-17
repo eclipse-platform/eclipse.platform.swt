@@ -17,13 +17,30 @@ public interface ClipboardCommands extends Remote {
 	String PORT_MESSAGE = "ClipboardCommands Registry Port: ";
 	String ID = "ClipboardCommands";
 
+	/**
+	 * Same value as SWT's DND.CLIPBOARD
+	 */
+	int CLIPBOARD = 1 << 0;
+	/**
+	 * Same value as SWT's DND.SELECTION_CLIPBOARD
+	 */
+	int SELECTION_CLIPBOARD = 1 << 1;
+
+
 	void stop() throws RemoteException;
 
-	void setContents(String string) throws RemoteException;
+	/**
+	 * @param string string to set as contents
+	 * @param clipboardId {@link #CLIPBOARD} or {@value #SELECTION_CLIPBOARD}
+	 */
+	void setContents(String string, int clipboardId) throws RemoteException;
 
 	void setFocus() throws RemoteException;
 
-	String getStringContents() throws RemoteException;
+	/**
+	 * @param clipboardId {@link #CLIPBOARD} or {@value #SELECTION_CLIPBOARD}
+	 */
+	String getStringContents(int clipboardId) throws RemoteException;
 
 	void waitUntilReady() throws RemoteException;
 }
