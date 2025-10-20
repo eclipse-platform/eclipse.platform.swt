@@ -158,11 +158,8 @@ public final class Image extends Resource implements Drawable {
 
 		}
 
-		public long getHandle() {
-			if (handleContainer != null) {
-				return handleContainer.handle;
-			}
-			return -1;
+		public ImageHandle getHandle() {
+			return handleContainer;
 		}
 	};
 
@@ -837,20 +834,20 @@ private ImageHandle getImageMetadata(ZoomContext zoomContext) {
  * @noreference This method is not intended to be referenced by clients.
  */
 public static long win32_getHandle (Image image, int zoom) {
-	return image.getHandle(zoom, zoom);
+	return image.getHandle(zoom, zoom).handle;
 }
 
-long getHandle (int targetZoom, int nativeZoom) {
+ImageHandle getHandle (int targetZoom, int nativeZoom) {
 	if (isDisposed()) {
-		return 0L;
+		return null;
 	}
 	ZoomContext zoomContext = imageProvider.getFittingZoomContext(targetZoom, nativeZoom);
-	return getImageMetadata(zoomContext).handle;
+	return getImageMetadata(zoomContext);
 }
 
 @FunctionalInterface
 interface HandleAtSizeConsumer {
-	void accept(long imageHandle, Point handleSize);
+	void accept(ImageHandle imageHandle, Point handleSize);
 }
 
 void executeOnImageHandleAtSize(HandleAtSizeConsumer handleAtSizeConsumer, int widthHint, int heightHint) {
@@ -892,11 +889,12 @@ public static void drawAtSize(GC gc, ImageData imageData, int width, int height)
 
 
 long [] createGdipImage(Integer zoom) {
-	long handle = Image.win32_getHandle(this, zoom);
+	ImageHandle handle = this.getHandle(zoom, zoom);
 	return createGdipImageFromHandle(handle);
 }
 
-long[] createGdipImageFromHandle(long handle) {
+long[] createGdipImageFromHandle(ImageHandle imageHandle) {
+	long handle = imageHandle.handle;
 	switch (type) {
 		case SWT.BITMAP: {
 			BITMAP bm = new BITMAP();
@@ -2816,7 +2814,7 @@ private static class DrawableWrapper implements Drawable {
 	}
 }
 
-private class ImageHandle {
+class ImageHandle {
 	private long handle;
 	private final int zoom;
 	private int height;
@@ -2830,6 +2828,10 @@ private class ImageHandle {
 			setBackground(backgroundColor);
 		}
 		setImageMetadataForHandle(this, zoom);
+	}
+
+	long getHandle() {
+		return handle;
 	}
 
 	public Rectangle getBounds() {
