@@ -1233,10 +1233,11 @@ private class DrawScaledImageOperation extends ImageOperation {
 }
 
 private void drawImage(Image image, int destX, int destY, int destWidth, int destHeight, int imageZoom) {
-	Rectangle destPixels = Win32DPIUtils.pointToPixel(drawable, new Rectangle(destX, destY, destWidth, destHeight), imageZoom);
-	image.executeOnImageHandleAtSize((tempHandle, handleSize) -> {
-		drawImage(image, 0, 0, handleSize.x, handleSize.y, destPixels.x, destPixels.y, destPixels.width,
-				destPixels.height, false, tempHandle);
+	Rectangle destPixels = Win32DPIUtils.pointToPixel(drawable, new Rectangle(destX, destY, destWidth, destHeight),
+			imageZoom);
+	image.executeOnImageHandleAtBestFittingSize(tempHandle -> {
+		drawImage(image, 0, 0, tempHandle.getWidth(), tempHandle.getHeight(), destPixels.x, destPixels.y,
+				destPixels.width, destPixels.height, false, tempHandle);
 	}, destPixels.width, destPixels.height);
 }
 

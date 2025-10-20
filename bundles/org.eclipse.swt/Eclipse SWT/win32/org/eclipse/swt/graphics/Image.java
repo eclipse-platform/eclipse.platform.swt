@@ -845,12 +845,7 @@ ImageHandle getHandle (int targetZoom, int nativeZoom) {
 	return getImageMetadata(zoomContext);
 }
 
-@FunctionalInterface
-interface HandleAtSizeConsumer {
-	void accept(ImageHandle imageHandle, Point handleSize);
-}
-
-void executeOnImageHandleAtSize(HandleAtSizeConsumer handleAtSizeConsumer, int widthHint, int heightHint) {
+void executeOnImageHandleAtBestFittingSize(Consumer<ImageHandle> handleAtSizeConsumer, int widthHint, int heightHint) {
 	if (!lastRequestedHandle.isReusable(heightHint, widthHint)) {
 		ImageData imageData;
 		imageData = this.imageProvider.loadImageDataAtSize(widthHint, heightHint);
@@ -858,8 +853,7 @@ void executeOnImageHandleAtSize(HandleAtSizeConsumer handleAtSizeConsumer, int w
 		ImageHandle handleContainer = init(imageData, -1);
 		lastRequestedHandle = new CachedHandle(handleContainer, widthHint, heightHint);
 	}
-	handleAtSizeConsumer.accept(lastRequestedHandle.getHandle(),
-			new Point(lastRequestedHandle.handleContainer().width, lastRequestedHandle.handleContainer().height));
+	handleAtSizeConsumer.accept(lastRequestedHandle.getHandle());
 }
 
 /**
@@ -2817,13 +2811,15 @@ private static class DrawableWrapper implements Drawable {
 class ImageHandle {
 	private long handle;
 	private final int zoom;
-	private int height;
-	private int width;
+	private final int height;
+	private final int width;
 
-	public ImageHandle(long handle, int zoom) {
+	ImageHandle(long handle, int zoom) {
 		this.handle = handle;
 		this.zoom = zoom;
-		updateBoundsInPixelsFromNative();
+		Point bounds = getBoundsInPixelsFromNative();
+		this.width = bounds.x;
+		this.height = bounds.y;
 		if (backgroundColor != null) {
 			setBackground(backgroundColor);
 		}
@@ -2834,7 +2830,15 @@ class ImageHandle {
 		return handle;
 	}
 
-	public Rectangle getBounds() {
+	int getWidth() {
+		return width;
+	}
+
+	int getHeight() {
+		return height;
+	}
+
+	Rectangle getBounds() {
 		return new Rectangle(0, 0, width, height);
 	}
 
@@ -2863,14 +2867,12 @@ class ImageHandle {
 		device.internal_dispose_GC(hDC, null);
 	}
 
-	private void updateBoundsInPixelsFromNative() {
+	private Point getBoundsInPixelsFromNative() {
 		switch (type) {
 		case SWT.BITMAP:
 			BITMAP bm = new BITMAP();
 			OS.GetObject(handle, BITMAP.sizeof, bm);
-			width = bm.bmWidth;
-			height = bm.bmHeight;
-			return;
+			return new Point(bm.bmWidth, bm.bmHeight);
 		case SWT.ICON:
 			ICONINFO info = new ICONINFO();
 			OS.GetIconInfo(handle, info);
@@ -2881,11 +2883,10 @@ class ImageHandle {
 			if (hBitmap == info.hbmMask) bm.bmHeight /= 2;
 			if (info.hbmColor != 0) OS.DeleteObject(info.hbmColor);
 			if (info.hbmMask != 0) OS.DeleteObject(info.hbmMask);
-			width = bm.bmWidth;
-			height = bm.bmHeight;
-			return;
+			return new Point(bm.bmWidth, bm.bmHeight);
 		default:
 			SWT.error(SWT.ERROR_INVALID_IMAGE);
+			return null;
 		}
 	}
 
