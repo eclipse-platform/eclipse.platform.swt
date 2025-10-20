@@ -20,6 +20,7 @@ import java.util.function.*;
 import java.util.stream.*;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.Image.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gdip.*;
 import org.eclipse.swt.internal.win32.*;
@@ -1061,7 +1062,7 @@ private class DrawImageOperation extends ImageOperation {
 
 	private void drawImageInPixels(Image image, Point location) {
 		if (image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-		long handle = Image.win32_getHandle(image, getZoom());
+		ImageHandle handle = image.getHandle(getZoom(), getZoom());
 		drawImage(image, 0, 0, -1, -1, location.x, location.y, -1, -1, true, handle);
 	}
 }
@@ -1277,12 +1278,12 @@ private class DrawImageToImageOperation extends ImageOperation {
 
 	@Override
 	void apply() {
-		long handle = Image.win32_getHandle(getImage(), getZoom());
+		ImageHandle handle = getImage().getHandle(getZoom(), getZoom());
 		drawImage(getImage(), source.x, source.y, source.width, source.height, destination.x, destination.y, destination.width, destination.height, simple, handle);
 	}
 }
 
-private void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, long tempImageHandle) {
+private void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, ImageHandle tempImageHandle) {
 	if (data.gdipGraphics != 0) {
 		//TODO - cache bitmap
 		long [] gdipImage = srcImage.createGdipImageFromHandle(tempImageHandle);
@@ -1350,7 +1351,7 @@ private void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int src
 					simple);
 			break;
 		case SWT.ICON:
-			drawIcon(tempImageHandle, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple);
+			drawIcon(tempImageHandle.getHandle(), srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple);
 			break;
 	}
 }
@@ -1489,9 +1490,10 @@ private void drawIcon(long imageHandle, int srcX, int srcY, int srcWidth, int sr
 	if (failed) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 }
 
-private void drawBitmap(Image srcImage, long imageHandle, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple) {
+private void drawBitmap(Image srcImage, ImageHandle imageHandle, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple) {
 	BITMAP bm = new BITMAP();
-	OS.GetObject(imageHandle, BITMAP.sizeof, bm);
+	long handle = imageHandle.getHandle();
+	OS.GetObject(handle, BITMAP.sizeof, bm);
 	int imgWidth = bm.bmWidth;
 	int imgHeight = bm.bmHeight;
 	if (srcWidth == 0 && srcHeight == 0) {
@@ -1523,14 +1525,14 @@ private void drawBitmap(Image srcImage, long imageHandle, int srcX, int srcY, in
 	boolean isDib = bm.bmBits != 0;
 	int depth = bm.bmPlanes * bm.bmBitsPixel;
 	if (isDib && depth == 32) {
-		drawBitmapAlpha(imageHandle, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple);
+		drawBitmapAlpha(handle, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple);
 	} else if (srcImage.transparentPixel != -1) {
 		drawBitmapTransparent(srcImage, imageHandle, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple, bm, imgWidth, imgHeight);
 	} else {
-		drawBitmapColor(imageHandle, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple);
+		drawBitmapColor(handle, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple);
 	}
 	if (mustRestore) {
-		long hOldBitmap = OS.SelectObject(memGC.handle, imageHandle);
+		long hOldBitmap = OS.SelectObject(memGC.handle, handle);
 		memGC.data.hNullBitmap = hOldBitmap;
 	}
 }
@@ -1785,11 +1787,11 @@ private void drawBitmapMask(long srcColor, long srcMask, int srcX, int srcY, int
 	OS.DeleteDC(srcHdc);
 }
 
-private void drawBitmapTransparent(Image srcImage, long imageHandle, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, BITMAP bm, int imgWidth, int imgHeight) {
+private void drawBitmapTransparent(Image srcImage, ImageHandle imageHandle, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, BITMAP bm, int imgWidth, int imgHeight) {
 
 	/* Find the RGB values for the transparent pixel. */
 	boolean isDib = bm.bmBits != 0;
-	long hBitmap = imageHandle;
+	long hBitmap = imageHandle.getHandle();
 	long srcHdc = OS.CreateCompatibleDC(handle);
 	long oldSrcBitmap = OS.SelectObject(srcHdc, hBitmap);
 	byte[] originalColors = null;
@@ -1834,7 +1836,7 @@ private void drawBitmapTransparent(Image srcImage, long imageHandle, int srcX, i
 				bmiHeader.biBitCount = bm.bmBitsPixel;
 				byte[] bmi = new byte[BITMAPINFOHEADER.sizeof + numColors * 4];
 				OS.MoveMemory(bmi, bmiHeader, BITMAPINFOHEADER.sizeof);
-				OS.GetDIBits(srcHdc, imageHandle, 0, 0, null, bmi, OS.DIB_RGB_COLORS);
+				OS.GetDIBits(srcHdc, imageHandle.getHandle(), 0, 0, null, bmi, OS.DIB_RGB_COLORS);
 				int offset = BITMAPINFOHEADER.sizeof + 4 * srcImage.transparentPixel;
 				transRed = bmi[offset + 2] & 0xFF;
 				transGreen = bmi[offset + 1] & 0xFF;
@@ -1907,7 +1909,7 @@ private void drawBitmapTransparent(Image srcImage, long imageHandle, int srcX, i
 		OS.DeleteObject(maskBitmap);
 	}
 	OS.SelectObject(srcHdc, oldSrcBitmap);
-	if (hBitmap != imageHandle) OS.DeleteObject(hBitmap);
+	if (hBitmap != imageHandle.getHandle()) OS.DeleteObject(hBitmap);
 	OS.DeleteDC(srcHdc);
 }
 
@@ -4483,7 +4485,7 @@ private void init(Drawable drawable, GCData data, long hDC) {
 	}
 	Image image = data.image;
 	if (image != null) {
-		data.hNullBitmap = OS.SelectObject(hDC, image.getHandle(data.imageZoom, data.nativeZoom));
+		data.hNullBitmap = OS.SelectObject(hDC, image.getHandle(data.imageZoom, data.nativeZoom).getHandle());
 		image.memGC = this;
 	}
 	int layout = data.layout;
