@@ -623,7 +623,7 @@ public Point computeSize (int wHint, int hHint, boolean changed){
 	hHint = (hHint != SWT.DEFAULT ? DPIUtil.pointToPixel(hHint, zoom) : hHint);
 	//We should never return a size that is to small, RoundingMode.UP ensures we at worst case report
 	//a size that is a bit too large by half a point
-	return Win32DPIUtils.pixelToPointAsSize(computeSizeInPixels(wHint, hHint, changed), zoom);
+	return Win32DPIUtils.pixelToPointAsConservativeSize(computeSizeInPixels(wHint, hHint, changed), zoom);
 }
 
 Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
