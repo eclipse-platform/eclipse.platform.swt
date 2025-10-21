@@ -278,16 +278,18 @@ public Image(Device device, Image srcImage, int flag) {
 	if (flag != SWT.IMAGE_DISABLE) transparentPixel = srcImage.transparentPixel;
 
 	long imageSurface = srcImage.surface;
-	int width = this.width = srcImage.width;
-	int height = this.height = srcImage.height;
+	this.width = srcImage.width;
+	this.height = srcImage.height;
 	int format = Cairo.cairo_surface_get_content(imageSurface) == Cairo.CAIRO_CONTENT_COLOR ? Cairo.CAIRO_FORMAT_RGB24 : Cairo.CAIRO_FORMAT_ARGB32;
 	boolean hasAlpha = format == Cairo.CAIRO_FORMAT_ARGB32;
-	surface = Cairo.cairo_image_surface_create(format, width, height);
+	int dataWidth = DPIUtil.pointToPixel(this.width, DPIUtil.getDeviceZoom());
+	int dataHeight= DPIUtil.pointToPixel(this.height, DPIUtil.getDeviceZoom());
+	surface = Cairo.cairo_image_surface_create(format, dataWidth, dataHeight);
 	if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	if (DPIUtil.getDeviceZoom() != currentDeviceZoom) {
-		double scaleFactor = DPIUtil.getDeviceZoom() / 100f;
-		Cairo.cairo_surface_set_device_scale(surface, scaleFactor, scaleFactor);
-	}
+	double[] scaleX = new double[1];
+	double[] scaleY = new double[1];
+	Cairo.cairo_surface_get_device_scale(imageSurface, scaleX, scaleY);
+	Cairo.cairo_surface_set_device_scale(surface, scaleX[0], scaleY[0]);
 	long cairo = Cairo.cairo_create(surface);
 	if (cairo == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	Cairo.cairo_set_operator(cairo, Cairo.CAIRO_OPERATOR_SOURCE);
@@ -306,9 +308,9 @@ public Image(Device device, Image srcImage, int flag) {
 		switch (flag) {
 			case SWT.IMAGE_DISABLE: {
 				byte[] line = new byte[stride];
-				for (int y=0; y<height; y++) {
+				for (int y=0; y<dataHeight; y++) {
 					C.memmove(line, data + (y * stride), stride);
-					for (int x = 0, offset = 0; x < width; x++, offset += 4) {
+					for (int x = 0, offset = 0; x < dataWidth; x++, offset += 4) {
 						int a = line[offset + oa] & 0xFF;
 						int r = line[offset + or] & 0xFF;
 						int g = line[offset + og] & 0xFF;
@@ -339,9 +341,9 @@ public Image(Device device, Image srcImage, int flag) {
 			}
 			case SWT.IMAGE_GRAY: {
 				byte[] line = new byte[stride];
-				for (int y=0; y<height; y++) {
+				for (int y=0; y<dataHeight; y++) {
 					C.memmove(line, data + (y * stride), stride);
-					for (int x=0, offset = 0; x<width; x++, offset += 4) {
+					for (int x=0, offset = 0; x<dataWidth; x++, offset += 4) {
 						int a = line[offset + oa] & 0xFF;
 						int r = line[offset + or] & 0xFF;
 						int g = line[offset + og] & 0xFF;
