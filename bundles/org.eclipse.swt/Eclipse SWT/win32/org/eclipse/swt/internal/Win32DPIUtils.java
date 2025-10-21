@@ -124,11 +124,15 @@ public class Win32DPIUtils {
 	}
 
 	public static Point pixelToPointAsSize(Point point, int zoom) {
-		return pixelToPoint(point, zoom, RoundingMode.UP);
+		return pixelToPoint(point, zoom, RoundingMode.DOWN);
 	}
 
 	public static Point pixelToPointAsLocation(Point point, int zoom) {
 		return pixelToPoint(point, zoom, RoundingMode.ROUND);
+	}
+
+	public static Point pixelToPointAsConservativeSize(Point point, int zoom) {
+		return pixelToPoint(point, zoom, RoundingMode.UP);
 	}
 
 	private static Point pixelToPoint(Point point, int zoom, RoundingMode mode) {
@@ -145,7 +149,7 @@ public class Win32DPIUtils {
 		if (rect instanceof Rectangle.OfFloat rectOfFloat) return pixelToPoint(rectOfFloat, zoom);
 		Rectangle scaledRect = new Rectangle.OfFloat (0,0,0,0);
 		Point scaledTopLeft = pixelToPointAsLocation(new Point (rect.x, rect.y), zoom);
-		Point scaledBottomRight = pixelToPointAsLocation(new Point (rect.x + rect.width, rect.y + rect.height), zoom);
+		Point scaledBottomRight = pixelToPointAsSize(new Point (rect.x + rect.width, rect.y + rect.height), zoom);
 
 		scaledRect.x = scaledTopLeft.x;
 		scaledRect.y = scaledTopLeft.y;

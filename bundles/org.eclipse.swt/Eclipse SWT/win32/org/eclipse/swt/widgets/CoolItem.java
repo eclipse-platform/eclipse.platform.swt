@@ -188,7 +188,7 @@ public Point computeSize (int wHint, int hHint) {
 	int zoom = getZoom();
 	wHint = (wHint != SWT.DEFAULT ? DPIUtil.pointToPixel(wHint, zoom) : wHint);
 	hHint = (hHint != SWT.DEFAULT ? DPIUtil.pointToPixel(hHint, zoom) : hHint);
-	return Win32DPIUtils.pixelToPointAsSize(computeSizeInPixels(wHint, hHint), zoom);
+	return Win32DPIUtils.pixelToPointAsConservativeSize(computeSizeInPixels(wHint, hHint), zoom);
 }
 Point computeSizeInPixels (int wHint, int hHint) {
 	int index = parent.indexOf (this);
