@@ -78,7 +78,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 
 @Tag("clipboard")
 @Test
-public void test_copy() {
+public void test_copy() throws InterruptedException {
 	if (SwtTestUtil.isCocoa) {
 		// TODO Fix Cocoa failure.
 		if (SwtTestUtil.verbose) {
@@ -92,6 +92,7 @@ public void test_copy() {
 	ccombo.copy();
 	ccombo.setSelection(new Point(0,0));
 	ccombo.paste();
+	SwtTestUtil.processEvents(1000, () -> "23123456".equals(ccombo.getText()));
 	assertEquals("23123456", ccombo.getText());
 }
 
@@ -135,7 +136,7 @@ public void test_isFocusControl() {
 
 @Tag("clipboard")
 @Test
-public void test_paste() {
+public void test_paste() throws InterruptedException {
 	if (SwtTestUtil.isCocoa) {
 		// TODO Fix Cocoa failure.
 		if (SwtTestUtil.verbose) {
@@ -147,8 +148,10 @@ public void test_paste() {
 	ccombo.setText("123456");
 	ccombo.setSelection(new Point(1,3));
 	ccombo.cut();
+	SwtTestUtil.processEvents(1000, () -> "1456".equals(ccombo.getText()));
 	assertEquals("1456", ccombo.getText());
 	ccombo.paste();
+	SwtTestUtil.processEvents(1000, () -> "123456".equals(ccombo.getText()));
 	assertEquals("123456", ccombo.getText());
 }
 
