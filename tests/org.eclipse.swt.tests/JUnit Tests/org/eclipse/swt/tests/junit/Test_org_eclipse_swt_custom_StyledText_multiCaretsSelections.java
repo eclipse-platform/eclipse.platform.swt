@@ -28,6 +28,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.test.Screenshots;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -220,6 +221,7 @@ public class Test_org_eclipse_swt_custom_StyledText_multiCaretsSelections {
 		assertArrayEquals(new int[] { 2, 0, 7, 0 }, text.getSelectionRanges());
 	}
 
+	@Tag("clipboard")
 	@Test
 	public void test_MultiCarets_CopyPaste() {
 		text.setText("1\n2");

@@ -35,6 +35,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Widget;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -263,6 +264,7 @@ public void test_computeSizeIIZ() {
 	// super class test is sufficient
 }
 
+@Tag("clipboard")
 @Test
 public void test_copy() {
 	if (SwtTestUtil.isCocoa) {
@@ -928,6 +930,7 @@ public void test_isVisible() {
 	assertFalse(control.isVisible());
 }
 
+@Tag("clipboard")
 @Test
 public void test_paste() {
 	if (SwtTestUtil.isCocoa) {
@@ -1429,6 +1432,7 @@ public void test_consistency_DragDetect () {
 	consistencyEvent(30, 10, 50, 0, ConsistencyUtility.MOUSE_DRAG);
 }
 
+@Tag("clipboard")
 @Test
 public void test_consistency_Segments () {
 	if (SwtTestUtil.isCocoa) {

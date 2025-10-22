@@ -22,6 +22,7 @@ import org.eclipse.swt.custom.LineBackgroundListener;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Shell;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -40,6 +41,7 @@ public void setUp() {
 	shell.open();
 }
 
+@Tag("clipboard")
 @Test
 public void test_lineGetBackgroundLorg_eclipse_swt_custom_LineBackgroundEvent() {
 	LineBackgroundListener listener = event -> {
