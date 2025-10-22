@@ -11,10 +11,13 @@
 package org.eclipse.swt.tests.junit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -25,6 +28,7 @@ import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.RTFTransfer;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
@@ -352,5 +356,46 @@ public class Test_org_eclipse_swt_dnd_Clipboard {
 			return result[0] != null;
 		});
 		assertEquals(helloWorld, result[0]);
+	}
+
+	@ParameterizedTest
+	@MethodSource("supportedClipboardIds")
+	public void test_getAvailableTypeNames(int clipboardId) throws Exception {
+		openAndFocusRemote();
+		String helloWorld = getUniqueTestString();
+		remote.setContents(helloWorld, clipboardId);
+
+		openAndFocusShell(false);
+		String[] availableTypeNames = clipboard.getAvailableTypeNames();
+		// The actual contents of type names is platform specific, so we just
+		// verify that we get something.
+		assertNotNull(availableTypeNames);
+		assertTrue(availableTypeNames.length > 0);
+	}
+
+	@ParameterizedTest
+	@MethodSource("supportedClipboardIds")
+	public void test_getAvailableTypes(int clipboardId) throws Exception {
+		openAndFocusRemote();
+		String helloWorld = getUniqueTestString();
+		remote.setContents(helloWorld, clipboardId);
+
+		openAndFocusShell(false);
+		TransferData[] availableTypes = clipboard.getAvailableTypes(clipboardId);
+		assertTrue(Arrays.stream(availableTypes).anyMatch(textTransfer::isSupportedType));
+
+		helloWorld = getUniqueTestString();
+		String helloWorldRtf = "{\\rtf1\\b\\i " + helloWorld + "}";
+		clipboard.setContents(new Object[] { helloWorld, helloWorldRtf }, new Transfer[] { textTransfer, rtfTransfer },
+				clipboardId);
+		availableTypes = clipboard.getAvailableTypes(clipboardId);
+		assertTrue(Arrays.stream(availableTypes).anyMatch(textTransfer::isSupportedType));
+		assertTrue(Arrays.stream(availableTypes).anyMatch(rtfTransfer::isSupportedType));
+
+		helloWorld = getUniqueTestString();
+		helloWorldRtf = "{\\rtf1\\b\\i " + helloWorld + "}";
+		clipboard.setContents(new Object[] { helloWorldRtf }, new Transfer[] { rtfTransfer }, clipboardId);
+		availableTypes = clipboard.getAvailableTypes(clipboardId);
+		assertTrue(Arrays.stream(availableTypes).anyMatch(rtfTransfer::isSupportedType));
 	}
 }
