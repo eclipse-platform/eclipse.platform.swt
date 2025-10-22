@@ -15,6 +15,7 @@ package org.eclipse.swt.internal.image;
 import java.io.*;
 import java.nio.charset.*;
 import java.util.*;
+import java.util.function.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -50,6 +51,29 @@ public class SVGFileFormat extends FileFormat {
 		}
 		if (targetZoom <= 0) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT, null, " [Cannot rasterize SVG for zoom <= 0]");
+		}
+		ImageData rasterizedImageData = RASTERIZER.rasterizeSVG(inputStream, 100 * targetZoom / fileZoom);
+		return List.of(new ElementAtZoom<>(rasterizedImageData, targetZoom));
+	}
+
+	@Override
+	public List<ElementAtZoom<ImageData>> loadFromStream(LEDataInputStream stream, int fileZoom, int targetZoom,
+			Supplier<Point> sizeHintSupplier) {
+		if (RASTERIZER == null) {
+			SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT, null, " [No SVG rasterizer found]");
+		}
+		if (targetZoom <= 0) {
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT, null, " [Cannot rasterize SVG for zoom <= 0]");
+		}
+		if (sizeHintSupplier != null) {
+			Point point = sizeHintSupplier.get();
+			if (point != null) {
+				double factor = targetZoom / 100d;
+				int w = (int) (factor * point.x);
+				int h = (int) (factor * point.y);
+				ImageData imageData = RASTERIZER.rasterizeSVG(inputStream, w, h);
+				return List.of(new ElementAtZoom<>(imageData, targetZoom));
+			}
 		}
 		ImageData rasterizedImageData = RASTERIZER.rasterizeSVG(inputStream, 100 * targetZoom / fileZoom);
 		return List.of(new ElementAtZoom<>(rasterizedImageData, targetZoom));
