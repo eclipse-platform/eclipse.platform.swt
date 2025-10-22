@@ -36,6 +36,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Display;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -222,6 +223,7 @@ public void test_computeSizeIIZ() {
 	// super class test is sufficient
 }
 
+@Tag("clipboard")
 @Test
 public void test_copy() {
 	if (SwtTestUtil.isCocoa) {
@@ -245,6 +247,7 @@ public void test_copy() {
 	assertEquals("23123456", combo.getText());
 }
 
+@Tag("clipboard")
 @Test
 public void test_cut() {
 	if (SwtTestUtil.isCocoa) {
@@ -492,6 +495,7 @@ public void test_indexOfLjava_lang_StringI() {
 		assertEquals(i, combo.indexOf("fred" + i, i));
 }
 
+@Tag("clipboard")
 @Test
 public void test_paste() {
 	if (SwtTestUtil.isCocoa) {
@@ -1036,6 +1040,7 @@ public void test_consistency_DragDetect () {
 	consistencyEvent(10, 5, 20, 10, ConsistencyUtility.MOUSE_DRAG);
 }
 
+@Tag("clipboard")
 @Test
 public void test_consistency_Segments () {
 	if (!SwtTestUtil.isWindows) {

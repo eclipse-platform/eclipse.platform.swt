@@ -19,7 +19,7 @@ import org.junit.platform.suite.api.Suite;
 /**
  * Suite for testing all of the graphics test cases.
  */
-@Suite
+@Suite(failIfNoTests = false)
 @SelectClasses({ //
 		// Sorted list of tests
 		Test_org_eclipse_swt_graphics_Color.class, //

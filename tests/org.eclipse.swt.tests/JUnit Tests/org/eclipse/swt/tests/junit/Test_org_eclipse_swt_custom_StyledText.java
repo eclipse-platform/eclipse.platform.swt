@@ -78,6 +78,7 @@ import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Widget;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -323,6 +324,7 @@ public void test_removeCaretListener_CaretListenerNotCalled() {
 	assertFalse(listenerCalled);
 }
 
+@Tag("clipboard")
 @Test
 public void test_addLineBackgroundListenerLorg_eclipse_swt_custom_LineBackgroundListener() {
 	String line = "Line1";
@@ -348,6 +350,7 @@ public void test_addLineBackgroundListenerLorg_eclipse_swt_custom_LineBackground
 	assertFalse(listenerCalled);
 }
 
+@Tag("clipboard")
 @Test
 public void test_addLineStyleListenerLorg_eclipse_swt_custom_LineStyleListener() {
 	String line = "Line1";
@@ -687,6 +690,8 @@ public void test_marginsCorrect(){
 	assertEquals(leftMargin, singleText.getLeftMargin());
 	singleText.dispose();
 }
+
+@Tag("clipboard")
 @Test
 public void test_copy() {
 	if (SwtTestUtil.isCocoa) {
@@ -763,6 +768,7 @@ private static StyleRange getRangeForText(String str, String subStr) {
 	return null;
 }
 
+@Tag("clipboard")
 @Test
 public void test_clipboardWithHtml() {
 	String content = "This is red, background yellow, bold, italic, underscore, big, small, super, sub.";
@@ -814,6 +820,7 @@ public void test_clipboardWithHtml() {
 	fontArial8.dispose();
 }
 
+@Tag("clipboard")
 @Test
 public void test_cut() {
 	if (SwtTestUtil.isCocoa) {
@@ -2239,6 +2246,7 @@ public void test_invokeActionI() {
 	text.invokeAction(ST.TOGGLE_OVERWRITE);
 }
 
+@Tag("clipboard")
 @Test
 public void test_paste(){
 	if (SwtTestUtil.isCocoa) {
@@ -5265,6 +5273,7 @@ public void test_selectAllInBlockSelectionMode() {
 	assertEquals("Test" + System.lineSeparator(), text.getSelectionText());
 }
 
+@Tag("clipboard")
 @Test
 public void test_cutTextInBlockSelection() {
 	text.setText(blockSelectionTestText());
@@ -5281,6 +5290,7 @@ public void test_cutTextInBlockSelection() {
 			+ "Sample Test Selection" + System.lineSeparator()));
 }
 
+@Tag("clipboard")
 @Test
 public void test_pasteInsertsTextInBlockSelectionAsBlock() {
 	text.setText(blockSelectionTestText());
@@ -5300,6 +5310,7 @@ public void test_pasteInsertsTextInBlockSelectionAsBlock() {
 			+ blockSelectionTestTextOneLine()));
 }
 
+@Tag("clipboard")
 @Test
 public void test_cutAndPasteInBlockSelection() {
 	text.setText(blockSelectionTestText());
@@ -5811,6 +5822,7 @@ public void test_bug551335_lostStyles() throws InterruptedException {
  * from clipboard. It should be still possible to paste text which was copied
  * from a now disposed/unavailable StyledText.
  */
+@Tag("clipboard")
 @Test
 public void test_clipboardCarryover() {
 	assumeFalse(SwtTestUtil.isCocoa, "Disabled on Mac because similar clipboard tests are also disabled.");
