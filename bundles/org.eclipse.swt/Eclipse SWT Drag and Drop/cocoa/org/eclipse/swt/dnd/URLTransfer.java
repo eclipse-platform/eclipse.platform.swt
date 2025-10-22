@@ -33,6 +33,8 @@ import org.eclipse.swt.internal.cocoa.*;
 public class URLTransfer extends ByteArrayTransfer {
 
 	static URLTransfer _instance = new URLTransfer();
+	// XXX: SWT uses the deprecated format name here,
+	// the new name is "public.url" aka NSPasteboardTypeURL
 	static final String URL = OS.NSURLPboardType.getString();
 	static final String URL1 = OS.kUTTypeURL.getString();
 	static final int URL_ID = registerType(URL);
