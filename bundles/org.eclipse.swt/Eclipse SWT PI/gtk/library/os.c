@@ -2399,26 +2399,6 @@ JNIEXPORT void JNICALL GDK_NATIVE(gdk_1surface_1set_1cursor)
 }
 #endif
 
-#ifndef NO_gdk_1surface_1set_1input_1region
-JNIEXPORT void JNICALL GDK_NATIVE(gdk_1surface_1set_1input_1region)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
-{
-	GDK_NATIVE_ENTER(env, that, gdk_1surface_1set_1input_1region_FUNC);
-	gdk_surface_set_input_region((GdkSurface *)arg0, (cairo_region_t *)arg1);
-	GDK_NATIVE_EXIT(env, that, gdk_1surface_1set_1input_1region_FUNC);
-}
-#endif
-
-#ifndef NO_gdk_1surface_1set_1opaque_1region
-JNIEXPORT void JNICALL GDK_NATIVE(gdk_1surface_1set_1opaque_1region)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
-{
-	GDK_NATIVE_ENTER(env, that, gdk_1surface_1set_1opaque_1region_FUNC);
-	gdk_surface_set_opaque_region((GdkSurface *)arg0, (cairo_region_t *)arg1);
-	GDK_NATIVE_EXIT(env, that, gdk_1surface_1set_1opaque_1region_FUNC);
-}
-#endif
-
 #ifndef NO_gdk_1text_1property_1to_1utf8_1list_1for_1display
 JNIEXPORT jint JNICALL GDK_NATIVE(gdk_1text_1property_1to_1utf8_1list_1for_1display)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jint arg2, jlong arg3, jint arg4, jlongArray arg5)
@@ -3138,18 +3118,6 @@ JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1x11_1surface_1get_1xid)
 	GDK_NATIVE_ENTER(env, that, gdk_1x11_1surface_1get_1xid_FUNC);
 	rc = (jlong)gdk_x11_surface_get_xid((GdkSurface *)arg0);
 	GDK_NATIVE_EXIT(env, that, gdk_1x11_1surface_1get_1xid_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_gdk_1x11_1surface_1lookup_1for_1display
-JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1x11_1surface_1lookup_1for_1display)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
-{
-	jlong rc = 0;
-	GDK_NATIVE_ENTER(env, that, gdk_1x11_1surface_1lookup_1for_1display_FUNC);
-	rc = (jlong)gdk_x11_surface_lookup_for_display((GdkDisplay *)arg0, (Window)arg1);
-	GDK_NATIVE_EXIT(env, that, gdk_1x11_1surface_1lookup_1for_1display_FUNC);
 	return rc;
 }
 #endif

@@ -179,8 +179,6 @@ typedef enum {
 	gdk_1surface_1new_1popup_FUNC,
 	gdk_1surface_1new_1toplevel_FUNC,
 	gdk_1surface_1set_1cursor_FUNC,
-	gdk_1surface_1set_1input_1region_FUNC,
-	gdk_1surface_1set_1opaque_1region_FUNC,
 	gdk_1text_1property_1to_1utf8_1list_1for_1display_FUNC,
 	gdk_1texture_1new_1for_1pixbuf_FUNC,
 	gdk_1texture_1new_1from_1file_FUNC,
@@ -236,7 +234,6 @@ typedef enum {
 	gdk_1x11_1screen_1get_1window_1manager_1name_FUNC,
 	gdk_1x11_1screen_1lookup_1visual_FUNC,
 	gdk_1x11_1surface_1get_1xid_FUNC,
-	gdk_1x11_1surface_1lookup_1for_1display_FUNC,
 	gdk_1x11_1window_1get_1xid_FUNC,
 	gdk_1x11_1window_1lookup_1for_1display_FUNC,
 } GDK_FUNCS;
