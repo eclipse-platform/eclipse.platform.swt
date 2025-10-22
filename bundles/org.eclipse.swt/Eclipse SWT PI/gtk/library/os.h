@@ -59,7 +59,6 @@
 #if !GTK_CHECK_VERSION(4,0,0)
 #include <gtk/gtkx.h>
 #define NO_gdk_1x11_1surface_1get_1xid
-#define NO_gdk_1x11_1surface_1lookup_1for_1display
 #else
 #define NO_gdk_1x11_1get_1default_1xdisplay
 #define NO_gdk_1x11_1window_1get_1xid
@@ -286,8 +285,6 @@
 #define NO_gdk_1surface_1get_1root_1origin
 #define NO_gdk_1surface_1invalidate_1region
 #define NO_gdk_1event_1get_1surface
-#define NO_gdk_1surface_1set_1input_1region
-#define NO_gdk_1surface_1set_1opaque_1region
 
 // No GdkToplevel on GTK3
 #define NO_gdk_1toplevel_1present
