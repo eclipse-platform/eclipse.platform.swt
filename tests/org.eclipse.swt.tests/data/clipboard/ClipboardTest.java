@@ -56,7 +56,7 @@ public class ClipboardTest extends JFrame {
 
 	private static Registry rmiRegistry;
 	private JTextArea textArea;
-	private ClipboardCommands commands;
+	private ClipboardCommandsImpl commands;
 
 	public ClipboardTest() throws RemoteException {
 		super("ClipboardTest");
@@ -68,6 +68,7 @@ public class ClipboardTest extends JFrame {
 
 		JButton copyButton = new JButton("Copy");
 		JButton pasteButton = new JButton("Paste");
+		JButton pressToContinue = new JButton("Press To Continue Test");
 
 		copyButton.addActionListener(e -> {
 			String text = textArea.getSelectedText();
@@ -88,9 +89,14 @@ public class ClipboardTest extends JFrame {
 			}
 		});
 
+		pressToContinue.addActionListener(e -> {
+			commands.buttonPressed.countDown();
+		});
+
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.add(copyButton);
 		buttonPanel.add(pasteButton);
+		buttonPanel.add(pressToContinue);
 
 		add(scrollPane, BorderLayout.CENTER);
 		add(buttonPanel, BorderLayout.SOUTH);

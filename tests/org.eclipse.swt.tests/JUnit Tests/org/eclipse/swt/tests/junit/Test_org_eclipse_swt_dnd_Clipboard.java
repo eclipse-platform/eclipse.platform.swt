@@ -12,23 +12,32 @@ package org.eclipse.swt.tests.junit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.RTFTransfer;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -40,8 +49,20 @@ import org.junit.jupiter.params.provider.MethodSource;
  *      some clipboard tests
  */
 @Tag("clipboard")
+@TestMethodOrder(OrderAnnotation.class) // run tests needing button presses first
 public class Test_org_eclipse_swt_dnd_Clipboard {
 
+	/**
+	 * See {@link #openAndFocusShell(boolean)} - some tests require user to actually
+	 * interact with the shell.
+	 *
+	 * Default to skipping tests requiring "real" activation on GHA and Jenkins.
+	 *
+	 * <code>true</code>: skip tests <code>false</code>: don't skip tests
+	 * <code>null</code>: unknown whether to skip tests yet
+	 */
+	private static Boolean skipTestsRequiringButtonPress = (Boolean.parseBoolean(System.getenv("GITHUB_ACTIONS"))
+			|| System.getenv("JOB_NAME") != null) ? true : null;
 	private static int uniqueId = 1;
 	private Display display;
 	private Shell shell;
@@ -65,10 +86,68 @@ public class Test_org_eclipse_swt_dnd_Clipboard {
 	 * Note: Wayland backend does not allow access to system clipboard from
 	 * non-focussed windows. So we have to create/open and focus a window here so
 	 * that clipboard operations work.
+	 *
+	 * Additionally, if we want to provide data to the clipboard, we require user
+	 * interaction on the created shell. Therefore if forSetContents is true the
+	 * tester needs to press a button for test to work.
+	 *
+	 * If there is no user interaction (button not pressed) then the test is
+	 * skipped, rather than failed, and subsequent tests requiring user interaction
+	 * as skipped too. See {@link #skipTestsRequiringButtonPress}
 	 */
-	private void openAndFocusShell() {
+	private void openAndFocusShell(boolean forSetContents) throws InterruptedException {
+		assertNull(shell);
 		shell = new Shell(display);
-		SwtTestUtil.openShell(shell);
+
+		boolean requireUserPress = forSetContents && SwtTestUtil.isWayland();
+		if (requireUserPress) {
+			assumeFalse(skipTestsRequiringButtonPress != null && skipTestsRequiringButtonPress,
+					"Skipping tests that require user input");
+
+			AtomicBoolean pressed = new AtomicBoolean(false);
+			shell.setLayout(new RowLayout(SWT.VERTICAL));
+			Button button = new Button(shell, SWT.PUSH);
+			button.setText("Press me!");
+			button.addListener(SWT.Selection, (e) -> pressed.set(true));
+			button.setSize(200, 50);
+			Label label = new Label(shell, SWT.NONE);
+			label.setText("""
+					Press the button to tell Wayland that you really want this window to have access to clipboard.
+					This is needed on Wayland because only really focussed programs are allowed to write to the
+					global keyboard.
+
+					If you don't press this button soon, the test will be skipped and you won't be asked again.
+					""");
+			Label timeleft = new Label(shell, SWT.NONE);
+			timeleft.setText("Time left to press button: XXXXXXXXXXXXXXXXXXXX seconds");
+
+			SwtTestUtil.openShell(shell);
+
+			// If we know there is a tester pressing the buttons, allow them
+			// a little grace on the timeout. If we don't know if there is a
+			// tester around, skip tests fairly quickly and don't
+			// ask again.
+			int timeout = skipTestsRequiringButtonPress == null ? 1500 : 10000;
+			long startTime = System.nanoTime();
+			SwtTestUtil.processEvents(timeout, () -> {
+				long nowTime = System.nanoTime();
+				long timeLeft = nowTime - startTime;
+				long timeLeftMs = timeout - (timeLeft / 1_000_000);
+				double timeLeftS = timeLeftMs / 1_000.0d;
+				timeleft.setText("Time left to press button: " + timeLeftS + " seconds");
+				return pressed.get();
+			});
+			boolean userPressedButton = pressed.get();
+			if (userPressedButton) {
+				skipTestsRequiringButtonPress = false;
+			} else {
+				skipTestsRequiringButtonPress = true;
+				assumeTrue(false, "Skipping tests that require user input");
+			}
+		} else {
+			SwtTestUtil.openShell(shell);
+		}
+
 	}
 
 	/**
@@ -76,10 +155,17 @@ public class Test_org_eclipse_swt_dnd_Clipboard {
 	 * non-focussed windows. So we have to open and focus remote here so that
 	 * clipboard operations work.
 	 */
-	public void openAndFocusRemote() throws Exception {
+	private void openAndFocusRemote() throws Exception {
 		assertNull(remote);
 		remote = new RemoteClipboard();
 		remote.start();
+
+		/*
+		 * If/when OpenJDK Project Wakefield gets merged then we may need to wait for
+		 * button pressed on the swing app just like the SWT app. This may also be
+		 * needed if Wayland implementations get more restrictive on X apps too.
+		 */
+		// remote.waitForButtonPress();
 	}
 
 	@AfterEach
@@ -138,8 +224,8 @@ public class Test_org_eclipse_swt_dnd_Clipboard {
 	 */
 	@ParameterizedTest
 	@MethodSource("supportedClipboardIds")
-	public void test_LocalClipboard(int clipboardId) {
-		openAndFocusShell();
+	public void test_LocalClipboard(int clipboardId) throws InterruptedException {
+		openAndFocusShell(false);
 
 		String helloWorld = getUniqueTestString();
 		clipboard.setContents(new Object[] { helloWorld }, new Transfer[] { textTransfer }, clipboardId);
@@ -179,10 +265,11 @@ public class Test_org_eclipse_swt_dnd_Clipboard {
 		assertEquals(helloWorldRtf, clipboard.getContents(rtfTransfer, clipboardId));
 	}
 
+	@Order(2)
 	@ParameterizedTest
 	@MethodSource("supportedClipboardIds")
 	public void test_setContents(int clipboardId) throws Exception {
-		openAndFocusShell();
+		openAndFocusShell(true);
 		String helloWorld = getUniqueTestString();
 
 		clipboard.setContents(new Object[] { helloWorld }, new Transfer[] { textTransfer }, clipboardId);
@@ -199,10 +286,9 @@ public class Test_org_eclipse_swt_dnd_Clipboard {
 		String helloWorld = getUniqueTestString();
 		remote.setContents(helloWorld, clipboardId);
 
-		openAndFocusShell();
+		openAndFocusShell(false);
 		assertEquals(helloWorld, clipboard.getContents(textTransfer, clipboardId));
 	}
-
 
 	@Test
 	public void test_getContentsBothClipboards() throws Exception {
@@ -214,16 +300,17 @@ public class Test_org_eclipse_swt_dnd_Clipboard {
 		String helloWorldSelection = getUniqueTestString();
 		remote.setContents(helloWorldSelection, DND.SELECTION_CLIPBOARD);
 
-		openAndFocusShell();
+		openAndFocusShell(false);
 		assertEquals(helloWorldClipboard, clipboard.getContents(textTransfer, DND.CLIPBOARD));
 		assertEquals(helloWorldSelection, clipboard.getContents(textTransfer, DND.SELECTION_CLIPBOARD));
 	}
 
+	@Order(1)
 	@Test
 	public void test_setContentsBothClipboards() throws Exception {
 		assumeTrue(SwtTestUtil.isGTK);
 
-		openAndFocusShell();
+		openAndFocusShell(true);
 		String helloWorldClipboard = getUniqueTestString();
 		clipboard.setContents(new Object[] { helloWorldClipboard }, new Transfer[] { textTransfer }, DND.CLIPBOARD);
 		String helloWorldSelection = getUniqueTestString();
@@ -244,7 +331,7 @@ public class Test_org_eclipse_swt_dnd_Clipboard {
 		String helloWorld = getUniqueTestString();
 		remote.setContents(helloWorld, clipboardId);
 
-		openAndFocusShell();
+		openAndFocusShell(false);
 
 		// Multiple ways of using the API
 		// 1: Spin the event loop manually waiting for future to complete

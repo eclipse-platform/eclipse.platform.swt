@@ -126,6 +126,28 @@ public class SwtTestUtil {
 	}
 
 	/**
+	 * Return whether running on Wayland. This is dynamically set at runtime and cannot
+	 * be accessed before the corresponding property is initialized in Display.
+	 *
+	 * <strong>Note:</strong> this method still must be called after the first
+	 * Display is created to be valid
+	 */
+	public final static boolean isWayland() {
+		if (!isGTK) {
+			return false;
+		}
+		String backend = System.getProperty("org.eclipse.swt.internal.gdk.backend");
+
+		if ("wayland".equals(backend)) {
+			return true;
+		} else if ("x11".equals(backend)) {
+			return false;
+		}
+		fail("org.eclipse.swt.internal.gdk.backend System property is not set yet. Create a new Display before calling isWayland");
+		throw new IllegalStateException("unreachable");
+	}
+
+	/**
 	 * Return whether running on GTK4. This is dynamically set at runtime and cannot
 	 * be accessed before the corresponding property is initialized in OS.
 	 *

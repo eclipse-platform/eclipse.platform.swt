@@ -43,4 +43,6 @@ public interface ClipboardCommands extends Remote {
 	String getStringContents(int clipboardId) throws RemoteException;
 
 	void waitUntilReady() throws RemoteException;
+
+	void waitForButtonPress() throws RemoteException;
 }

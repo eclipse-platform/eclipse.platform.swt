@@ -205,4 +205,9 @@ public class RemoteClipboard implements ClipboardCommands {
 	public void waitUntilReady() throws RemoteException {
 		remote.waitUntilReady();
 	}
+
+	@Override
+	public void waitForButtonPress()  throws RemoteException {
+		remote.waitForButtonPress();
+	}
 }
