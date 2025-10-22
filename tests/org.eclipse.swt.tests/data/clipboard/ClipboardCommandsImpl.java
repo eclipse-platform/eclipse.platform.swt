@@ -18,12 +18,15 @@ import java.lang.reflect.InvocationTargetException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Arrays;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.SwingUtilities;
 
 public class ClipboardCommandsImpl extends UnicastRemoteObject implements ClipboardCommands {
 	private static final long serialVersionUID = 330098269086266134L;
 	private ClipboardTest clipboardTest;
+	CountDownLatch buttonPressed;
 
 	protected ClipboardCommandsImpl(ClipboardTest clipboardTest) throws RemoteException {
 		super();
@@ -105,6 +108,23 @@ public class ClipboardCommandsImpl extends UnicastRemoteObject implements Clipbo
 			clipboardTest.log("setFocus()");
 			clipboardTest.requestFocus();
 		});
+	}
+
+	@Override
+	public void waitForButtonPress() throws RemoteException {
+		clipboardTest.log("waitForButtonPress() - START");
+		buttonPressed = new CountDownLatch(1);
+		try {
+			if (buttonPressed.await(10, TimeUnit.SECONDS)) {
+				clipboardTest.log("waitForButtonPress() - SUCCESS");
+			} else {
+				clipboardTest.log("waitForButtonPress() - FAILED Timeout");
+				throw new RemoteException("Button not pressed in time");
+			}
+		} catch (InterruptedException e) {
+			clipboardTest.log("waitForButtonPress() - FAILED Interrupted");
+			throw new RemoteException("Interrupted while waiting for button press", e);
+		}
 	}
 
 	private void invokeAndWait(Runnable run) throws RemoteException {
