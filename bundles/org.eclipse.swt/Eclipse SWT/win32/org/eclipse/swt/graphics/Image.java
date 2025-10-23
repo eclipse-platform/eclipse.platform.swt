@@ -1650,7 +1650,7 @@ private ImageHandle initIconHandle(long[] handles, int zoom) {
 	OS.DeleteObject(handles[0]);
 	OS.DeleteObject(handles[1]);
 	type = SWT.ICON;
-	return new ImageHandle(hIcon, zoom);
+	return new ImageHandle(hIcon, zoom, -1);
 }
 
 private ImageHandle initBitmapHandle(ImageData imageData, long handle, Integer zoom) {
@@ -2040,7 +2040,7 @@ private class ExistingImageHandleProviderWrapper extends AbstractImageProviderWr
 	public ExistingImageHandleProviderWrapper(long handle, int zoomForHandle) {
 		this.handle = handle;
 		this.zoomForHandle = zoomForHandle;
-		ImageHandle imageHandle = new ImageHandle(handle, zoomForHandle);
+		ImageHandle imageHandle = new ImageHandle(handle, zoomForHandle, -1);
 
 		ImageData baseData = imageHandle.getImageData();
 		this.width = DPIUtil.pixelToPoint(baseData.width, zoomForHandle);
@@ -2298,7 +2298,7 @@ private class PlainImageProviderWrapper extends AbstractImageProviderWrapper {
 
 	private ImageHandle createHandle(int zoom) {
 		long handle = initHandle(zoom);
-		ImageHandle imageHandle = new ImageHandle(handle, zoom);
+		ImageHandle imageHandle = new ImageHandle(handle, zoom, -1);
 		zoomLevelToImageHandle.put(zoom, imageHandle);
 		return imageHandle;
 	}
@@ -2494,7 +2494,7 @@ private class ImageFileNameProviderWrapper extends BaseImageProviderWrapper<Imag
 				long[] hicon = new long[1];
 				status = Gdip.Bitmap_GetHICON(bitmap, hicon);
 				handle = hicon[0];
-				imageMetadata = new ImageHandle(handle, zoom);
+				imageMetadata = new ImageHandle(handle, zoom, -1);
 			} else {
 				type = SWT.BITMAP;
 				width = Gdip.Image_GetWidth(bitmap);
@@ -2811,10 +2811,6 @@ class ImageHandle {
 	 */
 	final int transparentPixel;
 	int transparentColor = -1;
-
-	ImageHandle(long handle, int zoom) {
-		this(handle, zoom, -1);
-	}
 
 	ImageHandle(long handle, int zoom, int transparentPixel) {
 		this.handle = handle;
