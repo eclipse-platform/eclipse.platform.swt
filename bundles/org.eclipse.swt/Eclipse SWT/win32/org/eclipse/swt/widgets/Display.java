@@ -1180,32 +1180,39 @@ static long create32bitDIB (long hBitmap, int alpha, byte [] alphaData, int tran
 }
 
 static Image createIcon (Image image, int zoom) {
-	Device device = image.getDevice ();
+	Device device = image.getDevice();
 	ImageData data = image.getImageData(zoom);
-	if (data.alpha == -1 && data.alphaData == null) {
-		ImageData mask = data.getTransparencyMask ();
-		return new Image (device, data, mask);
+	switch (data.getTransparencyType()) {
+	case SWT.TRANSPARENCY_MASK:
+	case SWT.TRANSPARENCY_PIXEL:
+		ImageData mask = data.getTransparencyMask();
+		return new Image(device, data, mask);
+	case SWT.TRANSPARENCY_ALPHA:
+	case SWT.NONE:
+	default:
+		int width = data.width, height = data.height;
+		long hMask, hBitmap;
+		long hDC = device.internal_new_GC(null);
+		long dstHdc = OS.CreateCompatibleDC(hDC), oldDstBitmap;
+		hBitmap = Display.create32bitDIB(Image.win32_getHandle(image, zoom), data.alpha, data.alphaData,
+				data.transparentPixel);
+		hMask = OS.CreateBitmap(width, height, 1, 1, null);
+		oldDstBitmap = OS.SelectObject(dstHdc, hMask);
+		OS.PatBlt(dstHdc, 0, 0, width, height, OS.BLACKNESS);
+		OS.SelectObject(dstHdc, oldDstBitmap);
+		OS.DeleteDC(dstHdc);
+		device.internal_dispose_GC(hDC, null);
+		ICONINFO info = new ICONINFO();
+		info.fIcon = true;
+		info.hbmColor = hBitmap;
+		info.hbmMask = hMask;
+		long hIcon = OS.CreateIconIndirect(info);
+		if (hIcon == 0)
+			SWT.error(SWT.ERROR_NO_HANDLES);
+		OS.DeleteObject(hBitmap);
+		OS.DeleteObject(hMask);
+		return Image.win32_new(device, SWT.ICON, hIcon, zoom);
 	}
-	int width = data.width, height = data.height;
-	long hMask, hBitmap;
-	long hDC = device.internal_new_GC (null);
-	long dstHdc = OS.CreateCompatibleDC (hDC), oldDstBitmap;
-	hBitmap = Display.create32bitDIB (Image.win32_getHandle(image, zoom), data.alpha, data.alphaData, data.transparentPixel);
-	hMask = OS.CreateBitmap (width, height, 1, 1, null);
-	oldDstBitmap = OS.SelectObject (dstHdc, hMask);
-	OS.PatBlt (dstHdc, 0, 0, width, height, OS.BLACKNESS);
-	OS.SelectObject (dstHdc, oldDstBitmap);
-	OS.DeleteDC (dstHdc);
-	device.internal_dispose_GC (hDC, null);
-	ICONINFO info = new ICONINFO ();
-	info.fIcon = true;
-	info.hbmColor = hBitmap;
-	info.hbmMask = hMask;
-	long hIcon = OS.CreateIconIndirect (info);
-	if (hIcon == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	OS.DeleteObject (hBitmap);
-	OS.DeleteObject (hMask);
-	return Image.win32_new (device, SWT.ICON, hIcon, zoom);
 }
 
 long getTextSearchIcon(int size) {
