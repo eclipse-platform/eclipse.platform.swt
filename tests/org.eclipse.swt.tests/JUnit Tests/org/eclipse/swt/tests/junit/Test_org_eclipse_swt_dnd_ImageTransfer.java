@@ -14,6 +14,7 @@ import static org.eclipse.swt.tests.graphics.ImageDataTestHelper.imageDataCompar
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -128,10 +129,10 @@ public class Test_org_eclipse_swt_dnd_ImageTransfer extends ClipboardBase {
 		ImageData imageData = getImageData();
 
 		openAndFocusShell(false);
-		// Put a type on the clipboard and ensure we don't match it
 		setContents(imageData);
 		ImageData contents = getContents();
 		assertEquals(0, imageDataComparator().compare(imageData, contents));
+		assertNotSame(imageData, contents);
 	}
 
 	@Test
