@@ -49,6 +49,7 @@ public class Snippet141 {
 		dialog.setFilterExtensions(new String[] {"*.gif"});
 		String fileName = dialog.open();
 		final AtomicBoolean stopAnimation = new AtomicBoolean(false);
+
 		if (fileName != null) {
 			loader = new ImageLoader();
 			try {
@@ -56,57 +57,42 @@ public class Snippet141 {
 				if (imageDataArray.length > 1) {
 					animateThread = new Thread("Animation") {
 						@Override
-						@SuppressWarnings("unused")
 						public void run() {
-							/* Create an off-screen image to draw on, and fill it with the shell background. */
-							Image offScreenImage = new Image(display, loader.logicalScreenWidth, loader.logicalScreenHeight);
-							GC offScreenImageGC = new GC(offScreenImage);
-							offScreenImageGC.setBackground(shellBackground);
-							offScreenImageGC.fillRectangle(0, 0, loader.logicalScreenWidth, loader.logicalScreenHeight);
-
+							Image offScreenImage = null;
 							try {
-								/* Create the first image and draw it on the off-screen image. */
+								int width = loader.logicalScreenWidth;
+								int height = loader.logicalScreenHeight;
+
+								ImageGcDrawer offscreenDrawer = (gc, imageWidth, imageHeight) -> {
+									gc.setBackground(shellBackground);
+									gc.fillRectangle(0, 0, imageWidth, imageHeight);
+								};
+								offScreenImage = new Image(display, offscreenDrawer, width, height);
+								GC offScreenImageGC = new GC(offScreenImage);
+
 								int imageDataIndex = 0;
 								ImageData imageData = imageDataArray[imageDataIndex];
+
 								if (image != null && !image.isDisposed()) image.dispose();
 								image = new Image(display, imageData);
-								offScreenImageGC.drawImage(
-									image,
-									0,
-									0,
-									imageData.width,
-									imageData.height,
-									imageData.x,
-									imageData.y,
-									imageData.width,
-									imageData.height);
+								offScreenImageGC.drawImage(image, 0, 0, imageData.width, imageData.height,
+										imageData.x, imageData.y, imageData.width, imageData.height);
 
-								/* Now loop through the images, creating and drawing each one
-								 * on the off-screen image before drawing it on the shell. */
 								int repeatCount = loader.repeatCount;
 								while ((loader.repeatCount == 0 || repeatCount > 0) && !stopAnimation.get()) {
 									switch (imageData.disposalMethod) {
 									case SWT.DM_FILL_BACKGROUND:
-										/* Fill with the background color before drawing. */
 										Color bgColor = null;
 										if (useGIFBackground && loader.backgroundPixel != -1) {
 											bgColor = new Color(imageData.palette.getRGB(loader.backgroundPixel));
 										}
 										offScreenImageGC.setBackground(bgColor != null ? bgColor : shellBackground);
 										offScreenImageGC.fillRectangle(imageData.x, imageData.y, imageData.width, imageData.height);
+										if (bgColor != null) bgColor.dispose();
 										break;
 									case SWT.DM_FILL_PREVIOUS:
-										/* Restore the previous image before drawing. */
-										offScreenImageGC.drawImage(
-											image,
-											0,
-											0,
-											imageData.width,
-											imageData.height,
-											imageData.x,
-											imageData.y,
-											imageData.width,
-											imageData.height);
+										offScreenImageGC.drawImage(image, 0, 0, imageData.width, imageData.height,
+												imageData.x, imageData.y, imageData.width, imageData.height);
 										break;
 									}
 
@@ -114,37 +100,28 @@ public class Snippet141 {
 									imageData = imageDataArray[imageDataIndex];
 									image.dispose();
 									image = new Image(display, imageData);
-									offScreenImageGC.drawImage(
-										image,
-										0,
-										0,
-										imageData.width,
-										imageData.height,
-										imageData.x,
-										imageData.y,
-										imageData.width,
-										imageData.height);
 
-									/* Draw the off-screen image to the shell. */
+									offScreenImageGC.drawImage(image, 0, 0, imageData.width, imageData.height,
+											imageData.x, imageData.y, imageData.width, imageData.height);
+
 									shellGC.drawImage(offScreenImage, 0, 0);
 
-									/* Sleep for the specified delay time (adding commonly-used slow-down fudge factors). */
 									try {
 										int ms = imageData.delayTime * 10;
 										if (ms < 20) ms += 30;
 										if (ms < 30) ms += 10;
 										Thread.sleep(ms);
 									} catch (InterruptedException e) {
+										// ignore
 									}
 
-									/* If we have just drawn the last image, decrement the repeat count and start again. */
 									if (imageDataIndex == imageDataArray.length - 1) repeatCount--;
 								}
+								offScreenImageGC.dispose();
 							} catch (SWTException ex) {
 								System.out.println("There was an error animating the GIF");
 							} finally {
 								if (offScreenImage != null && !offScreenImage.isDisposed()) offScreenImage.dispose();
-								if (offScreenImageGC != null && !offScreenImageGC.isDisposed()) offScreenImageGC.dispose();
 								if (image != null && !image.isDisposed()) image.dispose();
 							}
 						}

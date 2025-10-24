@@ -46,13 +46,13 @@ public class Snippet214 {
 			button.setText ("Button " + i);
 		}
 		shell.addListener (SWT.Resize, event -> {
+			ImageGcDrawer imageGcDrawer = (gc, imageWidth, imageHeight) -> {
+				gc.setForeground (display.getSystemColor (SWT.COLOR_WHITE));
+				gc.setBackground (display.getSystemColor (SWT.COLOR_BLUE));
+				gc.fillGradientRectangle (0, 0, imageWidth, imageHeight, false);
+			};
 			Rectangle rect = shell.getClientArea ();
-			Image newImage = new Image (display, Math.max (1, rect.width), 1);
-			GC gc = new GC (newImage);
-			gc.setForeground (display.getSystemColor (SWT.COLOR_WHITE));
-			gc.setBackground (display.getSystemColor (SWT.COLOR_BLUE));
-			gc.fillGradientRectangle (rect.x, rect.y, rect.width, 1, false);
-			gc.dispose ();
+			Image newImage = new Image (display, imageGcDrawer, Math.max (1, rect.width), 1);
 			shell.setBackgroundImage (newImage);
 			if (oldImage != null) oldImage.dispose ();
 			oldImage = newImage;

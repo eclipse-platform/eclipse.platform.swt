@@ -40,13 +40,13 @@ public static void main (String [] args) {
 	}
 	if (originalImage == null) {
 		int width = 150, height = 200;
-		originalImage = new Image (display, width, height);
-		GC gc = new GC (originalImage);
-		gc.fillRectangle (0, 0, width, height);
-		gc.drawLine (0, 0, width, height);
-		gc.drawLine (0, height, width, 0);
-		gc.drawText ("Default Image", 10, 10);
-		gc.dispose ();
+		ImageGcDrawer imageGcDrawer = (gc, imageWidth, imageHeight) -> {
+			gc.fillRectangle (0, 0, width, height);
+			gc.drawLine (0, 0, width, height);
+			gc.drawLine (0, height, width, 0);
+			gc.drawText ("Default Image", 10, 10);
+		};
+		originalImage = new Image (display, imageGcDrawer, width, height);
 	}
 	final Image image = originalImage;
 	final Point origin = new Point (0, 0);

@@ -12,7 +12,6 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
-
 /*
  * example snippet: create a table (lazy)
  *
@@ -28,11 +27,11 @@ public class Snippet7 {
 
 public static void main (String [] args) {
 	final Display display = new Display ();
-	final Image image = new Image (display, 16, 16);
-	GC gc = new GC (image);
-	gc.setBackground (display.getSystemColor (SWT.COLOR_RED));
-	gc.fillRectangle (image.getBounds ());
-	gc.dispose ();
+	ImageGcDrawer imageGcDrawer = (gc, imageWidth, imageHeight) -> {
+		gc.setBackground(display.getSystemColor(SWT.COLOR_RED));
+		gc.fillRectangle(new Rectangle(0, 0, imageWidth, imageHeight));
+	};
+	final Image image = new Image(display, imageGcDrawer, 16, 16);
 	final Shell shell = new Shell (display);
 	shell.setText ("Lazy Table");
 	shell.setLayout (new FillLayout ());

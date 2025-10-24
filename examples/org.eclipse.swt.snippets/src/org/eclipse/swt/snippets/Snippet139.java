@@ -91,7 +91,6 @@ static ImageData flip(ImageData srcData, boolean vertical) {
 public static void main(String[] args) {
 	Display display = new Display();
 
-	// create an image with the word "hello" on it
 	final Image image0 = new Image(display, 50, 30);
 	GC gc = new GC(image0);
 	gc.setBackground(display.getSystemColor(SWT.COLOR_RED));
@@ -100,8 +99,9 @@ public static void main(String[] args) {
 	gc.dispose();
 
 	ImageData data = image0.getImageData();
+
 	// rotate and flip this image
-	final Image image1 = new Image(display, rotate(data, SWT.LEFT));
+ 	final Image image1 = new Image(display, rotate(data, SWT.LEFT));
 	final Image image2 = new Image(display, rotate(data, SWT.RIGHT));
 	final Image image3 = new Image(display, rotate(data, SWT.DOWN));
 	final Image image4 = new Image(display, flip(data, true));

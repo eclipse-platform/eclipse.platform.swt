@@ -32,12 +32,13 @@ public class Snippet10 {
 		shell.setText("Advanced Graphics");
 		FontData fd = shell.getFont().getFontData()[0];
 		final Font font = new Font(display, fd.getName(), 60, SWT.BOLD | SWT.ITALIC);
-		final Image image = new Image(display, 640, 480);
+		final ImageGcDrawer imageGcDrawer = (gc, imageWidth, imageHeight) -> {
+			gc.setBackground(display.getSystemColor(SWT.COLOR_RED));
+			gc.fillOval(0, 0, imageWidth, imageHeight);
+		};
+		final Image image = new Image(display,imageGcDrawer, 640, 480);
 		final Rectangle rect = image.getBounds();
-		GC gc = new GC(image);
-		gc.setBackground(display.getSystemColor(SWT.COLOR_RED));
-		gc.fillOval(rect.x, rect.y, rect.width, rect.height);
-		gc.dispose();
+
 		shell.addListener(SWT.Paint, event -> {
 			GC gc1 = event.gc;
 			Transform tr = new Transform(display);
@@ -61,6 +62,7 @@ public class Snippet10 {
 			if (!display.readAndDispatch())
 				display.sleep();
 		}
+
 		image.dispose();
 		font.dispose();
 		display.dispose();

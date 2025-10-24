@@ -87,65 +87,56 @@ public class Snippet288 {
 		imageDataArray = new ImageData[numItems][];
 		image = new Image[numItems][];
 		for (int i = 0; i < numItems; i++) {
-			loader[i] = new ImageLoader();
-			int fullWidth = loader[i].logicalScreenWidth;
-			int fullHeight = loader[i].logicalScreenHeight;
-			imageDataArray[i] = loader[i].load(directory + File.separator + filenames[i]);
-			int numFramesOfAnimation = imageDataArray[i].length;
-			image[i] = new Image[numFramesOfAnimation];
-			for (int j = 0; j < numFramesOfAnimation; j++) {
-				if (j == 0) {
-					//for the first frame of animation, just draw the first frame
-					image[i][j] = new Image(display, imageDataArray[i][j]);
-					fullWidth = imageDataArray[i][j].width;
-					fullHeight = imageDataArray[i][j].height;
-				}
-				else {
-					//after the first frame of animation, draw the background or previous frame first, then the new image data
-					image[i][j] = new Image(display, fullWidth, fullHeight);
-					GC gc = new GC(image[i][j]);
-					gc.setBackground(shellBackground);
-					gc.fillRectangle(0, 0, fullWidth, fullHeight);
-					ImageData imageData = imageDataArray[i][j];
-					switch (imageData.disposalMethod) {
-					case SWT.DM_FILL_BACKGROUND:
-						/* Fill with the background color before drawing. */
-						Color bgColor = null;
-						if (useGIFBackground && loader[i].backgroundPixel != -1) {
-							bgColor = new Color(imageData.palette.getRGB(loader[i].backgroundPixel));
-						}
-						gc.setBackground(bgColor != null ? bgColor : shellBackground);
-						gc.fillRectangle(imageData.x, imageData.y, imageData.width, imageData.height);
-						break;
-					default:
-						/* Restore the previous image before drawing. */
-						gc.drawImage(
-							image[i][j-1],
-							0,
-							0,
-							fullWidth,
-							fullHeight,
-							0,
-							0,
-							fullWidth,
-							fullHeight);
-						break;
-					}
-					Image newFrame = new Image(display, imageData);
-					gc.drawImage(newFrame,
-							0,
-							0,
-							imageData.width,
-							imageData.height,
-							imageData.x,
-							imageData.y,
-							imageData.width,
-							imageData.height);
-					newFrame.dispose();
-					gc.dispose();
-				}
-			}
+		    loader[i] = new ImageLoader();
+		    int fullWidth = loader[i].logicalScreenWidth;
+		    int fullHeight = loader[i].logicalScreenHeight;
+		    imageDataArray[i] = loader[i].load(directory + File.separator + filenames[i]);
+		    int numFramesOfAnimation = imageDataArray[i].length;
+		    image[i] = new Image[numFramesOfAnimation];
+
+		    for (int j = 0; j < numFramesOfAnimation; j++) {
+		        final int frameIndex = j;
+		        final int imageIndex = i;
+
+		        if (frameIndex == 0) {
+		            image[imageIndex][frameIndex] = new Image(display, imageDataArray[imageIndex][frameIndex]);
+		            fullWidth = imageDataArray[imageIndex][frameIndex].width;
+		            fullHeight = imageDataArray[imageIndex][frameIndex].height;
+		        } else {
+		            ImageGcDrawer imageGcDrawer = (gc, imageWidth, imageHeight) -> {
+		                gc.setBackground(shellBackground);
+		                gc.fillRectangle(0, 0, imageWidth, imageWidth);
+		                ImageData imageData = imageDataArray[imageIndex][frameIndex];
+
+		                switch (imageData.disposalMethod) {
+		                    case SWT.DM_FILL_BACKGROUND:
+		                        Color bgColor = null;
+		                        if (useGIFBackground && loader[imageIndex].backgroundPixel != -1) {
+		                            bgColor = new Color(imageData.palette.getRGB(loader[imageIndex].backgroundPixel));
+		                        }
+		                        gc.setBackground(bgColor != null ? bgColor : shellBackground);
+		                        gc.fillRectangle(imageData.x, imageData.y, imageData.width, imageData.height);
+		                        break;
+		                    default:
+		                        gc.drawImage(
+		                                image[imageIndex][frameIndex - 1],
+		                                0, 0, imageWidth, imageWidth,
+		                                0, 0, imageWidth, imageWidth);
+		                        break;
+		                }
+
+		                Image newFrame = new Image(display, imageData);
+		                gc.drawImage(newFrame,
+		                        0, 0, imageData.width, imageData.height,
+		                        imageData.x, imageData.y, imageData.width, imageData.height);
+		                newFrame.dispose();
+		            };
+
+		            image[imageIndex][frameIndex] = new Image(display, imageGcDrawer, fullWidth, fullHeight);
+		        }
+		    }
 		}
+
 	}
 
 	private static void startAnimationThreads() {
