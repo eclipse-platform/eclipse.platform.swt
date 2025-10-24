@@ -13,6 +13,7 @@ package org.eclipse.swt.tests.junit;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -152,10 +153,10 @@ public class Test_org_eclipse_swt_dnd_FileTransfer extends ClipboardBase {
 		String[] fileList = getFileList();
 
 		openAndFocusShell(false);
-		// Put a type on the clipboard and ensure we don't match it
 		setContents(fileList);
 		String[] contents = getContents();
 		assertArrayEquals(fileList, contents);
+		assertNotSame(fileList, contents);
 	}
 
 	@Test

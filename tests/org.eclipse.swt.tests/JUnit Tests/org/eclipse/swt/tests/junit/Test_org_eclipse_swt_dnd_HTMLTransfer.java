@@ -13,6 +13,7 @@ package org.eclipse.swt.tests.junit;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -122,6 +123,7 @@ public class Test_org_eclipse_swt_dnd_HTMLTransfer extends ClipboardBase {
 		setContents(test);
 		String contents = getContents();
 		assertEquals(test, contents);
+		assertNotSame(test, contents);
 	}
 
 	static Stream<Arguments> testData() {

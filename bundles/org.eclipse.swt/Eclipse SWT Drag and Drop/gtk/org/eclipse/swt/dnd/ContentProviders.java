@@ -457,7 +457,8 @@ class ContentProviders {
 				// Object is from within app, so get contents from clipboard data
 				// Do not remove our reference to the object yet as it may be copied
 				// multiple times
-				return fromSourceId.data.get(transferKey(transfer));
+				Object object = fromSourceId.data.get(transferKey(transfer));
+				return clone(transfer, object);
 			} else {
 				// Object is from outside app or otherwise needed deserializing
 				// Remove our reference to it and return it
@@ -470,5 +471,40 @@ class ContentProviders {
 		// gdk_clipboard_read_value_finish and equivalents
 		// should have returned 0 in this case
 		return null;
+	}
+
+	/**
+	 * When calling gdk_clipboard_read_value_async and related functions, if the
+	 * clipboard is owned locally it returns the instance that was placed on the
+	 * clipboard and avoid the serialization and deserialization.
+	 *
+	 * This presents a problem for SWT because SWT has always returned a copy
+	 * (javaToNative/nativeToJava) of the object between the setContents and the
+	 * getContents.
+	 *
+	 * For some objects, like String it may be ok to return the same instance since
+	 * String is immutable, but for others, such as ImageData or custom types a copy
+	 * definitely needs to be made to preserve the pre-existing behavior. However,
+	 * to maintain compatibility with the pre-existing implementations for even
+	 * String type Transfers that have returned a copy, we copy String types too in
+	 * this implementation.
+	 */
+	private Object clone(Transfer transfer, Object object) {
+		TransferData td = new TransferData();
+		td.result = 0;
+		int[] typeIds = transfer.getTypeIds();
+		if (typeIds.length == 0 || typeIds[0] == 0) {
+			return null;
+		}
+		// Which type id we use doesn't matter, as long as it is the same in both
+		// directions
+		td.type = typeIds[0];
+		transfer.javaToNative(object, td);
+		if (td.result == 0 || td.pValue == 0 || td.length == 0) {
+			return null;
+		}
+		Object clonedObject = transfer.nativeToJava(td);
+		OS.g_free(td.pValue);
+		return clonedObject;
 	}
 }
