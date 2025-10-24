@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Comparator;
 import java.util.Random;
 
 import org.eclipse.swt.graphics.Image;
@@ -210,6 +211,28 @@ public class ImageDataTestHelper {
 		}
 
 		return new BlitTestInfo(dstInfo_depth, dstInfo_scale, dstInfo_byteOrder, dstInfo_isDirect, dst);
+	}
+
+	/**
+	 * Compares ImageData, allows for change in things like bit depth by comparing pixel values rather
+	 * that the raw data like {@link #assertImageDataEqual(ImageData, ImageData, ImageData)}
+	 */
+	public static Comparator<ImageData> imageDataComparator() {
+		return Comparator.<ImageData>comparingInt(d -> d.width) //
+				.thenComparing(d -> d.height) //
+				.thenComparing((ImageData firstData, ImageData secondData) -> {
+					for (int x = 0; x < firstData.width; x++) {
+						for (int y = 0; y < firstData.height; y++) {
+							if (firstData.getPixel(x, y) != secondData.getPixel(x, y)) {
+								return -1;
+							}
+							if (firstData.getAlpha(x, y) != secondData.getAlpha(x, y)) {
+								return -1;
+							}
+						}
+					}
+					return 0;
+				});
 	}
 
 	public static void assertImageDataEqual(ImageData source, ImageData actual, ImageData expected) {

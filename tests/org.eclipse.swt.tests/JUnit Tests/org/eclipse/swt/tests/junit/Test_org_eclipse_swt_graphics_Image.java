@@ -15,6 +15,7 @@
 package org.eclipse.swt.tests.junit;
 
 
+import static org.eclipse.swt.tests.graphics.ImageDataTestHelper.imageDataComparator;
 import static org.eclipse.swt.tests.junit.SwtTestUtil.assertSWTProblem;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -31,7 +32,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -1156,24 +1156,6 @@ public void test_gcOnImageGcDrawer_imageDataAtNonDeviceZoom() {
 		image.dispose();
 		DPIUtil.setDeviceZoom(originalDeviceZoom);
 	}
-}
-
-private Comparator<ImageData> imageDataComparator() {
-	return Comparator.<ImageData>comparingInt(d -> d.width) //
-			.thenComparing(d -> d.height) //
-			.thenComparing((ImageData firstData, ImageData secondData) -> {
-				for (int x = 0; x < firstData.width; x++) {
-					for (int y = 0; y < firstData.height; y++) {
-						if (firstData.getPixel(x, y) != secondData.getPixel(x, y)) {
-							return -1;
-						}
-						if (firstData.getAlpha(x, y) != secondData.getAlpha(x, y)) {
-							return -1;
-						}
-					}
-				}
-				return 0;
-			});
 }
 
 }
