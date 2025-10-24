@@ -23,6 +23,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.RMISocketFactory;
+import java.util.Arrays;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -117,9 +118,11 @@ public class ClipboardTest extends JFrame {
 	public static void main(String[] args) throws IOException {
 		System.setProperty("java.rmi.server.hostname", "127.0.0.1");
 
+		boolean autoPort = Arrays.asList(args).contains("-autoport");
+
 		// Make sure RMI is localhost only
 		RMISocketFactory.setSocketFactory(new LocalHostOnlySocketFactory());
-		int chosenPort = getAvailablePort();
+		int chosenPort = autoPort ? getAvailablePort() : ClipboardCommands.DEFAULT_PORT;
 		rmiRegistry = LocateRegistry.createRegistry(chosenPort);
 		System.out.println(ClipboardCommands.PORT_MESSAGE + chosenPort);
 
