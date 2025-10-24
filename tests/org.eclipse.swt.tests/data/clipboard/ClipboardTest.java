@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.RMISocketFactory;
@@ -60,8 +59,9 @@ public class ClipboardTest extends JFrame {
 	private JTextArea textArea;
 	private ClipboardCommandsImpl commands;
 
-	public ClipboardTest() throws RemoteException {
+	public ClipboardTest() throws Exception {
 		super("ClipboardTest");
+		registerSelectionTypes();
 		commands = new ClipboardCommandsImpl(this);
 		rmiRegistry.rebind(ClipboardCommands.ID, commands);
 
@@ -79,7 +79,6 @@ public class ClipboardTest extends JFrame {
 		JButton copyButton = new JButton("Copy");
 		JButton pasteButton = new JButton("Paste");
 		JButton pressToContinue = new JButton("Press To Continue Test");
-
 		copyButton.addActionListener(e -> {
 			String text = textArea.getSelectedText();
 			if (text != null) {
@@ -140,7 +139,7 @@ public class ClipboardTest extends JFrame {
 		SwingUtilities.invokeLater(() -> {
 			try {
 				new ClipboardTest();
-			} catch (RemoteException e) {
+			} catch (Exception e) {
 				System.err.println("Failed to start ClipboardTest");
 				e.printStackTrace();
 				System.exit(1);
@@ -156,5 +155,12 @@ public class ClipboardTest extends JFrame {
 		try (var ss = new java.net.ServerSocket(0)) {
 			return ss.getLocalPort();
 		}
+	}
+
+	static void registerSelectionTypes() throws Exception {
+		RtfSelection.register();
+		HtmlSelection.register();
+		UrlSelection.register();
+		MyTypeSelection.register();
 	}
 }

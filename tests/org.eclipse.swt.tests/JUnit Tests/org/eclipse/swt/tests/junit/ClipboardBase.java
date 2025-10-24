@@ -31,6 +31,8 @@ import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import clipboard.ClipboardTest;
+
 /**
  * Base class for tests that test clipboard and transfer types
  */
@@ -176,6 +178,28 @@ public class ClipboardBase {
 			}
 			SwtTestUtil.processEvents();
 		}
+	}
+
+	protected String addTrailingNulCharacter(String result) {
+		return result + '\0';
+	}
+
+	/**
+	 * Trim trailing nul character - some transfer types require a trailing nul when
+	 * copied to the clipboard, so use this method to remove it for tests that
+	 * obtain bytes from the {@link ClipboardTest} app.
+	 *
+	 * @param result to trim terminating nul character from
+	 * @return string with the nul character trimmed, or null if result was null.
+	 */
+	protected String trimTrailingNulCharacter(String result) {
+		if (result == null) {
+			return null;
+		}
+		if (result.charAt(result.length() - 1) == '\0') {
+			result = result.substring(0, result.length() - 1);
+		}
+		return result;
 	}
 
 	/**

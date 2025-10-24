@@ -33,20 +33,52 @@ public interface ClipboardCommands extends Remote {
 
 	void stop() throws RemoteException;
 
+	void setFocus() throws RemoteException;
+
+	void waitUntilReady() throws RemoteException;
+
+	void waitForButtonPress() throws RemoteException;
+
 	/**
-	 * @param string string to set as contents
+	 * @param string string to set as contents on {@link #CLIPBOARD}
+	 */
+	void setContents(String string) throws RemoteException;
+
+	/**
+	 * @param string      string to set as contents
 	 * @param clipboardId {@link #CLIPBOARD} or {@value #SELECTION_CLIPBOARD}
 	 */
 	void setContents(String string, int clipboardId) throws RemoteException;
 
-	void setFocus() throws RemoteException;
+	void setRtfContents(String string) throws RemoteException;
+
+	String getRtfContents() throws RemoteException;
+
+	void setHtmlContents(String string) throws RemoteException;
+
+	String getHtmlContents() throws RemoteException;
+
+	void setUrlContents(byte[] string) throws RemoteException;
+
+	byte[] getUrlContents() throws RemoteException;
+
+	String getStringContents() throws RemoteException;
 
 	/**
 	 * @param clipboardId {@link #CLIPBOARD} or {@value #SELECTION_CLIPBOARD}
 	 */
 	String getStringContents(int clipboardId) throws RemoteException;
 
-	void waitUntilReady() throws RemoteException;
+	void setImageContents(byte[] imageContents) throws RemoteException;
 
-	void waitForButtonPress() throws RemoteException;
+	byte[] getImageContents() throws RemoteException;
+
+	void setFileListContents(String[] fileList) throws RemoteException;
+
+	String[] getFileListContents() throws RemoteException;
+
+	void setMyTypeContents(byte[] bytes) throws RemoteException;
+
+	byte[] getMyTypeContents() throws RemoteException;
+
 }
