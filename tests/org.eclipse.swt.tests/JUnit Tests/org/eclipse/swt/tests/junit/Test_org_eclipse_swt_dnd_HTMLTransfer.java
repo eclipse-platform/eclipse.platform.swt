@@ -126,7 +126,17 @@ public class Test_org_eclipse_swt_dnd_HTMLTransfer extends ClipboardBase {
 
 	static Stream<Arguments> testData() {
 		return Stream.of(//
-				Arguments.of("hello_world", "<b>Hello, World!</b>") //
+				Arguments.of("hello_world", "<b>Hello, World!</b>"), //
+				/*
+				 * single_char and odd_chars are a regression test specifically for a bug that
+				 * if there was only 1 byte in the clipboard the return value of getContents was
+				 * null instead of the single character and if there was odd > 1 the last byte
+				 * would be dropped. See
+				 * https://github.com/eclipse-platform/eclipse.platform.swt/issues/2666
+				 */
+				Arguments.of("single_char", " "), //
+				Arguments.of("odd_chars", "12345"), //
+				Arguments.of("even_chars", "123456") //
 		);
 	}
 
