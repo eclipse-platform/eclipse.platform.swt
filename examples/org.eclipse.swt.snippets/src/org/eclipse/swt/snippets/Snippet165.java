@@ -32,13 +32,14 @@ public class Snippet165 {
 
 public static void main (String [] args) {
 	Display display = new Display ();
-	Image image = new Image(display, 16, 16);
-	GC gc = new GC(image);
-	gc.setBackground(display.getSystemColor(SWT.COLOR_BLUE));
-	gc.fillRectangle(0, 0, 16, 16);
-	gc.setBackground(display.getSystemColor(SWT.COLOR_YELLOW));
-	gc.fillRectangle(3, 3, 10, 10);
-	gc.dispose();
+	ImageGcDrawer imageGcDrawer = (gc, imageWidth, imageHeight) -> {
+		gc.setBackground(display.getSystemColor(SWT.COLOR_BLUE));
+		gc.fillRectangle(0, 0, 16, 16);
+		gc.setBackground(display.getSystemColor(SWT.COLOR_YELLOW));
+		gc.fillRectangle(3, 3, 10, 10);
+	};
+	Image image = new Image(display, imageGcDrawer, 16, 16);
+
 	final Shell shell = new Shell (display);
 	shell.setText("Snippet 165");
 	shell.setLayout(new GridLayout());
