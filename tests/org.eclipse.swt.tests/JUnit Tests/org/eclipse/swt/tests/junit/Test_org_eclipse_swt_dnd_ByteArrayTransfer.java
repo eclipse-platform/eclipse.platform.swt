@@ -209,12 +209,16 @@ public class Test_org_eclipse_swt_dnd_ByteArrayTransfer extends ClipboardBase {
 		assertMyTypeEquals(test, result);
 	}
 
+	// apart from the static, this should be a straight copy/paste of
+	// the code in the ByteArrayTransfer javadoc
 	public static class MyType {
 		public String fileName;
 		public long fileLength;
 		public long lastModified;
 	}
 
+	// apart from the static, this should be a straight copy/paste of
+	// the code in the ByteArrayTransfer javadoc
 	public static class MyTypeTransfer extends ByteArrayTransfer {
 
 		private static final String MYTYPENAME = "my_type_name";
