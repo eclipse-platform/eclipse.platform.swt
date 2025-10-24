@@ -26,6 +26,10 @@ public interface ClipboardCommands extends Remote {
 	 */
 	int SELECTION_CLIPBOARD = 1 << 1;
 
+	/**
+	 * The port the RMI will listen on by default
+	 */
+	int DEFAULT_PORT = 3456;
 
 	void stop() throws RemoteException;
 

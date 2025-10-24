@@ -35,56 +35,19 @@ import java.util.concurrent.TimeUnit;
 import clipboard.ClipboardCommands;
 
 public class RemoteClipboard implements ClipboardCommands {
+	/**
+	 * Set to true to manually launch the ClipboardTest. This is useful so you can
+	 * debug the Swing side.
+	 */
+	private static boolean DEBUG_REMOTE = false;
 	private ClipboardCommands remote;
 	private Process remoteClipboardProcess;
 	private Path remoteClipboardTempDir;
 
 	public void start() throws Exception {
 		assertNull(remote, "Create a new instance to restart");
-		/*
-		 * The below copy using getPath may be redundant (i.e. it may be possible to run
-		 * the class files from where they currently reside in the bin folder or the
-		 * jar), but this method of setting up the class files is very simple and is
-		 * done the same way that other files are extracted for tests.
-		 *
-		 * If the ClipboardTest starts to get more complicated, or other tests want to
-		 * replicate this design element, then refactoring this is an option.
-		 */
-		remoteClipboardTempDir = Files.createTempDirectory("swt-test-Clipboard");
-		List.of( //
-				"ClipboardTest", //
-				"ClipboardCommands", //
-				"ClipboardCommandsImpl", //
-				"ClipboardTest$LocalHostOnlySocketFactory" //
-		).forEach((f) -> {
-			// extract the files and put them in the temp directory
-			SwtTestUtil.copyFile("/clipboard/" + f + ".class",
-					remoteClipboardTempDir.resolve("clipboard/" + f + ".class"));
-		});
 
-		String javaHome = System.getProperty("java.home");
-		String javaExe = javaHome + "/bin/java" + (SwtTestUtil.isWindowsOS ? ".exe" : "");
-		assertTrue(Files.exists(Path.of(javaExe)));
-
-		ProcessBuilder pb = new ProcessBuilder(javaExe, "clipboard.ClipboardTest")
-				.directory(remoteClipboardTempDir.toFile());
-		pb.inheritIO();
-		pb.redirectOutput(Redirect.PIPE);
-		remoteClipboardProcess = pb.start();
-
-		// Read server output to find the port
-		int port = SwtTestUtil.runOperationInThread(() -> {
-			BufferedReader reader = new BufferedReader(new InputStreamReader(remoteClipboardProcess.getInputStream()));
-			String line;
-			while ((line = reader.readLine()) != null) {
-				if (line.startsWith(ClipboardCommands.PORT_MESSAGE)) {
-					String[] parts = line.split(":");
-					return Integer.parseInt(parts[1].trim());
-				}
-			}
-			throw new RuntimeException("Failed to get port");
-		});
-		assertNotEquals(0, port);
+		int port = DEBUG_REMOTE ? ClipboardCommands.DEFAULT_PORT : launchRemote();
 		try {
 			Registry reg = LocateRegistry.getRegistry("127.0.0.1", port);
 			long stopTime = System.currentTimeMillis() + 10000;
@@ -126,6 +89,54 @@ public class RemoteClipboard implements ClipboardCommands {
 		remote.waitUntilReady();
 		remote.setFocus();
 		remote.waitUntilReady();
+	}
+
+	private int launchRemote() throws IOException {
+		/*
+		 * The below copy using getPath may be redundant (i.e. it may be possible to run
+		 * the class files from where they currently reside in the bin folder or the
+		 * jar), but this method of setting up the class files is very simple and is
+		 * done the same way that other files are extracted for tests.
+		 *
+		 * If the ClipboardTest starts to get more complicated, or other tests want to
+		 * replicate this design element, then refactoring this is an option.
+		 */
+		remoteClipboardTempDir = Files.createTempDirectory("swt-test-Clipboard");
+		List.of( //
+				"ClipboardTest", //
+				"ClipboardCommands", //
+				"ClipboardCommandsImpl", //
+				"ClipboardTest$LocalHostOnlySocketFactory" //
+		).forEach((f) -> {
+			// extract the files and put them in the temp directory
+			SwtTestUtil.copyFile("/clipboard/" + f + ".class",
+					remoteClipboardTempDir.resolve("clipboard/" + f + ".class"));
+		});
+
+		String javaHome = System.getProperty("java.home");
+		String javaExe = javaHome + "/bin/java" + (SwtTestUtil.isWindowsOS ? ".exe" : "");
+		assertTrue(Files.exists(Path.of(javaExe)));
+
+		ProcessBuilder pb = new ProcessBuilder(javaExe, "clipboard.ClipboardTest", "-autoport")
+				.directory(remoteClipboardTempDir.toFile());
+		pb.inheritIO();
+		pb.redirectOutput(Redirect.PIPE);
+		remoteClipboardProcess = pb.start();
+
+		// Read server output to find the port
+		int port = SwtTestUtil.runOperationInThread(() -> {
+			BufferedReader reader = new BufferedReader(new InputStreamReader(remoteClipboardProcess.getInputStream()));
+			String line;
+			while ((line = reader.readLine()) != null) {
+				if (line.startsWith(ClipboardCommands.PORT_MESSAGE)) {
+					String[] parts = line.split(":");
+					return Integer.parseInt(parts[1].trim());
+				}
+			}
+			throw new RuntimeException("Failed to get port");
+		});
+		assertNotEquals(0, port);
+		return port;
 	}
 
 	@Override
@@ -207,7 +218,7 @@ public class RemoteClipboard implements ClipboardCommands {
 	}
 
 	@Override
-	public void waitForButtonPress()  throws RemoteException {
+	public void waitForButtonPress() throws RemoteException {
 		remote.waitForButtonPress();
 	}
 }
