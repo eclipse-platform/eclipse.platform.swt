@@ -63,10 +63,22 @@
 		                junit.jupiter.execution.parallel.classes=false
 		            </configurationParameters>
 		        </properties>
+            <reportFormat>plain</reportFormat>
+            <consoleOutputReporter>
+                <disable>true</disable>
+            </consoleOutputReporter>
+            <statelessTestsetInfoReporter
+                    implementation="org.apache.maven.plugin.surefire.extensions.junit5.JUnit5StatelessTestsetInfoTreeReporter">
+            </statelessTestsetInfoReporter>
             </configuration>
           </execution>
         </executions>
 		<dependencies>
+			<dependency>
+				<groupId>me.fabriciorby</groupId>
+				<artifactId>maven-surefire-junit5-tree-reporter</artifactId>
+				<version>1.5.1</version>
+			</dependency>
 			<dependency>
 				<groupId>org.apache.maven.surefire</groupId>
 				<artifactId>surefire-junit-platform</artifactId>
