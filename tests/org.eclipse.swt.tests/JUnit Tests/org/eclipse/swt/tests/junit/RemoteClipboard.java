@@ -55,7 +55,13 @@ public class RemoteClipboard implements ClipboardCommands {
 				"ClipboardTest", //
 				"ClipboardCommands", //
 				"ClipboardCommandsImpl", //
-				"ClipboardTest$LocalHostOnlySocketFactory" //
+				"ClipboardTest$FileListSelection", //
+				"ClipboardTest$HtmlSelection", //
+				"ClipboardTest$ImageSelection", //
+				"ClipboardTest$LocalHostOnlySocketFactory", //
+				"ClipboardTest$MyTypeSelection", //
+				"ClipboardTest$RtfSelection", //
+				"ClipboardTest$UrlSelection" //
 		).forEach((f) -> {
 			// extract the files and put them in the temp directory
 			SwtTestUtil.copyFile("/clipboard/" + f + ".class",
@@ -85,6 +91,7 @@ public class RemoteClipboard implements ClipboardCommands {
 			throw new RuntimeException("Failed to get port");
 		});
 		assertNotEquals(0, port);
+
 		try {
 			Registry reg = LocateRegistry.getRegistry("127.0.0.1", port);
 			long stopTime = System.currentTimeMillis() + 10000;
@@ -187,6 +194,11 @@ public class RemoteClipboard implements ClipboardCommands {
 	}
 
 	@Override
+	public void setContents(String string) throws RemoteException {
+		setContents(string, CLIPBOARD);
+	}
+
+	@Override
 	public void setContents(String string, int clipboardId) throws RemoteException {
 		remote.setContents(string, clipboardId);
 	}
@@ -194,6 +206,11 @@ public class RemoteClipboard implements ClipboardCommands {
 	@Override
 	public void setFocus() throws RemoteException {
 		remote.setFocus();
+	}
+
+	@Override
+	public String getStringContents() throws RemoteException {
+		return getStringContents(CLIPBOARD);
 	}
 
 	@Override
@@ -207,7 +224,68 @@ public class RemoteClipboard implements ClipboardCommands {
 	}
 
 	@Override
-	public void waitForButtonPress()  throws RemoteException {
+	public void waitForButtonPress() throws RemoteException {
 		remote.waitForButtonPress();
 	}
+
+	@Override
+	public void setRtfContents(String test) throws RemoteException {
+		remote.setRtfContents(test);
+	}
+
+	@Override
+	public String getRtfContents() throws RemoteException {
+		return remote.getRtfContents();
+	}
+
+	@Override
+	public void setHtmlContents(String test) throws RemoteException {
+		remote.setHtmlContents(test);
+	}
+
+	@Override
+	public String getHtmlContents() throws RemoteException {
+		return remote.getHtmlContents();
+	}
+
+	@Override
+	public void setUrlContents(byte[] test) throws RemoteException {
+		remote.setUrlContents(test);
+	}
+
+	@Override
+	public byte[] getUrlContents() throws RemoteException {
+		return remote.getUrlContents();
+	}
+
+	@Override
+	public void setImageContents(byte[] imageContents) throws RemoteException {
+		remote.setImageContents(imageContents);
+	}
+
+	@Override
+	public byte[] getImageContents() throws RemoteException {
+		return remote.getImageContents();
+	}
+
+	@Override
+	public void setFileListContents(String[] fileList) throws RemoteException {
+		remote.setFileListContents(fileList);
+	}
+
+	@Override
+	public String[] getFileListContents() throws RemoteException {
+		return remote.getFileListContents();
+	}
+
+	@Override
+	public void setMyTypeContents(byte[] bytes) throws RemoteException {
+		remote.setMyTypeContents(bytes);
+	}
+
+	@Override
+	public byte[] getMyTypeContents() throws RemoteException {
+		return remote.getMyTypeContents();
+	}
+
 }
