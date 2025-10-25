@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -38,8 +38,7 @@ public class Callback {
 	long address, errorResult;
 	boolean isStatic, isArrayBased;
 
-	static final boolean is32Bit = C.PTR_SIZEOF == 4 ? true : false;
-	static final String PTR_SIGNATURE = is32Bit ? "I" : "J"; //$NON-NLS-1$  //$NON-NLS-2$
+	static final String PTR_SIGNATURE = "J"; //$NON-NLS-1$
 	static final String SIGNATURE_0 = getSignature(0);
 	static final String SIGNATURE_1 = getSignature(1);
 	static final String SIGNATURE_2 = getSignature(2);
@@ -228,9 +227,6 @@ public Callback (Object object, String method, Type returnType, Type [] argument
 	signature.append(")");
 	signature.append(getTypeLetter.apply(returnType));
 	this.signature = signature.toString();
-	if (is32Bit) {
-		this.signature = this.signature.replace("J", "I");
-	}
 
 	/* Bind the address */
 	address = bind (this, this.object, this.method, this.signature, this.argCount, this.isStatic, this.isArrayBased, this.errorResult);
