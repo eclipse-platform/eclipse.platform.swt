@@ -18,6 +18,7 @@ import static org.eclipse.swt.internal.image.ImageColorTransformer.DEFAULT_DISAB
 
 import java.io.*;
 import java.util.*;
+import java.util.function.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
@@ -278,16 +279,16 @@ public Image(Device device, Image srcImage, int flag) {
 	if (flag != SWT.IMAGE_DISABLE) transparentPixel = srcImage.transparentPixel;
 
 	long imageSurface = srcImage.surface;
-	int width = this.width = srcImage.width;
-	int height = this.height = srcImage.height;
+	this.width = srcImage.width;
+	this.height = srcImage.height;
 	int format = Cairo.cairo_surface_get_content(imageSurface) == Cairo.CAIRO_CONTENT_COLOR ? Cairo.CAIRO_FORMAT_RGB24 : Cairo.CAIRO_FORMAT_ARGB32;
 	boolean hasAlpha = format == Cairo.CAIRO_FORMAT_ARGB32;
-	surface = Cairo.cairo_image_surface_create(format, width, height);
+	int dataWidth = DPIUtil.pointToPixel(this.width, DPIUtil.getDeviceZoom());
+	int dataHeight= DPIUtil.pointToPixel(this.height, DPIUtil.getDeviceZoom());
+	surface = Cairo.cairo_image_surface_create(format, dataWidth, dataHeight);
 	if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	if (DPIUtil.getDeviceZoom() != currentDeviceZoom) {
-		double scaleFactor = DPIUtil.getDeviceZoom() / 100f;
-		Cairo.cairo_surface_set_device_scale(surface, scaleFactor, scaleFactor);
-	}
+	double scaleFactor = DPIUtil.getDeviceZoom() / 100f;
+	Cairo.cairo_surface_set_device_scale(surface, scaleFactor, scaleFactor);
 	long cairo = Cairo.cairo_create(surface);
 	if (cairo == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	Cairo.cairo_set_operator(cairo, Cairo.CAIRO_OPERATOR_SOURCE);
@@ -306,9 +307,9 @@ public Image(Device device, Image srcImage, int flag) {
 		switch (flag) {
 			case SWT.IMAGE_DISABLE: {
 				byte[] line = new byte[stride];
-				for (int y=0; y<height; y++) {
+				for (int y=0; y<dataHeight; y++) {
 					C.memmove(line, data + (y * stride), stride);
-					for (int x = 0, offset = 0; x < width; x++, offset += 4) {
+					for (int x = 0, offset = 0; x < dataWidth; x++, offset += 4) {
 						int a = line[offset + oa] & 0xFF;
 						int r = line[offset + or] & 0xFF;
 						int g = line[offset + og] & 0xFF;
@@ -339,9 +340,9 @@ public Image(Device device, Image srcImage, int flag) {
 			}
 			case SWT.IMAGE_GRAY: {
 				byte[] line = new byte[stride];
-				for (int y=0; y<height; y++) {
+				for (int y=0; y<dataHeight; y++) {
 					C.memmove(line, data + (y * stride), stride);
-					for (int x=0, offset = 0; x<width; x++, offset += 4) {
+					for (int x=0, offset = 0; x<dataWidth; x++, offset += 4) {
 						int a = line[offset + oa] & 0xFF;
 						int r = line[offset + or] & 0xFF;
 						int g = line[offset + og] & 0xFF;
@@ -925,6 +926,74 @@ void destroy() {
 	if (surface != 0) Cairo.cairo_surface_destroy(surface);
 	surface = mask = 0;
 	memGC = null;
+}
+
+private CachedImageAtSize cachedImageAtSize = new CachedImageAtSize();
+
+private class CachedImageAtSize {
+	private Image image;
+
+	public void destroy() {
+		if (image != null) {
+			image.dispose();
+			image = null;
+		}
+	}
+
+	private Optional<Image> refresh(int destWidth, int destHeight) {
+		int scaledWidth = DPIUtil.pointToPixel(destWidth, DPIUtil.getDeviceZoom());
+		int scaledHeight = DPIUtil.pointToPixel(destHeight, DPIUtil.getDeviceZoom());
+		if (isReusable(scaledWidth, scaledHeight)) {
+			return Optional.of(image);
+		} else {
+			destroy();
+			Optional<Image> imageAtSize = loadImageAtSize(scaledWidth, scaledHeight);
+			image = imageAtSize.orElse(null);
+			return imageAtSize;
+		}
+	}
+
+	private boolean isReusable(int width, int height) {
+		return image != null && image.height == height && image.width == width;
+	}
+
+	private Optional<Image> loadImageAtSize(int destWidth, int destHeight) {
+		Optional<ImageData> imageData = loadImageDataAtExactSize(destWidth, destHeight);
+		if (imageData.isEmpty()) {
+			return Optional.empty();
+		}
+		Image image = new Image(device, imageData.get(), DPIUtil.getDeviceZoom());
+		if (styleFlag != SWT.IMAGE_COPY) {
+			Image styledImage = new Image(device, image, styleFlag);
+			image.dispose();
+			image = styledImage;
+		}
+		return Optional.of(image);
+	}
+
+	private Optional<ImageData> loadImageDataAtExactSize(int targetWidth, int targetHeight) {
+		if (imageDataProvider instanceof ImageDataAtSizeProvider imageDataAtSizeProvider) {
+			ImageData imageData = imageDataAtSizeProvider.getImageData(targetWidth, targetHeight);
+			if (imageData == null) {
+				SWT.error(SWT.ERROR_INVALID_ARGUMENT, null,
+						" ImageDataAtSizeProvider returned null for width=" + targetWidth + ", height=" + targetHeight);
+			}
+			return Optional.of(imageData);
+		}
+		if (imageFileNameProvider != null) {
+			String fileName = DPIUtil.validateAndGetImagePathAtZoom(imageFileNameProvider, 100).element();
+			if (ImageDataLoader.isDynamicallySizable(fileName)) {
+				ImageData imageDataAtSize = ImageDataLoader.loadBySize(fileName, targetWidth, targetHeight);
+				return Optional.of(imageDataAtSize);
+			}
+		}
+		return Optional.empty();
+	}
+}
+
+void executeOnImageAtSize(Consumer<Image> imageAtBestFittingSizeConsumer, int destWidth, int destHeight) {
+	Optional<Image> imageAtSize = cachedImageAtSize.refresh(destWidth, destHeight);
+	imageAtBestFittingSizeConsumer.accept(imageAtSize.orElse(this));
 }
 
 /**
