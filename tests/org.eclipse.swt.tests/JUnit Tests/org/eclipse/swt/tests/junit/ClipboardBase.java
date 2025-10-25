@@ -168,6 +168,7 @@ public class ClipboardBase {
 			}
 		} finally {
 			if (clipboard != null) {
+				supportedClipboardIds().forEach(clipboard::clearContents);
 				clipboard.dispose();
 			}
 			if (shell != null) {
