@@ -27,6 +27,7 @@ import java.util.Arrays;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -64,6 +65,14 @@ public class ClipboardTest extends JFrame {
 		commands = new ClipboardCommandsImpl(this);
 		rmiRegistry.rebind(ClipboardCommands.ID, commands);
 
+		JLabel label = new JLabel("""
+				<html>This window is a AWT/Swing window used to test the SWT Clipboard<br>
+				This window will be opened and closed repeatedly while running<br>
+				clipboard JUnit tests. Do not close this window (unless the JUnit<br>
+				tests have completed)<br>
+				<br>
+				If the Press Button to Continue Test becomes enabled, press it.</html>
+				""");
 		textArea = new JTextArea(10, 40);
 		JScrollPane scrollPane = new JScrollPane(textArea);
 
@@ -90,6 +99,7 @@ public class ClipboardTest extends JFrame {
 			}
 		});
 
+		pressToContinue.setEnabled(false);
 		pressToContinue.addActionListener(e -> {
 			commands.buttonPressed.countDown();
 		});
@@ -99,6 +109,7 @@ public class ClipboardTest extends JFrame {
 		buttonPanel.add(pasteButton);
 		buttonPanel.add(pressToContinue);
 
+		add(label, BorderLayout.NORTH);
 		add(scrollPane, BorderLayout.CENTER);
 		add(buttonPanel, BorderLayout.SOUTH);
 
