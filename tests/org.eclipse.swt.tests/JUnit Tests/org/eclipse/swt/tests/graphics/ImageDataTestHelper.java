@@ -223,7 +223,9 @@ public class ImageDataTestHelper {
 				.thenComparing((ImageData firstData, ImageData secondData) -> {
 					for (int x = 0; x < firstData.width; x++) {
 						for (int y = 0; y < firstData.height; y++) {
-							if (firstData.getPixel(x, y) != secondData.getPixel(x, y)) {
+							RGB first = firstData.palette.getRGB(firstData.getPixel(x, y));
+							RGB second = secondData.palette.getRGB(secondData.getPixel(x, y));
+							if (!first.equals(second)) {
 								return -1;
 							}
 							if (firstData.getAlpha(x, y) != secondData.getAlpha(x, y)) {
