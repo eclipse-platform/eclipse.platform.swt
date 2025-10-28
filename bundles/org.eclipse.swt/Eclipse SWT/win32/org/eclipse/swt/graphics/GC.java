@@ -4799,7 +4799,7 @@ public void setBackground (Color color) {
 	storeAndApplyOperationForExistingHandle(new SetBackgroundOperation(color));
 }
 
-private class SetBackgroundOperation extends Operation {
+private class SetBackgroundOperation extends ReplaceableOperation  {
 	private final Color color;
 
 	SetBackgroundOperation(Color color) {
@@ -5113,7 +5113,7 @@ public void setFont (Font font) {
 	storeAndApplyOperationForExistingHandle(new SetFontOperation(font));
 }
 
-private class SetFontOperation extends Operation {
+private class SetFontOperation extends ReplaceableOperation  {
 	private final Font font;
 
 	SetFontOperation(Font font) {
@@ -5148,7 +5148,7 @@ public void setForeground (Color color) {
 	storeAndApplyOperationForExistingHandle(new SetForegroundOperation(color));
 }
 
-private class SetForegroundOperation extends Operation {
+private class SetForegroundOperation extends ReplaceableOperation  {
 	private final Color color;
 
 	SetForegroundOperation(Color color) {
@@ -5302,7 +5302,7 @@ public void setLineAttributes (LineAttributes attributes) {
 	storeAndApplyOperationForExistingHandle(new SetLineAttributesOperation(attributes));
 }
 
-private class SetLineAttributesOperation extends Operation {
+private class SetLineAttributesOperation extends ReplaceableOperation  {
 	private final LineAttributes attributes;
 
 	SetLineAttributesOperation(LineAttributes attributes) {
@@ -5432,7 +5432,7 @@ public void setLineCap(int cap) {
 	storeAndApplyOperationForExistingHandle(new SetLineCapOperation(cap));
 }
 
-private class SetLineCapOperation extends Operation {
+private class SetLineCapOperation extends ReplaceableOperation  {
 	private final int cap;
 
 	SetLineCapOperation(int cap) {
@@ -5477,7 +5477,7 @@ public void setLineDash(int[] dashes) {
 	storeAndApplyOperationForExistingHandle(new SetLineDashOperation(dashes));
 }
 
-private class SetLineDashOperation extends Operation {
+private class SetLineDashOperation extends ReplaceableOperation  {
 	private final int[] dashes;
 
 	SetLineDashOperation(int[] dashes) {
@@ -5529,7 +5529,7 @@ public void setLineJoin(int join) {
 	storeAndApplyOperationForExistingHandle(new SetLineJoinOperation(join));
 }
 
-private class SetLineJoinOperation extends Operation {
+private class SetLineJoinOperation extends ReplaceableOperation  {
 	private final int join;
 
 	SetLineJoinOperation(int join) {
@@ -5572,7 +5572,7 @@ public void setLineStyle(int lineStyle) {
 	storeAndApplyOperationForExistingHandle(new SetLineStyleOperation(lineStyle));
 }
 
-private class SetLineStyleOperation extends Operation {
+private class SetLineStyleOperation extends ReplaceableOperation  {
 	private final int lineStyle;
 
 	SetLineStyleOperation(int lineStyle) {
@@ -5626,7 +5626,7 @@ public void setLineWidth(int lineWidth) {
 	storeAndApplyOperationForExistingHandle(new SetLineWidthOperation(lineWidth));
 }
 
-private class SetLineWidthOperation extends Operation {
+private class SetLineWidthOperation extends ReplaceableOperation {
 	private final int width;
 
 	SetLineWidthOperation(int width) {
@@ -6042,8 +6042,21 @@ int getZoom() {
 }
 
 private void storeAndApplyOperationForExistingHandle(Operation operation) {
+	removePreviousOperationIfSupercededBy(operation);
 	operations.add(operation);
 	operation.apply();
+}
+
+private void removePreviousOperationIfSupercededBy(Operation operation) {
+	if (operations.isEmpty()) {
+		return;
+	}
+	int lastIndex = operations.size() - 1;
+	Operation lastOperation = operations.get(lastIndex);
+	if (lastOperation.canBeReplacedBy(operation)) {
+		lastOperation.disposeAll();
+		operations.remove(lastIndex);
+	}
 }
 
 private void createGcHandle(Drawable drawable, GCData newData) {
@@ -6084,6 +6097,17 @@ private abstract class Operation {
 			r.dispose();
 		}
 		disposables.clear();
+	}
+
+	boolean canBeReplacedBy(Operation operation) {
+		return false;
+	}
+}
+
+private abstract class ReplaceableOperation extends Operation {
+	@Override
+	boolean canBeReplacedBy(Operation operation) {
+		return operation.getClass().equals(this.getClass());
 	}
 }
 }
