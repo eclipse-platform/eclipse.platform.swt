@@ -17,9 +17,6 @@ package org.eclipse.swt.tests.junit;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
 import org.junit.jupiter.api.Test;
@@ -63,21 +60,17 @@ public void test_getMessage() {
 public void test_printStackTrace() {
 
 	// test default SWTError
-
-	ByteArrayOutputStream out = new ByteArrayOutputStream();
-	System.setErr(new PrintStream(out));
-	SWTError error = new SWTError();
-	error.printStackTrace();
-	assertTrue(out.size() > 0);
-	assertTrue(new String(out.toByteArray()).contains("test_printStackTrace"));
+	SWTError error1 = new SWTError();
+	String stderr = SwtTestUtil.runWithCapturedStderr(() -> {
+		error1.printStackTrace();
+	});
+	assertTrue(stderr.contains("test_printStackTrace"));
 
 	// test SWTError with code
-
-	out = new ByteArrayOutputStream();
-	System.setErr(new PrintStream(out));
-	error = new SWTError(SWT.ERROR_INVALID_ARGUMENT);
-	error.printStackTrace();
-	assertTrue(out.size() > 0);
-	assertTrue(new String(out.toByteArray()).contains("test_printStackTrace"));
+	SWTError error2 = new SWTError(SWT.ERROR_INVALID_ARGUMENT);
+	stderr = SwtTestUtil.runWithCapturedStderr(() -> {
+		error2.printStackTrace();
+	});
+	assertTrue(stderr.contains("test_printStackTrace"));
 }
 }
