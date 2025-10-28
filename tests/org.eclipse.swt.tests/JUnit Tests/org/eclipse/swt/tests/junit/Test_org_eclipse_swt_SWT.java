@@ -30,6 +30,8 @@ import java.util.List;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
 import org.eclipse.swt.SWTException;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Display;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 
@@ -49,6 +51,9 @@ public class Test_org_eclipse_swt_SWT {
 				"did not correctly throw exception for ERROR_NO_HANDLES");
 		assertThrows(SWTError.class, () -> SWT.error(-1),
 				"did not correctly throw exception for error(-1)");
+
+
+		new Image(Display.getDefault(), 100, 100);
 	}
 
 	@Test

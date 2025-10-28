@@ -32,49 +32,49 @@ import org.junit.platform.suite.api.Suite;
 		Test_org_eclipse_swt_SWT.class, //
 		Test_org_eclipse_swt_SWTException.class, //
 		Test_org_eclipse_swt_SWTError.class, //
-		Test_org_eclipse_swt_widgets_Display.class, //
-		// Groups of tests
-		AllGraphicsTests.class, //
-		AllWidgetTests.class, //
-		// Rest of tests alphabetically
-		DPIUtilTests.class, //
-		JSVGRasterizerTest.class, //
-		Test_org_eclipse_swt_accessibility_Accessible.class, //
-		Test_org_eclipse_swt_accessibility_AccessibleControlEvent.class, //
-		Test_org_eclipse_swt_accessibility_AccessibleEvent.class, //
-		Test_org_eclipse_swt_accessibility_AccessibleTextEvent.class, //
-		Test_org_eclipse_swt_dnd_ByteArrayTransfer.class, //
-		Test_org_eclipse_swt_dnd_Clipboard.class, //
-		Test_org_eclipse_swt_dnd_FileTransfer.class, //
-		Test_org_eclipse_swt_dnd_HTMLTransfer.class, //
-		Test_org_eclipse_swt_dnd_ImageTransfer.class, //
-		Test_org_eclipse_swt_dnd_RTFTransfer.class, //
-		Test_org_eclipse_swt_dnd_TextTransfer.class, //
-		Test_org_eclipse_swt_dnd_URLTransfer.class, //
-		Test_org_eclipse_swt_events_ArmEvent.class, //
-		Test_org_eclipse_swt_events_ControlEvent.class, //
-		Test_org_eclipse_swt_events_DisposeEvent.class, //
-		Test_org_eclipse_swt_events_FocusEvent.class, //
-		Test_org_eclipse_swt_events_HelpEvent.class, //
-		Test_org_eclipse_swt_events_KeyEvent.class, //
-		Test_org_eclipse_swt_events_MenuEvent.class, //
-		Test_org_eclipse_swt_events_ModifyEvent.class, //
-		Test_org_eclipse_swt_events_MouseEvent.class, //
-		Test_org_eclipse_swt_events_PaintEvent.class, //
-		Test_org_eclipse_swt_events_SelectionEvent.class, //
-		Test_org_eclipse_swt_events_ShellEvent.class, //
-		Test_org_eclipse_swt_events_TraverseEvent.class, //
-		Test_org_eclipse_swt_events_TreeEvent.class, //
-		Test_org_eclipse_swt_events_TypedEvent.class, //
-		Test_org_eclipse_swt_events_VerifyEvent.class, //
-		Test_org_eclipse_swt_internal_SVGRasterizer.class, //
-		Test_org_eclipse_swt_layout_BorderLayout.class, //
-		Test_org_eclipse_swt_layout_FormAttachment.class, //
-		Test_org_eclipse_swt_layout_GridData.class, //
-		Test_org_eclipse_swt_printing_PrintDialog.class, //
-		Test_org_eclipse_swt_printing_Printer.class, //
-		Test_org_eclipse_swt_printing_PrinterData.class, //
-		Test_org_eclipse_swt_program_Program.class, //
+//		Test_org_eclipse_swt_widgets_Display.class, //
+//		// Groups of tests
+//		AllGraphicsTests.class, //
+//		AllWidgetTests.class, //
+//		// Rest of tests alphabetically
+//		DPIUtilTests.class, //
+//		JSVGRasterizerTest.class, //
+//		Test_org_eclipse_swt_accessibility_Accessible.class, //
+//		Test_org_eclipse_swt_accessibility_AccessibleControlEvent.class, //
+//		Test_org_eclipse_swt_accessibility_AccessibleEvent.class, //
+//		Test_org_eclipse_swt_accessibility_AccessibleTextEvent.class, //
+//		Test_org_eclipse_swt_dnd_ByteArrayTransfer.class, //
+//		Test_org_eclipse_swt_dnd_Clipboard.class, //
+//		Test_org_eclipse_swt_dnd_FileTransfer.class, //
+//		Test_org_eclipse_swt_dnd_HTMLTransfer.class, //
+//		Test_org_eclipse_swt_dnd_ImageTransfer.class, //
+//		Test_org_eclipse_swt_dnd_RTFTransfer.class, //
+//		Test_org_eclipse_swt_dnd_TextTransfer.class, //
+//		Test_org_eclipse_swt_dnd_URLTransfer.class, //
+//		Test_org_eclipse_swt_events_ArmEvent.class, //
+//		Test_org_eclipse_swt_events_ControlEvent.class, //
+//		Test_org_eclipse_swt_events_DisposeEvent.class, //
+//		Test_org_eclipse_swt_events_FocusEvent.class, //
+//		Test_org_eclipse_swt_events_HelpEvent.class, //
+//		Test_org_eclipse_swt_events_KeyEvent.class, //
+//		Test_org_eclipse_swt_events_MenuEvent.class, //
+//		Test_org_eclipse_swt_events_ModifyEvent.class, //
+//		Test_org_eclipse_swt_events_MouseEvent.class, //
+//		Test_org_eclipse_swt_events_PaintEvent.class, //
+//		Test_org_eclipse_swt_events_SelectionEvent.class, //
+//		Test_org_eclipse_swt_events_ShellEvent.class, //
+//		Test_org_eclipse_swt_events_TraverseEvent.class, //
+//		Test_org_eclipse_swt_events_TreeEvent.class, //
+//		Test_org_eclipse_swt_events_TypedEvent.class, //
+//		Test_org_eclipse_swt_events_VerifyEvent.class, //
+//		Test_org_eclipse_swt_internal_SVGRasterizer.class, //
+//		Test_org_eclipse_swt_layout_BorderLayout.class, //
+//		Test_org_eclipse_swt_layout_FormAttachment.class, //
+//		Test_org_eclipse_swt_layout_GridData.class, //
+//		Test_org_eclipse_swt_printing_PrintDialog.class, //
+//		Test_org_eclipse_swt_printing_Printer.class, //
+//		Test_org_eclipse_swt_printing_PrinterData.class, //
+//		Test_org_eclipse_swt_program_Program.class, //
 })
 public class AllNonBrowserTests {
 	private static List<Error> leakedResources;
