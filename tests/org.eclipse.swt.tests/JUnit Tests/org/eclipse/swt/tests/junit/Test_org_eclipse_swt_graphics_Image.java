@@ -1072,11 +1072,15 @@ public void test_imageDataIsCached() {
 		return imagePath;
 	};
 	Image fileNameProviderImage = new Image(display, imageFileNameProvider);
-	callCount.set(0);
-	fileNameProviderImage.getImageData(100);
-	fileNameProviderImage.getImageData(100);
-	fileNameProviderImage.getImageData(100);
-	assertEquals(0, callCount.get());
+	try {
+		callCount.set(0);
+		fileNameProviderImage.getImageData(100);
+		fileNameProviderImage.getImageData(100);
+		fileNameProviderImage.getImageData(100);
+		assertEquals(0, callCount.get());
+	} finally {
+		fileNameProviderImage.dispose();
+	}
 }
 
 @Test

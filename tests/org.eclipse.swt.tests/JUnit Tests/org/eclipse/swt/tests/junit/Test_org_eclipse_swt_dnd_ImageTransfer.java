@@ -96,7 +96,13 @@ public class Test_org_eclipse_swt_dnd_ImageTransfer extends ClipboardBase {
 		assertEquals(0, imageDataComparator().compare(imageData, getContents()));
 
 		assertThrows(IllegalArgumentException.class, () -> setContents(""));
-		assertThrows(IllegalArgumentException.class, () -> setContents(new Image(display, imageData)));
+		Image image = new Image(display, imageData);
+		try {
+			// verify that ImageTransfer rejects actual images, as ImageData is required
+			assertThrows(IllegalArgumentException.class, () -> setContents(image));
+		} finally {
+			image.dispose();
+		}
 		assertThrows(IllegalArgumentException.class, () -> setContents(new Object()));
 	}
 
