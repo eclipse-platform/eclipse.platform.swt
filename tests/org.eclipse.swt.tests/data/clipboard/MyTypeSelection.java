@@ -20,7 +20,7 @@ public final class MyTypeSelection implements Transferable {
 
 	static DataFlavor flavor;
 
-	static void register() throws ClassNotFoundException {
+	static void register() {
 		flavor = new DataFlavor("application/x-my_type_name;class=java.io.InputStream", "my_type_name");
 		SystemFlavorMap map = (SystemFlavorMap) SystemFlavorMap.getDefaultFlavorMap();
 		map.addUnencodedNativeForFlavor(flavor, "my_type_name");
