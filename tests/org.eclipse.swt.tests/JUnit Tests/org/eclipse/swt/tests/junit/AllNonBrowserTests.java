@@ -18,8 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.graphics.Resource;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.platform.suite.api.AfterSuite;
+import org.junit.platform.suite.api.BeforeSuite;
 import org.junit.platform.suite.api.SelectClasses;
 import org.junit.platform.suite.api.Suite;
 
@@ -79,8 +79,8 @@ import org.junit.platform.suite.api.Suite;
 public class AllNonBrowserTests {
 	private static List<Error> leakedResources;
 
-	@BeforeAll
-	public static void beforeClass() {
+	@BeforeSuite
+	public static void beforeSuite() {
 		// Set up ResourceTracked to detect any leaks
 		leakedResources = new ArrayList<> ();
 		Resource.setNonDisposeHandler (error -> {
@@ -93,11 +93,11 @@ public class AllNonBrowserTests {
 
 	/*
 	 * It would be easier to understand if errors here were reported
-	 * through  a test and not through @AfterClass, but this is a
+	 * through  a test and not through @AfterSuite, but this is a
 	 * suite class and not a test class, so it can't have tests.
 	 */
-	@AfterAll
-	public static void afterClass() {
+	@AfterSuite
+	public static void afterSuite() {
 		// Run GC in order do detect any outstanding leaks
 		System.gc ();
 		// And wait a bit to let Resource.ResourceTracker, that is
