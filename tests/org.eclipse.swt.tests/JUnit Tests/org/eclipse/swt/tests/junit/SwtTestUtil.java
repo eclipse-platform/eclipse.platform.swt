@@ -19,9 +19,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -763,5 +765,27 @@ static <T> T runOperationInThread(int timeoutMs, ExceptionalSupplier<T> supplier
 	@SuppressWarnings("unchecked")
 	T result = (T) supplierValue[0];
 	return result;
+}
+
+/**
+ * Capture any output on System.err
+ *
+ * This method does not capture output on stderr from C level, such as
+ * Gdk-CRITICAL messages.
+ *
+ * @param runnable to run while capturing output
+ * @return output on System.err
+ */
+public static String runWithCapturedStderr(Runnable runnable) {
+	PrintStream originalErr = System.err;
+	ByteArrayOutputStream errContent = new ByteArrayOutputStream();
+	System.setErr(new PrintStream(errContent, true, StandardCharsets.UTF_8));
+	try {
+		runnable.run();
+		return errContent.toString(StandardCharsets.UTF_8);
+
+	} finally {
+		System.setErr(originalErr);
+	}
 }
 }

@@ -111,8 +111,7 @@ public class AllNonBrowserTests {
 		}
 
 		for (Error leak : leakedResources) {
-			// For some reason, printing to System.err in JUnit test has no effect
-			leak.printStackTrace (System.out);
+			leak.printStackTrace ();
 		}
 
 		if (0 != leakedResources.size ()) {
