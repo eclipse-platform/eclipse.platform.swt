@@ -61,9 +61,6 @@
 		                junit.jupiter.execution.parallel.enabled=false
 		                junit.jupiter.execution.parallel.methods=false
 		                junit.jupiter.execution.parallel.classes=false
-		                junit.vintage.execution.parallel.enabled=false
-		                junit.vintage.execution.parallel.methods=false
-		                junit.vintage.execution.parallel.classes=false
 		            </configurationParameters>
 		        </properties>
             </configuration>
@@ -74,11 +71,6 @@
 				<groupId>org.apache.maven.surefire</groupId>
 				<artifactId>surefire-junit-platform</artifactId>
 				<version>${surefire.version}</version>
-			</dependency>
-			<dependency>
-			    <groupId>org.junit.vintage</groupId>
-			    <artifactId>junit-vintage-engine</artifactId>
-			    <version>5.13.4</version>
 			</dependency>
 			<dependency>
 			    <groupId>org.junit.platform</groupId>
