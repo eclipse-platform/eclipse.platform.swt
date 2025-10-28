@@ -34,6 +34,9 @@ class ClipboardProxy {
 
 	long clipboardOwner = GTK3.gtk_window_new(GTK.GTK_WINDOW_TOPLEVEL);
 
+	/**
+	 * display == null means that the display has been disposed.
+	 */
 	Display display;
 	Clipboard activeClipboard = null;
 	Clipboard activePrimaryClipboard = null;
@@ -78,7 +81,48 @@ void gtk_gdk_clipboard_clear(long clipboard) {
 	GTK3.gtk_clipboard_clear(clipboard);
 }
 
+/**
+ * The calls to gtk_clipboard_set_with_owner (in
+ * {@link #setData(Clipboard, Object[], Transfer[], int)}) means the
+ * GtkClipboard (in C side) has function pointers saved to the getFunc +
+ * clearFunc callbacks.
+ *
+ * Therefore, when we dispose {@link ClipboardProxy} we cannot dispose the
+ * callbacks until we know that GtkClipboard doesn't have a pointer to these
+ * callbacks. GtkClipboard clears these pointers in clipboard_unset
+ * (https://gitlab.gnome.org/GNOME/gtk/-/blob/716458e86a222f43e64f7a4feda37749f3469ee4/gtk/gtkclipboard.c#L755)
+ * and notifies us that the pointers are no longer stored by calling clearFunc
+ * (https://gitlab.gnome.org/GNOME/gtk/-/blob/716458e86a222f43e64f7a4feda37749f3469ee4/gtk/gtkclipboard.c#L782)
+ *
+ * Therefore, after disposing ClipboardProxy we need to defer disposing the
+ * callbacks until clearFunc has been called.
+ *
+ * We know if we have been called sufficiently (for both clipboards that could
+ * have a handle stored) when both clipboards no longer have data stored.
+ *
+ * If we don't defer the disposal it causes SIGSEGV or other undefined behavior.
+ *
+ * Fix for https://github.com/eclipse-platform/eclipse.platform.swt/issues/2675
+ */
+private void finishDispose() {
+	if (display == null) {
+		if (clipboardDataTypes == null && primaryClipboardDataTypes == null) {
+			if (getFunc != null ) getFunc.dispose();
+			getFunc = null;
+			if (clearFunc != null) clearFunc.dispose();
+			clearFunc = null;
+			if (clipboardOwner != 0) {
+				GTK3.gtk_widget_destroy(clipboardOwner);
+			}
+			clipboardOwner = 0;
+		}
+	}
+}
+
 long clearFunc(long clipboard,long user_data_or_owner){
+	if (display == null) {
+		System.err.println("***WARNING: Attempt to access SWT clipboard after disposing SWT Display.");
+	}
 	if (clipboard == Clipboard.GTKCLIPBOARD) {
 		activeClipboard = null;
 		clipboardData = null;
@@ -89,6 +133,7 @@ long clearFunc(long clipboard,long user_data_or_owner){
 		primaryClipboardData = null;
 		primaryClipboardDataTypes = null;
 	}
+	finishDispose();
 	return 1;
 }
 
@@ -101,18 +146,7 @@ void dispose () {
 		GTK3.gtk_clipboard_store(Clipboard.GTKPRIMARYCLIPBOARD);
 	}
 	display = null;
-	if (getFunc != null ) getFunc.dispose();
-	getFunc = null;
-	if (clearFunc != null) clearFunc.dispose();
-	clearFunc = null;
-	clipboardData = null;
-	clipboardDataTypes = null;
-	primaryClipboardData = null;
-	primaryClipboardDataTypes = null;
-	if (clipboardOwner != 0) {
-		GTK3.gtk_widget_destroy(clipboardOwner);
-	}
-	clipboardOwner = 0;
+	finishDispose();
 }
 
 /**
@@ -120,6 +154,10 @@ void dispose () {
  * When this clipboard is disposed, the data will no longer be available.
  */
 long getFunc(long clipboard, long selection_data, long info, long user_data_or_owner){
+	if (display == null) {
+		System.err.println("***WARNING: Attempt to access SWT clipboard after disposing SWT Display.");
+		return 0;
+	}
 	if (selection_data == 0) return 0;
 	long target = GTK3.gtk_selection_data_get_target(selection_data);
 	TransferData tdata = new TransferData();

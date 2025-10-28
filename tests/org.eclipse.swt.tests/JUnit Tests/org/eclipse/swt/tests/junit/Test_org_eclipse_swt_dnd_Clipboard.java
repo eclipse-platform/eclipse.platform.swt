@@ -19,11 +19,14 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.RTFTransfer;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.dnd.TransferData;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
@@ -242,5 +245,138 @@ public class Test_org_eclipse_swt_dnd_Clipboard extends ClipboardBase {
 		clipboard.setContents(new Object[] { helloWorldRtf }, new Transfer[] { rtfTransfer }, clipboardId);
 		availableTypes = clipboard.getAvailableTypes(clipboardId);
 		assertTrue(Arrays.stream(availableTypes).anyMatch(rtfTransfer::isSupportedType));
+	}
+
+	/**
+	 * tear down and start again without clearing off the clipboard
+	 */
+	private void tearDownAndStartAgain() {
+		// we can't call tearDown because we don't want to clear the clipboard
+		clipboard.dispose();
+		clipboard = null;
+		shell.dispose();
+		shell = null;
+		SwtTestUtil.processEvents();
+
+		// tearDown doesn't dispose on each test, but the error we are checking
+		// for happens when Display is disposed (causing ClipboardProxy to be disposed)
+		display.dispose();
+		display = null;
+
+		// start back up
+		setUp();
+	}
+
+	private void checkStderrForGTK3Warning(String stderr) {
+		if (SwtTestUtil.isGTK3()) {
+			if ("***WARNING: Attempt to access SWT clipboard after disposing SWT Display.\n".equals(stderr)) {
+				// test passed (VM didn't SIGSEGV) and we exercise the problematic code causing
+				// https://github.com/eclipse-platform/eclipse.platform.swt/issues/2675
+			} else if (stderr.isEmpty()) {
+				assumeTrue(false, """
+						test passed (VM didn't SIGSEGV) but we didn't exercise the problematic code causing
+						https://github.com/eclipse-platform/eclipse.platform.swt/issues/2675
+						""");
+			} else {
+				// test passed (VM didn't SIGSEGV) but we don't know why there is other stderr
+				// output, log it to the test results for further investigation.
+				assertEquals("", stderr);
+			}
+		} else {
+			assertEquals("", stderr);
+		}
+	}
+
+	private Text setContentsOnClipboardAndDisposeDisplay() throws InterruptedException {
+		openAndFocusShell(false);
+
+		String helloWorld = getUniqueTestString();
+		clipboard.setContents(new Object[] { helloWorld }, new Transfer[] { textTransfer });
+		assertEquals(helloWorld, clipboard.getContents(textTransfer));
+
+		tearDownAndStartAgain();
+		shell = new Shell(display);
+		Text text = new Text(shell, SWT.SINGLE);
+		String textBoxHello = getUniqueTestString();
+		text.setText(textBoxHello);
+		text.setSelection(0, textBoxHello.length());
+
+		return text;
+	}
+
+	/**
+	 * Regression test for
+	 * https://github.com/eclipse-platform/eclipse.platform.swt/issues/2675
+	 */
+	@Test
+	public void test_AfterNewDisplay_TextCopy() throws Exception {
+		Text text = setContentsOnClipboardAndDisposeDisplay();
+		SwtTestUtil.openShell(shell);
+
+		/*
+		 * on GTK3 this Text.copy would trigger SIGSEGV on GTK calling disposed callback
+		 * ClipboardProxy.clearFunc
+		 */
+		String stderr = SwtTestUtil.runWithCapturedStderr(() -> text.copy());
+		checkStderrForGTK3Warning(stderr);
+
+		// After the test, clear out the partially disposed clipboard by taking
+		// ownership and then clearing it
+		clipboard.setContents(new Object[] { getUniqueTestString() }, new Transfer[] { textTransfer });
+		clipboard.clearContents();
+	}
+
+	/**
+	 * Regression test for
+	 * https://github.com/eclipse-platform/eclipse.platform.swt/issues/2675
+	 */
+	@Test
+	public void test_AfterNewDisplay_LocalSetContents() throws Exception {
+		setContentsOnClipboardAndDisposeDisplay();
+		SwtTestUtil.openShell(shell);
+
+		/*
+		 * on GTK3 this setContents would lead to undefined behavior because when the
+		 * ClipboardProxy called bind on the new ClipboardProxy.clearFunc there was a
+		 * pretty good chance it would bind to the same entry in the callback table. But
+		 * depending on exact order of operations that table entry could be empty,
+		 * leading to SIGSEGV.
+		 */
+		String stderr = SwtTestUtil.runWithCapturedStderr(
+				() -> clipboard.setContents(new Object[] { getUniqueTestString() }, new Transfer[] { textTransfer }));
+		checkStderrForGTK3Warning(stderr);
+	}
+
+	/**
+	 * Regression test for
+	 * https://github.com/eclipse-platform/eclipse.platform.swt/issues/2675
+	 */
+	@Test
+	public void test_AfterNewDisplay_RemoteGetContents() throws Exception {
+		setContentsOnClipboardAndDisposeDisplay();
+		openAndFocusRemote();
+		/*
+		 * on GTK3 this getting from the remote would trigger SIGSEGV on GTK calling
+		 * disposed callback ClipboardProxy.getFunc
+		 * https://github.com/eclipse-platform/eclipse.platform.swt/issues/2675
+		 *
+		 * Caveat: What is available on the clipboard after Display dispose is very
+		 * platform and configuration dependent and no guarantees in the SWT API exist.
+		 * Therefore the return value of remote.getStringContents() is not checked here.
+		 */
+		String stderr = SwtTestUtil
+				.runWithCapturedStderr(() -> SwtTestUtil.runOperationInThread(() -> remote.getStringContents()));
+		checkStderrForGTK3Warning(stderr);
+
+		/*
+		 * On GTK3 At this point the old ClipboardProxy has not been disposed because
+		 * this process still owns the clipboard from the original setContents done at
+		 * the beginning of the test. Therefore set some new contents so that the old
+		 * contents can be cleared.
+		 */
+		SwtTestUtil.openShell(shell);
+		stderr = SwtTestUtil.runWithCapturedStderr(
+				() -> clipboard.setContents(new Object[] { getUniqueTestString() }, new Transfer[] { textTransfer }));
+		checkStderrForGTK3Warning(stderr);
 	}
 }

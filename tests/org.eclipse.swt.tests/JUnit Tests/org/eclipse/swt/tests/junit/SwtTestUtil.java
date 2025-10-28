@@ -150,6 +150,28 @@ public class SwtTestUtil {
 	}
 
 	/**
+	 * Return whether running on GTK3. This is dynamically set at runtime and cannot
+	 * be accessed before the corresponding property is initialized in OS.
+	 *
+	 * <strong>Note:</strong> this method still must be called after the static
+	 * block of OS is run.
+	 */
+	public final static boolean isGTK3() {
+		if (!isGTK) {
+			return false;
+		}
+
+		String version = System.getProperty("org.eclipse.swt.internal.gtk.version", "");
+		if (version.startsWith("3")) {
+			return true;
+		} else if (!version.isBlank()) {
+			return false;
+		}
+		fail("org.eclipse.swt.internal.gtk.version System property is not set yet. Create a new Display (or otherwise access OS) before calling isGTK4");
+		throw new IllegalStateException("unreachable");
+	}
+
+	/**
 	 * Return whether running on GTK4. This is dynamically set at runtime and cannot
 	 * be accessed before the corresponding property is initialized in OS.
 	 *
