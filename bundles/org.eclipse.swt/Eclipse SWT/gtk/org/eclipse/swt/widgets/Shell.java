@@ -637,7 +637,7 @@ void bringToTop (boolean force) {
 			}
 			long seat = GDK.gdk_display_get_default_seat(gdkDisplay);
 			if (GTK.GTK4) {
-				/* TODO: GTK does not provide a gdk_surface_show, probably will require use of the present api */
+				GTK4.gtk_window_present(shellHandle);
 			} else {
 				GDK.gdk_window_show(gdkResource);
 			}

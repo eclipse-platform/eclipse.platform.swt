@@ -453,6 +453,7 @@ public class GTK4 {
 	public static final native void gtk_window_set_child(long window, long child);
 	/** @param window cast=(GtkWindow *) */
 	public static final native void gtk_window_destroy(long window);
+
 	/** @param window cast=(GtkWindow *) */
 	public static final native long gtk_window_get_icon_name(long window);
 	/**
@@ -462,6 +463,9 @@ public class GTK4 {
 	public static final native void gtk_window_set_icon_name(long window, long name);
 	/** @param window cast=(GtkWindow *) */
 	public static final native long gtk_window_get_titlebar(long window);
+
+	/** @param window cast=(GtkWindow *) */
+	public static final native void gtk_window_present(long window) ;
 
 	/* GtkShortcutController */
 	public static final native long gtk_shortcut_controller_new();

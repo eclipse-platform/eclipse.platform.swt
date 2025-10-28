@@ -2776,6 +2776,16 @@ JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1window_1new)
 }
 #endif
 
+#ifndef NO_gtk_1window_1present
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1window_1present)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1window_1present_FUNC);
+	gtk_window_present((GtkWindow *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1window_1present_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1window_1set_1child
 JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1window_1set_1child)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)

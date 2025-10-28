@@ -226,6 +226,7 @@ typedef enum {
 	gtk_1window_1maximize_FUNC,
 	gtk_1window_1minimize_FUNC,
 	gtk_1window_1new_FUNC,
+	gtk_1window_1present_FUNC,
 	gtk_1window_1set_1child_FUNC,
 	gtk_1window_1set_1default_1widget_FUNC,
 	gtk_1window_1set_1icon_1name_FUNC,
