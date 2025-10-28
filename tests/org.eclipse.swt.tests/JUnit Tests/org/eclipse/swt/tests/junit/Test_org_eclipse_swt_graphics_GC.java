@@ -1028,16 +1028,20 @@ public void test_bug1288_createGCFromImageFromNonDisplayThread() throws Interrup
 public void test_noMemoryLeakAfterDispose() {
 	GC testGC = new GC(display);
 	Image image = new Image(display, 1, 1);
-	testGC.setFont(display.getSystemFont());
-	testGC.setClipping(new Rectangle(0, 0, 2, 2));
-	testGC.drawImage(image, 0, 0);
-	testGC.drawText("Test", 0, 0);
-	testGC.drawLine(0, 0, 5, 5);
-	WeakReference<GC> testGCReference = new WeakReference<>(testGC);
-	testGC.dispose();
-	testGC = null;
-	System.gc();
-	assertNull(testGCReference.get());
+	try {
+		testGC.setFont(display.getSystemFont());
+		testGC.setClipping(new Rectangle(0, 0, 2, 2));
+		testGC.drawImage(image, 0, 0);
+		testGC.drawText("Test", 0, 0);
+		testGC.drawLine(0, 0, 5, 5);
+		WeakReference<GC> testGCReference = new WeakReference<>(testGC);
+		testGC.dispose();
+		testGC = null;
+		System.gc();
+		assertNull(testGCReference.get());
+	} finally {
+		image.dispose();
+	}
 }
 
 /* custom */
