@@ -506,8 +506,8 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 				NSRect bounds = lineBounds[lineBounds.length - 1];
 				rect.x = pt.x + bounds.x + bounds.width;
 				rect.y = y + bounds.y;
-				rect.width = (flags & SWT.FULL_SELECTION) != 0 ? 0x7fffffff : bounds.height / 3;
-				rect.height = Math.max(bounds.height, ascent + descent);
+				rect.width = (flags & SWT.FULL_SELECTION) != 0 ? OS.MAX_TEXT_CONTAINER_SIZE : (bounds.height + spacing) / 3;
+				rect.height = Math.max(bounds.height + spacing, ascent + descent);
 				path.appendBezierPathWithRect(rect);
 			}
 			selectionColor.setFill();
