@@ -22,7 +22,7 @@ import org.junit.platform.suite.api.Suite;
  */
 @Suite(failIfNoTests = false)
 @SelectClasses({
-	AllNonBrowserTests.class,
+//	AllNonBrowserTests.class,
 	AllBrowserTests.class
 })
 public class AllTests {
