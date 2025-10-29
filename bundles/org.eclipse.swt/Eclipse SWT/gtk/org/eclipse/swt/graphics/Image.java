@@ -928,6 +928,7 @@ void destroy() {
 	if (surface != 0) Cairo.cairo_surface_destroy(surface);
 	surface = mask = 0;
 	memGC = null;
+	cachedImageAtSize.destroy();
 }
 
 private CachedImageAtSize cachedImageAtSize = new CachedImageAtSize();
