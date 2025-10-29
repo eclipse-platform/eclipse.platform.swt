@@ -2581,6 +2581,23 @@ JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1widget_1get_1root)
 }
 #endif
 
+#ifndef NO_gtk_1widget_1get_1size_1request
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1widget_1get_1size_1request)
+	(JNIEnv *env, jclass that, jlong arg0, jintArray arg1, jintArray arg2)
+{
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+	GTK4_NATIVE_ENTER(env, that, gtk_1widget_1get_1size_1request_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	gtk_widget_get_size_request((GtkWidget*)arg0, (int *)lparg1, (int *)lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1widget_1get_1size_1request_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1widget_1insert_1after
 JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1widget_1insert_1after)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2)
@@ -2653,6 +2670,16 @@ JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1widget_1set_1focusable)
 	GTK4_NATIVE_ENTER(env, that, gtk_1widget_1set_1focusable_FUNC);
 	gtk_widget_set_focusable((GtkWidget *)arg0, (gboolean)arg1);
 	GTK4_NATIVE_EXIT(env, that, gtk_1widget_1set_1focusable_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1widget_1set_1size_1request
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1widget_1set_1size_1request)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jint arg2)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1widget_1set_1size_1request_FUNC);
+	gtk_widget_set_size_request((GtkWidget*)arg0, (int)arg1, (int)arg2);
+	GTK4_NATIVE_EXIT(env, that, gtk_1widget_1set_1size_1request_FUNC);
 }
 #endif
 
