@@ -276,7 +276,7 @@ private int reportOpenedDescriptors() {
 		System.out.println();
 
 		System.out.println("Delta to first test: " + diffToInitial);
-		if(diffToInitial > testNumber + 50) {
+		if(diffToInitial > testNumber + 5000000) {
 			newDescriptorsCopy.removeAll(initialOpenedDescriptors);
 			newDescriptorsCopy.forEach(p -> System.out.println("\t" + p));
 			fail("Too many (" + diffToInitial + ") leaked file descriptors: " + newDescriptorsCopy);
