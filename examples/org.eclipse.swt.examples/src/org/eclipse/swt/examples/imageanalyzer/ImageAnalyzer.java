@@ -118,12 +118,12 @@ public class ImageAnalyzer {
 	static final int ALPHA_X = 1;
 	static final int ALPHA_Y = 2;
 	static final String[] OPEN_FILTER_EXTENSIONS = new String[] {
-			"*.bmp;*.gif;*.ico;*.jfif;*.jpeg;*.jpg;*.png;*.tif;*.tiff",
-			"*.bmp", "*.gif", "*.ico", "*.jpg;*.jpeg;*.jfif", "*.png", "*.tif;*.tiff" };
+			"*.bmp;*.gif;*.ico;*.jfif;*.jpeg;*.jpg;*.png;*.svg;*.tif;*.tiff",
+			"*.bmp", "*.gif", "*.ico", "*.jpg;*.jpeg;*.jfif", "*.png", "*.svg","*.tif;*.tiff" };
 	static final String[] OPEN_FILTER_NAMES = new String[] {
 			bundle.getString("All_images") + " (bmp, gif, ico, jfif, jpeg, jpg, png, tif, tiff)",
 			"BMP (*.bmp)", "GIF (*.gif)", "ICO (*.ico)", "JPEG (*.jpg, *.jpeg, *.jfif)",
-			"PNG (*.png)", "TIFF (*.tif, *.tiff)" };
+			"PNG (*.png)", "SVG (*.svg)","TIFF (*.tif, *.tiff)" };
 	static final String[] SAVE_FILTER_EXTENSIONS = new String[] {
 			"*.bmp", "*.bmp", "*.gif", "*.ico", "*.jpg", "*.png", "*.tif", "*.bmp" };
 	static final String[] SAVE_FILTER_NAMES = new String[] {
