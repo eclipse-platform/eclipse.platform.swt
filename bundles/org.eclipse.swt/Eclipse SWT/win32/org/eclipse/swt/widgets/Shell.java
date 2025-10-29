@@ -2787,9 +2787,4 @@ LRESULT WM_WINDOWPOSCHANGING (long wParam, long lParam) {
 	return result;
 }
 
-@Override
-void handleDPIChange(Event event, float scalingFactor) {
-	super.handleDPIChange(event, scalingFactor);
-	layout (null, SWT.DEFER | SWT.ALL | SWT.CHANGED);
-}
 }
