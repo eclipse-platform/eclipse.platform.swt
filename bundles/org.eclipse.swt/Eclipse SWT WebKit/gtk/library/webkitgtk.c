@@ -243,6 +243,270 @@ fail:
 }
 #endif
 
+#ifndef NO_jsc_1value_1is_1boolean
+JNIEXPORT jboolean JNICALL WebKitGTK_NATIVE(jsc_1value_1is_1boolean)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jboolean rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, jsc_1value_1is_1boolean_FUNC);
+/*
+	rc = (jboolean)jsc_value_is_boolean(arg0);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, jsc_value_is_boolean)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jlong))fp)(arg0);
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, jsc_1value_1is_1boolean_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_jsc_1value_1is_1null
+JNIEXPORT jboolean JNICALL WebKitGTK_NATIVE(jsc_1value_1is_1null)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jboolean rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, jsc_1value_1is_1null_FUNC);
+/*
+	rc = (jboolean)jsc_value_is_null(arg0);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, jsc_value_is_null)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jlong))fp)(arg0);
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, jsc_1value_1is_1null_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_jsc_1value_1is_1number
+JNIEXPORT jboolean JNICALL WebKitGTK_NATIVE(jsc_1value_1is_1number)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jboolean rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, jsc_1value_1is_1number_FUNC);
+/*
+	rc = (jboolean)jsc_value_is_number(arg0);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, jsc_value_is_number)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jlong))fp)(arg0);
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, jsc_1value_1is_1number_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_jsc_1value_1is_1object
+JNIEXPORT jboolean JNICALL WebKitGTK_NATIVE(jsc_1value_1is_1object)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jboolean rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, jsc_1value_1is_1object_FUNC);
+/*
+	rc = (jboolean)jsc_value_is_object(arg0);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, jsc_value_is_object)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jlong))fp)(arg0);
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, jsc_1value_1is_1object_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_jsc_1value_1is_1string
+JNIEXPORT jboolean JNICALL WebKitGTK_NATIVE(jsc_1value_1is_1string)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jboolean rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, jsc_1value_1is_1string_FUNC);
+/*
+	rc = (jboolean)jsc_value_is_string(arg0);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, jsc_value_is_string)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jlong))fp)(arg0);
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, jsc_1value_1is_1string_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_jsc_1value_1is_1typed_1array
+JNIEXPORT jboolean JNICALL WebKitGTK_NATIVE(jsc_1value_1is_1typed_1array)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jboolean rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, jsc_1value_1is_1typed_1array_FUNC);
+/*
+	rc = (jboolean)jsc_value_is_typed_array(arg0);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, jsc_value_is_typed_array)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jlong))fp)(arg0);
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, jsc_1value_1is_1typed_1array_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_jsc_1value_1is_1undefined
+JNIEXPORT jboolean JNICALL WebKitGTK_NATIVE(jsc_1value_1is_1undefined)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jboolean rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, jsc_1value_1is_1undefined_FUNC);
+/*
+	rc = (jboolean)jsc_value_is_undefined(arg0);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, jsc_value_is_undefined)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jlong))fp)(arg0);
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, jsc_1value_1is_1undefined_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_jsc_1value_1object_1get_1property
+JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(jsc_1value_1object_1get_1property)
+	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	jlong rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, jsc_1value_1object_1get_1property_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+/*
+	rc = (jlong)jsc_value_object_get_property(arg0, lparg1);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, jsc_value_object_get_property)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong, jbyte *))fp)(arg0, lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	WebKitGTK_NATIVE_EXIT(env, that, jsc_1value_1object_1get_1property_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_jsc_1value_1object_1get_1property_1at_1index
+JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(jsc_1value_1object_1get_1property_1at_1index)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
+{
+	jlong rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, jsc_1value_1object_1get_1property_1at_1index_FUNC);
+/*
+	rc = (jlong)jsc_value_object_get_property_at_index(arg0, arg1);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, jsc_value_object_get_property_at_index)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong, jint))fp)(arg0, arg1);
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, jsc_1value_1object_1get_1property_1at_1index_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_jsc_1value_1to_1boolean
+JNIEXPORT jboolean JNICALL WebKitGTK_NATIVE(jsc_1value_1to_1boolean)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jboolean rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, jsc_1value_1to_1boolean_FUNC);
+/*
+	rc = (jboolean)jsc_value_to_boolean(arg0);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, jsc_value_to_boolean)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jlong))fp)(arg0);
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, jsc_1value_1to_1boolean_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_jsc_1value_1to_1double
+JNIEXPORT jdouble JNICALL WebKitGTK_NATIVE(jsc_1value_1to_1double)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jdouble rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, jsc_1value_1to_1double_FUNC);
+/*
+	rc = (jdouble)jsc_value_to_double(arg0);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, jsc_value_to_double)
+		if (fp) {
+			rc = (jdouble)((jdouble (CALLING_CONVENTION*)(jlong))fp)(arg0);
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, jsc_1value_1to_1double_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_jsc_1value_1to_1int32
+JNIEXPORT jint JNICALL WebKitGTK_NATIVE(jsc_1value_1to_1int32)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jint rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, jsc_1value_1to_1int32_FUNC);
+/*
+	rc = (jint)jsc_value_to_int32(arg0);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, jsc_value_to_int32)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(jlong))fp)(arg0);
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, jsc_1value_1to_1int32_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_jsc_1value_1to_1string
+JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(jsc_1value_1to_1string)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, jsc_1value_1to_1string_FUNC);
+/*
+	rc = (jlong)jsc_value_to_string(arg0);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, jsc_value_to_string)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong))fp)(arg0);
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, jsc_1value_1to_1string_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_soup_1cookie_1get_1name
 JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(soup_1cookie_1get_1name)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -1954,6 +2218,52 @@ JNIEXPORT jint JNICALL WebKitGTK_NATIVE(webkit_1web_1view_1can_1show_1mime_1type
 		}
 	}
 	WebKitGTK_NATIVE_EXIT(env, that, webkit_1web_1view_1can_1show_1mime_1type_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_webkit_1web_1view_1evaluate_1javascript
+JNIEXPORT void JNICALL WebKitGTK_NATIVE(webkit_1web_1view_1evaluate_1javascript)
+	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1, jlong arg2, jlong arg3, jlong arg4, jlong arg5, jlong arg6, jlong arg7)
+{
+	jbyte *lparg1=NULL;
+	WebKitGTK_NATIVE_ENTER(env, that, webkit_1web_1view_1evaluate_1javascript_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+/*
+	webkit_web_view_evaluate_javascript(arg0, lparg1, arg2, arg3, arg4, arg5, arg6, arg7);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, webkit_web_view_evaluate_javascript)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jlong, jbyte *, jlong, jlong, jlong, jlong, jlong, jlong))fp)(arg0, lparg1, arg2, arg3, arg4, arg5, arg6, arg7);
+		}
+	}
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	WebKitGTK_NATIVE_EXIT(env, that, webkit_1web_1view_1evaluate_1javascript_FUNC);
+}
+#endif
+
+#ifndef NO_webkit_1web_1view_1evaluate_1javascript_1finish
+JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(webkit_1web_1view_1evaluate_1javascript_1finish)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlongArray arg2)
+{
+	jlong *lparg2=NULL;
+	jlong rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, webkit_1web_1view_1evaluate_1javascript_1finish_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
+/*
+	rc = (jlong)webkit_web_view_evaluate_javascript_finish(arg0, arg1, (GError **)lparg2);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, webkit_web_view_evaluate_javascript_finish)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong, jlong, GError **))fp)(arg0, arg1, (GError **)lparg2);
+		}
+	}
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseLongArrayElements(env, arg2, lparg2, 0);
+	WebKitGTK_NATIVE_EXIT(env, that, webkit_1web_1view_1evaluate_1javascript_1finish_FUNC);
 	return rc;
 }
 #endif
