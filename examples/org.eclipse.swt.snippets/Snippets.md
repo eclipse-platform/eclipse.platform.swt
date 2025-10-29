@@ -45,7 +45,7 @@ To contribute a new snippet, [create a snippet contribution as a pull request](h
 - [send custom headers and post data with HTTP requests](https://github.com/eclipse-platform/eclipse.platform.swt/tree/master/examples/org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/Snippet330.java) – [(preview)](https://github.com/eclipse-platform/eclipse.platform.swt/blob/master/examples/org.eclipse.swt.snippets/previews/Snippet330.png "Preview for Snippet 330")
 - [WebKit in a browser](https://github.com/eclipse-platform/eclipse.platform.swt/tree/master/examples/org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/Snippet351.java) – [(preview)](https://github.com/eclipse-platform/eclipse.platform.swt/blob/master/examples/org.eclipse.swt.snippets/previews/Snippet351.png "Preview for Snippet 351")
 - [Resize the shell to the fit the html content after it's loaded](https://github.com/eclipse-platform/eclipse.platform.swt/tree/master/examples/org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/Snippet372.java) – [(preview)](https://github.com/eclipse-platform/eclipse.platform.swt/blob/master/examples/org.eclipse.swt.snippets/previews/Snippet372.png "Preview for Snippet 372")
-- [Mozilla in a browser](https://github.com/eclipse-platform/eclipse.platform.swt/tree/master/examples/org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/Snippet260.java?h=R4_7_maintenance)
+- [WebKit in a browser](https://github.com/eclipse-platform/eclipse.platform.swt/tree/master/examples/org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/Snippet260.java)
 
 
 ### **BusyIndicator**
