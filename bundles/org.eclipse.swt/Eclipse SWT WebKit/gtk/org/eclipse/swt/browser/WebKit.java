@@ -224,7 +224,11 @@ class WebKit extends WebBrowser {
 
 			NativeClearSessions = () -> {
 				if (!WebKitGTK.LibraryLoaded) return;
-				if (WebKitGTK.webkit_get_minor_version() >= 16) {
+				if (GTK.GTK4) {
+					long session = WebKitGTK.webkit_network_session_get_default();
+					long manager = WebKitGTK.webkit_network_session_get_website_data_manager(session);
+					WebKitGTK.webkit_website_data_manager_clear(manager, 64, 0, 0, 0, 0);
+				} else if (WebKitGTK.webkit_get_minor_version() >= 16) {
 					long context = WebKitGTK.webkit_web_context_get_default();
 					long manager = WebKitGTK.webkit_web_context_get_website_data_manager (context);
 					WebKitGTK.webkit_website_data_manager_clear(manager, WebKitGTK.WEBKIT_WEBSITE_DATA_COOKIES, 0, 0, 0, 0);
@@ -1159,8 +1163,14 @@ private static class Webkit2AsyncToSync {
 	}
 
 	static boolean setCookie(String cookieUrl, String cookieValue) {
-		long context = WebKitGTK.webkit_web_context_get_default();
-		long cookieManager = WebKitGTK.webkit_web_context_get_cookie_manager(context);
+		long cookieManager;
+		if (GTK.GTK4) {
+			long session = WebKitGTK.webkit_network_session_get_default();
+			cookieManager = WebKitGTK.webkit_network_session_get_cookie_manager(session);
+		} else {
+			long context = WebKitGTK.webkit_web_context_get_default();
+			cookieManager = WebKitGTK.webkit_web_context_get_cookie_manager(context);
+		}
 		byte[] bytes = Converter.wcsToMbcs (cookieUrl, true);
 		long uri;
 		if (WebKitGTK.soup_get_major_version()==2) {
@@ -1230,8 +1240,14 @@ private static class Webkit2AsyncToSync {
 	}
 
 	static String getCookie(String cookieUrl, String cookieName) {
-		long context = WebKitGTK.webkit_web_context_get_default();
-		long cookieManager = WebKitGTK.webkit_web_context_get_cookie_manager(context);
+		long cookieManager;
+		if (GTK.GTK4) {
+			long session = WebKitGTK.webkit_network_session_get_default();
+			cookieManager = WebKitGTK.webkit_network_session_get_cookie_manager(session);
+		} else {
+			long context = WebKitGTK.webkit_web_context_get_default();
+			cookieManager = WebKitGTK.webkit_web_context_get_cookie_manager(context);
+		}
 		byte[] uri = Converter.wcsToMbcs (cookieUrl, true);
 		if (nonBlockingEvaluate > 0) {
 			System.err.println("SWT Webkit: getCookie() called inside a synchronous callback, which can lead to a deadlock.\n"
