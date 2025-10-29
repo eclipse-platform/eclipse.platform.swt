@@ -685,6 +685,18 @@ public class GTK4 {
 	/** @param widget cast=(GtkWidget *) */
 	public static final native long gtk_widget_get_clipboard(long widget);
 	/**
+	 * @param widget cast=(GtkWidget*)
+	 * @param width cast=(int *)
+	 * @param height cast=(int *)
+	 */
+	public static final native void gtk_widget_get_size_request(long widget, int[] width, int[] height);
+	/**
+	 * @param widget cast=(GtkWidget*)
+	 * @param width cast=(int)
+	 * @param height cast=(int)
+	 */
+	public static final native void gtk_widget_set_size_request(long widget, int width, int height);
+	/**
 	 * @param widget cast=(GtkWidget *)
 	 * @param allocation cast=(GtkAllocation *),flags=no_out
 	 */

@@ -1302,6 +1302,14 @@ public boolean getMaximized () {
  */
 public Point getMinimumSize () {
 	checkWidget ();
+	if (GTK.GTK4) {
+		int[] widthP = new int[1];
+		int[] heightP = new int[1];
+		GTK4.gtk_widget_get_size_request(shellHandle, widthP, heightP);
+		int width = Math.max (1, widthP[0] + trimWidth ());
+		int height = Math.max (1, heightP[0] + trimHeight ());
+		return new Point (width, height);
+	}
 	int width = Math.max (1, geometry.getMinWidth() + trimWidth ());
 	int height = Math.max (1, geometry.getMinHeight() + trimHeight ());
 	return new Point (width, height);
@@ -1324,6 +1332,11 @@ public Point getMinimumSize () {
  */
 public Point getMaximumSize () {
 	checkWidget ();
+	if (GTK.GTK4) {
+		// GTK 4 doesn't have the concept of Window maximum size
+		// A possibility might be size_allocate
+		return new Point(Integer.MAX_VALUE, Integer.MAX_VALUE);
+	}
 	int width = Math.min (Integer.MAX_VALUE, geometry.getMaxWidth() + trimWidth ());
 	int height = Math.min (Integer.MAX_VALUE, geometry.getMaxHeight() + trimHeight ());
 	return new Point (width, height);
@@ -2668,6 +2681,7 @@ public void setMinimumSize (int width, int height) {
 
 	if(GTK.GTK4) {
 		geometry.setMinSizeRequested(true);
+		GTK4.gtk_widget_set_size_request(shellHandle, width, height);
 		return;
 	}
 
@@ -2723,6 +2737,11 @@ public void setMinimumSize (Point size) {
  */
 public void setMaximumSize (int width, int height) {
 	checkWidget ();
+	if (GTK.GTK4) {
+		// Gtk 4 doesn't have the concept of maximum window size
+		// A possibility might be size_allocate
+		return;
+	}
 	geometry.setMaxWidth(Math.max (width, trimWidth ()) - trimWidth ());
 	geometry.setMaxHeight(Math.max (height, trimHeight ()) - trimHeight ());
 	int hint = GDK.GDK_HINT_MAX_SIZE;
