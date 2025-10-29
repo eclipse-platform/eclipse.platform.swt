@@ -419,7 +419,6 @@ public void test_evalute_Cookies () {
 	assertFalse(res.isEmpty());
 }
 
-@Tag("gtk4-todo")
 @Test
 public void test_ClearAllSessionCookies () {
 	final AtomicBoolean loaded = new AtomicBoolean(false);
@@ -445,11 +444,14 @@ public void test_ClearAllSessionCookies () {
 	// Should be empty
 	String e1 = Browser.getCookie("cookie1", "https://www.eclipse.org/swt");
 	String e2 = Browser.getCookie("cookie2", "https://www.eclipse.org/swt");
-	assertTrue(e1 == null || e1.isEmpty());
-	assertTrue(e2 == null || e2.isEmpty());
+	if (e1 != null) {
+		assertEquals("", e1);
+	}
+	if (e2 != null) {
+		assertEquals("", e2);
+	}
 }
 
-@Tag("gtk4-todo")
 @Test
 public void test_get_set_Cookies() {
 	final AtomicBoolean loaded = new AtomicBoolean(false);
