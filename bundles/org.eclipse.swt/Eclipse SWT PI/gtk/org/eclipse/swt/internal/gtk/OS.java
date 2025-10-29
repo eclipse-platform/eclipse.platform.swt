@@ -1552,6 +1552,10 @@ public static final native void g_unsetenv(byte [] variable);
  * @param error cast=(GError **)
  */
 public static final native long g_uri_parse (byte[] uri_string,  long flags, long[] error);
+/**
+ * @method flags=dynamic
+ */
+public static final native void g_uri_unref (long uri);
 /** @method flags=const */
 public static final native int glib_major_version();
 /** @method flags=const */

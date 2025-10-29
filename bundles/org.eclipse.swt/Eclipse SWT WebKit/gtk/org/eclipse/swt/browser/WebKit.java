@@ -1196,7 +1196,11 @@ private static class Webkit2AsyncToSync {
 				setCookie_callback.getAddress(), callbackID);
 		Webkit2AsyncReturnObj retObj = execAsyncAndWaitForReturn(cookieBrowser, asyncFunc, " setCookie() was called");
 
-		WebKitGTK.soup_uri_free (uri);
+		if (WebKitGTK.soup_get_major_version()==2) {
+			WebKitGTK.soup_uri_free (uri);
+		} else {
+			OS.g_uri_unref(uri);
+		}
 
 		if (retObj.swtAsyncTimeout) {
 			return false;

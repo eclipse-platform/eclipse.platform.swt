@@ -1038,6 +1038,7 @@ typedef enum {
 	g_1type_1register_1static_FUNC,
 	g_1unsetenv_FUNC,
 	g_1uri_1parse_FUNC,
+	g_1uri_1unref_FUNC,
 	g_1utf16_1offset_1to_1pointer_FUNC,
 	g_1utf16_1offset_1to_1utf8_1offset_FUNC,
 	g_1utf16_1pointer_1to_1offset_FUNC,
