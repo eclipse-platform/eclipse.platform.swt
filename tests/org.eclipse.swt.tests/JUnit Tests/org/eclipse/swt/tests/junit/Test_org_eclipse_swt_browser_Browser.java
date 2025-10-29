@@ -2060,7 +2060,6 @@ public void test_evaluate_evaluation_failed_exception() {
  * Test the evaluate() api that returns an array of numbers. Functionality based on Snippet308.
  * Only wait till success. Otherwise timeout after 3 seconds.
  */
-@Tag("gtk4-todo")
 @Test
 public void test_evaluate_array_numbers() {
 
@@ -2100,7 +2099,6 @@ public void test_evaluate_array_numbers() {
  * Test the evaluate() api that returns an array of strings. Functionality based on Snippet308.
  * Only wait till success. Otherwise timeout after 3 seconds.
  */
-@Tag("gtk4-todo")
 @Test
 public void test_evaluate_array_strings () {
 
@@ -2140,7 +2138,6 @@ public void test_evaluate_array_strings () {
  * Test the evaluate() api that returns an array of mixed types. Functionality based on Snippet308.
  * Only wait till success. Otherwise timeout after 3 seconds.
  */
-@Tag("gtk4-todo")
 @Test
 public void test_evaluate_array_mixedTypes () {
 	final AtomicReferenceArray<Object> atomicArray = new AtomicReferenceArray<>(3);

@@ -551,6 +551,23 @@ public static final native boolean jsc_value_is_number(long value);
  * @method flags=dynamic
  */
 public static final native double jsc_value_to_double(long value);
+/**
+ * @method flags=dynamic
+ */
+public static final native int jsc_value_to_int32(long value);
+/**
+ * @method flags=dynamic
+ */
+public static final native boolean jsc_value_is_typed_array(long value);
+/**
+ * @method flags=dynamic
+ */
+public static final native long jsc_value_object_get_property(long value, byte[] name);
+/**
+ * @method flags=dynamic
+ */
+public static final native long jsc_value_object_get_property_at_index(long value, int index);
+
 
 /** @method flags=dynamic */
 public static final native void webkit_web_view_stop_loading(long web_view);

@@ -2887,8 +2887,18 @@ static Object gtk4_convertToJava(long jsc_value) {
 	} else if (WebKitGTK.jsc_value_is_null(jsc_value) || WebKitGTK.jsc_value_is_undefined(jsc_value)) {
 		return null;
 	} else if (WebKitGTK.jsc_value_is_object(jsc_value)) {
-		// TODO
-		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		long jsc_length = WebKitGTK.jsc_value_object_get_property(jsc_value, Converter.wcsToMbcs(PROPERTY_LENGTH, true));
+		if (WebKitGTK.jsc_value_is_number(jsc_length)) {
+			int length = WebKitGTK.jsc_value_to_int32(jsc_length);
+			Object[] result = new Object[length];
+			for (int i = 0; i < length; i++) {
+				long jsc_value_at_i = WebKitGTK.jsc_value_object_get_property_at_index (jsc_value, i);
+				if (jsc_value_at_i != 0) {
+					result[i] = gtk4_convertToJava (jsc_value_at_i);
+				}
+			}
+			return result;
+		}
 	}
 
 	SWT.error(SWT.ERROR_INVALID_ARGUMENT);
