@@ -60,6 +60,7 @@
 #define FcConfigAppFontAddFile_LIB LIB_FONTCONFIG
 #define pango_attr_insert_hyphens_new_LIB LIB_PANGO
 #define g_uri_parse_LIB LIB_GLIB
+#define g_uri_unref_LIB LIB_GLIB
 
 /* Field accessors */
 #define G_OBJECT_CLASS_CONSTRUCTOR(arg0) (arg0)->constructor

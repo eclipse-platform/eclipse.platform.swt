@@ -12907,6 +12907,24 @@ fail:
 }
 #endif
 
+#ifndef NO_g_1uri_1unref
+JNIEXPORT void JNICALL OS_NATIVE(g_1uri_1unref)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	OS_NATIVE_ENTER(env, that, g_1uri_1unref_FUNC);
+/*
+	g_uri_unref(arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, g_uri_unref)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jlong))fp)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, g_1uri_1unref_FUNC);
+}
+#endif
+
 #ifndef NO_g_1utf16_1offset_1to_1pointer
 JNIEXPORT jlong JNICALL OS_NATIVE(g_1utf16_1offset_1to_1pointer)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
