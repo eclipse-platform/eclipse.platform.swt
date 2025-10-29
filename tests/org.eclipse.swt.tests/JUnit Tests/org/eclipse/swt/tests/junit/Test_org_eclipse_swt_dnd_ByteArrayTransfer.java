@@ -194,6 +194,7 @@ public class Test_org_eclipse_swt_dnd_ByteArrayTransfer extends ClipboardBase {
 		assertMyTypeEquals(test, getContents());
 	}
 
+	@Tag("gtk4-todo")
 	@Order(1)
 	@Test
 	@DisabledOnOs(value = OS.MAC, disabledReason = """

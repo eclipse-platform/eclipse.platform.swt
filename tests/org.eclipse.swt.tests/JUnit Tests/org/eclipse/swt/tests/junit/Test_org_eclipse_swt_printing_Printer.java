@@ -31,6 +31,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.printing.Printer;
 import org.eclipse.swt.printing.PrinterData;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -126,6 +127,7 @@ public void test_getPrinterData() {
 	printer.dispose();
 }
 
+@Tag("gtk4-todo")
 @Test
 public void test_getPrinterList() {
 	PrinterData data = Printer.getDefaultPrinterData();
