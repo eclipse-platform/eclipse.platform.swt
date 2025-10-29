@@ -100,3 +100,6 @@ jobs:
         path: |
           ${{ github.workspace }}/**/target/surefire-reports/*.xml
           ${{ github.workspace }}/**/hs_err_pid*.log
+          ${{ github.workspace }}/**/*.log
+          ${{ github.workspace }}/**/*.dump
+          ${{ github.workspace }}/**/*.dumpstream
