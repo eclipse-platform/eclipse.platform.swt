@@ -8,6 +8,8 @@
 SWT is a cross-platform GUI library for JVM based desktop applications.
 The best known SWT-based application is [Eclipse](https://www.eclipse.org).
 
+For more information about SWT, visit the [official SWT page](https://eclipse.dev/eclipse/swt/).
+
 ## Getting Started
 
 SWT comes with platform-specific jar files.
@@ -97,7 +99,7 @@ See the following description for how to contribute a feature or a bug fix to SW
 
 - <https://www.eclipse.org/swt/fixbugs.php>
 
-Information regarding source code management, builds, coding standards, and more and be found under the following link.
+Information regarding source code management, builds, coding standards, and more can be found under the following link.
 
 - <https://projects.eclipse.org/projects/eclipse.platform.swt/developer>
 
@@ -113,23 +115,16 @@ Before your contribution can be accepted by the project, you need to create and 
 
 ## Contact
 
-Contact the project developers via the project's "dev" list.
+Contact the project developers via GitHub:
 
-- <https://accounts.eclipse.org/mailing-list/platform-dev>
-
-## Search for Bugs
-
-SWT used to track ongoing development and issues in Bugzilla .
-
-- <https://bugs.eclipse.org/bugs/buglist.cgi?product=Platform&component=SWT>
-
-## Create a New Bug
+- [GitHub Discussions](https://github.com/eclipse-platform/eclipse.platform.swt/discussions) - For questions and general discussions
+- [GitHub Issues](https://github.com/eclipse-platform/eclipse.platform.swt/issues) - For bug reports and feature requests
 
 You can register bugs and feature requests in the GitHub Issue Tracker. Remember that contributions are always welcome!
-- [View existing SWT issues](https://github.com/eclipse-platform/eclipse.platform.swt/issues)
-- [New SWT issue](https://github.com/eclipse-platform/eclipse.platform.swt/issues/new)
 
 Please bear in mind that this project is almost entirely developed by volunteers. If you do not provide the implementation yourself (or pay someone to do it for you), the bug might never get fixed. If it is a serious bug, other people than you might care enough to provide a fix.
+
+**Note:** SWT used to track ongoing development and issues in [Bugzilla](https://bugs.eclipse.org/bugs/buglist.cgi?product=Platform&component=SWT), but we now use GitHub Issues and Discussions.
 
 
 # Prototyping on a Single, Cross-Platform SWT Implementation
