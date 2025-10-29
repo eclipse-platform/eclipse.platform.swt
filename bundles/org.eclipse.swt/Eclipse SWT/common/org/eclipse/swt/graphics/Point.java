@@ -177,7 +177,7 @@ public static sealed class OfFloat extends Point permits Point.WithMonitor {
 
 	@Override
 	public Point.OfFloat clone() {
-		return new Point.OfFloat(getX(), getY());
+		return new Point.OfFloat(getX(), getY(), roundingMode);
 	}
 
 	/**
