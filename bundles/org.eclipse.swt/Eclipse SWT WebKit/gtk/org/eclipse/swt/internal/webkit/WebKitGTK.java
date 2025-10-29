@@ -354,6 +354,12 @@ public static final native int webkit_get_minor_version();
 public static final native long webkit_navigation_policy_decision_get_request(long decision);
 
 /** @method flags=dynamic */
+public static final native long webkit_navigation_policy_decision_get_navigation_action(long decision);
+
+/** @method flags=dynamic */
+public static final native long webkit_navigation_action_get_request(long navigation);
+
+/** @method flags=dynamic */
 public static final native void webkit_policy_decision_download(long decision);
 
 /** @method flags=dynamic */
@@ -487,6 +493,64 @@ public static final native long webkit_web_resource_get_data_finish(long WebKitW
  */
 /*WebKitJavascriptResult * webkit_web_view_run_javascript_finish (WebKitWebView *web_view, GAsyncResult *result, GError **error);*/
 public static final native long webkit_web_view_run_javascript_finish(long web_view, long GAsyncResult, long [] gerror);
+
+/*
+ * void webkit_web_view_evaluate_javascript ( WebKitWebView* web_view, const
+ * char* script, gssize length, const char* world_name, const char* source_uri,
+ * GCancellable* cancellable, GAsyncReadyCallback callback, gpointer user_data )
+ */
+/**
+ * @method flags=dynamic
+ */
+public static final native void webkit_web_view_evaluate_javascript(long web_view, byte[] script, long length,
+		long world_name, long source_uri, long cancellable, long callback, long user_data);
+
+/**
+ * @method flags=dynamic
+ * @param error cast=(GError **)
+ */
+/*
+ * JSCValue* webkit_web_view_evaluate_javascript_finish ( WebKitWebView*
+ * web_view, GAsyncResult* result, GError** error )
+ */
+public static final native long webkit_web_view_evaluate_javascript_finish(long web_view, long result, long [] error);
+
+/**
+ * @method flags=dynamic
+ */
+public static final native boolean jsc_value_is_boolean(long value);
+/**
+ * @method flags=dynamic
+ */
+public static final native boolean jsc_value_to_boolean(long value);
+/**
+ * @method flags=dynamic
+ */
+public static final native boolean jsc_value_is_string(long value);
+/**
+ * @method flags=dynamic
+ */
+public static final native long jsc_value_to_string(long value);
+/**
+ * @method flags=dynamic
+ */
+public static final native boolean jsc_value_is_null(long value);
+/**
+ * @method flags=dynamic
+ */
+public static final native boolean jsc_value_is_undefined(long value);
+/**
+ * @method flags=dynamic
+ */
+public static final native boolean jsc_value_is_object(long value);
+/**
+ * @method flags=dynamic
+ */
+public static final native boolean jsc_value_is_number(long value);
+/**
+ * @method flags=dynamic
+ */
+public static final native double jsc_value_to_double(long value);
 
 /** @method flags=dynamic */
 public static final native void webkit_web_view_stop_loading(long web_view);
