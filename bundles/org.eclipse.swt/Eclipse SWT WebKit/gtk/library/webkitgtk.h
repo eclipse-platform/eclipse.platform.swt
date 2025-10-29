@@ -52,6 +52,7 @@
 		} \
 		if (handle) { \
 			var = dlsym(handle,	#name); \
+			if (!var) {	g_critical("SWT webkitgtk: Failed to load webkit function %s", #name); } \
 		} \
 		CHECK_DLERROR \
 		initialized = 1; \
