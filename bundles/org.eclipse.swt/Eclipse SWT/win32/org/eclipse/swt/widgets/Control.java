@@ -5948,7 +5948,7 @@ void sendZoomChangedEvent(Event event, Shell shell) {
 				}
 				if (dpiExecData.decrement()) {
 					if (event.doit) {
-						shell.WM_SIZE(0, 0);
+						shell.layout(true, true);
 					}
 				}
 			}
