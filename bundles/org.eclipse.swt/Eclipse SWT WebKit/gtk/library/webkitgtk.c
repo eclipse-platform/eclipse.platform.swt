@@ -1245,6 +1245,26 @@ JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(webkit_1navigation_1policy_1decision_1g
 }
 #endif
 
+#ifndef NO_webkit_1network_1session_1get_1cookie_1manager
+JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(webkit_1network_1session_1get_1cookie_1manager)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, webkit_1network_1session_1get_1cookie_1manager_FUNC);
+/*
+	rc = (jlong)webkit_network_session_get_cookie_manager(arg0);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, webkit_network_session_get_cookie_manager)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong))fp)(arg0);
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, webkit_1network_1session_1get_1cookie_1manager_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_webkit_1network_1session_1get_1default
 JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(webkit_1network_1session_1get_1default)
 	(JNIEnv *env, jclass that)
@@ -1261,6 +1281,26 @@ JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(webkit_1network_1session_1get_1default)
 		}
 	}
 	WebKitGTK_NATIVE_EXIT(env, that, webkit_1network_1session_1get_1default_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_webkit_1network_1session_1get_1website_1data_1manager
+JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(webkit_1network_1session_1get_1website_1data_1manager)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, webkit_1network_1session_1get_1website_1data_1manager_FUNC);
+/*
+	rc = (jlong)webkit_network_session_get_website_data_manager(arg0);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, webkit_network_session_get_website_data_manager)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong))fp)(arg0);
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, webkit_1network_1session_1get_1website_1data_1manager_FUNC);
 	return rc;
 }
 #endif

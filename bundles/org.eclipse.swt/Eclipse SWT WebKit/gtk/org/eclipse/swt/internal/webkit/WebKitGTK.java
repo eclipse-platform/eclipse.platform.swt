@@ -85,7 +85,7 @@ public class WebKitGTK extends C {
 	public static final int G_TLS_CERTIFICATE_GENERIC_ERROR = 6;
 	public static final int G_TLS_CERTIFICATE_VALIDATE_ALL = 7;
 
-	public static final int WEBKIT_WEBSITE_DATA_COOKIES = 1 << 8;
+	public static final int WEBKIT_WEBSITE_DATA_COOKIES = GTK.GTK4 ? 64 : 1 << 8;
 
 	public static final int WEBKIT_USER_SCRIPT_INJECT_AT_DOCUMENT_START = 0;
 	public static final int WEBKIT_USER_CONTENT_INJECT_TOP_FRAME = 1;
@@ -364,6 +364,12 @@ public static final native long webkit_web_context_get_default();
 
 /** @method flags=dynamic */
 public static final native long webkit_network_session_get_default();
+
+/** @method flags=dynamic */
+public static final native long webkit_network_session_get_cookie_manager(long session);
+
+/** @method flags=dynamic */
+public static final native long webkit_network_session_get_website_data_manager(long session);
 
 /** @method flags=dynamic */
 public static final native long webkit_web_context_get_cookie_manager(long context);
