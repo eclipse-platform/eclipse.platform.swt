@@ -79,7 +79,7 @@ public class ACC {
 	public static final int ROLE_TABLECELL = 0x1d;
 	public static final int ROLE_TABLECOLUMNHEADER = 0x19;
 	/** @deprecated use ROLE_TABLECOLUMNHEADER */
-	@Deprecated
+	@Deprecated(forRemoval = true, since = "2025-12")
 	public static final int ROLE_TABLECOLUMN = ROLE_TABLECOLUMNHEADER;
 	public static final int ROLE_TABLEROWHEADER = 0x1a;
 	public static final int ROLE_TREE = 0x23;
