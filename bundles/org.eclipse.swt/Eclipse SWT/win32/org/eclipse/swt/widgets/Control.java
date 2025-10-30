@@ -4791,7 +4791,8 @@ public boolean setParent (Composite parent) {
 	// If parent changed, zoom level might need to be adjusted
 	int newZoom = parent.nativeZoom;
 	if (newZoom != nativeZoom) {
-		Event zoomChangedEvent = createZoomChangedEvent(newZoom, false);
+		DPIChangeExecution dpiChangeExecution = new DPIChangeExecution(false, null);
+		Event zoomChangedEvent = createZoomChangedEvent(newZoom, dpiChangeExecution);
 		sendZoomChangedEvent(zoomChangedEvent, getShell());
 	}
 	int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE;
@@ -5009,14 +5010,12 @@ LRESULT WM_DESTROY (long wParam, long lParam) {
 	return null;
 }
 
-Event createZoomChangedEvent(int zoom, boolean asyncExec) {
+Event createZoomChangedEvent(int zoom, DPIChangeExecution dpiChangeExecution) {
 	Event event = new Event();
 	event.type = SWT.ZoomChanged;
 	event.widget = this;
 	event.detail = zoom;
 	event.doit = true;
-	DPIChangeExecution dpiChangeExecution = new DPIChangeExecution();
-	dpiChangeExecution.asyncExec = asyncExec;
 	event.data = dpiChangeExecution;
 	return event;
 }
@@ -5905,7 +5904,13 @@ LRESULT wmScrollChild (long wParam, long lParam) {
 
 static class DPIChangeExecution {
 	AtomicInteger taskCount = new AtomicInteger();
-	private boolean asyncExec = true;
+	boolean asyncExec = true;
+	Rectangle shellBounds;
+
+	public DPIChangeExecution(boolean asyncExec, Rectangle shellBounds) {
+		this.asyncExec = asyncExec;
+		this.shellBounds = shellBounds;
+	}
 
 	private void process(Control control, Runnable operation) {
 		boolean currentAsyncExec = asyncExec;
@@ -5948,6 +5953,9 @@ void sendZoomChangedEvent(Event event, Shell shell) {
 				}
 				if (dpiExecData.decrement()) {
 					if (event.doit) {
+						if (dpiExecData.shellBounds != null) {
+							shell.setSizeInPixels(dpiExecData.shellBounds.width, dpiExecData.shellBounds.height);
+						}
 						shell.layout(true, true);
 					}
 				}

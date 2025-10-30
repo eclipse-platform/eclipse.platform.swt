@@ -2489,13 +2489,13 @@ private void handleMonitorSpecificDpiChange(int newNativeZoom, Rectangle newBoun
 	// Do not process DPI change for child shells asynchronous to avoid relayouting when
 	// repositioning the child shell to a different monitor upon opening
 	boolean processDpiChangeAsynchronous = getParent() == null;
-	Event zoomChangedEvent = createZoomChangedEvent(newNativeZoom, processDpiChangeAsynchronous);
+	DPIChangeExecution dpiChangeExecution = new DPIChangeExecution(processDpiChangeAsynchronous, newBoundsInPixels);
+	Event zoomChangedEvent = createZoomChangedEvent(newNativeZoom, dpiChangeExecution);
 	if (lastDpiChangeEvent != null) {
 		lastDpiChangeEvent.doit = false;
 	}
 	lastDpiChangeEvent = zoomChangedEvent;
 	notifyListeners(SWT.ZoomChanged, zoomChangedEvent);
-	this.setBoundsInPixels(newBoundsInPixels.x, newBoundsInPixels.y, newBoundsInPixels.width, newBoundsInPixels.height);
 }
 
 @Override
