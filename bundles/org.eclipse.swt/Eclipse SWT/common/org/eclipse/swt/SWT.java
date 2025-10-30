@@ -978,14 +978,14 @@ public class SWT {
 	 * @deprecated The same as PreExternalEventDispatch (value is 52).
 	 * @since 3.103
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true, since = "2025-12")
 	public static final int Sleep = PreExternalEventDispatch;
 
 	/**
 	 * @deprecated The same as PostExternalEventDispatch (value is 53).
 	 * @since 3.103
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true, since = "2025-12")
 	public static final int Wakeup = PostExternalEventDispatch;
 
 	/**
@@ -2549,7 +2549,7 @@ public class SWT {
 	 *             XULRunner as a browser renderer is no longer supported. Use
 	 *             <code>SWT.WEBKIT</code> or <code>SWT.NONE</code> instead.
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true, since = "2025-12")
 	public static final int MOZILLA = 1 << 15;
 
 	/**
