@@ -4688,6 +4688,10 @@ void releaseDisplay () {
 		activateCallback = null;
 		activateProc = 0;
 
+		computeSizeCallback.dispose();
+		computeSizeCallback = null;
+		computeSizeProc = 0;
+
 		gesturePressReleaseCallback.dispose();
 		gesturePressReleaseCallback = null;
 		gesturePressReleaseProc = 0;

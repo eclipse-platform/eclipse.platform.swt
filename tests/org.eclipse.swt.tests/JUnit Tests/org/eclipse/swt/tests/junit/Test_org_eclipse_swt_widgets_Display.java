@@ -1628,6 +1628,18 @@ public void test_getWarnings() {
 }
 
 @Test
+public void test_manyDispose() {
+	int i = 0;
+	// We iterate a number slightly bigger than MAX_CALLBACKS
+	// If a single non-static callback isn't disposed then the
+	// callback table will be filled and this test will fail
+	while (i++ < 300) {
+		final Display display = new Display();
+		display.dispose();
+	}
+}
+
+@Test
 public void test_isDisposed() {
 	Display disp = new Display();
 	assertFalse(disp.isDisposed());
