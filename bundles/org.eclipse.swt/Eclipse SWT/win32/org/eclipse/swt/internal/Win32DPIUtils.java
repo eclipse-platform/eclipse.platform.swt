@@ -124,7 +124,7 @@ public class Win32DPIUtils {
 	}
 
 	public static Point pixelToPointAsSize(Point point, int zoom) {
-		return pixelToPoint(point, zoom, RoundingMode.DOWN);
+		return pixelToPoint(point, zoom, RoundingMode.ROUND);
 	}
 
 	public static Point pixelToPointAsLocation(Point point, int zoom) {
