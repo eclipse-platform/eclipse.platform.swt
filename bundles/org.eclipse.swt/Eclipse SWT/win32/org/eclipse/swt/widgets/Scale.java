@@ -17,6 +17,7 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 
 /**
@@ -143,8 +144,11 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
 
-@Override Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
+@Override
+Point computeSizeInPixels (Point hintInPoints, boolean changed) {
 	checkWidget ();
+	int zoom = getZoom();
+	Point hintInPixels = Win32DPIUtils.pointToPixelAsSize(hintInPoints, zoom);
 	int border = getBorderWidthInPixels ();
 	int width = border * 2, height = border * 2;
 	RECT rect = new RECT ();
@@ -158,8 +162,8 @@ static int checkStyle (int style) {
 		width += (rect.left * 2) + scrollX + (scrollX / 3);
 		height += getSystemMetrics (OS.SM_CYVSCROLL) * 10;
 	}
-	if (wHint != SWT.DEFAULT) width = wHint + (border * 2);
-	if (hHint != SWT.DEFAULT) height = hHint + (border * 2);
+	if (hintInPoints.x != SWT.DEFAULT) width = hintInPixels.x + (border * 2);
+	if (hintInPoints.y != SWT.DEFAULT) height = hintInPixels.y + (border * 2);
 	return new Point (width, height);
 }
 

@@ -159,8 +159,10 @@ long callWindowProc (long hwnd, int msg, long wParam, long lParam) {
 }
 
 @Override
-Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
+Point computeSizeInPixels (Point hintInPoints, boolean changed) {
 	checkWidget ();
+	int zoom = getZoom();
+	Point hintInPixels = Win32DPIUtils.pointToPixelAsSize(hintInPoints, zoom);
 	int width, height;
 	/*
 	 * When the text is empty, LM_GETIDEALSIZE returns zero width and height,
@@ -178,13 +180,13 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 		OS.ReleaseDC (handle, hDC);
 	} else {
 		SIZE size = new SIZE ();
-		int maxWidth = (wHint == SWT.DEFAULT) ? 0x7fffffff : wHint;
+		int maxWidth = (hintInPoints.x == SWT.DEFAULT) ? 0x7fffffff : hintInPixels.x;
 		OS.SendMessage (handle, OS.LM_GETIDEALSIZE, maxWidth, size);
 		width = size.cx;
 		height = size.cy;
 	}
-	if (wHint != SWT.DEFAULT) width = wHint;
-	if (hHint != SWT.DEFAULT) height = hHint;
+	if (hintInPoints.x != SWT.DEFAULT) width = hintInPixels.x;
+	if (hintInPoints.y != SWT.DEFAULT) height = hintInPixels.y;
 	int border = getBorderWidthInPixels ();
 	width += border * 2;
 	height += border * 2;

@@ -207,31 +207,29 @@ Widget [] computeTabList () {
 }
 
 @Override
-Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
+Point computeSizeInPixels (Point hintInPoints, boolean changed) {
 	display.runSkin ();
-	Point size;
+	Point sizeInPoints;
 	if (layout != null) {
-		if (wHint == SWT.DEFAULT || hHint == SWT.DEFAULT) {
+		if (hintInPoints.x == SWT.DEFAULT || hintInPoints.y == SWT.DEFAULT) {
 			changed |= (state & LAYOUT_CHANGED) != 0;
 			state &= ~LAYOUT_CHANGED;
-			int zoom = getZoom();
-			size = Win32DPIUtils.pointToPixelAsSize(layout.computeSize (this, DPIUtil.pixelToPoint(wHint, zoom), DPIUtil.pixelToPoint(hHint, zoom), changed), zoom);
+			sizeInPoints = layout.computeSize (this, hintInPoints.x, hintInPoints.y, changed);
 		} else {
-			size = new Point (wHint, hHint);
+			sizeInPoints = hintInPoints;
 		}
 	} else {
-		size = minimumSize (wHint, hHint, changed);
-		if (size.x == 0) size.x = DEFAULT_WIDTH;
-		if (size.y == 0) size.y = DEFAULT_HEIGHT;
+		sizeInPoints = minimumSize (hintInPoints, changed);
+		if (sizeInPoints.x == 0) sizeInPoints.x = DEFAULT_WIDTH;
+		if (sizeInPoints.y == 0) sizeInPoints.y = DEFAULT_HEIGHT;
 	}
-	if (wHint != SWT.DEFAULT) size.x = wHint;
-	if (hHint != SWT.DEFAULT) size.y = hHint;
+	if (hintInPoints.x != SWT.DEFAULT) sizeInPoints.x = hintInPoints.x;
+	if (hintInPoints.y != SWT.DEFAULT) sizeInPoints.y = hintInPoints.y;
 	/*
 	 * Since computeTrim can be overridden by subclasses, we cannot
 	 * call computeTrimInPixels directly.
 	 */
-	int zoom = getZoom();
-	Rectangle trim = Win32DPIUtils.pointToPixel(computeTrim (0, 0, DPIUtil.pixelToPoint(size.x, zoom), DPIUtil.pixelToPoint(size.y, zoom)), zoom);
+	Rectangle trim = Win32DPIUtils.pointToPixel(computeTrim (0, 0, sizeInPoints.x, sizeInPoints.y), getZoom());
 	return new Point (trim.width, trim.height);
 }
 
@@ -869,16 +867,15 @@ void markLayout (boolean changed, boolean all) {
 	}
 }
 
-Point minimumSize (int wHint, int hHint, boolean changed) {
+Point minimumSize (Point hintInPoints, boolean changed) {
 	/*
 	 * Since getClientArea can be overridden by subclasses, we cannot
 	 * call getClientAreaInPixels directly.
 	 */
-	int zoom = getZoom();
-	Rectangle clientArea = Win32DPIUtils.pointToPixel(getClientArea (), zoom);
+	Rectangle clientArea = getClientArea ();
 	int width = 0, height = 0;
 	for (Control element : _getChildren ()) {
-		Rectangle rect = Win32DPIUtils.pointToPixel(element.getBounds (), zoom);
+		Rectangle rect = element.getBounds ();
 		width = Math.max (width, rect.x - clientArea.x + rect.width);
 		height = Math.max (height, rect.y - clientArea.y + rect.height);
 	}

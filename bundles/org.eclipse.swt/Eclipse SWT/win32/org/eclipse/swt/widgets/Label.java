@@ -130,8 +130,11 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.LEFT, SWT.CENTER, SWT.RIGHT, 0, 0, 0);
 }
 
-@Override Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
+@Override
+Point computeSizeInPixels (Point hintInPoints, boolean changed) {
 	checkWidget ();
+	int zoom = getZoom();
+	Point hintInPixels = Win32DPIUtils.pointToPixelAsSize(hintInPoints, zoom);
 	int width = 0, height = 0, border = getBorderWidthInPixels ();
 	if ((style & SWT.SEPARATOR) != 0) {
 		int lineWidth = getSystemMetrics (OS.SM_CXBORDER);
@@ -140,8 +143,8 @@ static int checkStyle (int style) {
 		} else {
 			width = lineWidth * 2; height = DEFAULT_HEIGHT;
 		}
-		if (wHint != SWT.DEFAULT) width = wHint;
-		if (hHint != SWT.DEFAULT) height = hHint;
+		if (hintInPoints.x != SWT.DEFAULT) width = hintInPixels.x;
+		if (hintInPoints.y != SWT.DEFAULT) height = hintInPixels.y;
 		width += border * 2; height += border * 2;
 		return new Point (width, height);
 	}
@@ -161,9 +164,9 @@ static int checkStyle (int style) {
 		} else {
 			RECT rect = new RECT ();
 			int flags = OS.DT_CALCRECT | OS.DT_EDITCONTROL | OS.DT_EXPANDTABS;
-			if ((style & SWT.WRAP) != 0 && wHint != SWT.DEFAULT) {
+			if ((style & SWT.WRAP) != 0 && hintInPoints.x != SWT.DEFAULT) {
 				flags |= OS.DT_WORDBREAK;
-				rect.right = Math.max (0, wHint - width);
+				rect.right = Math.max (0, hintInPixels.x - width);
 			}
 			char [] buffer = new char [length + 1];
 			OS.GetWindowText (handle, buffer, length + 1);
@@ -174,8 +177,8 @@ static int checkStyle (int style) {
 		if (newFont != 0) OS.SelectObject (hDC, oldFont);
 		OS.ReleaseDC (handle, hDC);
 	}
-	if (wHint != SWT.DEFAULT) width = wHint;
-	if (hHint != SWT.DEFAULT) height = hHint;
+	if (hintInPoints.x != SWT.DEFAULT) width = hintInPixels.x;
+	if (hintInPoints.y != SWT.DEFAULT) height = hintInPixels.y;
 	width += border * 2;
 	height += border * 2;
 	return new Point (width, height);

@@ -178,9 +178,10 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
-@Override Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
+@Override
+Point computeSizeInPixels (Point hintInPoints, boolean changed) {
 	checkWidget ();
-	Point size = super.computeSizeInPixels (wHint, hHint, changed);
+	Point size = super.computeSizeInPixels (hintInPoints, changed);
 	RECT insetRect = new RECT (), itemRect = new RECT ();
 	OS.SendMessage (handle, OS.TCM_ADJUSTRECT, 0, insetRect);
 	int width = insetRect.left - insetRect.right;
@@ -498,7 +499,7 @@ public int indexOf (TabItem item) {
 }
 
 @Override
-Point minimumSize (int wHint, int hHint, boolean flushCache) {
+Point minimumSize (Point hintInPoints, boolean flushCache) {
 	int width = 0, height = 0;
 	for (Control child : _getChildren ()) {
 		int index = 0;
@@ -507,9 +508,8 @@ Point minimumSize (int wHint, int hHint, boolean flushCache) {
 			if (items [index].control == child) break;
 			index++;
 		}
-		int zoom = getZoom();
 		if (index == count) {
-			Rectangle rect = Win32DPIUtils.pointToPixel(child.getBounds (), zoom);
+			Rectangle rect = child.getBounds ();
 			width = Math.max (width, rect.x + rect.width);
 			height = Math.max (height, rect.y + rect.height);
 		} else {
@@ -517,7 +517,7 @@ Point minimumSize (int wHint, int hHint, boolean flushCache) {
 			 * Since computeSize can be overridden by subclasses, we cannot
 			 * call computeSizeInPixels directly.
 			 */
-			Point size = Win32DPIUtils.pointToPixelAsSize(child.computeSize (DPIUtil.pixelToPoint(wHint, zoom), DPIUtil.pixelToPoint(hHint, zoom), flushCache), zoom);
+			Point size = child.computeSize (hintInPoints.x, hintInPoints.y, flushCache);
 			width = Math.max (width, size.x);
 			height = Math.max (height, size.y);
 		}

@@ -592,10 +592,13 @@ public void clearSelection () {
 	OS.SendMessage (handle, OS.CB_SETEDITSEL, 0, -1);
 }
 
-@Override Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
+@Override
+Point computeSizeInPixels (Point hintInPoints, boolean changed) {
 	checkWidget ();
+	int zoom = getZoom();
+	Point hintInPixels = Win32DPIUtils.pointToPixelAsSize(hintInPoints, zoom);
 	int width = 0, height = 0;
-	if (wHint == SWT.DEFAULT) {
+	if (hintInPoints.x == SWT.DEFAULT) {
 		long newFont, oldFont = 0;
 		long hDC = OS.GetDC (handle);
 		newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
@@ -627,7 +630,7 @@ public void clearSelection () {
 		if (newFont != 0) OS.SelectObject (hDC, oldFont);
 		OS.ReleaseDC (handle, hDC);
 	}
-	if (hHint == SWT.DEFAULT) {
+	if (hintInPoints.y == SWT.DEFAULT) {
 		if ((style & SWT.SIMPLE) != 0) {
 			int count = (int)OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
 			int itemHeight = (int)OS.SendMessage (handle, OS.CB_GETITEMHEIGHT, 0, 0);
@@ -636,8 +639,8 @@ public void clearSelection () {
 	}
 	if (width == 0) width = DEFAULT_WIDTH;
 	if (height == 0) height = DEFAULT_HEIGHT;
-	if (wHint != SWT.DEFAULT) width = wHint;
-	if (hHint != SWT.DEFAULT) height = hHint;
+	if (hintInPoints.x != SWT.DEFAULT) width = hintInPixels.x;
+	if (hintInPoints.y != SWT.DEFAULT) height = hintInPixels.y;
 	if ((style & SWT.READ_ONLY) != 0) {
 		width += 8;
 	} else {

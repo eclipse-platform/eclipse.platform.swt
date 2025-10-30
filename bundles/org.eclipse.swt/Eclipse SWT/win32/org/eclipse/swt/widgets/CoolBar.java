@@ -140,11 +140,14 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
-@Override Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
+@Override
+Point computeSizeInPixels (Point hintInPoints, boolean changed) {
+	int zoom = getZoom();
+	Point hintInPixels = Win32DPIUtils.pointToPixelAsSize(hintInPoints, zoom);
 	int width = 0, height = 0;
 	int border = getBorderWidthInPixels ();
-	int newWidth = wHint == SWT.DEFAULT ? 0x3FFF : wHint + (border * 2);
-	int newHeight = hHint == SWT.DEFAULT ? 0x3FFF : hHint + (border * 2);
+	int newWidth = hintInPoints.x == SWT.DEFAULT ? 0x3FFF : hintInPixels.x + (border * 2);
+	int newHeight = hintInPoints.y == SWT.DEFAULT ? 0x3FFF : hintInPixels.y + (border * 2);
 	int count = (int)OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
 	if (count != 0) {
 		ignoreResize = true;
@@ -189,8 +192,8 @@ protected void checkSubclass () {
 		width = height;
 		height = tmp;
 	}
-	if (wHint != SWT.DEFAULT) width = wHint;
-	if (hHint != SWT.DEFAULT) height = hHint;
+	if (hintInPoints.x != SWT.DEFAULT) width = hintInPixels.x;
+	if (hintInPoints.y != SWT.DEFAULT) height = hintInPixels.y;
 	height += border * 2;
 	width += border * 2;
 	return new Point (width, height);
@@ -1225,7 +1228,7 @@ void handleDPIChange(Event event, float scalingFactor) {
 			item.setControl(control);
 		}
 
-		Point preferredControlSize =  item.getControl().computeSizeInPixels(SWT.DEFAULT, SWT.DEFAULT, true);
+		Point preferredControlSize =  item.getControl().computeSizeInPixels(new Point(SWT.DEFAULT, SWT.DEFAULT), true);
 		int controlWidth = preferredControlSize.x;
 		int controlHeight = preferredControlSize.y;
 		if (((style & SWT.VERTICAL) != 0)) {
