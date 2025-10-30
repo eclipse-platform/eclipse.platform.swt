@@ -2341,7 +2341,16 @@ long webkit_hovering_over_link (long web_view, long title, long uri) {
 long webkit_decide_policy (long web_view, long decision, int decision_type, long user_data) {
 	switch (decision_type) {
 	case WebKitGTK.WEBKIT_POLICY_DECISION_TYPE_NAVIGATION_ACTION:
-		long request = WebKitGTK. webkit_navigation_policy_decision_get_request(decision);
+		long request;
+		if (GTK.GTK4) {
+			long navigation = WebKitGTK. webkit_navigation_policy_decision_get_navigation_action(decision);
+			if (navigation == 0) {
+				return 0;
+			}
+			request = WebKitGTK.webkit_navigation_action_get_request(navigation);
+		} else {
+			request = WebKitGTK. webkit_navigation_policy_decision_get_request(decision);
+		}
 		if (request == 0){
 			return 0;
 		}

@@ -354,6 +354,12 @@ public static final native int webkit_get_minor_version();
 public static final native long webkit_navigation_policy_decision_get_request(long decision);
 
 /** @method flags=dynamic */
+public static final native long webkit_navigation_policy_decision_get_navigation_action(long decision);
+
+/** @method flags=dynamic */
+public static final native long webkit_navigation_action_get_request(long navigation);
+
+/** @method flags=dynamic */
 public static final native void webkit_policy_decision_download(long decision);
 
 /** @method flags=dynamic */
