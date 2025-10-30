@@ -6813,8 +6813,10 @@ void update (boolean all, boolean flush) {
 	if(GTK.GTK4) GTK.gtk_widget_queue_draw(handle);
 	if (!GTK.gtk_widget_get_visible (topHandle ())) return;
 	if (!GTK.gtk_widget_get_realized (handle)) return;
-	long window = paintWindow ();
-	if (flush) display.flushExposes (window, all);
+	if (flush && OS.isX11()) {
+		long window = paintWindow ();
+		display.flushExposes (window, all);
+	}
 }
 
 void updateBackgroundMode () {
