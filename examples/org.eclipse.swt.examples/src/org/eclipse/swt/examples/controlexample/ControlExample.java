@@ -104,7 +104,6 @@ public class ControlExample {
 		return new Tab [] {
 			new ButtonTab (this),
 			new CanvasTab (this),
-			new ColorTab(this),
 			new ComboTab (this),
 			new CoolBarTab (this),
 			new DateTimeTab (this),
@@ -121,6 +120,7 @@ public class ControlExample {
 			shellTab = new ShellTab(this),
 			new SliderTab (this),
 			new SpinnerTab (this),
+			new SystemTab(this),
 			new TabFolderTab (this),
 			new TableTab (this),
 			new TextTab (this),
