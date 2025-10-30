@@ -444,7 +444,7 @@ public void test_drawImageLorg_eclipse_swt_graphics_ImageIIII_ImageDataAtSizePro
 	ImageDataAtSizeProvider provider = new ImageDataAtSizeProvider() {
 		@Override
 		public ImageData getImageData(int zoom) {
-			return new ImageData(1, 1, 32, new PaletteData(0xFF0000, 0xFF00, 0xFF));
+			return new ImageData(1 * zoom / 100, 1 * zoom / 100, 32, new PaletteData(0xFF0000, 0xFF00, 0xFF));
 		}
 
 		@Override
@@ -492,7 +492,7 @@ public void test_drawImageLorg_eclipse_swt_graphics_ImageIIII_ImageDataAtSizePro
 		}
 		@Override
 		public ImageData getImageData(int zoom) {
-			return new ImageData(1, 1, 32, new PaletteData(0xFF0000, 0xFF00, 0xFF));
+			return new ImageData(1 * zoom / 100, 1 * zoom / 100, 32, new PaletteData(0xFF0000, 0xFF00, 0xFF));
 		}
 	};
 	Image image = styleImage(new Image(display, imageDataAtSizeProvider), styleFlag);
