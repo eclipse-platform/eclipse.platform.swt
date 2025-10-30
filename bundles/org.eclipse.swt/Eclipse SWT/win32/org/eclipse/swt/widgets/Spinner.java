@@ -17,6 +17,7 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 
 /**
@@ -256,10 +257,13 @@ void addVerifyListener (VerifyListener listener) {
 	addTypedListener(listener, SWT.Verify);
 }
 
-@Override Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
+@Override
+Point computeSizeInPixels (Point hintInPoints, boolean changed) {
 	checkWidget ();
+	int zoom = getZoom();
+	Point hintInPixels = Win32DPIUtils.pointToPixelAsSize(hintInPoints, zoom);
 	int width = 0, height = 0;
-	if (wHint == SWT.DEFAULT || hHint == SWT.DEFAULT) {
+	if (hintInPoints.x == SWT.DEFAULT || hintInPoints.y == SWT.DEFAULT) {
 		long newFont, oldFont = 0;
 		long hDC = OS.GetDC (hwndText);
 		newFont = OS.SendMessage (hwndText, OS.WM_GETFONT, 0, 0);
@@ -291,10 +295,10 @@ void addVerifyListener (VerifyListener listener) {
 	}
 	if (width == 0) width = DEFAULT_WIDTH;
 	if (height == 0) height = DEFAULT_HEIGHT;
-	if (wHint != SWT.DEFAULT) width = wHint;
-	if (hHint != SWT.DEFAULT)
-		height = hHint;
-	else {
+	if (hintInPoints.x != SWT.DEFAULT) width = hintInPixels.x;
+	if (hintInPoints.y != SWT.DEFAULT) {
+		height = hintInPixels.y;
+	} else {
 		int borderAdjustment = (style & SWT.BORDER) != 0 ? -1 : 3;
 		int upDownHeight = getSystemMetrics (OS.SM_CYVSCROLL);
 		height = Math.max(height, upDownHeight + borderAdjustment);

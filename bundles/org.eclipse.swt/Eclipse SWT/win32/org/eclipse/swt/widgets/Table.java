@@ -1426,7 +1426,10 @@ public void clearAll () {
 	}
 }
 
-@Override Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
+@Override
+Point computeSizeInPixels (Point hintInPoints, boolean changed) {
+	int zoom = getZoom();
+	Point hintInPixels = Win32DPIUtils.pointToPixelAsSize(hintInPoints, zoom);
 	if (fixScrollWidth) setScrollWidth (null, true);
 	//This code is intentionally commented
 //	if (itemHeight == -1 && hooks (SWT.MeasureItem)) {
@@ -1454,8 +1457,8 @@ public void clearAll () {
 	OS.GetWindowRect (hwndHeader, rect);
 	int height = rect.bottom - rect.top;
 	int bits = 0;
-	if (wHint != SWT.DEFAULT) {
-		bits |= wHint & 0xFFFF;
+	if (hintInPoints.x != SWT.DEFAULT) {
+		bits |= hintInPixels.x & 0xFFFF;
 	} else {
 		int width = 0;
 		int count = (int)OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
@@ -1472,8 +1475,8 @@ public void clearAll () {
 	height += (int)OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0) * itemHeight;
 	if (width == 0) width = DEFAULT_WIDTH;
 	if (height == 0) height = DEFAULT_HEIGHT;
-	if (wHint != SWT.DEFAULT) width = wHint;
-	if (hHint != SWT.DEFAULT) height = hHint;
+	if (hintInPoints.x != SWT.DEFAULT) width = hintInPixels.x;
+	if (hintInPoints.y != SWT.DEFAULT) height = hintInPixels.y;
 	int border = getBorderWidthInPixels ();
 	width += border * 2;  height += border * 2;
 	if ((style & SWT.V_SCROLL) != 0) {

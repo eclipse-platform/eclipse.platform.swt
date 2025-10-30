@@ -138,9 +138,10 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
-@Override Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
+@Override
+Point computeSizeInPixels (Point hintInPoints, boolean changed) {
 	checkWidget ();
-	Point size = super.computeSizeInPixels (wHint, hHint, changed);
+	Point size = super.computeSizeInPixels (hintInPoints, changed);
 	int length = text.length ();
 	if (length != 0) {
 		String string = fixText (false);

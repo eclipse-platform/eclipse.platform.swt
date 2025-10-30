@@ -213,10 +213,13 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
 }
 
-@Override Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
+@Override
+Point computeSizeInPixels (Point hintInPoints, boolean changed) {
 	checkWidget ();
+	int zoom = getZoom();
+	Point hintInPixels = Win32DPIUtils.pointToPixelAsSize(hintInPoints, zoom);
 	int width = 0, height = 0;
-	if (wHint == SWT.DEFAULT) {
+	if (hintInPoints.x == SWT.DEFAULT) {
 		if ((style & SWT.H_SCROLL) != 0) {
 			width = (int)OS.SendMessage (handle, OS.LB_GETHORIZONTALEXTENT, 0, 0);
 			width -= INSET;
@@ -246,15 +249,15 @@ static int checkStyle (int style) {
 			OS.ReleaseDC (handle, hDC);
 		}
 	}
-	if (hHint == SWT.DEFAULT) {
+	if (hintInPoints.y == SWT.DEFAULT) {
 		int count = (int)OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
 		int itemHeight = (int)OS.SendMessage (handle, OS.LB_GETITEMHEIGHT, 0, 0);
 		height = count * itemHeight;
 	}
 	if (width == 0) width = DEFAULT_WIDTH;
 	if (height == 0) height = DEFAULT_HEIGHT;
-	if (wHint != SWT.DEFAULT) width = wHint;
-	if (hHint != SWT.DEFAULT) height = hHint;
+	if (hintInPoints.x != SWT.DEFAULT) width = hintInPixels.x;
+	if (hintInPoints.y != SWT.DEFAULT) height = hintInPixels.y;
 	int border = getBorderWidthInPixels ();
 	width += border * 2 + INSET;
 	height += border * 2;

@@ -322,8 +322,11 @@ int computeLeftMargin () {
 	return margin;
 }
 
-@Override Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
+@Override
+Point computeSizeInPixels (Point hintInPoints, boolean changed) {
 	checkWidget ();
+	int zoom = getZoom();
+	Point hintInPixels = Win32DPIUtils.pointToPixelAsSize(hintInPoints, zoom);
 	int width = 0, height = 0, border = getBorderWidthInPixels ();
 	if ((style & SWT.ARROW) != 0) {
 		if ((style & (SWT.UP | SWT.DOWN)) != 0) {
@@ -336,8 +339,8 @@ int computeLeftMargin () {
 	} else {
 		if ((style & SWT.COMMAND) != 0) {
 			SIZE size = new SIZE ();
-			if (wHint != SWT.DEFAULT) {
-				size.cx = wHint;
+			if (hintInPoints.x != SWT.DEFAULT) {
+				size.cx = hintInPixels.x;
 				OS.SendMessage (handle, OS.BCM_GETIDEALSIZE, 0, size);
 				width = size.cx;
 				height = size.cy;
@@ -381,9 +384,9 @@ int computeLeftMargin () {
 					char [] buffer = text.toCharArray ();
 					RECT rect = new RECT ();
 					int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE;
-					if ((style & SWT.WRAP) != 0 && wHint != SWT.DEFAULT) {
+					if ((style & SWT.WRAP) != 0 && hintInPoints.x != SWT.DEFAULT) {
 						flags = OS.DT_CALCRECT | OS.DT_WORDBREAK;
-						rect.right = wHint - width - 2 * border;
+						rect.right = hintInPixels.x - width - 2 * border;
 						if (isRadioOrCheck()) {
 							rect.right -= checkWidth + 3;
 						} else {
@@ -412,8 +415,8 @@ int computeLeftMargin () {
 			}
 		}
 	}
-	if (wHint != SWT.DEFAULT) width = wHint;
-	if (hHint != SWT.DEFAULT) height = hHint;
+	if (hintInPoints.x != SWT.DEFAULT) width = hintInPixels.x;
+	if (hintInPoints.y != SWT.DEFAULT) height = hintInPixels.y;
 	width += border * 2;
 	height += border * 2;
 	return new Point (width, height);

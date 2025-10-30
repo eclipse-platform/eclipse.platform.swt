@@ -126,8 +126,11 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
 
-@Override Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
+@Override
+Point computeSizeInPixels (Point hintInPoints, boolean changed) {
 	checkWidget ();
+	int zoom = getZoom();
+	Point hintInPixels = Win32DPIUtils.pointToPixelAsSize(hintInPoints, zoom);
 	int border = getBorderWidthInPixels ();
 	int width = border * 2, height = border * 2;
 	if ((style & SWT.HORIZONTAL) != 0) {
@@ -135,8 +138,8 @@ static int checkStyle (int style) {
 	} else {
 		width += 3; height += DEFAULT_HEIGHT;
 	}
-	if (wHint != SWT.DEFAULT) width = wHint + (border * 2);
-	if (hHint != SWT.DEFAULT) height = hHint + (border * 2);
+	if (hintInPoints.x != SWT.DEFAULT) width = hintInPixels.x + (border * 2);
+	if (hintInPoints.y != SWT.DEFAULT) height = hintInPixels.y + (border * 2);
 	return new Point (width, height);
 }
 

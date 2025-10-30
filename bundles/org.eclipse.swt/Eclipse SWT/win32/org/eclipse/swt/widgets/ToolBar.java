@@ -208,15 +208,18 @@ void clearSizeCache(boolean changed) {
 	}
 }
 
-@Override Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
+@Override
+Point computeSizeInPixels (Point hintInPoints, boolean changed) {
+	int zoom = getZoom();
+	Point hintInPixels = Win32DPIUtils.pointToPixelAsSize(hintInPoints, zoom);
 	int count = (int)OS.SendMessage (handle, OS.TB_BUTTONCOUNT, 0, 0);
-	if (count == this._count && wHint == this._wHint && hHint == this._hHint) {
+	if (count == this._count && hintInPixels.x == this._wHint && hintInPixels.y == this._hHint) {
 		// Return already cached values calculated previously
 		return new Point (_width, _height);
 	}
 	this._count = count;
-	this._wHint = wHint;
-	this._hHint = hHint;
+	this._wHint = hintInPixels.x;
+	this._hHint = hintInPixels.y;
 	int width = 0, height = 0;
 	if ((style & SWT.VERTICAL) != 0) {
 		RECT rect = new RECT ();
@@ -241,8 +244,8 @@ void clearSizeCache(boolean changed) {
 		int oldWidth = oldRect.right - oldRect.left;
 		int oldHeight = oldRect.bottom - oldRect.top;
 		int border = getBorderWidthInPixels ();
-		int newWidth = wHint == SWT.DEFAULT ? 0x3FFF : wHint + border * 2;
-		int newHeight = hHint == SWT.DEFAULT ? 0x3FFF : hHint + border * 2;
+		int newWidth = hintInPoints.x == SWT.DEFAULT ? 0x3FFF : hintInPixels.x + border * 2;
+		int newHeight = hintInPoints.y == SWT.DEFAULT ? 0x3FFF : hintInPixels.y + border * 2;
 		boolean redraw = getDrawing () && OS.IsWindowVisible (handle);
 		ignoreResize = true;
 		if (redraw) OS.UpdateWindow (handle);
@@ -268,8 +271,8 @@ void clearSizeCache(boolean changed) {
 	*/
 	if (width == 0) width = DEFAULT_WIDTH;
 	if (height == 0) height = DEFAULT_HEIGHT;
-	if (wHint != SWT.DEFAULT) width = wHint;
-	if (hHint != SWT.DEFAULT) height = hHint;
+	if (hintInPoints.x != SWT.DEFAULT) width = hintInPixels.x;
+	if (hintInPoints.y != SWT.DEFAULT) height = hintInPixels.y;
 	Rectangle trim = computeTrimInPixels (0, 0, width, height);
 	width = trim.width;  height = trim.height;
 	/*

@@ -702,10 +702,13 @@ public void clearSelection () {
 	OS.SendMessage (handle, OS.EM_SETSEL, -1, 0);
 }
 
-@Override Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
+@Override
+Point computeSizeInPixels (Point hintInPoints, boolean changed) {
 	checkWidget ();
+	int zoom = getZoom();
+	Point hintInPixels = Win32DPIUtils.pointToPixelAsSize(hintInPoints, zoom);
 	int height = 0, width = 0;
-	if (wHint == SWT.DEFAULT || hHint == SWT.DEFAULT) {
+	if (hintInPoints.x == SWT.DEFAULT || hintInPoints.y == SWT.DEFAULT) {
 		long newFont, oldFont = 0;
 		long hDC = OS.GetDC (handle);
 		newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
@@ -717,9 +720,9 @@ public void clearSelection () {
 		RECT rect = new RECT ();
 		int flags = OS.DT_CALCRECT | OS.DT_EDITCONTROL | OS.DT_NOPREFIX;
 		boolean wrap = (style & SWT.MULTI) != 0 && (style & SWT.WRAP) != 0;
-		if (wrap && wHint != SWT.DEFAULT) {
+		if (wrap && hintInPoints.x != SWT.DEFAULT) {
 			flags |= OS.DT_WORDBREAK;
-			rect.right = wHint;
+			rect.right = hintInPixels.x;
 		}
 		int length = OS.GetWindowTextLength (handle);
 		if (length != 0) {
@@ -729,7 +732,7 @@ public void clearSelection () {
 			Arrays.fill (buffer, '\0'); // erase sensitive data
 			width = rect.right - rect.left;
 		}
-		if (wrap && hHint == SWT.DEFAULT) {
+		if (wrap && hintInPoints.y == SWT.DEFAULT) {
 			int newHeight = rect.bottom - rect.top;
 			if (newHeight != 0) height = newHeight;
 		}
@@ -744,8 +747,8 @@ public void clearSelection () {
 	}
 	if (width == 0) width = DEFAULT_WIDTH;
 	if (height == 0) height = DEFAULT_HEIGHT;
-	if (wHint != SWT.DEFAULT) width = wHint;
-	if (hHint != SWT.DEFAULT) height = hHint;
+	if (hintInPoints.x != SWT.DEFAULT) width = hintInPixels.x;
+	if (hintInPoints.y != SWT.DEFAULT) height = hintInPixels.y;
 	Rectangle trim = computeTrimInPixels (0, 0, width, height);
 	return new Point (trim.width, trim.height);
 }

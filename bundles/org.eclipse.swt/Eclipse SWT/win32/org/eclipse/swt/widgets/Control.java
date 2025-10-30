@@ -619,18 +619,18 @@ public Point computeSize (int wHint, int hHint) {
 public Point computeSize (int wHint, int hHint, boolean changed){
 	checkWidget ();
 	int zoom = getZoom();
-	wHint = (wHint != SWT.DEFAULT ? DPIUtil.pointToPixel(wHint, zoom) : wHint);
-	hHint = (hHint != SWT.DEFAULT ? DPIUtil.pointToPixel(hHint, zoom) : hHint);
 	//We should never return a size that is to small, RoundingMode.UP ensures we at worst case report
 	//a size that is a bit too large by half a point
-	return Win32DPIUtils.pixelToPointAsConservativeSize(computeSizeInPixels(wHint, hHint, changed), zoom);
+	return Win32DPIUtils.pixelToPointAsConservativeSize(computeSizeInPixels(new Point.OfFloat(wHint, hHint, RoundingMode.UP), changed), zoom);
 }
 
-Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
+Point computeSizeInPixels (Point hintInPoints, boolean changed) {
 	int width = DEFAULT_WIDTH;
 	int height = DEFAULT_HEIGHT;
-	if (wHint != SWT.DEFAULT) width = wHint;
-	if (hHint != SWT.DEFAULT) height = hHint;
+	int zoom = getZoom();
+	Point hintInPixels = Win32DPIUtils.pointToPixelAsSize(hintInPoints, zoom);
+	if (hintInPoints.x != SWT.DEFAULT) width = hintInPixels.x;
+	if (hintInPoints.y != SWT.DEFAULT) height = hintInPixels.y;
 	int border = getBorderWidthInPixels ();
 	width += border * 2;
 	height += border * 2;
