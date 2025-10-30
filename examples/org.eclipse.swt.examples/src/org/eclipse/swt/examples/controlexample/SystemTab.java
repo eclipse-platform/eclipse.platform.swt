@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 Red Hat, Inc. and others.
+ * Copyright (c) 2000, 2025 Red Hat, Inc. and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -13,7 +13,6 @@
  *     Ian Pun <ipun@redhat.com> - addition of Color tab
  *******************************************************************************/
 package org.eclipse.swt.examples.controlexample;
-
 
 import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
 
@@ -34,16 +33,19 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Widget;
 
-class ColorTab extends Tab {
-	Table colors, cursors;
-	Group colorsGroup, cursorsGroup;
+class SystemTab extends Tab {
+	Table colors, cursors, images;
+	Group colorsGroup, cursorsGroup, imagesGroup;
 	HashMap <Integer, String> hmap = new HashMap <> ();
 	HashMap <Integer, String> cmap = new HashMap <> ();
+	HashMap <Integer, String> imap = new HashMap <> ();
 	static final int namedColorEnd = 8;
 	static String [] columnTitles	= {ControlExample.getResourceString("ColorTitle_0"),
 				ControlExample.getResourceString("ColorTitle_1"),
 				ControlExample.getResourceString("ColorTitle_2"),
 				ControlExample.getResourceString("ColorTitle_3")};
+	static String [] columnTitles2	= {ControlExample.getResourceString("ColorTitle_0"),
+			ControlExample.getResourceString("ColorTitle_4")};
 
 	/* Size widgets added to the "Size" group */
 	Button packColumnsButton;
@@ -51,7 +53,7 @@ class ColorTab extends Tab {
 	/**
 	 * Creates the color tab within a given instance of ControlExample.
 	 */
-	ColorTab(ControlExample instance) {
+	SystemTab(ControlExample instance) {
 		super(instance);
 		addTableElements();
 	}
@@ -110,6 +112,12 @@ class ColorTab extends Tab {
 		cmap.put(SWT.CURSOR_UPARROW, "CURSOR_UPARROW");
 		cmap.put(SWT.CURSOR_IBEAM, "CURSOR_IBEAM");
 		cmap.put(SWT.CURSOR_NO, "CURSOR_NO");
+
+		imap.put(SWT.ICON_ERROR, "ICON_ERROR");
+		imap.put(SWT.ICON_INFORMATION, "ICON_INFORMATION");
+		imap.put(SWT.ICON_QUESTION, "ICON_QUESTION");
+		imap.put(SWT.ICON_WARNING, "ICON_WARNING");
+		imap.put(SWT.ICON_WORKING, "ICON_WORKING");
 	}
 
 	/**
@@ -118,7 +126,7 @@ class ColorTab extends Tab {
 	@Override
 	void createExampleGroup () {
 		super.createExampleGroup ();
-		exampleGroup.setLayout(new GridLayout(2, false));
+		exampleGroup.setLayout(new GridLayout(3, false));
 
 		colorsGroup = new Group (exampleGroup, SWT.NONE);
 		colorsGroup.setLayout (new GridLayout ());
@@ -129,6 +137,11 @@ class ColorTab extends Tab {
 		cursorsGroup.setLayout (new GridLayout ());
 		cursorsGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, false, true));
 		cursorsGroup.setText ("Cursors");
+
+		imagesGroup = new Group (exampleGroup, SWT.NONE);
+		imagesGroup.setLayout (new GridLayout ());
+		imagesGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, false, true));
+		imagesGroup.setText ("Images");
 	}
 
 	/**
@@ -205,6 +218,28 @@ class ColorTab extends Tab {
 			Cursor cursor = (item != null) ? (Cursor) item.getData() : null;
 			cursors.setCursor(cursor);
 		});
+
+		/* Create the images table widget */
+		images = new Table (imagesGroup, style | SWT.V_SCROLL);
+		images.setLayoutData(new GridData (SWT.FILL, SWT.FILL, false, true));
+		images.setHeaderVisible(true);
+		// fill in the table.
+		for (String columnTitle : columnTitles2) {
+			TableColumn tableColumn1 = new TableColumn(images, SWT.NONE);
+			tableColumn1.setText(columnTitle);
+			tableColumn1.setToolTipText(ControlExample.getResourceString("Tooltip", columnTitle));
+		}
+		for (Entry<Integer, String> entry : imap.entrySet()) {
+			Integer key = entry.getKey();
+			String value = entry.getValue();
+			TableItem item = new TableItem(images, SWT.NONE);
+			item.setText(value);
+			item.setText(0, value);
+			item.setImage(1, display.getSystemImage(key));
+		}
+		for (int i = 0; i < columnTitles2.length; i++) {
+			images.getColumn(i).pack();
+		}
 	}
 
 	/**
@@ -212,7 +247,7 @@ class ColorTab extends Tab {
 	 */
 	@Override
 	Widget [] getExampleWidgets () {
-		return new Widget [] {colors, cursors};
+		return new Widget [] {colors, cursors, images};
 	}
 
 	/**
@@ -220,7 +255,7 @@ class ColorTab extends Tab {
 	 */
 	@Override
 	String getTabText () {
-		return "Color";
+		return "System";
 	}
 
 	/**
