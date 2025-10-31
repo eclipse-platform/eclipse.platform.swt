@@ -4158,11 +4158,11 @@ long gtk_motion_notify_event (long widget, long event) {
 	// See comment in #dragDetect()
 	if ((dragDetectionQueue != null) && OS.isWayland()) {
 		boolean dragging = false;
-		if ((state & DRAG_DETECT) != 0 && wantDragDropDetection ()) {
-				boolean [] consume = new boolean [1];
-				if (dragDetect ((int) eventX[0], (int) eventY[0], true, true, consume)) {
-					dragging = true;
-				if (isDisposed ()) return 1;
+		if ((state & DRAG_DETECT) != 0 && wantDragDropDetection()) {
+			boolean[] consume = new boolean[1];
+			if (dragDetect((int)eventX[0], (int)eventY[0], true, true, consume)) {
+				dragging = true;
+				if (isDisposed()) return 1;
 			}
 		}
 		if (dragging) {
@@ -4182,7 +4182,7 @@ long gtk_motion_notify_event (long widget, long event) {
 				GDK.gdk_event_get_state(event, eventState);
 			}
 
-			if (sendDragEvent (eventButton[0], eventState[0], scaledEvent.x, scaledEvent.y, false)){
+			if (sendDragEvent (eventButton[0], eventState[0], scaledEvent.x, scaledEvent.y, false)) {
 				return 1;
 			}
 		}
@@ -4235,7 +4235,8 @@ long gtk_motion_notify_event (long widget, long event) {
 		}
 	}
 
-	return sendMouseEvent(SWT.MouseMove, 0, time, x, y, isHint, state[0]) ? 0 : 1;
+	return sendMouseEvent(SWT.MouseMove, 0, time, x, y, isHint, state[0])
+			? 0 : 1;
 }
 
 @Override
