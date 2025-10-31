@@ -1138,6 +1138,5 @@ void handleDPIChange(Event event, float scalingFactor) {
 	for (int i = 0; i < getItemCount(); i++) {
 		items[i].notifyListeners(SWT.ZoomChanged, event);
 	}
-	layout(true, true);
 }
 }
