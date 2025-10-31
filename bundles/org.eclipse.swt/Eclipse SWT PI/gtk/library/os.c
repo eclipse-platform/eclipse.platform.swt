@@ -9011,7 +9011,25 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1widget_1get_1allocation)
 	GtkAllocation _arg1, *lparg1=NULL;
 	GTK_NATIVE_ENTER(env, that, gtk_1widget_1get_1allocation_FUNC);
 	if (arg1) if ((lparg1 = &_arg1) == NULL) goto fail;
+#if GTK_CHECK_VERSION(4,0,0)
+	{
+		graphene_rect_t bounds;
+		if (gtk_widget_compute_bounds((GtkWidget *)arg0, (GtkWidget *)arg0, &bounds)) {
+			lparg1->x = (int)bounds.origin.x;
+			lparg1->y = (int)bounds.origin.y;
+			lparg1->width = (int)bounds.size.width;
+			lparg1->height = (int)bounds.size.height;
+		} else {
+			/* If compute_bounds fails, set allocation to zero */
+			lparg1->x = 0;
+			lparg1->y = 0;
+			lparg1->width = 0;
+			lparg1->height = 0;
+		}
+	}
+#else
 	gtk_widget_get_allocation((GtkWidget *)arg0, (GtkAllocation *)lparg1);
+#endif
 fail:
 	if (arg1 && lparg1) setGtkAllocationFields(env, arg1, lparg1);
 	GTK_NATIVE_EXIT(env, that, gtk_1widget_1get_1allocation_FUNC);
