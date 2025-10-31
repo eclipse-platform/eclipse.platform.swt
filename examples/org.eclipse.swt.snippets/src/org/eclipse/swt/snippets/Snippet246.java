@@ -37,7 +37,7 @@ public class Snippet246 {
 
 		String executionPath = System.getProperty("user.dir");
 		Label label = new Label(shell, SWT.WRAP);
-		label.setText("File created as: " + executionPath.replace("\\", "/")+"/swt.png");
+		label.setText("File created as: " + executionPath.replace("\\", "/") + "/swt.png");
 		shell.pack();
 		shell.open();
 		while (!shell.isDisposed()) {
@@ -49,18 +49,19 @@ public class Snippet246 {
 
 	private static void createImage() {
 		Font font = new Font(display, "Comic Sans MS", 48, SWT.BOLD);
-		Image image = new Image(display, 174, 96);
-		GC gc = new GC(image);
-		gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
-		gc.fillRectangle(image.getBounds());
-		gc.setFont(font);
-		gc.setForeground(display.getSystemColor(SWT.COLOR_RED));
-		gc.drawString("S", 3, 10);
-		gc.setForeground(display.getSystemColor(SWT.COLOR_GREEN));
-		gc.drawString("W", 50, 10);
-		gc.setForeground(display.getSystemColor(SWT.COLOR_BLUE));
-		gc.drawString("T", 124, 10);
-		gc.dispose();
+
+		ImageGcDrawer imageGcDrawer = (gc, imageWidth, imageHeight) -> {
+			gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
+			gc.fillRectangle(new Rectangle(0, 0, 174, 96));
+			gc.setFont(font);
+			gc.setForeground(display.getSystemColor(SWT.COLOR_RED));
+			gc.drawString("S", 3, 10);
+			gc.setForeground(display.getSystemColor(SWT.COLOR_GREEN));
+			gc.drawString("W", 50, 10);
+			gc.setForeground(display.getSystemColor(SWT.COLOR_BLUE));
+			gc.drawString("T", 124, 10);
+		};
+		Image image = new Image(display, imageGcDrawer, 174, 96);
 
 		ImageLoader loader = new ImageLoader();
 		loader.data = new ImageData[] { image.getImageData() };

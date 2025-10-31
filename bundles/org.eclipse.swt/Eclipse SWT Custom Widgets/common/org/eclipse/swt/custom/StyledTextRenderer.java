@@ -1475,7 +1475,7 @@ void setFont(Font font, int tabs) {
 		if (boldItalicFont != null) boldItalicFont.dispose();
 		boldFont = italicFont = boldItalicFont = null;
 		regularFont = font;
-		layout.setText("    ");
+		layout.setText("   ");
 		layout.setFont(font);
 		layout.setStyle(new TextStyle(getFont(SWT.NORMAL), null, null), 0, 0);
 		layout.setStyle(new TextStyle(getFont(SWT.BOLD), null, null), 1, 1);
