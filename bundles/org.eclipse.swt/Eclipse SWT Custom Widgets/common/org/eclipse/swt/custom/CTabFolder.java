@@ -79,7 +79,7 @@ public class CTabFolder extends Composite {
 	 *
 	 * @deprecated This field is no longer used.  See setMinimumCharacters(int)
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true, since = "2025-12")
 	public int MIN_TAB_WIDTH = 4;
 
 	/**
