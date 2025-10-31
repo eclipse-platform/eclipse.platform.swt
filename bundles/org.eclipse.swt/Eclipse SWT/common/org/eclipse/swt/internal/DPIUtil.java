@@ -50,6 +50,17 @@ public class DPIUtil {
 	private static AutoScaleMethod autoScaleMethod;
 
 	private static String autoScaleValue;
+	/**
+	 * System property to enable to scale the application on runtime
+	 * when a DPI change is detected.
+	 * <ul>
+	 * <li>"true": the application is scaled on DPI changes</li>
+	 * <li>"false": the application will remain in its initial scaling</li>
+	 * </ul>
+	 * <b>Important:</b> This flag is only parsed and used on Win32. Setting it to
+	 * true on GTK or cocoa will be ignored.
+	 */
+	static final String SWT_AUTOSCALE_UPDATE_ON_RUNTIME = "swt.autoScale.updateOnRuntime";
 
 	/**
 	 * System property that controls the autoScale functionality.
@@ -87,6 +98,14 @@ public class DPIUtil {
 	 */
 	private static final String SWT_AUTOSCALE_METHOD = "swt.autoScale.method";
 
+	/**
+	 * System property that enforces to use autoScale value despite incompatibility
+	 * For e.g. Monitor-specific scaling with int200 autoscale value
+	 */
+	private static final String SWT_AUTOSCALE_DISABLE_COMPATIBILITY_CHECK = "swt.autoScale.force";
+
+	private static final Set<String> ALLOWED_AUTOSCALE_VALUES_FOR_UPDATE_ON_RUNTIME = Set.of("quarter", "exact");
+
 	static {
 		autoScaleValue = System.getProperty (SWT_AUTOSCALE);
 
@@ -95,12 +114,45 @@ public class DPIUtil {
 		autoScaleMethod = AUTO_SCALE_METHOD_SETTING != AutoScaleMethod.AUTO ? AUTO_SCALE_METHOD_SETTING : AutoScaleMethod.NEAREST;
 	}
 
-static String getAutoScaleValue() {
+public static String getAutoScaleValue() {
 	return autoScaleValue;
 }
 
 static void setAutoScaleValue(String autoScaleValueArg) {
 	autoScaleValue = autoScaleValueArg;
+}
+
+/**
+ * Returns {@code true} only if the current setup is compatible
+ * with monitor-specific scaling. Returns {@code false} if:
+ * <ul>
+ *   <li>Not running on Windows</li>
+ *   <li>The current auto-scale mode is incompatible</li>
+ * </ul>
+ *
+ * <p>Allowed values: {@code quarter}, {@code exact}.
+ *
+ */
+public static boolean isSetupCompatibleToMonitorSpecificScaling() {
+    // Per-monitor DPI supported only on Windows
+    if (!"win32".equals(SWT.getPlatform())) {
+        return false;
+    }
+
+    // Default means: treat as "quarter" (compatible)
+    if (autoScaleValue == null || "true".equalsIgnoreCase(System.getProperty(SWT_AUTOSCALE_DISABLE_COMPATIBILITY_CHECK))) {
+        return true;
+    }
+
+    String value = autoScaleValue.toLowerCase(Locale.ROOT);
+
+    // Compatible only if one of the known values
+    return ALLOWED_AUTOSCALE_VALUES_FOR_UPDATE_ON_RUNTIME.contains(value);
+}
+
+public static boolean isMonitorSpecificScalingActive() {
+	boolean updateOnRuntimeValue = Boolean.getBoolean (DPIUtil.SWT_AUTOSCALE_UPDATE_ON_RUNTIME);
+	return updateOnRuntimeValue;
 }
 
 public static int pixelToPoint(int size, int zoom) {

@@ -111,7 +111,7 @@ class ControlWin32Tests {
 	}
 
 	@ParameterizedTest
-	@CsvSource({ "0.5, 100, true", "1.0, 200, true", "2.0, 200, true", "2.0, quarter, true", "0.5, 100, false",
+	@CsvSource({ "2.0, quarter, true", "0.5, 100, false",
 			"1.0, 200, false", "2.0, 200, false", "2.0, quarter, false", })
 	public void testAutoScaleImageData(float scaleFactor, String autoScale, boolean monitorSpecificScaling) {
 		Win32DPIUtils.setMonitorSpecificScaling(monitorSpecificScaling);
