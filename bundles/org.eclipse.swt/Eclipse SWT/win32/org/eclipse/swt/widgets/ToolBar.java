@@ -1805,6 +1805,5 @@ void handleDPIChange(Event event, float scalingFactor) {
 	setDisabledImageList(getDisabledImageList());
 	setHotImageList(getHotImageList());
 	OS.SendMessage(handle, OS.TB_AUTOSIZE, 0, 0);
-	layout(true);
 }
 }
