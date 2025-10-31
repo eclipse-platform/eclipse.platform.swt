@@ -1027,7 +1027,7 @@ JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1css_1provider_1load_1from_1data)
 	jbyte *lparg1=NULL;
 	GTK4_NATIVE_ENTER(env, that, gtk_1css_1provider_1load_1from_1data_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	gtk_css_provider_load_from_data((GtkCssProvider *)arg0, (const gchar *)lparg1, (gssize)arg2);
+	gtk_css_provider_load_from_string((GtkCssProvider *)arg0, (const gchar *)lparg1);
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	GTK4_NATIVE_EXIT(env, that, gtk_1css_1provider_1load_1from_1data_FUNC);
@@ -2716,7 +2716,13 @@ JNIEXPORT jboolean JNICALL GTK4_NATIVE(gtk_1widget_1translate_1coordinates)
 	GTK4_NATIVE_ENTER(env, that, gtk_1widget_1translate_1coordinates_FUNC);
 	if (arg4) if ((lparg4 = (*env)->GetDoubleArrayElements(env, arg4, NULL)) == NULL) goto fail;
 	if (arg5) if ((lparg5 = (*env)->GetDoubleArrayElements(env, arg5, NULL)) == NULL) goto fail;
-	rc = (jboolean)gtk_widget_translate_coordinates((GtkWidget *)arg0, (GtkWidget *)arg1, arg2, arg3, (double *)lparg4, (double *)lparg5);
+	{
+		graphene_point_t src_point = { (float)arg2, (float)arg3 };
+		graphene_point_t dest_point;
+		rc = (jboolean)gtk_widget_compute_point((GtkWidget *)arg0, (GtkWidget *)arg1, &src_point, &dest_point);
+		if (rc && lparg4) *lparg4 = (jdouble)dest_point.x;
+		if (rc && lparg5) *lparg5 = (jdouble)dest_point.y;
+	}
 fail:
 	if (arg5 && lparg5) (*env)->ReleaseDoubleArrayElements(env, arg5, lparg5, 0);
 	if (arg4 && lparg4) (*env)->ReleaseDoubleArrayElements(env, arg4, lparg4, 0);

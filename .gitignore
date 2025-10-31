@@ -9,4 +9,4 @@ pom.tycho
 
 /binaries/org.eclipse.swt.*/src/
 tmpdir/
-‎build_gtk.sh
+build_gtk.sh
