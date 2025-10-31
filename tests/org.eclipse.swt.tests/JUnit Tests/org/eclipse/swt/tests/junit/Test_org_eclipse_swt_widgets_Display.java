@@ -343,8 +343,10 @@ public void test_getCursorLocation() {
 	try {
 		Point pt = display.getCursorLocation();
 		assertNotNull(pt);
-		assertTrue(pt.x >= 0);
-		assertTrue(pt.y >= 0);
+		assertTrue(pt.x >= 0,
+				"Display's cursor location x co-ordinate should be positive. But it is: " + pt.x);
+		assertTrue(pt.y >= 0,
+				"Display's cursor location y co-ordinate should be positive. But it is: " + pt.y);
 	} finally {
 		display.dispose();
 	}
