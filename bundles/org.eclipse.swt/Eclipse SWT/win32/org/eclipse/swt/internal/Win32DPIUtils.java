@@ -33,20 +33,9 @@ import org.eclipse.swt.widgets.*;
  * @noreference This class is not intended to be referenced by clients
  */
 public class Win32DPIUtils {
-	/**
-	 * System property to enable to scale the application on runtime
-	 * when a DPI change is detected.
-	 * <ul>
-	 * <li>"true": the application is scaled on DPI changes</li>
-	 * <li>"false": the application will remain in its initial scaling</li>
-	 * </ul>
-	 * <b>Important:</b> This flag is only parsed and used on Win32. Setting it to
-	 * true on GTK or cocoa will be ignored.
-	 */
-	private static final String SWT_AUTOSCALE_UPDATE_ON_RUNTIME = "swt.autoScale.updateOnRuntime";
 
 	static {
-	    DPIUtil.setUseSmoothScalingByDefaultProvider(() -> isMonitorSpecificScalingActive());
+		DPIUtil.setUseSmoothScalingByDefaultProvider(() -> DPIUtil.isMonitorSpecificScalingActive());
 	}
 
 	public static boolean setDPIAwareness(int desiredDpiAwareness) {
@@ -302,53 +291,18 @@ public class Win32DPIUtils {
 	}
 
 	public static void setMonitorSpecificScaling(boolean activate) {
-		System.setProperty(SWT_AUTOSCALE_UPDATE_ON_RUNTIME, Boolean.toString(activate));
+		System.setProperty(DPIUtil.SWT_AUTOSCALE_UPDATE_ON_RUNTIME, Boolean.toString(activate));
 	}
 
 	public static void setAutoScaleForMonitorSpecificScaling() {
 		boolean isDefaultAutoScale = DPIUtil.getAutoScaleValue() == null;
 		if (isDefaultAutoScale) {
 			DPIUtil.setAutoScaleValue("quarter");
-		} else if (!isSupportedAutoScaleForMonitorSpecificScaling()) {
+		} else if (!DPIUtil.isSetupCompatibleToMonitorSpecificScaling()) {
 			throw new SWTError(SWT.ERROR_NOT_IMPLEMENTED,
 					"monitor-specific scaling is only implemented for auto-scale values \"quarter\", \"exact\", \"false\" or a concrete zoom value, but \""
 							+ DPIUtil.getAutoScaleValue() + "\" has been specified");
 		}
-	}
-
-	/**
-	 * Monitor-specific scaling on Windows only supports auto-scale modes in which
-	 * all elements (font, images, control bounds etc.) are scaled equally or almost
-	 * equally. The previously default mode "integer"/"integer200", which rounded
-	 * the scale factor for everything but fonts to multiples of 100, is complex and
-	 * difficult to realize with monitor-specific rescaling of UI elements. Since a
-	 * uniform scale factor for everything should perspectively be used anyway,
-	 * there will be support for complex auto-scale modes for monitor-specific
-	 * scaling.
-	 *
-	 * The supported modes are "quarter" and "exact" or explicit zoom values given
-	 * by the value itself or "false". Every other value will be treated as
-	 * "integer"/"integer200" and is thus not supported.
-	 */
-	private static boolean isSupportedAutoScaleForMonitorSpecificScaling() {
-		if (DPIUtil.getAutoScaleValue() == null) {
-			return false;
-		}
-		switch (DPIUtil.getAutoScaleValue().toLowerCase()) {
-			case "false", "quarter", "exact": return true;
-		}
-		try {
-			Integer.parseInt(DPIUtil.getAutoScaleValue());
-			return true;
-		} catch (NumberFormatException e) {
-			// unsupported value, use default
-		}
-		return false;
-	}
-
-	public static boolean isMonitorSpecificScalingActive() {
-		boolean updateOnRuntimeValue = Boolean.getBoolean (SWT_AUTOSCALE_UPDATE_ON_RUNTIME);
-		return updateOnRuntimeValue;
 	}
 
 	public static int getPrimaryMonitorZoomAtStartup() {

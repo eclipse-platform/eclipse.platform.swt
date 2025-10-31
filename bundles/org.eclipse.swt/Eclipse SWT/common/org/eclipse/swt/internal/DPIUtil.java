@@ -51,6 +51,19 @@ public class DPIUtil {
 
 	private static String autoScaleValue;
 
+	private static final Set<String> ALLOWED_AUTOSCALE_VALUES_FOR_UPDATE_ON_RUNTIME = Set.of("quarter", "exact", "false");
+	/**
+	 * System property to enable to scale the application on runtime
+	 * when a DPI change is detected.
+	 * <ul>
+	 * <li>"true": the application is scaled on DPI changes</li>
+	 * <li>"false": the application will remain in its initial scaling</li>
+	 * </ul>
+	 * <b>Important:</b> This flag is only parsed and used on Win32. Setting it to
+	 * true on GTK or cocoa will be ignored.
+	 */
+	static final String SWT_AUTOSCALE_UPDATE_ON_RUNTIME = "swt.autoScale.updateOnRuntime";
+
 	/**
 	 * System property that controls the autoScale functionality.
 	 * <ul>
@@ -101,6 +114,51 @@ static String getAutoScaleValue() {
 
 static void setAutoScaleValue(String autoScaleValueArg) {
 	autoScaleValue = autoScaleValueArg;
+}
+
+/**
+ * Returns {@code true} only if the current setup is compatible
+ * with monitor-specific scaling. Returns {@code false} if:
+ * <ul>
+ *   <li>Not running on Windows</li>
+ *   <li>The current auto-scale mode is incompatible</li>
+ * </ul>
+ *
+ * The supported auto-scale modes are "quarter" and "exact" or explicit zoom values given
+ * by the value itself or "false". Every other value will be treated as
+ * "integer"/"integer200" and is thus not supported.
+ *
+ * <p>
+ * <b>Background information:</b>
+ * Monitor-specific scaling on Windows only supports auto-scale modes in which
+ * all elements (font, images, control bounds etc.) are scaled equally or almost
+ * equally. The previously default mode "integer"/"integer200", which rounded
+ * the scale factor for everything but fonts to multiples of 100, is complex and
+ * difficult to realize with monitor-specific rescaling of UI elements. Since a
+ * uniform scale factor for everything should perspectively be used anyway,
+ * there will be no support for complex auto-scale modes for monitor-specific
+ * scaling.
+ */
+public static boolean isSetupCompatibleToMonitorSpecificScaling() {
+	if (DPIUtil.getAutoScaleValue() == null) {
+		return false;
+	}
+
+	if (ALLOWED_AUTOSCALE_VALUES_FOR_UPDATE_ON_RUNTIME.contains(DPIUtil.getAutoScaleValue().toLowerCase())) {
+		return true;
+	}
+	try {
+		Integer.parseInt(DPIUtil.getAutoScaleValue());
+		return true;
+	} catch (NumberFormatException e) {
+		// unsupported value, use default
+	}
+	return false;
+}
+
+public static boolean isMonitorSpecificScalingActive() {
+	boolean updateOnRuntimeValue = Boolean.getBoolean (DPIUtil.SWT_AUTOSCALE_UPDATE_ON_RUNTIME);
+	return updateOnRuntimeValue;
 }
 
 public static int pixelToPoint(int size, int zoom) {
