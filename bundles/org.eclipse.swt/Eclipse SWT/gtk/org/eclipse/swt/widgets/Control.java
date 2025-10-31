@@ -4147,8 +4147,6 @@ void gtk4_motion_event(long controller, double x, double y, long event) {
 
 @Override
 long gtk_motion_notify_event (long widget, long event) {
-	int result;
-
 	double[] eventX = new double[1];
 	double[] eventY = new double[1];
 	GDK.gdk_event_get_coords(event, eventX, eventY);
@@ -4164,9 +4162,7 @@ long gtk_motion_notify_event (long widget, long event) {
 				boolean [] consume = new boolean [1];
 				if (dragDetect ((int) eventX[0], (int) eventY[0], true, true, consume)) {
 					dragging = true;
-					if (consume [0]) result = 1;
 				if (isDisposed ()) return 1;
-			} else {
 			}
 		}
 		if (dragging) {
@@ -4239,8 +4235,7 @@ long gtk_motion_notify_event (long widget, long event) {
 		}
 	}
 
-	result = sendMouseEvent(SWT.MouseMove, 0, time, x, y, isHint, state[0]) ? 0 : 1;
-	return result;
+	return sendMouseEvent(SWT.MouseMove, 0, time, x, y, isHint, state[0]) ? 0 : 1;
 }
 
 @Override
