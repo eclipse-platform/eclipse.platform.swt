@@ -1242,6 +1242,5 @@ void handleDPIChange(Event event, float scalingFactor) {
 		}
 	}
 	setItemLayoutInPixels(itemOrder, indices, scaledSizes);
-	updateLayout(true);
 }
 }
