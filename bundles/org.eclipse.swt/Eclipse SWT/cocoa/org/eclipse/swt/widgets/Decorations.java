@@ -515,7 +515,7 @@ public void setImage (Image image) {
 	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	this.image = image;
 	if (parent != null) return;
-	if (display.dockImage == null) {
+	if (display.dockImage == null && !display.isBundledIconSet()) {
 		display.application.setApplicationIconImage (image != null ? image.handle : null);
 	}
 }
@@ -552,7 +552,7 @@ public void setImages (Image [] images) {
 	}
 	this.images = images;
 	if (parent != null) return;
-	if (display.dockImage == null) {
+	if (display.dockImage == null && !display.isBundledIconSet()) {
 		if (images != null && images.length > 1) {
 			Image [] bestImages = new Image [images.length];
 			System.arraycopy (images, 0, bestImages, 0, images.length);
