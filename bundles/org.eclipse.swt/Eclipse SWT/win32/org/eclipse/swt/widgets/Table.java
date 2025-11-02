@@ -1429,7 +1429,7 @@ public void clearAll () {
 @Override
 Point computeSizeInPixels (Point hintInPoints, boolean changed) {
 	int zoom = getZoom();
-	Point hintInPixels = Win32DPIUtils.pointToPixelAsSize(hintInPoints, zoom);
+	Point hintInPixels = Win32DPIUtils.pointToPixelAsSufficientlyLargeSize(hintInPoints, zoom);
 	if (fixScrollWidth) setScrollWidth (null, true);
 	//This code is intentionally commented
 //	if (itemHeight == -1 && hooks (SWT.MeasureItem)) {

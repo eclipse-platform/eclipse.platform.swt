@@ -162,7 +162,7 @@ long callWindowProc (long hwnd, int msg, long wParam, long lParam) {
 Point computeSizeInPixels (Point hintInPoints, boolean changed) {
 	checkWidget ();
 	int zoom = getZoom();
-	Point hintInPixels = Win32DPIUtils.pointToPixelAsSize(hintInPoints, zoom);
+	Point hintInPixels = Win32DPIUtils.pointToPixelAsSufficientlyLargeSize(hintInPoints, zoom);
 	int width, height;
 	/*
 	 * When the text is empty, LM_GETIDEALSIZE returns zero width and height,

@@ -121,8 +121,8 @@ long callWindowProc (long hwnd, int msg, long wParam, long lParam) {
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
 	int zoom = getZoom();
-	Rectangle rectangle = Win32DPIUtils.pointToPixel(new Rectangle(x, y, width, height), zoom);
-	return Win32DPIUtils.pixelToPoint(computeTrimInPixels(rectangle.x, rectangle.y, rectangle.width, rectangle.height), zoom);
+	Rectangle rectangle = Win32DPIUtils.pointToPixelWithSufficientlyLargeSize(new Rectangle(x, y, width, height), zoom);
+	return Win32DPIUtils.pixelToPointWithSufficientlyLargeSize(computeTrimInPixels(rectangle.x, rectangle.y, rectangle.width, rectangle.height), zoom);
 }
 
 Rectangle computeTrimInPixels (int x, int y, int width, int height) {
