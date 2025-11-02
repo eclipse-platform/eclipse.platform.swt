@@ -143,7 +143,7 @@ protected void checkSubclass () {
 @Override
 Point computeSizeInPixels (Point hintInPoints, boolean changed) {
 	int zoom = getZoom();
-	Point hintInPixels = Win32DPIUtils.pointToPixelAsSize(hintInPoints, zoom);
+	Point hintInPixels = Win32DPIUtils.pointToPixelAsSufficientlyLargeSize(hintInPoints, zoom);
 	int width = 0, height = 0;
 	int border = getBorderWidthInPixels ();
 	int newWidth = hintInPoints.x == SWT.DEFAULT ? 0x3FFF : hintInPixels.x + (border * 2);

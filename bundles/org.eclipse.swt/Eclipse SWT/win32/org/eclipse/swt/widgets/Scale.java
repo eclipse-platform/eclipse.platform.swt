@@ -148,7 +148,7 @@ static int checkStyle (int style) {
 Point computeSizeInPixels (Point hintInPoints, boolean changed) {
 	checkWidget ();
 	int zoom = getZoom();
-	Point hintInPixels = Win32DPIUtils.pointToPixelAsSize(hintInPoints, zoom);
+	Point hintInPixels = Win32DPIUtils.pointToPixelAsSufficientlyLargeSize(hintInPoints, zoom);
 	int border = getBorderWidthInPixels ();
 	int width = border * 2, height = border * 2;
 	RECT rect = new RECT ();

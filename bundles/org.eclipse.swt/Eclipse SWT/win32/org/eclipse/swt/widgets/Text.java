@@ -706,7 +706,7 @@ public void clearSelection () {
 Point computeSizeInPixels (Point hintInPoints, boolean changed) {
 	checkWidget ();
 	int zoom = getZoom();
-	Point hintInPixels = Win32DPIUtils.pointToPixelAsSize(hintInPoints, zoom);
+	Point hintInPixels = Win32DPIUtils.pointToPixelAsSufficientlyLargeSize(hintInPoints, zoom);
 	int height = 0, width = 0;
 	if (hintInPoints.x == SWT.DEFAULT || hintInPoints.y == SWT.DEFAULT) {
 		long newFont, oldFont = 0;

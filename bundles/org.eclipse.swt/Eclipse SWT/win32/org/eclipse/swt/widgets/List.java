@@ -217,7 +217,7 @@ static int checkStyle (int style) {
 Point computeSizeInPixels (Point hintInPoints, boolean changed) {
 	checkWidget ();
 	int zoom = getZoom();
-	Point hintInPixels = Win32DPIUtils.pointToPixelAsSize(hintInPoints, zoom);
+	Point hintInPixels = Win32DPIUtils.pointToPixelAsSufficientlyLargeSize(hintInPoints, zoom);
 	int width = 0, height = 0;
 	if (hintInPoints.x == SWT.DEFAULT) {
 		if ((style & SWT.H_SCROLL) != 0) {

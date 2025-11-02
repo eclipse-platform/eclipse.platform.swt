@@ -186,16 +186,16 @@ protected void checkSubclass () {
 public Point computeSize (int wHint, int hHint) {
 	checkWidget ();
 	int zoom = getZoom();
-	wHint = (wHint != SWT.DEFAULT ? DPIUtil.pointToPixel(wHint, zoom) : wHint);
-	hHint = (hHint != SWT.DEFAULT ? DPIUtil.pointToPixel(hHint, zoom) : hHint);
-	return Win32DPIUtils.pixelToPointAsConservativeSize(computeSizeInPixels(wHint, hHint), zoom);
+	return Win32DPIUtils.pixelToPointAsSufficientlyLargeSize(computeSizeInPixels(new Point(wHint, hHint)), zoom);
 }
-Point computeSizeInPixels (int wHint, int hHint) {
+Point computeSizeInPixels (Point sizeHintInPoints) {
+	int zoom = getZoom();
+	Point sizeHintInPixels = Win32DPIUtils.pointToPixelAsSufficientlyLargeSize(sizeHintInPoints, zoom);
 	int index = parent.indexOf (this);
 	if (index == -1) return new Point (0, 0);
-	int width = wHint, height = hHint;
-	if (wHint == SWT.DEFAULT) width = 32;
-	if (hHint == SWT.DEFAULT) height = 32;
+	int width = sizeHintInPixels.x, height = sizeHintInPixels.y;
+	if (sizeHintInPoints.x == SWT.DEFAULT) width = 32;
+	if (sizeHintInPoints.y == SWT.DEFAULT) height = 32;
 	if ((parent.style & SWT.VERTICAL) != 0) {
 		height += parent.getMargin (index);
 	} else {

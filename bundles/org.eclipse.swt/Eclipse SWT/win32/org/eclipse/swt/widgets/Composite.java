@@ -229,7 +229,7 @@ Point computeSizeInPixels (Point hintInPoints, boolean changed) {
 	 * Since computeTrim can be overridden by subclasses, we cannot
 	 * call computeTrimInPixels directly.
 	 */
-	Rectangle trim = Win32DPIUtils.pointToPixel(computeTrim (0, 0, sizeInPoints.x, sizeInPoints.y), getZoom());
+	Rectangle trim = Win32DPIUtils.pointToPixelWithSufficientlyLargeSize(computeTrim (0, 0, sizeInPoints.x, sizeInPoints.y), getZoom());
 	return new Point (trim.width, trim.height);
 }
 

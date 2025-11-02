@@ -426,7 +426,7 @@ public static sealed class OfFloat extends Rectangle permits Rectangle.WithMonit
 		this(x, y, width, height, RoundingMode.ROUND, RoundingMode.ROUND);
 	}
 
-	private OfFloat(float x, float y, float width, float height, RoundingMode locationRounding, RoundingMode sizeRounding) {
+	public OfFloat(float x, float y, float width, float height, RoundingMode locationRounding, RoundingMode sizeRounding) {
 		this.locationRounding = locationRounding;
 		this.sizeRounding = sizeRounding;
 		setX(x);
