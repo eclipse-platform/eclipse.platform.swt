@@ -143,7 +143,7 @@ public static sealed class OfFloat extends Point permits Point.WithMonitor {
 
 	public OfFloat(int x, int y) {
 		super(x, y);
-		this.roundingMode = null;
+		this.roundingMode = RoundingMode.ROUND;
 	}
 
 	public OfFloat(float x, float y) {
