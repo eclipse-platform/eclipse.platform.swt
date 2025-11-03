@@ -73,4 +73,24 @@ public void test_toString() {
 	assertTrue(p.toString().length() > 0);
 	assertEquals("Point {3, 4}", p.toString());
 }
+
+@Test
+public void test_OfFloat_clone() {
+	Point.OfFloat pointOfInt = new Point.OfFloat(3, 4);
+	Point.OfFloat clonedPointOfInt = pointOfInt.clone();
+	assertEquals(pointOfInt, clonedPointOfInt);
+	assertEquals(pointOfInt.x, clonedPointOfInt.x);
+	assertEquals(pointOfInt.getX(), clonedPointOfInt.getX());
+	assertEquals(pointOfInt.y, clonedPointOfInt.y);
+	assertEquals(pointOfInt.getY(), clonedPointOfInt.getY());
+
+	Point.OfFloat pointOfFloat = new Point.OfFloat(3.4f, 3.5f);
+	Point.OfFloat clonedPointOfFloat = pointOfFloat.clone();
+	assertEquals(pointOfFloat, clonedPointOfFloat);
+	assertEquals(pointOfFloat.x, clonedPointOfFloat.x);
+	assertEquals(pointOfFloat.getX(), clonedPointOfFloat.getX());
+	assertEquals(pointOfFloat.y, clonedPointOfFloat.y);
+	assertEquals(pointOfFloat.getY(), clonedPointOfFloat.getY());
+}
+
 }
