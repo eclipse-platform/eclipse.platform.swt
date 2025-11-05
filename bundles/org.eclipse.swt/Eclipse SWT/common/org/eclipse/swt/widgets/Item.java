@@ -75,7 +75,7 @@ public abstract class Item extends Widget {
 public Item (Widget parent, int style) {
 	super (parent, style);
 	text = "";
-	this.addListener(SWT.ZoomChanged, this::handleDPIChange);
+	this._addListener(SWT.ZoomChanged, this::handleDPIChange);
 }
 
 /**
