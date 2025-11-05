@@ -189,7 +189,7 @@ public Widget (Widget parent, int style) {
 
 void registerDPIChangeListener() {
 	if (display.isRescalingAtRuntime()) {
-		this.addListener(SWT.ZoomChanged, event -> {
+		this._addListener(SWT.ZoomChanged, event -> {
 			float scalingFactor = 1f * DPIUtil.getZoomForAutoscaleProperty(event.detail) / DPIUtil.getZoomForAutoscaleProperty(nativeZoom);
 			handleDPIChange(event, scalingFactor);
 		});
