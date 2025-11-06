@@ -13,8 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.function.*;
 import java.util.stream.*;
@@ -33,10 +32,11 @@ class CoordinateSystemMapperTests {
 
 	private Monitor createMonitor(CoordinateSystemMapper mapper, Rectangle boundsInPixels, int nativeZoom) {
 		Monitor monitor = new Monitor();
-		Rectangle bounds = mapper.mapMonitorBounds(boundsInPixels, DPIUtil.getZoomForAutoscaleProperty(nativeZoom));
+		monitor.zoom = nativeZoom;
+		Rectangle.WithMonitor boundsInPixelWithMonitor = new Rectangle.WithMonitor(boundsInPixels.x, boundsInPixels.y, boundsInPixels.width, boundsInPixels.height, monitor);
+		Rectangle bounds = mapper.mapMonitorBounds(boundsInPixelWithMonitor);
 		monitor.setBounds(bounds);
 		monitor.setClientArea(bounds);
-		monitor.zoom = nativeZoom;
 		return monitor;
 	}
 
@@ -57,6 +57,34 @@ class CoordinateSystemMapperTests {
 
 	private SingleZoomCoordinateSystemMapper getSingleZoomCoordinateSystemMapper() {
 		return new SingleZoomCoordinateSystemMapper(null);
+	}
+
+	@Test
+	void mapMonitorBoundsWithSingleZoomCoordinateMapper() {
+		CoordinateSystemMapper mapper = getSingleZoomCoordinateSystemMapper();
+		Monitor monitor100 = new Monitor();
+		monitor100.zoom = 100;
+		Monitor monitor200 = new Monitor();
+		monitor200.zoom = 200;
+
+		int oldDeviceZoom = DPIUtil.getDeviceZoom();
+		try {
+			Rectangle.WithMonitor rectInPixelsWithMonitorAt100 = new Rectangle.WithMonitor(10, 10, 20, 20, monitor100);
+			Rectangle.WithMonitor rectInPixelsWithMonitorAt200 = new Rectangle.WithMonitor(10, 10, 20, 20, monitor200);
+			// Result should not depend on monitor zoom
+			assertEquals(mapper.mapMonitorBounds(rectInPixelsWithMonitorAt100),
+					mapper.mapMonitorBounds(rectInPixelsWithMonitorAt200));
+
+			DPIUtil.setDeviceZoom(100);
+			Rectangle mappedRectAtDeviceZoom100 = mapper.mapMonitorBounds(rectInPixelsWithMonitorAt100);
+			DPIUtil.setDeviceZoom(200);
+			// Result should depend on device zoom
+			assertNotEquals(mapper.mapMonitorBounds(rectInPixelsWithMonitorAt100), mappedRectAtDeviceZoom100);
+			assertEquals(mapper.mapMonitorBounds(rectInPixelsWithMonitorAt100),
+					mapper.mapMonitorBounds(rectInPixelsWithMonitorAt200));
+		} finally {
+			DPIUtil.setDeviceZoom(oldDeviceZoom);
+		}
 	}
 
 	@ParameterizedTest

@@ -2225,16 +2225,10 @@ Monitor getMonitor (long hmonitor) {
 	OS.GetMonitorInfo (hmonitor, lpmi);
 	Monitor monitor = new Monitor ();
 	monitor.handle = hmonitor;
-	Rectangle boundsInPixels = new Rectangle(lpmi.rcMonitor_left, lpmi.rcMonitor_top, lpmi.rcMonitor_right - lpmi.rcMonitor_left,lpmi.rcMonitor_bottom - lpmi.rcMonitor_top);
-	Rectangle clientAreaInPixels = new Rectangle(lpmi.rcWork_left, lpmi.rcWork_top, lpmi.rcWork_right - lpmi.rcWork_left, lpmi.rcWork_bottom - lpmi.rcWork_top);
 	int [] dpiX = new int[1];
 	int [] dpiY = new int[1];
 	int result = OS.GetDpiForMonitor (monitor.handle, OS.MDT_EFFECTIVE_DPI, dpiX, dpiY);
 	result = (result == OS.S_OK) ? DPIUtil.mapDPIToZoom (dpiX[0]) : 100;
-
-	int autoscaleZoom = DPIUtil.getZoomForAutoscaleProperty(result);
-	monitor.setBounds(coordinateSystemMapper.mapMonitorBounds(boundsInPixels, autoscaleZoom));
-	monitor.setClientArea(coordinateSystemMapper.mapMonitorBounds(clientAreaInPixels, autoscaleZoom));
 	if (result == 0) {
 		System.err.println("***WARNING: GetDpiForMonitor: SWT could not get valid monitor scaling factor.");
 		result = 100;
@@ -2244,6 +2238,12 @@ Monitor getMonitor (long hmonitor) {
 	 * to scaling issue on OS Win8.1 and above, for more details refer bug 537614.
 	 */
 	monitor.zoom = result;
+	Rectangle.WithMonitor boundsInPixels = new Rectangle.WithMonitor(lpmi.rcMonitor_left, lpmi.rcMonitor_top, lpmi.rcMonitor_right - lpmi.rcMonitor_left,lpmi.rcMonitor_bottom - lpmi.rcMonitor_top, monitor);
+	Rectangle.WithMonitor clientAreaInPixels = new Rectangle.WithMonitor(lpmi.rcWork_left, lpmi.rcWork_top, lpmi.rcWork_right - lpmi.rcWork_left, lpmi.rcWork_bottom - lpmi.rcWork_top, monitor);
+
+	monitor.setBounds(coordinateSystemMapper.mapMonitorBounds(boundsInPixels));
+	monitor.setClientArea(coordinateSystemMapper.mapMonitorBounds(clientAreaInPixels));
+
 	return monitor;
 }
 

@@ -71,8 +71,8 @@ class SingleZoomCoordinateSystemMapper implements CoordinateSystemMapper {
 	}
 
 	@Override
-	public Rectangle mapMonitorBounds(Rectangle rect, int zoom) {
-		return Win32DPIUtils.pixelToPoint(rect, zoom);
+	public Rectangle mapMonitorBounds(Rectangle.WithMonitor rect) {
+		return Win32DPIUtils.pixelToPoint(rect, DPIUtil.getDeviceZoom());
 	}
 
 	@Override

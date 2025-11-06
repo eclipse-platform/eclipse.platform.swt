@@ -84,7 +84,9 @@ class MultiZoomCoordinateSystemMapper implements CoordinateSystemMapper {
 	}
 
 	@Override
-	public Rectangle mapMonitorBounds(Rectangle rect, int zoom) {
+	public Rectangle mapMonitorBounds(Rectangle.WithMonitor rect) {
+		Monitor monitor = rect.getMonitor();
+		int zoom = getApplicableMonitorZoom(monitor);
 		Rectangle bounds = Win32DPIUtils.pixelToPoint(rect, zoom);
 		bounds.x = rect.x;
 		bounds.y = rect.y;
