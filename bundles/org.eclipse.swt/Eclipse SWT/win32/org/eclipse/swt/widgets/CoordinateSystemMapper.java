@@ -25,7 +25,7 @@ interface CoordinateSystemMapper {
 
 	Point map(Control from, Control to, int x, int y);
 
-	Rectangle mapMonitorBounds(Rectangle rectangle, int zoom);
+	Rectangle mapMonitorBounds(Rectangle.WithMonitor rectangle);
 
 	Point translateFromDisplayCoordinates(Point point);
 
