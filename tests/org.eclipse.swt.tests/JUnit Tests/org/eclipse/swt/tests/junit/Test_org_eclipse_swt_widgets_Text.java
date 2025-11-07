@@ -1102,6 +1102,7 @@ public void test_setEditableZ() {
 	assertTrue(text.getEditable());
 }
 
+@Tag("gtk4-todo")
 @Override
 @Test
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
@@ -1443,6 +1444,7 @@ public void test_consistency_DragDetect () {
 	consistencyEvent(30, 10, 50, 0, ConsistencyUtility.MOUSE_DRAG);
 }
 
+@Tag("gtk4-todo")
 @Tag("clipboard")
 @Test
 public void test_consistency_Segments () {
@@ -1566,6 +1568,7 @@ private void doSegmentsTest (boolean isListening) {
  * Bug 565164 - SWT.BS event no longer working
  */
 @Test
+@Tag("gtk4-todo")
 public void test_backspaceAndDelete() throws InterruptedException {
 	assumeTrue(Boolean.parseBoolean(System.getenv("GITHUB_ACTIONS")),
 			"Display.post tests only run successfully on GitHub actions - see https://github.com/eclipse-platform/eclipse.platform.swt/issues/2571");

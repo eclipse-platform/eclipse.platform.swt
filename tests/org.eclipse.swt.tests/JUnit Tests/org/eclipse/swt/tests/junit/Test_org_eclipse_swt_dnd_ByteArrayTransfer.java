@@ -196,6 +196,7 @@ public class Test_org_eclipse_swt_dnd_ByteArrayTransfer extends ClipboardBase {
 
 	@Order(1)
 	@Test
+	@Tag("gtk4-todo")
 	@DisabledOnOs(value = OS.MAC, disabledReason = """
 			remote.getMyTypeContents doesn't work properly on macOS, this is
 			probably a test only issue on macOS

@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -194,6 +195,7 @@ public void test_setEnabledZ() {
 	assertFalse(menuItem.getEnabled());
 }
 
+@Tag("gtk4-todo")
 @Override
 @Test
 public void test_setImageLorg_eclipse_swt_graphics_Image() {

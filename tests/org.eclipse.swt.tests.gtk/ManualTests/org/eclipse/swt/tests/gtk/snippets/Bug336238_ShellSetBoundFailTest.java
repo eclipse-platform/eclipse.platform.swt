@@ -17,12 +17,14 @@ package org.eclipse.swt.tests.gtk.snippets;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.eclipse.swt.widgets.Shell;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 public class Bug336238_ShellSetBoundFailTest {
 
 	static int cycles = 100;
 
+	@Tag("gtk4-todo")
 	@Test
 	public void testSetBounds() {
 

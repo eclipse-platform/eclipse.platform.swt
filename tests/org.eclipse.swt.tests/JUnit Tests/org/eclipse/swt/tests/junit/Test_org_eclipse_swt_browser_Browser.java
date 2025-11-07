@@ -85,6 +85,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.TestMethodOrder;
@@ -418,6 +419,7 @@ public void test_evalute_Cookies () {
 	assertFalse(res.isEmpty());
 }
 
+@Tag("gtk4-todo")
 @Test
 public void test_ClearAllSessionCookies () {
 	final AtomicBoolean loaded = new AtomicBoolean(false);
@@ -447,6 +449,7 @@ public void test_ClearAllSessionCookies () {
 	assertTrue(e2 == null || e2.isEmpty());
 }
 
+@Tag("gtk4-todo")
 @Test
 public void test_get_set_Cookies() {
 	final AtomicBoolean loaded = new AtomicBoolean(false);
@@ -806,6 +809,7 @@ public void test_OpenWindowListener_addAndRemove() {
 	for (int i = 0; i < 100; i++) browser.removeOpenWindowListener(listener);
 }
 
+@Tag("gtk4-todo")
 @Test
 public void test_OpenWindowListener_openHasValidEventDetails() {
 	AtomicBoolean openFiredCorrectly = new AtomicBoolean(false);
@@ -828,6 +832,7 @@ public void test_OpenWindowListener_openHasValidEventDetails() {
 }
 
 /** Test that a script 'window.open()' opens a child popup shell. */
+@Tag("gtk4-todo")
 @Test
 public void test_OpenWindowListener_open_ChildPopup() {
 	AtomicBoolean childCompleted = new AtomicBoolean(false);
@@ -865,6 +870,7 @@ public void test_OpenWindowListener_open_ChildPopup() {
 }
 
 /** Validate event order : Child's visibility should come before progress completed event */
+@Tag("gtk4-todo")
 @Test
 public void test_OpenWindow_Progress_Listener_ValidateEventOrder() {
 
@@ -1032,6 +1038,7 @@ public void test_StatusTextListener_addAndRemove() {
  * over the hyperlink (newer Webkit2+) browser.
  */
 @Test
+@Tag("gtk4-todo")
 public void test_StatusTextListener_hoverMouseOverLink() {
 	assumeFalse(isEdge, "no API in Edge for this");
 
@@ -1304,6 +1311,7 @@ public void test_VisibilityWindowListener_addAndRemove() {
 }
 
 /** Verify that if multiple child shells are open, no duplicate visibility events are sent. */
+@Tag("gtk4-todo")
 @Test
 public void test_VisibilityWindowListener_multiple_shells() {
 		AtomicBoolean secondChildCompleted = new AtomicBoolean(false);
@@ -1364,6 +1372,7 @@ public void test_VisibilityWindowListener_multiple_shells() {
  *  Validate that when javascript opens a new window and specifies size,
  *  it's size is passed to the visibility event correctly.
  */
+@Tag("gtk4-todo")
 @Test
 public void test_VisibilityWindowListener_eventSize() {
 

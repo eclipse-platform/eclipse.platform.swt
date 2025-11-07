@@ -45,6 +45,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -654,6 +655,7 @@ public void test_setBoundsLorg_eclipse_swt_graphics_Rectangle() {
  * Regression test for Bug 436841 - [GTK3] FocusOut/In and Activate/Deactivate
  * events when opening context menu. Only applicable on GTK x11.
  */
+@Tag("gtk4-todo")
 @Test
 public void test_activateEventSend() throws InterruptedException {
 	assumeTrue((SwtTestUtil.isGTK && SwtTestUtil.isX11()) || SwtTestUtil.isGTK4(),
@@ -706,6 +708,7 @@ public void test_activateEventSend() throws InterruptedException {
  *
  * Disabled on Wayland as there is no absolute positioning.
  */
+@Tag("gtk4-todo")
 @Test
 public void test_setBounds() throws Exception {
 	if (SwtTestUtil.isX11()) {
@@ -957,6 +960,7 @@ public void test_bug558652_scrollBarNPE() {
 	}
 }
 
+@Tag("gtk4-todo")
 @Test
 public void test_Issue450_NoShellActivateOnSetFocus() {
 	final String key = "org.eclipse.swt.internal.activateShellOnForceFocus";

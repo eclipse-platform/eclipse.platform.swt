@@ -59,6 +59,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Monitor;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Widget;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -521,6 +522,7 @@ public void test_isEnabled() {
 	assertFalse(control.isEnabled());
 }
 @Test
+@Tag("gtk4-wayland-todo")
 public void test_isFocusControl() {
 	if (shell.getVisible()) {
 		// Some tests, such as `Test_org_eclipse_swt_widgets_Text`, show their
