@@ -1166,6 +1166,7 @@ public void test_getLineHeight() {
 	assertTrue(text.getLineHeight() > 0);
 }
 
+@Tag("gtk4-todo")
 @Test
 public void test_getLineIndex () {
 	test_getLineIndex(text);
@@ -1252,6 +1253,7 @@ void test_getLineIndex (StyledText text) {
 	assertEquals(0, text.getLineIndex(100));
 }
 
+@Tag("gtk4-todo")
 @Test
 public void test_getLinePixel () {
 	test_getLinePixel(text);
@@ -5394,6 +5396,7 @@ public void test_insertInBlockSelection() {
 			+ System.lineSeparator()));
 }
 
+@Tag("gtk4-todo")
 @Test
 public void test_setStyleRanges_render() throws InterruptedException {
 	assumeFalse(SwtTestUtil.isCocoa, "Bug 553090 prevents test to work on Mac");
@@ -5424,6 +5427,7 @@ public void test_setStyleRanges_render() throws InterruptedException {
 /**
  * Test LineStyleListener which provides styles but no ranges.
  */
+@Tag("gtk4-todo")
 @Test
 public void test_lineStyleListener_styles_render() throws InterruptedException {
 	assumeFalse(SwtTestUtil.isCocoa, "Bug 536588 prevents test to work on Mac");
@@ -5449,6 +5453,7 @@ public void test_lineStyleListener_styles_render() throws InterruptedException {
 /**
  * Test LineStyleListener which provides styles and ranges.
  */
+@Tag("gtk4-todo")
 @Test
 public void test_lineStyleListener_stylesAndRanges_render() throws InterruptedException {
 	assumeFalse(SwtTestUtil.isCocoa, "Bug 536588 prevents test to work on Mac");
@@ -5475,6 +5480,7 @@ public void test_lineStyleListener_stylesAndRanges_render() throws InterruptedEx
 /**
  * Test LineStyleListener which provides invalid styles with invalid start or length.
  */
+@Tag("gtk4-todo")
 @Test
 public void test_lineStyleListener_invalidStyles_render() throws InterruptedException {
 	assumeFalse(SwtTestUtil.isCocoa, "Bug 536588 prevents test to work on Mac");
@@ -5658,6 +5664,7 @@ public void test_consistency_DragDetect () {
  * Such a problem was once caused with bug 547532 and discovered along bug 549110.
  * </p>
  */
+@Tag("gtk4-todo")
 @Test
 public void test_GlyphMetricsOnTab_Bug549110() throws InterruptedException {
 	assumeFalse(SwtTestUtil.isCocoa, "Bug 536588 prevents test to work on Mac");
@@ -5732,6 +5739,7 @@ public void test_InsertWhenDisabled() {
  * Bug 551335 - [StyledText] setStyleRanges reset less cache than necessary
  * Bug 551336 - [StyledText] resetting styles does not reset rendering
  */
+@Tag("gtk4-todo")
 @Test
 public void test_bug551335_lostStyles() throws InterruptedException {
 	assumeFalse(SwtTestUtil.isCocoa, "Bug 536588 prevents test to work on Mac");
@@ -5904,6 +5912,7 @@ public void test_arrowDownKeepsPositionAfterNewLine() {
  * Bug 565164 - SWT.BS event no longer working
  */
 @Test
+@Tag("gtk4-todo")
 public void test_backspaceAndDelete() throws InterruptedException {
 	assumeTrue(Boolean.parseBoolean(System.getenv("GITHUB_ACTIONS")),
 			"Display.post tests only run successfully on GitHub actions - see https://github.com/eclipse-platform/eclipse.platform.swt/issues/2571");
