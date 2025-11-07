@@ -173,7 +173,18 @@ public CCombo (Composite parent, int style) {
 	}
 
 	initAccessible();
-	addListener(SWT.ZoomChanged, this::handleDPIChange);
+
+	// Add listener asynchronously in order to delay execution. This works because
+	// other DPI changes are also executed asynchronously but if we choose to revert
+	// back to synchronous execution of the listeners then this async call may be
+	// executed too late and zoom change events may happen too early and not get
+	// propagated.
+	// See https://github.com/eclipse-platform/eclipse.platform.swt/issues/2733
+	getDisplay().asyncExec(() -> {
+		if (!isDisposed()) {
+			addListener(SWT.ZoomChanged, this::handleDPIChange);
+		}
+	});
 }
 static int checkStyle (int style) {
 	int mask = SWT.BORDER | SWT.READ_ONLY | SWT.FLAT | SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT | SWT.LEAD | SWT.CENTER | SWT.TRAIL;

@@ -758,7 +758,18 @@ public StyledText(Composite parent, int style) {
 	initializeAccessible();
 	setData("DEFAULT_DROP_TARGET_EFFECT", new StyledTextDropTargetEffect(this));
 	if (IS_MAC) setData(STYLEDTEXT_KEY);
-	addListener(SWT.ZoomChanged, this::handleDPIChange);
+
+	// Add listener asynchronously in order to delay execution. This works because
+	// other DPI changes are also executed asynchronously but if we choose to revert
+	// back to synchronous execution of the listeners then this async call may be
+	// executed too late and zoom change events may happen too early and not get
+	// propagated.
+	// See https://github.com/eclipse-platform/eclipse.platform.swt/issues/2733
+	getDisplay().asyncExec(() -> {
+		if (!isDisposed()) {
+			addListener(SWT.ZoomChanged, this::handleDPIChange);
+		}
+	});
 }
 /**
  * Adds an extended modify listener. An ExtendedModify event is sent by the
