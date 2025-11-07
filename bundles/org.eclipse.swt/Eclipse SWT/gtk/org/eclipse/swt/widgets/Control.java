@@ -4825,18 +4825,19 @@ void releaseWidget () {
 @Override
 void destroyWidget() {
 	if (GTK.GTK4) {
-		// Remove widget from hierarchy  by removing it from parent container
-		if (parent != null) {
-			long currHandle = topHandle();
-
-			if (GTK.GTK_IS_WINDOW(currHandle)) {
-				GTK4.gtk_window_destroy(currHandle);
-			} else {
-				if (fixedHandle != 0) {
-					OS.swt_fixed_remove(parent.parentingHandle(), fixedHandle);
-				}
+		long currHandle = topHandle();
+		if (GTK.GTK_IS_WINDOW(currHandle)) {
+			// GTK windows don't have a parent, so destroy it now
+			GTK4.gtk_window_destroy(currHandle);
+		} else if (parent != null) {
+			if (fixedHandle != 0) {
+				// Remove widget from hierarchy by removing it from parent container
+				OS.swt_fixed_remove(parent.parentingHandle(), fixedHandle);
 			}
+		} else {
+			assert false : "widgets must have a parent or be a GtkWindow";
 		}
+
 		releaseHandle();
 	} else {
 		super.destroyWidget();
