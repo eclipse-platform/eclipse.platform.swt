@@ -1227,7 +1227,7 @@ int getBorderWidthInPixels () {
  */
 public Rectangle getBounds (){
 	checkWidget ();
-	return Win32DPIUtils.pixelToPoint(getBoundsInPixels (), computeGetBoundsZoom());
+	return boundsToPointsViaShellCoordinates(getBoundsInPixels (), computeGetBoundsZoom());
 }
 
 Rectangle getBoundsInPixels () {
@@ -1594,7 +1594,8 @@ public Shell getShell () {
  */
 public Point getSize (){
 	checkWidget ();
-	return Win32DPIUtils.pixelToPointAsSize(getSizeInPixels (), computeGetBoundsZoom());
+	Rectangle.OfFloat bounds = Rectangle.OfFloat.from(getBounds());
+	return new Point.OfFloat(bounds.getWidth(), bounds.getHeight());
 }
 
 Point getSizeInPixels () {
@@ -3379,7 +3380,27 @@ private Point.OfFloat calculateParentOffsetToShell() {
 }
 
 /**
- * Cope with limited invertibility of pixel/point conversions.
+ * See {@link #boundsToPixelsViaShellCoordinates(Rectangle, int)} as inverse
+ * operation
+ */
+private Rectangle boundsToPointsViaShellCoordinates(Rectangle boundsInPixels, int zoom) {
+	Point.OfFloat parentOffsetToShell = calculateParentOffsetToShell();
+	Point.OfFloat parentOffsetToShellInPixels = Point.OfFloat
+			.from(Win32DPIUtils.pointToPixelAsSize(parentOffsetToShell, zoom));
+	Rectangle.OfFloat offsetRectangleInPixels = new Rectangle.OfFloat(
+			boundsInPixels.x + parentOffsetToShellInPixels.getX(),
+			boundsInPixels.y + parentOffsetToShellInPixels.getY(), boundsInPixels.width, boundsInPixels.height);
+	Rectangle.OfFloat offsetRectangle = Rectangle.OfFloat
+			.from(Win32DPIUtils.pixelToPoint(offsetRectangleInPixels, zoom));
+	float x = offsetRectangle.getX() - parentOffsetToShell.getX();
+	float y = offsetRectangle.getY() - parentOffsetToShellInPixels.getY();
+	float width = offsetRectangle.getWidth();
+	float height = offsetRectangle.getHeight();
+	return new Rectangle.OfFloat(x, y, width, height);
+}
+
+/**
+ * Cope with limited invertability of pixel/point conversions.
  * <p>
  * Example: 125% monitor, layout fills composite with single child
  * <ul>
