@@ -3302,7 +3302,54 @@ public void setBounds (Rectangle rect) {
 	checkWidget ();
 	if (rect == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int zoom = computeBoundsZoom();
-	setBoundsInPixels(Win32DPIUtils.pointToPixel(rect, zoom));
+	Rectangle boundsInPixels = Win32DPIUtils.pointToPixel(rect, zoom);
+	fitInParentBounds(boundsInPixels, zoom);
+	setBoundsInPixels(boundsInPixels);
+}
+
+
+/**
+ * Cope with limited invertibility of pixel/point conversions.
+ * <p>
+ * Example: 125% monitor, layout fills composite with single child
+ * <ul>
+ * <li>Composite with client area of 527 pixels
+ * <li>getClientArea() returns 527 / 1,25 = 421,6 points
+ * <li>So layout sets rounded 422 points to child
+ * <li>This conforms to 422 * 1,25 = 527,5 pixels, which is rounded up to 528,
+ * i.e., one more than parent size
+ * </ul>
+ * Alternatives:
+ * <ul>
+ * <li>rounding down the client area instead could lead to areas not redrawn, as
+ * rounded down 421 points result in 526 pixels, one less than the actual size
+ * of the composite
+ * <li>rounding down the passed bounds leads to controls becoming unnecessarily
+ * smaller than their calculated size
+ * </ul>
+ * Thus, reduce the control size in case it would not fit anyway
+ */
+private void fitInParentBounds(Rectangle boundsInPixels, int zoom) {
+	if (parent == null) {
+		return;
+	}
+	Rectangle parentBoundsInPixels = parent.getBoundsInPixels();
+	// Check if child does not fit into parent, but that it would fit when taking an
+	// off-by-one for the width/height in points into account, as such an off-by-one
+	// can happen when doing bounds calculations in points due to rounding (e.g., in
+	// layouts)
+	boolean childNotFittingHorizontally = parentBoundsInPixels.width < boundsInPixels.x + boundsInPixels.width;
+	boolean childFittingHorizontallyWithOffByOne = parentBoundsInPixels.width >= boundsInPixels.x + boundsInPixels.width
+			- Win32DPIUtils.pointToPixel(1.0f, zoom);
+	if (childNotFittingHorizontally && childFittingHorizontallyWithOffByOne) {
+		boundsInPixels.width = parentBoundsInPixels.width - boundsInPixels.x;
+	}
+	boolean childNotFittingVertically = parentBoundsInPixels.height < boundsInPixels.y + boundsInPixels.height;
+	boolean childFittingVerticallyWithOffByOne = parentBoundsInPixels.height >= boundsInPixels.y + boundsInPixels.height
+			- Win32DPIUtils.pointToPixel(1.0f, zoom);
+	if (childNotFittingVertically && childFittingVerticallyWithOffByOne) {
+		boundsInPixels.height = parentBoundsInPixels.height - boundsInPixels.y;
+	}
 }
 
 void setBoundsInPixels (Rectangle rect) {
@@ -3817,9 +3864,7 @@ public void setRegion (Region region) {
 public void setSize (int width, int height) {
 	checkWidget ();
 	int zoom = computeBoundsZoom();
-	width = DPIUtil.pointToPixel(width, zoom);
-	height = DPIUtil.pointToPixel(height, zoom);
-	setSizeInPixels(width, height);
+	setSize(new Point(width, height), zoom);
 }
 
 void setSizeInPixels (int width, int height) {
@@ -3853,8 +3898,18 @@ void setSizeInPixels (int width, int height) {
 public void setSize (Point size) {
 	checkWidget ();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
-	size = Win32DPIUtils.pointToPixelAsSize(size, computeBoundsZoom());
-	setSizeInPixels(size.x, size.y);
+	int zoom = computeBoundsZoom();
+	setSize(size, zoom);
+}
+
+private void setSize(Point size, int zoom) {
+	// Use the exact (non-rounded) bounds to apply proper rounding when converting the size from point to pixel
+	Rectangle bounds = Win32DPIUtils.pixelToPoint(Rectangle.OfFloat.from(getBoundsInPixels()), zoom);
+	bounds.width = size.x;
+	bounds.height = size.y;
+	Rectangle boundsInPixels = Win32DPIUtils.pointToPixel(bounds, zoom);
+	fitInParentBounds(boundsInPixels, zoom);
+	setSizeInPixels(boundsInPixels.width, boundsInPixels.height);
 }
 
 @Override
