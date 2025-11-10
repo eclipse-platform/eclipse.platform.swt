@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -32,13 +32,21 @@ import org.eclipse.swt.widgets.*;
 @Deprecated
 public class AnimatedProgress extends Canvas {
 
+	@Deprecated
 	static final int SLEEP = 70;
+	@Deprecated
 	static final int DEFAULT_WIDTH = 160;
+	@Deprecated
 	static final int DEFAULT_HEIGHT = 18;
+	@Deprecated
 	boolean active = false;
+	@Deprecated
 	boolean showStripes = false;
+	@Deprecated
 	int value;
+	@Deprecated
 	int orientation = SWT.HORIZONTAL;
+	@Deprecated
 	boolean showBorder = false;
 
 /**
@@ -69,6 +77,7 @@ public class AnimatedProgress extends Canvas {
  * @see SWT#BORDER
  * @see #getStyle()
  */
+@Deprecated
 public AnimatedProgress(Composite parent, int style) {
 	super(parent, checkStyle(style));
 
@@ -94,12 +103,14 @@ private static int checkStyle (int style) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+@Deprecated
 public synchronized void clear(){
 	checkWidget();
 	if (active) stop();
 	showStripes = false;
 	redraw();
 }
+@Deprecated
 @Override
 public Point computeSize(int wHint, int hHint, boolean changed) {
 	checkWidget();
@@ -123,6 +134,7 @@ private void drawBevelRect(GC gc, int x, int y, int w, int h, Color topleft, Col
 	gc.drawLine(x+w, y, x+w, y+h);
 	gc.drawLine(x, y+h, x+w, y+h);
 }
+@Deprecated
 void paint(PaintEvent event) {
 	GC gc = event.gc;
 	Display disp= getDisplay();
@@ -137,6 +149,7 @@ void paint(PaintEvent event) {
 
 	paintStripes(gc);
 }
+@Deprecated
 void paintStripes(GC gc) {
 
 	if (!showStripes) return;
@@ -184,6 +197,7 @@ void paintStripes(GC gc) {
 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
 * </ul>
 */
+@Deprecated
 public synchronized void start() {
 	checkWidget();
 	if (active) return;
@@ -205,6 +219,7 @@ public synchronized void start() {
 /**
 * Stop the animation.   Freeze the presentation at its current appearance.
 */
+@Deprecated
 public synchronized void stop() {
 	//checkWidget();
 	active = false;
