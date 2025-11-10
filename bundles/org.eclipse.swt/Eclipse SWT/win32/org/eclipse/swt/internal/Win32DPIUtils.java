@@ -159,13 +159,16 @@ public class Win32DPIUtils {
 
 	private static Rectangle pixelToPoint(Rectangle rect, int zoom, RoundingMode sizeRounding) {
 		if (zoom == 100 || rect == null) return rect;
+		if (rect instanceof Rectangle.OfFloat) {
+			return scaleBounds(rect, 100, zoom);
+		}
 		Rectangle.OfFloat floatRect = Rectangle.OfFloat.from(rect);
 		Point.OfFloat scaledTopLeft = pixelToPoint(floatRect.getTopLeft(), zoom);
 		Point.OfFloat scaledBottomRight = pixelToPoint(floatRect.getBottomRight(), zoom);
-		float scaledX = scaledTopLeft.getX();
-		float scaleyY = scaledTopLeft.getY();
-		float scaledWidth = scaledBottomRight.getX() - scaledTopLeft.getX();
-		float scaledHeight = scaledBottomRight.getY() - scaledTopLeft.getY();
+		float scaledX = scaledTopLeft.x;
+		float scaleyY = scaledTopLeft.y;
+		float scaledWidth = scaledBottomRight.x - scaledTopLeft.x;
+		float scaledHeight = scaledBottomRight.y - scaledTopLeft.y;
 		return new Rectangle.OfFloat(scaledX, scaleyY, scaledWidth, scaledHeight, RoundingMode.ROUND, sizeRounding);
 	}
 
@@ -280,13 +283,16 @@ public class Win32DPIUtils {
 
 	private static Rectangle pointToPixel(Rectangle rect, int zoom, RoundingMode sizeRounding) {
 		if (zoom == 100 || rect == null) return rect;
+		if (rect instanceof Rectangle.OfFloat) {
+			return scaleBounds(rect, zoom, 100);
+		}
 		Rectangle.OfFloat floatRect = Rectangle.OfFloat.from(rect);
 		Point.OfFloat scaledTopLeft = pointToPixel(floatRect.getTopLeft(), zoom);
 		Point.OfFloat scaledBottomRight = pointToPixel(floatRect.getBottomRight(), zoom);
-		float scaledX = scaledTopLeft.getX();
-		float scaleyY = scaledTopLeft.getY();
-		float scaledWidth = scaledBottomRight.getX() - scaledTopLeft.getX();
-		float scaledHeight = scaledBottomRight.getY() - scaledTopLeft.getY();
+		float scaledX = scaledTopLeft.x;
+		float scaleyY = scaledTopLeft.y;
+		float scaledWidth = scaledBottomRight.x - scaledTopLeft.x;
+		float scaledHeight = scaledBottomRight.y - scaledTopLeft.y;
 		return new Rectangle.OfFloat(scaledX, scaleyY, scaledWidth, scaledHeight, RoundingMode.ROUND, sizeRounding);
 	}
 

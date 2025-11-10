@@ -464,12 +464,12 @@ public static sealed class OfFloat extends Rectangle permits Rectangle.WithMonit
 	}
 
 	public void setWidth(float width) {
-		this.width = sizeRounding.round(width + getX()) - x;
+		this.width = sizeRounding.round(width);
 		this.residualWidth = width - this.width;
 	}
 
 	public void setHeight(float height) {
-		this.height = sizeRounding.round(height + getY()) - y;
+		this.height = sizeRounding.round(height);
 		this.residualHeight = height - this.height;
 	}
 
