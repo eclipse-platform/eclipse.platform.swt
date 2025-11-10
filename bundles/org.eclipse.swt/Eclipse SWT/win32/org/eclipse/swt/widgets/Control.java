@@ -3335,11 +3335,48 @@ public void setBounds (Rectangle rect) {
 	checkWidget ();
 	if (rect == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int zoom = computeBoundsZoom();
-	Rectangle boundsInPixels = Win32DPIUtils.pointToPixel(rect, zoom);
+	Rectangle boundsInPixels = boundsToPixelsViaShellCoordinates(rect, zoom);
 	fitInParentBounds(boundsInPixels, zoom);
 	setBoundsInPixels(boundsInPixels);
 }
 
+/**
+ * Converts bounds to pixels via the shell coordinate system, such that the
+ * coordinates for every control are rounded in the same. Otherwise, child and
+ * parent controls may not fit as their coordinates are relative to different
+ * coordinate systems (the ones with their individual parent as origin), such
+ * that applied rounding leads to different values for the actually same
+ * coordinates. One consequence when not doing this is that child controls with
+ * x and y set to 0 and width and height set to the parent's bounds may be
+ * larger than the parent.
+ */
+private Rectangle boundsToPixelsViaShellCoordinates(Rectangle bounds, int zoom) {
+	Point.OfFloat parentOffsetToShell = calculateParentOffsetToShell();
+	Point.OfFloat parentOffsetToShellInPixels = Point.OfFloat
+			.from(Win32DPIUtils.pointToPixelAsSize(parentOffsetToShell, zoom));
+	Rectangle.OfFloat offsetRectangle = new Rectangle.OfFloat(bounds.x + parentOffsetToShell.getX(),
+			bounds.y + parentOffsetToShell.getY(), bounds.width, bounds.height);
+	Rectangle.OfFloat offsetRectangleInPixels = Rectangle.OfFloat
+			.from(Win32DPIUtils.pointToPixel(offsetRectangle, zoom));
+	int xInPixels = offsetRectangleInPixels.x - parentOffsetToShellInPixels.x;
+	int yInPixels = offsetRectangleInPixels.y - parentOffsetToShellInPixels.y;
+	int widthInPixels = offsetRectangleInPixels.width;
+	int heightInPixels = offsetRectangleInPixels.height;
+	return new Rectangle(xInPixels, yInPixels, widthInPixels, heightInPixels);
+}
+
+private Point.OfFloat calculateParentOffsetToShell() {
+	float parentX = 0;
+	float parentY = 0;
+	Control parent = getParent();
+	while (parent != null & !(parent instanceof Shell)) {
+		Rectangle.OfFloat parentLocation = Rectangle.OfFloat.from(parent.getBounds());
+		parentX += parentLocation.getX();
+		parentY += parentLocation.getY();
+		parent = parent.getParent();
+	}
+	return new Point.OfFloat(parentX, parentY);
+}
 
 /**
  * Cope with limited invertibility of pixel/point conversions.
@@ -3966,7 +4003,7 @@ private void setSize(Point size, int zoom) {
 	Rectangle bounds = Win32DPIUtils.pixelToPoint(Rectangle.OfFloat.from(getBoundsInPixels()), zoom);
 	bounds.width = size.x;
 	bounds.height = size.y;
-	Rectangle boundsInPixels = Win32DPIUtils.pointToPixel(bounds, zoom);
+	Rectangle boundsInPixels = boundsToPixelsViaShellCoordinates(bounds, zoom);
 	fitInParentBounds(boundsInPixels, zoom);
 	setSizeInPixels(boundsInPixels.width, boundsInPixels.height);
 }
