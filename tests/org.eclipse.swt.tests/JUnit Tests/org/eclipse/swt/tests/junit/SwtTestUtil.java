@@ -252,7 +252,7 @@ public static boolean isBidi() {
 public static void openShell(Shell shell) {
 	if (shell != null && !shell.getVisible()) {
 		if (isGTK) {
-			if (isGTK4()) {
+			if (isGTK4() || isWayland()) {
 				waitAllEvents(() -> shell.open(), shell, Set.of(SWT.Paint, SWT.Activate, SWT.FocusIn), 1000);
 			} else {
 				waitEvent(() -> shell.open(), shell, SWT.Paint, 1000);
