@@ -1051,13 +1051,12 @@ public void test_postLorg_eclipse_swt_widgets_Event() {
 
 		Shell shell = new Shell(display, SWT.NO_TRIM);
 		shell.setBounds(display.getBounds());
-		shell.open();
 
 		// The display.post needs to successfully obtain the focused window (at least on GTK3)
-		// so we can send events to it. This processEvents gives SWT/GTK time to draw/focus/etc
+		// so we can send events to it. This openShell gives SWT/GTK time to draw/focus/etc
 		// the window so that org.eclipse.swt.widgets.Display.findFocusedWindow()
 		// returns non-zero
-		SwtTestUtil.processEvents();
+		SwtTestUtil.openShell(shell);
 
 		Event event;
 
