@@ -1338,6 +1338,12 @@ public void test_setSynchronizerLorg_eclipse_swt_widgets_Synchronizer() {
 	}
 }
 
+/*
+ * this test false passes on GTK4 when not run in isolation. The test probably
+ * needs some work to ensure it is a valid test, such as making sure that it is
+ * the display.wake that wakes the first display.sleep call. Also checking the
+ * first call to display.sleep does return true.
+ */
 @Tag("gtk4-todo")
 @Test
 public void test_sleep() {
