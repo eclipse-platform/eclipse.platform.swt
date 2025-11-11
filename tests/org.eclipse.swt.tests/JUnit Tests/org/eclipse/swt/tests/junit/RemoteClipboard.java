@@ -92,6 +92,16 @@ public class RemoteClipboard implements ClipboardCommands {
 	}
 
 	private int launchRemote() throws IOException {
+		if (SwtTestUtil.isLinux) {
+			String display = System.getenv("DISPLAY");
+			assumeTrue(display != null && !display.isBlank(), """
+					The remote clipboard test requires X11 because Java Swing
+					does not have Wayland backend until Project Wakefield is
+					implemented, therefore these clipboard related tests are
+					skipped.
+					""");
+		}
+
 		/*
 		 * The below copy using getPath may be redundant (i.e. it may be possible to run
 		 * the class files from where they currently reside in the bin folder or the
