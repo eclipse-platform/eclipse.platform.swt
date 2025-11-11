@@ -83,12 +83,14 @@ jobs:
       matrix:
         java: ['21']
         gtk: [gtk3, gtk4]
+        gdk_backend: [x11, wayland]
     uses: ./.github/workflows/build.yml
     with:
       runner: ubuntu-latest
       java: ${{ matrix.java }}
       native: gtk.linux.x86_64
       gtk: ${{ matrix.gtk }}
+      gdk_backend: ${{ matrix.gdk_backend }}
       performance: ${{ contains(github.event.pull_request.labels.*.name, 'performance') }}
       runtodotests: ${{ contains(github.event.pull_request.labels.*.name, 'runtodotests') }}
 

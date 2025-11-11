@@ -6,7 +6,7 @@ target/
 .polyglot.*
 pom.tycho
 .DS_Store
-
+/xdg-runtime-*
 /binaries/org.eclipse.swt.*/src/
 tmpdir/
 # temp build script used by copilot instructions: https://github.com/eclipse-platform/eclipse.platform.swt/blob/c3318b8e7ebc9e34de80afc4f3e5ec15cc7ca112/.github/workflows/copilot-setup-steps.yml#L43
