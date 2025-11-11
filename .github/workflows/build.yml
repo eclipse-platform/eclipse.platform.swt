@@ -28,6 +28,11 @@ on:
         type: boolean
         required: false
         default: false
+      gtk:
+        description: "(Required on Linux only) GTK version to use (one of gtk3, gtk4)"
+        type: string
+        required: false
+        default: ""
 
 jobs:
   build:
@@ -40,9 +45,27 @@ jobs:
        lfs: false # lfs-pull is not necessary, the natives are re-build in each run
     - name: Install Linux requirements
       if: ${{ inputs.native == 'gtk.linux.x86_64'}}
+      shell: bash
       run: |
+        set -x
         sudo apt-get update -qq
-        sudo apt-get install -qq -y libgtk-3-dev libgtk-4-dev freeglut3-dev webkit2gtk-driver
+        # Required tools (GHA normally provides these in their base images)
+        sudo apt-get install -qq -y build-essential git
+        # GTK3 dependencies
+        sudo apt-get install -qq -y libgtk-3-dev freeglut3-dev webkit2gtk-driver
+        # GTK4 dependencies
+        sudo apt-get install -qq -y libgtk-4-dev freeglut3-dev libwebkitgtk-6.0-4
+
+    - name: Disable AppArmor when testing WebKit on GTK4
+      if: ${{ inputs.native == 'gtk.linux.x86_64' && inputs.gtk == 'gtk4' }}
+      shell: bash
+      run: |
+        # WebKit for GTK4 uses bwrap and on Ubuntu 24.04 default settings are not working
+        # so turn off apparmor. We are already running in a protected environment, so we
+        # don't really need this extra level.
+        sudo sysctl kernel.unprivileged_userns_clone=1
+        sudo sysctl kernel.apparmor_restrict_unprivileged_userns=0
+
     - name: Pull large static Windows binaries
       if: ${{ inputs.native == 'win32.win32.x86_64'}}
       run: |
@@ -60,6 +83,7 @@ jobs:
     - name: Build
       env:
         GTK_XCFLAGS: '-Wno-deprecated-declarations'
+        SWT_GTK4: "${{ inputs.gtk == 'gtk4' && '1' || '0' }}"
       run: >-
         ${{ contains(inputs.native, 'linux') && 'xvfb-run' || '' }}
         mvn --batch-mode -V -U -e
@@ -71,10 +95,12 @@ jobs:
         --fail-at-end
         -DskipNativeTests=false
         -DfailIfNoTests=false
-        ${{ (inputs.runtodotests == false && contains(inputs.native, 'linux')) && '-DexcludedGroups=gtk3-todo' || '' }}
+        ${{ (inputs.runtodotests == false && inputs.gtk == 'gtk4') && '-DexcludedGroups=gtk4-todo' || '' }}
         clean install
     - name: Performance tests
       if: ${{ inputs.performance }}
+      env:
+        SWT_GTK4: "${{ inputs.gtk == 'gtk4' && '1' || '0' }}"
       working-directory: tests/org.eclipse.swt.tests
       run: >-
         ${{ contains(inputs.native, 'linux') && 'xvfb-run' || '' }}
@@ -89,7 +115,7 @@ jobs:
       if: always()
       uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
       with:
-        name: test-results-${{ inputs.native }}-java${{ inputs.java }}
+        name: test-results-${{ inputs.native }}-${{ inputs.gtk }}-java${{ inputs.java }}
         if-no-files-found: warn
         path: |
           ${{ github.workspace }}/**/target/surefire-reports/*.xml
