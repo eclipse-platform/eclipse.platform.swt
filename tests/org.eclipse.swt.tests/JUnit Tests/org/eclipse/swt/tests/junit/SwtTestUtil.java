@@ -52,6 +52,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.test.Screenshots;
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 
 public class SwtTestUtil {
 	/**
@@ -101,9 +102,41 @@ public class SwtTestUtil {
 	public final static boolean isWindowsOS = System.getProperty("os.name").startsWith("Windows");
 	public final static boolean isLinux = System.getProperty("os.name").equals("Linux");
 
+	private static boolean checkEnvVarMatches(String name, String regex) {
+		String value = System.getenv(name);
+		if (value == null) {
+			return false;
+		}
+		return value.matches(regex);
+	}
 
-	/** Useful if you want some tests not to run on Jenkins with user "genie.platform" */
-	public final static boolean isRunningOnContinousIntegration = isGTK && ("genie.platform".equalsIgnoreCase(System.getProperty("user.name")));
+	public static final String GITHUB_DETECT_ENV_VAR = "GITHUB_ACTIONS";
+	public static final String GITHUB_DETECT_REGEX = "true";
+
+	/**
+	 * Return true if we are probably running on GitHub Actions.
+	 *
+	 * To enable or disable tests on Jenkins with annotations use
+	 * {@link EnabledIfEnvironmentVariable} and related classes with
+	 * {@link #GITHUB_DETECT_ENV_VAR} and {@link #GITHUB_DETECT_REGEX}
+	 */
+	public static boolean isRunningOnGitHubActions() {
+		return checkEnvVarMatches(GITHUB_DETECT_ENV_VAR, GITHUB_DETECT_REGEX);
+	}
+
+	public static final String JENKINS_DETECT_ENV_VAR = "JOB_NAME";
+	public static final String JENKINS_DETECT_REGEX = ".*";
+
+	/**
+	 * Return true if we are probably running on Jenkins.
+	 *
+	 * To enable or disable tests on Jenkins with annotations use
+	 * {@link EnabledIfEnvironmentVariable} and related classes with
+	 * {@link #JENKINS_DETECT_ENV_VAR} and {@link #JENKINS_DETECT_REGEX}
+	 */
+	public static boolean isRunningOnJenkins() {
+		return checkEnvVarMatches(JENKINS_DETECT_ENV_VAR, JENKINS_DETECT_REGEX);
+	}
 
 	/**
 	 * Return whether running on x11. This is dynamically set at runtime and cannot

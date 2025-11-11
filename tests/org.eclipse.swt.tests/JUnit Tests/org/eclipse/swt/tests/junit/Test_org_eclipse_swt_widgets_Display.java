@@ -14,6 +14,8 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import static org.eclipse.swt.tests.junit.SwtTestUtil.JENKINS_DETECT_ENV_VAR;
+import static org.eclipse.swt.tests.junit.SwtTestUtil.JENKINS_DETECT_REGEX;
 import static org.eclipse.swt.tests.junit.SwtTestUtil.assertSWTProblem;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -49,8 +51,8 @@ import org.eclipse.test.Screenshots;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
+import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
 import org.junit.jupiter.api.condition.DisabledOnOs;
-import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Display
@@ -1042,7 +1044,7 @@ public void test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_Con
 }
 
 @Test
-@EnabledIfEnvironmentVariable(named = "GITHUB_ACTIONS", matches = "true", disabledReason = "Display.post tests only run successfully on GitHub actions - see https://github.com/eclipse-platform/eclipse.platform.swt/issues/2571")
+@DisabledIfEnvironmentVariable(named = JENKINS_DETECT_ENV_VAR, matches = JENKINS_DETECT_REGEX, disabledReason = "Display.post tests don't run reliably on Jenkins - see https://github.com/eclipse-platform/eclipse.platform.swt/issues/2571")
 @Tag("gtk4-todo")
 @Tag("gtk3-wayland-todo")
 public void test_postLorg_eclipse_swt_widgets_Event() {

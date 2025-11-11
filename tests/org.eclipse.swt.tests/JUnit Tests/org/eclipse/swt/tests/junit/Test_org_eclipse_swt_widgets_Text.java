@@ -13,11 +13,12 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import static org.eclipse.swt.tests.junit.SwtTestUtil.JENKINS_DETECT_ENV_VAR;
+import static org.eclipse.swt.tests.junit.SwtTestUtil.JENKINS_DETECT_REGEX;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyListener;
@@ -37,6 +38,7 @@ import org.eclipse.swt.widgets.Widget;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Text
@@ -1569,9 +1571,8 @@ private void doSegmentsTest (boolean isListening) {
  */
 @Test
 @Tag("gtk4-todo")
+@DisabledIfEnvironmentVariable(named = JENKINS_DETECT_ENV_VAR, matches = JENKINS_DETECT_REGEX, disabledReason = "Display.post tests don't run reliably on Jenkins - see https://github.com/eclipse-platform/eclipse.platform.swt/issues/2571")
 public void test_backspaceAndDelete() throws InterruptedException {
-	assumeTrue(Boolean.parseBoolean(System.getenv("GITHUB_ACTIONS")),
-			"Display.post tests only run successfully on GitHub actions - see https://github.com/eclipse-platform/eclipse.platform.swt/issues/2571");
 	shell.open();
 	text.setSize(10, 50);
 	// The display.post needs to successfully obtain the focused window (at least on GTK3)

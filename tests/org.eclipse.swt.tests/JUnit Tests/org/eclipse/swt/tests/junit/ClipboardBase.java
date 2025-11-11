@@ -47,8 +47,8 @@ public class ClipboardBase {
 	 * <code>true</code>: skip tests <code>false</code>: don't skip tests
 	 * <code>null</code>: unknown whether to skip tests yet
 	 */
-	private static Boolean skipTestsRequiringButtonPress = (Boolean.parseBoolean(System.getenv("GITHUB_ACTIONS"))
-			|| System.getenv("JOB_NAME") != null) ? true : null;
+	private static Boolean skipTestsRequiringButtonPress = (SwtTestUtil.isRunningOnGitHubActions()
+			|| SwtTestUtil.isRunningOnJenkins()) ? true : null;
 	private static int uniqueId = 1;
 	protected Display display;
 	protected Shell shell;
