@@ -1,3 +1,21 @@
+# This is the workflow for SWT that collects and reports junit results
+
+# This script runs from the master branch all the time. This means if you update it in a
+# Pull Request, the update won't take effect until after you merge the PR, the PR itself
+# will *not* use the edits.
+# Therefore to really test a change to this script, push it to your fork's master branch
+# and then create a PR against your own master branch.
+
+# You can run this locally to test changes with the act command https://nektosact.com/
+# Steps:
+# 1. Get a PAT (https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
+#    Use fine grained one, needs Read access to artifact metadata, and metadata
+# 2. Get the URL of some artifacts to test against from a previous run of the build
+#    script (such as your last run on your fork's master branch). It looks like:
+#    https://api.github.com/repos/jonahgraham/eclipse.platform.swt/actions/runs/19980765555/artifacts
+# 3. Run the act command:
+#    act -W '.github/workflows/junit.yml' -s GITHUB_TOKEN=your_token --input artifacts_url=your_url
+
 name: Publish Unit Test Results
 
 on:
@@ -10,37 +28,101 @@ permissions:
   contents: read
 
 jobs:
-  unit-test-results:
-    name: Unit Test Results
+  discover-results:
     runs-on: ubuntu-latest
     if: github.event.workflow_run.conclusion != 'skipped'
+    outputs:
+      matrix: ${{ steps.build-matrix.outputs.matrix }}
+      isall: ${{ steps.build-matrix.outputs.isall }}
+    steps:
+      - name: Find test-results from artifacts_url and build dynamic matrix
+        id: build-matrix
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        run: |
+          set -x
+          # Get the URL from the event, or the act command line
+          artifacts_url=${{ github.event.workflow_run.artifacts_url || github.event.inputs.artifacts_url }}
+          results=$(gh api "$artifacts_url" -q '.artifacts[] | [.name] | @tsv' | grep 'test-results-')
+
+          platforms=""
+          if [[ "$results" == *macos* ]]; then
+            platforms="macos"
+          fi
+          if [[ "$results" == *linux* ]]; then
+            if [[ -n "$platforms" ]]; then
+              platforms+=" "
+            fi
+            platforms+="linux"
+          fi
+          if [[ "$results" == *win32* ]]; then
+            if [[ -n "$platforms" ]]; then
+              platforms+=" "
+            fi
+            platforms+="win32"
+          fi
+
+          if [[ "$platforms" == "macos linux win32" ]]; then
+            platforms+=" all"
+            echo "isall=1" >> "$GITHUB_OUTPUT"
+          else
+            echo "isall=0" >> "$GITHUB_OUTPUT"
+          fi
+
+          json=$(jq -R --arg key "platform" 'split(" ") | {($key): .}' <<< "$platforms")
+
+          echo "Matrix JSON (pretty): ${json}"
+          {
+            echo 'matrix<<EOF'
+            printf '%s\n' "$json"
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+
+  results:
+    needs: discover-results
+    runs-on: ubuntu-latest
     permissions:
       checks: write
       pull-requests: write
       contents: read
       issues: read
       actions: read
+    strategy:
+      # Use the dynamic matrix from the previous job
+      matrix: ${{ fromJson(needs.discover-results.outputs.matrix) }}
+      fail-fast: false
 
     steps:
-      - name: Download and Extract Artifacts
+      - name: Downloading rest results for ${{ matrix.platform }}
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         run: |
-           mkdir -p artifacts && cd artifacts
+          set -x
+          mkdir -p artifacts && cd artifacts
 
-           artifacts_url=${{ github.event.workflow_run.artifacts_url }}
+          # Get the URL from the event, or the act command line
+          artifacts_url=${{ github.event.workflow_run.artifacts_url || github.event.inputs.artifacts_url }}
 
-           gh api "$artifacts_url" -q '.artifacts[] | [.name, .archive_download_url] | @tsv' | while read artifact
-           do
-             IFS=$'\t' read name url <<< "$artifact"
-             gh api $url > "$name.zip"
-             unzip -d "$name" "$name.zip"
-           done
+          if [[ "${{ matrix.platform }}" == "all" ]]; then
+              # allow everything through
+              grep="."
+          else
+              # only download event file and tests for this platform
+              grep="Event File|${{ matrix.platform }}"
+          fi
+          gh api "$artifacts_url" -q '.artifacts[] | [.name, .archive_download_url] | @tsv' | grep -E "$grep" | while read artifact
+          do
+            IFS=$'\t' read name url <<< "$artifact"
+            gh api $url > "$name.zip"
+            unzip -d "$name" "$name.zip"
+          done
 
       - name: Publish Unit Test Results
         uses: EnricoMi/publish-unit-test-result-action@34d7c956a59aed1bfebf31df77b8de55db9bbaaf # v2.21.0
         id: test-results
         with:
+          check_name: ${{ matrix.platform == 'all' && 'Test Results' || format('Test Results ({0})', matrix.platform) }}
+          comment_mode: ${{ (matrix.platform == 'all') == (needs.discover-results.outputs.isall == '1') && 'always' || 'off' }}
           commit: ${{ github.event.workflow_run.head_sha }}
           event_file: artifacts/Event File/event.json
           event_name: ${{ github.event.workflow_run.event }}
