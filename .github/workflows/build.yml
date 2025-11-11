@@ -1,0 +1,92 @@
+# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
+
+name: "SWT Build"
+
+on:
+  workflow_call:
+    inputs:
+      runner:
+        description: "build.runs-on value"
+        type: string
+        required: true
+      java:
+        description: "Java version"
+        type: string
+        required: true
+      native:
+        description: "Native target identifier (one of gtk.linux.x86_64, win32.win32.x86_64, cocoa.macosx.x86_64, cocoa.macosx.aarch64)"
+        type: string
+        required: true
+      performance:
+        description: "Run performance tests too (one of true, false)"
+        type: boolean
+        required: false
+        default: false
+
+jobs:
+  build:
+    runs-on: ${{ inputs.runner }}
+    steps:
+    - name: checkout swt
+      uses: actions/checkout@ff7abcd0c3c05ccf6adc123a8cd1fd4fb30fb493 # v5.0.0
+      with:
+       fetch-depth: 0 # required for jgit timestamp provider to work
+       lfs: false # lfs-pull is not necessary, the natives are re-build in each run
+    - name: Install Linux requirements
+      if: ${{ inputs.native == 'gtk.linux.x86_64'}}
+      run: |
+        sudo apt-get update -qq
+        sudo apt-get install -qq -y libgtk-3-dev libgtk-4-dev freeglut3-dev webkit2gtk-driver
+    - name: Pull large static Windows binaries
+      if: ${{ inputs.native == 'win32.win32.x86_64'}}
+      run: |
+        git lfs pull --include='/binaries/org.eclipse.swt.win32.win32.x86_64/WebView2Loader.dll'
+    - name: Set up Java ${{ inputs.java }}
+      uses: actions/setup-java@de5a937a1dc73fbc1a67d7d1aa4bebc1082f3190 # v5.0.0
+      with:
+        java-version: ${{ inputs.java }}
+        distribution: 'temurin'
+        cache: maven
+    - name: Set up Maven
+      uses: stCarolas/setup-maven@v5
+      with:
+        maven-version: 3.9.11
+    - name: Build
+      env:
+        GTK_XCFLAGS: '-Wno-deprecated-declarations'
+      run: >-
+        ${{ contains(inputs.native, 'linux') && 'xvfb-run' || '' }}
+        mvn --batch-mode -V -U -e
+        --threads 1C
+        -DforkCount=1
+        '-Dnative=${{ inputs.native }}'
+        -Papi-check -Pjavadoc
+        '-Dtycho.baseline.replace=none'
+        --fail-at-end
+        -DskipNativeTests=false
+        -DfailIfNoTests=false
+        clean install
+    - name: Performance tests
+      if: ${{ inputs.performance }}
+      working-directory: tests/org.eclipse.swt.tests
+      run: >-
+        ${{ contains(inputs.native, 'linux') && 'xvfb-run' || '' }}
+        mvn --batch-mode -V -U -e
+        -DforkCount=1
+        --fail-at-end
+        -DskipNativeTests=true
+        -DfailIfNoTests=true
+        -Dtest=PerformanceTests
+        integration-test
+    - name: Upload Test Results
+      if: always()
+      uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+      with:
+        name: test-results-${{ inputs.native }}-java${{ inputs.java }}
+        if-no-files-found: warn
+        path: |
+          ${{ github.workspace }}/**/target/surefire-reports/*.xml
+          ${{ github.workspace }}/**/*.log
+          ${{ github.workspace }}/**/*.dump
+          ${{ github.workspace }}/**/*.dumpstream
