@@ -23,6 +23,11 @@ on:
         type: boolean
         required: false
         default: false
+      runtodotests:
+        description: "Run TODO tagged tests too (one of true, false)"
+        type: boolean
+        required: false
+        default: false
 
 jobs:
   build:
@@ -66,6 +71,7 @@ jobs:
         --fail-at-end
         -DskipNativeTests=false
         -DfailIfNoTests=false
+        ${{ (inputs.runtodotests == false && contains(inputs.native, 'linux')) && '-DexcludedGroups=gtk3-todo' || '' }}
         clean install
     - name: Performance tests
       if: ${{ inputs.performance }}
