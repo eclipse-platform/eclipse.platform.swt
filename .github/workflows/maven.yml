@@ -1,5 +1,13 @@
 # This is the main maven workflow for SWT.
 
+# You can run this locally to test changes with the act command https://nektosact.com/
+# For example, to run all linux tests on Java 21:
+#   act -j build-linux --matrix java:21 --artifact-server-path $PWD/.artifacts
+# You may need to download runners on first run, act will ask but if you
+# want the big runner there is no progress as it downloads, so you can pull it with
+# docker directly:
+#   docker pull catthehacker/ubuntu:full-latest
+
 name: SWT Matrix Build
 concurrency: 
     group: ${{ github.workflow }}-${{ github.ref }}
@@ -25,19 +33,48 @@ jobs:
       with:
         name: Event File
         path: ${{ github.event_path }}
-  build:
+
+  build-linux:
+    name: Build (Linux)
     strategy:
       fail-fast: false
       matrix:
-        java: [ '21' ]
-        config: 
-          - { name: Linux, os: ubuntu-latest, native: gtk.linux.x86_64 }
-          - { name: Windows, os: windows-latest, native: win32.win32.x86_64 }
-          - { name: MacOS x86, os: macos-15-intel, native: cocoa.macosx.x86_64 }
-          - { name: MacOS ARM, os: macos-latest, native: cocoa.macosx.aarch64 }
+        java: ['21']
     uses: ./.github/workflows/build.yml
     with:
-      runner: ${{ matrix.config.os }}
+      runner: ubuntu-latest
       java: ${{ matrix.java }}
-      native: ${{ matrix.config.native }}
+      native: gtk.linux.x86_64
+      performance: ${{ contains(github.event.pull_request.labels.*.name, 'performance') }}
+
+  build-windows:
+    name: Build (Windows)
+    strategy:
+      fail-fast: false
+      matrix:
+        java: ['21']
+    uses: ./.github/workflows/build.yml
+    with:
+      runner: windows-latest
+      java: ${{ matrix.java }}
+      native: win32.win32.x86_64
+
+  build-macos:
+    name: Build (macOS)
+    strategy:
+      fail-fast: false
+      matrix:
+        java: ['21']
+        native: [cocoa.macosx.x86_64, cocoa.macosx.aarch64]
+        runner: [macos-15-intel, macos-latest]
+        exclude:
+          - runner: macos-latest
+            native: cocoa.macosx.x86_64
+          - runner: macos-15-intel
+            native: cocoa.macosx.aarch64
+    uses: ./.github/workflows/build.yml
+    with:
+      runner: ${{ matrix.runner }}
+      java: ${{ matrix.java }}
+      native: ${{ matrix.native }}
       performance: ${{ contains(github.event.pull_request.labels.*.name, 'performance') }}
