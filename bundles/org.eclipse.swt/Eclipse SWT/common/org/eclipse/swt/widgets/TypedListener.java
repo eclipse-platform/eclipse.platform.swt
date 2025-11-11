@@ -48,6 +48,7 @@ public class TypedListener implements Listener {
 	/**
 	 * The receiver's event listener
 	 */
+	@Deprecated(forRemoval = true, since = "3.129.0 (removal in 2027-03 or later)")
 	protected EventListener eventListener;
 
 /**
@@ -82,6 +83,7 @@ public TypedListener (SWTEventListener listener) {
  * @noreference This method is not intended to be referenced by clients.
  */
 
+@Deprecated(forRemoval = true, since = "3.129.0 (removal in 2027-03 or later)")
 public TypedListener (EventListener listener) {
 	eventListener = listener;
 }
@@ -99,6 +101,7 @@ public TypedListener (EventListener listener) {
  *
  * @noreference This method is not intended to be referenced by clients.
  */
+@Deprecated(forRemoval = true, since = "3.129.0 (removal in 2027-03 or later)")
 public EventListener getEventListener () {
 	// At the moment all typed listeners implement SWTEventListener but that interface is intended to be removed in the future and then they will only implement EventListener.
 	// This method should not be called for typed listeners listeners that only implement EventListener.
@@ -119,6 +122,7 @@ public EventListener getEventListener () {
  *
  * @noreference This method is not intended to be referenced by clients.
  */
+@Deprecated(forRemoval = true, since = "3.129.0 (removal in 2027-03 or later)")
 @Override
 public void handleEvent (Event e) {
 	switch (e.type) {

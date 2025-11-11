@@ -37,10 +37,12 @@ final class LegacySWTFontRegistry implements SWTFontRegistry {
 	private Map<FontData, Font> fontsMap = new HashMap<>();
 	private Device device;
 
+	@Deprecated(forRemoval= true, since= "2025-09")
 	LegacySWTFontRegistry(Device device) {
 		this.device = device;
 	}
 
+	@Deprecated(forRemoval= true, since= "2025-09")
 	@Override
 	public Font getSystemFont(int zoom) {
 		if (fontsMap.containsKey(KEY_SYSTEM_FONTS)) {
@@ -61,6 +63,7 @@ final class LegacySWTFontRegistry implements SWTFontRegistry {
 		return font;
 	}
 
+	@Deprecated(forRemoval= true, since= "2025-09")
 	@Override
 	public Font getFont(FontData fontData, int zoom) {
 		if (fontsMap.containsKey(fontData)) {
@@ -77,6 +80,7 @@ final class LegacySWTFontRegistry implements SWTFontRegistry {
 		return font;
 	}
 
+	@Deprecated(forRemoval= true, since= "2025-09")
 	@Override
 	public Font getFont(long fontHandle, int zoom) {
 		return Font.win32_new(device, fontHandle, zoom);
@@ -88,6 +92,7 @@ final class LegacySWTFontRegistry implements SWTFontRegistry {
 		return font;
 	}
 
+	@Deprecated(forRemoval= true, since= "2025-09")
 	@Override
 	public void dispose() {
 		for (Font font : fontsMap.values()) {
