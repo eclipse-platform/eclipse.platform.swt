@@ -1062,7 +1062,7 @@ private class DrawImageOperation extends ImageOperation {
 
 	private void drawImageInPixels(Image image, Point location) {
 		if (image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-		ImageHandle handle = image.getHandle(getZoom(), getZoom());
+		ImageHandle handle = image.getHandle(getZoom(), data.nativeZoom);
 		drawImage(image, 0, 0, -1, -1, location.x, location.y, -1, -1, true, handle);
 	}
 }
@@ -1279,7 +1279,7 @@ private class DrawImageToImageOperation extends ImageOperation {
 
 	@Override
 	void apply() {
-		ImageHandle handle = getImage().getHandle(getZoom(), getZoom());
+		ImageHandle handle = getImage().getHandle(getZoom(), data.nativeZoom);
 		drawImage(getImage(), source.x, source.y, source.width, source.height, destination.x, destination.y, destination.width, destination.height, simple, handle);
 	}
 }
