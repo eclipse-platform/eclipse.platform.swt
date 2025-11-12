@@ -48,6 +48,7 @@ import org.junit.jupiter.api.condition.OS;
  * {@link MyTypeTransfer}
  */
 @Tag("clipboard")
+@Tag("gtk3-wayland-todo")
 @TestMethodOrder(OrderAnnotation.class) // run tests needing button presses first
 public class Test_org_eclipse_swt_dnd_ByteArrayTransfer extends ClipboardBase {
 	private MyTypeTransfer myTypeTransfer;
