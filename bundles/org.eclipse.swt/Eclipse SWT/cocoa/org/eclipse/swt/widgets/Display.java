@@ -14,6 +14,8 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
+// fake change
+
 import java.lang.Runtime.*;
 import java.util.*;
 import java.util.concurrent.*;
