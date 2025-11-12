@@ -82,6 +82,8 @@ public abstract class Control extends Widget implements Drawable {
 	private static final String DATA_SHELL_ZOOM = "SHELL_ZOOM";
 
 	private static final String DATA_AUTOSCALE_DISABLED = "AUTOSCALE_DISABLED";
+
+	private static final String PROPOGATE_AUTOSCALE_DISABLED = "PROPOGATE_AUTOSCALE_DISABLED";
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
@@ -121,7 +123,13 @@ Control () {
 public Control (Composite parent, int style) {
 	super (parent, style);
 	this.parent = parent;
-	this.autoScaleDisabled = parent.autoScaleDisabled;
+	Boolean parentPropagateAutoscaleDisabled = (Boolean) parent.getData(PROPOGATE_AUTOSCALE_DISABLED);
+	if (parentPropagateAutoscaleDisabled == null || parentPropagateAutoscaleDisabled) {
+		this.autoScaleDisabled = parent.autoScaleDisabled;
+	}
+	if (!autoScaleDisabled) {
+		this.nativeZoom = getShellZoom();
+	}
 	createWidget ();
 }
 
@@ -618,7 +626,7 @@ public Point computeSize (int wHint, int hHint) {
  */
 public Point computeSize (int wHint, int hHint, boolean changed){
 	checkWidget ();
-	int zoom = getZoom();
+	int zoom = computeBoundsZoom();
 	//We should never return a size that is to small, RoundingMode.UP ensures we at worst case report
 	//a size that is a bit too large by half a point
 	return Win32DPIUtils.pixelToPointAsSufficientlyLargeSize(computeSizeInPixels(new Point(wHint, hHint), zoom, changed), zoom);
@@ -1206,7 +1214,7 @@ int getBorderWidthInPixels () {
  */
 public Rectangle getBounds (){
 	checkWidget ();
-	return Win32DPIUtils.pixelToPoint(getBoundsInPixels (), getZoom());
+	return Win32DPIUtils.pixelToPoint(getBoundsInPixels (), computeBoundsZoom());
 }
 
 Rectangle getBoundsInPixels () {
@@ -1402,7 +1410,7 @@ public Object getLayoutData () {
 public Point getLocation () {
 	checkWidget ();
 	//For a location the closest point values is okay
-	return Win32DPIUtils.pixelToPointAsLocation(getLocationInPixels(), getZoom());
+	return Win32DPIUtils.pixelToPointAsLocation(getLocationInPixels(), computeBoundsZoom());
 }
 
 Point getLocationInPixels () {
@@ -1558,7 +1566,7 @@ public Shell getShell () {
  */
 public Point getSize (){
 	checkWidget ();
-	return Win32DPIUtils.pixelToPointAsSize(getSizeInPixels (), getZoom());
+	return Win32DPIUtils.pixelToPointAsSize(getSizeInPixels (), computeBoundsZoom());
 }
 
 Point getSizeInPixels () {
@@ -3293,7 +3301,7 @@ void setBoundsInPixels (int x, int y, int width, int height, int flags, boolean 
 public void setBounds (Rectangle rect) {
 	checkWidget ();
 	if (rect == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int zoom = autoScaleDisabled && parent != null ? parent.getZoom() : getZoom();
+	int zoom = computeBoundsZoom();
 	setBoundsInPixels(Win32DPIUtils.pointToPixel(rect, zoom));
 }
 
@@ -3551,7 +3559,7 @@ public void setLayoutData (Object layoutData) {
  */
 public void setLocation (int x, int y) {
 	checkWidget ();
-	int zoom = autoScaleDisabled && parent != null ? parent.getZoom() : getZoom();
+	int zoom = computeBoundsZoom();
 	x = DPIUtil.pointToPixel(x, zoom);
 	y = DPIUtil.pointToPixel(y, zoom);
 	setLocationInPixels(x, y);
@@ -3582,7 +3590,7 @@ void setLocationInPixels (int x, int y) {
 public void setLocation (Point location) {
 	checkWidget ();
 	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);
-	location = Win32DPIUtils.pointToPixelAsLocation(location, getZoom());
+	location = Win32DPIUtils.pointToPixelAsLocation(location, computeBoundsZoom());
 	setLocationInPixels(location.x, location.y);
 }
 
@@ -3808,7 +3816,7 @@ public void setRegion (Region region) {
  */
 public void setSize (int width, int height) {
 	checkWidget ();
-	int zoom = autoScaleDisabled && parent != null ? parent.getZoom() : getZoom();
+	int zoom = computeBoundsZoom();
 	width = DPIUtil.pointToPixel(width, zoom);
 	height = DPIUtil.pointToPixel(height, zoom);
 	setSizeInPixels(width, height);
@@ -3845,7 +3853,7 @@ void setSizeInPixels (int width, int height) {
 public void setSize (Point size) {
 	checkWidget ();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
-	size = Win32DPIUtils.pointToPixelAsSize(size, getZoom());
+	size = Win32DPIUtils.pointToPixelAsSize(size, computeBoundsZoom());
 	setSizeInPixels(size.x, size.y);
 }
 
@@ -4821,6 +4829,13 @@ int getShellZoom() {
 		return shellZoom;
 	}
 	return nativeZoom;
+}
+
+private int computeBoundsZoom() {
+	if (parent != null) {
+		return parent.getZoom();
+	}
+	return getZoom();
 }
 
 abstract TCHAR windowClass ();
