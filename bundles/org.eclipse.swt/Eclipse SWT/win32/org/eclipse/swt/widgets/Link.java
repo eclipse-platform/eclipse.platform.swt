@@ -159,9 +159,8 @@ long callWindowProc (long hwnd, int msg, long wParam, long lParam) {
 }
 
 @Override
-Point computeSizeInPixels (Point hintInPoints, boolean changed) {
+Point computeSizeInPixels (Point hintInPoints, int zoom, boolean changed) {
 	checkWidget ();
-	int zoom = getZoom();
 	Point hintInPixels = Win32DPIUtils.pointToPixelAsSufficientlyLargeSize(hintInPoints, zoom);
 	int width, height;
 	/*

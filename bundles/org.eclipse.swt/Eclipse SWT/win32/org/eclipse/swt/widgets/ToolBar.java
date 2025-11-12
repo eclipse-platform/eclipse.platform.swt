@@ -209,8 +209,7 @@ void clearSizeCache(boolean changed) {
 }
 
 @Override
-Point computeSizeInPixels (Point hintInPoints, boolean changed) {
-	int zoom = getZoom();
+Point computeSizeInPixels (Point hintInPoints, int zoom, boolean changed) {
 	Point hintInPixels = Win32DPIUtils.pointToPixelAsSufficientlyLargeSize(hintInPoints, zoom);
 	int count = (int)OS.SendMessage (handle, OS.TB_BUTTONCOUNT, 0, 0);
 	if (count == this._count && hintInPixels.x == this._wHint && hintInPixels.y == this._hHint) {

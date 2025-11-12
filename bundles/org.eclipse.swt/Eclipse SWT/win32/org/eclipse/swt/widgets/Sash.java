@@ -127,9 +127,8 @@ static int checkStyle (int style) {
 }
 
 @Override
-Point computeSizeInPixels (Point hintInPoints, boolean changed) {
+Point computeSizeInPixels (Point hintInPoints, int zoom, boolean changed) {
 	checkWidget ();
-	int zoom = getZoom();
 	Point hintInPixels = Win32DPIUtils.pointToPixelAsSufficientlyLargeSize(hintInPoints, zoom);
 	int border = getBorderWidthInPixels ();
 	int width = border * 2, height = border * 2;

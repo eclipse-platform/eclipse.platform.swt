@@ -1824,8 +1824,7 @@ long CompareFunc (long lParam1, long lParam2, long lParamSort) {
 }
 
 @Override
-Point computeSizeInPixels (Point hintInPoints, boolean changed) {
-	int zoom = getZoom();
+Point computeSizeInPixels (Point hintInPoints, int zoom, boolean changed) {
 	Point hintInPixels = Win32DPIUtils.pointToPixelAsSufficientlyLargeSize(hintInPoints, zoom);
 	int width = 0, height = 0;
 	if (hwndHeader != 0) {

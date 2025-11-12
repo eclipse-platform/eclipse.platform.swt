@@ -1427,8 +1427,7 @@ public void clearAll () {
 }
 
 @Override
-Point computeSizeInPixels (Point hintInPoints, boolean changed) {
-	int zoom = getZoom();
+Point computeSizeInPixels (Point hintInPoints, int zoom, boolean changed) {
 	Point hintInPixels = Win32DPIUtils.pointToPixelAsSufficientlyLargeSize(hintInPoints, zoom);
 	if (fixScrollWidth) setScrollWidth (null, true);
 	//This code is intentionally commented

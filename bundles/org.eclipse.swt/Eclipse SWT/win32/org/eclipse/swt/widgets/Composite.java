@@ -207,7 +207,7 @@ Widget [] computeTabList () {
 }
 
 @Override
-Point computeSizeInPixels (Point hintInPoints, boolean changed) {
+Point computeSizeInPixels (Point hintInPoints, int zoom, boolean changed) {
 	display.runSkin ();
 	Point sizeInPoints;
 	if (layout != null) {
