@@ -179,9 +179,9 @@ protected void checkSubclass () {
 }
 
 @Override
-Point computeSizeInPixels (Point hintInPoints, boolean changed) {
+Point computeSizeInPixels (Point hintInPoints, int zoom, boolean changed) {
 	checkWidget ();
-	Point size = super.computeSizeInPixels (hintInPoints, changed);
+	Point size = super.computeSizeInPixels (hintInPoints, zoom, changed);
 	RECT insetRect = new RECT (), itemRect = new RECT ();
 	OS.SendMessage (handle, OS.TCM_ADJUSTRECT, 0, insetRect);
 	int width = insetRect.left - insetRect.right;

@@ -141,8 +141,7 @@ protected void checkSubclass () {
 }
 
 @Override
-Point computeSizeInPixels (Point hintInPoints, boolean changed) {
-	int zoom = getZoom();
+Point computeSizeInPixels (Point hintInPoints, int zoom, boolean changed) {
 	Point hintInPixels = Win32DPIUtils.pointToPixelAsSufficientlyLargeSize(hintInPoints, zoom);
 	int width = 0, height = 0;
 	int border = getBorderWidthInPixels ();
@@ -1228,7 +1227,7 @@ void handleDPIChange(Event event, float scalingFactor) {
 			item.setControl(control);
 		}
 
-		Point preferredControlSize =  item.getControl().computeSizeInPixels(new Point(SWT.DEFAULT, SWT.DEFAULT), true);
+		Point preferredControlSize =  item.getControl().computeSizeInPixels(new Point(SWT.DEFAULT, SWT.DEFAULT), getZoom(), true);
 		int controlWidth = preferredControlSize.x;
 		int controlHeight = preferredControlSize.y;
 		if (((style & SWT.VERTICAL) != 0)) {

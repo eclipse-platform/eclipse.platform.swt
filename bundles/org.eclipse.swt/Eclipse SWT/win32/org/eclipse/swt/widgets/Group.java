@@ -139,9 +139,9 @@ protected void checkSubclass () {
 }
 
 @Override
-Point computeSizeInPixels (Point hintInPoints, boolean changed) {
+Point computeSizeInPixels (Point hintInPoints, int zoom, boolean changed) {
 	checkWidget ();
-	Point size = super.computeSizeInPixels (hintInPoints, changed);
+	Point size = super.computeSizeInPixels (hintInPoints, zoom, changed);
 	int length = text.length ();
 	if (length != 0) {
 		String string = fixText (false);

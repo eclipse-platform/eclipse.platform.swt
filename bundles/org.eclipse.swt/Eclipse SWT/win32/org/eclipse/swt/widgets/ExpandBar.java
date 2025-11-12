@@ -127,8 +127,7 @@ static int checkStyle (int style) {
 }
 
 @Override
-Point computeSizeInPixels (Point hintInPoints, boolean changed) {
-	int zoom = getZoom();
+Point computeSizeInPixels (Point hintInPoints, int zoom, boolean changed) {
 	Point hintInPixels = Win32DPIUtils.pointToPixelAsSufficientlyLargeSize(hintInPoints, zoom);
 	int height = 0, width = 0;
 	if (hintInPoints.x == SWT.DEFAULT || hintInPoints.y == SWT.DEFAULT) {
