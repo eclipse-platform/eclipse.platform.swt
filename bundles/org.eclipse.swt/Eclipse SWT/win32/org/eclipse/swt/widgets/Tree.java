@@ -748,7 +748,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 						}
 					}
 				}
-				rect.left += DPIUtil.pointToPixel(INSET - 1, zoom) ;
+				rect.left += Win32DPIUtils.pointToPixelAsSufficientlyLargeSize(INSET - 1, zoom) ;
 				if (drawImage) {
 					Image image = null;
 					if (index == 0) {
@@ -757,8 +757,8 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 						Image [] images  = item.images;
 						if (images != null) image = images [index];
 					}
-					int inset = i != 0 ? DPIUtil.pointToPixel(INSET, zoom) : 0;
-					int offset = i != 0 ? DPIUtil.pointToPixel(INSET, zoom) : DPIUtil.pointToPixel(INSET + 2, zoom);
+					int inset = i != 0 ? Win32DPIUtils.pointToPixelAsSufficientlyLargeSize(INSET, zoom) : 0;
+					int offset = i != 0 ? Win32DPIUtils.pointToPixelAsSufficientlyLargeSize(INSET, zoom) : Win32DPIUtils.pointToPixelAsSufficientlyLargeSize(INSET + 2, zoom);
 					if (image != null) {
 						Rectangle bounds = image.getBounds (); // Points
 						if (size == null) size = Win32DPIUtils.pixelToPointAsSize (getImageSize (), zoom); // To Points
@@ -5488,7 +5488,7 @@ public void showColumn (TreeColumn column) {
 			SCROLLINFO info = new SCROLLINFO();
 			info.cbSize = SCROLLINFO.sizeof;
 			info.fMask = OS.SIF_POS;
-			info.nPos = Math.max(0, headerRect.left - DPIUtil.pointToPixel(INSET / 2, getZoom()));
+			info.nPos = Math.max(0, headerRect.left - Win32DPIUtils.pointToPixelAsSufficientlyLargeSize(INSET / 2, getZoom()));
 			OS.SetScrollInfo(hwndParent, OS.SB_HORZ, info, true);
 			setScrollWidth();
 		} else if (scrollBecauseRight) {
@@ -7930,7 +7930,7 @@ LRESULT wmNotifyHeader (NMHDR hdr, long wParam, long lParam) {
 							}
 						}
 
-						int x = rects[i].left + DPIUtil.pointToPixel(INSET + 2, getZoom());
+						int x = rects[i].left + Win32DPIUtils.pointToPixelAsSufficientlyLargeSize(INSET + 2, getZoom());
 						if (columns[i].image != null) {
 							GCData data = new GCData();
 							data.device = display;
@@ -8248,7 +8248,7 @@ LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, long lParam) {
 							data.background = OS.GetBkColor (nmcd.hdc);
 							data.font = Font.win32_new (display, hFont);
 							GC gc = createNewGC(nmcd.hdc, data);
-							int x = cellRect [0].left + DPIUtil.pointToPixel(INSET, getZoom());
+							int x = cellRect [0].left + Win32DPIUtils.pointToPixelAsSufficientlyLargeSize(INSET, getZoom());
 							if (index [0] != 0) x -= gridWidth;
 							Image image = item [0].getImage (index [0]);
 							if (image != null || index [0] == 0) {

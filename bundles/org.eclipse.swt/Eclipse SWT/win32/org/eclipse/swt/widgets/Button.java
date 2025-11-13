@@ -362,10 +362,10 @@ Point computeSizeInPixels (Point hintInPoints, int zoom, boolean changed) {
 					Rectangle rect = Win32DPIUtils.scaleBounds(image.getBounds(), this.getZoom(), 100);
 					width = rect.width;
 					if (hasText && text.length () != 0) {
-						width += DPIUtil.pointToPixel(MARGIN * 2, getZoom());;
+						width += Win32DPIUtils.pointToPixelAsSufficientlyLargeSize(MARGIN * 2, getZoom());;
 					}
 					height = rect.height;
-					extra = DPIUtil.pointToPixel(MARGIN * 2, getZoom());;
+					extra = Win32DPIUtils.pointToPixelAsSufficientlyLargeSize(MARGIN * 2, getZoom());;
 				}
 			}
 			if (hasText) {
@@ -379,7 +379,7 @@ Point computeSizeInPixels (Point hintInPoints, int zoom, boolean changed) {
 				if (length == 0) {
 					height = Math.max (height, lptm.tmHeight);
 				} else {
-					extra = Math.max (DPIUtil.pointToPixel(MARGIN * 2, getZoom()), lptm.tmAveCharWidth);
+					extra = Math.max (Win32DPIUtils.pointToPixelAsSufficientlyLargeSize(MARGIN * 2, getZoom()), lptm.tmAveCharWidth);
 					char [] buffer = text.toCharArray ();
 					RECT rect = new RECT ();
 					int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE;

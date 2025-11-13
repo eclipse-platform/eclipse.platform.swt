@@ -269,6 +269,10 @@ public class Win32DPIUtils {
 		return pointToPixel(point, zoom, RoundingMode.UP);
 	}
 
+	public static int pointToPixelAsSufficientlyLargeSize(int value, int zoom) {
+		return (int) Math.ceil(value * DPIUtil.getScalingFactor(zoom));
+	}
+
 	public static Point pointToPixelAsLocation(Point point, int zoom) {
 		return pointToPixel(point, zoom, RoundingMode.ROUND);
 	}
