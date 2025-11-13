@@ -492,7 +492,7 @@ RECT getBounds (int index, boolean getText, boolean getImage, boolean fullText, 
 			}
 			if (getText) {
 				if (fullText && clip) {
-					rect.left = rect.right + DPIUtil.pointToPixel(Tree.INSET, getZoom());
+					rect.left = rect.right + Tree.INSET;
 					rect.right = headerRect.right;
 				} else {
 					String string = index == 0 ? text : strings != null ? strings [index] : null;
@@ -513,10 +513,10 @@ RECT getBounds (int index, boolean getText, boolean getImage, boolean fullText, 
 							OS.ReleaseDC (hwnd, hNewDC);
 						}
 						if (getImage) {
-							rect.right += textRect.right - textRect.left + DPIUtil.pointToPixel(Tree.INSET * 3, getZoom());
+							rect.right += textRect.right - textRect.left + Tree.INSET * 3;
 						} else {
-							rect.left = rect.right + DPIUtil.pointToPixel(Tree.INSET, getZoom());
-							rect.right = rect.left + (textRect.right - textRect.left) + DPIUtil.pointToPixel(Tree.INSET, getZoom());
+							rect.left = rect.right + Tree.INSET;
+							rect.right = rect.left + (textRect.right - textRect.left) + Tree.INSET;
 						}
 					}
 				}
@@ -914,8 +914,9 @@ public Rectangle getTextBounds (int index) {
 Rectangle getTextBoundsInPixels (int index) {
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	RECT rect = getBounds (index, true, false, true);
+	if (index == 0) rect.left += Tree.INSET - 1;
 	rect.left = Math.min (rect.left, rect.right);
-	rect.right = rect.right + DPIUtil.pointToPixel(Tree.INSET, getZoom()); // Add INSET margin to avoid truncation of text seen with "Segoe UI" font
+	rect.right = rect.right - Tree.INSET + 1; // Add 1 px margin to avoid truncation of text seen with "Segoe UI" font
 	int width = Math.max (0, rect.right - rect.left);
 	int height = Math.max (0, rect.bottom - rect.top);
 	return new Rectangle (rect.left, rect.top, width, height);
