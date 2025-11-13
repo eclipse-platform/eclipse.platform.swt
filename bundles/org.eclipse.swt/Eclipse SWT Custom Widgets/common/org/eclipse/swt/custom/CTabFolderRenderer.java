@@ -14,6 +14,8 @@
  *******************************************************************************/
 package org.eclipse.swt.custom;
 
+import java.util.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
@@ -1380,10 +1382,31 @@ public class CTabFolderRenderer {
 
 				// draw highlight marker of selected tab
 				if (parent.selectionHighlightBarThickness > 0 && parent.simple) {
-					Color previousColor = gc.getBackground();
-					gc.setBackground(item.getDisplay().getSystemColor(parent.shouldHighlight() ? SWT.COLOR_LIST_SELECTION : SWT.COLOR_WIDGET_DISABLED_FOREGROUND));
-					gc.fillRectangle(x + 1 /* outline */, parent.onBottom ? y + height - 1 - parent.selectionHighlightBarThickness : y + 1, width - 2 /*outline*/, parent.selectionHighlightBarThickness);
-					gc.setBackground(previousColor);
+				    int thickness = parent.selectionHighlightBarThickness;
+				    boolean onBottom = parent.onBottom;
+				    boolean highlight = parent.shouldHighlight();
+
+				    Color oldBackground = gc.getBackground();
+				    Color highlightColor = item.getDisplay().getSystemColor(
+				        highlight ? SWT.COLOR_LIST_SELECTION : SWT.COLOR_WIDGET_DISABLED_FOREGROUND
+				    );
+				    gc.setBackground(highlightColor);
+
+				    int bottomY = y + height - 1;
+				    int highlightY = onBottom ? bottomY - thickness : thickness;
+
+				    int[] shape2 = Arrays.copyOf(shape, shape.length);
+				    // Update Y coordinates in shape to apply highlight thickness
+				    shape2[1] = shape2[3] = shape2[shape2.length - 1] = shape2[shape2.length - 3] = highlightY;
+
+				    xx = x;
+				    yy = onBottom ? bottomY - thickness - 1 : y;
+				    ww = width;
+				    hh = height;
+
+				    drawBackground(gc, shape2, xx, yy, ww, hh, highlightColor, null, null, null, false);
+
+				    gc.setBackground(oldBackground);
 				}
 
 				// draw outline
