@@ -54,7 +54,10 @@ public class Snippet292 {
 		button.setText ("Snapshot");
 		button.addListener (SWT.Selection, e -> {
 			Image image = label.getImage ();
-			if (image != null) image.dispose ();
+			if (image != null) {
+				label.setImage(null);
+				image.dispose ();
+			}
 			Rectangle rect = group.getBounds();
 			image = new Image (display, rect.width, rect.height);
 			GC gc = new GC (image);
