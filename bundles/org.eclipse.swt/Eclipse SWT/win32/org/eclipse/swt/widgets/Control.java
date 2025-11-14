@@ -3302,7 +3302,83 @@ public void setBounds (Rectangle rect) {
 	checkWidget ();
 	if (rect == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int zoom = computeBoundsZoom();
-	setBoundsInPixels(Win32DPIUtils.pointToPixel(rect, zoom));
+	Rectangle boundsInPixels = boundsToPixelsViaShellCoordinates(rect, zoom);
+	fitInParentBounds(boundsInPixels, zoom);
+	setBoundsInPixels(boundsInPixels);
+}
+
+/**
+ * Converts bounds to pixels via the shell coordinate system, such that the
+ * coordinates for every control are rounded in the same. Otherwise, child and
+ * parent controls may not fit as their coordinates are relative to different
+ * coordinate systems (the ones with their individual parent as origin), such
+ * that applied rounding leads to different values for the actually same
+ * coordinates. One consequence when not doing this is that child controls with
+ * x and y set to 0 and width and height set to the parent's bounds may be
+ * larger than the parent.
+ */
+private Rectangle boundsToPixelsViaShellCoordinates(Rectangle bounds, int zoom) {
+	Point.OfFloat parentOffsetToShell = calculateParentOffsetToShell();
+	Point.OfFloat parentOffsetToShellInPixels = Point.OfFloat
+			.from(Win32DPIUtils.pointToPixelAsSize(parentOffsetToShell, zoom));
+	Rectangle.OfFloat offsetRectangle = new Rectangle.OfFloat(bounds.x + parentOffsetToShell.getX(),
+			bounds.y + parentOffsetToShell.getY(), bounds.width, bounds.height);
+	Rectangle.OfFloat offsetRectangleInPixels = Rectangle.OfFloat
+			.from(Win32DPIUtils.pointToPixel(offsetRectangle, zoom));
+	int xInPixels = offsetRectangleInPixels.x - parentOffsetToShellInPixels.x;
+	int yInPixels = offsetRectangleInPixels.y - parentOffsetToShellInPixels.y;
+	int widthInPixels = offsetRectangleInPixels.width;
+	int heightInPixels = offsetRectangleInPixels.height;
+	return new Rectangle(xInPixels, yInPixels, widthInPixels, heightInPixels);
+}
+
+private Point.OfFloat calculateParentOffsetToShell() {
+	float parentX = 0;
+	float parentY = 0;
+	Control parent = getParent();
+	while (parent != null & !(parent instanceof Shell)) {
+		Rectangle.OfFloat parentLocation = Rectangle.OfFloat.from(parent.getBounds());
+		parentX += parentLocation.getX();
+		parentY += parentLocation.getY();
+		parent = parent.getParent();
+	}
+	return new Point.OfFloat(parentX, parentY);
+}
+
+/**
+ * Cope with limited invertibility of pixel/point conversions.
+ * <p>
+ * Example: 125% monitor, layout fills composite with single child
+ * <ul>
+ * <li>Composite with client area of 527 pixels
+ * <li>getClientArea() returns 527 / 1,25 = 421,6 points
+ * <li>So layout sets rounded 422 points to child
+ * <li>This conforms to 422 * 1,25 = 527,5 pixels, which is rounded up to 528,
+ * i.e., one more than parent size
+ * </ul>
+ * Alternatives:
+ * <ul>
+ * <li>rounding down the client area instead could lead to areas not redrawn, as
+ * rounded down 421 points result in 526 pixels, one less than the actual size
+ * of the composite
+ * <li>rounding down the passed bounds leads to controls becoming unnecessarily
+ * smaller than their calculated size
+ * </ul>
+ * Thus, reduce the control size in case it would not fit anyway
+ */
+private void fitInParentBounds(Rectangle boundsInPixels, int zoom) {
+	if (parent == null) {
+		return;
+	}
+	Rectangle parentBounds = parent.getBoundsInPixels();
+	if (parentBounds.width < boundsInPixels.x + boundsInPixels.width
+			&& parentBounds.width >= boundsInPixels.x + boundsInPixels.width - Win32DPIUtils.pointToPixel(1.0f, zoom)) {
+		boundsInPixels.width = parentBounds.width - boundsInPixels.x;
+	}
+	if (parentBounds.height < boundsInPixels.y + boundsInPixels.height && parentBounds.height >= boundsInPixels.y
+			+ boundsInPixels.height - Win32DPIUtils.pointToPixel(1.0f, zoom)) {
+		boundsInPixels.height = parentBounds.height - boundsInPixels.y;
+	}
 }
 
 void setBoundsInPixels (Rectangle rect) {
@@ -3817,9 +3893,7 @@ public void setRegion (Region region) {
 public void setSize (int width, int height) {
 	checkWidget ();
 	int zoom = computeBoundsZoom();
-	width = DPIUtil.pointToPixel(width, zoom);
-	height = DPIUtil.pointToPixel(height, zoom);
-	setSizeInPixels(width, height);
+	setSize(new Point(width, height), zoom);
 }
 
 void setSizeInPixels (int width, int height) {
@@ -3853,8 +3927,17 @@ void setSizeInPixels (int width, int height) {
 public void setSize (Point size) {
 	checkWidget ();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
-	size = Win32DPIUtils.pointToPixelAsSize(size, computeBoundsZoom());
-	setSizeInPixels(size.x, size.y);
+	int zoom = computeBoundsZoom();
+	setSize(size, zoom);
+}
+
+private void setSize(Point size, int zoom) {
+	Rectangle bounds = getBounds();
+	bounds.width = size.x;
+	bounds.height = size.y;
+	Rectangle boundsInPixels = boundsToPixelsViaShellCoordinates(bounds, zoom);
+	fitInParentBounds(boundsInPixels, zoom);
+	setSizeInPixels(boundsInPixels.width, boundsInPixels.height);
 }
 
 @Override
