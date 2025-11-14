@@ -441,17 +441,7 @@ public void test_drawImageLorg_eclipse_swt_graphics_ImageIIII_ImageDataProvider(
 
 @Test
 public void test_drawImageLorg_eclipse_swt_graphics_ImageIIII_ImageDataAtSizeProvider_invalid() {
-	ImageDataAtSizeProvider provider = new ImageDataAtSizeProvider() {
-		@Override
-		public ImageData getImageData(int zoom) {
-			return new ImageData(1 * zoom / 100, 1 * zoom / 100, 32, new PaletteData(0xFF0000, 0xFF00, 0xFF));
-		}
-
-		@Override
-		public ImageData getImageData(int width, int height) {
-			return null;
-		}
-	};
+	ImageDataAtSizeProvider provider = (width, height) -> null;
 	Image image = new Image(display, provider);
 	Image drawToImage = new Image(display, 1, 1);
 	try {
@@ -474,26 +464,19 @@ public void test_drawImageLorg_eclipse_swt_graphics_ImageIIII_ImageDataAtSizePro
 	gc.setAntialias(SWT.OFF);
 	RGB drawnRgb = new RGB(255, 255, 255);
 	RGB undrawnRgb = new RGB(0, 0, 0);
-	ImageDataAtSizeProvider imageDataAtSizeProvider = new ImageDataAtSizeProvider() {
-		@Override
-		public ImageData getImageData(int width, int height) {
-			PaletteData palette = new PaletteData(0xFF0000, 0xFF00, 0xFF);
-			int drawnPixel = palette.getPixel(drawnRgb);
-			ImageData imageData = new ImageData(width, height, 32, palette);
-			for (int i = 0; i < width; i++) {
-				imageData.setPixel(i, 0, drawnPixel);
-				imageData.setPixel(i, height - 1, drawnPixel);
-			}
-			for (int i = 0; i < height; i++) {
-				imageData.setPixel(0, i, drawnPixel);
-				imageData.setPixel(width - 1, i, drawnPixel);
-			}
-			return imageData;
+	ImageDataAtSizeProvider imageDataAtSizeProvider = (width1, height1) -> {
+		PaletteData palette = new PaletteData(0xFF0000, 0xFF00, 0xFF);
+		int drawnPixel = palette.getPixel(drawnRgb);
+		ImageData imageData = new ImageData(width1, height1, 32, palette);
+		for (int i = 0; i < width1; i++) {
+			imageData.setPixel(i, 0, drawnPixel);
+			imageData.setPixel(i, height1 - 1, drawnPixel);
 		}
-		@Override
-		public ImageData getImageData(int zoom) {
-			return new ImageData(1 * zoom / 100, 1 * zoom / 100, 32, new PaletteData(0xFF0000, 0xFF00, 0xFF));
+		for (int i = 0; i < height1; i++) {
+			imageData.setPixel(0, i, drawnPixel);
+			imageData.setPixel(width1 - 1, i, drawnPixel);
 		}
+		return imageData;
 	};
 	Image image = styleImage(new Image(display, imageDataAtSizeProvider), styleFlag);
 

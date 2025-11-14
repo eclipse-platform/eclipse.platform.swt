@@ -12,17 +12,65 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
+import org.eclipse.swt.internal.*;
+
 /**
- * Provides an API that is invoked by SWT when an image needs to be drawn at a
- * specified width and height.
- * <p>
- * Client code must implement this interface to supply {@link ImageData} on demand.
- * </p>
+ * An extension of the {@link ImageDataProvider} that is capable of providing
+ * image data at a specified size instead of or in addition to a specified zoom.
+ * This requires an implementation of the {@link #getImageData(int, int)} method
+ * for providing image data at a specified size. Optionally, the
+ * {@link #getDefaultSize()} method can be overwritten such that the image data
+ * can also be retrieved via a zoom that uses the default size as reference for
+ * the 100% version. This serves two use cases:
+ * <ol>
+ * <li>The image data source is size independent, such that the provider can
+ * specify at what size the image data is to be provided. As an example, an SVG
+ * image source may be defined at arbitrary size and the implementation of this
+ * provider can define at which default size the image is to be used at 100%
+ * zoom. To achieve this, the {@link #getImageData(int, int)} has to be
+ * implemented for the retrieval of image data at a given size and
+ * {@link #getDefaultSize()} has to be overwritten to define the default size at
+ * 100% zoom.
+ * <li>An image created with this data provider is to be drawn at a custom size
+ * (and not a specific zoom). Such a drawing can be performed via
+ * {@link GC#drawImage(Image, int, int, int, int)}. For this case,
+ * {@link #getDefaultSize()} does not need to be overwritten, as the zoom-based
+ * version of the image data is not of interest.
+ * </ol>
  *
  * @since 3.132
- * @noreference This class is still experimental API and might be subject to change.
+ * @noreference This class is still experimental API and might be subject to
+ *              change.
  */
 public interface ImageDataAtSizeProvider extends ImageDataProvider {
+
+	@Override
+	default ImageData getImageData(int zoom) {
+		Point defaultSize = getDefaultSize();
+		if (new Point(-1, -1).equals(defaultSize)) {
+			if (zoom == 100) {
+				return new ImageData(1, 1, 32, new PaletteData(0xFF0000, 0xFF00, 0xFF));
+			}
+			return null;
+		}
+		return getImageData(DPIUtil.pointToPixel(defaultSize.x, zoom), DPIUtil.pointToPixel(defaultSize.y, zoom));
+	}
+
+	/**
+	 * Returns the default size of the image data returned by this provider. It
+	 * conforms to the size of the data that is returned when calling
+	 * {@link #getImageData(int)} with a zoom value of 100.
+	 *
+	 * This method can also return (-1, -1), in which case
+	 * {@link #getImageData(int)} will return dummy data of size (1, 1). This
+	 * reduces potential overheads for the use case in which image data is only
+	 * retrieved size-based via {@link #getImageData(int, int)}.
+	 *
+	 * @return the default size of the data returned by this provider for 100% zoom
+	 */
+	default Point getDefaultSize() {
+		return new Point(-1, -1);
+	}
 
 	/**
 	 * Returns the {@link ImageData} for the given width and height.
@@ -42,7 +90,6 @@ public interface ImageDataAtSizeProvider extends ImageDataProvider {
 	 * @param height the desired height of the {@link ImageData} to be returned
 	 * @return the {@link ImageData} that exactly matches the requested width and
 	 *         height
-	 * @since 3.132
 	 */
 	ImageData getImageData(int width, int height);
 
