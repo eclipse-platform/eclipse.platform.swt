@@ -5187,21 +5187,17 @@ private void _setBackground (Color color) {
 	if (color != null && color.isDisposed ()) {
 		error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	boolean set = false;
 	GdkRGBA rgba = null;
 	if (color != null) {
 		rgba = color.handle;
 		backgroundAlpha = color.getAlpha();
 	}
-	set = true;
-	if (set) {
-		if (color == null) {
-			state &= ~BACKGROUND;
-		} else {
-			state |= BACKGROUND;
-		}
-		setBackgroundGdkRGBA (rgba);
+	if (color == null) {
+		state &= ~BACKGROUND;
+	} else {
+		state |= BACKGROUND;
 	}
+	setBackgroundGdkRGBA (rgba);
 	redrawChildren ();
 }
 
@@ -5539,8 +5535,7 @@ public void setForeground (Color color) {
 	if (color != null && color.isDisposed ()) {
 		error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	boolean set = false;
-	set = !getForeground().equals(color);
+	boolean set = !getForeground().equals(color);
 	if (set) {
 		if (color == null) {
 			state &= ~FOREGROUND;
