@@ -4704,24 +4704,11 @@ void redrawChildren () {
 
 void redrawWidget (int x, int y, int width, int height, boolean redrawAll, boolean all, boolean trim) {
 	if (!GTK.gtk_widget_get_realized(handle)) return;
-	GdkRectangle rect = new GdkRectangle ();
 	if (GTK.GTK4) {
-		long surface = paintSurface ();
-		if (redrawAll) {
-			int [] w = new int [1], h = new int [1];
-			gdk_surface_get_size (surface, w, h);
-			rect.width = w [0];
-			rect.height = h [0];
-		} else {
-			rect.x = x;
-			rect.y = y;
-			rect.width = Math.max (0, width);
-			rect.height = Math.max (0, height);
-		}
-		/* TODO: GTK4 no ability to invalidate surfaces, may need to keep track of
-		 * invalid regions ourselves and do gdk_surface_queue_expose. Will need a different way to force redraws
-		 * New "render" signal? */
+		// GTK4 has no ability to invalidate surfaces or regions/rectangle, mark the whole widget for redraw
+		GTK.gtk_widget_queue_draw(handle);
 	} else {
+		GdkRectangle rect = new GdkRectangle ();
 		long window = paintWindow ();
 		if (redrawAll) {
 			int [] w = new int [1], h = new int [1];
