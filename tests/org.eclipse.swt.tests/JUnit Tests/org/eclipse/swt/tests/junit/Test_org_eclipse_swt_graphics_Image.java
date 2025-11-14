@@ -42,10 +42,12 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.ImageDataAtSizeProvider;
 import org.eclipse.swt.graphics.ImageDataProvider;
 import org.eclipse.swt.graphics.ImageFileNameProvider;
 import org.eclipse.swt.graphics.ImageGcDrawer;
 import org.eclipse.swt.graphics.PaletteData;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.DPIUtil;
@@ -428,6 +430,25 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Device_ImageDataProvider()
 		return null;
 	};
 	image = new Image(display, provider4);
+	image.dispose();
+}
+
+@Test
+public void test_ConstructorLorg_eclipse_swt_graphics_Device_ImageDataAtSizeProvider() {
+	int imageSize = 10;
+	ImageDataAtSizeProvider provider = new ImageDataAtSizeProvider() {
+		@Override
+		public Point getDefaultSize() {
+			return new Point(imageSize, imageSize);
+		}
+		@Override
+		public ImageData getImageData(int width, int height) {
+			return new ImageData(width, height, 32, new PaletteData(0xFF0000, 0xFF00, 0xFF));
+		}
+	};
+	Image image = new Image(display, provider);
+	assertEquals(imageSize, image.getBounds().width);
+	assertEquals(imageSize * 2, image.getImageData(200).width);
 	image.dispose();
 }
 
