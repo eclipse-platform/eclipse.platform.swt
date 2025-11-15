@@ -255,7 +255,16 @@ pipeline {
 													sh build.sh clean
 													sh build.sh -gtk4 checklibs install-pi-only
 												elif [[ ${PLATFORM} == cocoa.macosx.* ]]; then
+													xcode-select --print-path
+													xcode-select --version
+													softwareupdate --list
+													softwareupdate --history
+													xcodebuild -version
+													xcodebuild -showsdks
 													sh build.sh install 
+													for f in libs/*; do
+														vtool -show ${f}
+													done
 												else
 													echo "Unexpected build platform ${PLATFORM}"
 													exit 1
