@@ -108,7 +108,7 @@ public int getAscent() {
  * @since 3.107
  */
 public double getAverageCharacterWidth() {
-	return getAverageCharWidth();
+	return DPIUtil.pixelToPoint((double)handle.tmAveCharWidth, getZoom());
 }
 
 /**
