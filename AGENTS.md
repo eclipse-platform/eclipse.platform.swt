@@ -1,4 +1,4 @@
-# GitHub Copilot Instructions for Eclipse Platform SWT
+# AGENTS.md - Eclipse SWT Guide for AI Tools
 
 ## Project Overview
 
@@ -43,10 +43,17 @@ mvn clean verify -DskipTests
 ```
 
 ### Building Natives
-To rebuild native libraries:
-1. Ensure the appropriate binary project is imported in your workspace (e.g., `binaries/org.eclipse.swt.gtk.linux.x86_64`)
-2. Native build scripts are platform-specific and located in the binary fragments
-3. For GTK on Linux: See `docs/gtk-dev-guide.md` for detailed instructions
+
+**GTK (Linux):**
+```bash
+cd bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library
+./build.sh -gtk-all install    # Build both GTK3 and GTK4
+```
+
+**CRITICAL**: Files like `os.c`, `os_stats.c`, `os_stats.h` are **auto-generated**. Never edit them directly!
+Instead: modify Java source (e.g., `OS.java`), clean/rebuild the project, then run `./build.sh`.
+
+See `docs/gtk-dev-guide.md` for detailed instructions.
 
 ## Coding Standards
 
@@ -66,7 +73,12 @@ To rebuild native libraries:
 ### Code Organization
 - Platform-independent code: `bundles/org.eclipse.swt/Eclipse SWT/common/`
 - Platform-specific code: `bundles/org.eclipse.swt/Eclipse SWT/{gtk,win32,cocoa}/`
+- JNI layer: `bundles/org.eclipse.swt/Eclipse SWT PI/{gtk,win32,cocoa}/`
 - Emulated widgets: `bundles/org.eclipse.swt/Eclipse SWT/emulated/`
+
+### OSGi Bundle Dependencies
+SWT is an OSGi bundle. Check `bundles/org.eclipse.swt/META-INF/MANIFEST.MF` before using external classes.
+If needed, add packages to `Import-Package` or `Require-Bundle`.
 
 ## Testing
 
@@ -147,12 +159,40 @@ mvn test -Dtest=ClassName
 - **GitHub Discussions**: Use for questions and general discussions
 - **GitHub Issues**: Use for bug reports and feature requests
 
-## Tips for Copilot
+## Critical Development Rules
 
-- When generating SWT code, always include proper resource disposal
-- Remember that SWT is not thread-safe - UI operations need Display.syncExec/asyncExec
-- Platform-specific code should go in the appropriate platform directory
-- When adding native methods, declare them in `OS.java` first
-- Follow existing code patterns in the repository for consistency
-- Use snippets in `examples/org.eclipse.swt.snippets/` as reference examples
-- Consider cross-platform compatibility when making changes
+### Resource Disposal
+**YOU MUST DISPOSE:** `Image`, `GC`, `Cursor`, `Region`, `Path`, `Pattern`
+**Auto-disposed (no manual disposal needed):** `Color`, `Font` (as of recent SWT versions)
+**DO NOT DISPOSE:** System colors/fonts, `ImageRegistry` images, Display/Shell (framework-managed)
+
+```java
+Image image = new Image(display, 100, 100);
+try {
+    // Use image
+} finally {
+    image.dispose();
+}
+```
+
+### Threading
+**All SWT code must run on the Display thread!**
+```java
+display.asyncExec(() -> button.setText("Updated"));
+```
+
+### Adding GTK Functions
+1. Add native method declaration to `OS.java` with JavaDoc annotations (`@param cast=`, `@method flags=dynamic`)
+2. Clean and rebuild `org.eclipse.swt` project (regenerates `os.c`)
+3. Rebuild natives: `cd bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library && ./build.sh -gtk3 install`
+
+## Tips for AI Tools
+
+- Always include proper resource disposal in generated code
+- Ensure UI operations use `Display.syncExec/asyncExec`
+- Platform-specific code goes in `{gtk,win32,cocoa}/` directories
+- When adding native methods, declare in `OS.java` first
+- Never edit auto-generated files (`os.c`, `os_stats.*`)
+- Use snippets in `examples/org.eclipse.swt.snippets/` as reference
+- Test cross-platform compatibility
+- Check MANIFEST.MF for OSGi dependencies
