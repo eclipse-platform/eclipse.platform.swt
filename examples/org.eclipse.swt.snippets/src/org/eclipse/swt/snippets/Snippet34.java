@@ -27,12 +27,12 @@ public class Snippet34 {
 
 public static void main (String[] args) {
 	Display display = new Display();
-	Image image = new Image (display, 16, 16);
 	Color color = display.getSystemColor (SWT.COLOR_RED);
-	GC gc = new GC (image);
-	gc.setBackground (color);
-	gc.fillRectangle (image.getBounds ());
-	gc.dispose ();
+	ImageGcDrawer imageGcDrawer = (gc, imageWidth, imageHeight) -> {
+		gc.setBackground (color);
+		gc.fillRectangle (new Rectangle(0,0,imageWidth, imageHeight));
+	};
+	Image image = new Image (display, imageGcDrawer, 16, 16);
 	Shell shell = new Shell (display);
 	shell.setText("Snippet 34");
 	Label label = new Label (shell, SWT.BORDER);

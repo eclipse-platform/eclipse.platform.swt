@@ -12,7 +12,6 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
-
 /*
  * ToolBar example snippet: create a flat tool bar (images)
  *
@@ -27,12 +26,13 @@ public class Snippet36 {
 
 public static void main (String [] args) {
 	Display display = new Display();
-	Image image = new Image (display, 16, 16);
 	Color color = display.getSystemColor (SWT.COLOR_RED);
-	GC gc = new GC (image);
-	gc.setBackground (color);
-	gc.fillRectangle (image.getBounds ());
-	gc.dispose ();
+	ImageGcDrawer imageGcDrawer = (gc, imageWidth, imageHeight) -> {
+		gc.setBackground(color);
+		gc.fillRectangle(0, 0, imageWidth, imageHeight);
+
+	};
+	Image image = new Image(display, imageGcDrawer, 16, 16);
 	Shell shell = new Shell (display);
 	shell.setText("Snippet 36");
 	ToolBar toolBar = new ToolBar (shell, SWT.FLAT | SWT.BORDER);
