@@ -51,11 +51,15 @@ public class DPIUtil {
 
 	private static String autoScaleValue;
 
-	private static final Set<String> ALLOWED_AUTOSCALE_VALUES_FOR_UPDATE_ON_RUNTIME = Set.of("quarter", "exact", "false");
+	private static final Set<String> ALLOWED_AUTOSCALE_VALUES_FOR_UPDATE_ON_RUNTIME = Set.of("quarter", "exact");
+
 	/**
-	 * System property to enable to scale the application on runtime
-	 * when a DPI change is detected.
+	 * System property to enable to scale the application on runtime when a DPI
+	 * change is detected.
 	 * <ul>
+	 * <li>"force": the application is scaled on DPI changes even if an unsupported
+	 * value for swt.autoScale are defined. See allowed values
+	 * {@link #ALLOWED_AUTOSCALE_VALUES_FOR_UPDATE_ON_RUNTIME}.</li>
 	 * <li>"true": the application is scaled on DPI changes</li>
 	 * <li>"false": the application will remain in its initial scaling</li>
 	 * </ul>
@@ -140,25 +144,19 @@ static void setAutoScaleValue(String autoScaleValueArg) {
  * scaling.
  */
 public static boolean isSetupCompatibleToMonitorSpecificScaling() {
-	if (DPIUtil.getAutoScaleValue() == null) {
+	if (!"win32".equals(SWT.getPlatform())) {
 		return false;
 	}
-
-	if (ALLOWED_AUTOSCALE_VALUES_FOR_UPDATE_ON_RUNTIME.contains(DPIUtil.getAutoScaleValue().toLowerCase())) {
+	if (autoScaleValue == null || "force".equals(System.getProperty(SWT_AUTOSCALE_UPDATE_ON_RUNTIME))) {
 		return true;
 	}
-	try {
-		Integer.parseInt(DPIUtil.getAutoScaleValue());
-		return true;
-	} catch (NumberFormatException e) {
-		// unsupported value, use default
-	}
-	return false;
+	String value = autoScaleValue.toLowerCase(Locale.ROOT);
+	return ALLOWED_AUTOSCALE_VALUES_FOR_UPDATE_ON_RUNTIME.contains(value);
 }
 
 public static boolean isMonitorSpecificScalingActive() {
-	boolean updateOnRuntimeValue = Boolean.getBoolean (DPIUtil.SWT_AUTOSCALE_UPDATE_ON_RUNTIME);
-	return updateOnRuntimeValue;
+	String updateOnRuntimeValue = System.getProperty(SWT_AUTOSCALE_UPDATE_ON_RUNTIME);
+	return "force".equalsIgnoreCase(updateOnRuntimeValue) || "true".equalsIgnoreCase(updateOnRuntimeValue);
 }
 
 public static int pixelToPoint(int size, int zoom) {
