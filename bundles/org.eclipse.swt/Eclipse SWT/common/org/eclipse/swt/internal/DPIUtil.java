@@ -51,7 +51,14 @@ public class DPIUtil {
 
 	private static String autoScaleValue;
 
-	private static final Set<String> ALLOWED_AUTOSCALE_VALUES_FOR_UPDATE_ON_RUNTIME = Set.of("quarter", "exact", "false");
+	private static final Set<String> ALLOWED_AUTOSCALE_VALUES_FOR_UPDATE_ON_RUNTIME = Set.of("quarter", "exact");
+
+	/**
+	 * System property that enforces to use autoScale value despite incompatibility
+	 * For e.g. Monitor-specific scaling with int200 autoscale value
+	 */
+	private static final String SWT_AUTOSCALE_DISABLE_COMPATIBILITY_CHECK = "swt.autoScale.force";
+
 	/**
 	 * System property to enable to scale the application on runtime
 	 * when a DPI change is detected.
@@ -140,20 +147,20 @@ static void setAutoScaleValue(String autoScaleValueArg) {
  * scaling.
  */
 public static boolean isSetupCompatibleToMonitorSpecificScaling() {
-	if (DPIUtil.getAutoScaleValue() == null) {
+	// Per-monitor DPI supported only on Windows
+	if (!"win32".equals(SWT.getPlatform())) {
 		return false;
 	}
 
-	if (ALLOWED_AUTOSCALE_VALUES_FOR_UPDATE_ON_RUNTIME.contains(DPIUtil.getAutoScaleValue().toLowerCase())) {
+	// Default means: treat as "quarter" (compatible)
+	if (autoScaleValue == null || "true".equalsIgnoreCase(System.getProperty(SWT_AUTOSCALE_DISABLE_COMPATIBILITY_CHECK))) {
 		return true;
 	}
-	try {
-		Integer.parseInt(DPIUtil.getAutoScaleValue());
-		return true;
-	} catch (NumberFormatException e) {
-		// unsupported value, use default
-	}
-	return false;
+
+	String value = autoScaleValue.toLowerCase(Locale.ROOT);
+
+	// Compatible only if one of the known values
+	return ALLOWED_AUTOSCALE_VALUES_FOR_UPDATE_ON_RUNTIME.contains(value);
 }
 
 public static boolean isMonitorSpecificScalingActive() {
