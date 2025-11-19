@@ -2711,9 +2711,4 @@ int getSystemMetrics(int nIndex) {
 	return OS.GetSystemMetricsForDpi(nIndex, DPIUtil.mapZoomToDPI(nativeZoom));
 }
 
-boolean adjustWindowRectEx(RECT lpRect, int dwStyle, boolean bMenu, int dwExStyle) {
-	return OS.AdjustWindowRectExForDpi (lpRect, dwStyle, bMenu, dwExStyle, DPIUtil.mapZoomToDPI(nativeZoom));
-}
-
-
 }

@@ -6097,6 +6097,12 @@ void handleDPIChange(Event event, float scalingFactor) {
 	}
 }
 
+boolean adjustWindowRectEx(RECT lpRect, int dwStyle, boolean bMenu, int dwExStyle) {
+	Shell shell = getShell();
+	int zoom = shell != null ? shell.getZoom() : nativeZoom;
+	return OS.AdjustWindowRectExForDpi (lpRect, dwStyle, bMenu, dwExStyle, DPIUtil.mapZoomToDPI(zoom));
+}
+
 private static void resizeFont(Control control, int newZoom) {
 	Display display = control.getDisplay();
 	Font font = control.font;
