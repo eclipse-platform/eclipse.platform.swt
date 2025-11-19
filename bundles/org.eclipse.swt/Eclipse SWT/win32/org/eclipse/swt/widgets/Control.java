@@ -6097,6 +6097,13 @@ void handleDPIChange(Event event, float scalingFactor) {
 	}
 }
 
+@Override
+int getSystemMetrics(int nIndex) {
+	Shell shell = getShell();
+	int zoom = shell != null ? shell.getZoom() : nativeZoom;
+	return OS.GetSystemMetricsForDpi(nIndex, DPIUtil.mapZoomToDPI(zoom));
+}
+
 boolean adjustWindowRectEx(RECT lpRect, int dwStyle, boolean bMenu, int dwExStyle) {
 	Shell shell = getShell();
 	int zoom = shell != null ? shell.getZoom() : nativeZoom;
