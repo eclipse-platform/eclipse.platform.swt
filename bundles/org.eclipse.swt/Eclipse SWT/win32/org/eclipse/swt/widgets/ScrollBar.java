@@ -999,4 +999,12 @@ LRESULT wmScrollChild (long wParam, long lParam) {
 	return null;
 }
 
+@Override
+int getSystemMetrics(int nIndex) {
+	// Control#getSystemMetrics should be used if possible,
+	// as it considers if autoscaling of a Control is
+	// disabled which would affect the ScrollBar as well,
+	// therefore the value is fetched via the parent
+	return parent.getSystemMetrics(nIndex);
+}
 }
