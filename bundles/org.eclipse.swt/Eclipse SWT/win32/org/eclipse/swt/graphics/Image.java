@@ -2262,21 +2262,20 @@ private class PlainImageProviderWrapper extends AbstractImageProviderWrapper {
 
 	@Override
 	ImageData newImageData(ZoomContext zoomContext) {
-		int targetZoom = zoomContext.targetZoom();
+		return loadImageDataWithGrayOrDisablement(zoomContext.targetZoom()).element();
+	}
+
+	@Override
+	protected ElementAtZoom<ImageData> loadImageData(int targetZoom) {
 		if (zoomLevelToImageHandle.isEmpty()) {
-			return createBaseHandle(targetZoom).getImageData();
+			return new ElementAtZoom<> (createBaseHandle(targetZoom).getImageData(), targetZoom);
 		}
 		// if a GC is initialized with an Image (memGC != null), the image data must not be resized, because it would
 		// be a destructive operation. Therefor, a new handle is created for the requested zoom
 		if (memGC != null) {
-			return newImageHandle(zoomContext).getImageData();
+			return new ElementAtZoom<> (newImageHandle(new ZoomContext(targetZoom)).getImageData(), targetZoom);
 		}
-		return getScaledImageData(targetZoom);
-	}
-
-	@Override
-	protected ElementAtZoom<ImageData> loadImageData(int zoom) {
-		return getClosestAvailableImageData(zoom);
+		return new ElementAtZoom<> (getScaledImageData(targetZoom), targetZoom);
 	}
 
 	@Override
