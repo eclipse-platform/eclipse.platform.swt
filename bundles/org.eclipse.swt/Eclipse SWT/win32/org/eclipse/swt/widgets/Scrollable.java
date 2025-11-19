@@ -120,12 +120,12 @@ long callWindowProc (long hwnd, int msg, long wParam, long lParam) {
  */
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
-	int zoom = getZoom();
+	int zoom = computeBoundsZoom();
 	Rectangle rectangle = Win32DPIUtils.pointToPixelWithSufficientlyLargeSize(new Rectangle(x, y, width, height), zoom);
-	return Win32DPIUtils.pixelToPointWithSufficientlyLargeSize(computeTrimInPixels(rectangle.x, rectangle.y, rectangle.width, rectangle.height), zoom);
+	return Win32DPIUtils.pixelToPointWithSufficientlyLargeSize(computeTrimInPixels(rectangle.x, rectangle.y, rectangle.width, rectangle.height, zoom), zoom);
 }
 
-Rectangle computeTrimInPixels (int x, int y, int width, int height) {
+Rectangle computeTrimInPixels (int x, int y, int width, int height, int zoom) {
 	long scrolledHandle = scrolledHandle ();
 	RECT rect = new RECT ();
 	OS.SetRect (rect, x, y, x + width, y + height);

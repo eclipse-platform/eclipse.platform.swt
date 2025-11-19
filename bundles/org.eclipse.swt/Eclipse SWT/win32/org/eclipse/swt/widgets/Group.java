@@ -166,9 +166,9 @@ Point computeSizeInPixels (Point hintInPoints, int zoom, boolean changed) {
 	return size;
 }
 
-@Override Rectangle computeTrimInPixels (int x, int y, int width, int height) {
+@Override Rectangle computeTrimInPixels (int x, int y, int width, int height, int zoom) {
 	checkWidget ();
-	Rectangle trim = super.computeTrimInPixels (x, y, width, height);
+	Rectangle trim = super.computeTrimInPixels (x, y, width, height, zoom);
 	long newFont, oldFont = 0;
 	long hDC = OS.GetDC (handle);
 	newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);

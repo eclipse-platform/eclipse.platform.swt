@@ -200,7 +200,7 @@ Point computeSizeInPixels (Point hintInPoints, int zoom, boolean changed) {
 	return size;
 }
 
-@Override Rectangle computeTrimInPixels (int x, int y, int width, int height) {
+@Override Rectangle computeTrimInPixels (int x, int y, int width, int height, int zoom) {
 	checkWidget ();
 	RECT rect = new RECT ();
 	OS.SetRect (rect, x, y, x + width, y + height);

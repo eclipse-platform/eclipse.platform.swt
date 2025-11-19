@@ -303,11 +303,11 @@ Point computeSizeInPixels (Point hintInPoints, int zoom, boolean changed) {
 		height = Math.max(height, upDownHeight + borderAdjustment);
 	}
 
-	Rectangle trim = computeTrimInPixels (0, 0, width, height);
+	Rectangle trim = computeTrimInPixels (0, 0, width, height, zoom);
 	return new Point (trim.width, trim.height);
 }
 
-@Override Rectangle computeTrimInPixels (int x, int y, int width, int height) {
+@Override Rectangle computeTrimInPixels (int x, int y, int width, int height, int zoom) {
 	checkWidget ();
 
 	/* Get the trim of the text control */

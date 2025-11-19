@@ -279,7 +279,7 @@ Control computeTabRoot () {
 	return this;
 }
 
-@Override Rectangle computeTrimInPixels (int x, int y, int width, int height) {
+@Override Rectangle computeTrimInPixels (int x, int y, int width, int height, int zoom) {
 	checkWidget ();
 
 	/* Get the size of the trimmings */

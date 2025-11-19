@@ -172,7 +172,7 @@ Point computeSizeInPixels (Point hintInPoints, int zoom, boolean changed) {
 	if (height == 0) height = DEFAULT_HEIGHT;
 	if (hintInPoints.x != SWT.DEFAULT) width = hintInPixels.x;
 	if (hintInPoints.y != SWT.DEFAULT) height = hintInPixels.y;
-	Rectangle trim = computeTrimInPixels (0, 0, width, height);
+	Rectangle trim = computeTrimInPixels (0, 0, width, height, zoom);
 	return new Point (trim.width, trim.height);
 }
 

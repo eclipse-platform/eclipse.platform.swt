@@ -748,13 +748,13 @@ Point computeSizeInPixels (Point hintInPoints, int zoom, boolean changed) {
 	if (height == 0) height = DEFAULT_HEIGHT;
 	if (hintInPoints.x != SWT.DEFAULT) width = hintInPixels.x;
 	if (hintInPoints.y != SWT.DEFAULT) height = hintInPixels.y;
-	Rectangle trim = computeTrimInPixels (0, 0, width, height);
+	Rectangle trim = computeTrimInPixels (0, 0, width, height, zoom);
 	return new Point (trim.width, trim.height);
 }
 
-@Override Rectangle computeTrimInPixels (int x, int y, int width, int height) {
+@Override Rectangle computeTrimInPixels (int x, int y, int width, int height, int zoom) {
 	checkWidget ();
-	Rectangle rect = super.computeTrimInPixels (x, y, width, height);
+	Rectangle rect = super.computeTrimInPixels (x, y, width, height, zoom);
 	/*
 	* The preferred height of a single-line text widget
 	* has been hand-crafted to be the same height as

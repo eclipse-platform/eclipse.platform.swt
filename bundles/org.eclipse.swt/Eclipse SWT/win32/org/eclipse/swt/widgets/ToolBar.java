@@ -272,7 +272,7 @@ Point computeSizeInPixels (Point hintInPoints, int zoom, boolean changed) {
 	if (height == 0) height = DEFAULT_HEIGHT;
 	if (hintInPoints.x != SWT.DEFAULT) width = hintInPixels.x;
 	if (hintInPoints.y != SWT.DEFAULT) height = hintInPixels.y;
-	Rectangle trim = computeTrimInPixels (0, 0, width, height);
+	Rectangle trim = computeTrimInPixels (0, 0, width, height, zoom);
 	width = trim.width;  height = trim.height;
 	/*
 	 * Cache this size information for possible re-use as this method gets called
@@ -283,8 +283,8 @@ Point computeSizeInPixels (Point hintInPoints, int zoom, boolean changed) {
 	return new Point (width, height);
 }
 
-@Override Rectangle computeTrimInPixels (int x, int y, int width, int height) {
-	Rectangle trim = super.computeTrimInPixels (x, y, width, height);
+@Override Rectangle computeTrimInPixels (int x, int y, int width, int height, int zoom) {
+	Rectangle trim = super.computeTrimInPixels (x, y, width, height, zoom);
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	if ((bits & OS.CCS_NODIVIDER) == 0) trim.height += 2;
 	return trim;
