@@ -1214,7 +1214,7 @@ int getBorderWidthInPixels () {
  */
 public Rectangle getBounds (){
 	checkWidget ();
-	return Win32DPIUtils.pixelToPoint(getBoundsInPixels (), computeBoundsZoom());
+	return Win32DPIUtils.pixelToPoint(getBoundsInPixels (), computeGetBoundsZoom());
 }
 
 Rectangle getBoundsInPixels () {
@@ -1410,7 +1410,7 @@ public Object getLayoutData () {
 public Point getLocation () {
 	checkWidget ();
 	//For a location the closest point values is okay
-	return Win32DPIUtils.pixelToPointAsLocation(getLocationInPixels(), computeBoundsZoom());
+	return Win32DPIUtils.pixelToPointAsLocation(getLocationInPixels(), computeGetBoundsZoom());
 }
 
 Point getLocationInPixels () {
@@ -1566,7 +1566,7 @@ public Shell getShell () {
  */
 public Point getSize (){
 	checkWidget ();
-	return Win32DPIUtils.pixelToPointAsSize(getSizeInPixels (), computeBoundsZoom());
+	return Win32DPIUtils.pixelToPointAsSize(getSizeInPixels (), computeGetBoundsZoom());
 }
 
 Point getSizeInPixels () {
@@ -4831,7 +4831,14 @@ int getShellZoom() {
 	return nativeZoom;
 }
 
-private int computeBoundsZoom() {
+private int computeGetBoundsZoom() {
+	if (parent != null && !autoScaleDisabled) {
+		return parent.getZoom();
+	}
+	return getZoom();
+}
+
+int computeBoundsZoom() {
 	if (parent != null) {
 		return parent.getZoom();
 	}
