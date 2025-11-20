@@ -1328,7 +1328,7 @@ public ImageData getImageData (int zoom) {
 	if (zoomLevelToImageHandle.containsKey(zoom)) {
 		return zoomLevelToImageHandle.get(zoom).getImageData();
 	}
-	return this.imageProvider.newImageData(new ZoomContext(zoom));
+	return this.imageProvider.newImageData(zoom);
 }
 
 
@@ -2007,7 +2007,7 @@ private abstract class AbstractImageProviderWrapper {
 
 	protected abstract ElementAtZoom<ImageData> loadImageData(int zoom);
 
-	abstract ImageData newImageData(ZoomContext zoomContext);
+	abstract ImageData newImageData(int zoom);
 
 	abstract AbstractImageProviderWrapper createCopy(Image image);
 
@@ -2068,8 +2068,8 @@ private class ExistingImageHandleProviderWrapper extends AbstractImageProviderWr
 	}
 
 	@Override
-	ImageData newImageData(ZoomContext zoomContext) {
-		return getScaledImageData(zoomContext.targetZoom());
+	ImageData newImageData(int zoom) {
+		return getScaledImageData(zoom);
 	}
 
 	@Override
@@ -2095,18 +2095,18 @@ private abstract class ImageFromImageDataProviderWrapper extends AbstractImagePr
 	void initImage() {
 		// As the init call configured some Image attributes (e.g. type)
 		// it must be called
-		newImageData(new ZoomContext(100));
+		newImageData(100);
 	}
 
 	@Override
-	ImageData newImageData(ZoomContext zoomContext) {
+	ImageData newImageData(int zoom) {
 		Function<Integer, ImageData> imageDataRetrieval = zoomToRetrieve -> {
-			ImageHandle handle = initializeHandleFromSource(zoomContext);
+			ImageHandle handle = initializeHandleFromSource(new ZoomContext(zoomToRetrieve));
 			ImageData data = handle.getImageData();
 			handle.destroy();
 			return data;
 		};
-		return (ImageData) cachedImageData.computeIfAbsent(zoomContext.targetZoom(), imageDataRetrieval).clone();
+		return (ImageData) cachedImageData.computeIfAbsent(zoom, imageDataRetrieval).clone();
 	}
 
 	@Override
@@ -2270,17 +2270,16 @@ private class PlainImageProviderWrapper extends AbstractImageProviderWrapper {
 	}
 
 	@Override
-	ImageData newImageData(ZoomContext zoomContext) {
-		int targetZoom = zoomContext.targetZoom();
+	ImageData newImageData(int zoom) {
 		if (zoomLevelToImageHandle.isEmpty()) {
-			return createBaseHandle(targetZoom).getImageData();
+			return createBaseHandle(zoom).getImageData();
 		}
 		// if a GC is initialized with an Image (memGC != null), the image data must not be resized, because it would
 		// be a destructive operation. Therefor, a new handle is created for the requested zoom
 		if (memGC != null) {
-			return newImageHandle(zoomContext).getImageData();
+			return newImageHandle(new ZoomContext(zoom)).getImageData();
 		}
-		return getScaledImageData(targetZoom);
+		return getScaledImageData(zoom);
 	}
 
 	@Override
@@ -2392,14 +2391,14 @@ private abstract class BaseImageProviderWrapper<T> extends DynamicImageProviderW
 	}
 
 	@Override
-	ImageData newImageData(ZoomContext zoomContext) {
+	ImageData newImageData(int zoom) {
 		Function<Integer, ImageData> imageDataRetrival = zoomToRetrieve -> {
 			ImageHandle handle = initializeHandleFromSource(zoomToRetrieve);
 			ImageData data = handle.getImageData();
 			handle.destroy();
 			return data;
 		};
-		return (ImageData) cachedImageData.computeIfAbsent(zoomContext.targetZoom(), imageDataRetrival).clone();
+		return (ImageData) cachedImageData.computeIfAbsent(zoom, imageDataRetrival).clone();
 	}
 
 	@Override
@@ -2432,7 +2431,7 @@ private class ImageFileNameProviderWrapper extends BaseImageProviderWrapper<Imag
 		super(provider, ImageFileNameProvider.class);
 		// Checks for the contract of the passed provider require
 		// checking for valid image data creation
-		newImageData(new ZoomContext(DPIUtil.getDeviceZoom()));
+		newImageData(DPIUtil.getDeviceZoom());
 	}
 
 	@Override
@@ -2735,8 +2734,8 @@ private class ImageGcDrawerWrapper extends DynamicImageProviderWrapper {
 	}
 
 	@Override
-	ImageData newImageData(ZoomContext zoomContext) {
-		return loadImageData(zoomContext.targetZoom).element();
+	ImageData newImageData(int zoom) {
+		return loadImageData(zoom).element();
 	}
 
 	@Override
