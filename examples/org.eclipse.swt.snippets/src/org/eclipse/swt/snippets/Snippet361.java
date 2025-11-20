@@ -171,10 +171,6 @@ public class Snippet361 {
 				if (printer.startPage()) {
 					printerGC.drawImage(
 						printerImage,
-						0,
-						0,
-						imageData.width,
-						imageData.height,
 						-trim.x,
 						-trim.y,
 						scaleFactor * imageData.width,

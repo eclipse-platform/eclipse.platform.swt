@@ -1448,13 +1448,8 @@ boolean paint (GC gc, CTableColumn column, boolean backgroundOnly) {
 
 		/* draw the image */
 		if (image != null) {
-			Rectangle imageBounds = image.getBounds ();
-			gc.drawImage (
-				image,
-				0, 0,									/* source x, y */
-				imageBounds.width, imageBounds.height,	/* source width, height */
-				imageArea.x, imageArea.y,				/* dest x, y */
-				imageArea.width, imageArea.height);		/* dest width, height */
+			gc.drawImage(image, imageArea.x, imageArea.y, /* dest x, y */
+					imageArea.width, imageArea.height); /* dest width, height */
 		}
 
 		/* draw the text */

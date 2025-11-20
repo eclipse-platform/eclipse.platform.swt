@@ -28,7 +28,6 @@ import org.eclipse.swt.browser.VisibilityWindowListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -189,10 +188,9 @@ public class BrowserExample {
 			data.right = new FormAttachment(100, -5);
 			canvas.setLayoutData(data);
 
-			final Rectangle rect = images[0].getBounds();
 			canvas.addListener(SWT.Paint, e -> {
 				Point pt = ((Canvas)e.widget).getSize();
-				e.gc.drawImage(images[index], 0, 0, rect.width, rect.height, 0, 0, pt.x, pt.y);
+				e.gc.drawImage(images[index], 0, 0, pt.x, pt.y);
 			});
 			canvas.addListener(SWT.MouseDown, e -> browser.setUrl(getResourceString("Startup")));
 

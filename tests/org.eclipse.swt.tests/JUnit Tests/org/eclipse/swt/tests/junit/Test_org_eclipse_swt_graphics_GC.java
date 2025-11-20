@@ -278,8 +278,7 @@ public void test_drawImage_nonAutoScalableGC_bug_2504() throws InterruptedExcept
     canvas.setSize(canvasWidth, canvasHeight);
     AtomicBoolean paintListenerCalled = new AtomicBoolean();
     canvas.addPaintListener(e -> {
-        e.gc.drawImage(image, 0, 0, bounds.width, bounds.height,
-                       0, 0, canvasWidth, canvasHeight);
+		e.gc.drawImage(image, 0, 0, canvasWidth, canvasHeight);
         paintListenerCalled.set(true);
     });
 
