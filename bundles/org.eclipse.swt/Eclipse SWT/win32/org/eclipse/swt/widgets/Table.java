@@ -7336,6 +7336,20 @@ LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, long lParam) {
 	return null;
 }
 
+void destroyImageList() {
+	// Bug in windows: Cannot set the imageList handle to 0 directly, it doesn't
+	// seems to cache the previous imageList and show flaky behavior. Instead set
+	// the size of the image to the minimum (1,1) and then set the imageList to 0.
+	long hImageList = OS.ImageList_Create (1, 1, 0, 0, 0);
+	long oldStateImageList = OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_STATE, hImageList);
+	long oldhImageList = OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, hImageList);
+	OS.ImageList_Destroy(oldStateImageList);
+	OS.ImageList_Destroy(oldhImageList);
+	OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_STATE, 0);
+	OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, 0);
+	OS.ImageList_Destroy(hImageList);
+}
+
 @Override
 void handleDPIChange(Event event, float scalingFactor) {
 	super.handleDPIChange(event, scalingFactor);
@@ -7358,6 +7372,12 @@ void handleDPIChange(Event event, float scalingFactor) {
 		imageList = null;
 	}
 
+	if ((style & SWT.CHECK) != 0 ) {
+		destroyImageList();
+		int size = getItemHeightInPixels();
+		setCheckboxImageList(size, size, true);
+	}
+
 	// if the item height was set at least once programmatically with CDDS_SUBITEMPREPAINT,
 	// the item height of the table is not managed by the OS anymore e.g. when the zoom
 	// on the monitor is changed, the height of the item will stay at the fixed size.
@@ -7375,7 +7395,6 @@ void handleDPIChange(Event event, float scalingFactor) {
 		// Update scrollbar width if no columns are available
 		 setScrollWidth(scrollWidth);
 	}
-	 fixCheckboxImageListColor (true);
-	 settingItemHeight = false;
+	settingItemHeight = false;
 }
 }
