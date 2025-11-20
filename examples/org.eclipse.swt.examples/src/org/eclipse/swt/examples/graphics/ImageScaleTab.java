@@ -14,7 +14,10 @@
 
 package org.eclipse.swt.examples.graphics;
 
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.graphics.Device;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Rectangle;
 
 /**
  * This tab demonstrates how an image can be scaled.
@@ -45,9 +48,8 @@ public void paint(GC gc, int width, int height) {
 	Device device = gc.getDevice();
 	Image image = GraphicsExample.loadImage(device, GraphicsExample.class, "houses.png");
 
-	Rectangle bounds = image.getBounds();
 	Rectangle canvasBounds = example.canvas.getBounds();
-	gc.drawImage(image, 0, 0, bounds.width, bounds.height, 0, 0, canvasBounds.width, canvasBounds.height);
+	gc.drawImage(image, 0, 0, canvasBounds.width, canvasBounds.height);
 
 	image.dispose();
 }

@@ -507,8 +507,6 @@ void paint (GC gc) {
 		int drawHeight = Math.min (imageBounds.height, headerHeight - 2 * padding);
 		gc.drawImage (
 			super.getImage (),
-			0, 0,
-			imageBounds.width, imageBounds.height,
 			startX, (headerHeight - drawHeight) / 2,
 			imageBounds.width, drawHeight);
 		startX += imageBounds.width + CTable.MARGIN_IMAGE;

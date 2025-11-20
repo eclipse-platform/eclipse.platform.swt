@@ -77,7 +77,7 @@ public class AdvancedGraphics {
 			tr.translate(rect.width / 4, rect.height / 2);
 			tr.rotate(-30);
 			if (image != null) {
-				gc.drawImage(image, 0, 0, rect.width, rect.height, 0, 0, rect.width, rect.height);
+				gc.drawImage(image, 0, 0);
 			}
 			gc.setAlpha(100);
 			gc.setTransform(tr);

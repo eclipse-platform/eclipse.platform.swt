@@ -7302,8 +7302,7 @@ LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, long lParam) {
 						Point size = imageList == null ? new Point (rect.width, rect.height) : Win32DPIUtils.pointToPixelAsSize(imageList.getImageSize(), getZoom());
 						int y = imageRect.top + Math.max (0, (imageRect.bottom - imageRect.top - size.y) / 2);
 						int zoom = getZoom();
-						rect = Win32DPIUtils.pixelToPoint(rect, zoom);
-						gc.drawImage (image, rect.x, rect.y, rect.width, rect.height, DPIUtil.pixelToPoint(x, zoom), DPIUtil.pixelToPoint(y, zoom), DPIUtil.pixelToPoint(size.x, zoom), DPIUtil.pixelToPoint(size.y, zoom));
+						gc.drawImage (image, DPIUtil.pixelToPoint(x, zoom), DPIUtil.pixelToPoint(y, zoom), DPIUtil.pixelToPoint(size.x, zoom), DPIUtil.pixelToPoint(size.y, zoom));
 						x += size.x + INSET + (pinfo.iSubItem == 0 ? -2 : 4);
 					} else {
 						x += INSET + 2;
