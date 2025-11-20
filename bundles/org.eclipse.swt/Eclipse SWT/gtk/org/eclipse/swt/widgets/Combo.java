@@ -2695,6 +2695,17 @@ void updateCss() {
 	// Deal with background
 	if (background != null) {
 		final String colorString = display.gtk_rgba_to_css_string(background);
+		GdkRGBA menuBackground = new GdkRGBA();
+		menuBackground.red = background.red;
+		menuBackground.green = background.green;
+		menuBackground.blue = background.blue;
+		menuBackground.alpha = 1.0;
+		/* Ensures that the popup menu is not transparent and as a result unreadable
+		 * This way effects like "light" transparency (alpha > 0.85) can not be achieved.
+		 * Having any transparency of the popup is generally unwanted as it hurts visibility so
+		 * if such a feature is usable to anyone it would need new dedicated API.
+		 */
+		final String menuColorString = display.gtk_rgba_to_css_string(menuBackground);
 
 		/*
 		 * Use 'background:' instead of 'background-color:' to also override
@@ -2702,7 +2713,7 @@ void updateCss() {
 		 * 'background-image:' for 'GtkToggleButton' used in READ_ONLY combo.
 		 */
 		css.append("* {background: " + colorString + ";}\n");
-		css.append("menu {background: " + colorString + ";}\n");
+		css.append("menu {background: " + menuColorString + ";}\n");
 
 		/*
 		 * Setting background color for '*' also affects selection background,
