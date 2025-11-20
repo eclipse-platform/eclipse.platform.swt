@@ -25,44 +25,46 @@ import org.eclipse.swt.widgets.*;
 
 public class Snippet275 {
 
-static String value;
-public static void main (String[] args) {
-	final int INTERVAL = 888;
-	final Display display = new Display ();
-	final Image image = new Image (display, 750, 750);
-	GC gc = new GC (image);
-	gc.setBackground (display.getSystemColor (SWT.COLOR_RED));
-	gc.fillRectangle (image.getBounds ());
-	gc.dispose ();
+	static String value;
 
-	Shell shell = new Shell (display);
-	shell.setText("Snippet 275");
-	shell.setBounds (10, 10, 790, 790);
-	final Canvas canvas = new Canvas (shell, SWT.NONE);
-	canvas.setBounds (10, 10, 750, 750);
-	canvas.addListener (SWT.Paint, event -> {
-		value = String.valueOf (System.currentTimeMillis ());
-		event.gc.drawImage (image, 0, 0);
-		event.gc.drawString (value, 10, 10, true);
-	});
-	display.timerExec (INTERVAL, new Runnable () {
-		@Override
-		public void run () {
-			if (canvas.isDisposed ()) return;
-			// canvas.redraw (); // <-- bad, damages more than is needed
-			GC gc = new GC (canvas);
-			Point extent = gc.stringExtent (value + '0');
-			gc.dispose ();
-			canvas.redraw (10, 10, extent.x, extent.y, false);
-			display.timerExec (INTERVAL, this);
+	public static void main(String[] args) {
+		final int INTERVAL = 888;
+		final Display display = new Display();
+		ImageGcDrawer imageGcDrawer = (gc, imageWidth, imageHeight) -> {
+			gc.setBackground(display.getSystemColor(SWT.COLOR_RED));
+			gc.fillRectangle(new Rectangle(0, 0, imageWidth, imageHeight));
+		};
+		final Image image = new Image(display, imageGcDrawer, 750, 750);
+		Shell shell = new Shell(display);
+		shell.setText("Snippet 275");
+		shell.setBounds(10, 10, 790, 790);
+		final Canvas canvas = new Canvas(shell, SWT.NONE);
+		canvas.setBounds(10, 10, 750, 750);
+		canvas.addListener(SWT.Paint, event -> {
+			value = String.valueOf(System.currentTimeMillis());
+			event.gc.drawImage(image, 0, 0);
+			event.gc.drawString(value, 10, 10, true);
+		});
+		display.timerExec(INTERVAL, new Runnable() {
+			@Override
+			public void run() {
+				if (canvas.isDisposed())
+					return;
+				// canvas.redraw (); // <-- bad, damages more than is needed
+				GC gc = new GC(canvas);
+				Point extent = gc.stringExtent(value + '0');
+				gc.dispose();
+				canvas.redraw(10, 10, extent.x, extent.y, false);
+				display.timerExec(INTERVAL, this);
+			}
+		});
+		shell.open();
+		while (!shell.isDisposed()) {
+			if (!display.readAndDispatch())
+				display.sleep();
 		}
-	});
-	shell.open ();
-	while (!shell.isDisposed ()){
-		if (!display.readAndDispatch ()) display.sleep ();
+		image.dispose();
+		display.dispose();
 	}
-	image.dispose ();
-	display.dispose ();
-}
 
 }

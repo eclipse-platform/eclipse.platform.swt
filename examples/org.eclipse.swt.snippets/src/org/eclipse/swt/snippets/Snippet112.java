@@ -28,12 +28,14 @@ public class Snippet112 {
 
 public static void main (String [] args) {
 	Display display = new Display ();
-	final Image image = new Image (display, 20, 20);
 	Color color = display.getSystemColor (SWT.COLOR_RED);
-	GC gc = new GC (image);
-	gc.setBackground (color);
-	gc.fillRectangle (image.getBounds ());
-	gc.dispose ();
+
+	final ImageGcDrawer imageGcDrawer = (gc, imageWidth, imageHeight) -> {
+		gc.setBackground(color);
+		gc.fillRectangle(0, 0, imageWidth, imageHeight);
+	};
+
+	final Image image = new Image (display, imageGcDrawer, 20, 20);
 
 	Shell shell = new Shell (display);
 	shell.setText("Snippet 112");
