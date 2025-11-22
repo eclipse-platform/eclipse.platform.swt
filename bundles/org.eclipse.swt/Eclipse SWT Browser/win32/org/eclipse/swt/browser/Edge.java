@@ -551,7 +551,8 @@ private static void processOSMessagesUntil(Supplier<Boolean> condition, Consumer
 	MSG msg = new MSG();
 	AtomicBoolean timeoutOccurred = new AtomicBoolean();
 	// The timer call also wakes up the display to avoid being stuck in display.sleep()
-	display.timerExec((int) MAXIMUM_OPERATION_TIME.toMillis(), () -> timeoutOccurred.set(true));
+	Runnable runnable = () -> timeoutOccurred.set(true);
+	display.timerExec((int) MAXIMUM_OPERATION_TIME.toMillis(), runnable);
 	while (!display.isDisposed() && !condition.get() && !timeoutOccurred.get()) {
 		if (OS.PeekMessage(msg, 0, 0, 0, OS.PM_NOREMOVE | OS.PM_QS_POSTMESSAGE)) {
 			display.readAndDispatch();
@@ -559,6 +560,7 @@ private static void processOSMessagesUntil(Supplier<Boolean> condition, Consumer
 			display.sleep();
 		}
 	}
+	display.timerExec(-1, runnable);
 	if (!condition.get()) {
 		timeoutHandler.accept(createTimeOutException());
 	}

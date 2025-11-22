@@ -76,6 +76,7 @@ import org.eclipse.swt.browser.WindowEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Shell;
@@ -2979,6 +2980,18 @@ public void test_TabTraversalOutOfBrowser() {
 	assertTrue(waitForPassCondition(textGainedFocus::get));
 	assertFalse(browser.isFocusControl());
 	assertTrue(text.isFocusControl());
+}
+
+// Regression test for https://github.com/eclipse-platform/eclipse.platform.swt/issues/2806
+@Test
+public void test_TimerRegression_Issue2806() {
+	for (int i = 0; i < 10000; i++) {
+		browser.setText("Iteration " + i);
+		new BrowserFunction(browser, "name");
+	}
+	new Composite(shell, SWT.NONE);
+	processUiEvents();
+
 }
 
 /* custom */
