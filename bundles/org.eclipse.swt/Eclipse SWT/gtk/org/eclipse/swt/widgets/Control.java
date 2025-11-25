@@ -3834,7 +3834,17 @@ void cairoClipRegion (long cairo) {
 	eventRegion = actualRegion;
 }
 
+@Override
+void snapshotToDraw(long handle, long snapshot) {
+	if (GTK.GTK4 && handle == fixedHandle) {
+		// The fixedHandle has nothing to draw itself, so skip drawing on this handle
+		// and let Display.snapshotDrawProc call gtk_widget_snapshot_child on
+		// the child widgets
+		return;
+	}
 
+	super.snapshotToDraw(handle, snapshot);
+}
 
 @Override
 void gtk4_draw(long widget, long cairo, Rectangle bounds) {
