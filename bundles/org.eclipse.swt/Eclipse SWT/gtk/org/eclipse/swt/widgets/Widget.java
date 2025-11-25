@@ -18,7 +18,6 @@ import java.util.stream.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.gtk3.*;
@@ -962,7 +961,7 @@ long gtk_draw (long widget, long cairo) {
 	return 0;
 }
 
-void gtk4_draw(long widget, long cairo, Rectangle bounds) {}
+void gtk4_draw(long cairo, int width, int height) {}
 
 long gtk_focus (long widget, long event) {
 	return 0;
@@ -2281,28 +2280,6 @@ long sizeAllocateProc (long handle, long arg0, long user_data) {
 
 long sizeRequestProc (long handle, long arg0, long user_data) {
 	return 0;
-}
-
-/**
- * Converts an incoming snapshot into a gtk_draw() call, complete with
- * a Cairo context.
- *
- * @param handle the widget receiving the snapshot
- * @param snapshot the actual GtkSnapshot
- */
-void snapshotToDraw (long handle, long snapshot) {
-	GtkAllocation allocation = new GtkAllocation();
-	GTK.gtk_widget_get_allocation(handle, allocation);
-	long rect = Graphene.graphene_rect_alloc();
-	Graphene.graphene_rect_init(rect, 0, 0, allocation.width, allocation.height);
-
-	long cairo = GTK4.gtk_snapshot_append_cairo(snapshot, rect);
-	if (cairo != 0) {
-		Rectangle bounds = new Rectangle(0, 0, allocation.width, allocation.height);
-		gtk4_draw(handle, cairo, bounds);
-	}
-
-	Graphene.graphene_rect_free(rect);
 }
 
 long gtk_widget_get_window (long widget){

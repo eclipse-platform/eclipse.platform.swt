@@ -176,10 +176,11 @@ long gtk_draw (long widget, long cairo) {
 }
 
 @Override
-void gtk4_draw (long widget, long cairo, Rectangle bounds) {
-	if ((state & OBSCURED) != 0) return;
-	super.gtk4_draw (widget, cairo, bounds);
-	drawCaretInFocus(widget, cairo);
+void gtk4_draw (long cairo, int width, int height) {
+// TODO
+//	if ((state & OBSCURED) != 0) return;
+//	super.gtk4_draw (widget, cairo, bounds);
+//	drawCaretInFocus(widget, cairo);
 }
 
 void drawCaretInFocus(long widget, long cairo) {

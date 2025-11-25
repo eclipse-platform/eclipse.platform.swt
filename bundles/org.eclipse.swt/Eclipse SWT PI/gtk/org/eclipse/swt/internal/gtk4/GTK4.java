@@ -1064,4 +1064,78 @@ public class GTK4 {
 	 */
 	public static final native long gtk_gesture_get_last_updated_sequence(long gesture);
 
+	/**
+	 */
+	public static final native long gtk_drawing_area_new();
+	/**
+	 *
+	 * @param self cast=(GtkDrawingArea *)
+	 * @param draw_func cast=(GtkDrawingAreaDrawFunc)
+	 * @param user_data cast=(gpointer)
+	 * @param destroy cast=(GDestroyNotify)
+	 */
+	public static final native void	gtk_drawing_area_set_draw_func(long self, long draw_func, long user_data, long destroy);
+	/**
+	 * @param self cast=(GtkDrawingArea *)
+	 */
+	public static final native int gtk_drawing_area_get_content_height (long self);
+	/**
+	 * @param self cast=(GtkDrawingArea *)
+	 */
+	public static final native int gtk_drawing_area_get_content_width (long self);
+	/**
+	 * @param self cast=(GtkDrawingArea *)
+	 * @param height cast=(int)
+	 */
+	public static final native void gtk_drawing_area_set_content_height (long self, int height);
+	/**
+	 * @param self cast=(GtkDrawingArea *)
+	 * @param width cast=(int)
+	 */
+	public static final native void gtk_drawing_area_set_content_width (long self, int width);
+
+	public static final native long gtk_overlay_get_type();
+	public static final native long gtk_overlay_new();
+
+	/**
+	 * @param overlay cast=(GtkOverlay *)
+	 * @param widget cast=(GtkWidget *)
+	 */
+	public static final native void gtk_overlay_add_overlay (long overlay, long widget);
+	/**
+	 * @param overlay cast=(GtkOverlay *)
+	 * @param widget cast=(GtkWidget *)
+	 */
+	public static final native void gtk_overlay_remove_overlay (long overlay, long widget);
+	/**
+	 * @param overlay cast=(GtkOverlay *)
+	 * @param widget cast=(GtkWidget *)
+	 */
+	public static final native void gtk_overlay_set_child (long overlay, long widget);
+	/**
+	 * @param overlay cast=(GtkOverlay *)
+	 */
+	public static final native long gtk_overlay_get_child (long overlay);
+	/**
+	 * @param overlay cast=(GtkOverlay *)
+	 * @param widget cast=(GtkWidget *)
+	 */
+	public static final native boolean gtk_overlay_get_measure_overlay (long overlay, long widget);
+	/**
+	 * @param overlay cast=(GtkOverlay *)
+	 * @param widget cast=(GtkWidget *)
+	 * @param measure cast=(gboolean)
+	 */
+	public static final native void gtk_overlay_set_measure_overlay (long overlay, long widget, boolean measure);
+	/**
+	 * @param overlay cast=(GtkOverlay *)
+	 * @param widget cast=(GtkWidget *)
+	 */
+	public static final native boolean gtk_overlay_get_clip_overlay (long overlay, long widget);
+	/**
+	 * @param overlay cast=(GtkOverlay *)
+	 * @param widget cast=(GtkWidget *)
+	 * @param clip_overlay cast=(gboolean)
+	 */
+	public static final native void gtk_overlay_set_clip_overlay (long overlay, long widget, boolean clip_overlay);
 }
