@@ -410,13 +410,18 @@ public void test_evalute_Cookies () {
 
 	// Set the cookies
 	// document.cookie behaves different from other global vars
-	browser.evaluate("document.cookie = \"cookie1=value1\";");
-	browser.evaluate("document.cookie = \"cookie2=value2\";");
+	browser.evaluate("""
+			document.cookie = "cookie1=value1";
+			""");
+	browser.evaluate("""
+			document.cookie = "cookie2=value2";
+			""");
 
+	System.out.println("Cookie enabled:"+browser.evaluate("return navigator.cookieEnabled"));
 	// Retrieve entire cookie store
 	String res = (String) browser.evaluate("return document.cookie;");
 
-	assertFalse(res.isEmpty());
+	assertEquals("cookie1=value1; cookie2=value2", res);
 }
 
 @Tag("gtk4-todo")
