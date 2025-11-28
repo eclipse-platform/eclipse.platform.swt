@@ -16,7 +16,7 @@
   <parent>
     <groupId>org.eclipse.platform</groupId>
     <artifactId>eclipse.platform.swt.localbuild</artifactId>
-    <version>4.38.0-SNAPSHOT</version>
+    <version>4.39.0-SNAPSHOT</version>
     <relativePath>../../local-build/local-build-parent/</relativePath>
   </parent>
   <artifactId>org.eclipse.swt.tests</artifactId>
