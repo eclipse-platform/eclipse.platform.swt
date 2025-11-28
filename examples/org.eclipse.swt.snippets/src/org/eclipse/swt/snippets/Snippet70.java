@@ -31,17 +31,17 @@ public static void main (String [] args) {
 	Color white = display.getSystemColor (SWT.COLOR_WHITE);
 	Color black = display.getSystemColor (SWT.COLOR_BLACK);
 
-	Image image = new Image (display, 20, 20);
-	GC gc = new GC (image);
-	gc.setBackground (red);
-	gc.fillRectangle (5, 5, 10, 10);
-	gc.dispose ();
+	ImageGcDrawer imageGcDrawer = (gc, imageWidth, imageHeight) -> {
+		gc.setBackground (red);
+		gc.fillRectangle (5, 5, 10, 10);
+	};
+	Image image = new Image (display, imageGcDrawer, 20, 20);
 	ImageData imageData = image.getImageData ();
 
 	PaletteData palette = new PaletteData (new RGB (0, 0, 0),new RGB (0xFF, 0xFF, 0xFF));
 	ImageData maskData = new ImageData (20, 20, 1, palette);
 	Image mask = new Image (display, maskData);
-	gc = new GC (mask);
+	GC gc = new GC (mask);
 	gc.setBackground (black);
 	gc.fillRectangle (0, 0, 20, 20);
 	gc.setBackground (white);

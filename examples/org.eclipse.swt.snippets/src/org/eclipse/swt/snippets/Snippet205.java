@@ -33,13 +33,16 @@ public static void main(String[] args) {
 	Display display = new Display();
 	final Shell shell = new Shell(display, SWT.SHELL_TRIM | SWT.DOUBLE_BUFFERED);
 	shell.setText("Embedding objects in text");
-	final Image[] images = {new Image(display, 32, 32), new Image(display, 20, 40), new Image(display, 40, 20)};
+	final Image[] images = new Image[3];
+	final Rectangle[] rects = { new Rectangle(0, 0, 32, 32), new Rectangle(0, 0, 20, 40), new Rectangle(0, 0, 40, 20) };
 	int[] colors  = {SWT.COLOR_BLUE, SWT.COLOR_MAGENTA, SWT.COLOR_GREEN};
 	for (int i = 0; i < images.length; i++) {
-		GC gc = new GC(images[i]);
-		gc.setBackground(display.getSystemColor(colors[i]));
-		gc.fillRectangle(images[i].getBounds());
-		gc.dispose();
+		final int index = i;
+		ImageGcDrawer imageGcDrawer = (gc, imageWidth, imageHeight) -> {
+			gc.setBackground(display.getSystemColor(colors[index]));
+			gc.fillRectangle(rects[index]);
+		};
+		images[i] = new Image(display, imageGcDrawer, rects[i].width, rects[i].height);
 	}
 
 	final Button button = new Button(shell, SWT.PUSH);
