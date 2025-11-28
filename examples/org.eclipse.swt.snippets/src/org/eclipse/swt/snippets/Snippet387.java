@@ -88,15 +88,10 @@ public class Snippet387 {
 	}
 
 	private static Image createStaticImage(Display display, String text, boolean disposeGC) {
-		Image staticImage = new Image(display, IMAGE_WIDTH, IMAGE_HEIGHT);
-		GC imageGC = new GC(staticImage);
-		try {
-			drawImageContent(imageGC, text, IMAGE_WIDTH, IMAGE_HEIGHT);
-		} finally {
-			if (disposeGC) {
-				imageGC.dispose();
-			}
-		}
+		ImageGcDrawer imageGcDrawer = (gc, imageWidth, imageHeight) -> {
+			drawImageContent(gc, text, imageWidth, imageHeight);
+		};
+		Image staticImage = new Image(display, imageGcDrawer, IMAGE_WIDTH, IMAGE_HEIGHT);
 		return staticImage;
 	}
 
