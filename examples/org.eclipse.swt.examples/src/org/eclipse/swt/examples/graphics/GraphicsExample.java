@@ -28,10 +28,12 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageGcDrawer;
 import org.eclipse.swt.graphics.Path;
 import org.eclipse.swt.graphics.Pattern;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.internal.TransparencyColorImageGcDrawer;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -325,11 +327,10 @@ static Image createThumbnail(Device device, String name) {
 	Rectangle src = image.getBounds();
 	Image result = null;
 	if (src.width != 16 || src.height != 16) {
-		result = new Image(device, 16, 16);
-		GC gc = new GC(result);
-		Rectangle dest = result.getBounds();
-		gc.drawImage(image, dest.x, dest.y, dest.width, dest.height);
-		gc.dispose();
+		ImageGcDrawer igc = (gc, iwidth, iheight) -> {
+			gc.drawImage(image, src.x, src.y, src.width, src.height, 0, 0, iwidth, iheight);
+		};
+		result = new Image(device, igc, 16, 16);
 	}
 	if (result != null) {
 		image.dispose();
@@ -347,17 +348,24 @@ static Image createThumbnail(Device device, String name) {
  *
  * */
 static Image createImage(Device device, Color color1, Color color2, int width, int height) {
-	Image image = new Image(device, width, height);
-	GC gc = new GC(image);
-	Rectangle rect = image.getBounds();
-	Pattern pattern = new Pattern(device, rect.x, rect.y, rect.width - 1,
-				rect.height - 1, color1, color2);
-	gc.setBackgroundPattern(pattern);
-	gc.fillRectangle(rect);
-	gc.drawRectangle(rect.x, rect.y, rect.width - 1, rect.height - 1);
-	gc.dispose();
-	pattern.dispose();
+	ImageGcDrawer igc = (gc, iwidth, iheight) ->  {
+		Pattern pattern = new Pattern(device, 0, 0, iwidth - 1,
+				iheight - 1, color1, color2);
+		gc.setBackgroundPattern(pattern);
+		gc.fillRectangle(0,0,iwidth,iheight);
+		gc.drawRectangle(0, 0, iwidth - 1, iheight - 1);
+		pattern.dispose();
+	};
+	Image image = new Image(device, igc, width, height);
 	return image;
+}
+
+private static Color getTransparencyColor(Device device, Color color) {
+	Color transparencyColor = device.getSystemColor(SWT.COLOR_CYAN);
+	if (transparencyColor.equals(color)) {
+		transparencyColor = device.getSystemColor(SWT.COLOR_DARK_BLUE);
+	}
+	return transparencyColor;
 }
 
 /**
@@ -368,16 +376,21 @@ static Image createImage(Device device, Color color1, Color color2, int width, i
  *
  * */
 static Image createImage(Device device, Color color) {
-	Image image = new Image(device, 16, 16);
-	GC gc = new GC(image);
-	gc.setBackground(color);
-	Rectangle rect = image.getBounds();
-	gc.fillRectangle(rect);
-	if (color.equals(device.getSystemColor(SWT.COLOR_BLACK))) {
-		gc.setForeground(device.getSystemColor(SWT.COLOR_WHITE));
-	}
-	gc.drawRectangle(rect.x, rect.y, rect.width - 1, rect.height - 1);
-	gc.dispose();
+	@SuppressWarnings("restriction")
+	ImageGcDrawer iGC = new TransparencyColorImageGcDrawer(getTransparencyColor(device, color)) {
+		@Override
+		public void drawOn(GC gc, int imageWidth, int imageHeight) {
+			gc.setBackground(getTransparencyColor(device, color));
+			gc.fillRectangle(0, 0, imageWidth, imageHeight);
+			gc.setBackground(color);
+			gc.fillRectangle(0, 0, imageWidth - 1, imageHeight - 1);
+			if (color.equals(device.getSystemColor(SWT.COLOR_BLACK))) {
+				gc.setForeground(device.getSystemColor(SWT.COLOR_WHITE));
+			}
+			gc.drawRectangle(0, 0, imageWidth - 1, imageHeight - 1);
+		}
+	};
+	Image image = new Image (device, iGC, 16, 16);
 	return image;
 }
 

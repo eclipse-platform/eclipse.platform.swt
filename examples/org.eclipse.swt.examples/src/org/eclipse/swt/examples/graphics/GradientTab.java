@@ -19,6 +19,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageGcDrawer;
 import org.eclipse.swt.graphics.Path;
 import org.eclipse.swt.graphics.Pattern;
 import org.eclipse.swt.graphics.Point;
@@ -177,29 +178,26 @@ public void paint(GC gc, int width, int height) {
  *            Height of the drawing surface
  */
 Image createImage(Device device, Color color1, Color color2, int width, int height) {
-	Image image = new Image(device, width/2, height/2);
-	GC gc = new GC(image);
-	Rectangle rect = image.getBounds();
+	ImageGcDrawer igc = (gc, iwidth, iheight) -> {
+		Pattern pattern1 = new Pattern(device, 0, 0, iwidth/2f, iheight/2f, color1, color2);
+		gc.setBackgroundPattern(pattern1);
+		Path path = new Path(device);
+		path.addRectangle(0, 0, width/4f, height/4f);
+		path.addRectangle(width/4f, height/4f, width/4f, height/4f);
+		gc.fillPath(path);
+		path.dispose();
 
-	Pattern pattern1 = new Pattern(device, rect.x, rect.y, rect.width/2f, rect.height/2f, color1, color2);
-	gc.setBackgroundPattern(pattern1);
-	Path path = new Path(device);
-	path.addRectangle(0, 0, width/4f, height/4f);
-	path.addRectangle(width/4f, height/4f, width/4f, height/4f);
-	gc.fillPath(path);
-	path.dispose();
-
-	Pattern pattern2 = new Pattern(device, rect.width, 0, rect.width/2f, rect.height/2f, color1, color2);
-	gc.setBackgroundPattern(pattern2);
-	path = new Path(device);
-	path.addRectangle(width/4f, 0, width/4f, height/4f);
-	path.addRectangle(0, height/4f, width/4f, height/4f);
-	gc.fillPath(path);
-	path.dispose();
-
-	gc.dispose();
-	pattern1.dispose();
-	pattern2.dispose();
+		Pattern pattern2 = new Pattern(device, iwidth, 0, iwidth/2f, iheight/2f, color1, color2);
+		gc.setBackgroundPattern(pattern2);
+		path = new Path(device);
+		path.addRectangle(width/4f, 0, width/4f, height/4f);
+		path.addRectangle(0, height/4f, width/4f, height/4f);
+		gc.fillPath(path);
+		path.dispose();
+		pattern1.dispose();
+		pattern2.dispose();
+	};
+	Image image = new Image(device, igc,  width/2, height/2);
 	return image;
 }
 
