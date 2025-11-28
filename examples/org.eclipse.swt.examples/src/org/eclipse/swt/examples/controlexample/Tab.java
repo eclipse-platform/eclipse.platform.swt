@@ -43,8 +43,8 @@ import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageGcDrawer;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
@@ -1294,60 +1294,58 @@ abstract class Tab {
 	}
 
 	Image colorImage (Color color) {
-		Image image = new Image (display, IMAGE_SIZE, IMAGE_SIZE);
-		GC gc = new GC(image);
-		gc.setBackground(color);
-		Rectangle bounds = image.getBounds();
-		gc.fillRectangle(0, 0, bounds.width, bounds.height);
-		gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
-		gc.drawRectangle(0, 0, bounds.width - 1, bounds.height - 1);
-		gc.dispose();
+		ImageGcDrawer imageGcDrawer = (gc, iwidth, iheight) -> {
+			gc.setBackground(color);
+			gc.fillRectangle(0, 0, iwidth, iheight);
+			gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
+			gc.drawRectangle(0, 0, iwidth - 1, iheight - 1);
+		};
+		Image image = new Image (display, imageGcDrawer, IMAGE_SIZE, IMAGE_SIZE);
 		return image;
 	}
 
 	Image fontImage (Font font) {
-		Image image = new Image (display, IMAGE_SIZE, IMAGE_SIZE);
-		GC gc = new GC(image);
-		Rectangle bounds = image.getBounds();
-		gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
-		gc.fillRectangle(0, 0, bounds.width, bounds.height);
-		gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
-		gc.drawRectangle(0, 0, bounds.width - 1, bounds.height - 1);
-		FontData data[] = font.getFontData();
-		int style = data[0].getStyle();
-		switch (style) {
-		case SWT.NORMAL:
-			gc.drawLine(3, 3, 3, 8);
-			gc.drawLine(4, 3, 7, 8);
-			gc.drawLine(8, 3, 8, 8);
-			break;
-		case SWT.BOLD:
-			gc.drawLine(3, 2, 3, 9);
-			gc.drawLine(4, 2, 4, 9);
-			gc.drawLine(5, 2, 7, 2);
-			gc.drawLine(5, 3, 8, 3);
-			gc.drawLine(5, 5, 7, 5);
-			gc.drawLine(5, 6, 7, 6);
-			gc.drawLine(5, 8, 8, 8);
-			gc.drawLine(5, 9, 7, 9);
-			gc.drawLine(7, 4, 8, 4);
-			gc.drawLine(7, 7, 8, 7);
-			break;
-		case SWT.ITALIC:
-			gc.drawLine(6, 2, 8, 2);
-			gc.drawLine(7, 3, 4, 8);
-			gc.drawLine(3, 9, 5, 9);
-			break;
-		case SWT.BOLD | SWT.ITALIC:
-			gc.drawLine(5, 2, 8, 2);
-			gc.drawLine(5, 3, 8, 3);
-			gc.drawLine(6, 4, 4, 7);
-			gc.drawLine(7, 4, 5, 7);
-			gc.drawLine(3, 8, 6, 8);
-			gc.drawLine(3, 9, 6, 9);
-			break;
-		}
-		gc.dispose();
+		ImageGcDrawer igc = (gc, iwidth, iheight) -> {
+			gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
+			gc.fillRectangle(0, 0, iwidth, iheight);
+			gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
+			gc.drawRectangle(0, 0, iwidth - 1, iheight - 1);
+			FontData data[] = font.getFontData();
+			int style = data[0].getStyle();
+			switch (style) {
+			case SWT.NORMAL:
+				gc.drawLine(3, 3, 3, 8);
+				gc.drawLine(4, 3, 7, 8);
+				gc.drawLine(8, 3, 8, 8);
+				break;
+			case SWT.BOLD:
+				gc.drawLine(3, 2, 3, 9);
+				gc.drawLine(4, 2, 4, 9);
+				gc.drawLine(5, 2, 7, 2);
+				gc.drawLine(5, 3, 8, 3);
+				gc.drawLine(5, 5, 7, 5);
+				gc.drawLine(5, 6, 7, 6);
+				gc.drawLine(5, 8, 8, 8);
+				gc.drawLine(5, 9, 7, 9);
+				gc.drawLine(7, 4, 8, 4);
+				gc.drawLine(7, 7, 8, 7);
+				break;
+			case SWT.ITALIC:
+				gc.drawLine(6, 2, 8, 2);
+				gc.drawLine(7, 3, 4, 8);
+				gc.drawLine(3, 9, 5, 9);
+				break;
+			case SWT.BOLD | SWT.ITALIC:
+				gc.drawLine(5, 2, 8, 2);
+				gc.drawLine(5, 3, 8, 3);
+				gc.drawLine(6, 4, 4, 7);
+				gc.drawLine(7, 4, 5, 7);
+				gc.drawLine(3, 8, 6, 8);
+				gc.drawLine(3, 9, 6, 9);
+				break;
+			}
+		};
+		Image image = new Image (display, igc, IMAGE_SIZE, IMAGE_SIZE);
 		return image;
 	}
 
