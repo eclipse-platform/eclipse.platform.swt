@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-Name: %pluginName
 Bundle-Vendor: %providerName
 Bundle-SymbolicName: org.eclipse.swt; singleton:=true
-Bundle-Version: 3.132.100.qualifier
+Bundle-Version: 3.133.0.qualifier
 Bundle-ManifestVersion: 2
 Bundle-Localization: plugin
 DynamicImport-Package: org.eclipse.swt.accessibility2
@@ -23,5 +23,5 @@ Export-Package:
  org.eclipse.swt.program,
  org.eclipse.swt.widgets
 Eclipse-ExtensibleAPI: true
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-RequiredExecutionEnvironment: JavaSE-21
 Automatic-Module-Name: org.eclipse.swt
