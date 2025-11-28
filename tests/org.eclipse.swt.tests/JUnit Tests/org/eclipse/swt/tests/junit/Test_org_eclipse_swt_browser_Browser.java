@@ -32,9 +32,6 @@ import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -49,6 +46,8 @@ import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerArray;
@@ -90,6 +89,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.io.TempDir;
+
+import com.sun.net.httpserver.HttpExchange;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.browser.Browser
@@ -399,76 +400,84 @@ public void test_Constructor_multipleInstantiationsInDifferentThreads() {
 }
 
 @Test
-public void test_evalute_Cookies () {
-	final AtomicBoolean loaded = new AtomicBoolean(false);
-	browser.addProgressListener(ProgressListener.completedAdapter(event -> loaded.set(true)));
+public void test_evalute_Cookies () throws IOException {
+	try (var server = new EchoHttpServer()) {
+		final AtomicBoolean loaded = new AtomicBoolean(false);
+		browser.addProgressListener(ProgressListener.completedAdapter(event -> loaded.set(true)));
 
-	// Using JavaScript Cookie API on local (file) URL gives DOM Exception 18
-	browser.setUrl("https://www.eclipse.org/swt");
-	shell.open();
-	waitForPassCondition(loaded::get);
+		// Using JavaScript Cookie API on local (file) URL gives DOM Exception 18
+		browser.setUrl(server.getEchoUrl("test_evalute_Cookies"));
+		shell.open();
+		waitForPassCondition(loaded::get);
 
-	// Set the cookies
-	// document.cookie behaves different from other global vars
-	browser.evaluate("document.cookie = \"cookie1=value1\";");
-	browser.evaluate("document.cookie = \"cookie2=value2\";");
+		// Set the cookies
+		// document.cookie behaves different from other global vars
+		browser.evaluate("document.cookie = \"cookie1=value1\";");
+		browser.evaluate("document.cookie = \"cookie2=value2\";");
 
-	// Retrieve entire cookie store
-	String res = (String) browser.evaluate("return document.cookie;");
+		// Retrieve entire cookie store
+		String res = (String) browser.evaluate("return document.cookie;");
 
-	assertFalse(res.isEmpty());
+		assertFalse(res.isEmpty());
+	}
 }
 
 @Tag("gtk4-todo")
 @Test
-public void test_ClearAllSessionCookies () {
-	final AtomicBoolean loaded = new AtomicBoolean(false);
-	browser.addProgressListener(ProgressListener.completedAdapter(event -> loaded.set(true)));
+public void test_ClearAllSessionCookies () throws IOException {
+	try (var server = new EchoHttpServer()) {
+		final AtomicBoolean loaded = new AtomicBoolean(false);
+		browser.addProgressListener(ProgressListener.completedAdapter(event -> loaded.set(true)));
 
-	// Using JavaScript Cookie API on local (file) URL gives DOM Exception 18
-	browser.setUrl("https://www.eclipse.org/swt");
-	shell.open();
-	waitForPassCondition(loaded::get);
+		// Using JavaScript Cookie API on local (file) URL gives DOM Exception 18
+		String url = server.getEchoUrl("test_ClearAllSessionCookies");
+		browser.setUrl(url);
+		shell.open();
+		waitForPassCondition(loaded::get);
 
-	// Set the cookies
-	Browser.setCookie("cookie1=value1", "https://www.eclipse.org/swt");
-	Browser.setCookie("cookie2=value2", "https://www.eclipse.org/swt");
+		// Set the cookies
+		Browser.setCookie("cookie1=value1", url);
+		Browser.setCookie("cookie2=value2", url);
 
-	// Get the cookies
-	String v1 = Browser.getCookie("cookie1", "https://www.eclipse.org/swt");
-	String v2 = Browser.getCookie("cookie2", "https://www.eclipse.org/swt");
-	assertEquals("value1", v1);
-	assertEquals("value2", v2);
+		// Get the cookies
+		String v1 = Browser.getCookie("cookie1", url);
+		String v2 = Browser.getCookie("cookie2", url);
+		assertEquals("value1", v1);
+		assertEquals("value2", v2);
 
-	Browser.clearSessions();
+		Browser.clearSessions();
 
-	// Should be empty
-	String e1 = Browser.getCookie("cookie1", "https://www.eclipse.org/swt");
-	String e2 = Browser.getCookie("cookie2", "https://www.eclipse.org/swt");
-	assertTrue(e1 == null || e1.isEmpty());
-	assertTrue(e2 == null || e2.isEmpty());
+		// Should be empty
+		String e1 = Browser.getCookie("cookie1", url);
+		String e2 = Browser.getCookie("cookie2", url);
+		assertTrue(e1 == null || e1.isEmpty());
+		assertTrue(e2 == null || e2.isEmpty());
+	}
 }
 
 @Tag("gtk4-todo")
 @Test
-public void test_get_set_Cookies() {
-	final AtomicBoolean loaded = new AtomicBoolean(false);
-	browser.addProgressListener(ProgressListener.completedAdapter(event -> loaded.set(true)));
+public void test_get_set_Cookies() throws IOException {
+	try (var server = new EchoHttpServer()) {
+		final AtomicBoolean loaded = new AtomicBoolean(false);
+		browser.addProgressListener(ProgressListener.completedAdapter(event -> loaded.set(true)));
 
-	// Using JavaScript Cookie API on local (file) URL gives DOM Exception 18
-	browser.setUrl("https://www.eclipse.org/swt");
-	shell.open();
-	waitForPassCondition(loaded::get);
+		// Using JavaScript Cookie API on local (file) URL gives DOM Exception 18
+		String url = server.getEchoUrl("test_ClearAllSessionCookies");
+		browser.setUrl(url);
+		shell.open();
+		waitForPassCondition(loaded::get);
 
-	// Set the cookies
-	Browser.setCookie("cookie1=value1", "https://www.eclipse.org/swt");
-	Browser.setCookie("cookie2=value2", "https://www.eclipse.org/swt");
+		// Set the cookies
+		Browser.setCookie("cookie1=value1", url);
+		Browser.setCookie("cookie2=value2", url);
 
-	// Get the cookies
-	String v1 = Browser.getCookie("cookie1", "https://www.eclipse.org/swt");
-	assertEquals("value1", v1);
-	String v2 = Browser.getCookie("cookie2", "https://www.eclipse.org/swt");
-	assertEquals("value2", v2);
+		// Get the cookies
+		String v1 = Browser.getCookie("cookie1", url);
+		assertEquals("value1", v1);
+		String v2 = Browser.getCookie("cookie2", url);
+		assertEquals("value2", v2);
+	}
 }
 
 @Override
@@ -1182,63 +1191,51 @@ public void test_setUrl_local() {
 	validateTitleChanged(expectedTitle, browserSetFunc);
 }
 
-/** This test requires working Internet connection */
 @Test
-public void test_setUrl_remote() {
+public void test_setUrl_remote() throws IOException {
 	assumeFalse(SwtTestUtil.isCocoa, "Test fails on Mac, see https://github.com/eclipse-platform/eclipse.platform.swt/issues/722");
 
-	// This test sometimes times out if build server has a bad connection. Thus for this test we have a longer timeout.
-	secondsToWaitTillFail = 35;
+	try (var server = new EchoHttpServer()) {
 
-	String url = "https://example.com"; // example.com loads very quickly and conveniently has a consistent title
+		String url = server.getEchoUrl("test_setUrl_remote");
 
-	// Skip this test if we don't have a working Internet connection.
-	assumeTrue(checkInternet(url), "Skipping test due to bad internet connection");
-	testLog.append("checkInternet() passed");
-
-	String expectedTitle = "Example Domain";
-	Runnable browserSetFunc = () -> {
-		testLog.append("Setting Browser url to:" + url);
-		boolean opSuccess = browser.setUrl(url);
-		assertTrue(opSuccess);
-	};
-	validateTitleChanged(expectedTitle, browserSetFunc);
+		String expectedTitle = "test_setUrl_remote";
+		Runnable browserSetFunc = () -> {
+			testLog.append("Setting Browser url to:" + url);
+			boolean opSuccess = browser.setUrl(url);
+			assertTrue(opSuccess);
+		};
+		validateTitleChanged(expectedTitle, browserSetFunc);
+	}
 }
 
-/** This test requires working Internet connection */
 @Test
-public void test_setUrl_remote_with_post() {
-	// This test sometimes times out if build server has a bad connection. Thus for this test we have a longer timeout.
-	secondsToWaitTillFail = 35;
+public void test_setUrl_remote_with_post() throws IOException {
+	try (var server = new EchoHttpServer()) {
+		String url = server.postEchoUrl();
+		String postData = "test_setUrl_remote_with_post";
 
-	String url = "https://bugs.eclipse.org/bugs/buglist.cgi";
+		Runnable browserSetFunc = () -> {
+			testLog.append("Setting Browser url to:" + url);
+			boolean opSuccess = browser.setUrl(url, postData, null);
+			assertTrue(opSuccess);
+		};
 
-	// Skip this test if we don't have a working Internet connection.
-	assumeTrue(checkInternet(url), "Skipping test due to bad internet connection");
-	testLog.append("checkInternet() passed");
+		final AtomicReference<Boolean> completed = new AtomicReference<>(false);
+		browser.addProgressListener(completedAdapter(event -> {
+			testLog.append("ProgressListener fired");
+			completed.set(true);
+		}));
+		browserSetFunc.run();
+		shell.open();
 
-	Runnable browserSetFunc = () -> {
-		testLog.append("Setting Browser url to:" + url);
-		boolean opSuccess = browser.setUrl(
-				url, "bug_severity=enhancement&bug_status=NEW&email1=rgrunber&emailassigned_to1=1&emailtype1=substring",
-				null);
-		assertTrue(opSuccess);
-	};
+		boolean hasFinished = waitForPassCondition(() -> completed.get().booleanValue());
+		assertTrue(hasFinished);
 
-	final AtomicReference<Boolean> completed = new AtomicReference<>(false);
-	browser.addProgressListener(completedAdapter(event -> {
-		testLog.append("ProgressListener fired");
-		completed.set(true);
-	}));
-	browserSetFunc.run();
-	shell.open();
-
-	boolean hasFinished = waitForPassCondition(() -> completed.get().booleanValue());
-	assertTrue(hasFinished);
-
-	// Even a successful empty query returns about 10000 chars of HTML
-	int numChars = browser.getText().length();
-	assertTrue(numChars > 10000);
+		String lowerCase = browser.getText().toLowerCase();
+		assertTrue(lowerCase.contains("<title>test_setUrl_remote_with_post</title>".toLowerCase()), "Browser getText was: " + browser.getText());
+		assertTrue(lowerCase.contains("</html>"), "Browser getText was: " + browser.getText());
+	}
 }
 
 private void validateTitleChanged(String expectedTitle, Runnable browserSetFunc) {
@@ -1818,11 +1815,55 @@ private String normalizeHtmlString(String htmlString) {
  * Test that a page load an be stopped (stop()) without throwing an exception.
  */
 @Test
-public void test_stop() {
-	/* THIS TEST REQUIRES WEB ACCESS! How else can we really test the http:// part of a browser widget? */
-	browser.setUrl("https://www.eclipse.org/swt");
-	waitForMilliseconds(1000);
-	browser.stop();
+public void test_stop() throws IOException {
+	CountDownLatch latch = new CountDownLatch(1);
+	try (var server = new EchoHttpServer() {
+		@Override
+		protected void handleGetEcho(HttpExchange exchange) throws IOException {
+			try {
+				// Simulates a slow http server, the latch.countdown allows
+				// this to complete
+				// the timeout here is so that this doesn't get stuck
+				latch.await(5, TimeUnit.SECONDS);
+			} catch (InterruptedException e) {
+				throw new IOException(e);
+			}
+			super.handleGetEcho(exchange);
+		}
+	}) {
+		shell.open();
+
+		final AtomicBoolean completed = new AtomicBoolean(false);
+		browser.addProgressListener(ProgressListener.completedAdapter(event -> completed.set(true)));
+		browser.setUrl(server.getEchoUrl("test_stop"));
+		waitForMilliseconds(1000);
+		assertFalse(completed.get());
+		browser.stop();
+		// allow the GET to complete, and ensure we complete, and since
+		// we control the server, we know that the document should still
+		// be blank, so test for that
+		latch.countDown();
+
+		if (SwtTestUtil.isCocoa || SwtTestUtil.isWindows) {
+			// Only WebKit gives a completed progress on stop.
+			// Is this a bug in itself?
+			// Instead we wait for a moment to allow the now
+			// unlatched code to complete
+			waitForMilliseconds(1000);
+		} else {
+			assertTrue(waitForPassCondition(completed::get));
+		}
+		assertFalse(browser.getText().toLowerCase().contains("test_stop"), "Browser getText was: " + browser.getText());
+
+		// Make sure that after stop we can issue a fresh call
+		final AtomicBoolean loaded = new AtomicBoolean(false);
+		browser.addProgressListener(ProgressListener.completedAdapter(event -> loaded.set(true)));
+		browser.setUrl(server.getEchoUrl("test_stop - after the stop"));
+		assertTrue(waitForPassCondition(loaded::get));
+		String lowerCase = browser.getText().toLowerCase();
+		assertTrue(lowerCase.contains("<title>test_stop - after the stop</title>"), "Browser getText was: " + browser.getText());
+		assertTrue(lowerCase.contains("</html>"), "Browser getText was: " + browser.getText());
+	}
 }
 
 @Test
@@ -2177,23 +2218,26 @@ public void test_evaluate_array_mixedTypes () {
  */
 @Test
 public void test_evaluate_OpeningNewWindow() throws Exception {
-	AtomicBoolean initialLoad = new AtomicBoolean();
-	AtomicBoolean openWindowListenerCalled = new AtomicBoolean();
-	browser.addProgressListener(ProgressListener.completedAdapter(e -> initialLoad.set(true)));
-	browser.addOpenWindowListener(event -> {
-		event.required = true; // block default
-		openWindowListenerCalled.set(true);
-	});
-	browser.setText("""
-			<button id="button" onClick="window.open('https://eclipse.org');">open eclipse.org</button>
-			""");
-	waitForPassCondition(initialLoad::get);
+	try (var server = new EchoHttpServer()) {
+		AtomicBoolean initialLoad = new AtomicBoolean();
+		AtomicBoolean openWindowListenerCalled = new AtomicBoolean();
+		browser.addProgressListener(ProgressListener.completedAdapter(e -> initialLoad.set(true)));
+		browser.addOpenWindowListener(event -> {
+			event.required = true; // block default
+			openWindowListenerCalled.set(true);
+		});
+		var html = String.format("""
+				<button id="button" onClick="window.open('%s');">open eclipse.org</button>
+				""", server.getEchoUrl("test_evaluate_OpeningNewWindow"));
+		browser.setText(html);
+		waitForPassCondition(initialLoad::get);
 
-	browser.evaluate("""
-				document.getElementById("button").click();
-			""");
+		browser.evaluate("""
+					document.getElementById("button").click();
+				""");
 
-	waitForPassCondition(openWindowListenerCalled::get);
+		waitForPassCondition(openWindowListenerCalled::get);
+	}
 }
 
 ProgressListener callCustomFunctionUponLoad = completedAdapter(event ->	browser.execute("callCustomFunction()"));
@@ -2808,37 +2852,6 @@ void waitForMilliseconds(final int milliseconds) {
 	waitForPassCondition(() -> false, milliseconds);
 
 }
-
-/**
- * Check if Internet connection to a http url works.
- *
- * @param url a full url like http://www.example.com
- * @return true if server responded with correct code (200), false otherwise.
- */
-private static Boolean checkInternet(String url) {
-	if (url!=null && url.toLowerCase().startsWith("http://")) {
-		throw new IllegalArgumentException("please use https instead, http do not work on mac out of the box and your test will hang there!");
-	}
-	HttpURLConnection connection = null;
-	try {
-		connection = (HttpURLConnection) new URL(url).openConnection();
-		connection.setRequestMethod("HEAD");
-		int code = connection.getResponseCode(); // 200 is success. See https://tools.ietf.org/html/rfc7231#section-6.3.1.
-		if (code == 200)
-			return true;
-	} catch (MalformedURLException e) {
-		System.err.println("Given url is malformed: " + url + "Try a fully formed url like: https://www.example.com");
-		e.printStackTrace();
-	} catch (IOException e) {
-		// No connection was made.
-	} finally {
-		if (connection != null) {
-			connection.disconnect();
-		}
-	}
-	return false;
-}
-
 
 private static void printMemoryUse() {
 	System.gc();
