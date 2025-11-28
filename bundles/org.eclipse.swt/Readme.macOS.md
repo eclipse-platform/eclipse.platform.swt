@@ -89,7 +89,7 @@ this information into this readme.
 You need to install the following on your system:
 
 * XCode Command Line Tools (already present in XCode)
-* Java 17 JDK (https://adoptium.net/marketplace/?version=17)
+* Java 21 JDK (https://adoptium.net/marketplace/?version=21)
 
 ### Building and Testing locally
 
