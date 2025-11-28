@@ -35,13 +35,13 @@ public static void main(String [] args) {
 	Shell shell = new Shell(display);
 	shell.setText("Snippet 220");
 	shell.setBounds(10, 10, 350, 200);
-	Image xImage = new Image (display, 16, 16);
-	GC gc = new GC(xImage);
-	gc.setForeground(display.getSystemColor(SWT.COLOR_RED));
-	gc.drawLine(1, 1, 14, 14);
-	gc.drawLine(1, 14, 14, 1);
-	gc.drawOval(2, 2, 11, 11);
-	gc.dispose();
+	ImageGcDrawer imageGcDrawer = (gc, imageWidth, imageHeight) -> {
+		gc.setForeground(display.getSystemColor(SWT.COLOR_RED));
+		gc.drawLine(1, 1, 14, 14);
+		gc.drawLine(1, 14, 14, 1);
+		gc.drawOval(2, 2, 11, 11);
+	};
+	Image xImage = new Image (display, imageGcDrawer, 16, 16);
 	final int IMAGE_MARGIN = 2;
 	final Tree tree = new Tree(shell, SWT.CHECK);
 	tree.setBounds(10, 10, 300, 150);

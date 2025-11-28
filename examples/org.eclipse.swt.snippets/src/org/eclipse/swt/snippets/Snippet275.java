@@ -29,11 +29,11 @@ static String value;
 public static void main (String[] args) {
 	final int INTERVAL = 888;
 	final Display display = new Display ();
-	final Image image = new Image (display, 750, 750);
-	GC gc = new GC (image);
-	gc.setBackground (display.getSystemColor (SWT.COLOR_RED));
-	gc.fillRectangle (image.getBounds ());
-	gc.dispose ();
+	ImageGcDrawer imageGcDrawer = (gc, imageWidth, imageHeight) -> {
+		gc.setBackground(display.getSystemColor(SWT.COLOR_RED));
+		gc.fillRectangle(0, 0, imageWidth, imageHeight);
+	};
+	final Image image = new Image(display, imageGcDrawer, 750, 750);
 
 	Shell shell = new Shell (display);
 	shell.setText("Snippet 275");

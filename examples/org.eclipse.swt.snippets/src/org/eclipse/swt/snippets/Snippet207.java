@@ -28,16 +28,16 @@ public class Snippet207 {
 	public static void main(String[] args) {
 		final Display display = new Display();
 
-		final Image image = new Image(display, 110, 60);
-		GC gc = new GC(image);
-		Font font = new Font(display, "Times", 30, SWT.BOLD);
-		gc.setFont(font);
-		gc.setBackground(display.getSystemColor(SWT.COLOR_RED));
-		gc.fillRectangle(0, 0, 110, 60);
-		gc.setForeground(display.getSystemColor(SWT.COLOR_WHITE));
-		gc.drawText("SWT", 10, 10, true);
-		font.dispose();
-		gc.dispose();
+		ImageGcDrawer imageGcDrawer = (gc, imageWidth, imageHeight) -> {
+			Font font = new Font(display, "Times", 30, SWT.BOLD);
+			gc.setFont(font);
+			gc.setBackground(display.getSystemColor(SWT.COLOR_RED));
+			gc.fillRectangle(0, 0, 110, 60);
+			gc.setForeground(display.getSystemColor(SWT.COLOR_WHITE));
+			gc.drawText("SWT", 10, 10, true);
+			font.dispose();
+		};
+		final Image image = new Image(display, imageGcDrawer, 110, 60);
 
 		final Rectangle rect = image.getBounds();
 		Shell shell = new Shell(display);
