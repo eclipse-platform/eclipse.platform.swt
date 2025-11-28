@@ -32,14 +32,14 @@ public static void main (String [] args) {
 	Caret caret = new Caret (shell, SWT.NONE);
 	Color white = display.getSystemColor (SWT.COLOR_WHITE);
 	Color black = display.getSystemColor (SWT.COLOR_BLACK);
-	final Image image = new Image (display, 20, 20);
-	GC gc = new GC (image);
-	gc.setBackground (black);
-	gc.fillRectangle (0, 0, 20, 20);
-	gc.setForeground (white);
-	gc.drawLine (0, 0, 19, 19);
-	gc.drawLine (19, 0, 0, 19);
-	gc.dispose ();
+	ImageGcDrawer imageGcDrawer = (gc, imageWidth, imageHeight) -> {
+		gc.setBackground (black);
+		gc.fillRectangle (0, 0, 20, 20);
+		gc.setForeground (white);
+		gc.drawLine (0, 0, 19, 19);
+		gc.drawLine (19, 0, 0, 19);
+	};
+	final Image image = new Image (display, imageGcDrawer, 20, 20);
 	caret.setLocation (10, 10);
 	caret.setImage (image);
 	caret.setVisible (true);

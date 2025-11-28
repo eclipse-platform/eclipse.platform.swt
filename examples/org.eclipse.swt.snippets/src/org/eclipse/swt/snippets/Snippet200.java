@@ -30,20 +30,20 @@ public class Snippet200 {
 public static void main(String[] args) {
 	Display display = new Display();
 	//define a pattern on an image
-	final Image image = new Image(display, 1000, 1000);
-	Color blue = display.getSystemColor(SWT.COLOR_BLUE);
-	Color yellow = display.getSystemColor(SWT.COLOR_YELLOW);
-	Color white = display.getSystemColor(SWT.COLOR_WHITE);
-	GC gc = new GC(image);
-	gc.setBackground(white);
-	gc.setForeground(yellow);
-	gc.fillGradientRectangle(0, 0, 1000, 1000, true);
-	for (int i=-500; i<1000; i+=10) {
-		gc.setForeground(blue);
-		gc.drawLine(i, 0, 500 + i, 1000);
-		gc.drawLine(500 + i, 0, i, 1000);
-	}
-	gc.dispose();
+	ImageGcDrawer imageGcDrawer = (gc, imageWidth, imageHeight) -> {
+		Color blue = display.getSystemColor(SWT.COLOR_BLUE);
+		Color yellow = display.getSystemColor(SWT.COLOR_YELLOW);
+		Color white = display.getSystemColor(SWT.COLOR_WHITE);
+		gc.setBackground(white);
+		gc.setForeground(yellow);
+		gc.fillGradientRectangle(0, 0, 1000, 1000, true);
+		for (int i=-500; i<1000; i+=10) {
+			gc.setForeground(blue);
+			gc.drawLine(i, 0, 500 + i, 1000);
+			gc.drawLine(500 + i, 0, i, 1000);
+		}
+	};
+	final Image image = new Image(display, imageGcDrawer, 1000, 1000);
 	final Pattern pattern;
 	try {
 		pattern = new Pattern(display, image);

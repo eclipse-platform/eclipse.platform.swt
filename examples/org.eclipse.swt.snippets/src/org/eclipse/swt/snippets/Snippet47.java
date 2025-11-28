@@ -30,26 +30,26 @@ public static void main (String [] args) {
 	Shell shell = new Shell (display);
 	shell.setText("Snippet 47");
 
-	Image image = new Image (display, 20, 20);
-	Color color = display.getSystemColor (SWT.COLOR_BLUE);
-	GC gc = new GC (image);
-	gc.setBackground (color);
-	gc.fillRectangle (image.getBounds ());
-	gc.dispose ();
+	ImageGcDrawer imageGcDrawer = (gc, imageWidth, imageHeight) -> {
+		Color color = display.getSystemColor(SWT.COLOR_BLUE);
+		gc.setBackground(color);
+		gc.fillRectangle(new Rectangle(0, 0, 20, 20));
+	};
+	Image image = new Image(display, imageGcDrawer, 20, 20);
 
-	Image disabledImage = new Image (display, 20, 20);
-	color = display.getSystemColor (SWT.COLOR_GREEN);
-	gc = new GC (disabledImage);
-	gc.setBackground (color);
-	gc.fillRectangle (disabledImage.getBounds ());
-	gc.dispose ();
+	imageGcDrawer = (gc, imageWidth, imageHeight) -> {
+		Color color = display.getSystemColor(SWT.COLOR_GREEN);
+		gc.setBackground(color);
+		gc.fillRectangle(new Rectangle(0, 0, 20, 20));
+	};
+	Image disabledImage = new Image(display, imageGcDrawer, 20, 20);
 
-	Image hotImage = new Image (display, 20, 20);
-	color = display.getSystemColor (SWT.COLOR_RED);
-	gc = new GC (hotImage);
-	gc.setBackground (color);
-	gc.fillRectangle (hotImage.getBounds ());
-	gc.dispose ();
+	imageGcDrawer = (gc, imageWidth, imageHeight) -> {
+		Color color = display.getSystemColor(SWT.COLOR_RED);
+		gc.setBackground(color);
+		gc.fillRectangle(new Rectangle(0, 0, 20, 20));
+	};
+	Image hotImage = new Image(display, imageGcDrawer, 20, 20);
 
 	ToolBar bar = new ToolBar (shell, SWT.BORDER | SWT.FLAT);
 	Rectangle clientArea = shell.getClientArea ();

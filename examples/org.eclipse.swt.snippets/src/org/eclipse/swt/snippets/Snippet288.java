@@ -45,7 +45,7 @@ public class Snippet288 {
 		shellBackground = shell.getBackground();
 		FileDialog dialog = new FileDialog(shell, SWT.OPEN | SWT.MULTI);
 		dialog.setText("Select Multiple Animated GIFs");
-		dialog.setFilterExtensions(new String[] {"*.gif"});
+		dialog.setFilterExtensions("*.gif");
 		String filename = dialog.open();
 		String filenames[] = dialog.getFileNames();
 		int numToolBarItems = filenames.length;
@@ -94,6 +94,8 @@ public class Snippet288 {
 			int numFramesOfAnimation = imageDataArray[i].length;
 			image[i] = new Image[numFramesOfAnimation];
 			for (int j = 0; j < numFramesOfAnimation; j++) {
+		        final int frameIndex = j;
+		        final int imageIndex = i;
 				if (j == 0) {
 					//for the first frame of animation, just draw the first frame
 					image[i][j] = new Image(display, imageDataArray[i][j]);
@@ -101,40 +103,30 @@ public class Snippet288 {
 					fullHeight = imageDataArray[i][j].height;
 				}
 				else {
-					//after the first frame of animation, draw the background or previous frame first, then the new image data
-					image[i][j] = new Image(display, fullWidth, fullHeight);
-					GC gc = new GC(image[i][j]);
-					gc.setBackground(shellBackground);
-					gc.fillRectangle(0, 0, fullWidth, fullHeight);
-					ImageData imageData = imageDataArray[i][j];
-					switch (imageData.disposalMethod) {
-					case SWT.DM_FILL_BACKGROUND:
-						/* Fill with the background color before drawing. */
-						Color bgColor = null;
-						if (useGIFBackground && loader[i].backgroundPixel != -1) {
-							bgColor = new Color(imageData.palette.getRGB(loader[i].backgroundPixel));
-						}
-						gc.setBackground(bgColor != null ? bgColor : shellBackground);
-						gc.fillRectangle(imageData.x, imageData.y, imageData.width, imageData.height);
-						break;
-					default:
-						/* Restore the previous image before drawing. */
-						gc.drawImage(
-							image[i][j-1],
-							0,
-							0,
-							fullWidth,
-							fullHeight);
-						break;
-					}
-					Image newFrame = new Image(display, imageData);
-					gc.drawImage(newFrame,
-							imageData.x,
-							imageData.y,
-							imageData.width,
-							imageData.height);
-					newFrame.dispose();
-					gc.dispose();
+		            ImageGcDrawer imageGcDrawer = (gc, imageWidth, imageHeight) -> {
+		                gc.setBackground(shellBackground);
+		                gc.fillRectangle(0, 0, imageWidth, imageHeight);
+		                ImageData imageData = imageDataArray[imageIndex][frameIndex];
+		                switch (imageData.disposalMethod) {
+		                    case SWT.DM_FILL_BACKGROUND:
+		                        Color bgColor = null;
+		                        if (useGIFBackground && loader[imageIndex].backgroundPixel != -1) {
+		                            bgColor = new Color(imageData.palette.getRGB(loader[imageIndex].backgroundPixel));
+		                        }
+		                        gc.setBackground(bgColor != null ? bgColor : shellBackground);
+		                        gc.fillRectangle(imageData.x, imageData.y, imageData.width, imageData.height);
+		                        break;
+		                    default:
+		                        gc.drawImage(
+		                                image[imageIndex][frameIndex - 1],
+		                                0, 0, imageWidth, imageHeight);
+		                        break;
+		                }
+		                Image newFrame = new Image(display, imageData);
+		                gc.drawImage(newFrame, imageData.x, imageData.y, imageData.width, imageData.height);
+		                newFrame.dispose();
+		            };
+		            image[imageIndex][frameIndex] = new Image(display, imageGcDrawer, fullWidth, fullHeight);
 				}
 			}
 		}

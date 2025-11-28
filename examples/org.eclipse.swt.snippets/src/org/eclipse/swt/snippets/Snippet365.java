@@ -89,12 +89,12 @@ public class Snippet365 {
 		// Gradient background for Shell
 		shell.addListener(SWT.Resize, event -> {
 			Rectangle rect = shell.getClientArea();
-			Image newImage = new Image(display, Math.max(1, rect.width), 1);
-			GC gc = new GC(newImage);
-			gc.setForeground(display.getSystemColor(SWT.COLOR_BLUE));
-			gc.setBackground(display.getSystemColor(SWT.COLOR_GREEN));
-			gc.fillGradientRectangle(rect.x, rect.y, rect.width, 1, false);
-			gc.dispose();
+			ImageGcDrawer imageGcDrawer = (gc, imageWidth, imageHeight) ->  {
+				gc.setForeground(display.getSystemColor(SWT.COLOR_BLUE));
+				gc.setBackground(display.getSystemColor(SWT.COLOR_GREEN));
+				gc.fillGradientRectangle(rect.x, rect.y, rect.width, 1, false);
+			};
+			Image newImage = new Image(display, imageGcDrawer, Math.max(1, rect.width), 1);
 			shell.setBackgroundImage(newImage);
 			if (oldImage != null)
 				oldImage.dispose();
@@ -135,11 +135,11 @@ public class Snippet365 {
 				// Custom
 				customGroup.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
 				cLabel.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
-				cTab.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_TRANSPARENT));
-				gradientCTab.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_TRANSPARENT));
-				sashForm.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_TRANSPARENT));
+				cTab.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
+				gradientCTab.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
+				sashForm.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
 				for (Control control : sashForm.getChildren()) {
-					control.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_TRANSPARENT));
+					control.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
 				}
 				// Default
 				push.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
@@ -185,9 +185,9 @@ public class Snippet365 {
 				customGroup.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
 				cLabel.setBackground((Color) null);
 				styledText.setBackground((Color) null);
-				sashForm.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
+				sashForm.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
 				for (Control control : sashForm.getChildren()) {
-					control.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
+					control.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
 				}
 				cTab.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
 
@@ -458,12 +458,12 @@ public class Snippet365 {
 	private static Image getBackgroundImage(final Display display) {
 		if (newImage == null) {
 			Rectangle rect = new Rectangle(0, 0, 115, 5);
-			newImage = new Image(display, Math.max(1, rect.width), 1);
-			GC gc = new GC(newImage);
-			gc.setForeground(display.getSystemColor(SWT.COLOR_WHITE));
-			gc.setBackground(display.getSystemColor(SWT.COLOR_RED));
-			gc.fillGradientRectangle(rect.x, rect.y, rect.width, 1, false);
-			gc.dispose();
+			ImageGcDrawer imageGcDrawer = (gc, imageWidth, imageHeight) -> {
+				gc.setForeground(display.getSystemColor(SWT.COLOR_WHITE));
+				gc.setBackground(display.getSystemColor(SWT.COLOR_RED));
+				gc.fillGradientRectangle(rect.x , rect.y, rect.width, 1, false);
+			};
+			newImage = new Image(display, imageGcDrawer, Math.max(1, 115), 1);
 		}
 		return newImage;
 	}

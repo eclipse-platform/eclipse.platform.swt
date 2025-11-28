@@ -50,12 +50,12 @@ public class Snippet218 {
 		styledText.setForeground(display.getSystemColor (SWT.COLOR_BLUE));
 		styledText.addListener (SWT.Resize, event -> {
 			Rectangle rect = styledText.getClientArea ();
-			Image newImage = new Image (display, 1, Math.max (1, rect.height));
-			GC gc = new GC (newImage);
-			gc.setForeground (display.getSystemColor (SWT.COLOR_WHITE));
-			gc.setBackground (display.getSystemColor (SWT.COLOR_YELLOW));
-			gc.fillGradientRectangle (rect.x, rect.y, 1, rect.height, true);
-			gc.dispose ();
+			ImageGcDrawer imageGcDrawer = (gc, imageWidth, imageHeight) ->  {
+				gc.setForeground (display.getSystemColor (SWT.COLOR_WHITE));
+				gc.setBackground (display.getSystemColor (SWT.COLOR_YELLOW));
+				gc.fillGradientRectangle (rect.x, rect.y, 1, rect.height, true);
+			};
+			Image newImage = new Image (display, imageGcDrawer, 1, Math.max (1, rect.height));
 			styledText.setBackgroundImage (newImage);
 			if (oldImage != null) oldImage.dispose ();
 			oldImage = newImage;

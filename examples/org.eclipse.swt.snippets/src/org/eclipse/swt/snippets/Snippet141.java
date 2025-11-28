@@ -46,7 +46,7 @@ public class Snippet141 {
 		shellBackground = shell.getBackground();
 
 		FileDialog dialog = new FileDialog(shell);
-		dialog.setFilterExtensions(new String[] {"*.gif"});
+		dialog.setFilterExtensions("*.gif");
 		String fileName = dialog.open();
 		final AtomicBoolean stopAnimation = new AtomicBoolean(false);
 		if (fileName != null) {
@@ -59,11 +59,14 @@ public class Snippet141 {
 						@SuppressWarnings("unused")
 						public void run() {
 							/* Create an off-screen image to draw on, and fill it with the shell background. */
-							Image offScreenImage = new Image(display, loader.logicalScreenWidth, loader.logicalScreenHeight);
+							int width = loader.logicalScreenWidth;
+							int height = loader.logicalScreenHeight;
+							ImageGcDrawer offscreenDrawer = (gc, imageWidth, imageHeight) -> {
+								gc.setBackground(shellBackground);
+								gc.fillRectangle(0, 0, imageWidth, imageHeight);
+							};
+							Image offScreenImage = new Image(display, offscreenDrawer, width, height);
 							GC offScreenImageGC = new GC(offScreenImage);
-							offScreenImageGC.setBackground(shellBackground);
-							offScreenImageGC.fillRectangle(0, 0, loader.logicalScreenWidth, loader.logicalScreenHeight);
-
 							try {
 								/* Create the first image and draw it on the off-screen image. */
 								int imageDataIndex = 0;

@@ -32,11 +32,11 @@ public static void main(String[] args) {
 	Shell shell = new Shell (display);
 	shell.setText("Snippet 143");
 	Image image = new Image (display, 16, 16);
-	Image image2 = new Image (display, 16, 16);
-	GC gc = new GC(image2);
-	gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
-	gc.fillRectangle(image2.getBounds());
-	gc.dispose();
+	ImageGcDrawer imgc = (gc, iwidth, iheight) -> {
+		gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
+		gc.fillRectangle(0, 0, iwidth, iheight);
+	};
+	Image image2 = new Image(display, imgc, 16, 16);
 	final Tray tray = display.getSystemTray ();
 	if (tray == null) {
 		System.out.println ("The system tray is not available");
