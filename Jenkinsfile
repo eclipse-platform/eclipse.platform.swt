@@ -48,9 +48,9 @@ def getNativeJdkUrl(String os, String arch) { // To update the used JDK version 
 		// Temporary workaround until there are official Temurin GA releases for Windows on ARM that can be consumed through JustJ
 		dir("${WORKSPACE}/repackage-win32.aarch64-jdk") {
 			sh """
-				curl -L 'https://github.com/adoptium/temurin17-binaries/releases/download/jdk17u-2024-02-07-14-14-beta/OpenJDK17U-jdk_aarch64_windows_hotspot_2024-02-07-14-14.zip' > jdk.zip
-				unzip -q jdk.zip jdk-17.0.11+1/include/** jdk-17.0.11+1/lib/**
-				cd jdk-17.0.11+1
+				curl -L 'https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.9%2B10/OpenJDK21U-jdk_aarch64_windows_hotspot_21.0.9_10.zip' > jdk.zip
+				unzip -q jdk.zip jdk-21.0.9+10/include/** jdk-21.0.9+10/lib/**
+				cd jdk-21.0.9+10
 				tar -czf ../jdk.tar.gz include/ lib/
 			"""
 		}
@@ -59,15 +59,15 @@ def getNativeJdkUrl(String os, String arch) { // To update the used JDK version 
 		// Downloading jdk and renew it for riscv64 architecture on Linux
 		dir("${WORKSPACE}/repackage-linux.riscv64-jdk") {
 				sh """
-				curl -L 'https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.12%2B7/OpenJDK17U-jdk_riscv64_linux_hotspot_17.0.12_7.tar.gz' > jdk.tar.gz
-				tar -xzf jdk.tar.gz jdk-17.0.12+7/include/ jdk-17.0.12+7/lib/
-				cd jdk-17.0.12+7
+				curl -L 'https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.9%2B10/OpenJDK21U-jdk_riscv64_linux_hotspot_21.0.9_10.tar.gz' > jdk.tar.gz
+				tar -xzf jdk.tar.gz jdk-21.0.9+10/include/ jdk-21.0.9+10/lib/
+				cd jdk-21.0.9+10
 				tar -czf ../jdk.tar.gz include/ lib/
 				"""
 		}
 		return "file://${WORKSPACE}/repackage-linux.riscv64-jdk/jdk.tar.gz"
 	}
-	return "https://download.eclipse.org/justj/jres/17/downloads/20230428_1804/org.eclipse.justj.openjdk.hotspot.jre.minimal.stripped-17.0.7-${os}-${arch}.tar.gz"
+	return "https://download.eclipse.org/justj/jres/21/downloads/20251104_1502/org.eclipse.justj.openjdk.hotspot.jre.minimal.stripped-21.0.9-${os}-${arch}.tar.gz"
 }
 
 def getLatestGitTag() {

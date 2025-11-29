@@ -6,7 +6,7 @@ Bundle-Version: 3.108.200.qualifier
 Bundle-Vendor: Eclipse.org
 Require-Bundle: org.eclipse.swt
 Eclipse-BundleShape: dir
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-RequiredExecutionEnvironment: JavaSE-21
 Automatic-Module-Name: org.eclipse.swt.tests.win32
 Import-Package: org.junit.jupiter.api;version="[5.13.0,6.0.0)",
  org.junit.jupiter.params;version="[5.13.0,6.0.0)",

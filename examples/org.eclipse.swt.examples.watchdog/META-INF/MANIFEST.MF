@@ -4,7 +4,7 @@ Bundle-Name: %bundleName
 Bundle-SymbolicName: org.eclipse.swt.examples.watchdog;singleton:=true
 Bundle-Version: 1.2.0.qualifier
 Bundle-Activator: org.eclipse.swt.examples.watchdog.WatchdogPlugin
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-RequiredExecutionEnvironment: JavaSE-21
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.swt,
