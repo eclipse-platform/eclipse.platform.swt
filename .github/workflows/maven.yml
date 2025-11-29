@@ -1,8 +1,8 @@
 # This is the main maven workflow for SWT.
 
 # You can run this locally to test changes with the act command https://nektosact.com/
-# For example, to run all linux tests on Java 21:
-#   act -j build-linux --matrix java:21 --artifact-server-path $PWD/.artifacts
+# For example, to run all GTK4 tests:
+#   act -j build-linux --matrix java:21 --matrix gtk:gtk4 --artifact-server-path $PWD/.artifacts
 # You may need to download runners on first run, act will ask but if you
 # want the big runner there is no progress as it downloads, so you can pull it with
 # docker directly:
@@ -19,9 +19,6 @@ on:
   pull_request:
     branches: [ master ]
     types: [opened, reopened, synchronize, labeled]
-
-env:
-  SWT_GTK4: "${{ contains(github.event.pull_request.labels.*.name, 'gtk4') && '1' || '0' }}"
 
 jobs:
   event_file:
@@ -40,11 +37,13 @@ jobs:
       fail-fast: false
       matrix:
         java: ['21']
+        gtk: [gtk3, gtk4]
     uses: ./.github/workflows/build.yml
     with:
       runner: ubuntu-latest
       java: ${{ matrix.java }}
       native: gtk.linux.x86_64
+      gtk: ${{ matrix.gtk }}
       performance: ${{ contains(github.event.pull_request.labels.*.name, 'performance') }}
       runtodotests: ${{ contains(github.event.pull_request.labels.*.name, 'runtodotests') }}
 
