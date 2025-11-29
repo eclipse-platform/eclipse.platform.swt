@@ -3199,6 +3199,25 @@ public static final native long CGImageGetWidth(long image);
  */
 public static final native void CGImageRelease(long image);
 /**
+ * @param url cast=(CFURLRef)
+ * @param mediaBox cast=(const CGRect *)
+ * @param auxiliaryInfo cast=(CFDictionaryRef)
+ */
+public static final native long CGPDFContextCreateWithURL(long url, CGRect mediaBox, long auxiliaryInfo);
+/**
+ * @param context cast=(CGContextRef)
+ * @param pageInfo cast=(CFDictionaryRef)
+ */
+public static final native void CGPDFContextBeginPage(long context, long pageInfo);
+/**
+ * @param context cast=(CGContextRef)
+ */
+public static final native void CGPDFContextEndPage(long context);
+/**
+ * @param context cast=(CGContextRef)
+ */
+public static final native void CGPDFContextClose(long context);
+/**
  * @param path cast=(CGMutablePathRef)
  * @param m cast=(CGAffineTransform*)
  * @param cp1x cast=(CGFloat)
