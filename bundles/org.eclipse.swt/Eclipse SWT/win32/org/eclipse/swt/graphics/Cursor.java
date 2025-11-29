@@ -627,14 +627,10 @@ private static class ImageDataProviderCursorHandleProvider extends HotspotAwareC
 
 	@Override
 	public CursorHandle createHandle(Device device, int zoom) {
-		ImageData source;
-		if (zoom == DEFAULT_ZOOM) {
-			source = this.provider.getImageData(DEFAULT_ZOOM);
-		} else {
-			Image tempImage = new Image(device, this.provider);
-			source = tempImage.getImageData(zoom);
-			tempImage.dispose();
-		}
+		Image tempImage = new Image(device, this.provider);
+		int scaledZoom = (int) (zoom * getPointerSizeScaleFactor());
+		ImageData source = tempImage.getImageData(scaledZoom);
+		tempImage.dispose();
 		return setupCursorFromImageData(device, source, null, getHotpotXInPixels(zoom), getHotpotYInPixels(zoom));
 	}
 }
