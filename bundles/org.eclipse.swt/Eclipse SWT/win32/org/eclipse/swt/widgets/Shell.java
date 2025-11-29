@@ -1350,7 +1350,29 @@ public boolean print (GC gc) {
 	checkWidget ();
 	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-	return false;
+	// Print only the client area (children) without shell decorations
+	forceResize ();
+	Control [] children = _getChildren ();
+	long gdipGraphics = gc.getGCData().gdipGraphics;
+	for (Control child : children) {
+		Rectangle bounds = child.getBounds();
+		if (gdipGraphics != 0) {
+			// For GDI+, translate the graphics object
+			org.eclipse.swt.internal.gdip.Gdip.Graphics_TranslateTransform(gdipGraphics, bounds.x, bounds.y, org.eclipse.swt.internal.gdip.Gdip.MatrixOrderPrepend);
+			child.print(gc);
+			org.eclipse.swt.internal.gdip.Gdip.Graphics_TranslateTransform(gdipGraphics, -bounds.x, -bounds.y, org.eclipse.swt.internal.gdip.Gdip.MatrixOrderPrepend);
+		} else {
+			// For GDI, modify the world transform to add translation
+			int state = OS.SaveDC(gc.handle);
+			// Create a translation transform matrix
+			float[] translateMatrix = new float[] {1, 0, 0, 1, bounds.x, bounds.y};
+			// Multiply (prepend) the translation to the existing transform
+			OS.ModifyWorldTransform(gc.handle, translateMatrix, OS.MWT_LEFTMULTIPLY);
+			child.print(gc);
+			OS.RestoreDC(gc.handle, state);
+		}
+	}
+	return true;
 }
 
 @Override

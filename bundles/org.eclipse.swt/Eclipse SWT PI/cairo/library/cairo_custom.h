@@ -30,6 +30,7 @@
 #define cairo_ps_surface_set_size_LIB LIB_CAIRO
 #define cairo_surface_set_device_scale_LIB LIB_CAIRO
 #define cairo_surface_get_device_scale_LIB LIB_CAIRO
+#define cairo_pdf_surface_create_LIB LIB_CAIRO
 
 #ifdef CAIRO_HAS_XLIB_SURFACE
 #define cairo_xlib_surface_get_height_LIB LIB_CAIRO

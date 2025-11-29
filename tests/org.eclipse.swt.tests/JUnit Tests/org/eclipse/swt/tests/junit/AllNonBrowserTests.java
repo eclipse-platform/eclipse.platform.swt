@@ -71,6 +71,7 @@ import org.junit.platform.suite.api.Suite;
 		Test_org_eclipse_swt_layout_BorderLayout.class, //
 		Test_org_eclipse_swt_layout_FormAttachment.class, //
 		Test_org_eclipse_swt_layout_GridData.class, //
+		Test_org_eclipse_swt_printing_PDFDocument.class, //
 		Test_org_eclipse_swt_printing_PrintDialog.class, //
 		Test_org_eclipse_swt_printing_Printer.class, //
 		Test_org_eclipse_swt_printing_PrinterData.class, //

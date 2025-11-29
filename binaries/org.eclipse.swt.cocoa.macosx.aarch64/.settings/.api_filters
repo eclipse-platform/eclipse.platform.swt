@@ -196,12 +196,4 @@
             </message_arguments>
         </filter>
     </resource>
-    <resource path="META-INF/MANIFEST.MF">
-        <filter comment="Version is bumped for Eclipse 4.39 because of new BREE requirement" id="926941240">
-            <message_arguments>
-                <message_argument value="3.133.0"/>
-                <message_argument value="3.132.0"/>
-            </message_arguments>
-        </filter>
-    </resource>
 </component>
