@@ -146,12 +146,12 @@ public static void main(String [] args) {
 }
 
 static Image createImage(Display display, int width, int height) {
-	Image result = new Image(display, width, height);
-	GC gc = new GC(result);
-	for (int x = -height; x < width; x += 4) {
-		gc.drawLine(x, 0, x + height, height);
-	}
-	gc.dispose();
+	ImageGcDrawer imageGcDrawer = (gc, imageWidth, imageHeight) -> {
+		for (int x = -height; x < width; x += 4) {
+			gc.drawLine(x, 0, x + height, height);
+		}
+	};
+	Image result = new Image(display, imageGcDrawer, width, height);
 	return result;
 }
 }
