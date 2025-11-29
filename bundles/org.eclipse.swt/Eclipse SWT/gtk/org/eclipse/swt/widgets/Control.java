@@ -5258,7 +5258,6 @@ void setBackgroundGdkRGBA (long handle, GdkRGBA rgba) {
 
 	long context = GTK.gtk_widget_get_style_context(handle);
 	setBackgroundGdkRGBA(context, handle, rgba);
-	if (!GTK.GTK4) GTK3.gtk_style_context_invalidate(context);
 }
 /**
  * Sets the receiver's background image to the image specified
