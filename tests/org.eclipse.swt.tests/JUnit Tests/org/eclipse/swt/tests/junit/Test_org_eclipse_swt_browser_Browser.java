@@ -404,19 +404,26 @@ public void test_evalute_Cookies () {
 	browser.addProgressListener(ProgressListener.completedAdapter(event -> loaded.set(true)));
 
 	// Using JavaScript Cookie API on local (file) URL gives DOM Exception 18
-	browser.setUrl("https://www.eclipse.org/swt");
+	String url = "https://eclipse.dev/eclipse/swt/";
+	browser.setUrl(url);
 	shell.open();
 	waitForPassCondition(loaded::get);
+
+	// Retrieve entire cookie store
+	String res = (String) browser.evaluate("return document.cookie;");
+	assertEquals("", res.strip(), "Expected no cookies on " + "https://eclipse.dev/eclipse/swt/");
 
 	// Set the cookies
 	// document.cookie behaves different from other global vars
 	browser.evaluate("document.cookie = \"cookie1=value1\";");
 	browser.evaluate("document.cookie = \"cookie2=value2\";");
 
-	// Retrieve entire cookie store
-	String res = (String) browser.evaluate("return document.cookie;");
+	waitForMilliseconds(1000);
 
-	assertFalse(res.isEmpty());
+	// Retrieve entire cookie store
+	res = (String) browser.evaluate("return document.cookie;");
+
+	assertFalse(res.isEmpty(), "Expected cookies but got nothing on " + url);
 }
 
 @Tag("gtk4-todo")
