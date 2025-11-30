@@ -4849,9 +4849,9 @@ void flushQueueOnDnd() {
 	// to determine DnD threshold.
 	// This is to preserve backwards Cocoa/Win32 compatibility.
 	Event mouseDownEvent = dragDetectionQueue.getFirst();
-	mouseDownEvent.data = Boolean.valueOf(true); // force send MouseDown to avoid subsequent MouseMove before MouseDown.
+	mouseDownEvent.data = null;
 	dragDetectionQueue = null;
-	sendOrPost(SWT.MouseDown, mouseDownEvent);
+	sendEvent(SWT.MouseDown, mouseDownEvent);
 }
 
 boolean sendDragEvent (int button, int stateMask, int x, int y, boolean isStateMask) {
