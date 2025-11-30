@@ -936,10 +936,6 @@ public class ImageAnalyzer {
 								imageData = event.imageData;
 								imageCanvasGC.drawImage(
 									image,
-									0,
-									0,
-									imageData.width,
-									imageData.height,
 									imageData.x,
 									imageData.y,
 									imageData.width,
@@ -1186,10 +1182,6 @@ public class ImageAnalyzer {
 					Image printerImage = new Image(printer, imageData);
 					gc.drawImage(
 						printerImage,
-						0,
-						0,
-						imageData.width,
-						imageData.height,
 						-trim.x,
 						-trim.y,
 						scaleFactor * imageData.width,
@@ -1463,10 +1455,6 @@ public class ImageAnalyzer {
 			// Draw the current image onto the off-screen image.
 			offScreenImageGC.drawImage(
 				image,
-				0,
-				0,
-				imageData.width,
-				imageData.height,
 				imageData.x,
 				imageData.y,
 				imageData.width,
@@ -1491,16 +1479,7 @@ public class ImageAnalyzer {
 						imageData.height);
 				} else if (imageData.disposalMethod == SWT.DM_FILL_PREVIOUS) {
 					// Restore the previous image before drawing.
-					offScreenImageGC.drawImage(
-						image,
-						0,
-						0,
-						imageData.width,
-						imageData.height,
-						imageData.x,
-						imageData.y,
-						imageData.width,
-						imageData.height);
+					offScreenImageGC.drawImage(image, imageData.x, imageData.y, imageData.width, imageData.height);
 				}
 
 				// Get the next image data.
@@ -1511,15 +1490,7 @@ public class ImageAnalyzer {
 
 				// Draw the new image data.
 				offScreenImageGC.drawImage(
-					image,
-					0,
-					0,
-					imageData.width,
-					imageData.height,
-					imageData.x,
-					imageData.y,
-					imageData.width,
-					imageData.height);
+						image, imageData.x, imageData.y, imageData.width, imageData.height);
 
 				// Draw the off-screen image to the screen.
 				imageCanvasGC.drawImage(offScreenImage, 0, 0);
@@ -1780,10 +1751,6 @@ public class ImageAnalyzer {
 		/* Draw the image */
 		gc.drawImage(
 			paintImage,
-			0,
-			0,
-			imageData.width,
-			imageData.height,
 			ix + imageData.x,
 			iy + imageData.y,
 			w,
@@ -1795,10 +1762,6 @@ public class ImageAnalyzer {
 			Image maskImage = new Image(display, maskImageData);
 			gc.drawImage(
 				maskImage,
-				0,
-				0,
-				imageData.width,
-				imageData.height,
 				w + 10 + ix + imageData.x,
 				iy + imageData.y,
 				w,
