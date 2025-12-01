@@ -2842,7 +2842,7 @@ private static Boolean checkInternet(String url) {
 
 private static void printMemoryUse() {
 	System.gc();
-	System.runFinalization();
+	runFinalization();
 	long max = Runtime.getRuntime().maxMemory();
 	long total = Runtime.getRuntime().totalMemory();
 	long free = Runtime.getRuntime().freeMemory();
@@ -2853,6 +2853,15 @@ private static void printMemoryUse() {
 	System.out.printf(Locale.GERMAN, "%n%,16d bytes free heap", free);
 	System.out.printf(Locale.GERMAN, "%n%,16d bytes used heap", used);
 	System.out.println("\n#################################################\n");
+}
+
+/**
+ * Finalization is deprecated for removal in Java, as of now there is no actual
+ * removal date planned. The method exists to narrowly suppress warnings.
+ */
+@SuppressWarnings("removal")
+private static void runFinalization() {
+	System.runFinalization();
 }
 
 
