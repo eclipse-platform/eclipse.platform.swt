@@ -536,12 +536,21 @@ public void test_getBoundsI() {
 @Test
 public void test_getExpanded() {
 	assertFalse(treeItem.getExpanded());
+	// do nothing when the item is a leaf
+	treeItem.setExpanded(true);
+	assertFalse(treeItem.getExpanded());
 	// there must be at least one subitem before you can set the treeitem expanded
 	new TreeItem(treeItem, 0);
 	treeItem.setExpanded(true);
 	assertTrue(treeItem.getExpanded());
 	treeItem.setExpanded(false);
 	assertFalse(treeItem.getExpanded());
+	treeItem.setExpanded(true);
+	treeItem.removeAll();
+	assertTrue(treeItem.getExpanded());
+	// do nothing when the item is a leaf
+	treeItem.setExpanded(false);
+	assertTrue(treeItem.getExpanded());
 }
 
 @Test
