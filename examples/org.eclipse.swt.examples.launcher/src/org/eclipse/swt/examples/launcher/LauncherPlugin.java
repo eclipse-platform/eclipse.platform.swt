@@ -16,6 +16,7 @@ package org.eclipse.swt.examples.launcher;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.HashMap;
@@ -390,7 +391,8 @@ public class LauncherPlugin extends AbstractUIPlugin {
 		InputStream is = null;
 		try {
 			URL installUrl = bundle.getEntry("/");
-			URL url = new URL(installUrl, iconPath);
+			URI uri = installUrl.toURI().resolve(iconPath);
+			URL url = uri.toURL();
 			is = url.openConnection().getInputStream();
 			ImageData source = new ImageData(is);
 			ImageData mask = source.getTransparencyMask();

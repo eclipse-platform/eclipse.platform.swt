@@ -16,6 +16,7 @@ package org.eclipse.swt.examples.imageanalyzer;
 import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
 
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -879,7 +880,7 @@ public class ImageAnalyzer {
 		imageCanvas.setCursor(waitCursor);
 		ImageLoader oldLoader = loader;
 		try {
-			URL url = new URL(urlname);
+			URL url = new URI(urlname).toURL();
 			try (InputStream stream = url.openStream()) {
 				loader = new ImageLoader();
 				if (incremental) {
@@ -1221,7 +1222,7 @@ public class ImageAnalyzer {
 			loader = new ImageLoader();
 			ImageData[] newImageData;
 			if (fileName == null) {
-				URL url = new URL(currentName);
+				URL url = new URI(currentName).toURL();
 				try (InputStream stream = url.openStream()) {
 					long startTime = System.currentTimeMillis();
 					newImageData = loader.load(stream);
