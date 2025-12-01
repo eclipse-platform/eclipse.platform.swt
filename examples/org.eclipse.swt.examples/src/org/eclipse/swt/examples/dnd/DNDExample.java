@@ -18,7 +18,8 @@ import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
 
 import java.io.File;
 import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
@@ -423,8 +424,8 @@ private void createDragSource() {
 				dragDataHTML = "<b>"+dragDataText+"</b>";
 				dragDataURL = "http://" + dragDataText.replace(' ', '.');
 				try {
-					new URL(dragDataURL);
-				} catch (MalformedURLException e) {
+					new URI(dragDataURL).toURL();
+				} catch (MalformedURLException | URISyntaxException | IllegalArgumentException e) {
 					dragDataURL = null;
 				}
 			}

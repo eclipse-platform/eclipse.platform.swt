@@ -79,14 +79,14 @@ public static void main(String [] args) {
 
 	browser.addAuthenticationListener(event -> {
 		try {
-			URL url = new URL(event.location);
-			if (url.getHost().equals(KNOWN_HOST)) {
+			URI uri = new URI(event.location);
+			if (uri.getHost().equals(KNOWN_HOST)) {
 				event.user = KNOWN_USER;
 				event.password = KNOWN_PASSWORD;
 			} else {
 				/* do nothing, let default prompter run */
 			}
-		} catch (MalformedURLException e) {
+		} catch (URISyntaxException e) {
 			/* should not happen, let default prompter run */
 		}
 	});
