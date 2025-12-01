@@ -1500,6 +1500,7 @@ public void removeListener (int eventType, Listener listener) {
  * @nooverride This method is not intended to be re-implemented or extended by clients.
  * @deprecated Use {@link #removeListener(int, EventListener)}.
  */
+@SuppressWarnings("removal")
 @Deprecated(forRemoval=true, since="2025-03")
 protected void removeListener (int eventType, SWTEventListener listener) {
 	removeTypedListener(eventType, listener);
