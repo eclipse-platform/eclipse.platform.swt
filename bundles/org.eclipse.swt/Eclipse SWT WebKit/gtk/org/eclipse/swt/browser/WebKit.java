@@ -2063,20 +2063,22 @@ public boolean setUrl (String url, String postData, String[] headers) {
 	* invalid URL string and try to fix it by prepending an appropriate protocol.
 	*/
 	try {
-		new URL(url);
-	} catch (MalformedURLException e) {
-		String testUrl = null;
-		if (url.charAt (0) == SEPARATOR_FILE) {
-			/* appears to be a local file */
-			testUrl = PROTOCOL_FILE + url;
-		} else {
-			testUrl = PROTOCOL_HTTP + url;
-		}
-		try {
-			new URL (testUrl);
-			url = testUrl;		/* adding the protocol made the url valid */
-		} catch (MalformedURLException e2) {
-			/* adding the protocol did not make the url valid, so do nothing */
+		new URI(url).toURL();
+	} catch (URISyntaxException | IllegalArgumentException | MalformedURLException e) {
+		if (!url.isEmpty()) {
+			String testUrl = null;
+			if (url.charAt (0) == SEPARATOR_FILE) {
+				/* appears to be a local file */
+				testUrl = PROTOCOL_FILE + url;
+			} else {
+				testUrl = PROTOCOL_HTTP + url;
+			}
+			try {
+				new URI(testUrl).toURL();
+				url = testUrl;		/* adding the protocol made the url valid */
+			} catch (URISyntaxException | IllegalArgumentException | MalformedURLException e2) {
+				/* adding the protocol did not make the url valid, so do nothing */
+			}
 		}
 	}
 
@@ -2137,7 +2139,7 @@ public boolean setUrl (String url, String postData, String[] headers) {
 			String mime_type = null;
 			String encoding_type = null;
 			try {
-				URL base = new URL(base_url);
+				URL base = new URI(base_url).toURL();
 				URLConnection url_conn = base.openConnection();
 				if (url_conn instanceof HttpURLConnection) {
 					HttpURLConnection conn = (HttpURLConnection) url_conn;
@@ -2203,8 +2205,12 @@ public boolean setUrl (String url, String postData, String[] headers) {
 							}
 						}
 					}
+				} else {
+					html = "Unsupported connection type: " + url_conn;
 				}
-			} catch (IOException e) { // MalformedURLException is an IOException also.
+			} catch (URISyntaxException | IllegalArgumentException | MalformedURLException e) {
+				html = "URL is invalid: " + e.getMessage();
+			} catch (IOException e) {
 				html = e.getMessage();
 			} finally {
 				if (html != null && lastRequest == w2_bug527738LastRequestCounter.get()) {

@@ -754,7 +754,7 @@ public void test_LocationListener_LocationListener_ordered_changing () {
 	}));
 	shell.open();
 	browser.setText("You should not see this message.");
-	String url = getValidUrl();
+	String url = getValidFileUrl();
 	browser.setUrl(url);
 	assertTrue(waitForPassCondition(() -> locations.size() == 2));
 	assertTrue(locations.get(0).equals("about:blank") && locations.get(1).contains("testWebsiteWithTitle.html"));
@@ -763,8 +763,10 @@ public void test_LocationListener_LocationListener_ordered_changing () {
 @TempDir
 static Path tempFolder;
 
-private String getValidUrl() {
-	return SwtTestUtil.getPath("testWebsiteWithTitle.html", tempFolder).toUri().toString();
+private String getValidFileUrl() {
+	String url = SwtTestUtil.getPath("testWebsiteWithTitle.html", tempFolder).toUri().toString();
+	assertTrue(url.startsWith("file://"));
+	return url;
 }
 
 @Test
@@ -1184,7 +1186,27 @@ public void test_setUrl_local() {
 	assumeFalse(SwtTestUtil.isCocoa, "Test fails on Mac, see https://github.com/eclipse-platform/eclipse.platform.swt/issues/722");
 	String expectedTitle = "Website Title";
 	Runnable browserSetFunc = () -> {
-		String url = getValidUrl();
+		String url = getValidFileUrl();
+		testLogAppend("URL: " + url);
+		boolean opSuccess = browser.setUrl(url);
+		assertTrue(opSuccess);
+	};
+	validateTitleChanged(expectedTitle, browserSetFunc);
+}
+
+/**
+ * Verifies that an invalid URL (missing file://) will be converted to a valid
+ * URL with the file:// added.
+ */
+@Test
+public void test_setUrl_invalid_url_local() {
+	assumeTrue(SwtTestUtil.isLinux, "Handling of invalid URLs is platform dependent");
+	String expectedTitle = "Website Title";
+	Runnable browserSetFunc = () -> {
+		String url = getValidFileUrl();
+		assertTrue(url.startsWith("file://"));
+		url = url.replaceFirst("^file://", "");
+		assertTrue(url.startsWith("/"));
 		testLogAppend("URL: " + url);
 		boolean opSuccess = browser.setUrl(url);
 		assertTrue(opSuccess);
@@ -1199,6 +1221,30 @@ public void test_setUrl_remote() throws IOException {
 	try (var server = new EchoHttpServer()) {
 
 		String url = server.getEchoUrl("test_setUrl_remote");
+
+		String expectedTitle = "test_setUrl_remote";
+		Runnable browserSetFunc = () -> {
+			testLog.append("Setting Browser url to:" + url);
+			boolean opSuccess = browser.setUrl(url);
+			assertTrue(opSuccess);
+		};
+		validateTitleChanged(expectedTitle, browserSetFunc);
+	}
+}
+
+/**
+ * Verifies that an invalid URL (missing http://) will be converted to a valid
+ * URL with the http:// added.
+ */
+@Test
+public void test_setUrl_invalid_url_remote() throws IOException {
+	assumeTrue(SwtTestUtil.isLinux, "Handling of invalid URLs is platform dependent");
+
+	try (var server = new EchoHttpServer()) {
+
+		String validUrl = server.getEchoUrl("test_setUrl_remote");
+		assertTrue(validUrl.startsWith("http://"));
+		String url = validUrl.replaceFirst("^http://", "");
 
 		String expectedTitle = "test_setUrl_remote";
 		Runnable browserSetFunc = () -> {
@@ -1274,6 +1320,106 @@ public void test_setUrl_remote_with_post_no_content_type() throws IOException {
 			assertEquals("", capture.getErrorContent());
 		}
 	}
+}
+
+@Test
+public void test_setUrl_post_invalid_url() {
+	assumeTrue(SwtTestUtil.isLinux, "Handling of invalid URLs is platform dependent");
+	// Purposefully invalid URL (Note that URLs that become valid with
+	// http:// or file:// prefixed will get converted to their valid URLs
+	String url = "";
+	String postData = "test_setUrl_post_invalid_url";
+
+	Runnable browserSetFunc = () -> {
+		testLog.append("Setting Browser url to:" + url);
+		boolean opSuccess = browser.setUrl(url, postData, null);
+		assertTrue(opSuccess);
+	};
+
+	final AtomicReference<Boolean> completed = new AtomicReference<>(false);
+	browser.addProgressListener(completedAdapter(event -> {
+		testLog.append("ProgressListener fired");
+		completed.set(true);
+	}));
+	browserSetFunc.run();
+	shell.open();
+
+	boolean hasFinished = waitForPassCondition(() -> completed.get().booleanValue());
+	assertTrue(hasFinished);
+
+	String lowerCase = browser.getText().toLowerCase();
+	assertTrue(lowerCase.contains("URL is invalid".toLowerCase()), "Browser getText was: " + browser.getText());
+}
+
+@Test
+public void test_setUrl_post_connection_closes_prematurely() throws IOException {
+	assumeTrue(SwtTestUtil.isLinux, """
+			Handling POST in Linux is handled by SWT, so we need extra testing for the SWT code.
+			This test can be adapted to win32/cocoa, but that would be testing the third-party
+			browser component. Therefore (for now) this test only runs on Linux.
+			""");
+	try (var server = new EchoHttpServer() {
+		@Override
+		protected void handlePostEcho(HttpExchange exchange) {
+			// Immediately close the connection - this should generate a user
+			// visible error in the UI.
+
+			// For Webkit case where we handle post
+			exchange.close();
+		}
+	}) {
+		String url = server.postEchoUrl();
+		String postData = "test_setUrl_remote_with_post";
+
+		Runnable browserSetFunc = () -> {
+			testLog.append("Setting Browser url to:" + url);
+			boolean opSuccess = browser.setUrl(url, postData, null);
+			assertTrue(opSuccess);
+		};
+
+		final AtomicReference<Boolean> completed = new AtomicReference<>(false);
+		browser.addProgressListener(completedAdapter(event -> {
+			testLog.append("ProgressListener fired");
+			completed.set(true);
+		}));
+		browserSetFunc.run();
+		shell.open();
+
+		boolean hasFinished = waitForPassCondition(() -> completed.get().booleanValue());
+		assertTrue(hasFinished);
+
+		String lowerCase = browser.getText().toLowerCase();
+		assertTrue(lowerCase.contains("Unexpected end of file from server".toLowerCase()), "Browser getText was: " + browser.getText());
+	}
+}
+
+@Test
+public void test_setUrl_post_file_url() {
+	assumeTrue(SwtTestUtil.isLinux, "Handling of invalid URLs is platform dependent");
+	// Purposefully invalid URL (Note that URLs that become valid with
+	// http:// or file:// prefixed will get converted to their valid URLs
+	String url = getValidFileUrl();
+	String postData = "test_setUrl_post_file_url";
+
+	Runnable browserSetFunc = () -> {
+		testLog.append("Setting Browser url to:" + url);
+		boolean opSuccess = browser.setUrl(url, postData, null);
+		assertTrue(opSuccess);
+	};
+
+	final AtomicReference<Boolean> completed = new AtomicReference<>(false);
+	browser.addProgressListener(completedAdapter(event -> {
+		testLog.append("ProgressListener fired");
+		completed.set(true);
+	}));
+	browserSetFunc.run();
+	shell.open();
+
+	boolean hasFinished = waitForPassCondition(() -> completed.get().booleanValue());
+	assertTrue(hasFinished);
+
+	String lowerCase = browser.getText().toLowerCase();
+	assertTrue(lowerCase.contains("Unsupported connection type".toLowerCase()), "Browser getText was: " + browser.getText());
 }
 
 private void validateTitleChanged(String expectedTitle, Runnable browserSetFunc) {
