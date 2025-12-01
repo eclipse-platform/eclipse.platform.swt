@@ -1285,6 +1285,43 @@ public void test_setUrl_remote_with_post() throws IOException {
 }
 
 @Test
+public void test_setUrl_remote_with_post_no_content_type() throws IOException {
+	try (var server = new EchoHttpServer() {
+		@Override
+		protected void setResponseHeaders(HttpExchange exchange) {
+			// omit calling super so that no content type is set
+		}
+	}) {
+		try (var capture = new CapturedOutput()) {
+			String url = server.postEchoUrl();
+			String postData = "test_setUrl_remote_with_post";
+
+			Runnable browserSetFunc = () -> {
+				testLog.append("Setting Browser url to:" + url);
+				boolean opSuccess = browser.setUrl(url, postData, null);
+				assertTrue(opSuccess);
+			};
+
+			final AtomicReference<Boolean> completed = new AtomicReference<>(false);
+			browser.addProgressListener(completedAdapter(event -> {
+				testLog.append("ProgressListener fired");
+				completed.set(true);
+			}));
+			browserSetFunc.run();
+			shell.open();
+
+			boolean hasFinished = waitForPassCondition(() -> completed.get().booleanValue());
+			assertTrue(hasFinished);
+
+			String lowerCase = browser.getText().toLowerCase();
+			assertTrue(lowerCase.contains("<title>test_setUrl_remote_with_post</title>".toLowerCase()), "Browser getText was: " + browser.getText());
+			assertTrue(lowerCase.contains("</html>"), "Browser getText was: " + browser.getText());
+			capture.assertNoOutput();
+		}
+	}
+}
+
+@Test
 public void test_setUrl_post_invalid_url() {
 	assumeTrue(SwtTestUtil.isLinux, "Handling of invalid URLs is platform dependent");
 	// Purposefully invalid URL (Note that URLs that become valid with
