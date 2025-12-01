@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -17,8 +17,8 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -50,13 +50,7 @@ public void setUp() {
 
 @Test
 public void test_ConstructorLorg_eclipse_swt_widgets_TreeI() {
-	try {
-		new TreeItem((TreeItem)null, SWT.NULL);
-		fail("No exception thrown for parent == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
-
+	assertThrows(IllegalArgumentException.class, () -> new TreeItem((TreeItem)null, SWT.NULL), "No exception thrown for parent == null");
 	for (int i=0; i<10; i++) {
 		new TreeItem(tree, SWT.NONE);
 	}
@@ -67,12 +61,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_TreeI() {
 
 @Test
 public void test_ConstructorLorg_eclipse_swt_widgets_TreeII() {
-	try {
-		new TreeItem(tree, SWT.NONE, 5);
-		fail("No exception thrown for illegal index argument");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> new TreeItem(tree, SWT.NONE, 5), "No exception thrown for illegal index argument");
 }
 
 @Test
@@ -87,11 +76,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_TreeItemI() {
 
 @Test
 public void test_ConstructorLorg_eclipse_swt_widgets_TreeItemII() {
-	try {
-		new TreeItem(treeItem, SWT.NONE, 5);
-		fail("No exception thrown for illegal index argument");
-	}
-	catch (IllegalArgumentException e) {}
+	assertThrows(IllegalArgumentException.class, () -> new TreeItem(treeItem, SWT.NONE, 5), "No exception thrown for illegal index argument");
 	assertEquals(1, tree.getItemCount());
 }
 
@@ -643,26 +628,11 @@ public void test_getItemI() {
 
 	for (int i = 0; i < number; i++)
 		assertEquals(items[i], treeItem.getItem(i));
-	try {
-		treeItem.getItem(number);
-		fail("No exception thrown for illegal index argument");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> treeItem.getItem(number), "No exception thrown for illegal index argument");
 
-	try {
-		treeItem.getItem(number+1);
-		fail("No exception thrown for illegal index argument");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> treeItem.getItem(number+1), "No exception thrown for illegal index argument");
 
-	try {
-		treeItem.getItem(-1);
-		fail("No exception thrown for illegal index argument");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> treeItem.getItem(-1), "No exception thrown for illegal index argument");
 }
 
 @Test
@@ -744,13 +714,9 @@ public void test_setBackgroundILorg_eclipse_swt_graphics_Color() {
 	treeItem.setBackground(null);
 	assertEquals(tree.getBackground(),treeItem.getBackground(0));
 
-	try {
-		Color color = new Color(255, 0, 0);
-		color.dispose();
-		treeItem.setBackground(color);
-		fail("No exception thrown for color disposed");
-	} catch (IllegalArgumentException e) {
-	}
+	Color color = new Color(255, 0, 0);
+	color.dispose();
+	assertThrows(IllegalArgumentException.class, () -> treeItem.setBackground(color), "No exception thrown for color disposed");
 }
 
 @Test
@@ -761,11 +727,7 @@ public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 	treeItem.setBackground(null);
 	assertEquals(tree.getBackground(),treeItem.getBackground());
 	color.dispose();
-	try {
-		treeItem.setBackground(color);
-		fail("No exception thrown for color disposed");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> treeItem.setBackground(color), "No exception thrown for color disposed");
 }
 
 @Test
@@ -812,20 +774,15 @@ public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	treeItem.setFont(font);
 	assertEquals(treeItem.getFont(), font);
 
-	font = new Font(treeItem.getDisplay(), SwtTestUtil.testFontName, 10, SWT.NORMAL);
-	treeItem.setFont(font);
-	assertEquals(treeItem.getFont(), font);
+	Font font2 = new Font(treeItem.getDisplay(), SwtTestUtil.testFontName, 10, SWT.NORMAL);
+	treeItem.setFont(font2);
+	assertEquals(treeItem.getFont(), font2);
 
 	treeItem.setFont(null);
 	assertEquals(treeItem.getFont(), tree.getFont());
 
-	font.dispose();
-	try {
-		treeItem.setFont(font);
-		treeItem.setFont(null);
-		fail("No exception thrown for disposed font");
-	} catch (IllegalArgumentException e) {
-	}
+	font2.dispose();
+	assertThrows(IllegalArgumentException.class, () -> treeItem.setFont(font2), "No exception thrown for disposed font");
 }
 
 @Test
@@ -871,12 +828,7 @@ public void test_setFontILorg_eclipse_swt_graphics_Font() {
 	font.dispose();
 	font2.dispose();
 
-	try {
-		treeItem.setFont(0, font);
-		treeItem.setFont(0, null);
-		fail("No exception thrown for disposed font");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> treeItem.setFont(0, font), "No exception thrown for disposed font");
 }
 
 @Test
@@ -918,13 +870,9 @@ public void test_setForegroundILorg_eclipse_swt_graphics_Color() {
 	treeItem.setForeground(null);
 	assertEquals(tree.getForeground(),treeItem.getForeground(0));
 
-	try {
-		Color color = new Color(255, 0, 0);
-		color.dispose();
-		treeItem.setForeground(color);
-		fail("No exception thrown for color disposed");
-	} catch (IllegalArgumentException e) {
-	}
+	Color color = new Color(255, 0, 0);
+	color.dispose();
+	assertThrows(IllegalArgumentException.class, () -> treeItem.setForeground(color), "No exception thrown for color disposed");
 }
 
 @Test
@@ -935,11 +883,7 @@ public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
 	treeItem.setForeground(null);
 	assertEquals(tree.getForeground(),treeItem.getForeground());
 	color.dispose();
-	try {
-		treeItem.setForeground(color);
-		fail("No exception thrown for color disposed");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> treeItem.setForeground(color), "No exception thrown for color disposed");
 }
 
 @Test
@@ -984,12 +928,7 @@ public void test_setImage$Lorg_eclipse_swt_graphics_Image() {
 	for (int i = 0; i < images.length; i++) {
 		assertEquals(images[i], treeItem.getImage(i));
 	}
-	try {
-		treeItem.setImage((Image []) null);
-		fail("No exception thrown for images == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> treeItem.setImage((Image []) null), "No exception thrown for images == null");
 }
 
 @Test
@@ -1025,12 +964,7 @@ public void test_setImageILorg_eclipse_swt_graphics_Image() {
 	assertEquals(images[0], treeItem.getImage(0));
 
 	images[0].dispose();
-	try {
-		treeItem.setImage(0, images[0]);
-		treeItem.setImage(0, null);
-		fail("No exception thrown for disposed font");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> treeItem.setImage(0, images[0]), "No exception thrown for disposed font");
 }
 
 @Test
@@ -1038,12 +972,7 @@ public void test_setText$Ljava_lang_String() {
 	final String TestString = "test";
 	final String TestStrings[] = new String[] {TestString, TestString + "1", TestString + "2"};
 
-	try {
-		treeItem.setText((String []) null);
-		fail("No exception thrown for strings == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> treeItem.setText((String []) null), "No exception thrown for strings == null");
 
 	/*
 	* Test the getText/setText API with a Tree that has only
@@ -1131,19 +1060,9 @@ public void test_setTextILjava_lang_String(){
 	assertEquals(0, treeItem.getText(-1).length());
 
 
-	try {
-		treeItem.setText(-1, null);
-		fail("No exception thrown for string == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> treeItem.setText(-1, null), "No exception thrown for string == null");
 
-	try {
-		treeItem.setText(0, null);
-		fail("No exception thrown for string == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> treeItem.setText(0, null), "No exception thrown for string == null");
 
 	/*
 	* Test the getText/setText API with a small table that
