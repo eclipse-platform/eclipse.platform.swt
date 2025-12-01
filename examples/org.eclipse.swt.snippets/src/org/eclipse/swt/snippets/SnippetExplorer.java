@@ -194,7 +194,7 @@ public class SnippetExplorer {
 	 */
 	private static boolean canRunCommand(String command) {
 		try {
-			final Process p = Runtime.getRuntime().exec(command);
+			final Process p = Runtime.getRuntime().exec(new String[] {command});
 			p.waitFor(150, TimeUnit.MILLISECONDS);
 			if (p.isAlive()) {
 				p.destroy();
