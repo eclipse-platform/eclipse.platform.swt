@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -825,6 +826,37 @@ static <T> T runOperationInThread(int timeoutMs, ExceptionalSupplier<T> supplier
 /**
  * Capture any output on System.err
  *
+ * This class does not capture output on stderr from C level, such as
+ * Gdk-CRITICAL messages.
+ *
+ * See {@link SwtTestUtil#runWithCapturedStderr(Runnable)} or construct
+ * this class directly.
+ */
+public static class RunWithCapturedStderr implements Closeable {
+
+	private PrintStream originalErr;
+	private ByteArrayOutputStream errContent;
+
+	public RunWithCapturedStderr() {
+		originalErr = System.err;
+		errContent = new ByteArrayOutputStream();
+		System.setErr(new PrintStream(errContent, true, StandardCharsets.UTF_8));
+
+	}
+
+	public String getErrorContent() {
+		return errContent.toString(StandardCharsets.UTF_8);
+	}
+
+	@Override
+	public void close() {
+		System.setErr(originalErr);
+	}
+}
+
+/**
+ * Capture any output on System.err
+ *
  * This method does not capture output on stderr from C level, such as
  * Gdk-CRITICAL messages.
  *
@@ -832,15 +864,9 @@ static <T> T runOperationInThread(int timeoutMs, ExceptionalSupplier<T> supplier
  * @return output on System.err
  */
 public static String runWithCapturedStderr(Runnable runnable) {
-	PrintStream originalErr = System.err;
-	ByteArrayOutputStream errContent = new ByteArrayOutputStream();
-	System.setErr(new PrintStream(errContent, true, StandardCharsets.UTF_8));
-	try {
+	try (var capture = new RunWithCapturedStderr()) {
 		runnable.run();
-		return errContent.toString(StandardCharsets.UTF_8);
-
-	} finally {
-		System.setErr(originalErr);
+		return capture.getErrorContent();
 	}
 }
 }
