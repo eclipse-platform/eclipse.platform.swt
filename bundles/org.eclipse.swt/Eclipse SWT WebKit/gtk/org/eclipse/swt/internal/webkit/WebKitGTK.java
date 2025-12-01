@@ -135,7 +135,8 @@ public class WebKitGTK extends C {
 	public static final byte[] ready_to_show = ascii ("ready-to-show"); // $NON-NLS-1$
 
 	/** Properties: */
-	// Webkit2: https://webkitgtk.org/reference/webkit2gtk/unstable/WebKitSettings.html#WebKitSettings.properties
+	// GTK3: https://webkitgtk.org/reference/webkit2gtk/stable/class.Settings.html#properties
+	// GTK4: https://webkitgtk.org/reference/webkitgtk/stable/class.Settings.html#properties
 	//
 	// Developer Note:
 	// - Webkit2 documentation doesn't explicitly say if g_object_(set|get) is safe to use, but
