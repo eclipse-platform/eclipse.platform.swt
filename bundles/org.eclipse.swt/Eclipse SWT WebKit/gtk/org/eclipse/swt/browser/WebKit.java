@@ -2200,19 +2200,21 @@ public boolean setUrl (String url, String postData, String[] headers) {
 					{ // Extract result meta data
 						// Get Media Type from Content-Type
 						String content_type = conn.getContentType();
-						int parameterSeparatorIndex = content_type.indexOf(';');
-						mime_type = parameterSeparatorIndex > 0 ? content_type.substring(0, parameterSeparatorIndex) : content_type;
+						if (content_type != null) {
+							int parameterSeparatorIndex = content_type.indexOf(';');
+							mime_type = parameterSeparatorIndex > 0 ? content_type.substring(0, parameterSeparatorIndex) : content_type;
 
-						// Get Encoding if defined
-						if (content_type.indexOf(';') > 0) {
-							String [] attrs = content_type.split(";");
-							for (String attr : attrs) {
-								int i = attr.indexOf('=');
-								if (i > 0) {
-									String key = attr.substring(0, i).trim();
-									String value = attr.substring(i + 1).trim();
-									if ("charset".equalsIgnoreCase(key)) { //$NON-NLS-1$
-										encoding_type = value;
+							// Get Encoding if defined
+							if (content_type.indexOf(';') > 0) {
+								String [] attrs = content_type.split(";");
+								for (String attr : attrs) {
+									int i = attr.indexOf('=');
+									if (i > 0) {
+										String key = attr.substring(0, i).trim();
+										String value = attr.substring(i + 1).trim();
+										if ("charset".equalsIgnoreCase(key)) { //$NON-NLS-1$
+											encoding_type = value;
+										}
 									}
 								}
 							}
