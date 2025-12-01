@@ -42,10 +42,18 @@ import org.eclipse.swt.widgets.*;
  * The way they version webkitGTK is different from webkit.
  *   WebkitGTK:
  *    2.5 is webkit2.                    [2.4-..)  is Gtk3.
+ *  The WebKitGTK has a release version number and an API version.
+ *    GTK3: API Version 4
+ *    GTK4: API Version 6
+ *    (there used to be API Version 5, but it is discontinued and no need to support)
  *  Further, linux distributions might refer to webkit2 bindings linked against gtk3 differently.
  *  E.g on Fedora:
  *     webkitgtk4 = webkit2 / Gtk3
  *     webkit2gtk3 = WebKit2/ Gtk3
+ *  E.g on Ubuntu:
+ *     webkit2gtk = webkit2 / Gtk3 API Version 4
+ *     webkitgtk = WebKit2 / Gtk4 API Version 6
+ *
  *
  * Webkit2 loading:
  * - Dynamic bindings are auto generated and linked when the @dynamic keyword is used in WebKitGTK.java
@@ -65,7 +73,8 @@ import org.eclipse.swt.widgets.*;
  * It's the best that could be done at the time, but it could result in strange behavior like some webpages loading in funky ways if post-data is used.
  *
  * Some good resources that I found are as following:
- * - Webkit2 reference: https://webkitgtk.org/reference/webkit2gtk/stable/
+ * - GTK3: Webkit2 reference: https://webkitgtk.org/reference/webkit2gtk/stable/
+ * - GTK4: Webkit2 reference: https://webkitgtk.org/reference/webkitgtk/stable/
  *
  * - To understand GDBus, consider reading this guide:
  *   http://www.cs.grinnell.edu/~rebelsky/Courses/CSC195/2013S/Outlines/
@@ -557,7 +566,8 @@ static long Proc (long handle, long arg0, long arg1, long arg2, long user_data) 
 
 /**
  * gboolean user_function (WebKitWebView *web_view, WebKitAuthenticationRequest *request, gpointer user_data)
- * - https://webkitgtk.org/reference/webkit2gtk/stable/WebKitWebView.html#WebKitWebView-authenticate
+ * - GTK3: https://webkitgtk.org/reference/webkit2gtk/stable/signal.WebView.authenticate.html
+ * - GTK4: https://webkitgtk.org/reference/webkitgtk/stable/signal.WebView.authenticate.html
  */
 long webkit_authenticate (long web_view, long request){
 
@@ -693,7 +703,9 @@ public void create (Composite parent, int style) {
 		System.out.println("***WARNING: Please use for development purposes only!");
 	}
 
-	// Webkit2 Signal Documentation: https://webkitgtk.org/reference/webkit2gtk/stable/WebKitWebView.html#WebKitWebView--title
+	// Webkit2 Signal Documentation:
+	// GTK3: https://webkitgtk.org/reference/webkit2gtk/stable/class.WebView.html#signals
+	// GTK3: https://webkitgtk.org/reference/webkitgtk/stable/class.WebView.html#signals
 	if (GTK.GTK4) {
 		OS.swt_fixed_add(browser.handle, webView);
 	} else {
@@ -717,11 +729,13 @@ public void create (Composite parent, int style) {
 	// gboolean user_function (WebKitWebView *web_view,  WebKitAuthenticationRequest *request,  gpointer user_data)
 	OS.g_signal_connect (webView, WebKitGTK.authenticate, 					Proc3.getAddress (), AUTHENTICATE);
 
-	// (!) Note this one's a 'webContext' signal, not webview. See:
-	// https://webkitgtk.org/reference/webkit2gtk/stable/WebKitWebContext.html#WebKitWebContext-download-started
 	if (GTK.GTK4) {
+		// (!) Note this one's a 'NetworkSession' signal, not WebView. See:
+		// https://webkitgtk.org/reference/webkitgtk/stable/signal.NetworkSession.download-started.html
 		OS.g_signal_connect (WebKitGTK.webkit_network_session_get_default(), WebKitGTK.download_started, Proc3.getAddress (), DOWNLOAD_STARTED);
 	} else {
+		// (!) Note this one's a 'webContext' signal, not WebView. See:
+		// https://webkitgtk.org/reference/webkit2gtk/stable/signal.WebContext.download-started.html
 		OS.g_signal_connect (WebKitGTK.webkit_web_context_get_default(), WebKitGTK.download_started, Proc3.getAddress (), DOWNLOAD_STARTED);
 	}
 
@@ -1869,7 +1883,8 @@ long handleLoadCommitted (long uri, boolean top) {
  * This method is reached by:
  * Webkit2: WebKitWebView load-changed signal
  * 	- void user_function (WebKitWebView  *web_view, WebKitLoadEvent load_event, gpointer user_data)
- *  - https://webkitgtk.org/reference/webkit2gtk/stable/WebKitWebView.html#WebKitWebView-load-changed
+ *  - GTK3: https://webkitgtk.org/reference/webkit2gtk/stable/signal.WebView.load-changed.html
+ *  - GTK4: https://webkitgtk.org/reference/webkitgtk/stable/signal.WebView.load-changed.html
  *  - Note: As there is no return value, safe to fire asynchronously.
  */
 private void fireProgressCompletedEvent(){
@@ -2246,7 +2261,8 @@ public void stop () {
 /**
  * WebKitWebView 'close' signal
  * void user_function (WebKitWebView *web_view, gpointer user_data); // observe *no* return value.
- * https://webkitgtk.org/reference/webkit2gtk/stable/WebKitWebView.html#WebKitWebView-close
+ * GTK4: https://webkitgtk.org/reference/webkit2gtk/stable/signal.WebView.close.html
+ * GTK4: https://webkitgtk.org/reference/webkitgtk/stable/signal.WebView.close.html
  */
 long webkit_close_web_view (long web_view) {
 	WindowEvent newEvent = new WindowEvent (browser);
@@ -2350,7 +2366,8 @@ static long webkit_download_failed(long download) {
 /**
  * WebkitWebView mouse-target-changed
  * - void user_function (WebKitWebView *web_view, WebKitHitTestResult *hit_test_result, guint modifiers, gpointer user_data)
- * - https://webkitgtk.org/reference/webkit2gtk/stable/WebKitWebView.html#WebKitWebView-mouse-target-changed
+ * - GTK4: https://webkitgtk.org/reference/webkit2gtk/stable/signal.WebView.mouse-target-changed.html
+ * - GTK4: https://webkitgtk.org/reference/webkitgtk/stable/signal.WebView.mouse-target-changed.html
  * */
 long webkit_mouse_target_changed (long web_view, long hit_test_result, long modifiers) {
 	if (WebKitGTK.webkit_hit_test_result_context_is_link(hit_test_result)){
@@ -2604,7 +2621,8 @@ void convertUri (long webkitUri) {
 /**
  * Triggered by a change in property. (both gdouble[0,1])
  * Webkit2: WebkitWebview notify::estimated-load-progress
- *  https://webkitgtk.org/reference/webkit2gtk/stable/WebKitWebView.html#WebKitWebView--estimated-load-progress
+ *  GTK3: https://webkitgtk.org/reference/webkit2gtk/stable/property.WebView.estimated-load-progress.html
+ *  GTK4: https://webkitgtk.org/reference/webkitgtk/stable/property.WebView.estimated-load-progress.html
  *
  *  No return value required. Thus safe to run asynchronously.
  */
@@ -2629,7 +2647,8 @@ long webkit_notify_progress (long web_view, long pspec) {
 /**
  * Triggerd by webkit's 'notify::title' signal and forwarded to this function.
  * The signal doesn't have documentation (2.15.4), but is mentioned here:
- * https://webkitgtk.org/reference/webkit2gtk/stable/WebKitWebView.html#webkit-web-view-get-title
+ * GTK3: https://webkitgtk.org/reference/webkit2gtk/stable/method.WebView.get_title.html
+ * GTK4: https://webkitgtk.org/reference/webkitgtk/stable/method.WebView.get_title.html
  *
  * It doesn't look it would require a return value, so running in asyncExec should be fine.
  */
@@ -2702,7 +2721,8 @@ private void addRequestHeaders(long requestHeaders, String[] headers){
 /**
  * Emitted after "create" on the newly created WebKitWebView when it should be displayed to the user.
  * Webkit2 signal: ready-to-show
- *   https://webkitgtk.org/reference/webkitgtk/unstable/webkitgtk-webkitwebview.html#WebKitWebView-web-view-ready
+ *  GTK3: https://webkitgtk.org/reference/webkit2gtk/stable/vfunc.WebView.ready_to_show.html
+ *  GTK4: https://webkitgtk.org/reference/webkitgtk/stable/vfunc.WebView.ready_to_show.html
  * Note in webkit2, no return value has to be provided in callback.
  */
 long webkit_web_view_ready (long web_view) {
