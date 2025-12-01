@@ -1042,7 +1042,7 @@ public class SnippetExplorer {
 				if (!launchedSnippets.isEmpty()) {
 					System.err.println("Some Snippets are still running:");
 					for (Thread t : launchedSnippets) {
-						System.err.println("    " + t.getName() + " (ThreadId: " + t.getId() + ")");
+						System.err.println("    " + t.getName() + " (ThreadId: " + t.threadId() + ")");
 						final Display d = Display.findDisplay(t);
 						if (d != null && !d.isDisposed()) {
 							d.syncExec(d::dispose);
