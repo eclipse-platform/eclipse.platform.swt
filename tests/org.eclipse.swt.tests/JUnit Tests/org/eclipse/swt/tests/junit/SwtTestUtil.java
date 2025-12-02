@@ -19,11 +19,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -832,15 +830,9 @@ static <T> T runOperationInThread(int timeoutMs, ExceptionalSupplier<T> supplier
  * @return output on System.err
  */
 public static String runWithCapturedStderr(Runnable runnable) {
-	PrintStream originalErr = System.err;
-	ByteArrayOutputStream errContent = new ByteArrayOutputStream();
-	System.setErr(new PrintStream(errContent, true, StandardCharsets.UTF_8));
-	try {
+	try (var capture = new CapturedOutput()) {
 		runnable.run();
-		return errContent.toString(StandardCharsets.UTF_8);
-
-	} finally {
-		System.setErr(originalErr);
+		return capture.getErrContent();
 	}
 }
 }
