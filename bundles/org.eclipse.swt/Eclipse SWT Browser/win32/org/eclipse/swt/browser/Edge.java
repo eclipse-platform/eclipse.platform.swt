@@ -185,8 +185,8 @@ class Edge extends WebBrowser {
 			HttpCookie parser = HttpCookie.parse(CookieValue).get(0);
 			URL origin;
 			try {
-				origin = new URL(CookieUrl);
-			} catch (MalformedURLException e) {
+				origin = new URI(CookieUrl).toURL();
+			} catch (URISyntaxException | IllegalArgumentException | MalformedURLException e) {
 				return;
 			}
 			if (parser.getDomain() == null) {

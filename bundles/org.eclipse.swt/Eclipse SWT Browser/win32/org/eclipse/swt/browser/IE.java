@@ -717,8 +717,8 @@ public void create(Composite parent, int style) {
 					boolean isPDF = false;
 					String path = null;
 					try {
-						path = new URL(url3).getPath();
-					} catch (MalformedURLException e) {
+						path = new URI(url3).toURL().getPath();
+					} catch (URISyntaxException | IllegalArgumentException | MalformedURLException e) {
 					}
 					if (path != null) {
 						int extensionIndex = path.lastIndexOf('.');
