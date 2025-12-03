@@ -14,6 +14,8 @@
  *******************************************************************************/
 package org.eclipse.swt.custom;
 
+import java.util.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
@@ -93,8 +95,8 @@ public class CTabFolderRenderer {
 	static final int BUTTON_FILL = SWT.COLOR_LIST_BACKGROUND;
 	static final int BORDER1_COLOR = SWT.COLOR_WIDGET_NORMAL_SHADOW;
 
-	static final int ITEM_TOP_MARGIN = 2;
-	static final int ITEM_BOTTOM_MARGIN = 2;
+	static final int ITEM_TOP_MARGIN = 3;
+	static final int ITEM_BOTTOM_MARGIN = 3;
 	static final int ITEM_LEFT_MARGIN = 4;
 	static final int ITEM_RIGHT_MARGIN = 4;
 	static final int INTERNAL_SPACING = 4;
@@ -1382,7 +1384,15 @@ public class CTabFolderRenderer {
 				if (parent.selectionHighlightBarThickness > 0 && parent.simple) {
 					Color previousColor = gc.getBackground();
 					gc.setBackground(item.getDisplay().getSystemColor(parent.shouldHighlight() ? SWT.COLOR_LIST_SELECTION : SWT.COLOR_WIDGET_DISABLED_FOREGROUND));
-					gc.fillRectangle(x + 1 /* outline */, parent.onBottom ? y + height - 1 - parent.selectionHighlightBarThickness : y + 1, width - 2 /*outline*/, parent.selectionHighlightBarThickness);
+
+					int[] highlightShape = Arrays.copyOf(shape, shape.length);
+					// Update Y coordinates in shape to apply highlight thickness
+					int thickness = parent.selectionHighlightBarThickness;
+					boolean onBottom = parent.onBottom;
+					int bottomY = y + height - 1;
+					int highlightY = onBottom ? bottomY - thickness : thickness + 1;
+					highlightShape[1] = highlightShape[3] = highlightShape[highlightShape.length - 1] = highlightShape[highlightShape.length - 3] = highlightY;
+					gc.fillPolygon(highlightShape);
 					gc.setBackground(previousColor);
 				}
 
