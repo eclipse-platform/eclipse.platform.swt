@@ -631,7 +631,7 @@ private static class ImageDataProviderCursorHandleProvider extends HotspotAwareC
 		int scaledZoom = (int) (zoom * getPointerSizeScaleFactor());
 		ImageData source = tempImage.getImageData(scaledZoom);
 		tempImage.dispose();
-		return setupCursorFromImageData(device, source, null, getHotpotXInPixels(zoom), getHotpotYInPixels(zoom));
+		return setupCursorFromImageData(device, source, null, getHotpotXInPixels(scaledZoom), getHotpotYInPixels(scaledZoom));
 	}
 }
 
@@ -650,8 +650,8 @@ private static class ImageDataCursorHandleProvider extends HotspotAwareCursorHan
 		float accessibilityFactor = getPointerSizeScaleFactor();
 		int scaledZoom = (int) (zoom * accessibilityFactor);
 		ImageData scaledSource = DPIUtil.scaleImageData(device, this.source, scaledZoom, DEFAULT_ZOOM);
-		return setupCursorFromImageData(device, scaledSource, null, getHotpotXInPixels(zoom),
-				getHotpotYInPixels(zoom));
+		return setupCursorFromImageData(device, scaledSource, null, getHotpotXInPixels(scaledZoom),
+				getHotpotYInPixels(scaledZoom));
 	}
 }
 
@@ -680,7 +680,8 @@ private static class ImageDataWithMaskCursorHandleProvider extends ImageDataCurs
 
 	@Override
 	public CursorHandle createHandle(Device device, int zoom) {
-		float scaledZoomFactor = zoom * getPointerSizeScaleFactor() / 100f;
+		int scaledZoom = (int) (zoom * getPointerSizeScaleFactor());
+		float scaledZoomFactor = scaledZoom / 100f;
 		int scaledSourceWidth = Math.round(this.source.width * scaledZoomFactor);
 		int scaledSourceHeight = Math.round(this.source.height * scaledZoomFactor);
 		ImageData scaledSource = this.source.scaledTo(scaledSourceWidth, scaledSourceHeight);
@@ -690,8 +691,8 @@ private static class ImageDataWithMaskCursorHandleProvider extends ImageDataCurs
 			int scaledMaskHeight = Math.round(this.mask.height * scaledZoomFactor);
 			scaledMask = this.mask.scaledTo(scaledMaskWidth, scaledMaskHeight);
 		}
-		return setupCursorFromImageData(device, scaledSource, scaledMask, getHotpotXInPixels(zoom),
-				getHotpotYInPixels(zoom));
+		return setupCursorFromImageData(device, scaledSource, scaledMask, getHotpotXInPixels(scaledZoom),
+				getHotpotYInPixels(scaledZoom));
 	}
 }
 
