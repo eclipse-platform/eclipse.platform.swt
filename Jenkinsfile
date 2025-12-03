@@ -44,29 +44,6 @@ def runOnNativeBuildAgent(String platform, Closure body) {
 
 /** Returns the download URL of the JDK against whose C headers (in the 'include/' folder) and native libraries the SWT natives are compiled.*/
 def getNativeJdkUrl(String os, String arch) { // To update the used JDK version update the URL template below
-	if ('win32'.equals(os) && 'aarch64'.equals(arch)) {
-		// Temporary workaround until there are official Temurin GA releases for Windows on ARM that can be consumed through JustJ
-		dir("${WORKSPACE}/repackage-win32.aarch64-jdk") {
-			sh """
-				curl -L 'https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.9%2B10/OpenJDK21U-jdk_aarch64_windows_hotspot_21.0.9_10.zip' > jdk.zip
-				unzip -q jdk.zip jdk-21.0.9+10/include/** jdk-21.0.9+10/lib/**
-				cd jdk-21.0.9+10
-				tar -czf ../jdk.tar.gz include/ lib/
-			"""
-		}
-		return "file://${WORKSPACE}/repackage-win32.aarch64-jdk/jdk.tar.gz"
-	} else if ('linux'.equals(os) && 'riscv64'.equals(arch)) {
-		// Downloading jdk and renew it for riscv64 architecture on Linux
-		dir("${WORKSPACE}/repackage-linux.riscv64-jdk") {
-				sh """
-				curl -L 'https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.9%2B10/OpenJDK21U-jdk_riscv64_linux_hotspot_21.0.9_10.tar.gz' > jdk.tar.gz
-				tar -xzf jdk.tar.gz jdk-21.0.9+10/include/ jdk-21.0.9+10/lib/
-				cd jdk-21.0.9+10
-				tar -czf ../jdk.tar.gz include/ lib/
-				"""
-		}
-		return "file://${WORKSPACE}/repackage-linux.riscv64-jdk/jdk.tar.gz"
-	}
 	return "https://download.eclipse.org/justj/jres/21/downloads/20251104_1502/org.eclipse.justj.openjdk.hotspot.jre.minimal.stripped-21.0.9-${os}-${arch}.tar.gz"
 }
 
