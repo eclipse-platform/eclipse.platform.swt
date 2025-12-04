@@ -580,17 +580,7 @@ void bringToTop (boolean force) {
 			if (focusHandle != 0 && !GTK.gtk_widget_has_focus (focusHandle)) return;
 		}
 	}
-	/*
-	* Bug in GTK.  When a shell that is not managed by the window
-	* manage is given focus, GTK gets stuck in "focus follows pointer"
-	* mode when the pointer is within the shell and its parent when
-	* the shell is hidden or disposed. The fix is to use XSetInputFocus()
-	* to assign focus when ever the active shell has not managed by
-	* the window manager.
-	*
-	* NOTE: This bug is fixed in GTK+ 2.6.8 and above.
-	*/
-	boolean xFocus = false;
+
 	if (activeShell != null) {
 		display.activeShell = null;
 		display.activePending = true;
@@ -607,7 +597,7 @@ void bringToTop (boolean force) {
 	} else {
 		gdkResource = gtk_widget_get_window (shellHandle);
 	}
-	if ((xFocus || (style & SWT.ON_TOP) != 0)) {
+	if ((style & SWT.ON_TOP) != 0) {
 		if (OS.isX11()) {
 			long gdkDisplay;
 			if (GTK.GTK4) {
