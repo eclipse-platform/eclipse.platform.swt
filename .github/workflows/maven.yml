@@ -84,6 +84,9 @@ jobs:
         java: ['21']
         gtk: [gtk3, gtk4]
         gdk_backend: [x11, wayland]
+        exclude:
+          - gtk: gtk3
+            gdk_backend: wayland
     uses: ./.github/workflows/build.yml
     with:
       runner: ubuntu-latest
