@@ -31,8 +31,53 @@ jobs:
         name: Event File
         path: ${{ github.event_path }}
 
+  changes:
+    name: Detect changed paths
+    runs-on: ubuntu-latest
+    outputs:
+      # Lint warnings are expected in this block
+      # https://github.com/dorny/paths-filter/issues/223#issuecomment-2463309889
+      win32: ${{ steps.filter.outputs.win32  || 'false' }}
+      gtk:   ${{ steps.filter.outputs.gtk    || 'false' }}
+      cocoa: ${{ steps.filter.outputs.cocoa  || 'false' }}
+      md:    ${{ steps.filter.outputs.md     || 'false' }}
+      other: ${{ steps.filter.outputs.other  || 'false' }}
+    steps:
+      - name: Paths filter (PRs only)
+        if: github.event.pull_request.base
+        # dorney/paths-filter is out of date, so use this fork with
+        # a specific fix for missing predicate-quantifier in action's
+        # inputs
+        # https://github.com/dorny/paths-filter/pull/226#issuecomment-2805358761
+        uses: petermetz/paths-filter@5ee2f5d4cf5d7bdd998a314a42da307e2ae1639d
+        id: filter
+        with:
+          predicate-quantifier: 'every'
+          filters: |
+            win32:
+              - '**/win32/**'
+            gtk:
+              - '**/gtk/**'
+            cocoa:
+              - '**/cocoa/**'
+            md:
+              - '**/*.md'
+            jenkins:
+              - 'Jenkinsfile'
+            # "other" = anything not matching the above buckets
+            other:
+              - '**'
+              - '!**/win32/**'
+              - '!**/gtk/**'
+              - '!**/cocoa/**'
+              - '!**/*.md'
+              - '!Jenkinsfile'
+
   build-linux:
     name: Build (Linux)
+    needs: changes
+    # push => always; PR => run if gtk changed OR "other" changed (run-everything case)
+    if: ${{ github.event_name != 'pull_request' || needs.changes.outputs.gtk == 'true' || needs.changes.outputs.other == 'true' }}
     strategy:
       fail-fast: false
       matrix:
@@ -49,6 +94,9 @@ jobs:
 
   build-windows:
     name: Build (Windows)
+    needs: changes
+    # push => always; PR => run if win32 changed OR "other" changed (run-everything case)
+    if: ${{ github.event_name != 'pull_request' || needs.changes.outputs.win32 == 'true' || needs.changes.outputs.other == 'true' }}
     strategy:
       fail-fast: false
       matrix:
@@ -63,6 +111,9 @@ jobs:
 
   build-macos:
     name: Build (macOS)
+    needs: changes
+    # push => always; PR => run if cocoa changed OR "other" changed (run-everything case)
+    if: ${{ github.event_name != 'pull_request' || needs.changes.outputs.cocoa == 'true' || needs.changes.outputs.other == 'true' }}
     strategy:
       fail-fast: false
       matrix:
