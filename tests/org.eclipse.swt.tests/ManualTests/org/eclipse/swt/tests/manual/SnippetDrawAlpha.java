@@ -81,7 +81,7 @@ public class SnippetDrawAlpha {
 		Image resultImage = new Image(device, resultData);
 		GC gc = new GC(resultImage);
 		gc.setAntialias(SWT.ON);
-		gc.drawImage(original, 0, 0, width, height,
+		gc.drawImage(original,
 				/*
 				 * E.g. destWidth here is effectively DPIUtil.autoScaleDown
 				 * (scaledWidth), but avoiding rounding errors. Nevertheless, we

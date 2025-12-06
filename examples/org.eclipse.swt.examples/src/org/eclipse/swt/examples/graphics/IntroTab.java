@@ -13,10 +13,17 @@
  *******************************************************************************/
 package org.eclipse.swt.examples.graphics;
 
-import java.util.*;
+import java.util.Random;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Device;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Path;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 
 public class IntroTab extends AnimatedGraphicsTab {
 
@@ -96,8 +103,7 @@ public void paint(GC gc, int width, int height) {
 	Path path = new Path(device);
 	path.addString(text, x, y, font);
 	gc.setClipping(path);
-	Rectangle rect = image.getBounds();
-	gc.drawImage(image, 0, 0, rect.width, rect.height, 0, 0, width, height);
+	gc.drawImage(image, 0, 0, width, height);
 	gc.setClipping((Rectangle)null);
 	gc.setForeground(device.getSystemColor(SWT.COLOR_BLUE));
 	gc.drawPath(path);

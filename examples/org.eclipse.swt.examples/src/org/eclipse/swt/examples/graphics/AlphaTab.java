@@ -14,8 +14,13 @@
 
 package org.eclipse.swt.examples.graphics;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Device;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Path;
+import org.eclipse.swt.graphics.Point;
 
 /**
  * This tab demonstrates alpha blending. It draws various shapes and images as
@@ -104,21 +109,16 @@ public class AlphaTab extends AnimatedGraphicsTab {
 			alphaImg2 = GraphicsExample.loadImage(device, GraphicsExample.class, "alpha_img2.png");
 		}
 
-		Rectangle rect = alphaImg1.getBounds();
 
 		gc.setAlpha(alphaValue);
-		gc.drawImage(alphaImg1, rect.x, rect.y, rect.width, rect.height,
-				width/2, height/2, width/4, height/4);
+		gc.drawImage(alphaImg1, width / 2, height / 2, width / 4, height / 4);
 
-		gc.drawImage(alphaImg1, rect.x, rect.y, rect.width, rect.height,
-				0, 0, width/4, height/4);
+		gc.drawImage(alphaImg1, 0, 0, width / 4, height / 4);
 
-		gc.setAlpha(255-alphaValue);
-		gc.drawImage(alphaImg2, rect.x, rect.y, rect.width, rect.height,
-				width/2, 0, width/4, height/4);
+		gc.setAlpha(255 - alphaValue);
+		gc.drawImage(alphaImg2, width / 2, 0, width / 4, height / 4);
 
-		gc.drawImage(alphaImg2, rect.x, rect.y, rect.width, rect.height,
-				0, 3*height/4, width/4, height/4);
+		gc.drawImage(alphaImg2, 0, 3 * height / 4, width / 4, height / 4);
 
 		// pentagon
 		gc.setBackground(device.getSystemColor(SWT.COLOR_DARK_MAGENTA));

@@ -72,10 +72,6 @@ public class Snippet141 {
 								image = new Image(display, imageData);
 								offScreenImageGC.drawImage(
 									image,
-									0,
-									0,
-									imageData.width,
-									imageData.height,
 									imageData.x,
 									imageData.y,
 									imageData.width,
@@ -97,16 +93,8 @@ public class Snippet141 {
 										break;
 									case SWT.DM_FILL_PREVIOUS:
 										/* Restore the previous image before drawing. */
-										offScreenImageGC.drawImage(
-											image,
-											0,
-											0,
-											imageData.width,
-											imageData.height,
-											imageData.x,
-											imageData.y,
-											imageData.width,
-											imageData.height);
+										offScreenImageGC.drawImage(image, imageData.x, imageData.y, imageData.width,
+												imageData.height);
 										break;
 									}
 
@@ -114,16 +102,8 @@ public class Snippet141 {
 									imageData = imageDataArray[imageDataIndex];
 									image.dispose();
 									image = new Image(display, imageData);
-									offScreenImageGC.drawImage(
-										image,
-										0,
-										0,
-										imageData.width,
-										imageData.height,
-										imageData.x,
-										imageData.y,
-										imageData.width,
-										imageData.height);
+									offScreenImageGC.drawImage(image, imageData.x, imageData.y, imageData.width,
+											imageData.height);
 
 									/* Draw the off-screen image to the shell. */
 									shellGC.drawImage(offScreenImage, 0, 0);
