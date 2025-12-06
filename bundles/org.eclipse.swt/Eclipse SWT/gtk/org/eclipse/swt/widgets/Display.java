@@ -133,13 +133,13 @@ public class Display extends Device implements Executor {
 	Callback eventCallback;
 	long eventProc, windowProc2, windowProc3, windowProc4, windowProc5, windowProc6;
 	long changeValueProc;
-	long snapshotDrawProc, keyPressReleaseProc, focusProc, windowActiveProc, enterMotionProc, leaveProc,
+	long gtk4DrawProc, keyPressReleaseProc, focusProc, windowActiveProc, enterMotionProc, leaveProc,
 		 scrollProc, resizeProc, activateProc, gesturePressReleaseProc;
 	long notifyProc;
 	long computeSizeProc;
 	Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5, windowCallback6;
 	Callback changeValue;
-	Callback snapshotDraw, keyPressReleaseCallback, focusCallback, windowActiveCallback, enterMotionCallback, computeSizeCallback,
+	Callback gtk4Draw, keyPressReleaseCallback, focusCallback, windowActiveCallback, enterMotionCallback, computeSizeCallback,
 			 scrollCallback, leaveCallback, resizeCallback, activateCallback, gesturePressReleaseCallback;
 	Callback notifyCallback;
 	EventTable eventTable, filterTable;
@@ -1717,16 +1717,10 @@ static long rendererClassInitProc (long g_class, long class_data) {
 	return 0;
 }
 
-void snapshotDrawProc(long handle, long snapshot) {
+void gtk4DrawProc(long drawing_area, long cairo, int width, int height, long user_data) {
 	Display display = getCurrent ();
-	Widget widget = display.getWidget (handle);
-	if (widget != null) widget.snapshotToDraw(handle, snapshot);
-	long child = GTK4.gtk_widget_get_first_child(handle);
-	// Propagate the snapshot down the widget tree
-	while (child != 0) {
-		GTK4.gtk_widget_snapshot_child(handle, child, snapshot);
-		child = GTK4.gtk_widget_get_next_sibling(child);
-	}
+	Widget widget = display.getWidget (user_data);
+	if (widget != null) widget.gtk4_draw(cairo, width, height);
 }
 
 static long rendererGetPreferredWidthProc (long cell, long handle, long minimun_size, long natural_size) {
@@ -3565,8 +3559,8 @@ void initializeCallbacks () {
 	windowProc2 = windowCallback2.getAddress ();
 
 	if (GTK.GTK4) {
-		snapshotDraw = new Callback(this, "snapshotDrawProc", void.class, new Type[] {long.class, long.class}); //$NON-NLS-1$
-		snapshotDrawProc = snapshotDraw.getAddress();
+		gtk4Draw = new Callback(this, "gtk4DrawProc", void.class, new Type[] {long.class, long.class, int.class, int.class, long.class}); //$NON-NLS-1$
+		gtk4DrawProc = gtk4Draw.getAddress();
 
 		keyPressReleaseCallback = new Callback(this, "keyPressReleaseProc", boolean.class, new Type[] {
 				long.class, int.class, int.class, int.class, long.class}); //$NON-NLS-1$
@@ -4697,9 +4691,9 @@ void releaseDisplay () {
 		gesturePressReleaseCallback = null;
 		gesturePressReleaseProc = 0;
 
-		snapshotDraw.dispose();
-		snapshotDraw = null;
-		snapshotDrawProc = 0;
+		gtk4Draw.dispose();
+		gtk4Draw = null;
+		gtk4DrawProc = 0;
 	}
 
 	notifyCallback.dispose();
