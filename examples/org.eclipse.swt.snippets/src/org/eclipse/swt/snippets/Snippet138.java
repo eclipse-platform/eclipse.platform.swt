@@ -29,17 +29,17 @@ public class Snippet138 {
 	public static void main(String[] args) {
 		Display display = new Display();
 
-		Image small = new Image(display, 16, 16);
-		GC gc = new GC(small);
-		gc.setBackground(display.getSystemColor(SWT.COLOR_RED));
-		gc.fillArc(0, 0, 16, 16, 45, 270);
-		gc.dispose();
+		final ImageGcDrawer imageGcDrawer = (gc, imageWidth, imageHeight) -> {
+			gc.setBackground(display.getSystemColor(SWT.COLOR_RED));
+			gc.fillArc(0, 0, imageWidth, imageHeight, 45, 270);
+		};
+		Image small = new Image(display, imageGcDrawer, 16, 16);
 
-		Image large = new Image(display, 32, 32);
-		gc = new GC(large);
-		gc.setBackground(display.getSystemColor(SWT.COLOR_RED));
-		gc.fillArc(0, 0, 32, 32, 45, 270);
-		gc.dispose();
+		final ImageGcDrawer imageGcDrawer1 = (gc, imageWidth, imageHeight) -> {
+			gc.setBackground(display.getSystemColor(SWT.COLOR_RED));
+			gc.fillArc(0, 0, imageWidth, imageHeight, 45, 270);
+		};
+		Image large = new Image(display, imageGcDrawer1, 32, 32);
 
 		/* Provide different resolutions for icons to get
 		 * high quality rendering wherever the OS needs
