@@ -172,8 +172,7 @@ public final class Image extends Resource implements Drawable {
 		private Optional<ImageHandle> createHandleAtExactSize(int width, int height) {
 			Optional<ImageData> imageData = imageProvider.loadImageDataAtExactSize(width, height);
 			if (imageData.isPresent()) {
-				ImageData adaptedData = adaptImageDataIfDisabledOrGray(imageData.get());
-				ImageHandle imageHandle = init(adaptedData, -1);
+				ImageHandle imageHandle = init(imageData.get(), -1);
 				return Optional.of(imageHandle);
 			}
 			return Optional.empty();
@@ -187,8 +186,7 @@ public final class Image extends Resource implements Drawable {
 			ImageHandle bestFittingHandle = zoomLevelToImageHandle.get(imageZoom);
 			if (bestFittingHandle == null) {
 				ImageData bestFittingImageData = imageProvider.loadImageData(imageZoom).element();
-				ImageData adaptedData = adaptImageDataIfDisabledOrGray(bestFittingImageData);
-				bestFittingHandle = init(adaptedData, -1);
+				bestFittingHandle = init(bestFittingImageData, -1);
 			}
 			return bestFittingHandle;
 		}
@@ -333,21 +331,11 @@ public Image(Device device, Image srcImage, int flag) {
 			}
 			break;
 		}
-		case SWT.IMAGE_DISABLE: {
+		case SWT.IMAGE_DISABLE:
+		case SWT.IMAGE_GRAY:{
 			for (ImageHandle imageHandle : srcImage.zoomLevelToImageHandle.values()) {
-				Rectangle rect = imageHandle.getBounds();
 				ImageData data = srcImage.getImageData(imageHandle.zoom);
-				ImageData newData = applyDisableImageData(data, rect.height, rect.width);
-				init (newData, imageHandle.zoom);
-			}
-			break;
-		}
-		case SWT.IMAGE_GRAY: {
-			for (ImageHandle imageHandle : srcImage.zoomLevelToImageHandle.values()) {
-				Rectangle rect = imageHandle.getBounds();
-				ImageData data = srcImage.getImageData(imageHandle.zoom);
-				ImageData newData = applyGrayImageData(data, rect.height, rect.width);
-				init (newData, imageHandle.zoom);
+				init (data, imageHandle.zoom);
 			}
 			break;
 		}
@@ -698,9 +686,9 @@ public Image(Device device, ImageGcDrawer imageGcDrawer, int width, int height) 
 	init();
 }
 
-private ImageData adaptImageDataIfDisabledOrGray(ImageData data) {
+private static ImageData adaptImageDataIfDisabledOrGray(ImageData data, int styleFlag) {
 	ImageData returnImageData = null;
-	switch (this.styleFlag) {
+	switch (styleFlag) {
 		case SWT.IMAGE_DISABLE: {
 			ImageData newData = applyDisableImageData(data, data.height, data.width);
 			returnImageData = newData;
@@ -726,7 +714,7 @@ void init() {
 	this.isInitialized = true;
 }
 
-private ImageData applyDisableImageData(ImageData data, int height, int width) {
+private static ImageData applyDisableImageData(ImageData data, int height, int width) {
 	PaletteData palette = data.palette;
 	ImageData newData = new ImageData(width, height, 32, new PaletteData(0xFF, 0xFF00, 0xFF0000));
 	newData.alpha = data.alpha;
@@ -775,7 +763,7 @@ private ImageData applyDisableImageData(ImageData data, int height, int width) {
 	return newData;
 }
 
-private ImageData applyGrayImageData(ImageData data, int pHeight, int pWidth) {
+private static ImageData applyGrayImageData(ImageData data, int pHeight, int pWidth) {
 	PaletteData palette = data.palette;
 	ImageData newData = data;
 	if (!palette.isDirect) {
@@ -1456,7 +1444,8 @@ private static ImageData directToDirect(ImageData src, int newDepth, PaletteData
 
 private record HandleForImageDataContainer(int type, ImageData imageData, long[] handles) {}
 
-private static HandleForImageDataContainer init(Device device, ImageData i) {
+private static HandleForImageDataContainer init(Device device, ImageData i, int styleFlag) {
+	i = adaptImageDataIfDisabledOrGray(i, styleFlag);
 	/* Windows does not support 2-bit images. Convert to 4-bit image. */
 	if (i.depth == 2) {
 		i = indexToIndex(i, 4);
@@ -1665,7 +1654,7 @@ private void setImageMetadataForHandle(ImageHandle imageMetadata, int zoom) {
 
 private ImageHandle initIconHandle(Device device, ImageData source, ImageData mask, Integer zoom) {
 	ImageData imageData = applyMask(source, mask);
-	HandleForImageDataContainer imageDataHandle = init(device, imageData);
+	HandleForImageDataContainer imageDataHandle = init(device, imageData, this.styleFlag);
 	return initIconHandle(imageDataHandle.handles, zoom);
 }
 
@@ -1690,7 +1679,7 @@ private ImageHandle initBitmapHandle(ImageData imageData, long handle, Integer z
 
 static long [] initIcon(Device device, ImageData source, ImageData mask) {
 	ImageData imageData = applyMask(source, mask);
-	return init(device, imageData).handles;
+	return init(device, imageData, SWT.NONE).handles;
 }
 
 private static ImageData applyMask(ImageData source, ImageData mask) {
@@ -1770,7 +1759,7 @@ private static ImageData applyMask(ImageData source, ImageData mask) {
 
 private ImageHandle init(ImageData i, int zoom) {
 	if (i == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	HandleForImageDataContainer imageDataHandle = init(device, i);
+	HandleForImageDataContainer imageDataHandle = init(device, i, this.styleFlag);
 	switch (imageDataHandle.type()) {
 		case SWT.ICON: {
 			return initIconHandle(imageDataHandle.handles(), zoom);
@@ -2121,7 +2110,6 @@ private abstract class ImageFromImageDataProviderWrapper extends AbstractImagePr
 	private ImageHandle initializeHandleFromSource(ZoomContext zoomContext) {
 		ElementAtZoom<ImageData> imageDataAtZoom = loadImageData(zoomContext.targetZoom());
 		ImageData imageData = DPIUtil.scaleImageData(device, imageDataAtZoom.element(), zoomContext.targetZoom(), imageDataAtZoom.zoom());
-		imageData = adaptImageDataIfDisabledOrGray(imageData);
 		return newImageHandle(imageData, zoomContext);
 	}
 }
@@ -2414,7 +2402,6 @@ private abstract class BaseImageProviderWrapper<T> extends DynamicImageProviderW
 	private ImageHandle initializeHandleFromSource(int zoom) {
 		ElementAtZoom<ImageData> imageDataAtZoom = loadImageData(zoom);
 		ImageData imageData = DPIUtil.scaleImageData (device, imageDataAtZoom.element(), zoom, imageDataAtZoom.zoom());
-		imageData = adaptImageDataIfDisabledOrGray(imageData);
 		return init(imageData, zoom);
 	}
 
@@ -2764,8 +2751,7 @@ private class ImageGcDrawerWrapper extends DynamicImageProviderWrapper {
 			drawer.drawOn(gc, width, height);
 			ImageData imageData = image.getImageData(targetZoom);
 			drawer.postProcess(imageData);
-			ImageData newData = adaptImageDataIfDisabledOrGray(imageData);
-			return init(newData, targetZoom);
+			return init(imageData, targetZoom);
 		} finally {
 			gc.dispose();
 			image.dispose();
