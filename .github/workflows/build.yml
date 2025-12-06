@@ -29,7 +29,18 @@ on:
         required: false
         default: false
       gtk:
-        description: "(Required on Linux only) GTK version to use (one of gtk3, gtk4)"
+        description: |
+          (Required on Linux only) GTK version to use (one of gtk3, gtk4)
+
+          Controls the SWT_GTK4 environemnt variable.
+        type: string
+        required: false
+        default: ""
+      gdk_backend:
+        description: |
+          (Required on Linux only) GDK_BACKEND to use (one of x11, wayland)
+
+          The backend will affect which compositor to use.
         type: string
         required: false
         default: ""
@@ -55,6 +66,8 @@ jobs:
         sudo apt-get install -qq -y libgtk-3-dev freeglut3-dev webkit2gtk-driver
         # GTK4 dependencies
         sudo apt-get install -qq -y libgtk-4-dev freeglut3-dev libwebkitgtk-6.0-4
+        # x11 + wayland runtimes
+        sudo apt-get install -qq -y dbus-daemon xvfb mutter
 
     - name: Disable AppArmor when testing WebKit on GTK4
       if: ${{ inputs.native == 'gtk.linux.x86_64' && inputs.gtk == 'gtk4' }}
@@ -84,8 +97,13 @@ jobs:
       env:
         GTK_XCFLAGS: '-Wno-deprecated-declarations'
         SWT_GTK4: "${{ inputs.gtk == 'gtk4' && '1' || '0' }}"
+        GDK_BACKEND: "${{ inputs.gdk_backend }}"
+
+      # Run wayland/x11 sessions in a similar way that GTK tests itself
+      # https://gitlab.gnome.org/GNOME/gtk/-/blob/gtk-4-20/.gitlab-ci/run-tests.sh
       run: >-
-        ${{ contains(inputs.native, 'linux') && 'xvfb-run' || '' }}
+        ${{ inputs.gdk_backend == 'x11' && 'dbus-run-session -- xvfb-run -a -s "-screen 0 1024x768x24 -noreset"' || '' }}
+        ${{ inputs.gdk_backend == 'wayland' && 'XDG_RUNTIME_DIR="$(mktemp -p $(pwd) -d xdg-runtime-XXXXXX)" dbus-run-session -- mutter --headless --wayland --no-x11 --virtual-monitor 1024x768 --  ' || '' }}
         mvn --batch-mode -V -U -e
         --threads 1C
         -DforkCount=1
@@ -95,15 +113,19 @@ jobs:
         --fail-at-end
         -DskipNativeTests=false
         -DfailIfNoTests=false
-        ${{ (inputs.runtodotests == false && inputs.gtk == 'gtk4') && '-DexcludedGroups=gtk4-todo' || '' }}
+        ${{ (inputs.runtodotests == false && inputs.gtk =='gtk4' && inputs.gdk_backend == 'wayland') && '-DexcludedGroups=gtk4-todo,gtk4-wayland-todo' || '' }}
+        ${{ (inputs.runtodotests == false && inputs.gtk =='gtk4' && inputs.gdk_backend == 'x11')     && '-DexcludedGroups=gtk4-todo' || '' }}
+        ${{ (inputs.runtodotests == false && inputs.gtk =='gtk3' && inputs.gdk_backend == 'wayland') && '-DexcludedGroups=gtk3-wayland-todo' || '' }}
         clean install
     - name: Performance tests
       if: ${{ inputs.performance }}
       env:
         SWT_GTK4: "${{ inputs.gtk == 'gtk4' && '1' || '0' }}"
+        GDK_BACKEND: "${{ inputs.gdk_backend }}"
       working-directory: tests/org.eclipse.swt.tests
       run: >-
-        ${{ contains(inputs.native, 'linux') && 'xvfb-run' || '' }}
+        ${{ inputs.gdk_backend == 'x11' && 'xwfb-run -s \\-geometry -s 1920x1080 -- ' || '' }}
+        ${{ inputs.gdk_backend == 'wayland' && 'xwfb-run -s \\-geometry -s 1920x1080 -- wlheadless-run -c weston --backend=x11 --width 1920 --height 1080 -- env -u DISPLAY ' || '' }}
         mvn --batch-mode -V -U -e
         -DforkCount=1
         --fail-at-end
@@ -115,7 +137,7 @@ jobs:
       if: always()
       uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
       with:
-        name: test-results-${{ inputs.native }}-${{ inputs.gtk }}-java${{ inputs.java }}
+        name: test-results-${{ inputs.native }}-${{ inputs.gtk }}-${{ inputs.gdk_backend }}-java${{ inputs.java }}
         if-no-files-found: warn
         path: |
           ${{ github.workspace }}/**/target/surefire-reports/*.xml

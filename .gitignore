@@ -6,7 +6,7 @@ target/
 .polyglot.*
 pom.tycho
 .DS_Store
-
+/xdg-runtime-*
 /binaries/org.eclipse.swt.*/src/
 tmpdir/
 ‎build_gtk.sh
