@@ -1551,6 +1551,7 @@ public void test_wake() {
 /* custom */
 boolean disposeExecRan;
 
+@SuppressWarnings("deprecation")
 @Test
 public void test_getDPI() {
 	Display display = new Display();
