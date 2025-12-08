@@ -510,7 +510,7 @@ void error (int code) {
 	SWT.error(code);
 }
 
-boolean filters (int eventType) {
+public boolean filters (int eventType) {
 	return display.filters (eventType);
 }
 

@@ -870,7 +870,7 @@ NSRect expansionFrameWithFrame_inView(long id, long sel, NSRect cellRect, long v
 	return result;
 }
 
-boolean filters (int eventType) {
+public boolean filters (int eventType) {
 	return display.filters (eventType);
 }
 
