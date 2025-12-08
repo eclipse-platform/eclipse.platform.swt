@@ -1573,9 +1573,12 @@ int handleAcceleratorKeyPressed(long pView, long pArgs) {
 			return COM.S_OK;
 		}
 
-		if (!sendKeyEvent(keyEvent)) {
-			args.put_Handled(true);
-		}
+		asyncExec(() -> {
+			sendKeyEvent(keyEvent);
+		});
+
+		boolean hasListener = browser.getListeners(keyEvent.type).length != 0 || browser.getDisplay().filters(keyEvent.type);
+		args.put_Handled(hasListener);
 	} else {
 		keyEvent.type = SWT.KeyUp;
 		browser.notifyListeners (keyEvent.type, keyEvent);

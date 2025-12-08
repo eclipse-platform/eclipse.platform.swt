@@ -1194,7 +1194,7 @@ long filterProc(long xEvent, long gdkEvent, long data2) {
 	return 0;
 }
 
-public boolean filters (int eventType) {
+boolean filters (int eventType) {
 	return display.filters (eventType);
 }
 
