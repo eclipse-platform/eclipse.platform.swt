@@ -155,6 +155,9 @@ public static boolean isSetupCompatibleToMonitorSpecificScaling() {
 }
 
 public static boolean isMonitorSpecificScalingActive() {
+	if (!"win32".equals(SWT.getPlatform())) {
+		return false;
+	}
 	String updateOnRuntimeValue = System.getProperty(SWT_AUTOSCALE_UPDATE_ON_RUNTIME);
 	return "force".equalsIgnoreCase(updateOnRuntimeValue) || "true".equalsIgnoreCase(updateOnRuntimeValue);
 }
