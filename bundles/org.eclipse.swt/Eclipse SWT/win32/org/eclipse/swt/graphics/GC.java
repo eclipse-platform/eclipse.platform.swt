@@ -15,16 +15,13 @@ package org.eclipse.swt.graphics;
 
 
 import java.util.*;
-import java.util.List;
 import java.util.function.*;
-import java.util.stream.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.Image.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gdip.*;
 import org.eclipse.swt.internal.win32.*;
-import org.eclipse.swt.widgets.*;
 
 /**
  * Class <code>GC</code> is where all of the drawing capabilities that are
@@ -1183,15 +1180,6 @@ private class DrawScalingImageToImageOperation extends ImageOperation {
 		drawImage(getImage(), source.x, source.y, source.width, source.height, destination.x, destination.y, destination.width, destination.height, gcZoom, srcImageZoom);
 	}
 
-	private Collection<Integer> getAllCurrentMonitorZooms() {
-		if (device instanceof Display display) {
-			return Arrays.stream(display.getMonitors())
-				.map(Monitor::getZoom)
-				.collect(Collectors.toSet());
-		}
-		return Collections.emptySet();
-	}
-
 	private int calculateZoomForImage(int gcZoom, int srcWidth, int srcHeight, int destWidth, int destHeight) {
 		if (srcWidth == 1 && srcHeight == 1) {
 			// One pixel images can use the GC zoom
@@ -1207,13 +1195,7 @@ private class DrawScalingImageToImageOperation extends ImageOperation {
 
 		float imageScaleFactor = 1f * destWidth / srcWidth;
 		int imageZoom = Math.round(gcZoom * imageScaleFactor);
-		if (getAllCurrentMonitorZooms().contains(imageZoom)) {
-			return imageZoom;
-		}
-		if (imageZoom > 150) {
-			return 200;
-		}
-		return 100;
+		return imageZoom;
 	}
 }
 
@@ -1233,8 +1215,9 @@ private class DrawScaledImageOperation extends ImageOperation {
 }
 
 private void drawImage(Image image, int destX, int destY, int destWidth, int destHeight, int imageZoom) {
-	Rectangle destPixels = Win32DPIUtils.pointToPixel(drawable, new Rectangle(destX, destY, destWidth, destHeight),
+	Rectangle destPixels= Win32DPIUtils.pointToPixel(drawable, new Rectangle(destX , destY, destWidth , destHeight),
 			imageZoom);
+
 	image.executeOnImageHandleAtBestFittingSize(tempHandle -> {
 		drawImage(image, 0, 0, tempHandle.width(), tempHandle.height(), destPixels.x, destPixels.y,
 				destPixels.width, destPixels.height, false, tempHandle);
@@ -1245,24 +1228,46 @@ private void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHei
 		int destWidth, int destHeight, int imageZoom, int scaledImageZoom) {
 	Rectangle src = Win32DPIUtils.pointToPixel(drawable, new Rectangle(srcX, srcY, srcWidth, srcHeight), scaledImageZoom);
 	Rectangle dest = Win32DPIUtils.pointToPixel(drawable, new Rectangle(destX, destY, destWidth, destHeight), imageZoom);
+	Rectangle fullImageBounds = image.getBounds();
+	Rectangle fullImageBoundsScaled = Win32DPIUtils.pointToPixel(drawable, fullImageBounds, scaledImageZoom);
+	Rectangle unscaledSrc =  new Rectangle(srcX, srcY, srcWidth, srcHeight);
 	if (scaledImageZoom != 100) {
 		/*
 		 * This is a HACK! Due to rounding errors at fractional scale factors,
 		 * the coordinates may be slightly off. The workaround is to restrict
 		 * coordinates to the allowed bounds.
 		 */
-		Rectangle b = image.getBounds(scaledImageZoom);
-		int errX = src.x + src.width - b.width;
-		int errY = src.y + src.height - b.height;
+		int errX = src.x + src.width - fullImageBoundsScaled.width;
+		int errY = src.y + src.height - fullImageBoundsScaled.height;
 		if (errX != 0 || errY != 0) {
 			if (errX <= scaledImageZoom / 100 && errY <= scaledImageZoom / 100) {
-				src.intersect(b);
+				src.intersect(fullImageBoundsScaled);
 			} else {
 				SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 			}
 		}
 	}
-	drawImage(image, src.x, src.y, src.width, src.height, dest.x, dest.y, dest.width, dest.height, false, image.getHandle(scaledImageZoom, data.nativeZoom));
+	image.executeOnImageHandleAtBestFittingSize((tempHandle) -> {
+		Rectangle newSrc = computeSourceRectangle(tempHandle, fullImageBounds, fullImageBoundsScaled, unscaledSrc, src);
+		drawImage(image, newSrc.x, newSrc.y, newSrc.width, newSrc.height, dest.x, dest.y, dest.width,
+				dest.height, false, tempHandle);
+	}, fullImageBoundsScaled.width, fullImageBoundsScaled.height);
+}
+
+private Rectangle computeSourceRectangle(ImageHandle imageHandle, Rectangle fullImageBounds, Rectangle fullImageBoundsScaled, Rectangle unscaledSrc, Rectangle src) {
+	if (new Rectangle(0, 0, imageHandle.getWidth(), imageHandle.getHeight()).equals(fullImageBoundsScaled)) {
+		return src;
+	} else {
+		/*
+		 *  the achieved handle with its drawings has not the required size, thus we calculate the zoom of the handle
+		 *
+		 * with respect to the full 100% image. The point values (x,y,width,height) of the source "part" of the full image will
+		 * be computed to pixels by this zoom.
+		 */
+		float scaleFactor = 1f * imageHandle.getWidth() / fullImageBounds.width;
+		int closestZoomOfHandle = Math.round(scaleFactor * 100);
+		return Win32DPIUtils.pointToPixel(drawable, unscaledSrc, closestZoomOfHandle);
+	}
 }
 
 private class DrawImageToImageOperation extends ImageOperation {
@@ -5819,7 +5824,7 @@ private class SetTransformOperation extends Operation {
  * Returns the extent of the given string. No tab
  * expansion or carriage return processing will be performed.
  * <p>
- * The <em>extent</em> of a string is the width and height of
+ * The <em>extent</em> ofbut  a string is the width and height of
  * the rectangular area it would cover if drawn in a particular
  * font (in this case, the current font in the receiver).
  * </p>
