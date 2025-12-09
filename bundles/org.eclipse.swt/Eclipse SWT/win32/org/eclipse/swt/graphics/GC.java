@@ -1183,15 +1183,6 @@ private class DrawScalingImageToImageOperation extends ImageOperation {
 		drawImage(getImage(), source.x, source.y, source.width, source.height, destination.x, destination.y, destination.width, destination.height, gcZoom, srcImageZoom);
 	}
 
-	private Collection<Integer> getAllCurrentMonitorZooms() {
-		if (device instanceof Display display) {
-			return Arrays.stream(display.getMonitors())
-				.map(Monitor::getZoom)
-				.collect(Collectors.toSet());
-		}
-		return Collections.emptySet();
-	}
-
 	private int calculateZoomForImage(int gcZoom, int srcWidth, int srcHeight, int destWidth, int destHeight) {
 		if (srcWidth == 1 && srcHeight == 1) {
 			// One pixel images can use the GC zoom
@@ -1207,13 +1198,7 @@ private class DrawScalingImageToImageOperation extends ImageOperation {
 
 		float imageScaleFactor = 1f * destWidth / srcWidth;
 		int imageZoom = Math.round(gcZoom * imageScaleFactor);
-		if (getAllCurrentMonitorZooms().contains(imageZoom)) {
-			return imageZoom;
-		}
-		if (imageZoom > 150) {
-			return 200;
-		}
-		return 100;
+		return imageZoom;
 	}
 }
 
@@ -1243,6 +1228,7 @@ private void drawImage(Image image, int destX, int destY, int destWidth, int des
 
 private void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY,
 		int destWidth, int destHeight, int imageZoom, int scaledImageZoom) {
+
 	Rectangle src = Win32DPIUtils.pointToPixel(drawable, new Rectangle(srcX, srcY, srcWidth, srcHeight), scaledImageZoom);
 	Rectangle dest = Win32DPIUtils.pointToPixel(drawable, new Rectangle(destX, destY, destWidth, destHeight), imageZoom);
 	if (scaledImageZoom != 100) {
@@ -1262,7 +1248,31 @@ private void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHei
 			}
 		}
 	}
-	drawImage(image, src.x, src.y, src.width, src.height, dest.x, dest.y, dest.width, dest.height, false, image.getHandle(scaledImageZoom, data.nativeZoom));
+	Rectangle fullImageBounds = image.getBounds();
+	Rectangle targetSrc = Win32DPIUtils.pointToPixel(drawable, fullImageBounds, scaledImageZoom);
+	Rectangle startSrc =  new Rectangle(srcX, srcY, srcWidth, srcHeight);
+	image.executeOnImageHandleAtBestFittingSizeAtZoom((tempHandle) -> {
+		Rectangle src1 = computeSourceRectangle(tempHandle, fullImageBounds, targetSrc, startSrc, src);
+		drawImage(image, src1.x, src1.y, src1.width, src1.height, dest.x, dest.y, dest.width,
+				dest.height, false, tempHandle);
+	}, scaledImageZoom);
+
+}
+
+private Rectangle computeSourceRectangle(ImageHandle imageHandle, Rectangle fullImageBounds, Rectangle targetSrc, Rectangle startSrc, Rectangle srcPart) {
+	if (new Rectangle(0, 0, imageHandle.getWidth(), imageHandle.getHeight()).equals(targetSrc)) {
+		return srcPart;
+	} else {
+		/*
+		 *  the achieved handle with its drawings has not the required size, thus we calculate the zoom of the handle
+		 *
+		 * with respect to the full 100% image. The point values (x,y,width,height) of the source "part" of the full image will
+		 * be computed to pixels by this zoom.
+		 */
+		float scaleFactor = 1f * imageHandle.getWidth() / fullImageBounds.width;
+		int closestZoomOfHandle = Math.round(scaleFactor * 100);
+		return Win32DPIUtils.pointToPixel(drawable, startSrc, closestZoomOfHandle);
+	}
 }
 
 private class DrawImageToImageOperation extends ImageOperation {
