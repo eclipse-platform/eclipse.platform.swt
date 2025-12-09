@@ -71,7 +71,7 @@ public class Bug530969_ControlPrint {
 		shell.setSize(cSize);
 
 		shell.open();
-		Image canvas = new Image(display, cSize.x, cSize.y);
+		Image canvas = new Image(display, cSize);
 		GC gc = new GC(canvas);
 		composite.print(gc);
 

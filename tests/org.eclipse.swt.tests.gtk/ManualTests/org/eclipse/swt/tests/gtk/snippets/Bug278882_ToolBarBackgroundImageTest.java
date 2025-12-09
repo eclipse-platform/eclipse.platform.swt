@@ -40,7 +40,7 @@ public class Bug278882_ToolBarBackgroundImageTest {
 		Image originalImage = toolBar.getBackgroundImage();
 
 		Point p = toolBar.getSize();
-		Image bg = new Image(display, p.x, p.y);
+		Image bg = new Image(display, p);
 
 		GC gc = new GC(bg);
 		gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));

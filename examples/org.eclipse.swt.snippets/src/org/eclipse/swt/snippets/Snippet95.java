@@ -44,8 +44,7 @@ public static void main(String[] args) {
 	button.addListener(SWT.Selection, event -> {
 		Point tableSize = table.getSize();
 		GC gc = new GC(table);
-		final Image image =
-			new Image(display, tableSize.x, tableSize.y);
+		final Image image = new Image(display, tableSize);
 		gc.copyArea(image, 0, 0);
 		gc.dispose();
 

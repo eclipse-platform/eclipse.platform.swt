@@ -214,8 +214,49 @@ Image(Device device) {
  * @see #dispose()
  */
 public Image(Device device, int width, int height) {
+	this(device, new Point(width, height));
+}
+
+/**
+ * Constructs an empty instance of this class with the width
+ * (the x coordinate) and height (the y coordinate) of the
+ * specified point. The result may be drawn upon by creating
+ * a GC and using any of its drawing operations, as shown in
+ * the following example:
+ * <pre>
+ *    Image i = new Image(device, boundsRectangle);
+ *    GC gc = new GC(i);
+ *    gc.drawRectangle(0, 0, 50, 50);
+ *    gc.dispose();
+ * </pre>
+ * <p>
+ * Note: Some platforms may have a limitation on the size
+ * of image that can be created (size depends on width, height,
+ * and depth). For example, Windows 95, 98, and ME do not allow
+ * images larger than 16M.
+ * </p>
+ * <p>
+ * You must dispose the image when it is no longer required.
+ * </p>
+ *
+ * @param device the device on which to create the image
+ * @param size a point specifying the image's width and height (must not be null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the bounds point is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if either the points width or height is negative</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
+ * </ul>
+ *
+ * @see #dispose()
+ * @since 3.133
+ */
+public Image(Device device, Point size) {
 	super(device);
-	Point size = new Point(width, height);
+	if (size == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	init(size.x, size.y);
 	init();
 }
@@ -406,7 +447,7 @@ public Image(Device device, Image srcImage, int flag) {
  *
  * @see #dispose()
  *
- * @deprecated use {@link Image#Image(Device, int, int)} instead
+ * @deprecated use {@link Image#Image(Device, int, int)} or {@link Image#Image(Device, Point)} instead
  */
 @Deprecated(since = "2025-06", forRemoval = true)
 public Image(Device device, Rectangle bounds) {

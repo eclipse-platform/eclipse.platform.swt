@@ -58,8 +58,7 @@ public class Snippet292 {
 				label.setImage(null);
 				image.dispose ();
 			}
-			Rectangle rect = group.getBounds();
-			image = new Image (display, rect.width, rect.height);
+			image = new Image (display, group.getSize());
 			GC gc = new GC (image);
 			boolean success = group.print (gc);
 			gc.dispose ();

@@ -80,8 +80,7 @@ public class Bug531667_CanvasPrint_does_not_work {
 	}
 
 	private static void snapshot(Display display, Composite composite, String filename) {
-		Rectangle bounds = composite.getBounds();
-		Image image = new Image(display, bounds.width, bounds.height);
+		Image image = new Image(display, composite.getSize());
 		GC gc = new GC(image);
 		composite.print(gc);
 		gc.dispose();
