@@ -81,8 +81,6 @@ public abstract class Control extends Widget implements Drawable {
 
 	private static final String DATA_SHELL_ZOOM = "SHELL_ZOOM";
 
-	private static final String DATA_AUTOSCALE_DISABLED = "AUTOSCALE_DISABLED";
-
 	private static final String PROPOGATE_AUTOSCALE_DISABLED = "PROPOGATE_AUTOSCALE_DISABLED";
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -1282,19 +1280,6 @@ public Object getData(String key) {
 	return super.getData(key);
 }
 
-@Override
-public void setData(String key, Object value) {
-	super.setData(key, value);
-	if (DATA_AUTOSCALE_DISABLED.equals(key)) {
-		autoScaleDisabled = Boolean.parseBoolean(value.toString());
-		if (autoScaleDisabled) {
-			this.nativeZoom = 100;
-		} else {
-			this.nativeZoom = getShellZoom();
-		}
-	}
-}
-
 /**
  * Returns <code>true</code> if the receiver is detecting
  * drag gestures, and  <code>false</code> otherwise.
@@ -1871,6 +1856,11 @@ boolean isActive () {
 	}
 	if (shell == null) shell = getShell ();
 	return shell.getEnabled ();
+}
+
+@Override
+public boolean isAutoScalable() {
+	return !autoScaleDisabled;
 }
 
 /**
@@ -3350,6 +3340,19 @@ private void fitInParentBounds(Rectangle boundsInPixels, int zoom) {
 	if (childNotFittingVertically && childFittingVerticallyWithOffByOne) {
 		boundsInPixels.height = parentBoundsInPixels.height - boundsInPixels.y;
 	}
+}
+
+/**
+ * @since 3.132
+ */
+public boolean setAutoscaleDisabled(boolean autoscaleDisabled) {
+	this.autoScaleDisabled = autoscaleDisabled;
+	if (autoScaleDisabled) {
+		this.nativeZoom = 100;
+	} else {
+		this.nativeZoom = getShellZoom();
+	}
+	return true;
 }
 
 void setBoundsInPixels (Rectangle rect) {
