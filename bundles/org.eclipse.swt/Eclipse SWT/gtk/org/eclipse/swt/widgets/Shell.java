@@ -2796,6 +2796,11 @@ public void setModified (boolean modified) {
 	this.modified = modified;
 }
 
+
+public int getNativeZoom() {
+	return DPIUtil.getNativeDeviceZoom();
+}
+
 /**
  * Sets the shape of the shell to the region specified
  * by the argument.  When the argument is null, the
