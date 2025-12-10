@@ -356,4 +356,16 @@ class ControlWin32Tests {
 		assertTrue(clientAreaInPixels.height <= childBoundsInPixels.y + childBoundsInPixels.height);
 	}
 
+	@Test
+	void testChildShellGetSize() {
+		Win32DPIUtils.setMonitorSpecificScaling(true);
+		Display display = Display.getDefault();
+		Shell shell = new Shell(display);
+		shell.nativeZoom = 150;
+		Shell childShell = new Shell(shell);
+		childShell.nativeZoom = 100;
+		childShell.setSize(300, 300);
+		assertEquals(300, childShell.getSizeInPixels().x);
+	}
+
 }

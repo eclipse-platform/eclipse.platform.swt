@@ -4886,7 +4886,7 @@ int getShellZoom() {
 	return nativeZoom;
 }
 
-private int computeGetBoundsZoom() {
+int computeGetBoundsZoom() {
 	if (parent != null && !autoScaleDisabled) {
 		return parent.getZoom();
 	}

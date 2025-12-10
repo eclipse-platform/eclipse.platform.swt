@@ -2787,4 +2787,14 @@ LRESULT WM_WINDOWPOSCHANGING (long wParam, long lParam) {
 	return result;
 }
 
+@Override
+int computeBoundsZoom() {
+	return getZoom();
+}
+
+@Override
+int computeGetBoundsZoom() {
+	return getZoom();
+}
+
 }
