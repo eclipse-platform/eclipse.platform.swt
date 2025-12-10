@@ -1166,6 +1166,7 @@ public class ImageAnalyzer {
 		if (image == null) return;
 
 		try {
+			final int DOTS_PER_INCH = 96;
 			// Ask the user to specify the printer.
 			PrintDialog dialog = new PrintDialog(shell, SWT.NONE);
 			if (printerData != null) dialog.setPrinterData(printerData);
@@ -1173,9 +1174,8 @@ public class ImageAnalyzer {
 			if (printerData == null) return;
 
 			Printer printer = new Printer(printerData);
-			Point screenDPI = display.getDPI();
 			Point printerDPI = printer.getDPI();
-			int scaleFactor = printerDPI.x / screenDPI.x;
+			int scaleFactor = printerDPI.x / DOTS_PER_INCH;
 			Rectangle trim = printer.computeTrim(0, 0, 0, 0);
 			if (printer.startJob(currentName)) {
 				if (printer.startPage()) {
