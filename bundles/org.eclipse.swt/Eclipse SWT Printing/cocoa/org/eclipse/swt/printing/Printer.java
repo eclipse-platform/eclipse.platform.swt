@@ -624,7 +624,7 @@ public Point getDPI() {
 }
 
 Point getIndependentDPI() {
-	return super.getDPI();
+	return new Point(72, 72);
 }
 
 /**
