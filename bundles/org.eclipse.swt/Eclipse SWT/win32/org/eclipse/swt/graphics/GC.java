@@ -2309,36 +2309,7 @@ private class DrawRectangleOperation extends Operation {
 }
 
 private void drawRectangleInPixels (int x, int y, int width, int height) {
-	checkGC(DRAW);
-	long gdipGraphics = data.gdipGraphics;
-	if (gdipGraphics != 0) {
-		if (width < 0) {
-			x = x + width;
-			width = -width;
-		}
-		if (height < 0) {
-			y = y + height;
-			height = -height;
-		}
-		Gdip.Graphics_TranslateTransform(gdipGraphics, data.gdipXOffset, data.gdipYOffset, Gdip.MatrixOrderPrepend);
-		Gdip.Graphics_DrawRectangle(gdipGraphics, data.gdipPen, x, y, width, height);
-		Gdip.Graphics_TranslateTransform(gdipGraphics, -data.gdipXOffset, -data.gdipYOffset, Gdip.MatrixOrderPrepend);
-		return;
-	}
-	if ((data.style & SWT.MIRRORED) != 0) {
-		/*
-		* Note that Rectangle() subtracts one pixel in MIRRORED mode when
-		* the pen was created with CreatePen() and its width is 0 or 1.
-		*/
-		if (data.lineWidth > 1) {
-			if ((data.lineWidth % 2) == 1) x++;
-		} else {
-			if (data.hPen != 0 && OS.GetObject(data.hPen, 0, 0) != OS.LOGPEN_sizeof()) {
-				x++;
-			}
-		}
-	}
-	OS.Rectangle (handle, x, y, x + width + 1, y + height + 1);
+	drawPolygonInPixels(new int[] {x, y, x + width + 1, y, x + width + 1, y + height + 1, x, y + height + 1});
 }
 
 /**
