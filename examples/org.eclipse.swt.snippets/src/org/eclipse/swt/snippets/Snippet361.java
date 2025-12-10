@@ -146,6 +146,7 @@ public class Snippet361 {
 	}
 
 	private static void performPrintAction(final Display display, final Shell shell) {
+		final int DOTS_PER_INCH = 96;
 		Rectangle r = composite.getBounds();
 		Point p = shell.toDisplay(r.x, r.y);
 		org.eclipse.swt.graphics.Image snapshotImage
@@ -159,9 +160,8 @@ public class Snippet361 {
 		data = dialog.open();
 		if (data != null) {
 			Printer printer = new Printer(data);
-			Point screenDPI = display.getDPI();
 			Point printerDPI = printer.getDPI();
-			int scaleFactor = printerDPI.x / screenDPI.x;
+			int scaleFactor = printerDPI.x / DOTS_PER_INCH;
 			Rectangle trim = printer.computeTrim(0, 0, 0, 0);
 			if (printer.startJob("Print Image")) {
 				ImageData imageData = snapshotImage.getImageData();
