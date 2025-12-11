@@ -126,12 +126,15 @@ Please bear in mind that this project is almost entirely developed by volunteers
 **Note:** SWT used to track ongoing development and issues in [Bugzilla](https://bugs.eclipse.org/bugs/buglist.cgi?product=Platform&component=SWT), but we now use GitHub Issues and Discussions.
 
 
-# Prototyping on a Single, Cross-Platform SWT Implementation
+# Evaluation of a Single, Cross-Platform SWT Implementation
 
-There is current work on evaluating the feasibility of achieving a single, OS-agnostic implementation of SWT in order to reduce maintenance efforts, enable better look and feel, and improve configurability.
-The work on these prototypes and their documentation can currently be found in a dedicated GitHub organization: https://github.com/swt-initiative31
+In project [Initiative 31](https://github.com/swt-initiative31) an evaluation on the feasibility of implementing SWT in an OS-agnostic way based on a cross-platform graphics/widgets library has been conducted.
+The goal was to assess if the existing three implementations could eventually be replaced by an OS-agnostic one in order to reduce maintenance efforts, enable highly customizable look and feel, and improve configurability.
+A demonstrator based on the graphics library Skia was implemented and multiple prototypes for mitigating risks have been implemented, such that bringing that to a production-ready implementation is a matter of effort but not of conceptual or technical/technological risk.
 
-Actual prototyping work has been started on four technologies: Skia with Visual Class Library (VCL), Skia with custom-rendered widgets, GTK, and Swing\
-The prototypes for the following technologies are still under investigation, are further developed and can be tried out here:
-- Skia with custom-drawn widgets: https://github.com/swt-initiative31/prototype-skija
-- Cross-platform GTK: https://github.com/swt-initiative31/prototype-gtk
+The actual prototyping work has started on four technologies: Skia with Visual Class Library (VCL), Skia with custom-implemented widgets, GTK, and Swing\
+All those prototypes can be found in the according GitHub organization: https://github.com/swt-initiative31 \
+The work finally focused on the Skia graphics library with custom-implemented widgets: https://github.com/swt-initiative31/prototype-skija
+
+The project concluded with the feasibility demonstration and a [report summarizing the results](https://github.com/swt-initiative31/documents/blob/main/report/overall_report.md).
+Given sufficient resources, a follow-up project could convert the demonstrator into a production-ready state.
