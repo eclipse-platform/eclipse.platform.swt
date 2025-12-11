@@ -1066,6 +1066,72 @@ JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1drag_1source_1set_1icon)
 }
 #endif
 
+#ifndef NO_gtk_1drawing_1area_1get_1content_1height
+JNIEXPORT jint JNICALL GTK4_NATIVE(gtk_1drawing_1area_1get_1content_1height)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jint rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1drawing_1area_1get_1content_1height_FUNC);
+	rc = (jint)gtk_drawing_area_get_content_height((GtkDrawingArea *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1drawing_1area_1get_1content_1height_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1drawing_1area_1get_1content_1width
+JNIEXPORT jint JNICALL GTK4_NATIVE(gtk_1drawing_1area_1get_1content_1width)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jint rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1drawing_1area_1get_1content_1width_FUNC);
+	rc = (jint)gtk_drawing_area_get_content_width((GtkDrawingArea *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1drawing_1area_1get_1content_1width_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1drawing_1area_1new
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1drawing_1area_1new)
+	(JNIEnv *env, jclass that)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1drawing_1area_1new_FUNC);
+	rc = (jlong)gtk_drawing_area_new();
+	GTK4_NATIVE_EXIT(env, that, gtk_1drawing_1area_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1drawing_1area_1set_1content_1height
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1drawing_1area_1set_1content_1height)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1drawing_1area_1set_1content_1height_FUNC);
+	gtk_drawing_area_set_content_height((GtkDrawingArea *)arg0, (int)arg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1drawing_1area_1set_1content_1height_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1drawing_1area_1set_1content_1width
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1drawing_1area_1set_1content_1width)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1drawing_1area_1set_1content_1width_FUNC);
+	gtk_drawing_area_set_content_width((GtkDrawingArea *)arg0, (int)arg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1drawing_1area_1set_1content_1width_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1drawing_1area_1set_1draw_1func
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1drawing_1area_1set_1draw_1func)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2, jlong arg3)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1drawing_1area_1set_1draw_1func_FUNC);
+	gtk_drawing_area_set_draw_func((GtkDrawingArea *)arg0, (GtkDrawingAreaDrawFunc)arg1, (gpointer)arg2, (GDestroyNotify)arg3);
+	GTK4_NATIVE_EXIT(env, that, gtk_1drawing_1area_1set_1draw_1func_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1drop_1target_1async_1new
 JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1drop_1target_1async_1new)
 	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
@@ -2069,6 +2135,116 @@ JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1native_1get_1surface)
 	rc = (jlong)gtk_native_get_surface((GtkNative *)arg0);
 	GTK4_NATIVE_EXIT(env, that, gtk_1native_1get_1surface_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1overlay_1add_1overlay
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1overlay_1add_1overlay)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1overlay_1add_1overlay_FUNC);
+	gtk_overlay_add_overlay((GtkOverlay *)arg0, (GtkWidget *)arg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1overlay_1add_1overlay_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1overlay_1get_1child
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1overlay_1get_1child)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1overlay_1get_1child_FUNC);
+	rc = (jlong)gtk_overlay_get_child((GtkOverlay *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1overlay_1get_1child_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1overlay_1get_1clip_1overlay
+JNIEXPORT jboolean JNICALL GTK4_NATIVE(gtk_1overlay_1get_1clip_1overlay)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	jboolean rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1overlay_1get_1clip_1overlay_FUNC);
+	rc = (jboolean)gtk_overlay_get_clip_overlay((GtkOverlay *)arg0, (GtkWidget *)arg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1overlay_1get_1clip_1overlay_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1overlay_1get_1measure_1overlay
+JNIEXPORT jboolean JNICALL GTK4_NATIVE(gtk_1overlay_1get_1measure_1overlay)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	jboolean rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1overlay_1get_1measure_1overlay_FUNC);
+	rc = (jboolean)gtk_overlay_get_measure_overlay((GtkOverlay *)arg0, (GtkWidget *)arg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1overlay_1get_1measure_1overlay_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1overlay_1get_1type
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1overlay_1get_1type)
+	(JNIEnv *env, jclass that)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1overlay_1get_1type_FUNC);
+	rc = (jlong)gtk_overlay_get_type();
+	GTK4_NATIVE_EXIT(env, that, gtk_1overlay_1get_1type_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1overlay_1new
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1overlay_1new)
+	(JNIEnv *env, jclass that)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1overlay_1new_FUNC);
+	rc = (jlong)gtk_overlay_new();
+	GTK4_NATIVE_EXIT(env, that, gtk_1overlay_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1overlay_1remove_1overlay
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1overlay_1remove_1overlay)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1overlay_1remove_1overlay_FUNC);
+	gtk_overlay_remove_overlay((GtkOverlay *)arg0, (GtkWidget *)arg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1overlay_1remove_1overlay_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1overlay_1set_1child
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1overlay_1set_1child)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1overlay_1set_1child_FUNC);
+	gtk_overlay_set_child((GtkOverlay *)arg0, (GtkWidget *)arg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1overlay_1set_1child_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1overlay_1set_1clip_1overlay
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1overlay_1set_1clip_1overlay)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jboolean arg2)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1overlay_1set_1clip_1overlay_FUNC);
+	gtk_overlay_set_clip_overlay((GtkOverlay *)arg0, (GtkWidget *)arg1, (gboolean)arg2);
+	GTK4_NATIVE_EXIT(env, that, gtk_1overlay_1set_1clip_1overlay_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1overlay_1set_1measure_1overlay
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1overlay_1set_1measure_1overlay)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jboolean arg2)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1overlay_1set_1measure_1overlay_FUNC);
+	gtk_overlay_set_measure_overlay((GtkOverlay *)arg0, (GtkWidget *)arg1, (gboolean)arg2);
+	GTK4_NATIVE_EXIT(env, that, gtk_1overlay_1set_1measure_1overlay_FUNC);
 }
 #endif
 

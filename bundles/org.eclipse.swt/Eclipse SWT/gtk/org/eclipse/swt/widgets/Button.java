@@ -50,7 +50,9 @@ import org.eclipse.swt.internal.gtk4.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class Button extends Control {
-	long boxHandle, labelHandle, imageHandle, arrowHandle, groupHandle;
+	private long drawingAreaHandle;
+	private long overlayaHandle;
+	private long boxHandle, labelHandle, imageHandle, arrowHandle, groupHandle;
 	boolean selected, grayed;
 	/** True iff this toggle button requires special theme handling. See bug 546552.*/
 	boolean toggleButtonTheming;
@@ -389,7 +391,16 @@ void createHandle (int index) {
 		if (imageHandle == 0) error(SWT.ERROR_NO_HANDLES);
 
 		if (GTK.GTK4) {
-			GTK.gtk_widget_set_parent(boxHandle, handle);
+			drawingAreaHandle = GTK4.gtk_drawing_area_new();
+			GTK.gtk_widget_set_hexpand(drawingAreaHandle, true);
+			GTK.gtk_widget_set_vexpand(drawingAreaHandle, true);
+			GTK4.gtk_drawing_area_set_draw_func(drawingAreaHandle, display.gtk4DrawProc, handle, 0);
+
+			overlayaHandle = GTK4.gtk_overlay_new();
+			GTK4.gtk_overlay_add_overlay(overlayaHandle, drawingAreaHandle);
+
+			GTK.gtk_widget_set_parent(overlayaHandle, handle);
+			GTK4.gtk_overlay_set_child(overlayaHandle, boxHandle);
 			GTK4.gtk_box_append(boxHandle, imageHandle);
 			GTK4.gtk_box_append(boxHandle, labelHandle);
 		} else {
@@ -454,6 +465,8 @@ void checkBackground() {
 @Override
 void deregister () {
 	super.deregister ();
+	if (drawingAreaHandle != 0) display.removeWidget (drawingAreaHandle);
+	if (overlayaHandle != 0) display.removeWidget (overlayaHandle);
 	if (boxHandle != 0) display.removeWidget (boxHandle);
 	if (labelHandle != 0) display.removeWidget (labelHandle);
 	if (imageHandle != 0) display.removeWidget (imageHandle);
@@ -720,6 +733,8 @@ boolean mnemonicMatch (char key) {
 @Override
 void register () {
 	super.register ();
+	if (drawingAreaHandle != 0) display.addWidget (drawingAreaHandle, this);
+	if (overlayaHandle != 0) display.addWidget (overlayaHandle, this);
 	if (boxHandle != 0) display.addWidget (boxHandle, this);
 	if (labelHandle != 0) display.addWidget (labelHandle, this);
 	if (imageHandle != 0) display.addWidget (imageHandle, this);
@@ -729,6 +744,7 @@ void register () {
 @Override
 void releaseHandle () {
 	super.releaseHandle ();
+	overlayaHandle = drawingAreaHandle = 0;
 	boxHandle = imageHandle = labelHandle = arrowHandle = 0;
 }
 
@@ -737,7 +753,9 @@ void releaseWidget() {
 	super.releaseWidget();
 
 	if (GTK.GTK4) {
-		if (boxHandle != 0) GTK.gtk_widget_unparent(boxHandle);
+		// TODO review this with the new overlay work
+		if (overlayaHandle != 0) GTK.gtk_widget_unparent(overlayaHandle);
+//		if (boxHandle != 0) GTK.gtk_widget_unparent(boxHandle);
 	}
 
 	// Release reference to hidden GtkCheckButton that allows for SWT.RADIO behavior
@@ -1290,6 +1308,7 @@ public void setText (String string) {
 }
 
 private void updateWidgetsVisibility() {
+	// TODO what do I need to do on show widget for overlay/drawing area
 	if (text.length() == 0 && image == null) {
 		gtk_widget_hide (boxHandle);
 		gtk_widget_hide (labelHandle);
@@ -1310,6 +1329,7 @@ private void updateWidgetsVisibility() {
 @Override
 void showWidget () {
 	super.showWidget ();
+	// TODO what do I need to do on show widget for overlay/drawing area
 	if (boxHandle != 0 && ((text != null && text.length() != 0) || image != null)) gtk_widget_show (boxHandle);
 	if (labelHandle != 0  && text != null && text.length() != 0) gtk_widget_show (labelHandle);
 	if (arrowHandle != 0) gtk_widget_show (arrowHandle);
