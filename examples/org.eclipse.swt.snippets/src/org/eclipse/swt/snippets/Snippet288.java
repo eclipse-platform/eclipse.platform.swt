@@ -124,19 +124,11 @@ public class Snippet288 {
 							0,
 							0,
 							fullWidth,
-							fullHeight,
-							0,
-							0,
-							fullWidth,
 							fullHeight);
 						break;
 					}
 					Image newFrame = new Image(display, imageData);
 					gc.drawImage(newFrame,
-							0,
-							0,
-							imageData.width,
-							imageData.height,
 							imageData.x,
 							imageData.y,
 							imageData.width,

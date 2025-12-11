@@ -2616,34 +2616,30 @@ static void fillGradientRectangle(GC gc, Device device,
 	RGB fromRGB, RGB toRGB,
 	int redBits, int greenBits, int blueBits, int zoom) {
 	/* Create the bitmap and tile it */
-	ImageDataProvider imageDataProvider = imageZoom -> {
-		int scaledWidth = DPIUtil.pointToPixel(width, imageZoom);
-		int scaledHeight = DPIUtil.pointToPixel(height, imageZoom);
-		return createGradientBand(scaledWidth, scaledHeight, vertical, fromRGB, toRGB, redBits, greenBits,
+
+	ImageDataAtSizeProvider imageDataAtSizeProvider = (imageWidth, imageHeight) -> {
+		return createGradientBand(imageWidth, imageHeight, vertical, fromRGB, toRGB, redBits, greenBits,
 				blueBits);
 	};
-	Image image = new Image(device, imageDataProvider);
+	Image image = new Image(device, imageDataAtSizeProvider);
 	ImageData band = image.getImageData(zoom);
 	if ((band.width == 1) || (band.height == 1)) {
-			gc.drawImage(image, 0, 0, DPIUtil.pixelToPoint(band.width, zoom), DPIUtil.pixelToPoint(band.height, zoom),
-					DPIUtil.pixelToPoint(x, zoom), DPIUtil.pixelToPoint(y, zoom), DPIUtil.pixelToPoint(width, zoom),
-					DPIUtil.pixelToPoint(height, zoom));
+		gc.drawImage(image, DPIUtil.pixelToPoint(x, zoom), DPIUtil.pixelToPoint(y, zoom),
+				DPIUtil.pixelToPoint(width, zoom), DPIUtil.pixelToPoint(height, zoom));
 		} else {
 		if (vertical) {
 			for (int dx = 0; dx < width; dx += band.width) {
 				int blitWidth = width - dx;
 				if (blitWidth > band.width) blitWidth = band.width;
-					gc.drawImage(image, 0, 0, DPIUtil.pixelToPoint(blitWidth, zoom), DPIUtil.pixelToPoint(band.height, zoom),
-							DPIUtil.pixelToPoint(dx + x, zoom), DPIUtil.pixelToPoint(y, zoom), DPIUtil.pixelToPoint(blitWidth, zoom),
-							DPIUtil.pixelToPoint(band.height, zoom));
+				gc.drawImage(image, DPIUtil.pixelToPoint(dx + x, zoom), DPIUtil.pixelToPoint(y, zoom),
+						DPIUtil.pixelToPoint(blitWidth, zoom), DPIUtil.pixelToPoint(band.height, zoom));
 				}
 		} else {
 			for (int dy = 0; dy < height; dy += band.height) {
 				int blitHeight = height - dy;
 				if (blitHeight > band.height) blitHeight = band.height;
-					gc.drawImage(image, 0, 0, DPIUtil.pixelToPoint(band.width, zoom), DPIUtil.pixelToPoint(blitHeight, zoom),
-							DPIUtil.pixelToPoint(x, zoom), DPIUtil.pixelToPoint(dy + y, zoom), DPIUtil.pixelToPoint(band.width, zoom),
-							DPIUtil.pixelToPoint(blitHeight, zoom));
+				gc.drawImage(image, DPIUtil.pixelToPoint(x, zoom), DPIUtil.pixelToPoint(dy + y, zoom),
+						DPIUtil.pixelToPoint(band.width, zoom), DPIUtil.pixelToPoint(blitHeight, zoom));
 				}
 		}
 	}

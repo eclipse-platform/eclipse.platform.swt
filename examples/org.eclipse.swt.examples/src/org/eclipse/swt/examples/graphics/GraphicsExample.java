@@ -328,7 +328,7 @@ static Image createThumbnail(Device device, String name) {
 		result = new Image(device, 16, 16);
 		GC gc = new GC(result);
 		Rectangle dest = result.getBounds();
-		gc.drawImage(image, src.x, src.y, src.width, src.height, dest.x, dest.y, dest.width, dest.height);
+		gc.drawImage(image, dest.x, dest.y, dest.width, dest.height);
 		gc.dispose();
 	}
 	if (result != null) {

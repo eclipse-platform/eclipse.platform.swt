@@ -47,9 +47,8 @@ public static void main(String[] args) {
 	//define the shape of the shell using setRegion
 	shell.setRegion(region);
 	shell.addPaintListener(e -> {
-		Rectangle bounds = image.getBounds();
 		Point size = shell.getSize();
-		e.gc.drawImage(image, 0, 0, bounds.width, bounds.height, 10, 10, size.x-20, size.y-20);
+		e.gc.drawImage(image, 10, 10, size.x-20, size.y-20);
 	});
 	shell.addListener(SWT.KeyDown, e -> {
 		if (e.character == SWT.ESC) {
