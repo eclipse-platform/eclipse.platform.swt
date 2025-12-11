@@ -1443,7 +1443,7 @@ private static ImageData directToDirect(ImageData src, int newDepth, PaletteData
 
 private record HandleForImageDataContainer(int type, ImageData imageData, long[] handles) {}
 
-private static HandleForImageDataContainer init(Device device, ImageData i, int styleFlag) {
+private static HandleForImageDataContainer init(Device device, ImageData i) {
 	/* Windows does not support 2-bit images. Convert to 4-bit image. */
 	if (i.depth == 2) {
 		i = indexToIndex(i, 4);
@@ -1652,7 +1652,7 @@ private void setImageMetadataForHandle(ImageHandle imageMetadata, int zoom) {
 
 private ImageHandle initIconHandle(Device device, ImageData source, ImageData mask, Integer zoom) {
 	ImageData imageData = applyMask(source, mask);
-	HandleForImageDataContainer imageDataHandle = init(device, imageData, this.styleFlag);
+	HandleForImageDataContainer imageDataHandle = init(device, imageData);
 	return initIconHandle(imageDataHandle.handles, zoom);
 }
 
@@ -1677,7 +1677,7 @@ private ImageHandle initBitmapHandle(ImageData imageData, long handle, Integer z
 
 static long [] initIcon(Device device, ImageData source, ImageData mask) {
 	ImageData imageData = applyMask(source, mask);
-	return init(device, imageData, SWT.NONE).handles;
+	return init(device, imageData).handles;
 }
 
 private static ImageData applyMask(ImageData source, ImageData mask) {
@@ -1757,7 +1757,7 @@ private static ImageData applyMask(ImageData source, ImageData mask) {
 
 private ImageHandle init(ImageData i, int zoom) {
 	if (i == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	HandleForImageDataContainer imageDataHandle = init(device, i, this.styleFlag);
+	HandleForImageDataContainer imageDataHandle = init(device, i);
 	switch (imageDataHandle.type()) {
 		case SWT.ICON: {
 			return initIconHandle(imageDataHandle.handles(), zoom);
@@ -2725,7 +2725,7 @@ private class ImageGcDrawerWrapper extends DynamicImageProviderWrapper {
 
 	@Override
 	ImageData newImageData(ZoomContext zoomContext) {
-		return loadImageDataWithGrayOrDisablement(zoomContext.targetZoom).element();
+		return loadImageData(zoomContext.targetZoom).element();
 	}
 
 	@Override
