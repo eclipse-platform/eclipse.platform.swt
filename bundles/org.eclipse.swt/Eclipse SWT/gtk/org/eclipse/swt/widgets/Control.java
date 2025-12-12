@@ -5091,6 +5091,7 @@ boolean sendMouseEvent (int type, int button, int count, int detail, boolean sen
 						flushQueueOnDnd();
 					} else {
 						dragDetectionQueue.add(event);
+						return true;
 					}
 					break;
 				case SWT.MouseUp:
