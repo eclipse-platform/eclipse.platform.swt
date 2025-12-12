@@ -159,9 +159,20 @@ public final class Image extends Resource implements Drawable {
 				return imageHandle;
 			}
 
-			imageHandle = creator.get();
-			zoomLevelToImageHandle.put(zoom, imageHandle);
-			return imageHandle;
+			synchronized (zoomLevelToImageHandle) {
+				imageHandle = (DestroyableImageHandle) get(zoom);
+				if (imageHandle == null) {
+					imageHandle = creator.get();
+					zoomLevelToImageHandle.put(zoom, imageHandle);
+				}
+				return imageHandle;
+			}
+		}
+
+		<T> T runSynchronized(Supplier<T> supplier) {
+			synchronized (zoomLevelToImageHandle) {
+				return supplier.get();
+			}
 		}
 
 		boolean contains(int zoom) {
@@ -1388,7 +1399,13 @@ public ImageData getImageData (int zoom) {
 		return imageHandle.getImageData();
 	}
 
-	return this.imageProvider.newImageData(zoom);
+	return imageHandleManager.runSynchronized(() -> {
+		InternalImageHandle obtainedImageHandle = imageHandleManager.get(zoom);
+		if (obtainedImageHandle != null) {
+			return obtainedImageHandle.getImageData();
+		}
+		return this.imageProvider.newImageData(zoom);
+	});
 }
 
 /**
