@@ -154,14 +154,19 @@ public final class Image extends Resource implements Drawable {
 				return null;
 			}
 
-			DestroyableImageHandle imageHandle = (DestroyableImageHandle) get(zoom);
-			if (imageHandle != null) {
-				return imageHandle;
+			DestroyableImageHandle registeredimageHandle = (DestroyableImageHandle) get(zoom);
+			if (registeredimageHandle != null) {
+				return registeredimageHandle;
 			}
 
-			imageHandle = creator.get();
-			zoomLevelToImageHandle.put(zoom, imageHandle);
-			return imageHandle;
+			return executeOnHandle(zoom, optHandle  -> {
+				if (optHandle .isPresent()) {
+					return optHandle .get();
+				}
+				DestroyableImageHandle imagehandle = creator.get();
+				zoomLevelToImageHandle.put(zoom, imagehandle);
+				return imagehandle;
+			});
 		}
 
 		boolean contains(int zoom) {
@@ -181,15 +186,24 @@ public final class Image extends Resource implements Drawable {
 		}
 
 		void destroyHandles(Predicate<Integer> filter) {
-			Iterator<Entry<Integer, DestroyableImageHandle>> it = zoomLevelToImageHandle.entrySet().iterator();
-			while (it.hasNext()) {
-				Entry<Integer, DestroyableImageHandle> zoomToHandle = it.next();
-				if (filter.test(zoomToHandle.getKey())) {
-					DestroyableImageHandle imageHandle = zoomToHandle.getValue();
-					it.remove();
-					zoomLevelToImageHandle.remove(imageHandle.zoom, imageHandle);
-					imageHandle.destroy();
+			executeOnHandle(0, __ -> {
+				Iterator<Entry<Integer, DestroyableImageHandle>> it = zoomLevelToImageHandle.entrySet().iterator();
+				while (it.hasNext()) {
+					Entry<Integer, DestroyableImageHandle> zoomToHandle = it.next();
+					if (filter.test(zoomToHandle.getKey())) {
+						DestroyableImageHandle imageHandle = zoomToHandle.getValue();
+						it.remove();
+						zoomLevelToImageHandle.remove(imageHandle.zoom, imageHandle);
+						imageHandle.destroy();
+					}
 				}
+				return null;
+			});
+		}
+
+		<R> R executeOnHandle(int zoom, Function<Optional<InternalImageHandle>,R> execution) {
+			synchronized (this) {
+					return execution.apply(Optional.ofNullable(get(100)));
 			}
 		}
 
@@ -1304,8 +1318,8 @@ public Rectangle getBounds() {
 
 Rectangle getBounds(int zoom) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (imageHandleManager.contains(zoom)) {
-		ImageHandle imageMetadata = imageHandleManager.get(zoom);
+	ImageHandle imageMetadata = imageHandleManager.get(zoom);
+	if (imageMetadata != null) {
 		Rectangle rectangle = new Rectangle(0, 0, imageMetadata.width, imageMetadata.height);
 		return Win32DPIUtils.scaleBounds(rectangle, zoom, imageMetadata.zoom);
 	}
@@ -1388,7 +1402,12 @@ public ImageData getImageData (int zoom) {
 		return imageHandle.getImageData();
 	}
 
-	return this.imageProvider.newImageData(zoom);
+	return imageHandleManager.executeOnHandle(zoom, obtainedImageHandle  -> {
+		if (obtainedImageHandle.isPresent()) {
+			return obtainedImageHandle.get().getImageData();
+		}
+		return this.imageProvider.newImageData(zoom);
+	});
 }
 
 /**
