@@ -18,7 +18,8 @@ import static org.eclipse.swt.internal.image.ImageColorTransformer.DEFAULT_DISAB
 
 import java.io.*;
 import java.util.*;
-import java.util.Map.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
 import java.util.function.*;
 import java.util.stream.*;
 
@@ -138,7 +139,7 @@ public final class Image extends Resource implements Drawable {
 	private final ImageHandleManager imageHandleManager = new ImageHandleManager();
 
 	private class ImageHandleManager {
-		private Map<Integer, DestroyableImageHandle> zoomLevelToImageHandle = new HashMap<>();
+		private Map<Integer, DestroyableImageHandle> zoomLevelToImageHandle = new ConcurrentHashMap<>();
 
 		InternalImageHandle get(int zoom) {
 			final DestroyableImageHandle imageHandle = zoomLevelToImageHandle.get(zoom);
@@ -153,15 +154,7 @@ public final class Image extends Resource implements Drawable {
 			if (zoom == -1) {
 				return null;
 			}
-
-			DestroyableImageHandle imageHandle = (DestroyableImageHandle) get(zoom);
-			if (imageHandle != null) {
-				return imageHandle;
-			}
-
-			imageHandle = creator.get();
-			zoomLevelToImageHandle.put(zoom, imageHandle);
-			return imageHandle;
+			return zoomLevelToImageHandle.computeIfAbsent(zoom, __ -> creator.get());
 		}
 
 		boolean contains(int zoom) {
@@ -181,16 +174,23 @@ public final class Image extends Resource implements Drawable {
 		}
 
 		void destroyHandles(Predicate<Integer> filter) {
-			Iterator<Entry<Integer, DestroyableImageHandle>> it = zoomLevelToImageHandle.entrySet().iterator();
-			while (it.hasNext()) {
-				Entry<Integer, DestroyableImageHandle> zoomToHandle = it.next();
-				if (filter.test(zoomToHandle.getKey())) {
-					DestroyableImageHandle imageHandle = zoomToHandle.getValue();
-					it.remove();
-					zoomLevelToImageHandle.remove(imageHandle.zoom(), imageHandle);
-					imageHandle.destroy();
-				}
-			}
+		    zoomLevelToImageHandle.entrySet().removeIf(entry -> {
+		    	if (filter.test(entry.getKey())) {
+		    		entry.getValue().destroy();
+		    		return true;
+		    	}
+		    	return false;
+		    });
+		}
+
+		<R> R executeOnHandle(int zoom, Function<AtomicReference<DestroyableImageHandle>,R> executable) {
+			AtomicReference<R> computedValue = new AtomicReference<>();
+			zoomLevelToImageHandle.compute(zoom, (key, value) -> {
+				AtomicReference<DestroyableImageHandle> handleReference = new AtomicReference<>(value);
+				computedValue.set(executable.apply(handleReference));
+				return handleReference.get();
+			});
+			return computedValue.get();
 		}
 
 		@Override
@@ -1304,12 +1304,13 @@ public Rectangle getBounds() {
 
 Rectangle getBounds(int zoom) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (imageHandleManager.contains(zoom)) {
-		InternalImageHandle imageMetadata = imageHandleManager.get(zoom);
-		Rectangle rectangle = new Rectangle(0, 0, imageMetadata.width(), imageMetadata.height());
-		return Win32DPIUtils.scaleBounds(rectangle, zoom, imageMetadata.zoom());
-	}
-	return this.imageProvider.getBounds(zoom);
+	return imageHandleManager.executeOnHandle(zoom, imageHandle -> {
+		if (imageHandle.get() != null) {
+			Rectangle rectangle = new Rectangle(0, 0, imageHandle.get().width(), imageHandle.get().height());
+			return Win32DPIUtils.scaleBounds(rectangle, zoom, imageHandle.get().zoom());
+		}
+		return this.imageProvider.getBounds(zoom);
+	});
 }
 
 /**
@@ -1383,15 +1384,16 @@ public ImageData getImageData() {
  */
 public ImageData getImageData (int zoom) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	InternalImageHandle imageHandle = imageHandleManager.get(zoom);
-	if (imageHandle != null) {
-		return imageHandle.getImageData();
-	}
-
-	if (this.imageProvider.isPersistentImageHandleRequriedForImageData()) {
-		return imageHandleManager.getOrCreate(zoom, () -> imageProvider.newImageHandle(new ZoomContext(zoom))).getImageData();
-	}
-	return this.imageProvider.newImageData(zoom);
+	return imageHandleManager.executeOnHandle(zoom, imageHandle -> {
+		if (imageHandle.get() != null) {
+			return imageHandle.get().getImageData();
+		}
+		if (this.imageProvider.isPersistentImageHandleRequriedForImageData()) {
+			imageHandle.set(imageProvider.newImageHandle(new ZoomContext(zoom)));
+			return imageHandle.get().getImageData();
+		}
+		return this.imageProvider.newImageData(zoom);
+	});
 }
 
 /**
