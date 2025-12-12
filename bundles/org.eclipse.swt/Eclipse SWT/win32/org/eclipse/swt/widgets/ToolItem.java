@@ -583,7 +583,7 @@ void resizeControl () {
 		control.setSize (itemRect.width, itemRect.height);
 		Rectangle rect = control.getBounds ();
 		rect.x = itemRect.x + (itemRect.width - rect.width) / 2;
-		rect.y = itemRect.y + (itemRect.height - rect.height) / 2;
+		rect.y = itemRect.y + Math.max(0, itemRect.height - rect.height) / 2;
 		control.setLocation (rect.x, rect.y);
 	}
 }
