@@ -255,6 +255,12 @@ Point computeSizeInPixels (Point hintInPoints, int zoom, boolean changed) {
 			OS.SendMessage (handle, OS.TB_GETITEMRECT, count - 1, rect);
 			width = Math.max (width, rect.right);
 			height = Math.max (height, rect.bottom);
+			// Adjust height for embedded controls (Combo, Text, etc.)
+			for (ToolItem item : items) {
+			    if (item != null && item.getControl() != null) {
+			        height = Math.max(height, item.getControl().getBoundsInPixels().height);
+			    }
+			}
 		}
 		OS.SetWindowPos (handle, 0, 0, 0, oldWidth, oldHeight, flags);
 		if (redraw) OS.ValidateRect (handle, null);
