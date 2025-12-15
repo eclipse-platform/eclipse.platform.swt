@@ -278,14 +278,24 @@ public FontData open () {
 }
 
 private int getDPI() {
-	long hDC = OS.GetDC (0);
-	// We need to use OS.GetDeviceCaps, which is static throughout application
-	// lifecycle (System DPI Aware), because we use
-	// DPI_AWARENESS_CONTEXT_UNAWARE_GDISCALED which always depends on the DPI at
-	// application startup
-	int dpi = OS.GetDeviceCaps(hDC, OS.LOGPIXELSY);
-	OS.ReleaseDC (0, hDC);
-	return dpi;
+	long currentDpiAwarenessContext = OS.GetThreadDpiAwarenessContext();
+	try {
+		if (parent.getDisplay().isRescalingAtRuntime()) {
+			currentDpiAwarenessContext = OS.SetThreadDpiAwarenessContext(OS.DPI_AWARENESS_CONTEXT_UNAWARE_GDISCALED);
+		}
+		long hDC = OS.GetDC(0);
+		// We need to use OS.GetDeviceCaps, which is static throughout application
+		// lifecycle (System DPI Aware), because we use
+		// DPI_AWARENESS_CONTEXT_UNAWARE_GDISCALED which always depends on the DPI at
+		// application startup
+		int dpi = OS.GetDeviceCaps(hDC, OS.LOGPIXELSY);
+		OS.ReleaseDC(0, hDC);
+		return dpi;
+	} finally {
+		if (parent.getDisplay().isRescalingAtRuntime()) {
+			OS.SetThreadDpiAwarenessContext(currentDpiAwarenessContext);
+		}
+	}
 }
 
 /**
