@@ -1224,16 +1224,19 @@ public void setExpanded (boolean expanded) {
 	checkWidget();
 	long path = GTK.gtk_tree_model_get_path (parent.modelHandle, handle);
 	// Do nothing when the item is a leaf or already expanded
-	if (expanded != GTK.gtk_tree_view_row_expanded (parent.handle, path) && GTK.gtk_tree_model_iter_n_children (parent.modelHandle, handle) != 0) {
-		if (expanded) {
-			OS.g_signal_handlers_block_matched (parent.handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, TEST_EXPAND_ROW);
-			GTK.gtk_tree_view_expand_row (parent.handle, path, false);
-			OS.g_signal_handlers_unblock_matched (parent.handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, TEST_EXPAND_ROW);
-		} else {
-			OS.g_signal_handlers_block_matched (parent.handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, TEST_COLLAPSE_ROW);
-			GTK.gtk_widget_realize (parent.handle);
-			GTK.gtk_tree_view_collapse_row (parent.handle, path);
-			OS.g_signal_handlers_unblock_matched (parent.handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, TEST_COLLAPSE_ROW);
+	boolean hasChildren = GTK.gtk_tree_model_iter_n_children (parent.modelHandle, handle) != 0;
+	if (hasChildren) {
+		if (expanded != GTK.gtk_tree_view_row_expanded (parent.handle, path)) {
+			if (expanded) {
+				OS.g_signal_handlers_block_matched (parent.handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, TEST_EXPAND_ROW);
+				GTK.gtk_tree_view_expand_row (parent.handle, path, false);
+				OS.g_signal_handlers_unblock_matched (parent.handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, TEST_EXPAND_ROW);
+			} else {
+				OS.g_signal_handlers_block_matched (parent.handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, TEST_COLLAPSE_ROW);
+				GTK.gtk_widget_realize (parent.handle);
+				GTK.gtk_tree_view_collapse_row (parent.handle, path);
+				OS.g_signal_handlers_unblock_matched (parent.handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, TEST_COLLAPSE_ROW);
+			}
 		}
 		isExpanded = expanded;
 	}

@@ -765,7 +765,7 @@ public void test_setExpandedZ() {
 	assertFalse(treeItem.getExpanded());
 
 
-	new TreeItem(treeItem, SWT.NULL);
+	TreeItem ti1 = new TreeItem(treeItem, SWT.NULL);
 	treeItem.setExpanded(true);
 	assertTrue(treeItem.getExpanded());
 	treeItem.setExpanded(false);
@@ -773,8 +773,49 @@ public void test_setExpandedZ() {
 
 	TreeItem ti = new TreeItem(treeItem, SWT.NULL);
 	ti.setExpanded(true);
+	// leaf is never expanded
+	assertFalse(ti.getExpanded());
 	treeItem.setExpanded(false);
 	assertFalse(ti.getExpanded());
+
+	TreeItem ti2 = new TreeItem(ti1, SWT.NULL);
+	assertFalse(ti2.getExpanded());
+
+	// Expand all levels from top to bottom
+	treeItem.setExpanded(true);
+	ti1.setExpanded(true);
+	ti2.setExpanded(true);
+
+	assertTrue(treeItem.getExpanded());
+	assertTrue(ti1.getExpanded());
+	assertFalse(ti2.getExpanded());
+
+	// Collapse all levels, starting with parent (like JFace does it in AbstractTreeViewer.internalCollapseToLevel(Widget, int))
+	treeItem.setExpanded(false);
+	ti1.setExpanded(false);
+	ti2.setExpanded(false);
+
+	assertFalse(treeItem.getExpanded());
+	assertFalse(ti1.getExpanded());
+	assertFalse(ti2.getExpanded());
+
+	// Expand all levels from bottom to top
+	ti2.setExpanded(true);
+	ti1.setExpanded(true);
+	treeItem.setExpanded(true);
+
+	assertTrue(treeItem.getExpanded());
+	assertTrue(ti1.getExpanded());
+	assertFalse(ti2.getExpanded());
+
+	// Collapse all levels, starting with last child
+	ti2.setExpanded(false);
+	ti1.setExpanded(false);
+	treeItem.setExpanded(false);
+
+	assertFalse(treeItem.getExpanded());
+	assertFalse(ti1.getExpanded());
+	assertFalse(ti2.getExpanded());
 }
 
 @Test
