@@ -1769,18 +1769,6 @@ JNIEXPORT jlong JNICALL GTK3_NATIVE(gtk_1style_1context_1get_1parent)
 }
 #endif
 
-#ifndef NO_gtk_1style_1context_1invalidate
-G_GNUC_BEGIN_IGNORE_DEPRECATIONS
-JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1style_1context_1invalidate)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	GTK3_NATIVE_ENTER(env, that, gtk_1style_1context_1invalidate_FUNC);
-	gtk_style_context_invalidate((GtkStyleContext *)arg0);
-	GTK3_NATIVE_EXIT(env, that, gtk_1style_1context_1invalidate_FUNC);
-}
-G_GNUC_END_IGNORE_DEPRECATIONS
-#endif
-
 #ifndef NO_gtk_1target_1list_1new
 JNIEXPORT jlong JNICALL GTK3_NATIVE(gtk_1target_1list_1new)
 	(JNIEnv *env, jclass that, jlong arg0, jint arg1)

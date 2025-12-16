@@ -3249,7 +3249,6 @@ void initializeSystemColorsList(long shellContext) {
 	GTK.gtk_style_context_save (shellContext);
 	GTK.gtk_style_context_add_class(shellContext, GTK.GTK_STYLE_CLASS_VIEW);
 	GTK.gtk_style_context_add_class(shellContext, GTK.GTK_STYLE_CLASS_CELL);
-	if (!GTK.GTK4) GTK3.gtk_style_context_invalidate(shellContext);
 
 	COLOR_LIST_FOREGROUND_RGBA = styleContextGetColor (shellContext, GTK.GTK_STATE_FLAG_NORMAL);
 	COLOR_LIST_BACKGROUND_RGBA = styleContextEstimateBackgroundColor(shellContext, GTK.GTK_STATE_FLAG_NORMAL);
