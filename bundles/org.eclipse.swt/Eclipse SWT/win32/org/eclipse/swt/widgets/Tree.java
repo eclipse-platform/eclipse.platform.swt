@@ -522,7 +522,6 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 								if (images != null) image = images [index];
 							}
 							if (image != null) {
-								Rectangle bounds = image.getBounds (); // Points
 								if (size == null) size = Win32DPIUtils.pixelToPointAsSize (getImageSize (), zoom); // To Points
 								if (!ignoreDrawForeground) {
 									GCData data = new GCData();
@@ -530,7 +529,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 									GC gc = createNewGC(hDC, data);
 									RECT iconRect = item.getBounds (index, false, true, false, false, true, hDC); // Pixels
 									gc.setClipping (Win32DPIUtils.pixelToPoint(new Rectangle(iconRect.left, iconRect.top, iconRect.right - iconRect.left, iconRect.bottom - iconRect.top), zoom));
-									gc.drawImage (image, 0, 0, bounds.width, bounds.height, DPIUtil.pixelToPoint(iconRect.left, zoom), DPIUtil.pixelToPoint(iconRect.top, zoom), size.x, size.y);
+									gc.drawImage (image, DPIUtil.pixelToPoint(iconRect.left, zoom), DPIUtil.pixelToPoint(iconRect.top, zoom), size.x, size.y);
 									OS.SelectClipRgn (hDC, 0);
 									gc.dispose ();
 								}
@@ -760,7 +759,6 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 					int inset = i != 0 ? INSET : 0;
 					int offset = i != 0 ? INSET : INSET + 2;
 					if (image != null) {
-						Rectangle bounds = image.getBounds (); // Points
 						if (size == null) size = Win32DPIUtils.pixelToPointAsSize (getImageSize (), zoom); // To Points
 						if (!ignoreDrawForeground) {
 							//int y1 = rect.top + (index == 0 ? (getItemHeight () - size.y) / 2 : 0);
@@ -770,7 +768,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 							data.device = display;
 							GC gc = createNewGC(hDC, data);
 							gc.setClipping (Win32DPIUtils.pixelToPoint(new Rectangle(x1, rect.top, rect.right - x1, rect.bottom - rect.top), zoom));
-							gc.drawImage (image, 0, 0, bounds.width, bounds.height, DPIUtil.pixelToPoint(x1, zoom), DPIUtil.pixelToPoint(y1, zoom), size.x, size.y);
+							gc.drawImage (image, DPIUtil.pixelToPoint(x1, zoom), DPIUtil.pixelToPoint(y1, zoom), size.x, size.y);
 							OS.SelectClipRgn (hDC, 0);
 							gc.dispose ();
 						}
@@ -8256,9 +8254,8 @@ LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, long lParam) {
 								RECT imageRect = item [0].getBounds (index [0], false, true, false, false, false, hDC);
 								if (imageList == null) size.x = imageRect.right - imageRect.left;
 								if (image != null) {
-									Rectangle rect = image.getBounds (); // Points
 									int zoom = getZoom();
-									gc.drawImage (image, rect.x, rect.y, rect.width, rect.height, DPIUtil.pixelToPoint(x, zoom), DPIUtil.pixelToPoint(imageRect.top, zoom), DPIUtil.pixelToPoint(size.x, zoom), DPIUtil.pixelToPoint(size.y, zoom));
+									gc.drawImage (image, DPIUtil.pixelToPoint(x, zoom), DPIUtil.pixelToPoint(imageRect.top, zoom), DPIUtil.pixelToPoint(size.x, zoom), DPIUtil.pixelToPoint(size.y, zoom));
 									x += INSET + (index [0] == 0 ? 1 : 0);
 								}
 								x += size.x;
