@@ -574,8 +574,7 @@ void onPaint(PaintEvent event) {
 
 	// draw the image
 	if (img != null) {
-		gc.drawImage(img, 0, 0, imageRect.width, imageHeight,
-						x, imageY, imageRect.width, imageHeight);
+		gc.drawImage(img, x, imageY, imageRect.width, imageHeight);
 		x +=  imageRect.width + GAP;
 		extent.x -= imageRect.width + GAP;
 	}
