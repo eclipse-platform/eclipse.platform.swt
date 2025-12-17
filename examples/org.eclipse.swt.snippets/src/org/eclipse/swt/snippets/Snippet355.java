@@ -33,9 +33,9 @@ public class Snippet355 {
 			int height = rect.height;
 			GC gc = e.gc;
 			int x = 10, y = 10;
-			gc.drawImage (image, 0, 0, width, height, x, y, width, height);
-			gc.drawImage (image, 0, 0, width, height, x+width, y, (int)Math.round(width * 0.5), (int)Math.round(height * 0.5));
-			gc.drawImage (image, 0, 0, width, height, x+width+(int)Math.round(width * 0.5), y, width * 2, height * 2);
+			gc.drawImage (image, x, y, width, height);
+			gc.drawImage (image, x+width, y, (int)Math.round(width * 0.5), (int)Math.round(height * 0.5));
+			gc.drawImage (image, x+width+(int)Math.round(width * 0.5), y, width * 2, height * 2);
 		});
 		shell.setSize (600, 400);
 		shell.open ();
