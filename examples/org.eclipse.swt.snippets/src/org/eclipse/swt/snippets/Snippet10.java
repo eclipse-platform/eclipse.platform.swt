@@ -43,7 +43,7 @@ public class Snippet10 {
 			Transform tr = new Transform(display);
 			tr.translate(50, 120);
 			tr.rotate(-30);
-			gc1.drawImage(image, 0, 0, rect.width, rect.height, 0, 0, rect.width / 2, rect.height / 2);
+			gc1.drawImage(image, 0, 0, rect.width / 2, rect.height / 2);
 			gc1.setAlpha(100);
 			gc1.setTransform(tr);
 			Path path = new Path(display);
