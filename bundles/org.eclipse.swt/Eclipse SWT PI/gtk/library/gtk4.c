@@ -1864,6 +1864,18 @@ JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1gesture_1zoom_1new)
 }
 #endif
 
+#ifndef NO_gtk_1header_1bar_1new
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1header_1bar_1new)
+	(JNIEnv *env, jclass that)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1header_1bar_1new_FUNC);
+	rc = (jlong)gtk_header_bar_new();
+	GTK4_NATIVE_EXIT(env, that, gtk_1header_1bar_1new_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1hsv_1to_1rgb
 JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1hsv_1to_1rgb)
 	(JNIEnv *env, jclass that, jfloat arg0, jfloat arg1, jfloat arg2, jfloatArray arg3, jfloatArray arg4, jfloatArray arg5)
@@ -2529,6 +2541,18 @@ JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1widget_1get_1first_1child)
 }
 #endif
 
+#ifndef NO_gtk_1widget_1get_1height
+JNIEXPORT jint JNICALL GTK4_NATIVE(gtk_1widget_1get_1height)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jint rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1widget_1get_1height_FUNC);
+	rc = (jint)gtk_widget_get_height((GtkWidget *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1widget_1get_1height_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1widget_1get_1last_1child
 JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1widget_1get_1last_1child)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -2615,6 +2639,18 @@ fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
 	GTK4_NATIVE_EXIT(env, that, gtk_1widget_1get_1size_1request_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1widget_1get_1width
+JNIEXPORT jint JNICALL GTK4_NATIVE(gtk_1widget_1get_1width)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jint rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1widget_1get_1width_FUNC);
+	rc = (jint)gtk_widget_get_width((GtkWidget *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1widget_1get_1width_FUNC);
+	return rc;
 }
 #endif
 
@@ -2860,6 +2896,16 @@ JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1window_1set_1icon_1name)
 	GTK4_NATIVE_ENTER(env, that, gtk_1window_1set_1icon_1name_FUNC);
 	gtk_window_set_icon_name((GtkWindow *)arg0, (const char *)arg1);
 	GTK4_NATIVE_EXIT(env, that, gtk_1window_1set_1icon_1name_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1window_1set_1titlebar
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1window_1set_1titlebar)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1window_1set_1titlebar_FUNC);
+	gtk_window_set_titlebar((GtkWindow *)arg0, (GtkWidget *)arg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1window_1set_1titlebar_FUNC);
 }
 #endif
 
