@@ -80,16 +80,16 @@ public static void main (String [] args) {
 }
 
 static Image getStateImage (Display display, boolean checked) {
-	Image image = new Image (display, 16, 16);
-	GC gc = new GC (image);
-	gc.setBackground (display.getSystemColor (SWT.COLOR_YELLOW));
-	gc.fillOval (0, 0, 16, 16);
-	if (checked) {
-		gc.setForeground (display.getSystemColor (SWT.COLOR_DARK_GREEN));
-		gc.drawLine (0, 0, 16, 16);
-		gc.drawLine (16, 0, 0, 16);
-	}
-	gc.dispose ();
+	ImageGcDrawer imageGcDrawer = (gc, imageWidth, imageHeight) -> {
+		gc.setBackground(display.getSystemColor(SWT.COLOR_YELLOW));
+		gc.fillOval(0, 0, imageWidth, imageHeight);
+		if (checked) {
+			gc.setForeground(display.getSystemColor(SWT.COLOR_DARK_GREEN));
+			gc.drawLine(0, 0, imageWidth, imageHeight);
+			gc.drawLine(imageWidth, 0, 0, imageHeight);
+		}
+	};
+	Image image = new Image(display, imageGcDrawer, 16, 16);
 	return image;
 }
 }

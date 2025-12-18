@@ -138,13 +138,10 @@ public class Snippet367 {
 		createSeparator(shell);
 
 		new Label (shell, SWT.NONE).setText ("2. Painted image\n (default resolution)");
-		Image image = new Image (display, size.x, size.y);
-		GC gc = new GC (image);
-		try {
-			paintImage (gc, size);
-		} finally {
-			gc.dispose ();
-		}
+	    ImageGcDrawer customImageGcDrawer = (gc, imageWidth, imageHeight) -> {
+			paintImage (gc, new Point(imageWidth, imageHeight));
+		};
+		Image image = new Image(display, customImageGcDrawer, size.x, size.y);
 		Label imageLabel = new Label (shell, SWT.NONE);
 		imageLabel.setImage (image);
 		imageLabel.setLayoutData (new GridData (SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
@@ -154,14 +151,14 @@ public class Snippet367 {
 		new Label (shell, SWT.NONE).setText ("3. Painted image\n(multi-res, unzoomed paint)");
 		imageLabel = new Label (shell, SWT.NONE);
 		imageLabel.setImage (new Image (display, (ImageDataProvider) zoom -> {
-			Image temp = new Image (display, size.x * zoom / 100, size.y * zoom / 100);
-			GC gc1 = new GC (temp);
+			ImageGcDrawer customImageGcDrawer1 = (gc, imageWidth, imageHeight) -> {
+				paintImage(gc, new Point(imageWidth, imageHeight));
+			};
+			Image temp = new Image(display, customImageGcDrawer1, size.x * zoom / 100, size.y * zoom / 100);
 			try {
-				paintImage (gc1, size);
-				return temp.getImageData ();
+				return temp.getImageData();
 			} finally {
-				gc1.dispose ();
-				temp.dispose ();
+				temp.dispose();
 			}
 		}));
 		imageLabel.setLayoutData (new GridData (SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
@@ -171,14 +168,14 @@ public class Snippet367 {
 		new Label (shell, SWT.NONE).setText ("4. Painted image\n(multi-res, zoomed paint)");
 		imageLabel = new Label (shell, SWT.NONE);
 		imageLabel.setImage (new Image (display, (ImageDataProvider) zoom -> {
-			Image temp = new Image (display, size.x * zoom / 100, size.y * zoom / 100);
-			GC gc1 = new GC (temp);
+			ImageGcDrawer customImageGcDrawer1 = (gc, imageWidth, imageHeight) -> {
+				paintImage2 (gc, new Point(imageWidth, imageHeight), zoom / 100);
+			};
+			Image temp = new Image (display, customImageGcDrawer1, size.x * zoom / 100, size.y * zoom / 100);
 			try {
-				paintImage2 (gc1, new Point (size.x * zoom / 100, size.y * zoom / 100), zoom / 100);
-				return temp.getImageData ();
+				return temp.getImageData();
 			} finally {
-				gc1.dispose ();
-				temp.dispose ();
+				temp.dispose();
 			}
 		}));
 		imageLabel.setLayoutData (new GridData (SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
