@@ -4601,6 +4601,7 @@ class AccessibleObject {
 	}
 
 	void addRelation (int type, Accessible target) {
+		if(GTK.GTK4) return; //TODO investigate proper way for GTK 4.x
 		AccessibleObject targetAccessibleObject = target.getAccessibleObject();
 		if (targetAccessibleObject != null) {
 			/*
@@ -4634,6 +4635,7 @@ class AccessibleObject {
 	}
 
 	void removeRelation (int type, Accessible target) {
+		if(GTK.GTK4) return; //TODO investigate proper way for GTK 4.x
 		AccessibleObject targetAccessibleObject = target.getAccessibleObject();
 		if (targetAccessibleObject != null) {
 			/*
