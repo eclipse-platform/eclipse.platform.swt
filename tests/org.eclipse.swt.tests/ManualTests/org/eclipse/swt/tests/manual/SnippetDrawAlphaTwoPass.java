@@ -103,14 +103,14 @@ public class SnippetDrawAlphaTwoPass {
 
 		GC gc = new GC(result);
 		gc.setAntialias(SWT.ON);
-		gc.drawImage(original, 0, 0, width, height, 0, 0, scaledWidth, scaledHeight);
+		gc.drawImage(original, 0, 0, scaledWidth, scaledHeight);
 		gc.dispose();
 
 		if (resultMaskData != null) {
 			resultMask = new Image(device, resultMaskData);
 			gc = new GC(resultMask);
 			gc.setAntialias(SWT.ON);
-			gc.drawImage(originalMask, 0, 0, width, height, 0, 0, scaledWidth, scaledHeight);
+			gc.drawImage(originalMask, 0, 0, scaledWidth, scaledHeight);
 			gc.dispose();
 		}
 
