@@ -27,7 +27,7 @@ SWT consists of two main parts:
 
 ### Technology Stack
 - **Build Tool**: Maven with Tycho plugin
-- **Java Version**: Java 17 (compiler target), Java 21 (build/runtime in CI)
+- **Java Version**: Java 21
 - **Supported Architectures**: x86_64, aarch64, loongarch64, ppc64le, riscv64
 
 ### Build Commands
