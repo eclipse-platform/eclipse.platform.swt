@@ -18,6 +18,9 @@ import java.awt.*;
 import java.awt.Canvas;
 import java.awt.event.*;
 import java.lang.reflect.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
+import java.util.function.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.Rectangle;
@@ -36,6 +39,10 @@ import org.eclipse.swt.widgets.Event;
  * @since 3.0
  */
 public class SWT_AWT {
+
+	private static final int AWT_WAITING_TIME_FOR_SWT_THREAD = 5_000; // in milliseconds
+
+	private static final int SWT_THREAD_BLOCK_LIMIT = 200; // in milliseconds
 
 	/**
 	 * The name of the embedded Frame class. The default class name
@@ -246,21 +253,62 @@ public static Frame new_Frame(final Composite parent) {
 				case SWT.FocusIn:
 					EventQueue.invokeLater(() -> {
 						if (frame.isActive()) return;
-						try {
-							synthesizeWindowActivation (frame, Boolean.TRUE);
-						} catch (Throwable e1) {e1.printStackTrace();}
+						synchronizedExecution(() -> parent != null && !parent.isDisposed() && parent.isFocusControl(),() -> { synthesizeWindowActivation (frame, Boolean.TRUE);}  );
 					});
 					break;
 				case SWT.Deactivate:
 				case SWT.FocusOut:
 					EventQueue.invokeLater(() -> {
 						if (!frame.isActive()) return;
-						try {
-							synthesizeWindowActivation (frame, Boolean.FALSE);
-						} catch (Throwable e1) {e1.printStackTrace();}
+						synchronizedExecution(() -> parent == null || parent.isDisposed() || !parent.isFocusControl(),() -> { synthesizeWindowActivation (frame, Boolean.FALSE);}  );
 					});
 					break;
 			}
+		}
+
+                /**
+                 *
+                 *  It must be made sure, that the parent composite is in the same focus state like the AWT frame.
+                 *  This is not sure, because AWT will be executed asynchronous, in the meantime the SWT main thread can continue and change the state again.
+                 *
+                 *  Example: in eclipse the perspective changes cause many FocusIn,FocusOut events and if there are multiple SWT_AWT frames,
+                 *  these can break the embedded AWT feature.
+                 *
+                 *  So in the SWT main thread the state of the parent will be checked and it will be blocked for a very short time (SWT_THREAD_BLOCK_LIMIT).
+                 *  In this time, we change the behaviour in the AWT thread to the right state and since we block the SWT main thread, we ensure, that
+                 *  the state there does not change.
+                 *
+                 *  In case the AWT part freezes or fails, then the SWT thread continues after the short time period.
+                 *
+                 * @param swtExec executed check in swt main thread
+                 * @param awtExec action to be executed in awt thread
+                 */
+		private void synchronizedExecution(Supplier< Boolean> swtExec,  Runnable awtExec ) {
+
+			try {
+			    AtomicBoolean swtResult = new AtomicBoolean();
+			    final CountDownLatch swtThreadStart = new CountDownLatch(1);
+			    final CountDownLatch awtThreadEnd = new CountDownLatch(1);
+
+			    Display.getDefault().asyncExec(() -> {
+				swtResult.set(swtExec.get());
+				swtThreadStart.countDown();
+				try {
+				    awtThreadEnd.await(SWT_THREAD_BLOCK_LIMIT, TimeUnit.MILLISECONDS);
+				} catch (InterruptedException e1) {
+				    e1.printStackTrace();
+				}
+			    });
+			    swtThreadStart.await(AWT_WAITING_TIME_FOR_SWT_THREAD, TimeUnit.MILLISECONDS);
+
+			    if(swtResult.get()) {
+				awtExec.run();
+			    }
+			    awtThreadEnd.countDown();
+
+			} catch (Throwable e1) {e1.printStackTrace();}
+
+
 		}
 	};
 
