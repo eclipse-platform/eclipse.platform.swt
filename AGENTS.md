@@ -48,6 +48,14 @@ mvn clean verify -DskipTests
 ```bash
 cd bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library
 ./build.sh -gtk-all install    # Build both GTK3 and GTK4
+
+# Build only GTK3
+export GTK_VERSION=3.0
+./build.sh install
+
+# Build only GTK4
+export GTK_VERSION=4.0
+./build.sh install
 ```
 
 **CRITICAL**: Files like `os.c`, `os_stats.c`, `os_stats.h` are **auto-generated**. Never edit them directly!
@@ -184,7 +192,7 @@ display.asyncExec(() -> button.setText("Updated"));
 ### Adding GTK Functions
 1. Add native method declaration to `OS.java` with JavaDoc annotations (`@param cast=`, `@method flags=dynamic`)
 2. Clean and rebuild `org.eclipse.swt` project (regenerates `os.c`)
-3. Rebuild natives: `cd bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library && ./build.sh -gtk3 install`
+3. Rebuild natives: `cd bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library && export GTK_VERSION=3.0 && ./build.sh install`
 
 ## Tips for AI Tools
 
