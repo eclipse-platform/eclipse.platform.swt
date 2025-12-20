@@ -30,10 +30,12 @@ import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 public class Test_org_eclipse_swt_custom_BusyIndicator {
 
 	@Test
+	@Timeout(value = 30)
 	public void testShowWhile() {
 		Shell shell = new Shell();
 		Display display = shell.getDisplay();
@@ -91,6 +93,7 @@ public class Test_org_eclipse_swt_custom_BusyIndicator {
 	}
 
 	@Test
+	@Timeout(value = 30)
 	public void testShowWhileWithFuture() {
 		ExecutorService executor = Executors.newSingleThreadExecutor();
 		try {
