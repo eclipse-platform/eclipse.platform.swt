@@ -8470,6 +8470,22 @@ fail:
 }
 #endif
 
+#ifndef NO_SendMessageCallback
+JNIEXPORT jlong JNICALL OS_NATIVE(SendMessageCallback)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jlong arg2, jcharArray arg3, jlong arg4, jlong arg5)
+{
+	jchar *lparg3=NULL;
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, SendMessageCallback_FUNC);
+	if (arg3) if ((lparg3 = (*env)->GetCharArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	rc = (jlong)SendMessageCallback((HWND)arg0, arg1, (WPARAM)arg2, (LPARAM)lparg3, (SENDASYNCPROC)arg4, (LONG_PTR)arg5);
+fail:
+	if (arg3 && lparg3) (*env)->ReleaseCharArrayElements(env, arg3, lparg3, 0);
+	OS_NATIVE_EXIT(env, that, SendMessageCallback_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_SetActiveWindow
 JNIEXPORT jlong JNICALL OS_NATIVE(SetActiveWindow)
 	(JNIEnv *env, jclass that, jlong arg0)

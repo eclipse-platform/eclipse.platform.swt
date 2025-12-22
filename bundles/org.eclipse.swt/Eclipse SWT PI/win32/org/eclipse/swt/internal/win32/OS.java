@@ -4117,6 +4117,14 @@ public static final native long SendMessage (long hWnd, int Msg, long wParam, ch
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
+ * @param lpResultCallBack cast=(SENDASYNCPROC)
+ * @param dwData cast=(LONG_PTR)
+ */
+public static final native long SendMessageCallback(long hWnd, int Msg, long wParam, char [] lParam, long lpResultCallBack, long dwData);
+/**
+ * @param hWnd cast=(HWND)
+ * @param wParam cast=(WPARAM)
+ * @param lParam cast=(LPARAM)
  */
 public static final native long SendMessage (long hWnd, int Msg, long wParam, int [] lParam);
 /**

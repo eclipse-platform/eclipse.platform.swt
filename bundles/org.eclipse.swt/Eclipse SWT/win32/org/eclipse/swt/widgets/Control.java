@@ -16,6 +16,7 @@ package org.eclipse.swt.widgets;
 
 
 import java.util.*;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 import java.util.stream.*;
 
@@ -5979,9 +5980,34 @@ LRESULT wmScrollChild (long wParam, long lParam) {
 	return null;
 }
 
+private class DPIChangeOperation {
+	Runnable operation;
+	Callback callback;
+
+	DPIChangeOperation(Runnable operation) {
+		this.operation = operation;
+	}
+
+	void asyncExec() {
+		callback = new Callback(this, "runAsyncOperation", 0);
+		OS.SendMessageCallback(Control.this.handle, OS.WM_NULL, 0, null, callback.getAddress(), 0);
+	}
+
+	void syncExec() {
+		operation.run();
+	}
+
+	long runAsyncOperation() {
+		operation.run();
+		callback.dispose();
+		return 0;
+	}
+}
+
 static class DPIChangeExecution {
 	AtomicInteger taskCount = new AtomicInteger();
 	private boolean asyncExec = true;
+	ExecutorService executor = Executors.newSingleThreadExecutor();
 
 	private void process(Control control, Runnable operation) {
 		boolean currentAsyncExec = asyncExec;
@@ -5991,10 +6017,11 @@ static class DPIChangeExecution {
 			// to wrong results, because no final layout will be triggered
 			asyncExec &= (comp.layout != null);
 		}
+		DPIChangeOperation dpiChangeOperation = control.new DPIChangeOperation(operation);
 		if (asyncExec) {
-			control.getDisplay().asyncExec(operation::run);
+			dpiChangeOperation.asyncExec();
 		} else {
-			operation.run();
+			dpiChangeOperation.syncExec();
 		}
 		// resetting it prevents to break asynchronous execution when the synchronous
 		// DPI change handling is finished

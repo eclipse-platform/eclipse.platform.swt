@@ -625,6 +625,7 @@ typedef enum {
 	SendMessage__JIJ_3C_FUNC,
 	SendMessage__JIJ_3I_FUNC,
 	SendMessage__JI_3I_3I_FUNC,
+	SendMessageCallback_FUNC,
 	SetActiveWindow_FUNC,
 	SetBkColor_FUNC,
 	SetBkMode_FUNC,
