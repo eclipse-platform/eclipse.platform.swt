@@ -18,7 +18,9 @@ import java.util.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cocoa.*;
+import org.eclipse.swt.internal.win32.*;
 
 /**
  * Instances of this class represent the "windows"
@@ -1990,6 +1992,10 @@ public void setMinimumSize (Point size) {
 public void setModified (boolean modified) {
 	checkWidget ();
 	window.setDocumentEdited (modified);
+}
+
+public int getNativeZoom() {
+	return DPIUtil.getNativeDeviceZoom();
 }
 
 /**

@@ -3527,6 +3527,13 @@ NSTouch findTouchWithId(NSArray touches, NSObject identity) {
 	return null;
 }
 
+/**
+ * @since 3.132
+ */
+public boolean setAutoscaleDisabled(boolean autoscaleDisabled) {
+	return false;
+}
+
 void setBackground () {
 	if (!drawsBackground()) return;
 	Control control = findBackgroundControl ();

@@ -1234,6 +1234,11 @@ public ToolBar getToolBar() {
 }
 
 @Override
+public int getNativeZoom() {
+	return DPIUtil.mapDPIToZoom(OS.GetDpiForWindow(handle));
+}
+
+@Override
 Composite findDeferredControl () {
 	return layoutCount > 0 ? this : null;
 }
