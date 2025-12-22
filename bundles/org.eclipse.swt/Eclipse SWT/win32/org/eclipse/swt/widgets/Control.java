@@ -16,6 +16,7 @@ package org.eclipse.swt.widgets;
 
 
 import java.util.*;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 import java.util.stream.*;
 
@@ -5982,6 +5983,7 @@ LRESULT wmScrollChild (long wParam, long lParam) {
 static class DPIChangeExecution {
 	AtomicInteger taskCount = new AtomicInteger();
 	private boolean asyncExec = true;
+	ExecutorService executor = Executors.newSingleThreadExecutor();
 
 	private void process(Control control, Runnable operation) {
 		boolean currentAsyncExec = asyncExec;
@@ -5992,7 +5994,9 @@ static class DPIChangeExecution {
 			asyncExec &= (comp.layout != null);
 		}
 		if (asyncExec) {
-			control.getDisplay().asyncExec(operation::run);
+			executor.submit(() -> {
+				control.getDisplay().syncExec(operation::run);
+			});
 		} else {
 			operation.run();
 		}
