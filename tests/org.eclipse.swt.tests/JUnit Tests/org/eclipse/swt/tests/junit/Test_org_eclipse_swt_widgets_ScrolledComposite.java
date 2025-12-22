@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 Red Hat, Inc. and others.
+ * Copyright (c) 2000, 2025 Red Hat, Inc. and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -16,8 +16,8 @@ package org.eclipse.swt.tests.junit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
@@ -41,12 +41,7 @@ public class Test_org_eclipse_swt_widgets_ScrolledComposite extends Test_org_ecl
 	@Override
 	@Test
 	public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
-		try {
-			scrolledComposite = new ScrolledComposite(null, 0);
-			fail("No exception thrown");
-		}
-		catch (IllegalArgumentException e) {
-		}
+		assertThrows(IllegalArgumentException.class, () -> new ScrolledComposite(null, 0), "No exception thrown");
 
 		int[] cases = {SWT.H_SCROLL, SWT.V_SCROLL, SWT.BORDER, SWT.LEFT_TO_RIGHT, SWT.RIGHT_TO_LEFT};
 		for (int style : cases) {

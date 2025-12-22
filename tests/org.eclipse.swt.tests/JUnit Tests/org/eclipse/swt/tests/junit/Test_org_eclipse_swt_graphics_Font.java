@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -20,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
@@ -106,28 +105,17 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 	font.dispose();
 
 	// illegal argument, fontData == null
-	try {
-		font = new Font(display, (FontData)null);
-		font.dispose();
-		fail("No exception thrown for fontData == null");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () ->
+		new Font(display, (FontData)null), "No exception thrown for fontData == null");
 
 	// illegal argument, name == null
-	try {
-		font = new Font(display, new FontData(null, 10, SWT.NORMAL));
-		font.dispose();
-		fail("No exception thrown for name == null");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> new Font(display, new FontData(null, 10, SWT.NORMAL)),
+			"No exception thrown for name == null");
 
 	// illegal argument, height < 0
-	try {
-		font = new Font(display, new FontData(SwtTestUtil.testFontName, -10, SWT.NORMAL));
-		font.dispose();
-		fail("No exception thrown for height < 0");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class,
+			() -> new Font(display, new FontData(SwtTestUtil.testFontName, -10, SWT.NORMAL)),
+			"No exception thrown for height < 0");
 }
 
 @Test

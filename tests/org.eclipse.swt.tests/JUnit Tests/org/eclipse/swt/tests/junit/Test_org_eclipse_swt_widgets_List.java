@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -16,6 +16,7 @@ package org.eclipse.swt.tests.junit;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -162,7 +163,6 @@ public void test_addLjava_lang_StringI() {
 @Test
 public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
 	listenerCalled = false;
-	boolean exceptionThrown = false;
 	SelectionListener listener = new SelectionListener() {
 		@Override
 		public void widgetSelected(SelectionEvent event) {
@@ -172,53 +172,26 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 		public void widgetDefaultSelected(SelectionEvent event) {
 		}
 	};
-	try {
-		list.addSelectionListener(null);
-	}
-	catch (IllegalArgumentException e) {
-		exceptionThrown = true;
-	}
-	assertTrue(exceptionThrown);
+	assertThrows(IllegalArgumentException.class, () -> list.addSelectionListener(null));
 
 	list.addSelectionListener(listener);
 	list.select(0);
 	assertFalse(listenerCalled);
 	list.removeSelectionListener(listener);
-	exceptionThrown = false;
-	try {
-		list.removeSelectionListener(null);
-	}
-	catch (IllegalArgumentException e) {
-		exceptionThrown = true;
-	}
-	assertTrue(exceptionThrown);
+	assertThrows(IllegalArgumentException.class, () -> list.removeSelectionListener(null));
 
 	// test single-selection list
 
 	setSingleList();
 
 	listenerCalled = false;
-	exceptionThrown = false;
-	try {
-		list.addSelectionListener(null);
-	}
-	catch (IllegalArgumentException e) {
-		exceptionThrown = true;
-	}
-	assertTrue(exceptionThrown);
+	assertThrows(IllegalArgumentException.class, () -> list.addSelectionListener(null));
 
 	list.addSelectionListener(listener);
 	list.select(0);
 	assertFalse(listenerCalled);
 	list.removeSelectionListener(listener);
-	exceptionThrown = false;
-	try {
-		list.removeSelectionListener(null);
-	}
-	catch (IllegalArgumentException e) {
-		exceptionThrown = true;
-	}
-	assertTrue(exceptionThrown);
+	assertThrows(IllegalArgumentException.class, () -> list.removeSelectionListener(null));
 }
 
 @Test

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -16,6 +16,7 @@ package org.eclipse.swt.tests.junit;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -60,11 +61,8 @@ public void test_addExpandListenerLorg_eclipse_swt_events_ExpandListener() {
 		}
 	};
 
-	try {
-		expandBar.addExpandListener(null);
-		fail("No exception thrown for addExpandListener with null argument");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> expandBar.addExpandListener(null),
+			"No exception thrown for addExpandListener with null argument");
 
 	expandBar.addExpandListener(expandListener);
 	expandBar.notifyListeners(SWT.Expand, new Event());
@@ -74,11 +72,8 @@ public void test_addExpandListenerLorg_eclipse_swt_events_ExpandListener() {
 	expandBar.notifyListeners(SWT.Collapse, new Event());
 	assertTrue(listenerCalled[0]);
 
-	try {
-		expandBar.removeExpandListener(null);
-		fail("No exception thrown for removeExpandListener with null argument");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> expandBar.removeExpandListener(null),
+			"No exception thrown for removeExpandListener with null argument");
 
 	listenerCalled[0] = false;
 	expandBar.removeExpandListener(expandListener);

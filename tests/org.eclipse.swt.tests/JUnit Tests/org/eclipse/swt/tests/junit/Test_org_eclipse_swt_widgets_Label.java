@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -14,7 +14,7 @@
 package org.eclipse.swt.tests.junit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
@@ -41,12 +41,7 @@ public void setUp() {
 @Override
 @Test
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI(){
-	try {
-		label = new Label(null, 0);
-		fail("No exception thrown"); //should never get here
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> new Label(null, 0), "No exception thrown");
 
 	label = new Label(shell, 0);
 
@@ -108,12 +103,7 @@ public void test_setFocus() {
 
 @Test
 public void test_setTextLjava_lang_String(){
-	try {
-		label.setText(null);
-		fail("No exception thrown for string == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> label.setText(null), "No exception thrown for string == null");
 }
 
 /* custom */

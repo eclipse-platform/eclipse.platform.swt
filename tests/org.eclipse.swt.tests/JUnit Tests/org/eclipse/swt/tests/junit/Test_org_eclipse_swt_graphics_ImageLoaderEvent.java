@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -14,10 +14,9 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.graphics.ImageLoaderEvent;
@@ -32,11 +31,8 @@ public class Test_org_eclipse_swt_graphics_ImageLoaderEvent {
 
 @Test
 public void test_ConstructorLorg_eclipse_swt_graphics_ImageLoaderLorg_eclipse_swt_graphics_ImageDataIZ() {
-	try {
-		new ImageLoaderEvent(null, null, 0, true);
-		fail("No exception thrown for ImageLoader source == null");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> new ImageLoaderEvent(null, null, 0, true),
+			"No exception thrown for ImageLoader source == null");
 
 	new ImageLoaderEvent(new ImageLoader(), null, 0, true);
 }
@@ -47,5 +43,4 @@ public void test_toString() {
 	assertNotNull(event.toString());
 	assertTrue(event.toString().length() > 0);
 }
-
 }
