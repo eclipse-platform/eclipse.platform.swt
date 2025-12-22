@@ -377,10 +377,39 @@ public Rectangle union (Rectangle rect) {
  * @since 3.131
  */
 public static Rectangle of(Point topLeft, int width, int height) {
-	if (topLeft instanceof Point.WithMonitor monitorAwareTopLeft) {
-		return new Rectangle.WithMonitor(monitorAwareTopLeft.getX(), monitorAwareTopLeft.getY(), width, height, monitorAwareTopLeft.getMonitor());
+	return Rectangle.of(topLeft, new Point(width, height));
+}
+
+/**
+ * Creates a new {@code Rectangle} using the specified top-left point and the
+ * dimensions point defining the width and height.
+ * <p>
+ * If the provided {@code Point} instances carry additional contextual
+ * information, an extended {@code Rectangle} type may be returned to preserve
+ * that context. Otherwise, a standard {@code Rectangle} is returned.
+ * </p>
+ *
+ * @param topLeft   the top-left corner of the rectangle
+ * @param dimension the point defining the width and height of the rectangle
+ * @return a new {@code Rectangle} instance appropriate for the given point and
+ *         dimensions
+ * @since 3.133
+ */
+public static Rectangle of(Point topLeft, Point dimension) {
+	final float x = (topLeft instanceof Point.OfFloat p) ? p.getX() : topLeft.x;
+	final float y = (topLeft instanceof Point.OfFloat p) ? p.getY() : topLeft.y;
+	final float w = (dimension instanceof Point.OfFloat p) ? p.getX() : dimension.x;
+	final float h = (dimension instanceof Point.OfFloat p) ? p.getY() : dimension.y;
+
+	if (topLeft instanceof Point.WithMonitor pm) {
+		return new Rectangle.WithMonitor(x, y, w, h, pm.getMonitor());
 	}
-	return new Rectangle(topLeft.x, topLeft.y, width, height);
+
+	if (topLeft instanceof Point.OfFloat || dimension instanceof Point.OfFloat) {
+		return new Rectangle.OfFloat(x, y, w, h);
+	}
+
+	return new Rectangle(topLeft.x, topLeft.y, dimension.x, dimension.y);
 }
 
 /**
