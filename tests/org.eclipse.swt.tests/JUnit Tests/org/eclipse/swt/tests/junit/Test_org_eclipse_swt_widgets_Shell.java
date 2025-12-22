@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
@@ -131,7 +132,6 @@ public void test_ConstructorLorg_eclipse_swt_widgets_ShellI() {
 @Test
 public void test_addShellListenerLorg_eclipse_swt_events_ShellListener() {
 	listenerCalled = false;
-	boolean exceptionThrown = false;
 	ShellListener listener = new ShellListener() {
 		@Override
 		public void shellActivated(ShellEvent e) {
@@ -150,14 +150,7 @@ public void test_addShellListenerLorg_eclipse_swt_events_ShellListener() {
 		public void shellIconified(ShellEvent e) {
 		}
 	};
-	try {
-		shell.addShellListener(null);
-	}
-	catch (IllegalArgumentException e) {
-		exceptionThrown = true;
-	}
-	assertTrue(exceptionThrown);
-	exceptionThrown = false;
+	assertThrows(IllegalArgumentException.class, () -> shell.addShellListener(null));
 	shell.addShellListener(listener);
 	shell.forceActive();
 	/* can't assume listener is synchronously called when forceActive returned */
@@ -168,13 +161,7 @@ public void test_addShellListenerLorg_eclipse_swt_events_ShellListener() {
 	shell.forceActive();
 	/* can't assume listener is synchronously called when forceActive returned */
 	/* assertTrue(":b:", listenerCalled == false); */
-	try {
-		shell.removeShellListener(null);
-	}
-	catch (IllegalArgumentException e) {
-		exceptionThrown = true;
-	}
-	assertTrue(exceptionThrown);
+	assertThrows(IllegalArgumentException.class, () -> shell.removeShellListener(null));
 }
 
 @Test

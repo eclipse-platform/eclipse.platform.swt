@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -190,8 +191,6 @@ public void test_setFocus() {
 	assertFalse(ccombo.setFocus());
 	shell.open();
 	shell.setVisible(true);
-	boolean exceptionThrown = false;
-	try{
 		ccombo.setEnabled(false);
 		ccombo.setVisible(true);
 		assertFalse(ccombo.setFocus());
@@ -211,17 +210,16 @@ public void test_setFocus() {
 			ccombo.setEnabled(true);
 			ccombo.setVisible(true);
 			ccombo.setFocus();
-			SwtTestUtil.processEvents(100, () -> ccombo.isFocusControl());
+			try {
+				SwtTestUtil.processEvents(100, () -> ccombo.isFocusControl());
+			} catch (InterruptedException e) {
+				fail(e.getMessage());
+			}
 			assertTrue(ccombo.isFocusControl());
 			Control focusControl = ccombo.getDisplay().getFocusControl();
 			assertTrue(focusControl instanceof Text);
 			assertEquals(ccombo, focusControl.getParent());
 		}
-	}
-	catch (Exception e) {
-		exceptionThrown = true;
-	}
-	assertFalse(exceptionThrown);
 }
 
 @Override

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -16,8 +16,8 @@ package org.eclipse.swt.tests.junit;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -165,24 +165,16 @@ public void test_setMinimizedZ() {
 
 @Test
 public void test_setTextLjava_lang_String() {
-	try {
-		decorations.setText(null);
-		fail("No exception thrown for string == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> decorations.setText(null),
+			"No exception thrown for string == null");
 
 	String testStr = "test string";
 	decorations.setText(testStr);
 	assertEquals(testStr, decorations.getText());
 	decorations.setText("");
 	assertTrue(decorations.getText().isEmpty());
-	try {
-		decorations.setText(null);
-		fail("No exception thrown for string == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> decorations.setText(null),
+			"No exception thrown for string == null");
 }
 
 @Override

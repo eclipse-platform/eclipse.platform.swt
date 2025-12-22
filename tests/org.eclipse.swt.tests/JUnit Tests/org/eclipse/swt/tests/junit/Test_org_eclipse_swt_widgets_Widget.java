@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -124,12 +125,8 @@ public void test_addDisposeListenerLorg_eclipse_swt_events_DisposeListener() {
 }
 @Test
 public void test_addListenerILorg_eclipse_swt_widgets_Listener() {
-	try {
-		widget.addListener(SWT.Dispose, null);
-		fail("No exception thrown for listener == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> widget.addListener(SWT.Dispose, null),
+			"No exception thrown for listener == null");
 
 	Listener listener = e -> {
 	};
@@ -158,12 +155,8 @@ public void test_notifyListenersILorg_eclipse_swt_widgets_Event() {
 @Test
 public void test_removeListenerILorg_eclipse_swt_widgets_Listener() {
 	// this method is further tested by all of the removeTypedListener tests
-	try {
-		widget.removeListener(SWT.Paint, null);
-		fail("No exception thrown for listener == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> widget.removeListener(SWT.Paint, null),
+			"No exception thrown for listener == null");
 
 	widget.removeListener(SWT.Paint, e -> {
 	});
@@ -189,12 +182,7 @@ public void test_setDataLjava_lang_StringLjava_lang_Object() {
 	widget.setData("the widget", null);
 	assertNull(widget.getData("the widget"));
 
-	try {
-		widget.setData(null, null);
-		fail();
-	} catch(IllegalArgumentException e) {
-		// expected
-	}
+	assertThrows(IllegalArgumentException.class, () -> widget.setData(null, null));
 }
 @Test
 public void test_toString() {

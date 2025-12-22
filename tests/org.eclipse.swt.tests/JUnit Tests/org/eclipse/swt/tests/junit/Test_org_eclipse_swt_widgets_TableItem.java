@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -16,6 +16,7 @@ package org.eclipse.swt.tests.junit;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -47,12 +48,8 @@ public void setUp() {
 
 @Test
 public void test_ConstructorLorg_eclipse_swt_widgets_TableI() {
-	try {
-		new TableItem(null, SWT.NULL);
-		fail("No exception thrown for parent == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> new TableItem(null, SWT.NULL),
+			"No exception thrown for parent == null");
 
 	for (int i=0; i<10; i++) {
 		new TableItem(table, SWT.NONE);
@@ -64,12 +61,8 @@ public void test_ConstructorLorg_eclipse_swt_widgets_TableI() {
 
 @Test
 public void test_ConstructorLorg_eclipse_swt_widgets_TableII() {
-	try {
-		new TableItem(table, SWT.NONE, 5);
-		fail("No exception thrown for illegal index argument");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows (IllegalArgumentException.class, () ->
+		new TableItem(table, SWT.NONE, 5),"No exception thrown for illegal index argument");
 }
 
 @Test
