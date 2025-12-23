@@ -455,7 +455,18 @@ public int getDepth () {
  * @exception SWTException <ul>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
+ *
+ * @deprecated <p>This method returns a single global DPI value
+ * that does not reflect per-monitor DPI settings on modern operating systems.
+ * In environments with different scaling factors across monitors, it may provide
+ * a misleading or meaningless result, as it does not correspond to the actual DPI
+ * of any specific monitor.</p>
+ *
+ * <p>Note: While deprecated for general {@code Device} instances like {@code Display},
+ * this method may still be validly used when called on a {@code Printer} instance,
+ * where a single global DPI value is meaningful and expected.</p>
  */
+@Deprecated
 public Point getDPI () {
 	checkDevice ();
 	return getScreenDPI();
@@ -641,6 +652,7 @@ public boolean getWarnings () {
  * @see #create
  */
 protected void init () {
+	final int DOTS_PER_INCH = 96;
 	if (debug) {
 		if (xDisplay != 0) {
 			/* Create the warning and error callbacks */
@@ -723,10 +735,9 @@ protected void init () {
 		}
 	}
 	defaultFont = OS.pango_font_description_copy (defaultFont);
-	Point dpi = getDPI(), screenDPI = getScreenDPI();
-	if (dpi.y != screenDPI.y) {
+	if (this.dpi.y != DOTS_PER_INCH) {
 		int size = OS.pango_font_description_get_size(defaultFont);
-		OS.pango_font_description_set_size(defaultFont, size * dpi.y / screenDPI.y);
+		OS.pango_font_description_set_size(defaultFont, size * this.dpi.y / DOTS_PER_INCH);
 	}
 	systemFont = Font.gtk_new (this, defaultFont);
 
