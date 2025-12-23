@@ -3527,6 +3527,26 @@ NSTouch findTouchWithId(NSArray touches, NSObject identity) {
 	return null;
 }
 
+/**
+ * Sets the autoscaling mode for this widget.
+ * <p>
+ * On Cocoa, autoscaling cannot be configured at the widget level.
+ * This method is therefore not supported on these platforms and has no effect.
+ * </p>
+ *
+ * @param autoscalingMode
+ *            the autoscaling mode to request; this argument is accepted but
+ *            ignored on this platform
+ *
+ * @return {@code false} to indicate that autoscaling mode cannot be changed
+ *         on GTK or Cocoa
+ *
+ * @since 3.133
+ */
+public boolean setAutoscalingMode(AutoscalingMode autoscalingMode) {
+	return false;
+}
+
 void setBackground () {
 	if (!drawsBackground()) return;
 	Control control = findBackgroundControl ();

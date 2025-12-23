@@ -2787,6 +2787,17 @@ public void setModified (boolean modified) {
 }
 
 /**
+ * Returns the native zoom of the device which is used globally by SWT.
+ *
+ * @return the native zoom for the current device
+ *
+ * @since 3.133
+ */
+public int getNativeZoom() {
+	return DPIUtil.getNativeDeviceZoom();
+}
+
+/**
  * Sets the shape of the shell to the region specified
  * by the argument.  When the argument is null, the
  * default shape of the shell is restored.  The shell
