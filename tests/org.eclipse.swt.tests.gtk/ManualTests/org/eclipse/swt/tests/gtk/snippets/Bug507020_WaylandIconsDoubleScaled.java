@@ -42,7 +42,7 @@ public class Bug507020_WaylandIconsDoubleScaled {
 		gridData.horizontalSpan = 2;
 		canvas.setLayoutData (gridData);
 
-		new Label (shell, SWT.NONE).setText ("5. 50x50 box\n(Display#getDPI(): " + display.getDPI().x + ")");
+		new Label (shell, SWT.NONE).setText ("5. 50x50 box");
 		Label box= new Label (shell, SWT.NONE);
 		box.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_DARK_SHADOW));
 		box.setLayoutData (new GridData (50, 50));
