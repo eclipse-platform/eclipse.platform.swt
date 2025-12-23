@@ -78,12 +78,24 @@ public abstract class Control extends Widget implements Drawable {
 	Region region;
 	Font font;
 	int drawCount, foreground, background, backgroundAlpha = 255;
-	boolean autoScaleDisabled = false;
+	AutoscalingMode autoscalingMode = AutoscalingMode.ENABLED;
 
+	/**
+	 * @deprecated use {@link Shell#getZoom(AutoscalingMode)} instead to obtain the zoom of the shell.
+	 */
+	@Deprecated(since = "2026-03", forRemoval = true)
 	private static final String DATA_SHELL_ZOOM = "SHELL_ZOOM";
 
+	/**
+	 * @deprecated use {@link Control#setAutoscalingMode(AutoscalingMode)} instead to set the autoscaling mode directly.
+	 */
+	@Deprecated(since = "2026-03", forRemoval = true)
 	private static final String DATA_AUTOSCALE_DISABLED = "AUTOSCALE_DISABLED";
 
+	/**
+	 * @deprecated use {@link Control#setAutoscalingMode(AutoscalingMode)} instead to set the autoscaling mode directly.
+	 */
+	@Deprecated(since = "2026-03", forRemoval = true)
 	private static final String PROPOGATE_AUTOSCALE_DISABLED = "PROPOGATE_AUTOSCALE_DISABLED";
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -124,11 +136,11 @@ Control () {
 public Control (Composite parent, int style) {
 	super (parent, style);
 	this.parent = parent;
-	Boolean parentPropagateAutoscaleDisabled = (Boolean) parent.getData(PROPOGATE_AUTOSCALE_DISABLED);
-	if (parentPropagateAutoscaleDisabled == null || parentPropagateAutoscaleDisabled) {
-		this.autoScaleDisabled = parent.autoScaleDisabled;
+	AutoscalingMode parentAutoscaleMode = parent.autoscalingMode;
+	if (parentAutoscaleMode == AutoscalingMode.DISABLED_INHERITED) {
+		this.autoscalingMode = parent.autoscalingMode;
 	}
-	if (!autoScaleDisabled) {
+	if (!isAutoscalingDisabled()) {
 		this.nativeZoom = getShellZoom();
 	}
 	createWidget ();
@@ -1286,13 +1298,28 @@ public Object getData(String key) {
 @Override
 public void setData(String key, Object value) {
 	super.setData(key, value);
-	if (DATA_AUTOSCALE_DISABLED.equals(key)) {
-		autoScaleDisabled = Boolean.parseBoolean(value.toString());
-		if (autoScaleDisabled) {
-			this.nativeZoom = 100;
-		} else {
-			this.nativeZoom = getShellZoom();
-		}
+	if (DATA_AUTOSCALE_DISABLED.equals(key) || PROPOGATE_AUTOSCALE_DISABLED.equals(key)) {
+		updateAutoScalingModeFromData();
+	}
+}
+
+/**
+ * @deprecated use {@link Control#setAutoscalingMode(AutoscalingMode)} instead.
+ * These hidden data objects will be removed in a future release and one has to
+ * migrate to the new API for that purpose.
+ */
+@Deprecated(since = "2026-03", forRemoval = true)
+private void updateAutoScalingModeFromData() {
+	Object propagateAutoscaleDisabled = getData(PROPOGATE_AUTOSCALE_DISABLED);
+	boolean propagateAutoscaling = propagateAutoscaleDisabled != null && Boolean.parseBoolean(propagateAutoscaleDisabled.toString());
+	Object autoscaleDisabled = getData(DATA_AUTOSCALE_DISABLED);
+	boolean isAutoscaleDisabled = autoscaleDisabled != null && Boolean.parseBoolean(autoscaleDisabled.toString());
+	if (isAutoscaleDisabled) {
+		autoscalingMode = propagateAutoscaling ? AutoscalingMode.DISABLED_INHERITED : AutoscalingMode.DISABLED;
+		this.nativeZoom = 100;
+	} else {
+		autoscalingMode = AutoscalingMode.ENABLED;
+		this.nativeZoom = getShellZoom();
 	}
 }
 
@@ -1872,6 +1899,11 @@ boolean isActive () {
 	}
 	if (shell == null) shell = getShell ();
 	return shell.getEnabled ();
+}
+
+@Override
+public boolean isAutoScalable() {
+	return autoscalingMode == AutoscalingMode.ENABLED;
 }
 
 /**
@@ -3351,6 +3383,32 @@ private void fitInParentBounds(Rectangle boundsInPixels, int zoom) {
 	if (childNotFittingVertically && childFittingVerticallyWithOffByOne) {
 		boundsInPixels.height = parentBoundsInPixels.height - boundsInPixels.y;
 	}
+}
+
+/**
+ * Sets the autoscaling mode for this widget. The capability is not supported on
+ * every platform, such that calling this method may not have an effect on
+ * unsupported platforms. The return value indicates if the autoscale mode was
+ * set properly. With {@link #isAutoScalable()}, the autoscale enablement can
+ * also be evaluated at any later point in time.
+ * <p>
+ * Currently, this is only supported on Windows.
+ * </p>
+ *
+ * @param autoscalingMode the autoscaling mode to set
+ *
+ * @return {@code false} if the operation was called on an unsupported platform
+ *
+ * @since 3.133
+ */
+public boolean setAutoscalingMode(AutoscalingMode autoscalingMode) {
+	this.autoscalingMode = autoscalingMode;
+	if (isAutoscalingDisabled()) {
+		this.nativeZoom = 100;
+	} else {
+		this.nativeZoom = getShellZoom();
+	}
+	return true;
 }
 
 void setBoundsInPixels (Rectangle rect) {
@@ -4866,7 +4924,7 @@ public boolean setParent (Composite parent) {
 @Override
 GC createNewGC(long hDC, GCData data) {
 	data.nativeZoom = nativeZoom;
-	if (autoScaleDisabled && data.font != null) {
+	if (isAutoscalingDisabled() && data.font != null) {
 		data.font = SWTFontProvider.getFont(display, data.font.getFontData()[0], 100);
 	}
 	return GC.win32_new(hDC, data);
@@ -4874,7 +4932,7 @@ GC createNewGC(long hDC, GCData data) {
 
 @Override
 int getAutoscalingZoom() {
-	if (autoScaleDisabled) {
+	if (isAutoscalingDisabled()) {
 		return 100;
 	}
 	return super.getAutoscalingZoom();
@@ -4888,7 +4946,7 @@ int getShellZoom() {
 }
 
 int computeGetBoundsZoom() {
-	if (parent != null && !autoScaleDisabled) {
+	if (parent != null && !isAutoscalingDisabled()) {
 		return parent.getAutoscalingZoom();
 	}
 	return getAutoscalingZoom();
@@ -6076,10 +6134,14 @@ void sendZoomChangedEvent(Event event, Shell shell) {
 	}
 }
 
+private boolean isAutoscalingDisabled() {
+	return autoscalingMode != AutoscalingMode.ENABLED;
+}
+
 @Override
 void handleDPIChange(Event event, float scalingFactor) {
 	super.handleDPIChange(event, scalingFactor);
-	if (this.autoScaleDisabled) {
+	if (isAutoscalingDisabled()) {
 		this.nativeZoom = 100;
 	}
 	resizeFont(this, nativeZoom);
