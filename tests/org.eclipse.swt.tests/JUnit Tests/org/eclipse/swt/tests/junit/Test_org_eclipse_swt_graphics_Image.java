@@ -188,6 +188,34 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 }
 
 @Test
+public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_Point() {
+	Image image;
+	IllegalArgumentException e;
+
+	e = assertThrows(IllegalArgumentException.class, () -> new Image(display, new Point(-1, 10)));
+	assertSWTProblem("Incorrect exception thrown for width < 0", SWT.ERROR_INVALID_ARGUMENT, e);
+
+	e = assertThrows(IllegalArgumentException.class, () -> new Image(display, new Point(0, 10)));
+	assertSWTProblem("Incorrect exception thrown for width == 0", SWT.ERROR_INVALID_ARGUMENT, e);
+
+	e = assertThrows(IllegalArgumentException.class, () -> new Image(display, new Point(10, -1)));
+	assertSWTProblem("Incorrect exception thrown for height < 0", SWT.ERROR_INVALID_ARGUMENT, e);
+
+	e = assertThrows(IllegalArgumentException.class, () -> new Image(display, new Point(10, 0)));
+	assertSWTProblem("Incorrect exception thrown for height == 0", SWT.ERROR_INVALID_ARGUMENT, e);
+
+	e = assertThrows(IllegalArgumentException.class, () -> new Image(display, (Point) null));
+	assertSWTProblem("Incorrect exception thrown for size == null", SWT.ERROR_NULL_ARGUMENT, e);
+
+	// valid images
+	image = new Image(null, new Point(10, 10));
+	image.dispose();
+
+	image = new Image(display, new Point(10, 10));
+	image.dispose();
+}
+
+@Test
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageData() {
 	IllegalArgumentException e;
 
