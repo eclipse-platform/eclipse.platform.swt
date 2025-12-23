@@ -1233,6 +1233,22 @@ public ToolBar getToolBar() {
 	return null;
 }
 
+/**
+ * Returns the native zoom level of this shell.
+ * <p>
+ * The value is derived from the underlying operating system's DPI for the
+ * window and converted into a zoom percentage using
+ * {@link DPIUtil#mapDPIToZoom(int)}.
+ * </p>
+ *
+ * @return the native zoom level of the shell, expressed as a percentage
+ *
+ * @since 3.133
+ */
+public int getNativeZoom() {
+	return DPIUtil.mapDPIToZoom(OS.GetDpiForWindow(handle));
+}
+
 @Override
 Composite findDeferredControl () {
 	return layoutCount > 0 ? this : null;

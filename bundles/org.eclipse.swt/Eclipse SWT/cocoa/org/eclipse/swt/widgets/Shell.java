@@ -18,6 +18,7 @@ import java.util.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cocoa.*;
 
 /**
@@ -1990,6 +1991,17 @@ public void setMinimumSize (Point size) {
 public void setModified (boolean modified) {
 	checkWidget ();
 	window.setDocumentEdited (modified);
+}
+
+/**
+ * Returns the native zoom of the device which is used globally by SWT.
+ *
+ * @return the native zoom for the current device
+ *
+ * @since 3.133
+ */
+public int getNativeZoom() {
+	return DPIUtil.getNativeDeviceZoom();
 }
 
 /**
