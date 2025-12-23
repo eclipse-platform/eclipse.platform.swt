@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.zip.DataFormatException;
 
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.printing.PDFDocument;
@@ -64,7 +63,7 @@ public class Test_org_eclipse_swt_printing_PDFDocument {
 	}
 
 	@Test
-	public void test_createPDFDocumentWithHelloWorld() throws IOException, DataFormatException {
+	public void test_createPDFDocumentWithHelloWorld() throws IOException {
 		// Create a temporary file for the PDF
 		tempFile = Files.createTempFile(tempDir, "test", ".pdf").toFile();
 		String filename = tempFile.getAbsolutePath();
