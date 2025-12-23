@@ -1347,7 +1347,35 @@ boolean filterEvent (Event event) {
 	return false;
 }
 
-boolean filters (int eventType) {
+
+
+/**
+ * Checks for if there exists a listener in the collection of listeners who will
+ * be notified when an event of the given type occurs anywhere in a widget. The event type is one of the event constants
+ * defined in class <code>SWT</code>. When the event does occur,
+ * the listener is notified by sending it the <code>handleEvent()</code>
+ * message.
+ *
+ * <p>
+ * Filters are listeners which are registered at display level by calling {@link Display#addFilter(int, Listener)}. These listeners are triggered when there happens an event of the type they are registered with, anywhere in an SWT application.
+ * </p>
+ *
+ * <p>
+ * Needs to be public as the consumers of display can register a filter from any package using public method <code>addFilter</code> and might need to check if there exists a filter for an event.
+ * </p>
+ *
+ * @param eventType the type of an event to check if there exists a listener registered using <code>addFilter</code>
+ * @return true if there exists a listener which reacts to the eventType otherwise false
+ *
+ * @see Listener
+ * @see SWT
+ * @see #addFilter
+ * @see #removeFilter
+ * @see #removeListener
+ *
+ * @since 3.133
+ */
+public boolean filters (int eventType) {
 	if (filterTable == null) return false;
 	return filterTable.hooks (eventType);
 }
