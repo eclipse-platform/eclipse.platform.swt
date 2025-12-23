@@ -5143,6 +5143,13 @@ void gtk_label_set_align(long label, float xAlign, float yAlign) {
 	GTK.gtk_label_set_yalign(label, yAlign);
 }
 
+/**
+ * @since 3.132
+ */
+public boolean setAutoscaleDisabled(boolean autoscaleDisabled) {
+	return false;
+}
+
 void setBackground () {
 	if ((state & BACKGROUND) == 0 && backgroundImage == null) {
 		if ((state & PARENT_BACKGROUND) != 0) {

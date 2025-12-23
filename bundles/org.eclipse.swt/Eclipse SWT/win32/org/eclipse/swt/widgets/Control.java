@@ -77,7 +77,7 @@ public abstract class Control extends Widget implements Drawable {
 	Region region;
 	Font font;
 	int drawCount, foreground, background, backgroundAlpha = 255;
-	boolean autoScaleDisabled = false;
+	AutoscalingMode autoscalingMode = AutoscalingMode.ENABLED;
 
 	private static final String DATA_SHELL_ZOOM = "SHELL_ZOOM";
 
@@ -123,11 +123,11 @@ Control () {
 public Control (Composite parent, int style) {
 	super (parent, style);
 	this.parent = parent;
-	Boolean parentPropagateAutoscaleDisabled = (Boolean) parent.getData(PROPOGATE_AUTOSCALE_DISABLED);
-	if (parentPropagateAutoscaleDisabled == null || parentPropagateAutoscaleDisabled) {
-		this.autoScaleDisabled = parent.autoScaleDisabled;
+	AutoscalingMode parentAutoscaleMode = parent.autoscalingMode;
+	if (parentAutoscaleMode == AutoscalingMode.DISABLED_INHERITED) {
+		this.autoscalingMode = parent.autoscalingMode;
 	}
-	if (!autoScaleDisabled) {
+	if (isAutoScalable()) {
 		this.nativeZoom = getShellZoom();
 	}
 	createWidget ();
@@ -1285,11 +1285,14 @@ public Object getData(String key) {
 @Override
 public void setData(String key, Object value) {
 	super.setData(key, value);
-	if (DATA_AUTOSCALE_DISABLED.equals(key)) {
-		autoScaleDisabled = Boolean.parseBoolean(value.toString());
+	if (DATA_AUTOSCALE_DISABLED.equals(key) || PROPOGATE_AUTOSCALE_DISABLED.equals(key)) {
+		boolean autoScaleDisabled = Boolean.parseBoolean(getData(DATA_AUTOSCALE_DISABLED).toString());
+		boolean propagateAutoscaleDisabled = Boolean.parseBoolean(getData(PROPOGATE_AUTOSCALE_DISABLED).toString());
 		if (autoScaleDisabled) {
+			autoscalingMode = propagateAutoscaleDisabled ? AutoscalingMode.DISABLED_INHERITED : AutoscalingMode.DISABLED;
 			this.nativeZoom = 100;
 		} else {
+			autoscalingMode = AutoscalingMode.ENABLED;
 			this.nativeZoom = getShellZoom();
 		}
 	}
@@ -1871,6 +1874,11 @@ boolean isActive () {
 	}
 	if (shell == null) shell = getShell ();
 	return shell.getEnabled ();
+}
+
+@Override
+public boolean isAutoScalable() {
+	return autoscalingMode == AutoscalingMode.ENABLED;
 }
 
 /**
@@ -3350,6 +3358,19 @@ private void fitInParentBounds(Rectangle boundsInPixels, int zoom) {
 	if (childNotFittingVertically && childFittingVerticallyWithOffByOne) {
 		boundsInPixels.height = parentBoundsInPixels.height - boundsInPixels.y;
 	}
+}
+
+/**
+ * @since 3.132
+ */
+public boolean setAutoscalingMode(AutoscalingMode autoscalingMode) {
+	this.autoscalingMode = autoscalingMode;
+	if (!isAutoScalable()) {
+		this.nativeZoom = 100;
+	} else {
+		this.nativeZoom = getShellZoom();
+	}
+	return true;
 }
 
 void setBoundsInPixels (Rectangle rect) {
@@ -4865,7 +4886,7 @@ public boolean setParent (Composite parent) {
 @Override
 GC createNewGC(long hDC, GCData data) {
 	data.nativeZoom = getNativeZoom();
-	if (autoScaleDisabled && data.font != null) {
+	if (!isAutoScalable() && data.font != null) {
 		data.font = SWTFontProvider.getFont(display, data.font.getFontData()[0], 100);
 	}
 	return GC.win32_new(hDC, data);
@@ -4873,7 +4894,7 @@ GC createNewGC(long hDC, GCData data) {
 
 @Override
 int getZoom() {
-	if (autoScaleDisabled) {
+	if (!isAutoScalable()) {
 		return 100;
 	}
 	return super.getZoom();
@@ -4887,7 +4908,7 @@ int getShellZoom() {
 }
 
 private int computeGetBoundsZoom() {
-	if (parent != null && !autoScaleDisabled) {
+	if (parent != null && isAutoScalable()) {
 		return parent.getZoom();
 	}
 	return getZoom();
@@ -6035,7 +6056,7 @@ void sendZoomChangedEvent(Event event, Shell shell) {
 @Override
 void handleDPIChange(Event event, float scalingFactor) {
 	super.handleDPIChange(event, scalingFactor);
-	if (this.autoScaleDisabled) {
+	if (!this.isAutoScalable()) {
 		this.nativeZoom = 100;
 	}
 	resizeFont(this, getNativeZoom());
