@@ -108,6 +108,35 @@ public class Snippet382 {
 		final Image disabledImageWithTransparentGcDrawer = new Image (display, imageWithTransparentGcDrawer, SWT.IMAGE_DISABLE);
 		final Image greyImageWithTransparentGcDrawer = new Image (display, imageWithTransparentGcDrawer, SWT.IMAGE_GRAY);
 
+		Image imageWithPlainImageData = new Image(display, 16, 16);
+
+		GC plainImageGCDrawer = new GC(imageWithPlainImageData);
+		plainImageGCDrawer.setBackground(display.getSystemColor(SWT.COLOR_RED));
+		plainImageGCDrawer.fillRectangle(0, 0, 16, 16);
+		plainImageGCDrawer.setForeground(display.getSystemColor(SWT.COLOR_YELLOW));
+		plainImageGCDrawer.drawRectangle(4, 4, 8, 8);
+		plainImageGCDrawer.dispose();
+
+		Image disabledImageWithPlainImageData = new Image(display, imageWithPlainImageData, SWT.IMAGE_DISABLE);
+		Image greyImageWithPlainImageData = new Image(display, imageWithPlainImageData, SWT.IMAGE_GRAY);
+
+
+		Image imageWithPlainImageDataWithHandleAlreadyCreated = new Image (display, 16, 16);
+
+		GC plainImageWithHandleCreated = new GC (imageWithPlainImageDataWithHandleAlreadyCreated);
+		plainImageWithHandleCreated.setBackground(display.getSystemColor(SWT.COLOR_RED));
+		plainImageWithHandleCreated.fillRectangle(0, 0, 16, 16);
+		plainImageWithHandleCreated.setForeground(display.getSystemColor(SWT.COLOR_YELLOW));
+		plainImageWithHandleCreated.drawRectangle(4, 4, 8,  8);
+		// Force creation of the handle at 100% and 200% zoom
+		imageWithPlainImageDataWithHandleAlreadyCreated.getImageData(100);
+		imageWithPlainImageDataWithHandleAlreadyCreated.getImageData(200);
+		plainImageWithHandleCreated.dispose();
+
+		Image disabledImageWithHandleCreated = new Image (display, imageWithPlainImageDataWithHandleAlreadyCreated, SWT.IMAGE_DISABLE);
+		Image greyImageWithHandleCreated = new Image (display, imageWithPlainImageDataWithHandleAlreadyCreated, SWT.IMAGE_GRAY);
+
+
 		final Shell shell = new Shell (display);
 		shell.setText("Snippet382");
 		shell.setLayout (new GridLayout (3, false));
@@ -149,6 +178,16 @@ public class Snippet382 {
 						drawImages(mainGC, gcData, "Normal", 740, imageWithTransparentGcDrawer);
 						drawImages(mainGC, gcData, "Disabled", 780, disabledImageWithTransparentGcDrawer);
 						drawImages(mainGC, gcData, "Greyed", 820, greyImageWithTransparentGcDrawer);
+
+						mainGC.drawText("--Image with PlainImageData--", 20, 850);
+						drawImages(mainGC, gcData, "Normal", 880, imageWithPlainImageData);
+						drawImages(mainGC, gcData, "Disabled", 920, disabledImageWithPlainImageData);
+						drawImages(mainGC, gcData, "Greyed", 960, greyImageWithPlainImageData);
+
+						mainGC.drawText("--Image with PlainImageData (Handle Created Before Grey or Disabled Image Created)--", 20, 1000);
+						drawImages(mainGC, gcData, "Normal", 1040, imageWithPlainImageDataWithHandleAlreadyCreated);
+						drawImages(mainGC, gcData, "Disabled", 1080, disabledImageWithHandleCreated);
+						drawImages(mainGC, gcData, "Greyed", 1120, greyImageWithHandleCreated);
 					} finally {
 						mainGC.dispose ();
 					}
@@ -168,7 +207,7 @@ public class Snippet382 {
 		};
 		shell.addListener(SWT.Paint, l);
 
-		shell.setSize(400, 750);
+		shell.setSize(400, 850);
 		shell.open ();
 		while (!shell.isDisposed ()) {
 			if (!display.readAndDispatch ()) display.sleep ();
