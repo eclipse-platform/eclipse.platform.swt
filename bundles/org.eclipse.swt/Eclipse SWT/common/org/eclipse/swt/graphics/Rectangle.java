@@ -384,22 +384,27 @@ public static Rectangle of(Point topLeft, int width, int height) {
 }
 
 /**
- * Creates a new {@code Rectangle} using the specified Point instances for
- * the dimensions.
+ * Creates a new {@code Rectangle} using the specified Point instances for the
+ * dimensions.
  * <p>
  * If the provided {@code Point} instance carries additional OfFloat
  * information, an extended {@code Rectangle} type may be returned to preserve
  * that context. Otherwise, a standard {@code Rectangle} is returned.
  * </p>
  *
- * @param topLeft the top-left corner of the rectangle
+ * @param topLeft   the top-left corner of the rectangle
  * @param dimension the Point(width, height) of the rectangle
  * @return a new {@code Rectangle} instance appropriate for the given point and
  *         dimensions
  * @since 3.133
  */
 public static Rectangle of(Point topLeft, Point dimension) {
-	if(dimension instanceof Point.OfFloat ofFloatDimension) {
+	if (topLeft instanceof Point.OfFloat ofFloatTopLeft && dimension instanceof Point.OfFloat ofFloatDimension) {
+		return new Rectangle.OfFloat(ofFloatTopLeft.getX(), ofFloatTopLeft.getY(), ofFloatDimension.getX(),
+				ofFloatDimension.getY());
+	} else if (topLeft instanceof Point.OfFloat ofFloatTopLeft) {
+		return new Rectangle.OfFloat(ofFloatTopLeft.getX(), ofFloatTopLeft.getY(), dimension.x, dimension.y);
+	} else if (dimension instanceof Point.OfFloat ofFloatDimension) {
 		return new Rectangle.OfFloat(topLeft.x, topLeft.y, ofFloatDimension.getX(), ofFloatDimension.getY());
 	}
 	return new Rectangle(topLeft.x, topLeft.y, dimension.x, dimension.y);
