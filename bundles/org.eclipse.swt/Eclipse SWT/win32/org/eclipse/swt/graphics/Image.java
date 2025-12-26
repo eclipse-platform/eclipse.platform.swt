@@ -179,6 +179,17 @@ public final class Image extends Resource implements Drawable {
 			return Optional.empty();
 		}
 
+		public ImageHandle getOrCreateImageHandleAtClosestSizeAtZoom(int scaledZoom) {
+			scaledZoom = DPIUtil.getZoomForAutoscaleProperty(scaledZoom);
+			ImageHandle bestFittingHandle = zoomLevelToImageHandle.get(scaledZoom);
+			if (bestFittingHandle == null) {
+				ImageData bestFittingImageData = imageProvider.loadImageData(scaledZoom).element();
+				ImageData adaptedData = adaptImageDataIfDisabledOrGray(bestFittingImageData);
+				bestFittingHandle = init(adaptedData, -1);
+			}
+			return bestFittingHandle;
+		}
+
 		private ImageHandle getOrCreateImageHandleAtClosestSize(int widthHint, int heightHint) {
 			Rectangle bounds = getBounds(100);
 			int imageZoomForWidth = 100 * widthHint / bounds.width;
@@ -878,6 +889,15 @@ ImageHandle getHandle (int targetZoom, int nativeZoom) {
 void executeOnImageHandleAtBestFittingSize(Consumer<ImageHandle> handleAtSizeConsumer, int widthHint, int heightHint) {
 	ImageHandle imageHandle = lastRequestedHandle.refresh(widthHint, heightHint);
 	handleAtSizeConsumer.accept(imageHandle);
+}
+
+void executeOnImageHandleAtBestFittingSizeAtZoom(Consumer<ImageHandle> handleAtSizeConsumer, int scaledZoom) {
+	ImageHandle imageHandle = lastRequestedHandle.getOrCreateImageHandleAtClosestSizeAtZoom(scaledZoom);
+	handleAtSizeConsumer.accept(imageHandle);
+}
+void executeOnImageHandleAtSizeOrZoom(BiConsumer<ImageHandle, Point> handleAtSizeConsumer, int targetWidth, int targetHeight, int zoom) {
+	ImageHandle imageHandle = lastRequestedHandle.getOrCreateImageHandleAtClosestSizeAtZoom(zoom);
+	handleAtSizeConsumer.accept(imageHandle, new Point(imageHandle.getWidth(), imageHandle.getHeight()));
 }
 
 /**
