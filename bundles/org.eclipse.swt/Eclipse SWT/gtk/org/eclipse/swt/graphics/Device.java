@@ -723,8 +723,8 @@ protected void init () {
 		}
 	}
 	defaultFont = OS.pango_font_description_copy (defaultFont);
-	Point dpi = getDPI(), screenDPI = getScreenDPI();
-	if (dpi.y != screenDPI.y) {
+	Point screenDPI = getScreenDPI();
+	if (this.dpi.y != screenDPI.y) {
 		int size = OS.pango_font_description_get_size(defaultFont);
 		OS.pango_font_description_set_size(defaultFont, size * dpi.y / screenDPI.y);
 	}
