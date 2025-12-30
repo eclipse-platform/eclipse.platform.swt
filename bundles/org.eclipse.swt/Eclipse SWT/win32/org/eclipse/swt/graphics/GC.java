@@ -4462,6 +4462,15 @@ private long identity() {
 }
 
 private void init(Drawable drawable, GCData data, long hDC) {
+	ImageHandle imageHandle = null;
+	Image image = data.image;
+	if (image != null) {
+		imageHandle = image.getHandle(data.imageZoom, data.nativeZoom);
+	}
+	init(drawable, data, hDC, imageHandle);
+}
+
+private void init(Drawable drawable, GCData data, long hDC, ImageHandle imageHandle) {
 	int foreground = data.foreground;
 	if (foreground != -1) {
 		data.state &= ~(FOREGROUND | FOREGROUND_TEXT | PEN);
@@ -4485,8 +4494,8 @@ private void init(Drawable drawable, GCData data, long hDC) {
 		data.font = SWTFontProvider.getFont(device, OS.GetCurrentObject(hDC, OS.OBJ_FONT), data.nativeZoom);
 	}
 	Image image = data.image;
-	if (image != null) {
-		data.hNullBitmap = OS.SelectObject(hDC, image.getHandle(data.imageZoom, data.nativeZoom).getHandle());
+	if (imageHandle != null) {
+		data.hNullBitmap = OS.SelectObject(hDC, imageHandle.getHandle());
 		image.memGC = this;
 	}
 	int layout = data.layout;
@@ -5935,12 +5944,12 @@ Point textExtentInPixels(String string, int flags) {
 	return new Point(rect.right, rect.bottom);
 }
 
-void refreshFor(Drawable drawable) {
+void refreshFor(Drawable drawable, ImageHandle imageHandle) {
 	if (drawable == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	destroy();
 	GCData newData = new GCData();
 	originalData.copyTo(newData);
-	createGcHandle(drawable, newData);
+	createGcHandle(drawable, newData, imageHandle);
 }
 
 /**
@@ -6059,10 +6068,10 @@ private void removePreviousOperationIfSupercededBy(Operation operation) {
 	}
 }
 
-private void createGcHandle(Drawable drawable, GCData newData) {
-	long newHandle = drawable.internal_new_GC(newData);
-	if (newHandle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	init(drawable, newData, newHandle);
+private void createGcHandle(Drawable drawable, GCData newData, ImageHandle imageHandle) {
+	long gcHandle = drawable.internal_new_GC(newData);
+	if (gcHandle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	init(drawable, newData, gcHandle, imageHandle);
 	for (Operation operation : operations) {
 		operation.apply();
 	}
