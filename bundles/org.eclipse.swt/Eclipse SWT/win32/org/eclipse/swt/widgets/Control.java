@@ -736,7 +736,7 @@ int defaultBackground () {
 }
 
 long defaultFont() {
-	return SWTFontProvider.getSystemFontHandle(display, getNativeZoom());
+	return SWTFontProvider.getSystemFontHandle(display, nativeZoom);
 }
 
 int defaultForeground () {
@@ -1352,7 +1352,7 @@ public Font getFont () {
 	if (font != null) return font;
 	long hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 	if (hFont == 0) hFont = defaultFont ();
-	return SWTFontProvider.getFont(display, hFont, getNativeZoom());
+	return SWTFontProvider.getFont(display, hFont, nativeZoom);
 }
 
 /**
@@ -1791,7 +1791,7 @@ public long internal_new_GC (GCData data) {
 			}
 		}
 		data.device = display;
-		data.nativeZoom = getNativeZoom();
+		data.nativeZoom = nativeZoom;
 		int foreground = getForegroundPixel ();
 		if (foreground != OS.GetTextColor (hDC)) data.foreground = foreground;
 		Control control = findBackgroundControl ();
@@ -3424,7 +3424,7 @@ public void setCursor (Cursor cursor) {
 }
 
 void setDefaultFont () {
-	long hFont = SWTFontProvider.getSystemFontHandle(display, getNativeZoom());
+	long hFont = SWTFontProvider.getSystemFontHandle(display, nativeZoom);
 	OS.SendMessage (handle, OS.WM_SETFONT, hFont, 0);
 }
 
@@ -3526,7 +3526,7 @@ public void setFont (Font font) {
 	Font newFont = font;
 	if (newFont != null) {
 		if (newFont.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-		newFont = Font.win32_new(newFont, getNativeZoom());
+		newFont = Font.win32_new(newFont, nativeZoom);
 	}
 	long hFont = 0;
 	if (newFont != null) {
@@ -4864,7 +4864,7 @@ public boolean setParent (Composite parent) {
 
 @Override
 GC createNewGC(long hDC, GCData data) {
-	data.nativeZoom = getNativeZoom();
+	data.nativeZoom = nativeZoom;
 	if (autoScaleDisabled && data.font != null) {
 		data.font = SWTFontProvider.getFont(display, data.font.getFontData()[0], 100);
 	}
@@ -6038,7 +6038,7 @@ void handleDPIChange(Event event, float scalingFactor) {
 	if (this.autoScaleDisabled) {
 		this.nativeZoom = 100;
 	}
-	resizeFont(this, getNativeZoom());
+	resizeFont(this, nativeZoom);
 
 	Image image = backgroundImage;
 	if (image != null) {

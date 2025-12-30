@@ -33,7 +33,7 @@ public class PatternWin32ManualTest {
 
 	public static void main (String [] args) {
 		Shell shell = new Shell(display);
-		int zoom = shell.getNativeZoom();
+		int zoom = shell.nativeZoom;
 		int scalingFactor = 3;
 		int scaledZoom = zoom * scalingFactor;
 		int width = 400;
