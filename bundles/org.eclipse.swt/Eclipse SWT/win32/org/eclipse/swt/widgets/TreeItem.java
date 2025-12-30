@@ -312,8 +312,8 @@ void destroyWidget () {
 }
 
 long fontHandle (int index) {
-	if (cellFont != null && cellFont [index] != null) return SWTFontProvider.getFontHandle(cellFont[index], getNativeZoom());
-	if (font != null) return SWTFontProvider.getFontHandle(font, getNativeZoom());
+	if (cellFont != null && cellFont [index] != null) return SWTFontProvider.getFontHandle(cellFont[index], nativeZoom);
+	if (font != null) return SWTFontProvider.getFontHandle(font, nativeZoom);
 	return -1;
 }
 
@@ -1384,7 +1384,7 @@ public void setFont (Font font){
 		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	Font oldFont = this.font;
-	Font newFont = (font == null ? font : Font.win32_new(font, getNativeZoom()));
+	Font newFont = (font == null ? font : Font.win32_new(font, nativeZoom));
 	if (oldFont == newFont) return;
 	this.font = newFont;
 	if (oldFont != null && oldFont.equals (font)) return;
@@ -1440,7 +1440,7 @@ public void setFont (int index, Font font) {
 	}
 	Font oldFont = cellFont [index];
 	if (oldFont == font) return;
-	cellFont [index] = font == null ? font : Font.win32_new(font, getNativeZoom());
+	cellFont [index] = font == null ? font : Font.win32_new(font, nativeZoom);
 	if (oldFont != null && oldFont.equals (font)) return;
 	if (font != null) parent.customDraw = true;
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
@@ -1822,7 +1822,7 @@ void handleDPIChange(Event event, float scalingFactor) {
 	if (cellFonts != null) {
 		for (int index = 0; index < cellFonts.length; index++) {
 			Font cellFont = cellFonts[index];
-			cellFonts[index] = cellFont == null ? null : Font.win32_new(cellFont, getNativeZoom());
+			cellFonts[index] = cellFont == null ? null : Font.win32_new(cellFont, nativeZoom);
 		}
 	}
 	for (TreeItem item : getItems()) {

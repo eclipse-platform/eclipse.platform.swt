@@ -140,7 +140,7 @@ private OptionalInt getSystemCaretWidthInPixelsForCurrentMonitor() {
 	int [] buffer = new int [1];
 	if (OS.SystemParametersInfo (OS.SPI_GETCARETWIDTH, 0, buffer, 0)) {
 		int width = DPIUtil.pixelToPoint(buffer [0], Win32DPIUtils.getPrimaryMonitorZoomAtStartup());
-		int widthInPixels = DPIUtil.pointToPixel(width, getNativeZoom());
+		int widthInPixels = DPIUtil.pointToPixel(width, nativeZoom);
 		return OptionalInt.of(widthInPixels);
 	}
 	return OptionalInt.empty();
@@ -160,7 +160,7 @@ public Font getFont () {
 	checkWidget();
 	if (font == null) {
 		long hFont = defaultFont ();
-		return Font.win32_new (display, hFont, getNativeZoom());
+		return Font.win32_new (display, hFont, nativeZoom);
 	}
 	return font;
 }
@@ -486,7 +486,7 @@ public void setFont (Font font) {
 	if (font != null && font.isDisposed ()) {
 		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	this.font = font == null ? null : Font.win32_new(font, getNativeZoom());
+	this.font = font == null ? null : Font.win32_new(font, nativeZoom);
 	if (hasFocus ()) setIMEFont ();
 }
 
@@ -517,7 +517,7 @@ public void setImage (Image image) {
 void setIMEFont () {
 	if (!OS.IsDBLocale) return;
 	long hFont = 0;
-	if (font != null) hFont = SWTFontProvider.getFontHandle(font, getNativeZoom());
+	if (font != null) hFont = SWTFontProvider.getFontHandle(font, nativeZoom);
 	if (hFont == 0) hFont = defaultFont ();
 	long hwnd = parent.handle;
 	long hIMC = OS.ImmGetContext (hwnd);
