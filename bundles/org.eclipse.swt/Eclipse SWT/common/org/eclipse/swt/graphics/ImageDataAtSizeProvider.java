@@ -39,8 +39,6 @@ import org.eclipse.swt.internal.*;
  * </ol>
  *
  * @since 3.132
- * @noreference This class is still experimental API and might be subject to
- *              change.
  */
 public interface ImageDataAtSizeProvider extends ImageDataProvider {
 
