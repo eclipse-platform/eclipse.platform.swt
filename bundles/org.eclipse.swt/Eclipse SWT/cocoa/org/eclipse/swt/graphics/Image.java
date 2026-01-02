@@ -736,19 +736,11 @@ public Image(Device device, InputStream stream) {
  */
 public Image(Device device, String filename) {
 	super(device);
-	NSAutoreleasePool pool = null;
-	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
-	try {
-		if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		initNative(filename);
-		if (this.handle == null) {
-			initWithSupplier(zoom -> ImageDataLoader.canLoadAtZoom(filename, FileFormat.DEFAULT_ZOOM, zoom),
-					zoom -> ImageDataLoader.loadByZoom(filename, FileFormat.DEFAULT_ZOOM, zoom).element());
-		}
-		init();
-	} finally {
-		if (pool != null) pool.release();
-	}
+	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	ImageFileNameProvider imageFileNameProvider = (ImageFileNameProvider) zoom -> {
+		return zoom == 100 ? filename : null;
+	};
+	initUsingFileNameProvider(imageFileNameProvider);
 }
 
 /**
@@ -783,6 +775,10 @@ public Image(Device device, String filename) {
 public Image(Device device, ImageFileNameProvider imageFileNameProvider) {
 	super(device);
 	if (imageFileNameProvider == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	initUsingFileNameProvider(imageFileNameProvider);
+}
+
+private void initUsingFileNameProvider(ImageFileNameProvider imageFileNameProvider) {
 	this.imageFileNameProvider = imageFileNameProvider;
 	String filename = imageFileNameProvider.getImagePath(100);
 	if (filename == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
