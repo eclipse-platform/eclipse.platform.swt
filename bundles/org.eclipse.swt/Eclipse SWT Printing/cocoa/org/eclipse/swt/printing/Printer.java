@@ -623,6 +623,7 @@ public Point getDPI() {
 	}
 }
 
+@SuppressWarnings("deprecation")
 Point getIndependentDPI() {
 	return super.getDPI();
 }
