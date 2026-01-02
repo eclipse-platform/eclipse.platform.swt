@@ -519,7 +519,18 @@ public int getDepth () {
  * @exception SWTException <ul>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
+ *
+ * @deprecated <p>This method returns a single global DPI value
+ * that does not reflect per-monitor DPI settings on modern operating systems.
+ * In environments with different scaling factors across monitors, it may provide
+ * a misleading or meaningless result, as it does not correspond to the actual DPI
+ * of any specific monitor.</p>
+ *
+ * <p>Note: While deprecated for general {@code Device} instances like {@code Display},
+ * this method may still be validly used when called on a {@code Printer} instance,
+ * where a single global DPI value is meaningful and expected.</p>
  */
+@Deprecated
 public Point getDPI () {
 	checkDevice ();
 	long hDC = internal_new_GC (null);
