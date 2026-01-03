@@ -20,7 +20,6 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageLoader;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
@@ -61,8 +60,7 @@ public class Bug547557_ShellPrintGC {
 	}
 
 	private static void saveImage(Shell shell, String filename, int format) {
-		Rectangle bounds = shell.getBounds();
-		Image image = new Image(shell.getDisplay(), bounds.width, bounds.height);
+		Image image = new Image(shell.getDisplay(), shell.getSize());
 		// Printing the client area will result in a warning and only the client area being printed
 //		Image image = new Image(shell.getDisplay(), shell.getClientArea());
 		GC gc = new GC(image);
