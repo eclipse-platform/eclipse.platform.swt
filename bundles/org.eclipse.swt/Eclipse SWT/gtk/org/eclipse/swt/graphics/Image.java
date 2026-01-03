@@ -597,9 +597,10 @@ public Image(Device device, String filename) {
 	super(device);
 	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	currentDeviceZoom = DPIUtil.getDeviceZoom();
-	ElementAtZoom<ImageData> image = ImageDataLoader.loadByZoom(filename, FileFormat.DEFAULT_ZOOM, currentDeviceZoom);
-	ImageData data = DPIUtil.scaleImageData(device, image, currentDeviceZoom);
-	init(data);
+	this.imageFileNameProvider = (ImageFileNameProvider) zoom -> {
+		return zoom == 100 ? filename : null;
+	};
+	initFromFileNameProvider(currentDeviceZoom);
 	init();
 }
 
