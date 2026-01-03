@@ -298,4 +298,66 @@ public void test_unionLorg_eclipse_swt_graphics_Rectangle() {
 	assertSWTProblem("Incorrect exception thrown for rectangle == null", SWT.ERROR_NULL_ARGUMENT, e);
 }
 
+@Test
+void test_bothPointsAreOfFloat() {
+    Point.OfFloat topLeft = new Point.OfFloat(10.5f, 20.5f);
+    Point.OfFloat dimension = new Point.OfFloat(30.5f, 40.5f);
+
+    Rectangle rect = Rectangle.of(topLeft, dimension);
+
+    assertTrue(rect instanceof Rectangle.OfFloat);
+    Rectangle.OfFloat f = (Rectangle.OfFloat) rect;
+
+    assertEquals(10.5f, f.getX());
+    assertEquals(20.5f, f.getY());
+    assertEquals(30.5f, f.getWidth());
+    assertEquals(40.5f, f.getHeight());
+}
+
+@Test
+void testOnlyTopLeftIsOfFloat() {
+    Point.OfFloat topLeft = new Point.OfFloat(5.5f, 15.5f);
+    Point dimension = new Point(100, 200);
+
+    Rectangle rect = Rectangle.of(topLeft, dimension);
+
+    assertTrue(rect instanceof Rectangle.OfFloat);
+    Rectangle.OfFloat f = (Rectangle.OfFloat) rect;
+
+    assertEquals(5.5f, f.getX());
+    assertEquals(15.5f, f.getY());
+    assertEquals(100, f.getWidth());
+    assertEquals(200, f.getHeight());
+}
+
+@Test
+void testOnlyDimensionIsOfFloat() {
+    Point topLeft = new Point(7, 9);
+    Point.OfFloat dimension = new Point.OfFloat(55.5f, 66.5f);
+
+    Rectangle rect = Rectangle.of(topLeft, dimension);
+
+    assertTrue(rect instanceof Rectangle.OfFloat);
+    Rectangle.OfFloat f = (Rectangle.OfFloat) rect;
+
+    assertEquals(7, f.getX());
+    assertEquals(9, f.getY());
+    assertEquals(55.5f, f.getWidth());
+    assertEquals(66.5f, f.getHeight());
+}
+
+@Test
+void testNeitherPointIsOfFloat() {
+    Point topLeft = new Point(1, 2);
+    Point dimension = new Point(10, 20);
+
+    Rectangle rect = Rectangle.of(topLeft, dimension);
+
+    assertFalse(rect instanceof Rectangle.OfFloat);
+    assertEquals(1, rect.x);
+    assertEquals(2, rect.y);
+    assertEquals(10, rect.width);
+    assertEquals(20, rect.height);
+}
+
 }
