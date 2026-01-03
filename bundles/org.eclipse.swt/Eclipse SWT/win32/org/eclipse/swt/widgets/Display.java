@@ -4964,6 +4964,7 @@ public <T, E extends Exception> T syncCall(SwtCallable<T, E> callable) throws E 
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_NO_HANDLES if a handle could not be obtained for timer creation</li>
  * </ul>
  *
  * @see #asyncExec
@@ -5005,10 +5006,9 @@ public void timerExec (int milliseconds, Runnable runnable) {
 		}
 	}
 	long newTimerID = OS.SetTimer (hwndMessage, timerId, milliseconds, 0);
-	if (newTimerID != 0) {
-		timerList [index] = runnable;
-		timerIds [index] = newTimerID;
-	}
+	if (newTimerID == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+	timerList [index] = runnable;
+	timerIds [index] = newTimerID;
 }
 
 boolean translateAccelerator (MSG msg, Control control) {
