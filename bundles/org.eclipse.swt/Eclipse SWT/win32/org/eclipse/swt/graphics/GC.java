@@ -4461,6 +4461,15 @@ private long identity() {
 	return Gdip.Matrix_new(1, 0, 0, 1, 0, 0);
 }
 
+private void initWithImageHandle(Drawable drawable, GCData data, long hDC, ImageHandle imageHandle) {
+	Image image = data.image;
+	data.image = null;
+	init(drawable, data, hDC);
+	data.hNullBitmap = OS.SelectObject(hDC, imageHandle.getHandle());
+	image.memGC = this;
+	data.image = image;
+}
+
 private void init(Drawable drawable, GCData data, long hDC) {
 	int foreground = data.foreground;
 	if (foreground != -1) {
@@ -5935,12 +5944,12 @@ Point textExtentInPixels(String string, int flags) {
 	return new Point(rect.right, rect.bottom);
 }
 
-void refreshFor(Drawable drawable) {
+void refreshFor(Drawable drawable, ImageHandle imageHandle) {
 	if (drawable == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	destroy();
 	GCData newData = new GCData();
 	originalData.copyTo(newData);
-	createGcHandle(drawable, newData);
+	createGcHandle(drawable, newData, imageHandle);
 }
 
 /**
@@ -6059,10 +6068,10 @@ private void removePreviousOperationIfSupercededBy(Operation operation) {
 	}
 }
 
-private void createGcHandle(Drawable drawable, GCData newData) {
+private void createGcHandle(Drawable drawable, GCData newData, ImageHandle imageHandle) {
 	long newHandle = drawable.internal_new_GC(newData);
 	if (newHandle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	init(drawable, newData, newHandle);
+	initWithImageHandle(drawable, newData, newHandle, imageHandle);
 	for (Operation operation : operations) {
 		operation.apply();
 	}
