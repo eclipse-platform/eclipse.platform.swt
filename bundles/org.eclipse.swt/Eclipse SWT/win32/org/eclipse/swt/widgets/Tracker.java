@@ -405,7 +405,7 @@ public Rectangle [] getRectangles () {
 	checkWidget();
 	Rectangle [] result = getRectanglesInPixels();
 	for (int i = 0; i < result.length; i++) {
-		result[i] = Win32DPIUtils.pixelToPoint(result[i], getZoom());
+		result[i] = Win32DPIUtils.pixelToPoint(result[i], getAutoscalingZoom());
 	}
 	return result;
 }
@@ -847,7 +847,7 @@ public void setRectangles (Rectangle [] rectangles) {
 	Rectangle [] rectanglesInPixels = new Rectangle [rectangles.length];
 	for (int i = 0; i < rectangles.length; i++) {
 		if (parent != null) {
-			rectanglesInPixels [i] = Win32DPIUtils.pointToPixel (rectangles [i], getZoom());
+			rectanglesInPixels [i] = Win32DPIUtils.pointToPixel (rectangles [i], getAutoscalingZoom());
 		} else {
 			rectanglesInPixels [i] = display.translateToDisplayCoordinates(rectangles[i]);
 		}

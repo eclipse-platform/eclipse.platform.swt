@@ -1192,7 +1192,7 @@ void reskinWidget() {
 boolean sendDragEvent (int button, int x, int y) {
 	Event event = new Event ();
 	event.button = button;
-	int zoom = getZoom();
+	int zoom = getAutoscalingZoom();
 	event.setLocation(DPIUtil.pixelToPoint(x, zoom), DPIUtil.pixelToPoint(y, zoom));
 	setInputState (event, SWT.DragDetect);
 	postEvent (SWT.DragDetect, event);
@@ -1203,7 +1203,7 @@ boolean sendDragEvent (int button, int x, int y) {
 boolean sendDragEvent (int button, int stateMask, int x, int y) {
 	Event event = new Event ();
 	event.button = button;
-	int zoom = getZoom();
+	int zoom = getAutoscalingZoom();
 	event.setLocation(DPIUtil.pixelToPoint(x, zoom), DPIUtil.pixelToPoint(y, zoom));
 	event.stateMask = stateMask;
 	postEvent (SWT.DragDetect, event);
@@ -1280,7 +1280,7 @@ boolean sendMouseEvent (int type, int button, int count, int detail, boolean sen
 	event.button = button;
 	event.detail = detail;
 	event.count = count;
-	int zoom = getZoom();
+	int zoom = getAutoscalingZoom();
 	event.setLocation(DPIUtil.pixelToPoint(OS.GET_X_LPARAM (lParam), zoom), DPIUtil.pixelToPoint(OS.GET_Y_LPARAM (lParam), zoom));
 	setInputState (event, type);
 	mapEvent (hwnd, event);
@@ -1707,7 +1707,7 @@ boolean showMenu (int x, int y, int detail) {
 	if (!event.doit) return true;
 	Menu menu = getMenu ();
 	if (menu != null && !menu.isDisposed ()) {
-		Point locInPixels = Win32DPIUtils.pointToPixelAsLocation(event.getLocation(), getZoom()); // In Pixels
+		Point locInPixels = Win32DPIUtils.pointToPixelAsLocation(event.getLocation(), getAutoscalingZoom()); // In Pixels
 		if (x != locInPixels.x || y != locInPixels.y) {
 			menu.setLocation (event.getLocation());
 		}
@@ -2361,7 +2361,7 @@ LRESULT wmPaint (long hwnd, long wParam, long lParam) {
 			OS.SetMetaRgn (hDC);
 			Event event = new Event ();
 			event.gc = gc;
-			event.setBounds(Win32DPIUtils.pixelToPoint(new Rectangle(rect.left, rect.top, width, height), getZoom()));
+			event.setBounds(Win32DPIUtils.pixelToPoint(new Rectangle(rect.left, rect.top, width, height), getAutoscalingZoom()));
 			sendEvent (SWT.Paint, event);
 			// widget could be disposed at this point
 			event.gc = null;
@@ -2699,7 +2699,7 @@ GC createNewGC(long hDC, GCData data) {
 	return GC.win32_new(hDC, data);
 }
 
-int getZoom() {
+int getAutoscalingZoom() {
 	return DPIUtil.getZoomForAutoscaleProperty(nativeZoom);
 }
 

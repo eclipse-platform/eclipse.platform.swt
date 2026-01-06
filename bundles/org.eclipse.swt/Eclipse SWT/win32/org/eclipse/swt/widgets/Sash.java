@@ -246,7 +246,7 @@ LRESULT WM_KEYDOWN (long wParam, long lParam) {
 			OS.SetCursorPos (cursorPt.x, cursorPt.y);
 
 			Event event = new Event ();
-			event.setBounds(Win32DPIUtils.pixelToPoint(new Rectangle(newX, newY, width, height), getZoom()));
+			event.setBounds(Win32DPIUtils.pixelToPoint(new Rectangle(newX, newY, width, height), getAutoscalingZoom()));
 			sendSelectionEvent  (SWT.Selection, event, true);
 			if (isDisposed ()) return LRESULT.ZERO;
 			if (event.doit) {
@@ -286,7 +286,7 @@ LRESULT WM_LBUTTONDOWN (long wParam, long lParam) {
 
 	/* The event must be sent because doit flag is used */
 	Event event = new Event ();
-	event.setBounds(Win32DPIUtils.pixelToPoint(new Rectangle(lastX, lastY, width, height), getZoom()));
+	event.setBounds(Win32DPIUtils.pixelToPoint(new Rectangle(lastX, lastY, width, height), getAutoscalingZoom()));
 	if ((style & SWT.SMOOTH) == 0) {
 		event.detail = SWT.DRAG;
 	}
@@ -294,7 +294,7 @@ LRESULT WM_LBUTTONDOWN (long wParam, long lParam) {
 	if (isDisposed ()) return LRESULT.ZERO;
 
 	/* Draw the banding rectangle */
-	Rectangle boundsInPixels = Win32DPIUtils.pointToPixel(event.getBounds(), getZoom());
+	Rectangle boundsInPixels = Win32DPIUtils.pointToPixel(event.getBounds(), getAutoscalingZoom());
 	if (event.doit) {
 		dragging = true;
 		lastX = boundsInPixels.x;
@@ -327,15 +327,15 @@ LRESULT WM_LBUTTONUP (long wParam, long lParam) {
 
 	/* The event must be sent because doit flag is used */
 	Event event = new Event ();
-	event.setBounds(Win32DPIUtils.pixelToPoint(new Rectangle(lastX, lastY, widthInPixels, heightInPixels), getZoom()));
+	event.setBounds(Win32DPIUtils.pixelToPoint(new Rectangle(lastX, lastY, widthInPixels, heightInPixels), getAutoscalingZoom()));
 	drawBand (lastX, lastY, widthInPixels, heightInPixels);
 	sendSelectionEvent (SWT.Selection, event, true);
 	if (isDisposed ()) return result;
 	Rectangle bounds = event.getBounds();
 	if (event.doit) {
 		if ((style & SWT.SMOOTH) != 0) {
-			int xInPixels = DPIUtil.pointToPixel(bounds.x, getZoom());
-			int yInPixels = DPIUtil.pointToPixel(bounds.y, getZoom());
+			int xInPixels = DPIUtil.pointToPixel(bounds.x, getAutoscalingZoom());
+			int yInPixels = DPIUtil.pointToPixel(bounds.y, getAutoscalingZoom());
 			setBoundsInPixels (xInPixels, yInPixels, widthInPixels, heightInPixels);
 			// widget could be disposed at this point
 		}
@@ -370,7 +370,7 @@ LRESULT WM_MOUSEMOVE (long wParam, long lParam) {
 	if (newX == lastX && newY == lastY) return result;
 	drawBand (lastX, lastY, width, height);
 
-	int zoom = getZoom();
+	int zoom = getAutoscalingZoom();
 	/* The event must be sent because doit flag is used */
 	Event event = new Event ();
 	event.setBounds(Win32DPIUtils.pixelToPoint(new Rectangle(newX, newY, width, height), zoom));

@@ -138,7 +138,7 @@ void _setImage (Image image) {
 	if (imageList != null) imageList.dispose ();
 	imageList = null;
 	if (image != null) {
-		imageList = new ImageList (style & SWT.RIGHT_TO_LEFT, getZoom());
+		imageList = new ImageList (style & SWT.RIGHT_TO_LEFT, getAutoscalingZoom());
 		if (OS.IsWindowEnabled (handle)) {
 			imageList.add (image);
 		} else {
@@ -147,7 +147,7 @@ void _setImage (Image image) {
 			imageList.add (disabledImage);
 		}
 		BUTTON_IMAGELIST buttonImageList = new BUTTON_IMAGELIST ();
-		buttonImageList.himl = imageList.getHandle(getZoom());
+		buttonImageList.himl = imageList.getHandle(getAutoscalingZoom());
 		int oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE), newBits = oldBits;
 		newBits &= ~(OS.BS_LEFT | OS.BS_CENTER | OS.BS_RIGHT);
 		if ((style & SWT.LEFT) != 0) newBits |= OS.BS_LEFT;
@@ -188,7 +188,7 @@ void _setText (String text) {
 	if ((style & SWT.RIGHT) != 0) newBits |= OS.BS_RIGHT;
 	if (imageList != null) {
 		BUTTON_IMAGELIST buttonImageList = new BUTTON_IMAGELIST ();
-		buttonImageList.himl = imageList.getHandle(getZoom());
+		buttonImageList.himl = imageList.getHandle(getAutoscalingZoom());
 		if (text.length () == 0) {
 			if ((style & SWT.LEFT) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_LEFT;
 			if ((style & SWT.CENTER) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_CENTER;
@@ -295,7 +295,7 @@ int computeLeftMargin () {
 	if ((style & (SWT.PUSH | SWT.TOGGLE)) == 0) return MARGIN;
 	int margin = 0;
 	if (image != null && text.length () != 0) {
-		Rectangle bounds = Win32DPIUtils.scaleBounds(image.getBounds(), this.getZoom(), 100);
+		Rectangle bounds = Win32DPIUtils.scaleBounds(image.getBounds(), this.getAutoscalingZoom(), 100);
 		margin += bounds.width + MARGIN * 2;
 		long oldFont = 0;
 		long hDC = OS.GetDC (handle);
@@ -359,13 +359,13 @@ Point computeSizeInPixels (Point hintInPoints, int zoom, boolean changed) {
 			boolean hasImage = image != null, hasText = true;
 			if (hasImage) {
 				if (image != null) {
-					Rectangle rect = Win32DPIUtils.scaleBounds(image.getBounds(), this.getZoom(), 100);
+					Rectangle rect = Win32DPIUtils.scaleBounds(image.getBounds(), this.getAutoscalingZoom(), 100);
 					width = rect.width;
 					if (hasText && text.length () != 0) {
-						width += DPIUtil.pointToPixel(MARGIN * 2, getZoom());;
+						width += DPIUtil.pointToPixel(MARGIN * 2, getAutoscalingZoom());;
 					}
 					height = rect.height;
-					extra = DPIUtil.pointToPixel(MARGIN * 2, getZoom());;
+					extra = DPIUtil.pointToPixel(MARGIN * 2, getAutoscalingZoom());;
 				}
 			}
 			if (hasText) {
@@ -379,7 +379,7 @@ Point computeSizeInPixels (Point hintInPoints, int zoom, boolean changed) {
 				if (length == 0) {
 					height = Math.max (height, lptm.tmHeight);
 				} else {
-					extra = Math.max (DPIUtil.pointToPixel(MARGIN * 2, getZoom()), lptm.tmAveCharWidth);
+					extra = Math.max (DPIUtil.pointToPixel(MARGIN * 2, getAutoscalingZoom()), lptm.tmAveCharWidth);
 					char [] buffer = text.toCharArray ();
 					RECT rect = new RECT ();
 					int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE;
@@ -780,7 +780,7 @@ public void setAlignment (int alignment) {
 	if ((style & SWT.RIGHT) != 0) newBits |= OS.BS_RIGHT;
 	if (imageList != null) {
 		BUTTON_IMAGELIST buttonImageList = new BUTTON_IMAGELIST ();
-		buttonImageList.himl = imageList.getHandle(getZoom());
+		buttonImageList.himl = imageList.getHandle(getAutoscalingZoom());
 		if (text.length () == 0) {
 			if ((style & SWT.LEFT) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_LEFT;
 			if ((style & SWT.CENTER) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_CENTER;
@@ -1035,7 +1035,7 @@ void updateImageList () {
 		BUTTON_IMAGELIST buttonImageList = new BUTTON_IMAGELIST ();
 		OS.SendMessage (handle, OS.BCM_GETIMAGELIST, 0, buttonImageList);
 		if (imageList != null) imageList.dispose ();
-		imageList = new ImageList (style & SWT.RIGHT_TO_LEFT, getZoom());
+		imageList = new ImageList (style & SWT.RIGHT_TO_LEFT, getAutoscalingZoom());
 		if (OS.IsWindowEnabled (handle)) {
 			imageList.add (image);
 		} else {
@@ -1043,7 +1043,7 @@ void updateImageList () {
 			disabledImage = new Image (display, image, SWT.IMAGE_DISABLE);
 			imageList.add (disabledImage);
 		}
-		buttonImageList.himl = imageList.getHandle(getZoom());
+		buttonImageList.himl = imageList.getHandle(getAutoscalingZoom());
 		OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, buttonImageList);
 		/*
 		* Bug in Windows.  Under certain cirumstances yet to be
@@ -1392,13 +1392,13 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 							GC gc = createNewGC(nmcd.hdc, data);
 
 							int margin = computeLeftMargin();
-							Rectangle imageBounds = Win32DPIUtils.scaleBounds(image.getBounds(), this.getZoom(), 100);
+							Rectangle imageBounds = Win32DPIUtils.scaleBounds(image.getBounds(), this.getAutoscalingZoom(), 100);
 							int imageWidth = imageBounds.width;
 							left += (imageWidth + (isRadioOrCheck() ? 2 * MARGIN : MARGIN)); // for SWT.RIGHT_TO_LEFT right and left are inverted
 
 							int x = margin + (isRadioOrCheck() ? radioOrCheckTextPadding : 3);
 							int y = Math.max (0, (nmcd.bottom - imageBounds.height) / 2);
-							int zoom = getZoom();
+							int zoom = getAutoscalingZoom();
 							gc.drawImage (image, DPIUtil.pixelToPoint(x, zoom), DPIUtil.pixelToPoint(y, zoom));
 							gc.dispose ();
 						}

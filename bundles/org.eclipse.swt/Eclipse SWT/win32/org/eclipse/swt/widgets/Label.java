@@ -148,7 +148,7 @@ Point computeSizeInPixels (Point hintInPoints, int zoom, boolean changed) {
 		return new Point (width, height);
 	}
 	if (isImageMode) {
-		Rectangle rect = Win32DPIUtils.scaleBounds(image.getBounds(), this.getZoom(), 100);
+		Rectangle rect = Win32DPIUtils.scaleBounds(image.getBounds(), this.getAutoscalingZoom(), 100);
 		width += rect.width;
 		height += rect.height;
 	} else {
@@ -554,7 +554,7 @@ void wmDrawChildImage(DRAWITEMSTRUCT struct) {
 	int height = struct.bottom - struct.top;
 	if (width == 0 || height == 0) return;
 
-	int zoom = getZoom();
+	int zoom = getAutoscalingZoom();
 	Rectangle imageRect = Win32DPIUtils.scaleBounds(image.getBounds(), zoom, 100);
 
 	int x = 0;

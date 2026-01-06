@@ -911,7 +911,7 @@ boolean dragDetect (long hwnd, int x, int y, boolean filter, boolean [] detect, 
  */
 public Point getCaretLocation () {
 	checkWidget ();
-	return Win32DPIUtils.pixelToPointAsLocation(getCaretLocationInPixels(), getZoom());
+	return Win32DPIUtils.pixelToPointAsLocation(getCaretLocationInPixels(), getAutoscalingZoom());
 }
 
 Point getCaretLocationInPixels () {
@@ -1079,7 +1079,7 @@ public int getItemCount () {
  */
 public int getItemHeight () {
 	checkWidget ();
-	return DPIUtil.pixelToPoint(getItemHeightInPixels(), getZoom());
+	return DPIUtil.pixelToPoint(getItemHeightInPixels(), getAutoscalingZoom());
 }
 
 int getItemHeightInPixels () {
@@ -1345,7 +1345,7 @@ public String getText () {
  */
 public int getTextHeight () {
 	checkWidget ();
-	return DPIUtil.pixelToPoint(getTextHeightInPixels(), getZoom());
+	return DPIUtil.pixelToPoint(getTextHeightInPixels(), getAutoscalingZoom());
 }
 
 int getTextHeightInPixels () {
