@@ -305,7 +305,7 @@ public String getToolTipText () {
  */
 public int getWidth () {
 	checkWidget ();
-	return DPIUtil.pixelToPoint(getWidthInPixels(), getZoom());
+	return DPIUtil.pixelToPoint(getWidthInPixels(), getAutoscalingZoom());
 }
 
 int getWidthInPixels () {
@@ -401,12 +401,12 @@ public void pack () {
 	long hwnd = parent.handle;
 	int oldWidth = (int)OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
 	TCHAR buffer = new TCHAR (parent.getCodePage (), text, true);
-	int headerWidth = (int) (OS.SendMessage (hwnd, OS.LVM_GETSTRINGWIDTH, 0, buffer) + Win32DPIUtils.pointToPixel(Table.HEADER_MARGIN, getZoom()));
-	if (OS.IsAppThemed ()) headerWidth += Win32DPIUtils.pointToPixel(Table.HEADER_EXTRA, getZoom());
+	int headerWidth = (int) (OS.SendMessage (hwnd, OS.LVM_GETSTRINGWIDTH, 0, buffer) + Win32DPIUtils.pointToPixel(Table.HEADER_MARGIN, getAutoscalingZoom()));
+	if (OS.IsAppThemed ()) headerWidth += Win32DPIUtils.pointToPixel(Table.HEADER_EXTRA, getAutoscalingZoom());
 	boolean hasHeaderImage = false;
 	if (image != null) {
 		hasHeaderImage = true;
-		Rectangle bounds = Win32DPIUtils.pointToPixel(image.getBounds(), getZoom());
+		Rectangle bounds = Win32DPIUtils.pointToPixel(image.getBounds(), getAutoscalingZoom());
 		headerWidth += bounds.width;
 		long hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
 		int margin = (int)OS.SendMessage (hwndHeader, OS.HDM_GETBITMAPMARGIN, 0, 0);
@@ -432,7 +432,7 @@ public void pack () {
 				if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
 				if (isDisposed () || parent.isDisposed ()) break;
 				Rectangle bounds = event.getBounds();
-				columnWidth = Math.max (columnWidth, DPIUtil.pointToPixel(bounds.x + bounds.width, getZoom()) - headerRect.left);
+				columnWidth = Math.max (columnWidth, DPIUtil.pointToPixel(bounds.x + bounds.width, getAutoscalingZoom()) - headerRect.left);
 			}
 		}
 		if (newFont != 0) OS.SelectObject (hDC, oldFont);
@@ -846,7 +846,7 @@ public void setToolTipText (String string) {
  */
 public void setWidth (int width) {
 	checkWidget ();
-	setWidthInPixels(DPIUtil.pointToPixel(width, getZoom()));
+	setWidthInPixels(DPIUtil.pointToPixel(width, getAutoscalingZoom()));
 }
 
 void setWidthInPixels (int width) {
