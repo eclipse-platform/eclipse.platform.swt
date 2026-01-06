@@ -413,7 +413,7 @@ int getMargin (int index) {
 	}
 	if ((style & SWT.FLAT) == 0) {
 		if (!isLastItemOfRow (index)) {
-			margin += DPIUtil.pointToPixel(SEPARATOR_WIDTH, getZoom());
+			margin += DPIUtil.pointToPixel(SEPARATOR_WIDTH, getAutoscalingZoom());
 		}
 	}
 	return margin;
@@ -550,7 +550,7 @@ public Point [] getItemSizes () {
 	Point [] sizes = getItemSizesInPixels();
 	if (sizes != null) {
 		for (int i = 0; i < sizes.length; i++) {
-			sizes[i] = Win32DPIUtils.pixelToPointAsSize(sizes[i], getZoom());
+			sizes[i] = Win32DPIUtils.pixelToPointAsSize(sizes[i], getAutoscalingZoom());
 		}
 	}
 	return sizes;
@@ -810,7 +810,7 @@ public void setItemLayout (int [] itemOrder, int [] wrapIndices, Point [] sizes)
 	if (sizes == null) error (SWT.ERROR_NULL_ARGUMENT);
 	Point [] sizesInPoints = new Point [sizes.length];
 	for (int i = 0; i < sizes.length; i++) {
-		sizesInPoints[i] = Win32DPIUtils.pointToPixelAsSize(sizes[i], getZoom());
+		sizesInPoints[i] = Win32DPIUtils.pointToPixelAsSize(sizes[i], getAutoscalingZoom());
 	}
 	setItemLayoutInPixels (itemOrder, wrapIndices, sizesInPoints);
 }
@@ -1174,7 +1174,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 			if (item != null) {
 				Event event = new Event();
 				event.detail = SWT.ARROW;
-				int zoom = getZoom();
+				int zoom = getAutoscalingZoom();
 				if ((style & SWT.VERTICAL) != 0) {
 					event.setLocation(DPIUtil.pixelToPoint(lpnm.right, zoom), DPIUtil.pixelToPoint(lpnm.top, zoom));
 				} else {
@@ -1227,7 +1227,7 @@ void handleDPIChange(Event event, float scalingFactor) {
 			item.setControl(control);
 		}
 
-		Point preferredControlSize =  item.getControl().computeSizeInPixels(new Point(SWT.DEFAULT, SWT.DEFAULT), getZoom(), true);
+		Point preferredControlSize =  item.getControl().computeSizeInPixels(new Point(SWT.DEFAULT, SWT.DEFAULT), getAutoscalingZoom(), true);
 		int controlWidth = preferredControlSize.x;
 		int controlHeight = preferredControlSize.y;
 		if (((style & SWT.VERTICAL) != 0)) {

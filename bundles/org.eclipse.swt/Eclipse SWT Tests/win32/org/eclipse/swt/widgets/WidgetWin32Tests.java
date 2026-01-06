@@ -40,10 +40,10 @@ class WidgetWin32Tests {
 		button.setText("Widget Test");
 		button.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_CYAN));
 		shell.open();
-		assertEquals("The initial zoom is wrong", zoom, button.getZoom()); // pre-condition
+		assertEquals("The initial zoom is wrong", zoom, button.getAutoscalingZoom()); // pre-condition
 		DPITestUtil.changeDPIZoom(shell, scaledZoom);
 		assertEquals("The Zoom Level should be updated for button on zoom change event on its shell", scaledZoom,
-				button.getZoom());
+				button.getAutoscalingZoom());
 	}
 
 	@Test

@@ -456,9 +456,9 @@ int imageIndex (Image image) {
 	if (image == null) return -1;
 	if (imageList == null) {
 		Rectangle boundsInPoints = image.getBounds();
-		imageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, boundsInPoints.width, boundsInPoints.height, getZoom());
+		imageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, boundsInPoints.width, boundsInPoints.height, getAutoscalingZoom());
 		int index = imageList.add (image);
-		long hImageList = imageList.getHandle(getZoom());
+		long hImageList = imageList.getHandle(getAutoscalingZoom());
 		OS.SendMessage (handle, OS.TCM_SETIMAGELIST, 0, hImageList);
 		return index;
 	}
@@ -838,8 +838,8 @@ void updateOrientation () {
 	if (imageList != null) {
 		Point sizeInPoints = imageList.getImageSize();
 		display.releaseImageList (imageList);
-		imageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, sizeInPoints.x, sizeInPoints.y, this.getZoom());
-		long hImageList = imageList.getHandle(getZoom());
+		imageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, sizeInPoints.x, sizeInPoints.y, this.getAutoscalingZoom());
+		long hImageList = imageList.getHandle(getAutoscalingZoom());
 		OS.SendMessage (handle, OS.TCM_SETIMAGELIST, 0, hImageList);
 		TCITEM tcItem = new TCITEM ();
 		tcItem.mask = OS.TCIF_IMAGE;

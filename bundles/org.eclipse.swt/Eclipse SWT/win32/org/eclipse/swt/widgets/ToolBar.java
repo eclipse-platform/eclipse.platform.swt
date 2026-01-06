@@ -571,7 +571,7 @@ public ToolItem getItem (int index) {
 public ToolItem getItem (Point point) {
 	checkWidget ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	return getItemInPixels(Win32DPIUtils.pointToPixelAsLocation(point, getZoom()));
+	return getItemInPixels(Win32DPIUtils.pointToPixelAsLocation(point, getAutoscalingZoom()));
 }
 
 ToolItem getItemInPixels (Point point) {
@@ -1052,7 +1052,7 @@ void setDisabledImageList (ImageList imageList) {
 	long hImageList = 0;
 	if ((disabledImageList = imageList) != null) {
 		hImageList = OS.SendMessage(handle, OS.TB_GETDISABLEDIMAGELIST, 0, 0);
-		long newImageList = disabledImageList.getHandle(getZoom());
+		long newImageList = disabledImageList.getHandle(getAutoscalingZoom());
 		if (hImageList == newImageList) return;
 		hImageList = newImageList;
 	}
@@ -1091,7 +1091,7 @@ void setHotImageList (ImageList imageList) {
 	long hImageList = 0;
 	if ((hotImageList = imageList) != null) {
 		hImageList = OS.SendMessage(handle, OS.TB_GETHOTIMAGELIST, 0, 0);
-		long newImageList = hotImageList.getHandle(getZoom());
+		long newImageList = hotImageList.getHandle(getAutoscalingZoom());
 		if (hImageList == newImageList) return;
 		hImageList = newImageList;
 	}
@@ -1104,7 +1104,7 @@ void setImageList (ImageList imageList) {
 	long hImageList = 0;
 	if ((this.imageList = imageList) != null) {
 		hImageList = OS.SendMessage(handle, OS.TB_GETIMAGELIST, 0, 0);
-		long newImageList = imageList.getHandle(getZoom());
+		long newImageList = imageList.getHandle(getAutoscalingZoom());
 		if (hImageList == newImageList) return;
 		hImageList = newImageList;
 	}
@@ -1274,9 +1274,9 @@ void updateOrientation () {
 	super.updateOrientation ();
 	if (imageList != null) {
 		Point sizeInPoints = imageList.getImageSize();
-		ImageList newImageList = display.getImageListToolBar (style & SWT.RIGHT_TO_LEFT, sizeInPoints.x, sizeInPoints.y, getZoom());
-		ImageList newHotImageList = display.getImageListToolBarHot (style & SWT.RIGHT_TO_LEFT, sizeInPoints.x, sizeInPoints.y, getZoom());
-		ImageList newDisabledImageList = display.getImageListToolBarDisabled (style & SWT.RIGHT_TO_LEFT, sizeInPoints.x, sizeInPoints.y, getZoom());
+		ImageList newImageList = display.getImageListToolBar (style & SWT.RIGHT_TO_LEFT, sizeInPoints.x, sizeInPoints.y, getAutoscalingZoom());
+		ImageList newHotImageList = display.getImageListToolBarHot (style & SWT.RIGHT_TO_LEFT, sizeInPoints.x, sizeInPoints.y, getAutoscalingZoom());
+		ImageList newDisabledImageList = display.getImageListToolBarDisabled (style & SWT.RIGHT_TO_LEFT, sizeInPoints.x, sizeInPoints.y, getAutoscalingZoom());
 		TBBUTTONINFO info = new TBBUTTONINFO ();
 		info.cbSize = TBBUTTONINFO.sizeof;
 		info.dwMask = OS.TBIF_IMAGE;
@@ -1302,9 +1302,9 @@ void updateOrientation () {
 		display.releaseToolImageList (imageList);
 		display.releaseToolHotImageList (hotImageList);
 		display.releaseToolDisabledImageList (disabledImageList);
-		OS.SendMessage (handle, OS.TB_SETIMAGELIST, 0, newImageList.getHandle(getZoom()));
-		OS.SendMessage (handle, OS.TB_SETHOTIMAGELIST, 0, newHotImageList.getHandle(getZoom()));
-		OS.SendMessage (handle, OS.TB_SETDISABLEDIMAGELIST, 0, newDisabledImageList.getHandle(getZoom()));
+		OS.SendMessage (handle, OS.TB_SETIMAGELIST, 0, newImageList.getHandle(getAutoscalingZoom()));
+		OS.SendMessage (handle, OS.TB_SETHOTIMAGELIST, 0, newHotImageList.getHandle(getAutoscalingZoom()));
+		OS.SendMessage (handle, OS.TB_SETDISABLEDIMAGELIST, 0, newDisabledImageList.getHandle(getAutoscalingZoom()));
 		imageList = newImageList;
 		hotImageList = newHotImageList;
 		disabledImageList = newDisabledImageList;
@@ -1651,7 +1651,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 				int index = (int)OS.SendMessage (handle, OS.TB_COMMANDTOINDEX, lpnmtb.iItem, 0);
 				RECT rect = new RECT ();
 				OS.SendMessage (handle, OS.TB_GETITEMRECT, index, rect);
-				int zoom = getZoom();
+				int zoom = getAutoscalingZoom();
 				event.setLocation(DPIUtil.pixelToPoint(rect.left, zoom), DPIUtil.pixelToPoint(rect.bottom, zoom));
 				child.sendSelectionEvent (SWT.Selection, event, false);
 			}

@@ -181,7 +181,7 @@ private void drawChevron (long hDC, RECT rect) {
 void drawItem (GC gc, long hTheme, RECT clipRect, boolean drawFocus) {
 	long hDC = gc.handle;
 	int headerHeightinPixels = getHeaderHeightInPixels();
-	int zoom = getZoom();
+	int zoom = getAutoscalingZoom();
 	int imageHeightInPixels = DPIUtil.pointToPixel(imageHeight, zoom);
 	int imageWidthInPixels = DPIUtil.pointToPixel(imageWidth, zoom);
 
@@ -302,12 +302,12 @@ public boolean getExpanded () {
  */
 public int getHeaderHeight () {
 	checkWidget ();
-	return DPIUtil.pixelToPoint(getHeaderHeightInPixels(), getZoom());
+	return DPIUtil.pixelToPoint(getHeaderHeightInPixels(), getAutoscalingZoom());
 }
 
 int getHeaderHeightInPixels () {
 	int headerHeightInPixels = parent.getBandHeight();
-	int imageHeightInPixels = DPIUtil.pointToPixel(imageHeight, getZoom());
+	int imageHeightInPixels = DPIUtil.pointToPixel(imageHeight, getAutoscalingZoom());
 	int imageHeaderDiff = headerHeightInPixels - imageHeightInPixels;
 	if (imageHeaderDiff < IMAGE_MARGIN) {
 		headerHeightInPixels = imageHeightInPixels + IMAGE_MARGIN;
@@ -327,7 +327,7 @@ int getHeaderHeightInPixels () {
  */
 public int getHeight () {
 	checkWidget ();
-	return DPIUtil.pixelToPoint(getHeightInPixels(), getZoom());
+	return DPIUtil.pixelToPoint(getHeightInPixels(), getAutoscalingZoom());
 }
 
 int getHeightInPixels () {
@@ -375,7 +375,7 @@ boolean isHover (int x, int y) {
 void redraw (boolean all) {
 	long parentHandle = parent.handle;
 	int headerHeightInPixels = getHeaderHeightInPixels();
-	int zoom = getZoom();
+	int zoom = getAutoscalingZoom();
 	int imageHeightInPixels = DPIUtil.pointToPixel(imageHeight, zoom);
 	int imageWidthInPixels = DPIUtil.pointToPixel(imageWidth, zoom);
 	RECT rect = new RECT ();
@@ -492,7 +492,7 @@ public void setExpanded (boolean expanded) {
  */
 public void setHeight (int height) {
 	checkWidget ();
-	setHeightInPixels(DPIUtil.pointToPixel(height, getZoom()));
+	setHeightInPixels(DPIUtil.pointToPixel(height, getAutoscalingZoom()));
 }
 
 void setHeightInPixels (int height) {

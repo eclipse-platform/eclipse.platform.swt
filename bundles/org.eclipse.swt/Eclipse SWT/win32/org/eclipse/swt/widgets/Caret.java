@@ -119,12 +119,12 @@ long defaultFont () {
  */
 public Rectangle getBounds () {
 	checkWidget();
-	return Win32DPIUtils.pixelToPoint(getBoundsInPixels(), getZoom());
+	return Win32DPIUtils.pixelToPoint(getBoundsInPixels(), getAutoscalingZoom());
 }
 
 Rectangle getBoundsInPixels () {
 	if (image != null) {
-		Rectangle rect = Win32DPIUtils.pointToPixel(image.getBounds(), getZoom());
+		Rectangle rect = Win32DPIUtils.pointToPixel(image.getBounds(), getAutoscalingZoom());
 		return new Rectangle (getXInPixels(), getYInPixels(), rect.width, rect.height);
 	}
 	if (width == 0) {
@@ -223,12 +223,12 @@ public Canvas getParent () {
  */
 public Point getSize () {
 	checkWidget();
-	return Win32DPIUtils.pixelToPointAsSize(getSizeInPixels(), getZoom());
+	return Win32DPIUtils.pixelToPointAsSize(getSizeInPixels(), getAutoscalingZoom());
 }
 
 Point getSizeInPixels () {
 	if (image != null) {
-		Rectangle rect = Win32DPIUtils.pointToPixel(image.getBounds(), getZoom());
+		Rectangle rect = Win32DPIUtils.pointToPixel(image.getBounds(), getAutoscalingZoom());
 		return new Point (rect.width, rect.height);
 	}
 	if (width == 0) {
@@ -241,19 +241,19 @@ Point getSizeInPixels () {
 }
 
 private int getWidthInPixels() {
-	return DPIUtil.pointToPixel(width, getZoom());
+	return DPIUtil.pointToPixel(width, getAutoscalingZoom());
 }
 
 private int getHeightInPixels() {
-	return DPIUtil.pointToPixel(height, getZoom());
+	return DPIUtil.pointToPixel(height, getAutoscalingZoom());
 }
 
 private int getXInPixels() {
-	return DPIUtil.pointToPixel(x, getZoom());
+	return DPIUtil.pointToPixel(x, getAutoscalingZoom());
 }
 
 private int getYInPixels() {
-	return DPIUtil.pointToPixel(y, getZoom());
+	return DPIUtil.pointToPixel(y, getAutoscalingZoom());
 }
 
 /**
@@ -373,7 +373,7 @@ void resize () {
 	resized = false;
 	long hwnd = parent.handle;
 	OS.DestroyCaret ();
-	long hBitmap = image != null ? Image.win32_getHandle(image, getZoom()) : 0;
+	long hBitmap = image != null ? Image.win32_getHandle(image, getAutoscalingZoom()) : 0;
 	int widthInPixels = this.getWidthInPixels();
 	if (image == null && widthInPixels == 0) {
 		OptionalInt systemCaretWidthInPixelsForCurrentMonitor = getSystemCaretWidthInPixelsForCurrentMonitor();
@@ -452,7 +452,7 @@ public void setBounds (Rectangle rect) {
 void setFocus () {
 	long hwnd = parent.handle;
 	long hBitmap = 0;
-	if (image != null) hBitmap = Image.win32_getHandle(image, getZoom());
+	if (image != null) hBitmap = Image.win32_getHandle(image, getAutoscalingZoom());
 	int widthInPixels = this.getWidthInPixels();
 	if (image == null && widthInPixels == 0) {
 		OptionalInt systemCaretWidthInPixelsForCurrentMonitor = getSystemCaretWidthInPixelsForCurrentMonitor();
