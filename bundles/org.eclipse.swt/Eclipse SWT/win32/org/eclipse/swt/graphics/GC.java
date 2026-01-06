@@ -1214,13 +1214,29 @@ private class DrawScaledImageOperation extends ImageOperation {
 	}
 }
 
+private float calculateTransformationScale() {
+	Transform current = new Transform(device);
+	getTransform(current);
+	float[] m = new float[6];
+	current.getElements(m);
+	float scaleWidth = (float) Math.hypot(m[0], m[2]);
+	float scaleHeight = (float) Math.hypot(m[1], m[3]);
+	current.dispose();
+	return Math.max(scaleWidth, scaleHeight);
+}
+
 private void drawImage(Image image, int destX, int destY, int destWidth, int destHeight, int imageZoom) {
-	Rectangle destPixels= Win32DPIUtils.pointToPixel(drawable, new Rectangle(destX , destY, destWidth , destHeight),
+	float transformationScale = calculateTransformationScale();
+	int scaledImageZoomWithTransform = Math.round(transformationScale * imageZoom);
+	Rectangle destPixels = Win32DPIUtils.pointToPixel(drawable, new Rectangle(destX , destY, destWidth , destHeight),
 			imageZoom);
+	Rectangle destPixelsScaledWithTransform = Win32DPIUtils.pointToPixel(drawable, new Rectangle(destX , destY, destWidth , destHeight),
+			scaledImageZoomWithTransform);
+
 	image.executeOnImageHandleAtBestFittingSize(tempHandle -> {
 		drawImage(image, 0, 0, tempHandle.width(), tempHandle.height(), destPixels.x, destPixels.y,
 				destPixels.width, destPixels.height, false, tempHandle);
-	}, destPixels.width, destPixels.height);
+	}, destPixelsScaledWithTransform.width, destPixelsScaledWithTransform.height);
 }
 
 private void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY,
@@ -1230,6 +1246,9 @@ private void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHei
 	Rectangle fullImageBounds = image.getBounds();
 	Rectangle fullImageBoundsPixels = Win32DPIUtils.pointToPixel(drawable, fullImageBounds, scaledImageZoom);
 	Rectangle src =  new Rectangle(srcX, srcY, srcWidth, srcHeight);
+	float transformationScale = calculateTransformationScale();
+	int scaledImageZoomWithTransform = Math.round(transformationScale * scaledImageZoom);
+	Rectangle fullImageBoundsScaledWithTransform = Win32DPIUtils.pointToPixel(drawable, fullImageBounds, scaledImageZoomWithTransform);
 	if (scaledImageZoom != 100) {
 		/*
 		 * This is a HACK! Due to rounding errors at fractional scale factors,
@@ -1250,7 +1269,7 @@ private void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHei
 		Rectangle newSrcPixels = computeSourceRectangle(tempHandle, fullImageBounds, fullImageBoundsPixels, src, srcPixels);
 		drawImage(image, newSrcPixels.x, newSrcPixels.y, newSrcPixels.width, newSrcPixels.height, destPixels.x, destPixels.y, destPixels.width,
 				destPixels.height, false, tempHandle);
-	}, fullImageBoundsPixels.width, fullImageBoundsPixels.height);
+	}, fullImageBoundsScaledWithTransform.width, fullImageBoundsScaledWithTransform.height);
 }
 
 private Rectangle computeSourceRectangle(ImageHandle imageHandle, Rectangle fullImageBounds, Rectangle fullImageBoundsPixels, Rectangle src, Rectangle srcPixels) {
