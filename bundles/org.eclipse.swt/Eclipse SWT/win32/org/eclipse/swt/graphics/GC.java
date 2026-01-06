@@ -521,6 +521,20 @@ private abstract class ImageOperation extends Operation {
 		image.removeOnDisposeListener(disposeCallback);
 		super.disposeAll();
 	}
+
+	protected float calculateTransformationScale() {
+		Transform current = new Transform(device);
+		getTransform(current);
+		float[] m = new float[6];
+		current.getElements(m);
+		// this calculates the effective length in x and y
+		// direction without being affected by the rotation
+		// of the transformation
+		float scaleWidth = (float) Math.hypot(m[0], m[2]);
+		float scaleHeight = (float) Math.hypot(m[1], m[3]);
+		current.dispose();
+		return Math.max(scaleWidth, scaleHeight);
+	}
 }
 
 private class CopyAreaToImageOperation extends ImageOperation {
@@ -1181,11 +1195,13 @@ private class DrawScalingImageToImageOperation extends ImageOperation {
 	private void draw(Image image, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight) {
 		int gcZoom = getZoom();
 		int requestedImageZoom = calculateZoomForImage(gcZoom, source.width, source.height, destination.width, destination.height);
+		float transformationScale = calculateTransformationScale();
+		int scaledImageZoomWithTransform = Math.round(transformationScale * requestedImageZoom);
 
 		Rectangle src =  new Rectangle(srcX, srcY, srcWidth, srcHeight);
 		Rectangle destPixels = Win32DPIUtils.pointToPixel(drawable, new Rectangle(destX, destY, destWidth, destHeight), gcZoom);
 		Rectangle fullImageBounds = image.getBounds();
-		Rectangle requestedFullImageBoundsPixels = Win32DPIUtils.pointToPixel(drawable, fullImageBounds, requestedImageZoom);
+		Rectangle requestedFullImageBoundsPixels = Win32DPIUtils.pointToPixel(drawable, fullImageBounds, scaledImageZoomWithTransform);
 
 		image.executeOnImageHandleAtBestFittingSize((tempHandle) -> {
 			Rectangle srcPixels = computeSourceRectangle(tempHandle, fullImageBounds, src);
@@ -1252,18 +1268,22 @@ private class DrawScaledImageOperation extends ImageOperation {
 
 	@Override
 	void apply() {
-		int gcZoom = getZoom();
-		drawImage(getImage(), destination.x, destination.y, destination.width, destination.height, gcZoom);
+		draw(getImage(), destination.x, destination.y, destination.width, destination.height);
 	}
-}
 
-private void drawImage(Image image, int destX, int destY, int destWidth, int destHeight, int imageZoom) {
-	Rectangle destPixels = Win32DPIUtils.pointToPixel(drawable, new Rectangle(destX, destY, destWidth, destHeight),
-			imageZoom);
-	image.executeOnImageHandleAtBestFittingSize(tempHandle -> {
-		drawImage(image, 0, 0, tempHandle.width(), tempHandle.height(), destPixels.x, destPixels.y,
-				destPixels.width, destPixels.height, false, tempHandle);
-	}, destPixels.width, destPixels.height);
+	private void draw(Image image, int destX, int destY, int destWidth, int destHeight) {
+		int gcZoom = getZoom();
+		float transformationScale = calculateTransformationScale();
+		int scaledImageZoomWithTransform = Math.round(transformationScale * gcZoom);
+		Rectangle destPixels = Win32DPIUtils.pointToPixel(drawable, new Rectangle(destX , destY, destWidth , destHeight), gcZoom);
+		Rectangle destPixelsScaledWithTransform = Win32DPIUtils.pointToPixel(drawable, new Rectangle(destX , destY, destWidth , destHeight),
+				scaledImageZoomWithTransform);
+
+		image.executeOnImageHandleAtBestFittingSize(tempHandle -> {
+			drawImage(image, 0, 0, tempHandle.width(), tempHandle.height(), destPixels.x, destPixels.y,
+					destPixels.width, destPixels.height, false, tempHandle);
+		}, destPixelsScaledWithTransform.width, destPixelsScaledWithTransform.height);
+	}
 }
 
 private class DrawImageToImageOperation extends ImageOperation {
