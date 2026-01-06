@@ -162,6 +162,11 @@ public final class Image extends Resource implements Drawable {
 	private ImageGcDrawer imageGcDrawer;
 
 	/**
+	 * Byte array to store input stream data to draw on various Zoom levels
+	 */
+	private byte[] inputStreamData;
+
+	/**
 	 * Style flag used to differentiate normal, gray-scale and disabled images based
 	 * on image data providers. Without this, a normal and a disabled image of the
 	 * same image data provider would be considered equal.
@@ -555,10 +560,13 @@ public Image(Device device, ImageData source, ImageData mask) {
 public Image(Device device, InputStream stream) {
 	super(device);
 	currentDeviceZoom = DPIUtil.getDeviceZoom();
-	ElementAtZoom<ImageData> image = ImageDataLoader.loadByZoom(stream, FileFormat.DEFAULT_ZOOM, currentDeviceZoom);
-	ImageData data = DPIUtil.scaleImageData(device, image, currentDeviceZoom);
-	init(data);
-	init();
+	try {
+		this.inputStreamData = stream.readAllBytes();
+		initDataFromInputStream(currentDeviceZoom);
+		init();
+	} catch (IOException e) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT, e);
+	}
 }
 
 /**
@@ -763,6 +771,15 @@ boolean refreshImageForZoom () {
 			refreshed = true;
 			currentDeviceZoom = deviceZoomLevel;
 		}
+	} else if (inputStreamData != null) {
+		int deviceZoomLevel = deviceZoom;
+		if (deviceZoomLevel != currentDeviceZoom) {
+			destroy();
+			initDataFromInputStream(deviceZoomLevel);
+			init();
+			refreshed = true;
+			currentDeviceZoom = deviceZoomLevel;
+		}
 	}
 	return refreshed;
 }
@@ -800,6 +817,12 @@ private void initFromImageDataProvider(int zoom) {
 	ElementAtZoom<ImageData> data = DPIUtil.validateAndGetImageDataAtZoom (imageDataProvider, zoom);
 	ImageData resizedData = DPIUtil.scaleImageData (device, data.element(), zoom, data.zoom());
 	init(resizedData);
+}
+
+private void initDataFromInputStream(int zoom) {
+	ElementAtZoom<ImageData> image = ImageDataLoader.loadByZoom(new ByteArrayInputStream(inputStreamData), FileFormat.DEFAULT_ZOOM, zoom);
+	ImageData data = DPIUtil.scaleImageData(device, image, zoom);
+	init(data);
 }
 
 void createFromPixbuf(int type, long pixbuf) {
@@ -986,6 +1009,12 @@ private class CachedImageAtSize {
 			String fileName = DPIUtil.validateAndGetImagePathAtZoom(imageFileNameProvider, 100).element();
 			if (ImageDataLoader.isDynamicallySizable(fileName)) {
 				ImageData imageDataAtSize = ImageDataLoader.loadBySize(fileName, targetWidth, targetHeight);
+				return Optional.of(imageDataAtSize);
+			}
+		}
+		if (inputStreamData != null) {
+			if (ImageDataLoader.isDynamicallySizable(new ByteArrayInputStream(inputStreamData))) {
+				ImageData imageDataAtSize = ImageDataLoader.loadBySize(new ByteArrayInputStream(inputStreamData), targetWidth, targetHeight);
 				return Optional.of(imageDataAtSize);
 			}
 		}
