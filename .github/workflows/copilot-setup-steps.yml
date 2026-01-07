@@ -30,7 +30,7 @@ jobs:
       - name: Set up Maven
         uses: stCarolas/setup-maven@v5
         with:
-          maven-version: '3.9.11'
+          maven-version: '3.9.12'
       - name: Prepare Linux Build
         run: |
           sudo apt-get update -qq 
