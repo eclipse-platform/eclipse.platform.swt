@@ -1236,7 +1236,7 @@ private void drawImage(Image image, int destX, int destY, int destWidth, int des
 	Rectangle destPixels = Win32DPIUtils.pointToPixel(drawable, new Rectangle(destX, destY, destWidth, destHeight),
 			imageZoom);
 	image.executeOnImageHandleAtBestFittingSize(tempHandle -> {
-		drawImage(image, 0, 0, tempHandle.getWidth(), tempHandle.getHeight(), destPixels.x, destPixels.y,
+		drawImage(image, 0, 0, tempHandle.width(), tempHandle.height(), destPixels.x, destPixels.y,
 				destPixels.width, destPixels.height, false, tempHandle);
 	}, destPixels.width, destPixels.height);
 }
@@ -1352,7 +1352,7 @@ private void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int src
 					simple);
 			break;
 		case SWT.ICON:
-			drawIcon(tempImageHandle.getHandle(), srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple);
+			drawIcon(tempImageHandle.handle(), srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple);
 			break;
 	}
 }
@@ -1493,7 +1493,7 @@ private void drawIcon(long imageHandle, int srcX, int srcY, int srcWidth, int sr
 
 private void drawBitmap(Image srcImage, ImageHandle imageHandle, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple) {
 	BITMAP bm = new BITMAP();
-	long handle = imageHandle.getHandle();
+	long handle = imageHandle.handle();
 	OS.GetObject(handle, BITMAP.sizeof, bm);
 	int imgWidth = bm.bmWidth;
 	int imgHeight = bm.bmHeight;
@@ -1527,7 +1527,7 @@ private void drawBitmap(Image srcImage, ImageHandle imageHandle, int srcX, int s
 	int depth = bm.bmPlanes * bm.bmBitsPixel;
 	if (isDib && depth == 32) {
 		drawBitmapAlpha(handle, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple);
-	} else if (imageHandle.transparentPixel != -1) {
+	} else if (imageHandle.transparentPixel() != -1) {
 		drawBitmapTransparent(imageHandle, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple, bm, imgWidth, imgHeight);
 	} else {
 		drawBitmapColor(handle, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple);
@@ -1792,11 +1792,11 @@ private void drawBitmapTransparent(ImageHandle imageHandle, int srcX, int srcY, 
 
 	/* Find the RGB values for the transparent pixel. */
 	boolean isDib = bm.bmBits != 0;
-	long hBitmap = imageHandle.getHandle();
+	long hBitmap = imageHandle.handle();
 	long srcHdc = OS.CreateCompatibleDC(handle);
 	long oldSrcBitmap = OS.SelectObject(srcHdc, hBitmap);
 	byte[] originalColors = null;
-	int transparentColor = imageHandle.transparentColor;
+	int transparentColor = imageHandle.transparentColor();
 	if (transparentColor == -1) {
 		int transBlue = 0, transGreen = 0, transRed = 0;
 		boolean fixPalette = false;
@@ -1805,7 +1805,7 @@ private void drawBitmapTransparent(ImageHandle imageHandle, int srcX, int srcY, 
 				int maxColors = 1 << bm.bmBitsPixel;
 				byte[] oldColors = new byte[maxColors * 4];
 				OS.GetDIBColorTable(srcHdc, 0, maxColors, oldColors);
-				int offset = imageHandle.transparentPixel * 4;
+				int offset = imageHandle.transparentPixel() * 4;
 				for (int i = 0; i < oldColors.length; i += 4) {
 					if (i != offset) {
 						if (oldColors[offset] == oldColors[i] && oldColors[offset+1] == oldColors[i+1] && oldColors[offset+2] == oldColors[i+2]) {
@@ -1837,15 +1837,15 @@ private void drawBitmapTransparent(ImageHandle imageHandle, int srcX, int srcY, 
 				bmiHeader.biBitCount = bm.bmBitsPixel;
 				byte[] bmi = new byte[BITMAPINFOHEADER.sizeof + numColors * 4];
 				OS.MoveMemory(bmi, bmiHeader, BITMAPINFOHEADER.sizeof);
-				OS.GetDIBits(srcHdc, imageHandle.getHandle(), 0, 0, null, bmi, OS.DIB_RGB_COLORS);
-				int offset = BITMAPINFOHEADER.sizeof + 4 * imageHandle.transparentPixel;
+				OS.GetDIBits(srcHdc, imageHandle.handle(), 0, 0, null, bmi, OS.DIB_RGB_COLORS);
+				int offset = BITMAPINFOHEADER.sizeof + 4 * imageHandle.transparentPixel();
 				transRed = bmi[offset + 2] & 0xFF;
 				transGreen = bmi[offset + 1] & 0xFF;
 				transBlue = bmi[offset] & 0xFF;
 			}
 		} else {
 			/* Direct color image */
-			int pixel = imageHandle.transparentPixel;
+			int pixel = imageHandle.transparentPixel();
 			switch (bm.bmBitsPixel) {
 				case 16:
 					transBlue = (pixel & 0x1F) << 3;
@@ -1865,7 +1865,7 @@ private void drawBitmapTransparent(ImageHandle imageHandle, int srcX, int srcY, 
 			}
 		}
 		transparentColor = transBlue << 16 | transGreen << 8 | transRed;
-		if (!fixPalette) imageHandle.transparentColor = transparentColor;
+		if (!fixPalette) imageHandle.setTransparentColor(transparentColor);
 	}
 
 	if (originalColors == null) {
@@ -1910,7 +1910,7 @@ private void drawBitmapTransparent(ImageHandle imageHandle, int srcX, int srcY, 
 		OS.DeleteObject(maskBitmap);
 	}
 	OS.SelectObject(srcHdc, oldSrcBitmap);
-	if (hBitmap != imageHandle.getHandle()) OS.DeleteObject(hBitmap);
+	if (hBitmap != imageHandle.handle()) OS.DeleteObject(hBitmap);
 	OS.DeleteDC(srcHdc);
 }
 
@@ -4495,7 +4495,7 @@ private void init(Drawable drawable, GCData data, long hDC, ImageHandle imageHan
 	}
 	Image image = data.image;
 	if (imageHandle != null) {
-		data.hNullBitmap = OS.SelectObject(hDC, imageHandle.getHandle());
+		data.hNullBitmap = OS.SelectObject(hDC, imageHandle.handle());
 		image.memGC = this;
 	}
 	int layout = data.layout;

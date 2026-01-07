@@ -187,7 +187,7 @@ public final class Image extends Resource implements Drawable {
 				if (filter.test(zoomToHandle.getKey())) {
 					DestroyableImageHandle imageHandle = zoomToHandle.getValue();
 					it.remove();
-					zoomLevelToImageHandle.remove(imageHandle.zoom, imageHandle);
+					zoomLevelToImageHandle.remove(imageHandle.zoom(), imageHandle);
 					imageHandle.destroy();
 				}
 			}
@@ -232,7 +232,7 @@ public final class Image extends Resource implements Drawable {
 				return false;
 			}
 			return (requestedHeight == height && requestedWidth == width)
-					|| (handleContainer.getHeight() == height && handleContainer.getHeight() == width);
+					|| (handleContainer.height() == height && handleContainer.height() == width);
 		}
 
 		private Optional<ImageHandle> createHandleAtExactSize(int width, int height) {
@@ -363,8 +363,8 @@ public Image(Device device, Image srcImage, int flag) {
 			switch (type) {
 				case SWT.BITMAP:
 					for (ImageHandle imageHandle : srcImage.imageHandleManager.getAllImageHandles()) {
-						Rectangle rect = imageHandle.getBounds();
-						long srcImageHandle = imageHandle.handle;
+						Rectangle rect = imageHandle.bounds();
+						long srcImageHandle = imageHandle.handle();
 						/* Get the HDC for the device */
 						long hDC = device.internal_new_GC(null);
 
@@ -374,11 +374,11 @@ public Image(Device device, Image srcImage, int flag) {
 						long hOldSrc = OS.SelectObject(hdcSource, srcImageHandle);
 						BITMAP bm = new BITMAP();
 						OS.GetObject(srcImageHandle, BITMAP.sizeof, bm);
-						imageMetadata = imageHandleManager.getOrCreate(imageHandle.zoom,
+						imageMetadata = imageHandleManager.getOrCreate(imageHandle.zoom(),
 								() -> new DestroyableImageHandle(
 										OS.CreateCompatibleBitmap(hdcSource, rect.width,
 												bm.bmBits != 0 ? -rect.height : rect.height),
-										imageHandle.zoom, imageHandle.transparentPixel));
+										imageHandle.zoom(), imageHandle.transparentPixel()));
 						if (imageMetadata.handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 						long hOldDest = OS.SelectObject(hdcDest, imageMetadata.handle);
 						OS.BitBlt(hdcDest, 0, 0, rect.width, rect.height, hdcSource, 0, 0, OS.SRCCOPY);
@@ -393,11 +393,11 @@ public Image(Device device, Image srcImage, int flag) {
 					break;
 				case SWT.ICON:
 					for (ImageHandle imageHandle : srcImage.imageHandleManager.getAllImageHandles()) {
-						Rectangle rect = imageHandle.getBounds();
-						imageMetadata = imageHandleManager.getOrCreate(imageHandle.zoom,
+						Rectangle rect = imageHandle.bounds();
+						imageMetadata = imageHandleManager.getOrCreate(imageHandle.zoom(),
 								() -> new DestroyableImageHandle(
-										OS.CopyImage(imageHandle.handle, OS.IMAGE_ICON, rect.width, rect.height, 0),
-										imageHandle.zoom, imageHandle.transparentPixel));
+										OS.CopyImage(imageHandle.handle(), OS.IMAGE_ICON, rect.width, rect.height, 0),
+										imageHandle.zoom(), imageHandle.transparentPixel()));
 						if (imageMetadata.handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 					}
 					break;
@@ -408,19 +408,19 @@ public Image(Device device, Image srcImage, int flag) {
 		}
 		case SWT.IMAGE_DISABLE: {
 			for (ImageHandle imageHandle : srcImage.imageHandleManager.getAllImageHandles()) {
-				Rectangle rect = imageHandle.getBounds();
-				ImageData data = srcImage.getImageData(imageHandle.zoom);
+				Rectangle rect = imageHandle.bounds();
+				ImageData data = srcImage.getImageData(imageHandle.zoom());
 				ImageData newData = applyDisableImageData(data, rect.height, rect.width);
-				imageHandleManager.getOrCreate(imageHandle.zoom, () -> init (newData, imageHandle.zoom));
+				imageHandleManager.getOrCreate(imageHandle.zoom(), () -> init (newData, imageHandle.zoom()));
 			}
 			break;
 		}
 		case SWT.IMAGE_GRAY: {
 			for (ImageHandle imageHandle : srcImage.imageHandleManager.getAllImageHandles()) {
-				Rectangle rect = imageHandle.getBounds();
-				ImageData data = srcImage.getImageData(imageHandle.zoom);
+				Rectangle rect = imageHandle.bounds();
+				ImageData data = srcImage.getImageData(imageHandle.zoom());
 				ImageData newData = applyGrayImageData(data, rect.height, rect.width);
-				imageHandleManager.getOrCreate(imageHandle.zoom, () -> init (newData, imageHandle.zoom));
+				imageHandleManager.getOrCreate(imageHandle.zoom(), () -> init (newData, imageHandle.zoom()));
 			}
 			break;
 		}
@@ -934,7 +934,7 @@ private InternalImageHandle getImageMetadata(ZoomContext zoomContext) {
  * @noreference This method is not intended to be referenced by clients.
  */
 public static long win32_getHandle (Image image, int zoom) {
-	return image.getHandle(zoom, zoom).handle;
+	return image.getHandle(zoom, zoom).handle();
 }
 
 ImageHandle getHandle (int targetZoom, int nativeZoom) {
@@ -982,8 +982,8 @@ long [] createGdipImage(Integer zoom) {
 }
 
 long[] createGdipImageFromHandle(ImageHandle imageHandle) {
-	long handle = imageHandle.getHandle();
-	int transparentPixel = imageHandle.transparentPixel;
+	long handle = imageHandle.handle();
+	int transparentPixel = imageHandle.transparentPixel();
 	switch (type) {
 		case SWT.BITMAP: {
 			BITMAP bm = new BITMAP();
@@ -1237,13 +1237,13 @@ public Color getBackground() {
 		return Color.win32_new(device, (backgroundColor.blue << 16) | (backgroundColor.green << 8) | backgroundColor.red);
 	}
 	ImageHandle imageHandle = this.getHandle(100, 100);
-	if (imageHandle.transparentPixel == -1) {
+	if (imageHandle.transparentPixel() == -1) {
 		return null;
 	}
 	/* Get the HDC for the device */
 	long hDC = device.internal_new_GC(null);
-	long handle = imageHandle.handle;
-	int transparentPixel = imageHandle.transparentPixel;
+	long handle = imageHandle.handle();
+	int transparentPixel = imageHandle.transparentPixel();
 	/* Compute the background color */
 	BITMAP bm = new BITMAP();
 	OS.GetObject(handle, BITMAP.sizeof, bm);
@@ -1306,8 +1306,8 @@ Rectangle getBounds(int zoom) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (imageHandleManager.contains(zoom)) {
 		ImageHandle imageMetadata = imageHandleManager.get(zoom);
-		Rectangle rectangle = new Rectangle(0, 0, imageMetadata.width, imageMetadata.height);
-		return Win32DPIUtils.scaleBounds(rectangle, zoom, imageMetadata.zoom);
+		Rectangle rectangle = new Rectangle(0, 0, imageMetadata.width(), imageMetadata.height());
+		return Win32DPIUtils.scaleBounds(rectangle, zoom, imageMetadata.zoom());
 	}
 	return this.imageProvider.getBounds(zoom);
 }
@@ -1329,7 +1329,7 @@ Rectangle getBounds(int zoom) {
  */
 @Deprecated(since = "2025-09", forRemoval = true)
 public Rectangle getBoundsInPixels() {
-	return applyUsingAnyHandle(ImageHandle::getBounds);
+	return applyUsingAnyHandle(ImageHandle::bounds);
 }
 
 /**
@@ -2653,7 +2653,7 @@ private class ImageFileNameProviderWrapper extends BaseImageProviderWrapper<Imag
 								img.alphaData = alphaData;
 
 								imageMetadata = init(img, zoom);
-								handle = imageMetadata.getHandle();
+								handle = imageMetadata.handle();
 							}
 							Gdip.Bitmap_UnlockBits(bitmap, lockedBitmapData);
 						} else {
@@ -2865,15 +2865,11 @@ private static class DrawableWrapper implements Drawable {
 
 abstract class ImageHandle {
 	private final long handle;
-	protected final int zoom;
+	private final int zoom;
 	private final int height;
 	private final int width;
-
-	/**
-	 * specifies the transparent pixel
-	 */
-	final int transparentPixel;
-	int transparentColor = -1;
+	private final int transparentPixel;
+	private int transparentColor = -1;
 
 	ImageHandle(long handle, int zoom, int transparentPixel) {
 		this.handle = handle;
@@ -2884,20 +2880,36 @@ abstract class ImageHandle {
 		this.transparentPixel = transparentPixel;
 	}
 
-	long getHandle() {
+	long handle() {
 		return isDisposed() ? 0 : handle;
 	}
 
-	int getWidth() {
+	int width() {
 		return width;
 	}
 
-	int getHeight() {
+	int height() {
 		return height;
 	}
 
-	Rectangle getBounds() {
+	Rectangle bounds() {
 		return new Rectangle(0, 0, width, height);
+	}
+
+	int zoom() {
+		return zoom;
+	}
+
+	int transparentPixel() {
+		return transparentPixel;
+	}
+
+	int transparentColor() {
+		return transparentColor;
+	}
+
+	void setTransparentColor(int transparentColor) {
+		this.transparentColor = transparentColor;
 	}
 
 	abstract boolean isDisposed();
@@ -2935,20 +2947,20 @@ private abstract class InternalImageHandle extends ImageHandle {
 	}
 
 	void setBackground(RGB color) {
-		if (transparentPixel == -1) return;
+		if (transparentPixel() == -1) return;
 
 		/* Get the HDC for the device */
 		long hDC = device.internal_new_GC(null);
 
 		/* Change the background color in the image */
 		BITMAP bm = new BITMAP();
-		OS.GetObject(getHandle(), BITMAP.sizeof, bm);
+		OS.GetObject(handle(), BITMAP.sizeof, bm);
 		long hdcMem = OS.CreateCompatibleDC(hDC);
-		OS.SelectObject(hdcMem, getHandle());
+		OS.SelectObject(hdcMem, handle());
 		int maxColors = 1 << bm.bmBitsPixel;
 		byte[] colors = new byte[maxColors * 4];
 		int numColors = OS.GetDIBColorTable(hdcMem, 0, maxColors, colors);
-		int offset = transparentPixel * 4;
+		int offset = transparentPixel() * 4;
 		colors[offset] = (byte)color.blue;
 		colors[offset + 1] = (byte)color.green;
 		colors[offset + 2] = (byte)color.red;
@@ -2966,7 +2978,7 @@ private abstract class InternalImageHandle extends ImageHandle {
 		switch (type) {
 			case SWT.ICON: {
 				ICONINFO info = new ICONINFO();
-				OS.GetIconInfo(getHandle(), info);
+				OS.GetIconInfo(handle(), info);
 				/* Get the basic BITMAP information */
 				long hBitmap = info.hbmColor;
 				if (hBitmap == 0) hBitmap = info.hbmMask;
@@ -3104,7 +3116,7 @@ private abstract class InternalImageHandle extends ImageHandle {
 			case SWT.BITMAP: {
 				/* Get the basic BITMAP information */
 				bm = new BITMAP();
-				OS.GetObject(getHandle(), BITMAP.sizeof, bm);
+				OS.GetObject(handle(), BITMAP.sizeof, bm);
 				depth = bm.bmPlanes * bm.bmBitsPixel;
 				width = bm.bmWidth;
 				height = bm.bmHeight;
@@ -3115,7 +3127,7 @@ private abstract class InternalImageHandle extends ImageHandle {
 				DIBSECTION dib = null;
 				if (isDib) {
 					dib = new DIBSECTION();
-					OS.GetObject(getHandle(), DIBSECTION.sizeof, dib);
+					OS.GetObject(handle(), DIBSECTION.sizeof, dib);
 				}
 				/* Calculate number of colors */
 				int numColors = 0;
@@ -3143,14 +3155,14 @@ private abstract class InternalImageHandle extends ImageHandle {
 
 				/* Create the DC and select the bitmap */
 				long hBitmapDC = OS.CreateCompatibleDC(hDC);
-				long hOldBitmap = OS.SelectObject(hBitmapDC, getHandle());
+				long hOldBitmap = OS.SelectObject(hBitmapDC, handle());
 				/* Find the size of the image and allocate data */
 				int imageSize;
 				if (isDib) {
 					imageSize = dib.biSizeImage;
 				} else {
 					/* Call with null lpBits to get the image size */
-					OS.GetDIBits(hBitmapDC, getHandle(), 0, height, null, bmi, OS.DIB_RGB_COLORS);
+					OS.GetDIBits(hBitmapDC, handle(), 0, height, null, bmi, OS.DIB_RGB_COLORS);
 					OS.MoveMemory(bmiHeader, bmi, BITMAPINFOHEADER.sizeof);
 					imageSize = bmiHeader.biSizeImage;
 				}
@@ -3159,7 +3171,7 @@ private abstract class InternalImageHandle extends ImageHandle {
 				if (isDib) {
 					OS.MoveMemory(data, bm.bmBits, imageSize);
 				} else {
-					OS.GetDIBits(hBitmapDC, getHandle(), 0, height, data, bmi, OS.DIB_RGB_COLORS);
+					OS.GetDIBits(hBitmapDC, handle(), 0, height, data, bmi, OS.DIB_RGB_COLORS);
 				}
 				/* Calculate the palette */
 				PaletteData palette = null;
@@ -3199,7 +3211,7 @@ private abstract class InternalImageHandle extends ImageHandle {
 
 				/* Construct and return the ImageData */
 				ImageData imageData = new ImageData(width, height, depth, palette, 4, data);
-				imageData.transparentPixel = transparentPixel;
+				imageData.transparentPixel = transparentPixel();
 				if (depth == 32) {
 					byte straightData[] = new byte[imageSize];
 					byte alphaData[] = new byte[width * height];
@@ -3250,9 +3262,9 @@ private class DestroyableImageHandle extends InternalImageHandle {
 
 	void destroy() {
 		if (type == SWT.ICON) {
-			OS.DestroyIcon (getHandle());
+			OS.DestroyIcon (handle());
 		} else {
-			OS.DeleteObject (getHandle());
+			OS.DeleteObject (handle());
 		}
 		isDisposed = true;
 	}
