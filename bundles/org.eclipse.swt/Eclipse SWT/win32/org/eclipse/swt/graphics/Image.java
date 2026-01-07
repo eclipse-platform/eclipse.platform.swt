@@ -2294,13 +2294,11 @@ private class PlainImageProviderWrapper extends AbstractImageProviderWrapper {
 			return createBaseHandle(targetZoom);
 		}
 		if (memGC != null) {
-			if (memGC.getZoom() != targetZoom) {
-				GC currentGC = memGC;
-				memGC = null;
-				createHandle(targetZoom);
-				currentGC.refreshFor(new DrawableWrapper(Image.this, zoomContext));
-			}
-			return zoomLevelToImageHandle.get(targetZoom);
+			GC currentGC = memGC;
+			memGC = null;
+			ImageHandle imageHandle = createHandle(targetZoom);
+			currentGC.refreshFor(new DrawableWrapper(Image.this, zoomContext));
+			return imageHandle;
 		}
 		return super.newImageHandle(zoomContext);
 	}
