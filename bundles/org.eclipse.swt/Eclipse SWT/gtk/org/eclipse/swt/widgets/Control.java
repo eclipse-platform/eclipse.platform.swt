@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2025 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -6872,7 +6872,8 @@ Point getWindowOrigin () {
  */
 Point getSurfaceOrigin () {
 	double[] originX = new double[1], originY = new double[1];
-	boolean success = GTK4.gtk_widget_translate_coordinates(fixedHandle, getShell().shellHandle, 0, 0, originX, originY);
+	long widgetHandle = fixedHandle != 0 ? fixedHandle: eventHandle();
+	boolean success = GTK4.gtk_widget_translate_coordinates(widgetHandle, getShell().shellHandle, 0, 0, originX, originY);
 
 	return success ? new Point((int)originX[0], (int)originY[0]) : new Point(0, 0);
 }
