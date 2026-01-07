@@ -740,11 +740,7 @@ public Image(Device device, String filename) {
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
 		if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		initNative(filename);
-		if (this.handle == null) {
-			initWithSupplier(zoom -> ImageDataLoader.canLoadAtZoom(filename, FileFormat.DEFAULT_ZOOM, zoom),
-					zoom -> ImageDataLoader.loadByZoom(filename, FileFormat.DEFAULT_ZOOM, zoom).element());
-		}
+		initUsingFileNameProvider(zoom -> zoom == 100 ? filename : null);
 		init();
 	} finally {
 		if (pool != null) pool.release();
@@ -783,31 +779,39 @@ public Image(Device device, String filename) {
 public Image(Device device, ImageFileNameProvider imageFileNameProvider) {
 	super(device);
 	if (imageFileNameProvider == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.imageFileNameProvider = imageFileNameProvider;
-	String filename = imageFileNameProvider.getImagePath(100);
-	if (filename == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
-		initNative(filename);
-		if (this.handle == null) init(ImageDataLoader.loadByZoom(filename, 100, 100).element(), 100);
+		initUsingFileNameProvider(imageFileNameProvider);
 		init();
-		String filename2x = imageFileNameProvider.getImagePath(200);
-		if (filename2x != null) {
-			alphaInfo_200 = new AlphaInfo();
-			id id = NSImageRep.imageRepWithContentsOfFile(NSString.stringWith(filename2x));
-			NSImageRep rep = new NSImageRep(id);
-			handle.addRepresentation(rep);
-		} else if (ImageDataLoader.canLoadAtZoom(filename, 100, 200)) {
-			// Try to natively scale up the image (e.g. possible if it's an SVG)
-			ImageData imageData2x = ImageDataLoader.loadByZoom(filename, 100, 200).element();
-			alphaInfo_200 = new AlphaInfo();
-			NSBitmapImageRep rep = createRepresentation (imageData2x, alphaInfo_200);
-			handle.addRepresentation(rep);
-			rep.release();
-		}
 	} finally {
 		if (pool != null) pool.release();
+	}
+}
+
+private void initUsingFileNameProvider(ImageFileNameProvider imageFileNameProvider) {
+	this.imageFileNameProvider = imageFileNameProvider;
+	String filename = imageFileNameProvider.getImagePath(100);
+	if (filename == null) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	initNative(filename);
+	if (this.handle == null) {
+		init(ImageDataLoader.loadByZoom(filename, 100, 100).element(), 100);
+	}
+	String filename2x = imageFileNameProvider.getImagePath(200);
+	if (filename2x != null) {
+		alphaInfo_200 = new AlphaInfo();
+		id id = NSImageRep.imageRepWithContentsOfFile(NSString.stringWith(filename2x));
+		NSImageRep rep = new NSImageRep(id);
+		handle.addRepresentation(rep);
+	} else if (ImageDataLoader.canLoadAtZoom(filename, 100, 200)) {
+		// Try to natively scale up the image (e.g. possible if it's an SVG)
+		ImageData imageData2x = ImageDataLoader.loadByZoom(filename, 100, 200).element();
+		alphaInfo_200 = new AlphaInfo();
+		NSBitmapImageRep rep = createRepresentation(imageData2x, alphaInfo_200);
+		handle.addRepresentation(rep);
+		rep.release();
 	}
 }
 
