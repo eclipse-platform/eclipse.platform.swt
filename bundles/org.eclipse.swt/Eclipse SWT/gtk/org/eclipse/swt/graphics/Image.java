@@ -559,6 +559,9 @@ public Image(Device device, ImageData source, ImageData mask) {
  */
 public Image(Device device, InputStream stream) {
 	super(device);
+	if (stream == null) {
+		SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	}
 	currentDeviceZoom = DPIUtil.getDeviceZoom();
 	try {
 		this.inputStreamData = stream.readAllBytes();
