@@ -389,7 +389,7 @@ public ExpandItem [] getItems () {
  */
 public int getSpacing () {
 	checkWidget ();
-	return DPIUtil.pixelToPoint(getSpacingInPixels (), getZoom());
+	return DPIUtil.pixelToPoint(getSpacingInPixels (), getAutoscalingZoom());
 }
 
 int getSpacingInPixels () {
@@ -559,7 +559,7 @@ void setScrollbar () {
  */
 public void setSpacing (int spacing) {
 	checkWidget ();
-	setSpacingInPixels(DPIUtil.pointToPixel(spacing, getZoom()));
+	setSpacingInPixels(DPIUtil.pointToPixel(spacing, getAutoscalingZoom()));
 }
 
 void setSpacingInPixels (int spacing) {
@@ -787,7 +787,7 @@ LRESULT WM_PAINT (long wParam, long lParam) {
 			if (hooks (SWT.Paint) || filters (SWT.Paint)) {
 				Event event = new Event ();
 				event.gc = gc;
-				event.setBounds(Win32DPIUtils.pixelToPoint(new Rectangle(rect.left, rect.top, width, height), getZoom()));
+				event.setBounds(Win32DPIUtils.pixelToPoint(new Rectangle(rect.left, rect.top, width, height), getAutoscalingZoom()));
 				sendEvent (SWT.Paint, event);
 				event.gc = null;
 			}

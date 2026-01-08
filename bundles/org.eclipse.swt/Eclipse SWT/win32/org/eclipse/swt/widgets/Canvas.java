@@ -103,7 +103,7 @@ public Canvas (Composite parent, int style) {
  * @since 3.2
  */
 public void drawBackground (GC gc, int x, int y, int width, int height) {
-	int zoom = getZoom();
+	int zoom = getAutoscalingZoom();
 	Rectangle rectangle = Win32DPIUtils.pointToPixel(new Rectangle(x, y, width, height), zoom);
 	drawBackgroundInPixels(gc, rectangle.x, rectangle.y, rectangle.width, rectangle.height, 0, 0);
 }
@@ -197,7 +197,7 @@ void reskinChildren (int flags) {
  */
 public void scroll (int destX, int destY, int x, int y, int width, int height, boolean all) {
 	checkWidget ();
-	int zoom = getZoom();
+	int zoom = getAutoscalingZoom();
 	destX = DPIUtil.pointToPixel(destX, zoom);
 	destY = DPIUtil.pointToPixel(destY, zoom);
 	Rectangle rectangle = Win32DPIUtils.pointToPixel(new Rectangle(x, y, width, height), zoom);
