@@ -567,7 +567,7 @@ LRESULT WM_LBUTTONDOWN (long wParam, long lParam) {
 			if (OS.ImmGetCompositionString (hIMC, OS.GCS_COMPSTR, (char [])null, 0) > 0) {
 				Event event = new Event ();
 				event.detail = SWT.COMPOSITION_OFFSET;
-				int zoom = getZoom();
+				int zoom = getAutoscalingZoom();
 				event.setLocation(DPIUtil.pixelToPoint(OS.GET_X_LPARAM (lParam), zoom), DPIUtil.pixelToPoint(OS.GET_Y_LPARAM (lParam), zoom));
 				sendEvent (SWT.ImeComposition, event);
 				int offset = event.index;

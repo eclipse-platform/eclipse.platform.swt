@@ -1060,7 +1060,7 @@ public boolean getMaximized () {
  */
 public Point getMaximumSize () {
 	checkWidget ();
-	return Win32DPIUtils.pixelToPointAsSize(getMaximumSizeInPixels(), getZoom());
+	return Win32DPIUtils.pixelToPointAsSize(getMaximumSizeInPixels(), getAutoscalingZoom());
 }
 
 Point getMaximumSizeInPixels () {
@@ -1101,7 +1101,7 @@ Point getMaximumSizeInPixels () {
  */
 public Point getMinimumSize () {
 	checkWidget ();
-	return Win32DPIUtils.pixelToPointAsSize(getMinimumSizeInPixels(), getZoom());
+	return Win32DPIUtils.pixelToPointAsSize(getMinimumSizeInPixels(), getAutoscalingZoom());
 }
 
 Point getMinimumSizeInPixels () {
@@ -1231,6 +1231,22 @@ public Shell [] getShells () {
 public ToolBar getToolBar() {
 	checkWidget ();
 	return null;
+}
+
+/**
+ * Returns the native zoom level of this shell.
+ * <p>
+ * The value is derived from the underlying operating system's DPI for the
+ * window and converted into a zoom percentage using
+ * {@link DPIUtil#mapDPIToZoom(int)}.
+ * </p>
+ *
+ * @return the native zoom level of the shell, expressed as a percentage
+ *
+ * @since 3.133
+ */
+public int getNativeZoom() {
+	return DPIUtil.mapDPIToZoom(OS.GetDpiForWindow(handle));
 }
 
 @Override
@@ -1631,8 +1647,8 @@ public void setBounds(Rectangle rect) {
 	// the WM_DPICHANGED event processing. So to avoid duplicate scaling, we always
 	// have to scale width and height with the zoom of the original monitor (still
 	// returned by getZoom()) here.
-	setBoundsInPixels(boundsInPixels.x, boundsInPixels.y, DPIUtil.pointToPixel(rect.width, getZoom()),
-			DPIUtil.pointToPixel(rect.height, getZoom()));
+	setBoundsInPixels(boundsInPixels.x, boundsInPixels.y, DPIUtil.pointToPixel(rect.width, getAutoscalingZoom()),
+			DPIUtil.pointToPixel(rect.height, getAutoscalingZoom()));
 }
 
 @Override
@@ -1807,7 +1823,7 @@ public void setImeInputMode (int mode) {
  */
 public void setMaximumSize (int width, int height) {
 	checkWidget ();
-	int zoom = getZoom();
+	int zoom = getAutoscalingZoom();
 	setMaximumSizeInPixels(DPIUtil.pointToPixel(width, zoom), DPIUtil.pointToPixel(height, zoom));
 }
 
@@ -1836,7 +1852,7 @@ public void setMaximumSize (int width, int height) {
 public void setMaximumSize (Point size) {
 	checkWidget ();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
-	size = Win32DPIUtils.pointToPixelAsSize(size, getZoom());
+	size = Win32DPIUtils.pointToPixelAsSize(size, getAutoscalingZoom());
 	setMaximumSizeInPixels(size.x, size.y);
 }
 
@@ -1882,7 +1898,7 @@ void setMaximumSizeInPixels (int width, int height) {
  */
 public void setMinimumSize (int width, int height) {
 	checkWidget ();
-	int zoom = getZoom();
+	int zoom = getAutoscalingZoom();
 	setMinimumSizeInPixels(DPIUtil.pointToPixel(width, zoom), DPIUtil.pointToPixel(height, zoom));
 }
 
@@ -1931,7 +1947,7 @@ void setMinimumSizeInPixels (int width, int height) {
 public void setMinimumSize (Point size) {
 	checkWidget ();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
-	size = Win32DPIUtils.pointToPixelAsSize(size, getZoom());
+	size = Win32DPIUtils.pointToPixelAsSize(size, getAutoscalingZoom());
 	setMinimumSizeInPixels(size.x, size.y);
 }
 
@@ -2811,12 +2827,12 @@ LRESULT WM_WINDOWPOSCHANGING (long wParam, long lParam) {
 
 @Override
 int computeBoundsZoom() {
-	return getZoom();
+	return getAutoscalingZoom();
 }
 
 @Override
 int computeGetBoundsZoom() {
-	return getZoom();
+	return getAutoscalingZoom();
 }
 
 }

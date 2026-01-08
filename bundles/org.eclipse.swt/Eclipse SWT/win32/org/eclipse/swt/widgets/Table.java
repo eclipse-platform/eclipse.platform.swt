@@ -2338,7 +2338,7 @@ public int getGridLineWidth () {
 }
 
 int getGridLineWidthInPixels () {
-	return DPIUtil.pointToPixel(GRID_WIDTH, getZoom());
+	return DPIUtil.pointToPixel(GRID_WIDTH, getAutoscalingZoom());
 }
 
 /**
@@ -2395,7 +2395,7 @@ private int getHeaderForegroundPixel() {
  */
 public int getHeaderHeight () {
 	checkWidget ();
-	return DPIUtil.pixelToPoint(getHeaderHeightInPixels (), getZoom());
+	return DPIUtil.pixelToPoint(getHeaderHeightInPixels (), getAutoscalingZoom());
 }
 
 int getHeaderHeightInPixels () {
@@ -2476,7 +2476,7 @@ public TableItem getItem (int index) {
 public TableItem getItem (Point point) {
 	checkWidget ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	return getItemInPixels (Win32DPIUtils.pointToPixelAsLocation(point, getZoom()));
+	return getItemInPixels (Win32DPIUtils.pointToPixelAsLocation(point, getAutoscalingZoom()));
 }
 
 TableItem getItemInPixels (Point point) {
@@ -2576,7 +2576,7 @@ public int getItemCount () {
  */
 public int getItemHeight () {
 	checkWidget ();
-	return DPIUtil.pixelToPoint(getItemHeightInPixels(), getZoom());
+	return DPIUtil.pixelToPoint(getItemHeightInPixels(), getAutoscalingZoom());
 }
 
 int getItemHeightInPixels () {
@@ -2832,7 +2832,7 @@ boolean hitTestSelection (int index, int x, int y) {
 		long hFont = item.fontHandle (0);
 		if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
 		Event event = sendMeasureItemEvent (item, index, 0, hDC);
-		if (Win32DPIUtils.pointToPixel(event.getBounds(), getZoom()).contains (x, y)) result = true;
+		if (Win32DPIUtils.pointToPixel(event.getBounds(), getAutoscalingZoom()).contains (x, y)) result = true;
 		if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
 		if (newFont != 0) OS.SelectObject (hDC, oldFont);
 		OS.ReleaseDC (handle, hDC);
@@ -2850,10 +2850,10 @@ int imageIndex (Image image, int column) {
 	}
 	if (imageList == null) {
 		Rectangle boundsInPoints = image.getBounds();
-		imageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, boundsInPoints.width, boundsInPoints.height, getZoom());
+		imageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, boundsInPoints.width, boundsInPoints.height, getAutoscalingZoom());
 		int index = imageList.indexOf (image);
 		if (index == -1) index = imageList.add (image);
-		long hImageList = imageList.getHandle(getZoom());
+		long hImageList = imageList.getHandle(getAutoscalingZoom());
 		/*
 		* Bug in Windows.  Making any change to an item that
 		* changes the item height of a table while the table
@@ -2870,7 +2870,7 @@ int imageIndex (Image image, int column) {
 		}
 		OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, hImageList);
 		if (headerImageList != null) {
-			long hHeaderImageList = headerImageList.getHandle(getZoom());
+			long hHeaderImageList = headerImageList.getHandle(getAutoscalingZoom());
 			OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, hHeaderImageList);
 		}
 		fixCheckboxImageList (false);
@@ -2890,10 +2890,10 @@ int imageIndexHeader (Image image) {
 	if (image == null) return OS.I_IMAGENONE;
 	if (headerImageList == null) {
 		Rectangle boundsInPoints = image.getBounds();
-		headerImageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, boundsInPoints.width, boundsInPoints.height, getZoom());
+		headerImageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, boundsInPoints.width, boundsInPoints.height, getAutoscalingZoom());
 		int index = headerImageList.indexOf (image);
 		if (index == -1) index = headerImageList.add (image);
-		long hImageList = headerImageList.getHandle(getZoom());
+		long hImageList = headerImageList.getHandle(getAutoscalingZoom());
 		OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, hImageList);
 		return index;
 	}
@@ -3484,7 +3484,7 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, long lParam, Event
 	if (drawHot) event.detail |= SWT.HOT;
 	if (drawSelected) event.detail |= SWT.SELECTED;
 	if (drawBackground) event.detail |= SWT.BACKGROUND;
-	Rectangle bounds = Win32DPIUtils.pixelToPoint(new Rectangle (cellRect.left, cellRect.top, cellRect.right - cellRect.left, cellRect.bottom - cellRect.top), getZoom());
+	Rectangle bounds = Win32DPIUtils.pixelToPoint(new Rectangle (cellRect.left, cellRect.top, cellRect.right - cellRect.left, cellRect.bottom - cellRect.top), getAutoscalingZoom());
 	event.setBounds (bounds);
 	gc.setClipping (bounds);
 	sendEvent (SWT.EraseItem, event);
@@ -3530,7 +3530,7 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, long lParam, Event
 		RECT textRect = item.getBounds ((int)nmcd.dwItemSpec, nmcd.iSubItem, true, false, fullText, false, hDC);
 		if ((style & SWT.FULL_SELECTION) == 0) {
 			if (measureEvent != null) {
-				Rectangle boundsInPixels = Win32DPIUtils.pointToPixel(measureEvent.getBounds(), getZoom());
+				Rectangle boundsInPixels = Win32DPIUtils.pointToPixel(measureEvent.getBounds(), getAutoscalingZoom());
 				textRect.right = Math.min (cellRect.right, boundsInPixels.x + boundsInPixels.width);
 			}
 			if (!ignoreDrawFocus) {
@@ -3545,7 +3545,7 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, long lParam, Event
 			boolean backgroundWanted = !ignoreDrawHot || drawDrophilited || (!ignoreDrawSelection && clrSelectionBk != -1);
 
 			if (backgroundWanted) {
-				int explorerExtraInPixels = DPIUtil.pointToPixel(EXPLORER_EXTRA, getZoom());
+				int explorerExtraInPixels = DPIUtil.pointToPixel(EXPLORER_EXTRA, getAutoscalingZoom());
 				RECT pClipRect = new RECT ();
 				OS.SetRect (pClipRect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
 				RECT rect = new RECT ();
@@ -3567,7 +3567,7 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, long lParam, Event
 					rect.right += explorerExtraInPixels;
 					pClipRect.right += explorerExtraInPixels;
 				}
-				long hTheme = OS.OpenThemeData (handle, Display.TREEVIEW, getZoom());
+				long hTheme = OS.OpenThemeData (handle, Display.TREEVIEW, getAutoscalingZoom());
 				int iStateId = selected ? OS.LISS_SELECTED : OS.LISS_HOT;
 				if (OS.GetFocus () != handle && selected && !drawHot) iStateId = OS.LISS_SELECTEDNOTFOCUS;
 				if (drawDrophilited) iStateId = OS.LISS_SELECTED;
@@ -3606,7 +3606,7 @@ Event sendEraseItemEvent (TableItem item, NMTTCUSTOMDRAW nmcd, int column, RECT 
 	event.index = column;
 	event.gc = gc;
 	event.detail |= SWT.FOREGROUND;
-	event.setBounds(Win32DPIUtils.pixelToPoint(new Rectangle(cellRect.left, cellRect.top, cellRect.right - cellRect.left, cellRect.bottom - cellRect.top), getZoom()));
+	event.setBounds(Win32DPIUtils.pixelToPoint(new Rectangle(cellRect.left, cellRect.top, cellRect.right - cellRect.left, cellRect.bottom - cellRect.top), getAutoscalingZoom()));
 	//gc.setClipping (event.x, event.y, event.width, event.height);
 	sendEvent (SWT.EraseItem, event);
 	event.gc = null;
@@ -3627,7 +3627,7 @@ Event sendMeasureItemEvent (TableItem item, int row, int column, long hDC) {
 	event.item = item;
 	event.gc = gc;
 	event.index = column;
-	event.setBounds(Win32DPIUtils.pixelToPoint(new Rectangle(itemRect.left, itemRect.top, itemRect.right - itemRect.left, itemRect.bottom - itemRect.top), getZoom()));
+	event.setBounds(Win32DPIUtils.pixelToPoint(new Rectangle(itemRect.left, itemRect.top, itemRect.right - itemRect.left, itemRect.bottom - itemRect.top), getAutoscalingZoom()));
 	boolean drawSelected = false;
 	if (OS.IsWindowEnabled (handle)) {
 		LVITEM lvItem = new LVITEM ();
@@ -3650,7 +3650,7 @@ Event sendMeasureItemEvent (TableItem item, int row, int column, long hDC) {
 	gc.dispose ();
 	OS.RestoreDC (hDC, nSavedDC);
 	if (!isDisposed () && !item.isDisposed ()) {
-		Rectangle boundsInPixels = Win32DPIUtils.pointToPixel(event.getBounds(), getZoom());
+		Rectangle boundsInPixels = Win32DPIUtils.pointToPixel(event.getBounds(), getAutoscalingZoom());
 		if (columnCount == 0) {
 			int width = (int)OS.SendMessage (handle, OS.LVM_GETCOLUMNWIDTH, 0, 0);
 			if (boundsInPixels.x + boundsInPixels.width > width) setScrollWidth (boundsInPixels.x + boundsInPixels.width);
@@ -3927,11 +3927,11 @@ void sendPaintItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd) {
 	if (drawHot) event.detail |= SWT.HOT;
 	if (drawSelected) event.detail |= SWT.SELECTED;
 	if (drawBackground) event.detail |= SWT.BACKGROUND;
-	event.setBounds(Win32DPIUtils.pixelToPoint(new Rectangle(itemRect.left, itemRect.top, itemRect.right - itemRect.left, itemRect.bottom - itemRect.top), getZoom()));
+	event.setBounds(Win32DPIUtils.pixelToPoint(new Rectangle(itemRect.left, itemRect.top, itemRect.right - itemRect.left, itemRect.bottom - itemRect.top), getAutoscalingZoom()));
 	RECT cellRect = item.getBounds ((int)nmcd.dwItemSpec, nmcd.iSubItem, true, true, true, true, hDC);
 	int cellWidth = cellRect.right - cellRect.left;
 	int cellHeight = cellRect.bottom - cellRect.top;
-	gc.setClipping (Win32DPIUtils.pixelToPoint(new Rectangle (cellRect.left, cellRect.top, cellWidth, cellHeight), getZoom()));
+	gc.setClipping (Win32DPIUtils.pixelToPoint(new Rectangle (cellRect.left, cellRect.top, cellWidth, cellHeight), getAutoscalingZoom()));
 	sendEvent (SWT.PaintItem, event);
 	if (data.focusDrawn) focusRect = null;
 	event.gc = null;
@@ -3955,7 +3955,7 @@ Event sendPaintItemEvent (TableItem item, NMTTCUSTOMDRAW nmcd, int column, RECT 
 	event.index = column;
 	event.gc = gc;
 	event.detail |= SWT.FOREGROUND;
-	event.setBounds(Win32DPIUtils.pixelToPoint(new Rectangle(itemRect.left, itemRect.top, itemRect.right - itemRect.left, itemRect.bottom - itemRect.top), getZoom()));
+	event.setBounds(Win32DPIUtils.pixelToPoint(new Rectangle(itemRect.left, itemRect.top, itemRect.right - itemRect.left, itemRect.bottom - itemRect.top), getAutoscalingZoom()));
 	//gc.setClipping (cellRect.left, cellRect.top, cellWidth, cellHeight);
 	sendEvent (SWT.PaintItem, event);
 	event.gc = null;
@@ -4881,7 +4881,7 @@ boolean setScrollWidth (TableItem item, boolean force) {
 			*/
 			newWidth++;
 		}
-		newWidth += INSET * 2 + DPIUtil.pointToPixel(VISTA_EXTRA, getZoom());
+		newWidth += INSET * 2 + DPIUtil.pointToPixel(VISTA_EXTRA, getAutoscalingZoom());
 		int oldWidth = (int)OS.SendMessage (handle, OS.LVM_GETCOLUMNWIDTH, 0, 0);
 		if (newWidth > oldWidth) {
 			setScrollWidth (newWidth);
@@ -5127,7 +5127,7 @@ void setTableEmpty () {
 		OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, hImageList);
 		OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, 0);
 		if (headerImageList != null) {
-			long hHeaderImageList = headerImageList.getHandle(getZoom());
+			long hHeaderImageList = headerImageList.getHandle(getAutoscalingZoom());
 			long hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 			OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, hHeaderImageList);
 		}
@@ -5541,7 +5541,7 @@ void updateMenuLocation (Event event) {
 		y = Math.min (y, clientArea.y + clientArea.height);
 	}
 	Point pt = toDisplayInPixels (x, y);
-	int zoom = getZoom();
+	int zoom = getAutoscalingZoom();
 	event.setLocation(DPIUtil.pixelToPoint(pt.x, zoom), DPIUtil.pixelToPoint(pt.y, zoom));
 }
 
@@ -5579,7 +5579,7 @@ void updateOrientation () {
 	if (imageList != null) {
 		Point sizeInPoints = imageList.getImageSize();
 		display.releaseImageList (imageList);
-		imageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, sizeInPoints.x, sizeInPoints.y, getZoom());
+		imageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, sizeInPoints.x, sizeInPoints.y, getAutoscalingZoom());
 		int count = (int)OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 		for (int i = 0; i < count; i++) {
 			TableItem item = _getItem (i, false);
@@ -5591,14 +5591,14 @@ void updateOrientation () {
 				}
 			}
 		}
-		long hImageList = imageList.getHandle(getZoom());
+		long hImageList = imageList.getHandle(getAutoscalingZoom());
 		OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, hImageList);
 	}
 	if (hwndHeader != 0) {
 		if (headerImageList != null) {
 			Point sizeInPoints = headerImageList.getImageSize();
 			display.releaseImageList (headerImageList);
-			headerImageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, sizeInPoints.x, sizeInPoints.y, getZoom());
+			headerImageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, sizeInPoints.x, sizeInPoints.y, getAutoscalingZoom());
 			if (columns != null) {
 				for (int i = 0; i < columns.length; i++) {
 					TableColumn column = columns [i];
@@ -5619,7 +5619,7 @@ void updateOrientation () {
 					}
 				}
 			}
-			long hHeaderImageList = headerImageList.getHandle(getZoom());
+			long hHeaderImageList = headerImageList.getHandle(getAutoscalingZoom());
 			OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, hHeaderImageList);
 		}
 	}
@@ -5746,7 +5746,7 @@ long windowProc (long hwnd, int msg, long wParam, long lParam) {
 		OS.GetClientRect (handle, clientRect);
 		TableItem item = _getItem (selection);
 		RECT rect = item.getBounds (selection, 0, true, true, true);
-		int dragImageSizeInPixel = DPIUtil.pointToPixel(DRAG_IMAGE_SIZE, getZoom());
+		int dragImageSizeInPixel = DPIUtil.pointToPixel(DRAG_IMAGE_SIZE, getAutoscalingZoom());
 		if ((style & SWT.FULL_SELECTION) != 0) {
 			int width = dragImageSizeInPixel;
 			rect.left = Math.max (clientRect.left, mousePos.x - width / 2);
@@ -6968,10 +6968,10 @@ LRESULT wmNotifyHeader (NMHDR hdr, long wParam, long lParam) {
 							GCData data = new GCData();
 							data.device = display;
 							GC gc = createNewGC(nmcd.hdc, data);
-							int y = Math.max (0, (nmcd.bottom - Win32DPIUtils.pointToPixel(columns[i].image.getBounds(), getZoom()).height) / 2);
-							int zoom = getZoom();
+							int y = Math.max (0, (nmcd.bottom - Win32DPIUtils.pointToPixel(columns[i].image.getBounds(), getAutoscalingZoom()).height) / 2);
+							int zoom = getAutoscalingZoom();
 							gc.drawImage (columns[i].image, DPIUtil.pixelToPoint(x, zoom), DPIUtil.pixelToPoint(y, zoom));
-							x += Win32DPIUtils.pointToPixel(columns[i].image.getBounds(), getZoom()).width + 12;
+							x += Win32DPIUtils.pointToPixel(columns[i].image.getBounds(), getAutoscalingZoom()).width + 12;
 							gc.dispose ();
 						}
 
@@ -7234,7 +7234,7 @@ private LRESULT positionTooltip(NMHDR hdr, long lParam) {
 private RECT getItemBounds(LVHITTESTINFO pinfo, TableItem item, long hDC) {
 	Event event = sendMeasureItemEvent(item, pinfo.iItem, pinfo.iSubItem, hDC);
 	RECT itemRect = new RECT();
-	Rectangle boundsInPixels = Win32DPIUtils.pointToPixel(event.getBounds(), getZoom());
+	Rectangle boundsInPixels = Win32DPIUtils.pointToPixel(event.getBounds(), getAutoscalingZoom());
 	OS.SetRect(itemRect, boundsInPixels.x, boundsInPixels.y, boundsInPixels.x + boundsInPixels.width,
 			boundsInPixels.y + boundsInPixels.height);
 	return itemRect;
@@ -7297,11 +7297,11 @@ LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, long lParam) {
 					if (pinfo.iSubItem != 0) x -= gridWidth;
 					Image image = item.getImage (pinfo.iSubItem);
 					if (image != null) {
-						Rectangle rect = Win32DPIUtils.pointToPixel(image.getBounds(), getZoom());
+						Rectangle rect = Win32DPIUtils.pointToPixel(image.getBounds(), getAutoscalingZoom());
 						RECT imageRect = item.getBounds (pinfo.iItem, pinfo.iSubItem, false, true, false, false, hDC);
-						Point size = imageList == null ? new Point (rect.width, rect.height) : Win32DPIUtils.pointToPixelAsSize(imageList.getImageSize(), getZoom());
+						Point size = imageList == null ? new Point (rect.width, rect.height) : Win32DPIUtils.pointToPixelAsSize(imageList.getImageSize(), getAutoscalingZoom());
 						int y = imageRect.top + Math.max (0, (imageRect.bottom - imageRect.top - size.y) / 2);
-						int zoom = getZoom();
+						int zoom = getAutoscalingZoom();
 						gc.drawImage (image, DPIUtil.pixelToPoint(x, zoom), DPIUtil.pixelToPoint(y, zoom), DPIUtil.pixelToPoint(size.x, zoom), DPIUtil.pixelToPoint(size.y, zoom));
 						x += size.x + INSET + (pinfo.iSubItem == 0 ? -2 : 4);
 					} else {

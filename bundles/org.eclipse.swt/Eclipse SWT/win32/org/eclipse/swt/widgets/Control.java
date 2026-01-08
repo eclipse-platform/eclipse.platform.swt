@@ -77,7 +77,7 @@ public abstract class Control extends Widget implements Drawable {
 	Region region;
 	Font font;
 	int drawCount, foreground, background, backgroundAlpha = 255;
-	boolean autoScaleDisabled = false;
+	AutoscalingMode autoscalingMode = AutoscalingMode.ENABLED;
 
 	private static final String DATA_SHELL_ZOOM = "SHELL_ZOOM";
 
@@ -123,11 +123,11 @@ Control () {
 public Control (Composite parent, int style) {
 	super (parent, style);
 	this.parent = parent;
-	Boolean parentPropagateAutoscaleDisabled = (Boolean) parent.getData(PROPOGATE_AUTOSCALE_DISABLED);
-	if (parentPropagateAutoscaleDisabled == null || parentPropagateAutoscaleDisabled) {
-		this.autoScaleDisabled = parent.autoScaleDisabled;
+	AutoscalingMode parentAutoscaleMode = parent.autoscalingMode;
+	if (parentAutoscaleMode == AutoscalingMode.DISABLED_INHERITED) {
+		this.autoscalingMode = parent.autoscalingMode;
 	}
-	if (!autoScaleDisabled) {
+	if (isAutoScalable()) {
 		this.nativeZoom = getShellZoom();
 	}
 	createWidget ();
@@ -796,7 +796,7 @@ public boolean dragDetect (Event event) {
 	checkWidget ();
 	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
 	Point loc = event.getLocation();
-	int zoom = getZoom();
+	int zoom = getAutoscalingZoom();
 	return dragDetect (event.button, event.count, event.stateMask, DPIUtil.pointToPixel(loc.x, zoom), DPIUtil.pointToPixel(loc.y, zoom));
 }
 
@@ -839,7 +839,7 @@ public boolean dragDetect (Event event) {
 public boolean dragDetect (MouseEvent event) {
 	checkWidget ();
 	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int zoom = getZoom();
+	int zoom = getAutoscalingZoom();
 	return dragDetect (event.button, event.count, event.stateMask, DPIUtil.pointToPixel(event.x, zoom), DPIUtil.pointToPixel(event.y, zoom)); // To Pixels
 }
 
@@ -962,7 +962,7 @@ void fillImageBackground (long hDC, Control control, RECT rect, int tx, int ty) 
 	if (control != null) {
 		Image image = control.backgroundImage;
 		if (image != null) {
-			control.drawImageBackground (hDC, handle, Image.win32_getHandle(image, getZoom()), rect, tx, ty);
+			control.drawImageBackground (hDC, handle, Image.win32_getHandle(image, getAutoscalingZoom()), rect, tx, ty);
 		}
 	}
 }
@@ -1174,7 +1174,7 @@ int getBackgroundPixel () {
  */
 public int getBorderWidth () {
 	checkWidget ();
-	return DPIUtil.pixelToPoint(getBorderWidthInPixels (), getZoom());
+	return DPIUtil.pixelToPoint(getBorderWidthInPixels (), getAutoscalingZoom());
 }
 
 int getBorderWidthInPixels () {
@@ -1286,12 +1286,20 @@ public Object getData(String key) {
 public void setData(String key, Object value) {
 	super.setData(key, value);
 	if (DATA_AUTOSCALE_DISABLED.equals(key)) {
-		autoScaleDisabled = Boolean.parseBoolean(value.toString());
+		boolean autoScaleDisabled = Boolean.parseBoolean(value.toString());
 		if (autoScaleDisabled) {
+			Object autoscaleDisablementValue = getData(PROPOGATE_AUTOSCALE_DISABLED);
+			boolean propagateAutoscaling = autoscaleDisablementValue != null && Boolean.parseBoolean(autoscaleDisablementValue.toString());
+			autoscalingMode = propagateAutoscaling ? AutoscalingMode.DISABLED_INHERITED : AutoscalingMode.DISABLED;
 			this.nativeZoom = 100;
 		} else {
+			autoscalingMode = AutoscalingMode.ENABLED;
 			this.nativeZoom = getShellZoom();
 		}
+	} else if (PROPOGATE_AUTOSCALE_DISABLED.equals(key)) {
+		boolean propagateAutoscaling = value != null && Boolean.parseBoolean(value.toString());
+		autoscalingMode = propagateAutoscaling ? AutoscalingMode.DISABLED_INHERITED : AutoscalingMode.DISABLED;
+		this.nativeZoom = 100;
 	}
 }
 
@@ -1873,6 +1881,11 @@ boolean isActive () {
 	return shell.getEnabled ();
 }
 
+@Override
+public boolean isAutoScalable() {
+	return autoscalingMode == AutoscalingMode.ENABLED;
+}
+
 /**
  * Returns <code>true</code> if the receiver is enabled and all
  * ancestors up to and including the receiver's nearest ancestor
@@ -2024,7 +2037,7 @@ void mapEvent (long hwnd, Event event) {
 	if (hwnd != handle) {
 		POINT point = new POINT ();
 		Point loc = event.getLocation();
-		int zoom = getZoom();
+		int zoom = getAutoscalingZoom();
 		point.x = DPIUtil.pointToPixel(loc.x, zoom);
 		point.y = DPIUtil.pointToPixel(loc.y, zoom);
 		OS.MapWindowPoints (hwnd, handle, point, 1);
@@ -2486,7 +2499,7 @@ public void redraw () {
  */
 public void redraw (int x, int y, int width, int height, boolean all) {
 	checkWidget ();
-	int zoom = getZoom();
+	int zoom = getAutoscalingZoom();
 	if (width <= 0 || height <= 0) return;
 	Rectangle rectangle = Win32DPIUtils.pointToPixel(new Rectangle(x, y, width, height), zoom);
 
@@ -2989,7 +3002,7 @@ boolean sendGestureEvent (GESTUREINFO gi) {
 	int type = 0;
 	Point globalPt = new Point(gi.x, gi.y);
 	Point point = toControlInPixels(globalPt.x, globalPt.y);
-	int zoom = getZoom();
+	int zoom = getAutoscalingZoom();
 	event.setLocation(DPIUtil.pixelToPoint(point.x, zoom), DPIUtil.pixelToPoint(point.y, zoom));
 	switch (gi.dwID) {
 		case OS.GID_ZOOM:
@@ -3070,7 +3083,7 @@ void sendTouchEvent (TOUCHINPUT touchInput []) {
 	POINT pt = new POINT ();
 	OS.GetCursorPos (pt);
 	OS.ScreenToClient (handle, pt);
-	int zoom = getZoom();
+	int zoom = getAutoscalingZoom();
 	event.setLocation(DPIUtil.pixelToPoint(pt.x, zoom), DPIUtil.pixelToPoint(pt.y, zoom));
 	Touch [] touches = new Touch [touchInput.length];
 	Monitor monitor = getMonitor ();
@@ -3097,7 +3110,7 @@ void setBackground () {
 	if (control.backgroundImage != null) {
 		Shell shell = getShell ();
 		shell.releaseBrushes ();
-		setBackgroundImage (Image.win32_getHandle(control.backgroundImage, getZoom()));
+		setBackgroundImage (Image.win32_getHandle(control.backgroundImage, getAutoscalingZoom()));
 	} else {
 		setBackgroundPixel (control.background == -1 ? control.defaultBackground() : control.background);
 	}
@@ -3350,6 +3363,31 @@ private void fitInParentBounds(Rectangle boundsInPixels, int zoom) {
 	if (childNotFittingVertically && childFittingVerticallyWithOffByOne) {
 		boundsInPixels.height = parentBoundsInPixels.height - boundsInPixels.y;
 	}
+}
+
+/**
+ * Sets the autoscaling mode for this widget.
+ * The capability is not supported on every platform, such that calling this method may not have an effect on unsupported platforms. The return value indicates if the autoscale mode was set properly. With {@link #isAutoScalable()}, the autoscale enablement can also be evaluated at any later pointin time.
+ * <p>
+ * Currently, this is only supported on Windows.
+ * </p>
+ *
+ * @param autoscalingMode
+ *            the autoscaling mode to request; this argument is accepted but
+ *            ignored on this platform
+ *
+ * @return {@code false} if the operation was called on an unsupported platform
+ *
+ * @since 3.133
+ */
+public boolean setAutoscalingMode(AutoscalingMode autoscalingMode) {
+	this.autoscalingMode = autoscalingMode;
+	if (!isAutoScalable()) {
+		this.nativeZoom = 100;
+	} else {
+		this.nativeZoom = getShellZoom();
+	}
+	return true;
 }
 
 void setBoundsInPixels (Rectangle rect) {
@@ -3834,7 +3872,7 @@ public void setRegion (Region region) {
 	long hRegion = 0;
 	if (region != null) {
 		hRegion = OS.CreateRectRgn (0, 0, 0, 0);
-		OS.CombineRgn (hRegion, Region.win32_getHandle(region, getZoom()), hRegion, OS.RGN_OR);
+		OS.CombineRgn (hRegion, Region.win32_getHandle(region, getAutoscalingZoom()), hRegion, OS.RGN_OR);
 	}
 	OS.SetWindowRgn (handle, hRegion, true);
 	this.region = region;
@@ -4123,7 +4161,7 @@ public Point toControl (int x, int y) {
 	checkWidget ();
 	Point displayPointInPixels = getDisplay().translateToDisplayCoordinates(new Point(x, y));
 	final Point controlPointInPixels = toControlInPixels(displayPointInPixels.x, displayPointInPixels.y);
-	return Win32DPIUtils.pixelToPointAsLocation(controlPointInPixels, getZoom());
+	return Win32DPIUtils.pixelToPointAsLocation(controlPointInPixels, getAutoscalingZoom());
 }
 
 Point toControlInPixels (int x, int y) {
@@ -4181,7 +4219,7 @@ public Point toControl (Point point) {
  */
 public Point toDisplay (int x, int y) {
 	checkWidget ();
-	int zoom = getZoom();
+	int zoom = getAutoscalingZoom();
 	Point displayPointInPixels = toDisplayInPixels(DPIUtil.pointToPixel(x, zoom), DPIUtil.pointToPixel(y, zoom));
 	return getDisplay().translateFromDisplayCoordinates(displayPointInPixels);
 }
@@ -4723,7 +4761,7 @@ void updateBackgroundColor () {
 void updateBackgroundImage () {
 	Control control = findBackgroundControl ();
 	Image image = control != null ? control.backgroundImage : backgroundImage;
-	setBackgroundImage (image != null ? Image.win32_getHandle(image, getZoom()) : 0);
+	setBackgroundImage (image != null ? Image.win32_getHandle(image, getAutoscalingZoom()) : 0);
 }
 
 void updateBackgroundMode () {
@@ -4865,18 +4903,18 @@ public boolean setParent (Composite parent) {
 @Override
 GC createNewGC(long hDC, GCData data) {
 	data.nativeZoom = nativeZoom;
-	if (autoScaleDisabled && data.font != null) {
+	if (!isAutoScalable() && data.font != null) {
 		data.font = SWTFontProvider.getFont(display, data.font.getFontData()[0], 100);
 	}
 	return GC.win32_new(hDC, data);
 }
 
 @Override
-int getZoom() {
-	if (autoScaleDisabled) {
+int getAutoscalingZoom() {
+	if (!isAutoScalable()) {
 		return 100;
 	}
-	return super.getZoom();
+	return super.getAutoscalingZoom();
 }
 
 int getShellZoom() {
@@ -4887,17 +4925,17 @@ int getShellZoom() {
 }
 
 int computeGetBoundsZoom() {
-	if (parent != null && !autoScaleDisabled) {
-		return parent.getZoom();
+	if (parent != null && isAutoScalable()) {
+		return parent.getAutoscalingZoom();
 	}
-	return getZoom();
+	return getAutoscalingZoom();
 }
 
 int computeBoundsZoom() {
 	if (parent != null) {
-		return parent.getZoom();
+		return parent.getAutoscalingZoom();
 	}
-	return getZoom();
+	return getAutoscalingZoom();
 }
 
 abstract TCHAR windowClass ();
@@ -5789,7 +5827,7 @@ LRESULT WM_TABLET_FLICK (long wParam, long lParam) {
 			event.yDirection = 1;
 			break;
 	}
-	int zoom = getZoom();
+	int zoom = getAutoscalingZoom();
 	event.setLocation(DPIUtil.pixelToPoint(fPoint.x, zoom), DPIUtil.pixelToPoint(fPoint.y, zoom));
 	event.type = SWT.Gesture;
 	event.detail = SWT.GESTURE_SWIPE;
@@ -5927,7 +5965,7 @@ LRESULT wmColorChild (long wParam, long lParam) {
 		RECT rect = new RECT ();
 		OS.GetClientRect (handle, rect);
 		long hwnd = control.handle;
-		long hBitmap = Image.win32_getHandle(control.backgroundImage, getZoom());
+		long hBitmap = Image.win32_getHandle(control.backgroundImage, getAutoscalingZoom());
 		OS.MapWindowPoints (handle, hwnd, rect, 2);
 		POINT lpPoint = new POINT ();
 		OS.GetWindowOrgEx (wParam, lpPoint);
@@ -6035,7 +6073,7 @@ void sendZoomChangedEvent(Event event, Shell shell) {
 @Override
 void handleDPIChange(Event event, float scalingFactor) {
 	super.handleDPIChange(event, scalingFactor);
-	if (this.autoScaleDisabled) {
+	if (!this.isAutoScalable()) {
 		this.nativeZoom = 100;
 	}
 	resizeFont(this, nativeZoom);

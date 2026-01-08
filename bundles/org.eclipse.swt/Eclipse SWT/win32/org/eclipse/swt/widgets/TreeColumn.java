@@ -307,7 +307,7 @@ public String getToolTipText () {
  */
 public int getWidth () {
 	checkWidget ();
-	return DPIUtil.pixelToPoint(getWidthInPixels(), getZoom());
+	return DPIUtil.pixelToPoint(getWidthInPixels(), getAutoscalingZoom());
 }
 
 int getWidthInPixels () {
@@ -355,7 +355,7 @@ public void pack () {
 				Event event = parent.sendMeasureItemEvent (item, index, hDC, detail);
 				if (isDisposed () || parent.isDisposed ()) break;
 				Rectangle bounds = event.getBounds();
-				itemRight = DPIUtil.pointToPixel(bounds.x + bounds.width, getZoom());
+				itemRight = DPIUtil.pointToPixel(bounds.x + bounds.width, getAutoscalingZoom());
 			} else {
 				long hFont = item.fontHandle (index);
 				if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
@@ -371,10 +371,10 @@ public void pack () {
 	int flags = OS.DT_CALCRECT | OS.DT_NOPREFIX;
 	char [] buffer = text.toCharArray ();
 	OS.DrawText (hDC, buffer, buffer.length, rect, flags);
-	int headerWidth = rect.right - rect.left + DPIUtil.pointToPixel(Tree.HEADER_MARGIN, getZoom());
-	if (OS.IsAppThemed ()) headerWidth += DPIUtil.pointToPixel(Tree.HEADER_EXTRA, getZoom());
+	int headerWidth = rect.right - rect.left + DPIUtil.pointToPixel(Tree.HEADER_MARGIN, getAutoscalingZoom());
+	if (OS.IsAppThemed ()) headerWidth += DPIUtil.pointToPixel(Tree.HEADER_EXTRA, getAutoscalingZoom());
 	if (image != null) {
-		Rectangle bounds = Win32DPIUtils.pointToPixel(image.getBounds(), getZoom());
+		Rectangle bounds = Win32DPIUtils.pointToPixel(image.getBounds(), getAutoscalingZoom());
 		headerWidth += bounds.width;
 		int margin = 0;
 		if (hwndHeader != 0) {
@@ -524,7 +524,7 @@ void setImage (Image image, boolean sort, boolean right) {
 			hdItem.mask &= ~OS.HDI_IMAGE;
 			hdItem.fmt &= ~OS.HDF_IMAGE;
 			hdItem.fmt |= OS.HDF_BITMAP;
-			hdItem.hbm = Image.win32_getHandle(image, getZoom());
+			hdItem.hbm = Image.win32_getHandle(image, getAutoscalingZoom());
 		} else {
 			hdItem.mask &= ~OS.HDI_BITMAP;
 			hdItem.fmt &= ~OS.HDF_BITMAP;
@@ -705,7 +705,7 @@ public void setToolTipText (String string) {
  */
 public void setWidth (int width) {
 	checkWidget ();
-	setWidthInPixels(DPIUtil.pointToPixel(width, getZoom()));
+	setWidthInPixels(DPIUtil.pointToPixel(width, getAutoscalingZoom()));
 }
 
 void setWidthInPixels (int width) {
