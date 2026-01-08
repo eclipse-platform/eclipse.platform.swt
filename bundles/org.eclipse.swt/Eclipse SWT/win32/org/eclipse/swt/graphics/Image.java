@@ -201,7 +201,7 @@ public final class Image extends Resource implements Drawable {
 	}
 
 	private class HandleAtSize {
-		private ImageHandle handleContainer = null;
+		private InternalImageHandle handleContainer = null;
 		private DestroyableImageHandle temporaryHandleContainer = null;
 		private int requestedWidth = -1;
 		private int requestedHeight = -1;
@@ -235,7 +235,7 @@ public final class Image extends Resource implements Drawable {
 					|| (handleContainer.height() == height && handleContainer.height() == width);
 		}
 
-		private Optional<ImageHandle> createHandleAtExactSize(int width, int height) {
+		private Optional<InternalImageHandle> createHandleAtExactSize(int width, int height) {
 			Optional<ImageData> imageData = imageProvider.loadImageDataAtExactSize(width, height);
 			if (imageData.isPresent()) {
 				ImageData adaptedData = adaptImageDataIfDisabledOrGray(imageData.get());
@@ -245,12 +245,12 @@ public final class Image extends Resource implements Drawable {
 			return Optional.empty();
 		}
 
-		private ImageHandle getOrCreateImageHandleAtClosestSize(int widthHint, int heightHint) {
+		private InternalImageHandle getOrCreateImageHandleAtClosestSize(int widthHint, int heightHint) {
 			Rectangle bounds = getBounds(100);
 			int imageZoomForWidth = 100 * widthHint / bounds.width;
 			int imageZoomForHeight = 100 * heightHint / bounds.height;
 			int imageZoom = DPIUtil.getZoomForAutoscaleProperty(Math.max(imageZoomForWidth, imageZoomForHeight));
-			ImageHandle bestFittingHandle = imageHandleManager.get(imageZoom);
+			InternalImageHandle bestFittingHandle = imageHandleManager.get(imageZoom);
 			if (bestFittingHandle == null) {
 				ImageData bestFittingImageData = imageProvider.loadImageData(imageZoom).element();
 				ImageData adaptedData = adaptImageDataIfDisabledOrGray(bestFittingImageData);
@@ -362,7 +362,7 @@ public Image(Device device, Image srcImage, int flag) {
 		case SWT.IMAGE_COPY: {
 			switch (type) {
 				case SWT.BITMAP:
-					for (ImageHandle imageHandle : srcImage.imageHandleManager.getAllImageHandles()) {
+					for (InternalImageHandle imageHandle : srcImage.imageHandleManager.getAllImageHandles()) {
 						Rectangle rect = imageHandle.bounds();
 						long srcImageHandle = imageHandle.handle();
 						/* Get the HDC for the device */
@@ -379,8 +379,8 @@ public Image(Device device, Image srcImage, int flag) {
 										OS.CreateCompatibleBitmap(hdcSource, rect.width,
 												bm.bmBits != 0 ? -rect.height : rect.height),
 										imageHandle.zoom(), imageHandle.transparentPixel()));
-						if (imageMetadata.handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-						long hOldDest = OS.SelectObject(hdcDest, imageMetadata.handle);
+						if (imageMetadata.handle() == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+						long hOldDest = OS.SelectObject(hdcDest, imageMetadata.handle());
 						OS.BitBlt(hdcDest, 0, 0, rect.width, rect.height, hdcSource, 0, 0, OS.SRCCOPY);
 						OS.SelectObject(hdcSource, hOldSrc);
 						OS.SelectObject(hdcDest, hOldDest);
@@ -392,13 +392,13 @@ public Image(Device device, Image srcImage, int flag) {
 					}
 					break;
 				case SWT.ICON:
-					for (ImageHandle imageHandle : srcImage.imageHandleManager.getAllImageHandles()) {
+					for (InternalImageHandle imageHandle : srcImage.imageHandleManager.getAllImageHandles()) {
 						Rectangle rect = imageHandle.bounds();
 						imageMetadata = imageHandleManager.getOrCreate(imageHandle.zoom(),
 								() -> new DestroyableImageHandle(
 										OS.CopyImage(imageHandle.handle(), OS.IMAGE_ICON, rect.width, rect.height, 0),
 										imageHandle.zoom(), imageHandle.transparentPixel()));
-						if (imageMetadata.handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+						if (imageMetadata.handle() == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 					}
 					break;
 				default:
@@ -407,7 +407,7 @@ public Image(Device device, Image srcImage, int flag) {
 			break;
 		}
 		case SWT.IMAGE_DISABLE: {
-			for (ImageHandle imageHandle : srcImage.imageHandleManager.getAllImageHandles()) {
+			for (InternalImageHandle imageHandle : srcImage.imageHandleManager.getAllImageHandles()) {
 				Rectangle rect = imageHandle.bounds();
 				ImageData data = srcImage.getImageData(imageHandle.zoom());
 				ImageData newData = applyDisableImageData(data, rect.height, rect.width);
@@ -416,7 +416,7 @@ public Image(Device device, Image srcImage, int flag) {
 			break;
 		}
 		case SWT.IMAGE_GRAY: {
-			for (ImageHandle imageHandle : srcImage.imageHandleManager.getAllImageHandles()) {
+			for (InternalImageHandle imageHandle : srcImage.imageHandleManager.getAllImageHandles()) {
 				Rectangle rect = imageHandle.bounds();
 				ImageData data = srcImage.getImageData(imageHandle.zoom());
 				ImageData newData = applyGrayImageData(data, rect.height, rect.width);
@@ -1305,7 +1305,7 @@ public Rectangle getBounds() {
 Rectangle getBounds(int zoom) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (imageHandleManager.contains(zoom)) {
-		ImageHandle imageMetadata = imageHandleManager.get(zoom);
+		InternalImageHandle imageMetadata = imageHandleManager.get(zoom);
 		Rectangle rectangle = new Rectangle(0, 0, imageMetadata.width(), imageMetadata.height());
 		return Win32DPIUtils.scaleBounds(rectangle, zoom, imageMetadata.zoom());
 	}
@@ -1329,7 +1329,7 @@ Rectangle getBounds(int zoom) {
  */
 @Deprecated(since = "2025-09", forRemoval = true)
 public Rectangle getBoundsInPixels() {
-	return applyUsingAnyHandle(ImageHandle::bounds);
+	return applyUsingAnyHandle(InternalImageHandle::bounds);
 }
 
 /**
@@ -2863,56 +2863,92 @@ private static class DrawableWrapper implements Drawable {
 	}
 }
 
-abstract class ImageHandle {
+interface ImageHandle {
+	long handle();
+
+	int width();
+
+	int height();
+
+	int transparentPixel();
+
+	int transparentColor();
+
+	void setTransparentColor(int transparentColor);
+}
+
+private interface InternalImageHandle extends ImageHandle {
+	int zoom();
+
+	Rectangle bounds();
+
+	void setBackground(RGB rgb);
+
+	ImageData getImageData();
+
+	boolean isDisposed();
+}
+
+private class DestroyableImageHandle implements InternalImageHandle {
 	private final long handle;
 	private final int zoom;
 	private final int height;
 	private final int width;
 	private final int transparentPixel;
 	private int transparentColor = -1;
+	private boolean isDisposed;
 
-	ImageHandle(long handle, int zoom, int transparentPixel) {
+	DestroyableImageHandle(long handle, int zoom, int transparentPixel) {
 		this.handle = handle;
 		this.zoom = zoom;
 		Point bounds = getBoundsInPixelsFromNative();
 		this.width = bounds.x;
 		this.height = bounds.y;
 		this.transparentPixel = transparentPixel;
+		if (backgroundColor != null) {
+			setBackground(backgroundColor);
+		}
 	}
 
-	long handle() {
+	@Override
+	public long handle() {
 		return isDisposed() ? 0 : handle;
 	}
 
-	int width() {
+	@Override
+	public int width() {
 		return width;
 	}
 
-	int height() {
+	@Override
+	public int height() {
 		return height;
 	}
 
-	Rectangle bounds() {
+	@Override
+	public Rectangle bounds() {
 		return new Rectangle(0, 0, width, height);
 	}
 
-	int zoom() {
+	@Override
+	public int zoom() {
 		return zoom;
 	}
 
-	int transparentPixel() {
+	@Override
+	public int transparentPixel() {
 		return transparentPixel;
 	}
 
-	int transparentColor() {
+	@Override
+	public int transparentColor() {
 		return transparentColor;
 	}
 
-	void setTransparentColor(int transparentColor) {
+	@Override
+	public void setTransparentColor(int transparentColor) {
 		this.transparentColor = transparentColor;
 	}
-
-	abstract boolean isDisposed();
 
 	private Point getBoundsInPixelsFromNative() {
 		switch (type) {
@@ -2936,17 +2972,10 @@ abstract class ImageHandle {
 			return null;
 		}
 	}
-}
 
-private abstract class InternalImageHandle extends ImageHandle {
-	InternalImageHandle(long handle, int zoom, int transparentPixel) {
-		super(handle, zoom, transparentPixel);
-		if (backgroundColor != null) {
-			setBackground(backgroundColor);
-		}
-	}
 
-	void setBackground(RGB color) {
+	@Override
+	public void setBackground(RGB color) {
 		if (transparentPixel() == -1) return;
 
 		/* Get the HDC for the device */
@@ -2971,7 +3000,8 @@ private abstract class InternalImageHandle extends ImageHandle {
 		device.internal_dispose_GC(hDC, null);
 	}
 
-	ImageData getImageData() {
+	@Override
+	public ImageData getImageData() {
 		if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 		BITMAP bm;
 		int depth, width, height;
@@ -3246,17 +3276,9 @@ private abstract class InternalImageHandle extends ImageHandle {
 				return null;
 		}
 	}
-}
-
-private class DestroyableImageHandle extends InternalImageHandle {
-	private boolean isDisposed;
-
-	DestroyableImageHandle(long handle, int zoom, int transparentPixel) {
-		super(handle, zoom, transparentPixel);
-	}
 
 	@Override
-	boolean isDisposed() {
+	public boolean isDisposed() {
 		return isDisposed;
 	}
 
@@ -3269,6 +3291,5 @@ private class DestroyableImageHandle extends InternalImageHandle {
 		isDisposed = true;
 	}
 }
-
 
 }
