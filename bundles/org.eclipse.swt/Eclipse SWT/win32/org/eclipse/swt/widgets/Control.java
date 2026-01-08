@@ -2259,6 +2259,7 @@ public boolean print (GC gc) {
 	long hdc = gc.handle;
 	int state = 0;
 	long gdipGraphics = gc.getGCData().gdipGraphics;
+	float scaleFactor = 1f * gc.getGCData().nativeZoom/nativeZoom;
 	if (gdipGraphics != 0) {
 		long clipRgn = 0;
 		Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeNone);
@@ -2274,6 +2275,7 @@ public boolean print (GC gc) {
 		long matrix = Gdip.Matrix_new(1, 0, 0, 1, 0, 0);
 		if (matrix == 0) error(SWT.ERROR_NO_HANDLES);
 		Gdip.Graphics_GetTransform(gdipGraphics, matrix);
+		Gdip.Matrix_Scale(matrix, scaleFactor, scaleFactor, Gdip.MatrixOrderPrepend);
 		if (!Gdip.Matrix_IsIdentity(matrix)) {
 			lpXform = new float[6];
 			Gdip.Matrix_GetElements(matrix, lpXform);
@@ -2283,12 +2285,16 @@ public boolean print (GC gc) {
 		state = OS.SaveDC(hdc);
 		if (lpXform != null) {
 			OS.SetGraphicsMode(hdc, OS.GM_ADVANCED);
-			OS.SetWorldTransform(hdc, lpXform);
+			OS.ModifyWorldTransform(hdc, lpXform, OS.MWT_LEFTMULTIPLY);
 		}
 		if (clipRgn != 0) {
 			OS.SelectClipRgn(hdc, clipRgn);
 			OS.DeleteObject(clipRgn);
 		}
+	} else {
+		state = OS.SaveDC(hdc);
+		float[] translateMatrix = new float[] {scaleFactor, 0, 0, scaleFactor, 0, 0};
+		OS.ModifyWorldTransform(hdc, translateMatrix, OS.MWT_LEFTMULTIPLY);
 	}
 	int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
 	OS.RedrawWindow (topHandle, null, 0, flags);
@@ -2299,8 +2305,8 @@ public boolean print (GC gc) {
 	 */
 	printWindowFlags |= OS.PW_RENDERFULLCONTENT;
 	printWidget (topHandle, hdc, gc, printWindowFlags);
+	OS.RestoreDC(hdc, state);
 	if (gdipGraphics != 0) {
-		OS.RestoreDC(hdc, state);
 		Gdip.Graphics_ReleaseHDC(gdipGraphics, hdc);
 	}
 	return true;
