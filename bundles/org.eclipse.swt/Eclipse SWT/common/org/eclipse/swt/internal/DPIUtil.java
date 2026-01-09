@@ -76,7 +76,6 @@ public class DPIUtil {
 	 *     but only uses integer multiples of 100%. The detected native zoom is
 	 *     generally rounded down (e.g. at 150%, will use 100%), unless close to
 	 *     the next integer multiple (currently at 175%, will use 200%).</li>
-	 * <li><b>integer200</b>: like <b>integer</b>, but the maximal zoom level is 200%.</li>
 	 * <li><b>half</b>: deviceZoom depends on the current display resolution,
 	 *     but only uses integer multiples of 50%. The detected native zoom is
 	 *     rounded to the closest permissible value, with tie-breaker towards even.</li>
@@ -88,7 +87,7 @@ public class DPIUtil {
 	 * <li><i>&lt;value&gt;</i>: deviceZoom uses the given integer value in
 	 *     percent as zoom level.</li>
 	 * </ul>
-	 * The current default is "integer200".
+	 * The current default is "integer".
 	 */
 	private static final String SWT_AUTOSCALE = "swt.autoScale";
 
@@ -130,13 +129,13 @@ static void setAutoScaleValue(String autoScaleValueArg) {
  *
  * The supported auto-scale modes are "quarter" and "exact" or explicit zoom values given
  * by the value itself or "false". Every other value will be treated as
- * "integer"/"integer200" and is thus not supported.
+ * "integer" and is thus not supported.
  *
  * <p>
  * <b>Background information:</b>
  * Monitor-specific scaling on Windows only supports auto-scale modes in which
  * all elements (font, images, control bounds etc.) are scaled equally or almost
- * equally. The previously default mode "integer"/"integer200", which rounded
+ * equally. The previously default mode "integer", which rounded
  * the scale factor for everything but fonts to multiples of 100, is complex and
  * difficult to realize with monitor-specific rescaling of UI elements. Since a
  * uniform scale factor for everything should perspectively be used anyway,
@@ -444,7 +443,7 @@ private static int getZoomForAutoscaleProperty (int nativeDeviceZoom, String aut
 		} else if ("half".equalsIgnoreCase (autoScaleValue)) {
 			// Math.round rounds 125->150 and 175->200,
 			// Math.rint rounds 125->100 and 175->200 matching
-			// "integer200"
+			// "integer"
 			zoom = (int) Math.rint(nativeDeviceZoom / 50d) * 50;
 		} else if ("quarter".equalsIgnoreCase (autoScaleValue)) {
 			zoom = Math.round(nativeDeviceZoom / 25f) * 25;
@@ -459,7 +458,7 @@ private static int getZoomForAutoscaleProperty (int nativeDeviceZoom, String aut
 			}
 		}
 	}
-	if (zoom == 0) { // || "integer".equalsIgnoreCase (value) || "integer200".equalsIgnoreCase (value)
+	if (zoom == 0) {
 		zoom = Math.max ((nativeDeviceZoom + 25) / 100 * 100, 100);
 	}
 	return zoom;
