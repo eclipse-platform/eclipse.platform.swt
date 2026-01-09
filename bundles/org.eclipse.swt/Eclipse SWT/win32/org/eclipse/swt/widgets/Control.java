@@ -16,6 +16,7 @@ package org.eclipse.swt.widgets;
 
 
 import java.util.*;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 import java.util.stream.*;
 
@@ -84,6 +85,8 @@ public abstract class Control extends Widget implements Drawable {
 	private static final String DATA_AUTOSCALE_DISABLED = "AUTOSCALE_DISABLED";
 
 	private static final String PROPOGATE_AUTOSCALE_DISABLED = "PROPOGATE_AUTOSCALE_DISABLED";
+
+	private final Queue<Runnable> asyncDpiChangeProcessors = new ConcurrentLinkedQueue<>();
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
@@ -5822,11 +5825,29 @@ LRESULT WM_TOUCH (long wParam, long lParam) {
 }
 
 LRESULT WM_TIMER (long wParam, long lParam) {
-	if (wParam == Menu.ID_TOOLTIP_TIMER && activeMenu != null) {
-		OS.KillTimer (this.handle, Menu.ID_TOOLTIP_TIMER);
-		activeMenu.wmTimer (wParam, lParam);
+	if (executeDpiEventProcessor(wParam)) {
+		OS.KillTimer(this.handle, wParam);
+	} else if (wParam == Menu.ID_TOOLTIP_TIMER && activeMenu != null) {
+		OS.KillTimer(this.handle, Menu.ID_TOOLTIP_TIMER);
+		activeMenu.wmTimer(wParam, lParam);
 	}
 	return null;
+}
+
+boolean executeDpiEventProcessor(long wParam) {
+	Optional<Runnable> triggeredDpiEventProcessor = asyncDpiChangeProcessors.stream()
+			.filter(it -> it.hashCode() == wParam).findFirst();
+	if (triggeredDpiEventProcessor.isPresent()) {
+		Runnable dpiEventProcessor = triggeredDpiEventProcessor.get();
+		if (asyncDpiChangeProcessors.peek() != dpiEventProcessor) {
+			getDisplay().getRuntimeExceptionHandler()
+					.accept(new IllegalStateException("DPI change event processed in wrong order"));
+		}
+		asyncDpiChangeProcessors.remove(dpiEventProcessor);
+		dpiEventProcessor.run();
+		return true;
+	}
+	return false;
 }
 
 LRESULT WM_UNDO (long wParam, long lParam) {
@@ -5992,7 +6013,8 @@ static class DPIChangeExecution {
 			asyncExec &= (comp.layout != null);
 		}
 		if (asyncExec) {
-			control.getDisplay().asyncExec(operation::run);
+			control.asyncDpiChangeProcessors.add(operation);
+			OS.SetTimer(control.handle, operation.hashCode(), 0, 0);
 		} else {
 			operation.run();
 		}
