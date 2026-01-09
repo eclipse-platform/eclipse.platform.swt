@@ -15,6 +15,7 @@
 package org.eclipse.swt.widgets;
 
 
+import java.lang.reflect.*;
 import java.util.*;
 import java.util.concurrent.atomic.*;
 import java.util.stream.*;
@@ -5992,7 +5993,7 @@ static class DPIChangeExecution {
 			asyncExec &= (comp.layout != null);
 		}
 		if (asyncExec) {
-			control.getDisplay().asyncExec(operation::run);
+			DPIChangeProcessingCallback.schedule(control, operation);
 		} else {
 			operation.run();
 		}
@@ -6008,6 +6009,49 @@ static class DPIChangeExecution {
 	private boolean decrement() {
 		return taskCount.decrementAndGet() <= 0;
 	}
+}
+
+private static class DPIChangeProcessingCallback  {
+	private final Runnable operation;
+	private final long address;
+
+	private DPIChangeProcessingCallback(Control control, Runnable dpiChangeProcessing) {
+		// Has to have TIMERPROC signature, see https://learn.microsoft.com/en-us/windows/win32/api/winuser/nc-winuser-timerproc
+		Callback callback = new Callback(this, "run", void.class, new Type[] { int.class, int.class, int.class, int.class} );
+		this.operation = () -> {
+			if (!control.isDisposed()) {
+				dpiChangeProcessing.run();
+			}
+			callback.dispose();
+		};
+		this.address = callback.getAddress();
+	}
+
+	@SuppressWarnings("unused") // Executed as callback method referenced by signature description
+	public void run(int hwnd, int msg , int idEvent, int dwTime) {
+		OS.KillTimer(hwnd, idEvent);
+		operation.run();
+	}
+
+	private long getAddress() {
+		return address;
+	}
+
+	static void schedule(Control control, Runnable runnable) {
+		try {
+			DPIChangeProcessingCallback callback = new DPIChangeProcessingCallback(control, runnable);
+			OS.SetTimer(0, 0, 0, callback.getAddress());
+		} catch  (SWTError error) {
+			// In case of too many callbacks, fall back to running the operation synchronously
+			if (error.code == SWT.ERROR_NO_MORE_CALLBACKS) {
+				runnable.run();
+			} else {
+				throw error;
+			}
+		}
+
+	}
+
 }
 
 void sendZoomChangedEvent(Event event, Shell shell) {
