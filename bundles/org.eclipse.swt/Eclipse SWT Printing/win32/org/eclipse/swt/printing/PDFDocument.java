@@ -215,7 +215,6 @@ public class PDFDocument implements Drawable {
 		int screenDpiX = 96;
 		int screenDpiY = 96;
 		if (this.device != null) {
-			@SuppressWarnings("deprecation")
 			Point dpi = this.device.getDPI();
 			screenDpiX = dpi.x;
 			screenDpiY = dpi.y;
@@ -428,7 +427,6 @@ public class PDFDocument implements Drawable {
 		int screenDpiX = 96;
 		int screenDpiY = 96;
 		if (device != null) {
-			@SuppressWarnings("deprecation")
 			Point dpi = device.getDPI();
 			screenDpiX = dpi.x;
 			screenDpiY = dpi.y;
