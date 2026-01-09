@@ -5052,9 +5052,7 @@ String debugInfoForIndex(long index) {
 }
 
 void dpiChanged(int newScaleFactor) {
-	@SuppressWarnings("deprecation")
-	int dpiX = getDPI().x;
-	DPIUtil.setDeviceZoom (DPIUtil.mapDPIToZoom(dpiX * newScaleFactor));
+	DPIUtil.setDeviceZoom (DPIUtil.mapDPIToZoom(getDPI().x * newScaleFactor));
 	Shell[] shells = getShells();
 	for (int i = 0; i < shells.length; i++) {
 		shells[i].layout(true, true);
