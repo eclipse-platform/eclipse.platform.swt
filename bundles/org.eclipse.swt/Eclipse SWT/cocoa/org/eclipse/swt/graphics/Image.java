@@ -147,6 +147,11 @@ public final class Image extends Resource implements Drawable {
 	private ImageGcDrawer imageGcDrawer;
 
 	/**
+	 * Byte array to store input stream data to draw on various Zoom levels
+	 */
+	private byte[] inputStreamData;
+
+	/**
 	 * Style flag used to differentiate normal, gray-scale and disabled images based
 	 * on image data providers. Without this, a normal and a disabled image of the
 	 * same image data provider would be considered equal.
@@ -691,9 +696,9 @@ public Image(Device device, InputStream stream) {
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
-		byte[] input = stream.readAllBytes();
-		initWithSupplier(zoom -> ImageDataLoader.canLoadAtZoom(new ByteArrayInputStream(input), FileFormat.DEFAULT_ZOOM, zoom),
-				zoom -> ImageDataLoader.loadByZoom(new ByteArrayInputStream(input), FileFormat.DEFAULT_ZOOM, zoom).element());
+		this.inputStreamData = stream.readAllBytes();
+		initWithSupplier(zoom -> ImageDataLoader.canLoadAtZoom(new ByteArrayInputStream(inputStreamData), FileFormat.DEFAULT_ZOOM, zoom),
+				zoom -> ImageDataLoader.loadByZoom(new ByteArrayInputStream(inputStreamData), FileFormat.DEFAULT_ZOOM, zoom).element());
 		init();
 	} catch (IOException e) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT, e);
@@ -1904,6 +1909,12 @@ private class CachedImageAtSize {
 			String fileName = DPIUtil.validateAndGetImagePathAtZoom(imageFileNameProvider, 100).element();
 			if (ImageDataLoader.isDynamicallySizable(fileName)) {
 				ImageData imageDataAtSize = ImageDataLoader.loadBySize(fileName, targetWidth, targetHeight);
+				return Optional.of(imageDataAtSize);
+			}
+		}
+		if (inputStreamData != null) {
+			if (ImageDataLoader.isDynamicallySizable(new ByteArrayInputStream(inputStreamData))) {
+				ImageData imageDataAtSize = ImageDataLoader.loadBySize(new ByteArrayInputStream(inputStreamData), targetWidth, targetHeight);
 				return Optional.of(imageDataAtSize);
 			}
 		}
