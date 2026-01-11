@@ -2909,7 +2909,14 @@ public void setVisible (boolean visible) {
 		 * up in front of the full-screen window.
 		 */
 		if (parent!=null && parent.getShell().getFullScreen()) {
-			GTK3.gtk_window_set_type_hint(shellHandle, GDK.GDK_WINDOW_TYPE_HINT_DIALOG);
+			if (GTK.GTK4) {
+				GTK.gtk_window_set_modal(shellHandle, true);
+				GTK.gtk_window_set_transient_for(shellHandle, parent.getShell().shellHandle);
+				GTK.gtk_window_set_destroy_with_parent(shellHandle, true);
+			} else {
+				GTK3.gtk_window_set_type_hint(shellHandle, GDK.GDK_WINDOW_TYPE_HINT_DIALOG);
+
+			}
 		}
 	} else {
 		updateModal ();
