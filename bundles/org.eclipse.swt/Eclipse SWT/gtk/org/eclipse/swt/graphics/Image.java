@@ -440,7 +440,7 @@ public Image(Device device, Rectangle bounds) {
  * @see #dispose()
  */
 public Image(Device device, ImageData data) {
-	this(device, GtkDPIUtil.pointToPixel(device, data), DPIUtil.getDeviceZoom());
+	this(device, DPIUtil.autoScaleImageData(device, data, 100), DPIUtil.getDeviceZoom());
 }
 
 private Image(Device device, ImageData data, int zoom) {
@@ -489,8 +489,8 @@ public Image(Device device, ImageData source, ImageData mask) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	currentDeviceZoom = DPIUtil.getDeviceZoom();
-	source = GtkDPIUtil.pointToPixel (device, source);
-	mask = GtkDPIUtil.pointToPixel (device, mask);
+	source = DPIUtil.autoScaleImageData(device, source, 100);
+	mask = DPIUtil.autoScaleImageData(device, mask, 100);
 	mask = ImageData.convertMask (mask);
 	ImageData image = new ImageData(source.width, source.height, source.depth, source.palette, source.scanlinePad, source.data);
 	image.maskPad = mask.scanlinePad;
