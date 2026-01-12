@@ -158,7 +158,7 @@ public static boolean isMonitorSpecificScalingActive() {
 		return false;
 	}
 	String updateOnRuntimeValue = System.getProperty(SWT_AUTOSCALE_UPDATE_ON_RUNTIME);
-	return "force".equalsIgnoreCase(updateOnRuntimeValue) || "true".equalsIgnoreCase(updateOnRuntimeValue);
+	return !"false".equalsIgnoreCase(updateOnRuntimeValue);
 }
 
 public static int pixelToPoint(int size, int zoom) {
