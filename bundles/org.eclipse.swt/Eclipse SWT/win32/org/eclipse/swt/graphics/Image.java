@@ -2789,11 +2789,10 @@ private class ImageGcDrawerWrapper extends DynamicImageProviderWrapper {
 
 	@Override
 	protected ElementAtZoom<ImageData> loadImageData(int zoom) {
-		return new ElementAtZoom<>(getImageMetadata(new ZoomContext(zoom)).getImageData(), zoom);
+		return new ElementAtZoom<>(loadImageData(new ZoomContext(zoom)), zoom);
 	}
 
-	@Override
-	protected DestroyableImageHandle newImageHandle(ZoomContext zoomContext) {
+	private ImageData loadImageData(ZoomContext zoomContext) {
 		currentZoom = zoomContext;
 		int targetZoom = zoomContext.targetZoom();
 		int gcStyle = drawer.getGcStyle();
@@ -2813,12 +2812,16 @@ private class ImageGcDrawerWrapper extends DynamicImageProviderWrapper {
 			drawer.drawOn(gc, width, height);
 			ImageData imageData = image.getImageData(targetZoom);
 			drawer.postProcess(imageData);
-			ImageData newData = adaptImageDataIfDisabledOrGray(imageData);
-			return init(newData, targetZoom);
+			return adaptImageDataIfDisabledOrGray(imageData);
 		} finally {
 			gc.dispose();
 			image.dispose();
 		}
+	}
+
+	@Override
+	protected DestroyableImageHandle newImageHandle(ZoomContext zoomContext) {
+		return init(loadImageData(zoomContext), zoomContext.targetZoom);
 	}
 
 	@Override
