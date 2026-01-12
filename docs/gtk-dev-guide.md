@@ -235,7 +235,7 @@ To learn about SWT, try out the snippets and examples in the repository. Search 
 
 You should learn at least:
 * Set of basic widgets (Button/Label/Table/Tree etc..)
-* Layouts (Absolute [i.e no layout]/Grid/Row/Column/FormAttach)
+* Layouts (Absolute, i.e no layout with  Grid/Row/Column/FormAttach)
 * Attaching listeners
 
 **General Widget Hierarchy**
@@ -557,7 +557,7 @@ If you inspect a widget, in almost every createHandle() method, you will see the
 
 This means that SWT is creating a new instance of the SWTFixed container. Normally it then assigns something to the handle variable puts the widgets inside it. 
 
-Usually in GTK you create a drawing surface (GdkWindow) [note the 'd'] and draw one or several widgets inside it. In SWT, we create a new drawing surface (GdkWindow) for every single widget. This is very ineffective but gives SWT more control about drawing order and permits easier implementation of overlapping widgets. At this point it might be beneficial to understand that a GdkWindow is a drawing surface, where as a GtkWindow [note 't vs d' difference] is a shell with decorations like 'X', '-' and it interacts with the X drawing system. More will be discussed in the GTK sections that follow.
+Usually in GTK you create a drawing surface `GdkWindow` (note the 'd') and draw one or several widgets inside it. In SWT, we create a new drawing surface (GdkWindow) for every single widget. This is very ineffective but gives SWT more control about drawing order and permits easier implementation of overlapping widgets. At this point it might be beneficial to understand that a GdkWindow is a drawing surface, where as a `GtkWindow` (note 't vs d' difference) is a shell with decorations like 'X', '-' and it interacts with the X drawing system. More will be discussed in the GTK sections that follow.
 
 **Technical C details**
 
@@ -992,7 +992,9 @@ Launch your SWT application. In terminal execute jps (java processes) and identi
     2824 LayoutExample    #<<< this is the SWT snippet.
 
 As a side note, I often set the title of a snippet to the PID of the process. This way I don't have to look for it with jps anymore. To do this in java:
-  <code>ManagementFactory.getRuntimeMXBean().getName().split("@")[0];</code>
+```
+ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
+```
 
 In Eclipse, press Ctrl+3, then search for 'Debug Attached Executable'. (I usually search for 'attached' and it pops up). Search for 'java'. You should see a list of multiple java processes. Pick the one that has the PID of your snippet:
 
@@ -1052,7 +1054,7 @@ SWT Tools then copies code here (for debugging, don't edit as this folder is del
   * This site is good for the conversion: http://www.binaryhexconverter.com/hex-to-decimal-converter
   * You can also convert using the built in Long library in Java:
   Long.toHexString (OS.gtk_widget_get_window(<handle>);
-* Identify which GdkWindow maps to which GtkWidget using GtkInspector - see [images/Gdk_window.png](images/Gdk_window.png) or [images/README.md](images/README.md) for download instructions.
+* Identify which GdkWindow maps to which GtkWidget using GtkInspector - see [images/Gdk_window.png](images/Gdk_window.png)
 * Remember to cast when writing native GTK applications:
   * GtkWidget *button, sometimes a function can accept any widget
   * Bug you need to cast to a particular widget, i.e.: ((GtkButton*)button)->x
