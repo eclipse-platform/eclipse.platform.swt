@@ -125,6 +125,10 @@ public static boolean isCustomAutoScale() {
 	return System.getProperty (SWT_AUTOSCALE) != null;
 }
 
+public static String getEffectiveAutoScaleValue() {
+	return autoScaleValue.toString();
+}
+
 /**
  * Returns {@code true} only if the current setup is compatible
  * with monitor-specific scaling. Returns {@code false} if:
@@ -168,7 +172,7 @@ public static boolean isMonitorSpecificScalingActive() {
 		return false;
 	}
 	String updateOnRuntimeValue = System.getProperty(SWT_AUTOSCALE_UPDATE_ON_RUNTIME);
-	return "force".equalsIgnoreCase(updateOnRuntimeValue) || "true".equalsIgnoreCase(updateOnRuntimeValue);
+	return !"false".equalsIgnoreCase(updateOnRuntimeValue);
 }
 
 public static int pixelToPoint(int size, int zoom) {
@@ -465,10 +469,7 @@ public static int getZoomForAutoscaleProperty (int nativeDeviceZoom) {
 
 public static void runWithAutoScaleValue(String autoScaleValue, Runnable runnable) {
 	AutoScale initialAutoScaleValue = DPIUtil.autoScaleValue;
-	// This method is used to adapt to the autoscale value used by the Equinox launcher,
-	// which currently defaults to "integer". So we need to use explicit "integer" default here
-	// until the Equinox launcher is adapted.
-	DPIUtil.autoScaleValue = AutoScaleCalculation.parseFrom(autoScaleValue == null ? "integer" : autoScaleValue);
+	DPIUtil.autoScaleValue = AutoScaleCalculation.parseFrom(autoScaleValue);
 	DPIUtil.deviceZoom = getZoomForAutoscaleProperty(nativeDeviceZoom);
 	try {
 		runnable.run();
