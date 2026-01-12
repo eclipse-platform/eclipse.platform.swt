@@ -394,10 +394,32 @@ private static <T> ElementAtZoom<T> getElementAtZoom(Function<Integer, T> elemen
 	return null;
 }
 
+/**
+ * Returns the native zoom of the UI and its controls according to the adapted
+ * OS elements. Particularly on Windows, this is the zoom used for fonts by the
+ * OS, no matter what autoscaling of SWT might be applied on top.
+ * <p>
+ * <b>Warning:</b> When using monitor-specific scaling on Windows, this value
+ * may not be reasonable as there is no single zoom for the application but one
+ * per shell and its monitor. In that case, this method will return the native
+ * zoom for the shell whose zoom has last been changed (via moving the shell to
+ * another monitor or changing the zoom of a monitor).
+ */
 public static int getNativeDeviceZoom() {
 	return nativeDeviceZoom;
 }
 
+/**
+ * Returns the zoom of the UI and its controls according to SWT autoscaling
+ * settings. It is an adapted value of {@link #getNativeDeviceZoom()} based on
+ * the setting of the {@code swt.autoScale} property.
+ * <p>
+ * <b>Warning:</b> When using monitor-specific scaling on Windows, this value
+ * may not be reasonable as there is no single zoom for the application but one
+ * per shell and its monitor. In that case, this method will return the
+ * autoscaling zoom for the shell whose zoom has last been changed (via moving
+ * the shell to another monitor or changing the zoom of a monitor).
+ */
 public static int getDeviceZoom() {
 	return deviceZoom;
 }
