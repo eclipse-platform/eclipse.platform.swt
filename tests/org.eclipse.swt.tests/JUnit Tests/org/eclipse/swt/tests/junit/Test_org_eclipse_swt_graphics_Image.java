@@ -465,9 +465,26 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Device_ImageGcDrawer() {
 }
 
 @Test
-public void test_ConstructorLorg_eclipse_swt_graphics_DeviceImageI() throws IOException {
+public void test_ConstructorLorg_eclipse_swt_graphics_DeviceImageI_inputStream() throws IOException {
 	byte[] bytes = Files.readAllBytes(Path.of(getPath("collapseall.png")));
 	Image sourceImage = new Image(display, new ByteArrayInputStream(bytes));
+	Image copiedImage = new Image(display, sourceImage, SWT.IMAGE_COPY);
+	Image targetImage = new Image(display, 1, 1);
+	GC gc = new GC(targetImage);
+	gc.drawImage(sourceImage, 0, 0);
+	gc.drawImage(targetImage, 0, 0);
+
+	assertEquals(0, imageDataComparator().compare(sourceImage.getImageData(), copiedImage.getImageData()));
+
+	sourceImage.dispose();
+	copiedImage.dispose();
+	targetImage.dispose();
+}
+
+@Test
+public void test_ConstructorLorg_eclipse_swt_graphics_DeviceImageI_fileNameProvider() {
+	ImageFileNameProvider fileNameProvider = zoom -> zoom == 100 ? getPath("collapseall.png") : null;
+	Image sourceImage = new Image(display, fileNameProvider);
 	Image copiedImage = new Image(display, sourceImage, SWT.IMAGE_COPY);
 	Image targetImage = new Image(display, 1, 1);
 	GC gc = new GC(targetImage);
