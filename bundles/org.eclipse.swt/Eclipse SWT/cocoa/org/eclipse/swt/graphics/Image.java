@@ -14,6 +14,7 @@
 package org.eclipse.swt.graphics;
 
 
+import static org.eclipse.swt.internal.DPIUtil.pixelToPoint;
 import static org.eclipse.swt.internal.DPIUtil.pointToPixel;
 import static org.eclipse.swt.internal.image.ImageColorTransformer.DEFAULT_DISABLED_IMAGE_TRANSFORMER;
 
@@ -1854,13 +1855,13 @@ public String toString () {
 public static void drawAtSize(GC gc, ImageData imageData, int width, int height) {
 	StrictChecks.runWithStrictChecksDisabled(() -> {
 		Image imageToDraw = new Image(gc.device, (ImageDataProvider) zoom -> imageData);
-		gc.drawImage(imageToDraw, 0, 0, CocoaDPIUtil.pixelToPoint(imageData.width), CocoaDPIUtil.pixelToPoint(imageData.height),
+		gc.drawImage(imageToDraw, 0, 0, pixelToPoint(imageData.width, DPIUtil.getDeviceZoom()), pixelToPoint(imageData.height, DPIUtil.getDeviceZoom()),
 				/*
 				 * E.g. destWidth here is effectively DPIUtil.autoScaleDown (scaledWidth), but
 				 * avoiding rounding errors. Nevertheless, we still have some rounding errors
 				 * due to the point-based API GC#drawImage(..).
 				 */
-				0, 0,  Math.round(CocoaDPIUtil.pixelToPoint(width)),  Math.round(CocoaDPIUtil.pixelToPoint(height)));
+				0, 0,  pixelToPoint(width, DPIUtil.getDeviceZoom()), pixelToPoint(height, DPIUtil.getDeviceZoom()));
 		imageToDraw.dispose();
 	});
 }
