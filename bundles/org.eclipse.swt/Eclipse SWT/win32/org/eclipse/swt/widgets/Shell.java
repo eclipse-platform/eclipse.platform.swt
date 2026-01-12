@@ -1233,6 +1233,21 @@ public ToolBar getToolBar() {
 	return null;
 }
 
+/**
+ * Returns the zoom of the shell.
+ * <p>
+ * Hint: The returned value is the zoom of the shell as originally considered by
+ * the OS and not an adjusted zoom value as considered by SWT autoscaling capabilities.
+ * </p>
+ *
+ * @return the zoom for this shell
+ *
+ * @since 3.133
+ */
+public int getZoom() {
+	return DPIUtil.mapDPIToZoom(OS.GetDpiForWindow(handle));
+}
+
 @Override
 Composite findDeferredControl () {
 	return layoutCount > 0 ? this : null;
