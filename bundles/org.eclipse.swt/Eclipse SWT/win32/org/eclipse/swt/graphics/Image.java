@@ -2247,7 +2247,7 @@ private class ImageDataLoaderStreamProviderWrapper extends ImageFromImageDataPro
 			this.inputStreamData = inputStream.readAllBytes();
 			initImage();
 		} catch (IOException e) {
-			SWT.error(SWT.ERROR_INVALID_ARGUMENT, e);
+			SWT.error(SWT.ERROR_IO, e);
 		}
 	}
 
