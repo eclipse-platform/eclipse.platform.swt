@@ -554,11 +554,17 @@ public Image(Device device, ImageData source, ImageData mask) {
  */
 public Image(Device device, InputStream stream) {
 	super(device);
-	currentDeviceZoom = DPIUtil.getDeviceZoom();
-	ElementAtZoom<ImageData> image = ImageDataLoader.loadByZoom(stream, FileFormat.DEFAULT_ZOOM, currentDeviceZoom);
-	ImageData data = DPIUtil.scaleImageData(device, image, currentDeviceZoom);
-	init(data);
-	init();
+	if (stream == null) {
+		SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	}
+	try {
+		currentDeviceZoom = DPIUtil.getDeviceZoom();
+		this.imageDataProvider = createImageDataProvider(stream);
+		initFromImageDataProvider(currentDeviceZoom);
+		init();
+	} catch (IOException e) {
+		SWT.error(SWT.ERROR_IO, e);
+	}
 }
 
 /**
@@ -800,6 +806,20 @@ private void initFromImageDataProvider(int zoom) {
 	ElementAtZoom<ImageData> data = DPIUtil.validateAndGetImageDataAtZoom (imageDataProvider, zoom);
 	ImageData resizedData = DPIUtil.scaleImageData (device, data.element(), zoom, data.zoom());
 	init(resizedData);
+}
+
+private static ImageDataProvider createImageDataProvider(InputStream stream) throws IOException {
+	byte[] streamData = stream.readAllBytes();
+	if (ImageDataLoader.isDynamicallySizable(new ByteArrayInputStream(streamData))) {
+		ImageDataAtSizeProvider imageDataAtSizeProvider = (width, height) -> ImageDataLoader
+				.loadBySize(new ByteArrayInputStream(streamData), width, height);
+		return imageDataAtSizeProvider;
+	}
+
+	ImageData imageData = ImageDataLoader
+			.loadByZoom(new ByteArrayInputStream(streamData), FileFormat.DEFAULT_ZOOM, 100)
+			.element();
+	return zoom -> zoom == 100 ? imageData : null;
 }
 
 void createFromPixbuf(int type, long pixbuf) {
