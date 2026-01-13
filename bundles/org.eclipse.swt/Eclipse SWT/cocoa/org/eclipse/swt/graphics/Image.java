@@ -691,9 +691,8 @@ public Image(Device device, InputStream stream) {
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
-		byte[] input = stream.readAllBytes();
-		initWithSupplier(zoom -> ImageDataLoader.canLoadAtZoom(new ByteArrayInputStream(input), FileFormat.DEFAULT_ZOOM, zoom),
-				zoom -> ImageDataLoader.loadByZoom(new ByteArrayInputStream(input), FileFormat.DEFAULT_ZOOM, zoom).element());
+		ImageDataProvider imageDataProvider = createImageDataProvider(stream);
+		initUsingImageDataProvider(imageDataProvider);
 		init();
 	} catch (IOException e) {
 		SWT.error(SWT.ERROR_IO, e);
@@ -847,24 +846,14 @@ private void initUsingFileNameProvider(ImageFileNameProvider imageFileNameProvid
 public Image(Device device, ImageDataProvider imageDataProvider) {
 	super(device);
 	if (imageDataProvider == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.imageDataProvider = imageDataProvider;
-	ImageData data = imageDataProvider.getImageData (100);
-	if (data == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
-		init (data, 100);
+		initUsingImageDataProvider(imageDataProvider);
 		init ();
 		StrictChecks.runIfStrictChecksEnabled(() -> {
 			DPIUtil.validateLinearScaling(imageDataProvider);
 		});
-		ImageData data2x = imageDataProvider.getImageData (200);
-		if (data2x != null) {
-			alphaInfo_200 = new AlphaInfo();
-			NSBitmapImageRep rep = createRepresentation (data2x, alphaInfo_200);
-			handle.addRepresentation(rep);
-			rep.release();
-		}
 	} finally {
 		if (pool != null) pool.release();
 	}
@@ -1511,11 +1500,15 @@ void init(ImageData image, int imageZoom) {
 	handle.setCacheMode(OS.NSImageCacheNever);
 }
 
-private void initWithSupplier(Function<Integer, Boolean> canLoadAtZoom, Function<Integer, ImageData> zoomToImageData) {
-	ImageData imageData = zoomToImageData.apply(100);
+private void initUsingImageDataProvider(ImageDataProvider imageDataProvider) {
+	this.imageDataProvider = imageDataProvider;
+	ImageData imageData = imageDataProvider.getImageData(100);
+	if (imageData == null) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
 	init(imageData, 100);
-	if (canLoadAtZoom.apply(200)) {
-		ImageData imageData2x = zoomToImageData.apply(200);
+	ImageData imageData2x = imageDataProvider.getImageData(200);
+	if (imageData2x != null) {
 		alphaInfo_200 = new AlphaInfo();
 		NSBitmapImageRep rep = createRepresentation (imageData2x, alphaInfo_200);
 		handle.addRepresentation(rep);
@@ -1523,6 +1516,19 @@ private void initWithSupplier(Function<Integer, Boolean> canLoadAtZoom, Function
 	}
 }
 
+private static ImageDataProvider createImageDataProvider(InputStream stream) throws IOException {
+	byte[] streamData = stream.readAllBytes();
+	if (ImageDataLoader.isDynamicallySizable(new ByteArrayInputStream(streamData))) {
+		ImageDataAtSizeProvider imageDataAtSizeProvider = (width, height) -> ImageDataLoader
+				.loadBySize(new ByteArrayInputStream(streamData), width, height);
+		return imageDataAtSizeProvider;
+	}
+
+	ImageData imageData = ImageDataLoader
+			.loadByZoom(new ByteArrayInputStream(streamData), FileFormat.DEFAULT_ZOOM, 100)
+			.element();
+	return zoom -> zoom == 100 ? imageData : null;
+}
 
 void initAlpha_200(NSBitmapImageRep nativeRep) {
 	NSAutoreleasePool pool = null;
