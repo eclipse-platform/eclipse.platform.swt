@@ -386,6 +386,17 @@ public int getDepth () {
  * dots per inch of the display, and whose y coordinate
  * is the logical vertical dots per inch of the display.
  *
+ * <p><b>Caution:</b> this method may yield unexpected results when using
+ * multiple monitors. This method returns a value based on the
+ * primary monitor DPI on startup (depending on the OS).</p>
+ *
+ * <p>Note: This method returns a DPI value under consideration of the 
+ * autoscale mode. If the autoscaled zoom is different to the native
+ * zoom, the returned DPI will be calculated relative from the autoscaled
+ * zoom to the DPI of the native zoom, e.g. in the Windows implementation 
+ * (with a base DPI of 96) this method will return 120 with autoscale mode 
+ * <i>integer</i> and 96 with autoscale mode <i>quarter</i>.</p>
+ *
  * @return the horizontal and vertical DPI
  *
  * @exception SWTException <ul>
