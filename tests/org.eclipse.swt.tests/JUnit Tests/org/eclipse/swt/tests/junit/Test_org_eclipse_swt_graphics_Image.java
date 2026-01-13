@@ -288,6 +288,15 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_io_InputStream
 	}
 	assertSWTProblem("Incorrect exception thrown for invalid InputStream", SWT.ERROR_UNSUPPORTED_FORMAT, e);
 
+	InputStream failingStream = new InputStream() {
+		@Override
+		public int read() throws IOException {
+			throw new IOException("bad input stream");
+		}
+	};
+	e = assertThrows(SWTException.class, () -> new Image(display, failingStream));
+	assertSWTProblem("Incorrect exception thrown for invalid InputStream", SWT.ERROR_IO, e);
+
 	String firstFile = SwtTestUtil.invalidImageFilenames[0];
 	Display[] displays = { display, null };
 	for (Display display : displays) {

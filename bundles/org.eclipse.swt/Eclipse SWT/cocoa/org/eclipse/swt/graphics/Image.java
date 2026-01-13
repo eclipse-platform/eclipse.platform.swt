@@ -696,7 +696,7 @@ public Image(Device device, InputStream stream) {
 				zoom -> ImageDataLoader.loadByZoom(new ByteArrayInputStream(input), FileFormat.DEFAULT_ZOOM, zoom).element());
 		init();
 	} catch (IOException e) {
-		SWT.error(SWT.ERROR_INVALID_ARGUMENT, e);
+		SWT.error(SWT.ERROR_IO, e);
 	} finally {
 		if (pool != null) pool.release();
 	}
