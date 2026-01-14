@@ -1388,6 +1388,9 @@ public ImageData getImageData (int zoom) {
 		return imageHandle.getImageData();
 	}
 
+	if (this.imageProvider.isPersistentImageHandleRequriedForImageData()) {
+		return imageHandleManager.getOrCreate(zoom, () -> imageProvider.newImageHandle(new ZoomContext(zoom))).getImageData();
+	}
 	return this.imageProvider.newImageData(zoom);
 }
 
@@ -2055,6 +2058,10 @@ private abstract class AbstractImageProviderWrapper {
 		return Collections.emptySet();
 	}
 
+	protected boolean isPersistentImageHandleRequriedForImageData() {
+		return false;
+	}
+
 	protected abstract ElementAtZoom<ImageData> loadImageData(int zoom);
 
 	abstract ImageData newImageData(int zoom);
@@ -2076,10 +2083,7 @@ private abstract class AbstractImageProviderWrapper {
 		return Optional.empty(); // exact size not available
 	}
 
-	protected DestroyableImageHandle newImageHandle(ZoomContext zoomContext) {
-		ImageData resizedData = getImageData (zoomContext.targetZoom());
-		return newImageHandle(resizedData, zoomContext);
-	}
+	abstract DestroyableImageHandle newImageHandle(ZoomContext zoomContext);
 
 	protected final DestroyableImageHandle newImageHandle(ImageData data, ZoomContext zoomContext) {
 		if (type == SWT.ICON && data.getTransparencyType() != SWT.TRANSPARENCY_MASK) {
@@ -2135,6 +2139,12 @@ private class ExistingImageHandleProviderWrapper extends AbstractImageProviderWr
 	@Override
 	protected ElementAtZoom<ImageData> loadImageData(int zoom) {
 		return getClosestAvailableImageData(zoom);
+	}
+
+	@Override
+	protected DestroyableImageHandle newImageHandle(ZoomContext zoomContext) {
+		ImageData resizedData = newImageData (zoomContext.targetZoom());
+		return newImageHandle(resizedData, zoomContext);
 	}
 }
 
@@ -2262,7 +2272,7 @@ private class ImageDataLoaderStreamProviderWrapper extends ImageFromImageDataPro
 
 	@Override
 	protected Rectangle getBounds(int zoom) {
-		ImageData scaledImageData = getImageData(zoom);
+		ImageData scaledImageData = newImageData(zoom);
 		return new Rectangle(0, 0, scaledImageData.width, scaledImageData.height);
 	}
 
@@ -2320,15 +2330,18 @@ private class PlainImageProviderWrapper extends AbstractImageProviderWrapper {
 	}
 
 	@Override
+	protected boolean isPersistentImageHandleRequriedForImageData() {
+		// when requesting image data for a not-yet-calculated zoom on an image
+		// with a GC initialized on it (memGC != null), this data must not be
+		// acquired by resizing from another zoom but by creating a handle for
+		// the zoom and making the GC reapply its operations on it. For that reason,
+		// this methods returns true if there is a memGC and in case there is no
+		// handle yet, such that a handle must be created anyway.
+		return imageHandleManager.isEmpty() || memGC != null;
+	}
+
+	@Override
 	ImageData newImageData(int zoom) {
-		if (imageHandleManager.isEmpty()) {
-			return imageHandleManager.getOrCreate(zoom, () -> createBaseHandle(zoom)).getImageData();
-		}
-		// if a GC is initialized with an Image (memGC != null), the image data must not be resized, because it would
-		// be a destructive operation. Therefor, a new handle is created for the requested zoom
-		if (memGC != null) {
-			return imageHandleManager.getOrCreate(zoom, () -> newImageHandle(new ZoomContext(zoom))).getImageData();
-		}
 		return getScaledImageData(zoom);
 	}
 
@@ -2350,7 +2363,9 @@ private class PlainImageProviderWrapper extends AbstractImageProviderWrapper {
 			currentGC.refreshFor(new DrawableWrapper(Image.this, zoomContext), imageHandle);
 			return imageHandle;
 		}
-		return super.newImageHandle(zoomContext);
+
+		ImageData resizedData = newImageData (targetZoom);
+		return newImageHandle(resizedData, zoomContext);
 	}
 	private DestroyableImageHandle createBaseHandle(int zoom) {
 		baseZoom = zoom;
@@ -2468,7 +2483,7 @@ private abstract class BaseImageProviderWrapper<T> extends DynamicImageProviderW
 
 	@Override
 	protected Rectangle getBounds(int zoom) {
-		ImageData imageData = getImageData(zoom);
+		ImageData imageData = newImageData(zoom);
 		return new Rectangle(0, 0, imageData.width, imageData.height);
 	}
 }
