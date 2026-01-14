@@ -1227,7 +1227,7 @@ void handleDPIChange(Event event, float scalingFactor) {
 			item.setControl(control);
 		}
 
-		Point preferredControlSize =  item.getControl().computeSizeInPixels(new Point(SWT.DEFAULT, SWT.DEFAULT), getAutoscalingZoom(), true);
+		Point preferredControlSize =  item.getControl().computeSizeInPixels(new Point(SWT.DEFAULT, SWT.DEFAULT), computeBoundsZoom(), true);
 		int controlWidth = preferredControlSize.x;
 		int controlHeight = preferredControlSize.y;
 		if (((style & SWT.VERTICAL) != 0)) {
