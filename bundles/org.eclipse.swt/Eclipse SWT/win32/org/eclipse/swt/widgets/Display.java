@@ -953,6 +953,7 @@ protected void create (DeviceData data) {
 		setMonitorSpecificScaling(true);
 		Win32DPIUtils.setAutoScaleForMonitorSpecificScaling();
 	}
+	Win32DPIUtils.initializeCustomDpiAwareness();
 	createDisplay (data);
 	register (this);
 	if (Default == null) Default = this;
