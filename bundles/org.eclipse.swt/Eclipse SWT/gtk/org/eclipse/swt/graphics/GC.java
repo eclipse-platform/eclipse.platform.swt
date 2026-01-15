@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2022 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -467,8 +467,7 @@ public void copyArea(Image image, int x, int y) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (image.type != SWT.BITMAP || image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	Point loc = new Point(x, y);
-	copyAreaInPixels(image, loc.x, loc.y);
+	copyAreaInPixels(image, x, y);
 }
 void copyAreaInPixels(Image image, int x, int y) {
 	long cairo = Cairo.cairo_create(image.surface);
@@ -507,9 +506,7 @@ void copyAreaInPixels(Image image, int x, int y) {
  */
 public void copyArea(int srcX, int srcY, int width, int height, int destX, int destY) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Rectangle src = new Rectangle(srcX, srcY, width, height);
-	Point dest = new Point(destX, destY);
-	copyAreaInPixels(src.x, src.y, src.width, src.height, dest.x, dest.y);
+	copyAreaInPixels(srcX, srcY, width, height, destX, destY);
 }
 
 void copyAreaInPixels(int srcX, int srcY, int width, int height, int destX, int destY) {
@@ -535,9 +532,7 @@ void copyAreaInPixels(int srcX, int srcY, int width, int height, int destX, int 
  */
 public void copyArea(int srcX, int srcY, int width, int height, int destX, int destY, boolean paint) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Rectangle srcLoc = new Rectangle(srcX, srcY, width, height);
-	Point destLoc = new Point(destX, destY);
-	copyAreaInPixels(srcLoc.x, srcLoc.y, srcLoc.width, srcLoc.height, destLoc.x, destLoc.y, paint);
+	copyAreaInPixels(srcX, srcY, width, height, destX, destY, paint);
 }
 void copyAreaInPixels(int srcX, int srcY, int width, int height, int destX, int destY, boolean paint) {
 	if (width <= 0 || height <= 0) return;
@@ -726,8 +721,7 @@ void destroy() {
  */
 public void drawArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Rectangle loc = new Rectangle(x, y, width, height);
-	drawArcInPixels(loc.x, loc.y, loc.width, loc.height, startAngle, arcAngle);
+	drawArcInPixels(x, y, width, height, startAngle, arcAngle);
 }
 void drawArcInPixels(int x, int y, int width, int height, int startAngle, int arcAngle) {
 	checkGC(DRAW);
@@ -781,8 +775,7 @@ void drawArcInPixels(int x, int y, int width, int height, int startAngle, int ar
  */
 public void drawFocus(int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Rectangle loc = new Rectangle(x, y, width, height);
-	drawFocusInPixels(loc.x, loc.y, loc.width, loc.height);
+	drawFocusInPixels(x, y, width, height);
 }
 void drawFocusInPixels(int x, int y, int width, int height) {
 	long cairo = data.cairo;
@@ -814,8 +807,7 @@ public void drawImage(Image image, int x, int y) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	Point loc = new Point(x, y);
-	drawImageInPixels(image, loc.x, loc.y);
+	drawImageInPixels(image, x, y);
 }
 void drawImageInPixels(Image image, int x, int y) {
 	drawImage(image, 0, 0, -1, -1, x, y, -1, -1, true);
@@ -994,9 +986,7 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
  */
 public void drawLine(int x1, int y1, int x2, int y2) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Point loc1 = new Point(x1, y1);
-	Point loc2 = new Point(x2, y2);
-	drawLineInPixels(loc1.x, loc1.y, loc2.x, loc2.y);
+	drawLineInPixels(x1, y1, x2, y2);
 }
 void drawLineInPixels(int x1, int y1, int x2, int y2) {
 	checkGC(DRAW);
@@ -1033,8 +1023,7 @@ void drawLineInPixels(int x1, int y1, int x2, int y2) {
  */
 public void drawOval(int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Rectangle rect = new Rectangle(x, y, width, height);
-	drawOvalInPixels(rect.x, rect.y, rect.width, rect.height);
+	drawOvalInPixels(x, y, width, height);
 }
 void drawOvalInPixels(int x, int y, int width, int height) {
 	checkGC(DRAW);
@@ -1120,8 +1109,7 @@ public void drawPath(Path path) {
  */
 public void drawPoint (int x, int y) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Point loc = new Point(x, y);
-	drawPointInPixels(loc.x, loc.y);
+	drawPointInPixels(x, y);
 }
 void drawPointInPixels (int x, int y) {
 	checkGC(DRAW);
@@ -1217,7 +1205,7 @@ void drawPolyline(long cairo, int[] pointArray, double xOffset, double yOffset, 
  */
 public void drawRectangle(int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	drawRectangle(new Rectangle(x, y, width, height));
+	drawRectangleInPixels(x, y, width, height);
 }
 void drawRectangleInPixels(int x, int y, int width, int height) {
 	checkGC(DRAW);
@@ -1253,10 +1241,7 @@ void drawRectangleInPixels(int x, int y, int width, int height) {
  */
 public void drawRectangle(Rectangle rect) {
 	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	drawRectangleInPixels(rect);
-}
-void drawRectangleInPixels(Rectangle rect) {
-	drawRectangleInPixels (rect.x, rect.y, rect.width, rect.height);
+	drawRectangleInPixels(rect.x, rect.y, rect.width, rect.height);
 }
 /**
  * Draws the outline of the round-cornered rectangle specified by
@@ -1281,9 +1266,7 @@ void drawRectangleInPixels(Rectangle rect) {
  */
 public void drawRoundRectangle(int x, int y, int width, int height, int arcWidth, int arcHeight) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Rectangle rect = new Rectangle(x, y, width, height);
-	Point arcSize = new Point(arcWidth, arcHeight);
-	drawRoundRectangleInPixels(rect.x, rect.y, rect.width, rect.height, arcSize.x, arcSize.y);
+	drawRoundRectangleInPixels(x, y, width, height, arcWidth, arcHeight);
 }
 void drawRoundRectangleInPixels(int x, int y, int width, int height, int arcWidth, int arcHeight) {
 	checkGC(DRAW);
@@ -1387,8 +1370,7 @@ void drawStringInPixels (String string, int x, int y) {
 public void drawString(String string, int x, int y, boolean isTransparent) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	Point loc = new Point(x, y);
-	drawStringInPixels(string, loc.x, loc.y, isTransparent);
+	drawStringInPixels(string, x, y, isTransparent);
 }
 
 void drawStringInPixels(String string, int x, int y, boolean isTransparent) {
@@ -1449,8 +1431,7 @@ void drawTextInPixels(String string, int x, int y) {
  * </ul>
  */
 public void drawText(String string, int x, int y, boolean isTransparent) {
-	Point loc = new Point (x, y);
-	drawTextInPixels(string, loc.x, loc.y, isTransparent);
+	drawTextInPixels(string, x, y, isTransparent);
 }
 void drawTextInPixels(String string, int x, int y, boolean isTransparent) {
 	int flags = SWT.DRAW_DELIMITER | SWT.DRAW_TAB;
@@ -1498,8 +1479,7 @@ void drawTextInPixels(String string, int x, int y, boolean isTransparent) {
  * </ul>
  */
 public void drawText (String string, int x, int y, int flags) {
-	Point loc = new Point (x, y);
-	drawTextInPixels(string, loc.x, loc.y, flags);
+	drawTextInPixels(string, x, y, flags);
 }
 void drawTextInPixels (String string, int x, int y, int flags) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
@@ -1584,8 +1564,7 @@ public boolean equals(Object object) {
  */
 public void fillArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Rectangle rect = new Rectangle(x, y, width, height);
-	fillArcInPixels(rect.x, rect.y, rect.width, rect.height, startAngle, arcAngle);
+	fillArcInPixels(x, y, width, height, startAngle, arcAngle);
 }
 void fillArcInPixels(int x, int y, int width, int height, int startAngle, int arcAngle) {
 	checkGC(FILL);
@@ -1643,8 +1622,7 @@ void fillArcInPixels(int x, int y, int width, int height, int startAngle, int ar
  */
 public void fillGradientRectangle(int x, int y, int width, int height, boolean vertical) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Rectangle rect = new Rectangle(x, y, width, height);
-	fillGradientRectangleInPixels(rect.x, rect.y, rect.width, rect.height, vertical);
+	fillGradientRectangleInPixels(x, y, width, height, vertical);
 }
 
 void fillGradientRectangleInPixels(int x, int y, int width, int height, boolean vertical) {
@@ -1727,8 +1705,7 @@ void fillGradientRectangleInPixels(int x, int y, int width, int height, boolean 
  */
 public void fillOval(int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Rectangle rect = new Rectangle(x, y, width, height);
-	fillOvalInPixels(rect.x, rect.y, rect.width, rect.height);
+	fillOvalInPixels(x, y, width, height);
 }
 void fillOvalInPixels(int x, int y, int width, int height) {
 	checkGC(FILL);
@@ -1839,7 +1816,7 @@ void fillPolygonInPixels(int[] pointArray) {
  */
 public void fillRectangle(int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	fillRectangle(new Rectangle(x, y, width, height));
+	fillRectangleInPixels(x, y, width, height);
 }
 void fillRectangleInPixels(int x, int y, int width, int height) {
 	checkGC(FILL);
@@ -1878,9 +1855,6 @@ void fillRectangleInPixels(int x, int y, int width, int height) {
 public void fillRectangle(Rectangle rect) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	fillRectangleInPixels(rect);
-}
-void fillRectangleInPixels(Rectangle rect) {
 	fillRectangleInPixels(rect.x, rect.y, rect.width, rect.height);
 }
 
@@ -1903,9 +1877,7 @@ void fillRectangleInPixels(Rectangle rect) {
  */
 public void fillRoundRectangle(int x, int y, int width, int height, int arcWidth, int arcHeight) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Rectangle rect = new Rectangle(x, y, width, height);
-	Point arcSize = new Point(arcWidth, arcHeight);
-	fillRoundRectangleInPixels(rect.x, rect.y, rect.width, rect.height, arcSize.x, arcSize.y);
+	fillRoundRectangleInPixels(x, y, width, height, arcWidth, arcHeight);
 }
 void fillRoundRectangleInPixels(int x, int y, int width, int height, int arcWidth, int arcHeight) {
 	checkGC(FILL);
