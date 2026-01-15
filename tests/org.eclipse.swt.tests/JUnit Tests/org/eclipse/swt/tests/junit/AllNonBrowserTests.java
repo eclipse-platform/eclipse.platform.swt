@@ -14,10 +14,15 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.graphics.Resource;
+import org.eclipse.swt.tests.junit.AllNonBrowserTests.NonBrowserTestSuite;
 import org.junit.platform.suite.api.AfterSuite;
 import org.junit.platform.suite.api.BeforeSuite;
 import org.junit.platform.suite.api.SelectClasses;
@@ -26,58 +31,68 @@ import org.junit.platform.suite.api.Suite;
 /**
  * Suite for running most SWT test cases (all except for browser tests).
  */
-@Suite(failIfNoTests = false)
-@SelectClasses({ //
-		// Basic tests
-		Test_org_eclipse_swt_SWT.class, //
-		Test_org_eclipse_swt_SWTException.class, //
-		Test_org_eclipse_swt_SWTError.class, //
-		Test_org_eclipse_swt_widgets_Display.class, //
-		// Groups of tests
-		AllGraphicsTests.class, //
-		AllWidgetTests.class, //
-		// Rest of tests alphabetically
-		DPIUtilTests.class, //
-		JSVGRasterizerTest.class, //
-		Test_org_eclipse_swt_accessibility_Accessible.class, //
-		Test_org_eclipse_swt_accessibility_AccessibleControlEvent.class, //
-		Test_org_eclipse_swt_accessibility_AccessibleEvent.class, //
-		Test_org_eclipse_swt_accessibility_AccessibleTextEvent.class, //
-		Test_org_eclipse_swt_dnd_ByteArrayTransfer.class, //
-		Test_org_eclipse_swt_dnd_Clipboard.class, //
-		Test_org_eclipse_swt_dnd_FileTransfer.class, //
-		Test_org_eclipse_swt_dnd_HTMLTransfer.class, //
-		Test_org_eclipse_swt_dnd_ImageTransfer.class, //
-		Test_org_eclipse_swt_dnd_RTFTransfer.class, //
-		Test_org_eclipse_swt_dnd_TextTransfer.class, //
-		Test_org_eclipse_swt_dnd_URLTransfer.class, //
-		Test_org_eclipse_swt_events_ArmEvent.class, //
-		Test_org_eclipse_swt_events_ControlEvent.class, //
-		Test_org_eclipse_swt_events_DisposeEvent.class, //
-		Test_org_eclipse_swt_events_FocusEvent.class, //
-		Test_org_eclipse_swt_events_HelpEvent.class, //
-		Test_org_eclipse_swt_events_KeyEvent.class, //
-		Test_org_eclipse_swt_events_MenuEvent.class, //
-		Test_org_eclipse_swt_events_ModifyEvent.class, //
-		Test_org_eclipse_swt_events_MouseEvent.class, //
-		Test_org_eclipse_swt_events_PaintEvent.class, //
-		Test_org_eclipse_swt_events_SelectionEvent.class, //
-		Test_org_eclipse_swt_events_ShellEvent.class, //
-		Test_org_eclipse_swt_events_TraverseEvent.class, //
-		Test_org_eclipse_swt_events_TreeEvent.class, //
-		Test_org_eclipse_swt_events_TypedEvent.class, //
-		Test_org_eclipse_swt_events_VerifyEvent.class, //
-		Test_org_eclipse_swt_internal_SVGRasterizer.class, //
-		Test_org_eclipse_swt_layout_BorderLayout.class, //
-		Test_org_eclipse_swt_layout_FormAttachment.class, //
-		Test_org_eclipse_swt_layout_GridData.class, //
-		Test_org_eclipse_swt_printing_PDFDocument.class, //
-		Test_org_eclipse_swt_printing_PrintDialog.class, //
-		Test_org_eclipse_swt_printing_Printer.class, //
-		Test_org_eclipse_swt_printing_PrinterData.class, //
-		Test_org_eclipse_swt_program_Program.class, //
-})
+@NonBrowserTestSuite
 public class AllNonBrowserTests {
+
+	// Combine the test annotations with the test classes in a wrapper annotation
+	// such that it can be reused for derived test suites
+	@Suite(failIfNoTests = false)
+	@SelectClasses({ //
+			// Basic tests
+			Test_org_eclipse_swt_SWT.class, //
+			Test_org_eclipse_swt_SWTException.class, //
+			Test_org_eclipse_swt_SWTError.class, //
+			Test_org_eclipse_swt_widgets_Display.class, //
+			// Groups of tests
+			AllGraphicsTests.class, //
+			AllWidgetTests.class, //
+			// Rest of tests alphabetically
+			DPIUtilTests.class, //
+			JSVGRasterizerTest.class, //
+			Test_org_eclipse_swt_accessibility_Accessible.class, //
+			Test_org_eclipse_swt_accessibility_AccessibleControlEvent.class, //
+			Test_org_eclipse_swt_accessibility_AccessibleEvent.class, //
+			Test_org_eclipse_swt_accessibility_AccessibleTextEvent.class, //
+			Test_org_eclipse_swt_dnd_ByteArrayTransfer.class, //
+			Test_org_eclipse_swt_dnd_Clipboard.class, //
+			Test_org_eclipse_swt_dnd_FileTransfer.class, //
+			Test_org_eclipse_swt_dnd_HTMLTransfer.class, //
+			Test_org_eclipse_swt_dnd_ImageTransfer.class, //
+			Test_org_eclipse_swt_dnd_RTFTransfer.class, //
+			Test_org_eclipse_swt_dnd_TextTransfer.class, //
+			Test_org_eclipse_swt_dnd_URLTransfer.class, //
+			Test_org_eclipse_swt_events_ArmEvent.class, //
+			Test_org_eclipse_swt_events_ControlEvent.class, //
+			Test_org_eclipse_swt_events_DisposeEvent.class, //
+			Test_org_eclipse_swt_events_FocusEvent.class, //
+			Test_org_eclipse_swt_events_HelpEvent.class, //
+			Test_org_eclipse_swt_events_KeyEvent.class, //
+			Test_org_eclipse_swt_events_MenuEvent.class, //
+			Test_org_eclipse_swt_events_ModifyEvent.class, //
+			Test_org_eclipse_swt_events_MouseEvent.class, //
+			Test_org_eclipse_swt_events_PaintEvent.class, //
+			Test_org_eclipse_swt_events_SelectionEvent.class, //
+			Test_org_eclipse_swt_events_ShellEvent.class, //
+			Test_org_eclipse_swt_events_TraverseEvent.class, //
+			Test_org_eclipse_swt_events_TreeEvent.class, //
+			Test_org_eclipse_swt_events_TypedEvent.class, //
+			Test_org_eclipse_swt_events_VerifyEvent.class, //
+			Test_org_eclipse_swt_internal_SVGRasterizer.class, //
+			Test_org_eclipse_swt_layout_BorderLayout.class, //
+			Test_org_eclipse_swt_layout_FormAttachment.class, //
+			Test_org_eclipse_swt_layout_GridData.class, //
+			Test_org_eclipse_swt_printing_PDFDocument.class, //
+			Test_org_eclipse_swt_printing_PrintDialog.class, //
+			Test_org_eclipse_swt_printing_Printer.class, //
+			Test_org_eclipse_swt_printing_PrinterData.class, //
+			Test_org_eclipse_swt_program_Program.class, //
+	})
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.TYPE)
+	@interface NonBrowserTestSuite  {
+		//
+	}
+
 	private static List<Error> leakedResources;
 
 	@BeforeSuite
