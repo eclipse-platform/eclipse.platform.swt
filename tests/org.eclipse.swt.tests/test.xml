@@ -24,7 +24,7 @@
   <!-- This target defines the tests that need to be run. -->
   <target name="suite" unless="performance">
     <property name="data" value="${eclipse-home}/swt_sniff_folder"/>
-    <delete dir="${location1}" quiet="true"/>
+    <delete dir="${data}" quiet="true"/>
     <ant target="core-test" antfile="${library-file}" dir="${eclipse-home}">
       <property name="data-dir" value="${data}"/>
       <property name="plugin-name" value="${plugin-name}"/>
@@ -34,9 +34,23 @@
     </ant>
   </target>
 	
+  <!-- This target defines the tests that need to be run. -->
+  <target name="suite-non-default-autoscale" unless="performance">
+    <property name="data" value="${eclipse-home}/swt_sniff_folder"/>
+    <delete dir="${data}" quiet="true"/>
+    <ant target="core-test" antfile="${library-file}" dir="${eclipse-home}">
+      <property name="data-dir" value="${data}"/>
+      <property name="plugin-name" value="${plugin-name}"/>
+      <property name="classname" value="org.eclipse.swt.tests.junit.AllNonBrowserTests_AutoscaleOsNonDefaults"/>
+      <!-- workaround for https://bugs.eclipse.org/502410 and checks for bug 532632 -->
+      <property name="vmargs" value="-Dorg.eclipse.swt.internal.gtk.disablePrinting -Dorg.eclipse.swt.internal.enableStrictChecks"/>
+    </ant>
+  </target>
+	
   <!-- This target defines the browser tests. -->
   <target name="browser-suite" unless="performance">
     <property name="data" value="${eclipse-home}/swt_sniff_folder"/>
+  	<delete dir="${data}" quiet="true"/>
     <ant target="core-test" antfile="${library-file}" dir="${eclipse-home}">
       <property name="timeout" value="900000"/>
       <property name="data-dir" value="${data}"/>
@@ -71,7 +85,7 @@
 
   <!-- This target runs the test suite. Any actions that need to happen after all -->
   <!-- the tests have been run should go here. -->
-  <target name="run" depends="init,suite,browser-suite,cleanup">
+  <target name="run" depends="init,suite,suite-non-default-autoscale,browser-suite,cleanup">
     <ant target="collect" antfile="${library-file}" dir="${eclipse-home}">
       <property name="includes" value="org*.xml"/>
       <property name="output-file" value="${plugin-name}.xml"/>
