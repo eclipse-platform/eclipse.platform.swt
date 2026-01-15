@@ -34,8 +34,37 @@ import org.eclipse.swt.widgets.*;
  */
 public class Win32DPIUtils {
 
+	/**
+	 * This property allows to customize the DPI awareness of the application's UI
+	 * thread, such that different DPI awareness modes are supported via
+	 * configuration and not only via the application's executable manifest.
+	 * Supported modes are "System", "PerMonitor", and "PerMonitorV2".
+	 */
+	public static final String CUSTOM_DPI_AWARENESS_PROPERTY = "org.eclipse.swt.internal.win32.dpiAwareness";
+
 	static {
 		DPIUtil.setUseSmoothScalingByDefaultProvider(() -> DPIUtil.isMonitorSpecificScalingActive());
+	}
+
+	private static int customDpiAwareness = -1;
+
+	public static void initializeCustomDpiAwareness() {
+		String customDpiAwareness = System.getProperty(CUSTOM_DPI_AWARENESS_PROPERTY);
+		if (customDpiAwareness != null) {
+			switch (customDpiAwareness.toLowerCase()) {
+			case "permonitorv2":
+				setDPIAwareness(OS.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+				break;
+			case "permonitor":
+				setDPIAwareness(OS.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE);
+				break;
+			case "system":
+				setDPIAwareness(OS.DPI_AWARENESS_CONTEXT_SYSTEM_AWARE);
+				break;
+			default:
+				System.err.println("Invalid DPI awareness specified: " + customDpiAwareness);
+			}
+		}
 	}
 
 	public static boolean setDPIAwareness(int desiredDpiAwareness) {
@@ -55,17 +84,17 @@ public class Win32DPIUtils {
 			System.err.println("***WARNING: setting DPI awareness failed.");
 			return false;
 		}
+		customDpiAwareness = desiredDpiAwareness;
 		return true;
 	}
 
 	public static <T> T runWithProperDPIAwareness(Display display, Supplier<T> operation) {
-		// only with monitor-specific scaling enabled, the main thread's DPI awareness may be adapted
-		if (!display.isRescalingAtRuntime()) {
+		if (customDpiAwareness == -1) {
 			return operation.get();
 		}
 		long previousDPIAwareness = OS.GetThreadDpiAwarenessContext();
 		try {
-			if (!setDPIAwareness(OS.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2)) {
+			if (!setDPIAwareness(customDpiAwareness)) {
 				// awareness was not changed, so no need to reset it
 				previousDPIAwareness = 0;
 			}

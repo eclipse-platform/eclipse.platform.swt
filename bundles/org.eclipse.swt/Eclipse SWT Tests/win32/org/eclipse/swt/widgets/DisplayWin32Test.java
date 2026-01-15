@@ -27,6 +27,41 @@ class DisplayWin32Test {
 	}
 
 	@Test
+	public void monitorSpecificScaling_withCustomDpiAwareness() {
+		System.setProperty(Win32DPIUtils.CUSTOM_DPI_AWARENESS_PROPERTY, "System");
+		try {
+			Win32DPIUtils.setMonitorSpecificScaling(true);
+			Display display = Display.getDefault();
+			assertTrue(display.isRescalingAtRuntime());
+			assertEquals(OS.DPI_AWARENESS_CONTEXT_SYSTEM_AWARE, OS.GetThreadDpiAwarenessContext());
+		} finally {
+			System.clearProperty(Win32DPIUtils.CUSTOM_DPI_AWARENESS_PROPERTY);
+		}
+	}
+
+	@Test
+	public void customDpiAwareness_System() {
+		System.setProperty(Win32DPIUtils.CUSTOM_DPI_AWARENESS_PROPERTY, "System");
+		try {
+			Display.getDefault();
+			assertEquals(OS.DPI_AWARENESS_CONTEXT_SYSTEM_AWARE, OS.GetThreadDpiAwarenessContext());
+		} finally {
+			System.clearProperty(Win32DPIUtils.CUSTOM_DPI_AWARENESS_PROPERTY);
+		}
+	}
+
+	@Test
+	public void customDpiAwareness_PerMonitorV2() {
+		System.setProperty(Win32DPIUtils.CUSTOM_DPI_AWARENESS_PROPERTY, "PerMonitorV2");
+		try {
+			Display.getDefault();
+			assertEquals(OS.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2, OS.GetThreadDpiAwarenessContext());
+		} finally {
+			System.clearProperty(Win32DPIUtils.CUSTOM_DPI_AWARENESS_PROPERTY);
+		}
+	}
+
+	@Test
 	@SuppressWarnings("removal")
 	public void setRescaleAtRuntime_activate() {
 		Display display = Display.getDefault();
