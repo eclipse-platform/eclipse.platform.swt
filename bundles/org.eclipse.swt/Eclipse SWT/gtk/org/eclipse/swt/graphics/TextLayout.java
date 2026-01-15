@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2020 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -1453,11 +1453,6 @@ int _getOffset (int offset, int movement, boolean forward) {
  */
 public int getOffset(Point point, int[] trailing) {
 	checkLayout();
-	return getOffsetInPixels(point, trailing);
-}
-
-int getOffsetInPixels(Point point, int[] trailing) {
-	if (point == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	return getOffsetInPixels(point.x, point.y, trailing);
 }
 
@@ -1486,7 +1481,7 @@ int getOffsetInPixels(Point point, int[] trailing) {
  */
 public int getOffset(int x, int y, int[] trailing) {
 	checkLayout();
-	return getOffset(new Point(x, y), trailing);
+	return getOffsetInPixels(x, y, trailing);
 }
 
 int getOffsetInPixels(int x, int y, int[] trailing) {
