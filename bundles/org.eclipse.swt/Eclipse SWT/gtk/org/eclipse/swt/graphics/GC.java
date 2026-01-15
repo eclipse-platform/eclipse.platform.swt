@@ -1156,7 +1156,7 @@ public void drawPolygon(int[] pointArray) {
 void drawPolygonInPixels(int[] pointArray) {
 	checkGC(DRAW);
 	long cairo = data.cairo;
-	drawPolyline(cairo, pointArray, true);
+	drawPolyline(cairo, pointArray, data.cairoXoffset, data.cairoYoffset, true);
 	Cairo.cairo_stroke(cairo);
 }
 
@@ -1186,14 +1186,13 @@ public void drawPolyline(int[] pointArray) {
 void drawPolylineInPixels(int[] pointArray) {
 	checkGC(DRAW);
 	long cairo = data.cairo;
-	drawPolyline(cairo, pointArray, false);
+	drawPolyline(cairo, pointArray, data.cairoXoffset, data.cairoYoffset, false);
 	Cairo.cairo_stroke(cairo);
 }
 
-void drawPolyline(long cairo, int[] pointArray, boolean close) {
+void drawPolyline(long cairo, int[] pointArray, double xOffset, double yOffset, boolean close) {
 	int count = pointArray.length / 2;
 	if (count == 0) return;
-	double xOffset = data.cairoXoffset, yOffset = data.cairoYoffset;
 	Cairo.cairo_move_to(cairo, pointArray[0] + xOffset, pointArray[1] + yOffset);
 	for (int i = 1, j=2; i < count; i++, j += 2) {
 		Cairo.cairo_line_to(cairo, pointArray[j] + xOffset, pointArray[j + 1] + yOffset);
@@ -1819,7 +1818,7 @@ public void fillPolygon(int[] pointArray) {
 void fillPolygonInPixels(int[] pointArray) {
 	checkGC(FILL);
 	long cairo = data.cairo;
-	drawPolyline(cairo, pointArray, true);
+	drawPolyline(cairo, pointArray, 0, 0, true);
 	Cairo.cairo_fill(cairo);
 }
 
