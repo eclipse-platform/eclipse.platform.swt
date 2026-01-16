@@ -951,7 +951,7 @@ protected void create (DeviceData data) {
 	checkDisplay (thread = Thread.currentThread (), true);
 	if (DPIUtil.isMonitorSpecificScalingActive()) {
 		setMonitorSpecificScaling(true);
-		Win32DPIUtils.setAutoScaleForMonitorSpecificScaling();
+		DPIUtil.setMonitorSpecificScaling(true);
 	}
 	Win32DPIUtils.initializeCustomDpiAwareness();
 	createDisplay (data);
