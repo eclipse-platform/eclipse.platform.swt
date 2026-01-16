@@ -325,21 +325,6 @@ public class Win32DPIUtils {
 		return pointToPixel (rect, zoom);
 	}
 
-	public static void setMonitorSpecificScaling(boolean activate) {
-		System.setProperty(DPIUtil.SWT_AUTOSCALE_UPDATE_ON_RUNTIME, Boolean.toString(activate));
-	}
-
-	public static void setAutoScaleForMonitorSpecificScaling() {
-		boolean isDefaultAutoScale = DPIUtil.getAutoScaleValue() == null;
-		if (isDefaultAutoScale) {
-			DPIUtil.setAutoScaleValue("quarter");
-		} else if (!DPIUtil.isSetupCompatibleToMonitorSpecificScaling()) {
-			throw new SWTError(SWT.ERROR_NOT_IMPLEMENTED,
-					"monitor-specific scaling is only implemented for auto-scale values \"quarter\", \"exact\", \"false\" or a concrete zoom value, but \""
-							+ DPIUtil.getAutoScaleValue() + "\" has been specified");
-		}
-	}
-
 	public static int getPrimaryMonitorZoomAtStartup() {
 		long hDC = OS.GetDC(0);
 		int dpi = OS.GetDeviceCaps(hDC, OS.LOGPIXELSX);

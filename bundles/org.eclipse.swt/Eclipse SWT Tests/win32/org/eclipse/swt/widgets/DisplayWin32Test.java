@@ -1,5 +1,6 @@
 package org.eclipse.swt.widgets;
 
+import static org.eclipse.swt.internal.DPIUtil.setMonitorSpecificScaling;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.eclipse.swt.internal.*;
@@ -13,7 +14,7 @@ class DisplayWin32Test {
 
 	@Test
 	public void monitorSpecificScaling_activate() {
-		Win32DPIUtils.setMonitorSpecificScaling(true);
+		setMonitorSpecificScaling(true);
 		Display display = Display.getDefault();
 		assertTrue(display.isRescalingAtRuntime());
 		assertEquals(OS.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2, OS.GetThreadDpiAwarenessContext());
@@ -21,7 +22,7 @@ class DisplayWin32Test {
 
 	@Test
 	public void monitorSpecificScaling_deactivate() {
-		Win32DPIUtils.setMonitorSpecificScaling(false);
+		setMonitorSpecificScaling(false);
 		Display display = Display.getDefault();
 		assertFalse(display.isRescalingAtRuntime());
 	}
@@ -30,7 +31,7 @@ class DisplayWin32Test {
 	public void monitorSpecificScaling_withCustomDpiAwareness() {
 		System.setProperty(Win32DPIUtils.CUSTOM_DPI_AWARENESS_PROPERTY, "System");
 		try {
-			Win32DPIUtils.setMonitorSpecificScaling(true);
+			setMonitorSpecificScaling(true);
 			Display display = Display.getDefault();
 			assertTrue(display.isRescalingAtRuntime());
 			assertEquals(OS.DPI_AWARENESS_CONTEXT_SYSTEM_AWARE, OS.GetThreadDpiAwarenessContext());

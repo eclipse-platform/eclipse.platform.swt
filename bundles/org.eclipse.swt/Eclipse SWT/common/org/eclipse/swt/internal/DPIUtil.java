@@ -312,6 +312,18 @@ public static int pointToPixel(int size, int zoom) {
 	return Math.round (size * scaleFactor);
 }
 
+public static void setMonitorSpecificScaling(boolean activate) {
+	System.setProperty(SWT_AUTOSCALE_UPDATE_ON_RUNTIME, Boolean.toString(activate));
+	boolean isDefaultAutoScale = DPIUtil.getAutoScaleValue() == null;
+	if (isDefaultAutoScale) {
+		DPIUtil.setAutoScaleValue("quarter");
+	} else if (!DPIUtil.isSetupCompatibleToMonitorSpecificScaling()) {
+		throw new SWTError(SWT.ERROR_NOT_IMPLEMENTED,
+				"monitor-specific scaling is only implemented for auto-scale values \"quarter\", \"exact\", but \""
+						+ DPIUtil.getAutoScaleValue() + "\" has been specified");
+	}
+}
+
 /**
  * Represents an element, such as some image data, at a specific zoom level.
  *

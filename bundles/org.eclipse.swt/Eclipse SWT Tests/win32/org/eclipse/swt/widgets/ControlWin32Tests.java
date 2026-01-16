@@ -13,6 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
+import static org.eclipse.swt.internal.DPIUtil.setMonitorSpecificScaling;
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -36,7 +37,7 @@ class ControlWin32Tests {
 
 	@Test
 	public void testScaleFontCorrectlyInAutoScaleScenario() {
-		Win32DPIUtils.setMonitorSpecificScaling(true);
+		setMonitorSpecificScaling(true);
 		Display display = Display.getDefault();
 
 		assertTrue("Autoscale property is not set to true", display.isRescalingAtRuntime());
@@ -48,7 +49,7 @@ class ControlWin32Tests {
 
 	@Test
 	public void testSetFontWithMonitorSpecificScalingEnabled() {
-		Win32DPIUtils.setMonitorSpecificScaling(true);
+		setMonitorSpecificScaling(true);
 		Display display = Display.getDefault();
 		Image colorImage = new Image(display, 10, 10);
 		GC gc = new GC(colorImage);
@@ -59,7 +60,7 @@ class ControlWin32Tests {
 
 	@Test
 	public void testDoNotScaleFontInNoAutoScaleScenario() {
-		Win32DPIUtils.setMonitorSpecificScaling(false);
+		setMonitorSpecificScaling(false);
 		Display display = Display.getDefault();
 
 		assertFalse("Autoscale property is not set to false", display.isRescalingAtRuntime());
@@ -71,7 +72,7 @@ class ControlWin32Tests {
 
 	@Test
 	public void testDoNotScaleFontInNoAutoScaleScenarioWithLegacyFontRegistry() {
-		Win32DPIUtils.setMonitorSpecificScaling(false);
+		setMonitorSpecificScaling(false);
 		String originalValue = System.getProperty("swt.fontRegistry");
 		System.setProperty("swt.fontRegistry", "legacy");
 		try {
@@ -93,7 +94,7 @@ class ControlWin32Tests {
 
 	@Test
 	public void testCorrectScaleUpUsingDifferentSetBoundsMethod() {
-		Win32DPIUtils.setMonitorSpecificScaling(true);
+		setMonitorSpecificScaling(true);
 		Display display = Display.getDefault();
 		Shell shell = new Shell(display);
 		Button button = new Button(shell, SWT.PUSH);
@@ -114,7 +115,7 @@ class ControlWin32Tests {
 	@CsvSource({ "2.0, quarter, true", "0.5, 100, false",
 			"1.0, 200, false", "2.0, 200, false", "2.0, quarter, false", })
 	public void testAutoScaleImageData(float scaleFactor, String autoScale, boolean monitorSpecificScaling) {
-		Win32DPIUtils.setMonitorSpecificScaling(monitorSpecificScaling);
+		setMonitorSpecificScaling(monitorSpecificScaling);
 		DPIUtil.runWithAutoScaleValue(autoScale, () -> {
 			Display display = new Display();
 			try {
@@ -167,7 +168,7 @@ class ControlWin32Tests {
 	 */
 	@Test
 	void testChildFillsCompositeWithOffset() {
-		Win32DPIUtils.setMonitorSpecificScaling(true);
+		setMonitorSpecificScaling(true);
 		// pixel values at 125%: (2.5, 2.5, 2.5, 2.5) --> when rounding bottom right
 		// corner (pixel value (5, 5)) instead of width/height independently, will be
 		// rounded to (3, 3, 2, 2) --> too small for child
@@ -205,7 +206,7 @@ class ControlWin32Tests {
 	 */
 	@Test
 	void testChildWithOffsetFillsComposite() {
-		Win32DPIUtils.setMonitorSpecificScaling(true);
+		setMonitorSpecificScaling(true);
 		// pixel values at 125%: (0, 0, 5, 5)
 		Rectangle parentBounds = new Rectangle(0, 0, 4, 4);
 		// pixel values at 125%: (2.5, 2.5, 2.5, 2.5) --> when rounding width/height
@@ -252,7 +253,7 @@ class ControlWin32Tests {
 	 */
 	@Test
 	void testFitChildIntoParent() {
-		Win32DPIUtils.setMonitorSpecificScaling(true);
+		setMonitorSpecificScaling(true);
 		// pixel values at 125%: (0, 0, 5, 5)
 		Rectangle parentBounds = new Rectangle(0, 0, 4, 4);
 		// pixel values at 125%: (2.5, 2.5, 3.75, 3.75) --> rounded to (3, 3, 3, 3)
@@ -276,7 +277,7 @@ class ControlWin32Tests {
 	// and not for fitting actually larger childs into parts
 	@Test
 	void testFitChildIntoParent_limitedSizeDifference() {
-		Win32DPIUtils.setMonitorSpecificScaling(true);
+		setMonitorSpecificScaling(true);
 		// pixel values at 125%: (0, 0, 5, 5)
 		Rectangle parentBounds = new Rectangle(0, 0, 4, 4);
 		// pixel values at 125%: (2.5, 2.5, 5, 5) --> rounded to (3, 3, 5, 5)
@@ -315,7 +316,7 @@ class ControlWin32Tests {
 	 */
 	@Test
 	void testChildFillsScrollableWithBadlyRoundedClientArea() {
-		Win32DPIUtils.setMonitorSpecificScaling(true);
+		setMonitorSpecificScaling(true);
 		Display display = Display.getDefault();
 		Shell shell = new Shell(display);
 		Composite parent = new Composite(shell, SWT.H_SCROLL|SWT.V_SCROLL);
@@ -358,7 +359,7 @@ class ControlWin32Tests {
 
 	@Test
 	void testChildShellGetSize() {
-		Win32DPIUtils.setMonitorSpecificScaling(true);
+		setMonitorSpecificScaling(true);
 		Display display = Display.getDefault();
 		Shell shell = new Shell(display);
 		shell.nativeZoom = 150;
