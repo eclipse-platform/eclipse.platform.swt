@@ -20,6 +20,7 @@ import java.util.function.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.AutoScaleCalculation.*;
 
 /**
  * This class hold common constants and utility functions w.r.t. to SWT high DPI
@@ -49,17 +50,15 @@ public class DPIUtil {
 	private static final AutoScaleMethod AUTO_SCALE_METHOD_SETTING;
 	private static AutoScaleMethod autoScaleMethod;
 
-	private static String autoScaleValue;
-
-	private static final Set<String> ALLOWED_AUTOSCALE_VALUES_FOR_UPDATE_ON_RUNTIME = Set.of("quarter", "exact");
+	private static AutoScale autoScaleValue;
 
 	/**
 	 * System property to enable to scale the application on runtime when a DPI
 	 * change is detected.
 	 * <ul>
 	 * <li>"force": the application is scaled on DPI changes even if an unsupported
-	 * value for swt.autoScale are defined. See allowed values
-	 * {@link #ALLOWED_AUTOSCALE_VALUES_FOR_UPDATE_ON_RUNTIME}.</li>
+	 * value for swt.autoScale are defined. See allowed values in
+	 * {@link AutoScaleCalculation}.</li>
 	 * <li>"true": the application is scaled on DPI changes</li>
 	 * <li>"false": the application will remain in its initial scaling</li>
 	 * </ul>
@@ -104,19 +103,22 @@ public class DPIUtil {
 	private static final String SWT_AUTOSCALE_METHOD = "swt.autoScale.method";
 
 	static {
-		autoScaleValue = System.getProperty (SWT_AUTOSCALE);
+		updateAutoScaleValue();
 
 		String value = System.getProperty (SWT_AUTOSCALE_METHOD);
 		AUTO_SCALE_METHOD_SETTING = AutoScaleMethod.forString(value).orElse(AutoScaleMethod.AUTO);
 		autoScaleMethod = AUTO_SCALE_METHOD_SETTING != AutoScaleMethod.AUTO ? AUTO_SCALE_METHOD_SETTING : AutoScaleMethod.NEAREST;
 	}
 
-static String getAutoScaleValue() {
-	return autoScaleValue;
-}
 
-static void setAutoScaleValue(String autoScaleValueArg) {
-	autoScaleValue = autoScaleValueArg;
+private static void updateAutoScaleValue() {
+	String autoScaleProperty = System.getProperty (SWT_AUTOSCALE);
+	autoScaleValue = AutoScaleCalculation.parseFrom(autoScaleProperty);
+	if (DPIUtil.isMonitorSpecificScalingActive() && !DPIUtil.isSetupCompatibleToMonitorSpecificScaling()) {
+		throw new SWTError(SWT.ERROR_NOT_IMPLEMENTED,
+				"monitor-specific scaling is only implemented for auto-scale values \"quarter\", \"exact\", but \""
+						+ autoScaleProperty + "\" has been specified");
+	}
 }
 
 /**
@@ -146,11 +148,15 @@ public static boolean isSetupCompatibleToMonitorSpecificScaling() {
 	if (!"win32".equals(SWT.getPlatform())) {
 		return false;
 	}
-	if (autoScaleValue == null || "force".equals(System.getProperty(SWT_AUTOSCALE_UPDATE_ON_RUNTIME))) {
+	if (System.getProperty(SWT_AUTOSCALE) == null || "force".equals(System.getProperty(SWT_AUTOSCALE_UPDATE_ON_RUNTIME))) {
 		return true;
 	}
-	String value = autoScaleValue.toLowerCase(Locale.ROOT);
-	return ALLOWED_AUTOSCALE_VALUES_FOR_UPDATE_ON_RUNTIME.contains(value);
+	return autoScaleValue.isCompatibleToMonitorSpecificScaling();
+}
+
+public static void setMonitorSpecificScaling(boolean activate) {
+	System.setProperty(DPIUtil.SWT_AUTOSCALE_UPDATE_ON_RUNTIME, Boolean.toString(activate));
+	updateAutoScaleValue();
 }
 
 public static boolean isMonitorSpecificScalingActive() {
@@ -312,18 +318,6 @@ public static int pointToPixel(int size, int zoom) {
 	return Math.round (size * scaleFactor);
 }
 
-public static void setMonitorSpecificScaling(boolean activate) {
-	System.setProperty(SWT_AUTOSCALE_UPDATE_ON_RUNTIME, Boolean.toString(activate));
-	boolean isDefaultAutoScale = DPIUtil.getAutoScaleValue() == null;
-	if (isDefaultAutoScale) {
-		DPIUtil.setAutoScaleValue("quarter");
-	} else if (!DPIUtil.isSetupCompatibleToMonitorSpecificScaling()) {
-		throw new SWTError(SWT.ERROR_NOT_IMPLEMENTED,
-				"monitor-specific scaling is only implemented for auto-scale values \"quarter\", \"exact\", but \""
-						+ DPIUtil.getAutoScaleValue() + "\" has been specified");
-	}
-}
-
 /**
  * Represents an element, such as some image data, at a specific zoom level.
  *
@@ -462,41 +456,15 @@ private static boolean shouldUseSmoothScaling() {
 }
 
 public static int getZoomForAutoscaleProperty (int nativeDeviceZoom) {
-	return getZoomForAutoscaleProperty(nativeDeviceZoom, autoScaleValue);
-}
-
-private static int getZoomForAutoscaleProperty (int nativeDeviceZoom, String autoScaleValue) {
-	int zoom = 0;
-	if (autoScaleValue != null) {
-		if ("false".equalsIgnoreCase (autoScaleValue)) {
-			zoom = 100;
-		} else if ("half".equalsIgnoreCase (autoScaleValue)) {
-			// Math.round rounds 125->150 and 175->200,
-			// Math.rint rounds 125->100 and 175->200 matching
-			// "integer"
-			zoom = (int) Math.rint(nativeDeviceZoom / 50d) * 50;
-		} else if ("quarter".equalsIgnoreCase (autoScaleValue)) {
-			zoom = Math.round(nativeDeviceZoom / 25f) * 25;
-		} else if ("exact".equalsIgnoreCase (autoScaleValue)) {
-			zoom = nativeDeviceZoom;
-		} else {
-			try {
-				int zoomValue = Integer.parseInt (autoScaleValue);
-				zoom = Math.max (Math.min (zoomValue, 1600), 25);
-			} catch (NumberFormatException e) {
-				// unsupported value, use default
-			}
-		}
-	}
-	if (zoom == 0) {
-		zoom = Math.max ((nativeDeviceZoom + 25) / 100 * 100, 100);
-	}
-	return zoom;
+	return autoScaleValue.getAutoScaledZoom(nativeDeviceZoom);
 }
 
 public static void runWithAutoScaleValue(String autoScaleValue, Runnable runnable) {
-	String initialAutoScaleValue = DPIUtil.autoScaleValue;
-	DPIUtil.autoScaleValue = autoScaleValue;
+	AutoScale initialAutoScaleValue = DPIUtil.autoScaleValue;
+	// This method is used to adapt to the autoscale value used by the Equinox launcher,
+	// which currently defaults to "integer". So we need to use explicit "integer" default here
+	// until the Equinox launcher is adapted.
+	DPIUtil.autoScaleValue = AutoScaleCalculation.parseFrom(autoScaleValue == null ? "integer" : autoScaleValue);
 	DPIUtil.deviceZoom = getZoomForAutoscaleProperty(nativeDeviceZoom);
 	try {
 		runnable.run();
