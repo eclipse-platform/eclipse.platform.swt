@@ -446,7 +446,7 @@ public static void setDeviceZoom (int nativeDeviceZoom) {
 	// in GTK, preserve the current method when switching to a 100% monitor
 	boolean preserveScalingMethod = SWT.getPlatform().equals("gtk") && deviceZoom == 100;
 	if (!preserveScalingMethod && AUTO_SCALE_METHOD_SETTING == AutoScaleMethod.AUTO) {
-		if (useSmoothScalingByDefaultProvider.shouldUseSmoothScaling()) {
+		if (shouldUseSmoothScaling()) {
 			autoScaleMethod = AutoScaleMethod.SMOOTH;
 		} else {
 			autoScaleMethod = AutoScaleMethod.NEAREST;
@@ -454,15 +454,11 @@ public static void setDeviceZoom (int nativeDeviceZoom) {
 	}
 }
 
-@FunctionalInterface
-interface UseSmoothScalingProvider {
-    boolean shouldUseSmoothScaling();
-}
-
-private static UseSmoothScalingProvider useSmoothScalingByDefaultProvider = () -> false;
-
-static void setUseSmoothScalingByDefaultProvider(UseSmoothScalingProvider provider) {
-    useSmoothScalingByDefaultProvider = provider;
+private static boolean shouldUseSmoothScaling() {
+	if ("gtk".equals(SWT.getPlatform())) {
+		return DPIUtil.getDeviceZoom() / 100 * 100 != DPIUtil.getDeviceZoom();
+	}
+	return isMonitorSpecificScalingActive();
 }
 
 public static int getZoomForAutoscaleProperty (int nativeDeviceZoom) {

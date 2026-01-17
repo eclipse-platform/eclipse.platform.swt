@@ -42,10 +42,6 @@ public class Win32DPIUtils {
 	 */
 	public static final String CUSTOM_DPI_AWARENESS_PROPERTY = "org.eclipse.swt.internal.win32.dpiAwareness";
 
-	static {
-		DPIUtil.setUseSmoothScalingByDefaultProvider(() -> DPIUtil.isMonitorSpecificScalingActive());
-	}
-
 	private static int customDpiAwareness = -1;
 
 	public static void initializeCustomDpiAwareness() {

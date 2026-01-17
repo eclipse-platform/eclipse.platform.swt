@@ -16,11 +16,6 @@ package org.eclipse.swt.internal;
 import org.eclipse.swt.graphics.*;
 
 public class GtkDPIUtil {
-	static {
-	    DPIUtil.setUseSmoothScalingByDefaultProvider(() -> {
-	        return DPIUtil.getDeviceZoom() / 100 * 100 != DPIUtil.getDeviceZoom();
-	    });
-	}
 
 	/**
 	 * Auto-scale up ImageData to device zoom that is at 100%.
