@@ -15,16 +15,13 @@ package org.eclipse.swt.graphics;
 
 
 import java.util.*;
-import java.util.List;
 import java.util.function.*;
-import java.util.stream.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.Image.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gdip.*;
 import org.eclipse.swt.internal.win32.*;
-import org.eclipse.swt.widgets.*;
 
 /**
  * Class <code>GC</code> is where all of the drawing capabilities that are
@@ -1183,15 +1180,6 @@ private class DrawScalingImageToImageOperation extends ImageOperation {
 		drawImage(getImage(), source.x, source.y, source.width, source.height, destination.x, destination.y, destination.width, destination.height, gcZoom, srcImageZoom);
 	}
 
-	private Collection<Integer> getAllCurrentMonitorZooms() {
-		if (device instanceof Display display) {
-			return Arrays.stream(display.getMonitors())
-				.map(Monitor::getZoom)
-				.collect(Collectors.toSet());
-		}
-		return Collections.emptySet();
-	}
-
 	private int calculateZoomForImage(int gcZoom, int srcWidth, int srcHeight, int destWidth, int destHeight) {
 		if (srcWidth == 1 && srcHeight == 1) {
 			// One pixel images can use the GC zoom
@@ -1205,15 +1193,9 @@ private class DrawScalingImageToImageOperation extends ImageOperation {
 			return gcZoom;
 		}
 
-		float imageScaleFactor = 1f * destWidth / srcWidth;
+		float imageScaleFactor = Math.max(1f * destWidth / srcWidth, 1f * destHeight / srcHeight);
 		int imageZoom = Math.round(gcZoom * imageScaleFactor);
-		if (getAllCurrentMonitorZooms().contains(imageZoom)) {
-			return imageZoom;
-		}
-		if (imageZoom > 150) {
-			return 200;
-		}
-		return 100;
+		return imageZoom;
 	}
 }
 
@@ -1232,37 +1214,73 @@ private class DrawScaledImageOperation extends ImageOperation {
 	}
 }
 
+private float calculateTransformationScale() {
+	Transform current = new Transform(device);
+	getTransform(current);
+	float[] m = new float[6];
+	current.getElements(m);
+	float scaleWidth = (float) Math.hypot(m[0], m[2]);
+	float scaleHeight = (float) Math.hypot(m[1], m[3]);
+	current.dispose();
+	return Math.max(scaleWidth, scaleHeight);
+}
+
 private void drawImage(Image image, int destX, int destY, int destWidth, int destHeight, int imageZoom) {
-	Rectangle destPixels = Win32DPIUtils.pointToPixel(drawable, new Rectangle(destX, destY, destWidth, destHeight),
+	float transformationScale = calculateTransformationScale();
+	int scaledImageZoomWithTransform = Math.round(transformationScale * imageZoom);
+	Rectangle destPixels = Win32DPIUtils.pointToPixel(drawable, new Rectangle(destX , destY, destWidth , destHeight),
 			imageZoom);
+	Rectangle destPixelsScaledWithTransform = Win32DPIUtils.pointToPixel(drawable, new Rectangle(destX , destY, destWidth , destHeight),
+			scaledImageZoomWithTransform);
+
 	image.executeOnImageHandleAtBestFittingSize(tempHandle -> {
 		drawImage(image, 0, 0, tempHandle.width(), tempHandle.height(), destPixels.x, destPixels.y,
 				destPixels.width, destPixels.height, false, tempHandle);
-	}, destPixels.width, destPixels.height);
+	}, destPixelsScaledWithTransform.width, destPixelsScaledWithTransform.height);
 }
 
 private void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY,
 		int destWidth, int destHeight, int imageZoom, int scaledImageZoom) {
-	Rectangle src = Win32DPIUtils.pointToPixel(drawable, new Rectangle(srcX, srcY, srcWidth, srcHeight), scaledImageZoom);
-	Rectangle dest = Win32DPIUtils.pointToPixel(drawable, new Rectangle(destX, destY, destWidth, destHeight), imageZoom);
+	Rectangle srcPixels = Win32DPIUtils.pointToPixel(drawable, new Rectangle(srcX, srcY, srcWidth, srcHeight), scaledImageZoom);
+	Rectangle destPixels = Win32DPIUtils.pointToPixel(drawable, new Rectangle(destX, destY, destWidth, destHeight), imageZoom);
+	Rectangle fullImageBounds = image.getBounds();
+	Rectangle fullImageBoundsPixels = Win32DPIUtils.pointToPixel(drawable, fullImageBounds, scaledImageZoom);
+	Rectangle src =  new Rectangle(srcX, srcY, srcWidth, srcHeight);
+	float transformationScale = calculateTransformationScale();
+	int scaledImageZoomWithTransform = Math.round(transformationScale * scaledImageZoom);
+	Rectangle fullImageBoundsScaledWithTransform = Win32DPIUtils.pointToPixel(drawable, fullImageBounds, scaledImageZoomWithTransform);
 	if (scaledImageZoom != 100) {
 		/*
 		 * This is a HACK! Due to rounding errors at fractional scale factors,
 		 * the coordinates may be slightly off. The workaround is to restrict
 		 * coordinates to the allowed bounds.
 		 */
-		Rectangle b = image.getBounds(scaledImageZoom);
-		int errX = src.x + src.width - b.width;
-		int errY = src.y + src.height - b.height;
+		int errX = srcPixels.x + srcPixels.width - fullImageBoundsPixels.width;
+		int errY = srcPixels.y + srcPixels.height - fullImageBoundsPixels.height;
 		if (errX != 0 || errY != 0) {
 			if (errX <= scaledImageZoom / 100 && errY <= scaledImageZoom / 100) {
-				src.intersect(b);
+				srcPixels.intersect(fullImageBoundsPixels);
 			} else {
 				SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 			}
 		}
 	}
-	drawImage(image, src.x, src.y, src.width, src.height, dest.x, dest.y, dest.width, dest.height, false, image.getHandle(scaledImageZoom, data.nativeZoom));
+	image.executeOnImageHandleAtBestFittingSize((tempHandle) -> {
+		Rectangle newSrcPixels = computeSourceRectangle(tempHandle, fullImageBounds, fullImageBoundsPixels, src, srcPixels);
+		drawImage(image, newSrcPixels.x, newSrcPixels.y, newSrcPixels.width, newSrcPixels.height, destPixels.x, destPixels.y, destPixels.width,
+				destPixels.height, false, tempHandle);
+	}, fullImageBoundsScaledWithTransform.width, fullImageBoundsScaledWithTransform.height);
+}
+
+private Rectangle computeSourceRectangle(ImageHandle imageHandle, Rectangle fullImageBounds, Rectangle fullImageBoundsPixels, Rectangle src, Rectangle srcPixels) {
+	if (new Rectangle(0, 0, imageHandle.width(), imageHandle.height()).equals(fullImageBoundsPixels)) {
+		return srcPixels;
+	} else {
+		// handle has not the required size, so source must be scaled with respect to handle size
+		float scaleFactor = Math.max(1f * imageHandle.width() / fullImageBounds.width, 1f * imageHandle.height() / fullImageBounds.height);
+		int closestZoomOfHandle = Math.round(scaleFactor * 100);
+		return Win32DPIUtils.pointToPixel(drawable, src, closestZoomOfHandle);
+	}
 }
 
 private class DrawImageToImageOperation extends ImageOperation {
