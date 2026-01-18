@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import org.eclipse.swt.internal.DPIUtil;
 import org.eclipse.swt.tests.junit.AllNonBrowserTests.NonBrowserTestSuite;
 import org.junit.platform.suite.api.AfterSuite;
 import org.junit.platform.suite.api.BeforeSuite;
@@ -21,16 +22,22 @@ import org.junit.platform.suite.api.BeforeSuite;
 @NonBrowserTestSuite
 public class AllNonBrowserTests_AutoscaleOsNonDefaults extends AllNonBrowserTests {
 
+	private static final String AUTO_SCALE_PROPERTY = "swt.autoScale";
+	private static boolean originalMonitorSpecificScalingActive;
+
+	@SuppressWarnings("restriction")
 	@BeforeSuite
 	static void setNonDefaultAutoscale() {
-		System.setProperty("swt.autoScale", "quarter");
-		System.setProperty("swt.autoScale.updateOnRuntime", "true");
+		originalMonitorSpecificScalingActive = DPIUtil.isMonitorSpecificScalingActive();
+		System.setProperty(AUTO_SCALE_PROPERTY, originalMonitorSpecificScalingActive ? "integer" : "quarter");
+		DPIUtil.setMonitorSpecificScaling(!originalMonitorSpecificScalingActive);
 	}
 
+	@SuppressWarnings("restriction")
 	@AfterSuite
 	static void restoreDefaultAutoscale() {
-		System.clearProperty("swt.autoScale");
-		System.clearProperty("swt.autoScale.updateOnRuntime");
+		System.clearProperty(AUTO_SCALE_PROPERTY);
+		DPIUtil.setMonitorSpecificScaling(originalMonitorSpecificScalingActive);
 	}
 
 
