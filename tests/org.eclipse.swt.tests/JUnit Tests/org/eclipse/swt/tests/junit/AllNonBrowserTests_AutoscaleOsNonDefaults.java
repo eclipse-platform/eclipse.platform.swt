@@ -22,20 +22,21 @@ import org.junit.platform.suite.api.BeforeSuite;
 @NonBrowserTestSuite
 public class AllNonBrowserTests_AutoscaleOsNonDefaults extends AllNonBrowserTests {
 
+	private static final String AUTO_SCALE_PROPERTY = "swt.autoScale";
 	private static boolean originalMonitorSpecificScalingActive;
 
 	@SuppressWarnings("restriction")
 	@BeforeSuite
 	static void setNonDefaultAutoscale() {
 		originalMonitorSpecificScalingActive = DPIUtil.isMonitorSpecificScalingActive();
-		System.setProperty("swt.autoScale", "quarter");
-		DPIUtil.setMonitorSpecificScaling(true);
+		System.setProperty(AUTO_SCALE_PROPERTY, originalMonitorSpecificScalingActive ? "integer" : "quarter");
+		DPIUtil.setMonitorSpecificScaling(!originalMonitorSpecificScalingActive);
 	}
 
 	@SuppressWarnings("restriction")
 	@AfterSuite
 	static void restoreDefaultAutoscale() {
-		System.clearProperty("swt.autoScale");
+		System.clearProperty(AUTO_SCALE_PROPERTY);
 		DPIUtil.setMonitorSpecificScaling(originalMonitorSpecificScalingActive);
 	}
 
