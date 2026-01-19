@@ -559,7 +559,7 @@ public void drawBackground (GC gc, int x, int y, int width, int height, int offs
 		long cairo = data.cairo;
 		Cairo.cairo_save (cairo);
 		if (control.backgroundImage != null) {
-			Point pt = display.mapInPixels (this, control, 0, 0);
+			Point pt = display.map (this, control, 0, 0);
 			Cairo.cairo_translate (cairo, -pt.x - offsetX, -pt.y - offsetY);
 			x += pt.x + offsetX;
 			y += pt.y + offsetY;
@@ -1438,7 +1438,7 @@ void printWidget (GC gc, long drawable, int depth, int x, int y) {
 	gc.setClipping (newClip);
 	super.printWidget (gc, drawable, depth, x, y);
 	Rectangle clientRect = getClientAreaInPixels ();
-	Point pt = display.mapInPixels (this, parent, clientRect.x, clientRect.y);
+	Point pt = display.map (this, parent, clientRect.x, clientRect.y);
 	clientRect.x = x + pt.x - rect.x;
 	clientRect.y = y + pt.y - rect.y;
 	newClip.intersect (clientRect);

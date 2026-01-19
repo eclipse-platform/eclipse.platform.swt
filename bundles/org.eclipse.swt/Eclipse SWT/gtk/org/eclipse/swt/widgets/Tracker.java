@@ -200,7 +200,7 @@ Point adjustMoveCursor () {
 	int newX = bounds.x + bounds.width / 2;
 	int newY = bounds.y;
 
-	Point point = display.mapInPixels(parent, null, newX, newY);
+	Point point = display.map(parent, null, newX, newY);
 	display.setCursorLocation(point);
 
 	int[] actualX = new int[1], actualY = new int[1], state = new int[1];
@@ -237,7 +237,7 @@ Point adjustResizeCursor () {
 		newY = bounds.y + bounds.height / 2;
 	}
 
-	Point point = display.mapInPixels (parent, null, newX, newY);
+	Point point = display.map (parent, null, newX, newY);
 	display.setCursorLocation (point);
 
 	/*
@@ -368,7 +368,7 @@ void drawRectangles (Rectangle [] rects) {
 
 		// Ensure we have absolute screen coordinates. (btw, there are no absolute coordinates on Wayland, so Tracker(Display) is probably broken).
 		if (parent != null) {  // if Tracker(Display) has absolute coords.  Tracker(Composite) has relative. For relative, we need to find absolute.
-			cachedUnion = display.mapInPixels(parent, null, cachedUnion) ;
+			cachedUnion = display.map(parent, null, cachedUnion) ;
 		}
 
 		if (!cachedCombinedDisplayResolution.intersects(cachedUnion)) {
@@ -382,7 +382,7 @@ void drawRectangles (Rectangle [] rects) {
 		// Combine Rects into a region. (region is not necessarily a rectangle, E.g it can be 'L' shaped etc..).
 		for (int i = 0; i < rects.length; i++) {
 			// Turn filled rectangles into just the outer lines by drawing one line at a time.
-			Rectangle r = parent != null ? display.mapInPixels(parent, null, rects[i]) : rects[i];
+			Rectangle r = parent != null ? display.map(parent, null, rects[i]) : rects[i];
 			rect.x = r.x;
 			rect.y = r.y;
 			rect.width = r.width + 1;
@@ -646,7 +646,7 @@ long gtk_mouse (int eventType, long widget, long eventPtr) {
 			Rectangle eventRect = new Rectangle (newX [0], newY [0], 0, 0);
 			event.setBounds (eventRect);
 		} else {
-			Point screenCoord = display.mapInPixels (parent, null, newX [0], newY [0]);
+			Point screenCoord = display.map (parent, null, newX [0], newY [0]);
 			Rectangle eventRect = new Rectangle (screenCoord.x, screenCoord.y, 0, 0);
 			event.setBounds (eventRect);
 		}

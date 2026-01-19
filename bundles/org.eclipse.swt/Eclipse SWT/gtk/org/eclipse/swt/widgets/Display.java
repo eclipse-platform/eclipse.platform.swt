@@ -4048,27 +4048,6 @@ public Point map (Control from, Control to, int x, int y) {
 	return point;
 }
 
-Point mapInPixels (Control from, Control to, int x, int y) {
-	checkDevice ();
-	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
-	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
-	Point point = new Point (x, y);
-	if (from == to) return point;
-	if (from != null) {
-		Point origin = GTK.GTK4 ? from.getSurfaceOrigin() : from.getWindowOrigin ();
-		if ((from.style & SWT.MIRRORED) != 0) point.x = from.getClientWidth () - point.x;
-		point.x += origin.x;
-		point.y += origin.y;
-	}
-	if (to != null) {
-		Point origin = GTK.GTK4 ? to.getSurfaceOrigin() : to.getWindowOrigin ();
-		point.x -= origin.x;
-		point.y -= origin.y;
-		if ((to.style & SWT.MIRRORED) != 0) point.x = to.getClientWidth () - point.x;
-	}
-	return point;
-}
-
 /**
  * Maps a point from one coordinate system to another.
  * When the control is null, coordinates are mapped to
@@ -4109,12 +4088,6 @@ public Rectangle map (Control from, Control to, Rectangle rectangle) {
 	checkDevice();
 	if (rectangle == null) error (SWT.ERROR_NULL_ARGUMENT);
 	return map (from, to, rectangle.x, rectangle.y, rectangle.width, rectangle.height);
-}
-
-Rectangle mapInPixels (Control from, Control to, Rectangle rectangle) {
-	checkDevice();
-	if (rectangle == null) error (SWT.ERROR_NULL_ARGUMENT);
-	return mapInPixels (from, to, rectangle.x, rectangle.y, rectangle.width, rectangle.height);
 }
 
 /**
@@ -4170,31 +4143,6 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
 	}
 	if (to != null) {
 		Point origin = GTK.GTK4 ? to.getSurfaceOrigin() : to.getWindowOrigin ();
-		rect.x -= origin.x;
-		rect.y -= origin.y;
-		if (toRTL = (to.style & SWT.MIRRORED) != 0) rect.x = to.getClientWidth () - rect.x;
-	}
-
-	if (fromRTL != toRTL) rect.x -= rect.width;
-	return rect;
-}
-
-Rectangle mapInPixels (Control from, Control to, int x, int y, int width, int height) {
-	checkDevice();
-	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
-	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
-
-	Rectangle rect = new Rectangle (x, y, width, height);
-	if (from == to) return rect;
-	boolean fromRTL = false, toRTL = false;
-	if (from != null) {
-		Point origin = GTK.GTK4 ? from.getSurfaceOrigin() : from.getWindowOrigin ();
-		if (fromRTL = (from.style & SWT.MIRRORED) != 0) rect.x = from.getClientWidth () - rect.x;
-		rect.x += origin.x;
-		rect.y += origin.y;
-	}
-	if (to != null) {
-		Point origin = GTK.GTK4 ? from.getSurfaceOrigin() : from.getWindowOrigin ();
 		rect.x -= origin.x;
 		rect.y -= origin.y;
 		if (toRTL = (to.style & SWT.MIRRORED) != 0) rect.x = to.getClientWidth () - rect.x;
