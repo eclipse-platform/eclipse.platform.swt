@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2025 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -655,7 +655,7 @@ void bringToTop (boolean force) {
 void center () {
 	if (parent == null) return;
 	Rectangle rect = getBoundsInPixels ();
-	Rectangle parentRect = display.mapInPixels (parent, null, parent.getClientAreaInPixels());
+	Rectangle parentRect = display.map(parent, null, parent.getClientAreaInPixels());
 	int x = Math.max (parentRect.x, parentRect.x + (parentRect.width - rect.width) / 2);
 	int y = Math.max (parentRect.y, parentRect.y + (parentRect.height - rect.height) / 2);
 	Rectangle monitorRect = parent.getMonitor ().getClientArea();

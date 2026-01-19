@@ -217,7 +217,7 @@ void drawBackground (Control control, long gdkResource, long cr, int x, int y, i
 		Cairo.cairo_clip(cairo);
 	}
 	if (control.backgroundImage != null) {
-		Point pt = display.mapInPixels (this, control, 0, 0);
+		Point pt = display.map (this, control, 0, 0);
 		Cairo.cairo_translate (cairo, -pt.x, -pt.y);
 		x += pt.x;
 		y += pt.y;
@@ -4130,7 +4130,7 @@ void gtk4_motion_event(long controller, double x, double y, long event) {
 		if (display.currentControl != null && !display.currentControl.isDisposed()) {
 			display.removeMouseHoverTimeout(display.currentControl.handle);
 			/*
-			 *  Note: for GTK4, the call to display.mapInPixels function was removed due to the
+			 *  Note: for GTK4, the call to display.map function was removed due to the
 			 *  inability to get the origin of surfaces. Testing needs to be done to see if
 			 *  the x, y, coordinates suffice.
 			 */
@@ -4226,7 +4226,7 @@ long gtk_motion_notify_event (long widget, long event) {
 	if (this != display.currentControl) {
 		if (display.currentControl != null && !display.currentControl.isDisposed ()) {
 			display.removeMouseHoverTimeout(display.currentControl.handle);
-			Point pt = display.mapInPixels(this, display.currentControl, (int)x, (int)y);
+			Point pt = display.map(this, display.currentControl, (int)x, (int)y);
 			display.currentControl.sendMouseEvent(SWT.MouseExit,  0, time, pt.x, pt.y, isHint, state[0]);
 		}
 		if (!isDisposed ()) {
