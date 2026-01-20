@@ -3142,12 +3142,14 @@ private class DestroyableImageHandle implements InternalImageHandle {
 					if (!hasMaskData && depth == 32) {
 						alphaData = new byte[width * height];
 						boolean hasAlphaData = false;
+						boolean isAllZeroAlpha = true;
 						for (int pixelIndex = 0; pixelIndex < alphaData.length; pixelIndex++) {
 							alphaData[pixelIndex] = data[pixelIndex * 4 + 3];
 							hasAlphaData |= alphaData[pixelIndex] != -1;
+							isAllZeroAlpha &= alphaData[pixelIndex] == 0;
 						}
 						// In case there is alpha data, replace the empty mask data with proper alpha data
-						if (hasAlphaData) {
+						if (hasAlphaData && !isAllZeroAlpha) {
 							maskData = null;
 						} else {
 							alphaData = null;
