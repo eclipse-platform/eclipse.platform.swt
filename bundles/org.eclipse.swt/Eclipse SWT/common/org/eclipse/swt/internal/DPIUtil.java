@@ -121,6 +121,10 @@ private static void updateAutoScaleValue() {
 	}
 }
 
+public static boolean isCustomAutoScale() {
+	return System.getProperty (SWT_AUTOSCALE) != null;
+}
+
 /**
  * Returns {@code true} only if the current setup is compatible
  * with monitor-specific scaling. Returns {@code false} if:

@@ -949,11 +949,7 @@ public void close () {
 protected void create (DeviceData data) {
 	checkSubclass ();
 	checkDisplay (thread = Thread.currentThread (), true);
-	if (DPIUtil.isMonitorSpecificScalingActive()) {
-		setMonitorSpecificScaling(true);
-	}
-	DPIUtil.setMonitorSpecificScaling(DPIUtil.isMonitorSpecificScalingActive());
-	Win32DPIUtils.initializeCustomDpiAwareness();
+	initializeAutoscaling(DPIUtil.isMonitorSpecificScalingActive());
 	createDisplay (data);
 	register (this);
 	if (Default == null) Default = this;
@@ -5404,19 +5400,25 @@ public boolean isRescalingAtRuntime() {
  */
 @Deprecated(since = "2025-03", forRemoval = true)
 public boolean setRescalingAtRuntime(boolean activate) {
-	return setMonitorSpecificScaling(activate);
+	return initializeAutoscaling(activate);
 }
 
-private boolean setMonitorSpecificScaling(boolean activate) {
-	long desiredApiAwareness = activate ? OS.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 : OS.DPI_AWARENESS_CONTEXT_SYSTEM_AWARE;
-	if (Win32DPIUtils.setDPIAwareness(desiredApiAwareness)) {
-		rescalingAtRuntime = activate;
-		coordinateSystemMapper = activate ? new MultiZoomCoordinateSystemMapper(this, this::getMonitors) : new SingleZoomCoordinateSystemMapper(this);
-		// dispose a existing font registry for the default display
-		SWTFontProvider.disposeFontRegistry(this);
-		return true;
+private boolean initializeAutoscaling(boolean useMonitorSpecificScaling) {
+	boolean successfullySetDpiAwareness = true;
+	if (!Win32DPIUtils.initializeCustomDpiAwareness() && !DPIUtil.isCustomAutoScale()) {
+		successfullySetDpiAwareness = setDpiAwareness(useMonitorSpecificScaling);
 	}
-	return false;
+	DPIUtil.setMonitorSpecificScaling(useMonitorSpecificScaling);
+	rescalingAtRuntime = useMonitorSpecificScaling;
+	coordinateSystemMapper = useMonitorSpecificScaling ? new MultiZoomCoordinateSystemMapper(this, this::getMonitors) : new SingleZoomCoordinateSystemMapper(this);
+	// dispose an existing font registry for the default display
+	SWTFontProvider.disposeFontRegistry(this);
+	return successfullySetDpiAwareness;
+}
+
+private boolean setDpiAwareness(boolean useMonitorSpecificScaling) {
+	long desiredApiAwareness = useMonitorSpecificScaling ? OS.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 : OS.DPI_AWARENESS_CONTEXT_SYSTEM_AWARE;
+	return Win32DPIUtils.setDPIAwareness(desiredApiAwareness);
 }
 
 }
