@@ -354,11 +354,11 @@ public class OS extends C {
 	public static final short DMDUP_SIMPLEX = 1;
 	public static final short DMDUP_VERTICAL = 2;
 	public static final short DMDUP_HORIZONTAL = 3;
-	public static final int DPI_AWARENESS_CONTEXT_UNAWARE = 24592;
-	public static final int DPI_AWARENESS_CONTEXT_UNAWARE_GDISCALED = 1073766416;
-	public static final int DPI_AWARENESS_CONTEXT_SYSTEM_AWARE = 24593;
-	public static final int DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE = 18;
-	public static final int DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 = 34;
+	public static final long DPI_AWARENESS_CONTEXT_UNAWARE = DPI_AWARENESS_CONTEXT_UNAWARE();
+	public static final long DPI_AWARENESS_CONTEXT_UNAWARE_GDISCALED = DPI_AWARENESS_CONTEXT_UNAWARE_GDISCALED();
+	public static final long DPI_AWARENESS_CONTEXT_SYSTEM_AWARE = DPI_AWARENESS_CONTEXT_SYSTEM_AWARE();
+	public static final long DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE = DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE();
+	public static final long DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 = DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2();
 	public static final int DSTINVERT = 0x550009;
 	public static final int DT_BOTTOM = 0x8;
 	public static final int DT_CALCRECT = 0x400;
@@ -2350,6 +2350,12 @@ public static final native boolean AlphaBlend(long hdcDest, int nXOriginDest, in
 /** @param hdc cast=(HDC) */
 public static final native boolean Arc (long hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect, int nXStartArc, int nYStartArc, int nXEndArc, int nYEndArc);
 /**
+ * @method flags=dynamic
+ * @param dpiContextA cast=(DPI_AWARENESS_CONTEXT)
+ * @param dpiContextB cast=(DPI_AWARENESS_CONTEXT)
+ */
+public static final native boolean AreDpiAwarenessContextsEqual (long dpiContextA, long dpiContextB);
+/**
  * @param pszAssoc flags=no_out
  * @param pszExtra flags=no_out
  * @param pcchOut cast=(DWORD *)
@@ -2573,6 +2579,16 @@ public static final native long DispatchMessage (MSG lpmsg);
  * @param pDevModeInput cast=(PDEVMODEW)
  */
 public static final native int DocumentProperties (long hWnd, long hPrinter, char[] pDeviceName, long pDevModeOutput, long pDevModeInput, int fMode);
+/** @method flags=no_gen */
+public static final native long DPI_AWARENESS_CONTEXT_UNAWARE();
+/** @method flags=no_gen */
+public static final native long DPI_AWARENESS_CONTEXT_UNAWARE_GDISCALED();
+/** @method flags=no_gen */
+public static final native long DPI_AWARENESS_CONTEXT_SYSTEM_AWARE();
+/** @method flags=no_gen */
+public static final native long DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE();
+/** @method flags=no_gen */
+public static final native long DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2();
 /**
  * @param hwnd cast=(HWND)
  * @param pt flags=struct

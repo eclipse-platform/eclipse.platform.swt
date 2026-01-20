@@ -343,3 +343,103 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(IsDarkModeAvailable)
 	return isAvailable;
 }
 #endif
+
+#ifndef NO_DPI_1AWARENESS_1CONTEXT_1PER_1MONITOR_1AWARE
+JNIEXPORT jlong JNICALL OS_NATIVE(DPI_1AWARENESS_1CONTEXT_1PER_1MONITOR_1AWARE)
+	(JNIEnv *env, jclass that)
+{
+	/* Suppress warnings about unreferenced parameters */
+	(void)env;
+	(void)that;
+		
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, DPI_1AWARENESS_1CONTEXT_1PER_1MONITOR_1AWARE_FUNC);
+	#ifdef DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE
+			rc = (jlong)(LONG_PTR)DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE;
+		#else
+			rc = 0;
+		#endif
+	OS_NATIVE_EXIT(env, that, DPI_1AWARENESS_1CONTEXT_1PER_1MONITOR_1AWARE_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_DPI_1AWARENESS_1CONTEXT_1PER_1MONITOR_1AWARE_1V2
+JNIEXPORT jlong JNICALL OS_NATIVE(DPI_1AWARENESS_1CONTEXT_1PER_1MONITOR_1AWARE_1V2)
+	(JNIEnv *env, jclass that)
+{
+	/* Suppress warnings about unreferenced parameters */
+	(void)env;
+	(void)that;
+	
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, DPI_1AWARENESS_1CONTEXT_1PER_1MONITOR_1AWARE_1V2_FUNC);
+	#ifdef DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2
+		rc = (jlong)(LONG_PTR)DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2;
+	#else
+		rc = 0;
+	#endif
+	OS_NATIVE_EXIT(env, that, DPI_1AWARENESS_1CONTEXT_1PER_1MONITOR_1AWARE_1V2_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_DPI_1AWARENESS_1CONTEXT_1SYSTEM_1AWARE
+JNIEXPORT jlong JNICALL OS_NATIVE(DPI_1AWARENESS_1CONTEXT_1SYSTEM_1AWARE)
+	(JNIEnv *env, jclass that)
+{
+	/* Suppress warnings about unreferenced parameters */
+	(void)env;
+	(void)that;
+	
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, DPI_1AWARENESS_1CONTEXT_1SYSTEM_1AWARE_FUNC);
+	#ifdef DPI_AWARENESS_CONTEXT_SYSTEM_AWARE
+		rc = (jlong)(LONG_PTR)DPI_AWARENESS_CONTEXT_SYSTEM_AWARE;
+	#else
+		rc = 0;
+	#endif
+	OS_NATIVE_EXIT(env, that, DPI_1AWARENESS_1CONTEXT_1SYSTEM_1AWARE_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_DPI_1AWARENESS_1CONTEXT_1UNAWARE
+JNIEXPORT jlong JNICALL OS_NATIVE(DPI_1AWARENESS_1CONTEXT_1UNAWARE)
+	(JNIEnv *env, jclass that)
+{
+	/* Suppress warnings about unreferenced parameters */
+	(void)env;
+	(void)that;
+	
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, DPI_1AWARENESS_1CONTEXT_1UNAWARE_FUNC);
+	#ifdef DPI_AWARENESS_CONTEXT_UNAWARE
+		rc = (jlong)(LONG_PTR)DPI_AWARENESS_CONTEXT_UNAWARE;
+	#else
+		rc = 0;
+	#endif
+	OS_NATIVE_EXIT(env, that, DPI_1AWARENESS_1CONTEXT_1UNAWARE_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_DPI_1AWARENESS_1CONTEXT_1UNAWARE_1GDISCALED
+JNIEXPORT jlong JNICALL OS_NATIVE(DPI_1AWARENESS_1CONTEXT_1UNAWARE_1GDISCALED)
+	(JNIEnv *env, jclass that)
+{
+	/* Suppress warnings about unreferenced parameters */
+	(void)env;
+	(void)that;
+	
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, DPI_1AWARENESS_1CONTEXT_1UNAWARE_1GDISCALED_FUNC);
+	#ifdef DPI_AWARENESS_CONTEXT_UNAWARE_GDISCALED
+		rc = (jlong)(LONG_PTR)DPI_AWARENESS_CONTEXT_UNAWARE_GDISCALED;
+	#else
+		rc = 0;
+	#endif
+	OS_NATIVE_EXIT(env, that, DPI_1AWARENESS_1CONTEXT_1UNAWARE_1GDISCALED_FUNC);
+	return rc;
+}
+#endif

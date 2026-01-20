@@ -24,3 +24,4 @@
 #define OpenThemeDataForDpi_LIB "uxtheme.dll"
 #define GetThreadDpiAwarenessContext_LIB "user32.dll"
 #define SetThreadDpiAwarenessContext_LIB "user32.dll"
+#define AreDpiAwarenessContextsEqual_LIB "user32.dll"

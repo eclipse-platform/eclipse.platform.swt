@@ -5408,7 +5408,7 @@ public boolean setRescalingAtRuntime(boolean activate) {
 }
 
 private boolean setMonitorSpecificScaling(boolean activate) {
-	int desiredApiAwareness = activate ? OS.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 : OS.DPI_AWARENESS_CONTEXT_SYSTEM_AWARE;
+	long desiredApiAwareness = activate ? OS.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 : OS.DPI_AWARENESS_CONTEXT_SYSTEM_AWARE;
 	if (Win32DPIUtils.setDPIAwareness(desiredApiAwareness)) {
 		rescalingAtRuntime = activate;
 		coordinateSystemMapper = activate ? new MultiZoomCoordinateSystemMapper(this, this::getMonitors) : new SingleZoomCoordinateSystemMapper(this);
