@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2025 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -157,6 +157,26 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(Arc)
 	OS_NATIVE_ENTER(env, that, Arc_FUNC);
 	rc = (jboolean)Arc((HDC)arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
 	OS_NATIVE_EXIT(env, that, Arc_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_AreDpiAwarenessContextsEqual
+JNIEXPORT jboolean JNICALL OS_NATIVE(AreDpiAwarenessContextsEqual)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, AreDpiAwarenessContextsEqual_FUNC);
+/*
+	rc = (jboolean)AreDpiAwarenessContextsEqual((DPI_AWARENESS_CONTEXT)arg0, (DPI_AWARENESS_CONTEXT)arg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, AreDpiAwarenessContextsEqual)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(DPI_AWARENESS_CONTEXT, DPI_AWARENESS_CONTEXT))fp)((DPI_AWARENESS_CONTEXT)arg0, (DPI_AWARENESS_CONTEXT)arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, AreDpiAwarenessContextsEqual_FUNC);
 	return rc;
 }
 #endif

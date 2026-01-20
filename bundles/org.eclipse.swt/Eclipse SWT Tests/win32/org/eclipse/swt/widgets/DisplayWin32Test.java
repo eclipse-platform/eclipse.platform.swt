@@ -1,7 +1,8 @@
 package org.eclipse.swt.widgets;
 
 import static org.eclipse.swt.internal.DPIUtil.setMonitorSpecificScaling;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
@@ -17,7 +18,14 @@ class DisplayWin32Test {
 		setMonitorSpecificScaling(true);
 		Display display = Display.getDefault();
 		assertTrue(display.isRescalingAtRuntime());
-		assertEquals(OS.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2, OS.GetThreadDpiAwarenessContext());
+
+		assertExpectedDpiAwareness(OS.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+	}
+
+	private static void assertExpectedDpiAwareness(long expected) {
+		long currentDpiAwareness = OS.GetThreadDpiAwarenessContext();
+		boolean hasExpectedDpiAwareness = OS.AreDpiAwarenessContextsEqual(expected,currentDpiAwareness);
+		assertTrue(hasExpectedDpiAwareness, "unexpected DPI awareness: " + currentDpiAwareness);
 	}
 
 	@Test
@@ -34,7 +42,7 @@ class DisplayWin32Test {
 			setMonitorSpecificScaling(true);
 			Display display = Display.getDefault();
 			assertTrue(display.isRescalingAtRuntime());
-			assertEquals(OS.DPI_AWARENESS_CONTEXT_SYSTEM_AWARE, OS.GetThreadDpiAwarenessContext());
+			assertExpectedDpiAwareness(OS.DPI_AWARENESS_CONTEXT_SYSTEM_AWARE);
 		} finally {
 			System.clearProperty(Win32DPIUtils.CUSTOM_DPI_AWARENESS_PROPERTY);
 		}
@@ -45,7 +53,7 @@ class DisplayWin32Test {
 		System.setProperty(Win32DPIUtils.CUSTOM_DPI_AWARENESS_PROPERTY, "System");
 		try {
 			Display.getDefault();
-			assertEquals(OS.DPI_AWARENESS_CONTEXT_SYSTEM_AWARE, OS.GetThreadDpiAwarenessContext());
+			assertExpectedDpiAwareness(OS.DPI_AWARENESS_CONTEXT_SYSTEM_AWARE);
 		} finally {
 			System.clearProperty(Win32DPIUtils.CUSTOM_DPI_AWARENESS_PROPERTY);
 		}
@@ -56,7 +64,7 @@ class DisplayWin32Test {
 		System.setProperty(Win32DPIUtils.CUSTOM_DPI_AWARENESS_PROPERTY, "PerMonitorV2");
 		try {
 			Display.getDefault();
-			assertEquals(OS.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2, OS.GetThreadDpiAwarenessContext());
+			assertExpectedDpiAwareness(OS.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
 		} finally {
 			System.clearProperty(Win32DPIUtils.CUSTOM_DPI_AWARENESS_PROPERTY);
 		}
@@ -68,7 +76,7 @@ class DisplayWin32Test {
 		Display display = Display.getDefault();
 		display.setRescalingAtRuntime(true);
 		assertTrue(display.isRescalingAtRuntime());
-		assertEquals(OS.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2, OS.GetThreadDpiAwarenessContext());
+		assertExpectedDpiAwareness(OS.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
 	}
 
 	@Test
@@ -77,7 +85,7 @@ class DisplayWin32Test {
 		Display display = Display.getDefault();
 		display.setRescalingAtRuntime(false);
 		assertFalse(display.isRescalingAtRuntime());
-		assertEquals(OS.DPI_AWARENESS_CONTEXT_SYSTEM_AWARE, OS.GetThreadDpiAwarenessContext());
+		assertExpectedDpiAwareness(OS.DPI_AWARENESS_CONTEXT_SYSTEM_AWARE);
 	}
 
 	@Test
@@ -86,13 +94,13 @@ class DisplayWin32Test {
 		Display display = Display.getDefault();
 		display.setRescalingAtRuntime(false);
 		assertFalse(display.isRescalingAtRuntime());
-		assertEquals(OS.DPI_AWARENESS_CONTEXT_SYSTEM_AWARE, OS.GetThreadDpiAwarenessContext());
+		assertExpectedDpiAwareness(OS.DPI_AWARENESS_CONTEXT_SYSTEM_AWARE);
 		display.setRescalingAtRuntime(true);
 		assertTrue(display.isRescalingAtRuntime());
-		assertEquals(OS.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2, OS.GetThreadDpiAwarenessContext());
+		assertExpectedDpiAwareness(OS.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
 		display.setRescalingAtRuntime(false);
 		assertFalse(display.isRescalingAtRuntime());
-		assertEquals(OS.DPI_AWARENESS_CONTEXT_SYSTEM_AWARE, OS.GetThreadDpiAwarenessContext());
+		assertExpectedDpiAwareness(OS.DPI_AWARENESS_CONTEXT_SYSTEM_AWARE);
 	}
 
 }

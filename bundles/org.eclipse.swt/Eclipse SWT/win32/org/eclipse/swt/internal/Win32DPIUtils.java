@@ -42,7 +42,7 @@ public class Win32DPIUtils {
 	 */
 	public static final String CUSTOM_DPI_AWARENESS_PROPERTY = "org.eclipse.swt.internal.win32.dpiAwareness";
 
-	private static int customDpiAwareness = -1;
+	private static long customDpiAwareness = -1;
 
 	public static void initializeCustomDpiAwareness() {
 		String customDpiAwareness = System.getProperty(CUSTOM_DPI_AWARENESS_PROPERTY);
@@ -63,7 +63,7 @@ public class Win32DPIUtils {
 		}
 	}
 
-	public static boolean setDPIAwareness(int desiredDpiAwareness) {
+	public static boolean setDPIAwareness(long desiredDpiAwareness) {
 		if (desiredDpiAwareness == OS.GetThreadDpiAwarenessContext()) {
 			return true;
 		}

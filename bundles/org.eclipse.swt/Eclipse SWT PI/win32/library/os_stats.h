@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2025 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -31,6 +31,7 @@ typedef enum {
 	AllowSetForegroundWindow_FUNC,
 	AlphaBlend_FUNC,
 	Arc_FUNC,
+	AreDpiAwarenessContextsEqual_FUNC,
 	AssocQueryString_FUNC,
 	BITMAPINFOHEADER_1sizeof_FUNC,
 	BITMAP_1sizeof_FUNC,
@@ -100,6 +101,11 @@ typedef enum {
 	DIBSECTION_1sizeof_FUNC,
 	DOCHOSTUIINFO_1sizeof_FUNC,
 	DOCINFO_1sizeof_FUNC,
+	DPI_1AWARENESS_1CONTEXT_1PER_1MONITOR_1AWARE_FUNC,
+	DPI_1AWARENESS_1CONTEXT_1PER_1MONITOR_1AWARE_1V2_FUNC,
+	DPI_1AWARENESS_1CONTEXT_1SYSTEM_1AWARE_FUNC,
+	DPI_1AWARENESS_1CONTEXT_1UNAWARE_FUNC,
+	DPI_1AWARENESS_1CONTEXT_1UNAWARE_1GDISCALED_FUNC,
 	DRAWITEMSTRUCT_1sizeof_FUNC,
 	DROPFILES_1sizeof_FUNC,
 	DefFrameProc_FUNC,
