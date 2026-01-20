@@ -44,23 +44,24 @@ public class Win32DPIUtils {
 
 	private static long customDpiAwareness = -1;
 
-	public static void initializeCustomDpiAwareness() {
+	public static boolean initializeCustomDpiAwareness() {
 		String customDpiAwareness = System.getProperty(CUSTOM_DPI_AWARENESS_PROPERTY);
 		if (customDpiAwareness != null) {
 			switch (customDpiAwareness.toLowerCase()) {
 			case "permonitorv2":
 				setDPIAwareness(OS.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
-				break;
+				return true;
 			case "permonitor":
 				setDPIAwareness(OS.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE);
-				break;
+				return true;
 			case "system":
 				setDPIAwareness(OS.DPI_AWARENESS_CONTEXT_SYSTEM_AWARE);
-				break;
+				return true;
 			default:
 				System.err.println("Invalid DPI awareness specified: " + customDpiAwareness);
 			}
 		}
+		return false;
 	}
 
 	public static boolean setDPIAwareness(long desiredDpiAwareness) {
