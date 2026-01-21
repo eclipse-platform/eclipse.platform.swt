@@ -5408,9 +5408,9 @@ private boolean initializeAutoscaling(boolean useMonitorSpecificScaling) {
 	if (!Win32DPIUtils.initializeCustomDpiAwareness() && !DPIUtil.isCustomAutoScale()) {
 		successfullySetDpiAwareness = setDpiAwareness(useMonitorSpecificScaling);
 	}
-	DPIUtil.setMonitorSpecificScaling(useMonitorSpecificScaling);
-	rescalingAtRuntime = useMonitorSpecificScaling;
-	coordinateSystemMapper = useMonitorSpecificScaling ? new MultiZoomCoordinateSystemMapper(this, this::getMonitors) : new SingleZoomCoordinateSystemMapper(this);
+	rescalingAtRuntime = useMonitorSpecificScaling && Win32DPIUtils.hasProperDpiAwarenessForMonitorSpecificScaling();
+	DPIUtil.setMonitorSpecificScaling(rescalingAtRuntime);
+	coordinateSystemMapper = rescalingAtRuntime ? new MultiZoomCoordinateSystemMapper(this, this::getMonitors) : new SingleZoomCoordinateSystemMapper(this);
 	// dispose an existing font registry for the default display
 	SWTFontProvider.disposeFontRegistry(this);
 	return successfullySetDpiAwareness;
