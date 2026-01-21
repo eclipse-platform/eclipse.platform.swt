@@ -42,7 +42,7 @@ class DisplayWin32Test {
 		try {
 			setMonitorSpecificScaling(true);
 			Display display = Display.getDefault();
-			assertTrue(display.isRescalingAtRuntime());
+			assertFalse(display.isRescalingAtRuntime());
 			assertExpectedDpiAwareness(OS.DPI_AWARENESS_CONTEXT_SYSTEM_AWARE);
 		} finally {
 			System.clearProperty(Win32DPIUtils.CUSTOM_DPI_AWARENESS_PROPERTY);

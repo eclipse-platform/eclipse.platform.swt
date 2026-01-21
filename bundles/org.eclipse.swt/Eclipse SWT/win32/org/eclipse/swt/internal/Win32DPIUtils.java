@@ -85,6 +85,10 @@ public class Win32DPIUtils {
 		return true;
 	}
 
+	public static boolean hasProperDpiAwarenessForMonitorSpecificScaling() {
+		return OS.AreDpiAwarenessContextsEqual(OS.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2, OS.GetThreadDpiAwarenessContext());
+	}
+
 	public static <T> T runWithProperDPIAwareness(Display display, Supplier<T> operation) {
 		if (customDpiAwareness == -1) {
 			return operation.get();
