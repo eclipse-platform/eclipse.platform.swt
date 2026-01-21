@@ -156,14 +156,23 @@ public static boolean isSetupCompatibleToMonitorSpecificScaling() {
 	if (!"win32".equals(SWT.getPlatform())) {
 		return false;
 	}
-	if (System.getProperty(SWT_AUTOSCALE) == null || "force".equals(System.getProperty(SWT_AUTOSCALE_UPDATE_ON_RUNTIME))) {
+	if (System.getProperty(SWT_AUTOSCALE) == null || isMonitorSpecificScalingEnforced()) {
 		return true;
 	}
 	return autoScaleValue.isCompatibleToMonitorSpecificScaling();
 }
 
+private static boolean isMonitorSpecificScalingEnforced() {
+	return "force".equals(System.getProperty(SWT_AUTOSCALE_UPDATE_ON_RUNTIME));
+}
+
 public static void setMonitorSpecificScaling(boolean activate) {
-	System.setProperty(DPIUtil.SWT_AUTOSCALE_UPDATE_ON_RUNTIME, Boolean.toString(activate));
+	// If monitor-specific scaling was enforced via system property, calling this
+	// method with "true" should preserve the enforcement and not overwrite the
+	// system property with a simple "true"
+	if (!activate || !isMonitorSpecificScalingEnforced()) {
+		System.setProperty(DPIUtil.SWT_AUTOSCALE_UPDATE_ON_RUNTIME, Boolean.toString(activate));
+	}
 	updateAutoScaleValue();
 }
 
