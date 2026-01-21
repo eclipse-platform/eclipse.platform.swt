@@ -522,19 +522,6 @@ private abstract class ImageOperation extends Operation {
 		super.disposeAll();
 	}
 
-	protected float calculateTransformationScale() {
-		Transform current = new Transform(device);
-		getTransform(current);
-		float[] m = new float[6];
-		current.getElements(m);
-		// this calculates the effective length in x and y
-		// direction without being affected by the rotation
-		// of the transformation
-		float scaleWidth = (float) Math.hypot(m[0], m[2]);
-		float scaleHeight = (float) Math.hypot(m[1], m[3]);
-		current.dispose();
-		return Math.max(scaleWidth, scaleHeight);
-	}
 }
 
 private class CopyAreaToImageOperation extends ImageOperation {
@@ -1055,7 +1042,32 @@ public void drawImage (Image image, int x, int y) {
 	checkNonDisposed();
 	if (image == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	storeAndApplyOperationForExistingHandle(new DrawImageOperation(image, new Point(x, y)));
+	Transform transform = new Transform(device);
+	try {
+		getTransform(transform);
+		if (transform.isIdentity()) {
+			storeAndApplyOperationForExistingHandle(new DrawImageOperation(image, new Point(x, y)));
+		} else {
+			Rectangle imageBounds = image.getBounds();
+			drawImage(image, x, y, imageBounds.width, imageBounds.height);
+		}
+	} finally {
+		transform.dispose();
+	}
+}
+
+private float calculateTransformationScale() {
+	Transform current = new Transform(device);
+	getTransform(current);
+	float[] m = new float[6];
+	current.getElements(m);
+	// this calculates the effective length in x and y
+	// direction without being affected by the rotation
+	// of the transformation
+	float scaleWidth = (float) Math.hypot(m[0], m[2]);
+	float scaleHeight = (float) Math.hypot(m[1], m[3]);
+	current.dispose();
+	return Math.max(scaleWidth, scaleHeight);
 }
 
 private class DrawImageOperation extends ImageOperation {
