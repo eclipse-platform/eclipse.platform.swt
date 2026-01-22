@@ -19,11 +19,17 @@ import org.eclipse.swt.widgets.*;
 /*
  * Demonstrates cropping and scaling of images using a GC
  *
- * The GC provides two relevant drawImage methods: one that scales an entire
- * image to a destination rectangle, and another that crops a source region and
- * scales it to the destination. The snippet allows to select any source area
- * of an image and draw it to a specific target size. Additionally you can scale
- * it additionally to the selected target size and rotate the image.
+ * The GC provides three drawImage methods: one that draws an image at a target
+ * destination, one that scales an entire image to a destination rectangle, and
+ * another that crops a source region and scales it to the destination. The snippet
+ * allows to select any source area of an image and draw it to a specific target
+ * size. Additionally you can scale it additionally to the selected target size and
+ * rotate the image.
+ *
+ * The snippet will draw the result with all three drawImage methods.
+ * As not all methods will use all configuration option (e.g. only one methods supports
+ * drawing a cropped part of an image), changing parameters does not always affect all
+ * results.
  *
  * This snippet allows experimenting with different source and destination
  * values for the second method. Within the method, the GC receives the
@@ -60,7 +66,7 @@ public class Snippet389 {
 		shell.setText("GC#drawImage Interactive");
 
 		new CropImageView(shell, image);
-		shell.setSize(1000, 600);
+		shell.setSize(1000, 800);
 		shell.open();
 
 		while (!shell.isDisposed()) {
@@ -76,15 +82,17 @@ public class Snippet389 {
 
 		private Image image;
 		private int srcX, srcY, srcW, srcH;
-		private int dstX, dstY, dstW, dstH;
+		private int dstW, dstH;
 		private float transformationScale;
 		private int transformationRotation;
 		private Text textSrcX, textSrcY, textSrcW, textSrcH;
-		private Text textDstX, textDstY, textDstW, textDstH;
+		private Text textDstW, textDstH;
 		private Text textScale;
 		private Slider rotationSlider;
 		private Canvas srcCanvas;
-		private Canvas dstCanvas;
+		private Canvas dstCanvas1;
+		private Canvas dstCanvas2;
+		private Canvas dstCanvas3;
 
 		public CropImageView(Composite parent, Image image) {
 			super(parent, SWT.None);
@@ -96,16 +104,11 @@ public class Snippet389 {
 			setLayout(new GridLayout(2, false));
 
 			Rectangle imgBounds = image.getBounds();
-
-			final int fixedDstW = imgBounds.width * 2;
-			final int fixedDstH = imgBounds.height * 2;
 			srcX = imgBounds.width / 2;
 			srcY = imgBounds.height / 2;
 			srcW = imgBounds.width / 2;
 			srcH = imgBounds.height / 2;
 
-			dstX = 0;
-			dstY = 0;
 			dstW = imgBounds.width;
 			dstH = imgBounds.height;
 
@@ -122,8 +125,6 @@ public class Snippet389 {
 			textSrcW = field(controls, "srcWidth", srcW);
 			textSrcH = field(controls, "srcHeight", srcH);
 
-			textDstX = field(controls, "destX", dstX);
-			textDstY = field(controls, "destY", dstY);
 			textDstW = field(controls, "destWidth", dstW);
 			textDstH = field(controls, "destHeight", dstH);
 
@@ -138,7 +139,13 @@ public class Snippet389 {
 			draw.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 			draw.setLayout(new GridLayout(2, true));
 
-			srcCanvas = new Canvas(draw, SWT.BORDER);
+			Group srcCanvasGroup = new Group(draw, SWT.NONE);
+			srcCanvasGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+			srcCanvasGroup.setLayout(new GridLayout(1, true));
+			Label labelSrcCanvas = new Label(srcCanvasGroup, SWT.NONE);
+			labelSrcCanvas.setText("Source Image");
+			labelSrcCanvas.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+			srcCanvas = new Canvas(srcCanvasGroup, SWT.NONE);
 			srcCanvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 			srcCanvas.addListener(SWT.Paint, e -> {
 				try {
@@ -167,42 +174,87 @@ public class Snippet389 {
 				}
 			});
 
-			dstCanvas = new Canvas(draw, SWT.BORDER);
+			Group dstCanvas1Group = new Group(draw, SWT.NONE);
+			dstCanvas1Group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+			dstCanvas1Group.setLayout(new GridLayout(1, true));
+			Label labelDstCanvas1 = new Label(dstCanvas1Group, SWT.WRAP);
+			labelDstCanvas1.setText("GC#drawImage(Image, int, int) - Scale Factor and Rotation (no crop)");
+			labelDstCanvas1.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+			dstCanvas1 = initDestinationCanvas(dstCanvas1Group, 1, false);
+
+
+			Group dstCanvas2Group = new Group(draw, SWT.NONE);
+			dstCanvas2Group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+			dstCanvas2Group.setLayout(new GridLayout(1, true));
+			Label labelDstCanvas2 = new Label(dstCanvas2Group, SWT.WRAP);
+			labelDstCanvas2.setText("GC#drawImage(Image, int, int, int, int) - destWidth, destHeight, Scale Factor and Rotation (no crop)");
+			labelDstCanvas2.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+			dstCanvas2 = initDestinationCanvas(dstCanvas2Group, 2, true);
+
+			Group dstCanvas3Group = new Group(draw, SWT.NONE);
+			dstCanvas3Group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+			dstCanvas3Group.setLayout(new GridLayout(1, true));
+			Label labelDstCanvas3 = new Label(dstCanvas3Group, SWT.WRAP);
+			labelDstCanvas3.setText("GC#drawImage(Image, int, int, int, int, int, int, int, int) - All");
+			labelDstCanvas3.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+			dstCanvas3 = initDestinationCanvas(dstCanvas3Group, 3, true);
+
+			apply.addListener(SWT.Selection, e -> refreshView());
+		}
+
+		private Canvas initDestinationCanvas(Composite parent, int drawingMode, boolean scalableAPI) {
+			Canvas dstCanvas = new Canvas(parent, SWT.NONE);
 			dstCanvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 			dstCanvas.addListener(SWT.Paint, e -> {
 				try {
 					GC gc = e.gc;
 					Rectangle ca = dstCanvas.getClientArea();
-
-					int px = (ca.width - fixedDstW) / 2;
-					int py = (ca.height - fixedDstH) / 2;
-					Transform translationTransform = new Transform(getDisplay());
-					translationTransform.translate(px + dstX, py + dstY);
-
-					translationTransform.translate(fixedDstW / 2f, fixedDstH / 2f);
-					if (transformationScale > 1) {
-						translationTransform.scale(transformationScale, transformationScale);
+					Rectangle imgBounds = image.getBounds();
+					switch (drawingMode) {
+						case 1: {
+							float imageBoundsX = imgBounds.width * transformationScale;
+							float imageBoundsY = imgBounds.height * transformationScale;
+							int px = Math.round((ca.width - imgBounds.width * transformationScale) / 2f);
+							int py = Math.round((ca.height - imgBounds.height * transformationScale) / 2f);
+							prepareTransform(gc, px, py, imageBoundsX, imageBoundsY);
+							gc.drawImage(image, 0, 0);
+							gc.setLineStyle(SWT.LINE_DASH);
+							gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_BLACK));
+							gc.drawRectangle(0, 0, imgBounds.width, imgBounds.height);
+							break;
+						}
+						case 2: {
+							float imageBoundsX = dstW * transformationScale;
+							float imageBoundsY = dstH * transformationScale;
+							int px = Math.round((ca.width - dstW * transformationScale) / 2f);
+							int py = Math.round((ca.height - dstH * transformationScale) / 2f);
+							prepareTransform(gc, px, py, imageBoundsX, imageBoundsY);
+							gc.drawImage(image, 0, 0, dstW, dstH);
+							gc.setLineStyle(SWT.LINE_DASH);
+							gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_BLACK));
+							gc.drawRectangle(0, 0, dstW, dstH);
+							break;
+						}
+						case 3: {
+							float imageBoundsX = dstW * transformationScale;
+							float imageBoundsY = dstH * transformationScale;
+							int px = Math.round((ca.width - dstW * transformationScale) / 2f);
+							int py = Math.round((ca.height - dstH * transformationScale) / 2f);
+							prepareTransform(gc, px, py, imageBoundsX, imageBoundsY);
+							gc.drawImage(image, srcX, srcY, srcW, srcH, 0, 0, dstW, dstH);
+							gc.setLineStyle(SWT.LINE_DASH);
+							gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_BLACK));
+							gc.drawRectangle(0, 0, dstW, dstH);
+							gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_RED));
+							gc.setLineWidth(1);
+							gc.drawRectangle(0, 0, dstW, dstH);
+							break;
+						}
+						default:
+							throw new IllegalArgumentException("Unexpected value: " + drawingMode);
 					}
-					if (transformationRotation != 0) {
-						translationTransform.rotate(transformationRotation);
-					}
-					translationTransform.translate(-fixedDstW / 2f, -fixedDstH / 2f);
-					gc.setTransform(translationTransform);
 
-					Rectangle imageBounds = image.getBounds();
-					if (imageBounds.equals(new Rectangle(srcX, srcY, srcW, srcH))) {
-						gc.drawImage(image, 0, 0, dstW, dstH);
-					} else {
-						gc.drawImage(image, srcX, srcY, srcW, srcH, 0, 0, dstW, dstH);
-					}
 
-					gc.setLineStyle(SWT.LINE_DASH);
-					gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_BLACK));
-					gc.drawRectangle(0, 0, fixedDstW, fixedDstH);
-
-					gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_RED));
-					gc.setLineWidth(2);
-					gc.drawRectangle(0, 0, dstW, dstH);
 				} catch (Exception ex) {
 					MessageBox box = new MessageBox(getShell());
 					box.setText("Invalid values");
@@ -210,18 +262,20 @@ public class Snippet389 {
 					box.open();
 				}
 			});
+			return dstCanvas;
+		}
 
-			Label srcLabel = new Label(draw, SWT.CENTER);
-			srcLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-			srcLabel.setText("150 x 150");
-
-			Label dstLabel = new Label(draw, SWT.CENTER);
-			dstLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-			dstLabel.setText("300 x 300");
-
-			apply.addListener(SWT.Selection, e -> {
-				refreshView();
-			});
+		private void prepareTransform(GC gc,  int offestX, int offsetY, float imageBoundsX, float imageBoundsY) {
+			Transform translationTransform = new Transform(getDisplay());
+			translationTransform.translate(offestX + imageBoundsX/2, offsetY + imageBoundsY/2);
+			if (transformationScale > 1) {
+				translationTransform.scale(transformationScale, transformationScale);
+			}
+			if (transformationRotation != 0) {
+				translationTransform.rotate(transformationRotation);
+			}
+			translationTransform.translate(-imageBoundsX/2/transformationScale, -imageBoundsY/2/transformationScale);
+			gc.setTransform(translationTransform);
 		}
 
 		private void refreshView() {
@@ -230,8 +284,6 @@ public class Snippet389 {
 			srcW = parseInt(textSrcW);
 			srcH = parseInt(textSrcH);
 
-			dstX = parseInt(textDstX);
-			dstY = parseInt(textDstY);
 			dstW = parseInt(textDstW);
 			dstH = parseInt(textDstH);
 
@@ -239,7 +291,9 @@ public class Snippet389 {
 			transformationRotation = rotationSlider.getSelection();
 
 			srcCanvas.redraw();
-			dstCanvas.redraw();
+			dstCanvas1.redraw();
+			dstCanvas2.redraw();
+			dstCanvas3.redraw();
 		}
 
 		Text field(Composite parent, String label, Number value) {
