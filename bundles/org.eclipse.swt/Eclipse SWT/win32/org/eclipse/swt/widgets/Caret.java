@@ -665,7 +665,9 @@ void handleDPIChange(Event event, float scalingFactor) {
 	if (font != null) {
 		setFont(font);
 	}
-	if (isVisible && hasFocus ()) resize();
+	if (isFocusCaret()) {
+		setFocus();
+	}
 }
 }
 
