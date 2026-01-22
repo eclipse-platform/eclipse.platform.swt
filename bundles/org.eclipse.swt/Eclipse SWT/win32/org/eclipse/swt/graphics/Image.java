@@ -2831,7 +2831,6 @@ private class ImageGcDrawerWrapper extends DynamicImageProviderWrapper {
 			drawer.postProcess(imageData);
 			return adaptImageDataIfDisabledOrGray(imageData);
 		} finally {
-			gc.dispose();
 			image.dispose();
 		}
 	}

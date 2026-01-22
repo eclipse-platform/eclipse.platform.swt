@@ -1635,7 +1635,6 @@ LRESULT WM_PAINT (long wParam, long lParam) {
 						GCData gcData = gc.getGCData ();
 						if (gcData.focusDrawn && !isDisposed ()) updateUIState ();
 					}
-					gc.dispose();
 					if (!isDisposed ()) {
 						paintGC.drawImage (image, DPIUtil.pixelToPoint(ps.left, zoom), DPIUtil.pixelToPoint(ps.top, zoom));
 					}
