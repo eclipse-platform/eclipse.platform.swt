@@ -544,7 +544,6 @@ public void test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_Con
 		shell.setBounds(0,0,400,400);
 		shell.open();
 
-		Point shellOffset = shell.getLocation();
 		Point result;
 
 		result = display.map(button1, button2, 0, 0);
@@ -561,19 +560,22 @@ public void test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_Con
 		result = display.map(button2, button1, 25, 35);
 		assertEquals(new Point(225,135), result);
 
-		result = display.map(null, button2, 0, 0);
-		assertEquals(new Point(-200 - shellOffset.x,-100 - shellOffset.y), result);
-		result = display.map(null, button2, -2, -4);
-		assertEquals(new Point(-202 - shellOffset.x,-104 - shellOffset.y), result);
-		result = display.map(null, button2, 6, 8);
-		assertEquals(new Point(-194 - shellOffset.x,-92 - shellOffset.y), result);
+		if (!SwtTestUtil.isGTK4()) { //Shell.getLocation gives 0,0 on Gtk 4
+			Point shellOffset = shell.getLocation();
+			result = display.map(null, button2, 0, 0);
+			assertEquals(new Point(-200 - shellOffset.x, -100 - shellOffset.y), result);
+			result = display.map(null, button2, -2, -4);
+			assertEquals(new Point(-202 - shellOffset.x, -104 - shellOffset.y), result);
+			result = display.map(null, button2, 6, 8);
+			assertEquals(new Point(-194 - shellOffset.x, -92 - shellOffset.y), result);
 
-		result = display.map(button2, null, 0, 0);
-		assertEquals(new Point(shellOffset.x + 200,shellOffset.y + 100), result);
-		result = display.map(button2, null, -3, -6);
-		assertEquals(new Point(shellOffset.x + 197, shellOffset.y + 94), result);
-		result = display.map(button2, null, 9, 12);
-		assertEquals(new Point(shellOffset.x + 209,shellOffset.y + 112), result);
+			result = display.map(button2, null, 0, 0);
+			assertEquals(new Point(shellOffset.x + 200, shellOffset.y + 100), result);
+			result = display.map(button2, null, -3, -6);
+			assertEquals(new Point(shellOffset.x + 197, shellOffset.y + 94), result);
+			result = display.map(button2, null, 9, 12);
+			assertEquals(new Point(shellOffset.x + 209, shellOffset.y + 112), result);
+		}
 
 		Shell shellMapTest1 = new Shell(display,SWT.NO_TRIM);
 		Button buttonTest1 = new Button(shellMapTest1, SWT.PUSH);
@@ -669,7 +671,6 @@ public void test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_Con
 		shell.setBounds(0,0,400,400);
 		shell.open();
 
-		Point shellOffset = shell.getLocation();
 		Rectangle result;
 
 		result = display.map(button1, button2, 0, 0, 100, 100);
@@ -686,19 +687,22 @@ public void test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_Con
 		result = display.map(button2, button1, 45, 55, 165, 175);
 		assertEquals(new Rectangle(245,155,165,175), result);
 
-		result = display.map(null, button2, 0, 0, 100, 100);
-		assertEquals(new Rectangle(-200 - shellOffset.x,-100 - shellOffset.y,100,100), result);
-		result = display.map(null, button2, -2, -4, 106, 108);
-		assertEquals(new Rectangle(-202 - shellOffset.x,-104 - shellOffset.y,106,108), result);
-		result = display.map(null, button2, 10, 12, 114, 116);
-		assertEquals(new Rectangle(-190 - shellOffset.x,-88 - shellOffset.y,114,116), result);
+		if (!SwtTestUtil.isGTK4()) { // Shell.getLocation gives 0,0 on Gtk 4
+			Point shellOffset = shell.getLocation();
+			result = display.map(null, button2, 0, 0, 100, 100);
+			assertEquals(new Rectangle(-200 - shellOffset.x, -100 - shellOffset.y, 100, 100), result);
+			result = display.map(null, button2, -2, -4, 106, 108);
+			assertEquals(new Rectangle(-202 - shellOffset.x, -104 - shellOffset.y, 106, 108), result);
+			result = display.map(null, button2, 10, 12, 114, 116);
+			assertEquals(new Rectangle(-190 - shellOffset.x, -88 - shellOffset.y, 114, 116), result);
 
-		result = display.map(button2, null, 0, 0, 100, 100);
-		assertEquals(new Rectangle(shellOffset.x + 200,shellOffset.y + 100,100,100), result);
-		result = display.map(button2, null, -3, -6, 109, 112);
-		assertEquals(new Rectangle(shellOffset.x + 197,shellOffset.y + 94,109,112), result);
-		result = display.map(button2, null, 15, 18, 121, 124);
-		assertEquals(new Rectangle(shellOffset.x + 215,shellOffset.y + 118,121,124), result);
+			result = display.map(button2, null, 0, 0, 100, 100);
+			assertEquals(new Rectangle(shellOffset.x + 200, shellOffset.y + 100, 100, 100), result);
+			result = display.map(button2, null, -3, -6, 109, 112);
+			assertEquals(new Rectangle(shellOffset.x + 197, shellOffset.y + 94, 109, 112), result);
+			result = display.map(button2, null, 15, 18, 121, 124);
+			assertEquals(new Rectangle(shellOffset.x + 215, shellOffset.y + 118, 121, 124), result);
+		}
 
 		Shell shellMapTest1 = new Shell(display,SWT.NO_TRIM);
 		Button buttonTest1 = new Button(shellMapTest1, SWT.PUSH);
@@ -798,8 +802,6 @@ public void test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_Con
 
 		Point result;
 		Point point = new Point(0,0);
-		Point shellOffset = shell.getLocation();
-
 
 		result = display.map(button1, button2, point);
 		assertEquals(new Point(-200,-100), result);
@@ -815,19 +817,22 @@ public void test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_Con
 		result = display.map(button2, button1, new Point(25,35));
 		assertEquals(new Point(225,135), result);
 
-		result = display.map(null, button2, point);
-		assertEquals(new Point(-200 - shellOffset.x,-100 - shellOffset.y), result);
-		result = display.map(null, button2, new Point(-2,-4));
-		assertEquals(new Point(-202 - shellOffset.x,-104 - shellOffset.y), result);
-		result = display.map(null, button2, new Point(6,8));
-		assertEquals(new Point(-194 - shellOffset.x,-92 - shellOffset.y), result);
+		if (!SwtTestUtil.isGTK4()) { // Shell.getLocation gives 0,0 on Gtk 4
+			Point shellOffset = shell.getLocation();
+			result = display.map(null, button2, point);
+			assertEquals(new Point(-200 - shellOffset.x, -100 - shellOffset.y), result);
+			result = display.map(null, button2, new Point(-2, -4));
+			assertEquals(new Point(-202 - shellOffset.x, -104 - shellOffset.y), result);
+			result = display.map(null, button2, new Point(6, 8));
+			assertEquals(new Point(-194 - shellOffset.x, -92 - shellOffset.y), result);
 
-		result = display.map(button2, null, point);
-		assertEquals(new Point(shellOffset.x + 200,shellOffset.y + 100), result);
-		result = display.map(button2, null, new Point(-3,-6));
-		assertEquals(new Point(shellOffset.x + 197,shellOffset.y + 94), result);
-		result = display.map(button2, null, new Point(9,12));
-		assertEquals(new Point(shellOffset.x + 209,shellOffset.y + 112), result);
+			result = display.map(button2, null, point);
+			assertEquals(new Point(shellOffset.x + 200, shellOffset.y + 100), result);
+			result = display.map(button2, null, new Point(-3, -6));
+			assertEquals(new Point(shellOffset.x + 197, shellOffset.y + 94), result);
+			result = display.map(button2, null, new Point(9, 12));
+			assertEquals(new Point(shellOffset.x + 209, shellOffset.y + 112), result);
+		}
 
 		Shell shellMapTest1 = new Shell(display,SWT.NO_TRIM);
 		Button buttonTest1 = new Button(shellMapTest1, SWT.PUSH);
@@ -929,7 +934,6 @@ public void test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_Con
 
 		Rectangle result;
 		Rectangle rect = new Rectangle(0,0,100,100);
-		Point shellOffset = shell.getLocation();
 
 		result = display.map(button1, button2, rect);
 		assertEquals(new Rectangle(-200,-100,100,100), result);
@@ -945,19 +949,22 @@ public void test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_Con
 		result = display.map(button2, button1, new Rectangle(45, 55, 165, 175));
 		assertEquals(new Rectangle(245,155,165,175), result);
 
-		result = display.map(null, button2, rect);
-		assertEquals(new Rectangle(-200 - shellOffset.x,-100 - shellOffset.y,100,100), result);
-		result = display.map(null, button2, new Rectangle(-2, -4, 106, 108));
-		assertEquals(new Rectangle(-202 - shellOffset.x,-104 - shellOffset.y,106,108), result);
-		result = display.map(null, button2, new Rectangle(10, 12, 114, 116));
-		assertEquals(new Rectangle(-190 - shellOffset.x,-88 - shellOffset.y,114,116), result);
+		if (!SwtTestUtil.isGTK4()) { // Shell.getLocation gives 0,0 on Gtk 4
+			Point shellOffset = shell.getLocation();
+			result = display.map(null, button2, rect);
+			assertEquals(new Rectangle(-200 - shellOffset.x, -100 - shellOffset.y, 100, 100), result);
+			result = display.map(null, button2, new Rectangle(-2, -4, 106, 108));
+			assertEquals(new Rectangle(-202 - shellOffset.x, -104 - shellOffset.y, 106, 108), result);
+			result = display.map(null, button2, new Rectangle(10, 12, 114, 116));
+			assertEquals(new Rectangle(-190 - shellOffset.x, -88 - shellOffset.y, 114, 116), result);
 
-		result = display.map(button2, null, rect);
-		assertEquals(new Rectangle(shellOffset.x + 200,shellOffset.y + 100,100,100), result);
-		result = display.map(button2, null, new Rectangle(-3, -6, 109, 112));
-		assertEquals(new Rectangle(shellOffset.x + 197,shellOffset.y + 94,109,112), result);
-		result = display.map(button2, null, new Rectangle(15, 18, 121, 124));
-		assertEquals(new Rectangle(shellOffset.x + 215,shellOffset.y + 118,121,124), result);
+			result = display.map(button2, null, rect);
+			assertEquals(new Rectangle(shellOffset.x + 200, shellOffset.y + 100, 100, 100), result);
+			result = display.map(button2, null, new Rectangle(-3, -6, 109, 112));
+			assertEquals(new Rectangle(shellOffset.x + 197, shellOffset.y + 94, 109, 112), result);
+			result = display.map(button2, null, new Rectangle(15, 18, 121, 124));
+			assertEquals(new Rectangle(shellOffset.x + 215, shellOffset.y + 118, 121, 124), result);
+		}
 
 		Shell shellMapTest1 = new Shell(display,SWT.NO_TRIM);
 		Button buttonTest1 = new Button(shellMapTest1, SWT.PUSH);

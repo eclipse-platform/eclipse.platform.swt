@@ -4032,6 +4032,9 @@ public Point map (Control from, Control to, int x, int y) {
 	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	Point point = new Point (x, y);
+	if (GTK.GTK4 && (to == null || from == null)) {
+		return point;
+	}
 	if (from == to) return point;
 	if (from != null) {
 		Point origin = GTK.GTK4 ? from.getSurfaceOrigin() : from.getWindowOrigin ();
@@ -4134,6 +4137,9 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
 	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	Rectangle rect = new Rectangle (x, y, width, height);
 	if (from == to) return rect;
+	if (GTK.GTK4 && (to == null || from == null)) {
+		return rect;
+	}
 	boolean fromRTL = false, toRTL = false;
 	if (from != null) {
 		Point origin = GTK.GTK4 ? from.getSurfaceOrigin () : from.getWindowOrigin ();
