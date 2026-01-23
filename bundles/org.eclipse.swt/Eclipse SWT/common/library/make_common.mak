@@ -14,4 +14,4 @@
 
 maj_ver=4
 min_ver=972
-rev=4
+rev=5
