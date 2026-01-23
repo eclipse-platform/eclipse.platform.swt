@@ -2070,11 +2070,6 @@ private abstract class AbstractImageProviderWrapper {
 
 	abstract AbstractImageProviderWrapper createCopy(Image image);
 
-	ImageData getScaledImageData (int zoom) {
-		ElementAtZoom<ImageData> closestAvailableImageData = getClosestAvailableImageData(zoom);
-		return DPIUtil.scaleImageData(device, closestAvailableImageData.element(), zoom, closestAvailableImageData.zoom());
-	}
-
 	ElementAtZoom<ImageData> getClosestAvailableImageData(int zoom) {
 		TreeSet<Integer> availableZooms = new TreeSet<>(imageHandleManager.getAllZooms());
 		int closestZoom = Optional.ofNullable(availableZooms.higher(zoom)).orElse(availableZooms.lower(zoom));
@@ -2125,7 +2120,8 @@ private class ExistingImageHandleProviderWrapper extends AbstractImageProviderWr
 
 	@Override
 	ImageData newImageData(int zoom) {
-		return getScaledImageData(zoom);
+		ElementAtZoom<ImageData> closestAvailableImageData = loadImageData(zoom);
+		return DPIUtil.scaleImageData(device, closestAvailableImageData.element(), zoom, closestAvailableImageData.zoom());
 	}
 
 	@Override
@@ -2344,7 +2340,8 @@ private class PlainImageProviderWrapper extends AbstractImageProviderWrapper {
 
 	@Override
 	ImageData newImageData(int zoom) {
-		return getScaledImageData(zoom);
+		ElementAtZoom<ImageData> closestAvailableImageData = loadImageData(zoom);
+		return DPIUtil.scaleImageData(device, closestAvailableImageData.element(), zoom, closestAvailableImageData.zoom());
 	}
 
 	@Override
