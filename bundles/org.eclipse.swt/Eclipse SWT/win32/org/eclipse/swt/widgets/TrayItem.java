@@ -79,6 +79,7 @@ public class TrayItem extends Item {
 public TrayItem (Tray parent, int style) {
 	super (parent, style);
 	this.parent = parent;
+	this.nativeZoom = display.getDeviceZoom();
 	parent.createItem (this, parent.getItemCount ());
 	createUpdateWidget (true);
 }
