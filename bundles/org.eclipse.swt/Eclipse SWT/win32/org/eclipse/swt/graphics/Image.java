@@ -911,12 +911,6 @@ private ImageData applyGrayImageData(ImageData data, int pHeight, int pWidth) {
 	return newData;
 }
 
-private InternalImageHandle getImageMetadata(ZoomContext zoomContext) {
-	int targetZoom = zoomContext.targetZoom();
-	return imageHandleManager.getOrCreate(targetZoom, () -> imageProvider.newImageHandle(zoomContext));
-}
-
-
 /**
  * <b>IMPORTANT:</b> This method is not part of the public
  * API for Image. It is marked public only so that it
@@ -942,7 +936,7 @@ ImageHandle getHandle (int targetZoom, int nativeZoom) {
 		return null;
 	}
 	ZoomContext zoomContext = imageProvider.getFittingZoomContext(targetZoom, nativeZoom);
-	return getImageMetadata(zoomContext);
+	return imageHandleManager.getOrCreate(targetZoom, () -> imageProvider.newImageHandle(zoomContext));
 }
 
 void executeOnImageHandleAtBestFittingSize(Consumer<ImageHandle> handleAtSizeConsumer, int widthHint, int heightHint) {
@@ -2073,7 +2067,8 @@ private abstract class AbstractImageProviderWrapper {
 	ElementAtZoom<ImageData> getClosestAvailableImageData(int zoom) {
 		TreeSet<Integer> availableZooms = new TreeSet<>(imageHandleManager.getAllZooms());
 		int closestZoom = Optional.ofNullable(availableZooms.higher(zoom)).orElse(availableZooms.lower(zoom));
-		return new ElementAtZoom<>(getImageMetadata(new ZoomContext(closestZoom)).getImageData(), closestZoom);
+		ImageData imageData = imageHandleManager.get(closestZoom).getImageData();
+		return new ElementAtZoom<>(imageData, closestZoom);
 	}
 
 	protected Optional<ImageData> loadImageDataAtExactSize(int width, int height) {
