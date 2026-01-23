@@ -2045,12 +2045,9 @@ ImageList getImageList (int style, int width, int height, int zoom) {
 	while (i < length) {
 		ImageList list = imageList [i];
 		if (list == null) break;
-		Point size = list.getImageSize();
-		if (size.x == width && size.y == height) {
-			if (list.getStyle () == style) {
-				list.addRef();
-				return list;
-			}
+		if (list.isFittingFor(style, width, height, zoom)) {
+			list.addRef();
+			return list;
 		}
 		i++;
 	}
@@ -2075,12 +2072,9 @@ ImageList getImageListToolBar (int style, int width, int height, int zoom) {
 	while (i < length) {
 		ImageList list = toolImageList [i];
 		if (list == null) break;
-		Point size = list.getImageSize();
-		if (size.x == width && size.y == height) {
-			if (list.getStyle () == style) {
-				list.addRef();
-				return list;
-			}
+		if (list.isFittingFor(style, width, height, zoom)) {
+			list.addRef();
+			return list;
 		}
 		i++;
 	}
@@ -2105,12 +2099,9 @@ ImageList getImageListToolBarDisabled (int style, int width, int height, int zoo
 	while (i < length) {
 		ImageList list = toolDisabledImageList [i];
 		if (list == null) break;
-		Point size = list.getImageSize();
-		if (size.x == width && size.y == height) {
-			if (list.getStyle () == style) {
-				list.addRef();
-				return list;
-			}
+		if (list.isFittingFor(style, width, height, zoom)) {
+			list.addRef();
+			return list;
 		}
 		i++;
 	}
@@ -2135,12 +2126,9 @@ ImageList getImageListToolBarHot (int style, int width, int height, int zoom) {
 	while (i < length) {
 		ImageList list = toolHotImageList [i];
 		if (list == null) break;
-		Point size = list.getImageSize();
-		if (size.x == width && size.y == height) {
-			if (list.getStyle () == style) {
-				list.addRef();
-				return list;
-			}
+		if (list.isFittingFor(style, width, height, zoom)) {
+			list.addRef();
+			return list;
 		}
 		i++;
 	}
