@@ -331,10 +331,6 @@ public Image get (int index) {
 	return images [index];
 }
 
-public int getStyle () {
-	return style;
-}
-
 public long getHandle(int targetZoom) {
 	if (!zoomToHandle.containsKey(targetZoom)) {
 		int scaledWidth = DPIUtil.pointToPixel(DPIUtil.pixelToPoint(width, this.zoom), targetZoom);
@@ -372,6 +368,11 @@ public Point getImageSize() {
 	int [] cx = new int [1], cy = new int [1];
 	OS.ImageList_GetIconSize (handle, cx, cy);
 	return Win32DPIUtils.pixelToPointAsSize(new Point (cx [0], cy [0]), zoom);
+}
+
+public boolean isFittingFor(int style, int width, int height, int zoom) {
+	Point imageSize = getImageSize();
+	return this.style == style && imageSize.x == width && imageSize.y == height && this.zoom == zoom;
 }
 
 public int indexOf (Image image) {
