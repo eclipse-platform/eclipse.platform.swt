@@ -1499,7 +1499,11 @@ public void setDate (int year, int month, int day) {
 
 		if (GTK.GTK4) {
 			long dateTime = OS.g_date_time_new_local(year, month + 1, day, 0, 0, 0);
-			GTK4.gtk_calendar_select_day(calendarHandle, dateTime);
+			if (GTK.GTK_VERSION >= OS.VERSION(4, 20, 0)) {
+				GTK4.gtk_calendar_set_date(calendarHandle, dateTime);
+			} else {
+				GTK4.gtk_calendar_select_day(calendarHandle, dateTime);
+			}
 			OS.g_date_time_unref(dateTime);
 		} else {
 			GTK3.gtk_calendar_select_month (calendarHandle, month, year);

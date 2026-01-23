@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2025 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -751,12 +751,32 @@ JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1calendar_1get_1date)
 #endif
 
 #ifndef NO_gtk_1calendar_1select_1day
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1calendar_1select_1day)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
 {
 	GTK4_NATIVE_ENTER(env, that, gtk_1calendar_1select_1day_FUNC);
 	gtk_calendar_select_day((GtkCalendar *)arg0, (GDateTime *)arg1);
 	GTK4_NATIVE_EXIT(env, that, gtk_1calendar_1select_1day_FUNC);
+}
+G_GNUC_END_IGNORE_DEPRECATIONS
+#endif
+
+#ifndef NO_gtk_1calendar_1set_1date
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1calendar_1set_1date)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1calendar_1set_1date_FUNC);
+/*
+	gtk_calendar_set_date((GtkCalendar *)arg0, (GDateTime *)arg1);
+*/
+	{
+		GTK4_LOAD_FUNCTION(fp, gtk_calendar_set_date)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkCalendar *, GDateTime *))fp)((GtkCalendar *)arg0, (GDateTime *)arg1);
+		}
+	}
+	GTK4_NATIVE_EXIT(env, that, gtk_1calendar_1set_1date_FUNC);
 }
 #endif
 
