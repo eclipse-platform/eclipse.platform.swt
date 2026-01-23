@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2021, 2025 Syntevo and others.
+ * Copyright (c) 2021, 2026 Syntevo and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -81,10 +81,17 @@ public class GTK4 {
 	/** @param calendar cast=(GtkCalendar *) */
 	public static final native long gtk_calendar_get_date(long calendar);
 	/**
+	 * @method flags=ignore_deprecations
 	 * @param calendar cast=(GtkCalendar *)
 	 * @param date cast=(GDateTime *)
 	 */
 	public static final native void gtk_calendar_select_day(long calendar, long date);
+	/**
+	 * @method flags=dynamic
+	 * @param calendar cast=(GtkCalendar *)
+	 * @param date cast=(GDateTime *)
+	 */
+	public static final native void gtk_calendar_set_date(long calendar, long date);
 	/**
 	 * @param calendar cast=(GtkCalendar *)
 	 * @param value cast=(gboolean)

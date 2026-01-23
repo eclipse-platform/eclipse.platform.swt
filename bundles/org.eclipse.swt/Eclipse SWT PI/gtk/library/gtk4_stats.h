@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2025 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -80,6 +80,7 @@ typedef enum {
 	gtk_1button_1set_1child_FUNC,
 	gtk_1calendar_1get_1date_FUNC,
 	gtk_1calendar_1select_1day_FUNC,
+	gtk_1calendar_1set_1date_FUNC,
 	gtk_1calendar_1set_1show_1day_1names_FUNC,
 	gtk_1calendar_1set_1show_1heading_FUNC,
 	gtk_1calendar_1set_1show_1week_1numbers_FUNC,
