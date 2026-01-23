@@ -238,8 +238,7 @@ public final class Image extends Resource implements Drawable {
 		private Optional<InternalImageHandle> createHandleAtExactSize(int width, int height) {
 			Optional<ImageData> imageData = imageProvider.loadImageDataAtExactSize(width, height);
 			if (imageData.isPresent()) {
-				ImageData adaptedData = adaptImageDataIfDisabledOrGray(imageData.get());
-				temporaryHandleContainer = init(adaptedData, -1);
+				temporaryHandleContainer = init(imageData.get(), -1);
 				return Optional.of(temporaryHandleContainer);
 			}
 			return Optional.empty();
@@ -253,8 +252,7 @@ public final class Image extends Resource implements Drawable {
 			InternalImageHandle bestFittingHandle = imageHandleManager.get(imageZoom);
 			if (bestFittingHandle == null) {
 				ImageData bestFittingImageData = imageProvider.loadImageData(imageZoom).element();
-				ImageData adaptedData = adaptImageDataIfDisabledOrGray(bestFittingImageData);
-				bestFittingHandle = temporaryHandleContainer = init(adaptedData, -1);
+				bestFittingHandle = temporaryHandleContainer = init(bestFittingImageData, -1);
 			}
 			return bestFittingHandle;
 		}
@@ -769,6 +767,10 @@ public Image(Device device, ImageGcDrawer imageGcDrawer, int width, int height) 
 	super(device);
 	this.imageProvider = new ImageGcDrawerWrapper(imageGcDrawer, width, height);
 	init();
+}
+
+private ElementAtZoom<ImageData> adaptImageDataIfDisabledOrGray(ElementAtZoom<ImageData> dataAtZoom) {
+	return new ElementAtZoom<>(adaptImageDataIfDisabledOrGray(dataAtZoom.element()), dataAtZoom.zoom());
 }
 
 private ImageData adaptImageDataIfDisabledOrGray(ImageData data) {
@@ -2058,6 +2060,10 @@ private abstract class AbstractImageProviderWrapper {
 		return false;
 	}
 
+	/**
+	 * Returns image data at the best-fitting available zoom for the given zoom.
+	 * The returned data will have a potential gray/disable style applied.
+	 */
 	protected abstract ElementAtZoom<ImageData> loadImageData(int zoom);
 
 	abstract ImageData newImageData(int zoom);
@@ -2071,6 +2077,10 @@ private abstract class AbstractImageProviderWrapper {
 		return new ElementAtZoom<>(imageData, closestZoom);
 	}
 
+	/**
+	 * Returns image data at the exact requested size if available.
+	 * The returned data will have a potential gray/disable style applied.
+	 */
 	protected Optional<ImageData> loadImageDataAtExactSize(int width, int height) {
 		return Optional.empty(); // exact size not available
 	}
@@ -2174,7 +2184,6 @@ private abstract class ImageFromImageDataProviderWrapper extends AbstractImagePr
 	private DestroyableImageHandle initializeHandleFromSource(ZoomContext zoomContext) {
 		ElementAtZoom<ImageData> imageDataAtZoom = loadImageData(zoomContext.targetZoom());
 		ImageData imageData = DPIUtil.scaleImageData(device, imageDataAtZoom.element(), zoomContext.targetZoom(), imageDataAtZoom.zoom());
-		imageData = adaptImageDataIfDisabledOrGray(imageData);
 		return newImageHandle(imageData, zoomContext);
 	}
 }
@@ -2202,7 +2211,8 @@ private class PlainImageDataProviderWrapper extends ImageFromImageDataProviderWr
 
 	@Override
 	protected ElementAtZoom<ImageData> loadImageData(int zoom) {
-		return new ElementAtZoom<>(imageDataAtBaseZoom, baseZoom);
+		ImageData adaptedImageData = adaptImageDataIfDisabledOrGray(imageDataAtBaseZoom);
+		return new ElementAtZoom<>(adaptedImageData, baseZoom);
 	}
 
 	@Override
@@ -2233,7 +2243,8 @@ private class MaskedImageDataProviderWrapper extends ImageFromImageDataProviderW
 		ImageData scaledMask = DPIUtil.scaleImageData(device, maskAt100, zoom, 100);
 		scaledMask = ImageData.convertMask(scaledMask);
 		ImageData mergedData = applyMask(scaledSource, scaledMask);
-		return new ElementAtZoom<>(mergedData, zoom);
+		ImageData adaptedData = adaptImageDataIfDisabledOrGray(mergedData);
+		return new ElementAtZoom<>(adaptedData, zoom);
 	}
 
 	@Override
@@ -2260,7 +2271,8 @@ private class ImageDataLoaderStreamProviderWrapper extends ImageFromImageDataPro
 
 	@Override
 	protected ElementAtZoom<ImageData> loadImageData(int zoom) {
-		return ImageDataLoader.loadByZoom(new ByteArrayInputStream(inputStreamData), FileFormat.DEFAULT_ZOOM, zoom);
+		ElementAtZoom<ImageData> imageDataAtZoom = ImageDataLoader.loadByZoom(new ByteArrayInputStream(inputStreamData), FileFormat.DEFAULT_ZOOM, zoom);
+		return adaptImageDataIfDisabledOrGray(imageDataAtZoom);
 	}
 
 	@Override
@@ -2278,7 +2290,8 @@ private class ImageDataLoaderStreamProviderWrapper extends ImageFromImageDataPro
 	protected Optional<ImageData> loadImageDataAtExactSize(int targetWidth, int targetHeight) {
 		if (ImageDataLoader.isDynamicallySizable(new ByteArrayInputStream(this.inputStreamData))) {
 			ImageData imageDataAtSize = ImageDataLoader.loadBySize(new ByteArrayInputStream(this.inputStreamData), targetWidth, targetHeight);
-			return Optional.of(imageDataAtSize);
+			ImageData adaptedImageDataAtSize = adaptImageDataIfDisabledOrGray(imageDataAtSize);
+			return Optional.of(adaptedImageDataAtSize);
 		}
 		return Optional.empty();
 	}
@@ -2470,7 +2483,6 @@ private abstract class BaseImageProviderWrapper<T> extends DynamicImageProviderW
 	private DestroyableImageHandle initializeHandleFromSource(int zoom) {
 		ElementAtZoom<ImageData> imageDataAtZoom = loadImageData(zoom);
 		ImageData imageData = DPIUtil.scaleImageData (device, imageDataAtZoom.element(), zoom, imageDataAtZoom.zoom());
-		imageData = adaptImageDataIfDisabledOrGray(imageData);
 		return init(imageData, zoom);
 	}
 
@@ -2497,7 +2509,8 @@ private class ImageFileNameProviderWrapper extends BaseImageProviderWrapper<Imag
 		// Load at appropriate zoom via loader
 		if (fileForZoom.zoom() != zoom && ImageDataLoader.canLoadAtZoom(fileForZoom.element(), fileForZoom.zoom(), zoom)) {
 			ElementAtZoom<ImageData> imageDataAtZoom = ImageDataLoader.loadByZoom(fileForZoom.element(), fileForZoom.zoom(), zoom);
-			return new ElementAtZoom<>(imageDataAtZoom.element(), zoom);
+			ImageData adaptedImageData = adaptImageDataIfDisabledOrGray(imageDataAtZoom.element());
+			return new ElementAtZoom<>(adaptedImageData, zoom);
 		}
 
 		// Load at file zoom (native or via loader) and rescale
@@ -2517,7 +2530,7 @@ private class ImageFileNameProviderWrapper extends BaseImageProviderWrapper<Imag
 				temporaryImageHandle.destroy();
 			}
 		}
-		return imageDataAtZoom;
+		return adaptImageDataIfDisabledOrGray(imageDataAtZoom);
 	}
 
 	@Override
@@ -2727,7 +2740,8 @@ private class ImageFileNameProviderWrapper extends BaseImageProviderWrapper<Imag
 		String fileName = DPIUtil.validateAndGetImagePathAtZoom(this.provider, 100).element();
 		if (ImageDataLoader.isDynamicallySizable(fileName)) {
 			ImageData imageDataAtSize = ImageDataLoader.loadBySize(fileName, targetWidth, targetHeight);
-			return Optional.of(imageDataAtSize);
+			ImageData adaptedImageDataAtSize = adaptImageDataIfDisabledOrGray(imageDataAtSize);
+			return Optional.of(adaptedImageDataAtSize);
 		}
 		return Optional.empty();
 	}
@@ -2740,7 +2754,8 @@ private class ImageDataProviderWrapper extends BaseImageProviderWrapper<ImageDat
 
 	@Override
 	protected ElementAtZoom<ImageData> loadImageData(int zoom) {
-		return DPIUtil.validateAndGetImageDataAtZoom (provider, zoom);
+		ElementAtZoom<ImageData> imageDataAtZoom = DPIUtil.validateAndGetImageDataAtZoom (provider, zoom);
+		return adaptImageDataIfDisabledOrGray(imageDataAtZoom);
 	}
 
 	@Override
@@ -2756,7 +2771,8 @@ private class ImageDataProviderWrapper extends BaseImageProviderWrapper<ImageDat
 				SWT.error(SWT.ERROR_INVALID_ARGUMENT, null,
 						" ImageDataAtSizeProvider returned null for width=" + targetWidth + ", height=" + targetHeight);
 			}
-			return Optional.of(imageData);
+			ImageData adaptedImageData = adaptImageDataIfDisabledOrGray(imageData);
+			return Optional.of(adaptedImageData);
 		}
 		return Optional.empty();
 	}
