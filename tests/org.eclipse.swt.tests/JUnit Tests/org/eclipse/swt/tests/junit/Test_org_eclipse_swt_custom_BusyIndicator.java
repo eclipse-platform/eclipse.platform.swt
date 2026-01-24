@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2024 Christoph Läubrich and others.
+ * Copyright (c) 2024, 2026 Christoph Läubrich and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -95,8 +95,7 @@ public class Test_org_eclipse_swt_custom_BusyIndicator {
 	@Test
 	@Timeout(value = 30)
 	public void testShowWhileWithFuture() {
-		ExecutorService executor = Executors.newSingleThreadExecutor();
-		try {
+		try (ExecutorService executor = Executors.newSingleThreadExecutor()){
 			Shell shell = new Shell();
 			Display display = shell.getDisplay();
 			Cursor busyCursor = display.getSystemCursor(SWT.CURSOR_WAIT);
@@ -129,8 +128,6 @@ public class Test_org_eclipse_swt_custom_BusyIndicator {
 			shell.dispose();
 			while (!display.isDisposed() && display.readAndDispatch()) {
 			}
-		} finally {
-			executor.shutdownNow();
 		}
 	}
 
