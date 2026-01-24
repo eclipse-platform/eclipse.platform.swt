@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2025 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -1093,6 +1093,18 @@ JNIEXPORT jlong JNICALL GTK3_NATIVE(gtk_1icon_1theme_1lookup_1by_1gicon)
 	GTK3_NATIVE_ENTER(env, that, gtk_1icon_1theme_1lookup_1by_1gicon_FUNC);
 	rc = (jlong)gtk_icon_theme_lookup_by_gicon((GtkIconTheme *)arg0, (GIcon *)arg1, (gint)arg2, (GtkIconLookupFlags)arg3);
 	GTK3_NATIVE_EXIT(env, that, gtk_1icon_1theme_1lookup_1by_1gicon_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1icon_1theme_1lookup_1by_1gicon_1for_1scale
+JNIEXPORT jlong JNICALL GTK3_NATIVE(gtk_1icon_1theme_1lookup_1by_1gicon_1for_1scale)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jint arg2, jint arg3, jint arg4)
+{
+	jlong rc = 0;
+	GTK3_NATIVE_ENTER(env, that, gtk_1icon_1theme_1lookup_1by_1gicon_1for_1scale_FUNC);
+	rc = (jlong)gtk_icon_theme_lookup_by_gicon_for_scale((GtkIconTheme *)arg0, (GIcon *)arg1, (gint)arg2, (gint)arg3, (GtkIconLookupFlags)arg4);
+	GTK3_NATIVE_EXIT(env, that, gtk_1icon_1theme_1lookup_1by_1gicon_1for_1scale_FUNC);
 	return rc;
 }
 #endif
