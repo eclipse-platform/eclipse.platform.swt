@@ -1311,7 +1311,7 @@ public void setData(String key, Object value) {
 @Deprecated(since = "2026-03", forRemoval = true)
 private void updateAutoScalingModeFromData() {
 	Object propagateAutoscaleDisabled = getData(PROPOGATE_AUTOSCALE_DISABLED);
-	boolean propagateAutoscaling = propagateAutoscaleDisabled != null && Boolean.parseBoolean(propagateAutoscaleDisabled.toString());
+	boolean propagateAutoscaling = propagateAutoscaleDisabled == null || Boolean.parseBoolean(propagateAutoscaleDisabled.toString());
 	Object autoscaleDisabled = getData(DATA_AUTOSCALE_DISABLED);
 	boolean isAutoscaleDisabled = autoscaleDisabled != null && Boolean.parseBoolean(autoscaleDisabled.toString());
 	if (isAutoscaleDisabled) {
