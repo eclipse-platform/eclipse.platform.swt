@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2025 Vector Informatik GmbH and others.
+ * Copyright (c) 2025, 2026 Vector Informatik GmbH and others.
  *
  * This program and the accompanying materials are made available under the terms of the Eclipse
  * Public License 2.0 which accompanies this distribution, and is available at
@@ -13,8 +13,11 @@
 package org.eclipse.swt.tests.junit;
 
 import static org.eclipse.swt.tests.junit.SwtTestUtil.assertSWTProblem;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 
 import org.eclipse.swt.SWT;
@@ -43,9 +46,30 @@ public class Test_org_eclipse_swt_internal_SVGRasterizer {
 	}
 
 	@Test
+	public void test_ConstructorLorg_eclipse_swt_graphics_Device_InputStream() throws IOException {
+		Image image = null;
+		try (InputStream is = getClass().getResourceAsStream("collapseall.svg")) {
+			image = new Image(Display.getDefault(), is);
+		}
+		ImageData imageData = image.getImageData();
+		assertEquals(16, imageData.width);
+		assertEquals(16, imageData.height);
+		image.dispose();
+
+		try (InputStream is = getClass().getResourceAsStream("corrupt.svg")) {
+			SWTException e = assertThrows(SWTException.class,
+					() -> new Image(Display.getDefault(), is));
+			assertSWTProblem("Incorrect exception thrown for provider with corrupt images", SWT.ERROR_INVALID_IMAGE, e);
+		}
+	}
+
+	@Test
 	public void test_ConstructorLorg_eclipse_swt_graphics_Device_ImageFileNameProvider() {
 		ImageFileNameProvider validImageFileNameProvider = zoom -> getPath("collapseall.svg");
 		Image image = new Image(Display.getDefault(), validImageFileNameProvider);
+		ImageData imageData = image.getImageData();
+		assertEquals(16, imageData.width);
+		assertEquals(16, imageData.height);
 		image.dispose();
 
 		ImageFileNameProvider corruptImageFileNameProvider = zoom -> getPath("corrupt.svg");
@@ -58,6 +82,9 @@ public class Test_org_eclipse_swt_internal_SVGRasterizer {
 	public void test_ConstructorLorg_eclipse_swt_graphics_Device_ImageDataProvider() {
 		ImageDataProvider validImageDataProvider = zoom -> (zoom == 100) ? new ImageData(getPath("collapseall.svg")) : null;
 		Image image = new Image(Display.getDefault(), validImageDataProvider);
+		ImageData imageData = image.getImageData();
+		assertEquals(16, imageData.width);
+		assertEquals(16, imageData.height);
 		image.dispose();
 
 		ImageDataProvider corruptImageDataProvider = zoom -> (zoom == 100) ? new ImageData(getPath("corrupt.svg")) : null;

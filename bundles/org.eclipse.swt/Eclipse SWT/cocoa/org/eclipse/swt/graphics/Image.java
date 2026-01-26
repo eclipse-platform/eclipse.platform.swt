@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2025 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -1520,8 +1520,19 @@ private void initUsingImageDataProvider(ImageDataProvider imageDataProvider) {
 private static ImageDataProvider createImageDataProvider(InputStream stream) throws IOException {
 	byte[] streamData = stream.readAllBytes();
 	if (ImageDataLoader.isDynamicallySizable(new ByteArrayInputStream(streamData))) {
-		ImageDataAtSizeProvider imageDataAtSizeProvider = (width, height) -> ImageDataLoader
-				.loadBySize(new ByteArrayInputStream(streamData), width, height);
+		ImageDataAtSizeProvider imageDataAtSizeProvider = new ImageDataAtSizeProvider() {
+			@Override
+			public ImageData getImageData(int zoom) {
+				return ImageDataLoader
+						.loadByZoom(new ByteArrayInputStream(streamData), FileFormat.DEFAULT_ZOOM, zoom)
+						.element();
+			}
+
+			@Override
+			public ImageData getImageData(int width, int height) {
+				return ImageDataLoader.loadBySize(new ByteArrayInputStream(streamData), width, height);
+			}
+		};
 		return imageDataAtSizeProvider;
 	}
 
