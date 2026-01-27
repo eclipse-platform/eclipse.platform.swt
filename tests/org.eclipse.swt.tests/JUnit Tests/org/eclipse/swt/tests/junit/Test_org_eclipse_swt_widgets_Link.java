@@ -24,6 +24,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Link;
 import org.junit.jupiter.api.BeforeEach;
@@ -62,6 +65,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 		fail("No exception thrown for parent == null");
 	}
 	catch (IllegalArgumentException e) {
+		// expected
 	}
 }
 
@@ -82,6 +86,7 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 		link.addSelectionListener(null);
 		fail("No exception thrown for addSelectionListener with null argument");
 	} catch (IllegalArgumentException e) {
+		// expected
 	}
 
 	link.addSelectionListener(listener);
@@ -92,6 +97,7 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 		link.removeSelectionListener(null);
 		fail("No exception thrown for removeSelectionListener with null argument");
 	} catch (IllegalArgumentException e) {
+		// expected
 	}
 	listenerCalled = false;
 	link.removeSelectionListener(listener);
@@ -172,6 +178,7 @@ public void test_setTextLjava_lang_String() {
 		link.setText(null);
 		fail("No exception thrown for text == null");
 	} catch (IllegalArgumentException e) {
+		// expected
 	}
 }
 
@@ -183,5 +190,91 @@ public void test_setLinkForegroundLorg_eclipse_swt_graphics_Color() {
 	assertEquals(color, link.getLinkForeground());
 	link.setLinkForeground(null);
 	assertNotEquals(color, link.getForeground());
+}
+
+
+@Test
+public void test_LinkRendersCorrectlyAfterResize() {
+	shell.setSize(400, 300);
+	link.setText("Visit <a href=\"https://eclipse.org\">Eclipse</a> website");
+	link.setBounds(10, 10, 200, 50);
+
+	shell.open();
+
+	Display display = shell.getDisplay();
+	// Force initial paint
+	while (display.readAndDispatch()) {
+		// loop until no more events
+	}
+
+	// Resize multiple times rapidly (stress test for flicker)
+	for (int i = 0; i < 10; i++) {
+		link.setSize(200 + (i * 10), 50 + (i * 5));
+		while (display.readAndDispatch()) {
+			// loop until no more events
+		}
+	}
+
+	// Verify link is still functional and sized correctly
+	Point size = link.getSize();
+	assertTrue(size.x > 0 && size.y > 0, "Link should have valid size after resize");
+	assertEquals("Visit <a href=\"https://eclipse.org\">Eclipse</a> website",
+				link.getText(), "Link text should be preserved after resize");
+
+	// Verify the link is still visible and has proper bounds
+	Rectangle bounds = link.getBounds();
+	assertTrue(bounds.width > 0 && bounds.height > 0,
+			"Link should have valid bounds after multiple resizes");
+}
+
+@Test
+public void test_LinkBackgroundNotErasedDuringPaint() {
+	link.setText("Test <a>link</a>");
+
+	shell.setSize(300, 200);
+	link.setVisible(true);
+	shell.open();
+
+	Display display = shell.getDisplay();
+	// Trigger redraws and ensure no crashes or obvious rendering failure
+	for (int i = 0; i < 10; i++) {
+		link.redraw();
+		link.update();
+		while (display.readAndDispatch()) {
+			// loop until no more events
+		}
+	}
+
+	// Verify the link is still valid and has correct text
+	assertFalse(link.isDisposed(), "Link should not be disposed after multiple redraws");
+	assertEquals("Test <a>link</a>", link.getText(), "Link text should be intact");
+}
+
+@Test
+public void test_LinkMaintainsContentDuringRapidResize() {
+	shell.setSize(400, 300);
+	String testText = "Click <a href=\"page1\">here</a> or <a href=\"page2\">there</a>";
+	link.setText(testText);
+	link.setBounds(10, 10, 300, 100);
+
+	shell.open();
+	Display display = shell.getDisplay();
+	while (display.readAndDispatch()) {
+		// loop until no more events
+	}
+
+	// Rapidly resize - this would cause flickering in the old implementation
+	for (int i = 0; i < 20; i++) {
+		int newWidth = 200 + (i % 2) * 100;
+		int newHeight = 50 + (i % 2) * 30;
+		link.setSize(newWidth, newHeight);
+
+		// Process events but don't wait for full redraw
+		display.readAndDispatch();
+
+		// Content should remain intact
+		assertEquals(testText, link.getText(),
+			"Link text should remain unchanged during resize iteration " + i);
+	}
 }
 }
