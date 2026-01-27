@@ -45,7 +45,7 @@ public interface ImageDataAtSizeProvider extends ImageDataProvider {
 	@Override
 	default ImageData getImageData(int zoom) {
 		Point defaultSize = getDefaultSize();
-		if (new Point(-1, -1).equals(defaultSize)) {
+		if (defaultSize.x == -1 && defaultSize.y == -1) {
 			if (zoom == 100) {
 				return new ImageData(1, 1, 32, new PaletteData(0xFF0000, 0xFF00, 0xFF));
 			}
