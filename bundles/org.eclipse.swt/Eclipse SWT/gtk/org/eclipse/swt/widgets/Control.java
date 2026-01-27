@@ -1787,7 +1787,8 @@ public Point toDisplay (Point point) {
  */
 Point getControlOrigin() {
 	double[] originX = new double[1], originY = new double[1];
-	boolean success = GTK4.gtk_widget_translate_coordinates(fixedHandle, getShell().shellHandle, 0, 0, originX, originY);
+	long widgetHandle = fixedHandle != 0 ? fixedHandle: eventHandle();
+	boolean success = GTK4.gtk_widget_translate_coordinates(widgetHandle, getShell().shellHandle, 0, 0, originX, originY);
 
 	return success ? new Point((int)originX[0], (int)originY[0]) : new Point(0, 0);
 }
