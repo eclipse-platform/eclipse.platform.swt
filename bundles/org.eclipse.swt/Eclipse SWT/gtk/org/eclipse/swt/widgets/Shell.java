@@ -728,6 +728,14 @@ Rectangle computeTrimInPixels (int x, int y, int width, int height) {
 		trim.y -= menuBarHeight;
 		trim.height += menuBarHeight;
 	}
+	if (GTK.GTK4 && OS.isWayland()) {
+		long titlebar = GTK4.gtk_window_get_titlebar(shellHandle);
+		if (titlebar != 0) {
+			int titleBarHeight = GTK4.gtk_widget_get_height (titlebar);
+			trim.y -= titleBarHeight;
+			trim.height += titleBarHeight;
+		}
+	}
 	return trim;
 }
 
@@ -743,6 +751,15 @@ void createHandle (int index) {
 			if (GTK.GTK4) {
 				// TODO: GTK4 need to handle for GTK_WINDOW_POPUP type
 				shellHandle = GTK4.gtk_window_new();
+				if (OS.isWayland()) {
+					long headerbar = GTK4.gtk_window_get_titlebar(shellHandle);
+					if (headerbar == 0) {
+					    // Force-install a headerbar if none exists in order to be able to qurey its size later
+						// If none set by the app gtk_window_get_titlebar returns 0 but Gtk still draws one internally
+					    long hb = GTK4.gtk_header_bar_new();
+					    GTK4.gtk_window_set_titlebar(shellHandle, hb);
+					}
+				}
 			} else {
 				shellHandle = GTK3.gtk_window_new(type);
 			}

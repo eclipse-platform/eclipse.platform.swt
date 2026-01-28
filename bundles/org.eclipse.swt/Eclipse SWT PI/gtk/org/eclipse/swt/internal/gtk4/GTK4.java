@@ -471,6 +471,11 @@ public class GTK4 {
 	/** @param window cast=(GtkWindow *) */
 	public static final native long gtk_window_get_titlebar(long window);
 
+	/** @param window cast=(GtkWindow *)
+	 *  @param titlebar cast=(GtkWidget *)
+	 **/
+	public static final native void gtk_window_set_titlebar(long window, long titlebar);
+
 	/** @param window cast=(GtkWindow *) */
 	public static final native void gtk_window_present(long window) ;
 
@@ -1070,5 +1075,17 @@ public class GTK4 {
 	 * @param gesture cast=(GtkGesture *)
 	 */
 	public static final native long gtk_gesture_get_last_updated_sequence(long gesture);
+
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 */
+	public static final native int gtk_widget_get_width(long widget);
+
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 */
+	public static final native int gtk_widget_get_height(long widget);
+
+	public static final native long gtk_header_bar_new();
 
 }
