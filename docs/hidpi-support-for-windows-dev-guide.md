@@ -366,6 +366,55 @@ Existing usages or extensions of SWT could (implicitly) rely on a static zoom fo
  As GDI/GDI+ works with integer pixels, but SWT uses a point coordinate system, fractional zooms (e.g., 125%, 150%) can lead to rounding issues and scaling can lead to slight inaccuracies.
 Especially on zooms like 125% and 175%, rendering and layout changes must be carefully tested.
 
+### Coordinate System
+
+Windows uses its own coordinate system represented in absolute pixel values, while SWT uses a point-based system that adjusts for zoom levels. 
+This fundamental difference creates challenges that require special handling.
+
+#### Windows Coordinate System
+
+Windows defines monitor coordinates in pixels, independent of zoom levels:
+
+**Example: Two 1000×1000px monitors (left-to-right)**
+- **Left monitor as primary:** Left `(0, 0, 1000, 1000)`, Right `(1000, 0, 1000, 1000)`  
+- **Right monitor as primary:** Left `(-1000, 0, 1000, 1000)`, Right `(0, 0, 1000, 1000)`
+
+The primary monitor always starts at `(0, 0)`, with other monitors positioned relative to it.
+
+#### SWT Coordinate System  
+
+SWT uses a point-based coordinate system where:
+- All values are zoom-adjusted and normalized to 100% scaling
+- Widget positions are relative to their parent container
+- **Exception:** Shell coordinates are absolute, mapping directly to the Windows coordinate space
+
+#### The Integration Challenge
+
+The intersection of these two coordinate systems creates ambiguity for Shell positioning.
+Since SWT represents all values in points, applying the same scaling to Shell locations would cause multiple Windows pixel coordinates to map to the same SWT point value after scaling down.
+Also, without a proper zoom-context, a point or a rectangle can be scaled down to a point coordinates space where no monitor spans.
+
+![Coordinate spaces of the monitors in points and pixels in original SWT Coordinate system](images/coordinate_system.png)
+Fig: Coordinate spaces of the monitors in points and pixels in original SWT Coordinate system
+
+![Coordinates of the position of the point in points and pixels in original SWT Coordinate system](images/coordinate_system_with_point.png)
+Fig: Coordinates of the position of the point in points and pixels in original SWT Coordinate system
+
+#### SWT's Solution: Specialized Coordinate Mappers
+
+SWT addresses this challenge with two coordinate system mappers:
+
+**`MultiZoomCoordinatesSystemMapper`** (used when monitors have different zoom levels):
+- **Top-left position:** Stored in absolute pixels to preserve monitor boundaries
+- **Width and height:** Stored in points, adjusted for the monitor's zoom factor
+- **MontiorAwareRectangle and MonitorAwarePoint:** To deal with the ambiguity, all the rectangles and points created by the mapper are monitor-aware.
+Hence, scaling these objects between points and pixels is simple.
+
+**`SingleZoomCoordinatesSystemMapper`** (used when all monitors have the same zoom):
+- Uses standard widget scaling logic throughout
+
+This approach ensures accurate Shell positioning across diverse multi-monitor configurations while maintaining SWT's point-based coordinate abstraction for application developers.
+
 ### Process & Thread DPI Awareness
 
 Windows differentiates between process and thread DPI awareness.
