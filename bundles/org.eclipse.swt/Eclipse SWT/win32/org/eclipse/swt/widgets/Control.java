@@ -1313,14 +1313,12 @@ private void updateAutoScalingModeFromData() {
 	Object propagateAutoscaleDisabled = getData(PROPOGATE_AUTOSCALE_DISABLED);
 	boolean propagateAutoscaling = propagateAutoscaleDisabled == null || Boolean.parseBoolean(propagateAutoscaleDisabled.toString());
 	Object autoscaleDisabled = getData(DATA_AUTOSCALE_DISABLED);
-	boolean isAutoscaleDisabled = autoscaleDisabled != null && Boolean.parseBoolean(autoscaleDisabled.toString());
+	boolean isAutoscaleDisabled = autoscaleDisabled != null && Boolean.parseBoolean(autoscaleDisabled.toString()) || parent.autoscalingMode == AutoscalingMode.DISABLED_INHERITED;
+	AutoscalingMode newAutoscalingMode = AutoscalingMode.ENABLED;
 	if (isAutoscaleDisabled) {
-		autoscalingMode = propagateAutoscaling ? AutoscalingMode.DISABLED_INHERITED : AutoscalingMode.DISABLED;
-		this.nativeZoom = 100;
-	} else {
-		autoscalingMode = AutoscalingMode.ENABLED;
-		this.nativeZoom = getShellZoom();
+		newAutoscalingMode = propagateAutoscaling ? AutoscalingMode.DISABLED_INHERITED : AutoscalingMode.DISABLED;
 	}
+	setAutoscalingMode(newAutoscalingMode);
 }
 
 /**
@@ -3403,10 +3401,11 @@ private void fitInParentBounds(Rectangle boundsInPixels, int zoom) {
  */
 public boolean setAutoscalingMode(AutoscalingMode autoscalingMode) {
 	this.autoscalingMode = autoscalingMode;
-	if (isAutoscalingDisabled()) {
-		this.nativeZoom = 100;
-	} else {
-		this.nativeZoom = getShellZoom();
+	int newZoom = isAutoscalingDisabled() ? 100 : getShellZoom();
+	if (nativeZoom != newZoom) {
+		nativeZoom = newZoom;
+		Event zoomChangedEvent = createZoomChangedEvent(newZoom, false);
+		notifyListeners(SWT.ZoomChanged, zoomChangedEvent);
 	}
 	return true;
 }
