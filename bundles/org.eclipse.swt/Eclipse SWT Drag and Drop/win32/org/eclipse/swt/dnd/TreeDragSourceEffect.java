@@ -129,21 +129,18 @@ public class TreeDragSourceEffect extends DragSourceEffect {
 
 				PaletteData palette = new PaletteData(0xFF00, 0xFF0000, 0xFF000000);
 				ImageData data = new ImageData(srcWidth, srcHeight, bm.bmBitsPixel, palette, bm.bmWidthBytes, srcData);
-				if (shdi.crColorKey == -1) {
-					byte[] alphaData = new byte[srcWidth * srcHeight];
-					int spinc = dibBM.bmWidthBytes - srcWidth * 4;
-					int ap = 0, sp = 3;
-					for (int y = 0; y < srcHeight; ++y) {
-						for (int x = 0; x < srcWidth; ++x) {
-							alphaData [ap++] = srcData [sp];
-							sp += 4;
-						}
-						sp += spinc;
-					}
-					data.alphaData = alphaData;
-				} else {
-					data.transparentPixel = shdi.crColorKey << 8;
+				byte[] alphaData = new byte[srcWidth * srcHeight];
+				int spinc = dibBM.bmWidthBytes - srcWidth * 4;
+				int ap = 0, sp = (shdi.crColorKey == -1) ? 3 : 0;
+				for (int y = 0; y < srcHeight; ++y) {
+				    for (int x = 0; x < srcWidth; ++x) {
+				        alphaData [ap++] = computeAlpha(srcData, sp, shdi.crColorKey);
+				        sp += 4;
+				    }
+				    sp += spinc;
 				}
+				data.alphaData = alphaData;
+
 				Display display = control.getDisplay ();
 				dragSourceImage = new Image (display, new Win32DPIUtils.AutoScaleImageDataProvider(display, data, DPIUtil.getZoomForAutoscaleProperty(control.nativeZoom)));
 				OS.SelectObject (memHdc, oldMemBitmap);
@@ -157,5 +154,16 @@ public class TreeDragSourceEffect extends DragSourceEffect {
 			}
 		}
 		return null;
+	}
+
+	private static byte computeAlpha(byte[] src, int sp, int crColorKey) {
+	    if (crColorKey == -1) return src[sp];
+	    int b = src[sp] & 0xFF;
+	    int g = src[sp + 1] & 0xFF;
+	    int r = src[sp + 2] & 0xFF;
+	    int keyR = crColorKey & 0xFF;
+	    int keyG = (crColorKey >> 8) & 0xFF;
+	    int keyB = (crColorKey >> 16) & 0xFF;
+	    return (r == keyR && g == keyG && b == keyB) ? 0 : (byte) 255;
 	}
 }
