@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2022 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -12,7 +12,6 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.examples.controlexample;
-
 
 import java.io.InputStream;
 import java.text.MessageFormat;
@@ -48,12 +47,6 @@ public class ControlExample {
 		"target.gif", 					//$NON-NLS-1$
 		"backgroundImage.png", 			//$NON-NLS-1$
 		"parentBackgroundImage.png"}; 	//$NON-NLS-1$
-	static final int[] imageTypes = {
-		SWT.ICON,
-		SWT.ICON,
-		SWT.ICON,
-		SWT.BITMAP,
-		SWT.BITMAP};
 
 	boolean startup = true;
 
@@ -205,12 +198,7 @@ public class ControlExample {
 					for (int i = 0; i < imageLocations.length; ++i) {
 						try (InputStream sourceStream = clazz.getResourceAsStream(imageLocations[i])) {
 							ImageData source = new ImageData(sourceStream);
-							if (imageTypes[i] == SWT.ICON) {
-								ImageData mask = source.getTransparencyMask();
-								images[i] = new Image(null, source, mask);
-							} else {
-								images[i] = new Image(null, source);
-							}
+							images[i] = new Image(null, source);
 						}
 					}
 				}
