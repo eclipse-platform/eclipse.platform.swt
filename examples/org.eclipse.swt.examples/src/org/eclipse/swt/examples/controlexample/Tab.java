@@ -1295,15 +1295,29 @@ abstract class Tab {
 		}
 	}
 
+	private Color getTransparencyColor(Color color) {
+		Color transparencyColor = display.getSystemColor(SWT.COLOR_CYAN);
+		if (transparencyColor.equals(color)) {
+			transparencyColor = display.getSystemColor(SWT.COLOR_DARK_BLUE);
+		}
+		return transparencyColor;
+	}
+
 	Image colorImage (Color color) {
-		Image image = new Image (display, IMAGE_SIZE, IMAGE_SIZE);
-		GC gc = new GC(image);
-		gc.setBackground(color);
-		Rectangle bounds = image.getBounds();
-		gc.fillRectangle(0, 0, bounds.width, bounds.height);
-		gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
-		gc.drawRectangle(0, 0, bounds.width - 1, bounds.height - 1);
-		gc.dispose();
+		@SuppressWarnings("restriction")
+		ImageGcDrawer iGC = new TransparencyColorImageGcDrawer(getTransparencyColor(color)) {
+			@Override
+			public void drawOn(GC gc, int imageWidth, int imageHeight) {
+				gc.setBackground(getTransparencyColor(color));
+				gc.fillRectangle(0, 0, imageWidth, imageHeight);
+				gc.setBackground(color);
+				gc.fillRectangle(0, 0, imageWidth - 1, imageHeight - 1);
+				gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
+				gc.drawRectangle(0, 0, imageWidth - 1, imageHeight - 1);
+				gc.dispose();
+			}
+		};
+		Image image = new Image (display, iGC, IMAGE_SIZE, IMAGE_SIZE);
 		return image;
 	}
 
