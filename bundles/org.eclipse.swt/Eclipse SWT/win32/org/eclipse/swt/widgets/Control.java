@@ -1313,9 +1313,10 @@ private void updateAutoScalingModeFromData() {
 	Object propagateAutoscaleDisabled = getData(PROPOGATE_AUTOSCALE_DISABLED);
 	boolean propagateAutoscaling = propagateAutoscaleDisabled == null || Boolean.parseBoolean(propagateAutoscaleDisabled.toString());
 	Object autoscaleDisabled = getData(DATA_AUTOSCALE_DISABLED);
-	boolean isAutoscaleDisabled = autoscaleDisabled != null && Boolean.parseBoolean(autoscaleDisabled.toString()) || parent.autoscalingMode == AutoscalingMode.DISABLED_INHERITED;
+	boolean isAutoscaleDisabledOnControl = autoscaleDisabled != null && Boolean.parseBoolean(autoscaleDisabled.toString());
+	boolean isAutoscaleDisabledInheritedFromParent = parent != null && parent.autoscalingMode == AutoscalingMode.DISABLED_INHERITED;
 	AutoscalingMode newAutoscalingMode = AutoscalingMode.ENABLED;
-	if (isAutoscaleDisabled) {
+	if (isAutoscaleDisabledOnControl || isAutoscaleDisabledInheritedFromParent) {
 		newAutoscalingMode = propagateAutoscaling ? AutoscalingMode.DISABLED_INHERITED : AutoscalingMode.DISABLED;
 	}
 	setAutoscalingMode(newAutoscalingMode);
