@@ -1215,6 +1215,10 @@ private class DrawScalingImageToImageOperation extends ImageOperation {
 		Rectangle fullImageBounds = image.getBounds();
 		Rectangle requestedFullImageBoundsPixels = Win32DPIUtils.pointToPixel(drawable, fullImageBounds, scaledImageZoomWithTransform);
 
+		// In case there is a memGC for the image, a handle at proper zoom can be created by reapplying the GC operation
+		if (image.memGC != null) {
+			image.getHandle(getZoom(), data.nativeZoom);
+		}
 		image.executeOnImageHandleAtBestFittingSize((tempHandle) -> {
 			Rectangle srcPixels = computeSourceRectangle(tempHandle, fullImageBounds, src);
 			drawImage(image, srcPixels.x, srcPixels.y, srcPixels.width, srcPixels.height, destPixels.x, destPixels.y, destPixels.width,
@@ -1291,6 +1295,10 @@ private class DrawScaledImageOperation extends ImageOperation {
 		Rectangle destPixelsScaledWithTransform = Win32DPIUtils.pointToPixel(drawable, new Rectangle(destX , destY, destWidth , destHeight),
 				scaledImageZoomWithTransform);
 
+		// In case there is a memGC for the image, a handle at proper zoom can be created by reapplying the GC operation
+		if (image.memGC != null) {
+			image.getHandle(getZoom(), data.nativeZoom);
+		}
 		image.executeOnImageHandleAtBestFittingSize(tempHandle -> {
 			drawImage(image, 0, 0, tempHandle.width(), tempHandle.height(), destPixels.x, destPixels.y,
 					destPixels.width, destPixels.height, false, tempHandle);
