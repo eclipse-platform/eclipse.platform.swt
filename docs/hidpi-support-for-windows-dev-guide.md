@@ -416,6 +416,38 @@ The `MultiZoomCoordinateSystemMapper` addresses coordinate ambiguity in dynamic 
 ![MultiZoomCoordinateSystem](images/coordinate_system_with_coordinate_system_mapper.png)
 Fig: The representation of the pixel coordinates space and points coordinates space using coordinate mappers
 
+### Usage of Rectangle.OfFloat & Point.OfFloat
+
+Since both the SWT API and the Windows API predominantly use integer values for positions, sizes, and bounds, rounding is generally involved when values are converted to or from the operating system.
+If API return values (for example, `Control.getLocation`) are used in calculations and later passed to other API methods (such as `Control.setBounds`), multiple destructive rounding steps can occur. These accumulated roundings may result in final pixel values that are larger or smaller than expected.
+To mitigate this effect, most API methods in Windows return internal subclasses `Rectangle.OfFloat` or `Point.OfFloat`, which preserve fractional residuals so that a correct rounding can be applied at a later stage.
+To maintain this behavior, it is important to keep and reuse the returned `Point`/`Rectangle` instances instead of replacing them with new ones. The static utility methods provided by `Rectangle` and `Point` help retain as much precision as possible throughout these operations.
+
+**Example**
+
+In the following example, the parent control is resized based on the current size of a child. One possible implementation is to use the `Control.setBounds(int, int, int, int)` API, which converts any potential `Point.OfFloat` inputs and immediately applies rounded integer values.
+
+```java
+void resize(Composite parent, Control, child) {
+    Point childSize = child.getSize();
+    parent.setBounds(5, 5, childSize.x, childSize.y);
+}
+```
+
+A better alternative is to use the `Control.setBounds(Rectangle)` API and create the bounds using `Rectangle.of(Point, Point)`. On Windows, this will automatically create a `Rectangle.OfFloat` if any of the provided points is a `Point.OfFloat`, preserving fractional values and improving the precision of subsequent conversions.
+
+```java
+void resize(Composite parent, Control, child) {
+    Point childSize = child.getSize();
+    Rectangle newBounds = Rectangle.of(new Point(5, 5), childSize);
+    parent.setBounds(newBounds);
+}
+```
+
+As a rule of thumb, avoid API methods that take raw integer values when an equivalent overload accepting `Rectangle` or `Point` is available, as these retain precision and reduce cumulative rounding errors. 
+
+Be aware that `Rectangle.OfFloat` or `Point.OfFloat` are internal classes which you should not instantiate outside of SWT. There are static utility methods `Rectangle.of` and `Point.of` that will create precise version if necessary as well as implementations of `Rectangle.clone` and `Point.clone` to create precise copies if the original one was precise.
+
 ### Process & Thread DPI Awareness
 
 Windows differentiates between process and thread DPI awareness.
