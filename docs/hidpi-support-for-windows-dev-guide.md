@@ -196,7 +196,7 @@ DPI-dependent resources (`Font`, `Image`, `Cursor`, `TextLayout`, and geometric 
 - Create new variants lazily when needed for rendering at another zoom.
 
 `Font` does not apply this pattern internally within the class, but instead uses the `SWTFontProvider` to get matching `Font` instances for a required zoom.
-Access to an OS handle is usually provided via a public static non-API method like `Cursor#win32_getHandle(Cursor, zoom)`.
+Access to an OS handle is usually provided via a public static non-API method like `Cursor.win32_getHandle(Cursor, zoom)`.
 All resources have similar methods.
 
 ---
@@ -226,7 +226,7 @@ widget.notifyListeners(SWT.ZoomChanged, event);
 
 It is used when:
 
-- a widget's parent is changed via `Control#setParent` (immediate consistency is required)
+- a widget's parent is changed via `Control.setParent` (immediate consistency is required)
 - a `Composite` has *no* layout manager and delegates changes to its children (geometry must remain stable during recalculation)
 - immediate consistency is required (layout recalculation, cached geometry updates)
 
@@ -452,7 +452,7 @@ Be aware that `Rectangle.OfFloat` or `Point.OfFloat` are internal classes which 
 
 Windows differentiates between process and thread DPI awareness.
 The process DPI awareness is defined by the executable, e.g. eclipse.exe will start with DPI awareness *System*, all recent javaw.exe will start with DPI awareness *PerMonitorV2*.
-SWT will set the thread DPI awareness to *PerMonitorV2* **if and ony if** monitor specific scaling is activated, either via `Display#setMonitorSpecificScaling` or the `swt.autoScale.updateOnRuntime` system property.
+SWT will set the thread DPI awareness to *PerMonitorV2* **if and ony if** monitor specific scaling is activated, either via `Display.setMonitorSpecificScaling` or the `swt.autoScale.updateOnRuntime` system property.
 If:
 
 - process and thread DPI awareness are the same, the application should always behave as expected
