@@ -366,6 +366,56 @@ Existing usages or extensions of SWT could (implicitly) rely on a static zoom fo
  As GDI/GDI+ works with integer pixels, but SWT uses a point coordinate system, fractional zooms (e.g., 125%, 150%) can lead to rounding issues and scaling can lead to slight inaccuracies.
 Especially on zooms like 125% and 175%, rendering and layout changes must be carefully tested.
 
+### Coordinate System
+
+SWT's HiDPI support requires coordinating between Windows' pixel-based coordinate system and SWT's point-based coordinate system. 
+The coordinate mapping strategy differs between *static* and *dynamic* HiDPI support modes.
+
+#### Windows vs SWT Coordinate Systems
+
+**Windows Coordinate System:**
+- Uses absolute pixel values independent of zoom levels
+- Primary monitor always positioned at `(0, 0)`
+- Other monitors positioned relative to primary monitor
+
+**Example: Two 1000×1000px monitors**
+- **Left monitor as primary:** Left `(0, 0, 1000, 1000)`, Right `(1000, 0, 1000, 1000)`  
+- **Right monitor as primary:** Left `(-1000, 0, 1000, 1000)`, Right `(0, 0, 1000, 1000)`
+
+**SWT Coordinate System:**
+- Uses point-based coordinates normalized to 100% scaling
+- Widget positions are relative to parent containers
+- Shell coordinates are absolute, mapping to Windows coordinate space
+
+#### Coordinate Mapping by HiDPI Support Mode
+
+**Static HiDPI Support (*System* DPI awareness):**
+- Uses `SingleZoomCoordinateSystemMapper`
+- Applies uniform scaling based on primary monitor DPI
+- All coordinates scaled consistently using single zoom factor
+
+**Dynamic HiDPI Support (*PerMonitorV2* DPI awareness):**
+- Uses `MultiZoomCoordinateSystemMapper` 
+- Handles per-monitor DPI differences
+- Shell positioning requires special handling to prevent coordinate ambiguity
+
+#### Multi-Monitor Coordinate Mapping
+
+The `MultiZoomCoordinateSystemMapper` addresses coordinate ambiguity in dynamic HiDPI support:
+
+**Shell Position Handling:**
+- **Top-left position:** Stored in absolute pixels to preserve monitor boundaries
+- **Width and height:** Stored in points, adjusted for monitor's zoom factor
+- **MonitorAwareRectangle and MonitorAwarePoint:** Coordinate objects track their associated monitor context for accurate pixel-to-point conversion and vice-versa.
+
+**Benefits:**
+- Prevents multiple pixel coordinates from mapping to identical point values
+- Ensures Shell positioning works correctly across monitors with different zoom levels
+- Maintains SWT's point-based abstraction for application developers
+
+![MultiZoomCoordinateSystem](images/coordinate_system_with_coordinate_system_mapper.png)
+Fig: The representation of the pixel coordinates space and points coordinates space using coordinate mappers
+
 ### Process & Thread DPI Awareness
 
 Windows differentiates between process and thread DPI awareness.
