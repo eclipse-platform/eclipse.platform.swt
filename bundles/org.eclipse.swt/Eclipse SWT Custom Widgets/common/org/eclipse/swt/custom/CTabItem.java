@@ -185,7 +185,7 @@ public Control getControl () {
  *
  * @deprecated the disabled image is not used
  */
-@Deprecated
+@Deprecated(forRemoval = true, since = "2026-06")
 public Image getDisabledImage(){
 	checkWidget();
 	return disabledImage;

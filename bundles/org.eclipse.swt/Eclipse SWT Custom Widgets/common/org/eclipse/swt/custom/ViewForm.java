@@ -81,7 +81,7 @@ public class ViewForm extends Composite {
 	 *
 	 * @deprecated
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true, since = "2026-06")
 	public static RGB borderInsideRGB  = new RGB (132, 130, 132);
 	/**
 	 * Color of middle line of drop shadow border.
@@ -91,7 +91,7 @@ public class ViewForm extends Composite {
 	 *
 	 * @deprecated
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true, since = "2026-06")
 	public static RGB borderMiddleRGB  = new RGB (143, 141, 138);
 	/**
 	 * Color of outermost line of drop shadow border.
@@ -101,7 +101,7 @@ public class ViewForm extends Composite {
 	 *
 	 * @deprecated
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true, since = "2026-06")
 	public static RGB borderOutsideRGB = new RGB (171, 168, 165);
 
 	// SWT widgets

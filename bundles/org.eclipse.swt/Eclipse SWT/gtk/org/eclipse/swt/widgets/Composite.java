@@ -238,7 +238,7 @@ Control [] _getTabList () {
  * @deprecated use {@link Composite#layout(Control[], int)} instead
  * @since 3.1
  */
-@Deprecated
+@Deprecated(forRemoval = true, since = "2026-06")
 public void changed (Control[] changed) {
 	layout(changed, SWT.DEFER);
 }
