@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2025 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -111,6 +111,7 @@ typedef enum {
 	gtk_1icon_1theme_1get_1default_FUNC,
 	gtk_1icon_1theme_1load_1icon_FUNC,
 	gtk_1icon_1theme_1lookup_1by_1gicon_FUNC,
+	gtk_1icon_1theme_1lookup_1by_1gicon_1for_1scale_FUNC,
 	gtk_1im_1context_1filter_1keypress_FUNC,
 	gtk_1image_1new_1from_1icon_1name_FUNC,
 	gtk_1image_1new_1from_1surface_FUNC,

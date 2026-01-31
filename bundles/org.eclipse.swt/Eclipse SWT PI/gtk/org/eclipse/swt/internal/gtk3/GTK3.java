@@ -795,6 +795,15 @@ public class GTK3 {
 	 * @param flags cast=(GtkIconLookupFlags)
 	 */
 	public static final native long gtk_icon_theme_lookup_by_gicon(long icon_theme, long icon, int size, int flags);
+	/* GtkIconTheme */
+	/**
+	 * @param icon_theme cast=(GtkIconTheme *)
+	 * @param icon cast=(GIcon *)
+	 * @param size cast=(gint)
+	 * @param scale cast=(gint)
+	 * @param flags cast=(GtkIconLookupFlags)
+	 */
+	public static final native long gtk_icon_theme_lookup_by_gicon_for_scale(long icon_theme, long icon, int size, int scale, int flags);
 	/**
 	 * @param icon_theme cast=(GtkIconTheme *)
 	 * @param icon_name cast=(const gchar *)
