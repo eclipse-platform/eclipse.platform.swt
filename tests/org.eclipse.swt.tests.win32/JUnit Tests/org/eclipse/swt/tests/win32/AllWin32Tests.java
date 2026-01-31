@@ -26,7 +26,8 @@ import org.junit.platform.suite.api.Suite;
 		Test_org_eclipse_swt_events_KeyEvent.class, //
 		Test_org_eclipse_swt_widgets_Display.class, //
 		TestTreeColumn.class, //
-		Win32DPIUtilTests.class })
+		Win32DPIUtilTests.class, //
+		Win32AutoScaleTests.class})
 public class AllWin32Tests {
 
 }

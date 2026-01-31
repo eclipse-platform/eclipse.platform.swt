@@ -16,12 +16,41 @@ package org.eclipse.swt.tests.win32;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
+import java.util.Objects;
 import java.util.function.BooleanSupplier;
 
+import org.eclipse.swt.graphics.AutoscalingMode;
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 
 public class SwtWin32TestUtil {
+
+private static final VarHandle AUTOSCALING_FIELD;
+static {
+	try {
+		AUTOSCALING_FIELD = MethodHandles.privateLookupIn(Control.class, MethodHandles.lookup()).findVarHandle(Control.class, "autoscalingMode", AutoscalingMode.class);
+	} catch (ReflectiveOperationException e) {
+		throw new RuntimeException(e);
+	}
+}
+
+/**
+ * Returns the auto-scaling mode of the given {@link Control} based on the internal
+ * {@code autoscalingMode} field. This field is internal and therefore has to be
+ * accessed via reflection.
+ *
+ * @param control control to read the auto-scaling mode from (not {@code null}).
+ * @return The auto-scaling mode of the given control
+ */
+public static AutoscalingMode getAutoscalingMode(Control control) {
+	Objects.requireNonNull(control, "Control must not be null");
+	Objects.requireNonNull(AUTOSCALING_FIELD, "Unable to find auto-scaling field for Control class");
+	return (AutoscalingMode) AUTOSCALING_FIELD.get(control);
+}
+
 
 /**
  * Dispatch events until <em>condition</em> is <code>true</code> or timeout reached.
