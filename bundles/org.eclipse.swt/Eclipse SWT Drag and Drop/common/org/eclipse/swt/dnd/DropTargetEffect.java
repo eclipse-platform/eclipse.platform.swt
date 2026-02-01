@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007, 2008 IBM Corporation and others.
+ * Copyright (c) 2007, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -97,8 +97,7 @@ public class DropTargetEffect extends DropTargetAdapter {
 	}
 
 	Widget getItem(Table table, int x, int y) {
-		Point coordinates = new Point(x, y);
-		coordinates = table.toControl(coordinates);
+		Point coordinates = table.toControl(x, y);
 		TableItem item = table.getItem(coordinates);
 		if (item != null) return item;
 		Rectangle area = table.getClientArea();
@@ -116,8 +115,7 @@ public class DropTargetEffect extends DropTargetAdapter {
 	}
 
 	Widget getItem(Tree tree, int x, int y) {
-		Point point = new Point(x, y);
-		point = tree.toControl(point);
+		Point point = tree.toControl(x, y);
 		TreeItem item = tree.getItem(point);
 		if (item == null) {
 			Rectangle area = tree.getClientArea();

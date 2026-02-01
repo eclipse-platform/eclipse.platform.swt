@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -784,7 +784,7 @@ class TableTab extends ScrollableTab {
 	protected void specialPopupMenuItems(Menu menu, Event event) {
 		MenuItem item = new MenuItem(menu, SWT.PUSH);
 		item.setText("getItem(Point) on mouse coordinates");
-		menuMouseCoords = table1.toControl(new Point(event.x, event.y));
+		menuMouseCoords = table1.toControl(event.x, event.y);
 		item.addSelectionListener(widgetSelectedAdapter(e -> {
 			eventConsole.append ("getItem(Point(" + menuMouseCoords + ")) returned: " + table1.getItem(menuMouseCoords));
 			eventConsole.append ("\n");

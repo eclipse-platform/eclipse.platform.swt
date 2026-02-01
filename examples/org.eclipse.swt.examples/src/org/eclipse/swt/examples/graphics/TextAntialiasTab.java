@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2016 IBM Corporation and others.
+ * Copyright (c) 2006, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -110,7 +110,7 @@ public void createControlPanel(Composite parent) {
 		final Button button = (Button) event.widget;
 		final Composite parent1 = button.getParent();
 		Rectangle bounds = button.getBounds();
-		Point point = parent1.toDisplay(new Point(bounds.x, bounds.y));
+		Point point = parent1.toDisplay(bounds.x, bounds.y);
 		menu.setLocation(point.x, point.y + bounds.height);
 		menu.setVisible(true);
 	});

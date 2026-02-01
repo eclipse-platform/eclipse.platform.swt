@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2021 Syntevo and others.
+ * Copyright (c) 2021, 2026 Syntevo and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -14,11 +14,18 @@
 
 package org.eclipse.swt.tests.cocoa.snippets;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeItem;
 
 public final class Bug577767_macOS_TableScrollsPastContent {
 	public static void testTable(Button button, boolean isVirtual) {
@@ -53,7 +60,7 @@ public final class Bug577767_macOS_TableScrollsPastContent {
 		// A way to get rid of popup for convenience of testing
 		table.addListener (SWT.MouseDown, e -> popup.dispose ());
 
-		popup.setLocation (button.toDisplay (new Point (20, 20)));
+		popup.setLocation (button.toDisplay (20, 20));
 		popup.setSize (200, 200);
 		popup.open ();
 	}
@@ -90,7 +97,7 @@ public final class Bug577767_macOS_TableScrollsPastContent {
 		// A way to get rid of popup for convenience of testing
 		tree.addListener (SWT.MouseDown, e -> popup.dispose ());
 
-		popup.setLocation (button.toDisplay (new Point (20, 20)));
+		popup.setLocation (button.toDisplay (20, 20));
 		popup.setSize (200, 200);
 		popup.open ();
 	}

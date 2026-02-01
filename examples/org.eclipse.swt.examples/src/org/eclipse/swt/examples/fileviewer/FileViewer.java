@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2025 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -45,7 +45,6 @@ import org.eclipse.swt.events.ShellListener;
 import org.eclipse.swt.events.TreeAdapter;
 import org.eclipse.swt.events.TreeEvent;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -536,7 +535,7 @@ public class FileViewer {
 			}
 			private File getTargetFile(DropTargetEvent event) {
 				// Determine the target File for the drop
-				TreeItem item = tree.getItem(tree.toControl(new Point(event.x, event.y)));
+				TreeItem item = tree.getItem(tree.toControl(event.x, event.y));
 				File targetFile = null;
 				if (item != null) {
 					// We are over a particular item in the tree, use the item's file
@@ -845,7 +844,7 @@ public class FileViewer {
 			}
 			private File getTargetFile(DropTargetEvent event) {
 				// Determine the target File for the drop
-				TableItem item = table.getItem(table.toControl(new Point(event.x, event.y)));
+				TableItem item = table.getItem(table.toControl(event.x, event.y));
 				File targetFile = null;
 				if (item == null) {
 					// We are over an unoccupied area of the table.

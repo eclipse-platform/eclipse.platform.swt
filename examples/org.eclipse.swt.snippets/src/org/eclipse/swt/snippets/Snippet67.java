@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -41,9 +41,8 @@ public static void main (String [] args) {
 	item.addListener (SWT.Selection, event -> {
 		if (event.detail == SWT.ARROW) {
 			Rectangle rect = item.getBounds ();
-			Point pt = new Point (rect.x, rect.y + rect.height);
-			pt = toolBar.toDisplay (pt);
-			menu.setLocation (pt.x, pt.y);
+			Point pt = toolBar.toDisplay (rect.x, rect.y + rect.height);
+			menu.setLocation (pt);
 			menu.setVisible (true);
 		}
 	});

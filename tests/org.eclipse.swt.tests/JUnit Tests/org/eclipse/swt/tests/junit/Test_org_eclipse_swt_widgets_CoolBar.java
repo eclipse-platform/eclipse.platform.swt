@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -166,7 +166,7 @@ class CoolItemSelectionListener extends SelectionAdapter {
 			CoolItem coolItem = (CoolItem) event.widget;
 			Rectangle itemBounds = coolItem.getBounds ();
 			itemBounds.width = event.x - itemBounds.x;
-			Point pt = coolBar.toDisplay(new Point (itemBounds.x, itemBounds.y));
+			Point pt = coolBar.toDisplay(itemBounds.x, itemBounds.y);
 			itemBounds.x = pt.x;
 			itemBounds.y = pt.y;
 
@@ -181,7 +181,7 @@ class CoolItemSelectionListener extends SelectionAdapter {
 			int i = 0;
 			while (i < toolCount) {
 				Rectangle toolBounds = tools[i].getBounds ();
-				pt = toolBar.toDisplay(new Point(toolBounds.x, toolBounds.y));
+				pt = toolBar.toDisplay(toolBounds.x, toolBounds.y);
 				toolBounds.x = pt.x;
 				toolBounds.y = pt.y;
 				Rectangle intersection = itemBounds.intersection (toolBounds);
@@ -201,8 +201,8 @@ class CoolItemSelectionListener extends SelectionAdapter {
 			/* Display the pop-up menu at the lower left corner of the arrow button.
 			 * Dispose the menu when the user is done with it.
 			 */
-			pt = coolBar.toDisplay(new Point(event.x, event.y));
-			menu.setLocation (pt.x, pt.y);
+			pt = coolBar.toDisplay(event.x, event.y);
+			menu.setLocation (pt);
 			menu.setVisible (true);
 			Display display = coolBar.getDisplay ();
 			while (menu != null && !menu.isDisposed() && menu.isVisible ()) {

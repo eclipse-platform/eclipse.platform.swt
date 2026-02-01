@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2016 IBM Corporation and others.
+ * Copyright (c) 2006, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -101,7 +101,7 @@ public void createControlPanel(final Composite parent) {
 		final ToolItem toolItem = (ToolItem) event.widget;
 		final ToolBar  toolBar = toolItem.getParent();
 		Rectangle toolItemBounds = toolItem.getBounds();
-		Point point = toolBar.toDisplay(new Point(toolItemBounds.x, toolItemBounds.y));
+		Point point = toolBar.toDisplay(toolItemBounds.x, toolItemBounds.y);
 		menu1.setLocation(point.x, point.y + toolItemBounds.height);
 		menu1.setVisible(true);
 	});
@@ -124,7 +124,7 @@ public void createControlPanel(final Composite parent) {
 		final ToolItem toolItem = (ToolItem) event.widget;
 		final ToolBar  toolBar = toolItem.getParent();
 		Rectangle toolItemBounds = toolItem.getBounds();
-		Point point = toolBar.toDisplay(new Point(toolItemBounds.x, toolItemBounds.y));
+		Point point = toolBar.toDisplay(toolItemBounds.x, toolItemBounds.y);
 		menu2.setLocation(point.x, point.y + toolItemBounds.height);
 		menu2.setVisible(true);
 	});
