@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -378,8 +378,8 @@ class ToolBarTab extends Tab {
 				final ToolItem toolItem = (ToolItem) event.widget;
 				final ToolBar  toolBar = toolItem.getParent();
 
-				Point point = toolBar.toDisplay(new Point(event.x, event.y));
-				menu.setLocation(point.x, point.y);
+				Point point = toolBar.toDisplay(event.x, event.y);
+				menu.setLocation(point);
 				menu.setVisible(true);
 			}
 		}

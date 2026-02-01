@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018 Red Hat and others. All rights reserved.
+ * Copyright (c) 2018, 2026 Red Hat and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -167,8 +167,8 @@ public class Bug186038_DNDActivateEvent {
 			dropDownShell.setText("This is a drop down widget.shell");
 			dropDownShell.setSize(100, 200);
 			Rectangle buttonRect = button1.getBounds();
-			Point p = button1.getParent().toDisplay(new Point(buttonRect.x, buttonRect.y + buttonRect.height));
-			dropDownShell.setLocation(p.x, p.y);
+			Point p = button1.getParent().toDisplay(buttonRect.x, buttonRect.y + buttonRect.height);
+			dropDownShell.setLocation(p);
 			dropDownShell.setVisible(true);
 			dropDownShell.setFocus();
 		}

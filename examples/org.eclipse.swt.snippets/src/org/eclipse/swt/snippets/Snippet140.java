@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -63,7 +63,7 @@ public static void main (String [] args) {
 			if (event.detail == SWT.ARROW) {
 				CoolItem item = (CoolItem) event.widget;
 				Rectangle itemBounds = item.getBounds();
-				Point pt = coolBar.toDisplay(new Point(itemBounds.x, itemBounds.y));
+				Point pt = coolBar.toDisplay(itemBounds.x, itemBounds.y);
 				itemBounds.x = pt.x;
 				itemBounds.y = pt.y;
 				ToolBar bar = (ToolBar) item.getControl();
@@ -72,7 +72,7 @@ public static void main (String [] args) {
 				int i = 0;
 				while (i < tools.length) {
 					Rectangle toolBounds = tools[i].getBounds();
-					pt = bar.toDisplay(new Point(toolBounds.x, toolBounds.y));
+					pt = bar.toDisplay(toolBounds.x, toolBounds.y);
 					toolBounds.x = pt.x;
 					toolBounds.y = pt.y;
 
@@ -109,8 +109,8 @@ public static void main (String [] args) {
 				 * Drop down the menu below the chevron, with the left edges
 				 * aligned.
 				 */
-				pt = coolBar.toDisplay(new Point(event.x, event.y));
-				chevronMenu.setLocation(pt.x, pt.y);
+				pt = coolBar.toDisplay(event.x, event.y);
+				chevronMenu.setLocation(pt);
 				chevronMenu.setVisible(true);
 			}
 		}));

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -330,7 +330,7 @@ boolean insertItemIntoRow(CoolItem item, int rowIndex, int x_root) {
 	Rectangle bounds = items[rowIndex][0].internalGetBounds();
 	int rowY = bounds.y;
 	int oldRowHeight = bounds.height;
-	int x = Math.max(0, Math.abs(x_root - toDisplay(new Point(0, 0)).x));
+	int x = Math.max(0, Math.abs(x_root - toDisplay(0, 0).x));
 
 	/* Find the insertion index and add the item. */
 	int index;
@@ -604,7 +604,7 @@ void onMouseMove(Event event) {
 	fixEvent(event);
 	CoolItem grabbed = getGrabbedItem(event.x, event.y);
 	if (dragging != null) {
-		int left_root = toDisplay(new Point(event.x - itemXOffset, event.y)).x;
+		int left_root = toDisplay(event.x - itemXOffset, event.y).x;
 		Rectangle bounds = dragging.internalGetBounds();
 		if (event.y < bounds.y) {
 			moveUp(dragging, left_root);
