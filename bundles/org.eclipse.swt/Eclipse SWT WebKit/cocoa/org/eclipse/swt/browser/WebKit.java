@@ -1598,6 +1598,10 @@ void handleEvent(long evtId) {
 				} else if (translatedKey == 'x') {
 					webView.cut (webView);
 					event.preventDefault();
+				} else if (translatedKey == '=' || translatedKey == '+') {
+					webView.makeTextLarger();
+				} else if (translatedKey == '-') {
+					webView.makeTextSmaller();
 				}
 			}
 		}
