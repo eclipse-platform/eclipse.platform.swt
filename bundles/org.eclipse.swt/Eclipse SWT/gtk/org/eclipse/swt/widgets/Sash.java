@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2025 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -522,7 +522,7 @@ long gtk3_key_press_event(long widget, long eventPtr) {
 				} else {
 					cursorX += width / 2;
 				}
-				display.setCursorLocation(parent.toDisplayInPixels(cursorX, cursorY));
+				display.setCursorLocation(parent.toDisplay(cursorX, cursorY));
 			}
 			break;
 	}

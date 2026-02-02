@@ -1735,26 +1735,6 @@ public Point toDisplay(int x, int y) {
 	return new Point(x, y);
 }
 
-Point toDisplayInPixels(int x, int y) {
-	checkWidget();
-
-	int[] origin_x = new int[1], origin_y = new int[1];
-	if (GTK.GTK4) {
-		Point origin = getControlOrigin();
-		origin_x[0] = origin.x;
-		origin_y[0] = origin.y;
-	} else {
-		long window = eventWindow();
-		GDK.gdk_window_get_origin(window, origin_x, origin_y);
-	}
-
-	if ((style & SWT.MIRRORED) != 0) x = getClientWidth() - x;
-	x += origin_x[0];
-	y += origin_y[0];
-
-	return new Point(x, y);
-}
-
 /**
  * Returns a point which is the result of converting the
  * argument, which is specified in coordinates relative to
