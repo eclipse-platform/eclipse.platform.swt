@@ -1028,9 +1028,6 @@ public void setID (int id) {
  */
 @Override
 public void setImage (Image image) {
-	//TODO: GTK4 Menu images with text are no longer supported
-	if (GTK.GTK4) return;
-
 	checkWidget();
 	if (this.image == image) return;
 	if ((style & SWT.SEPARATOR) != 0) return;
@@ -1053,24 +1050,61 @@ private void _setImage (Image image) {
 			imageList.put (imageIndex, image);
 			surface = imageList.getSurface (imageIndex);
 		}
-
-		if (!GTK3.GTK_IS_MENU_ITEM (handle)) return;
-		if (OS.SWT_PADDED_MENU_ITEMS && imageHandle != 0) {
-			GTK3.gtk_image_set_from_surface(imageHandle, surface);
-		} else {
-			if (imageHandle == 0) {
-				imageHandle = GTK3.gtk_image_new_from_surface(surface);
-				if (imageHandle == 0) error(SWT.ERROR_NO_HANDLES);
-
-				GTK3.gtk_container_add(boxHandle, imageHandle);
-				GTK3.gtk_box_reorder_child(boxHandle, imageHandle, 0);
+		if (GTK.GTK4) {
+			long pixbuf = ImageList.createPixbuf(image);
+			long texture = GDK.gdk_texture_new_for_pixbuf(pixbuf);
+			OS.g_object_unref(pixbuf);
+			if (OS.SWT_PADDED_MENU_ITEMS && imageHandle != 0) {
+				GTK4.gtk_image_set_from_paintable(imageHandle, texture);
 			} else {
+				if (imageHandle == 0) {
+					imageHandle = GTK4.gtk_image_new_from_paintable(texture);
+					if (imageHandle == 0) error(SWT.ERROR_NO_HANDLES);
+					if(boxHandle == 0) {
+						boxHandle = gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, false, 6);
+					}
+
+					GTK4.gtk_box_append(boxHandle, imageHandle);
+					GTK4.gtk_box_reorder_child_after(boxHandle, imageHandle, 0);
+				} else {
+					GTK4.gtk_image_set_from_paintable(imageHandle, texture);
+				}
+			}
+			return;
+		} else {
+			if (!GTK3.GTK_IS_MENU_ITEM (handle)) return;
+			if (OS.SWT_PADDED_MENU_ITEMS && imageHandle != 0) {
 				GTK3.gtk_image_set_from_surface(imageHandle, surface);
+			} else {
+				if (imageHandle == 0) {
+					imageHandle = GTK3.gtk_image_new_from_surface(surface);
+					if (imageHandle == 0) error(SWT.ERROR_NO_HANDLES);
+
+					GTK3.gtk_container_add(boxHandle, imageHandle);
+					GTK3.gtk_box_reorder_child(boxHandle, imageHandle, 0);
+				} else {
+					GTK3.gtk_image_set_from_surface(imageHandle, surface);
+				}
 			}
 		}
 		gtk_widget_show(imageHandle);
 	} else {
 		if (imageHandle != 0) {
+			if (GTK.GTK4) {
+				if (OS.SWT_PADDED_MENU_ITEMS) {
+					GTK4.gtk_box_remove(boxHandle, imageHandle);
+					imageHandle = GTK.gtk_image_new ();
+					if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
+					GTK.gtk_image_set_pixel_size (imageHandle, 16);
+					GTK4.gtk_box_append (boxHandle, imageHandle);
+					GTK4.gtk_box_append(boxHandle, labelHandle);
+					gtk_widget_show (imageHandle);
+				} else {
+					GTK4.gtk_box_remove(boxHandle, imageHandle);
+					imageHandle = 0;
+				}
+				return;
+			}
 			if (OS.SWT_PADDED_MENU_ITEMS) {
 				GTK3.gtk_container_remove(boxHandle, imageHandle);
 				imageHandle = GTK.gtk_image_new ();
