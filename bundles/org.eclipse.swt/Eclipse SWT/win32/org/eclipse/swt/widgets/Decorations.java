@@ -1710,13 +1710,13 @@ void handleDPIChange(Event event, float scalingFactor) {
 	super.handleDPIChange(event, scalingFactor);
 
 	Menu menuBar = getMenuBar();
-	if (menuBar != null) {
+	if (menuBar != null && !menuBar.isDisposed()) {
 		menuBar.notifyListeners(SWT.ZoomChanged, event);
 	}
 
 	if (menus != null) {
 		for (Menu menu : menus) {
-			if (menu != null) {
+			if (menu != null && !menu.isDisposed()) {
 				menu.notifyListeners(SWT.ZoomChanged, event);
 			}
 		}

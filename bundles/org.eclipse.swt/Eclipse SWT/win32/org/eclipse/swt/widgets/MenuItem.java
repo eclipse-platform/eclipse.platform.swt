@@ -1465,7 +1465,7 @@ void handleDPIChange(Event event, float scalingFactor) {
 	}
 	// Refresh the sub menu
 	Menu subMenu = getMenu();
-	if (subMenu != null) {
+	if (subMenu != null && !subMenu.isDisposed()) {
 		subMenu.notifyListeners(SWT.ZoomChanged, event);
 	}
 }

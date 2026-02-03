@@ -1826,7 +1826,9 @@ void handleDPIChange(Event event, float scalingFactor) {
 		}
 	}
 	for (TreeItem item : getItems()) {
-		item.notifyListeners(SWT.ZoomChanged, event);
+		if (item != null && !item.isDisposed()) {
+			item.notifyListeners(SWT.ZoomChanged, event);
+		}
 	}
 }
 }
