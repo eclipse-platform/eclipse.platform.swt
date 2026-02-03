@@ -16,6 +16,7 @@ package org.eclipse.swt.tests.junit;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
@@ -37,6 +38,11 @@ public class Test_org_eclipse_swt_custom_BusyIndicator {
 	@Test
 	@Timeout(value = 30)
 	public void testShowWhile() {
+		if (SwtTestUtil.isLinux) {
+			int availableProcessors = Runtime.getRuntime().availableProcessors();
+			assumeTrue(availableProcessors >= 4,
+					"Need at least 4 CPUs for this test to be reliable on Linux: " + availableProcessors);
+		}
 		// Executors.newSingleThreadExecutor() hangs on some Linux configurations
 		try (ExecutorService executor = Executors.newFixedThreadPool(2)){
 			Shell shell = new Shell();
