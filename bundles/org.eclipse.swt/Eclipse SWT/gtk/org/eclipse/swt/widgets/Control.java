@@ -520,14 +520,7 @@ private void hookWidgetSignals(long focusHandle) {
 private void hookPaintSignals() {
 	long paintHandle = paintHandle();
 
-	if (GTK.GTK4) {
-		long widgetClass = GTK.GTK_WIDGET_GET_CLASS(paintHandle());
-		GtkWidgetClass widgetClassStruct = new GtkWidgetClass();
-
-		OS.memmove(widgetClassStruct, widgetClass);
-		widgetClassStruct.snapshot = display.snapshotDrawProc;
-		OS.memmove(widgetClass, widgetClassStruct);
-	} else {
+	if (!GTK.GTK4) {
 		int paintMask = GDK.GDK_EXPOSURE_MASK;
 		GTK3.gtk_widget_add_events (paintHandle, paintMask);
 		OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [DRAW], 0, display.getClosure (EXPOSE_EVENT_INVERSE), false);
@@ -3815,10 +3808,8 @@ void cairoClipRegion (long cairo) {
 	eventRegion = actualRegion;
 }
 
-
-
 @Override
-void gtk4_draw(long widget, long cairo, Rectangle bounds) {
+void gtk4_draw(long cairo, int width, int height) {
 	if (!hooksPaint()) return;
 
 	GCData data = new GCData();
@@ -3828,7 +3819,7 @@ void gtk4_draw(long widget, long cairo, Rectangle bounds) {
 	Event event = new Event();
 	event.count = 1;
 	event.gc = gc;
-	event.setBounds(bounds);
+	event.setBounds(new Rectangle(0, 0, width, height));
 
 	drawWidget(gc);
 	sendEvent(SWT.Paint, event);
