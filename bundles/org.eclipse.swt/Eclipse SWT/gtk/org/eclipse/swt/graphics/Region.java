@@ -448,10 +448,6 @@ public void intersect(Region region) {
  */
 public boolean intersects (int x, int y, int width, int height) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return intersectsInPixels(x, y, width, height);
-}
-
-boolean intersectsInPixels (int x, int y, int width, int height) {
 	cairo_rectangle_int_t rect = new cairo_rectangle_int_t();
 	rect.x = x;
 	rect.y = y;
@@ -478,8 +474,7 @@ boolean intersectsInPixels (int x, int y, int width, int height) {
  */
 public boolean intersects(Rectangle rect) {
 	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return intersectsInPixels(rect.x, rect.y, rect.width, rect.height);
+	return intersects(rect.x, rect.y, rect.width, rect.height);
 }
 
 /**
