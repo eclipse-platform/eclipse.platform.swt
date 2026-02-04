@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <component id="org.eclipse.swt.gtk.linux.x86_64" version="2">
-    <resource path="Eclipse SWT/gtk/org/eclipse/swt/widgets/Composite.java" type="org.eclipse.swt.widgets.Composite">
-        <filter id="576778288">
+    <resource path="Eclipse SWT Custom Widgets/common/org/eclipse/swt/custom/BusyIndicator.java" type="org.eclipse.swt.custom.BusyIndicator">
+        <filter id="336658481">
             <message_arguments>
-                <message_argument value="Scrollable"/>
-                <message_argument value="Composite"/>
+                <message_argument value="org.eclipse.swt.custom.BusyIndicator"/>
+                <message_argument value="onWake"/>
             </message_arguments>
         </filter>
     </resource>
     <resource path="Eclipse SWT/common/org/eclipse/swt/graphics/ImageDataAtSizeProvider.java" type="org.eclipse.swt.graphics.ImageDataAtSizeProvider">
-        <filter id="403804204" comment="Adding API filter to mark ImageDataAtSizeProvider as referenceable">
+        <filter comment="Adding API filter to mark ImageDataAtSizeProvider as referenceable" id="403804204">
             <message_arguments>
                 <message_argument value="org.eclipse.swt.graphics.ImageDataAtSizeProvider"/>
                 <message_argument value="getDefaultSize()"/>
             </message_arguments>
         </filter>
-        <filter id="1211105284" comment="Adding API filter to mark ImageDataAtSizeProvider as referenceable">
-            <message_arguments>
-                <message_argument value="getDefaultSize()"/>
-            </message_arguments>
-        </filter>
-        <filter id="403804204" comment="Adding API filter to mark ImageDataAtSizeProvider as referenceable">
+        <filter comment="Adding API filter to mark ImageDataAtSizeProvider as referenceable" id="403804204">
             <message_arguments>
                 <message_argument value="org.eclipse.swt.graphics.ImageDataAtSizeProvider"/>
                 <message_argument value="getImageData(int, int)"/>
             </message_arguments>
         </filter>
-        <filter id="1211105284" comment="Adding API filter to mark ImageDataAtSizeProvider as referenceable">
+        <filter comment="Adding API filter to mark ImageDataAtSizeProvider as referenceable" id="1211105284">
+            <message_arguments>
+                <message_argument value="getDefaultSize()"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Adding API filter to mark ImageDataAtSizeProvider as referenceable" id="1211105284">
             <message_arguments>
                 <message_argument value="getImageData(int, int)"/>
             </message_arguments>

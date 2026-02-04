@@ -17,6 +17,7 @@ package org.eclipse.swt.custom;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
+import java.util.function.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -33,6 +34,14 @@ public class BusyIndicator {
 	private static final AtomicInteger nextBusyId = new AtomicInteger();
 	static final String BUSYID_NAME = "SWT BusyIndicator"; //$NON-NLS-1$
 	static final String BUSY_CURSOR = "SWT BusyIndicator Cursor"; //$NON-NLS-1$
+	/**
+	 * @since 3.133
+	 */
+	public static Runnable onWake;
+	/**
+	 * @since 3.133
+	 */
+	public static Consumer<Exception> onWakeError;
 
 	/**
 	 * Runs the given <code>Runnable</code> while providing
@@ -111,8 +120,14 @@ public class BusyIndicator {
 						stage.handle((nil1, nil2) -> {
 							if (!display.isDisposed()) {
 								try {
+									if (onWake!=null) {
+										onWake.run();
+									}
 									display.wake();
 								} catch (SWTException e) {
+									if (onWakeError!=null) {
+										onWakeError.accept(e);
+									}
 									// ignore then, this can happen due to the async nature between our check for
 									// disposed and the actual call to wake the display can be disposed
 								}

@@ -69,6 +69,8 @@ public class Test_org_eclipse_swt_custom_BusyIndicator {
 		volatile long lastSleepExitTime = 0;
 
 		SwtInternalStateTracker(Display display) {
+			BusyIndicator.onWake = () -> logEvent("Called Wake from inside call");
+			BusyIndicator.onWakeError = e -> logEvent("Error On wake "+e);
 			this.display = display;
 			initReflection();
 			logEvent("SwtInternalStateTracker initialized");
@@ -212,6 +214,7 @@ public class Test_org_eclipse_swt_custom_BusyIndicator {
 		final AtomicBoolean asyncExec1Ran = new AtomicBoolean(false);
 		final AtomicBoolean asyncExec2Ran = new AtomicBoolean(false);
 		final AtomicBoolean asyncExec3Ran = new AtomicBoolean(false);
+
 
 		@Override
 		public String toString() {
@@ -387,6 +390,7 @@ public class Test_org_eclipse_swt_custom_BusyIndicator {
 				tracker.logEvent("Test completed successfully");
 			} finally {
 				watchdog.cancel(false);
+				state.swtTracker.printEventLog();
 			}
 		}
 	}
@@ -454,7 +458,6 @@ public class Test_org_eclipse_swt_custom_BusyIndicator {
 				tracker.logEvent("About to call BusyIndicator.showWhile(future)");
 				tracker.logEvent("State before showWhile: wake=" + tracker.getWakeFlag() + ", syncEmpty="
 						+ tracker.isSynchronizerEmpty());
-
 				BusyIndicator.showWhile(future);
 
 				tracker.logEvent("BusyIndicator.showWhile(future) returned");
@@ -468,6 +471,7 @@ public class Test_org_eclipse_swt_custom_BusyIndicator {
 				tracker.logEvent("Test completed successfully");
 			} finally {
 				watchdog.cancel(false);
+				state.swtTracker.printEventLog();
 			}
 		}
 	}
