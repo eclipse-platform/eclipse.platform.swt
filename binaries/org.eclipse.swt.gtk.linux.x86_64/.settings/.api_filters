@@ -7,6 +7,12 @@
                 <message_argument value="onWake"/>
             </message_arguments>
         </filter>
+        <filter id="336658481">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.BusyIndicator"/>
+                <message_argument value="onWakeError"/>
+            </message_arguments>
+        </filter>
     </resource>
     <resource path="Eclipse SWT/common/org/eclipse/swt/graphics/ImageDataAtSizeProvider.java" type="org.eclipse.swt.graphics.ImageDataAtSizeProvider">
         <filter comment="Adding API filter to mark ImageDataAtSizeProvider as referenceable" id="403804204">

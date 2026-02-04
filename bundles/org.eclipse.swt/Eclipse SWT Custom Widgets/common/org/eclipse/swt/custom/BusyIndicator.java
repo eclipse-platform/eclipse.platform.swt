@@ -35,11 +35,11 @@ public class BusyIndicator {
 	static final String BUSYID_NAME = "SWT BusyIndicator"; //$NON-NLS-1$
 	static final String BUSY_CURSOR = "SWT BusyIndicator Cursor"; //$NON-NLS-1$
 	/**
-	 * @since 3.133
+	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public static Runnable onWake;
 	/**
-	 * @since 3.133
+	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public static Consumer<Exception> onWakeError;
 

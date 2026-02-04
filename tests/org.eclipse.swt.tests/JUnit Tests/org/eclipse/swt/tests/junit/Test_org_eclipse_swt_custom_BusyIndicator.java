@@ -17,8 +17,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -37,7 +35,6 @@ import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Synchronizer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
@@ -47,51 +44,26 @@ public class Test_org_eclipse_swt_custom_BusyIndicator {
 	private static final long WATCHDOG_TIMEOUT_SECONDS = 25;
 
 	/**
-	 * Debug tracker for SWT internal state. Uses reflection to access private
-	 * fields for diagnostic purposes only.
+	 * Lightweight tracker that uses the public BusyIndicator hooks to track
+	 * wake() calls without using reflection, to avoid influencing JVM timing.
 	 */
-	private static class SwtInternalStateTracker {
-		private final Display display;
-		private Field wakeField;
-		private Field synchronizerField;
-
-// Event log for tracking what happened
+	private static class WakeTracker {
 		final CopyOnWriteArrayList<String> eventLog = new CopyOnWriteArrayList<>();
 		final AtomicInteger wakeCallCount = new AtomicInteger(0);
-		final AtomicInteger readAndDispatchCallCount = new AtomicInteger(0);
-		final AtomicInteger readAndDispatchTrueCount = new AtomicInteger(0);
-		final AtomicInteger sleepCallCount = new AtomicInteger(0);
+		final AtomicInteger wakeErrorCount = new AtomicInteger(0);
 		final AtomicInteger asyncExecScheduledCount = new AtomicInteger(0);
 		final AtomicInteger asyncExecRunCount = new AtomicInteger(0);
-		volatile long lastWakeCallTime = 0;
-		volatile String lastWakeCallThread = null;
-		volatile long lastSleepEnterTime = 0;
-		volatile long lastSleepExitTime = 0;
 
-		SwtInternalStateTracker(Display display) {
-			BusyIndicator.onWake = () -> logEvent("Called Wake from inside call");
-			BusyIndicator.onWakeError = e -> logEvent("Error On wake "+e);
-			this.display = display;
-			initReflection();
-			logEvent("SwtInternalStateTracker initialized");
-		}
-
-		private void initReflection() {
-			try {
-// Try to access Display.wake field (GTK-specific)
-				wakeField = Display.class.getDeclaredField("wake");
-				wakeField.setAccessible(true);
-				logEvent("Found Display.wake field (GTK platform)");
-			} catch (NoSuchFieldException e) {
-				logEvent("WARN: Could not find Display.wake field (may not be GTK platform)");
-			}
-			try {
-				synchronizerField = Display.class.getDeclaredField("synchronizer");
-				synchronizerField.setAccessible(true);
-				logEvent("Found Display.synchronizer field");
-			} catch (NoSuchFieldException e) {
-				logEvent("WARN: Could not find Display.synchronizer field");
-			}
+		WakeTracker() {
+			BusyIndicator.onWake = () -> {
+				wakeCallCount.incrementAndGet();
+				logEvent("BusyIndicator triggered display.wake()");
+			};
+			BusyIndicator.onWakeError = e -> {
+				wakeErrorCount.incrementAndGet();
+				logEvent("BusyIndicator wake error: " + e);
+			};
+			logEvent("WakeTracker initialized");
 		}
 
 		void logEvent(String event) {
@@ -100,18 +72,9 @@ public class Test_org_eclipse_swt_custom_BusyIndicator {
 			eventLog.add(String.format("[%05d] [%-20s] %s", ts, threadName, event));
 		}
 
-		void recordWakeCall() {
-			wakeCallCount.incrementAndGet();
-			lastWakeCallTime = System.currentTimeMillis();
-			lastWakeCallThread = Thread.currentThread().getName();
-			Boolean wakeFlagBefore = getWakeFlag();
-			logEvent("display.wake() called (wake flag before=" + wakeFlagBefore + ")");
-		}
-
 		void recordAsyncExecScheduled(String description) {
 			asyncExecScheduledCount.incrementAndGet();
-			Boolean syncEmpty = isSynchronizerEmpty();
-			logEvent("asyncExec SCHEDULED: " + description + " (syncEmpty before=" + syncEmpty + ")");
+			logEvent("asyncExec SCHEDULED: " + description);
 		}
 
 		void recordAsyncExecRun(String description) {
@@ -119,82 +82,28 @@ public class Test_org_eclipse_swt_custom_BusyIndicator {
 			logEvent("asyncExec RUNNING: " + description);
 		}
 
-		void recordReadAndDispatch(boolean result) {
-			readAndDispatchCallCount.incrementAndGet();
-			if (result) {
-				readAndDispatchTrueCount.incrementAndGet();
-			}
-			Boolean wakeFlagNow = getWakeFlag();
-			Boolean syncEmpty = isSynchronizerEmpty();
-			logEvent("readAndDispatch() returned " + result + " (wake=" + wakeFlagNow + ", syncEmpty=" + syncEmpty
-					+ ")");
-		}
-
-		void recordSleepEnter() {
-			sleepCallCount.incrementAndGet();
-			lastSleepEnterTime = System.currentTimeMillis();
-			Boolean wakeFlagNow = getWakeFlag();
-			Boolean syncEmpty = isSynchronizerEmpty();
-			logEvent("Display.sleep() ENTER (wake=" + wakeFlagNow + ", syncEmpty=" + syncEmpty + ")");
-		}
-
-		void recordSleepExit() {
-			lastSleepExitTime = System.currentTimeMillis();
-			long duration = lastSleepExitTime - lastSleepEnterTime;
-			Boolean wakeFlagNow = getWakeFlag();
-			Boolean syncEmpty = isSynchronizerEmpty();
-			logEvent("Display.sleep() EXIT after " + duration + "ms (wake=" + wakeFlagNow + ", syncEmpty=" + syncEmpty
-					+ ")");
-		}
-
-		Boolean getWakeFlag() {
-			if (wakeField == null)
-				return null;
-			try {
-				return wakeField.getBoolean(display);
-			} catch (Exception e) {
-				return null;
-			}
-		}
-
-		Boolean isSynchronizerEmpty() {
-			if (synchronizerField == null)
-				return null;
-			try {
-				Synchronizer sync = (Synchronizer) synchronizerField.get(display);
-				Method isEmptyMethod = Synchronizer.class.getDeclaredMethod("isMessagesEmpty");
-				isEmptyMethod.setAccessible(true);
-				return (Boolean) isEmptyMethod.invoke(sync);
-			} catch (Exception e) {
-				return null;
-			}
-		}
-
-		String getInternalStateSummary() {
+		String getSummary() {
 			StringBuilder sb = new StringBuilder();
-			sb.append("=== SWT INTERNAL STATE ===\n");
-			sb.append("  wake flag (current): ").append(getWakeFlag()).append("\n");
-			sb.append("  synchronizer empty (current): ").append(isSynchronizerEmpty()).append("\n");
-			sb.append("  display.wake() call count: ").append(wakeCallCount.get()).append("\n");
-			sb.append("  last wake() call time: ").append(lastWakeCallTime > 0 ? (lastWakeCallTime % 100000) : "never")
-					.append("\n");
-			sb.append("  last wake() call thread: ").append(lastWakeCallThread != null ? lastWakeCallThread : "none")
-					.append("\n");
-			sb.append("  readAndDispatch() total calls: ").append(readAndDispatchCallCount.get()).append("\n");
-			sb.append("  readAndDispatch() returned true: ").append(readAndDispatchTrueCount.get()).append("\n");
-			sb.append("  Display.sleep() call count: ").append(sleepCallCount.get()).append("\n");
+			sb.append("=== WAKE TRACKER STATE ===\n");
+			sb.append("  BusyIndicator.onWake call count: ").append(wakeCallCount.get()).append("\n");
+			sb.append("  BusyIndicator.onWakeError count: ").append(wakeErrorCount.get()).append("\n");
 			sb.append("  asyncExec scheduled count: ").append(asyncExecScheduledCount.get()).append("\n");
 			sb.append("  asyncExec actually ran count: ").append(asyncExecRunCount.get()).append("\n");
-			sb.append("=== END SWT INTERNAL STATE ===");
+			sb.append("=== END WAKE TRACKER STATE ===");
 			return sb.toString();
 		}
 
 		void printEventLog() {
-			System.err.println("=== SWT EVENT LOG (" + eventLog.size() + " entries) ===");
+			System.err.println("=== EVENT LOG (" + eventLog.size() + " entries) ===");
 			for (String event : eventLog) {
 				System.err.println(event);
 			}
-			System.err.println("=== END SWT EVENT LOG ===");
+			System.err.println("=== END EVENT LOG ===");
+		}
+
+		void cleanup() {
+			BusyIndicator.onWake = null;
+			BusyIndicator.onWakeError = null;
 		}
 	}
 
@@ -208,9 +117,9 @@ public class Test_org_eclipse_swt_custom_BusyIndicator {
 		final AtomicBoolean futureCompleted = new AtomicBoolean(false);
 		final AtomicBoolean futureNestedCompleted = new AtomicBoolean(false);
 		volatile String currentStage = "initialization";
-		volatile SwtInternalStateTracker swtTracker = null;
+		volatile WakeTracker wakeTracker = null;
 
-// Track asyncExec callback execution
+		// Track asyncExec callback execution
 		final AtomicBoolean asyncExec1Ran = new AtomicBoolean(false);
 		final AtomicBoolean asyncExec2Ran = new AtomicBoolean(false);
 		final AtomicBoolean asyncExec3Ran = new AtomicBoolean(false);
@@ -243,11 +152,11 @@ public class Test_org_eclipse_swt_custom_BusyIndicator {
 			System.err.println("Test state: " + state);
 			System.err.println();
 
-// Print SWT internal state
-			if (state.swtTracker != null) {
-				System.err.println(state.swtTracker.getInternalStateSummary());
+			// Print wake tracker state
+			if (state.wakeTracker != null) {
+				System.err.println(state.wakeTracker.getSummary());
 				System.err.println();
-				state.swtTracker.printEventLog();
+				state.wakeTracker.printEventLog();
 				System.err.println();
 			}
 
@@ -270,8 +179,8 @@ public class Test_org_eclipse_swt_custom_BusyIndicator {
 
 	private static void drainEventQueue(Display display, TestState state) {
 		state.eventLoopDraining.set(true);
-		if (state.swtTracker != null) {
-			state.swtTracker.logEvent("drainEventQueue() started");
+		if (state.wakeTracker != null) {
+			state.wakeTracker.logEvent("drainEventQueue() started");
 		}
 		long startTime = System.nanoTime();
 		long timeoutNanos = TimeUnit.SECONDS.toNanos(LOOP_TIMEOUT_SECONDS);
@@ -281,8 +190,8 @@ public class Test_org_eclipse_swt_custom_BusyIndicator {
 						"Event queue not empty after " + LOOP_TIMEOUT_SECONDS + " seconds. State: " + state);
 			}
 		}
-		if (state.swtTracker != null) {
-			state.swtTracker.logEvent("drainEventQueue() completed");
+		if (state.wakeTracker != null) {
+			state.wakeTracker.logEvent("drainEventQueue() completed");
 		}
 		state.eventLoopDraining.set(false);
 	}
@@ -294,14 +203,12 @@ public class Test_org_eclipse_swt_custom_BusyIndicator {
 		try (ExecutorService executor = Executors.newFixedThreadPool(2);
 				ScheduledExecutorService watchdogExecutor = Executors.newSingleThreadScheduledExecutor()) {
 			ScheduledFuture<?> watchdog = startWatchdog(watchdogExecutor, state);
+			WakeTracker tracker = new WakeTracker();
+			state.wakeTracker = tracker;
 			try {
 				state.currentStage = "creating shell and display";
 				Shell shell = new Shell();
 				Display display = shell.getDisplay();
-
-// Initialize SWT internal state tracker
-				SwtInternalStateTracker tracker = new SwtInternalStateTracker(display);
-				state.swtTracker = tracker;
 
 				Cursor busyCursor = display.getSystemCursor(SWT.CURSOR_WAIT);
 				CountDownLatch latch = new CountDownLatch(1);
@@ -339,7 +246,7 @@ public class Test_org_eclipse_swt_custom_BusyIndicator {
 
 				assertNotEquals(busyCursor, shell.getCursor());
 
-// asyncExec #1: This will call nested showWhile
+				// asyncExec #1: This will call nested showWhile
 				tracker.recordAsyncExecScheduled("#1: BusyIndicator.showWhile(futureNested)");
 				display.asyncExec(() -> {
 					tracker.recordAsyncExecRun("#1: BusyIndicator.showWhile(futureNested)");
@@ -350,7 +257,7 @@ public class Test_org_eclipse_swt_custom_BusyIndicator {
 
 				Cursor[] cursorInAsync = new Cursor[2];
 
-// asyncExec #2: Check cursor and release nested latch
+				// asyncExec #2: Check cursor and release nested latch
 				tracker.recordAsyncExecScheduled("#2: check cursor + latchNested.countDown()");
 				display.asyncExec(() -> {
 					tracker.recordAsyncExecRun("#2: check cursor + latchNested.countDown()");
@@ -360,7 +267,7 @@ public class Test_org_eclipse_swt_custom_BusyIndicator {
 					latchNested.countDown();
 				});
 
-// asyncExec #3: Check cursor and release main latch
+				// asyncExec #3: Check cursor and release main latch
 				tracker.recordAsyncExecScheduled("#3: check cursor + latch.countDown()");
 				display.asyncExec(() -> {
 					tracker.recordAsyncExecRun("#3: check cursor + latch.countDown()");
@@ -373,8 +280,6 @@ public class Test_org_eclipse_swt_custom_BusyIndicator {
 				state.currentStage = "calling showWhile";
 				state.showWhileStarted.set(true);
 				tracker.logEvent("About to call BusyIndicator.showWhile(future)");
-				tracker.logEvent("State before showWhile: wake=" + tracker.getWakeFlag() + ", syncEmpty="
-						+ tracker.isSynchronizerEmpty());
 
 				BusyIndicator.showWhile(future);
 
@@ -390,7 +295,8 @@ public class Test_org_eclipse_swt_custom_BusyIndicator {
 				tracker.logEvent("Test completed successfully");
 			} finally {
 				watchdog.cancel(false);
-				state.swtTracker.printEventLog();
+				tracker.printEventLog();
+				tracker.cleanup();
 			}
 		}
 	}
@@ -402,14 +308,12 @@ public class Test_org_eclipse_swt_custom_BusyIndicator {
 		try (ExecutorService executor = Executors.newSingleThreadExecutor();
 				ScheduledExecutorService watchdogExecutor = Executors.newSingleThreadScheduledExecutor()) {
 			ScheduledFuture<?> watchdog = startWatchdog(watchdogExecutor, state);
+			WakeTracker tracker = new WakeTracker();
+			state.wakeTracker = tracker;
 			try {
 				state.currentStage = "creating shell and display";
 				Shell shell = new Shell();
 				Display display = shell.getDisplay();
-
-// Initialize SWT internal state tracker
-				SwtInternalStateTracker tracker = new SwtInternalStateTracker(display);
-				state.swtTracker = tracker;
 
 				Cursor busyCursor = display.getSystemCursor(SWT.CURSOR_WAIT);
 				Cursor[] cursorInAsync = new Cursor[1];
@@ -430,7 +334,7 @@ public class Test_org_eclipse_swt_custom_BusyIndicator {
 					tracker.logEvent("Future task COMPLETED");
 				});
 
-// asyncExec: Check cursor and release latch
+				// asyncExec: Check cursor and release latch
 				tracker.recordAsyncExecScheduled("#1: check cursor + latch.countDown()");
 				display.asyncExec(() -> {
 					tracker.recordAsyncExecRun("#1: check cursor + latch.countDown()");
@@ -440,7 +344,7 @@ public class Test_org_eclipse_swt_custom_BusyIndicator {
 					latch.countDown();
 				});
 
-// External trigger for minimal latency as advised in the javadoc
+				// External trigger for minimal latency as advised in the javadoc
 				executor.submit(() -> {
 					tracker.logEvent("Wake trigger task: waiting for future.get()");
 					try {
@@ -449,15 +353,12 @@ public class Test_org_eclipse_swt_custom_BusyIndicator {
 					} catch (Exception e) {
 						tracker.logEvent("Wake trigger task: future.get() threw " + e.getClass().getSimpleName());
 					}
-					tracker.recordWakeCall();
 					display.wake();
 				});
 
 				state.currentStage = "calling showWhile";
 				state.showWhileStarted.set(true);
 				tracker.logEvent("About to call BusyIndicator.showWhile(future)");
-				tracker.logEvent("State before showWhile: wake=" + tracker.getWakeFlag() + ", syncEmpty="
-						+ tracker.isSynchronizerEmpty());
 				BusyIndicator.showWhile(future);
 
 				tracker.logEvent("BusyIndicator.showWhile(future) returned");
@@ -471,7 +372,8 @@ public class Test_org_eclipse_swt_custom_BusyIndicator {
 				tracker.logEvent("Test completed successfully");
 			} finally {
 				watchdog.cancel(false);
-				state.swtTracker.printEventLog();
+				tracker.printEventLog();
+				tracker.cleanup();
 			}
 		}
 	}
