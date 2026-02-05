@@ -1408,6 +1408,47 @@ public void test_sleep() {
 }
 
 @Test
+@DisabledOnOs(value = org.junit.jupiter.api.condition.OS.WINDOWS, disabledReason = "Windows uses WaitMessage() which does not support timeout-based interruption checking")
+public void test_sleep_respondToInterrupt() {
+	final Display display = new Display();
+	Shell shell = new Shell(display);
+	try {
+		shell.open();
+		Thread uiThread = Thread.currentThread();
+
+		// Start a thread that will interrupt the UI thread after 1 second
+		Thread interrupter = new Thread(() -> {
+			try {
+				Thread.sleep(1000);
+				uiThread.interrupt();
+			} catch (InterruptedException e) {
+				// Ignore
+			}
+		});
+		interrupter.start();
+
+		// Event loop with timeout to prevent hanging if sleep() never responds to interrupt
+		long deadline = System.currentTimeMillis() + 5000;
+		while (!shell.isDisposed() && System.currentTimeMillis() < deadline) {
+			if (!display.readAndDispatch()) {
+				boolean hasMoreWork = display.sleep();
+				// When interrupted, sleep() returns false and interrupt flag is preserved
+				if (!hasMoreWork && uiThread.isInterrupted()) {
+					// Success! Clean up and return
+					Thread.interrupted(); // clear flag
+					return;
+				}
+			}
+		}
+		// If we get here, the test failed
+		fail("sleep() did not respond to thread interruption within timeout");
+	} finally {
+		shell.dispose();
+		display.dispose();
+	}
+}
+
+@Test
 public void test_syncExecLjava_lang_Runnable() {
 	final Display display = new Display();
 	try {
