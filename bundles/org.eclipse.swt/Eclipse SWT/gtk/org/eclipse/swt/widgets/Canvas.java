@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2025 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -171,7 +171,7 @@ long gtk_commit (long imcontext, long text) {
 long gtk_draw (long widget, long cairo) {
 	if ((state & OBSCURED) != 0) return 0;
 	long result = super.gtk_draw (widget, cairo);
-	drawCaretInFocus(widget, cairo);
+	drawCaretInFocus(cairo);
 	return result;
 }
 
@@ -179,10 +179,10 @@ long gtk_draw (long widget, long cairo) {
 void gtk4_draw (long widget, long cairo, Rectangle bounds) {
 	if ((state & OBSCURED) != 0) return;
 	super.gtk4_draw (widget, cairo, bounds);
-	drawCaretInFocus(widget, cairo);
+	drawCaretInFocus(cairo);
 }
 
-void drawCaretInFocus(long widget, long cairo) {
+void drawCaretInFocus(long cairo) {
 	/*
 	 *  blink is needed to be checked as gtk_draw() signals sent from other parts of the canvas
 	 *  can interfere with the blinking state. This will ensure that we are only draw/redrawing the
@@ -191,12 +191,12 @@ void drawCaretInFocus(long widget, long cairo) {
 	 *  Additionally, only draw the caret if it has focus. See bug 528819.
 	 */
 	if (caret != null && blink == true && caret.isFocusCaret()) {
-		drawCaret(widget,cairo);
+		drawCaret(cairo);
 		blink = false;
 	}
 }
 
-private void drawCaret(long widget, long cairo) {
+private void drawCaret(long cairo) {
 	if(this.isDisposed()) return;
 	if (cairo == 0) error(SWT.ERROR_NO_HANDLES);
 

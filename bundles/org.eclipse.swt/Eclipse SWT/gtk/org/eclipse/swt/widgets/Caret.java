@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2025 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -125,7 +125,7 @@ private void drawInCellEditor(long window) {
 	long cairo = GDK.gdk_cairo_create(window);
 	Point pt = display.map(parent, embeddedInto, new Point(0,0));
 	Cairo.cairo_translate (cairo, pt.x, pt.y);
-	parent.drawCaretInFocus(parent.handle, cairo);
+	parent.drawCaretInFocus(cairo);
 	Cairo.cairo_destroy(cairo);
 }
 
