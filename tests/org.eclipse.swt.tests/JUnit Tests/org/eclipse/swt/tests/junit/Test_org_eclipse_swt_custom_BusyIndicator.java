@@ -173,7 +173,7 @@ public class Test_org_eclipse_swt_custom_BusyIndicator {
 				System.err.println();
 			}
 			System.err.println("=== END THREAD DUMP ===");
-			Runtime.getRuntime().exit(-1000);
+//			Runtime.getRuntime().exit(-1000);
 		}, WATCHDOG_TIMEOUT_SECONDS, TimeUnit.SECONDS);
 	}
 
