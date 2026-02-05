@@ -669,7 +669,7 @@ void center () {
 	} else {
 		y = Math.max (y, monitorRect.y);
 	}
-	setLocationInPixels (x, y);
+	setLocation (x, y);
 }
 
 @Override
@@ -1275,7 +1275,7 @@ Point getLocationInPixels () {
 	// Bug in GTK: when shell is moved and then hidden, its location does not get updated.
 	// Move it before getting its location.
 	if (!getVisible() && moved) {
-		setLocationInPixels(oldX, oldY);
+		setLocation(oldX, oldY);
 	}
 	int [] x = new int [1], y = new int [1];
 	if (GTK.GTK4) {
@@ -2924,7 +2924,7 @@ public void setVisible (boolean visible) {
 	checkWidget();
 
 	if (moved) { //fix shell location if it was moved.
-		setLocationInPixels(oldX, oldY);
+		setLocation(oldX, oldY);
 	}
 	int mask = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
 	if ((style & mask) != 0) {
