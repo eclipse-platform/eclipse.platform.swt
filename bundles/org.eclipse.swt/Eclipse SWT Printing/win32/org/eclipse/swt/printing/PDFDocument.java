@@ -47,114 +47,135 @@ import org.eclipse.swt.internal.win32.*;
  *
  * @see GC
  * @since 3.133
+ *
+ * @noreference This class is provisional API and subject to change. It is being made available to gather early feedback. The API or behavior may change in future releases as the implementation evolves based on user feedback.
  */
-public class PDFDocument implements Drawable {
-	Device device;
+public final class PDFDocument extends Device {
 	long handle;
 	boolean isGCCreated = false;
-	boolean disposed = false;
 	boolean jobStarted = false;
 	boolean pageStarted = false;
 	String filename;
 
 	/**
-	 * Width of the page in device-independent units
+	 * Preferred width of the page in points (1/72 inch)
 	 */
-	double width;
+	double preferredWidthInPoints;
 
 	/**
-	 * Height of the page in device-independent units
+	 * Preferred height of the page in points (1/72 inch)
 	 */
-	double height;
+	double preferredHeightInPoints;
 
 	/**
-	 * Width of the page in points (1/72 inch)
+	 * Actual width of the page in points (1/72 inch)
 	 */
-	double widthInPoints;
+	double actualWidthInPoints;
 
 	/**
-	 * Height of the page in points (1/72 inch)
+	 * Actual height of the page in points (1/72 inch)
 	 */
-	double heightInPoints;
+	double actualHeightInPoints;
 
 	/** The name of the Microsoft Print to PDF printer */
 	private static final String PDF_PRINTER_NAME = "Microsoft Print to PDF";
-	
+
+	/** Points per inch - the standard PDF coordinate system uses 72 points per inch */
+	private static final double POINTS_PER_INCH = 72.0;
+
+	/**
+	 * Internal data class to pass PDF document parameters through
+	 * the Device constructor.
+	 */
+	static class PDFDocumentData extends DeviceData {
+		String filename;
+		double widthInPoints;
+		double heightInPoints;
+	}
+
 	/** Helper class to represent a paper size with orientation */
 	private static class PaperSize {
 		int paperSizeConstant;
 		int orientation;
-		double widthInInches;
-		double heightInInches;
-		
+		double widthInPoints;
+		double heightInPoints;
+
 		PaperSize(int paperSize, int orientation, double width, double height) {
 			this.paperSizeConstant = paperSize;
 			this.orientation = orientation;
-			this.widthInInches = width;
-			this.heightInInches = height;
+			this.widthInPoints = width;
+			this.heightInPoints = height;
 		}
 	}
 
 	/**
-	 * Finds the best matching standard paper size for the given dimensions.
+	 * Finds the best matching standard paper size for the given dimensions in points.
 	 * Tries both portrait and landscape orientations and selects the one that
 	 * minimizes wasted space while ensuring the content fits.
+	 * The returned paper size will always be >= the requested size.
 	 */
-	private static PaperSize findBestPaperSize(double widthInInches, double heightInInches) {
-		// Common paper sizes (width x height in inches, portrait orientation)
+	private static PaperSize findBestPaperSize(double widthInPoints, double heightInPoints) {
+		// Common paper sizes (width x height in points, portrait orientation)
+		// 1 inch = 72 points
 		int[][] standardSizes = {
-			{OS.DMPAPER_LETTER, 850, 1100},      // 8.5 x 11
-			{OS.DMPAPER_LEGAL, 850, 1400},       // 8.5 x 14
-			{OS.DMPAPER_A4, 827, 1169},          // 8.27 x 11.69
-			{OS.DMPAPER_TABLOID, 1100, 1700},    // 11 x 17
-			{OS.DMPAPER_A3, 1169, 1654},         // 11.69 x 16.54
-			{OS.DMPAPER_EXECUTIVE, 725, 1050},   // 7.25 x 10.5
-			{OS.DMPAPER_A5, 583, 827},           // 5.83 x 8.27
+			{OS.DMPAPER_LETTER, 612, 792},       // 8.5 x 11 inches
+			{OS.DMPAPER_LEGAL, 612, 1008},       // 8.5 x 14 inches
+			{OS.DMPAPER_A4, 595, 842},           // 8.27 x 11.69 inches (210 x 297 mm)
+			{OS.DMPAPER_TABLOID, 792, 1224},     // 11 x 17 inches
+			{OS.DMPAPER_A3, 842, 1191},          // 11.69 x 16.54 inches (297 x 420 mm)
+			{OS.DMPAPER_EXECUTIVE, 522, 756},    // 7.25 x 10.5 inches
+			{OS.DMPAPER_A5, 420, 595},           // 5.83 x 8.27 inches (148 x 210 mm)
 		};
-		
+
 		PaperSize bestMatch = null;
 		double minWaste = Double.MAX_VALUE;
-		
+
 		for (int[] size : standardSizes) {
-			double paperWidth = size[1] / 100.0;
-			double paperHeight = size[2] / 100.0;
-			
+			double paperWidth = size[1];
+			double paperHeight = size[2];
+
 			// Try portrait orientation
-			if (widthInInches <= paperWidth && heightInInches <= paperHeight) {
-				double waste = (paperWidth * paperHeight) - (widthInInches * heightInInches);
+			if (widthInPoints <= paperWidth && heightInPoints <= paperHeight) {
+				double waste = (paperWidth * paperHeight) - (widthInPoints * heightInPoints);
 				if (waste < minWaste) {
 					minWaste = waste;
 					bestMatch = new PaperSize(size[0], OS.DMORIENT_PORTRAIT, paperWidth, paperHeight);
 				}
 			}
-			
+
 			// Try landscape orientation (swap width and height)
-			if (widthInInches <= paperHeight && heightInInches <= paperWidth) {
-				double waste = (paperHeight * paperWidth) - (widthInInches * heightInInches);
+			if (widthInPoints <= paperHeight && heightInPoints <= paperWidth) {
+				double waste = (paperHeight * paperWidth) - (widthInPoints * heightInPoints);
 				if (waste < minWaste) {
 					minWaste = waste;
 					bestMatch = new PaperSize(size[0], OS.DMORIENT_LANDSCAPE, paperHeight, paperWidth);
 				}
 			}
 		}
-		
-		// Default to Letter if no match found
+
+		// Error if requested size exceeds the largest available standard paper size
 		if (bestMatch == null) {
-			bestMatch = new PaperSize(OS.DMPAPER_LETTER, OS.DMORIENT_PORTRAIT, 8.5, 11.0);
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT, null, " [Requested page size exceeds maximum supported size]");
 		}
-		
+
 		return bestMatch;
 	}
 
 	/**
-	 * Constructs a new PDFDocument with the specified filename and page dimensions.
+	 * Constructs a new PDFDocument with the specified filename and preferred page dimensions.
+	 * <p>
+	 * The dimensions specify the preferred page size in points (1/72 inch). On Windows,
+	 * the Microsoft Print to PDF driver only supports standard paper sizes, so the actual
+	 * page size may be larger than requested. Use {@link #getBounds()} to query the actual
+	 * page dimensions after construction.
+	 * </p>
 	 * <p>
 	 * You must dispose the PDFDocument when it is no longer required.
 	 * </p>
 	 *
 	 * @param filename the path to the PDF file to create
-	 * @param width the width of each page in device-independent units
-	 * @param height the height of each page in device-independent units
+	 * @param widthInPoints the preferred width of each page in points (1/72 inch)
+	 * @param heightInPoints the preferred height of each page in points (1/72 inch)
 	 *
 	 * @exception IllegalArgumentException <ul>
 	 *    <li>ERROR_NULL_ARGUMENT - if filename is null</li>
@@ -165,68 +186,42 @@ public class PDFDocument implements Drawable {
 	 * </ul>
 	 *
 	 * @see #dispose()
+	 * @see #getBounds()
 	 */
-	public PDFDocument(String filename, double width, double height) {
-		this(null, filename, width, height);
+	public PDFDocument(String filename, double widthInPoints, double heightInPoints) {
+		super(checkData(filename, widthInPoints, heightInPoints));
 	}
 
 	/**
-	 * Constructs a new PDFDocument with the specified filename and page dimensions,
-	 * associated with the given device.
-	 * <p>
-	 * You must dispose the PDFDocument when it is no longer required.
-	 * </p>
-	 *
-	 * @param device the device to associate with this PDFDocument
-	 * @param filename the path to the PDF file to create
-	 * @param width the width of each page in device-independent units
-	 * @param height the height of each page in device-independent units
-	 *
-	 * @exception IllegalArgumentException <ul>
-	 *    <li>ERROR_NULL_ARGUMENT - if filename is null</li>
-	 *    <li>ERROR_INVALID_ARGUMENT - if width or height is not positive</li>
-	 * </ul>
-	 * @exception SWTError <ul>
-	 *    <li>ERROR_NO_HANDLES - if the PDF printer is not available</li>
-	 * </ul>
-	 *
-	 * @see #dispose()
+	 * Validates and prepares the data for construction.
 	 */
-	public PDFDocument(Device device, String filename, double width, double height) {
+	static PDFDocumentData checkData(String filename, double widthInPoints, double heightInPoints) {
 		if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		if (width <= 0 || height <= 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		if (widthInPoints <= 0 || heightInPoints <= 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		PDFDocumentData data = new PDFDocumentData();
+		data.filename = filename;
+		data.widthInPoints = widthInPoints;
+		data.heightInPoints = heightInPoints;
+		return data;
+	}
 
-		this.filename = filename;
-		this.width = width;
-		this.height = height;
+	/**
+	 * Creates the PDF device in the operating system.
+	 * This method is called before <code>init</code>.
+	 *
+	 * @param data the DeviceData which describes the receiver
+	 */
+	@Override
+	protected void create(DeviceData data) {
+		PDFDocumentData pdfData = (PDFDocumentData) data;
+		this.filename = pdfData.filename;
+		this.preferredWidthInPoints = pdfData.widthInPoints;
+		this.preferredHeightInPoints = pdfData.heightInPoints;
 
-		// Get device from the current display if not provided
-		if (device == null) {
-			try {
-				this.device = org.eclipse.swt.widgets.Display.getDefault();
-			} catch (SWTException e) {
-				this.device = null;
-			}
-		} else {
-			this.device = device;
-		}
-
-		// Calculate physical size in inches from screen pixels
-		int screenDpiX = 96;
-		int screenDpiY = 96;
-		if (this.device != null) {
-			Point dpi = this.device.getDPI();
-			screenDpiX = dpi.x;
-			screenDpiY = dpi.y;
-		}
-		double widthInInches = width / screenDpiX;
-		double heightInInches = height / screenDpiY;
-		
-		// Microsoft Print to PDF doesn't support custom page sizes
-		// Find the best matching standard paper size
-		PaperSize bestMatch = findBestPaperSize(widthInInches, heightInInches);
-		this.widthInPoints = bestMatch.widthInInches * 72.0;
-		this.heightInPoints = bestMatch.heightInInches * 72.0;
+		// Find the best matching standard paper size for the requested dimensions
+		PaperSize bestMatch = findBestPaperSize(preferredWidthInPoints, preferredHeightInPoints);
+		this.actualWidthInPoints = bestMatch.widthInPoints;
+		this.actualHeightInPoints = bestMatch.heightInPoints;
 
 		// Create printer DC for "Microsoft Print to PDF"
 		TCHAR driver = new TCHAR(0, "WINSPOOL", true);
@@ -257,7 +252,7 @@ public class PDFDocument implements Drawable {
 		}
 
 		if (handle == 0) {
-			SWT.error(SWT.ERROR_NO_HANDLES);
+			SWT.error(SWT.ERROR_NO_HANDLES, null, " [Failed to create device context for '" + PDF_PRINTER_NAME + "'. Ensure the printer is installed and enabled.]");
 		}
 	}
 
@@ -290,7 +285,8 @@ public class PDFDocument implements Drawable {
 			OS.HeapFree(hHeap, 0, lpszDocName);
 
 			if (rc <= 0) {
-				SWT.error(SWT.ERROR_NO_HANDLES);
+				int lastError = OS.GetLastError();
+				SWT.error(SWT.ERROR_NO_HANDLES, null, " [StartDoc failed for '" + PDF_PRINTER_NAME + "' (rc=" + rc + ", lastError=" + lastError + ")]");
 			}
 			jobStarted = true;
 		}
@@ -302,7 +298,11 @@ public class PDFDocument implements Drawable {
 	private void ensurePageStarted() {
 		ensureJobStarted();
 		if (!pageStarted) {
-			OS.StartPage(handle);
+			int rc = OS.StartPage(handle);
+			if (rc <= 0) {
+				int lastError = OS.GetLastError();
+				SWT.error(SWT.ERROR_NO_HANDLES, null, " [StartPage failed (rc=" + rc + ", lastError=" + lastError + ")]");
+			}
 			pageStarted = true;
 		}
 	}
@@ -316,11 +316,11 @@ public class PDFDocument implements Drawable {
 	 * </p>
 	 *
 	 * @exception SWTException <ul>
-	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+	 *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
 	 * </ul>
 	 */
 	public void newPage() {
-		if (disposed) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
+		checkDevice();
 		if (pageStarted) {
 			OS.EndPage(handle);
 			pageStarted = false;
@@ -339,51 +339,138 @@ public class PDFDocument implements Drawable {
 	 * has been started may not be fully supported by all printer drivers.
 	 * </p>
 	 *
-	 * @param widthInPoints the width of the new page in points (1/72 inch)
-	 * @param heightInPoints the height of the new page in points (1/72 inch)
+	 * @param widthInPoints the preferred width of the new page in points (1/72 inch)
+	 * @param heightInPoints the preferred height of the new page in points (1/72 inch)
 	 *
 	 * @exception IllegalArgumentException <ul>
 	 *    <li>ERROR_INVALID_ARGUMENT - if width or height is not positive</li>
 	 * </ul>
 	 * @exception SWTException <ul>
-	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+	 *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
 	 * </ul>
 	 */
 	public void newPage(double widthInPoints, double heightInPoints) {
-		if (disposed) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
+		checkDevice();
 		if (widthInPoints <= 0 || heightInPoints <= 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 
-		this.widthInPoints = widthInPoints;
-		this.heightInPoints = heightInPoints;
+		this.preferredWidthInPoints = widthInPoints;
+		this.preferredHeightInPoints = heightInPoints;
+		// Note: actual page size may be larger due to standard paper size constraints
+		PaperSize bestMatch = findBestPaperSize(widthInPoints, heightInPoints);
+		this.actualWidthInPoints = bestMatch.widthInPoints;
+		this.actualHeightInPoints = bestMatch.heightInPoints;
 		newPage();
 	}
 
 	/**
-	 * Returns the width of the current page in points.
+	 * Returns the actual width of the current page in points.
+	 * <p>
+	 * On Windows, this may be larger than the preferred width specified
+	 * in the constructor due to standard paper size constraints.
+	 * </p>
 	 *
-	 * @return the width in points (1/72 inch)
+	 * @return the actual width in points (1/72 inch)
 	 *
 	 * @exception SWTException <ul>
-	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+	 *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
 	 * </ul>
 	 */
 	public double getWidth() {
-		if (disposed) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
-		return widthInPoints;
+		checkDevice();
+		return actualWidthInPoints;
 	}
 
 	/**
-	 * Returns the height of the current page in points.
+	 * Returns the actual height of the current page in points.
+	 * <p>
+	 * On Windows, this may be larger than the preferred height specified
+	 * in the constructor due to standard paper size constraints.
+	 * </p>
 	 *
-	 * @return the height in points (1/72 inch)
+	 * @return the actual height in points (1/72 inch)
 	 *
 	 * @exception SWTException <ul>
-	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+	 *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
 	 * </ul>
 	 */
 	public double getHeight() {
-		if (disposed) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
-		return heightInPoints;
+		checkDevice();
+		return actualHeightInPoints;
+	}
+
+	/**
+	 * Returns the DPI (dots per inch) of the PDF document.
+	 * Since the coordinate system is scaled to work in points (1/72 inch),
+	 * this always returns 72 DPI, consistent with GTK and Cocoa implementations.
+	 *
+	 * @return a point whose x coordinate is the horizontal DPI and whose y coordinate is the vertical DPI
+	 *
+	 * @exception SWTException <ul>
+	 *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+	 * </ul>
+	 */
+	@Override
+	public Point getDPI() {
+		checkDevice();
+		return new Point(72, 72);
+	}
+
+	/**
+	 * Returns a rectangle describing the receiver's size and location.
+	 * The rectangle dimensions are in points (1/72 inch).
+	 * <p>
+	 * On Windows, this returns the actual page size which may be larger
+	 * than the preferred size specified in the constructor.
+	 * </p>
+	 *
+	 * @return the bounding rectangle
+	 *
+	 * @exception SWTException <ul>
+	 *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+	 * </ul>
+	 */
+	@Override
+	public Rectangle getBounds() {
+		checkDevice();
+		return new Rectangle(0, 0, (int) actualWidthInPoints, (int) actualHeightInPoints);
+	}
+
+	/**
+	 * Returns a rectangle which describes the area of the
+	 * receiver which is capable of displaying data.
+	 * <p>
+	 * On Windows, the printable area may be smaller than the page bounds
+	 * due to printer margins.
+	 * </p>
+	 *
+	 * @return the client area
+	 *
+	 * @exception SWTException <ul>
+	 *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+	 * </ul>
+	 */
+	@Override
+	public Rectangle getClientArea() {
+		checkDevice();
+		// Get the printable area from the device capabilities
+		// Need actual printer DPI for conversion (not the user-facing 72 DPI)
+		int printerDpiX = OS.GetDeviceCaps(handle, OS.LOGPIXELSX);
+		int printerDpiY = OS.GetDeviceCaps(handle, OS.LOGPIXELSY);
+		int printableWidth = OS.GetDeviceCaps(handle, OS.HORZRES);
+		int printableHeight = OS.GetDeviceCaps(handle, OS.VERTRES);
+		int offsetX = OS.GetDeviceCaps(handle, OS.PHYSICALOFFSETX);
+		int offsetY = OS.GetDeviceCaps(handle, OS.PHYSICALOFFSETY);
+
+		// Convert from device units to points
+		double scaleX = POINTS_PER_INCH / printerDpiX;
+		double scaleY = POINTS_PER_INCH / printerDpiY;
+
+		int x = (int) (offsetX * scaleX);
+		int y = (int) (offsetY * scaleY);
+		int width = (int) (printableWidth * scaleX);
+		int height = (int) (printableHeight * scaleY);
+
+		return new Rectangle(x, y, width, height);
 	}
 
 	/**
@@ -403,62 +490,38 @@ public class PDFDocument implements Drawable {
 	 */
 	@Override
 	public long internal_new_GC(GCData data) {
-		if (disposed) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
-		if (isGCCreated) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-
-		ensurePageStarted();
-
+		checkDevice();
+		if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES, null, " [PDF document handle is not valid]");
 		if (data != null) {
+			if (isGCCreated) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+
+			ensurePageStarted();
+
 			int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 			if ((data.style & mask) != 0) {
 				data.layout = (data.style & SWT.RIGHT_TO_LEFT) != 0 ? OS.LAYOUT_RTL : 0;
 			} else {
 				data.style |= SWT.LEFT_TO_RIGHT;
 			}
-			data.device = device;
+			data.device = this;
 			data.nativeZoom = 100;
-			if (device != null) {
-				data.font = device.getSystemFont();
-			}
+			data.font = getSystemFont();
+
+			// Set up coordinate system scaling to work in points
+			// The printer has its own DPI, so we scale to make 1 user unit = 1 point
+			int printerDpiX = OS.GetDeviceCaps(handle, OS.LOGPIXELSX);
+			int printerDpiY = OS.GetDeviceCaps(handle, OS.LOGPIXELSY);
+
+			// Scale factor: printer_dpi / POINTS_PER_INCH (since we want 1 unit = 1 point = 1/72 inch)
+			float scaleX = (float)(printerDpiX / POINTS_PER_INCH);
+			float scaleY = (float)(printerDpiY / POINTS_PER_INCH);
+
+			OS.SetGraphicsMode(handle, OS.GM_ADVANCED);
+			float[] transform = new float[] {scaleX, 0, 0, scaleY, 0, 0};
+			OS.SetWorldTransform(handle, transform);
+
+			isGCCreated = true;
 		}
-		
-		// Set up coordinate system scaling
-		// Get screen DPI
-		int screenDpiX = 96;
-		int screenDpiY = 96;
-		if (device != null) {
-			Point dpi = device.getDPI();
-			screenDpiX = dpi.x;
-			screenDpiY = dpi.y;
-		}
-		
-		// Get PDF printer DPI
-		int pdfDpiX = OS.GetDeviceCaps(handle, OS.LOGPIXELSX);
-		int pdfDpiY = OS.GetDeviceCaps(handle, OS.LOGPIXELSY);
-		
-		// Calculate content size in inches (what user wanted)
-		double contentWidthInInches = width / screenDpiX;
-		double contentHeightInInches = height / screenDpiY;
-		
-		// Calculate scale factor to fit content to page
-		// The page size is the physical paper size we selected
-		double pageWidthInInches = widthInPoints / 72.0;
-		double pageHeightInInches = heightInPoints / 72.0;
-		double scaleToFitWidth = pageWidthInInches / contentWidthInInches;
-		double scaleToFitHeight = pageHeightInInches / contentHeightInInches;
-		
-		// Use the smaller scale to ensure both width and height fit
-		double scaleToFit = Math.min(scaleToFitWidth, scaleToFitHeight);
-		
-		// Combined scale: fit-to-page * DPI conversion
-		float scaleX = (float)(scaleToFit * pdfDpiX / screenDpiX);
-		float scaleY = (float)(scaleToFit * pdfDpiY / screenDpiY);
-		
-		OS.SetGraphicsMode(handle, OS.GM_ADVANCED);
-		float[] transform = new float[] {scaleX, 0, 0, scaleY, 0, 0};
-		OS.SetWorldTransform(handle, transform);
-		
-		isGCCreated = true;
 		return handle;
 	}
 
@@ -491,27 +554,12 @@ public class PDFDocument implements Drawable {
 	}
 
 	/**
-	 * Returns <code>true</code> if the PDFDocument has been disposed,
-	 * and <code>false</code> otherwise.
-	 *
-	 * @return <code>true</code> when the PDFDocument is disposed and <code>false</code> otherwise
+	 * Destroys the PDF document handle.
+	 * This method is called internally by the dispose
+	 * mechanism of the <code>Device</code> class.
 	 */
-	public boolean isDisposed() {
-		return disposed;
-	}
-
-	/**
-	 * Disposes of the operating system resources associated with
-	 * the PDFDocument. Applications must dispose of all PDFDocuments
-	 * that they allocate.
-	 * <p>
-	 * This method finalizes the PDF file and writes it to disk.
-	 * </p>
-	 */
-	public void dispose() {
-		if (disposed) return;
-		disposed = true;
-
+	@Override
+	protected void destroy() {
 		if (handle != 0) {
 			if (pageStarted) {
 				OS.EndPage(handle);
