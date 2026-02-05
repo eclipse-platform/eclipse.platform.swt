@@ -452,7 +452,7 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 			Rectangle rect = child.getBoundsInPixels ();
 			if (Math.min(x + width, rect.x + rect.width) >= Math.max (x, rect.x) &&
 				Math.min(y + height, rect.y + rect.height) >= Math.max (y, rect.y)) {
-					child.setLocationInPixels (rect.x + deltaX, rect.y + deltaY);
+					child.setLocation (rect.x + deltaX, rect.y + deltaY);
 			}
 		}
 	}

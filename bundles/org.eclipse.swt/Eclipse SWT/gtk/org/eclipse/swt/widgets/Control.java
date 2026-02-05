@@ -1267,12 +1267,6 @@ public void setLocation (Point location) {
 	setBounds (location.x, location.y, 0, 0, true, false);
 }
 
-void setLocationInPixels (Point location) {
-	checkWidget ();
-	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setBounds (location.x, location.y, 0, 0, true, false);
-}
-
 /**
  * Sets the receiver's location to the point specified by the arguments which
  * are relative to the receiver's parent (or its display if its parent is null),
@@ -1292,12 +1286,6 @@ void setLocationInPixels (Point location) {
  * </ul>
  */
 public void setLocation(int x, int y) {
-	checkWidget();
-	Point loc = new Point (x, y);
-	setBounds (loc.x, loc.y, 0, 0, true, false);
-}
-
-void setLocationInPixels(int x, int y) {
 	checkWidget();
 	setBounds (x, y, 0, 0, true, false);
 }
