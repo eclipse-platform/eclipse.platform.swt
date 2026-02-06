@@ -63,7 +63,36 @@ import org.eclipse.swt.internal.win32.*;
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Examples: GraphicsExample, PaintExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
-public final class GC extends Resource {
+public sealed class GC extends Resource {
+
+	/**
+	 * An AutoCloseable implementation of GC which calls dispose in the close
+	 * method. Can be created via {@link #create(Drawable)}.
+	 *
+	 * @since 3.126
+	 */
+	public static final class AutoDisposableGC extends GC implements AutoCloseable {
+		AutoDisposableGC(Drawable drawable, int style) {
+			super(drawable, style);
+		}
+		@Override
+		public void close() {
+			dispose();
+		}
+	}
+
+	/**
+	 * Creates an AutoCloseable instance of the GC class which has been configured
+	 * to draw on the specified drawable. GC.dispose() will be called automatically
+	 * in the close() method if called in a try-with-resources statement.
+	 *
+	 * @since 3.126
+	 * @param drawable the drawable to draw on
+	 * @return GC.AutoDisposableGC
+	 */
+	public static GC.AutoDisposableGC create(Drawable drawable) {
+		return new AutoDisposableGC(drawable, SWT.NONE);
+	}
 
 	/**
 	 * the handle to the OS device context
@@ -121,7 +150,9 @@ GC() {
  * foreground color, background color and font in the GC
  * to match those in the drawable.
  * <p>
- * You must dispose the graphics context when it is no longer required.
+ * You must dispose the graphics context when it is no longer required or
+ * create a safe context via {@link #create(Drawable)} which takes over
+ * disposal when called in a try-with-resources statement.
  * </p>
  * @param drawable the drawable to draw on
  * @exception IllegalArgumentException <ul>
@@ -148,7 +179,9 @@ public GC(Drawable drawable) {
  * foreground color, background color and font in the GC
  * to match those in the drawable.
  * <p>
- * You must dispose the graphics context when it is no longer required.
+ * You must dispose the graphics context when it is no longer required or
+ * create a safe context via {@link #create(Drawable)} which takes over
+ * disposal when called in a try-with-resources statement.
  * </p>
  *
  * @param drawable the drawable to draw on
