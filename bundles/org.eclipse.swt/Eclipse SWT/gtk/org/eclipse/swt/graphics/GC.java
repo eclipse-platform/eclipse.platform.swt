@@ -68,8 +68,8 @@ public sealed class GC extends Resource {
 	 *
 	 * @since 3.126
 	 */
-	public static final class Closeable extends GC implements AutoCloseable {
-		Closeable(Drawable drawable, int style) {
+	public static final class AutoDisposableGC extends GC implements AutoCloseable {
+		AutoDisposableGC(Drawable drawable, int style) {
 			super(drawable, style);
 		}
 		@Override
@@ -85,10 +85,10 @@ public sealed class GC extends Resource {
 	 *
 	 * @since 3.126
 	 * @param drawable the drawable to draw on
-	 * @return GC.Closeable
+	 * @return GC.AutoDisposableGC
 	 */
-	public static GC.Closeable create(Drawable drawable) {
-		return new Closeable(drawable, SWT.NONE);
+	public static GC.AutoDisposableGC create(Drawable drawable) {
+		return new AutoDisposableGC(drawable, SWT.NONE);
 	}
 
 	/**
