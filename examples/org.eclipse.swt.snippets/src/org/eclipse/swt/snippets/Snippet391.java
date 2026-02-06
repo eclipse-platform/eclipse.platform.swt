@@ -35,6 +35,7 @@ public class Snippet391 {
 
 	private static int boxSizeCm = 10;
 	private static boolean considerMonitorZoom = false;
+	private static boolean useControlPrint = false;
 
 	public static void main(String[] args) {
 		Display display = new Display();
@@ -85,6 +86,28 @@ public class Snippet391 {
 			canvas.redraw();
 		});
 
+		// Paint mode radio buttons
+		Group modeGroup = new Group(controlPanel, SWT.NONE);
+		modeGroup.setText("Paint Mode");
+		modeGroup.setLayout(new GridLayout(1, false));
+		GridData modeData = new GridData(SWT.FILL, SWT.CENTER, true, false);
+		modeData.horizontalSpan = 2;
+		modeGroup.setLayoutData(modeData);
+
+		Button directPaintRadio = new Button(modeGroup, SWT.RADIO);
+		directPaintRadio.setText("Direct Paint");
+		directPaintRadio.setSelection(true);
+
+		Button controlPrintRadio = new Button(modeGroup, SWT.RADIO);
+		controlPrintRadio.setText("Control Print");
+
+		directPaintRadio.addListener(SWT.Selection, e -> {
+			useControlPrint = !directPaintRadio.getSelection();
+		});
+		controlPrintRadio.addListener(SWT.Selection, e -> {
+			useControlPrint = controlPrintRadio.getSelection();
+		});
+
 		// Separator
 		Label separator = new Label(controlPanel, SWT.SEPARATOR | SWT.HORIZONTAL);
 		GridData sepData = new GridData(SWT.FILL, SWT.CENTER, true, false);
@@ -97,7 +120,7 @@ public class Snippet391 {
 		GridData printData = new GridData(SWT.FILL, SWT.CENTER, true, false);
 		printData.horizontalSpan = 2;
 		printButton.setLayoutData(printData);
-		printButton.addListener(SWT.Selection, e -> printToPrinter(shell));
+		printButton.addListener(SWT.Selection, e -> printToPrinter(shell, canvas));
 
 		// Create PDF button
 		Button pdfButton = new Button(controlPanel, SWT.PUSH);
@@ -203,7 +226,7 @@ public class Snippet391 {
 		gc.setForeground(originalFg);
 	}
 
-	private static void printToPrinter(Shell shell) {
+	private static void printToPrinter(Shell shell, Canvas canvas) {
 		PrintDialog printDialog = new PrintDialog(shell);
 		PrinterData data = printDialog.open();
 		if (data == null) {
@@ -214,8 +237,12 @@ public class Snippet391 {
 		if (printer.startJob("Drawing Test - Snippet 391")) {
 			GC gc = new GC(printer);
 			if (printer.startPage()) {
-				Rectangle printArea = printer.getClientArea();
-				drawTestPattern(gc, printer, printArea, null);
+				if (useControlPrint) {
+					canvas.print(gc);
+				} else {
+					Rectangle printArea = printer.getClientArea();
+					drawTestPattern(gc, printer, printArea, null);
+				}
 				printer.endPage();
 			}
 			gc.dispose();
@@ -232,7 +259,7 @@ public class Snippet391 {
 	private static void createPdf(Shell shell, Canvas canvas) {
 		try {
 			String tempDir = System.getProperty("java.io.tmpdir");
-			String pdfPath = tempDir + "/drawing_test_snippet391.pdf";
+			String pdfPath = tempDir +(useControlPrint? "/drawing_test_snippet391_control.pdf":"/drawing_test_snippet391_direct.pdf");
 
 			// Use exact canvas size in points (1 point = 1 pixel at 72 DPI)
 			Point canvasSize = canvas.getSize();
@@ -242,8 +269,12 @@ public class Snippet391 {
 			PDFDocument pdf = new PDFDocument(pdfPath, widthPoints, heightPoints);
 			GC gc = new GC(pdf);
 
-			Rectangle pdfRect = new Rectangle(0, 0, canvasSize.x, canvasSize.y);
-			drawTestPattern(gc, pdf, pdfRect, null);
+			if (useControlPrint) {
+				canvas.print(gc);
+			} else {
+				Rectangle pdfRect = new Rectangle(0, 0, canvasSize.x, canvasSize.y);
+				drawTestPattern(gc, pdf, pdfRect, null);
+			}
 
 			gc.dispose();
 			pdf.dispose();
