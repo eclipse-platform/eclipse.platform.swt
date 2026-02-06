@@ -162,6 +162,37 @@ public final class PDFDocument extends Device {
 	}
 
 	/**
+	 * Constructs a new PDFDocument with the specified filename and page size.
+	 * <p>
+	 * The page size specifies the preferred dimensions in points (1/72 inch). On Windows,
+	 * the Microsoft Print to PDF driver only supports standard paper sizes, so the actual
+	 * page size may be larger than requested. Use {@link #getBounds()} to query the actual
+	 * page dimensions after construction.
+	 * </p>
+	 * <p>
+	 * You must dispose the PDFDocument when it is no longer required.
+	 * </p>
+	 *
+	 * @param filename the path to the PDF file to create
+	 * @param pageSize the page size specifying width and height in points (1/72 inch)
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_NULL_ARGUMENT - if filename or pageSize is null</li>
+	 *    <li>ERROR_INVALID_ARGUMENT - if width or height is not positive</li>
+	 * </ul>
+	 * @exception SWTError <ul>
+	 *    <li>ERROR_NO_HANDLES - if the PDF printer is not available</li>
+	 * </ul>
+	 *
+	 * @see PageSize
+	 * @see #dispose()
+	 * @see #getBounds()
+	 */
+	public PDFDocument(String filename, PageSize pageSize) {
+		super(checkData(filename, pageSize));
+	}
+
+	/**
 	 * Constructs a new PDFDocument with the specified filename and preferred page dimensions.
 	 * <p>
 	 * The dimensions specify the preferred page size in points (1/72 inch). On Windows,
@@ -189,7 +220,15 @@ public final class PDFDocument extends Device {
 	 * @see #getBounds()
 	 */
 	public PDFDocument(String filename, double widthInPoints, double heightInPoints) {
-		super(checkData(filename, widthInPoints, heightInPoints));
+		this(filename, new PageSize(widthInPoints, heightInPoints));
+	}
+
+	/**
+	 * Validates and prepares the data for construction.
+	 */
+	static PDFDocumentData checkData(String filename, PageSize pageSize) {
+		if (pageSize == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+		return checkData(filename, pageSize.width(), pageSize.height());
 	}
 
 	/**

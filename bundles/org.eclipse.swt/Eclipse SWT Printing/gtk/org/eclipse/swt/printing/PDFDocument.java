@@ -74,6 +74,30 @@ public final class PDFDocument extends Device {
 	}
 
 	/**
+	 * Constructs a new PDFDocument with the specified filename and page size.
+	 * <p>
+	 * You must dispose the PDFDocument when it is no longer required.
+	 * </p>
+	 *
+	 * @param filename the path to the PDF file to create
+	 * @param pageSize the page size specifying width and height in points (1/72 inch)
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_NULL_ARGUMENT - if filename or pageSize is null</li>
+	 *    <li>ERROR_INVALID_ARGUMENT - if width or height is not positive</li>
+	 * </ul>
+	 * @exception SWTError <ul>
+	 *    <li>ERROR_NO_HANDLES - if the PDF surface could not be created</li>
+	 * </ul>
+	 *
+	 * @see PageSize
+	 * @see #dispose()
+	 */
+	public PDFDocument(String filename, PageSize pageSize) {
+		super(checkData(filename, pageSize));
+	}
+
+	/**
 	 * Constructs a new PDFDocument with the specified filename and page dimensions.
 	 * <p>
 	 * You must dispose the PDFDocument when it is no longer required.
@@ -94,7 +118,15 @@ public final class PDFDocument extends Device {
 	 * @see #dispose()
 	 */
 	public PDFDocument(String filename, double widthInPoints, double heightInPoints) {
-		super(checkData(filename, widthInPoints, heightInPoints));
+		this(filename, new PageSize(widthInPoints, heightInPoints));
+	}
+
+	/**
+	 * Validates and prepares the data for construction.
+	 */
+	static PDFDocumentData checkData(String filename, PageSize pageSize) {
+		if (pageSize == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+		return checkData(filename, pageSize.width(), pageSize.height());
 	}
 
 	/**
