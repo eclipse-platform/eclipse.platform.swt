@@ -369,4 +369,45 @@ class ControlWin32Tests {
 		assertEquals(300, childShell.getSizeInPixels().x);
 	}
 
+	@Test
+	public void testAutoScaleDisabledProperty() {
+		Display display = Display.getDefault();
+		Shell shell = new Shell(display);
+		shell.setData("AUTOSCALE_DISABLED", true);
+		assertEquals(AutoscalingMode.DISABLED_INHERITED, shell.autoscalingMode);
+		Composite child = new Composite(shell, SWT.NONE);
+		assertEquals(AutoscalingMode.DISABLED_INHERITED, child.autoscalingMode);
+	}
+
+	@Test
+	public void testAutoScaleDisabled() {
+		Display display = Display.getDefault();
+		Shell shell = new Shell(display);
+		shell.setAutoscalingMode(AutoscalingMode.DISABLED);
+		assertEquals(AutoscalingMode.DISABLED, shell.autoscalingMode);
+		Composite child = new Composite(shell, SWT.NONE);
+		assertEquals(AutoscalingMode.ENABLED, child.autoscalingMode);
+	}
+
+	@Test
+	public void testPropagateAutoScaleDisabledProperty() {
+		Display display = Display.getDefault();
+		Shell shell = new Shell(display);
+		shell.setData("AUTOSCALE_DISABLED", true);
+		shell.setData("PROPOGATE_AUTOSCALE_DISABLED", false);
+		assertEquals(AutoscalingMode.DISABLED, shell.autoscalingMode);
+		Composite child = new Composite(shell, SWT.NONE);
+		assertEquals(AutoscalingMode.ENABLED, child.autoscalingMode);
+	}
+
+	@Test
+	public void testPropagateAutoScaleDisabled() {
+		Display display = Display.getDefault();
+		Shell shell = new Shell(display);
+		shell.setAutoscalingMode(AutoscalingMode.DISABLED_INHERITED);
+		assertEquals(AutoscalingMode.DISABLED_INHERITED, shell.autoscalingMode);
+		Composite child = new Composite(shell, SWT.NONE);
+		assertEquals(AutoscalingMode.DISABLED_INHERITED, child.autoscalingMode);
+	}
+
 }
