@@ -5633,11 +5633,11 @@ public boolean sleep () {
 			OS.g_main_context_check (context, max_priority [0], fds, nfds);
 			OS.g_main_context_release (context);
 		}
-	} while (!result && synchronizer.isMessagesEmpty() && !wake);
+	} while (!result && synchronizer.isMessagesEmpty() && !wake && !thread.isInterrupted());
 	wake = false;
 	if (!GTK.GTK4) GDK.gdk_threads_enter ();
 	sendPostExternalEventDispatchEvent ();
-	return true;
+	return !thread.isInterrupted();
 }
 
 /**
