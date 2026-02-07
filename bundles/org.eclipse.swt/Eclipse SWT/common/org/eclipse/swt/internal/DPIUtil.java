@@ -197,6 +197,12 @@ public static float pixelToPoint(float size, int zoom) {
 	return (size / scaleFactor);
 }
 
+public static double pixelToPoint(double size, int zoom) {
+	if (zoom == 100 || size == SWT.DEFAULT) return size;
+	double scaleFactor = getScalingFactorD (zoom, 100);
+	return (size / scaleFactor);
+}
+
 
 /**
  * Auto-scale image with ImageData
@@ -279,6 +285,13 @@ public static float getScalingFactor(int zoom) {
 	return getScalingFactor(zoom, 100);
 }
 
+
+public static double getScalingFactorD(int targetZoom, int currentZoom) {
+	if (targetZoom <= 0) {
+		targetZoom = deviceZoom;
+	}
+	return targetZoom / (double) currentZoom;
+}
 
 public static float getScalingFactor(int targetZoom, int currentZoom) {
 	if (targetZoom <= 0) {
