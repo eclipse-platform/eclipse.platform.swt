@@ -1447,7 +1447,7 @@ void printWidget (GC gc, long drawable, int depth, int x, int y) {
 	for (int i=children.length-1; i>=0; --i) {
 		Control child = children [i];
 		if (child.getVisible ()) {
-			Point location = child.getLocationInPixels ();
+			Point location = child.getLocation ();
 			child.printWidget (gc, drawable, depth, x + location.x, y + location.y);
 		}
 	}

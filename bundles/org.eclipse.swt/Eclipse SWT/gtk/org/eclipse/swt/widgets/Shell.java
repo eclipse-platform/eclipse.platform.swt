@@ -1270,7 +1270,7 @@ public boolean getFullScreen () {
 }
 
 @Override
-Point getLocationInPixels () {
+public Point getLocation() {
 	checkWidget ();
 	// Bug in GTK: when shell is moved and then hidden, its location does not get updated.
 	// Move it before getting its location.
@@ -3044,7 +3044,7 @@ public void setVisible (boolean visible) {
 		opened = true;
 		if (!moved) {
 			moved = true;
-			Point location = getLocationInPixels();
+			Point location = getLocation();
 			oldX = location.x;
 			oldY = location.y;
 			sendEvent (SWT.Move);
@@ -3495,7 +3495,7 @@ Point getWindowOrigin () {
 		 * window trims etc. from the window manager. That's why getLocation ()
 		 * is not safe to use for coordinate mappings after the shell has been made visible.
 		 */
-		return getLocationInPixels ();
+		return getLocation ();
 	}
 	return super.getWindowOrigin( );
 }
@@ -3503,7 +3503,7 @@ Point getWindowOrigin () {
 @Override
 Point getSurfaceOrigin () {
 	if (!mapped) {
-		return getLocationInPixels ();
+		return getLocation ();
 	}
 	return super.getSurfaceOrigin( );
 }

@@ -1227,11 +1227,6 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
  */
 public Point getLocation () {
 	checkWidget();
-	return getLocationInPixels();
-}
-
-Point getLocationInPixels () {
-	checkWidget();
 	long topHandle = topHandle ();
 	GtkAllocation allocation = new GtkAllocation ();
 	GTK.gtk_widget_get_allocation (topHandle, allocation);
