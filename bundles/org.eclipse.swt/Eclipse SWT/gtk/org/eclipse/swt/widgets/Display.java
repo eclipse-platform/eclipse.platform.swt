@@ -1719,14 +1719,15 @@ static long rendererClassInitProc (long g_class, long class_data) {
 
 void snapshotDrawProc(long handle, long snapshot) {
 	Display display = getCurrent ();
-	Widget widget = display.getWidget (handle);
-	if (widget != null) widget.snapshotToDraw(handle, snapshot);
 	long child = GTK4.gtk_widget_get_first_child(handle);
-	// Propagate the snapshot down the widget tree
+	// Propagate the snapshot down the widget tree first
 	while (child != 0) {
 		GTK4.gtk_widget_snapshot_child(handle, child, snapshot);
 		child = GTK4.gtk_widget_get_next_sibling(child);
 	}
+	// Draw custom paint on top of children
+	Widget widget = display.getWidget (handle);
+	if (widget != null) widget.snapshotToDraw(handle, snapshot);
 }
 
 static long rendererGetPreferredWidthProc (long cell, long handle, long minimun_size, long natural_size) {
