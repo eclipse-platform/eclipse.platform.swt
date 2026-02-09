@@ -546,4 +546,14 @@ void updateCaret () {
 	GTK.gtk_im_context_set_cursor_location (imHandle, rect);
 }
 
+@Override
+void snapshotToDraw(long handle, long snapshot) {
+	// Skip drawing if this is being called on fixedHandle to prevent double draws
+	// making carret not visible at all
+	if (fixedHandle != 0 && handle == fixedHandle) {
+		return;
+	}
+	super.snapshotToDraw(handle, snapshot);
+}
+
 }
