@@ -1878,7 +1878,7 @@ long gtk_size_allocate (long widget, long allocation) {
 			long header = GTK4.gtk_window_get_titlebar(shellHandle);
 			int[] headerNaturalHeight = new int[1];
 			if (header != 0) {
-				GTK4.gtk_widget_measure(header, GTK.GTK_ORIENTATION_VERTICAL, 0, null, headerNaturalHeight, null, null);
+				GTK4.gtk_widget_measure(header, GTK.GTK_ORIENTATION_VERTICAL, -1, null, headerNaturalHeight, null, null);
 			}
 			widthA[0] = monitorSize.width;
 			heightA[0] = monitorSize.height - headerNaturalHeight[0];
@@ -2395,7 +2395,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 				long header = GTK4.gtk_window_get_titlebar(shellHandle);
 				int[] headerNaturalHeight = new int[1];
 				if (header != 0) {
-					GTK4.gtk_widget_measure(header, GTK.GTK_ORIENTATION_VERTICAL, 0, null, headerNaturalHeight, null, null);
+					GTK4.gtk_widget_measure(header, GTK.GTK_ORIENTATION_VERTICAL, -1, null, headerNaturalHeight, null, null);
 				}
 				GTK.gtk_window_set_default_size(shellHandle, width, height + headerNaturalHeight[0]);
 			} else {
