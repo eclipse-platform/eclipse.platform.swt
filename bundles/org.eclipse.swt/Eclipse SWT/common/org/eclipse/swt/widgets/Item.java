@@ -230,6 +230,7 @@ private void handleDPIChange(Event event) {
 	// Refresh the image
 	Image image = getImage();
 	if (image != null) {
+		setImage(null);
 		setImage(image);
 	}
 }
