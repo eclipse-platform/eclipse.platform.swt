@@ -1815,6 +1815,11 @@ String getNameText () {
 @Override
 void handleDPIChange(Event event, float scalingFactor) {
 	super.handleDPIChange(event, scalingFactor);
+	if (images != null) {
+		for (int i = 1; i < images.length; i++) {
+			setImage(i, images[i]);
+		}
+	}
 	if (font != null) {
 		setFont(font);
 	}
