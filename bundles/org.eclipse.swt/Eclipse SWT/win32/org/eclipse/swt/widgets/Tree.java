@@ -5805,8 +5805,12 @@ void updateOrientation () {
 				}
 			}
 		}
-		long hImageList = imageList.getHandle(getAutoscalingZoom());
-		OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_NORMAL, hImageList);
+		// Image list is only set at OS when the first column contains images,
+		// thus check if an image list is set at the OS to refresh and otherwise skip it
+		if (OS.SendMessage (handle, OS.TVM_GETIMAGELIST, OS.TVSIL_NORMAL, 0) != 0) {
+			long hImageList = imageList.getHandle(getAutoscalingZoom());
+			OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_NORMAL, hImageList);
+		}
 	}
 	if (hwndHeader != 0) {
 		if (headerImageList != null) {
