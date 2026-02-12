@@ -27,6 +27,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -48,12 +50,15 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.internal.DPIUtil;
+import org.eclipse.swt.tests.graphics.ImageDataTestHelper;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -392,6 +397,50 @@ public void test_drawImageLorg_eclipse_swt_graphics_ImageIIII() {
 	gc.drawImage(images.alpha, 100, 120, 20, 15);
 	assertThrows(IllegalArgumentException.class, () -> gc.drawImage(null, 100, 120, 50, 60));
 	images.dispose();
+}
+
+@Test
+@EnabledOnOs(OS.WINDOWS)
+public void test_drawImageLorg_eclipse_swt_graphics_ImageIIII_withTransform() throws IOException {
+	Image image = null;
+	try (InputStream is = getClass().getResourceAsStream("collapseall.svg")) {
+		image = new Image(Display.getDefault(), is);
+	}
+	Transform transform = new Transform(display, 2, 0, 0, 2, 0, 0);
+	gc.setTransform(transform);
+	gc.drawImage(image, 0, 0, 2, 2);
+	ImageData resultImageDataWithTransform = getImageDataFromGC(gc, 0, 0, 4, 4);
+
+	gc.setTransform(null);
+	gc.drawImage(image, 10, 10, 4, 4);
+	ImageData resultImageDataWithoutTransform = getImageDataFromGC(gc, 10, 10, 4, 4);
+
+	ImageDataTestHelper.assertImageDataEqual(resultImageDataWithoutTransform, resultImageDataWithoutTransform, resultImageDataWithTransform);
+
+	image.dispose();
+	transform.dispose();
+}
+
+private ImageData getImageDataFromGC(GC gc, int x, int y, int width, int height) {
+	Image extractionImage = new Image(display, width, height);
+	gc.copyArea(extractionImage, x, y);
+	ImageData resultImageData = extractionImage.getImageData();
+	extractionImage.dispose();
+	return resultImageData;
+}
+
+public void test_drawImageLorg_eclipse_swt_graphics_ImageIIII_withTransform_zeroTargetSize() throws IOException {
+	Image image = null;
+	try (InputStream is = getClass().getResourceAsStream("collapseall.svg")) {
+		image = new Image(Display.getDefault(), is);
+	}
+	Transform transform = new Transform(display, 0.1f, 0, 0, 0.1f, 0, 0);
+	gc.setTransform(transform);
+	// The destination size will become 0, but no exception should be thrown.
+	gc.drawImage(image, 0, 0, 2, 2);
+
+	image.dispose();
+	transform.dispose();
 }
 
 @Test

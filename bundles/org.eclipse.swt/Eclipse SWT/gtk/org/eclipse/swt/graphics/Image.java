@@ -1025,7 +1025,7 @@ private class CachedImageAtSize {
 }
 
 void executeOnImageAtSize(Consumer<Image> imageAtBestFittingSizeConsumer, int destWidth, int destHeight) {
-	Optional<Image> imageAtSize = cachedImageAtSize.refresh(destWidth, destHeight);
+	Optional<Image> imageAtSize = cachedImageAtSize.refresh(Math.max(1, destWidth), Math.max(1, destHeight));
 	imageAtBestFittingSizeConsumer.accept(imageAtSize.orElse(this));
 }
 
