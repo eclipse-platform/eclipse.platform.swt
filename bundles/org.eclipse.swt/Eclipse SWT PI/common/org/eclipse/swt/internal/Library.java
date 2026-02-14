@@ -13,15 +13,10 @@
  *******************************************************************************/
 package org.eclipse.swt.internal;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.JarURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
-import java.util.jar.Attributes;
+import java.io.*;
+import java.net.*;
+import java.nio.file.*;
+import java.util.jar.*;
 
 public class Library {
 
@@ -192,6 +187,10 @@ static boolean extract (String extractToFilePath, String mappedName) {
 }
 
 static boolean isLoadable () {
+	return isLoadable(false);
+}
+
+static boolean isLoadable (boolean ignoreMissingManifest) {
 	URL url = Platform.class.getClassLoader ().getResource ("org/eclipse/swt/internal/Library.class"); //$NON-NLS-1$
 	if (!url.getProtocol ().equals ("jar")) { //$NON-NLS-1$
 		/* SWT is presumably running in a development environment */
@@ -216,6 +215,9 @@ static boolean isLoadable () {
 	String manifestOS = attributes.getValue ("SWT-OS"); //$NON-NLS-1$
 	String manifestArch = attributes.getValue ("SWT-Arch"); //$NON-NLS-1$
 	if (arch.equals (manifestArch) && os.equals (manifestOS)) {
+		return true;
+	}
+	if (manifestArch == null && manifestOS == null && ignoreMissingManifest) {
 		return true;
 	}
 
