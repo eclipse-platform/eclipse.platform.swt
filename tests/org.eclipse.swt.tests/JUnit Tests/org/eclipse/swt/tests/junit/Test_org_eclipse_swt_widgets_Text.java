@@ -268,7 +268,7 @@ public void test_computeSizeIIZ() {
 
 @Tag("clipboard")
 @Test
-public void test_copy() {
+public void test_copy() throws InterruptedException {
 	if (SwtTestUtil.isCocoa) {
 		// TODO Fix Cocoa failure.
 		if (SwtTestUtil.verbose) {
@@ -277,52 +277,45 @@ public void test_copy() {
 		}
 		return;
 	}
-	text.copy();
+	copyToClipboard(text);
 
 	text.selectAll();
-	text.copy();
+	copyToClipboard(text);
 	assertEquals("", text.getSelectionText());
 
 	text.setText("00000");
 	text.selectAll();
-	text.copy();
+	copyToClipboard(text);
 	text.setSelection(2);
 	assertEquals("", text.getSelectionText());
 
+	System.out.println(text.getText());
 	text.setText("");
-	text.paste();
-	// Spin the event loop to let GTK process the clipboard + entry update
-	Display display = text.getDisplay();
-	while (display.readAndDispatch()) {
-	    // loop until no more events
-	}
+	pasteFromClipboard(text);
 	assertEquals("00000", text.getText());
 
 	// tests a SINGLE line text editor
 	makeCleanEnvironment(true);
 
-	text.copy();
+	copyToClipboard(text);
 
 	text.selectAll();
-	text.copy();
+	copyToClipboard(text);
 	assertEquals("", text.getSelectionText());
 
 	text.setText("00000");
 	text.selectAll();
-	text.copy();
+	copyToClipboard(text);
 	text.setSelection(2);
 	assertEquals("", text.getSelectionText());
 
 	text.setText("");
-	text.paste();
-	while (display.readAndDispatch()) {
-	    // loop until no more events
-	}
+	pasteFromClipboard(text);
 	assertEquals("00000", text.getText());
 }
 
 @Test
-public void test_cut() {
+public void test_cut() throws InterruptedException {
 	if (SwtTestUtil.isCocoa) {
 		// TODO Fix Cocoa failure.
 		if (SwtTestUtil.verbose) {
@@ -331,28 +324,28 @@ public void test_cut() {
 		}
 		return;
 	}
-	text.cut();
+	cutToClipboard(text);
 	text.setText("01234567890");
 	text.setSelection(2, 5);
-	text.cut();
+	cutToClipboard(text);
 	assertEquals("01567890", text.getText());
 
 	text.selectAll();
-	text.cut();
+	cutToClipboard(text);
 	assertEquals("", text.getText());
 
 	// tests a SINGLE line text editor
 	makeCleanEnvironment(true);
 
-	text.cut();
+	cutToClipboard(text);
 
 	text.setText("01234567890");
 	text.setSelection(2, 5);
-	text.cut();
+	cutToClipboard(text);
 	assertEquals("01567890", text.getText());
 
 	text.selectAll();
-	text.cut();
+	cutToClipboard(text);
 	assertEquals("", text.getText());
 }
 
@@ -946,26 +939,21 @@ public void test_paste() throws InterruptedException {
 	text.setText("01234567890");
 	text.setSelection(2, 4);
 	assertEquals("01234567890", text.getText());
-	text.copy();
-	SwtTestUtil.processEvents(100, null);
+	copyToClipboard(text);
 	text.setSelection(0);
-	text.paste();
-	SwtTestUtil.processEvents(1000, () -> "2301234567890".equals(text.getText()));
+	pasteFromClipboard(text);
 	assertEquals("2301234567890", text.getText());
-	text.copy();
-	SwtTestUtil.processEvents(100, null);
+	copyToClipboard(text);
 	text.setSelection(3);
-	text.paste();
-	SwtTestUtil.processEvents(1000, () -> "230231234567890".equals(text.getText()));
+	pasteFromClipboard(text);
 	assertEquals("230231234567890", text.getText());
 
 	text.setText("0" + delimiterString + "1");
 	text.selectAll();
-	text.copy();
+	copyToClipboard(text);
 	text.setSelection(0);
-	text.paste();
+	pasteFromClipboard(text);
 	String expected = "0" + delimiterString + "1" + "0" + delimiterString + "1";
-	SwtTestUtil.processEvents(1000, () -> expected.equals(text.getText()));
 	assertEquals(expected, text.getText());
 
 	// tests a SINGLE line text editor
@@ -974,15 +962,13 @@ public void test_paste() throws InterruptedException {
 	text.setText("01234567890");
 	text.setSelection(2, 4);
 	assertEquals("01234567890", text.getText());
-	text.copy();
+	copyToClipboard(text);
 	text.setSelection(0);
-	text.paste();
-	SwtTestUtil.processEvents(1000, () -> "2301234567890".equals(text.getText()));
+	pasteFromClipboard(text);
 	assertEquals("2301234567890", text.getText());
-	text.copy();
+	copyToClipboard(text);
 	text.setSelection(3);
-	text.paste();
-	SwtTestUtil.processEvents(1000, () -> "230231234567890".equals(text.getText()));
+	pasteFromClipboard(text);
 	assertEquals("230231234567890", text.getText());
 
 	// tests a SINGLE line text editor
@@ -990,9 +976,9 @@ public void test_paste() throws InterruptedException {
 
 	text.setText("0" + delimiterString + "1");
 	text.selectAll();
-	text.copy();
+	copyToClipboard(text);
 	text.setSelection(0);
-	text.paste();
+	pasteFromClipboard(text);
 
 	if (SwtTestUtil.fCheckSWTPolicy) {
 		String expected2 = "0" + delimiterString + "1" + "0" + delimiterString + "1";
@@ -1002,7 +988,7 @@ public void test_paste() throws InterruptedException {
 }
 
 @Test
-public void test_selectAll() {
+public void test_selectAll() throws InterruptedException {
 	if (SwtTestUtil.isCocoa) {
 		// TODO Fix Cocoa failure.
 		if (SwtTestUtil.verbose) {
@@ -1015,14 +1001,14 @@ public void test_selectAll() {
 	assertEquals("01234567890", text.getText());
 	text.selectAll();
 	assertEquals("01234567890", text.getSelectionText());
-	text.cut();
+	cutToClipboard(text);
 	assertEquals("", text.getText());
 
 	text.setText("01234" + delimiterString+"567890");
 	assertEquals("01234" + delimiterString+"567890", text.getText());
 	text.selectAll();
 	assertEquals("01234" + delimiterString+"567890", text.getSelectionText());
-	text.cut();
+	cutToClipboard(text);
 	assertEquals("", text.getText());
 
 	// tests a SINGLE line text editor
@@ -1032,7 +1018,7 @@ public void test_selectAll() {
 	assertEquals("01234567890", text.getText());
 	text.selectAll();
 	assertEquals("01234567890", text.getSelectionText());
-	text.cut();
+	cutToClipboard(text);
 	assertEquals("", text.getText());
 
 	// tests a SINGLE line text editor
@@ -1041,7 +1027,7 @@ public void test_selectAll() {
 		assertEquals("01234" + delimiterString+"567890", text.getText());
 		text.selectAll();
 		assertEquals("01234" + delimiterString+"567890", text.getSelectionText());
-		text.cut();
+		cutToClipboard(text);
 		assertEquals("", text.getText());
 	}
 }
@@ -1449,7 +1435,7 @@ public void test_consistency_DragDetect () {
 @Tag("gtk4-todo")
 @Tag("clipboard")
 @Test
-public void test_consistency_Segments () {
+public void test_consistency_Segments () throws InterruptedException {
 	if (SwtTestUtil.isCocoa) {
 		// TODO Fix Cocoa failure.
 		if (SwtTestUtil.verbose) {
@@ -1487,7 +1473,7 @@ public void test_consistency_Segments () {
 	}
 }
 
-private void doSegmentsTest (boolean isListening) {
+private void doSegmentsTest (boolean isListening) throws InterruptedException {
 	String string = "1234";
 
 	// Test setText
@@ -1522,14 +1508,14 @@ private void doSegmentsTest (boolean isListening) {
 	text.setSelection(pt);
 	assertEquals(pt, text.getSelection());
 	assertFalse(listenerCalled);
-	text.copy();
+	copyToClipboard(text);
 	assertEquals(isListening, listenerCalled);
 	listenerCalled = false;
 
 	substr = string.substring(pt.x, pt.y);
 	pt.x = pt.y = 1;
 	text.setSelection(pt);
-	text.paste();
+	pasteFromClipboard(text);
 	assertEquals(isListening, listenerCalled);
 	listenerCalled = false;
 
@@ -1542,7 +1528,7 @@ private void doSegmentsTest (boolean isListening) {
 	text.setSelection(pt);
 	assertEquals(substr, text.getSelectionText());
 	assertEquals(substr, text.getText(pt.x, pt.y - 1));
-	text.cut();
+	cutToClipboard(text);
 	assertEquals(isListening, listenerCalled);
 	listenerCalled = false;
 	assertEquals(string, text.getText());
@@ -1552,7 +1538,7 @@ private void doSegmentsTest (boolean isListening) {
 	pt.x = 6;
 	pt.y = 8;
 	text.setSelection(pt.x, pt.y);
-	text.cut();
+	cutToClipboard(text);
 	pt.y = pt.x;
 	assertEquals(pt, text.getSelection());
 	listenerCalled = false;
@@ -1636,4 +1622,21 @@ public void test_issue472() {
 		}
 	}
 }
+
+private void cutToClipboard(Text text) throws InterruptedException {
+	text.cut();
+	SwtTestUtil.processEvents(100, null);
+}
+
+private void copyToClipboard(Text text) throws InterruptedException {
+	text.copy();
+	SwtTestUtil.processEvents(100, null);
+}
+
+private void pasteFromClipboard(Text text) throws InterruptedException {
+	String oldText = text.getText();
+	text.paste();
+	SwtTestUtil.processEvents(1000, () -> !oldText.equals(text.getText()));
+}
+
 }
