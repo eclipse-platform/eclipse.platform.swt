@@ -151,6 +151,17 @@ NSSize cellSizeForBounds (long id, long sel, NSRect cellFrame) {
 		size.height = Math.max(size.height, imageSize.height);
 	}
 
+	// Native buttons in Cocoa always render with a height of 24.0; a font size higher than 16pt is not reflected.
+	// Therefore, we adjust the button height manually, if a custom font with a size > 16 is set.
+	if (font != null && font.handle.pointSize() > 16.0) {
+		NSCell cell = new NSCell (id);
+		NSRect titleRect = cell.titleRectForBounds(cellFrame);
+		// For some reason, the titleRectForBounds() returns too small heights for font sizes > 20
+		// We fix this by adjusting the height by 8 which leads to nicer results for all sizes.
+		final int FONT_SIZE_HEIGHT_ADJUST = 8;
+		size.height = Math.max(size.height, titleRect.height + FONT_SIZE_HEIGHT_ADJUST);
+	}
+
 	if (((style & (SWT.PUSH|SWT.TOGGLE)) !=0) && (style & (SWT.FLAT|SWT.WRAP)) == 0) {
 		if (image != null) {
 			NSCell cell = new NSCell(id);
