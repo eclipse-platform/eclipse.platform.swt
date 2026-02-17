@@ -661,8 +661,19 @@ public void create (Composite parent, int style) {
 
 	if (FirstCreate) {
 		FirstCreate = false;
+
 		// Register the swt:// custom protocol for BrowserFunction calls via XMLHttpRequest
 		long context = WebKitGTK.webkit_web_context_get_default();
+		if (GTK.GTK4) {
+			String xdgRuntimeDir = System.getenv("XDG_RUNTIME_DIR");
+			if (xdgRuntimeDir != null && !xdgRuntimeDir.isEmpty()) {
+				byte[] path = Converter.wcsToMbcs(xdgRuntimeDir, true);
+				WebKitGTK.webkit_web_context_add_path_to_sandbox(context, path, false);
+			}
+			// Add /tmp to sandbox for temporary files
+			byte[] tmpPath = Converter.wcsToMbcs("/tmp", true);
+			WebKitGTK.webkit_web_context_add_path_to_sandbox(context, tmpPath, false);
+		}
 		WebKitGTK.webkit_web_context_register_uri_scheme(context, SWT_PROTOCOL, RequestProc.getAddress(), 0, 0);
 		long security = WebKitGTK.webkit_web_context_get_security_manager(context);
 		WebKitGTK.webkit_security_manager_register_uri_scheme_as_secure(security, SWT_PROTOCOL);
