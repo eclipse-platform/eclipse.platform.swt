@@ -395,6 +395,9 @@ public static final native void webkit_web_context_set_tls_errors_policy(long co
 public static final native void webkit_web_context_register_uri_scheme(long context, byte[] scheme, long callback, long user_data, long user_data_destroy_func);
 
 /** @method flags=dynamic */
+public static final native void webkit_web_context_add_path_to_sandbox(long context, byte[] path, boolean read_only);
+
+/** @method flags=dynamic */
 public static final native int webkit_web_view_can_go_back(long web_view);
 
 /** @method flags=dynamic */
