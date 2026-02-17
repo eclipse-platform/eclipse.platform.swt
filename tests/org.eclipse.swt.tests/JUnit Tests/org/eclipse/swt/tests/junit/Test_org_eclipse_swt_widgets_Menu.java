@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -17,8 +17,8 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.HelpListener;
@@ -57,16 +57,11 @@ public void test_ConstructorLorg_eclipse_swt_widgets_Control() {
 
 @Test
 public void test_ConstructorLorg_eclipse_swt_widgets_DecorationsI() {
-	Menu newMenu;
 	Shell nullShell = null;
-	try {
-		newMenu = new Menu(nullShell, SWT.NULL);
-		newMenu.dispose();
-		fail("No exception thrown for parent == null");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> new Menu(nullShell, SWT.NULL),
+			"No exception thrown for parent == null");
 
-	newMenu = new Menu(shell, SWT.NULL);
+	new Menu(shell, SWT.NULL);
 }
 
 @Test
@@ -76,17 +71,11 @@ public void test_ConstructorLorg_eclipse_swt_widgets_Menu() {
 
 @Test
 public void test_ConstructorLorg_eclipse_swt_widgets_MenuItem() {
-	Menu newMenu;
-	MenuItem mItem = null;
-	try {
-		newMenu = new Menu(mItem);
-		newMenu.dispose();
-		fail("No exception thrown for parent == null");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () ->
+		new Menu((MenuItem)null),"No exception thrown for parent == null");
 
-	mItem = new MenuItem(menu, SWT.NULL);
-	newMenu = new Menu(mItem);
+	MenuItem mItem = new MenuItem(menu, SWT.NULL);
+	new Menu(mItem);
 }
 
 @Test
@@ -94,21 +83,15 @@ public void test_addHelpListenerLorg_eclipse_swt_events_HelpListener() {
 	listenerCalled = false;
 	HelpListener listener = e -> listenerCalled = true;
 
-	try {
-		menu.addHelpListener(null);
-		fail("No exception thrown for addHelpListener with null argument");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> menu.addHelpListener(null),
+			"No exception thrown for addHelpListener with null argument");
 
 	menu.addHelpListener(listener);
 	menu.notifyListeners(SWT.Help, new Event());
 	assertTrue(listenerCalled);
 
-	try {
-		menu.removeHelpListener(null);
-		fail("No exception thrown for removeHelpListener with null argument");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> menu.removeHelpListener(null),
+			"No exception thrown for removeHelpListener with null argument");
 
 	listenerCalled = false;
 	menu.removeHelpListener(listener);
@@ -130,11 +113,8 @@ public void test_addMenuListenerLorg_eclipse_swt_events_MenuListener() {
 		}
 	};
 
-	try {
-		menu.addMenuListener(null);
-		fail("No exception thrown for addMenuListener with null argument");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> menu.addMenuListener(null),
+			"No exception thrown for addMenuListener with null argument");
 
 	menu.addMenuListener(menuListener);
 	menu.notifyListeners(SWT.Show, new Event());
@@ -144,11 +124,8 @@ public void test_addMenuListenerLorg_eclipse_swt_events_MenuListener() {
 	menu.notifyListeners(SWT.Hide, new Event());
 	assertTrue(listenerCalled);
 
-	try {
-		menu.removeMenuListener(null);
-		fail("No exception thrown for removeMenuListener with null argument");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> menu.removeMenuListener(null),
+			"No exception thrown for removeMenuListener with null argument");
 
 	listenerCalled = false;
 	menu.removeMenuListener(menuListener);
@@ -317,13 +294,8 @@ public void test_setLocationII() {
 
 @Test
 public void test_setLocationLorg_eclipse_swt_graphics_Point() {
-	menu.setLocation(new Point(0,0));
-	try {
-		menu.setLocation(null);
-		fail("No exception thrown for null argument");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	menu.setLocation(new Point(0, 0));
+	assertThrows(IllegalArgumentException.class, () -> menu.setLocation(null), "No exception thrown for null argument");
 }
 
 /* custom */
