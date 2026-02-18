@@ -29,6 +29,11 @@ elif [ "x${MODEL}" = "xarm64" ] || [ "x${MODEL}" = "xaarch64" ]; then
 	fi
 fi
 
-export MACOSX_DEPLOYMENT_TARGET=10.10
+#TODO: increment this?
+export MACOSX_DEPLOYMENT_TARGET=10.15
+export CLANG_ENABLE_OBJC_WEAK = YES
+export CLANG_WARN_UNGUARDED_AVAILABILITY = YES
+export GCC_TREAT_WARNINGS_AS_ERRORS = YES
+
 
 make -f make_macosx.mak $1 $2 $3 $4 $5 $6 $7 $8 $9
