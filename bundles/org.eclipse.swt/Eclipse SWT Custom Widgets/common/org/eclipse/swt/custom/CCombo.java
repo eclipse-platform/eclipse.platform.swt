@@ -1187,6 +1187,9 @@ void internalLayout (boolean changed) {
 	int width = rect.width;
 	int height = rect.height;
 	Point arrowSize = arrow.computeSize (SWT.DEFAULT, height, changed);
+	// clamp the height of the arrow to the maximum of the client area
+	// https://github.com/eclipse-platform/eclipse.platform.swt/issues/2817
+	arrowSize.y = Math.min(height, arrowSize.y);
 	text.setBounds (0, 0, width - arrowSize.x, height);
 	arrow.setBounds (width - arrowSize.x, 0, arrowSize.x, arrowSize.y);
 }
