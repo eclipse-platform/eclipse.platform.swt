@@ -204,9 +204,7 @@ private void drawCaret(long cairo) {
 		Cairo.cairo_save(cairo);
 
 		if (caret.image != null && !caret.image.isDisposed() && caret.image.mask == 0) {
-			if (!GTK.GTK4) {
-				Cairo.cairo_set_source_rgb(cairo, 1, 1, 1);
-			}
+			Cairo.cairo_set_source_rgb(cairo, 1, 1, 1);
 			Cairo.cairo_set_operator(cairo, Cairo.CAIRO_OPERATOR_DIFFERENCE);
 			long surface = Cairo.cairo_get_target(cairo);
 			int nWidth = 0;
@@ -224,9 +222,7 @@ private void drawCaret(long cairo) {
 			Cairo.cairo_set_source_surface(cairo, caret.image.surface, 0, 0);
 			Cairo.cairo_paint(cairo);
 		} else {
-			if (!GTK.GTK4) {
-				Cairo.cairo_set_source_rgb(cairo, 1, 1, 1);
-			}
+			Cairo.cairo_set_source_rgb(cairo, 1, 1, 1);
 			Cairo.cairo_set_operator(cairo, Cairo.CAIRO_OPERATOR_DIFFERENCE);
 			int nWidth = caret.width, nHeight = caret.height;
 			if (nWidth <= 0) nWidth = Caret.DEFAULT_WIDTH;
