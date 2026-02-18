@@ -168,7 +168,7 @@ public ImageData getImageData(int zoom) {
 			OS.g_object_unref(paintable);
 		} else {
 			long icon_theme = GTK3.gtk_icon_theme_get_default();
-			long gicon_info = GTK3.gtk_icon_theme_lookup_by_gicon(icon_theme, gicon, 16/*size*/, 0);
+			long gicon_info = GTK3.gtk_icon_theme_lookup_by_gicon_for_scale(icon_theme, gicon, 16/*size*/, 1/*scale*/, 0);
 			if (gicon_info != 0) {
 				pixbuf = GTK3.gtk_icon_info_load_icon(gicon_info, null);
 				OS.g_object_unref(gicon_info);
@@ -204,6 +204,10 @@ public ImageData getImageData(int zoom) {
 					}
 				}
 				data.alphaData = alphaData;
+				if (height > 16 && width > 16) {
+					ImageData scaled = data.scaledTo(16, 16);
+					data = scaled;
+				}
 			} else {
 				PaletteData palette = new PaletteData(0xFF0000, 0xFF00, 0xFF);
 				data = new ImageData(width, height, 24, palette, 4, srcData);
