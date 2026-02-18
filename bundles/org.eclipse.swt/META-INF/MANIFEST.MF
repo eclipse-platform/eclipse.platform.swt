@@ -5,7 +5,7 @@ Bundle-SymbolicName: org.eclipse.swt; singleton:=true
 Bundle-Version: 3.133.0.qualifier
 Bundle-ManifestVersion: 2
 Bundle-Localization: plugin
-DynamicImport-Package: org.eclipse.swt.accessibility2
+DynamicImport-Package: org.eclipse.swt.accessibility2,org.junit.jupiter.api.extension.*
 Export-Package: 
  org.eclipse.swt,
  org.eclipse.swt.accessibility,
