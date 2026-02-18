@@ -31,6 +31,14 @@ public boolean canGoBack() {
 	return OS.objc_msgSend_bool(this.id, OS.sel_canGoBack);
 }
 
+public void makeTextLarger() {
+	OS.objc_msgSend(this.id, OS.sel_makeTextLarger);
+}
+
+public void makeTextSmaller() {
+	OS.objc_msgSend(this.id, OS.sel_makeTextSmaller);
+}
+
 public boolean canGoForward() {
 	return OS.objc_msgSend_bool(this.id, OS.sel_canGoForward);
 }
