@@ -1774,6 +1774,23 @@ public static boolean isSystemDarkTheme () {
 	return OS.isSystemDarkAppearance();
 }
 
+/**
+ * Returns <code>true</code> if SWT is running in headless mode, else
+ * returns <code>false</code>.
+ * <p>
+ * In headless mode, SWT widgets do not create native platform resources
+ * and operations are no-ops or return default values.
+ * </p>
+ *
+ * @return <code>true</code> if SWT is running in headless mode, else
+ *         returns <code>false</code>.
+ *
+ * @since 3.132
+ */
+public static boolean isHeadless () {
+	return false;
+}
+
 int getLastEventTime () {
 	NSEvent event = application != null ? application.currentEvent() : null;
 	if (event == null) return 0;
