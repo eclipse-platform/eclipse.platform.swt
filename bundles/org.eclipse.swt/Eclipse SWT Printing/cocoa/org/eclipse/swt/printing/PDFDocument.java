@@ -31,6 +31,10 @@ import org.eclipse.swt.internal.cocoa.*;
  * when those instances are no longer required.
  * </p>
  * <p>
+ * <b>Note:</b> On Windows, this class uses the built-in "Microsoft Print to PDF"
+ * printer which is available on Windows 10 and later.
+ * </p>
+ * <p>
  * The following example demonstrates how to use PDFDocument:
  * </p>
  * <pre>
@@ -76,6 +80,12 @@ public final class PDFDocument extends Device {
 	/**
 	 * Constructs a new PDFDocument with the specified filename and page size.
 	 * <p>
+	 * The page size specifies the preferred dimensions in points (1/72 inch). On Windows,
+	 * the Microsoft Print to PDF driver only supports standard paper sizes, so the actual
+	 * page size may be larger than requested. Use {@link #getBounds()} to query the actual
+	 * page dimensions after construction.
+	 * </p>
+	 * <p>
 	 * You must dispose the PDFDocument when it is no longer required.
 	 * </p>
 	 *
@@ -87,35 +97,43 @@ public final class PDFDocument extends Device {
 	 *    <li>ERROR_INVALID_ARGUMENT - if width or height is not positive</li>
 	 * </ul>
 	 * @exception SWTError <ul>
-	 *    <li>ERROR_NO_HANDLES - if the PDF context could not be created</li>
+	 *    <li>ERROR_NO_HANDLES - if the PDF printer is not available</li>
 	 * </ul>
 	 *
 	 * @see PageSize
 	 * @see #dispose()
+	 * @see #getBounds()
 	 */
 	public PDFDocument(String filename, PageSize pageSize) {
 		super(checkData(filename, pageSize));
 	}
 
 	/**
-	 * Constructs a new PDFDocument with the specified filename and page dimensions.
+	 * Constructs a new PDFDocument with the specified filename and preferred page dimensions.
+	 * <p>
+	 * The dimensions specify the preferred page size in points (1/72 inch). On Windows,
+	 * the Microsoft Print to PDF driver only supports standard paper sizes, so the actual
+	 * page size may be larger than requested. Use {@link #getBounds()} to query the actual
+	 * page dimensions after construction.
+	 * </p>
 	 * <p>
 	 * You must dispose the PDFDocument when it is no longer required.
 	 * </p>
 	 *
 	 * @param filename the path to the PDF file to create
-	 * @param widthInPoints the width of each page in points (1/72 inch)
-	 * @param heightInPoints the height of each page in points (1/72 inch)
+	 * @param widthInPoints the preferred width of each page in points (1/72 inch)
+	 * @param heightInPoints the preferred height of each page in points (1/72 inch)
 	 *
 	 * @exception IllegalArgumentException <ul>
 	 *    <li>ERROR_NULL_ARGUMENT - if filename is null</li>
 	 *    <li>ERROR_INVALID_ARGUMENT - if width or height is not positive</li>
 	 * </ul>
 	 * @exception SWTError <ul>
-	 *    <li>ERROR_NO_HANDLES - if the PDF context could not be created</li>
+	 *    <li>ERROR_NO_HANDLES - if the PDF printer is not available</li>
 	 * </ul>
 	 *
 	 * @see #dispose()
+	 * @see #getBounds()
 	 */
 	public PDFDocument(String filename, double widthInPoints, double heightInPoints) {
 		this(filename, new PageSize(widthInPoints, heightInPoints));
@@ -237,9 +255,13 @@ public final class PDFDocument extends Device {
 	 * This method should be called after completing the content of one page
 	 * and before starting to draw on the next page.
 	 * </p>
+	 * <p>
+	 * <b>Note:</b> On Windows, changing page dimensions after the document
+	 * has been started may not be fully supported by all printer drivers.
+	 * </p>
 	 *
-	 * @param widthInPoints the width of the new page in points (1/72 inch)
-	 * @param heightInPoints the height of the new page in points (1/72 inch)
+	 * @param widthInPoints the preferred width of the new page in points (1/72 inch)
+	 * @param heightInPoints the preferred height of the new page in points (1/72 inch)
 	 *
 	 * @exception IllegalArgumentException <ul>
 	 *    <li>ERROR_INVALID_ARGUMENT - if width or height is not positive</li>
@@ -258,9 +280,13 @@ public final class PDFDocument extends Device {
 	}
 
 	/**
-	 * Returns the width of the current page in points.
+	 * Returns the actual width of the current page in points.
+	 * <p>
+	 * On Windows, this may be larger than the preferred width specified
+	 * in the constructor due to standard paper size constraints.
+	 * </p>
 	 *
-	 * @return the width in points (1/72 inch)
+	 * @return the actual width in points (1/72 inch)
 	 *
 	 * @exception SWTException <ul>
 	 *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
@@ -272,9 +298,13 @@ public final class PDFDocument extends Device {
 	}
 
 	/**
-	 * Returns the height of the current page in points.
+	 * Returns the actual height of the current page in points.
+	 * <p>
+	 * On Windows, this may be larger than the preferred height specified
+	 * in the constructor due to standard paper size constraints.
+	 * </p>
 	 *
-	 * @return the height in points (1/72 inch)
+	 * @return the actual height in points (1/72 inch)
 	 *
 	 * @exception SWTException <ul>
 	 *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
@@ -287,8 +317,8 @@ public final class PDFDocument extends Device {
 
 	/**
 	 * Returns the DPI (dots per inch) of the PDF document.
-	 * PDF documents work in points where 1 point = 1/72 inch,
-	 * so the DPI is always 72.
+	 * Since the coordinate system is scaled to work in points (1/72 inch),
+	 * this always returns 72 DPI, consistent with GTK and Cocoa implementations.
 	 *
 	 * @return a point whose x coordinate is the horizontal DPI and whose y coordinate is the vertical DPI
 	 *
@@ -305,6 +335,10 @@ public final class PDFDocument extends Device {
 	/**
 	 * Returns a rectangle describing the receiver's size and location.
 	 * The rectangle dimensions are in points (1/72 inch).
+	 * <p>
+	 * On Windows, this returns the actual page size which may be larger
+	 * than the preferred size specified in the constructor.
+	 * </p>
 	 *
 	 * @return the bounding rectangle
 	 *
