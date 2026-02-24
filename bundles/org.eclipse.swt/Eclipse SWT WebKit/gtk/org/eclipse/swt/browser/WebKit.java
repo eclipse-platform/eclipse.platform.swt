@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010, 2025 IBM Corporation and others.
+ * Copyright (c) 2010, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -322,13 +322,15 @@ class WebKit extends WebBrowser {
 	@Override
 	String getJavaCallDeclaration() {
 		// callJava does a synchronous XMLHttpRequest, which is handled by RequestProc.
-		return "if (!window.callJava) { window.callJava = function(index, token, args) {\n"
-				+ "var xhr = new XMLHttpRequest();\n"
-				+ "var uri = 'swt://browserfunction/' + index + '/' + token + '?' + encodeURIComponent(JSON.stringify(args));\n"
-				+ "xhr.open('POST', uri, false);\n"
-				+ "xhr.send(null);\n"
-				+ "return JSON.parse(xhr.responseText);\n"
-				+ "}}\n";
+		return """
+			if (!window.callJava) { window.callJava = function(index, token, args) {
+			var xhr = new XMLHttpRequest();
+			var uri = 'swt://browserfunction/' + index + '/' + token + '?' + encodeURIComponent(JSON.stringify(args));
+			xhr.open('POST', uri, false);
+			xhr.send(null);
+			return JSON.parse(xhr.responseText);
+			}}
+			""";
 	}
 
 	/**
@@ -345,7 +347,7 @@ class WebKit extends WebBrowser {
 
 	private static String internalGetWebKitVersionStr () {
 		int [] vers = internalGetWebkitVersion();
-		return String.valueOf(vers[0]) + "." + String.valueOf(vers[1]) + "." + String.valueOf(vers[2]);
+		return String.valueOf(vers[0]) + "." + vers[1] + "." + vers[2];
 	}
 
 
@@ -419,12 +421,12 @@ static long JSDOMEventProc (long arg0, long event, long user_data) {
 								if ((state[0] & GDK.GDK_MOD1_MASK) != 0) keyEvent.stateMask |= SWT.ALT;
 								if ((state[0] & GDK.GDK_SHIFT_MASK) != 0) keyEvent.stateMask |= SWT.SHIFT;
 								if ((state[0]& GDK.GDK_CONTROL_MASK) != 0) keyEvent.stateMask |= SWT.CONTROL;
-								try { // to avoid deadlocks, evaluate() should not block during listener. See Bug 512001
-									  // I.e, evaluate() can be called and script will be executed, but no return value will be provided.
+								try { // to avoid deadlocks, evaluate() should not block during listener. See Bug
+										// 512001
+										// I.e, evaluate() can be called and script will be executed, but no return
+										// value will be provided.
 									nonBlockingEvaluate++;
-								browser.webBrowser.sendKeyEvent (keyEvent);
-								} catch (Exception e) {
-									throw e;
+									browser.webBrowser.sendKeyEvent(keyEvent);
 								} finally {
 									nonBlockingEvaluate--;
 								}
@@ -580,16 +582,14 @@ long webkit_authenticate (long web_view, long request){
 
 	String location = getUrl();
 
-	for (int i = 0; i < authenticationListeners.length; i++) {
+	for (AuthenticationListener listener : authenticationListeners) {
 		AuthenticationEvent event = new AuthenticationEvent (browser);
 		event.location = location;
 
 		try { // to avoid deadlocks, evaluate() should not block during authentication listener. See Bug 512001
 			  // I.e, evaluate() can be called and script will be executed, but no return value will be provided.
 			nonBlockingEvaluate++;
-			authenticationListeners[i].authenticate (event);
-		} catch (Exception e) {
-			throw e;
+			listener.authenticate (event);
 		} finally {
 			nonBlockingEvaluate--;
 		}
@@ -683,9 +683,9 @@ public void create (Composite parent, int style) {
 	Browser parentBrowser = WebKit.parentBrowser;
 	if (parentBrowser == null && parentShell != null) {
 		Control[] children = parentShell.getChildren();
-		for (int i = 0; i < children.length; i++) {
-			if (children[i] instanceof Browser) {
-				parentBrowser = (Browser) children[i];
+		for (Control child : children) {
+			if (child instanceof Browser b) {
+				parentBrowser = b;
 				break;
 			}
 		}
@@ -1041,7 +1041,7 @@ private static class Webkit2AsyncToSync {
 		static int getNextId() {
 			int value = 0;
 			boolean unique = false;
-			while (unique == false) {
+			while (!unique) {
 				value = nextCallbackId;
 				unique = !usedCallbackIds.contains(value);
 				if (nextCallbackId != Integer.MAX_VALUE)
@@ -1099,7 +1099,7 @@ private static class Webkit2AsyncToSync {
 		} else {
 			// Callback logic: Initiate an async callback and wait for it to finish.
 			// The callback comes back in runjavascript_callback(..) below.
-			Consumer<Integer> asyncFunc = (callbackId) -> {
+			Consumer<Integer> asyncFunc = callbackId -> {
 				if (GTK.GTK4) {
 					byte[] wcsToMbcs = Converter.wcsToMbcs(script, false);
 					WebKitGTK.webkit_web_view_evaluate_javascript(webView, wcsToMbcs, wcsToMbcs.length, 0, 0, 0,
@@ -1215,7 +1215,7 @@ private static class Webkit2AsyncToSync {
 		long guchar_data = WebKitGTK.webkit_web_resource_get_data_finish(WebResource, GAsyncResult, gsize_len, gerrorRes);
 		if (gerrorRes[0] != 0 || guchar_data == 0) {
 			OS.g_error_free(gerrorRes[0]);
-			retObj.returnValue = (String) "";
+			retObj.returnValue = "";
 		} else {
 			int len = (int) gsize_len[0];
 			byte[] buffer = new byte [len];
@@ -1352,9 +1352,8 @@ private static class Webkit2AsyncToSync {
 		Object resultObject = GDBus.convertGVariantToJava(user_data);
 
 		// We are expecting a GVariant tuple, anything else means something went wrong
-		if (resultObject instanceof Object []) {
+		if (resultObject instanceof Object [] nameAndId) {
 			// Unpack callback ID and cookie name
-			Object [] nameAndId = (Object []) resultObject;
 			String cookieName = (String) nameAndId[0];
 			int callbackId = ((Number) nameAndId[1]).intValue();
 			Webkit2AsyncReturnObj retObj = CallBackMap.getObj(callbackId);
@@ -1796,8 +1795,7 @@ boolean handleMouseEvent (String type, int screenX, int screenY, int detail, int
 	 * coordinates relative to themselves rather than relative to their top-
 	 * level page.  Convert screen-relative coordinates to be browser-relative.
 	 */
-	Point position = new Point (screenX, screenY);
-	position = browser.getDisplay ().map (null, browser, position);
+	Point position = browser.getDisplay ().map (null, browser, screenX, screenY);
 
 	Event mouseEvent = new Event ();
 	mouseEvent.widget = browser;
@@ -1886,8 +1884,8 @@ long handleLoadCommitted (long uri, boolean top) {
 	event.top = top;
 	Runnable fireLocationChanged = () ->  {
 		if (browser.isDisposed ()) return;
-		for (int i = 0; i < locationListeners.length; i++) {
-			locationListeners[i].changed (event);
+		for (LocationListener listener : locationListeners) {
+			listener.changed (event);
 		}
 	};
 	browser.getDisplay().asyncExec(fireLocationChanged);
@@ -1910,8 +1908,8 @@ private void fireProgressCompletedEvent(){
 		progress.widget = browser;
 		progress.current = MAX_PROGRESS;
 		progress.total = MAX_PROGRESS;
-		for (int i = 0; i < progressListeners.length; i++) {
-			progressListeners[i].completed (progress);
+		for (ProgressListener listener : progressListeners) {
+			listener.completed (progress);
 		}
 	};
 	browser.getDisplay().asyncExec(fireProgressEvents);
@@ -2121,14 +2119,13 @@ public boolean setUrl (String url, String postData, String[] headers) {
 	*/
 	long settings = WebKitGTK.webkit_web_view_get_settings (webView);
 	if (headers != null) {
-		for (int i = 0; i < headers.length; i++) {
-			String current = headers[i];
+		for (String current : headers) {
 			if (current != null) {
 				int index = current.indexOf (':');
 				if (index != -1) {
 					String key = current.substring (0, index).trim ();
 					String value = current.substring (index + 1).trim ();
-					if (key.length () > 0 && value.length () > 0) {
+					if (!key.isEmpty() && !value.isEmpty()) {
 						if (key.equalsIgnoreCase (USER_AGENT)) {
 							byte[] bytes = Converter.wcsToMbcs (value, true);
 							OS.g_object_set (settings, WebKitGTK.user_agent, bytes, 0);
@@ -2171,8 +2168,7 @@ public boolean setUrl (String url, String postData, String[] headers) {
 			try {
 				URL base = new URI(base_url).toURL();
 				URLConnection url_conn = base.openConnection();
-				if (url_conn instanceof HttpURLConnection) {
-					HttpURLConnection conn = (HttpURLConnection) url_conn;
+				if (url_conn instanceof HttpURLConnection conn) {
 
 					{ // Configure connection.
 						conn.setRequestMethod("POST"); //$NON-NLS-1$
@@ -2287,8 +2283,8 @@ long webkit_close_web_view (long web_view) {
 	newEvent.widget = browser;
 	Runnable fireCloseWindowListeners = () -> {
 		if (browser.isDisposed()) return;
-		for (int i = 0; i < closeWindowListeners.length; i++) {
-			closeWindowListeners[i].close (newEvent);
+		for (CloseWindowListener closeWindowListener : closeWindowListeners) {
+			closeWindowListener.close (newEvent);
 		}
 		browser.dispose ();
 	};
@@ -2305,8 +2301,8 @@ long webkit_create_web_view (long web_view, long frame) {
 	newEvent.required = true;
 	Runnable fireOpenWindowListeners = () -> {
 		if (openWindowListeners != null) {
-			for (int i = 0; i < openWindowListeners.length; i++) {
-				openWindowListeners[i].open (newEvent);
+			for (OpenWindowListener listener : openWindowListeners) {
+				listener.open (newEvent);
 			}
 		}
 	};
@@ -2314,8 +2310,7 @@ long webkit_create_web_view (long web_view, long frame) {
 		nonBlockingEvaluate++; 	  // running evaluate() inside openWindowListener and waiting for return leads to deadlock. Bug 512001
 		parentBrowser = browser;
 		fireOpenWindowListeners.run();// Permit evaluate()/execute() to execute scripts in listener, but do not provide return value.
-	} catch (Exception e) {
-		throw e; // rethrow exception if thrown, but decrement counter first.
+	// rethrow exception if thrown, but decrement counter first.
 	} finally {
 		parentBrowser = null;
 		nonBlockingEvaluate--;
@@ -2415,8 +2410,8 @@ long webkit_hovering_over_link (long web_view, long title, long uri) {
 		event.text = text;
 		Runnable fireStatusTextListener = () -> {
 			if (browser.isDisposed() || statusTextListeners == null) return;
-			for (int i = 0; i < statusTextListeners.length; i++) {
-				statusTextListeners[i].changed (event);
+			for (StatusTextListener listener : statusTextListeners) {
+				listener.changed (event);
 			}
 		};
 		browser.getDisplay().asyncExec(fireStatusTextListener);
@@ -2464,12 +2459,10 @@ long webkit_decide_policy (long web_view, long decision, int decision_type, long
 		try {
 			nonBlockingEvaluate++;
 			if (locationListeners != null) {
-				for (int i = 0; i < locationListeners.length; i++) {
-					locationListeners[i].changing (newEvent);
+				for (LocationListener listener : locationListeners) {
+					listener.changing (newEvent);
 				}
 			}
-		} catch (Exception e) {
-			throw e;
 		} finally {
 			nonBlockingEvaluate--;
 		}
@@ -2576,44 +2569,17 @@ long webkit_load_failed_tls (long web_view, long failing_uri, long certificate, 
 		OS.g_object_ref(certificate);
 		tlsErrorCertificate = certificate;
 		convertUri (failing_uri);
-		switch ((int)error) {
-			case WebKitGTK.G_TLS_CERTIFICATE_UNKNOWN_CA: {
-				tlsErrorType = SWT.getMessage("SWT_InvalidCert_UnknownCA");
-				break;
-			}
-			case WebKitGTK.G_TLS_CERTIFICATE_BAD_IDENTITY: {
-				tlsErrorType = SWT.getMessage("SWT_InvalidCert_BadIdentity");
-				break;
-			}
-			case WebKitGTK.G_TLS_CERTIFICATE_NOT_ACTIVATED: {
-				tlsErrorType = SWT.getMessage("SWT_InvalidCert_NotActivated");
-				break;
-			}
-			case WebKitGTK.G_TLS_CERTIFICATE_EXPIRED: {
-				tlsErrorType = SWT.getMessage("SWT_InvalidCert_Expired");
-				break;
-			}
-			case WebKitGTK.G_TLS_CERTIFICATE_REVOKED: {
-				tlsErrorType = SWT.getMessage("SWT_InvalidCert_Revoked");
-				break;
-			}
-			case WebKitGTK.G_TLS_CERTIFICATE_INSECURE: {
-				tlsErrorType = SWT.getMessage("SWT_InvalidCert_Insecure");
-				break;
-			}
-			case WebKitGTK.G_TLS_CERTIFICATE_GENERIC_ERROR: {
-				tlsErrorType = SWT.getMessage("SWT_InvalidCert_GenericError");
-				break;
-			}
-			case WebKitGTK.G_TLS_CERTIFICATE_VALIDATE_ALL: {
-				tlsErrorType = SWT.getMessage("SWT_InvalidCert_ValidateAll");
-				break;
-			}
-			default: {
-				tlsErrorType = SWT.getMessage("SWT_InvalidCert_GenericError");
-				break;
-			}
-		}
+		tlsErrorType = switch ((int) error) {
+		case WebKitGTK.G_TLS_CERTIFICATE_UNKNOWN_CA -> SWT.getMessage("SWT_InvalidCert_UnknownCA");
+		case WebKitGTK.G_TLS_CERTIFICATE_BAD_IDENTITY -> SWT.getMessage("SWT_InvalidCert_BadIdentity");
+		case WebKitGTK.G_TLS_CERTIFICATE_NOT_ACTIVATED -> SWT.getMessage("SWT_InvalidCert_NotActivated");
+		case WebKitGTK.G_TLS_CERTIFICATE_EXPIRED -> SWT.getMessage("SWT_InvalidCert_Expired");
+		case WebKitGTK.G_TLS_CERTIFICATE_REVOKED -> SWT.getMessage("SWT_InvalidCert_Revoked");
+		case WebKitGTK.G_TLS_CERTIFICATE_INSECURE -> SWT.getMessage("SWT_InvalidCert_Insecure");
+		case WebKitGTK.G_TLS_CERTIFICATE_GENERIC_ERROR -> SWT.getMessage("SWT_InvalidCert_GenericError");
+		case WebKitGTK.G_TLS_CERTIFICATE_VALIDATE_ALL -> SWT.getMessage("SWT_InvalidCert_ValidateAll");
+		default -> SWT.getMessage("SWT_InvalidCert_GenericError");
+		};
 	}
 	return 0;
 }
@@ -2653,8 +2619,8 @@ long webkit_notify_progress (long web_view, long pspec) {
 	event.total = MAX_PROGRESS;
 	Runnable fireProgressChangedEvents = () -> {
 		if (browser.isDisposed() || progressListeners == null) return;
-		for (int i = 0; i < progressListeners.length; i++) {
-			progressListeners[i].changed (event);
+		for (ProgressListener listener : progressListeners) {
+			listener.changed (event);
 		}
 	};
 	browser.getDisplay().asyncExec(fireProgressChangedEvents);
@@ -2685,8 +2651,8 @@ long webkit_notify_title (long web_view, long pspec) {
 	event.widget = browser;
 	event.title = titleString;
 	Runnable fireTitleListener = () -> {
-		for (int i = 0; i < titleListeners.length; i++) {
-			titleListeners[i].changed (event);
+		for (TitleListener listener : titleListeners) {
+			listener.changed (event);
 		}
 	};
 	browser.getDisplay().asyncExec(fireTitleListener);
@@ -2717,14 +2683,13 @@ long webkit_context_menu (long web_view, long context_menu, long eventXXX, long 
 }
 
 private void addRequestHeaders(long requestHeaders, String[] headers){
-	for (int i = 0; i < headers.length; i++) {
-		String current = headers[i];
+	for (String current : headers) {
 		if (current != null) {
 			int index = current.indexOf (':');
 			if (index != -1) {
 				String key = current.substring (0, index).trim ();
 				String value = current.substring (index + 1).trim ();
-				if (key.length () > 0 && value.length () > 0) {
+				if (!key.isEmpty() && !value.isEmpty()) {
 					byte[] nameBytes = Converter.wcsToMbcs (key, true);
 					byte[] valueBytes = Converter.wcsToMbcs (value, true);
 					WebKitGTK.soup_message_headers_append (requestHeaders, nameBytes, valueBytes);
@@ -2771,8 +2736,8 @@ long webkit_web_view_ready (long web_view) {
 
 	Runnable fireVisibilityListeners = () -> {
 		if (browser.isDisposed()) return;
-		for (int i = 0; i < visibilityWindowListeners.length; i++) {
-			visibilityWindowListeners[i].show (newEvent);
+		for (VisibilityWindowListener listener : visibilityWindowListeners) {
+			listener.show (newEvent);
 		}
 	};
 	// Postpone execution of listener, to avoid deadlocks in case evaluate() is
