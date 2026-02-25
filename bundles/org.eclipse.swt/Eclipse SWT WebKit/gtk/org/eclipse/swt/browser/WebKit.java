@@ -786,7 +786,11 @@ public void create (Composite parent, int style) {
 	OS.g_object_set (settings, WebKitGTK.enable_developer_extras, 1, 0);
 	//disable hardware acceleration due to  https://bugs.webkit.org/show_bug.cgi?id=239429#c11
 	//even evolution ended up doing the same https://gitlab.gnome.org/GNOME/evolution/-/commit/eb62ccaa28bbbca7668913ce7d8056a6d75f9b05
-	if (!GTK.GTK4) {
+	if (GTK.GTK4) {
+		// "1" is "never" in webkitgtk6 https://webkitgtk.org/reference/webkitgtk/stable/enum.HardwareAccelerationPolicy.html#never
+		OS.g_object_set (settings, WebKitGTK.hardware_acceleration_policy, 1, 0);
+	} else {
+		// "2" is "never" in webkitgtk4 https://webkitgtk.org/reference/webkit2gtk/stable/enum.HardwareAccelerationPolicy.html#never
 		OS.g_object_set (settings, WebKitGTK.hardware_acceleration_policy, 2, 0);
 	}
 
