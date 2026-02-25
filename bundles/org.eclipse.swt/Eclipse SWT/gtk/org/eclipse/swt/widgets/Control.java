@@ -626,18 +626,54 @@ public boolean print (GC gc) {
 	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	long topHandle = topHandle ();
 	GTK.gtk_widget_realize (topHandle);
-	/*
-	 * Feature in GTK: gtk_widget_draw() will only draw if the
-	 * widget's priv->alloc_needed field is set to TRUE. Since
-	 * this field is private and inaccessible, get and set the
-	 * allocation to trigger it to be TRUE. See bug 530969.
-	 */
-	GtkAllocation allocation = new GtkAllocation ();
-	GTK.gtk_widget_get_allocation(topHandle, allocation);
-	// Prevent allocation warnings
-	GTK.gtk_widget_get_preferred_size(topHandle, null, null);
-	GTK3.gtk_widget_size_allocate(topHandle, allocation);
-	GTK3.gtk_widget_draw(topHandle, gc.handle);
+
+	if (GTK.GTK4) {
+        /*
+         * In GTK4 gtk_widget_draw() has been removed. Rendering is now
+         * done via GtkSnapshot and the GskRenderNode pipeline. Snapshot the widget,
+         * extract the render node, then draw it onto the GC's Cairo context using
+         * gsk_render_node_draw().
+         */
+
+        long widgetPaintable = GTK4.gtk_widget_paintable_new(topHandle);
+        if (widgetPaintable == 0) return false;
+        try {
+            int width  = GTK4.gtk_widget_get_width(topHandle);
+            int height = GTK4.gtk_widget_get_height(topHandle);
+
+            long snapshot = GTK4.gtk_snapshot_new();
+            if (snapshot == 0) return false;
+
+            try {
+                GTK4.gdk_paintable_snapshot(widgetPaintable, snapshot, width, height);
+
+                long renderNode = GTK4.gtk_snapshot_free_to_node(snapshot);
+                snapshot = 0; // freed by gtk_snapshot_free_to_node
+
+                if (renderNode == 0) return false;
+
+                GTK4.gsk_render_node_draw(renderNode, gc.handle);
+                GTK4.gsk_render_node_unref(renderNode);
+            } finally {
+                if (snapshot != 0) OS.g_object_unref(snapshot);
+            }
+        } finally {
+            OS.g_object_unref(widgetPaintable);
+        }
+    } else {
+		/*
+		 * In GTK 3 gtk_widget_draw() will only draw if the
+		 * widget's priv->alloc_needed field is set to TRUE. Since
+		 * this field is private and inaccessible, get and set the
+		 * allocation to trigger it to be TRUE. See bug 530969.
+		 */
+		GtkAllocation allocation = new GtkAllocation ();
+		GTK.gtk_widget_get_allocation(topHandle, allocation);
+		// Prevent allocation warnings
+		GTK.gtk_widget_get_preferred_size(topHandle, null, null);
+		GTK3.gtk_widget_size_allocate(topHandle, allocation);
+		GTK3.gtk_widget_draw(topHandle, gc.handle);
+    }
 	return true;
 }
 
