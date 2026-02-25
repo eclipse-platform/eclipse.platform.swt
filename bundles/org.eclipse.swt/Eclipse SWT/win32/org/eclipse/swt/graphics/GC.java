@@ -2832,27 +2832,7 @@ private void drawTextInPixels (String string, int x, int y, int flags) {
 	OS.SetBkMode(handle, oldBkMode);
 }
 
-private boolean useGDIP (long hdc, char[] buffer) {
-	short[] glyphs = new short[buffer.length];
-	OS.GetGlyphIndices(hdc, buffer, buffer.length, glyphs, OS.GGI_MARK_NONEXISTING_GLYPHS);
-	for (int i = 0; i < glyphs.length; i++) {
-		if (glyphs [i] == -1) {
-			switch (buffer[i]) {
-				case '\t':
-				case '\n':
-				case '\r':
-					break;
-				default:
-					return true;
-			}
-		}
-	}
-	return false;
-}
-
 void drawText(long gdipGraphics, String string, int x, int y, int flags, Point size) {
-	int length = string.length();
-	char[] chars = string.toCharArray();
 	long hdc = Gdip.Graphics_GetHDC(gdipGraphics);
 	long hFont = data.hGDIFont;
 	if (hFont == 0 && data.font != null) hFont = SWTFontProvider.getFontHandle(data.font, data.nativeZoom);
@@ -2860,183 +2840,17 @@ void drawText(long gdipGraphics, String string, int x, int y, int flags, Point s
 	if (hFont != 0) oldFont = OS.SelectObject(hdc, hFont);
 	TEXTMETRIC lptm = new TEXTMETRIC();
 	OS.GetTextMetrics(hdc, lptm);
-	boolean gdip = useGDIP(hdc, chars);
 	if (hFont != 0) OS.SelectObject(hdc, oldFont);
 	Gdip.Graphics_ReleaseHDC(gdipGraphics, hdc);
-	if (gdip) {
-		drawTextGDIP(gdipGraphics, string, x, y, flags, size == null, size);
-		return;
-	}
-	int i = 0, start = 0, end = 0, drawX = x, drawY = y, width = 0, mnemonicIndex = -1;
-	if ((flags & (SWT.DRAW_DELIMITER | SWT.DRAW_TAB | SWT.DRAW_MNEMONIC)) != 0) {
-		int tabWidth = lptm.tmAveCharWidth * 8;
-		while (i < length) {
-			char c = chars [end++] = chars [i++];
-			switch (c) {
-				case '\t':
-					if ((flags & SWT.DRAW_TAB) != 0) {
-						int l = end - start - 1;
-						RectF bounds = drawText(gdipGraphics, chars, start, l, drawX, drawY, flags, mnemonicIndex, lptm, size == null);
-						drawX += Math.ceil(bounds.Width);
-						drawX = x + (((drawX - x) / tabWidth) + 1) * tabWidth;
-						mnemonicIndex = -1;
-						start = end;
-					}
-					break;
-				case '&':
-					if ((flags & SWT.DRAW_MNEMONIC) != 0) {
-						if (i == length) {end--; continue;}
-						if (chars [i] == '&') {i++; continue;}
-						end--;
-						mnemonicIndex = end - start;
-					}
-					break;
-				case '\r':
-				case '\n':
-					if ((flags & SWT.DRAW_DELIMITER) != 0) {
-						int l = end - start - 1;
-						if (c == '\r' && end != length && chars[end] == '\n') {
-							end++;
-							i++;
-						}
-						RectF bounds = drawText(gdipGraphics, chars, start, l, drawX, drawY, flags, mnemonicIndex, lptm, size == null);
-						drawY += Math.ceil(bounds.Height);
-						width = Math.max(width, drawX + (int)Math.ceil(bounds.Width));
-						drawX = x;
-						mnemonicIndex = -1;
-						start = end;
-					}
-					break;
-			}
-		}
-		length = end;
-	}
-	RectF bounds = drawText(gdipGraphics, chars, start, length - start, drawX, drawY, flags, mnemonicIndex, lptm, size == null);
-	if (size != null) {
-		drawY += Math.ceil(bounds.Height);
-		width = Math.max(width, drawX + (int)Math.ceil(bounds.Width));
-		size.x = width;
-		size.y = drawY;
-	}
-}
-
-private RectF drawText(long gdipGraphics, char[] buffer, int start, int length, int x, int y, int flags, int mnemonicIndex, TEXTMETRIC lptm, boolean draw) {
-	boolean drawMnemonic = draw && mnemonicIndex != -1 && (data.uiState & OS.UISF_HIDEACCEL) == 0;
-	boolean needsBounds = !draw || drawMnemonic || (flags & SWT.DRAW_TRANSPARENT) == 0 || (data.style & SWT.MIRRORED) != 0 || (flags & SWT.DRAW_DELIMITER) != 0;
-	if (length <= 0) {
-		RectF bounds = null;
-		if (needsBounds) {
-			bounds = new RectF();
-			bounds.Height = lptm.tmHeight;
-		}
-		return bounds;
-	}
-	int nGlyphs = (length * 3 / 2) + 16;
-	GCP_RESULTS result = new GCP_RESULTS();
-	result.lStructSize = GCP_RESULTS.sizeof;
-	result.nGlyphs = nGlyphs;
-	long hHeap = OS.GetProcessHeap();
-	long lpDx = result.lpDx = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, nGlyphs * 4);
-	long lpGlyphs = result.lpGlyphs = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, nGlyphs * 2);
-	long lpOrder = 0;
-	int dwFlags = OS.GCP_GLYPHSHAPE | OS.GCP_REORDER | OS.GCP_LIGATE;
-	if (drawMnemonic) {
-		lpOrder = result.lpOrder = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, nGlyphs * 4);
-	}
-	long hdc = Gdip.Graphics_GetHDC(gdipGraphics);
-	long hFont = data.hGDIFont;
-	if (hFont == 0 && data.font != null) hFont = SWTFontProvider.getFontHandle(data.font, data.nativeZoom);
-	long oldFont = 0;
-	if (hFont != 0) oldFont = OS.SelectObject(hdc, hFont);
-	if (start != 0) {
-		char[] temp = new char[length];
-		System.arraycopy(buffer, start, temp, 0, length);
-		buffer = temp;
-	}
-	if ((data.style & SWT.MIRRORED) != 0) OS.SetLayout(hdc, OS.GetLayout(hdc) | OS.LAYOUT_RTL);
-	OS.GetCharacterPlacement(hdc, buffer, length, 0, result, dwFlags);
-	if ((data.style & SWT.MIRRORED) != 0) OS.SetLayout(hdc, OS.GetLayout(hdc) & ~OS.LAYOUT_RTL);
-	if (hFont != 0) OS.SelectObject(hdc, oldFont);
-	Gdip.Graphics_ReleaseHDC(gdipGraphics, hdc);
-	nGlyphs = result.nGlyphs;
-	int drawX = x, drawY = y + lptm.tmAscent;
-	int[] dx = new int[nGlyphs];
-	OS.MoveMemory(dx, result.lpDx, nGlyphs * 4);
-	float[] points = new float[dx.length * 2];
-	for (int i = 0, j = 0; i < dx.length; i++) {
-		points[j++] = drawX;
-		points[j++] = drawY;
-		drawX += dx[i];
-	}
-	RectF bounds = null;
-	if (needsBounds) {
-		bounds = new RectF();
-		Gdip.Graphics_MeasureDriverString(gdipGraphics, lpGlyphs, nGlyphs, data.gdipFont, points, 0, 0, bounds);
-	}
-	if (draw) {
-		if ((flags & SWT.DRAW_TRANSPARENT) == 0) {
-			Gdip.Graphics_FillRectangle(gdipGraphics, data.gdipBrush, x, y, (int)Math.ceil(bounds.Width), (int)Math.ceil(bounds.Height));
-		}
-		int gstate = 0;
-		long brush = getFgBrush();
-		if ((data.style & SWT.MIRRORED) != 0) {
-			switch (Gdip.Brush_GetType(brush)) {
-				case Gdip.BrushTypeLinearGradient:
-					Gdip.LinearGradientBrush_ScaleTransform(brush, -1, 1, Gdip.MatrixOrderPrepend);
-					Gdip.LinearGradientBrush_TranslateTransform(brush, - 2 * x - bounds.Width, 0, Gdip.MatrixOrderPrepend);
-					break;
-				case Gdip.BrushTypeTextureFill:
-					Gdip.TextureBrush_ScaleTransform(brush, -1, 1, Gdip.MatrixOrderPrepend);
-					Gdip.TextureBrush_TranslateTransform(brush, - 2 * x - bounds.Width, 0, Gdip.MatrixOrderPrepend);
-					break;
-			}
-			gstate = Gdip.Graphics_Save(gdipGraphics);
-			Gdip.Graphics_ScaleTransform(gdipGraphics, -1, 1, Gdip.MatrixOrderPrepend);
-			Gdip.Graphics_TranslateTransform(gdipGraphics, - 2 * x - bounds.Width, 0, Gdip.MatrixOrderPrepend);
-		}
-		Gdip.Graphics_DrawDriverString(gdipGraphics, lpGlyphs, result.nGlyphs, data.gdipFont, brush, points, 0, 0);
-		if ((data.style & SWT.MIRRORED) != 0) {
-			switch (Gdip.Brush_GetType(brush)) {
-				case Gdip.BrushTypeLinearGradient:
-					Gdip.LinearGradientBrush_ResetTransform(brush);
-					break;
-				case Gdip.BrushTypeTextureFill:
-					Gdip.TextureBrush_ResetTransform(brush);
-					break;
-			}
-			Gdip.Graphics_Restore(gdipGraphics, gstate);
-		}
-		if (drawMnemonic) {
-			long pen = Gdip.Pen_new(brush, 1);
-			if (pen != 0) {
-				int[] order = new int[1];
-				OS.MoveMemory(order, result.lpOrder + mnemonicIndex * 4, 4);
-				int mnemonicLeft, mnemonicRight;
-				if ((data.style & SWT.MIRRORED) != 0) {
-					mnemonicLeft = (int)Math.ceil(bounds.Width) - (int)points[order[0] * 2] + 2 * x;
-					mnemonicRight = mnemonicLeft - dx[order[0]];
-				} else {
-					mnemonicLeft = (int)points[order[0] * 2];
-					mnemonicRight = mnemonicLeft + dx[order[0]];
-				}
-				int mnemonicY = y + lptm.tmAscent + 2;
-				int smoothingMode = Gdip.Graphics_GetSmoothingMode(gdipGraphics);
-				Gdip.Graphics_SetSmoothingMode(gdipGraphics, Gdip.SmoothingModeNone);
-				Gdip.Graphics_DrawLine(gdipGraphics, pen, mnemonicLeft, mnemonicY, mnemonicRight, mnemonicY);
-				Gdip.Graphics_SetSmoothingMode(gdipGraphics, smoothingMode);
-				Gdip.Pen_delete(pen);
-			}
-		}
-	}
-	if (lpOrder != 0) OS.HeapFree(hHeap, 0, lpOrder);
-	OS.HeapFree(hHeap, 0, lpGlyphs);
-	OS.HeapFree(hHeap, 0, lpDx);
-	return bounds;
+	drawTextGDIP(gdipGraphics, string, x, y, flags, size == null, size);
 }
 
 private void drawTextGDIP(long gdipGraphics, String string, int x, int y, int flags, boolean draw, Point size) {
 	boolean needsBounds = !draw || (flags & SWT.DRAW_TRANSPARENT) == 0;
 	char[] buffer;
+	if ((flags & SWT.DRAW_DELIMITER) == 0) {
+		string = string.replace(System.lineSeparator(), "");
+	}
 	int length = string.length();
 	if (length != 0) {
 		buffer = string.toCharArray();
