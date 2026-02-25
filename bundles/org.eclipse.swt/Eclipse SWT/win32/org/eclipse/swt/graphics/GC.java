@@ -109,6 +109,8 @@ public final class GC extends Resource {
 	static final float[] LINE_DASHDOT_ZERO = new float[]{9, 6, 3, 6};
 	static final float[] LINE_DASHDOTDOT_ZERO = new float[]{9, 3, 3, 3, 3, 3};
 
+	private static final String USE_GDI_TEXT_RENDERING_WITH_GDPI = "org.eclipse.swt.internal.win32.useGDITextRenderingWithGDIP";
+
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
@@ -2832,7 +2834,18 @@ private void drawTextInPixels (String string, int x, int y, int flags) {
 	OS.SetBkMode(handle, oldBkMode);
 }
 
-private boolean useGDIP (long hdc, char[] buffer) {
+private boolean useGDIP(long hdc, char[] buffer) {
+	// If the system property is set to true, then GDI text rendering may be used
+	// even when GDI+/advanced mode is enabled.
+	// The property exists to allow backward compatibility with long standing
+	// behavior of using GDI text rendering even when GDI+ was enabled was enforced,
+	// introduced because of issues with the GDI+ text rendering a long time ago. In
+	// case no regressions occur because of using GDI+ text rendering, this property
+	// should be removed and GDI+ text rendering should be used by default when
+	// GDI+/advanced mode is enabled.
+	if (!Boolean.getBoolean(USE_GDI_TEXT_RENDERING_WITH_GDPI)) {
+		return true;
+	}
 	short[] glyphs = new short[buffer.length];
 	OS.GetGlyphIndices(hdc, buffer, buffer.length, glyphs, OS.GGI_MARK_NONEXISTING_GLYPHS);
 	for (int i = 0; i < glyphs.length; i++) {
