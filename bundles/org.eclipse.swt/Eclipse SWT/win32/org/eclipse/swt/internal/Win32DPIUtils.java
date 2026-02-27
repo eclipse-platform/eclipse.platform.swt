@@ -137,6 +137,11 @@ public class Win32DPIUtils {
 		return pixelToPointAsSize (point, zoom);
 	}
 
+	public static Point pixelToPointAsSufficientlyLargeSize(Drawable drawable, Point point, int zoom) {
+		if (drawable != null && !drawable.isAutoScalable()) return point;
+		return pixelToPointAsSufficientlyLargeSize (point, zoom);
+	}
+
 	public static Point pixelToPointAsLocation(Drawable drawable, Point point, int zoom) {
 		if (drawable != null && !drawable.isAutoScalable()) return point;
 		return pixelToPointAsLocation (point, zoom);
