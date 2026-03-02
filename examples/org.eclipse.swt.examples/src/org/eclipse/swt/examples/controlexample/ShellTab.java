@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2022 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -52,7 +52,7 @@ class ShellTab extends Tab {
 	 */
 	void closeAllShells() {
 		for (int i = 0; i<shellCount; i++) {
-			if (shells [i] != null & !shells [i].isDisposed ()) {
+			if (shells [i] != null && !shells [i].isDisposed ()) {
 				shells [i].dispose();
 				shells [i] = null;
 			}
