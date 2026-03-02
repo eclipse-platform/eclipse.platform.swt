@@ -350,7 +350,7 @@ class CoolBarTab extends Tab {
 				menu.addMenuListener(menuHiddenAdapter(e ->	visible = false));
 				for (int i = 0; i < 9; ++i) {
 					final String text = ControlExample.getResourceString("DropDownData_" + i);
-					if (text.length() != 0) {
+					if (!text.isEmpty()) {
 						MenuItem menuItem = new MenuItem(menu, SWT.NONE);
 						menuItem.setText(text);
 						/*
@@ -469,7 +469,7 @@ class CoolBarTab extends Tab {
 							menuItem.setMenu(m);
 							for (int k = 0; k < 9; ++k) {
 								text = ControlExample.getResourceString("DropDownData_" + k);
-								if (text.length() != 0) {
+								if (!text.isEmpty()) {
 									MenuItem mi = new MenuItem(m, SWT.NONE);
 									mi.setText(text);
 									/* Application code to perform the action for the submenu item would go here. */

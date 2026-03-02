@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2025 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -210,11 +210,11 @@ class BrowserTab extends Tab {
 		/* store the state of the Browser if applicable */
 		if (browser != null) {
 			String url = browser.getUrl();
-			if (url.length() > 0 && !url.equals("about:blank")) { //$NON-NLS-1$
+			if (!url.isEmpty() && !url.equals("about:blank")) { //$NON-NLS-1$
 				lastUrl = url;
 			} else {
 				String text = browser.getText();
-				if (text.length() > 0) {
+				if (!text.isEmpty()) {
 					lastText = text;
 				}
 			}
