@@ -5876,11 +5876,11 @@ private class SetTransformOperation extends Operation {
  * </ul>
  */
 public Point stringExtent (String string) {
-	if (string == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	return Win32DPIUtils.pixelToPointAsSufficientlyLargeSize(drawable, stringExtentInPixels(string), getZoom());
 }
 
 Point stringExtentInPixels (String string) {
+	if (string == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	checkNonDisposed();
 	checkGC(FONT);
 	int length = string.length();
@@ -5892,7 +5892,6 @@ Point stringExtentInPixels (String string) {
 	}
 	SIZE size = new SIZE();
 	if (length == 0) {
-//		OS.GetTextExtentPoint32(handle, SPACE, SPACE.length(), size);
 		OS.GetTextExtentPoint32(handle, new char[]{' '}, 1, size);
 		return new Point(0, size.cy);
 	} else {
