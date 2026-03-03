@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2025 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2026 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -371,6 +371,9 @@ public static final native void webkit_policy_decision_ignore(long decision);
 public static final native long webkit_web_context_get_default();
 
 /** @method flags=dynamic */
+public static final native long webkit_network_session_allow_tls_certificate_for_host(long session, long certificate, byte[] constGCharHost);
+
+/** @method flags=dynamic */
 public static final native long webkit_network_session_get_default();
 
 /** @method flags=dynamic */
@@ -378,6 +381,9 @@ public static final native long webkit_network_session_get_cookie_manager(long s
 
 /** @method flags=dynamic */
 public static final native long webkit_network_session_get_website_data_manager(long session);
+
+/** @method flags=dynamic */
+public static final native void webkit_network_session_set_tls_errors_policy(long session, int policy);
 
 /** @method flags=dynamic */
 public static final native long webkit_web_context_get_cookie_manager(long context);

@@ -708,8 +708,13 @@ public void create (Composite parent, int style) {
 		OS.g_object_ref(webView);
 	}
 	if (ignoreTls) {
-		WebKitGTK.webkit_web_context_set_tls_errors_policy(WebKitGTK.webkit_web_view_get_context(webView),
-				WebKitGTK.WEBKIT_TLS_ERRORS_POLICY_IGNORE);
+		if (GTK.GTK4) {
+			WebKitGTK.webkit_network_session_set_tls_errors_policy(WebKitGTK.webkit_network_session_get_default(),
+					WebKitGTK.WEBKIT_TLS_ERRORS_POLICY_IGNORE);
+		} else {
+			WebKitGTK.webkit_web_context_set_tls_errors_policy(WebKitGTK.webkit_web_view_get_context(webView),
+					WebKitGTK.WEBKIT_TLS_ERRORS_POLICY_IGNORE);
+		}
 		System.out.println("***WARNING: WebKitGTK is configured to ignore TLS errors via -Dorg.eclipse.swt.internal.webkitgtk.ignoretlserrors=true .");
 		System.out.println("***WARNING: Please use for development purposes only!");
 	}
@@ -2534,10 +2539,16 @@ long webkit_load_changed (long web_view, int status, long user_data) {
 				prompt.setMessage(message);
 				int result = prompt.open();
 				if (result == SWT.YES) {
-					long webkitcontext = WebKitGTK.webkit_web_view_get_context(web_view);
 					if (javaHost != null) {
 						byte [] host = Converter.javaStringToCString(javaHost);
-						WebKitGTK.webkit_web_context_allow_tls_certificate_for_host(webkitcontext, tlsErrorCertificate, host);
+						if (GTK.GTK4) {
+							WebKitGTK.webkit_network_session_allow_tls_certificate_for_host(
+									WebKitGTK.webkit_network_session_get_default(), tlsErrorCertificate, host);
+						} else {
+							long webkitcontext = WebKitGTK.webkit_web_view_get_context(web_view);
+							WebKitGTK.webkit_web_context_allow_tls_certificate_for_host(webkitcontext,
+									tlsErrorCertificate, host);
+						}
 						WebKitGTK.webkit_web_view_reload (web_view);
 					} else {
 						System.err.println("***ERROR: Unable to parse host from URI!");
