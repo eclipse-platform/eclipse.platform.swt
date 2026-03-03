@@ -70,7 +70,7 @@ There are two possible option:
 * Import the `org.eclipse.swt.tools` project into a second workspace and run `MacGeneratorUI` as vanilla Java application.
 
 Running `MacGeneratorUI` from within a second workspace has the benefit that you can tweak the `MacGeneratorUI` tool should you run into any issues.
-It should consume `org.eclipse.swt` from a target platform (not in source form). The project `org.eclipse.swt.tools.base` and `org.eclipse.swt.tools.spies`
+It should consume `org.eclipse.swt` from a target platform (not in source form). The project `org.eclipse.swt.tools` and `org.eclipse.swt.tools.spies`
 should also be in that second workspace.
 
 Please note that `MacGeneratorUI` makes certain assumptions (hard-coded) about the environment and paths. That's usually fine
