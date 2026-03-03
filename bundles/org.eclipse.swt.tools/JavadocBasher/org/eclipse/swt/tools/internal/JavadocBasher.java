@@ -63,16 +63,15 @@ import org.eclipse.jface.text.*;
 public class JavadocBasher {
 	static final boolean fVerbose = false; // set to true for verbose output
 
-	final List<File> fBashed = new ArrayList<>();
-	final List<File> fUnchanged = new ArrayList<>();
+	final List<Path> fBashed = new ArrayList<>();
+	final List<Path> fUnchanged = new ArrayList<>();
 	final List<String> fSkipped = new ArrayList<>();
 
 	record Edit(int start, int length, String text) {
 	}
 
-	public static void main(String[] args) {
-		String workspaceDir = ".."; // use forward slashes, no final slash
-		String outputDir = ".."; // can point to another directory for debugging
+	public static void main(String[] args) throws IOException {
+		Path swtProject = Path.of("..", "org.eclipse.swt").toRealPath();
 		String[] folders = new String[] { // commented folders do not need to be
 				// bashed
 				"Eclipse SWT", "Eclipse SWT Accessibility",
@@ -99,16 +98,14 @@ public class JavadocBasher {
 		};
 
 		System.out.println("==== Start Bashing ====");
+		System.out.println("  in " + swtProject);
 		int totalBashed = 0;
 		for (String dir : targetSubdirs) {
 			for (String folder : folders) {
-				String targetSubdir = folder + "/" + dir;
-				File source = new File(workspaceDir + "/org.eclipse.swt/"
-						+ folder + "/" + sourceSubdir);
-				File target = new File(workspaceDir + "/org.eclipse.swt/"
-						+ targetSubdir);
-				File out = new File(outputDir + "/org.eclipse.swt/"
-						+ targetSubdir);
+				Path targetSubdir = Path.of(folder, dir);
+				Path source = swtProject.resolve(Path.of(folder, sourceSubdir));
+				Path target = swtProject.resolve(targetSubdir);
+				Path out = swtProject.resolve(targetSubdir);
 				JavadocBasher basher = new JavadocBasher();
 				System.out.println("\n==== Start Bashing " + targetSubdir);
 				basher.bashJavaSourceTree(source, target, out);
@@ -127,7 +124,7 @@ public class JavadocBasher {
 				+ " files in total) - Be sure to Refresh (F5) project(s) ====");
 	}
 
-	void status(String label, List<?> list, String targetSubdir) {
+	void status(String label, List<?> list, Path targetSubdir) {
 		int count = list.size();
 		System.out.println(label + " " + count
 				+ ((count == 1) ? " file" : " files") + " in " + targetSubdir
@@ -140,87 +137,58 @@ public class JavadocBasher {
 		}
 	}
 
-	char[] readFile(File file) {
-		try {
-			return Files.readString(file.toPath()).toCharArray();
-		} catch (IOException ioe) {
-			System.out.println("*** Could not read " + file);
-		}
-		return null;
-	}
-
-	void writeFile(String contents, File file) {
-		try {
-			Files.writeString(file.toPath(), contents);
-		} catch (IOException ioe) {
-			System.out.println("*** Could not write to " + file);
-			if (fVerbose) {
-				System.out.println("<dump filename=\"" + file + "\">");
-				System.out.println(contents);
-				System.out.println("</dump>");
-			}
-		}
-	}
-
-	void bashJavaSourceTree(File sourceDir, File targetDir, File outDir) {
+	void bashJavaSourceTree(Path sourceDir, Path targetDir, Path outDir) throws IOException {
 		if (fVerbose)
 			System.out.println("Reading source javadoc from " + sourceDir);
-		if (!sourceDir.exists()) {
+		if (!Files.exists(sourceDir)) {
 			System.out.println("Source: " + sourceDir + " was missing");
 			return;
 		}
-		if (!targetDir.exists()) {
+		if (!Files.exists(targetDir)) {
 			System.out.println("Target: " + targetDir + " was missing");
 			return;
 		}
-
-		String[] list = sourceDir.list();
-		if (list != null) {
-			for (String filename: list) {
+		try (var list = Files.list(sourceDir)) {
+			for (Path source : list.toList()) {
+				String filename = source.getFileName().toString();
 				if (filename.equals("internal") || filename.equals("library"))
 					continue;
-				File source = new File(sourceDir, filename);
-				File target = new File(targetDir, filename);
-				File out = new File(outDir, filename);
-				if (source.exists() && target.exists()) {
-					if (source.isDirectory()) {
-						if (target.isDirectory()) {
+				Path target = targetDir.resolve(filename);
+				Path out = outDir.resolve(filename);
+				if (!Files.exists(source)) {
+					throw new IllegalStateException("Source not exists: " + source);
+				}
+				if (Files.exists(target)) {
+					if (Files.isDirectory(source)) {
+						if (Files.isDirectory(target)) {
 							bashJavaSourceTree(source, target, out);
 						} else {
-							System.out.println("*** " + target
-									+ " should have been a directory.");
+							throw new IllegalStateException("Target should have been a directory: " + target);
 						}
 					} else {
-						if (filename.toLowerCase().endsWith(".java")) {
+						if (filename.endsWith(".java")) {
 							bashFile(source, target, out);
 						} else {
-							fSkipped.add(source + " (not a java file)");
+							throw new IllegalStateException("Not a java file: " + source);
 						}
 					}
 				} else {
-					if (source.exists()) {
-						fSkipped.add(target + " (does not exist)");
-					} else {
-						fSkipped.add(source + " (does not exist)");
-					}
+					fSkipped.add(target + " (does not exist)");
 				}
 			}
 		}
 	}
 
-	void bashFile(final File source, final File target, File out) {
-		char[] contents = readFile(source);
-		if (contents == null) return;
+	void bashFile(Path source, Path target, Path out) throws IOException {
+		String contents = Files.readString(source);
 		ASTParser parser = ASTParser.newParser(AST.getJLSLatest());
-		final Document sourceDocument = new Document(new String(contents));
-		parser.setSource(contents);
+		final Document sourceDocument = new Document(contents);
+		parser.setSource(contents.toCharArray());
 		ASTNode sourceUnit = parser.createAST(null);
 
-		contents = readFile(target);
-		if (contents == null) return;
-		String targetContents = new String(contents);
+		String targetContents = Files.readString(target);
 		final Document targetDocument = new Document(targetContents);
-		parser.setSource(contents);
+		parser.setSource(targetContents.toCharArray());
 		ASTNode targetUnit = parser.createAST(null);
 
 		final Map<String, String> comments = new HashMap<>();
@@ -404,12 +372,9 @@ public class JavadocBasher {
 		
 		String newContents = targetDocument.get();
 		if (!targetContents.equals(newContents)) {
-			if (makeDirectory(out.getParentFile())) {
-				writeFile(newContents, out);
-				fBashed.add(target);
-			} else {
-				System.out.println("*** Could not create " + out.getParent());
-			}
+			Files.createDirectories(out.getParent());
+			Files.writeString(out, newContents);
+			fBashed.add(target);
 		} else {
 			fUnchanged.add(target);
 		}
@@ -455,11 +420,5 @@ public class JavadocBasher {
 		} catch (BadLocationException e) {
 		}
 		return offset;
-	}
-
-	boolean makeDirectory(File directory) {
-		if (directory.exists())
-			return true;
-		return directory.mkdirs();
 	}
 }
