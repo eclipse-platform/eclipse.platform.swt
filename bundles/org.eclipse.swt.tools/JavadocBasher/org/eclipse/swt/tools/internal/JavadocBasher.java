@@ -4,6 +4,7 @@ import java.io.*;
 import java.nio.file.*;
 import java.util.*;
 import java.util.Map.*;
+import java.util.stream.*;
 
 import org.eclipse.jdt.core.dom.*;
 import org.eclipse.jface.text.*;
@@ -61,25 +62,12 @@ import org.eclipse.jface.text.*;
  */
 public class JavadocBasher {
 	static final boolean fVerbose = false; // set to true for verbose output
-	List<String> fBashed;
-	List<String> fUnchanged;
-	List<String> fSkipped;
 
-	public JavadocBasher() {
-		fBashed = new ArrayList<>();
-		fUnchanged = new ArrayList<>();
-		fSkipped = new ArrayList<>();
-	}
-	
-	public static class Edit {
-		int start, length;
-		String text;
+	final List<File> fBashed = new ArrayList<>();
+	final List<File> fUnchanged = new ArrayList<>();
+	final List<String> fSkipped = new ArrayList<>();
 
-		public Edit(int start, int length, String text) {
-			this.start = start;
-			this.length = length;
-			this.text = text;
-		}
+	record Edit(int start, int length, String text) {
 	}
 
 	public static void main(String[] args) {
@@ -124,14 +112,13 @@ public class JavadocBasher {
 				JavadocBasher basher = new JavadocBasher();
 				System.out.println("\n==== Start Bashing " + targetSubdir);
 				basher.bashJavaSourceTree(source, target, out);
-				List<String> bashedList = basher.getBashed();
-				basher.status("Bashed", bashedList, targetSubdir);
-				if (!bashedList.isEmpty()) {
-					totalBashed += bashedList.size();
-					if (fVerbose)
-						basher.status("Didn't change", basher.getUnchanged(),
-								targetSubdir);
-					basher.status("Skipped", basher.getSkipped(), targetSubdir);
+				basher.status("Bashed", basher.fBashed, targetSubdir);
+				if (!basher.fBashed.isEmpty()) {
+					totalBashed += basher.fBashed.size();
+					if (fVerbose) {
+						basher.status("Didn't change", basher.fUnchanged, targetSubdir);
+					}
+					basher.status("Skipped", basher.fSkipped, targetSubdir);
 				}
 				System.out.println("==== Done Bashing " + targetSubdir);
 			}
@@ -140,14 +127,15 @@ public class JavadocBasher {
 				+ " files in total) - Be sure to Refresh (F5) project(s) ====");
 	}
 
-	void status(String label, List<String> list, String targetSubdir) {
+	void status(String label, List<?> list, String targetSubdir) {
 		int count = list.size();
 		System.out.println(label + " " + count
 				+ ((count == 1) ? " file" : " files") + " in " + targetSubdir
 				+ ((count > 0) ? ":" : "."));
 		if (count > 0) {
-			for(String s : list)
+			for (Object s : list) {
 				System.out.println(label + ": " + s);
+			}
 			System.out.println();
 		}
 	}
@@ -220,7 +208,6 @@ public class JavadocBasher {
 		}
 	}
 
-
 	void bashFile(final File source, final File target, File out) {
 		char[] contents = readFile(source);
 		if (contents == null) return;
@@ -236,63 +223,50 @@ public class JavadocBasher {
 		parser.setSource(contents);
 		ASTNode targetUnit = parser.createAST(null);
 
-		final HashMap<String, String> comments = new HashMap<>();
+		final Map<String, String> comments = new HashMap<>();
 		sourceUnit.accept(new ASTVisitor() {
 			String prefix = "";
 			@Override
 			public boolean visit(Block node) {
 				return false;
 			}
+
 			@Override
 			public boolean visit(VariableDeclarationFragment node) {
 				FieldDeclaration field = (FieldDeclaration)node.getParent();
-				int mods = field.getModifiers();
-				if (Modifier.isPublic(mods) || Modifier.isProtected(mods)) {
+				if (isExternallyVisible(field)) {
 					Javadoc javadoc = field.getJavadoc();
 					if (field.fragments().size() > 1 && javadoc != null) {
 						System.err.println("Field declaration with multiple variables is not supported. -> " + source + " " + node.getName().getFullyQualifiedName());
 					}
-					try {
-						String key = prefix + "." + node.getName().getFullyQualifiedName();
-						comments.put(key, javadoc != null ? sourceDocument.get(javadoc.getStartPosition(), getJavadocLength(sourceDocument, javadoc)) : "");
-					} catch (BadLocationException e) {}
+					addComment(sourceDocument, comments, prefix, node.getName(), javadoc, "");
 					return true;
 				}
 				return false;
 			}
+
 			@Override
 			public boolean visit(MethodDeclaration node) {
-				int mods = node.getModifiers();
-				if (Modifier.isPublic(mods) || Modifier.isProtected(mods)) {
+				if (isExternallyVisible(node)) {
 					Javadoc javadoc = node.getJavadoc();
-					try {
-						String key = prefix + "." + node.getName().getFullyQualifiedName();
-						for (Iterator<SingleVariableDeclaration> iterator = node.parameters().iterator(); iterator.hasNext();) {
-							SingleVariableDeclaration param = iterator.next();
-							key += param.getType().toString();
-						}
-						comments.put(key, javadoc != null ? sourceDocument.get(javadoc.getStartPosition(), getJavadocLength(sourceDocument, javadoc)) : "");
-					} catch (BadLocationException e) {}
+					addComment(sourceDocument, comments, prefix, node.getName(), javadoc, parameterSuffix(node));
 					return true;
 				}
 				return false;
 			}
+
 			@Override
 			public boolean visit(TypeDeclaration node) {
-				int mods = node.getModifiers();
-				if (Modifier.isPublic(mods) || Modifier.isProtected(mods)) {
+				if (isExternallyVisible(node)) {
 					Javadoc javadoc = node.getJavadoc();
-					try {
-						String key = prefix + "." + node.getName().getFullyQualifiedName();
-						comments.put(key, javadoc != null ? sourceDocument.get(javadoc.getStartPosition(), getJavadocLength(sourceDocument, javadoc)) : "");
-					} catch (BadLocationException e) {}
+					addComment(sourceDocument, comments, prefix, node.getName(), javadoc, "");
 					prefix = node.getName().getFullyQualifiedName();
 					return true;
 				}
 				return false;
 			}
-		});
 
+		});
 
 		final List<Edit> edits = new ArrayList<>();
 		targetUnit.accept(new ASTVisitor() {
@@ -304,73 +278,53 @@ public class JavadocBasher {
 			@Override
 			public boolean visit(VariableDeclarationFragment node) {
 				FieldDeclaration field = (FieldDeclaration)node.getParent();
-				int mods = field.getModifiers();
-				if (Modifier.isPublic(mods) || Modifier.isProtected(mods)) {
+				if (isExternallyVisible(field)) {
 					Javadoc javadoc = field.getJavadoc();
 					if (field.fragments().size() > 1 && javadoc != null) {
 						System.err.println("Field declaration with multiple variables is not supported. -> " + target + " " + node.getName().getFullyQualifiedName());
 					}
 					String key = prefix + "." + node.getName().getFullyQualifiedName();
-					String newComment = comments.get(key);
+					String newComment = comments.remove(key);
 					if (newComment != null) {
-						comments.remove(key);
-						if (javadoc != null) {
-							edits.add(new Edit(javadoc.getStartPosition(), getJavadocLength(targetDocument, javadoc), newComment));
-						} else {
-							edits.add(new Edit(field.getStartPosition(), 0, newComment));
-						}
+						edits.add(createJavaDocEdit(field, javadoc, newComment, targetDocument));
 					}
 					return true;
 				}
 				return false;
 			}
+
 			@Override
 			public boolean visit(MethodDeclaration node) {
-				int mods = node.getModifiers();
-				if (Modifier.isPublic(mods) || Modifier.isProtected(mods)) {
+				if (isExternallyVisible(node)) {
 					Javadoc javadoc = node.getJavadoc();
-					String key = prefix + "." + node.getName().getFullyQualifiedName();
-					for (Iterator<SingleVariableDeclaration> iterator = node.parameters().iterator(); iterator.hasNext();) {
-						SingleVariableDeclaration param = iterator.next();
-						key += param.getType().toString();
-					}
-					String newComment = comments.get(key);
+					String key = prefix + "." + node.getName().getFullyQualifiedName() + parameterSuffix(node);
+					String newComment = comments.remove(key);
 					if (newComment != null) {
-						comments.remove(key);
-						if (javadoc != null) {
-							edits.add(new Edit(javadoc.getStartPosition(), getJavadocLength(targetDocument, javadoc), newComment));
-						} else {
-							edits.add(new Edit(node.getStartPosition(), 0, newComment));
-						}
+						edits.add(createJavaDocEdit(node, javadoc, newComment, targetDocument));
 					}
 					return true;
 				}
 				return false;
 			}
+
 			@Override
 			public boolean visit(TypeDeclaration node) {
-				int mods = node.getModifiers();
-				if (Modifier.isPublic(mods) || Modifier.isProtected(mods)) {
+				if (isExternallyVisible(node)) {
 					Javadoc javadoc = node.getJavadoc();
 					String key = prefix + "." + node.getName().getFullyQualifiedName();
-					String newComment = comments.get(key);
+					String newComment = comments.remove(key);
 					if (newComment != null) {
-						comments.remove(key);
-						if (javadoc != null) {
-							edits.add(new Edit(javadoc.getStartPosition(), getJavadocLength(targetDocument, javadoc), newComment));
-						} else {
-							edits.add(new Edit(node.getStartPosition(), 0, newComment));
-						}
+						edits.add(createJavaDocEdit(node, javadoc, newComment, targetDocument));
 					}
 					prefix = node.getName().getFullyQualifiedName();
 					return true;
 				}
 				return false;
 			}
+
 		});
 
-		for (int i = edits.size() - 1; i >=0 ; i--) {
-			Edit edit = edits.get(i);
+		for (Edit edit : edits.reversed()) {
 			try {
 				targetDocument.replace(edit.start, edit.length, edit.text);
 			} catch (BadLocationException e) {
@@ -452,19 +406,47 @@ public class JavadocBasher {
 		if (!targetContents.equals(newContents)) {
 			if (makeDirectory(out.getParentFile())) {
 				writeFile(newContents, out);
-				fBashed.add(target.toString());
+				fBashed.add(target);
 			} else {
 				System.out.println("*** Could not create " + out.getParent());
 			}
 		} else {
-			fUnchanged.add(target.toString());
+			fUnchanged.add(target);
 		}
+	}
+
+	static boolean isExternallyVisible(BodyDeclaration node) {
+		int mods = node.getModifiers();
+		return Modifier.isPublic(mods) || Modifier.isProtected(mods);
+	}
+
+	void addComment(Document sourceDocument, Map<String, String> comments, String prefix, SimpleName name,
+			Javadoc javadoc, String suffix) {
+		try {
+			String key = prefix + "." + name.getFullyQualifiedName() + suffix;
+			String doc = javadoc != null
+					? sourceDocument.get(javadoc.getStartPosition(), getJavadocLength(sourceDocument, javadoc))
+					: "";
+			comments.put(key, doc);
+		} catch (BadLocationException e) {
+		}
+	}
+
+	static String parameterSuffix(MethodDeclaration node) {
+		List<SingleVariableDeclaration> parameters = node.parameters();
+		return parameters.stream().map(p -> p.getType().toString()).collect(Collectors.joining());
+	}
+
+	Edit createJavaDocEdit(ASTNode node, Javadoc javadoc, String newComment, Document targetDocument) {
+		int startPosition = javadoc != null ? javadoc.getStartPosition() : node.getStartPosition();
+		int length = javadoc != null ? getJavadocLength(targetDocument, javadoc) : 0;
+		return new Edit(startPosition, length, newComment);
 	}
 
 	int getJavadocLength(Document sourceDocument, Javadoc javadoc) {
 		return skipWhitespace(sourceDocument, javadoc.getStartPosition() + javadoc.getLength()) - javadoc.getStartPosition();
 	}
-	
+
 	int skipWhitespace(Document doc, int offset) {
 		try {
 			while (Character.isWhitespace(doc.getChar(offset))){
@@ -479,17 +461,5 @@ public class JavadocBasher {
 		if (directory.exists())
 			return true;
 		return directory.mkdirs();
-	}
-
-	List<String> getBashed() {
-		return fBashed;
-	}
-
-	List<String> getUnchanged() {
-		return fUnchanged;
-	}
-
-	List<String> getSkipped() {
-		return fSkipped;
 	}
 }
