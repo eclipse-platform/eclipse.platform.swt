@@ -7404,7 +7404,11 @@ LRESULT wmNotify (NMHDR hdr, long wParam, long lParam) {
 	if (hdr.hwndFrom == itemToolTipHandle && itemToolTipHandle != 0) {
 		LRESULT result = wmNotifyToolTip (hdr, wParam, lParam);
 		if (result != null) return result;
+	} else if (hdr.hwndFrom == headerToolTipHandle && headerToolTipHandle != 0) {
+		// if it's the header, let Windows do its thing.
 	} else if (hdr.code == OS.TTN_SHOW) {
+		// Fallback: it's not about the item or about the header but it's still about a
+		// tooltip.
 		return positionTooltip(hdr, wParam, lParam, false);
 	}
 	if (hdr.hwndFrom == hwndHeader && hwndHeader != 0) {
