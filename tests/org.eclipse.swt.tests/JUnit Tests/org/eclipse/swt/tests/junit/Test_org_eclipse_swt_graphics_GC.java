@@ -16,6 +16,7 @@ package org.eclipse.swt.tests.junit;
 
 import static org.eclipse.swt.internal.DPIUtil.pointToPixel;
 import static org.eclipse.swt.tests.junit.SwtTestUtil.assertSWTProblem;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -45,6 +46,7 @@ import org.eclipse.swt.graphics.ImageDataProvider;
 import org.eclipse.swt.graphics.ImageGcDrawer;
 import org.eclipse.swt.graphics.LineAttributes;
 import org.eclipse.swt.graphics.PaletteData;
+import org.eclipse.swt.graphics.Path;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
@@ -792,41 +794,101 @@ public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 }
 
 @Test
+public void test_setClippingIIII_withTransform() {
+	Transform t = new Transform(gc.getDevice());
+	t.scale(1.5f,0.5f);
+	t.translate(-5,-25);
+
+	gc.setClipping(0,5,10,20);
+	gc.setTransform(t);
+	t.dispose();
+
+	Rectangle rect = gc.getClipping();
+	assertAll(
+		() -> assertEquals(5,rect.x),
+		() -> assertEquals(35, rect.y),
+		() -> assertEquals(7,rect.width),
+		() -> assertEquals(40,rect.height));
+
+}
+
+@Test
 public void test_setClippingIIII() {
-	// intermittently fails on XP for reasons unknown, comment out the test case
-	// until the problem is figured out
-//	Canvas canvas = new Canvas(shell, SWT.BORDER);
-//	shell.setSize(110,110);
-//	canvas.setSize(100,100);
-//	shell.open();
-//	GC testGc = new GC(canvas);
-//	testGc.setClipping(0,5,10,20);
-//	Rectangle rect = testGc.getClipping();
-//	assertTrue(rect.x == 0);
-//	assertTrue(rect.y == 5);
-//	assertTrue(rect.width == 10);
-//	assertTrue(rect.height == 20);
-//	testGc.dispose();
-//	canvas.dispose();
+	gc.setClipping(0,5,10,20);
+	Rectangle rect = gc.getClipping();
+	assertAll(
+		() -> assertEquals(0,rect.x),
+		() -> assertEquals(5, rect.y),
+		() -> assertEquals(10,rect.width),
+		() -> assertEquals(20,rect.height));
+}
+
+@Test
+public void test_setClippingLorg_eclipse_swt_graphics_Rectangle_withTransform() {
+	Transform t = new Transform(gc.getDevice());
+	t.scale(1.5f,0.5f);
+	t.translate(-5,-25);
+
+	gc.setClipping(new Rectangle(0,5,10,20));
+	gc.setTransform(t);
+	t.dispose();
+
+	Rectangle rect = gc.getClipping();
+	assertAll(
+		() -> assertEquals(5,rect.x),
+		() -> assertEquals(35, rect.y),
+		() -> assertEquals(7,rect.width),
+		() -> assertEquals(40,rect.height));
+
 }
 
 @Test
 public void test_setClippingLorg_eclipse_swt_graphics_Rectangle() {
-	// intermittently fails on XP for reasons unknown, comment out the test case
-	// until the problem is figured out
-//	Canvas canvas = new Canvas(shell, SWT.BORDER);
-//	shell.setSize(110,110);
-//	canvas.setSize(100,100);
-//	shell.open();
-//	GC testGc = new GC(canvas);
-//	testGc.setClipping(new Rectangle(0,5,10,20));
-//	Rectangle rect = testGc.getClipping();
-//	assertTrue(rect.x == 0);
-//	assertTrue(rect.y == 5);
-//	assertTrue(rect.width == 10);
-//	assertTrue(rect.height == 20);
-//	testGc.dispose();
-//	canvas.dispose();
+	gc.setClipping(new Rectangle(0,5,10,20));
+	Rectangle rect = gc.getClipping();
+	assertAll(
+		() -> assertEquals(0,rect.x),
+		() -> assertEquals(5, rect.y),
+		() -> assertEquals(10,rect.width),
+		() -> assertEquals(20,rect.height));
+}
+
+@Test
+public void test_setClippingLorg_eclipse_swt_graphics_Path_withTransform() {
+	Transform t = new Transform(gc.getDevice());
+	t.scale(1.5f,0.5f);
+	t.translate(-5,-25);
+
+	Path p = new Path(gc.getDevice());
+	p.addRectangle(0, 5, 10, 20);
+
+	gc.setClipping(p);
+	p.dispose();
+	gc.setTransform(t);
+	t.dispose();
+
+	Rectangle rect = gc.getClipping();
+	assertAll(
+		() -> assertEquals(5,rect.x),
+		() -> assertEquals(35, rect.y),
+		() -> assertEquals(7,rect.width),
+		() -> assertEquals(40,rect.height));
+
+	t.dispose();
+}
+
+@Test
+public void test_setClippingLorg_eclipse_swt_graphics_Path() {
+	Path p = new Path(gc.getDevice());
+	p.addRectangle(0, 5, 10, 20);
+	gc.setClipping(p);
+	p.dispose();
+	Rectangle rect = gc.getClipping();
+	assertAll(
+		() -> assertEquals(0,rect.x),
+		() -> assertEquals(5, rect.y),
+		() -> assertEquals(10,rect.width),
+		() -> assertEquals(20,rect.height));
 }
 
 @Test
