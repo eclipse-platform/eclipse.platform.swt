@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018, 2020 Red Hat Inc. and others. All rights reserved.
+ * Copyright (c) 2018, 2026 Red Hat Inc. and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -242,10 +242,6 @@ public class GDK extends OS {
 	public static final native int GdkRectangle_sizeof();
 
 	/** Macros */
-	/** @param event cast=(GdkEvent *) */
-	public static final native int GDK_EVENT_TYPE(long event);
-	/** @param event cast=(GdkEventAny *) */
-	public static final native long GDK_EVENT_WINDOW(long event);
 	/** @param display cast=(GdkDisplay *) */
 	public static final native boolean GDK_IS_WAYLAND_DISPLAY(long display);
 	/** @param display cast=(GdkDisplay *) */

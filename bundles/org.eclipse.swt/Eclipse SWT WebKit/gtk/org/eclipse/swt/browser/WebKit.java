@@ -386,7 +386,7 @@ static long JSDOMEventProc (long arg0, long event, long user_data) {
 		final Browser browser = FindBrowser (arg0);
 		if (browser != null && user_data == WIDGET_EVENT){
 			/* this instance does need to use the GDK event to create an SWT event to send */
-			switch (GDK.GDK_EVENT_TYPE (event)) {
+			switch (GDK.gdk_event_get_event_type (event)) {
 				case GDK.GDK_KEY_PRESS: {
 					if (browser.isFocusControl ()) {
 						int [] key = new int [1];
