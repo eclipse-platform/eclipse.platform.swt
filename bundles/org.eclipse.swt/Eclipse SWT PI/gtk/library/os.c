@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2025 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2026 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -27,30 +27,6 @@
 #ifdef _WIN32
   /* Many methods don't use their 'env' and 'that' arguments */
   #pragma warning (disable: 4100)
-#endif
-
-#ifndef NO_GDK_1EVENT_1TYPE
-JNIEXPORT jint JNICALL GDK_NATIVE(GDK_1EVENT_1TYPE)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	jint rc = 0;
-	GDK_NATIVE_ENTER(env, that, GDK_1EVENT_1TYPE_FUNC);
-	rc = (jint)GDK_EVENT_TYPE((GdkEvent *)arg0);
-	GDK_NATIVE_EXIT(env, that, GDK_1EVENT_1TYPE_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_GDK_1EVENT_1WINDOW
-JNIEXPORT jlong JNICALL GDK_NATIVE(GDK_1EVENT_1WINDOW)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	jlong rc = 0;
-	GDK_NATIVE_ENTER(env, that, GDK_1EVENT_1WINDOW_FUNC);
-	rc = (jlong)GDK_EVENT_WINDOW((GdkEventAny *)arg0);
-	GDK_NATIVE_EXIT(env, that, GDK_1EVENT_1WINDOW_FUNC);
-	return rc;
-}
 #endif
 
 #ifndef NO_GDK_1IS_1WAYLAND_1DISPLAY

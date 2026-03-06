@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -250,11 +250,11 @@ long gtk_activate (long widget) {
 	*/
 	long nextEvent = GDK.gdk_event_peek();
 	if (nextEvent != 0) {
-		int nextEventType = GDK.GDK_EVENT_TYPE (nextEvent);
+		int nextEventType = GDK.gdk_event_get_event_type (nextEvent);
 		long currEvent = GTK3.gtk_get_current_event ();
 		int currEventType = 0;
 		if (currEvent != 0) {
-			currEventType = GDK.GDK_EVENT_TYPE (currEvent);
+			currEventType = GDK.gdk_event_get_event_type (currEvent);
 			gdk_event_free(currEvent);
 		}
 		gdk_event_free (nextEvent);

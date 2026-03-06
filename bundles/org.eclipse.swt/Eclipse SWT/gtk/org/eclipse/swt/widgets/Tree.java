@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2025 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -2502,7 +2502,7 @@ long gtk_motion_notify_event (long widget, long event) {
 		long surface = GDK.gdk_event_get_surface(event);
 		if (surface != gtk_widget_get_surface(handle)) return 0;
 	} else {
-		long window = GDK.GDK_EVENT_WINDOW (event);
+		long window = GDK.gdk_event_get_window (event);
 		if (window != GTK3.gtk_tree_view_get_bin_window (handle)) return 0;
 	}
 	return super.gtk_motion_notify_event (widget, event);

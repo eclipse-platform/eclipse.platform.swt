@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2025 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2026 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -24,8 +24,6 @@
 #endif
 
 typedef enum {
-	GDK_1EVENT_1TYPE_FUNC,
-	GDK_1EVENT_1WINDOW_FUNC,
 	GDK_1IS_1WAYLAND_1DISPLAY_FUNC,
 	GDK_1IS_1X11_1DISPLAY_FUNC,
 	GDK_1TYPE_1PIXBUF_FUNC,
