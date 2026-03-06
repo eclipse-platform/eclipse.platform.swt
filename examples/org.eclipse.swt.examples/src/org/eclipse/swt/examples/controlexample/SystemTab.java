@@ -43,9 +43,10 @@ class SystemTab extends Tab {
 	static String [] columnTitles	= {ControlExample.getResourceString("ColorTitle_0"),
 				ControlExample.getResourceString("ColorTitle_1"),
 				ControlExample.getResourceString("ColorTitle_2"),
-				ControlExample.getResourceString("ColorTitle_3")};
+				ControlExample.getResourceString("ColorTitle_3"),
+				ControlExample.getResourceString("ColorTitle_4")};
 	static String [] columnTitles2	= {ControlExample.getResourceString("ColorTitle_0"),
-			ControlExample.getResourceString("ColorTitle_4")};
+			ControlExample.getResourceString("ColorTitle_5")};
 
 	/* Size widgets added to the "Size" group */
 	Button packColumnsButton;
@@ -180,10 +181,11 @@ class SystemTab extends Tab {
 				item.setText(value);
 				item.setText(0, value);
 				item.setText(1, "Named");
-				item.setText(2, getRGBcolor(key));
+				item.setText(2, getRGBAColor(key));
 				// the spaces will help the color cell be large enough to see
-				item.setText(3, "            ");
-				item.setBackground(3, display.getSystemColor(key));
+				item.setText(3, getHTMLColor(key) + " ");
+				item.setText(4, "            ");
+				item.setBackground(4, display.getSystemColor(key));
 				if (key == namedColorEnd) {
 					TableItem emptyItem = new TableItem(colors, SWT.NONE);
 					emptyItem.setText("");
@@ -194,10 +196,11 @@ class SystemTab extends Tab {
 				item.setText(value);
 				item.setText(0, value + " ");
 				item.setText(1, "System ");
-				item.setText(2, getRGBcolor(key) + " ");
+				item.setText(2, getRGBAColor(key) + " ");
+				item.setText(3, getHTMLColor(key) + " ");
 				// the spaces will help the color cell be large enough to see
-				item.setText(3, "            ");
-				item.setBackground(3, display.getSystemColor(key));
+				item.setText(4, "            ");
+				item.setBackground(4, display.getSystemColor(key));
 			}
 		}
 		for (int i = 0; i < columnTitles.length; i++) {
@@ -289,10 +292,17 @@ class SystemTab extends Tab {
 		}
 	}
 
-	String getRGBcolor(int id){
+	String getRGBAColor(int id){
 		Color color = display.getSystemColor(id);
 		return String.format("(%d,%d,%d,%d)", color.getRed(), color.getGreen(),
 				color.getBlue(), color.getAlpha());
+	}
+
+	String getHTMLColor(int id){
+		Color color = display.getSystemColor(id);
+		// #RRGGBB format (does not include alpha)
+		return String.format("#%02X%02X%02X", color.getRed(), color.getGreen(),
+				color.getBlue());
 	}
 
 	@Override
