@@ -276,9 +276,9 @@ private Image (Device device, int type, long handle, int nativeZoom) {
  * as shown in the following example:
  * <pre>
  *    Image i = new Image(device, width, height);
- *    GC gc = new GC(i);
- *    gc.drawRectangle(0, 0, 50, 50);
- *    gc.dispose();
+ *    try (var gc = GC.create(i)) {
+ *      gc.drawRectangle(0, 0, 50, 50));
+ *    }
  * </pre>
  * <p>
  * Note: Some platforms may have a limitation on the size
@@ -436,9 +436,9 @@ public Image(Device device, Image srcImage, int flag) {
  * drawing operations, as shown in the following example:
  * <pre>
  *    Image i = new Image(device, boundsRectangle);
- *    GC gc = new GC(i);
- *    gc.drawRectangle(0, 0, 50, 50);
- *    gc.dispose();
+ *    try (var gc = GC.create(i)) {
+ *      gc.drawRectangle(0, 0, 50, 50);
+ *    }
  * </pre>
  * <p>
  * Note: Some platforms may have a limitation on the size
