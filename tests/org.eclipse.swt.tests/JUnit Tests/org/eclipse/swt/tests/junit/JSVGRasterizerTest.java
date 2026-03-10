@@ -17,12 +17,12 @@ import static org.eclipse.swt.tests.junit.SwtTestUtil.assertSWTProblem;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
-import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.svg.JSVGRasterizer;
 import org.junit.jupiter.api.Test;
 
@@ -44,9 +44,9 @@ class JSVGRasterizerTest {
 
 	@Test
 	void testRasterizeWithZoom() {
-		ImageData data = rasterizer.rasterizeSVG(svgStream(svgString), 200);
-		assertEquals(200, data.width);
-		assertEquals(200, data.height);
+		BufferedImage data = rasterizer.rasterizeSVG(svgStream(svgString), 200);
+		assertEquals(200, data.getWidth());
+		assertEquals(200, data.getHeight());
 	}
 
 	@Test
@@ -71,9 +71,9 @@ class JSVGRasterizerTest {
 
 	@Test
 	void testRasterizeWithTargetSize() {
-		ImageData data = rasterizer.rasterizeSVG(svgStream(svgString), 300, 150);
-		assertEquals(300, data.width);
-		assertEquals(150, data.height);
+		BufferedImage data = rasterizer.rasterizeSVG(svgStream(svgString), 300, 150);
+		assertEquals(300, data.getWidth());
+		assertEquals(150, data.getHeight());
 	}
 
 	@Test

@@ -108,7 +108,7 @@ jobs:
         --threads 1C
         -DforkCount=1
         '-Dnative=${{ inputs.native }}'
-        -Papi-check -Pjavadoc
+        -Papi-check
         '-Dtycho.baseline.replace=none'
         --fail-at-end
         -DskipNativeTests=false

@@ -29,5 +29,6 @@
     <classpathentry kind="src" path="Eclipse SWT WebKit/cocoa"/>
     <classpathentry kind="src" path="Eclipse SWT OpenGL/cocoa"/>
     <classpathentry kind="src" path="Eclipse SWT OpenGL/common"/>
+    <classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.swt"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>

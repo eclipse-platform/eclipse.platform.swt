@@ -34,13 +34,9 @@ import static java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints.Key;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferInt;
 import java.io.InputStream;
 import java.util.Map;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.ImageData;
-import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.internal.image.SVGRasterizer;
 
 import com.github.weisj.jsvg.SVGDocument;
@@ -70,26 +66,21 @@ public class JSVGRasterizer implements SVGRasterizer {
 	);
 
 	@Override
-	public ImageData rasterizeSVG(InputStream inputStream, int zoom) {
-		if (zoom < 0) {
-			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-		}
+	public BufferedImage rasterizeSVG(InputStream inputStream, int zoom) {
 		SVGDocument svgDocument = loadAndValidateSVG(inputStream);
-		BufferedImage rasterizedImage = renderSVG(svgDocument, zoom);
-		return convertToSWTImageData(rasterizedImage);
+		return renderSVG(svgDocument, zoom);
 	}
 
 	@Override
-	public ImageData rasterizeSVG(InputStream inputStream, int width, int height) {
+	public BufferedImage rasterizeSVG(InputStream inputStream, int width, int height) {
 		SVGDocument svgDocument = loadAndValidateSVG(inputStream);
-		BufferedImage rasterizedImage = renderSVG(svgDocument, width, height);
-		return convertToSWTImageData(rasterizedImage);
+		return renderSVG(svgDocument, width, height);
 	}
 	
 	private SVGDocument loadAndValidateSVG(InputStream inputStream) {
 		SVGDocument svgDocument = SVG_LOADER.load(inputStream, null, LoaderContext.createDefault());
 		if (svgDocument == null) {
-			SWT.error(SWT.ERROR_INVALID_IMAGE);
+			throw new IllegalArgumentException();
 		}
 		return svgDocument;
 	}
@@ -103,9 +94,6 @@ public class JSVGRasterizer implements SVGRasterizer {
 	}
 	
 	private BufferedImage renderSVG(SVGDocument svgDocument, int width, int height) {
-		if (width <= 0 || height <= 0) {
-			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-		}
 		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		float widthScalingFactor = width / svgDocument.size().width;
 		float heightScalingFactor = height / svgDocument.size().height;
@@ -133,20 +121,5 @@ public class JSVGRasterizer implements SVGRasterizer {
 		return g;
 	}
 
-	private ImageData convertToSWTImageData(BufferedImage rasterizedImage) {
-		int width = rasterizedImage.getWidth();
-		int height = rasterizedImage.getHeight();
-		int[] pixels = ((DataBufferInt) rasterizedImage.getRaster().getDataBuffer()).getData();
-		PaletteData paletteData = new PaletteData(0xFF0000, 0x00FF00, 0x0000FF);
-		ImageData imageData = new ImageData(width, height, 24, paletteData);
-		int index = 0;
-		for (int y = 0; y < imageData.height; y++) {
-			for (int x = 0; x < imageData.width; x++) {
-				int alpha = (pixels[index] >> 24) & 0xFF;
-				imageData.setAlpha(x, y, alpha);
-				imageData.setPixel(x, y, pixels[index++] & 0x00FFFFFF);
-			}
-		}
-		return imageData;
-	}
+
 }

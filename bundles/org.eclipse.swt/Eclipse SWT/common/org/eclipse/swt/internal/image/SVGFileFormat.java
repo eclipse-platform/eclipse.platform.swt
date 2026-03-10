@@ -12,6 +12,7 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.image;
 
+import java.awt.image.*;
 import java.io.*;
 import java.nio.charset.*;
 import java.util.*;
@@ -61,8 +62,13 @@ public class SVGFileFormat extends FileFormat {
 		if (targetZoom <= 0) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT, null, " [Cannot rasterize SVG for zoom <= 0]");
 		}
-		ImageData rasterizedImageData = RASTERIZER.rasterizeSVG(inputStream, 100 * targetZoom / fileZoom);
-		return List.of(new ElementAtZoom<>(rasterizedImageData, targetZoom));
+		try {
+			ImageData rasterizedImageData = convertToSWTImageData(RASTERIZER.rasterizeSVG(inputStream, 100 * targetZoom / fileZoom));
+			return List.of(new ElementAtZoom<>(rasterizedImageData, targetZoom));
+		} catch (IllegalArgumentException e) {
+			SWT.error(SWT.ERROR_INVALID_IMAGE);
+			return null;
+		}
 	}
 
 	@Override
@@ -73,8 +79,30 @@ public class SVGFileFormat extends FileFormat {
 		if (width <= 0 || height <= 0) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT, null, " [Cannot rasterize SVG for width or height <= 0]");
 		}
-		ImageData rasterizedImageData = RASTERIZER.rasterizeSVG(inputStream, width, height);
-		return rasterizedImageData;
+		try {
+			ImageData rasterizedImageData = convertToSWTImageData(RASTERIZER.rasterizeSVG(inputStream, width, height));
+			return rasterizedImageData;
+		} catch (IllegalArgumentException e) {
+			SWT.error(SWT.ERROR_INVALID_IMAGE);
+			return null;
+		}
+	}
+
+	private ImageData convertToSWTImageData(BufferedImage rasterizedImage) {
+		int width = rasterizedImage.getWidth();
+		int height = rasterizedImage.getHeight();
+		int[] pixels = ((DataBufferInt) rasterizedImage.getRaster().getDataBuffer()).getData();
+		PaletteData paletteData = new PaletteData(0xFF0000, 0x00FF00, 0x0000FF);
+		ImageData imageData = new ImageData(width, height, 24, paletteData);
+		int index = 0;
+		for (int y = 0; y < imageData.height; y++) {
+			for (int x = 0; x < imageData.width; x++) {
+				int alpha = (pixels[index] >> 24) & 0xFF;
+				imageData.setAlpha(x, y, alpha);
+				imageData.setPixel(x, y, pixels[index++] & 0x00FFFFFF);
+			}
+		}
+		return imageData;
 	}
 
 	@Override
