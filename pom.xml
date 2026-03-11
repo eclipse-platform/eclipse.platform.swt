@@ -236,6 +236,7 @@
     <module>examples/org.eclipse.swt.examples.ole.win32</module>
     <module>examples/org.eclipse.swt.examples.views</module>
     <module>tests/org.eclipse.swt.tests</module>
+    <module>tests/org.eclipse.swt.svg.tests</module>
     <module>features/org.eclipse.swt.tools.feature</module>
   </modules>
 </project>

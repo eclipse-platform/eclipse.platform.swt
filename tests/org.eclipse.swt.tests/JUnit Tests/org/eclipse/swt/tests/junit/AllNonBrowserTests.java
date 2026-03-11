@@ -48,7 +48,6 @@ public class AllNonBrowserTests {
 			AllWidgetTests.class, //
 			// Rest of tests alphabetically
 			DPIUtilTests.class, //
-			JSVGRasterizerTest.class, //
 			Test_org_eclipse_swt_accessibility_Accessible.class, //
 			Test_org_eclipse_swt_accessibility_AccessibleControlEvent.class, //
 			Test_org_eclipse_swt_accessibility_AccessibleEvent.class, //
