@@ -5231,13 +5231,19 @@ public boolean sleep () {
 	try {
 		addPool();
 		allowTimers = runAsyncMessages = false;
-		NSRunLoop.currentRunLoop().runMode(OS.NSDefaultRunLoopMode, NSDate.distantFuture());
+		/*
+		 * Use a timeout-based approach to allow checking for thread interruption.
+		 * Sleep for a maximum of 50 milliseconds at a time, similar to GTK.
+		 */
+		do {
+			NSRunLoop.currentRunLoop().runMode(OS.NSDefaultRunLoopMode, NSDate.dateWithTimeIntervalSinceNow(0.05));
+		} while (synchronizer.isMessagesEmpty() && !thread.isInterrupted());
 		allowTimers = runAsyncMessages = true;
 	} finally {
 		removePool();
 	}
 	sendPostExternalEventDispatchEvent ();
-	return true;
+	return !thread.isInterrupted();
 }
 
 int sourceProc (int info) {
