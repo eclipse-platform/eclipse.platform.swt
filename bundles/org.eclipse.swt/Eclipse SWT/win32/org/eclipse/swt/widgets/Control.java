@@ -6168,9 +6168,7 @@ int getSystemMetrics(int nIndex) {
 }
 
 boolean adjustWindowRectEx(RECT lpRect, int dwStyle, boolean bMenu, int dwExStyle) {
-	Shell shell = getShell();
-	int zoom = shell != null ? shell.getZoom() : nativeZoom;
-	return OS.AdjustWindowRectExForDpi (lpRect, dwStyle, bMenu, dwExStyle, DPIUtil.mapZoomToDPI(zoom));
+	return OS.AdjustWindowRectExForDpi (lpRect, dwStyle, bMenu, dwExStyle, DPIUtil.mapZoomToDPI(getShellZoom()));
 }
 
 private static void resizeFont(Control control, int newZoom) {
