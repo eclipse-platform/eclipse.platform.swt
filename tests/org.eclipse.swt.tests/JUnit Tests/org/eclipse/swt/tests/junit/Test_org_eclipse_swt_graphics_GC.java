@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -16,6 +16,7 @@ package org.eclipse.swt.tests.junit;
 
 import static org.eclipse.swt.internal.DPIUtil.pointToPixel;
 import static org.eclipse.swt.tests.junit.SwtTestUtil.assertSWTProblem;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -793,40 +794,24 @@ public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 
 @Test
 public void test_setClippingIIII() {
-	// intermittently fails on XP for reasons unknown, comment out the test case
-	// until the problem is figured out
-//	Canvas canvas = new Canvas(shell, SWT.BORDER);
-//	shell.setSize(110,110);
-//	canvas.setSize(100,100);
-//	shell.open();
-//	GC testGc = new GC(canvas);
-//	testGc.setClipping(0,5,10,20);
-//	Rectangle rect = testGc.getClipping();
-//	assertTrue(rect.x == 0);
-//	assertTrue(rect.y == 5);
-//	assertTrue(rect.width == 10);
-//	assertTrue(rect.height == 20);
-//	testGc.dispose();
-//	canvas.dispose();
+	gc.setClipping(0,5,10,20);
+	Rectangle rect = gc.getClipping();
+	assertAll(
+		() -> assertEquals(0,rect.x),
+		() -> assertEquals(5, rect.y),
+		() -> assertEquals(10,rect.width),
+		() -> assertEquals(20,rect.height));
 }
 
 @Test
 public void test_setClippingLorg_eclipse_swt_graphics_Rectangle() {
-	// intermittently fails on XP for reasons unknown, comment out the test case
-	// until the problem is figured out
-//	Canvas canvas = new Canvas(shell, SWT.BORDER);
-//	shell.setSize(110,110);
-//	canvas.setSize(100,100);
-//	shell.open();
-//	GC testGc = new GC(canvas);
-//	testGc.setClipping(new Rectangle(0,5,10,20));
-//	Rectangle rect = testGc.getClipping();
-//	assertTrue(rect.x == 0);
-//	assertTrue(rect.y == 5);
-//	assertTrue(rect.width == 10);
-//	assertTrue(rect.height == 20);
-//	testGc.dispose();
-//	canvas.dispose();
+	gc.setClipping(new Rectangle(0,5,10,20));
+	Rectangle rect = gc.getClipping();
+	assertAll(
+		() -> assertEquals(0,rect.x),
+		() -> assertEquals(5, rect.y),
+		() -> assertEquals(10,rect.width),
+		() -> assertEquals(20,rect.height));
 }
 
 @Test
