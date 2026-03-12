@@ -234,6 +234,8 @@ public enum Selector {
 	, sel_canBecomeKeyWindow("canBecomeKeyWindow")
 	, sel_canDragRowsWithIndexes_atPoint_("canDragRowsWithIndexes:atPoint:")
 	, sel_canGoBack("canGoBack")
+	, sel_makeTextLarger("makeTextLarger:")
+	, sel_makeTextSmaller("makeTextSmaller:")
 	, sel_canGoForward("canGoForward")
 	, sel_canRedo("canRedo")
 	, sel_canShowMIMEType_("canShowMIMEType:")
