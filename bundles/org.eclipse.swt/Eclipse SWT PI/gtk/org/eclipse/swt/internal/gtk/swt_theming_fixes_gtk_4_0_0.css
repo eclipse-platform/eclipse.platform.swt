@@ -5,3 +5,8 @@ button {
 	min-height: 0px;
 	min-width: 0px;
 }
+modelbutton {
+    padding-top: 2px;
+    padding-bottom: 2px;
+    min-height: 0;
+}
