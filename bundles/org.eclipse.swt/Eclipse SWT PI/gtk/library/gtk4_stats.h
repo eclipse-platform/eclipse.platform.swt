@@ -20,6 +20,7 @@
 #endif
 
 typedef enum {
+	GTK_1IS_1POPOVER_1MENU_FUNC,
 	gdk_1clipboard_1get_1content_FUNC,
 	gdk_1clipboard_1get_1formats_FUNC,
 	gdk_1clipboard_1is_1local_FUNC,

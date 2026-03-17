@@ -26,6 +26,18 @@
   #pragma warning (disable: 4100)
 #endif
 
+#ifndef NO_GTK_1IS_1POPOVER_1MENU
+JNIEXPORT jboolean JNICALL GTK4_NATIVE(GTK_1IS_1POPOVER_1MENU)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jboolean rc = 0;
+	GTK4_NATIVE_ENTER(env, that, GTK_1IS_1POPOVER_1MENU_FUNC);
+	rc = (jboolean)GTK_IS_POPOVER_MENU(arg0);
+	GTK4_NATIVE_EXIT(env, that, GTK_1IS_1POPOVER_1MENU_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gdk_1clipboard_1get_1content
 JNIEXPORT jlong JNICALL GTK4_NATIVE(gdk_1clipboard_1get_1content)
 	(JNIEnv *env, jclass that, jlong arg0)

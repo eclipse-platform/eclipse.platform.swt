@@ -30,6 +30,8 @@ public class GTK4 {
 	public static final int GTK_PICK_INSENSITIVE = 1;
 	public static final int GTK_PICK_NON_TARGETABLE = 2;
 
+	public static final native boolean GTK_IS_POPOVER_MENU(long obj);
+
 	/**
 	 * @param context cast=(GtkIMContext *)
 	 * @param event cast=(GdkEvent *)
