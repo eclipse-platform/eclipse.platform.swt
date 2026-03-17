@@ -356,30 +356,30 @@ void _setVisible (boolean visible) {
 					gdk_event_free (eventPtr);
 				}
 			} else {
-				/*
-				 *  GTK Feature: gtk_menu_popup is deprecated as of GTK3.22 and the new method gtk_menu_popup_at_pointer
-				 *  requires an event to hook on to. This requires the popup & events related to the menu be handled
-				 *  immediately and not as a post event in display, requiring the current event.
-				 */
-				eventPtr = GTK3.gtk_get_current_event();
-				if (eventPtr == 0) {
-					eventPtr = GDK.gdk_event_new(GTK.GTK4 ? GDK.GDK4_BUTTON_PRESS : GDK.GDK_BUTTON_PRESS);
-					GdkEventButton event = new GdkEventButton ();
-					event.type = GTK.GTK4 ? GDK.GDK4_BUTTON_PRESS : GDK.GDK_BUTTON_PRESS;
-					// Only assign a window on X11, as on Wayland the window is that of the mouse pointer
-					if (OS.isX11()) {
-						event.window = OS.g_object_ref(GTK3.gtk_widget_get_window (getShell().handle));
-					}
-					event.device = GDK.gdk_get_pointer(GDK.gdk_display_get_default ());
-					event.time = display.getLastEventTime ();
-					GTK3.memmove (eventPtr, event, GdkEventButton.sizeof);
-				}
-				adjustParentWindowWayland(eventPtr);
-				verifyMenuPosition(getItemCount());
-				GTK3.gtk_menu_popup_at_pointer(handle, eventPtr);
 				if (GTK.GTK4) {
-					GDK.gdk_event_unref(eventPtr);
+					GTK.gtk_popover_popup(handle);
 				} else {
+					/*
+					 *  GTK Feature: gtk_menu_popup is deprecated as of GTK3.22 and the new method gtk_menu_popup_at_pointer
+					 *  requires an event to hook on to. This requires the popup & events related to the menu be handled
+					 *  immediately and not as a post event in display, requiring the current event.
+					 */
+					eventPtr = GTK3.gtk_get_current_event();
+					if (eventPtr == 0) {
+						eventPtr = GDK.gdk_event_new(GTK.GTK4 ? GDK.GDK4_BUTTON_PRESS : GDK.GDK_BUTTON_PRESS);
+						GdkEventButton event = new GdkEventButton ();
+						event.type = GTK.GTK4 ? GDK.GDK4_BUTTON_PRESS : GDK.GDK_BUTTON_PRESS;
+						// Only assign a window on X11, as on Wayland the window is that of the mouse pointer
+						if (OS.isX11()) {
+							event.window = OS.g_object_ref(GTK3.gtk_widget_get_window (getShell().handle));
+						}
+						event.device = GDK.gdk_get_pointer(GDK.gdk_display_get_default ());
+						event.time = display.getLastEventTime ();
+						GTK3.memmove (eventPtr, event, GdkEventButton.sizeof);
+					}
+					adjustParentWindowWayland(eventPtr);
+					verifyMenuPosition(getItemCount());
+					GTK3.gtk_menu_popup_at_pointer(handle, eventPtr);
 					GDK.gdk_event_free(eventPtr);
 				}
 			}
