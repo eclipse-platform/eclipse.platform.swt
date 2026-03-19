@@ -14,6 +14,8 @@
 package org.eclipse.swt.tests.junit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -75,5 +77,23 @@ public void test_setSelectionForegroundLorg_eclipse_swt_graphics_Color() {
 
 	cTabItem.setSelectionForeground(null);
 	assertEquals(red, cTabItem.getSelectionForeground());
+}
+
+@Test
+public void test_setShowDirty() {
+	assertFalse(cTabItem.getShowDirty());
+	cTabItem.setShowDirty(true);
+	assertTrue(cTabItem.getShowDirty());
+	cTabItem.setShowDirty(false);
+	assertFalse(cTabItem.getShowDirty());
+}
+
+@Test
+public void test_dirtyIndicatorCloseStyle() {
+	assertFalse(cTabFolder.getDirtyIndicatorCloseStyle());
+	cTabFolder.setDirtyIndicatorCloseStyle(true);
+	assertTrue(cTabFolder.getDirtyIndicatorCloseStyle());
+	cTabFolder.setDirtyIndicatorCloseStyle(false);
+	assertFalse(cTabFolder.getDirtyIndicatorCloseStyle());
 }
 }

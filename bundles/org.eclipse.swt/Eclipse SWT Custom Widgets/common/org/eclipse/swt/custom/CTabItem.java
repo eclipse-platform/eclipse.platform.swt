@@ -55,6 +55,7 @@ public class CTabItem extends Item {
 	int closeImageState = SWT.BACKGROUND;
 	int state = SWT.NONE;
 	boolean showClose = false;
+	boolean showDirty = false;
 	boolean showing = false;
 
 /**
@@ -277,6 +278,26 @@ public boolean getShowClose() {
 	return showClose;
 }
 /**
+ * Returns <code>true</code> to indicate that the receiver is dirty
+ * (has unsaved changes). When the parent folder's dirty indicator style
+ * is enabled, dirty items show a bullet dot at the close button location
+ * instead of the default <code>*</code> prefix.
+ *
+ * @return <code>true</code> if the item is marked as dirty
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see CTabFolder#setDirtyIndicatorCloseStyle(boolean)
+ * @since 3.134
+ */
+public boolean getShowDirty() {
+	checkWidget();
+	return showDirty;
+}
+/**
  * Returns the receiver's tool tip text, or null if it has
  * not been set.
  *
@@ -488,6 +509,29 @@ public void setShowClose(boolean close) {
 	checkWidget();
 	if (showClose == close) return;
 	showClose = close;
+	parent.updateFolder(CTabFolder.REDRAW_TABS);
+}
+/**
+ * Marks this item as dirty (having unsaved changes). When the parent
+ * folder's dirty indicator style is enabled via
+ * {@link CTabFolder#setDirtyIndicatorCloseStyle(boolean)}, dirty items
+ * show a bullet dot at the close button location. The bullet transforms
+ * into the close button on hover.
+ *
+ * @param dirty <code>true</code> to mark the item as dirty
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see CTabFolder#setDirtyIndicatorCloseStyle(boolean)
+ * @since 3.134
+ */
+public void setShowDirty(boolean dirty) {
+	checkWidget();
+	if (showDirty == dirty) return;
+	showDirty = dirty;
 	parent.updateFolder(CTabFolder.REDRAW_TABS);
 }
 /**
