@@ -199,6 +199,7 @@ public class CTabFolder extends Composite {
 	// close, min/max and chevron buttons
 	boolean showClose = false;
 	boolean showUnselectedClose = true;
+	boolean dirtyIndicatorStyle = false;
 
 	boolean showMin = false;
 	boolean minimized = false;
@@ -2798,7 +2799,7 @@ boolean setItemLocation(GC gc) {
 				item.x = leftItemEdge;
 				item.y = y;
 				item.showing = true;
-				if (showClose || item.showClose) {
+				if (showClose || item.showClose || (dirtyIndicatorStyle && item.showDirty)) {
 					item.closeRect.x = leftItemEdge - renderer.computeTrim(i, SWT.NONE, 0, 0, 0, 0).x;
 					item.closeRect.y = onBottom ? size.y - borderBottom - tabHeight + (tabHeight - closeButtonSize.y)/2: borderTop + (tabHeight - closeButtonSize.y)/2;
 				}
@@ -2899,7 +2900,7 @@ boolean setItemSize(GC gc) {
 				tab.height = tabHeight;
 				tab.width = width;
 				tab.closeRect.width = tab.closeRect.height = 0;
-				if (showClose || tab.showClose) {
+				if (showClose || tab.showClose || (dirtyIndicatorStyle && tab.showDirty)) {
 					Point closeSize = renderer.computeSize(CTabFolderRenderer.PART_CLOSE_BUTTON, SWT.SELECTED, gc, SWT.DEFAULT, SWT.DEFAULT);
 					tab.closeRect.width = closeSize.x;
 					tab.closeRect.height = closeSize.y;
@@ -2983,8 +2984,8 @@ boolean setItemSize(GC gc) {
 		tab.height = tabHeight;
 		tab.width = width;
 		tab.closeRect.width = tab.closeRect.height = 0;
-		if (showClose || tab.showClose) {
-			if (i == selectedIndex || showUnselectedClose) {
+		if (showClose || tab.showClose || (dirtyIndicatorStyle && tab.showDirty)) {
+			if (i == selectedIndex || showUnselectedClose || (dirtyIndicatorStyle && tab.showDirty)) {
 				Point closeSize = renderer.computeSize(CTabFolderRenderer.PART_CLOSE_BUTTON, SWT.NONE, gc, SWT.DEFAULT, SWT.DEFAULT);
 				tab.closeRect.width = closeSize.x;
 				tab.closeRect.height = closeSize.y;
@@ -3670,6 +3671,50 @@ public void setUnselectedCloseVisible(boolean visible) {
 	updateFolder(REDRAW);
 }
 /**
+ * Sets whether the dirty indicator uses the close button style. When enabled,
+ * dirty items (marked via {@link CTabItem#setShowDirty(boolean)}) show a
+ * bullet dot at the close button location instead of the traditional
+ * <code>*</code> prefix. The bullet transforms into the close button on hover.
+ * <p>
+ * The default value is <code>false</code> (traditional <code>*</code> prefix
+ * behavior).
+ * </p>
+ *
+ * @param useCloseButtonStyle <code>true</code> to use the bullet-on-close-button
+ *        style for dirty indicators
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see CTabItem#setShowDirty(boolean)
+ * @since 3.134
+ */
+public void setDirtyIndicatorCloseStyle(boolean useCloseButtonStyle) {
+	checkWidget();
+	if (dirtyIndicatorStyle == useCloseButtonStyle) return;
+	dirtyIndicatorStyle = useCloseButtonStyle;
+	updateFolder(REDRAW_TABS);
+}
+/**
+ * Returns whether the dirty indicator uses the close button style.
+ *
+ * @return <code>true</code> if the dirty indicator uses the close button style
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see #setDirtyIndicatorCloseStyle(boolean)
+ * @since 3.134
+ */
+public boolean getDirtyIndicatorCloseStyle() {
+	checkWidget();
+	return dirtyIndicatorStyle;
+}
+/**
  * Specify whether the image appears on unselected tabs.
  *
  * @param visible <code>true</code> makes the image appear
@@ -4003,7 +4048,7 @@ String _getToolTip(int x, int y) {
 	CTabItem item = getItem(new Point (x, y));
 	if (item == null) return null;
 	if (!item.showing) return null;
-	if ((showClose || item.showClose) && item.closeRect.contains(x, y)) {
+	if ((showClose || item.showClose || (dirtyIndicatorStyle && item.showDirty)) && item.closeRect.contains(x, y)) {
 		return SWT.getMessage("SWT_Close"); //$NON-NLS-1$
 	}
 	return item.getToolTipText();

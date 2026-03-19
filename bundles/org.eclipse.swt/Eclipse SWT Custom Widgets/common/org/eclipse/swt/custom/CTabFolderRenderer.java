@@ -265,7 +265,7 @@ public class CTabFolderRenderer {
 
 					if (shouldApplyLargeTextPadding(parent)) {
 						width += getLargeTextPadding(item) * 2;
-					} else if (shouldDrawCloseIcon(item)) {
+					} else if (shouldAllocateCloseRect(item)) {
 						if (width > 0) width += INTERNAL_SPACING;
 						width += computeSize(PART_CLOSE_BUTTON, SWT.NONE, gc, SWT.DEFAULT, SWT.DEFAULT).x;
 					}
@@ -283,6 +283,15 @@ public class CTabFolderRenderer {
 		boolean showClose = folder.showClose || item.showClose;
 		boolean isSelectedOrShowCloseForUnselected = (item.state & SWT.SELECTED) != 0 || folder.showUnselectedClose;
 		return showClose && isSelectedOrShowCloseForUnselected;
+	}
+
+	private boolean shouldDrawDirtyIndicator(CTabItem item) {
+		CTabFolder folder = item.getParent();
+		return folder.dirtyIndicatorStyle && item.showDirty;
+	}
+
+	private boolean shouldAllocateCloseRect(CTabItem item) {
+		return shouldDrawCloseIcon(item) || shouldDrawDirtyIndicator(item);
 	}
 
 	/**
@@ -683,7 +692,20 @@ public class CTabFolderRenderer {
 	}
 
 	void drawClose(GC gc, Rectangle closeRect, int closeImageState) {
+		drawClose(gc, closeRect, closeImageState, false);
+	}
+
+	void drawClose(GC gc, Rectangle closeRect, int closeImageState, boolean showDirtyIndicator) {
 		if (closeRect.width == 0 || closeRect.height == 0) return;
+
+		// When dirty and not hovered/pressed, draw bullet instead of X
+		if (showDirtyIndicator) {
+			int maskedState = closeImageState & (SWT.HOT | SWT.SELECTED | SWT.BACKGROUND);
+			if (maskedState != SWT.HOT && maskedState != SWT.SELECTED) {
+				drawDirtyIndicator(gc, closeRect);
+				return;
+			}
+		}
 
 		// draw X with length of this constant
 		final int lineLength = 8;
@@ -713,6 +735,17 @@ public class CTabFolderRenderer {
 		}
 		gc.setLineWidth(originalLineWidth);
 		gc.setForeground(originalForeground);
+	}
+
+	private void drawDirtyIndicator(GC gc, Rectangle closeRect) {
+		int diameter = 8;
+		int x = closeRect.x + (closeRect.width - diameter) / 2;
+		int y = closeRect.y + (closeRect.height - diameter) / 2;
+		y += parent.onBottom ? -1 : 1;
+		Color originalBackground = gc.getBackground();
+		gc.setBackground(gc.getForeground());
+		gc.fillOval(x, y, diameter, diameter);
+		gc.setBackground(originalBackground);
 	}
 
 	private void drawCloseLines(GC gc, int x, int y, int lineLength, boolean hot) {
@@ -1061,7 +1094,7 @@ public class CTabFolderRenderer {
 			// draw Image
 			Rectangle trim = computeTrim(itemIndex, SWT.NONE, 0, 0, 0, 0);
 			int xDraw = x - trim.x;
-			if (parent.single && shouldDrawCloseIcon(item)) xDraw += item.closeRect.width;
+			if (parent.single && shouldAllocateCloseRect(item)) xDraw += item.closeRect.width;
 			Image image = item.getImage();
 			if (image != null && !image.isDisposed() && parent.showSelectedImage) {
 				Rectangle imageBounds = image.getBounds();
@@ -1109,7 +1142,9 @@ public class CTabFolderRenderer {
 					gc.setBackground(orginalBackground);
 				}
 			}
-			if (shouldDrawCloseIcon(item)) drawClose(gc, item.closeRect, item.closeImageState);
+			if (shouldAllocateCloseRect(item)) {
+				drawClose(gc, item.closeRect, item.closeImageState, shouldDrawDirtyIndicator(item));
+			}
 		}
 	}
 
@@ -1117,7 +1152,7 @@ public class CTabFolderRenderer {
 		int margin = 0;
 		if (shouldApplyLargeTextPadding(parent)) {
 			margin += getLargeTextPadding(item);
-			if (shouldDrawCloseIcon(item)) {
+			if (shouldAllocateCloseRect(item)) {
 				 margin -= item.closeRect.width / 2;
 			}
 		}
@@ -1248,7 +1283,7 @@ public class CTabFolderRenderer {
 				Rectangle imageBounds = image.getBounds();
 				// only draw image if it won't overlap with close button
 				int maxImageWidth = x + width - xDraw - (trim.width + trim.x);
-				if (shouldDrawCloseIcon(item)) {
+				if (shouldAllocateCloseRect(item)) {
 					maxImageWidth -= item.closeRect.width + INTERNAL_SPACING;
 				}
 				if (imageBounds.width < maxImageWidth) {
@@ -1264,7 +1299,7 @@ public class CTabFolderRenderer {
 			// draw Text
 			xDraw += getLeftTextMargin(item);
 			int textWidth = x + width - xDraw - (trim.width + trim.x);
-			if (shouldDrawCloseIcon(item)) {
+			if (shouldAllocateCloseRect(item)) {
 				textWidth -= item.closeRect.width + INTERNAL_SPACING;
 			}
 			if (textWidth > 0) {
@@ -1281,8 +1316,10 @@ public class CTabFolderRenderer {
 				gc.drawText(item.shortenedText, xDraw, textY, FLAGS);
 				gc.setFont(gcFont);
 			}
-			// draw close
-			if (shouldDrawCloseIcon(item)) drawClose(gc, item.closeRect, item.closeImageState);
+			// draw close or dirty indicator
+			if (shouldAllocateCloseRect(item)) {
+				drawClose(gc, item.closeRect, item.closeImageState, shouldDrawDirtyIndicator(item));
+			}
 		}
 	}
 
