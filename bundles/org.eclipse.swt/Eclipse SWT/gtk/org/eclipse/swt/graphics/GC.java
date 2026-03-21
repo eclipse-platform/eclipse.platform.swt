@@ -3094,7 +3094,19 @@ public void setClipping(int x, int y, int width, int height) {
 public void setClipping(Path path) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (path != null && path.isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+
+	Transform t = null;
+	if (currentTransform != null) {
+		t = new Transform(getDevice());
+		getTransform(t);
+		setTransform(null);
+	}
 	resetClipping();
+	if (t != null) {
+		setTransform(t);
+		t.dispose();
+	}
+
 	if (path != null) {
 		initCairo();
 		long cairo = data.cairo;
