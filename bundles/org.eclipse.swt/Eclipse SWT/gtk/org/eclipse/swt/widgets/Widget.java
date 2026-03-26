@@ -2282,6 +2282,17 @@ long sizeRequestProc (long handle, long arg0, long user_data) {
 }
 
 /**
+ * Renders the widget background during a GTK4 snapshot. Called before
+ * children are snapshotted so the background appears behind them.
+ * Subclasses can override to perform background rendering.
+ *
+ * @param handle the widget receiving the snapshot
+ * @param snapshot the actual GtkSnapshot
+ */
+void snapshotBackground (long handle, long snapshot) {
+}
+
+/**
  * Converts an incoming snapshot into a gtk_draw() call, complete with
  * a Cairo context.
  *
