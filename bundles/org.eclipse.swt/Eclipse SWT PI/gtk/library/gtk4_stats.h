@@ -111,6 +111,7 @@ typedef enum {
 	gtk_1editable_1get_1delegate_FUNC,
 	gtk_1editable_1get_1max_1width_1chars_FUNC,
 	gtk_1editable_1get_1text_FUNC,
+	gtk_1editable_1set_1alignment_FUNC,
 	gtk_1editable_1set_1max_1width_1chars_FUNC,
 	gtk_1editable_1set_1text_FUNC,
 	gtk_1entry_1buffer_1get_1text_FUNC,

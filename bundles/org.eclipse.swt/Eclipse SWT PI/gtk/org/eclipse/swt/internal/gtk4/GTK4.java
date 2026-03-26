@@ -135,6 +135,11 @@ public class GTK4 {
 	public static final native int gtk_editable_get_max_width_chars(long editable);
 	/**
 	 * @param editable cast=(GtkEditable *)
+	 * @param alignment cast=(float)
+	 */
+	public static final native void gtk_editable_set_alignment(long editable, float alignment);
+	/**
+	 * @param editable cast=(GtkEditable *)
 	 * @param chars cast=(int)
 	 */
 	public static final native void gtk_editable_set_max_width_chars(long editable, int chars);
