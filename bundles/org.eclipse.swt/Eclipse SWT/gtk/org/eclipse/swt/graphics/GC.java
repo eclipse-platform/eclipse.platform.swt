@@ -3786,6 +3786,7 @@ public void setXORMode(boolean xor) {
  * </ul>
  */
 public Point stringExtent(String string) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return textExtentInPixels(string, 0);
 }
 Point stringExtentInPixels(String string) {
@@ -3812,6 +3813,7 @@ Point stringExtentInPixels(String string) {
  * </ul>
  */
 public Point textExtent(String string) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return textExtentInPixels(string, SWT.DRAW_DELIMITER | SWT.DRAW_TAB);
 }
 
