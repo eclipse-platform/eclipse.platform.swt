@@ -35,6 +35,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontMetrics;
@@ -917,6 +918,9 @@ public void test_stringExtentLjava_lang_String() {
 	Point pt = gc.stringExtent("abc");
 	assertTrue(pt.x > 0);
 	assertTrue(pt.y > 0);
+	gc.dispose();
+	SWTException e = assertThrows(SWTException.class, () -> gc.stringExtent("abc"));
+	assertEquals(SWT.ERROR_GRAPHIC_DISPOSED, e.code);
 }
 
 @Test
@@ -924,6 +928,9 @@ public void test_textExtentLjava_lang_String() {
 	Point pt = gc.textExtent("abc");
 	assertTrue(pt.x > 0);
 	assertTrue(pt.y > 0);
+	gc.dispose();
+	SWTException e = assertThrows(SWTException.class, () -> gc.textExtent("abc"));
+	assertEquals(SWT.ERROR_GRAPHIC_DISPOSED, e.code);
 }
 
 @Test
@@ -931,6 +938,9 @@ public void test_textExtentLjava_lang_StringI() {
 	Point pt = gc.textExtent("abc", 0);
 	assertTrue(pt.x > 0);
 	assertTrue(pt.y > 0);
+	gc.dispose();
+	SWTException e = assertThrows(SWTException.class, () -> gc.textExtent("abc", 0));
+	assertEquals(SWT.ERROR_GRAPHIC_DISPOSED, e.code);
 }
 
 @Test
