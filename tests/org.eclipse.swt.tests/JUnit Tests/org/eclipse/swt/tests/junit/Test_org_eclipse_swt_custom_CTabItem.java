@@ -90,10 +90,10 @@ public void test_setShowDirty() {
 
 @Test
 public void test_dirtyIndicatorCloseStyle() {
-	assertFalse(cTabFolder.getDirtyIndicatorCloseStyle());
-	cTabFolder.setDirtyIndicatorCloseStyle(true);
-	assertTrue(cTabFolder.getDirtyIndicatorCloseStyle());
-	cTabFolder.setDirtyIndicatorCloseStyle(false);
-	assertFalse(cTabFolder.getDirtyIndicatorCloseStyle());
+	assertFalse(cTabFolder.getDirtyIndicatorStyle());
+	cTabFolder.setDirtyIndicatorStyle(true);
+	assertTrue(cTabFolder.getDirtyIndicatorStyle());
+	cTabFolder.setDirtyIndicatorStyle(false);
+	assertFalse(cTabFolder.getDirtyIndicatorStyle());
 }
 }

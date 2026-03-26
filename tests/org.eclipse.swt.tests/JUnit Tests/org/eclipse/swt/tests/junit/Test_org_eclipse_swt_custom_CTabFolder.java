@@ -939,4 +939,115 @@ public void test_getItem_byPoint() {
 	assertNull(notFound);
 }
 
+@Test
+public void test_dirtyIndicator_doesNotCloseWithoutCloseEnabled() {
+	// Create folder WITHOUT SWT.CLOSE style
+	makeCleanEnvironment(SWT.NONE);
+	shell.setLayout(new FillLayout());
+
+	for (int i = 0; i < 3; i++) {
+		CTabItem item = new CTabItem(ctabFolder, SWT.NONE);
+		item.setText("Tab " + i);
+		Label content = new Label(ctabFolder, SWT.NONE);
+		content.setText("Content " + i);
+		item.setControl(content);
+	}
+
+	ctabFolder.setDirtyIndicatorStyle(true);
+	ctabFolder.getItem(0).setShowDirty(true);
+	ctabFolder.setSelection(0);
+	shell.setSize(800, 400);
+	SwtTestUtil.openShell(shell);
+	processEvents();
+
+	// The dirty item should still have a closeRect allocated for the bullet
+	CTabItem dirtyItem = ctabFolder.getItem(0);
+	Rectangle closeRect = dirtyItem.getBounds(); // just verify item exists
+
+	int itemCountBefore = ctabFolder.getItemCount();
+	assertEquals(3, itemCountBefore);
+
+	// Simulate mouse down + up on the closeRect area via events
+	// The item should NOT be disposed because close is not enabled
+	Rectangle itemBounds = dirtyItem.getBounds();
+	Event mouseDown = new Event();
+	mouseDown.type = SWT.MouseDown;
+	mouseDown.button = 1;
+	mouseDown.x = itemBounds.x + itemBounds.width - 5;
+	mouseDown.y = itemBounds.y + itemBounds.height / 2;
+	ctabFolder.notifyListeners(SWT.MouseDown, mouseDown);
+	processEvents();
+
+	Event mouseUp = new Event();
+	mouseUp.type = SWT.MouseUp;
+	mouseUp.button = 1;
+	mouseUp.x = mouseDown.x;
+	mouseUp.y = mouseDown.y;
+	ctabFolder.notifyListeners(SWT.MouseUp, mouseUp);
+	processEvents();
+
+	// Item should still exist - dirty indicator click should not close the tab
+	assertFalse(dirtyItem.isDisposed(), "Dirty item should not be disposed when close is not enabled");
+	assertEquals(3, ctabFolder.getItemCount(), "Item count should remain unchanged");
+}
+
+@Test
+public void test_dirtyIndicator_closesWhenCloseEnabled() {
+	// Create folder WITH SWT.CLOSE style
+	makeCleanEnvironment(SWT.CLOSE);
+	shell.setLayout(new FillLayout());
+
+	for (int i = 0; i < 3; i++) {
+		CTabItem item = new CTabItem(ctabFolder, SWT.NONE);
+		item.setText("Tab " + i);
+		Label content = new Label(ctabFolder, SWT.NONE);
+		content.setText("Content " + i);
+		item.setControl(content);
+	}
+
+	ctabFolder.setDirtyIndicatorStyle(true);
+	ctabFolder.getItem(0).setShowDirty(true);
+	ctabFolder.setSelection(0);
+	shell.setSize(800, 400);
+	SwtTestUtil.openShell(shell);
+	processEvents();
+
+	CTabItem dirtyItem = ctabFolder.getItem(0);
+
+	// Access closeRect via reflection to click precisely on it
+	try {
+		Field closeRectField = CTabItem.class.getDeclaredField("closeRect");
+		closeRectField.setAccessible(true);
+		Rectangle closeRectValue = (Rectangle) closeRectField.get(dirtyItem);
+
+		// closeRect should be allocated (non-zero) for dirty items
+		assertTrue(closeRectValue.width > 0 && closeRectValue.height > 0,
+				"closeRect should be allocated for dirty item");
+
+		// Simulate mouse down on the close rect
+		Event mouseDown = new Event();
+		mouseDown.type = SWT.MouseDown;
+		mouseDown.button = 1;
+		mouseDown.x = closeRectValue.x + closeRectValue.width / 2;
+		mouseDown.y = closeRectValue.y + closeRectValue.height / 2;
+		ctabFolder.notifyListeners(SWT.MouseDown, mouseDown);
+		processEvents();
+
+		// Simulate mouse up on the same location
+		Event mouseUp = new Event();
+		mouseUp.type = SWT.MouseUp;
+		mouseUp.button = 1;
+		mouseUp.x = mouseDown.x;
+		mouseUp.y = mouseDown.y;
+		ctabFolder.notifyListeners(SWT.MouseUp, mouseUp);
+		processEvents();
+
+		// Item should be disposed - close is enabled via SWT.CLOSE
+		assertTrue(dirtyItem.isDisposed(), "Dirty item should be disposed when close is enabled");
+		assertEquals(2, ctabFolder.getItemCount(), "Item count should decrease by 1");
+	} catch (NoSuchFieldException | IllegalAccessException e) {
+		fail("Failed to access closeRect via reflection: " + e.getMessage());
+	}
+}
+
 }

@@ -32,7 +32,7 @@ public class Snippet394 {
 
 		CTabFolder folder = new CTabFolder(shell, SWT.CLOSE | SWT.BORDER);
 		folder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		folder.setDirtyIndicatorCloseStyle(true);
+		folder.setDirtyIndicatorStyle(true);
 
 		for (int i = 0; i < 4; i++) {
 			CTabItem item = new CTabItem(folder, SWT.NONE);
