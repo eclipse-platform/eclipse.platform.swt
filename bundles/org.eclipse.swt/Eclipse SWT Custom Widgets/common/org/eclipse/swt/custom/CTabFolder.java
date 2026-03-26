@@ -1896,7 +1896,7 @@ void onMouse(Event event) {
 				}
 			}
 			if (item != null) {
-				if (item.closeRect.contains(x,y)){
+				if ((showClose || item.showClose) && item.closeRect.contains(x,y)){
 					item.closeImageState = SWT.SELECTED;
 					redraw(item.closeRect.x, item.closeRect.y, item.closeRect.width, item.closeRect.height, false);
 					update();
@@ -1977,7 +1977,7 @@ void onMouse(Event event) {
 				}
 			}
 			if (item != null) {
-				if (item.closeRect.contains(x,y)) {
+				if ((showClose || item.showClose) && item.closeRect.contains(x,y)) {
 					boolean selected = item.closeImageState == SWT.SELECTED;
 					item.closeImageState = SWT.HOT;
 					redraw(item.closeRect.x, item.closeRect.y, item.closeRect.width, item.closeRect.height, false);
@@ -3671,17 +3671,22 @@ public void setUnselectedCloseVisible(boolean visible) {
 	updateFolder(REDRAW);
 }
 /**
- * Sets whether the dirty indicator uses the close button style. When enabled,
+ * Sets whether the dirty indicator style is enabled. When enabled,
  * dirty items (marked via {@link CTabItem#setShowDirty(boolean)}) show a
  * bullet dot at the close button location instead of the traditional
- * <code>*</code> prefix. The bullet transforms into the close button on hover.
+ * <code>*</code> prefix. The bullet transforms into the close button on hover
+ * when close is enabled for the folder or the individual item.
+ * <p>
+ * Note: the dirty indicator is purely visual. Clicking the bullet does not
+ * close the tab unless close is independently enabled (via the
+ * {@link SWT#CLOSE} style or {@link CTabItem#setShowClose(boolean)}).
+ * </p>
  * <p>
  * The default value is <code>false</code> (traditional <code>*</code> prefix
  * behavior).
  * </p>
  *
- * @param useCloseButtonStyle <code>true</code> to use the bullet-on-close-button
- *        style for dirty indicators
+ * @param enabled <code>true</code> to enable the dirty indicator style
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -3691,26 +3696,26 @@ public void setUnselectedCloseVisible(boolean visible) {
  * @see CTabItem#setShowDirty(boolean)
  * @since 3.134
  */
-public void setDirtyIndicatorCloseStyle(boolean useCloseButtonStyle) {
+public void setDirtyIndicatorStyle(boolean enabled) {
 	checkWidget();
-	if (dirtyIndicatorStyle == useCloseButtonStyle) return;
-	dirtyIndicatorStyle = useCloseButtonStyle;
+	if (dirtyIndicatorStyle == enabled) return;
+	dirtyIndicatorStyle = enabled;
 	updateFolder(REDRAW_TABS);
 }
 /**
- * Returns whether the dirty indicator uses the close button style.
+ * Returns whether the dirty indicator style is enabled.
  *
- * @return <code>true</code> if the dirty indicator uses the close button style
+ * @return <code>true</code> if the dirty indicator style is enabled
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @see #setDirtyIndicatorCloseStyle(boolean)
+ * @see #setDirtyIndicatorStyle(boolean)
  * @since 3.134
  */
-public boolean getDirtyIndicatorCloseStyle() {
+public boolean getDirtyIndicatorStyle() {
 	checkWidget();
 	return dirtyIndicatorStyle;
 }
@@ -4048,8 +4053,10 @@ String _getToolTip(int x, int y) {
 	CTabItem item = getItem(new Point (x, y));
 	if (item == null) return null;
 	if (!item.showing) return null;
-	if ((showClose || item.showClose || (dirtyIndicatorStyle && item.showDirty)) && item.closeRect.contains(x, y)) {
-		return SWT.getMessage("SWT_Close"); //$NON-NLS-1$
+	if (item.closeRect.contains(x, y)) {
+		if (showClose || item.showClose) {
+			return SWT.getMessage("SWT_Close"); //$NON-NLS-1$
+		}
 	}
 	return item.getToolTipText();
 }

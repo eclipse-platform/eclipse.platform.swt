@@ -290,7 +290,7 @@ public boolean getShowClose() {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @see CTabFolder#setDirtyIndicatorCloseStyle(boolean)
+ * @see CTabFolder#setDirtyIndicatorStyle(boolean)
  * @since 3.134
  */
 public boolean getShowDirty() {
@@ -514,7 +514,7 @@ public void setShowClose(boolean close) {
 /**
  * Marks this item as dirty (having unsaved changes). When the parent
  * folder's dirty indicator style is enabled via
- * {@link CTabFolder#setDirtyIndicatorCloseStyle(boolean)}, dirty items
+ * {@link CTabFolder#setDirtyIndicatorStyle(boolean)}, dirty items
  * show a bullet dot at the close button location. The bullet transforms
  * into the close button on hover.
  *
@@ -525,7 +525,7 @@ public void setShowClose(boolean close) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @see CTabFolder#setDirtyIndicatorCloseStyle(boolean)
+ * @see CTabFolder#setDirtyIndicatorStyle(boolean)
  * @since 3.134
  */
 public void setShowDirty(boolean dirty) {
