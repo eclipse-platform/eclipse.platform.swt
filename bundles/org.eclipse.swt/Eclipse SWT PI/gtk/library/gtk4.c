@@ -1186,6 +1186,16 @@ JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1editable_1get_1text)
 }
 #endif
 
+#ifndef NO_gtk_1editable_1set_1alignment
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1editable_1set_1alignment)
+	(JNIEnv *env, jclass that, jlong arg0, jfloat arg1)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1editable_1set_1alignment_FUNC);
+	gtk_editable_set_alignment((GtkEditable *)arg0, (float)arg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1editable_1set_1alignment_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1editable_1set_1max_1width_1chars
 JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1editable_1set_1max_1width_1chars)
 	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
