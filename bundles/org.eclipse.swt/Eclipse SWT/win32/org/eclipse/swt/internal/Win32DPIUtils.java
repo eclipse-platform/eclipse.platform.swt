@@ -240,6 +240,21 @@ public class Win32DPIUtils {
 		return returnArray;
 	}
 
+	public static float[] pointToPixel(Drawable drawable, float values[], int zoom) {
+		if (drawable != null && !drawable.isAutoScalable()) {
+			return values;
+		}
+		if (zoom == 100 || values == null) {
+			return values;
+		}
+		float scaleFactor = DPIUtil.getScalingFactor (zoom);
+		float scaledValues[] = new float[values.length];
+		for (int i = 0; i < scaledValues.length; i++) {
+			scaledValues[i] = values[i] * scaleFactor;
+		}
+		return scaledValues;
+	}
+
 	public static int[] pointToPixel(Drawable drawable, int[] pointArray, int zoom) {
 		if (drawable != null && !drawable.isAutoScalable()) return pointArray;
 		return pointToPixel (pointArray, zoom);
