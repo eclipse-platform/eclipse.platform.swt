@@ -741,7 +741,6 @@ public class CTabFolderRenderer {
 		int diameter = 8;
 		int x = closeRect.x + (closeRect.width - diameter) / 2;
 		int y = closeRect.y + (closeRect.height - diameter) / 2;
-		y += parent.onBottom ? -1 : 1;
 		Color originalBackground = gc.getBackground();
 		gc.setBackground(gc.getForeground());
 		gc.fillOval(x, y, diameter, diameter);
