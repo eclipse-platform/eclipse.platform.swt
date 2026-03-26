@@ -855,6 +855,17 @@ public void test_setLineAttributes$I() {
 	assertEquals(new LineAttributes(width, cap, join, style, dashes, dashOffset, miterLimit), gc.getLineAttributes(), "actual line attributes differ from the ones that have been set");
 	assertEquals(width, passedLineAttributes.width, 0.0f, "setter call changed line width");
 
+	// Ensure that after recreating the image handle from the GC on Windows does not overwrite any values
+	int currentZoom = DPIUtil.getDeviceZoom();
+	int alternateZoom = currentZoom == 100 ? 200 : 100;
+	image.getImageData(alternateZoom);
+	assertEquals(width, gc.getLineWidth(), "unexpected line width");
+	assertEquals(cap, gc.getLineCap(), "unexpected line cap");
+	assertEquals(join, gc.getLineJoin(), "unexpected line join");
+	assertEquals(style, gc.getLineStyle(), "unexpected line style");
+	assertEquals(new LineAttributes(width, cap, join, style, dashes, dashOffset, miterLimit), gc.getLineAttributes(), "actual line attributes differ from the ones that have been set");
+	assertEquals(width, passedLineAttributes.width, 0.0f, "setter call changed line width");
+
 	gc.setLineAttributes(new LineAttributes(1));
 	assertEquals(new LineAttributes(1), gc.getLineAttributes());
 }

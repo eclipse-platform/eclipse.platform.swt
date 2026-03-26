@@ -5361,8 +5361,15 @@ private class SetLineAttributesOperation extends ReplaceableOperation  {
 
 	@Override
 	void apply() {
-		attributes.width = Win32DPIUtils.pointToPixel(drawable, attributes.width, getZoom());
-		setLineAttributesInPixels(attributes);
+		setLineAttributesInPixels(convertToPixels(attributes));
+	}
+
+	private LineAttributes convertToPixels(LineAttributes attributes) {
+		int zoom = getZoom();
+		float[] dashInPixels =  Win32DPIUtils.pointToPixel(drawable, attributes.dash, zoom);
+		float widthInPixels = Win32DPIUtils.pointToPixel(drawable, attributes.width, zoom);
+		LineAttributes lineAttributesInPixels = new LineAttributes(widthInPixels, attributes.cap, attributes.join, attributes.style, dashInPixels, attributes.dashOffset, attributes.miterLimit);
+		return lineAttributesInPixels;
 	}
 }
 
@@ -5424,12 +5431,6 @@ private void setLineAttributesInPixels (LineAttributes attributes) {
 			if (!changed && lineDashes[i] != dash) changed = true;
 		}
 		if (changed) {
-			float[] newDashes = new float[dashes.length];
-			int deviceZoom = getZoom();
-			for (int i = 0; i < newDashes.length; i++) {
-				newDashes[i] = Win32DPIUtils.pointToPixel(drawable, dashes[i], deviceZoom);
-			}
-			dashes = newDashes;
 			mask |= LINE_STYLE;
 		} else {
 			dashes = lineDashes;
