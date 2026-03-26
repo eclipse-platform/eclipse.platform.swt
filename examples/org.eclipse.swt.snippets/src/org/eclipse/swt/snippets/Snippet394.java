@@ -11,13 +11,15 @@
 package org.eclipse.swt.snippets;
 
 /*
- * CTabFolder example: dirty indicator using bullet dot on close button
+ * CTabFolder example: dirty indicator using bullet dot on close button,
+ * with runtime dark/light theme switching to show color adaptation.
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.*;
 import org.eclipse.swt.custom.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
@@ -52,6 +54,45 @@ public class Snippet394 {
 			CTabItem selected = folder.getSelection();
 			if (selected != null) {
 				selected.setShowDirty(!selected.getShowDirty());
+			}
+		});
+
+		boolean[] isDark = {false};
+		Button toggleThemeButton = new Button(shell, SWT.PUSH);
+		toggleThemeButton.setText("Switch to Dark Theme");
+		toggleThemeButton.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		toggleThemeButton.addListener(SWT.Selection, e -> {
+			isDark[0] = !isDark[0];
+			if (isDark[0]) {
+				Color tabBg = new Color(display, 43, 43, 43);
+				Color selBg = new Color(display, 60, 63, 65);
+				Color contentBg = new Color(display, 30, 30, 30);
+				Color fg = new Color(display, 187, 187, 187);
+				folder.setBackground(tabBg);
+				folder.setForeground(fg);
+				folder.setSelectionBackground(selBg);
+				folder.setSelectionForeground(fg);
+				for (int i = 0; i < folder.getItemCount(); i++) {
+					Control ctrl = folder.getItem(i).getControl();
+					if (ctrl != null) {
+						ctrl.setBackground(contentBg);
+						ctrl.setForeground(fg);
+					}
+				}
+				toggleThemeButton.setText("Switch to Light Theme");
+			} else {
+				folder.setBackground(null);
+				folder.setForeground(null);
+				folder.setSelectionBackground((Color) null);
+				folder.setSelectionForeground(null);
+				for (int i = 0; i < folder.getItemCount(); i++) {
+					Control ctrl = folder.getItem(i).getControl();
+					if (ctrl != null) {
+						ctrl.setBackground(null);
+						ctrl.setForeground(null);
+					}
+				}
+				toggleThemeButton.setText("Switch to Dark Theme");
 			}
 		});
 
