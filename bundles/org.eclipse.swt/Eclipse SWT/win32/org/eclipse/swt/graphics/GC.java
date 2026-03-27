@@ -4199,6 +4199,7 @@ public LineAttributes getLineAttributes () {
 	if(attributes.dash != null) {
 		attributes.dash = Win32DPIUtils.pixelToPoint(drawable, attributes.dash, deviceZoom);
 	}
+	attributes.dashOffset = Win32DPIUtils.pixelToPoint(drawable, attributes.dashOffset, deviceZoom);
 	return attributes;
 }
 
@@ -5367,8 +5368,9 @@ private class SetLineAttributesOperation extends ReplaceableOperation  {
 	private LineAttributes convertToPixels(LineAttributes attributes) {
 		int zoom = getZoom();
 		float[] dashInPixels =  Win32DPIUtils.pointToPixel(drawable, attributes.dash, zoom);
+		float dashOffsetInPixels = Win32DPIUtils.pointToPixel(drawable, attributes.dashOffset, zoom);
 		float widthInPixels = Win32DPIUtils.pointToPixel(drawable, attributes.width, zoom);
-		LineAttributes lineAttributesInPixels = new LineAttributes(widthInPixels, attributes.cap, attributes.join, attributes.style, dashInPixels, attributes.dashOffset, attributes.miterLimit);
+		LineAttributes lineAttributesInPixels = new LineAttributes(widthInPixels, attributes.cap, attributes.join, attributes.style, dashInPixels, dashOffsetInPixels, attributes.miterLimit);
 		return lineAttributesInPixels;
 	}
 }
