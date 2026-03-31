@@ -97,10 +97,9 @@ public class StarfieldTab extends AnimatedGraphicsTab {
 			final int tempy = (int) (stars[i].ypos / stars[i].zpos + height / 2);
 
 			if (tempx >= 0 && tempx < width && tempy >= 0 && tempy < height) {
-				Color color = new Color(gc.getDevice(), stars[i].color, stars[i].color, stars[i].color);
+				Color color = new Color(stars[i].color, stars[i].color, stars[i].color);
 				gc.setForeground(color);
 				gc.drawPoint(tempx, tempy);
-				color.dispose();
 			}
 		}
 	}
