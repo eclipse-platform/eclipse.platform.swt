@@ -551,6 +551,11 @@ public class GTK4 {
 	public static final native long gtk_popover_menu_new_from_model_full(long model, int flags);
 	/**
 	 * @param popover cast=(GtkPopoverMenu *)
+	 * @return cast=(GMenuModel *)
+	 */
+	public static final native long gtk_popover_menu_get_menu_model(long popover);
+	/**
+	 * @param popover cast=(GtkPopoverMenu *)
 	 * @param model cast=(GMenuModel *)
 	 */
 	public static final native void gtk_popover_menu_set_menu_model(long popover, long model);

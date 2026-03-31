@@ -2200,6 +2200,18 @@ JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1popover_1menu_1bar_1new_1from_1model)
 }
 #endif
 
+#ifndef NO_gtk_1popover_1menu_1get_1menu_1model
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1popover_1menu_1get_1menu_1model)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1popover_1menu_1get_1menu_1model_FUNC);
+	rc = (jlong)gtk_popover_menu_get_menu_model((GtkPopoverMenu *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1popover_1menu_1get_1menu_1model_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1popover_1menu_1new_1from_1model_1full
 JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1popover_1menu_1new_1from_1model_1full)
 	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
