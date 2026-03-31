@@ -1871,7 +1871,7 @@ int fixMnemonic (char [] buffer) {
 public int getAdvanceWidth(char ch) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	//BOGUS
-	return stringExtentInPixels(new String(new char[]{ch})).x;
+	return textExtentInPixels(new String(new char[]{ch}), 0).x;
 }
 
 /**
@@ -2002,7 +2002,7 @@ public Pattern getBackgroundPattern() {
 public int getCharWidth(char ch) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	//BOGUS
-	return stringExtentInPixels(new String(new char[]{ch})).x;
+	return textExtentInPixels(new String(new char[]{ch}), 0).x;
 }
 
 /**
@@ -3787,9 +3787,6 @@ public void setXORMode(boolean xor) {
  */
 public Point stringExtent(String string) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return textExtentInPixels(string, 0);
-}
-Point stringExtentInPixels(String string) {
 	return textExtentInPixels(string, 0);
 }
 
