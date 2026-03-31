@@ -3037,6 +3037,9 @@ private RectF drawText(long gdipGraphics, char[] buffer, int start, int length, 
 private void drawTextGDIP(long gdipGraphics, String string, int x, int y, int flags, boolean draw, Point size) {
 	boolean needsBounds = !draw || (flags & SWT.DRAW_TRANSPARENT) == 0;
 	char[] buffer;
+	if ((flags & SWT.DRAW_DELIMITER) == 0) {
+		string = string.replaceAll("[\\r\\n]+", "");
+	}
 	int length = string.length();
 	if (length != 0) {
 		buffer = string.toCharArray();
