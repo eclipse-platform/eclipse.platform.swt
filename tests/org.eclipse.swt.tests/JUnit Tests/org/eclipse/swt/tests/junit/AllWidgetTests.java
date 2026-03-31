@@ -73,6 +73,7 @@ import org.junit.platform.suite.api.Suite;
 		Test_org_eclipse_swt_widgets_Shell.class, //
 		Test_org_eclipse_swt_widgets_Slider.class, //
 		Test_org_eclipse_swt_widgets_Spinner.class, //
+		Test_org_eclipse_swt_widgets_Synchronizer.class, //
 		Test_org_eclipse_swt_widgets_TabFolder.class, //
 		Test_org_eclipse_swt_widgets_TabItem.class, //
 		Test_org_eclipse_swt_widgets_Table.class, //
