@@ -618,20 +618,15 @@ void bringToTop (boolean force) {
 			OS.XSetInputFocus (xDisplay, xWindow, OS.RevertToParent, OS.CurrentTime);
 			GDK.gdk_x11_display_error_trap_pop_ignored(gdkDisplay);
 		} else {
-			long gdkDisplay;
-			if (GTK.GTK4) {
-				gdkDisplay = GDK.gdk_surface_get_display(gdkResource);
-			} else {
-				GTK3.gtk_grab_add(shellHandle);
-				gdkDisplay = GDK.gdk_window_get_display(gdkResource);
-			}
-			long seat = GDK.gdk_display_get_default_seat(gdkDisplay);
 			if (GTK.GTK4) {
 				GTK4.gtk_window_present(shellHandle);
 			} else {
+				GTK3.gtk_grab_add(shellHandle);
+				long gdkDisplay = GDK.gdk_window_get_display(gdkResource);
+				long seat = GDK.gdk_display_get_default_seat(gdkDisplay);
 				GDK.gdk_window_show(gdkResource);
+				GDK.gdk_seat_grab(seat, gdkResource, GDK.GDK_SEAT_CAPABILITY_ALL, true, 0, 0, 0, 0);
 			}
-			GDK.gdk_seat_grab(seat, gdkResource, GDK.GDK_SEAT_CAPABILITY_ALL, true, 0, 0, 0, 0);
 			/*
 			 * Bug 541185: Hover over to open Javadoc popup will make the popup
 			 * close instead of gaining focus due to an extra focus out signal sent
@@ -3350,17 +3345,13 @@ void checkAndUngrabFocus () {
 	 * assumes that GdkSeat are the same for parent and child, which seems to be the case.
 	 */
 	if (requiresUngrab() && !isMappedToPopup() && grabbedFocus) {
-		long gdkResource, display;
-		if (GTK.GTK4) {
-			gdkResource = gtk_widget_get_surface (shellHandle);
-			display = GDK.gdk_surface_get_display(gdkResource);
-		} else {
-			gdkResource = gtk_widget_get_window (shellHandle);
-			display = GDK.gdk_window_get_display(gdkResource);
+		if (!GTK.GTK4) {
+			long gdkResource = gtk_widget_get_window (shellHandle);
+			long display = GDK.gdk_window_get_display(gdkResource);
 			GTK3.gtk_grab_remove(shellHandle);
+			long seat = GDK.gdk_display_get_default_seat(display);
+			GDK.gdk_seat_ungrab(seat);
 		}
-		long seat = GDK.gdk_display_get_default_seat(display);
-		GDK.gdk_seat_ungrab(seat);
 		grabbedFocus = false;
 	}
 }
