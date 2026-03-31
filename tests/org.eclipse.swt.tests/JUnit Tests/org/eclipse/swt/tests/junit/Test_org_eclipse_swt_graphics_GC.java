@@ -955,6 +955,18 @@ public void test_textExtentLjava_lang_StringI() {
 }
 
 @Test
+public void test_textExtentLjava_lang_StringI_disabledLineDelimiter() {
+	gc.setAdvanced(false);
+	Point ptWithoutAdvanced = gc.textExtent("abc\u4E2D" + System.lineSeparator() + "def", 0);
+	gc.setAdvanced(true);
+	Point ptWithAdvanced = gc.textExtent("abc\u4E2D" + System.lineSeparator() + "def", 0);
+	// Due to slightly different rendering, size must not be identical but similar in advanced/non-advanced mode
+	assertTrue(Math.abs(ptWithAdvanced.x - ptWithoutAdvanced.x) <= 2);
+	assertTrue(Math.abs(ptWithAdvanced.y - ptWithoutAdvanced.y) <= 2);
+	gc.dispose();
+}
+
+@Test
 public void test_toString() {
 	String s = gc.toString();
 	assertNotNull(s);
