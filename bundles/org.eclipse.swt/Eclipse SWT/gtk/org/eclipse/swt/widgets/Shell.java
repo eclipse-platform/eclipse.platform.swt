@@ -749,7 +749,6 @@ void createHandle (int index) {
 			int type = GTK.GTK_WINDOW_TOPLEVEL;
 			if (isChildShell && (style & SWT.ON_TOP) != 0) type = GTK.GTK_WINDOW_POPUP;
 			if (GTK.GTK4) {
-				// TODO: GTK4 need to handle for GTK_WINDOW_POPUP type
 				shellHandle = GTK4.gtk_window_new();
 				if (OS.isWayland()) {
 					long headerbar = GTK4.gtk_window_get_titlebar(shellHandle);
@@ -759,6 +758,9 @@ void createHandle (int index) {
 					    long hb = GTK4.gtk_header_bar_new();
 					    GTK4.gtk_window_set_titlebar(shellHandle, hb);
 					}
+				}
+				if (type == GTK.GTK_WINDOW_POPUP) {
+					GTK.gtk_window_set_decorated(shellHandle, false);
 				}
 			} else {
 				shellHandle = GTK3.gtk_window_new(type);
