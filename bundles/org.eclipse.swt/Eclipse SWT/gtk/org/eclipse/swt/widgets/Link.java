@@ -341,7 +341,6 @@ long gtk_button_press_event (long widget, long event) {
 	if (result != 0) return result;
 
 	int eventType = GDK.gdk_event_get_event_type(event);
-	eventType = fixGdkEventTypeValues(eventType);
 
 	int [] eventButton = new int [1];
 	if (GTK.GTK4) {

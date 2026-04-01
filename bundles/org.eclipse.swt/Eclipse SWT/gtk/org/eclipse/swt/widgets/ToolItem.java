@@ -626,7 +626,6 @@ long gtk_clicked (long widget) {
 		long eventPtr = GTK3.gtk_get_current_event ();
 		if (eventPtr != 0) {
 			int eventType = GDK.gdk_event_get_event_type(eventPtr);
-			eventType = Control.fixGdkEventTypeValues(eventType);
 			long topHandle = topHandle();
 			switch (eventType) {
 				case GDK.GDK_KEY_RELEASE: //Fall Through..
@@ -789,7 +788,6 @@ void gtk4_enter_event(long controller, double x, double y, long event) {
 @Override
 long gtk3_event_after (long widget, long gdkEvent) {
 	int eventType = GDK.gdk_event_get_event_type(gdkEvent);
-	eventType = Control.fixGdkEventTypeValues(eventType);
 	switch (eventType) {
 		case GDK.GDK_BUTTON_PRESS: {
 			int [] eventButton = new int [1];

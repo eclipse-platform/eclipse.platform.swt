@@ -470,7 +470,7 @@ boolean grab () {
 @Override
 long gtk_button_release_event (long widget, long event) {
 	Control.mouseDown = false;
-	return gtk_mouse (GTK.GTK4 ? GDK.GDK4_BUTTON_RELEASE : GDK.GDK_BUTTON_RELEASE, widget, event);
+	return gtk_mouse (GDK.GDK_BUTTON_RELEASE, widget, event);
 }
 
 @Override
@@ -619,7 +619,7 @@ long gtk_motion_notify_event (long widget, long eventPtr) {
 		grabbed = grab ();
 		lastCursor = cursor;
 	}
-	return gtk_mouse (GTK.GTK4 ? GDK.GDK4_MOTION_NOTIFY : GDK.GDK_MOTION_NOTIFY, widget, eventPtr);
+	return gtk_mouse (GDK.GDK_MOTION_NOTIFY, widget, eventPtr);
 }
 
 long gtk_mouse (int eventType, long widget, long eventPtr) {
@@ -735,7 +735,6 @@ long gtk_mouse (int eventType, long widget, long eventPtr) {
 		oldX = newX [0];
 		oldY = newY [0];
 	}
-	eventType = Control.fixGdkEventTypeValues(eventType);
 	tracking = eventType != GDK.GDK_BUTTON_RELEASE;
 	return 0;
 }
@@ -912,7 +911,6 @@ private void setTrackerBackground(boolean opaque) {
 
 boolean processEvent (long eventPtr) {
 	int eventType = GDK.gdk_event_get_event_type(eventPtr);
-	eventType = Control.fixGdkEventTypeValues(eventType);
 	long widget = GTK3.gtk_get_event_widget (eventPtr);
 	switch (eventType) {
 		case GDK.GDK_MOTION_NOTIFY: gtk_motion_notify_event (widget, eventPtr); break;

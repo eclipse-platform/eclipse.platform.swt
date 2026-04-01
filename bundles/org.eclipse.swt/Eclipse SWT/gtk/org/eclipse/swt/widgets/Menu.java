@@ -366,9 +366,9 @@ void _setVisible (boolean visible) {
 					 */
 					eventPtr = GTK3.gtk_get_current_event();
 					if (eventPtr == 0) {
-						eventPtr = GDK.gdk_event_new(GTK.GTK4 ? GDK.GDK4_BUTTON_PRESS : GDK.GDK_BUTTON_PRESS);
+						eventPtr = GDK.gdk_event_new(GDK.GDK_BUTTON_PRESS);
 						GdkEventButton event = new GdkEventButton ();
-						event.type = GTK.GTK4 ? GDK.GDK4_BUTTON_PRESS : GDK.GDK_BUTTON_PRESS;
+						event.type = GDK.GDK_BUTTON_PRESS;
 						// Only assign a window on X11, as on Wayland the window is that of the mouse pointer
 						if (OS.isX11()) {
 							event.window = OS.g_object_ref(GTK3.gtk_widget_get_window (getShell().handle));
@@ -1415,7 +1415,6 @@ void adjustParentWindowWayland (long eventPtr) {
 		}
 		OS.g_object_ref(deviceResource);
 		int eventType = GDK.gdk_event_get_event_type(eventPtr);
-		eventType = Control.fixGdkEventTypeValues(eventType);
 		switch (eventType) {
 			case GDK.GDK_BUTTON_PRESS:
 				GdkEventButton eventButton = new GdkEventButton();

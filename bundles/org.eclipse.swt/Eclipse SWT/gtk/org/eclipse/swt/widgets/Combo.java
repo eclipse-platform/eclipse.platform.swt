@@ -1493,7 +1493,6 @@ long gtk_changed (long widget) {
 	long eventPtr = GTK.GTK4 ? 0 : GTK3.gtk_get_current_event ();
 	if (eventPtr != 0) {
 		int eventType = GDK.gdk_event_get_event_type(eventPtr);
-		eventType = fixGdkEventTypeValues(eventType);
 		switch (eventType) {
 			case GDK.GDK_KEY_PRESS:
 				keyPress = true;
@@ -1675,7 +1674,6 @@ long gtk3_event_after (long widget, long gdkEvent)  {
 	* field.
 	*/
 	int eventType = GDK.gdk_event_get_event_type(gdkEvent);
-	eventType = fixGdkEventTypeValues(eventType);
 	switch (eventType) {
 		case GDK.GDK_BUTTON_PRESS: {
 			int [] eventButton = new int [1];
@@ -2752,7 +2750,6 @@ String verifyText (String string, int start, int end) {
 	long eventPtr = GTK.GTK4 ? 0 : GTK3.gtk_get_current_event ();
 	if (eventPtr != 0) {
 		int type = GDK.gdk_event_get_event_type(eventPtr);
-		type = fixGdkEventTypeValues(type);
 		switch (type) {
 			case GDK.GDK_KEY_PRESS:
 				setKeyState (event, eventPtr);
