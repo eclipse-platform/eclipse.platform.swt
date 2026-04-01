@@ -331,8 +331,8 @@ boolean gtk4_key_press_event(long controller, int keyval, int keycode, int state
 }
 
 @Override
-long gtk_button_press_event(long widget, long event) {
-	long result = super.gtk_button_press_event(widget, event);
+long gtk3_button_press_event(long widget, long event) {
+	long result = super.gtk3_button_press_event(widget, event);
 	if (result != 0) return result;
 
 	int[] eventButton = new int[1];
@@ -387,8 +387,8 @@ long gtk_button_press_event(long widget, long event) {
 }
 
 @Override
-long gtk_button_release_event(long widget, long event) {
-	long result = super.gtk_button_release_event(widget, event);
+long gtk3_button_release_event(long widget, long event) {
+	long result = super.gtk3_button_release_event(widget, event);
 	if (result != 0) return result;
 
 	int[] eventButton = new int[1];
@@ -544,7 +544,7 @@ long gtk3_motion_notify_event(long widget, long eventPtr) {
 	int[] state = new int[1];
 	GDK.gdk_event_get_state(eventPtr, state);
 
-	long gdkResource = gdk_event_get_surface_or_window(eventPtr);
+	long gdkResource = GDK.gdk_event_get_window(eventPtr);
 	boolean isHint;
 	GdkEventMotion gdkEvent = new GdkEventMotion();
 	GTK3.memmove(gdkEvent, eventPtr, GdkEventMotion.sizeof);

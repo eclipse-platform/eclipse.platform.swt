@@ -2003,7 +2003,7 @@ public int getTopIndex () {
 }
 
 @Override
-long gtk_button_press_event (long widget, long event) {
+long gtk3_button_press_event (long widget, long event) {
 	double [] eventX = new double [1];
 	double [] eventY = new double [1];
 	GDK.gdk_event_get_coords(event, eventX, eventY);
@@ -2020,10 +2020,10 @@ long gtk_button_press_event (long widget, long event) {
 	GDK.gdk_event_get_root_coords(event, eventRX, eventRY);
 
 
-	long eventGdkResource = gdk_event_get_surface_or_window(event);
+	long eventGdkResource = GDK.gdk_event_get_window(event);
 	if (eventGdkResource != GTK3.gtk_tree_view_get_bin_window (handle)) return 0;
 
-	long result = super.gtk_button_press_event (widget, event);
+	long result = super.gtk3_button_press_event (widget, event);
 	if (result != 0) return result;
 	/*
 	 * Feature in GTK. In multi-select tree view there is a problem with using DnD operations while also selecting multiple items.
@@ -2201,35 +2201,22 @@ void sendTreeDefaultSelection() {
 
 
 @Override
-long gtk_button_release_event (long widget, long event) {
+long gtk3_button_release_event (long widget, long event) {
 	double [] eventX = new double [1];
 	double [] eventY = new double [1];
-	if (GTK.GTK4) {
-		GDK.gdk_event_get_position(event, eventX, eventY);
-	} else {
-		GDK.gdk_event_get_coords(event, eventX, eventY);
-	}
+	GDK.gdk_event_get_coords(event, eventX, eventY);
 
 	int [] eventButton = new int [1];
 	int [] eventState = new int [1];
-	if (GTK.GTK4) {
-		eventButton[0] = GDK.gdk_button_event_get_button(event);
-		eventState[0] = GDK.gdk_event_get_modifier_state(event);
-	} else {
-		GDK.gdk_event_get_button(event, eventButton);
-		GDK.gdk_event_get_state(event, eventState);
-	}
+	GDK.gdk_event_get_button(event, eventButton);
+	GDK.gdk_event_get_state(event, eventState);
 
 	double [] eventRX = new double [1];
 	double [] eventRY = new double [1];
 	GDK.gdk_event_get_root_coords(event, eventRX, eventRY);
 
-	long eventGdkResource = gdk_event_get_surface_or_window(event);
-	if (GTK.GTK4) {
-		if (eventGdkResource != gtk_widget_get_surface (handle)) return 0;
-	} else {
-		if (eventGdkResource != GTK3.gtk_tree_view_get_bin_window (handle)) return 0;
-	}
+	long eventGdkResource = GDK.gdk_event_get_window(event);
+	if (eventGdkResource != GTK3.gtk_tree_view_get_bin_window (handle)) return 0;
 	// Check region since super.gtk_button_release_event() isn't called
 	lastInput.x = (int) eventX[0];
 	lastInput.y = (int) eventY[0];
@@ -2259,7 +2246,7 @@ long gtk_button_release_event (long widget, long event) {
 			}
 		}
 	}
-	return super.gtk_button_release_event (widget, event);
+	return super.gtk3_button_release_event (widget, event);
 }
 
 @Override

@@ -468,7 +468,7 @@ boolean grab () {
 }
 
 @Override
-long gtk_button_release_event (long widget, long event) {
+long gtk3_button_release_event (long widget, long event) {
 	Control.mouseDown = false;
 	return gtk3_mouse (GDK.GDK_BUTTON_RELEASE, widget, event);
 }
@@ -906,7 +906,7 @@ boolean processEvent (long eventPtr) {
 	long widget = GTK3.gtk_get_event_widget (eventPtr);
 	switch (eventType) {
 		case GDK.GDK_MOTION_NOTIFY: gtk3_motion_notify_event (widget, eventPtr); break;
-		case GDK.GDK_BUTTON_RELEASE: gtk_button_release_event (widget, eventPtr); break;
+		case GDK.GDK_BUTTON_RELEASE: gtk3_button_release_event (widget, eventPtr); break;
 		case GDK.GDK_KEY_PRESS: gtk3_key_press_event (widget, eventPtr); break;
 		case GDK.GDK_KEY_RELEASE: gtk3_key_release_event (widget, eventPtr); break;
 		case GDK.GDK_BUTTON_PRESS:

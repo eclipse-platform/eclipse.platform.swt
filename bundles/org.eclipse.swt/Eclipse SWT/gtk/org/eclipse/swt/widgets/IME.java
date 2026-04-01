@@ -247,7 +247,7 @@ public boolean getWideCaret () {
 }
 
 @Override
-long gtk_button_press_event (long widget, long event) {
+long gtk3_button_press_event (long widget, long event) {
 	if (!isInlineEnabled ()) return 0;
 	long imHandle = imHandle ();
 	if (imHandle != 0) GTK.gtk_im_context_reset (imHandle);

@@ -507,7 +507,7 @@ public boolean getVisible () {
 }
 
 @Override
-long gtk_button_press_event (long widget, long event) {
+long gtk3_button_press_event (long widget, long event) {
 	sendSelectionEvent (SWT.Selection, null, true);
 	setVisible (false);
 	return 0;

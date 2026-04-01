@@ -788,8 +788,8 @@ long gtk_changed (long widget) {
 }
 
 @Override
-long gtk_button_press_event (long widget, long event) {
-	long result = super.gtk_button_press_event (widget, event);
+long gtk3_button_press_event (long widget, long event) {
+	long result = super.gtk3_button_press_event (widget, event);
 	if (result != 0) return result;
 	/*
 	 * Feature in GTK. In multi-select tree view there is a problem with using DnD operations while also selecting multiple items.
@@ -803,15 +803,9 @@ long gtk_button_press_event (long widget, long event) {
 	double [] eventY = new double [1];
 	int [] eventState = new int [1];
 	int [] eventButton = new int [1];
-	if (GTK.GTK4) {
-		eventButton[0] = GDK.gdk_button_event_get_button(event);
-		eventState[0] = GDK.gdk_event_get_modifier_state(event);
-		GDK.gdk_event_get_position(event, eventX, eventY);
-	} else {
-		GDK.gdk_event_get_button(event, eventButton);
-		GDK.gdk_event_get_state(event, eventState);
-		GDK.gdk_event_get_coords(event, eventX, eventY);
-	}
+	GDK.gdk_event_get_button(event, eventButton);
+	GDK.gdk_event_get_state(event, eventState);
+	GDK.gdk_event_get_coords(event, eventX, eventY);
 
 	if ((state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect) &&
 			OS.isWayland() && eventType == GDK.GDK_BUTTON_PRESS) {
@@ -929,24 +923,15 @@ long gtk3_key_press_event (long widget, long event) {
 }
 
 @Override
-long gtk_button_release_event (long widget, long event) {
+long gtk3_button_release_event (long widget, long event) {
 	int [] eventState = new int [1];
 	double [] eventX = new double [1];
 	double [] eventY = new double [1];
-	if (GTK.GTK4) {
-		eventState[0] = GDK.gdk_event_get_modifier_state(event);
-		GDK.gdk_event_get_position(event, eventX, eventY);
-	} else {
-		GDK.gdk_event_get_state(event, eventState);
-		GDK.gdk_event_get_coords(event, eventX, eventY);
-	}
+	GDK.gdk_event_get_state(event, eventState);
+	GDK.gdk_event_get_coords(event, eventX, eventY);
 
-	long eventGdkResource = gdk_event_get_surface_or_window(event);
-	if (GTK.GTK4) {
-		if (eventGdkResource != gtk_widget_get_surface (handle)) return 0;
-	} else {
-		if (eventGdkResource != GTK3.gtk_tree_view_get_bin_window (handle)) return 0;
-	}
+	long eventGdkResource = GDK.gdk_event_get_window(event);
+	if (eventGdkResource != GTK3.gtk_tree_view_get_bin_window (handle)) return 0;
 	/*
 	 * Feature in GTK. In multi-select tree view there is a problem with using DnD operations while also selecting multiple items.
 	 * When doing a DnD, GTK de-selects all other items except for the widget being dragged from. By disabling the selection function
@@ -972,7 +957,7 @@ long gtk_button_release_event (long widget, long event) {
 			}
 		}
 	}
-	return super.gtk_button_release_event (widget, event);
+	return super.gtk3_button_release_event (widget, event);
 }
 
 /**

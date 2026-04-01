@@ -266,7 +266,7 @@ long gtk_activate (long widget) {
 }
 
 @Override
-long gtk_button_press_event (long widget, long event) {
+long gtk3_button_press_event (long widget, long event) {
 	int eventType = GDK.gdk_event_get_event_type(event);
 
 	int [] eventButton = new int [1];

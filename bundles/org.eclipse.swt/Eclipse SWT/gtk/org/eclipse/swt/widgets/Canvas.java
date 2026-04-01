@@ -150,12 +150,12 @@ public IME getIME () {
 }
 
 @Override
-long gtk_button_press_event (long widget, long event) {
+long gtk3_button_press_event (long widget, long event) {
 	if (ime != null) {
-		long result = ime.gtk_button_press_event (widget, event);
+		long result = ime.gtk3_button_press_event (widget, event);
 		if (result != 0) return result;
 	}
-	return  super.gtk_button_press_event (widget, event);
+	return  super.gtk3_button_press_event (widget, event);
 }
 
 @Override

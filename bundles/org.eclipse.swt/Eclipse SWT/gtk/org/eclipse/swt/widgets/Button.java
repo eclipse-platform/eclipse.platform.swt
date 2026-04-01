@@ -584,8 +584,8 @@ public String getText () {
 }
 
 @Override
-long gtk_button_press_event (long widget, long event) {
-	long result = super.gtk_button_press_event (widget, event);
+long gtk3_button_press_event (long widget, long event) {
+	long result = super.gtk3_button_press_event (widget, event);
 	if (result != 0) return result;
 	if ((style & SWT.RADIO) != 0) selected  = getSelection ();
 	return result;
