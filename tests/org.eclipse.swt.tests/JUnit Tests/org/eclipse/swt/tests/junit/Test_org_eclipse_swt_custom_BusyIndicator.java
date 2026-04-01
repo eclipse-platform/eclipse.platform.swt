@@ -14,15 +14,21 @@
 package org.eclipse.swt.tests.junit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
@@ -85,7 +91,43 @@ public class Test_org_eclipse_swt_custom_BusyIndicator {
 				latch.countDown();
 			});
 
-			BusyIndicator.showWhile(future);
+			AtomicBoolean timedOut = new AtomicBoolean(false);
+			AtomicInteger wakeCount = new AtomicInteger(0);
+			AtomicReference<Timer> wakeTimerRef = new AtomicReference<>();
+			Timer watchdog = new Timer("BusyIndicator-watchdog", true);
+			watchdog.schedule(new TimerTask() {
+				@Override
+				public void run() {
+					timedOut.set(true);
+					System.out.println("[BusyIndicator testShowWhile] Watchdog fired after 20s! future.isDone()=" + future.isDone());
+					Timer wakeTimer = new Timer("BusyIndicator-waker", true);
+					wakeTimerRef.set(wakeTimer);
+					wakeTimer.scheduleAtFixedRate(new TimerTask() {
+						@Override
+						public void run() {
+							int count = wakeCount.incrementAndGet();
+							System.out.println("[BusyIndicator testShowWhile] Calling display.wake() #" + count + " future.isDone()=" + future.isDone());
+							if (!display.isDisposed()) {
+								try {
+									display.wake();
+								} catch (Exception e) {
+									System.out.println("[BusyIndicator testShowWhile] display.wake() threw: " + e);
+								}
+							}
+						}
+					}, 0, 1000);
+				}
+			}, 20_000);
+			try {
+				BusyIndicator.showWhile(future);
+			} finally {
+				watchdog.cancel();
+				Timer wakeTimer = wakeTimerRef.get();
+				if (wakeTimer != null) {
+					wakeTimer.cancel();
+				}
+			}
+			assertFalse(timedOut.get(), "showWhile() did not complete within 20s, had to call display.wake() " + wakeCount.get() + " time(s)");
 			assertTrue(future.isDone());
 			assertEquals(busyCursor, cursorInAsync[0]);
 			assertEquals(busyCursor, cursorInAsync[1]);
@@ -125,7 +167,44 @@ public class Test_org_eclipse_swt_custom_BusyIndicator {
 				}
 				display.wake();
 			});
-			BusyIndicator.showWhile(future);
+
+			AtomicBoolean timedOut = new AtomicBoolean(false);
+			AtomicInteger wakeCount = new AtomicInteger(0);
+			AtomicReference<Timer> wakeTimerRef = new AtomicReference<>();
+			Timer watchdog = new Timer("BusyIndicator-watchdog", true);
+			watchdog.schedule(new TimerTask() {
+				@Override
+				public void run() {
+					timedOut.set(true);
+					System.out.println("[BusyIndicator testShowWhileWithFuture] Watchdog fired after 20s! future.isDone()=" + future.isDone());
+					Timer wakeTimer = new Timer("BusyIndicator-waker", true);
+					wakeTimerRef.set(wakeTimer);
+					wakeTimer.scheduleAtFixedRate(new TimerTask() {
+						@Override
+						public void run() {
+							int count = wakeCount.incrementAndGet();
+							System.out.println("[BusyIndicator testShowWhileWithFuture] Calling display.wake() #" + count + " future.isDone()=" + future.isDone());
+							if (!display.isDisposed()) {
+								try {
+									display.wake();
+								} catch (Exception e) {
+									System.out.println("[BusyIndicator testShowWhileWithFuture] display.wake() threw: " + e);
+								}
+							}
+						}
+					}, 0, 1000);
+				}
+			}, 20_000);
+			try {
+				BusyIndicator.showWhile(future);
+			} finally {
+				watchdog.cancel();
+				Timer wakeTimer = wakeTimerRef.get();
+				if (wakeTimer != null) {
+					wakeTimer.cancel();
+				}
+			}
+			assertFalse(timedOut.get(), "showWhile() did not complete within 20s, had to call display.wake() " + wakeCount.get() + " time(s)");
 			assertTrue(future.isDone());
 			assertEquals(busyCursor, cursorInAsync[0]);
 			shell.dispose();
