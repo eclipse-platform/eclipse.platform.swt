@@ -352,7 +352,6 @@ long gtk_clicked (long widget) {
 		}
 
 		int eventType = GDK.gdk_event_get_event_type(eventPtr);
-		eventType = Control.fixGdkEventTypeValues(eventType);
 		int eventTime = GDK.gdk_event_get_time(eventPtr);
 		switch (eventType) {
 			case GDK.GDK_BUTTON_RELEASE: {
@@ -374,7 +373,6 @@ long gtk_clicked (long widget) {
 @Override
 long gtk3_event_after (long widget, long gdkEvent) {
 	int eventType = GDK.gdk_event_get_event_type(gdkEvent);
-	eventType = Control.fixGdkEventTypeValues(eventType);
 	switch (eventType) {
 		case GDK.GDK_BUTTON_PRESS: {
 			int [] eventButton = new int [1];

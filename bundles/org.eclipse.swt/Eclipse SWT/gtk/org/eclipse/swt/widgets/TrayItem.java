@@ -258,8 +258,6 @@ long gtk_activate (long widget) {
 			gdk_event_free(currEvent);
 		}
 		gdk_event_free (nextEvent);
-		currEventType = Control.fixGdkEventTypeValues(currEventType);
-		nextEventType = Control.fixGdkEventTypeValues(nextEventType);
 		if (currEventType == GDK.GDK_BUTTON_PRESS && nextEventType == GDK.GDK_2BUTTON_PRESS) {
 			sendSelectionEvent (SWT.DefaultSelection);
 		}
