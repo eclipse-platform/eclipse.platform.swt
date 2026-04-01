@@ -36,8 +36,6 @@ public class CTabFolderRenderer {
 
 	private Font chevronFont = null;
 
-	private static final int[] EMPTY_CORNER = new int[] {0,0};
-
 	static final RGB CLOSE_FILL = new RGB(240, 64, 64);
 
 	static final int BUTTON_SIZE = 16;
@@ -799,33 +797,12 @@ public class CTabFolderRenderer {
 		int y = bounds.y;
 		int height = bounds.height;
 
-		int[] shape = null;
+		gc.setForeground(parent.getDisplay().getSystemColor(BORDER1_COLOR));
 		if (parent.onBottom) {
-			int[] left = EMPTY_CORNER;
-
-			shape = new int[left.length + 2];
-			int index = 0;
-			shape[index++] = x;
-			shape[index++] = y - 1;
-			for (int i = 0; i < left.length / 2; i++) {
-				shape[index++] = x + left[2 * i];
-				shape[index++] = y + height + left[2 * i + 1] - 1;
-			}
+			gc.drawLine(x, y - 1, x, y + height - 1);
 		} else {
-			int[] left = EMPTY_CORNER;
-
-			shape = new int[left.length + 2];
-			int index = 0;
-			shape[index++] = x;
-			shape[index++] = y + height;
-			for (int i = 0; i < left.length / 2; i++) {
-				shape[index++] = x + left[2 * i];
-				shape[index++] = y + left[2 * i + 1];
-			}
-
+			gc.drawLine(x, y + height, x, y);
 		}
-
-		drawBorder(gc, shape);
 	}
 
 	void drawMaximize(GC gc, Rectangle maxRect, int maxImageState) {
@@ -931,44 +908,16 @@ public class CTabFolderRenderer {
 	 * Draw the unselected border for the receiver on the right.
 	 */
 	void drawRightUnselectedBorder(GC gc, Rectangle bounds, int state) {
-		int x = bounds.x;
+		int x = bounds.x + bounds.width - 1;
 		int y = bounds.y;
-		int width = bounds.width;
 		int height = bounds.height;
 
-		int[] shape = null;
-		int startX = x + width - 1;
-
+		gc.setForeground(parent.getDisplay().getSystemColor(BORDER1_COLOR));
 		if (parent.onBottom) {
-			int[] right = EMPTY_CORNER;
-
-			shape = new int[right.length + 2];
-			int index = 0;
-
-			for (int i = 0; i < right.length / 2; i++) {
-				shape[index++] = startX + right[2 * i];
-				shape[index++] = y + height + right[2 * i + 1] - 1;
-			}
-			shape[index++] = startX;
-			shape[index++] = y - 1;
+			gc.drawLine(x, y + height - 1, x, y - 1);
 		} else {
-			int[] right = EMPTY_CORNER;
-
-			shape = new int[right.length + 2];
-			int index = 0;
-
-			for (int i = 0; i < right.length / 2; i++) {
-				shape[index++] = startX + right[2 * i];
-				shape[index++] = y + right[2 * i + 1];
-			}
-
-			shape[index++] = startX;
-			shape[index++] = y + height;
-
+			gc.drawLine(x, y, x, y + height);
 		}
-
-		drawBorder(gc, shape);
-
 	}
 
 	void drawSelected(int itemIndex, GC gc, Rectangle bounds, int state ) {
@@ -1016,51 +965,39 @@ public class CTabFolderRenderer {
 				}
 
 				// draw selected tab background and outline
-				shape = null;
+				shape = new int[12];
 				if (parent.onBottom) {
-					int[] left = EMPTY_CORNER;
-					int[] right = EMPTY_CORNER;
-					if (borderLeft == 0 && itemIndex == parent.firstIndex) {
-						left = new int[]{x, y+height};
-					}
-					shape = new int[left.length+right.length+8];
 					int index = 0;
 					shape[index++] = x; // first point repeated here because below we reuse shape to draw outline
 					shape[index++] = y - 1;
 					shape[index++] = x;
 					shape[index++] = y - 1;
-					for (int i = 0; i < left.length/2; i++) {
-						shape[index++] = x + left[2*i];
-						shape[index++] = y + height + left[2*i+1] - 1;
+					shape[index++] = x;
+					shape[index++] = y + height;
+					if (borderLeft == 0 && itemIndex == parent.firstIndex) {
+						shape[index - 2] += x;
+						shape[index - 1] += y + height;
 					}
-					for (int i = 0; i < right.length/2; i++) {
-						shape[index++] = rightEdge - 1 + right[2*i];
-						shape[index++] = y + height + right[2*i+1] - 1;
-					}
+					shape[index++] = rightEdge - 1;
+					shape[index++] = y + height - 1;
 					shape[index++] = rightEdge - 1;
 					shape[index++] = y - 1;
 					shape[index++] = rightEdge - 1;
 					shape[index++] = y - 1;
 				} else {
-					int[] left = EMPTY_CORNER;
-					int[] right = EMPTY_CORNER;
-					if (borderLeft == 0 && itemIndex == parent.firstIndex) {
-						left = new int[]{x, y};
-					}
-					shape = new int[left.length+right.length+8];
 					int index = 0;
 					shape[index++] = x; // first point repeated here because below we reuse shape to draw outline
 					shape[index++] = y + height + 1;
 					shape[index++] = x;
 					shape[index++] = y + height + 1;
-					for (int i = 0; i < left.length/2; i++) {
-						shape[index++] = x + left[2*i];
-						shape[index++] = y + left[2*i+1];
+					shape[index++] = x;
+					shape[index++] = y;
+					if (borderLeft == 0 && itemIndex == parent.firstIndex) {
+						shape[index - 2] += x;
+						shape[index - 1] += y;
 					}
-					for (int i = 0; i < right.length/2; i++) {
-						shape[index++] = rightEdge - 1 + right[2*i];
-						shape[index++] = y + right[2*i+1];
-					}
+					shape[index++] = rightEdge - 1;
+					shape[index++] = y;
 					shape[index++] = rightEdge - 1;
 					shape[index++] = y + height + 1;
 					shape[index++] = rightEdge - 1;
@@ -1198,7 +1135,6 @@ public class CTabFolderRenderer {
 
 	void drawTabArea(GC gc, Rectangle bounds, int state) {
 		Point size = parent.getSize();
-		int[] shape = null;
 		Color borderColor = parent.getDisplay().getSystemColor(BORDER1_COLOR);
 		int tabHeight = parent.tabHeight;
 		int style = parent.getStyle();
@@ -1218,7 +1154,7 @@ public class CTabFolderRenderer {
 			int y2 = parent.onBottom ? size.y - borderBottom : borderTop;
 			if (borderLeft > 0 && parent.onBottom) y2 -= 1;
 
-			shape = new int[] {x1, y1, x1,y2, x2,y2, x2,y1};
+			int[] shape = new int[] {x1, y1, x1,y2, x2,y2, x2,y1};
 
 			// If horizontal gradient, show gradient across the whole area
 			if (selectedIndex != -1 && parent.selectionGradientColors != null && parent.selectionGradientColors.length > 1 && !parent.selectionGradientVertical) {
@@ -1242,55 +1178,32 @@ public class CTabFolderRenderer {
 		int y = parent.onBottom ? size.y - borderBottom - tabHeight : borderTop;
 		int width = size.x - borderLeft - borderRight + 1;
 		int height = tabHeight - 1;
+		int[] shape = new int[8];
 		// Draw Tab Header
 		if (parent.onBottom) {
-			int[] left, right;
-			if ((style & SWT.BORDER) != 0) {
-				left = EMPTY_CORNER;
-				right = EMPTY_CORNER;
-			} else {
-				left = EMPTY_CORNER;
-				right = EMPTY_CORNER;
-			}
-			shape = new int[left.length + right.length + 4];
 			int index = 0;
 			shape[index++] = x;
-			shape[index++] = y-highlight_header;
-			for (int i = 0; i < left.length/2; i++) {
-				shape[index++] = x+left[2*i];
-				shape[index++] = y+height+left[2*i+1];
-				if (borderLeft == 0) shape[index-1] += 1;
-			}
-			for (int i = 0; i < right.length/2; i++) {
-				shape[index++] = x+width+right[2*i];
-				shape[index++] = y+height+right[2*i+1];
-				if (borderLeft == 0) shape[index-1] += 1;
-			}
-			shape[index++] = x+width;
-			shape[index++] = y-highlight_header;
+			shape[index++] = y - highlight_header;
+			shape[index++] = x;
+			shape[index++] = y + height;
+			if (borderLeft == 0)
+				shape[index - 1] += 1;
+			shape[index++] = x + width;
+			shape[index++] = y + height;
+			if (borderLeft == 0)
+				shape[index - 1] += 1;
+			shape[index++] = x + width;
+			shape[index++] = y - highlight_header;
 		} else {
-			int[] left, right;
-			if ((style & SWT.BORDER) != 0) {
-				left = EMPTY_CORNER;
-				right = EMPTY_CORNER;
-			} else {
-				left = EMPTY_CORNER;
-				right = EMPTY_CORNER;
-			}
-			shape = new int[left.length + right.length + 4];
 			int index = 0;
 			shape[index++] = x;
-			shape[index++] = y+height+highlight_header + 1;
-			for (int i = 0; i < left.length/2; i++) {
-				shape[index++] = x+left[2*i];
-				shape[index++] = y+left[2*i+1];
-			}
-			for (int i = 0; i < right.length/2; i++) {
-				shape[index++] = x+width+right[2*i];
-				shape[index++] = y+right[2*i+1];
-			}
-			shape[index++] = x+width;
-			shape[index++] = y+height+highlight_header + 1;
+			shape[index++] = y + height + highlight_header + 1;
+			shape[index++] = x;
+			shape[index++] = y;
+			shape[index++] = x + width;
+			shape[index++] = y;
+			shape[index++] = x + width;
+			shape[index++] = y + height + highlight_header + 1;
 		}
 		// Fill in background
 		boolean single = parent.single;
