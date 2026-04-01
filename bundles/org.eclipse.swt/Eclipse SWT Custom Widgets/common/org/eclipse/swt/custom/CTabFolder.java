@@ -1251,7 +1251,7 @@ public int getSelectionIndex() {
  * @since 3.0
  * @deprecated Curved tabs are no longer supported.
  */
-@Deprecated(forRemoval = true, since = "2026-04")
+@Deprecated(forRemoval = true, since = "2026-06")
 public boolean getSimple() {
 	checkWidget();
 	return simple;
@@ -2369,7 +2369,6 @@ public void reskin(int flags) {
 @Override
 public void setBackground (Color color) {
 	super.setBackground(color);
-	renderer.createAntialiasColors(); //TODO: need better caching strategy
 	updateBkImages(true);
 	redraw();
 }
@@ -2498,7 +2497,6 @@ public void setBackground(Color[] colors, int[] percents, boolean vertical) {
 @Override
 public void setBackgroundImage(Image image) {
 		super.setBackgroundImage(image);
-		renderer.createAntialiasColors(); //TODO: need better caching strategy
 		redraw();
 }
 /**
@@ -3288,7 +3286,6 @@ public void setSelectionBackground (Color color) {
 	if (selectionBackground == color) return;
 	if (color == null) color = getDisplay().getSystemColor(SELECTION_BACKGROUND);
 	selectionBackground = color;
-	renderer.createAntialiasColors(); //TODO:  need better caching strategy
 	if (selectedIndex > -1) redraw();
 }
 /**
@@ -3449,7 +3446,6 @@ public void setSelectionBackground(Image image) {
 		selectionGradientPercents = null;
 	}
 	selectionBgImage = image;
-	renderer.createAntialiasColors(); //TODO:  need better caching strategy
 	if (selectedIndex > -1) redraw();
 }
 /**
@@ -3504,7 +3500,7 @@ public void setSelectionBarThickness(int thickness) {
  * @since 3.0
  * @deprecated Curved tabs are no longer supported.
  */
-@Deprecated(forRemoval = true, since = "2026-04")
+@Deprecated(forRemoval = true, since = "2026-06")
 public void setSimple(boolean simple) {
 	checkWidget();
 }
