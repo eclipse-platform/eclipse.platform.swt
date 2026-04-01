@@ -106,6 +106,19 @@ public class BusyIndicator {
 			} else {
 				Integer busyId = setBusyCursor(display);
 				try {
+					// Install a timer as a safety net to periodically wake the event loop in case
+					// the primary wake signal is lost (e.g. due to a native call may fail to wake the polling function).
+					// That should be short enough to not be noticeable by the user and long
+					// enough to not burn more CPU time than necessary
+					int wakeTime = 10;
+					display.timerExec(wakeTime, new Runnable() {
+						@Override
+						public void run() {
+							if (!future.isDone() && !display.isDisposed()) {
+								display.timerExec(wakeTime, this);
+							}
+						}
+					});
 					if (future instanceof CompletionStage<?> stage) {
 						// let us wake up from sleep once the future is done
 						stage.handle((nil1, nil2) -> {
@@ -118,19 +131,6 @@ public class BusyIndicator {
 								}
 							}
 							return null;
-						});
-					} else {
-						// for plain features we need to use a workaround, we install a timer every
-						// few ms, that should be short enough to not be noticeable by the user and long
-						// enough to not burn more CPU time than necessary
-						int wakeTime = 10;
-						display.timerExec(wakeTime, new Runnable() {
-							@Override
-							public void run() {
-								if (!future.isDone() && !display.isDisposed()) {
-									display.timerExec(wakeTime, this);
-								}
-							}
 						});
 					}
 					while (!future.isDone() && !display.isDisposed()) {
