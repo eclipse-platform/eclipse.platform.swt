@@ -116,7 +116,6 @@ public class CTabFolder extends Composite {
 	/* sizing, positioning */
 	boolean onBottom = false;
 	boolean single = false;
-	boolean simple = true;
 	int fixedTabHeight = SWT.DEFAULT;
 	int tabHeight;
 	int minChars = 20;
@@ -1254,7 +1253,7 @@ public int getSelectionIndex() {
 @Deprecated(forRemoval = true, since = "2026-06")
 public boolean getSimple() {
 	checkWidget();
-	return simple;
+	return true;
 }
 /**
  * Returns <code>true</code> if the CTabFolder only displays the selected tab
@@ -2151,7 +2150,6 @@ void onResize(Event event) {
 			int x1 = Math.min(size.x, oldSize.x);
 			Rectangle trim = renderer.computeTrim(CTabFolderRenderer.PART_BODY, SWT.NONE, 0, 0, 0, 0);
 			if (size.x != oldSize.x) x1 -= trim.width + trim.x - marginWidth + 2;
-			if (!simple) x1 -= 5; // rounded top right corner
 			int y1 = Math.min(size.y, oldSize.y);
 			if (size.y != oldSize.y) y1 -= trim.height + trim.y - marginHeight;
 			int x2 = Math.max(size.x, oldSize.x);
