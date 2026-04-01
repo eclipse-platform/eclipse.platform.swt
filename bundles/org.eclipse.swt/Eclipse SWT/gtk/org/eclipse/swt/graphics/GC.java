@@ -1871,7 +1871,7 @@ int fixMnemonic (char [] buffer) {
 public int getAdvanceWidth(char ch) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	//BOGUS
-	return stringExtentInPixels(new String(new char[]{ch})).x;
+	return textExtentInPixels(new String(new char[]{ch}), 0).x;
 }
 
 /**
@@ -2002,7 +2002,7 @@ public Pattern getBackgroundPattern() {
 public int getCharWidth(char ch) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	//BOGUS
-	return stringExtentInPixels(new String(new char[]{ch})).x;
+	return textExtentInPixels(new String(new char[]{ch}), 0).x;
 }
 
 /**
@@ -3094,7 +3094,19 @@ public void setClipping(int x, int y, int width, int height) {
 public void setClipping(Path path) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (path != null && path.isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+
+	Transform t = null;
+	if (currentTransform != null) {
+		t = new Transform(getDevice());
+		getTransform(t);
+		setTransform(null);
+	}
 	resetClipping();
+	if (t != null) {
+		setTransform(t);
+		t.dispose();
+	}
+
 	if (path != null) {
 		initCairo();
 		long cairo = data.cairo;
@@ -3774,9 +3786,7 @@ public void setXORMode(boolean xor) {
  * </ul>
  */
 public Point stringExtent(String string) {
-	return textExtentInPixels(string, 0);
-}
-Point stringExtentInPixels(String string) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return textExtentInPixels(string, 0);
 }
 
@@ -3800,6 +3810,7 @@ Point stringExtentInPixels(String string) {
  * </ul>
  */
 public Point textExtent(String string) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return textExtentInPixels(string, SWT.DRAW_DELIMITER | SWT.DRAW_TAB);
 }
 

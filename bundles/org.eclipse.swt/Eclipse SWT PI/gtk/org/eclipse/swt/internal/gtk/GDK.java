@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018, 2020 Red Hat Inc. and others. All rights reserved.
+ * Copyright (c) 2018, 2026 Red Hat Inc. and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -222,30 +222,12 @@ public class GDK extends OS {
 	public static final int GDK_WINDOW_TYPE_HINT_UTILITY = 5;
 	public static final int GDK_WINDOW_TYPE_HINT_TOOLTIP = 10;
 
-	/** GdkEventType constants are different on GTK4 */
-	public static final int GDK4_EXPOSE = 3;
-	public static final int GDK4_MOTION_NOTIFY = 4;
-	public static final int GDK4_BUTTON_PRESS = 5;
-	public static final int GDK4_BUTTON_RELEASE = 6;
-	public static final int GDK4_KEY_PRESS = 7;
-	public static final int GDK4_KEY_RELEASE = 8;
-	public static final int GDK4_ENTER_NOTIFY = 9;
-	public static final int GDK4_LEAVE_NOTIFY = 10;
-	public static final int GDK4_FOCUS_CHANGE = 11;
-	public static final int GDK4_CONFIGURE = 12;
-	public static final int GDK4_MAP = 13;
-	public static final int GDK4_UNMAP = 14;
-
 	/** sizeof(TYPE) for 32/64 bit support */
 	public static final native int GdkKeymapKey_sizeof();
 	public static final native int GdkRGBA_sizeof();
 	public static final native int GdkRectangle_sizeof();
 
 	/** Macros */
-	/** @param event cast=(GdkEvent *) */
-	public static final native int GDK_EVENT_TYPE(long event);
-	/** @param event cast=(GdkEventAny *) */
-	public static final native long GDK_EVENT_WINDOW(long event);
 	/** @param display cast=(GdkDisplay *) */
 	public static final native boolean GDK_IS_WAYLAND_DISPLAY(long display);
 	/** @param display cast=(GdkDisplay *) */
@@ -540,7 +522,7 @@ public class GDK extends OS {
 	/**
 	 * @method flags=dynamic
 	 */
-	// TODO GTK4 function removed
+	/* [GTK3 only, if-def'd in os.h] */
 	public static final native void gdk_event_handler_set(long func, long data, long notify);
 	/* [GTK3 only, if-def'd in os.h] */
 	public static final native long gdk_event_new(int type);

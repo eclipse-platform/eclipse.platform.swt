@@ -3,9 +3,13 @@
 <plugin>
    <extension
          point="org.eclipse.ui.views">
+      <category
+            id="org.eclipse.swt.dev.tools"
+            name="%viewCategory">
+      </category>
       <view
             allowMultiple="false"
-            category="org.eclipse.swt.swt.tools"
+            category="org.eclipse.swt.dev.tools"
             class="org.eclipse.swt.tools.views.MacGeneratorView"
             icon="icons/mac.gif"
             id="org.eclipse.swt.tools.views.MacGeneratorView"

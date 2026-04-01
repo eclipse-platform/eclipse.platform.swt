@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2025 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2009, 2026 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -98,9 +98,11 @@ typedef enum {
 	webkit_1navigation_1action_1get_1request_FUNC,
 	webkit_1navigation_1policy_1decision_1get_1navigation_1action_FUNC,
 	webkit_1navigation_1policy_1decision_1get_1request_FUNC,
+	webkit_1network_1session_1allow_1tls_1certificate_1for_1host_FUNC,
 	webkit_1network_1session_1get_1cookie_1manager_FUNC,
 	webkit_1network_1session_1get_1default_FUNC,
 	webkit_1network_1session_1get_1website_1data_1manager_FUNC,
+	webkit_1network_1session_1set_1tls_1errors_1policy_FUNC,
 	webkit_1policy_1decision_1download_FUNC,
 	webkit_1policy_1decision_1ignore_FUNC,
 	webkit_1response_1policy_1decision_1get_1request_FUNC,
@@ -118,6 +120,7 @@ typedef enum {
 	webkit_1user_1content_1manager_1remove_1all_1scripts_FUNC,
 	webkit_1user_1script_1new_FUNC,
 	webkit_1user_1script_1unref_FUNC,
+	webkit_1web_1context_1add_1path_1to_1sandbox_FUNC,
 	webkit_1web_1context_1allow_1tls_1certificate_1for_1host_FUNC,
 	webkit_1web_1context_1get_1cookie_1manager_FUNC,
 	webkit_1web_1context_1get_1default_FUNC,

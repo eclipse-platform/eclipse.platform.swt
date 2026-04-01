@@ -3037,6 +3037,9 @@ private RectF drawText(long gdipGraphics, char[] buffer, int start, int length, 
 private void drawTextGDIP(long gdipGraphics, String string, int x, int y, int flags, boolean draw, Point size) {
 	boolean needsBounds = !draw || (flags & SWT.DRAW_TRANSPARENT) == 0;
 	char[] buffer;
+	if ((flags & SWT.DRAW_DELIMITER) == 0) {
+		string = string.replaceAll("[\\r\\n]+", "");
+	}
 	int length = string.length();
 	if (length != 0) {
 		buffer = string.toCharArray();
@@ -4199,6 +4202,7 @@ public LineAttributes getLineAttributes () {
 	if(attributes.dash != null) {
 		attributes.dash = Win32DPIUtils.pixelToPoint(drawable, attributes.dash, deviceZoom);
 	}
+	attributes.dashOffset = Win32DPIUtils.pixelToPoint(drawable, attributes.dashOffset, deviceZoom);
 	return attributes;
 }
 
@@ -5361,8 +5365,16 @@ private class SetLineAttributesOperation extends ReplaceableOperation  {
 
 	@Override
 	void apply() {
-		attributes.width = Win32DPIUtils.pointToPixel(drawable, attributes.width, getZoom());
-		setLineAttributesInPixels(attributes);
+		setLineAttributesInPixels(convertToPixels(attributes));
+	}
+
+	private LineAttributes convertToPixels(LineAttributes attributes) {
+		int zoom = getZoom();
+		float[] dashInPixels =  Win32DPIUtils.pointToPixel(drawable, attributes.dash, zoom);
+		float dashOffsetInPixels = Win32DPIUtils.pointToPixel(drawable, attributes.dashOffset, zoom);
+		float widthInPixels = Win32DPIUtils.pointToPixel(drawable, attributes.width, zoom);
+		LineAttributes lineAttributesInPixels = new LineAttributes(widthInPixels, attributes.cap, attributes.join, attributes.style, dashInPixels, dashOffsetInPixels, attributes.miterLimit);
+		return lineAttributesInPixels;
 	}
 }
 
@@ -5424,12 +5436,6 @@ private void setLineAttributesInPixels (LineAttributes attributes) {
 			if (!changed && lineDashes[i] != dash) changed = true;
 		}
 		if (changed) {
-			float[] newDashes = new float[dashes.length];
-			int deviceZoom = getZoom();
-			for (int i = 0; i < newDashes.length; i++) {
-				newDashes[i] = Win32DPIUtils.pointToPixel(drawable, dashes[i], deviceZoom);
-			}
-			dashes = newDashes;
 			mask |= LINE_STYLE;
 		} else {
 			dashes = lineDashes;
@@ -5876,11 +5882,11 @@ private class SetTransformOperation extends Operation {
  * </ul>
  */
 public Point stringExtent (String string) {
-	if (string == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	return Win32DPIUtils.pixelToPointAsSize(drawable, stringExtentInPixels(string), getZoom());
+	return Win32DPIUtils.pixelToPointAsSufficientlyLargeSize(drawable, stringExtentInPixels(string), getZoom());
 }
 
 Point stringExtentInPixels (String string) {
+	if (string == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	checkNonDisposed();
 	checkGC(FONT);
 	int length = string.length();
@@ -5892,7 +5898,6 @@ Point stringExtentInPixels (String string) {
 	}
 	SIZE size = new SIZE();
 	if (length == 0) {
-//		OS.GetTextExtentPoint32(handle, SPACE, SPACE.length(), size);
 		OS.GetTextExtentPoint32(handle, new char[]{' '}, 1, size);
 		return new Point(0, size.cy);
 	} else {
@@ -5922,7 +5927,7 @@ Point stringExtentInPixels (String string) {
  * </ul>
  */
 public Point textExtent (String string) {
-	return Win32DPIUtils.pixelToPointAsSize(drawable, textExtentInPixels(string, SWT.DRAW_DELIMITER | SWT.DRAW_TAB), getZoom());
+	return textExtent(string, SWT.DRAW_DELIMITER | SWT.DRAW_TAB);
 }
 
 /**
@@ -5957,7 +5962,7 @@ public Point textExtent (String string) {
  * </ul>
  */
 public Point textExtent (String string, int flags) {
-	return Win32DPIUtils.pixelToPointAsSize(drawable, textExtentInPixels(string, flags), getZoom());
+	return Win32DPIUtils.pixelToPointAsSufficientlyLargeSize(textExtentInPixels(string, flags), getZoom());
 }
 
 Point textExtentInPixels(String string, int flags) {

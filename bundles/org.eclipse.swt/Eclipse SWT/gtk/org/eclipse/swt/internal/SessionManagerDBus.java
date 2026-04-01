@@ -300,8 +300,7 @@ public class SessionManagerDBus {
 	}
 
 	private void handleStop() {
-		for (int i = 0; i < listeners.size(); i++) {
-			IListener listener = listeners.get(i);
+		for (IListener listener : listeners) {
 			listener.stop();
 		}
 	}

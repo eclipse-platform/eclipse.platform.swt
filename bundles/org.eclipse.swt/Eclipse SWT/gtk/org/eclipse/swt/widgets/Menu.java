@@ -55,7 +55,7 @@ public class Menu extends Widget {
 	long menuHandle;
 
 	/** GTK4 only fields */
-	long modelHandle, actionGroup, shortcutController;
+	long modelHandle, popoverHandle, actionGroup, shortcutController;
 
 	class Section {
 		LinkedList<MenuItem> sectionItems;
@@ -356,30 +356,30 @@ void _setVisible (boolean visible) {
 					gdk_event_free (eventPtr);
 				}
 			} else {
-				/*
-				 *  GTK Feature: gtk_menu_popup is deprecated as of GTK3.22 and the new method gtk_menu_popup_at_pointer
-				 *  requires an event to hook on to. This requires the popup & events related to the menu be handled
-				 *  immediately and not as a post event in display, requiring the current event.
-				 */
-				eventPtr = GTK3.gtk_get_current_event();
-				if (eventPtr == 0) {
-					eventPtr = GDK.gdk_event_new(GTK.GTK4 ? GDK.GDK4_BUTTON_PRESS : GDK.GDK_BUTTON_PRESS);
-					GdkEventButton event = new GdkEventButton ();
-					event.type = GTK.GTK4 ? GDK.GDK4_BUTTON_PRESS : GDK.GDK_BUTTON_PRESS;
-					// Only assign a window on X11, as on Wayland the window is that of the mouse pointer
-					if (OS.isX11()) {
-						event.window = OS.g_object_ref(GTK3.gtk_widget_get_window (getShell().handle));
-					}
-					event.device = GDK.gdk_get_pointer(GDK.gdk_display_get_default ());
-					event.time = display.getLastEventTime ();
-					GTK3.memmove (eventPtr, event, GdkEventButton.sizeof);
-				}
-				adjustParentWindowWayland(eventPtr);
-				verifyMenuPosition(getItemCount());
-				GTK3.gtk_menu_popup_at_pointer(handle, eventPtr);
 				if (GTK.GTK4) {
-					GDK.gdk_event_unref(eventPtr);
+					GTK.gtk_popover_popup(handle);
 				} else {
+					/*
+					 *  GTK Feature: gtk_menu_popup is deprecated as of GTK3.22 and the new method gtk_menu_popup_at_pointer
+					 *  requires an event to hook on to. This requires the popup & events related to the menu be handled
+					 *  immediately and not as a post event in display, requiring the current event.
+					 */
+					eventPtr = GTK3.gtk_get_current_event();
+					if (eventPtr == 0) {
+						eventPtr = GDK.gdk_event_new(GDK.GDK_BUTTON_PRESS);
+						GdkEventButton event = new GdkEventButton ();
+						event.type = GDK.GDK_BUTTON_PRESS;
+						// Only assign a window on X11, as on Wayland the window is that of the mouse pointer
+						if (OS.isX11()) {
+							event.window = OS.g_object_ref(GTK3.gtk_widget_get_window (getShell().handle));
+						}
+						event.device = GDK.gdk_get_pointer(GDK.gdk_display_get_default ());
+						event.time = display.getLastEventTime ();
+						GTK3.memmove (eventPtr, event, GdkEventButton.sizeof);
+					}
+					adjustParentWindowWayland(eventPtr);
+					verifyMenuPosition(getItemCount());
+					GTK3.gtk_menu_popup_at_pointer(handle, eventPtr);
 					GDK.gdk_event_free(eventPtr);
 				}
 			}
@@ -823,6 +823,110 @@ public boolean getVisible () {
 }
 
 @Override
+long gtk_map (long widget) {
+	if (GTK.GTK4) {
+		if ((style & SWT.BAR) != 0) {
+			/*
+			 * The GtkPopoverMenuBar has been mapped, which means its internal
+			 * GtkPopoverMenuBarItem children now exist. Find the GtkPopoverMenu child for each,
+			 * and connect SHOW/HIDE signals so that SWT MenuListeners on DROP_DOWN are notified.
+			 */
+			connectDropDownMenuSignals();
+		} else if ((style & SWT.POP_UP) != 0) {
+			/*
+			 * The POP_UP GtkPopoverMenu has been mapped. Its handle IS the GtkPopoverMenu,
+			 * and nested GtkPopoverMenu children for any CASCADE submenus already exist in
+			 * its widget tree. Connect SHOW/HIDE signals for those nested submenus now.
+			 */
+			connectCascadeSubMenuSignals(this, handle);
+		}
+	}
+	return super.gtk_map(widget);
+}
+
+private void connectDropDownMenuSignals() {
+	if (items == null) return;
+	long barItem = GTK4.gtk_widget_get_first_child(handle);
+
+	for (MenuItem menuItem : items) {
+		if (barItem == 0) break;
+		if ((menuItem.style & SWT.SEPARATOR) != 0) continue;
+		if (menuItem.menu != null && menuItem.menu.popoverHandle == 0) {
+			long popover = findGtkPopoverMenuChild(barItem);
+			if (popover != 0) {
+				OS.g_object_ref(popover);
+				menuItem.menu.popoverHandle = popover;
+				display.addWidget(popover, menuItem.menu);
+				OS.g_signal_connect_closure_by_id(popover, display.signalIds[SHOW], 0, display.getClosure(SHOW), false);
+				OS.g_signal_connect_closure_by_id(popover, display.signalIds[HIDE], 0, display.getClosure(HIDE), false);
+				/*
+				 * Also connect SHOW/HIDE signals for nested CASCADE submenus.
+				 */
+				connectCascadeSubMenuSignals(menuItem.menu);
+			}
+		}
+		barItem = GTK4.gtk_widget_get_next_sibling(barItem);
+	}
+}
+
+private void connectCascadeSubMenuSignals(Menu menu) {
+	connectCascadeSubMenuSignals(menu, menu.popoverHandle);
+}
+
+private void connectCascadeSubMenuSignals(Menu menu, long parentPopoverHandle) {
+	if (menu == null || parentPopoverHandle == 0 || menu.items == null) return;
+	for (MenuItem item : menu.items) {
+		if ((item.style & SWT.CASCADE) != 0 && item.menu != null) {
+			/*
+			 * item.menu is the CASCADE submenu (always SWT.DROP_DOWN style).
+			 * Its popoverHandle is 0 until we find and register its GtkPopoverMenu.
+			 * Skip if already connected (popoverHandle != 0).
+			 */
+			if (item.menu.popoverHandle != 0) continue;
+			long nestedPopover = findNestedPopoverForModel(parentPopoverHandle, item.menu.modelHandle);
+			if (nestedPopover != 0) {
+				OS.g_object_ref(nestedPopover);
+				item.menu.popoverHandle = nestedPopover;
+				display.addWidget(nestedPopover, item.menu);
+				OS.g_signal_connect_closure_by_id(nestedPopover, display.signalIds[SHOW], 0, display.getClosure(SHOW), false);
+				OS.g_signal_connect_closure_by_id(nestedPopover, display.signalIds[HIDE], 0, display.getClosure(HIDE), false);
+				// Recurse to handle further nested CASCADE submenus
+				connectCascadeSubMenuSignals(item.menu);
+			}
+		}
+	}
+}
+
+private long findNestedPopoverForModel(long parentWidget, long targetModel) {
+	if (parentWidget == 0 || targetModel == 0) return 0;
+	long child = GTK4.gtk_widget_get_first_child(parentWidget);
+	while (child != 0) {
+		if (GTK4.GTK_IS_POPOVER_MENU(child)) {
+			long model = GTK4.gtk_popover_menu_get_menu_model(child);
+			if (model == targetModel) {
+				return child;
+			}
+		}
+		long found = findNestedPopoverForModel(child, targetModel);
+		if (found != 0) return found;
+		child = GTK4.gtk_widget_get_next_sibling(child);
+	}
+	return 0;
+}
+
+
+private long findGtkPopoverMenuChild(long barItem) {
+	long child = GTK4.gtk_widget_get_first_child(barItem);
+	while (child != 0) {
+		if (GTK4.GTK_IS_POPOVER_MENU(child)) {
+			return child;
+		}
+		child = GTK4.gtk_widget_get_next_sibling(child);
+	}
+	return 0;
+}
+
+@Override
 long gtk_hide (long widget) {
 	if ((style & SWT.POP_UP) != 0) {
 		if (display.activeShell != null) {
@@ -911,6 +1015,15 @@ void hookEvents() {
 		if ((style & SWT.DROP_DOWN) == 0) {
 			OS.g_signal_connect_closure_by_id(handle, display.signalIds[SHOW], 0, display.getClosure(SHOW), false);
 			OS.g_signal_connect_closure_by_id(handle, display.signalIds[HIDE], 0, display.getClosure(HIDE), false);
+			if ((style & (SWT.BAR | SWT.POP_UP)) != 0) {
+				/*
+				 * Connect MAP signal on the GtkPopoverMenuBar so that once it is
+				 * realized and its internal GtkPopoverMenuBarItem children exist,
+				 * we can find the GtkPopoverMenu for each DROP_DOWN submenu and
+				 * route SHOW/HIDE signals back to the SWT DROP_DOWN Menu.
+				 */
+				OS.g_signal_connect_closure_by_id(handle, display.signalIds[MAP], 0, display.getClosure(MAP), false);
+			}
 		}
 
 	} else {
@@ -1041,6 +1154,16 @@ void destroyWidget () {
 	if (menuHandle != 0) {
 		OS.g_object_unref(menuHandle);
 		menuHandle = 0;
+	}
+}
+
+@Override
+void deregister() {
+	super.deregister();
+	if (GTK.GTK4 && (style & SWT.DROP_DOWN) != 0 && popoverHandle != 0) {
+		display.removeWidget(popoverHandle);
+		OS.g_object_unref(popoverHandle);
+		popoverHandle = 0;
 	}
 }
 
@@ -1292,7 +1415,6 @@ void adjustParentWindowWayland (long eventPtr) {
 		}
 		OS.g_object_ref(deviceResource);
 		int eventType = GDK.gdk_event_get_event_type(eventPtr);
-		eventType = Control.fixGdkEventTypeValues(eventType);
 		switch (eventType) {
 			case GDK.GDK_BUTTON_PRESS:
 				GdkEventButton eventButton = new GdkEventButton();

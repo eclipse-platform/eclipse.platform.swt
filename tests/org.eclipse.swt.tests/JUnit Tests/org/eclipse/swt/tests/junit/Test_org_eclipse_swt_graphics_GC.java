@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -16,6 +16,7 @@ package org.eclipse.swt.tests.junit;
 
 import static org.eclipse.swt.internal.DPIUtil.pointToPixel;
 import static org.eclipse.swt.tests.junit.SwtTestUtil.assertSWTProblem;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -27,11 +28,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontMetrics;
@@ -48,12 +52,15 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.internal.DPIUtil;
+import org.eclipse.swt.tests.graphics.ImageDataTestHelper;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -392,6 +399,50 @@ public void test_drawImageLorg_eclipse_swt_graphics_ImageIIII() {
 	gc.drawImage(images.alpha, 100, 120, 20, 15);
 	assertThrows(IllegalArgumentException.class, () -> gc.drawImage(null, 100, 120, 50, 60));
 	images.dispose();
+}
+
+@Test
+@EnabledOnOs(OS.WINDOWS)
+public void test_drawImageLorg_eclipse_swt_graphics_ImageIIII_withTransform() throws IOException {
+	Image image = null;
+	try (InputStream is = getClass().getResourceAsStream("collapseall.svg")) {
+		image = new Image(Display.getDefault(), is);
+	}
+	Transform transform = new Transform(display, 2, 0, 0, 2, 0, 0);
+	gc.setTransform(transform);
+	gc.drawImage(image, 0, 0, 2, 2);
+	ImageData resultImageDataWithTransform = getImageDataFromGC(gc, 0, 0, 4, 4);
+
+	gc.setTransform(null);
+	gc.drawImage(image, 10, 10, 4, 4);
+	ImageData resultImageDataWithoutTransform = getImageDataFromGC(gc, 10, 10, 4, 4);
+
+	ImageDataTestHelper.assertImageDataEqual(resultImageDataWithoutTransform, resultImageDataWithoutTransform, resultImageDataWithTransform);
+
+	image.dispose();
+	transform.dispose();
+}
+
+private ImageData getImageDataFromGC(GC gc, int x, int y, int width, int height) {
+	Image extractionImage = new Image(display, width, height);
+	gc.copyArea(extractionImage, x, y);
+	ImageData resultImageData = extractionImage.getImageData();
+	extractionImage.dispose();
+	return resultImageData;
+}
+
+public void test_drawImageLorg_eclipse_swt_graphics_ImageIIII_withTransform_zeroTargetSize() throws IOException {
+	Image image = null;
+	try (InputStream is = getClass().getResourceAsStream("collapseall.svg")) {
+		image = new Image(Display.getDefault(), is);
+	}
+	Transform transform = new Transform(display, 0.1f, 0, 0, 0.1f, 0, 0);
+	gc.setTransform(transform);
+	// The destination size will become 0, but no exception should be thrown.
+	gc.drawImage(image, 0, 0, 2, 2);
+
+	image.dispose();
+	transform.dispose();
 }
 
 @Test
@@ -744,40 +795,24 @@ public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 
 @Test
 public void test_setClippingIIII() {
-	// intermittently fails on XP for reasons unknown, comment out the test case
-	// until the problem is figured out
-//	Canvas canvas = new Canvas(shell, SWT.BORDER);
-//	shell.setSize(110,110);
-//	canvas.setSize(100,100);
-//	shell.open();
-//	GC testGc = new GC(canvas);
-//	testGc.setClipping(0,5,10,20);
-//	Rectangle rect = testGc.getClipping();
-//	assertTrue(rect.x == 0);
-//	assertTrue(rect.y == 5);
-//	assertTrue(rect.width == 10);
-//	assertTrue(rect.height == 20);
-//	testGc.dispose();
-//	canvas.dispose();
+	gc.setClipping(0,5,10,20);
+	Rectangle rect = gc.getClipping();
+	assertAll(
+		() -> assertEquals(0,rect.x),
+		() -> assertEquals(5, rect.y),
+		() -> assertEquals(10,rect.width),
+		() -> assertEquals(20,rect.height));
 }
 
 @Test
 public void test_setClippingLorg_eclipse_swt_graphics_Rectangle() {
-	// intermittently fails on XP for reasons unknown, comment out the test case
-	// until the problem is figured out
-//	Canvas canvas = new Canvas(shell, SWT.BORDER);
-//	shell.setSize(110,110);
-//	canvas.setSize(100,100);
-//	shell.open();
-//	GC testGc = new GC(canvas);
-//	testGc.setClipping(new Rectangle(0,5,10,20));
-//	Rectangle rect = testGc.getClipping();
-//	assertTrue(rect.x == 0);
-//	assertTrue(rect.y == 5);
-//	assertTrue(rect.width == 10);
-//	assertTrue(rect.height == 20);
-//	testGc.dispose();
-//	canvas.dispose();
+	gc.setClipping(new Rectangle(0,5,10,20));
+	Rectangle rect = gc.getClipping();
+	assertAll(
+		() -> assertEquals(0,rect.x),
+		() -> assertEquals(5, rect.y),
+		() -> assertEquals(10,rect.width),
+		() -> assertEquals(20,rect.height));
 }
 
 @Test
@@ -813,6 +848,17 @@ public void test_setLineAttributes$I() {
 	float miterLimit = 2.6f;
 	LineAttributes passedLineAttributes = new LineAttributes(width, cap, join, style, dashes, dashOffset, miterLimit);
 	gc.setLineAttributes(passedLineAttributes);
+	assertEquals(width, gc.getLineWidth(), "unexpected line width");
+	assertEquals(cap, gc.getLineCap(), "unexpected line cap");
+	assertEquals(join, gc.getLineJoin(), "unexpected line join");
+	assertEquals(style, gc.getLineStyle(), "unexpected line style");
+	assertEquals(new LineAttributes(width, cap, join, style, dashes, dashOffset, miterLimit), gc.getLineAttributes(), "actual line attributes differ from the ones that have been set");
+	assertEquals(width, passedLineAttributes.width, 0.0f, "setter call changed line width");
+
+	// Ensure that after recreating the image handle from the GC on Windows does not overwrite any values
+	int currentZoom = DPIUtil.getDeviceZoom();
+	int alternateZoom = currentZoom == 100 ? 200 : 100;
+	image.getImageData(alternateZoom);
 	assertEquals(width, gc.getLineWidth(), "unexpected line width");
 	assertEquals(cap, gc.getLineCap(), "unexpected line cap");
 	assertEquals(join, gc.getLineJoin(), "unexpected line join");
@@ -883,6 +929,9 @@ public void test_stringExtentLjava_lang_String() {
 	Point pt = gc.stringExtent("abc");
 	assertTrue(pt.x > 0);
 	assertTrue(pt.y > 0);
+	gc.dispose();
+	SWTException e = assertThrows(SWTException.class, () -> gc.stringExtent("abc"));
+	assertEquals(SWT.ERROR_GRAPHIC_DISPOSED, e.code);
 }
 
 @Test
@@ -890,6 +939,9 @@ public void test_textExtentLjava_lang_String() {
 	Point pt = gc.textExtent("abc");
 	assertTrue(pt.x > 0);
 	assertTrue(pt.y > 0);
+	gc.dispose();
+	SWTException e = assertThrows(SWTException.class, () -> gc.textExtent("abc"));
+	assertEquals(SWT.ERROR_GRAPHIC_DISPOSED, e.code);
 }
 
 @Test
@@ -897,6 +949,21 @@ public void test_textExtentLjava_lang_StringI() {
 	Point pt = gc.textExtent("abc", 0);
 	assertTrue(pt.x > 0);
 	assertTrue(pt.y > 0);
+	gc.dispose();
+	SWTException e = assertThrows(SWTException.class, () -> gc.textExtent("abc", 0));
+	assertEquals(SWT.ERROR_GRAPHIC_DISPOSED, e.code);
+}
+
+@Test
+public void test_textExtentLjava_lang_StringI_disabledLineDelimiter() {
+	gc.setAdvanced(false);
+	Point ptWithoutAdvanced = gc.textExtent("abc\u4E2D" + System.lineSeparator() + "def", 0);
+	gc.setAdvanced(true);
+	Point ptWithAdvanced = gc.textExtent("abc\u4E2D" + System.lineSeparator() + "def", 0);
+	// Due to slightly different rendering, size must not be identical but similar in advanced/non-advanced mode
+	assertTrue(Math.abs(ptWithAdvanced.x - ptWithoutAdvanced.x) <= 2);
+	assertTrue(Math.abs(ptWithAdvanced.y - ptWithoutAdvanced.y) <= 2);
+	gc.dispose();
 }
 
 @Test

@@ -254,7 +254,7 @@ void createHandle (int index) {
 		 * We need to handle borders differently in GTK3.20+. GtkEntry without frame will have a blank background color.
 		 * So let's set border via css and override the background in this case to be COLOR_LIST_BACKGROUND.
 		 */
-		if ((style & SWT.BORDER) == 0) {
+		if ((style & SWT.BORDER) == 0 && !(GTK.GTK4 && (style & SWT.SEARCH) != 0) ) {
 			GTK.gtk_entry_set_has_frame(handle, false);
 			long context = GTK.gtk_widget_get_style_context(handle);
 			String background = display.gtk_rgba_to_css_string(display.COLOR_LIST_BACKGROUND_RGBA);
@@ -265,11 +265,17 @@ void createHandle (int index) {
 		if ((style & SWT.CENTER) != 0) alignment = 0.5f;
 		if ((style & SWT.RIGHT) != 0) alignment = 1.0f;
 		if (alignment > 0.0f) {
-			GTK.gtk_entry_set_alignment(handle, alignment);
+			if (!(GTK.GTK4 && (style & SWT.SEARCH) != 0)) {
+				GTK.gtk_entry_set_alignment(handle, alignment);
+			} else {
+				GTK4.gtk_editable_set_alignment(handle, alignment);
+			}
 		}
 
 		if (DISABLE_EMOJI && GTK.GTK_VERSION >= OS.VERSION(3, 22, 20)) {
-		    GTK.gtk_entry_set_input_hints(handle, GTK.GTK_INPUT_HINT_NO_EMOJI);
+			if (!(GTK.GTK4 && (style & SWT.SEARCH) != 0)) {
+				GTK.gtk_entry_set_input_hints(handle, GTK.GTK_INPUT_HINT_NO_EMOJI);
+			}
 		}
 	} else {
 		if (GTK.GTK4) {
@@ -699,7 +705,7 @@ Rectangle computeTrimInPixels (int x, int y, int width, int height) {
 			trim.width += tmp.left + tmp.right;
 			trim.height += tmp.top + tmp.bottom;
 		}
-		if (!GTK.GTK4 ||  ((style & SWT.SEARCH) == 0) ) {
+		if (!GTK.GTK4 || ((style & SWT.SEARCH) == 0) ) {
 			GdkRectangle icon_area = new GdkRectangle();
 			GTK.gtk_entry_get_icon_area(handle, GTK.GTK_ENTRY_ICON_PRIMARY, icon_area);
 			trim.x -= icon_area.width;
@@ -1570,7 +1576,6 @@ long gtk_changed (long widget) {
 	long eventPtr = GTK.GTK4 ? 0 : GTK3.gtk_get_current_event ();
 	if (eventPtr != 0) {
 		int eventType = GDK.gdk_event_get_event_type(eventPtr);
-		eventType = fixGdkEventTypeValues(eventType);
 		switch (eventType) {
 			case GDK.GDK_KEY_PRESS:
 				keyPress = true;
@@ -1727,7 +1732,6 @@ long gtk3_event_after (long widget, long gdkEvent) {
 	*/
 	if ((style & SWT.SINGLE) != 0 && display.entrySelectOnFocus) {
 		int eventType = GDK.gdk_event_get_event_type(gdkEvent);
-		eventType = fixGdkEventTypeValues(eventType);
 		switch (eventType) {
 			case GDK.GDK_FOCUS_CHANGE:
 				boolean [] focusIn = new boolean [1];
@@ -2920,7 +2924,6 @@ String verifyText (String string, int start, int end) {
 	long eventPtr = GTK.GTK4 ? 0 : GTK3.gtk_get_current_event();
 	if (eventPtr != 0) {
 		int type = GDK.gdk_event_get_event_type(eventPtr);
-		type = fixGdkEventTypeValues(type);
 		switch (type) {
 			case GDK.GDK_KEY_PRESS:
 				setKeyState (event, eventPtr);

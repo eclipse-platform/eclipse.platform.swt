@@ -16,11 +16,11 @@
   <parent>
     <groupId>org.eclipse.platform</groupId>
     <artifactId>eclipse.platform.swt.localbuild</artifactId>
-    <version>4.39.0-SNAPSHOT</version>
+    <version>4.40.0-SNAPSHOT</version>
     <relativePath>../../local-build/local-build-parent/</relativePath>
   </parent>
   <artifactId>org.eclipse.swt.tests</artifactId>
-  <version>3.108.0-SNAPSHOT</version>
+  <version>3.108.100-SNAPSHOT</version>
   <packaging>eclipse-test-plugin</packaging>
   <properties>
     <tycho.testArgLine></tycho.testArgLine>

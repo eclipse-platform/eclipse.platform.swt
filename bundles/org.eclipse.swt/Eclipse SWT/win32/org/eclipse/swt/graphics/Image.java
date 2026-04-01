@@ -941,8 +941,8 @@ ImageHandle getHandle (int targetZoom, int nativeZoom) {
 	return imageHandleManager.getOrCreate(targetZoom, () -> imageProvider.newImageHandle(zoomContext));
 }
 
-void executeOnImageHandleAtBestFittingSize(Consumer<ImageHandle> handleAtSizeConsumer, int widthHint, int heightHint) {
-	ImageHandle imageHandle = lastRequestedHandle.refresh(widthHint, heightHint);
+void executeOnImageHandleAtBestFittingSize(Consumer<ImageHandle> handleAtSizeConsumer, int destWidth, int destHeight) {
+	ImageHandle imageHandle = lastRequestedHandle.refresh(Math.max(1, destWidth), Math.max(1, destHeight));
 	handleAtSizeConsumer.accept(imageHandle);
 }
 

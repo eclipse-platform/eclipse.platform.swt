@@ -436,6 +436,87 @@ public void test_childControlOverlap() {
 }
 
 /**
+ * Test that a topRight control with SWT.RIGHT | SWT.WRAP renders inline
+ * when there is sufficient horizontal space, and wraps to a second row
+ * when space is tight. Verifies that the control is not clipped vertically
+ * when inline (tab row must grow to accommodate taller controls like Text).
+ *
+ * See https://github.com/eclipse-platform/eclipse.platform.swt/issues/3138
+ */
+@Test
+public void test_topRightWrapOverflow() {
+	makeCleanEnvironment(SWT.BORDER);
+	shell.setSize(800, 400);
+	shell.setLayout(new FillLayout());
+
+	for (int i = 1; i <= 3; i++) {
+		CTabItem item = new CTabItem(ctabFolder, SWT.CLOSE);
+		item.setText("Tab " + i);
+		Label content = new Label(ctabFolder, SWT.NONE);
+		content.setText("Content " + i);
+		item.setControl(content);
+	}
+	ctabFolder.setSelection(0);
+
+	// Create a topRight composite with a ToolBar and a Text (search field),
+	// similar to Eclipse view toolbars (e.g., EGit Staging View)
+	Composite topRight = new Composite(ctabFolder, SWT.NONE);
+	GridLayout gl = new GridLayout(2, false);
+	gl.marginHeight = 0;
+	gl.marginWidth = 0;
+	topRight.setLayout(gl);
+
+	ToolBar toolbar = new ToolBar(topRight, SWT.FLAT);
+	for (int i = 0; i < 3; i++) {
+		ToolItem ti = new ToolItem(toolbar, SWT.PUSH);
+		ti.setText("B" + i);
+	}
+	Text searchText = new Text(topRight, SWT.BORDER | SWT.SEARCH);
+	searchText.setMessage("Filter...");
+	searchText.setLayoutData(new GridData(80, SWT.DEFAULT));
+
+	ctabFolder.setTopRight(topRight, SWT.RIGHT | SWT.WRAP);
+
+	SwtTestUtil.openShell(shell);
+	processEvents();
+
+	// With 800px shell, there is plenty of space — topRight must be inline
+	Rectangle topRightBounds = topRight.getBounds();
+	CTabItem firstTab = ctabFolder.getItem(0);
+	Rectangle tabBounds = firstTab.getBounds();
+
+	// topRight should be on the same row as the tabs (y positions overlap)
+	assertTrue(topRightBounds.y < tabBounds.y + tabBounds.height,
+			"topRight should be on the same row as tabs when there is enough space. "
+			+ "topRight.y=" + topRightBounds.y + " tab.bottom=" + (tabBounds.y + tabBounds.height));
+
+	// topRight must not be clipped: its full height should be visible within the folder
+	Rectangle folderBounds = ctabFolder.getBounds();
+	assertTrue(topRightBounds.y >= 0,
+			"topRight must not be clipped at the top. topRight.y=" + topRightBounds.y);
+	assertTrue(topRightBounds.y + topRightBounds.height <= folderBounds.height,
+			"topRight must not be clipped at the bottom");
+
+	// Now shrink the shell so there is not enough space — topRight should wrap
+	int totalTabWidth = 0;
+	for (CTabItem item : ctabFolder.getItems()) {
+		totalTabWidth += item.getBounds().width;
+	}
+	int topRightWidth = topRight.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
+	// Make shell narrow enough that tabs + topRight don't fit
+	shell.setSize(totalTabWidth + topRightWidth / 2, 400);
+	processEvents();
+
+	topRightBounds = topRight.getBounds();
+	tabBounds = ctabFolder.getItem(0).getBounds();
+
+	// topRight should now be below the tab row (wrapped)
+	assertTrue(topRightBounds.y >= tabBounds.y + tabBounds.height,
+			"topRight should wrap below tabs when space is tight. "
+			+ "topRight.y=" + topRightBounds.y + " tab.bottom=" + (tabBounds.y + tabBounds.height));
+}
+
+/**
  * Min/max and chevron icon can appear below tab row.
  * Test for bug 499215, 533582.
  */

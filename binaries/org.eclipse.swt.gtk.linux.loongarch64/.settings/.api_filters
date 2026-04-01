@@ -8,27 +8,41 @@
             </message_arguments>
         </filter>
     </resource>
-    <resource path="Eclipse SWT/common/org/eclipse/swt/graphics/ImageDataAtSizeProvider.java" type="org.eclipse.swt.graphics.ImageDataAtSizeProvider">
-        <filter id="403804204" comment="Adding API filter to mark ImageDataAtSizeProvider as referenceable">
+    <resource path="Eclipse SWT Printing/common/org/eclipse/swt/printing/PageSize.java" type="org.eclipse.swt.printing.PageSize">
+        <filter id="338944126">
             <message_arguments>
-                <message_argument value="org.eclipse.swt.graphics.ImageDataAtSizeProvider"/>
-                <message_argument value="getDefaultSize()"/>
+                <message_argument value="org.eclipse.swt.printing.PageSize"/>
+                <message_argument value="equals(Object)"/>
             </message_arguments>
         </filter>
-        <filter id="1211105284" comment="Adding API filter to mark ImageDataAtSizeProvider as referenceable">
+        <filter id="338944126">
             <message_arguments>
-                <message_argument value="getDefaultSize()"/>
+                <message_argument value="org.eclipse.swt.printing.PageSize"/>
+                <message_argument value="hashCode()"/>
             </message_arguments>
         </filter>
-        <filter id="403804204" comment="Adding API filter to mark ImageDataAtSizeProvider as referenceable">
+        <filter id="338944126">
             <message_arguments>
-                <message_argument value="org.eclipse.swt.graphics.ImageDataAtSizeProvider"/>
-                <message_argument value="getImageData(int, int)"/>
+                <message_argument value="org.eclipse.swt.printing.PageSize"/>
+                <message_argument value="height()"/>
             </message_arguments>
         </filter>
-        <filter id="1211105284" comment="Adding API filter to mark ImageDataAtSizeProvider as referenceable">
+        <filter id="338944126">
             <message_arguments>
-                <message_argument value="getImageData(int, int)"/>
+                <message_argument value="org.eclipse.swt.printing.PageSize"/>
+                <message_argument value="toString()"/>
+            </message_arguments>
+        </filter>
+        <filter id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.printing.PageSize"/>
+                <message_argument value="width()"/>
+            </message_arguments>
+        </filter>
+        <filter id="338948223">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.printing.PageSize"/>
+                <message_argument value="PageSize(double, double)"/>
             </message_arguments>
         </filter>
     </resource>

@@ -522,6 +522,43 @@ void deregister () {
 	if (socketHandle != 0) display.removeWidget (socketHandle);
 }
 
+@Override
+void snapshotBackground (long handle, long snapshot) {
+	if ((state & OBSCURED) != 0) return;
+	/*
+	 * Draw the effective background before children are snapshotted.
+	 *
+	 * SWTFixed widget has no CSS background rule, thus obtain a Cairo
+	 * context from the snapshot and delegate to drawBackground(), which
+	 * paints the background image or color directly via Cairo.
+	 *
+	 * Skip when an explicit background color has been set (state & BACKGROUND):
+	 * GTK4 renders the CSS provider background automatically before calling
+	 * the snapshot vfunc.
+	 */
+	Control control = findBackgroundControl ();
+	boolean draw = control != null && control.backgroundImage != null;
+	if (!draw && (state & CANVAS) != 0) {
+		draw = (state & BACKGROUND) == 0;
+	}
+	if (!draw) return;
+
+	if (control == null) control = this;
+	GtkAllocation allocation = new GtkAllocation();
+	GTK.gtk_widget_get_allocation(handle, allocation);
+	int width = (state & ZERO_WIDTH) != 0 ? 0 : allocation.width;
+	int height = (state & ZERO_HEIGHT) != 0 ? 0 : allocation.height;
+	long rect = Graphene.graphene_rect_alloc();
+	Graphene.graphene_rect_init(rect, 0, 0, width, height);
+	long cairo = GTK4.gtk_snapshot_append_cairo(snapshot, rect);
+	if (cairo != 0) {
+		drawBackground(control, 0, cairo, 0, 0, width, height);
+		Cairo.cairo_destroy(cairo);
+	}
+	Graphene.graphene_rect_free(rect);
+}
+
+
 /**
  * Fills the interior of the rectangle specified by the arguments,
  * with the receiver's background.
@@ -1447,7 +1484,7 @@ void printWidget (GC gc, long drawable, int depth, int x, int y) {
 	for (int i=children.length-1; i>=0; --i) {
 		Control child = children [i];
 		if (child.getVisible ()) {
-			Point location = child.getLocationInPixels ();
+			Point location = child.getLocation ();
 			child.printWidget (gc, drawable, depth, x + location.x, y + location.y);
 		}
 	}

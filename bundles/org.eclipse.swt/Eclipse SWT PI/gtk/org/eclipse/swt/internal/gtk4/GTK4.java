@@ -30,6 +30,8 @@ public class GTK4 {
 	public static final int GTK_PICK_INSENSITIVE = 1;
 	public static final int GTK_PICK_NON_TARGETABLE = 2;
 
+	public static final native boolean GTK_IS_POPOVER_MENU(long obj);
+
 	/**
 	 * @param context cast=(GtkIMContext *)
 	 * @param event cast=(GdkEvent *)
@@ -133,6 +135,11 @@ public class GTK4 {
 	public static final native int gtk_editable_get_max_width_chars(long editable);
 	/**
 	 * @param editable cast=(GtkEditable *)
+	 * @param alignment cast=(float)
+	 */
+	public static final native void gtk_editable_set_alignment(long editable, float alignment);
+	/**
+	 * @param editable cast=(GtkEditable *)
 	 * @param chars cast=(int)
 	 */
 	public static final native void gtk_editable_set_max_width_chars(long editable, int chars);
@@ -171,6 +178,7 @@ public class GTK4 {
 	public static final native boolean gdk_toplevel_lower(long toplevel);
 	/** @param surface cast=(GdkToplevel *) */
 	public static final native void gdk_toplevel_focus(long surface, int timestamp);
+
 
 	/* GtkDragSource */
 	public static final native long gtk_drag_source_new();
@@ -543,6 +551,11 @@ public class GTK4 {
 	public static final native long gtk_popover_menu_new_from_model_full(long model, int flags);
 	/**
 	 * @param popover cast=(GtkPopoverMenu *)
+	 * @return cast=(GMenuModel *)
+	 */
+	public static final native long gtk_popover_menu_get_menu_model(long popover);
+	/**
+	 * @param popover cast=(GtkPopoverMenu *)
 	 * @param model cast=(GMenuModel *)
 	 */
 	public static final native void gtk_popover_menu_set_menu_model(long popover, long model);
@@ -727,6 +740,10 @@ public class GTK4 {
 	public static final native void gtk_widget_insert_before(long widget, long parent, long next_sibling);
 	/**
 	 * @param widget cast=(GtkWidget *)
+	 */
+	public static final native long gtk_widget_paintable_new(long widget);
+	/**
+	 * @param widget cast=(GtkWidget *)
 	 * @param x cast=(double)
 	 * @param y cast=(double)
 	 * @param flags cast=(GtkPickFlags)
@@ -738,11 +755,18 @@ public class GTK4 {
 	public static final native long gtk_combo_box_get_child(long combo_box);
 
 	/* GtkSnapshot */
+
+	public static final native long gtk_snapshot_new();
 	/**
 	 * @param snapshot cast=(GtkSnapshot *)
 	 * @param rect cast=(const graphene_rect_t *)
 	 */
 	public static final native long gtk_snapshot_append_cairo(long snapshot, long rect);
+
+	/**
+	 * @param snapshot cast=(GtkSnapshot *)
+	 */
+	public static final native long gtk_snapshot_free_to_node(long snapshot);
 
 	/* GtkImage */
 	/**
@@ -1087,5 +1111,21 @@ public class GTK4 {
 	public static final native int gtk_widget_get_height(long widget);
 
 	public static final native long gtk_header_bar_new();
+	/**
+	 * @param paintable cast=(GdkPaintable *)
+	 * @param snapshot cast=(GdkSnapshot *)
+	 * @param width cast=(double)
+	 * @param height cast=(double)
+	 */
+	public static final native void gdk_paintable_snapshot(long paintable, long snapshot, int width, int height);
 
+	/**
+	 * @param renderNode cast=(GskRenderNode *)
+	 * @param cr cast=(cairo_t *)
+	 */
+	public static final native void gsk_render_node_draw(long renderNode, long cr);
+	/**
+	 * @param renderNode cast=(GskRenderNode *)
+	 */
+	public static final native void gsk_render_node_unref(long renderNode);
 }

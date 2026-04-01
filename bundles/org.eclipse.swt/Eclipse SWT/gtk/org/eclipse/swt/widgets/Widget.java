@@ -1727,7 +1727,6 @@ char [] sendIMKeyEvent (int type, long event, char [] chars) {
 		ptr = GTK.GTK4 ? GTK4.gtk_event_controller_get_current_event(controller):GTK3.gtk_get_current_event ();
 		if (ptr != 0) {
 			int eventType = GDK.gdk_event_get_event_type(ptr);
-			eventType = Control.fixGdkEventTypeValues(eventType);
 			switch (eventType) {
 				case GDK.GDK_KEY_PRESS:
 				case GDK.GDK_KEY_RELEASE:
@@ -1800,7 +1799,6 @@ void sendSelectionEvent (int eventType, Event event, boolean send) {
 	long ptr = GTK.GTK4 ? 0 : GTK3.gtk_get_current_event ();
 	if (ptr != 0) {
 		int currentEventType = GDK.gdk_event_get_event_type(ptr);
-		currentEventType = Control.fixGdkEventTypeValues(currentEventType);
 		switch (currentEventType) {
 			case GDK.GDK_BUTTON_PRESS:
 			case GDK.GDK_2BUTTON_PRESS:
@@ -2279,6 +2277,17 @@ long sizeAllocateProc (long handle, long arg0, long user_data) {
 
 long sizeRequestProc (long handle, long arg0, long user_data) {
 	return 0;
+}
+
+/**
+ * Renders the widget background during a GTK4 snapshot. Called before
+ * children are snapshotted so the background appears behind them.
+ * Subclasses can override to perform background rendering.
+ *
+ * @param handle the widget receiving the snapshot
+ * @param snapshot the actual GtkSnapshot
+ */
+void snapshotBackground (long handle, long snapshot) {
 }
 
 /**

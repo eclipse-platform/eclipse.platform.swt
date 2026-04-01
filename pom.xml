@@ -18,7 +18,7 @@
   <parent>
     <groupId>org.eclipse</groupId>
     <artifactId>eclipse-platform-parent</artifactId>
-    <version>4.39.0-SNAPSHOT</version>
+    <version>4.40.0-SNAPSHOT</version>
     <relativePath>../eclipse-platform-parent</relativePath>
   </parent>
 
@@ -175,6 +175,50 @@
                 </environment>
               </environments>
             </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>javadoc-basher</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>3.6.3</version>
+            <executions>
+              <execution>
+                <id>run-javadoc-basher</id>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+                <phase>validate</phase>
+                <configuration>
+                  <forceJava>true</forceJava>
+                  <workingDirectory>bundles/org.eclipse.swt.tools</workingDirectory>
+                  <executable>java</executable>
+                  <arguments>
+                    <argument>-classpath</argument>
+                    <classpath/>
+                    <argument>JavadocBasher/org/eclipse/swt/tools/internal/JavadocBasher.java</argument>
+                  </arguments>
+                  <includePluginDependencies>true</includePluginDependencies>
+                </configuration>
+              </execution>
+            </executions>
+            <dependencies>
+              <dependency>
+                  <groupId>org.eclipse.jdt</groupId>
+                  <artifactId>org.eclipse.jdt.core</artifactId>
+                  <version>[3.44.0,)</version>
+              </dependency>
+              <dependency>
+                  <groupId>org.eclipse.platform</groupId>
+                  <artifactId>org.eclipse.jface</artifactId>
+                  <version>[3.38.0,)</version>
+              </dependency>
+            </dependencies>
           </plugin>
         </plugins>
       </build>

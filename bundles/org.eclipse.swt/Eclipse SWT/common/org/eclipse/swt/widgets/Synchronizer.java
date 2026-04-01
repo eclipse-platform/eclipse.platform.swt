@@ -74,9 +74,8 @@ void moveAllEventsTo (Synchronizer toReceiveTheEvents) {
 
 
 void addLast (RunnableLock lock) {
-	boolean wake = messages.isEmpty();
 	messages.add(lock);
-	if (wake) display.wakeThread ();
+	if (messages.peek() == lock) display.wakeThread ();
 }
 
 /**

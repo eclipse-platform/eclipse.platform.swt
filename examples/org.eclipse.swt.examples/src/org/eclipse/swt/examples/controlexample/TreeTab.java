@@ -275,9 +275,7 @@ class TreeTab extends ScrollableTab {
 		editor.horizontalAlignment = SWT.LEFT;
 		editor.grabHorizontal = true;
 
-		tree.addListener(SWT.MouseDoubleClick, event -> {
-			treeDoubleClickListener(tree, editor, event);
-		});
+		tree.addListener(SWT.MouseDoubleClick, event -> treeDoubleClickListener(tree, editor, event));
 	}
 
 	private void treeDoubleClickListener(Tree tree, final TreeEditor editor, Event event) {
@@ -371,7 +369,7 @@ class TreeTab extends ScrollableTab {
 				setItemText(subitem, i, ControlExample.getResourceString("Node_" + (i + 1) + "_1"));
 			}
 		}
-		TreeItem treeRoots[] = tree1.getItems ();
+		TreeItem[] treeRoots = tree1.getItems ();
 		TreeItem item = new TreeItem (treeRoots[1], SWT.NONE);
 		setItemText(item, 1, ControlExample.getResourceString("Node_2_2"));
 		item = new TreeItem (item, SWT.NONE);

@@ -286,30 +286,6 @@ long eventSurface () {
 	return gtk_widget_get_surface (eventHandle);
 }
 
-/**
- * GdkEventType constants different on GTK4 and GTK3.
- * This checks for GTK versions and return the correct constants defined in GDK.java
- * @return constant defined
- */
-static int fixGdkEventTypeValues(int eventType) {
-	if (GTK.GTK4) {
-		switch (eventType) {
-			case GDK.GDK4_EXPOSE: return GDK.GDK_EXPOSE;
-			case GDK.GDK4_MOTION_NOTIFY: return GDK.GDK_MOTION_NOTIFY;
-			case GDK.GDK4_BUTTON_PRESS: return GDK.GDK_BUTTON_PRESS;
-			case GDK.GDK4_BUTTON_RELEASE: return GDK.GDK_BUTTON_RELEASE;
-			case GDK.GDK4_KEY_PRESS: return GDK.GDK_KEY_PRESS;
-			case GDK.GDK4_ENTER_NOTIFY: return GDK.GDK_ENTER_NOTIFY;
-			case GDK.GDK4_LEAVE_NOTIFY: return GDK.GDK_LEAVE_NOTIFY;
-			case GDK.GDK4_FOCUS_CHANGE: return GDK.GDK_FOCUS_CHANGE;
-			case GDK.GDK4_CONFIGURE: return GDK.GDK_CONFIGURE;
-			case GDK.GDK4_MAP: return GDK.GDK_MAP;
-			case GDK.GDK4_UNMAP: return GDK.GDK_UNMAP;
-		}
-	}
-	return eventType;
-}
-
 void fixFocus (Control focusControl) {
 	Shell shell = getShell ();
 	Control control = this;
@@ -626,18 +602,54 @@ public boolean print (GC gc) {
 	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	long topHandle = topHandle ();
 	GTK.gtk_widget_realize (topHandle);
-	/*
-	 * Feature in GTK: gtk_widget_draw() will only draw if the
-	 * widget's priv->alloc_needed field is set to TRUE. Since
-	 * this field is private and inaccessible, get and set the
-	 * allocation to trigger it to be TRUE. See bug 530969.
-	 */
-	GtkAllocation allocation = new GtkAllocation ();
-	GTK.gtk_widget_get_allocation(topHandle, allocation);
-	// Prevent allocation warnings
-	GTK.gtk_widget_get_preferred_size(topHandle, null, null);
-	GTK3.gtk_widget_size_allocate(topHandle, allocation);
-	GTK3.gtk_widget_draw(topHandle, gc.handle);
+
+	if (GTK.GTK4) {
+        /*
+         * In GTK4 gtk_widget_draw() has been removed. Rendering is now
+         * done via GtkSnapshot and the GskRenderNode pipeline. Snapshot the widget,
+         * extract the render node, then draw it onto the GC's Cairo context using
+         * gsk_render_node_draw().
+         */
+
+        long widgetPaintable = GTK4.gtk_widget_paintable_new(topHandle);
+        if (widgetPaintable == 0) return false;
+        try {
+            int width  = GTK4.gtk_widget_get_width(topHandle);
+            int height = GTK4.gtk_widget_get_height(topHandle);
+
+            long snapshot = GTK4.gtk_snapshot_new();
+            if (snapshot == 0) return false;
+
+            try {
+                GTK4.gdk_paintable_snapshot(widgetPaintable, snapshot, width, height);
+
+                long renderNode = GTK4.gtk_snapshot_free_to_node(snapshot);
+                snapshot = 0; // freed by gtk_snapshot_free_to_node
+
+                if (renderNode == 0) return false;
+
+                GTK4.gsk_render_node_draw(renderNode, gc.handle);
+                GTK4.gsk_render_node_unref(renderNode);
+            } finally {
+                if (snapshot != 0) OS.g_object_unref(snapshot);
+            }
+        } finally {
+            OS.g_object_unref(widgetPaintable);
+        }
+    } else {
+		/*
+		 * In GTK 3 gtk_widget_draw() will only draw if the
+		 * widget's priv->alloc_needed field is set to TRUE. Since
+		 * this field is private and inaccessible, get and set the
+		 * allocation to trigger it to be TRUE. See bug 530969.
+		 */
+		GtkAllocation allocation = new GtkAllocation ();
+		GTK.gtk_widget_get_allocation(topHandle, allocation);
+		// Prevent allocation warnings
+		GTK.gtk_widget_get_preferred_size(topHandle, null, null);
+		GTK3.gtk_widget_size_allocate(topHandle, allocation);
+		GTK3.gtk_widget_draw(topHandle, gc.handle);
+    }
 	return true;
 }
 
@@ -1226,11 +1238,6 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
  * </ul>
  */
 public Point getLocation () {
-	checkWidget();
-	return getLocationInPixels();
-}
-
-Point getLocationInPixels () {
 	checkWidget();
 	long topHandle = topHandle ();
 	GtkAllocation allocation = new GtkAllocation ();
@@ -2683,7 +2690,6 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 			if (dragging) return true;  //428852
 			if (eventPtr == 0) return dragOnTimeout;
 			int eventType = GDK.gdk_event_get_event_type(eventPtr);
-			eventType = fixGdkEventTypeValues(eventType);
 			switch (eventType) {
 				case GDK.GDK_MOTION_NOTIFY: {
 					long gdkResource = gdk_event_get_surface_or_window(eventPtr);
@@ -3496,7 +3502,7 @@ long gtk_button_press_event (long widget, long event, boolean sendMouseDown) {
 		display.clickCount = 1;
 		long nextEvent = GDK.gdk_event_peek();
 		if (nextEvent != 0) {
-			int peekedEventType = GDK.GDK_EVENT_TYPE (nextEvent);
+			int peekedEventType = GDK.gdk_event_get_event_type (nextEvent);
 			if (peekedEventType == GDK.GDK_2BUTTON_PRESS) display.clickCount = 2;
 			if (peekedEventType == GDK.GDK_3BUTTON_PRESS) display.clickCount = 3;
 			gdk_event_free (nextEvent);
@@ -3687,7 +3693,6 @@ boolean checkSubwindow () {
 @Override
 long gtk3_event_after (long widget, long gdkEvent) {
 	int eventType = GDK.gdk_event_get_event_type(gdkEvent);
-	eventType = fixGdkEventTypeValues(eventType);
 	switch (eventType) {
 		case GDK.GDK_BUTTON_PRESS: {
 			if (widget != eventHandle ()) break;
@@ -4069,7 +4074,6 @@ long gtk_mnemonic_activate (long widget, long arg1) {
 	long eventPtr = GTK3.gtk_get_current_event ();
 	if (eventPtr != 0) {
 		int type = GDK.gdk_event_get_event_type(eventPtr);
-		type = fixGdkEventTypeValues(type);
 		if (type == GDK.GDK_KEY_PRESS) {
 			Control focusControl = display.getFocusControl ();
 			long focusHandle = focusControl != null ? focusControl.focusHandle () : 0;

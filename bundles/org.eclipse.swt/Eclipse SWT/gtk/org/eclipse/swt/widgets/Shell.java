@@ -618,20 +618,15 @@ void bringToTop (boolean force) {
 			OS.XSetInputFocus (xDisplay, xWindow, OS.RevertToParent, OS.CurrentTime);
 			GDK.gdk_x11_display_error_trap_pop_ignored(gdkDisplay);
 		} else {
-			long gdkDisplay;
-			if (GTK.GTK4) {
-				gdkDisplay = GDK.gdk_surface_get_display(gdkResource);
-			} else {
-				GTK3.gtk_grab_add(shellHandle);
-				gdkDisplay = GDK.gdk_window_get_display(gdkResource);
-			}
-			long seat = GDK.gdk_display_get_default_seat(gdkDisplay);
 			if (GTK.GTK4) {
 				GTK4.gtk_window_present(shellHandle);
 			} else {
+				GTK3.gtk_grab_add(shellHandle);
+				long gdkDisplay = GDK.gdk_window_get_display(gdkResource);
+				long seat = GDK.gdk_display_get_default_seat(gdkDisplay);
 				GDK.gdk_window_show(gdkResource);
+				GDK.gdk_seat_grab(seat, gdkResource, GDK.GDK_SEAT_CAPABILITY_ALL, true, 0, 0, 0, 0);
 			}
-			GDK.gdk_seat_grab(seat, gdkResource, GDK.GDK_SEAT_CAPABILITY_ALL, true, 0, 0, 0, 0);
 			/*
 			 * Bug 541185: Hover over to open Javadoc popup will make the popup
 			 * close instead of gaining focus due to an extra focus out signal sent
@@ -749,7 +744,6 @@ void createHandle (int index) {
 			int type = GTK.GTK_WINDOW_TOPLEVEL;
 			if (isChildShell && (style & SWT.ON_TOP) != 0) type = GTK.GTK_WINDOW_POPUP;
 			if (GTK.GTK4) {
-				// TODO: GTK4 need to handle for GTK_WINDOW_POPUP type
 				shellHandle = GTK4.gtk_window_new();
 				if (OS.isWayland()) {
 					long headerbar = GTK4.gtk_window_get_titlebar(shellHandle);
@@ -759,6 +753,9 @@ void createHandle (int index) {
 					    long hb = GTK4.gtk_header_bar_new();
 					    GTK4.gtk_window_set_titlebar(shellHandle, hb);
 					}
+				}
+				if (type == GTK.GTK_WINDOW_POPUP) {
+					GTK.gtk_window_set_decorated(shellHandle, false);
 				}
 			} else {
 				shellHandle = GTK3.gtk_window_new(type);
@@ -1270,7 +1267,7 @@ public boolean getFullScreen () {
 }
 
 @Override
-Point getLocationInPixels () {
+public Point getLocation() {
 	checkWidget ();
 	// Bug in GTK: when shell is moved and then hidden, its location does not get updated.
 	// Move it before getting its location.
@@ -1878,7 +1875,7 @@ long gtk_size_allocate (long widget, long allocation) {
 			long header = GTK4.gtk_window_get_titlebar(shellHandle);
 			int[] headerNaturalHeight = new int[1];
 			if (header != 0) {
-				GTK4.gtk_widget_measure(header, GTK.GTK_ORIENTATION_VERTICAL, 0, null, headerNaturalHeight, null, null);
+				GTK4.gtk_widget_measure(header, GTK.GTK_ORIENTATION_VERTICAL, -1, null, headerNaturalHeight, null, null);
 			}
 			widthA[0] = monitorSize.width;
 			heightA[0] = monitorSize.height - headerNaturalHeight[0];
@@ -2395,7 +2392,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 				long header = GTK4.gtk_window_get_titlebar(shellHandle);
 				int[] headerNaturalHeight = new int[1];
 				if (header != 0) {
-					GTK4.gtk_widget_measure(header, GTK.GTK_ORIENTATION_VERTICAL, 0, null, headerNaturalHeight, null, null);
+					GTK4.gtk_widget_measure(header, GTK.GTK_ORIENTATION_VERTICAL, -1, null, headerNaturalHeight, null, null);
 				}
 				GTK.gtk_window_set_default_size(shellHandle, width, height + headerNaturalHeight[0]);
 			} else {
@@ -3044,7 +3041,7 @@ public void setVisible (boolean visible) {
 		opened = true;
 		if (!moved) {
 			moved = true;
-			Point location = getLocationInPixels();
+			Point location = getLocation();
 			oldX = location.x;
 			oldY = location.y;
 			sendEvent (SWT.Move);
@@ -3348,17 +3345,13 @@ void checkAndUngrabFocus () {
 	 * assumes that GdkSeat are the same for parent and child, which seems to be the case.
 	 */
 	if (requiresUngrab() && !isMappedToPopup() && grabbedFocus) {
-		long gdkResource, display;
-		if (GTK.GTK4) {
-			gdkResource = gtk_widget_get_surface (shellHandle);
-			display = GDK.gdk_surface_get_display(gdkResource);
-		} else {
-			gdkResource = gtk_widget_get_window (shellHandle);
-			display = GDK.gdk_window_get_display(gdkResource);
+		if (!GTK.GTK4) {
+			long gdkResource = gtk_widget_get_window (shellHandle);
+			long display = GDK.gdk_window_get_display(gdkResource);
 			GTK3.gtk_grab_remove(shellHandle);
+			long seat = GDK.gdk_display_get_default_seat(display);
+			GDK.gdk_seat_ungrab(seat);
 		}
-		long seat = GDK.gdk_display_get_default_seat(display);
-		GDK.gdk_seat_ungrab(seat);
 		grabbedFocus = false;
 	}
 }
@@ -3495,7 +3488,7 @@ Point getWindowOrigin () {
 		 * window trims etc. from the window manager. That's why getLocation ()
 		 * is not safe to use for coordinate mappings after the shell has been made visible.
 		 */
-		return getLocationInPixels ();
+		return getLocation ();
 	}
 	return super.getWindowOrigin( );
 }
@@ -3503,7 +3496,7 @@ Point getWindowOrigin () {
 @Override
 Point getSurfaceOrigin () {
 	if (!mapped) {
-		return getLocationInPixels ();
+		return getLocation ();
 	}
 	return super.getSurfaceOrigin( );
 }

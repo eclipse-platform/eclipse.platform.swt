@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2025 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -579,7 +579,7 @@ abstract class Tab {
 			doitCombo.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
 			doitCombo.addSelectionListener(widgetSelectedAdapter(e -> {
 				String newValue = doitCombo.getText();
-				if (newValue.length() == 0) {
+				if (newValue.isEmpty()) {
 					setFieldsMask &= ~DOIT;
 				} else {
 					setFieldsEvent.type = eventType;
@@ -600,7 +600,7 @@ abstract class Tab {
 			detailCombo.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
 			detailCombo.addSelectionListener(widgetSelectedAdapter(e -> {
 				String newValue = detailCombo.getText();
-				if (newValue.length() == 0) {
+				if (newValue.isEmpty()) {
 					setFieldsMask &= ~DETAIL;
 				} else {
 					setFieldsEvent.type = eventType;
@@ -622,7 +622,7 @@ abstract class Tab {
 			textText.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
 			textText.addModifyListener(e -> {
 				String newValue = textText.getText();
-				if (newValue.length() == 0) {
+				if (newValue.isEmpty()) {
 					setFieldsMask &= ~TEXT;
 				} else {
 					setFieldsEvent.type = eventType;
@@ -1097,20 +1097,20 @@ abstract class Tab {
 				} else if (typeName.equals("java.lang.String")) {
 					parameter = new Object[] {value};
 				} else if (typeName.equals("org.eclipse.swt.graphics.Point")) {
-					String xy[] = split(value, ',');
+					String[] xy = split(value, ',');
 					parameter = new Object[] {new Point(Integer.parseInt(xy[0]),Integer.parseInt(xy[1]))};
 				} else if (typeName.equals("org.eclipse.swt.graphics.Rectangle")) {
-					String xywh[] = split(value, ',');
+					String[] xywh = split(value, ',');
 					parameter = new Object[] {new Rectangle(Integer.parseInt(xywh[0]),Integer.parseInt(xywh[1]),Integer.parseInt(xywh[2]),Integer.parseInt(xywh[3]))};
 				} else if (typeName.equals("[I")) {
-					String strings[] = split(value, ',');
+					String[] strings = split(value, ',');
 					int[] ints = new int[strings.length];
 					for (int j = 0; j < strings.length; j++) {
 						ints[j] = Integer.parseInt(strings[j]);
 					}
 					parameter = new Object[] {ints};
 				} else if (typeName.equals("[C")) {
-					String strings[] = split(value, ',');
+					String[] strings = split(value, ',');
 					char[] chars = new char[strings.length];
 					for (int j = 0; j < strings.length; j++) {
 						chars[j] = strings[j].charAt(0);
@@ -1333,7 +1333,7 @@ abstract class Tab {
 				gc.fillRectangle(0, 0, iwidth - 1, iheight - 1);
 				gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
 				gc.drawRectangle(0, 0, iwidth - 1, iheight- 1);
-				FontData data[] = font.getFontData();
+				FontData[] data = font.getFontData();
 				int style = data[0].getStyle();
 				switch (style) {
 				case SWT.NORMAL:
@@ -1418,11 +1418,11 @@ abstract class Tab {
 		Widget [] widgets = getExampleWidgets ();
 		Control [] controls = new Control [0];
 		for (Widget widget : widgets) {
-			if (widget instanceof Control) {
+			if (widget instanceof Control control) {
 				Control[] newControls = new Control[controls.length + 1];
 				System.arraycopy(controls, 0, newControls, 0, controls.length);
 				controls = newControls;
-				controls[controls.length - 1] = (Control)widget;
+				controls[controls.length - 1] = control;
 			}
 		}
 		return controls;

@@ -268,11 +268,6 @@ class ToolBarTab extends Tab {
 		borderButton.setText ("SWT.BORDER");
 	}
 
-	@Override
-	void disposeExampleWidgets () {
-		super.disposeExampleWidgets ();
-	}
-
 	/**
 	 * Gets the "Example" widget children's items, if any.
 	 *
@@ -355,7 +350,7 @@ class ToolBarTab extends Tab {
 				menu = new Menu(shell, style | SWT.POP_UP);
 				for (int i = 0; i < 9; ++i) {
 					final String text = ControlExample.getResourceString("DropDownData_" + i);
-					if (text.length() != 0) {
+					if (!text.isEmpty()) {
 						MenuItem menuItem = new MenuItem(menu, SWT.NONE);
 						menuItem.setText(text);
 					} else {

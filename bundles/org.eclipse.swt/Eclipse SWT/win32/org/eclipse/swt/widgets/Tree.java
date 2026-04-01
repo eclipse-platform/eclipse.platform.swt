@@ -5805,8 +5805,12 @@ void updateOrientation () {
 				}
 			}
 		}
-		long hImageList = imageList.getHandle(getAutoscalingZoom());
-		OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_NORMAL, hImageList);
+		// Image list is only set at OS when the first column contains images,
+		// thus check if an image list is set at the OS to refresh and otherwise skip it
+		if (OS.SendMessage (handle, OS.TVM_GETIMAGELIST, OS.TVSIL_NORMAL, 0) != 0) {
+			long hImageList = imageList.getHandle(getAutoscalingZoom());
+			OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_NORMAL, hImageList);
+		}
 	}
 	if (hwndHeader != 0) {
 		if (headerImageList != null) {
@@ -7400,7 +7404,11 @@ LRESULT wmNotify (NMHDR hdr, long wParam, long lParam) {
 	if (hdr.hwndFrom == itemToolTipHandle && itemToolTipHandle != 0) {
 		LRESULT result = wmNotifyToolTip (hdr, wParam, lParam);
 		if (result != null) return result;
+	} else if (hdr.hwndFrom == headerToolTipHandle && headerToolTipHandle != 0) {
+		// if it's the header, let Windows do its thing.
 	} else if (hdr.code == OS.TTN_SHOW) {
+		// Fallback: it's not about the item or about the header but it's still about a
+		// tooltip.
 		return positionTooltip(hdr, wParam, lParam, false);
 	}
 	if (hdr.hwndFrom == hwndHeader && hwndHeader != 0) {

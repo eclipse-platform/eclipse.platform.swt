@@ -550,7 +550,6 @@ long gtk_value_changed (long range) {
 @Override
 long gtk3_event_after (long widget, long gdkEvent) {
 	int eventType = GDK.gdk_event_get_event_type(gdkEvent);
-	eventType = Control.fixGdkEventTypeValues(eventType);
 	switch (eventType) {
 		case GDK.GDK_BUTTON_RELEASE: {
 			int [] eventButton = new int [1];

@@ -1305,9 +1305,11 @@ void createDisplay (DeviceData data) {
 	GTK.gtk_widget_realize (shellHandle);
 
 	/* Initialize the filter and event callback */
-	eventCallback = new Callback (this, "eventProc", 2); //$NON-NLS-1$
-	eventProc = eventCallback.getAddress ();
-	GDK.gdk_event_handler_set (eventProc, 0, 0);
+	if (!GTK.GTK4) {
+		eventCallback = new Callback (this, "eventProc", 2); //$NON-NLS-1$
+		eventProc = eventCallback.getAddress ();
+		GDK.gdk_event_handler_set (eventProc, 0, 0);
+	}
 
 	signalCallback = new Callback (this, "signalProc", 3); //$NON-NLS-1$
 	signalProc = signalCallback.getAddress ();
@@ -1577,6 +1579,7 @@ void error (int code) {
 	SWT.error (code);
 }
 
+// Used on GTK 3 only
 long eventProc (long event, long data) {
 	/*
 	* Use gdk_event_get_time() rather than event.time or
@@ -1589,8 +1592,7 @@ long eventProc (long event, long data) {
 	int time = GDK.gdk_event_get_time (event);
 	if (time != 0) lastEventTime = time;
 
-	int eventType = GTK.GTK4 ? GDK.gdk_event_get_event_type(event) : GDK.GDK_EVENT_TYPE (event);
-	Control.fixGdkEventTypeValues(eventType);
+	int eventType = GDK.gdk_event_get_event_type(event);
 	switch (eventType) {
 		case GDK.GDK_BUTTON_PRESS:
 		case GDK.GDK_KEY_PRESS:
@@ -1607,12 +1609,7 @@ long eventProc (long event, long data) {
 		}
 	}
 	if (!dispatch) {
-		long copiedEvent;
-		if (GTK.GTK4) {
-			copiedEvent = GDK.gdk_event_ref (event);
-		} else {
-			copiedEvent = GDK.gdk_event_copy (event);
-		}
+		long copiedEvent = GDK.gdk_event_copy (event);
 
 		addGdkEvent (copiedEvent);
 		return 0;
@@ -1720,13 +1717,17 @@ static long rendererClassInitProc (long g_class, long class_data) {
 void snapshotDrawProc(long handle, long snapshot) {
 	Display display = getCurrent ();
 	Widget widget = display.getWidget (handle);
-	if (widget != null) widget.snapshotToDraw(handle, snapshot);
+	// Draw background before children so it appears behind them
+	if (widget != null) widget.snapshotBackground(handle, snapshot);
+
 	long child = GTK4.gtk_widget_get_first_child(handle);
-	// Propagate the snapshot down the widget tree
+	// Propagate the snapshot down the widget tree first
 	while (child != 0) {
 		GTK4.gtk_widget_snapshot_child(handle, child, snapshot);
 		child = GTK4.gtk_widget_get_next_sibling(child);
 	}
+	// Draw custom paint on top of children
+	if (widget != null) widget.snapshotToDraw(handle, snapshot);
 }
 
 static long rendererGetPreferredWidthProc (long cell, long handle, long minimun_size, long natural_size) {
@@ -4771,8 +4772,10 @@ void releaseDisplay () {
 	COLOR_TOGGLE_BUTTON_FOREGROUND_RGBA = null;
 
 	/* Dispose the event callback */
-	GDK.gdk_event_handler_set (0, 0, 0);
-	eventCallback.dispose ();  eventCallback = null;
+	if (!GTK.GTK4) {
+		GDK.gdk_event_handler_set (0, 0, 0);
+		eventCallback.dispose ();  eventCallback = null;
+	}
 
 	/* Dispose the hidden shell */
 	if (shellHandle != 0) {

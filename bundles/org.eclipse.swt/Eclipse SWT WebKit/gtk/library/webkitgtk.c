@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2025 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2009, 2026 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -1549,6 +1549,30 @@ JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(webkit_1navigation_1policy_1decision_1g
 }
 #endif
 
+#ifndef NO_webkit_1network_1session_1allow_1tls_1certificate_1for_1host
+JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(webkit_1network_1session_1allow_1tls_1certificate_1for_1host)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jbyteArray arg2)
+{
+	jbyte *lparg2=NULL;
+	jlong rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, webkit_1network_1session_1allow_1tls_1certificate_1for_1host_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
+/*
+	rc = (jlong)webkit_network_session_allow_tls_certificate_for_host(arg0, arg1, lparg2);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, webkit_network_session_allow_tls_certificate_for_host)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong, jlong, jbyte *))fp)(arg0, arg1, lparg2);
+		}
+	}
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	WebKitGTK_NATIVE_EXIT(env, that, webkit_1network_1session_1allow_1tls_1certificate_1for_1host_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_webkit_1network_1session_1get_1cookie_1manager
 JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(webkit_1network_1session_1get_1cookie_1manager)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -1606,6 +1630,24 @@ JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(webkit_1network_1session_1get_1website_
 	}
 	WebKitGTK_NATIVE_EXIT(env, that, webkit_1network_1session_1get_1website_1data_1manager_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO_webkit_1network_1session_1set_1tls_1errors_1policy
+JNIEXPORT void JNICALL WebKitGTK_NATIVE(webkit_1network_1session_1set_1tls_1errors_1policy)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
+{
+	WebKitGTK_NATIVE_ENTER(env, that, webkit_1network_1session_1set_1tls_1errors_1policy_FUNC);
+/*
+	webkit_network_session_set_tls_errors_policy(arg0, arg1);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, webkit_network_session_set_tls_errors_policy)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jlong, jint))fp)(arg0, arg1);
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, webkit_1network_1session_1set_1tls_1errors_1policy_FUNC);
 }
 #endif
 
@@ -1950,6 +1992,28 @@ JNIEXPORT void JNICALL WebKitGTK_NATIVE(webkit_1user_1script_1unref)
 		}
 	}
 	WebKitGTK_NATIVE_EXIT(env, that, webkit_1user_1script_1unref_FUNC);
+}
+#endif
+
+#ifndef NO_webkit_1web_1context_1add_1path_1to_1sandbox
+JNIEXPORT void JNICALL WebKitGTK_NATIVE(webkit_1web_1context_1add_1path_1to_1sandbox)
+	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1, jboolean arg2)
+{
+	jbyte *lparg1=NULL;
+	WebKitGTK_NATIVE_ENTER(env, that, webkit_1web_1context_1add_1path_1to_1sandbox_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+/*
+	webkit_web_context_add_path_to_sandbox(arg0, lparg1, arg2);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, webkit_web_context_add_path_to_sandbox)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jlong, jbyte *, jboolean))fp)(arg0, lparg1, arg2);
+		}
+	}
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	WebKitGTK_NATIVE_EXIT(env, that, webkit_1web_1context_1add_1path_1to_1sandbox_FUNC);
 }
 #endif
 

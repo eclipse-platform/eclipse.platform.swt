@@ -137,6 +137,11 @@ public class Win32DPIUtils {
 		return pixelToPointAsSize (point, zoom);
 	}
 
+	public static Point pixelToPointAsSufficientlyLargeSize(Drawable drawable, Point point, int zoom) {
+		if (drawable != null && !drawable.isAutoScalable()) return point;
+		return pixelToPointAsSufficientlyLargeSize (point, zoom);
+	}
+
 	public static Point pixelToPointAsLocation(Drawable drawable, Point point, int zoom) {
 		if (drawable != null && !drawable.isAutoScalable()) return point;
 		return pixelToPointAsLocation (point, zoom);
@@ -233,6 +238,21 @@ public class Win32DPIUtils {
 			returnArray [i] =  Math.round (pointArray [i] * scaleFactor);
 		}
 		return returnArray;
+	}
+
+	public static float[] pointToPixel(Drawable drawable, float values[], int zoom) {
+		if (drawable != null && !drawable.isAutoScalable()) {
+			return values;
+		}
+		if (zoom == 100 || values == null) {
+			return values;
+		}
+		float scaleFactor = DPIUtil.getScalingFactor (zoom);
+		float scaledValues[] = new float[values.length];
+		for (int i = 0; i < scaledValues.length; i++) {
+			scaledValues[i] = values[i] * scaleFactor;
+		}
+		return scaledValues;
 	}
 
 	public static int[] pointToPixel(Drawable drawable, int[] pointArray, int zoom) {
