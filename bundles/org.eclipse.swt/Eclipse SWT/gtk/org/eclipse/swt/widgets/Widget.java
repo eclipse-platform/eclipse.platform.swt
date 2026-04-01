@@ -1045,7 +1045,7 @@ long gtk_month_changed (long widget) {
 	return 0;
 }
 
-long gtk_motion_notify_event (long widget, long event) {
+long gtk3_motion_notify_event (long widget, long event) {
 	return 0;
 }
 
@@ -2649,7 +2649,7 @@ long windowProc (long handle, long arg0, long user_data) {
 		case LEAVE_NOTIFY_EVENT: return gtk_leave_notify_event (handle, arg0);
 		case MAP_EVENT: return gtk_map_event (handle, arg0);
 		case MNEMONIC_ACTIVATE: return gtk_mnemonic_activate (handle, arg0);
-		case MOTION_NOTIFY_EVENT: return gtk_motion_notify_event (handle, arg0);
+		case MOTION_NOTIFY_EVENT: return gtk3_motion_notify_event (handle, arg0);
 		case MOVE_FOCUS: return gtk_move_focus (handle, arg0);
 		case POPULATE_POPUP: return gtk_populate_popup (handle, arg0);
 		case SCROLL_EVENT:	return gtk_scroll_event (handle, arg0);

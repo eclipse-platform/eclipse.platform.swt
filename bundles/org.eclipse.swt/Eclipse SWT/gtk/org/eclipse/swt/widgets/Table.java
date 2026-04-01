@@ -2327,15 +2327,10 @@ long gtk_draw (long widget, long cairo) {
 }
 
 @Override
-long gtk_motion_notify_event (long widget, long event) {
-	if (GTK.GTK4) {
-		long surface = GDK.gdk_event_get_surface(event);
-		if (surface != gtk_widget_get_surface(handle)) return 0;
-	} else {
-		long window = GDK.gdk_event_get_window (event);
-		if (window != GTK3.gtk_tree_view_get_bin_window (handle)) return 0;
-	}
-	return super.gtk_motion_notify_event (widget, event);
+long gtk3_motion_notify_event (long widget, long event) {
+	long window = GDK.gdk_event_get_window (event);
+	if (window != GTK3.gtk_tree_view_get_bin_window (handle)) return 0;
+	return super.gtk3_motion_notify_event (widget, event);
 }
 
 @Override

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2025 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -470,7 +470,7 @@ boolean grab () {
 @Override
 long gtk_button_release_event (long widget, long event) {
 	Control.mouseDown = false;
-	return gtk_mouse (GDK.GDK_BUTTON_RELEASE, widget, event);
+	return gtk3_mouse (GDK.GDK_BUTTON_RELEASE, widget, event);
 }
 
 @Override
@@ -612,27 +612,19 @@ long gtk3_key_press_event (long widget, long eventPtr) {
 }
 
 @Override
-long gtk_motion_notify_event (long widget, long eventPtr) {
+long gtk3_motion_notify_event (long widget, long eventPtr) {
 	long cursor = this.cursor != null ? this.cursor.handle : 0;
 	if (cursor != lastCursor) {
 		ungrab ();
 		grabbed = grab ();
 		lastCursor = cursor;
 	}
-	return gtk_mouse (GDK.GDK_MOTION_NOTIFY, widget, eventPtr);
+	return gtk3_mouse (GDK.GDK_MOTION_NOTIFY, widget, eventPtr);
 }
 
-long gtk_mouse (int eventType, long widget, long eventPtr) {
+long gtk3_mouse (int eventType, long widget, long eventPtr) {
 	int [] newX = new int [1], newY = new int [1];
-	if (GTK.GTK4) {
-		double[] newXDouble = new double[1], newYDouble = new double[1];
-		display.getPointerPosition(newXDouble, newYDouble);
-
-		newX[0] = (int)newXDouble[0];
-		newY[0] = (int)newYDouble[0];
-	} else {
-		display.getWindowPointerPosition(window, newX, newY, null);
-	}
+	display.getWindowPointerPosition(window, newX, newY, null);
 
 	if (oldX != newX [0] || oldY != newY [0]) {
 		Rectangle [] oldRectangles = rectangles;
@@ -913,7 +905,7 @@ boolean processEvent (long eventPtr) {
 	int eventType = GDK.gdk_event_get_event_type(eventPtr);
 	long widget = GTK3.gtk_get_event_widget (eventPtr);
 	switch (eventType) {
-		case GDK.GDK_MOTION_NOTIFY: gtk_motion_notify_event (widget, eventPtr); break;
+		case GDK.GDK_MOTION_NOTIFY: gtk3_motion_notify_event (widget, eventPtr); break;
 		case GDK.GDK_BUTTON_RELEASE: gtk_button_release_event (widget, eventPtr); break;
 		case GDK.GDK_KEY_PRESS: gtk3_key_press_event (widget, eventPtr); break;
 		case GDK.GDK_KEY_RELEASE: gtk3_key_release_event (widget, eventPtr); break;
