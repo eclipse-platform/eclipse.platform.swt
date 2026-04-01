@@ -523,6 +523,22 @@ void deregister () {
 }
 
 @Override
+void snapshotToDraw(long handle, long snapshot) {
+	/*
+	 * For Composites that have both a fixedHandle (outer SwtFixed) and an
+	 * inner handle (also SwtFixed), snapshotDrawProc fires for BOTH handles
+	 * because snapshotDrawProc is installed on the SwtFixed class.  Doing
+	 * custom painting on the outer fixedHandle places the result on top of
+	 * the children that were snapshotted via the inner handle, obscuring the
+	 * tab/page content after a visibility change (e.g. switching CTabFolder
+	 * tabs on GTK4).  Skip custom painting for the outer fixedHandle; the
+	 * inner handle will do it correctly.
+	 */
+	if (fixedHandle != 0 && handle == fixedHandle) return;
+	super.snapshotToDraw(handle, snapshot);
+}
+
+@Override
 void snapshotBackground (long handle, long snapshot) {
 	if ((state & OBSCURED) != 0) return;
 	/*
