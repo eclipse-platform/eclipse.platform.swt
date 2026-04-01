@@ -2943,6 +2943,95 @@ public void test_BrowserFunction_multiprocess() {
 	browser2.dispose();
 }
 
+/**
+ * Regression test for https://github.com/eclipse-platform/eclipse.platform.swt/issues/20
+ *
+ * <p>A BrowserFunction registered before a navigation must be available when the new page's
+ * inline scripts execute (not just after the page finishes loading). In Edge/WebView2,
+ * function injection via {@code execute()} is asynchronous and can race with navigation
+ * completion. The fix uses {@code AddScriptToExecuteOnDocumentCreated} which guarantees
+ * injection before any page script runs.
+ */
+@Test
+public void test_BrowserFunction_availableBeforePageScripts_issue20() {
+	assumeTrue(isEdge, "Race condition is specific to async Edge/WebView2 implementation");
+	AtomicBoolean functionCalled = new AtomicBoolean(false);
+	AtomicBoolean pageLoadCompleted = new AtomicBoolean(false);
+
+	new BrowserFunction(browser, "options") {
+		@Override
+		public Object function(Object[] arguments) {
+			functionCalled.set(true);
+			return null;
+		}
+	};
+
+	// Navigate to a page whose inline <script> calls options() immediately.
+	// With the fix, options() is injected before any page scripts via
+	// AddScriptToExecuteOnDocumentCreated and is therefore guaranteed to be defined.
+	browser.addProgressListener(completedAdapter(e -> pageLoadCompleted.set(true)));
+	browser.setText("<html><body><script>options();</script></body></html>");
+
+	shell.open();
+	assertTrue(waitForPassCondition(pageLoadCompleted::get), "Page did not finish loading");
+	assertTrue(functionCalled.get(),
+		"BrowserFunction 'options' was not called by the page script — it was not available "
+		+ "before page scripts ran (regression of https://github.com/eclipse-platform/eclipse.platform.swt/issues/20)");
+}
+
+/**
+ * Regression test for https://github.com/eclipse-platform/eclipse.platform.swt/issues/20
+ *
+ * <p>BrowserFunctions must survive page navigations. When a second Browser instance is being
+ * initialized concurrently, event-loop processing for the first browser can cause its async
+ * function-injection script to race with navigation completion, making the function undefined
+ * on the newly loaded page.
+ */
+@Test
+public void test_BrowserFunction_availableOnLoad_concurrentInstances_issue20() {
+	assumeTrue(isEdge, "Race condition is specific to async Edge/WebView2 implementation");
+	AtomicBoolean browser1FuncAvailable = new AtomicBoolean(false);
+	AtomicBoolean browser2FuncAvailable = new AtomicBoolean(false);
+
+	// Use new Browser() directly (not the createBrowser() helper that waits for
+	// initialization) so that both browsers are initializing concurrently, replicating
+	// the timing described in the bug report.
+	Browser b1 = new Browser(shell, SWT.NONE);
+	b1.setUrl("about:blank");
+	new BrowserFunction(b1, "options") {
+		@Override
+		public Object function(Object[] arguments) { return null; }
+	};
+	b1.addProgressListener(completedAdapter(e -> {
+		try {
+			b1.evaluate("options();");
+			browser1FuncAvailable.set(true);
+		} catch (SWTException ignored) {}
+	}));
+	createdBroswers.add(b1);
+
+	// Creating a second browser forces event-loop processing that can reveal the race.
+	Browser b2 = new Browser(shell, SWT.NONE);
+	b2.setUrl("about:blank");
+	new BrowserFunction(b2, "options") {
+		@Override
+		public Object function(Object[] arguments) { return null; }
+	};
+	b2.addProgressListener(completedAdapter(e -> {
+		try {
+			b2.evaluate("options();");
+			browser2FuncAvailable.set(true);
+		} catch (SWTException ignored) {}
+	}));
+	createdBroswers.add(b2);
+
+	shell.open();
+	assertTrue(
+		waitForPassCondition(() -> browser1FuncAvailable.get() && browser2FuncAvailable.get()),
+		"BrowserFunction must be available when page load completes on both browsers "
+		+ "(regression of https://github.com/eclipse-platform/eclipse.platform.swt/issues/20)");
+}
+
 @Test
 @Disabled("Too fragile on CI, Display.getDefault().post(event) does not work reliably")
 public void test_TabTraversalOutOfBrowser() {

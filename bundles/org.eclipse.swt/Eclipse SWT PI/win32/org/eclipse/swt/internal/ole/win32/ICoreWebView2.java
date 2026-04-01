@@ -67,6 +67,10 @@ public int AddScriptToExecuteOnDocumentCreated(char[] javaScript, long handler) 
 	return COM.VtblCall(27, address, javaScript, handler);
 }
 
+public int RemoveScriptToExecuteOnDocumentCreated(char[] id) {
+	return COM.VtblCall(28, address, id);
+}
+
 public int ExecuteScript(char[] javaScript, IUnknown handler) {
 	return COM.VtblCall(29, address, javaScript, handler.address);
 }
