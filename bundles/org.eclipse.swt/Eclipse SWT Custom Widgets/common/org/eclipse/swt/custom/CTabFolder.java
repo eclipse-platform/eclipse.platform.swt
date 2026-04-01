@@ -688,7 +688,6 @@ Rectangle[] computeControlBounds (Point size, boolean[][] position) {
 		if (lastIndex != -1) {
 			CTabItem lastItem = items[lastIndex];
 			int w = lastItem.x + lastItem.width + SPACING;
-			if (!simple && lastIndex == selectedIndex) w -= (renderer.curveIndent - 7);
 			rects[controls.length - 1].x = w;
 		}
 	}
@@ -1250,7 +1249,9 @@ public int getSelectionIndex() {
  * @return <code>true</code> if the CTabFolder is rendered with a simple shape
  *
  * @since 3.0
+ * @deprecated Curved tabs are no longer supported.
  */
+@Deprecated(forRemoval = true, since = "2026-04")
 public boolean getSimple() {
 	checkWidget();
 	return simple;
@@ -2832,7 +2833,6 @@ boolean setItemLocation(GC gc) {
 				item.closeRect.x = item.x + item.width  - (edgeTrim.width + edgeTrim.x) - closeButtonSize.x;
 				item.closeRect.y = onBottom ? size.y - borderBottom - tabHeight + (tabHeight - closeButtonSize.y)/2: borderTop + (tabHeight - closeButtonSize.y)/2;
 				x = x + item.width;
-				if (!simple && i == selectedIndex) x -= renderer.curveIndent; //TODO: fix next item position
 			}
 		}
 	}
@@ -3285,7 +3285,6 @@ void setSelection(int index, boolean notify) {
 public void setSelectionBackground (Color color) {
 	if (inDispose) return;
 	checkWidget();
-	setSelectionHighlightGradientColor(null);
 	if (selectionBackground == color) return;
 	if (color == null) color = getDisplay().getSystemColor(SELECTION_BACKGROUND);
 	selectionBackground = color;
@@ -3352,7 +3351,6 @@ public void setSelectionBackground(Color[] colors, int[] percents) {
 public void setSelectionBackground(Color[] colors, int[] percents, boolean vertical) {
 	checkWidget();
 	int colorsLength;
-	Color highlightBeginColor = null;  //null == no highlight
 
 	if (colors != null) {
 		//The colors array can optionally have an extra entry which describes the highlight top color
@@ -3369,10 +3367,8 @@ public void setSelectionBackground(Color[] colors, int[] percents, boolean verti
 				SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 			}
 		}
-		//If the colors is exactly two more than percents then last is highlight
-		//Keep track of *real* colorsLength (minus the highlight)
+		//If the colors is exactly two more than percents then last was highlight color (now ignored)
 		if(percents.length == colors.length - 2) {
-			highlightBeginColor = colors[colors.length - 1];
 			colorsLength = colors.length - 1;
 		} else {
 			colorsLength = colors.length;
@@ -3417,7 +3413,6 @@ public void setSelectionBackground(Color[] colors, int[] percents, boolean verti
 		selectionGradientPercents = null;
 		selectionGradientVertical = false;
 		setSelectionBackground((Color)null);
-		setSelectionHighlightGradientColor(null);
 	} else {
 		selectionGradientColors = new Color[colorsLength];
 		for (int i = 0; i < colorsLength; ++i) {
@@ -3429,20 +3424,10 @@ public void setSelectionBackground(Color[] colors, int[] percents, boolean verti
 		}
 		selectionGradientVertical = vertical;
 		setSelectionBackground(selectionGradientColors[selectionGradientColors.length-1]);
-		setSelectionHighlightGradientColor(highlightBeginColor);
 	}
 
 	// Refresh with the new settings
 	if (selectedIndex > -1) redraw();
-}
-
-/*
- * Set the color for the highlight start for selected tabs.
- * Update the cache of highlight gradient colors if required.
- */
-void setSelectionHighlightGradientColor(Color start) {
-	if (inDispose) return;
-	renderer.setSelectionHighlightGradientColor(start);  //TODO: need better caching strategy
 }
 
 /**
@@ -3458,12 +3443,10 @@ void setSelectionHighlightGradientColor(Color start) {
  */
 public void setSelectionBackground(Image image) {
 	checkWidget();
-	setSelectionHighlightGradientColor(null);
 	if (image == selectionBgImage) return;
 	if (image != null) {
 		selectionGradientColors = null;
 		selectionGradientPercents = null;
-		renderer.disposeSelectionHighlightGradientColors(); //TODO: need better caching strategy
 	}
 	selectionBgImage = image;
 	renderer.createAntialiasColors(); //TODO:  need better caching strategy
@@ -3519,13 +3502,11 @@ public void setSelectionBarThickness(int thickness) {
  * </ul>
  *
  * @since 3.0
+ * @deprecated Curved tabs are no longer supported.
  */
+@Deprecated(forRemoval = true, since = "2026-04")
 public void setSimple(boolean simple) {
 	checkWidget();
-	if (this.simple != simple) {
-		this.simple = simple;
-		updateFolder(UPDATE_TAB_HEIGHT | REDRAW);
-	}
 }
 /**
  * Sets the number of tabs that the CTabFolder should display
