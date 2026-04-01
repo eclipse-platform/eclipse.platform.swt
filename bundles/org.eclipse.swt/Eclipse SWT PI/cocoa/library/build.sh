@@ -13,6 +13,8 @@
 #     IBM Corporation - initial API and implementation
 #*******************************************************************************
 
+# Dummy change
+
 sw_vers -productVersion
 
 cd `dirname $0`

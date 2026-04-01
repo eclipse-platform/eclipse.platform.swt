@@ -26,6 +26,12 @@ def runOnNativeBuildAgent(String platform, Closure body) {
 		case 'gtk4.linux.x86_64':
 			dockerImage = 'eclipse/platformreleng-debian-swtnativebuild:12'
 			break
+		case 'cocoa.macosx.aarch64':
+			agentLabel = 'nc1ht-macos26-arm64'
+			break
+		case 'cocoa.macosx.x86_64':
+			agentLabel = 'b9h15-macos15-x86_64'
+			break
 	}
 	if (dockerImage != null) {
 		podTemplate(inheritFrom: 'basic' /* inherit general configuration */, containers: [
@@ -233,7 +239,16 @@ pipeline {
 													sh build.sh clean
 													sh build.sh -gtk4 checklibs install-pi-only
 												elif [[ ${PLATFORM} == cocoa.macosx.* ]]; then
+													xcode-select --print-path
+													xcode-select --version
+													softwareupdate --list
+													softwareupdate --history
+													xcodebuild -version
+													xcodebuild -showsdks
 													sh build.sh install
+													for f in libs/*; do
+														vtool -show ${f}
+													done
 												else
 													echo "Unexpected build platform ${PLATFORM}"
 													exit 1
