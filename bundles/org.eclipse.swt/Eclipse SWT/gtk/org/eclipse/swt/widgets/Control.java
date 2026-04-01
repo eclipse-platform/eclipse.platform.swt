@@ -4119,7 +4119,7 @@ void gtk4_motion_event(long controller, double x, double y, long event) {
 }
 
 @Override
-long gtk_motion_notify_event (long widget, long event) {
+long gtk3_motion_notify_event (long widget, long event) {
 	double[] eventX = new double[1];
 	double[] eventY = new double[1];
 	GDK.gdk_event_get_coords(event, eventX, eventY);
@@ -4147,13 +4147,8 @@ long gtk_motion_notify_event (long widget, long event) {
 
 			int [] eventButton = new int [1];
 			int [] eventState = new int [1];
-			if (GTK.GTK4) {
-				eventButton[0] = GDK.gdk_button_event_get_button(event);
-				eventState[0] = GDK.gdk_event_get_modifier_state(event);
-			} else {
-				GDK.gdk_event_get_button(event, eventButton);
-				GDK.gdk_event_get_state(event, eventState);
-			}
+			GDK.gdk_event_get_button(event, eventButton);
+			GDK.gdk_event_get_state(event, eventState);
 
 			if (sendDragEvent (eventButton[0], eventState[0], scaledEvent.x, scaledEvent.y, false)) {
 				return 1;
@@ -4170,30 +4165,24 @@ long gtk_motion_notify_event (long widget, long event) {
 	int [] state = new int [1];
 	boolean isHint = false;
 
-	if (GTK.GTK4) {
-		state[0] = GDK.gdk_event_get_modifier_state(event);
-		x = eventX[0];
-		y = eventY[0];
-	} else {
-		double [] eventRX = new double[1];
-		double [] eventRY = new double[1];
-		GDK.gdk_event_get_root_coords(event, eventRX, eventRY);
-		x = eventRX[0];
-		y = eventRY[0];
+	double [] eventRX = new double[1];
+	double [] eventRY = new double[1];
+	GDK.gdk_event_get_root_coords(event, eventRX, eventRY);
+	x = eventRX[0];
+	y = eventRY[0];
 
-		GdkEventMotion gdkEvent = new GdkEventMotion();
-		GTK3.memmove(gdkEvent, event, GdkEventMotion.sizeof);
-		state[0] = gdkEvent.state;
-		isHint = gdkEvent.is_hint != 0;
+	GdkEventMotion gdkEvent = new GdkEventMotion();
+	GTK3.memmove(gdkEvent, event, GdkEventMotion.sizeof);
+	state[0] = gdkEvent.state;
+	isHint = gdkEvent.is_hint != 0;
 
-		if (isHint) {
-			int [] pointer_x = new int [1], pointer_y = new int [1], mask = new int [1];
-			long window = eventWindow ();
-			display.getWindowPointerPosition (window, pointer_x, pointer_y, mask);
-			x = pointer_x [0];
-			y = pointer_y [0];
-			state[0] = mask [0];
-		}
+	if (isHint) {
+		int [] pointer_x = new int [1], pointer_y = new int [1], mask = new int [1];
+		long window = eventWindow ();
+		display.getWindowPointerPosition (window, pointer_x, pointer_y, mask);
+		x = pointer_x [0];
+		y = pointer_y [0];
+		state[0] = mask [0];
 	}
 
 	if (this != display.currentControl) {
@@ -4208,8 +4197,7 @@ long gtk_motion_notify_event (long widget, long event) {
 		}
 	}
 
-	return sendMouseEvent(SWT.MouseMove, 0, time, x, y, isHint, state[0])
-			? 0 : 1;
+	return sendMouseEvent(SWT.MouseMove, 0, time, x, y, isHint, state[0]) ? 0 : 1;
 }
 
 @Override

@@ -1702,15 +1702,11 @@ long gtk_move_focus (long widget, long directionType) {
 }
 
 @Override
-long gtk_motion_notify_event (long widget, long event) {
+long gtk3_motion_notify_event (long widget, long event) {
 	if (widget == shellHandle) {
 		if (isCustomResize ()) {
 			int [] state = new int [1];
-			if (GTK.GTK4) {
-				state[0] = GDK.gdk_event_get_modifier_state(event);
-			} else {
-				GDK.gdk_event_get_state(event, state);
-			}
+			GDK.gdk_event_get_state(event, state);
 
 			double [] eventRX = new double [1];
 			double [] eventRY = new double [1];
@@ -1762,41 +1758,27 @@ long gtk_motion_notify_event (long widget, long event) {
 						break;
 				}
 				if (x != display.resizeBoundsX || y != display.resizeBoundsY) {
-					if (GTK.GTK4) {
-						/* TODO: GTK4 no longer exist, will probably need to us gdk_toplevel_begin_move &
-						 * gdk_toplevel_begin_resize to provide this functionality
-						 */
-					} else {
-						GDK.gdk_window_move_resize (gtk_widget_get_window (shellHandle), x, y, width, height);
-					}
+					GDK.gdk_window_move_resize (gtk_widget_get_window (shellHandle), x, y, width, height);
 				} else {
 					GTK3.gtk_window_resize (shellHandle, width, height);
 				}
 			} else {
 				double [] eventX = new double [1];
 				double [] eventY = new double [1];
-				if (GTK.GTK4) {
-					GDK.gdk_event_get_position(event, eventX, eventY);
-				} else {
-					GDK.gdk_event_get_coords(event, eventX, eventY);
-				}
+				GDK.gdk_event_get_coords(event, eventX, eventY);
 
 				int mode = getResizeMode (eventX[0], eventY[0]);
 				if (mode != display.resizeMode) {
 					long cursor = display.getSystemCursor(mode).handle;
-					if (GTK.GTK4) {
-						GTK4.gtk_widget_set_cursor (shellHandle, cursor);
-					} else {
-						long window = gtk_widget_get_window (shellHandle);
-						GDK.gdk_window_set_cursor (window, cursor);
-					}
+					long window = gtk_widget_get_window (shellHandle);
+					GDK.gdk_window_set_cursor (window, cursor);
 					display.resizeMode = mode;
 				}
 			}
 		}
 		return 0;
 	}
-	return super.gtk_motion_notify_event (widget, event);
+	return super.gtk3_motion_notify_event (widget, event);
 }
 
 @Override

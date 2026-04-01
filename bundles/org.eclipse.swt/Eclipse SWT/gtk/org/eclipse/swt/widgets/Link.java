@@ -519,21 +519,16 @@ long gtk3_key_press_event (long widget, long eventPtr) {
 }
 
 @Override
-long gtk_motion_notify_event (long widget, long event) {
-	long result = super.gtk_motion_notify_event (widget, event);
+long gtk3_motion_notify_event (long widget, long event) {
+	long result = super.gtk3_motion_notify_event (widget, event);
 	if (result != 0) return result;
 
 	double [] eventX = new double [1];
 	double [] eventY = new double [1];
 
 	int [] state = new int [1];
-	if (GTK.GTK4) {
-		GDK.gdk_event_get_position(event, eventX, eventY);
-		state[0] = GDK.gdk_event_get_modifier_state(event);
-	} else {
-		GDK.gdk_event_get_coords(event, eventX, eventY);
-		GDK.gdk_event_get_state(event, state);
-	}
+	GDK.gdk_event_get_coords(event, eventX, eventY);
+	GDK.gdk_event_get_state(event, state);
 
 	int x = (int) eventX[0];
 	int y = (int) eventY[0];

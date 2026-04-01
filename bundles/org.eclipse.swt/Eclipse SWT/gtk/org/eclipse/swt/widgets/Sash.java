@@ -531,8 +531,8 @@ long gtk3_key_press_event(long widget, long eventPtr) {
 }
 
 @Override
-long gtk_motion_notify_event(long widget, long eventPtr) {
-	long result = super.gtk_motion_notify_event(widget, eventPtr);
+long gtk3_motion_notify_event(long widget, long eventPtr) {
+	long result = super.gtk3_motion_notify_event(widget, eventPtr);
 	if (result != 0) return result;
 
 	if (!dragging) return 0;
