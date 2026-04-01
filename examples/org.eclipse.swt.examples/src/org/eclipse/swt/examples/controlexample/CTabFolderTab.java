@@ -62,7 +62,7 @@ class CTabFolderTab extends Tab {
 	Font itemFont;
 
 	/* Other widgets added to the "Other" group */
-	Button simpleTabButton, singleTabButton, imageButton, showMinButton, showMaxButton,
+	Button singleTabButton, imageButton, showMinButton, showMaxButton,
 	topRightButton, unselectedCloseButton, unselectedImageButton;
 
 	ToolBar topRightControl;
@@ -201,11 +201,6 @@ class CTabFolderTab extends Tab {
 		super.createOtherGroup ();
 
 		/* Create display controls specific to this example */
-		simpleTabButton = new Button (otherGroup, SWT.CHECK);
-		simpleTabButton.setText (ControlExample.getResourceString("Set_Simple_Tabs"));
-		simpleTabButton.setSelection(true);
-		simpleTabButton.addSelectionListener (widgetSelectedAdapter(event -> setSimpleTabs()));
-
 		singleTabButton = new Button (otherGroup, SWT.CHECK);
 		singleTabButton.setText (ControlExample.getResourceString("Set_Single_Tabs"));
 		singleTabButton.setSelection(false);
@@ -413,7 +408,6 @@ class CTabFolderTab extends Tab {
 	@Override
 	void setExampleWidgetState () {
 		super.setExampleWidgetState();
-		setSimpleTabs();
 		setSingleTabs();
 		setImages();
 		setMinimizeVisible();
@@ -425,14 +419,6 @@ class CTabFolderTab extends Tab {
 		setItemFont ();
 		setItemBackground();
 		setItemForeground();
-		setExampleWidgetSize();
-	}
-
-	/**
-	 * Sets the shape that the CTabFolder will use to render itself.
-	 */
-	void setSimpleTabs () {
-		tabFolder1.setSimple (simpleTabButton.getSelection ());
 		setExampleWidgetSize();
 	}
 

@@ -30,7 +30,6 @@ public class Bug221962_CTabFolderCorrupted {
 		shell.setLayout( new FillLayout() );
 		CTabFolder folder = new CTabFolder( shell, SWT.BORDER|SWT.FLAT );
 	
-		folder.setSimple(false);
 		CTabItem item;
 		item = new CTabItem(folder,SWT.NONE);
 		item.setText("First");
