@@ -33,16 +33,6 @@ public class CTabFolderRenderer {
 	protected CTabFolder parent;
 
 	Color fillColor;
-	/* Selected item appearance */
-	/* Colors for anti-aliasing */
-	Color selectedOuterColor = null;
-	Color selectedInnerColor = null;
-	Color tabAreaColor = null;
-	/*
-	 * Border color that was used in computing the cached anti-alias Colors.
-	 * We have to recompute the colors if the border color changes
-	 */
-	Color lastBorderColor = null;
 
 	private Font chevronFont = null;
 
@@ -163,9 +153,6 @@ public class CTabFolderRenderer {
 		this.parent = parent;
 	}
 
-	void antialias (int[] shape, Color innerColor, Color outerColor, GC gc){
-	}
-
 	/**
 	 * Returns the preferred size of a part.
 	 * <p>
@@ -255,14 +242,9 @@ public class CTabFolderRenderer {
 						int minChars = parent.minChars;
 						text = minChars == 0 ? null : item.getText();
 						if (text != null && text.length() > minChars) {
-							if (useEllipses()) {
-								int end = minChars < ELLIPSIS.length() + 1 ? minChars : minChars - ELLIPSIS.length();
-								text = text.substring(0, end);
-								if (minChars > ELLIPSIS.length() + 1) text += ELLIPSIS;
-							} else {
-								int end = minChars;
-								text = text.substring(0, end);
-							}
+							int end = minChars < ELLIPSIS.length() + 1 ? minChars : minChars - ELLIPSIS.length();
+							text = text.substring(0, end);
+							if (minChars > ELLIPSIS.length() + 1) text += ELLIPSIS;
 						}
 					} else {
 						text = item.getText();
@@ -404,48 +386,6 @@ public class CTabFolderRenderer {
 		return new Rectangle(x, y, width, height);
 	}
 
-	void createAntialiasColors() {
-		disposeAntialiasColors();
-		lastBorderColor = parent.getDisplay().getSystemColor(BORDER1_COLOR);
-		RGB lineRGB = lastBorderColor.getRGB();
-		/* compute the selected color */
-		RGB innerRGB = parent.selectionBackground.getRGB();
-		if (parent.selectionBgImage != null ||
-			(parent.selectionGradientColors != null && parent.selectionGradientColors.length > 1)) {
-			innerRGB = null;
-		}
-		RGB outerRGB = parent.getBackground().getRGB();
-		if (parent.gradientColors != null && parent.gradientColors.length > 1) {
-			outerRGB = null;
-		}
-		if (outerRGB != null) {
-			RGB from = lineRGB;
-			RGB to = outerRGB;
-			int red = from.red + 2*(to.red - from.red)/3;
-			int green = from.green + 2*(to.green - from.green)/3;
-			int blue = from.blue + 2*(to.blue - from.blue)/3;
-			selectedOuterColor = new Color(red, green, blue);
-		}
-		if (innerRGB != null) {
-			RGB from = lineRGB;
-			RGB to = innerRGB;
-			int red = from.red + 2*(to.red - from.red)/3;
-			int green = from.green + 2*(to.green - from.green)/3;
-			int blue = from.blue + 2*(to.blue - from.blue)/3;
-			selectedInnerColor = new Color(red, green, blue);
-		}
-		/* compute the tabArea color */
-		outerRGB = parent.getParent().getBackground().getRGB();
-		if (outerRGB != null) {
-			RGB from = lineRGB;
-			RGB to = outerRGB;
-			int red = from.red + 2*(to.red - from.red)/3;
-			int green = from.green + 2*(to.green - from.green)/3;
-			int blue = from.blue + 2*(to.blue - from.blue)/3;
-			tabAreaColor = new Color(red, green, blue);
-		}
-	}
-
 	/**
 	 * Dispose of any operating system resources associated with
 	 * the renderer. Called by the CTabFolder parent upon receiving
@@ -454,18 +394,12 @@ public class CTabFolderRenderer {
 	 * @since 3.6
 	 */
 	protected void dispose() {
-		disposeAntialiasColors();
-
 		fillColor = null;
 
 		if (chevronFont != null) {
 			chevronFont.dispose();
 			chevronFont = null;
 		}
-	}
-
-	void disposeAntialiasColors() {
-		tabAreaColor = selectedInnerColor = selectedOuterColor = null;
 	}
 
 	/**
@@ -1188,8 +1122,6 @@ public class CTabFolderRenderer {
 					if (shape[2*i + 1] == y + height + 1) shape[2*i + 1] -= 1;
 				}
 				Color borderColor = parent.getDisplay().getSystemColor(BORDER1_COLOR);
-				if (! borderColor.equals(lastBorderColor)) createAntialiasColors();
-				antialias(shape, selectedInnerColor, selectedOuterColor, gc);
 				gc.setForeground(borderColor);
 				gc.drawPolyline(shape);
 
@@ -1384,8 +1316,6 @@ public class CTabFolderRenderer {
 
 		// Draw border line
 		if (borderLeft > 0) {
-			if (! borderColor.equals(lastBorderColor)) createAntialiasColors();
-			antialias(shape, null, tabAreaColor, gc);
 			gc.setForeground(borderColor);
 			gc.drawPolyline(shape);
 		}
@@ -1495,9 +1425,7 @@ public class CTabFolderRenderer {
 	}
 
 	String shortenText(GC gc, String text, int width) {
-		return useEllipses()
-			? shortenText(gc, text, width, ELLIPSIS)
-			: shortenText(gc, text, width, ""); //$NON-NLS-1$
+		return shortenText(gc, text, width, ELLIPSIS);
 	}
 
 	String shortenText(GC gc, String text, int width, String ellipses) {
@@ -1517,13 +1445,6 @@ public class CTabFolderRenderer {
 		}
 		layout.dispose();
 		return end == 0 ? text.substring(0, 1) : text + ellipses;
-	}
-
-	/*
-	 * Return whether to use ellipses or just truncate labels
-	 */
-	boolean useEllipses() {
-		return true;
 	}
 
 }
