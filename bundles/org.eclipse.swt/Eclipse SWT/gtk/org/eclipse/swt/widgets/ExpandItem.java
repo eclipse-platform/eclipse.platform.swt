@@ -279,7 +279,7 @@ long gtk_activate (long widget) {
 }
 
 @Override
-long gtk_button_press_event (long widget, long event) {
+long gtk3_button_press_event (long widget, long event) {
 	setFocus ();
 	return 0;
 }

@@ -1438,24 +1438,20 @@ long gtk_activate (long widget) {
 }
 
 @Override
-long gtk_button_press_event (long widget, long event) {
+long gtk3_button_press_event (long widget, long event) {
 	/*
 	* Feature in GTK. Depending on where the user clicks, GTK prevents
 	* the left mouse button event from being propagated. The fix is to
 	* send the mouse event from the event_after handler.
 	*/
 	int [] eventButton = new int [1];
-	if (GTK.GTK4) {
-		eventButton[0] = GDK.gdk_button_event_get_button(event);
-	} else {
-		GDK.gdk_event_get_button(event, eventButton);
-	}
+	GDK.gdk_event_get_button(event, eventButton);
 
 	int eventType = GDK.gdk_event_get_event_type(event);
 	if (eventType == GDK.GDK_BUTTON_PRESS && eventButton[0] == 1) {
-		return gtk_button_press_event(widget, event, false);
+		return gtk3_button_press_event(widget, event, false);
 	}
-	return super.gtk_button_press_event (widget, event);
+	return super.gtk3_button_press_event (widget, event);
 }
 
 @Override

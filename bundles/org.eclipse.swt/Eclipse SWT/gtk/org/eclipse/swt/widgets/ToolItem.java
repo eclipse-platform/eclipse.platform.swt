@@ -610,13 +610,13 @@ public int getWidth () {
 }
 
 @Override
-long gtk_button_press_event (long widget, long event) {
-	return parent.gtk_button_press_event (widget, event);
+long gtk3_button_press_event (long widget, long event) {
+	return parent.gtk3_button_press_event (widget, event);
 }
 
 @Override
-long gtk_button_release_event (long widget, long event) {
-	return parent.gtk_button_release_event (widget, event);
+long gtk3_button_release_event (long widget, long event) {
+	return parent.gtk3_button_release_event (widget, event);
 }
 
 @Override

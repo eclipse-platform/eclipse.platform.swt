@@ -911,8 +911,8 @@ public Control [] getTabList () {
 }
 
 @Override
-long gtk_button_press_event (long widget, long event) {
-	long result = super.gtk_button_press_event (widget, event);
+long gtk3_button_press_event (long widget, long event) {
+	long result = super.gtk3_button_press_event (widget, event);
 	if (result != 0) return result;
 	if ((state & CANVAS) != 0) {
 		if ((style & SWT.NO_FOCUS) == 0 && hooksKeys ()) {

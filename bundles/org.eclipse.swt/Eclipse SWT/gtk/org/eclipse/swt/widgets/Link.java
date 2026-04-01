@@ -336,26 +336,18 @@ public String getText () {
 }
 
 @Override
-long gtk_button_press_event (long widget, long event) {
-	long result = super.gtk_button_press_event (widget, event);
+long gtk3_button_press_event (long widget, long event) {
+	long result = super.gtk3_button_press_event (widget, event);
 	if (result != 0) return result;
 
 	int eventType = GDK.gdk_event_get_event_type(event);
 
 	int [] eventButton = new int [1];
-	if (GTK.GTK4) {
-		eventButton[0] = GDK.gdk_button_event_get_button(event);
-	} else {
-		GDK.gdk_event_get_button(event, eventButton);
-	}
+	GDK.gdk_event_get_button(event, eventButton);
 
 	double [] eventX = new double [1];
 	double [] eventY = new double [1];
-	if (GTK.GTK4) {
-		GDK.gdk_event_get_position(event, eventX, eventY);
-	} else {
-		GDK.gdk_event_get_coords(event, eventX, eventY);
-	}
+	GDK.gdk_event_get_coords(event, eventX, eventY);
 
 	if (eventButton[0] == 1 && eventType == GDK.GDK_BUTTON_PRESS) {
 		if (focusIndex != -1) setFocus ();
@@ -392,25 +384,17 @@ long gtk_button_press_event (long widget, long event) {
 }
 
 @Override
-long gtk_button_release_event (long widget, long event) {
-	long result = super.gtk_button_release_event (widget, event);
+long gtk3_button_release_event (long widget, long event) {
+	long result = super.gtk3_button_release_event (widget, event);
 	if (result != 0) return result;
 	if (focusIndex == -1) return result;
 
 	int [] eventButton = new int [1];
-	if (GTK.GTK4) {
-		eventButton[0] = GDK.gdk_button_event_get_button(event);
-	} else {
-		GDK.gdk_event_get_button(event, eventButton);
-	}
+	GDK.gdk_event_get_button(event, eventButton);
 
 	double [] eventX = new double [1];
 	double [] eventY = new double [1];
-	if (GTK.GTK4) {
-		GDK.gdk_event_get_position(event, eventX, eventY);
-	} else {
-		GDK.gdk_event_get_coords(event, eventX, eventY);
-	}
+	GDK.gdk_event_get_coords(event, eventX, eventY);
 
 	if (eventButton[0] == 1) {
 		int x = (int) eventX[0];

@@ -3447,8 +3447,8 @@ int gtk_gesture_release_event (long gesture, int n_press, double x, double y, lo
 }
 
 @Override
-long gtk_button_press_event (long widget, long event) {
-	return gtk_button_press_event (widget, event, true);
+long gtk3_button_press_event (long widget, long event) {
+	return gtk3_button_press_event (widget, event, true);
 }
 
 boolean wantDragDropDetection () {
@@ -3461,7 +3461,7 @@ boolean wantDragDropDetection () {
 	return hooks (SWT.DragDetect);
 }
 
-long gtk_button_press_event (long widget, long event, boolean sendMouseDown) {
+long gtk3_button_press_event (long widget, long event, boolean sendMouseDown) {
 	mouseDown = true;
 
 	double [] eventX = new double [1];
@@ -3559,7 +3559,7 @@ long gtk_button_press_event (long widget, long event, boolean sendMouseDown) {
 }
 
 @Override
-long gtk_button_release_event (long widget, long event) {
+long gtk3_button_release_event (long widget, long event) {
 	mouseDown = false;
 
 	double[] eventX = new double[1];

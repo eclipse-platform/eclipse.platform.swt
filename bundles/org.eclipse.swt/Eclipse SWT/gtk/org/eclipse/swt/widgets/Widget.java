@@ -791,11 +791,11 @@ void gtk_adjustment_get(long adjustmentHandle, GtkAdjustment adjustment) {
 	adjustment.value = GTK.gtk_adjustment_get_value(adjustmentHandle);
 }
 
-long gtk_button_press_event (long widget, long event) {
+long gtk3_button_press_event (long widget, long event) {
 	return 0;
 }
 
-long gtk_button_release_event (long widget, long event) {
+long gtk3_button_release_event (long widget, long event) {
 	return 0;
 }
 
@@ -2627,8 +2627,8 @@ long windowProc (long handle, long arg0, long user_data) {
 		case MOTION_NOTIFY_EVENT_INVERSE: {
 			return 1;
 		}
-		case BUTTON_PRESS_EVENT: return gtk_button_press_event (handle, arg0);
-		case BUTTON_RELEASE_EVENT: return gtk_button_release_event (handle, arg0);
+		case BUTTON_PRESS_EVENT: return gtk3_button_press_event (handle, arg0);
+		case BUTTON_RELEASE_EVENT: return gtk3_button_release_event (handle, arg0);
 		case COMMIT: return gtk_commit (handle, arg0);
 		case CONFIGURE_EVENT: return gtk_configure_event (handle, arg0);
 		case DELETE_EVENT: return gtk_delete_event (handle, arg0);

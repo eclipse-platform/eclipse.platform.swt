@@ -2218,7 +2218,7 @@ private int validateValueBounds(FieldPosition field, int value) {
 }
 
 @Override
-long gtk_button_release_event (long widget, long event) {
+long gtk3_button_release_event (long widget, long event) {
 	if (isDate() || isTime()) {
 		int [] eventButton = new int [1];
 		GDK.gdk_event_get_button(event, eventButton);
@@ -2227,7 +2227,7 @@ long gtk_button_release_event (long widget, long event) {
 			onTextMouseClick();
 		}
 	}
-	return super.gtk_button_release_event(widget, event);
+	return super.gtk3_button_release_event(widget, event);
 }
 
 @Override

@@ -188,8 +188,8 @@ void createHandle (int index) {
 }
 
 @Override
-long gtk_button_press_event(long widget, long eventPtr) {
-	long result = super.gtk_button_press_event (widget, eventPtr);
+long gtk3_button_press_event(long widget, long eventPtr) {
+	long result = super.gtk3_button_press_event (widget, eventPtr);
 	if (result != 0) return result;
 	scrollType = GTK.GTK_SCROLL_NONE;
 	dragSent = false;

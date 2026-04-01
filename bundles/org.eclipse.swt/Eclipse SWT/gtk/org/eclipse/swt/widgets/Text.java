@@ -1548,9 +1548,9 @@ long gtk_activate (long widget) {
 }
 
 @Override
-long gtk_button_press_event (long widget, long event) {
+long gtk3_button_press_event (long widget, long event) {
 	long result;
-	result = super.gtk_button_press_event (widget, event);
+	result = super.gtk3_button_press_event (widget, event);
 	if (result != 0) return result;
 	int eventType = GDK.gdk_event_get_event_type(event);
 	if (!doubleClick) {

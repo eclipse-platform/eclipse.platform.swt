@@ -1496,7 +1496,7 @@ public Shell [] getShells () {
 }
 
 @Override
-long gtk_button_press_event (long widget, long event) {
+long gtk3_button_press_event (long widget, long event) {
 	if (widget == shellHandle) {
 		if (isCustomResize ()) {
 			if (OS.isX11() && (style & SWT.ON_TOP) != 0 && (style & SWT.NO_FOCUS) == 0) {
@@ -1533,7 +1533,7 @@ long gtk_button_press_event (long widget, long event) {
 		}
 		return 0;
 	}
-	return super.gtk_button_press_event (widget, event);
+	return super.gtk3_button_press_event (widget, event);
 }
 
 @Override
