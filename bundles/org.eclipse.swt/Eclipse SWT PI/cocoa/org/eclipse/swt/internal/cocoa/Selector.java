@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017 itemis AG and others.
+ * Copyright (c) 2017, 2026 itemis AG and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -97,6 +97,8 @@ public enum Selector {
 	, sel_TIFFRepresentation("TIFFRepresentation")
 	, sel_URL("URL")
 	, sel_URLFromPasteboard_("URLFromPasteboard:")
+	, sel_URLForApplicationToOpenURL_("URLForApplicationToOpenURL:")
+	, sel_URLForApplicationToOpenContentType_("URLForApplicationToOpenContentType:")
 	, sel_URLWithString_("URLWithString:")
 	, sel_UTF8String("UTF8String")
 	, sel_abortEditing("abortEditing")
@@ -1304,6 +1306,7 @@ public enum Selector {
 	, sel_type("type")
 	, sel_type_conformsToType_("type:conformsToType:")
 	, sel_typeOfFile_error_("typeOfFile:error:")
+	, sel_typeWithFilenameExtension_("typeWithFilenameExtension:")
 	, sel_types("types")
 	, sel_typesetter("typesetter")
 	, sel_unarchiveObjectWithData_("unarchiveObjectWithData:")

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2025 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -18,6 +18,7 @@ import static org.eclipse.swt.tests.junit.SwtTestUtil.assertSWTProblem;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -88,6 +89,17 @@ public void test_findProgramLjava_lang_String() {
 	IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> Program.findProgram(null),
 			"Failed to throw ERROR_NULL_ARGUMENT");
 	assertSWTProblem("Failed to throw ERROR_NULL_ARGUMENT", SWT.ERROR_NULL_ARGUMENT, e);
+}
+
+@Test
+public void test_findProgramForTxt() {
+	// Applications for MIME types may not be registered in Linux test environments
+	assumeFalse(SwtTestUtil.isGTK, "Applications for MIME types may not be registered in Linux test environments");
+	// .txt files are always associated with a text editor on Windows and macOS
+	Program program = Program.findProgram(".txt");
+	assertNotNull(program, "Expected a program for .txt files");
+	assertNotNull(program.getName(), "Expected program to have a non-null name");
+	assertTrue(program.getName().length() > 0, "Expected program to have a non-empty name");
 }
 
 @Test

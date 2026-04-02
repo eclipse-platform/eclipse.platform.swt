@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -43,6 +43,16 @@ public boolean isFilePackageAtPath(NSString fullPath) {
 
 public boolean openURL(NSURL url) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_openURL_, url != null ? url.id : 0);
+}
+
+public NSURL urlForApplicationToOpenURL(NSURL url) {
+	long result = OS.objc_msgSend(this.id, OS.sel_URLForApplicationToOpenURL_, url != null ? url.id : 0);
+	return result != 0 ? new NSURL(result) : null;
+}
+
+public NSURL urlForApplicationToOpenContentType(long contentType) {
+	long result = OS.objc_msgSend(this.id, OS.sel_URLForApplicationToOpenContentType_, contentType);
+	return result != 0 ? new NSURL(result) : null;
 }
 
 public boolean openURLs(NSArray urls, NSString bundleIdentifier, long options, NSAppleEventDescriptor descriptor, long identifiers) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007, 2022 IBM Corporation and others.
+ * Copyright (c) 2007, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -63,9 +63,6 @@ public class OS extends C {
 	public static final int kUIModeNormal = 0;
 	public static final int kUIModeContentHidden = 2;
 	public static final int kUIModeAllHidden = 3;
-	public static final int kLSUnknownType = 0;
-	public static final int kLSUnknownCreator = 0;
-	public static final int kLSRolesAll = 0xFFFFFFFF;
 	public static final int kAXUnderlineStyleNone = 0x0;
 	public static final int kAXUnderlineStyleSingle = 0x1;
 	public static final int kAXUnderlineStyleThick = 0x2;
@@ -298,15 +295,6 @@ public static final native byte LMGetKbdType();
 public static final native long AcquireRootMenu ();
 /** @method flags=dynamic */
 public static final native int CancelMenuTracking (long inRootMenu, boolean inImmediate, int inDismissalReason);
-/**
- * @param inType cast=(OSType)
- * @param inCreator cast=(OSType)
- * @param inExtension cast=(CFStringRef)
- * @param inRoleMask cast=(LSRolesMask)
- * @param outAppRef cast=(FSRef *)
- * @param outAppURL cast=(CFURLRef *)
- */
-public static final native long LSGetApplicationForInfo(int inType, int inCreator,long inExtension, int inRoleMask, byte[] outAppRef, int[] outAppURL);
 /** @method flags=dynamic
  * @param pmSessionInfo cast=(PMPrintSession)
  * @param outPMPrinter cast=(PMPrinter *)
@@ -839,6 +827,8 @@ public static final long sel_PMPrintSettings = Selector.sel_PMPrintSettings.valu
 public static final long sel_TIFFRepresentation = Selector.sel_TIFFRepresentation.value;
 public static final long sel_URL = Selector.sel_URL.value;
 public static final long sel_URLFromPasteboard_ = Selector.sel_URLFromPasteboard_.value;
+public static final long sel_URLForApplicationToOpenURL_ = Selector.sel_URLForApplicationToOpenURL_.value;
+public static final long sel_URLForApplicationToOpenContentType_ = Selector.sel_URLForApplicationToOpenContentType_.value;
 public static final long sel_URLWithString_ = Selector.sel_URLWithString_.value;
 public static final long sel_UTF8String = Selector.sel_UTF8String.value;
 public static final long sel_abortEditing = Selector.sel_abortEditing.value;
@@ -2046,6 +2036,7 @@ public static final long sel_translateXBy_yBy_ = Selector.sel_translateXBy_yBy_.
 public static final long sel_type = Selector.sel_type.value;
 public static final long sel_type_conformsToType_ = Selector.sel_type_conformsToType_.value;
 public static final long sel_typeOfFile_error_ = Selector.sel_typeOfFile_error_.value;
+public static final long sel_typeWithFilenameExtension_ = Selector.sel_typeWithFilenameExtension_.value;
 public static final long sel_types = Selector.sel_types.value;
 public static final long sel_typesetter = Selector.sel_typesetter.value;
 public static final long sel_unarchiveObjectWithData_ = Selector.sel_unarchiveObjectWithData_.value;
@@ -2960,11 +2951,6 @@ public static final native long CFRunLoopObserverCreate(long allocator, long act
  * @param observer cast=(CFRunLoopObserverRef)
  */
 public static final native void CFRunLoopObserverInvalidate(long observer);
-/**
- * @param allocator cast=(CFAllocatorRef)
- * @param fsRef cast=(FSRef*)
- */
-public static final native long CFURLCreateFromFSRef(long allocator, byte[] fsRef);
 /**
  * @param allocator cast=(CFAllocatorRef)
  * @param originalString cast=(CFStringRef)
