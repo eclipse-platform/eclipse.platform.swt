@@ -950,8 +950,8 @@ protected void create (DeviceData data) {
 }
 
 void createDisplay (DeviceData data) {
-	if (OS.VERSION < OS.VERSION (10, 10, 0)) {
-		System.out.println ("***WARNING: SWT requires MacOS X version 10.10 or greater"); //$NON-NLS-1$
+	if (OS.VERSION < OS.VERSION (11, 0, 0)) {
+		System.out.println ("***WARNING: SWT requires macOS version 11 or greater"); //$NON-NLS-1$
 		error(SWT.ERROR_NOT_IMPLEMENTED);
 	}
 
@@ -2522,10 +2522,10 @@ protected void init () {
 
 /**
  * Checks if the native item height should be enforced as a minimum (which is true by default).
- * 
+ *
  * Newer version of macOS may use a default item height in Table, Tree and List
  * controls that is larger than what is traditionally expected.
- * 
+ *
  * Enforcing the default height as a minimum may break existing assumptions and
  * render UI elements with a padding that may be considered too large.
  */

@@ -29,6 +29,6 @@ elif [ "x${MODEL}" = "xarm64" ] || [ "x${MODEL}" = "xaarch64" ]; then
 	fi
 fi
 
-export MACOSX_DEPLOYMENT_TARGET=10.10
+export MACOSX_DEPLOYMENT_TARGET=11
 
 make -f make_macosx.mak $1 $2 $3 $4 $5 $6 $7 $8 $9

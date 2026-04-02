@@ -34,6 +34,7 @@ AWT_OBJECTS   = swt_awt.o
 
 #SWT_DEBUG = -g
 CFLAGS = -c -xobjective-c -Wall $(ARCHS) $(SWT_DEBUG) -DUSE_ASSEMBLER -DCOCOA -DATOMIC \
+	-Wunguarded-availability \
 	-I $(SWT_JAVA_HOME)/include \
 	-I $(SWT_JAVA_HOME)/include/darwin \
 	-I /System/Library/Frameworks/Cocoa.framework/Headers \
