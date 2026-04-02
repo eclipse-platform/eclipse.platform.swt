@@ -34,6 +34,8 @@ public class BusyIndicator {
 	static final String BUSYID_NAME = "SWT BusyIndicator"; //$NON-NLS-1$
 	static final String BUSY_CURSOR = "SWT BusyIndicator Cursor"; //$NON-NLS-1$
 
+	private static final Runnable DO_NOTHING = () -> {};
+
 	/**
 	 * Runs the given <code>Runnable</code> while providing
 	 * busy feedback using this busy indicator.
@@ -111,10 +113,14 @@ public class BusyIndicator {
 						stage.handle((nil1, nil2) -> {
 							if (!display.isDisposed()) {
 								try {
-									display.wake();
+									// Use asyncExec() to wake up the display thread instead of wake()
+									// as this call may happen between the future.isDone() check and the
+									// display.sleep() call such that a wake() may get lost whereas an asyncExec()
+									// will wake up the sleep() even if it is scheduled before calling sleep()
+									display.asyncExec(DO_NOTHING);
 								} catch (SWTException e) {
-									// ignore then, this can happen due to the async nature between our check for
-									// disposed and the actual call to wake the display can be disposed
+									// ignore; due to the async nature between our disposed check and scheduling
+									// asyncExec(), the display may already be disposed
 								}
 							}
 							return null;
