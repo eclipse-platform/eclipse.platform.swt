@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2025 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -70,7 +70,6 @@ typedef enum {
 	CFRunLoopGetCurrent_FUNC,
 	CFRunLoopObserverCreate_FUNC,
 	CFRunLoopObserverInvalidate_FUNC,
-	CFURLCreateFromFSRef_FUNC,
 	CFURLCreateStringByAddingPercentEscapes_FUNC,
 	CGAffineTransform_1sizeof_FUNC,
 	CGBitmapContextCreate_FUNC,
@@ -149,7 +148,6 @@ typedef enum {
 	JSStringCreateWithUTF8CString_FUNC,
 	JSStringRelease_FUNC,
 	LMGetKbdType_FUNC,
-	LSGetApplicationForInfo_FUNC,
 	LineTo_FUNC,
 	MoveTo_FUNC,
 	NSAccessibilityAttributedStringForRangeParameterizedAttribute_FUNC,

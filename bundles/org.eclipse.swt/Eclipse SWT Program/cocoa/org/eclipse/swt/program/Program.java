@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -73,15 +73,10 @@ public static Program findProgram (String extension) {
 		}
 		NSString ext = NSString.stringWithCharacters(chars, chars.length);
 		if (ext != null) {
-			byte[] fsRef = new byte[80];
-			if (OS.LSGetApplicationForInfo(OS.kLSUnknownType, OS.kLSUnknownCreator, ext.id, OS.kLSRolesAll, fsRef, null) == OS.noErr) {
-				long url = OS.CFURLCreateFromFSRef(OS.kCFAllocatorDefault(), fsRef);
-				if (url != 0) {
-					NSString bundlePath = new NSURL(url).path();
-					NSBundle bundle = NSBundle.bundleWithPath(bundlePath);
-					if (bundle != null) program = getProgram(bundle);
-					OS.CFRelease(url);
-				}
+			NSURL appURL = findAppURLForExtension(ext);
+			if (appURL != null) {
+				NSBundle bundle = NSBundle.bundleWithPath(appURL.path());
+				if (bundle != null) program = getProgram(bundle);
 			}
 		}
 		return program;
@@ -151,6 +146,27 @@ public static String [] getExtensions () {
 	} finally {
 		pool.release();
 	}
+}
+
+private static NSURL findAppURLForExtension(NSString ext) {
+	NSWorkspace workspace = NSWorkspace.sharedWorkspace();
+	// On macOS 12.0+, use the content type-based API which works reliably
+	// for all file types including third-party ones.
+	if (OS.VERSION >= OS.VERSION(12, 0, 0)) {
+		long UTTypeClass = OS.objc_getClass("UTType");
+		if (UTTypeClass != 0) {
+			long utType = OS.objc_msgSend(UTTypeClass, OS.sel_typeWithFilenameExtension_, ext.id);
+			if (utType != 0) {
+				NSURL appURL = workspace.urlForApplicationToOpenContentType(utType);
+				if (appURL != null) {
+					return appURL;
+				}
+			}
+		}
+	}
+	// Fallback: URL-based lookup (available since macOS 10.6, deprecated in macOS 12.0)
+	NSURL fileURL = NSURL.fileURLWithPath(NSString.stringWith("/tmp/dummy." + ext.getString()));
+	return workspace.urlForApplicationToOpenURL(fileURL);
 }
 
 static Program getProgram(NSBundle bundle) {
