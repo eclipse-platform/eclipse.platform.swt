@@ -2063,6 +2063,26 @@ void setScrolling () {
 	view.performSelector(OS.sel_clearDeferFlushing, null, 0.0, display.runLoopModes());
 }
 
+/**
+ * Informs the operating system that the application prefers a dark
+ * theme for native components such as title bars, scrollbars, and
+ * native dialogs.
+ *
+ * @param preferred true if the dark theme is preferred, false otherwise.
+ *
+ * @since 3.134
+ */
+public void setDarkThemePreferred(boolean preferred) {
+	checkWidget();
+	if (OS.VERSION < OS.VERSION (10, 14, 0)) return;
+	if (window == null) return;
+	String appearanceName = preferred ? "NSAppearanceNameDarkAqua" : "NSAppearanceNameAqua";
+	NSAppearance appearance = NSAppearance.appearanceNamed (NSString.stringWith (appearanceName));
+	if (appearance != null) {
+		OS.objc_msgSend(window.id, OS.sel_setAppearance_, appearance.id);
+	}
+}
+
 @Override
 public void setText (String string) {
 	checkWidget();
