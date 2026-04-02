@@ -1774,6 +1774,20 @@ public static boolean isSystemDarkTheme () {
 	return OS.isSystemDarkAppearance();
 }
 
+/**
+ * Informs the operating system that the application prefers a dark
+ * theme for native components such as title bars, scrollbars, and
+ * native dialogs.
+ *
+ * @param preferred true if the dark theme is preferred, false otherwise.
+ *
+ * @since 3.134
+ */
+public void setDarkThemePreferred(boolean preferred) {
+	checkDevice();
+	OS.setTheme(preferred);
+}
+
 int getLastEventTime () {
 	NSEvent event = application != null ? application.currentEvent() : null;
 	if (event == null) return 0;
