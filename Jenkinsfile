@@ -17,6 +17,7 @@
 
 def runOnNativeBuildAgent(String platform, Closure body) {
 	def final nativeBuildStageName = 'Build SWT-native binaries'
+	def agentLabel = 'native.builder-' + platform
 	def dockerImage = null
 	switch (platform) {
 		case 'gtk.linux.x86_64':
@@ -38,7 +39,7 @@ def runOnNativeBuildAgent(String platform, Closure body) {
 	} else {
 		// See the Definition of the RelEng Jenkins instance in
 		// https://github.com/eclipse-cbi/jiro/tree/master/instances/eclipse.platform.releng
-		node('native.builder-' + platform) { stage(nativeBuildStageName) { body() } }
+		node(agentLabel) { stage(nativeBuildStageName) { body() } }
 	}
 }
 
@@ -232,7 +233,7 @@ pipeline {
 													sh build.sh clean
 													sh build.sh -gtk4 checklibs install-pi-only
 												elif [[ ${PLATFORM} == cocoa.macosx.* ]]; then
-													sh build.sh install 
+													sh build.sh install
 												else
 													echo "Unexpected build platform ${PLATFORM}"
 													exit 1
