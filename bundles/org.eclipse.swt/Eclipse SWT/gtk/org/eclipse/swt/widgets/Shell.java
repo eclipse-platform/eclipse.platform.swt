@@ -2879,6 +2879,20 @@ static Region mirrorRegion (Region region) {
 void setRelations() {
 }
 
+/**
+ * Informs the operating system that the application prefers a dark
+ * theme for native components such as title bars, scrollbars, and
+ * native dialogs.
+ *
+ * @param preferred true if the dark theme is preferred, false otherwise.
+ *
+ * @since 3.134
+ */
+public void setDarkThemePreferred(boolean preferred) {
+	checkWidget();
+	display.setDarkThemePreferred(preferred);
+}
+
 @Override
 public void setText (String string) {
 	super.setText (string);

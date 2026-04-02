@@ -576,7 +576,7 @@ void createBalloonTipHandle () {
 	OS.SetWindowLongPtr (balloonTipHandle, OS.GWLP_WNDPROC, display.windowProc);
 }
 
-void setTitleColoring() {
+void setTitleColoring(boolean preferred) {
 	int attributeID = 0;
 	if (OsVersion.IS_WIN10_2004) {
 		// Documented since build 20348, but was already present since build 19041
@@ -590,8 +590,22 @@ void setTitleColoring() {
 		return;
 	}
 
-	int[] value = new int[] {1};
+	int[] value = new int[] {preferred ? 1 : 0};
 	OS.DwmSetWindowAttribute (handle, attributeID, value, 4);
+}
+
+/**
+ * Informs the operating system that the application prefers a dark
+ * theme for native components such as title bars, scrollbars, and
+ * native dialogs.
+ *
+ * @param preferred true if the dark theme is preferred, false otherwise.
+ *
+ * @since 3.134
+ */
+public void setDarkThemePreferred(boolean preferred) {
+	checkWidget();
+	setTitleColoring(preferred);
 }
 
 @Override
@@ -627,7 +641,7 @@ void createHandle () {
 
 	if (!embedded) {
 		if (display.useShellTitleColoring) {
-			setTitleColoring();
+			setTitleColoring(true);
 		}
 
 		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
