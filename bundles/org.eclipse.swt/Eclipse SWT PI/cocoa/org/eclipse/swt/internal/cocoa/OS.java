@@ -547,6 +547,10 @@ public static final native long object_setInstanceVariable(long obj, byte[] name
  * @param clazz cast=(Class)
  */
 public static final native long object_setClass(long obj, long clazz);
+/**
+ * @method flags=cast
+ * @param selectorName cast=(const char*)
+ */
 public static final native long sel_registerName(String selectorName);
 public static final native int objc_super_sizeof();
 
