@@ -1,7 +1,7 @@
 # GTK4 Deprecation Status Report
 
 **Generated:** 2025-10-31 11:26:36 UTC
-**Build Command:** `./build_gtk.sh`
+**Build Command:** See the native build instructions in AGENTS.md
 
 ## Executive Summary
 
@@ -738,4 +738,4 @@ This is the largest and most complex migration.
 
 ---
 
-*This document was generated automatically by analyzing build output from `./build_gtk.sh` on 2025-10-31.*
+*This document was generated automatically on 2025-10-31.*
