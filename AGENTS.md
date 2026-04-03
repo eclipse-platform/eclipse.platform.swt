@@ -35,33 +35,35 @@ SWT consists of two main parts:
 # Build the entire project
 mvn clean verify
 
-# Build specific platform binary
-mvn clean verify -Dnative=gtk.linux.x86_64
+# Build (and include) specific platform native binaries
+mvn clean verify -Dnative=${target.ws}.<os>.<arch>
 
 # Skip tests
 mvn clean verify -DskipTests
 ```
 
-### Building Natives
+### Building native binaries
 
-**GTK (Linux):**
-```bash
-cd bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library
-./build.sh -gtk-all install    # Build both GTK3 and GTK4
+In this section,
+the placeholder `<os>` has one of the values `macosx`, `linux` or `win32`,
+the placeholder `<ws>` has one of the values `cocoa` (for Mac), `gtk` (for Linux) or `win32` (for Windows),
+the placeholder `<arch>` has one of the values `x86_64`, `aarch64`, `ppc64le` or `riscv64`,
 
-# Build only GTK3
-export GTK_VERSION=3.0
-./build.sh install
-
-# Build only GTK4
-export GTK_VERSION=4.0
-./build.sh install
+To build only the native binaries, run
+```
+cd binaries/org.eclipse.swt.<ws>.<os>.<arch>
+mvn clean antrun:run@build-native-binaries -Dnative=<ws>.<os>.<arch>
 ```
 
-**CRITICAL**: Files like `os.c`, `os_stats.c`, `os_stats.h` are **auto-generated**. Never edit them directly!
-Instead: modify Java source (e.g., `OS.java`), clean/rebuild the project, then run `./build.sh`.
+For Linux, to build only the GTK3 binaries, set the environment variable `GTK_VERSION` to value `3.0`.
+Or to build only the GTK4, set the environment variable `GTK_VERSION` to `4.0`.
 
-See `docs/gtk-dev-guide.md` for detailed instructions.
+**CRITICAL**: Files like `os.c`, `os_stats.c`, `os_stats.h` are **auto-generated**. Never edit them directly!
+Instead: modify Java source (e.g., `OS.java`), clean/rebuild the project, then run the native build command above.
+
+**CRITICAL**: Never commit any built native binary files to git, i.e. files like `libswt-*.so`, `libswt-*.jnilib` or `swt-*.dll`.
+
+See `docs/*.md` and `bundles/org.eclipse.swt/Readme*.md` files for detailed instructions.
 
 ## Coding Standards
 

@@ -7,4 +7,4 @@ applyTo: "bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library/*.c,bundles/org.ecl
 - The GTK docs can be found here https://www.gtk.org/docs/
 - Be carefull between the difference of GTK3 and GTK4 we need to check for specific versions in some places already
 - The GTK3 > GTK4 migration guide can be found here https://docs.gtk.org/gtk4/migrating-3to4.html
-- You will find a shell script ./build_gtk.sh that must be used to compile the code for testing changes
+- Use the native build instructions in the AGENTS.md file to compile the code for testing changes
