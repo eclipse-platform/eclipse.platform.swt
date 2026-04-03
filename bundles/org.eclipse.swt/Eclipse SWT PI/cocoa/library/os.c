@@ -7645,7 +7645,7 @@ JNIEXPORT jlong JNICALL OS_NATIVE(sel_1registerName)
 	jlong rc = 0;
 	OS_NATIVE_ENTER(env, that, sel_1registerName_FUNC);
 	if (arg0) if ((lparg0 = (*env)->GetStringUTFChars(env, arg0, NULL)) == NULL) goto fail;
-	rc = (jlong)sel_registerName(lparg0);
+	rc = (jlong)((jlong (*)(const char*))sel_registerName)((const char*)lparg0);
 fail:
 	if (arg0 && lparg0) (*env)->ReleaseStringUTFChars(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, sel_1registerName_FUNC);
