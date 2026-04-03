@@ -480,6 +480,7 @@ GraphicsTab[] createTabs() {
 		new PathTab(this),
 		new TransformReuseTab(this),
 		new PathReuseTab(this),
+		new PlasmaTab(this),
 	};
 }
 
