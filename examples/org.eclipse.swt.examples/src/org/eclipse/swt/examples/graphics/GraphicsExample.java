@@ -470,6 +470,7 @@ GraphicsTab[] createTabs() {
 		new LineJoinTab(this),
 		new RegionClippingTab(this),
 		new StarfieldTab(this),
+		new BlobTab(this),
 		new RippleTab(this),
 		new CustomAlphaTab(this),
 		new TextAntialiasTab(this),
