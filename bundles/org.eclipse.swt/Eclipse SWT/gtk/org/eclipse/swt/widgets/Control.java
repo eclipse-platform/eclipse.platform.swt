@@ -4143,14 +4143,14 @@ long gtk3_motion_notify_event (long widget, long event) {
 			int eventType = GDK.gdk_event_get_event_type(event);
 			if (eventType == GDK.GDK_3BUTTON_PRESS) return 0;
 
-			Point scaledEvent = new Point((int)eventX[0], (int) eventY[0]);
-
-			int [] eventButton = new int [1];
+			// Use the original mouseDown coordinates and button from the queued event,
+			// not the current motion event position (which is past the drag threshold
+			// and may be off the tab label, causing ctf.getItem() lookups to fail).
+			Event mouseDownEvent = dragDetectionQueue.getFirst();
 			int [] eventState = new int [1];
-			GDK.gdk_event_get_button(event, eventButton);
 			GDK.gdk_event_get_state(event, eventState);
 
-			if (sendDragEvent (eventButton[0], eventState[0], scaledEvent.x, scaledEvent.y, false)) {
+			if (sendDragEvent (mouseDownEvent.button, eventState[0], mouseDownEvent.x, mouseDownEvent.y, false)) {
 				return 1;
 			}
 		}
