@@ -554,9 +554,7 @@ void createHandle () {
 	widget.setIntercellSpacing(spacing);
 	widget.setDoubleAction(OS.sel_sendDoubleSelection);
 
-	if (OS.isBigSurOrLater()) {
-		OS.objc_msgSend(widget.id, OS.sel_setStyle, OS.NSTableViewStylePlain);
-	}
+	OS.objc_msgSend(widget.id, OS.sel_setStyle, OS.NSTableViewStylePlain);
 
 	/*
 	 * Table didn't have focus ring in SWT for years, because SWT didn't
@@ -1074,16 +1072,12 @@ void drawInteriorWithFrame_inView (long id, long sel, NSRect rect, long view) {
 		if (drawSelection) {
 			cellRect.height -= spacing.height;
 			/*
-			 * On BigSur, calling highlightSelectionInClipRect here draws over the full row
+			 * calling highlightSelectionInClipRect here draws over the full row
 			 * and not just the cellRect. This causes drawing over other cells content.
 			 * Workaround is to draw the highlight background ourselves and not call
 			 * highlightSelectionInClipRect to draw it.
 			 */
-			if (OS.isBigSurOrLater()) {
-				gc.fillRectangle((int)cellRect.x, (int)cellRect.y, (int)cellRect.width, (int)cellRect.height);
-			} else {
-				callSuper (widget.id, OS.sel_highlightSelectionInClipRect_, cellRect);
-			}
+			gc.fillRectangle((int)cellRect.x, (int)cellRect.y, (int)cellRect.width, (int)cellRect.height);
 			cellRect.height += spacing.height;
 		}
 		gc.dispose ();
@@ -1331,20 +1325,9 @@ public Rectangle getClientArea () {
 	Rectangle rect = super.getClientArea ();
 	/*
 	 * OSX version < 10.11 - The origin of the table is the top-left of the rows
-	 * of the table, not the header. We adjust the y value and height of the rect
-	 * accordingly, to include the header.
-	 *
-	 * OSX 10.11 - The origin of the table is the header and the header's
+	 * of the table, not the header. The origin of the table is the header and the header's
 	 * height is already included in the rect. Hence, we return the rect as is.
 	 */
-	if (OS.VERSION < OS.VERSION (10, 11, 0)) {
-		NSTableHeaderView headerView = ((NSTableView) view).headerView ();
-		if (headerView != null) {
-			int height =  (int) headerView.bounds ().height;
-			rect.y -= height;
-			rect.height += height;
-		}
-	}
 	return rect;
 }
 
@@ -1885,15 +1868,13 @@ public int getTopIndex () {
 	point.y = rect.y;
 
 	/*
-	 * In OSX 10.11, the origin of the table is the header, not the top-left of the rows.
+	 * The origin of the table is the header, not the top-left of the rows.
 	 * Offset the point's y coordinate accordingly.
 	 */
-	if (OS.VERSION >= OS.VERSION (10, 11, 0)) {
-		NSTableHeaderView headerView = ((NSTableView) view).headerView ();
-		if (headerView != null) {
-			int height =  (int) headerView.bounds ().height;
-			point.y += height;
-		}
+	NSTableHeaderView headerView = ((NSTableView) view).headerView ();
+	if (headerView != null) {
+		int height =  (int) headerView.bounds ().height;
+		point.y += height;
 	}
 	int rowAtPoint = (int)((NSTableView)view).rowAtPoint(point);
 	if (rowAtPoint == -1) return 0; /* Empty table */
@@ -3193,14 +3174,12 @@ public void setTopIndex (int index) {
 	pt.x = scrollView.contentView().bounds().x;
 	pt.y = widget.frameOfCellAtColumn(0, row).y;
 	/*
-	 * In OSX 10.11, the origin of the table is the header, not the top-left of the rows.
+	 * The origin of the table is the header, not the top-left of the rows.
 	 * Offset the point's y coordinate accordingly.
 	 */
-	if (OS.VERSION >= OS.VERSION(10, 11, 0)) {
-		if (widget.headerView() != null) {
-			NSRect headerRect = headerView.frame();
-			pt.y -= headerRect.y + headerRect.height;
-		}
+	if (widget.headerView() != null) {
+		NSRect headerRect = headerView.frame();
+		pt.y -= headerRect.y + headerRect.height;
 	}
 	view.scrollPoint(pt);
 }
@@ -3237,27 +3216,24 @@ public void showColumn (TableColumn column) {
 void showIndex (int index) {
 	if (0 <= index && index < itemCount) {
 		NSTableView tableView = (NSTableView)view;
-		if (OS.VERSION >= OS.VERSION (10, 15, 0)) {
-			if (tableView.headerView () == null) {
-				/**
-				 * On macOS 10.15, scrollRowToVisible doesn't work correctly if
-				 * contentView's bounds is not set (i.e, width or height is 0).
-				 *
-				 * The contentView's bounds is set when the Table's header view is set.
-				 * So don't call this code if Table has a header already.
-				 */
-				NSClipView contentView = scrollView.contentView ();
-				if (contentView != null) {
-					NSRect contentViewBounds = contentView.bounds ();
-					if (contentViewBounds.height == 0 || contentViewBounds.width == 0) {
-						NSView documentView = scrollView.documentView ();
-						if (documentView != null) {
-							NSRect documentViewBounds = documentView.bounds ();
-							NSSize size = new NSSize ();
-							size.width = contentViewBounds.width == 0 ? documentViewBounds.width : contentViewBounds.width;
-							size.height = contentViewBounds.height == 0 ? documentViewBounds.height : contentViewBounds.height;
-							contentView.setBoundsSize (size);
-						}
+		if (tableView.headerView () == null) {
+			/*
+			 * scrollRowToVisible doesn't work correctly if contentView's bounds
+			 * is not set (i.e, width or height is 0). The contentView's bounds
+			 * is set when the Table's header view is set. So don't call this code
+			 * if Table has a header already.
+			 */
+			NSClipView contentView = scrollView.contentView ();
+			if (contentView != null) {
+				NSRect contentViewBounds = contentView.bounds ();
+				if (contentViewBounds.height == 0 || contentViewBounds.width == 0) {
+					NSView documentView = scrollView.documentView ();
+					if (documentView != null) {
+						NSRect documentViewBounds = documentView.bounds ();
+						NSSize size = new NSSize ();
+						size.width = contentViewBounds.width == 0 ? documentViewBounds.width : contentViewBounds.width;
+						size.height = contentViewBounds.height == 0 ? documentViewBounds.height : contentViewBounds.height;
+						contentView.setBoundsSize (size);
 					}
 				}
 			}

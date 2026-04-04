@@ -703,15 +703,11 @@ void createHandle () {
 				OS.objc_msgSend(window.id, OS.sel_setMovable_, 0);
 			}
 		}
-		if (OS.VERSION >= OS.VERSION(10, 12, 0)) {
-			/*
-			 * In macOS 10.12, a new system preference "prefer tabs when opening documents"
-			 * has been added which causes automatic tabbing of windows in Eclipse.
-			 * Disable automatic window tabbing, but setting the NSWindow.allowsAutomaticWindowTabbing
-			 * property to false.
-			 */
-			OS.objc_msgSend(OS.class_NSWindow, OS.sel_setAllowsAutomaticWindowTabbing_, false);
-		}
+		/*
+		 * Disable automatic window tabbing. The system preference "prefer tabs when opening documents"
+		 * would otherwise cause automatic tabbing of windows in Eclipse.
+		 */
+		OS.objc_msgSend(OS.class_NSWindow, OS.sel_setAllowsAutomaticWindowTabbing_, false);
 		display.cascadeWindow(window, screen);
 		NSRect screenFrame = screen.frame();
 		double width = screenFrame.width * 5 / 8, height = screenFrame.height * 5 / 8;;
@@ -2074,7 +2070,6 @@ void setScrolling () {
  */
 public void setDarkThemePreferred(boolean preferred) {
 	checkWidget();
-	if (OS.VERSION < OS.VERSION (10, 14, 0)) return;
 	if (window == null) return;
 	String appearanceName = preferred ? "NSAppearanceNameDarkAqua" : "NSAppearanceNameAqua";
 	NSAppearance appearance = NSAppearance.appearanceNamed (NSString.stringWith (appearanceName));
@@ -2128,13 +2123,8 @@ void preventShellActivateJvmCrash () {
 	 *
 	 * Both bugs are bugs of macOS itself. The workaround is to cancel
 	 * menu tracking just before showing Shell.
-	 *
-	 * The condition should be for (macOS >= 12), but it's not possible
-	 * to reliably distinguish 11 from 12, see comment for OS.VERSION.
 	 */
-	if (OS.isBigSurOrLater ()) {
-		Display.cancelRootMenuTracking ();
-	}
+	Display.cancelRootMenuTracking ();
 }
 
 void setWindowVisible (boolean visible, boolean key) {
@@ -2292,15 +2282,11 @@ void updateParent (boolean visible) {
 				 */
 				if ((style & SWT.ON_TOP) != 0) {
 					window.setLevel(OS.NSStatusWindowLevel);
-				} else if (OS.VERSION >= OS.VERSION(10, 11, 0)) {
+				} else {
 					/*
-					 * Feature in Cocoa on 10.11: Second-level child windows of
-					 * a full-screen window are sometimes shown behind their
-					 * parent window, although they take keyboard focus.
-					 *
-					 * The exact circumstances are unknown. Could only be
-					 * reproduced when the app was launched with the Eclipse
-					 * launcher. This hack is a workaround for
+					 * Feature in Cocoa: Second-level child windows of a full-screen
+					 * window are sometimes shown behind their parent window, although
+					 * they take keyboard focus. This hack is a workaround for
 					 * https://bugs.eclipse.org/478975 .
 					 */
 					Shell parentShell = (Shell) parent;
