@@ -25,7 +25,7 @@ import org.eclipse.swt.internal.win32.*;
  * using the <code>getFontMetrics()</code> method.
  *
  * @see GC#getFontMetrics
- * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/">Sample code and further information</a>
  */
 public final class FontMetrics {
 

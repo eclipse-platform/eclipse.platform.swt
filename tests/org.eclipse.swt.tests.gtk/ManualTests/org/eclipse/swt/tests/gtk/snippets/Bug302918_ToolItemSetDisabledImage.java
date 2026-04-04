@@ -18,7 +18,7 @@ package org.eclipse.swt.tests.gtk.snippets;
  * CoolBar example snippet: create a cool bar
  *
  * For a widget.list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
+ * https://eclipse.dev/eclipse/swt/snippets/
  */
 
 import org.eclipse.swt.SWT;

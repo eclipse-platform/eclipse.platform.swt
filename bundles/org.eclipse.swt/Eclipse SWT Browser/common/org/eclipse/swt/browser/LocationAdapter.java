@@ -27,7 +27,7 @@ package org.eclipse.swt.browser;
  * which accept a lambda expression or a method reference that implements the event consumer.
  * </p>
  *
- * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/">Sample code and further information</a>
  *
  * @since 3.0
  */

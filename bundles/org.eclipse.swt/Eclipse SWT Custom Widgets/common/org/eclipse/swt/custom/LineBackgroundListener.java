@@ -21,7 +21,7 @@ import java.util.*;
  * is to be drawn.
  *
  * @see LineBackgroundEvent
- * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/">Sample code and further information</a>
  */
 @FunctionalInterface
 public interface LineBackgroundListener extends EventListener {

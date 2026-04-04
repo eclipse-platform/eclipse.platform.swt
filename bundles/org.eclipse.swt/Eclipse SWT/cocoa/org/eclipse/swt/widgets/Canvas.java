@@ -38,9 +38,9 @@ import org.eclipse.swt.internal.graphics.*;
  * </p>
  *
  * @see Composite
- * @see <a href="http://www.eclipse.org/swt/snippets/#canvas">Canvas snippets</a>
- * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
- * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/snippets/#canvas">Canvas snippets</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/examples.html">SWT Example: ControlExample</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/">Sample code and further information</a>
  */
 public class Canvas extends Composite {
 	Caret caret;

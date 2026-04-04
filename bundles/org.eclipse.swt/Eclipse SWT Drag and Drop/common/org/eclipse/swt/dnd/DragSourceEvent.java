@@ -20,7 +20,7 @@ import org.eclipse.swt.graphics.*;
  * The DragSourceEvent contains the event information passed in the methods of the DragSourceListener.
  *
  * @see DragSourceListener
- * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/">Sample code and further information</a>
  */
 public class DragSourceEvent extends TypedEvent {
 	/**

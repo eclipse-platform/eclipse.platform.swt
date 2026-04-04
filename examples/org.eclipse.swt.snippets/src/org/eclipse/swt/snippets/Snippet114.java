@@ -17,7 +17,7 @@ package org.eclipse.swt.snippets;
  * Tree example snippet: detect a selection or check event in a tree (SWT.CHECK)
  *
  * For a list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
+ * https://eclipse.dev/eclipse/swt/snippets/
  */
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;

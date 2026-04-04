@@ -21,7 +21,7 @@ import org.eclipse.swt.widgets.*;
  * touch-based gestures that are triggered by the user.
  *
  * @see GestureListener
- * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/">Sample code and further information</a>
  *
  * @since 3.7
  */

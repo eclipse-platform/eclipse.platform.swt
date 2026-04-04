@@ -50,8 +50,8 @@ import org.eclipse.swt.internal.image.*;
  * benefit from using one of the constructors provided by <code>Image</code>, as these
  * are implemented natively.</p>
  *
- * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ImageAnalyzer</a>
- * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/examples.html">SWT Example: ImageAnalyzer</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/">Sample code and further information</a>
  */
 public class ImageLoader {
 

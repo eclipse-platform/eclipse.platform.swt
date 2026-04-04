@@ -12,7 +12,7 @@ For more information about SWT, visit the [official SWT page](https://eclipse.de
 ## Getting Started
 
 SWT comes with platform-specific jar files.
-Download them from https://download.eclipse.org/eclipse/downloads/index.html and add the jar file to your classpath.
+Download them from https://download.eclipse.org/eclipse/downloads and add the jar file to your classpath.
 
 ### Example
 ![Example](example.png)
@@ -96,7 +96,7 @@ https://www.eclipse.org/setups/installer/?url=https://raw.githubusercontent.com/
 
 See the following description for how to contribute a feature or a bug fix to SWT.
 
-- <https://www.eclipse.org/swt/fixbugs.php>
+- https://eclipse.dev/eclipse/swt/
 
 Information regarding source code management, builds, coding standards, and more can be found under the following link.
 
@@ -110,7 +110,7 @@ Also see in the SWT section of the Eclipse FAQ for more background information a
 
 Before your contribution can be accepted by the project, you need to create and electronically sign the Eclipse Foundation Contributor License Agreement (CLA).
 
-- <http://www.eclipse.org/legal/CLA.php>
+- https://www.eclipse.org/legal/eca/
 
 ## Contact
 

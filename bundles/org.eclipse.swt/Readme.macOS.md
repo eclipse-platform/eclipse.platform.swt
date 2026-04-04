@@ -78,7 +78,7 @@ because all is within the same Git repository. It should only break when things 
 the reason why you should run it from within a second workspace with SWT consumed from a target platform. It modifies SWT *in* the same
 Git repo. If SWT is also in the same workspace, you will run into issues once some generation breaks SWT.
 
-More information on how to use the generator is available [here](https://www.eclipse.org/swt/macgen.php). Volunteers wanted to convert
+More information on how to use the generator is available [here](https://eclipse.dev/eclipse/swt/macgen.html). Volunteers wanted to convert
 this information into this readme.
 
 

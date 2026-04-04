@@ -74,9 +74,9 @@ import org.eclipse.swt.internal.image.*;
  * @see Color
  * @see ImageData
  * @see ImageLoader
- * @see <a href="http://www.eclipse.org/swt/snippets/#image">Image snippets</a>
- * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Examples: GraphicsExample, ImageAnalyzer</a>
- * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/snippets/#image">Image snippets</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/examples.html">SWT Examples: GraphicsExample, ImageAnalyzer</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/">Sample code and further information</a>
  */
 public final class Image extends Resource implements Drawable {
 

@@ -17,7 +17,7 @@ package org.eclipse.swt.snippets;
  * Display example snippet: create one repeating timer (every 500 ms)
  *
  * For a list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
+ * https://eclipse.dev/eclipse/swt/snippets/
  */
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;

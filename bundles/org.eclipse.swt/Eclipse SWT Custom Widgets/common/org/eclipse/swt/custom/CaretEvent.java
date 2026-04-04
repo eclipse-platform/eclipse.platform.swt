@@ -19,7 +19,7 @@ import org.eclipse.swt.events.*;
 /**
  * This event is sent when the caret offset changes.
  *
- * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/">Sample code and further information</a>
  *
  * @since 3.5
  */

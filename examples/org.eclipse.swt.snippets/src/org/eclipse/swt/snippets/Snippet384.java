@@ -44,7 +44,7 @@ import org.eclipse.swt.widgets.*;
  * </p>
  * <p>
  * For a complete list of SWT example snippets, visit:
- * <br><a href="http://www.eclipse.org/swt/snippets/">https://www.eclipse.org/swt/snippets/</a>
+ * <br><a href="https://eclipse.dev/eclipse/swt/snippets/">https://www.eclipse.org/swt/snippets/</a>
  * </p>
  */
 public class Snippet384 {

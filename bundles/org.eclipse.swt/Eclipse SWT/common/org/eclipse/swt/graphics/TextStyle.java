@@ -33,8 +33,8 @@ import org.eclipse.swt.*;
  * @see TextLayout
  * @see Font
  * @see Color
- * @see <a href="http://www.eclipse.org/swt/snippets/#textlayout">TextLayout, TextStyle snippets</a>
- * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/snippets/#textlayout">TextLayout, TextStyle snippets</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/">Sample code and further information</a>
  *
  * @since 3.0
  */

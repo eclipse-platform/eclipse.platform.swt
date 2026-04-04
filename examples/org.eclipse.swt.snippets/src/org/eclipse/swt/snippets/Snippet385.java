@@ -25,7 +25,7 @@ import org.eclipse.swt.widgets.*;
  * it uses the Windows-only monitor-specific scaling mode.
  * <p>
  * For a list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
+ * https://eclipse.dev/eclipse/swt/snippets/
  * </p>
  */
 public class Snippet385 {

@@ -21,7 +21,7 @@ package org.eclipse.swt.tests.gtk.snippets;
  * Tree example snippet: Images on the right side of the TreeItem
  *
  * For a widget.list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
+ * https://eclipse.dev/eclipse/swt/snippets/
  *
  * @since 3.2
  */

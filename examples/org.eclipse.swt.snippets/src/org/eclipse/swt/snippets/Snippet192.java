@@ -23,7 +23,7 @@ import org.eclipse.swt.widgets.*;
  * Show a sort indicator in the column header
  *
  * For a list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
+ * https://eclipse.dev/eclipse/swt/snippets/
  *
  * @since 3.2
  */

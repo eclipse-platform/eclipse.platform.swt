@@ -30,8 +30,8 @@ Tips for writing Snippets:
 * If a Snippet is started through SnippetLauncher or SnippetExplorer there is no guarantee a thread started with `setDaemon(true)`
   is stopped immediately when the Snippet ends. At best a Snippet stops all threads on exit.
 * To find the new Snippet easily you should add it to the SWT Snippet website.
-  * Website: https://www.eclipse.org/swt/snippets/
-  * Source: https://git.eclipse.org/c/www.eclipse.org/swt.git/tree/snippets/index.php
+  * Website: https://eclipse.dev/eclipse/swt/snippets/
+  * Source: [Snippets.md](Snippets.md)
 * If appropriate create a preview image for the Snippet. (used by SnippetExplorer and on the Snippet website)
 * The Snippet explanation comment should not be placed above the imports (as many existing Snippets do). Eclipse's organize
   imports feature may place new imports above the comment and therefore hide the explanation when imports are collapsed.

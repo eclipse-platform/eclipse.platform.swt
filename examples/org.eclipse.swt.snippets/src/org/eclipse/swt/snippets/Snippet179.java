@@ -17,7 +17,7 @@ package org.eclipse.swt.snippets;
  * Text example snippet: verify input (format for date)
  *
  * For a list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
+ * https://eclipse.dev/eclipse/swt/snippets/
  */
 import java.util.*;
 

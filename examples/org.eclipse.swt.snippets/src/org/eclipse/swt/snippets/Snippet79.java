@@ -17,7 +17,7 @@ package org.eclipse.swt.snippets;
  * Drag and Drop example snippet: define my own data transfer type
  *
  * For a list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
+ * https://eclipse.dev/eclipse/swt/snippets/
  *
  * @since 3.1
  */

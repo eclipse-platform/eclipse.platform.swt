@@ -17,7 +17,7 @@ package org.eclipse.swt.snippets;
  * GC example snippet: measure a string
  *
  * For a list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
+ * https://eclipse.dev/eclipse/swt/snippets/
  */
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;

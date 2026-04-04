@@ -18,7 +18,7 @@ import org.eclipse.swt.events.*;
 /**
  * This event is sent when a line is about to be drawn.
  *
- * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/">Sample code and further information</a>
  */
 public class LineStyleEvent extends TypedEvent {
 

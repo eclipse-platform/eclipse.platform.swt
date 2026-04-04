@@ -1,5 +1,5 @@
 @rem ***************************************************************************
-@rem Copyright (c) 2000, 2024 IBM Corporation and others.
+@rem Copyright (c) 2000, 2026 IBM Corporation and others.
 @rem
 @rem This program and the accompanying materials
 @rem are made available under the terms of the Eclipse Public License 2.0
@@ -33,7 +33,7 @@ IF "%MSVC_HOME%"=="" CALL :FindVisualStudio "%ProgramFiles(x86)%\Microsoft Visua
 @rem Report
 IF NOT EXIST "%MSVC_HOME%" (
 	CALL :ECHO "WARNING: Microsoft Visual Studio was not found (for edition=%MSVC_EDITION% version=%MSVC_VERSION%)"
-    CALL :ECHO "         Refer steps for SWT Windows native setup: https://www.eclipse.org/swt/swt_win_native.php"
+    CALL :ECHO "         Refer steps for SWT Windows native setup: https://eclipse.dev/eclipse/swt/swt_win_native.html"
 ) ELSE (
 	CALL :ECHO "MSVC_HOME: %MSVC_HOME%"
 )
@@ -85,7 +85,7 @@ WHERE cl
 if %ERRORLEVEL% NEQ 0 (
     CALL :ECHO "ERROR: cl (Microsoft C compiler) not found on path. Please install Microsoft Visual Studio."
     CALL :ECHO "         If already installed, try launching eclipse from the 'Developer Command Prompt for VS'"
-    CALL :ECHO "         Refer steps for SWT Windows native setup: https://www.eclipse.org/swt/swt_win_native.php"
+    CALL :ECHO "         Refer steps for SWT Windows native setup: https://eclipse.dev/eclipse/swt/swt_win_native.html"
     CALL :ECHO "ERROR: exit 1"	
     EXIT 1
 )

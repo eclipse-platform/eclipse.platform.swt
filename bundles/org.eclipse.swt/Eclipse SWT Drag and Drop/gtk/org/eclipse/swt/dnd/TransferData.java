@@ -27,7 +27,7 @@ package org.eclipse.swt.dnd;
  * are implementing a Transfer subclass and you are unable to subclass the
  * ByteArrayTransfer class.</p>
  *
- * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/">Sample code and further information</a>
  */
 public class TransferData {
 	/**

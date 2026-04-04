@@ -29,9 +29,9 @@ import org.eclipse.swt.widgets.*;
  * <dd>HORIZONTAL, VERTICAL, SMOOTH</dd>
  * </dl>
  *
- * @see <a href="http://www.eclipse.org/swt/snippets/#sashform">SashForm snippets</a>
- * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: CustomControlExample</a>
- * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/snippets/#sashform">SashForm snippets</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/examples.html">SWT Example: CustomControlExample</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/">Sample code and further information</a>
  */
 public class SashForm extends Composite {
 

@@ -19,7 +19,7 @@ package org.eclipse.swt.snippets;
  * shell tab order is set to: c1, B7, toolBar1, (c4: no focusable children), c2, L2
  *
  * For a list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
+ * https://eclipse.dev/eclipse/swt/snippets/
  */
 import org.eclipse.swt.*;
 import org.eclipse.swt.layout.*;

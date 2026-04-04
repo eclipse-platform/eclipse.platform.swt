@@ -17,7 +17,7 @@ package org.eclipse.swt.snippets;
  * FormLayout example snippet: use a form layout to hide/show a composite
  *
  * For a list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
+ * https://eclipse.dev/eclipse/swt/snippets/
  *
  * @since 3.5
  */

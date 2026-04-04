@@ -17,10 +17,10 @@ package org.eclipse.swt.snippets;
  * WebKit in a Browser
  *
  * The requirements for using WebKit-based Browsers are described
- * at http://www.eclipse.org/swt/faq.php#howusewebkit
+ * at https://eclipse.dev/eclipse/swt/faq.html#howusewebkit
  *
  * For a list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
+ * https://eclipse.dev/eclipse/swt/snippets/
  *
  * @since 3.7
  */

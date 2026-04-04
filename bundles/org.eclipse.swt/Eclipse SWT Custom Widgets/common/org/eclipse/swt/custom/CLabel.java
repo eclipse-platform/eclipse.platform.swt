@@ -42,8 +42,8 @@ import org.eclipse.swt.widgets.*;
  * shortening algorithm that is implemented in method <code>shortenText()</code>.
  * </p>
  *
- * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: CustomControlExample</a>
- * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/examples.html">SWT Example: CustomControlExample</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/">Sample code and further information</a>
  * @see CLabel#shortenText(GC, String, int)
  */
 public class CLabel extends Canvas {

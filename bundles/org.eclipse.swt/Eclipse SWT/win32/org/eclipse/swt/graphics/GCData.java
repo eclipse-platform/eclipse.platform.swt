@@ -26,7 +26,7 @@ import org.eclipse.swt.internal.win32.*;
  * within the packages provided by SWT. It is not available on all
  * platforms, and should never be called from application code.
  * </p>
- * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/">Sample code and further information</a>
  * @noreference This class is not intended to be referenced by clients
  */
 public final class GCData {

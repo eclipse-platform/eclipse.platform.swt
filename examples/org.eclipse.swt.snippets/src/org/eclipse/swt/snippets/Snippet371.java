@@ -17,7 +17,7 @@ package org.eclipse.swt.snippets;
  * CTabFolder example snippet: demonstration of a multi line CTabFolder
  *
  * For a list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
+ * https://eclipse.dev/eclipse/swt/snippets/
  *
  * @since 4.8
  */

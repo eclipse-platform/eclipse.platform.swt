@@ -28,8 +28,8 @@ import org.eclipse.swt.widgets.*;
  * their associated file extensions in the operating
  * system.
  *
- * @see <a href="http://www.eclipse.org/swt/snippets/#program">Program snippets</a>
- * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/snippets/#program">Program snippets</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/">Sample code and further information</a>
  */
 public final class Program {
 	String name, fullPath, identifier;

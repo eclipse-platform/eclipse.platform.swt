@@ -19,7 +19,7 @@ package org.eclipse.swt.snippets;
  * Tree example snippet: limit selection to items that match a pattern
  *
  * For a list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
+ * https://eclipse.dev/eclipse/swt/snippets/
  */
 
 import static org.eclipse.swt.events.SelectionListener.*;

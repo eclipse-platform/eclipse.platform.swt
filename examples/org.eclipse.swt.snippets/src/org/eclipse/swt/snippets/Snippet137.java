@@ -17,7 +17,7 @@ package org.eclipse.swt.snippets;
  * Browser example snippet: render HTML that includes relative links from memory
  *
  * For a list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
+ * https://eclipse.dev/eclipse/swt/snippets/
  *
  * @since 3.0
  */
@@ -31,9 +31,9 @@ public class Snippet137 {
 public static void main(String [] args) {
 	/* Relative links: use the HTML base tag */
 	String html = "<html><head>"+
-		"<base href=\"http://www.eclipse.org/swt/\" >"+
+		"<base href=\"https://eclipse.dev/eclipse/swt/\" >"+
 		"<title>HTML Test</title></head>"+
-		"<body><a href=\"faq.php\">local link</a></body></html>";
+		"<body><a href=\"faq.html\">local link</a></body></html>";
 
 	Display display = new Display();
 	Shell shell = new Shell(display);

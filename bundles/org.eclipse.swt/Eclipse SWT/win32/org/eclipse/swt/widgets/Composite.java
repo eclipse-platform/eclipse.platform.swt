@@ -46,8 +46,8 @@ import org.eclipse.swt.internal.win32.*;
  * </p>
  *
  * @see Canvas
- * @see <a href="http://www.eclipse.org/swt/snippets/#composite">Composite snippets</a>
- * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/snippets/#composite">Composite snippets</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/">Sample code and further information</a>
  */
 public class Composite extends Scrollable {
 	Layout layout;

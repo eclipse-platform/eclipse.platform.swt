@@ -23,7 +23,7 @@ import org.eclipse.swt.widgets.*;
  * Work in progress in https://bugs.eclipse.org/399786
  * <p>
  * For a list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
+ * https://eclipse.dev/eclipse/swt/snippets/
  */
 public class Snippet367 {
 	private static final String IMAGE_100 = "eclipse16.png";
