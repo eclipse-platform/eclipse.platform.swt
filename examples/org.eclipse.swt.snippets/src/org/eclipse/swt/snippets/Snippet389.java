@@ -37,7 +37,7 @@ import org.eclipse.swt.widgets.*;
  * factor, minimizing native resampling.
  *
  * For a list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
+ * https://eclipse.dev/eclipse/swt/snippets/
  */
 public class Snippet389 {
 

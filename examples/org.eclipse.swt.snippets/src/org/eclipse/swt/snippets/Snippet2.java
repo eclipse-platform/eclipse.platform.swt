@@ -24,7 +24,7 @@ import org.eclipse.swt.widgets.*;
  * Table example snippet: sort a table by column
  *
  * For a list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
+ * https://eclipse.dev/eclipse/swt/snippets/
  *
  * @since 3.2
  */

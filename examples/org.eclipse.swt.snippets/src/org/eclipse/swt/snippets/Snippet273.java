@@ -20,7 +20,7 @@ package org.eclipse.swt.snippets;
  * http://www.eclipse.org/articles/Article-CustomDrawingTableAndTreeItems/customDraw.htm#_example4
  *
  * For a list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
+ * https://eclipse.dev/eclipse/swt/snippets/
  *
  * @since 3.2
  */

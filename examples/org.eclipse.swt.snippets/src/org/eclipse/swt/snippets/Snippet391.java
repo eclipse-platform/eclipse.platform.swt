@@ -21,7 +21,7 @@ package org.eclipse.swt.snippets;
  * a reference box of a specific physical size (in centimeters).
  *
  * For a list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
+ * https://eclipse.dev/eclipse/swt/snippets/
  */
 
 import org.eclipse.swt.*;

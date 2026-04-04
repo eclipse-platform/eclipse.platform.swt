@@ -25,7 +25,7 @@ import org.eclipse.swt.widgets.*;
  * Useful for comparing rendering on different operating systems.
  * <p>
  * For a list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
+ * https://eclipse.dev/eclipse/swt/snippets/
  *
  * @see org.eclipse.swt.graphics.Image#Image(org.eclipse.swt.graphics.Device,
  *      java.io.InputStream)

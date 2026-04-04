@@ -32,7 +32,7 @@ import java.util.*;
  *
  * @see ImageLoader
  * @see ImageLoaderListener
- * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/">Sample code and further information</a>
  */
 
 public class ImageLoaderEvent extends EventObject {

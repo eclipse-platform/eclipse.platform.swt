@@ -18,7 +18,7 @@ package org.eclipse.swt.tests.gtk.snippets;
  * TableEditor example snippet: edit the widget.text of a widget.table item (in place)
  *
  * For a widget.list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
+ * https://eclipse.dev/eclipse/swt/snippets/
  */
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;

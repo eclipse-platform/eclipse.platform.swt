@@ -22,8 +22,8 @@ import org.eclipse.swt.widgets.*;
  * GLCanvas is a widget capable of displaying OpenGL content.
  *
  * @see GLData
- * @see <a href="http://www.eclipse.org/swt/snippets/#opengl">OpenGL snippets</a>
- * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/snippets/#opengl">OpenGL snippets</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/">Sample code and further information</a>
  *
  * @since 3.2
  */

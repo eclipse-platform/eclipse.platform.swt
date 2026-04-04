@@ -36,8 +36,8 @@ import org.eclipse.swt.widgets.*;
  *
  * @since 2.0
  *
- * @see <a href="http://www.eclipse.org/swt/snippets/#tablecursor">TableCursor snippets</a>
- * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/snippets/#tablecursor">TableCursor snippets</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/">Sample code and further information</a>
  */
 public class TableCursor extends Canvas {
 	Table table;

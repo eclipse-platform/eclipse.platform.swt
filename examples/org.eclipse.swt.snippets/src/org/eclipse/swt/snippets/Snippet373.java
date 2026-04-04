@@ -20,7 +20,7 @@ import org.eclipse.swt.events.*;
  * Snippet to display/refresh Monitor DPI dynamically if supported by OS.
  *
  * For a list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
+ * https://eclipse.dev/eclipse/swt/snippets/
  *
  * @since 3.0
  */
@@ -33,7 +33,7 @@ import org.eclipse.swt.widgets.*;
  * Dynamic DPI with restart example snippet Display current monitors zoom
  *
  * For a list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
+ * https://eclipse.dev/eclipse/swt/snippets/
  */
 public class Snippet373 {
 	private static final String IMAGE_100 = "eclipse16.png";

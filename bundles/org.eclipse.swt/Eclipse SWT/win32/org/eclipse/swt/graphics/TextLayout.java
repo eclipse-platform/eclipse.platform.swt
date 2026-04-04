@@ -34,9 +34,9 @@ import org.eclipse.swt.internal.win32.*;
  * when those instances are no longer required.
  * </p>
  *
- * @see <a href="http://www.eclipse.org/swt/snippets/#textlayout">TextLayout, TextStyle snippets</a>
- * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: CustomControlExample, StyledText tab</a>
- * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/snippets/#textlayout">TextLayout, TextStyle snippets</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/examples.html">SWT Example: CustomControlExample, StyledText tab</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/">Sample code and further information</a>
  *
  * @since 3.0
  */

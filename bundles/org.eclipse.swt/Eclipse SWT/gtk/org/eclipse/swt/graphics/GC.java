@@ -56,9 +56,9 @@ import org.eclipse.swt.internal.gtk.*;
  * </p>
  *
  * @see org.eclipse.swt.events.PaintEvent
- * @see <a href="http://www.eclipse.org/swt/snippets/#gc">GC snippets</a>
- * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Examples: GraphicsExample, PaintExample</a>
- * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/snippets/#gc">GC snippets</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/examples.html">SWT Examples: GraphicsExample, PaintExample</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/">Sample code and further information</a>
  */
 public final class GC extends Resource {
 	/**

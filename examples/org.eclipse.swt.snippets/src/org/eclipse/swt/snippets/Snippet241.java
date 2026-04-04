@@ -17,7 +17,7 @@ package org.eclipse.swt.snippets;
  * Text snippet: override Tab behavior to traverse out of a text control
  *
  * For a list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
+ * https://eclipse.dev/eclipse/swt/snippets/
  */
 
 import org.eclipse.swt.*;

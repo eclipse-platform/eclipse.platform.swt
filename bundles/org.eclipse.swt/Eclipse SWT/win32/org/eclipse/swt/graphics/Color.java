@@ -29,9 +29,9 @@ import org.eclipse.swt.*;
  * @see RGB
  * @see RGBA
  * @see Device#getSystemColor
- * @see <a href="http://www.eclipse.org/swt/snippets/#color">Color and RGB snippets</a>
- * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: PaintExample</a>
- * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/snippets/#color">Color and RGB snippets</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/examples.html">SWT Example: PaintExample</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/">Sample code and further information</a>
  */
 public final class Color extends Resource {
 

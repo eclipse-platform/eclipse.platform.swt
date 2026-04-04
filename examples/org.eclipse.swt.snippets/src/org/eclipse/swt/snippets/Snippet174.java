@@ -20,10 +20,10 @@ package org.eclipse.swt.snippets;
  * This snippet requires the experimental org.eclipse.swt.opengl plugin, which
  * is not included in SWT by default and should only be used with versions of
  * SWT prior to 3.2.  For information on using OpenGL in SWT see
- * http://www.eclipse.org/swt/opengl/ .
+ * https://eclipse.dev/eclipse/swt/opengl/ .
  * 
  * For a list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
+ * https://eclipse.dev/eclipse/swt/snippets/
  * 
  * @since 3.2
  */

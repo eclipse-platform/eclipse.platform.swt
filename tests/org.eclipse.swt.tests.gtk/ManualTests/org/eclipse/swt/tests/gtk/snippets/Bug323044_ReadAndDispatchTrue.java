@@ -19,7 +19,7 @@ package org.eclipse.swt.tests.gtk.snippets;
  * UI Automation (for testing tools) snippet: post key events
  *
  * For a widget.list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
+ * https://eclipse.dev/eclipse/swt/snippets/
  * 
  * @since 3.0
  */

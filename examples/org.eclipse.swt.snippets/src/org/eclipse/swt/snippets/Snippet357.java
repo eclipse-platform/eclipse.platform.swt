@@ -4,7 +4,7 @@
  * This Example Content is intended to demonstrate
  * usage of Eclipse technology. It is provided to you under the terms and
  * conditions of the Eclipse Distribution License v1.0 which is available
- * at http://www.eclipse.org/org/documents/edl-v10.php
+ * at https://www.eclipse.org/org/documents/edl-v10
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -16,7 +16,7 @@ package org.eclipse.swt.snippets;
  * set text attributes in a StyledText.
  *
  * For a list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
+ * https://eclipse.dev/eclipse/swt/snippets/
  */
 import org.eclipse.swt.*;
 import org.eclipse.swt.accessibility.*;

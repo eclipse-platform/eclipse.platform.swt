@@ -28,8 +28,8 @@ import org.eclipse.swt.internal.cocoa.*;
  * when those instances are no longer required.
  * </p>
  *
- * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: GraphicsExample</a>
- * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/examples.html">SWT Example: GraphicsExample</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/">Sample code and further information</a>
  */
 public final class Region extends Resource {
 	/**

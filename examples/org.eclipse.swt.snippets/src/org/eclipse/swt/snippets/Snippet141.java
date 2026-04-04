@@ -23,7 +23,7 @@ import org.eclipse.swt.widgets.*;
  * Image example snippet: display an animated GIF
  *
  * For a list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
+ * https://eclipse.dev/eclipse/swt/snippets/
  */
 public class Snippet141 {
 	static Display display;

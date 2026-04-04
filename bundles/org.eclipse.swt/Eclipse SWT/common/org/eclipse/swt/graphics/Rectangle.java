@@ -43,7 +43,7 @@ import org.eclipse.swt.widgets.*;
  * </p>
  *
  * @see Point
- * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/">Sample code and further information</a>
  */
 
 public sealed class Rectangle implements Serializable, Cloneable permits Rectangle.OfFloat {

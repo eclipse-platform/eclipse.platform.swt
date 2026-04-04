@@ -35,7 +35,7 @@ import org.eclipse.swt.graphics.*;
  * </p>
  *
  * @see Display#setSynchronizer
- * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/">Sample code and further information</a>
  */
 public class Synchronizer {
 	Display display;

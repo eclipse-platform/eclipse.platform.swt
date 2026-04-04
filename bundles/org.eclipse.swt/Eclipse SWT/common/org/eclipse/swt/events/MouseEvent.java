@@ -30,7 +30,7 @@ import org.eclipse.swt.widgets.*;
  * @see MouseListener
  * @see MouseMoveListener
  * @see MouseTrackListener
- * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/">Sample code and further information</a>
  */
 
 public class MouseEvent extends TypedEvent {

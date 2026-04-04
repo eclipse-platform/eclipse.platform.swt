@@ -24,7 +24,7 @@ import org.eclipse.swt.widgets.*;
  * Transparent Background example snippet: Set transparent background.
  *
  * For a list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
+ * https://eclipse.dev/eclipse/swt/snippets/
  */
 public class Snippet365 {
 	static Image oldImage;

@@ -21,7 +21,7 @@ import org.eclipse.swt.widgets.Event;
  * a widget such as a menu item being armed.
  *
  * @see ArmListener
- * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/">Sample code and further information</a>
  */
 
 public final class ArmEvent extends TypedEvent {

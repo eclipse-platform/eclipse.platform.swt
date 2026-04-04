@@ -84,8 +84,8 @@ import org.eclipse.swt.internal.win32.*;
  *
  * </code></pre>
  *
- * @see <a href="http://www.eclipse.org/swt/snippets/#ole">OLE and ActiveX snippets</a>
- * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Examples: OLEExample, OleWebBrowser</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/snippets/#ole">OLE and ActiveX snippets</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/examples.html">SWT Examples: OLEExample, OleWebBrowser</a>
  */
 public final class OleAutomation {
 	private IUnknown objIUnknown;

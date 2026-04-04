@@ -17,7 +17,7 @@ package org.eclipse.swt.snippets;
  * Browser: Resize the shell to the fit the html content after it's loaded.
  *
  * For a list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
+ * https://eclipse.dev/eclipse/swt/snippets/
  *
  * @since 4.8
  */

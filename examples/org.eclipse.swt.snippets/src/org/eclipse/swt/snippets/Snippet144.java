@@ -17,7 +17,7 @@ package org.eclipse.swt.snippets;
  * Virtual Table example snippet: create a table with 1,000,000 items (lazy)
  *
  * For a list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
+ * https://eclipse.dev/eclipse/swt/snippets/
  *
  * @since 3.0
  */

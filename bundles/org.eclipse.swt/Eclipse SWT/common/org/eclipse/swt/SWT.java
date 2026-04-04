@@ -37,7 +37,7 @@ import org.eclipse.swt.widgets.*;
  * will not withdraw support for a <em>HINT</em> once it is made available.
  * </p>
  *
- * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/">Sample code and further information</a>
  */
 
 /* NOTE:

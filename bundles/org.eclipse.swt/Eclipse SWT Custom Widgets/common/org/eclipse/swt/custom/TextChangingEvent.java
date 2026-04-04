@@ -20,7 +20,7 @@ import org.eclipse.swt.events.*;
  * This event is sent by the StyledTextContent implementor when a change
  * to the text is about to occur.
  *
- * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/">Sample code and further information</a>
  */
 public class TextChangingEvent extends TypedEvent {
 	/**

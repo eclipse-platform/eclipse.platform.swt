@@ -18,7 +18,7 @@ package org.eclipse.swt.snippets;
  * to a non-focused descriptive area
  *
  * For a list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
+ * https://eclipse.dev/eclipse/swt/snippets/
  *
  * @since 3.6
  */

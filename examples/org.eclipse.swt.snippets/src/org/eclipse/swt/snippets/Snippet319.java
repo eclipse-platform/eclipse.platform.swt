@@ -20,7 +20,7 @@ package org.eclipse.swt.snippets;
  * Note that JRE 1.6 or newer is required on Linux.
  *
  * For a list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
+ * https://eclipse.dev/eclipse/swt/snippets/
  */
 import java.awt.*;
 import java.awt.datatransfer.*;

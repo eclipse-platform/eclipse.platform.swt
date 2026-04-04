@@ -20,7 +20,7 @@ import org.eclipse.swt.*;
  * Mainly motivated by custom drawing behavior in the win32 implementation
  * <p>
  * For a list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
+ * https://eclipse.dev/eclipse/swt/snippets/
  * </p>
  */
 import org.eclipse.swt.layout.*;

@@ -17,7 +17,7 @@ package org.eclipse.swt.snippets;
  * Display example snippet: get the bounds and client area of a display
  *
  * For a list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
+ * https://eclipse.dev/eclipse/swt/snippets/
  */
 import org.eclipse.swt.widgets.*;
 

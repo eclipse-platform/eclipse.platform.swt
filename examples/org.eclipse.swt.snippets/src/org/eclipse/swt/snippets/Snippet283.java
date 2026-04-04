@@ -17,10 +17,10 @@ package org.eclipse.swt.snippets;
  * Table example snippet: Draw left aligned icon, text and selection
  *
  * For more info on custom-drawing TableItem and TreeItem content see
- * http://www.eclipse.org/articles/article.php?file=Article-CustomDrawingTableAndTreeItems/index.html
+ * https://www.eclipse.org/articles/article/?file=Article-CustomDrawingTableAndTreeItems/index.html
  *
  * For a list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
+ * https://eclipse.dev/eclipse/swt/snippets/
  */
 
 import org.eclipse.swt.*;

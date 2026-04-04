@@ -20,7 +20,7 @@ import org.eclipse.swt.layout.RowLayout;
  * example snippet: Hello World
  *
  * For a list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
+ * https://eclipse.dev/eclipse/swt/snippets/
  */
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;

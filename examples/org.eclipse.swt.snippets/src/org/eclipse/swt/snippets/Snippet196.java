@@ -18,7 +18,7 @@ package org.eclipse.swt.snippets;
  * In this case a phone number is used.
  *
  * For a list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
+ * https://eclipse.dev/eclipse/swt/snippets/
  */
 import java.util.regex.*;
 import java.util.regex.Pattern;

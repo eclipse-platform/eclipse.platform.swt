@@ -27,7 +27,7 @@ import org.eclipse.swt.widgets.*;
 * are visible.  It may appear above the current cursor location or below it depending how close you
 * are to the edge of the screen.
 *
-* @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+* @see <a href="https://eclipse.dev/eclipse/swt/">Sample code and further information</a>
 */
 public class PopupList {
 	Shell  shell;

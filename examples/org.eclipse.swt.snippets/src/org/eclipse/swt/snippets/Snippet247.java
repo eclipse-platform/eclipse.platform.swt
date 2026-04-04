@@ -18,7 +18,7 @@ package org.eclipse.swt.snippets;
  * Control example snippet: allow a multi-line text to process the default button
  *
  * For a list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
+ * https://eclipse.dev/eclipse/swt/snippets/
  */
 
 import static org.eclipse.swt.events.SelectionListener.*;

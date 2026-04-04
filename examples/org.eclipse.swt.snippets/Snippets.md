@@ -1,12 +1,12 @@
 # SWT Snippets
 
-Snippets are minimal stand-alone programs that demonstrate specific techniques or functionality.  Often a small example is the easiest way to understand how to use a particular feature. (If you are looking for large examples, like *ControlExample*, see the [SWT Examples](https://www.eclipse.org/swt/examples.php), and if you are programming with JFace, you may find these [JFace Snippets](https://wiki.eclipse.org/index.php/JFaceSnippets) useful).
+Snippets are minimal stand-alone programs that demonstrate specific techniques or functionality.  Often a small example is the easiest way to understand how to use a particular feature. (If you are looking for large examples, like *ControlExample*, see the [SWT Examples](https://eclipse.dev/eclipse/swt/examples.html), and if you are programming with JFace, you may find these [JFace Snippets](https://github.com/eclipse-platform/eclipse.platform.ui/blob/master/docs/JFaceSnippets.md) useful).
 
 Snippets also help isolate problems.  The best way to report an SWT bug is to write your own snippet showing the problem and paste it into the bug report. For a snippet template, see the [Hello World](https://github.com/eclipse-platform/eclipse.platform.swt/tree/master/examples/org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/Snippet1.java) example.
 
 Note that the examples here are often edited for brevity rather than completeness. They are intended to guide the reader towards the correct solution, rather than be finished products.  These snippets are tested against the HEAD stream and may sometimes reference new API or require bug fixes from there.
 
-To run a snippet, simply [import SWT into your Eclipse workspace](https://www.eclipse.org/swt/eclipse.php), create a new Java project that depends on SWT, copy the desired snippet to the clipboard, and paste it into a new snippet class. (If you are using eclipse 3.2 M1 or earlier, you need to create the class using the <i>New Class</i> wizard before pasting; but since 3.2 M1 you can simply select your project and paste, and the class is created for you). Run by selecting the class and then selecting `Run > Run As > Java Application`.
+To run a snippet, simply [import SWT into your Eclipse workspace](https://eclipse.dev/eclipse/swt/eclipse.html), create a new Java project that depends on SWT, copy the desired snippet to the clipboard, and paste it into a new snippet class. (If you are using eclipse 3.2 M1 or earlier, you need to create the class using the <i>New Class</i> wizard before pasting; but since 3.2 M1 you can simply select your project and paste, and the class is created for you). Run by selecting the class and then selecting `Run > Run As > Java Application`.
 
 To contribute a new snippet, [create a snippet contribution as a pull request](https://github.com/eclipse-platform/eclipse.platform.swt/pulls). Thanks in advance for your contribution!
 

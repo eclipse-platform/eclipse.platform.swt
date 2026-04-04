@@ -17,7 +17,7 @@ package org.eclipse.swt.snippets;
  * Browser example snippet: Send custom headers and post data with HTTP requests
  *
  * For a list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
+ * https://eclipse.dev/eclipse/swt/snippets/
  *
  * @since 3.6
  */

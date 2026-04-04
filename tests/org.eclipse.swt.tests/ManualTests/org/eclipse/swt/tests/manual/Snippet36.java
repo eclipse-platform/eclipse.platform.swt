@@ -4,7 +4,7 @@ package org.eclipse.swt.tests.manual;
  * ToolBar example snippet: create a flat tool bar (images)
  *
  * For a list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
+ * https://eclipse.dev/eclipse/swt/snippets/
  */
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;

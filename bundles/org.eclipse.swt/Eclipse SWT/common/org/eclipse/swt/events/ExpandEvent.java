@@ -21,7 +21,7 @@ import org.eclipse.swt.widgets.*;
  * <code>ExpandItem</code>s being expanded or collapsed.
  *
  * @see ExpandListener
- * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/">Sample code and further information</a>
  *
  * @since 3.2
  */

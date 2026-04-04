@@ -18,7 +18,7 @@ import org.eclipse.swt.events.*;
 /**
  * This event is sent after a text change occurs.
  *
- * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/">Sample code and further information</a>
  */
 public final class ExtendedModifyEvent extends TypedEvent {
 	/** start offset of the new text */

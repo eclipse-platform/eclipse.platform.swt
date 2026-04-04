@@ -18,7 +18,7 @@ package org.eclipse.swt.snippets;
  * Shows how to write a more cross-platform multi-window application using Display.getMenuBar().
  *
  * For a list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
+ * https://eclipse.dev/eclipse/swt/snippets/
  *
  * @since 3.7
  */

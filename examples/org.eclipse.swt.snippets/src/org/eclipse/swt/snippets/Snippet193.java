@@ -17,7 +17,7 @@ package org.eclipse.swt.snippets;
  * Tree example snippet: allow user to reorder columns by dragging and programmatically.
  *
  * For a list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
+ * https://eclipse.dev/eclipse/swt/snippets/
  *
  * @since 3.2
  */

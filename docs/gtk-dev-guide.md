@@ -719,7 +719,7 @@ You should consider browsing unstable API more often than stable API. Often you 
 * GTK GitLab Issues: If you think you have come across a bug in GTK, or need some official statement from GTK folks about some functionality. For example: https://gitlab.gnome.org/GNOME/gtk/-/issues
 * Mailing lists: See GTK documentation for mailing list information
 * Stack Overflow: For your broken snippets. Tag things with GTK http://stackoverflow.com/
-* See: http://www.gtk.org/development.php
+* See: https://www.gtk.org/docs/
 
 **GTK source code**
 
@@ -757,7 +757,7 @@ Eclipse has a plugin/perspective called "C/C++ Development Tools" or CDT. This i
 If you are using Fedora Eclipse you can install the CDT using dnf:
   sudo dnf install eclipse-cdt
 
-Alternatively if you are using upstream Eclipse, you can get it from the CDT update site: https://eclipse.org/cdt/downloads.php
+Alternatively if you are using upstream Eclipse, you can get it from the CDT update site: https://github.com/eclipse-cdt/cdt/blob/main/Downloads.md
 
 To get a feel for using CDT:
 * Try a basic hello world C project

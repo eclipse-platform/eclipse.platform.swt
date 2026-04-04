@@ -17,7 +17,7 @@ package org.eclipse.swt.snippets;
  * Shell example snippet: use shell modified state to prompt for save
  *
  * For a list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
+ * https://eclipse.dev/eclipse/swt/snippets/
  *
  * @since 3.5
  */

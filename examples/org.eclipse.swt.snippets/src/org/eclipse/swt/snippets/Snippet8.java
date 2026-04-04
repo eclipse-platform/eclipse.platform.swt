@@ -17,7 +17,7 @@ package org.eclipse.swt.snippets;
  * Tree example snippet: create a tree (lazy)
  *
  * For a list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
+ * https://eclipse.dev/eclipse/swt/snippets/
  */
 import java.io.*;
 

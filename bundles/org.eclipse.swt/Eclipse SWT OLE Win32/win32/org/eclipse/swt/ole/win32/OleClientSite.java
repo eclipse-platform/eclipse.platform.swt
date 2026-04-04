@@ -44,8 +44,8 @@ import org.eclipse.swt.widgets.*;
  *	<dt><b>Events</b> <dd>Dispose, Move, Resize
  * </dl>
  *
- * @see <a href="http://www.eclipse.org/swt/snippets/#ole">OLE and ActiveX snippets</a>
- * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Examples: OLEExample, OleWebBrowser</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/snippets/#ole">OLE and ActiveX snippets</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/examples.html">SWT Examples: OLEExample, OleWebBrowser</a>
  */
 public class OleClientSite extends Composite {
 

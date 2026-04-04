@@ -75,8 +75,8 @@ import org.eclipse.swt.*;
  * </p>
  *
  * @see Shell
- * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
- * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/examples.html">SWT Example: ControlExample</a>
+ * @see <a href="https://eclipse.dev/eclipse/swt/">Sample code and further information</a>
  */
 
 public abstract class Dialog {
