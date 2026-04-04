@@ -55,8 +55,6 @@ public class OS extends C {
 
 	public static final int noErr = 0;
 	public static final int kSystemIconsCreator = ('m' << 24) + ('a' << 16) + ('c' << 8) + 's';
-	public static final int kAlertCautionIcon = ('c'<<24) + ('a'<<16) + ('u'<<8) + 't';
-	public static final int kAlertNoteIcon = ('n'<<24) + ('o'<<16) + ('t'<<8) + 'e';
 	public static final int kAlertStopIcon = ('s'<<24) + ('t'<<16) + ('o'<<8) + 'p';
 	public static final int cmdKey = 1 << 8;
 	public static final int shiftKey = 1 << 9;
@@ -204,29 +202,16 @@ public class OS extends C {
 		OS.objc_msgSend(NSApplication.sharedApplication().id, sel_appAppearanceChanged, isDarkTheme ? 1 : 0);
 	}
 	public static boolean isAppDarkAppearance() {
-		if (OS.VERSION >= OS.VERSION(10, 14, 0)) {
-			NSAppearance currentAppearance = NSAppearance.currentAppearance();
-			if (currentAppearance != null) {
-				return "NSAppearanceNameDarkAqua".equals(currentAppearance.name().getString());
-			}
+		NSAppearance currentAppearance = NSAppearance.currentAppearance();
+		if (currentAppearance != null) {
+			return "NSAppearanceNameDarkAqua".equals(currentAppearance.name().getString());
 		}
 		return false;
 	}
 	public static boolean isSystemDarkAppearance() {
-		if (OS.VERSION >= OS.VERSION(10, 14, 0)) {
-			NSString osxMode = NSUserDefaults.standardUserDefaults ().stringForKey (NSString.stringWith ("AppleInterfaceStyle"));
-			return osxMode != null && "Dark".equals (osxMode.getString ());
-		}
-		return false;
+		NSString osxMode = NSUserDefaults.standardUserDefaults ().stringForKey (NSString.stringWith ("AppleInterfaceStyle"));
+		return osxMode != null && "Dark".equals (osxMode.getString ());
 	}
-	/**
-	 * @return true for macOS BigSur or later, returns false for macOS 10.15 and older
-	 */
-	public static boolean isBigSurOrLater () {
-		// See comment for OS.VERSION for an explanation
-		return OS.VERSION >= OS.VERSION(10, 16, 0);
-	}
-
 /** JNI natives */
 
 /** @method flags=jni */

@@ -465,7 +465,7 @@ void updateText (boolean selected) {
 	double [] foreground = parent.foreground;
 	if (foreground == null) {
 		if (selected) {
-			foreground = OS.isBigSurOrLater() ? display.selectedControlTextColor : display.alternateSelectedControlTextColor;
+			foreground = display.selectedControlTextColor;
 		} else {
 			foreground = parent.defaultForeground().handle;
 		}

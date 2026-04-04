@@ -157,23 +157,11 @@ public int open () {
 	}
 	if (((style & SWT.ICON_INFORMATION) != 0) || ((style & SWT.ICON_WORKING) != 0) || ((style & SWT.ICON_QUESTION) != 0)) {
 		alertType = OS.NSInformationalAlertStyle;
-		if (OS.isBigSurOrLater()) {
-			alert.setIcon(NSImage.imageNamed(OS.NSImageNameInfo));
-		} else {
-			NSImage icon = Display.getSystemImageForID(OS.kAlertNoteIcon);
-			alert.setIcon(icon);
-			icon.release();
-		}
+		alert.setIcon(NSImage.imageNamed(OS.NSImageNameInfo));
 	}
 	if ((style & SWT.ICON_WARNING) != 0) {
 		alertType = OS.NSWarningAlertStyle;
-		if (OS.isBigSurOrLater()) {
-			alert.setIcon(NSImage.imageNamed(OS.NSImageNameCaution));
-		} else {
-			NSImage icon = Display.getSystemImageForID(OS.kAlertCautionIcon);
-			alert.setIcon(icon);
-			icon.release();
-		}
+		alert.setIcon(NSImage.imageNamed(OS.NSImageNameCaution));
 	}
 	alert.setAlertStyle(alertType);
 
