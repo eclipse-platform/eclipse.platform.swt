@@ -11,14 +11,7 @@ on:
 jobs:
     # The job MUST be called `copilot-setup-steps` or it will not be picked up by Copilot.
   copilot-setup-steps:
-    strategy:
-      fail-fast: false
-      matrix:
-        config: 
-          - { os: 'linux' , runner: ubuntu-latest  }
-          - { os: 'macosx', runner: macos-latest   }
-          - { os: 'win32' , runner: windows-latest }
-    runs-on: ${{ matrix.config.runner }}
+    runs-on: ubuntu-latest
     permissions:
       contents: read
     steps:
@@ -26,20 +19,17 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           lfs: false
-
       - name: Set up JDK
         uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
         with:
           java-version: '21'
           distribution: 'temurin'
           cache: 'maven'
-          
       - name: Set up Maven
         uses: stCarolas/setup-maven@12eb41b233df95d49b0c11fc1b5bc8312e5d4ce0 # v5.1
         with:
           maven-version: '3.9.14'
-      - name: Prepare Linux Build
-        if: ${{ matrix.config.os == 'linux' }}
+      - name: Install SWT Linux Build Dependencies
         run: |
           sudo apt-get update -qq 
           sudo apt-get install -qq -y libgtk-3-dev libgtk-4-dev freeglut3-dev webkit2gtk-driver
