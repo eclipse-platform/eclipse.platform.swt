@@ -70,7 +70,7 @@ public class GraphicsExample {
 	Sash hSash, vSash;
 	Canvas canvas;
 	Composite tabControlPanel;
-	ToolItem backItem, dbItem;		// background, double buffer items
+	ToolItem backItem, dbItem,skiaItem;		// background, double buffer, skia items
 	Menu backMenu;					// background menu item
 
 	List<Image> resources;			// stores resources that will be disposed
@@ -205,6 +205,7 @@ void createControls(final Composite parent) {
 void createCanvas(Composite parent) {
 	int style = SWT.NO_BACKGROUND;
 	if (dbItem.getSelection()) style |= SWT.DOUBLE_BUFFERED;
+	if(skiaItem.getSelection()) style |= SWT.SKIA;
 	canvas = new Canvas(parent, style);
 	canvas.addListener(SWT.Paint, event -> {
 		GC gc = event.gc;
@@ -233,7 +234,11 @@ void createCanvas(Composite parent) {
 }
 
 void recreateCanvas() {
-	if (dbItem.getSelection() == ((canvas.getStyle() & SWT.DOUBLE_BUFFERED) != 0)) return;
+	boolean recreate = false;
+	if (dbItem.getSelection() != ((canvas.getStyle() & SWT.DOUBLE_BUFFERED) != 0)) recreate |= true;
+	if (skiaItem.getSelection() != ((canvas.getStyle() & SWT.SKIA) != 0)) recreate |= true;
+	if(recreate == false) return;
+
 	Object data = canvas.getLayoutData();
 	if (canvas != null) canvas.dispose();
 	createCanvas(parent);
@@ -312,6 +317,14 @@ void createToolBar(final Composite parent) {
 	dbItem.setText(getResourceString("DoubleBuffer")); //$NON-NLS-1$
 	dbItem.setImage(loadImage(display, "db.gif")); //$NON-NLS-1$
 	dbItem.addListener(SWT.Selection, event -> setDoubleBuffered(dbItem.getSelection()));
+
+	// skia tool item
+	skiaItem = new ToolItem(toolBar, SWT.CHECK);
+	skiaItem.setText(getResourceString("Skia")); //$NON-NLS-1$
+	skiaItem.setImage(loadImage(display, "db.gif")); //$NON-NLS-1$
+	skiaItem.setSelection(true);
+	skiaItem.addListener(SWT.Selection, event -> setSkia(skiaItem.getSelection()));
+
 }
 
 /**
@@ -592,6 +605,14 @@ public void redraw() {
  */
 public void setDoubleBuffered(boolean doubleBuffered) {
 	dbItem.setSelection(doubleBuffered);
+	recreateCanvas();
+}
+
+/**
+ * Sets whether the canvas is double buffered or not.
+ */
+public void setSkia(boolean skia) {
+	skiaItem.setSelection(skia);
 	recreateCanvas();
 }
 

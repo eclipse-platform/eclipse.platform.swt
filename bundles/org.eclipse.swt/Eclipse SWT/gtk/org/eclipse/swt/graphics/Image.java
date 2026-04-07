@@ -173,6 +173,11 @@ public final class Image extends Resource implements Drawable {
 	 */
 	private int currentDeviceZoom = 100;
 
+	/**
+	 * versions for an image cache
+	 */
+	private int version;
+
 Image(Device device) {
 	super(device);
 	currentDeviceZoom = DPIUtil.getDeviceZoom();
@@ -1676,6 +1681,22 @@ public static void drawAtSize(GC gc, ImageData imageData, int width, int height)
 				0, 0, width, height);
 		imageToDraw.dispose();
 	});
+}
+
+void increaseVersion() {
+	if(this.version == Integer.MAX_VALUE) {
+		this.version = 0;
+	} else {
+		this.version++;
+	}
+}
+
+/**
+ * @noreference This field is not intended to be referenced by clients.
+ * @return The current version of the image, which is incremented each time the image data changes.
+ */
+public ImageVersion getImageVersion() {
+	return new ImageVersion(this.version);
 }
 
 }

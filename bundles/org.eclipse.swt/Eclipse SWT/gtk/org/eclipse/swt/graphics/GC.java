@@ -60,7 +60,7 @@ import org.eclipse.swt.internal.gtk.*;
  * @see <a href="https://eclipse.dev/eclipse/swt/examples.html">SWT Examples: GraphicsExample, PaintExample</a>
  * @see <a href="https://eclipse.dev/eclipse/swt/">Sample code and further information</a>
  */
-public final class GC extends Resource {
+public sealed class GC extends Resource permits GCExtension {
 	/**
 	 * the handle to the OS device context
 	 * (Warning: This field is platform dependent)
@@ -2602,6 +2602,10 @@ void init(Drawable drawable, GCData data, long gdkGC) {
 	if (cairoTransformationMatrix == null) cairoTransformationMatrix = new double[6];
 	Cairo.cairo_get_matrix(data.cairo, cairoTransformationMatrix);
 	clipping = getClipping();
+	if(this.drawable instanceof Image i) {
+		// it is likely that the GC modifies the image, so we increase the verion
+		i.increaseVersion();
+	}
 }
 
 void initCairo() {

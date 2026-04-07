@@ -219,6 +219,14 @@ void destroyHandlesExcept(Set<Integer> zoomLevels) {
 	});
 }
 
+/**
+ * Package-protected for internal use by fragments.
+ * @return the properties of this pattern, which can be used to create a copy of the pattern with the same properties as this pattern
+ */
+PatternProperties getProperties() {
+	return new PatternProperties(image,  baseX1, baseY1, baseX2, baseY2, color1, alpha1, color2, alpha2);
+}
+
 Pattern copy() {
 	if (image != null) {
 		return new Pattern(device, image);
