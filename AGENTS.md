@@ -33,30 +33,32 @@ SWT consists of two main parts:
 ### Build Commands
 ```bash
 # Build the entire project
-mvn clean verify
+mvn clean install
 
 # Build (and include) specific platform native binaries
-mvn clean verify -Dnative=${target.ws}.<os>.<arch>
+mvn clean install '-Dnative=<ws>.<os>.<arch>'
 
 # Skip tests
-mvn clean verify -DskipTests
+mvn clean install -DskipTests
 ```
 
 ### Building native binaries
 
-In this section,
-the placeholder `<os>` has one of the values `macosx`, `linux` or `win32`,
-the placeholder `<ws>` has one of the values `cocoa` (for Mac), `gtk` (for Linux) or `win32` (for Windows),
-the placeholder `<arch>` has one of the values `x86_64`, `aarch64`, `ppc64le` or `riscv64`,
+Run from the repository root, specifying the target platform:
 
-To build only the native binaries, run
-```
-cd binaries/org.eclipse.swt.<ws>.<os>.<arch>
-mvn clean antrun:run@build-native-binaries -Dnative=<ws>.<os>.<arch>
+```bash
+# Windows (x86_64)
+mvn clean install '-Dnative=win32.win32.x86_64' -DskipTests
+
+# Linux (x86_64)
+mvn clean install '-Dnative=gtk.linux.x86_64' -DskipTests
+
+# macOS (x86_64 / aarch64)
+mvn clean install '-Dnative=cocoa.macosx.x86_64' -DskipTests
+mvn clean install '-Dnative=cocoa.macosx.aarch64' -DskipTests
 ```
 
-For Linux, to build only the GTK3 binaries, set the environment variable `GTK_VERSION` to value `3.0`.
-Or to build only the GTK4, set the environment variable `GTK_VERSION` to `4.0`.
+For Linux GTK3-only or GTK4-only builds, set `GTK_VERSION=3.0` or `GTK_VERSION=4.0` in the environment before running.
 
 **CRITICAL**: Files like `os.c`, `os_stats.c`, `os_stats.h` are **auto-generated**. Never edit them directly!
 Instead: modify Java source (e.g., `OS.java`), clean/rebuild the project, then run the native build command above.

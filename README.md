@@ -81,6 +81,22 @@ The `while`-loop processes all GUI related events until the shell is disposed wh
 Before exiting, any claimed GUI resources needs to be freed.
 
 
+## Building Native Binaries
+
+Run from the repository root:
+
+```bash
+# Windows (x86_64)
+mvn clean install '-Dnative=win32.win32.x86_64' -DskipTests
+
+# Linux (x86_64)
+mvn clean install '-Dnative=gtk.linux.x86_64' -DskipTests
+
+# macOS (x86_64 / aarch64)
+mvn clean install '-Dnative=cocoa.macosx.x86_64' -DskipTests
+mvn clean install '-Dnative=cocoa.macosx.aarch64' -DskipTests
+```
+
 # Contributing to SWT
 
 Thanks for your interest in this project.
