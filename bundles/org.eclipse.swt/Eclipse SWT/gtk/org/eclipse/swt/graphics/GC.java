@@ -190,6 +190,18 @@ public GC(Drawable drawable, int style) {
 	init();
 }
 
+private float calculateTransformationScale() {
+	if (currentTransform == null) {
+		return 1.0f;
+	}
+	// this calculates the effective length in x and y
+	// direction without being affected by the rotation
+	// of the transformation
+	float scaleWidth = (float) Math.hypot(currentTransform[0], currentTransform[2]);
+	float scaleHeight = (float) Math.hypot(currentTransform[1], currentTransform[3]);
+	return Math.max(scaleWidth, scaleHeight);
+}
+
 /**
  * Ensure that the style specified is either LEFT_TO_RIGHT <b>or</b> RIGHT_TO_LEFT.
  *
@@ -791,7 +803,12 @@ public void drawImage(Image image, int x, int y) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	drawImage(image, 0, 0, -1, -1, x, y, -1, -1, true);
+	if (currentTransform != null && !isIdentity(currentTransform)) {
+		Rectangle imageBounds = image.getBounds();
+		drawImage(image, x, y, imageBounds.width, imageBounds.height);
+	} else {
+		drawImage(image, 0, 0, -1, -1, x, y, -1, -1, true);
+	}
 }
 
 /**
@@ -886,7 +903,10 @@ public void drawImage(Image image, int destX, int destY, int destWidth, int dest
 	if (image.isDisposed()) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	image.executeOnImageAtSize(imageAtSize -> drawImage(imageAtSize, 0, 0, 0, 0, destX, destY, destWidth, destHeight, false), destWidth, destHeight);
+	float transformationScale = calculateTransformationScale();
+	int scaledWidth = Math.round(destWidth * transformationScale);
+	int scaledHeight = Math.round(destHeight * transformationScale);
+	image.executeOnImageAtSize(imageAtSize -> drawImage(imageAtSize, 0, 0, 0, 0, destX, destY, destWidth, destHeight, false), scaledWidth, scaledHeight);
 }
 
 void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple) {
