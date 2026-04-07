@@ -64,7 +64,7 @@ import org.eclipse.swt.internal.win32.*;
  * @see <a href="https://eclipse.dev/eclipse/swt/examples.html">SWT Examples: GraphicsExample, PaintExample</a>
  * @see <a href="https://eclipse.dev/eclipse/swt/">Sample code and further information</a>
  */
-public final class GC extends Resource {
+public sealed class GC extends Resource permits GCExtension {
 
 	/**
 	 * the handle to the OS device context
@@ -4568,6 +4568,7 @@ private void init(Drawable drawable, GCData data, long hDC, ImageHandle imageHan
 	this.drawable = drawable;
 	this.data = data;
 	handle = hDC;
+
 }
 
 private static int extractZoom(long hDC) {
