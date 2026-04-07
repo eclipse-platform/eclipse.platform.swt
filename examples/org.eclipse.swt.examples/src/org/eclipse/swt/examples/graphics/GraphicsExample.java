@@ -481,6 +481,11 @@ GraphicsTab[] createTabs() {
 		new TransformReuseTab(this),
 		new PathReuseTab(this),
 		new PlasmaTab(this),
+		new BurningSeaTab(this),
+		new CopperBarsTab(this),
+		new FireTab(this),
+		new MoireTab(this),
+		new RasterBarsTab(this),
 	};
 }
 
