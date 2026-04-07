@@ -1688,17 +1688,30 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 				}
 				case OS.CDDS_PREPAINT: {
 					long result = OS.CDRF_DODEFAULT;
-					if (background != -1 || (foreground != -1 && OS.IsWindowEnabled (handle)) || (state & CUSTOM_DRAW_ITEM) != 0) {
+					if (background != -1 || (foreground != -1 && OS.IsWindowEnabled (handle)) || (state & CUSTOM_DRAW_ITEM) != 0 || display.useDarkModeExplorerTheme) {
 						result = OS.CDRF_NOTIFYITEMDRAW;
 					}
 					return new LRESULT (result);
 				}
 				case OS.CDDS_ITEMPREPAINT: {
 					long result = OS.TBCDRF_USECDCOLORS;
-					nmcd.clrBtnFace = getBackgroundPixel (child);
+					int bgPixel = getBackgroundPixel (child);
+					nmcd.clrBtnFace = bgPixel;
+					nmcd.clrBtnHighlight = getDifferentColor (bgPixel);
 					nmcd.clrText = getForegroundPixel (child);
 					OS.MoveMemory (lParam, nmcd, NMTBCUSTOMDRAW.sizeof);
-					if (child != null && child.background != -1) {
+					if (display.useDarkModeExplorerTheme && (nmcd.uItemState & (OS.CDIS_CHECKED | OS.CDIS_HOT)) != 0) {
+						int pixel;
+						if ((nmcd.uItemState & OS.CDIS_CHECKED) != 0) {
+							pixel = getDifferentColor (bgPixel);
+						} else {
+							pixel = getSlightlyDifferentColor (bgPixel);
+						}
+						RECT rect = new RECT (nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
+						OS.SetDCBrushColor (nmcd.hdc, pixel);
+						OS.FillRect (nmcd.hdc, rect, OS.GetStockObject (OS.DC_BRUSH));
+						result |= OS.TBCDRF_NOBACKGROUND;
+					} else if (child != null && child.background != -1) {
 						RECT rect = new RECT (nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
 						OS.SetDCBrushColor (nmcd.hdc, child.background);
 						OS.FillRect (nmcd.hdc, rect, OS.GetStockObject (OS.DC_BRUSH));
