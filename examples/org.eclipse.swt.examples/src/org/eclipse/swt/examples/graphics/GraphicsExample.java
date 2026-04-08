@@ -486,6 +486,11 @@ GraphicsTab[] createTabs() {
 		new FireTab(this),
 		new MoireTab(this),
 		new RasterBarsTab(this),
+		new ExplosionTab(this),
+		new MandelbrotTab(this),
+		new ShadeBobsTab(this),
+		new TwisterTab(this),
+		new WaveTab(this),
 	};
 }
 
