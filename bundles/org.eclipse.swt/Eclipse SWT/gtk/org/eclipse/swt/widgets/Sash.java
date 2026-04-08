@@ -152,9 +152,9 @@ void createHandle(int index) {
 	if (GTK.GTK4) {
 		GTK4.gtk_widget_set_focusable(handle, true);
 		if ((style & SWT.VERTICAL) != 0) {
-			defaultCursor = GDK.gdk_cursor_new_from_name("sb_h_double_arrow", 0);
+			defaultCursor = GDK.gdk_cursor_new_from_name("ew-resize", 0);
 		} else {
-			defaultCursor = GDK.gdk_cursor_new_from_name("sb_v_double_arrow", 0);
+			defaultCursor = GDK.gdk_cursor_new_from_name("ns-resize", 0);
 		}
 	} else {
 		GTK3.gtk_widget_set_has_window(handle, true);
