@@ -29,7 +29,12 @@
 
 static CALLBACK_DATA callbackData[MAX_CALLBACKS];
 static int callbackEnabled = 1;
+#ifdef ATOMIC
+#include <stdatomic.h>
+static _Atomic int callbackEntryCount = 0;
+#else
 static int callbackEntryCount = 0;
+#endif
 static int initialized = 0;
 static jmethodID mid_Throwable_addSuppressed = NULL;
 
@@ -45,9 +50,8 @@ static jmethodID mid_Throwable_addSuppressed = NULL;
 #endif
 
 #ifdef ATOMIC
-#include <libkern/OSAtomic.h>
-#define ATOMIC_INC(value) OSAtomicIncrement32(&value);
-#define ATOMIC_DEC(value) OSAtomicDecrement32(&value);
+#define ATOMIC_INC(value) atomic_fetch_add_explicit(&value, 1, memory_order_relaxed);
+#define ATOMIC_DEC(value) atomic_fetch_sub_explicit(&value, 1, memory_order_relaxed);
 #else
 #define ATOMIC_INC(value) value++;
 #define ATOMIC_DEC(value) value--;
