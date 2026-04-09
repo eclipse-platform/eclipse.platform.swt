@@ -633,15 +633,16 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
 	int[] w = new int[1], h = new int[1];
 	if ((style & SWT.SINGLE) != 0) {
-		long layout;
 		if (GTK.GTK4) {
-			long context = GTK.gtk_widget_get_pango_context(handle);
-			layout = OS.pango_layout_new(context);
+			long ptr = GTK.gtk_entry_buffer_get_text(bufferHandle);
+			long layout = GTK.gtk_widget_create_pango_layout(handle, ptr);
+			OS.pango_layout_get_pixel_size(layout, w, h);
+			OS.g_object_unref(layout);
 		} else {
 			GTK.gtk_widget_realize(handle);
-			layout = GTK3.gtk_entry_get_layout(handle);
+			long layout = GTK3.gtk_entry_get_layout(handle);
+			OS.pango_layout_get_pixel_size(layout, w, h);
 		}
-		OS.pango_layout_get_pixel_size(layout, w, h);
 	} else {
 		byte [] start =  new byte [ITER_SIZEOF], end  =  new byte [ITER_SIZEOF];
 		GTK.gtk_text_buffer_get_bounds (bufferHandle, start, end);
@@ -691,7 +692,7 @@ Rectangle computeTrimInPixels (int x, int y, int width, int height) {
 		trim.x -= tmp.left;
 		trim.y -= tmp.top;
 		trim.width += tmp.left + tmp.right;
-		if (tmp.bottom == 0 && tmp.top == 0) {
+		if (GTK.GTK4 || tmp.bottom == 0 && tmp.top == 0) {
 			Point widthNative = computeNativeSize(handle, trim.width, SWT.DEFAULT, true);
 			trim.height = widthNative.y;
 		} else {
@@ -702,8 +703,14 @@ Rectangle computeTrimInPixels (int x, int y, int width, int height) {
 			gtk_style_context_get_border(context, state, tmp);
 			trim.x -= tmp.left;
 			trim.y -= tmp.top;
-			trim.width += tmp.left + tmp.right;
-			trim.height += tmp.top + tmp.bottom;
+			/*
+			 * In GTK4, computeNativeSize already returns the full natural height and width
+			 * including border, so avoid double-counting it here.
+			 */
+			if (!GTK.GTK4) {
+				trim.width += tmp.left + tmp.right;
+				trim.height += tmp.top + tmp.bottom;
+			}
 		}
 		if (!GTK.GTK4 || ((style & SWT.SEARCH) == 0) ) {
 			GdkRectangle icon_area = new GdkRectangle();
