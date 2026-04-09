@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2026 IBM Corporation and others.
+ * Copyright (c) 2000, 2021 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -149,7 +149,7 @@ public class StyledText extends Canvas {
 	/** False iff the widget is disabled */
 	boolean enabled = true;
 	/** True iff the widget is in the midst of being enabled or disabled */
-	boolean insideUpdateColorsCall;
+	boolean insideSetEnableCall;
 	Clipboard clipboard;
 	int clickCount;
 	int autoScrollDirection = SWT.NULL;	// the direction of autoscrolling (up, down, right, left)
@@ -8278,7 +8278,7 @@ public void setBackground(Color color) {
 	boolean backgroundDisabled = false;
 	if (!this.enabled && color == null) {
 		if (background != null) {
-			Color disabledBg = getDisplay().getSystemColor(SWT.COLOR_WIDGET_DISABLED_FOREGROUND);
+			Color disabledBg = getDisplay().getSystemColor(SWT.COLOR_TEXT_DISABLED_BACKGROUND);
 			if (background.equals(disabledBg)) {
 				return;
 			} else {
@@ -8287,13 +8287,11 @@ public void setBackground(Color color) {
 			}
 		}
 	}
-	customBackground = color != null && !this.insideUpdateColorsCall && !backgroundDisabled;
+	customBackground = color != null && !this.insideSetEnableCall && !backgroundDisabled;
 	background = color;
 	super.setBackground(color);
-	if (content != null) {
-		resetCache(0, content.getLineCount());
-		setCaretLocations();
-	}
+	resetCache(0, content.getLineCount());
+	setCaretLocations();
 	super.redraw();
 }
 /**
@@ -8774,35 +8772,6 @@ public void setDragDetect (boolean dragDetect) {
 	checkWidget ();
 	this.dragDetect = dragDetect;
 }
-
-/**
- * Applies foreground and background colors based on the control's state.
- * Custom foreground and background settings are preserved and not overridden.
- *
- * @param enabled  {@code true} if the control is enabled; {@code false} otherwise
- * @param editable {@code true} if the control is editable; {@code false} otherwise
- *
- */
-private void updateColors(boolean enabled, boolean editable) {
-	this.insideUpdateColorsCall = true;
-	Display display = getDisplay();
-	try {
-		if (enabled && editable) {
-			if (!customBackground) setBackground(display.getSystemColor(SWT.COLOR_LIST_BACKGROUND));
-			if (!customForeground) setForeground(display.getSystemColor(SWT.COLOR_LIST_FOREGROUND));
-		} else if(!enabled) {
-			if (!customBackground) setBackground(display.getSystemColor(SWT.COLOR_WIDGET_DISABLED_FOREGROUND));
-			if (!customForeground) setForeground(display.getSystemColor(SWT.COLOR_DARK_GRAY));
-		} else if(!editable) {
-			if (!customBackground) setBackground(display.getSystemColor(SWT.COLOR_WIDGET_DISABLED_FOREGROUND));
-			if (!customForeground) setForeground(display.getSystemColor(SWT.COLOR_LIST_FOREGROUND));
-		}
-	}
-	finally {
-		this.insideUpdateColorsCall = false;
-	}
-}
-
 /**
  * Sets whether the widget content can be edited.
  *
@@ -8816,13 +8785,28 @@ private void updateColors(boolean enabled, boolean editable) {
 public void setEditable(boolean editable) {
 	checkWidget();
 	this.editable = editable;
-	updateColors(this.enabled, this.editable);
 }
 @Override
 public void setEnabled(boolean enabled) {
 	super.setEnabled(enabled);
+	Display display = getDisplay();
 	this.enabled = enabled;
-	updateColors(this.enabled, this.editable);
+	this.insideSetEnableCall = true;
+	try {
+		if (enabled && editable) {
+			if (!customBackground) setBackground(display.getSystemColor(SWT.COLOR_LIST_BACKGROUND));
+			if (!customForeground) setForeground(display.getSystemColor(SWT.COLOR_LIST_FOREGROUND));
+		} else if(!enabled) {
+			if (!customBackground) setBackground(display.getSystemColor(SWT.COLOR_TEXT_DISABLED_BACKGROUND));
+			if (!customForeground) setForeground(display.getSystemColor(SWT.COLOR_WIDGET_DISABLED_FOREGROUND));
+		} else if(!editable) {
+			if (!customBackground) setBackground(display.getSystemColor(SWT.COLOR_TEXT_DISABLED_BACKGROUND));
+			if (!customForeground) setForeground(display.getSystemColor(SWT.COLOR_LIST_FOREGROUND));
+		}
+	}
+	finally {
+		this.insideSetEnableCall = false;
+	}
 }
 
 @Override
@@ -8889,7 +8873,7 @@ public void setForeground(Color color) {
 	boolean foregroundDisabled = false;
 	if (!this.enabled && color == null) {
 		if (foreground != null) {
-			Color disabledFg = getDisplay().getSystemColor(SWT.COLOR_DARK_GRAY);
+			Color disabledFg = getDisplay().getSystemColor(SWT.COLOR_WIDGET_DISABLED_FOREGROUND);
 			if (foreground.equals(disabledFg)) {
 				return;
 			} else {
@@ -8898,13 +8882,11 @@ public void setForeground(Color color) {
 			}
 		}
 	}
-	customForeground = color != null && !this.insideUpdateColorsCall && !foregroundDisabled;
+	customForeground = color != null && !this.insideSetEnableCall && !foregroundDisabled;
 	foreground = color;
 	super.setForeground(color);
-	if (content != null) {
-		resetCache(0, content.getLineCount());
-		setCaretLocations();
-	}
+	resetCache(0, content.getLineCount());
+	setCaretLocations();
 	super.redraw();
 }
 /**
