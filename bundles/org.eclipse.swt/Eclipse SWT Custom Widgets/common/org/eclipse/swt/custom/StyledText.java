@@ -8794,7 +8794,7 @@ private void updateColors(boolean enabled, boolean editable) {
 			if (!customBackground) setBackground(display.getSystemColor(SWT.COLOR_WIDGET_DISABLED_FOREGROUND));
 			if (!customForeground) setForeground(display.getSystemColor(SWT.COLOR_DARK_GRAY));
 		} else if(!editable) {
-			if (!customBackground) setBackground(display.getSystemColor(SWT.COLOR_WIDGET_DISABLED_FOREGROUND));
+			if (!customBackground) setBackground(display.getSystemColor(SWT.COLOR_TEXT_DISABLED_BACKGROUND));
 			if (!customForeground) setForeground(display.getSystemColor(SWT.COLOR_LIST_FOREGROUND));
 		}
 	}
