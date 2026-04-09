@@ -90,11 +90,3 @@ You need to install the following on your system:
 
 * XCode Command Line Tools (already present in XCode)
 * Java 21 JDK (https://adoptium.net/marketplace/?version=21)
-
-### Building and Testing locally
-
-Import and build the SWT project `bundles/org.eclipse.swt` and `binaries/org.eclipse.swt.cocoa.macosx.${arch}` in Eclipse.
-
-See **Building and Testing locally** in [Readme.md](Readme.md) for further instructions.
-
-Happy development!

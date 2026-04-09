@@ -81,21 +81,19 @@ The `while`-loop processes all GUI related events until the shell is disposed wh
 Before exiting, any claimed GUI resources needs to be freed.
 
 
-## Building Native Binaries
+## Building
 
-Run from the repository root:
-
+To build all SWT artifacts and to run all tests,
+execute at the CLI from the repository root:
 ```bash
-# Windows (x86_64)
-mvn clean install '-Dnative=win32.win32.x86_64' -DskipTests
-
-# Linux (x86_64)
-mvn clean install '-Dnative=gtk.linux.x86_64' -DskipTests
-
-# macOS (x86_64 / aarch64)
-mvn clean install '-Dnative=cocoa.macosx.x86_64' -DskipTests
-mvn clean install '-Dnative=cocoa.macosx.aarch64' -DskipTests
+mvn clean verify
 ```
+To build only the artifacts, without testing, run
+```bash
+mvn clean verify -DskipTests
+```
+
+For instructions on building the native binaries of SWT see the section [Building native binaries](bundles/org.eclipse.swt/Readme.md#building-native-binaries).
 
 # Contributing to SWT
 
