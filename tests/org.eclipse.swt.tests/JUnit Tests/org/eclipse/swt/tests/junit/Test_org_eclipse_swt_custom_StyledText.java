@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2026 IBM Corporation and others.
+ * Copyright (c) 2000, 2025 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -3245,8 +3245,8 @@ public void test_setDoubleClickEnabledZ(){
 @Test
 public void test_setEnabled(){
 	// Get colors
-	Color disabledBg = text.getDisplay().getSystemColor(SWT.COLOR_WIDGET_DISABLED_FOREGROUND);
-	Color disabledFg = text.getDisplay().getSystemColor(SWT.COLOR_DARK_GRAY);
+	Color disabledBg = text.getDisplay().getSystemColor(SWT.COLOR_TEXT_DISABLED_BACKGROUND);
+	Color disabledFg = text.getDisplay().getSystemColor(SWT.COLOR_WIDGET_DISABLED_FOREGROUND);
 	Color enabledBg = text.getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND);
 	Color enabledFg = text.getDisplay().getSystemColor(SWT.COLOR_LIST_FOREGROUND);
 
