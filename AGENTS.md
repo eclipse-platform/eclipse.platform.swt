@@ -33,32 +33,15 @@ SWT consists of two main parts:
 ### Build Commands
 ```bash
 # Build the entire project
-mvn clean install
-
-# Build (and include) specific platform native binaries
-mvn clean install '-Dnative=<ws>.<os>.<arch>'
+mvn clean verify
 
 # Skip tests
-mvn clean install -DskipTests
+mvn clean verify -DskipTests
 ```
 
 ### Building native binaries
 
-Run from the repository root, specifying the target platform:
-
-```bash
-# Windows (x86_64)
-mvn clean install '-Dnative=win32.win32.x86_64' -DskipTests
-
-# Linux (x86_64)
-mvn clean install '-Dnative=gtk.linux.x86_64' -DskipTests
-
-# macOS (x86_64 / aarch64)
-mvn clean install '-Dnative=cocoa.macosx.x86_64' -DskipTests
-mvn clean install '-Dnative=cocoa.macosx.aarch64' -DskipTests
-```
-
-For Linux GTK3-only or GTK4-only builds, set `GTK_VERSION=3.0` or `GTK_VERSION=4.0` in the environment before running.
+See `bundles/org.eclipse.swt/Readme.md#building-native-binaries` for instructions how to build the SWT native binaries.
 
 **CRITICAL**: Files like `os.c`, `os_stats.c`, `os_stats.h` are **auto-generated**. Never edit them directly!
 Instead: modify Java source (e.g., `OS.java`), clean/rebuild the project, then run the native build command above.

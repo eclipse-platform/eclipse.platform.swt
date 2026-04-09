@@ -18,9 +18,3 @@ You need to install the following on your system:
   Either select the components "MSVC C++-x64/x86-Buildtools" and "Windows 10 SDK"
   or the workload "Desktop development with C++" which includes the required components and some more.
 * Java 17 JDK (https://adoptium.net/marketplace/?version=17)
-
-### Building and Testing locally
-
-Import and build the SWT project `bundles/org.eclipse.swt` and `binaries/org.eclipse.swt.win32.win32.${arch}` in Eclipse.
-
-See **Building and Testing locally** in [Readme.md](Readme.md) for further instructions.
