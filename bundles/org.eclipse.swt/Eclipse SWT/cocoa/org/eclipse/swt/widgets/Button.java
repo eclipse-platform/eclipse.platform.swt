@@ -829,7 +829,10 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean resiz
 		}
 
 		NSButton button = (NSButton)view;
-		if (height > heightThreshold) {
+		// Use NSBezelStyleFlexiblePush when a custom font is set or when the height
+		// exceeds the standard button height. NSBezelStylePush assumes the macOS
+		// default font size (13pt) and clips text at larger sizes.
+		if (height > heightThreshold || font != null) {
 			button.setBezelStyle(OS.NSBezelStyleFlexiblePush);
 		} else {
 			button.setBezelStyle(OS.NSBezelStylePush);
@@ -845,9 +848,14 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean resiz
 }
 
 @Override
-void setFont (NSFont font) {
+void setFont (NSFont nsFont) {
 	if (text != null) {
 		((NSButton)view).setAttributedTitle(createString());
+	}
+	if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0 && (style & (SWT.FLAT | SWT.WRAP)) == 0) {
+		// Use NSBezelStyleFlexiblePush when a custom font is set. NSBezelStylePush
+		// assumes the macOS default font size (13pt) and clips text at larger sizes.
+		((NSButton)view).setBezelStyle(font != null ? OS.NSBezelStyleFlexiblePush : OS.NSBezelStylePush);
 	}
 }
 
