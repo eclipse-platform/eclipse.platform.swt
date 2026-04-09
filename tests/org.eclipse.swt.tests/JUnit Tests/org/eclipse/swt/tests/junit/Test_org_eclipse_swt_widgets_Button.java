@@ -28,8 +28,11 @@ import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageGcDrawer;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -582,6 +585,34 @@ public void test_consistency_DragDetect () {
 	tearDown();
 	setUp(SWT.ARROW);
 	consistencyEvent(5, 5, 15, 15, ConsistencyUtility.MOUSE_DRAG);
+}
+
+/**
+ * Test that a push button reports a greater preferred height after its font
+ * size is increased. A button whose font grows larger must compute a
+ * proportionally taller preferred size so that layout managers allocate
+ * sufficient space and the text is not clipped.
+ *
+ * @see <a href="https://github.com/eclipse-platform/eclipse.platform.swt/issues/3085">issue #3085</a>
+ */
+@Test
+public void test_computeSize_largerWithLargeCustomFont() {
+	button.setText("OK");
+	shell.open();
+
+	Point defaultSize = button.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+
+	FontData[] fontData = button.getFont().getFontData();
+	Font largeFont = new Font(button.getDisplay(), fontData[0].getName(), 50, fontData[0].getStyle());
+	try {
+		button.setFont(largeFont);
+		SwtTestUtil.processEvents();
+		Point largeSize = button.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		assertTrue(largeSize.y > defaultSize.y,
+				"Button with 50 pt font should be taller than button with default font");
+	} finally {
+		largeFont.dispose();
+	}
 }
 
 /** Test for Bug 381668 - NPE when disposing radio buttons right before they should gain focus */
