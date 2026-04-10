@@ -594,15 +594,6 @@ public class CTabFolderRenderer {
 		}
 	}
 
-	/*
-	 * Draw the border of the tab
-	 */
-	void drawBorder(GC gc, int[] shape) {
-
-		gc.setForeground(parent.getDisplay().getSystemColor(BORDER1_COLOR));
-		gc.drawPolyline(shape);
-	}
-
 	void drawBody(GC gc, Rectangle bounds, int state) {
 		Point size = new Point(bounds.width, bounds.height);
 		int selectedIndex = parent.selectedIndex;
