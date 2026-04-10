@@ -8290,8 +8290,10 @@ public void setBackground(Color color) {
 	customBackground = color != null && !this.insideSetEnableCall && !backgroundDisabled;
 	background = color;
 	super.setBackground(color);
-	resetCache(0, content.getLineCount());
-	setCaretLocations();
+	if (content != null) {
+		resetCache(0, content.getLineCount());
+		setCaretLocations();
+	}
 	super.redraw();
 }
 /**
@@ -8885,8 +8887,10 @@ public void setForeground(Color color) {
 	customForeground = color != null && !this.insideSetEnableCall && !foregroundDisabled;
 	foreground = color;
 	super.setForeground(color);
-	resetCache(0, content.getLineCount());
-	setCaretLocations();
+	if (content != null) {
+		resetCache(0, content.getLineCount());
+		setCaretLocations();
+	}
 	super.redraw();
 }
 /**
