@@ -1209,13 +1209,6 @@ public class CTabFolderRenderer {
 		boolean single = parent.single;
 		boolean bkSelected = single && selectedIndex != -1;
 		drawBackground(gc, shape, bkSelected);
-		// Fill in parent background for non-rectangular shape
-		Region r = new Region();
-		r.add(new Rectangle(x, y, width + 1, height + 1));
-		r.subtract(shape);
-		gc.setBackground(parent.getParent().getBackground());
-		fillRegion(gc, r);
-		r.dispose();
 
 		// Draw selected tab
 		if (selectedIndex == -1) {
@@ -1302,16 +1295,7 @@ public class CTabFolderRenderer {
 		}
 	}
 
-	void fillRegion(GC gc, Region region) {
-		// NOTE: region passed in to this function will be modified
-		Region clipping = new Region();
-		gc.getClipping(clipping);
-		region.intersect(clipping);
-		gc.setClipping(region);
-		gc.fillRectangle(region.getBounds());
-		gc.setClipping(clipping);
-		clipping.dispose();
-	}
+
 
 	Color getFillColor() {
 		if (fillColor == null) {
