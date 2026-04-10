@@ -4377,7 +4377,6 @@
 	<enum name="NSBezelStylePushDisclosure" swt_gen="true"></enum>
 	<enum name="NSBezelStyleSmallSquare" swt_gen="true"></enum>
 	<enum name="NSBoldFontMask" swt_gen="true"></enum>
-	<enum name="NSBorderlessWindowMask" swt_gen="true"></enum>
 	<enum name="NSBottomTabsBezelBorder" swt_gen="true"></enum>
 	<enum name="NSBoxCustom" swt_gen="true"></enum>
 	<enum name="NSBoxSeparator" swt_gen="true"></enum>
@@ -4389,7 +4388,6 @@
 	<enum name="NSCancelButton" swt_gen="true"></enum>
 	<enum name="NSCarriageReturnCharacter" swt_gen="true"></enum>
 	<enum name="NSClockAndCalendarDatePickerStyle" swt_gen="true"></enum>
-	<enum name="NSClosableWindowMask" swt_gen="true"></enum>
 	<enum name="NSClosePathBezierPathElement" swt_gen="true"></enum>
 	<enum name="NSCommandKeyMask" swt_gen="true"></enum>
 	<enum name="NSCompositeClear" swt_gen="true"></enum>
@@ -4402,7 +4400,6 @@
 	<enum name="NSCurveToBezierPathElement" swt_gen="true"></enum>
 	<enum name="NSDeleteCharacter" swt_gen="true"></enum>
 	<enum name="NSDeviceIndependentModifierFlagsMask" swt_gen="true"></enum>
-	<enum name="NSDocModalWindowMask" swt_gen="true"></enum>
 	<enum name="NSDragOperationCopy" swt_gen="true"></enum>
 	<enum name="NSDragOperationDelete" swt_gen="true"></enum>
 	<enum name="NSDragOperationEvery" swt_gen="true"></enum>
@@ -4425,7 +4422,6 @@
 	<enum name="NSFocusRingTypeNone" swt_gen="true"></enum>
 	<enum name="NSFontPanelAllEffectsModeMask" swt_gen="true"></enum>
 	<enum name="NSFontPanelAllModesMask" swt_gen="true"></enum>
-	<enum name="NSFullScreenWindowMask" swt_gen="true"></enum>
 	<enum name="NSHelpFunctionKey" swt_gen="true"></enum>
 	<enum name="NSHelpKeyMask" swt_gen="true"></enum>
 	<enum name="NSHourMinuteDatePickerElementFlag" swt_gen="true"></enum>
@@ -4459,7 +4455,6 @@
 	<enum name="NSLineBreakByWordWrapping" swt_gen="true"></enum>
 	<enum name="NSLineToBezierPathElement" swt_gen="true"></enum>
 	<enum name="NSMiniControlSize" swt_gen="true"></enum>
-	<enum name="NSMiniaturizableWindowMask" swt_gen="true"></enum>
 	<enum name="NSMiterLineJoinStyle" swt_gen="true"></enum>
 	<enum name="NSMixedState" swt_gen="true"></enum>
 	<enum name="NSMouseEntered" swt_gen="true"></enum>
@@ -4471,7 +4466,6 @@
 	<enum name="NSNoImage" swt_gen="true"></enum>
 	<enum name="NSNoTitle" swt_gen="true"></enum>
 	<enum name="NSNonZeroWindingRule" swt_gen="true"></enum>
-	<enum name="NSNonactivatingPanelMask" swt_gen="true"></enum>
 	<enum name="NSOffState" swt_gen="true"></enum>
 	<enum name="NSOnState" swt_gen="true"></enum>
 	<enum name="NSOpenGLCPSurfaceOrder" swt_gen="true"></enum>
@@ -4495,6 +4489,7 @@
 	<enum name="NSProgressIndicatorPreferredThickness" swt_gen="true"></enum>
 	<enum name="NSRGBColorSpaceModel" swt_gen="true"></enum>
 	<enum name="NSRegularControlSize" swt_gen="true"></enum>
+	<enum name="NSRegularSquareBezelStyle" swt_gen="true"></enum>
 	<enum name="NSResizableWindowMask" swt_gen="true"></enum>
 	<enum name="NSRightMouseDown" swt_gen="true"></enum>
 	<enum name="NSRightMouseDragged" swt_gen="true"></enum>
@@ -4535,7 +4530,6 @@
 	<enum name="NSTextAlignmentRight" swt_gen="true"></enum>
 	<enum name="NSTextFieldAndStepperDatePickerStyle" swt_gen="true"></enum>
 	<enum name="NSTextFieldDatePickerStyle" swt_gen="true"></enum>
-	<enum name="NSTitledWindowMask" swt_gen="true"></enum>
 	<enum name="NSToolbarDisplayModeIconOnly" swt_gen="true"></enum>
 	<enum name="NSTouchPhaseAny" swt_gen="true"></enum>
 	<enum name="NSTouchPhaseBegan" swt_gen="true"></enum>
@@ -4547,7 +4541,6 @@
 	<enum name="NSUnderlineStyleNone" swt_gen="true"></enum>
 	<enum name="NSUnderlineStyleSingle" swt_gen="true"></enum>
 	<enum name="NSUnderlineStyleThick" swt_gen="true"></enum>
-	<enum name="NSUtilityWindowMask" swt_gen="true"></enum>
 	<enum name="NSViewHeightSizable" swt_gen="true"></enum>
 	<enum name="NSViewMaxXMargin" swt_gen="true"></enum>
 	<enum name="NSViewMaxYMargin" swt_gen="true"></enum>
@@ -4560,6 +4553,15 @@
 	<enum name="NSWindowCollectionBehaviorFullScreenAuxiliary" swt_gen="true"></enum>
 	<enum name="NSWindowCollectionBehaviorFullScreenPrimary" swt_gen="true"></enum>
 	<enum name="NSWindowCollectionBehaviorMoveToActiveSpace" swt_gen="true"></enum>
+	<enum name="NSWindowStyleMaskBorderless" swt_gen="true"></enum>
+	<enum name="NSWindowStyleMaskClosable" swt_gen="true"></enum>
+	<enum name="NSWindowStyleMaskDocModalWindow" swt_gen="true"></enum>
+	<enum name="NSWindowStyleMaskFullScreen" swt_gen="true"></enum>
+	<enum name="NSWindowStyleMaskMiniaturizable" swt_gen="true"></enum>
+	<enum name="NSWindowStyleMaskNonactivatingPanel" swt_gen="true"></enum>
+	<enum name="NSWindowStyleMaskResizable" swt_gen="true"></enum>
+	<enum name="NSWindowStyleMaskTitled" swt_gen="true"></enum>
+	<enum name="NSWindowStyleMaskUtilityWindow" swt_gen="true"></enum>
 	<enum name="NSWritingDirectionLeftToRight" swt_gen="true"></enum>
 	<enum name="NSWritingDirectionRightToLeft" swt_gen="true"></enum>
 	<enum name="NSYearMonthDatePickerElementFlag" swt_gen="true"></enum>

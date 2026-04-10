@@ -242,7 +242,7 @@ protected void create(DeviceData deviceData) {
 		}
 		NSRect rect = new NSRect();
 		window = (NSWindow)new NSWindow().alloc();
-		window.initWithContentRect(rect, OS.NSBorderlessWindowMask, OS.NSBackingStoreBuffered, false);
+		window.initWithContentRect(rect, OS.NSWindowStyleMaskBorderless, OS.NSBackingStoreBuffered, false);
 		String className = "SWTPrinterView"; //$NON-NLS-1$
 		if (OS.objc_lookUpClass(className) == 0) {
 			long cls = OS.objc_allocateClassPair(OS.class_NSView, className, 0);

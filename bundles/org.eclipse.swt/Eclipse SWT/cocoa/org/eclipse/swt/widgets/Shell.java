@@ -554,7 +554,7 @@ boolean canBecomeKeyWindow (long id, long sel) {
 			}
 		}
 		long styleMask = window.styleMask();
-		if (styleMask == OS.NSBorderlessWindowMask || (styleMask & (OS.NSNonactivatingPanelMask | OS.NSDocModalWindowMask | OS.NSResizableWindowMask)) != 0) return true;
+		if (styleMask == OS.NSWindowStyleMaskBorderless || (styleMask & (OS.NSWindowStyleMaskNonactivatingPanel | OS.NSWindowStyleMaskDocModalWindow | OS.NSWindowStyleMaskResizable)) != 0) return true;
 	}
 	return super.canBecomeKeyWindow (id, sel);
 }
@@ -653,23 +653,23 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 void createHandle () {
 	state |= HIDDEN;
 	if (window == null && view == null) {
-		int styleMask = OS.NSBorderlessWindowMask;
+		int styleMask = OS.NSWindowStyleMaskBorderless;
 		if ((style & (SWT.TOOL | SWT.SHEET)) != 0) {
 			window = (NSWindow) new SWTPanel().alloc();
 			if ((style & SWT.SHEET) != 0) {
-				styleMask |= OS.NSDocModalWindowMask;
+				styleMask |= OS.NSWindowStyleMaskDocModalWindow;
 			} else {
-				styleMask |= OS.NSUtilityWindowMask | OS.NSNonactivatingPanelMask;
+				styleMask |= OS.NSWindowStyleMaskUtilityWindow | OS.NSWindowStyleMaskNonactivatingPanel;
 			}
 		} else {
 			window = (NSWindow) new SWTWindow().alloc ();
 		}
 		if ((style & SWT.NO_TRIM) == 0) {
-			if ((style & SWT.TITLE) != 0) styleMask |= OS.NSTitledWindowMask;
-			if ((style & SWT.CLOSE) != 0) styleMask |= OS.NSClosableWindowMask;
-			if ((style & SWT.MIN) != 0) styleMask |= OS.NSMiniaturizableWindowMask;
-			if ((style & SWT.MAX) != 0) styleMask |= OS.NSResizableWindowMask;
-			if ((style & SWT.RESIZE) != 0) styleMask |= OS.NSResizableWindowMask;
+			if ((style & SWT.TITLE) != 0) styleMask |= OS.NSWindowStyleMaskTitled;
+			if ((style & SWT.CLOSE) != 0) styleMask |= OS.NSWindowStyleMaskClosable;
+			if ((style & SWT.MIN) != 0) styleMask |= OS.NSWindowStyleMaskMiniaturizable;
+			if ((style & SWT.MAX) != 0) styleMask |= OS.NSWindowStyleMaskResizable;
+			if ((style & SWT.RESIZE) != 0) styleMask |= OS.NSWindowStyleMaskResizable;
 		}
 		NSScreen screen = null;
 		NSScreen primaryScreen = new NSScreen(NSScreen.screens().objectAtIndex(0));
@@ -683,7 +683,7 @@ void createHandle () {
 			window.setMovable(false);
 		}
 		if ((style & SWT.TOOL) != 0) {
-			// Feature in Cocoa: NSPanels that use NSUtilityWindowMask are always promoted to the floating window layer.
+			// Feature in Cocoa: NSPanels that use NSWindowStyleMaskUtilityWindow are always promoted to the floating window layer.
 			// Fix is to call setFloatingPanel:NO, which turns off this behavior.
 			((NSPanel)window).setFloatingPanel(false);
 			// By default, panels hide on deactivation.
@@ -987,7 +987,7 @@ public boolean getFullScreen () {
 
 boolean _getFullScreen () {
 	if ((window.collectionBehavior() & OS.NSWindowCollectionBehaviorFullScreenPrimary) != 0) {
-		return (window.styleMask() & OS.NSFullScreenWindowMask) != 0 ? true : false;
+		return (window.styleMask() & OS.NSWindowStyleMaskFullScreen) != 0 ? true : false;
 	}
 	return fullScreen;
 }
