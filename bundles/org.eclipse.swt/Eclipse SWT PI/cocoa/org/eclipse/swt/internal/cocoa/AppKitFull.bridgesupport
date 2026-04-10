@@ -2547,6 +2547,15 @@
 <enum name='NSWindowSharingNone' value='0'/>
 <enum name='NSWindowSharingReadOnly' value='1'/>
 <enum name='NSWindowSharingReadWrite' value='2'/>
+<enum name='NSWindowStyleMaskBorderless' value='0'/>
+<enum name='NSWindowStyleMaskClosable' value='2'/>
+<enum name='NSWindowStyleMaskDocModalWindow' value='64'/>
+<enum name='NSWindowStyleMaskFullScreen' value='16384'/>
+<enum name='NSWindowStyleMaskMiniaturizable' value='4'/>
+<enum name='NSWindowStyleMaskNonactivatingPanel' value='128'/>
+<enum name='NSWindowStyleMaskResizable' value='8'/>
+<enum name='NSWindowStyleMaskTitled' value='1'/>
+<enum name='NSWindowStyleMaskUtilityWindow' value='16'/>
 <enum name='NSWindowTitleHidden' value='1'/>
 <enum name='NSWindowTitleVisible' value='0'/>
 <enum name='NSWindowToolbarButton' value='3'/>

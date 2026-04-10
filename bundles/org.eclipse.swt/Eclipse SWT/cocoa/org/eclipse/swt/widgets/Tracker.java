@@ -765,7 +765,7 @@ public boolean open () {
 		NSScreen screen = new NSScreen(screens.objectAtIndex(i));
 		NSRect frame = screen.frame();
 		NSWindow window = (NSWindow)new NSWindow().alloc();
-		window = window.initWithContentRect(frame, OS.NSBorderlessWindowMask, OS.NSBackingStoreBuffered, false);
+		window = window.initWithContentRect(frame, OS.NSWindowStyleMaskBorderless, OS.NSBackingStoreBuffered, false);
 		window.setOpaque(false);
 		window.setLevel(OS.NSStatusWindowLevel);
 		window.setContentView(null);

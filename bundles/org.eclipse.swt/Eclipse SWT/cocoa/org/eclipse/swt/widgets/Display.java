@@ -3359,7 +3359,7 @@ public long internal_new_GC (GCData data) {
 	if (screenWindow == null) {
 		NSWindow window = (NSWindow) new NSWindow ().alloc ();
 		NSRect rect = new NSRect();
-		window = window.initWithContentRect(rect, OS.NSBorderlessWindowMask, OS.NSBackingStoreBuffered, false);
+		window = window.initWithContentRect(rect, OS.NSWindowStyleMaskBorderless, OS.NSBackingStoreBuffered, false);
 		window.setReleasedWhenClosed(false);
 		screenWindow = window;
 	}
