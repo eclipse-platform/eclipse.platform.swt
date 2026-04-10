@@ -201,8 +201,8 @@ void createHandle () {
 	if ((this.style & SWT.DROP_DOWN) != 0) {
 		NSButton buttonWidget = (NSButton)new SWTButton().alloc();
 		buttonWidget.init();
-		buttonWidget.setButtonType(OS.NSMomentaryLightButton);
-		buttonWidget.setBezelStyle(OS.NSRoundedDisclosureBezelStyle);
+		buttonWidget.setButtonType(OS.NSButtonTypeMomentaryLight);
+		buttonWidget.setBezelStyle(OS.NSBezelStylePushDisclosure);
 		buttonWidget.setFocusRingType(OS.NSFocusRingTypeNone);
 		buttonWidget.setTitle(NSString.stringWith(""));
 		buttonWidget.setImagePosition(OS.NSNoImage);

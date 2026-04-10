@@ -614,7 +614,7 @@ void createHandle () {
 		buttonCell = new NSButtonCell (OS.class_createInstance (cls, 0));
 		buttonCell.init ();
 		checkColumn.setDataCell (buttonCell);
-		buttonCell.setButtonType (OS.NSSwitchButton);
+		buttonCell.setButtonType (OS.NSButtonTypeSwitch);
 		buttonCell.setControlSize (OS.NSSmallControlSize);
 		buttonCell.setImagePosition (OS.NSImageOnly);
 		buttonCell.setAllowsMixedState (true);

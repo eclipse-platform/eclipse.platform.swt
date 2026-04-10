@@ -4372,12 +4372,20 @@
 	<enum name="NSBackspaceCharacter" swt_gen="true"></enum>
 	<enum name="NSBevelLineJoinStyle" swt_gen="true"></enum>
 	<enum name="NSBezelBorder" swt_gen="true"></enum>
+	<enum name="NSBezelStyleFlexiblePush" swt_gen="true"></enum>
+	<enum name="NSBezelStylePush" swt_gen="true"></enum>
+	<enum name="NSBezelStylePushDisclosure" swt_gen="true"></enum>
+	<enum name="NSBezelStyleSmallSquare" swt_gen="true"></enum>
 	<enum name="NSBoldFontMask" swt_gen="true"></enum>
 	<enum name="NSBorderlessWindowMask" swt_gen="true"></enum>
 	<enum name="NSBottomTabsBezelBorder" swt_gen="true"></enum>
 	<enum name="NSBoxCustom" swt_gen="true"></enum>
 	<enum name="NSBoxSeparator" swt_gen="true"></enum>
 	<enum name="NSButtLineCapStyle" swt_gen="true"></enum>
+	<enum name="NSButtonTypeMomentaryLight" swt_gen="true"></enum>
+	<enum name="NSButtonTypePushOnPushOff" swt_gen="true"></enum>
+	<enum name="NSButtonTypeRadio" swt_gen="true"></enum>
+	<enum name="NSButtonTypeSwitch" swt_gen="true"></enum>
 	<enum name="NSCancelButton" swt_gen="true"></enum>
 	<enum name="NSCarriageReturnCharacter" swt_gen="true"></enum>
 	<enum name="NSClockAndCalendarDatePickerStyle" swt_gen="true"></enum>
@@ -4454,7 +4462,6 @@
 	<enum name="NSMiniaturizableWindowMask" swt_gen="true"></enum>
 	<enum name="NSMiterLineJoinStyle" swt_gen="true"></enum>
 	<enum name="NSMixedState" swt_gen="true"></enum>
-	<enum name="NSMomentaryLightButton" swt_gen="true"></enum>
 	<enum name="NSMouseEntered" swt_gen="true"></enum>
 	<enum name="NSMouseExited" swt_gen="true"></enum>
 	<enum name="NSMouseMoved" swt_gen="true"></enum>
@@ -4486,19 +4493,14 @@
 	<enum name="NSPrintPanelShowsPageSetupAccessory" swt_gen="true"></enum>
 	<enum name="NSPrintPanelShowsPrintSelection" swt_gen="true"></enum>
 	<enum name="NSProgressIndicatorPreferredThickness" swt_gen="true"></enum>
-	<enum name="NSPushOnPushOffButton" swt_gen="true"></enum>
 	<enum name="NSRGBColorSpaceModel" swt_gen="true"></enum>
-	<enum name="NSRadioButton" swt_gen="true"></enum>
 	<enum name="NSRegularControlSize" swt_gen="true"></enum>
-	<enum name="NSRegularSquareBezelStyle" swt_gen="true"></enum>
 	<enum name="NSResizableWindowMask" swt_gen="true"></enum>
 	<enum name="NSRightMouseDown" swt_gen="true"></enum>
 	<enum name="NSRightMouseDragged" swt_gen="true"></enum>
 	<enum name="NSRightMouseUp" swt_gen="true"></enum>
 	<enum name="NSRoundLineCapStyle" swt_gen="true"></enum>
 	<enum name="NSRoundLineJoinStyle" swt_gen="true"></enum>
-	<enum name="NSRoundedBezelStyle" swt_gen="true"></enum>
-	<enum name="NSRoundedDisclosureBezelStyle" swt_gen="true"></enum>
 	<enum name="NSScaleNone" swt_gen="true"></enum>
 	<enum name="NSScrollElasticityNone" swt_gen="true"></enum>
 	<enum name="NSScrollWheel" swt_gen="true"></enum>
@@ -4510,14 +4512,12 @@
 	<enum name="NSScrollerKnobSlot" swt_gen="true"></enum>
 	<enum name="NSScrollerStyleLegacy" swt_gen="true"></enum>
 	<enum name="NSScrollerStyleOverlay" swt_gen="true"></enum>
-	<enum name="NSShadowlessSquareBezelStyle" swt_gen="true"></enum>
 	<enum name="NSShiftKeyMask" swt_gen="true"></enum>
 	<enum name="NSSmallControlSize" swt_gen="true"></enum>
 	<enum name="NSSquareLineCapStyle" swt_gen="true"></enum>
 	<enum name="NSStatusWindowLevel" swt_gen="true"></enum>
 	<enum name="NSStringDrawingUsesLineFragmentOrigin" swt_gen="true"></enum>
 	<enum name="NSSubmenuWindowLevel" swt_gen="true"></enum>
-	<enum name="NSSwitchButton" swt_gen="true"></enum>
 	<enum name="NSSystemDefined" swt_gen="true"></enum>
 	<enum name="NSTabCharacter" swt_gen="true"></enum>
 	<enum name="NSTableColumnNoResizing" swt_gen="true"></enum>
