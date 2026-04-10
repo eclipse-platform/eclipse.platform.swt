@@ -17,6 +17,9 @@ package org.eclipse.swt.tests.junit;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -25,7 +28,9 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -726,6 +731,212 @@ private Rectangle getBoundsInShell(Widget control) {
 		bounds.y += absParentBound.y;
 	}
 	return bounds;
+}
+
+@Test
+public void test_setTabPosition_invalidArgument() {
+	makeCleanEnvironment();
+	assertThrows(IllegalArgumentException.class, () -> ctabFolder.setTabPosition(SWT.LEFT));
+}
+
+@Test
+public void test_setTabHeight_invalidArgument() {
+	makeCleanEnvironment();
+	assertThrows(IllegalArgumentException.class, () -> ctabFolder.setTabHeight(-2));
+}
+
+@Test
+public void test_setSingle_onlySelectedTabShowing() {
+	createTabFolder(null, 5);
+	shell.setSize(800, 400);
+	SwtTestUtil.openShell(shell);
+	processEvents();
+
+	ctabFolder.setSingle(true);
+	processEvents();
+
+	// in single mode, only the selected tab should be showing
+	int selectedIdx = ctabFolder.getSelectionIndex();
+	for (int i = 0; i < ctabFolder.getItemCount(); i++) {
+		if (i == selectedIdx) {
+			assertTrue(ctabFolder.getItem(i).isShowing(),
+					"Selected tab at index " + i + " should be showing in single mode");
+		}
+	}
+}
+
+@Test
+public void test_getSelection_empty() {
+	makeCleanEnvironment();
+	assertNull(ctabFolder.getSelection());
+	assertEquals(-1, ctabFolder.getSelectionIndex());
+}
+
+@Test
+public void test_setSelection_outOfRange() {
+	createTabFolder(null, 3);
+	ctabFolder.setSelection(0);
+	assertEquals(0, ctabFolder.getSelectionIndex());
+
+	// out of range should not change selection
+	ctabFolder.setSelection(-1);
+	assertEquals(0, ctabFolder.getSelectionIndex());
+
+	ctabFolder.setSelection(99);
+	assertEquals(0, ctabFolder.getSelectionIndex());
+}
+
+@Test
+public void test_minimized_maximized_mutualExclusion() {
+	makeCleanEnvironment();
+
+	assertFalse(ctabFolder.getMinimized());
+	assertFalse(ctabFolder.getMaximized());
+
+	ctabFolder.setMinimized(true);
+	assertTrue(ctabFolder.getMinimized());
+	assertFalse(ctabFolder.getMaximized());
+
+	// setting maximized should clear minimized
+	ctabFolder.setMaximized(true);
+	assertTrue(ctabFolder.getMaximized());
+	assertFalse(ctabFolder.getMinimized());
+
+	ctabFolder.setMaximized(false);
+	assertFalse(ctabFolder.getMaximized());
+	assertFalse(ctabFolder.getMinimized());
+}
+
+@Test
+public void test_emptyFolder_operationsDontThrow() {
+	makeCleanEnvironment();
+
+	assertEquals(0, ctabFolder.getItemCount());
+	assertNull(ctabFolder.getSelection());
+	assertEquals(-1, ctabFolder.getSelectionIndex());
+
+	assertDoesNotThrow(() -> {
+		ctabFolder.showSelection();
+		ctabFolder.setBorderVisible(true);
+		ctabFolder.setMinimizeVisible(true);
+		ctabFolder.setMaximizeVisible(true);
+		ctabFolder.setSingle(true);
+		ctabFolder.setTabPosition(SWT.BOTTOM);
+	});
+}
+
+@Test
+public void test_emptyFolder_afterDisposingAllItems() {
+	createTabFolder(null, 3);
+	assertEquals(3, ctabFolder.getItemCount());
+	ctabFolder.setSelection(1);
+
+	while (ctabFolder.getItemCount() > 0) {
+		ctabFolder.getItem(0).dispose();
+	}
+
+	assertEquals(0, ctabFolder.getItemCount());
+	assertNull(ctabFolder.getSelection());
+	assertEquals(-1, ctabFolder.getSelectionIndex());
+}
+
+@Test
+public void test_tabOverflow_tabCompression() {
+	createTabFolder(null, 15);
+	shell.setSize(800, 200);
+	SwtTestUtil.openShell(shell);
+	processEvents();
+
+	int[] fullWidths = new int[ctabFolder.getItemCount()];
+	for (int i = 0; i < ctabFolder.getItemCount(); i++) {
+		fullWidths[i] = ctabFolder.getItem(i).getBounds().width;
+	}
+
+	// shrink to force compression
+	shell.setSize(200, 200);
+	processEvents();
+
+	boolean anyCompressed = false;
+	for (int i = 0; i < ctabFolder.getItemCount(); i++) {
+		int w = ctabFolder.getItem(i).getBounds().width;
+		if (w < fullWidths[i] || w == 0) {
+			anyCompressed = true;
+			break;
+		}
+	}
+	assertTrue(anyCompressed, "Some tabs should be compressed when space is tight");
+}
+
+@Test
+public void test_SelectionListener_notFiredProgrammatically() {
+	createTabFolder(null, 3);
+
+	AtomicBoolean selectionFired = new AtomicBoolean(false);
+	AtomicReference<Widget> selectedItem = new AtomicReference<>();
+
+	ctabFolder.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
+		@Override
+		public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
+			selectionFired.set(true);
+			selectedItem.set(e.item);
+		}
+	});
+
+	// programmatic setSelection must NOT fire SelectionListener
+	ctabFolder.setSelection(1);
+	assertFalse(selectionFired.get(), "Programmatic setSelection should not fire SelectionListener");
+
+	// user-initiated selection (via notifyListeners) must fire
+	Event event = new Event();
+	event.item = ctabFolder.getItem(2);
+	ctabFolder.notifyListeners(SWT.Selection, event);
+
+	assertTrue(selectionFired.get(), "SelectionListener should fire on SWT.Selection event");
+	assertEquals(ctabFolder.getItem(2), selectedItem.get());
+}
+
+@Test
+public void test_itemDisposal_selectedItem() {
+	createTabFolder(null, 3);
+	ctabFolder.setSelection(1);
+	assertEquals(1, ctabFolder.getSelectionIndex());
+
+	// disposing the currently selected item must not crash
+	ctabFolder.getItem(1).dispose();
+	assertEquals(2, ctabFolder.getItemCount());
+}
+
+@Test
+public void test_showSelection_makesSelectedVisible() {
+	createTabFolder(null, 20);
+	SwtTestUtil.openShell(shell);
+
+	ctabFolder.setSelection(ctabFolder.getItemCount() - 1);
+	ctabFolder.showSelection();
+	processEvents();
+
+	assertTrue(ctabFolder.getItem(ctabFolder.getSelectionIndex()).isShowing(),
+			"Selected item should be visible after showSelection()");
+}
+
+@Test
+public void test_getItem_byPoint() {
+	createTabFolder(null, 3);
+	shell.setSize(800, 400);
+	SwtTestUtil.openShell(shell);
+	processEvents();
+
+	CTabItem firstItem = ctabFolder.getItem(0);
+	Rectangle bounds = firstItem.getBounds();
+	// point inside the first tab should find it
+	CTabItem found = ctabFolder.getItem(
+			ctabFolder.toControl(ctabFolder.toDisplay(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2)));
+	assertEquals(firstItem, found);
+
+	// point outside any tab should return null
+	CTabItem notFound = ctabFolder.getItem(
+			ctabFolder.toControl(ctabFolder.toDisplay(bounds.x, ctabFolder.getBounds().height + 100)));
+	assertNull(notFound);
 }
 
 }
