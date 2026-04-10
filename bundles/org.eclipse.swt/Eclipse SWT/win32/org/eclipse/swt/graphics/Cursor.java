@@ -316,25 +316,14 @@ public Cursor(Device device, ImageDataProvider imageDataProvider, int hotspotX, 
  *
  * @noreference This method is not intended to be referenced by clients.
  */
-public static Long win32_getHandle (Cursor cursor, int zoom) {
+public static long win32_getHandle (Cursor cursor, int zoom) {
 	if (cursor.isDisposed()) {
 		return 0L;
 	}
-	int zoomWithPointerSizeScaleFactor = (int) (zoom * getPointerSizeScaleFactor());
-	if (cursor.zoomLevelToHandle.get(zoomWithPointerSizeScaleFactor) != null) {
-		return cursor.zoomLevelToHandle.get(zoomWithPointerSizeScaleFactor).getHandle();
-	}
-
-	CursorHandle handle = cursor.cursorHandleProvider.createHandle(cursor.device, zoomWithPointerSizeScaleFactor);
-	cursor.setHandleForZoomLevel(handle, zoomWithPointerSizeScaleFactor);
-
-	return cursor.zoomLevelToHandle.get(zoomWithPointerSizeScaleFactor).getHandle();
-}
-
-private void setHandleForZoomLevel(CursorHandle handle, Integer zoom) {
-	if (zoom != null && !zoomLevelToHandle.containsKey(zoom)) {
-		zoomLevelToHandle.put(zoom, handle);
-	}
+	int scaledZoom = (int) (zoom * getPointerSizeScaleFactor());
+	return cursor.zoomLevelToHandle
+			.computeIfAbsent(scaledZoom, z -> cursor.cursorHandleProvider.createHandle(cursor.device, z))
+			.getHandle();
 }
 
 /**
@@ -389,8 +378,7 @@ void destroy () {
 @Override
 public boolean equals (Object object) {
 	if (object == this) return true;
-	if (!(object instanceof Cursor)) return false;
-	Cursor cursor = (Cursor) object;
+	if (!(object instanceof Cursor cursor)) return false;
 	return device == cursor.device && win32_getHandle(this, DEFAULT_ZOOM) == win32_getHandle(cursor, DEFAULT_ZOOM);
 }
 
@@ -406,7 +394,7 @@ public boolean equals (Object object) {
  */
 @Override
 public int hashCode () {
-	return win32_getHandle(this, DEFAULT_ZOOM).intValue();
+	return (int) win32_getHandle(this, DEFAULT_ZOOM);
 }
 
 /**
@@ -439,7 +427,7 @@ public String toString () {
 @Override
 void destroyHandlesExcept(Set<Integer> zoomLevels) {
 	zoomLevelToHandle.entrySet().removeIf(entry -> {
-		final Integer zoom = entry.getKey();
+		Integer zoom = entry.getKey();
 		if (!zoomLevels.contains(zoom) && zoom != DPIUtil.getZoomForAutoscaleProperty(DEFAULT_ZOOM)) {
 			entry.getValue().destroy();
 			return true;
@@ -492,7 +480,7 @@ private static class CustomCursorHandle extends CursorHandle {
 	}
 }
 
-private static interface CursorHandleProvider {
+private interface CursorHandleProvider {
 	CursorHandle createHandle(Device device, int zoom);
 }
 
@@ -513,7 +501,7 @@ private static class StyleCursorHandleProvider implements CursorHandleProvider {
 		return new CustomCursorHandle(handle);
 	}
 
-	private static final long getOSCursorIdFromStyle(int style) {
+	private static long getOSCursorIdFromStyle(int style) {
 		long lpCursorName = 0;
 		switch (style) {
 		case SWT.CURSOR_HAND:
@@ -663,15 +651,15 @@ private static class ImageDataWithMaskCursorHandleProvider extends ImageDataCurs
 	}
 
 	private void validateMask(ImageData source, ImageData mask) {
-		ImageData testMask = mask == null ? null : (ImageData) mask.clone();
-		if (testMask == null) {
+		ImageData effectiveMask = mask;
+		if (effectiveMask == null) {
 			if (source.getTransparencyType() != SWT.TRANSPARENCY_MASK) {
 				SWT.error(SWT.ERROR_NULL_ARGUMENT);
 			}
-			testMask = source.getTransparencyMask();
+			effectiveMask = source.getTransparencyMask();
 		}
 		/* Check the bounds. Mask must be the same size as source */
-		if (testMask.width != source.width || testMask.height != source.height) {
+		if (effectiveMask.width != source.width || effectiveMask.height != source.height) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		}
 	}
