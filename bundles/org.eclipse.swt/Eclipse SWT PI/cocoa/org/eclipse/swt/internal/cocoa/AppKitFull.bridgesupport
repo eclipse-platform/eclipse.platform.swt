@@ -1309,6 +1309,10 @@
 <enum name='NSBelowTop' value='3'/>
 <enum name='NSBevelLineJoinStyle' value='2'/>
 <enum name='NSBezelBorder' value='2'/>
+<enum name='NSBezelStyleFlexiblePush' value='2'/>
+<enum name='NSBezelStylePush' value='1'/>
+<enum name='NSBezelStylePushDisclosure' value='14'/>
+<enum name='NSBezelStyleSmallSquare' value='6'/>
 <enum name='NSBlueControlTint' value='1'/>
 <enum name='NSBoldFontMask' value='2'/>
 <enum name='NSBorderlessWindowMask' value='0'/>
@@ -1325,6 +1329,10 @@
 <enum name='NSBrowserNoColumnResizing' value='0'/>
 <enum name='NSBrowserUserColumnResizing' value='2'/>
 <enum name='NSButtLineCapStyle' value='0'/>
+<enum name='NSButtonTypeMomentaryLight' value='0'/>
+<enum name='NSButtonTypePushOnPushOff' value='1'/>
+<enum name='NSButtonTypeRadio' value='4'/>
+<enum name='NSButtonTypeSwitch' value='3'/>
 <enum name='NSCMYKColorSpaceModel' value='2'/>
 <enum name='NSCMYKModeColorPanel' value='2'/>
 <enum name='NSCancelButton' value='0'/>
