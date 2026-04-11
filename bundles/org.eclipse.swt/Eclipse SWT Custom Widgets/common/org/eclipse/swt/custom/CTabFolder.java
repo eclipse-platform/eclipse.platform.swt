@@ -1807,6 +1807,13 @@ void onMouseDoubleClick(Event event) {
 		notifyListeners(SWT.DefaultSelection, e);
 	}
 }
+/**
+ * Returns whether the given point (px, py) is contained within the bounds
+ * of the given CTabItem, without allocating a Rectangle object.
+ */
+private static boolean containsPoint(CTabItem item, int px, int py) {
+	return px >= item.x && py >= item.y && px < item.x + item.width && py < item.y + item.height;
+}
 void onMouse(Event event) {
 	if( isDisposed() ) {
 		return;
@@ -1874,16 +1881,16 @@ void onMouse(Event event) {
 			CTabItem item = null;
 			if (single) {
 				if (selectedIndex != -1) {
-					Rectangle bounds = items[selectedIndex].getBounds();
-					if (bounds.contains(x, y)){
-						item = items[selectedIndex];
+					CTabItem selectedItem = items[selectedIndex];
+					if (containsPoint(selectedItem, x, y)){
+						item = selectedItem;
 					}
 				}
 			} else {
 				for (CTabItem tabItem : items) {
-					Rectangle bounds = tabItem.getBounds();
-					if (bounds.contains(x, y)){
+					if (containsPoint(tabItem, x, y)){
 						item = tabItem;
+						break;
 					}
 				}
 			}
@@ -1917,7 +1924,7 @@ void onMouse(Event event) {
 			for (int i=0; i<items.length; i++) {
 				CTabItem item = items[i];
 				close = false;
-				if (item.getBounds().contains(x, y)) {
+				if (containsPoint(item, x, y)) {
 					close = true;
 					if (item.closeRect.contains(x, y)) {
 						if (item.closeImageState != SWT.SELECTED && item.closeImageState != SWT.HOT) {
@@ -1955,16 +1962,16 @@ void onMouse(Event event) {
 			CTabItem item = null;
 			if (single) {
 				if (selectedIndex != -1) {
-					Rectangle bounds = items[selectedIndex].getBounds();
-					if (bounds.contains(x, y)){
-						item = items[selectedIndex];
+					CTabItem selectedItem = items[selectedIndex];
+					if (containsPoint(selectedItem, x, y)){
+						item = selectedItem;
 					}
 				}
 			} else {
 				for (CTabItem tabItem : items) {
-					Rectangle bounds = tabItem.getBounds();
-					if (bounds.contains(x, y)){
+					if (containsPoint(tabItem, x, y)){
 						item = tabItem;
+						break;
 					}
 				}
 			}
