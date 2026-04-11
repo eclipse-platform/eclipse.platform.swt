@@ -491,6 +491,10 @@ GraphicsTab[] createTabs() {
 		new ShadeBobsTab(this),
 		new TwisterTab(this),
 		new WaveTab(this),
+		new DancingTab(this),
+		new BumpMappingTab(this),
+		new FlatTextTab(this),
+		new LensTab(this),
 	};
 }
 
