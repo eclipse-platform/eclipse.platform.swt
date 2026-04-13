@@ -35,6 +35,8 @@ public class CTabFolderRenderer {
 	Color fillColor;
 
 	private Font chevronFont = null;
+	private Region clippingRegion = null;
+	private Region shapeRegion = null;
 
 	static final RGB CLOSE_FILL = new RGB(240, 64, 64);
 
@@ -398,6 +400,16 @@ public class CTabFolderRenderer {
 			chevronFont.dispose();
 			chevronFont = null;
 		}
+
+		if (clippingRegion != null) {
+			clippingRegion.dispose();
+			clippingRegion = null;
+		}
+
+		if (shapeRegion != null) {
+			shapeRegion.dispose();
+			shapeRegion = null;
+		}
 	}
 
 	/**
@@ -499,14 +511,16 @@ public class CTabFolderRenderer {
 	}
 
 	void drawBackground(GC gc, int[] shape, int x, int y, int width, int height, Color defaultBackground, Image image, Color[] colors, int[] percents, boolean vertical) {
-		Region clipping = null, region = null;
+		Region clipping = null;
 		if (shape != null) {
-			clipping = new Region();
+			if (clippingRegion == null) clippingRegion = new Region();
+			if (shapeRegion == null) shapeRegion = new Region();
+			clipping = clippingRegion;
 			gc.getClipping(clipping);
-			region = new Region();
-			region.add(shape);
-			region.intersect(clipping);
-			gc.setClipping(region);
+			shapeRegion.subtract(shapeRegion);
+			shapeRegion.add(shape);
+			shapeRegion.intersect(clipping);
+			gc.setClipping(shapeRegion);
 		}
 		if (image != null) {
 			// draw the background image in shape
@@ -589,8 +603,6 @@ public class CTabFolderRenderer {
 		}
 		if (shape != null) {
 			gc.setClipping(clipping);
-			clipping.dispose();
-			region.dispose();
 		}
 	}
 
