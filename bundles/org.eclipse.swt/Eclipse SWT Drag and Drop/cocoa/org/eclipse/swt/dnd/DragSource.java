@@ -361,7 +361,7 @@ void drag(Event dragDetectEvent) {
 			int width = 20, height = 20;
 			Image newDragImage = new Image(Display.getCurrent(), width, height);
 			GC imageGC = new GC(newDragImage);
-			Color grayColor = new Color(Display.getCurrent(), 50, 50, 50);
+			Color grayColor = new Color(50, 50, 50);
 			imageGC.setForeground(grayColor);
 			imageGC.drawRectangle(0, 0, 19, 19);
 			imageGC.dispose();

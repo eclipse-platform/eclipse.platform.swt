@@ -96,7 +96,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceIII() {
 }
 
 @Test
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "deprecation"})
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceIII_with_device() {
 	// Test new Color(Device device, int red, int green, int blue)
 	// IllegalArgumentException if the red, green or blue argument is not between 0 and 255
@@ -203,7 +203,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 }
 
 @Test
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "deprecation"})
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_RGB_with_device() {
 	// Test new Color(Device device, RGB rgb)
 	// IllegalArgumentException if the red, green or blue argument is not between 0 and 255; or rgb is null
@@ -307,7 +307,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 }
 
 @Test
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "deprecation"})
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_RGBA_with_device() {
 	// Test new Color(Device device, RGBA rgba)
 	// IllegalArgumentException if the red, green, blue or alpha argument is not between 0 and 255; or rgba is null
@@ -400,6 +400,7 @@ public void test_equalsLjava_lang_Object() {
 }
 
 @Test
+@SuppressWarnings("deprecation")
 public void test_equalsLjava_lang_Object_with_device() {
 	Color color = new Color(display, 1, 2, 3);
 	Color sameColor = new Color(display, 1, 2, 3);
@@ -432,6 +433,7 @@ public void test_equalsLjava_lang_Object_with_device() {
 }
 
 @Test
+@SuppressWarnings("deprecation")
 public void test_equalsLjava_lang_Object_mix() {
 	Color color = new Color(display, 1, 2, 3);
 	Color sameColorNoDevice = new Color(1, 2, 3);
@@ -461,6 +463,7 @@ public void test_getBlue() {
 }
 
 @Test
+@SuppressWarnings("deprecation")
 public void test_getBlue_with_device() {
 	// Test Color.getBlue()
 	Color color = new Color(display, 0, 0, 255);
@@ -475,6 +478,7 @@ public void test_getGreen() {
 }
 
 @Test
+@SuppressWarnings("deprecation")
 public void test_getGreen_with_device() {
 	// Test Color.getGreen()
 	Color color = new Color(display, 0, 255, 0);
@@ -489,6 +493,7 @@ public void test_getRGB() {
 }
 
 @Test
+@SuppressWarnings("deprecation")
 public void test_getRGB_with_device() {
 	Color color = new Color(display, 255, 255, 255);
 	assertNotNull(color.getRGB());
@@ -503,6 +508,7 @@ public void test_getRed() {
 }
 
 @Test
+@SuppressWarnings("deprecation")
 public void test_getRed_with_device() {
 	// Test Color.getRed()
 	Color color = new Color(display, 255, 0, 0);
@@ -517,6 +523,7 @@ public void test_getAlpha() {
 }
 
 @Test
+@SuppressWarnings("deprecation")
 public void test_getAlpha_with_device() {
 	// Test Color.getRed()
 	Color color = new Color(display, 255, 0, 0, 0);
@@ -533,6 +540,7 @@ public void test_hashCode() {
 }
 
 @Test
+@SuppressWarnings("deprecation")
 public void test_hashCode_with_device() {
 	Color color = new Color(display, 12, 34, 56, 0);
 	Color otherColor = new Color(display, 12, 34, 56, 0);
@@ -556,6 +564,7 @@ public void test_isDisposed() {
 }
 
 @Test
+@SuppressWarnings("deprecation")
 public void test_isDisposed_with_device() {
 	// Test Color.isDisposed() false
 	Color color = new Color(display, 34, 67, 98, 0);
@@ -574,6 +583,7 @@ public void test_toString() {
 }
 
 @Test
+@SuppressWarnings("deprecation")
 public void test_toString_with_device() {
 	Color color = new Color(display, 0, 0, 255, 255);
 	assertNotNull(color.toString());
@@ -598,6 +608,7 @@ public void test_getDevice() {
 }
 
 @Test
+@SuppressWarnings("deprecation")
 public void test_getDevice_with_device() {
 	Color color = new Color(display, 0, 0, 255, 255);
 	assertEquals(display, color.getDevice());

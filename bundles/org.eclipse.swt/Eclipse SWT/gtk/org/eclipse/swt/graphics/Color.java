@@ -70,7 +70,9 @@ Color(Device device) {
  * </ul>
  *
  * @see #Color(int, int, int) The equivalent constructor not requiring a Device
+ * @deprecated Use {@link #Color(int, int, int)}
  */
+@Deprecated(since="2026-06")
 public Color(Device device, int red, int green, int blue) {
 	super(device);
 	init(red, green, blue, 255);
@@ -115,7 +117,9 @@ public Color(int red, int green, int blue) {
  * @see #Color(int, int, int, int) The equivalent constructor not requiring a Device
  *
  * @since 3.104
+ * @deprecated Use {@link #Color(int, int, int, int)}
  */
+@Deprecated(since="2026-06")
 public Color(Device device, int red, int green, int blue, int alpha) {
 	super(device);
 	init(red, green, blue, alpha);
@@ -157,7 +161,9 @@ public Color(int red, int green, int blue, int alpha) {
  * </ul>
  *
  * @see #Color(RGB) The equivalent constructor not requiring a Device
+ * @deprecated Use {@link #Color(RGB)}
  */
+@Deprecated(since="2026-06")
 public Color(Device device, RGB rgb) {
 	super(device);
 	if (rgb == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -199,7 +205,9 @@ public Color(RGB rgb) {
  * @see #Color(RGBA) The equivalent constructor not requiring a Device
  *
  * @since 3.104
+ * @deprecated Use {@link #Color(RGBA)}
  */
+@Deprecated(since="2026-06")
 public Color(Device device, RGBA rgba) {
 	super(device);
 	if (rgba == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -244,7 +252,9 @@ public Color(RGBA rgba) {
  * @see #Color(RGB, int) The equivalent constructor not requiring a Device
  *
  * @since 3.104
+ * @deprecated Use {@link #Color(RGB, int)}
  */
+@Deprecated(since="2026-06")
 public Color(Device device, RGB rgb, int alpha) {
 	super(device);
 	if (rgb == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
