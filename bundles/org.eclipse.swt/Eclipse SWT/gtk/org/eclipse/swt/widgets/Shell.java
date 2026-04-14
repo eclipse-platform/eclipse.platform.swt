@@ -1656,29 +1656,21 @@ long gtk_focus_out_event (long widget, long event) {
 }
 
 @Override
-long gtk_leave_notify_event (long widget, long event) {
+long gtk3_leave_notify_event (long widget, long event) {
 	if (widget == shellHandle) {
 		if (isCustomResize ()) {
 			int [] state = new int [1];
-			if (GTK.GTK4) {
-				state[0] = GDK.gdk_event_get_modifier_state(event);
-			} else {
-				GDK.gdk_event_get_state(event, state);
-			}
+			GDK.gdk_event_get_state(event, state);
 
 			if ((state[0] & GDK.GDK_BUTTON1_MASK) == 0) {
-				if (GTK.GTK4) {
-					GTK4.gtk_widget_set_cursor (shellHandle, 0);
-				} else {
-					long window = gtk_widget_get_window (shellHandle);
-					GDK.gdk_window_set_cursor (window, 0);
-				}
+				long window = gtk_widget_get_window (shellHandle);
+				GDK.gdk_window_set_cursor (window, 0);
 				display.resizeMode = 0;
 			}
 		}
 		return 0;
 	}
-	return super.gtk_leave_notify_event (widget, event);
+	return super.gtk3_leave_notify_event (widget, event);
 }
 
 @Override

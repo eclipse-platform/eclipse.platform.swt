@@ -4033,7 +4033,7 @@ void gtk4_leave_event(long controller, long event) {
 }
 
 @Override
-long gtk_leave_notify_event (long widget, long event) {
+long gtk3_leave_notify_event (long widget, long event) {
 	if (display.currentControl != this) return 0;
 	int [] state = new int [1];
 	GDK.gdk_event_get_state(event, state);

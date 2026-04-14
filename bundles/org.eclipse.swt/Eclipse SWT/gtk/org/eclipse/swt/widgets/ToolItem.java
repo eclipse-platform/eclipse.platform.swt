@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2025 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -821,8 +821,8 @@ long gtk_focus_out_event (long widget, long event) {
 }
 
 @Override
-long gtk_leave_notify_event (long widget, long event) {
-	parent.gtk_leave_notify_event (widget, event);
+long gtk3_leave_notify_event (long widget, long event) {
+	parent.gtk3_leave_notify_event (widget, event);
 	if (drawHotImage) {
 		drawHotImage = false;
 		if (image != null) {
