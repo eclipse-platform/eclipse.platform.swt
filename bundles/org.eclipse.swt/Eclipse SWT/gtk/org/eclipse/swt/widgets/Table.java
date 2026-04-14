@@ -2149,7 +2149,7 @@ long gtk3_key_press_event (long widget, long event) {
 			// when    : Enter, Shift+Enter, Ctrl+Enter are pressed.
 			// Not when: Alt+Enter, (Meta|Super|Hyper)+Enter, reason is stateMask is not provided on Gtk.
 			// Note: alt+Enter creates a selection on GTK, but we filter it out to be a bit more consitent Win32 (521387)
-			int keymask = gdk_event_get_state (event);
+			int keymask = gdk3_event_get_state (event);
 			if ((keymask & (GDK.GDK_SUPER_MASK | GDK.GDK_META_MASK | GDK.GDK_HYPER_MASK | GDK.GDK_MOD1_MASK)) == 0) {
 				sendTreeDefaultSelection ();
 			}

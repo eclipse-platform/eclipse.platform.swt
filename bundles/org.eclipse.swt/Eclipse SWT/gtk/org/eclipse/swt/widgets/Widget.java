@@ -2369,13 +2369,9 @@ long gdk_event_get_surface_or_window(long event) {
  * @return the keymask to be used with constants like
  *        OS.GDK_SHIFT_MASK / OS.GDK_CONTROL_MASK / OS.GDK_MOD1_MASK etc..
  */
-int gdk_event_get_state (long event) {
+int gdk3_event_get_state (long event) {
 	int [] state = new int[1];
-	if (GTK.GTK4) {
-		state[0] = GDK.gdk_event_get_modifier_state(event);
-	} else {
-		GDK.gdk_event_get_state(event, state);
-	}
+	GDK.gdk_event_get_state(event, state);
 
 	return state[0];
 }
