@@ -35,6 +35,7 @@ import org.junit.platform.suite.api.Suite;
 		Test_org_eclipse_swt_graphics_ImageLoaderEvent.class, //
 		Test_org_eclipse_swt_graphics_PaletteData.class, //
 		Test_org_eclipse_swt_graphics_Path.class, //
+		Test_org_eclipse_swt_graphics_Pattern.class, //
 		Test_org_eclipse_swt_graphics_Point.class, //
 		Test_org_eclipse_swt_graphics_RGB.class, //
 		Test_org_eclipse_swt_graphics_RGBA.class, //
