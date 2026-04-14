@@ -1793,13 +1793,8 @@ long gtk3_key_press_event (long widget, long event) {
 					if (keyval [0] != 0) {
 						int [] key = new int [1];
 						int [] state = new int[1];
-						if (GTK.GTK4) {
-							key[0] = GDK.gdk_key_event_get_keyval(event);
-							state[0] = GDK.gdk_event_get_modifier_state(event);
-						} else {
-							GDK.gdk_event_get_keyval(event, key);
-							GDK.gdk_event_get_state(event, state);
-						}
+						GDK.gdk_event_get_keyval(event, key);
+						GDK.gdk_event_get_state(event, state);
 
 						int mask = GTK.gtk_accelerator_get_default_mod_mask ();
 						if (key[0] == keyval [0] && (state[0] & mask) == (mods [0] & mask)) {

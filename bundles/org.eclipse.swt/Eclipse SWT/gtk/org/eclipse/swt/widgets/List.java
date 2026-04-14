@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2025 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -965,7 +965,7 @@ long gtk3_button_release_event (long widget, long event) {
  * @param event the gtk key press event that was fired.
  */
 void keyPressDefaultSelectionHandler (long event, int key) {
-	int keymask = gdk_event_get_state (event);
+	int keymask = gdk3_event_get_state (event);
 	switch (key) {
 		case GDK.GDK_Return:
 			// Send DefaultSelectionEvent when:
