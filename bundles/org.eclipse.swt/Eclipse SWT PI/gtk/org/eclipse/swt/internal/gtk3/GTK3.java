@@ -704,11 +704,6 @@ public class GTK3 {
 	public static final native void gtk_toolbar_insert(long toolbar, long item, int pos);
 	/**
 	 * @param toolbar cast=(GtkToolbar *)
-	 * @param show_arrow cast=(gboolean)
-	 */
-	public static final native void gtk_toolbar_set_show_arrow(long toolbar, boolean show_arrow);
-	/**
-	 * @param toolbar cast=(GtkToolbar *)
 	 * @param style cast=(GtkToolbarStyle)
 	 */
 	public static final native void gtk_toolbar_set_style(long toolbar, int style);

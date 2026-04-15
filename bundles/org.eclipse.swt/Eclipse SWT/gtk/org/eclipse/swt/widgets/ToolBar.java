@@ -177,23 +177,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
 
-	Point size = null;
-
-	if (GTK.GTK4) {
-		size = computeNativeSize (handle, wHint, hHint, changed);
-	} else {
-		/*
-		 * Feature in GTK. Size of toolbar is calculated incorrectly
-		 * and appears as just the overflow arrow, if the arrow is enabled
-		 * to display. The fix is to disable it before the computation of
-		 * size and enable it if WRAP style is set.
-		 */
-		GTK3.gtk_toolbar_set_show_arrow (handle, false);
-		size = computeNativeSize (handle, wHint, hHint, changed);
-		if ((style & SWT.WRAP) != 0) GTK3.gtk_toolbar_set_show_arrow (handle, true);
-	}
-
-	return size;
+	return computeNativeSize (handle, wHint, hHint, changed);
 }
 
 @Override
@@ -609,18 +593,8 @@ void reskinChildren (int flags) {
 
 @Override
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
-	if (!GTK.GTK4) GTK3.gtk_toolbar_set_show_arrow (handle, false);
 	int result = super.setBounds (x, y, width, height, move, resize);
 	if ((result & RESIZED) != 0) relayout ();
-	if ((style & SWT.WRAP) != 0) {
-		if (GTK.GTK4) {
-			/* TODO: GTK4 will require us to implement our own
-			 * overflow menu. May require the use of the "toolbar" style class
-			 * applied to the widget.  */
-		} else {
-			GTK3.gtk_toolbar_set_show_arrow (handle, true);
-		}
-	}
 
 	return result;
 }
