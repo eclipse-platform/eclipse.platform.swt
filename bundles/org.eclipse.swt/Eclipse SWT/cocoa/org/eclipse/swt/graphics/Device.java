@@ -594,23 +594,23 @@ public boolean getWarnings () {
  */
 protected void init () {
 	/* Create the standard colors */
-	COLOR_TRANSPARENT = new Color (this, 0xFF,0xFF,0xFF,0);
-	COLOR_BLACK = new Color (this, 0,0,0);
-	COLOR_DARK_RED = new Color (this, 0x80,0,0);
-	COLOR_DARK_GREEN = new Color (this, 0,0x80,0);
-	COLOR_DARK_YELLOW = new Color (this, 0x80,0x80,0);
-	COLOR_DARK_BLUE = new Color (this, 0,0,0x80);
-	COLOR_DARK_MAGENTA = new Color (this, 0x80,0,0x80);
-	COLOR_DARK_CYAN = new Color (this, 0,0x80,0x80);
-	COLOR_GRAY = new Color (this, 0xC0,0xC0,0xC0);
-	COLOR_DARK_GRAY = new Color (this, 0x80,0x80,0x80);
-	COLOR_RED = new Color (this, 0xFF,0,0);
-	COLOR_GREEN = new Color (this, 0,0xFF,0);
-	COLOR_YELLOW = new Color (this, 0xFF,0xFF,0);
-	COLOR_BLUE = new Color (this, 0,0,0xFF);
-	COLOR_MAGENTA = new Color (this, 0xFF,0,0xFF);
-	COLOR_CYAN = new Color (this, 0,0xFF,0xFF);
-	COLOR_WHITE = new Color (this, 0xFF,0xFF,0xFF);
+	COLOR_TRANSPARENT = new Color (0xFF,0xFF,0xFF,0);
+	COLOR_BLACK = new Color (0,0,0);
+	COLOR_DARK_RED = new Color (0x80,0,0);
+	COLOR_DARK_GREEN = new Color (0,0x80,0);
+	COLOR_DARK_YELLOW = new Color (0x80,0x80,0);
+	COLOR_DARK_BLUE = new Color (0,0,0x80);
+	COLOR_DARK_MAGENTA = new Color (0x80,0,0x80);
+	COLOR_DARK_CYAN = new Color (0,0x80,0x80);
+	COLOR_GRAY = new Color (0xC0,0xC0,0xC0);
+	COLOR_DARK_GRAY = new Color (0x80,0x80,0x80);
+	COLOR_RED = new Color (0xFF,0,0);
+	COLOR_GREEN = new Color (0,0xFF,0);
+	COLOR_YELLOW = new Color (0xFF,0xFF,0);
+	COLOR_BLUE = new Color (0,0,0xFF);
+	COLOR_MAGENTA = new Color (0xFF,0,0xFF);
+	COLOR_CYAN = new Color (0,0xFF,0xFF);
+	COLOR_WHITE = new Color (0xFF,0xFF,0xFF);
 
 	paragraphStyle = (NSMutableParagraphStyle)new NSMutableParagraphStyle().alloc().init();
 	paragraphStyle.setAlignment(OS.NSTextAlignmentLeft);

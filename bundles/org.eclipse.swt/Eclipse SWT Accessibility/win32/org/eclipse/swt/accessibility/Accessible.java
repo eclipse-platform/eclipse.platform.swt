@@ -5099,7 +5099,7 @@ public class Accessible {
 			int r = Integer.parseInt(rgbString.substring(open + 1, comma1));
 			int g = Integer.parseInt(rgbString.substring(comma1 + 1, comma2));
 			int b = Integer.parseInt(rgbString.substring(comma2 + 1, close));
-			return new Color(control.getDisplay(), r, g, b);
+			return new Color(r, g, b);
 		} catch (NumberFormatException ex) {}
 		return null;
 	}
