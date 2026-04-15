@@ -962,7 +962,6 @@ public void test_dirtyIndicator_doesNotCloseWithoutCloseEnabled() {
 
 	// The dirty item should still have a closeRect allocated for the bullet
 	CTabItem dirtyItem = ctabFolder.getItem(0);
-	Rectangle closeRect = dirtyItem.getBounds(); // just verify item exists
 
 	int itemCountBefore = ctabFolder.getItemCount();
 	assertEquals(3, itemCountBefore);
