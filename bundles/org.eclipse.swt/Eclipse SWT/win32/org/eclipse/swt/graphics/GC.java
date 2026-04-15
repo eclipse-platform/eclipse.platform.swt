@@ -4858,7 +4858,7 @@ private class SetBackgroundOperation extends ReplaceableOperation  {
 
 	SetBackgroundOperation(Color color) {
 		RGB rgb = color.getRGB();
-		this.color = new Color(color.getDevice(), rgb);
+		this.color = new Color(rgb);
 		registerForDisposal(this.color);
 	}
 
@@ -5207,7 +5207,7 @@ private class SetForegroundOperation extends ReplaceableOperation  {
 
 	SetForegroundOperation(Color color) {
 		RGB rgb = color.getRGB();
-		this.color = new Color(color.getDevice(), rgb);
+		this.color = new Color(rgb);
 		registerForDisposal(this.color);
 	}
 
