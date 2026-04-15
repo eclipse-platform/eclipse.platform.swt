@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2025 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -184,7 +184,6 @@ typedef enum {
 	gtk_1toolbar_1insert_FUNC,
 	gtk_1toolbar_1new_FUNC,
 	gtk_1toolbar_1set_1icon_1size_FUNC,
-	gtk_1toolbar_1set_1show_1arrow_FUNC,
 	gtk_1toolbar_1set_1style_FUNC,
 	gtk_1tree_1view_1column_1cell_1get_1size_FUNC,
 	gtk_1tree_1view_1get_1bin_1window_FUNC,

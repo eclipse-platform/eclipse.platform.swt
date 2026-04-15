@@ -1987,16 +1987,6 @@ JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1toolbar_1set_1icon_1size)
 }
 #endif
 
-#ifndef NO_gtk_1toolbar_1set_1show_1arrow
-JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1toolbar_1set_1show_1arrow)
-	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
-{
-	GTK3_NATIVE_ENTER(env, that, gtk_1toolbar_1set_1show_1arrow_FUNC);
-	gtk_toolbar_set_show_arrow((GtkToolbar *)arg0, (gboolean)arg1);
-	GTK3_NATIVE_EXIT(env, that, gtk_1toolbar_1set_1show_1arrow_FUNC);
-}
-#endif
-
 #ifndef NO_gtk_1toolbar_1set_1style
 JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1toolbar_1set_1style)
 	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
