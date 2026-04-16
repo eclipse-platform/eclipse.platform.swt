@@ -58,8 +58,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.DisabledOnOs;
-import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -395,7 +393,6 @@ public void test_drawImageLorg_eclipse_swt_graphics_ImageIIII() {
 }
 
 @Test
-@DisabledOnOs(OS.MAC)
 public void test_drawImageLorg_eclipse_swt_graphics_ImageIIII_withTransform() throws IOException {
 	Image image = null;
 	try (InputStream is = getClass().getResourceAsStream("collapseall.svg")) {
