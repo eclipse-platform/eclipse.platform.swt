@@ -495,6 +495,12 @@ GraphicsTab[] createTabs() {
 		new BumpMappingTab(this),
 		new FlatTextTab(this),
 		new LensTab(this),
+		new BlockEffectTab(this),
+		new TwirlEffectTab(this),
+		new SineWaveTab(this),
+		new SkyTab(this),
+		new UnlimitedBallsTab(this),
+		new WarpTab(this),
 	};
 }
 
