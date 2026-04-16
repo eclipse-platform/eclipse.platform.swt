@@ -1820,32 +1820,29 @@ long gtk_size_allocate (long widget, long allocation) {
 	 * In GTK4 using gtk_window_get_default_size returns the previously set size even
 	 * if the window is maximized. Due to this it cannot be used when the shell has
 	 * been maximized. To fix this, get the monitor geometry ONLY when the window is
-	 * maximized and use this as the dimensions. Furthermore, the headerBar size needs
-	 * to be taken into account,otherwise some content will be off screen.
-	 *
-	 * While this fix allows the usage of the entire horizontal space, the vertical
-	 * space is more tricky. Under Wayland, getting the work area of the display is
-	 * not possible and not supported. A "hacky" way has been used in GTK4 thus far
-	 * to get the header bar height, which is then subtracted from the display height.
-	 * This gets the height *mostly* correct, but there is about 10 pixels that
-	 * are not used.
-	 *
-	 * This should be revisited at a later time, when the GTK4 port is more mature.
-	 * TODO: Make use of the entire vertical height
+	 * maximized and use this as the dimensions.
 	 */
 	if (GTK.GTK4) {
+		long header = GTK4.gtk_window_get_titlebar(shellHandle);
+		int[] headerNaturalHeight = new int[1];
+		if (header != 0) {
+			GTK4.gtk_widget_measure(header, GTK.GTK_ORIENTATION_VERTICAL, -1, null, headerNaturalHeight, null, null);
+		}
 		if(!GTK4.gtk_window_is_maximized(shellHandle)) {
 			GTK.gtk_window_get_default_size(shellHandle, widthA, heightA);
-		}
-		else {
+			/*
+			 * gtk_window_set_default_size() stores the total GTK window height (which
+			 * includes the header bar). Subtract the header bar height here so that
+			 * resizeBounds() receives the client-area height only, consistent with
+			 * what setBounds() passes.
+			 */
+			if (heightA[0] > 0) {
+				heightA[0] = Math.max(1, heightA[0] - headerNaturalHeight[0]);
+			}
+		} else {
 			long display = GDK.gdk_display_get_default();
 			long monitor = GDK.gdk_display_get_monitor_at_surface(display, paintSurface());
 			GDK.gdk_monitor_get_geometry(monitor, monitorSize);
-			long header = GTK4.gtk_window_get_titlebar(shellHandle);
-			int[] headerNaturalHeight = new int[1];
-			if (header != 0) {
-				GTK4.gtk_widget_measure(header, GTK.GTK_ORIENTATION_VERTICAL, -1, null, headerNaturalHeight, null, null);
-			}
 			widthA[0] = monitorSize.width;
 			heightA[0] = monitorSize.height - headerNaturalHeight[0];
 		}
