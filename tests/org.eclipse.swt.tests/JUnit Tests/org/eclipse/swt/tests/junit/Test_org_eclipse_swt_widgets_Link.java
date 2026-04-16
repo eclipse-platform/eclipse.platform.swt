@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -17,8 +17,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -60,13 +60,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	link.dispose();
 	link = new Link(shell, SWT.BORDER);
 	link.dispose();
-	try {
-		link = new Link(null, 0);
-		fail("No exception thrown for parent == null");
-	}
-	catch (IllegalArgumentException e) {
-		// expected
-	}
+	assertThrows(IllegalArgumentException.class, () -> new Link(null, 0), "No exception thrown for parent == null");
 }
 
 @Test
@@ -82,23 +76,13 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 		}
 	};
 
-	try {
-		link.addSelectionListener(null);
-		fail("No exception thrown for addSelectionListener with null argument");
-	} catch (IllegalArgumentException e) {
-		// expected
-	}
+	assertThrows(IllegalArgumentException.class, () -> link.addSelectionListener(null), "No exception thrown for addSelectionListener with null argument");
 
 	link.addSelectionListener(listener);
 	link.notifyListeners(SWT.Selection, new Event());
 	assertTrue(listenerCalled);
 
-	try {
-		link.removeSelectionListener(null);
-		fail("No exception thrown for removeSelectionListener with null argument");
-	} catch (IllegalArgumentException e) {
-		// expected
-	}
+	assertThrows(IllegalArgumentException.class, () -> link.removeSelectionListener(null), "No exception thrown for removeSelectionListener with null argument");
 	listenerCalled = false;
 	link.removeSelectionListener(listener);
 	link.notifyListeners(SWT.Selection, new Event());
@@ -174,12 +158,7 @@ public void test_setTextLjava_lang_String() {
 		link.setText(text);
 		assertEquals(link.getText() , text);
 	}
-	try {
-		link.setText(null);
-		fail("No exception thrown for text == null");
-	} catch (IllegalArgumentException e) {
-		// expected
-	}
+	assertThrows(IllegalArgumentException.class, () -> link.setText(null), "No exception thrown for text == null");
 }
 
 @Test
@@ -189,7 +168,7 @@ public void test_setLinkForegroundLorg_eclipse_swt_graphics_Color() {
 	link.setLinkForeground(color);
 	assertEquals(color, link.getLinkForeground());
 	link.setLinkForeground(null);
-	assertNotEquals(color, link.getForeground());
+	assertNotEquals(color, link.getLinkForeground());
 }
 
 
