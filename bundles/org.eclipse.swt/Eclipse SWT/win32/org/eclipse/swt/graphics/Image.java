@@ -969,15 +969,22 @@ public static void drawAtSize(GC gc, ImageData imageData, int width, int height)
 		imageToDraw.dispose();
 	});
 }
+record GdipImage(long bitmap, long pixels) {
+	void destroy() {
+		Gdip.Bitmap_delete(bitmap);
+		if (pixels != 0) {
+			long hHeap = OS.GetProcessHeap();
+			OS.HeapFree(hHeap, 0, pixels);
+		}
+	}
+}
 
-
-
-long [] createGdipImage(Integer zoom) {
+GdipImage createGdipImage(Integer zoom) {
 	ImageHandle handle = this.getHandle(zoom, zoom);
 	return createGdipImageFromHandle(handle);
 }
 
-long[] createGdipImageFromHandle(ImageHandle imageHandle) {
+GdipImage createGdipImageFromHandle(ImageHandle imageHandle) {
 	long handle = imageHandle.handle();
 	int transparentPixel = imageHandle.transparentPixel();
 	switch (type) {
@@ -1071,9 +1078,9 @@ long[] createGdipImageFromHandle(ImageHandle imageHandle) {
 				OS.DeleteObject(memHdc);
 				OS.DeleteObject(memDib);
 				int pixelFormat = hasAlpha ? Gdip.PixelFormat32bppPARGB : Gdip.PixelFormat32bppARGB;
-				return new long []{Gdip.Bitmap_new(imgWidth, imgHeight, dibBM.bmWidthBytes, pixelFormat, pixels), pixels};
+				return new GdipImage(Gdip.Bitmap_new(imgWidth, imgHeight, dibBM.bmWidthBytes, pixelFormat, pixels), pixels);
 			}
-			return new long []{Gdip.Bitmap_new(handle, 0), 0};
+			return new GdipImage(Gdip.Bitmap_new(handle, 0), 0);
 		}
 		case SWT.ICON: {
 			/*
@@ -1139,7 +1146,7 @@ long[] createGdipImageFromHandle(ImageHandle imageHandle) {
 			}
 			if (iconInfo.hbmColor != 0) OS.DeleteObject(iconInfo.hbmColor);
 			if (iconInfo.hbmMask != 0) OS.DeleteObject(iconInfo.hbmMask);
-			return new long []{img, pixels};
+			return new GdipImage(img, pixels);
 		}
 		default: SWT.error(SWT.ERROR_INVALID_IMAGE);
 	}
