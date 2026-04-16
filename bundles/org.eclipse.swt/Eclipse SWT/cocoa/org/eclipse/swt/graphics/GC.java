@@ -281,6 +281,19 @@ static int checkStyle (int style) {
 	return style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
 }
 
+private float calculateTransformationScale() {
+	if (data.transform == null) {
+		return 1.0f;
+	}
+	// this calculates the effective length in x and y
+	// direction without being affected by the rotation
+	// of the transformation
+	NSAffineTransformStruct struct = data.transform.transformStruct();
+	float scaleWidth = (float) Math.hypot(struct.m11, struct.m21);
+	float scaleHeight = (float) Math.hypot(struct.m12, struct.m22);
+	return Math.max(scaleWidth, scaleHeight);
+}
+
 /**
  * Invokes platform specific functionality to allocate a new graphics context.
  * <p>
@@ -1143,7 +1156,12 @@ public void drawImage(Image image, int x, int y) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	drawImage(image, 0, 0, -1, -1, x, y, -1, -1, true);
+	if (data.transform != null) {
+		Rectangle imageBounds = image.getBounds();
+		drawImage(image, x, y, imageBounds.width, imageBounds.height);
+	} else {
+		drawImage(image, 0, 0, -1, -1, x, y, -1, -1, true);
+	}
 }
 
 /**
@@ -1238,9 +1256,12 @@ public void drawImage(Image image, int destX, int destY, int destWidth, int dest
 	if (image.isDisposed()) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
+	float transformationScale = calculateTransformationScale();
+	int scaledWidth = Math.round(destWidth * transformationScale);
+	int scaledHeight = Math.round(destHeight * transformationScale);
 	image.executeOnImageAtSizeBestFittingSize(imageAtSize -> {
 		drawImage(imageAtSize, 0, 0, imageAtSize.width, imageAtSize.height, destX, destY, destWidth, destHeight, false);
-	}, destWidth, destHeight);
+	}, scaledWidth, scaledHeight);
 }
 
 void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple) {
