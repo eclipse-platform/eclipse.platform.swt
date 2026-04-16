@@ -3312,6 +3312,7 @@ private class DestroyableImageHandle implements InternalImageHandle {
 	}
 
 	void destroy() {
+		if (isDisposed) return;
 		if (type == SWT.ICON) {
 			OS.DestroyIcon (handle());
 		} else {
