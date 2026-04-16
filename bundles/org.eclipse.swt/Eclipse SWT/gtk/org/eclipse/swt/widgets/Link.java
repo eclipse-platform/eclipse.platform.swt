@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2025 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -348,39 +348,43 @@ long gtk3_button_press_event (long widget, long event) {
 	double [] eventX = new double [1];
 	double [] eventY = new double [1];
 	GDK.gdk_event_get_coords(event, eventX, eventY);
-
 	if (eventButton[0] == 1 && eventType == GDK.GDK_BUTTON_PRESS) {
-		if (focusIndex != -1) setFocus ();
-		int x = (int) eventX[0];
-		int y = (int) eventY[0];
-		if ((style & SWT.MIRRORED) != 0) x = getClientWidth () - x;
-		int offset = layout.getOffset (x, y, null);
-		int oldSelectionX = selection.x;
-		int oldSelectionY = selection.y;
-		selection.x = offset;
-		selection.y = -1;
-		if (oldSelectionX != -1 && oldSelectionY != -1) {
-			if (oldSelectionX > oldSelectionY) {
-				int temp = oldSelectionX;
-				oldSelectionX = oldSelectionY;
-				oldSelectionY = temp;
-			}
-			Rectangle rect = layout.getBounds (oldSelectionX, oldSelectionY);
-			redraw (rect.x, rect.y, rect.width, rect.height, false);
+		handlePress((int) eventX[0], (int) eventY[0]);
+	}
+	return result;
+}
+
+private void handlePress(int x, int y) {
+
+	if (focusIndex != -1)
+		setFocus();
+	if ((style & SWT.MIRRORED) != 0)
+		x = getClientWidth() - x;
+	int offset = layout.getOffset(x, y, null);
+	int oldSelectionX = selection.x;
+	int oldSelectionY = selection.y;
+	selection.x = offset;
+	selection.y = -1;
+	if (oldSelectionX != -1 && oldSelectionY != -1) {
+		if (oldSelectionX > oldSelectionY) {
+			int temp = oldSelectionX;
+			oldSelectionX = oldSelectionY;
+			oldSelectionY = temp;
 		}
-		for (int j = 0; j < offsets.length; j++) {
-			Rectangle [] rects = getRectanglesInPixels (j);
-			for (int i = 0; i < rects.length; i++) {
-				Rectangle rect = rects [i];
-				if (rect.contains (x, y)) {
-					focusIndex = j;
-					redraw ();
-					return result;
-				}
+		Rectangle rect = layout.getBounds(oldSelectionX, oldSelectionY);
+		redraw(rect.x, rect.y, rect.width, rect.height, false);
+	}
+	for (int j = 0; j < offsets.length; j++) {
+		Rectangle[] rects = getRectanglesInPixels(j);
+		for (int i = 0; i < rects.length; i++) {
+			Rectangle rect = rects[i];
+			if (rect.contains(x, y)) {
+				focusIndex = j;
+				redraw();
+				return;
 			}
 		}
 	}
-	return result;
 }
 
 @Override
@@ -397,21 +401,42 @@ long gtk3_button_release_event (long widget, long event) {
 	GDK.gdk_event_get_coords(event, eventX, eventY);
 
 	if (eventButton[0] == 1) {
-		int x = (int) eventX[0];
-		int y = (int) eventY[0];
-		if ((style & SWT.MIRRORED) != 0) x = getClientWidth () - x;
-		Rectangle [] rects = getRectanglesInPixels (focusIndex);
-		for (int i = 0; i < rects.length; i++) {
-			Rectangle rect = rects [i];
-			if (rect.contains (x, y)) {
-				Event ev = new Event ();
-				ev.text = ids [focusIndex];
-				sendSelectionEvent (SWT.Selection, ev, true);
-				return result;
-			}
-		}
+		handleRelease((int) eventX[0], (int) eventY[0]);
 	}
 	return result;
+}
+
+@Override
+int gtk_gesture_press_event(long gesture, int n_press, double x, double y, long event) {
+	int result = super.gtk_gesture_press_event(gesture, n_press, x, y, event);
+
+	if (GTK.gtk_gesture_single_get_current_button(gesture) != 1 || n_press != 1) return result;
+
+	if (focusIndex != -1) setFocus();
+		handlePress((int) x, (int) y);
+	return result;
+}
+
+@Override
+int gtk_gesture_release_event(long gesture, int n_press, double x, double y, long event) {
+	int result = super.gtk_gesture_release_event(gesture, n_press, x, y, event);
+	if (focusIndex == -1 || GTK.gtk_gesture_single_get_current_button(gesture) != 1) return result;
+
+	handleRelease((int) x, (int) y);
+	return result;
+}
+
+private void handleRelease(int hitX, int hitY) {
+	if ((style & SWT.MIRRORED) != 0) hitX = getClientWidth() - hitX;
+	Rectangle [] rects = getRectanglesInPixels(focusIndex);
+	for (Rectangle rect : rects) {
+		if (rect.contains(hitX, hitY)) {
+			Event ev = new Event();
+			ev.text = ids[focusIndex];
+			sendSelectionEvent(SWT.Selection, ev, true);
+			return;
+		}
+	}
 }
 
 @Override
@@ -514,11 +539,22 @@ long gtk3_motion_notify_event (long widget, long event) {
 	GDK.gdk_event_get_coords(event, eventX, eventY);
 	GDK.gdk_event_get_state(event, state);
 
-	int x = (int) eventX[0];
-	int y = (int) eventY[0];
+	handleMotion(state[0], (int) eventX[0], (int) eventY[0]);
+	return result;
+}
 
+@Override
+void gtk4_motion_event(long controller, double x, double y, long event) {
+	super.gtk4_motion_event(controller, x, y, event);
+
+	int state = event != 0 ? GDK.gdk_event_get_modifier_state(event) : 0;
+
+	handleMotion(state, (int) x, (int) y);
+}
+
+private void handleMotion(int mask, int x, int y) {
 	if ((style & SWT.MIRRORED) != 0) x = getClientWidth () - x;
-	if ((state[0] & GDK.GDK_BUTTON1_MASK) != 0) {
+	if ((mask & GDK.GDK_BUTTON1_MASK) != 0) {
 		int oldSelection = selection.y;
 		selection.y = layout.getOffset (x, y, null);
 		if (selection.y != oldSelection) {
@@ -538,13 +574,12 @@ long gtk3_motion_notify_event (long widget, long event) {
 				Rectangle rect = rects [i];
 				if (rect.contains (x, y)) {
 					setCursor (display.getSystemCursor (SWT.CURSOR_HAND));
-					return result;
+					return;
 				}
 			}
 		}
 		setCursor (null);
 	}
-	return result;
 }
 
 @Override
