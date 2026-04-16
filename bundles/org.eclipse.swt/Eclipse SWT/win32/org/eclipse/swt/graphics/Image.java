@@ -232,7 +232,7 @@ public final class Image extends Resource implements Drawable {
 				return false;
 			}
 			return (requestedHeight == height && requestedWidth == width)
-					|| (handleContainer.height() == height && handleContainer.height() == width);
+					|| (handleContainer.height() == height && handleContainer.width() == width);
 		}
 
 		private Optional<InternalImageHandle> createHandleAtExactSize(int width, int height) {
