@@ -1326,10 +1326,23 @@ private class DrawImageToImageOperation extends ImageOperation {
 }
 
 private void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, ImageHandle tempImageHandle) {
-	if (data.gdipGraphics != 0) {
-		//TODO - cache bitmap
-		long [] gdipImage = srcImage.createGdipImageFromHandle(tempImageHandle);
-		long img = gdipImage[0];
+	if (data.gdipGraphics == 0) {
+		switch (srcImage.type) {
+			case SWT.BITMAP:
+				drawBitmap(srcImage, tempImageHandle, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight,
+						simple);
+				break;
+			case SWT.ICON:
+				drawIcon(tempImageHandle.handle(), srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple);
+				break;
+		}
+		return;
+	}
+
+	//TODO - cache bitmap
+	Image.GdipImage gdipImage = srcImage.createGdipImageFromHandle(tempImageHandle);
+	try {
+		long img = gdipImage.bitmap();
 		int imgWidth = Gdip.Image_GetWidth(img);
 		int imgHeight = Gdip.Image_GetHeight(img);
 
@@ -1380,21 +1393,8 @@ private void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int src
 			Gdip.Graphics_Restore(data.gdipGraphics, gstate);
 		}
 		Gdip.ImageAttributes_delete(attrib);
-		Gdip.Bitmap_delete(img);
-		if (gdipImage[1] != 0) {
-			long hHeap = OS.GetProcessHeap ();
-			OS.HeapFree(hHeap, 0, gdipImage[1]);
-		}
-		return;
-	}
-	switch (srcImage.type) {
-		case SWT.BITMAP:
-			drawBitmap(srcImage, tempImageHandle, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight,
-					simple);
-			break;
-		case SWT.ICON:
-			drawIcon(tempImageHandle.handle(), srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple);
-			break;
+	} finally {
+		gdipImage.destroy();
 	}
 }
 

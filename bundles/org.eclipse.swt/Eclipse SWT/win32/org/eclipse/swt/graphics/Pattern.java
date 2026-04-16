@@ -18,7 +18,6 @@ import java.util.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gdip.*;
-import org.eclipse.swt.internal.win32.*;
 
 /**
  * Instances of this class represent patterns to use while drawing. Patterns
@@ -300,7 +299,7 @@ private class BasePatternHandle extends PatternHandle {
 }
 
 private class ImagePatternHandle extends PatternHandle {
-	private long[] gdipImage;
+	private Image.GdipImage gdipImage;
 
 	public ImagePatternHandle(int zoom) {
 		super(zoom);
@@ -309,7 +308,7 @@ private class ImagePatternHandle extends PatternHandle {
 	@Override
 	long createHandle(int zoom) {
 		gdipImage = image.createGdipImage(zoom);
-		long img = gdipImage[0];
+		long img = gdipImage.bitmap();
 		int width = Gdip.Image_GetWidth(img);
 		int height = Gdip.Image_GetHeight(img);
 		long handle = Gdip.TextureBrush_new(img, Gdip.WrapModeTile, 0, 0, width, height);
@@ -327,13 +326,10 @@ private class ImagePatternHandle extends PatternHandle {
 	}
 
 	private void cleanupBitmap() {
-		if (gdipImage.length < 2) return;
-		long img = gdipImage[0];
-		Gdip.Bitmap_delete(img);
-		if (gdipImage[1] != 0) {
-			long hHeap = OS.GetProcessHeap ();
-			OS.HeapFree(hHeap, 0, gdipImage[1]);
-		}
+		if (gdipImage == null) return;
+		Image.GdipImage tempGdipImage = gdipImage;
+		gdipImage = null;
+		tempGdipImage.destroy();
 	}
 }
 
