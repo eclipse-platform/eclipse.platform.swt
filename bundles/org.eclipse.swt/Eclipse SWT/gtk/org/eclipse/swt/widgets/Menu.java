@@ -308,8 +308,35 @@ void _setVisible (boolean visible) {
 			if (ableToSetLocation()) {
 				if (GTK.GTK4) {
 					GdkRectangle popoverPosition = new GdkRectangle();
-					popoverPosition.x = x;
-					popoverPosition.y = y;
+					/*
+					 * gtk_popover_set_pointing_to expects coordinates in the coordinate
+					 * space of the popover's current parent widget.
+					 *
+					 * When the popover is parented to parent.handle (Shell's GtkFixed),
+					 * setLocation() coordinates need to be translated from the shell
+					 * window's coordinate space (shellHandle / GtkWindow) into the
+					 * GtkFixed's coordinate space. On GTK4 with a header bar, the
+					 * GtkWindow origin is above the client area by the title bar height.
+					 *
+					 * Menus may also be reparented to a control (for example by
+					 * Control.showMenu()), in which case setLocation() can already be
+					 * relative to that control - do not apply the shell to
+					 * parent.handle translation.
+					 */
+					long currentParent = GTK.gtk_widget_get_parent(handle);
+					if (currentParent == parent.handle) {
+						double[] relX = new double[1], relY = new double[1];
+						if (GTK4.gtk_widget_translate_coordinates(parent.getShell().topHandle(), parent.handle, x, y, relX, relY)) {
+							popoverPosition.x = (int) relX[0];
+							popoverPosition.y = (int) relY[0];
+						} else {
+							popoverPosition.x = x;
+							popoverPosition.y = y;
+						}
+					} else {
+						popoverPosition.x = x;
+						popoverPosition.y = y;
+					}
 					popoverPosition.width = popoverPosition.height = 1;
 					GTK.gtk_popover_set_pointing_to(handle, popoverPosition);
 

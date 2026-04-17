@@ -869,6 +869,42 @@ long gtk_mnemonic_activate (long widget, long arg1) {
 }
 
 @Override
+int gtk_gesture_press_event(long gesture, int n_press, double x, double y, long event) {
+	/*
+	 * GTK4: For DROP_DOWN items, the arrow portion is a GtkMenuButton
+	 * (arrowHandle) that is separate from the main button. Attach a gesture
+	 * controller to arrowHandle and detect it here in order to send the
+	 * SWT.ARROW selection detail to the listener (e.g. to open a drop-down menu).
+	 */
+	if ((style & SWT.DROP_DOWN) != 0 && arrowHandle != 0
+			&& GTK.gtk_event_controller_get_widget(gesture) == arrowHandle
+			&& n_press == 1
+			&& GTK.gtk_gesture_single_get_current_button(gesture) == 1) {
+		Event e = new Event();
+		e.detail = SWT.ARROW;
+		GtkAllocation allocation = new GtkAllocation();
+		GTK.gtk_widget_get_allocation(arrowHandle, allocation);
+		/*
+		 * On GTK4 gtk_widget_get_allocation returns parent-widget-relative
+		 * coordinates, but the SWT event x/y must be in ToolBar-relative
+		 * coordinates so that callers can use toolBar.toDisplay(event.x, event.y).
+		 * Translate the arrow button's origin into the ToolBar's coordinate space.
+		 * If translation fails, fall back to the parent-relative allocation.
+		 */
+		double[] destX = new double[1];
+		double[] destY = new double[1];
+		boolean translated = GTK4.gtk_widget_translate_coordinates(arrowHandle, parent.handle, 0, 0, destX, destY);
+		e.x = translated ? (int) destX[0] : allocation.x;
+		if ((parent.style & SWT.MIRRORED) != 0) e.x = parent.getClientWidth() - allocation.width - e.x;
+		System.out.println(e.x);
+		e.y = translated ? (int) destY[0] + allocation.height : allocation.y + allocation.height;
+		sendSelectionEvent(SWT.Selection, e, false);
+		return GTK4.GTK_EVENT_SEQUENCE_CLAIMED;
+	}
+	return GTK4.GTK_EVENT_SEQUENCE_NONE;
+}
+
+@Override
 void hookEvents () {
 	super.hookEvents ();
 	if ((style & SWT.SEPARATOR) != 0) return;
