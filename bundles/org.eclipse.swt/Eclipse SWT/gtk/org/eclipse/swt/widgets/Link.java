@@ -546,7 +546,7 @@ long gtk3_motion_notify_event (long widget, long event) {
 void gtk4_motion_event(long controller, double x, double y, long event) {
 	super.gtk4_motion_event(controller, x, y, event);
 
-	int state = event != 0 ? GDK.gdk_event_get_modifier_state(event) : 0;
+	int state = GDK.gdk_event_get_modifier_state(event);
 
 	handleMotion(state, (int) x, (int) y);
 }
