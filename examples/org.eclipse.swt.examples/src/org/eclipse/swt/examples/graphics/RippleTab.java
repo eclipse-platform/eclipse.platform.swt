@@ -16,9 +16,11 @@
 
 package org.eclipse.swt.examples.graphics;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 
@@ -26,6 +28,8 @@ import org.eclipse.swt.widgets.Composite;
  * This tab displays a ripple effect on an image.
  */
 public class RippleTab extends AnimatedGraphicsTab {
+
+	private static final int DISPLAY_SCALE = 2;
 
 	private Image sourceImage;
 	private ImageData offImageData;
@@ -39,6 +43,7 @@ public class RippleTab extends AnimatedGraphicsTab {
 	private int oldind;
 	private int newind;
 	private Image outputImage;
+	private int frameCount;
 
 	public RippleTab(GraphicsExample example) {
 		super(example);
@@ -91,8 +96,15 @@ public class RippleTab extends AnimatedGraphicsTab {
 	@Override
 	public void next(int width, int height) {
 		if (texture == null) return;
-		if (Math.random() > 0.98) {
-			disturb((int)(Math.random() * width), (int)(Math.random() * height), width, height);
+		// Automatic rain: drop a ripple every ~15 frames at a random location,
+		// plus occasional extra drops so the effect is obvious without user
+		// interaction. Mouse movement still adds further disturbances.
+		frameCount++;
+		if (frameCount % 15 == 0) {
+			disturb((int) (Math.random() * width), (int) (Math.random() * height), width, height);
+		}
+		if (Math.random() > 0.9) {
+			disturb((int) (Math.random() * width), (int) (Math.random() * height), width, height);
 		}
 		newframe();
 	}
@@ -121,16 +133,36 @@ public class RippleTab extends AnimatedGraphicsTab {
 
 			imgData.getPixels(0, 0, this.width * this.height, texture, 0);
 			offImageData = new ImageData(this.width, this.height, imgData.depth, imgData.palette);
+
+			// Seed a handful of ripples so the effect is visible immediately.
+			for (int i = 0; i < 6; i++) {
+				disturb((int) (Math.random() * width), (int) (Math.random() * height), width, height);
+			}
 		}
 
 		offImageData.setPixels(0, 0, this.width * this.height, ripple, 0);
-		
+
 		if (outputImage != null) outputImage.dispose();
 		outputImage = new Image(gc.getDevice(), offImageData);
-		
-		int x = (width - this.width) / 2;
-		int y = (height - this.height) / 2;
-		gc.drawImage(outputImage, x, y);
+
+		int dw = this.width * DISPLAY_SCALE;
+		int dh = this.height * DISPLAY_SCALE;
+		int x = (width - dw) / 2;
+		int y = (height - dh) / 2;
+		gc.drawImage(outputImage, 0, 0, this.width, this.height, x, y, dw, dh);
+
+		String hint = GraphicsExample.getResourceString("RippleHint"); //$NON-NLS-1$
+		gc.setAdvanced(true);
+		gc.setAntialias(SWT.ON);
+		gc.setForeground(gc.getDevice().getSystemColor(SWT.COLOR_WHITE));
+		Point textSize = gc.textExtent(hint);
+		int tx = x + (dw - textSize.x) / 2;
+		int ty = y + dh - textSize.y - 8;
+		gc.setAlpha(180);
+		gc.setBackground(gc.getDevice().getSystemColor(SWT.COLOR_BLACK));
+		gc.fillRectangle(tx - 6, ty - 4, textSize.x + 12, textSize.y + 8);
+		gc.setAlpha(255);
+		gc.drawString(hint, tx, ty, true);
 	}
 
 	private void newframe() {
@@ -179,13 +211,15 @@ public class RippleTab extends AnimatedGraphicsTab {
 
 	private void disturb(int dx, int dy, int canvasWidth, int canvasHeight) {
 		if (texture == null) return;
-		
-		// Adjust dx, dy based on center alignment in paint()
-		int xOffset = (canvasWidth - width) / 2;
-		int yOffset = (canvasHeight - height) / 2;
-		
-		int x = dx - xOffset;
-		int y = dy - yOffset;
+
+		// Adjust dx, dy based on center alignment and display scale in paint()
+		int dw = width * DISPLAY_SCALE;
+		int dh = height * DISPLAY_SCALE;
+		int xOffset = (canvasWidth - dw) / 2;
+		int yOffset = (canvasHeight - dh) / 2;
+
+		int x = (dx - xOffset) / DISPLAY_SCALE;
+		int y = (dy - yOffset) / DISPLAY_SCALE;
 
 		for (int j = y - riprad; j < y + riprad; j++) {
 			for (int k = x - riprad; k < x + riprad; k++) {
