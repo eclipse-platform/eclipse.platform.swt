@@ -375,7 +375,7 @@ private void handlePress(int x, int y) {
 		redraw(rect.x, rect.y, rect.width, rect.height, false);
 	}
 	for (int j = 0; j < offsets.length; j++) {
-		Rectangle[] rects = getRectanglesInPixels(j);
+		Rectangle [] rects = getRectanglesInPixels(j);
 		for (int i = 0; i < rects.length; i++) {
 			Rectangle rect = rects[i];
 			if (rect.contains(x, y)) {
@@ -409,6 +409,7 @@ long gtk3_button_release_event (long widget, long event) {
 @Override
 int gtk_gesture_press_event(long gesture, int n_press, double x, double y, long event) {
 	int result = super.gtk_gesture_press_event(gesture, n_press, x, y, event);
+	if (result != GTK4.GTK_EVENT_SEQUENCE_NONE) return result;
 
 	if (GTK.gtk_gesture_single_get_current_button(gesture) != 1 || n_press != 1) return result;
 
@@ -419,6 +420,7 @@ int gtk_gesture_press_event(long gesture, int n_press, double x, double y, long 
 @Override
 int gtk_gesture_release_event(long gesture, int n_press, double x, double y, long event) {
 	int result = super.gtk_gesture_release_event(gesture, n_press, x, y, event);
+	if (result != GTK4.GTK_EVENT_SEQUENCE_NONE) return result;
 	if (focusIndex == -1 || GTK.gtk_gesture_single_get_current_button(gesture) != 1) return result;
 
 	handleRelease((int) x, (int) y);
