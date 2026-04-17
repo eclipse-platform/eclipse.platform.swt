@@ -412,8 +412,7 @@ int gtk_gesture_press_event(long gesture, int n_press, double x, double y, long 
 
 	if (GTK.gtk_gesture_single_get_current_button(gesture) != 1 || n_press != 1) return result;
 
-	if (focusIndex != -1) setFocus();
-		handlePress((int) x, (int) y);
+	handlePress((int) x, (int) y);
 	return result;
 }
 
