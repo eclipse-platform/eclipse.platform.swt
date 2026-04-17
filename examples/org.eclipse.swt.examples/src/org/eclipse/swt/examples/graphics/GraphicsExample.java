@@ -501,6 +501,17 @@ GraphicsTab[] createTabs() {
 		new SkyTab(this),
 		new UnlimitedBallsTab(this),
 		new WarpTab(this),
+		new WobbleTab(this),
+		new WormholeTab(this),
+		new LakeTab(this),
+		new DancingLightTab(this),
+		new RotoZoomTab(this),
+		new TunnelTab(this),
+		new VoxelTab(this),
+		new SineScrollTab(this),
+		new SimpleScrollTab(this),
+		new AdvancedScrollTab(this),
+		new StarWarsScrollTab(this),
 	};
 }
 

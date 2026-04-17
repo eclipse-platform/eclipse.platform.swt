@@ -29,6 +29,7 @@ public class SkyTab extends AnimatedGraphicsTab {
 
 	private static final int RENDER_WIDTH = 320;
 	private static final int RENDER_HEIGHT = 200;
+	private static final int DISPLAY_SCALE = 2;
 
 	private ImageData sprite;
 	private ImageData imageData;
@@ -152,9 +153,11 @@ public class SkyTab extends AnimatedGraphicsTab {
 		}
 		outputImage = new Image(gc.getDevice(), imageData);
 
-		int x = (width - RENDER_WIDTH) / 2;
-		int y = (height - RENDER_HEIGHT) / 2;
-		gc.drawImage(outputImage, x, y);
+		int dw = RENDER_WIDTH * DISPLAY_SCALE;
+		int dh = RENDER_HEIGHT * DISPLAY_SCALE;
+		int x = (width - dw) / 2;
+		int y = (height - dh) / 2;
+		gc.drawImage(outputImage, 0, 0, RENDER_WIDTH, RENDER_HEIGHT, x, y, dw, dh);
 	}
 
 	private int safeGetPixel(ImageData img, int x, int y) {

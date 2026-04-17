@@ -27,6 +27,7 @@ import org.eclipse.swt.graphics.ImageData;
 public class TwirlEffectTab extends AnimatedGraphicsTab {
 
 	private static final float STEP = 0.1f;
+	private static final int DISPLAY_SCALE = 3;
 
 	private ImageData sourceImage;
 	private ImageData imageData;
@@ -119,9 +120,11 @@ public class TwirlEffectTab extends AnimatedGraphicsTab {
 		}
 		outputImage = new Image(gc.getDevice(), imageData);
 
-		int x = (width - imgWidth) / 2;
-		int y = (height - imgHeight) / 2;
-		gc.drawImage(outputImage, x, y);
+		int dw = imgWidth * DISPLAY_SCALE;
+		int dh = imgHeight * DISPLAY_SCALE;
+		int x = (width - dw) / 2;
+		int y = (height - dh) / 2;
+		gc.drawImage(outputImage, 0, 0, imgWidth, imgHeight, x, y, dw, dh);
 	}
 
 	private ImageData filter(ImageData src) {

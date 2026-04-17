@@ -26,12 +26,15 @@ import org.eclipse.swt.graphics.ImageData;
  */
 public class BlockEffectTab extends AnimatedGraphicsTab {
 
+	private static final int DISPLAY_SCALE = 3;
+
 	private ImageData sourceImage;
 	private ImageData imageData;
 	private Image outputImage;
 	private int imgWidth, imgHeight;
 	private int blockSize;
 	private int direction;
+	private int holdFrames;
 
 	public BlockEffectTab(GraphicsExample example) {
 		super(example);
@@ -72,11 +75,20 @@ public class BlockEffectTab extends AnimatedGraphicsTab {
 		}
 
 		imageData = filter(sourceImage, blockSize);
+
+		// Hold the unblocked (blockSize=1) state for ~40 frames so the real
+		// image is visible before blocks start growing again.
+		if (holdFrames > 0) {
+			holdFrames--;
+			return;
+		}
+
 		blockSize += direction;
 
 		if (blockSize <= 1) {
 			direction = 1;
 			blockSize = 1;
+			holdFrames = 40;
 		}
 
 		if (blockSize >= imgWidth / 4) {
@@ -113,9 +125,11 @@ public class BlockEffectTab extends AnimatedGraphicsTab {
 		}
 		outputImage = new Image(gc.getDevice(), imageData);
 
-		int x = (width - imgWidth) / 2;
-		int y = (height - imgHeight) / 2;
-		gc.drawImage(outputImage, x, y);
+		int dw = imgWidth * DISPLAY_SCALE;
+		int dh = imgHeight * DISPLAY_SCALE;
+		int x = (width - dw) / 2;
+		int y = (height - dh) / 2;
+		gc.drawImage(outputImage, 0, 0, imgWidth, imgHeight, x, y, dw, dh);
 	}
 
 	private ImageData filter(ImageData src, int size) {
