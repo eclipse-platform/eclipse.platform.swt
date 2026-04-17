@@ -3299,36 +3299,36 @@ void initializeSystemColorsTitle(long shellContext) {
 }
 
 private void initializeSystemColorsLink() {
-	/*
-	 * Note: GTK has two types of link at least:
-	 *
-	 * 1) GtkLabel with HTML-like markup
-	 * 2) GtkLinkButton
-	 *
-	 * The 'HighContrast' theme has different colors for these.
-	 * GtkLabel is easier to work with, and obtained color matches color in previous SWT versions.
-	 */
-
-	// The 'Clearlooks-Phenix' theme sets 'color:' for 'window {' css node, so a stand-alone label is not enough
-	long window;
 	if (GTK.GTK4) {
-		window = GTK4.gtk_window_new();
-	} else {
-		window = GTK3.gtk_window_new (GTK.GTK_WINDOW_TOPLEVEL);
-	}
-	long label = GTK.gtk_label_new(null);
-	if (GTK.GTK4) {
-		GTK4.gtk_window_set_child(window, label);
-	} else {
-		GTK3.gtk_container_add(window, label);
-	}
+		/*
+		 * GTK 4 needs the "link" CSS class to retrieve the correct link color.
+		 */
+		long window = GTK4.gtk_window_new();
+		long button = GTK.gtk_button_new();
+		GTK4.gtk_window_set_child(window, button);
+		GTK.gtk_widget_add_css_class(button, Converter.wcsToMbcs("link", true));
 
-	long styleContextLink = GTK.gtk_widget_get_style_context (label);
-	COLOR_LINK_FOREGROUND_RGBA = styleContextGetColor (styleContextLink, GTK.GTK_STATE_FLAG_LINK);
+		long styleContextButton = GTK.gtk_widget_get_style_context(button);
+		COLOR_LINK_FOREGROUND_RGBA = styleContextGetColor(styleContextButton, GTK.GTK_STATE_FLAG_LINK);
 
-	if (GTK.GTK4) {
 		GTK4.gtk_window_destroy(window);
 	} else {
+		/*
+		 * Note: GTK has two types of link at least:
+		 *
+		 * 1) GtkLabel with HTML-like markup
+		 * 2) GtkLinkButton
+		 *
+		 * GtkLabel is easier to work with, and obtained color matches color in previous SWT versions.
+		 */
+		// The 'Clearlooks-Phenix' theme sets 'color:' for 'window {' css node, so a stand-alone label is not enough
+		long window = GTK3.gtk_window_new(GTK.GTK_WINDOW_TOPLEVEL);
+		long label = GTK.gtk_label_new(null);
+		GTK3.gtk_container_add(window, label);
+
+		long styleContextLink = GTK.gtk_widget_get_style_context(label);
+		COLOR_LINK_FOREGROUND_RGBA = styleContextGetColor(styleContextLink, GTK.GTK_STATE_FLAG_LINK);
+
 		GTK3.gtk_widget_destroy(window);
 	}
 }
