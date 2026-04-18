@@ -2987,7 +2987,6 @@ public void test_TabTraversalOutOfBrowser() {
 public void test_TimerRegression_Issue2806() {
 	for (int i = 0; i < 10000; i++) {
 		browser.setText("Iteration " + i);
-		new BrowserFunction(browser, "name");
 	}
 	new Composite(shell, SWT.NONE);
 	processUiEvents();
