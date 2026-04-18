@@ -9,3 +9,4 @@ pom.tycho
 /xdg-runtime-*
 /binaries/org.eclipse.swt.*/src/
 tmpdir/
+.claude/settings.local.json
