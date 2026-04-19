@@ -1858,7 +1858,7 @@ public void createFunction(BrowserFunction function) {
 private void registerFunctionScript(int functionIndex, String functionString) {
 	String[] scriptId = new String[1];
 	callAndWait(scriptId, completion ->
-		webViewProvider.getWebView(true).AddScriptToExecuteOnDocumentCreated(
+		webViewProvider.getWebView(false).AddScriptToExecuteOnDocumentCreated(
 			stringToWstr(functionString), completion.getAddress()));
 	if (scriptId[0] != null) {
 		functionScriptIds.put(functionIndex, scriptId[0]);
