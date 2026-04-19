@@ -3002,11 +3002,14 @@ public void test_BrowserFunction_availableOnLoad_concurrentInstances_issue20() {
 		@Override
 		public Object function(Object[] arguments) { return null; }
 	};
+	AtomicReference<SWTException> exceptionInBrowser1 = new AtomicReference<>();
 	b1.addProgressListener(completedAdapter(e -> {
 		try {
 			b1.evaluate("options();");
 			browser1FuncAvailable.set(true);
-		} catch (SWTException ignored) {}
+		} catch (SWTException ex) {
+			exceptionInBrowser1.set(ex);
+		}
 	}));
 	createdBroswers.add(b1);
 
@@ -3017,19 +3020,29 @@ public void test_BrowserFunction_availableOnLoad_concurrentInstances_issue20() {
 		@Override
 		public Object function(Object[] arguments) { return null; }
 	};
+	AtomicReference<SWTException> exceptionInBrowser2 = new AtomicReference<>();
 	b2.addProgressListener(completedAdapter(e -> {
 		try {
 			b2.evaluate("options();");
 			browser2FuncAvailable.set(true);
-		} catch (SWTException ignored) {}
+		} catch (SWTException ex) {
+			exceptionInBrowser2.set(ex);
+		}
 	}));
 	createdBroswers.add(b2);
 
 	shell.open();
-	assertTrue(
-		waitForPassCondition(() -> browser1FuncAvailable.get() && browser2FuncAvailable.get()),
-		"BrowserFunction must be available when page load completes on both browsers "
-		+ "(regression of https://github.com/eclipse-platform/eclipse.platform.swt/issues/20)");
+	waitForPassCondition(() -> (exceptionInBrowser1.get() != null || browser1FuncAvailable.get())
+			&& (exceptionInBrowser2.get() != null || browser2FuncAvailable.get()));
+
+	if (exceptionInBrowser1.get() != null) {
+		throw exceptionInBrowser1.get();
+	}
+	if (exceptionInBrowser2.get() != null) {
+		throw exceptionInBrowser2.get();
+	}
+	assertTrue(browser1FuncAvailable.get(), "BrowserFunction for first browser missing when page load completed");
+	assertTrue(browser2FuncAvailable.get(), "BrowserFunction for second browser missing when page load completed");
 }
 
 @Test
