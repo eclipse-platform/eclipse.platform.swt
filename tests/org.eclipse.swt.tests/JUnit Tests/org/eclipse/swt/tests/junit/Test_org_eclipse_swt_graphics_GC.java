@@ -26,7 +26,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -149,10 +148,6 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DrawableI() {
 
 @Test
 public void test_copyAreaIIIIII() {
-	// This test verifies pixel-level color values after a copyArea() operation.
-	// Such pixel-accurate checks are only reliable at 100% zoom due to fractional scaling.
-	assumeTrue(DPIUtil.getDeviceZoom() == 100, "Skipping test due to non-100% zoom");
-
 	Color white = display.getSystemColor(SWT.COLOR_WHITE);
 	Color blue = display.getSystemColor(SWT.COLOR_BLUE);
 	RGB whiteRGB = getRealRGB(white);
@@ -168,25 +163,21 @@ public void test_copyAreaIIIIII() {
 	gc.fillRectangle(5, 0, 6, 1);
 	gc.copyArea(0, 0, width, height, destX, destY);
 
-	ImageData imageData = image.getImageData();
+	ImageData imageData = image.getImageData(DPIUtil.getDeviceZoom());
 	PaletteData palette = imageData.palette;
 
-	int pixel = imageData.getPixel(destX + 4, destY);
+	int pixel = imageData.getPixel(scaleWithDeviceZoom(destX + 4), scaleWithDeviceZoom(destY));
 	assertEquals(whiteRGB, palette.getRGB(pixel));
-	pixel = imageData.getPixel(destX + 6 , destY);
+	pixel = imageData.getPixel(scaleWithDeviceZoom(destX + 6), scaleWithDeviceZoom(destY));
 	assertEquals(blueRGB, palette.getRGB(pixel));
-	pixel = imageData.getPixel(destX + 10, destY);
+	pixel = imageData.getPixel(scaleWithDeviceZoom(destX + 10), scaleWithDeviceZoom(destY));
 	assertEquals(blueRGB, palette.getRGB(pixel));
-	pixel = imageData.getPixel(destX + 12, destY);
+	pixel = imageData.getPixel(scaleWithDeviceZoom(destX + 12), scaleWithDeviceZoom(destY));
 	assertEquals(whiteRGB, palette.getRGB(pixel));
 }
 
 @Test
 public void test_copyAreaIIIIII_overlapingSourceTarget() {
-	// This test verifies pixel-level color values after a copyArea() operation.
-	// Such pixel-accurate checks are only reliable at 100% zoom due to fractional scaling.
-	assumeTrue(DPIUtil.getDeviceZoom() == 100, "Skipping test due to non-100% zoom");
-
 	Color red= display.getSystemColor(SWT.COLOR_RED);
 	Color blue = display.getSystemColor(SWT.COLOR_BLUE);
 	RGB redRGB = getRealRGB(red);
@@ -197,38 +188,34 @@ public void test_copyAreaIIIIII_overlapingSourceTarget() {
 	gc.setBackground(blue);
 	gc.fillRectangle(0, 100, 200, 100);
 
-	ImageData imageData = image.getImageData();
+	ImageData imageData = image.getImageData(DPIUtil.getDeviceZoom());
 	PaletteData palette = imageData.palette;
 
 	int pixel = imageData.getPixel(0, 0);
 	assertEquals(redRGB, palette.getRGB(pixel));
-	pixel = imageData.getPixel(0, 105);
+	pixel = imageData.getPixel(0, scaleWithDeviceZoom(105));
 	assertEquals(blueRGB, palette.getRGB(pixel));
-	pixel = imageData.getPixel(0, 155);
+	pixel = imageData.getPixel(0, scaleWithDeviceZoom(155));
 	assertEquals(blueRGB, palette.getRGB(pixel));
 
 	gc.copyArea(0, 50, 200, 100, 0, 100);
 
-	imageData = image.getImageData();
+	imageData = image.getImageData(DPIUtil.getDeviceZoom());
 	palette = imageData.palette;
 
-	pixel = imageData.getPixel(0, 105);
+	pixel = imageData.getPixel(0, scaleWithDeviceZoom(105));
 	assertEquals(redRGB, palette.getRGB(pixel));
-	pixel = imageData.getPixel(0, 145);
+	pixel = imageData.getPixel(0, scaleWithDeviceZoom(145));
 	assertEquals(redRGB, palette.getRGB(pixel));
-	pixel = imageData.getPixel(0, 155);
+	pixel = imageData.getPixel(0, scaleWithDeviceZoom(155));
 	assertEquals(blueRGB, palette.getRGB(pixel));
-	pixel = imageData.getPixel(0, 195);
+	pixel = imageData.getPixel(0, scaleWithDeviceZoom(195));
 	assertEquals(blueRGB, palette.getRGB(pixel));
 }
 
 
 @Test
 public void test_copyAreaLorg_eclipse_swt_graphics_ImageII() {
-	// This test verifies pixel-level color values after a copyArea() operation.
-	// Such pixel-accurate checks are only reliable at 100% zoom due to fractional scaling.
-	assumeTrue(DPIUtil.getDeviceZoom() == 100, "Skipping test due to non-100% zoom");
-
 	Color white = display.getSystemColor(SWT.COLOR_WHITE);
 	Color blue = display.getSystemColor(SWT.COLOR_BLUE);
 	RGB whiteRGB = getRealRGB(white);
@@ -240,18 +227,22 @@ public void test_copyAreaLorg_eclipse_swt_graphics_ImageII() {
 	gc.fillRectangle(5, 0, 6, 1);
 	Image image = new Image(display, 12, 12);
 	gc.copyArea(image, 0, 0);
-	ImageData imageData = image.getImageData();
+	ImageData imageData = image.getImageData(DPIUtil.getDeviceZoom());
 	PaletteData palette = imageData.palette;
 
-	int pixel = imageData.getPixel(4, 0);
+	int pixel = imageData.getPixel(scaleWithDeviceZoom(4), 0);
 	assertEquals(whiteRGB, palette.getRGB(pixel));
-	pixel = imageData.getPixel(5, 0);
+	pixel = imageData.getPixel(scaleWithDeviceZoom(5), 0);
 	assertEquals(blueRGB, palette.getRGB(pixel));
-	pixel = imageData.getPixel(10, 0);
+	pixel = imageData.getPixel(scaleWithDeviceZoom(10), 0);
 	assertEquals(blueRGB, palette.getRGB(pixel));
-	pixel = imageData.getPixel(11, 0);
+	pixel = imageData.getPixel(scaleWithDeviceZoom(11), 0);
 	assertEquals(whiteRGB, palette.getRGB(pixel));
 	image.dispose();
+}
+
+private int scaleWithDeviceZoom(int value) {
+	return value * DPIUtil.getDeviceZoom() / 100;
 }
 
 @Test
