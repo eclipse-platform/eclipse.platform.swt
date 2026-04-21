@@ -1276,4 +1276,11 @@ public void stop () {
 	checkWidget();
 	webBrowser.stop ();
 }
+
+@Override
+public String toString () {
+	String base = super.toString ();
+	if (webBrowser == null) return base;
+	return base + " [" + webBrowser.getBrowserType () + "]";
+}
 }
