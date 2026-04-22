@@ -13,15 +13,23 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import static java.lang.System.currentTimeMillis;
+import static java.lang.System.nanoTime;
 import static org.eclipse.swt.tests.junit.SwtTestUtil.JENKINS_DETECT_ENV_VAR;
 import static org.eclipse.swt.tests.junit.SwtTestUtil.JENKINS_DETECT_REGEX;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+
+import java.lang.management.ManagementFactory;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SegmentListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -30,6 +38,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
@@ -1376,6 +1385,55 @@ public void test_showSelection() {
 	text.showSelection();
 }
 
+// Originally reported as https://github.com/eclipse-platform/eclipse.platform.ui/issues/3920
+@Test
+public void test_finiteRedrawCancelButtonWithBackground() {
+	if ( text != null ) text.dispose();
+	// Style constants are causing
+	// org.eclipse.swt.widgets.Text.drawInteriorWithFrame_inView_searchfield(long, long, NSRect, long)
+	// to call
+	// org.eclipse.swt.internal.cocoa.NSControl.stringValue()
+	// which schedules redraw
+	text = new Text(shell, SWT.SEARCH | SWT.ICON_CANCEL);
+	// Background prevents early exit from drawInteriorWithFrame_inView_searchfield(long, long, NSRect, long)
+	text.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_RED));
+	setWidget(text);
+	shell.setLayout(new FillLayout());
+	text.requestLayout();
+	shell.open();
+	text.forceFocus();
+	testIdleAtVariousLength();
+}
+
+@Test
+public void test_finiteRedrawCancelButton() {
+	if ( text != null ) text.dispose();
+	// Style constants are causing
+	// org.eclipse.swt.widgets.Text.drawInteriorWithFrame_inView_searchfield(long, long, NSRect, long)
+	// to call
+	// org.eclipse.swt.internal.cocoa.NSControl.stringValue()
+	// which schedules redraw
+	text = new Text(shell, SWT.SEARCH | SWT.ICON_CANCEL);
+	setWidget(text);
+	shell.setLayout(new FillLayout());
+	text.requestLayout();
+	shell.open();
+	text.forceFocus();
+	testIdleAtVariousLength();
+}
+
+@Test
+public void test_finiteRedraw() {
+	if ( text != null ) text.dispose();
+	text = new Text(shell, SWT.NONE);
+	setWidget(text);
+	shell.setLayout(new FillLayout());
+	text.requestLayout();
+	shell.open();
+	text.forceFocus();
+	testIdleAtVariousLength();
+}
+
 /* custom */
 Text text;
 String delimiterString;
@@ -1637,6 +1695,93 @@ private void pasteFromClipboard(Text text) throws InterruptedException {
 	String oldText = text.getText();
 	text.paste();
 	SwtTestUtil.processEvents(1000, () -> !oldText.equals(text.getText()));
+}
+
+private void testIdleAtVariousLength() {
+	waitUntilIdle();
+	assertIdle();
+	text.setText("");
+	waitUntilIdle();
+	assertIdle();
+	text.setText("a");
+	waitUntilIdle();
+	assertIdle();
+	text.setText("aaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+	waitUntilIdle();
+	assertIdle();
+}
+
+private void waitUntilIdle() {
+	long hangTimeout = currentTimeMillis() + 1000;
+	long lastActive = nanoTime();
+	while (currentTimeMillis() < hangTimeout) {
+		if (shell.getDisplay().readAndDispatch()) {
+			lastActive = nanoTime();
+		} else {
+			// On GTK, blinking caret animation fires with 60 Hz, can't expect long idle times
+			if (lastActive < nanoTime() - 10_000_000) {
+				return;
+			}
+			Thread.yield();
+		}
+	}
+	fail("Unexpected system events keep coming");
+}
+
+private void assertIdle() {
+	assumeFalse(SwtTestUtil.isGTK4(), "GTK4 bug - 10-40% CPU in idle");
+	long[] paintCount = new long[] { 0 };
+	long wallNs, cpuNs;
+	PaintListener paintListener = ignored -> {
+		paintCount[0]++;
+	};
+	text.addPaintListener(paintListener);
+	try {
+		Display display = shell.getDisplay();
+		var tmx = ManagementFactory.getThreadMXBean();
+		assumeTrue(tmx.isThreadCpuTimeSupported() && tmx.isThreadCpuTimeEnabled(),
+				"Thread CPU time measurement is not available on this JVM");
+
+		final int MEASURE_MS = 2000;
+
+		// Schedule a single one-shot timer for the whole measurement window.
+		// When it fires it (a) sets the guard that terminates the loop, and
+		// (b) wakes display.sleep() on platforms that would otherwise block
+		// indefinitely because they generate no background events.
+		final boolean[] done = {false};
+		display.timerExec(MEASURE_MS, () -> done[0] = true);
+
+		long threadId = Thread.currentThread().threadId();
+		long cpuBefore = tmx.getThreadCpuTime(threadId);
+		long wallStart = System.nanoTime();
+		// Additional protection against broken event loop, happens on MacOS SDK 24
+		long stopGuard = currentTimeMillis() + MEASURE_MS * 2;
+		while (!done[0]) {
+			if (stopGuard < currentTimeMillis()) {
+				fail("Timer should fire");
+			}
+			if (!display.readAndDispatch()) {
+				// On GTK, blinking caret animation fires with 60 Hz
+				// We can't just count busy iterations
+				// Hence the actual CPU load measurement below
+				display.sleep();
+			}
+		}
+		wallNs = System.nanoTime() - wallStart;
+
+		cpuNs = tmx.getThreadCpuTime(threadId) - cpuBefore;
+	} finally {
+		text.removePaintListener(paintListener);
+	}
+	double cpuFraction = (double) cpuNs / wallNs;
+	int maxPaint =20;
+	double maxCPU = 0.05;
+	String message = "CPU usage when idle: %.1f%% < %.1f%%. Paint events: %d < %d"
+			.formatted(cpuFraction * 100, maxCPU * 100, paintCount[0], maxPaint);
+	if (SwtTestUtil.verbose) {
+		System.out.println(message);
+	}
+	assertTrue(cpuFraction < maxCPU && paintCount[0] < maxPaint, message);
 }
 
 }

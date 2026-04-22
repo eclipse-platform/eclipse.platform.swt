@@ -70,6 +70,18 @@ public class Text extends Scrollable {
 	long actionSearch, actionCancel;
 	APPEARANCE lastAppAppearance;
 
+	/*
+	 * Cached emptiness of the text for the SWT.SEARCH | SWT.ICON_CANCEL paint
+	 * path only. AppKit's NSSearchFieldCell stringValue selector posts
+	 * setNeedsDisplay: synchronously when invoked during a draw pass, turning
+	 * drawInteriorWithFrame_inView_searchfield's cancel-icon visibility check
+	 * into an infinite redraw loop. This flag is updated at the text-mutation
+	 * entry points (outside any paint), so the paint method never has to query
+	 * native state.
+	 * See https://github.com/eclipse-platform/eclipse.platform.ui/issues/3920
+	 */
+	boolean searchFieldHasText;
+
 	/**
 	* The maximum number of characters that can be entered
 	* into a text widget.
@@ -745,11 +757,22 @@ void drawInteriorWithFrame_inView_searchfield (long id, long sel, NSRect cellFra
 	SWTSearchFieldCell cell = new SWTSearchFieldCell(_cell.id);
 
 	if (cell.searchButtonCell() != null) {
-		cell.searchButtonCell().drawInteriorWithFrame(cell.searchButtonRectForBounds(cellFrame), view);
+		NSRect searchRect = cell.searchButtonRectForBounds(cellFrame);
+		cell.searchButtonCell().drawInteriorWithFrame(searchRect, view);
 	}
 
-	if (cell.cancelButtonCell() != null && ((NSSearchField) view).stringValue().length() > 0) {
-		cell.cancelButtonCell().drawInteriorWithFrame(cell.cancelButtonRectForBounds(cellFrame), view);
+	NSCell cancelCell = cell.cancelButtonCell();
+	/*
+	 * FIX: Use the Java-side searchFieldHasText cache rather than calling
+	 * stringValue on the search field during paint. Both NSControl.stringValue
+	 * and NSCell.stringValue dispatch to the same AppKit selector, which
+	 * posts setNeedsDisplay: as a side effect and re-arms the paint loop we
+	 * are trying to complete. See eclipse.platform.ui#3920 and the
+	 * updateSearchFieldHasText() call sites for how the cache is kept current.
+	 */
+	if (cancelCell != null && searchFieldHasText) {
+		NSRect cancelRect = cell.cancelButtonRectForBounds(cellFrame);
+		cancelCell.drawInteriorWithFrame(cancelRect, view);
 	}
 }
 
@@ -2397,7 +2420,9 @@ boolean shouldChangeTextInRange_replacementString(long id, long sel, long affect
 			result = false;
 		}
 	}
-	if (!result) sendEvent (SWT.Modify);
+	if (!result) {
+		sendEvent (SWT.Modify);
+	}
 	return result;
 }
 
@@ -2434,7 +2459,21 @@ void textViewDidChangeSelection(long id, long sel, long aNotification) {
 @Override
 void textDidChange (long id, long sel, long aNotification) {
 	if ((style & SWT.SINGLE) != 0) super.textDidChange (id, sel, aNotification);
+	updateSearchFieldHasText();
 	postEvent (SWT.Modify);
+}
+
+/*
+ * Refresh searchFieldHasText from the native control. Only safe to call
+ * outside a paint pass; querying stringValue during paint re-arms the
+ * very loop this cache exists to break (see eclipse.platform.ui#3920).
+ */
+private void updateSearchFieldHasText() {
+	if ((style & SWT.SEARCH) == 0) return;
+	if (display == null) return;
+	if (display.isPainting != null && display.isPainting.count() > 0) return;
+	NSString value = ((NSControl) view).stringValue();
+	searchFieldHasText = value != null && (int) value.length() > 0;
 }
 
 @Override
