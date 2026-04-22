@@ -329,7 +329,7 @@ pipeline {
 			post {
 				always {
 					junit allowEmptyResults: true, testResults: 'eclipse.platform.swt/tests/*.test*/target/surefire-reports/*.xml'
-					archiveArtifacts allowEmptyArchive: true, artifacts: '**/*.log,*/binaries/*/target/*.jar', excludes: '**/*-sources.jar'
+					archiveArtifacts allowEmptyArchive: true, artifacts: '**/*.log,*/binaries/*/target/*.jar,*/bundles/*/target/*.jar', excludes: '**/*-sources.jar'
 					discoverGitReferenceBuild referenceJob: 'eclipse.platform.swt/master'
 					// To accept unstable builds (test errors or new warnings introduced by third party changes) as reference using "ignoreQualityGate:true"
 					recordIssues enabledForFailure: true, publishAllIssues: true, ignoreQualityGate: true, tools: [
