@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2025 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -1516,18 +1516,20 @@ public void setImage(int index, Image image) {
 				 * Feature in GTK: a Tree with the style SWT.VIRTUAL has
 				 * fixed-height-mode enabled. This will limit the size of
 				 * any cells, including renderers. In order to prevent
-				 * images from disappearing/being cropped, we re-create
-				 * the renderers when the first image is set. Fix for
+				 * images from disappearing/being cropped, GTK's cached
+				 * row height must be invalidated so it re-measures with
+				 * the new pixbuf renderer size (set above). Fix for
 				 * bug 480261.
+				 *
+				 * Toggle the fixed-height-mode GObject property
+				 * off and back on. This resets GTK's cached row height
+				 * (fixed_height = -1) and schedules an async widget resize,
+				 * so GTK will re-measure on the next layout pass and pick
+				 * up the updated renderer size.
 				 */
 				if ((parent.style & SWT.VIRTUAL) != 0) {
-					/*
-					 * Only re-create SWT.CHECK renderers if this is the first column.
-					 * Otherwise check-boxes will be rendered in columns they are not
-					 * supposed to be rendered in. See bug 513761.
-					 */
-					boolean check = modelIndex == Tree.FIRST_COLUMN && (parent.style & SWT.CHECK) != 0;
-					parent.createRenderers(column, modelIndex, check, parent.style);
+					OS.g_object_set(parent.handle, OS.fixed_height_mode, false, 0);
+					OS.g_object_set(parent.handle, OS.fixed_height_mode, true, 0);
 				}
 			}
 		}
