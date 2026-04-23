@@ -2130,6 +2130,8 @@ public class GTK extends OS {
 	public static final native void gtk_tree_view_move_column_after(long tree_view, long column, long base_column);
 	/** @param model cast=(GtkTreeModel *) */
 	public static final native long gtk_tree_view_new_with_model(long model);
+	/** @param tree_view cast=(GtkTreeView *) */
+	public static final native void gtk_tree_view_columns_autosize(long tree_view);
 	/**
 	 * @param tree_view cast=(GtkTreeView *)
 	 * @param column cast=(GtkTreeViewColumn *)

@@ -8536,6 +8536,16 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1tree_1view_1column_1set_1widget)
 }
 #endif
 
+#ifndef NO_gtk_1tree_1view_1columns_1autosize
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1tree_1view_1columns_1autosize)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	GTK_NATIVE_ENTER(env, that, gtk_1tree_1view_1columns_1autosize_FUNC);
+	gtk_tree_view_columns_autosize((GtkTreeView *)arg0);
+	GTK_NATIVE_EXIT(env, that, gtk_1tree_1view_1columns_1autosize_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1tree_1view_1convert_1bin_1window_1to_1tree_1coords
 JNIEXPORT void JNICALL GTK_NATIVE(gtk_1tree_1view_1convert_1bin_1window_1to_1tree_1coords)
 	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jint arg2, jintArray arg3, jintArray arg4)

@@ -685,6 +685,7 @@ typedef enum {
 	gtk_1tree_1view_1column_1set_1sort_1order_FUNC,
 	gtk_1tree_1view_1column_1set_1visible_FUNC,
 	gtk_1tree_1view_1column_1set_1widget_FUNC,
+	gtk_1tree_1view_1columns_1autosize_FUNC,
 	gtk_1tree_1view_1convert_1bin_1window_1to_1tree_1coords_FUNC,
 	gtk_1tree_1view_1convert_1bin_1window_1to_1widget_1coords_FUNC,
 	gtk_1tree_1view_1create_1row_1drag_1icon_FUNC,
