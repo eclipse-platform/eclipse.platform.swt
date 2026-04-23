@@ -1522,13 +1522,11 @@ public void setImage(int index, Image image) {
 				 * bug 480261.
 				 *
 				 * Toggle the fixed-height-mode GObject property
-				 * off and back on. This resets GTK's cached row height
-				 * (fixed_height = -1) and schedules an async widget resize,
-				 * so GTK will re-measure on the next layout pass and pick
-				 * up the updated renderer size.
+				 * off, autoresize columns and back on.
 				 */
 				if ((parent.style & SWT.VIRTUAL) != 0) {
 					OS.g_object_set(parent.handle, OS.fixed_height_mode, false, 0);
+					GTK.gtk_tree_view_columns_autosize(parent.handle);
 					OS.g_object_set(parent.handle, OS.fixed_height_mode, true, 0);
 				}
 			}
