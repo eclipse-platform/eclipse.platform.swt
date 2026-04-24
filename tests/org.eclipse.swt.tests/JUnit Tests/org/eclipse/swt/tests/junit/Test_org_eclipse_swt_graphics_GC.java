@@ -72,12 +72,14 @@ import org.junit.jupiter.params.provider.ValueSource;
 @SuppressWarnings("restriction")
 public class Test_org_eclipse_swt_graphics_GC {
 
+private static final int IMAGE_SIZE = 200;
+
 @BeforeEach
 public void setUp() {
 	display = Display.getDefault();
 	shell = new Shell(display);
 	shell.setBounds(0,30,240,290);
-	image = new Image(display, 200, 200);
+	image = new Image(display, IMAGE_SIZE, IMAGE_SIZE);
 	gc = new GC(image);
 }
 
@@ -408,27 +410,24 @@ public void test_drawImageLorg_eclipse_swt_graphics_ImageIIII_withTransform() th
 	try (InputStream is = getClass().getResourceAsStream("collapseall.svg")) {
 		image = new Image(Display.getDefault(), is);
 	}
+
+	Image referenceImage = new Image(display, IMAGE_SIZE, IMAGE_SIZE);
+	GC referenceImageGC = new GC(referenceImage);
+	referenceImageGC.drawImage(image, 0, 0, 4, 4);
+	referenceImageGC.drawImage(image, 10, 10, 4, 4);
+	ImageData referenceImageData = referenceImage.getImageData(DPIUtil.getDeviceZoom());
+	referenceImage.dispose();
+
 	Transform transform = new Transform(display, 2, 0, 0, 2, 0, 0);
 	gc.setTransform(transform);
 	gc.drawImage(image, 0, 0, 2, 2);
-	ImageData resultImageDataWithTransform = getImageDataFromGC(gc, 0, 0, 4, 4);
-
 	gc.setTransform(null);
 	gc.drawImage(image, 10, 10, 4, 4);
-	ImageData resultImageDataWithoutTransform = getImageDataFromGC(gc, 10, 10, 4, 4);
-
-	ImageDataTestHelper.assertImageDataEqual(resultImageDataWithoutTransform, resultImageDataWithoutTransform, resultImageDataWithTransform);
-
-	image.dispose();
 	transform.dispose();
-}
+	ImageData imageData = this.image.getImageData(DPIUtil.getDeviceZoom());
 
-private ImageData getImageDataFromGC(GC gc, int x, int y, int width, int height) {
-	Image extractionImage = new Image(display, width, height);
-	gc.copyArea(extractionImage, x, y);
-	ImageData resultImageData = extractionImage.getImageData();
-	extractionImage.dispose();
-	return resultImageData;
+	ImageDataTestHelper.assertImageDataEqual(referenceImageData, imageData, referenceImageData);
+	image.dispose();
 }
 
 @Test
