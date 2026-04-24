@@ -29,6 +29,7 @@
 		<buildid>${buildId}</buildid>
 		<maven.compiler.release>21</maven.compiler.release>
 		<swtMainProject>${project.basedir}/../../bundles/org.eclipse.swt</swtMainProject>
+		<surefire.failIfNoSpecifiedTests>false</surefire.failIfNoSpecifiedTests>
 	</properties>
 
 	<modules>

@@ -99,8 +99,11 @@ If needed, add packages to `Import-Package` or `Require-Bundle`.
 # Run all tests
 mvn clean verify
 
-# Run specific test class
-mvn test -Dtest=ClassName
+# Run specific test class (requires prior `mvn install` to build dependencies)
+mvn verify -pl :THE_BUNDLE_WITH_THE_ACTUAL_TEST -Dtest=ClassName
+
+# Run specific test class without prior `mvn install` (uses -am to build dependencies inline).
+mvn verify -pl :THE_BUNDLE_WITH_THE_ACTUAL_TEST -am -Dtest=ClassName
 ```
 
 ### Test Location
