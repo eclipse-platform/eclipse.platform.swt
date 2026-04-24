@@ -539,7 +539,7 @@ public void copyArea(Image image, int x, int y) {
 			NSGraphicsContext.setCurrentContext(context);
 			NSAffineTransform transform = NSAffineTransform.transform();
 			NSSize size = image.handle.size();
-			transform.translateXBy(0, size.height-(destHeight + 2 * destY));
+			transform.translateXBy(0, (size.height - (destHeight + 2 * destY)) * scaleFactor);
 			transform.concat();
 			NSRect srcRect = new NSRect();
 			srcRect.x = srcX;
