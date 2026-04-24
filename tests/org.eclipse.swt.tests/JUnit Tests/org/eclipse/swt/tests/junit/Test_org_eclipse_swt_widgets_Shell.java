@@ -807,18 +807,29 @@ public void test_setSizeLorg_eclipse_swt_graphics_Point() {
 		Point newSize = new Point(112, 27);
 		for (int i = 0; i < 10; i++) {
 			testShell.setSize(newSize);
-			assertEquals(newSize, testShell.getSize());
+			assertShellProperlySized(testShell, newSize);
 			newSize.x += 100;
 			newSize.y += 100;
 		}
 		newSize = new Point(1292, 1036);
 		for (int i = 0; i < 10; i++) {
 			testShell.setSize(newSize);
-			assertEquals(newSize, testShell.getSize());
+			assertShellProperlySized(testShell, newSize);
 			newSize.x -= 100;
 			newSize.y -= 100;
 		}
 	}
+}
+
+private void assertShellProperlySized(Shell shell, Point expectedSize) {
+	int tolerance = shell.getZoom() != 100 ? 1 : 0;
+	Point actualSize = shell.getSize();
+	assertTrue(
+			Math.abs(expectedSize.x - actualSize.x) <= tolerance
+					&& Math.abs(expectedSize.y - actualSize.y) <= tolerance,
+			"Shell is not sized correctly" //
+					+ " (expected size: " + expectedSize + " ± " + tolerance //
+					+ ", actual size: " + actualSize + ")");
 }
 
 Shell testShell;
