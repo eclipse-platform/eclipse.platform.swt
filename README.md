@@ -81,6 +81,32 @@ The `while`-loop processes all GUI related events until the shell is disposed wh
 Before exiting, any claimed GUI resources needs to be freed.
 
 
+# Contributing to SWT
+
+Thanks for your interest in this project.
+
+For information about contributing to Eclipse Platform in general, see the general [CONTRIBUTING](https://github.com/eclipse-platform/.github/blob/main/CONTRIBUTING.md) page.
+
+[![Create Eclipse Development Environment for Eclipse SWT](https://download.eclipse.org/oomph/www/setups/svg/SWT.svg)](
+https://www.eclipse.org/setups/installer/?url=https://raw.githubusercontent.com/eclipse-platform/eclipse.platform.swt/master/bundles/org.eclipse.swt.tools/Oomph/PlatformSWTConfiguration.setup&show=true
+"Click to open Eclipse-Installer Auto Launch or drag into your running installer")
+
+## Obtaining the sources
+
+The SWT source code is stored in this Git repository.
+
+This repository uses the [Git Large File Storage](https://git-lfs.com/) (LFS) extension to host also the precompiled SWT native binaries,
+which is therefore required unless binaries are compiled locally.
+
+When using Git from the CLI follow the Git LFS installation and setup instructions:
+- https://github.com/git-lfs/git-lfs/wiki/Installation#installing
+
+When using _EGit_ from within Eclipse follow the EGit user guide on _GIT LFS Support_:
+- https://github.com/eclipse-egit/egit/wiki/User-Guide#git-lfs-support
+
+Note:<br>
+Changes to the binary artifacts must not be committed, as the binaries are compiled only in the Eclipse infrastructure.
+
 ## Building
 
 To build all SWT artifacts and to run all tests,
@@ -94,17 +120,6 @@ mvn clean verify -DskipTests
 ```
 
 For instructions on building the native binaries of SWT see the section [Building native binaries](bundles/org.eclipse.swt/Readme.md#building-native-binaries).
-
-# Contributing to SWT
-
-Thanks for your interest in this project.
-
-For information about contributing to Eclipse Platform in general, see the general [CONTRIBUTING](https://github.com/eclipse-platform/.github/blob/main/CONTRIBUTING.md) page.
-
-[![Create Eclipse Development Environment for Eclipse SWT](https://download.eclipse.org/oomph/www/setups/svg/SWT.svg)](
-https://www.eclipse.org/setups/installer/?url=https://raw.githubusercontent.com/eclipse-platform/eclipse.platform.swt/master/bundles/org.eclipse.swt.tools/Oomph/PlatformSWTConfiguration.setup&show=true
-"Click to open Eclipse-Installer Auto Launch or drag into your running installer")
-
 
 ## Developer Resources
 

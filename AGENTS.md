@@ -23,6 +23,21 @@ SWT consists of two main parts:
 - `examples/` - Example code and snippets
 - `tests/` - JUnit tests
 
+### Native binaries
+
+This repository uses Git Large File Storage (LFS) to store precompiled native binaries.
+The `.gitattributes` file specifies which files are stored using LFS.
+
+If Git LFS is not installed and configured the LFS pointer files are not resolved on checkout and the binaries have to be compiled locally.
+For that, see the `Build Commands` section below.
+
+**NOTE**:
+For GitHub Copilot agent sessions Git LFS checkout is disabled.
+
+Cross-compiling binaries for operating systems other than the one currently in use is not possible, just as testing code for other platforms is not possible.
+If you make changes to code (Java or native) for other platforms, the binaries cannot be rebuilt and the changes cannot be tested locally.
+Instead, rely on the GitHub PR workflows created for each platform to test the changes.
+
 ## Build System
 
 ### Technology Stack
@@ -49,6 +64,8 @@ Instead: modify Java source (e.g., `OS.java`), clean/rebuild the project, then r
 **CRITICAL**: Never commit any built native binary files to git, i.e. files like `libswt-*.so`, `libswt-*.jnilib` or `swt-*.dll`.
 
 See `docs/*.md` and `bundles/org.eclipse.swt/Readme*.md` files for detailed instructions.
+
+Usually only the native binaries of the targeted platform can be built locally.
 
 ## Coding Standards
 
