@@ -2564,6 +2564,19 @@ public class SWT {
 	 */
 	public static final int WEBKIT = 1 << 16;
 
+	 /**
+	 * Experimental This API is experimental and may change or be removed in future releases.
+	 * Style constant specifying that a Canvas should use Skia. Only works for windows and linux.
+	 * for rendering its content (value is 1&lt;&lt;23).
+	 * <p><b>Used By:</b></p>
+	 * <ul>
+	 * <li><code>Canvas</code></li>
+	 * </ul>
+	 *
+	 * @since 3.134
+	 */
+	public static final int SKIA = 1 << 23;
+
 	/**
 	 * Style constant specifying that a Browser should use Edge (WebView2)
 	 * for rendering its content (value is 1&lt;&lt;18).
@@ -5000,3 +5013,4 @@ static {
 	}
 }
 }
+
