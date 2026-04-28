@@ -99,8 +99,13 @@ If needed, add packages to `Import-Package` or `Require-Bundle`.
 # Run all tests
 mvn clean verify
 
-# Run specific test class
-mvn test -Dtest=ClassName
+# Run specific test class (requires prior `mvn install` to build dependencies)
+mvn verify -pl :THE_BUNDLE_WITH_THE_ACTUAL_TEST -Dtest=ClassName
+
+# Run specific test class without prior `mvn install` (uses -am to build dependencies inline).
+# Note: in this project, Tycho's OSGi fragment resolution causes -am to also build all
+# binary fragment bundles. The extra flag suppresses surefire errors in those non-test bundles.
+mvn verify -pl :THE_BUNDLE_WITH_THE_ACTUAL_TEST -am -Dsurefire.failIfNoSpecifiedTests=false -Dtest=ClassName
 ```
 
 ### Test Location
