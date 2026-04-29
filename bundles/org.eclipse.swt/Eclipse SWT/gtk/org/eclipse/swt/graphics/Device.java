@@ -23,6 +23,7 @@ import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.gtk3.*;
 import org.eclipse.swt.internal.gtk4.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * This class is the abstract superclass of all device objects,
@@ -1107,7 +1108,7 @@ protected int getDeviceZoom() {
 		long surface = GTK4.gtk_native_get_surface(GTK4.gtk_widget_get_native(shellHandle));
 		monitor = GDK.gdk_display_get_monitor_at_surface(display, surface);
 	} else {
-		monitor = GDK.gdk_display_get_monitor_at_point(display, 0, 0);
+		monitor = Display.getPrimaryMonitor(display);
 	}
 
 	// GDK can return null monitor in some cases thus play safe

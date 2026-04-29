@@ -6256,17 +6256,34 @@ long gdk_device_get_surface_at_position (double[] win_x, double[] win_y) {
 	return GDK.gdk_device_get_surface_at_position (device, win_x, win_y);
 }
 
-static int _getDeviceZoom (long monitor_num) {
+static int _getDeviceZoom (long monitor) {
 	/*
 	 * We can hard-code 96 as gdk_screen_get_resolution will always return -1
 	 * if gdk_screen_set_resolution has not been called.
 	 */
 	int dpi = 96;
-	long display = GDK.gdk_display_get_default();
-	long monitor = GDK.gdk_display_get_monitor_at_point(display, 0, 0);
-	int scale = GDK.gdk_monitor_get_scale_factor(monitor);
-	dpi = dpi * scale;
+	if (monitor == 0) {
+		monitor = getPrimaryMonitor(GDK.gdk_display_get_default());
+	}
+	if (monitor != 0) {
+		int scale = GDK.gdk_monitor_get_scale_factor(monitor);
+		dpi = dpi * scale;
+	}
 	return DPIUtil.mapDPIToZoom (dpi);
+}
+
+/**
+ * Returns the GDK primary monitor handle, falling back to the monitor at
+ * virtual coordinate (0,0) when no primary monitor is reported (e.g. on Wayland).
+ *
+ * @noreference This method is not intended to be referenced by clients.
+ */
+public static long getPrimaryMonitor(long display) {
+	long monitor = GDK.gdk_display_get_primary_monitor(display);
+	if (monitor == 0) {
+		monitor = GDK.gdk_display_get_monitor_at_point(display, 0, 0);
+	}
+	return monitor;
 }
 
 static boolean isActivateShellOnForceFocus() {
