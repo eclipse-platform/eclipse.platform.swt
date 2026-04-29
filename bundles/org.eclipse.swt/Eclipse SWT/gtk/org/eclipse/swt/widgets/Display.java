@@ -480,6 +480,9 @@ public class Display extends Device implements Executor {
 		{GDK.GDK_Print,					SWT.PRINT_SCREEN},
 		{GDK.GDK_Help,					SWT.HELP},
 
+		{GDK.GDK_Copy,	SWT.COPY},
+		{GDK.GDK_Cut,	SWT.CUT},
+		{GDK.GDK_Paste,	SWT.PASTE},
 	};
 
 	/* Cache pressed modifier state. See Bug 537025. */
