@@ -1107,7 +1107,7 @@ protected int getDeviceZoom() {
 		long surface = GTK4.gtk_native_get_surface(GTK4.gtk_widget_get_native(shellHandle));
 		monitor = GDK.gdk_display_get_monitor_at_surface(display, surface);
 	} else {
-		monitor = GDK.gdk_display_get_monitor_at_point(display, 0, 0);
+		monitor = getPrimaryMonitor(display);
 	}
 
 	// GDK can return null monitor in some cases thus play safe
@@ -1118,6 +1118,20 @@ protected int getDeviceZoom() {
 	}
 
 	return DPIUtil.mapDPIToZoom (dpi);
+}
+
+/**
+ * Returns the GDK primary monitor handle, falling back to the monitor at
+ * virtual coordinate (0,0) when no primary monitor is reported (e.g. on Wayland).
+ *
+ * @noreference This method is not intended to be referenced by clients.
+ */
+protected long getPrimaryMonitor(long display) {
+	long monitor = GDK.gdk_display_get_primary_monitor(display);
+	if (monitor == 0) {
+		monitor = GDK.gdk_display_get_monitor_at_point(display, 0, 0);
+	}
+	return monitor;
 }
 
 }

@@ -2712,7 +2712,7 @@ public Monitor[] getMonitors() {
 					int scaleFactor = (int) GDK.gdk_monitor_get_scale_factor(gdkMonitor);
 					monitor.zoom = scaleFactor * 100;
 				} else {
-					monitor.zoom = Display._getDeviceZoom(monitor.handle);
+					monitor.zoom = _getDeviceZoom(monitor.handle);
 				}
 
 				/* workarea was defined in GTK 3.4. If present, it will return the best results
@@ -6256,16 +6256,19 @@ long gdk_device_get_surface_at_position (double[] win_x, double[] win_y) {
 	return GDK.gdk_device_get_surface_at_position (device, win_x, win_y);
 }
 
-static int _getDeviceZoom (long monitor_num) {
+int _getDeviceZoom (long monitor) {
 	/*
 	 * We can hard-code 96 as gdk_screen_get_resolution will always return -1
 	 * if gdk_screen_set_resolution has not been called.
 	 */
 	int dpi = 96;
-	long display = GDK.gdk_display_get_default();
-	long monitor = GDK.gdk_display_get_monitor_at_point(display, 0, 0);
-	int scale = GDK.gdk_monitor_get_scale_factor(monitor);
-	dpi = dpi * scale;
+	if (monitor == 0) {
+		monitor = getPrimaryMonitor(GDK.gdk_display_get_default());
+	}
+	if (monitor != 0) {
+		int scale = GDK.gdk_monitor_get_scale_factor(monitor);
+		dpi = dpi * scale;
+	}
 	return DPIUtil.mapDPIToZoom (dpi);
 }
 
