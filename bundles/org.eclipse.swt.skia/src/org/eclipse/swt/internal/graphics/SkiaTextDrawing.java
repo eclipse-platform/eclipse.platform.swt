@@ -17,6 +17,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.internal.canvasext.FontProperties;
 import org.eclipse.swt.internal.canvasext.Logger;
 import org.eclipse.swt.internal.skia.DpiScalerUtil;
+import org.eclipse.swt.internal.skia.SkiaResources;
 
 import io.github.humbleui.skija.BlendMode;
 import io.github.humbleui.skija.FontEdging;
@@ -28,15 +29,13 @@ import io.github.humbleui.types.Rect;
 
 public class SkiaTextDrawing {
 	// only for debug purpose use text drawing without cache.
-	public static boolean USE_TEXT_CACHE = true;
 
 	public static void drawText(SkiaGC gc, String[] splits, int flags, int x, int y) {
 
-		if (USE_TEXT_CACHE) {
+		if (SkiaResources.USE_TEXT_IMAGE_CACHE) {
 			drawTextBlobWithCache(gc, splits, flags, x, y);
 			return;
 		}
-
 		drawTextBlobNoCache(gc, splits, flags, x, y);
 
 	}
@@ -120,7 +119,6 @@ public class SkiaTextDrawing {
 		final var surface = gc.getSkiaSurface();
 		final var scaler = new DpiScalerUtil(resources.getScaler());
 
-
 		final boolean transparent = isTransparent(flags);
 
 		final int x = scaler.autoScaleUp(xIn);
@@ -189,8 +187,8 @@ public class SkiaTextDrawing {
 				if (surfaceWidth > MAX_SURFACE_WIDTH) {
 					Logger.logException(new IllegalStateException("Surface width restricted: calculated=" + surfaceWidth //$NON-NLS-1$
 							+ ", max=" + MAX_SURFACE_WIDTH + ", font=" + props.name + ", size=" + size //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-							+ ", backgroundColor=" + backgroundColor + ", foregroundColor=" + foregroundColor  //$NON-NLS-1$//$NON-NLS-2$
-							+ ", antiAlias=" + antiAlias + ", transparent=" + transparent + ", text='" + text + "'"));   //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$//$NON-NLS-4$
+							+ ", backgroundColor=" + backgroundColor + ", foregroundColor=" + foregroundColor //$NON-NLS-1$//$NON-NLS-2$
+							+ ", antiAlias=" + antiAlias + ", transparent=" + transparent + ", text='" + text + "'")); //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$//$NON-NLS-4$
 					surfaceWidth = MAX_SURFACE_WIDTH;
 				}
 				if (surfaceWidth <= 0 || size.y <= 0) {
@@ -211,7 +209,8 @@ public class SkiaTextDrawing {
 						// always clear the support surface, then fill a specific rectangle area with
 						// the background color, the rest stays transparent.
 						try (Paint p = new Paint()) {
-							p.setColor(SkiaColorConverter.convertSWTColorToSkijaColor(gc.getBackground(), gc.getAlpha()));
+							p.setColor(
+									SkiaColorConverter.convertSWTColorToSkijaColor(gc.getBackground(), gc.getAlpha()));
 							p.setMode(PaintMode.FILL);
 							supportSurface.getCanvas().drawRect(
 									new Rect(0, 0, (int) Math.ceil(rect.getWidth() + endOfRectangle), size.y), p);

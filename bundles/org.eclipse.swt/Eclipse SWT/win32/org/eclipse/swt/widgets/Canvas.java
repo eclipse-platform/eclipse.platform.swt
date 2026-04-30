@@ -242,7 +242,12 @@ void reskinChildren (int flags) {
  * </ul>
  */
 public void scroll (int destX, int destY, int x, int y, int width, int height, boolean all) {
+	if(this.externalCanvasHandler != null) {
+		this.externalCanvasHandler.scroll(destX, destY, x, y, width, height, all);
+		return;
+	}
 	checkWidget ();
+
 	int zoom = getAutoscalingZoom();
 	destX = DPIUtil.pointToPixel(destX, zoom);
 	destY = DPIUtil.pointToPixel(destY, zoom);

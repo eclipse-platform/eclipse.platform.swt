@@ -24,11 +24,11 @@ import org.eclipse.swt.graphics.ImageVersion;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.internal.canvasext.FontProperties;
 import org.eclipse.swt.internal.canvasext.IDpiScaler;
-import org.eclipse.swt.internal.graphics.SkiaTextDrawing;
 import org.eclipse.swt.internal.skia.cache.ImageKey;
 import org.eclipse.swt.internal.skia.cache.ImageTextKey;
 import org.eclipse.swt.internal.skia.cache.SplitsTextCache;
 import org.eclipse.swt.widgets.Canvas;
+import org.eclipse.swt.widgets.Display;
 
 import io.github.humbleui.skija.FontEdging;
 import io.github.humbleui.skija.FontHinting;
@@ -38,8 +38,9 @@ import io.github.humbleui.skija.FontStyle;
 import io.github.humbleui.skija.Typeface;
 
 public class SkiaResources {
-	private static final String NO_IMAGE_CACHE = "org.eclipse.swt.internal.skia.noImageCache";
-	private static boolean USE_NO_IMAGE_CACHE = true;
+	private static final String IMAGE_CACHE = "org.eclipse.swt.internal.skia.ImageCache";
+	public static boolean USE_IMAGE_CACHE = false;
+	public static boolean USE_TEXT_IMAGE_CACHE = true;
 
 	/** Maximum number of entries kept in the text-image LRU cache. */
 	private static final int TEXT_IMAGE_CACHE_MAX = 512;
@@ -94,13 +95,14 @@ public class SkiaResources {
 
 	public SkiaResources(Canvas canvas, ISkiaCanvasExtension skiaExtension) {
 
-		USE_NO_IMAGE_CACHE = System.getProperty(NO_IMAGE_CACHE) == null ? false
-				: Boolean.parseBoolean(System.getProperty(NO_IMAGE_CACHE));
+		USE_IMAGE_CACHE = System.getProperty(IMAGE_CACHE) == null ? false
+				: Boolean.parseBoolean(System.getProperty(IMAGE_CACHE));
 
 		this.canvas = canvas;
 		this.skiaExtension = skiaExtension;
 		this.canvas.addListener(SWT.Dispose, e -> resetResources());
 		this.canvas.addListener(SWT.ZoomChanged, e -> resetResources());
+		this.canvas.addListener(SWT.Resize, e -> resetResources());
 	}
 
 	public void setBackground(Color color) {
@@ -175,8 +177,15 @@ public class SkiaResources {
 		}
 
 		final FontStyle style = new FontStyle(props.lfWeight, 5, slant);
-		final io.github.humbleui.skija.Font skijaFont = new io.github.humbleui.skija.Font(
-				extractTypeface(props, style));
+		io.github.humbleui.skija.Font skijaFont = new io.github.humbleui.skija.Font(extractTypeface(props, style));
+
+		final var rect = skijaFont.measureText("T");
+		final var textHeight = rect.getHeight();
+		if (textHeight == 0.0) {
+
+			props.name = Display.getDefault().getSystemFont().getFontData()[0].getName();
+			skijaFont = new io.github.humbleui.skija.Font(extractTypeface(props, style));
+		}
 
 		if (props.lfWidth != 0) {
 			final float stretch = (float) ((props.lfWidth / 10.0) + 0.5);
@@ -200,6 +209,11 @@ public class SkiaResources {
 
 		final FontMgr fm = FontMgr.getDefault();
 		var name = props.name;
+
+		if (name == null || name.isEmpty()) {
+			name = Display.getDefault().getSystemFont().getFontData()[0].getName();
+		}
+
 		name = name.trim();
 
 		if (fontNameMapping.containsKey(name)) {
@@ -342,7 +356,7 @@ public class SkiaResources {
 	}
 
 	public void cacheImage(Image swtImage, int zoom, io.github.humbleui.skija.Image skijaImage) {
-		if (!USE_NO_IMAGE_CACHE) {
+		if (USE_IMAGE_CACHE) {
 			final var key = new ImageKey(swtImage, ImageVersion.getVersion(swtImage), zoom);
 			final var old = imageCache.get(key);
 			if (old != null && !old.isClosed()) {
@@ -358,7 +372,7 @@ public class SkiaResources {
 
 	public void cacheTextImage(String text, FontProperties fontProperties, boolean transparent, int background,
 			int foreground, boolean antiAlias, io.github.humbleui.skija.Image skijaImage) {
-		if (!USE_NO_IMAGE_CACHE) {
+		if (USE_TEXT_IMAGE_CACHE) {
 			final var key = new ImageTextKey(text, fontProperties, transparent, background, foreground, antiAlias);
 			final var old = textImageCache.get(key);
 			if (old != null && !old.isClosed()) {
@@ -370,7 +384,8 @@ public class SkiaResources {
 
 	public io.github.humbleui.skija.Image getTextImage(String text, FontProperties fontProperties, boolean transparent,
 			int background, int foreground, boolean antialias) {
-		return this.textImageCache.get(new ImageTextKey(text, fontProperties, transparent, background, foreground, antialias));
+		return this.textImageCache
+				.get(new ImageTextKey(text, fontProperties, transparent, background, foreground, antialias));
 	}
 
 	private static String[] splitString(String text) {
@@ -385,13 +400,12 @@ public class SkiaResources {
 
 		String[] splits = null;
 
-		if (SkiaTextDrawing.USE_TEXT_CACHE) {
+		if (USE_TEXT_IMAGE_CACHE) {
 			splits = cachedTextSplits
 					.get(new SplitsTextCache(inputText, replaceAmpersand, delimiter, tabulatorExpansion));
 		}
 
 		String workInputText = inputText;
-
 
 		if (splits == null) {
 			if (tabulatorExpansion) {
@@ -416,7 +430,7 @@ public class SkiaResources {
 			}
 		}
 
-		if (SkiaTextDrawing.USE_TEXT_CACHE) {
+		if (USE_TEXT_IMAGE_CACHE) {
 			cachedTextSplits.put(new SplitsTextCache(inputText, replaceAmpersand, delimiter, tabulatorExpansion),
 					splits);
 		}

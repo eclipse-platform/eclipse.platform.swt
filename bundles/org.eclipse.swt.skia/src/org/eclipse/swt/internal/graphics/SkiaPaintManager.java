@@ -102,6 +102,10 @@ public class SkiaPaintManager {
 		}
 
 		final var scaledFloats = getScaledPathFloats(scaledLineWidth, floats, scaler);
+		if(scaledFloats == null || scaledFloats.length == 0) {
+			return null;
+		}
+
 		return PathEffect.makeDash(scaledFloats, 0f);
 
 	}

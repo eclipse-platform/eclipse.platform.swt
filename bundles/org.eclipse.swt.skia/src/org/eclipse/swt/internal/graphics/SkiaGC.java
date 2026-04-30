@@ -71,7 +71,7 @@ public class SkiaGC implements IExternalGC {
 	private boolean xorModeActive;
 	private int lineWidth = 1;
 	private int lineCap = SWT.CAP_FLAT;
-	private int lineStyle;
+	private int lineStyle = SWT.LINE_SOLID;
 	private Pattern foregroundPattern;
 	private Pattern backgroundPattern;
 
@@ -115,6 +115,8 @@ public class SkiaGC implements IExternalGC {
 		this.paintManager = new SkiaPaintManager(this);
 
 		this.dpiScalerUtil = new DpiScalerUtil(this.resources.getScaler());
+
+		this.currentClipBounds = canvas.getClientArea();
 
 	}
 
@@ -418,7 +420,9 @@ public class SkiaGC implements IExternalGC {
 	public void drawRectangle(int x, int y, int width, int height) {
 
 		paintManager.performDraw(paint -> {
-			surface.getCanvas().drawRect(RectangleConverter.createScaledRectangleWithOffset(dpiScalerUtil, lineWidth, x, y, width, height),  paint);
+			surface.getCanvas().drawRect(
+					RectangleConverter.createScaledRectangleWithOffset(dpiScalerUtil, lineWidth, x, y, width, height),
+					paint);
 		});
 
 	}
@@ -430,9 +434,15 @@ public class SkiaGC implements IExternalGC {
 
 	@Override
 	public void drawRoundRectangle(int x, int y, int width, int height, int arcWidth, int arcHeight) {
-		paintManager.performDraw(paint -> surface.getCanvas().drawRRect(
-				RectangleConverter.offsetRectangle(getScaler(),lineWidth,RectangleConverter.createScaledRoundRectangle(getScaler(),x, y, width, height, arcWidth / 2.0f, arcHeight / 2.0f)),
-				paint));
+		paintManager
+		.performDraw(
+				paint -> surface.getCanvas()
+				.drawRRect(
+						RectangleConverter
+						.offsetRectangle(getScaler(), lineWidth,
+								RectangleConverter.createScaledRoundRectangle(getScaler(), x, y,
+										width, height, arcWidth / 2.0f, arcHeight / 2.0f)),
+						paint));
 	}
 
 	@Override
@@ -476,7 +486,7 @@ public class SkiaGC implements IExternalGC {
 		final int x2 = vertical ? x : x + width;
 		final int y2 = vertical ? y + height : y;
 
-		final Rect rect = RectangleConverter.createScaledRectangle(getScaler(),x, y, width, height);
+		final Rect rect = RectangleConverter.createScaledRectangle(getScaler(), x, y, width, height);
 		int fromColor = SkiaColorConverter.convertSWTColorToSkijaColor(getForeground());
 		int toColor = SkiaColorConverter.convertSWTColorToSkijaColor(getBackground());
 		if (fromColor == toColor) {
@@ -520,8 +530,8 @@ public class SkiaGC implements IExternalGC {
 
 	@Override
 	public void fillOval(int x, int y, int width, int height) {
-		paintManager.performDrawFilled(
-				paint -> surface.getCanvas().drawOval(RectangleConverter.createScaledRectangle(getScaler(),x, y, width, height), paint));
+		paintManager.performDrawFilled(paint -> surface.getCanvas()
+				.drawOval(RectangleConverter.createScaledRectangle(getScaler(), x, y, width, height), paint));
 	}
 
 	@Override
@@ -566,14 +576,15 @@ public class SkiaGC implements IExternalGC {
 
 	@Override
 	public void fillRectangle(int x, int y, int width, int height) {
-		paintManager.performDrawFilled(
-				paint -> surface.getCanvas().drawRect(RectangleConverter.createScaledRectangle(getScaler(),x, y, width, height), paint));
+		paintManager.performDrawFilled(paint -> surface.getCanvas()
+				.drawRect(RectangleConverter.createScaledRectangle(getScaler(), x, y, width, height), paint));
 	}
 
 	@Override
 	public void fillRoundRectangle(int x, int y, int width, int height, int arcWidth, int arcHeight) {
-		paintManager.performDrawFilled(paint -> surface.getCanvas()
-				.drawRRect(RectangleConverter.createScaledRoundRectangle(getScaler(),x, y, width, height, arcWidth / 2.0f, arcHeight / 2.0f), paint));
+		paintManager.performDrawFilled(
+				paint -> surface.getCanvas().drawRRect(RectangleConverter.createScaledRoundRectangle(getScaler(), x, y,
+						width, height, arcWidth / 2.0f, arcHeight / 2.0f), paint));
 	}
 
 	@Override
@@ -616,7 +627,13 @@ public class SkiaGC implements IExternalGC {
 
 	@Override
 	public void setLineWidth(int i) {
-		this.lineWidth = i;
+
+		if (i <= 0) {
+			this.lineWidth = 1;
+		} else {
+			this.lineWidth = i;
+		}
+
 	}
 
 	@Override
@@ -672,7 +689,10 @@ public class SkiaGC implements IExternalGC {
 
 	@Override
 	public Rectangle getClipping() {
-		return currentClipBounds;
+		if (currentClipRegion != null) {
+			return currentClipBounds;
+		}
+		return canvas.getBounds();
 	}
 
 	@Override
@@ -694,8 +714,8 @@ public class SkiaGC implements IExternalGC {
 
 		final io.github.humbleui.skija.Image skijaImage = SwtToSkiaImageConverter.convertSWTImageToSkijaImage(image,
 				getScaler().getNativeZoom(), resources);
-		try (final io.github.humbleui.skija.Image copiedArea = surface.makeImageSnapshot(
-				RectangleConverter.createScaledRectangle(getScaler(),x, y, skijaImage.getWidth(), skijaImage.getHeight()).toIRect())) {
+		try (final io.github.humbleui.skija.Image copiedArea = surface.makeImageSnapshot(RectangleConverter
+				.createScaledRectangle(getScaler(), x, y, skijaImage.getWidth(), skijaImage.getHeight()).toIRect())) {
 
 			if (copiedArea == null) {
 				SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -726,8 +746,8 @@ public class SkiaGC implements IExternalGC {
 
 	@Override
 	public void copyArea(int srcX, int srcY, int width, int height, int destX, int destY) {
-		try (io.github.humbleui.skija.Image copiedArea = surface
-				.makeImageSnapshot(RectangleConverter.createScaledRectangle(getScaler(),srcX, srcY, width, height).toIRect())) {
+		try (io.github.humbleui.skija.Image copiedArea = surface.makeImageSnapshot(
+				RectangleConverter.createScaledRectangle(getScaler(), srcX, srcY, width, height).toIRect())) {
 			surface.getCanvas().drawImage(copiedArea, getScaler().autoScaleUp(destX), getScaler().autoScaleUp(destY));
 		}
 	}
@@ -740,7 +760,8 @@ public class SkiaGC implements IExternalGC {
 			// Save the canvas state before clipping
 			surface.getCanvas().save();
 			// Clip to the destination rectangle so only this area is affected
-			surface.getCanvas().clipRect(RectangleConverter.createScaledRectangle(getScaler(),srcX, srcY, width, height));
+			surface.getCanvas()
+			.clipRect(RectangleConverter.createScaledRectangle(getScaler(), srcX, srcY, width, height));
 			// Clear the clipped area with transparent background (simulates OS.SW_ERASE)
 			surface.getCanvas().clear(SkiaColorConverter.convertSWTColorToSkijaColor(getBackground()));
 			// Restore the canvas state
@@ -939,7 +960,7 @@ public class SkiaGC implements IExternalGC {
 		currentClipBounds = new Rectangle(rect.x, rect.y, rect.width, rect.height);
 		// Push a new canvas layer so the clip can be undone later with restore()
 		canvas.save();
-		canvas.clipRect(RectangleConverter.createScaledRectangle(getScaler(),rect));
+		canvas.clipRect(RectangleConverter.createScaledRectangle(getScaler(), rect));
 		isClipSet = true;
 
 	}
@@ -1010,6 +1031,11 @@ public class SkiaGC implements IExternalGC {
 		if (attributes == null) {
 			SWT.error(SWT.ERROR_NULL_ARGUMENT);
 		}
+
+		if(attributes.width <= 0) {
+			attributes.width = 1;
+		}
+
 		final float scaledWidth = getScaler().autoScaleUp(attributes.width);
 		setLineAttributesInPixels(attributes, scaledWidth);
 	}
@@ -1020,13 +1046,16 @@ public class SkiaGC implements IExternalGC {
 		}
 		boolean changed = false;
 		if (scaledWidth != this.lineWidth) {
-			this.lineWidth = (int) scaledWidth;
+			this.lineWidth = (int) Math.ceil(scaledWidth);
 			changed = true;
 		}
 		// Handle line style with validation
 		int lineStyle = attributes.style;
 		if (lineStyle != this.lineStyle) {
 			switch (lineStyle) {
+			case SWT.NONE:
+				lineStyle = SWT.LINE_SOLID;
+				break;
 			case SWT.LINE_SOLID:
 			case SWT.LINE_DASH:
 			case SWT.LINE_DOT:
@@ -1215,6 +1244,10 @@ public class SkiaGC implements IExternalGC {
 			int selectionEnd, Color selectionForeground, Color selectionBackground, int flags) {
 
 		final var rectangle = textLayout.getBounds();
+
+		if (rectangle.width <= 0 || rectangle.height <= 0) {
+			return;
+		}
 
 		Image i = null;
 		GC nativeGC = null;

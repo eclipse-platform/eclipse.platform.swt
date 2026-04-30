@@ -361,6 +361,10 @@ void reskinChildren (int flags) {
  * </ul>
  */
 public void scroll (int destX, int destY, int x, int y, int width, int height, boolean all) {
+	if(this.externalCanvasHandler != null) {
+		this.externalCanvasHandler.scroll(destX, destY, x, y, width, height, all);
+		return;
+	}
 	checkWidget();
 	if (width <= 0 || height <= 0) return;
 	/*

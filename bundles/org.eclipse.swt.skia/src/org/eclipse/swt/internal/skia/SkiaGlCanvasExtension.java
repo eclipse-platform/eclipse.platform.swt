@@ -55,6 +55,8 @@ implements ISkiaCanvasExtension, IExternalCanvasHandler {
 	private final DpiScalerUtil scaler;
 	private Image lastImage;
 
+	List<BackendRenderTarget> oldRenderTargets = new ArrayList<>();
+
 	private static final int SAMPLES = 0;
 
 	private record RedrawCommand(Rectangle area) {
@@ -91,11 +93,18 @@ implements ISkiaCanvasExtension, IExternalCanvasHandler {
 			renderTarget.close();
 		}
 
+		this.oldRenderTargets.clear();
+
 		// do not close the skijaContext, this freezes the app.
 
 	}
 
 	private void onResize(Event e) {
+
+		if (this.lastImage != null && !this.lastImage.isClosed()) {
+			this.lastImage.close();
+			this.lastImage = null;
+		}
 
 		final Rectangle rect = this.canvas.getClientArea();
 
@@ -110,6 +119,7 @@ implements ISkiaCanvasExtension, IExternalCanvasHandler {
 		if (renderTarget != null && !renderTarget.isClosed()) {
 			renderTarget.close();
 		}
+		oldRenderTargets.add(renderTarget);
 
 		renderTarget = BackendRenderTarget.makeGL(scaled.x, scaled.y, /* samples */SAMPLES, /* stencil */0, /* fbid */0,
 				FramebufferFormat.GR_GL_RGBA8);
@@ -119,10 +129,7 @@ implements ISkiaCanvasExtension, IExternalCanvasHandler {
 		if (surface != null) {
 			surface.getCanvas().clear(getBackgroundForSkia());
 		}
-		if (this.lastImage != null && !this.lastImage.isClosed()) {
-			this.lastImage.close();
-			this.lastImage = null;
-		}
+
 
 	}
 
@@ -311,12 +318,20 @@ implements ISkiaCanvasExtension, IExternalCanvasHandler {
 	public Surface createSupportSurface(int width, int height) {
 		final ImageInfo i = new ImageInfo(new ColorInfo(ColorType.RGBA_8888, ColorAlphaType.PREMUL, null), width,
 				height);
-		return Surface.makeRenderTarget(skijaContext, true, i);
+		// These support surfaces can cause drastic crashes without any information what happened.
+		//
+		return Surface.makeRenderTarget(skijaContext, false, i);
 	}
 
 	@Override
 	public DpiScalerUtil getScaler() {
 		return scaler;
+	}
+
+	@Override
+	public void scroll(int destX, int destY, int x, int y, int width, int height, boolean all) {
+		// TODO lastImage could be used for scrolling and then for the redraw would contain only the new area.
+		canvas.redraw();
 	}
 
 }

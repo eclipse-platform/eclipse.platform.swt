@@ -64,7 +64,7 @@ public class SnippetCanvasTextOCX26 {
 
 		var fd = f.getFontData()[0];
 
-		fd.setHeight(250);
+		fd.setHeight(200);
 
 		e.gc.setAlpha(200);
 		var fontBefore = e.gc.getFont();

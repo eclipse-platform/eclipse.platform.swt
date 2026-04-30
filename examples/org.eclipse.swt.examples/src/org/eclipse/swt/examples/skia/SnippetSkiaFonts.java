@@ -29,18 +29,17 @@ public class SnippetSkiaFonts {
 		setGridData(canvas, 300);
 		setGridData(skiaCanvas, 300);
 
-
 		final var pl = (PaintListener) event -> {
 			final GC gc = event.gc;
 			final FontData[] fontDataArrayScalable = display.getFontList(null, true);
 			final FontData[] fontDataArrayNotScalable = display.getFontList(null, false);
 			int y = 10 - shell.getVerticalBar().getSelection()   ;
-			
+
 			// Courier is a bitmap font on windows, skia does not support it...
 			final Font font1 = new Font(display, "Courier", 20, SWT.NONE);
 			y = drawFont(gc,font1,"Courier",y);
-			
-			
+
+
 			for (final FontData fd : fontDataArrayScalable) {
 
 				fd.setHeight(20);
@@ -51,7 +50,7 @@ public class SnippetSkiaFonts {
 
 				final Font font = new Font(display, fd);
 				y = drawFont(gc,font,"'" + fd.getName() +"'",y);
-				
+
 			}
 
 			for (final FontData fd : fontDataArrayNotScalable) {
@@ -92,12 +91,12 @@ public class SnippetSkiaFonts {
 	}
 
 	private static int drawFont(GC gc, Font font1, String fontName1, int y) {
-		
+
 		gc.setFont(font1);
 		gc.drawText(fontName1, 20, y);
 		font1.dispose();  // Frees system resources
 		y += stepSize;
-		
+
 		return y;
 	}
 

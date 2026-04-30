@@ -11,6 +11,7 @@
 package org.eclipse.swt.internal.canvasext;
 
 import java.util.function.*;
+
 import org.eclipse.swt.widgets.*;
 
 /**
@@ -23,5 +24,7 @@ public interface IExternalCanvasHandler {
 	void redrawTriggered();
 
 	void redrawTriggered(int x, int y, int width, int height, boolean all);
+
+	void scroll(int destX, int destY, int x, int y, int width, int height, boolean all);
 
 }
