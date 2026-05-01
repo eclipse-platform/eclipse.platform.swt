@@ -2135,21 +2135,11 @@ boolean setMarkedText_selectedRange (long id, long sel, long string, long range)
 
 void setNeedsDisplay (long id, long sel, boolean flag) {
 	if (flag && !isDrawing()) return;
-	NSView view = new NSView(id);
 	/*
 	* Since macOS 14 the clipsToBounds property of NSView has to be set to true
 	* See https://developer.apple.com/documentation/macos-release-notes/appkit-release-notes-for-macos-14
 	*/
 	OS.objc_msgSend(id, OS.sel_setClipsToBounds_, true);
-	if (flag && display.isPainting.containsObject(view)) {
-		NSMutableArray needsDisplay = display.needsDisplay;
-		if (needsDisplay == null) {
-			needsDisplay = (NSMutableArray)new NSMutableArray().alloc();
-			display.needsDisplay = needsDisplay = needsDisplay.initWithCapacity(12);
-		}
-		needsDisplay.addObject(view);
-		return;
-	}
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
@@ -2160,22 +2150,11 @@ void setNeedsDisplayInRect (long id, long sel, long arg0) {
 	if (!isDrawing()) return;
 	NSRect rect = new NSRect();
 	OS.memmove(rect, arg0, NSRect.sizeof);
-	NSView view = new NSView(id);
 	/*
 	* Since macOS 14 the clipsToBounds property of NSView has to be set to true
 	* See https://developer.apple.com/documentation/macos-release-notes/appkit-release-notes-for-macos-14
 	*/
 	OS.objc_msgSend(id, OS.sel_setClipsToBounds_, true);
-	if (display.isPainting.containsObject(view)) {
-		NSMutableArray needsDisplayInRect = display.needsDisplayInRect;
-		if (needsDisplayInRect == null) {
-			needsDisplayInRect = (NSMutableArray)new NSMutableArray().alloc();
-			display.needsDisplayInRect = needsDisplayInRect = needsDisplayInRect.initWithCapacity(12);
-		}
-		needsDisplayInRect.addObject(view);
-		needsDisplayInRect.addObject(NSValue.valueWithRect(rect));
-		return;
-	}
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
