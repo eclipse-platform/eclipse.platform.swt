@@ -692,17 +692,17 @@ public class CTabFolderRenderer {
 	}
 
 	void drawClose(GC gc, Rectangle closeRect, int closeImageState) {
-		drawClose(gc, closeRect, closeImageState, false);
+		drawClose(gc, closeRect, closeImageState, false, false);
 	}
 
-	void drawClose(GC gc, Rectangle closeRect, int closeImageState, boolean showDirtyIndicator) {
+	void drawClose(GC gc, Rectangle closeRect, int closeImageState, boolean showDirtyIndicator, boolean selected) {
 		if (closeRect.width == 0 || closeRect.height == 0) return;
 
 		// When dirty and not hovered/pressed, draw bullet instead of X
 		if (showDirtyIndicator) {
 			int maskedState = closeImageState & (SWT.HOT | SWT.SELECTED | SWT.BACKGROUND);
 			if (maskedState != SWT.HOT && maskedState != SWT.SELECTED) {
-				drawDirtyIndicator(gc, closeRect);
+				drawDirtyIndicator(gc, closeRect, selected);
 				return;
 			}
 		}
@@ -737,13 +737,18 @@ public class CTabFolderRenderer {
 		gc.setForeground(originalForeground);
 	}
 
-	private void drawDirtyIndicator(GC gc, Rectangle closeRect) {
+	private void drawDirtyIndicator(GC gc, Rectangle closeRect, boolean selected) {
 		int diameter = 8;
 		int x = closeRect.x + (closeRect.width - diameter) / 2;
 		int y = closeRect.y + (closeRect.height - diameter) / 2;
 		Color originalBackground = gc.getBackground();
+		int originalAlpha = gc.getAlpha();
 		gc.setBackground(gc.getForeground());
+		if (!selected) {
+			gc.setAlpha(140);
+		}
 		gc.fillOval(x, y, diameter, diameter);
+		gc.setAlpha(originalAlpha);
 		gc.setBackground(originalBackground);
 	}
 
@@ -1142,7 +1147,7 @@ public class CTabFolderRenderer {
 				}
 			}
 			if (shouldAllocateCloseRect(item)) {
-				drawClose(gc, item.closeRect, item.closeImageState, shouldDrawDirtyIndicator(item));
+				drawClose(gc, item.closeRect, item.closeImageState, shouldDrawDirtyIndicator(item), true);
 			}
 		}
 	}
@@ -1317,7 +1322,7 @@ public class CTabFolderRenderer {
 			}
 			// draw close or dirty indicator
 			if (shouldAllocateCloseRect(item)) {
-				drawClose(gc, item.closeRect, item.closeImageState, shouldDrawDirtyIndicator(item));
+				drawClose(gc, item.closeRect, item.closeImageState, shouldDrawDirtyIndicator(item), false);
 			}
 		}
 	}
