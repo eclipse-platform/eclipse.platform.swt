@@ -17,6 +17,7 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.cairo.*;
+import org.eclipse.swt.internal.canvasext.*;
 import org.eclipse.swt.internal.gtk.*;
 
 /**
@@ -45,6 +46,7 @@ public class Canvas extends Composite {
 	Caret caret;
 	IME ime;
 	boolean blink, drawFlag;
+	private IExternalCanvasHandler externalCanvasHandler;
 
 Canvas () {}
 
@@ -76,6 +78,28 @@ Canvas () {}
  */
 public Canvas (Composite parent, int style) {
 	super (parent, checkStyle (style));
+	if( ExternalCanvasHandler.isActive(this,style))
+		externalCanvasHandler = ExternalCanvasHandler.createHandler(this);
+}
+
+@Override
+public void redraw () {
+
+	if(externalCanvasHandler != null) {
+		externalCanvasHandler.redrawTriggered();
+	}
+	super.redraw();
+}
+
+@Override
+public void redraw (int x, int y, int width, int height, boolean all) {
+	if(externalCanvasHandler != null) {
+		externalCanvasHandler.redrawTriggered(x,y,width,height,all);
+		super.redraw();
+	}
+	else {
+		super.redraw(x,y,width,height,all);
+	}
 }
 
 /**
@@ -170,6 +194,12 @@ long gtk_commit (long imcontext, long text) {
 @Override
 long gtk_draw (long widget, long cairo) {
 	if ((state & OBSCURED) != 0) return 0;
+
+	if(externalCanvasHandler != null) {
+		externalCanvasHandler.paint((e)-> sendEvent(SWT.Paint, e),widget, cairo);
+		return 0;
+	}
+
 	long result = super.gtk_draw (widget, cairo);
 	drawCaretInFocus(cairo);
 	return result;
