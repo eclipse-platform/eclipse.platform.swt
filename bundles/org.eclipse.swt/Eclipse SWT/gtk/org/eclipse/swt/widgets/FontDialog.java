@@ -111,7 +111,7 @@ public boolean getEffectsVisible () {
  * @return the FontData for the selected font, or null
  * @deprecated use #getFontList ()
  */
-@Deprecated
+@Deprecated(forRemoval = true, since = "2026-06")
 public FontData getFontData () {
 	return fontData;
 }
@@ -301,7 +301,7 @@ public void setEffectsVisible(boolean visible) {
  * @param fontData the FontData to use initially, or null
  * @deprecated use #setFontList (FontData [])
  */
-@Deprecated
+@Deprecated(forRemoval = true, since = "2026-06")
 public void setFontData (FontData fontData) {
 	this.fontData = fontData;
 }
