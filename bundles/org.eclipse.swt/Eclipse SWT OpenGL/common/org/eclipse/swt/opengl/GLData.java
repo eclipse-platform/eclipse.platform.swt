@@ -25,6 +25,11 @@ package org.eclipse.swt.opengl;
  */
 
 public class GLData {
+
+	public static enum Profile {
+		CORE, COMPATIBILITY;
+	}
+
 	/**
 	 * Specifies a double-buffered surface.  During context
 	 * creation, only double-buffered formats are considered
@@ -133,6 +138,24 @@ public class GLData {
 	 */
 	public GLCanvas shareContext;
 
+	/**
+	 * The major GL context version to use. It defaults to 0 for
+	 * "not specified".
+	 */
+	public int majorVersion;
+
+	/**
+	 * The minor GL context version to use. If {@link #majorVersion}
+	 * is 0 this field is unused.
+	 */
+	public int minorVersion;
+
+	/**
+	 * The profile to use. This is only valid when
+	 * ({@link #majorVersion}.{@link #minorVersion}) is at least 3.0.
+	 */
+	public Profile profile;
+
 /**
  * Returns a string containing a concise, human-readable
  * description of the receiver.
@@ -146,6 +169,7 @@ public String toString() {
 		"r:" + redSize + " g:" + greenSize + " b:" + blueSize + " a:" + alphaSize + "," +
 		"depth:" + depthSize + ",stencil:" + stencilSize +
 		",accum r:" + accumRedSize + "g:" + accumGreenSize + "b:" + accumBlueSize + "a:" + accumAlphaSize +
-		",sampleBuffers:" + sampleBuffers + ",samples:" + samples;
+		",sampleBuffers:" + sampleBuffers + ",samples:" + samples +
+		",majorVersion:" + majorVersion + ",minorVersion:" + minorVersion + ",profile:" + profile;
 }
 }
