@@ -16,6 +16,14 @@
 		<failOnJavadocErrors>false</failOnJavadocErrors>
 	</properties>
 
+  <repositories>
+    <repository>
+      <id>orbit-simrel-milestone</id>
+      <url>https://download.eclipse.org/tools/orbit/simrel/orbit-aggregation/milestone/S202604250819</url>
+      <layout>p2</layout>
+    </repository>
+  </repositories>
+
   <!-- The skia canvas on mac is not supported. the tests fail with a class not found exception,
   	   so they will be skipped  -->
   <profiles>
@@ -32,31 +40,6 @@
     </profile>
   </profiles>
 
-	<dependencies>
-		<dependency>
-			<groupId>io.github.humbleui</groupId>
-			<artifactId>skija-shared</artifactId>
-			<version>0.143.11</version>
-		</dependency>
-		<dependency>
-			<groupId>io.github.humbleui</groupId>
-			<artifactId>skija-windows-x64</artifactId>
-			<version>0.143.11</version>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>io.github.humbleui</groupId>
-			<artifactId>skija-linux-x64</artifactId>
-			<version>0.143.11</version>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>io.github.humbleui</groupId>
-			<artifactId>types</artifactId>
-			<version>0.1.1</version>
-		</dependency>
-	</dependencies>
-
 	<build>
 		<plugins>
 			<plugin>
@@ -70,72 +53,6 @@
 							<org.eclipse.swt.buildtime>true</org.eclipse.swt.buildtime>
 						</profileProperties>
 					</dependency-resolution>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>resolve-skija-dependencies</id>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>resolve</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>copy-skija-shared</id>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>copy</goal>
-						</goals>
-						<configuration>
-							<artifactItems>
-								<artifactItem>
-									<groupId>io.github.humbleui</groupId>
-									<artifactId>skija-shared</artifactId>
-									<overWrite>true</overWrite>
-									<version>0.143.11</version>
-									<outputDirectory>${project.basedir}/lib</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>io.github.humbleui</groupId>
-									<artifactId>skija-windows-x64</artifactId>
-									<overWrite>true</overWrite>
-									<version>0.143.11</version>
-									<outputDirectory>${project.basedir}/lib</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>io.github.humbleui</groupId>
-									<artifactId>skija-linux-x64</artifactId>
-									<overWrite>true</overWrite>
-									<version>0.143.11</version>
-									<outputDirectory>${project.basedir}/lib</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>io.github.humbleui</groupId>
-									<artifactId>types</artifactId>
-									<overWrite>true</overWrite>
-									<version>0.1.1</version>
-									<outputDirectory>${project.basedir}/lib</outputDirectory>
-								</artifactItem>
-							</artifactItems>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-clean-plugin</artifactId>
-				<configuration>
-					<filesets>
-						<fileset>
-							<directory>${project.basedir}/lib</directory>
-							<includes>
-								<include>*.jar</include>
-							</includes>
-						</fileset>
-					</filesets>
 				</configuration>
 			</plugin>
 
