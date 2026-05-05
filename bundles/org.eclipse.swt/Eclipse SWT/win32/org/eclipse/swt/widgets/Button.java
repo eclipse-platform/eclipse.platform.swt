@@ -1403,7 +1403,9 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 							gc.dispose ();
 						}
 
-						left += isRadioOrCheck() ? radioOrCheckTextPadding : 0;
+						left += isRadioOrCheck()
+								? radioOrCheckTextPadding
+								: image != null ? MARGIN : 0;
 						RECT textRect = new RECT ();
 						OS.SetRect (textRect, left, nmcd.top + border, right, nmcd.bottom - border);
 
@@ -1420,13 +1422,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 						}
 						OS.DrawText(nmcd.hdc, buffer, buffer.length, textRect, flags | OS.DT_CALCRECT);
 						OS.OffsetRect(textRect, 0, Math.max(0, (nmcd.bottom  - textRect.bottom - border) / 2));
-						if (image != null) {
-							// The default button with an image doesn't respect the text alignment. So we do the same for styled buttons.
-							flags |= OS.DT_LEFT;
-							if (!isRadioOrCheck()) {
-								OS.OffsetRect(textRect, Math.max(MARGIN, (right - textRect.right) / 2 + 1), 0);
-							}
-						} else if ((style & SWT.LEFT) != 0) {
+						if ((style & SWT.LEFT) != 0) {
 							flags |= OS.DT_LEFT;
 						} else if ((style & SWT.RIGHT) != 0) {
 							flags |= OS.DT_RIGHT;
