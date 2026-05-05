@@ -1426,10 +1426,10 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 							flags |= OS.DT_LEFT;
 						} else if ((style & SWT.RIGHT) != 0) {
 							flags |= OS.DT_RIGHT;
-							OS.OffsetRect(textRect, right - textRect.right, 0);
+							OS.OffsetRect(textRect, right - textRect.right - 2, 0);
 						} else {
 							flags |= OS.DT_CENTER;
-							OS.OffsetRect(textRect, (right - textRect.right) / 2, 0);
+							OS.OffsetRect(textRect, (right - textRect.right) / 2 - 1, 0);
 						}
 						OS.SetBkMode(nmcd.hdc, OS.TRANSPARENT);
 						OS.SetTextColor(nmcd.hdc, foreground);
