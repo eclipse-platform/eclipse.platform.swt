@@ -17,7 +17,17 @@ import com.github.weisj.jsvg.logging.Logger;
 
 public class JVSGLoggerLogManager implements LogManager {
 
-	private static final Logger.Level LEVEL = Logger.Level.valueOf(System.getProperty("org.eclipse.swt.svg.logging", "ERROR"));
+	private static final Logger.Level LEVEL = getLogLevel();
+
+	private static Logger.Level getLogLevel() {
+		try {
+			return Enum.valueOf(Logger.Level.class, System.getProperty("org.eclipse.swt.svg.logging", "ERROR").toUpperCase());			
+		} catch (IllegalArgumentException e) {
+			System.err.format("JSVGRasterizer: Invalid log level specified: %s. Defaulting to ERROR.",
+					System.getProperty("org.eclipse.swt.svg.logging")).println();
+			return Logger.Level.ERROR;
+		}
+	}
 
 	@Override
 	public Logger createLogger(String name) {
