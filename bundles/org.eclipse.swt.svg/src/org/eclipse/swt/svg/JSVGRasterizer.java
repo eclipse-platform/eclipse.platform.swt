@@ -55,7 +55,18 @@ import com.github.weisj.jsvg.parser.SVGLoader;
  */
 public class JSVGRasterizer implements SVGRasterizer {
 
-	private static final SVGLoader SVG_LOADER = new SVGLoader();
+	private static final SVGLoader SVG_LOADER;
+
+	static {
+		Thread thread = Thread.currentThread();
+		ClassLoader contextClassLoader = thread.getContextClassLoader();
+		try {
+			thread.setContextClassLoader(JSVGRasterizer.class.getClassLoader());
+			SVG_LOADER = new SVGLoader();
+		} finally {
+			thread.setContextClassLoader(contextClassLoader);
+		}
+	}
 
 	private final static Map<Key, Object> RENDERING_HINTS = Map.of( //
 			KEY_ANTIALIASING, VALUE_ANTIALIAS_ON, //
