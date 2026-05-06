@@ -155,7 +155,7 @@ public class Display extends Device implements Executor {
 	Control currentControl, trackingControl, tooltipControl, ignoreFocusControl;
 	Widget tooltipTarget;
 
-	NSMutableArray isPainting, needsDisplay, needsDisplayInRect, runLoopModes;
+	NSMutableArray isPainting, runLoopModes;
 
 	NSDictionary markedAttributes;
 
@@ -3994,7 +3994,6 @@ public boolean readAndDispatch () {
 			events = true;
 			application.sendEvent(event);
 		}
-		events |= runPaint ();
 		events |= runDeferredEvents ();
 		if (!events) {
 			events = isDisposed () || runAsyncMessages (false);
@@ -4182,11 +4181,9 @@ void releaseDisplay () {
 	if (screenWindow != null) screenWindow.release();
 	screenWindow = null;
 
-	if (needsDisplay != null) needsDisplay.release();
-	if (needsDisplayInRect != null) needsDisplayInRect.release();
 	if (isPainting != null) isPainting.release();
 	if (runLoopModes != null) runLoopModes.release();
-	needsDisplay = needsDisplayInRect = isPainting = runLoopModes = null;
+	isPainting = runLoopModes = null;
 
 	modalShells = null;
 	modalDialog = null;
@@ -4462,28 +4459,6 @@ NSArray runLoopModes() {
 	runLoopModes.retain();
 	runLoopModes.autorelease();
 	return runLoopModes;
-}
-
-boolean runPaint () {
-	if (needsDisplay == null && needsDisplayInRect == null) return false;
-	if (needsDisplay != null) {
-		long count = needsDisplay.count();
-		for (int i = 0; i < count; i++) {
-			OS.objc_msgSend(needsDisplay.objectAtIndex(i).id, OS.sel_setNeedsDisplay_, true);
-		}
-		needsDisplay.release();
-		needsDisplay = null;
-	}
-	if (needsDisplayInRect != null) {
-		long count = needsDisplayInRect.count();
-		for (int i = 0; i < count; i+=2) {
-			NSValue value = new NSValue(needsDisplayInRect.objectAtIndex(i+1));
-			OS.objc_msgSend(needsDisplayInRect.objectAtIndex(i).id, OS.sel_setNeedsDisplayInRect_, value.rectValue());
-		}
-		needsDisplayInRect.release();
-		needsDisplayInRect = null;
-	}
-	return true;
 }
 
 boolean runPopups () {
