@@ -14,10 +14,21 @@ import java.util.function.Supplier;
 
 import com.github.weisj.jsvg.logging.LogManager;
 import com.github.weisj.jsvg.logging.Logger;
+import com.github.weisj.jsvg.logging.Logger.Level;
 
 public class JVSGLoggerLogManager implements LogManager {
 
-	private static final Logger.Level LEVEL = Logger.Level.valueOf(System.getProperty("org.eclipse.swt.svg.logging", "ERROR"));
+	private static final Logger.Level LEVEL = getLogLevel();
+
+	private static Level getLogLevel() {
+		try {
+			return Enum.valueOf(Logger.Level.class, System.getProperty("org.eclipse.swt.svg.logging", "ERROR").toUpperCase());			
+		} catch (IllegalArgumentException e) {
+			System.err.format("JSVGRasterizer: Invalid log level specified: %s. Defaulting to ERROR.",
+					System.getProperty("org.eclipse.swt.svg.logging")).println();
+			return Logger.Level.ERROR;
+		}
+	}
 
 	@Override
 	public Logger createLogger(String name) {
