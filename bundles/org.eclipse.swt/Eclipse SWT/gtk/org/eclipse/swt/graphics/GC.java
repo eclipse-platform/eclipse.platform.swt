@@ -19,6 +19,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Class <code>GC</code> is where all of the drawing capabilities that are
@@ -2622,6 +2623,16 @@ void init(Drawable drawable, GCData data, long gdkGC) {
 	if (cairoTransformationMatrix == null) cairoTransformationMatrix = new double[6];
 	Cairo.cairo_get_matrix(data.cairo, cairoTransformationMatrix);
 	clipping = getClipping();
+	if (drawable instanceof Control control) {
+		final Display display = control.getDisplay();
+		for (Composite parent = control.getParent(); parent != null; parent = parent.getParent()) {
+			Rectangle ancestorClientArea = display.map(parent, control, parent.getClientArea());
+			clipping.intersect(ancestorClientArea);
+			if (parent instanceof Shell) {
+				break;
+			}
+		}
+	}
 }
 
 void initCairo() {
