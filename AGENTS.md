@@ -99,8 +99,8 @@ If needed, add packages to `Import-Package` or `Require-Bundle`.
 # Run all tests
 mvn clean verify
 
-# Run specific test class
-mvn test -Dtest=ClassName
+# Run specific test class (append `#testMethodName` for a single test)
+mvn verify -pl :THE_BUNDLE_WITH_THE_ACTUAL_TEST -am -Dtest=ClassName
 ```
 
 ### Test Location
