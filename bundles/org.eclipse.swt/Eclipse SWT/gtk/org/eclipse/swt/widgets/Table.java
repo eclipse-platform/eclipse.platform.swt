@@ -2310,7 +2310,12 @@ long gtk_draw (long widget, long cairo) {
 		return 0;
 	}
 	drawInheritedBackground (cairo);
-	return super.gtk_draw (widget, cairo);
+	if (GTK.GTK4) {
+		return super.gtk_draw (widget, cairo);
+	} else {
+		// On GTK3 super.gtk_draw will be lost by items drawing thus handle explicitly in windowProc.
+		return 0;
+	}
 }
 
 @Override
@@ -4116,6 +4121,13 @@ long windowProc (long handle, long arg0, long user_data) {
 				}
 				propagateDraw(handle, arg0);
 			}
+			/*
+			 * Ensure the paint listener's drawing appears on top of items rather than being
+			 * overwritten by them.
+			 */
+			if (!GTK.GTK4) {
+				gtk3_paintEvent(arg0);
+			}
 			break;
 		}
 		case EXPOSE_EVENT_INVERSE: {
@@ -4192,6 +4204,33 @@ void checkSetDataInProcessBeforeRemoval(int start, int end) {
 			throw new SWTException(message);
 		}
 	}
+}
+
+/**
+ * Fire the paint event explicitly, so the paint listener's drawing is not lost.
+ */
+private void gtk3_paintEvent(long cairo) {
+	if ((state & OBSCURED) != 0) return;
+	if (drawRegion) {
+		cairoClipRegion(cairo);
+	}
+	if (!hooksPaint()) return;
+	GdkRectangle rect = new GdkRectangle();
+	GDK.gdk_cairo_get_clip_rectangle(cairo, rect);
+	Event event = new Event();
+	event.count = 1;
+	Rectangle eventBounds = new Rectangle(rect.x, rect.y, rect.width, rect.height);
+	if ((style & SWT.MIRRORED) != 0) eventBounds.x = getClientWidth() - eventBounds.width - eventBounds.x;
+	event.setBounds(eventBounds);
+	GCData data = new GCData();
+	if (drawRegion) data.regionSet = eventRegion;
+	data.cairo = cairo;
+	GC gc = event.gc = GC.gtk_new(this, data);
+	gc.setClipping(eventBounds.x, eventBounds.y, eventBounds.width, eventBounds.height);
+	drawWidget(gc);
+	sendEvent(SWT.Paint, event);
+	gc.dispose();
+	event.gc = null;
 }
 
 @Override
