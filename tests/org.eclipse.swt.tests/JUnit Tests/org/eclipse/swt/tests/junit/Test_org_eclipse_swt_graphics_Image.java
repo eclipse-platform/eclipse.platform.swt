@@ -213,16 +213,22 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 	// set red pixel at x=9, y=9
 	data.setPixel(9, 9, 0x30);
 	final Image imageFromImageData = new Image(display, data);
-	ImageGcDrawer gcDrawer = (gc, width, height) -> {
-		gc.drawImage(imageFromImageData, 0, 0);
-	};
-	Image gcImage = new Image(display, gcDrawer, 10, 10);
-	ImageData gcImageData = gcImage.getImageData();
-	int redPixel = gcImageData.getPixel(9, 9);
-	assertEquals(getRealRGB(display.getSystemColor(SWT.COLOR_RED)), gcImageData.palette.getRGB(redPixel));
-	gcImage.dispose();
-	image.dispose();
-	imageFromImageData.dispose();
+	try {
+		ImageGcDrawer gcDrawer = (gc, width, height) -> {
+			gc.drawImage(imageFromImageData, 0, 0);
+		};
+		Image gcImage = new Image(display, gcDrawer, 10, 10);
+		try {
+			ImageData gcImageData = gcImage.getImageData();
+			int redPixel = gcImageData.getPixel(9, 9);
+			assertEquals(getRealRGB(display.getSystemColor(SWT.COLOR_RED)), gcImageData.palette.getRGB(redPixel));
+		} finally {
+			gcImage.dispose();
+		}
+		image.dispose();
+	} finally {
+		imageFromImageData.dispose();
+	}
 }
 
 @Test
@@ -264,13 +270,15 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 		gc.drawImage(image2, 0, 0);
 	};
 	Image gcImage = new Image(display, gcDrawer, 10, 10);
-
-	ImageData gcImageData = gcImage.getImageData();
-	int redPixel = gcImageData.getPixel(9, 9);
-	assertEquals(getRealRGB(display.getSystemColor(SWT.COLOR_RED)), gcImageData.palette.getRGB(redPixel));
-	int bluePixel = gcImageData.getPixel(0, 0);
-	assertEquals(getRealRGB(backgroundColor), gcImageData.palette.getRGB(bluePixel));
-	gcImage.dispose();
+	try {
+		ImageData gcImageData = gcImage.getImageData();
+		int redPixel = gcImageData.getPixel(9, 9);
+		assertEquals(getRealRGB(display.getSystemColor(SWT.COLOR_RED)), gcImageData.palette.getRGB(redPixel));
+		int bluePixel = gcImageData.getPixel(0, 0);
+		assertEquals(getRealRGB(backgroundColor), gcImageData.palette.getRGB(bluePixel));
+	} finally {
+		gcImage.dispose();
+	}
 	image.dispose();
 	image2.dispose();
 }
