@@ -214,6 +214,8 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 	data.setPixel(9, 9, 0x30);
 	final Image imageFromImageData = new Image(display, data);
 	try {
+		int originalDeviceZoom = DPIUtil.getDeviceZoom();
+		DPIUtil.setDeviceZoom(100);
 		ImageGcDrawer gcDrawer = (gc, width, height) -> {
 			gc.drawImage(imageFromImageData, 0, 0);
 		};
@@ -224,6 +226,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 			assertEquals(getRealRGB(display.getSystemColor(SWT.COLOR_RED)), gcImageData.palette.getRGB(redPixel));
 		} finally {
 			gcImage.dispose();
+			DPIUtil.setDeviceZoom(originalDeviceZoom);
 		}
 		image.dispose();
 	} finally {
@@ -269,6 +272,8 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 		gc.fillRectangle(0, 0, 10, 10);
 		gc.drawImage(image2, 0, 0);
 	};
+	int originalDeviceZoom = DPIUtil.getDeviceZoom();
+	DPIUtil.setDeviceZoom(100);
 	Image gcImage = new Image(display, gcDrawer, 10, 10);
 	try {
 		ImageData gcImageData = gcImage.getImageData();
@@ -278,6 +283,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 		assertEquals(getRealRGB(backgroundColor), gcImageData.palette.getRGB(bluePixel));
 	} finally {
 		gcImage.dispose();
+		DPIUtil.setDeviceZoom(originalDeviceZoom);
 	}
 	image.dispose();
 	image2.dispose();
@@ -643,6 +649,7 @@ public void test_getBounds() {
 @Test
 public void test_getBoundsInPixels() {
 	Rectangle initialBounds = new Rectangle(0, 0, 10, 20);
+	Rectangle scaledInitialBounds = scaleBounds(initialBounds, DPIUtil.getDeviceZoom(), 100);
 	Image image1 = new Image(display, initialBounds.width, initialBounds.height);
 	image1.dispose();
 	SWTException e = assertThrows(SWTException.class, () -> image1.getBoundsInPixels());
@@ -655,7 +662,7 @@ public void test_getBoundsInPixels() {
 	Rectangle bounds = image.getBounds();
 	image.dispose();
 	assertEquals(initialBounds, bounds);
-	assertEquals(initialBounds, boundsInPixels);
+	assertEquals(scaledInitialBounds, boundsInPixels);
 
 	// create icon image
 	ImageData imageData = new ImageData(initialBounds.width, initialBounds.height, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
@@ -664,21 +671,21 @@ public void test_getBoundsInPixels() {
 	bounds = image.getBounds();
 	image.dispose();
 	assertEquals(initialBounds, bounds);
-	assertEquals(initialBounds, boundsInPixels);
+	assertEquals(scaledInitialBounds, boundsInPixels);
 
 	// create image with FileNameProvider
 	image = new Image(display, imageFileNameProvider);
 	boundsInPixels = image.getBoundsInPixels();
 	bounds = image.getBounds();
 	image.dispose();
-	assertEquals(bounds, boundsInPixels);
+	assertEquals(scaleBounds(bounds, DPIUtil.getDeviceZoom(), 100), boundsInPixels);
 
 	// create image with ImageDataProvider
 	image = new Image(display, imageDataProvider);
 	boundsInPixels = image.getBoundsInPixels();
 	bounds = image.getBounds();
 	image.dispose();
-	assertEquals(bounds, boundsInPixels);
+	assertEquals(scaleBounds(bounds, DPIUtil.getDeviceZoom(), 100), boundsInPixels);
 
 	// create image with ImageGcDrawer
 	image = new Image(display, imageGcDrawer, initialBounds.width, initialBounds.height);
@@ -686,7 +693,7 @@ public void test_getBoundsInPixels() {
 	bounds = image.getBounds();
 	image.dispose();
 	assertEquals(initialBounds, bounds);
-	assertEquals(initialBounds, boundsInPixels);
+	assertEquals(scaledInitialBounds, boundsInPixels);
 }
 
 @SuppressWarnings("removal")
@@ -704,7 +711,7 @@ public void test_getImageDataCurrentZoom() {
 	ImageData imageDataAtCurrentZoom = image.getImageDataAtCurrentZoom();
 	image.dispose();
 	Rectangle boundsAtCurrentZoom = new Rectangle(0, 0, imageDataAtCurrentZoom.width, imageDataAtCurrentZoom.height);
-	assertEquals(boundsAtCurrentZoom, bounds);
+	assertEquals(boundsAtCurrentZoom, scaleBounds(bounds, DPIUtil.getDeviceZoom(), 100));
 
 	// create icon image and compare size of imageData
 	ImageData imageData = new ImageData(bounds.width, bounds.height, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
@@ -712,7 +719,7 @@ public void test_getImageDataCurrentZoom() {
 	imageDataAtCurrentZoom = image.getImageDataAtCurrentZoom();
 	image.dispose();
 	boundsAtCurrentZoom = new Rectangle(0, 0, imageDataAtCurrentZoom.width, imageDataAtCurrentZoom.height);
-	assertEquals(boundsAtCurrentZoom, bounds);
+	assertEquals(boundsAtCurrentZoom, scaleBounds(bounds, DPIUtil.getDeviceZoom(), 100));
 
 	// create image with FileNameProvider
 	image = new Image(display, imageFileNameProvider);
@@ -720,7 +727,7 @@ public void test_getImageDataCurrentZoom() {
 	boundsAtCurrentZoom = new Rectangle(0, 0, imageDataAtCurrentZoom.width, imageDataAtCurrentZoom.height);
 	bounds = image.getBounds();
 	image.dispose();
-	assertEquals(boundsAtCurrentZoom, bounds);
+	assertEquals(boundsAtCurrentZoom, scaleBounds(bounds, DPIUtil.getDeviceZoom(), 100));
 
 	// create image with ImageDataProvider
 	image = new Image(display, imageDataProvider);
@@ -728,7 +735,7 @@ public void test_getImageDataCurrentZoom() {
 	boundsAtCurrentZoom = new Rectangle(0, 0, imageDataAtCurrentZoom.width, imageDataAtCurrentZoom.height);
 	bounds = image.getBounds();
 	image.dispose();
-	assertEquals(boundsAtCurrentZoom, bounds);
+	assertEquals(boundsAtCurrentZoom, scaleBounds(bounds, DPIUtil.getDeviceZoom(), 100));
 }
 
 @Test
@@ -1128,8 +1135,8 @@ public void test_imageDataIsCached() {
 	};
 	Image fileNameProviderImage = new Image(display, imageFileNameProvider);
 	try {
-		callCount.set(0);
 		fileNameProviderImage.getImageData(100);
+		callCount.set(0);
 		fileNameProviderImage.getImageData(100);
 		fileNameProviderImage.getImageData(100);
 		assertEquals(0, callCount.get());
