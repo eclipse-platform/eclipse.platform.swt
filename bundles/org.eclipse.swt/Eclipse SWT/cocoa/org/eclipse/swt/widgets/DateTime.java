@@ -320,12 +320,12 @@ void hideCalendar() {
 
 int getBezelInset() {
 	//TODO: Determine this value from the system instead of using constants
-	return (buttonView.cell ().controlSize () == OS.NSMiniControlSize) ? 3 : 1;
+	return (buttonView.cell ().controlSize () == OS.NSControlSizeMini) ? 3 : 1;
 }
 
 int getBezelSize() {
 	//TODO: Determine this value from the system instead of using constants
-	return (buttonView.cell ().controlSize () == OS.NSMiniControlSize) ? 6 : 4;
+	return (buttonView.cell ().controlSize () == OS.NSControlSizeMini) ? 6 : 4;
 }
 
 NSCalendarDate getCalendarDate () {
@@ -779,7 +779,7 @@ public void setSeconds (int seconds) {
 
 @Override
 void setSmallSize () {
-	if (buttonView != null) buttonView.cell ().setControlSize (OS.NSMiniControlSize);
+	if (buttonView != null) buttonView.cell ().setControlSize (OS.NSControlSizeMini);
 }
 
 /**

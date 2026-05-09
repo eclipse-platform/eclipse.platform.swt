@@ -954,8 +954,8 @@ void setSelection (int value, boolean setPos, boolean setText, boolean notify) {
 
 @Override
 void setSmallSize () {
-	textView.cell ().setControlSize (OS.NSSmallControlSize);
-	buttonView.cell ().setControlSize (OS.NSSmallControlSize);
+	textView.cell ().setControlSize (OS.NSControlSizeSmall);
+	buttonView.cell ().setControlSize (OS.NSControlSizeSmall);
 }
 
 /**

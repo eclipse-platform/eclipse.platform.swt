@@ -4278,7 +4278,7 @@ public void setSize (Point size) {
 void setSmallSize () {
 	if (view instanceof NSControl) {
 		NSCell cell = ((NSControl)view).cell();
-		if (cell != null) cell.setControlSize (OS.NSSmallControlSize);
+		if (cell != null) cell.setControlSize (OS.NSControlSizeSmall);
 	}
 }
 

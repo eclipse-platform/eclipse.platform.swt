@@ -615,7 +615,7 @@ void createHandle () {
 		buttonCell.init ();
 		checkColumn.setDataCell (buttonCell);
 		buttonCell.setButtonType (OS.NSButtonTypeSwitch);
-		buttonCell.setControlSize (OS.NSSmallControlSize);
+		buttonCell.setControlSize (OS.NSControlSizeSmall);
 		buttonCell.setImagePosition (OS.NSImageOnly);
 		buttonCell.setAllowsMixedState (true);
 		checkColumn.setWidth (getCheckColumnWidth ());
@@ -2191,9 +2191,9 @@ long nextState (long id, long sel) {
 	if (index == -1) index = (int)outlineView.selectedRow ();
 	TreeItem item = (TreeItem)display.getWidget (outlineView.itemAtRow (index).id);
 	if (item.grayed) {
-		return item.checked ? OS.NSOffState : OS.NSMixedState;
+		return item.checked ? OS.NSControlStateValueOff : OS.NSControlStateValueMixed;
 	}
-	return item.checked ? OS.NSOffState : OS.NSOnState;
+	return item.checked ? OS.NSControlStateValueOff : OS.NSControlStateValueOn;
 }
 
 @Override
@@ -2220,9 +2220,9 @@ long outlineView_objectValueForTableColumn_byItem (long id, long sel, long outli
 	if (checkColumn != null && tableColumn == checkColumn.id) {
 		NSNumber value;
 		if (item.checked && item.grayed) {
-			value = NSNumber.numberWithInt (OS.NSMixedState);
+			value = NSNumber.numberWithInt (OS.NSControlStateValueMixed);
 		} else {
-			value = NSNumber.numberWithInt (item.checked ? OS.NSOnState : OS.NSOffState);
+			value = NSNumber.numberWithInt (item.checked ? OS.NSControlStateValueOn : OS.NSControlStateValueOff);
 		}
 		return value.id;
 	}
