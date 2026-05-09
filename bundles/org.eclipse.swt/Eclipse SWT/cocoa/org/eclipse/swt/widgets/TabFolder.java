@@ -632,7 +632,7 @@ void setSelection (int index, boolean notify, boolean force) {
 
 @Override
 void setSmallSize () {
-	((NSTabView)view).setControlSize (OS.NSSmallControlSize);
+	((NSTabView)view).setControlSize (OS.NSControlSizeSmall);
 }
 
 @Override
