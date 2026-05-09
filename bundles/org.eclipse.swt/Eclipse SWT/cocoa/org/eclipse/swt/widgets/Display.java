@@ -3255,7 +3255,7 @@ NSFont getFont (long cls, long sel) {
 	if (font != 0) {
 		result = new NSFont (font);
 	} else {
-		result = NSFont.systemFontOfSize (NSFont.systemFontSizeForControlSize (OS.NSRegularControlSize));
+		result = NSFont.systemFontOfSize (NSFont.systemFontSizeForControlSize (OS.NSControlSizeRegular));
 	}
 	result.retain ();
 	OS.objc_msgSend (widget, OS.sel_release);
