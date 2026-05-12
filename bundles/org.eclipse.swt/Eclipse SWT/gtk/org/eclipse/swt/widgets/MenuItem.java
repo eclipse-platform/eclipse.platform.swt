@@ -762,6 +762,7 @@ void destroyWidget() {
 			aboveSection.sectionItems.addAll(section.sectionItems);
 
 			for (MenuItem item : section.sectionItems) {
+				item.section = aboveSection;
 				OS.g_menu_insert_item(aboveSection.getSectionHandle(), aboveSection.sectionItems.indexOf(item), item.handle);
 			}
 
