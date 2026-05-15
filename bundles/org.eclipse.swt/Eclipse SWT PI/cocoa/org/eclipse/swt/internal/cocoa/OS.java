@@ -38,6 +38,18 @@ public class OS extends C {
 		return (major << 16) + (minor << 8) + bugfix;
 	}
 
+	public static int VERSION_MAJOR (int version) {
+		return (version >>> 16) & 0xFF;
+	}
+
+	public static int VERSION_MINOR (int version) {
+		return (version >>> 8) & 0xFF;
+	}
+
+	public static int VERSION_BUGFIX (int version) {
+		return version & 0xFF;
+	}
+
 	public static final boolean IS_X86_64 = System.getProperty("os.arch").equals("x86_64"); //$NON-NLS-1$
 
 	/*
@@ -335,6 +347,15 @@ public static final native long PMPrinterGetIndexedPrinterResolution(long pmPrin
 /** C calls */
 
 public static final native int getpid();
+
+/**
+ * Returns the SDK version from LC_BUILD_VERSION in the main executable's
+ * Mach-O header, encoded as {@code (major << 16) + (minor << 8) + bugfix}.
+ * Returns 0 if LC_BUILD_VERSION is not found.
+ * @method flags=no_gen
+ */
+public static final native int getMachOSDKVersion();
+public static final int MACH_O_SDK_VERSION = getMachOSDKVersion();
 
 public static final native void call(long proc, long id, long sel);
 
@@ -823,6 +844,7 @@ public static void registerSelector (Long value, Selector selector) {
 public static Selector getSelector (long value) {
 	return SELECTORS.get(value);
 }
+public static final long sel_CGColor = Selector.sel_CGColor.value;
 public static final long sel_CGEvent = Selector.sel_CGEvent.value;
 public static final long sel_DOMDocument = Selector.sel_DOMDocument.value;
 public static final long sel_IBeamCursor = Selector.sel_IBeamCursor.value;
@@ -1653,6 +1675,7 @@ public static final long sel_sendAction_to_ = Selector.sel_sendAction_to_.value;
 public static final long sel_sendAction_to_from_ = Selector.sel_sendAction_to_from_.value;
 public static final long sel_sendEvent_ = Selector.sel_sendEvent_.value;
 public static final long sel_sender = Selector.sel_sender.value;
+public static final long sel_separatorColor = Selector.sel_separatorColor.value;
 public static final long sel_separatorItem = Selector.sel_separatorItem.value;
 public static final long sel_set = Selector.sel_set.value;
 public static final long sel_setAcceptsMouseMovedEvents_ = Selector.sel_setAcceptsMouseMovedEvents_.value;
@@ -1695,6 +1718,7 @@ public static final long sel_setBaseWritingDirection_ = Selector.sel_setBaseWrit
 public static final long sel_setBecomesKeyOnlyIfNeeded_ = Selector.sel_setBecomesKeyOnlyIfNeeded_.value;
 public static final long sel_setBezelStyle_ = Selector.sel_setBezelStyle_.value;
 public static final long sel_setBezeled_ = Selector.sel_setBezeled_.value;
+public static final long sel_setBorderColor_ = Selector.sel_setBorderColor_.value;
 public static final long sel_setBorderType_ = Selector.sel_setBorderType_.value;
 public static final long sel_setBorderWidth_ = Selector.sel_setBorderWidth_.value;
 public static final long sel_setBordered_ = Selector.sel_setBordered_.value;
@@ -1719,6 +1743,7 @@ public static final long sel_setContainerSize_ = Selector.sel_setContainerSize_.
 public static final long sel_setContentView_ = Selector.sel_setContentView_.value;
 public static final long sel_setContentViewMargins_ = Selector.sel_setContentViewMargins_.value;
 public static final long sel_setControlSize_ = Selector.sel_setControlSize_.value;
+public static final long sel_setCornerRadius_ = Selector.sel_setCornerRadius_.value;
 public static final long sel_setCookie_ = Selector.sel_setCookie_.value;
 public static final long sel_setCopiesOnScroll_ = Selector.sel_setCopiesOnScroll_.value;
 public static final long sel_setCurrentContext_ = Selector.sel_setCurrentContext_.value;
@@ -1915,6 +1940,7 @@ public static final long sel_setVerticalScrollElasticity_ = Selector.sel_setVert
 public static final long sel_setVerticalScroller_ = Selector.sel_setVerticalScroller_.value;
 public static final long sel_setView_ = Selector.sel_setView_.value;
 public static final long sel_setVisible_ = Selector.sel_setVisible_.value;
+public static final long sel_setWantsLayer_ = Selector.sel_setWantsLayer_.value;
 public static final long sel_setWantsRestingTouches_ = Selector.sel_setWantsRestingTouches_.value;
 public static final long sel_setWidth_ = Selector.sel_setWidth_.value;
 public static final long sel_setWidthTracksTextView_ = Selector.sel_setWidthTracksTextView_.value;
