@@ -2292,12 +2292,10 @@ void snapshotBackground (long handle, long snapshot) {
 
 /**
  * Converts an incoming snapshot into a gtk_draw() call, complete with
- * a Cairo context.
- *
- * @param handle the widget receiving the snapshot
- * @param snapshot the actual GtkSnapshot
+ * a Cairo context. Used by subclasses to
+ * trigger painting at the appropriate point in the snapshot order.
  */
-void snapshotToDraw (long handle, long snapshot) {
+void snapshotPaint (long handle, long snapshot) {
 	GtkAllocation allocation = new GtkAllocation();
 	GTK.gtk_widget_get_allocation(handle, allocation);
 	long rect = Graphene.graphene_rect_alloc();
@@ -2310,6 +2308,20 @@ void snapshotToDraw (long handle, long snapshot) {
 	}
 
 	Graphene.graphene_rect_free(rect);
+}
+
+/**
+ * Called before child widgets are snapshotted. Containers (Composite) override
+ * this to paint backgrounds behind their children.
+ */
+void snapshotToDraw (long handle, long snapshot) {
+}
+
+/**
+ * Called after child widgets are snapshotted. Leaf controls (Button, Label,
+ * etc.) override this to paint on top of their native appearance.
+ */
+void snapshotToDrawAfterChildren (long handle, long snapshot) {
 }
 
 long gtk_widget_get_window (long widget){

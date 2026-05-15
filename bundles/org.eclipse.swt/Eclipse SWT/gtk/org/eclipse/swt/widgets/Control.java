@@ -525,6 +525,25 @@ boolean hooksPaint () {
 }
 
 @Override
+void snapshotPaint (long handle, long snapshot) {
+	/*
+	 * Guard against creating an empty Cairo render node when there are no paint
+	 * listeners. gtk_snapshot_append_cairo() appends a node immediately; leaving it
+	 * empty/unfinished causes it to obscure render nodes already in the snapshot
+	 * (e.g. GtkTreeView content snapshotted before this call).
+	 */
+	if (!hooksPaint()) return;
+	super.snapshotPaint(handle, snapshot);
+}
+
+@Override
+void snapshotToDrawAfterChildren (long handle, long snapshot) {
+	// Leaf controls (Button, Label, etc.) paint after children so SWT.Paint listeners
+	// draw on top of the native widget appearance, matching GTK3 DRAW (after=true) behavior.
+	snapshotPaint(handle, snapshot);
+}
+
+@Override
 long hoverProc (long widget) {
 	int[] x = new int[1], y = new int[1], mask = new int[1];
 	if (GTK.GTK4) {

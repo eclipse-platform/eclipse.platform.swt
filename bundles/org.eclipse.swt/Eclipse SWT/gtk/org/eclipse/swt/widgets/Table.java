@@ -4234,6 +4234,18 @@ private void gtk3_paintEvent(long cairo) {
 }
 
 @Override
+void snapshotToDraw(long handle, long snapshot) {
+	// Table renders via native GTK children (GtkScrolledWindow > GtkTreeView).
+	// Like GTK3 where Table explicitly fires paint in EXPOSE_EVENT (after=true),
+	// GTK4 must paint after children so SWT.Paint overlays appear on top.
+}
+
+@Override
+void snapshotToDrawAfterChildren(long handle, long snapshot) {
+	snapshotPaint(handle, snapshot);
+}
+
+@Override
 public void dispose() {
 	super.dispose();
 

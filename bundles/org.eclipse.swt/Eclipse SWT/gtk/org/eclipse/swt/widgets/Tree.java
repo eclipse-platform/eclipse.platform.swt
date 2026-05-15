@@ -4306,6 +4306,18 @@ private void gtk3_paintEvent(long cairo) {
 	event.gc = null;
 }
 
+@Override
+void snapshotToDraw(long handle, long snapshot) {
+	// Tree renders via native GTK children (GtkScrolledWindow > GtkTreeView).
+	// Like GTK3 where Tree explicitly fires paint in EXPOSE_EVENT (after=true),
+	// GTK4 must paint after children so SWT.Paint overlays appear on top.
+}
+
+@Override
+void snapshotToDrawAfterChildren(long handle, long snapshot) {
+	snapshotPaint(handle, snapshot);
+}
+
 private void throwCannotRemoveItem(int i) {
 	String message = "Cannot remove item with index " + i + ".";
 	throw new SWTException(message);

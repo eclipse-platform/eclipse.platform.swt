@@ -558,6 +558,18 @@ void snapshotBackground (long handle, long snapshot) {
 	Graphene.graphene_rect_free(rect);
 }
 
+@Override
+void snapshotToDraw (long handle, long snapshot) {
+	// Containers paint before children so SWT.Paint backgrounds appear behind child controls,
+	// matching GTK3 EXPOSE_EVENT_INVERSE (after=false) behavior.
+	snapshotPaint(handle, snapshot);
+}
+
+@Override
+void snapshotToDrawAfterChildren (long handle, long snapshot) {
+	// Suppress Control's after-children paint: Composite already painted before children above.
+}
+
 
 /**
  * Fills the interior of the rectangle specified by the arguments,
