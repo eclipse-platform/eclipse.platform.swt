@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2014 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -518,6 +518,10 @@ void createHandle () {
 		if ((style & SWT.BORDER) == 0) {
 			widget.setFocusRingType (OS.NSFocusRingTypeNone);
 			widget.setBordered (false);
+		} else {
+			if (OS.VERSION >= OS.VERSION(26, 0, 0)) {
+				widget.setBordered (true);
+			}
 		}
 		/*
 		 * Bug in Cocoa: On OSX 10.10, setting the alignment on the search field
