@@ -660,6 +660,23 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 		}
 	}
 
+	/*
+	 * Single column Trees may return a very small initial width if the tree has not
+	 * yet been rendered. Walk all root items to compute the required width directly
+	 * from their cell renderers.
+	 */
+	if (wHint == SWT.DEFAULT && size.x == 0 && columnCount == 0) {
+		long col = GTK.gtk_tree_view_get_column(handle, 0);
+		if (col != 0) {
+			long iter = OS.g_malloc(GTK.GtkTreeIter_sizeof());
+			boolean valid = GTK.gtk_tree_model_iter_children(modelHandle, iter, 0);
+			while (valid) {
+				size.x = Math.max(size.x, calculateWidth(col, iter, true));
+				valid = GTK.gtk_tree_model_iter_next(modelHandle, iter);
+			}
+			OS.g_free(iter);
+		}
+	}
 	Rectangle trim = computeTrimInPixels (0, 0, size.x, size.y);
 	size.x = trim.width;
 	/*
