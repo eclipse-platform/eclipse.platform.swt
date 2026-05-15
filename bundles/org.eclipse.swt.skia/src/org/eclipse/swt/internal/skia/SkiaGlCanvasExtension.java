@@ -16,6 +16,7 @@ import java.util.function.Consumer;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GCExtension;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.canvasext.DpiScaler;
 import org.eclipse.swt.internal.canvasext.IExternalCanvasHandler;
@@ -55,8 +56,6 @@ implements ISkiaCanvasExtension, IExternalCanvasHandler {
 	private final DpiScalerUtil scaler;
 	private Image lastImage;
 
-	List<BackendRenderTarget> oldRenderTargets = new ArrayList<>();
-
 	private static final int SAMPLES = 0;
 
 	private record RedrawCommand(Rectangle area) {
@@ -65,11 +64,10 @@ implements ISkiaCanvasExtension, IExternalCanvasHandler {
 	public SkiaGlCanvasExtension(Canvas canvas) {
 		super(canvas, createGLData());
 		this.resources = new SkiaResources(canvas, this);
-		this.scaler = new DpiScalerUtil( new DpiScaler(canvas));
+		this.scaler = new DpiScalerUtil(new DpiScaler(canvas));
 		setCurrent();
 		skijaContext = DirectContext.makeGL();
 		this.canvas = canvas;
-		this.canvas.addListener(SWT.Resize, this::onResize);
 		this.canvas.addListener(SWT.Dispose, e -> onDispose());
 	}
 
@@ -80,47 +78,39 @@ implements ISkiaCanvasExtension, IExternalCanvasHandler {
 		return data;
 	}
 
-	private void onDispose() {
+	private void closeOpenResources() {
 
 		if (lastImage != null && !lastImage.isClosed()) {
 			lastImage.close();
+			lastImage = null;
 		}
-
-		if (surface != null && !surface.isClosed()) {
-			surface.close();
-		}
-		if (renderTarget != null && !renderTarget.isClosed()) {
-			renderTarget.close();
-		}
-
-		this.oldRenderTargets.clear();
-
-		// do not close the skijaContext, this freezes the app.
-
-	}
-
-	private void onResize(Event e) {
-
-		if (this.lastImage != null && !this.lastImage.isClosed()) {
-			this.lastImage.close();
-			this.lastImage = null;
-		}
-
-		final Rectangle rect = this.canvas.getClientArea();
 
 		if (surface != null && !surface.isClosed()) {
 			surface.close();
 			surface = null;
 		}
-
-		final DpiScalerUtil util = new DpiScalerUtil(resources.getScaler());
-
-		final var scaled = util.scaleSurfaceSize(rect.width, rect.height);
 		if (renderTarget != null && !renderTarget.isClosed()) {
 			renderTarget.close();
+			renderTarget = null;
 		}
-		oldRenderTargets.add(renderTarget);
 
+	}
+
+	private void onDispose() {
+
+		closeOpenResources();
+
+		// do not close the skijaContext, this freezes the app.
+
+	}
+
+	private void recreateSurface() {
+
+		closeOpenResources();
+
+		final Rectangle rect = this.canvas.getClientArea();
+		final DpiScalerUtil util = new DpiScalerUtil(resources.getScaler());
+		final var scaled = util.scaleSurfaceSize(rect.width, rect.height);
 		renderTarget = BackendRenderTarget.makeGL(scaled.x, scaled.y, /* samples */SAMPLES, /* stencil */0, /* fbid */0,
 				FramebufferFormat.GR_GL_RGBA8);
 		surface = Surface.wrapBackendRenderTarget(skijaContext, renderTarget, SurfaceOrigin.BOTTOM_LEFT,
@@ -129,7 +119,6 @@ implements ISkiaCanvasExtension, IExternalCanvasHandler {
 		if (surface != null) {
 			surface.getCanvas().clear(getBackgroundForSkia());
 		}
-
 
 	}
 
@@ -155,8 +144,29 @@ implements ISkiaCanvasExtension, IExternalCanvasHandler {
 	@Override
 	public void doPaint(Consumer<Event> paintEventSender) {
 
-		if (surface == null) {
+		if (!canvas.isVisible() || canvas.getClientArea().isEmpty() || canvas.isDisposed()) {
 			return;
+		}
+		final Rectangle ca = canvas.getClientArea();
+
+		boolean recreateSurface = false;
+		if (surface == null || surface.isClosed()) {
+			recreateSurface = true;
+		} else {
+
+			final Point surfaceRect = new Point(surface.getWidth(), surface.getHeight());
+
+			final DpiScalerUtil util = new DpiScalerUtil(resources.getScaler());
+			final var scaled = util.scaleSurfaceSize(ca.width, ca.height);
+
+			if (!scaled.equals(surfaceRect)) {
+				recreateSurface = true;
+			}
+
+		}
+
+		if (recreateSurface) {
+			recreateSurface();
 		}
 
 		final int saveCount = surface.getCanvas().getSaveCount();
@@ -164,16 +174,7 @@ implements ISkiaCanvasExtension, IExternalCanvasHandler {
 		try {
 
 			setCurrent();
-
 			Rectangle bounds = null;
-
-			final Rectangle ca = canvas.getClientArea();
-
-			// canvas not visible, do nothing...
-			if (ca.isEmpty()) {
-				skijaContext.flush();
-				return;
-			}
 
 			// for which area do we need to execute the paint events?
 			// If there are redraw commands, we can limit the area to the union of the
@@ -205,7 +206,7 @@ implements ISkiaCanvasExtension, IExternalCanvasHandler {
 			final DpiScalerUtil util = new DpiScalerUtil(resources.getScaler());
 
 			// scale the bounds and clip the surface.
-			final var scaledBounds = RectangleConverter.scaleUpRectangle(util,  bounds);
+			final var scaledBounds = RectangleConverter.scaleUpRectangle(util, bounds);
 			// new save count for the clip, so we can restore to this point in order to stay
 			// consistent for the future.
 			this.surface.getCanvas().save();
@@ -318,8 +319,8 @@ implements ISkiaCanvasExtension, IExternalCanvasHandler {
 	public Surface createSupportSurface(int width, int height) {
 		final ImageInfo i = new ImageInfo(new ColorInfo(ColorType.RGBA_8888, ColorAlphaType.PREMUL, null), width,
 				height);
-		// These support surfaces can cause drastic crashes without any information what happened.
-		//
+		// These support surfaces can cause drastic crashes without any information what
+		// happened.
 		return Surface.makeRenderTarget(skijaContext, false, i);
 	}
 
@@ -330,7 +331,8 @@ implements ISkiaCanvasExtension, IExternalCanvasHandler {
 
 	@Override
 	public void scroll(int destX, int destY, int x, int y, int width, int height, boolean all) {
-		// TODO lastImage could be used for scrolling and then for the redraw would contain only the new area.
+		// TODO lastImage could be used for scrolling and then for the redraw would
+		// contain only the new area.
 		canvas.redraw();
 	}
 
