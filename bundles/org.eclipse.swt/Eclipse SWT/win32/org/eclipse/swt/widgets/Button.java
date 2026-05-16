@@ -13,7 +13,8 @@
  *     Conrad Groth - Bug 23837 [FEEP] Button, do not respect foreground and background color on Windows
  *******************************************************************************/
 package org.eclipse.swt.widgets;
-
+import java.util.List;
+import java.util.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
@@ -21,6 +22,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.internal.win32.version.*;
+
 
 /**
  * Instances of this class represent a selectable user interface object that
@@ -263,6 +265,23 @@ long callWindowProc (long hwnd, int msg, long wParam, long lParam) {
 	return OS.CallWindowProc (ButtonProc, hwnd, msg, wParam, lParam);
 }
 
+private static StyleProcessor STYLE_PROCESSOR = new StyleProcessor();
+
+static {
+	StyleProcessor processor = new StyleProcessor();
+
+	if (COMMAND_LINK) {
+		processor.someOf("COMMAND");
+	} else {
+		processor.oneOf("PUSH, ARROW, CHECK, RADIO, TOGGLE");
+	}
+	processor.ifOneOf("PUSH, TOGGLE").thenOneOf("CENTER, LEFT, RIGHT")
+	.ifOneOf("CHECK, RADIO").thenOneOf("LEFT, RIGHT, CENTER")
+	.ifOneOf("ARROW").thenOneOf("UP, DOWN, LEFT, RIGHT");
+
+	STYLE_PROCESSOR = processor;
+}
+
 static int checkStyle (int style) {
 	style = checkBits (style, SWT.PUSH, SWT.ARROW, SWT.CHECK, SWT.RADIO, SWT.TOGGLE, COMMAND_LINK ? SWT.COMMAND : 0);
 	if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0) {
@@ -276,6 +295,11 @@ static int checkStyle (int style) {
 		return checkBits (style, SWT.UP, SWT.DOWN, SWT.LEFT, SWT.RIGHT, 0, 0);
 	}
 	return style;
+
+}
+
+List<String> getStyles() {
+	return STYLE_PROCESSOR.process(this.style);
 }
 
 void click () {
