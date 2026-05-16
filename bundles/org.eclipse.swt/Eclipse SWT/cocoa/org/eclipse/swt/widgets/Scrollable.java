@@ -114,7 +114,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 		size = NSScrollView.frameSizeForContentSize(size,
 			(style & SWT.H_SCROLL) != 0 ? OS.class_NSScroller : 0,
 			(style & SWT.V_SCROLL) != 0 ? OS.class_NSScroller : 0,
-			border, OS.NSRegularControlSize, OS.NSScrollerStyleLegacy);
+			border, OS.NSControlSizeRegular, OS.NSScrollerStyleLegacy);
 		width = (int)size.width;
 		height = (int)size.height;
 		NSRect frame = scrollView.contentView().frame();

@@ -4396,6 +4396,12 @@
 	<enum name="NSCompositeSourceOver" swt_gen="true"></enum>
 	<enum name="NSContentsCellMask" swt_gen="true"></enum>
 	<enum name="NSControlKeyMask" swt_gen="true"></enum>
+	<enum name="NSControlSizeMini" swt_gen="true"></enum>
+	<enum name="NSControlSizeRegular" swt_gen="true"></enum>
+	<enum name="NSControlSizeSmall" swt_gen="true"></enum>
+	<enum name="NSControlStateValueMixed" swt_gen="true"></enum>
+	<enum name="NSControlStateValueOff" swt_gen="true"></enum>
+	<enum name="NSControlStateValueOn" swt_gen="true"></enum>
 	<enum name="NSCriticalAlertStyle" swt_gen="true"></enum>
 	<enum name="NSCurveToBezierPathElement" swt_gen="true"></enum>
 	<enum name="NSDeleteCharacter" swt_gen="true"></enum>
@@ -4438,6 +4444,7 @@
 	<enum name="NSImageLeft" swt_gen="true"></enum>
 	<enum name="NSImageOnly" swt_gen="true"></enum>
 	<enum name="NSImageOverlaps" swt_gen="true"></enum>
+	<enum name="NSImageScaleNone" swt_gen="true"></enum>
 	<enum name="NSInformationalAlertStyle" swt_gen="true"></enum>
 	<enum name="NSItalicFontMask" swt_gen="true"></enum>
 	<enum name="NSKeyDown" swt_gen="true"></enum>
@@ -4454,9 +4461,9 @@
 	<enum name="NSLineBreakByTruncatingTail" swt_gen="true"></enum>
 	<enum name="NSLineBreakByWordWrapping" swt_gen="true"></enum>
 	<enum name="NSLineToBezierPathElement" swt_gen="true"></enum>
-	<enum name="NSMiniControlSize" swt_gen="true"></enum>
+
 	<enum name="NSMiterLineJoinStyle" swt_gen="true"></enum>
-	<enum name="NSMixedState" swt_gen="true"></enum>
+
 	<enum name="NSMouseEntered" swt_gen="true"></enum>
 	<enum name="NSMouseExited" swt_gen="true"></enum>
 	<enum name="NSMouseMoved" swt_gen="true"></enum>
@@ -4466,8 +4473,7 @@
 	<enum name="NSNoImage" swt_gen="true"></enum>
 	<enum name="NSNoTitle" swt_gen="true"></enum>
 	<enum name="NSNonZeroWindingRule" swt_gen="true"></enum>
-	<enum name="NSOffState" swt_gen="true"></enum>
-	<enum name="NSOnState" swt_gen="true"></enum>
+
 	<enum name="NSOpenGLCPSurfaceOrder" swt_gen="true"></enum>
 	<enum name="NSOpenGLPFAAccumSize" swt_gen="true"></enum>
 	<enum name="NSOpenGLPFAAlphaSize" swt_gen="true"></enum>
@@ -4488,7 +4494,7 @@
 	<enum name="NSPrintPanelShowsPrintSelection" swt_gen="true"></enum>
 	<enum name="NSProgressIndicatorPreferredThickness" swt_gen="true"></enum>
 	<enum name="NSRGBColorSpaceModel" swt_gen="true"></enum>
-	<enum name="NSRegularControlSize" swt_gen="true"></enum>
+
 	<enum name="NSRegularSquareBezelStyle" swt_gen="true"></enum>
 	<enum name="NSResizableWindowMask" swt_gen="true"></enum>
 	<enum name="NSRightMouseDown" swt_gen="true"></enum>
@@ -4496,7 +4502,7 @@
 	<enum name="NSRightMouseUp" swt_gen="true"></enum>
 	<enum name="NSRoundLineCapStyle" swt_gen="true"></enum>
 	<enum name="NSRoundLineJoinStyle" swt_gen="true"></enum>
-	<enum name="NSScaleNone" swt_gen="true"></enum>
+
 	<enum name="NSScrollElasticityNone" swt_gen="true"></enum>
 	<enum name="NSScrollWheel" swt_gen="true"></enum>
 	<enum name="NSScrollerDecrementLine" swt_gen="true"></enum>
@@ -4508,7 +4514,7 @@
 	<enum name="NSScrollerStyleLegacy" swt_gen="true"></enum>
 	<enum name="NSScrollerStyleOverlay" swt_gen="true"></enum>
 	<enum name="NSShiftKeyMask" swt_gen="true"></enum>
-	<enum name="NSSmallControlSize" swt_gen="true"></enum>
+
 	<enum name="NSSquareLineCapStyle" swt_gen="true"></enum>
 	<enum name="NSStatusWindowLevel" swt_gen="true"></enum>
 	<enum name="NSStringDrawingUsesLineFragmentOrigin" swt_gen="true"></enum>

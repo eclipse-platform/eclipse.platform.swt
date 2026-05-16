@@ -239,7 +239,7 @@ void createHandle () {
 
 		NSImageView imageWidget = (NSImageView) new SWTImageView ().alloc ();
 		imageWidget.init();
-		imageWidget.setImageScaling (OS.NSScaleNone);
+		imageWidget.setImageScaling (OS.NSImageScaleNone);
 
 		NSTextField textWidget = (NSTextField)new SWTTextField().alloc();
 		textWidget.init();

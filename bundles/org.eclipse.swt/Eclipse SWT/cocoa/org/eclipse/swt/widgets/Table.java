@@ -585,7 +585,7 @@ void createHandle () {
 		buttonCell.init ();
 		checkColumn.setDataCell (buttonCell);
 		buttonCell.setButtonType (OS.NSButtonTypeSwitch);
-		buttonCell.setControlSize(OS.NSSmallControlSize);
+		buttonCell.setControlSize(OS.NSControlSizeSmall);
 		buttonCell.setImagePosition (OS.NSImageOnly);
 		buttonCell.setAllowsMixedState (true);
 		checkColumn.setWidth(getCheckColumnWidth());
@@ -2133,9 +2133,9 @@ long nextState (long id, long sel) {
 	if (index == -1) index = (int)tableView.selectedRow ();
 	TableItem item = items[index];
 	if (item.grayed) {
-		return item.checked ? OS.NSOffState : OS.NSMixedState;
+		return item.checked ? OS.NSControlStateValueOff : OS.NSControlStateValueMixed;
 	}
-	return item.checked ? OS.NSOffState : OS.NSOnState;
+	return item.checked ? OS.NSControlStateValueOff : OS.NSControlStateValueOn;
 }
 
 @Override
@@ -3475,9 +3475,9 @@ long tableView_objectValueForTableColumn_row (long id, long sel, long aTableView
 	if (checkColumn != null && aTableColumn == checkColumn.id) {
 		NSNumber value;
 		if (item.checked && item.grayed) {
-			value = NSNumber.numberWithInt (OS.NSMixedState);
+			value = NSNumber.numberWithInt (OS.NSControlStateValueMixed);
 		} else {
-			value = NSNumber.numberWithInt (item.checked ? OS.NSOnState : OS.NSOffState);
+			value = NSNumber.numberWithInt (item.checked ? OS.NSControlStateValueOn : OS.NSControlStateValueOff);
 		}
 		return value.id;
 	}

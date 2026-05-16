@@ -356,7 +356,7 @@ public Menu getParent () {
 public boolean getSelection () {
 	checkWidget ();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return false;
-	return nsItem.state() == OS.NSOnState;
+	return nsItem.state() == OS.NSControlStateValueOn;
 }
 
 /**
@@ -793,7 +793,7 @@ boolean setRadioSelection (boolean value) {
 public void setSelection (boolean selected) {
 	checkWidget ();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return;
-	nsItem.setState(selected ? OS.NSOnState : OS.NSOffState);
+	nsItem.setState(selected ? OS.NSControlStateValueOn : OS.NSControlStateValueOff);
 }
 
 /**

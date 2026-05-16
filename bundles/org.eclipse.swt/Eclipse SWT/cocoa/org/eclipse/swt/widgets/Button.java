@@ -154,7 +154,7 @@ NSSize cellSizeForBounds (long id, long sel, NSRect cellFrame) {
 	if (((style & (SWT.PUSH|SWT.TOGGLE)) !=0) && (style & (SWT.FLAT|SWT.WRAP)) == 0) {
 		if (image != null) {
 			NSCell cell = new NSCell(id);
-			if (cell.controlSize() == OS.NSSmallControlSize) size.height += EXTRA_HEIGHT;
+			if (cell.controlSize() == OS.NSControlSizeSmall) size.height += EXTRA_HEIGHT;
 		}
 		// TODO: Why is this necessary?
 		size.width += EXTRA_WIDTH;
@@ -339,7 +339,7 @@ void drawBezelWithFrame_inView (long id, long sel, NSRect cellFrame, long viewid
 	if (this.background != null) {
 		NSButton button = (NSButton) view;
 
-		final boolean isHighlighted = (style & SWT.TOGGLE) == 0 ? button.isHighlighted() : ((NSButton) view).state() == OS.NSOnState;
+		final boolean isHighlighted = (style & SWT.TOGGLE) == 0 ? button.isHighlighted() : ((NSButton) view).state() == OS.NSControlStateValueOn;
 
 		final NSWindow window = button.window();
 		final NSButtonCell defaultButtonCell = window == null ? null : window.defaultButtonCell();
@@ -640,8 +640,8 @@ String getNameText () {
 public boolean getSelection () {
 	checkWidget ();
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return false;
-	if ((style & SWT.CHECK) != 0 && grayed) return ((NSButton)view).state() == OS.NSMixedState;
-	return ((NSButton)view).state() == OS.NSOnState;
+	if ((style & SWT.CHECK) != 0 && grayed) return ((NSButton)view).state() == OS.NSControlStateValueMixed;
+	return ((NSButton)view).state() == OS.NSControlStateValueOn;
 }
 
 /**
@@ -674,7 +674,7 @@ boolean isDescribedByLabel () {
 @Override
 long nextState(long id, long sel) {
 	if ((style & SWT.CHECK) != 0 && grayed) {
-		return ((NSButton)view).state() == OS.NSMixedState ? OS.NSOffState : OS.NSMixedState;
+		return ((NSButton)view).state() == OS.NSControlStateValueMixed ? OS.NSControlStateValueOff : OS.NSControlStateValueMixed;
 	}
 
 	return super.nextState(id, sel);
@@ -752,11 +752,11 @@ void sendSelection () {
 		}
 	}
 	if ((style & SWT.CHECK) != 0) {
-		if (grayed && ((NSButton)view).state() == OS.NSOnState) {
-			((NSButton)view).setState(OS.NSOffState);
+		if (grayed && ((NSButton)view).state() == OS.NSControlStateValueOn) {
+			((NSButton)view).setState(OS.NSControlStateValueOff);
 		}
-		if (!grayed && ((NSButton)view).state() == OS.NSMixedState) {
-			((NSButton)view).setState(OS.NSOnState);
+		if (!grayed && ((NSButton)view).state() == OS.NSControlStateValueMixed) {
+			((NSButton)view).setState(OS.NSControlStateValueOn);
 		}
 	}
 	sendSelectionEvent (SWT.Selection);
@@ -824,7 +824,7 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean resiz
 		int heightThreshold = REGULAR_BUTTON_HEIGHT;
 
 		NSCell cell = ((NSControl)view).cell();
-		if (cell != null && cell.controlSize() == OS.NSSmallControlSize) {
+		if (cell != null && cell.controlSize() == OS.NSControlSizeSmall) {
 			heightThreshold = SMALL_BUTTON_HEIGHT;
 		}
 
@@ -887,9 +887,9 @@ public void setGrayed(boolean grayed) {
 
 	if (checked) {
 		if (grayed) {
-			((NSButton) view).setState (OS.NSMixedState);
+			((NSButton) view).setState (OS.NSControlStateValueMixed);
 		} else {
-			((NSButton) view).setState (OS.NSOnState);
+			((NSButton) view).setState (OS.NSControlStateValueOn);
 		}
 	}
 }
@@ -937,9 +937,9 @@ public void setImage (Image image) {
 			NSSize size = cell.cellSize ();
 			int height = (int)Math.ceil(size.height);
 			if (height > SMALL_BUTTON_HEIGHT) {
-				cell.setControlSize(OS.NSRegularControlSize);
+				cell.setControlSize(OS.NSControlSizeRegular);
 			} else if (display.smallFonts){
-				cell.setControlSize(OS.NSSmallControlSize);
+				cell.setControlSize(OS.NSControlSizeSmall);
 			}
 			setFont(getFont());
 		}
@@ -978,9 +978,9 @@ public void setSelection (boolean selected) {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return;
 	if (grayed) {
-		((NSButton)view).setState (selected ? OS.NSMixedState : OS.NSOffState);
+		((NSButton)view).setState (selected ? OS.NSControlStateValueMixed : OS.NSControlStateValueOff);
 	} else {
-		((NSButton)view).setState (selected ? OS.NSOnState : OS.NSOffState);
+		((NSButton)view).setState (selected ? OS.NSControlStateValueOn : OS.NSControlStateValueOff);
 	}
 }
 
