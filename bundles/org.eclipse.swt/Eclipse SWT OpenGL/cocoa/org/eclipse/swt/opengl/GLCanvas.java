@@ -87,24 +87,18 @@ public GLCanvas (Composite parent, int style, GLData data) {
 		attrib [pos++] = data.stencilSize;
 	}
 
-	if (data.profile == Profile.CORE) {
-		attrib[pos++] = NSOpenGLPFAOpenGLProfile;
-		attrib[pos++] = NSOpenGLProfileVersion3_2Core;
-	}
 	if (data.profile == Profile.COMPATIBILITY) {
 		attrib[pos++] = NSOpenGLPFAOpenGLProfile;
 		attrib[pos++] = NSOpenGLProfileVersionLegacy;
+	} else if (data.majorVersion >= 4) {
+		attrib[pos++] = NSOpenGLPFAOpenGLProfile;
+		attrib[pos++] = NSOpenGLProfileVersion4_1Core;
+	} else if (data.majorVersion >= 3 || data.profile == Profile.CORE) {
+		attrib[pos++] = NSOpenGLPFAOpenGLProfile;
+		attrib[pos++] = NSOpenGLProfileVersion3_2Core;
 	} else {
-		if (data.majorVersion >= 4) {
-			attrib[pos++] = NSOpenGLPFAOpenGLProfile;
-			attrib[pos++] = NSOpenGLProfileVersion4_1Core;
-		} else if (data.majorVersion >= 3) {
-			attrib[pos++] = NSOpenGLPFAOpenGLProfile;
-			attrib[pos++] = NSOpenGLProfileVersion3_2Core;
-		} else {
-			attrib[pos++] = NSOpenGLPFAOpenGLProfile;
-			attrib[pos++] = NSOpenGLProfileVersionLegacy;
-		}
+		attrib[pos++] = NSOpenGLPFAOpenGLProfile;
+		attrib[pos++] = NSOpenGLProfileVersionLegacy;
 	}
 
 	/*
