@@ -3,20 +3,13 @@ Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.eclipse.swt.skia
 Bundle-Version: 3.134.0.qualifier
 Automatic-Module-Name: org.eclipse.swt.skia
-Bundle-ClassPath: lib/skija-linux-x64-0.143.11.jar,
- lib/skija-shared-0.143.11.jar,
- lib/skija-windows-x64-0.143.11.jar,
- lib/types-0.1.1.jar,
- lib/,
- ./
 Bundle-Name: %fragmentName
 Bundle-Vendor: %providerName
 Bundle-Localization: fragment
 Bundle-RequiredExecutionEnvironment: JavaSE-21
-Eclipse-ExtensibleAPI: true
-Fragment-Host: org.eclipse.swt;bundle-version="[3.134.0.qualifier,4.0.0)"
 Require-Bundle: io.github.humbleui.skija-shared;bundle-version="0.143.13",
- io.github.humbleui.types;bundle-version="0.2.0"
+ io.github.humbleui.types;bundle-version="0.2.0",
+ org.eclipse.swt
 Export-Package: org.eclipse.swt.internal.canvasext;version="0.0.1";x-friends:="org.eclipse.swt.tests.skia",
  org.eclipse.swt.internal.graphics;version="0.0.1";x-friends:="org.eclipse.swt.tests.skia",
  org.eclipse.swt.internal.skia;version="0.0.1";x-friends:="org.eclipse.swt.tests.skia",
