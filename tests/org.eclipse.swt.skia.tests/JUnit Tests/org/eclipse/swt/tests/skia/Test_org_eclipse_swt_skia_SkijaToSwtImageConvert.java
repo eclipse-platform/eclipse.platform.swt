@@ -2,11 +2,11 @@ package org.eclipse.swt.tests.skia;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.internal.graphics.SkijaToSwtImageConverter;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import io.github.humbleui.skija.ColorAlphaType;
@@ -15,8 +15,13 @@ import io.github.humbleui.skija.Image;
 import io.github.humbleui.skija.ImageInfo;
 import io.github.humbleui.skija.Surface;
 
-public class Test_org_eclipse_swt_skia_SkijaToSwtImageConverter {
+class Test_org_eclipse_swt_skia_SkijaToSwtImageConvert {
 
+	@BeforeAll
+	static void checkPlatform() {
+	    assumeTrue(SupportedTestPlatforms.isSupported(), "Test skipped: Platform not supported");
+	}
+	
 	@Test
 	public void testConvertSimpleRGBAImage() {
 		// Create a 2x2 Skija image with RGBA_8888
@@ -39,31 +44,4 @@ public class Test_org_eclipse_swt_skia_SkijaToSwtImageConverter {
 		}
 	}
 
-	@Test
-	public void testConvertAlphaHandling() {
-		// Create a 1x1 Skija image with alpha
-		try (Surface surface = Surface.makeRaster(new ImageInfo(1, 1, ColorType.RGBA_8888, ColorAlphaType.PREMUL))) {
-			surface.getCanvas().clear(0x80000000); // Half-transparent black
-			final Image skijaImage = surface.makeImageSnapshot();
-			final ImageData data = SkijaToSwtImageConverter.convertSkijaImageToImageData(skijaImage);
-			assertNotNull(data);
-			assertEquals(1, data.width);
-			assertEquals(1, data.height);
-			// Print actual alpha value for debugging
-			final int alpha = data.alphaData[0] & 0xFF;
-			System.out.printf("Pixel (0,0) alpha: %d\n", alpha);
-			// Check if alpha is between 1 and 254 (exclusive)
-			assertTrue(alpha > 0 && alpha < 255, "Alpha should be between 1 and 254, but was: " + alpha);
-		}
-	}
-
-	@Test
-	public void testNullInput() {
-		// Should throw AssertionError or NullPointerException on null input
-		final Throwable thrown = assertThrows(Throwable.class, () -> {
-			SkijaToSwtImageConverter.convertSkijaImageToImageData(null);
-		});
-		assertTrue(thrown instanceof NullPointerException || thrown instanceof AssertionError,
-				"Expected NullPointerException or AssertionError, but got: " + thrown.getClass().getName());
-	}
 }

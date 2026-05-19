@@ -7,10 +7,10 @@ Bundle-Name: %fragmentName
 Bundle-Vendor: %providerName
 Bundle-Localization: fragment
 Bundle-RequiredExecutionEnvironment: JavaSE-21
-Require-Bundle: io.github.humbleui.skija-shared;bundle-version="0.143.13",
- io.github.humbleui.types;bundle-version="0.2.0",
- org.eclipse.swt
-Export-Package: org.eclipse.swt.internal.canvasext;version="0.0.1";x-friends:="org.eclipse.swt.tests.skia",
- org.eclipse.swt.internal.graphics;version="0.0.1";x-friends:="org.eclipse.swt.tests.skia",
- org.eclipse.swt.internal.skia;version="0.0.1";x-friends:="org.eclipse.swt.tests.skia",
- org.eclipse.swt.internal.skia.cache;version="0.0.1";x-friends:="org.eclipse.swt.tests.skia"
+Require-Bundle: org.eclipse.swt;bundle-version="[3.134.0,4.0.0)",
+ io.github.humbleui.skija-shared;bundle-version="0.143.13",
+ io.github.humbleui.types;bundle-version="0.2.0"
+Export-Package: org.eclipse.swt.internal.canvasext;x-friends:="org.eclipse.swt.skia.tests",
+ org.eclipse.swt.internal.graphics;x-friends:="org.eclipse.swt.skia.tests",
+ org.eclipse.swt.internal.skia;x-friends:="org.eclipse.swt.skia.tests",
+ org.eclipse.swt.internal.skia.cache;x-friends:="org.eclipse.swt.skia.tests"

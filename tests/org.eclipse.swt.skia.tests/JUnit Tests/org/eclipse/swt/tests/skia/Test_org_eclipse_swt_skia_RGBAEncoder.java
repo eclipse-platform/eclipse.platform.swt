@@ -2,15 +2,22 @@ package org.eclipse.swt.tests.skia;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.internal.graphics.RGBAEncoder;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 public class Test_org_eclipse_swt_skia_RGBAEncoder {
 
+	@BeforeAll
+	static void checkPlatform() {
+	    assumeTrue(SupportedTestPlatforms.isSupported(), "Test skipped: Platform not supported");
+	}
+	
 	@Test
 	public void testIndexed8BitNoTransparency() {
 		// Palette with red, green, blue

@@ -2,16 +2,24 @@ package org.eclipse.swt.tests.skia;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.graphics.RectangleConverter;
 import org.eclipse.swt.internal.skia.DpiScalerUtil;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import io.github.humbleui.types.RRect;
 import io.github.humbleui.types.Rect;
 
 public class Test_org_eclipse_swt_skia_RectangleConverter {
+
+	@BeforeAll
+	static void checkPlatform() {
+		assumeTrue(SupportedTestPlatforms.isSupported(), "Test skipped: Platform not supported");
+	}
+
 	private final DpiScalerUtil scaler100 = new DpiScalerUtil(100);
 	private final DpiScalerUtil scaler150 = new DpiScalerUtil(150);
 
