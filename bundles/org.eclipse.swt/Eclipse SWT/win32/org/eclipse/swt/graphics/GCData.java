@@ -49,6 +49,7 @@ public final class GCData {
 	public int alpha = 0xFF;
 	public int nativeZoom;
 	int imageZoom;
+	boolean reapplicable;
 
 	public Image image;
 	public PAINTSTRUCT ps;
