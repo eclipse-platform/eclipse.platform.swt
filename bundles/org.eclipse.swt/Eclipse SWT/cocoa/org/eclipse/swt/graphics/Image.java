@@ -1945,5 +1945,13 @@ private class CachedImageAtSize {
 	}
 }
 
+/**
+ * Not supported on Cocoa.
+ * @return the version of the image.
+ */
+ImageVersion getImageVersion() {
+	return null;
+}
+
 }
 

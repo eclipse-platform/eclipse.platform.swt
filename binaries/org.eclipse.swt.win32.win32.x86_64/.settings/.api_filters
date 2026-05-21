@@ -148,6 +148,20 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="Eclipse SWT/common/org/eclipse/swt/SWT.java" type="org.eclipse.swt.SWT">
+        <filter comment="Add SKIA support to SWT." id="336658481">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.SWT"/>
+                <message_argument value="SKIA"/>
+            </message_arguments>
+        </filter>
+        <filter comment="https://github.com/eclipse-platform/eclipse.platform.swt/pull/3127" id="338755678">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.SWT"/>
+                <message_argument value="CHROMIUM"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="Eclipse SWT/common/org/eclipse/swt/graphics/Point.java" type="org.eclipse.swt.graphics.Point$OfFloat">
         <filter id="338944126">
             <message_arguments>
@@ -336,6 +350,60 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="Eclipse SWT/win32/org/eclipse/swt/graphics/FontMetrics.java" type="org.eclipse.swt.graphics.FontMetrics">
+        <filter comment="@noreference is set. Bug in api tools. " id="336658481">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.FontMetrics"/>
+                <message_argument value="handle"/>
+            </message_arguments>
+        </filter>
+        <filter id="574619653">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.FontMetrics.win32_new"/>
+                <message_argument value="org.eclipse.swt.internal.win32.TEXTMETRIC"/>
+            </message_arguments>
+        </filter>
+        <filter id="574619654">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.FontMetrics.handle"/>
+                <message_argument value="org.eclipse.swt.internal.win32.TEXTMETRIC"/>
+            </message_arguments>
+        </filter>
+        <filter id="574619656">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.FontMetrics"/>
+                <message_argument value="handle"/>
+            </message_arguments>
+        </filter>
+        <filter comment="@noreference is set. But in api tools." id="627060751">
+            <message_arguments>
+                <message_argument value="TEXTMETRIC"/>
+                <message_argument value="FontMetrics"/>
+                <message_argument value="handle"/>
+            </message_arguments>
+        </filter>
+        <filter comment="@noreference is set. Bug in api tools." id="643846161">
+            <message_arguments>
+                <message_argument value="TEXTMETRIC"/>
+                <message_argument value="FontMetrics"/>
+                <message_argument value="win32_new(TEXTMETRIC, int)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="Eclipse SWT/win32/org/eclipse/swt/graphics/GC.java" type="org.eclipse.swt.graphics.GC">
+        <filter comment="@noreference is set. But in api tools." id="336658481">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.GC"/>
+                <message_argument value="handle"/>
+            </message_arguments>
+        </filter>
+        <filter id="574619656">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.GC"/>
+                <message_argument value="handle"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="Eclipse SWT/win32/org/eclipse/swt/graphics/GCData.java" type="org.eclipse.swt.graphics.GCData">
         <filter id="627060751">
             <message_arguments>
@@ -353,11 +421,11 @@
             </message_arguments>
         </filter>
     </resource>
-    <resource path="Eclipse SWT/common/org/eclipse/swt/SWT.java" type="org.eclipse.swt.SWT">
-        <filter comment="https://github.com/eclipse-platform/eclipse.platform.swt/pull/3127" id="338755678">
+    <resource path="META-INF/MANIFEST.MF">
+        <filter comment="skia implementation: version upgrade necessary." id="924844039">
             <message_arguments>
-                <message_argument value="org.eclipse.swt.SWT"/>
-                <message_argument value="CHROMIUM"/>
+                <message_argument value="3.134.0"/>
+                <message_argument value="3.134.0"/>
             </message_arguments>
         </filter>
     </resource>
