@@ -2333,6 +2333,7 @@ private class PlainImageProviderWrapper extends AbstractImageProviderWrapper {
 
 	@Override
 	protected long configureGCData(GCData data) {
+		data.reapplicable = true;
 		return configureGC(data, new ZoomContext(DPIUtil.getDeviceZoom(), DPIUtil.getNativeDeviceZoom()));
 	}
 
@@ -2374,7 +2375,7 @@ private class PlainImageProviderWrapper extends AbstractImageProviderWrapper {
 			GC currentGC = memGC;
 			memGC = null;
 			DestroyableImageHandle imageHandle = createHandle(targetZoom);
-			currentGC.refreshFor(new DrawableWrapper(Image.this, zoomContext), imageHandle);
+			currentGC.reapplyTo(new DrawableWrapper(Image.this, zoomContext), imageHandle);
 			return imageHandle;
 		}
 
