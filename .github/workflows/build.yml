@@ -141,6 +141,7 @@ jobs:
         if-no-files-found: warn
         path: |
           ${{ github.workspace }}/**/target/surefire-reports/*.xml
+          ${{ github.workspace }}/**/target/screenshots/*.png
           ${{ github.workspace }}/**/*.log
           ${{ github.workspace }}/**/*.dump
           ${{ github.workspace }}/**/*.dumpstream
