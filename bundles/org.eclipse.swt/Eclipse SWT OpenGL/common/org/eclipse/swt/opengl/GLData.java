@@ -27,7 +27,7 @@ package org.eclipse.swt.opengl;
 public class GLData {
 
 	public static enum Profile {
-		CORE, COMPATIBILITY;
+		CORE, LEGACY;
 	}
 
 	/**
