@@ -4901,16 +4901,31 @@ public void setBackgroundPattern (Pattern pattern) {
 	storeAndApplyOperationForExistingHandle(new SetBackgroundPatternOperation(pattern));
 }
 
-private class SetBackgroundPatternOperation extends Operation {
-	private final Pattern pattern;
+private abstract class PatternOperation extends Operation {
+	private Pattern pattern;
 
+	PatternOperation(Pattern pattern) {
+		this.pattern = pattern;
+	}
+
+	protected Pattern getPattern() {
+		if (pattern != null && pattern.isDisposed()) {
+			// recreate locally managed pattern if the original was disposed
+			pattern = pattern.copy();
+			registerForDisposal(pattern);
+		}
+		return pattern;
+	}
+}
+
+private class SetBackgroundPatternOperation extends PatternOperation {
 	SetBackgroundPatternOperation(Pattern pattern) {
-		this.pattern = pattern == null ? null : pattern.copy();
-		registerForDisposal(this.pattern);
+		super(pattern);
 	}
 
 	@Override
 	void apply() {
+		Pattern pattern = getPattern();
 		if (data.gdipGraphics == 0 && pattern == null) return;
 		initGdip();
 		if (data.backgroundPattern == pattern) return;
@@ -5249,16 +5264,15 @@ public void setForegroundPattern (Pattern pattern) {
 	storeAndApplyOperationForExistingHandle(new SetForegroundPatternOperation(pattern));
 }
 
-private class SetForegroundPatternOperation extends Operation {
-	private final Pattern pattern;
+private class SetForegroundPatternOperation extends PatternOperation {
 
 	SetForegroundPatternOperation(Pattern pattern) {
-		this.pattern = pattern == null ? null : pattern.copy();
-		registerForDisposal(this.pattern);
+		super(pattern);
 	}
 
 	@Override
 	void apply() {
+		Pattern pattern = getPattern();
 		if (data.gdipGraphics == 0 && pattern == null) return;
 		initGdip();
 		if (data.foregroundPattern == pattern) return;
@@ -5990,8 +6004,11 @@ Point textExtentInPixels(String string, int flags) {
 	return new Point(rect.right, rect.bottom);
 }
 
-void refreshFor(Drawable drawable, ImageHandle imageHandle) {
+void reapplyTo(Drawable drawable, ImageHandle imageHandle) {
 	if (drawable == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (!data.reapplicable) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
 	destroy();
 	GCData newData = new GCData();
 	originalData.copyTo(newData);
@@ -6097,9 +6114,13 @@ int getZoom() {
 }
 
 private void storeAndApplyOperationForExistingHandle(Operation operation) {
-	removePreviousOperationIfSupercededBy(operation);
-	operations.add(operation);
 	operation.apply();
+	if (data.reapplicable) {
+		removePreviousOperationIfSupercededBy(operation);
+		operations.add(operation);
+	} else {
+		operation.disposeAll();
+	}
 }
 
 private void removePreviousOperationIfSupercededBy(Operation operation) {

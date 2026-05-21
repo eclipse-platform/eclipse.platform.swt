@@ -487,8 +487,8 @@ public void test_drawImageLorg_eclipse_swt_graphics_ImageIIII_ImageDataAtSizePro
 		Exception e = assertThrows(IllegalArgumentException.class, () -> gc.drawImage(image, 0, 0, 1, 1));
 		assertSWTProblem("Incorrect exception thrown for provider == null", SWT.ERROR_INVALID_ARGUMENT, e);
 	} finally {
-		image.dispose();
 		drawToImage.dispose();
+		image.dispose();
 	}
 }
 
