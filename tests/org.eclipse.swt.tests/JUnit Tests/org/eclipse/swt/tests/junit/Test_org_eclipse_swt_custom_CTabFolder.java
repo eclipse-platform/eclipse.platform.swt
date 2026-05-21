@@ -14,12 +14,14 @@
 package org.eclipse.swt.tests.junit;
 
 
+import static org.eclipse.swt.tests.junit.SwtTestUtil.hasPixel;
+import static org.eclipse.swt.tests.junit.SwtTestUtil.openShell;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -62,6 +64,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.custom.CTabFolder
@@ -110,6 +114,8 @@ public void test_setFontLorg_eclipse_swt_graphics_Font() {
 
 /* custom */
 protected CTabFolder ctabFolder;
+private static final Color RED = new Color(255, 0, 0);
+private static final Color BLUE = new Color(0, 0, 255);
 
 /**
  * Dispose all widgets in shell and create a new empty {@link CTabFolder}.
@@ -1049,4 +1055,46 @@ public void test_dirtyIndicator_closesWhenCloseEnabled() {
 	}
 }
 
+
+@ParameterizedTest
+@CsvSource(value = {"false,1", "false,2", "true,1", "true,2"})
+public void test_tabsAreRendered(boolean nestComposite, int activateTab) {
+	Composite parent = shell;
+	Control[] children = shell.getChildren();
+	for (Control child : children) {
+		child.dispose();
+	}
+	if (nestComposite) {
+		parent = new Composite(parent, SWT.NONE);
+		parent.setLayout(new FillLayout());
+	}
+	ctabFolder = new CTabFolder(parent, SWT.NONE);
+	setWidget(ctabFolder);
+	shell.setSize(800, 400);
+	ctabFolder.setBackground(RED);
+	ctabFolder.setForeground(BLUE);
+	ctabFolder.setSelectionForeground(BLUE);
+	CTabItem tab = createTabItem(1);
+	openShell(shell);
+	processEvents();
+	Rectangle bounds = tab.getBounds();
+	assertTrue(hasPixel(ctabFolder, BLUE, bounds));
+	tab = createTabItem(2);
+	ctabFolder.setSelection(activateTab);
+	SwtTestUtil.processEvents();
+	bounds = tab.getBounds();
+	assertTrue(hasPixel(ctabFolder, BLUE, bounds));
+	tab.dispose();
+	SwtTestUtil.processEvents();
+	assertFalse(hasPixel(ctabFolder, BLUE, bounds));
+}
+
+private CTabItem createTabItem(int i) {
+	CTabItem item = new CTabItem(ctabFolder, SWT.CLOSE);
+	item.setText("█".repeat(10));
+	Label content = new Label(ctabFolder, SWT.NONE);
+	content.setText("Content " + i);
+	item.setControl(content);
+	return item;
+}
 }
