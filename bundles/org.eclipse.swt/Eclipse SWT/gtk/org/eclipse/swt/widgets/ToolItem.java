@@ -298,8 +298,10 @@ void createHandle (int index) {
 		if (GTK.GTK4) {
 			labelHandle = GTK.gtk_label_new_with_mnemonic(null);
 			if (labelHandle == 0) error(SWT.ERROR_NO_HANDLES);
-			imageHandle = GTK.gtk_image_new();
+			imageHandle = GTK4.gtk_picture_new();
 			if (imageHandle == 0) error(SWT.ERROR_NO_HANDLES);
+			GTK.gtk_widget_set_halign(imageHandle, GTK.GTK_ALIGN_CENTER);
+			GTK.gtk_widget_set_valign(imageHandle, GTK.GTK_ALIGN_CENTER);
 
 			GTK.gtk_widget_set_valign(boxHandle, GTK.GTK_ALIGN_CENTER);
 
@@ -779,7 +781,8 @@ void gtk4_enter_event(long controller, double x, double y, long event) {
 				long pixbuf = ImageList.createPixbuf(hotImage);
 				long texture = GDK.gdk_texture_new_for_pixbuf(pixbuf);
 				OS.g_object_unref(pixbuf);
-				GTK4.gtk_image_set_from_paintable(imageHandle, texture);
+				GTK4.gtk_picture_set_paintable(imageHandle, texture);
+				OS.g_object_unref(texture);
 			}
 		}
 	}
@@ -850,7 +853,8 @@ void gtk4_leave_event(long controller, long event) {
 					long pixbuf = ImageList.createPixbuf(image);
 					long texture = GDK.gdk_texture_new_for_pixbuf(pixbuf);
 					OS.g_object_unref(pixbuf);
-					GTK4.gtk_image_set_from_paintable(imageHandle, texture);
+					GTK4.gtk_picture_set_paintable(imageHandle, texture);
+					OS.g_object_unref(texture);
 				}
 			}
 		}
@@ -1373,13 +1377,24 @@ void _setImage (Image image) {
 			long pixbuf = ImageList.createPixbuf(image);
 			long texture = GDK.gdk_texture_new_for_pixbuf(pixbuf);
 			OS.g_object_unref(pixbuf);
-			GTK4.gtk_image_set_from_paintable(imageHandle, texture);
+			GTK4.gtk_picture_set_paintable(imageHandle, texture);
+			OS.g_object_unref(texture);
+			/*
+			 * Pin the GtkPicture to the image's logical (point) size so it occupies the
+			 * same footprint as the previously used GtkImage. The texture is created
+			 * from a device-scaled pixbuf whose intrinsic size is in pixels; without a
+			 * size request GtkPicture would measure to those pixel dimensions, inflating
+			 * the ToolItem and causing overlaps (e.g. the CTabFolder chevron toolbar).
+			 */
+			Rectangle bounds = image.getBounds();
+			GTK.gtk_widget_set_size_request(imageHandle, bounds.width, bounds.height);
 		} else {
 			GTK3.gtk_image_set_from_surface(imageHandle, imageList.getSurface(imageIndex));
 		}
 	} else {
 		if(GTK.GTK4) {
-			GTK4.gtk_image_clear(imageHandle);
+			GTK4.gtk_picture_set_paintable(imageHandle, 0);
+			GTK.gtk_widget_set_size_request(imageHandle, -1, -1);
 			gtk_widget_hide(imageHandle);
 		} else {
 			GTK3.gtk_image_set_from_surface(imageHandle, 0);
