@@ -107,21 +107,9 @@ Check out the repository holding the SWT sources and binaries. I usually do this
 
     git@github.com:eclipse-platform/eclipse.platform.swt.git
 
-Subsequently import all projects from the SWT source repository.  
-From the binary repository, import only: <code>org.eclipse.swt.gtk.linux.x86_64</code>
+Note: Native binaries are stored in the same repository using Git LFS, under `binaries/`. Make sure Git LFS is installed (`git lfs install`) before cloning, otherwise LFS pointer files won't be resolved.
 
-**Modify the .classpath files**
-
-At first you might get many many errors. You first have to tell the project, that you are on Linux/GTK for things to compile/run properly. Specifically for GTK, you must do the following:
-* Open the 'Navigator' view (not package explorer)
-* Under 'org.eclipse.swt' look for the .classpath files
-* Rename .classpath_gtk to .classpath
-* Clean up projects (in Eclipse, Project -> Clean)
-* Now run a test snippet or ControlExample.java, it should work without the compilation errors
-
-If '.classpath_gtk' is missing from navigator, you probably have a broken workspace. Make a new one. This sometimes happens when upgrading from older versions of eclipse.
-
-Edit the org.eclipse.swt.examples project and add the org.eclipse.swt project as dependent. Now you should be able to run the 'ControlExample.java'
+Subsequently import all projects from the SWT repository, including: <code>org.eclipse.swt.gtk.linux.x86_64</code> from the `binaries/` folder.
 
 **Configure git for review**
 
@@ -133,7 +121,7 @@ For general contribution guidelines, see: https://github.com/eclipse-platform/.g
 
 **About**
 
-You checked out two SWT repos: SWT and SWT binaries. The SWT binaries contain ready-build SO files to be used with built with the SWT source code. Sometimes you need to add native GTK functions to OS.java, allowing you to use those new functions in the SWT (Java) source code. After any changes to OS.java, you need to rebuild the GTK .SO bindings. Otherwise SWT will complain about "unsatisfied link errors" between the SWT source code and the binaries.
+The SWT repository contains both source code and precompiled native binaries (stored via Git LFS in the `binaries/` folder). Sometimes you need to add native GTK functions to OS.java, allowing you to use those new functions in the SWT (Java) source code. After any changes to OS.java, you need to rebuild the GTK .SO bindings. Otherwise SWT will complain about "unsatisfied link errors" between the SWT source code and the binaries.
 
 **Prerequisites**
 
@@ -161,11 +149,11 @@ Navigate to folder containing script 1 and execute the script as following:
 
 <code>./build.sh -gtk3 install (or -gtk4 if building for gtk4)</code>
 
-This will clean up old object files, build gtk3 and gtk4 and copy them to the binary git repository. Build.sh has additional parameters, to find out more:  
+This will clean up old object files, build gtk3 and gtk4 and copy them to the `binaries/` folder in the repository. Build.sh has additional parameters, to find out more:  
 
 <code>./build.sh --help</code>
 
-Note, the script doesn't clean the binary repository. Consider using the following to fully automate cleanup and rebuild:
+Note, the script doesn't clean the binaries folder. Consider using the following to fully automate cleanup and rebuild:
 
     #!/bin/bash
     echo "Clean up of bindings"
@@ -221,7 +209,7 @@ After building the native libraries, you can verify they work correctly by:
 
 If you encounter "UnsatisfiedLinkError" exceptions, it means the native libraries weren't built correctly or aren't being found. Double-check that:
 - The build completed successfully without errors
-- The .so files were copied to the binary repository
+- The .so files were copied to the `binaries/` folder in the repository
 - Your Eclipse workspace is using the correct .so files
 
 **References**

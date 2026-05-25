@@ -7,4 +7,3 @@ but only during development work.
 For example install_sysdeps.sh (on linux), is aimed at installing packages that are 
 required to be able to build swt native glue code.
 
-For more details, see the description inside each script.
