@@ -343,6 +343,11 @@ void createHandle (int index, boolean fixed, boolean scrolled) {
 
 	if (GTK.GTK4) {
 		GTK4.gtk_widget_set_focusable(handle, true);
+		/*
+		 * Without GTK_OVERFLOW_HIDDEN children can
+		 * draw freely outside the parent, reproducing the GTK3 clipping behaviour.
+		 */
+		GTK4.gtk_widget_set_overflow(handle, GTK4.GTK_OVERFLOW_HIDDEN);
 	} else {
 		GTK3.gtk_widget_set_has_window(handle, true);
 	}

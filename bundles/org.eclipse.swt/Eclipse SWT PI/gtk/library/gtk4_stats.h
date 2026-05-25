@@ -230,6 +230,7 @@ typedef enum {
 	gtk_1widget_1pick_FUNC,
 	gtk_1widget_1set_1cursor_FUNC,
 	gtk_1widget_1set_1focusable_FUNC,
+	gtk_1widget_1set_1overflow_FUNC,
 	gtk_1widget_1set_1size_1request_FUNC,
 	gtk_1widget_1size_1allocate_FUNC,
 	gtk_1widget_1snapshot_1child_FUNC,

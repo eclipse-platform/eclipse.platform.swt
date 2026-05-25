@@ -2829,6 +2829,16 @@ JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1widget_1set_1focusable)
 }
 #endif
 
+#ifndef NO_gtk_1widget_1set_1overflow
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1widget_1set_1overflow)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1widget_1set_1overflow_FUNC);
+	gtk_widget_set_overflow((GtkWidget *)arg0, (GtkOverflow)arg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1widget_1set_1overflow_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1widget_1set_1size_1request
 JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1widget_1set_1size_1request)
 	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jint arg2)
