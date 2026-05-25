@@ -26,6 +26,9 @@ public class GTK4 {
 	public static final int GTK_EVENT_SEQUENCE_CLAIMED = 1;
 	public static final int GTK_EVENT_SEQUENCE_DENIED = 2;
 
+	public static final int GTK_OVERFLOW_VISIBLE = 0;
+	public static final int GTK_OVERFLOW_HIDDEN = 1;
+
 	public static final int GTK_PICK_DEFAULT = 0;
 	public static final int GTK_PICK_INSENSITIVE = 1;
 	public static final int GTK_PICK_NON_TARGETABLE = 2;
@@ -707,6 +710,11 @@ public class GTK4 {
 	 * @param focusable cast=(gboolean)
 	 */
 	public static final native void gtk_widget_set_focusable(long widget, boolean focusable);
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 * @param overflow cast=(GtkOverflow)
+	 */
+	public static final native void gtk_widget_set_overflow(long widget, int overflow);
 	/** @param widget cast=(GtkWidget *) */
 	public static final native long gtk_widget_get_clipboard(long widget);
 	/**
