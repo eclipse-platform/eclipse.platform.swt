@@ -61,7 +61,10 @@ See `bundles/org.eclipse.swt/Readme.md#building-native-binaries` for instruction
 **CRITICAL**: Files like `os.c`, `os_stats.c`, `os_stats.h` are **auto-generated**. Never edit them directly!
 Instead: modify Java source (e.g., `OS.java`), clean/rebuild the project, then run the native build command above.
 
-**CRITICAL**: Never commit any built native binary files to git, i.e. files like `libswt-*.so`, `libswt-*.jnilib` or `swt-*.dll`.
+**CRITICAL**: Never commit any built native binary files to git. These are built and committed by the CI. This includes:
+- Linux: `libswt-*.so`
+- MacOS: `libswt-*.jnilib`, `libswt-*.dylib`
+- Windows: `swt-*.dll`
 
 See `docs/*.md` and `bundles/org.eclipse.swt/Readme*.md` files for detailed instructions.
 
@@ -80,7 +83,7 @@ Usually only the native binaries of the targeted platform can be built locally.
 - **Platform-specific**: Code goes in platform folders (gtk/, win32/, cocoa/)
 - **JNI**: Communication between Java and native code uses JNI
 - **OS.java**: Central file for native method declarations
-- Do not commit binaries! They will be build and comitted by the CI.
+- **Never commit built binaries** (`*.so`, `*.dll`, `*.jnilib`, `*.dylib`) — They will be built and committed by the CI.
 
 ### Code Organization
 - Platform-independent code: `bundles/org.eclipse.swt/Eclipse SWT/common/`
@@ -165,9 +168,9 @@ mvn verify -pl :THE_BUNDLE_WITH_THE_ACTUAL_TEST -am -DskipNativeTests=false -Dsu
 
 ## Resources
 
-- **Main README**: [`README.md`](../README.md)
-- **Contributing Guide**: [`CONTRIBUTING.md`](../CONTRIBUTING.md)
-- **GTK Development Guide**: [`docs/gtk-dev-guide.md`](../docs/gtk-dev-guide.md)
+- **Main README**: [`README.md`](README.md)
+- **Contributing Guide**: [`CONTRIBUTING.md`](CONTRIBUTING.md)
+- **GTK Development Guide**: [`docs/gtk-dev-guide.md`](docs/gtk-dev-guide.md)
 - **GitHub Discussions**: Use for questions and general discussions
 - **GitHub Issues**: Use for bug reports and feature requests
 
