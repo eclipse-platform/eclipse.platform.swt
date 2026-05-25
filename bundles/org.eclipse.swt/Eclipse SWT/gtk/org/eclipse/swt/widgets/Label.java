@@ -651,6 +651,7 @@ public void setImage (Image image) {
 			long texture = GDK.gdk_texture_new_for_pixbuf(pixbuf);
 			OS.g_object_unref(pixbuf);
 			GTK4.gtk_picture_set_paintable(imageHandle, texture);
+			OS.g_object_unref(texture);
 		} else {
 			GTK3.gtk_image_set_from_surface(imageHandle, image.surface);
 		}

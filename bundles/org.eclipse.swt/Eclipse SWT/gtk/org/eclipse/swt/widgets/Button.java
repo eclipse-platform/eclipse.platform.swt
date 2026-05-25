@@ -385,7 +385,11 @@ void createHandle (int index) {
 		labelHandle = GTK.gtk_label_new_with_mnemonic(null);
 		if (labelHandle == 0) error(SWT.ERROR_NO_HANDLES);
 
-		imageHandle = GTK.gtk_image_new();
+		if (GTK.GTK4) {
+			imageHandle = GTK4.gtk_picture_new();
+		} else {
+			imageHandle = GTK.gtk_image_new();
+		}
 		if (imageHandle == 0) error(SWT.ERROR_NO_HANDLES);
 
 		if (GTK.GTK4) {
@@ -1156,13 +1160,14 @@ private void _setImage (Image image) {
 			long pixbuf = ImageList.createPixbuf(image);
 			long texture = GDK.gdk_texture_new_for_pixbuf(pixbuf);
 			OS.g_object_unref(pixbuf);
-			GTK4.gtk_image_set_from_paintable(imageHandle, texture);
+			GTK4.gtk_picture_set_paintable(imageHandle, texture);
+			OS.g_object_unref(texture);
 		} else {
 			GTK3.gtk_image_set_from_surface(imageHandle, image.surface);
 		}
 	} else {
 		if (GTK.GTK4) {
-			GTK4.gtk_image_set_from_paintable(imageHandle, 0);
+			GTK4.gtk_picture_set_paintable(imageHandle, 0);
 		} else {
 			GTK3.gtk_image_set_from_surface(imageHandle, 0);
 		}
