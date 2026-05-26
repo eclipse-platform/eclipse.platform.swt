@@ -39,6 +39,12 @@
         </filter>
     </resource>
     <resource path="Eclipse SWT/common/org/eclipse/swt/SWT.java" type="org.eclipse.swt.SWT">
+        <filter id="336658481">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.SWT"/>
+                <message_argument value="SKIA"/>
+            </message_arguments>
+        </filter>
         <filter comment="https://github.com/eclipse-platform/eclipse.platform.swt/pull/3127" id="338755678">
             <message_arguments>
                 <message_argument value="org.eclipse.swt.SWT"/>
@@ -231,6 +237,20 @@
             <message_arguments>
                 <message_argument value="org.eclipse.swt.graphics.Rectangle.WithMonitor"/>
                 <message_argument value="WithMonitor(int, int, int, int, Monitor)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="Eclipse SWT/gtk/org/eclipse/swt/graphics/GC.java" type="org.eclipse.swt.graphics.GC">
+        <filter comment="@noreference is set. Bug in api filters." id="336658481">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.GC"/>
+                <message_argument value="handle"/>
+            </message_arguments>
+        </filter>
+        <filter id="574619656">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.GC"/>
+                <message_argument value="handle"/>
             </message_arguments>
         </filter>
     </resource>

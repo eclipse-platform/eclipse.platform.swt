@@ -136,7 +136,7 @@ public CLabel(Composite parent, int style) {
  */
 private static int checkStyle (int style) {
 	if ((style & SWT.BORDER) != 0) style |= SWT.SHADOW_IN;
-	int mask = SWT.SHADOW_IN | SWT.SHADOW_OUT | SWT.SHADOW_NONE | SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
+	int mask = SWT.SHADOW_IN | SWT.SHADOW_OUT | SWT.SHADOW_NONE | SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT | SWT.SKIA;
 	style = style & mask;
 	return style |= SWT.NO_FOCUS | SWT.DOUBLE_BUFFERED;
 }
