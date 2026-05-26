@@ -9,6 +9,9 @@ on:
   pull_request:
     branches: [ master ]
 
+permissions:
+  contents: read
+
 jobs:
   check-freeze-period:
     uses: eclipse-platform/eclipse.platform.releng.aggregator/.github/workflows/verifyFreezePeriod.yml@master
