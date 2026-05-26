@@ -518,8 +518,10 @@ void createHandle () {
 		if (OS.VERSION_MAJOR(OS.MACH_O_SDK_VERSION) == 26) {
 			// macOS 26 (Tahoe) Liquid Glass requires a visible border on all text fields
 			// regardless of SWT.BORDER style, so we draw one via the layer.
-			widget.setBordered(false);
-			configureLayerBorder(widget);
+			if (Display.liquidGlassStrategy.equals(Display.LiquidGlassStrategy.LAYER_BORDER)) {
+				widget.setBordered(false);
+				configureLayerBorder(widget);
+			}
 		} else {
 			if ((style & SWT.BORDER) == 0) {
 				widget.setFocusRingType (OS.NSFocusRingTypeNone);

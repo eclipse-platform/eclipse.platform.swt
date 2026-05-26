@@ -513,8 +513,10 @@ void createHandle () {
 		if (OS.VERSION_MAJOR(OS.MACH_O_SDK_VERSION) == 26) {
 			// macOS 26 (Tahoe) Liquid Glass requires a visible border on all combo boxes,
 			// so we draw one via the layer.
-			widget.setBordered(false);
-			configureLayerBorder(widget);
+			if (Display.liquidGlassStrategy.equals(Display.LiquidGlassStrategy.LAYER_BORDER)) {
+				widget.setBordered(false);
+				configureLayerBorder(widget);
+			}
 		}
 		view = widget;
 	}
