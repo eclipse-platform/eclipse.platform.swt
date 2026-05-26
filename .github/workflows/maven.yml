@@ -20,6 +20,9 @@ on:
     branches: [ master ]
     types: [opened, reopened, synchronize, labeled]
 
+permissions:
+  contents: read
+
 jobs:
   event_file:
     name: "Event File"
