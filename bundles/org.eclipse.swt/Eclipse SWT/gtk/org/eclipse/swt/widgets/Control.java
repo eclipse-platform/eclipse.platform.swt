@@ -1175,7 +1175,18 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 			gtk_widget_show(topHandle);
 			gtk_widget_get_preferred_size (topHandle, requisition);
 			gtk_widget_size_allocate(topHandle, allocation, -1);
-			gtk_widget_hide(topHandle);
+			/*
+			 * On Gtk 4 gtk_widget_hide() resets the widget's allocation to 0x0. If the SWT
+			 * widget is no longer in the HIDDEN state but visibility hasn't propagated in
+			 * GTK 4, leave it visible on the GTK side so its allocation (and the propagated
+			 * allocations of its children) survive. Otherwise children of a Composite that
+			 * was made visible right before this setBounds call would be left at size 0x0
+			 * and miss Resize events. See
+			 * https://github.com/eclipse-platform/eclipse.platform.swt/issues/3330
+			 */
+			if (!GTK.GTK4 || (state & HIDDEN) != 0) {
+				gtk_widget_hide(topHandle);
+			}
 			/* Bug 540002: Showing and hiding widget causes original focused control to loose focus,
 			 * Reset focus to original focused control after dealing with allocation.
 			 */
@@ -1184,6 +1195,8 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 			}
 		} else {
 			if (GTK.GTK4) {
+				// Prevent GTK+ allocation warnings, preferred size should be retrieved before setting allocation size.
+				GTK.gtk_widget_get_preferred_size(topHandle, null, null);
 				GTK4.gtk_widget_size_allocate (topHandle, allocation, -1);
 			} else {
 				// Prevent GTK+ allocation warnings, preferred size should be retrieved before setting allocation size.
