@@ -5065,7 +5065,7 @@ boolean sendMouseEvent (int type, int button, int count, int detail, boolean sen
 	 */
 	event.data = Boolean.valueOf(send);
 	if (OS.isWayland()) {
-		if (type == SWT.MouseDown) {
+		if (type == SWT.MouseDown && event.button == 1) {
 			if (wantDragDropDetection ()) {
 				// Delay MouseDown
 				dragDetectionQueue = new LinkedList<>();
