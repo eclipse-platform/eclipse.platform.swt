@@ -3845,6 +3845,9 @@ void cairoClipRegion (long cairo) {
 @Override
 void gtk4_draw(long widget, long cairo, Rectangle bounds) {
 	if (!hooksPaint()) return;
+	if (bounds.width == 0 || bounds.height == 0) {
+		return;
+	}
 
 	GCData data = new GCData();
 	data.cairo = cairo;
