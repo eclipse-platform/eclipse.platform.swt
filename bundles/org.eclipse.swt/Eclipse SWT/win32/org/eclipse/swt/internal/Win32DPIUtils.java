@@ -178,7 +178,13 @@ public class Win32DPIUtils {
 	}
 
 	public static Rectangle pixelToPointWithSufficientlyLargeSize(Rectangle rect, int zoom) {
-		return pixelToPoint(rect, zoom, RoundingMode.UP);
+		if (zoom == 100 || rect == null) return rect;
+
+		Point scaledTopLeft = pixelToPoint(new Point(rect.x, rect.y), zoom, RoundingMode.DOWN);
+		Point scaledBottomRight = pixelToPoint(new Point(rect.x + rect.width, rect.y + rect.height), zoom, RoundingMode.UP);
+		return new Rectangle(scaledTopLeft.x, scaledTopLeft.y,
+		                     scaledBottomRight.x - scaledTopLeft.x,
+		                     scaledBottomRight.y - scaledTopLeft.y);
 	}
 
 	private static Rectangle pixelToPoint(Rectangle rect, int zoom, RoundingMode sizeRounding) {
