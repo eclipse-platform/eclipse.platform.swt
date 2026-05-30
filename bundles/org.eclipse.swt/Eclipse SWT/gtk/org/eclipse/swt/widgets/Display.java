@@ -2635,6 +2635,24 @@ public static boolean isSystemDarkTheme () {
 public void setDarkThemePreferred(boolean preferred) {
 	checkDevice();
 	OS.setTheme(preferred);
+	if (GTK.GTK4) {
+		/*
+		 * Re-initialize the cached system colors so that widgets created or repainted
+		 * after this call pick up the correct dark/light theme background and
+		 * foreground colors. GTK3 uses gtk_draw which calls
+		 * gtk_render_background(context, cairo, ...). This asks GTK's live style
+		 * context to paint the background — the style context is always up-to-date with
+		 * the current theme setting, so it reflects dark/light dynamically without any
+		 * cached values.
+		 *
+		 * GTK4 removed the draw signal entirely. SWT replaced it with
+		 * snapshotBackground which uses Cairo-based custom painting via
+		 * drawBackground() → control.getBackgroundGdkRGBA() → defaultBackground() → the
+		 * cached COLOR_WIDGET_BACKGROUND_RGBA. That cache is only populated at Display
+		 * creation time, so it goes stale when the theme is changed afterwards.
+		 */
+		initializeSystemColors();
+	}
 }
 
 int getLastEventTime () {
