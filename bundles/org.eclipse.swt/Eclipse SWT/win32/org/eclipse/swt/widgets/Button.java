@@ -211,11 +211,6 @@ void _setText (String text) {
 	* is disabled, the first pixel of the text is clipped.  The fix
 	* is to append a space to the text.
 	*/
-	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-		if (!OS.IsAppThemed ()) {
-			text = OS.IsWindowEnabled (handle) ? text : text + " ";
-		}
-	}
 	TCHAR buffer = new TCHAR (getCodePage (), text, true);
 	OS.SetWindowText (handle, buffer);
 	if ((state & HAS_AUTO_DIRECTION) != 0) {
@@ -391,12 +386,6 @@ Point computeSizeInPixels (Point hintInPoints, int zoom, boolean changed) {
 						} else {
 							rect.right -= 6;
 						}
-						if (!OS.IsAppThemed ()) {
-							rect.right -= 2;
-							if (isRadioOrCheck()) {
-								rect.right -= 2;
-							}
-						}
 					}
 					OS.DrawText (hDC, buffer, buffer.length, rect, flags);
 					width += rect.right - rect.left;
@@ -436,37 +425,31 @@ void createHandle () {
 	super.createHandle ();
 	parent.state &= ~IGNORE_WM_CHANGEUISTATE;
 
-	if (OS.IsAppThemed ()) {
-		/* Set the theme background.
-		*
-		* NOTE: On Vista this causes problems when the tab
-		* key is pressed for push buttons so disable the
-		* theme background drawing for these widgets for
-		* now.
-		*/
-		if ((style & (SWT.PUSH | SWT.TOGGLE)) == 0) {
-			state |= THEME_BACKGROUND;
-		}
-
-		/*
-		* Bug in Windows.  For some reason, the HBRUSH that
-		* is returned from WM_CTRLCOLOR is misaligned when
-		* the button uses it to draw.  If the brush is a solid
-		* color, this does not matter.  However, if the brush
-		* contains an image, the image is misaligned.  The
-		* fix is to draw the background in WM_CTRLCOLOR.
-		*
-		* NOTE: For comctl32.dll 6.0 with themes disabled,
-		* drawing in WM_ERASEBKGND will draw on top of the
-		* text of the control.
-		*/
-		if ((style & SWT.RADIO) != 0) {
-			state |= DRAW_BACKGROUND;
-		}
-
-		useDarkModeExplorerTheme = display.useDarkModeExplorerTheme;
-		maybeEnableDarkSystemTheme();
+	/* Set the theme background.
+	*
+	* NOTE: On Vista this causes problems when the tab
+	* key is pressed for push buttons so disable the
+	* theme background drawing for these widgets for
+	* now.
+	*/
+	if ((style & (SWT.PUSH | SWT.TOGGLE)) == 0) {
+		state |= THEME_BACKGROUND;
 	}
+
+	/*
+	* Bug in Windows.  For some reason, the HBRUSH that
+	* is returned from WM_CTRLCOLOR is misaligned when
+	* the button uses it to draw.  If the brush is a solid
+	* color, this does not matter.  However, if the brush
+	* contains an image, the image is misaligned.  The
+	* fix is to draw the background in WM_CTRLCOLOR.
+	*/
+	if ((style & SWT.RADIO) != 0) {
+		state |= DRAW_BACKGROUND;
+	}
+
+	useDarkModeExplorerTheme = display.useDarkModeExplorerTheme;
+	maybeEnableDarkSystemTheme();
 }
 
 private boolean customBackgroundDrawing() {
@@ -497,22 +480,6 @@ int defaultForeground () {
 @Override
 void enableWidget (boolean enabled) {
 	super.enableWidget (enabled);
-	/*
-	* Bug in Windows.  When a Button control is right-to-left and
-	* is disabled, the first pixel of the text is clipped.  The fix
-	* is to append a space to the text.
-	*/
-	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-		if (!OS.IsAppThemed ()) {
-			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-			boolean hasImage = (bits & (OS.BS_BITMAP | OS.BS_ICON)) != 0;
-			if (!hasImage) {
-				String string = enabled ? text : text + " ";
-				TCHAR buffer = new TCHAR (getCodePage (), string, true);
-				OS.SetWindowText (handle, buffer);
-			}
-		}
-	}
 	/*
 	* Bug in Windows.  When a button has the style BS_CHECKBOX
 	* or BS_RADIOBUTTON, is checked, and is displaying both an
@@ -1257,9 +1224,7 @@ LRESULT WM_UPDATEUISTATE (long wParam, long lParam) {
 		boolean redraw = findImageControl () != null;
 		if (!redraw) {
 			if ((state & THEME_BACKGROUND) != 0) {
-				if (OS.IsAppThemed ()) {
-					redraw = findThemeControl () != null;
-				}
+				redraw = findThemeControl () != null;
 			}
 			if (!redraw) redraw = findBackgroundControl () != null;
 		}
@@ -1311,12 +1276,8 @@ private int getCheckboxTextOffset(long hdc) {
 
 	SIZE size = new SIZE();
 
-	if (OS.IsAppThemed ()) {
-		OS.GetThemePartSize(display.hButtonTheme(nativeZoom), hdc, OS.BP_CHECKBOX, OS.CBS_UNCHECKEDNORMAL, null, OS.TS_TRUE, size);
-		result += size.cx;
-	} else {
-		result += DPIUtil.pointToPixel(13, nativeZoom);
-	}
+	OS.GetThemePartSize(display.hButtonTheme(nativeZoom), hdc, OS.BP_CHECKBOX, OS.CBS_UNCHECKEDNORMAL, null, OS.TS_TRUE, size);
+	result += size.cx;
 
 	// Windows uses half width of '0' as checkbox-to-text distance.
 	OS.GetTextExtentPoint32(hdc, STRING_WITH_ZERO_CHAR, 1, size);
@@ -1540,24 +1501,10 @@ LRESULT wmDrawChild (long wParam, long lParam) {
 	OS.MoveMemory (struct, lParam, DRAWITEMSTRUCT.sizeof);
 	RECT rect = new RECT ();
 	OS.SetRect (rect, struct.left, struct.top, struct.right, struct.bottom);
-	if (OS.IsAppThemed ()) {
-		boolean pressed = ((struct.itemState & OS.ODS_SELECTED) != 0);
-		boolean enabled = getEnabled ();
-		int iStateId = getThemeStateId(style, pressed, enabled);
-		OS.DrawThemeBackground (display.hScrollBarThemeAuto(nativeZoom), struct.hDC, OS.SBP_ARROWBTN, iStateId, rect, null);
-	} else {
-		int uState = OS.DFCS_SCROLLLEFT;
-		switch (style & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT)) {
-			case SWT.UP: uState = OS.DFCS_SCROLLUP; break;
-			case SWT.DOWN: uState = OS.DFCS_SCROLLDOWN; break;
-			case SWT.LEFT: uState = OS.DFCS_SCROLLLEFT; break;
-			case SWT.RIGHT: uState = OS.DFCS_SCROLLRIGHT; break;
-		}
-		if (!getEnabled ()) uState |= OS.DFCS_INACTIVE;
-		if ((style & SWT.FLAT) == SWT.FLAT) uState |= OS.DFCS_FLAT;
-		if ((struct.itemState & OS.ODS_SELECTED) != 0) uState |= OS.DFCS_PUSHED;
-		OS.DrawFrameControl (struct.hDC, rect, OS.DFC_SCROLL, uState);
-	}
+	boolean pressed = ((struct.itemState & OS.ODS_SELECTED) != 0);
+	boolean enabled = getEnabled ();
+	int iStateId = getThemeStateId(style, pressed, enabled);
+	OS.DrawThemeBackground (display.hScrollBarThemeAuto(nativeZoom), struct.hDC, OS.SBP_ARROWBTN, iStateId, rect, null);
 	return null;
 }
 

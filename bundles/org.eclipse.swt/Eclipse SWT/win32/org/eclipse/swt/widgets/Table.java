@@ -886,22 +886,20 @@ LRESULT CDDS_PREPAINT (NMLVCUSTOMDRAW nmcd, long wParam, long lParam) {
 				if (enabled && (int)OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) == OS.CLR_NONE || !enabled && hasCustomBackground()) {
 					if (control == null) control = this;
 					fillBackground (nmcd.hdc, control.getBackgroundPixel (), rect);
-					if (OS.IsAppThemed ()) {
-						if (sortColumn != null && sortDirection != SWT.NONE) {
-							int index = indexOf (sortColumn);
-							if (index != -1) {
-								parent.forceResize ();
-								int clrSortBk = getSortColumnPixel ();
-								RECT columnRect = new RECT (), headerRect = new RECT ();
-								OS.GetClientRect (handle, columnRect);
-								long hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-								if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect) != 0) {
-									OS.MapWindowPoints (hwndHeader, handle, headerRect, 2);
-									columnRect.left = headerRect.left;
-									columnRect.right = headerRect.right;
-									if (OS.IntersectRect(columnRect, columnRect, rect)) {
-										fillBackground (nmcd.hdc, clrSortBk, columnRect);
-									}
+					if (sortColumn != null && sortDirection != SWT.NONE) {
+						int index = indexOf (sortColumn);
+						if (index != -1) {
+							parent.forceResize ();
+							int clrSortBk = getSortColumnPixel ();
+							RECT columnRect = new RECT (), headerRect = new RECT ();
+							OS.GetClientRect (handle, columnRect);
+							long hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+							if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect) != 0) {
+								OS.MapWindowPoints (hwndHeader, handle, headerRect, 2);
+								columnRect.left = headerRect.left;
+								columnRect.right = headerRect.right;
+								if (OS.IntersectRect(columnRect, columnRect, rect)) {
+									fillBackground (nmcd.hdc, clrSortBk, columnRect);
 								}
 							}
 						}
@@ -1493,10 +1491,8 @@ void createHandle () {
 	state &= ~(CANVAS | THEME_BACKGROUND);
 
 	/* Use the Explorer theme */
-	if (OS.IsAppThemed ()) {
-		explorerTheme = true;
-		OS.SetWindowTheme (handle, Display.EXPLORER, null);
-	}
+	explorerTheme = true;
+	OS.SetWindowTheme (handle, Display.EXPLORER, null);
 
 	/* Get the header window handle */
 	hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
@@ -4229,7 +4225,6 @@ void setCheckboxImageList (int width, int height, boolean fixScroll) {
 	if ((style & SWT.CHECK) == 0) return;
 	int count = 8, flags = OS.ILC_COLOR32;
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) flags |= OS.ILC_MIRROR;
-	if (!OS.IsAppThemed ()) flags |= OS.ILC_MASK;
 	long hStateList = OS.ImageList_Create (width, height, flags, count, count);
 	long hDC = OS.GetDC (handle);
 	long memDC = OS.CreateCompatibleDC (hDC);
@@ -4237,17 +4232,9 @@ void setCheckboxImageList (int width, int height, boolean fixScroll) {
 	long hOldBitmap = OS.SelectObject (memDC, hBitmap);
 	RECT rect = new RECT ();
 	OS.SetRect (rect, 0, 0, width * count, height);
-	int clrBackground;
-	if (OS.IsAppThemed ()) {
-		Control control = findBackgroundControl ();
-		if (control == null) control = this;
-		clrBackground = control.getBackgroundPixel ();
-	} else {
-		clrBackground = 0x020000FF;
-		if ((clrBackground & 0xFFFFFF) == OS.GetSysColor (OS.COLOR_WINDOW)) {
-			clrBackground = 0x0200FF00;
-		}
-	}
+	Control control = findBackgroundControl ();
+	if (control == null) control = this;
+	int clrBackground = control.getBackgroundPixel ();
 	long hBrush = OS.CreateSolidBrush (clrBackground);
 	OS.FillRect (memDC, rect, hBrush);
 	OS.DeleteObject (hBrush);
@@ -4257,61 +4244,37 @@ void setCheckboxImageList (int width, int height, boolean fixScroll) {
 	OS.SelectObject (hDC, oldFont);
 	int itemWidth = Math.min (tm.tmHeight, width);
 	int itemHeight = Math.min (tm.tmHeight, height);
-	if (OS.IsAppThemed()) {
-		/*
-		 * Feature in Windows. DrawThemeBackground stretches the checkbox
-		 * bitmap to fill the provided rectangle. To avoid stretching
-		 * artifacts, limit the rectangle to actual checkbox bitmap size.
-		 */
-		SIZE size = new SIZE();
-		OS.GetThemePartSize(display.hButtonTheme(nativeZoom), memDC, OS.BP_CHECKBOX, 0, null, OS.TS_TRUE, size);
-		itemWidth = Math.min (size.cx, itemWidth);
-		itemHeight = Math.min (size.cy, itemHeight);
-	}
+	/*
+	 * Feature in Windows. DrawThemeBackground stretches the checkbox
+	 * bitmap to fill the provided rectangle. To avoid stretching
+	 * artifacts, limit the rectangle to actual checkbox bitmap size.
+	 */
+	SIZE size = new SIZE();
+	OS.GetThemePartSize(display.hButtonTheme(nativeZoom), memDC, OS.BP_CHECKBOX, 0, null, OS.TS_TRUE, size);
+	itemWidth = Math.min (size.cx, itemWidth);
+	itemHeight = Math.min (size.cy, itemHeight);
 	int left = (width - itemWidth) / 2, top = (height - itemHeight) / 2;
 	OS.SetRect (rect, left, top, left + itemWidth, top + itemHeight);
-	if (OS.IsAppThemed ()) {
-		long hTheme = display.hButtonTheme(nativeZoom);
-		OS.DrawThemeBackground (hTheme, memDC, OS.BP_CHECKBOX, OS.CBS_UNCHECKEDNORMAL, rect, null);
-		rect.left += width;  rect.right += width;
-		OS.DrawThemeBackground (hTheme, memDC, OS.BP_CHECKBOX, OS.CBS_CHECKEDNORMAL, rect, null);
-		rect.left += width;  rect.right += width;
-		OS.DrawThemeBackground (hTheme, memDC, OS.BP_CHECKBOX, OS.CBS_UNCHECKEDNORMAL, rect, null);
-		rect.left += width;  rect.right += width;
-		OS.DrawThemeBackground (hTheme, memDC, OS.BP_CHECKBOX, OS.CBS_MIXEDNORMAL, rect, null);
-		rect.left += width;  rect.right += width;
-		OS.DrawThemeBackground (hTheme, memDC, OS.BP_CHECKBOX, OS.CBS_UNCHECKEDDISABLED, rect, null);
-		rect.left += width;  rect.right += width;
-		OS.DrawThemeBackground (hTheme, memDC, OS.BP_CHECKBOX, OS.CBS_CHECKEDDISABLED, rect, null);
-		rect.left += width;  rect.right += width;
-		OS.DrawThemeBackground (hTheme, memDC, OS.BP_CHECKBOX, OS.CBS_UNCHECKEDDISABLED, rect, null);
-		rect.left += width;  rect.right += width;
-		OS.DrawThemeBackground (hTheme, memDC, OS.BP_CHECKBOX, OS.CBS_MIXEDDISABLED, rect, null);
-	} else {
-		OS.DrawFrameControl (memDC, rect, OS.DFC_BUTTON, OS.DFCS_BUTTONCHECK | OS.DFCS_FLAT);
-		rect.left += width;  rect.right += width;
-		OS.DrawFrameControl (memDC, rect, OS.DFC_BUTTON, OS.DFCS_BUTTONCHECK | OS.DFCS_CHECKED | OS.DFCS_FLAT);
-		rect.left += width;  rect.right += width;
-		OS.DrawFrameControl (memDC, rect, OS.DFC_BUTTON, OS.DFCS_BUTTONCHECK | OS.DFCS_INACTIVE | OS.DFCS_FLAT);
-		rect.left += width;  rect.right += width;
-		OS.DrawFrameControl (memDC, rect, OS.DFC_BUTTON, OS.DFCS_BUTTONCHECK | OS.DFCS_CHECKED | OS.DFCS_INACTIVE | OS.DFCS_FLAT);
-		rect.left += width;  rect.right += width;
-		OS.DrawFrameControl (memDC, rect, OS.DFC_BUTTON, OS.DFCS_BUTTONCHECK | OS.DFCS_FLAT);
-		rect.left += width;  rect.right += width;
-		OS.DrawFrameControl (memDC, rect, OS.DFC_BUTTON, OS.DFCS_BUTTONCHECK | OS.DFCS_CHECKED | OS.DFCS_FLAT);
-		rect.left += width;  rect.right += width;
-		OS.DrawFrameControl (memDC, rect, OS.DFC_BUTTON, OS.DFCS_BUTTONCHECK | OS.DFCS_INACTIVE | OS.DFCS_FLAT);
-		rect.left += width;  rect.right += width;
-		OS.DrawFrameControl (memDC, rect, OS.DFC_BUTTON, OS.DFCS_BUTTONCHECK | OS.DFCS_CHECKED | OS.DFCS_INACTIVE | OS.DFCS_FLAT);
-	}
+	long hTheme = display.hButtonTheme(nativeZoom);
+	OS.DrawThemeBackground (hTheme, memDC, OS.BP_CHECKBOX, OS.CBS_UNCHECKEDNORMAL, rect, null);
+	rect.left += width;  rect.right += width;
+	OS.DrawThemeBackground (hTheme, memDC, OS.BP_CHECKBOX, OS.CBS_CHECKEDNORMAL, rect, null);
+	rect.left += width;  rect.right += width;
+	OS.DrawThemeBackground (hTheme, memDC, OS.BP_CHECKBOX, OS.CBS_UNCHECKEDNORMAL, rect, null);
+	rect.left += width;  rect.right += width;
+	OS.DrawThemeBackground (hTheme, memDC, OS.BP_CHECKBOX, OS.CBS_MIXEDNORMAL, rect, null);
+	rect.left += width;  rect.right += width;
+	OS.DrawThemeBackground (hTheme, memDC, OS.BP_CHECKBOX, OS.CBS_UNCHECKEDDISABLED, rect, null);
+	rect.left += width;  rect.right += width;
+	OS.DrawThemeBackground (hTheme, memDC, OS.BP_CHECKBOX, OS.CBS_CHECKEDDISABLED, rect, null);
+	rect.left += width;  rect.right += width;
+	OS.DrawThemeBackground (hTheme, memDC, OS.BP_CHECKBOX, OS.CBS_UNCHECKEDDISABLED, rect, null);
+	rect.left += width;  rect.right += width;
+	OS.DrawThemeBackground (hTheme, memDC, OS.BP_CHECKBOX, OS.CBS_MIXEDDISABLED, rect, null);
 	OS.SelectObject (memDC, hOldBitmap);
 	OS.DeleteDC (memDC);
 	OS.ReleaseDC (handle, hDC);
-	if (OS.IsAppThemed ()) {
-		OS.ImageList_Add (hStateList, hBitmap, 0);
-	} else {
-		OS.ImageList_AddMasked (hStateList, hBitmap, clrBackground);
-	}
+	OS.ImageList_Add (hStateList, hBitmap, 0);
 	OS.DeleteObject (hBitmap);
 	/*
 	* Bug in Windows.  Making any change to an item that

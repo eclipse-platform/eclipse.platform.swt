@@ -2574,9 +2574,7 @@ int widgetStyle () {
 		*/
 		if ((style & SWT.READ_ONLY) != 0) {
 			if ((style & (SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.PASSWORD)) == 0) {
-				if (OS.IsAppThemed ()) {
-					bits |= OS.ES_MULTILINE;
-				}
+				bits |= OS.ES_MULTILINE;
 			}
 		}
 		return bits;
@@ -2754,7 +2752,7 @@ LRESULT WM_DRAWITEM (long wParam, long lParam) {
 	POINT pt = new POINT ();
 	OS.MapWindowPoints (struct.hwndItem, handle, pt, 1);
 	drawBackground (struct.hDC, rect, -1, pt.x, pt.y);
-	if (struct.CtlID == SWT.ICON_CANCEL && struct.hwndItem == hwndActiveIcon && OS.IsAppThemed()) {
+	if (struct.CtlID == SWT.ICON_CANCEL && struct.hwndItem == hwndActiveIcon) {
 		int state = OS.GetKeyState (OS.VK_LBUTTON) < 0 ? OS.PBS_PRESSED : OS.PBS_HOT;
 		OS.DrawThemeBackground(display.hButtonThemeAuto(nativeZoom), struct.hDC, OS.BP_PUSHBUTTON, state, rect, null);
 	}
@@ -2777,14 +2775,12 @@ LRESULT WM_ERASEBKGND (long wParam, long lParam) {
 				Control control = findBackgroundControl ();
 				if (control == null && background == -1) {
 					if ((state & THEME_BACKGROUND) != 0) {
-						if (OS.IsAppThemed ()) {
-							control = findThemeControl ();
-							if (control != null) {
-								RECT rect = new RECT ();
-								OS.GetClientRect (handle, rect);
-								fillThemeBackground (wParam, control, rect);
-								return LRESULT.ONE;
-							}
+						control = findThemeControl ();
+						if (control != null) {
+							RECT rect = new RECT ();
+							OS.GetClientRect (handle, rect);
+							fillThemeBackground (wParam, control, rect);
+							return LRESULT.ONE;
 						}
 					}
 				}
@@ -3041,14 +3037,12 @@ LRESULT wmColorChild (long wParam, long lParam) {
 				Control control = findBackgroundControl ();
 				if (control == null && background == -1) {
 					if ((state & THEME_BACKGROUND) != 0) {
-						if (OS.IsAppThemed ()) {
-							control = findThemeControl ();
-							if (control != null) {
-								OS.SetTextColor (wParam, getForegroundPixel ());
-								OS.SetBkColor (wParam, getBackgroundPixel ());
-								OS.SetBkMode (wParam, OS.TRANSPARENT);
-								return new LRESULT (OS.GetStockObject (OS.NULL_BRUSH));
-							}
+						control = findThemeControl ();
+						if (control != null) {
+							OS.SetTextColor (wParam, getForegroundPixel ());
+							OS.SetBkColor (wParam, getBackgroundPixel ());
+							OS.SetBkMode (wParam, OS.TRANSPARENT);
+							return new LRESULT (OS.GetStockObject (OS.NULL_BRUSH));
 						}
 					}
 				}

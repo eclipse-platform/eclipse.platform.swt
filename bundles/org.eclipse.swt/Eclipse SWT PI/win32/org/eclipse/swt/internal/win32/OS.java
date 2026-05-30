@@ -134,14 +134,12 @@ public class OS extends C {
 	public static final int BST_INDETERMINATE = 0x2;
 	public static final int BST_UNCHECKED = 0x0;
 	public static final int BS_3STATE = 0x5;
-	public static final int BS_BITMAP = 0x80;
 	public static final int BS_CENTER = 0x300;
 	public static final int BS_CHECKBOX = 0x2;
 	public static final int BS_COMMANDLINK =  0xe;
 	public static final int BS_DEFPUSHBUTTON = 0x1;
 	public static final int BS_FLAT = 0x8000;
 	public static final int BS_GROUPBOX = 0x7;
-	public static final int BS_ICON = 0x40;
 	public static final int BS_LEFT = 0x100;
 	public static final int BS_MULTILINE = 0x2000;
 	public static final int BS_NOTIFY = 0x4000;
@@ -309,17 +307,7 @@ public class OS extends C {
 	public static final int DCX_CACHE = 0x2;
 	public static final int DEFAULT_CHARSET = 0x1;
 	public static final int DEFAULT_GUI_FONT = 0x11;
-	public static final int DFCS_BUTTONCHECK = 0x0;
-	public static final int DFCS_CHECKED = 0x400;
-	public static final int DFCS_FLAT = 0x4000;
-	public static final int DFCS_INACTIVE = 0x100;
-	public static final int DFCS_PUSHED = 0x200;
-	public static final int DFCS_SCROLLDOWN = 0x1;
-	public static final int DFCS_SCROLLLEFT = 0x2;
-	public static final int DFCS_SCROLLRIGHT = 0x3;
-	public static final int DFCS_SCROLLUP = 0x0;
-	public static final int DFC_BUTTON = 0x4;
-	public static final int DFC_SCROLL = 0x3;
+
 	public static final int DIB_RGB_COLORS = 0x0;
 	public static final int DI_NORMAL = 0x3;
 	public static final int DI_NOMIRROR = 0x10;
@@ -2605,11 +2593,7 @@ public static final native boolean DrawEdge (long hdc, RECT qrc, int edge, int g
  * @param lpRect flags=no_out
  */
 public static final native boolean DrawFocusRect (long hDC, RECT lpRect);
-/**
- * @param hdc cast=(HDC)
- * @param lprc flags=no_out
- */
-public static final native boolean DrawFrameControl (long hdc, RECT lprc, int uType, int uState);
+
 /**
  * @param hdc cast=(HDC)
  * @param hIcon cast=(HICON)
@@ -3108,12 +3092,7 @@ public static final native int ILGetSize(long pidl);
  * @param hbmMask cast=(HBITMAP)
  */
 public static final native int ImageList_Add (long himl, long hbmImage, long hbmMask);
-/**
- * @param himl cast=(HIMAGELIST)
- * @param hbmImage cast=(HBITMAP)
- * @param crMask cast=(COLORREF)
- */
-public static final native int ImageList_AddMasked (long himl, long hbmImage, int crMask);
+
 /** @param himl cast=(HIMAGELIST) */
 public static final native boolean ImageList_BeginDrag (long himl, int iTrack, int dxHotspot, int dyHotspot);
 public static final native long ImageList_Create (int cx, int cy, int flags, int cInitial, int cGrow);
@@ -3254,7 +3233,6 @@ public static final native boolean InvalidateRect (long hWnd, RECT lpRect, boole
  * @param hRgn cast=(HRGN)
  */
 public static final native boolean InvalidateRgn (long hWnd, long hRgn, boolean bErase);
-public static final native boolean IsAppThemed ();
 /** @method flags=no_gen */
 public static final native boolean IsDarkModeAvailable();
 /** @param hWnd cast=(HWND) */

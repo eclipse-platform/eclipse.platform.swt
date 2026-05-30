@@ -932,15 +932,13 @@ public void setVisible (boolean visible) {
 	* bar and hide both.
 	*/
 	if (!visible) {
-		if (OS.IsAppThemed ()) {
-			SCROLLBARINFO psbi = new SCROLLBARINFO ();
-			psbi.cbSize = SCROLLBARINFO.sizeof;
-			int idObject = (style & SWT.VERTICAL) != 0 ? OS.OBJID_HSCROLL : OS.OBJID_VSCROLL;
-			OS.GetScrollBarInfo (hwnd, idObject, psbi);
-			if ((psbi.rgstate [0] & OS.STATE_SYSTEM_INVISIBLE) != 0) {
-				OS.ShowScrollBar (hwnd, type == OS.SB_VERT ? OS.SB_HORZ : OS.SB_VERT, true);
-				type = OS.SB_BOTH;
-			}
+		SCROLLBARINFO psbi = new SCROLLBARINFO ();
+		psbi.cbSize = SCROLLBARINFO.sizeof;
+		int idObject = (style & SWT.VERTICAL) != 0 ? OS.OBJID_HSCROLL : OS.OBJID_VSCROLL;
+		OS.GetScrollBarInfo (hwnd, idObject, psbi);
+		if ((psbi.rgstate [0] & OS.STATE_SYSTEM_INVISIBLE) != 0) {
+			OS.ShowScrollBar (hwnd, type == OS.SB_VERT ? OS.SB_HORZ : OS.SB_VERT, true);
+			type = OS.SB_BOTH;
 		}
 	}
 	if (OS.ShowScrollBar (hwnd, type, visible)) {

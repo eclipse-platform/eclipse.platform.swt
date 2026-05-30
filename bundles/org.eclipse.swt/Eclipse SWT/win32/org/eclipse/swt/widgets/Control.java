@@ -922,12 +922,10 @@ void drawBackground (long hDC, RECT rect, int pixel, int tx, int ty) {
 	}
 	if (pixel == -1) {
 		if ((state & THEME_BACKGROUND) != 0) {
-			if (OS.IsAppThemed ()) {
-				control = findThemeControl ();
-				if (control != null) {
-					fillThemeBackground (hDC, control, rect);
-					return;
-				}
+			control = findThemeControl ();
+			if (control != null) {
+				fillThemeBackground (hDC, control, rect);
+				return;
 			}
 		}
 	}
@@ -2547,10 +2545,8 @@ boolean redrawChildren () {
 	Control control = findBackgroundControl ();
 	if (control == null) {
 		if ((state & THEME_BACKGROUND) != 0) {
-			if (OS.IsAppThemed ()) {
-				OS.InvalidateRect (handle, null, true);
-				return true;
-			}
+			OS.InvalidateRect (handle, null, true);
+			return true;
 		}
 	} else {
 		if (control.backgroundImage != null) {
@@ -3274,9 +3270,7 @@ void setBoundsInPixels (int x, int y, int width, int height, int flags, boolean 
 		if (backgroundImage == null) flags |= OS.SWP_NOCOPYBITS;
 	} else {
 		if (OS.GetWindow (handle, OS.GW_CHILD) == 0) {
-			if (OS.IsAppThemed ()) {
-				if (findThemeControl () != null) flags |= OS.SWP_NOCOPYBITS;
-			}
+			if (findThemeControl () != null) flags |= OS.SWP_NOCOPYBITS;
 		}
 	}
 	long topHandle = topHandle ();
@@ -5201,9 +5195,7 @@ LRESULT WM_ERASEBKGND (long wParam, long lParam) {
 		if (findImageControl () != null) return LRESULT.ONE;
 	}
 	if ((state & THEME_BACKGROUND) != 0) {
-		if (OS.IsAppThemed ()) {
-			if (findThemeControl () != null) return LRESULT.ONE;
-		}
+		if (findThemeControl () != null) return LRESULT.ONE;
 	}
 	return null;
 }
@@ -5558,10 +5550,8 @@ LRESULT WM_MOVE (long wParam, long lParam) {
 		if (this != getShell ()) redrawChildren ();
 	} else {
 		if ((state & THEME_BACKGROUND) != 0) {
-			if (OS.IsAppThemed ()) {
-				if (OS.IsWindowVisible (handle)) {
-					if (findThemeControl () != null) redrawChildren ();
-				}
+			if (OS.IsWindowVisible (handle)) {
+				if (findThemeControl () != null) redrawChildren ();
 			}
 		}
 	}
@@ -5963,17 +5953,15 @@ LRESULT wmColorChild (long wParam, long lParam) {
 	Control control = findBackgroundControl ();
 	if (control == null) {
 		if ((state & THEME_BACKGROUND) != 0) {
-			if (OS.IsAppThemed ()) {
-				control = findThemeControl ();
-				if (control != null) {
-					RECT rect = new RECT ();
-					OS.GetClientRect (handle, rect);
-					OS.SetTextColor (wParam, getForegroundPixel ());
-					OS.SetBkColor (wParam, getBackgroundPixel ());
-					fillThemeBackground (wParam, control, rect);
-					OS.SetBkMode (wParam, OS.TRANSPARENT);
-					return new LRESULT (OS.GetStockObject (OS.NULL_BRUSH));
-				}
+			control = findThemeControl ();
+			if (control != null) {
+				RECT rect = new RECT ();
+				OS.GetClientRect (handle, rect);
+				OS.SetTextColor (wParam, getForegroundPixel ());
+				OS.SetBkColor (wParam, getBackgroundPixel ());
+				fillThemeBackground (wParam, control, rect);
+				OS.SetBkMode (wParam, OS.TRANSPARENT);
+				return new LRESULT (OS.GetStockObject (OS.NULL_BRUSH));
 			}
 		}
 		if (foreground == -1) return null;

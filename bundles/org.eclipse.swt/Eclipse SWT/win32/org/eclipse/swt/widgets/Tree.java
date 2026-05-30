@@ -437,12 +437,10 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 		}
 	}
 	int sortIndex = -1, clrSortBk = -1;
-	if (OS.IsAppThemed ()) {
-		if (sortColumn != null && sortDirection != SWT.NONE) {
-			if (findImageControl () == null) {
-				sortIndex = indexOf (sortColumn);
-				clrSortBk = getSortColumnPixel ();
-			}
+	if (sortColumn != null && sortDirection != SWT.NONE) {
+		if (findImageControl () == null) {
+			sortIndex = indexOf (sortColumn);
+			clrSortBk = getSortColumnPixel ();
 		}
 	}
 	int x = 0;
@@ -1003,13 +1001,11 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 		if (clrTextBk == -1) clrTextBk = item.background;
 	}
 	int clrSortBk = -1;
-	if (OS.IsAppThemed ()) {
-		if (sortColumn != null && sortDirection != SWT.NONE) {
-			if (findImageControl () == null) {
-				if (indexOf (sortColumn) == index) {
-					clrSortBk = getSortColumnPixel ();
-					if (clrTextBk == -1) clrTextBk = clrSortBk;
-				}
+	if (sortColumn != null && sortDirection != SWT.NONE) {
+		if (findImageControl () == null) {
+			if (indexOf (sortColumn) == index) {
+				clrSortBk = getSortColumnPixel ();
+				if (clrTextBk == -1) clrTextBk = clrSortBk;
 			}
 		}
 	}
@@ -1263,12 +1259,6 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 						hdItem.mask = OS.HDI_WIDTH;
 						OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
 						OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.left + hdItem.cxy, nmcd.bottom);
-						if (!OS.IsAppThemed ()) {
-							RECT itemRect = new RECT ();
-							if (OS.TreeView_GetItemRect (handle, item.handle, itemRect, true)) {
-								rect.left = Math.min (itemRect.left, rect.right);
-							}
-						}
 						if ((style & SWT.FULL_SELECTION) != 0) {
 							if (!selected) fillBackground (hDC, clrTextBk, rect);
 						} else {
@@ -1368,43 +1358,41 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 LRESULT CDDS_POSTPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 	if (ignoreCustomDraw) return null;
 	if (OS.IsWindowVisible (handle)) {
-		if (OS.IsAppThemed ()) {
-			if (sortColumn != null && sortDirection != SWT.NONE) {
-				if (findImageControl () == null) {
-					int index = indexOf (sortColumn);
-					if (index != -1) {
-						int top = nmcd.top;
-						/*
-						* Bug in Windows.  For some reason, during a collapse,
-						* when TVM_GETNEXTITEM is sent with TVGN_LASTVISIBLE
-						* and the collapse causes the item being collapsed
-						* to become the last visible item in the tree, the
-						* message takes a long time to process.  In order for
-						* the slowness to happen, the children of the item
-						* must have children.  Times of up to 11 seconds have
-						* been observed with 23 children, each having one
-						* child.  The fix is to use the bottom partially
-						* visible item rather than the last possible item
-						* that could be visible.
-						*
-						* NOTE: This problem only happens on Vista during
-						* WM_NOTIFY with NM_CUSTOMDRAW and CDDS_POSTPAINT.
-						*/
-						long hItem = getBottomItem ();
-						if (hItem != 0) {
-							RECT rect = new RECT ();
-							if (OS.TreeView_GetItemRect (handle, hItem, rect, false)) {
-								top = rect.bottom;
-							}
-						}
+		if (sortColumn != null && sortDirection != SWT.NONE) {
+			if (findImageControl () == null) {
+				int index = indexOf (sortColumn);
+				if (index != -1) {
+					int top = nmcd.top;
+					/*
+					* Bug in Windows.  For some reason, during a collapse,
+					* when TVM_GETNEXTITEM is sent with TVGN_LASTVISIBLE
+					* and the collapse causes the item being collapsed
+					* to become the last visible item in the tree, the
+					* message takes a long time to process.  In order for
+					* the slowness to happen, the children of the item
+					* must have children.  Times of up to 11 seconds have
+					* been observed with 23 children, each having one
+					* child.  The fix is to use the bottom partially
+					* visible item rather than the last possible item
+					* that could be visible.
+					*
+					* NOTE: This problem only happens on Vista during
+					* WM_NOTIFY with NM_CUSTOMDRAW and CDDS_POSTPAINT.
+					*/
+					long hItem = getBottomItem ();
+					if (hItem != 0) {
 						RECT rect = new RECT ();
-						OS.SetRect (rect, nmcd.left, top, nmcd.right, nmcd.bottom);
-						RECT headerRect = new RECT ();
-						OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect);
-						rect.left = headerRect.left;
-						rect.right = headerRect.right;
-						fillBackground (nmcd.hdc, getSortColumnPixel (), rect);
+						if (OS.TreeView_GetItemRect (handle, hItem, rect, false)) {
+							top = rect.bottom;
+						}
 					}
+					RECT rect = new RECT ();
+					OS.SetRect (rect, nmcd.left, top, nmcd.right, nmcd.bottom);
+					RECT headerRect = new RECT ();
+					OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect);
+					rect.left = headerRect.left;
+					rect.right = headerRect.right;
+					fillBackground (nmcd.hdc, getSortColumnPixel (), rect);
 				}
 			}
 		}
@@ -1645,10 +1633,8 @@ void checkBuffered () {
 		style |= SWT.DOUBLE_BUFFERED;
 		OS.SendMessage (handle, OS.TVM_SETSCROLLTIME, 0, 0);
 	}
-	if (OS.IsAppThemed ()) {
-		int exStyle = (int)OS.SendMessage (handle, OS.TVM_GETEXTENDEDSTYLE, 0, 0);
-		if ((exStyle & OS.TVS_EX_DOUBLEBUFFER) != 0) style |= SWT.DOUBLE_BUFFERED;
-	}
+	int exStyle = (int)OS.SendMessage (handle, OS.TVM_GETEXTENDEDSTYLE, 0, 0);
+	if ((exStyle & OS.TVS_EX_DOUBLEBUFFER) != 0) style |= SWT.DOUBLE_BUFFERED;
 }
 
 boolean checkData (TreeItem item, boolean redraw) {
@@ -1876,20 +1862,18 @@ void createHandle () {
 	state &= ~(CANVAS | THEME_BACKGROUND);
 
 	/* Use the Explorer theme */
-	if (OS.IsAppThemed ()) {
-		explorerTheme = true;
-		OS.SetWindowTheme (handle, Display.EXPLORER, null);
-		int bits = OS.TVS_EX_DOUBLEBUFFER | OS.TVS_EX_RICHTOOLTIP;
-		if (ENABLE_TVS_EX_FADEINOUTEXPANDOS) bits |= OS.TVS_EX_FADEINOUTEXPANDOS;
-		OS.SendMessage (handle, OS.TVM_SETEXTENDEDSTYLE, 0, bits);
-		/*
-		* Bug in Windows.  When the tree is using the explorer
-		* theme, it does not use COLOR_WINDOW_TEXT for the
-		* default foreground color.  The fix is to explicitly
-		* set the foreground.
-		*/
-		setForegroundPixel (-1);
-	}
+	explorerTheme = true;
+	OS.SetWindowTheme (handle, Display.EXPLORER, null);
+	int bits = OS.TVS_EX_DOUBLEBUFFER | OS.TVS_EX_RICHTOOLTIP;
+	if (ENABLE_TVS_EX_FADEINOUTEXPANDOS) bits |= OS.TVS_EX_FADEINOUTEXPANDOS;
+	OS.SendMessage (handle, OS.TVM_SETEXTENDEDSTYLE, 0, bits);
+	/*
+	* Bug in Windows.  When the tree is using the explorer
+	* theme, it does not use COLOR_WINDOW_TEXT for the
+	* default foreground color.  The fix is to explicitly
+	* set the foreground.
+	*/
+	setForegroundPixel (-1);
 
 	/* Set the checkbox image list */
 	if ((style & SWT.CHECK) != 0) setCheckboxImageList ();
@@ -4741,7 +4725,6 @@ void setCheckboxImageList () {
 	if ((style & SWT.CHECK) == 0) return;
 	int count = 5, flags = OS.ILC_COLOR32;
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) flags |= OS.ILC_MIRROR;
-	if (!OS.IsAppThemed ()) flags |= OS.ILC_MASK;
 	int height = (int)OS.SendMessage (handle, OS.TVM_GETITEMHEIGHT, 0, 0), width = height;
 	long hStateList = OS.ImageList_Create (width, height, flags, count, count);
 	long hDC = OS.GetDC (handle);
@@ -4750,23 +4733,9 @@ void setCheckboxImageList () {
 	long hOldBitmap = OS.SelectObject (memDC, hBitmap);
 	RECT rect = new RECT ();
 	OS.SetRect (rect, 0, 0, width * count, height);
-	/*
-	* NOTE: DrawFrameControl() draws a black and white
-	* mask when not drawing a push button.  In order to
-	* make the box surrounding the check mark transparent,
-	* fill it with a color that is neither black or white.
-	*/
-	int clrBackground = 0;
-	if (OS.IsAppThemed ()) {
-		Control control = findBackgroundControl ();
-		if (control == null) control = this;
-		clrBackground = control.getBackgroundPixel ();
-	} else {
-		clrBackground = 0x020000FF;
-		if ((clrBackground & 0xFFFFFF) == OS.GetSysColor (OS.COLOR_WINDOW)) {
-			clrBackground = 0x0200FF00;
-		}
-	}
+	Control control = findBackgroundControl ();
+	if (control == null) control = this;
+	int clrBackground = control.getBackgroundPixel ();
 	long hBrush = OS.CreateSolidBrush (clrBackground);
 	OS.FillRect (memDC, rect, hBrush);
 	OS.DeleteObject (hBrush);
@@ -4776,45 +4745,29 @@ void setCheckboxImageList () {
 	OS.SelectObject (hDC, oldFont);
 	int itemWidth = Math.min (tm.tmHeight, width);
 	int itemHeight = Math.min (tm.tmHeight, height);
-	if (OS.IsAppThemed()) {
-		/*
-		 * Feature in Windows. DrawThemeBackground stretches the checkbox
-		 * bitmap to fill the provided rectangle. To avoid stretching
-		 * artifacts, limit the rectangle to actual checkbox bitmap size.
-		 */
-		SIZE size = new SIZE();
-		OS.GetThemePartSize(display.hButtonTheme(nativeZoom), memDC, OS.BP_CHECKBOX, 0, null, OS.TS_TRUE, size);
-		itemWidth = Math.min (size.cx, itemWidth);
-		itemHeight = Math.min (size.cy, itemHeight);
-	}
+	/*
+	 * Feature in Windows. DrawThemeBackground stretches the checkbox
+	 * bitmap to fill the provided rectangle. To avoid stretching
+	 * artifacts, limit the rectangle to actual checkbox bitmap size.
+	 */
+	SIZE size = new SIZE();
+	OS.GetThemePartSize(display.hButtonTheme(nativeZoom), memDC, OS.BP_CHECKBOX, 0, null, OS.TS_TRUE, size);
+	itemWidth = Math.min (size.cx, itemWidth);
+	itemHeight = Math.min (size.cy, itemHeight);
 	int left = (width - itemWidth) / 2, top = (height - itemHeight) / 2 + 1;
 	OS.SetRect (rect, left + width, top, left + width + itemWidth, top + itemHeight);
-	if (OS.IsAppThemed ()) {
-		long hTheme = display.hButtonTheme(nativeZoom);
-		OS.DrawThemeBackground (hTheme, memDC, OS.BP_CHECKBOX, OS.CBS_UNCHECKEDNORMAL, rect, null);
-		rect.left += width;  rect.right += width;
-		OS.DrawThemeBackground (hTheme, memDC, OS.BP_CHECKBOX, OS.CBS_CHECKEDNORMAL, rect, null);
-		rect.left += width;  rect.right += width;
-		OS.DrawThemeBackground (hTheme, memDC, OS.BP_CHECKBOX, OS.CBS_UNCHECKEDNORMAL, rect, null);
-		rect.left += width;  rect.right += width;
-		OS.DrawThemeBackground (hTheme, memDC, OS.BP_CHECKBOX, OS.CBS_MIXEDNORMAL, rect, null);
-	} else {
-		OS.DrawFrameControl (memDC, rect, OS.DFC_BUTTON, OS.DFCS_BUTTONCHECK | OS.DFCS_FLAT);
-		rect.left += width;  rect.right += width;
-		OS.DrawFrameControl (memDC, rect, OS.DFC_BUTTON, OS.DFCS_BUTTONCHECK | OS.DFCS_CHECKED | OS.DFCS_FLAT);
-		rect.left += width;  rect.right += width;
-		OS.DrawFrameControl (memDC, rect, OS.DFC_BUTTON, OS.DFCS_BUTTONCHECK | OS.DFCS_INACTIVE | OS.DFCS_FLAT);
-		rect.left += width;  rect.right += width;
-		OS.DrawFrameControl (memDC, rect, OS.DFC_BUTTON, OS.DFCS_BUTTONCHECK | OS.DFCS_CHECKED | OS.DFCS_INACTIVE | OS.DFCS_FLAT);
-	}
+	long hTheme = display.hButtonTheme(nativeZoom);
+	OS.DrawThemeBackground (hTheme, memDC, OS.BP_CHECKBOX, OS.CBS_UNCHECKEDNORMAL, rect, null);
+	rect.left += width;  rect.right += width;
+	OS.DrawThemeBackground (hTheme, memDC, OS.BP_CHECKBOX, OS.CBS_CHECKEDNORMAL, rect, null);
+	rect.left += width;  rect.right += width;
+	OS.DrawThemeBackground (hTheme, memDC, OS.BP_CHECKBOX, OS.CBS_UNCHECKEDNORMAL, rect, null);
+	rect.left += width;  rect.right += width;
+	OS.DrawThemeBackground (hTheme, memDC, OS.BP_CHECKBOX, OS.CBS_MIXEDNORMAL, rect, null);
 	OS.SelectObject (memDC, hOldBitmap);
 	OS.DeleteDC (memDC);
 	OS.ReleaseDC (handle, hDC);
-	if (OS.IsAppThemed ()) {
-		OS.ImageList_Add (hStateList, hBitmap, 0);
-	} else {
-		OS.ImageList_AddMasked (hStateList, hBitmap, clrBackground);
-	}
+	OS.ImageList_Add (hStateList, hBitmap, 0);
 	OS.DeleteObject (hBitmap);
 	long hOldStateList = OS.SendMessage (handle, OS.TVM_GETIMAGELIST, OS.TVSIL_STATE, 0);
 	OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_STATE, hStateList);
@@ -5890,17 +5843,8 @@ void unsubclass () {
 
 @Override
 int widgetStyle () {
-	int bits = super.widgetStyle () | OS.TVS_SHOWSELALWAYS | OS.TVS_LINESATROOT | OS.TVS_HASBUTTONS | OS.TVS_NONEVENHEIGHT;
-	if (OS.IsAppThemed ()) {
-		bits |= OS.TVS_TRACKSELECT;
-		if ((style & SWT.FULL_SELECTION) != 0) bits |= OS.TVS_FULLROWSELECT;
-	} else {
-		if ((style & SWT.FULL_SELECTION) != 0) {
-			bits |= OS.TVS_FULLROWSELECT;
-		} else {
-			bits |= OS.TVS_HASLINES;
-		}
-	}
+	int bits = super.widgetStyle () | OS.TVS_SHOWSELALWAYS | OS.TVS_LINESATROOT | OS.TVS_HASBUTTONS | OS.TVS_NONEVENHEIGHT | OS.TVS_TRACKSELECT;
+	if ((style & SWT.FULL_SELECTION) != 0) bits |= OS.TVS_FULLROWSELECT;
 	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
 		bits &= ~(OS.WS_HSCROLL | OS.WS_VSCROLL);
 		bits |= OS.TVS_NOSCROLL;
@@ -7559,10 +7503,8 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 				if (hwndHeader == 0) createParent ();
 			}
 			if (!customDraw && findImageControl () == null) {
-				if (OS.IsAppThemed ()) {
-					if (sortColumn == null || sortDirection == SWT.NONE) {
-						break;
-					}
+				if (sortColumn == null || sortDirection == SWT.NONE) {
+					break;
 				}
 			}
 			NMTVCUSTOMDRAW nmcd = new NMTVCUSTOMDRAW ();

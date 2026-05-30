@@ -427,7 +427,7 @@ boolean isAppThemed () {
 	if (background != -1) return false;
 	if (foreground != -1) return false;
 	if (hFont != 0) return false;
-	return OS.IsAppThemed ();
+	return true;
 }
 
 void layoutItems (int index, boolean setScrollbar) {

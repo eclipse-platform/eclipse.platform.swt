@@ -1421,21 +1421,6 @@ fail:
 }
 #endif
 
-#ifndef NO_DrawFrameControl
-JNIEXPORT jboolean JNICALL OS_NATIVE(DrawFrameControl)
-	(JNIEnv *env, jclass that, jlong arg0, jobject arg1, jint arg2, jint arg3)
-{
-	RECT _arg1, *lparg1=NULL;
-	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, DrawFrameControl_FUNC);
-	if (arg1) if ((lparg1 = getRECTFields(env, arg1, &_arg1)) == NULL) goto fail;
-	rc = (jboolean)DrawFrameControl((HDC)arg0, lparg1, arg2, arg3);
-fail:
-	OS_NATIVE_EXIT(env, that, DrawFrameControl_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_DrawIconEx
 JNIEXPORT jboolean JNICALL OS_NATIVE(DrawIconEx)
 	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jint arg2, jlong arg3, jint arg4, jint arg5, jint arg6, jlong arg7, jint arg8)
@@ -3880,18 +3865,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(ImageList_1Add)
 }
 #endif
 
-#ifndef NO_ImageList_1AddMasked
-JNIEXPORT jint JNICALL OS_NATIVE(ImageList_1AddMasked)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jint arg2)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, ImageList_1AddMasked_FUNC);
-	rc = (jint)ImageList_AddMasked((HIMAGELIST)arg0, (HBITMAP)arg1, (COLORREF)arg2);
-	OS_NATIVE_EXIT(env, that, ImageList_1AddMasked_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_ImageList_1BeginDrag
 JNIEXPORT jboolean JNICALL OS_NATIVE(ImageList_1BeginDrag)
 	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jint arg2, jint arg3)
@@ -4438,18 +4411,6 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(InvalidateRgn)
 	OS_NATIVE_ENTER(env, that, InvalidateRgn_FUNC);
 	rc = (jboolean)InvalidateRgn((HWND)arg0, (HRGN)arg1, arg2);
 	OS_NATIVE_EXIT(env, that, InvalidateRgn_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_IsAppThemed
-JNIEXPORT jboolean JNICALL OS_NATIVE(IsAppThemed)
-	(JNIEnv *env, jclass that)
-{
-	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, IsAppThemed_FUNC);
-	rc = (jboolean)IsAppThemed();
-	OS_NATIVE_EXIT(env, that, IsAppThemed_FUNC);
 	return rc;
 }
 #endif
