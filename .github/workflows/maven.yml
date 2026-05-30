@@ -45,11 +45,7 @@ jobs:
     steps:
       - name: Paths filter (PRs only)
         if: github.event.pull_request.base
-        # dorney/paths-filter is out of date, so use this fork with
-        # a specific fix for missing predicate-quantifier in action's
-        # inputs
-        # https://github.com/dorny/paths-filter/pull/226#issuecomment-2805358761
-        uses: petermetz/paths-filter@5ee2f5d4cf5d7bdd998a314a42da307e2ae1639d
+        uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d # v4.0.1
         id: filter
         with:
           predicate-quantifier: 'every'
