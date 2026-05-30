@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2020 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -50,8 +50,8 @@ public final class Color extends Resource {
 	public GdkRGBA handle;
 	int alpha = 0;
 
-Color(Device device) {
-	super(device);
+Color() {
+	super();
 }
 
 /**
@@ -465,13 +465,12 @@ public RGBA getRGBA () {
  * application code.
  * </p>
  *
- * @param device the device on which to allocate the color
  * @param gdkRGBA the handle for the color
  *
  * @noreference This method is not intended to be referenced by clients.
  */
 public static Color gtk_new(Device device, GdkRGBA gdkRGBA) {
-	Color color = new Color(device);
+	Color color = new Color();
 	color.handle = gdkRGBA;
 	color.alpha = (int) (gdkRGBA.alpha * 255);
 	return color;
@@ -487,14 +486,13 @@ public static Color gtk_new(Device device, GdkRGBA gdkRGBA) {
  * application code.
  * </p>
  *
- * @param device the device on which to allocate the color
  * @param gdkRGBA the handle for the color
  * @param alpha the int for the alpha content in the color(Currently SWT honors extreme values for alpha ie. 0 or 255)
  *
  * @noreference This method is not intended to be referenced by clients.
  */
-public static Color gtk_new(Device device, GdkRGBA gdkRGBA, int alpha) {
-	Color color = new Color(device);
+public static Color gtk_new(GdkRGBA gdkRGBA, int alpha) {
+	Color color = new Color();
 	color.handle = gdkRGBA;
 	color.alpha = alpha;
 	return color;

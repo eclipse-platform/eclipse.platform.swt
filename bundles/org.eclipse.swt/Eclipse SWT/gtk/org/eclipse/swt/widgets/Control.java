@@ -2949,12 +2949,12 @@ public Color getBackground () {
 	checkWidget();
 	Color color;
 	if (backgroundAlpha == 0) {
-		color = Color.gtk_new (display, this.getBackgroundGdkRGBA (), 0);
+		color = Color.gtk_new (this.getBackgroundGdkRGBA (), 0);
 		return color;
 	} else {
 		Control control = findBackgroundControl ();
 		if (control == null) control = this;
-		return Color.gtk_new (display, control.getBackgroundGdkRGBA (), backgroundAlpha);
+		return Color.gtk_new (control.getBackgroundGdkRGBA (), backgroundAlpha);
 	}
 }
 
