@@ -519,9 +519,7 @@ LRESULT WM_UPDATEUISTATE (long wParam, long lParam) {
 	boolean redraw = findImageControl () != null;
 	if (!redraw) {
 		if ((state & THEME_BACKGROUND) != 0) {
-			if (OS.IsAppThemed ()) {
-				redraw = findThemeControl () != null;
-			}
+			redraw = findThemeControl () != null;
 		}
 	}
 	if (redraw) {

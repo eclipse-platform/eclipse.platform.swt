@@ -362,13 +362,11 @@ void destroyItem (CoolItem item) {
 
 @Override
 void drawThemeBackground (long hDC, long hwnd, RECT rect) {
-	if (OS.IsAppThemed ()) {
-		if (background == -1 && (style & SWT.FLAT) != 0) {
-			Control control = findBackgroundControl ();
-			if (control != null && control.backgroundImage != null) {
-				fillBackground (hDC, control.getBackgroundPixel (), rect);
-				return;
-			}
+	if (background == -1 && (style & SWT.FLAT) != 0) {
+		Control control = findBackgroundControl ();
+		if (control != null && control.backgroundImage != null) {
+			fillBackground (hDC, control.getBackgroundPixel (), rect);
+			return;
 		}
 	}
 	RECT rect2 = new RECT ();
@@ -1030,29 +1028,6 @@ LRESULT WM_COMMAND (long wParam, long lParam) {
 }
 
 @Override
-LRESULT WM_ERASEBKGND (long wParam, long lParam) {
-	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
-	/*
-	* Feature in Windows.  For some reason, Windows
-	* does not fully erase the area that the cool bar
-	* occupies when the size of the cool bar is larger
-	* than the space occupied by the cool bar items.
-	* The fix is to erase the cool bar background.
-	*
-	* NOTE: On versions of Windows prior to XP, for
-	* some reason, the cool bar draws separators in
-	* WM_ERASEBKGND.  Therefore it is essential to run
-	* the cool bar window proc after the background has
-	* been erased.
-	*/
-	if (!OS.IsAppThemed ()) {
-		drawBackground (wParam);
-		return null;
-	}
-	return result;
-}
-
-@Override
 LRESULT WM_NOTIFY (long wParam, long lParam) {
 	/*
 	* Feature in Windows.  When the cool bar window
@@ -1110,12 +1085,7 @@ LRESULT WM_SIZE (long wParam, long lParam) {
 		if (code == 0) return LRESULT.ZERO;
 		return new LRESULT (code);
 	}
-	//TEMPORARY CODE
-//	if (OS.IsAppThemed ()) {
-//		if (background == -1 && (style & SWT.FLAT) == 0) {
-//			OS.InvalidateRect (handle, null, true);
-//		}
-//	}
+
 	return super.WM_SIZE (wParam, lParam);
 }
 

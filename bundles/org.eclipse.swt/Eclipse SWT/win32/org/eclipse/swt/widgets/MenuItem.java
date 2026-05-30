@@ -802,19 +802,15 @@ private void updateImage () {
 	if (parent.needsMenuCallback()) {
 		info.hbmpItem = OS.HBMMENU_CALLBACK;
 	} else {
-		if (OS.IsAppThemed ()) {
-			if (hBitmap != 0) OS.DeleteObject (hBitmap);
-			hBitmap = getMenuItemIconBitmapHandle(image);
-			if ((style & (SWT.CHECK | SWT.RADIO)) != 0 && CUSTOM_SELECTION_IMAGE > 0) {
-				info.fMask |= OS.MIIM_CHECKMARKS;
-				info.hbmpUnchecked = hBitmap;
-				info.hbmpChecked = getMenuItemIconSelectedBitmapHandle();
-			}
-			else {
-				info.hbmpItem = hBitmap;
-			}
-		} else {
-			info.hbmpItem = image != null ? OS.HBMMENU_CALLBACK : 0;
+		if (hBitmap != 0) OS.DeleteObject (hBitmap);
+		hBitmap = getMenuItemIconBitmapHandle(image);
+		if ((style & (SWT.CHECK | SWT.RADIO)) != 0 && CUSTOM_SELECTION_IMAGE > 0) {
+			info.fMask |= OS.MIIM_CHECKMARKS;
+			info.hbmpUnchecked = hBitmap;
+			info.hbmpChecked = getMenuItemIconSelectedBitmapHandle();
+		}
+		else {
+			info.hbmpItem = hBitmap;
 		}
 	}
 	long hMenu = parent.handle;
