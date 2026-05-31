@@ -982,7 +982,6 @@ public class OS extends C {
 	public static final int NM_CLICK = 0xfffffffe;
 	public static final int NM_CUSTOMDRAW = NM_FIRST - 12;
 	public static final int NM_DBLCLK = 0xfffffffd;
-	public static final int NM_RECOGNIZEGESTURE = NM_FIRST - 16;
 	public static final int NM_RELEASEDCAPTURE = NM_FIRST - 16;
 	public static final int NM_RETURN = 0xfffffffc;
 	public static final int NOTIFYICONDATA_V2_SIZE = NOTIFYICONDATA_V2_SIZE ();
@@ -1251,7 +1250,6 @@ public class OS extends C {
 	public static final int SPI_GETWHEELSCROLLCHARS = 108;
 	public static final int SPI_GETWHEELSCROLLLINES = 104;
 	public static final int SPI_GETCARETWIDTH = 0x2006;
-	public static final int SPI_SETSIPINFO = 224;
 	public static final int SPI_SETHIGHCONTRAST = 67;
 	public static final int SRCAND = 0x8800c6;
 	public static final int SRCCOPY = 0xcc0020;
@@ -1841,7 +1839,6 @@ public class OS extends C {
 	public static final int WS_CLIPSIBLINGS = 0x4000000;
 	public static final int WS_DISABLED = 0x4000000;
 	public static final int WS_EX_APPWINDOW = 0x40000;
-	public static final int WS_EX_CAPTIONOKBTN = 0x80000000;
 	public static final int WS_EX_CLIENTEDGE = 0x200;
 	public static final int WS_EX_COMPOSITED = 0x2000000;
 	public static final int WS_EX_DLGMODALFRAME = 0x1;
