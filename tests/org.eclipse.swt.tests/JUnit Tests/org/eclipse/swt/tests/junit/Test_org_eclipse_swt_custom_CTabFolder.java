@@ -14,6 +14,7 @@
 package org.eclipse.swt.tests.junit;
 
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -1047,6 +1048,207 @@ public void test_dirtyIndicator_closesWhenCloseEnabled() {
 	} catch (NoSuchFieldException | IllegalAccessException e) {
 		fail("Failed to access closeRect via reflection: " + e.getMessage());
 	}
+}
+
+@Test
+public void test_setItemOrder_reordersItems() {
+	createTabFolder(null, 4);
+	CTabItem[] original = ctabFolder.getItems();
+
+	// indices[i] is the index of the item that should move to position i
+	ctabFolder.setItemOrder(new int[] { 2, 0, 3, 1 });
+
+	CTabItem[] reordered = ctabFolder.getItems();
+	assertEquals(original[2], reordered[0]);
+	assertEquals(original[0], reordered[1]);
+	assertEquals(original[3], reordered[2]);
+	assertEquals(original[1], reordered[3]);
+}
+
+@Test
+public void test_setItemOrder_keepsSelection() {
+	createTabFolder(null, 4);
+	CTabItem selected = ctabFolder.getItem(1);
+	ctabFolder.setSelection(selected);
+	assertEquals(selected, ctabFolder.getSelection());
+
+	ctabFolder.setItemOrder(new int[] { 3, 1, 0, 2 });
+
+	// the same item must still be selected, with its index updated
+	assertEquals(selected, ctabFolder.getSelection());
+	assertEquals(1, ctabFolder.getSelectionIndex());
+	assertEquals(selected, ctabFolder.getItem(1));
+}
+
+@Test
+public void test_setItemOrder_identityIsNoOp() {
+	createTabFolder(null, 4);
+	CTabItem[] original = ctabFolder.getItems();
+	ctabFolder.setSelection(ctabFolder.getItem(2));
+
+	ctabFolder.setItemOrder(new int[] { 0, 1, 2, 3 });
+
+	assertArrayEquals(original, ctabFolder.getItems());
+	assertEquals(2, ctabFolder.getSelectionIndex());
+}
+
+@Test
+public void test_setItemOrder_chevronStillWorks() {
+	createTabFolder(null, 8);
+	shell.setSize(800, 200);
+	processEvents();
+	// shrink so that not all tabs fit and a chevron is required
+	showChevron();
+	processEvents();
+
+	CTabItem selected = ctabFolder.getItem(0);
+	ctabFolder.setSelection(selected);
+	processEvents();
+
+	// reverse the order
+	int n = ctabFolder.getItemCount();
+	int[] order = new int[n];
+	for (int i = 0; i < n; i++) {
+		order[i] = n - 1 - i;
+	}
+	ctabFolder.setItemOrder(order);
+	processEvents();
+
+	// the chevron must still be present and the internal book-keeping consistent
+	assertNotNull(getChevron(ctabFolder), "Chevron should still be shown after reordering");
+	assertEquals(selected, ctabFolder.getSelection());
+
+	int[] priority = reflection_getIntArray(ctabFolder, "priority");
+	assertTrue(isPermutation(priority, n), "priority[] must remain a permutation of item indices after reorder");
+	int firstIndex = reflection_getInt(ctabFolder, "firstIndex");
+	assertTrue(firstIndex >= -1 && firstIndex < n, "firstIndex must reference a valid item after reorder");
+
+	// no tabs / toolbar items overlap after the reorder
+	checkElementOverlap(ctabFolder);
+}
+
+@Test
+public void test_setItemOrder_errorCases() {
+	createTabFolder(null, 3);
+
+	assertThrows(IllegalArgumentException.class, () -> ctabFolder.setItemOrder(null),
+			"null argument must be rejected");
+	assertThrows(IllegalArgumentException.class, () -> ctabFolder.setItemOrder(new int[] { 0, 1 }),
+			"wrong-length array must be rejected");
+	assertThrows(IllegalArgumentException.class, () -> ctabFolder.setItemOrder(new int[] { 0, 1, 1 }),
+			"duplicate index must be rejected");
+	assertThrows(IllegalArgumentException.class, () -> ctabFolder.setItemOrder(new int[] { 0, 1, 3 }),
+			"out-of-range index must be rejected");
+	assertThrows(IllegalArgumentException.class, () -> ctabFolder.setItemOrder(new int[] { -1, 1, 2 }),
+			"negative index must be rejected");
+
+	// a rejected call must leave the existing order untouched
+	CTabItem[] original = ctabFolder.getItems();
+	assertThrows(IllegalArgumentException.class, () -> ctabFolder.setItemOrder(new int[] { 0, 1, 1 }));
+	assertArrayEquals(original, ctabFolder.getItems());
+}
+
+@Test
+public void test_moveItem_forward() {
+	createTabFolder(null, 5);
+	CTabItem[] original = ctabFolder.getItems();
+
+	// move item 1 to position 3 -> [0, 2, 3, 1, 4]
+	ctabFolder.moveItem(1, 3);
+
+	CTabItem[] reordered = ctabFolder.getItems();
+	assertArrayEquals(
+			new CTabItem[] { original[0], original[2], original[3], original[1], original[4] },
+			reordered);
+}
+
+@Test
+public void test_moveItem_backward() {
+	createTabFolder(null, 5);
+	CTabItem[] original = ctabFolder.getItems();
+
+	// move item 3 to position 0 -> [3, 0, 1, 2, 4]
+	ctabFolder.moveItem(3, 0);
+
+	CTabItem[] reordered = ctabFolder.getItems();
+	assertArrayEquals(
+			new CTabItem[] { original[3], original[0], original[1], original[2], original[4] },
+			reordered);
+}
+
+@Test
+public void test_moveItem_keepsSelection() {
+	createTabFolder(null, 5);
+	CTabItem selected = ctabFolder.getItem(1);
+	ctabFolder.setSelection(selected);
+
+	ctabFolder.moveItem(1, 3);
+
+	assertEquals(selected, ctabFolder.getSelection());
+	assertEquals(3, ctabFolder.getSelectionIndex());
+	assertEquals(selected, ctabFolder.getItem(3));
+}
+
+@Test
+public void test_moveItem_sameIndexIsNoOp() {
+	createTabFolder(null, 4);
+	CTabItem[] original = ctabFolder.getItems();
+	ctabFolder.setSelection(ctabFolder.getItem(2));
+
+	ctabFolder.moveItem(2, 2);
+
+	assertArrayEquals(original, ctabFolder.getItems());
+	assertEquals(2, ctabFolder.getSelectionIndex());
+}
+
+@Test
+public void test_moveItem_errorCases() {
+	createTabFolder(null, 3);
+
+	assertThrows(IllegalArgumentException.class, () -> ctabFolder.moveItem(-1, 0),
+			"negative from index must be rejected");
+	assertThrows(IllegalArgumentException.class, () -> ctabFolder.moveItem(3, 0),
+			"out-of-range from index must be rejected");
+	assertThrows(IllegalArgumentException.class, () -> ctabFolder.moveItem(0, -1),
+			"negative to index must be rejected");
+	assertThrows(IllegalArgumentException.class, () -> ctabFolder.moveItem(0, 3),
+			"out-of-range to index must be rejected");
+}
+
+private static int[] reflection_getIntArray(CTabFolder tabFolder, String fieldName) {
+	try {
+		Field field = CTabFolder.class.getDeclaredField(fieldName);
+		field.setAccessible(true);
+		return (int[]) field.get(tabFolder);
+	} catch (Exception e) {
+		fail("Failed to access " + fieldName + " via reflection: " + e.getMessage());
+		return null;
+	}
+}
+
+private static int reflection_getInt(CTabFolder tabFolder, String fieldName) {
+	try {
+		Field field = CTabFolder.class.getDeclaredField(fieldName);
+		field.setAccessible(true);
+		return field.getInt(tabFolder);
+	} catch (Exception e) {
+		fail("Failed to access " + fieldName + " via reflection: " + e.getMessage());
+		return -1;
+	}
+}
+
+private static boolean isPermutation(int[] values, int size) {
+	if (values.length != size) {
+		return false;
+	}
+	boolean[] seen = new boolean[size];
+	for (int value : values) {
+		if (value < 0 || value >= size || seen[value]) {
+			return false;
+		}
+		seen[value] = true;
+	}
+	return true;
 }
 
 }
