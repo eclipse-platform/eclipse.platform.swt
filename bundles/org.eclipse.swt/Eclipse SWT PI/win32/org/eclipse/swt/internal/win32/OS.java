@@ -2142,8 +2142,8 @@ public static final boolean OpenPrinter (TCHAR pPrinterName, long [] phPrinter, 
 
 public static final int[] readRegistryDwords(int hkeyLocation, String key, String valueName) {
 	final int ERROR_MORE_DATA = 234;
-	Objects.requireNonNull("key", key);
-	Objects.requireNonNull("valueName", valueName);
+	Objects.requireNonNull(key, "key");
+	Objects.requireNonNull(valueName, "valueName");
 	long[] phkResult = new long[1];
 	TCHAR regKey = new TCHAR(0, key, true);
 	TCHAR lpValueName = new TCHAR(0, valueName, true);
