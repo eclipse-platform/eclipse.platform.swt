@@ -2843,8 +2843,22 @@ boolean setItemLocation(GC gc) {
 	return changed;
 }
 /**
- * Reorder the items of the receiver.
- * @param indices an array containing the new indices for all items
+ * Sets the order that the items in the receiver should be displayed in to the
+ * given argument.
+ * <p>
+ * The argument is described in terms of the zero-relative ordering of the
+ * receiver's current items: <code>indices[i]</code> is the index of the item
+ * that should be moved to position <code>i</code>. In other words, the item
+ * currently at index <code>indices[i]</code> becomes the new item at index
+ * <code>i</code>. The argument must contain every index of the receiver's items
+ * exactly once.
+ * </p><p>
+ * The currently selected item remains selected after the reorder, and the set
+ * of visible tabs is preserved as far as the new ordering allows.
+ * </p>
+ *
+ * @param indices the new display order of the receiver's items, expressed as a
+ *        permutation of their current indices
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the indices array is null</li>
@@ -2856,14 +2870,20 @@ boolean setItemLocation(GC gc) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ *
+ * @see #moveItem(int, int)
+ *
+ * @since 3.135
  */
-/*public*/ void setItemOrder (int[] indices) {
+public void setItemOrder (int[] indices) {
 	checkWidget();
 	if (indices == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (indices.length != items.length) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	int newSelectedIndex = -1;
 	boolean[] seen = new boolean[items.length];
 	CTabItem[] temp = new CTabItem[items.length];
+	// oldToNew[oldIndex] is the position the item at oldIndex moves to.
+	int[] oldToNew = new int[items.length];
 	for (int i=0; i<indices.length; i++) {
 		int index = indices[i];
 		if (!(0 <= index && index < items.length)) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
@@ -2871,10 +2891,66 @@ boolean setItemLocation(GC gc) {
 		seen[index] = true;
 		if (index == selectedIndex) newSelectedIndex = i;
 		temp[i] = items[index];
+		oldToNew[index] = i;
 	}
 	items = temp;
 	selectedIndex = newSelectedIndex;
+	// priority[] and firstIndex hold indices into items[], so remap them to the
+	// items' new positions to keep the chevron/visible-tab state correct.
+	for (int i=0; i<priority.length; i++) {
+		priority[i] = oldToNew[priority[i]];
+	}
+	if (firstIndex != -1) firstIndex = oldToNew[firstIndex];
 	updateFolder(REDRAW);
+}
+/**
+ * Moves the item at the <code>from</code> index to the <code>to</code> index.
+ * The items between the two indices shift by one position to fill the gap; all
+ * other items keep their relative order. This is a convenience for the common
+ * single-item reorder gesture (such as dragging a tab) and is equivalent to
+ * building the corresponding permutation and passing it to
+ * {@link #setItemOrder(int[])}.
+ * <p>
+ * If <code>from</code> and <code>to</code> are equal this method has no effect.
+ * The currently selected item remains selected after the move.
+ * </p>
+ *
+ * @param from the zero-relative index of the item to move
+ * @param to the zero-relative index the item should be moved to
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_RANGE - if either <code>from</code> or <code>to</code> is
+ *    not between 0 and the number of items minus 1 (inclusive)</li>
+ * </ul>
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see #setItemOrder(int[])
+ *
+ * @since 3.135
+ */
+public void moveItem (int from, int to) {
+	checkWidget();
+	int count = items.length;
+	if (from < 0 || from >= count) SWT.error (SWT.ERROR_INVALID_RANGE);
+	if (to < 0 || to >= count) SWT.error (SWT.ERROR_INVALID_RANGE);
+	if (from == to) return;
+	// Build the permutation that removes the item at `from` and re-inserts it at
+	// `to`, then delegate so priority[]/firstIndex are remapped in one place.
+	int[] order = new int[count];
+	int next = 0;
+	for (int i = 0; i < count; i++) {
+		if (i == to) {
+			order[i] = from;
+		} else {
+			if (next == from) next++;
+			order[i] = next++;
+		}
+	}
+	setItemOrder(order);
 }
 boolean setItemSize(GC gc) {
 	boolean changed = false;
