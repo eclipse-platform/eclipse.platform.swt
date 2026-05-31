@@ -11,9 +11,8 @@
  * Contributors:
  *     Yatta Solutions - initial API and implementation
  *******************************************************************************/
-package org.eclipse.swt.tests.junit;
+package org.eclipse.swt.svg;
 
-import static org.eclipse.swt.tests.junit.SwtTestUtil.assertSWTProblem;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -23,10 +22,8 @@ import java.nio.charset.StandardCharsets;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.ImageData;
-import org.eclipse.swt.svg.JSVGRasterizer;
 import org.junit.jupiter.api.Test;
 
-@SuppressWarnings("restriction")
 class JSVGRasterizerTest {
 
 	private final JSVGRasterizer rasterizer = new JSVGRasterizer();
@@ -51,13 +48,7 @@ class JSVGRasterizerTest {
 
 	@Test
 	void testRasterizeWithZoomNegative() {
-		try {
-			rasterizer.rasterizeSVG(svgStream(svgString), -100);
-
-		} catch (IllegalArgumentException e) {
-			assertSWTProblem("Incorrect exception thrown for negative zoom", SWT.ERROR_INVALID_ARGUMENT, e);
-		}
-
+		assertThrows(IllegalArgumentException.class, () -> rasterizer.rasterizeSVG(svgStream(svgString), -100));
 	}
 
 	@Test

@@ -1,0 +1,54 @@
+<!--  
+###############################################################################
+# Copyright (c) 2026 Vector Informatik GmbH and others.
+#
+# This program and the accompanying materials are made available under the
+# terms of the Eclipse Public License 2.0 which accompanies this distribution,
+# and is available at https://www.eclipse.org/legal/epl-2.0/
+###############################################################################
+ -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.eclipse.platform</groupId>
+		<artifactId>eclipse.platform.swt</artifactId>
+		<version>4.41.0-SNAPSHOT</version>
+		<relativePath>../../</relativePath>
+	</parent>
+	<artifactId>org.eclipse.swt.svg</artifactId>
+	<version>3.133.100-SNAPSHOT</version>
+	<packaging>eclipse-plugin</packaging>
+	<properties>
+		<tycho.extraClasspathJars>IGNORE</tycho.extraClasspathJars>
+	</properties>
+	<build>
+		<sourceDirectory>src</sourceDirectory>
+		<testSourceDirectory>test</testSourceDirectory>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<dependencies>
+					<dependency>
+						<groupId>org.apache.maven.surefire</groupId>
+						<artifactId>surefire-junit-platform</artifactId>
+						<version>${surefire.version}</version>
+					</dependency>
+				</dependencies>
+				<executions>
+					<execution>
+						<id>execute-tests</id>
+						<goals>
+							<goal>test</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+
+</project>
