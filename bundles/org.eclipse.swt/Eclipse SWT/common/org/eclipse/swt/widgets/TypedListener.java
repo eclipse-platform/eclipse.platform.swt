@@ -65,7 +65,7 @@ public class TypedListener implements Listener {
  * @noreference This method is not intended to be referenced by clients.
  */
 @Deprecated(forRemoval=true, since="2025-03")
-public TypedListener (SWTEventListener listener) {
+public TypedListener (@SuppressWarnings("removal") SWTEventListener listener) {
 	eventListener = listener;
 }
 
