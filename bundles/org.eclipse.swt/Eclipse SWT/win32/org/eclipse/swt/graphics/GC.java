@@ -6112,13 +6112,9 @@ int getZoom() {
 }
 
 private void storeAndApplyOperationForExistingHandle(Operation operation) {
+	removePreviousOperationIfSupercededBy(operation);
+	operations.add(operation);
 	operation.apply();
-	if (data.reapplicable) {
-		removePreviousOperationIfSupercededBy(operation);
-		operations.add(operation);
-	} else {
-		operation.disposeAll();
-	}
 }
 
 private void removePreviousOperationIfSupercededBy(Operation operation) {
