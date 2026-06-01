@@ -35,8 +35,8 @@ public class GLCanvas extends Canvas {
 	static final String GLCONTEXT_KEY = "org.eclipse.swt.internal.cocoa.glcontext"; //$NON-NLS-1$
 
 	static final int NSOpenGLPFAOpenGLProfile = 99;
-	static final int NSOpenGLProfileVersion3_2Core = 0x3200;
 	static final int NSOpenGLProfileVersionLegacy = 0x1000;
+	static final int NSOpenGLProfileVersion3_2Core = 0x3200;
 	static final int NSOpenGLProfileVersion4_1Core = 0x4100;
 
 /**
@@ -212,12 +212,12 @@ public GLData getGLData () {
 	data.accumAlphaSize = accumColorSize;
 
 	pixelFormat.getValues(value, NSOpenGLPFAOpenGLProfile, 0);
-	if (value[0] == NSOpenGLProfileVersion3_2Core) {
+	if (value[0] == NSOpenGLProfileVersionLegacy) {
+		data.profile = Profile.LEGACY;
+	} else if (value[0] == NSOpenGLProfileVersion3_2Core) {
 		data.majorVersion = 3;
 		data.minorVersion = 2;
 		data.profile = Profile.CORE;
-	} else if (value[0] == NSOpenGLProfileVersionLegacy) {
-		data.profile = Profile.LEGACY;
 	} else if (value[0] == NSOpenGLProfileVersion4_1Core) {
 		data.majorVersion = 4;
 		data.minorVersion = 1;
