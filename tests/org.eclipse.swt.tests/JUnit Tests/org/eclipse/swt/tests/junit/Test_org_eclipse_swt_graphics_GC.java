@@ -731,6 +731,45 @@ public void test_getFontMetrics() {
 	assertTrue(fm.getHeight() > 0);
 }
 
+/**
+ * Verifies that applying a transform to a GC does not affect the font metrics
+ * when the font does not exist on the current platform and a fallback font is
+ * used instead.
+ *
+ * @see <a href="https://github.com/eclipse-platform/eclipse.platform.swt/issues/2978">Issue 2978</a>
+ */
+@Test
+public void test_getFontMetrics_notAffectedByTransform() {
+	Font font = new Font(display, "NonExistentSWTTestFont", 24, SWT.NORMAL);
+	Transform scaleTransform = new Transform(display, 3.0f, 0.0f, 0.0f, 3.0f, 0.0f, 0.0f);
+	try {
+		gc.setFont(font);
+		gc.setTransform(scaleTransform);
+		double metricsWithTransform = gc.getFontMetrics().getAverageCharacterWidth();
+
+		gc.setTransform(null);
+		double metricsAfterClearingTransform = gc.getFontMetrics().getAverageCharacterWidth();
+
+		gc.setFont(font);
+		double metricsAfterReSettingFont = gc.getFontMetrics().getAverageCharacterWidth();
+
+		gc.setTransform(scaleTransform);
+		double metricsWithTransformAgain = gc.getFontMetrics().getAverageCharacterWidth();
+
+		assertAll(
+			() -> assertEquals(metricsWithTransform, metricsAfterClearingTransform, 0,
+					"Font metrics must not change after clearing the transform"),
+			() -> assertEquals(metricsAfterClearingTransform, metricsAfterReSettingFont, 0,
+					"Font metrics must not change when re-setting the font without transform"),
+			() -> assertEquals(metricsAfterReSettingFont, metricsWithTransformAgain, 0,
+					"Font metrics must not be scaled when the transform is re-applied")
+		);
+	} finally {
+		scaleTransform.dispose();
+		font.dispose();
+	}
+}
+
 @Test
 public void test_getStyle() {
 	Canvas canvas = new Canvas(shell, SWT.NULL);

@@ -681,7 +681,22 @@ static long createGdipFont(long hDC, long hFont, long graphics, long fontCollect
 		if (outFont != null && font != 0) {
 			long hHeap = OS.GetProcessHeap();
 			long pLogFont = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, LOGFONT.sizeof);
-			Gdip.Font_GetLogFontW(font, graphics, pLogFont);
+			if (graphics != 0) {
+				// Font_GetLogFontW applies the graphics's world transform when converting the
+				// font size to LOGFONT units. A non-identity user transform would cause lfHeight
+				// to be scaled, producing an incorrectly-sized GDI font for GetTextMetrics.
+				// Temporarily set identity so the LOGFONT reflects device-pixel metrics.
+				long savedMatrix = Gdip.Matrix_new(0, 0, 0, 0, 0, 0);
+				Gdip.Graphics_GetTransform(graphics, savedMatrix);
+				long identityMatrix = Gdip.Matrix_new(1, 0, 0, 1, 0, 0);
+				Gdip.Graphics_SetTransform(graphics, identityMatrix);
+				Gdip.Font_GetLogFontW(font, graphics, pLogFont);
+				Gdip.Graphics_SetTransform(graphics, savedMatrix);
+				Gdip.Matrix_delete(identityMatrix);
+				Gdip.Matrix_delete(savedMatrix);
+			} else {
+				Gdip.Font_GetLogFontW(font, graphics, pLogFont);
+			}
 			outFont[0] = OS.CreateFontIndirect(pLogFont);
 			OS.HeapFree(hHeap, 0, pLogFont);
 		}
