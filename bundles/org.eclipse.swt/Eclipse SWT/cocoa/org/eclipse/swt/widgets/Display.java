@@ -2038,7 +2038,7 @@ double [] getWidgetColorRGB (int id) {
 double [] getNSColorRGB (NSColor color) {
 	if (color == null) return null;
 	NSColorSpace colorSpace = color.colorSpace();
-	if (colorSpace == null || colorSpace.colorSpaceModel() != OS.NSRGBColorSpaceModel) {
+	if (colorSpace == null || colorSpace.colorSpaceModel() != OS.NSColorSpaceModelRGB) {
 		color = color.colorUsingColorSpaceName(OS.NSDeviceRGBColorSpace);
 	}
 	if (color == null) return null;

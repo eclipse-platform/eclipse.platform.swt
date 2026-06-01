@@ -1420,6 +1420,7 @@
 <enum name='NSColorRenderingIntentPerceptual' value='3'/>
 <enum name='NSColorRenderingIntentRelativeColorimetric' value='2'/>
 <enum name='NSColorRenderingIntentSaturation' value='4'/>
+<enum name='NSColorSpaceModelRGB' value='1'/>
 <enum name='NSCommandKeyMask' value='1048576'/>
 <enum name='NSCompositeClear' value='0'/>
 <enum name='NSCompositeColor' value='27'/>
@@ -1450,6 +1451,10 @@
 <enum name='NSCompositeSourceOut' value='4'/>
 <enum name='NSCompositeSourceOver' value='2'/>
 <enum name='NSCompositeXOR' value='10'/>
+<enum name='NSCompositingOperationClear' value='0'/>
+<enum name='NSCompositingOperationCopy' value='1'/>
+<enum name='NSCompositingOperationSourceAtop' value='5'/>
+<enum name='NSCompositingOperationSourceOver' value='2'/>
 <enum name='NSCompressedFontMask' value='512'/>
 <enum name='NSCondensedFontMask' value='64'/>
 <enum name='NSContentsCellMask' value='1'/>
@@ -1479,6 +1484,9 @@
 <enum name='NSCursorUpdateMask' value='131072'/>
 <enum name='NSCurveToBezierPathElement' value='2'/>
 <enum name='NSCustomPaletteModeColorPanel' value='4'/>
+<enum name='NSDatePickerStyleClockAndCalendar' value='1'/>
+<enum name='NSDatePickerStyleTextField' value='2'/>
+<enum name='NSDatePickerStyleTextFieldAndStepper' value='0'/>
 <enum name='NSDecimalTabStopType' value='3'/>
 <enum name='NSDefaultControlTint' value='0'/>
 <enum name='NSDeleteCharFunctionKey' value='63294'/>
@@ -1655,6 +1663,8 @@
 <enum name='NSFontPanelCollectionModeMask' value='4'/>
 <enum name='NSFontPanelDocumentColorEffectModeMask' value='2048'/>
 <enum name='NSFontPanelFaceModeMask' value='1'/>
+<enum name='NSFontPanelModeMaskAllEffects' value='1048320'/>
+<enum name='NSFontPanelModeMaskAllModes' value='4294967295'/>
 <enum name='NSFontPanelShadowEffectModeMask' value='4096'/>
 <enum name='NSFontPanelSizeModeMask' value='2'/>
 <enum name='NSFontPanelStandardModesMask' value='65535'/>

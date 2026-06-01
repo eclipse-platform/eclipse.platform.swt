@@ -1201,7 +1201,7 @@ void drawInteriorWithFrame_inView (long id, long sel, NSRect rect, long view) {
 			transform.scaleXBy(1, -1);
 			transform.translateXBy(0, -(destRect.height + 2 * destRect.y));
 			transform.concat();
-			image.drawInRect(destRect, srcRect, OS.NSCompositeSourceOver, 1);
+			image.drawInRect(destRect, srcRect, OS.NSCompositingOperationSourceOver, 1);
 			context.restoreGraphicsState();
 			int imageWidth = imageBounds.width + IMAGE_GAP;
 			rect.x += imageWidth;

@@ -428,7 +428,7 @@ void updateImage () {
 	rect.height = size.height;
 	rect.width = size.width;
 	newImage.lockFocus ();
-	defaultImage.drawInRect (rect, rect, OS.NSCompositeSourceOver, 1);
+	defaultImage.drawInRect (rect, rect, OS.NSCompositingOperationSourceOver, 1);
 	if (drawImage) {
 		NSImage badgetImage = overlayImage.handle;
 		NSSize badgeSize = badgetImage.size ();
@@ -439,7 +439,7 @@ void updateImage () {
 		dstRect.x = size.width / 2;
 		dstRect.height = size.height / 2;
 		dstRect.width = size.width / 2;
-		badgetImage.drawInRect(dstRect, srcRect, OS.NSCompositeSourceOver, 1);
+		badgetImage.drawInRect(dstRect, srcRect, OS.NSCompositingOperationSourceOver, 1);
 	}
 	if (drawIntermidiate || drawProgress) {
 		switch (progressState) {

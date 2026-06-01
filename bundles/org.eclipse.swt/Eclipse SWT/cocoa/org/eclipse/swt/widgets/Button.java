@@ -448,7 +448,7 @@ void drawInteriorWithFrame_inView (long id, long sel, NSRect cellRect, long view
 		transform.scaleXBy(1, -1);
 		transform.translateXBy(0, -imageSize.height);
 		transform.concat();
-		image.handle.drawInRect(destRect, new NSRect(), OS.NSCompositeSourceOver, 1);
+		image.handle.drawInRect(destRect, new NSRect(), OS.NSCompositingOperationSourceOver, 1);
 		NSGraphicsContext.static_restoreGraphicsState();
 	}
 

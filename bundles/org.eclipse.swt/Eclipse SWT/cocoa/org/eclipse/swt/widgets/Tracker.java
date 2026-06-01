@@ -344,7 +344,7 @@ void drawRectangles (NSWindow window, Rectangle [] rects, boolean erase) {
 	} else {
 		parentOrigin = new Point (0, 0);
 	}
-	context.setCompositingOperation(erase ? OS.NSCompositeClear : OS.NSCompositeSourceOver);
+	context.setCompositingOperation(erase ? OS.NSCompositingOperationClear : OS.NSCompositingOperationSourceOver);
 	NSRect rectFrame = new NSRect();
 	NSPoint globalPoint = new NSPoint();
 	double screenHeight = display.getPrimaryFrame().height;
@@ -782,7 +782,7 @@ public boolean open () {
 		}
 		NSGraphicsContext.static_saveGraphicsState();
 		NSGraphicsContext.setCurrentContext(context);
-		context.setCompositingOperation(OS.NSCompositeClear);
+		context.setCompositingOperation(OS.NSCompositingOperationClear);
 		frame.x = frame.y = 0;
 		NSBezierPath.fillRect(frame);
 		NSGraphicsContext.static_restoreGraphicsState();

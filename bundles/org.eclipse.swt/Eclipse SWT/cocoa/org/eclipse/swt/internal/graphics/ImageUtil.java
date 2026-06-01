@@ -50,7 +50,7 @@ public class ImageUtil {
 		NSRect sourceRect = new NSRect();
 		sourceRect.width = 0;
 		sourceRect.height = 0;
-		imgHandle.drawInRect(target, sourceRect, OS.NSCompositeCopy, 1);
+		imgHandle.drawInRect(target, sourceRect, OS.NSCompositingOperationCopy, 1);
 		NSGraphicsContext.static_restoreGraphicsState();
 		rep.autorelease();
 		return rep;

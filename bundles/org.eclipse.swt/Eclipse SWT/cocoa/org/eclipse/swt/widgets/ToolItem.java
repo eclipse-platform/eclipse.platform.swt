@@ -451,7 +451,7 @@ void drawImageWithFrameInView (long id, long sel, long image, NSRect rect, long 
 
 	if (drawSelected) {
 		NSColor.colorWithDeviceRed(0,0,0,.3f).setFill();
-		OS.NSRectFillUsingOperation(rect, OS.NSCompositeSourceAtop);
+		OS.NSRectFillUsingOperation(rect, OS.NSCompositingOperationSourceAtop);
 		OS.CGContextEndTransparencyLayer(cgContext);
 		NSGraphicsContext.currentContext().restoreGraphicsState();
 	}
