@@ -2843,22 +2843,15 @@ boolean setItemLocation(GC gc) {
 	return changed;
 }
 /**
- * Sets the order that the items in the receiver should be displayed in to the
- * given argument.
+ * Reorder the items of the receiver.
  * <p>
- * The argument is described in terms of the zero-relative ordering of the
- * receiver's current items: <code>indices[i]</code> is the index of the item
- * that should be moved to position <code>i</code>. In other words, the item
- * currently at index <code>indices[i]</code> becomes the new item at index
- * <code>i</code>. The argument must contain every index of the receiver's items
- * exactly once.
- * </p><p>
- * The currently selected item remains selected after the reorder, and the set
- * of visible tabs is preserved as far as the new ordering allows.
+ * <code>indices[i]</code> is the index of the item that should be moved to
+ * position <code>i</code>. The argument must contain every index of the
+ * receiver's items exactly once. The currently selected item remains selected
+ * after the reorder.
  * </p>
  *
- * @param indices the new display order of the receiver's items, expressed as a
- *        permutation of their current indices
+ * @param indices an array containing the new indices for all items
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the indices array is null</li>
@@ -2870,12 +2863,8 @@ boolean setItemLocation(GC gc) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- *
- * @see #moveItem(int, int)
- *
- * @since 3.135
  */
-public void setItemOrder (int[] indices) {
+/*public*/ void setItemOrder (int[] indices) {
 	checkWidget();
 	if (indices == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (indices.length != items.length) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
@@ -2907,9 +2896,7 @@ public void setItemOrder (int[] indices) {
  * Moves the item at the <code>from</code> index to the <code>to</code> index.
  * The items between the two indices shift by one position to fill the gap; all
  * other items keep their relative order. This is a convenience for the common
- * single-item reorder gesture (such as dragging a tab) and is equivalent to
- * building the corresponding permutation and passing it to
- * {@link #setItemOrder(int[])}.
+ * single-item reorder gesture, such as dragging a tab.
  * <p>
  * If <code>from</code> and <code>to</code> are equal this method has no effect.
  * The currently selected item remains selected after the move.
@@ -2927,8 +2914,6 @@ public void setItemOrder (int[] indices) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- *
- * @see #setItemOrder(int[])
  *
  * @since 3.135
  */
