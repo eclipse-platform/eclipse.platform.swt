@@ -4385,15 +4385,13 @@
 	<enum name="NSButtonTypePushOnPushOff" swt_gen="true"></enum>
 	<enum name="NSButtonTypeRadio" swt_gen="true"></enum>
 	<enum name="NSButtonTypeSwitch" swt_gen="true"></enum>
-	<enum name="NSCancelButton" swt_gen="true"></enum>
 	<enum name="NSCarriageReturnCharacter" swt_gen="true"></enum>
-	<enum name="NSClockAndCalendarDatePickerStyle" swt_gen="true"></enum>
 	<enum name="NSClosePathBezierPathElement" swt_gen="true"></enum>
 	<enum name="NSCommandKeyMask" swt_gen="true"></enum>
-	<enum name="NSCompositeClear" swt_gen="true"></enum>
-	<enum name="NSCompositeCopy" swt_gen="true"></enum>
-	<enum name="NSCompositeSourceAtop" swt_gen="true"></enum>
-	<enum name="NSCompositeSourceOver" swt_gen="true"></enum>
+	<enum name="NSCompositingOperationClear" swt_gen="true"></enum>
+	<enum name="NSCompositingOperationCopy" swt_gen="true"></enum>
+	<enum name="NSCompositingOperationSourceAtop" swt_gen="true"></enum>
+	<enum name="NSCompositingOperationSourceOver" swt_gen="true"></enum>
 	<enum name="NSContentsCellMask" swt_gen="true"></enum>
 	<enum name="NSControlKeyMask" swt_gen="true"></enum>
 	<enum name="NSControlSizeMini" swt_gen="true"></enum>
@@ -4426,8 +4424,8 @@
 	<enum name="NSFileHandlingPanelOKButton" swt_gen="true"></enum>
 	<enum name="NSFlagsChanged" swt_gen="true"></enum>
 	<enum name="NSFocusRingTypeNone" swt_gen="true"></enum>
-	<enum name="NSFontPanelAllEffectsModeMask" swt_gen="true"></enum>
-	<enum name="NSFontPanelAllModesMask" swt_gen="true"></enum>
+	<enum name="NSFontPanelModeMaskAllEffects" swt_gen="true"></enum>
+	<enum name="NSFontPanelModeMaskAllModes" swt_gen="true"></enum>
 	<enum name="NSHelpFunctionKey" swt_gen="true"></enum>
 	<enum name="NSHelpKeyMask" swt_gen="true"></enum>
 	<enum name="NSHourMinuteDatePickerElementFlag" swt_gen="true"></enum>
@@ -4463,6 +4461,7 @@
 	<enum name="NSLineToBezierPathElement" swt_gen="true"></enum>
 
 	<enum name="NSMiterLineJoinStyle" swt_gen="true"></enum>
+	<enum name="NSModalResponseCancel" swt_gen="true"></enum>
 
 	<enum name="NSMouseEntered" swt_gen="true"></enum>
 	<enum name="NSMouseExited" swt_gen="true"></enum>
@@ -4493,7 +4492,7 @@
 	<enum name="NSPrintPanelShowsPageSetupAccessory" swt_gen="true"></enum>
 	<enum name="NSPrintPanelShowsPrintSelection" swt_gen="true"></enum>
 	<enum name="NSProgressIndicatorPreferredThickness" swt_gen="true"></enum>
-	<enum name="NSRGBColorSpaceModel" swt_gen="true"></enum>
+	<enum name="NSColorSpaceModelRGB" swt_gen="true"></enum>
 
 	<enum name="NSRegularSquareBezelStyle" swt_gen="true"></enum>
 	<enum name="NSResizableWindowMask" swt_gen="true"></enum>
@@ -4534,8 +4533,9 @@
 	<enum name="NSTextAlignmentJustified" swt_gen="true"></enum>
 	<enum name="NSTextAlignmentLeft" swt_gen="true"></enum>
 	<enum name="NSTextAlignmentRight" swt_gen="true"></enum>
-	<enum name="NSTextFieldAndStepperDatePickerStyle" swt_gen="true"></enum>
-	<enum name="NSTextFieldDatePickerStyle" swt_gen="true"></enum>
+	<enum name="NSDatePickerStyleClockAndCalendar" swt_gen="true"></enum>
+	<enum name="NSDatePickerStyleTextField" swt_gen="true"></enum>
+	<enum name="NSDatePickerStyleTextFieldAndStepper" swt_gen="true"></enum>
 	<enum name="NSToolbarDisplayModeIconOnly" swt_gen="true"></enum>
 	<enum name="NSTouchPhaseAny" swt_gen="true"></enum>
 	<enum name="NSTouchPhaseBegan" swt_gen="true"></enum>

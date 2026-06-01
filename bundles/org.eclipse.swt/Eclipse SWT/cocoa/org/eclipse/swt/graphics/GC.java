@@ -551,7 +551,7 @@ public void copyArea(Image image, int x, int y) {
 			destRect.y = destY;
 			destRect.width = destWidth * scaleFactor;
 			destRect.height = destHeight * scaleFactor;
-			data.image.handle.drawInRect(destRect, srcRect, OS.NSCompositeCopy, 1);
+			data.image.handle.drawInRect(destRect, srcRect, OS.NSCompositingOperationCopy, 1);
 			NSGraphicsContext.static_restoreGraphicsState();
 			return;
 		}
@@ -725,7 +725,7 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 			destRect.y = destY;
 			destRect.width = width;
 			destRect.height = height;
-			imageHandle.drawInRect(destRect, srcRect, OS.NSCompositeCopy, 1);
+			imageHandle.drawInRect(destRect, srcRect, OS.NSCompositingOperationCopy, 1);
 			handle.restoreGraphicsState();
 			return;
 		}
@@ -1304,7 +1304,7 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 		destRect.y = destY;
 		destRect.width = destWidth;
 		destRect.height = destHeight;
-		imageHandle.drawInRect(destRect, srcRect, OS.NSCompositeSourceOver, data.alpha / 255f);
+		imageHandle.drawInRect(destRect, srcRect, OS.NSCompositingOperationSourceOver, data.alpha / 255f);
 		handle.restoreGraphicsState();
 	} finally {
 		uncheckGC(pool);

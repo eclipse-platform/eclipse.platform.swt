@@ -211,7 +211,7 @@ public PrinterData open() {
 		response = (int)panel.runModalWithPrintInfo(printInfo);
 	}
 	display.setData(SET_MODAL_DIALOG, null);
-	if (response != OS.NSCancelButton) {
+	if (response != OS.NSModalResponseCancel) {
 		NSPrinter printer = printInfo.printer();
 		NSString str = printer.name();
 		data = new PrinterData(Printer.DRIVER, str.getString());

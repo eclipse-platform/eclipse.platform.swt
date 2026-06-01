@@ -272,7 +272,7 @@ public void setRGB (RGB rgb) {
 }
 
 int validModesForFontPanel(long id, long sel, long arg0) {
-	return effectsVisible ? OS.NSFontPanelAllModesMask : OS.NSFontPanelAllModesMask & ~OS.NSFontPanelAllEffectsModeMask;
+	return effectsVisible ? OS.NSFontPanelModeMaskAllModes : OS.NSFontPanelModeMaskAllModes & ~OS.NSFontPanelModeMaskAllEffects;
 }
 
 void windowWillClose(long id, long sel, long sender) {

@@ -168,7 +168,7 @@ void drawLabelInRect(long id, long sel, boolean shouldTruncateLabel, NSRect rect
 		transform.scaleXBy(1, -1);
 		transform.translateXBy(0, -(destRect.height + 2 * destRect.y));
 		transform.concat();
-		image.handle.drawInRect(destRect, new NSRect(), OS.NSCompositeSourceOver, 1);
+		image.handle.drawInRect(destRect, new NSRect(), OS.NSCompositingOperationSourceOver, 1);
 		NSGraphicsContext.static_restoreGraphicsState();
 		rect.x += imageSize.width + IMAGE_GAP;
 		rect.width -= imageSize.width + IMAGE_GAP;

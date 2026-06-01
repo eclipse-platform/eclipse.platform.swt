@@ -172,10 +172,10 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 void createHandle () {
 	NSDatePicker widget = (NSDatePicker)new SWTDatePicker().alloc();
 	widget.init();
-	int pickerStyle = (style & SWT.DROP_DOWN) != 0 ? OS.NSTextFieldDatePickerStyle : OS.NSTextFieldAndStepperDatePickerStyle;
+	int pickerStyle = (style & SWT.DROP_DOWN) != 0 ? OS.NSDatePickerStyleTextField : OS.NSDatePickerStyleTextFieldAndStepper;
 	int elementFlags = 0;
 	if ((style & SWT.CALENDAR) != 0) {
-		pickerStyle = OS.NSClockAndCalendarDatePickerStyle;
+		pickerStyle = OS.NSDatePickerStyleClockAndCalendar;
 		elementFlags = OS.NSYearMonthDayDatePickerElementFlag;
 	} else {
 		if ((style & SWT.TIME) != 0) {
