@@ -134,13 +134,13 @@ public class Display extends Device implements Executor {
 	long eventProc, windowProc2, windowProc3, windowProc4, windowProc5, windowProc6;
 	long changeValueProc;
 	long snapshotDrawProc, keyPressReleaseProc, focusProc, windowActiveProc, enterMotionProc, leaveProc,
-		 scrollProc, resizeProc, activateProc, gesturePressReleaseProc;
+		 scrollProc, resizeProc, layoutProc, activateProc, gesturePressReleaseProc;
 	long notifyProc;
 	long computeSizeProc;
 	Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5, windowCallback6;
 	Callback changeValue;
 	Callback snapshotDraw, keyPressReleaseCallback, focusCallback, windowActiveCallback, enterMotionCallback, computeSizeCallback,
-			 scrollCallback, leaveCallback, resizeCallback, activateCallback, gesturePressReleaseCallback;
+			 scrollCallback, leaveCallback, resizeCallback, layoutCallback, activateCallback, gesturePressReleaseCallback;
 	Callback notifyCallback;
 	EventTable eventTable, filterTable;
 	static String APP_NAME = "SWT"; //$NON-NLS-1$
@@ -3631,6 +3631,8 @@ void initializeCallbacks () {
 
 		resizeCallback = new Callback(this, "resizeProc", void.class, new Type[] {long.class, int.class, int.class}); //$NON-NLS-1$
 		resizeProc = resizeCallback.getAddress();
+		layoutCallback = new Callback(this, "layoutProc", void.class, new Type[] {long.class, int.class, int.class, long.class}); //$NON-NLS-1$
+		layoutProc = layoutCallback.getAddress();
 
 		activateCallback = new Callback(this, "activateProc", void.class, new Type[] {long.class, long.class, long.class}); //$NON-NLS-1$
 		activateProc = activateCallback.getAddress();
@@ -4671,6 +4673,9 @@ void releaseDisplay () {
 		resizeCallback.dispose();
 		resizeCallback = null;
 		resizeProc = 0;
+		layoutCallback.dispose();
+		layoutCallback = null;
+		layoutProc = 0;
 
 		activateCallback.dispose();
 		activateCallback = null;
@@ -6153,6 +6158,11 @@ void activateProc(long action, long parameter, long user_data) {
 void resizeProc(long handle, int width, int height) {
 	Widget widget = getWidget(handle);
 	if (widget != null) widget.gtk_size_allocate(handle, 0);
+}
+
+void layoutProc(long surface, int width, int height, long user_data) {
+	Widget widget = getWidget(user_data);
+	if (widget != null) widget.gtk_layout(surface, width, height);
 }
 
 long notifyProc (long object, long param_spec, long user_data) {

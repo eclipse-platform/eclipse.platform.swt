@@ -1112,6 +1112,9 @@ long gtk_size_allocate (long widget, long allocation) {
 	return 0;
 }
 
+void gtk_layout (long surface, int width, int height) {
+}
+
 long gtk_status_icon_popup_menu (long handle, long button, long activate_time) {
 	return 0;
 }
