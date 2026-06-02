@@ -650,6 +650,8 @@ static long createGdipFont(long hDC, long hFont, long graphics, long fontCollect
 		int style = Gdip.FontStyleRegular;
 		if (logFont.lfWeight == 700) style |= Gdip.FontStyleBold;
 		if (logFont.lfItalic != 0) style |= Gdip.FontStyleItalic;
+		if (logFont.lfUnderline != 0) style |= Gdip.FontStyleUnderline;
+		if (logFont.lfStrikeOut != 0) style |= Gdip.FontStyleStrikeout;
 		char[] chars = logFont.lfFaceName;
 		int index = 0;
 		while (index < chars.length) {
