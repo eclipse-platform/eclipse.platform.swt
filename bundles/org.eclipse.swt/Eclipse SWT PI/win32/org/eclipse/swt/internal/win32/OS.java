@@ -59,9 +59,6 @@ public class OS extends C {
 			*/
 		}
 
-		/* Make the process DPI aware for Windows Vista */
-		OS.SetProcessDPIAware ();
-
 		/* Get the DBCS flag */
 		IsDBLocale = OS.GetSystemMetrics (SM_IMMENABLED) != 0;
 	}
@@ -4346,7 +4343,6 @@ public static final native long SetParent (long hWndChild, long hWndNewParent);
 public static final native int SetPixel (long hdc, int X, int Y, int crColor);
 /** @param hdc cast=(HDC) */
 public static final native int SetPolyFillMode (long hdc, int iPolyFillMode);
-public static final native boolean SetProcessDPIAware ();
 /**
  * @method flags=dynamic
  * @param dpiContext cast=(DPI_AWARENESS_CONTEXT)
