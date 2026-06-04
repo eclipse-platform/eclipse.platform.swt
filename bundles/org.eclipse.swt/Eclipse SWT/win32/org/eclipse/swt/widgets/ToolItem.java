@@ -947,12 +947,12 @@ void _setText (String string) {
 		if ((style & SWT.FLIP_TEXT_DIRECTION) != 0) {
 			int bits  = OS.GetWindowLong (hwnd, OS.GWL_EXSTYLE);
 			if ((bits & OS.WS_EX_LAYOUTRTL) != 0) {
-				buffer = new TCHAR (parent.getCodePage (), LRE + string, true);
+				buffer = new TCHAR (LRE + string, true);
 			} else {
-				buffer = new TCHAR (parent.getCodePage (), RLE + string, true);
+				buffer = new TCHAR (RLE + string, true);
 			}
 		} else {
-			buffer = new TCHAR(parent.getCodePage (), string, true);
+			buffer = new TCHAR(string, true);
 		}
 		int byteCount = buffer.length () * TCHAR.sizeof;
 		pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);

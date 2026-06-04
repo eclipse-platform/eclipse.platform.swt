@@ -159,7 +159,7 @@ public static int registerType(String formatName) {
 	// Look name up in the registry
 	// If name is not in registry, add it and return assigned value.
 	// If name already exists in registry, return its assigned value
-	TCHAR chFormatName = new TCHAR(0, formatName, true);
+	TCHAR chFormatName = new TCHAR(formatName, true);
 	return OS.RegisterClipboardFormat(chFormatName);
 }
 

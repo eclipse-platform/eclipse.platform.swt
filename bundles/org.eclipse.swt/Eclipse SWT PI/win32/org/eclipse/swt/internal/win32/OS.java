@@ -290,7 +290,6 @@ public class OS extends C {
 	public static final int COLOR_WINDOWFRAME = 0x6;
 	public static final int COLOR_WINDOWTEXT = 0x8;
 	public static final int COMPLEXREGION = 0x3;
-	public static final int CP_ACP = 0x0;
 	public static final int CP_UTF8 = 65001;
 	public static final int CP_DROPDOWNBUTTON = 1;
 	public static final int CPS_COMPLETE = 0x1;
@@ -2130,8 +2129,8 @@ public static final int[] readRegistryDwords(int hkeyLocation, String key, Strin
 	Objects.requireNonNull(key, "key");
 	Objects.requireNonNull(valueName, "valueName");
 	long[] phkResult = new long[1];
-	TCHAR regKey = new TCHAR(0, key, true);
-	TCHAR lpValueName = new TCHAR(0, valueName, true);
+	TCHAR regKey = new TCHAR(key, true);
+	TCHAR lpValueName = new TCHAR(valueName, true);
 	if (OS.RegOpenKeyEx(hkeyLocation, regKey, 0, OS.KEY_READ, phkResult) != 0) {
 		return null; // Registry entry not found
 	}

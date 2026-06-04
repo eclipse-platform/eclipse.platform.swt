@@ -1993,17 +1993,17 @@ public int getIconDepth () {
 	checkDevice ();
 	if (getDepth () >= 24) return 32;
 
-	TCHAR buffer1 = new TCHAR (0, "Control Panel\\Desktop\\WindowMetrics", true); //$NON-NLS-1$
+	TCHAR buffer1 = new TCHAR ("Control Panel\\Desktop\\WindowMetrics", true); //$NON-NLS-1$
 	long [] phkResult = new long [1];
 	int result = OS.RegOpenKeyEx (OS.HKEY_CURRENT_USER, buffer1, 0, OS.KEY_READ, phkResult);
 	if (result != 0) return 4;
 	int depth = 4;
 	int [] lpcbData = new int [1];
 
-	TCHAR buffer2 = new TCHAR (0, "Shell Icon BPP", true); //$NON-NLS-1$
+	TCHAR buffer2 = new TCHAR ("Shell Icon BPP", true); //$NON-NLS-1$
 	result = OS.RegQueryValueEx (phkResult [0], buffer2, 0, null, (TCHAR) null, lpcbData);
 	if (result == 0) {
-		TCHAR lpData = new TCHAR (0, lpcbData [0] / TCHAR.sizeof);
+		TCHAR lpData = new TCHAR (lpcbData [0] / TCHAR.sizeof);
 		result = OS.RegQueryValueEx (phkResult [0], buffer2, 0, null, lpData, lpcbData);
 		if (result == 0) {
 			try {
@@ -2850,9 +2850,9 @@ protected void init () {
 	/* Remember the current thread id */
 	threadId = OS.GetCurrentThreadId ();
 
-	windowClass = new TCHAR (0, WindowName + WindowClassCount, true);
-	windowShadowClass = new TCHAR (0, WindowShadowName + WindowClassCount, true);
-	windowOwnDCClass = new TCHAR (0, WindowOwnDCName + WindowClassCount, true);
+	windowClass = new TCHAR (WindowName + WindowClassCount, true);
+	windowShadowClass = new TCHAR (WindowShadowName + WindowClassCount, true);
+	windowOwnDCClass = new TCHAR (WindowOwnDCName + WindowClassCount, true);
 	WindowClassCount++;
 
 	/* Register the SWT window class */
@@ -2884,7 +2884,7 @@ protected void init () {
 		hInstance,
 		null);
 	String title = "SWT_Window_"+APP_NAME;
-	OS.SetWindowText(hwndMessage, new TCHAR(0, title, true));
+	OS.SetWindowText(hwndMessage, new TCHAR(title, true));
 	messageCallback = new Callback (this, "messageProc", 4); //$NON-NLS-1$
 	messageProc = messageCallback.getAddress ();
 	OS.SetWindowLongPtr (hwndMessage, OS.GWLP_WNDPROC, messageProc);
@@ -2900,11 +2900,11 @@ protected void init () {
 	idleHook = OS.SetWindowsHookEx (OS.WH_FOREGROUNDIDLE, foregroundIdleProc, 0, threadId);
 
 	/* Register window messages */
-	TASKBARCREATED = OS.RegisterWindowMessage (new TCHAR (0, "TaskbarCreated", true)); //$NON-NLS-1$
-	TASKBARBUTTONCREATED = OS.RegisterWindowMessage (new TCHAR (0, "TaskbarButtonCreated", true)); //$NON-NLS-1$
-	SWT_RESTORECARET = OS.RegisterWindowMessage (new TCHAR (0, "SWT_RESTORECARET", true)); //$NON-NLS-1$
-	DI_GETDRAGIMAGE = OS.RegisterWindowMessage (new TCHAR (0, "ShellGetDragImage", true)); //$NON-NLS-1$
-	SWT_OPENDOC = OS.RegisterWindowMessage(new TCHAR (0, "SWT_OPENDOC", true)); //$NON-NLS-1$
+	TASKBARCREATED = OS.RegisterWindowMessage (new TCHAR ("TaskbarCreated", true)); //$NON-NLS-1$
+	TASKBARBUTTONCREATED = OS.RegisterWindowMessage (new TCHAR ("TaskbarButtonCreated", true)); //$NON-NLS-1$
+	SWT_RESTORECARET = OS.RegisterWindowMessage (new TCHAR ("SWT_RESTORECARET", true)); //$NON-NLS-1$
+	DI_GETDRAGIMAGE = OS.RegisterWindowMessage (new TCHAR ("ShellGetDragImage", true)); //$NON-NLS-1$
+	SWT_OPENDOC = OS.RegisterWindowMessage(new TCHAR ("SWT_OPENDOC", true)); //$NON-NLS-1$
 
 	/* Initialize OLE */
 	OS.OleInitialize (0);
@@ -3422,7 +3422,7 @@ String getSharedData(int pid, int  handle) {
 	long sharedData = OS.MapViewOfFile(mapHandle[0], OS.FILE_MAP_READ, 0, 0, 0);
 	if (sharedData == 0) return null;
 	int length = OS.wcslen (sharedData);
-	TCHAR buffer = new TCHAR (0, length);
+	TCHAR buffer = new TCHAR (length);
 	int byteCount = buffer.length () * TCHAR.sizeof;
 	OS.MoveMemory (buffer, sharedData, byteCount);
 	String result = buffer.toString (0, length);

@@ -53,7 +53,7 @@ public class CoolBar extends Composite {
 	boolean locked;
 	boolean ignoreResize;
 	static final long ReBarProc;
-	static final TCHAR ReBarClass = new TCHAR (0, OS.REBARCLASSNAME, true);
+	static final TCHAR ReBarClass = new TCHAR (OS.REBARCLASSNAME, true);
 	static {
 		WNDCLASS lpWndClass = new WNDCLASS ();
 		OS.GetClassInfo (0, ReBarClass, lpWndClass);

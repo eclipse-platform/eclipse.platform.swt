@@ -400,7 +400,7 @@ public void pack () {
 	if (index == -1) return;
 	long hwnd = parent.handle;
 	int oldWidth = (int)OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
-	TCHAR buffer = new TCHAR (parent.getCodePage (), text, true);
+	TCHAR buffer = new TCHAR (text, true);
 	int headerWidth = (int) (OS.SendMessage (hwnd, OS.LVM_GETSTRINGWIDTH, 0, buffer) + Win32DPIUtils.pointToPixel(Table.HEADER_MARGIN + Table.HEADER_EXTRA, getAutoscalingZoom()));
 	boolean hasHeaderImage = false;
 	if (image != null) {

@@ -154,13 +154,13 @@ class IE extends WebBrowser {
 		};
 
 		NativeGetCookie = () -> {
-			TCHAR url = new TCHAR (0, CookieUrl, true);
-			TCHAR cookieData = new TCHAR (0, 8192);
+			TCHAR url = new TCHAR (CookieUrl, true);
+			TCHAR cookieData = new TCHAR (8192);
 			int[] size = new int[] {cookieData.length ()};
 			if (!OS.InternetGetCookie (url, null, cookieData, size)) {
 				/* original cookieData size was not large enough */
 				size[0] /= TCHAR.sizeof;
-				cookieData = new TCHAR (0, size[0]);
+				cookieData = new TCHAR (size[0]);
 				if (!OS.InternetGetCookie (url, null, cookieData, size)) return;
 			}
 			String allCookies = cookieData.toString (0, size[0]);
@@ -179,8 +179,8 @@ class IE extends WebBrowser {
 		};
 
 		NativeSetCookie = () -> {
-			TCHAR url = new TCHAR (0, CookieUrl, true);
-			TCHAR value = new TCHAR (0, CookieValue, true);
+			TCHAR url = new TCHAR (CookieUrl, true);
+			TCHAR value = new TCHAR (CookieValue, true);
 			CookieResult = OS.InternetSetCookie (url, null, value);
 		};
 
@@ -191,18 +191,18 @@ class IE extends WebBrowser {
 		* IE releases prior to IE10).  Check this value in order to determine
 		* version-specific features that can be enabled.
 		*/
-		TCHAR key = new TCHAR (0, "Software\\Microsoft\\Internet Explorer", true);	//$NON-NLS-1$
+		TCHAR key = new TCHAR ("Software\\Microsoft\\Internet Explorer", true);	//$NON-NLS-1$
 		long [] phkResult = new long [1];
 		if (OS.RegOpenKeyEx (OS.HKEY_LOCAL_MACHINE, key, 0, OS.KEY_READ, phkResult) == 0) {
 			int [] lpcbData = new int [1];
-			TCHAR buffer = new TCHAR (0, "svcVersion", true); //$NON-NLS-1$
+			TCHAR buffer = new TCHAR ("svcVersion", true); //$NON-NLS-1$
 			int result = OS.RegQueryValueEx (phkResult [0], buffer, 0, null, (TCHAR) null, lpcbData);
 			if (result != 0) {
-				buffer = new TCHAR (0, "Version", true); //$NON-NLS-1$
+				buffer = new TCHAR ("Version", true); //$NON-NLS-1$
 				result = OS.RegQueryValueEx (phkResult [0], buffer, 0, null, (TCHAR) null, lpcbData);
 			}
 			if (result == 0) {
-				TCHAR lpData = new TCHAR (0, lpcbData [0] / TCHAR.sizeof);
+				TCHAR lpData = new TCHAR (lpcbData [0] / TCHAR.sizeof);
 				result = OS.RegQueryValueEx (phkResult [0], buffer, 0, null, lpData, lpcbData);
 				if (result == 0) {
 					String versionString = lpData.toString (0, lpData.strlen ());
@@ -231,19 +231,19 @@ class IE extends WebBrowser {
 		* If it is detected in the registry to be Shell.Explorer.1 then change the progId that
 		* will be embedded to explicitly specify Shell.Explorer.2.
 		*/
-		key = new TCHAR (0, "Shell.Explorer\\CLSID", true);	//$NON-NLS-1$
+		key = new TCHAR ("Shell.Explorer\\CLSID", true);	//$NON-NLS-1$
 		phkResult = new long [1];
 		if (OS.RegOpenKeyEx (OS.HKEY_CLASSES_ROOT, key, 0, OS.KEY_READ, phkResult) == 0) {
 			int [] lpcbData = new int [1];
 			int result = OS.RegQueryValueEx (phkResult [0], null, 0, null, (TCHAR) null, lpcbData);
 			if (result == 0) {
-				TCHAR lpData = new TCHAR (0, lpcbData [0] / TCHAR.sizeof);
+				TCHAR lpData = new TCHAR (lpcbData [0] / TCHAR.sizeof);
 				result = OS.RegQueryValueEx (phkResult [0], null, 0, null, lpData, lpcbData);
 				if (result == 0) {
 					String clsid = lpData.toString (0, lpData.strlen ());
 					if (clsid.equals (CLSID_SHELLEXPLORER1)) {
 						/* Shell.Explorer.1 is the default, ensure that Shell.Explorer.2 is available */
-						key = new TCHAR (0, "Shell.Explorer.2", true);	//$NON-NLS-1$
+						key = new TCHAR ("Shell.Explorer.2", true);	//$NON-NLS-1$
 						long [] phkResult2 = new long [1];
 						if (OS.RegOpenKeyEx (OS.HKEY_CLASSES_ROOT, key, 0, OS.KEY_READ, phkResult2) == 0) {
 							/* specify that Shell.Explorer.2 is to be used */
@@ -322,14 +322,14 @@ public void create(Composite parent, int style) {
 
 		if (version != -1) {
 			long[] key = new long[1];
-			final TCHAR subkey = new TCHAR(0, "Software\\Microsoft\\Internet Explorer\\Main\\FeatureControl\\FEATURE_BROWSER_EMULATION", true);	//$NON-NLS-1$
+			final TCHAR subkey = new TCHAR("Software\\Microsoft\\Internet Explorer\\Main\\FeatureControl\\FEATURE_BROWSER_EMULATION", true);	//$NON-NLS-1$
 			if (OS.RegCreateKeyEx(OS.HKEY_CURRENT_USER, subkey, 0, null, OS.REG_OPTION_VOLATILE, OS.KEY_WRITE | OS.KEY_QUERY_VALUE, 0, key, null) == 0) {
-				TCHAR lpszFile = new TCHAR(0, OS.MAX_PATH);
+				TCHAR lpszFile = new TCHAR(OS.MAX_PATH);
 				OS.GetModuleFileName(0, lpszFile, lpszFile.length());
 				String path = lpszFile.toString(0, lpszFile.strlen());
 				int index = path.lastIndexOf(SEPARATOR_OS);
 				String executable = index != -1 ? path.substring(index + 1) : path;
-				final TCHAR lpValueName = new TCHAR(0, executable, true);
+				final TCHAR lpValueName = new TCHAR(executable, true);
 				/*
 				 * Program name & IE version entry is added to the Windows
 				 * registry and same gets deleted during the dispose cycle.
@@ -496,8 +496,8 @@ public void create(Composite parent, int style) {
 					* case is detected and the string is changed to be a proper url string.
 					*/
 					if (url1.indexOf(":/") == -1 && url1.indexOf(":\\") != -1) { //$NON-NLS-1$ //$NON-NLS-2$
-						TCHAR filePath1 = new TCHAR(0, url1, true);
-						TCHAR urlResult1 = new TCHAR(0, OS.INTERNET_MAX_URL_LENGTH);
+						TCHAR filePath1 = new TCHAR(url1, true);
+						TCHAR urlResult1 = new TCHAR(OS.INTERNET_MAX_URL_LENGTH);
 						int[] size1 = new int[] {urlResult1.length()};
 						if (OS.UrlCreateFromPath(filePath1, urlResult1, size1, 0) == COM.S_OK) {
 							url1 = urlResult1.toString(0, size1[0]);
@@ -580,8 +580,8 @@ public void create(Composite parent, int style) {
 					* case is detected and the string is changed to be a proper url string.
 					*/
 					if (url2.indexOf(":/") == -1 && url2.indexOf(":\\") != -1) { //$NON-NLS-1$ //$NON-NLS-2$
-						TCHAR filePath2 = new TCHAR(0, url2, true);
-						TCHAR urlResult2 = new TCHAR(0, OS.INTERNET_MAX_URL_LENGTH);
+						TCHAR filePath2 = new TCHAR(url2, true);
+						TCHAR urlResult2 = new TCHAR(OS.INTERNET_MAX_URL_LENGTH);
 						int[] size2 = new int[] {urlResult2.length()};
 						if (OS.UrlCreateFromPath(filePath2, urlResult2, size2, 0) == COM.S_OK) {
 							url2 = urlResult2.toString(0, size2[0]);

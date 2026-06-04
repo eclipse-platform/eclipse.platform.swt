@@ -85,7 +85,7 @@ public class TableDragSourceEffect extends DragSourceEffect {
 		if (dragSourceImage != null) dragSourceImage.dispose();
 		dragSourceImage = null;
 		SHDRAGIMAGE shdi = new SHDRAGIMAGE();
-		int DI_GETDRAGIMAGE = OS.RegisterWindowMessage (new TCHAR (0, "ShellGetDragImage", true)); //$NON-NLS-1$
+		int DI_GETDRAGIMAGE = OS.RegisterWindowMessage (new TCHAR ("ShellGetDragImage", true)); //$NON-NLS-1$
 		if (OS.SendMessage (control.handle, DI_GETDRAGIMAGE, 0, shdi) != 0) {
 			if ((control.getStyle() & SWT.MIRRORED) != 0) {
 				event.offsetX = shdi.sizeDragImage.cx - shdi.ptOffset.x;

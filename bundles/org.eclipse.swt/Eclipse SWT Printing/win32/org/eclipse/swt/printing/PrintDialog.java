@@ -32,7 +32,7 @@ import org.eclipse.swt.widgets.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class PrintDialog extends Dialog {
-	static final TCHAR DialogClass = new TCHAR (0, "#32770", true);
+	static final TCHAR DialogClass = new TCHAR ("#32770", true);
 	PrinterData printerData = new PrinterData();
 
 /**
@@ -335,7 +335,7 @@ public PrinterData open() {
 		}
 		if (success) {
 			/* Initialize PRINTDLG DEVNAMES for the specified printer. */
-			TCHAR buffer = new TCHAR(0, printerData.name, true);
+			TCHAR buffer = new TCHAR(printerData.name, true);
 			int size = buffer.length() * TCHAR.sizeof;
 			short[] offsets = new short[4]; // DEVNAMES (4 offsets)
 			int offsetsSize = offsets.length * 2; // 2 bytes each

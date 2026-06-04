@@ -1159,7 +1159,7 @@ public void setText (String string) {
 	info.cbSize = MENUITEMINFO.sizeof;
 	long hMenu = parent.handle;
 
-	TCHAR buffer = new TCHAR (0, string, true);
+	TCHAR buffer = new TCHAR (string, true);
 	int byteCount = buffer.length () * TCHAR.sizeof;
 	pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 	OS.MoveMemory (pszText, buffer, byteCount);

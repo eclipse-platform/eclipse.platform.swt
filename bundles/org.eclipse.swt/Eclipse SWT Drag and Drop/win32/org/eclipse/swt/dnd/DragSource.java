@@ -123,7 +123,7 @@ public class DragSource extends Widget {
 
 	static final String DEFAULT_DRAG_SOURCE_EFFECT = "DEFAULT_DRAG_SOURCE_EFFECT"; //$NON-NLS-1$
 	static final int CFSTR_PERFORMEDDROPEFFECT  = Transfer.registerType("Performed DropEffect");	 //$NON-NLS-1$
-	static final TCHAR WindowClass = new TCHAR (0, "#32770", true);
+	static final TCHAR WindowClass = new TCHAR ("#32770", true);
 
 	private class COMIDropSource extends COMObject {
 

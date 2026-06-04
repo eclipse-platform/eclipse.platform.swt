@@ -57,7 +57,7 @@ public class ToolBar extends Composite {
 	boolean ignoreResize, ignoreMouse;
 	ImageList imageList, disabledImageList, hotImageList;
 	static final long ToolBarProc;
-	static final TCHAR ToolBarClass = new TCHAR (0, OS.TOOLBARCLASSNAME, true);
+	static final TCHAR ToolBarClass = new TCHAR (OS.TOOLBARCLASSNAME, true);
 	static {
 		WNDCLASS lpWndClass = new WNDCLASS ();
 		OS.GetClassInfo (0, ToolBarClass, lpWndClass);

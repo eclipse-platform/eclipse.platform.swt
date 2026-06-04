@@ -107,7 +107,7 @@ public class Text extends Scrollable {
 	}
 
 	static final long EditProc;
-	static final TCHAR EditClass = new TCHAR (0, "EDIT", true);
+	static final TCHAR EditClass = new TCHAR ("EDIT", true);
 	static {
 		WNDCLASS lpWndClass = new WNDCLASS ();
 		OS.GetClassInfo (0, EditClass, lpWndClass);
@@ -517,7 +517,7 @@ public void append (String string) {
 	}
 	OS.SendMessage (handle, OS.EM_SETSEL, length, length);
 	clearSegments (true);
-	TCHAR buffer = new TCHAR (getCodePage (), string, true);
+	TCHAR buffer = new TCHAR (string, true);
 	/*
 	* Feature in Windows.  When an edit control with ES_MULTILINE
 	* style that does not have the WS_VSCROLL style is full (i.e.
@@ -666,8 +666,7 @@ void clearSegments (boolean applyText) {
 	boolean oldIgnoreCharacter = ignoreCharacter, oldIgnoreModify = ignoreModify, oldIgnoreVerify = ignoreVerify;
 	ignoreCharacter = ignoreModify = ignoreVerify = true;
 	int length = OS.GetWindowTextLength (handle);
-	int cp = getCodePage ();
-	TCHAR buffer = new TCHAR (cp, length + 1);
+	TCHAR buffer = new TCHAR (length + 1);
 	if (length > 0) OS.GetWindowText (handle, buffer, length + 1);
 	buffer = deprocessText (buffer, 0, -1, true);
 	/* Get the current selection */
@@ -868,7 +867,7 @@ TCHAR deprocessText (TCHAR text, int start, int end, boolean terminate) {
 	if (start != 0 || end != length) {
 		char [] newChars = new char [length];
 		System.arraycopy(chars, start, newChars, 0, length);
-		return new TCHAR (getCodePage (), newChars, terminate);
+		return new TCHAR (newChars, terminate);
 	}
 	return text;
 }
@@ -1349,7 +1348,7 @@ public String getSelectionText () {
 	int [] start = new int [1], end = new int [1];
 	OS.SendMessage (handle, OS.EM_GETSEL, start, end);
 	if (start [0] == end [0]) return "";
-	TCHAR buffer = new TCHAR (getCodePage (), length + 1);
+	TCHAR buffer = new TCHAR (length + 1);
 	OS.GetWindowText (handle, buffer, length + 1);
 	if (segments != null) {
 		buffer = deprocessText (buffer, start [0], end [0], false);
@@ -1409,7 +1408,7 @@ public String getText () {
 	checkWidget ();
 	int length = OS.GetWindowTextLength (handle);
 	if (length == 0) return "";
-	TCHAR buffer = new TCHAR (getCodePage (), length + 1);
+	TCHAR buffer = new TCHAR (length + 1);
 	OS.GetWindowText (handle, buffer, length + 1);
 	if (segments != null) {
 		buffer = deprocessText (buffer, 0, -1, false);
@@ -1447,7 +1446,7 @@ public char[] getTextChars () {
 	checkWidget ();
 	int length = OS.GetWindowTextLength (handle);
 	if (length == 0) return new char[0];
-	TCHAR buffer = new TCHAR (getCodePage (), length + 1);
+	TCHAR buffer = new TCHAR (length + 1);
 	OS.GetWindowText (handle, buffer, length + 1);
 	if (segments != null) buffer = deprocessText (buffer, 0, -1, false);
 	char [] chars = new char [length];
@@ -1596,7 +1595,7 @@ public void insert (String string) {
 		if (string == null) return;
 	}
 	clearSegments (true);
-	TCHAR buffer = new TCHAR (getCodePage (), string, true);
+	TCHAR buffer = new TCHAR (string, true);
 	/*
 	* Feature in Windows.  When an edit control with ES_MULTILINE
 	* style that does not have the WS_VSCROLL style is full (i.e.
@@ -1757,7 +1756,7 @@ int resolveTextDirection() {
 	int textDirection = SWT.NONE;
 	int length = OS.GetWindowTextLength (handle);
 	if (length > 0) {
-		TCHAR buffer = new TCHAR (getCodePage (), length + 1);
+		TCHAR buffer = new TCHAR (length + 1);
 		OS.GetWindowText (handle, buffer, length + 1);
 		if (segments != null) {
 			buffer = deprocessText (buffer, 0, -1, false);
@@ -1872,7 +1871,7 @@ boolean sendKeyEvent (int type, int msg, long wParam, long lParam, Event event) 
 	if (newText == null) return false;
 	if (newText == oldText) return true;
 	newText = Display.withCrLf (newText);
-	TCHAR buffer = new TCHAR (getCodePage (), newText, true);
+	TCHAR buffer = new TCHAR (newText, true);
 	OS.SendMessage (handle, OS.EM_SETSEL, start [0], end [0]);
 	/*
 	* Feature in Windows.  When an edit control with ES_MULTILINE
@@ -2316,7 +2315,7 @@ public void setText (String string) {
 	clearSegments (false);
 	int limit = (int)OS.SendMessage (handle, OS.EM_GETLIMITTEXT, 0, 0) & 0x7FFFFFFF;
 	if (string.length () > limit) string = string.substring (0, limit);
-	TCHAR buffer = new TCHAR (getCodePage (), string, true);
+	TCHAR buffer = new TCHAR (string, true);
 	OS.SetWindowText (handle, buffer);
 	if ((state & HAS_AUTO_DIRECTION) != 0) {
 		super.updateTextDirection(AUTO_TEXT_DIRECTION);
@@ -2380,7 +2379,7 @@ public void setTextChars (char[] text) {
 		System.arraycopy(text, 0, temp, 0, limit);
 		text = temp;
 	}
-	TCHAR buffer = new TCHAR (getCodePage (), text, true);
+	TCHAR buffer = new TCHAR (text, true);
 	OS.SetWindowText (handle, buffer);
 	buffer.clear ();
 	if ((state & HAS_AUTO_DIRECTION) != 0) {
@@ -3001,7 +3000,7 @@ LRESULT wmClipboard (int msg, long wParam, long lParam) {
 				callWindowProc (handle, msg, wParam, lParam);
 			}
 			newText = Display.withCrLf (newText);
-			TCHAR buffer = new TCHAR (getCodePage (), newText, true);
+			TCHAR buffer = new TCHAR (newText, true);
 			/*
 			* Feature in Windows.  When an edit control with ES_MULTILINE
 			* style that does not have the WS_VSCROLL style is full (i.e.

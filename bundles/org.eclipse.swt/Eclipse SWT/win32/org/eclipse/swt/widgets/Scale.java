@@ -45,7 +45,7 @@ import org.eclipse.swt.internal.win32.*;
 public class Scale extends Control {
 	boolean ignoreResize, ignoreSelection;
 	static final long TrackBarProc;
-	static final TCHAR TrackBarClass = new TCHAR (0, OS.TRACKBAR_CLASS, true);
+	static final TCHAR TrackBarClass = new TCHAR (OS.TRACKBAR_CLASS, true);
 	boolean createdAsRTL;
 	static {
 		WNDCLASS lpWndClass = new WNDCLASS ();

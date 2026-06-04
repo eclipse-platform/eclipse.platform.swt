@@ -99,7 +99,7 @@ public class Combo extends Composite {
 	static /*final*/ long EditProc, ListProc;
 
 	static final long ComboProc;
-	static final TCHAR ComboClass = new TCHAR (0, "COMBOBOX", true);
+	static final TCHAR ComboClass = new TCHAR ("COMBOBOX", true);
 	static {
 		WNDCLASS lpWndClass = new WNDCLASS ();
 		OS.GetClassInfo (0, ComboClass, lpWndClass);
@@ -166,7 +166,7 @@ public Combo (Composite parent, int style) {
 public void add (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	TCHAR buffer = new TCHAR (getCodePage (), string, true);
+	TCHAR buffer = new TCHAR (string, true);
 	int result = (int)OS.SendMessage (handle, OS.CB_ADDSTRING, 0, buffer);
 	if (result == OS.CB_ERR) error (SWT.ERROR_ITEM_NOT_ADDED);
 	if (result == OS.CB_ERRSPACE) error (SWT.ERROR_ITEM_NOT_ADDED);
@@ -206,7 +206,7 @@ public void add (String string, int index) {
 	if (!(0 <= index && index <= count)) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
-	TCHAR buffer = new TCHAR (getCodePage (), string, true);
+	TCHAR buffer = new TCHAR (string, true);
 	int result = (int)OS.SendMessage (handle, OS.CB_INSERTSTRING, index, buffer);
 	if (result == OS.CB_ERRSPACE || result == OS.CB_ERR) {
 		error (SWT.ERROR_ITEM_NOT_ADDED);
@@ -418,7 +418,6 @@ void applyListSegments () {
 	if (add) items = new String [count];
 	int index = items.length;
 	int selection = OS.CB_ERR;
-	int cp = getCodePage ();
 	String string;
 	TCHAR buffer;
 	if (!noSelection) {
@@ -429,14 +428,14 @@ void applyListSegments () {
 		if (add) {
 			int length = (int)OS.SendMessage (handle, OS.CB_GETLBTEXTLEN, index, 0);
 			if (length == OS.CB_ERR) error (SWT.ERROR);
-			buffer = new TCHAR (cp, length + 1);
+			buffer = new TCHAR (length + 1);
 			if (OS.SendMessage (handle, OS.CB_GETLBTEXT, index, buffer) == OS.CB_ERR) return;
 			items [index] = string = buffer.toString (0, length);
 		} else {
 			string = items [index];
 		}
 		if (OS.SendMessage (handle, OS.CB_DELETESTRING, index, 0) == OS.CB_ERR) return;
-		if (buffer == null) buffer = new TCHAR (cp, string, true);
+		if (buffer == null) buffer = new TCHAR (string, true);
 		if (OS.SendMessage (handle, OS.CB_INSERTSTRING, index, buffer) == OS.CB_ERR) return;
 	}
 	if (selection != OS.CB_ERR) {
@@ -547,8 +546,7 @@ void clearSegments (boolean applyText) {
 	boolean oldIgnoreCharacter = ignoreCharacter, oldIgnoreModify = ignoreModify;
 	ignoreCharacter = ignoreModify = true;
 	int length = OS.GetWindowTextLength (hwndText);
-	int cp = getCodePage ();
-	TCHAR buffer = new TCHAR (cp, length + 1);
+	TCHAR buffer = new TCHAR (length + 1);
 	if (length > 0) OS.GetWindowText (hwndText, buffer, length + 1);
 	buffer = deprocessText (buffer, 0, -1, true);
 	/* Get the current selection */
@@ -813,7 +811,7 @@ TCHAR deprocessText (TCHAR text, int start, int end, boolean terminate) {
 	if (start != 0 || end != length) {
 		char [] newChars = new char [length];
 		System.arraycopy(chars, start, newChars, 0, length);
-		return new TCHAR (getCodePage (), newChars, terminate);
+		return new TCHAR (newChars, terminate);
 	}
 	return text;
 }
@@ -1323,7 +1321,7 @@ public String getText () {
 	checkWidget ();
 	int length = OS.GetWindowTextLength (handle);
 	if (length == 0) return "";
-	TCHAR buffer = new TCHAR (getCodePage (), length + 1);
+	TCHAR buffer = new TCHAR (length + 1);
 	OS.GetWindowText (handle, buffer, length + 1);
 	if (segments != null) {
 		buffer = deprocessText (buffer, 0, -1, false);
@@ -1479,7 +1477,7 @@ public int indexOf (String string, int start) {
 	int count = (int)OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
 	if (!(0 <= start && start < count)) return -1;
 	int index = start - 1, last = 0;
-	TCHAR buffer = new TCHAR (getCodePage (), string, true);
+	TCHAR buffer = new TCHAR (string, true);
 	do {
 		index = (int)OS.SendMessage (handle, OS.CB_FINDSTRINGEXACT, last = index, buffer);
 		if (index == OS.CB_ERR || index <= last) return -1;
@@ -1914,7 +1912,7 @@ boolean sendKeyEvent (int type, int msg, long wParam, long lParam, Event event) 
 	String newText = verifyText (oldText, start [0], end [0], event);
 	if (newText == null) return false;
 	if (newText == oldText) return true;
-	TCHAR buffer = new TCHAR (getCodePage (), newText, true);
+	TCHAR buffer = new TCHAR (newText, true);
 	OS.SendMessage (hwndText, OS.EM_SETSEL, start [0], end [0]);
 	OS.SendMessage (hwndText, OS.EM_REPLACESEL, 0, buffer);
 	return false;
@@ -2098,9 +2096,8 @@ public void setItems (String... items) {
 		setScrollWidth (0);
 	}
 	OS.SendMessage (handle, OS.CB_RESETCONTENT, 0, 0);
-	int codePage = getCodePage ();
 	for (String item : items) {
-		TCHAR buffer = new TCHAR (codePage, item, true);
+		TCHAR buffer = new TCHAR (item, true);
 		int code = (int)OS.SendMessage (handle, OS.CB_ADDSTRING, 0, buffer);
 		if (code == OS.CB_ERR) error (SWT.ERROR_ITEM_NOT_ADDED);
 		if (code == OS.CB_ERRSPACE) error (SWT.ERROR_ITEM_NOT_ADDED);
@@ -2290,7 +2287,7 @@ public void setText (String string) {
 		limit = (int)OS.SendMessage (hwndText, OS.EM_GETLIMITTEXT, 0, 0) & 0x7FFFFFFF;
 	}
 	if (string.length () > limit) string = string.substring (0, limit);
-	TCHAR buffer = new TCHAR (getCodePage (), string, true);
+	TCHAR buffer = new TCHAR (string, true);
 	if (OS.SetWindowText (handle, buffer)) {
 		applyEditSegments ();
 		sendEvent (SWT.Modify);
@@ -2741,12 +2738,12 @@ long windowProc (long hwnd, int msg, long wParam, long lParam) {
 			if (lParam != 0 && (hooks (SWT.Segments) || filters (SWT.Segments) || ((state & HAS_AUTO_DIRECTION) != 0))) {
 				long code = OS.CB_ERR;
 				int length = OS.wcslen (lParam);
-				TCHAR buffer = new TCHAR (getCodePage (), length);
+				TCHAR buffer = new TCHAR (length);
 				OS.MoveMemory (buffer, lParam, buffer.length () * TCHAR.sizeof);
 				String string = buffer.toString (0, length);
 				Event event = getSegments (string);
 				if (event != null && event.segments != null) {
-					buffer = new TCHAR (getCodePage (), getSegmentsText (string, event), true);
+					buffer = new TCHAR (getSegmentsText (string, event), true);
 					long hHeap = OS.GetProcessHeap ();
 					length = buffer.length() * TCHAR.sizeof;
 					long pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, length);
@@ -3136,7 +3133,7 @@ LRESULT wmClipboard (long hwndText, int msg, long wParam, long lParam) {
 			if (lockText) return null;
 			end [0] = OS.GetWindowTextLength (hwndText);
 			int length = OS.wcslen (lParam);
-			TCHAR buffer = new TCHAR (getCodePage (), length);
+			TCHAR buffer = new TCHAR (length);
 			int byteCount = buffer.length () * TCHAR.sizeof;
 			OS.MoveMemory (buffer, lParam, byteCount);
 			newText = buffer.toString (0, length);
@@ -3150,7 +3147,7 @@ LRESULT wmClipboard (long hwndText, int msg, long wParam, long lParam) {
 			if (call) {
 				OS.CallWindowProc (EditProc, hwndText, msg, wParam, lParam);
 			}
-			TCHAR buffer = new TCHAR (getCodePage (), newText, true);
+			TCHAR buffer = new TCHAR (newText, true);
 			if (msg == OS.WM_SETTEXT) {
 				long hHeap = OS.GetProcessHeap ();
 				int byteCount = buffer.length () * TCHAR.sizeof;

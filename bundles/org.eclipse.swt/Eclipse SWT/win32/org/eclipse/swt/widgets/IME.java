@@ -50,7 +50,7 @@ public class IME extends Widget {
 	int [] ranges;
 	TextStyle [] styles;
 
-	static final int WM_MSIME_MOUSE = OS.RegisterWindowMessage (new TCHAR (0, "MSIMEMouseOperation", true)); //$NON-NLS-1$
+	static final int WM_MSIME_MOUSE = OS.RegisterWindowMessage (new TCHAR ("MSIMEMouseOperation", true)); //$NON-NLS-1$
 
 	/* TextLayout has a copy of these constants */
 	static final int UNDERLINE_IME_DOT = 1 << 16;
@@ -534,7 +534,7 @@ LRESULT WM_KEYDOWN (long wParam, long lParam) {
 				}
 				long hwnd = parent.handle;
 				long hIMC = OS.ImmGetContext (hwnd);
-				TCHAR buffer = new TCHAR (0, event.text, true);
+				TCHAR buffer = new TCHAR (event.text, true);
 				long rc = OS.ImmEscape(hKL, hIMC, OS.IME_ESC_HANJA_MODE, buffer);
 				if (rc != 0) {
 					sendEvent (SWT.ImeComposition, event);

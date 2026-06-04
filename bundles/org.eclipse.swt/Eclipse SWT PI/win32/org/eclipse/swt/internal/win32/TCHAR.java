@@ -16,12 +16,8 @@ package org.eclipse.swt.internal.win32;
 import java.util.Arrays;
 
 /**
- * This class implements the conversions between unicode characters
- * and the <em>platform supported</em> representation for characters.
- * <p>
- * Note that unicode characters which can not be found in the platform
- * encoding will be converted to an arbitrary platform specific character.
- * </p>
+ * A char[] buffer wrapper with optional null-terminator support,
+ * used to pass Java strings to Win32 Unicode (W) APIs via JNI.
  *
  * @jniclass flags=no_gen
  */
@@ -30,15 +26,15 @@ public class TCHAR {
 
 public final static int sizeof = 2;
 
-public TCHAR (int codePage, int length) {
+public TCHAR (int length) {
 	chars = new char [length];
 }
 
-public TCHAR (int codePage, char ch, boolean terminate) {
-	this (codePage, terminate ? new char [] {ch, '\0'} : new char [] {ch}, false);
+public TCHAR (char ch, boolean terminate) {
+	this (terminate ? new char [] {ch, '\0'} : new char [] {ch}, false);
 }
 
-public TCHAR (int codePage, char [] chars, boolean terminate) {
+public TCHAR (char [] chars, boolean terminate) {
 	int charCount = chars.length;
 	if (terminate) {
 		if (charCount == 0 || (charCount > 0 && chars [charCount - 1] != 0)) {
@@ -50,8 +46,8 @@ public TCHAR (int codePage, char [] chars, boolean terminate) {
 	this.chars = chars;
 }
 
-public TCHAR (int codePage, String string, boolean terminate) {
-	this (codePage, getChars (string, terminate), false);
+public TCHAR (String string, boolean terminate) {
+	this (getChars (string, terminate), false);
 }
 
 static char [] getChars (String string, boolean terminate) {

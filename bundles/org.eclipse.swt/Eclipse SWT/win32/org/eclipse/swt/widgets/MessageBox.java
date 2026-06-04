@@ -142,7 +142,7 @@ void setButtonText (long wParam, int style, int id) {
 	if (labels.get (style) != null) {
 		long hwnd = OS.GetDlgItem (wParam, id);
 		if (hwnd != 0) {
-			OS.SetWindowText (hwnd, new TCHAR (0, labels.get (style), true));
+			OS.SetWindowText (hwnd, new TCHAR (labels.get (style), true));
 		}
 	}
 }
@@ -265,8 +265,8 @@ public int open () {
 
 	/* Open the message box */
 	display.sendPreExternalEventDispatchEvent ();
-	TCHAR buffer1 = new TCHAR (0, message, true);
-	TCHAR buffer2 = new TCHAR (0, title, true);
+	TCHAR buffer1 = new TCHAR (message, true);
+	TCHAR buffer2 = new TCHAR (title, true);
 	display.externalEventLoop = true;
 
 	Callback cbtCallback = null;

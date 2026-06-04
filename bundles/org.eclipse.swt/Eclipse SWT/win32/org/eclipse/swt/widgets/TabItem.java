@@ -137,7 +137,7 @@ void _setText (int index, String string) {
 	}
 	long hwnd = parent.handle;
 	long hHeap = OS.GetProcessHeap ();
-	TCHAR buffer = new TCHAR (parent.getCodePage (), string, true);
+	TCHAR buffer = new TCHAR (string, true);
 	int byteCount = buffer.length () * TCHAR.sizeof;
 	long pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 	OS.MoveMemory (pszText, buffer, byteCount);

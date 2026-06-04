@@ -45,7 +45,7 @@ public class ProgressBar extends Control {
 	static final int TIMER_ID = 100;
 	static final int MINIMUM_WIDTH = 100;
 	static final long ProgressBarProc;
-	static final TCHAR ProgressBarClass = new TCHAR (0, OS.PROGRESS_CLASS, true);
+	static final TCHAR ProgressBarClass = new TCHAR (OS.PROGRESS_CLASS, true);
 	static {
 		WNDCLASS lpWndClass = new WNDCLASS ();
 		OS.GetClassInfo (0, ProgressBarClass, lpWndClass);

@@ -104,8 +104,8 @@ public class Table extends Composite {
 	static final int DRAG_IMAGE_SIZE = 301;
 	static boolean COMPRESS_ITEMS = true;
 	static final long TableProc;
-	static final TCHAR TableClass = new TCHAR (0, OS.WC_LISTVIEW, true);
-	static final TCHAR HeaderClass = new TCHAR (0, OS.WC_HEADER, true);
+	static final TCHAR TableClass = new TCHAR (OS.WC_LISTVIEW, true);
+	static final TCHAR HeaderClass = new TCHAR (OS.WC_HEADER, true);
 	static {
 		WNDCLASS lpWndClass = new WNDCLASS ();
 		OS.GetClassInfo (0, TableClass, lpWndClass);
@@ -1574,7 +1574,7 @@ void createHeaderToolTips () {
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) bits |= OS.WS_EX_LAYOUTRTL;
 	headerToolTipHandle = OS.CreateWindowEx (
 		bits,
-		new TCHAR (0, OS.TOOLTIPS_CLASS, true),
+		new TCHAR (OS.TOOLTIPS_CLASS, true),
 		null,
 		OS.TTS_NOPREFIX,
 		OS.CW_USEDEFAULT, 0, OS.CW_USEDEFAULT, 0,
@@ -4799,7 +4799,7 @@ boolean setScrollWidth (TableItem item, boolean force) {
 					OS.ReleaseDC (handle, hDC);
 					newWidth = Math.max (newWidth, rect.right - rect.left);
 				} else {
-					TCHAR buffer = new TCHAR (getCodePage (), string, true);
+					TCHAR buffer = new TCHAR (string, true);
 					newWidth = Math.max (newWidth, (int)OS.SendMessage (handle, OS.LVM_GETSTRINGWIDTH, 0, buffer));
 				}
 			}

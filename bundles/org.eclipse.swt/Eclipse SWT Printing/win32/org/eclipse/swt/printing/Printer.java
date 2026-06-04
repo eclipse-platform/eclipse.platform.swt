@@ -72,9 +72,9 @@ public final class Printer extends Device {
 	static TCHAR appName;
 	static TCHAR keyName;
 	static {
-		profile = new TCHAR(0, "PrinterPorts", true); //$NON-NLS-1$
-		appName = new TCHAR(0, "windows", true); //$NON-NLS-1$
-		keyName = new TCHAR(0, "device", true); //$NON-NLS-1$
+		profile = new TCHAR("PrinterPorts", true); //$NON-NLS-1$
+		appName = new TCHAR("windows", true); //$NON-NLS-1$
+		keyName = new TCHAR("device", true); //$NON-NLS-1$
 	}
 
 /**
@@ -86,8 +86,8 @@ public final class Printer extends Device {
  */
 public static PrinterData[] getPrinterList() {
 	int length = 1024;
-	TCHAR buf = new TCHAR(0, length);
-	TCHAR nullBuf = new TCHAR(0, 1);
+	TCHAR buf = new TCHAR(length);
+	TCHAR nullBuf = new TCHAR(1);
 	int n = OS.GetProfileString(profile, null, nullBuf, buf, length);
 	if (n == 0) return new PrinterData[0];
 	String[] deviceNames = new String[5];
@@ -109,7 +109,7 @@ public static PrinterData[] getPrinterList() {
 	for (int p = 0; p < nameCount; p++) {
 		String device = deviceNames[p];
 		String driver = ""; //$NON-NLS-1$
-		if (OS.GetProfileString(profile, new TCHAR(0, device, true), nullBuf, buf, length) > 0) {
+		if (OS.GetProfileString(profile, new TCHAR(device, true), nullBuf, buf, length) > 0) {
 			int commaIndex = 0;
 			while (buf.tcharAt(commaIndex) != ',' && commaIndex < length) commaIndex++;
 			if (commaIndex < length) {
@@ -133,8 +133,8 @@ public static PrinterData[] getPrinterList() {
 public static PrinterData getDefaultPrinterData() {
 	String deviceName = null;
 	int length = 1024;
-	TCHAR buf = new TCHAR(0, length);
-	TCHAR nullBuf = new TCHAR(0, 1);
+	TCHAR buf = new TCHAR(length);
+	TCHAR nullBuf = new TCHAR(1);
 	int n = OS.GetProfileString(appName, keyName, nullBuf, buf, length);
 	if (n == 0) return null;
 	int commaIndex = 0;
@@ -144,7 +144,7 @@ public static PrinterData getDefaultPrinterData() {
 	}
 	if (deviceName == null) return null;
 	String driver = ""; //$NON-NLS-1$
-	if (OS.GetProfileString(profile, new TCHAR(0, deviceName, true), nullBuf, buf, length) > 0) {
+	if (OS.GetProfileString(profile, new TCHAR(deviceName, true), nullBuf, buf, length) > 0) {
 		commaIndex = 0;
 		while (buf.tcharAt(commaIndex) != ',' && commaIndex < length) commaIndex++;
 		if (commaIndex < length) {
@@ -213,8 +213,8 @@ public Printer(PrinterData data) {
 @Override
 protected void create(DeviceData deviceData) {
 	data = (PrinterData)deviceData;
-	TCHAR driver = new TCHAR(0, data.driver, true);
-	TCHAR device = new TCHAR(0, data.name, true);
+	TCHAR driver = new TCHAR(data.driver, true);
+	TCHAR device = new TCHAR(data.name, true);
 	long lpInitData = 0;
 	byte devmodeData [] = data.otherData;
 	long hHeap = OS.GetProcessHeap();
@@ -364,7 +364,7 @@ public boolean startJob(String jobName) {
 	long hHeap = OS.GetProcessHeap();
 	long lpszDocName = 0;
 	if (jobName != null && jobName.length() != 0) {
-		TCHAR buffer = new TCHAR(0, jobName, true);
+		TCHAR buffer = new TCHAR(jobName, true);
 		int byteCount = buffer.length() * TCHAR.sizeof;
 		lpszDocName = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 		OS.MoveMemory(lpszDocName, buffer, byteCount);
@@ -376,7 +376,7 @@ public boolean startJob(String jobName) {
 			/* Prompt the user for a file name. */
 			data.fileName = "FILE:"; //$NON-NLS-1$
 		}
-		TCHAR buffer = new TCHAR(0, data.fileName, true);
+		TCHAR buffer = new TCHAR(data.fileName, true);
 		int byteCount = buffer.length() * TCHAR.sizeof;
 		lpszOutput = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 		OS.MoveMemory(lpszOutput, buffer, byteCount);

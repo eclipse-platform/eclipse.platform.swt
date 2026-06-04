@@ -122,9 +122,9 @@ public class Tree extends Composite {
 	// The default Indent at 100 dpi
 	static final int DEFAULT_INDENT = 16;
 	static final long TreeProc;
-	static final TCHAR TreeClass = new TCHAR (0, OS.WC_TREEVIEW, true);
+	static final TCHAR TreeClass = new TCHAR (OS.WC_TREEVIEW, true);
 	static final long HeaderProc;
-	static final TCHAR HeaderClass = new TCHAR (0, OS.WC_HEADER, true);
+	static final TCHAR HeaderClass = new TCHAR (OS.WC_HEADER, true);
 	static {
 		WNDCLASS lpWndClass = new WNDCLASS ();
 		OS.GetClassInfo (0, TreeClass, lpWndClass);
@@ -1910,7 +1910,7 @@ void createHeaderToolTips () {
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) bits |= OS.WS_EX_LAYOUTRTL;
 	headerToolTipHandle = OS.CreateWindowEx (
 		bits,
-		new TCHAR (0, OS.TOOLTIPS_CLASS, true),
+		new TCHAR (OS.TOOLTIPS_CLASS, true),
 		null,
 		OS.TTS_NOPREFIX,
 		OS.CW_USEDEFAULT, 0, OS.CW_USEDEFAULT, 0,
@@ -2221,7 +2221,7 @@ void createItemToolTips () {
 	bits2 |= OS.WS_EX_TRANSPARENT;
 	itemToolTipHandle = OS.CreateWindowEx (
 		bits2,
-		new TCHAR (0, OS.TOOLTIPS_CLASS, true),
+		new TCHAR (OS.TOOLTIPS_CLASS, true),
 		null,
 		OS.TTS_NOPREFIX | OS.TTS_NOANIMATE | OS.TTS_NOFADE,
 		OS.CW_USEDEFAULT, 0, OS.CW_USEDEFAULT, 0,

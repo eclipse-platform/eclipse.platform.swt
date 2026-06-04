@@ -51,7 +51,7 @@ public class Link extends Control {
 	char [] mnemonics;
 	int nextFocusItem = -1;
 	static final long LinkProc;
-	static final TCHAR LinkClass = new TCHAR (0, OS.WC_LINK, true);
+	static final TCHAR LinkClass = new TCHAR (OS.WC_LINK, true);
 	static {
 		WNDCLASS lpWndClass = new WNDCLASS ();
 		OS.GetClassInfo (0, LinkClass, lpWndClass);
@@ -567,7 +567,7 @@ public void setText (String string) {
 	if ((state & HAS_AUTO_DIRECTION) != 0) {
 		updateTextDirection (AUTO_TEXT_DIRECTION);
 	}
-	TCHAR buffer = new TCHAR (getCodePage (), string, true);
+	TCHAR buffer = new TCHAR (string, true);
 	OS.SetWindowText (handle, buffer);
 	parse(string);
 }
