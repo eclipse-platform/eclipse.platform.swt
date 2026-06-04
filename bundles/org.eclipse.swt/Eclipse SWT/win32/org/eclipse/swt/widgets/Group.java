@@ -47,7 +47,7 @@ public class Group extends Composite {
 	String text = "";
 	static final int CLIENT_INSET = 3;
 	static final long GroupProc;
-	static final TCHAR GroupClass = new TCHAR (0, "SWT_GROUP", true);
+	static final TCHAR GroupClass = new TCHAR ("SWT_GROUP", true);
 	static {
 		/*
 		* Feature in Windows.  The group box window class
@@ -58,7 +58,7 @@ public class Group extends Composite {
 		* implement special code that damages only the control.
 		*/
 		WNDCLASS lpWndClass = new WNDCLASS ();
-		TCHAR WC_BUTTON = new TCHAR (0, "BUTTON", true);
+		TCHAR WC_BUTTON = new TCHAR ("BUTTON", true);
 		OS.GetClassInfo (0, WC_BUTTON, lpWndClass);
 		GroupProc = lpWndClass.lpfnWndProc;
 		long hInstance = OS.GetModuleHandle (null);
@@ -206,7 +206,7 @@ void enableWidget (boolean enabled) {
 	super.enableWidget (enabled);
 	String string = fixText ();
 	if (string != null) {
-		TCHAR buffer = new TCHAR (getCodePage (), string, true);
+		TCHAR buffer = new TCHAR (string, true);
 		OS.SetWindowText (handle, buffer);
 	}
 	if (enabled && hasCustomForeground()) {
@@ -402,7 +402,7 @@ public void setText (String string) {
 	text = string;
 	if ((state & HAS_AUTO_DIRECTION) == 0 || !updateTextDirection (AUTO_TEXT_DIRECTION)) {
 		string = fixText ();
-		TCHAR buffer = new TCHAR (getCodePage (), string == null ? text : string, true);
+		TCHAR buffer = new TCHAR (string == null ? text : string, true);
 		OS.SetWindowText (handle, buffer);
 	}
 }
@@ -411,7 +411,7 @@ public void setText (String string) {
 boolean updateTextDirection(int textDirection) {
 	if (super.updateTextDirection(textDirection)) {
 		String string = fixText ();
-		TCHAR buffer = new TCHAR (getCodePage (), string == null ? text : string, true);
+		TCHAR buffer = new TCHAR (string == null ? text : string, true);
 		OS.SetWindowText (handle, buffer);
 		return true;
 	}

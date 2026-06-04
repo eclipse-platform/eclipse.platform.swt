@@ -58,7 +58,7 @@ public class Label extends Control {
 	boolean isImageMode;	// Resolves ambiguity when both image and text are set
 	static final int MARGIN = 4;
 	static final long LabelProc;
-	static final TCHAR LabelClass = new TCHAR (0, "STATIC", true);
+	static final TCHAR LabelClass = new TCHAR ("STATIC", true);
 	static {
 		WNDCLASS lpWndClass = new WNDCLASS ();
 		OS.GetClassInfo (0, LabelClass, lpWndClass);
@@ -402,7 +402,7 @@ public void setText (String string) {
 	if (string.equals (text)) return;
 	text = string;
 	string = Display.withCrLf (string);
-	TCHAR buffer = new TCHAR (getCodePage (), string, true);
+	TCHAR buffer = new TCHAR (string, true);
 	OS.SetWindowText (handle, buffer);
 	if ((state & HAS_AUTO_DIRECTION) != 0) {
 		updateTextDirection (AUTO_TEXT_DIRECTION);

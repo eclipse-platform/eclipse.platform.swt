@@ -55,9 +55,9 @@ public class DateTime extends Composite {
 	SYSTEMTIME lastSystemTime;
 	SYSTEMTIME time = new SYSTEMTIME (); // only used in calendar mode
 	static final long DateTimeProc;
-	static final TCHAR DateTimeClass = new TCHAR (0, OS.DATETIMEPICK_CLASS, true);
+	static final TCHAR DateTimeClass = new TCHAR (OS.DATETIMEPICK_CLASS, true);
 	static final long CalendarProc;
-	static final TCHAR CalendarClass = new TCHAR (0, OS.MONTHCAL_CLASS, true);
+	static final TCHAR CalendarClass = new TCHAR (OS.MONTHCAL_CLASS, true);
 	static {
 		WNDCLASS lpWndClass = new WNDCLASS ();
 		OS.GetClassInfo (0, DateTimeClass, lpWndClass);
@@ -159,7 +159,7 @@ public DateTime (Composite parent, int style) {
 	super (parent, checkStyle (style));
 	if ((this.style & SWT.SHORT) != 0) {
 		String buffer = ((this.style & SWT.DATE) != 0) ? getCustomShortDateFormat() : getCustomShortTimeFormat();
-		TCHAR lpszFormat = new TCHAR (0, buffer, true);
+		TCHAR lpszFormat = new TCHAR (buffer, true);
 		OS.SendMessage (handle, OS.DTM_SETFORMAT, 0, lpszFormat);
 	}
 }
@@ -273,7 +273,7 @@ int defaultBackground () {
 }
 
 String getCustomShortDateFormat () {
-	TCHAR tchar = new TCHAR (getCodePage (), 80);
+	TCHAR tchar = new TCHAR (80);
 	int size = OS.GetLocaleInfo (OS.LOCALE_USER_DEFAULT, OS.LOCALE_SYEARMONTH, tchar, 80);
 	return size != 0 ? tchar.toString (0, size - 1) : "M/yyyy"; //$NON-NLS-1$
 }
@@ -301,7 +301,7 @@ String getCustomShortTimeFormat () {
 }
 
 String getTimeFormat () {
-	TCHAR tchar = new TCHAR (getCodePage (), 80);
+	TCHAR tchar = new TCHAR (80);
 	int size = OS.GetLocaleInfo (OS.LOCALE_USER_DEFAULT, OS.LOCALE_STIMEFORMAT, tchar, 80);
 	return size > 0 ? tchar.toString (0, size - 1) : "h:mm:ss tt"; //$NON-NLS-1$
 }

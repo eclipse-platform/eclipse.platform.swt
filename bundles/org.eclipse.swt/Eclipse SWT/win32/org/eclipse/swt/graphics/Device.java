@@ -600,7 +600,7 @@ public FontData [] getFontList (String faceName, boolean scalable) {
 			OS.EnumFontFamilies (hDC, lf.lfFaceName, lpEnumFontFamProc, scalable ? 1 : 0);
 		}
 	} else {
-		TCHAR lpFaceName = new TCHAR (0, faceName, true);
+		TCHAR lpFaceName = new TCHAR (faceName, true);
 		OS.EnumFontFamilies (hDC, lpFaceName.chars, lpEnumFontFamProc, scalable ? 1 : 0);
 	}
 	int logPixelsY = OS.GetDeviceCaps(hDC, OS.LOGPIXELSY);
@@ -820,7 +820,7 @@ public boolean isDisposed () {
 public boolean loadFont (String path) {
 	checkDevice();
 	if (path == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	TCHAR lpszFilename = new TCHAR (0, path, true);
+	TCHAR lpszFilename = new TCHAR (path, true);
 	boolean loaded = OS.AddFontResourceEx (lpszFilename, OS.FR_PRIVATE, 0) != 0;
 	if (loaded) {
 		if (gdipToken != null) {

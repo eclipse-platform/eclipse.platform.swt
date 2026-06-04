@@ -374,17 +374,17 @@ public static String findProgramID (String extension) {
 
 	if (extension.charAt (0) != '.') extension = "." + extension; //$NON-NLS-1$
 
-	TCHAR extensionKey = new TCHAR(0, extension, true);
+	TCHAR extensionKey = new TCHAR(extension, true);
 	String result = getKeyValue(extensionKey);
 	if (result != null) {
 		// look for "<programID>\NotInsertable"
-		TCHAR notInsertableKey = new TCHAR(0, result+"\\NotInsertable", true); //$NON-NLS-1$
+		TCHAR notInsertableKey = new TCHAR(result+"\\NotInsertable", true); //$NON-NLS-1$
 		if (getKeyExists(notInsertableKey)) return ""; //$NON-NLS-1$
 		// look for "<programID>\Insertable"
-		TCHAR insertableKey = new TCHAR(0, result+"\\Insertable", true); //$NON-NLS-1$
+		TCHAR insertableKey = new TCHAR(result+"\\Insertable", true); //$NON-NLS-1$
 		if (getKeyExists(insertableKey)) return result;
 		// look for "<programID>\protocol\StdFileEditing\server"
-		TCHAR serverKey = new TCHAR(0, result+"\\protocol\\StdFileEditing\\server", true); //$NON-NLS-1$
+		TCHAR serverKey = new TCHAR(result+"\\protocol\\StdFileEditing\\server", true); //$NON-NLS-1$
 		if (getKeyExists(serverKey)) return result;
 	}
 
@@ -402,7 +402,7 @@ static String getKeyValue (TCHAR key) {
 		if (length == 0) {
 			result = "";
 		} else {
-			TCHAR lpData = new TCHAR (0, length);
+			TCHAR lpData = new TCHAR (length);
 			if (OS.RegQueryValueEx (phkResult [0], null, 0, null, lpData, lpcbData) == 0) {
 				length = Math.max(0, lpData.length () - 1);
 				result = lpData.toString (0, length);

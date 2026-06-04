@@ -44,7 +44,7 @@ import org.eclipse.swt.internal.win32.*;
 public class List extends Scrollable {
 	static final int INSET = 3;
 	static final long ListProc;
-	static final TCHAR ListClass = new TCHAR (0, "LISTBOX", true);
+	static final TCHAR ListClass = new TCHAR ("LISTBOX", true);
 	boolean addedUCC = false; // indicates whether Bidi UCC were added; 'state & HAS_AUTO_DIRECTION' isn't a sufficient indicator
 	static {
 		WNDCLASS lpWndClass = new WNDCLASS ();
@@ -105,7 +105,7 @@ public List (Composite parent, int style) {
 public void add (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	TCHAR buffer = new TCHAR (getCodePage (), string, true);
+	TCHAR buffer = new TCHAR (string, true);
 	int result = (int)OS.SendMessage (handle, OS.LB_ADDSTRING, 0, buffer);
 	if (result == OS.LB_ERR) error (SWT.ERROR_ITEM_NOT_ADDED);
 	if (result == OS.LB_ERRSPACE) error (SWT.ERROR_ITEM_NOT_ADDED);
@@ -141,7 +141,7 @@ public void add (String string, int index) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (index == -1) error (SWT.ERROR_INVALID_RANGE);
-	TCHAR buffer = new TCHAR (getCodePage (), string, true);
+	TCHAR buffer = new TCHAR (string, true);
 	int result = (int)OS.SendMessage (handle, OS.LB_INSERTSTRING, index, buffer);
 	if (result == OS.LB_ERRSPACE) error (SWT.ERROR_ITEM_NOT_ADDED);
 	if (result == OS.LB_ERR) {
@@ -696,7 +696,7 @@ public int indexOf (String string, int start) {
 	int count = (int)OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
 	if (!(0 <= start && start < count)) return -1;
 	int index = start - 1, last;
-	TCHAR buffer = new TCHAR (getCodePage (), string, true);
+	TCHAR buffer = new TCHAR (string, true);
 	do {
 		index = (int)OS.SendMessage (handle, OS.LB_FINDSTRINGEXACT, last = index, buffer);
 		if (index == OS.LB_ERR || index <= last) return -1;
@@ -1235,10 +1235,9 @@ public void setItems (String... items) {
 	OS.SendMessage (handle, OS.LB_RESETCONTENT, 0, 0);
 	OS.SendMessage (handle, OS.LB_INITSTORAGE, length, length * 32);
 	int index = 0;
-	int cp = getCodePage ();
 	while (index < length) {
 		String string = items [index];
-		TCHAR buffer = new TCHAR (cp, string, true);
+		TCHAR buffer = new TCHAR (string, true);
 		int result = (int)OS.SendMessage (handle, OS.LB_ADDSTRING, 0, buffer);
 		if (result == OS.LB_ERR || result == OS.LB_ERRSPACE) break;
 		if ((style & SWT.H_SCROLL) != 0) {
@@ -1634,8 +1633,7 @@ long windowProc (long hwnd, int msg, long wParam, long lParam) {
 			case OS.LB_INSERTSTRING:
 			case OS.LB_FINDSTRINGEXACT:
 				int length = OS.wcslen (lParam); // we are always Unicode here
-				int cp = getCodePage ();
-				TCHAR buffer = new TCHAR (cp, length);
+				TCHAR buffer = new TCHAR (length);
 				OS.MoveMemory (buffer, lParam, buffer.length () * TCHAR.sizeof);
 				String string = buffer.toString (0, length);
 				int direction = BidiUtil.resolveTextDirection (string);
@@ -1648,7 +1646,7 @@ long windowProc (long hwnd, int msg, long wParam, long lParam) {
 					direction = (style & SWT.RIGHT_TO_LEFT) != 0 ? SWT.RIGHT_TO_LEFT : SWT.LEFT_TO_RIGHT;
 				}
 				string = (direction == SWT.RIGHT_TO_LEFT ? RLE : LRE) + string;
-				buffer = new TCHAR (cp, string, true);
+				buffer = new TCHAR (string, true);
 				long hHeap = OS.GetProcessHeap ();
 				length = buffer.length() * TCHAR.sizeof;
 				long pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, length);

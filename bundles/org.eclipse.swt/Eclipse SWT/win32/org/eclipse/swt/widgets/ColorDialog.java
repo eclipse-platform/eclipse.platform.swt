@@ -100,7 +100,7 @@ long CCHookProc (long hdlg, long uiMsg, long lParam, long lpData) {
 	switch ((int)uiMsg) {
 		case OS.WM_INITDIALOG: {
 			if (title != null && title.length () != 0) {
-				TCHAR buffer = new TCHAR (0, title, true);
+				TCHAR buffer = new TCHAR (title, true);
 				OS.SetWindowText (hdlg, buffer);
 			}
 			break;

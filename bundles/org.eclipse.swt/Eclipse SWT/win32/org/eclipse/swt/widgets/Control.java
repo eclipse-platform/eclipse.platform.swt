@@ -1239,10 +1239,6 @@ Rectangle getBoundsInPixels () {
 	return new Rectangle (rect.left, rect.top, width, height);
 }
 
-int getCodePage () {
-	return OS.CP_ACP;
-}
-
 String getClipboardText () {
 	String string = "";
 	if (OS.OpenClipboard (0)) {
@@ -1252,7 +1248,7 @@ String getClipboardText () {
 			int byteCount = OS.GlobalSize (hMem) / TCHAR.sizeof * TCHAR.sizeof;
 			long ptr = OS.GlobalLock (hMem);
 			if (ptr != 0) {
-				TCHAR buffer = new TCHAR (0, byteCount / TCHAR.sizeof);
+				TCHAR buffer = new TCHAR (byteCount / TCHAR.sizeof);
 				OS.MoveMemory (buffer, ptr, byteCount);
 				string = buffer.toString (0, buffer.strlen ());
 				OS.GlobalUnlock (hMem);

@@ -72,7 +72,7 @@ public Clipboard(Display display) {
 		DND.error(SWT.ERROR_THREAD_INVALID_ACCESS);
 	}
 	this.display = display;
-	TCHAR chFormatName = new TCHAR(0, "Preferred DropEffect", true); //$NON-NLS-1$
+	TCHAR chFormatName = new TCHAR("Preferred DropEffect", true); //$NON-NLS-1$
 	CFSTR_PREFERREDDROPEFFECT = OS.RegisterClipboardFormat(chFormatName);
 	createCOMInterfaces();
 	this.AddRef();

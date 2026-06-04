@@ -54,7 +54,7 @@ public class TabFolder extends Composite {
 	TabItem [] items;
 	ImageList imageList;
 	static final long TabFolderProc;
-	static final TCHAR TabFolderClass = new TCHAR (0, OS.WC_TABCONTROL, true);
+	static final TCHAR TabFolderClass = new TCHAR (OS.WC_TABCONTROL, true);
 	boolean createdAsRTL;
 
 	/*

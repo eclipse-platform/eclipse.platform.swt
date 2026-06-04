@@ -374,7 +374,7 @@ long EnumLocalesProc(long lpLocaleString) {
 
 	/* Get the locale ID */
 	int length = 8;
-	TCHAR buffer = new TCHAR(0, length);
+	TCHAR buffer = new TCHAR(length);
 	int byteCount = length * TCHAR.sizeof;
 	OS.MoveMemory(buffer, lpLocaleString, byteCount);
 	int lcid = Integer.parseInt(buffer.toString(0, buffer.strlen ()), 16);

@@ -1259,7 +1259,7 @@ void setSystemMenu () {
 public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	TCHAR buffer = new TCHAR (0, string, true);
+	TCHAR buffer = new TCHAR (string, true);
 	/* Ensure that the title appears in the task bar.*/
 	if ((state & FOREIGN_HANDLE) != 0) {
 		long hHeap = OS.GetProcessHeap ();

@@ -60,7 +60,7 @@ public class Button extends Control {
 	static /*final*/ boolean COMMAND_LINK = false;
 	static final char[] STRING_WITH_ZERO_CHAR = new char[] {'0'};
 	static final long ButtonProc;
-	static final TCHAR ButtonClass = new TCHAR (0, "BUTTON", true);
+	static final TCHAR ButtonClass = new TCHAR ("BUTTON", true);
 	static {
 		WNDCLASS lpWndClass = new WNDCLASS ();
 		OS.GetClassInfo (0, ButtonClass, lpWndClass);
@@ -206,7 +206,7 @@ void _setText (String text) {
 		OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
 		OS.InvalidateRect (handle, null, true);
 	}
-	TCHAR buffer = new TCHAR (getCodePage (), text, true);
+	TCHAR buffer = new TCHAR (text, true);
 	OS.SetWindowText (handle, buffer);
 	if ((state & HAS_AUTO_DIRECTION) != 0) {
 		updateTextDirection (AUTO_TEXT_DIRECTION);

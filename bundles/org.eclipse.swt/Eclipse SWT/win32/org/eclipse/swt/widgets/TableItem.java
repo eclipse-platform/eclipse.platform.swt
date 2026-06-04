@@ -277,7 +277,7 @@ RECT getBounds (int row, int column, boolean getText, boolean getImage, boolean 
 				int width = 0;
 				long hFont = fontHandle (column);
 				if (hFont == -1 && hDC == 0) {
-					TCHAR buffer = new TCHAR (parent.getCodePage (), text, true);
+					TCHAR buffer = new TCHAR (text, true);
 					width = (int)OS.SendMessage (hwnd, OS.LVM_GETSTRINGWIDTH, 0, buffer);
 				} else {
 					char [] buffer = text.toCharArray ();

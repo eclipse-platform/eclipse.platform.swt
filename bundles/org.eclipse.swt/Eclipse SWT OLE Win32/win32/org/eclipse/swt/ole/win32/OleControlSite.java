@@ -737,7 +737,7 @@ void onFocusOut(Event e) {
 	OS.GetGUIThreadInfo(threadId, lpgui1);
 	objIOleInPlaceObject.UIDeactivate();
 	if (SWT_RESTORECARET == 0) {
-		SWT_RESTORECARET = OS.RegisterWindowMessage (new TCHAR (0, "SWT_RESTORECARET", true));
+		SWT_RESTORECARET = OS.RegisterWindowMessage (new TCHAR ("SWT_RESTORECARET", true));
 	}
 	if (lpgui1.hwndCaret != 0) {
 		GUITHREADINFO lpgui2 = new GUITHREADINFO();

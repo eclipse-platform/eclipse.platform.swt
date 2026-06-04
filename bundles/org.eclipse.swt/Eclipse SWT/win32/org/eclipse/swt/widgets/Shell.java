@@ -135,7 +135,7 @@ public class Shell extends Decorations {
 	Control lastActive;
 	static /*final*/ long ToolTipProc;
 	static final long DialogProc;
-	static final TCHAR DialogClass = new TCHAR (0, "#32770", true);
+	static final TCHAR DialogClass = new TCHAR ("#32770", true);
 	final static int [] SYSTEM_COLORS = {
 		OS.COLOR_BTNFACE,
 		OS.COLOR_WINDOW,
@@ -552,7 +552,7 @@ public void close () {
 void createBalloonTipHandle () {
 	balloonTipHandle = OS.CreateWindowEx (
 		0,
-		new TCHAR (0, OS.TOOLTIPS_CLASS, true),
+		new TCHAR (OS.TOOLTIPS_CLASS, true),
 		null,
 		OS.TTS_ALWAYSTIP | OS.TTS_NOPREFIX | OS.TTS_BALLOON,
 		OS.CW_USEDEFAULT, 0, OS.CW_USEDEFAULT, 0,
@@ -707,7 +707,7 @@ void createToolTipHandle () {
 long createToolTipHandle (long parent) {
 	long toolTipHandle = OS.CreateWindowEx (
 		0,
-		new TCHAR (0, OS.TOOLTIPS_CLASS, true),
+		new TCHAR (OS.TOOLTIPS_CLASS, true),
 		null,
 		OS.TTS_ALWAYSTIP | OS.TTS_NOPREFIX,
 		OS.CW_USEDEFAULT, 0, OS.CW_USEDEFAULT, 0,
@@ -1284,7 +1284,7 @@ long hwndMDIClient () {
 		int widgetStyle = OS.MDIS_ALLCHILDSTYLES | OS.WS_CHILD | OS.WS_CLIPCHILDREN | OS.WS_CLIPSIBLINGS;
 		hwndMDIClient = OS.CreateWindowEx (
 			0,
-			new TCHAR (0, "MDICLIENT", true),
+			new TCHAR ("MDICLIENT", true),
 			null,
 			widgetStyle,
 			0, 0, 0, 0,
@@ -2129,7 +2129,7 @@ void setToolTipTitle (long hwndToolTip, String text, int icon) {
 		* the null terminator.
 		*/
 		if (text.length () > 99) text = text.substring (0, 99);
-		TCHAR pszTitle = new TCHAR (getCodePage (), text, true);
+		TCHAR pszTitle = new TCHAR (text, true);
 		OS.SendMessage (hwndToolTip, OS.TTM_SETTITLE, icon, pszTitle);
 	} else {
 		OS.SendMessage (hwndToolTip, OS.TTM_SETTITLE, 0, 0);

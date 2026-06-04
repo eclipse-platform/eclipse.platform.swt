@@ -693,11 +693,11 @@ int Authenticate (long hwnd, long szUsername, long szPassword) {
 		authenticationListener.authenticate (event);
 		if (!event.doit) return COM.E_ACCESSDENIED;
 		if (event.user != null && event.password != null) {
-			TCHAR user = new TCHAR (0, event.user, true);
+			TCHAR user = new TCHAR (event.user, true);
 			int size = user.length () * TCHAR.sizeof;
 			long userPtr = OS.CoTaskMemAlloc (size);
 			OS.MoveMemory (userPtr, user, size);
-			TCHAR password = new TCHAR (0, event.password, true);
+			TCHAR password = new TCHAR (event.password, true);
 			size = password.length () * TCHAR.sizeof;
 			long passwordPtr = OS.CoTaskMemAlloc (size);
 			OS.MoveMemory (passwordPtr, password, size);
