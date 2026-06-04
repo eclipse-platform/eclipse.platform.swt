@@ -2017,6 +2017,7 @@ void hookDOMListeners(OleAutomation webBrowser, final boolean isTop) {
 	documents = newDocuments;
 }
 
+@SuppressWarnings("deprecation")
 void unhookDOMListeners(OleAutomation[] documents) {
 	char[] buffer = (COM.IIDIHTMLDocumentEvents2 + '\0').toCharArray();
 	GUID guid = new GUID();
