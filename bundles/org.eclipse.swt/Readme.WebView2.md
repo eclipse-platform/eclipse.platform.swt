@@ -67,7 +67,9 @@ language+country code that defines the browser UI language and preferred
 language for HTTP requests (`Accept-Languages` header).
 Example values: `en`, `ja`, `en-GB`, `de-AT`.
 
-The property `org.eclipse.swt.browser.Edge.allowSingleSignOnUsingOSPrimaryAccount` enables Single Sign-On with Azure Active Directory (AAD) resources using the logged-in Windows account. This also enables SSO with websites using Microsoft accounts associated with the Windows login. Setting this property to true enables this feature. The default value is false.
+The WebView2 runtime in SWT automatically enables Single Sign-On with Azure Active Directory (AAD) resources using the logged-in Windows account.
+This also enables SSO with websites using Microsoft accounts associated with the Windows login.
+This feature can be disabled by setting the system property `org.eclipse.swt.browser.EdgeAllowSingleSignOnUsingOSPrimaryAccount` to `false`.
 
 See also: https://learn.microsoft.com/en-us/dotnet/api/microsoft.web.webview2.core.corewebview2environmentoptions.allowsinglesignonusingosprimaryaccount
 
