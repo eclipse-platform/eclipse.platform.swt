@@ -654,7 +654,6 @@ typedef enum {
 	SetPixel_FUNC,
 	SetPolyFillMode_FUNC,
 	SetPreferredAppMode_FUNC,
-	SetProcessDPIAware_FUNC,
 	SetProp_FUNC,
 	SetROP2_FUNC,
 	SetRect_FUNC,

@@ -8772,18 +8772,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(SetPolyFillMode)
 }
 #endif
 
-#ifndef NO_SetProcessDPIAware
-JNIEXPORT jboolean JNICALL OS_NATIVE(SetProcessDPIAware)
-	(JNIEnv *env, jclass that)
-{
-	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, SetProcessDPIAware_FUNC);
-	rc = (jboolean)SetProcessDPIAware();
-	OS_NATIVE_EXIT(env, that, SetProcessDPIAware_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_SetProp
 JNIEXPORT jboolean JNICALL OS_NATIVE(SetProp)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2)
