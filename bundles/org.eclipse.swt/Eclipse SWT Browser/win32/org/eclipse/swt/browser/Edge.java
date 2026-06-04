@@ -611,7 +611,7 @@ WebViewEnvironment createEnvironment() {
 	String browserArgs = System.getProperty(BROWSER_ARGS_PROP);
 	String language = System.getProperty(LANGUAGE_PROP);
 
-	boolean allowSSO = Boolean.getBoolean(ALLOW_SINGLE_SIGN_ON_USING_OS_PRIMARY_ACCOUNT_PROP);
+	boolean allowSSO = !"false".equalsIgnoreCase(System.getProperty(ALLOW_SINGLE_SIGN_ON_USING_OS_PRIMARY_ACCOUNT_PROP));
 
 	String dataDir = getDataDir(display);
 
