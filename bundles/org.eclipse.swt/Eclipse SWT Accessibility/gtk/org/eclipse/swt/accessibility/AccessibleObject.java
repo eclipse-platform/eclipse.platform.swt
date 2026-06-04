@@ -2072,6 +2072,7 @@ class AccessibleObject {
 	 *
 	 * @return a pointer to the AtkObject representing the caption, or 0
 	 */
+	@SuppressWarnings("deprecation")
 	static long atkTable_get_caption (long atkObject) {
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -2108,6 +2109,7 @@ class AccessibleObject {
 	 *
 	 * @return a pointer to the AtkObject representing the summary, or 0
 	 */
+	@SuppressWarnings("deprecation")
 	static long atkTable_get_summary (long atkObject) {
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {

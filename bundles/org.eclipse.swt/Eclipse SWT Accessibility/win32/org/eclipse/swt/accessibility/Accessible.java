@@ -3847,6 +3847,7 @@ public class Accessible {
 	}
 
 	/* IAccessibleTable2::get_caption([out] ppAccessible) */
+	@SuppressWarnings("deprecation")
 	int get_caption(long ppAccessible) {
 		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
@@ -4035,6 +4036,7 @@ public class Accessible {
 	}
 
 	/* IAccessibleTable2::get_summary([out] ppAccessible) */
+	@SuppressWarnings("deprecation")
 	int get_summary(long ppAccessible) {
 		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
