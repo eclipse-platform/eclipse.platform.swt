@@ -24,8 +24,7 @@ public class ImageList {
 	long handle;
 	int style, refCount;
 	Image [] images;
-	private final int zoom;
-	private final int width, height;
+	private int width, height;
 	private final int flags;
 
 	private HashMap<Integer, Long> zoomToHandle = new HashMap<>();
@@ -41,10 +40,11 @@ public ImageList (int style, int width, int height, int zoom) {
 	this.flags = listFlags;
 	this.height = height;
 	this.width = width;
-	handle = OS.ImageList_Create (width, height, this.flags, 16, 16);
+	int widthInPixels = DPIUtil.pointToPixel(width, zoom);
+	int heightInPixels = DPIUtil.pointToPixel(height, zoom);
+	handle = OS.ImageList_Create (widthInPixels, heightInPixels, this.flags, 16, 16);
 	zoomToHandle.put(zoom, handle);
 	images = new Image [4];
-	this.zoom = zoom;
 }
 
 public int add (Image image) {
@@ -56,8 +56,10 @@ public int add (Image image) {
 		index++;
 	}
 	if (count == 0) {
-		Rectangle rect = Win32DPIUtils.scaleBounds(image.getBounds(), zoom, 100);
-		OS.ImageList_SetIconSize (handle, rect.width, rect.height);
+		Rectangle bounds = image.getBounds();
+		width = bounds.width;
+		height = bounds.height;
+		zoomToHandle.forEach((zoom, handleForZoom) -> OS.ImageList_SetIconSize(handleForZoom, DPIUtil.pointToPixel(width, zoom), DPIUtil.pointToPixel(height, zoom)));
 	}
 	setForAllHandles(index, image, count);
 	if (index == images.length) {
@@ -334,8 +336,8 @@ public Image get (int index) {
 
 public long getHandle(int targetZoom) {
 	if (!zoomToHandle.containsKey(targetZoom)) {
-		int scaledWidth = DPIUtil.pointToPixel(DPIUtil.pixelToPoint(width, this.zoom), targetZoom);
-		int scaledHeight = DPIUtil.pointToPixel(DPIUtil.pixelToPoint(height, this.zoom), targetZoom);
+		int scaledWidth = DPIUtil.pointToPixel(width, targetZoom);
+		int scaledHeight = DPIUtil.pointToPixel(height, targetZoom);
 		long newImageListHandle = OS.ImageList_Create(scaledWidth, scaledHeight, flags, 16, 16);
 		int count = OS.ImageList_GetImageCount (handle);
 		for (int i = 0; i < count; i++) {
@@ -366,14 +368,11 @@ private void addPlaceholderImageToImageList(long imageListHandle, int bitmapWidt
  * {@return size of Images in the ImageList in points}
  */
 public Point getImageSize() {
-	int [] cx = new int [1], cy = new int [1];
-	OS.ImageList_GetIconSize (handle, cx, cy);
-	return Win32DPIUtils.pixelToPointAsSize(new Point (cx [0], cy [0]), zoom);
+	return new Point(width, height);
 }
 
-public boolean isFittingFor(int style, int width, int height, int zoom) {
-	Point imageSize = getImageSize();
-	return this.style == style && imageSize.x == width && imageSize.y == height && this.zoom == zoom;
+public boolean isFittingFor(int style, int width, int height) {
+	return this.style == style && this.width == width && this.height == height;
 }
 
 public int indexOf (Image image) {

@@ -2045,7 +2045,7 @@ ImageList getImageList (int style, int width, int height, int zoom) {
 	while (i < length) {
 		ImageList list = imageList [i];
 		if (list == null) break;
-		if (list.isFittingFor(style, width, height, zoom)) {
+		if (list.isFittingFor(style, width, height)) {
 			list.addRef();
 			return list;
 		}
@@ -2058,7 +2058,7 @@ ImageList getImageList (int style, int width, int height, int zoom) {
 		imageList = newList;
 	}
 
-	ImageList list = new ImageList (style, DPIUtil.pointToPixel(width, zoom), DPIUtil.pointToPixel(height, zoom), zoom);
+	ImageList list = new ImageList (style, width, height, zoom);
 	imageList [i] = list;
 	list.addRef();
 	return list;
@@ -2072,7 +2072,7 @@ ImageList getImageListToolBar (int style, int width, int height, int zoom) {
 	while (i < length) {
 		ImageList list = toolImageList [i];
 		if (list == null) break;
-		if (list.isFittingFor(style, width, height, zoom)) {
+		if (list.isFittingFor(style, width, height)) {
 			list.addRef();
 			return list;
 		}
@@ -2085,7 +2085,7 @@ ImageList getImageListToolBar (int style, int width, int height, int zoom) {
 		toolImageList = newList;
 	}
 
-	ImageList list = new ImageList (style, DPIUtil.pointToPixel(width, zoom), DPIUtil.pointToPixel(height, zoom), zoom);
+	ImageList list = new ImageList (style, width, height, zoom);
 	toolImageList [i] = list;
 	list.addRef();
 	return list;
@@ -2099,7 +2099,7 @@ ImageList getImageListToolBarDisabled (int style, int width, int height, int zoo
 	while (i < length) {
 		ImageList list = toolDisabledImageList [i];
 		if (list == null) break;
-		if (list.isFittingFor(style, width, height, zoom)) {
+		if (list.isFittingFor(style, width, height)) {
 			list.addRef();
 			return list;
 		}
@@ -2112,7 +2112,7 @@ ImageList getImageListToolBarDisabled (int style, int width, int height, int zoo
 		toolDisabledImageList = newList;
 	}
 
-	ImageList list = new ImageList (style, DPIUtil.pointToPixel(width, zoom), DPIUtil.pointToPixel(height, zoom), zoom);
+	ImageList list = new ImageList (style, width, height, zoom);
 	toolDisabledImageList [i] = list;
 	list.addRef();
 	return list;
@@ -2126,7 +2126,7 @@ ImageList getImageListToolBarHot (int style, int width, int height, int zoom) {
 	while (i < length) {
 		ImageList list = toolHotImageList [i];
 		if (list == null) break;
-		if (list.isFittingFor(style, width, height, zoom)) {
+		if (list.isFittingFor(style, width, height)) {
 			list.addRef();
 			return list;
 		}
@@ -2139,7 +2139,7 @@ ImageList getImageListToolBarHot (int style, int width, int height, int zoom) {
 		toolHotImageList = newList;
 	}
 
-	ImageList list = new ImageList (style, DPIUtil.pointToPixel(width, zoom), DPIUtil.pointToPixel(height, zoom), zoom);
+	ImageList list = new ImageList (style, width, height, zoom);
 	toolHotImageList [i] = list;
 	list.addRef();
 	return list;
