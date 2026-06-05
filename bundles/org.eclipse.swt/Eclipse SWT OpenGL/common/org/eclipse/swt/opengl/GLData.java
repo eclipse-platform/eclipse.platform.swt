@@ -151,7 +151,7 @@ public class GLData {
 	public int minorVersion;
 
 	/**
-	 * The profile to use. This is only valid when
+	 * The GL profile to use, {@link Profile#CORE} is only valid when
 	 * ({@link #majorVersion}.{@link #minorVersion}) is at least 3.0.
 	 */
 	public Profile profile;
