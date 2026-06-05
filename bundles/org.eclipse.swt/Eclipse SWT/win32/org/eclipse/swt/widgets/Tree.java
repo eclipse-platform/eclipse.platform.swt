@@ -5600,11 +5600,13 @@ String toolTipText (NMTTDISPINFO hdr) {
 		RECT [] cellRect = new RECT [1], itemRect = new RECT [1];
 		if (findCell (pt.x, pt.y, item, index, cellRect, itemRect)) {
 			String text = null;
-			if (index [0] == 0) {
+			int[] columnOrder = getColumnOrder();
+			int orderedIndex = columnOrder.length != 0 ? columnOrder [index[0]] : index[0];
+			if (orderedIndex == 0) {
 				text = item [0].text;
 			} else {
 				String[] strings = item [0].strings;
-				if (strings != null) text = strings [index [0]];
+				if (strings != null) text = strings [orderedIndex];
 			}
 			//TEMPORARY CODE
 			if (isCustomToolTip ()) text = " ";
