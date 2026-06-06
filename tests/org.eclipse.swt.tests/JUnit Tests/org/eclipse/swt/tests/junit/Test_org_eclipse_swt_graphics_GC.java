@@ -49,6 +49,7 @@ import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.Region;
 import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.internal.DPIUtil;
 import org.eclipse.swt.tests.graphics.ImageDataTestHelper;
@@ -779,6 +780,19 @@ public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 	color.dispose();
 	assertThrows(IllegalArgumentException.class, () -> gc.setBackground(color),
 			"No exception thrown for color disposed");
+}
+
+@Test
+public void test_getClipping() {
+	gc.setClipping(0,5,10,20);
+	Region r = new Region();
+	try {
+		gc.getClipping(r);
+		gc.dispose();
+		assertEquals(new Rectangle(0, 5, 10, 20), r.getBounds());
+	} finally {
+		r.dispose();
+	}
 }
 
 @Test

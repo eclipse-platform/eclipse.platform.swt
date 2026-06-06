@@ -144,7 +144,7 @@ Point computeSizeInPixels (Point hintInPoints, int zoom, boolean changed) {
 	Point size = super.computeSizeInPixels (hintInPoints, zoom, changed);
 	int length = text.length ();
 	if (length != 0) {
-		String string = fixText (false);
+		String string = fixText ();
 
 		/*
 		* If the group has text, and the text is wider than the
@@ -160,8 +160,7 @@ Point computeSizeInPixels (Point hintInPoints, int zoom, boolean changed) {
 		OS.DrawText (hDC, buffer, buffer.length, rect, flags);
 		if (newFont != 0) OS.SelectObject (hDC, oldFont);
 		OS.ReleaseDC (handle, hDC);
-		int offsetY = OS.IsAppThemed () ? 0 : 1;
-		size.x = Math.max (size.x, rect.right - rect.left + CLIENT_INSET * 6 + offsetY);
+		size.x = Math.max (size.x, rect.right - rect.left + CLIENT_INSET * 6);
 	}
 	return size;
 }
@@ -177,11 +176,10 @@ Point computeSizeInPixels (Point hintInPoints, int zoom, boolean changed) {
 	OS.GetTextMetrics (hDC, tm);
 	if (newFont != 0) OS.SelectObject (hDC, oldFont);
 	OS.ReleaseDC (handle, hDC);
-	int offsetY = OS.IsAppThemed () ? 0 : 1;
 	trim.x -= CLIENT_INSET;
-	trim.y -= tm.tmHeight + offsetY;
+	trim.y -= tm.tmHeight;
 	trim.width += CLIENT_INSET * 2;
-	trim.height += tm.tmHeight + CLIENT_INSET + offsetY;
+	trim.height += tm.tmHeight + CLIENT_INSET;
 	return trim;
 }
 
@@ -206,12 +204,7 @@ void createHandle () {
 @Override
 void enableWidget (boolean enabled) {
 	super.enableWidget (enabled);
-	/*
-	* Bug in Windows.  When a group control is right-to-left and
-	* is disabled, the first pixel of the text is clipped.  The
-	* fix is to add a space to both sides of the text.
-	*/
-	String string = fixText (enabled);
+	String string = fixText ();
 	if (string != null) {
 		TCHAR buffer = new TCHAR (getCodePage (), string, true);
 		OS.SetWindowText (handle, buffer);
@@ -221,19 +214,10 @@ void enableWidget (boolean enabled) {
 	}
 }
 
-String fixText (boolean enabled) {
-	/*
-	* Bug in Windows.  When a group control is right-to-left and
-	* is disabled, the first pixel of the text is clipped.  The
-	* fix is to add a space to both sides of the text.
-	*/
+String fixText () {
 	if (text.length() == 0) return null;
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-		String string = null;
-		if (!enabled && !OS.IsAppThemed ()) {
-			string = " " + text + " ";
-		}
-		return (style & SWT.FLIP_TEXT_DIRECTION) == 0 ? string : string != null ? LRE + string : LRE + text;
+		return (style & SWT.FLIP_TEXT_DIRECTION) == 0 ? null : LRE + text;
 	} else if ((style & SWT.FLIP_TEXT_DIRECTION) != 0) {
 		return RLE + text;
 	}
@@ -253,8 +237,7 @@ String fixText (boolean enabled) {
 	OS.GetTextMetrics (hDC, tm);
 	if (newFont != 0) OS.SelectObject (hDC, oldFont);
 	OS.ReleaseDC (handle, hDC);
-	int offsetY = OS.IsAppThemed () ? 0 : 1;
-	int x = CLIENT_INSET, y = tm.tmHeight + offsetY;
+	int x = CLIENT_INSET, y = tm.tmHeight;
 	int width = Math.max (0, rect.right - CLIENT_INSET * 2);
 	int height = Math.max (0, rect.bottom - y - CLIENT_INSET);
 	return new Rectangle (x, y, width, height);
@@ -418,7 +401,7 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	text = string;
 	if ((state & HAS_AUTO_DIRECTION) == 0 || !updateTextDirection (AUTO_TEXT_DIRECTION)) {
-		string = fixText (OS.IsWindowEnabled (handle));
+		string = fixText ();
 		TCHAR buffer = new TCHAR (getCodePage (), string == null ? text : string, true);
 		OS.SetWindowText (handle, buffer);
 	}
@@ -427,7 +410,7 @@ public void setText (String string) {
 @Override
 boolean updateTextDirection(int textDirection) {
 	if (super.updateTextDirection(textDirection)) {
-		String string = fixText (OS.IsWindowEnabled (handle));
+		String string = fixText ();
 		TCHAR buffer = new TCHAR (getCodePage (), string == null ? text : string, true);
 		OS.SetWindowText (handle, buffer);
 		return true;
@@ -510,7 +493,7 @@ LRESULT WM_PAINT (long wParam, long lParam) {
 	LRESULT result = super.WM_PAINT(wParam, lParam);
 
 	if (hasCustomForeground() && text.length () != 0) {
-		String string = fixText (false);
+		String string = fixText ();
 		char [] buffer = (string == null ? text : string).toCharArray ();
 
 		// We cannot use BeginPaint and EndPaint, because that removes the group border
@@ -553,13 +536,10 @@ LRESULT WM_PRINTCLIENT (long wParam, long lParam) {
 	* BS_GROUP, there is no problem.  The fix is to save
 	* and restore the current font.
 	*/
-	if (OS.IsAppThemed ()) {
-		int nSavedDC = OS.SaveDC (wParam);
-		long code = callWindowProc (handle, OS.WM_PRINTCLIENT, wParam, lParam);
-		OS.RestoreDC (wParam, nSavedDC);
-		return new LRESULT (code);
-	}
-	return result;
+	int nSavedDC = OS.SaveDC (wParam);
+	long code = callWindowProc (handle, OS.WM_PRINTCLIENT, wParam, lParam);
+	OS.RestoreDC (wParam, nSavedDC);
+	return new LRESULT (code);
 }
 
 @Override
@@ -577,9 +557,7 @@ LRESULT WM_UPDATEUISTATE (long wParam, long lParam) {
 	boolean redraw = findImageControl () != null;
 	if (!redraw) {
 		if ((state & THEME_BACKGROUND) != 0) {
-			if (OS.IsAppThemed ()) {
-				redraw = findThemeControl () != null;
-			}
+			redraw = findThemeControl () != null;
 		}
 		if (!redraw) redraw = findBackgroundControl () != null;
 	}

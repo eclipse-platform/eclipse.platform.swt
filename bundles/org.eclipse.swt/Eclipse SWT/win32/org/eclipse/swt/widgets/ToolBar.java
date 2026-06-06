@@ -136,9 +136,7 @@ public ToolBar (Composite parent, int style) {
 		* not lay out properly.  The work around does not run
 		* in this case.
 		*/
-		if (OS.IsAppThemed ()) {
-			if ((style & SWT.RIGHT) != 0) bits |= OS.TBSTYLE_LIST;
-		}
+		if ((style & SWT.RIGHT) != 0) bits |= OS.TBSTYLE_LIST;
 		OS.SetWindowLong (handle, OS.GWL_STYLE, bits | OS.CCS_VERT);
 	} else {
 		this.style |= SWT.HORIZONTAL;
@@ -336,24 +334,6 @@ Widget [] computeTabList () {
 void createHandle () {
 	super.createHandle ();
 	state &= ~CANVAS;
-
-	/*
-	* Feature in Windows.  When TBSTYLE_FLAT is used to create
-	* a flat toolbar, for some reason TBSTYLE_TRANSPARENT is
-	* also set.  This causes the toolbar to flicker when it is
-	* moved or resized.  The fix is to clear TBSTYLE_TRANSPARENT.
-	*
-	* NOTE:  This work around is unnecessary on XP.  There is no
-	* flickering and clearing the TBSTYLE_TRANSPARENT interferes
-	* with the XP theme.
-	*/
-	if ((style & SWT.FLAT) != 0) {
-		if (!OS.IsAppThemed ()) {
-			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-			bits &= ~OS.TBSTYLE_TRANSPARENT;
-			OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
-		}
-	}
 
 	/*
 	* Feature in Windows.  Despite the fact that the
@@ -708,35 +688,33 @@ void layoutItems () {
 	* not lay out properly.  The work around does not run
 	* in this case.
 	*/
-	if (OS.IsAppThemed ()) {
-		if ((style & SWT.RIGHT) != 0 && (style & SWT.VERTICAL) == 0) {
-			boolean hasText = false, hasImage = false;
-			for (ToolItem item : items) {
-				if (item != null) {
-					if (!hasText) hasText = item.text.length () != 0;
-					if (!hasImage) hasImage = item.image != null;
-					if (hasText && hasImage) break;
-				}
+	if ((style & SWT.RIGHT) != 0 && (style & SWT.VERTICAL) == 0) {
+		boolean hasText = false, hasImage = false;
+		for (ToolItem item : items) {
+			if (item != null) {
+				if (!hasText) hasText = item.text.length () != 0;
+				if (!hasImage) hasImage = item.image != null;
+				if (hasText && hasImage) break;
 			}
-			int oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE), newBits = oldBits;
-			if (hasText && hasImage) {
-				newBits |= OS.TBSTYLE_LIST;
-			} else {
-				newBits &= ~OS.TBSTYLE_LIST;
-			}
-			if (newBits != oldBits) {
-				setDropDownItems (false);
-				OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
-				/*
-				* Feature in Windows.  For some reason, when the style
-				* is changed to TBSTYLE_LIST, Windows does not lay out
-				* the tool items.  The fix is to use WM_SETFONT to force
-				* the tool bar to redraw and lay out.
-				*/
-				long hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
-				OS.SendMessage (handle, OS.WM_SETFONT, hFont, 0);
-				setDropDownItems (true);
-			}
+		}
+		int oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE), newBits = oldBits;
+		if (hasText && hasImage) {
+			newBits |= OS.TBSTYLE_LIST;
+		} else {
+			newBits &= ~OS.TBSTYLE_LIST;
+		}
+		if (newBits != oldBits) {
+			setDropDownItems (false);
+			OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
+			/*
+			* Feature in Windows.  For some reason, when the style
+			* is changed to TBSTYLE_LIST, Windows does not lay out
+			* the tool items.  The fix is to use WM_SETFONT to force
+			* the tool bar to redraw and lay out.
+			*/
+			long hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+			OS.SendMessage (handle, OS.WM_SETFONT, hFont, 0);
+			setDropDownItems (true);
 		}
 	}
 
@@ -747,44 +725,42 @@ void layoutItems () {
 	 * This affects every button in the tool bar and makes the preferred height too big.
 	 * The fix is to set the TBSTYLE_LIST, so that Windows can condense the unused space.
 	 */
-	if (OS.IsAppThemed()) {
-		if ((style & SWT.RIGHT) == 0 && (style & SWT.HORIZONTAL) != 0) {
-			boolean hasText = false, hasImage = false, hasTextAndImageInSingleItem = false;
-			for (ToolItem item : items) {
-				if (item != null) {
-					boolean itemHasText = false, itemHasImage = false;
-					itemHasText = item.text.length() != 0;
-					itemHasImage = item.image != null;
-					if (!hasText) {
-						hasText = itemHasText;
-					}
-					if (!hasImage) {
-						hasImage = itemHasImage;
-					}
-					if (itemHasText && itemHasImage) {
-						hasTextAndImageInSingleItem = true;
-						break;
-					}
+	if ((style & SWT.RIGHT) == 0 && (style & SWT.HORIZONTAL) != 0) {
+		boolean hasText = false, hasImage = false, hasTextAndImageInSingleItem = false;
+		for (ToolItem item : items) {
+			if (item != null) {
+				boolean itemHasText = false, itemHasImage = false;
+				itemHasText = item.text.length() != 0;
+				itemHasImage = item.image != null;
+				if (!hasText) {
+					hasText = itemHasText;
+				}
+				if (!hasImage) {
+					hasImage = itemHasImage;
+				}
+				if (itemHasText && itemHasImage) {
+					hasTextAndImageInSingleItem = true;
+					break;
 				}
 			}
-			int oldBits = OS.GetWindowLong(handle, OS.GWL_STYLE), newBits = oldBits;
-			if (hasText && hasImage && !hasTextAndImageInSingleItem) {
-				newBits |= OS.TBSTYLE_LIST;
-			} else {
-				newBits &= ~OS.TBSTYLE_LIST;
-			}
-			if (newBits != oldBits) {
-				setDropDownItems(false);
-				OS.SetWindowLong(handle, OS.GWL_STYLE, newBits);
-				/*
-				 * Feature in Windows. For some reason, when the style is changed to
-				 * TBSTYLE_LIST, Windows does not lay out the tool items. The fix is to use
-				 * WM_SETFONT to force the tool bar to redraw and lay out.
-				 */
-				long hFont = OS.SendMessage(handle, OS.WM_GETFONT, 0, 0);
-				OS.SendMessage(handle, OS.WM_SETFONT, hFont, 0);
-				setDropDownItems(true);
-			}
+		}
+		int oldBits = OS.GetWindowLong(handle, OS.GWL_STYLE), newBits = oldBits;
+		if (hasText && hasImage && !hasTextAndImageInSingleItem) {
+			newBits |= OS.TBSTYLE_LIST;
+		} else {
+			newBits &= ~OS.TBSTYLE_LIST;
+		}
+		if (newBits != oldBits) {
+			setDropDownItems(false);
+			OS.SetWindowLong(handle, OS.GWL_STYLE, newBits);
+			/*
+			 * Feature in Windows. For some reason, when the style is changed to
+			 * TBSTYLE_LIST, Windows does not lay out the tool items. The fix is to use
+			 * WM_SETFONT to force the tool bar to redraw and lay out.
+			 */
+			long hFont = OS.SendMessage(handle, OS.WM_GETFONT, 0, 0);
+			OS.SendMessage(handle, OS.WM_SETFONT, hFont, 0);
+			setDropDownItems(true);
 		}
 	}
 
@@ -957,28 +933,6 @@ void setBackgroundPixel (int pixel) {
 }
 
 void setBackgroundTransparent (boolean transparent) {
-	/*
-	* Feature in Windows.  When TBSTYLE_TRANSPARENT is set
-	* in a tool bar that is drawing a background, images in
-	* the image list that include transparency information
-	* do not draw correctly.  The fix is to clear and set
-	* TBSTYLE_TRANSPARENT depending on the background color.
-	*
-	* NOTE:  This work around is unnecessary on XP.  The
-	* TBSTYLE_TRANSPARENT style is never cleared on that
-	* platform.
-	*/
-	if ((style & SWT.FLAT) != 0) {
-		if (!OS.IsAppThemed ()) {
-			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-			if (!transparent && findBackgroundControl () == null) {
-				bits &= ~OS.TBSTYLE_TRANSPARENT;
-			} else {
-				bits |= OS.TBSTYLE_TRANSPARENT;
-			}
-			OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
-		}
-	}
 }
 
 @Override
@@ -1020,29 +974,27 @@ void setDropDownItems (boolean set) {
 	* NOTE:  This work around only runs when the tool bar contains
 	* only images.
 	*/
-	if (OS.IsAppThemed ()) {
-		boolean hasText = false, hasImage = false;
-		for (ToolItem item : items) {
-			if (item != null) {
-				if (!hasText) hasText = item.text.length () != 0;
-				if (!hasImage) hasImage = item.image != null;
-				if (hasText && hasImage) break;
-			}
+	boolean hasText = false, hasImage = false;
+	for (ToolItem item : items) {
+		if (item != null) {
+			if (!hasText) hasText = item.text.length () != 0;
+			if (!hasImage) hasImage = item.image != null;
+			if (hasText && hasImage) break;
 		}
-		if (hasImage && !hasText) {
-			for (ToolItem item : items) {
-				if (item != null && (item.style & SWT.DROP_DOWN) != 0) {
-					TBBUTTONINFO info = new TBBUTTONINFO ();
-					info.cbSize = TBBUTTONINFO.sizeof;
-					info.dwMask = OS.TBIF_STYLE;
-					OS.SendMessage (handle, OS.TB_GETBUTTONINFO, item.id, info);
-					if (set) {
-						info.fsStyle |= OS.BTNS_DROPDOWN;
-					} else {
-						info.fsStyle &= ~OS.BTNS_DROPDOWN;
-					}
-					OS.SendMessage (handle, OS.TB_SETBUTTONINFO, item.id, info);
+	}
+	if (hasImage && !hasText) {
+		for (ToolItem item : items) {
+			if (item != null && (item.style & SWT.DROP_DOWN) != 0) {
+				TBBUTTONINFO info = new TBBUTTONINFO ();
+				info.cbSize = TBBUTTONINFO.sizeof;
+				info.dwMask = OS.TBIF_STYLE;
+				OS.SendMessage (handle, OS.TB_GETBUTTONINFO, item.id, info);
+				if (set) {
+					info.fsStyle |= OS.BTNS_DROPDOWN;
+				} else {
+					info.fsStyle &= ~OS.BTNS_DROPDOWN;
 				}
+				OS.SendMessage (handle, OS.TB_SETBUTTONINFO, item.id, info);
 			}
 		}
 	}
@@ -1314,27 +1266,10 @@ void updateOrientation () {
 
 @Override
 int widgetStyle () {
-	int bits = super.widgetStyle () | OS.CCS_NORESIZE | OS.TBSTYLE_TOOLTIPS | OS.TBSTYLE_CUSTOMERASE;
-	if (OS.IsAppThemed ()) bits |= OS.TBSTYLE_TRANSPARENT;
+	int bits = super.widgetStyle () | OS.CCS_NORESIZE | OS.TBSTYLE_TOOLTIPS | OS.TBSTYLE_CUSTOMERASE | OS.TBSTYLE_TRANSPARENT;
 	if ((style & SWT.SHADOW_OUT) == 0) bits |= OS.CCS_NODIVIDER;
 	if ((style & SWT.WRAP) != 0) bits |= OS.TBSTYLE_WRAPABLE;
 	if ((style & SWT.FLAT) != 0) bits |= OS.TBSTYLE_FLAT;
-	/*
-	* Feature in Windows.  When a tool bar has the style
-	* TBSTYLE_LIST and has a drop down item, Window leaves
-	* too much padding around the button.  This affects
-	* every button in the tool bar and makes the preferred
-	* height too big.  The fix is to set the TBSTYLE_LIST
-	* when the tool bar contains both text and images.
-	*
-	* NOTE: Tool bars with CCS_VERT must have TBSTYLE_LIST
-	* set before any item is added or the tool bar does
-	* not lay out properly.  The work around does not run
-	* in this case.
-	*/
-	if (!OS.IsAppThemed ()) {
-		if ((style & SWT.RIGHT) != 0) bits |= OS.TBSTYLE_LIST;
-	}
 	return bits;
 }
 

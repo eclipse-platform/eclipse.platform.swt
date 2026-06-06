@@ -723,14 +723,6 @@ Rectangle computeTrimInPixels (int x, int y, int width, int height) {
 		trim.y -= menuBarHeight;
 		trim.height += menuBarHeight;
 	}
-	if (GTK.GTK4 && OS.isWayland()) {
-		long titlebar = GTK4.gtk_window_get_titlebar(shellHandle);
-		if (titlebar != 0) {
-			int titleBarHeight = GTK4.gtk_widget_get_height (titlebar);
-			trim.y -= titleBarHeight;
-			trim.height += titleBarHeight;
-		}
-	}
 	return trim;
 }
 
@@ -971,6 +963,7 @@ void hookEvents () {
 		long gdkSurface = gtk_widget_get_surface (shellHandle);
 		OS.g_signal_connect (gdkSurface, OS.notify_state, display.notifyProc, shellHandle);
 		OS.g_signal_connect (gdkSurface, OS.compute_size, display.computeSizeProc, shellHandle);
+		OS.g_signal_connect (gdkSurface, OS.layout, display.layoutProc, shellHandle);
 		OS.g_signal_connect(shellHandle, OS.notify_default_height, display.notifyProc, Widget.NOTIFY_DEFAULT_HEIGHT);
 		OS.g_signal_connect(shellHandle, OS.notify_default_width, display.notifyProc, Widget.NOTIFY_DEFAULT_WIDTH);
 		OS.g_signal_connect(shellHandle, OS.notify_maximized, display.notifyProc, Widget.NOTIFY_MAXIMIZED);
@@ -1812,7 +1805,6 @@ long gtk3_key_press_event (long widget, long event) {
 @Override
 long gtk_size_allocate (long widget, long allocation) {
 	int width, height;
-	GdkRectangle monitorSize = new GdkRectangle();
 	int[] widthA = new int [1];
 	int[] heightA = new int [1];
 
@@ -1840,11 +1832,14 @@ long gtk_size_allocate (long widget, long allocation) {
 				heightA[0] = Math.max(1, heightA[0] - headerNaturalHeight[0]);
 			}
 		} else {
-			long display = GDK.gdk_display_get_default();
-			long monitor = GDK.gdk_display_get_monitor_at_surface(display, paintSurface());
-			GDK.gdk_monitor_get_geometry(monitor, monitorSize);
-			widthA[0] = monitorSize.width;
-			heightA[0] = monitorSize.height - headerNaturalHeight[0];
+			/*
+			 * For maximized windows, neither gtk_window_get_default_size() nor
+			 * gdk_surface_get_width/height() have the new dimensions yet when
+			 * notify::maximized fires. The GdkSurface::layout signal fires
+			 * synchronously after the compositor commits the new allocation;
+			 * gtk_layout() handles the resize from there.
+			 */
+			return 0;
 		}
 	} else {
 		GTK3.gtk_window_get_size(shellHandle, widthA, heightA);
@@ -1862,6 +1857,37 @@ long gtk_size_allocate (long widget, long allocation) {
 		resizeBounds (width, height, true); //this is called to resize child widgets when the shell is resized.
 	}
 	return 0;
+}
+
+@Override
+void gtk_layout (long surface, int surfaceWidth, int surfaceHeight) {
+	/*
+	 * Used exclusively for the maximized case:
+	 * notify::maximized fires before the compositor commits the new size, so
+	 * gtk_size_allocate returns 0 early for maximized windows and defers here.
+	 *
+	 * For non-maximized resizes, sizing is already handled correctly via
+	 * gtk_window_get_default_size, so those are skipped here to avoid overriding
+	 * with different surface dimensions.
+	 *
+	 * Surface width and height - total GTK window size including the header bar.
+	 */
+	if (!GTK4.gtk_window_is_maximized(shellHandle)) return;
+
+	long header = GTK4.gtk_window_get_titlebar(shellHandle);
+	int headerH = 0;
+	if (header != 0) {
+		int[] headerNaturalHeight = new int[1];
+		GTK4.gtk_widget_measure(header, GTK.GTK_ORIENTATION_VERTICAL, -1, null, headerNaturalHeight, null, null);
+		headerH = headerNaturalHeight[0];
+	}
+	int newWidth = surfaceWidth;
+	int newHeight = Math.max(1, surfaceHeight - headerH);
+	if ((!resized || oldWidth != newWidth || oldHeight != newHeight) && newWidth > 0) {
+		oldWidth = newWidth;
+		oldHeight = newHeight;
+		resizeBounds(newWidth, newHeight, true);
+	}
 }
 
 private void updateDecorations(long gdkResource) {
@@ -2345,25 +2371,21 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 		if (geometry.getMaxHeight() > 0) {
 			height = Math.min(height, geometry.getMaxHeight());
 		}
-		/*
-		* If the shell is created without a RESIZE style bit, and the
-		* minWidth/minHeight/maxWidth/maxHeight have been set, allow the resize.
-		*/
-		if ((style & SWT.RESIZE) != 0 || (geometry.getMinHeight()  != 0 || geometry.getMinWidth()  != 0 || geometry.getMaxHeight()  != 0 || geometry.getMaxWidth()  != 0)) {
-			if (GTK.GTK4) {
-				/*
-				 * On GTK4, GtkWindow size includes the header bar. In order to keep window size allocation of the client area
-				 * consistent with previous versions of SWT, we need to include the header bar height in addition to the given height value.
-				 */
-				long header = GTK4.gtk_window_get_titlebar(shellHandle);
-				int[] headerNaturalHeight = new int[1];
-				if (header != 0) {
-					GTK4.gtk_widget_measure(header, GTK.GTK_ORIENTATION_VERTICAL, -1, null, headerNaturalHeight, null, null);
-				}
-				GTK.gtk_window_set_default_size(shellHandle, width, height + headerNaturalHeight[0]);
-			} else {
-				GTK3.gtk_window_resize (shellHandle, width, height);
+		if (GTK.GTK4) {
+			/*
+			 * GtkWindow size includes the header bar. To stay consistent with previous
+			 * versions of SWT, header bar height has to be added to the given height value.
+			 * This applies to all shell styles that have a title bar (e.g. SHELL_TRIM,
+			 * DIALOG_TRIM).
+			 */
+			long header = GTK4.gtk_window_get_titlebar(shellHandle);
+			int[] headerNaturalHeight = new int[1];
+			if (header != 0) {
+				GTK4.gtk_widget_measure(header, GTK.GTK_ORIENTATION_VERTICAL, -1, null, headerNaturalHeight, null, null);
 			}
+			GTK.gtk_window_set_default_size(shellHandle, width, height + headerNaturalHeight[0]);
+		} else if ((style & SWT.RESIZE) != 0 || (geometry.getMinHeight()  != 0 || geometry.getMinWidth()  != 0 || geometry.getMaxHeight()  != 0 || geometry.getMaxWidth()  != 0)) {
+			GTK3.gtk_window_resize (shellHandle, width, height);
 		}
 		boolean changed = width != oldWidth || height != oldHeight;
 		if (changed) {
@@ -2520,19 +2542,17 @@ void setInitialBounds() {
 				height = (int) (dest.height * SHELL_TO_MONITOR_RATIO);
 			}
 
-			if ((style & SWT.RESIZE) != 0) {
-				/*
-				 * On GTK4, GtkWindow size includes the header bar. In order to keep window size allocation of the client area
-				 * consistent with previous versions of SWT, we need to include the header bar height in addition to the given height value.
-				 */
-				long header = GTK4.gtk_window_get_titlebar(shellHandle);
-				int[] headerNaturalHeight = new int[1];
-				if (header != 0) {
-					GTK4.gtk_widget_measure(header, GTK.GTK_ORIENTATION_VERTICAL, -1, null, headerNaturalHeight, null, null);
-				}
-
-				GTK.gtk_window_set_default_size(shellHandle, width, height + headerNaturalHeight[0]);
+			/*
+			 * GtkWindow size includes the header bar. To stay
+			 * consistent with previous versions of SWT the header bar height is added the given height value.
+			 * This applies to all shell styles.
+			 */
+			long header = GTK4.gtk_window_get_titlebar(shellHandle);
+			int[] headerNaturalHeight = new int[1];
+			if (header != 0) {
+				GTK4.gtk_widget_measure(header, GTK.GTK_ORIENTATION_VERTICAL, -1, null, headerNaturalHeight, null, null);
 			}
+			GTK.gtk_window_set_default_size(shellHandle, width, height + headerNaturalHeight[0]);
 		} else {
 			long display = GDK.gdk_display_get_default();
 			if (display != 0) {
@@ -3158,6 +3178,24 @@ int trimHeight () {
 	// Shells with both ON_TOP and RESIZE set only use border, not trim.
 	// See bug 319612.
 	if (isCustomResize()) return 0;
+	if (GTK.GTK4 && OS.isWayland()) {
+		/*
+		 * On GTK4 Wayland, window decorations are implemented as GTK CSD widgets. The
+		 * title bar (GtkHeaderBar) is part of the GtkWindow and its height must be
+		 * queried dynamically. Use gtk_widget_get_height() if already allocated,
+		 * otherwise gtk_widget_measure() which works even before the window is
+		 * realized/shown.
+		 */
+		long titlebar = GTK4.gtk_window_get_titlebar(shellHandle);
+		if (titlebar != 0) {
+			int height = GTK4.gtk_widget_get_height(titlebar);
+			if (height > 0) return height;
+			int[] naturalHeight = new int[1];
+			GTK4.gtk_widget_measure(titlebar, GTK.GTK_ORIENTATION_VERTICAL, -1, null, naturalHeight, null, null);
+			return naturalHeight[0];
+		}
+		return 0;
+	}
 	boolean hasTitle = false, hasResize = false, hasBorder = false;
 	hasTitle = (style & (SWT.MIN | SWT.MAX | SWT.TITLE | SWT.MENU)) != 0;
 	hasResize = (style & SWT.RESIZE) != 0;
@@ -3178,6 +3216,10 @@ int trimWidth () {
 	// Shells with both ON_TOP and RESIZE set only use border, not trim.
 	// See bug 319612.
 	if (isCustomResize()) return 0;
+	if (GTK.GTK4 && OS.isWayland()) {
+		// On GTK4 Wayland CSD, the title bar adds height only.
+		return 0;
+	}
 	boolean hasTitle = false, hasResize = false, hasBorder = false;
 	hasTitle = (style & (SWT.MIN | SWT.MAX | SWT.TITLE | SWT.MENU)) != 0;
 	hasResize = (style & SWT.RESIZE) != 0;

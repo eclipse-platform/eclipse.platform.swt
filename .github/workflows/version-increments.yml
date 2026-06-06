@@ -5,6 +5,9 @@ on:
     workflows: [ 'Pull-Request Checks' ]
     types: [ completed ]
 
+permissions:
+  contents: read
+
 jobs:
   publish-version-check-results:
     uses: eclipse-platform/eclipse.platform.releng.aggregator/.github/workflows/publishVersionCheckResults.yml@master

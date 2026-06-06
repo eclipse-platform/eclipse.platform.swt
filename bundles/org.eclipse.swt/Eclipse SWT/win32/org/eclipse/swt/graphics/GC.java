@@ -19,6 +19,7 @@ import java.util.function.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.Image.*;
+import org.eclipse.swt.graphics.Region.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gdip.*;
 import org.eclipse.swt.internal.win32.*;
@@ -3940,16 +3941,10 @@ public void getClipping (Region region) {
 }
 
 private class GetClippingOperation extends Operation {
-	private final Map<Integer, Long> zoomToRegionHandle = new HashMap<>();
+	private final ZoomToRegionMap zoomToRegionHandle = new ZoomToRegionMap();
 
 	public GetClippingOperation(Region region) {
-		region.set(zoom -> {
-			if (!zoomToRegionHandle.containsKey(zoom)) {
-				System.err.println("No clipping handle for zoom " + zoom + " has been created on this GC");
-				return zoomToRegionHandle.values().iterator().next();
-			}
-			return zoomToRegionHandle.get(zoom);
-		}, getZoom());
+		region.set(zoomToRegionHandle, getZoom());
 	}
 
 	// Whenever the GC handle is recalculated for a new zoom, we compute and store the clipping
@@ -3957,14 +3952,11 @@ private class GetClippingOperation extends Operation {
 	// that clipping is set can retrieve it from the storage when required.
 	@Override
 	void apply() {
-		zoomToRegionHandle.computeIfAbsent(getZoom(), __ -> getClippingRegion());
+		zoomToRegionHandle.register(getZoom(), () -> getClippingRegion());
 	}
 
 	@Override
 	void disposeAll() {
-		for (long handle : zoomToRegionHandle.values()) {
-			OS.DeleteObject(handle);
-		}
 		super.disposeAll();
 	}
 }

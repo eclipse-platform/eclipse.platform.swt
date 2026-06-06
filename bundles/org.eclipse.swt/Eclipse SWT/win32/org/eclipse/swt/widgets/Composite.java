@@ -1445,23 +1445,21 @@ LRESULT WM_NCHITTEST (long wParam, long lParam) {
 	* and the point is not in the client area, and redraw
 	* the trim, which somehow fixes the next WM_NCHITTEST.
 	*/
-	if (OS.IsAppThemed ()) {
-		if ((state & CANVAS)!= 0) {
-			long code = callWindowProc (handle, OS.WM_NCHITTEST, wParam, lParam);
-			if (code == OS.HTCLIENT) {
-				RECT rect = new RECT ();
-				OS.GetClientRect (handle, rect);
-				POINT pt = new POINT ();
-				pt.x = OS.GET_X_LPARAM (lParam);
-				pt.y = OS.GET_Y_LPARAM (lParam);
-				OS.MapWindowPoints (0, handle, pt, 1);
-				if (!OS.PtInRect (rect, pt)) {
-					int flags = OS.RDW_FRAME | OS.RDW_INVALIDATE;
-					OS.RedrawWindow (handle, null, 0, flags);
-				}
+	if ((state & CANVAS)!= 0) {
+		long code = callWindowProc (handle, OS.WM_NCHITTEST, wParam, lParam);
+		if (code == OS.HTCLIENT) {
+			RECT rect = new RECT ();
+			OS.GetClientRect (handle, rect);
+			POINT pt = new POINT ();
+			pt.x = OS.GET_X_LPARAM (lParam);
+			pt.y = OS.GET_Y_LPARAM (lParam);
+			OS.MapWindowPoints (0, handle, pt, 1);
+			if (!OS.PtInRect (rect, pt)) {
+				int flags = OS.RDW_FRAME | OS.RDW_INVALIDATE;
+				OS.RedrawWindow (handle, null, 0, flags);
 			}
-			return new LRESULT (code);
 		}
+		return new LRESULT (code);
 	}
 	return result;
 }
@@ -1752,9 +1750,7 @@ LRESULT WM_SIZE (long wParam, long lParam) {
 				}
 			}
 		}
-		if (OS.IsAppThemed ()) {
-			if (findThemeControl () != null) redrawChildren ();
-		}
+		if (findThemeControl () != null) redrawChildren ();
 	}
 
 	/* Resize the embedded window */
@@ -1832,26 +1828,24 @@ LRESULT wmNCPaint (long hwnd, long wParam, long lParam) {
 	if (result != null) return result;
 	long borderHandle = borderHandle ();
 	if ((state & CANVAS) != 0 || (hwnd == borderHandle && handle != borderHandle)) {
-		if (OS.IsAppThemed ()) {
-			int bits1 = OS.GetWindowLong (hwnd, OS.GWL_EXSTYLE);
-			if ((bits1 & OS.WS_EX_CLIENTEDGE) != 0) {
-				long code = 0;
-				int bits2 = OS.GetWindowLong (hwnd, OS.GWL_STYLE);
-				if ((bits2 & (OS.WS_HSCROLL | OS.WS_VSCROLL)) != 0) {
-					code = callWindowProc (hwnd, OS.WM_NCPAINT, wParam, lParam);
-				}
-				long hDC = OS.GetWindowDC (hwnd);
-				RECT rect = new RECT ();
-				OS.GetWindowRect (hwnd, rect);
-				rect.right -= rect.left;
-				rect.bottom -= rect.top;
-				rect.left = rect.top = 0;
-				int border = getSystemMetrics (OS.SM_CXEDGE);
-				OS.ExcludeClipRect (hDC, border, border, rect.right - border, rect.bottom - border);
-				OS.DrawThemeBackground(display.hEditTheme(nativeZoom), hDC, OS.EP_EDITTEXT, OS.ETS_NORMAL, rect, null);
-				OS.ReleaseDC (hwnd, hDC);
-				return new LRESULT (code);
+		int bits1 = OS.GetWindowLong (hwnd, OS.GWL_EXSTYLE);
+		if ((bits1 & OS.WS_EX_CLIENTEDGE) != 0) {
+			long code = 0;
+			int bits2 = OS.GetWindowLong (hwnd, OS.GWL_STYLE);
+			if ((bits2 & (OS.WS_HSCROLL | OS.WS_VSCROLL)) != 0) {
+				code = callWindowProc (hwnd, OS.WM_NCPAINT, wParam, lParam);
 			}
+			long hDC = OS.GetWindowDC (hwnd);
+			RECT rect = new RECT ();
+			OS.GetWindowRect (hwnd, rect);
+			rect.right -= rect.left;
+			rect.bottom -= rect.top;
+			rect.left = rect.top = 0;
+			int border = getSystemMetrics (OS.SM_CXEDGE);
+			OS.ExcludeClipRect (hDC, border, border, rect.right - border, rect.bottom - border);
+			OS.DrawThemeBackground(display.hEditTheme(nativeZoom), hDC, OS.EP_EDITTEXT, OS.ETS_NORMAL, rect, null);
+			OS.ReleaseDC (hwnd, hDC);
+			return new LRESULT (code);
 		}
 	}
 	return result;

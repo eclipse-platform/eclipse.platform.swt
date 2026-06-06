@@ -412,36 +412,6 @@ LRESULT WM_GETDLGCODE (long wParam, long lParam) {
 LRESULT WM_SIZE (long wParam, long lParam) {
 	LRESULT result = super.WM_SIZE (wParam, lParam);
 	if (result != null) return result;
-	/*
-	* Feature in Windows.  When a progress bar with the style
-	* PBS_MARQUEE becomes too small, the animation (currently
-	* a small bar moving from right to left) does not have
-	* enough space to draw.  The result is that the progress
-	* bar does not appear to be moving.  The fix is to detect
-	* this case, clear the PBS_MARQUEE style and emulate the
-	* animation using PBM_STEPIT.
-	*
-	* NOTE:  This only happens on Window XP.
-	*/
-	if ((style & SWT.INDETERMINATE) != 0) {
-		if (!OS.IsAppThemed()) {
-			forceResize ();
-			RECT rect = new RECT ();
-			OS.GetClientRect (handle, rect);
-			int oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-			int newBits = oldBits;
-			if (rect.right - rect.left < MINIMUM_WIDTH) {
-				newBits &= ~OS.PBS_MARQUEE;
-			} else {
-				newBits |= OS.PBS_MARQUEE;
-			}
-			if (newBits != oldBits) {
-				stopTimer ();
-				OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
-				startTimer ();
-			}
-		}
-	}
 	return result;
 }
 

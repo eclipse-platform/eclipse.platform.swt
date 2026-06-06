@@ -1319,16 +1319,7 @@ public void setVisible (boolean visible) {
 				oldWidth = rect.width;
 				oldHeight = rect.height;
 			}
-			/*
-			* Bug in Windows.  On Vista using the Classic theme,
-			* when the window is hung and UpdateWindow() is called,
-			* nothing is drawn, and outstanding WM_PAINTs are cleared.
-			* This causes pixel corruption.  The fix is to avoid calling
-			* update on hung windows.
-			*/
-			if (OS.IsAppThemed () || !OS.IsHungAppWindow (handle)) {
-				OS.UpdateWindow (handle);
-			}
+			OS.UpdateWindow (handle);
 		}
 	} else {
 		if (OS.IsIconic (handle)) {

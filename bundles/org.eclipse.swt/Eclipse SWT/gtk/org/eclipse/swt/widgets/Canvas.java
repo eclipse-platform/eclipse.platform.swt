@@ -182,17 +182,34 @@ void gtk4_draw (long widget, long cairo, Rectangle bounds) {
 	drawCaretInFocus(cairo);
 }
 
+@Override
+boolean hooksPaint() {
+	if (GTK.GTK4 && caret != null && caret.isShowing && caret.isFocusCaret()) return true;
+	return super.hooksPaint();
+}
+
 void drawCaretInFocus(long cairo) {
-	/*
-	 *  blink is needed to be checked as gtk_draw() signals sent from other parts of the canvas
-	 *  can interfere with the blinking state. This will ensure that we are only draw/redrawing the
-	 *  caret when it is intended to. See Bug 517487.
-	 *
-	 *  Additionally, only draw the caret if it has focus. See bug 528819.
-	 */
-	if (caret != null && blink == true && caret.isFocusCaret()) {
-		drawCaret(cairo);
-		blink = false;
+	if (GTK.GTK4) {
+		/*
+		 * Drawing the caret is a matter of painting it into the snapshot whenever
+		 * isShowing is true. The blink effect is driven by the timer toggling isShowing
+		 * and queuing a redraw.
+		 */
+		if (caret != null && caret.isFocusCaret() && caret.isShowing) {
+			drawCaret(cairo);
+		}
+	} else {
+		/*
+		 * blink is needed to be checked as gtk_draw() signals sent from other parts of
+		 * the canvas can interfere with the blinking state. This will ensure that we
+		 * are only draw/redrawing the caret when it is intended to. See Bug 517487.
+		 *
+		 * Additionally, only draw the caret if it has focus. See bug 528819.
+		 */
+		if (caret != null && blink == true && caret.isFocusCaret()) {
+			drawCaret(cairo);
+			blink = false;
+		}
 	}
 }
 
@@ -200,14 +217,13 @@ private void drawCaret(long cairo) {
 	if(this.isDisposed()) return;
 	if (cairo == 0) error(SWT.ERROR_NO_HANDLES);
 
-	if (drawFlag) {
+	/*
+	 * The drawFlag toggle is a GTK3 mechanism only.
+	 */
+	if (drawFlag || GTK.GTK4) {
 		Cairo.cairo_save(cairo);
 
 		if (caret.image != null && !caret.image.isDisposed() && caret.image.mask == 0) {
-			if (!GTK.GTK4) {
-				Cairo.cairo_set_source_rgb(cairo, 1, 1, 1);
-			}
-			Cairo.cairo_set_operator(cairo, Cairo.CAIRO_OPERATOR_DIFFERENCE);
 			long surface = Cairo.cairo_get_target(cairo);
 			int nWidth = 0;
 			switch (Cairo.cairo_surface_get_type(surface)) {
@@ -221,23 +237,41 @@ private void drawCaret(long cairo) {
 			int nX = caret.x;
 			if ((style & SWT.MIRRORED) != 0) nX = getClientWidth () - nWidth - nX;
 			Cairo.cairo_translate(cairo, nX, caret.y);
+			if (GTK.GTK4) {
+				/*
+				 * The snapshot surface starts transparent, thus use CAIRO_OPERATOR_OVER with the image directly.
+				 */
+				Cairo.cairo_set_operator(cairo, Cairo.CAIRO_OPERATOR_OVER);
+			} else {
+				Cairo.cairo_set_source_rgb(cairo, 1, 1, 1);
+				Cairo.cairo_set_operator(cairo, Cairo.CAIRO_OPERATOR_DIFFERENCE);
+			}
 			Cairo.cairo_set_source_surface(cairo, caret.image.surface, 0, 0);
 			Cairo.cairo_paint(cairo);
 		} else {
-			if (!GTK.GTK4) {
-				Cairo.cairo_set_source_rgb(cairo, 1, 1, 1);
-			}
-			Cairo.cairo_set_operator(cairo, Cairo.CAIRO_OPERATOR_DIFFERENCE);
 			int nWidth = caret.width, nHeight = caret.height;
 			if (nWidth <= 0) nWidth = Caret.DEFAULT_WIDTH;
 			int nX = caret.x;
 			if ((style & SWT.MIRRORED) != 0) nX = getClientWidth () - nWidth - nX;
 			Cairo.cairo_rectangle(cairo, nX, caret.y, nWidth, nHeight);
+			if (GTK.GTK4) {
+				/*
+				 * The snapshot surface starts transparent, thus OVER with the widget's
+				 * foreground color instead so the caret is black on light themes and white on
+				 * dark themes.
+				 */
+				Color fg = getForeground();
+				Cairo.cairo_set_source_rgb(cairo, fg.getRed() / 255.0, fg.getGreen() / 255.0, fg.getBlue() / 255.0);
+				Cairo.cairo_set_operator(cairo, Cairo.CAIRO_OPERATOR_OVER);
+			} else {
+				Cairo.cairo_set_source_rgb(cairo, 1, 1, 1);
+				Cairo.cairo_set_operator(cairo, Cairo.CAIRO_OPERATOR_DIFFERENCE);
+			}
 		}
 
 		Cairo.cairo_fill(cairo);
 		Cairo.cairo_restore(cairo);
-		if (caret.embeddedInto == null) {
+		if (!GTK.GTK4 && caret.embeddedInto == null) {
 			drawFlag = false;
 		}
 	} else {
@@ -268,7 +302,7 @@ void gtk4_focus_enter_event(long handle, long event) {
 @Override
 void gtk4_focus_leave_event(long handle, long event) {
 	super.gtk4_focus_leave_event (handle, event);
-	if (caret != null) caret.setFocus ();
+	if (caret != null) caret.killFocus ();
 }
 
 @Override

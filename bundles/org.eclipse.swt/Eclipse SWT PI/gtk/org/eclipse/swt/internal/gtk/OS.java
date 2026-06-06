@@ -468,6 +468,7 @@ public class OS extends C {
 	public static final byte[] notify_theme_change = ascii("notify::gtk-application-prefer-dark-theme");
 	public static final byte[] response = ascii("response");
 	public static final byte[] compute_size = ascii("compute-size");
+	public static final byte[] layout = ascii("layout");
 
 	/** Properties */
 	public static final byte[] active = ascii("active");

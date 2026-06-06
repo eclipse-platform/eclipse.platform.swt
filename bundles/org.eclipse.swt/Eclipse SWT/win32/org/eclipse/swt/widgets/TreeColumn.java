@@ -371,8 +371,7 @@ public void pack () {
 	int flags = OS.DT_CALCRECT | OS.DT_NOPREFIX;
 	char [] buffer = text.toCharArray ();
 	OS.DrawText (hDC, buffer, buffer.length, rect, flags);
-	int headerWidth = rect.right - rect.left + DPIUtil.pointToPixel(Tree.HEADER_MARGIN, getAutoscalingZoom());
-	if (OS.IsAppThemed ()) headerWidth += DPIUtil.pointToPixel(Tree.HEADER_EXTRA, getAutoscalingZoom());
+	int headerWidth = rect.right - rect.left + DPIUtil.pointToPixel(Tree.HEADER_MARGIN + Tree.HEADER_EXTRA, getAutoscalingZoom());
 	if (image != null) {
 		Rectangle bounds = Win32DPIUtils.pointToPixel(image.getBounds(), getAutoscalingZoom());
 		headerWidth += bounds.width;
@@ -613,16 +612,14 @@ void setSortDirection (int direction) {
 				break;
 		}
 		OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, hdItem);
-		if (OS.IsAppThemed ()) {
-			long hwnd = parent.handle;
-			parent.forceResize ();
-			RECT rect = new RECT (), headerRect = new RECT ();
-			OS.GetClientRect (hwnd, rect);
-			OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect);
-			rect.left = headerRect.left;
-			rect.right = headerRect.right;
-			OS.InvalidateRect (hwnd, rect, true);
-		}
+		long hwnd = parent.handle;
+		parent.forceResize ();
+		RECT rect = new RECT (), headerRect = new RECT ();
+		OS.GetClientRect (hwnd, rect);
+		OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect);
+		rect.left = headerRect.left;
+		rect.right = headerRect.right;
+		OS.InvalidateRect (hwnd, rect, true);
 	}
 }
 
