@@ -1007,6 +1007,45 @@ public void test_textExtentLjava_lang_StringI_disabledLineDelimiter() {
 	gc.dispose();
 }
 
+/**
+ * @see <a href="https://github.com/eclipse-platform/eclipse.platform.swt/issues/3091">Issue 3091</a>
+ */
+@Test
+public void test_textExtentLjava_lang_StringI_lineDelimiterVariants() {
+	// 中 has no glyph in common Latin fonts; on Win32 this causes useGDIP() to
+	// return true, routing text through drawTextGDIP() / Graphics_DrawString.
+	String withLF   = "a中\nb";
+	String withCR   = "a中\rb";
+	String withCRLF = "a中\r\nb";
+	int flags = SWT.DRAW_DELIMITER;
+
+	gc.setAdvanced(false);
+	Point lfNonAdv   = gc.textExtent(withLF,   flags);
+	Point crNonAdv   = gc.textExtent(withCR,   flags);
+	Point crlfNonAdv = gc.textExtent(withCRLF, flags);
+
+	gc.setAdvanced(true);
+	Point lfAdv   = gc.textExtent(withLF,   flags);
+	Point crAdv   = gc.textExtent(withCR,   flags);
+	Point crlfAdv = gc.textExtent(withCRLF, flags);
+
+	// All three line-ending types must produce the same text height in non-advanced mode.
+	assertEquals(lfNonAdv.y, crNonAdv.y,
+			"Non-advanced: CR must produce the same height as LF with DRAW_DELIMITER");
+	assertEquals(lfNonAdv.y, crlfNonAdv.y,
+			"Non-advanced: CRLF must produce the same height as LF with DRAW_DELIMITER");
+
+	// Advanced mode must agree with non-advanced within minor rendering tolerance.
+	// On Win32, \r and \r\n must be normalised to \n before passing to
+	// Graphics_DrawString, which does not treat bare \r as a line delimiter.
+	assertTrue(Math.abs(lfAdv.y   - lfNonAdv.y)   <= 2,
+			"LF: advanced height must match non-advanced");
+	assertTrue(Math.abs(crAdv.y   - crNonAdv.y)   <= 2,
+			"CR: advanced height must match non-advanced");
+	assertTrue(Math.abs(crlfAdv.y - crlfNonAdv.y) <= 2,
+			"CRLF: advanced height must match non-advanced");
+}
+
 @Test
 public void test_toString() {
 	String s = gc.toString();
