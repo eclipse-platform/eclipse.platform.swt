@@ -3040,6 +3040,10 @@ private void drawTextGDIP(long gdipGraphics, String string, int x, int y, int fl
 	char[] buffer;
 	if ((flags & SWT.DRAW_DELIMITER) == 0) {
 		string = string.replaceAll("[\\r\\n]+", "");
+	} else {
+		// Graphics_DrawString only recognises \n as a line break, not bare \r.
+		// Normalise \r\n -> \n first, then lone \r -> \n (order matters).
+		string = string.replace("\r\n", "\n").replace("\r", "\n");
 	}
 	int length = string.length();
 	if (length != 0) {
