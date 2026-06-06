@@ -206,11 +206,6 @@ void _setText (String text) {
 		OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
 		OS.InvalidateRect (handle, null, true);
 	}
-	/*
-	* Bug in Windows.  When a Button control is right-to-left and
-	* is disabled, the first pixel of the text is clipped.  The fix
-	* is to append a space to the text.
-	*/
 	TCHAR buffer = new TCHAR (getCodePage (), text, true);
 	OS.SetWindowText (handle, buffer);
 	if ((state & HAS_AUTO_DIRECTION) != 0) {
