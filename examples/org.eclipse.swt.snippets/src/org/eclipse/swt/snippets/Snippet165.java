@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -44,7 +44,6 @@ public static void main (String [] args) {
 	shell.setLayout(new GridLayout());
 	final CTabFolder folder = new CTabFolder(shell, SWT.BORDER);
 	folder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-	folder.setSimple(false);
 	folder.setUnselectedImageVisible(false);
 	folder.setUnselectedCloseVisible(false);
 	for (int i = 0; i < 8; i++) {
