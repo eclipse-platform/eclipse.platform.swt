@@ -3569,7 +3569,6 @@ public void setSelectionBarThickness(int thickness) {
  */
 @Deprecated(forRemoval = true, since = "2026-06")
 public void setSimple(boolean simple) {
-	checkWidget();
 }
 /**
  * Sets the number of tabs that the CTabFolder should display
