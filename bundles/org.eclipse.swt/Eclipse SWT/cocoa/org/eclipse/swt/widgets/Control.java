@@ -2505,6 +2505,7 @@ Decorations menuShell () {
 
 @Override
 void scrollWheel (long id, long sel, long theEvent) {
+	if (display==null) return;
 	boolean handled = false;
 	if (id == view.id) {
 		NSEvent nsEvent = new NSEvent(theEvent);
