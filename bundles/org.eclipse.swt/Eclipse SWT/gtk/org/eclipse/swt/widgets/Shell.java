@@ -1299,14 +1299,6 @@ public boolean getMaximized () {
  */
 public Point getMinimumSize () {
 	checkWidget ();
-	if (GTK.GTK4) {
-		int[] widthP = new int[1];
-		int[] heightP = new int[1];
-		GTK4.gtk_widget_get_size_request(shellHandle, widthP, heightP);
-		int width = Math.max (1, widthP[0] + trimWidth ());
-		int height = Math.max (1, heightP[0] + trimHeight ());
-		return new Point (width, height);
-	}
 	int width = Math.max (1, geometry.getMinWidth() + trimWidth ());
 	int height = Math.max (1, geometry.getMinHeight() + trimHeight ());
 	return new Point (width, height);
@@ -2671,7 +2663,15 @@ public void setMinimumSize (int width, int height) {
 
 	if(GTK.GTK4) {
 		geometry.setMinSizeRequested(true);
-		GTK4.gtk_widget_set_size_request(shellHandle, width, height);
+		/*
+		 * Account for headerbar if one is there (CSD on wayland and non-CST on x11/xwayland).
+		 */
+		long header = GTK4.gtk_window_get_titlebar(shellHandle);
+		int[] headerNaturalHeight = new int[1];
+		if (header != 0) {
+			GTK4.gtk_widget_measure(header, GTK.GTK_ORIENTATION_VERTICAL, -1, null, headerNaturalHeight, null, null);
+		}
+		GTK4.gtk_widget_set_size_request(shellHandle, geometry.getMinWidth(), geometry.getMinHeight() + headerNaturalHeight[0]);
 		return;
 	}
 
