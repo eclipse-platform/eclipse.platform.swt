@@ -61,6 +61,12 @@ public class TreeDropTargetEffect extends DropTargetEffect {
 	long expandBeginTime;
 
 	/**
+	 * Tracks whether the drag-dest-row currently shown was set by this effect (via the feedback flags)
+	 * so it doesn't clear insertMark set via {@link org.eclipse.swt.widgets.Tree#setInsertMark}.
+	 */
+	private boolean ownsInsertMark;
+
+	/**
 	 * Creates a new <code>TreeDropTargetEffect</code> to handle the drag under effect on the specified
 	 * <code>Tree</code>.
 	 *
@@ -118,6 +124,7 @@ public class TreeDropTargetEffect extends DropTargetEffect {
 		Tree tree = (Tree) control;
 		long handle = tree.handle;
 		GTK.gtk_tree_view_set_drag_dest_row(handle, 0, GTK.GTK_TREE_VIEW_DROP_BEFORE);
+		ownsInsertMark = false;
 
 		scrollBeginTime = 0;
 		scrollIndex = -1;
@@ -214,11 +221,15 @@ public class TreeDropTargetEffect extends DropTargetEffect {
 			if ((effect & DND.FEEDBACK_INSERT_AFTER) != 0) position = GTK.GTK_TREE_VIEW_DROP_AFTER;
 			if (position != -1) {
 				GTK.gtk_tree_view_set_drag_dest_row(handle, path[0], position);
-			} else {
+				ownsInsertMark = true;
+			} else if (ownsInsertMark) {
+				// Only clear the drag-dest-row if set by the effect.
 				GTK.gtk_tree_view_set_drag_dest_row(handle, 0, GTK.GTK_TREE_VIEW_DROP_BEFORE);
+				ownsInsertMark = false;
 			}
-		} else {
+		} else if (ownsInsertMark) {
 			GTK.gtk_tree_view_set_drag_dest_row(handle, 0, GTK.GTK_TREE_VIEW_DROP_BEFORE);
+			ownsInsertMark = false;
 		}
 
 		if (path[0] != 0) GTK.gtk_tree_path_free (path [0]);
