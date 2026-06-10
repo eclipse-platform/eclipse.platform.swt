@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, 2025 Red Hat and others. All rights reserved.
+ * Copyright (c) 2019, 2026 Red Hat and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -306,16 +306,19 @@ public class NativeImageLoader {
 			ob = 0;
 		}
 
-		// We use alpha by default now so all images saved are 32 bit, if there is no
-		// alpha we set it to 255
-		int bytes_per_pixel = 4;
+		// Build the pixel buffer for the GdkPixbuf. Formats that support an alpha
+		// channel are saved as 32 bit RGBA, all others as 24 bit RGB. The pixbuf must
+		// not carry an alpha channel for formats that don't support it (e.g. JPEG),
+		// otherwise the encoder fails and produces an empty result. When the format
+		// supports alpha but the source has none, the alpha channel is filled with 255.
+		int bytes_per_pixel = alpha_supported ? 4 : 3;
 		byte[] srcData = new byte[(width * height * bytes_per_pixel)];
 
 		int alpha_offset = n_channels == 4 ? 1 : 0;
-		if (has_alpha) {
+		if (alpha_supported) {
 			for (int y = 0, offset = 0, new_offset = 0, alphaIndex = 0; y < height; y++) {
 				for (int x = 0; x < width; x++, offset += n_channels, new_offset += bytes_per_pixel) {
-					byte a = imgData.alphaData[alphaIndex++];
+					byte a = has_alpha ? imgData.alphaData[alphaIndex++] : (byte) 255;
 					byte r = imgData.data[offset + alpha_offset + or];
 					byte g = imgData.data[offset + alpha_offset + og];
 					byte b = imgData.data[offset + alpha_offset + ob];
@@ -333,12 +336,11 @@ public class NativeImageLoader {
 					byte r = imgData.data[offset + alpha_offset + or];
 					byte g = imgData.data[offset + alpha_offset + og];
 					byte b = imgData.data[offset + alpha_offset + ob];
-					byte a = (byte) 255;
 
+					// GdkPixbuf expects RGB format
 					srcData[new_offset + db] = b;
 					srcData[new_offset + dg] = g;
 					srcData[new_offset + dr] = r;
-					srcData[new_offset + da] = a;
 				}
 			}
 		}
@@ -347,8 +349,7 @@ public class NativeImageLoader {
 		long buffer_ptr = OS.g_malloc(srcData.length);
 		C.memmove(buffer_ptr, srcData, srcData.length);
 		int rowstride = srcData.length / height;
-		// We use alpha in all cases, if no alpha is provided then it's just 255
-		long pixbuf = GDK.gdk_pixbuf_new_from_data(buffer_ptr, colorspace, true, 8, width, height, rowstride, 0, 0);
+		long pixbuf = GDK.gdk_pixbuf_new_from_data(buffer_ptr, colorspace, alpha_supported, 8, width, height, rowstride, 0, 0);
 		if (pixbuf == 0) {
 			OS.g_free(buffer_ptr);
 			SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -370,19 +371,29 @@ public class NativeImageLoader {
 
 		long[] buffer = new long[1];
 		if (type == null || typeStr == "") {
+			OS.g_object_unref(pixbuf);
 			OS.g_free(buffer_ptr);
 			SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT);
 		}
 		long[] len = new long[1];
-		GDK.gdk_pixbuf_save_to_bufferv(pixbuf, buffer, len, type, null, null, null);
+		boolean saved = GDK.gdk_pixbuf_save_to_bufferv(pixbuf, buffer, len, type, null, null, null);
+		if (!saved || buffer[0] == 0) {
+			OS.g_object_unref(pixbuf);
+			OS.g_free(buffer_ptr);
+			SWT.error(SWT.ERROR_INVALID_IMAGE);
+		}
 		byte[] byteArray = new byte[(int) len[0]];
 		C.memmove(byteArray, buffer[0], byteArray.length);
+		// Free the buffer allocated by gdk_pixbuf_save_to_bufferv to avoid an off-heap memory leak
+		OS.g_free(buffer[0]);
 		try {
 			stream.write(byteArray);
 		} catch (IOException e) {
+			OS.g_object_unref(pixbuf);
 			OS.g_free(buffer_ptr);
 			SWT.error(SWT.ERROR_IO);
 		}
+		OS.g_object_unref(pixbuf);
 		// must free buffer_ptr last otherwise we get half/corrupted image
 		OS.g_free(buffer_ptr);
 	}
