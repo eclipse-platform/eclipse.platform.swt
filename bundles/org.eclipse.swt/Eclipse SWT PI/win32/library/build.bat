@@ -21,7 +21,9 @@ echo INFO Starting build of binaries. Detailed system setup instructions can be 
 @rem Specify VisualStudio Edition: 'Community', 'Enterprise', 'Professional' etc.
 IF "x.%MSVC_EDITION%"=="x." set "MSVC_EDITION=auto"
 
-@rem Specify VisualStudio Version: '2022', '2019', '2017' etc.
+@rem Specify VisualStudio Version:
+@rem Up to VisualStudio 2022 the version year is relevant for the installation path ('2022', '2019', '2017' etc.)
+@rem Starting with VisualStudio 2026, the internal version number is relevant ('18' for VS2026) 
 IF "x.%MSVC_VERSION%"=="x." set "MSVC_VERSION=auto"
 
 @rem Search for a usable Visual Studio
@@ -100,6 +102,7 @@ GOTO :EOF
 @rem %1 = path template with '$MSVC_VERSION$' and '$MSVC_EDITION$' tokens
 :FindVisualStudio
 	IF "%MSVC_VERSION%"=="auto" (
+		CALL :FindVisualStudio2 "%~1" "18"
 		CALL :FindVisualStudio2 "%~1" "2022"
 		CALL :FindVisualStudio2 "%~1" "2019"
 		CALL :FindVisualStudio2 "%~1" "2017"
