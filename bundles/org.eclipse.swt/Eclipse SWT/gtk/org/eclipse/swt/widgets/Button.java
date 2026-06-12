@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2025 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -857,49 +857,47 @@ void _setAlignment (int alignment) {
 	if ((alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) == 0) return;
 	style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 	style |= alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
-	/* Alignment not honoured when image and text are visible */
 	boolean bothVisible = GTK.gtk_widget_get_visible (labelHandle) && GTK.gtk_widget_get_visible (imageHandle);
-	if (bothVisible) {
-		if ((style & (SWT.RADIO | SWT.CHECK)) != 0) alignment = SWT.LEFT;
-		if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0) alignment = SWT.CENTER;
-	}
+	GTK.gtk_widget_set_halign (boxHandle, GTK.GTK_ALIGN_FILL);
+	/* Alignment not honoured for check and radio buttons when image and text are visible */
+	if (bothVisible && (style & (SWT.RADIO | SWT.CHECK)) != 0) alignment = SWT.LEFT;
 	if ((alignment & SWT.LEFT) != 0) {
 		if (bothVisible) {
-			gtk_box_set_child_packing (boxHandle, labelHandle, false, false, 0, GTK.GTK_PACK_START);
 			gtk_box_set_child_packing (boxHandle, imageHandle, false, false, 0, GTK.GTK_PACK_START);
+			gtk_box_set_child_packing (boxHandle, labelHandle, false, false, 0, GTK.GTK_PACK_START);
+			GTK.gtk_widget_set_halign (boxHandle, GTK.GTK_ALIGN_START);
+			gtk_widget_set_align(imageHandle,GTK.GTK_ALIGN_END, GTK.GTK_ALIGN_CENTER);
 		} else {
 			gtk_box_set_child_packing (boxHandle, labelHandle, true, true, 0, GTK.GTK_PACK_END);
 			gtk_box_set_child_packing (boxHandle, imageHandle, true, true, 0, GTK.GTK_PACK_START);
+			gtk_widget_set_align(imageHandle,GTK.GTK_ALIGN_START, GTK.GTK_ALIGN_CENTER);
 		}
 
 		gtk_label_set_align(labelHandle,0.0f,0.5f);
-		gtk_widget_set_align(imageHandle,GTK.GTK_ALIGN_START, GTK.GTK_ALIGN_CENTER);
-
 		GTK.gtk_label_set_justify (labelHandle, GTK.GTK_JUSTIFY_LEFT);
 		return;
 	}
 	if ((alignment & SWT.CENTER) != 0) {
 		if (bothVisible) {
-			gtk_box_set_child_packing (boxHandle, labelHandle, true, true, 0, GTK.GTK_PACK_END);
-			gtk_box_set_child_packing (boxHandle, imageHandle, true, true, 0, GTK.GTK_PACK_START);
-
-			gtk_label_set_align(labelHandle,0.0f,0.5f);
+			gtk_box_set_child_packing (boxHandle, imageHandle, false, false, 0, GTK.GTK_PACK_START);
+			gtk_box_set_child_packing (boxHandle, labelHandle, false, false, 0, GTK.GTK_PACK_START);
+			GTK.gtk_widget_set_halign (boxHandle, GTK.GTK_ALIGN_CENTER);
 			gtk_widget_set_align(imageHandle,GTK.GTK_ALIGN_END, GTK.GTK_ALIGN_CENTER);
-
 		} else {
 			gtk_box_set_child_packing (boxHandle, labelHandle, true, true, 0, GTK.GTK_PACK_END);
 			gtk_box_set_child_packing (boxHandle, imageHandle, true, true, 0, GTK.GTK_PACK_START);
-
-			gtk_label_set_align(labelHandle,0.5f,0.5f);
 			gtk_widget_set_align(imageHandle,GTK.GTK_ALIGN_CENTER, GTK.GTK_ALIGN_CENTER);
-			GTK.gtk_label_set_justify (labelHandle, GTK.GTK_JUSTIFY_CENTER);
 		}
+
+		gtk_label_set_align(labelHandle,0.5f,0.5f);
+		GTK.gtk_label_set_justify (labelHandle, GTK.GTK_JUSTIFY_CENTER);
 		return;
 	}
 	if ((alignment & SWT.RIGHT) != 0) {
 		if (bothVisible) {
-			gtk_box_set_child_packing (boxHandle, labelHandle, false, false, 0, GTK.GTK_PACK_END);
-			gtk_box_set_child_packing (boxHandle, imageHandle, false, false, 0, GTK.GTK_PACK_END);
+			gtk_box_set_child_packing (boxHandle, imageHandle, false, false, 0, GTK.GTK_PACK_START);
+			gtk_box_set_child_packing (boxHandle, labelHandle, false, false, 0, GTK.GTK_PACK_START);
+			GTK.gtk_widget_set_halign (boxHandle, GTK.GTK_ALIGN_END);
 		} else {
 			gtk_box_set_child_packing (boxHandle, labelHandle, true, true, 0, GTK.GTK_PACK_END);
 			gtk_box_set_child_packing (boxHandle, imageHandle, true, true, 0, GTK.GTK_PACK_START);
