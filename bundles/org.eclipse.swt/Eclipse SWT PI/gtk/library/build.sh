@@ -127,14 +127,6 @@ case $SWT_OS.$SWT_ARCH in
 			export PKG_CONFIG_PATH="/usr/lib64/pkgconfig/"
 		fi
 		;;
-	"linux.loongarch64")
-		if [ "${CC}" = "" ]; then
-			export CC=gcc
-		fi
-		if [ "${PKG_CONFIG_PATH}" = "" ]; then
-			export PKG_CONFIG_PATH="/usr/lib64/pkgconfig/"
-		fi
-		;;
 	"linux.riscv64")
 		if [ "${CC}" = "" ]; then
 			export CC=gcc
@@ -146,7 +138,7 @@ esac
 
 
 # For 64-bit CPUs, we have a switch
-if [ ${MODEL} = 'x86_64' -o ${MODEL} = 'ppc64le' -o ${MODEL} = 'aarch64' -o ${MODEL} = 'loongarch64' -o ${MODEL} = 'riscv64' ]; then
+if [ ${MODEL} = 'x86_64' -o ${MODEL} = 'ppc64le' -o ${MODEL} = 'aarch64' -o ${MODEL} = 'riscv64' ]; then
 	SWT_PTR_CFLAGS=-DJNI64
 	if [ -d /lib64 ]; then
 		XLIB64=-L/usr/X11R6/lib64

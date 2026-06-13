@@ -23,7 +23,7 @@ _for example_
   * `binaries/org.eclipse.swt.cocoa.macosx.x86_64` for Mac
 
 These examples refer to the architecture `x86_64` but there are other projects for
-other architectures, like `aarch64` (or `loongarch64` / `ppc64le` for Linux).
+other architectures, like `aarch64` (or `ppc64le` for Linux).
 
 For details about the operating system specific SWT implementations and their (build) requirements, see
 - [Linux](Readme.Linux.md)
