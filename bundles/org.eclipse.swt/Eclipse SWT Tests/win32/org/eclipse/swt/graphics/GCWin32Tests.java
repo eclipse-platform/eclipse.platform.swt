@@ -14,6 +14,7 @@
 package org.eclipse.swt.graphics;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.concurrent.*;
 
@@ -60,6 +61,37 @@ class GCWin32Tests {
 		GC gc = GC.win32_new(shell, new GCData());
 		gc.getGCData().nativeZoom = zoom * scalingFactor;
 		gc.getGCData().lineWidth = 10;
-		assertEquals("Drawn elements should scale to the right value", gc.getGCData().lineWidth, gc.getLineWidth() * scalingFactor, 0);
+		assertEquals("Drawn elements should scale to the right value", gc.getGCData().lineWidth,
+				gc.getLineWidth() * scalingFactor, 0);
+	}
+
+	/**
+	 * Regression test for https://github.com/eclipse-platform/eclipse.platform.swt/issues/3091
+	 */
+	@Test
+	public void test_drawTextLjava_lang_StringII_advanced_unterlined() {
+		Display display = Display.getDefault();
+		FontData defaultFontFata = display.getSystemFont().getFontData()[0];
+		defaultFontFata.data.lfUnderline = 1;
+		Font font = new Font(display, defaultFontFata);
+		Image image = new Image(display, 100, 100);
+		try {
+			GC gc = new GC(image);
+			gc.setFont(font);
+			gc.setAdvanced(true);
+			gc.drawText("Hello World", 10, 50);
+			ImageData imageData = image.getImageData();
+			boolean anyPixelUnderTextIsNotEmpty = false;
+			for (int i = 0; i < imageData.width * imageData.height; i++) {
+				if (imageData.getPixel(i % imageData.width, i / imageData.width) != -1) {
+					anyPixelUnderTextIsNotEmpty = true;
+					break;
+				}
+			}
+			assertTrue(anyPixelUnderTextIsNotEmpty);
+		} finally {
+			image.dispose();
+			font.dispose();
+		}
 	}
 }
