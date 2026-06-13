@@ -279,16 +279,27 @@ Image(Device device) {
  * by creating a GC and using any of its drawing operations,
  * as shown in the following example:
  * <pre>
- *    Image i = new Image(device, width, height);
+ *    Image i = new Image(device, imageWidth, imageHeight);
  *    GC gc = new GC(i);
- *    gc.drawRectangle(0, 0, 50, 50);
+ *    gc.drawRectangle(0, 0, imageWidth, imageHeight);
  *    gc.dispose();
  * </pre>
  * <p>
- * Note: Some platforms may have a limitation on the size
+ * <b>Note:</b> It is recommended to use
+ * {@link #Image(Device, ImageGcDrawer, int, int)} instead.
+ * With that constructor, image data for different zoom levels
+ * can be created on demand, whereas with this constructor
+ * the image data is only created once and may appear blurry
+ * when scaled to other zoom levels. The preceding example
+ * can be rewritten using the recommended constructor as follows:
+ * </p>
+ * <pre>
+ *    Image i = new Image(device, (gc, width, height) -> gc.drawRectangle(0, 0, width, height), imageWidth, imageHeight);
+ * </pre>
+ * <p>
+ * Some platforms may have a limitation on the size
  * of image that can be created (size depends on width, height,
- * and depth). For example, Windows 95, 98, and ME do not allow
- * images larger than 16M.
+ * and depth).
  * </p>
  * <p>
  * You must dispose the image when it is no longer required.
@@ -306,6 +317,7 @@ Image(Device device) {
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
  *
+ * @see #Image(Device, ImageGcDrawer, int, int)
  * @see #dispose()
  */
 public Image(Device device, int width, int height) {
@@ -503,14 +515,25 @@ private void createRepFromSourceAndApplyFlag(NSBitmapImageRep srcRep, int srcWid
  * <pre>
  *    Image i = new Image(device, boundsRectangle);
  *    GC gc = new GC(i);
- *    gc.drawRectangle(0, 0, 50, 50);
+ *    gc.drawRectangle(0, 0, boundsRectangle.width, boundsRectangle.height);
  *    gc.dispose();
  * </pre>
  * <p>
- * Note: Some platforms may have a limitation on the size
+ * <b>Note:</b> It is recommended to use
+ * {@link #Image(Device, ImageGcDrawer, int, int)} instead.
+ * With that constructor, image data for different zoom levels
+ * can be created on demand, whereas with this constructor
+ * the image data is only created once and may appear blurry
+ * when scaled to other zoom levels. The preceding example
+ * can be rewritten using the recommended constructor as follows:
+ * </p>
+ * <pre>
+ *    Image i = new Image(device, (gc, width, height) -> gc.drawRectangle(0, 0, width, height), boundsRectangle.width, boundsRectangle.height);
+ * </pre>
+ * <p>
+ * Some platforms may have a limitation on the size
  * of image that can be created (size depends on width, height,
- * and depth). For example, Windows 95, 98, and ME do not allow
- * images larger than 16M.
+ * and depth).
  * </p>
  * <p>
  * You must dispose the image when it is no longer required.
@@ -530,7 +553,7 @@ private void createRepFromSourceAndApplyFlag(NSBitmapImageRep srcRep, int srcWid
  *
  * @see #dispose()
  *
- * @deprecated use {@link Image#Image(Device, int, int)} instead
+ * @deprecated use {@link #Image(Device, ImageGcDrawer, int, int)} or {@link #Image(Device, int, int)} instead
  */
 @Deprecated(since = "2025-06", forRemoval = true)
 public Image(Device device, Rectangle bounds) {
