@@ -102,6 +102,7 @@ public class OLEExample {
 			if (index != -1) {
 				String fileExtension = fileName.substring(index + 1);
 				if (fileExtension.equalsIgnoreCase("doc") || 
+						fileExtension.equalsIgnoreCase("docx") ||
 						fileExtension.equalsIgnoreCase("rtf") ||
 						fileExtension.equalsIgnoreCase("txt")) {
 					try {
@@ -118,7 +119,7 @@ public class OLEExample {
 			int index = fileName.lastIndexOf('.');
 			if (index != -1) {
 				String fileExtension = fileName.substring(index + 1);
-				if (fileExtension.equalsIgnoreCase("xls")) {
+				if (fileExtension.equalsIgnoreCase("xls") || fileExtension.equalsIgnoreCase("xlsx")) {
 					try {
 						clientSite = createSite(oleFrame, "Excel.Sheet", new File(fileName));
 					} catch (SWTException error2) {
@@ -128,27 +129,13 @@ public class OLEExample {
 			}
 		}
 
-		// try opening a media file with MPlayer
+		// try opening mpa, wmv, mpg, mpeg, avi, asf, wav with WMPlayer
 		if (clientSite == null) {
 			int index = fileName.lastIndexOf('.');
 			if (index != -1) {
 				String fileExtension = fileName.substring(index + 1);
-				if (fileExtension.equalsIgnoreCase("mpa")) {
-					try {
-						clientSite = createSite(oleFrame, "MPlayer", new File(fileName));
-					} catch (SWTException error2) {
-						disposeClient();
-					}
-				}
-			}
-		}
-
-		// try opening with wmv, mpg, mpeg, avi, asf, wav with WMPlayer
-		if (clientSite == null) {
-			int index = fileName.lastIndexOf('.');
-			if (index != -1) {
-				String fileExtension = fileName.substring(index + 1);
-				if (fileExtension.equalsIgnoreCase("wmv")
+				if (fileExtension.equalsIgnoreCase("mpa")
+						|| fileExtension.equalsIgnoreCase("wmv")
 						|| fileExtension.equalsIgnoreCase("mpg")
 						|| fileExtension.equalsIgnoreCase("mpeg")
 						|| fileExtension.equalsIgnoreCase("avi")
@@ -266,13 +253,7 @@ public class OLEExample {
 		mediaPlayerButton.setText("New MPlayer");
 		mediaPlayerButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
 			if (((Button) e.widget).getSelection())
-				newClientSite("MPlayer");
-		}));
-		Button powerPointButton = new Button(buttons, SWT.RADIO);
-		powerPointButton.setText("New PowerPoint Slide");
-		powerPointButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
-			if (((Button) e.widget).getSelection())
-				newClientSite("PowerPoint.Slide");
+				newClientSite("WMPlayer.OCX");
 		}));
 		Button wordButton = new Button(buttons, SWT.RADIO);
 		wordButton.setText("New Word Document");
