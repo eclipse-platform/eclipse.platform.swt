@@ -43,7 +43,7 @@ Instead, rely on the GitHub PR workflows created for each platform to test the c
 ### Technology Stack
 - **Build Tool**: Maven with Tycho plugin
 - **Java Version**: Java 21
-- **Supported Architectures**: x86_64, aarch64, loongarch64, ppc64le, riscv64
+- **Supported Architectures**: x86_64, aarch64, ppc64le, riscv64
 
 ### Build Commands
 ```bash
