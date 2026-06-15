@@ -322,7 +322,8 @@ long createMask (long hBitmap, int destWidth, int destHeight, int background, in
 }
 
 public void dispose () {
-	if (handle != 0) OS.ImageList_Destroy (handle);
+	zoomToHandle.values().stream().filter(it -> it != 0).forEach(OS::ImageList_Destroy);
+	zoomToHandle.clear();
 	handle = 0;
 	images = null;
 }
