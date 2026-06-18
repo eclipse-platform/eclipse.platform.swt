@@ -6808,7 +6808,9 @@ void update (boolean all, boolean flush) {
 	if(GTK.GTK4) GTK.gtk_widget_queue_draw(handle);
 	if (!GTK.gtk_widget_get_visible (topHandle ())) return;
 	if (!GTK.gtk_widget_get_realized (handle)) return;
-	if (flush && OS.isX11()) {
+	// flushExposes drains X11 Expose events and is a no-op on GTK4, which uses a
+	// frame-clock/render-node draw model and no longer has GdkWindows to flush.
+	if (flush && OS.isX11() && !GTK.GTK4) {
 		long window = paintWindow ();
 		display.flushExposes (window, all);
 	}
