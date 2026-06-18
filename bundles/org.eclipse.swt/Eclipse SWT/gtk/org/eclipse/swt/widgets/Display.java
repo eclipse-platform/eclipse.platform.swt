@@ -2514,8 +2514,7 @@ public Control getFocusControl () {
 		return focusControl;
 	}
 	if (activeShell == null) return null;
-	long shellHandle = activeShell.shellHandle;
-	long handle = GTK.gtk_window_get_focus (shellHandle);
+	long handle = GTK.gtk_window_get_focus (activeShell.focusWindowHandle ());
 	if (handle == 0) return null;
 	do {
 		Widget widget = getWidget (handle);

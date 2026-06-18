@@ -2234,6 +2234,38 @@ JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1popover_1menu_1set_1menu_1model)
 }
 #endif
 
+#ifndef NO_gtk_1popover_1new
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1popover_1new)
+	(JNIEnv *env, jclass that)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1popover_1new_FUNC);
+	rc = (jlong)gtk_popover_new();
+	GTK4_NATIVE_EXIT(env, that, gtk_1popover_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1popover_1set_1autohide
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1popover_1set_1autohide)
+	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1popover_1set_1autohide_FUNC);
+	gtk_popover_set_autohide((GtkPopover *)arg0, arg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1popover_1set_1autohide_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1popover_1set_1child
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1popover_1set_1child)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1popover_1set_1child_FUNC);
+	gtk_popover_set_child((GtkPopover *)arg0, (GtkWidget *)arg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1popover_1set_1child_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1popover_1set_1has_1arrow
 JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1popover_1set_1has_1arrow)
 	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)

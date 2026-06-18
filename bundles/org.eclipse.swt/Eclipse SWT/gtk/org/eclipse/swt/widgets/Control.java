@@ -1795,9 +1795,25 @@ public Point toDisplay (Point point) {
 Point getControlOrigin() {
 	double[] originX = new double[1], originY = new double[1];
 	long widgetHandle = fixedHandle != 0 ? fixedHandle: eventHandle();
-	boolean success = GTK4.gtk_widget_translate_coordinates(widgetHandle, getShell().shellHandle, 0, 0, originX, originY);
-
-	return success ? new Point((int)originX[0], (int)originY[0]) : new Point(0, 0);
+	Shell shell = getShell();
+	boolean success = GTK4.gtk_widget_translate_coordinates(widgetHandle, shell.shellHandle, 0, 0, originX, originY);
+	Point origin = success ? new Point((int)originX[0], (int)originY[0]) : new Point(0, 0);
+	/*
+	 * A popover-backed Shell renders in its own surface positioned (via oldX/oldY) within
+	 * the nearest real top-level window's content. translate_coordinates only yields the
+	 * offset within the popover, so add the placement of each popover-backed ancestor to
+	 * keep display coordinates consistent with that window (e.g. so a sibling popup can be
+	 * laid out next to it via toDisplay, including the javadoc popup parented to the
+	 * content-assist proposal popup).
+	 */
+	while (shell.popover) {
+		origin.x += shell.oldX;
+		origin.y += shell.oldY;
+		Shell parentShell = shell.parent != null ? shell.parent.getShell() : null;
+		if (parentShell == null || parentShell == shell) break;
+		shell = parentShell;
+	}
+	return origin;
 }
 
 /**
@@ -2914,8 +2930,7 @@ boolean forceFocus (long focusHandle) {
 	// widget could be disposed at this point
 	if (isDisposed ()) return false;
 	Shell shell = getShell ();
-	long shellHandle = shell.shellHandle;
-	long handle = GTK.gtk_window_get_focus (shellHandle);
+	long handle = GTK.gtk_window_get_focus (shell.focusWindowHandle ());
 	while (handle != 0) {
 		if (handle == focusHandle) {
 			/* Cancel any previous ignoreFocus requests */
@@ -6892,8 +6907,17 @@ Point getWindowOrigin () {
 Point getSurfaceOrigin () {
 	double[] originX = new double[1], originY = new double[1];
 	long widgetHandle = fixedHandle != 0 ? fixedHandle: eventHandle();
-	boolean success = GTK4.gtk_widget_translate_coordinates(widgetHandle, getShell().shellHandle, 0, 0, originX, originY);
-
-	return success ? new Point((int)originX[0], (int)originY[0]) : new Point(0, 0);
+	Shell shell = getShell();
+	boolean success = GTK4.gtk_widget_translate_coordinates(widgetHandle, shell.shellHandle, 0, 0, originX, originY);
+	Point origin = success ? new Point((int)originX[0], (int)originY[0]) : new Point(0, 0);
+	/* See getControlOrigin(): account for the placement of each popover-backed ancestor. */
+	while (shell.popover) {
+		origin.x += shell.oldX;
+		origin.y += shell.oldY;
+		Shell parentShell = shell.parent != null ? shell.parent.getShell() : null;
+		if (parentShell == null || parentShell == shell) break;
+		shell = parentShell;
+	}
+	return origin;
 }
 }
