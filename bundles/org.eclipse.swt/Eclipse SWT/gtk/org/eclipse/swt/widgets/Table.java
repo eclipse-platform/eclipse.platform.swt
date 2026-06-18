@@ -2513,7 +2513,10 @@ boolean mnemonicMatch (char key) {
 @Override
 long paintWindow () {
 	GTK.gtk_widget_realize (handle);
-	// TODO: this function has been removed on GTK4
+	if (GTK.GTK4) {
+		// gtk_tree_view_get_bin_window was removed in GTK4; fall back to the widget surface
+		return gtk_widget_get_surface (handle);
+	}
 	return GTK3.gtk_tree_view_get_bin_window (handle);
 }
 

@@ -1756,6 +1756,9 @@ static long rendererSnapshotProc (long cell, long snapshot, long handle, long ba
 }
 
 void flushExposes (long window, boolean all) {
+	// GTK4 uses a frame-clock/render-node draw model and has no X11 Expose events
+	// or GdkWindows to flush, so checkIfEventProc rejects everything: skip the scan.
+	if (GTK.GTK4) return;
 	if (OS.isX11()) {
 		this.flushWindow = window;
 		this.flushAll = all;
