@@ -575,6 +575,14 @@ public class GTK4 {
 	public static final native void gtk_popover_menu_set_menu_model(long popover, long model);
 
 	/* GtkPopover */
+	public static final native long gtk_popover_new();
+	/** @param popover cast=(GtkPopover *) */
+	public static final native void gtk_popover_set_autohide(long popover, boolean autohide);
+	/**
+	 * @param popover cast=(GtkPopover *)
+	 * @param child cast=(GtkWidget *)
+	 */
+	public static final native void gtk_popover_set_child(long popover, long child);
 	/** @param popover cast=(GtkPopover *) */
 	public static final native void gtk_popover_set_has_arrow(long popover, boolean has_arrow);
 
