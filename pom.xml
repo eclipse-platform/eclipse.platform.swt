@@ -180,6 +180,12 @@
       </build>
     </profile>
     <profile>
+      <id>skia</id>
+      <modules>
+        <module>tests/org.eclipse.swt.skia.tests</module>
+      </modules>
+    </profile>
+    <profile>
       <id>javadoc-basher</id>
       <build>
         <plugins>
@@ -237,6 +243,5 @@
     <module>examples/org.eclipse.swt.examples.views</module>
     <module>tests/org.eclipse.swt.tests</module>
     <module>features/org.eclipse.swt.tools.feature</module>
-    <module>tests/org.eclipse.swt.skia.tests</module>
   </modules>
 </project>

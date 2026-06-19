@@ -25,9 +25,6 @@ public abstract class GLPaintEventInvoker extends GLCanvasExtension {
 		super(canvas, data);
 	}
 
-	/**
-	 * @noreference This method is not intended to be referenced by clients.
-	 */
 	public Object paint(Consumer<Event> consumer, long wParam, long lParam) {
 
 		var canvas = getCanvas();
@@ -47,16 +44,15 @@ public abstract class GLPaintEventInvoker extends GLCanvasExtension {
 
 	}
 
-	/**
-	 * @noreference This method is not intended to be referenced by clients.
-	 */
 	public void redrawTriggered() {
 		this.redrawTriggered = true;
 	}
 
-	/**
-	 * @noreference This method is not intended to be referenced by clients.
-	 */
+	@Override
+	public void setCurrent() {
+		super.setCurrent();
+	}
+
 	public abstract void doPaint(Consumer<Event> paintEventSender);
 
 }

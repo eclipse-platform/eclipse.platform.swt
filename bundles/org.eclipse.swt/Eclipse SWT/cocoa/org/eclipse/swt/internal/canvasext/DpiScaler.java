@@ -1,6 +1,5 @@
 package org.eclipse.swt.internal.canvasext;
 
-import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 /**
@@ -14,6 +13,7 @@ public class DpiScaler implements IDpiScaler {
 	public DpiScaler(Canvas canvas) {
 	}
 
+	@Override
 	public int getNativeZoom() {
 		return 100;
 	}
