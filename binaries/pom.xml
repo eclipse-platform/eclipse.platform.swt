@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
 ###############################################################################
-# Copyright (c) 2024, 2024 Hannes Wellmann and others.
+# Copyright (c) 2024, 2026 Hannes Wellmann and others.
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the Eclipse Public License v1.0
 # which accompanies this distribution, and is available at
@@ -137,37 +137,34 @@
 									<goal>run</goal>
 								</goals>
 								<configuration>
-									<target>
-										<!-- See https://stackoverflow.com/a/53227117 and http://ant-contrib.sourceforge.net/tasks/tasks/index.html -->
-										<taskdef resource="net/sf/antcontrib/antlib.xml"/>
-										<if><equals arg1="${native}" arg2="${ws}.${os}.${arch}"/>
-											<then>
-												<property name="build_dir" value="${project.build.directory}/natives-build-temp"/>
-												<exec executable="${java.home}/bin/java" dir="${swtMainProject}" failonerror="true">
-													<arg line="-Dws=${ws} -Darch=${arch} build-scripts/CollectSources.java -nativeSources '${build_dir}'"/>
-												</exec>
-												<property name="SWT_JAVA_HOME" value="${java.home}"/><!-- Not overwritten if already set, e.g. as CLI argument -->
-												<echo>Compile SWT natives against headers and libraries from JDK: ${SWT_JAVA_HOME}</echo>
-												<if><equals arg1="${ws}" arg2="win32" />
-													<then>
-														<exec dir="${build_dir}" executable="${build_dir}/build.bat" failonerror="true">
-															<env key="SWT_JAVA_HOME" value="${SWT_JAVA_HOME}"/>
-															<env key="OUTPUT_DIR" value="${project.basedir}"/>
-															<arg line="install clean"/>
-														</exec>
-													</then>
-													<else>
-														<exec dir="${build_dir}" executable="sh" failonerror="true">
-															<arg line="build.sh"/>
-															<env key="SWT_JAVA_HOME" value="${SWT_JAVA_HOME}"/>
-															<env key="OUTPUT_DIR" value="${project.basedir}"/>
-															<env key="MODEL" value="${arch}"/>
-															<arg line="install clean"/>
-														</exec>
-													</else>
-												</if>
-											</then>
-										</if>
+									<target xmlns:if="ant:if" xmlns:unless="ant:unless">
+										<condition property="swt.build.natives">
+											<equals arg1="${native}" arg2="${ws}.${os}.${arch}"/>
+										</condition>
+										<condition property="swt.build.natives.win32">
+											<and>
+												<isset property="swt.build.natives"/>
+												<equals arg1="${ws}" arg2="win32"/>
+											</and>
+										</condition>
+										<property name="build_dir" value="${project.build.directory}/natives-build-temp"/>
+										<exec if:true="${swt.build.natives}" executable="${java.home}/bin/java" dir="${swtMainProject}" failonerror="true">
+											<arg line="-Dws=${ws} -Darch=${arch} build-scripts/CollectSources.java -nativeSources '${build_dir}'"/>
+										</exec>
+										<property name="SWT_JAVA_HOME" value="${java.home}"/><!-- Not overwritten if already set, e.g. as CLI argument -->
+										<echo if:true="${swt.build.natives}">Compile SWT natives against headers and libraries from JDK: ${SWT_JAVA_HOME}</echo>
+										<exec if:true="${swt.build.natives.win32}" dir="${build_dir}" executable="${build_dir}/build.bat" failonerror="true">
+											<env key="SWT_JAVA_HOME" value="${SWT_JAVA_HOME}"/>
+											<env key="OUTPUT_DIR" value="${project.basedir}"/>
+											<arg line="install clean"/>
+										</exec>
+										<exec if:true="${swt.build.natives}" unless:true="${swt.build.natives.win32}" dir="${build_dir}" executable="sh" failonerror="true">
+											<arg line="build.sh"/>
+											<env key="SWT_JAVA_HOME" value="${SWT_JAVA_HOME}"/>
+											<env key="OUTPUT_DIR" value="${project.basedir}"/>
+											<env key="MODEL" value="${arch}"/>
+											<arg line="install clean"/>
+										</exec>
 									</target>
 								</configuration>
 							</execution>
@@ -215,24 +212,6 @@
 								</configuration>
 							</execution>
 						</executions>
-						<dependencies>
-							<dependency>
-								<groupId>org.apache.ant</groupId>
-								<artifactId>ant</artifactId>
-								<version>1.10.17</version>
-							</dependency>
-							<dependency>
-								<groupId>ant-contrib</groupId>
-								<artifactId>ant-contrib</artifactId>
-								<version>1.0b3</version>
-								<exclusions>
-									<exclusion>
-										<groupId>ant</groupId>
-										<artifactId>ant</artifactId>
-									</exclusion>
-								</exclusions>
-							</dependency>
-						</dependencies>
 					</plugin>
 				</plugins>
 			</build>
