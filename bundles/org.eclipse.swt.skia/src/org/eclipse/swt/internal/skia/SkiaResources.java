@@ -183,7 +183,7 @@ public class SkiaResources implements ISkiaResources {
 		final FontStyle style = new FontStyle(props.lfWeight, 5, slant);
 		io.github.humbleui.skija.Font skijaFont = new io.github.humbleui.skija.Font(extractTypeface(props, style));
 
-		final var rect = skijaFont.measureText("T");
+		final var rect = skijaFont.measureText("T"); //$NON-NLS-1$
 		final var textHeight = rect.getHeight();
 		if (textHeight == 0.0) {
 
@@ -242,7 +242,7 @@ public class SkiaResources implements ISkiaResources {
 		if (SWT.getPlatform().equals("win32")) { //$NON-NLS-1$
 			// arabic fonts are no longer supported on windows. Also windows falls back to
 			// arial
-			if (name.toLowerCase().startsWith("arabic ") || name.toLowerCase().equals("arabic")) { //$NON-NLS-1$
+			if (name.toLowerCase().startsWith("arabic ") || name.toLowerCase().equals("arabic")) { //$NON-NLS-1$ //$NON-NLS-2$
 				fontNameMapping.put(name, "Arial"); //$NON-NLS-1$
 				return fm.matchFamilyStyle("Arial", style); //$NON-NLS-1$
 			}

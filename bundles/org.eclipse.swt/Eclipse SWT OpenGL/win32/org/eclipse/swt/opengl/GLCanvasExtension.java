@@ -30,8 +30,6 @@ public abstract class GLCanvasExtension {
  *
  * @param data the requested attributes of the GLCanvas
  *
-* @noreference This method is not intended to be referenced by clients.
- *
  * @exception IllegalArgumentException
  * <ul><li>ERROR_NULL_ARGUMENT when the data is null</li>
  *     <li>ERROR_UNSUPPORTED_DEPTH when the requested attributes cannot be provided</li>
@@ -112,8 +110,6 @@ static int checkStyle(Composite parent, int style) {
 /**
  * Returns a GLData object describing the created context.
  *
-* @noreference This method is not intended to be referenced by clients.
-*
  * @return GLData description of the OpenGL context attributes
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -152,7 +148,6 @@ public GLData getGLData () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * @noreference This method is not intended to be referenced by clients.
  */
 public boolean isCurrent () {
 	checkWidget ();
@@ -167,9 +162,6 @@ public boolean isCurrent () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- *
- * @noreference This method is not intended to be referenced by clients.
- *
  */
 public void setCurrent () {
 	checkWidget ();
@@ -186,7 +178,6 @@ public void setCurrent () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * @noreference This method is not intended to be referenced by clients.
  */
 public void swapBuffers () {
 	checkWidget ();

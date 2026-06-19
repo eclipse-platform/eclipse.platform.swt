@@ -47,10 +47,10 @@ public class FontProperties {
 		var fd = font.getFontData()[0];
 
 //		float height = (float)OS.pango_font_description_get_size(font.handle) / OS.PANGO_SCALE;
-		var stretch = OS.pango_font_description_get_stretch(font.handle);
+		int stretch = OS.pango_font_description_get_stretch(font.handle);
 //		var variant = OS.pango_font_description_get_variant(font.handle);
 //		var style = OS.pango_font_description_get_style(font.handle);
-		var weight = OS.pango_font_description_get_weight(font.handle);
+		int weight = OS.pango_font_description_get_weight(font.handle);
 
 		var fp = new FontProperties();
 
@@ -67,6 +67,23 @@ public class FontProperties {
 
 		return fp;
 
+	}
+
+	public static FontProperties getFontProperties(FontData fd) {
+
+		var weight = OS.PANGO_WEIGHT_NORMAL;
+		var stretch = OS.PANGO_STRETCH_NORMAL;
+
+		var fp = new FontProperties();
+
+		fp.name = fd.getName();
+		fp.lfHeight = fd.getHeight();
+		if((fd.getStyle() & SWT.ITALIC) != 0 )
+			fp.lfItalic = 1;
+		fp.lfWeight = weight;
+		fp.lfWidth = stretch + 1;
+
+		return fp;
 	}
 
 

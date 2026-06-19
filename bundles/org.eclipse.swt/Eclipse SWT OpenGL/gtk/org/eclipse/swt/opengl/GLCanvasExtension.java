@@ -21,15 +21,8 @@ import org.eclipse.swt.internal.opengl.glx.*;
 import org.eclipse.swt.widgets.*;
 
 /**
- * GLCanvas is a widget capable of displaying OpenGL content.
- *
- * @see GLData
- * @see <a href="http://www.eclipse.org/swt/snippets/#opengl">OpenGL snippets</a>
- * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- *
  * @noreference This class is not intended to be referenced by clients.
  */
-
 public abstract class GLCanvasExtension {
 	long context;
 	long xWindow;

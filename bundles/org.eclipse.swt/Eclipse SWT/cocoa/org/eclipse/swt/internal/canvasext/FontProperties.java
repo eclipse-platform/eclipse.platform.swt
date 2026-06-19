@@ -18,8 +18,11 @@ public class FontProperties {
 
 	}
 
+	public static FontProperties getFontProperties(FontData fd) {
+		return null;
+	}
+
 	public static FontProperties getFontProperties(Font font) {
 		return null;
-
 	}
 }
