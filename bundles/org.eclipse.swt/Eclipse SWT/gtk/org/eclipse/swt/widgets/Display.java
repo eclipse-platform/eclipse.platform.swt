@@ -3420,21 +3420,15 @@ void initializeSystemColorsDisabled() {
 }
 
 GdkRGBA styleContextGetColor(long context, int flag) {
-	/*
-	* Feature in GTK: we need to handle calls to gtk_style_context_get_color()
-	* differently due to changes in GTK3.18+. This solves failing test cases
-	* which started failing after GTK3.16. See Bug 481122 for more info.
-	* Reference: https://blogs.gnome.org/mclasen/2015/11/20/a-gtk-update/
-	*/
 	GdkRGBA rgba = new GdkRGBA ();
+	GTK.gtk_style_context_save(context);
+	GTK.gtk_style_context_set_state(context, flag);
 	if (GTK.GTK4) {
 		GTK4.gtk_style_context_get_color(context, rgba);
 	} else {
-		GTK.gtk_style_context_save(context);
-		GTK.gtk_style_context_set_state(context, flag);
 		GTK3.gtk_style_context_get_color (context, flag, rgba);
-		GTK.gtk_style_context_restore(context);
 	}
+	GTK.gtk_style_context_restore(context);
 	return rgba;
 }
 
