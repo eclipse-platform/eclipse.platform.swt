@@ -335,6 +335,9 @@
 #define NO_swt_1fixed_1add
 #define NO_swt_1fixed_1remove
 
+// No GdkPaintable on GTK3
+#define NO_swt_1scaled_1paintable_1new
+
 #endif
 
 #include "os_custom.h"

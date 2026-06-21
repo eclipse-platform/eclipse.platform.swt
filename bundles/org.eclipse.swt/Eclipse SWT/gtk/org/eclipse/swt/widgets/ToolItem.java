@@ -781,8 +781,11 @@ void gtk4_enter_event(long controller, double x, double y, long event) {
 				long pixbuf = ImageList.createPixbuf(hotImage);
 				long texture = GDK.gdk_texture_new_for_pixbuf(pixbuf);
 				OS.g_object_unref(pixbuf);
-				GTK4.gtk_picture_set_paintable(imageHandle, texture);
+				Rectangle bounds = hotImage.getBounds();
+				long paintable = OS.swt_scaled_paintable_new(texture, bounds.width, bounds.height);
 				OS.g_object_unref(texture);
+				GTK4.gtk_picture_set_paintable(imageHandle, paintable);
+				OS.g_object_unref(paintable);
 			}
 		}
 	}
@@ -853,8 +856,11 @@ void gtk4_leave_event(long controller, long event) {
 					long pixbuf = ImageList.createPixbuf(image);
 					long texture = GDK.gdk_texture_new_for_pixbuf(pixbuf);
 					OS.g_object_unref(pixbuf);
-					GTK4.gtk_picture_set_paintable(imageHandle, texture);
+					Rectangle bounds = image.getBounds();
+					long paintable = OS.swt_scaled_paintable_new(texture, bounds.width, bounds.height);
 					OS.g_object_unref(texture);
+					GTK4.gtk_picture_set_paintable(imageHandle, paintable);
+					OS.g_object_unref(paintable);
 				}
 			}
 		}
@@ -1376,24 +1382,22 @@ void _setImage (Image image) {
 			long pixbuf = ImageList.createPixbuf(image);
 			long texture = GDK.gdk_texture_new_for_pixbuf(pixbuf);
 			OS.g_object_unref(pixbuf);
-			GTK4.gtk_picture_set_paintable(imageHandle, texture);
-			OS.g_object_unref(texture);
 			/*
-			 * Pin the GtkPicture to the image's logical (point) size so it occupies the
-			 * same footprint as the previously used GtkImage. The texture is created
-			 * from a device-scaled pixbuf whose intrinsic size is in pixels; without a
-			 * size request GtkPicture would measure to those pixel dimensions, inflating
-			 * the ToolItem and causing overlaps (e.g. the CTabFolder chevron toolbar).
+			 * Wrap the full-resolution texture in a paintable that reports the image's
+			 * logical (point) size, so the GtkPicture keeps the same footprint as the
+			 * previously used GtkImage and renders crisply at HiDPI.
 			 */
 			Rectangle bounds = image.getBounds();
-			GTK.gtk_widget_set_size_request(imageHandle, bounds.width, bounds.height);
+			long paintable = OS.swt_scaled_paintable_new(texture, bounds.width, bounds.height);
+			OS.g_object_unref(texture);
+			GTK4.gtk_picture_set_paintable(imageHandle, paintable);
+			OS.g_object_unref(paintable);
 		} else {
 			GTK3.gtk_image_set_from_surface(imageHandle, imageList.getSurface(imageIndex));
 		}
 	} else {
 		if(GTK.GTK4) {
 			GTK4.gtk_picture_set_paintable(imageHandle, 0);
-			GTK.gtk_widget_set_size_request(imageHandle, -1, -1);
 			gtk_widget_hide(imageHandle);
 		} else {
 			GTK3.gtk_image_set_from_surface(imageHandle, 0);

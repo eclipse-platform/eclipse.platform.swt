@@ -15270,6 +15270,18 @@ JNIEXPORT void JNICALL OS_NATIVE(swt_1fixed_1restack)
 }
 #endif
 
+#ifndef NO_swt_1scaled_1paintable_1new
+JNIEXPORT jlong JNICALL OS_NATIVE(swt_1scaled_1paintable_1new)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jint arg2)
+{
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, swt_1scaled_1paintable_1new_FUNC);
+	rc = (jlong)swt_scaled_paintable_new((GdkTexture*)arg0, arg1, arg2);
+	OS_NATIVE_EXIT(env, that, swt_1scaled_1paintable_1new_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_swt_1set_1lock_1functions
 JNIEXPORT void JNICALL OS_NATIVE(swt_1set_1lock_1functions)
 	(JNIEnv *env, jclass that)
