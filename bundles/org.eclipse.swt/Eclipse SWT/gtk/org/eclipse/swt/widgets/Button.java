@@ -1158,8 +1158,11 @@ private void _setImage (Image image) {
 			long pixbuf = ImageList.createPixbuf(image);
 			long texture = GDK.gdk_texture_new_for_pixbuf(pixbuf);
 			OS.g_object_unref(pixbuf);
-			GTK4.gtk_picture_set_paintable(imageHandle, texture);
+			Rectangle bounds = image.getBounds();
+			long paintable = OS.swt_scaled_paintable_new(texture, bounds.width, bounds.height);
 			OS.g_object_unref(texture);
+			GTK4.gtk_picture_set_paintable(imageHandle, paintable);
+			OS.g_object_unref(paintable);
 		} else {
 			GTK3.gtk_image_set_from_surface(imageHandle, image.surface);
 		}

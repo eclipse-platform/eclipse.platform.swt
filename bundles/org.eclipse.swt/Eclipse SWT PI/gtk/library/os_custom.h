@@ -136,6 +136,15 @@ struct _SwtFixedClass
 GType swt_fixed_get_type (void) G_GNUC_CONST;
 
 #if defined(GTK4)
+/*
+ * GdkPaintable that wraps a GdkTexture but advertises a fixed logical (point)
+ * intrinsic size. Used so GtkPicture measures images in logical points (avoiding
+ * HiDPI inflation) while still drawing the full device-resolution texture crisply.
+ */
+GdkPaintable* swt_scaled_paintable_new (GdkTexture* texture, int width, int height);
+#endif
+
+#if defined(GTK4)
 void swt_fixed_add(SwtFixed* fixed, GtkWidget* widget);
 void swt_fixed_remove(SwtFixed* fixed, GtkWidget* widget);
 #endif

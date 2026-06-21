@@ -579,6 +579,12 @@ public class OS extends C {
 	/** @category custom */
 	public static final native long swt_fixed_get_type();
 
+	/**
+	 * @param texture cast=(GdkTexture*)
+	 * @category custom
+	 */
+	public static final native long swt_scaled_paintable_new(long texture, int width, int height);
+
 	/** @category custom */
 	public static final native long swt_fixed_accessible_get_type();
 	/**
