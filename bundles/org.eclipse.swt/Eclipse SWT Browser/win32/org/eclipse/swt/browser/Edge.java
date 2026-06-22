@@ -87,7 +87,7 @@ class Edge extends WebBrowser {
 	HashMap<Long, LocationEvent> navigations = new HashMap<>();
 	/** Maps BrowserFunction index to the script ID from AddScriptToExecuteOnDocumentCreated. */
 	private final Map<Integer, String> functionScriptIds = new HashMap<>();
-	private boolean ignoreGotFocus;
+	private int ignoreGotFocus;
 	private boolean ignoreFocusIn;
 	private String lastCustomText;
 
@@ -898,7 +898,15 @@ void browserFocusIn(Event event) {
 	// We need to ignore that next event, as in the meantime the user might
 	// have moved focus to some other control and reacting on that event
 	// would bring us back to the Browser.
-	ignoreGotFocus = true;
+	// https://github.com/eclipse-platform/eclipse.platform.swt/pull/1849#issuecomment-4753007036
+	// There can be multiple focus-in events within the same event loop iteration,
+	// e.g.,
+	// other.setFocus();
+	// browser.setFocus();
+	// other.setFocus();
+	// browser.setFocus();
+	// We need to apply the ignore handling to all of them, so a counter is used.
+	ignoreGotFocus++;
 
 	controller.MoveFocus(COM.COREWEBVIEW2_MOVE_FOCUS_REASON_PROGRAMMATIC);
 }
@@ -1506,8 +1514,8 @@ private void asyncExec(Runnable r) {
 }
 
 int handleGotFocus(long pView, long pArg) {
-	if (ignoreGotFocus) {
-		ignoreGotFocus = false;
+	if (ignoreGotFocus > 0) {
+		ignoreGotFocus--;
 		return COM.S_OK;
 	}
 	// https://github.com/eclipse-platform/eclipse.platform.swt/issues/1139
