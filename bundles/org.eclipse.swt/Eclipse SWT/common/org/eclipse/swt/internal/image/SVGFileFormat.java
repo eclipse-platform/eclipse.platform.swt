@@ -19,6 +19,7 @@ import java.util.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.DPIUtil.*;
+import org.eclipse.swt.widgets.Display;
 
 /**
  * A {@link FileFormat} implementation for handling SVG (Scalable Vector
@@ -61,7 +62,7 @@ public class SVGFileFormat extends FileFormat {
 		if (targetZoom <= 0) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT, null, " [Cannot rasterize SVG for zoom <= 0]");
 		}
-		ImageData rasterizedImageData = RASTERIZER.rasterizeSVG(inputStream, 100 * targetZoom / fileZoom);
+		ImageData rasterizedImageData = RASTERIZER.rasterizeSVG(inputStream, 100 * targetZoom / fileZoom, getWidgetForegroundColor());
 		return List.of(new ElementAtZoom<>(rasterizedImageData, targetZoom));
 	}
 
@@ -73,8 +74,15 @@ public class SVGFileFormat extends FileFormat {
 		if (width <= 0 || height <= 0) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT, null, " [Cannot rasterize SVG for width or height <= 0]");
 		}
-		ImageData rasterizedImageData = RASTERIZER.rasterizeSVG(inputStream, width, height);
-		return rasterizedImageData;
+		return RASTERIZER.rasterizeSVG(inputStream, width, height, getWidgetForegroundColor());
+	}
+
+	private static RGB getWidgetForegroundColor() {
+		Display display = Display.getDefault();
+		if (display != null) {
+			return display.getSystemColor(SWT.COLOR_WIDGET_FOREGROUND).getRGB();
+		}
+		return null;
 	}
 
 	@Override
