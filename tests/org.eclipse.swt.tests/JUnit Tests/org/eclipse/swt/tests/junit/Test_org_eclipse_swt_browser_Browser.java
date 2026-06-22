@@ -3095,6 +3095,36 @@ public void test_TimerRegression_Issue2806() {
 
 }
 
+/**
+ * https://github.com/eclipse-platform/eclipse.platform.swt/issues/1848
+ * https://github.com/eclipse-platform/eclipse.platform.swt/pull/1849
+ *
+ * Send two focus events to the browser within the same event loop iteration.
+ * Edge uses
+ * controller.MoveFocus(COM.COREWEBVIEW2_MOVE_FOCUS_REASON_PROGRAMMATIC); //
+ * which triggers then asynchronoulsy. BOTH WebView2 events must then be handled
+ * (ignored) internally and not cause another call to browserFocusIn(). So we
+ * expect a total of 2 SWT events (not 3).
+ */
+@Test
+public void test_EdgeAsyncFocusHandling() {
+	assumeTrue(isEdge, "This test is intended for Edge only");
+
+	shell.open();
+	Text otherControl = new Text(shell, SWT.NONE);
+	processUiEvents();
+	List<Event> focusInEvents = new ArrayList<>();
+	browser.addListener(SWT.FocusIn, focusInEvents::add);
+
+	otherControl.setFocus();
+	browser.setFocus();
+	otherControl.setFocus();
+	browser.setFocus();
+	processUiEvents();
+
+	assertEquals(2, focusInEvents.size());
+}
+
 /* custom */
 /**
  * Wait for passTest to return true. Timeout otherwise.
