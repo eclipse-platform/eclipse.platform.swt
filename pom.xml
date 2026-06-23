@@ -183,6 +183,7 @@
       <id>skia</id>
       <modules>
         <module>tests/org.eclipse.swt.skia.tests</module>
+        <module>examples/org.eclipse.swt.examples.skia</module>
       </modules>
     </profile>
     <profile>
