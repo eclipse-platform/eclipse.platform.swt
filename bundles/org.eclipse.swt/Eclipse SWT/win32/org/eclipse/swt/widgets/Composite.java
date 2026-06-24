@@ -1530,7 +1530,7 @@ LRESULT WM_PAINT (long wParam, long lParam) {
 
 					Event event = new Event ();
 					event.gc = gc;
-					event.setBounds(Win32DPIUtils.pixelToPoint(new Rectangle.OfFloat(ps.left, ps.top, width, height), getAutoscalingZoom()));
+					event.setBounds(Win32DPIUtils.pixelToPointWithSufficientlyLargeSize(new Rectangle.OfFloat(ps.left, ps.top, width, height), getAutoscalingZoom()));
 					sendEvent (SWT.Paint, event);
 					if (data.focusDrawn && !isDisposed ()) updateUIState ();
 					gc.dispose ();
