@@ -250,6 +250,64 @@ private void gtk_combo_box_toggle_wrap (boolean wrap) {
 }
 
 /**
+ * <p>Bug 506. Bulk updates of the item list.</p>
+ *
+ * <p>Editing the GtkListStore a combo is showing is expensive per row. On GTK3,
+ *   while the wrap width is above 0, row_inserted_cb and row_deleted_cb in
+ *   gtktreemenu.c rebuild the whole popup menu on every row change, so filling
+ *   or clearing a large combo row by row is quadratic. Detaching the model with
+ *   gtk_combo_box_set_model(handle, 0) does not help, because the popup keeps
+ *   the model even when the combo drops it.</p>
+ *
+ * <p>Solution: never bulk-edit an attached store. Build a new GtkListStore, fill
+ *   it while nothing observes it, and hand it to the combo in one step, so the
+ *   popup is rebuilt once per bulk update instead of once per row. Building the
+ *   popup itself is still superlinear inside GTK.</p>
+ *
+ * @param newItems the items the combo shows afterwards
+ * @param activeIndex the item to select afterwards, or -1 for no selection
+ */
+private void setModelItems (String [] newItems, int activeIndex) {
+	if (handle == 0) return;
+	long [] types = new long [] {OS.G_TYPE_STRING (), OS.G_TYPE_STRING ()};
+	long model = GTK.gtk_list_store_newv (types.length, types);
+	if (model == 0) error (SWT.ERROR_NO_HANDLES);
+	long iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
+	if (iter == 0) {
+		OS.g_object_unref (model);
+		error (SWT.ERROR_NO_HANDLES);
+	}
+	for (String item : newItems) {
+		GTK.gtk_list_store_append (model, iter);
+		GTK.gtk_list_store_set (model, iter, 0, Converter.wcsToMbcs (item, true), -1);
+	}
+	OS.g_free (iter);
+
+	// On GTK4 swapping the model emits "changed" for the dropped active item, which
+	// would send spurious Modify/Selection events, so keep the combo quiet meanwhile.
+	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	GTK.gtk_combo_box_set_model (handle, model);
+	OS.g_object_unref (model);
+	if (activeIndex != -1) {
+		// On a combo with an entry, block every "changed" handler, including GTK's own that rewrites
+		// the entry from the model row, so the entry keeps its text (possibly altered by a Verify
+		// listener) and caret. This also blocks GTK3's GtkComboBoxAccessible, whose index can go stale.
+		int changedId = entryHandle != 0 ? OS.g_signal_lookup (OS.changed, OS.G_OBJECT_TYPE (handle)) : 0;
+		if (changedId != 0) OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_ID, changedId, 0, 0, 0, 0);
+		GTK.gtk_combo_box_set_active (handle, activeIndex);
+		if (changedId != 0) OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_ID, changedId, 0, 0, 0, 0);
+	}
+	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	// Editable combos only get wrap enabled on insert, which bulk updates no longer go through.
+	if (newItems.length > 0) gtk_combo_box_toggle_wrap (true);
+
+	// The swap rebuilds the popup, so its children lost the direction set for them before.
+	if ((style & SWT.RIGHT_TO_LEFT) != 0 && popupHandle != 0) {
+		GTK3.gtk_container_forall (popupHandle, display.setDirectionProc, GTK.GTK_TEXT_DIR_RTL);
+	}
+}
+
+/**
  * Adds the listener to the collection of listeners who will
  * be notified when the receiver's text is modified, by sending
  * it one of the messages defined in the <code>ModifyListener</code>
@@ -2073,13 +2131,14 @@ public void remove (int start, int end) {
 	System.arraycopy (oldItems, end + 1, newItems, start, oldItems.length - end - 1);
 	items = newItems;
 	int index = GTK.gtk_combo_box_get_active (handle);
-	if (start <= index && index <= end) clearText();
-
-	gtk_combo_box_toggle_wrap(false);
-	for (int i = end; i >= start; i--) {
-		if (handle != 0) GTK.gtk_combo_box_text_remove(handle, i);
+	boolean selectionRemoved = start <= index && index <= end;
+	if (selectionRemoved) clearText();
+	// Rebuilding the model drops the active item, so remember where it moves to.
+	int newIndex = -1;
+	if (index != -1 && !selectionRemoved) {
+		newIndex = index > end ? index - (end - start + 1) : index;
 	}
-	gtk_combo_box_toggle_wrap(true);
+	setModelItems (items, newIndex);
 }
 
 /**
@@ -2119,7 +2178,7 @@ public void removeAll () {
 
 	items = new String[0];
 	clearText();
-	gtk_combo_box_text_remove_all();
+	setModelItems (items, -1);
 }
 
 /**
@@ -2408,20 +2467,7 @@ public void setItems (String... items) {
 	System.arraycopy (items, 0, this.items, 0, items.length);
 	clearText ();
 
-	gtk_combo_box_text_remove_all();
-	for (int i = 0; i < items.length; i++) {
-		String string = items [i];
-		gtk_combo_box_insert(string, i);
-		if ((style & SWT.RIGHT_TO_LEFT) != 0 && popupHandle != 0) {
-			GTK3.gtk_container_forall (popupHandle, display.setDirectionProc, GTK.GTK_TEXT_DIR_RTL);
-		}
-	}
-}
-
-private void gtk_combo_box_text_remove_all() {
-	gtk_combo_box_toggle_wrap(false);
-	if (handle != 0) GTK.gtk_combo_box_text_remove_all(handle);
-	gtk_combo_box_toggle_wrap(true);
+	setModelItems (this.items, -1);
 }
 
 /**

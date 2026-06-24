@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -646,6 +647,154 @@ public void test_removeII() {
 		combo.remove(0, 1);
 		assertTrue(combo.getText().isEmpty());
 	}
+}
+
+@Test
+public void test_removeII_keepsSelectionOutsideRange() {
+	// Bug 506: removing a range outside the selection must keep the same item
+	// selected even though GTK rebuilds the model. Selection handling is platform
+	// specific, so assert it only on GTK.
+	String[] items = {"item0", "item1", "item2", "item3", "item4"};
+
+	// Selection after the removed range: index shifts down by the removed count.
+	combo.setItems(items);
+	combo.select(4);
+	combo.remove(0, 1);
+	assertEquals(3, combo.getItemCount());
+	if (SwtTestUtil.isGTK) {
+		assertEquals(2, combo.getSelectionIndex());
+		assertEquals("item4", combo.getItem(combo.getSelectionIndex()));
+	}
+
+	// Selection right after the removed range.
+	combo.setItems(items);
+	combo.select(2);
+	combo.remove(0, 1);
+	if (SwtTestUtil.isGTK) {
+		assertEquals(0, combo.getSelectionIndex());
+		assertEquals("item2", combo.getItem(combo.getSelectionIndex()));
+	}
+
+	// Selection before the removed range: index is unchanged.
+	combo.setItems(items);
+	combo.select(0);
+	combo.remove(2, 3);
+	assertEquals(3, combo.getItemCount());
+	if (SwtTestUtil.isGTK) {
+		assertEquals(0, combo.getSelectionIndex());
+		assertEquals("item0", combo.getItem(combo.getSelectionIndex()));
+	}
+
+	// Selection inside the removed range: selection is cleared.
+	combo.setItems(items);
+	combo.select(2);
+	combo.remove(1, 3);
+	assertEquals(2, combo.getItemCount());
+	if (SwtTestUtil.isGTK) {
+		assertEquals(-1, combo.getSelectionIndex());
+	}
+}
+
+@Test
+public void test_bulkUpdatesKeepShownItemsInSync() {
+	// Bug 506: setItems/remove/removeAll replace the GTK model, so selecting an item
+	// afterwards, and adding items to the new model, must still show the right text.
+	Combo editable = new Combo(shell, SWT.DROP_DOWN);
+	editable.setItems("item0", "item1", "item2", "item3");
+	editable.select(3);
+	assertEquals("item3", editable.getText());
+
+	editable.remove(0, 1);
+	editable.select(0);
+	assertEquals("item2", editable.getText());
+
+	editable.removeAll();
+	editable.add("y");
+	editable.add("x", 0);
+	editable.select(1);
+	assertEquals("y", editable.getText());
+	editable.select(0);
+	assertEquals("x", editable.getText());
+	editable.dispose();
+}
+
+@Test
+public void test_bulkUpdatesSendNoEventsWhenNothingIsSelected() {
+	// Bug 506: setItems/remove/removeAll rebuild the GTK model internally. That must
+	// stay invisible to applications, so an unselected combo must send no events.
+	// Editable combos are covered too, because they carry a second set of listeners
+	// on the entry widget.
+	String[] items = {"item0", "item1", "item2", "item3", "item4"};
+	for (int style : new int[] {SWT.READ_ONLY, SWT.DROP_DOWN}) {
+		String message = "style " + style;
+		Combo bulk = new Combo(shell, style);
+		AtomicInteger modifyCount = new AtomicInteger();
+		AtomicInteger selectionCount = new AtomicInteger();
+		bulk.addModifyListener(e -> modifyCount.incrementAndGet());
+		bulk.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> selectionCount.incrementAndGet()));
+
+		bulk.setItems(items);
+		bulk.remove(0, 1);
+		bulk.removeAll();
+		SwtTestUtil.processEvents();
+
+		assertEquals(0, selectionCount.get(), message);
+		if (SwtTestUtil.isGTK) {
+			assertEquals(0, modifyCount.get(), message);
+		}
+		bulk.dispose();
+	}
+}
+
+@Test
+public void test_removeII_keepsSelectedItemWithoutEvents() {
+	// Bug 506: a range removal that keeps the selected item must not change the shown
+	// text or its text selection, and must not report that as a modification or as a new selection.
+	assumeFalse(SwtTestUtil.isCocoa,
+			"Cocoa sends a Selection event for an editable Combo when items before the selection are removed");
+	String[] items = {"item0", "item1", "item2", "item3", "item4"};
+	for (int style : new int[] {SWT.READ_ONLY, SWT.DROP_DOWN}) {
+		String message = "style " + style;
+		Combo bulk = new Combo(shell, style);
+		bulk.setItems(items);
+		bulk.select(4);
+		bulk.setSelection(new Point(1, 3));
+		String textBefore = bulk.getText();
+		Point selectionBefore = bulk.getSelection();
+		AtomicInteger modifyCount = new AtomicInteger();
+		AtomicInteger selectionCount = new AtomicInteger();
+		bulk.addModifyListener(e -> modifyCount.incrementAndGet());
+		bulk.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> selectionCount.incrementAndGet()));
+
+		bulk.remove(0, 1);
+		SwtTestUtil.processEvents();
+
+		assertEquals(0, selectionCount.get(), message);
+		if (SwtTestUtil.isGTK) {
+			assertEquals(textBefore, bulk.getText(), message);
+			assertEquals(selectionBefore, bulk.getSelection(), message);
+			assertEquals(0, modifyCount.get(), message);
+		}
+		bulk.dispose();
+	}
+}
+
+@Test
+public void test_removeII_keepsVerifiedTextOfSelectedItem() {
+	// Bug 506: the shown text of a kept selection must survive a range removal, even
+	// when a Verify listener made it differ from the item. Whether select() runs Verify
+	// listeners is platform specific, so assert it only on GTK.
+	assumeTrue(SwtTestUtil.isGTK, "select() does not send Verify events on this platform");
+	Combo editable = new Combo(shell, SWT.DROP_DOWN);
+	editable.setItems("a", "b", "cat");
+	editable.addVerifyListener(e -> e.text = e.text.toUpperCase());
+	editable.select(2);
+	assertEquals("CAT", editable.getText());
+
+	editable.remove(0, 1);
+	assertEquals("CAT", editable.getText());
+	assertEquals(0, editable.getSelectionIndex());
+	editable.dispose();
 }
 
 @Test
