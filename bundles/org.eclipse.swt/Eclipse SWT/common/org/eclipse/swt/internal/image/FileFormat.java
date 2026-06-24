@@ -116,6 +116,9 @@ public abstract class FileFormat {
  * device independent image array represented by the stream.
  */
 public List<ElementAtZoom<ImageData>> loadFromStream(LEDataInputStream stream, int fileZoom, int targetZoom) {
+	return loadFromStream(stream, fileZoom, targetZoom, null);
+}
+public List<ElementAtZoom<ImageData>> loadFromStream(LEDataInputStream stream, int fileZoom, int targetZoom, Supplier<Point> sizeHintSupplier) {
 	try {
 		inputStream = stream;
 		return loadFromByteStream(fileZoom, targetZoom);
@@ -148,13 +151,16 @@ public ImageData loadFromStreamBySize(LEDataInputStream stream, int width, int h
  * return the device independent image array represented by the stream.
  */
 public static List<ElementAtZoom<ImageData>> load(ElementAtZoom<InputStream> is, ImageLoader loader, int targetZoom) {
+	return load(is, loader, targetZoom, null);
+}
+public static List<ElementAtZoom<ImageData>> load(ElementAtZoom<InputStream> is, ImageLoader loader, int targetZoom, Supplier<Point> sizeHintSupplier) {
 	LEDataInputStream stream = new LEDataInputStream(is.element());
 	FileFormat fileFormat = determineFileFormat(stream).orElseGet(() -> {
 		SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT);
 		return null;
 	});
 	fileFormat.loader = loader;
-	return fileFormat.loadFromStream(stream, is.zoom(), targetZoom);
+	return fileFormat.loadFromStream(stream, is.zoom(), targetZoom, sizeHintSupplier);
 }
 
 public static ImageData load(InputStream is, ImageLoader loader, int width, int height) {
