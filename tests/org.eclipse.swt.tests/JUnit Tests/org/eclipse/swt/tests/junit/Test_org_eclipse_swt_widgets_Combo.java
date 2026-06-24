@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -646,6 +647,101 @@ public void test_removeII() {
 		combo.select(0);
 		combo.remove(0, 1);
 		assertTrue(combo.getText().isEmpty());
+	}
+}
+
+@Test
+public void test_removeII_keepsSelectionOutsideRange() {
+	// Bug 506: removing a range outside the selection must keep the same item
+	// selected even though GTK rebuilds the model. Selection handling is platform
+	// specific, so assert it only on GTK.
+	String[] items = {"item0", "item1", "item2", "item3", "item4"};
+
+	// Selection after the removed range: index shifts down by the removed count.
+	combo.setItems(items);
+	combo.select(4);
+	combo.remove(0, 1);
+	assertEquals(3, combo.getItemCount());
+	if (SwtTestUtil.isGTK) {
+		assertEquals(2, combo.getSelectionIndex());
+		assertEquals("item4", combo.getItem(combo.getSelectionIndex()));
+	}
+
+	// Selection before the removed range: index is unchanged.
+	combo.setItems(items);
+	combo.select(0);
+	combo.remove(2, 3);
+	assertEquals(3, combo.getItemCount());
+	if (SwtTestUtil.isGTK) {
+		assertEquals(0, combo.getSelectionIndex());
+		assertEquals("item0", combo.getItem(combo.getSelectionIndex()));
+	}
+
+	// Selection inside the removed range: selection is cleared.
+	combo.setItems(items);
+	combo.select(2);
+	combo.remove(1, 3);
+	assertEquals(2, combo.getItemCount());
+	if (SwtTestUtil.isGTK) {
+		assertEquals(-1, combo.getSelectionIndex());
+	}
+}
+
+@Test
+public void test_bulkUpdatesSendNoEventsWhenNothingIsSelected() {
+	// Bug 506: setItems/remove/removeAll rebuild the GTK model internally. That must
+	// stay invisible to applications, so an unselected combo must send no events.
+	// Editable combos are covered too, because they carry a second set of listeners
+	// on the entry widget.
+	String[] items = {"item0", "item1", "item2", "item3", "item4"};
+	for (int style : new int[] {SWT.READ_ONLY, SWT.DROP_DOWN}) {
+		String message = "style " + style;
+		Combo bulk = new Combo(shell, style);
+		AtomicInteger modifyCount = new AtomicInteger();
+		AtomicInteger selectionCount = new AtomicInteger();
+		bulk.addModifyListener(e -> modifyCount.incrementAndGet());
+		bulk.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> selectionCount.incrementAndGet()));
+
+		bulk.setItems(items);
+		bulk.remove(0, 1);
+		bulk.removeAll();
+		SwtTestUtil.processEvents();
+
+		assertEquals(0, selectionCount.get(), message);
+		if (SwtTestUtil.isGTK) {
+			assertEquals(0, modifyCount.get(), message);
+		}
+		bulk.dispose();
+	}
+}
+
+@Test
+public void test_removeII_keepsSelectedItemWithoutEvents() {
+	// Bug 506: a range removal that keeps the selected item must not change the shown
+	// text, and must not report that as a modification or as a new selection.
+	assumeFalse(SwtTestUtil.isCocoa,
+			"Cocoa sends a Selection event for an editable Combo when items before the selection are removed");
+	String[] items = {"item0", "item1", "item2", "item3", "item4"};
+	for (int style : new int[] {SWT.READ_ONLY, SWT.DROP_DOWN}) {
+		String message = "style " + style;
+		Combo bulk = new Combo(shell, style);
+		bulk.setItems(items);
+		bulk.select(4);
+		String textBefore = bulk.getText();
+		AtomicInteger modifyCount = new AtomicInteger();
+		AtomicInteger selectionCount = new AtomicInteger();
+		bulk.addModifyListener(e -> modifyCount.incrementAndGet());
+		bulk.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> selectionCount.incrementAndGet()));
+
+		bulk.remove(0, 1);
+		SwtTestUtil.processEvents();
+
+		assertEquals(0, selectionCount.get(), message);
+		if (SwtTestUtil.isGTK) {
+			assertEquals(textBefore, bulk.getText(), message);
+			assertEquals(0, modifyCount.get(), message);
+		}
+		bulk.dispose();
 	}
 }
 
