@@ -1075,7 +1075,12 @@ Point resizeCalculationsGTK3 (long widget, int width, int height) {
 	 * Feature in GTK3.20+: size calculations take into account GtkCSSNode
 	 * elements which we cannot access. If the to-be-allocated size minus
 	 * these elements is < 0, allocate the preferred size instead. See bug 486068.
+	 *
+	 * On GTK4 the widget is sized via its own
+	 * gtk_widget_size_allocate(), which clamps to the minimum size internally,
+	 * so this adjustment is unnecessary. Return the requested size unchanged on GTK4.
 	 */
+	if (GTK.GTK4) return sizes;
 	GtkRequisition minimumSize = new GtkRequisition();
 	GtkRequisition naturalSize = new GtkRequisition();
 	GTK.gtk_widget_get_preferred_size(widget, minimumSize, naturalSize);
