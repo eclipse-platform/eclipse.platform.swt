@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -18,6 +18,7 @@ package org.eclipse.swt.tests.junit;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -35,6 +36,8 @@ import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.graphics.ImageLoaderEvent;
 import org.eclipse.swt.graphics.ImageLoaderListener;
 import org.eclipse.swt.graphics.PaletteData;
+import org.eclipse.swt.internal.DPIUtil.ElementAtZoom;
+import org.eclipse.swt.internal.NativeImageLoader;
 import org.eclipse.swt.widgets.Display;
 import org.junit.jupiter.api.Test;
 
@@ -209,6 +212,37 @@ public void test_bug547529() {
 		assertArrayEquals(savedBytes, loadedBytes);
 	} finally {
 		display.dispose();
+	}
+}
+
+/**
+ * Regression test for https://github.com/eclipse-platform/eclipse.platform.swt/issues/3404
+ *
+ * A single-frame GIF carrying a graphic control extension, such a GIF is reported as a
+ * non-static animation whose first frame step yields no update (since gdk-pixbuf
+ * 2.44 delegates decoding to glycin), so the GTK image loader used
+ * to return an empty list. JFace requests image data at the monitor's zoom this exact way
+ * (see org.eclipse.jface.resource.URLImageDescriptor#loadImageFromStream) and an empty
+ * list made its {@code .get(0)} throw ArrayIndexOutOfBoundsException, which is only reached
+ * when running at a zoom other than 100%. The call below mirrors that line verbatim, so it
+ * reproduces the original failure unless loading always yields at least one frame.
+ */
+@Test
+public void test_loadSingleFrameGifReportedAsAnimation_bug3404() throws IOException {
+	byte[] bytes;
+	try (InputStream in = getClass().getResourceAsStream("tc_empty.gif")) {
+		assertNotNull(in, "Test resource c_empty.gif not found");
+		bytes = in.readAllBytes();
+	}
+	for (int zoom : new int[] { 100, 200 }) {
+		// Copy of URLImageDescriptor.loadImageFromStream(stream, fileZoom, targetZoom):
+		// an empty list throws ArrayIndexOutOfBoundsException on get(0), exactly as JFace did.
+		@SuppressWarnings("restriction")
+		ImageData imageData = NativeImageLoader
+				.load(new ElementAtZoom<>(new ByteArrayInputStream(bytes), zoom), new ImageLoader(), zoom).get(0)
+				.element();
+		assertNotNull(imageData, "No ImageData returned at zoom " + zoom);
+		assertTrue(imageData.width > 0 && imageData.height > 0, "ImageData has no pixels at zoom " + zoom);
 	}
 }
 
