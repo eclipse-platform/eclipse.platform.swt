@@ -121,6 +121,18 @@ public class NativeImageLoader {
 					break;
 				}
 			}
+			if (imgDataList.isEmpty()) {
+				// Some single-frame images (e.g. GIFs carrying a graphic control extension)
+				// are reported by GdkPixbuf (when using glycin library internally) as
+				// non-static animations, but the first iter_advance() returns false so that the
+				// loop above adds no frame at all.
+				// Fall back to the static image in this case (see
+				// https://github.com/eclipse-platform/eclipse.platform.swt/issues/3404).
+				long pixbuf = GDK.gdk_pixbuf_animation_get_static_image(pixbuf_animation);
+				ImageData imgData = pixbufToImageData(pixbuf);
+				imgData.type = getImageFormat(loader);
+				imgDataList.add(imgData);
+			}
 		}
 		ImageData[] imgDataArray = new ImageData[imgDataList.size()];
 		for (int i = 0; i < imgDataList.size(); i++) {
