@@ -2678,7 +2678,7 @@ int getChevronCount() {
 private void updateChevronImage(boolean styleChange) {
 	if (styleChange && chevronImage == null) return;
 	int newCount = getChevronCount();
-	if (!styleChange && chevronCount == newCount) return;
+	if (!styleChange && chevronImage != null && chevronCount == newCount) return;
 	if (chevronImage != null) chevronImage.dispose();
 	chevronImage = createButtonImage(getDisplay(), CTabFolderRenderer.PART_CHEVRON_BUTTON);
 	chevronItem.setImage(chevronImage);
@@ -3998,6 +3998,15 @@ boolean updateItems (int showIndex) {
 			// Tab height has changed. Item sizes have to be set again.
 			changed |= setItemSize(gc);
 		}
+	}
+	if (showChevron) {
+		// Give the chevron its image (and thus its real preferred size) before
+		// setItemLocation decides how many tabs are showing. Both setItemLocation
+		// and computeControlBounds reserve space for the chevron via
+		// getRightItemEdge(); an image-less chevron measures much smaller than the
+		// final one, which would let an extra tab remain visible and make the
+		// chevron overlap the trailing controls (e.g. the min/max toolbar).
+		updateChevronImage(false);
 	}
 	changed |= setItemLocation(gc);
 	setButtonBounds();
