@@ -22,6 +22,7 @@ import java.nio.charset.StandardCharsets;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.RGB;
 import org.junit.jupiter.api.Test;
 
 class JSVGRasterizerTest {
@@ -29,7 +30,7 @@ class JSVGRasterizerTest {
 	private final JSVGRasterizer rasterizer = new JSVGRasterizer();
 	private String svgString = """
 			<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-			    <rect width="100%" height="100%"/>
+			    <rect width="100%" height="100%" fill="currentColor"/>
 			</svg>
 			""";
 
@@ -89,4 +90,10 @@ class JSVGRasterizerTest {
 		assertEquals(SWT.ERROR_INVALID_IMAGE, exception.code);
 	}
 
+	@Test
+	void testDefaultCurrentColorIsBlack() {
+		ImageData data = rasterizer.rasterizeSVG(svgStream(svgString), 100);
+		RGB rgb = data.palette.getRGB(data.getPixel(0, 0));
+		assertEquals(new RGB(0, 0, 0), rgb);
+	}
 }
