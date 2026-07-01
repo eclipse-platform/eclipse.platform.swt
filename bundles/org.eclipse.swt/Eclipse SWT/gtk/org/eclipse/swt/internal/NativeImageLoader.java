@@ -18,6 +18,7 @@ package org.eclipse.swt.internal;
 import java.io.*;
 import java.util.*;
 import java.util.List;
+import java.util.function.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -34,6 +35,10 @@ public class NativeImageLoader {
 	// --- loading ---
 
 	public static List<ElementAtZoom<ImageData>> load(ElementAtZoom<InputStream> streamAtZoom, ImageLoader imageLoader, int targetZoom) {
+		return load(streamAtZoom, imageLoader, targetZoom, null);
+	}
+
+	public static List<ElementAtZoom<ImageData>> load(ElementAtZoom<InputStream> streamAtZoom, ImageLoader imageLoader, int targetZoom, Supplier<Point> sizeHintSupplier) {
 		// 1) Load InputStream into byte array
 		byte[] data_buffer;
 		InputStream stream = streamAtZoom.element();
@@ -53,7 +58,7 @@ public class NativeImageLoader {
 			} catch (IOException e) {
 				SWT.error(SWT.ERROR_IO);
 			}
-			return FileFormat.load(new ElementAtZoom<>(stream2, streamAtZoom.zoom()), imageLoader, targetZoom);
+			return FileFormat.load(new ElementAtZoom<>(stream2, streamAtZoom.zoom()), imageLoader, targetZoom, sizeHintSupplier);
 		}
 		List<ImageData> imgDataList = new ArrayList<>();
 		long loader = GDK.gdk_pixbuf_loader_new();
