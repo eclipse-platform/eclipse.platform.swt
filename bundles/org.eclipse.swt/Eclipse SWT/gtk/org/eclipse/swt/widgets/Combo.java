@@ -2067,12 +2067,36 @@ public void remove (int start, int end) {
 	items = newItems;
 	int index = GTK.gtk_combo_box_get_active (handle);
 	if (start <= index && index <= end) clearText();
-
-	gtk_combo_box_toggle_wrap(false);
-	for (int i = end; i >= start; i--) {
-		if (handle != 0) GTK.gtk_combo_box_text_remove(handle, i);
+	// Detaching the model resets the active item, so remember the selection to restore it.
+	int newIndex = -1;
+	if (index != -1 && !(start <= index && index <= end)) {
+		newIndex = index > end ? index - (end - start + 1) : index;
 	}
-	gtk_combo_box_toggle_wrap(true);
+
+	long model = handle != 0 ? GTK.gtk_combo_box_get_model (handle) : 0;
+	if (model != 0) {
+		// Bug 506: detach the model and remove the rows directly (end first to keep
+		// indices stable) so GtkComboBox relayouts once instead of per removed row.
+		OS.g_object_ref (model);
+		gtk_combo_box_toggle_wrap (false);
+		GTK.gtk_combo_box_set_model (handle, 0);
+		long iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
+		for (int i = end; i >= start; i--) {
+			if (GTK.gtk_tree_model_iter_nth_child (model, iter, 0, i)) {
+				GTK.gtk_list_store_remove (model, iter);
+			}
+		}
+		OS.g_free (iter);
+		GTK.gtk_combo_box_set_model (handle, model);
+		if (newIndex != -1) {
+			// Restore the selection without firing a spurious Modify event.
+			OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+			GTK.gtk_combo_box_set_active (handle, newIndex);
+			OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+		}
+		OS.g_object_unref (model);
+		gtk_combo_box_toggle_wrap (true);
+	}
 }
 
 /**
@@ -2112,7 +2136,19 @@ public void removeAll () {
 
 	items = new String[0];
 	clearText();
-	gtk_combo_box_text_remove_all();
+
+	long model = handle != 0 ? GTK.gtk_combo_box_get_model (handle) : 0;
+	if (model != 0) {
+		// Bug 506: detach the model and clear the GtkListStore in one step so
+		// GtkComboBox relayouts once instead of per removed row.
+		OS.g_object_ref (model);
+		gtk_combo_box_toggle_wrap (false);
+		GTK.gtk_combo_box_set_model (handle, 0);
+		GTK.gtk_list_store_clear (model);
+		GTK.gtk_combo_box_set_model (handle, model);
+		OS.g_object_unref (model);
+		gtk_combo_box_toggle_wrap (true);
+	}
 }
 
 /**
@@ -2401,20 +2437,37 @@ public void setItems (String... items) {
 	System.arraycopy (items, 0, this.items, 0, items.length);
 	clearText ();
 
-	gtk_combo_box_text_remove_all();
-	for (int i = 0; i < items.length; i++) {
-		String string = items [i];
-		gtk_combo_box_insert(string, i);
-		if ((style & SWT.RIGHT_TO_LEFT) != 0 && popupHandle != 0) {
-			GTK3.gtk_container_forall (popupHandle, display.setDirectionProc, GTK.GTK_TEXT_DIR_RTL);
+	long model = handle != 0 ? GTK.gtk_combo_box_get_model (handle) : 0;
+	if (model != 0) {
+		// Bug 506: detach the model and populate the GtkListStore directly so
+		// GtkComboBox relayouts once instead of per inserted item.
+		OS.g_object_ref (model);
+		gtk_combo_box_toggle_wrap (false);
+		GTK.gtk_combo_box_set_model (handle, 0);
+		GTK.gtk_list_store_clear (model);
+		long iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
+		for (int i = 0; i < items.length; i++) {
+			gtk_list_store_insert (model, iter, items [i], i);
 		}
+		OS.g_free (iter);
+		GTK.gtk_combo_box_set_model (handle, model);
+		OS.g_object_unref (model);
+		gtk_combo_box_toggle_wrap (true);
+	}
+
+	if ((style & SWT.RIGHT_TO_LEFT) != 0 && popupHandle != 0) {
+		GTK3.gtk_container_forall (popupHandle, display.setDirectionProc, GTK.GTK_TEXT_DIR_RTL);
 	}
 }
 
-private void gtk_combo_box_text_remove_all() {
-	gtk_combo_box_toggle_wrap(false);
-	if (handle != 0) GTK.gtk_combo_box_text_remove_all(handle);
-	gtk_combo_box_toggle_wrap(true);
+/**
+ * Inserts an item into the combo's GtkListStore (text in column 0) while the
+ * model is detached during bulk updates, reusing the given iter. See {@link #setItems}.
+ */
+private void gtk_list_store_insert (long model, long iter, String string, int index) {
+	byte[] buffer = Converter.wcsToMbcs (string, true);
+	GTK.gtk_list_store_insert (model, iter, index);
+	GTK.gtk_list_store_set (model, iter, 0, buffer, -1);
 }
 
 /**

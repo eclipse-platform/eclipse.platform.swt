@@ -650,6 +650,42 @@ public void test_removeII() {
 }
 
 @Test
+public void test_removeII_keepsSelectionOutsideRange() {
+	// Bug 506: removing a range outside the selection must keep the same item
+	// selected. Selection handling is platform specific, so assert it only on GTK.
+	String[] items = {"item0", "item1", "item2", "item3", "item4"};
+
+	// Selection after the removed range: index shifts down by the removed count.
+	combo.setItems(items);
+	combo.select(4);
+	combo.remove(0, 1);
+	assertEquals(3, combo.getItemCount());
+	if (SwtTestUtil.isGTK) {
+		assertEquals(2, combo.getSelectionIndex());
+		assertEquals("item4", combo.getItem(combo.getSelectionIndex()));
+	}
+
+	// Selection before the removed range: index is unchanged.
+	combo.setItems(items);
+	combo.select(0);
+	combo.remove(2, 3);
+	assertEquals(3, combo.getItemCount());
+	if (SwtTestUtil.isGTK) {
+		assertEquals(0, combo.getSelectionIndex());
+		assertEquals("item0", combo.getItem(combo.getSelectionIndex()));
+	}
+
+	// Selection inside the removed range: selection is cleared.
+	combo.setItems(items);
+	combo.select(2);
+	combo.remove(1, 3);
+	assertEquals(2, combo.getItemCount());
+	if (SwtTestUtil.isGTK) {
+		assertEquals(-1, combo.getSelectionIndex());
+	}
+}
+
+@Test
 public void test_removeLjava_lang_String() {
 	int number = 5;
 	for (int i = 0; i < number; i++)
