@@ -1409,7 +1409,17 @@ void moveAbove (long child, long sibling) {
 void moveBelow (long child, long sibling) {
 	if (child == sibling) return;
 	long parentHandle = parentingHandle ();
-	if (sibling == 0 && parentHandle == fixedHandle) {
+    /*
+     * GTK3-only: when sibling == 0 (move to the bottom of the z-order) the
+     * child would be stacked behind the scrolled content's GdkWindow, hiding
+     * overlay controls such as Table/Tree editors. Re-place it just above the
+     * scrolled content instead.
+     *
+     * Not needed on GTK4: widgets have no per-widget GdkWindow, so paint order
+     * is simply the parent's child-list order (first = bottom, last = top), and
+     * the general branch below already appends the child to the end (top).
+     */
+	if (!GTK.GTK4 && sibling == 0 && parentHandle == fixedHandle) {
 		moveAbove (child, scrolledHandle != 0  ? scrolledHandle : handle);
 		return;
 	}
