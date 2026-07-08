@@ -201,28 +201,39 @@ public final class Image extends Resource implements Drawable {
 	}
 
 	private class HandleAtSize {
+		record TemporaryHandleForZoom(DestroyableImageHandle handle, int zoom) {}
+
 		private InternalImageHandle handleContainer = null;
-		private DestroyableImageHandle temporaryHandleContainer = null;
+		private TemporaryHandleForZoom temporaryHandleContainer = null;
 		private int requestedWidth = -1;
 		private int requestedHeight = -1;
 
 		public void destroy() {
-			if (temporaryHandleContainer != null) {
-				temporaryHandleContainer.destroy();
-				temporaryHandleContainer = null;
+			TemporaryHandleForZoom previousHandle = reset();
+			if (previousHandle != null) {
+				previousHandle.handle().destroy();
 			}
+		}
+
+		private TemporaryHandleForZoom reset() {
+			TemporaryHandleForZoom previousHandle = temporaryHandleContainer;
+			temporaryHandleContainer = null;
 			handleContainer = null;
 			requestedWidth = -1;
 			requestedHeight = -1;
+			return previousHandle;
 		}
 
 		public ImageHandle refresh(int width, int height) {
 			if (!isReusable(width, height)) {
-				destroy();
+				TemporaryHandleForZoom previousHandle = reset();
 				requestedWidth = width;
 				requestedHeight = height;
 				handleContainer = createHandleAtExactSize(width, height)
-						.orElseGet(() -> getOrCreateImageHandleAtClosestSize(width, height));
+						.orElseGet(() -> getOrCreateImageHandleAtClosestSize(width, height, previousHandle));
+				if (previousHandle != null && previousHandle.handle() != handleContainer) {
+					previousHandle.handle().destroy();
+				}
 			}
 			return handleContainer;
 		}
@@ -238,23 +249,32 @@ public final class Image extends Resource implements Drawable {
 		private Optional<InternalImageHandle> createHandleAtExactSize(int width, int height) {
 			Optional<ImageData> imageData = imageProvider.loadImageDataAtExactSize(width, height);
 			if (imageData.isPresent()) {
-				temporaryHandleContainer = init(imageData.get(), -1);
-				return Optional.of(temporaryHandleContainer);
+				temporaryHandleContainer = new TemporaryHandleForZoom(init(imageData.get(), -1), 0);
+				return Optional.of(temporaryHandleContainer.handle());
 			}
 			return Optional.empty();
 		}
 
-		private InternalImageHandle getOrCreateImageHandleAtClosestSize(int widthHint, int heightHint) {
+		private InternalImageHandle getOrCreateImageHandleAtClosestSize(int widthHint, int heightHint, TemporaryHandleForZoom previousHandle) {
 			Rectangle bounds = getBounds(100);
 			int imageZoomForWidth = 100 * widthHint / bounds.width;
 			int imageZoomForHeight = 100 * heightHint / bounds.height;
 			int imageZoom = DPIUtil.getZoomForAutoscaleProperty(Math.max(imageZoomForWidth, imageZoomForHeight));
-			InternalImageHandle bestFittingHandle = imageHandleManager.get(imageZoom);
-			if (bestFittingHandle == null) {
-				ImageData bestFittingImageData = imageProvider.loadImageData(imageZoom).element();
-				bestFittingHandle = temporaryHandleContainer = init(bestFittingImageData, -1);
+			int nearestAvailableZoom = imageProvider.nearestAvailableZoom(imageZoom);
+			InternalImageHandle bestFittingHandle = imageHandleManager.get(nearestAvailableZoom);
+			if (bestFittingHandle != null) {
+				return bestFittingHandle;
 			}
-			return bestFittingHandle;
+			if (nearestAvailableZoom == 100) {
+				return getHandleInternal(100, 100);
+			}
+			if (previousHandle != null && previousHandle.zoom() == nearestAvailableZoom) {
+				temporaryHandleContainer = previousHandle;
+				return previousHandle.handle();
+			}
+			ElementAtZoom<ImageData> imageData = imageProvider.loadImageData(imageZoom);
+			temporaryHandleContainer = new TemporaryHandleForZoom(init(imageData.element(), -1), imageData.zoom());
+			return temporaryHandleContainer.handle();
 		}
 
 	}
@@ -957,6 +977,10 @@ public static long win32_getHandle (Image image, int zoom) {
 }
 
 ImageHandle getHandle (int targetZoom, int nativeZoom) {
+	return getHandleInternal(targetZoom, nativeZoom);
+}
+
+InternalImageHandle getHandleInternal (int targetZoom, int nativeZoom) {
 	if (isDisposed()) {
 		return null;
 	}
@@ -2090,6 +2114,8 @@ private abstract class AbstractImageProviderWrapper {
 		return false;
 	}
 
+	abstract int nearestAvailableZoom(int zoom);
+
 	/**
 	 * Returns image data at the best-fitting available zoom for the given zoom.
 	 * The returned data will have a potential gray/disable style applied.
@@ -2102,7 +2128,7 @@ private abstract class AbstractImageProviderWrapper {
 
 	ElementAtZoom<ImageData> getClosestAvailableImageData(int zoom) {
 		TreeSet<Integer> availableZooms = new TreeSet<>(imageHandleManager.getAllZooms());
-		int closestZoom = Optional.ofNullable(availableZooms.higher(zoom)).orElse(availableZooms.lower(zoom));
+		int closestZoom = availableZooms.contains(zoom) ? zoom : Optional.ofNullable(availableZooms.higher(zoom)).orElse(availableZooms.lower(zoom));
 		ImageData imageData = imageHandleManager.get(closestZoom).getImageData();
 		return new ElementAtZoom<>(imageData, closestZoom);
 	}
@@ -2179,6 +2205,11 @@ private class ExistingImageHandleProviderWrapper extends AbstractImageProviderWr
 		ImageData resizedData = newImageData (zoomContext.targetZoom());
 		return newImageHandle(resizedData, zoomContext);
 	}
+
+	@Override
+	int nearestAvailableZoom(int zoom) {
+		return zoomForHandle;
+	}
 }
 
 private abstract class ImageFromImageDataProviderWrapper extends AbstractImageProviderWrapper {
@@ -2249,6 +2280,11 @@ private class PlainImageDataProviderWrapper extends ImageFromImageDataProviderWr
 	AbstractImageProviderWrapper createCopy(Image image) {
 		return image.new PlainImageDataProviderWrapper(this.imageDataAtBaseZoom);
 	}
+
+	@Override
+	int nearestAvailableZoom(int zoom) {
+		return baseZoom;
+	}
 }
 
 private class MaskedImageDataProviderWrapper extends ImageFromImageDataProviderWrapper {
@@ -2280,6 +2316,11 @@ private class MaskedImageDataProviderWrapper extends ImageFromImageDataProviderW
 	@Override
 	AbstractImageProviderWrapper createCopy(Image image) {
 		return image.new MaskedImageDataProviderWrapper(this.srcAt100, this.maskAt100);
+	}
+
+	@Override
+	int nearestAvailableZoom(int zoom) {
+		return 100;
 	}
 }
 
@@ -2324,6 +2365,14 @@ private class ImageDataLoaderStreamProviderWrapper extends ImageFromImageDataPro
 			return Optional.of(adaptedImageDataAtSize);
 		}
 		return Optional.empty();
+	}
+
+	@Override
+	int nearestAvailableZoom(int zoom) {
+		if (ImageDataLoader.isDynamicallySizable(new ByteArrayInputStream(this.inputStreamData))) {
+			return zoom;
+		}
+		return FileFormat.DEFAULT_ZOOM;
 	}
 }
 
@@ -2386,6 +2435,11 @@ private class PlainImageProviderWrapper extends AbstractImageProviderWrapper {
 	@Override
 	protected ElementAtZoom<ImageData> loadImageData(int zoom) {
 		return getClosestAvailableImageData(zoom);
+	}
+
+	@Override
+	int nearestAvailableZoom(int zoom) {
+		return getClosestAvailableImageData(zoom).zoom();
 	}
 
 	@Override
@@ -2533,6 +2587,7 @@ private class ImageFileNameProviderWrapper extends BaseImageProviderWrapper<Imag
 		newImageData(DPIUtil.getDeviceZoom());
 	}
 
+
 	@Override
 	protected ElementAtZoom<ImageData> loadImageData(int zoom) {
 		ElementAtZoom<String> fileForZoom = DPIUtil.validateAndGetImagePathAtZoom(provider, zoom);
@@ -2562,6 +2617,14 @@ private class ImageFileNameProviderWrapper extends BaseImageProviderWrapper<Imag
 			}
 		}
 		return adaptImageDataIfDisabledOrGray(imageDataAtZoom);
+	}
+
+	@Override
+	int nearestAvailableZoom(int zoom) {
+		if (provider instanceof ImageDataAtSizeProvider) {
+			return zoom;
+		}
+		return DPIUtil.validateAndGetImagePathAtZoom(provider, zoom).zoom();
 	}
 
 	@Override
@@ -2807,6 +2870,14 @@ private class ImageDataProviderWrapper extends BaseImageProviderWrapper<ImageDat
 		}
 		return Optional.empty();
 	}
+
+	@Override
+	int nearestAvailableZoom(int zoom) {
+		if (provider instanceof ImageDataAtSizeProvider) {
+			return zoom;
+		}
+		return DPIUtil.validateAndGetImageDataAtZoom (provider, zoom).zoom();
+	}
 }
 
 private class ImageGcDrawerWrapper extends DynamicImageProviderWrapper {
@@ -2846,6 +2917,11 @@ private class ImageGcDrawerWrapper extends DynamicImageProviderWrapper {
 	@Override
 	protected ElementAtZoom<ImageData> loadImageData(int zoom) {
 		return new ElementAtZoom<>(loadImageData(new ZoomContext(zoom)), zoom);
+	}
+
+	@Override
+	int nearestAvailableZoom(int zoom) {
+		return zoom;
 	}
 
 	private ImageData loadImageData(ZoomContext zoomContext) {
