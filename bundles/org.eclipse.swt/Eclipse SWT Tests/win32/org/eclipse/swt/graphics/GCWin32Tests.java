@@ -14,16 +14,19 @@
 package org.eclipse.swt.graphics;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.*;
 import java.util.concurrent.*;
+import java.util.stream.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.widgets.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.*;
+import org.junit.jupiter.params.*;
+import org.junit.jupiter.params.provider.*;
 
 @ExtendWith(PlatformSpecificExecutionExtension.class)
 @ExtendWith(WithMonitorSpecificScalingExtension.class)
@@ -141,5 +144,70 @@ class GCWin32Tests {
 			}
 		}
 		return count;
+	}
+
+	/**
+	 * Regression test for the size calculation in scaling/cropping GC.drawImage()
+	 * operations with asymmetric source dimensions (smaller height than width) at
+	 * fractional zoom levels.
+	 * <p>
+	 * At fractional zoom levels the effective X and Y scale factors diverge because
+	 * each axis is rounded independently (e.g. at 125%:
+	 * scaleFactorX&nbsp;=&nbsp;625/500&nbsp;=&nbsp;1.25 but
+	 * scaleFactorY&nbsp;=&nbsp;24/19&nbsp;&asymp;&nbsp;1.263).
+	 */
+	@ParameterizedTest
+	@MethodSource("zoomAndHeightArguments")
+	public void drawImage_asymmetricDimensionsAtFractionalZoom(int zoom, int height) {
+		Display display = Display.getDefault();
+
+		int logicalWidth = 500;
+		int logicalHeight = height;
+
+		PaletteData palette = new PaletteData(0xFF0000, 0xFF00, 0xFF);
+		ImageData srcData = new ImageData(logicalWidth, logicalHeight, 32, palette);
+		for (int y = 0; y < logicalHeight; y++) {
+			for (int x = 0; x < logicalWidth; x++) {
+				// left half red, right half blue – makes wrong-rectangle errors visible
+				srcData.setPixel(x, y, x < logicalWidth / 2 ? 0xFF0000 : 0x0000FF);
+			}
+		}
+		Image srcImage = new Image(display, srcData);
+
+		int previousZoom = DPIUtil.getDeviceZoom();
+		try {
+			DPIUtil.setDeviceZoom(zoom);
+
+			Image referenceImage = new Image(display, logicalWidth + 5, logicalHeight + 5);
+			GC referenceGC = new GC(referenceImage);
+			referenceGC.drawImage(srcImage, 0, 0);
+			referenceGC.dispose();
+
+			Image testImageScaled = new Image(display, logicalWidth + 5, logicalHeight + 5);
+			GC testGC = new GC(testImageScaled);
+			testGC.drawImage(srcImage, 0, 0, logicalWidth, logicalHeight);
+			testGC.dispose();
+			assertArrayEquals(referenceImage.getImageData(zoom).data, testImageScaled.getImageData(zoom).data);
+			testImageScaled.dispose();
+
+			Image testImageScaledCropped = new Image(display, logicalWidth + 5, logicalHeight + 5);
+			testGC = new GC(testImageScaledCropped);
+			testGC.drawImage(srcImage, 0, 0, logicalWidth, logicalHeight, 0, 0, logicalWidth, logicalHeight);
+			testGC.dispose();
+			assertArrayEquals(referenceImage.getImageData(zoom).data, testImageScaledCropped.getImageData(zoom).data);
+			testImageScaledCropped.dispose();
+
+			referenceImage.dispose();
+		} finally {
+			DPIUtil.setDeviceZoom(previousZoom);
+			srcImage.dispose();
+		}
+	}
+
+	private static Stream<Arguments> zoomAndHeightArguments() {
+		int[] zooms = { 25, 50, 75, 100, 125, 150, 175, 200 };
+		int[] heights = IntStream.rangeClosed(4, 20).toArray();
+		return Arrays.stream(zooms).boxed()
+				.flatMap(zoom -> Arrays.stream(heights).mapToObj(height -> Arguments.of(zoom, height)));
 	}
 }

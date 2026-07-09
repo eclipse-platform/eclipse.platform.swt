@@ -1250,11 +1250,15 @@ private class DrawScalingImageToImageOperation extends ImageOperation {
 		 * computed to pixels depending on the factor of the full image bounds to the
 		 * actual OS handle size that will be used.
 		 */
-		float scaleFactor = Math.min(1f * imageHandle.width() / fullImageBounds.width, 1f * imageHandle.height() / fullImageBounds.height);
-		int closestZoomOfHandle = Math.round(scaleFactor * 100);
-		Rectangle srcPixels = Win32DPIUtils.pointToPixel(drawable, src, closestZoomOfHandle);
+		float scaleFactorX = (1f * imageHandle.width()) / fullImageBounds.width;
+		float scaleFactorY = (1f * imageHandle.height()) / fullImageBounds.height;
+		int srcXPixels = Math.round(scaleFactorX * src.x);
+		int srcWidthPixels = Math.round(scaleFactorX * (src.x + src.width)) - srcXPixels;
+		int srcYPixels = Math.round(scaleFactorY * src.y);
+		int srcHeightPixels = Math.round(scaleFactorY * (src.y + src.height)) - srcYPixels;
+		Rectangle srcPixels = new Rectangle(srcXPixels, srcYPixels, srcWidthPixels, srcHeightPixels);
 
-		if (closestZoomOfHandle != 100) {
+		if (Math.abs(scaleFactorX - 1f) >= 0.01f || Math.abs(scaleFactorY - 1f) >= 0.01f) {
 			/*
 			 * This is a HACK! Due to rounding errors at fractional scale factors,
 			 * the coordinates may be slightly off. The workaround is to restrict
@@ -1263,7 +1267,7 @@ private class DrawScalingImageToImageOperation extends ImageOperation {
 			int errX = srcPixels.x + srcPixels.width - imageHandle.width();
 			int errY = srcPixels.y + srcPixels.height - imageHandle.height();
 			if (errX != 0 || errY != 0) {
-				if (errX <= closestZoomOfHandle / 100 && errY <= closestZoomOfHandle / 100) {
+				if (errX <= Math.max(1, scaleFactorX) && errY <= Math.max(1, scaleFactorY)) {
 					srcPixels.intersect(new Rectangle(0, 0, imageHandle.width(), imageHandle.height()));
 				} else {
 					SWT.error (SWT.ERROR_INVALID_ARGUMENT);
