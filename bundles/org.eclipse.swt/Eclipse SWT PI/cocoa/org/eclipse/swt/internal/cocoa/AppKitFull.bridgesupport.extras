@@ -4517,9 +4517,7 @@
 	<enum name="NSRoundLineJoinStyle" swt_gen="true"></enum>
 	<enum name="NSScrollElasticityNone" swt_gen="true"></enum>
 	<enum name="NSScrollWheel" swt_gen="true"></enum>
-	<enum name="NSScrollerDecrementLine" swt_gen="true"></enum>
 	<enum name="NSScrollerDecrementPage" swt_gen="true"></enum>
-	<enum name="NSScrollerIncrementLine" swt_gen="true"></enum>
 	<enum name="NSScrollerIncrementPage" swt_gen="true"></enum>
 	<enum name="NSScrollerKnob" swt_gen="true"></enum>
 	<enum name="NSScrollerKnobSlot" swt_gen="true"></enum>

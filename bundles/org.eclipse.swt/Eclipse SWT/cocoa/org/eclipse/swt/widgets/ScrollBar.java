@@ -481,17 +481,9 @@ void sendSelection () {
 	int hitPart = (int)((NSScroller)view).testPart(point);
 	Event event = new Event();
 	switch (hitPart) {
-	case OS.NSScrollerDecrementLine:
-		value -= increment;
-		event.detail = SWT.ARROW_UP;
-		break;
 	case OS.NSScrollerDecrementPage:
 		value -= pageIncrement;
 		event.detail = SWT.PAGE_UP;
-		break;
-	case OS.NSScrollerIncrementLine:
-		value += increment;
-		event.detail = SWT.ARROW_DOWN;
 		break;
 	case OS.NSScrollerIncrementPage:
 		value += pageIncrement;
