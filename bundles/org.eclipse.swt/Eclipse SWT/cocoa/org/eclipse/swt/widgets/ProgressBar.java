@@ -87,7 +87,11 @@ static int checkStyle (int style) {
 @Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
-	int size = OS.NSProgressIndicatorPreferredThickness;
+	NSProgressIndicator widget = (NSProgressIndicator)view;
+	NSRect oldFrame = widget.frame();
+	widget.sizeToFit();
+	int size = (int)widget.frame().height;
+	widget.setFrame(oldFrame);
 	int width = 0, height = 0;
 	if ((style & SWT.HORIZONTAL) != 0) {
 		height = size;

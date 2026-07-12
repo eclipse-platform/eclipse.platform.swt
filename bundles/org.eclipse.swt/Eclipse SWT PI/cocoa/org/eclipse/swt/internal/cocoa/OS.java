@@ -2281,7 +2281,6 @@ public static final int NSPageUpFunctionKey = 63276;
 public static final int NSPortraitOrientation = 0;
 public static final int NSPrintPanelShowsPageSetupAccessory = 256;
 public static final int NSPrintPanelShowsPrintSelection = 32;
-public static final int NSProgressIndicatorPreferredThickness = 14;
 public static final int NSRegularSquareBezelStyle = 2;
 public static final int NSResizableWindowMask = 8;
 public static final int NSRightMouseDown = 3;

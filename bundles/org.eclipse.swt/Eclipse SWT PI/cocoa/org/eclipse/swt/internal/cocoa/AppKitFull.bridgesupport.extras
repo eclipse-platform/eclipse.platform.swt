@@ -2376,6 +2376,9 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="sizeToFit" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="startAnimation:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -4507,7 +4510,6 @@
 	<enum name="NSPortraitOrientation" swt_gen="true"></enum>
 	<enum name="NSPrintPanelShowsPageSetupAccessory" swt_gen="true"></enum>
 	<enum name="NSPrintPanelShowsPrintSelection" swt_gen="true"></enum>
-	<enum name="NSProgressIndicatorPreferredThickness" swt_gen="true"></enum>
 	<enum name="NSRegularSquareBezelStyle" swt_gen="true"></enum>
 	<enum name="NSResizableWindowMask" swt_gen="true"></enum>
 	<enum name="NSRightMouseDown" swt_gen="true"></enum>
