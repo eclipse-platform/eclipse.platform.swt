@@ -2501,7 +2501,9 @@ public void removePaintListener(PaintListener listener) {
 void removeRelation () {
 	if (!isDescribedByLabel ()) return;		/* there will not be any */
 	if (labelRelation != null) {
-		_getAccessible().removeRelation (ACC.RELATION_LABELLED_BY, labelRelation._getAccessible());
+		if (accessible != null && labelRelation.accessible != null) {
+			accessible.removeRelation (ACC.RELATION_LABELLED_BY, labelRelation.accessible);
+		}
 		labelRelation = null;
 	}
 }
