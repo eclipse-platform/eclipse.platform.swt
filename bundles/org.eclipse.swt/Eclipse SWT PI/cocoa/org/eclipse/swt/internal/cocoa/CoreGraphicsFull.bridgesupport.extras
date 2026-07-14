@@ -247,6 +247,25 @@
 		<arg swt_gen="true"></arg>
 		<retval></retval>
 	</function>
+	<function name="CGPDFContextBeginPage" swt_gen="true">
+		<arg swt_gen="true"></arg>
+		<arg swt_gen="true"></arg>
+		<retval></retval>
+	</function>
+	<function name="CGPDFContextClose" swt_gen="true">
+		<arg swt_gen="true"></arg>
+		<retval></retval>
+	</function>
+	<function name="CGPDFContextCreateWithURL" swt_gen="true">
+		<arg swt_gen="true"></arg>
+		<arg swt_gen="true" swt_java_type="CGRect"></arg>
+		<arg swt_gen="true"></arg>
+		<retval swt_gen="true"></retval>
+	</function>
+	<function name="CGPDFContextEndPage" swt_gen="true">
+		<arg swt_gen="true"></arg>
+		<retval></retval>
+	</function>
 	<function name="CGPathAddCurveToPoint" swt_gen="true">
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
