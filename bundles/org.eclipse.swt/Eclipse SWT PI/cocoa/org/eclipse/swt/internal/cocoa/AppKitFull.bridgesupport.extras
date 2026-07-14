@@ -4154,6 +4154,14 @@
 		</method>
 	</class>
 	<class name="NSWorkspace" swt_gen="mixed">
+		<method selector="URLForApplicationToOpenContentType:" swt_gen="true">
+			<arg swt_gen="true" swt_java_type="UTType"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="URLForApplicationToOpenURL:" swt_gen="true">
+			<arg swt_gen="true" swt_java_type="NSURL"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="fullPathForApplication:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -4188,6 +4196,12 @@
 		</method>
 		<method selector="typeOfFile:error:" swt_gen="true">
 			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+	</class>
+	<class name="UTType" swt_gen="mixed">
+		<method class_method="true" selector="typeWithFilenameExtension:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>

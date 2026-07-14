@@ -7,9 +7,6 @@
  * https://www.eclipse.org/legal/epl-2.0/
  *
  * SPDX-License-Identifier: EPL-2.0
- *
- * Contributors:
- *    IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.internal.cocoa;
 
@@ -25,6 +22,16 @@ public NSWorkspace(long id) {
 
 public NSWorkspace(id id) {
 	super(id);
+}
+
+public NSURL URLForApplicationToOpenURL(NSURL url) {
+	long result = OS.objc_msgSend(this.id, OS.sel_URLForApplicationToOpenURL_, url != null ? url.id : 0);
+	return result != 0 ? new NSURL(result) : null;
+}
+
+public NSURL URLForApplicationToOpenContentType(UTType contentType) {
+	long result = OS.objc_msgSend(this.id, OS.sel_URLForApplicationToOpenContentType_, contentType != null ? contentType.id : 0);
+	return result != 0 ? new NSURL(result) : null;
 }
 
 public NSString fullPathForApplication(NSString appName) {
@@ -43,16 +50,6 @@ public boolean isFilePackageAtPath(NSString fullPath) {
 
 public boolean openURL(NSURL url) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_openURL_, url != null ? url.id : 0);
-}
-
-public NSURL urlForApplicationToOpenURL(NSURL url) {
-	long result = OS.objc_msgSend(this.id, OS.sel_URLForApplicationToOpenURL_, url != null ? url.id : 0);
-	return result != 0 ? new NSURL(result) : null;
-}
-
-public NSURL urlForApplicationToOpenContentType(long contentType) {
-	long result = OS.objc_msgSend(this.id, OS.sel_URLForApplicationToOpenContentType_, contentType);
-	return result != 0 ? new NSURL(result) : null;
 }
 
 public boolean openURLs(NSArray urls, NSString bundleIdentifier, long options, NSAppleEventDescriptor descriptor, long identifiers) {

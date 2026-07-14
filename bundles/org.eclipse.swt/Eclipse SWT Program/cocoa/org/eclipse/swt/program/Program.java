@@ -153,20 +153,17 @@ private static NSURL findAppURLForExtension(NSString ext) {
 	// On macOS 12.0+, use the content type-based API which works reliably
 	// for all file types including third-party ones.
 	if (OS.VERSION >= OS.VERSION(12, 0, 0)) {
-		long UTTypeClass = OS.objc_getClass("UTType");
-		if (UTTypeClass != 0) {
-			long utType = OS.objc_msgSend(UTTypeClass, OS.sel_typeWithFilenameExtension_, ext.id);
-			if (utType != 0) {
-				NSURL appURL = workspace.urlForApplicationToOpenContentType(utType);
-				if (appURL != null) {
-					return appURL;
-				}
+		UTType utType = UTType.typeWithFilenameExtension(ext);
+		if (utType != null) {
+			NSURL appURL = workspace.URLForApplicationToOpenContentType(utType);
+			if (appURL != null) {
+				return appURL;
 			}
 		}
 	}
 	// Fallback: URL-based lookup (available since macOS 10.6, deprecated in macOS 12.0)
 	NSURL fileURL = NSURL.fileURLWithPath(NSString.stringWith("/tmp/dummy." + ext.getString()));
-	return workspace.urlForApplicationToOpenURL(fileURL);
+	return workspace.URLForApplicationToOpenURL(fileURL);
 }
 
 static Program getProgram(NSBundle bundle) {

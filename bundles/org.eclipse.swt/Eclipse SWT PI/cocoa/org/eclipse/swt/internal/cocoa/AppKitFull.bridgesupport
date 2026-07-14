@@ -32642,6 +32642,10 @@
 <arg declared_type='NSURL * _Nonnull' index='0' name='url' type='@'/>
 <retval declared_type='NSURL * _Nullable' type='@'/>
 </method>
+<method selector='URLForApplicationToOpenContentType:'>
+<arg declared_type='UTType * _Nonnull' index='0' name='contentType' type='@'/>
+<retval declared_type='NSURL * _Nullable' type='@'/>
+</method>
 <method selector='URLForApplicationWithBundleIdentifier:'>
 <arg declared_type='NSString * _Nonnull' index='0' name='bundleIdentifier' type='@'/>
 <retval declared_type='NSURL * _Nullable' type='@'/>
@@ -32933,6 +32937,12 @@
 </method>
 <method selector='userDefaultsChanged'>
 <retval declared_type='BOOL' type='B'/>
+</method>
+</class>
+<class name='UTType'>
+<method class_method='true' selector='typeWithFilenameExtension:'>
+<arg declared_type='NSString * _Nonnull' index='0' name='filenameExtension' type='@'/>
+<retval declared_type='UTType * _Nullable' type='@'/>
 </method>
 </class>
 <informal_protocol name='NSAccessibility'>
