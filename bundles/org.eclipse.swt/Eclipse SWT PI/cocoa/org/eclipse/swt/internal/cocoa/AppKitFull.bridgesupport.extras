@@ -4425,6 +4425,7 @@
 	<enum name="NSEventTypeMagnify" swt_gen="true"></enum>
 	<enum name="NSEventTypeRotate" swt_gen="true"></enum>
 	<enum name="NSEventTypeSwipe" swt_gen="true"></enum>
+	<enum name="NSFileHandlingPanelCancelButton" swt_gen="true"></enum>
 	<enum name="NSFileHandlingPanelOKButton" swt_gen="true"></enum>
 	<enum name="NSFlagsChanged" swt_gen="true"></enum>
 	<enum name="NSFocusRingTypeNone" swt_gen="true"></enum>
