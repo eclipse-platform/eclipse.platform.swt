@@ -5451,11 +5451,6 @@
 <arg declared_type='CFErrorRef*' name='error' type='^^{__CFError}'/>
 <retval already_retained='true' declared_type='CFURLRef' type='^{__CFURL=}'/>
 </function>
-<function name='CFURLCreateFromFSRef'>
-<arg declared_type='CFAllocatorRef' name='allocator' type='^{__CFAllocator=}'/>
-<arg const='true' declared_type='struct FSRef*' name='fsRef' type='^{FSRef=[80C]}'/>
-<retval already_retained='true' declared_type='CFURLRef' type='^{__CFURL=}'/>
-</function>
 <function name='CFURLCreateFromFileSystemRepresentation'>
 <arg declared_type='CFAllocatorRef' name='allocator' type='^{__CFAllocator=}'/>
 <arg const='true' declared_type='UInt8*' name='buffer' type='*'/>
