@@ -1877,6 +1877,12 @@
 <enum name='NSMenuPropertyItemImage' value='8'/>
 <enum name='NSMenuPropertyItemKeyEquivalent' value='4'/>
 <enum name='NSMenuPropertyItemTitle' value='1'/>
+<enum name='NSControlSizeMini' value='2'/>
+<enum name='NSControlSizeRegular' value='0'/>
+<enum name='NSControlSizeSmall' value='1'/>
+<enum name='NSControlStateValueMixed' value='-1'/>
+<enum name='NSControlStateValueOff' value='0'/>
+<enum name='NSControlStateValueOn' value='1'/>
 <enum name='NSMiniControlSize' value='2'/>
 <enum name='NSMiniaturizableWindowMask' value='4'/>
 <enum name='NSMiterLineJoinStyle' value='0'/>
