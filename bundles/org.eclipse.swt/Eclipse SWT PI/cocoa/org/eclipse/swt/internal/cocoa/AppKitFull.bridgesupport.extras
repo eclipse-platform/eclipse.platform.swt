@@ -4387,6 +4387,7 @@
 	<enum name="NSButtonTypeSwitch" swt_gen="true"></enum>
 	<enum name="NSCarriageReturnCharacter" swt_gen="true"></enum>
 	<enum name="NSClosePathBezierPathElement" swt_gen="true"></enum>
+	<enum name="NSColorSpaceModelRGB" swt_gen="true"></enum>
 	<enum name="NSCommandKeyMask" swt_gen="true"></enum>
 	<enum name="NSCompositingOperationClear" swt_gen="true"></enum>
 	<enum name="NSCompositingOperationCopy" swt_gen="true"></enum>
@@ -4402,6 +4403,9 @@
 	<enum name="NSControlStateValueOn" swt_gen="true"></enum>
 	<enum name="NSCriticalAlertStyle" swt_gen="true"></enum>
 	<enum name="NSCurveToBezierPathElement" swt_gen="true"></enum>
+	<enum name="NSDatePickerStyleClockAndCalendar" swt_gen="true"></enum>
+	<enum name="NSDatePickerStyleTextField" swt_gen="true"></enum>
+	<enum name="NSDatePickerStyleTextFieldAndStepper" swt_gen="true"></enum>
 	<enum name="NSDeleteCharacter" swt_gen="true"></enum>
 	<enum name="NSDeviceIndependentModifierFlagsMask" swt_gen="true"></enum>
 	<enum name="NSDragOperationCopy" swt_gen="true"></enum>
@@ -4459,10 +4463,8 @@
 	<enum name="NSLineBreakByTruncatingTail" swt_gen="true"></enum>
 	<enum name="NSLineBreakByWordWrapping" swt_gen="true"></enum>
 	<enum name="NSLineToBezierPathElement" swt_gen="true"></enum>
-
 	<enum name="NSMiterLineJoinStyle" swt_gen="true"></enum>
 	<enum name="NSModalResponseCancel" swt_gen="true"></enum>
-
 	<enum name="NSMouseEntered" swt_gen="true"></enum>
 	<enum name="NSMouseExited" swt_gen="true"></enum>
 	<enum name="NSMouseMoved" swt_gen="true"></enum>
@@ -4472,7 +4474,6 @@
 	<enum name="NSNoImage" swt_gen="true"></enum>
 	<enum name="NSNoTitle" swt_gen="true"></enum>
 	<enum name="NSNonZeroWindingRule" swt_gen="true"></enum>
-
 	<enum name="NSOpenGLCPSurfaceOrder" swt_gen="true"></enum>
 	<enum name="NSOpenGLPFAAccumSize" swt_gen="true"></enum>
 	<enum name="NSOpenGLPFAAlphaSize" swt_gen="true"></enum>
@@ -4492,8 +4493,6 @@
 	<enum name="NSPrintPanelShowsPageSetupAccessory" swt_gen="true"></enum>
 	<enum name="NSPrintPanelShowsPrintSelection" swt_gen="true"></enum>
 	<enum name="NSProgressIndicatorPreferredThickness" swt_gen="true"></enum>
-	<enum name="NSColorSpaceModelRGB" swt_gen="true"></enum>
-
 	<enum name="NSRegularSquareBezelStyle" swt_gen="true"></enum>
 	<enum name="NSResizableWindowMask" swt_gen="true"></enum>
 	<enum name="NSRightMouseDown" swt_gen="true"></enum>
@@ -4501,7 +4500,6 @@
 	<enum name="NSRightMouseUp" swt_gen="true"></enum>
 	<enum name="NSRoundLineCapStyle" swt_gen="true"></enum>
 	<enum name="NSRoundLineJoinStyle" swt_gen="true"></enum>
-
 	<enum name="NSScrollElasticityNone" swt_gen="true"></enum>
 	<enum name="NSScrollWheel" swt_gen="true"></enum>
 	<enum name="NSScrollerDecrementLine" swt_gen="true"></enum>
@@ -4513,7 +4511,6 @@
 	<enum name="NSScrollerStyleLegacy" swt_gen="true"></enum>
 	<enum name="NSScrollerStyleOverlay" swt_gen="true"></enum>
 	<enum name="NSShiftKeyMask" swt_gen="true"></enum>
-
 	<enum name="NSSquareLineCapStyle" swt_gen="true"></enum>
 	<enum name="NSStatusWindowLevel" swt_gen="true"></enum>
 	<enum name="NSStringDrawingUsesLineFragmentOrigin" swt_gen="true"></enum>
@@ -4533,9 +4530,6 @@
 	<enum name="NSTextAlignmentJustified" swt_gen="true"></enum>
 	<enum name="NSTextAlignmentLeft" swt_gen="true"></enum>
 	<enum name="NSTextAlignmentRight" swt_gen="true"></enum>
-	<enum name="NSDatePickerStyleClockAndCalendar" swt_gen="true"></enum>
-	<enum name="NSDatePickerStyleTextField" swt_gen="true"></enum>
-	<enum name="NSDatePickerStyleTextFieldAndStepper" swt_gen="true"></enum>
 	<enum name="NSToolbarDisplayModeIconOnly" swt_gen="true"></enum>
 	<enum name="NSTouchPhaseAny" swt_gen="true"></enum>
 	<enum name="NSTouchPhaseBegan" swt_gen="true"></enum>
