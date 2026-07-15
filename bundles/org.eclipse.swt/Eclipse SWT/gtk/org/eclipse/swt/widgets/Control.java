@@ -815,7 +815,13 @@ void createWidget(int index) {
 	checkBuffered();
 	showWidget();
 	setInitialBounds();
-	setZOrder(null, false, false);
+	if (GTK.GTK4 && !(this instanceof Shell)) {
+		/* moveBelow(null) now sinks Shell-direct children to the back
+		 * (see Composite.moveAbove) - guard against undoing that. */
+		setZOrder(null, false, false, !(parent instanceof Shell));
+	} else {
+		setZOrder(null, false, false);
+	}
 	if (!GTK.GTK4) setRelations();
 	checkMirrored();
 	checkBorder();
@@ -4833,10 +4839,10 @@ void destroyWidget() {
 			// GTK windows don't have a parent, so destroy it now
 			GTK4.gtk_window_destroy(currHandle);
 		} else if (parent != null) {
-			if (fixedHandle != 0) {
-				// Remove widget from hierarchy by removing it from parent container
-				OS.swt_fixed_remove(parent.parentingHandle(), fixedHandle);
-			}
+			/* Use currHandle, not fixedHandle alone - widgets without a
+			 * separate fixedHandle wrapper were otherwise never actually
+			 * unparented here, leaving them alive and rendered natively. */
+			OS.swt_fixed_remove(parent.parentingHandle(), currHandle);
 		} else {
 			assert false : "widgets must have a parent or be a GtkWindow";
 		}
@@ -5925,7 +5931,12 @@ public boolean setParent (Composite parent) {
 	allocation.height = height;
 	gtk_widget_size_allocate(topHandle, allocation, -1);
 	this.parent = parent;
-	setZOrder (null, false, true);
+	if (GTK.GTK4 && !(this instanceof Shell)) {
+		/* See createWidget() re: guarding fixChildren on GTK4. */
+		setZOrder (null, false, true, !(parent instanceof Shell));
+	} else {
+		setZOrder (null, false, true);
+	}
 	reskin (SWT.ALL);
 	// restore focus to the last Control that had it, if focus is now gone
 	if (focusControlBeforeReparent != null && !focusControlBeforeReparent.isDisposed() && display.getFocusControl() == null) {

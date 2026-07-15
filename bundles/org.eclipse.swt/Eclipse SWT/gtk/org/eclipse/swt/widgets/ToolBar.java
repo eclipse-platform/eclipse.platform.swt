@@ -309,8 +309,10 @@ public int getItemCount () {
 
 	int itemCount = 0;
 	if (GTK.GTK4) {
+		/* Must match _getItems(): a Menu's GtkPopover is also parented here
+		 * as a native child and would otherwise count as a phantom item. */
 		for (long child = GTK4.gtk_widget_get_first_child(handle); child != 0; child = GTK4.gtk_widget_get_next_sibling(child)) {
-			itemCount++;
+			if (display.getWidget(child) instanceof ToolItem) itemCount++;
 		}
 	} else {
 		long list = GTK3.gtk_container_get_children (handle);
@@ -348,8 +350,9 @@ ToolItem[] _getItems () {
 		ArrayList<ToolItem> childrenList = new ArrayList<>();
 		for (long child = GTK4.gtk_widget_get_first_child(handle); child != 0; child = GTK4.gtk_widget_get_next_sibling(child)) {
 			Widget childWidget = display.getWidget(child);
-			if (childWidget != null) {
-				childrenList.add((ToolItem)childWidget);
+			/* A Menu's GtkPopover is also a native child here; skip non-ToolItems. */
+			if (childWidget instanceof ToolItem toolItem) {
+				childrenList.add(toolItem);
 			}
 		}
 

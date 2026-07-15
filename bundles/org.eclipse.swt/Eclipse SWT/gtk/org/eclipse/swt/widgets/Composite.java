@@ -1396,7 +1396,20 @@ void moveAbove (long child, long sibling) {
 	long parentHandle = parentingHandle ();
 	if (GTK.GTK4) {
 		if (sibling == 0) {
-			GTK4.gtk_widget_insert_after(child, parentHandle, 0L);
+			/*
+			 * True raise-to-top-of-paint-order, scoped to Shell-direct
+			 * children (e.g. an overlay pane raised via moveAbove(null)).
+			 * GTK4 has no per-widget GdkWindow, so this same native sibling
+			 * list also backs Composite._getChildren(); other code already
+			 * relies on today's insert_after(..., NULL) behaviour to keep
+			 * getChildren() stable for non-Shell parents, so this is not
+			 * changed generally.
+			 */
+			if (this instanceof Shell) {
+				GTK4.gtk_widget_insert_before(child, parentHandle, 0L);
+			} else {
+				GTK4.gtk_widget_insert_after(child, parentHandle, 0L);
+			}
 		} else {
 			GTK4.gtk_widget_insert_before(child, parentHandle, sibling);
 		}
@@ -1416,16 +1429,20 @@ void moveBelow (long child, long sibling) {
      * scrolled content instead.
      *
      * Not needed on GTK4: widgets have no per-widget GdkWindow, so paint order
-     * is simply the parent's child-list order (first = bottom, last = top), and
-     * the general branch below already appends the child to the end (top).
+     * is simply the parent's child-list order (first = bottom, last = top).
      */
 	if (!GTK.GTK4 && sibling == 0 && parentHandle == fixedHandle) {
 		moveAbove (child, scrolledHandle != 0  ? scrolledHandle : handle);
 		return;
 	}
 	if (GTK.GTK4) {
+		/* Mirror image of moveAbove - see the comment there. */
 		if (sibling == 0) {
-			GTK4.gtk_widget_insert_before(child, parentHandle, 0L);
+			if (this instanceof Shell) {
+				GTK4.gtk_widget_insert_after(child, parentHandle, 0L);
+			} else {
+				GTK4.gtk_widget_insert_before(child, parentHandle, 0L);
+			}
 		} else {
 			GTK4.gtk_widget_insert_after(child, parentHandle, sibling);
 		}
