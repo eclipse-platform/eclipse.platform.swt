@@ -4542,10 +4542,10 @@
 	<enum name="NSTableViewSolidVerticalGridLineMask" swt_gen="true"></enum>
 	<enum name="NSTerminateCancel" swt_gen="true"></enum>
 	<enum name="NSTerminateNow" swt_gen="true"></enum>
-	<enum name="NSTextAlignmentCenter" swt_gen="true"></enum>
+	<enum name="NSTextAlignmentCenter" swt_gen="true" swt_value_aarch64="1"></enum>
 	<enum name="NSTextAlignmentJustified" swt_gen="true"></enum>
 	<enum name="NSTextAlignmentLeft" swt_gen="true"></enum>
-	<enum name="NSTextAlignmentRight" swt_gen="true"></enum>
+	<enum name="NSTextAlignmentRight" swt_gen="true" swt_value_aarch64="2"></enum>
 	<enum name="NSToolbarDisplayModeIconOnly" swt_gen="true"></enum>
 	<enum name="NSTouchPhaseAny" swt_gen="true"></enum>
 	<enum name="NSTouchPhaseBegan" swt_gen="true"></enum>

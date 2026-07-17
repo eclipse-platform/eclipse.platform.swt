@@ -982,6 +982,8 @@ public String[] getExtraAttributeNames(Node node) {
 		}
 	} else if (name.equals("class")) {
 		return new String[]{"swt_superclass"};
+	} else if (name.equals("enum")) {
+		return new String[]{"swt_value_aarch64"};
 	} else if (name.equals("struct")) {
 		return new String[]{"swt_gen_memmove", "swt_gen_tostring"};
 	} else if (name.equals("retval")) {
@@ -1147,10 +1149,10 @@ void generateEnums() {
 						if (value.indexOf('.') != -1) {
 							out("double ");
 						} else {
-							if (value.equals("4294967295")) {
+							if (isUint32Max(value)) {
 								out("int ");
 								value = "-1";
-							} else if (value.equals("18446744073709551615")) {
+							} else if (isUint64Max(value)) {
 								out("long ");
 								value = "-1L";
 							} else {
@@ -1165,8 +1167,20 @@ void generateEnums() {
 						}
 						out(attributes.getNamedItem("name").getNodeValue());
 						out(" = ");
-						out(value);
-						if (isLong && !value.endsWith("L")) out("L");
+						Node aarch64ValueNode = attributes.getNamedItem("swt_value_aarch64");
+						if (aarch64ValueNode != null) {
+							out("IS_X86_64 ? ");
+							out(value);
+							if (isLong && !value.endsWith("L")) out("L");
+							out(" : ");
+							String aarch64Value = aarch64ValueNode.getNodeValue();
+							aarch64Value = isUint32Max(aarch64Value) ? "-1" : isUint64Max(aarch64Value) ? "-1L" : aarch64Value;
+							out(aarch64Value);
+							if (isLong && !aarch64Value.endsWith("L")) out("L");
+						} else {
+							out(value);
+							if (isLong && !value.endsWith("L")) out("L");
+						}
 						out(";");
 						outln();
 					} else {
@@ -1176,6 +1190,17 @@ void generateEnums() {
 			}
 		}
 	}
+}
+
+private static final String UINT32_MAX = "4294967295";
+private static final String UINT64_MAX = "18446744073709551615";
+
+private boolean isUint32Max(String value) {
+	return value.equals(UINT32_MAX);
+}
+
+private boolean isUint64Max(String value) {
+	return value.equals(UINT64_MAX);
 }
 
 boolean getGen(Node node) {
