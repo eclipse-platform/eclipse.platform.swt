@@ -2057,6 +2057,8 @@ void onPageTraversal(Event event) {
 					if (e.doit && !isDisposed()) {
 						showList(chevronRect);
 					}
+				} else {
+					index = visible [(current + offset + idx) % idx];
 				}
 			}
 		}

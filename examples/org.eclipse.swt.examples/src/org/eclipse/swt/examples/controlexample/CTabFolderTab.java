@@ -63,7 +63,7 @@ class CTabFolderTab extends Tab {
 
 	/* Other widgets added to the "Other" group */
 	Button singleTabButton, imageButton, showMinButton, showMaxButton,
-	topRightButton, unselectedCloseButton, unselectedImageButton;
+	topRightButton, unselectedCloseButton, unselectedImageButton, activateMRUButton;
 
 	ToolBar topRightControl;
 
@@ -233,6 +233,12 @@ class CTabFolderTab extends Tab {
 		unselectedCloseButton.setText (ControlExample.getResourceString("Set_Unselected_Close_Visible"));
 		unselectedCloseButton.setSelection(true);
 		unselectedCloseButton.addSelectionListener (widgetSelectedAdapter(event -> setUnselectedCloseVisible()));
+
+		activateMRUButton = new Button (otherGroup, SWT.CHECK);
+		activateMRUButton.setText (ControlExample.getResourceString("Set_MRU_Active"));
+		activateMRUButton.setSelection(false);
+		activateMRUButton.addSelectionListener (widgetSelectedAdapter(event -> setMRUActive()));
+
 	}
 
 	/**
@@ -412,6 +418,7 @@ class CTabFolderTab extends Tab {
 		setImages();
 		setMinimizeVisible();
 		setMaximizeVisible();
+		setMRUActive();
 		setUnselectedCloseVisible();
 		setUnselectedImageVisible();
 		setSelectionBackground ();
@@ -456,6 +463,13 @@ class CTabFolderTab extends Tab {
 	 */
 	void setMaximizeVisible () {
 		tabFolder1.setMaximizeVisible(showMaxButton.getSelection ());
+		setExampleWidgetSize();
+	}
+	/**
+	 * Activates/deactivates the MRU setting
+	 */
+	void setMRUActive () {
+		tabFolder1.setMRUVisible(activateMRUButton.getSelection ());
 		setExampleWidgetSize();
 	}
 	/**
