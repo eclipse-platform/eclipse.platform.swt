@@ -559,9 +559,9 @@ void key (NSEvent nsEvent) {
 			int mask = 0;
 			switch (keyCode) {
 				case SWT.ALT: mask = OS.NSAlternateKeyMask; break;
-				case SWT.CONTROL: mask = OS.NSControlKeyMask; break;
-				case SWT.COMMAND: mask = OS.NSCommandKeyMask; break;
-				case SWT.SHIFT: mask = OS.NSShiftKeyMask; break;
+				case SWT.CONTROL: mask = OS.NSEventModifierFlagControl; break;
+				case SWT.COMMAND: mask = OS.NSEventModifierFlagCommand; break;
+				case SWT.SHIFT: mask = OS.NSEventModifierFlagShift; break;
 				case SWT.CAPS_LOCK:
 					Event event = new Event();
 					event.keyCode = keyCode;
@@ -583,7 +583,7 @@ void key (NSEvent nsEvent) {
 		}
 	}
 
-	int stepSize = (modifierFlags & OS.NSControlKeyMask) != 0 ? STEPSIZE_SMALL : STEPSIZE_LARGE;
+	int stepSize = (modifierFlags & OS.NSEventModifierFlagControl) != 0 ? STEPSIZE_SMALL : STEPSIZE_LARGE;
 	int xChange = 0, yChange = 0;
 	switch (nsKeyCode) {
 		case 53: /* Esc */

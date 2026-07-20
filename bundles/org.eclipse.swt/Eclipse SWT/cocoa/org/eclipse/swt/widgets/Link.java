@@ -824,7 +824,7 @@ int traversalCode (int key, NSEvent theEvent) {
 	int bits = super.traversalCode (key, theEvent);
 	if (key == 48 /* Tab */ && theEvent != null) {
 		long modifierFlags = theEvent.modifierFlags();
-		boolean next = (modifierFlags & OS.NSShiftKeyMask) == 0;
+		boolean next = (modifierFlags & OS.NSEventModifierFlagShift) == 0;
 		if (next && focusIndex < offsets.length - 1) {
 			return bits & ~ SWT.TRAVERSE_TAB_NEXT;
 		}

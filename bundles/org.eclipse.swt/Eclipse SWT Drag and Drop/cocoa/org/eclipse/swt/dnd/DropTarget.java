@@ -575,7 +575,7 @@ int getOperationFromKeyState() {
 	if (currEvent != null) {
 		long modifiers = currEvent.modifierFlags();
 		boolean option = (modifiers & OS.NSAlternateKeyMask) == OS.NSAlternateKeyMask;
-		boolean control = (modifiers & OS.NSControlKeyMask) == OS.NSControlKeyMask;
+		boolean control = (modifiers & OS.NSEventModifierFlagControl) == OS.NSEventModifierFlagControl;
 		if (control && option) return DND.DROP_DEFAULT;
 		if (control) return DND.DROP_LINK;
 		if (option) return DND.DROP_COPY;

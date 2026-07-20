@@ -312,7 +312,7 @@ boolean canDragRowsWithIndexes_atPoint(long id, long sel, long rowIndexes, NSPoi
 
 	boolean drag = (state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect);
 	if (drag) {
-		if (!widget.isRowSelected(row) && (modifiers & (OS.NSCommandKeyMask | OS.NSShiftKeyMask | OS.NSAlternateKeyMask | OS.NSControlKeyMask)) == 0) {
+		if (!widget.isRowSelected(row) && (modifiers & (OS.NSEventModifierFlagCommand | OS.NSEventModifierFlagShift | OS.NSAlternateKeyMask | OS.NSEventModifierFlagControl)) == 0) {
 			NSIndexSet set = (NSIndexSet)new NSIndexSet().alloc();
 			set = set.initWithIndex(row);
 			widget.selectRowIndexes (set, false);
@@ -2133,7 +2133,7 @@ void mouseDown (long id, long sel, long theEvent) {
 		// it from menuForEvent:.  This has the side effect, however, of sending control-click to the NSTableView,
 		// which is interpreted as a single click that clears the selection.  Fix is to ignore control-click,
 		NSEvent event = new NSEvent(theEvent);
-		if ((event.modifierFlags() & OS.NSControlKeyMask) != 0) return;
+		if ((event.modifierFlags() & OS.NSEventModifierFlagControl) != 0) return;
 	}
 	super.mouseDown(id, sel, theEvent);
 }

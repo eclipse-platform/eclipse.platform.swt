@@ -510,7 +510,7 @@ boolean shouldShowMenu (NSEvent event) {
 			if (!(hooks(SWT.Selection) || hooks(SWT.DefaultSelection))) {
 				return true;
 			}
-			if ((event.modifierFlags() & OS.NSDeviceIndependentModifierFlagsMask) == OS.NSControlKeyMask) {
+			if ((event.modifierFlags() & OS.NSDeviceIndependentModifierFlagsMask) == OS.NSEventModifierFlagControl) {
 				return true;
 			}
 			return false;

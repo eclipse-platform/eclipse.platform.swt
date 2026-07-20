@@ -2515,7 +2515,7 @@ void windowSendEvent (long id, long sel, long event) {
 			 * swallowed to handle native traversal. If we find that, force the key event to
 			 * the first responder.
 			 */
-			if ((nsEvent.modifierFlags() & OS.NSControlKeyMask) != 0) {
+			if ((nsEvent.modifierFlags() & OS.NSEventModifierFlagControl) != 0) {
 				NSString chars = nsEvent.characters();
 
 				if (chars != null && chars.length() == 1) {

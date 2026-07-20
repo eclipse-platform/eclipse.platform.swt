@@ -1879,9 +1879,9 @@ boolean setInputState (Event event, NSEvent nsEvent, int type) {
 	}
 	long modifierFlags = nsEvent.modifierFlags();
 	if ((modifierFlags & OS.NSAlternateKeyMask) != 0) event.stateMask |= SWT.ALT;
-	if ((modifierFlags & OS.NSShiftKeyMask) != 0) event.stateMask |= SWT.SHIFT;
-	if ((modifierFlags & OS.NSControlKeyMask) != 0) event.stateMask |= SWT.CONTROL;
-	if ((modifierFlags & OS.NSCommandKeyMask) != 0) event.stateMask |= SWT.COMMAND;
+	if ((modifierFlags & OS.NSEventModifierFlagShift) != 0) event.stateMask |= SWT.SHIFT;
+	if ((modifierFlags & OS.NSEventModifierFlagControl) != 0) event.stateMask |= SWT.CONTROL;
+	if ((modifierFlags & OS.NSEventModifierFlagCommand) != 0) event.stateMask |= SWT.COMMAND;
 
 	long state = NSEvent.pressedMouseButtons();
 	if ((state & 0x1) != 0) event.stateMask |= SWT.BUTTON1;

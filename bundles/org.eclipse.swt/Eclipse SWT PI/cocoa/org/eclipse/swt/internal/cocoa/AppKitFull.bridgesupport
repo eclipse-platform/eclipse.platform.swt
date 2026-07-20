@@ -1198,6 +1198,9 @@
 <enum name='NSAlertFirstButtonReturn' value='1000'/>
 <enum name='NSAlertOtherReturn' value='-1'/>
 <enum name='NSAlertSecondButtonReturn' value='1001'/>
+<enum name='NSAlertStyleCritical' value='2'/>
+<enum name='NSAlertStyleInformational' value='1'/>
+<enum name='NSAlertStyleWarning' value='0'/>
 <enum name='NSAlertThirdButtonReturn' value='1002'/>
 <enum name='NSAllScrollerParts' value='2'/>
 <enum name='NSAlphaFirstBitmapFormat' value='1'/>
@@ -1421,7 +1424,6 @@
 <enum name='NSColorRenderingIntentRelativeColorimetric' value='2'/>
 <enum name='NSColorRenderingIntentSaturation' value='4'/>
 <enum name='NSColorSpaceModelRGB' value='1'/>
-<enum name='NSCommandKeyMask' value='1048576'/>
 <enum name='NSCompositeClear' value='0'/>
 <enum name='NSCompositeColor' value='27'/>
 <enum name='NSCompositeColorBurn' value='20'/>
@@ -1466,7 +1468,6 @@
 <enum name='NSControlCharacterActionWhitespace' value='2'/>
 <enum name='NSControlCharacterActionZeroAdvancement' value='1'/>
 <enum name='NSControlGlyph' value='16777215'/>
-<enum name='NSControlKeyMask' value='262144'/>
 <enum name='NSCorrectionIndicatorTypeDefault' value='0'/>
 <enum name='NSCorrectionIndicatorTypeGuesses' value='2'/>
 <enum name='NSCorrectionIndicatorTypeReversion' value='1'/>
@@ -1477,7 +1478,6 @@
 <enum name='NSCorrectionResponseRejected' value='2'/>
 <enum name='NSCorrectionResponseReverted' value='5'/>
 <enum name='NSCrayonModeColorPanel' value='7'/>
-<enum name='NSCriticalAlertStyle' value='2'/>
 <enum name='NSCriticalRequest' value='0'/>
 <enum name='NSCursorPointingDevice' value='2'/>
 <enum name='NSCursorUpdate' value='17'/>
@@ -1545,6 +1545,10 @@
 <enum name='NSEventMaskRotate' value='262144'/>
 <enum name='NSEventMaskSmartMagnify' value64='4294967296'/>
 <enum name='NSEventMaskSwipe' value='2147483648'/>
+<enum name='NSEventModifierFlagCommand' value='1048576'/>
+<enum name='NSEventModifierFlagControl' value='262144'/>
+<enum name='NSEventModifierFlagHelp' value='4194304'/>
+<enum name='NSEventModifierFlagShift' value='131072'/>
 <enum name='NSEventPhaseBegan' value='1'/>
 <enum name='NSEventPhaseCancelled' value='16'/>
 <enum name='NSEventPhaseChanged' value='4'/>
@@ -1726,7 +1730,6 @@
 <enum name='NSHeavierFontAction' value='5'/>
 <enum name='NSHelpButtonBezelStyle' value='9'/>
 <enum name='NSHelpFunctionKey' value='63302'/>
-<enum name='NSHelpKeyMask' value='4194304'/>
 <enum name='NSHighlightModeMatrix' value='1'/>
 <enum name='NSHomeFunctionKey' value='63273'/>
 <enum name='NSHorizontalRuler' value='0'/>
@@ -1783,7 +1786,6 @@
 <enum name='NSImageScaleProportionallyDown' value='0'/>
 <enum name='NSImageScaleProportionallyUpOrDown' value='3'/>
 <enum name='NSIndexedColorSpaceModel' value='5'/>
-<enum name='NSInformationalAlertStyle' value='1'/>
 <enum name='NSInformationalRequest' value='10'/>
 <enum name='NSInlineBezelStyle' value='15'/>
 <enum name='NSInsertCharFunctionKey' value='63293'/>
@@ -2207,7 +2209,6 @@
 <enum name='NSSharingServiceErrorMaximum' value='67327'/>
 <enum name='NSSharingServiceErrorMinimum' value='67072'/>
 <enum name='NSSharingServiceNotConfiguredError' value='67072'/>
-<enum name='NSShiftKeyMask' value='131072'/>
 <enum name='NSShowControlGlyphs' value='1'/>
 <enum name='NSShowInvisibleGlyphs' value='2'/>
 <enum name='NSSingleDateMode' value='0'/>
@@ -2522,7 +2523,6 @@
 <enum name='NSVisualEffectStateFollowsWindowActiveState' value='0'/>
 <enum name='NSVisualEffectStateInactive' value='2'/>
 <enum name='NSWantsBidiLevels' value='4'/>
-<enum name='NSWarningAlertStyle' value='0'/>
 <enum name='NSWheelModeColorPanel' value='6'/>
 <enum name='NSWindowAbove' value='1'/>
 <enum name='NSWindowAnimationBehaviorAlertPanel' value='5'/>

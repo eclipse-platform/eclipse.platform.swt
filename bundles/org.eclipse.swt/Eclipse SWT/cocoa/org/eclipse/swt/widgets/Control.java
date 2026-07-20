@@ -1044,7 +1044,7 @@ void doCommandBySelector (long id, long sel, long selector) {
 			 * is down, because we likely triggered the current key sequence via flagsChanged.
 			 */
 			long modifiers = nsEvent.modifierFlags();
-			if (s.keyInputHappened == false || (modifiers & OS.NSCommandKeyMask) != 0) {
+			if (s.keyInputHappened == false || (modifiers & OS.NSEventModifierFlagCommand) != 0) {
 				s.keyInputHappened = true;
 				boolean [] consume = new boolean [1];
 				if (translateTraversal (nsEvent.keyCode (), nsEvent, consume)) return;
@@ -1363,9 +1363,9 @@ void flagsChanged (long id, long sel, long theEvent) {
 			int keyCode = Display.translateKey (nsEvent.keyCode ());
 			switch (keyCode) {
 				case SWT.ALT: mask = OS.NSAlternateKeyMask; break;
-				case SWT.CONTROL: mask = OS.NSControlKeyMask; break;
-				case SWT.COMMAND: mask = OS.NSCommandKeyMask; break;
-				case SWT.SHIFT: mask = OS.NSShiftKeyMask; break;
+				case SWT.CONTROL: mask = OS.NSEventModifierFlagControl; break;
+				case SWT.COMMAND: mask = OS.NSEventModifierFlagCommand; break;
+				case SWT.SHIFT: mask = OS.NSEventModifierFlagShift; break;
 				case SWT.CAPS_LOCK:
 					Event event = new Event();
 					event.keyCode = keyCode;
@@ -2558,7 +2558,7 @@ boolean mouseEvent (long id, long sel, long theEvent, int type) {
 
 	switch (nsType) {
 		case OS.NSLeftMouseDown:
-			if (nsEvent.clickCount() == 1 && (nsEvent.modifierFlags() & OS.NSControlKeyMask) == 0 && (state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect)) {
+			if (nsEvent.clickCount() == 1 && (nsEvent.modifierFlags() & OS.NSEventModifierFlagControl) == 0 && (state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect)) {
 				consume = new boolean[1];
 				NSPoint location = view.convertPoint_fromView_(nsEvent.locationInWindow(), null);
 				if (!view.isFlipped ()) {
@@ -4783,7 +4783,7 @@ boolean translateTraversal (int key, NSEvent theEvent, boolean [] consume) {
 		}
 		case 48: /* Tab */ {
 			long modifiers = theEvent.modifierFlags ();
-			boolean next = (modifiers & OS.NSShiftKeyMask) == 0;
+			boolean next = (modifiers & OS.NSEventModifierFlagShift) == 0;
 			detail = next ? SWT.TRAVERSE_TAB_NEXT : SWT.TRAVERSE_TAB_PREVIOUS;
 			break;
 		}
@@ -4799,7 +4799,7 @@ boolean translateTraversal (int key, NSEvent theEvent, boolean [] consume) {
 		case 121: /* Page down */ {
 			all = true;
 			long modifiers = theEvent.modifierFlags ();
-			if ((modifiers & OS.NSControlKeyMask) == 0) return false;
+			if ((modifiers & OS.NSEventModifierFlagControl) == 0) return false;
 			detail = key == 121 /* Page down */ ? SWT.TRAVERSE_PAGE_NEXT : SWT.TRAVERSE_PAGE_PREVIOUS;
 			break;
 		}

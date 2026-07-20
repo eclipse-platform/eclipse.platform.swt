@@ -305,7 +305,7 @@ boolean sendKeyEvent(NSEvent nsEvent, int type) {
 				int xChange = 0, yChange = 0;
 				int stepSize = PAGE_INCREMENT;
 				long modifiers = nsEvent.modifierFlags();
-				if ((modifiers & OS.NSControlKeyMask) != 0) stepSize = INCREMENT;
+				if ((modifiers & OS.NSEventModifierFlagControl) != 0) stepSize = INCREMENT;
 				if ((style & SWT.VERTICAL) != 0) {
 					if (keyCode == 126 || keyCode == 125) break;
 					xChange = keyCode == 123 ? -stepSize : stepSize;

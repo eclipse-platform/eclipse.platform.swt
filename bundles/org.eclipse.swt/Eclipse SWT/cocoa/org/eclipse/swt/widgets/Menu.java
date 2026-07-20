@@ -389,7 +389,7 @@ void createItem (MenuItem item, int index) {
 		long keyEquiv = 0;
 		if (keyEquivString != null) {
 			keyEquiv = keyEquivString.characterAtIndex(0);
-			if ((keyMask & OS.NSCommandKeyMask) != 0) keyEquiv |= SWT.COMMAND;
+			if ((keyMask & OS.NSEventModifierFlagCommand) != 0) keyEquiv |= SWT.COMMAND;
 			if ((keyMask & OS.NSAlternateKeyMask) != 0) keyEquiv |= SWT.ALT;
 			item.accelerator = (int) keyEquiv;
 		}

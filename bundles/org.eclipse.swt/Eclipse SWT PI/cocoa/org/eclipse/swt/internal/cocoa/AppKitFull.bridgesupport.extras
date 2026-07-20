@@ -4373,6 +4373,9 @@
 	<constant name="NSWindowWillCloseNotification" swt_gen="true"></constant>
 	<enum name="NSAlertFirstButtonReturn" swt_gen="true"></enum>
 	<enum name="NSAlertSecondButtonReturn" swt_gen="true"></enum>
+	<enum name="NSAlertStyleCritical" swt_gen="true"></enum>
+	<enum name="NSAlertStyleInformational" swt_gen="true"></enum>
+	<enum name="NSAlertStyleWarning" swt_gen="true"></enum>
 	<enum name="NSAlertThirdButtonReturn" swt_gen="true"></enum>
 	<enum name="NSAlphaFirstBitmapFormat" swt_gen="true"></enum>
 	<enum name="NSAlphaNonpremultipliedBitmapFormat" swt_gen="true"></enum>
@@ -4405,20 +4408,17 @@
 	<enum name="NSCarriageReturnCharacter" swt_gen="true"></enum>
 	<enum name="NSClosePathBezierPathElement" swt_gen="true"></enum>
 	<enum name="NSColorSpaceModelRGB" swt_gen="true"></enum>
-	<enum name="NSCommandKeyMask" swt_gen="true"></enum>
 	<enum name="NSCompositingOperationClear" swt_gen="true"></enum>
 	<enum name="NSCompositingOperationCopy" swt_gen="true"></enum>
 	<enum name="NSCompositingOperationSourceAtop" swt_gen="true"></enum>
 	<enum name="NSCompositingOperationSourceOver" swt_gen="true"></enum>
 	<enum name="NSContentsCellMask" swt_gen="true"></enum>
-	<enum name="NSControlKeyMask" swt_gen="true"></enum>
 	<enum name="NSControlSizeMini" swt_gen="true"></enum>
 	<enum name="NSControlSizeRegular" swt_gen="true"></enum>
 	<enum name="NSControlSizeSmall" swt_gen="true"></enum>
 	<enum name="NSControlStateValueMixed" swt_gen="true"></enum>
 	<enum name="NSControlStateValueOff" swt_gen="true"></enum>
 	<enum name="NSControlStateValueOn" swt_gen="true"></enum>
-	<enum name="NSCriticalAlertStyle" swt_gen="true"></enum>
 	<enum name="NSCurveToBezierPathElement" swt_gen="true"></enum>
 	<enum name="NSDatePickerStyleClockAndCalendar" swt_gen="true"></enum>
 	<enum name="NSDatePickerStyleTextField" swt_gen="true"></enum>
@@ -4433,6 +4433,10 @@
 	<enum name="NSDragOperationNone" swt_gen="true"></enum>
 	<enum name="NSEnterCharacter" swt_gen="true"></enum>
 	<enum name="NSEvenOddWindingRule" swt_gen="true"></enum>
+	<enum name="NSEventModifierFlagCommand" swt_gen="true"></enum>
+	<enum name="NSEventModifierFlagControl" swt_gen="true"></enum>
+	<enum name="NSEventModifierFlagHelp" swt_gen="true"></enum>
+	<enum name="NSEventModifierFlagShift" swt_gen="true"></enum>
 	<enum name="NSEventPhaseBegan" swt_gen="true"></enum>
 	<enum name="NSEventPhaseCancelled" swt_gen="true"></enum>
 	<enum name="NSEventPhaseEnded" swt_gen="true"></enum>
@@ -4449,7 +4453,6 @@
 	<enum name="NSFontPanelModeMaskAllEffects" swt_gen="true"></enum>
 	<enum name="NSFontPanelModeMaskAllModes" swt_gen="true"></enum>
 	<enum name="NSHelpFunctionKey" swt_gen="true"></enum>
-	<enum name="NSHelpKeyMask" swt_gen="true"></enum>
 	<enum name="NSHourMinuteDatePickerElementFlag" swt_gen="true"></enum>
 	<enum name="NSHourMinuteSecondDatePickerElementFlag" swt_gen="true"></enum>
 	<enum name="NSImageAbove" swt_gen="true"></enum>
@@ -4465,7 +4468,6 @@
 	<enum name="NSImageOnly" swt_gen="true"></enum>
 	<enum name="NSImageOverlaps" swt_gen="true"></enum>
 	<enum name="NSImageScaleNone" swt_gen="true"></enum>
-	<enum name="NSInformationalAlertStyle" swt_gen="true"></enum>
 	<enum name="NSItalicFontMask" swt_gen="true"></enum>
 	<enum name="NSKeyDown" swt_gen="true"></enum>
 	<enum name="NSKeyUp" swt_gen="true"></enum>
@@ -4525,7 +4527,6 @@
 	<enum name="NSScrollerKnobSlot" swt_gen="true"></enum>
 	<enum name="NSScrollerStyleLegacy" swt_gen="true"></enum>
 	<enum name="NSScrollerStyleOverlay" swt_gen="true"></enum>
-	<enum name="NSShiftKeyMask" swt_gen="true"></enum>
 	<enum name="NSSquareLineCapStyle" swt_gen="true"></enum>
 	<enum name="NSStatusWindowLevel" swt_gen="true"></enum>
 	<enum name="NSStringDrawingUsesLineFragmentOrigin" swt_gen="true"></enum>
@@ -4562,7 +4563,6 @@
 	<enum name="NSViewMinXMargin" swt_gen="true"></enum>
 	<enum name="NSViewMinYMargin" swt_gen="true"></enum>
 	<enum name="NSViewWidthSizable" swt_gen="true"></enum>
-	<enum name="NSWarningAlertStyle" swt_gen="true"></enum>
 	<enum name="NSWindowAbove" swt_gen="true"></enum>
 	<enum name="NSWindowBelow" swt_gen="true"></enum>
 	<enum name="NSWindowCollectionBehaviorFullScreenAuxiliary" swt_gen="true"></enum>

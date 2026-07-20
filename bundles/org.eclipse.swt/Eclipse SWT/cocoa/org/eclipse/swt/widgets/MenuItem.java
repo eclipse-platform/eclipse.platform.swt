@@ -623,9 +623,9 @@ public void setAccelerator (int accelerator) {
 	nsItem.setKeyEquivalent (nsstring.lowercaseString());
 	nsstring.release();
 	int mask = 0;
-	if ((accelerator & SWT.SHIFT) != 0) mask |= OS.NSShiftKeyMask;
-	if ((accelerator & SWT.CONTROL) != 0) mask |= OS.NSControlKeyMask;
-	if ((accelerator & SWT.COMMAND) != 0) mask |= OS.NSCommandKeyMask;
+	if ((accelerator & SWT.SHIFT) != 0) mask |= OS.NSEventModifierFlagShift;
+	if ((accelerator & SWT.CONTROL) != 0) mask |= OS.NSEventModifierFlagControl;
+	if ((accelerator & SWT.COMMAND) != 0) mask |= OS.NSEventModifierFlagCommand;
 	if ((accelerator & SWT.ALT) != 0) mask |= OS.NSAlternateKeyMask;
 	nsItem.setKeyEquivalentModifierMask (mask);
 }
@@ -951,10 +951,10 @@ boolean updateAccelerator (boolean show) {
 		if (i < buffer.length && buffer [i] == '\t') {
 			for (j = i + 1; j < buffer.length; j++) {
 				switch (buffer [j]) {
-					case '\u2303': mask |= OS.NSControlKeyMask; i++; break;
+					case '\u2303': mask |= OS.NSEventModifierFlagControl; i++; break;
 					case '\u2325': mask |= OS.NSAlternateKeyMask; i++; break;
-					case '\u21E7': mask |= OS.NSShiftKeyMask; i++; break;
-					case '\u2318': mask |= OS.NSCommandKeyMask; i++; break;
+					case '\u21E7': mask |= OS.NSEventModifierFlagShift; i++; break;
+					case '\u2318': mask |= OS.NSEventModifierFlagCommand; i++; break;
 					default:
 						j = buffer.length;
 						break;
