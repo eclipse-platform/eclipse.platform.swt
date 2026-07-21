@@ -248,7 +248,7 @@ public final class Image extends Resource implements Drawable {
 			Rectangle bounds = getBounds(100);
 			int imageZoomForWidth = 100 * widthHint / bounds.width;
 			int imageZoomForHeight = 100 * heightHint / bounds.height;
-			int imageZoom = DPIUtil.getZoomForAutoscaleProperty(Math.max(imageZoomForWidth, imageZoomForHeight));
+			int imageZoom = DPIUtil.getZoomForAutoscaleProperty(widthHint > heightHint ? imageZoomForWidth : imageZoomForHeight);
 			InternalImageHandle bestFittingHandle = imageHandleManager.get(imageZoom);
 			if (bestFittingHandle == null) {
 				ImageData bestFittingImageData = imageProvider.loadImageData(imageZoom).element();
