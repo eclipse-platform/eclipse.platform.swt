@@ -18,6 +18,7 @@ import static org.eclipse.swt.internal.image.ImageColorTransformer.DEFAULT_DISAB
 
 import java.io.*;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 import java.util.function.*;
@@ -29,6 +30,7 @@ import org.eclipse.swt.internal.DPIUtil.*;
 import org.eclipse.swt.internal.gdip.*;
 import org.eclipse.swt.internal.image.*;
 import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Instances of this class are graphics which have been prepared
@@ -261,12 +263,9 @@ public final class Image extends Resource implements Drawable {
 			int imageZoomForHeight = 100 * heightHint / bounds.height;
 			int imageZoom = DPIUtil.getZoomForAutoscaleProperty(Math.max(imageZoomForWidth, imageZoomForHeight));
 			int nearestAvailableZoom = imageProvider.nearestAvailableZoom(imageZoom);
-			InternalImageHandle bestFittingHandle = imageHandleManager.get(nearestAvailableZoom);
+			InternalImageHandle bestFittingHandle = getPersistentHandle(imageZoom, nearestAvailableZoom);
 			if (bestFittingHandle != null) {
 				return bestFittingHandle;
-			}
-			if (nearestAvailableZoom == 100) {
-				return getHandleInternal(100, 100);
 			}
 			if (previousHandle != null && previousHandle.zoom() == nearestAvailableZoom) {
 				temporaryHandleContainer = previousHandle;
@@ -275,6 +274,35 @@ public final class Image extends Resource implements Drawable {
 			ElementAtZoom<ImageData> imageData = imageProvider.loadImageData(imageZoom);
 			temporaryHandleContainer = new TemporaryHandleForZoom(init(imageData.element(), -1), imageData.zoom());
 			return temporaryHandleContainer.handle();
+		}
+
+		private InternalImageHandle getPersistentHandle(int imageZoom, int nearestAvailableZoom) {
+			InternalImageHandle bestFittingHandle = imageHandleManager.get(imageZoom);
+			if (bestFittingHandle != null) {
+				return bestFittingHandle;
+			}
+			if (getShellZooms().contains(imageZoom)) {
+				return getHandleInternal(imageZoom, imageZoom);
+			}
+			bestFittingHandle = imageHandleManager.get(nearestAvailableZoom);
+			if (bestFittingHandle != null) {
+				return bestFittingHandle;
+			}
+			if (nearestAvailableZoom == 100) {
+				return getHandleInternal(100, 100);
+			}
+			return null;
+		}
+
+		private Set<Integer> getShellZooms() {
+			if (getDevice() instanceof Display display) {
+				try {
+ 					return Arrays.stream(display.getShells()).map(Shell::getZoom).collect(Collectors.toSet());
+ 				} catch (SWTException e) {
+ 					return Collections.emptySet();
+ 				}
+			}
+			return Collections.emptySet();
 		}
 
 	}

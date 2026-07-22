@@ -135,6 +135,85 @@ class ImagesWin32Tests {
 	}
 
 	/**
+	 * Tests that a GC.drawImage() handle at the exact imageZoom is returned in
+	 * preference to a handle at nearestAvailableZoom when both are present in the
+	 * image's handle manager.
+	 * <p>
+	 * Explicitly creating a persistent handle at 200% via
+	 * {@link Image#win32_getHandle(Image, int)} places it in the handle manager.
+	 * When GC.drawImage() then targets a pixel size that maps to imageZoom=200
+	 * (while nearestAvailableZoom stays 100% because the provider only has 100%
+	 * data), the 200% handle must be found first via the imageZoom lookup and
+	 * returned instead of the 100% one.
+	 * <p>
+	 * See https://github.com/eclipse-platform/eclipse.platform.swt/issues/3419
+	 */
+	@Test
+	public void testDrawImagePrefersExistingHandleAtExactImageZoom() {
+		PaletteData palette = new PaletteData(0xFF0000, 0xFF00, 0xFF);
+		ImageData imageData = new ImageData(10, 10, 24, palette);
+		Image image = new Image(Display.getDefault(), (ImageDataProvider) zoom -> zoom == 100 ? imageData : null);
+		try {
+			long handle100 = Image.win32_getHandle(image, 100);
+			long handle200 = Image.win32_getHandle(image, 200);
+			assertNotEquals(0L, handle100, "100% handle should be non-zero");
+			assertNotEquals(0L, handle200, "200% handle should be non-zero");
+			assertNotEquals(handle100, handle200, "Handles for different zooms should be distinct native objects");
+			long[] drawHandle = {0};
+			// 20x20 pixels → imageZoom=200 for a 10x10 base; nearestAvailableZoom=100
+			// The 200% handle already in the handle manager must be found and preferred
+			image.executeOnImageHandleAtBestFittingSize(h -> drawHandle[0] = h.handle(), 20, 20);
+			assertEquals(handle200, drawHandle[0],
+					"GC.drawImage() should prefer the existing handle at imageZoom=200 "
+					+ "over the nearestAvailableZoom=100 handle");
+		} finally {
+			image.dispose();
+		}
+	}
+
+	/**
+	 * Tests that when the pixel size requested by GC.drawImage() maps to a zoom
+	 * equal to a current monitor's zoom, a persistent handle is created for that
+	 * zoom level and is subsequently reusable via
+	 * {@link Image#win32_getHandle(Image, int)}.
+	 * <p>
+	 * A shell is created so that {@code Display.getShells()} is non-empty and
+	 * the monitor zoom is visible to the handle-selection logic. Drawing at a
+	 * pixel size whose imageZoom equals the shell's zoom triggers the
+	 * monitor-zoom persistence path: the handle is stored in the image's handle
+	 * manager and can be retrieved without allocating a second native object.
+	 * On 100%-DPI machines the new {@code imageZoom == monitorZoom} branch
+	 * overlaps with the existing {@code nearestAvailableZoom == 100} fallback;
+	 * on HiDPI machines the new branch is exercised in isolation.
+	 * <p>
+	 * See https://github.com/eclipse-platform/eclipse.platform.swt/issues/3419
+	 */
+	@Test
+	public void testDrawImageCreatesAndReusesPersistentHandleForMonitorZoomImageZoom() {
+		PaletteData palette = new PaletteData(0xFF0000, 0xFF00, 0xFF);
+		ImageData imageData = new ImageData(10, 10, 24, palette);
+		Image image = new Image(Display.getDefault(), (ImageDataProvider) zoom -> zoom == 100 ? imageData : null);
+		Shell shell = new Shell(Display.getDefault());
+		try {
+			int shellZoom = shell.getZoom();
+			int pixelSize = 10 * shellZoom / 100;
+			long[] drawHandle = {0};
+			// Drawing at shellZoom's pixel size → imageZoom == shellZoom == monitorZoom
+			// A persistent handle must be created and stored in the handle manager
+			image.executeOnImageHandleAtBestFittingSize(h -> drawHandle[0] = h.handle(), pixelSize, pixelSize);
+			// If persisted, win32_getHandle returns the same native handle without a new allocation
+			long persistedHandle = Image.win32_getHandle(image, shellZoom);
+			assertNotEquals(0L, drawHandle[0], "Draw handle should be non-zero");
+			assertEquals(persistedHandle, drawHandle[0],
+					"GC.drawImage() at the monitor zoom should create a persistent handle "
+					+ "so that win32_getHandle returns the same native object");
+		} finally {
+			image.dispose();
+			shell.dispose();
+		}
+	}
+
+	/**
 	 * Tests that a persistent native handle already created via
 	 * {@link Image#win32_getHandle(Image, int)} is found and reused by
 	 * GC.drawImage() when the nearest available zoom for the requested draw size
