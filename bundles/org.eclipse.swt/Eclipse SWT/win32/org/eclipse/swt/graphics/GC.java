@@ -110,6 +110,8 @@ public final class GC extends Resource {
 	static final float[] LINE_DASHDOT_ZERO = new float[]{9, 6, 3, 6};
 	static final float[] LINE_DASHDOTDOT_ZERO = new float[]{9, 3, 3, 3, 3, 3};
 
+	private static final String USE_GDI_TEXT_RENDERING_WITH_GDPI = "org.eclipse.swt.internal.win32.useGDITextRenderingWithGDIP";
+
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
@@ -2850,7 +2852,18 @@ private void drawTextInPixels (String string, int x, int y, int flags) {
 	OS.SetBkMode(handle, oldBkMode);
 }
 
-private boolean useGDIP (long hdc, char[] buffer) {
+private boolean useGDIP(long hdc, char[] buffer) {
+	// If the system property is set to true, then GDI text rendering may be used
+	// even when GDI+/advanced mode is enabled.
+	// The property exists to allow backward compatibility with long standing
+	// behavior of using GDI text rendering even when GDI+ was enabled was enforced,
+	// introduced because of issues with the GDI+ text rendering a long time ago. In
+	// case no regressions occur because of using GDI+ text rendering, this property
+	// should be removed and GDI+ text rendering should be used by default when
+	// GDI+/advanced mode is enabled.
+	if (!Boolean.getBoolean(USE_GDI_TEXT_RENDERING_WITH_GDPI)) {
+		return true;
+	}
 	short[] glyphs = new short[buffer.length];
 	OS.GetGlyphIndices(hdc, buffer, buffer.length, glyphs, OS.GGI_MARK_NONEXISTING_GLYPHS);
 	for (int i = 0; i < glyphs.length; i++) {
@@ -2882,7 +2895,7 @@ void drawText(long gdipGraphics, String string, int x, int y, int flags, Point s
 	if (hFont != 0) OS.SelectObject(hdc, oldFont);
 	Gdip.Graphics_ReleaseHDC(gdipGraphics, hdc);
 	if (gdip) {
-		drawTextGDIP(gdipGraphics, string, x, y, flags, size == null, size);
+		drawTextGDIP(gdipGraphics, string, x, y, flags, size == null, size, lptm);
 		return;
 	}
 	int i = 0, start = 0, end = 0, drawX = x, drawY = y, width = 0, mnemonicIndex = -1;
@@ -3052,7 +3065,7 @@ private RectF drawText(long gdipGraphics, char[] buffer, int start, int length, 
 	return bounds;
 }
 
-private void drawTextGDIP(long gdipGraphics, String string, int x, int y, int flags, boolean draw, Point size) {
+private void drawTextGDIP(long gdipGraphics, String string, int x, int y, int flags, boolean draw, Point size, TEXTMETRIC lptm) {
 	boolean needsBounds = !draw || (flags & SWT.DRAW_TRANSPARENT) == 0;
 	char[] buffer;
 	if ((flags & SWT.DRAW_DELIMITER) == 0) {
@@ -3074,7 +3087,14 @@ private void drawTextGDIP(long gdipGraphics, String string, int x, int y, int fl
 	int formatFlags = Gdip.StringFormat_GetFormatFlags(format) | Gdip.StringFormatFlagsMeasureTrailingSpaces;
 	if ((data.style & SWT.MIRRORED) != 0) formatFlags |= Gdip.StringFormatFlagsDirectionRightToLeft;
 	Gdip.StringFormat_SetFormatFlags(format, formatFlags);
-	float[] tabs = (flags & SWT.DRAW_TAB) != 0 ? new float[]{measureSpace(data.gdipFont, format) * 8} : new float[1];
+	// Use the same tab stop width as the legacy GDI/GDI-glyph-position path
+	// (8 * the font's GDI average character width, matching Win32's own
+	// DrawText()/TabbedTextOut() convention), rather than 8 * the width of a
+	// single space glyph as measured by GDI+. The two metrics are computed by
+	// different engines and can differ substantially (the GDI+ space-glyph
+	// metric tends to be noticeably narrower), which previously made tab
+	// stops shrink visibly compared to plain GDI and the legacy fallback.
+	float[] tabs = (flags & SWT.DRAW_TAB) != 0 ? new float[]{lptm.tmAveCharWidth * 8} : new float[1];
 	Gdip.StringFormat_SetTabStops(format, 0, tabs.length, tabs);
 	int hotkeyPrefix = (flags & SWT.DRAW_MNEMONIC) != 0 ? Gdip.HotkeyPrefixShow : Gdip.HotkeyPrefixNone;
 	if ((flags & SWT.DRAW_MNEMONIC) != 0 && (data.uiState & OS.UISF_HIDEACCEL) != 0) hotkeyPrefix = Gdip.HotkeyPrefixHide;
@@ -4654,12 +4674,7 @@ public boolean isDisposed() {
 	return handle == 0;
 }
 
-private float measureSpace(long font, long format) {
-	PointF pt = new PointF();
-	RectF bounds = new RectF();
-	Gdip.Graphics_MeasureString(data.gdipGraphics, new char[]{' '}, 1, font, pt, format, bounds);
-	return bounds.Width;
-}
+
 
 /**
  * Sets the receiver to always use the operating system's advanced graphics
