@@ -2977,7 +2977,15 @@ public void removeAll () {
 	long selection = GTK.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 
-	GTK.gtk_tree_store_clear (modelHandle);
+    // Disconnect the model from the view before clearing it.
+    // gtk_tree_store_clear fires cell-data / row-changed callbacks for every
+    // row it removes. Those callbacks re-enter SWT (cellDataProc -> checkData
+    // -> getParentItem -> gtk_tree_model_get_path) with iterators that are
+    // already being freed, causing a SIGSEGV. With no model attached the view
+    // has nothing to render, so no callbacks are fired during the clear.
+    GTK.gtk_tree_view_set_model (handle, 0);
+    GTK.gtk_tree_store_clear (modelHandle);
+    GTK.gtk_tree_view_set_model (handle, modelHandle);
 
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 
