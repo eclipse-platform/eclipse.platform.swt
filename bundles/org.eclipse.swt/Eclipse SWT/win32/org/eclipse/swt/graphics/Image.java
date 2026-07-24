@@ -175,6 +175,15 @@ public final class Image extends Resource implements Drawable {
 			return zoomLevelToImageHandle.keySet();
 		}
 
+		Integer getNearestAvailableZoom(int zoom) {
+			TreeSet<Integer> availableZooms = new TreeSet<>(getAllZooms());
+			if (availableZooms.contains(zoom)) {
+				return zoom;
+			}
+			Integer higher = availableZooms.higher(zoom);
+			return higher != null ? higher : availableZooms.lower(zoom);
+		}
+
 		void destroyHandles(Predicate<Integer> filter) {
 		    zoomLevelToImageHandle.entrySet().removeIf(entry -> {
 		    	if (filter.test(entry.getKey())) {
@@ -2155,8 +2164,7 @@ private abstract class AbstractImageProviderWrapper {
 	abstract AbstractImageProviderWrapper createCopy(Image image);
 
 	ElementAtZoom<ImageData> getClosestAvailableImageData(int zoom) {
-		TreeSet<Integer> availableZooms = new TreeSet<>(imageHandleManager.getAllZooms());
-		int closestZoom = availableZooms.contains(zoom) ? zoom : Optional.ofNullable(availableZooms.higher(zoom)).orElse(availableZooms.lower(zoom));
+		int closestZoom = imageHandleManager.getNearestAvailableZoom(zoom);
 		ImageData imageData = imageHandleManager.get(closestZoom).getImageData();
 		return new ElementAtZoom<>(imageData, closestZoom);
 	}
@@ -2467,7 +2475,10 @@ private class PlainImageProviderWrapper extends AbstractImageProviderWrapper {
 
 	@Override
 	int nearestAvailableZoom(int zoom) {
-		return getClosestAvailableImageData(zoom).zoom();
+		if (imageHandleManager.isEmpty()) {
+			return 100;
+		}
+		return imageHandleManager.getNearestAvailableZoom(zoom);
 	}
 
 	@Override

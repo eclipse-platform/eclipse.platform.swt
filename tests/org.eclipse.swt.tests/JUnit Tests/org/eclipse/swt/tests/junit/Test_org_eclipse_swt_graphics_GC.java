@@ -382,6 +382,20 @@ public void test_drawImageLorg_eclipse_swt_graphics_ImageIIIIIIII() {
 	images.dispose();
 }
 
+/**
+ * See https://github.com/eclipse-platform/eclipse.platform.swt/issues/3442
+ */
+@Test
+public void test_drawImage_emptyImage() {
+	Image emptyImage = new Image(display, IMAGE_SIZE, IMAGE_SIZE);
+	try {
+		gc.drawImage(emptyImage, 0, 0, IMAGE_SIZE, IMAGE_SIZE, 0, 0, IMAGE_SIZE / 3, IMAGE_SIZE / 3);
+		ImageDataTestHelper.assertImageDataEqual(image.getImageData(), emptyImage.getImageData(), image.getImageData());
+	} finally {
+		emptyImage.dispose();
+	}
+}
+
 
 @Test
 public void test_drawImageLorg_eclipse_swt_graphics_ImageIIII() {
