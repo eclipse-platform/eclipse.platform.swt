@@ -394,14 +394,6 @@ public void put (int index, Image image) {
 	images [index] = image;
 }
 
-public void remove (int index) {
-	int count = OS.ImageList_GetImageCount (handle);
-	if (!(0 <= index && index < count)) return;
-	zoomToHandle.values().forEach(handle -> OS.ImageList_Remove (handle, index));
-	System.arraycopy (images, index + 1, images, index, --count - index);
-	images [index] = null;
-}
-
 public int removeRef() {
 	return --refCount;
 }
