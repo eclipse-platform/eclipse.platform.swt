@@ -172,6 +172,7 @@ public class CTabFolder extends Composite {
 	int[] priority = new int[0];
 	boolean mru = false;
 	Listener listener;
+	Listener tabControlZoomListener;
 	boolean ignoreTraverse;
 	boolean useDefaultRenderer;
 
@@ -344,6 +345,10 @@ void init(int style) {
 			case SWT.ZoomChanged:	   onZoomChange(event); break;
 		}
 	};
+
+	// A tab control is rescaled after the folder itself, so its size can only be
+	// measured reliably once it has processed the zoom change on its own.
+	tabControlZoomListener = event -> updateFolder(UPDATE_TAB_HEIGHT | REDRAW);
 
 	int[] folderEvents = new int[]{
 		SWT.Dispose,
@@ -4186,6 +4191,7 @@ void addTabControl(Control control, int flags, int index, boolean update) {
 	int length = controls.length;
 
 	control.addListener(SWT.Resize, listener);
+	control.addListener(SWT.ZoomChanged, tabControlZoomListener);
 
 	//Grow all 4 arrays
 	Control[] newControls = new Control [length + 1];
@@ -4247,6 +4253,7 @@ void removeTabControl (Control control, boolean update) {
 
 	if (!control.isDisposed()) {
 		control.removeListener(SWT.Resize, listener);
+		control.removeListener(SWT.ZoomChanged, tabControlZoomListener);
 		control.setBackground (null);
 		control.setBackgroundImage (null);
 		if (control instanceof Composite) ((Composite) control).setBackgroundMode(SWT.INHERIT_NONE);
