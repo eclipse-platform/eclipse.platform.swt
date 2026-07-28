@@ -1712,8 +1712,6 @@ void handleDPIChange(Event event, float scalingFactor) {
 	// Remove and re-add all button the let Windows resize the tool bar
 	Stack<ToolItemData> buttondata = new Stack<>();
 	for (int i = itemCount - 1; i >= 0; i--) {
-		TBBUTTON lpButton = new TBBUTTON ();
-		OS.SendMessage (handle, OS.TB_GETBUTTON, i, lpButton);
 		ToolItem item = toolItems[i];
 		if ((item.style & SWT.SEPARATOR) != 0 && item.getControl() != null) {
 			// Take note of widths of separators with control, so they can be resized
@@ -1721,6 +1719,13 @@ void handleDPIChange(Event event, float scalingFactor) {
 			seperatorWidth[i] = item.getWidth();
 		}
 		item.notifyListeners(SWT.ZoomChanged, event);
+		// Capture the button data AFTER handling the zoom change. The zoom refresh
+		// may update the item's image-list slot (iBitmap), so capturing the button
+		// beforehand could re-add it with a stale image index, resulting in the
+		// wrong (or a blank) icon being shown. Reading the button here ensures the
+		// current, post-refresh image index is preserved.
+		TBBUTTON lpButton = new TBBUTTON ();
+		OS.SendMessage (handle, OS.TB_GETBUTTON, i, lpButton);
 		buttondata.push(new ToolItemData(item, lpButton));
 		OS.SendMessage(handle, OS.TB_DELETEBUTTON, i, 0);
 	}
