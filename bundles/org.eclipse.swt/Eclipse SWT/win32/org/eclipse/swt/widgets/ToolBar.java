@@ -1738,6 +1738,11 @@ void handleDPIChange(Event event, float scalingFactor) {
 			}
 		}
 	}
+	// Refresh the image lists so the image list for the correct zoom is used
+	setImageList(getImageList());
+	setDisabledImageList(getDisabledImageList());
+	setHotImageList(getHotImageList());
+	boolean toolBarEnabled = getEnabled();
 	for (int i = 0; i < itemCount; i++) {
 		ToolItem item = toolItems[i];
 		// If the separator is used with a control, we must reset the size to the cached value,
@@ -1745,12 +1750,9 @@ void handleDPIChange(Event event, float scalingFactor) {
 		if ((item.style & SWT.SEPARATOR) != 0 && item.getControl() != null) {
 			item.setWidth(seperatorWidth[i]);
 		}
+		// Make sure the tool item is resized with the new image and font size
+		toolItems[i].updateImages(toolItems[i].getEnabled() && toolBarEnabled);
 	}
-
-	// Refresh the image lists so the image list for the correct zoom is used
-	setImageList(getImageList());
-	setDisabledImageList(getDisabledImageList());
-	setHotImageList(getHotImageList());
 	OS.SendMessage(handle, OS.TB_AUTOSIZE, 0, 0);
 	clearSizeCache(true);
 }
