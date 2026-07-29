@@ -55,6 +55,27 @@ public int add (Image image) {
 		if (imageAtIndex == null) break;
 		index++;
 	}
+	putAt (index, image);
+	return index;
+}
+
+/**
+ * Stores {@code image} at the given {@code index}.
+ * <ul>
+ * <li>If {@code image} is non-null and {@code index} equals the current size, a
+ * new slot is appended.</li>
+ * <li>If {@code index} is within the current size, the slot is replaced (or
+ * cleared when {@code image} is null).</li>
+ * <li>If {@code index} is out of range (&lt; 0 or &gt; current size), this
+ * method does nothing.</li>
+ * </ul>
+ */
+public void putAt (int index, Image image) {
+	int count = OS.ImageList_GetImageCount (handle);
+	if (index != count || image == null) {
+		put (index, image);
+		return;
+	}
 	if (count == 0) {
 		Rectangle bounds = image.getBounds();
 		width = bounds.width;
@@ -68,7 +89,6 @@ public int add (Image image) {
 		images = newImages;
 	}
 	images [index] = image;
-	return index;
 }
 
 private Image getOrClearIfDisposed(int index) {
