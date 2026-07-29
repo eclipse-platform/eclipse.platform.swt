@@ -195,6 +195,19 @@ public void test_setEnabledZ() {
 	assertFalse(menuItem.getEnabled());
 }
 
+@Test
+public void test_setEnabledZ_cascade() {
+	MenuItem cascadeItem = new MenuItem(menu, SWT.CASCADE);
+	Menu subMenu = new Menu(shell, SWT.DROP_DOWN);
+	cascadeItem.setMenu(subMenu);
+	assertTrue(cascadeItem.getEnabled());
+	cascadeItem.setEnabled(false);
+	assertFalse(cascadeItem.getEnabled());
+	cascadeItem.setEnabled(true);
+	assertTrue(cascadeItem.getEnabled());
+	cascadeItem.dispose();
+}
+
 @Tag("gtk4-todo")
 @Override
 @Test

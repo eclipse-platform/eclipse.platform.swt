@@ -295,7 +295,22 @@ void createHandle(int index) {
 				break;
 			case SWT.CASCADE:
 				modelHandle = OS.g_menu_new();
-				handle = OS.g_menu_item_new_submenu(Converter.javaStringToCString(""), modelHandle);
+				/*
+				 * Give the CASCADE item an action so it can be enabled/disabled like
+				 * on the other platforms and like GTK3. A plain submenu item created
+				 * via g_menu_item_new_submenu has no action, so its GtkModelButton is
+				 * always sensitive: setEnabled(false) would be a no-op and the (possibly
+				 * empty) submenu could still be opened. Attaching a SimpleAction makes
+				 * the item follow the action's enabled state. While the action is
+				 * enabled, activating the item still navigates into the submenu (the
+				 * action is not triggered); while disabled, the item is insensitive and
+				 * the submenu cannot be opened.
+				 */
+				actionHandle = OS.g_simple_action_new(Converter.javaStringToCString(String.valueOf(this.hashCode())), 0);
+				OS.g_action_map_add_action(parent.actionGroup, actionHandle);
+				actionName = String.valueOf(parent.hashCode()) + "." + String.valueOf(this.hashCode());
+				handle = OS.g_menu_item_new(Converter.javaStringToCString(""), Converter.javaStringToCString(actionName));
+				OS.g_menu_item_set_submenu(handle, modelHandle);
 				break;
 			case SWT.PUSH:
 			default:
@@ -523,10 +538,6 @@ public boolean getEnabled () {
 	checkWidget();
 
 	if (GTK.GTK4) {
-		if ((style & SWT.CASCADE) != 0) {
-			return true;
-		}
-
 		return OS.g_action_get_enabled(actionHandle);
 	} else {
 		return GTK.gtk_widget_get_sensitive(handle);
