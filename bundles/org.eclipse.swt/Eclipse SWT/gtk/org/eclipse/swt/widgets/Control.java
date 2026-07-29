@@ -6166,6 +6166,20 @@ public void setVisible (boolean visible) {
 				if (enableWindow != 0) GDK.gdk_window_show_unraised(enableWindow);
 			}
 			gtk_widget_show (topHandle);
+			/*
+			 * On GTK4, a Composite laid out while it (or an ancestor) is hidden can end
+			 * up with its children sized against a stale 0x0 client area, because
+			 * gtk_widget_hide() resets allocations to 0x0 (issue #3330) and setBounds on a
+			 * hidden widget shows/allocates/re-hides it. The size given while hidden is
+			 * still stored in the parent's swt_fixed child list, so re-running the parent's
+			 * size allocation re-applies this control's real size (restoring its client
+			 * area), after which a re-layout of its own subtree lets the children pick up
+			 * the now-correct client area. See issue #3450.
+			 */
+			if (GTK.GTK4 && this instanceof Composite composite && composite.layout != null) {
+				parent.forceResize ();
+				composite.layout (true, true);
+			}
 		}
 	} else {
 		/*
