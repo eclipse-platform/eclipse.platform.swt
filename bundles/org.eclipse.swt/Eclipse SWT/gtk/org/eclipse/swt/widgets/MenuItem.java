@@ -68,6 +68,19 @@ public class MenuItem extends Item {
 	/** GTK4 only fields */
 	long modelHandle, actionHandle, shortcutHandle;
 	Section section;
+	/**
+	 * The action's own name within the parent's action group, i.e. the name
+	 * g_simple_action_new() was given. Use this with the GActionMap API (e.g.
+	 * g_action_map_remove_action), which keys actions by their plain name.
+	 */
+	String actionId;
+	/**
+	 * The <em>detailed</em> action name: actionId qualified with the prefix the
+	 * action group was inserted under (see Menu#createHandle), plus a target for
+	 * SWT.RADIO. Use this where an action is referenced by name, such as
+	 * g_menu_item_new() or gtk_named_action_new(), and never with the GActionMap
+	 * API.
+	 */
 	String actionName;
 
 /**
@@ -273,23 +286,25 @@ void createHandle(int index) {
 				break;
 			case SWT.RADIO:
 				long stringVariantType = OS.g_variant_type_new(OS.G_VARIANT_TYPE_STRING);
+				actionId = String.valueOf(this.hashCode());
 				actionHandle = OS.g_simple_action_new_stateful(
-					Converter.javaStringToCString(String.valueOf(this.hashCode())),
+					Converter.javaStringToCString(actionId),
 					stringVariantType,
 					OS.g_variant_new_string(Converter.javaStringToCString("untoggled")));
 				OS.g_action_map_add_action(parent.actionGroup, actionHandle);
-				actionName = String.valueOf(parent.hashCode()) + "." + String.valueOf(this.hashCode()) + "::toggled";
+				actionName = String.valueOf(parent.hashCode()) + "." + actionId + "::toggled";
 				handle = OS.g_menu_item_new(null, Converter.javaStringToCString(actionName));
 				OS.g_variant_type_free(stringVariantType);
 				break;
 			case SWT.CHECK:
 				long boolVariantType = OS.g_variant_type_new(OS.G_VARIANT_TYPE_BOOLEAN);
+				actionId = String.valueOf(this.hashCode());
 				actionHandle = OS.g_simple_action_new_stateful(
-					Converter.javaStringToCString(String.valueOf(this.hashCode())),
+					Converter.javaStringToCString(actionId),
 					0,
 					OS.g_variant_new_boolean(false));
 				OS.g_action_map_add_action(parent.actionGroup, actionHandle);
-				actionName = String.valueOf(parent.hashCode()) + "." + String.valueOf(this.hashCode());
+				actionName = String.valueOf(parent.hashCode()) + "." + actionId;
 				handle = OS.g_menu_item_new(null, Converter.javaStringToCString(actionName));
 				OS.g_variant_type_free(boolVariantType);
 				break;
@@ -306,17 +321,19 @@ void createHandle(int index) {
 				 * action is not triggered); while disabled, the item is insensitive and
 				 * the submenu cannot be opened.
 				 */
-				actionHandle = OS.g_simple_action_new(Converter.javaStringToCString(String.valueOf(this.hashCode())), 0);
+				actionId = String.valueOf(this.hashCode());
+				actionHandle = OS.g_simple_action_new(Converter.javaStringToCString(actionId), 0);
 				OS.g_action_map_add_action(parent.actionGroup, actionHandle);
-				actionName = String.valueOf(parent.hashCode()) + "." + String.valueOf(this.hashCode());
+				actionName = String.valueOf(parent.hashCode()) + "." + actionId;
 				handle = OS.g_menu_item_new(Converter.javaStringToCString(""), Converter.javaStringToCString(actionName));
 				OS.g_menu_item_set_submenu(handle, modelHandle);
 				break;
 			case SWT.PUSH:
 			default:
-				actionHandle = OS.g_simple_action_new(Converter.javaStringToCString(String.valueOf(this.hashCode())), 0);
+				actionId = String.valueOf(this.hashCode());
+				actionHandle = OS.g_simple_action_new(Converter.javaStringToCString(actionId), 0);
 				OS.g_action_map_add_action(parent.actionGroup, actionHandle);
-				actionName = String.valueOf(parent.hashCode()) + "." + String.valueOf(this.hashCode());
+				actionName = String.valueOf(parent.hashCode()) + "." + actionId;
 				handle = OS.g_menu_item_new(null, Converter.javaStringToCString(actionName));
 				break;
 		}
@@ -760,7 +777,12 @@ void releaseWidget() {
 	super.releaseWidget();
 
 	if (GTK.GTK4) {
-		if (parent.actionGroup != 0 && actionName != null) OS.g_action_map_remove_action(parent.actionGroup, Converter.javaStringToCString(actionName));
+		/*
+		 * Remove by actionId, not actionName: GActionMap keys actions by their own
+		 * name, so passing the prefixed detailed name silently removes nothing and
+		 * leaks the action for the lifetime of the parent's action group.
+		 */
+		if (parent.actionGroup != 0 && actionId != null) OS.g_action_map_remove_action(parent.actionGroup, Converter.javaStringToCString(actionId));
 	} else {
 		long accelGroup = getAccelGroup();
 		if (accelGroup != 0) removeAccelerator(accelGroup);
