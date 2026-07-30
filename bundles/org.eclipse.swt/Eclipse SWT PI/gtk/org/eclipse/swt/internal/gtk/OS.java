@@ -411,6 +411,7 @@ public class OS extends C {
 	public static final byte[] hide = ascii("hide");
 	public static final byte[] icon_release = ascii("icon-release");
 	public static final byte[] insert_text = ascii("insert-text");
+	public static final byte[] items_changed = ascii("items-changed");
 	public static final byte[] key_press_event = ascii("key-press-event");
 	public static final byte[] key_release_event = ascii("key-release-event");
 	public static final byte[] key_pressed = ascii("key-pressed");

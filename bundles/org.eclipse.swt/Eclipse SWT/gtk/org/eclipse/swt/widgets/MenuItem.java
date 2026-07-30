@@ -264,6 +264,12 @@ void createHandle(int index) {
 			case SWT.SEPARATOR:
 				modelHandle = OS.g_menu_new();
 				handle = OS.g_menu_item_new_section(null, modelHandle);
+				/*
+				 * A separator starts a new section GMenu; observe it for
+				 * "items-changed" too so submenus added into this section later get
+				 * wired (see Menu#hookItemsChanged and issue #3451).
+				 */
+				parent.hookItemsChanged(modelHandle);
 				break;
 			case SWT.RADIO:
 				long stringVariantType = OS.g_variant_type_new(OS.G_VARIANT_TYPE_STRING);
@@ -1148,6 +1154,18 @@ public void setMenu (Menu menu) {
 
 		OS.g_menu_remove(section.getSectionHandle(), section.getItemPosition(this));
 		OS.g_menu_insert_item(section.getSectionHandle(), section.getItemPosition(this), handle);
+
+		/*
+		 * If a DROP_DOWN is attached while its parent is already mapped (contributions
+		 * added/rebuilt after the parent was shown, e.g. workspace restore), wire its
+		 * SHOW/HIDE now; otherwise SWT.Show never fires and the submenu appears empty
+		 * (issue #3451). The g_menu calls above already emit "items-changed" on the
+		 * section model, so this is normally redundant; go through modelItemsChanged()
+		 * anyway so both paths re-wire from the same (root) menu.
+		 */
+		if (menu != null) {
+			parent.modelItemsChanged();
+		}
 	} else {
 		long accelGroup = getAccelGroup ();
 		if (accelGroup != 0) removeAccelerators (accelGroup);
