@@ -135,12 +135,14 @@ public class Display extends Device implements Executor {
 	long changeValueProc;
 	long snapshotDrawProc, keyPressReleaseProc, focusProc, windowActiveProc, enterMotionProc, leaveProc,
 		 scrollProc, resizeProc, layoutProc, activateProc, gesturePressReleaseProc;
+	long menuItemsChangedProc;
 	long notifyProc;
 	long computeSizeProc;
 	Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5, windowCallback6;
 	Callback changeValue;
 	Callback snapshotDraw, keyPressReleaseCallback, focusCallback, windowActiveCallback, enterMotionCallback, computeSizeCallback,
 			 scrollCallback, leaveCallback, resizeCallback, layoutCallback, activateCallback, gesturePressReleaseCallback;
+	Callback menuItemsChangedCallback;
 	Callback notifyCallback;
 	EventTable eventTable, filterTable;
 	static String APP_NAME = "SWT"; //$NON-NLS-1$
@@ -3633,6 +3635,10 @@ void initializeCallbacks () {
 		activateCallback = new Callback(this, "activateProc", void.class, new Type[] {long.class, long.class, long.class}); //$NON-NLS-1$
 		activateProc = activateCallback.getAddress();
 
+		menuItemsChangedCallback = new Callback(this, "menuItemsChangedProc", void.class, new Type[] {
+				long.class, int.class, int.class, int.class, long.class}); //$NON-NLS-1$
+		menuItemsChangedProc = menuItemsChangedCallback.getAddress();
+
 		computeSizeCallback = new Callback(this, "computeSizeProc", void.class, new Type[] {long.class, long.class, long.class}); //$NON-NLS-1$
 		computeSizeProc = computeSizeCallback.getAddress();
 	}
@@ -4670,6 +4676,10 @@ void releaseDisplay () {
 		activateCallback.dispose();
 		activateCallback = null;
 		activateProc = 0;
+
+		menuItemsChangedCallback.dispose();
+		menuItemsChangedCallback = null;
+		menuItemsChangedProc = 0;
 
 		computeSizeCallback.dispose();
 		computeSizeCallback = null;
@@ -6143,6 +6153,11 @@ void activateProc(long action, long parameter, long user_data) {
 	if(widget == null) return;
 
 	widget.gtk_activate(user_data);
+}
+
+void menuItemsChangedProc(long model, int position, int removed, int added, long user_data) {
+	Widget widget = getWidget(user_data);
+	if (widget instanceof Menu menu) menu.modelItemsChanged();
 }
 
 void resizeProc(long handle, int width, int height) {
