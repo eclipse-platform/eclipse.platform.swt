@@ -3045,6 +3045,79 @@ public void test_BrowserFunction_availableOnLoad_concurrentInstances_issue20() {
 	assertTrue(browser2FuncAvailable.get(), "BrowserFunction for second browser missing when page load completed");
 }
 
+/**
+ * Regression test: a disposed BrowserFunction must no longer be available (re-injected) after a
+ * subsequent navigation. This verifies that deregistration removes the persistent document-created
+ * script (whose ID is captured asynchronously on the Edge backend).
+ */
+@Test
+public void test_BrowserFunction_disposedFunctionRemovedAfterNavigation() {
+	BrowserFunction function = new BrowserFunction(browser, "disposableFunc") {
+		@Override
+		public Object function(Object[] arguments) {
+			return "alive";
+		}
+	};
+
+	AtomicBoolean firstPageLoaded = new AtomicBoolean(false);
+	ProgressListener firstPageListener = completedAdapter(e -> firstPageLoaded.set(true));
+	browser.addProgressListener(firstPageListener);
+	browser.setText("<html><body>first page</body></html>");
+	shell.open();
+	assertTrue(waitForPassCondition(firstPageLoaded::get), "First page did not load");
+	// The function is registered and usable now (this also ensures its registration has settled).
+	assertEquals("alive", browser.evaluate("return disposableFunc();"));
+	browser.removeProgressListener(firstPageListener);
+
+	// Dispose the function, then navigate: it must be gone on the new page.
+	function.dispose();
+	AtomicBoolean secondPageLoaded = new AtomicBoolean(false);
+	browser.addProgressListener(completedAdapter(e -> secondPageLoaded.set(true)));
+	browser.setText("<html><body>second page</body></html>");
+	assertTrue(waitForPassCondition(secondPageLoaded::get), "Second page did not load");
+
+	Object stillDefined = browser.evaluate("return typeof disposableFunc === 'function';");
+	assertEquals(Boolean.FALSE, stillDefined,
+		"A disposed BrowserFunction must not be re-injected on a subsequently loaded page");
+}
+
+/**
+ * Regression test: redefining a BrowserFunction with the same name (which deregisters the previous
+ * one and registers the new one) must take effect and survive navigations - the newest definition
+ * wins and the previous one is not resurrected.
+ */
+@Test
+public void test_BrowserFunction_redefineSameNameSurvivesNavigation() {
+	new BrowserFunction(browser, "f") {
+		@Override
+		public Object function(Object[] arguments) {
+			return "v1";
+		}
+	};
+	new BrowserFunction(browser, "f") {
+		@Override
+		public Object function(Object[] arguments) {
+			return "v2";
+		}
+	};
+
+	AtomicBoolean firstPageLoaded = new AtomicBoolean(false);
+	ProgressListener firstPageListener = completedAdapter(e -> firstPageLoaded.set(true));
+	browser.addProgressListener(firstPageListener);
+	browser.setText("<html><body>first page</body></html>");
+	shell.open();
+	assertTrue(waitForPassCondition(firstPageLoaded::get), "First page did not load");
+	assertEquals("v2", browser.evaluate("return f();"), "The most recent definition of 'f' must win");
+	browser.removeProgressListener(firstPageListener);
+
+	AtomicBoolean secondPageLoaded = new AtomicBoolean(false);
+	browser.addProgressListener(completedAdapter(e -> secondPageLoaded.set(true)));
+	browser.setText("<html><body>second page</body></html>");
+	assertTrue(waitForPassCondition(secondPageLoaded::get), "Second page did not load");
+	assertEquals("v2", browser.evaluate("return f();"),
+		"The redefined BrowserFunction must survive navigation and the previous definition must not be resurrected");
+}
+
 @Test
 @Disabled("Too fragile on CI, Display.getDefault().post(event) does not work reliably")
 public void test_TabTraversalOutOfBrowser() {
