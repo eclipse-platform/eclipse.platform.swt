@@ -386,6 +386,11 @@ class WebViewProvider {
 		webViewWrapper.webView_11 = initializeWebView_11(webView);
 		webViewWrapper.webView_12 = initializeWebView_12(webView);
 		webViewWrapper.webView_13 = initializeWebView_13(webView);
+		// Register the scripts of all BrowserFunctions created during initialization
+		// before completing the future below, as that synchronously runs queued
+		// navigation tasks (e.g. from setUrl()/setText()) and thus may already create
+		// the first document
+		registerPendingFunctionScripts(webView);
 		boolean success = webViewWrapperFuture.complete(webViewWrapper);
 		// Release the webViews if the webViewWrapperFuture has already timed out and completed exceptionally
 		if(!success && webViewWrapperFuture.isCompletedExceptionally()) {
@@ -397,6 +402,10 @@ class WebViewProvider {
 
 	private void abortInitialization() {
 		webViewWrapperFuture.cancel(true);
+	}
+
+	boolean isInitialized() {
+		return webViewWrapperFuture.isDone();
 	}
 
 	void releaseWebView() {
@@ -1839,38 +1848,67 @@ public boolean setUrl(String url, String postData, String[] headers) {
 }
 
 /**
- * Registers the function script persistently via AddScriptToExecuteOnDocumentCreated so it is
- * injected on every future document creation before any page scripts run, avoiding the race
- * condition between async function injection and navigation completion.
- * If called while inside a WebView2 callback, the persistent registration is deferred via
- * {@link Display#asyncExec(Runnable)} so it completes once the callback returns.
+ * Registers a BrowserFunction persistently via AddScriptToExecuteOnDocumentCreated so it is
+ * injected on every future document creation before any page scripts run.
+ * <p>
+ * The registration is issued immediately, but without waiting for its (asynchronous) completion:
+ * what makes a function available on a page is <em>issuing</em> the registration before the
+ * navigation that creates the document is issued to WebView2 - not waiting for the registration to
+ * complete. Since nothing is blocked on the completion, this can also safely be issued from within
+ * a WebView2 callback without risking a deadlock.
+ * <p>
+ * If the browser is not yet initialized when the function is created, the registration is issued by
+ * {@link WebViewProvider#initializeWebView(ICoreWebView2Controller)} (via
+ * {@link #registerPendingFunctionScripts(ICoreWebView2)}) before the first navigation, so functions
+ * created concurrently with initialization are available on the first loaded page.
  * See <a href="https://github.com/eclipse-platform/eclipse.platform.swt/issues/20">issue #20</a>.
  */
 @Override
 public void createFunction(BrowserFunction function) {
+	// If the browser is not yet initialized, initializeWebView() registers all pending
+	// functions (including this one) before completing the initialization future. Do not
+	// register again in that case - and in particular do not call getWebView() below, as
+	// that would pump the event loop until initialization completes and thus create a
+	// duplicate registration.
+	boolean alreadyInitialized = webViewProvider.isInitialized();
 	super.createFunction(function);
-	int functionIndex = function.index;
-	String functionString = function.functionString;
-	if (inCallback > 0) {
-		// Cannot wait for a callback result while already inside a WebView2 callback;
-		// defer the persistent registration to after the callback completes.
-		browser.getDisplay().asyncExec(() -> {
-			if (browser.isDisposed() || !functions.containsKey(functionIndex)) return;
-			registerFunctionScript(functionIndex, functionString);
-		});
-		return;
+	if (alreadyInitialized) {
+		registerFunctionScript(webViewProvider.getWebView(false), function.index, function.functionString);
 	}
-	registerFunctionScript(functionIndex, functionString);
 }
 
-private void registerFunctionScript(int functionIndex, String functionString) {
-	String[] scriptId = new String[1];
-	callAndWait(scriptId, completion ->
-		webViewProvider.getWebView(false).AddScriptToExecuteOnDocumentCreated(
-			stringToWstr(functionString), completion.getAddress()));
-	if (scriptId[0] != null) {
-		functionScriptIds.put(functionIndex, scriptId[0]);
+private void registerPendingFunctionScripts(ICoreWebView2 webView) {
+	for (Map.Entry<Integer, BrowserFunction> entry : functions.entrySet()) {
+		BrowserFunction function = entry.getValue();
+		if (function.functionString != null) {
+			registerFunctionScript(webView, entry.getKey(), function.functionString);
+		}
 	}
+}
+
+/**
+ * Issues the registration of a function's document-created script on the given WebView without
+ * blocking for the asynchronous completion. The resulting script ID is stored once the completion
+ * callback fires; if the function was deregistered again in the meantime, the script is removed
+ * right away instead, so an immediately following deregistration does not leak the script.
+ */
+private void registerFunctionScript(ICoreWebView2 webView, int functionIndex, String functionString) {
+	IUnknown completion = newCallback((result, scriptIdPointer) -> {
+		if ((int) result == COM.S_OK) {
+			String scriptId = wstrToString(scriptIdPointer, false);
+			if (functions.containsKey(functionIndex)) {
+				functionScriptIds.put(functionIndex, scriptId);
+			} else if (!browser.isDisposed()) {
+				webView.RemoveScriptToExecuteOnDocumentCreated(stringToWstr(scriptId));
+			}
+		}
+		return COM.S_OK;
+	});
+	int hr = webView.AddScriptToExecuteOnDocumentCreated(stringToWstr(functionString), completion.getAddress());
+	if (hr != OS.S_OK) {
+		System.err.println("Registering browser function failed with result " + hr + " for function: " + functionString);
+	}
+	completion.Release();
 }
 
 @Override
@@ -1881,6 +1919,8 @@ void deregisterFunction(BrowserFunction function) {
 		webViewProvider.getWebView(true).RemoveScriptToExecuteOnDocumentCreated(
 			stringToWstr(scriptId));
 	}
+	// If scriptId == null, an asynchronous registration has not stored its ID yet; its completion
+	// callback detects the now-removed function (via the functions map) and removes the script itself.
 }
 
 }
