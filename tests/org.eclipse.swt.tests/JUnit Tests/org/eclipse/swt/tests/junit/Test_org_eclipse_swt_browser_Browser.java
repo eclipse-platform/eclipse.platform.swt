@@ -3046,6 +3046,133 @@ public void test_BrowserFunction_availableOnLoad_concurrentInstances_issue20() {
 }
 
 /**
+ * Regression test: a BrowserFunction created from <em>inside</em> another BrowserFunction's
+ * callback must be registered and available on a page that is navigated to from within that same
+ * callback.
+ * <p>
+ * On the Edge/WebView2 backend this exercises function creation while a WebView2 callback is on the
+ * stack. Registration must be issued (before the navigation queued in the same callback) without
+ * blocking, since blocking inside a callback would deadlock.
+ */
+@Test
+public void test_BrowserFunction_createFunctionInsideCallback() {
+	assumeTrue(isEdge, "BrowserFunction availability before the page's inline scripts is specific to the Edge/WebView2 implementation");
+	AtomicBoolean innerCalled = new AtomicBoolean(false);
+
+	// 'inner' is only created when 'outer' is invoked from JavaScript, i.e. inside a callback.
+	class Inner extends BrowserFunction {
+		Inner() {
+			super(browser, "inner");
+		}
+		@Override
+		public Object function(Object[] arguments) {
+			innerCalled.set(true);
+			return null;
+		}
+	}
+	class Outer extends BrowserFunction {
+		Outer() {
+			super(browser, "outer");
+		}
+		@Override
+		public Object function(Object[] arguments) {
+			new Inner(); // create a new BrowserFunction from inside a callback
+			// Navigate to a page whose inline script calls the just-created function.
+			browser.setText("<html><body><script>inner();</script></body></html>");
+			return null;
+		}
+	}
+	new Outer();
+
+	// Trigger outer() once, after the first page has loaded.
+	AtomicBoolean outerTriggered = new AtomicBoolean(false);
+	browser.addProgressListener(completedAdapter(e -> {
+		if (outerTriggered.compareAndSet(false, true)) {
+			browser.execute("outer();");
+		}
+	}));
+	browser.setText("<html><body>first page</body></html>");
+
+	shell.open();
+	assertTrue(waitForPassCondition(innerCalled::get),
+		"BrowserFunction created inside a callback was not available on the page navigated to from that callback");
+}
+
+/**
+ * Regression test for issue #20: a BrowserFunction created while the browser is still initializing
+ * must be available <em>before</em> the first loaded page's own inline scripts run - not merely
+ * after the page finished loading. This combines concurrent initialization (the browser is not
+ * awaited) with a page whose inline script immediately calls the function.
+ */
+@Test
+public void test_BrowserFunction_availableBeforePageScripts_concurrentInit_issue20() {
+	assumeTrue(isEdge, "BrowserFunction availability before the page's inline scripts is specific to the Edge/WebView2 implementation");
+	AtomicBoolean functionCalled = new AtomicBoolean(false);
+
+	// Use new Browser() directly (not the createBrowser() helper that waits for initialization) so
+	// the browser is still initializing while we navigate and register the function.
+	Browser b = new Browser(shell, SWT.NONE);
+	createdBroswers.add(b);
+	// Mirror the bug's order: request the navigation first, then create the function - both before
+	// initialization completes.
+	b.setText("<html><body><script>options();</script></body></html>");
+	new BrowserFunction(b, "options") {
+		@Override
+		public Object function(Object[] arguments) {
+			functionCalled.set(true);
+			return null;
+		}
+	};
+
+	shell.open();
+	assertTrue(waitForPassCondition(functionCalled::get),
+		"BrowserFunction 'options' was not available before the first page's inline script ran during concurrent initialization");
+}
+
+/**
+ * Regression test for issue #20: when multiple BrowserFunctions are created while the browser is
+ * still initializing, all of them must be available on the first loaded page.
+ */
+@Test
+public void test_BrowserFunction_multipleFunctionsDuringConcurrentInit_issue20() {
+	assumeFalse(SwtTestUtil.isCocoa, "BrowserFunction availability during concurrent initialization is not reliable on Cocoa");
+	AtomicReference<Object> result = new AtomicReference<>();
+	AtomicReference<SWTException> failure = new AtomicReference<>();
+
+	Browser b = new Browser(shell, SWT.NONE);
+	createdBroswers.add(b);
+	b.setUrl("about:blank");
+	new BrowserFunction(b, "f1") {
+		@Override
+		public Object function(Object[] arguments) {
+			return 1;
+		}
+	};
+	new BrowserFunction(b, "f2") {
+		@Override
+		public Object function(Object[] arguments) {
+			return 2;
+		}
+	};
+	b.addProgressListener(completedAdapter(e -> {
+		try {
+			result.set(b.evaluate("return f1() + f2();"));
+		} catch (SWTException ex) {
+			failure.set(ex);
+		}
+	}));
+
+	shell.open();
+	waitForPassCondition(() -> result.get() != null || failure.get() != null);
+	if (failure.get() != null) {
+		throw failure.get();
+	}
+	assertNotNull(result.get(), "Neither BrowserFunction was available on the first loaded page");
+	assertEquals(3.0, ((Number) result.get()).doubleValue(),
+		"Both BrowserFunctions created during concurrent initialization must be available on the first page");
+}
+
+/**
  * Regression test: a disposed BrowserFunction must no longer be available (re-injected) after a
  * subsequent navigation. This verifies that deregistration removes the persistent document-created
  * script (whose ID is captured asynchronously on the Edge backend).
