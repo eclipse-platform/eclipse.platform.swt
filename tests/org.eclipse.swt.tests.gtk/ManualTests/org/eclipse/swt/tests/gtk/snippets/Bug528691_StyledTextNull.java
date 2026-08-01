@@ -32,21 +32,23 @@ public class Bug528691_StyledTextNull {
 	public static void main(String[] args) {
 		final Display display = new Display();
 
-		final Shell shell = new Shell(display);
-		shell.setLayout(new FillLayout());
+		try {
+			final Shell shell = new Shell(display);
+			shell.setLayout(new FillLayout());
 
-		final StyledText styledText = new StyledText(shell, SWT.BORDER);
-		styledText.setText("hello\u0000world");
+			final StyledText styledText = new StyledText(shell, SWT.BORDER);
+			styledText.setText("hello\u0000world");
 
-		shell.setSize(500, 400);
-		shell.open();
+			shell.setSize(500, 400);
+			shell.open();
 
-		while (!shell.isDisposed()) {
-			if (!display.readAndDispatch()) {
-				display.sleep();
+			while (!shell.isDisposed()) {
+				if (!display.readAndDispatch()) {
+					display.sleep();
+				}
 			}
+		} finally {
+			display.dispose();
 		}
-
-		display.dispose();
 	}
 }
