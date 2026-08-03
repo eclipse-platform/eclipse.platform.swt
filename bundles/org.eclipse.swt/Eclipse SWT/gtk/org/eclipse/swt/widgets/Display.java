@@ -136,6 +136,15 @@ public class Display extends Device implements Executor {
 	long snapshotDrawProc, keyPressReleaseProc, focusProc, windowActiveProc, enterMotionProc, leaveProc,
 		 scrollProc, resizeProc, layoutProc, activateProc, gesturePressReleaseProc;
 	long menuItemsChangedProc;
+	/**
+	 * GTK4 only: set while SWT is mutating a GMenu, i.e. between the
+	 * {@code g_menu_remove} and {@code g_menu_insert_item} of an item refresh, when
+	 * the model no longer matches SWT's own item bookkeeping. The "items-changed"
+	 * emitted by the removal re-enters menu wiring synchronously, so custom menu
+	 * widget injection - which itself refreshes the model, by position - must not
+	 * run until the model is whole again (see MenuItem#refreshMenuModelGTK4).
+	 */
+	boolean menuModelMutating;
 	long notifyProc;
 	long computeSizeProc;
 	Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5, windowCallback6;

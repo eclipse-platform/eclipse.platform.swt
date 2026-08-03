@@ -11984,6 +11984,20 @@ fail:
 }
 #endif
 
+#ifndef NO_g_1menu_1item_1set_1attribute_1value
+JNIEXPORT void JNICALL OS_NATIVE(g_1menu_1item_1set_1attribute_1value)
+	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1, jlong arg2)
+{
+	jbyte *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, g_1menu_1item_1set_1attribute_1value_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	g_menu_item_set_attribute_value((GMenuItem *)arg0, (const gchar *)lparg1, (GVariant *)arg2);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, g_1menu_1item_1set_1attribute_1value_FUNC);
+}
+#endif
+
 #ifndef NO_g_1menu_1item_1set_1label
 JNIEXPORT void JNICALL OS_NATIVE(g_1menu_1item_1set_1label)
 	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1)

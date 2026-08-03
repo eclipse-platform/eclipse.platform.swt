@@ -75,6 +75,13 @@ public class GTK4 {
 	 */
 	public static final native void gtk_rgb_to_hsv(float r, float g, float b, float[] h, float[] s, float[] v);
 
+	/* GtkActionable */
+	/**
+	 * @param actionable cast=(GtkActionable *)
+	 * @param action_name cast=(const char *)
+	 */
+	public static final native void gtk_actionable_set_action_name(long actionable, byte[] action_name);
+
 	/* GtkBox */
 	/**
 	 * @param box cast=(GtkBox *)
@@ -590,6 +597,17 @@ public class GTK4 {
 	public static final native void gtk_text_set_tabs(long entry, long tabs);
 
 	/* GtkPopoverMenu */
+	/**
+	 * @param popover cast=(GtkPopoverMenu *)
+	 * @param child cast=(GtkWidget *)
+	 * @param id cast=(const char *)
+	 */
+	public static final native boolean gtk_popover_menu_add_child(long popover, long child, byte[] id);
+	/**
+	 * @param popover cast=(GtkPopoverMenu *)
+	 * @param child cast=(GtkWidget *)
+	 */
+	public static final native boolean gtk_popover_menu_remove_child(long popover, long child);
 	/**
 	 * @param model cast=(GMenuModel *)
 	 * @param flags cast=(GtkPopoverMenuFlags)
