@@ -415,6 +415,16 @@ JNIEXPORT jlong JNICALL GTK4_NATIVE(gdk_1content_1formats_1to_1string)
 }
 #endif
 
+#ifndef NO_gdk_1content_1formats_1unref
+JNIEXPORT void JNICALL GTK4_NATIVE(gdk_1content_1formats_1unref)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	GTK4_NATIVE_ENTER(env, that, gdk_1content_1formats_1unref_FUNC);
+	gdk_content_formats_unref((GdkContentFormats *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gdk_1content_1formats_1unref_FUNC);
+}
+#endif
+
 #ifndef NO_gdk_1content_1provider_1get_1value
 JNIEXPORT jboolean JNICALL GTK4_NATIVE(gdk_1content_1provider_1get_1value)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlongArray arg2)
@@ -2646,6 +2656,16 @@ fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
 	GTK4_NATIVE_EXIT(env, that, gtk_1tree_1view_1column_1cell_1get_1size_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1tree_1view_1enable_1model_1drag_1dest
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1tree_1view_1enable_1model_1drag_1dest)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jint arg2)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1tree_1view_1enable_1model_1drag_1dest_FUNC);
+	gtk_tree_view_enable_model_drag_dest((GtkTreeView *)arg0, (GdkContentFormats *)arg1, (GdkDragAction)arg2);
+	GTK4_NATIVE_EXIT(env, that, gtk_1tree_1view_1enable_1model_1drag_1dest_FUNC);
 }
 #endif
 

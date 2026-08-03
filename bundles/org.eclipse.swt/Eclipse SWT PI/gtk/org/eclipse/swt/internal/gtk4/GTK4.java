@@ -233,6 +233,8 @@ public class GTK4 {
 	 * @param type cast=(GType)
 	 */
 	public static final native boolean gdk_content_formats_contain_gtype(long formats, long type);
+	/** @param formats cast=(GdkContentFormats *) */
+	public static final native void gdk_content_formats_unref(long formats);
 
 	/* GdkDrop */
 	/**
@@ -897,6 +899,14 @@ public class GTK4 {
 	/* GtkMenuButton */
 	/** @param menu_button cast=(GtkMenuButton *) */
 	public static final native void gtk_menu_button_set_use_underline(long menu_button, boolean use_underline);
+
+	/* GtkTreeView */
+	/**
+	 * @param tree_view cast=(GtkTreeView *)
+	 * @param formats cast=(GdkContentFormats *)
+	 * @param actions cast=(GdkDragAction)
+	 */
+	public static final native void gtk_tree_view_enable_model_drag_dest(long tree_view, long formats, int actions);
 
 	/* GtkTreeViewColumn */
 	/**
