@@ -753,19 +753,23 @@ public void removeDropListener(DropTargetListener listener) {
  * </ul>
  */
 public void setTransfer(Transfer... transferAgents){
+	if (transferAgents == null) DND.error(SWT.ERROR_NULL_ARGUMENT);
 	if (GTK.GTK4) {
 		this.transferAgents = transferAgents;
 
 		long contentFormatsBuilder = GTK4.gdk_content_formats_builder_new();
 		for (Transfer agent : transferAgents) {
+			if (agent == null) continue;
 			for (String typeName : agent.getTypeNames()) {
 				GTK4.gdk_content_formats_builder_add_mime_type(contentFormatsBuilder, Converter.javaStringToCString(typeName));
 			}
 		}
-		GTK4.gtk_drop_target_async_set_formats(dropController, contentFormatsBuilder);
+		// The builder is not a GdkContentFormats, it has to be converted first.
+		// gtk_drop_target_async_set_formats() then takes its own reference.
+		long formats = GTK4.gdk_content_formats_builder_free_to_formats(contentFormatsBuilder);
+		GTK4.gtk_drop_target_async_set_formats(dropController, formats);
+		GTK4.gdk_content_formats_unref(formats);
 	} else {
-		if (transferAgents == null) DND.error(SWT.ERROR_NULL_ARGUMENT);
-
 		if (this.transferAgents.length != 0) {
 			GTK3.gtk_drag_dest_unset(control.handle);
 		}
