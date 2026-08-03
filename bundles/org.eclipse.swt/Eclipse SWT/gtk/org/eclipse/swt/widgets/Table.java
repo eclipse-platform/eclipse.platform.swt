@@ -711,6 +711,13 @@ void createHandle (int index) {
 	if (!searchEnabled ()) {
 		GTK.gtk_tree_view_set_search_column (handle, -1);
 	}
+	if (GTK.GTK4) {
+		// Required before TableDropTargetEffect may use
+		// gtk_tree_view_set_drag_dest_row(), see Tree.createHandle() for details.
+		long formats = GTK4.gdk_content_formats_builder_free_to_formats(GTK4.gdk_content_formats_builder_new());
+		GTK4.gtk_tree_view_enable_model_drag_dest(handle, formats, 0);
+		GTK4.gdk_content_formats_unref(formats);
+	}
 }
 
 void createItem (TableColumn column, int index) {

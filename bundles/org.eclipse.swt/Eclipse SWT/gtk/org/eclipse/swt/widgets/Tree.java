@@ -881,7 +881,23 @@ void createHandle (int index) {
 		GTK.gtk_tree_view_set_search_column (handle, -1);
 	}
 
-	if (GTK.GTK4) bindArrowKeyBindings();
+	if (GTK.GTK4) {
+		bindArrowKeyBindings();
+		/*
+		 * GTK renders the drop highlight requested through
+		 * gtk_tree_view_set_drag_dest_row() from the private TreeViewDragInfo struct,
+		 * but only gtk_tree_view_enable_model_drag_dest() ever allocates it and the
+		 * snapshot code dereferences it without a NULL check. Driving the highlight
+		 * ourselves, as setInsertMark() and TreeDropTargetEffect do, would therefore
+		 * crash on the next repaint, so allocate the struct up front. The drop target
+		 * GTK installs alongside it gets an empty format list and no actions, which
+		 * makes it reject every drag so that GTK's own tree view drag handlers never
+		 * compete with SWT's DropTarget.
+		 */
+		long formats = GTK4.gdk_content_formats_builder_free_to_formats(GTK4.gdk_content_formats_builder_new());
+		GTK4.gtk_tree_view_enable_model_drag_dest(handle, formats, 0);
+		GTK4.gdk_content_formats_unref(formats);
+	}
 }
 
 /**
