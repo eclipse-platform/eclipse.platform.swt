@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -117,6 +117,9 @@ public class DragSource extends Widget {
 
 	long targetList;
 
+	/* GTK4 GtkDragSource event controller added to the control */
+	long dragSourceController;
+
 	//workaround - remember action performed for DragEnd
 	boolean moveData = false;
 
@@ -182,7 +185,7 @@ public DragSource(Control control, int style) {
 		}
 		control.setData(DND.DRAG_SOURCE_KEY, this);
 
-		long dragSourceController = GTK4.gtk_drag_source_new();
+		dragSourceController = GTK4.gtk_drag_source_new();
 		GTK4.gtk_widget_add_controller(control.handle, dragSourceController);
 
 		OS.g_signal_connect(dragSourceController, OS.prepare, dragPrepareProc.getAddress(), 0);
@@ -207,21 +210,6 @@ public DragSource(Control control, int style) {
 		OS.g_signal_connect(control.handle, OS.drag_end, DragEnd.getAddress(), 0);
 		OS.g_signal_connect(control.handle, OS.drag_data_delete, DragDataDelete.getAddress(), 0);
 
-		controlListener = event -> {
-			if (event.type == SWT.Dispose) {
-				if (!DragSource.this.isDisposed()) {
-					DragSource.this.dispose();
-				}
-			}
-			if (event.type == SWT.DragDetect) {
-				if (!DragSource.this.isDisposed()) {
-					DragSource.this.drag(event);
-				}
-			}
-		};
-		control.addListener (SWT.Dispose, controlListener);
-		control.addListener (SWT.DragDetect, controlListener);
-
 		Object effect = control.getData(DEFAULT_DRAG_SOURCE_EFFECT);
 		if (effect instanceof DragSourceEffect) {
 			dragEffect = (DragSourceEffect) effect;
@@ -232,9 +220,26 @@ public DragSource(Control control, int style) {
 		} else if (control instanceof List) {
 			dragEffect = new ListDragSourceEffect((List) control);
 		}
-
-		this.addListener(SWT.Dispose, e -> onDispose());
 	}
+
+	// Dispose listeners
+	controlListener = event -> {
+		if (event.type == SWT.Dispose) {
+			if (!DragSource.this.isDisposed()) {
+				DragSource.this.dispose();
+			}
+		}
+		if (event.type == SWT.DragDetect) {
+			if (!DragSource.this.isDisposed()) {
+				DragSource.this.drag(event);
+			}
+		}
+	};
+	control.addListener (SWT.Dispose, controlListener);
+	// On GTK4 the drag is started by the GtkDragSource controller, not by SWT.DragDetect.
+	if (!GTK.GTK4) control.addListener (SWT.DragDetect, controlListener);
+
+	this.addListener(SWT.Dispose, e -> onDispose());
 }
 
 static int checkStyle (int style) {
@@ -621,7 +626,12 @@ public Transfer[] getTransfer(){
 
 void onDispose() {
 	if (control == null) return;
-	if (targetList != 0) {
+	if (GTK.GTK4) {
+		if (dragSourceController != 0) {
+			GTK4.gtk_widget_remove_controller(control.handle, dragSourceController);
+			dragSourceController = 0;
+		}
+	} else if (targetList != 0) {
 		GTK3.gtk_target_list_unref(targetList);
 	}
 	targetList = 0;
