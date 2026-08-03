@@ -136,6 +136,16 @@ public class Display extends Device implements Executor {
 	long snapshotDrawProc, keyPressReleaseProc, focusProc, windowActiveProc, enterMotionProc, leaveProc,
 		 scrollProc, resizeProc, layoutProc, activateProc, gesturePressReleaseProc;
 	long menuItemsChangedProc;
+	/** GTK4 only: when the last key event was dispatched, see Menu#clearStrayRowSelection. */
+	long lastKeyEventTime;
+	/**
+	 * GTK4 only: set while SWT is mutating a GMenu. The removal's synchronous
+	 * "items-changed" re-enters menu wiring, so position-based custom widget
+	 * injection must wait until the model is whole again (see MenuItem#refreshMenuModelGTK4).
+	 */
+	boolean menuModelMutating;
+	/** GTK4 only: the MenuItem custom-icon-row selection CSS has been installed, see ensureMenuIconRowCss. */
+	private boolean menuIconRowCssApplied;
 	long notifyProc;
 	long computeSizeProc;
 	Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5, windowCallback6;
@@ -860,6 +870,24 @@ void addSkinnableWidget (Widget widget) {
 		skinList = newSkinWidgets;
 	}
 	skinList [skinCount++] = widget;
+}
+
+/**
+ * GTK4 only: installs, once per display, the rule that paints the selection
+ * highlight of MenuItem custom icon rows (see MenuItem.setCustomRowSelected).
+ * Installed above the user priority so it wins over the per-widget background a
+ * themed workbench (e.g. the Eclipse e4 dark theme) attaches to these SWT-owned
+ * rows. Painting with the row's text color at a low alpha matches native rows in
+ * any theme without a hard-coded color.
+ */
+void ensureMenuIconRowCss() {
+	if (menuIconRowCssApplied) return;
+	menuIconRowCssApplied = true;
+	long provider = GTK.gtk_css_provider_new();
+	GTK4.gtk_css_provider_load_from_data(provider,
+			Converter.wcsToMbcs("modelbutton." + MenuItem.CUSTOM_SELECTED_CLASS + " { background-color: alpha(currentColor, 0.1); }", true), -1);
+	GTK.gtk_style_context_add_provider_for_display(GDK.gdk_display_get_default(), provider, GTK.GTK_STYLE_PROVIDER_PRIORITY_USER + 1);
+	OS.g_object_unref(provider);
 }
 
 void addWidget (long handle, Widget widget) {
@@ -6123,6 +6151,7 @@ void windowActiveProc(long handle, long user_data) {;
 }
 
 boolean keyPressReleaseProc(long controller, int keyval, int keycode, int state, long user_data) {
+	lastKeyEventTime = System.currentTimeMillis();
 	long handle = GTK.gtk_event_controller_get_widget(controller);
 	Widget widget = getWidget(handle);
 	if (widget == null) return false;
