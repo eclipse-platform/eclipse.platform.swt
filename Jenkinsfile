@@ -21,10 +21,10 @@ def runOnNativeBuildAgent(String platform, Closure body) {
 	def dockerImage = null
 	switch (platform) {
 		case 'gtk.linux.x86_64':
-			dockerImage = 'eclipse/platformreleng-debian-swtgtk3nativebuild:10'
+			dockerImage = 'ghcr.io/eclipse-platform/platformreleng-debian-swtgtk3nativebuild:11'
 			break
 		case 'gtk4.linux.x86_64':
-			dockerImage = 'eclipse/platformreleng-debian-swtnativebuild:12'
+			dockerImage = 'ghcr.io/eclipse-platform/platformreleng-debian-swtnativebuild:12'
 			break
 	}
 	if (dockerImage != null) {
