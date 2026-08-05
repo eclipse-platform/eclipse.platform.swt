@@ -28,6 +28,15 @@ on:
         type: boolean
         required: false
         default: false
+      api_check:
+        description: |
+          Run the API tools check and generate the javadoc (one of true, false)
+
+          Both only depend on the Java sources, so enable this for a single job
+          per operating system.
+        type: boolean
+        required: false
+        default: false
       gtk:
         description: |
           (Required on Linux only) GTK version to use (one of gtk3, gtk4)
@@ -108,7 +117,7 @@ jobs:
         --threads 1C
         -DforkCount=1
         '-Dnative=${{ inputs.native }}'
-        -Papi-check -Pjavadoc
+        ${{ inputs.api_check && '-Papi-check -Pjavadoc' || '' }}
         '-Dtycho.baseline.replace=none'
         --fail-at-end
         -DskipNativeTests=false

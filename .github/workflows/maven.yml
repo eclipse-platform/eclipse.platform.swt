@@ -93,6 +93,8 @@ jobs:
       native: gtk.linux.x86_64
       gtk: ${{ matrix.gtk }}
       gdk_backend: ${{ matrix.gdk_backend }}
+      # All Linux jobs build the same Java sources, so check the API and javadoc only once
+      api_check: ${{ matrix.gtk == 'gtk3' && matrix.gdk_backend == 'x11' }}
       performance: ${{ contains(github.event.pull_request.labels.*.name, 'performance') }}
       runtodotests: ${{ contains(github.event.pull_request.labels.*.name, 'runtodotests') }}
 
@@ -110,6 +112,7 @@ jobs:
       runner: windows-latest
       java: ${{ matrix.java }}
       native: win32.win32.x86_64
+      api_check: true
       performance: ${{ contains(github.event.pull_request.labels.*.name, 'performance') }}
       runtodotests: ${{ contains(github.event.pull_request.labels.*.name, 'runtodotests') }}
 
@@ -128,5 +131,7 @@ jobs:
       runner: ${{ matrix.arch == 'x86_64' && 'macos-15-intel' || 'macos-latest' }}
       java: ${{ matrix.java }}
       native: cocoa.macosx.${{ matrix.arch }}
+      # Both macOS fragments compile the same Java sources, so check the API and javadoc only once
+      api_check: ${{ matrix.arch == 'aarch64' }}
       performance: ${{ contains(github.event.pull_request.labels.*.name, 'performance') }}
       runtodotests: ${{ contains(github.event.pull_request.labels.*.name, 'runtodotests') }}
