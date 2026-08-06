@@ -1246,8 +1246,11 @@ void updateOrientation () {
 				hotImageList.put(info.iImage, null);
 				disabledImageList.put(info.iImage, null);
 				info.iImage = newImageList.add(image);
-				newHotImageList.add(hot);
-				newDisabledImageList.add(disabled);
+				// Keep the new hot and disabled lists index-aligned with the new
+				// normal list by reusing the normal list's index (see
+				// ToolItem.updateImages) instead of three independent add(...) calls.
+				newHotImageList.putAt(info.iImage, hot);
+				newDisabledImageList.putAt(info.iImage, disabled);
 				OS.SendMessage (handle, OS.TB_SETBUTTONINFO, item.id, info);
 			}
 		}

@@ -1135,8 +1135,11 @@ void updateImages (boolean enabled) {
 			if (!enabled) image2 = hot = disabled;
 		}
 		info.iImage = imageList.add (image2);
-		disabledImageList.add (disabled);
-		hotImageList.add (hot != null ? hot : image2);
+		// Use the slot index from the normal image list as authoritative source
+		// for the image ordering and reuse it for the disabled and hot lists so all
+		// three stay index-aligned.
+		disabledImageList.putAt (info.iImage, disabled);
+		hotImageList.putAt (info.iImage, hot != null ? hot : image2);
 		parent.setImageList (imageList);
 		parent.setDisabledImageList (disabledImageList);
 		parent.setHotImageList (hotImageList);
@@ -1171,7 +1174,11 @@ void updateImages (boolean enabled) {
 			imageList.put (info.iImage, image2);
 		}
 		if (hotImageList != null) {
-			hotImageList.put (info.iImage, hot != null ? hot : image2);
+			// Mirror the normal list: when it stores no image for this slot
+			// (image2 == null, i.e. the item's image was cleared) the button stops
+			// referencing this slot (iImage becomes I_IMAGENONE below), so free the
+			// hot slot too instead of leaving the old hot image behind.
+			hotImageList.put (info.iImage, image2 != null ? (hot != null ? hot : image2) : null);
 		}
 		if (image == null) info.iImage = OS.I_IMAGENONE;
 	}
