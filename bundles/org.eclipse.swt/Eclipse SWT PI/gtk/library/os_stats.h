@@ -969,6 +969,7 @@ typedef enum {
 	g_1menu_1item_1new_1section_FUNC,
 	g_1menu_1item_1new_1submenu_FUNC,
 	g_1menu_1item_1set_1attribute_FUNC,
+	g_1menu_1item_1set_1attribute_1value_FUNC,
 	g_1menu_1item_1set_1label_FUNC,
 	g_1menu_1item_1set_1submenu_FUNC,
 	g_1menu_1new_FUNC,

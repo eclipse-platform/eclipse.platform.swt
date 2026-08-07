@@ -2417,6 +2417,12 @@ public static final native void g_menu_item_set_label(long menu_item, byte[] lab
  * @param data cast=(const gchar *)
  */
 public static final native void g_menu_item_set_attribute(long menu_item, byte[] attribute, byte[] format_string, long data);
+/**
+ * @param menu_item cast=(GMenuItem *)
+ * @param attribute cast=(const gchar *)
+ * @param value cast=(GVariant *)
+ */
+public static final native void g_menu_item_set_attribute_value(long menu_item, byte[] attribute, long value);
 
 /* GSimpleActionGroup */
 public static final native long g_simple_action_group_new();
