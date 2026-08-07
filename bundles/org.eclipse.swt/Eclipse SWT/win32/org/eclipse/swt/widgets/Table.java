@@ -7161,9 +7161,11 @@ private LRESULT positionTooltip(NMHDR hdr, long lParam) {
 				long hwndToolTip = OS.SendMessage(handle, OS.LVM_GETTOOLTIPS, 0, 0);
 				int flags = OS.SWP_NOACTIVATE | OS.SWP_NOZORDER;
 				Rectangle adjustedTooltipBounds = getDisplay().fitRectangleBoundsIntoMonitorWithCursor(toolRect);
-				OS.SetWindowPos(hwndToolTip, 0, adjustedTooltipBounds.x, adjustedTooltipBounds.y,
-						adjustedTooltipBounds.width, adjustedTooltipBounds.height, flags);
-				result = LRESULT.ONE;
+				if (adjustedTooltipBounds != null) {
+					OS.SetWindowPos(hwndToolTip, 0, adjustedTooltipBounds.x, adjustedTooltipBounds.y,
+							adjustedTooltipBounds.width, adjustedTooltipBounds.height, flags);
+					result = LRESULT.ONE;
+				}
 			} else if (isCustomToolTip()) {
 				RECT itemRect = getItemBounds(pinfo, item, hDC);
 				NMTTDISPINFO lpnmtdi = new NMTTDISPINFO();
