@@ -229,4 +229,8 @@ public String toString() {
 	return "Pattern {" + (color != null ? color.id : gradient.id) + "}";
 }
 
+PatternProperties getProperties() {
+    return null;
+}
+
 }

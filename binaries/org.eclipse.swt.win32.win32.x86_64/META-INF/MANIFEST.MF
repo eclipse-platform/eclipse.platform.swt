@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Fragment-Host: org.eclipse.swt;bundle-version="[3.128.0,4.0.0)"
+Fragment-Host: org.eclipse.swt;bundle-version="[3.134.0.qualifier,4.0.0)"
 Bundle-Name: %fragmentName
 Bundle-Vendor: %providerName
 Bundle-SymbolicName: org.eclipse.swt.win32.win32.x86_64; singleton:=true
@@ -16,18 +16,19 @@ Export-Package:
  org.eclipse.swt.dnd,
  org.eclipse.swt.events,
  org.eclipse.swt.graphics,
+ org.eclipse.swt.internal;x-friends:="org.eclipse.ui",
+ org.eclipse.swt.internal.canvasext;x-friends:="org.eclipse.swt.skia,org.eclipse.swt.skia.tests",
+ org.eclipse.swt.internal.gdip;x-internal:=true,
+ org.eclipse.swt.internal.image;x-internal:=true,
+ org.eclipse.swt.internal.ole.win32;x-internal:=true,
+ org.eclipse.swt.internal.opengl.win32;x-internal:=true,
+ org.eclipse.swt.internal.win32;x-internal:=true,
  org.eclipse.swt.layout,
+ org.eclipse.swt.ole.win32,
  org.eclipse.swt.opengl,
  org.eclipse.swt.printing,
  org.eclipse.swt.program,
- org.eclipse.swt.widgets,
- org.eclipse.swt.internal; x-friends:="org.eclipse.ui",
- org.eclipse.swt.internal.image; x-internal:=true,
- org.eclipse.swt.ole.win32,
- org.eclipse.swt.internal.gdip; x-internal:=true,
- org.eclipse.swt.internal.ole.win32; x-internal:=true,
- org.eclipse.swt.internal.win32; x-internal:=true,
- org.eclipse.swt.internal.opengl.win32; x-internal:=true
+ org.eclipse.swt.widgets
 Eclipse-PlatformFilter: (& (osgi.ws=win32) (osgi.os=win32) (osgi.arch=x86_64))
 SWT-WS: win32
 SWT-OS: win32

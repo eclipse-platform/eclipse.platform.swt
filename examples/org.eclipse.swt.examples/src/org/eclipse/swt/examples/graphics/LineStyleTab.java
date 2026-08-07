@@ -116,6 +116,9 @@ public void createControlPanel(Composite parent) {
 public void paint(GC gc, int width, int height) {
 	Device device = gc.getDevice();
 
+	int sections = 7;
+	int textPositions = 14;
+
 	Pattern pattern = null;
 	if (lineColor.getBgColor1() != null) {
 		gc.setForeground(lineColor.getBgColor1());
@@ -128,15 +131,18 @@ public void paint(GC gc, int width, int height) {
 	gc.setLineWidth(lineWidthSpinner.getSelection());
 
 	// draw lines with caps
-	gc.drawLine(3*width/16, 1*height/6, 13*width/16, 1*height/6);
+	gc.drawLine(3*width/16, 1*height/sections, 13*width/16, 1*height/sections);
 	gc.setLineStyle(SWT.LINE_DASH);
-	gc.drawLine(3*width/16, 2*height/6, 13*width/16, 2*height/6);
+	gc.drawLine(3*width/16, 2*height/sections, 13*width/16, 2*height/sections);
 	gc.setLineStyle(SWT.LINE_DOT);
-	gc.drawLine(3*width/16, 3*height/6, 13*width/16, 3*height/6);
+	gc.drawLine(3*width/16, 3*height/sections, 13*width/16, 3*height/sections);
 	gc.setLineStyle(SWT.LINE_DASHDOT);
-	gc.drawLine(3*width/16, 4*height/6, 13*width/16, 4*height/6);
+	gc.drawLine(3*width/16, 4*height/sections, 13*width/16, 4*height/sections);
 	gc.setLineStyle(SWT.LINE_DASHDOTDOT);
-	gc.drawLine(3*width/16, 5*height/6, 13*width/16, 5*height/6);
+	gc.drawLine(3*width/16, 5*height/sections, 13*width/16, 5*height/sections);
+	gc.setLineDash(new int[] {25,20,15,10,5});
+	gc.drawLine(3*width/16, 6*height/sections, 13*width/16, 6*height/sections);
+
 
 	// draw labels
 	Font font = new Font(device, getPlatformFont(), 20, SWT.NORMAL);
@@ -146,19 +152,22 @@ public void paint(GC gc, int width, int height) {
 
 	String text = GraphicsExample.getResourceString("Solid"); //$NON-NLS-1$
 	Point size = gc.stringExtent(text);
-	gc.drawString(text, (width-size.x)/2, 1*height/12, true);
+	gc.drawString(text, (width-size.x)/2, 1*height/textPositions, true);
 	text = GraphicsExample.getResourceString("Dash"); //$NON-NLS-1$
 	size = gc.stringExtent(text);
-	gc.drawString(text, (width-size.x)/2, 3*height/12, true);
+	gc.drawString(text, (width-size.x)/2, 3*height/textPositions, true);
 	text = GraphicsExample.getResourceString("Dot"); //$NON-NLS-1$
 	size = gc.stringExtent(text);
-	gc.drawString(text, (width-size.x)/2, 5*height/12, true);
+	gc.drawString(text, (width-size.x)/2, 5*height/textPositions, true);
 	text = GraphicsExample.getResourceString("DashDot"); //$NON-NLS-1$
 	size = gc.stringExtent(text);
-	gc.drawString(text, (width-size.x)/2, 7*height/12, true);
+	gc.drawString(text, (width-size.x)/2, 7*height/textPositions, true);
 	text = GraphicsExample.getResourceString("DashDotDot"); //$NON-NLS-1$
 	size = gc.stringExtent(text);
-	gc.drawString(text, (width-size.x)/2, 9*height/12, true);
+	gc.drawString(text, (width-size.x)/2, 9*height/textPositions, true);
+	text = GraphicsExample.getResourceString("CustomLineStyle {25,20,15,10,5}"); //$NON-NLS-1$
+	size = gc.stringExtent(text);
+	gc.drawString(text, (width-size.x)/2, 11*height/textPositions , true);
 	font.dispose();
 }
 
