@@ -158,28 +158,12 @@ void setColorType(byte value) {
 }
 
 /**
- * Get the image's compression method.
- * This value must be 0.
- */
-byte getCompressionMethod() {
-	return compressionMethod;
-}
-
-/**
  * Set the image's compression method.
  * This value must be 0.
  */
 void setCompressionMethod(byte value) {
 	reference[COMPRESSION_METHOD_OFFSET] = value;
 	compressionMethod = value;
-}
-
-/**
- * Get the image's filter method.
- * This value must be 0.
- */
-byte getFilterMethod() {
-	return filterMethod;
 }
 
 /**

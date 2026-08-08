@@ -60,8 +60,4 @@ void validate(PngFileReadState readState, PngIhdrChunk headerChunk) {
 	super.validate(readState, headerChunk);
 }
 
-byte getDataByteAtOffset(int offset) {
-	return reference[DATA_OFFSET + offset];
-}
-
 }
