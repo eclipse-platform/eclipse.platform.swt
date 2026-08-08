@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2022 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -53,6 +53,7 @@ public final class TextLayout extends Resource {
 	int wrapIndent;
 	boolean justify;
 	int[] tabs;
+	int defaultTabLength;
 	int[] segments;
 	char[] segmentsChars;
 	StyleItem[] styles;
@@ -383,23 +384,35 @@ void computeRuns (GC gc) {
 	int indentInPixels = DPIUtil.pointToPixel(indent, getZoom(gc));
 	int wrapWidthInPixels = DPIUtil.pointToPixel(wrapWidth, getZoom(gc));
 	int[] tabsInPixels = Win32DPIUtils.pointToPixel(tabs, getZoom(gc));
+	int defaultTabWidthInPixels = getDefaultTabWidthInPixels(gc, srcHdc);
+	if (defaultTabWidthInPixels > 0) tabsInPixels = new int[] {defaultTabWidthInPixels};
 	int lineWidth = indentInPixels, lineStart = 0, lineCount = 1;
 	for (int i=0; i<allRuns.length - 1; i++) {
 		StyleItem run = allRuns[i];
 		if (tabsInPixels != null && run.tab) {
 			int tabsLength = tabsInPixels.length, j;
-			for (j = 0; j < tabsLength; j++) {
-				if (tabsInPixels[j] > lineWidth) {
-					run.width = tabsInPixels[j] - lineWidth;
-					break;
+			if (defaultTabWidthInPixels > 0) {
+				// Exact space grid, see getDefaultTabWidthInPixels()
+				int tabX = defaultTabWidthInPixels;
+				while (tabX <= lineWidth) tabX += defaultTabWidthInPixels;
+				run.width = tabX - lineWidth;
+				j = tabsLength;
+			} else {
+				// Compare in points: in pixels a stop can round past a pen sitting on it
+				int lineWidthInPoints = DPIUtil.pixelToPoint(lineWidth, getZoom(gc));
+				for (j = 0; j < tabsLength; j++) {
+					if (tabs[j] > lineWidthInPoints) {
+						run.width = tabsInPixels[j] - lineWidth;
+						break;
+					}
 				}
-			}
-			if (j == tabsLength) {
-				int tabX = tabsInPixels[tabsLength-1];
-				int lastTabWidth = tabsLength > 1 ? tabsInPixels[tabsLength-1] - tabsInPixels[tabsLength-2] : tabsInPixels[0];
-				if (lastTabWidth > 0) {
-					while (tabX <= lineWidth) tabX += lastTabWidth;
-					run.width = tabX - lineWidth;
+				if (j == tabsLength) {
+					int tabXInPoints = tabs[tabsLength-1];
+					int lastTabWidthInPoints = tabsLength > 1 ? tabs[tabsLength-1] - tabs[tabsLength-2] : tabs[0];
+					if (lastTabWidthInPoints > 0) {
+						while (tabXInPoints <= lineWidthInPoints) tabXInPoints += lastTabWidthInPoints;
+						run.width = DPIUtil.pointToPixel(tabXInPoints, getZoom(gc)) - lineWidth;
+					}
 				}
 			}
 
@@ -4027,6 +4040,24 @@ int untranslateOffset(int offset) {
  * @since 3.107
  */
 public void setDefaultTabWidth(int tabLength) {
-	// unused in win32
+	if (tabLength < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	checkLayout();
+	if (defaultTabLength == tabLength) return;
+	freeRuns();
+	defaultTabLength = tabLength;
+}
+
+// Exact pixel width of the single tab stop if it is defaultTabLength spaces wide, else 0
+int getDefaultTabWidthInPixels(GC gc, long hdc) {
+	if (defaultTabLength <= 0 || tabs == null || tabs.length != 1) return 0;
+	int nativeZoom = getNativeZoom(gc);
+	long hFont = font != null ? SWTFontProvider.getFontHandle(font, nativeZoom) : SWTFontProvider.getSystemFontHandle(device, nativeZoom);
+	long oldFont = OS.SelectObject(hdc, hFont);
+	char[] spaces = new char[defaultTabLength];
+	Arrays.fill(spaces, ' ');
+	SIZE size = new SIZE();
+	OS.GetTextExtentPoint32(hdc, spaces, spaces.length, size);
+	OS.SelectObject(hdc, oldFont);
+	return DPIUtil.pixelToPoint(size.cx, getZoom(gc)) == tabs[0] ? size.cx : 0;
 }
 }
