@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2022 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -379,47 +379,41 @@ void computeRuns (GC gc) {
 	}
 	SCRIPT_LOGATTR logAttr = new SCRIPT_LOGATTR();
 	SCRIPT_PROPERTIES properties = new SCRIPT_PROPERTIES();
-	int wrapIndentInPixels = DPIUtil.pointToPixel(wrapIndent, getZoom(gc));
-	int indentInPixels = DPIUtil.pointToPixel(indent, getZoom(gc));
-	int wrapWidthInPixels = DPIUtil.pointToPixel(wrapWidth, getZoom(gc));
-	int[] tabsInPixels = Win32DPIUtils.pointToPixel(tabs, getZoom(gc));
+	int zoom = getZoom(gc);
+	int wrapIndentInPixels = DPIUtil.pointToPixel(wrapIndent, zoom);
+	int indentInPixels = DPIUtil.pointToPixel(indent, zoom);
+	int wrapWidthInPixels = DPIUtil.pointToPixel(wrapWidth, zoom);
 	int lineWidth = indentInPixels, lineStart = 0, lineCount = 1;
 	for (int i=0; i<allRuns.length - 1; i++) {
 		StyleItem run = allRuns[i];
-		if (tabsInPixels != null && run.tab) {
-			int tabsLength = tabsInPixels.length, j;
-			for (j = 0; j < tabsLength; j++) {
-				if (tabsInPixels[j] > lineWidth) {
-					run.width = tabsInPixels[j] - lineWidth;
-					break;
-				}
-			}
-			if (j == tabsLength) {
-				int tabX = tabsInPixels[tabsLength-1];
-				int lastTabWidth = tabsLength > 1 ? tabsInPixels[tabsLength-1] - tabsInPixels[tabsLength-2] : tabsInPixels[0];
-				if (lastTabWidth > 0) {
-					while (tabX <= lineWidth) tabX += lastTabWidth;
-					run.width = tabX - lineWidth;
-				}
-			}
-
+		if (tabs != null && run.tab) {
 			/*
-			 * This block adjusts the indentation after merged tabs stops.
-			 * The extra tabs are removed in merge.
+			 * Locate the tab stop in points, the unit the stops were defined in. Rounding the pen
+			 * position to points first keeps a stop the pen already sits on from counting as the
+			 * next one, which would collapse the tab to a pixel at fractional zoom levels.
 			 */
-			int length = run.length;
-			if (length > 1) {
-				int stop = j + length - 1;
-				if (stop < tabsLength) {
-					run.width += tabsInPixels[stop] - tabsInPixels[j];
-				} else {
-					if (j < tabsLength) {
-						run.width += tabsInPixels[tabsLength-1] - tabsInPixels[j];
-						length -= (tabsLength - 1) - j;
-					}
-					int lastTabWidth = tabsLength > 1 ? tabsInPixels[tabsLength-1] - tabsInPixels[tabsLength-2] : tabsInPixels[0];
-					run.width += lastTabWidth * (length - 1);
-				}
+			int lineWidthInPoints = DPIUtil.pixelToPoint(lineWidth, zoom);
+			int tabsLength = tabs.length, j;
+			for (j = 0; j < tabsLength; j++) {
+				if (tabs[j] > lineWidthInPoints) break;
+			}
+			int lastTabWidth = tabsLength > 1 ? tabs[tabsLength-1] - tabs[tabsLength-2] : tabs[0];
+			/* Merged tabs advance by one additional stop each. The extra tabs are removed in merge. */
+			int extraStops = run.length - 1;
+			int tabX = 0;
+			boolean stopFound = false;
+			if (j < tabsLength) {
+				int stop = j + extraStops;
+				tabX = stop < tabsLength ? tabs[stop] : tabs[tabsLength-1] + lastTabWidth * (stop - (tabsLength-1));
+				stopFound = true;
+			} else if (lastTabWidth > 0) {
+				tabX = tabs[tabsLength-1];
+				while (tabX <= lineWidthInPoints) tabX += lastTabWidth;
+				tabX += lastTabWidth * extraStops;
+				stopFound = true;
+			}
+			if (stopFound) {
+				run.width = Math.max(0, DPIUtil.pointToPixel(tabX, zoom) - lineWidth);
 			}
 		}
 		if (wrapWidth != -1 && lineWidth + run.width > wrapWidthInPixels && !run.tab && !run.lineBreak) {
