@@ -109,6 +109,30 @@ class TextLayoutWin32Tests {
 				+ zoom + "% it did not for " + violations);
 	}
 
+	@ParameterizedTest
+	@ValueSource(ints = { 100, 125, 150, 175, 200 })
+	public void testMergedTabsPastTheLastStopLandOnTheDefinedStops(int zoom) {
+		Display display = Display.getDefault();
+		Font font = Font.win32_new(display.getSystemFont(), zoom);
+		// Stops continue at the width of the last interval: 10, 20, 30 and 10, 25, 40, 55
+		assertEquals(30, mergedTabsEnd(display, font, new int[] { 10 }, 3), "zoom " + zoom + "%");
+		assertEquals(55, mergedTabsEnd(display, font, new int[] { 10, 25 }, 4), "zoom " + zoom + "%");
+	}
+
+	private static int mergedTabsEnd(Display display, Font font, int[] tabs, int tabCount) {
+		// Consecutive tabs are only merged into one run once the text has more than TextLayout.TOO_MANY_RUNS items
+		String content = "a\t".repeat(TextLayout.TOO_MANY_RUNS) + "\n" + "\t".repeat(tabCount) + "X";
+		TextLayout layout = new TextLayout(display);
+		try {
+			layout.setFont(font);
+			layout.setTabs(tabs);
+			layout.setText(content);
+			return layout.getLocation(content.lastIndexOf('X'), false).x;
+		} finally {
+			layout.dispose();
+		}
+	}
+
 	private static int boundsWidth(Display display, Font font, int[] tabs, int tabLength, String content) {
 		TextLayout layout = new TextLayout(display);
 		try {
