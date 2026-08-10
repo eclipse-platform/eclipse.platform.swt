@@ -380,58 +380,67 @@ void computeRuns (GC gc) {
 	}
 	SCRIPT_LOGATTR logAttr = new SCRIPT_LOGATTR();
 	SCRIPT_PROPERTIES properties = new SCRIPT_PROPERTIES();
-	int wrapIndentInPixels = DPIUtil.pointToPixel(wrapIndent, getZoom(gc));
-	int indentInPixels = DPIUtil.pointToPixel(indent, getZoom(gc));
-	int wrapWidthInPixels = DPIUtil.pointToPixel(wrapWidth, getZoom(gc));
-	int[] tabsInPixels = Win32DPIUtils.pointToPixel(tabs, getZoom(gc));
+	int zoom = getZoom(gc);
+	int wrapIndentInPixels = DPIUtil.pointToPixel(wrapIndent, zoom);
+	int indentInPixels = DPIUtil.pointToPixel(indent, zoom);
+	int wrapWidthInPixels = DPIUtil.pointToPixel(wrapWidth, zoom);
 	int defaultTabWidthInPixels = getDefaultTabWidthInPixels(gc, srcHdc);
-	if (defaultTabWidthInPixels > 0) tabsInPixels = new int[] {defaultTabWidthInPixels};
 	int lineWidth = indentInPixels, lineStart = 0, lineCount = 1;
 	for (int i=0; i<allRuns.length - 1; i++) {
 		StyleItem run = allRuns[i];
-		if (tabsInPixels != null && run.tab) {
-			int tabsLength = tabsInPixels.length, j;
+		if (tabs != null && run.tab) {
 			if (defaultTabWidthInPixels > 0) {
-				// Exact space grid, see getDefaultTabWidthInPixels()
+				// Exact space grid, see getDefaultTabWidthInPixels(); merged tabs add one width each
 				int tabX = defaultTabWidthInPixels;
 				while (tabX <= lineWidth) tabX += defaultTabWidthInPixels;
-				run.width = tabX - lineWidth;
-				j = tabsLength;
+				run.width = tabX - lineWidth + defaultTabWidthInPixels * (run.length - 1);
 			} else {
-				// Compare in points: in pixels a stop can round past a pen sitting on it
-				int lineWidthInPoints = DPIUtil.pixelToPoint(lineWidth, getZoom(gc));
+				/*
+				 * The stop is resolved entirely in points, the unit setTabs() defined it in, and
+				 * only the resulting position is converted. Accumulating in pixels instead would
+				 * round every step and let the positions drift past the last stop.
+				 */
+				int lineWidthInPoints = DPIUtil.pixelToPoint(lineWidth, zoom);
+				int widthInPoints = 0;
+				boolean stopFound = false;
+				int tabsLength = tabs.length, j;
 				for (j = 0; j < tabsLength; j++) {
 					if (tabs[j] > lineWidthInPoints) {
-						run.width = tabsInPixels[j] - lineWidth;
+						widthInPoints = tabs[j] - lineWidthInPoints;
+						stopFound = true;
 						break;
 					}
 				}
 				if (j == tabsLength) {
-					int tabXInPoints = tabs[tabsLength-1];
-					int lastTabWidthInPoints = tabsLength > 1 ? tabs[tabsLength-1] - tabs[tabsLength-2] : tabs[0];
-					if (lastTabWidthInPoints > 0) {
-						while (tabXInPoints <= lineWidthInPoints) tabXInPoints += lastTabWidthInPoints;
-						run.width = DPIUtil.pointToPixel(tabXInPoints, getZoom(gc)) - lineWidth;
+					int tabX = tabs[tabsLength-1];
+					int lastTabWidth = tabsLength > 1 ? tabs[tabsLength-1] - tabs[tabsLength-2] : tabs[0];
+					if (lastTabWidth > 0) {
+						while (tabX <= lineWidthInPoints) tabX += lastTabWidth;
+						widthInPoints = tabX - lineWidthInPoints;
+						stopFound = true;
 					}
 				}
-			}
 
-			/*
-			 * This block adjusts the indentation after merged tabs stops.
-			 * The extra tabs are removed in merge.
-			 */
-			int length = run.length;
-			if (length > 1) {
-				int stop = j + length - 1;
-				if (stop < tabsLength) {
-					run.width += tabsInPixels[stop] - tabsInPixels[j];
-				} else {
-					if (j < tabsLength) {
-						run.width += tabsInPixels[tabsLength-1] - tabsInPixels[j];
-						length -= (tabsLength - 1) - j;
+				/*
+				 * This block adjusts the indentation after merged tabs stops.
+				 * The extra tabs are removed in merge.
+				 */
+				int length = run.length;
+				if (length > 1 && stopFound) {
+					int stop = j + length - 1;
+					if (stop < tabsLength) {
+						widthInPoints += tabs[stop] - tabs[j];
+					} else {
+						if (j < tabsLength) {
+							widthInPoints += tabs[tabsLength-1] - tabs[j];
+							length -= (tabsLength - 1) - j;
+						}
+						int lastTabWidth = tabsLength > 1 ? tabs[tabsLength-1] - tabs[tabsLength-2] : tabs[0];
+						widthInPoints += lastTabWidth * (length - 1);
 					}
-					int lastTabWidth = tabsLength > 1 ? tabsInPixels[tabsLength-1] - tabsInPixels[tabsLength-2] : tabsInPixels[0];
-					run.width += lastTabWidth * (length - 1);
+				}
+				if (stopFound) {
+					run.width = DPIUtil.pointToPixel(lineWidthInPoints + widthInPoints, zoom) - lineWidth;
 				}
 			}
 		}
