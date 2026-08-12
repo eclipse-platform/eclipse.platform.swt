@@ -165,8 +165,15 @@ Control[] _getChildren () {
 	long parentHandle = parentingHandle();
 
 	if (GTK.GTK4) {
+		/*
+		 * The GTK4 child list is ordered back-to-front (first = bottom, last =
+		 * top), because that is the order GTK4 paints its children in. This
+		 * method has to hand out the topmost child first, so walk the native
+		 * list backwards - that also makes the result match GTK3, whose
+		 * swt_fixed list is kept in front-to-back order instead.
+		 */
 		ArrayList<Control> childrenList = new ArrayList<>();
-		for (long child = GTK4.gtk_widget_get_first_child(parentHandle); child != 0; child = GTK4.gtk_widget_get_next_sibling(child)) {
+		for (long child = GTK4.gtk_widget_get_last_child(parentHandle); child != 0; child = GTK4.gtk_widget_get_prev_sibling(child)) {
 			Widget childWidget = display.getWidget(child);
 			if (childWidget != null && childWidget instanceof Control && childWidget != this) {
 				childrenList.add((Control)childWidget);
@@ -727,10 +734,16 @@ void fixZOrder () {
 	if ((state & CANVAS) != 0) return;
 	long parentHandle = parentingHandle ();
 	if (GTK.GTK4) {
-		/* TODO: GTK4 parent does not hold the list of children it has created (parent-children relationship can only be done
-		 * with GdkPopup) Will need to consider if we can get children some other way or not have to do fixZOrder at all
-		 * and use GdkPopup autohide feature.
+		/*
+		 * Keep the widget's own content at the very bottom of the child list, so
+		 * that child controls (e.g. Table/Tree editors) are never stacked behind
+		 * it. This mirrors the GTK3 branch below, which lowers the widget's own
+		 * internal GdkWindows underneath those of the children.
 		 */
+		long content = scrolledHandle != 0 ? scrolledHandle : handle;
+		if (content != 0 && GTK.gtk_widget_get_parent (content) == parentHandle) {
+			GTK4.gtk_widget_insert_after (content, parentHandle, 0L);
+		}
 	} else {
 		long parentWindow = gtk_widget_get_window (parentHandle);
 		if (parentWindow == 0) return;
@@ -1395,23 +1408,20 @@ void moveAbove (long child, long sibling) {
 	if (child == sibling) return;
 	long parentHandle = parentingHandle ();
 	if (GTK.GTK4) {
+		/*
+		 * GTK4 has no per-widget GdkWindow: paint and hit-test order is simply
+		 * the parent's child-list order, first = bottom, last = top. So "above"
+		 * means "later in the list" - the mirror image of the GTK3 swt_fixed
+		 * list, where the head of the list is the topmost child.
+		 *
+		 * gtk_widget_insert_before(..., NULL) appends (top of the z-order),
+		 * gtk_widget_insert_after(..., sibling) places the child directly on
+		 * top of that sibling.
+		 */
 		if (sibling == 0) {
-			/*
-			 * True raise-to-top-of-paint-order, scoped to Shell-direct
-			 * children (e.g. an overlay pane raised via moveAbove(null)).
-			 * GTK4 has no per-widget GdkWindow, so this same native sibling
-			 * list also backs Composite._getChildren(); other code already
-			 * relies on today's insert_after(..., NULL) behaviour to keep
-			 * getChildren() stable for non-Shell parents, so this is not
-			 * changed generally.
-			 */
-			if (this instanceof Shell) {
-				GTK4.gtk_widget_insert_before(child, parentHandle, 0L);
-			} else {
-				GTK4.gtk_widget_insert_after(child, parentHandle, 0L);
-			}
+			GTK4.gtk_widget_insert_before(child, parentHandle, 0L);
 		} else {
-			GTK4.gtk_widget_insert_before(child, parentHandle, sibling);
+			GTK4.gtk_widget_insert_after(child, parentHandle, sibling);
 		}
 	} else {
 		OS.swt_fixed_restack (parentHandle, child, sibling, true);
@@ -1438,13 +1448,9 @@ void moveBelow (long child, long sibling) {
 	if (GTK.GTK4) {
 		/* Mirror image of moveAbove - see the comment there. */
 		if (sibling == 0) {
-			if (this instanceof Shell) {
-				GTK4.gtk_widget_insert_after(child, parentHandle, 0L);
-			} else {
-				GTK4.gtk_widget_insert_before(child, parentHandle, 0L);
-			}
+			GTK4.gtk_widget_insert_after(child, parentHandle, 0L);
 		} else {
-			GTK4.gtk_widget_insert_after(child, parentHandle, sibling);
+			GTK4.gtk_widget_insert_before(child, parentHandle, sibling);
 		}
 	} else {
 		OS.swt_fixed_restack (parentHandle, child, sibling, false);

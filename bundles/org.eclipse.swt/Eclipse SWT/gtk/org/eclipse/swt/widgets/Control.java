@@ -815,13 +815,7 @@ void createWidget(int index) {
 	checkBuffered();
 	showWidget();
 	setInitialBounds();
-	if (GTK.GTK4 && !(this instanceof Shell)) {
-		/* moveBelow(null) now sinks Shell-direct children to the back
-		 * (see Composite.moveAbove) - guard against undoing that. */
-		setZOrder(null, false, false, !(parent instanceof Shell));
-	} else {
-		setZOrder(null, false, false);
-	}
+	setZOrder(null, false, false);
 	if (!GTK.GTK4) setRelations();
 	checkMirrored();
 	checkBorder();
@@ -5931,12 +5925,7 @@ public boolean setParent (Composite parent) {
 	allocation.height = height;
 	gtk_widget_size_allocate(topHandle, allocation, -1);
 	this.parent = parent;
-	if (GTK.GTK4 && !(this instanceof Shell)) {
-		/* See createWidget() re: guarding fixChildren on GTK4. */
-		setZOrder (null, false, true, !(parent instanceof Shell));
-	} else {
-		setZOrder (null, false, true);
-	}
+	setZOrder (null, false, true);
 	reskin (SWT.ALL);
 	// restore focus to the last Control that had it, if focus is now gone
 	if (focusControlBeforeReparent != null && !focusControlBeforeReparent.isDisposed() && display.getFocusControl() == null) {
@@ -6253,9 +6242,12 @@ void setZOrder (Control sibling, boolean above, boolean fixRelations, boolean fi
 
 	long topHandle = topHandle ();
 	long siblingHandle = sibling != null ? sibling.topHandle () : 0;
-	if (GTK.GTK4) {
-		//TODO: Test GTK3 behavior then implement, probably using gdk_toplevel_lower
-	} else {
+	/*
+	 * Nothing to restack on GTK4: its widgets have no GdkWindow of their own, so
+	 * the z-order is entirely determined by the position in the parent's child
+	 * list, which parent.moveAbove()/moveBelow() below takes care of.
+	 */
+	if (!GTK.GTK4) {
 		long window = gtk_widget_get_window (topHandle);
 		if (window != 0) {
 			long siblingWindow = 0;
