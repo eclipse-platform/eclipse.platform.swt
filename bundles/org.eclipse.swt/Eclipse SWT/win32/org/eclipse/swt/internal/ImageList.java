@@ -55,6 +55,11 @@ public int add (Image image) {
 		if (imageAtIndex == null) break;
 		index++;
 	}
+	put (index, image);
+	return index;
+}
+
+private void append (int index, Image image, int count) {
 	if (count == 0) {
 		Rectangle bounds = image.getBounds();
 		width = bounds.width;
@@ -68,7 +73,6 @@ public int add (Image image) {
 		images = newImages;
 	}
 	images [index] = image;
-	return index;
 }
 
 private Image getOrClearIfDisposed(int index) {
@@ -386,9 +390,19 @@ public int indexOf (Image image) {
 	return -1;
 }
 
+/**
+ * Stores the given image at the given index, replacing whatever is stored at that index. Passing
+ * no image clears the index. The index may also address the slot right after the last one, in
+ * which case a new slot is appended for the given image. Nothing happens for any other index
+ * outside the list's current size.
+ */
 public void put (int index, Image image) {
 	if ((0 <= index && index < images.length) && (images [index] == image)) return;
 	int count = OS.ImageList_GetImageCount (handle);
+	if (index == count && image != null) {
+		append (index, image, count);
+		return;
+	}
 	if (!(0 <= index && index < count)) return;
 	if (image != null) setForAllHandles(index, image, count);
 	images [index] = image;

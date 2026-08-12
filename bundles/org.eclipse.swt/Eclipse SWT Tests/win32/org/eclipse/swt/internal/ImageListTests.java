@@ -132,4 +132,158 @@ public class ImageListTests {
 		}
 	}
 
+	@Test
+	public void testAddReturnsConsecutiveIndicesForConsecutiveImages() {
+		ImageList list = new ImageList(SWT.NONE, 16, 16, 100);
+		Image[] images = createImages(3);
+		try {
+			assertEquals(0, list.add(images[0]));
+			assertEquals(1, list.add(images[1]));
+			assertEquals(2, list.add(images[2]));
+		} finally {
+			disposeAll(list, images);
+		}
+	}
+
+	@Test
+	public void testAddReusesSlotOfRemovedImage() {
+		ImageList list = new ImageList(SWT.NONE, 16, 16, 100);
+		Image[] images = createImages(3);
+		try {
+			list.add(images[0]);
+			list.add(images[1]);
+			list.put(0, null);
+
+			assertEquals(0, list.add(images[2]));
+			assertSame(images[2], list.get(0));
+		} finally {
+			disposeAll(list, images);
+		}
+	}
+
+	@Test
+	public void testPutAppendsImageAtEndOfList() {
+		ImageList list = new ImageList(SWT.NONE, 16, 16, 100);
+		Image[] images = createImages(2);
+		try {
+			list.add(images[0]);
+
+			list.put(1, images[1]);
+
+			assertSame(images[1], list.get(1));
+			assertEquals(2, list.size());
+		} finally {
+			disposeAll(list, images);
+		}
+	}
+
+	@Test
+	public void testPutReplacesImageInsideList() {
+		ImageList list = new ImageList(SWT.NONE, 16, 16, 100);
+		Image[] images = createImages(3);
+		try {
+			list.add(images[0]);
+			list.add(images[1]);
+
+			list.put(0, images[2]);
+
+			assertSame(images[2], list.get(0));
+			assertEquals(2, list.size());
+		} finally {
+			disposeAll(list, images);
+		}
+	}
+
+	@Test
+	public void testPutWithoutImageClearsSlotInsideList() {
+		ImageList list = new ImageList(SWT.NONE, 16, 16, 100);
+		Image[] images = createImages(2);
+		try {
+			list.add(images[0]);
+			list.add(images[1]);
+
+			list.put(0, null);
+
+			assertNull(list.get(0));
+			assertSame(images[1], list.get(1));
+			assertEquals(1, list.size());
+		} finally {
+			disposeAll(list, images);
+		}
+	}
+
+	@Test
+	public void testPutBeyondEndOfListIsIgnored() {
+		ImageList list = new ImageList(SWT.NONE, 16, 16, 100);
+		Image[] images = createImages(2);
+		try {
+			list.add(images[0]);
+
+			list.put(2, images[1]);
+
+			assertEquals(1, list.size());
+		} finally {
+			disposeAll(list, images);
+		}
+	}
+
+	@Test
+	public void testPutNegativeIndexIsIgnored() {
+		ImageList list = new ImageList(SWT.NONE, 16, 16, 100);
+		Image[] images = createImages(2);
+		try {
+			list.add(images[0]);
+
+			list.put(-1, images[1]);
+
+			assertSame(images[0], list.get(0));
+			assertEquals(1, list.size());
+		} finally {
+			disposeAll(list, images);
+		}
+	}
+
+	/**
+	 * Tool bars address their normal, hot and disabled image list with a single
+	 * index per item, so an image must be storable at a given index instead of at
+	 * whatever slot the individual list happens to have free.
+	 */
+	@Test
+	public void testPutKeepsListsAlignedWhenTheirFreeSlotsDiffer() {
+		ImageList list = new ImageList(SWT.NONE, 16, 16, 100);
+		ImageList hotList = new ImageList(SWT.NONE, 16, 16, 100);
+		Image[] images = createImages(4);
+		try {
+			list.add(images[0]);
+			hotList.add(images[1]);
+			// only the first list has a free slot from here on
+			list.put(0, null);
+
+			int index = list.add(images[2]);
+			hotList.put(index, images[3]);
+
+			assertEquals(0, index);
+			assertSame(images[2], list.get(index));
+			assertSame(images[3], hotList.get(index));
+		} finally {
+			hotList.dispose();
+			disposeAll(list, images);
+		}
+	}
+
+	private static Image[] createImages(int count) {
+		Image[] images = new Image[count];
+		for (int i = 0; i < count; i++) {
+			images[i] = new Image(Display.getDefault(), 16, 16);
+		}
+		return images;
+	}
+
+	private static void disposeAll(ImageList list, Image[] images) {
+		list.dispose();
+		for (Image image : images) {
+			image.dispose();
+		}
+	}
+
 }

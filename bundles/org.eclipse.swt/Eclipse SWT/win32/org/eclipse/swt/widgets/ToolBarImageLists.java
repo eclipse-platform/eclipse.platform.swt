@@ -57,8 +57,12 @@ class ToolBarImageLists {
 
 	int add(Image image, Image hotImage, Image disabledImage) {
 		int index = imageList.add(image);
-		hotImageList.add(hotImage);
-		disabledImageList.add(disabledImage);
+		// Use the slot index from the normal image list as authoritative source
+		// for the image ordering and reuse it for the hot and disabled lists
+		// instead of letting each of them scan for its own free slot, so all
+		// three stay index-aligned.
+		hotImageList.put(index, hotImage);
+		disabledImageList.put(index, disabledImage);
 		return index;
 	}
 

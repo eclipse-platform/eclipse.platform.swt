@@ -1141,7 +1141,13 @@ void updateImages (boolean enabled) {
 			if (!enabled) image2 = hot = disabled;
 		}
 
-		parent.putImage(info.iImage, image2, hot != null ? hot : image2, disabled);
+		/*
+		* When the normal image is cleared (image2 == null) the button stops
+		* referencing this slot (iImage becomes I_IMAGENONE below), so the hot
+		* image must be freed too instead of leaving the old hot image behind
+		* for a later item that reuses this slot.
+		*/
+		parent.putImage(info.iImage, image2, image2 != null ? (hot != null ? hot : image2) : null, disabled);
 		if (image == null) info.iImage = OS.I_IMAGENONE;
 	}
 
