@@ -311,12 +311,16 @@ static int callAndWait(long[] ppv, ToIntFunction<IUnknown> callable) {
 		return COM.S_OK;
 	});
 	ppv[0] = 0;
-	phr[0] = callable.applyAsInt(completion);
-	// "completion" callback may be called asynchronously,
-	// so keep processing next OS message that may call it
-	processOSMessagesUntil(() -> phr[0] != COM.S_OK || ppv[0] != 0, exception -> {
-		throw exception;
-	}, Display.getCurrent());
+	int cr = callable.applyAsInt(completion);
+	if (cr != COM.S_OK) {
+		phr[0] = cr;
+	} else {
+		// "completion" callback may be called asynchronously,
+		// so keep processing next OS message that may call it
+		processOSMessagesUntil(() -> phr[0] != COM.S_OK || ppv[0] != 0, exception -> {
+			throw exception;
+		}, Display.getCurrent());
+	}
 	completion.Release();
 	return phr[0];
 }
@@ -331,12 +335,16 @@ int callAndWait(String[] pstr, ToIntFunction<IUnknown> callable) {
 		return COM.S_OK;
 	});
 	pstr[0] = null;
-	phr[0] = callable.applyAsInt(completion);
-	// "completion" callback may be called asynchronously,
-	// so keep processing next OS message that may call it
-	processOSMessagesUntil(() -> phr[0] != COM.S_OK || pstr[0] != null, exception -> {
-		throw exception;
-	}, browser.getDisplay());
+	int cr = callable.applyAsInt(completion);
+	if (cr != COM.S_OK) {
+		phr[0] = cr;
+	} else {
+		// "completion" callback may be called asynchronously,
+		// so keep processing next OS message that may call it
+		processOSMessagesUntil(() -> phr[0] != COM.S_OK || pstr[0] != null, exception -> {
+			throw exception;
+		}, browser.getDisplay());
+	}
 	completion.Release();
 	return phr[0];
 }
@@ -659,6 +667,9 @@ WebViewEnvironment createEnvironment() {
 	options.Release();
 	if (hr == OS.HRESULT_FROM_WIN32(OS.ERROR_FILE_NOT_FOUND)) {
 		SWT.error(SWT.ERROR_NOT_IMPLEMENTED, null, " [WebView2 runtime not found]");
+	}
+	if (hr == OS.HRESULT_FROM_WIN32(OS.ERROR_NOT_SUPPORTED)) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT, null, String.format(" [Invalid WebView2 directory: %s. Please ensure that '%s' points to a WebView2 application directory (which usually ends with \\EdgeWebView\\Application\\<Version>)]", browserDir, BROWSER_DIR_PROP));
 	}
 	if (hr != COM.S_OK) error(SWT.ERROR_NO_HANDLES, hr);
 	ICoreWebView2Environment environment = new ICoreWebView2Environment(ppv[0]);

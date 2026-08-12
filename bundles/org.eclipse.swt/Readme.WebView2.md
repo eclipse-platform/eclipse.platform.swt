@@ -38,9 +38,11 @@ the `Browser` will automatically fall back to the Internet Explorer backend.
 ### Browser Directory
 
 WebView2 backend will automatically locate runtimes and Edge installations.
-The path to the Edge binary directory can also be set manually using the
+The path to the WebView2 binary directory can also be set manually using the
 `org.eclipse.swt.browser.EdgeDir` system property. This is also
 required when bundling fixed-version WebView2 binaries.
+
+_Note_: The directory pointed to by `org.eclipse.swt.browser.EdgeDir` must contain the WebView2 binary (`msedgewebview2.exe`, usually in `\EdgeWebView\Application\<Version>`), **not** the Edge application binary (`msedge.exe`, usually in `\Edge\Application\<Version>`).
 
 ### User Directory
 
