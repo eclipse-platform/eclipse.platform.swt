@@ -55,7 +55,7 @@ public class ToolBar extends Composite {
 	ToolItem [] items;
 	ToolItem [] tabItemList;
 	boolean ignoreResize, ignoreMouse;
-	ImageList imageList, disabledImageList, hotImageList;
+	private ImageList imageList, disabledImageList, hotImageList;
 	static final long ToolBarProc;
 	static final TCHAR ToolBarClass = new TCHAR (OS.TOOLBARCLASSNAME, true);
 	static {
@@ -143,6 +143,34 @@ public ToolBar (Composite parent, int style) {
 	}
 }
 
+/*
+ * The given image bounds are the bounds of the tool item's image and determine which shared image
+ * lists are used. They are intentionally not derived from the images actually added: for a disabled
+ * item with CHECK or RADIO style, those are the disabled images, which may have different bounds.
+ * Note that the icon size of an image list is defined by the first image added to it.
+ */
+int addImage(Rectangle imageBounds, Image image, Image hotImage, Image disabledImage) {
+	int listStyle = style & SWT.RIGHT_TO_LEFT;
+	if (imageList == null) {
+		imageList = display.getImageListToolBar(listStyle, imageBounds.width, imageBounds.height, getAutoscalingZoom());
+	}
+	if (hotImageList == null) {
+		hotImageList = display.getImageListToolBarHot(listStyle, imageBounds.width, imageBounds.height,
+				getAutoscalingZoom());
+	}
+	if (disabledImageList == null) {
+		disabledImageList = display.getImageListToolBarDisabled(listStyle, imageBounds.width, imageBounds.height,
+				getAutoscalingZoom());
+	}
+	int index = imageList.add(image);
+	hotImageList.add(hotImage);
+	disabledImageList.add(disabledImage);
+	setImageList(imageList);
+	setHotImageList(hotImageList);
+	setDisabledImageList(disabledImageList);
+	return index;
+}
+
 @Override
 long callWindowProc (long hwnd, int msg, long wParam, long lParam) {
 	if (handle == 0) return 0;
@@ -197,6 +225,10 @@ public void layout (boolean changed) {
 	checkWidget ();
 	clearSizeCache(changed);
 	super.layout(changed);
+}
+
+void clearImage(int index) {
+	putImage(index, null, null, null);
 }
 
 void clearSizeCache(boolean changed) {
@@ -867,6 +899,18 @@ boolean mnemonicMatch (char ch) {
 	int index = (int)OS.SendMessage (handle, OS.TB_COMMANDTOINDEX, id [0], 0);
 	if (index == -1) return false;
 	return findMnemonic (items [id [0]].text) != '\0';
+}
+
+void putImage(int index, Image image, Image hotImage, Image disabledImage) {
+	if (imageList != null) {
+		imageList.put(index, image);
+	}
+	if (hotImageList != null) {
+		hotImageList.put(index, hotImage);
+	}
+	if (disabledImageList != null) {
+		disabledImageList.put(index, disabledImage);
+	}
 }
 
 @Override

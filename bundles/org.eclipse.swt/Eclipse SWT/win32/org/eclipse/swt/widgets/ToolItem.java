@@ -535,12 +535,7 @@ void releaseImages () {
 	* an image and one is never assigned, this is not a problem.
 	*/
 	if ((info.fsStyle & OS.BTNS_SEP) == 0 && info.iImage != OS.I_IMAGENONE) {
-		ImageList imageList = parent.getImageList ();
-		ImageList hotImageList = parent.getHotImageList ();
-		ImageList disabledImageList = parent.getDisabledImageList();
-		if (imageList != null) imageList.put (info.iImage, null);
-		if (hotImageList != null) hotImageList.put (info.iImage, null);
-		if (disabledImageList != null) disabledImageList.put (info.iImage, null);
+		parent.clearImage(info.iImage);
 	}
 }
 
@@ -1099,21 +1094,7 @@ void updateImages (boolean enabled) {
 	info.dwMask = OS.TBIF_IMAGE;
 	OS.SendMessage (hwnd, OS.TB_GETBUTTONINFO, id, info);
 	if (info.iImage == OS.I_IMAGENONE && image == null) return;
-	ImageList imageList = parent.getImageList ();
-	ImageList hotImageList = parent.getHotImageList ();
-	ImageList disabledImageList = parent.getDisabledImageList();
 	if (info.iImage == OS.I_IMAGENONE) {
-		Rectangle boundsInPoints = image.getBounds();
-		int listStyle = parent.style & SWT.RIGHT_TO_LEFT;
-		if (imageList == null) {
-			imageList = display.getImageListToolBar (listStyle, boundsInPoints.width, boundsInPoints.height, getAutoscalingZoom());
-		}
-		if (disabledImageList == null) {
-			disabledImageList = display.getImageListToolBarDisabled (listStyle, boundsInPoints.width, boundsInPoints.height, getAutoscalingZoom());
-		}
-		if (hotImageList == null) {
-			hotImageList = display.getImageListToolBarHot (listStyle, boundsInPoints.width, boundsInPoints.height, getAutoscalingZoom());
-		}
 		Image disabled = disabledImage;
 		if (disabledImage == null) {
 			if (disabledImage2 != null) disabledImage2.dispose ();
@@ -1134,27 +1115,19 @@ void updateImages (boolean enabled) {
 		if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
 			if (!enabled) image2 = hot = disabled;
 		}
-		info.iImage = imageList.add (image2);
-		disabledImageList.add (disabled);
-		hotImageList.add (hot != null ? hot : image2);
-		parent.setImageList (imageList);
-		parent.setDisabledImageList (disabledImageList);
-		parent.setHotImageList (hotImageList);
+		info.iImage = parent.addImage(image.getBounds(), image2, hot != null ? hot : image2, disabled);
 	} else {
 		Image disabled = null;
-		if (disabledImageList != null) {
-			if (image != null) {
-				if (disabledImage2 != null) disabledImage2.dispose ();
-				disabledImage2 = null;
-				disabled = disabledImage;
-				if (disabledImage == null) {
-					disabled = image;
-					if (!enabled) {
-						disabled = disabledImage2 = new Image (display, image, SWT.IMAGE_DISABLE);
-					}
+		if (image != null) {
+			if (disabledImage2 != null) disabledImage2.dispose ();
+			disabledImage2 = null;
+			disabled = disabledImage;
+			if (disabledImage == null) {
+				disabled = image;
+				if (!enabled) {
+					disabled = disabledImage2 = new Image (display, image, SWT.IMAGE_DISABLE);
 				}
 			}
-			disabledImageList.put (info.iImage, disabled);
 		}
 		/*
 		* Bug in Windows.  When a tool item with the style
@@ -1167,12 +1140,8 @@ void updateImages (boolean enabled) {
 		if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
 			if (!enabled) image2 = hot = disabled;
 		}
-		if (imageList != null) {
-			imageList.put (info.iImage, image2);
-		}
-		if (hotImageList != null) {
-			hotImageList.put (info.iImage, hot != null ? hot : image2);
-		}
+
+		parent.putImage(info.iImage, image2, hot != null ? hot : image2, disabled);
 		if (image == null) info.iImage = OS.I_IMAGENONE;
 	}
 
