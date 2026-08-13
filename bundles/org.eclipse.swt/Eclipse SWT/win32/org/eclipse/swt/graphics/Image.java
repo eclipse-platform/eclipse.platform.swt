@@ -2630,6 +2630,9 @@ private abstract class BaseImageProviderWrapper<T> extends DynamicImageProviderW
 }
 
 private class ImageFileNameProviderWrapper extends BaseImageProviderWrapper<ImageFileNameProvider> {
+	/** File already found not to be dynamically sizable, so re-reading it cannot help. */
+	private String nonSizableFileName;
+
 	ImageFileNameProviderWrapper(ImageFileNameProvider provider) {
 		super(provider, ImageFileNameProvider.class);
 		// Checks for the contract of the passed provider require
@@ -2879,10 +2882,18 @@ private class ImageFileNameProviderWrapper extends BaseImageProviderWrapper<Imag
 	@Override
 	protected Optional<ImageData> loadImageDataAtExactSize(int targetWidth, int targetHeight) {
 		String fileName = DPIUtil.validateAndGetImagePathAtZoom(this.provider, 100).element();
-		if (ImageDataLoader.isDynamicallySizable(fileName)) {
-			ImageData imageDataAtSize = ImageDataLoader.loadBySize(fileName, targetWidth, targetHeight);
-			ImageData adaptedImageDataAtSize = adaptImageDataIfDisabledOrGray(imageDataAtSize);
-			return Optional.of(adaptedImageDataAtSize);
+		if (fileName.equals(nonSizableFileName)) {
+			return Optional.empty();
+		}
+		try (InputStream stream = new BufferedInputStream(new FileInputStream(fileName))) {
+			if (ImageDataLoader.isDynamicallySizable(stream)) {
+				nonSizableFileName = null;
+				ImageData imageDataAtSize = ImageDataLoader.loadBySize(stream, targetWidth, targetHeight);
+				return Optional.of(adaptImageDataIfDisabledOrGray(imageDataAtSize));
+			}
+			nonSizableFileName = fileName;
+		} catch (IOException e) {
+			SWT.error(SWT.ERROR_IO, e);
 		}
 		return Optional.empty();
 	}

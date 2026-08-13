@@ -72,8 +72,21 @@ public abstract class FileFormat {
 
 	private static final int MAX_SIGNATURE_BYTES = 18 + 2; // e.g. Win-BMP or OS2-BMP plus a safety-margin
 
+	/**
+	 * Answers whether the stream holds a format that can be loaded at an arbitrary size.
+	 * A stream that supports mark is rewound to its current position afterwards.
+	 */
 	public static boolean isDynamicallySizableFormat(InputStream is) {
+		boolean rewind = is.markSupported();
+		if (rewind) is.mark(MAX_SIGNATURE_BYTES);
 		Optional<FileFormat> format = determineFileFormat(new LEDataInputStream(is, MAX_SIGNATURE_BYTES));
+		if (rewind) {
+			try {
+				is.reset();
+			} catch (IOException e) {
+				SWT.error(SWT.ERROR_IO, e);
+			}
+		}
 		return format.isPresent() && !(format.get() instanceof StaticImageFileFormat);
 	}
 
