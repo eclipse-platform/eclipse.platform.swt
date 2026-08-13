@@ -526,11 +526,6 @@ public class GTK extends OS {
 	/** @param combo_box cast=(GtkComboBoxText *) */
 	public static final native void gtk_combo_box_text_remove(long combo_box, int position);
 	/**
-	 * @param combo_box cast=(GtkComboBoxText *)
-	 */
-	/* Do not call directly. Call Combo.gtk_combo_box_text_remove_all(..) instead). */
-	public static final native void gtk_combo_box_text_remove_all(long combo_box);
-	/**
 	* @param combo_box cast=(GtkComboBox *)
 	*/
 	public static final native int gtk_combo_box_get_active(long combo_box);
@@ -538,6 +533,11 @@ public class GTK extends OS {
 	* @param combo_box cast=(GtkComboBox *)
 	*/
 	public static final native long gtk_combo_box_get_model(long combo_box);
+	/**
+	* @param combo_box cast=(GtkComboBox *)
+	* @param model cast=(GtkTreeModel *)
+	*/
+	public static final native void gtk_combo_box_set_model(long combo_box, long model);
 	/**
 	* @param combo_box cast=(GtkComboBox *)
 	* @param index cast=(gint)
