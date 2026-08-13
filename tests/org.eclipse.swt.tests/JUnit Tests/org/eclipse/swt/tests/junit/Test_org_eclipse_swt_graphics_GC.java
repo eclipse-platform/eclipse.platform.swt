@@ -30,6 +30,9 @@ import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -59,6 +62,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -71,6 +75,9 @@ import org.junit.jupiter.params.provider.ValueSource;
 public class Test_org_eclipse_swt_graphics_GC {
 
 private static final int IMAGE_SIZE = 200;
+
+@TempDir
+static Path tempFolder;
 
 @BeforeEach
 public void setUp() {
@@ -1206,6 +1213,60 @@ RGB getRealRGB(Color color) {
 	colorImage.dispose();
 	int pixel = imageData.getPixel(0, 0);
 	return palette.getRGB(pixel);
+}
+
+/**
+ * Drawing reads the image dimensions from the image itself. Obtaining them through
+ * ImageData used to decode the file again on every draw at a device zoom other than 100.
+ */
+@Test
+public void test_drawImage_doesNotReReadImageFileAtNonDefaultZoom() throws IOException {
+	Path file = tempFolder.resolve("volatile-collapseall.png");
+	Files.copy(SwtTestUtil.getPath("collapseall.png", tempFolder), file);
+	int previousDeviceZoom = DPIUtil.getDeviceZoom();
+	Image fileImage = null;
+	try {
+		DPIUtil.setDeviceZoom(200);
+		gc.dispose();
+		gc = new GC(image);
+		fileImage = new Image(display, file.toString());
+		ImageData beforeDelete = drawToFreshTarget(fileImage);
+		assertFalse(Arrays.equals(blankTargetData(), beforeDelete.data), "the reference draw produced no pixels");
+
+		Files.delete(file);
+
+		ImageData afterDelete = drawToFreshTarget(fileImage);
+		ImageDataTestHelper.assertImageDataEqual(beforeDelete, afterDelete, beforeDelete);
+		gc.drawImage(fileImage, 0, 0);
+	} finally {
+		if (fileImage != null) {
+			fileImage.dispose();
+		}
+		DPIUtil.setDeviceZoom(previousDeviceZoom);
+		Files.deleteIfExists(file);
+	}
+}
+
+private byte[] blankTargetData() {
+	Image target = new Image(display, IMAGE_SIZE, IMAGE_SIZE);
+	try {
+		return target.getImageData().data;
+	} finally {
+		target.dispose();
+	}
+}
+
+private ImageData drawToFreshTarget(Image source) {
+	Rectangle bounds = source.getBounds();
+	Image target = new Image(display, IMAGE_SIZE, IMAGE_SIZE);
+	GC targetGc = new GC(target);
+	try {
+		targetGc.drawImage(source, 0, 0, bounds.width, bounds.height, 0, 0, bounds.width * 2, bounds.height * 2);
+		return target.getImageData();
+	} finally {
+		targetGc.dispose();
+		target.dispose();
+	}
 }
 
 private void executeWithNonDefaultDeviceZoom(Runnable executable) {
