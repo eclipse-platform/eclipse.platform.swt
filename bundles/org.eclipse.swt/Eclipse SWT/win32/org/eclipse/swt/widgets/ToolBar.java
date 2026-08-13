@@ -165,9 +165,7 @@ int addImage(Rectangle imageBounds, Image image, Image hotImage, Image disabledI
 	int index = imageList.add(image);
 	hotImageList.add(hotImage);
 	disabledImageList.add(disabledImage);
-	setImageList(imageList);
-	setHotImageList(hotImageList);
-	setDisabledImageList(disabledImageList);
+	refreshImageLists(true);
 	return index;
 }
 
@@ -525,18 +523,6 @@ void enableWidget (boolean enabled) {
 			}
 		}
 	}
-}
-
-ImageList getDisabledImageList () {
-	return disabledImageList;
-}
-
-ImageList getHotImageList () {
-	return hotImageList;
-}
-
-ImageList getImageList () {
-	return imageList;
 }
 
 /**
@@ -913,6 +899,44 @@ void putImage(int index, Image image, Image hotImage, Image disabledImage) {
 	}
 }
 
+private void refreshImageLists(boolean itemsChanged) {
+	int zoom = getAutoscalingZoom();
+	long imageListHandle = getImageListHandle(imageList, zoom);
+	long hotImageListHandle = getImageListHandle(hotImageList, zoom);
+	long disabledImageListHandle = getImageListHandle(disabledImageList, zoom);
+	boolean imageListOutdated = isImageListOutdated(OS.TB_GETIMAGELIST, imageListHandle);
+	boolean hotImageListOutdated = isImageListOutdated(OS.TB_GETHOTIMAGELIST, hotImageListHandle);
+	boolean disabledImageListOutdated = isImageListOutdated(OS.TB_GETDISABLEDIMAGELIST, disabledImageListHandle);
+	if (!imageListOutdated && !hotImageListOutdated && !disabledImageListOutdated) {
+		return;
+	}
+	// clear the BTNS_DROPDOWN bits while the image lists are exchanged, see
+	// setDropDownItems()
+	if (itemsChanged) {
+		setDropDownItems(false);
+	}
+	if (imageListOutdated) {
+		OS.SendMessage(handle, OS.TB_SETIMAGELIST, 0, imageListHandle);
+	}
+	if (hotImageListOutdated) {
+		OS.SendMessage(handle, OS.TB_SETHOTIMAGELIST, 0, hotImageListHandle);
+	}
+	if (disabledImageListOutdated) {
+		OS.SendMessage(handle, OS.TB_SETDISABLEDIMAGELIST, 0, disabledImageListHandle);
+	}
+	if (itemsChanged) {
+		setDropDownItems(true);
+	}
+}
+
+private static long getImageListHandle(ImageList imageList, int zoom) {
+	return imageList != null ? imageList.getHandle(zoom) : 0;
+}
+
+private boolean isImageListOutdated(int getMessageCode, long expectedHandle) {
+	return OS.SendMessage(handle, getMessageCode, 0, 0) != expectedHandle;
+}
+
 @Override
 void releaseChildren (boolean destroy) {
 	if (items != null) {
@@ -1044,19 +1068,6 @@ void setDropDownItems (boolean set) {
 	}
 }
 
-void setDisabledImageList (ImageList imageList) {
-	long hImageList = 0;
-	if ((disabledImageList = imageList) != null) {
-		hImageList = OS.SendMessage(handle, OS.TB_GETDISABLEDIMAGELIST, 0, 0);
-		long newImageList = disabledImageList.getHandle(getAutoscalingZoom());
-		if (hImageList == newImageList) return;
-		hImageList = newImageList;
-	}
-	setDropDownItems (false);
-	OS.SendMessage (handle, OS.TB_SETDISABLEDIMAGELIST, 0, hImageList);
-	setDropDownItems (true);
-}
-
 @Override
 public void setFont (Font font) {
 	checkWidget ();
@@ -1081,32 +1092,6 @@ public void setFont (Font font) {
 		OS.SendMessage (handle, OS.TB_SETBUTTONSIZE, 0, 0);
 	}
 	layoutItems ();
-}
-
-void setHotImageList (ImageList imageList) {
-	long hImageList = 0;
-	if ((hotImageList = imageList) != null) {
-		hImageList = OS.SendMessage(handle, OS.TB_GETHOTIMAGELIST, 0, 0);
-		long newImageList = hotImageList.getHandle(getAutoscalingZoom());
-		if (hImageList == newImageList) return;
-		hImageList = newImageList;
-	}
-	setDropDownItems (false);
-	OS.SendMessage (handle, OS.TB_SETHOTIMAGELIST, 0, hImageList);
-	setDropDownItems (true);
-}
-
-void setImageList (ImageList imageList) {
-	long hImageList = 0;
-	if ((this.imageList = imageList) != null) {
-		hImageList = OS.SendMessage(handle, OS.TB_GETIMAGELIST, 0, 0);
-		long newImageList = imageList.getHandle(getAutoscalingZoom());
-		if (hImageList == newImageList) return;
-		hImageList = newImageList;
-	}
-	setDropDownItems (false);
-	OS.SendMessage (handle, OS.TB_SETIMAGELIST, 0, hImageList);
-	setDropDownItems (true);
 }
 
 @Override
@@ -1298,12 +1283,10 @@ void updateOrientation () {
 		display.releaseToolImageList (imageList);
 		display.releaseToolHotImageList (hotImageList);
 		display.releaseToolDisabledImageList (disabledImageList);
-		OS.SendMessage (handle, OS.TB_SETIMAGELIST, 0, newImageList.getHandle(getAutoscalingZoom()));
-		OS.SendMessage (handle, OS.TB_SETHOTIMAGELIST, 0, newHotImageList.getHandle(getAutoscalingZoom()));
-		OS.SendMessage (handle, OS.TB_SETDISABLEDIMAGELIST, 0, newDisabledImageList.getHandle(getAutoscalingZoom()));
 		imageList = newImageList;
 		hotImageList = newHotImageList;
 		disabledImageList = newDisabledImageList;
+		refreshImageLists(false);
 		OS.InvalidateRect (handle, null, true);
 	}
 }
@@ -1788,9 +1771,7 @@ void handleDPIChange(Event event, float scalingFactor) {
 		}
 	}
 	// Refresh the image lists so the image list for the correct zoom is used
-	setImageList(getImageList());
-	setDisabledImageList(getDisabledImageList());
-	setHotImageList(getHotImageList());
+	refreshImageLists(true);
 	boolean toolBarEnabled = getEnabled();
 	for (int i = 0; i < itemCount; i++) {
 		ToolItem item = toolItems[i];
