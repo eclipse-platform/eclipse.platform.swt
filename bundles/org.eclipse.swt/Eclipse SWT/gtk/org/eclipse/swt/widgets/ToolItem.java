@@ -51,6 +51,11 @@ public class ToolItem extends Item {
 
 	/** GTK4 only field, used to keep track of the containing box of the image & label */
 	long boxHandle, groupHandle;
+	/** GTK4 only field, used to keep track of the box wrapping the image, see {@link #createHandle} */
+	long imageBoxHandle;
+
+	/** GTK4 only, gap between the image and the text when SWT.RIGHT is set on the tool bar */
+	static final int TEXT_IMAGE_SPACING = 4;
 
 	ToolBar parent;
 	Control control;
@@ -206,6 +211,16 @@ void createHandle (int index) {
 	state |= HANDLE;
 	int bits = SWT.SEPARATOR | SWT.RADIO | SWT.CHECK | SWT.PUSH | SWT.DROP_DOWN;
 
+	/*
+	 * On GTK3 the tool bar arranges image and text on its own, based on the style
+	 * set with gtk_toolbar_set_style(). GTK4 has no GtkToolbar, so the arrangement
+	 * is done here: SWT.RIGHT puts the text beside the image, otherwise it goes
+	 * below the image.
+	 */
+	boolean textBesideImage = (parent.style & SWT.RIGHT) != 0;
+	int boxOrientation = textBesideImage ? GTK.GTK_ORIENTATION_HORIZONTAL : GTK.GTK_ORIENTATION_VERTICAL;
+	int boxSpacing = textBesideImage ? TEXT_IMAGE_SPACING : 0;
+
 	switch (style & bits) {
 		case SWT.SEPARATOR:
 			if (GTK.GTK4) {
@@ -222,7 +237,7 @@ void createHandle (int index) {
 				handle = GTK.gtk_box_new(GTK.GTK_ORIENTATION_HORIZONTAL, 0);
 				if (handle == 0) error(SWT.ERROR_NO_HANDLES);
 
-				boxHandle = GTK.gtk_box_new(GTK.GTK_ORIENTATION_VERTICAL, 0);
+				boxHandle = GTK.gtk_box_new(boxOrientation, boxSpacing);
 				if (boxHandle == 0) error(SWT.ERROR_NO_HANDLES);
 
 				long button = GTK.gtk_button_new();
@@ -265,7 +280,7 @@ void createHandle (int index) {
 			if (GTK.GTK4) {
 				handle = GTK.gtk_toggle_button_new();
 				if (handle == 0) error(SWT.ERROR_NO_HANDLES);
-				boxHandle = GTK.gtk_box_new(GTK.GTK_ORIENTATION_VERTICAL, 0);
+				boxHandle = GTK.gtk_box_new(boxOrientation, boxSpacing);
 				if (boxHandle == 0) error(SWT.ERROR_NO_HANDLES);
 
 				GTK4.gtk_button_set_child(handle, boxHandle);
@@ -280,7 +295,7 @@ void createHandle (int index) {
 			if (GTK.GTK4) {
 				handle = GTK.gtk_button_new();
 				if (handle == 0) error(SWT.ERROR_NO_HANDLES);
-				boxHandle = GTK.gtk_box_new(GTK.GTK_ORIENTATION_VERTICAL, 0);
+				boxHandle = GTK.gtk_box_new(boxOrientation, boxSpacing);
 				if (boxHandle == 0) error(SWT.ERROR_NO_HANDLES);
 
 				GTK4.gtk_button_set_child(handle, boxHandle);
@@ -303,12 +318,28 @@ void createHandle (int index) {
 			GTK.gtk_widget_set_halign(imageHandle, GTK.GTK_ALIGN_CENTER);
 			GTK.gtk_widget_set_valign(imageHandle, GTK.GTK_ALIGN_CENTER);
 
+			/*
+			 * A GtkPicture scales its content to whatever size it is measured for,
+			 * so a picture put directly into a vertical box is asked for a height
+			 * matching the box's width, which is the width of the label below it.
+			 * The image, and with it the whole tool bar, then grows as wide labels
+			 * appear. Wrapping the picture in a box perpendicular to the item's box
+			 * keeps it at the image's own size, because a box measured across its
+			 * orientation never offers a child more than the child's natural size.
+			 */
+			imageBoxHandle = GTK.gtk_box_new(boxOrientation == GTK.GTK_ORIENTATION_VERTICAL
+					? GTK.GTK_ORIENTATION_HORIZONTAL : GTK.GTK_ORIENTATION_VERTICAL, 0);
+			if (imageBoxHandle == 0) error(SWT.ERROR_NO_HANDLES);
+			GTK.gtk_widget_set_halign(imageBoxHandle, GTK.GTK_ALIGN_CENTER);
+			GTK.gtk_widget_set_valign(imageBoxHandle, GTK.GTK_ALIGN_CENTER);
+			GTK4.gtk_box_append(imageBoxHandle, imageHandle);
+
 			GTK.gtk_widget_set_valign(boxHandle, GTK.GTK_ALIGN_CENTER);
 
-			GTK4.gtk_box_append(boxHandle, imageHandle);
+			GTK4.gtk_box_append(boxHandle, imageBoxHandle);
 			GTK4.gtk_box_append(boxHandle, labelHandle);
 
-			gtk_widget_hide(imageHandle);
+			gtk_widget_hide(imageBoxHandle);
 			gtk_widget_hide(labelHandle);
 		} else {
 			labelHandle = GTK.gtk_label_new_with_mnemonic(null);
@@ -1064,7 +1095,7 @@ void register () {
 @Override
 void releaseHandle () {
 	super.releaseHandle ();
-	arrowHandle = labelHandle = imageHandle = eventHandle = 0;
+	arrowHandle = labelHandle = imageHandle = imageBoxHandle = eventHandle = 0;
 }
 
 @Override
@@ -1394,7 +1425,7 @@ void _setImage (Image image) {
 		}
 
 		if (GTK.GTK4) {
-			gtk_widget_show(imageHandle);
+			gtk_widget_show(imageBoxHandle);
 			long pixbuf = ImageList.createPixbuf(image);
 			long texture = GDK.gdk_texture_new_for_pixbuf(pixbuf);
 			OS.g_object_unref(pixbuf);
@@ -1414,7 +1445,7 @@ void _setImage (Image image) {
 	} else {
 		if(GTK.GTK4) {
 			GTK4.gtk_picture_set_paintable(imageHandle, 0);
-			gtk_widget_hide(imageHandle);
+			gtk_widget_hide(imageBoxHandle);
 		} else {
 			GTK3.gtk_image_set_from_surface(imageHandle, 0);
 		}
@@ -1516,8 +1547,16 @@ public void setText (String string) {
 	byte [] buffer = Converter.wcsToMbcs (chars, true);
 
 	if (GTK.GTK4) {
-		gtk_widget_show(labelHandle);
 		GTK.gtk_label_set_text_with_mnemonic(labelHandle, buffer);
+		/*
+		 * An empty label still asks for the height of a line of text, which would
+		 * keep the tool bar as tall as it was while the text was shown.
+		 */
+		if (string.isEmpty()) {
+			gtk_widget_hide(labelHandle);
+		} else {
+			gtk_widget_show(labelHandle);
+		}
 	} else {
 		GTK.gtk_label_set_text_with_mnemonic(labelHandle, buffer);
 	}

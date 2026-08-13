@@ -533,10 +533,12 @@ void relayout () {
 		}
 	}
 
-	if (GTK.GTK4) {
-		/* TODO: GTK4 no more GtkToolbar, we have to use a generic GtkBox
-		 * therefore we will need to implement these style ourselves. */
-	} else {
+	/*
+	 * GTK4 has no GtkToolbar and thus no gtk_toolbar_set_style(). There, each item
+	 * shows or hides its image and its label as they are set, and arranges them
+	 * according to SWT.RIGHT, see ToolItem#createHandle.
+	 */
+	if (!GTK.GTK4) {
 		int type = GTK.GTK_TOOLBAR_ICONS;
 		if (hasText && hasImage) {
 			if ((style & SWT.RIGHT) != 0) {
