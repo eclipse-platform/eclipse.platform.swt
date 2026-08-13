@@ -604,8 +604,14 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 
 @Override
 void setBackgroundGdkRGBA (long context, long handle, GdkRGBA rgba) {
+	/*
+	 * On GTK4 the tool bar is a GtkBox carrying the "toolbar" style class, so its CSS
+	 * node is named "box" and a plain "toolbar" selector never matches, leaving the
+	 * tool bar with the theme background instead of the requested one.
+	 */
+	String selector = GTK.GTK4 ? "box.toolbar" : "toolbar";
 	// Form background string
-	String css = "toolbar {background-color: " + display.gtk_rgba_to_css_string(rgba) + ";}";
+	String css = selector + " {background-color: " + display.gtk_rgba_to_css_string(rgba) + ";}";
 
 	// Cache background color
 	this.cssBackground = css;
