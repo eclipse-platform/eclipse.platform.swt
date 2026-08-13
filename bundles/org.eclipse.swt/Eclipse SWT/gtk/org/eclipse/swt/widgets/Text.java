@@ -1001,7 +1001,7 @@ public int getCaretPosition () {
 	checkWidget ();
 	int result;
 	if ((style & SWT.SINGLE) != 0)  {
-		long ptr = GTK3.gtk_entry_get_text (handle);
+		long ptr = GTK.GTK4 ? GTK.gtk_entry_buffer_get_text (bufferHandle) : GTK3.gtk_entry_get_text (handle);
 		result = (int)OS.g_utf8_offset_to_utf16_offset (ptr, GTK.gtk_editable_get_position (handle));
 	} else {
 		byte [] position = new byte [ITER_SIZEOF];
@@ -1697,7 +1697,7 @@ long gtk_delete_range (long widget, long iter1, long iter2) {
 @Override
 long gtk_delete_text (long widget, long start_pos, long end_pos) {
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
-	long ptr = GTK3.gtk_entry_get_text (handle);
+	long ptr = GTK.GTK4 ? GTK.gtk_entry_buffer_get_text (bufferHandle) : GTK3.gtk_entry_get_text (handle);
 	if (end_pos == -1) end_pos = OS.g_utf8_strlen (ptr, -1);
 	int start = (int)OS.g_utf8_offset_to_utf16_offset (ptr, start_pos);
 	int end = (int)OS.g_utf8_offset_to_utf16_offset (ptr, end_pos);
@@ -1812,7 +1812,7 @@ long gtk_insert_text (long widget, long new_text, long new_text_length, long pos
 	String oldText = new String (Converter.mbcsToWcs (buffer));
 	int [] pos = new int [1];
 	C.memmove (pos, position, 4);
-	long ptr = GTK3.gtk_entry_get_text (handle);
+	long ptr = GTK.GTK4 ? GTK.gtk_entry_buffer_get_text (bufferHandle) : GTK3.gtk_entry_get_text (handle);
 	if (pos [0] == -1) pos [0] = (int)OS.g_utf8_strlen (ptr, -1);
 	/* Use the selection when the text was deleted */
 	int start = pos [0], end = pos [0];

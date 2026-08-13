@@ -2555,7 +2555,7 @@ public void setText (String string) {
 	* fix is to block the firing of these events and fire them ourselves in a consistent manner.
 	*/
 	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
-		long ptr = GTK3.gtk_entry_get_text (entryHandle);
+		long ptr = GTK.GTK4 ? GTK4.gtk_entry_buffer_get_text (GTK4.gtk_entry_get_buffer (entryHandle)) : GTK3.gtk_entry_get_text (entryHandle);
 		string = verifyText (string, 0, (int)OS.g_utf16_strlen (ptr, -1));
 		if (string == null) return;
 	}

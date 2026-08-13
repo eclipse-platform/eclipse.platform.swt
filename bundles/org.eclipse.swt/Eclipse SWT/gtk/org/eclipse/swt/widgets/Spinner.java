@@ -717,7 +717,7 @@ long gtk_commit (long imContext, long text) {
 @Override
 long gtk_delete_text (long widget, long start_pos, long end_pos) {
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
-	long ptr = GTK3.gtk_entry_get_text (GTK.GTK4 ? entryHandle : handle);
+	long ptr = GTK.GTK4 ? GTK.gtk_entry_buffer_get_text (GTK4.gtk_text_get_buffer (entryHandle)) : GTK3.gtk_entry_get_text (handle);
 	if (end_pos == -1) end_pos = OS.g_utf8_strlen (ptr, -1);
 	int start = (int)OS.g_utf8_offset_to_utf16_offset (ptr, start_pos);
 	int end = (int)OS.g_utf8_offset_to_utf16_offset (ptr, end_pos);
@@ -761,7 +761,7 @@ long gtk_insert_text (long widget, long new_text, long new_text_length, long pos
 	String oldText = new String (Converter.mbcsToWcs (buffer));
 	int [] pos = new int [1];
 	C.memmove (pos, position, 4);
-	long ptr = GTK3.gtk_entry_get_text (GTK.GTK4 ? entryHandle : handle);
+	long ptr = GTK.GTK4 ? GTK.gtk_entry_buffer_get_text (GTK4.gtk_text_get_buffer (entryHandle)) : GTK3.gtk_entry_get_text (handle);
 	if (pos [0] == -1) pos [0] = (int)OS.g_utf8_strlen (ptr, -1);
 	int start = (int)OS.g_utf16_pointer_to_offset (ptr, pos [0]);
 	String newText = verifyText (oldText, start, start);
@@ -1311,7 +1311,7 @@ String verifyText (String string, int start, int end) {
 	event.text = string;
 	event.start = start;
 	event.end = end;
-	long eventPtr = GTK3.gtk_get_current_event ();
+	long eventPtr = GTK.GTK4 ? 0 : GTK3.gtk_get_current_event ();
 	if (eventPtr != 0) {
 		int type = GDK.gdk_event_get_event_type(eventPtr);
 		switch (type) {
