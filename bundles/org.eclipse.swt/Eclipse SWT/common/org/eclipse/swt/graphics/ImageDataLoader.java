@@ -45,10 +45,6 @@ class ImageDataLoader {
 		return ImageLoader.canLoadAtZoom(filename, fileZoom, targetZoom);
 	}
 
-	static boolean isDynamicallySizable(String filename) {
-		return ImageLoader.isDynamicallySizable(filename);
-	}
-
 	static boolean isDynamicallySizable(InputStream stream) {
 		return ImageLoader.isDynamicallySizable(stream);
 	}
@@ -67,12 +63,6 @@ class ImageDataLoader {
 
 	public static ImageData loadBySize(InputStream stream, int width, int height) {
 		ImageData data = new ImageLoader().loadBySize(stream, width, height);
-		if (data == null) SWT.error(SWT.ERROR_INVALID_IMAGE);
-		return data;
-	}
-
-	public static ImageData loadBySize(String filename, int width, int height) {
-		ImageData data = new ImageLoader().loadBySize(filename, width, height);
 		if (data == null) SWT.error(SWT.ERROR_INVALID_IMAGE);
 		return data;
 	}

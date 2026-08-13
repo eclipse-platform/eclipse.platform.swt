@@ -34,6 +34,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 import org.eclipse.swt.SWT;
@@ -1221,6 +1222,78 @@ public void test_gcOnImageGcDrawer_imageDataAtNonDeviceZoom() {
 		redOverwritingGc.dispose();
 		image.dispose();
 		DPIUtil.setDeviceZoom(originalDeviceZoom);
+	}
+}
+
+/**
+ * Whether a file can be loaded at an arbitrary size never changes, so the scaled
+ * drawImage must determine it once instead of re-reading the file on every draw.
+ * Deleting the file after the first draw makes any further read fail loudly.
+ */
+@Test
+public void test_drawImageAtSize_doesNotReReadFileOfNonSizableFormat() throws IOException {
+	Path file = tempFolder.resolve("volatile-collapseall.png");
+	Files.copy(Path.of(getPath("collapseall.png")), file);
+	int previousDeviceZoom = DPIUtil.getDeviceZoom();
+	DPIUtil.setDeviceZoom(100);
+	try {
+		Image image = new Image(display, file.toString());
+		Image target = new Image(display, 64, 64);
+		GC gc = new GC(target);
+		try {
+			Rectangle bounds = image.getBounds();
+			gc.drawImage(image, 0, 0, bounds.width * 2, bounds.height * 2);
+
+			Files.delete(file);
+
+			gc.drawImage(image, 0, 0, bounds.width * 2, bounds.height * 2);
+			gc.drawImage(image, 0, 0, bounds.width * 3, bounds.height * 3);
+		} finally {
+			gc.dispose();
+			target.dispose();
+			image.dispose();
+		}
+	} finally {
+		DPIUtil.setDeviceZoom(previousDeviceZoom);
+		Files.deleteIfExists(file);
+	}
+}
+
+/**
+ * An Image may be backed by different files over its lifetime, so what is known about
+ * one file must not be applied to the next one.
+ */
+@Test
+public void test_drawImageAtSize_reevaluatesSizabilityWhenFileNameChanges() throws IOException {
+	Path sizableFile = tempFolder.resolve("switchable-collapseall.svg");
+	Files.copy(Path.of(getPath("collapseall.svg")), sizableFile);
+	AtomicReference<String> currentFile = new AtomicReference<>(getPath("collapseall.png"));
+	ImageFileNameProvider switchingProvider = zoom -> zoom == 100 ? currentFile.get() : null;
+	int previousDeviceZoom = DPIUtil.getDeviceZoom();
+	DPIUtil.setDeviceZoom(100);
+	try {
+		Image image = new Image(display, switchingProvider);
+		Image target = new Image(display, 64, 64);
+		GC gc = new GC(target);
+		try {
+			// learns that the PNG cannot be loaded at an arbitrary size
+			gc.drawImage(image, 0, 0, 20, 20);
+
+			currentFile.set(sizableFile.toString());
+			gc.drawImage(image, 0, 0, 20, 20);
+
+			// if the SVG were still treated as non-sizable, it would never be read at all
+			Files.delete(sizableFile);
+			assertThrows(SWTException.class, () -> gc.drawImage(image, 0, 0, 24, 24),
+					"the file of a sizable image must be read again for a new size");
+		} finally {
+			gc.dispose();
+			target.dispose();
+			image.dispose();
+		}
+	} finally {
+		DPIUtil.setDeviceZoom(previousDeviceZoom);
+		Files.deleteIfExists(sizableFile);
 	}
 }
 

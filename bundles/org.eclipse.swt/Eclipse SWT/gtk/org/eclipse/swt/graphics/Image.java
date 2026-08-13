@@ -970,6 +970,8 @@ private CachedImageAtSize cachedImageAtSize = new CachedImageAtSize();
 
 private class CachedImageAtSize {
 	private Image image;
+	/** File already found not to be dynamically sizable, so re-reading it cannot help. */
+	private String nonSizableFileName;
 
 	public void destroy() {
 		if (image != null) {
@@ -1020,9 +1022,17 @@ private class CachedImageAtSize {
 		}
 		if (imageFileNameProvider != null) {
 			String fileName = DPIUtil.validateAndGetImagePathAtZoom(imageFileNameProvider, 100).element();
-			if (ImageDataLoader.isDynamicallySizable(fileName)) {
-				ImageData imageDataAtSize = ImageDataLoader.loadBySize(fileName, targetWidth, targetHeight);
-				return Optional.of(imageDataAtSize);
+			if (fileName.equals(nonSizableFileName)) {
+				return Optional.empty();
+			}
+			try (InputStream stream = new BufferedInputStream(new FileInputStream(fileName))) {
+				if (ImageDataLoader.isDynamicallySizable(stream)) {
+					nonSizableFileName = null;
+					return Optional.of(ImageDataLoader.loadBySize(stream, targetWidth, targetHeight));
+				}
+				nonSizableFileName = fileName;
+			} catch (IOException e) {
+				SWT.error(SWT.ERROR_IO, e);
 			}
 		}
 		return Optional.empty();

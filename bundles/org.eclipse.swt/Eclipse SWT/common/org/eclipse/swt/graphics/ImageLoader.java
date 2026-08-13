@@ -209,29 +209,10 @@ List<ElementAtZoom<ImageData>> loadByZoom(String filename, int fileZoom, int tar
 	return null;
 }
 
-ImageData loadBySize(String filename, int width, int height) {
-	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	try (InputStream stream = new FileInputStream(filename)) {
-		return loadBySize(stream, width, height);
-	} catch (IOException e) {
-		SWT.error(SWT.ERROR_IO, e);
-	}
-	return null;
-}
-
 static boolean canLoadAtZoom(String filename, int fileZoom, int targetZoom) {
 	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	try (InputStream stream = new FileInputStream(filename)) {
 		return canLoadAtZoom(stream, fileZoom, targetZoom);
-	} catch (IOException e) {
-		SWT.error(SWT.ERROR_IO, e);
-	}
-	return false;
-}
-
-static boolean isDynamicallySizable(String filename) {
-	try (InputStream stream = new FileInputStream(filename)) {
-		return FileFormat.isDynamicallySizableFormat(stream);
 	} catch (IOException e) {
 		SWT.error(SWT.ERROR_IO, e);
 	}
