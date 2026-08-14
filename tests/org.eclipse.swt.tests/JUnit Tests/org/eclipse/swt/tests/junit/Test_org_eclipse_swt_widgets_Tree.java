@@ -19,8 +19,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,12 +59,7 @@ public void setUp() {
 @Override
 @Test
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
-	try {
-		tree = new Tree(null, 0);
-		fail("No exception thrown for parent == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> new Tree(null, 0), "No exception thrown for parent == null");
 
 	int[] cases = {0, SWT.BORDER};
 	for (int style : cases)
@@ -126,36 +121,16 @@ public void test_getColumnCount() {
 
 @Test
 public void test_getColumnI() {
-	try {
-		tree.getColumn(0);
-		fail("No exception thrown for index out of range");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> tree.getColumn(0), "No exception thrown for index out of range");
 	TreeColumn column0 = new TreeColumn(tree, SWT.LEFT);
-	try {
-		tree.getColumn(1);
-		fail("No exception thrown for index out of range");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> tree.getColumn(1), "No exception thrown for index out of range");
 	assertEquals(column0, tree.getColumn(0));
 	TreeColumn column1 = new TreeColumn(tree, SWT.LEFT);
 	assertEquals(column1, tree.getColumn(1));
 	column1.dispose();
-	try {
-		tree.getColumn(1);
-		fail("No exception thrown for index out of range");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> tree.getColumn(1), "No exception thrown for index out of range");
 	column0.dispose();
-	try {
-		tree.getColumn(0);
-		fail("No exception thrown for index out of range");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> tree.getColumn(0), "No exception thrown for index out of range");
 }
 
 @Test
@@ -218,26 +193,11 @@ public void test_getItemI() {
 
 	for (int i = 0; i < number; i++)
 		assertEquals(items[i], tree.getItem(i));
-	try {
-		tree.getItem(number);
-		fail("No exception thrown for illegal index argument");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> tree.getItem(number), "No exception thrown for illegal index argument");
 
-	try {
-		tree.getItem(number+1);
-		fail("No exception thrown for illegal index argument");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> tree.getItem(number+1), "No exception thrown for illegal index argument");
 
-	try {
-		tree.getItem(-1);
-		fail("No exception thrown for illegal index argument");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> tree.getItem(-1), "No exception thrown for illegal index argument");
 }
 
 @Test
@@ -428,23 +388,13 @@ public void test_setItemCountI() {
 	assertEquals(4, tree.indexOf(tree.getItems()[4]));
 	tree.setItemCount(3);
 	assertEquals(3, tree.getItemCount());
-	try {
-		tree.getItem(4);
-		fail("No exception thrown for illegal index argument");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> tree.getItem(4), "No exception thrown for illegal index argument");
 	tree.setItemCount(40);
 	assertEquals(40, tree.getItemCount());
 	tree.getItem(39);
 	tree.setItemCount(0);
 	assertEquals(0, tree.getItemCount());
-	try {
-		tree.getItem(39);
-		fail("No exception thrown for illegal index argument");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> tree.getItem(39), "No exception thrown for illegal index argument");
 }
 
 @Test
@@ -484,12 +434,7 @@ public void test_setSelection$Lorg_eclipse_swt_widgets_TreeItem() {
 	assertArrayEquals(new TreeItem[] {}, tree.getSelection());
 	assertEquals(0, tree.getSelectionCount());
 
-	try {
-		tree.setSelection((TreeItem[]) null);
-		fail("No exception thrown for items == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> tree.setSelection((TreeItem[]) null), "No exception thrown for items == null");
 
 	tree.setSelection(new TreeItem[]{null});
 	assertEquals(0, tree.getSelectionCount());
@@ -565,12 +510,7 @@ public void test_setSelection$Lorg_eclipse_swt_widgets_TreeItem() {
 	assertArrayEquals(new TreeItem[] {}, tree.getSelection());
 	assertEquals(0, tree.getSelectionCount());
 
-	try {
-		tree.setSelection((TreeItem[]) null);
-		fail("No exception thrown for items == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> tree.setSelection((TreeItem[]) null), "No exception thrown for items == null");
 
 	tree.setSelection(new TreeItem[]{items[10]});
 	assertArrayEquals(new TreeItem[] {items[10]}, tree.getSelection());
@@ -641,11 +581,9 @@ public void test_setTopItemLorg_eclipse_swt_widgets_TreeItem() {
 	TreeItem top2 = tree.getTopItem();
 	shell.setVisible(false);
 	assertEquals(top, top2);
+	shell.setVisible(true);
 	try {
-		shell.setVisible(true);
-		tree.setTopItem(null);
-		fail("No exception thrown for item == null");
-	} catch (IllegalArgumentException e) {
+		assertThrows(IllegalArgumentException.class, () -> tree.setTopItem(null), "No exception thrown for item == null");
 	} finally {
 		shell.setVisible (false);
 	}
@@ -653,12 +591,7 @@ public void test_setTopItemLorg_eclipse_swt_widgets_TreeItem() {
 
 @Test
 public void test_showItemLorg_eclipse_swt_widgets_TreeItem() {
-	try {
-		tree.showItem(null);
-		fail("No exception thrown for item == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> tree.showItem(null), "No exception thrown for item == null");
 
 	int number = 20;
 	TreeItem[] items = new TreeItem[number];

@@ -18,7 +18,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -132,12 +131,7 @@ public void test_addExpandListenerItemExpandedAdapterLorg_eclipse_swt_events_Exp
 @Override
 @Test
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
-	try {
-		new ExpandBar(null, 0);
-		fail("No exception thrown for parent == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> new ExpandBar(null, 0), "No exception thrown for parent == null");
 }
 
 @Test
@@ -161,17 +155,11 @@ public void test_getItemI() {
 	}
 
 	expandBar = new ExpandBar(shell, 0);
-	number = 5;
 	items = new ExpandItem[number];
 	for (int i = 0; i<number ; i++){
 		items[i] = new ExpandItem(expandBar, 0);
 	}
-	try {
-		expandBar.getItem(number);
-		fail("No exception thrown for illegal index argument");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> expandBar.getItem(number), "No exception thrown for illegal index argument");
 }
 
 @Test
@@ -209,12 +197,7 @@ public void test_indexOfLorg_eclipse_swt_widgets_ExpandItem() {
 		items[i] = new ExpandItem(expandBar, 0);
 	}
 	for (int i = 0; i < number; i++) {
-		try {
-			expandBar.indexOf(null);
-			fail("No exception thrown for expandItem == null");
-		}
-		catch (IllegalArgumentException e) {
-		}
+		assertThrows(IllegalArgumentException.class, () -> expandBar.indexOf(null), "No exception thrown for expandItem == null");
 	}
 }
 

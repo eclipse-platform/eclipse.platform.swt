@@ -20,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -1061,12 +1060,7 @@ public void test_consistency_Segments () {
 		}
 		listenerCalled = true;
 	};
-	try {
-		combo.addSegmentListener(null);
-		fail("No exception thrown for addSegmentListener(null)");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> combo.addSegmentListener(null), "No exception thrown for addSegmentListener(null)");
 	combo.addSegmentListener(sl1);
 	doSegmentsTest(true);
 
