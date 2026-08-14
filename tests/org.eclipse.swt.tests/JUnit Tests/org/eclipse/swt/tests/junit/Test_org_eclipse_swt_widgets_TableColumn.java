@@ -15,8 +15,8 @@ package org.eclipse.swt.tests.junit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
@@ -47,46 +47,21 @@ public void setUp() {
 
 @Test
 public void test_ConstructorLorg_eclipse_swt_widgets_TableI() {
-	try {
-		new TableColumn(null, SWT.NULL);
-		fail("No exception thrown for parent == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> new TableColumn(null, SWT.NULL), "No exception thrown for parent == null");
 }
 
 @Test
 public void test_ConstructorLorg_eclipse_swt_widgets_TableII() {
-	try {
-		new TableColumn(null, SWT.NULL, 0);
-		fail("No exception thrown for parent == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> new TableColumn(null, SWT.NULL, 0), "No exception thrown for parent == null");
 
-	try {
-		new TableColumn(table, SWT.NULL, -1);
-		fail("No exception thrown for index == -1");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> new TableColumn(table, SWT.NULL, -1), "No exception thrown for index == -1");
 
-	try {
-		new TableColumn(table, SWT.NULL, 2);
-		fail("No exception thrown for illegal index argument");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> new TableColumn(table, SWT.NULL, 2), "No exception thrown for illegal index argument");
 }
 
 @Test
 public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
-	try {
-		tableColumn.addSelectionListener(null);
-		fail("No exception thrown for selectionListener == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> tableColumn.addSelectionListener(null), "No exception thrown for selectionListener == null");
 }
 
 @Test
@@ -138,12 +113,7 @@ public void test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListene
 	tableColumn.removeSelectionListener(listener);
 	tableColumn.addSelectionListener(listener);
 	tableColumn.removeSelectionListener(listener);
-	try {
-		tableColumn.removeSelectionListener(null);
-		fail("No exception thrown for selectionListener == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> tableColumn.removeSelectionListener(null), "No exception thrown for selectionListener == null");
 }
 
 @Test
@@ -189,14 +159,8 @@ public void test_setMoveableZ() {
 
 	TableColumn tableColumn2 = new TableColumn(tableColumn.getParent(), SWT.NONE);
 	tableColumn2.dispose();
-	try {
-		tableColumn2.getMoveable();
-		fail("No exception thrown for widget is Disposed");
-	} catch (SWTException ex) {}
-	try {
-		tableColumn2.setMoveable(true);
-		fail("No exception thrown for widget is Disposed");
-	} catch (SWTException ex) {}
+	assertThrows(SWTException.class, () -> tableColumn2.getMoveable(), "No exception thrown for widget is Disposed");
+	assertThrows(SWTException.class, () -> tableColumn2.setMoveable(true), "No exception thrown for widget is Disposed");
 }
 
 @Test
@@ -221,12 +185,7 @@ public void test_setTextLjava_lang_String() {
 	tableColumn.setText("text");
 	assertEquals(tableColumn.getText(), "text");
 
-	try {
-		tableColumn.setText(null);
-		fail("No exception thrown for column header == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> tableColumn.setText(null), "No exception thrown for column header == null");
 }
 
 /* custom */

@@ -18,7 +18,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -440,13 +439,9 @@ public void test_setBackgroundILorg_eclipse_swt_graphics_Color() {
 	tableItem.setBackground(null);
 	assertEquals(table.getBackground(),tableItem.getBackground(0));
 
-	try {
-		Color color = new Color(255, 0, 0);
-		color.dispose();
-		tableItem.setBackground(color);
-		fail("No exception thrown for color disposed");
-	} catch (IllegalArgumentException e) {
-	}
+	Color disposedColor = new Color(255, 0, 0);
+	disposedColor.dispose();
+	assertThrows(IllegalArgumentException.class, () -> tableItem.setBackground(disposedColor), "No exception thrown for color disposed");
 }
 
 @Test
@@ -457,11 +452,7 @@ public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 	tableItem.setBackground(null);
 	assertEquals(table.getBackground(),tableItem.getBackground());
 	color.dispose();
-	try {
-		tableItem.setBackground(color);
-		fail("No exception thrown for color disposed");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> tableItem.setBackground(color), "No exception thrown for color disposed");
 }
 
 @Test
@@ -483,11 +474,11 @@ public void test_setCheckedZ() {
 @Test
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	Display display = tableItem.getDisplay();
-	Font font = tableItem.getFont();
-	tableItem.setFont(font);
-	assertEquals(tableItem.getFont(), font);
+	Font initialFont = tableItem.getFont();
+	tableItem.setFont(initialFont);
+	assertEquals(tableItem.getFont(), initialFont);
 
-	font = new Font(display, SwtTestUtil.testFontName, 10, SWT.NORMAL);
+	Font font = new Font(display, SwtTestUtil.testFontName, 10, SWT.NORMAL);
 	tableItem.setFont(font);
 	assertEquals(tableItem.getFont(), font);
 
@@ -495,12 +486,7 @@ public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	assertEquals(tableItem.getFont(), table.getFont());
 
 	font.dispose();
-	try {
-		tableItem.setFont(font);
-		tableItem.setFont(null);
-		fail("No exception thrown for disposed font");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> tableItem.setFont(font), "No exception thrown for disposed font");
 }
 
 @Test
@@ -546,12 +532,7 @@ public void test_setFontILorg_eclipse_swt_graphics_Font() {
 	font.dispose();
 	font2.dispose();
 
-	try {
-		tableItem.setFont(0, font);
-		tableItem.setFont(0, null);
-		fail("No exception thrown for disposed font");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> tableItem.setFont(0, font), "No exception thrown for disposed font");
 }
 
 @Test
@@ -593,13 +574,9 @@ public void test_setForegroundILorg_eclipse_swt_graphics_Color() {
 	tableItem.setForeground(null);
 	assertEquals(table.getForeground(),tableItem.getForeground(0));
 
-	try {
-		Color color = new Color(255, 0, 0);
-		color.dispose();
-		tableItem.setForeground(color);
-		fail("No exception thrown for color disposed");
-	} catch (IllegalArgumentException e) {
-	}
+	Color disposedColor = new Color(255, 0, 0);
+	disposedColor.dispose();
+	assertThrows(IllegalArgumentException.class, () -> tableItem.setForeground(disposedColor), "No exception thrown for color disposed");
 }
 
 @Test
@@ -610,11 +587,7 @@ public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
 	tableItem.setForeground(null);
 	assertEquals(table.getForeground(),tableItem.getForeground());
 	color.dispose();
-	try {
-		tableItem.setForeground(color);
-		fail("No exception thrown for color disposed");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> tableItem.setForeground(color), "No exception thrown for color disposed");
 }
 
 @Test
@@ -659,12 +632,7 @@ public void test_setImage$Lorg_eclipse_swt_graphics_Image() {
 	for (int i = 0; i < images.length; i++) {
 		assertEquals(images[i], tableItem.getImage(i));
 	}
-	try {
-		tableItem.setImage((Image []) null);
-		fail("No exception thrown for images == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> tableItem.setImage((Image []) null), "No exception thrown for images == null");
 }
 
 @Test
@@ -700,12 +668,7 @@ public void test_setImageILorg_eclipse_swt_graphics_Image() {
 	assertEquals(images[0], tableItem.getImage(0));
 
 	images[0].dispose();
-	try {
-		tableItem.setImage(0, images[0]);
-		tableItem.setImage(0, null);
-		fail("No exception thrown for disposed font");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> tableItem.setImage(0, images[0]), "No exception thrown for disposed image");
 }
 
 @SuppressWarnings("deprecation")
@@ -727,12 +690,7 @@ public void test_setText$Ljava_lang_String() {
 	final String TestString = "test";
 	final String TestStrings[] = new String[] {TestString, TestString + "1", TestString + "2"};
 
-	try {
-		tableItem.setText((String []) null);
-		fail("No exception thrown for strings == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> tableItem.setText((String []) null), "No exception thrown for strings == null");
 
 	/*
 	* Test the getText/setText API with a Table that has only
@@ -820,19 +778,9 @@ public void test_setTextILjava_lang_String(){
 	assertEquals(0, tableItem.getText(-1).length());
 
 
-	try {
-		tableItem.setText(-1, null);
-		fail("No exception thrown for string == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> tableItem.setText(-1, null), "No exception thrown for string == null");
 
-	try {
-		tableItem.setText(0, null);
-		fail("No exception thrown for string == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> tableItem.setText(0, null), "No exception thrown for string == null");
 
 
 	/*

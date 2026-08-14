@@ -18,8 +18,8 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,12 +51,7 @@ public void setUp() {
 @Override
 @Test
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
-	try {
-		new Table(null, 0);
-		fail("No exception thrown for parent == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> new Table(null, 0), "No exception thrown for parent == null");
 }
 
 @Override
@@ -92,12 +87,7 @@ public void test_deselect$I() {
 	table.selectAll();
 	assertEquals(number, table.getSelectionCount());
 
-	try{
-		table.deselect(null);
-		fail("No exception thrown for selection == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> table.deselect(null), "No exception thrown for selection == null");
 	assertEquals(number, table.getSelectionCount());
 	table.selectAll();
 
@@ -257,36 +247,16 @@ public void test_getColumnCount() {
 
 @Test
 public void test_getColumnI() {
-	try {
-		table.getColumn(0);
-		fail("No exception thrown for index out of range");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> table.getColumn(0), "No exception thrown for index out of range");
 	TableColumn column0 = new TableColumn(table, SWT.LEFT);
-	try {
-		table.getColumn(1);
-		fail("No exception thrown for index out of range");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> table.getColumn(1), "No exception thrown for index out of range");
 	assertEquals(column0, table.getColumn(0));
 	TableColumn column1 = new TableColumn(table, SWT.LEFT);
 	assertEquals(column1, table.getColumn(1));
 	column1.dispose();
-	try {
-		table.getColumn(1);
-		fail("No exception thrown for index out of range");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> table.getColumn(1), "No exception thrown for index out of range");
 	column0.dispose();
-	try {
-		table.getColumn(0);
-		fail("No exception thrown for index out of range");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> table.getColumn(0), "No exception thrown for index out of range");
 }
 
 @Test
@@ -372,19 +342,9 @@ public void test_getItemI() {
 
 	for (int i = 0; i < number; i++)
 		assertEquals(items[i], table.getItem(i));
-	try {
-		table.getItem(number);
-		fail("No exception thrown for illegal index argument");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> table.getItem(number), "No exception thrown for illegal index argument");
 
-	try {
-		table.getItem(number+1);
-		fail("No exception thrown for illegal index argument");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> table.getItem(number+1), "No exception thrown for illegal index argument");
 
 	// note: SWT.SINGLE
 	makeCleanEnvironment(true);
@@ -394,19 +354,9 @@ public void test_getItemI() {
 	for (int i = 0; i < number; i++) {
 		assertEquals(items[i], table.getItem(i));
 	}
-	try {
-		table.getItem(number);
-		fail("No exception thrown for illegal index argument");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> table.getItem(number), "No exception thrown for illegal index argument");
 
-	try {
-		table.getItem(number+1);
-		fail("No exception thrown for illegal index argument");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> table.getItem(number+1), "No exception thrown for illegal index argument");
 }
 
 @Test
@@ -640,12 +590,7 @@ public void test_indexOfLorg_eclipse_swt_widgets_TableItem() {
 	}
 
 	for (int i = 0; i < number; i++) {
-		try {
-			table.indexOf((TableItem)null);
-			fail("No exception thrown for tableItem == null");
-		}
-		catch (IllegalArgumentException e) {
-		}
+		assertThrows(IllegalArgumentException.class, () -> table.indexOf((TableItem)null), "No exception thrown for tableItem == null");
 	}
 
 	// another table
@@ -683,12 +628,7 @@ public void test_indexOfLorg_eclipse_swt_widgets_TableItem() {
 	}
 
 	for (int i = 0; i < number; i++) {
-		try {
-			table.indexOf((TableItem)null);
-			fail("No exception thrown for tableItem == null");
-		}
-		catch (IllegalArgumentException e) {
-		}
+		assertThrows(IllegalArgumentException.class, () -> table.indexOf((TableItem)null), "No exception thrown for tableItem == null");
 	}
 
 	makeCleanEnvironment(true);
@@ -767,26 +707,11 @@ public void test_remove$I() {
 	TableItem[] items = new TableItem[number];
 	for (int i = 0; i < number; i++)
 		items[i] = new TableItem(table, 0);
-	try {
-		table.remove(null);
-		fail("No exception thrown for tableItems == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> table.remove(null), "No exception thrown for tableItems == null");
 
-	try {
-		table.remove(new int[] {2, 1, 0, -100, 5, 5, 2, 1, 0, 0, 0});
-		fail("No exception thrown for illegal index arguments");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> table.remove(new int[] {2, 1, 0, -100, 5, 5, 2, 1, 0, 0, 0}), "No exception thrown for illegal index arguments");
 
-	try {
-		table.remove(new int[] {2, 1, 0, number, 5, 5, 2, 1, 0, 0, 0});
-		fail("No exception thrown for illegal index arguments");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> table.remove(new int[] {2, 1, 0, number, 5, 5, 2, 1, 0, 0, 0}), "No exception thrown for illegal index arguments");
 
 	table.remove(new int[] {});
 
@@ -847,10 +772,7 @@ public void test_removeII() {
 	TableItem[] items = new TableItem[number];
 	for (int i = 0; i < number; i++)
 		items[i] = new TableItem(table, 0);
-	try {
-		table.remove(-number, number + 100);
-		fail("No exception thrown for illegal index range");
-	} catch (IllegalArgumentException e) {}
+	assertThrows(IllegalArgumentException.class, () -> table.remove(-number, number + 100), "No exception thrown for illegal index range");
 
 	makeCleanEnvironment(false);
 
@@ -871,10 +793,7 @@ public void test_removeII() {
 	items = new TableItem[number];
 	for (int i = 0; i < number; i++)
 		items[i] = new TableItem(table, 0);
-	try {
-		table.remove(2, 100);
-		fail("No exception thrown for illegal index range");
-	} catch (IllegalArgumentException e) {}
+	assertThrows(IllegalArgumentException.class, () -> table.remove(2, 100), "No exception thrown for illegal index range");
 	assertArrayEquals(items, table.getItems());
 
 	makeCleanEnvironment(false);
@@ -882,10 +801,7 @@ public void test_removeII() {
 	items = new TableItem[number];
 	for (int i = 0; i < number; i++)
 		items[i] = new TableItem(table, 0);
-	try {
-		table.remove(2, number);
-		fail("No exception thrown for illegal index range");
-	} catch (IllegalArgumentException e) {}
+	assertThrows(IllegalArgumentException.class, () -> table.remove(2, number), "No exception thrown for illegal index range");
 	assertArrayEquals(items, table.getItems());
 
 	makeCleanEnvironment(false);
@@ -937,20 +853,14 @@ public void test_removeII() {
 
 	for (int i = 0; i < number; i++)
 		items[i] = new TableItem(table, 0);
-	try {
-		table.remove(-20, -10);
-		fail("No exception thrown for illegal index range");
-	} catch (IllegalArgumentException e) {}
+	assertThrows(IllegalArgumentException.class, () -> table.remove(-20, -10), "No exception thrown for illegal index range");
 	assertArrayEquals(items, table.getItems());
 
 	makeCleanEnvironment(false);
 
 	for (int i = 0; i < number; i++)
 		items[i] = new TableItem(table, 0);
-	try {
-		table.remove(20, 40);
-		fail("No exception thrown for illegal index range");
-	} catch (IllegalArgumentException e) {}
+	assertThrows(IllegalArgumentException.class, () -> table.remove(20, 40), "No exception thrown for illegal index range");
 	assertArrayEquals(items, table.getItems());
 
 	makeCleanEnvironment(false);
@@ -998,10 +908,7 @@ public void test_removeII() {
 	for (int i = 0; i < number; i++)
 		items[i] = new TableItem(table, 0);
 	assertEquals(number, table.getItemCount());
-	try {
-		table.remove(-10, 2);
-		fail("No exception thrown for illegal index range");
-	} catch (IllegalArgumentException e) {}
+	assertThrows(IllegalArgumentException.class, () -> table.remove(-10, 2), "No exception thrown for illegal index range");
 	assertEquals(number, table.getItemCount());
 	if (SwtTestUtil.fCheckSWTPolicy) {
 		table.remove(10, 2);
@@ -1016,10 +923,7 @@ public void test_removeII() {
 	for (int i = 3; i < number; i++) {
 		assertFalse(items[i].isDisposed());
 	}
-	try {
-		table.remove(1, 200);
-		fail("No exception thrown for illegal index range");
-	} catch (IllegalArgumentException e) {}
+	assertThrows(IllegalArgumentException.class, () -> table.remove(1, 200), "No exception thrown for illegal index range");
 	assertEquals(number - 3, table.getItemCount());
 	assertArrayEquals(new TableItem[] {items[3], items[4]}, table.getItems());
 
@@ -1038,29 +942,23 @@ public void test_removeII() {
 
 	for (int i = 0; i < number; i++)
 		items[i] = new TableItem(table, 0);
-	try {
-		table.remove(number, number);
-		fail("No exception thrown for illegal index range");
-	} catch (IllegalArgumentException e) {}
+	assertThrows(IllegalArgumentException.class, () -> table.remove(number, number), "No exception thrown for illegal index range");
 
 	makeCleanEnvironment(false);
 
 	for (int i = 0; i < number; i++)
 		items[i] = new TableItem(table, 0);
-	try {
-		table.remove(number, number + 100);
-		fail("No exception thrown for illegal index range");
-	} catch (IllegalArgumentException e) {}
+	assertThrows(IllegalArgumentException.class, () -> table.remove(number, number + 100), "No exception thrown for illegal index range");
 
 	makeCleanEnvironment(false);
 
-	number = 15;
-	items = new TableItem[number];
-	for (int i = 0; i < number; i++)
+	int largerNumber = 15;
+	items = new TableItem[largerNumber];
+	for (int i = 0; i < largerNumber; i++)
 		items[i] = new TableItem(table, 0);
 
 	table.remove(new int[] {2, 1, 0, 5, 5});
-	assertEquals(number-4, table.getItemCount());
+	assertEquals(largerNumber-4, table.getItemCount());
 	assertTrue(items[0].isDisposed());
 	assertTrue(items[1].isDisposed());
 	assertTrue(items[2].isDisposed());
@@ -1071,12 +969,7 @@ public void test_removeII() {
 
 @Test
 public void test_select$I() {
-	try {
-		table.select(null);
-		fail("No exception thrown for selection == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> table.select(null), "No exception thrown for selection == null");
 
 	int number = 15;
 	TableItem[] items = new TableItem[number];
@@ -1128,15 +1021,8 @@ public void test_select$I() {
 	for (int i = 0; i < number; i++)
 		items[i] = new TableItem(table, 0);
 
-	try {
-		table.select(null);
-		fail("No exception thrown for selection == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
-	finally {
-		assertEquals(0, table.getSelectionCount());
-	}
+	assertThrows(IllegalArgumentException.class, () -> table.select(null), "No exception thrown for selection == null");
+	assertEquals(0, table.getSelectionCount());
 
 	table.select(new int[] {0});
 	assertArrayEquals(new int[] {0}, table.getSelectionIndices());
@@ -1329,69 +1215,33 @@ public void test_setColumnOrder$I() {
 	assertArrayEquals(table.getColumnOrder(), new int[0]);
 	table.setColumnOrder(new int[0]);
 	assertArrayEquals(table.getColumnOrder(), new int[0]);
-	try {
-		table.setColumnOrder(null);
-		fail("No exception thrown for null argument");
-	} catch (IllegalArgumentException ex) {}
-	try {
-		table.setColumnOrder(new int[1]);
-		fail("No exception thrown for invalid argument");
-	} catch (IllegalArgumentException ex) {}
+	assertThrows(IllegalArgumentException.class, () -> table.setColumnOrder(null), "No exception thrown for null argument");
+	assertThrows(IllegalArgumentException.class, () -> table.setColumnOrder(new int[1]), "No exception thrown for invalid argument");
 
 	TableColumn column0 = new TableColumn(table, SWT.NONE);
 	TableColumn column1 = new TableColumn(table, SWT.NONE);
 	TableColumn column2 = new TableColumn(table, SWT.NONE);
 	assertArrayEquals(table.getColumnOrder(), new int[]{0, 1, 2});
-	try {
-		table.setColumnOrder(null);
-		fail("No exception thrown for null argument");
-	} catch (IllegalArgumentException ex) {}
-	try {
-		table.setColumnOrder(new int[0]);
-		fail("No exception thrown for invalid argument");
-	} catch (IllegalArgumentException ex) {}
-	try {
-		table.setColumnOrder(new int[]{0,1});
-		fail("No exception thrown for invalid argument");
-	} catch (IllegalArgumentException ex) {}
-	try {
-		table.setColumnOrder(new int[]{0, 1, 2, 3});
-		fail("No exception thrown for invalid argument");
-	} catch (IllegalArgumentException ex) {}
-	try {
-		table.setColumnOrder(new int[]{0, 0, 1});
-		fail("No exception thrown for invalid argument");
-	} catch (IllegalArgumentException ex) {}
-	try {
-		table.setColumnOrder(new int[]{3, 0, 1});
-		fail("No exception thrown for invalid argument");
-	} catch (IllegalArgumentException ex) {}
+	assertThrows(IllegalArgumentException.class, () -> table.setColumnOrder(null), "No exception thrown for null argument");
+	assertThrows(IllegalArgumentException.class, () -> table.setColumnOrder(new int[0]), "No exception thrown for invalid argument");
+	assertThrows(IllegalArgumentException.class, () -> table.setColumnOrder(new int[]{0,1}), "No exception thrown for invalid argument");
+	assertThrows(IllegalArgumentException.class, () -> table.setColumnOrder(new int[]{0, 1, 2, 3}), "No exception thrown for invalid argument");
+	assertThrows(IllegalArgumentException.class, () -> table.setColumnOrder(new int[]{0, 0, 1}), "No exception thrown for invalid argument");
+	assertThrows(IllegalArgumentException.class, () -> table.setColumnOrder(new int[]{3, 0, 1}), "No exception thrown for invalid argument");
 	table.setColumnOrder(new int[]{2, 1, 0});
 	assertArrayEquals(table.getColumnOrder(), new int[] {2, 1, 0});
 	column2.dispose();
 	assertArrayEquals(table.getColumnOrder(), new int[] {1, 0});
-	try {
-		table.setColumnOrder(new int[]{0, 1, 2});
-		fail("No exception thrown for invalid argument");
-	} catch (IllegalArgumentException ex) {}
+	assertThrows(IllegalArgumentException.class, () -> table.setColumnOrder(new int[]{0, 1, 2}), "No exception thrown for invalid argument");
 	column1.dispose();
 	assertArrayEquals(table.getColumnOrder(), new int[]{0});
 	column0.dispose();
 	assertArrayEquals(table.getColumnOrder(), new int[0]);
-	try {
-		table.setColumnOrder(new int[1]);
-		fail("No exception thrown for invalid argument");
-	} catch (IllegalArgumentException ex) {}
+	assertThrows(IllegalArgumentException.class, () -> table.setColumnOrder(new int[1]), "No exception thrown for invalid argument");
 	Table table2 = new Table(table.getParent(), SWT.NONE);
 	table2.dispose();
-	try {
-		table2.getColumnOrder();
-		fail("No exception thrown for widget is Disposed");
-	} catch (SWTException ex) {}
-	try {
-		table2.setColumnOrder(new int[0]);
-		fail("No exception thrown for widget is Disposed");
-	} catch (SWTException ex) {}
+	assertThrows(SWTException.class, () -> table2.getColumnOrder(), "No exception thrown for widget is Disposed");
+	assertThrows(SWTException.class, () -> table2.setColumnOrder(new int[0]), "No exception thrown for widget is Disposed");
 }
 
 @Override
@@ -1456,23 +1306,13 @@ public void test_setItemCountI() {
 	assertEquals(4, table.indexOf(table.getItems()[4]));
 	table.setItemCount(3);
 	assertEquals(3, table.getItemCount());
-	try {
-		table.getItem(4);
-		fail("No exception thrown for illegal index argument");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> table.getItem(4), "No exception thrown for illegal index argument");
 	table.setItemCount(40);
 	assertEquals(40, table.getItemCount());
 	table.getItem(39);
 	table.setItemCount(0);
 	assertEquals(0, table.getItemCount());
-	try {
-		table.getItem(39);
-		fail("No exception thrown for illegal index argument");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> table.getItem(39), "No exception thrown for illegal index argument");
 }
 
 @Test
@@ -1495,12 +1335,7 @@ public void test_setSelection$I() {
 	TableItem[] items = new TableItem[number];
 	for (int i = 0; i < number; i++)
 		items[i] = new TableItem(table, 0);
-	try {
-		table.setSelection((int[]) null);
-		fail("No exception thrown for selection == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> table.setSelection((int[]) null), "No exception thrown for selection == null");
 
 	table.setSelection(new int[]{});
 	assertArrayEquals(new int[]{}, table.getSelectionIndices());
@@ -1532,15 +1367,8 @@ public void test_setSelection$I() {
 	for (int i = 0; i < number; i++)
 		items[i] = new TableItem(table, 0);
 
-	try {
-		table.setSelection((int[]) null);
-		fail("No exception thrown for selection range == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
-	finally {
-		assertEquals(0, table.getSelectionCount());
-	}
+	assertThrows(IllegalArgumentException.class, () -> table.setSelection((int[]) null), "No exception thrown for selection range == null");
+	assertEquals(0, table.getSelectionCount());
 
 	table.setSelection(new int[] {});
 	assertArrayEquals(new int[] {}, table.getSelectionIndices());
@@ -1579,25 +1407,11 @@ public void test_setSelection$Lorg_eclipse_swt_widgets_TableItem() {
 	TableItem[] items = new TableItem[number];
 	for (int i = 0; i < number; i++)
 		items[i] = new TableItem(table, 0);
-	try {
-		table.setSelection((TableItem[]) null);
-		fail("No exception thrown for selection range == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
-	finally {
-		assertEquals(0, table.getSelectionCount());
-	}
+	assertThrows(IllegalArgumentException.class, () -> table.setSelection((TableItem[]) null), "No exception thrown for selection range == null");
+	assertEquals(0, table.getSelectionCount());
 
-	try {
-		table.setSelection((TableItem) null);
-		fail("No exception thrown for selection == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
-	finally {
-		assertEquals(0, table.getSelectionCount());
-	}
+	assertThrows(IllegalArgumentException.class, () -> table.setSelection((TableItem) null), "No exception thrown for selection == null");
+	assertEquals(0, table.getSelectionCount());
 
 	table.setSelection(new TableItem[]{});
 	assertEquals(0, table.getSelectionCount());

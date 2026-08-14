@@ -17,8 +17,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
@@ -75,12 +75,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 
 	new Button(shell, SWT.PUSH | SWT.CHECK);
 
-	try {
-		new Button(null, 0);
-		fail("No exception thrown for parent == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> new Button(null, 0), "No exception thrown for parent == null");
 }
 
 @Test
@@ -96,21 +91,13 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 		}
 	};
 
-	try {
-		button.addSelectionListener(null);
-		fail("No exception thrown for addSelectionListener with null argument");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> button.addSelectionListener(null), "No exception thrown for addSelectionListener with null argument");
 
 	button.addSelectionListener(listener);
 	button.notifyListeners(SWT.Selection, new Event());
 	assertTrue(listenerCalled);
 
-	try {
-		button.removeSelectionListener(null);
-		fail("No exception thrown for removeSelectionListener with null argument");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> button.removeSelectionListener(null), "No exception thrown for removeSelectionListener with null argument");
 	listenerCalled = false;
 	button.removeSelectionListener(listener);
 	button.notifyListeners(SWT.Selection, new Event());
@@ -362,26 +349,21 @@ public void test_setForegroundAlphaRadiokButton() {
 
 @Test
 public void test_setImageLorg_eclipse_swt_graphics_Image() {
-	Image image = button.getImage();
-	button.setImage(image);
-	assertEquals(image, button.getImage());
+	Image initialImage = button.getImage();
+	button.setImage(initialImage);
+	assertEquals(initialImage, button.getImage());
 
 	button.setImage(null);
 	assertNull(button.getImage());
 
 	ImageGcDrawer noOpGcDrawer = (gc, width, height) -> {};
-	image = new Image(shell.getDisplay(), noOpGcDrawer, 10, 10);
+	Image image = new Image(shell.getDisplay(), noOpGcDrawer, 10, 10);
 	button.setImage(image);
 	assertEquals(image, button.getImage());
 
 	button.setImage(null);
 	image.dispose();
-	try {
-		button.setImage(image);
-		button.setImage(null);
-		fail("No exception thrown for disposed image");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> button.setImage(image), "No exception thrown for disposed image");
 }
 
 @Test
@@ -435,12 +417,7 @@ public void test_setTextLjava_lang_String() {
 		assertEquals(cases[i], button.getText());
 	}
 
-	try {
-		button.setText(null);
-		fail("No exception thrown for text == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> button.setText(null), "No exception thrown for text == null");
 
 	button.setText("");
 }

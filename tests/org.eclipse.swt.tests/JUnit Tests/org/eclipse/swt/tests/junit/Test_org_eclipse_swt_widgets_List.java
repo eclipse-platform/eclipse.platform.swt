@@ -18,7 +18,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
@@ -50,11 +49,7 @@ public void setUp() {
 @Override
 @Test
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
-	try {
-		list = new List(null, 0);
-		fail("No exception thrown"); //should never get here
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> new List(null, 0), "No exception thrown for parent == null");
 
 	int[] cases =
 		{
@@ -70,11 +65,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 
 @Test
 public void test_addLjava_lang_String() {
-	try {
-		list.add(null);
-		fail("No exception thrown");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.add(null), "No exception thrown");
 	list.add("");
 	assertArrayEquals(new String[] {""}, list.getItems());
 	list.add("some \n text");
@@ -86,11 +77,7 @@ public void test_addLjava_lang_String() {
 
 	setSingleList();
 
-	try {
-		list.add(null);
-		fail("No exception thrown");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.add(null), "No exception thrown");
 
 	list.add("");
 	assertArrayEquals(new String[] {""}, list.getItems());
@@ -102,11 +89,7 @@ public void test_addLjava_lang_String() {
 
 @Test
 public void test_addLjava_lang_StringI() {
-	try {
-		list.add("some text", 2);
-		fail("No exception thrown");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.add("some text", 2), "No exception thrown");
 	assertEquals(0, list.getItemCount());
 
 	list.add("", 0);
@@ -116,27 +99,15 @@ public void test_addLjava_lang_StringI() {
 	list.add("some text", 0);
 	assertArrayEquals(new String[] {"some text", "", "some \n text" }, list.getItems());
 
-	try {
-		list.add(null, 0);
-		fail("No exception thrown string == null");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.add(null, 0), "No exception thrown string == null");
 
-	try {
-		list.add("string", -1);
-		fail("No exception thrown index < 0");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.add("string", -1), "No exception thrown index < 0");
 
 	// test single-selection list
 
 	setSingleList();
 
-	try {
-		list.add("some text", 2);
-		fail("No exception thrown");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.add("some text", 2), "No exception thrown");
 
 	assertEquals(0, list.getItemCount());
 
@@ -147,17 +118,9 @@ public void test_addLjava_lang_StringI() {
 	list.add("some text", 0);
 	assertArrayEquals(new String[] {"some text", "", "some \n text" }, list.getItems());
 
-	try {
-		list.add(null, 0);
-		fail("No exception thrown string == null");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.add(null, 0), "No exception thrown string == null");
 
-	try {
-		list.add("string", -1);
-		fail("No exception thrown index < 0");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.add("string", -1), "No exception thrown index < 0");
 }
 
 @Test
@@ -226,11 +189,7 @@ public void test_deselect$I() {
 	list.setItems(items);
 	list.setSelection(items);
 	assertArrayEquals(list.getSelection(), items);
-	try {
-		list.deselect(null);
-		fail("No exception thrown");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.deselect(null), "No exception thrown");
 	assertArrayEquals(list.getSelection(), items);
 	list.deselect(new int[] {
 	});
@@ -250,11 +209,7 @@ public void test_deselect$I() {
 	list.setItems(items);
 	list.setSelection(new String[] { "item3" });
 	assertArrayEquals(list.getSelection(), new String[] { "item3" });
-	try {
-		list.deselect(null);
-		fail("No exception thrown");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.deselect(null), "No exception thrown");
 
 	assertArrayEquals(list.getSelection(), new String[] { "item3" });
 	list.deselect(new int[] {});
@@ -481,34 +436,18 @@ public void test_getItemHeight() {
 public void test_getItemI() {
 	String[] items = { "item0", "item1", "item2", "item3" };
 	list.setItems(items);
-	try {
-		list.getItem(5);
-		fail("No exception thrown");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.getItem(5), "No exception thrown");
 
-	try {
-		list.getItem(-1);
-		fail("No exception thrown for index < 0");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.getItem(-1), "No exception thrown for index < 0");
 
 	assertEquals(list.getItem(3), "item3");
 
 
 	setSingleList();
 	list.setItems(items);
-	try {
-		list.getItem(5);
-		fail("No exception thrown");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.getItem(5), "No exception thrown");
 
-	try {
-		list.getItem(-1);
-		fail("No exception thrown for index < 0");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.getItem(-1), "No exception thrown for index < 0");
 
 	//assert(":a:", list.getItem(5)==null);
 	assertEquals("item3", list.getItem(3));
@@ -615,11 +554,7 @@ public void test_getSelectionCount() {
 	assertEquals(3, list.getSelectionCount());
 
 	list.deselectAll();
-	try {
-		list.setSelection((String[]) null);
-		fail("No exception thrown for selection == null");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.setSelection((String[]) null), "No exception thrown for selection == null");
 	assertEquals(list.getSelectionCount(), 0);
 
 
@@ -748,11 +683,7 @@ public void test_indexOfLjava_lang_String() {
 	assertEquals(list.indexOf("text3"), 2);
 	assertEquals(list.indexOf("text4"), -1);
 
-	try {
-		list.indexOf(null);
-		fail("No exception thrown for item == null");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.indexOf(null), "No exception thrown for item == null");
 
 	String[] items2 = { "text1", "text2", "text2" }; //two identical
 
@@ -772,11 +703,7 @@ public void test_indexOfLjava_lang_String() {
 	assertEquals(-1, list.indexOf("text4"));
 
 
-	try {
-		list.indexOf(null);
-		fail("No exception thrown");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.indexOf(null), "No exception thrown");
 
 
 	assertEquals(1, list.indexOf("text2"));
@@ -797,11 +724,7 @@ public void test_indexOfLjava_lang_StringI() {
 	list.setItems(items2);
 	assertEquals(list.indexOf("text2", 2), 2);
 
-	try {
-		list.indexOf(null, 0);
-		fail("No exception thrown for string == null");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.indexOf(null, 0), "No exception thrown for string == null");
 
 	setSingleList();
 
@@ -811,11 +734,7 @@ public void test_indexOfLjava_lang_StringI() {
 	assertEquals(1, list.indexOf("text2", 1));
 	assertEquals(2, list.indexOf("text2", 2));
 
-	try {
-		list.indexOf(null, 0);
-		fail("No exception thrown for string == null");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.indexOf(null, 0), "No exception thrown for string == null");
 }
 
 @Test
@@ -845,11 +764,7 @@ public void test_isSelectedI() {
 
 @Test
 public void test_remove$I() {
-	try {
-		list.remove((int[]) null);
-		fail("No exception thrown for indices == null");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.remove((int[]) null), "No exception thrown for indices == null");
 
 	String[] items = { "text0", "text1", "text2", "text3" };
 
@@ -863,35 +778,19 @@ public void test_remove$I() {
 	list.setItems(items);
 
 	// index > number of elements in list
-	try {
-		list.remove(new int[] { 4, 1});
-		fail("No exception thrown");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.remove(new int[] { 4, 1}), "No exception thrown");
 	assertArrayEquals(list.getItems(), items);
 
-	try {
-		list.remove(new int[] { 3, 1, -1 });
-		fail("No exception thrown");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.remove(new int[] { 3, 1, -1 }), "No exception thrown");
 	assertArrayEquals(list.getItems(), items);
 
 	list.setItems(items);
 	assertEquals(list.getItemCount(), 4);
 
-	try {
-		list.remove(new int[] { -1, -1 });
-		fail("No exception thrown");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.remove(new int[] { -1, -1 }), "No exception thrown");
 	assertArrayEquals(list.getItems(), items);
 
-	try {
-		list.remove(new int[] { -2, -1 });
-		fail("No exception thrown");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.remove(new int[] { -2, -1 }), "No exception thrown");
 	assertArrayEquals(list.getItems(), items);
 
 	list.setItems(items);
@@ -909,12 +808,7 @@ public void test_remove$I() {
 
 	setSingleList();
 
-	try {
-		int[] indices = null;
-		list.remove(indices);
-		fail("No exception thrown for indices == null");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.remove((int[]) null), "No exception thrown for indices == null");
 
 	list.setItems(items);
 	assertEquals(4, list.getItemCount());
@@ -934,29 +828,17 @@ public void test_remove$I() {
 	assertEquals(4, list.getItemCount());
 
 	// index > number of elements in list
-	try {
-		list.remove(new int[] { 4, 1});
-		fail("No exception thrown");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.remove(new int[] { 4, 1}), "No exception thrown");
 	assertArrayEquals(list.getItems(), items);
 
-	try {
-		list.remove(new int[] { 3, 1, -1 });
-		fail("No exception thrown");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.remove(new int[] { 3, 1, -1 }), "No exception thrown");
 	assertArrayEquals(list.getItems(), items);
 
 
 	list.setItems(items);
 	assertEquals(4, list.getItemCount());
 
-	try {
-		list.remove(new int[] { -1, -1 });
-		fail("No exception thrown");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.remove(new int[] { -1, -1 }), "No exception thrown");
 
 	assertArrayEquals(items, list.getItems());
 
@@ -1003,18 +885,10 @@ public void test_removeI() {
 	list.setItems(items);
 	assertEquals(list.getItemCount(), 3);
 
-	try {
-		list.remove(3);
-		fail("No exception thrown");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.remove(3), "No exception thrown");
 	assertEquals(list.getItemCount(), 3);
 
-	try {
-		list.remove(-1);
-		fail("No exception thrown");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.remove(-1), "No exception thrown");
 	assertEquals(list.getItemCount(), 3);
 
 	list.remove(1);
@@ -1024,19 +898,11 @@ public void test_removeI() {
 	list.setItems(items);
 	assertEquals(list.getItemCount(), 3);
 
-	try {
-		list.remove(3, 4);
-		fail("No exception thrown");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.remove(3, 4), "No exception thrown");
 
 	assertEquals(list.getItemCount(), 3);
 
-	try {
-		list.remove(3, 3);
-		fail("No exception thrown");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.remove(3, 3), "No exception thrown");
 
 	assertEquals(list.getItemCount(), 3);
 
@@ -1057,18 +923,10 @@ public void test_removeI() {
 	setSingleList();
 	list.setItems(items);
 	assertEquals(3, list.getItemCount());
-	try {
-		list.remove(3);
-		fail("No exception thrown");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.remove(3), "No exception thrown");
 	assertEquals(3, list.getItemCount());
 	/////////////////////////////////////////////////
-	try {
-		list.remove(-1);
-		fail("No exception thrown");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.remove(-1), "No exception thrown");
 
 	assertEquals(3, list.getItemCount());
 	////////////////////////////////////////////////
@@ -1097,19 +955,11 @@ public void test_removeII() {
 	list.setItems(items);
 	assertEquals(3, list.getItemCount());
 
-	try {
-		list.remove(3, 4);
-		fail("No exception thrown");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.remove(3, 4), "No exception thrown");
 
 	assertEquals(3, list.getItemCount());
 
-	try {
-		list.remove(3, 3);
-		fail("No exception thrown");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.remove(3, 3), "No exception thrown");
 	assertEquals(3, list.getItemCount());
 
 	list.remove(0, 0);
@@ -1119,18 +969,10 @@ public void test_removeII() {
 	list.setItems(items);
 	assertEquals(3, list.getItemCount());
 
-	try {
-		list.remove(-1, 1);
-		fail("No exception thrown for start index < 0");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.remove(-1, 1), "No exception thrown for start index < 0");
 	assertEquals(3, list.getItemCount());
 
-	try {
-		list.remove(3, 4);
-		fail("No exception thrown");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.remove(3, 4), "No exception thrown");
 	assertEquals(3, list.getItemCount());
 
 	list.remove(0, 2);
@@ -1139,11 +981,7 @@ public void test_removeII() {
 	list.setItems(items);
 	assertEquals(3, list.getItemCount());
 
-	try {
-		list.remove(3, 3);
-		fail("No exception thrown");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.remove(3, 3), "No exception thrown");
 	assertEquals(3, list.getItemCount());
 
 	list.remove(2, 0);
@@ -1155,28 +993,16 @@ public void test_removeII() {
 	list.setItems(items);
 	assertEquals(3, list.getItemCount());
 	//////////////////////////////////////////////////////////////
-	try {
-		list.remove(3, 4);
-		fail("No exception thrown");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.remove(3, 4), "No exception thrown");
 
 	assertEquals(3, list.getItemCount());
 	/////////////////////////////////////////////////////////
-	try {
-		list.remove(3, 3);
-		fail("No exception thrown");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.remove(3, 3), "No exception thrown");
 
 	assertEquals(3, list.getItemCount());
 	//////////////////////////////////////////////////////////////
 
-	try {
-		list.remove(-1, 1);
-		fail("No exception thrown for start index < 0");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.remove(-1, 1), "No exception thrown for start index < 0");
 	assertEquals(3, list.getItemCount());
 
 	list.remove(1, 2);
@@ -1187,11 +1013,7 @@ public void test_removeII() {
 	list.setItems(items);
 	assertEquals(3, list.getItemCount());
 
-	try {
-		list.remove(2, 10);
-		fail("No exception thrown");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.remove(2, 10), "No exception thrown");
 	assertEquals(3, list.getItemCount());
 	assertEquals("text2", list.getItem(1));
 
@@ -1206,18 +1028,10 @@ public void test_removeLjava_lang_String() {
 	list.setItems(items);
 	assertEquals(list.getItemCount(), 4);
 
-	try {
-		list.remove((String) null);
-		fail("No exception thrown");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.remove((String) null), "No exception thrown");
 	assertEquals(list.getItemCount(), 4);
 
-	try {
-		list.remove("items989");
-		fail("No exception thrown");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.remove("items989"), "No exception thrown");
 	assertEquals(list.getItemCount(), 4);
 
 	list.setItems(items);
@@ -1234,18 +1048,10 @@ public void test_removeLjava_lang_String() {
 	list.setItems(items);
 	assertEquals(4, list.getItemCount());
 
-	try {
-		list.remove((String) null);
-		fail("No exception thrown");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.remove((String) null), "No exception thrown");
 	assertEquals(4, list.getItemCount());
 	////////////////////////////////////////
-	try {
-		list.remove("items989");
-		fail("No exception thrown");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.remove("items989"), "No exception thrown");
 	assertEquals(4, list.getItemCount());
 
 
@@ -1261,11 +1067,7 @@ public void test_removeLjava_lang_String() {
 
 @Test
 public void test_select$I() {
-	try {
-		list.select((int[]) null);
-		fail("No exception thrown");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.select((int[]) null), "No exception thrown");
 
 	String[] items = { "item0", "item1", "item2", "item3" };
 	list.setItems(items);
@@ -1317,11 +1119,7 @@ public void test_select$I() {
 	setSingleList();
 	list.setItems(items);
 
-	try {
-		list.select((int[]) null);
-		fail("No exception thrown");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.select((int[]) null), "No exception thrown");
 
 	list.select(new int[]{ -1 });
 	assertArrayEquals(list.getSelectionIndices(), new int[] {});
@@ -1600,30 +1398,18 @@ public void test_setItemILjava_lang_String() {
 	assertEquals(list.getItemCount(), 0);
 	int[] cases = { -10, 0, 10 };
 	for (int index : cases) {
-		try {
-			list.setItem(index, null);
-			fail("No exception thrown");
-		} catch (IllegalArgumentException e) {
-		}
+		assertThrows(IllegalArgumentException.class, () -> list.setItem(index, null), "No exception thrown");
 	}
 	assertEquals(list.getItemCount(), 0);
 
 	for (int index : cases) {
-		try {
-			list.setItem(index, "");
-			fail("No exception thrown");
-		} catch (IllegalArgumentException e) {
-		}
+		assertThrows(IllegalArgumentException.class, () -> list.setItem(index, ""), "No exception thrown");
 	}
 	assertEquals(list.getItemCount(), 0);
 
 	int cases2[] = { 10, 15, 0 };
 	for (int index : cases2) {
-		try {
-			list.setItem(index, "fred");
-			fail("No exception thrown");
-		} catch (IllegalArgumentException e) {
-		}
+		assertThrows(IllegalArgumentException.class, () -> list.setItem(index, "fred"), "No exception thrown");
 		assertEquals(list.getItemCount(), 0);
 	}
 
@@ -1634,22 +1420,14 @@ public void test_setItemILjava_lang_String() {
 	setSingleList();
 	assertEquals(0, list.getItemCount());
 	for (int index : cases) {
-		try {
-			list.setItem(index, null);
-			fail("No exception thrown");
-		} catch (IllegalArgumentException e) {
-		}
+		assertThrows(IllegalArgumentException.class, () -> list.setItem(index, null), "No exception thrown");
 
 	}
 
 
 	setSingleList();
 	for (int index : cases) {
-		try {
-			list.setItem(index, "");
-			fail("No exception thrown");
-		} catch (IllegalArgumentException e) {
-		}
+		assertThrows(IllegalArgumentException.class, () -> list.setItem(index, ""), "No exception thrown");
 	}
 
 	assertEquals(0, list.getItemCount());
@@ -1657,11 +1435,7 @@ public void test_setItemILjava_lang_String() {
 
 	setSingleList();
 	for (int index : cases2) {
-		try {
-			list.setItem(index, "fred");
-			fail("No exception thrown");
-		} catch (IllegalArgumentException e) {
-		}
+		assertThrows(IllegalArgumentException.class, () -> list.setItem(index, "fred"), "No exception thrown");
 
 		assertEquals(0, list.getItemCount());
 	}
@@ -1674,11 +1448,7 @@ public void test_setItemILjava_lang_String() {
 
 @Test
 public void test_setItems$Ljava_lang_String() {
-	try {
-		list.setItems((String[])null);
-		fail("No exception thrown for items == null");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.setItems((String[])null), "No exception thrown for items == null");
 
 	// TODO An SWTError should never happen and should not
 	// be part of the test case.  List should throw an
@@ -1705,11 +1475,7 @@ public void test_setItems$Ljava_lang_String() {
 		assertArrayEquals(items, list.getItems());
 	}
 
-	try {
-		list.setItems((String[])null);
-		fail("No exception thrown");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.setItems((String[])null), "No exception thrown");
 
 
 	setSingleList();
@@ -1719,11 +1485,7 @@ public void test_setItems$Ljava_lang_String() {
 	}
 
 
-	try {
-		list.setItems((String[])null);
-		fail("No exception thrown");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.setItems((String[])null), "No exception thrown");
 }
 
 @Test
@@ -1735,11 +1497,7 @@ public void test_setSelection$I() {
 	list.setSelection(new int [0]);
 	assertArrayEquals(list.getSelectionIndices(), new int[0]);
 
-	try {
-		list.setSelection((int[]) null);
-		fail("No exception thrown for MULTI: setSelection((int[]) null)");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.setSelection((int[]) null), "No exception thrown for MULTI: setSelection((int[]) null)");
 
 	list.setSelection(new int [] {2});
 	assertArrayEquals(list.getSelectionIndices(), new int[] {2});
@@ -1793,11 +1551,7 @@ public void test_setSelection$I() {
 	assertArrayEquals(list.getSelectionIndices(), new int[0]);
 	assertEquals(list.getFocusIndex(), -1);
 
-	try {
-		list.setSelection((int[]) null);
-		fail("No exception thrown for EMPTY MULTI: setSelection((int[]) null)");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.setSelection((int[]) null), "No exception thrown for EMPTY MULTI: setSelection((int[]) null)");
 
 	list.setSelection(new int [] {0});
 	assertArrayEquals(list.getSelectionIndices(), new int[0]);
@@ -1827,11 +1581,7 @@ public void test_setSelection$I() {
 	list.setSelection(new int [0]);
 	assertArrayEquals(list.getSelectionIndices(), new int[0]);
 
-	try {
-		list.setSelection((int[]) null);
-		fail("No exception thrown for SINGLE: setSelection((int[]) null)");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.setSelection((int[]) null), "No exception thrown for SINGLE: setSelection((int[]) null)");
 
 	list.setSelection(new int [] {2});
 	assertArrayEquals(list.getSelectionIndices(), new int[] {2});
@@ -1880,11 +1630,7 @@ public void test_setSelection$I() {
 	assertArrayEquals(list.getSelectionIndices(), new int[0]);
 	assertEquals(list.getFocusIndex(), -1);
 
-	try {
-		list.setSelection((int[]) null);
-		fail("No exception thrown for EMPTY SINGLE: setSelection((int[]) null)");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.setSelection((int[]) null), "No exception thrown for EMPTY SINGLE: setSelection((int[]) null)");
 
 	list.setSelection(new int [] {0});
 	assertArrayEquals(list.getSelectionIndices(), new int[0]);
@@ -1919,11 +1665,7 @@ public void test_setSelection$Ljava_lang_String() {
 		assertEquals(list.getFocusIndex(), -1);
 	}
 
-	try {
-		list.setSelection((String[]) null);
-		fail("No exception thrown");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.setSelection((String[]) null), "No exception thrown");
 
 	list.setSelection(new String [] {"fred 2"});
 	assertArrayEquals(list.getSelection(), new String [] {"fred 2"});
@@ -1966,11 +1708,7 @@ public void test_setSelection$Ljava_lang_String() {
 	assertArrayEquals(list.getSelection(), new String[0]);
 	assertEquals(list.getFocusIndex(), -1);
 
-	try {
-		list.setSelection((String[]) null);
-		fail("No exception thrown");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.setSelection((String[]) null), "No exception thrown");
 
 	list.setSelection(new String [] {"fred 0"});
 	assertArrayEquals(list.getSelection(), new String[0]);
@@ -1988,11 +1726,7 @@ public void test_setSelection$Ljava_lang_String() {
 	list.setSelection(new String [0]);
 	assertArrayEquals(list.getSelection(), new String[0]);
 
-	try {
-		list.setSelection((String[]) null);
-		fail("No exception thrown");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.setSelection((String[]) null), "No exception thrown");
 
 	list.setSelection(new String [] {"fred 2"});
 	assertArrayEquals(list.getSelection(), new String[] {"fred 2"});
@@ -2032,11 +1766,7 @@ public void test_setSelection$Ljava_lang_String() {
 	assertArrayEquals(list.getSelection(), new String[0]);
 	assertEquals(list.getFocusIndex(), -1);
 
-	try {
-		list.setSelection((String[]) null);
-		fail("No exception thrown");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> list.setSelection((String[]) null), "No exception thrown");
 
 	list.setSelection(new String [] {"fred 0"});
 	assertArrayEquals(list.getSelection(), new String[0]);

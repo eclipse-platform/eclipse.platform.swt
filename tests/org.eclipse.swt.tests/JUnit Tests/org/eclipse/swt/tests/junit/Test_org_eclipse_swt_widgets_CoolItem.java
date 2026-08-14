@@ -16,8 +16,8 @@ package org.eclipse.swt.tests.junit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
@@ -51,30 +51,15 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CoolBarI() {
 	CoolBar coolBar = new CoolBar(shell, 0);
 	new CoolItem(coolBar, 0);
 
-	try {
-		new CoolItem(null, 0);
-		fail("No exception thrown for parent == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> new CoolItem(null, 0), "No exception thrown for parent == null");
 }
 
 @Test
 public void test_ConstructorLorg_eclipse_swt_widgets_CoolBarII() {
 	CoolBar coolBar = new CoolBar(shell, 0);
 	CoolItem coolItem = new CoolItem(coolBar, 0, 0);
-	try {
-		coolItem = new CoolItem(coolBar, 0, -1);
-		fail("No exception thrown for index == -1");
-	}
-	catch (IllegalArgumentException e){
-	}
-	try {
-		coolItem = new CoolItem(coolBar, 0, 2);
-		fail("No exception thrown for index == 2");
-	}
-	catch (IllegalArgumentException e){
-	}
+	assertThrows(IllegalArgumentException.class, () -> new CoolItem(coolBar, 0, -1), "No exception thrown for index == -1");
+	assertThrows(IllegalArgumentException.class, () -> new CoolItem(coolBar, 0, 2), "No exception thrown for index == 2");
 	assertEquals(1, coolBar.getItemCount());
 	coolItem = new CoolItem(coolBar, 0, 1);
 	assertEquals(2, coolBar.getItemCount());
@@ -198,22 +183,12 @@ public void test_setControlLorg_eclipse_swt_widgets_Control() {
 		assertEquals(size2, coolItem.getSize());
 	}
 
-	button = new Button(coolBar, SWT.PUSH);
-	button.dispose();
-	try {
-		coolItem.setControl(button);
-		fail("No exception when control.isDisposed()");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	Button disposedButton = new Button(coolBar, SWT.PUSH);
+	disposedButton.dispose();
+	assertThrows(IllegalArgumentException.class, () -> coolItem.setControl(disposedButton), "No exception when control.isDisposed()");
 
-	button = new Button(shell, SWT.PUSH);
-	try {
-		coolItem.setControl(button);
-		fail("No exception thrown when control has wrong parent");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	Button wrongParentButton = new Button(shell, SWT.PUSH);
+	assertThrows(IllegalArgumentException.class, () -> coolItem.setControl(wrongParentButton), "No exception thrown when control has wrong parent");
 }
 
 @Test

@@ -14,6 +14,7 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import org.eclipse.swt.SWTException;
@@ -57,25 +58,12 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Device() {
 
 @Test
 public void test_add$I() {
-	Region reg = new Region(display);
-	try {
-		reg.add((int[])null);
-		reg.dispose();
-		fail("no exception thrown for adding a null rectangle");
-	}
-	catch (IllegalArgumentException e) {
-	}
-	reg.dispose();
-	try {
-		reg.add(new int[]{});
-		reg.dispose();
-		fail("no exception thrown on disposed region");
-	}
-	catch (SWTException e) {
-	}
-	reg.dispose();
+	Region emptyRegion = new Region(display);
+	assertThrows(IllegalArgumentException.class, () -> emptyRegion.add((int[]) null), "no exception thrown for adding a null rectangle");
+	emptyRegion.dispose();
+	assertThrows(SWTException.class, () -> emptyRegion.add(new int[]{}), "no exception thrown on disposed region");
 
-	reg = new Region(display);
+	Region reg = new Region(display);
 	reg.add(new int[] {0,0, 50,0, 50,25, 0,25});
 	Rectangle box = reg.getBounds();
 	reg.dispose();
@@ -112,21 +100,11 @@ public void test_addLorg_eclipse_swt_graphics_Rectangle() {
 	// add a second rectangle
 	reg.add(new Rectangle(200, 200, 10,10));
 
-	try {
-		reg.add((Rectangle)null);
-		fail("no exception thrown for adding a null rectangle");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> reg.add((Rectangle)null), "no exception thrown for adding a null rectangle");
 
 	reg.dispose();
 
-	try {
-		reg.add(new Rectangle(20,30,10,5));
-		fail("no exception thrown for adding a rectangle after Region got disposed");
-	}
-	catch (SWTException e) {
-	}
+	assertThrows(SWTException.class, () -> reg.add(new Rectangle(20,30,10,5)), "no exception thrown for adding a rectangle after Region got disposed");
 }
 
 @Test
@@ -138,34 +116,21 @@ public void test_addLorg_eclipse_swt_graphics_Region() {
 	reg1.add(reg2);
 	reg2.dispose();
 
-	try {
-		reg1.add((Region)null);
-		fail("no exception thrown for adding a null region");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> reg1.add((Region)null), "no exception thrown for adding a null region");
 
-	try {
-		reg2 = new Region(display);
-		reg2.add(new Rectangle(1,1,100,200));
-		reg2.dispose();
-		reg1.add(reg2);
-		fail("no exception thrown for adding to a Region a Region which got disposed");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	Region disposedRegion = new Region(display);
+	disposedRegion.add(new Rectangle(1,1,100,200));
+	disposedRegion.dispose();
+	assertThrows(IllegalArgumentException.class, () -> reg1.add(disposedRegion), "no exception thrown for adding to a Region a Region which got disposed");
 
 	reg1.dispose();
 
+	Region liveRegion = new Region(display);
 	try {
-		reg2 = new Region(display);
-		reg2.add(new Rectangle(1,1,100,200));
-		reg1.add(reg2);
-		fail("no exception thrown for adding a Region to a Region which got disposed");
-	}
-	catch (SWTException e) {
+		liveRegion.add(new Rectangle(1,1,100,200));
+		assertThrows(SWTException.class, () -> reg1.add(liveRegion), "no exception thrown for adding a Region to a Region which got disposed");
 	} finally {
-		if (reg2 != null) reg2.dispose();
+		liveRegion.dispose();
 	}
 }
 
@@ -177,16 +142,11 @@ public void test_containsII() {
 	Point pointInRect2 = new Point(1049,1009);
 	Point pointNotInRect12 = new Point(49,110);
 
-	Region reg = new Region(display);
-	reg.dispose();
-	try {
-		reg.contains(pointInRect1.x, pointInRect1.y);
-		fail("no exception thrown on disposed region");
-	}
-	catch (Exception e) {
-	}
+	Region disposedRegion = new Region(display);
+	disposedRegion.dispose();
+	assertThrows(Exception.class, () -> disposedRegion.contains(pointInRect1.x, pointInRect1.y), "no exception thrown on disposed region");
 
-	reg = new Region(display);
+	Region reg = new Region(display);
 	if (reg.contains(pointInRect1.x, pointInRect1.y)) {
 		reg.dispose();
 		fail("Empty region should not contain point");
@@ -217,16 +177,11 @@ public void test_containsLorg_eclipse_swt_graphics_Point() {
 	Point pointInRect2 = new Point(1049,1009);
 	Point pointNotInRect12 = new Point(49,110);
 
-	Region reg = new Region(display);
-	reg.dispose();
-	try {
-		reg.contains(pointInRect1);
-		fail("no exception thrown on disposed region");
-	}
-	catch (Exception e) {
-	}
+	Region disposedRegion = new Region(display);
+	disposedRegion.dispose();
+	assertThrows(Exception.class, () -> disposedRegion.contains(pointInRect1), "no exception thrown on disposed region");
 
-	reg = new Region(display);
+	Region reg = new Region(display);
 	if (reg.contains(pointInRect1)) {
 		reg.dispose();
 		fail("Empty region should not contain point");
@@ -315,22 +270,17 @@ public void test_equalsLjava_lang_Object() {
 
 @Test
 public void test_getBounds() {
-	Region reg = new Region(display);
-	reg.dispose();
+	Region disposedRegion = new Region(display);
+	disposedRegion.dispose();
 
-	try {
-		reg.getBounds();
-		fail("Region disposed should throw Exception");
-	}
-	catch (Exception e) {
-	}
+	assertThrows(Exception.class, () -> disposedRegion.getBounds(), "Region disposed should throw Exception");
 
 	Rectangle rect1 = new Rectangle(10,10,50,30);
 	Rectangle rect2 = new Rectangle(100,100,10,10);
 	// the rectangle enclosing the two preceding rectangles
 	Rectangle rect12Bounds = new Rectangle(10,10,100,100);
 
-	reg = new Region(display);
+	Region reg = new Region(display);
 	reg.add(rect1);
 	Rectangle rect1Bis = reg.getBounds();
 	if (rect1Bis.x != rect1.x || rect1Bis.y != rect1.y ||
@@ -391,16 +341,11 @@ public void test_intersectLorg_eclipse_swt_graphics_Rectangle() {
 	Rectangle rect4 = new Rectangle(48,24,10,10);
 	Rectangle rect5 = new Rectangle(24,20,24,10);
 
-	Region reg = new Region(display);
-	reg.dispose();
-	try {
-		reg.intersect(rect1);
-		fail("no exception thrown on disposed region");
-	}
-	catch (SWTException e) {
-	}
+	Region disposedRegion = new Region(display);
+	disposedRegion.dispose();
+	assertThrows(SWTException.class, () -> disposedRegion.intersect(rect1), "no exception thrown on disposed region");
 
-	reg = new Region(display);
+	Region reg = new Region(display);
 	reg.intersect(rect1);
 	if (!reg.isEmpty()) {
 		reg.dispose();
@@ -447,20 +392,14 @@ public void test_intersectLorg_eclipse_swt_graphics_Rectangle() {
 
 @Test
 public void test_intersectLorg_eclipse_swt_graphics_Region() {
-	Region reg = new Region(display);
 	Region reg1 = new Region(display);
 	reg1.add(new Rectangle(0,0,48,24));
 
-	reg.dispose();
-	try {
-		reg.intersect(reg1);
-		reg1.dispose();
-		fail("no exception thrown on disposed region");
-	}
-	catch (SWTException e) {
-	}
+	Region disposedRegion = new Region(display);
+	disposedRegion.dispose();
+	assertThrows(SWTException.class, () -> disposedRegion.intersect(reg1), "no exception thrown on disposed region");
 
-	reg = new Region(display);
+	Region reg = new Region(display);
 	reg.intersect(reg1);
 	if (!reg.isEmpty()) {
 		reg.dispose();
@@ -548,16 +487,11 @@ public void test_intersectsIIII() {
 	Rectangle rectNotInter12 = new Rectangle(40,50,5,15);
 
 
-	Region reg = new Region(display);
-	reg.dispose();
-	try {
-		reg.intersects(rectInter1.x, rectInter1.y, rectInter1.width, rectInter1.height);
-		fail("no exception thrown on disposed region");
-	}
-	catch (Exception e) {
-	}
+	Region disposedRegion = new Region(display);
+	disposedRegion.dispose();
+	assertThrows(Exception.class, () -> disposedRegion.intersects(rectInter1.x, rectInter1.y, rectInter1.width, rectInter1.height), "no exception thrown on disposed region");
 
-	reg = new Region(display);
+	Region reg = new Region(display);
 	if (reg.intersects(rect1.x, rect1.y, rect1.width, rect1.height)) {
 		reg.dispose();
 		fail("intersects can't return true on empty region");
@@ -603,16 +537,11 @@ public void test_intersectsLorg_eclipse_swt_graphics_Rectangle() {
 	Rectangle rectNotInter12 = new Rectangle(40,50,5,15);
 
 
-	Region reg = new Region(display);
-	reg.dispose();
-	try {
-		reg.intersects(rectInter1);
-		fail("no exception thrown on disposed region");
-	}
-	catch (Exception e) {
-	}
+	Region disposedRegion = new Region(display);
+	disposedRegion.dispose();
+	assertThrows(Exception.class, () -> disposedRegion.intersects(rectInter1), "no exception thrown on disposed region");
 
-	reg = new Region(display);
+	Region reg = new Region(display);
 	if (reg.intersects(rect1)) {
 		reg.dispose();
 		fail("intersects can't return true on empty region");
@@ -682,25 +611,12 @@ public void test_isEmpty() {
 
 @Test
 public void test_subtract$I() {
-	Region reg = new Region(display);
-	try {
-		reg.subtract((int[])null);
-		reg.dispose();
-		fail("no exception thrown for subtract a null array");
-	}
-	catch (IllegalArgumentException e) {
-	}
-	reg.dispose();
-	try {
-		reg.subtract(new int[]{});
-		reg.dispose();
-		fail("no exception thrown on disposed region");
-	}
-	catch (SWTException e) {
-	}
-	reg.dispose();
+	Region emptyRegion = new Region(display);
+	assertThrows(IllegalArgumentException.class, () -> emptyRegion.subtract((int[]) null), "no exception thrown for subtract a null array");
+	emptyRegion.dispose();
+	assertThrows(SWTException.class, () -> emptyRegion.subtract(new int[]{}), "no exception thrown on disposed region");
 
-	reg = new Region(display);
+	Region reg = new Region(display);
 	reg.add(new int[] {0,0, 50,0, 50,25, 0,25});
 	reg.subtract(new int[] {0,0, 50,0, 50,20, 0,20});
 	Rectangle box = reg.getBounds();
@@ -731,16 +647,11 @@ public void test_subtractLorg_eclipse_swt_graphics_Rectangle() {
 	Rectangle rect4 = new Rectangle(50,25,10,10);
 	Rectangle rect5 = new Rectangle(0,0,60,20);
 
-	Region reg = new Region(display);
-	reg.dispose();
-	try {
-		reg.subtract(rect1);
-		fail("no exception thrown on disposed region");
-	}
-	catch (SWTException e) {
-	}
+	Region disposedRegion = new Region(display);
+	disposedRegion.dispose();
+	assertThrows(SWTException.class, () -> disposedRegion.subtract(rect1), "no exception thrown on disposed region");
 
-	reg = new Region(display);
+	Region reg = new Region(display);
 	reg.subtract(rect1);
 	if (!reg.isEmpty()) {
 		reg.dispose();
@@ -791,17 +702,11 @@ public void test_subtractLorg_eclipse_swt_graphics_Region() {
 	Region reg1 = new Region(display);
 	reg1.add(new Rectangle(0,0,50,25));
 
-	Region reg = new Region(display);
-	reg.dispose();
-	try {
-		reg.subtract(reg1);
-		reg1.dispose();
-		fail("no exception thrown on disposed region");
-	}
-	catch (SWTException e) {
-	}
+	Region disposedRegion = new Region(display);
+	disposedRegion.dispose();
+	assertThrows(SWTException.class, () -> disposedRegion.subtract(reg1), "no exception thrown on disposed region");
 
-	reg = new Region(display);
+	Region reg = new Region(display);
 	reg.subtract(reg1);
 	if (!reg.isEmpty()) {
 		reg.dispose();

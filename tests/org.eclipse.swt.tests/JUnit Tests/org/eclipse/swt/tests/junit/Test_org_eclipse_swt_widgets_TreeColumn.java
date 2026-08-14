@@ -15,8 +15,8 @@ package org.eclipse.swt.tests.junit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 import java.util.ArrayList;
@@ -50,46 +50,21 @@ public void setUp() {
 
 @Test
 public void test_ConstructorLorg_eclipse_swt_widgets_TreeI() {
-	try {
-		new TreeColumn(null, SWT.NULL);
-		fail("No exception thrown for parent == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> new TreeColumn(null, SWT.NULL), "No exception thrown for parent == null");
 }
 
 @Test
 public void test_ConstructorLorg_eclipse_swt_widgets_TreeII() {
-	try {
-		new TreeColumn(null, SWT.NULL, 0);
-		fail("No exception thrown for parent == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> new TreeColumn(null, SWT.NULL, 0), "No exception thrown for parent == null");
 
-	try {
-		new TreeColumn(tree, SWT.NULL, -1);
-		fail("No exception thrown for index == -1");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> new TreeColumn(tree, SWT.NULL, -1), "No exception thrown for index == -1");
 
-	try {
-		new TreeColumn(tree, SWT.NULL, 2);
-		fail("No exception thrown for illegal index argument");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> new TreeColumn(tree, SWT.NULL, 2), "No exception thrown for illegal index argument");
 }
 
 @Test
 public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
-	try {
-		treeColumn.addSelectionListener(null);
-		fail("No exception thrown for selectionListener == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> treeColumn.addSelectionListener(null), "No exception thrown for selectionListener == null");
 }
 
 @Test
@@ -142,12 +117,7 @@ public void test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListene
 	treeColumn.removeSelectionListener(listener);
 	treeColumn.addSelectionListener(listener);
 	treeColumn.removeSelectionListener(listener);
-	try {
-		treeColumn.removeSelectionListener(null);
-		fail("No exception thrown for selectionListener == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> treeColumn.removeSelectionListener(null), "No exception thrown for selectionListener == null");
 }
 
 @Test
@@ -200,12 +170,7 @@ public void test_setTextLjava_lang_String() {
 	treeColumn.setText("text");
 	assertEquals(treeColumn.getText(), "text");
 
-	try {
-		treeColumn.setText(null);
-		fail("No exception thrown for column header == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> treeColumn.setText(null), "No exception thrown for column header == null");
 }
 
 @Test

@@ -15,8 +15,8 @@ package org.eclipse.swt.tests.junit;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
@@ -44,12 +44,7 @@ public void setUp() {
 
 @Test
 public void test_ConstructorLorg_eclipse_swt_widgets_ExpandItemI() {
-	try {
-		new ExpandItem(null, SWT.NULL);
-		fail("No exception thrown for parent == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> new ExpandItem(null, SWT.NULL), "No exception thrown for parent == null");
 }
 
 @Test
@@ -88,22 +83,12 @@ public void test_setControlLorg_eclipse_swt_widgets_Control() {
 	Button button = new Button(expandBar, SWT.PUSH);
 	expandItem.setControl(button);
 
-	button = new Button(expandBar, SWT.PUSH);
-	button.dispose();
-	try {
-		expandItem.setControl(button);
-		fail("No exception when control.isDisposed()");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	Button disposedButton = new Button(expandBar, SWT.PUSH);
+	disposedButton.dispose();
+	assertThrows(IllegalArgumentException.class, () -> expandItem.setControl(disposedButton), "No exception when control.isDisposed()");
 
-	button = new Button(shell, SWT.PUSH);
-	try {
-		expandItem.setControl(button);
-		fail("No exception thrown when control has wrong parent");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	Button wrongParentButton = new Button(shell, SWT.PUSH);
+	assertThrows(IllegalArgumentException.class, () -> expandItem.setControl(wrongParentButton), "No exception thrown when control has wrong parent");
 }
 
 @Test
@@ -138,11 +123,7 @@ public void test_setImageLorg_eclipse_swt_graphics_Image() {
 public void test_setTextLjava_lang_String() {
 	expandItem.setText("ABCDEFG");
 	assertEquals("ABCDEFG", expandItem.getText());
-	try {
-		expandItem.setText(null);
-		fail("No exception thrown for addArmListener with null argument");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> expandItem.setText(null), "No exception thrown for addArmListener with null argument");
 	expandItem.setText("ABCDEFG");
 	assertTrue(expandItem.getText().startsWith("ABCDEFG"));
 }
