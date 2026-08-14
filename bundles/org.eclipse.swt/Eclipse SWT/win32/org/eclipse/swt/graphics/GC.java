@@ -2886,7 +2886,7 @@ void drawText(long gdipGraphics, String string, int x, int y, int flags, Point s
 	if (hFont != 0) OS.SelectObject(hdc, oldFont);
 	Gdip.Graphics_ReleaseHDC(gdipGraphics, hdc);
 	if (gdip) {
-		drawTextGDIP(gdipGraphics, string, x, y, flags, size == null, size);
+		drawTextGDIP(gdipGraphics, string, x, y, flags, size == null, size, lptm);
 		return;
 	}
 	int i = 0, start = 0, end = 0, drawX = x, drawY = y, width = 0, mnemonicIndex = -1;
@@ -3056,7 +3056,7 @@ private RectF drawText(long gdipGraphics, char[] buffer, int start, int length, 
 	return bounds;
 }
 
-private void drawTextGDIP(long gdipGraphics, String string, int x, int y, int flags, boolean draw, Point size) {
+private void drawTextGDIP(long gdipGraphics, String string, int x, int y, int flags, boolean draw, Point size, TEXTMETRIC lptm) {
 	boolean needsBounds = !draw || (flags & SWT.DRAW_TRANSPARENT) == 0;
 	char[] buffer;
 	if ((flags & SWT.DRAW_DELIMITER) == 0) {
@@ -3078,7 +3078,15 @@ private void drawTextGDIP(long gdipGraphics, String string, int x, int y, int fl
 	int formatFlags = Gdip.StringFormat_GetFormatFlags(format) | Gdip.StringFormatFlagsMeasureTrailingSpaces;
 	if ((data.style & SWT.MIRRORED) != 0) formatFlags |= Gdip.StringFormatFlagsDirectionRightToLeft;
 	Gdip.StringFormat_SetFormatFlags(format, formatFlags);
-	float[] tabs = (flags & SWT.DRAW_TAB) != 0 ? new float[]{measureSpace(data.gdipFont, format) * 8} : new float[1];
+	// Use the same tab stop width as the GDI-based text rendering path: 8 * the
+	// font's average character width, which is what Win32's own DrawText() and
+	// TabbedTextOut() use by default. This used to be 8 * the width of a single
+	// space glyph, which is a different metric rather than a differently
+	// computed one: in proportional fonts a space is roughly half the average
+	// character width, so tab stops came out about half as wide whenever this
+	// path was taken. (In monospace fonts the two nearly coincide, which is why
+	// the discrepancy was easy to miss.)
+	float[] tabs = (flags & SWT.DRAW_TAB) != 0 ? new float[]{lptm.tmAveCharWidth * 8} : new float[1];
 	Gdip.StringFormat_SetTabStops(format, 0, tabs.length, tabs);
 	int hotkeyPrefix = (flags & SWT.DRAW_MNEMONIC) != 0 ? Gdip.HotkeyPrefixShow : Gdip.HotkeyPrefixNone;
 	if ((flags & SWT.DRAW_MNEMONIC) != 0 && (data.uiState & OS.UISF_HIDEACCEL) != 0) hotkeyPrefix = Gdip.HotkeyPrefixHide;
@@ -4656,13 +4664,6 @@ private void checkNonDisposed() {
 @Override
 public boolean isDisposed() {
 	return handle == 0;
-}
-
-private float measureSpace(long font, long format) {
-	PointF pt = new PointF();
-	RectF bounds = new RectF();
-	Gdip.Graphics_MeasureString(data.gdipGraphics, new char[]{' '}, 1, font, pt, format, bounds);
-	return bounds.Width;
 }
 
 /**
