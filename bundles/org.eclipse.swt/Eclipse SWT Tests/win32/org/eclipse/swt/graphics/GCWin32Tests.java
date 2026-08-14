@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.function.*;
 import java.util.stream.*;
 
 import org.eclipse.swt.*;
@@ -144,6 +145,184 @@ class GCWin32Tests {
 			}
 		}
 		return count;
+	}
+
+	/**
+	 * U+FFFE is a Unicode non-character that no standard font has a glyph for.
+	 * Appending it to a string makes an advanced GC lay that string out with
+	 * GDI+ instead of letting GDI compute the glyph positions, which is the only
+	 * way to exercise the GDI+ tab stop handling.
+	 */
+	private static final String UNSUPPORTED_GLYPH = String.valueOf((char) 0xFFFE);
+
+	/**
+	 * Fonts covering both ends of the space-width/average-character-width ratio:
+	 * in proportional fonts a space is roughly half the average character width,
+	 * while in monospace fonts the two nearly coincide. A tab stop derived from
+	 * the space width therefore only misbehaves noticeably for the proportional
+	 * ones, so both kinds have to be covered.
+	 */
+	private static Stream<String> tabStopTestFonts() {
+		return Stream.of("Segoe UI", "Arial", "Times New Roman", "Courier New", "Consolas");
+	}
+
+	/**
+	 * The extents of the GDI and the GDI+ path are each rounded up to whole
+	 * pixels independently, so measurements derived from a difference of two
+	 * extents may legitimately be off by one pixel.
+	 */
+	private static final int ROUNDING_TOLERANCE = 1;
+
+	/**
+	 * Verifies that a tab is expanded to eight times the font's average
+	 * character width, which is the convention Win32's own {@code DrawText()}
+	 * and {@code TabbedTextOut()} follow: {@code TabbedTextOut()} is documented
+	 * to expand tabs to "eight times the average character width" by default,
+	 * and {@code DRAWTEXTPARAMS.iTabLength} is documented to be measured "in
+	 * units equal to the average character width".
+	 * <p>
+	 * This pins down the constant the GDI+ path is expected to reproduce.
+	 */
+	@ParameterizedTest
+	@MethodSource("tabStopTestFonts")
+	public void tabStopWidthEqualsEightAverageCharacterWidths(String fontName) {
+		Display display = Display.getDefault();
+		Image image = new Image(display, 400, 100);
+		Font font = new Font(display, fontName, 12, SWT.NORMAL);
+		GC gc = new GC(image);
+		try {
+			gc.setFont(font);
+			int averageCharacterWidth = gc.getFontMetrics().handle.tmAveCharWidth;
+			assertWithinRoundingTolerance(8 * averageCharacterWidth, measureTabStopWidth(gc),
+					"a tab must be expanded to eight average character widths for font " + fontName);
+		} finally {
+			gc.dispose();
+			font.dispose();
+			image.dispose();
+		}
+	}
+
+	/**
+	 * Verifies that tab stops are expanded to the same width no matter whether
+	 * text is rendered via plain GDI or via GDI+.
+	 * <p>
+	 * Both paths must use eight times the font's average character width
+	 * ({@code TEXTMETRIC.tmAveCharWidth}). The GDI+ path used to derive its tab
+	 * stop width from the width of a single space glyph instead. That is a
+	 * different metric, not merely a differently computed one: in proportional
+	 * fonts a space is roughly half the average character width, so tab stops
+	 * came out about half as wide whenever that path was taken.
+	 */
+	@ParameterizedTest
+	@MethodSource("tabStopTestFonts")
+	public void tabStopWidthIsConsistentBetweenGdiAndGdipRendering(String fontName) {
+		Display display = Display.getDefault();
+		Image image = new Image(display, 400, 100);
+		Font font = new Font(display, fontName, 12, SWT.NORMAL);
+		try {
+			int gdiTabStopWidth = withGC(image, font, false, GCWin32Tests::measureTabStopWidth);
+			int gdipTabStopWidth = withGC(image, font, true, GCWin32Tests::measureTabStopWidth);
+			assertWithinRoundingTolerance(gdiTabStopWidth, gdipTabStopWidth,
+					"GDI+ rendering must expand a tab to the same width as GDI rendering for font " + fontName);
+		} finally {
+			font.dispose();
+			image.dispose();
+		}
+	}
+
+	/**
+	 * Verifies that consecutive tabs advance to consecutive tab stops instead of
+	 * collapsing into a single one, i.e. that the tab stop width repeats. GDI
+	 * derives the repetition from its own {@code (position / width + 1) * width}
+	 * calculation, whereas GDI+ gets a single tab stop distance passed to
+	 * {@code StringFormat::SetTabStops} and repeats it internally; this asserts
+	 * that both arrive at the same layout.
+	 */
+	@ParameterizedTest
+	@MethodSource("tabStopTestFonts")
+	public void consecutiveTabsAdvanceByWholeTabStops(String fontName) {
+		Display display = Display.getDefault();
+		Image image = new Image(display, 800, 100);
+		Font font = new Font(display, fontName, 12, SWT.NORMAL);
+		try {
+			for (boolean advanced : new boolean[] { false, true }) {
+				int twoTabStops = withGC(image, font, advanced,
+						gc -> measureTabAdvance(gc, "\t\t") );
+				int oneTabStop = withGC(image, font, advanced, GCWin32Tests::measureTabStopWidth);
+				assertWithinRoundingTolerance(2 * oneTabStop, twoTabStops,
+						"two tabs must advance by two tab stops for font " + fontName
+						+ " (advanced=" + advanced + ")");
+			}
+		} finally {
+			font.dispose();
+			image.dispose();
+		}
+	}
+
+	/**
+	 * Verifies that a tab advances to the next tab stop rather than adding a
+	 * fixed amount of space, so that text following a tab starts at the same
+	 * column regardless of what precedes the tab within the same tab stop.
+	 */
+	@ParameterizedTest
+	@MethodSource("tabStopTestFonts")
+	public void textAfterTabStartsAtSameTabStopRegardlessOfPrecedingText(String fontName) {
+		Display display = Display.getDefault();
+		Image image = new Image(display, 400, 100);
+		Font font = new Font(display, fontName, 12, SWT.NORMAL);
+		try {
+			for (boolean advanced : new boolean[] { false, true }) {
+				int withoutPrefix = withGC(image, font, advanced, gc -> measureExtent(gc, "\tB"));
+				int withPrefix = withGC(image, font, advanced, gc -> measureExtent(gc, "A\tB"));
+				assertWithinRoundingTolerance(withoutPrefix, withPrefix,
+						"text following a tab must start at the same tab stop no matter what precedes the tab, "
+						+ "for font " + fontName + " (advanced=" + advanced + ")");
+			}
+		} finally {
+			font.dispose();
+			image.dispose();
+		}
+	}
+
+	/**
+	 * Returns the width of a single tab stop, measured as the advance a leading
+	 * tab adds. A leading tab always expands to exactly one tab stop, so unlike
+	 * a tab in the middle of a string this measurement is not diluted by the
+	 * slightly different glyph advances of the GDI and the GDI+ text layout
+	 * engine.
+	 */
+	private static int measureTabStopWidth(GC gc) {
+		return measureTabAdvance(gc, "\t");
+	}
+
+	/**
+	 * Returns the horizontal advance the given leading tabs add to the extent of
+	 * the text that follows them.
+	 */
+	private static int measureTabAdvance(GC gc, String leadingTabs) {
+		return measureExtent(gc, leadingTabs + "B") - measureExtent(gc, "B");
+	}
+
+	private static int measureExtent(GC gc, String text) {
+		// measure in pixels to keep the comparison free of the point/pixel
+		// conversion the public API applies at non-100% zoom levels
+		return gc.textExtentInPixels(text + UNSUPPORTED_GLYPH, SWT.DRAW_TAB).x;
+	}
+
+	private static void assertWithinRoundingTolerance(int expected, int actual, String message) {
+		assertTrue(Math.abs(actual - expected) <= ROUNDING_TOLERANCE,
+				message + " (expected " + expected + ", was " + actual + ")");
+	}
+
+	private static int withGC(Image target, Font font, boolean advanced, ToIntFunction<GC> measurement) {
+		GC gc = new GC(target);
+		try {
+			gc.setFont(font);
+			gc.setAdvanced(advanced);
+			return measurement.applyAsInt(gc);
+		} finally {
+			gc.dispose();
+		}
 	}
 
 	/**
