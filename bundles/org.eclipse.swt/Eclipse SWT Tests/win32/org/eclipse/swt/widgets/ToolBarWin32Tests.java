@@ -90,6 +90,129 @@ class ToolBarWin32Tests {
 		}
 	}
 
+	/**
+	 * A tool bar addresses its normal, hot and disabled image list with a single
+	 * index per item, and disposing an item frees its slot in those lists for
+	 * reuse. The remaining items must keep rendering their own icon.
+	 */
+	@Test
+	void testIconsRenderedCorrectlyAfterDisposingAnotherItem() {
+		Display display = new Display();
+		RGB[] colors = { new RGB(220, 40, 40), new RGB(40, 180, 40), new RGB(40, 40, 220) };
+		Image[] icons = createIcons(display, colors);
+		try {
+			Shell shell = new Shell(display);
+			shell.setLayout(new FillLayout());
+			ToolBar bar = new ToolBar(shell, SWT.FLAT);
+			ToolItem[] items = createItems(bar, icons);
+			shell.setSize(500, 90);
+			shell.open();
+
+			items[1].dispose();
+
+			Set<ToolItemWithExpectedColor> itemsToCheck = Set.of(
+					new ToolItemWithExpectedColor(items[0], colors[0]),
+					new ToolItemWithExpectedColor(items[2], colors[2]));
+			assertTrue(waitUntilIconsRenderOwnColor(display, () -> iconsRenderOwnColor(bar, itemsToCheck, colors),
+					TIMEOUT_MILLIS), "every tool item must render its own icon after another item is disposed");
+		} finally {
+			disposeAll(icons, display);
+		}
+	}
+
+	/**
+	 * Tool bars share the image lists for a given icon size, so the items of one
+	 * tool bar must not be affected by those of another tool bar using icons of the
+	 * same size.
+	 */
+	@Test
+	void testIconsRenderedCorrectlyWithSecondToolBarUsingSameIconSize() {
+		Display display = new Display();
+		RGB[] colors = { new RGB(220, 40, 40), new RGB(40, 180, 40), new RGB(40, 40, 220), new RGB(230, 200, 30) };
+		Image[] icons = createIcons(display, colors);
+		try {
+			Shell shell = new Shell(display);
+			shell.setLayout(new FillLayout(SWT.VERTICAL));
+			ToolBar firstBar = new ToolBar(shell, SWT.FLAT);
+			ToolItem[] firstItems = createItems(firstBar, icons[0], icons[1]);
+			ToolBar secondBar = new ToolBar(shell, SWT.FLAT);
+			ToolItem[] secondItems = createItems(secondBar, icons[2], icons[3]);
+			shell.setSize(500, 180);
+			shell.open();
+
+			Set<ToolItemWithExpectedColor> firstItemsToCheck = Set.of(
+					new ToolItemWithExpectedColor(firstItems[0], colors[0]),
+					new ToolItemWithExpectedColor(firstItems[1], colors[1]));
+			Set<ToolItemWithExpectedColor> secondItemsToCheck = Set.of(
+					new ToolItemWithExpectedColor(secondItems[0], colors[2]),
+					new ToolItemWithExpectedColor(secondItems[1], colors[3]));
+			assertTrue(
+					waitUntilIconsRenderOwnColor(display,
+							() -> iconsRenderOwnColor(firstBar, firstItemsToCheck, colors)
+									&& iconsRenderOwnColor(secondBar, secondItemsToCheck, colors),
+							TIMEOUT_MILLIS),
+					"every tool item must render its own icon although both tool bars share the image lists");
+		} finally {
+			disposeAll(icons, display);
+		}
+	}
+
+	/**
+	 * Changing the orientation moves every item's images into image lists created
+	 * for the new orientation, which must retain the assignment of items to their
+	 * icons.
+	 */
+	@Test
+	void testIconsRenderedCorrectlyAfterOrientationChange() {
+		Display display = new Display();
+		RGB[] colors = { new RGB(220, 40, 40), new RGB(40, 180, 40), new RGB(40, 40, 220) };
+		Image[] icons = createIcons(display, colors);
+		try {
+			Shell shell = new Shell(display);
+			shell.setLayout(new FillLayout());
+			ToolBar bar = new ToolBar(shell, SWT.FLAT);
+			ToolItem[] items = createItems(bar, icons);
+			shell.setSize(500, 90);
+			shell.open();
+
+			bar.setOrientation(SWT.RIGHT_TO_LEFT);
+			bar.setOrientation(SWT.LEFT_TO_RIGHT);
+
+			Set<ToolItemWithExpectedColor> itemsToCheck = new HashSet<>();
+			for (int i = 0; i < items.length; i++) {
+				itemsToCheck.add(new ToolItemWithExpectedColor(items[i], colors[i]));
+			}
+			assertTrue(waitUntilIconsRenderOwnColor(display, () -> iconsRenderOwnColor(bar, itemsToCheck, colors),
+					TIMEOUT_MILLIS), "every tool item must render its own icon after an orientation change");
+		} finally {
+			disposeAll(icons, display);
+		}
+	}
+
+	private static Image[] createIcons(Display display, RGB[] colors) {
+		Image[] icons = new Image[colors.length];
+		for (int i = 0; i < colors.length; i++) {
+			icons[i] = solidIcon(display, 16, colors[i]);
+		}
+		return icons;
+	}
+
+	private static ToolItem[] createItems(ToolBar bar, Image... icons) {
+		ToolItem[] items = new ToolItem[icons.length];
+		for (int i = 0; i < icons.length; i++) {
+			items[i] = new ToolItem(bar, SWT.PUSH);
+			items[i].setImage(icons[i]);
+		}
+		return items;
+	}
+
+	private static void disposeAll(Image[] icons, Display display) {
+		for (Image icon : icons) {
+			icon.dispose();
+		}
+		display.dispose();
+	}
+
 	private static boolean waitUntilIconsRenderOwnColor(Display display, BooleanSupplier condition,
 			long timeoutMillis) {
 		long deadline = System.currentTimeMillis() + timeoutMillis;
