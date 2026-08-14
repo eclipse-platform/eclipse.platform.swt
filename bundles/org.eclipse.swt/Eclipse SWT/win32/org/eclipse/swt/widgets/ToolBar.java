@@ -55,7 +55,8 @@ public class ToolBar extends Composite {
 	ToolItem [] items;
 	ToolItem [] tabItemList;
 	boolean ignoreResize, ignoreMouse;
-	private ImageList imageList, disabledImageList, hotImageList;
+	private ToolBarImageLists imageLists;
+
 	static final long ToolBarProc;
 	static final TCHAR ToolBarClass = new TCHAR (OS.TOOLBARCLASSNAME, true);
 	static {
@@ -150,21 +151,10 @@ public ToolBar (Composite parent, int style) {
  * Note that the icon size of an image list is defined by the first image added to it.
  */
 int addImage(Rectangle imageBounds, Image image, Image hotImage, Image disabledImage) {
-	int listStyle = style & SWT.RIGHT_TO_LEFT;
-	if (imageList == null) {
-		imageList = display.getImageListToolBar(listStyle, imageBounds.width, imageBounds.height, getAutoscalingZoom());
+	if (imageLists == null) {
+		imageLists = createImageLists(imageBounds.width, imageBounds.height);
 	}
-	if (hotImageList == null) {
-		hotImageList = display.getImageListToolBarHot(listStyle, imageBounds.width, imageBounds.height,
-				getAutoscalingZoom());
-	}
-	if (disabledImageList == null) {
-		disabledImageList = display.getImageListToolBarDisabled(listStyle, imageBounds.width, imageBounds.height,
-				getAutoscalingZoom());
-	}
-	int index = imageList.add(image);
-	hotImageList.add(hotImage);
-	disabledImageList.add(disabledImage);
+	int index = imageLists.add(image, hotImage, disabledImage);
 	refreshImageLists(true);
 	return index;
 }
@@ -225,8 +215,20 @@ public void layout (boolean changed) {
 	super.layout(changed);
 }
 
+private void clearAndReleaseImageLists() {
+	if (imageLists != null) {
+		OS.SendMessage(handle, OS.TB_SETIMAGELIST, 0, 0);
+		OS.SendMessage(handle, OS.TB_SETHOTIMAGELIST, 0, 0);
+		OS.SendMessage(handle, OS.TB_SETDISABLEDIMAGELIST, 0, 0);
+		imageLists.release();
+		imageLists = null;
+	}
+}
+
 void clearImage(int index) {
-	putImage(index, null, null, null);
+	if (imageLists != null) {
+		imageLists.clear(index);
+	}
 }
 
 void clearSizeCache(boolean changed) {
@@ -405,6 +407,10 @@ void createHandle () {
 	OS.SendMessage (handle, OS.TB_SETEXTENDEDSTYLE, 0, bits);
 }
 
+private ToolBarImageLists createImageLists(int width, int height) {
+	return ToolBarImageLists.create(display, style & SWT.RIGHT_TO_LEFT, width, height, getAutoscalingZoom());
+}
+
 void createItem (ToolItem item, int index) {
 	int count = (int)OS.SendMessage (handle, OS.TB_BUTTONCOUNT, 0, 0);
 	if (!(0 <= index && index <= count)) error (SWT.ERROR_INVALID_RANGE);
@@ -470,9 +476,9 @@ void destroyItem (ToolItem item) {
 	* an image and one is never assigned, this is not a problem.
 	*/
 	if ((info.fsStyle & OS.BTNS_SEP) == 0 && info.iImage != OS.I_IMAGENONE) {
-		if (imageList != null) imageList.put (info.iImage, null);
-		if (hotImageList != null) hotImageList.put (info.iImage, null);
-		if (disabledImageList != null) disabledImageList.put (info.iImage, null);
+		if (imageLists != null) {
+			imageLists.clear(info.iImage);
+		}
 	}
 	OS.SendMessage (handle, OS.TB_DELETEBUTTON, index, 0);
 	if (item.id == lastFocusId) lastFocusId = -1;
@@ -876,22 +882,16 @@ boolean mnemonicMatch (char ch) {
 }
 
 void putImage(int index, Image image, Image hotImage, Image disabledImage) {
-	if (imageList != null) {
-		imageList.put(index, image);
-	}
-	if (hotImageList != null) {
-		hotImageList.put(index, hotImage);
-	}
-	if (disabledImageList != null) {
-		disabledImageList.put(index, disabledImage);
+	if (imageLists != null) {
+		imageLists.put(index, image, hotImage, disabledImage);
 	}
 }
 
 private void refreshImageLists(boolean itemsChanged) {
 	int zoom = getAutoscalingZoom();
-	long imageListHandle = getImageListHandle(imageList, zoom);
-	long hotImageListHandle = getImageListHandle(hotImageList, zoom);
-	long disabledImageListHandle = getImageListHandle(disabledImageList, zoom);
+	long imageListHandle = imageLists.getImageListHandle(zoom);
+	long hotImageListHandle = imageLists.getHotImageListHandle(zoom);
+	long disabledImageListHandle = imageLists.getDisabledImageListHandle(zoom);
 	boolean imageListOutdated = isImageListOutdated(OS.TB_GETIMAGELIST, imageListHandle);
 	boolean hotImageListOutdated = isImageListOutdated(OS.TB_GETHOTIMAGELIST, hotImageListHandle);
 	boolean disabledImageListOutdated = isImageListOutdated(OS.TB_GETDISABLEDIMAGELIST, disabledImageListHandle);
@@ -917,10 +917,6 @@ private void refreshImageLists(boolean itemsChanged) {
 	}
 }
 
-private static long getImageListHandle(ImageList imageList, int zoom) {
-	return imageList != null ? imageList.getHandle(zoom) : 0;
-}
-
 private boolean isImageListOutdated(int getMessageCode, long expectedHandle) {
 	return OS.SendMessage(handle, getMessageCode, 0, 0) != expectedHandle;
 }
@@ -942,27 +938,6 @@ void releaseChildren (boolean destroy) {
 void releaseWidget () {
 	super.releaseWidget ();
 	clearAndReleaseImageLists();
-}
-
-private void clearAndReleaseImageLists() {
-	ImageList releasedImageList = imageList;
-	ImageList releasedHotImageList = hotImageList;
-	ImageList releasedDisabledImageList = disabledImageList;
-	imageList = hotImageList = disabledImageList = null;
-	refreshImageLists(false);
-	releaseImageLists(releasedImageList, releasedHotImageList, releasedDisabledImageList);
-}
-
-private void releaseImageLists(ImageList imageList, ImageList hotImageList, ImageList disabledImageList) {
-	if (imageList != null) {
-		display.releaseToolImageList (imageList);
-	}
-	if (hotImageList != null) {
-		display.releaseToolHotImageList (hotImageList);
-	}
-	if (disabledImageList != null) {
-		display.releaseToolDisabledImageList (disabledImageList);
-	}
 }
 
 @Override
@@ -1250,14 +1225,10 @@ String toolTipText (NMTTDISPINFO hdr) {
 @Override
 void updateOrientation () {
 	super.updateOrientation ();
-	if (imageList != null) {
-		Point sizeInPoints = imageList.getImageSize();
-		ImageList oldImageList = imageList;
-		ImageList oldHotImageList = hotImageList;
-		ImageList oldDisabledImageList = disabledImageList;
-		imageList = display.getImageListToolBar (style & SWT.RIGHT_TO_LEFT, sizeInPoints.x, sizeInPoints.y, getAutoscalingZoom());
-		hotImageList = display.getImageListToolBarHot (style & SWT.RIGHT_TO_LEFT, sizeInPoints.x, sizeInPoints.y, getAutoscalingZoom());
-		disabledImageList = display.getImageListToolBarDisabled (style & SWT.RIGHT_TO_LEFT, sizeInPoints.x, sizeInPoints.y, getAutoscalingZoom());
+	if (imageLists != null) {
+		Point size = imageLists.getImageSize();
+		ToolBarImageLists oldImageLists = imageLists;
+		imageLists = createImageLists(size.x, size.y);
 		TBBUTTONINFO info = new TBBUTTONINFO ();
 		info.cbSize = TBBUTTONINFO.sizeof;
 		info.dwMask = OS.TBIF_IMAGE;
@@ -1268,20 +1239,12 @@ void updateOrientation () {
 			if (item.image == null) continue;
 			OS.SendMessage (handle, OS.TB_GETBUTTONINFO, item.id, info);
 			if (info.iImage != OS.I_IMAGENONE) {
-				Image image = oldImageList.get(info.iImage);
-				Image hot = oldHotImageList.get(info.iImage);
-				Image disabled = oldDisabledImageList.get(info.iImage);
-				oldImageList.put(info.iImage, null);
-				oldHotImageList.put(info.iImage, null);
-				oldDisabledImageList.put(info.iImage, null);
-				info.iImage = imageList.add(image);
-				hotImageList.add(hot);
-				disabledImageList.add(disabled);
+				info.iImage = imageLists.moveFrom(oldImageLists, info.iImage);
 				OS.SendMessage (handle, OS.TB_SETBUTTONINFO, item.id, info);
 			}
 		}
 		refreshImageLists(false);
-		releaseImageLists(oldImageList, oldHotImageList, oldDisabledImageList);
+		oldImageLists.release();
 		OS.InvalidateRect (handle, null, true);
 	}
 }
