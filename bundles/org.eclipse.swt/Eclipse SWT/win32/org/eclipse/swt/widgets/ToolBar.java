@@ -482,19 +482,7 @@ void destroyItem (ToolItem item) {
 	item.id = -1;
 	int count = (int)OS.SendMessage (handle, OS.TB_BUTTONCOUNT, 0, 0);
 	if (count == 0) {
-		if (imageList != null) {
-			OS.SendMessage (handle, OS.TB_SETIMAGELIST, 0, 0);
-			display.releaseToolImageList (imageList);
-		}
-		if (hotImageList != null) {
-			OS.SendMessage (handle, OS.TB_SETHOTIMAGELIST, 0, 0);
-			display.releaseToolHotImageList (hotImageList);
-		}
-		if (disabledImageList != null) {
-			OS.SendMessage (handle, OS.TB_SETDISABLEDIMAGELIST, 0, 0);
-			display.releaseToolDisabledImageList (disabledImageList);
-		}
-		imageList = hotImageList = disabledImageList = null;
+		clearAndReleaseImageLists();
 		items = new ToolItem [4];
 	}
 	if ((style & SWT.VERTICAL) != 0) setRowCount (count - 1);
@@ -953,19 +941,28 @@ void releaseChildren (boolean destroy) {
 @Override
 void releaseWidget () {
 	super.releaseWidget ();
+	clearAndReleaseImageLists();
+}
+
+private void clearAndReleaseImageLists() {
+	ImageList releasedImageList = imageList;
+	ImageList releasedHotImageList = hotImageList;
+	ImageList releasedDisabledImageList = disabledImageList;
+	imageList = hotImageList = disabledImageList = null;
+	refreshImageLists(false);
+	releaseImageLists(releasedImageList, releasedHotImageList, releasedDisabledImageList);
+}
+
+private void releaseImageLists(ImageList imageList, ImageList hotImageList, ImageList disabledImageList) {
 	if (imageList != null) {
-		OS.SendMessage (handle, OS.TB_SETIMAGELIST, 0, 0);
 		display.releaseToolImageList (imageList);
 	}
 	if (hotImageList != null) {
-		OS.SendMessage (handle, OS.TB_SETHOTIMAGELIST, 0, 0);
 		display.releaseToolHotImageList (hotImageList);
 	}
 	if (disabledImageList != null) {
-		OS.SendMessage (handle, OS.TB_SETDISABLEDIMAGELIST, 0, 0);
 		display.releaseToolDisabledImageList (disabledImageList);
 	}
-	imageList = hotImageList = disabledImageList = null;
 }
 
 @Override
@@ -1255,9 +1252,12 @@ void updateOrientation () {
 	super.updateOrientation ();
 	if (imageList != null) {
 		Point sizeInPoints = imageList.getImageSize();
-		ImageList newImageList = display.getImageListToolBar (style & SWT.RIGHT_TO_LEFT, sizeInPoints.x, sizeInPoints.y, getAutoscalingZoom());
-		ImageList newHotImageList = display.getImageListToolBarHot (style & SWT.RIGHT_TO_LEFT, sizeInPoints.x, sizeInPoints.y, getAutoscalingZoom());
-		ImageList newDisabledImageList = display.getImageListToolBarDisabled (style & SWT.RIGHT_TO_LEFT, sizeInPoints.x, sizeInPoints.y, getAutoscalingZoom());
+		ImageList oldImageList = imageList;
+		ImageList oldHotImageList = hotImageList;
+		ImageList oldDisabledImageList = disabledImageList;
+		imageList = display.getImageListToolBar (style & SWT.RIGHT_TO_LEFT, sizeInPoints.x, sizeInPoints.y, getAutoscalingZoom());
+		hotImageList = display.getImageListToolBarHot (style & SWT.RIGHT_TO_LEFT, sizeInPoints.x, sizeInPoints.y, getAutoscalingZoom());
+		disabledImageList = display.getImageListToolBarDisabled (style & SWT.RIGHT_TO_LEFT, sizeInPoints.x, sizeInPoints.y, getAutoscalingZoom());
 		TBBUTTONINFO info = new TBBUTTONINFO ();
 		info.cbSize = TBBUTTONINFO.sizeof;
 		info.dwMask = OS.TBIF_IMAGE;
@@ -1268,25 +1268,20 @@ void updateOrientation () {
 			if (item.image == null) continue;
 			OS.SendMessage (handle, OS.TB_GETBUTTONINFO, item.id, info);
 			if (info.iImage != OS.I_IMAGENONE) {
-				Image image = imageList.get(info.iImage);
-				Image hot = hotImageList.get(info.iImage);
-				Image disabled = disabledImageList.get(info.iImage);
-				imageList.put(info.iImage, null);
-				hotImageList.put(info.iImage, null);
-				disabledImageList.put(info.iImage, null);
-				info.iImage = newImageList.add(image);
-				newHotImageList.add(hot);
-				newDisabledImageList.add(disabled);
+				Image image = oldImageList.get(info.iImage);
+				Image hot = oldHotImageList.get(info.iImage);
+				Image disabled = oldDisabledImageList.get(info.iImage);
+				oldImageList.put(info.iImage, null);
+				oldHotImageList.put(info.iImage, null);
+				oldDisabledImageList.put(info.iImage, null);
+				info.iImage = imageList.add(image);
+				hotImageList.add(hot);
+				disabledImageList.add(disabled);
 				OS.SendMessage (handle, OS.TB_SETBUTTONINFO, item.id, info);
 			}
 		}
-		display.releaseToolImageList (imageList);
-		display.releaseToolHotImageList (hotImageList);
-		display.releaseToolDisabledImageList (disabledImageList);
-		imageList = newImageList;
-		hotImageList = newHotImageList;
-		disabledImageList = newDisabledImageList;
 		refreshImageLists(false);
+		releaseImageLists(oldImageList, oldHotImageList, oldDisabledImageList);
 		OS.InvalidateRect (handle, null, true);
 	}
 }
