@@ -33,6 +33,11 @@ import org.eclipse.swt.widgets.*;
  * compared visually without restarting the process:
  * - "Use GDI+ (advanced) rendering" calls GC.setAdvanced() and re-renders
  *   every row, switching between plain GDI and GDI+.
+ * - "Use legacy GDI text rendering" toggles the
+ *   org.eclipse.swt.internal.win32.useGDITextRenderingWithGDIP system property,
+ *   restoring the previous behavior of having GDI compute the glyph positions.
+ *   It only matters while GDI+/advanced rendering is enabled and is disabled
+ *   otherwise.
  *
  * The rows labelled "unsupported glyph (U+FFFE)" append U+FFFE, a Unicode
  * non-character that no standard font has a glyph for. Strings containing such
@@ -53,18 +58,21 @@ import org.eclipse.swt.widgets.*;
  *   diacritics) should render recognisable, visible glyphs in every
  *   combination.
  * - "Underlined"/"Strikeout"/"Bold + underlined" render their decoration with
- *   plain GDI, but go blank once GDI+/advanced is enabled, unless U+FFFE
- *   forces GDI+'s own text layout. See
+ *   plain GDI and with GDI+, and go blank only with legacy GDI text rendering
+ *   enabled, unless U+FFFE forces GDI+'s own text layout. See
  *   https://github.com/eclipse-platform/eclipse.platform.swt/issues/3091 .
  *
  * On platforms other than Windows, GC.setAdvanced() does not select a
- * different text rendering engine, so all rows render identically regardless
- * of the checkbox state.
+ * different text rendering engine and the system property has no effect, so
+ * all rows render identically regardless of the checkbox state.
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  */
 public class Snippet395 {
+
+	static final String USE_GDI_TEXT_RENDERING_WITH_GDIP_PROPERTY =
+			"org.eclipse.swt.internal.win32.useGDITextRenderingWithGDIP";
 
 	/** One row of the comparison: a label, the text properties to apply, and how to draw it. */
 	record TextRow(String label, int fontStyle, boolean underline, boolean strikeout, String text, int drawFlags,
@@ -76,9 +84,11 @@ public class Snippet395 {
 
 	/**
 	 * Renders one fresh sample {@link Image} per row, either with plain GDI
-	 * ({@code advanced == false}) or with GDI+ ({@code advanced == true}).
-	 * Callers are responsible for disposing the previous set of images
-	 * returned by an earlier call.
+	 * ({@code advanced == false}) or with GDI+ ({@code advanced == true}), in
+	 * the latter case reflecting whatever the
+	 * {@link #USE_GDI_TEXT_RENDERING_WITH_GDIP_PROPERTY} system property is set
+	 * to right now. Callers are responsible for disposing the previous set of
+	 * images returned by an earlier call.
 	 */
 	private static Map<TextRow, Image> renderSamples(Display display, java.util.List<TextRow> rows,
 			Map<TextRow, Font> fonts, int sampleWidth, int sampleHeight, boolean advanced) {
@@ -149,6 +159,17 @@ public class Snippet395 {
 		advancedCheckbox.setSelection(true);
 		advancedCheckbox.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
+		Button legacyCheckbox = new Button(shell, SWT.CHECK | SWT.WRAP);
+		legacyCheckbox.setText("Use legacy GDI text rendering (org.eclipse.swt.internal.win32."
+				+ "useGDITextRenderingWithGDIP = true) - historical, pre-#3091-fix behavior."
+				+ "\nThe legacy fallback is only an escape hatch for the transition to GDI+ text rendering and is to"
+				+ " be removed in a future release, at which point this checkbox will have no effect anymore.");
+		legacyCheckbox.setSelection(Boolean.getBoolean(USE_GDI_TEXT_RENDERING_WITH_GDIP_PROPERTY));
+		legacyCheckbox.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		// The property only ever affects the advanced/GDI+ code path, so the
+		// checkbox is meaningless (and disabled) while advanced rendering is off.
+		legacyCheckbox.setEnabled(advancedCheckbox.getSelection());
+
 		ScrolledComposite scroller = new ScrolledComposite(shell, SWT.V_SCROLL | SWT.BORDER);
 		scroller.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		scroller.setExpandHorizontal(true);
@@ -181,20 +202,27 @@ public class Snippet395 {
 
 		Runnable refresh = () -> {
 			boolean advanced = advancedCheckbox.getSelection();
+			legacyCheckbox.setEnabled(advanced);
+			boolean legacyFallback = advanced && legacyCheckbox.getSelection();
+			System.setProperty(USE_GDI_TEXT_RENDERING_WITH_GDIP_PROPERTY, Boolean.toString(legacyFallback));
 
 			Map<TextRow, Image> old = samplesHolder.getAndSet(
 					renderSamples(display, rows, fonts, sampleWidth, sampleHeight, advanced));
 			old.values().forEach(Image::dispose);
 
-			shell.setText("Text rendering comparison (advanced = " + advanced + ")");
-			info.setText("GC.setAdvanced(" + advanced + ")"
-					+ "\nToggle the checkbox below to compare plain GDI vs. GDI+ text rendering."
+			shell.setText("Text rendering comparison (advanced = " + advanced
+					+ ", legacy GDI text rendering = " + legacyFallback + ")");
+			info.setText("GC.setAdvanced(" + advanced + "); system property "
+					+ USE_GDI_TEXT_RENDERING_WITH_GDIP_PROPERTY + " = " + legacyFallback
+					+ "\nToggle the checkboxes below to compare plain GDI vs. GDI+ text rendering, and - while"
+					+ " GDI+ is enabled - the default vs. the legacy text rendering path."
 					+ " See the source comment for what to expect per row.");
 			shell.layout(true, true);
 			canvas.redraw();
 		};
 
 		advancedCheckbox.addListener(SWT.Selection, e -> refresh.run());
+		legacyCheckbox.addListener(SWT.Selection, e -> refresh.run());
 		refresh.run();
 
 		canvas.addPaintListener(e -> {

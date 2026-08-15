@@ -70,6 +70,29 @@ class GCWin32Tests {
 	}
 
 	/**
+	 * Regression test for
+	 * https://github.com/eclipse-platform/eclipse.platform.swt/issues/3091: an
+	 * advanced GC using a font with an underline (or strikeout) decoration drew
+	 * no ink at all, i.e. the text was lost entirely rather than merely losing
+	 * its decoration.
+	 */
+	@Test
+	public void drawTextWithUnderlinedFontRendersVisibleInk() {
+		Display display = Display.getDefault();
+		FontData underlinedFontData = display.getSystemFont().getFontData()[0];
+		underlinedFontData.data.lfUnderline = 1;
+		Font font = new Font(display, underlinedFontData);
+		Image image = new Image(display, 100, 100);
+		try {
+			assertTrue(renderTextAndCountNonWhitePixels(image, font, "Hello World") > 0,
+					"an advanced GC must draw visible ink for text in an underlined font");
+		} finally {
+			image.dispose();
+			font.dispose();
+		}
+	}
+
+	/**
 	 * Verifies that underline and strikeout styles requested via a font's
 	 * {@link FontData} are preserved when GDI+ cannot find the font family and
 	 * constructs a substitute font from the {@code LOGFONT} fields instead.
@@ -123,35 +146,21 @@ class GCWin32Tests {
 	}
 
 	private static int renderTextAndCountNonWhitePixels(Image target, Font font, String text) {
-		GC testGC = new GC(target);
-		try {
-			testGC.setAdvanced(true); // required so font style flags (underline, strikeout) are applied during rendering
-			testGC.setBackground(new Color(255, 255, 255));
-			testGC.fillRectangle(target.getBounds());
-			testGC.setForeground(new Color(0, 0, 0));
-			testGC.setFont(font);
-			testGC.drawText(text, 5, 5);
-		} finally {
-			testGC.dispose();
-		}
-		ImageData imageData = target.getImageData(DPIUtil.getDeviceZoom());
-		int count = 0;
-		for (int y = 0; y < imageData.height; y++) {
-			for (int x = 0; x < imageData.width; x++) {
-				RGB rgb = imageData.palette.getRGB(imageData.getPixel(x, y));
-				if (rgb.red != 255 || rgb.green != 255 || rgb.blue != 255) {
-					count++;
-				}
-			}
-		}
-		return count;
+		// advanced mode is required so that font style flags (underline,
+		// strikeout) are applied during rendering
+		return renderTextAndCountNonWhitePixels(target, font, text, SWT.DRAW_DELIMITER | SWT.DRAW_TAB, SWT.NONE, true);
 	}
 
 	/**
 	 * U+FFFE is a Unicode non-character that no standard font has a glyph for.
 	 * Appending it to a string makes an advanced GC lay that string out with
-	 * GDI+ instead of letting GDI compute the glyph positions, which is the only
-	 * way to exercise the GDI+ tab stop handling.
+	 * GDI+ instead of letting GDI compute the glyph positions.
+	 * <p>
+	 * Since GDI+ text layout became the default for advanced GCs, this is no
+	 * longer strictly required. It is kept deliberately so that the tab stop
+	 * tests exercise the GDI+ layout path irrespective of the state of the
+	 * {@code useGDITextRenderingWithGDIP} system property, which exists to
+	 * switch back to GDI-computed glyph positions.
 	 */
 	private static final String UNSUPPORTED_GLYPH = String.valueOf((char) 0xFFFE);
 
@@ -388,5 +397,239 @@ class GCWin32Tests {
 		int[] heights = IntStream.rangeClosed(4, 20).toArray();
 		return Arrays.stream(zooms).boxed()
 				.flatMap(zoom -> Arrays.stream(heights).mapToObj(height -> Arguments.of(zoom, height)));
+	}
+
+	/**
+	 * Verifies that an advanced GC applies a font's underline and strikeout
+	 * decoration for every combination of weight and slant, not just for the
+	 * plain, non-bold, non-italic case. Decorated text must produce more ink
+	 * than the same text in the same weight and slant without decoration.
+	 */
+	@ParameterizedTest(name = "{3}")
+	@MethodSource("styleDecorationCombinations")
+	public void drawTextRendersFontDecorationForStyleCombinations(int styleBits, boolean underline,
+			boolean strikeout, String description) {
+		Display display = Display.getDefault();
+		FontData decoratedFontData = display.getSystemFont().getFontData()[0];
+		decoratedFontData.setStyle(styleBits);
+		if (underline) decoratedFontData.data.lfUnderline = 1;
+		if (strikeout) decoratedFontData.data.lfStrikeOut = 1;
+		Font decoratedFont = new Font(display, decoratedFontData);
+		FontData plainFontData = display.getSystemFont().getFontData()[0];
+		plainFontData.setStyle(styleBits);
+		Font plainFont = new Font(display, plainFontData);
+		Image image = new Image(display, 150, 100);
+		try {
+			int pixelsWithDecoration = renderTextAndCountNonWhitePixels(image, decoratedFont, "Hello");
+			int pixelsWithoutDecoration = renderTextAndCountNonWhitePixels(image, plainFont, "Hello");
+
+			assertTrue(pixelsWithDecoration > pixelsWithoutDecoration,
+					"Text decorated with " + description + " must produce more ink than the undecorated text "
+					+ "(decorated: " + pixelsWithDecoration + ", undecorated: " + pixelsWithoutDecoration + ")");
+		} finally {
+			decoratedFont.dispose();
+			plainFont.dispose();
+			image.dispose();
+		}
+	}
+
+	private static Stream<Arguments> styleDecorationCombinations() {
+		return Stream.of(
+			Arguments.of(SWT.NORMAL, true, false, "normal weight + underline"),
+			Arguments.of(SWT.BOLD, true, false, "bold + underline"),
+			Arguments.of(SWT.ITALIC, false, true, "italic + strikeout"),
+			Arguments.of(SWT.BOLD | SWT.ITALIC, true, true, "bold + italic + underline + strikeout")
+		);
+	}
+
+	/**
+	 * Verifies that an advanced GC underlines the mnemonic (accelerator)
+	 * character requested via {@link SWT#DRAW_MNEMONIC}, which must produce
+	 * visibly more ink than the same text without a mnemonic.
+	 */
+	@Test
+	public void drawTextMnemonicUnderlineAddsVisibleInk() {
+		Display display = Display.getDefault();
+		Font font = display.getSystemFont();
+		Image image = new Image(display, 150, 60);
+		try {
+			int pixelsWithMnemonic = renderTextAndCountNonWhitePixels(image, font, "&File",
+					SWT.DRAW_MNEMONIC | SWT.DRAW_TRANSPARENT, SWT.NONE, true);
+			int pixelsWithoutMnemonic = renderTextAndCountNonWhitePixels(image, font, "File",
+					SWT.DRAW_TRANSPARENT, SWT.NONE, true);
+
+			assertTrue(pixelsWithMnemonic > pixelsWithoutMnemonic,
+					"Mnemonic underline should add visible ink (with mnemonic: " + pixelsWithMnemonic
+					+ ", without: " + pixelsWithoutMnemonic + ")");
+		} finally {
+			image.dispose();
+		}
+	}
+
+	/**
+	 * Verifies that mirrored ({@link SWT#RIGHT_TO_LEFT}) text drawn by an
+	 * advanced GC covers about the same area as the same mirrored text drawn by
+	 * a plain, non-advanced GC, which serves as the reference.
+	 */
+	@Test
+	public void drawTextMirroredStyleRendersInkAreaComparableToGdi() {
+		Display display = Display.getDefault();
+		Font font = display.getSystemFont();
+		Image image = new Image(display, 200, 60);
+		try {
+			Rectangle gdipInkBounds = renderTextAndGetInkBounds(image, font, "Hello World",
+					SWT.DRAW_TRANSPARENT, SWT.RIGHT_TO_LEFT, true);
+			Rectangle gdiInkBounds = renderTextAndGetInkBounds(image, font, "Hello World",
+					SWT.DRAW_TRANSPARENT, SWT.RIGHT_TO_LEFT, false);
+
+			assertAll(
+				() -> assertNotNull(gdipInkBounds, "GDI+ mirrored rendering must draw visible text"),
+				() -> assertNotNull(gdiInkBounds, "GDI mirrored rendering must draw visible text")
+			);
+			// Widths may legitimately differ a bit (different layout engines), but a
+			// gross regression (e.g. text collapsed to a sliver, or drawn far wider
+			// because mirroring was applied twice) would fall well outside this range.
+			assertWithinTolerance("mirrored text ink width", gdipInkBounds.width, gdiInkBounds.width, 0.4);
+		} finally {
+			image.dispose();
+		}
+	}
+
+	private static Stream<Arguments> complexScriptsAndCharsets() {
+		return Stream.of(
+			Arguments.of("Arabic", "\u0645\u0631\u062d\u0628\u0627"),
+			Arguments.of("Hebrew", "\u05e9\u05dc\u05d5\u05dd"),
+			Arguments.of("CJK (Chinese)", "\u4f60\u597d\u4e16\u754c"),
+			Arguments.of("Cyrillic", "\u041f\u0440\u0438\u0432\u0435\u0442"),
+			Arguments.of("Greek", "\u0393\u03b5\u03b9\u03ac \u03c3\u03bf\u03c5"),
+			Arguments.of("Combining diacritics", "e\u0301clat")
+		);
+	}
+
+	/**
+	 * Verifies that an advanced GC renders visible ink for text in a variety of
+	 * scripts and charsets. This is a smoke test only: exact glyph shaping and
+	 * positioning is left to the text layout engine, but text must never be
+	 * silently dropped.
+	 */
+	@ParameterizedTest(name = "{0}")
+	@MethodSource("complexScriptsAndCharsets")
+	public void drawTextComplexScriptsAndCharsetsRenderVisibleInk(String description, String text) {
+		Display display = Display.getDefault();
+		Font font = display.getSystemFont();
+		Image image = new Image(display, 200, 60);
+		try {
+			int renderedPixels = renderTextAndCountNonWhitePixels(image, font, text);
+
+			assertTrue(renderedPixels > 0, "GDI+ rendering must draw visible ink for " + description);
+		} finally {
+			image.dispose();
+		}
+	}
+
+	/**
+	 * Verifies that a kerning-sensitive string drawn by an advanced GC comes
+	 * out about as wide as the same string drawn by a plain, non-advanced GC,
+	 * which serves as the reference. Minor differences in advances and kerning
+	 * are expected, whereas glyphs collapsing onto each other or a roughly
+	 * doubled width would indicate a real layout defect.
+	 */
+	@Test
+	public void drawTextKerningSensitiveTextWidthIsComparableToGdi() {
+		Display display = Display.getDefault();
+		Font font = display.getSystemFont();
+		Image image = new Image(display, 300, 60);
+		String kerningSensitiveText = "AVATAR WAVE To Yes";
+		try {
+			Rectangle gdipInkBounds = renderTextAndGetInkBounds(image, font, kerningSensitiveText,
+					SWT.DRAW_TRANSPARENT, SWT.NONE, true);
+			Rectangle gdiInkBounds = renderTextAndGetInkBounds(image, font, kerningSensitiveText,
+					SWT.DRAW_TRANSPARENT, SWT.NONE, false);
+
+			assertAll(
+				() -> assertNotNull(gdipInkBounds, "GDI+ rendering must draw visible text"),
+				() -> assertNotNull(gdiInkBounds, "GDI rendering must draw visible text")
+			);
+			assertWithinTolerance("kerning-sensitive text ink width", gdipInkBounds.width, gdiInkBounds.width, 0.3);
+		} finally {
+			image.dispose();
+		}
+	}
+
+	/**
+	 * Asserts that {@code actual} is within {@code (1 +/- tolerance)} times
+	 * {@code expected}, i.e. flags gross deviations (roughly halved/doubled or
+	 * worse) while tolerating the minor differences that are expected between
+	 * the text layout of an advanced and a non-advanced GC.
+	 */
+	private static void assertWithinTolerance(String description, int actual, int expected, double tolerance) {
+		int lowerBound = (int) Math.floor(expected * (1 - tolerance));
+		int upperBound = (int) Math.ceil(expected * (1 + tolerance));
+		assertTrue(actual >= lowerBound && actual <= upperBound,
+				"Expected " + description + " (" + actual + ") to be within " + (int) (tolerance * 100)
+				+ "% of the reference value (" + expected + "), i.e. in [" + lowerBound + ", " + upperBound + "]");
+	}
+
+	private static int renderTextAndCountNonWhitePixels(Image target, Font font, String text, int drawFlags,
+			int gcStyle, boolean advanced) {
+		renderText(target, font, text, drawFlags, gcStyle, advanced);
+		return countNonWhitePixels(target);
+	}
+
+	private static Rectangle renderTextAndGetInkBounds(Image target, Font font, String text, int drawFlags,
+			int gcStyle, boolean advanced) {
+		renderText(target, font, text, drawFlags, gcStyle, advanced);
+		return inkBounds(target);
+	}
+
+	private static void renderText(Image target, Font font, String text, int drawFlags, int gcStyle,
+			boolean advanced) {
+		GC testGC = new GC(target, gcStyle);
+		try {
+			testGC.setAdvanced(advanced);
+			testGC.setBackground(new Color(255, 255, 255));
+			testGC.fillRectangle(target.getBounds());
+			testGC.setForeground(new Color(0, 0, 0));
+			testGC.setFont(font);
+			testGC.drawText(text, 5, 5, drawFlags);
+		} finally {
+			testGC.dispose();
+		}
+	}
+
+	private static int countNonWhitePixels(Image target) {
+		ImageData imageData = target.getImageData(DPIUtil.getDeviceZoom());
+		int count = 0;
+		for (int y = 0; y < imageData.height; y++) {
+			for (int x = 0; x < imageData.width; x++) {
+				RGB rgb = imageData.palette.getRGB(imageData.getPixel(x, y));
+				if (rgb.red != 255 || rgb.green != 255 || rgb.blue != 255) {
+					count++;
+				}
+			}
+		}
+		return count;
+	}
+
+	/**
+	 * Returns the bounding box of all non-white pixels in the given image, or
+	 * {@code null} if the image is entirely white (i.e. nothing was drawn).
+	 */
+	private static Rectangle inkBounds(Image target) {
+		ImageData imageData = target.getImageData(DPIUtil.getDeviceZoom());
+		int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE, maxX = -1, maxY = -1;
+		for (int y = 0; y < imageData.height; y++) {
+			for (int x = 0; x < imageData.width; x++) {
+				RGB rgb = imageData.palette.getRGB(imageData.getPixel(x, y));
+				if (rgb.red != 255 || rgb.green != 255 || rgb.blue != 255) {
+					minX = Math.min(minX, x);
+					minY = Math.min(minY, y);
+					maxX = Math.max(maxX, x);
+					maxY = Math.max(maxY, y);
+				}
+			}
+		}
+		if (maxX < 0) return null;
+		return new Rectangle(minX, minY, maxX - minX + 1, maxY - minY + 1);
 	}
 }
