@@ -439,12 +439,11 @@ JNIEXPORT jlong JNICALL COM_NATIVE(CreateSwtWebView2Host)
 }
 
 JNIEXPORT jlong JNICALL COM_NATIVE(CreateSwtWebView2Options)
-	(JNIEnv *env, jclass that, jobject host)
+	(JNIEnv *env, jclass that)
 {
 	/* Suppress warnings about unreferenced parameters */
 	(void)env;
 	(void)that;
-	(void)host;
 
 	return (jlong)SwtWebView2Options::Create();
 }
