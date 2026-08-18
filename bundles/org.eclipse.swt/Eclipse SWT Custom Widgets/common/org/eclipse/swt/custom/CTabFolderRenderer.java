@@ -741,18 +741,34 @@ public class CTabFolderRenderer {
 		int diameter = 8;
 		int x = closeRect.x + (closeRect.width - diameter) / 2;
 		int y = closeRect.y + (closeRect.height - diameter) / 2;
+		/*
+		 * Alpha and anti-aliasing switch the GC to GDI+ on Windows. All tabs share one
+		 * GC, so tabs painted afterwards would use different text metrics and lose
+		 * their clipping. Leaving the advanced mode resets the clipping, hence the save
+		 * and restore.
+		 */
+		Region clipping = null;
+		if (!gc.getAdvanced()) {
+			clipping = new Region();
+			gc.getClipping(clipping);
+		}
 		Color originalBackground = gc.getBackground();
 		int originalAlpha = gc.getAlpha();
+		int originalAntialias = gc.getAntialias();
 		gc.setBackground(gc.getForeground());
 		if (!selected) {
 			gc.setAlpha(140);
 		}
-		int originalAntialias = gc.getAntialias();
 		gc.setAntialias(SWT.ON);
 		gc.fillOval(x, y, diameter, diameter);
 		gc.setAntialias(originalAntialias);
 		gc.setAlpha(originalAlpha);
 		gc.setBackground(originalBackground);
+		if (clipping != null) {
+			gc.setAdvanced(false);
+			gc.setClipping(clipping);
+			clipping.dispose();
+		}
 	}
 
 	private void drawCloseLines(GC gc, int x, int y, int lineLength, boolean hot) {

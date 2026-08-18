@@ -44,6 +44,7 @@ import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -1096,6 +1097,61 @@ public void test_dirtyIndicator_closesWhenCloseEnabled() {
 		assertEquals(2, ctabFolder.getItemCount(), "Item count should decrease by 1");
 	} catch (NoSuchFieldException | IllegalAccessException e) {
 		fail("Failed to access closeRect via reflection: " + e.getMessage());
+	}
+}
+
+/**
+ * All tabs are painted with the same GC, so the dirty indicator must not leave it in
+ * advanced graphics mode.
+ */
+@Test
+public void test_dirtyIndicator_doesNotChangeAdvancedGraphicsMode() {
+	makeCleanEnvironment(SWT.CLOSE);
+	shell.setLayout(new FillLayout());
+
+	for (int i = 0; i < 2; i++) {
+		CTabItem item = new CTabItem(ctabFolder, SWT.NONE);
+		item.setText("Tab " + i);
+	}
+	ctabFolder.setDirtyIndicatorStyle(true);
+	// the dirty item is painted before the selected one, which is painted last
+	ctabFolder.getItem(0).setShowDirty(true);
+	ctabFolder.setSelection(1);
+	shell.setSize(800, 400);
+	SwtTestUtil.openShell(shell);
+	processEvents();
+
+	assertTrue(getCloseRect(ctabFolder.getItem(0)).width > 0, "dirty indicator is not laid out");
+
+	// paint into an image so that the test does not depend on the display sending paint events
+	Rectangle bounds = ctabFolder.getBounds();
+	Image image = new Image(shell.getDisplay(), bounds.width, bounds.height);
+	GC gc = new GC(image);
+	try {
+		boolean advancedBefore = gc.getAdvanced();
+
+		Event paint = new Event();
+		paint.gc = gc;
+		paint.width = bounds.width;
+		paint.height = bounds.height;
+		ctabFolder.notifyListeners(SWT.Paint, paint);
+
+		assertEquals(advancedBefore, gc.getAdvanced(),
+				"Painting the dirty indicator must not change the advanced graphics mode of the GC");
+	} finally {
+		gc.dispose();
+		image.dispose();
+	}
+}
+
+private static Rectangle getCloseRect(CTabItem item) {
+	try {
+		Field closeRect = CTabItem.class.getDeclaredField("closeRect");
+		closeRect.setAccessible(true);
+		return (Rectangle) closeRect.get(item);
+	} catch (NoSuchFieldException | IllegalAccessException e) {
+		fail("Failed to access closeRect via reflection: " + e.getMessage());
+		return null;
 	}
 }
 
