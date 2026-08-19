@@ -756,9 +756,7 @@ public class CTabFolderRenderer {
 		int originalAlpha = gc.getAlpha();
 		int originalAntialias = gc.getAntialias();
 		gc.setBackground(gc.getForeground());
-		if (!selected) {
-			gc.setAlpha(140);
-		}
+		gc.setAlpha(selected ? 190 : 140);
 		gc.setAntialias(SWT.ON);
 		gc.fillOval(x, y, diameter, diameter);
 		gc.setAntialias(originalAntialias);
