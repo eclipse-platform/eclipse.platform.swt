@@ -1,9 +1,9 @@
 package org.eclipse.swt.widgets;
 
 import static org.eclipse.swt.internal.DPIUtil.setMonitorSpecificScaling;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 import org.junit.jupiter.api.*;
@@ -102,6 +102,25 @@ class DisplayWin32Test {
 		display.setRescalingAtRuntime(false);
 		assertFalse(display.isRescalingAtRuntime());
 		assertExpectedDpiAwareness(OS.DPI_AWARENESS_CONTEXT_SYSTEM_AWARE);
+	}
+
+	// https://github.com/eclipse-platform/eclipse.platform.swt/issues/3530
+	@Test
+	public void getBoundsAndGetClientAreaUseZoomOfPrimaryMonitor_MatchingGCZoom() throws Exception {
+		Display display = Display.getDefault();
+
+		DPIUtil.setDeviceZoom(200); // must not be considered
+		Rectangle bounds1 = display.getBounds();
+		Rectangle clientArea1 = display.getClientArea();
+		DPIUtil.setDeviceZoom(100); // must not be considered
+		Rectangle bounds2 = display.getBounds();
+		Rectangle clientArea2 = display.getClientArea();
+
+		assertEquals(bounds2.width, bounds1.width);
+		assertEquals(clientArea2.width, clientArea1.width);
+
+		GC gc = new GC(display);
+		assertEquals(display.getPrimaryMonitor().getZoom(), gc.getGCData().nativeZoom);
 	}
 
 }
