@@ -1054,4 +1054,24 @@ public void test_setLocationII() {
 	}
 	super.test_setLocationII();
 }
+
+@Test
+public void test_degenerateSizeDoesNotExpandShell() {
+	// A bordered popup asked for a height of 0 used to be allocated -1, which GTK rejects,
+	// so it fell back to its natural size with its content never laid out. See issue 3539.
+	// GTK4 backs these shells with a GtkPopover, which never went through that box maths
+	// and enforces a minimum height of its own.
+	assumeTrue(SwtTestUtil.isGTK && !SwtTestUtil.isGTK4());
+	Shell popup = new Shell(shell, SWT.TOOL | SWT.ON_TOP);
+	popup.setLayout(new FillLayout());
+	Button child = new Button(popup, SWT.PUSH);
+	child.setText("some content that is clearly taller than two pixels");
+	popup.setSize(228, 0);
+	popup.setVisible(true);
+	SwtTestUtil.processEvents();
+	Rectangle clientArea = popup.getClientArea();
+	popup.dispose();
+	assertTrue(clientArea.height >= 0, "negative client area: " + clientArea);
+	assertTrue(clientArea.height <= 2, "shell expanded to its natural size: " + clientArea);
+}
 }
