@@ -2361,8 +2361,10 @@ void resizeBounds (int width, int height, boolean notify) {
 			GDK.gdk_window_resize (enableWindow, width, height);
 		}
 	}
-	int boxWidth = width - 2*border;
-	int boxHeight = height - 2*border;
+	// GTK rejects negative allocations; a shell smaller than its own border must not
+	// leak a negative size into gtk_widget_size_allocate().
+	int boxWidth = Math.max (0, width - 2*border);
+	int boxHeight = Math.max (0, height - 2*border);
 	if ((style & SWT.RESIZE) == 0) {
 		GTK.gtk_widget_set_size_request (vboxHandle, boxWidth, boxHeight);
 	}
