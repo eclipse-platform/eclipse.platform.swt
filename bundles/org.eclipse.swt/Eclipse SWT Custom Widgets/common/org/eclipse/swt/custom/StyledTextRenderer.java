@@ -619,11 +619,11 @@ private Point[] intersectingRelativeNonEmptySelections(int fromOffset, int toOff
 	int lineLength = toOffset - fromOffset;
 	List<Point> res = new ArrayList<>();
 	for (int i = 0; i < selectionRanges.length; i += 2) {
-		// ranges are assumed to be sorted by start offset, then (positive)length or higher end offset
-		Point relativeSelection = new Point(selectionRanges[i] - fromOffset, selectionRanges[i] + selectionRanges[i + 1] - fromOffset);
-		if (relativeSelection.x != relativeSelection.y &&
-			relativeSelection.x <= lineLength  && relativeSelection.y >= 0) {
-			res.add(relativeSelection);
+		// ranges are assumed to be sorted by start offset, then (positive) length or higher end offset
+		final int x = selectionRanges[i] - fromOffset;
+		final int y = selectionRanges[i] + selectionRanges[i + 1] - fromOffset;
+		if (x != y && x <= lineLength  && y >= 0) {
+			res.add(new Point(x, y));
 		}
 	}
 	return res.toArray(new Point[res.size()]);
