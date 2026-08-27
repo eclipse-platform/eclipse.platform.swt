@@ -471,6 +471,7 @@ private LineDrawInfo makeLineDrawInfo(int lineIndex) {
 }
 
 int drawLines(int startLine, int endLine, int begX, int begY, int endY, GC gc, Color widgetBackground, Color widgetForeground) {
+	final int[] selectionRanges = styledText.getBlockSelection() ? null : styledText.getSelectionRanges();
 	// When fixed line metrics is in effect, tall unicode characters
 	// will not always fit line's height. In this case, they will
 	// draw out of line's bounds. To prevent them from being clipped
@@ -503,7 +504,7 @@ int drawLines(int startLine, int endLine, int begX, int begY, int endY, GC gc, C
 		// Draw foreground
 		y = begY;
 		for (LineDrawInfo lineInfo : drawInfos) {
-			drawLineForeground(lineInfo, begX, y, gc, widgetForeground);
+			drawLineForeground(lineInfo, begX, y, gc, widgetForeground, selectionRanges);
 			y += lineInfo.height;
 		}
 
@@ -519,7 +520,7 @@ int drawLines(int startLine, int endLine, int begX, int begY, int endY, GC gc, C
 	for (int iLine = startLine; y < endY && iLine < endLine; iLine++) {
 		LineDrawInfo lineInfo = makeLineDrawInfo(iLine);
 		drawLineBackground(lineInfo, y, gc, widgetBackground);
-		drawLineForeground(lineInfo, begX, y, gc, widgetForeground);
+		drawLineForeground(lineInfo, begX, y, gc, widgetForeground, selectionRanges);
 		disposeTextLayout(lineInfo.layout);
 		y += lineInfo.height;
 	}
@@ -546,26 +547,31 @@ private void drawLineBackground(LineDrawInfo lineInfo, int paintY, GC gc, Color 
 	}
 }
 
-private void drawLineForeground(LineDrawInfo lineInfo, int paintX, int paintY, GC gc, Color widgetForeground) {
+private void drawLineForeground(LineDrawInfo lineInfo, int paintX, int paintY, GC gc, Color widgetForeground, int[] selectionRanges) {
 	int lineLength = lineInfo.text.length();
 	gc.setForeground(widgetForeground);
-	Point[] selection = intersectingRelativeNonEmptySelections(lineInfo.offset, lineInfo.offset + lineLength);
-	if (styledText.getBlockSelection() || selection.length == 0) {
-		lineInfo.layout.draw(gc, paintX, paintY);
-	} else {
-		Color selectionFg = styledText.getSelectionForeground();
-		Color selectionBg = styledText.getSelectionBackground();
-		final int baseFlags = (styledText.getStyle() & SWT.FULL_SELECTION) != 0 ? SWT.FULL_SELECTION : SWT.DELIMITER_SELECTION;
-		for (Point relativeSelection : selection) {
-			int start = Math.max(0, relativeSelection.x);
-			int end = Math.min(lineLength, relativeSelection.y);
-			int flags = baseFlags;
-			if (relativeSelection.x <= lineLength && lineLength < relativeSelection.y ) {
-				flags |= SWT.LAST_LINE_SELECTION;
+	// selectionRanges are null for block selection
+	if (selectionRanges != null) {
+		Point[] selection = intersectingRelativeNonEmptySelections(lineInfo.offset, lineInfo.offset + lineLength, selectionRanges);
+		if (selection.length == 0) {
+			lineInfo.layout.draw(gc, paintX, paintY);
+		} else {
+			Color selectionFg = styledText.getSelectionForeground();
+			Color selectionBg = styledText.getSelectionBackground();
+			final int baseFlags = (styledText.getStyle() & SWT.FULL_SELECTION) != 0 ? SWT.FULL_SELECTION : SWT.DELIMITER_SELECTION;
+			for (Point relativeSelection : selection) {
+				int start = Math.max(0, relativeSelection.x);
+				int end = Math.min(lineLength, relativeSelection.y);
+				int flags = baseFlags;
+				if (relativeSelection.x <= lineLength && lineLength < relativeSelection.y ) {
+					flags |= SWT.LAST_LINE_SELECTION;
+				}
+				// TODO calling draw multiple times here prints line multiple times, overriding some colors
+				lineInfo.layout.draw(gc, paintX, paintY, start, end - 1, selectionFg, selectionBg, flags);
 			}
-			// TODO calling draw multiple times here prints line multiple times, overriding some colors
-			lineInfo.layout.draw(gc, paintX, paintY, start, end - 1, selectionFg, selectionBg, flags);
 		}
+	} else {
+		lineInfo.layout.draw(gc, paintX, paintY);
 	}
 
 	// draw objects
@@ -614,8 +620,7 @@ private void drawLineForeground(LineDrawInfo lineInfo, int paintX, int paintY, G
 	}
 }
 
-private Point[] intersectingRelativeNonEmptySelections(int fromOffset, int toOffset) {
-	int[] selectionRanges = styledText.getSelectionRanges();
+private Point[] intersectingRelativeNonEmptySelections(int fromOffset, int toOffset, int[] selectionRanges) {
 	int lineLength = toOffset - fromOffset;
 	List<Point> res = new ArrayList<>();
 	for (int i = 0; i < selectionRanges.length; i += 2) {
