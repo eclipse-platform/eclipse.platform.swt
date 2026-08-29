@@ -39,13 +39,17 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabFolder2Listener;
 import org.eclipse.swt.custom.CTabFolderEvent;
+import org.eclipse.swt.custom.CTabFolderRenderer;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.DPIUtil;
 import org.eclipse.swt.layout.FillLayout;
@@ -1164,6 +1168,141 @@ public void test_moveItem_errorCases() {
 			"negative to index must be rejected");
 	assertThrows(IllegalArgumentException.class, () -> ctabFolder.moveItem(0, 3),
 			"out-of-range to index must be rejected");
+}
+
+/* Paints tab row and body in two colors, neither of them the folder background. */
+private static final RGB TAB_ROW_COLOR = new RGB(255, 0, 0);
+private static final RGB BODY_COLOR = new RGB(0, 255, 0);
+private static final RGB FOLDER_BACKGROUND = new RGB(0, 0, 255);
+
+private static final class TwoToneRenderer extends CTabFolderRenderer {
+	TwoToneRenderer(CTabFolder parent) {
+		super(parent);
+	}
+
+	@Override
+	protected void draw(int part, int state, Rectangle bounds, GC gc) {
+		if (part == PART_BACKGROUND) {
+			int split = bounds.y + parent.getTabHeight();
+			gc.setBackground(new Color(TAB_ROW_COLOR));
+			gc.fillRectangle(bounds.x, bounds.y, bounds.width, split - bounds.y);
+			gc.setBackground(new Color(BODY_COLOR));
+			gc.fillRectangle(bounds.x, split, bounds.width, bounds.y + bounds.height - split);
+			return;
+		}
+		super.draw(part, state, bounds, gc);
+	}
+}
+
+/** A custom renderer that leaves PART_BACKGROUND to the built-in implementation. */
+private static final class PlainSubclassRenderer extends CTabFolderRenderer {
+	PlainSubclassRenderer(CTabFolder parent) {
+		super(parent);
+	}
+}
+
+/** The color a control shows: its background image if it has one, else its background. */
+private static RGB effectiveBackground(Control control) {
+	Image image = control.getBackgroundImage();
+	if (image != null) {
+		ImageData data = image.getImageData();
+		return data.palette.getRGB(data.getPixel(0, 0));
+	}
+	return control.getBackground().getRGB();
+}
+
+private Composite createFolderWithTopRightToolBar(int shellWidth, boolean withGradient) {
+	return createFolderWithTopRightToolBar(shellWidth, withGradient, true);
+}
+
+private Composite createFolderWithTopRightToolBar(int shellWidth, boolean withGradient, boolean twoTone) {
+	makeCleanEnvironment();
+	shell.setLayout(new FillLayout());
+	ctabFolder.setRenderer(twoTone ? new TwoToneRenderer(ctabFolder) : new PlainSubclassRenderer(ctabFolder));
+	ctabFolder.setBackground(new Color(FOLDER_BACKGROUND));
+	if (withGradient) {
+		ctabFolder.setBackground(new Color[] { new Color(FOLDER_BACKGROUND), new Color(FOLDER_BACKGROUND) },
+				new int[] { 100 });
+	}
+	for (int i = 0; i < 3; i++) {
+		CTabItem item = new CTabItem(ctabFolder, SWT.NONE);
+		item.setText("A rather long tab title " + i);
+		item.setControl(new Composite(ctabFolder, SWT.NONE));
+	}
+	ctabFolder.setSelection(0);
+
+	// the IDE wraps the tool bar in a Composite, which is what carries the background
+	Composite topRight = new Composite(ctabFolder, SWT.NONE);
+	topRight.setLayout(new FillLayout());
+	ToolBar toolBar = new ToolBar(topRight, SWT.FLAT);
+	for (int i = 0; i < 6; i++) {
+		new ToolItem(toolBar, SWT.PUSH).setText("Item " + i);
+	}
+	ctabFolder.setTopRight(topRight, SWT.RIGHT | SWT.WRAP);
+
+	shell.setSize(shellWidth, 300);
+	shell.open();
+	SwtTestUtil.processEvents();
+	ctabFolder.layout(true, true);
+	SwtTestUtil.processEvents();
+	return topRight;
+}
+
+@Test
+public void test_topRightControl_wrappedBelowTabRow_matchesBody() {
+	Composite toolBar = createFolderWithTopRightToolBar(240, false);
+	assertTrue(toolBar.getBounds().y > ctabFolder.getTabHeight(),
+			"tool bar did not wrap below the tab row, bounds " + toolBar.getBounds());
+	assertEquals(BODY_COLOR, effectiveBackground(toolBar),
+			"a wrapped control sits on the body and has to match what the renderer paints there");
+}
+
+@Test
+public void test_topRightControl_inTabRow_matchesTabRow() {
+	Composite toolBar = createFolderWithTopRightToolBar(900, false);
+	assertFalse(toolBar.getBounds().y > ctabFolder.getTabHeight(),
+			"tool bar unexpectedly wrapped, bounds " + toolBar.getBounds());
+	assertEquals(TAB_ROW_COLOR, effectiveBackground(toolBar),
+			"a control in the tab row has to match what the renderer paints there");
+}
+
+@Test
+public void test_topRightControl_rendererKeepingDefaultBackground_staysOnTheFolderBackground() {
+	Composite toolBar = createFolderWithTopRightToolBar(240, false, false);
+	assertEquals(FOLDER_BACKGROUND, effectiveBackground(toolBar),
+			"a renderer that does not paint PART_BACKGROUND has to leave the folder background");
+}
+
+@Test
+public void test_topRightControl_defaultRendererWithGradient_keepsFlatBackground() {
+	makeCleanEnvironment();
+	shell.setLayout(new FillLayout());
+	ctabFolder.setBackground(new Color(FOLDER_BACKGROUND));
+	ctabFolder.setBackground(new Color[] { new Color(TAB_ROW_COLOR), new Color(BODY_COLOR) },
+			new int[] { 100 });
+	for (int i = 0; i < 3; i++) {
+		CTabItem item = new CTabItem(ctabFolder, SWT.NONE);
+		item.setText("A rather long tab title " + i);
+		item.setControl(new Composite(ctabFolder, SWT.NONE));
+	}
+	ctabFolder.setSelection(0);
+	Composite topRight = new Composite(ctabFolder, SWT.NONE);
+	topRight.setLayout(new FillLayout());
+	ToolBar toolBar = new ToolBar(topRight, SWT.FLAT);
+	for (int i = 0; i < 6; i++) {
+		new ToolItem(toolBar, SWT.PUSH).setText("Item " + i);
+	}
+	ctabFolder.setTopRight(topRight, SWT.RIGHT | SWT.WRAP);
+	shell.setSize(240, 300);
+	shell.open();
+	SwtTestUtil.processEvents();
+	ctabFolder.layout(true, true);
+	SwtTestUtil.processEvents();
+
+	assertTrue(topRight.getBounds().y > ctabFolder.getTabHeight(),
+			"tool bar did not wrap below the tab row, bounds " + topRight.getBounds());
+	assertNull(topRight.getBackgroundImage(),
+			"the built-in renderer paints the body flat, a wrapped control needs no image");
 }
 
 /** Layout with a preferred size the test can change at will. */
