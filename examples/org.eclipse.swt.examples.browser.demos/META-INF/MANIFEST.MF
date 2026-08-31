@@ -9,7 +9,8 @@ Bundle-Localization: plugin
 Export-Package: org.eclipse.swt.examples.browser.demos,
  org.eclipse.swt.examples.browser.demos.views
 Require-Bundle: org.eclipse.ui,
- org.eclipse.core.runtime
+ org.eclipse.core.runtime,
+ org.eclipse.swt
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-21
 Automatic-Module-Name: org.eclipse.swt.examples.browser.demos
