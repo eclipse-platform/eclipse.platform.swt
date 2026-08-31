@@ -2419,9 +2419,6 @@ private class ImageDataLoaderStreamProviderWrapper extends ImageFromImageDataPro
 
 	@Override
 	int nearestAvailableZoom(int zoom) {
-		if (ImageDataLoader.isDynamicallySizable(new ByteArrayInputStream(this.inputStreamData))) {
-			return zoom;
-		}
 		return FileFormat.DEFAULT_ZOOM;
 	}
 }
@@ -2674,9 +2671,6 @@ private class ImageFileNameProviderWrapper extends BaseImageProviderWrapper<Imag
 
 	@Override
 	int nearestAvailableZoom(int zoom) {
-		if (provider instanceof ImageDataAtSizeProvider) {
-			return zoom;
-		}
 		return DPIUtil.validateAndGetImagePathAtZoom(provider, zoom).zoom();
 	}
 
@@ -2926,9 +2920,6 @@ private class ImageDataProviderWrapper extends BaseImageProviderWrapper<ImageDat
 
 	@Override
 	int nearestAvailableZoom(int zoom) {
-		if (provider instanceof ImageDataAtSizeProvider) {
-			return zoom;
-		}
 		return DPIUtil.validateAndGetImageDataAtZoom (provider, zoom).zoom();
 	}
 }
