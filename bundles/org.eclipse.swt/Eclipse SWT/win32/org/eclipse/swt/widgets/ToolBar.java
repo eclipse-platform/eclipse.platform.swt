@@ -888,6 +888,9 @@ void putImage(int index, Image image, Image hotImage, Image disabledImage) {
 }
 
 private void refreshImageLists(boolean itemsChanged) {
+	if (imageLists == null) {
+		return;
+	}
 	int zoom = getAutoscalingZoom();
 	long imageListHandle = imageLists.getImageListHandle(zoom);
 	long hotImageListHandle = imageLists.getHotImageListHandle(zoom);
