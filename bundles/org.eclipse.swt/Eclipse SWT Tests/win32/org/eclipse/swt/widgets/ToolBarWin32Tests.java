@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.*;
@@ -186,6 +187,37 @@ class ToolBarWin32Tests {
 					TIMEOUT_MILLIS), "every tool item must render its own icon after an orientation change");
 		} finally {
 			disposeAll(icons, display);
+		}
+	}
+
+	/**
+	 * A tool bar without images has no image lists, which a zoom change must
+	 * tolerate. Failing there leaves every control visited afterwards at the old zoom.
+	 */
+	@Test
+	void testZoomChangeWithImagelessToolBarRescalesFollowingControls() {
+		Display display = new Display();
+		Image icon = solidIcon(display, 16, new RGB(220, 40, 40));
+		try {
+			Shell shell = new Shell(display);
+			shell.setLayout(new FillLayout(SWT.VERTICAL));
+			ToolBar barWithoutImages = new ToolBar(shell, SWT.FLAT);
+			new ToolItem(barWithoutImages, SWT.PUSH).setText("No icon");
+			ToolBar followingBar = new ToolBar(shell, SWT.FLAT);
+			createItems(followingBar, icon);
+			shell.setSize(500, 180);
+			shell.open();
+
+			int newZoom = shell.getAutoscalingZoom() * 2;
+			DPITestUtil.changeDPIZoom(shell, newZoom);
+
+			assertEquals(newZoom, barWithoutImages.getAutoscalingZoom(),
+					"a tool bar without images must process a zoom change");
+			assertEquals(newZoom, followingBar.getAutoscalingZoom(),
+					"a control after a tool bar without images must still process the zoom change");
+		} finally {
+			icon.dispose();
+			display.dispose();
 		}
 	}
 
