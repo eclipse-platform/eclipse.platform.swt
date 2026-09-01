@@ -16,16 +16,21 @@ import static org.eclipse.swt.tests.junit.SwtTestUtil.assertSWTProblem;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageDataProvider;
 import org.eclipse.swt.graphics.ImageFileNameProvider;
+import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.internal.image.SVGFileFormat;
 import org.eclipse.swt.widgets.Display;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -37,6 +42,14 @@ import org.junit.jupiter.api.io.TempDir;
  * classpath.
  */
 public class Test_org_eclipse_swt_internal_SVGRasterizer {
+
+	private static final String CURRENT_COLOR_SVG = """
+			<svg viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg">
+			    <rect width="100%" height="100%" fill="currentColor"/>
+			</svg>
+			""";
+
+	private static final RGB CURRENT_COLOR = new RGB(12, 34, 56);
 
 	@TempDir
 	static Path tempFolder;
@@ -91,6 +104,52 @@ public class Test_org_eclipse_swt_internal_SVGRasterizer {
 		SWTException e = assertThrows(SWTException.class,
 				() -> new Image(Display.getDefault(), corruptImageDataProvider));
 		assertSWTProblem("Incorrect exception thrown for provider with corrupt images", SWT.ERROR_INVALID_IMAGE, e);
+	}
+
+	@Test
+	@SuppressWarnings("restriction")
+	public void test_currentColor() {
+		RGB initial = SVGFileFormat.getCurrentColor();
+		assertEquals(initial, rasterizeFirstPixel());
+		try {
+			SVGFileFormat.setCurrentColor(CURRENT_COLOR);
+			assertEquals(CURRENT_COLOR, rasterizeFirstPixel());
+		} finally {
+			SVGFileFormat.setCurrentColor(null);
+		}
+		assertEquals(initial, SVGFileFormat.getCurrentColor());
+	}
+
+	@Test
+	@SuppressWarnings("restriction")
+	public void test_currentColorAtTargetSize() {
+		Display display = Display.getDefault();
+		Image svgImage = new Image(display, currentColorSvgStream());
+		Image target = new Image(display, 20, 20);
+		GC gc = new GC(target);
+		try {
+			SVGFileFormat.setCurrentColor(CURRENT_COLOR);
+			gc.drawImage(svgImage, 0, 0, 20, 20);
+		} finally {
+			SVGFileFormat.setCurrentColor(null);
+			gc.dispose();
+		}
+		try {
+			ImageData data = target.getImageData();
+			assertEquals(CURRENT_COLOR, data.palette.getRGB(data.getPixel(10, 10)));
+		} finally {
+			target.dispose();
+			svgImage.dispose();
+		}
+	}
+
+	private static RGB rasterizeFirstPixel() {
+		ImageData data = new ImageData(currentColorSvgStream());
+		return data.palette.getRGB(data.getPixel(0, 0));
+	}
+
+	private static InputStream currentColorSvgStream() {
+		return new ByteArrayInputStream(CURRENT_COLOR_SVG.getBytes(StandardCharsets.UTF_8));
 	}
 
 }
