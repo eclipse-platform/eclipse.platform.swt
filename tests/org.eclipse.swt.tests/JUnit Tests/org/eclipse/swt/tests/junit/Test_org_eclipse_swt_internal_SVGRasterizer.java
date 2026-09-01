@@ -16,8 +16,10 @@ import static org.eclipse.swt.tests.junit.SwtTestUtil.assertSWTProblem;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
 import org.eclipse.swt.SWT;
@@ -26,6 +28,8 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageDataProvider;
 import org.eclipse.swt.graphics.ImageFileNameProvider;
+import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.internal.image.SVGFileFormat;
 import org.eclipse.swt.widgets.Display;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -91,6 +95,30 @@ public class Test_org_eclipse_swt_internal_SVGRasterizer {
 		SWTException e = assertThrows(SWTException.class,
 				() -> new Image(Display.getDefault(), corruptImageDataProvider));
 		assertSWTProblem("Incorrect exception thrown for provider with corrupt images", SWT.ERROR_INVALID_IMAGE, e);
+	}
+
+	@Test
+	public void test_currentColor() {
+		String svg = """
+				<svg viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg">
+				    <rect width="100%" height="100%" fill="currentColor"/>
+				</svg>
+				""";
+		RGB initial = SVGFileFormat.getCurrentColor();
+		assertEquals(initial, rasterizeFirstPixel(svg));
+		RGB color = new RGB(12, 34, 56);
+		try {
+			SVGFileFormat.setCurrentColor(color);
+			assertEquals(color, rasterizeFirstPixel(svg));
+		} finally {
+			SVGFileFormat.setCurrentColor(null);
+		}
+		assertEquals(initial, SVGFileFormat.getCurrentColor());
+	}
+
+	private static RGB rasterizeFirstPixel(String svg) {
+		ImageData data = new ImageData(new ByteArrayInputStream(svg.getBytes(StandardCharsets.UTF_8)));
+		return data.palette.getRGB(data.getPixel(0, 0));
 	}
 
 }
