@@ -27,6 +27,11 @@ import org.eclipse.swt.internal.DPIUtil.*;
  * This class detects SVG files based on their header and uses a registered
  * {@link SVGRasterizer} service to rasterize SVG content.
  * </p>
+ * <p>
+ * The color resolving {@code currentColor} is global for all rasterizations,
+ * defaults to black and can be set via {@link #setCurrentColor(RGB)} or the
+ * system property {@code swt.svg.currentColor} (e.g. {@code #FFFFFF}).
+ * </p>
  */
 public class SVGFileFormat extends FileFormat {
 
@@ -42,6 +47,42 @@ public class SVGFileFormat extends FileFormat {
 			// rasterizer not in classpath or could not be instantiated
 		}
 		RASTERIZER = rasterizer;
+	}
+
+	private static final RGB INITIAL_CURRENT_COLOR = readCurrentColorProperty();
+
+	/** Volatile, as it may be set and read from different display threads. */
+	private static volatile RGB currentColor = INITIAL_CURRENT_COLOR;
+
+	/**
+	 * Sets the color resolving {@code currentColor}. Applies to subsequent
+	 * rasterizations only.
+	 *
+	 * @param color the color to use, or {@code null} to restore the initial value
+	 */
+	public static void setCurrentColor(RGB color) {
+		currentColor = color != null ? color : INITIAL_CURRENT_COLOR;
+	}
+
+	/**
+	 * @return the color resolving {@code currentColor}, never {@code null}
+	 */
+	public static RGB getCurrentColor() {
+		return currentColor;
+	}
+
+	private static RGB readCurrentColorProperty() {
+		RGB black = new RGB(0, 0, 0);
+		String value = System.getProperty("swt.svg.currentColor");
+		if (value == null) {
+			return black;
+		}
+		try {
+			int rgb = Integer.parseInt(value.trim().replaceFirst("^#", ""), 16);
+			return new RGB((rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, rgb & 0xFF);
+		} catch (NumberFormatException e) {
+			return black;
+		}
 	}
 
 	@Override
@@ -61,7 +102,7 @@ public class SVGFileFormat extends FileFormat {
 		if (targetZoom <= 0) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT, null, " [Cannot rasterize SVG for zoom <= 0]");
 		}
-		ImageData rasterizedImageData = RASTERIZER.rasterizeSVG(inputStream, 100 * targetZoom / fileZoom);
+		ImageData rasterizedImageData = RASTERIZER.rasterizeSVG(inputStream, 100 * targetZoom / fileZoom, currentColor);
 		return List.of(new ElementAtZoom<>(rasterizedImageData, targetZoom));
 	}
 
@@ -73,7 +114,7 @@ public class SVGFileFormat extends FileFormat {
 		if (width <= 0 || height <= 0) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT, null, " [Cannot rasterize SVG for width or height <= 0]");
 		}
-		ImageData rasterizedImageData = RASTERIZER.rasterizeSVG(inputStream, width, height);
+		ImageData rasterizedImageData = RASTERIZER.rasterizeSVG(inputStream, width, height, currentColor);
 		return rasterizedImageData;
 	}
 
