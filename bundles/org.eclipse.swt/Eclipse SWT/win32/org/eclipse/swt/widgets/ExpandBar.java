@@ -873,9 +873,7 @@ LRESULT wmScroll (ScrollBar bar, boolean update, long hwnd, int msg, long wParam
 void handleDPIChange(Event event, float scalingFactor) {
 	super.handleDPIChange(event, scalingFactor);
 	for (ExpandItem item : getItems()) {
-		if (item != null && !item.isDisposed()) {
-			item.notifyListeners(SWT.ZoomChanged, event);
-		}
+		notifyZoomChanged(item, event);
 	}
 	layoutItems(0, true);
 	redraw();

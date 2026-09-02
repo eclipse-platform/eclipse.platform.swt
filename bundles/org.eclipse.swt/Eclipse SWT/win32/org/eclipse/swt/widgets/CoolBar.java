@@ -1193,7 +1193,7 @@ void handleDPIChange(Event event, float scalingFactor) {
 
 		Control control = item.control;
 		if (control != null && !control.isDisposed()) {
-			control.notifyListeners(SWT.ZoomChanged, event);
+			notifyZoomChanged(control, event);
 			item.setControl(control);
 		}
 

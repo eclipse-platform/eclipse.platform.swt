@@ -1965,7 +1965,13 @@ public String toString() {
 
 @Override
 void handleDPIChange(Event event, float scalingFactor) {
-	super.handleDPIChange(event, scalingFactor);
+	try {
+		super.handleDPIChange(event, scalingFactor);
+	} catch (Error | RuntimeException ex) {
+		// A failure of the adaptation of this composite must not prevent the whole
+		// subtree from being adapted
+		stashZoomChangeFailure(event, ex);
+	}
 	for (Control child : getChildren()) {
 		child.sendZoomChangedEvent(event, getShell());
 	}

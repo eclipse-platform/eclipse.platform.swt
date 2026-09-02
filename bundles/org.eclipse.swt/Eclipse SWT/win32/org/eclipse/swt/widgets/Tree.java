@@ -8269,14 +8269,10 @@ void handleDPIChange(Event event, float scalingFactor) {
 	setItemHeight(-1);
 
 	for (TreeColumn treeColumn : getColumns()) {
-		if (treeColumn != null && !treeColumn.isDisposed()) {
-			treeColumn.notifyListeners(SWT.ZoomChanged, event);
-		}
+		notifyZoomChanged(treeColumn, event);
 	}
 	for (TreeItem item : getItems()) {
-		if (item != null && !item.isDisposed()) {
-			item.notifyListeners(SWT.ZoomChanged, event);
-		}
+		notifyZoomChanged(item, event);
 	}
 
 	calculateAndApplyIndentSize();
