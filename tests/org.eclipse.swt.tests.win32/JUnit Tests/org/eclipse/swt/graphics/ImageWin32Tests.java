@@ -13,13 +13,17 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
-
 import static org.eclipse.swt.tests.win32.SwtWin32TestUtil.assertImageDataEqualsIgnoringAlphaInData;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
 import org.eclipse.swt.internal.DPIUtil;
+import org.eclipse.swt.internal.win32.BITMAP;
 import org.eclipse.swt.internal.win32.OS;
 import org.eclipse.swt.widgets.Display;
 import org.junit.jupiter.api.BeforeEach;
@@ -220,6 +224,21 @@ public class ImageWin32Tests {
 			} finally {
 				copy.dispose();
 			}
+		} finally {
+			image.dispose();
+		}
+	}
+
+	public void test_getImageDataOnDestroyedHandleFailsWithoutCrashing() {
+		long hBitmap = createBitmapHandle(20, 10);
+		Image image = Image.win32_new(display, SWT.BITMAP, hBitmap, 100);
+		try {
+			assertTrue(OS.DeleteObject(hBitmap), "Failed to destroy the bitmap for the test");
+			assumeTrue(OS.GetObject(hBitmap, BITMAP.sizeof, new BITMAP()) == 0,
+					"The destroyed handle value has already been reused by the OS");
+			SWTException exception = assertThrows(SWTException.class, () -> image.getImageData(100),
+					"Retrieving image data for a destroyed handle must fail with an exception");
+			assertEquals(SWT.ERROR_INVALID_IMAGE, exception.code, "Unexpected error code");
 		} finally {
 			image.dispose();
 		}
