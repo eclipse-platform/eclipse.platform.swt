@@ -2539,8 +2539,18 @@ void handleMonitorSpecificDpiChange(int newNativeZoom, Rectangle newBoundsInPixe
 	lastDpiChangeEvent = zoomChangedEvent;
 	startZoomChangeTask(zoomChangedEvent);
 	try {
-		notifyListeners(SWT.ZoomChanged, zoomChangedEvent);
-		this.setBoundsInPixels(newBoundsInPixels.x, newBoundsInPixels.y, newBoundsInPixels.width, newBoundsInPixels.height);
+		notifyZoomChanged(this, zoomChangedEvent);
+		// The shell must be moved to the new monitor even if the zoom change
+		// processing of some widget failed
+		if (!isDisposed()) {
+			try {
+				setBoundsInPixels(newBoundsInPixels.x, newBoundsInPixels.y, newBoundsInPixels.width, newBoundsInPixels.height);
+			} catch (Error | RuntimeException ex) {
+				// Collect this failure like those of the widgets, as it would otherwise
+				// supersede them when they are propagated on completing the zoom change
+				stashZoomChangeFailure(zoomChangedEvent, ex);
+			}
+		}
 	} finally {
 		completeZoomChangeTask(zoomChangedEvent, this);
 	}
