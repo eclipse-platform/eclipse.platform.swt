@@ -4636,7 +4636,9 @@ void sendEvent (int eventType, Event event) {
 	if (event == null) event = new Event ();
 	event.display = this;
 	event.type = eventType;
-	if (event.time == 0) event.time = getLastEventTime ();
+	// See comment in Widget.sendEvent(int, Event, boolean) for why
+	// getLastEventTime() is not used as a fallback here.
+	if (event.time == 0) event.time = (int) (System.nanoTime() / 1_000_000L);
 	sendEvent (eventTable, event);
 }
 
