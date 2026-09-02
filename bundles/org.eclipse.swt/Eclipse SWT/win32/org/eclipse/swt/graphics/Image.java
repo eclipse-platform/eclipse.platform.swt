@@ -3132,18 +3132,25 @@ private class DestroyableImageHandle implements InternalImageHandle {
 		switch (type) {
 		case SWT.BITMAP:
 			BITMAP bm = new BITMAP();
-			OS.GetObject(handle, BITMAP.sizeof, bm);
+			if (OS.GetObject(handle, BITMAP.sizeof, bm) == 0) {
+				SWT.error(SWT.ERROR_INVALID_IMAGE);
+			}
 			return new Point(bm.bmWidth, bm.bmHeight);
 		case SWT.ICON:
 			ICONINFO info = new ICONINFO();
-			OS.GetIconInfo(handle, info);
+			if (!OS.GetIconInfo(handle, info)) {
+				SWT.error(SWT.ERROR_INVALID_IMAGE);
+			}
 			long hBitmap = info.hbmColor;
 			if (hBitmap == 0) hBitmap = info.hbmMask;
 			bm = new BITMAP();
-			OS.GetObject(hBitmap, BITMAP.sizeof, bm);
-			if (hBitmap == info.hbmMask) bm.bmHeight /= 2;
+			int queriedBytes = OS.GetObject(hBitmap, BITMAP.sizeof, bm);
 			if (info.hbmColor != 0) OS.DeleteObject(info.hbmColor);
 			if (info.hbmMask != 0) OS.DeleteObject(info.hbmMask);
+			if (queriedBytes == 0) {
+				SWT.error(SWT.ERROR_INVALID_IMAGE);
+			}
+			if (hBitmap == info.hbmMask) bm.bmHeight /= 2;
 			return new Point(bm.bmWidth, bm.bmHeight);
 		default:
 			SWT.error(SWT.ERROR_INVALID_IMAGE);
@@ -3161,7 +3168,11 @@ private class DestroyableImageHandle implements InternalImageHandle {
 
 		/* Change the background color in the image */
 		BITMAP bm = new BITMAP();
-		OS.GetObject(handle(), BITMAP.sizeof, bm);
+		if (OS.GetObject(handle(), BITMAP.sizeof, bm) == 0) {
+			/* Release the HDC for the device */
+			device.internal_dispose_GC(hDC, null);
+			SWT.error(SWT.ERROR_INVALID_IMAGE);
+		}
 		long hdcMem = OS.CreateCompatibleDC(hDC);
 		OS.SelectObject(hdcMem, handle());
 		int maxColors = 1 << bm.bmBitsPixel;
@@ -3186,12 +3197,18 @@ private class DestroyableImageHandle implements InternalImageHandle {
 		switch (type) {
 			case SWT.ICON: {
 				ICONINFO info = new ICONINFO();
-				OS.GetIconInfo(handle(), info);
+				if (!OS.GetIconInfo(handle(), info)) {
+					SWT.error(SWT.ERROR_INVALID_IMAGE);
+				}
 				/* Get the basic BITMAP information */
 				long hBitmap = info.hbmColor;
 				if (hBitmap == 0) hBitmap = info.hbmMask;
 				bm = new BITMAP();
-				OS.GetObject(hBitmap, BITMAP.sizeof, bm);
+				if (OS.GetObject(hBitmap, BITMAP.sizeof, bm) == 0) {
+					if (info.hbmColor != 0) OS.DeleteObject(info.hbmColor);
+					if (info.hbmMask != 0) OS.DeleteObject(info.hbmMask);
+					SWT.error(SWT.ERROR_INVALID_IMAGE);
+				}
 				depth = bm.bmPlanes * bm.bmBitsPixel;
 				width = bm.bmWidth;
 				if (hBitmap == info.hbmMask) bm.bmHeight /= 2;
@@ -3326,7 +3343,9 @@ private class DestroyableImageHandle implements InternalImageHandle {
 			case SWT.BITMAP: {
 				/* Get the basic BITMAP information */
 				bm = new BITMAP();
-				OS.GetObject(handle(), BITMAP.sizeof, bm);
+				if (OS.GetObject(handle(), BITMAP.sizeof, bm) == 0) {
+					SWT.error(SWT.ERROR_INVALID_IMAGE);
+				}
 				depth = bm.bmPlanes * bm.bmBitsPixel;
 				width = bm.bmWidth;
 				height = bm.bmHeight;
@@ -3337,7 +3356,16 @@ private class DestroyableImageHandle implements InternalImageHandle {
 				DIBSECTION dib = null;
 				if (isDib) {
 					dib = new DIBSECTION();
-					OS.GetObject(handle(), DIBSECTION.sizeof, dib);
+					/*
+					 * Only a complete DIBSECTION provides a valid image size. If the
+					 * object is not a DIB section, GetObject only fills the BITMAP part
+					 * and returns its size instead.
+					 */
+					if (OS.GetObject(handle(), DIBSECTION.sizeof, dib) != DIBSECTION.sizeof) {
+						/* Release the HDC for the device */
+						device.internal_dispose_GC(hDC, null);
+						SWT.error(SWT.ERROR_INVALID_IMAGE);
+					}
 				}
 				/* Calculate number of colors */
 				int numColors = 0;
