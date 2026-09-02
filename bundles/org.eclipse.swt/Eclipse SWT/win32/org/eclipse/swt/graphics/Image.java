@@ -3473,12 +3473,17 @@ private class DestroyableImageHandle implements InternalImageHandle {
 
 	void destroy() {
 		if (isDisposed) return;
-		if (type == SWT.ICON) {
-			OS.DestroyIcon (handle());
-		} else {
-			OS.DeleteObject (handle());
-		}
+		/*
+		 * Mark the handle as disposed before it is actually destroyed, so that it is
+		 * never reported as usable while it is already gone. The raw handle has to be
+		 * used for destruction, since handle() returns 0 for a disposed handle.
+		 */
 		isDisposed = true;
+		if (type == SWT.ICON) {
+			OS.DestroyIcon (handle);
+		} else {
+			OS.DeleteObject (handle);
+		}
 	}
 }
 
