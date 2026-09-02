@@ -1706,7 +1706,7 @@ void handleDPIChange(Event event, float scalingFactor) {
 			// at the end
 			seperatorWidth[i] = item.getWidth();
 		}
-		item.notifyListeners(SWT.ZoomChanged, event);
+		notifyZoomChanged(item, event);
 		// Capture the button data AFTER handling the zoom change. The zoom refresh
 		// may update the item's image-list slot (iBitmap), so capturing the button
 		// beforehand could re-add it with a stale image index, resulting in the

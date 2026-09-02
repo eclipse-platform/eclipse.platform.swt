@@ -3399,7 +3399,7 @@ public boolean setAutoscalingMode(AutoscalingMode autoscalingMode) {
 		Event zoomChangedEvent = createZoomChangedEvent(newZoom, false);
 		startZoomChangeTask(zoomChangedEvent);
 		try {
-			notifyListeners(SWT.ZoomChanged, zoomChangedEvent);
+			notifyZoomChanged(this, zoomChangedEvent);
 		} finally {
 			completeZoomChangeTask(zoomChangedEvent, getShell());
 		}
@@ -6035,6 +6035,14 @@ static class DPIChangeExecution {
 	private final Event event;
 	private final AtomicInteger taskCount = new AtomicInteger();
 	private boolean asyncExec;
+	/**
+	 * Collects the failures of the zoom change processing of individual widgets for
+	 * the complete zoom change. A failure is reported to the exception handlers of
+	 * the {@link Display} immediately, but is only propagated once the zoom change
+	 * has been processed by all widgets, so that a single failing widget does not
+	 * leave the remaining ones rendered with a stale zoom.
+	 */
+	private final ExceptionStash exceptions = new ExceptionStash();
 
 	private DPIChangeExecution(Event event, boolean asyncExec) {
 		this.event = event;
@@ -6056,16 +6064,33 @@ static class DPIChangeExecution {
 	}
 
 	/**
-	 * Completes a task registered with {@link #startTask()} and lays out the given
-	 * shell if it was the last outstanding task of this zoom change.
+	 * Completes a task registered with {@link #startTask()}. If it was the last
+	 * outstanding task, the given shell is laid out and the collected failures are
+	 * propagated, as the zoom change has then been processed by all widgets.
 	 */
 	private void completeTask(Shell shell) {
 		// Deliberately not requiring the count to be exactly zero: if the accounting
-		// of tasks was ever off, laying out the shell once too often is preferable to
-		// not laying it out at all
-		if (taskCount.decrementAndGet() <= 0 && event.doit && !shell.isDisposed()) {
-			shell.layout(true, true);
+		// of tasks was ever off, completing the zoom change once too often is
+		// preferable to not completing it at all
+		if (taskCount.decrementAndGet() > 0) {
+			return;
 		}
+		try {
+			if (event.doit && !shell.isDisposed()) {
+				shell.layout(true, true);
+			}
+		} catch (Error | RuntimeException ex) {
+			exceptions.stash(ex);
+		}
+		exceptions.close();
+	}
+
+	/**
+	 * Collects a failure of the zoom change processing of a single widget, see
+	 * {@link Widget#stashZoomChangeFailure(Event, Throwable)}.
+	 */
+	void stash(Throwable throwable) {
+		exceptions.stash(throwable);
 	}
 
 	/**
@@ -6147,8 +6172,9 @@ void sendZoomChangedEvent(Event event, Shell shell) {
 		startZoomChangeTask(event);
 		dpiExecData.process(this, () -> {
 			try {
-				if (!this.isDisposed() && event.doit) {
-					notifyListeners(SWT.ZoomChanged, event);
+				if (event.doit) {
+					// The disposal of this control is handled by the send itself
+					notifyZoomChanged(this, event);
 				}
 			} finally {
 				completeZoomChangeTask(event, shell);
