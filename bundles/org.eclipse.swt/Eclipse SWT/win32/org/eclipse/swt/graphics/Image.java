@@ -2196,17 +2196,31 @@ private class ExistingImageHandleProviderWrapper extends AbstractImageProviderWr
 
 	private final int width;
 	private final int height;
-	private final long handle;
-	private final int zoomForHandle;
+	/**
+	 * The zoom the image has an OS handle for that has not been derived from
+	 * another one. Image data for every other zoom is scaled from it.
+	 */
+	private final int baseZoom;
 
 	public ExistingImageHandleProviderWrapper(long handle, int zoomForHandle) {
-		this.handle = handle;
-		this.zoomForHandle = zoomForHandle;
+		this.baseZoom = zoomForHandle;
 		InternalImageHandle imageHandle = imageHandleManager.getOrCreate(zoomForHandle, () -> new DestroyableImageHandle(handle, zoomForHandle, -1));
 
 		ImageData baseData = imageHandle.getImageData();
 		this.width = DPIUtil.pixelToPoint(baseData.width, zoomForHandle);
 		this.height = DPIUtil.pixelToPoint(baseData.height, zoomForHandle);
+	}
+
+	/**
+	 * Creates the wrapper for a copy of an image that has been created for an
+	 * existing handle. Since the copy creates and owns its own OS handles, it only
+	 * inherits the base zoom and the size of the copied image, but never refers to
+	 * the handle of the copied image.
+	 */
+	private ExistingImageHandleProviderWrapper(int baseZoom, int width, int height) {
+		this.baseZoom = baseZoom;
+		this.width = width;
+		this.height = height;
 	}
 
 	@Override
@@ -2223,12 +2237,12 @@ private class ExistingImageHandleProviderWrapper extends AbstractImageProviderWr
 
 	@Override
 	AbstractImageProviderWrapper createCopy(Image image) {
-		return image.new ExistingImageHandleProviderWrapper(handle, zoomForHandle);
+		return image.new ExistingImageHandleProviderWrapper(baseZoom, width, height);
 	}
 
 	@Override
 	public Collection<Integer> getPreservedZoomLevels() {
-		return Collections.singleton(zoomForHandle);
+		return Collections.singleton(baseZoom);
 	}
 
 	@Override
@@ -2244,7 +2258,7 @@ private class ExistingImageHandleProviderWrapper extends AbstractImageProviderWr
 
 	@Override
 	int nearestAvailableZoom(int zoom) {
-		return zoomForHandle;
+		return baseZoom;
 	}
 }
 
