@@ -184,9 +184,9 @@ public Object nativeToJava(TransferData transferData) {
 				}
 			}
 			final int DEFAULT_IMAGE_STORAGE_ZOOM = 100;
+			/* The image takes ownership of the DIB and destroys it on disposal */
 			Image image = Image.win32_new(null, SWT.BITMAP, memDib, DEFAULT_IMAGE_STORAGE_ZOOM);
 			ImageData data = image.getImageData ();
-			OS.DeleteObject(memDib);
 			image.dispose();
 			return data;
 		} finally {
