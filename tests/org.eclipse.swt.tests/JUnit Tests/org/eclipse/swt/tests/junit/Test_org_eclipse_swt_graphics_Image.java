@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -1221,6 +1222,44 @@ public void test_gcOnImageGcDrawer_imageDataAtNonDeviceZoom() {
 		redOverwritingGc.dispose();
 		image.dispose();
 		DPIUtil.setDeviceZoom(originalDeviceZoom);
+	}
+}
+
+/**
+ * The size cache must hit at any device zoom. Comparing the requested size in pixels
+ * against the cached image's size in points made every scaled draw a miss at zoom != 100.
+ */
+@Test
+public void test_drawImageAtSize_cacheIsReusedAtNonDefaultZoom() throws IOException {
+	Path file = tempFolder.resolve("cached-collapseall.svg");
+	Files.copy(Path.of(getPath("collapseall.svg")), file, StandardCopyOption.REPLACE_EXISTING);
+	int originalDeviceZoom = DPIUtil.getDeviceZoom();
+	Image image = null;
+	Image target = null;
+	GC gc = null;
+	try {
+		DPIUtil.setDeviceZoom(200);
+		image = new Image(display, file.toString());
+		target = new Image(display, 64, 64);
+		gc = new GC(target);
+		gc.drawImage(image, 0, 0, 20, 20);
+
+		// a second draw at the same size must come from the cache, so the file is not needed
+		Files.delete(file);
+
+		gc.drawImage(image, 0, 0, 20, 20);
+	} finally {
+		if (gc != null) {
+			gc.dispose();
+		}
+		if (target != null) {
+			target.dispose();
+		}
+		if (image != null) {
+			image.dispose();
+		}
+		DPIUtil.setDeviceZoom(originalDeviceZoom);
+		Files.deleteIfExists(file);
 	}
 }
 

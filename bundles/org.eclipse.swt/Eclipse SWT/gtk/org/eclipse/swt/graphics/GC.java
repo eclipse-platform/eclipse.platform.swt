@@ -913,9 +913,14 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 	/* Refresh Image as per zoom level, if required. */
 	srcImage.refreshImageForZoom ();
 
-	ImageData srcImageData = srcImage.getImageData();
-	int imgWidth = srcImageData.width;
-	int imgHeight = srcImageData.height;
+	int imgWidth = srcImage.width;
+	int imgHeight = srcImage.height;
+	if (imgWidth == -1 || imgHeight == -1) {
+		/* Images wrapped around a native handle carry no dimensions, see Image.gtk_new. */
+		ImageData srcImageData = srcImage.getImageData();
+		imgWidth = srcImageData.width;
+		imgHeight = srcImageData.height;
+	}
 	if (srcWidth == 0 && srcHeight == 0) {
 		srcWidth = imgWidth;
 		srcHeight = imgHeight;

@@ -970,29 +970,43 @@ private CachedImageAtSize cachedImageAtSize = new CachedImageAtSize();
 
 private class CachedImageAtSize {
 	private Image image;
+	/** Size in pixels the cached image was requested at; the image itself carries points. */
+	private int requestedWidth = -1;
+	private int requestedHeight = -1;
+	/** Zoom the cached image was built for; the same pixel size can be requested at two zooms. */
+	private int requestedZoom = -1;
 
 	public void destroy() {
 		if (image != null) {
 			image.dispose();
 			image = null;
 		}
+		requestedWidth = -1;
+		requestedHeight = -1;
+		requestedZoom = -1;
 	}
 
 	private Optional<Image> refresh(int destWidth, int destHeight) {
-		int scaledWidth = DPIUtil.pointToPixel(destWidth, DPIUtil.getDeviceZoom());
-		int scaledHeight = DPIUtil.pointToPixel(destHeight, DPIUtil.getDeviceZoom());
-		if (isReusable(scaledWidth, scaledHeight)) {
+		int zoom = DPIUtil.getDeviceZoom();
+		int scaledWidth = DPIUtil.pointToPixel(destWidth, zoom);
+		int scaledHeight = DPIUtil.pointToPixel(destHeight, zoom);
+		if (isReusable(scaledWidth, scaledHeight, zoom)) {
 			return Optional.of(image);
 		} else {
 			destroy();
 			Optional<Image> imageAtSize = loadImageAtSize(scaledWidth, scaledHeight);
 			image = imageAtSize.orElse(null);
+			if (image != null) {
+				requestedWidth = scaledWidth;
+				requestedHeight = scaledHeight;
+				requestedZoom = zoom;
+			}
 			return imageAtSize;
 		}
 	}
 
-	private boolean isReusable(int width, int height) {
-		return image != null && image.height == height && image.width == width;
+	private boolean isReusable(int width, int height, int zoom) {
+		return image != null && requestedHeight == height && requestedWidth == width && requestedZoom == zoom;
 	}
 
 	private Optional<Image> loadImageAtSize(int destWidth, int destHeight) {
