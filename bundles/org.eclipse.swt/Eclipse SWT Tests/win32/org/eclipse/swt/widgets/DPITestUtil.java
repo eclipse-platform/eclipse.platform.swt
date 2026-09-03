@@ -14,7 +14,6 @@
 package org.eclipse.swt.widgets;
 
 import java.time.*;
-import java.util.concurrent.atomic.*;
 
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.widgets.Control.*;
@@ -30,19 +29,24 @@ public final class DPITestUtil {
 		DPIUtil.setDeviceZoom(nativeZoom);
 		Event event = shell.createZoomChangedEvent(nativeZoom, true);
 		shell.sendZoomChangedEvent(event, shell);
-		DPIChangeExecution data = (DPIChangeExecution) event.data;
-		waitForDPIChange(shell, TIMEOUT_MILLIS, data.taskCount);
+		waitForDPIChange(shell, (DPIChangeExecution) event.data);
 	}
 
-	private static void waitForDPIChange(Shell shell, int timeout, AtomicInteger scalingCounter) {
-		waitForPassCondition(shell, timeout, scalingCounter);
+	/**
+	 * Performs a zoom change like the operating system does when the shell is moved
+	 * to a monitor with a different scaling, i.e. by processing the zoom change for
+	 * the shell instead of sending the zoom changed event to it.
+	 */
+	public static void changeDPIZoomOnMonitorChange (Shell shell, int nativeZoom) {
+		shell.handleMonitorSpecificDpiChange(nativeZoom, shell.getBoundsInPixels());
+		waitForDPIChange(shell, (DPIChangeExecution) shell.lastDpiChangeEvent.data);
 	}
 
-	private static void waitForPassCondition(Shell shell, int timeout, AtomicInteger scalingCounter) {
-		final Instant timeOut = Instant.now().plusMillis(timeout);
+	private static void waitForDPIChange(Shell shell, DPIChangeExecution execution) {
+		final Instant timeOut = Instant.now().plusMillis(TIMEOUT_MILLIS);
 		final Display display = shell == null ? Display.getDefault() : shell.getDisplay();
 
-		while (Instant.now().isBefore(timeOut) && scalingCounter.get() != 0) {
+		while (Instant.now().isBefore(timeOut) && !execution.isComplete()) {
 			if (!display.isDisposed()) {
 				display.readAndDispatch();
 			}
