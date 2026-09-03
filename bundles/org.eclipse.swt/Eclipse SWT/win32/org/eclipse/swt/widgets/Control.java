@@ -6062,10 +6062,15 @@ private static class DPIChangeProcessingCallback  {
 		// Has to have TIMERPROC signature, see https://learn.microsoft.com/en-us/windows/win32/api/winuser/nc-winuser-timerproc
 		Callback callback = new Callback(this, "run", void.class, new Type[] { int.class, int.class, int.class, int.class} );
 		this.operation = () -> {
-			if (!control.isDisposed()) {
-				dpiChangeProcessing.run();
+			try {
+				if (!control.isDisposed()) {
+					dpiChangeProcessing.run();
+				}
+			} finally {
+				// The callback must be released in any case, as callback slots are a
+				// limited resource and leaking them makes further scheduling fail
+				callback.dispose();
 			}
-			callback.dispose();
 		};
 		this.address = callback.getAddress();
 	}
