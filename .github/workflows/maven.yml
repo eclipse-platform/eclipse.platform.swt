@@ -80,7 +80,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: ['21']
+        java: ['25']
         gtk: [gtk3, gtk4]
         gdk_backend: [x11, wayland]
         exclude:
@@ -106,7 +106,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: ['21']
+        java: ['25']
     uses: ./.github/workflows/build.yml
     with:
       runner: windows-latest
@@ -124,7 +124,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: ['21']
+        java: ['25']
         arch: [x86_64, aarch64]
     uses: ./.github/workflows/build.yml
     with:
