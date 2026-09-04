@@ -3397,7 +3397,12 @@ public boolean setAutoscalingMode(AutoscalingMode autoscalingMode) {
 	if (nativeZoom != newZoom) {
 		nativeZoom = newZoom;
 		Event zoomChangedEvent = createZoomChangedEvent(newZoom, false);
-		notifyListeners(SWT.ZoomChanged, zoomChangedEvent);
+		startZoomChangeTask(zoomChangedEvent);
+		try {
+			notifyListeners(SWT.ZoomChanged, zoomChangedEvent);
+		} finally {
+			completeZoomChangeTask(zoomChangedEvent, getShell());
+		}
 	}
 	return true;
 }
@@ -5141,9 +5146,7 @@ Event createZoomChangedEvent(int zoom, boolean asyncExec) {
 	event.widget = this;
 	event.detail = zoom;
 	event.doit = true;
-	DPIChangeExecution dpiChangeExecution = new DPIChangeExecution();
-	dpiChangeExecution.asyncExec = asyncExec;
-	event.data = dpiChangeExecution;
+	event.data = new DPIChangeExecution(event, asyncExec);
 	return event;
 }
 
@@ -6023,9 +6026,51 @@ LRESULT wmScrollChild (long wParam, long lParam) {
 	return null;
 }
 
+/**
+ * The processing of a single zoom change, which is performed in tasks that may be
+ * executed asynchronously. The zoom change is complete, and the shell is laid out,
+ * once all its tasks have been completed.
+ */
 static class DPIChangeExecution {
-	AtomicInteger taskCount = new AtomicInteger();
-	private boolean asyncExec = true;
+	private final Event event;
+	private final AtomicInteger taskCount = new AtomicInteger();
+	private boolean asyncExec;
+
+	private DPIChangeExecution(Event event, boolean asyncExec) {
+		this.event = event;
+		this.asyncExec = asyncExec;
+	}
+
+	/**
+	 * Registers a task of this zoom change, which must be completed with
+	 * {@link #completeTask(Shell)}.
+	 * <p>
+	 * Everything propagating the zoom changed event to widgets that are adapted in
+	 * a task of their own must hold a task itself, as the zoom change would
+	 * otherwise be considered complete as soon as the first of those widgets has
+	 * been adapted.
+	 * </p>
+	 */
+	private void startTask() {
+		taskCount.incrementAndGet();
+	}
+
+	/**
+	 * Completes a task registered with {@link #startTask()} and lays out the given
+	 * shell if it was the last outstanding task of this zoom change.
+	 */
+	private void completeTask(Shell shell) {
+		if (taskCount.decrementAndGet() <= 0 && event.doit && !shell.isDisposed()) {
+			shell.layout(true, true);
+		}
+	}
+
+	/**
+	 * Returns whether all tasks of this zoom change have been completed.
+	 */
+	boolean isComplete() {
+		return taskCount.get() <= 0;
+	}
 
 	private void process(Control control, Runnable operation) {
 		boolean currentAsyncExec = asyncExec;
@@ -6043,14 +6088,6 @@ static class DPIChangeExecution {
 		// resetting it prevents to break asynchronous execution when the synchronous
 		// DPI change handling is finished
 		asyncExec = currentAsyncExec;
-	}
-
-	private void increment() {
-		taskCount.incrementAndGet();
-	}
-
-	private boolean decrement() {
-		return taskCount.decrementAndGet() <= 0;
 	}
 }
 
@@ -6099,23 +6136,36 @@ private static class DPIChangeProcessingCallback  {
 
 void sendZoomChangedEvent(Event event, Shell shell) {
 	if (event.data instanceof DPIChangeExecution dpiExecData) {
-		dpiExecData.increment();
+		startZoomChangeTask(event);
 		dpiExecData.process(this, () -> {
 			try {
 				if (!this.isDisposed() && event.doit) {
 					notifyListeners(SWT.ZoomChanged, event);
 				}
 			} finally {
-				if (shell.isDisposed()) {
-					return;
-				}
-				if (dpiExecData.decrement()) {
-					if (event.doit) {
-						shell.layout(true, true);
-					}
-				}
+				completeZoomChangeTask(event, shell);
 			}
 		});
+	}
+}
+
+/**
+ * Registers a task of the zoom change the given event belongs to, see
+ * {@link DPIChangeExecution#startTask()}.
+ */
+static void startZoomChangeTask(Event event) {
+	if (event.data instanceof DPIChangeExecution execution) {
+		execution.startTask();
+	}
+}
+
+/**
+ * Completes a task of the zoom change the given event belongs to, see
+ * {@link DPIChangeExecution#completeTask(Shell)}.
+ */
+static void completeZoomChangeTask(Event event, Shell shell) {
+	if (event.data instanceof DPIChangeExecution execution) {
+		execution.completeTask(shell);
 	}
 }
 

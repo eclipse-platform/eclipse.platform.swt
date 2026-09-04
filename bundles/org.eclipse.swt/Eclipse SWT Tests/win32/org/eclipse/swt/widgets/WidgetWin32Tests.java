@@ -331,4 +331,38 @@ class WidgetWin32Tests {
 
 	}
 
+	@Test
+	public void testShellIsLaidOutOnceWhenZoomChangeIsProcessedSynchronously() {
+		Display display = Display.getDefault();
+		// A child shell processes the zoom change synchronously, i.e. all its children
+		// are adapted within the propagation of the zoom changed event
+		Shell parentShell = new Shell(display);
+		Shell shell = new Shell(parentShell, SWT.SHELL_TRIM);
+		CountingLayout layout = new CountingLayout();
+		shell.setLayout(layout);
+		for (int i = 0; i < 3; i++) {
+			new Button(shell, SWT.PUSH);
+		}
+		int scaledZoom = shell.nativeZoom * 2;
+
+		layout.layoutCount = 0;
+		DPITestUtil.changeDPIZoomOnMonitorChange(shell, scaledZoom);
+
+		assertEquals("The shell must be laid out exactly once for a single zoom change", 1, layout.layoutCount);
+	}
+
+	private static final class CountingLayout extends Layout {
+		int layoutCount;
+
+		@Override
+		protected Point computeSize(Composite composite, int wHint, int hHint, boolean flushCache) {
+			return new Point(wHint == SWT.DEFAULT ? 100 : wHint, hHint == SWT.DEFAULT ? 100 : hHint);
+		}
+
+		@Override
+		protected void layout(Composite composite, boolean flushCache) {
+			layoutCount++;
+		}
+	}
+
 }

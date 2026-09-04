@@ -2535,7 +2535,7 @@ LRESULT WM_DPICHANGED (long wParam, long lParam) {
 	return LRESULT.ONE;
 }
 
-private void handleMonitorSpecificDpiChange(int newNativeZoom, Rectangle newBoundsInPixels) {
+void handleMonitorSpecificDpiChange(int newNativeZoom, Rectangle newBoundsInPixels) {
 	DPIUtil.setDeviceZoom (newNativeZoom);
 	// Do not process DPI change for child shells asynchronous to avoid relayouting when
 	// repositioning the child shell to a different monitor upon opening
@@ -2545,8 +2545,13 @@ private void handleMonitorSpecificDpiChange(int newNativeZoom, Rectangle newBoun
 		lastDpiChangeEvent.doit = false;
 	}
 	lastDpiChangeEvent = zoomChangedEvent;
-	notifyListeners(SWT.ZoomChanged, zoomChangedEvent);
-	this.setBoundsInPixels(newBoundsInPixels.x, newBoundsInPixels.y, newBoundsInPixels.width, newBoundsInPixels.height);
+	startZoomChangeTask(zoomChangedEvent);
+	try {
+		notifyListeners(SWT.ZoomChanged, zoomChangedEvent);
+		this.setBoundsInPixels(newBoundsInPixels.x, newBoundsInPixels.y, newBoundsInPixels.width, newBoundsInPixels.height);
+	} finally {
+		completeZoomChangeTask(zoomChangedEvent, this);
+	}
 }
 
 @Override
