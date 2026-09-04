@@ -59,7 +59,12 @@ mvn clean verify -DskipTests
 See `bundles/org.eclipse.swt/Readme.md#building-native-binaries` for instructions how to build the SWT native binaries.
 
 **CRITICAL**: Files like `os.c`, `os_stats.c`, `os_stats.h` are **auto-generated**. Never edit them directly!
-Instead: modify Java source (e.g., `OS.java`), clean/rebuild the project, then run the native build command above.
+Instead: modify Java source (e.g., `OS.java`), regenerate the C files, then run the native build command above.
+To regenerate without the Eclipse IDE, run at the repository root:
+```bash
+mvn --non-recursive -Pjni-generator exec:exec@run-jni-generator
+```
+The pull-request checks run this command and fail if the committed generated files are outdated.
 
 **CRITICAL**: Never commit any built native binary files to git. These are built and committed by the CI. This includes:
 - Linux: `libswt-*.so`
@@ -198,7 +203,7 @@ display.asyncExec(() -> button.setText("Updated"));
 
 ### Adding GTK Functions
 1. Add native method declaration to `OS.java` with JavaDoc annotations (`@param cast=`, `@method flags=dynamic`)
-2. Clean and rebuild `org.eclipse.swt` project (regenerates `os.c`)
+2. Regenerate `os.c` and friends: `mvn --non-recursive -Pjni-generator exec:exec@run-jni-generator` (or clean and rebuild the `org.eclipse.swt` project in the IDE)
 3. Rebuild natives: `cd bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library && export GTK_VERSION=3.0 && ./build.sh install`
 
 ## Tips for AI Tools

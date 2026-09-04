@@ -79,19 +79,18 @@ public ASTClass(String sourcePath, MetaData metaData) {
 	packageName = unit.getPackage().getName().getFullyQualifiedName();
 	name = packageName + "." + simpleName;
 	superclassName = type.getSuperclassType() != null ? type.getSuperclassType().toString() : null;
-	List<ImportDeclaration> imports = unit.imports();
+	List<?> imports = unit.imports();
 	this.imports = new String[imports.size()];
 	int count = 0;
-	for (ImportDeclaration imp : imports) {
-		this.imports[count++] = imp.getName().getFullyQualifiedName();
+	for (Object imp : imports) {
+		this.imports[count++] = ((ImportDeclaration) imp).getName().getFullyQualifiedName();
 	}
 	start = type.getStartPosition();
-	
+
 	Javadoc doc = type.getJavadoc();
-	List<TagElement> tags = null;
 	if (doc != null) {
-		tags = doc.tags();
-		for (TagElement tag : tags) {
+		for (Object element : doc.tags()) {
+			TagElement tag = (TagElement) element;
 			if ("@jniclass".equals(tag.getTagName())) {
 				String data = tag.fragments().get(0).toString();
 				setMetaData(data);
@@ -102,9 +101,8 @@ public ASTClass(String sourcePath, MetaData metaData) {
 
 	List<ASTField> fid = new ArrayList<>();
 	for (FieldDeclaration field : type.getFields()) {
-		List<VariableDeclarationFragment> fragments = field.fragments();
-		for (VariableDeclarationFragment fragment : fragments) {
-			fid.add(new ASTField(this, field, fragment));
+		for (Object fragment : field.fragments()) {
+			fid.add(new ASTField(this, field, (VariableDeclarationFragment) fragment));
 		}
 	}
 	this.fields = fid.toArray(new ASTField[fid.size()]);
