@@ -937,7 +937,9 @@ long gtk_map (long widget) {
 			 * The POP_UP GtkPopoverMenu has been mapped. Its handle IS the GtkPopoverMenu,
 			 * and nested GtkPopoverMenu children for any CASCADE submenus already exist in
 			 * its widget tree. Connect SHOW/HIDE signals for those nested submenus now.
+			 * Also inject any custom icon widgets into the popover.
 			 */
+			injectCustomMenuIcons();
 			connectCascadeSubMenuSignals(this, handle);
 		}
 	}
@@ -1038,6 +1040,7 @@ private void connectDropDownMenuSignals() {
 				wireSubMenuPopover(menuItem.menu, popover);
 			}
 			if (menuItem.menu.popoverHandle != 0) {
+				menuItem.menu.injectCustomMenuIcons();
 				connectCascadeSubMenuSignals(menuItem.menu);
 			}
 		}
@@ -1065,8 +1068,23 @@ private void connectCascadeSubMenuSignals(Menu menu, long parentPopoverHandle) {
 				if (item.menu.popoverHandle != nestedPopover) {
 					wireSubMenuPopover(item.menu, nestedPopover);
 				}
+				item.menu.injectCustomMenuIcons();
 				connectCascadeSubMenuSignals(item.menu);
 			}
+		}
+	}
+}
+
+/**
+ * (Re-)injects the custom icon+label widgets of this menu's PUSH items into the
+ * GtkPopoverMenu, for those items that have one. A no-op for items whose widget
+ * is already attached.
+ */
+void injectCustomMenuIcons() {
+	if (items == null || display.menuModelMutating) return;
+	for (MenuItem item : items) {
+		if (item.customWidgetHandle != 0) {
+			item.injectCustomWidgetGTK4();
 		}
 	}
 }
@@ -1137,6 +1155,7 @@ long gtk_show (long widget) {
 	sendEvent (SWT.Show);
 	/* Wire cascade submenu SHOW/HIDE signals once the DROP_DOWN popover is shown. */
 	if (GTK.GTK4 && (style & SWT.DROP_DOWN) != 0 && popoverHandle != 0) {
+		injectCustomMenuIcons();
 		connectCascadeSubMenuSignals(this, popoverHandle);
 	}
 	if (OS.ubuntu_menu_proxy_get() != 0) {
