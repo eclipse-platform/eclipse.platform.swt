@@ -184,12 +184,12 @@
             <dependency>
               <groupId>org.eclipse.jdt</groupId>
               <artifactId>org.eclipse.jdt.core</artifactId>
-              <version>[3.46.0,)</version>
+              <version>3.46.0</version>
             </dependency>
             <dependency>
               <groupId>org.eclipse.platform</groupId>
               <artifactId>org.eclipse.jface</artifactId>
-              <version>[3.39.100.0,)</version>
+              <version>3.39.100</version>
             </dependency>
           </dependencies>
         </plugin>
