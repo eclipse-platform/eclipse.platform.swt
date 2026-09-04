@@ -23,7 +23,7 @@ package org.eclipse.swt.graphics;
  * @see GC#getFontMetrics
  * @see <a href="https://eclipse.dev/eclipse/swt/">Sample code and further information</a>
  */
-public final class FontMetrics {
+public sealed class FontMetrics permits FontMetricsExtension  {
 	int ascentInPoints, descentInPoints, averageCharWidthInPoints;
 
 FontMetrics() {
