@@ -16,7 +16,7 @@ Export-Package:
  org.eclipse.swt.events,
  org.eclipse.swt.graphics,
  org.eclipse.swt.internal;x-internal:=true,
- org.eclipse.swt.internal.image;x-internal:=true,
+ org.eclipse.swt.internal.image;x-friends:="org.eclipse.swt.svg",
  org.eclipse.swt.layout,
  org.eclipse.swt.opengl,
  org.eclipse.swt.printing,
@@ -25,3 +25,5 @@ Export-Package:
 Eclipse-ExtensibleAPI: true
 Bundle-RequiredExecutionEnvironment: JavaSE-21
 Automatic-Module-Name: org.eclipse.swt
+Require-Capability: osgi.extender;filter:="(&(osgi.extender=osgi.serviceloader.processor)(version>=1.0.0)(!(version>=2.0.0)))",
+ osgi.serviceloader;filter:="(osgi.serviceloader=org.eclipse.swt.internal.image.SVGRasterizer)";resolution:=optional
