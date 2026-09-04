@@ -61,6 +61,21 @@ Running the snippets:
 * (Optionally) install CDT from marketplace if you want to work on C/Native parts of SWT.
 * You should be able to run snippets now. (_e.g._ `Snippet1`).
 
+## Regenerating the JNI glue code
+
+The C files `os.c`, `*_stats.c/h` and `*_structs.c/h` next to `build.sh` in the `library` folders are generated
+from the `native` method declarations (and their `@method`/`@param` JavaDoc annotations) in the Java sources.
+Never edit them by hand. After changing a native declaration, regenerate them for all platforms from the CLI
+(at the repository root):
+```bash
+mvn --non-recursive -Pjni-generator exec:exec@run-jni-generator
+```
+and commit the changed C files together with the Java change. The pull-request checks run the same command and
+fail when the committed C files are outdated.
+
+In the Eclipse IDE the same happens automatically when the **SWT Tools** feature is installed:
+its `JNI Builder` regenerates the files on every build of the `org.eclipse.swt` project.
+
 ## Building native binaries
 
 To build only SWT's native binaries, run from the CLI (at the repository root):

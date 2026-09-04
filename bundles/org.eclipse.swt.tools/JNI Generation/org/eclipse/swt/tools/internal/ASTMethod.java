@@ -37,10 +37,11 @@ public ASTMethod(ASTClass declaringClass, MethodDeclaration method) {
 	start = method.getStartPosition();
 	
 	Javadoc doc = method.getJavadoc();
-	List<TagElement> tags = null;
+	List<?> tags = null;
 	if (doc != null) {
 		tags = doc.tags();
-		for (TagElement tag : tags) {
+		for (Object element : tags) {
+			TagElement tag = (TagElement) element;
 			if ("@method".equals(tag.getTagName())) {
 				String data = tag.fragments().get(0).toString();
 				setMetaData(data);
@@ -49,19 +50,20 @@ public ASTMethod(ASTClass declaringClass, MethodDeclaration method) {
 		}
 	}
 	returnType = new ASTType(declaringClass.resolver, method.getReturnType2(), method.getExtraDimensions());
-	
-	List<SingleVariableDeclaration> parameters = method.parameters();
+
+	List<?> parameters = method.parameters();
 	paramTypes = new ASTType[parameters.size()];
 	this.parameters = new ASTParameter[paramTypes.length];
 	int i = 0;
-	for (Iterator<SingleVariableDeclaration> iterator = parameters.iterator(); iterator.hasNext(); i++) {
-		SingleVariableDeclaration param = iterator.next();
+	for (Iterator<?> iterator = parameters.iterator(); iterator.hasNext(); i++) {
+		SingleVariableDeclaration param = (SingleVariableDeclaration) iterator.next();
 		paramTypes[i] = new ASTType(declaringClass.resolver, param.getType(), param.getExtraDimensions());
 		this.parameters[i] = new ASTParameter(this, i, param.getName().getIdentifier());
-	
+
 		if (tags != null) {
 			String name = param.getName().getIdentifier();
-			for (TagElement tag : tags) {
+			for (Object element : tags) {
+				TagElement tag = (TagElement) element;
 				if ("@param".equals(tag.getTagName())) {
 					List<?> fragments = tag.fragments();
 					if (fragments.size() >= 2 && name.equals(fragments.get(0).toString())) {

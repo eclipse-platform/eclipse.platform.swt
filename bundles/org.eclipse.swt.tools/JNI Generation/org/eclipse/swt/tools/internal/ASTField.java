@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2017 IBM Corporation and others.
+ * Copyright (c) 2004, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -12,8 +12,6 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.tools.internal;
-
-import java.util.*;
 
 import org.eclipse.jdt.core.dom.*;
 
@@ -32,10 +30,9 @@ public ASTField(ASTClass declaringClass, FieldDeclaration field, VariableDeclara
 	start = field.getStartPosition();
 	
 	Javadoc doc = field.getJavadoc();
-	List<TagElement> tags = null;
 	if (doc != null) {
-		tags = doc.tags();
-		for (TagElement tag : tags) {
+		for (Object element : doc.tags()) {
+			TagElement tag = (TagElement) element;
 			if ("@field".equals(tag.getTagName())) {
 				String data = tag.fragments().get(0).toString();
 				setMetaData(data);

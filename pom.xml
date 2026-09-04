@@ -109,7 +109,6 @@
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>exec-maven-plugin</artifactId>
-            <version>3.6.3</version>
             <executions>
               <execution>
                 <id>run-javadoc-basher</id>
@@ -118,30 +117,48 @@
                 </goals>
                 <phase>validate</phase>
                 <configuration>
-                  <forceJava>true</forceJava>
-                  <workingDirectory>bundles/org.eclipse.swt.tools</workingDirectory>
-                  <executable>java</executable>
                   <arguments>
                     <argument>-classpath</argument>
                     <classpath/>
                     <argument>JavadocBasher/org/eclipse/swt/tools/internal/JavadocBasher.java</argument>
                   </arguments>
-                  <includePluginDependencies>true</includePluginDependencies>
                 </configuration>
               </execution>
             </executions>
-            <dependencies>
-              <dependency>
-                  <groupId>org.eclipse.jdt</groupId>
-                  <artifactId>org.eclipse.jdt.core</artifactId>
-                  <version>[3.44.0,)</version>
-              </dependency>
-              <dependency>
-                  <groupId>org.eclipse.platform</groupId>
-                  <artifactId>org.eclipse.jface</artifactId>
-                  <version>[3.38.0,)</version>
-              </dependency>
-            </dependencies>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <!--
+        Regenerates the JNI glue code (os.c, *_stats.*, *_structs.* ...) of all platforms from the
+        native method declarations in the Java sources, without the Eclipse IDE builder. Run it with
+        "mvn -N -Pjni-generator exec:exec@run-jni-generator" (see bundles/org.eclipse.swt/Readme.md).
+        The pr-checks workflow runs this and fails when the committed generated files are out of date.
+      -->
+      <id>jni-generator</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>run-jni-generator</id>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+                <phase>validate</phase>
+                <configuration>
+                  <arguments>
+                    <argument>-classpath</argument>
+                    <classpath/>
+                    <argument>JNI Generation/org/eclipse/swt/tools/internal/JNIGeneratorApp.java</argument>
+                    <argument>all</argument>
+                  </arguments>
+                </configuration>
+              </execution>
+            </executions>
           </plugin>
         </plugins>
       </build>
@@ -149,6 +166,35 @@
   </profiles>
 
   <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <!-- Used by the javadoc-basher and jni-generator profiles to run tools from
+               bundles/org.eclipse.swt.tools with the java source-file launcher. -->
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>exec-maven-plugin</artifactId>
+          <version>3.6.3</version>
+          <configuration>
+            <forceJava>true</forceJava>
+            <executable>java</executable>
+            <workingDirectory>bundles/org.eclipse.swt.tools</workingDirectory>
+            <includePluginDependencies>true</includePluginDependencies>
+          </configuration>
+          <dependencies>
+            <dependency>
+              <groupId>org.eclipse.jdt</groupId>
+              <artifactId>org.eclipse.jdt.core</artifactId>
+              <version>[3.46.0,)</version>
+            </dependency>
+            <dependency>
+              <groupId>org.eclipse.platform</groupId>
+              <artifactId>org.eclipse.jface</artifactId>
+              <version>[3.39.100.0,)</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+      </plugins>
+    </pluginManagement>
     <plugins>
       <plugin>
         <groupId>org.eclipse.tycho</groupId>
