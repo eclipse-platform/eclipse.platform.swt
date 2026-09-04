@@ -276,6 +276,10 @@ public void setToolTip(NSString toolTip) {
 	OS.objc_msgSend(this.id, OS.sel_setToolTip_, toolTip != null ? toolTip.id : 0);
 }
 
+public void setWantsLayer(boolean wantsLayer) {
+	OS.objc_msgSend(this.id, OS.sel_setWantsLayer_, wantsLayer);
+}
+
 public void setWantsRestingTouches(boolean wantsRestingTouches) {
 	OS.objc_msgSend(this.id, OS.sel_setWantsRestingTouches_, wantsRestingTouches);
 }
