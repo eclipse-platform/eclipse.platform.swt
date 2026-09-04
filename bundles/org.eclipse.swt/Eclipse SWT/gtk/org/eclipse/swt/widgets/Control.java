@@ -1691,8 +1691,9 @@ public Point toControl(int x, int y) {
 		origin_x[0] = origin.x;
 		origin_y[0] = origin.y;
 	} else {
-		long window = eventWindow();
-		GDK.gdk_window_get_origin(window, origin_x, origin_y);
+		Point origin = getWindowOrigin();
+		origin_x[0] = origin.x;
+		origin_y[0] = origin.y;
 	}
 
 	x -= origin_x[0];
@@ -1756,8 +1757,9 @@ public Point toDisplay(int x, int y) {
 		origin_x[0] = origin.x;
 		origin_y[0] = origin.y;
 	} else {
-		long window = eventWindow();
-		GDK.gdk_window_get_origin(window, origin_x, origin_y);
+		Point origin = getWindowOrigin();
+		origin_x[0] = origin.x;
+		origin_y[0] = origin.y;
 	}
 
 	if ((style & SWT.MIRRORED) != 0) x = getClientWidth() - x;
@@ -6919,7 +6921,29 @@ Point getWindowOrigin () {
 	long window = eventWindow ();
 	GDK.gdk_window_get_origin (window, x, y);
 
+	Point monitorOrigin = monitorOrigin ();
+	if (monitorOrigin != null) {
+		x [0] += monitorOrigin.x;
+		y [0] += monitorOrigin.y;
+	}
+
 	return new Point (x [0], y [0]);
+}
+
+/**
+ * Offset that maps window relative GDK coordinates into the space of the monitor showing the
+ * receiver, or <code>null</code> when none is needed. Wayland reports no global position, so
+ * without it {@link Monitor} geometry and control coordinates cannot be compared.
+ */
+Point monitorOrigin () {
+	if (GTK.GTK4 || !OS.isWayland ()) return null;
+	// An unmapped Shell has no GdkWindow; the nearest ancestor that has one is on the same monitor.
+	long window = 0;
+	for (Control control = this; control != null; control = control.parent) {
+		window = gtk_widget_get_window (control.getShell ().topHandle ());
+		if (window != 0) break;
+	}
+	return display.monitorOrigin (window);
 }
 
 /**

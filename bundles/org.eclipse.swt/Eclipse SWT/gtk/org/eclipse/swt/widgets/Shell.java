@@ -1348,8 +1348,24 @@ public Point getLocation() {
 		// TODO: GTK4 GtkWindow no longer has the ability to get position
 	} else {
 		GTK3.gtk_window_get_position (shellHandle, x, y);
+		applyMonitorOrigin (x, y);
 	}
 	return new Point (x [0], y [0]);
+}
+
+@Override
+Point monitorOrigin () {
+	// A child Shell is positioned while still hidden, before its own monitor is known.
+	if (parent != null) return parent.monitorOrigin ();
+	return super.monitorOrigin ();
+}
+
+/** Shifts a window relative GTK position into display coordinates. */
+void applyMonitorOrigin (int [] x, int [] y) {
+	Point origin = monitorOrigin ();
+	if (origin == null) return;
+	x [0] += origin.x;
+	y [0] += origin.y;
 }
 
 @Override
@@ -1601,6 +1617,7 @@ long gtk3_button_press_event (long widget, long event) {
 long gtk_configure_event (long widget, long event) {
 	int [] x = new int [1], y = new int [1];
 	GTK3.gtk_window_get_position (shellHandle, x, y);
+	applyMonitorOrigin (x, y);
 
 	if (!isVisible ()) {
 		return 0; //We shouldn't handle move/resize events if shell is hidden.
@@ -2361,8 +2378,10 @@ void resizeBounds (int width, int height, boolean notify) {
 			GDK.gdk_window_resize (enableWindow, width, height);
 		}
 	}
-	int boxWidth = width - 2*border;
-	int boxHeight = height - 2*border;
+	// GTK rejects negative allocations; a shell smaller than its own border must not
+	// leak a negative size into gtk_widget_size_allocate().
+	int boxWidth = Math.max (0, width - 2*border);
+	int boxHeight = Math.max (0, height - 2*border);
 	if ((style & SWT.RESIZE) == 0) {
 		GTK.gtk_widget_set_size_request (vboxHandle, boxWidth, boxHeight);
 	}
@@ -2415,9 +2434,13 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 			}
 			if (mapped) positionPopover();
 		} else if (!GTK.GTK4) {
+			// GTK positions windows in its own space; x and y arrive in display coordinates.
+			Point origin = monitorOrigin ();
+			int gtkX = origin != null ? x - origin.x : x;
+			int gtkY = origin != null ? y - origin.y : y;
 			int [] x_pos = new int [1], y_pos = new int [1];
 			GTK3.gtk_window_get_position(shellHandle, x_pos, y_pos);
-			GTK3.gtk_window_move(shellHandle, x, y);
+			GTK3.gtk_window_move(shellHandle, gtkX, gtkY);
 			/*
 			 * Bug in GTK: gtk_window_get_position () is not always up-to-date right after
 			 * gtk_window_move (). The random delays cause problems like bug 445900.
@@ -2429,11 +2452,11 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 			for (int i = 0; i < 1000; i++) {
 				int [] x2_pos = new int [1], y2_pos = new int [1];
 				GTK3.gtk_window_get_position(shellHandle, x2_pos, y2_pos);
-				if (x2_pos[0] == x && y2_pos[0] == y) {
+				if (x2_pos[0] == gtkX && y2_pos[0] == gtkY) {
 					break;
 				}
 			}
-			if (x_pos [0] != x || y_pos [0] != y) {
+			if (x_pos [0] != gtkX || y_pos [0] != gtkY) {
 				moved = true;
 				oldX = x;
 				oldY = y;
@@ -3611,6 +3634,7 @@ Rectangle getBoundsInPixels () {
 			GDK.gdk_window_get_root_origin(GTK3.gtk_widget_get_window(shellHandle), x, y);
 		}
 	}
+	if (!GTK.GTK4) applyMonitorOrigin (x, y);
 	GtkAllocation allocation = new GtkAllocation ();
 	GTK.gtk_widget_get_allocation (vboxHandle, allocation);
 	int width = allocation.width;
