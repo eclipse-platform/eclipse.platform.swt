@@ -4096,7 +4096,8 @@ void updateBkImages(boolean colorChanged) {
 					int tabHeight = getTabHeight();
 					int height = this.getSize().y;
 					boolean wrapped = onBottom ? bounds.y + bounds.height < height - tabHeight : bounds.y > tabHeight;
-					if (wrapped || gradientColors == null) {
+					// only a custom renderer can paint something else here
+					if (useDefaultRenderer && (gradientColors == null || wrapped)) {
 						bkImageBounds[i]=null;
 						control.setBackgroundImage(null);
 						control.setBackground(getBackground());
@@ -4110,11 +4111,21 @@ void updateBkImages(boolean colorChanged) {
 							bounds.y = -1;
 						}
 						bounds.x = 0;
+						if (bounds.height <= 0) {
+							// drop the cache, so a skipped color change is not lost
+							bkImageBounds[i] = null;
+							continue;
+						}
 						// do not redraw when only translated:
 						if (colorChanged || !bounds.equals(bkImageBounds[i])) {
 							bkImageBounds[i] = bounds;
 							if (controlBkImages[i] != null) controlBkImages[i].dispose();
-							controlBkImages[i] = new Image(control.getDisplay(), (gc, imageWidth, imageHeight) -> renderer.draw(CTabFolderRenderer.PART_BACKGROUND, 0, bounds, gc), bounds.width, bounds.height);
+							controlBkImages[i] = new Image(control.getDisplay(), (gc, imageWidth, imageHeight) -> {
+								// pixels a renderer leaves untouched would stay blank in an image
+								gc.setBackground(getBackground());
+								gc.fillRectangle(0, 0, imageWidth, imageHeight);
+								renderer.draw(CTabFolderRenderer.PART_BACKGROUND, 0, bounds, gc);
+							}, bounds.width, bounds.height);
 							control.setBackground(null);
 							control.setBackgroundImage(controlBkImages[i]);
 						}
