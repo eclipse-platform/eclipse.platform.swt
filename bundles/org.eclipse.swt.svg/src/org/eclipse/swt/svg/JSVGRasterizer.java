@@ -42,6 +42,7 @@ import java.util.Map;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.PaletteData;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.internal.image.SVGRasterizer;
 
 import com.github.weisj.jsvg.SVGDocument;
@@ -53,6 +54,11 @@ import com.github.weisj.jsvg.parser.SVGLoader;
  * A rasterizer implementation for converting SVG data into rasterized images.
  * This class uses the third party library JSVG for the raterization of SVG
  * images.
+ * <p>
+ * The color resolving {@code currentColor} is global, defaults to black and
+ * can be set via {@link #setCurrentColor(RGB)} or the system property
+ * {@code swt.svg.currentColor} (e.g. {@code #FFFFFF}).
+ * </p>
  */
 public class JSVGRasterizer implements SVGRasterizer {
 
@@ -69,6 +75,14 @@ public class JSVGRasterizer implements SVGRasterizer {
 		}
 	}
 
+	private static final String CURRENT_COLOR_PROPERTY = "swt.svg.currentColor"; //$NON-NLS-1$
+
+	private static final RGB DEFAULT_CURRENT_COLOR = new RGB(0, 0, 0);
+
+	private static final RGB INITIAL_CURRENT_COLOR = readCurrentColorProperty();
+
+	private static volatile RGB currentColor = INITIAL_CURRENT_COLOR;
+
 	private final static Map<Key, Object> RENDERING_HINTS = Map.of( //
 			KEY_ANTIALIASING, VALUE_ANTIALIAS_ON, //
 			KEY_ALPHA_INTERPOLATION, VALUE_ALPHA_INTERPOLATION_QUALITY, //
@@ -80,6 +94,38 @@ public class JSVGRasterizer implements SVGRasterizer {
 			KEY_STROKE_CONTROL, VALUE_STROKE_PURE, //
 			KEY_TEXT_ANTIALIASING, VALUE_TEXT_ANTIALIAS_ON //
 	);
+
+	/**
+	 * Sets the color resolving {@code currentColor}. Applies to subsequent
+	 * rasterizations only.
+	 *
+	 * @param color the color to use, or {@code null} to restore the initial value
+	 */
+	public static void setCurrentColor(RGB color) {
+		currentColor = color != null ? color : INITIAL_CURRENT_COLOR;
+	}
+
+	/**
+	 * Returns the color resolving {@code currentColor}.
+	 *
+	 * @return the current color, never {@code null}
+	 */
+	public static RGB getCurrentColor() {
+		return currentColor;
+	}
+
+	private static RGB readCurrentColorProperty() {
+		String value = System.getProperty(CURRENT_COLOR_PROPERTY);
+		if (value == null) {
+			return DEFAULT_CURRENT_COLOR;
+		}
+		try {
+			int rgb = Integer.parseInt(value.trim().replaceFirst("^#", ""), 16); //$NON-NLS-1$ //$NON-NLS-2$
+			return new RGB((rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, rgb & 0xFF);
+		} catch (NumberFormatException e) {
+			return DEFAULT_CURRENT_COLOR;
+		}
+	}
 
 	@Override
 	public ImageData rasterizeSVG(InputStream inputStream, int zoom) {
@@ -140,7 +186,8 @@ public class JSVGRasterizer implements SVGRasterizer {
 	private Graphics2D configureRenderingOptions(float widthScalingFactor, float heightScalingFactor,
 			BufferedImage image) {
 		Graphics2D g = image.createGraphics();
-		g.setColor(Color.BLACK);
+		RGB color = currentColor;
+		g.setColor(new Color(color.red, color.green, color.blue));
 		g.setRenderingHints(RENDERING_HINTS);
 		g.scale(widthScalingFactor, heightScalingFactor);
 		return g;
