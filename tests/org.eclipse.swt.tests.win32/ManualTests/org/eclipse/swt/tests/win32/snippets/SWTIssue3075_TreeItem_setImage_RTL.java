@@ -11,12 +11,16 @@
 * Contributors:
 *     Vector Informatik GmbH  - initial API and implementation
 *******************************************************************************/
-package org.eclipse.swt.snippets;
+package org.eclipse.swt.tests.win32.snippets;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeColumn;
+import org.eclipse.swt.widgets.TreeItem;
 
 /**
  * Snippet to demonstrate SWT bug 3075: TreeItem.setImage() does not work for
@@ -24,9 +28,8 @@ import org.eclipse.swt.widgets.*;
  * <br/>
  *
  * See <a href="https://github.com/eclipse-platform/eclipse.platform.swt/issues/3075">SWT bug 3075</a>.
- *
  */
-public class Snippet392 {
+public class SWTIssue3075_TreeItem_setImage_RTL {
 	public static void main(String[] args) {
 		Display display = new Display();
 		Shell shell = new Shell(display);
@@ -40,7 +43,7 @@ public class Snippet392 {
 		TreeColumn column2 = new TreeColumn(tree, SWT.NONE);
 		column2.setWidth(200);
 
-		Image image = new Image(display, Snippet392.class.getResourceAsStream("eclipse.svg"));
+		Image image = new Image(display, SWTIssue3075_TreeItem_setImage_RTL.class.getResourceAsStream("eclipse.svg"));
 
 		TreeItem item = new TreeItem(tree, SWT.None);
 		item.setText(0, "Hello");
