@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2016 IBM Corporation and others.
+ * Copyright (c) 2008, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -30,7 +30,7 @@ import jakarta.annotation.*;
 
 
 public class MacGeneratorView {
-	private static final String GENERATE_ICON = "platform:/plugin/org.eclipse.swt.tools/icons/mac.gif";
+	private static final String GENERATE_ICON = "platform:/plugin/org.eclipse.swt.tools/icons/save_edit.svg";
 	private MacGeneratorUI ui;
 	private IResource root;
 	IResourceChangeListener listener;
@@ -127,25 +127,32 @@ public class MacGeneratorView {
 	}
 
 	private void contributeToPart(MPart part) {
-		if (part.getToolbar() == null) {
-			MToolBar toolBar = MMenuFactory.INSTANCE.createToolBar();
+		MToolBar toolBar = part.getToolbar();
+		if (toolBar == null) {
+			toolBar = MMenuFactory.INSTANCE.createToolBar();
 			MDirectToolItem item = MMenuFactory.INSTANCE.createDirectToolItem();
 			item.setLabel("Generate");
 			item.setTooltip("Generate");
 			item.setIconURI(GENERATE_ICON);
-			item.setObject(this);
 			toolBar.getChildren().add(item);
 			part.setToolbar(toolBar);
 		}
-		if (part.getMenus().stream().noneMatch(menu -> menu.getTags().contains("ViewMenu"))) {
-			MMenu menu = MMenuFactory.INSTANCE.createMenu();
+		MMenu menu = part.getMenus().stream().filter(m -> m.getTags().contains("ViewMenu")).findFirst().orElse(null);
+		if (menu == null) {
+			menu = MMenuFactory.INSTANCE.createMenu();
 			menu.getTags().add("ViewMenu");
 			MDirectMenuItem item = MMenuFactory.INSTANCE.createDirectMenuItem();
 			item.setLabel("Generate");
 			item.setIconURI(GENERATE_ICON);
-			item.setObject(this);
 			menu.getChildren().add(item);
 			part.getMenus().add(menu);
+		}
+		// The items are persisted with the workbench model, the object is not
+		for (MToolBarElement element : toolBar.getChildren()) {
+			if (element instanceof MDirectToolItem item) item.setObject(this);
+		}
+		for (MMenuElement element : menu.getChildren()) {
+			if (element instanceof MDirectMenuItem item) item.setObject(this);
 		}
 	}
 	
