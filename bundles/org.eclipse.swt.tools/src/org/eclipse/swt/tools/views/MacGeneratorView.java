@@ -19,6 +19,7 @@ import org.eclipse.core.resources.*;
 import org.eclipse.core.runtime.*;
 import org.eclipse.core.runtime.jobs.*;
 import org.eclipse.jface.action.*;
+import org.eclipse.swt.*;
 import org.eclipse.swt.tools.internal.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.*;
@@ -72,14 +73,8 @@ public class MacGeneratorView extends ViewPart {
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
 		IProject swtProject = workspaceRoot.getProject("org.eclipse.swt");
-		if (swtProject == null) {
-			throw new IllegalStateException("Project org.eclipse.swt not found in the workspace.");
-		}
 		Path rootPath = new Path("Eclipse SWT PI/cocoa");
 		root = swtProject.findMember(rootPath);
-		if (root == null) {
-			throw new IllegalStateException("Path "+rootPath+" not found in the workspace.");
-		}
 		listener = event -> {
 			if (job != null) return;
 			if (event.getType() != IResourceChangeEvent.POST_CHANGE) return;
@@ -103,7 +98,7 @@ public class MacGeneratorView extends ViewPart {
 				ui.refresh();
 			}
 		};
-		workspace.addResourceChangeListener(listener);
+		if (root != null) workspace.addResourceChangeListener(listener);
 	}
 
 	/**
@@ -112,6 +107,11 @@ public class MacGeneratorView extends ViewPart {
 	 */
 	@Override
 	public void createPartControl(Composite parent) {
+		if (root == null) {
+			Label label = new Label(parent, SWT.WRAP);
+			label.setText("Project org.eclipse.swt with folder \"Eclipse SWT PI/cocoa\" was not found in the workspace.");
+			return;
+		}
 		MacGenerator gen = new MacGenerator();
 		gen.setOutputDir(root.getLocation().toPortableString());
 		gen.setMainClass(mainClassName);
@@ -177,6 +177,6 @@ public class MacGeneratorView extends ViewPart {
 	 */
 	@Override
 	public void setFocus() {
-		ui.setFocus();
+		if (ui != null) ui.setFocus();
 	}
 }
