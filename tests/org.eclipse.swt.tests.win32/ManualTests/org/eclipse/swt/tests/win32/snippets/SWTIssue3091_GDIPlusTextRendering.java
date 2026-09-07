@@ -8,18 +8,29 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package org.eclipse.swt.snippets;
+package org.eclipse.swt.tests.win32.snippets;
 
-import java.util.*;
-import java.util.concurrent.atomic.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.custom.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Canvas;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
 
-/*
+/**
  * Windows plain GDI vs. GDI+ text rendering snippet.
  *
  * On Windows, GC.drawText() renders text in one of two ways: with plain GDI
@@ -27,17 +38,19 @@ import org.eclipse.swt.widgets.*;
  * GC.setAdvanced(true) is active. The two engines compute text layout
  * independently, so kerning, tab stop width, mnemonic underlining and
  * bidi/mirroring can all come out differently depending on which one draws.
- *
+ * <p>
  * This snippet renders a series of text properties, one row per property, and
  * lets the rendering path be switched at runtime, so that the results can be
  * compared visually without restarting the process:
- * - "Use GDI+ (advanced) rendering" calls GC.setAdvanced() and re-renders
- *   every row, switching between plain GDI and GDI+.
- * - "Use legacy GDI text rendering" toggles the
+ * <ul>
+ * <li>"Use GDI+ (advanced) rendering" calls GC.setAdvanced() and re-renders
+ *   every row, switching between plain GDI and GDI+.</li>
+ * <li>"Use legacy GDI text rendering" toggles the
  *   org.eclipse.swt.internal.win32.useGDITextRenderingWithGDIP system property,
  *   restoring the previous behavior of having GDI compute the glyph positions.
  *   It only matters while GDI+/advanced rendering is enabled and is disabled
- *   otherwise.
+ *   otherwise.</li>
+ * </ul>
  *
  * The rows labelled "unsupported glyph (U+FFFE)" append U+FFFE, a Unicode
  * non-character that no standard font has a glyph for. Strings containing such
@@ -47,29 +60,29 @@ import org.eclipse.swt.widgets.*;
  * U+FFFE itself is expected.
  *
  * What to expect while toggling:
- * - The two tab rows must expand tabs to the same column width in every
- *   combination.
- * - "Mnemonic" shows an underlined "F" in every combination (it does not
- *   depend on font-level decoration).
- * - "Kerning pair", the tab rows and "Mirrored / RTL" may differ slightly in
+ * <ul>
+ * <li> The two tab rows must expand tabs to the same column width in every
+ *   combination.</li>
+ * <li> "Mnemonic" shows an underlined "F" in every combination (it does not
+ *   depend on font-level decoration).</li>
+ * <li> "Kerning pair", the tab rows and "Mirrored / RTL" may differ slightly in
  *   spacing/positioning between the engines, but should never render blank,
- *   wildly stretched/compressed, or with overlapping glyphs.
- * - The script/charset rows (Arabic, Hebrew, CJK, Cyrillic, Greek, combining
+ *   wildly stretched/compressed, or with overlapping glyphs.</li>
+ * <li> The script/charset rows (Arabic, Hebrew, CJK, Cyrillic, Greek, combining
  *   diacritics) should render recognisable, visible glyphs in every
- *   combination.
- * - "Underlined"/"Strikeout"/"Bold + underlined" render their decoration with
+ *   combination.</li>
+ * <li> "Underlined"/"Strikeout"/"Bold + underlined" render their decoration with
  *   plain GDI and with GDI+, and go blank only with legacy GDI text rendering
- *   enabled, unless U+FFFE forces GDI+'s own text layout. See
- *   https://github.com/eclipse-platform/eclipse.platform.swt/issues/3091 .
+ *   enabled, unless U+FFFE forces GDI+'s own text layout.</li>
+ * </ul>
  *
  * On platforms other than Windows, GC.setAdvanced() does not select a
  * different text rendering engine and the system property has no effect, so
  * all rows render identically regardless of the checkbox state.
- *
- * For a list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
+ * <p>
+ * See <a href="https://github.com/eclipse-platform/eclipse.platform.swt/issues/3091">SWT bug 3091<a/>
  */
-public class Snippet395 {
+public class SWTIssue3091_GDIPlusTextRendering {
 
 	static final String USE_GDI_TEXT_RENDERING_WITH_GDIP_PROPERTY =
 			"org.eclipse.swt.internal.win32.useGDITextRenderingWithGDIP";
