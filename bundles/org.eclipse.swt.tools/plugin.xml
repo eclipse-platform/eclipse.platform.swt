@@ -7,14 +7,14 @@
             id="org.eclipse.swt.dev.tools"
             name="%viewCategory">
       </category>
-      <view
+      <e4view
             allowMultiple="false"
             category="org.eclipse.swt.dev.tools"
             class="org.eclipse.swt.tools.views.MacGeneratorView"
             icon="icons/mac.gif"
             id="org.eclipse.swt.tools.views.MacGeneratorView"
             name="%macViewName">
-      </view>
+      </e4view>
    </extension>
 
    <extension point="org.eclipse.ui.editors.templates">
