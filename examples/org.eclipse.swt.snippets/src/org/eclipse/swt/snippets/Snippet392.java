@@ -23,7 +23,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
-public class Snippet394 {
+public class Snippet392 {
 	public static void main(String[] args) {
 		Display display = new Display();
 		Shell shell = new Shell(display);
