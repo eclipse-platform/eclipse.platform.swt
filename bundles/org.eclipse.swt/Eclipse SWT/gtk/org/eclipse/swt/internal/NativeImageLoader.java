@@ -200,7 +200,7 @@ public class NativeImageLoader {
 		case "bmp" -> SWT.IMAGE_BMP;
 		case "gif" -> SWT.IMAGE_GIF;
 		case "ico" -> SWT.IMAGE_ICO;
-		case "jpeg" -> SWT.IMAGE_JPEG;
+		case "jpeg", "jpg" -> SWT.IMAGE_JPEG;
 		case "png" -> SWT.IMAGE_PNG;
 		case "tiff" -> SWT.IMAGE_TIFF;
 		case "svg" -> SWT.IMAGE_SVG;
