@@ -619,6 +619,12 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 }
 void drawInPixels(GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground, int flags) {
 	checkLayout ();
+
+	if(gc instanceof GCExtension gcext) {
+		gcext.textLayoutDraw(this, gc,  x,  y,  selectionStart,  selectionEnd,  selectionForeground,  selectionBackground,  flags);
+		return;
+	}
+
 	computeRuns();
 	if (gc == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (gc.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
