@@ -173,7 +173,6 @@
                bundles/org.eclipse.swt.tools with the java source-file launcher. -->
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>exec-maven-plugin</artifactId>
-          <version>3.6.3</version>
           <configuration>
             <forceJava>true</forceJava>
             <executable>java</executable>
