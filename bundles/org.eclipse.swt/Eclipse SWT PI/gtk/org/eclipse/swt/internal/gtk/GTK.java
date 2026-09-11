@@ -2276,6 +2276,16 @@ public class GTK extends OS {
 	public static final native void gtk_widget_set_margin_bottom(long widget, int margin);
 	/** @param self cast=(GtkWidget *) */
 	public static final native int gtk_widget_get_state_flags(long self);
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 * @param flags cast=(GtkStateFlags)
+	 */
+	public static final native void gtk_widget_unset_state_flags(long widget, int flags);
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 * @param flags cast=(GtkStateFlags)
+	 */
+	public static final native void gtk_widget_set_state_flags(long widget, int flags, boolean clear);
 	/** @param widget cast=(GtkWidget *) */
 	public static final native boolean gtk_widget_has_default(long widget);
 

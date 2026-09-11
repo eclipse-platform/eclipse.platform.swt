@@ -136,6 +136,8 @@ public class Display extends Device implements Executor {
 	long snapshotDrawProc, keyPressReleaseProc, focusProc, windowActiveProc, enterMotionProc, leaveProc,
 		 scrollProc, resizeProc, layoutProc, activateProc, gesturePressReleaseProc;
 	long menuItemsChangedProc;
+	/** GTK4 only: System.nanoTime() of the last key event, see Menu#syncRowSelection. */
+	long lastKeyEventTime;
 	long notifyProc;
 	long computeSizeProc;
 	Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5, windowCallback6;
@@ -6123,6 +6125,7 @@ void windowActiveProc(long handle, long user_data) {;
 }
 
 boolean keyPressReleaseProc(long controller, int keyval, int keycode, int state, long user_data) {
+	lastKeyEventTime = System.nanoTime();
 	long handle = GTK.gtk_event_controller_get_widget(controller);
 	Widget widget = getWidget(handle);
 	if (widget == null) return false;

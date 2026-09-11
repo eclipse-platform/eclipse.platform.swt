@@ -576,6 +576,7 @@ void createHandle (int index) {
 			default:
 				handle = GTK4.gtk_popover_menu_new_from_model_full(modelHandle, GTK4.GTK_POPOVER_MENU_NESTED);
 				GTK.gtk_widget_set_parent(handle, parent.handle);
+				hookRowSelectionSync(handle);
 				GTK.gtk_popover_set_position(handle, GTK.GTK_POS_BOTTOM);
 				GTK4.gtk_popover_set_has_arrow(handle, false);
 				GTK.gtk_widget_set_halign(handle, GTK.GTK_ALIGN_START);
@@ -1020,6 +1021,7 @@ private void wireSubMenuPopover(Menu submenu, long popover) {
 	OS.g_object_ref(popover);
 	submenu.popoverHandle = popover;
 	display.addWidget(popover, submenu);
+	submenu.hookRowSelectionSync(popover);
 	OS.g_signal_connect_closure_by_id(popover, display.signalIds[SHOW], 0, display.getClosure(SHOW), false);
 	OS.g_signal_connect_closure_by_id(popover, display.signalIds[HIDE], 0, display.getClosure(HIDE), false);
 }
@@ -1068,6 +1070,99 @@ private void connectCascadeSubMenuSignals(Menu menu, long parentPopoverHandle) {
 			}
 		}
 	}
+}
+
+/** GTK4: hooks the controllers that keep a popover's row selection in step with the pointer, see syncRowSelection. */
+void hookRowSelectionSync(long popover) {
+	long focusController = GTK4.gtk_event_controller_focus_new();
+	OS.g_signal_connect(focusController, OS.enter, display.focusProc, FOCUS_IN);
+	OS.g_signal_connect(focusController, OS.leave, display.focusProc, FOCUS_OUT);
+	GTK4.gtk_widget_add_controller(popover, focusController);
+	long motionController = GTK4.gtk_event_controller_motion_new();
+	/* "enter" has the motion signature and needs the same sync. */
+	OS.g_signal_connect(motionController, OS.enter, display.enterMotionProc, MOTION);
+	OS.g_signal_connect(motionController, OS.motion, display.enterMotionProc, MOTION);
+	GTK4.gtk_widget_add_controller(popover, motionController);
+	/* Menubar drop-downs sit outside every control's key controller; time their keys here. */
+	long keyController = GTK4.gtk_event_controller_key_new();
+	GTK.gtk_event_controller_set_propagation_phase(keyController, GTK.GTK_PHASE_CAPTURE);
+	OS.g_signal_connect(keyController, OS.key_pressed, display.keyPressReleaseProc, KEY_PRESSED);
+	GTK4.gtk_widget_add_controller(popover, keyController);
+}
+
+@Override
+boolean gtk4_key_press_event(long controller, int keyval, int keycode, int state, long event) {
+	return false; /* Only Display.lastKeyEventTime is wanted, see hookRowSelectionSync. */
+}
+
+@Override
+void gtk4_motion_event(long controller, double x, double y, long event) {
+	syncRowSelection(GTK.gtk_event_controller_get_widget(controller));
+}
+
+@Override
+void gtk4_focus_enter_event(long controller, long event) {
+	syncRowSelectionLater(GTK.gtk_event_controller_get_widget(controller));
+}
+
+@Override
+void gtk4_focus_leave_event(long controller, long event) {
+	syncRowSelectionLater(GTK.gtk_event_controller_get_widget(controller));
+}
+
+/* When a submenu closes, GtkWindow's focus fallback selects some row; sync once that settled. */
+private void syncRowSelectionLater(long popover) {
+	display.asyncExec(() -> {
+		/* The popover may have been rebuilt, and freed, meanwhile; see wireSubMenuPopover. */
+		if (!isDisposed() && popover == ((style & SWT.POP_UP) != 0 ? handle : popoverHandle)) syncRowSelection(popover);
+	});
+}
+
+/*
+ * GtkPopoverMenu stops updating the rows' selection once a submenu holds the pointer
+ * grab, so re-derive every row's selection from its "prelight" state, which crossing
+ * events set on the row under the pointer regardless of the grab.
+ */
+void syncRowSelection(long popover) {
+	/* Keyboard navigation selects rows through focus; leave those alone. */
+	if (System.nanoTime() - display.lastKeyEventTime < 500_000_000L) return;
+	/* The event may reach any popover of the menu (the grab holder); sync from the root down. */
+	for (long p = GTK.gtk_widget_get_parent(popover); p != 0; p = GTK.gtk_widget_get_parent(p)) {
+		if (GTK4.GTK_IS_POPOVER_MENU(p)) popover = p;
+	}
+	syncRowSelectionRecursive(popover);
+}
+
+private void syncRowSelectionRecursive(long widget) {
+	// Closed submenus stay instantiated; skipping them keeps this cheap on large menus.
+	if (GTK4.GTK_IS_POPOVER_MENU(widget) && !GTK.gtk_widget_get_visible(widget)) return;
+	if (isModelButton(widget)) {
+		int flags = GTK.gtk_widget_get_state_flags(widget);
+		boolean selected = (flags & GTK.GTK_STATE_FLAG_PRELIGHT) != 0 || hasVisibleSubmenu(widget);
+		if (selected && (flags & GTK.GTK_STATE_FLAG_SELECTED) == 0) {
+			GTK.gtk_widget_set_state_flags(widget, GTK.GTK_STATE_FLAG_SELECTED, false);
+		} else if (!selected && (flags & GTK.GTK_STATE_FLAG_SELECTED) != 0) {
+			GTK.gtk_widget_unset_state_flags(widget, GTK.GTK_STATE_FLAG_SELECTED);
+		}
+		// A bare state-flag change (ours, or GTK's own prelight) is not repainted inside the
+		// Eclipse workbench; queue a draw so the highlight tracks the pointer.
+		GTK.gtk_widget_queue_draw(widget);
+		/* A cascade row hosts its submenu popover as a child; keep descending. */
+	}
+	for (long child = GTK4.gtk_widget_get_first_child(widget); child != 0; child = GTK4.gtk_widget_get_next_sibling(child)) {
+		syncRowSelectionRecursive(child);
+	}
+}
+
+private static boolean hasVisibleSubmenu(long row) {
+	for (long child = GTK4.gtk_widget_get_first_child(row); child != 0; child = GTK4.gtk_widget_get_next_sibling(child)) {
+		if (GTK4.GTK_IS_POPOVER_MENU(child) && GTK.gtk_widget_get_visible(child)) return true;
+	}
+	return false;
+}
+
+private static boolean isModelButton(long widget) {
+	return "GtkModelButton".equals(Converter.cCharPtrToJavaString(OS.g_type_name(OS.G_OBJECT_TYPE(widget)), false));
 }
 
 /**
