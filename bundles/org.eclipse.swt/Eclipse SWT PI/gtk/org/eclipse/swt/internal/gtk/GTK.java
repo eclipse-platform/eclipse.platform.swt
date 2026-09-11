@@ -258,6 +258,7 @@ public class GTK extends OS {
 
 
 	/* GtkButton */
+	public static final native long gtk_button_get_type();
 	public static final native long gtk_button_new();
 	/**
 	 * @method flags=dynamic
@@ -1038,6 +1039,13 @@ public class GTK extends OS {
 	 * @param priority cast=(guint)
 	 */
 	public static final native void gtk_style_context_add_provider(long context, long provider, int priority);
+	/**
+	 * @method flags=dynamic
+	 * @param display cast=(GdkDisplay *)
+	 * @param provider cast=(GtkStyleProvider *)
+	 * @param priority cast=(guint)
+	 */
+	public static final native void gtk_style_context_add_provider_for_display(long display, long provider, int priority);
 	/**
 	 * @param context cast=(GtkStyleContext *)
 	 * @param class_name cast=(const gchar *)
@@ -2270,6 +2278,16 @@ public class GTK extends OS {
 	public static final native void gtk_widget_set_margin_bottom(long widget, int margin);
 	/** @param self cast=(GtkWidget *) */
 	public static final native int gtk_widget_get_state_flags(long self);
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 * @param flags cast=(GtkStateFlags)
+	 */
+	public static final native void gtk_widget_unset_state_flags(long widget, int flags);
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 * @param flags cast=(GtkStateFlags)
+	 */
+	public static final native void gtk_widget_set_state_flags(long widget, int flags, boolean clear);
 	/** @param widget cast=(GtkWidget *) */
 	public static final native boolean gtk_widget_has_default(long widget);
 
@@ -2281,6 +2299,12 @@ public class GTK extends OS {
 	 * @param css_class cast=(const char *)
 	 * */
 	public static final native void gtk_widget_add_css_class(long widget, byte[] css_class);
+	/**
+	 * @method flags=dynamic
+	 * @param widget cast=(GtkWidget *)
+	 * @param css_class cast=(const char *)
+	 * */
+	public static final native void gtk_widget_remove_css_class(long widget, byte[] css_class);
 	/** @param widget cast=(GtkWidget *) */
 	public static final native boolean gtk_widget_child_focus(long widget, int direction);
 	/**

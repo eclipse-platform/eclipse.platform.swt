@@ -21,6 +21,7 @@ import org.eclipse.swt.internal.gtk.*;
 public class GTK4 {
 
 	public static final int GTK_POPOVER_MENU_NESTED = 1 << 0;
+	public static final int GTK_SIZE_GROUP_HORIZONTAL = 1;
 
 	/*
 	 * GdkDragAction values. Note that GTK4 redefined these compared to GTK3
@@ -74,6 +75,13 @@ public class GTK4 {
 	 * @param v cast=(float *)
 	 */
 	public static final native void gtk_rgb_to_hsv(float r, float g, float b, float[] h, float[] s, float[] v);
+
+	/* GtkActionable */
+	/**
+	 * @param actionable cast=(GtkActionable *)
+	 * @param action_name cast=(const char *)
+	 */
+	public static final native void gtk_actionable_set_action_name(long actionable, byte[] action_name);
 
 	/* GtkBox */
 	/**
@@ -533,6 +541,15 @@ public class GTK4 {
 	/** @param window cast=(GtkWindow *) */
 	public static final native void gtk_window_present(long window) ;
 
+	/* GtkSizeGroup */
+	/** @param mode cast=(GtkSizeGroupMode) */
+	public static final native long gtk_size_group_new(int mode);
+	/**
+	 * @param size_group cast=(GtkSizeGroup *)
+	 * @param widget cast=(GtkWidget *)
+	 */
+	public static final native void gtk_size_group_add_widget(long size_group, long widget);
+
 	/* GtkShortcutController */
 	public static final native long gtk_shortcut_controller_new();
 	/**
@@ -590,6 +607,17 @@ public class GTK4 {
 	public static final native void gtk_text_set_tabs(long entry, long tabs);
 
 	/* GtkPopoverMenu */
+	/**
+	 * @param popover cast=(GtkPopoverMenu *)
+	 * @param child cast=(GtkWidget *)
+	 * @param id cast=(const char *)
+	 */
+	public static final native boolean gtk_popover_menu_add_child(long popover, long child, byte[] id);
+	/**
+	 * @param popover cast=(GtkPopoverMenu *)
+	 * @param child cast=(GtkWidget *)
+	 */
+	public static final native boolean gtk_popover_menu_remove_child(long popover, long child);
 	/**
 	 * @param model cast=(GMenuModel *)
 	 * @param flags cast=(GtkPopoverMenuFlags)
