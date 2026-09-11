@@ -57,7 +57,6 @@ public abstract class Control extends Widget implements Drawable {
 	static final boolean DISABLE_EMOJI = Boolean.getBoolean("SWT_GTK_INPUT_HINT_NO_EMOJI");
 
 	long fixedHandle;
-	long firstFixedHandle = 0;
 	long keyController;
 	long redrawWindow, enableWindow, provider;
 	int drawCount, backgroundAlpha = 255;
@@ -3969,17 +3968,15 @@ void gtk4_focus_enter_event(long controller, long event) {
 void gtk4_focus_window_event(long handle, long event) {
 	super.gtk4_focus_window_event(handle, event);
 
-	if(firstFixedHandle == 0) {
-		long child = handle;
-		//3rd child of shell will be SWTFixed
-		for(int i = 0; i<3; i++) {
-			child = GTK4.gtk_widget_get_first_child(child);
-		}
-		firstFixedHandle = child != 0 ? child:0;
-	}
-
-	if(firstFixedHandle !=0 && GTK.gtk_widget_has_focus(firstFixedHandle)) {
-		if(event == SWT.FocusIn)sendFocusEvent(SWT.FocusIn);
+	// Send the focus event when the receiver's focusable client-area SwtFixed
+	// (this.handle) holds the keyboard focus. Reference it directly rather than walking
+	// a fixed number of first-children from the window: that depth assumption is
+	// fragile, follows only first-children (so with a menu bar it reached the first menu
+	// bar item, not the content fixed), and a cached child handle would dangle once that
+	// widget was destroyed - the next window-active event then called
+	// gtk_widget_has_focus on freed memory (SIGSEGV).
+	if (this.handle != 0 && GTK.gtk_widget_has_focus(this.handle)) {
+		if (event == SWT.FocusIn) sendFocusEvent(SWT.FocusIn);
 		else sendFocusEvent(SWT.FocusOut);
 	}
 }
