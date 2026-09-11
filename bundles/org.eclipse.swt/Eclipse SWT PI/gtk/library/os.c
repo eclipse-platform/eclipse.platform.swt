@@ -9642,6 +9642,16 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1widget_1set_1size_1request)
 }
 #endif
 
+#ifndef NO_gtk_1widget_1set_1state_1flags
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1widget_1set_1state_1flags)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jboolean arg2)
+{
+	GTK_NATIVE_ENTER(env, that, gtk_1widget_1set_1state_1flags_FUNC);
+	gtk_widget_set_state_flags((GtkWidget *)arg0, (GtkStateFlags)arg1, arg2);
+	GTK_NATIVE_EXIT(env, that, gtk_1widget_1set_1state_1flags_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1widget_1set_1tooltip_1text
 JNIEXPORT void JNICALL GTK_NATIVE(gtk_1widget_1set_1tooltip_1text)
 	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1)
@@ -9693,6 +9703,16 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1widget_1unparent)
 	GTK_NATIVE_ENTER(env, that, gtk_1widget_1unparent_FUNC);
 	gtk_widget_unparent((GtkWidget *)arg0);
 	GTK_NATIVE_EXIT(env, that, gtk_1widget_1unparent_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1widget_1unset_1state_1flags
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1widget_1unset_1state_1flags)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
+{
+	GTK_NATIVE_ENTER(env, that, gtk_1widget_1unset_1state_1flags_FUNC);
+	gtk_widget_unset_state_flags((GtkWidget *)arg0, (GtkStateFlags)arg1);
+	GTK_NATIVE_EXIT(env, that, gtk_1widget_1unset_1state_1flags_FUNC);
 }
 #endif
 
