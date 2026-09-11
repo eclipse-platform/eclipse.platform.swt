@@ -1026,22 +1026,21 @@ private void wireSubMenuPopover(Menu submenu, long popover) {
 
 private void connectDropDownMenuSignals() {
 	if (items == null) return;
-	long barItem = GTK4.gtk_widget_get_first_child(handle);
-
 	for (MenuItem menuItem : items) {
-		if (barItem == 0) break;
-		if ((menuItem.style & SWT.SEPARATOR) != 0) continue;
-		if (menuItem.menu != null) {
-			long popover = findGtkPopoverMenuChild(barItem);
-			/* Re-wire when the discovered popover differs from the cache (initial or GTK rebuilt it). */
-			if (popover != 0 && menuItem.menu.popoverHandle != popover) {
-				wireSubMenuPopover(menuItem.menu, popover);
-			}
-			if (menuItem.menu.popoverHandle != 0) {
-				connectCascadeSubMenuSignals(menuItem.menu);
-			}
+		if (menuItem.menu == null) continue;
+		/*
+		 * Locate the popover by its menu model, not positionally: this also runs
+		 * from "items-changed" mid create/dispose, when the item list and the
+		 * bar's children are out of step and a positional walk wires the wrong menu.
+		 */
+		long popover = findNestedPopoverForModel(handle, menuItem.menu.modelHandle);
+		/* Re-wire when the discovered popover differs from the cache (initial or GTK rebuilt it). */
+		if (popover != 0 && menuItem.menu.popoverHandle != popover) {
+			wireSubMenuPopover(menuItem.menu, popover);
 		}
-		barItem = GTK4.gtk_widget_get_next_sibling(barItem);
+		if (menuItem.menu.popoverHandle != 0) {
+			connectCascadeSubMenuSignals(menuItem.menu);
+		}
 	}
 }
 
@@ -1093,18 +1092,6 @@ private long findNestedPopoverForModel(long parentWidget, long targetModel) {
 	return 0;
 }
 
-
-private long findGtkPopoverMenuChild(long barItem) {
-	long child = GTK4.gtk_widget_get_first_child(barItem);
-	while (child != 0) {
-		if (GTK4.GTK_IS_POPOVER_MENU(child)) {
-			return child;
-		}
-		child = GTK4.gtk_widget_get_next_sibling(child);
-	}
-	return 0;
-}
-
 @Override
 long gtk_hide (long widget) {
 	if ((style & SWT.POP_UP) != 0) {
@@ -1149,7 +1136,6 @@ long gtk_show (long widget) {
 	return 0;
 }
 
-
 @Override
 long gtk3_show_help (long widget, long helpType) {
 	if (sendHelpEvent (helpType)) {
@@ -1183,7 +1169,6 @@ long gtk_menu_popped_up (long widget, long flipped_rect, long final_rect, long f
 	System.out.println("");
 	return 0;
 }
-
 
 @Override
 void hookEvents() {
