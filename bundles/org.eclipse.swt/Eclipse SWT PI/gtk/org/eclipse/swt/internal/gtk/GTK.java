@@ -258,6 +258,7 @@ public class GTK extends OS {
 
 
 	/* GtkButton */
+	public static final native long gtk_button_get_type();
 	public static final native long gtk_button_new();
 	/**
 	 * @method flags=dynamic

@@ -1278,6 +1278,13 @@ public static final native long g_object_get_qdata(long object, int quark);
  */
 public static final native long g_object_new(long type, long first_property_name);
 /**
+ * @param type cast=(GType)
+ * @param first_property_name cast=(const gchar *),flags=no_out
+ * @param value cast=(const gchar *),flags=no_out
+ * @param terminator cast=(const gchar *),flags=sentinel
+ */
+public static final native long g_object_new(long type, byte[] first_property_name, byte[] value, long terminator);
+/**
  * @param object cast=(GObject *)
  * @param property_name cast=(const gchar *)
  */
@@ -2417,6 +2424,12 @@ public static final native void g_menu_item_set_label(long menu_item, byte[] lab
  * @param data cast=(const gchar *)
  */
 public static final native void g_menu_item_set_attribute(long menu_item, byte[] attribute, byte[] format_string, long data);
+/**
+ * @param menu_item cast=(GMenuItem *)
+ * @param attribute cast=(const gchar *)
+ * @param value cast=(GVariant *)
+ */
+public static final native void g_menu_item_set_attribute_value(long menu_item, byte[] attribute, long value);
 
 /* GSimpleActionGroup */
 public static final native long g_simple_action_group_new();
