@@ -5728,12 +5728,13 @@ void handleHorizontalScroll(Event event) {
  * @param event keyboard event
  */
 void handleKey(Event event) {
-	int action;
 	caretAlignment = PREVIOUS_OFFSET_TRAILING;
+	int action = SWT.NULL;
 	if (event.keyCode != 0) {
 		// special key pressed (e.g., F1)
 		action = getKeyBinding(event.keyCode | event.stateMask);
-	} else {
+	}
+	if (action == SWT.NULL && event.character != 0) {
 		// character key pressed
 		action = getKeyBinding(event.character | event.stateMask);
 		if (action == SWT.NULL) {
