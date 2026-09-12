@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2022 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -387,19 +387,25 @@ void computeRuns (GC gc) {
 	for (int i=0; i<allRuns.length - 1; i++) {
 		StyleItem run = allRuns[i];
 		if (tabsInPixels != null && run.tab) {
+			/*
+			 * Whether a stop is still ahead has to be decided in points, the unit setTabs()
+			 * defined it in. In pixels a stop the pen sits exactly on can round to one pixel
+			 * past the pen, collapsing the tab instead of advancing to the next stop.
+			 */
+			int lineWidthInPoints = DPIUtil.pixelToPoint(lineWidth, getZoom(gc));
 			int tabsLength = tabsInPixels.length, j;
 			for (j = 0; j < tabsLength; j++) {
-				if (tabsInPixels[j] > lineWidth) {
+				if (tabs[j] > lineWidthInPoints) {
 					run.width = tabsInPixels[j] - lineWidth;
 					break;
 				}
 			}
 			if (j == tabsLength) {
-				int tabX = tabsInPixels[tabsLength-1];
-				int lastTabWidth = tabsLength > 1 ? tabsInPixels[tabsLength-1] - tabsInPixels[tabsLength-2] : tabsInPixels[0];
-				if (lastTabWidth > 0) {
-					while (tabX <= lineWidth) tabX += lastTabWidth;
-					run.width = tabX - lineWidth;
+				int tabXInPoints = tabs[tabsLength-1];
+				int lastTabWidthInPoints = tabsLength > 1 ? tabs[tabsLength-1] - tabs[tabsLength-2] : tabs[0];
+				if (lastTabWidthInPoints > 0) {
+					while (tabXInPoints <= lineWidthInPoints) tabXInPoints += lastTabWidthInPoints;
+					run.width = DPIUtil.pointToPixel(tabXInPoints, getZoom(gc)) - lineWidth;
 				}
 			}
 
