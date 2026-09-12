@@ -4186,6 +4186,16 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1combo_1box_1set_1active)
 }
 #endif
 
+#ifndef NO_gtk_1combo_1box_1set_1model
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1combo_1box_1set_1model)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK_NATIVE_ENTER(env, that, gtk_1combo_1box_1set_1model_FUNC);
+	gtk_combo_box_set_model((GtkComboBox *)arg0, (GtkTreeModel *)arg1);
+	GTK_NATIVE_EXIT(env, that, gtk_1combo_1box_1set_1model_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1combo_1box_1text_1insert
 JNIEXPORT void JNICALL GTK_NATIVE(gtk_1combo_1box_1text_1insert)
 	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jbyteArray arg2, jbyteArray arg3)
@@ -4234,16 +4244,6 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1combo_1box_1text_1remove)
 	GTK_NATIVE_ENTER(env, that, gtk_1combo_1box_1text_1remove_FUNC);
 	gtk_combo_box_text_remove((GtkComboBoxText *)arg0, arg1);
 	GTK_NATIVE_EXIT(env, that, gtk_1combo_1box_1text_1remove_FUNC);
-}
-#endif
-
-#ifndef NO_gtk_1combo_1box_1text_1remove_1all
-JNIEXPORT void JNICALL GTK_NATIVE(gtk_1combo_1box_1text_1remove_1all)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	GTK_NATIVE_ENTER(env, that, gtk_1combo_1box_1text_1remove_1all_FUNC);
-	gtk_combo_box_text_remove_all((GtkComboBoxText *)arg0);
-	GTK_NATIVE_EXIT(env, that, gtk_1combo_1box_1text_1remove_1all_FUNC);
 }
 #endif
 
