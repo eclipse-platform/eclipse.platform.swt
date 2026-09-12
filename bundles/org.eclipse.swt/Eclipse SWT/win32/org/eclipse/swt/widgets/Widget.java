@@ -2705,6 +2705,56 @@ void handleDPIChange(Event event, float scalingFactor) {
 	this.nativeZoom = event.detail;
 }
 
+/**
+ * Sends the given zoom changed event to the given widget, if it is still valid,
+ * isolating a failure of its processing as described in
+ * {@link #stashZoomChangeFailure(Event, Throwable)}.
+ */
+static void notifyZoomChanged (Widget widget, Event event) {
+	if (widget == null || widget.isDisposed ()) return;
+	try {
+		widget.notifyListeners (SWT.ZoomChanged, event);
+	} catch (Error | RuntimeException ex) {
+		stashZoomChangeFailure (event, ex);
+	}
+}
+
+/**
+ * Collects a failure of the zoom change processing of a single widget in the
+ * execution of the given zoom changed event.
+ * <p>
+ * Such a failure must not abort the processing of the zoom change by the widgets
+ * it is propagated to afterwards, as this would leave them rendered with a stale
+ * zoom. It is therefore reported to the exception handlers of the
+ * {@link Display} immediately and, if those do not consume it, propagated only
+ * once the zoom change has been processed completely.
+ * </p>
+ * <p>
+ * A widget that adapts itself before propagating the event further, as
+ * composites do for their children, is supposed to isolate the re-application
+ * of resources owned by the application, such as images, regions and fonts,
+ * since that is the code which can fail on state outside the control of SWT.
+ * SWT's own native bookkeeping is deliberately not isolated: if it fails, that
+ * widget's own propagation to its sub-widgets is skipped, as continuing it over
+ * an inconsistent native state is no improvement. Every other widget is adapted
+ * in either case, since the failure is collected by the sender of the event.
+ * </p>
+ * <p>
+ * A failure raised by a listener has already been reported by the
+ * {@link EventTable} and is only reported again if that report did not consume
+ * it.
+ * </p>
+ */
+static void stashZoomChangeFailure (Event event, Throwable throwable) {
+	if (event.data instanceof Control.DPIChangeExecution execution) {
+		execution.stash (throwable);
+	} else if (throwable instanceof RuntimeException runtimeException) {
+		throw runtimeException;
+	} else {
+		throw (Error) throwable;
+	}
+}
+
 int getSystemMetrics(int nIndex) {
 	return OS.GetSystemMetricsForDpi(nIndex, DPIUtil.mapZoomToDPI(nativeZoom));
 }
