@@ -96,4 +96,40 @@ class JSVGRasterizerTest {
 		RGB rgb = data.palette.getRGB(data.getPixel(0, 0));
 		assertEquals(new RGB(0, 0, 0), rgb);
 	}
+
+	@Test
+	void testConfiguredCurrentColorIsUsed() {
+		try {
+			JSVGRasterizer.setCurrentColor(new RGB(255, 255, 255));
+			ImageData data = rasterizer.rasterizeSVG(svgStream(svgString), 100);
+			RGB rgb = data.palette.getRGB(data.getPixel(0, 0));
+			assertEquals(new RGB(255, 255, 255), rgb);
+		} finally {
+			JSVGRasterizer.setCurrentColor(null);
+		}
+	}
+
+	@Test
+	void testResetCurrentColorRestoresInitialValue() {
+		JSVGRasterizer.setCurrentColor(new RGB(255, 0, 0));
+		JSVGRasterizer.setCurrentColor(null);
+		assertEquals(new RGB(0, 0, 0), JSVGRasterizer.getCurrentColor());
+	}
+
+	@Test
+	void testCurrentColorDoesNotAffectExplicitFill() {
+		String explicitFill = """
+				<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+				    <rect width="100%" height="100%" fill="#00FF00"/>
+				</svg>
+				""";
+		try {
+			JSVGRasterizer.setCurrentColor(new RGB(255, 255, 255));
+			ImageData data = rasterizer.rasterizeSVG(svgStream(explicitFill), 100);
+			RGB rgb = data.palette.getRGB(data.getPixel(0, 0));
+			assertEquals(new RGB(0, 255, 0), rgb);
+		} finally {
+			JSVGRasterizer.setCurrentColor(null);
+		}
+	}
 }
