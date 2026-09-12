@@ -124,6 +124,7 @@ public class GDK extends OS {
 	public static final int GDK_KP_8 = 0xffb8;
 	public static final int GDK_KP_9 = 0xffb9;
 	public static final int GDK_KP_Add = 0xffab;
+	public static final int GDK_KP_Space = 0xff80;
 	public static final int GDK_KP_Decimal = 0xffae;
 	public static final int GDK_KP_Delete = 0xFF9F;
 	public static final int GDK_KP_Divide = 0xffaf;

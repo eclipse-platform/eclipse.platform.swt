@@ -56,6 +56,8 @@ public class Menu extends Widget {
 
 	/** GTK4 only fields */
 	long modelHandle, popoverHandle, actionGroup, shortcutController;
+	/** GTK4 only: aligns the label column of custom and native rows, see alignRowLabels(). */
+	long sizeGroupHandle;
 
 	class Section {
 		LinkedList<MenuItem> sectionItems;
@@ -938,7 +940,9 @@ long gtk_map (long widget) {
 			 * The POP_UP GtkPopoverMenu has been mapped. Its handle IS the GtkPopoverMenu,
 			 * and nested GtkPopoverMenu children for any CASCADE submenus already exist in
 			 * its widget tree. Connect SHOW/HIDE signals for those nested submenus now.
+			 * Also inject any custom icon widgets into the popover.
 			 */
+			injectCustomMenuIcons();
 			connectCascadeSubMenuSignals(this, handle);
 		}
 	}
@@ -1041,6 +1045,7 @@ private void connectDropDownMenuSignals() {
 			wireSubMenuPopover(menuItem.menu, popover);
 		}
 		if (menuItem.menu.popoverHandle != 0) {
+			menuItem.menu.injectCustomMenuIcons();
 			connectCascadeSubMenuSignals(menuItem.menu);
 		}
 	}
@@ -1066,8 +1071,33 @@ private void connectCascadeSubMenuSignals(Menu menu, long parentPopoverHandle) {
 				if (item.menu.popoverHandle != nestedPopover) {
 					wireSubMenuPopover(item.menu, nestedPopover);
 				}
+				item.menu.injectCustomMenuIcons();
 				connectCascadeSubMenuSignals(item.menu);
 			}
+		}
+	}
+}
+
+/**
+ * GTK4: hides any showing CASCADE submenu of this menu, mirroring GtkModelButton
+ * closing an open sibling submenu as the pointer moves on. Hidden via
+ * gtk_widget_set_visible(FALSE) like GTK does, not gtk_popover_popdown(), which
+ * would cascade to the parent popover and close the whole menu.
+ */
+void hideOpenSubmenus() {
+	// Walk the live widget tree rather than trusting each submenu's cached
+	// popoverHandle, which GTK may have rebuilt on a model change (a stale handle
+	// then hits GTK_IS_WIDGET).
+	long popover = (style & SWT.POP_UP) != 0 ? handle : popoverHandle;
+	if (popover != 0) hideVisibleSubmenus(popover, popover);
+}
+
+private void hideVisibleSubmenus(long widget, long root) {
+	for (long child = GTK4.gtk_widget_get_first_child(widget); child != 0; child = GTK4.gtk_widget_get_next_sibling(child)) {
+		if (GTK4.GTK_IS_POPOVER_MENU(child)) {
+			if (child != root && GTK.gtk_widget_get_visible(child)) GTK.gtk_widget_set_visible(child, false);
+		} else {
+			hideVisibleSubmenus(child, root);
 		}
 	}
 }
@@ -1136,10 +1166,15 @@ void syncRowSelection(long popover) {
 private void syncRowSelectionRecursive(long widget) {
 	// Closed submenus stay instantiated; skipping them keeps this cheap on large menus.
 	if (GTK4.GTK_IS_POPOVER_MENU(widget) && !GTK.gtk_widget_get_visible(widget)) return;
-	if (isModelButton(widget)) {
+	Widget item = display.getWidget(widget);
+	boolean custom = item instanceof MenuItem menuItem && menuItem.customWidgetHandle == widget;
+	if (custom || isModelButton(widget)) {
 		int flags = GTK.gtk_widget_get_state_flags(widget);
 		boolean selected = (flags & GTK.GTK_STATE_FLAG_PRELIGHT) != 0 || hasVisibleSubmenu(widget);
-		if (selected && (flags & GTK.GTK_STATE_FLAG_SELECTED) == 0) {
+		if (custom) {
+			/* Toggles the highlight class and forces the repaint, see MenuItem. */
+			((MenuItem) item).setCustomRowSelected(selected);
+		} else if (selected && (flags & GTK.GTK_STATE_FLAG_SELECTED) == 0) {
 			GTK.gtk_widget_set_state_flags(widget, GTK.GTK_STATE_FLAG_SELECTED, false);
 		} else if (!selected && (flags & GTK.GTK_STATE_FLAG_SELECTED) != 0) {
 			GTK.gtk_widget_unset_state_flags(widget, GTK.GTK_STATE_FLAG_SELECTED);
@@ -1159,6 +1194,62 @@ private static boolean hasVisibleSubmenu(long row) {
 		if (GTK4.GTK_IS_POPOVER_MENU(child) && GTK.gtk_widget_get_visible(child)) return true;
 	}
 	return false;
+}
+
+/**
+ * (Re-)injects the custom icon+label widgets of this menu's PUSH and CHECK items into the
+ * GtkPopoverMenu, for those items that have one. A no-op for items whose widget
+ * is already attached.
+ */
+void injectCustomMenuIcons() {
+	if (items == null || display.menuModelMutating) return;
+	for (MenuItem item : items) {
+		if (item.customWidgetHandle != 0) {
+			item.injectCustomWidgetGTK4();
+		}
+	}
+	alignRowLabels();
+}
+
+/**
+ * GTK4: keeps custom and native row labels in one column by joining the custom
+ * rows' leading boxes and the native rows' indicator boxes into one horizontal
+ * GtkSizeGroup. The group drops destroyed widgets and ignores duplicates, so this
+ * can simply run again whenever custom rows are (re)injected.
+ */
+void alignRowLabels() {
+	long popover = (style & SWT.POP_UP) != 0 ? handle : popoverHandle;
+	if (popover == 0) return;
+	boolean hasCustom = false, hasCheckIcon = false;
+	for (MenuItem item : items) {
+		if (item.customLeadingBoxHandle != 0) hasCustom = true;
+		if (item.customIndicatorHandle != 0 && (item.style & SWT.CHECK) != 0) hasCheckIcon = true;
+	}
+	if (!hasCustom) return;
+	/* A CHECK row with an icon puts the check column in front of the icons; the other rows reserve it too. */
+	for (MenuItem item : items) {
+		if (item.customIndicatorHandle != 0 && (item.style & SWT.CHECK) == 0) {
+			GTK.gtk_widget_set_visible(item.customIndicatorHandle, hasCheckIcon);
+		}
+	}
+	if (sizeGroupHandle == 0) sizeGroupHandle = GTK4.gtk_size_group_new(GTK4.GTK_SIZE_GROUP_HORIZONTAL);
+	for (MenuItem item : items) {
+		if (item.customLeadingBoxHandle != 0) GTK4.gtk_size_group_add_widget(sizeGroupHandle, item.customLeadingBoxHandle);
+	}
+	addNativeIndicatorBoxes(popover);
+}
+
+private void addNativeIndicatorBoxes(long widget) {
+	for (long child = GTK4.gtk_widget_get_first_child(widget); child != 0; child = GTK4.gtk_widget_get_next_sibling(child)) {
+		/* Nested submenu popovers are children of their cascade row and align their own rows. */
+		if (GTK4.GTK_IS_POPOVER_MENU(child)) continue;
+		if (isModelButton(child)) {
+			long box = GTK4.gtk_widget_get_first_child(child);
+			if (box != 0 && GTK.GTK_IS_BOX(box)) GTK4.gtk_size_group_add_widget(sizeGroupHandle, box);
+		} else {
+			addNativeIndicatorBoxes(child);
+		}
+	}
 }
 
 private static boolean isModelButton(long widget) {
@@ -1219,6 +1310,7 @@ long gtk_show (long widget) {
 	sendEvent (SWT.Show);
 	/* Wire cascade submenu SHOW/HIDE signals once the DROP_DOWN popover is shown. */
 	if (GTK.GTK4 && (style & SWT.DROP_DOWN) != 0 && popoverHandle != 0) {
+		injectCustomMenuIcons();
 		connectCascadeSubMenuSignals(this, popoverHandle);
 	}
 	if (OS.ubuntu_menu_proxy_get() != 0) {
@@ -1416,6 +1508,10 @@ void releaseWidget () {
 	cascade = null;
 	if (imageList != null) imageList.dispose ();
 	imageList = null;
+	if (sizeGroupHandle != 0) {
+		OS.g_object_unref(sizeGroupHandle);
+		sizeGroupHandle = 0;
+	}
 }
 
 /**

@@ -138,6 +138,12 @@ public class Display extends Device implements Executor {
 	long menuItemsChangedProc;
 	/** GTK4 only: System.nanoTime() of the last key event, see Menu#syncRowSelection. */
 	long lastKeyEventTime;
+	/**
+	 * GTK4 only: set while SWT is mutating a GMenu. The removal's synchronous
+	 * "items-changed" re-enters menu wiring, so position-based custom widget
+	 * injection must wait until the model is whole again (see MenuItem#refreshMenuModelGTK4).
+	 */
+	boolean menuModelMutating;
 	long notifyProc;
 	long computeSizeProc;
 	Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5, windowCallback6;

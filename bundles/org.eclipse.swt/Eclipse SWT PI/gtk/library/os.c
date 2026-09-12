@@ -3774,6 +3774,18 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1box_1set_1spacing)
 }
 #endif
 
+#ifndef NO_gtk_1button_1get_1type
+JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1button_1get_1type)
+	(JNIEnv *env, jclass that)
+{
+	jlong rc = 0;
+	GTK_NATIVE_ENTER(env, that, gtk_1button_1get_1type_FUNC);
+	rc = (jlong)gtk_button_get_type();
+	GTK_NATIVE_EXIT(env, that, gtk_1button_1get_1type_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1button_1new
 JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1button_1new)
 	(JNIEnv *env, jclass that)
@@ -12016,6 +12028,20 @@ fail:
 }
 #endif
 
+#ifndef NO_g_1menu_1item_1set_1attribute_1value
+JNIEXPORT void JNICALL OS_NATIVE(g_1menu_1item_1set_1attribute_1value)
+	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1, jlong arg2)
+{
+	jbyte *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, g_1menu_1item_1set_1attribute_1value_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	g_menu_item_set_attribute_value((GMenuItem *)arg0, (const gchar *)lparg1, (GVariant *)arg2);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, g_1menu_1item_1set_1attribute_1value_FUNC);
+}
+#endif
+
 #ifndef NO_g_1menu_1item_1set_1label
 JNIEXPORT void JNICALL OS_NATIVE(g_1menu_1item_1set_1label)
 	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1)
@@ -12108,14 +12134,33 @@ JNIEXPORT jlong JNICALL OS_NATIVE(g_1object_1get_1qdata)
 }
 #endif
 
-#ifndef NO_g_1object_1new
-JNIEXPORT jlong JNICALL OS_NATIVE(g_1object_1new)
+#ifndef NO_g_1object_1new__JJ
+JNIEXPORT jlong JNICALL OS_NATIVE(g_1object_1new__JJ)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
 {
 	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, g_1object_1new_FUNC);
+	OS_NATIVE_ENTER(env, that, g_1object_1new__JJ_FUNC);
 	rc = (jlong)g_object_new((GType)arg0, (const gchar *)arg1);
-	OS_NATIVE_EXIT(env, that, g_1object_1new_FUNC);
+	OS_NATIVE_EXIT(env, that, g_1object_1new__JJ_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_g_1object_1new__J_3B_3BJ
+JNIEXPORT jlong JNICALL OS_NATIVE(g_1object_1new__J_3B_3BJ)
+	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1, jbyteArray arg2, jlong arg3)
+{
+	jbyte *lparg1=NULL;
+	jbyte *lparg2=NULL;
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, g_1object_1new__J_3B_3BJ_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jlong)g_object_new((GType)arg0, (const gchar *)lparg1, (const gchar *)lparg2, (const gchar *)NULL);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, JNI_ABORT);
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
+	OS_NATIVE_EXIT(env, that, g_1object_1new__J_3B_3BJ_FUNC);
 	return rc;
 }
 #endif
