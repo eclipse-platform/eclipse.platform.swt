@@ -3632,6 +3632,19 @@ void setBackgroundImage (NSImage image) {
 void setBackgroundColor (NSColor nsColor) {
 }
 
+void configureLayerBorder(NSView nsView) {
+	nsView.setWantsLayer(true);
+	CALayer layer = nsView.layer();
+	if (layer != null) {
+		NSColor separatorColor = NSColor.separatorColor();
+		if (separatorColor != null) {
+			layer.setBorderColor(separatorColor.CGColor());
+		}
+		layer.setBorderWidth(1.0);
+		layer.setCornerRadius(4.0);
+	}
+}
+
 /**
  * Sets the receiver's size and location in points to the rectangular
  * area specified by the arguments. The <code>x</code> and

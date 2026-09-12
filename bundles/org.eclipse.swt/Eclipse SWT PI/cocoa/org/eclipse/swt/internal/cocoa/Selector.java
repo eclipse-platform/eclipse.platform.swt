@@ -89,6 +89,7 @@ public enum Selector {
 
 	  /** This section is auto generated */
 
+	, sel_CGColor("CGColor")
 	, sel_CGEvent("CGEvent")
 	, sel_DOMDocument("DOMDocument")
 	, sel_IBeamCursor("IBeamCursor")
@@ -919,6 +920,7 @@ public enum Selector {
 	, sel_sendAction_to_from_("sendAction:to:from:")
 	, sel_sendEvent_("sendEvent:")
 	, sel_sender("sender")
+	, sel_separatorColor("separatorColor")
 	, sel_separatorItem("separatorItem")
 	, sel_set("set")
 	, sel_setAcceptsMouseMovedEvents_("setAcceptsMouseMovedEvents:")
@@ -961,6 +963,7 @@ public enum Selector {
 	, sel_setBecomesKeyOnlyIfNeeded_("setBecomesKeyOnlyIfNeeded:")
 	, sel_setBezelStyle_("setBezelStyle:")
 	, sel_setBezeled_("setBezeled:")
+	, sel_setBorderColor_("setBorderColor:")
 	, sel_setBorderType_("setBorderType:")
 	, sel_setBorderWidth_("setBorderWidth:")
 	, sel_setBordered_("setBordered:")
@@ -985,6 +988,7 @@ public enum Selector {
 	, sel_setContentView_("setContentView:")
 	, sel_setContentViewMargins_("setContentViewMargins:")
 	, sel_setControlSize_("setControlSize:")
+	, sel_setCornerRadius_("setCornerRadius:")
 	, sel_setCookie_("setCookie:")
 	, sel_setCopiesOnScroll_("setCopiesOnScroll:")
 	, sel_setCurrentContext_("setCurrentContext:")
@@ -1181,6 +1185,7 @@ public enum Selector {
 	, sel_setVerticalScroller_("setVerticalScroller:")
 	, sel_setView_("setView:")
 	, sel_setVisible_("setVisible:")
+	, sel_setWantsLayer_("setWantsLayer:")
 	, sel_setWantsRestingTouches_("setWantsRestingTouches:")
 	, sel_setWidth_("setWidth:")
 	, sel_setWidthTracksTextView_("setWidthTracksTextView:")
