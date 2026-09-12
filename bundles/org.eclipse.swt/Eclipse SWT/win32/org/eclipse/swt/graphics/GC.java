@@ -110,23 +110,26 @@ public final class GC extends Resource {
 	static final float[] LINE_DASHDOT_ZERO = new float[]{9, 6, 3, 6};
 	static final float[] LINE_DASHDOTDOT_ZERO = new float[]{9, 3, 3, 3, 3, 3};
 
-	private static final String USE_GDI_TEXT_RENDERING_WITH_GDIP = "org.eclipse.swt.internal.win32.useGDITextRenderingWithGDIP";
+	private static final String USE_GDI_TEXT_RENDERING_FOR_DECORATED_FONTS = "org.eclipse.swt.internal.win32.useGDITextRenderingForDecoratedFonts";
 
 	/**
-	 * Whether text is laid out by GDI and only drawn by GDI+, instead of being
-	 * laid out by GDI+ itself, which restores the behavior that was in place
-	 * before GDI+ text layout became the default.
+	 * Whether text in a font with an underline or strikeout style is laid out by
+	 * GDI and only drawn by GDI+, instead of being laid out by GDI+ itself,
+	 * which restores the behavior that was in place before GDI+ started to lay
+	 * out such text.
 	 *
 	 * This is only a safety net for unexpected text rendering regressions, so
 	 * that consumers can fall back to the previous behavior instead of having
-	 * to downgrade SWT. It may be removed at any point in time and must not be
-	 * relied upon.
+	 * to downgrade SWT. Note that the previous behavior draws no glyphs at all
+	 * for decorated fonts, see
+	 * https://github.com/eclipse-platform/eclipse.platform.swt/issues/3091 .
+	 * It may be removed at any point in time and must not be relied upon.
 	 *
 	 * Evaluated once per GC rather than per drawing operation, so that reading
 	 * the system property does not add cost to text drawing, while a newly
 	 * created GC still picks up a value changed at runtime.
 	 */
-	private final boolean useGdiTextLayoutWithGdip = Boolean.getBoolean(USE_GDI_TEXT_RENDERING_WITH_GDIP);
+	private final boolean useGdiTextLayoutForDecoratedFonts = Boolean.getBoolean(USE_GDI_TEXT_RENDERING_FOR_DECORATED_FONTS);
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -2878,13 +2881,26 @@ private void drawTextInPixels (String string, int x, int y, int flags) {
  * by GDI+ (Graphics_DrawDriverString). Note that both cases draw with GDI+,
  * so this only selects which engine performs the layout.
  *
- * Unless the legacy GDI text layout is requested, GDI+ always lays out the
- * text itself and the glyph inspection below is not reached. Both are to be
- * removed together with the fallback.
+ * GDI is preferred, because it uses the hinted, grid-fitted glyph advances
+ * that the platform itself uses everywhere else (native controls, TextLayout
+ * and the non-advanced GC), whereas GDI+ lays out from unhinted font design
+ * metrics. The latter accumulates a sub-pixel error per glyph that is most
+ * apparent for tabular figures, where every digit shares the same advance and
+ * hence the same error, so that digit groups visibly spread apart.
+ *
+ * GDI+ layout is therefore only used where the glyph run cannot be drawn:
+ * when GDI cannot map all characters to glyphs, in which case GDI would draw
+ * missing-glyph boxes, and for fonts carrying an underline or strikeout style,
+ * which Graphics_DrawDriverString does not support and for which it draws
+ * blank space instead of the glyphs, see
+ * https://github.com/eclipse-platform/eclipse.platform.swt/issues/3091 .
  */
 private boolean useGdipTextLayout(long hdc, char[] buffer) {
-	if (!useGdiTextLayoutWithGdip) {
-		return true;
+	if (!useGdiTextLayoutForDecoratedFonts) {
+		int fontStyle = Gdip.Font_GetStyle(data.gdipFont);
+		if ((fontStyle & (Gdip.FontStyleUnderline | Gdip.FontStyleStrikeout)) != 0) {
+			return true;
+		}
 	}
 	short[] glyphs = new short[buffer.length];
 	OS.GetGlyphIndices(hdc, buffer, buffer.length, glyphs, OS.GGI_MARK_NONEXISTING_GLYPHS);
@@ -2975,7 +2991,10 @@ void drawText(long gdipGraphics, String string, int x, int y, int flags, Point s
 
 private RectF drawText(long gdipGraphics, char[] buffer, int start, int length, int x, int y, int flags, int mnemonicIndex, TEXTMETRIC lptm, boolean draw) {
 	boolean drawMnemonic = draw && mnemonicIndex != -1 && (data.uiState & OS.UISF_HIDEACCEL) == 0;
-	boolean needsBounds = !draw || drawMnemonic || (flags & SWT.DRAW_TRANSPARENT) == 0 || (data.style & SWT.MIRRORED) != 0 || (flags & SWT.DRAW_DELIMITER) != 0;
+	// Tabs and delimiters need the bounds of the preceding segment to place the
+	// following one, so they require bounds just like the cases that consume
+	// them for drawing.
+	boolean needsBounds = !draw || drawMnemonic || (flags & SWT.DRAW_TRANSPARENT) == 0 || (data.style & SWT.MIRRORED) != 0 || (flags & (SWT.DRAW_DELIMITER | SWT.DRAW_TAB)) != 0;
 	if (length <= 0) {
 		RectF bounds = null;
 		if (needsBounds) {

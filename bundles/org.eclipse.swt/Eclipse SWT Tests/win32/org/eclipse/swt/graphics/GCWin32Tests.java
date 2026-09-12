@@ -154,13 +154,8 @@ class GCWin32Tests {
 	/**
 	 * U+FFFE is a Unicode non-character that no standard font has a glyph for.
 	 * Appending it to a string makes an advanced GC lay that string out with
-	 * GDI+ instead of letting GDI compute the glyph positions.
-	 * <p>
-	 * Since GDI+ text layout became the default for advanced GCs, this is no
-	 * longer strictly required. It is kept deliberately so that the tab stop
-	 * tests exercise the GDI+ layout path irrespective of the state of the
-	 * {@code useGDITextRenderingWithGDIP} system property, which exists to
-	 * switch back to GDI-computed glyph positions.
+	 * GDI+ instead of letting GDI compute the glyph positions, which is how the
+	 * tab stop tests reach the GDI+ layout path.
 	 */
 	private static final String UNSUPPORTED_GLYPH = String.valueOf((char) 0xFFFE);
 
@@ -551,6 +546,61 @@ class GCWin32Tests {
 				() -> assertNotNull(gdiInkBounds, "GDI rendering must draw visible text")
 			);
 			assertWithinTolerance("kerning-sensitive text ink width", gdipInkBounds.width, gdiInkBounds.width, 0.3);
+		} finally {
+			image.dispose();
+		}
+	}
+
+	/**
+	 * Verifies that an advanced GC advances digits exactly like a plain,
+	 * non-advanced GC does, which serves as the reference.
+	 * <p>
+	 * Digits are the most sensitive probe for a layout engine's glyph advances:
+	 * a font's figures usually all share a single advance, so a per-glyph error
+	 * does not average out over a string but accumulates in one direction and
+	 * shows up as visibly irregular gaps. Unlike the tolerant comparisons for
+	 * proportional text, this is therefore asserted exactly, up to the rounding
+	 * of the two extents.
+	 */
+	@ParameterizedTest
+	@MethodSource("tabStopTestFonts")
+	public void drawTextDigitAdvancesMatchGdi(String fontName) {
+		Display display = Display.getDefault();
+		Image image = new Image(display, 600, 60);
+		String digits = "01234567890123456789";
+		try {
+			for (int size : new int[] { 9, 12, 16 }) {
+				Font font = new Font(display, fontName, size, SWT.NORMAL);
+				try {
+					int advancedWidth = withGC(image, font, true, gc -> gc.textExtent(digits, SWT.NONE).x);
+					int gdiWidth = withGC(image, font, false, gc -> gc.textExtent(digits, SWT.NONE).x);
+					assertWithinRoundingTolerance(gdiWidth, advancedWidth,
+							"an advanced GC must advance digits like a non-advanced one for font " + fontName
+							+ " at " + size + "pt");
+				} finally {
+					font.dispose();
+				}
+			}
+		} finally {
+			image.dispose();
+		}
+	}
+
+	/**
+	 * Verifies that an advanced GC can draw tab-expanded text. Placing the
+	 * segment after a tab requires the bounds of the segment before it, which
+	 * the glyph-run based text rendering only computes on demand.
+	 */
+	@Test
+	public void drawTextWithTabsRendersVisibleInk() {
+		Display display = Display.getDefault();
+		Font font = display.getSystemFont();
+		Image image = new Image(display, 300, 60);
+		try {
+			int renderedPixels = renderTextAndCountNonWhitePixels(image, font, "A\tB\tC",
+					SWT.DRAW_TAB | SWT.DRAW_TRANSPARENT, SWT.NONE, true);
+
+			assertTrue(renderedPixels > 0, "an advanced GC must draw visible ink for tab-expanded text");
 		} finally {
 			image.dispose();
 		}
