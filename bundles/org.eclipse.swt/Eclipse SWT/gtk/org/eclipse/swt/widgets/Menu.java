@@ -447,8 +447,12 @@ void _setVisible (boolean visible) {
 						GTK3.memmove (eventPtr, event, GdkEventButton.sizeof);
 						// Bug in GTK?: testing with SWT_MENU_LOCATION_DEBUGGING=1 shows final_rect.x and
 						// final_rect.y popup menu position is off by 1 compared to this.x and this.y
-						rect.x = this.x + 1;
-						rect.y = this.y + 1;
+						// The rectangle is relative to the shell, so the monitor origin has to go.
+						Point monitorOrigin = getShell ().monitorOrigin ();
+						int originX = monitorOrigin != null ? monitorOrigin.x : 0;
+						int originY = monitorOrigin != null ? monitorOrigin.y : 0;
+						rect.x = this.x + 1 - originX;
+						rect.y = this.y + 1 - originY;
 					}
 					// Popup the menu and pin it at the top left corner of the GdkRectangle relative to the GdkWindow
 					GTK3.gtk_menu_popup_at_rect(handle, event.window, rect, GDK.GDK_GRAVITY_NORTH_WEST,

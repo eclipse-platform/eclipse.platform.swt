@@ -1054,4 +1054,63 @@ public void test_setLocationII() {
 	}
 	super.test_setLocationII();
 }
+
+@Test
+public void test_degenerateSizeDoesNotExpandShell() {
+	// A bordered popup asked for a height of 0 used to be allocated -1, which GTK rejects,
+	// so it fell back to its natural size with its content never laid out. See issue 3539.
+	// GTK4 backs these shells with a GtkPopover, which never went through that box maths
+	// and enforces a minimum height of its own.
+	assumeTrue(SwtTestUtil.isGTK && !SwtTestUtil.isGTK4());
+	Shell popup = new Shell(shell, SWT.TOOL | SWT.ON_TOP);
+	popup.setLayout(new FillLayout());
+	Button child = new Button(popup, SWT.PUSH);
+	child.setText("some content that is clearly taller than two pixels");
+	popup.setSize(228, 0);
+	popup.setVisible(true);
+	SwtTestUtil.processEvents();
+	Rectangle clientArea = popup.getClientArea();
+	popup.dispose();
+	assertTrue(clientArea.height >= 0, "negative client area: " + clientArea);
+	assertTrue(clientArea.height <= 2, "shell expanded to its natural size: " + clientArea);
+}
+
+@Test
+public void test_toDisplayIsOnTheShellsMonitor() {
+	// Display coordinates and Monitor geometry have to share one coordinate space, otherwise
+	// callers that clip a location against a monitor discard it. See issue 3539.
+	// GTK4 has no root coordinates yet, so toDisplay() is still shell relative there.
+	assumeTrue(SwtTestUtil.isGTK && !SwtTestUtil.isGTK4());
+	shell.setSize(300, 200);
+	shell.open();
+	SwtTestUtil.processEvents();
+	Rectangle monitor = shell.getMonitor().getBounds();
+	Point origin = shell.toDisplay(0, 0);
+	assertTrue(monitor.contains(origin), "toDisplay " + origin + " is outside monitor " + monitor);
+}
+
+@Test
+public void test_popupLocationRoundTrip() {
+	// JFace reuses one popup: position, show, hide, reposition. Every pass has to round-trip,
+	// including the ones where the shell is still mapped. See issue 3539.
+	assumeTrue(SwtTestUtil.isGTK && !SwtTestUtil.isGTK4());
+	shell.setSize(400, 300);
+	shell.open();
+	SwtTestUtil.processEvents();
+	Shell popup = new Shell(shell, SWT.TOOL | SWT.ON_TOP);
+	popup.setSize(120, 80);
+	try {
+		for (int pass = 0; pass < 3; pass++) {
+			Point location = shell.toDisplay(40 + pass * 10, 40 + pass * 10);
+			popup.setLocation(location);
+			popup.setVisible(true);
+			SwtTestUtil.processEvents();
+			assertEquals(location, popup.getLocation(), "pass " + pass);
+			popup.setVisible(false);
+			SwtTestUtil.processEvents();
+		}
+	} finally {
+		popup.dispose();
+	}
+}
 }
