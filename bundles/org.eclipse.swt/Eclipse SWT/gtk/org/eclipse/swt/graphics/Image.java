@@ -185,9 +185,10 @@ Image(Device device) {
  * as shown in the following example:
  * <pre>
  *    Image i = new Image(device, imageWidth, imageHeight);
- *    GC gc = new GC(i);
- *    gc.drawRectangle(0, 0, imageWidth, imageHeight);
- *    gc.dispose();
+ *    try (AutoDisposableGC autoGC = GC.create(i)) {
+ *      GC gc = autoGC.gc();
+ *      gc.drawRectangle(0, 0, imageWidth, imageHeight);
+ *    }
  * </pre>
  * <p>
  * <b>Note:</b> It is recommended to use
@@ -390,9 +391,10 @@ public Image(Device device, Image srcImage, int flag) {
  * drawing operations, as shown in the following example:
  * <pre>
  *    Image i = new Image(device, boundsRectangle);
- *    GC gc = new GC(i);
- *    gc.drawRectangle(0, 0, boundsRectangle.width, boundsRectangle.height);
- *    gc.dispose();
+ *    try (AutoDisposableGC autoGC = GC.create(i)) {
+ *      GC gc = autoGC.gc();
+ *      gc.drawRectangle(0, 0, boundsRectangle.width, boundsRectangle.height);
+ *    }
  * </pre>
  * <p>
  * <b>Note:</b> It is recommended to use
