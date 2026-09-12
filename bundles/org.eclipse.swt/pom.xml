@@ -37,7 +37,7 @@
                     <dependency-resolution>
                         <optionalDependencies>ignore</optionalDependencies>
                         <profileProperties>
-                            <org.eclipse.swt.buildtime>true</org.eclipse.swt.buildtime>
+                            <org.eclipse.equinox.p2.disable.require.capability.eclipse.swt>true</org.eclipse.equinox.p2.disable.require.capability.eclipse.swt>
                         </profileProperties>
                     </dependency-resolution>
                 </configuration>
