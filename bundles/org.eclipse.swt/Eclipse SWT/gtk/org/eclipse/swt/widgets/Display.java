@@ -2003,6 +2003,22 @@ boolean filters (int eventType) {
 }
 
 /**
+ * Origin of the monitor showing the given GdkWindow, or <code>null</code> when no offset is
+ * needed. See {@link Control#monitorOrigin()}.
+ */
+Point monitorOrigin (long window) {
+	if (GTK.GTK4 || !OS.isWayland () || window == 0) return null;
+	long displayHandle = GDK.gdk_display_get_default ();
+	if (displayHandle == 0) return null;
+	long monitor = GDK.gdk_display_get_monitor_at_window (displayHandle, window);
+	if (monitor == 0) return null;
+	GdkRectangle geometry = new GdkRectangle ();
+	GDK.gdk_monitor_get_geometry (monitor, geometry);
+	if (geometry.x == 0 && geometry.y == 0) return null;
+	return new Point (geometry.x, geometry.y);
+}
+
+/**
  * Returns the location of the on-screen pointer relative
  * to the top left corner of the screen.
  *
@@ -2024,7 +2040,7 @@ public Point getCursorLocation() {
 		x[0] = (int)xDouble[0];
 		y[0] = (int)yDouble[0];
 	} else {
-		getWindowPointerPosition(0, x, y, null);
+		long pointerWindow = getWindowPointerPosition(0, x, y, null);
 
 		/*
 		 * Wayland feature: There is no global x/y coordinates in Wayland for security measures, so they
@@ -2044,6 +2060,17 @@ public Point getCursorLocation() {
 				x[0]+= offsetX[0];
 				y[0]+= offsetY[0];
 				tempShell = tempShell.getParent().getShell();
+			}
+			/*
+			 * Callers compare this against Control.toDisplay(), so use the same space.
+			 * Prefer the monitor of the window under the pointer, which is the one the
+			 * coordinates are relative to; the active shell is only a fallback.
+			 */
+			Point origin = monitorOrigin (pointerWindow);
+			if (origin == null) origin = tempShell.monitorOrigin ();
+			if (origin != null) {
+				x[0] += origin.x;
+				y[0] += origin.y;
 			}
 		}
 	}
