@@ -695,6 +695,44 @@ public void test_fillGradientRectangleIIIIZ() {
 }
 
 @Test
+public void test_fillGradientRectangle_doesNotChangeLaterDrawing() {
+	int deviceZoom = DPIUtil.getDeviceZoom();
+	// the gradient scales the surface to the device zoom, which a 1:1 image does not have
+	DPIUtil.setDeviceZoom(200);
+	try {
+		ImageData gradientFirst = drawGradientAndRectangle(true);
+		ImageData rectangleFirst = drawGradientAndRectangle(false);
+		assertArrayEquals(rectangleFirst.data, gradientFirst.data,
+				"drawing after fillGradientRectangle must land where it lands before it");
+	} finally {
+		DPIUtil.setDeviceZoom(deviceZoom);
+	}
+}
+
+private ImageData drawGradientAndRectangle(boolean gradientFirst) {
+	Image image = new Image(display, 40, 40);
+	try {
+		if (gradientFirst) drawGradient(image);
+		GC rectangleGC = new GC(image);
+		rectangleGC.setBackground(display.getSystemColor(SWT.COLOR_RED));
+		rectangleGC.fillRectangle(10, 10, 5, 5);
+		rectangleGC.dispose();
+		if (!gradientFirst) drawGradient(image);
+		return image.getImageData(100);
+	} finally {
+		image.dispose();
+	}
+}
+
+private void drawGradient(Image image) {
+	GC gradientGC = new GC(image);
+	gradientGC.setForeground(display.getSystemColor(SWT.COLOR_BLUE));
+	gradientGC.setBackground(display.getSystemColor(SWT.COLOR_GREEN));
+	gradientGC.fillGradientRectangle(0, 0, 2, 2, false);
+	gradientGC.dispose();
+}
+
+@Test
 public void test_fillOvalIIII() {
 	gc.fillOval(10, 0, 20, 30);
 	gc.fillOval(-1, -1, -1, -1);
