@@ -158,7 +158,7 @@ void configure () {
 	 * Using gdk_screen_get_monitor_at_point() returns it correctly. Using getLocation() on point will get
 	 * the coordinates for where the tooltip should appear on the host.
 	 */
-	Point point = getLocation();
+	Point point = getMonitorLookupLocation ();
 	boolean multipleMonitors;
 	GdkRectangle dest = new GdkRectangle ();
 	long displayHandle = GDK.gdk_display_get_default();
@@ -377,9 +377,14 @@ Point getLocation () {
 		GTK3.gtk_status_icon_get_geometry (itemHandle, 0, area, 0);
 		x = area.x + area.width / 2;
 		y = area.y + area.height / 2;
-	}
-
-	if (x == -1 || y == -1) {
+	} else if (x != -1 && y != -1) {
+		// setLocation() takes display coordinates, but GTK positions windows in its own space.
+		Point monitorOrigin = parent.monitorOrigin ();
+		if (monitorOrigin != null) {
+			x -= monitorOrigin.x;
+			y -= monitorOrigin.y;
+		}
+	} else {
 		if (GTK.GTK4) {
 			double[] px = new double[1], py = new double[1];
 			display.getPointerPosition(px, py);
@@ -396,6 +401,13 @@ Point getLocation () {
 	}
 
 	return new Point(x, y);
+}
+
+/** Returns the location in display coordinates, as used by Monitor geometry. */
+Point getMonitorLookupLocation () {
+	if (item != null) return getLocation ();
+	// Without an explicit location the tooltip follows the pointer, which may be over another shell.
+	return x == -1 || y == -1 ? display.getCursorLocation () : new Point (x, y);
 }
 
 /**
@@ -583,7 +595,8 @@ long gtk_size_allocate (long widget, long allocation) {
 	GTK.gtk_widget_realize (widget);
 	GdkRectangle dest = new GdkRectangle ();
 	long display = GDK.gdk_display_get_default();
-	long monitor = GDK.gdk_display_get_monitor_at_point(display, x, y);
+	Point lookup = getMonitorLookupLocation ();
+	long monitor = GDK.gdk_display_get_monitor_at_point(display, lookup.x, lookup.y);
 	GDK.gdk_monitor_get_geometry(monitor, dest);
 	GtkAllocation widgetAllocation = new GtkAllocation ();
 	GTK.gtk_widget_get_allocation (widget, widgetAllocation);
