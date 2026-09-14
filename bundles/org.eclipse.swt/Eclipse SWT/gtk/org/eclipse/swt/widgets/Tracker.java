@@ -56,6 +56,8 @@ public class Tracker extends Widget {
 	Rectangle bounds;
 	int cursorOrientation = SWT.NONE;
 	int oldX, oldY;
+	Point monitorOrigin;
+	Point overlayOrigin = new Point (0, 0);
 	long provider;
 
 	// Re-use/cache some items for performance reasons as draw-events must be efficient to prevent jitter.
@@ -195,6 +197,25 @@ public void addKeyListener(KeyListener listener) {
 	addTypedListener(listener, SWT.KeyUp, SWT.KeyDown);
 }
 
+/** Returns the union of all monitors on GTK3 Wayland, where monitors can have a negative origin, else the display bounds. */
+Rectangle getVirtualBounds () {
+	Rectangle bounds = display.getBounds ();
+	if (GTK.GTK4 || !OS.isWayland ()) return bounds;
+	for (Monitor monitor : display.getMonitors ()) {
+		bounds = bounds.union (monitor.getBounds ());
+	}
+	return bounds;
+}
+
+/** Reads the pointer relative to the tracked window, anchored for a Tracker(Display). */
+void getPointerPosition (int [] x, int [] y, int [] state) {
+	display.getWindowPointerPosition (window, x, y, state);
+	if (parent == null && monitorOrigin != null) {
+		x [0] += monitorOrigin.x;
+		y [0] += monitorOrigin.y;
+	}
+}
+
 Point adjustMoveCursor () {
 	if (bounds == null) return null;
 	int newX = bounds.x + bounds.width / 2;
@@ -211,7 +232,7 @@ Point adjustMoveCursor () {
 		actualX[0] = (int)actualXDouble[0];
 		actualY[0] = (int)actualYDouble[0];
 	} else {
-		display.getWindowPointerPosition(window, actualX, actualY, state);
+		getPointerPosition(actualX, actualY, state);
 	}
 
 	return new Point(actualX[0], actualY[0]);
@@ -253,7 +274,7 @@ Point adjustResizeCursor () {
 		actualX[0] = (int)actualXDouble[0];
 		actualY[0] = (int)actualYDouble[0];
 	} else {
-		display.getWindowPointerPosition(window, actualX, actualY, state);
+		getPointerPosition(actualX, actualY, state);
 	}
 
 	return new Point(actualX[0], actualY[0]);
@@ -383,18 +404,20 @@ void drawRectangles (Rectangle [] rects) {
 		for (int i = 0; i < rects.length; i++) {
 			// Turn filled rectangles into just the outer lines by drawing one line at a time.
 			Rectangle r = parent != null ? display.map(parent, null, rects[i]) : rects[i];
-			rect.x = r.x;
-			rect.y = r.y;
+			// On Wayland the overlay starts at the top left corner of the combined monitors.
+			int x = r.x - overlayOrigin.x, y = r.y - overlayOrigin.y;
+			rect.x = x;
+			rect.y = y;
 			rect.width = r.width + 1;
 			rect.height = 1;
 			Cairo.cairo_region_union_rectangle(region, rect); // Top line
 			rect.width = 1;
 			rect.height = r.height + 1;
 			Cairo.cairo_region_union_rectangle(region, rect); // Left line.
-			rect.x = r.x + r.width;
+			rect.x = x + r.width;
 			Cairo.cairo_region_union_rectangle(region, rect); // Right line.
-			rect.x = r.x;
-			rect.y = r.y + r.height;
+			rect.x = x;
+			rect.y = y + r.height;
 			rect.width = r.width + 1;
 			rect.height = 1;
 			Cairo.cairo_region_union_rectangle(region, rect); // Bottom line
@@ -624,7 +647,7 @@ long gtk3_motion_notify_event (long widget, long eventPtr) {
 
 long gtk3_mouse (int eventType, long widget, long eventPtr) {
 	int [] newX = new int [1], newY = new int [1];
-	display.getWindowPointerPosition(window, newX, newY, null);
+	getPointerPosition(newX, newY, null);
 
 	if (oldX != newX [0] || oldY != newY [0]) {
 		Rectangle [] oldRectangles = rectangles;
@@ -765,6 +788,12 @@ public boolean open () {
 		window = gtk_widget_get_window (parent.paintHandle());
 	}
 	if (window == 0) return false;
+	// Rectangles are in display coordinates, which on Wayland carry the monitor origin of the shell tree.
+	Shell anchorShell = parent != null ? parent.getShell () : null;
+	if (anchorShell == null && !GTK.GTK4 && OS.isWayland ()) {
+		anchorShell = display.getPointerShell (display.getWindowPointerPosition (window, new int [1], new int [1], null));
+	}
+	monitorOrigin = !GTK.GTK4 && anchorShell != null ? anchorShell.monitorOrigin () : null;
 	cancelled = false;
 	tracking = true;
 	int [] oldX = new int [1], oldY = new int [1], state = new int [1];
@@ -775,7 +804,7 @@ public boolean open () {
 		oldX[0] = (int) oldXDouble[0];
 		oldY[0] = (int) oldYDouble[0];
 	} else {
-		display.getWindowPointerPosition (window, oldX, oldY, state);
+		getPointerPosition (oldX, oldY, state);
 	}
 
 	/*
@@ -811,7 +840,8 @@ public boolean open () {
 	grabbed = grab ();
 	lastCursor = this.cursor != null ? this.cursor.handle : 0;
 
-	cachedCombinedDisplayResolution = Display.getDefault().getBounds(); // In case resolution was changed during run time.
+	cachedCombinedDisplayResolution = getVirtualBounds(); // In case resolution was changed during run time.
+	overlayOrigin = !GTK.GTK4 && OS.isWayland () ? new Point (cachedCombinedDisplayResolution.x, cachedCombinedDisplayResolution.y) : new Point (0, 0);
 	overlay = GTK3.gtk_window_new (GTK.GTK_WINDOW_POPUP);
 	GTK3.gtk_window_set_skip_taskbar_hint (overlay, true);
 	GTK.gtk_window_set_title (overlay, new byte [1]);
@@ -822,8 +852,10 @@ public boolean open () {
 		GDK.gdk_window_set_override_redirect (overlayWindow, true);
 	}
 	setTrackerBackground(true);
-	Rectangle bounds = display.getBoundsInPixels();
-	GTK3.gtk_window_move (overlay, bounds.x, bounds.y);
+	Rectangle bounds = cachedCombinedDisplayResolution;
+	int overlayX = monitorOrigin != null ? bounds.x - monitorOrigin.x : bounds.x;
+	int overlayY = monitorOrigin != null ? bounds.y - monitorOrigin.y : bounds.y;
+	GTK3.gtk_window_move (overlay, overlayX, overlayY);
 	GTK3.gtk_window_resize (overlay, bounds.width, bounds.height);
 	gtk_widget_show (overlay);
 
