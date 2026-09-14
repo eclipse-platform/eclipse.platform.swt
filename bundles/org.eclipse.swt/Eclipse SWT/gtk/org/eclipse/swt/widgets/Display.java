@@ -1993,6 +1993,32 @@ boolean filters (int eventType) {
 	return filterTable.hooks (eventType);
 }
 
+/** Returns the origin of the monitor showing the given GdkWindow, or <code>null</code> when it is unknown. */
+Point monitorOrigin (long window) {
+	if (GTK.GTK4 || !OS.isWayland () || window == 0) return null;
+	long displayHandle = GDK.gdk_display_get_default ();
+	if (displayHandle == 0) return null;
+	long monitor = GDK.gdk_display_get_monitor_at_window (displayHandle, window);
+	if (monitor == 0) return null;
+	GdkRectangle geometry = new GdkRectangle ();
+	GDK.gdk_monitor_get_geometry (monitor, geometry);
+	return new Point (geometry.x, geometry.y);
+}
+
+/** Returns the shell owning the given GdkWindow under the pointer, falling back to the active shell. */
+Shell getPointerShell (long pointerWindow) {
+	if (pointerWindow == 0) return activeShell;
+	long [] user_data = new long [1];
+	GDK.gdk_window_get_user_data (pointerWindow, user_data);
+	for (long handle = user_data [0]; handle != 0; handle = GTK.gtk_widget_get_parent (handle)) {
+		Widget widget = getWidget (handle);
+		if (widget instanceof Control control) return control.getShell ();
+		// A popup menu lives in its own GtkWindow, outside the widget tree of its shell.
+		if (widget instanceof Menu menu) return menu.getShell ();
+	}
+	return activeShell;
+}
+
 /**
  * Returns the location of the on-screen pointer relative
  * to the top left corner of the screen.
@@ -2049,26 +2075,19 @@ public Point getCursorLocation() {
 		x[0] = (int)xDouble[0];
 		y[0] = (int)yDouble[0];
 	} else {
-		getWindowPointerPosition(0, x, y, null);
+		long pointerWindow = getWindowPointerPosition(0, x, y, null);
 
 		/*
-		 * Wayland feature: There is no global x/y coordinates in Wayland for security measures, so they
-		 * all return relative coordinates dependant to the root window. If there is a popup window (type SWT.ON_TOP),
-		 * the return position is relative to the new popup window and not relative to the parent if its
-		 * active. Using that as an offset and adding all parent shell relative coordinates will give the
-		 * user the correct mouse position in Wayland. This only supports popups that are type
-		 * SWT.ON_TOP as any other type of window is not tied to the parent window through
-		 * a subsurface. There is currently no support for global coordinates
-		 * in Wayland. See Bug 514483.
+		 * Wayland has no global coordinates. The position is relative to the toplevel under the
+		 * pointer, popups included, and callers compare it against Control.toDisplay(), so add
+		 * the same monitor anchor.
 		 */
-		if (OS.isWayland() && activeShell != null) {
-			Shell tempShell = activeShell;
-			int [] offsetX = new int [1], offsetY = new int [1];
-			while (tempShell.getParent() != null) {
-				GTK3.gtk_window_get_position(tempShell.shellHandle, offsetX, offsetY);
-				x[0]+= offsetX[0];
-				y[0]+= offsetY[0];
-				tempShell = tempShell.getParent().getShell();
+		if (OS.isWayland()) {
+			Shell shell = getPointerShell (pointerWindow);
+			Point origin = shell != null ? shell.monitorOrigin () : null;
+			if (origin != null) {
+				x[0] += origin.x;
+				y[0] += origin.y;
 			}
 		}
 	}
@@ -5616,6 +5635,12 @@ void showIMWindow (Control control) {
 		if (pangoAttrs [0] != 0) GTK.gtk_label_set_attributes (preeditLabel, pangoAttrs[0]);
 		GTK.gtk_label_set_text (preeditLabel, preeditString [0]);
 		Point point = control.toDisplay (control.getIMCaretPos ());
+		// GTK positions windows in its own space; display coordinates carry the monitor origin.
+		Point monitorOrigin = control.monitorOrigin ();
+		if (monitorOrigin != null) {
+			point.x -= monitorOrigin.x;
+			point.y -= monitorOrigin.y;
+		}
 		GTK3.gtk_window_move (preeditWindow, point.x, point.y);
 		GtkRequisition requisition = new GtkRequisition ();
 		GTK.gtk_widget_get_preferred_size (preeditLabel, requisition, null);
