@@ -1359,4 +1359,53 @@ public void test_setMinimumSizeII_setMaximumSizeII_bothHold() throws Interrupted
 		sized.dispose();
 	}
 }
+
+/** Opens the shell and waits until its monitor is known, which Wayland only reports after the map. */
+private void openOnSettledMonitor() throws InterruptedException {
+	shell.open();
+	SwtTestUtil.processEvents();
+	if (SwtTestUtil.isWayland() && shell.getDisplay().getMonitors().length > 1) {
+		SwtTestUtil.processEvents(500, null);
+	}
+}
+
+@Test
+public void test_toDisplayIsOnTheShellsMonitor() throws InterruptedException {
+	// Display coordinates and Monitor geometry have to share one coordinate space, otherwise
+	// callers that clip a location against a monitor discard it. See issue 3539.
+	// GTK4 has no root coordinates yet, so toDisplay() is still shell relative there.
+	assumeTrue(SwtTestUtil.isGTK && !SwtTestUtil.isGTK4());
+	shell.setSize(300, 200);
+	openOnSettledMonitor();
+	Rectangle monitor = shell.getMonitor().getBounds();
+	Point origin = shell.toDisplay(0, 0);
+	assertTrue(monitor.contains(origin), "toDisplay " + origin + " is outside monitor " + monitor);
+}
+
+@Test
+public void test_popupLocationRoundTrip() throws InterruptedException {
+	// JFace reuses one popup: position, show, hide, reposition. Every pass has to round-trip
+	// and stay on the monitor of the parent, shown or hidden. See issue 3539.
+	assumeTrue(SwtTestUtil.isGTK && !SwtTestUtil.isGTK4());
+	shell.setSize(400, 300);
+	openOnSettledMonitor();
+	Rectangle monitor = shell.getMonitor().getBounds();
+	Shell popup = new Shell(shell, SWT.TOOL | SWT.ON_TOP);
+	popup.setSize(120, 80);
+	try {
+		for (int pass = 0; pass < 3; pass++) {
+			Point location = shell.toDisplay(40 + pass * 10, 40 + pass * 10);
+			popup.setLocation(location);
+			popup.setVisible(true);
+			SwtTestUtil.processEvents();
+			assertEquals(location, popup.getLocation(), "pass " + pass);
+			assertTrue(monitor.contains(popup.getLocation()), "pass " + pass + ": " + popup.getLocation() + " is outside monitor " + monitor);
+			popup.setVisible(false);
+			SwtTestUtil.processEvents();
+			assertEquals(monitor, popup.getMonitor().getBounds(), "hidden popup, pass " + pass);
+		}
+	} finally {
+		popup.dispose();
+	}
+}
 }
