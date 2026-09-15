@@ -1251,6 +1251,26 @@ public void test_moveItem_sameIndexIsNoOp() {
 }
 
 @Test
+public void test_setBackgroundColorClearsGradient() {
+	createTabFolder(null);
+	Composite topRight = new Composite(ctabFolder, SWT.NONE);
+	topRight.setLayout(new FixedSizeLayout(16, 8));
+	ctabFolder.setTopRight(topRight, SWT.RIGHT);
+	shell.setSize(400, 300);
+	shell.layout(true, true);
+	Color red = shell.getDisplay().getSystemColor(SWT.COLOR_RED);
+	Color blue = shell.getDisplay().getSystemColor(SWT.COLOR_BLUE);
+
+	ctabFolder.setBackground(new Color[] { red, blue }, new int[] { 100 }, true);
+	assertNotNull(topRight.getBackgroundImage(), "gradient must be handed to the top right control");
+
+	ctabFolder.setBackground(blue);
+	assertNull(topRight.getBackgroundImage(), "solid background must replace the gradient");
+	assertEquals(blue, topRight.getBackground());
+	assertEquals(blue, ctabFolder.getBackground());
+}
+
+@Test
 public void test_moveItem_errorCases() {
 	createTabFolder(null, 3);
 
