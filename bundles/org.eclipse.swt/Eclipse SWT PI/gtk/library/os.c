@@ -7864,6 +7864,18 @@ JNIEXPORT jboolean JNICALL GTK_NATIVE(gtk_1tree_1model_1iter_1nth_1child)
 }
 #endif
 
+#ifndef NO_gtk_1tree_1model_1iter_1parent
+JNIEXPORT jboolean JNICALL GTK_NATIVE(gtk_1tree_1model_1iter_1parent)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2)
+{
+	jboolean rc = 0;
+	GTK_NATIVE_ENTER(env, that, gtk_1tree_1model_1iter_1parent_FUNC);
+	rc = (jboolean)gtk_tree_model_iter_parent((GtkTreeModel *)arg0, (GtkTreeIter *)arg1, (GtkTreeIter *)arg2);
+	GTK_NATIVE_EXIT(env, that, gtk_1tree_1model_1iter_1parent_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1tree_1path_1append_1index
 JNIEXPORT void JNICALL GTK_NATIVE(gtk_1tree_1path_1append_1index)
 	(JNIEnv *env, jclass that, jlong arg0, jint arg1)

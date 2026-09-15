@@ -2028,31 +2028,50 @@ public TreeItem[] getSelection () {
 	checkWidget();
 	long selection = GTK.gtk_tree_view_get_selection (handle);
 	long list = GTK.gtk_tree_selection_get_selected_rows (selection, null);
-	if (list != 0) {
-		long originalList = list;
-		int count = OS.g_list_length (list);
-		TreeItem [] treeSelection = new TreeItem [count];
-		int length = 0;
-		for (int i=0; i<count; i++) {
-			long data = OS.g_list_data (list);
-			long iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
-			if (GTK.gtk_tree_model_get_iter (modelHandle, iter, data)) {
-				treeSelection [length] = _getItem (iter);
-				length++;
+	if (list == 0) return new TreeItem [0];
+	int count = OS.g_list_length (list);
+	TreeItem [] treeSelection = new TreeItem [count];
+	int length = 0;
+	// Paths come in tree order, so advance the previous iterators instead of the linear gtk_tree_model_get_iter()
+	long [] iters = new long [4];
+	int [] previous = new int [0];
+	for (long l = list; l != 0; l = OS.g_list_next (l)) {
+		long path = OS.g_list_data (l);
+		int depth = GTK.gtk_tree_path_get_depth (path);
+		int [] indices = new int [depth];
+		C.memmove (indices, GTK.gtk_tree_path_get_indices (path), 4 * depth);
+		GTK.gtk_tree_path_free (path);
+		if (depth > iters.length) iters = Arrays.copyOf (iters, depth);
+		int level = 0;
+		while (level < depth && level < previous.length && indices [level] == previous [level]) level++;
+		boolean found = true;
+		for (int i = level; i < depth && found; i++) {
+			if (iters [i] == 0) iters [i] = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
+			if (i == level && i < previous.length && indices [i] > previous [i]) {
+				for (int j = previous [i]; j < indices [i] && found; j++) {
+					found = GTK.gtk_tree_model_iter_next (modelHandle, iters [i]);
+				}
+			} else {
+				found = GTK.gtk_tree_model_iter_nth_child (modelHandle, iters [i], i == 0 ? 0 : iters [i - 1], indices [i]);
 			}
-			list = OS.g_list_next (list);
-			OS.g_free (iter);
-			GTK.gtk_tree_path_free (data);
 		}
-		OS.g_list_free (originalList);
-		if (length < count) {
-			TreeItem [] temp = new TreeItem [length];
-			System.arraycopy(treeSelection, 0, temp, 0, length);
-			treeSelection = temp;
+		if (found) {
+			treeSelection [length++] = _getItem (iters [depth - 1]);
+			previous = indices;
+		} else {
+			previous = new int [0];
 		}
-		return treeSelection;
 	}
-	return new TreeItem [0];
+	for (long iter : iters) {
+		if (iter != 0) OS.g_free (iter);
+	}
+	OS.g_list_free (list);
+	if (length < count) {
+		TreeItem [] temp = new TreeItem [length];
+		System.arraycopy(treeSelection, 0, temp, 0, length);
+		treeSelection = temp;
+	}
+	return treeSelection;
 }
 
 /**
@@ -3970,27 +3989,65 @@ public void setSelection (TreeItem item) {
 public void setSelection (TreeItem [] items) {
 	checkWidget ();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
-	deselectAll ();
 	int length = items.length;
-	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
-	boolean fixColumn = showFirstColumn ();
-	long selection = GTK.gtk_tree_view_get_selection (handle);
-	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-	boolean first = true;
-	for (int i = 0; i < length; i++) {
-		TreeItem item = items [i];
+	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) {
+		deselectAll ();
+		return;
+	}
+	Set<TreeItem> wanted = Collections.newSetFromMap (new IdentityHashMap<> ());
+	java.util.List<TreeItem> toSelect = new ArrayList<> (length);
+	for (TreeItem item : items) {
 		if (item == null) continue;
 		if (item.isDisposed ()) break;
 		if (item.parent != this) continue;
-		long path = GTK.gtk_tree_model_get_path (modelHandle, item.handle);
-		showItem (path, false);
-		if (first) {
-			GTK.gtk_tree_view_set_cursor (handle, path, 0, false);
+		if (wanted.add (item)) toSelect.add (item);
+	}
+	if (toSelect.isEmpty ()) {
+		deselectAll ();
+		return;
+	}
+	boolean fixColumn = showFirstColumn ();
+	long selection = GTK.gtk_tree_view_get_selection (handle);
+	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	// Each toggle is linear in the row index and set_cursor unselects all rows, so avoid both where possible
+	long firstPath = GTK.gtk_tree_model_get_path (modelHandle, toSelect.get (0).handle);
+	showItem (firstPath, false);
+	long [] cursorPath = new long [1];
+	GTK.gtk_tree_view_get_cursor (handle, cursorPath, null);
+	boolean cursorOnFirst = cursorPath [0] != 0 && GTK.gtk_tree_path_compare (cursorPath [0], firstPath) == 0;
+	if (cursorPath [0] != 0) GTK.gtk_tree_path_free (cursorPath [0]);
+	if (cursorOnFirst) {
+		if (GTK.gtk_widget_get_realized (handle)) GTK.gtk_tree_view_scroll_to_cell (handle, firstPath, 0, false, 0, 0);
+	} else {
+		deselectAll ();
+		GTK.gtk_tree_view_set_cursor (handle, firstPath, 0, false);
+	}
+	GTK.gtk_tree_path_free (firstPath);
+	Set<TreeItem> selected = Collections.newSetFromMap (new IdentityHashMap<> ());
+	for (TreeItem item : getSelection ()) {
+		if (wanted.contains (item)) {
+			selected.add (item);
+		} else {
+			GTK.gtk_tree_selection_unselect_iter (selection, item.handle);
+		}
+	}
+	long parentIter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
+	TreeItem expandedParent = null;
+	for (TreeItem item : toSelect) {
+		if (selected.contains (item)) continue;
+		if (GTK.gtk_tree_model_iter_parent (modelHandle, parentIter, item.handle)) {
+			TreeItem parentItem = _getItem (parentIter);
+			if (parentItem != expandedParent) {
+				long path = GTK.gtk_tree_model_get_path (modelHandle, parentIter);
+				showItem (path, false);
+				GTK.gtk_tree_view_expand_row (handle, path, false);
+				GTK.gtk_tree_path_free (path);
+				expandedParent = parentItem;
+			}
 		}
 		GTK.gtk_tree_selection_select_iter (selection, item.handle);
-		GTK.gtk_tree_path_free (path);
-		first = false;
 	}
+	OS.g_free (parentIter);
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	if (fixColumn) hideFirstColumn ();
 }
