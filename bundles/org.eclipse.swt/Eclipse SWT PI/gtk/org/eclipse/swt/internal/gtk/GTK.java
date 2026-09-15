@@ -1799,6 +1799,12 @@ public class GTK extends OS {
 	 * @param parent cast=(GtkTreeIter *)
 	 */
 	public static final native boolean gtk_tree_model_iter_nth_child(long tree_model, long iter, long parent, int n);
+	/**
+	 * @param tree_model cast=(GtkTreeModel *)
+	 * @param iter cast=(GtkTreeIter *)
+	 * @param child cast=(GtkTreeIter *)
+	 */
+	public static final native boolean gtk_tree_model_iter_parent(long tree_model, long iter, long child);
 
 	/* GtkTreePath */
 	/** @param path cast=(GtkTreePath *) */

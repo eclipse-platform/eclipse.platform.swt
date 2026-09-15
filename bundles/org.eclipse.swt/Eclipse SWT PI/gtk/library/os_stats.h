@@ -625,6 +625,7 @@ typedef enum {
 	gtk_1tree_1model_1iter_1n_1children_FUNC,
 	gtk_1tree_1model_1iter_1next_FUNC,
 	gtk_1tree_1model_1iter_1nth_1child_FUNC,
+	gtk_1tree_1model_1iter_1parent_FUNC,
 	gtk_1tree_1path_1append_1index_FUNC,
 	gtk_1tree_1path_1compare_FUNC,
 	gtk_1tree_1path_1free_FUNC,

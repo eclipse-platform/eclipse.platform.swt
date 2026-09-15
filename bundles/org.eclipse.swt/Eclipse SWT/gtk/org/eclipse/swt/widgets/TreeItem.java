@@ -842,18 +842,12 @@ public Tree getParent () {
  */
 public TreeItem getParentItem () {
 	checkWidget();
-	long path = GTK.gtk_tree_model_get_path (parent.modelHandle, handle);
+	long iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
 	TreeItem item = null;
-	int depth = GTK.gtk_tree_path_get_depth (path);
-	if (depth > 1) {
-		GTK.gtk_tree_path_up (path);
-		long iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
-		if (GTK.gtk_tree_model_get_iter (parent.modelHandle, iter, path)) {
-			item = parent._getItem (iter);
-		}
-		OS.g_free (iter);
+	if (GTK.gtk_tree_model_iter_parent (parent.modelHandle, iter, handle)) {
+		item = parent._getItem (iter);
 	}
-	GTK.gtk_tree_path_free (path);
+	OS.g_free (iter);
 	return item;
 }
 

@@ -563,6 +563,48 @@ public void test_setSelection$Lorg_eclipse_swt_widgets_TreeItem() {
 }
 
 @Test
+public void test_setSelection$Lorg_eclipse_swt_widgets_TreeItem_nested() {
+	TreeItem[][][] items = new TreeItem[3][5][4];
+	for (int r = 0; r < 3; r++) {
+		TreeItem root = new TreeItem(tree, 0);
+		for (int c = 0; c < 5; c++) {
+			TreeItem child = new TreeItem(root, 0);
+			items[r][c][0] = child;
+			for (int g = 1; g < 4; g++) {
+				items[r][c][g] = new TreeItem(child, 0);
+			}
+		}
+	}
+	TreeItem[] roots = tree.getItems();
+
+	if (SwtTestUtil.isGTK) {
+		tree.setSelection(new TreeItem[] {items[2][1][3], items[0][4][1]});
+		assertTrue(items[2][1][0].getExpanded());
+		assertTrue(items[0][4][0].getExpanded());
+		assertArrayEquals(new TreeItem[] {items[0][4][1], items[2][1][3]}, tree.getSelection());
+	}
+	// Other platforms only reveal the first item, so expand all parents
+	for (TreeItem root : roots) {
+		root.setExpanded(true);
+		for (TreeItem child : root.getItems()) child.setExpanded(true);
+	}
+
+	TreeItem[] selection = {items[2][1][3], roots[0], items[0][4][1], items[0][4][2], items[0][1][0]};
+	tree.setSelection(selection);
+	assertArrayEquals(new TreeItem[] {roots[0], items[0][1][0], items[0][4][1], items[0][4][2], items[2][1][3]}, tree.getSelection());
+
+	tree.setSelection(tree.getSelection());
+	assertArrayEquals(new TreeItem[] {roots[0], items[0][1][0], items[0][4][1], items[0][4][2], items[2][1][3]}, tree.getSelection());
+
+	tree.setSelection(new TreeItem[] {items[0][4][2], items[1][3][0], items[2][1][3], items[2][1][1]});
+	assertArrayEquals(new TreeItem[] {items[0][4][2], items[1][3][0], items[2][1][1], items[2][1][3]}, tree.getSelection());
+
+	assertEquals(items[2][1][0], items[2][1][3].getParentItem());
+	assertEquals(roots[1], items[1][3][0].getParentItem());
+	assertNull(roots[2].getParentItem());
+}
+
+@Test
 public void test_setTopItemLorg_eclipse_swt_widgets_TreeItem() {
 	tree.removeAll();
 	for (int i = 0; i < 10; i++) {
