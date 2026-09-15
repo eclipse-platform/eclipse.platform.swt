@@ -147,6 +147,8 @@ public ImageData getImageData(int zoom) {
 	if (iconPath == null) return null;
 	ImageData data = null;
 
+	// Icons are 16 points at 100%; the theme lookup wants the size in pixels.
+	int size = Math.max(1, Math.round(16 * zoom / 100f));
 	long gicon = OS.g_icon_new_for_string(Converter.javaStringToCString(iconPath), null);
 	if (gicon != 0) {
 		long pixbuf = 0;
@@ -168,7 +170,7 @@ public ImageData getImageData(int zoom) {
 			OS.g_object_unref(paintable);
 		} else {
 			long icon_theme = GTK3.gtk_icon_theme_get_default();
-			long gicon_info = GTK3.gtk_icon_theme_lookup_by_gicon(icon_theme, gicon, 16/*size*/, 0);
+			long gicon_info = GTK3.gtk_icon_theme_lookup_by_gicon(icon_theme, gicon, size, GTK.GTK_ICON_LOOKUP_FORCE_SIZE);
 			if (gicon_info != 0) {
 				pixbuf = GTK3.gtk_icon_info_load_icon(gicon_info, null);
 				OS.g_object_unref(gicon_info);

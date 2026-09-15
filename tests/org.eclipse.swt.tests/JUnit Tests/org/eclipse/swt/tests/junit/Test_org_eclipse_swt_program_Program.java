@@ -15,15 +15,18 @@
 package org.eclipse.swt.tests.junit;
 
 import static org.eclipse.swt.tests.junit.SwtTestUtil.assertSWTProblem;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Display;
 import org.junit.jupiter.api.BeforeAll;
@@ -126,6 +129,27 @@ public void test_getImageData() {
 			}
 		}
 	}
+}
+
+@Test
+public void test_getImageData_scalesWithZoom() {
+	assumeTrue(SwtTestUtil.isGTK && !SwtTestUtil.isGTK4(), "only GTK3 looks program icons up by size");
+	String[] extensions = Program.getExtensions();
+	if (extensions != null) {
+		for (String extension : extensions) {
+			Program program = Program.findProgram(extension);
+			ImageData data100 = program == null ? null : program.getImageData(100);
+			if (data100 == null) {
+				continue;
+			}
+			ImageData data200 = program.getImageData(200);
+			assertNotNull(data200, "no image data at 200% for " + program.getName());
+			assertEquals(data100.width * 2, data200.width, "width at 200% for " + program.getName());
+			assertEquals(data100.height * 2, data200.height, "height at 200% for " + program.getName());
+			return;
+		}
+	}
+	assumeTrue(false, "no program with an icon is registered on this machine");
 }
 
 @Test
