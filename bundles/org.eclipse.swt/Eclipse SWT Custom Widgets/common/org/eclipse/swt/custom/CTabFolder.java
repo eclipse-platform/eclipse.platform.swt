@@ -2379,8 +2379,19 @@ public void reskin(int flags) {
 	}
 }
 
+/**
+ * Sets the background color of the unselected tabs, clearing any background
+ * gradient set by {@link #setBackground(Color[], int[], boolean)}.
+ */
 @Override
 public void setBackground (Color color) {
+	gradientColors = null;
+	gradientPercents = null;
+	gradientVertical = false;
+	applyBackground(color);
+}
+
+private void applyBackground(Color color) {
 	super.setBackground(color);
 	updateBkImages(true);
 	redraw();
@@ -2501,7 +2512,7 @@ public void setBackground(Color[] colors, int[] percents, boolean vertical) {
 			gradientPercents[i] = percents[i];
 		}
 		gradientVertical = vertical;
-		setBackground(gradientColors[gradientColors.length-1]);
+		applyBackground(gradientColors[gradientColors.length-1]);
 	}
 
 	// Refresh with the new settings
