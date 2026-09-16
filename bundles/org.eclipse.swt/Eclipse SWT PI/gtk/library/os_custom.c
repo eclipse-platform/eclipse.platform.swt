@@ -1040,6 +1040,23 @@ G_DEFINE_TYPE_WITH_CODE (SwtFixedAccessible, swt_fixed_accessible, GTK_TYPE_CONT
 // Fully qualified Java class name for the Java implementation of ATK functions
 const char *ACCESSIBILITY_CLASS_NAME = "org/eclipse/swt/accessibility/AccessibleObject";
 
+static jclass accessibility_class = NULL;
+
+// FindClass resolves against the class loader of the calling Java method, which only is SWT's
+// when called from a JNI native method, so the class is looked up once and kept.
+static jclass get_accessibility_class (JNIEnv *env) {
+	if (accessibility_class == NULL) {
+		jclass cls = (*env)->FindClass(env, ACCESSIBILITY_CLASS_NAME);
+		if (cls == NULL) {
+			(*env)->ExceptionClear(env);
+			return NULL;
+		}
+		accessibility_class = (*env)->NewGlobalRef(env, cls);
+		(*env)->DeleteLocalRef(env, cls);
+	}
+	return accessibility_class;
+}
+
 static void swt_fixed_accessible_init (SwtFixedAccessible *accessible) {
 	// Initialize the SwtFixedAccessiblePrivate struct
 	accessible->priv = swt_fixed_accessible_get_instance_private (accessible);
@@ -1104,6 +1121,11 @@ void swt_fixed_accessible_register_accessible (AtkObject *obj, gboolean is_nativ
 	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (obj);
 	SwtFixedAccessiblePrivate *private = fixed->priv;
 	private->has_accessible = TRUE;
+
+	JNIEnv *env;
+	if ((*JVM)->GetEnv(JVM, (void **)&env, JNI_VERSION_10) == JNI_OK) {
+		get_accessibility_class(env);
+	}
 
 	if (!is_native) {
 		gtk_accessible_set_widget (GTK_ACCESSIBLE (obj), to_map);
@@ -2122,7 +2144,7 @@ jlong call_accessible_object_function (const char *method_name, const char *meth
 	}
 
 	// Find the class pointer
-	cls = (*env)->FindClass(env, ACCESSIBILITY_CLASS_NAME);
+	cls = get_accessibility_class(env);
 	if (cls == NULL) {
 		g_critical("JNI class pointer is NULL for class %s\n", ACCESSIBILITY_CLASS_NAME);
 		return 0;
