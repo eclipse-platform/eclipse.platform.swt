@@ -1118,6 +1118,32 @@ void hookRowSelectionSync(long popover) {
 	GTK.gtk_event_controller_set_propagation_phase(keyController, GTK.GTK_PHASE_CAPTURE);
 	OS.g_signal_connect(keyController, OS.key_pressed, display.keyPressReleaseProc, KEY_PRESSED);
 	GTK4.gtk_widget_add_controller(popover, keyController);
+	/* Presses outside the menu may reach the popover instead of dismissing it, see gtk_gesture_press_event. */
+	long clickGesture = GTK4.gtk_gesture_click_new();
+	GTK.gtk_event_controller_set_propagation_phase(clickGesture, GTK.GTK_PHASE_CAPTURE);
+	GTK.gtk_gesture_single_set_button(clickGesture, 0);
+	OS.g_signal_connect(clickGesture, OS.pressed, display.gesturePressReleaseProc, GESTURE_PRESSED);
+	GTK4.gtk_widget_add_controller(popover, clickGesture);
+}
+
+/*
+ * Before GTK 4.23.1, GDK keeps a single device grab per device: the grab of a submenu
+ * popover ends the grab of its parent, and closing the submenu restores nothing, so a
+ * later press outside the menu no longer dismisses it. GTK still routes that press to
+ * the popover holding its own grab; dismiss the menu from here.
+ */
+@Override
+int gtk_gesture_press_event(long gesture, int n_press, double x, double y, long event) {
+	long surface = event != 0 ? GDK.gdk_event_get_surface(event) : 0;
+	long rootPopover = 0;
+	for (Menu menu = this; menu != null && (menu.style & SWT.BAR) == 0; menu = menu.getParentMenu()) {
+		long popover = (menu.style & SWT.POP_UP) != 0 ? menu.handle : menu.popoverHandle;
+		/* A press on this menu or one above it is left to the menus and GDK. */
+		if (surface == 0 || popover == 0 || surface == GTK4.gtk_native_get_surface(popover)) return GTK4.GTK_EVENT_SEQUENCE_NONE;
+		rootPopover = popover;
+	}
+	GTK.gtk_popover_popdown(rootPopover);
+	return GTK4.GTK_EVENT_SEQUENCE_NONE;
 }
 
 @Override
