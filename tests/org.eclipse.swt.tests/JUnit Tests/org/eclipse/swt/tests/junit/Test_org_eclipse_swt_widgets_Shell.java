@@ -38,6 +38,7 @@ import org.eclipse.swt.events.ShellListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.Region;
+import org.eclipse.swt.internal.DPIUtil;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -766,14 +767,14 @@ public void test_setSizeII() {
 		Point newSize = new Point(112, 27);
 		for (int i = 0; i < 10; i++) {
 			testShell.setSize(newSize.x, newSize.y);
-			assertEquals(newSize, testShell.getSize());
+			assertShellProperlySized(testShell, newSize);
 			newSize.x += 100;
 			newSize.y += 100;
 		}
 		newSize = new Point(1292, 1036);
 		for (int i = 0; i < 10; i++) {
 			testShell.setSize(newSize.x, newSize.y);
-			assertEquals(newSize, testShell.getSize());
+			assertShellProperlySized(testShell, newSize);
 			newSize.x -= 100;
 			newSize.y -= 100;
 		}
@@ -821,8 +822,9 @@ public void test_setSizeLorg_eclipse_swt_graphics_Point() {
 	}
 }
 
+@SuppressWarnings("restriction")
 private void assertShellProperlySized(Shell shell, Point expectedSize) {
-	int tolerance = shell.getZoom() != 100 ? 1 : 0;
+	int tolerance = shell.getZoom() != 100 || DPIUtil.getNativeDeviceZoom() != 100 ? 1 : 0;
 	Point actualSize = shell.getSize();
 	assertTrue(
 			Math.abs(expectedSize.x - actualSize.x) <= tolerance
