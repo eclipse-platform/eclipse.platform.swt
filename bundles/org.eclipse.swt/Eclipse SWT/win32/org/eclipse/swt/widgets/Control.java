@@ -3353,7 +3353,10 @@ public void setBounds (Rectangle rect) {
  * Thus, reduce the control size in case it would not fit anyway
  */
 private void fitInParentBounds(Rectangle boundsInPixels, int zoom) {
-	if (parent == null) {
+	if (parent == null || this instanceof Shell) {
+		// A Shell is a geometric top-level element and must not be fit into any
+		// logical parent's bounds — even if it has another Shell set as parent
+		// (which denotes an owner relationship, not geometric containment).
 		return;
 	}
 	Rectangle parentBoundsInPixels = parent.getBoundsInPixels();
