@@ -1694,8 +1694,20 @@ long gtk_focus_in_event (long widget, long event) {
 	} else {
 		ignoreFocusIn = false;
 	}
-	restoreFocus();
+	/*
+	 * An opening menu popover takes the keyboard, which the window sees as losing and
+	 * regaining its focus; restoring the saved focus then would take it out of the menu.
+	 */
+	if (!(GTK.GTK4 && focusInMenu ())) restoreFocus();
 	return 0;
+}
+
+/** GTK4: whether the window's focus is inside a menu popover. */
+boolean focusInMenu () {
+	for (long focus = GTK.gtk_window_get_focus (shellHandle); focus != 0; focus = GTK.gtk_widget_get_parent (focus)) {
+		if (GTK4.GTK_IS_POPOVER_MENU (focus)) return true;
+	}
+	return false;
 }
 
 @Override
@@ -1745,6 +1757,22 @@ long gtk_map (long widget) {
 
 @Override
 long gtk_move_focus (long widget, long directionType) {
+	if (GTK.GTK4) {
+		/*
+		 * With the focus inside an open menu, move it within the menu. The focus control's
+		 * handle is the wrong target (it takes the focus out of the menu), and so is GTK's
+		 * own traversal from the window: it passes through the menu's parent widget, and a
+		 * GtkTreeView (Tree, Table) then grabs the focus itself instead of forwarding to
+		 * its child popover.
+		 */
+		for (long focus = GTK.gtk_window_get_focus (shellHandle); focus != 0; focus = GTK.gtk_widget_get_parent (focus)) {
+			if (GTK4.GTK_IS_POPOVER_MENU (focus) && display.getWidget (focus) instanceof Menu menu) {
+				if (!menu.moveFocus (focus, (int)directionType)) return 0;
+				OS.g_signal_stop_emission_by_name (shellHandle, OS.move_focus);
+				return 1;
+			}
+		}
+	}
 	Control control = display.getFocusControl ();
 	if (control != null) {
 		long focusHandle = control.focusHandle ();

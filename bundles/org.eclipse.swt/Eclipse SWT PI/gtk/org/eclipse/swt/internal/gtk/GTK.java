@@ -43,6 +43,9 @@ public class GTK extends OS {
 	public static final int GTK_DIALOG_MODAL = 1 << 0;
 	public static final int GTK_DIR_TAB_FORWARD = 0;
 	public static final int GTK_DIR_TAB_BACKWARD = 1;
+	public static final int GTK_DIR_UP = 2;
+	public static final int GTK_DIR_LEFT = 4;
+	public static final int GTK_DIR_RIGHT = 5;
 	public static final int GTK_ENTRY_ICON_PRIMARY = 0;
 	public static final int GTK_ENTRY_ICON_SECONDARY = 1;
 	public static final int GTK_FILE_CHOOSER_ACTION_OPEN = 0;

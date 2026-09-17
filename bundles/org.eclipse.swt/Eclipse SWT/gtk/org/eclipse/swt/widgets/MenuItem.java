@@ -1250,7 +1250,8 @@ private void createCustomMenuWidget() {
 	OS.g_object_set(customIndicatorHandle, Converter.javaStringToCString("can-target"), false, 0);
 	/* Decoration of the row, not a second control, like GtkModelButton's own indicator. */
 	OS.g_object_set(customIndicatorHandle, Converter.javaStringToCString("accessible-role"), GTK4.GTK_ACCESSIBLE_ROLE_PRESENTATION, 0);
-	GTK4.gtk_widget_set_focusable(customIndicatorHandle, false);
+	/* can-focus, not just focusable: GtkCheckButton's focus handler claims a traversal step whether or not it may take the focus. */
+	GTK.gtk_widget_set_can_focus(customIndicatorHandle, false);
 	GTK.gtk_widget_set_margin_end(customIndicatorHandle, 4);
 	if ((style & SWT.CHECK) != 0) {
 		if (actionName != null) {
@@ -1382,9 +1383,16 @@ void gtk4_leave_event(long controller, long event) {
 @Override
 void gtk4_focus_enter_event(long controller, long event) {
 	// Highlight the focused row like a focused native row. A stray focus (e.g. after
-	// a submenu hides) is swept by Menu.syncRowSelection.
+	// a submenu hides) is swept by Menu.syncRowSelection. GTK focuses the first row as
+	// it shows a menu; like a native row, that shows only when a key put it there.
 	customRowFocused = true;
-	setCustomRowSelected(true);
+	if (System.nanoTime() - display.lastKeyEventTime < 500_000_000L) setCustomRowSelected(true);
+	/*
+	 * GtkPopoverMenu drops the previous row's highlight only when a GtkModelButton
+	 * takes the focus (its focus handler makes it the active item); do it here.
+	 */
+	long popover = getParentPopoverHandle();
+	if (popover != 0) parent.deselectOtherRows(popover, customWidgetHandle);
 }
 
 @Override
