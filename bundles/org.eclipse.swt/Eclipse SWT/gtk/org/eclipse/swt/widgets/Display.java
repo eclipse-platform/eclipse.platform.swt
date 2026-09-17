@@ -144,6 +144,11 @@ public class Display extends Device implements Executor {
 	 * injection must wait until the model is whole again (see MenuItem#refreshMenuModelGTK4).
 	 */
 	boolean menuModelMutating;
+	/** GTK4 only: menu row kept out of picking after its submenu was closed from the keyboard, see Shell#gtk_move_focus. */
+	long untargetableMenuRow;
+	/** GTK4 only: where the pointer was when that row was hidden from it; it is picked again once the pointer moves. */
+	double untargetableMenuRowX, untargetableMenuRowY;
+	boolean untargetableMenuRowSeen;
 	long notifyProc;
 	long computeSizeProc;
 	Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5, windowCallback6;
@@ -4650,6 +4655,7 @@ void releaseDisplay () {
 	changeValueProc = 0;
 
 	if (GTK.GTK4) {
+		restoreMenuRowTarget ();
 		keyPressReleaseCallback.dispose();
 		keyPressReleaseCallback = null;
 		keyPressReleaseProc = 0;
@@ -6128,6 +6134,27 @@ void focusProc(long controller, long user_data) {;
 void windowActiveProc(long handle, long user_data) {;
 	Widget widget = getWidget(handle);
 	if (widget != null) widget.windowActiveProc(handle, user_data);
+}
+
+/** GTK4 only: lets the pointer pick the menu row again, see Shell#gtk_move_focus. */
+void restoreMenuRowTarget () {
+	if (untargetableMenuRow == 0) return;
+	OS.g_object_set (untargetableMenuRow, Converter.javaStringToCString ("can-target"), true, 0);
+	OS.g_object_unref (untargetableMenuRow);
+	untargetableMenuRow = 0;
+	untargetableMenuRowSeen = false;
+}
+
+/** GTK4 only: restores the row once the pointer has moved; the first event after hiding the submenu is GTK's synthesized crossing. */
+void restoreMenuRowTargetOnMotion (double x, double y) {
+	if (untargetableMenuRow == 0) return;
+	if (!untargetableMenuRowSeen) {
+		untargetableMenuRowSeen = true;
+		untargetableMenuRowX = x;
+		untargetableMenuRowY = y;
+	} else if (x != untargetableMenuRowX || y != untargetableMenuRowY) {
+		restoreMenuRowTarget ();
+	}
 }
 
 boolean keyPressReleaseProc(long controller, int keyval, int keycode, int state, long user_data) {

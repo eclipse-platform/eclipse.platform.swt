@@ -1127,6 +1127,7 @@ boolean gtk4_key_press_event(long controller, int keyval, int keycode, int state
 
 @Override
 void gtk4_motion_event(long controller, double x, double y, long event) {
+	display.restoreMenuRowTargetOnMotion(x, y);
 	syncRowSelection(GTK.gtk_event_controller_get_widget(controller));
 }
 
@@ -1160,7 +1161,18 @@ void syncRowSelection(long popover) {
 	for (long p = GTK.gtk_widget_get_parent(popover); p != 0; p = GTK.gtk_widget_get_parent(p)) {
 		if (GTK4.GTK_IS_POPOVER_MENU(p)) popover = p;
 	}
+	/* With the pointer over no row there is nothing to follow; a tooltip elsewhere must not clear a keyboard selection. */
+	if (!hasPrelitRow(popover)) return;
 	syncRowSelectionRecursive(popover);
+}
+
+private boolean hasPrelitRow(long widget) {
+	if (GTK4.GTK_IS_POPOVER_MENU(widget) && !GTK.gtk_widget_get_visible(widget)) return false;
+	if (isMenuRow(widget) && (GTK.gtk_widget_get_state_flags(widget) & GTK.GTK_STATE_FLAG_PRELIGHT) != 0) return true;
+	for (long child = GTK4.gtk_widget_get_first_child(widget); child != 0; child = GTK4.gtk_widget_get_next_sibling(child)) {
+		if (hasPrelitRow(child)) return true;
+	}
+	return false;
 }
 
 private void syncRowSelectionRecursive(long widget) {
@@ -1170,7 +1182,7 @@ private void syncRowSelectionRecursive(long widget) {
 	boolean custom = item instanceof MenuItem menuItem && menuItem.customWidgetHandle == widget;
 	if (custom || isModelButton(widget)) {
 		int flags = GTK.gtk_widget_get_state_flags(widget);
-		boolean selected = (flags & GTK.GTK_STATE_FLAG_PRELIGHT) != 0 || hasVisibleSubmenu(widget);
+		boolean selected = (flags & GTK.GTK_STATE_FLAG_PRELIGHT) != 0 || visibleSubmenu(widget) != 0;
 		if (custom) {
 			/* Toggles the highlight class and forces the repaint, see MenuItem. */
 			((MenuItem) item).setCustomRowSelected(selected);
@@ -1189,11 +1201,25 @@ private void syncRowSelectionRecursive(long widget) {
 	}
 }
 
-private static boolean hasVisibleSubmenu(long row) {
-	for (long child = GTK4.gtk_widget_get_first_child(row); child != 0; child = GTK4.gtk_widget_get_next_sibling(child)) {
-		if (GTK4.GTK_IS_POPOVER_MENU(child) && GTK.gtk_widget_get_visible(child)) return true;
+/** GTK4: drops the selection highlight of every row of {@code popover} but {@code row}, see MenuItem.gtk4_focus_enter_event. */
+void deselectOtherRows(long popover, long row) {
+	for (long child = GTK4.gtk_widget_get_first_child(popover); child != 0; child = GTK4.gtk_widget_get_next_sibling(child)) {
+		if (child == row || GTK4.GTK_IS_POPOVER_MENU(child)) continue; /* A submenu keeps its own selection. */
+		if (isMenuRow(child)) {
+			GTK.gtk_widget_unset_state_flags(child, GTK.GTK_STATE_FLAG_SELECTED);
+			GTK.gtk_widget_queue_draw(child);
+		} else {
+			deselectOtherRows(child, row);
+		}
 	}
-	return false;
+}
+
+/** GTK4: the showing submenu popover of {@code row}, or 0. */
+private static long visibleSubmenu(long row) {
+	for (long child = GTK4.gtk_widget_get_first_child(row); child != 0; child = GTK4.gtk_widget_get_next_sibling(child)) {
+		if (GTK4.GTK_IS_POPOVER_MENU(child) && GTK.gtk_widget_get_visible(child)) return child;
+	}
+	return 0;
 }
 
 /**
@@ -1252,8 +1278,160 @@ private void addNativeIndicatorBoxes(long widget) {
 	}
 }
 
-private static boolean isModelButton(long widget) {
+/**
+ * GTK4: moves the focus within the menu for an arrow or Tab key, see Shell.gtk_move_focus.
+ * {@code popover} is the innermost popover holding the focus. Returns false to leave the
+ * key to GTK, which switches the menu bar's menus.
+ */
+boolean moveFocus(long popover, int direction) {
+	long shellHandle = getShell().shellHandle;
+	long oldFocus = GTK.gtk_window_get_focus(shellHandle);
+	long root = popover;
+	for (long parent = GTK.gtk_widget_get_parent(popover); parent != 0; parent = GTK.gtk_widget_get_parent(parent)) {
+		if (GTK4.GTK_IS_POPOVER_MENU(parent)) root = parent;
+	}
+	boolean vertical = direction != GTK.GTK_DIR_LEFT && direction != GTK.GTK_DIR_RIGHT;
+	boolean backward = direction == GTK.GTK_DIR_UP || direction == GTK.GTK_DIR_TAB_BACKWARD;
+	Menu rootParent = display.getWidget(root) instanceof Menu rootMenu ? rootMenu.getParentMenu() : null;
+	boolean bar = rootParent != null && (rootParent.style & SWT.BAR) != 0;
+	/*
+	 * Left closes the submenu holding the focus or the one open below the focused row; Up
+	 * and Down close the latter and move on in this menu, where GTK would move into it, and
+	 * a submenu without a usable row (the focus sits on its scrolled window); Right leaves
+	 * a submenu without a usable row like a leaf row and enters one with, as in GTK.
+	 */
+	long submenu = popover != root && (direction == GTK.GTK_DIR_LEFT || findRow(popover, false) == 0) ? popover : oldFocus != 0 ? visibleSubmenu(oldFocus) : 0;
+	if (direction == GTK.GTK_DIR_RIGHT && submenu != 0 && findRow(submenu, false) != 0) submenu = 0;
+	if (submenu != 0) {
+		closeSubmenuFromKeyboard(submenu, root);
+		/* Or they may have rebuilt the rows: the old focus is gone with them. */
+		if (isDisposed() || display.getWidget(root) == null) return true;
+		oldFocus = GTK.gtk_window_get_focus(shellHandle);
+		if (!isMenuRow(oldFocus)) return true;
+		if (vertical) {
+			/* The focus is back on the row above the submenu: go on in that row's menu. */
+			for (popover = oldFocus; !GTK4.GTK_IS_POPOVER_MENU(popover); popover = GTK.gtk_widget_get_parent(popover)) {}
+		} else {
+			selectRow(oldFocus);
+			if (direction == GTK.GTK_DIR_RIGHT && bar) {
+				/* The bar switches menus once its drop-down declines Right, which the cascade row would take to open the submenu again. */
+				OS.g_object_ref(oldFocus);
+				GTK.gtk_widget_set_can_focus(oldFocus, false);
+				GTK.gtk_widget_child_focus(rootParent.handle, direction);
+				GTK.gtk_widget_set_can_focus(oldFocus, true);
+				OS.g_object_unref(oldFocus);
+			}
+			return true;
+		}
+	}
+	if (vertical && !isMenuRow(oldFocus)) {
+		/*
+		 * The focus fell onto an internal widget of the popover (its scrolled window,
+		 * after Eclipse replaced the rows while it opened): start from the first or
+		 * the last row instead of moving from there.
+		 */
+		long row = findRow(popover, backward);
+		if (row != 0) {
+			GTK.gtk_widget_grab_focus(row);
+			selectRow(row);
+			return true;
+		}
+	}
+	if (!GTK.gtk_widget_child_focus(root, direction)) {
+		/* A menu bar drop-down declines Left and Right so that the bar can switch menus; every other key stays in the menu. */
+		return vertical || !bar;
+	}
+	/* The rows' selection change is not repainted inside the Eclipse workbench. */
+	GTK.gtk_widget_queue_draw(oldFocus);
+	long newFocus = GTK.gtk_window_get_focus(shellHandle);
+	if (!isMenuRow(newFocus)) {
+		/*
+		 * GTK's wrap-around in a menu of a single row lands on the scrolled window, and so
+		 * does Right into a submenu without a usable row: leave that open, stay on its row.
+		 */
+		newFocus = vertical ? findRow(popover, backward) : oldFocus;
+		if (!isMenuRow(newFocus)) return true;
+		GTK.gtk_widget_grab_focus(newFocus);
+	}
+	selectRow(newFocus);
+	return true;
+}
+
+/*
+ * GTK4: closes a submenu for a key. GTK's own popdown cascades and closes the whole
+ * menu, so hide it as GTK's hover close does. GtkPopoverMenu then keeps sending the
+ * keys to the hidden submenu until a Left, the only key it does not send there, makes
+ * it forget the submenu and focus its active row: make that the cascade row by
+ * focusing it from outside its subtree, as its focus-enter is what records it.
+ */
+private void closeSubmenuFromKeyboard(long submenu, long root) {
+	long row = GTK.gtk_widget_get_parent(submenu);
+	/*
+	 * A pointer resting on the cascade row reopens the submenu the moment it hides (the
+	 * row sees the pointer again); keep the row out of picking until the pointer moves
+	 * on, see Display#restoreMenuRowTarget.
+	 */
+	display.restoreMenuRowTarget();
+	OS.g_object_set(row, Converter.javaStringToCString("can-target"), false, 0);
+	OS.g_object_ref(row);
+	display.untargetableMenuRow = row;
+	GTK.gtk_widget_set_visible(submenu, false);
+	if (isDisposed()) return; /* Hidden, this menu's SWT.Hide listeners ran and may have disposed the menu. */
+	GTK.gtk_widget_grab_focus(root);
+	GTK.gtk_widget_grab_focus(row);
+	GTK.gtk_widget_child_focus(root, GTK.GTK_DIR_LEFT);
+}
+
+/*
+ * GTK4: selects the row that took the focus and repaints it. GtkPopoverMenu does that
+ * itself unless the row is still its active item, which a custom row leaves behind
+ * (see deselectOtherRows).
+ */
+private static void selectRow(long row) {
+	GTK.gtk_widget_set_state_flags(row, GTK.GTK_STATE_FLAG_SELECTED, false);
+	GTK.gtk_widget_queue_draw(row);
+}
+
+/** GTK4: the first, or with {@code last} the last, usable row below {@code widget}, not of a submenu, or 0. */
+long findRow(long widget, boolean last) {
+	long found = 0;
+	for (long child = GTK4.gtk_widget_get_first_child(widget); child != 0; child = GTK4.gtk_widget_get_next_sibling(child)) {
+		if (GTK4.GTK_IS_POPOVER_MENU(child)) continue;
+		long row = isMenuRow(child) ? (GTK.gtk_widget_get_sensitive(child) && GTK.gtk_widget_get_visible(child) ? child : 0) : findRow(child, last);
+		if (row != 0) {
+			if (!last) return row;
+			found = row;
+		}
+	}
+	return found;
+}
+
+/** GTK4: whether {@code widget} is a menu row, native or custom. */
+boolean isMenuRow(long widget) {
+	if (widget == 0) return false;
+	if (isModelButton(widget)) return true;
+	return display.getWidget(widget) instanceof MenuItem item && item.customWidgetHandle == widget;
+}
+
+static boolean isModelButton(long widget) {
 	return "GtkModelButton".equals(Converter.cCharPtrToJavaString(OS.g_type_name(OS.G_OBJECT_TYPE(widget)), false));
+}
+
+/*
+ * GTK4: GTK focuses the first row of a popover menu as it shows it, without selecting
+ * it, so nothing looks selected and the first Down goes to the second row. Opened from
+ * the keyboard, select that row. It is focused a moment after the show signal, and it
+ * is not the first one when the SWT.Show listeners added rows in front of it.
+ */
+private void selectFirstRowLater(long popover) {
+	if (System.nanoTime() - display.lastKeyEventTime >= 500_000_000L) return;
+	display.asyncExec(() -> {
+		if (isDisposed() || popover != ((style & SWT.POP_UP) != 0 ? handle : popoverHandle) || !GTK.gtk_widget_get_mapped(popover)) return;
+		long first = findRow(popover, false);
+		if (first == 0) return;
+		GTK.gtk_widget_grab_focus(first);
+		selectRow(first);
+	});
 }
 
 /**
@@ -1280,6 +1458,22 @@ private long findNestedPopoverForModel(long parentWidget, long targetModel) {
 
 @Override
 long gtk_hide (long widget) {
+	Menu parentMenu = getParentMenu();
+	if (GTK.GTK4 && ((style & SWT.POP_UP) != 0 || parentMenu != null && (parentMenu.style & SWT.BAR) != 0)) {
+		display.restoreMenuRowTarget();
+		/*
+		 * The popover took the window's focus; once it is unmapped nothing has it, or
+		 * the menu bar's item does, and no focus-in of the window follows to restore
+		 * the saved focus. Do it here unless the closing gave the focus to another
+		 * widget: a click outside, or the neighbouring menu opened with Left/Right.
+		 */
+		Shell shell = getShell();
+		display.asyncExec(() -> {
+			if (shell.isDisposed()) return;
+			long focus = GTK.gtk_window_get_focus(shell.shellHandle);
+			if (focus == 0 || !GTK.gtk_widget_get_mapped(focus) || parentMenu != null && GTK.gtk_widget_get_parent(focus) == parentMenu.handle) shell.restoreFocus();
+		});
+	}
 	if ((style & SWT.POP_UP) != 0) {
 		if (display.activeShell != null) {
 			display.activeShell = getShell ();
@@ -1305,6 +1499,7 @@ long gtk_show (long widget) {
 			display.activeShell = getShell ();
 			display.activeShell.ignoreFocusOut = true;
 		}
+		if (GTK.GTK4) selectFirstRowLater(handle);
 		return 0;
 	}
 	sendEvent (SWT.Show);
@@ -1312,6 +1507,17 @@ long gtk_show (long widget) {
 	if (GTK.GTK4 && (style & SWT.DROP_DOWN) != 0 && popoverHandle != 0) {
 		injectCustomMenuIcons();
 		connectCascadeSubMenuSignals(this, popoverHandle);
+		if (GTK.gtk_widget_get_mapped(popoverHandle)) {
+			if (GTK.gtk_window_get_focus(getShell().shellHandle) == 0) {
+				/*
+				 * GTK focused the first row before the SWT.Show listeners ran; items they
+				 * created or replaced took that row with them. Focus the first row again so
+				 * that keyboard navigation goes on inside the submenu.
+				 */
+				GTK.gtk_widget_child_focus(popoverHandle, GTK.GTK_DIR_TAB_FORWARD);
+			}
+			selectFirstRowLater(popoverHandle);
+		}
 	}
 	if (OS.ubuntu_menu_proxy_get() != 0) {
 		MenuItem[] items = getItems();
