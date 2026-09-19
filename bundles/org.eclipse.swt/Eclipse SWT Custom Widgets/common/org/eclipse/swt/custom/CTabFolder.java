@@ -3934,42 +3934,26 @@ boolean updateItems() {
 }
 
 boolean updateItems (int showIndex) {
-	GC gc = new GC(this);
-	if (!single && !mru && showIndex != -1) {
-		// make sure selected item will be showing
-		int firstIndex = showIndex;
-		if (priority[0] < showIndex) {
-			int maxWidth = getRightItemEdge(gc) - getLeftItemEdge(gc, CTabFolderRenderer.PART_BORDER);
-			int width = 0;
-			int[] widths = new int[items.length];
-			for (int i = priority[0]; i <= showIndex; i++) {
-				int state = CTabFolderRenderer.MINIMUM_SIZE;
-				if (i == selectedIndex) state |= SWT.SELECTED;
-				widths[i] = renderer.computeSize(i, state, gc, SWT.DEFAULT, SWT.DEFAULT).x;
-				width += widths[i];
-				if (width > maxWidth) break;
-			}
-			if (width > maxWidth) {
-				width = 0;
-				for (int i = showIndex; i >= 0; i--) {
-					int state = CTabFolderRenderer.MINIMUM_SIZE;
-					if (i == selectedIndex) state |= SWT.SELECTED;
-					if (widths[i] == 0) widths[i] = renderer.computeSize(i, state, gc, SWT.DEFAULT, SWT.DEFAULT).x;
-					width += widths[i];
-					if (width > maxWidth) break;
-					firstIndex = i;
-				}
-			} else {
-				firstIndex = priority[0];
-				for (int i = showIndex + 1; i < items.length; i++) {
+	boolean changed = false;
+	try(AutoDisposableGC autoGC = GC.create(this)) {
+		GC gc = autoGC.gc();
+		if (!single && !mru && showIndex != -1) {
+			// make sure selected item will be showing
+			int firstIndex = showIndex;
+			if (priority[0] < showIndex) {
+				int maxWidth = getRightItemEdge(gc) - getLeftItemEdge(gc, CTabFolderRenderer.PART_BORDER);
+				int width = 0;
+				int[] widths = new int[items.length];
+				for (int i = priority[0]; i <= showIndex; i++) {
 					int state = CTabFolderRenderer.MINIMUM_SIZE;
 					if (i == selectedIndex) state |= SWT.SELECTED;
 					widths[i] = renderer.computeSize(i, state, gc, SWT.DEFAULT, SWT.DEFAULT).x;
 					width += widths[i];
-					if (width >= maxWidth) break;
+					if (width > maxWidth) break;
 				}
-				if (width < maxWidth) {
-					for (int i = priority[0] - 1; i >= 0; i--) {
+				if (width > maxWidth) {
+					width = 0;
+					for (int i = showIndex; i >= 0; i--) {
 						int state = CTabFolderRenderer.MINIMUM_SIZE;
 						if (i == selectedIndex) state |= SWT.SELECTED;
 						if (widths[i] == 0) widths[i] = renderer.computeSize(i, state, gc, SWT.DEFAULT, SWT.DEFAULT).x;
@@ -3977,59 +3961,78 @@ boolean updateItems (int showIndex) {
 						if (width > maxWidth) break;
 						firstIndex = i;
 					}
+				} else {
+					firstIndex = priority[0];
+					for (int i = showIndex + 1; i < items.length; i++) {
+						int state = CTabFolderRenderer.MINIMUM_SIZE;
+						if (i == selectedIndex) state |= SWT.SELECTED;
+						widths[i] = renderer.computeSize(i, state, gc, SWT.DEFAULT, SWT.DEFAULT).x;
+						width += widths[i];
+						if (width >= maxWidth) break;
+					}
+					if (width < maxWidth) {
+						for (int i = priority[0] - 1; i >= 0; i--) {
+							int state = CTabFolderRenderer.MINIMUM_SIZE;
+							if (i == selectedIndex) state |= SWT.SELECTED;
+							if (widths[i] == 0) widths[i] = renderer.computeSize(i, state, gc, SWT.DEFAULT, SWT.DEFAULT).x;
+							width += widths[i];
+							if (width > maxWidth) break;
+							firstIndex = i;
+						}
+					}
+				}
+
+			}
+			if (firstIndex != priority[0]) {
+				int index = 0;
+				// enumerate tabs from first visible to the last existing one (sorted ascending)
+				for (int i = firstIndex; i < items.length; i++) {
+					priority[index++] = i;
+				}
+				// enumerate hidden tabs on the left hand from first visible one
+				// in the inverse order (sorted descending) so that the originally
+				// first opened tab is always at the end of the list
+				for (int i = firstIndex - 1; i >= 0; i--) {
+					priority[index++] = i;
 				}
 			}
-
 		}
-		if (firstIndex != priority[0]) {
-			int index = 0;
-			// enumerate tabs from first visible to the last existing one (sorted ascending)
-			for (int i = firstIndex; i < items.length; i++) {
-				priority[index++] = i;
-			}
-			// enumerate hidden tabs on the left hand from first visible one
-			// in the inverse order (sorted descending) so that the originally
-			// first opened tab is always at the end of the list
-			for (int i = firstIndex - 1; i >= 0; i--) {
-				priority[index++] = i;
+
+		boolean oldShowChevron = showChevron;
+		changed = setItemSize(gc);
+		updateButtons();
+		boolean chevronChanged = showChevron != oldShowChevron;
+		if (chevronChanged) {
+			if (updateTabHeight(false)) {
+				// Tab height has changed. Item sizes have to be set again.
+				changed |= setItemSize(gc);
 			}
 		}
-	}
-
-	boolean oldShowChevron = showChevron;
-	boolean changed = setItemSize(gc);
-	updateButtons();
-	boolean chevronChanged = showChevron != oldShowChevron;
-	if (chevronChanged) {
-		if (updateTabHeight(false)) {
-			// Tab height has changed. Item sizes have to be set again.
-			changed |= setItemSize(gc);
+		if (showChevron) {
+			// Give the chevron its image (and thus its real preferred size) before
+			// setItemLocation decides how many tabs are showing. Both setItemLocation
+			// and computeControlBounds reserve space for the chevron via
+			// getRightItemEdge(); an image-less chevron measures much smaller than the
+			// final one, which would let an extra tab remain visible and make the
+			// chevron overlap the trailing controls (e.g. the min/max toolbar).
+			updateChevronImage(false);
+		}
+		changed |= setItemLocation(gc);
+		setButtonBounds();
+		changed |= chevronChanged;
+		if (changed && getToolTipText() != null) {
+			Point pt = toControl(getDisplay().getCursorLocation());
+			_setToolTipText(pt.x, pt.y);
 		}
 	}
-	if (showChevron) {
-		// Give the chevron its image (and thus its real preferred size) before
-		// setItemLocation decides how many tabs are showing. Both setItemLocation
-		// and computeControlBounds reserve space for the chevron via
-		// getRightItemEdge(); an image-less chevron measures much smaller than the
-		// final one, which would let an extra tab remain visible and make the
-		// chevron overlap the trailing controls (e.g. the min/max toolbar).
-		updateChevronImage(false);
-	}
-	changed |= setItemLocation(gc);
-	setButtonBounds();
-	changed |= chevronChanged;
-	if (changed && getToolTipText() != null) {
-		Point pt = toControl(getDisplay().getCursorLocation());
-		_setToolTipText(pt.x, pt.y);
-	}
-	gc.dispose();
 	return changed;
 }
 boolean updateTabHeight(boolean force){
 	int oldHeight = tabHeight;
-	GC gc = new GC(this);
-	tabHeight = renderer.computeSize(CTabFolderRenderer.PART_HEADER, SWT.NONE, gc, SWT.DEFAULT, SWT.DEFAULT).y;
-	gc.dispose();
+	try(AutoDisposableGC autoGC = GC.create(this)) {
+		GC gc = autoGC.gc();
+		tabHeight = renderer.computeSize(CTabFolderRenderer.PART_HEADER, SWT.NONE, gc, SWT.DEFAULT, SWT.DEFAULT).y;
+	}
 	if (fixedTabHeight == SWT.DEFAULT && controls != null && controls.length > 0) {
 		for (int i = 0; i < controls.length; i++) {
 			if (!controls[i].isDisposed() && controls[i].getVisible()) {
