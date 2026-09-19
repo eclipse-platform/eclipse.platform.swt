@@ -106,6 +106,12 @@ import org.eclipse.swt.internal.cocoa.*;
  */
 public class Display extends Device implements Executor {
 
+	public static enum LiquidGlassStrategy {
+		LAYER_BORDER, SKIP_DISPLAY_OVERRIDES
+	}
+
+	public static LiquidGlassStrategy liquidGlassStrategy=LiquidGlassStrategy.SKIP_DISPLAY_OVERRIDES;
+
 	static byte[] types = {'*','\0'};
 	static int size = C.PTR_SIZEOF, align = C.PTR_SIZEOF == 4 ? 2 : 3;
 
@@ -2822,7 +2828,55 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_comboBoxWillDismiss_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_comboBoxWillPopUp_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_textView_willChangeSelectionFromCharacterRange_toCharacterRange_, textWillChangeSelectionProc, "@:@{NSRange}{NSRange}");
-	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
+	int comboBoxMachOSDKVersion = OS.getMachOSDKVersion();
+	if (OS.VERSION_MAJOR(comboBoxMachOSDKVersion)==26 && Display.liquidGlassStrategy.equals(Display.LiquidGlassStrategy.SKIP_DISPLAY_OVERRIDES)) {
+		/*
+		 * Bug in macOS 26: Overriding drawRect:, setNeedsDisplay: or
+		 * setNeedsDisplayInRect: on NSComboBox prevents the native bezel
+		 * (rounded border) from being rendered. The new layer-backed rendering
+		 * pipeline in macOS 26 bypasses drawRect: for the bezel. Only register
+		 * the event/input methods from addEventMethods, skipping the display
+		 * invalidation overrides.
+		 */
+		OS.class_addMethod(cls, OS.sel_mouseDown_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_mouseUp_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_scrollWheel_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_rightMouseDown_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_rightMouseUp_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_rightMouseDragged_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_otherMouseDown_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_otherMouseUp_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_otherMouseDragged_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_mouseDragged_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_mouseMoved_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_mouseEntered_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_mouseExited_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_menuForEvent_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_keyDown_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_keyUp_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_flagsChanged_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_cursorUpdate_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_shouldDelayWindowOrderingForEvent_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_acceptsFirstMouse_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_changeColor_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_cancelOperation_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_touchesBeganWithEvent_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_touchesMovedWithEvent_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_touchesEndedWithEvent_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_touchesCancelledWithEvent_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_swipeWithEvent_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_rotateWithEvent_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_magnifyWithEvent_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_resignFirstResponder, proc2, "@:");
+		OS.class_addMethod(cls, OS.sel_becomeFirstResponder, proc2, "@:");
+		OS.class_addMethod(cls, OS.sel_resetCursorRects, proc2, "@:");
+		OS.class_addMethod(cls, OS.sel_updateTrackingAreas, proc2, "@:");
+		OS.class_addMethod(cls, OS.sel_getImageView, proc2, "@:");
+		OS.class_addMethod(cls, OS.sel_mouseDownCanMoveWindow, proc2, "@:");
+		OS.class_addMethod(cls, OS.sel_hitTest_, hitTestProc, "@:{NSPoint}");
+	}else {
+		addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
+	}
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
@@ -3160,7 +3214,55 @@ void initClasses () {
 	className = "SWTTextField";
 	cls = OS.objc_allocateClassPair(OS.class_NSTextField, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
-	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
+	int machOSDKVersion = OS.getMachOSDKVersion();
+	if (OS.VERSION_MAJOR(machOSDKVersion)==26 && Display.liquidGlassStrategy.equals(Display.LiquidGlassStrategy.SKIP_DISPLAY_OVERRIDES)) {
+		/*
+		 * Bug in macOS 26: Overriding drawRect:, setNeedsDisplay: or
+		 * setNeedsDisplayInRect: on NSTextField prevents the native bezel
+		 * (rounded border) from being rendered. The new layer-backed rendering
+		 * pipeline in macOS 26 bypasses drawRect: for the bezel. Only register
+		 * the event/input methods from addEventMethods, skipping the display
+		 * invalidation overrides.
+		 */
+		OS.class_addMethod(cls, OS.sel_mouseDown_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_mouseUp_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_scrollWheel_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_rightMouseDown_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_rightMouseUp_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_rightMouseDragged_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_otherMouseDown_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_otherMouseUp_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_otherMouseDragged_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_mouseDragged_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_mouseMoved_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_mouseEntered_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_mouseExited_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_menuForEvent_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_keyDown_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_keyUp_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_flagsChanged_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_cursorUpdate_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_shouldDelayWindowOrderingForEvent_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_acceptsFirstMouse_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_changeColor_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_cancelOperation_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_touchesBeganWithEvent_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_touchesMovedWithEvent_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_touchesEndedWithEvent_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_touchesCancelledWithEvent_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_swipeWithEvent_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_rotateWithEvent_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_magnifyWithEvent_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_resignFirstResponder, proc2, "@:");
+		OS.class_addMethod(cls, OS.sel_becomeFirstResponder, proc2, "@:");
+		OS.class_addMethod(cls, OS.sel_resetCursorRects, proc2, "@:");
+		OS.class_addMethod(cls, OS.sel_updateTrackingAreas, proc2, "@:");
+		OS.class_addMethod(cls, OS.sel_getImageView, proc2, "@:");
+		OS.class_addMethod(cls, OS.sel_mouseDownCanMoveWindow, proc2, "@:");
+		OS.class_addMethod(cls, OS.sel_hitTest_, hitTestProc, "@:{NSPoint}");
+	}else {
+		addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
+	}
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.class_addMethod(cls, OS.sel_acceptsFirstResponder, proc2, "@:");

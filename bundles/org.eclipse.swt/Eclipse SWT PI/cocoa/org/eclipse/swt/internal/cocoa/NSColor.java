@@ -27,6 +27,10 @@ public NSColor(id id) {
 	super(id);
 }
 
+public long /*CGColorRef*/ CGColor() {
+	return OS.objc_msgSend(this.id, OS.sel_CGColor);
+}
+
 public double alphaComponent() {
 	return OS.objc_msgSend_fpret(this.id, OS.sel_alphaComponent);
 }
@@ -148,6 +152,11 @@ public static NSColor selectedTextBackgroundColor() {
 
 public static NSColor selectedTextColor() {
 	long result = OS.objc_msgSend(OS.class_NSColor, OS.sel_selectedTextColor);
+	return result != 0 ? new NSColor(result) : null;
+}
+
+public static NSColor separatorColor() {
+	long result = OS.objc_msgSend(OS.class_NSColor, OS.sel_separatorColor);
 	return result != 0 ? new NSColor(result) : null;
 }
 
