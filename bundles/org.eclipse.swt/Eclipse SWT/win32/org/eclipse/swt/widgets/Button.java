@@ -1412,7 +1412,15 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 							} else {
 								OS.SetRect (focusRect, nmcd.left+4, nmcd.top+4, nmcd.right-4, nmcd.bottom-4);
 							}
-							OS.DrawFocusRect(nmcd.hdc, focusRect);
+							// DrawFocusRect() inverts the pixels, which is an arbitrary color on a custom background.
+							long pen = OS.CreatePen(OS.PS_DOT, 1, foreground);
+							OS.SaveDC(nmcd.hdc);
+							OS.SelectObject(nmcd.hdc, pen);
+							OS.SelectObject(nmcd.hdc, OS.GetStockObject(OS.NULL_BRUSH));
+							OS.SetBkMode(nmcd.hdc, OS.TRANSPARENT);
+							OS.Rectangle(nmcd.hdc, focusRect.left, focusRect.top, focusRect.right, focusRect.bottom);
+							OS.RestoreDC(nmcd.hdc, -1);
+							OS.DeleteObject(pen);
 						}
 						return new LRESULT (OS.CDRF_SKIPDEFAULT);
 					}
