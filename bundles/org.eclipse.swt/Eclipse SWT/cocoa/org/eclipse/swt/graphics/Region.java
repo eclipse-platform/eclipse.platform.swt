@@ -867,4 +867,8 @@ public String toString () {
 	if (isDisposed()) return "Region {*DISPOSED*}";
 	return "Region {" + handle + "}";
 }
+
+RegionLog getLog() {
+    return null;
+}
 }
