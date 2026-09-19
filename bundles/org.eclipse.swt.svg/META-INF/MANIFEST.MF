@@ -3,11 +3,12 @@ Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.eclipse.swt.svg
 Bundle-Version: 3.133.100.qualifier
 Automatic-Module-Name: org.eclipse.swt.svg
-Bundle-Name: %fragmentName
+Bundle-ActivationPolicy: lazy
+Bundle-Name: %pluginName
 Bundle-Vendor: %providerName
-Bundle-Localization: fragment
+Bundle-Localization: plugin
 Bundle-RequiredExecutionEnvironment: JavaSE-21
-Fragment-Host: org.eclipse.swt
+Require-Bundle: org.eclipse.swt
 Import-Package: com.github.weisj.jsvg;version="[2.1.0,3.0.0)",
  com.github.weisj.jsvg.logging;version="[2.1.0,3.0.0)",
  com.github.weisj.jsvg.parser;version="[2.1.0,3.0.0)",
@@ -22,5 +23,6 @@ Provide-Capability:
    effective:=active,
  osgi.serviceloader;
   osgi.serviceloader="com.github.weisj.jsvg.logging.LogManager";
-  register:="org.eclipse.swt.svg.logging.JVSGLoggerLogManager"
-
+  register:="org.eclipse.swt.svg.logging.JVSGLoggerLogManager",
+ osgi.serviceloader;osgi.serviceloader="org.eclipse.swt.internal.image.SVGRasterizer"
+Require-Capability: osgi.extender;filter:="(osgi.extender=osgi.serviceloader.registrar)"
