@@ -1674,7 +1674,17 @@ void sendEvent (int eventType, Event event, boolean send) {
 	event.display = display;
 	event.widget = this;
 	if (event.time == 0) {
-		event.time = display.getLastEventTime ();
+		/*
+		 * display.getLastEventTime() only reflects the time of the last *native*
+		 * NSEvent that was processed; it is not updated by synthetic events
+		 * dispatched directly (e.g. notifyListeners()) without going through the
+		 * native event queue. Relying on it here would make consecutive
+		 * synthetic events (as commonly created by tests) carry the same, stale
+		 * time, which can incorrectly look like a repeated/duplicate event to
+		 * code (e.g. KeyBindingDispatcher) that de-duplicates by event time.
+		 * Use a distinct, always-advancing timestamp instead.
+		 */
+		event.time = (int) (System.nanoTime() / 1_000_000L);
 	}
 	if (send) {
 		sendEvent (event);
