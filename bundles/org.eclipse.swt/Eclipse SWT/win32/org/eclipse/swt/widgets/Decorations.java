@@ -1700,16 +1700,11 @@ LRESULT WM_WINDOWPOSCHANGING (long wParam, long lParam) {
 void handleDPIChange(Event event, float scalingFactor) {
 	super.handleDPIChange(event, scalingFactor);
 
-	Menu menuBar = getMenuBar();
-	if (menuBar != null && !menuBar.isDisposed()) {
-		menuBar.notifyListeners(SWT.ZoomChanged, event);
-	}
+	notifyZoomChanged(getMenuBar(), event);
 
 	if (menus != null) {
 		for (Menu menu : menus) {
-			if (menu != null && !menu.isDisposed()) {
-				menu.notifyListeners(SWT.ZoomChanged, event);
-			}
+			notifyZoomChanged(menu, event);
 		}
 	}
 
