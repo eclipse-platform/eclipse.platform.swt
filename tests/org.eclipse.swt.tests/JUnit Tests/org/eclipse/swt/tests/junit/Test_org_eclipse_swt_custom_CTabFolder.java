@@ -528,6 +528,48 @@ public void test_topRightWrapOverflow() {
 }
 
 /**
+ * A top right tool bar squeezed by a transient narrow layout must return to its place
+ * in the tab row once there is space again. Test for issue 3608.
+ */
+@Test
+public void test_topRightToolBarKeepsPlaceAfterTransientNarrowLayout() throws InterruptedException {
+	makeCleanEnvironment(SWT.BORDER);
+	shell.setSize(400, 300);
+
+	CTabItem item = new CTabItem(ctabFolder, SWT.CLOSE);
+	item.setText("Tab");
+	ctabFolder.setSelection(0);
+
+	Composite topRight = new Composite(ctabFolder, SWT.NONE);
+	topRight.setLayout(new FillLayout());
+	ToolBar toolbar = new ToolBar(topRight, SWT.FLAT | SWT.RIGHT | SWT.WRAP);
+	Image image = new Image(shell.getDisplay(), 16, 16);
+	try {
+		for (int i = 0; i < 3; i++) {
+			new ToolItem(toolbar, SWT.PUSH).setImage(image);
+		}
+		ctabFolder.setTopRight(topRight, SWT.RIGHT | SWT.WRAP);
+
+		SwtTestUtil.openShell(shell);
+		processEvents();
+		Rectangle initialBounds = topRight.getBounds();
+		Point initialSize = toolbar.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+
+		// GTK allocates the squeezed tool bar asynchronously
+		ctabFolder.setSize(60, 300);
+		SwtTestUtil.processEvents(500, null);
+		assertEquals(initialSize, toolbar.computeSize(SWT.DEFAULT, SWT.DEFAULT),
+				"a squeezed tool bar must keep its preferred size");
+
+		shell.layout(true);
+		SwtTestUtil.processEvents(500, null);
+		assertEquals(initialBounds, topRight.getBounds(), "topRight should return to its place in the tab row");
+	} finally {
+		image.dispose();
+	}
+}
+
+/**
  * A tab control is rescaled after the folder itself, so the folder must recompute
  * its tab height once a tab control reports a zoom change. Test for issue 3456.
  */
