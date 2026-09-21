@@ -77,6 +77,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Rule;
@@ -196,9 +197,9 @@ public void setUp() {
 }
 
 @Override
-protected void afterDispose(Display display) {
-	super.afterDispose(display);
-
+@After
+public void tearDown() {
+	super.tearDown();
 	Shell[] shells = Display.getDefault().getShells();
 	int disposedShells = 0;
 	for (Shell shell : shells) {
