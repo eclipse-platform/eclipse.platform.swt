@@ -4937,6 +4937,7 @@ public static void error (int code, Throwable throwable, String detail) {
 		case ERROR_CANNOT_SET_TEXT:
 		case ERROR_ITEM_NOT_ADDED:
 		case ERROR_ITEM_NOT_REMOVED:
+		case ERROR_NO_HANDLES:
 		//FALL THROUGH
 
 		/* SWT Errors (fatal, may occur only on some platforms) */
@@ -4948,10 +4949,6 @@ public static void error (int code, Throwable throwable, String detail) {
 			error.throwable = throwable;
 			throw error;
 		}
-		case ERROR_NO_HANDLES:
-			SWTError error = new SWTError (code, message);
-			error.throwable = throwable;
-			throw error;
 	}
 
 	/* Unknown/Undefined Error */

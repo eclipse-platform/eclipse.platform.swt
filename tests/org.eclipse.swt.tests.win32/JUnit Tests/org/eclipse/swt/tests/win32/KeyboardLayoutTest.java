@@ -251,12 +251,8 @@ public class KeyboardLayoutTest {
 
 	@After
 	public void tearDown() {
-		if (shell != null) {
-			shell.dispose();
-		}
-		if (display != null) {
-			display.dispose();
-		}
+		shell.dispose();
+		display.dispose();
 	}
 
 	protected static void failOnApiError(String name) {
