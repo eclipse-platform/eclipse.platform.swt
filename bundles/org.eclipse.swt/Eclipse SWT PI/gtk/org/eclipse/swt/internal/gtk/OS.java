@@ -1253,6 +1253,19 @@ public static final native void g_log_remove_handler(byte[] log_domain, int hand
  * @param user_data cast=(gpointer)
  */
 public static final native int g_log_set_handler(byte[] log_domain, int log_levels, long log_func, long user_data);
+/**
+ * @param func cast=(GLogWriterFunc)
+ * @param user_data cast=(gpointer)
+ * @param user_data_free cast=(GDestroyNotify)
+ */
+public static final native void g_log_set_writer_func(long func, long user_data, long user_data_free);
+/**
+ * @param log_level cast=(GLogLevelFlags)
+ * @param fields cast=(const GLogField *)
+ * @param n_fields cast=(gsize)
+ * @param user_data cast=(gpointer)
+ */
+public static final native int g_log_writer_default(int log_level, long fields, long n_fields, long user_data);
 /** @param size cast=(gulong) */
 public static final native long g_malloc(long size);
 /**

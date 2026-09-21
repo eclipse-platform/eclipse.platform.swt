@@ -951,6 +951,8 @@ typedef enum {
 	g_1log_1default_1handler_FUNC,
 	g_1log_1remove_1handler_FUNC,
 	g_1log_1set_1handler_FUNC,
+	g_1log_1set_1writer_1func_FUNC,
+	g_1log_1writer_1default_FUNC,
 	g_1main_1context_1acquire_FUNC,
 	g_1main_1context_1check_FUNC,
 	g_1main_1context_1default_FUNC,

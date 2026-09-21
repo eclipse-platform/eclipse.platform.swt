@@ -11742,6 +11742,28 @@ fail:
 }
 #endif
 
+#ifndef NO_g_1log_1set_1writer_1func
+JNIEXPORT void JNICALL OS_NATIVE(g_1log_1set_1writer_1func)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2)
+{
+	OS_NATIVE_ENTER(env, that, g_1log_1set_1writer_1func_FUNC);
+	g_log_set_writer_func((GLogWriterFunc)arg0, (gpointer)arg1, (GDestroyNotify)arg2);
+	OS_NATIVE_EXIT(env, that, g_1log_1set_1writer_1func_FUNC);
+}
+#endif
+
+#ifndef NO_g_1log_1writer_1default
+JNIEXPORT jint JNICALL OS_NATIVE(g_1log_1writer_1default)
+	(JNIEnv *env, jclass that, jint arg0, jlong arg1, jlong arg2, jlong arg3)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, g_1log_1writer_1default_FUNC);
+	rc = (jint)g_log_writer_default((GLogLevelFlags)arg0, (const GLogField *)arg1, (gsize)arg2, (gpointer)arg3);
+	OS_NATIVE_EXIT(env, that, g_1log_1writer_1default_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_g_1main_1context_1acquire
 JNIEXPORT jboolean JNICALL OS_NATIVE(g_1main_1context_1acquire)
 	(JNIEnv *env, jclass that, jlong arg0)
