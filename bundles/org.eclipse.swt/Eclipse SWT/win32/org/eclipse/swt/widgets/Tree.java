@@ -7367,7 +7367,7 @@ LRESULT WM_TIMER (long wParam, long lParam) {
 		}
 	}
 	return result;
-}
+};
 
 @Override
 LRESULT wmColorChild (long wParam, long lParam) {
