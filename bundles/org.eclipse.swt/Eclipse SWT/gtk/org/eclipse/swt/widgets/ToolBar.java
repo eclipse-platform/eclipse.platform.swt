@@ -161,6 +161,12 @@ void createHandle (int index) {
 	*/
 	if (!GTK.GTK4) GTK3.gtk_toolbar_set_icon_size (handle, GTK.GTK_ICON_SIZE_SMALL_TOOLBAR);
 
+	/*
+	* The GTK 3 overflow arrow enlarges the preferred size while the tool bar
+	* is allocated less than it needs, so a transient narrow layout sticks.
+	*/
+	if (!GTK.GTK4) OS.g_object_set (handle, Converter.javaStringToCString ("show-arrow"), false, 0);
+
 	// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,
 	// reset to default font to get the usual behavior
 	setFontDescription(defaultFont().handle);
