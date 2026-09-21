@@ -78,6 +78,13 @@ public abstract class Device implements Drawable {
 	int [] handler_ids = new int [log_domains.length];
 	int warningLevel;
 
+	/*
+	 * GTK's own messages bypass logProc: it is built with G_LOG_USE_STRUCTURED,
+	 * so they only reach a GLib writer function. One is installed for a device
+	 * in debug mode and, since GLib cannot unset it, kept for the process.
+	 */
+	static Callback logWriterCallback;
+
 	/* X Warning and Error Handlers */
 	static Callback XErrorCallback, XIOErrorCallback;
 	static long XErrorProc, XIOErrorProc, XNullErrorProc, XNullIOErrorProc;
@@ -690,6 +697,12 @@ protected void init () {
 		}
 	}
 
+	/* DEBUG too: Display.create() sets it from SWT_DEBUG after debug was initialized. */
+	if ((DEBUG || debug) && logWriterCallback == null) {
+		logWriterCallback = new Callback (Device.class, "logWriterProc", 4);
+		OS.g_log_set_writer_func (logWriterCallback.getAddress (), 0, 0);
+	}
+
 	emptyTab = OS.pango_tab_array_new(1, false);
 	if (emptyTab == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.pango_tab_array_set_tab(emptyTab, 0, OS.PANGO_TAB_LEFT, 1);
@@ -918,6 +931,13 @@ long logProc (long log_domain, long log_level, long message, long user_data) {
 		OS.g_log_default_handler (log_domain, (int)log_level, message, 0);
 	}
 	return 0;
+}
+
+/* Leaves the message to GLib and appends the Java stack that provoked it. */
+static long logWriterProc (long log_level, long fields, long n_fields, long user_data) {
+	long result = OS.g_log_writer_default ((int)log_level, fields, n_fields, user_data);
+	new Error ().printStackTrace ();
+	return result;
 }
 
 void new_Object (Object object) {
