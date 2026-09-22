@@ -241,6 +241,8 @@ public class OS extends C {
 	public static final int G_LOG_FLAG_FATAL = 0x2;
 	public static final int G_LOG_FLAG_RECURSION = 0x1;
 	public static final int G_LOG_LEVEL_MASK = 0xfffffffc;
+	public static final int G_LOG_LEVEL_INFO = 1 << 6;
+	public static final int G_LOG_LEVEL_DEBUG = 1 << 7;
 	public static final int G_APP_INFO_CREATE_NONE = 0;
 	public static final int G_APP_INFO_CREATE_SUPPORTS_URIS  = (1 << 1);
 	public static final int G_OUTPUT_STREAM_SPLICE_NONE = 0;

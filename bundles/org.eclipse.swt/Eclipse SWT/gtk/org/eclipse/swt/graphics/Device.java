@@ -936,7 +936,10 @@ long logProc (long log_domain, long log_level, long message, long user_data) {
 /* Leaves the message to GLib and appends the Java stack that provoked it. */
 static long logWriterProc (long log_level, long fields, long n_fields, long user_data) {
 	long result = OS.g_log_writer_default ((int)log_level, fields, n_fields, user_data);
-	new Error ().printStackTrace ();
+	/* Skip the informational levels; with G_MESSAGES_DEBUG set those can print without a stack. */
+	if (((int)log_level & (OS.G_LOG_LEVEL_INFO | OS.G_LOG_LEVEL_DEBUG)) == 0) {
+		new Error ().printStackTrace ();
+	}
 	return result;
 }
 
