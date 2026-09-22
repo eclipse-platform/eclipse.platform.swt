@@ -879,14 +879,14 @@ Point computeNativeSize (long h, int wHint, int hHint, boolean changed) {
 		int [] natural_size = new int [1];
 		if (wHint == SWT.DEFAULT) {
 			if (GTK.GTK4) {
-				GTK4.gtk_widget_measure(h, GTK.GTK_ORIENTATION_HORIZONTAL, height>0?height:-1, null, natural_size, null, null);
+				GTK4.gtk_widget_measure(h, GTK.GTK_ORIENTATION_HORIZONTAL, measureForSize (h, GTK.GTK_ORIENTATION_VERTICAL, height), null, natural_size, null, null);
 			} else {
 				GTK3.gtk_widget_get_preferred_width_for_height (h, height, null, natural_size);
 			}
 			width = natural_size [0];
 		} else {
 			if (GTK.GTK4) {
-				GTK4.gtk_widget_measure(h, GTK.GTK_ORIENTATION_VERTICAL, width>0?width:-1, null, natural_size, null, null);
+				GTK4.gtk_widget_measure(h, GTK.GTK_ORIENTATION_VERTICAL, measureForSize (h, GTK.GTK_ORIENTATION_HORIZONTAL, width), null, natural_size, null, null);
 			} else {
 				GTK3.gtk_widget_get_preferred_height_for_width (h, width, null, natural_size);
 			}
@@ -894,6 +894,14 @@ Point computeNativeSize (long h, int wHint, int hHint, boolean changed) {
 		}
 	}
 	return new Point(width, height);
+}
+
+/* gtk_widget_measure() warns when forSize is below the widget's minimum in that orientation, and measures for the minimum instead. */
+private static int measureForSize (long h, int orientation, int forSize) {
+	if (forSize <= 0) return -1;
+	int [] minimum_size = new int [1];
+	GTK4.gtk_widget_measure (h, orientation, -1, minimum_size, null, null, null);
+	return Math.max (forSize, minimum_size [0]);
 }
 
 void forceResize () {
