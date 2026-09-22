@@ -3085,8 +3085,6 @@ void setVisiblePopover (boolean visible) {
 		GTK.gtk_popover_popup (shellHandle);
 		mapped = true;
 		opened = true;
-		display.activeShell = this;
-		display.activePending = true;
 		if (!resized) {
 			resized = true;
 			sendEvent (SWT.Resize);
