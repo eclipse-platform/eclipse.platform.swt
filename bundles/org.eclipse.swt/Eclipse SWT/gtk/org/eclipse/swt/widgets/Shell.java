@@ -2793,7 +2793,7 @@ public void setMinimumSize (int width, int height) {
 		/*
 		 * Account for headerbar if one is there (CSD on wayland and non-CST on x11/xwayland).
 		 */
-		long header = GTK4.gtk_window_get_titlebar(shellHandle);
+		long header = popover ? 0 : GTK4.gtk_window_get_titlebar(shellHandle);
 		int[] headerNaturalHeight = new int[1];
 		if (header != 0) {
 			GTK4.gtk_widget_measure(header, GTK.GTK_ORIENTATION_VERTICAL, -1, null, headerNaturalHeight, null, null);
@@ -3372,6 +3372,8 @@ int trimHeight () {
 	// Shells with both ON_TOP and RESIZE set only use border, not trim.
 	// See bug 319612.
 	if (isCustomResize()) return 0;
+	/* A popover-backed shell is not a GtkWindow and carries no decoration. */
+	if (popover) return 0;
 	if (GTK.GTK4 && OS.isWayland()) {
 		/*
 		 * On GTK4 Wayland, window decorations are implemented as GTK CSD widgets. The
