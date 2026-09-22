@@ -3293,11 +3293,8 @@ void showWidget () {
 			display.activePending = true;
 		}
 
-		if (GTK.GTK4) {
-			for (long child = GTK4.gtk_widget_get_first_child(shellHandle); child != 0; child = GTK4.gtk_widget_get_next_sibling(child)) {
-				GTK.gtk_widget_unparent(child);
-			}
-		} else {
+		/* GTK4 drops the previous child in gtk_window_set_child() below. */
+		if (!GTK.GTK4) {
 			long list = GTK3.gtk_container_get_children (shellHandle);
 			long listIterator = list;
 			while (listIterator != 0) {
