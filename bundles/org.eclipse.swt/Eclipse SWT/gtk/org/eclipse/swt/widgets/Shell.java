@@ -3430,6 +3430,8 @@ int trimWidth () {
 
 void updateModal () {
 	if (!GTK.GTK4 && OS.isX11() && GTK.GTK_IS_PLUG (shellHandle)) return;
+	/* A popover is not a GtkWindow and cannot join a window group. */
+	if (popover) return;
 	long group = 0;
 	boolean isModalShell = false;
 	if (display.getModalDialog () == null) {
