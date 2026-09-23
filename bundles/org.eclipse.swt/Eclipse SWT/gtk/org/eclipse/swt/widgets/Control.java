@@ -58,6 +58,8 @@ public abstract class Control extends Widget implements Drawable {
 
 	long fixedHandle;
 	long keyController;
+	/* GTK4: where the pointer last moved over this control, relative to it */
+	double pointerX, pointerY;
 	long redrawWindow, enableWindow, provider;
 	int drawCount, backgroundAlpha = 255;
 	long dragGesture, zoomGesture, rotateGesture, panGesture;
@@ -546,11 +548,9 @@ void snapshotToDrawAfterChildren (long handle, long snapshot) {
 long hoverProc (long widget) {
 	int[] x = new int[1], y = new int[1], mask = new int[1];
 	if (GTK.GTK4) {
-		double[] xDouble = new double[1], yDouble = new double[1];
-		display.getPointerPosition(xDouble, yDouble);
-
-		x[0] = (int)xDouble[0];
-		y[0] = (int)yDouble[0];
+		/* The pointer position GDK reports is relative to the surface, not to this control. */
+		x[0] = (int) pointerX;
+		y[0] = (int) pointerY;
 	} else {
 		display.getWindowPointerPosition(0, x, y, mask);
 	}
@@ -3672,12 +3672,14 @@ void gtk4_enter_event(long controller, double x, double y, long event) {
 	long toolHandle = handle;
 	GTK.gtk_widget_set_tooltip_text (toolHandle, buffer);
 
+	pointerX = x;
+	pointerY = y;
 	if (display.currentControl == this) return;
 
 	// Disconnect previous current Control and send MouseExit event to it
 	if (display.currentControl != null && !display.currentControl.isDisposed()) {
 		display.removeMouseHoverTimeout(display.currentControl.handle);
-		display.currentControl.sendMouseEvent(SWT.MouseExit, 0, 0, x, y, false, 0);
+		display.currentControl.sendMouseEvent(SWT.MouseExit, 0, 0, display.currentControl.pointerX, display.currentControl.pointerY, false, 0);
 	}
 
 	// Set display's current control and send MouseEnter event
@@ -4086,7 +4088,8 @@ void gtk4_leave_event(long controller, long event) {
 	display.removeMouseHoverTimeout(handle);
 
 	if (sendLeaveNotify() || display.getCursorControl() == null) {
-		sendMouseEvent(SWT.MouseExit, 0, 0, 0, 0, false, 0);
+		/* GtkEventControllerMotion::leave has no coordinates */
+		sendMouseEvent(SWT.MouseExit, 0, 0, pointerX, pointerY, false, 0);
 		display.currentControl = null;
 	}
 }
@@ -4150,6 +4153,8 @@ long gtk_mnemonic_activate (long widget, long arg1) {
 
 @Override
 void gtk4_motion_event(long controller, double x, double y, long event) {
+	pointerX = x;
+	pointerY = y;
 	if (this == display.currentControl && (hooks(SWT.MouseHover) || filters(SWT.MouseHover))) {
 		display.addMouseHoverTimeout(handle);
 	}
@@ -4161,12 +4166,7 @@ void gtk4_motion_event(long controller, double x, double y, long event) {
 	if (this != display.currentControl) {
 		if (display.currentControl != null && !display.currentControl.isDisposed()) {
 			display.removeMouseHoverTimeout(display.currentControl.handle);
-			/*
-			 *  Note: for GTK4, the call to display.map function was removed due to the
-			 *  inability to get the origin of surfaces. Testing needs to be done to see if
-			 *  the x, y, coordinates suffice.
-			 */
-			display.currentControl.sendMouseEvent(SWT.MouseExit, 0, time, x, y, isHint, state);
+			display.currentControl.sendMouseEvent(SWT.MouseExit, 0, time, display.currentControl.pointerX, display.currentControl.pointerY, isHint, state);
 		}
 		if (!isDisposed()) {
 			display.currentControl = this;
