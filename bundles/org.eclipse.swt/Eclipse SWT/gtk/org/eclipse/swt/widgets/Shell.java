@@ -130,6 +130,7 @@ public class Shell extends Decorations {
 	 * On GTK4 an ON_TOP child Shell is backed by a GtkPopover to enable positioning by the client.
 	 */
 	boolean popover;
+	long activateGesture;
 	int oldX, oldY, oldWidth, oldHeight;
 	GeometryInterface geometry;
 	Control lastActive;
@@ -1061,6 +1062,19 @@ void hookEvents () {
 		OS.g_signal_connect(focusController, OS.enter, display.focusProc, FOCUS_IN);
 		OS.g_signal_connect(focusController, OS.leave, display.focusProc, FOCUS_OUT);
 
+		if (popover) {
+			/*
+			 * A press inside a popover moves the keyboard focus into it, and the previous focus
+			 * control gets FocusOut before this shell is focused. Activate it first, like a click
+			 * activates an ON_TOP shell on X11, so that listeners see it as the active shell.
+			 */
+			activateGesture = GTK4.gtk_gesture_click_new();
+			GTK.gtk_event_controller_set_propagation_phase(activateGesture, GTK.GTK_PHASE_CAPTURE);
+			GTK.gtk_gesture_single_set_button(activateGesture, 0);
+			GTK4.gtk_widget_add_controller(shellHandle, activateGesture);
+			OS.g_signal_connect(activateGesture, OS.pressed, display.gesturePressReleaseProc, GESTURE_PRESSED);
+		}
+
 		long enterLeaveController = GTK4.gtk_event_controller_motion_new();
 		GTK4.gtk_widget_add_controller(shellHandle, enterLeaveController);
 
@@ -1554,6 +1568,15 @@ public Shell [] getShells () {
 		}
 	}
 	return result;
+}
+
+@Override
+int gtk_gesture_press_event (long gesture, int n_press, double x, double y, long event) {
+	if (gesture == activateGesture) {
+		if ((style & SWT.NO_FOCUS) == 0) bringToTop (true);
+		return GTK4.GTK_EVENT_SEQUENCE_NONE;
+	}
+	return super.gtk_gesture_press_event (gesture, n_press, x, y, event);
 }
 
 @Override
