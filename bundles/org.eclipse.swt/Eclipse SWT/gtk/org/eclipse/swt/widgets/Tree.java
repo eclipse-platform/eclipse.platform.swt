@@ -3231,7 +3231,12 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 			// Use the x and width information from the Cairo context. See bug 535124.
 			if (cr != 0) {
 				GdkRectangle r2 = new GdkRectangle ();
-				GDK.gdk_cairo_get_clip_rectangle (cr, r2);
+				if (GTK.GTK4) {
+					/* gdk_cairo_get_clip_rectangle() does not exist, and cr is clipped to background_area */
+					r2 = rendererRect;
+				} else {
+					GDK.gdk_cairo_get_clip_rectangle (cr, r2);
+				}
 				rect.x = r2.x;
 				rect.width = r2.width;
 			}
