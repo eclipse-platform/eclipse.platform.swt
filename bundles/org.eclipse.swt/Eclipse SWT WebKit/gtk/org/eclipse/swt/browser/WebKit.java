@@ -171,7 +171,7 @@ class WebKit extends WebBrowser {
 	static final String USER_AGENT = "user-agent"; //$NON-NLS-1$
 	static final int MAX_PORT = 65535;
 	static final int MAX_PROGRESS = 100;
-	static final int[] MIN_VERSION = {1, 2, 0};
+	static final int[] MIN_VERSION = {2, 6, 0};
 	static final int SENTINEL_KEYPRESS = -1;
 	static final char SEPARATOR_FILE = File.separatorChar;
 	static final int STOP_PROPOGATE = 1;
@@ -2354,9 +2354,7 @@ static long webkit_download_decide_destination(long webKitDownload, long suggest
 			path = URI_FILEROOT + path;
 			byte[] uriBytes = Converter.wcsToMbcs (path, true);
 
-			if (WebKitGTK.webkit_get_minor_version() >= 6) {
-				WebKitGTK.webkit_download_set_allow_overwrite (webKitDownload, true);
-			}
+			WebKitGTK.webkit_download_set_allow_overwrite (webKitDownload, true);
 			WebKitGTK.webkit_download_set_destination (webKitDownload, uriBytes);
 			((WebKit)browser.webBrowser).openDownloadWindow(webKitDownload, fileName);
 		}
