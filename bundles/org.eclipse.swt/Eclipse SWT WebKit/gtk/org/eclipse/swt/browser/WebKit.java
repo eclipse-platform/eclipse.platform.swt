@@ -436,13 +436,53 @@ static long JSDOMEventProc (long arg0, long event, long user_data) {
 								}
 								return 1;
 							}
+							case GDK.GDK_Return:
+							case GDK.GDK_KP_Enter: {
+								/*
+								* Composite always reports Return as handled to suppress the GTK default
+								* button, so send the SWT events directly to learn whether SWT consumed it.
+								*/
+								Event keyEvent = new Event ();
+								keyEvent.widget = browser;
+								keyEvent.type = SWT.KeyDown;
+								keyEvent.time = GDK.gdk_event_get_time (event);
+								keyEvent.keyCode = key[0] == GDK.GDK_KP_Enter ? SWT.KEYPAD_CR : SWT.CR;
+								keyEvent.character = SWT.CR;
+								if (key[0] == GDK.GDK_KP_Enter) keyEvent.keyLocation = SWT.KEYPAD;
+								if ((state[0] & GDK.GDK_MOD1_MASK) != 0) keyEvent.stateMask |= SWT.ALT;
+								if ((state[0] & GDK.GDK_SHIFT_MASK) != 0) keyEvent.stateMask |= SWT.SHIFT;
+								if ((state[0] & GDK.GDK_CONTROL_MASK) != 0) keyEvent.stateMask |= SWT.CONTROL;
+								if ((state[0] & GDK.GDK_BUTTON1_MASK) != 0) keyEvent.stateMask |= SWT.BUTTON1;
+								if ((state[0] & GDK.GDK_BUTTON2_MASK) != 0) keyEvent.stateMask |= SWT.BUTTON2;
+								if ((state[0] & GDK.GDK_BUTTON3_MASK) != 0) keyEvent.stateMask |= SWT.BUTTON3;
+								boolean doit;
+								try { // evaluate() should not block during listener, see Escape above
+									nonBlockingEvaluate++;
+									doit = browser.webBrowser.sendKeyEvent (keyEvent);
+								} finally {
+									nonBlockingEvaluate--;
+								}
+								return doit && !browser.isDisposed () ? 0 : 1;
+							}
 						}
 					}
 					break;
 				}
 			}
 			if (browser != null) {
-				GTK3.gtk_widget_event (browser.handle, event);
+				boolean consumed = GTK3.gtk_widget_event (browser.handle, event);
+				/*
+				* A key press not consumed by the page is re-emitted by WebKitGTK to the
+				* focus widget, which is delivered to SWT a second time. Stop the key from
+				* reaching WebKit if SWT already consumed it (e.g. key binding or traversal).
+				* Return is handled above when the Browser has focus. Otherwise Composite's
+				* default button suppression is not a sign that SWT consumed it.
+				*/
+				if (consumed && GDK.gdk_event_get_event_type (event) == GDK.GDK_KEY_PRESS) {
+					int [] keyval = new int [1];
+					GDK.gdk_event_get_keyval (event, keyval);
+					if (keyval[0] != GDK.GDK_Return && keyval[0] != GDK.GDK_KP_Enter) return 1;
+				}
 			}
 		}
 		return 0;
