@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2016 IBM Corporation and others.
+ * Copyright (c) 2008, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -186,7 +186,7 @@ public class MacGeneratorUI {
 		GridData data = new GridData(GridData.FILL_HORIZONTAL);
 		search.setLayoutData(data);
 		search.setText(".*");
-		search.addListener(SWT.DefaultSelection, arg0 -> searchFor(search.getText()));
+		search.addListener(SWT.DefaultSelection, _ -> searchFor(search.getText()));
 		search.addListener(SWT.KeyDown, event -> {
 			if (event.keyCode == SWT.F6) {
 				searchFor(search.getText());					
@@ -313,7 +313,7 @@ public class MacGeneratorUI {
 		
 		Button generate = new Button(panel, SWT.PUSH);
 		generate.setText("Generate");
-		generate.addListener(SWT.Selection, event -> generate(null));
+		generate.addListener(SWT.Selection, _ -> generate(null));
 		return panel;
 	}
 	
