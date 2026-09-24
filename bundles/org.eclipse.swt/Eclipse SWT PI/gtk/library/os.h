@@ -257,12 +257,6 @@
 #define NO_GTK_1TYPE_1TEXT_1VIEW_1ACCESSIBLE
 #define NO_swt_1fixed_1accessible_1register_1accessible
 
-// GtkCellRenderer changes
-#define NO_GtkCellRendererPixbufClass_1sizeof
-#define NO_GtkCellRendererPixbuf_1sizeof
-#define NO_GtkCellRendererToggleClass_1sizeof
-#define NO_GtkCellRendererToggle_1sizeof
-
 // GTK3 only macros
 #define NO_GTK_1IS_1ACCEL_1LABEL
 #define NO_GTK_1IS_1CONTAINER
