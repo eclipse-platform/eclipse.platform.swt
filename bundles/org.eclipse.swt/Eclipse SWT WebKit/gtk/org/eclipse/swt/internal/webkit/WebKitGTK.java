@@ -66,6 +66,10 @@ public class WebKitGTK extends C {
 	public static final int WEBKIT2_LOAD_COMMITTED = 2;
 	public static final int WEBKIT2_LOAD_FINISHED = 3;
 
+	public static final int WEBKIT_WEB_PROCESS_CRASHED = 0;
+	public static final int WEBKIT_WEB_PROCESS_EXCEEDED_MEMORY_LIMIT = 1;
+	public static final int WEBKIT_WEB_PROCESS_TERMINATED_BY_API = 2;
+
 	public static final int WEBKIT_POLICY_DECISION_TYPE_NAVIGATION_ACTION = 0;
 	public static final int WEBKIT_POLICY_DECISION_TYPE_NEW_WINDOW_ACTION = 1;
 	public static final int WEBKIT_POLICY_DECISION_TYPE_RESPONSE = 2;
@@ -134,6 +138,9 @@ public class WebKitGTK extends C {
 
 	// Signal to indicate when the view should be shown to user. I.e, page load is complete.
 	public static final byte[] ready_to_show = ascii ("ready-to-show"); // $NON-NLS-1$
+
+	// The web process crashed, exceeded its memory limit or was terminated by API.
+	public static final byte[] web_process_terminated = ascii ("web-process-terminated"); // $NON-NLS-1$
 
 	/** Properties: */
 	// GTK3: https://webkitgtk.org/reference/webkit2gtk/stable/class.Settings.html#properties

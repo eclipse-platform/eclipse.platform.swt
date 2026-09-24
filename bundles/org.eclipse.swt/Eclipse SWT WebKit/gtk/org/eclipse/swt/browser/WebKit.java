@@ -106,6 +106,9 @@ class WebKit extends WebBrowser {
 	URI tlsErrorUri;
 	String tlsErrorType;
 
+	/** Why the web process terminated, or {@code null} while it is running. */
+	String webProcessTerminationReason;
+
 	private final ControlListener browserMoveListener = ControlListener.controlMovedAdapter(this::browserShellMoved);
 	private Point searchShellLocation;
 	private Shell searchShell;
@@ -207,6 +210,7 @@ class WebKit extends WebBrowser {
 	static final int DOWNLOAD_STARTED = 14;
 	static final int WIDGET_EVENT = 15; // Used for events like keyboard/mouse input. See Bug 528549 and Bug 533833.
 	static final int LOAD_FAILED_TLS = 16;
+	static final int WEB_PROCESS_TERMINATED = 17;
 
 	static final String KEY_CHECK_SUBWINDOW = "org.eclipse.swt.internal.control.checksubwindow"; //$NON-NLS-1$
 
@@ -625,6 +629,7 @@ long webViewProc (long handle, long arg0, long user_data) {
 		case NOTIFY_PROGRESS: return webkit_notify_progress (handle, arg0);
 		case NOTIFY_TITLE: return webkit_notify_title (handle, arg0);
 		case AUTHENTICATE: return webkit_authenticate (handle, arg0);
+		case WEB_PROCESS_TERMINATED: return webkit_web_process_terminated (handle, (int) arg0);
 		default: return 0;
 	}
 }
@@ -744,6 +749,11 @@ public void create (Composite parent, int style) {
 
 	// gboolean user_function (WebKitWebView *web_view,  WebKitAuthenticationRequest *request,  gpointer user_data)
 	OS.g_signal_connect (webView, WebKitGTK.authenticate, 					Proc3.getAddress (), AUTHENTICATE);
+
+	// void user_function (WebKitWebView *web_view, WebKitWebProcessTerminationReason reason, gpointer user_data)
+	if (WebKitGTK.webkit_get_minor_version() >= 20) {
+		OS.g_signal_connect (webView, WebKitGTK.web_process_terminated, Proc3.getAddress (), WEB_PROCESS_TERMINATED);
+	}
 
 	if (GTK.GTK4) {
 		// (!) Note this one's a 'NetworkSession' signal, not WebView. See:
@@ -1092,6 +1102,11 @@ private static class Webkit2AsyncToSync {
 	 * If in doubt, you should use nonBlockingExecute() where possible :-).
 	 */
 	static Object runjavascript(String script, Browser browser, long webView) {
+		String terminationReason = ((WebKit) browser.webBrowser).webProcessTerminationReason;
+		if (terminationReason != null) {
+			throw new SWTException(SWT.ERROR_FAILED_EVALUATE, "The web process " + terminationReason
+					+ ", JavaScript cannot be executed until a new page is loaded.\nScript that was evaluated:\n" + script);
+		}
 		if (nonBlockingEvaluate > 0) {
 			// Execute script, but do not wait for async call to complete. (assume it does). Bug 512001.
 			if (GTK.GTK4) {
@@ -2501,6 +2516,8 @@ long webkit_decide_policy (long web_view, long decision, int decision_type, long
 long webkit_load_changed (long web_view, int status, long user_data) {
 	switch (status) {
 		case WebKitGTK.WEBKIT2_LOAD_COMMITTED: {
+			// A committed page implies a running web process, possibly a newly spawned one.
+			webProcessTerminationReason = null;
 			long uri = WebKitGTK.webkit_web_view_get_uri (webView);
 			return handleLoadCommitted (uri, true);
 		}
@@ -2590,6 +2607,25 @@ long webkit_load_failed_tls (long web_view, long failing_uri, long certificate, 
 		default -> SWT.getMessage("SWT_InvalidCert_GenericError");
 		};
 	}
+	return 0;
+}
+
+/**
+ * WebKitWebView 'web-process-terminated' signal (WebKitGTK 2.20+).
+ * - void user_function (WebKitWebView *web_view, WebKitWebProcessTerminationReason reason, gpointer user_data)
+ * - GTK3: https://webkitgtk.org/reference/webkit2gtk/stable/signal.WebView.web-process-terminated.html
+ * - GTK4: https://webkitgtk.org/reference/webkitgtk/stable/signal.WebView.web-process-terminated.html
+ * Until a new page is committed, evaluate() and execute() fail immediately instead of timing out.
+ */
+long webkit_web_process_terminated (long web_view, int reason) {
+	webProcessTerminationReason = switch (reason) {
+	case WebKitGTK.WEBKIT_WEB_PROCESS_CRASHED -> "crashed";
+	case WebKitGTK.WEBKIT_WEB_PROCESS_EXCEEDED_MEMORY_LIMIT -> "exceeded its memory limit";
+	case WebKitGTK.WEBKIT_WEB_PROCESS_TERMINATED_BY_API -> "was terminated by API";
+	default -> "terminated (reason " + reason + ")";
+	};
+	System.err.println("SWT WebKit: The web process " + webProcessTerminationReason + " (URL: " + getUrl() + ")."
+			+ " JavaScript cannot be executed until a new page is loaded.");
 	return 0;
 }
 

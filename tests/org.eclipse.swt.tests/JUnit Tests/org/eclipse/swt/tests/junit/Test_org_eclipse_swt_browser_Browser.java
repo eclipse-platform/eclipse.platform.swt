@@ -181,11 +181,8 @@ public void setUp(TestInfo testInfo) {
 
 	String shellTitle = testInfo.getDisplayName();
 	if (SwtTestUtil.isGTK) {
-
 		// Note, webkitGtk version is only available once Browser is instantiated.
-		String webkitGtkVersionStr = System.getProperty("org.eclipse.swt.internal.webkitgtk.version"); //$NON-NLS-1$
-
-		shellTitle = shellTitle + " Webkit version: " + webkitGtkVersionStr;
+		shellTitle = shellTitle + " Webkit version: " + getWebKitGtkVersion();
 	}
 	shell.setText(shellTitle);
 	setWidget(browser); // For browser to occupy the whole shell, not just half of it.
@@ -2282,6 +2279,55 @@ public void test_evaluate_evaluation_failed_exception() {
 }
 
 /**
+ * Test that evaluate() fails fast once the WebKitGTK web process is gone and
+ * that JavaScript works again after a new page has been loaded.
+ */
+@Test
+public void test_evaluate_afterWebProcessTerminated() {
+	assumeTrue(SwtTestUtil.isGTK, "The web process is specific to WebKitGTK");
+	String[] webKitVersion = getWebKitGtkVersion().split("\\.");
+ 	int webKitMajor = Integer.parseInt(webKitVersion[0]);
+ 	int webKitMinor = Integer.parseInt(webKitVersion[1]);
+ 	assumeTrue(webKitMajor > 2 || webKitMajor == 2 && webKitMinor >= 20, "web-process-terminated requires WebKitGTK 2.20+");
+	AtomicBoolean loaded = new AtomicBoolean();
+	browser.addProgressListener(completedAdapter(event -> loaded.set(true)));
+	browser.setText("<html><body>HelloWorld</body></html>");
+	shell.open();
+	assertTrue(waitForPassCondition(loaded::get), "Initial page did not load");
+
+	List<ProcessHandle> webProcesses = ProcessHandle.current().descendants()
+			.filter(p -> p.info().command().orElse("").endsWith("WebKitWebProcess"))
+			.toList();
+	assumeFalse(webProcesses.isEmpty(), "No WebKitWebProcess found to terminate");
+	webProcesses.forEach(ProcessHandle::destroyForcibly);
+
+	SWTException terminationError = null;
+	Instant deadline = Instant.now().plusSeconds(secondsToWaitTillFail);
+	while (terminationError == null && Instant.now().isBefore(deadline)) {
+		processUiEvents();
+		try {
+			browser.evaluate("return 1;");
+		} catch (SWTException e) {
+			if (e.getMessage().startsWith("The web process")) {
+				terminationError = e;
+			}
+		}
+	}
+	assertNotNull(terminationError, "evaluate() did not report the terminated web process");
+	assertEquals(SWT.ERROR_FAILED_EVALUATE, terminationError.code);
+
+	Instant start = Instant.now();
+	assertThrows(SWTException.class, () -> browser.evaluate("return 1;"));
+	assertTrue(Duration.between(start, Instant.now()).toMillis() < 1000, "evaluate() should fail immediately");
+	assertFalse(browser.execute("1;"));
+
+	loaded.set(false);
+	browser.setText("<html><body>Reloaded</body></html>");
+	assertTrue(waitForPassCondition(loaded::get), "Page did not load after the web process terminated");
+	assertEquals(1.0, browser.evaluate("return 1;"));
+}
+
+/**
  * Test the evaluate() api that returns an array of numbers. Functionality based on Snippet308.
  * Only wait till success. Otherwise timeout after 3 seconds.
  */
@@ -3503,6 +3549,10 @@ private static void processUiEvents() {
 	Display display = Display.getCurrent();
 	while (display != null && !display.isDisposed() && display.readAndDispatch()) {
 	}
+}
+
+private static String getWebKitGtkVersion() {
+	return System.getProperty("org.eclipse.swt.internal.webkitgtk.version"); //$NON-NLS-1$
 }
 
 }
