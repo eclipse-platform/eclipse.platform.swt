@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2018 IBM Corporation and others.
+ * Copyright (c) 2003, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -659,7 +659,8 @@ boolean sendKeyEvent (Event event) {
 			traverseDoit = true;
 			break;
 		}
-		case SWT.CR: {
+		case SWT.CR:
+		case SWT.KEYPAD_CR: {
 			traversal = SWT.TRAVERSE_RETURN;
 			traverseDoit = false;
 			break;
