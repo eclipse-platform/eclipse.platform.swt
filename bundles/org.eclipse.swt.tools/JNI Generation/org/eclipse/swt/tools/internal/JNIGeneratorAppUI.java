@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2018 IBM Corporation and others.
+ * Copyright (c) 2004, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -291,7 +291,7 @@ public void open () {
 	panelLayout.numColumns = 1;
 	panel.setLayout(panelLayout);
 	
-	Listener updateMainClassListener =  e -> {
+	Listener updateMainClassListener =  _ -> {
 		updateMainClass();
 		if (!updateOutputDir()) return;
 		updateClasses();
@@ -853,7 +853,7 @@ void createActionButtons(Composite parent) {
 	actionsLayout.numColumns = 1;
 	actionsPanel.setLayout(actionsLayout);
 	
-	createActionButton(actionsPanel, "Generate &All", e -> generateAll());
+	createActionButton(actionsPanel, "Generate &All", _ -> generateAll());
 	
 	Label separator = new Label(actionsPanel, SWT.SEPARATOR | SWT.HORIZONTAL);
 	data = new GridData(GridData.FILL_HORIZONTAL);
@@ -862,12 +862,12 @@ void createActionButtons(Composite parent) {
 	data = new GridData(GridData.FILL_HORIZONTAL);
 	separator.setLayoutData(data);
 	
-	createActionButton(actionsPanel, "Generate Structs &Header", e -> generateStructsHeader());
-	createActionButton(actionsPanel, "Generate &Structs", e -> generateStructs());
-	createActionButton(actionsPanel, "Generate &Natives", e -> generateNatives());
-	createActionButton(actionsPanel, "Generate Meta &Data", e -> generateMetaData());
-	createActionButton(actionsPanel, "Generate Cons&tants", e -> generateConstants());	
-	createActionButton(actionsPanel, "Generate Si&zeof", e -> generateSizeof());
+	createActionButton(actionsPanel, "Generate Structs &Header", _ -> generateStructsHeader());
+	createActionButton(actionsPanel, "Generate &Structs", _ -> generateStructs());
+	createActionButton(actionsPanel, "Generate &Natives", _ -> generateNatives());
+	createActionButton(actionsPanel, "Generate Meta &Data", _ -> generateMetaData());
+	createActionButton(actionsPanel, "Generate Cons&tants", _ -> generateConstants());	
+	createActionButton(actionsPanel, "Generate Si&zeof", _ -> generateSizeof());
 
 	Composite filler = new Composite(actionsPanel, SWT.NONE);
 	filler.setLayoutData(new GridData(GridData.FILL_BOTH));

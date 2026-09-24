@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2021 IBM Corporation and others.
+ * Copyright (c) 2008, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -862,7 +862,7 @@ public String[] getXmls() {
 		} else {
 			String packageName = getPackageName();
 			File folder = new File(extrasDir != null ? extrasDir : outputDir + packageName.replace('.', '/'));
-			File[] files = folder.listFiles((FilenameFilter) (dir, name) -> name.endsWith("Full.bridgesupport"));
+			File[] files = folder.listFiles((FilenameFilter) (_, name) -> name.endsWith("Full.bridgesupport"));
 			if(files == null) {
 				files = new File[0];
 			}
