@@ -1726,10 +1726,19 @@ void releaseWidget () {
  */
 @Override
 void destroyWidget () {
-	super.destroyWidget();
+	if (GTK.GTK4 && (style & SWT.DROP_DOWN) != 0) {
+		/* The handle of a GTK4 drop-down menu is its GMenu model, not a widget */
+		releaseHandle ();
+	} else {
+		super.destroyWidget();
+	}
 	if (menuHandle != 0) {
 		OS.g_object_unref(menuHandle);
 		menuHandle = 0;
+	}
+	if (modelHandle != 0) {
+		OS.g_object_unref(modelHandle);
+		modelHandle = 0;
 	}
 }
 
