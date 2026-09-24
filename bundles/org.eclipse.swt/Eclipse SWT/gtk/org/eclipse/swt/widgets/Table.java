@@ -3084,11 +3084,7 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 		gc.fillRectangle (rendererRect.toRectangle ());
 		gc.dispose ();
 	}
-	/*
-	 * GTK4 clips each renderer to its own cell, so PaintItem cannot draw the image
-	 * the way it can on GTK3. Keep drawing it natively.
-	 */
-	if ((drawState & SWT.FOREGROUND) != 0 || GTK.GTK_IS_CELL_RENDERER_TOGGLE (cell) || (GTK.GTK4 && GTK.GTK_IS_CELL_RENDERER_PIXBUF (cell))) {
+	if ((drawState & SWT.FOREGROUND) != 0 || GTK.GTK_IS_CELL_RENDERER_TOGGLE (cell)) {
 		long g_class = OS.g_type_class_peek_parent (OS.G_OBJECT_GET_CLASS (cell));
 		GtkCellRendererClass klass = new GtkCellRendererClass ();
 		OS.memmove (klass, g_class);
@@ -3108,14 +3104,19 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 		}
 	}
 	if (item != null) {
-		if (GTK.GTK_IS_CELL_RENDERER_TEXT (cell)) {
+		/*
+		 * GTK4 clips each renderer to its own cell, so the image cell gets the PaintItem of the
+		 * text cell too, and each cell shows its part of what the listener draws.
+		 */
+		long textCell = GTK.GTK4 && GTK.GTK_IS_CELL_RENDERER_PIXBUF (cell) ? getTextRenderer (columnHandle) : cell;
+		if (GTK.GTK_IS_CELL_RENDERER_TEXT (textCell)) {
 			if (hooks (SWT.PaintItem)) {
 				if (wasSelected) drawState |= SWT.SELECTED;
 				Rectangle rect = columnRect.toRectangle ();
 				ignoreSize = true;
 				int [] contentX = new int [1], contentWidth = new int [1];
-				gtk_cell_renderer_get_preferred_size (cell, handle, contentWidth, null);
-				gtk_tree_view_column_cell_get_position (columnHandle, cell, contentX, null);
+				gtk_cell_renderer_get_preferred_size (textCell, handle, contentWidth, null);
+				gtk_tree_view_column_cell_get_position (columnHandle, textCell, contentX, null);
 				ignoreSize = false;
 				Image image = item.getImage (columnIndex);
 				int imageWidth = 0;
