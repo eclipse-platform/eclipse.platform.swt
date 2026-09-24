@@ -210,7 +210,7 @@ public class GTK extends OS {
 	public static final native int GtkCellRendererTextClass_sizeof();
 	public static final native int GtkTreeIter_sizeof();
 
-	/** GTK3 sizeof() [if-def'd in os.h] */
+	/** On GTK4 these structs are private, os_custom.h asks GLib for their registered sizes */
 	public static final native int GtkCellRendererPixbuf_sizeof();
 	public static final native int GtkCellRendererPixbufClass_sizeof();
 	public static final native int GtkCellRendererToggle_sizeof();

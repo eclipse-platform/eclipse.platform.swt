@@ -849,12 +849,8 @@ void createRenderers (long columnHandle, int modelIndex, boolean check, int colu
 			GTK.gtk_tree_view_column_add_attribute (columnHandle, checkRenderer, OS.cell_background_rgba, BACKGROUND_COLUMN);
 		}
 	}
-	long pixbufRenderer ;
-	if (GTK.GTK4) {
-		pixbufRenderer = GTK.gtk_cell_renderer_pixbuf_new ();
-	} else {
-		pixbufRenderer = ownerDraw ? OS.g_object_new (display.gtk_cell_renderer_pixbuf_get_type (), 0) : GTK.gtk_cell_renderer_pixbuf_new ();
-	}
+	long pixbufType = display.gtk_cell_renderer_pixbuf_get_type ();
+	long pixbufRenderer = ownerDraw && pixbufType != 0 ? OS.g_object_new (pixbufType, 0) : GTK.gtk_cell_renderer_pixbuf_new ();
 	if (pixbufRenderer == 0) {
 		error (SWT.ERROR_NO_HANDLES);
 	} else {
@@ -2548,11 +2544,8 @@ void recreateRenderers () {
 	if (checkRenderer != 0) {
 		display.removeWidget (checkRenderer);
 		OS.g_object_unref (checkRenderer);
-		if (GTK.GTK4) {
-			checkRenderer = GTK.gtk_cell_renderer_toggle_new ();
-		} else {
-			checkRenderer = ownerDraw ? OS.g_object_new (display.gtk_cell_renderer_toggle_get_type(), 0) : GTK.gtk_cell_renderer_toggle_new ();
-		}
+		long toggleType = display.gtk_cell_renderer_toggle_get_type ();
+		checkRenderer = ownerDraw && toggleType != 0 ? OS.g_object_new (toggleType, 0) : GTK.gtk_cell_renderer_toggle_new ();
 		if (checkRenderer == 0) error (SWT.ERROR_NO_HANDLES);
 		OS.g_object_ref (checkRenderer);
 		display.addWidget (checkRenderer, this);
@@ -2906,7 +2899,12 @@ long rendererSnapshotProc (long cell, long snapshot, long widget, long backgroun
 	OS.memmove(gdkRectangle, background_area, GdkRectangle.sizeof);
 	Graphene.graphene_rect_init(rect, gdkRectangle.x, gdkRectangle.y, gdkRectangle.width, gdkRectangle.height);
 	long cairo = GTK4.gtk_snapshot_append_cairo(snapshot, rect);
-	rendererRender (cell, cairo, snapshot, widget, background_area, cell_area, 0, flags);
+	try {
+		rendererRender (cell, cairo, snapshot, widget, background_area, cell_area, 0, flags);
+	} finally {
+		Cairo.cairo_destroy(cairo);
+		Graphene.graphene_rect_free(rect);
+	}
 	return 0;
 }
 
@@ -3086,7 +3084,11 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 		gc.fillRectangle (rendererRect.toRectangle ());
 		gc.dispose ();
 	}
-	if ((drawState & SWT.FOREGROUND) != 0 || GTK.GTK_IS_CELL_RENDERER_TOGGLE (cell)) {
+	/*
+	 * GTK4 clips each renderer to its own cell, so PaintItem cannot draw the image
+	 * the way it can on GTK3. Keep drawing it natively.
+	 */
+	if ((drawState & SWT.FOREGROUND) != 0 || GTK.GTK_IS_CELL_RENDERER_TOGGLE (cell) || (GTK.GTK4 && GTK.GTK_IS_CELL_RENDERER_PIXBUF (cell))) {
 		long g_class = OS.g_type_class_peek_parent (OS.G_OBJECT_GET_CLASS (cell));
 		GtkCellRendererClass klass = new GtkCellRendererClass ();
 		OS.memmove (klass, g_class);

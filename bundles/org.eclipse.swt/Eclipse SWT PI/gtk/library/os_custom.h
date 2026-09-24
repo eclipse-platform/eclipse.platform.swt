@@ -27,6 +27,14 @@
 #define GtkCellRendererPixbufClass_sizeof() sizeof(GtkCellRendererPixbufClass)
 #define GtkCellRendererToggle_sizeof() sizeof(GtkCellRendererToggle)
 #define GtkCellRendererToggleClass_sizeof() sizeof(GtkCellRendererToggleClass)
+#else
+/* GTK4 keeps these structs private, use the sizes GLib registered for the types */
+static inline guint swt_class_size(GType type) { GTypeQuery query; g_type_query(type, &query); return query.class_size; }
+static inline guint swt_instance_size(GType type) { GTypeQuery query; g_type_query(type, &query); return query.instance_size; }
+#define GtkCellRendererPixbuf_sizeof() swt_instance_size(GTK_TYPE_CELL_RENDERER_PIXBUF)
+#define GtkCellRendererPixbufClass_sizeof() swt_class_size(GTK_TYPE_CELL_RENDERER_PIXBUF)
+#define GtkCellRendererToggle_sizeof() swt_instance_size(GTK_TYPE_CELL_RENDERER_TOGGLE)
+#define GtkCellRendererToggleClass_sizeof() swt_class_size(GTK_TYPE_CELL_RENDERER_TOGGLE)
 #endif
 #define GtkTextIter_sizeof() sizeof(GtkTextIter)
 #define GtkTreeIter_sizeof() sizeof(GtkTreeIter)
