@@ -23,4 +23,4 @@ Provide-Capability:
  osgi.serviceloader;
   osgi.serviceloader="com.github.weisj.jsvg.logging.LogManager";
   register:="org.eclipse.swt.svg.logging.JVSGLoggerLogManager"
-
+Require-Capability: eclipse.swt; filter:="(implementation=native)"
