@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2022 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -379,27 +379,37 @@ void computeRuns (GC gc) {
 	}
 	SCRIPT_LOGATTR logAttr = new SCRIPT_LOGATTR();
 	SCRIPT_PROPERTIES properties = new SCRIPT_PROPERTIES();
-	int wrapIndentInPixels = DPIUtil.pointToPixel(wrapIndent, getZoom(gc));
-	int indentInPixels = DPIUtil.pointToPixel(indent, getZoom(gc));
-	int wrapWidthInPixels = DPIUtil.pointToPixel(wrapWidth, getZoom(gc));
-	int[] tabsInPixels = Win32DPIUtils.pointToPixel(tabs, getZoom(gc));
+	int zoom = getZoom(gc);
+	int wrapIndentInPixels = DPIUtil.pointToPixel(wrapIndent, zoom);
+	int indentInPixels = DPIUtil.pointToPixel(indent, zoom);
+	int wrapWidthInPixels = DPIUtil.pointToPixel(wrapWidth, zoom);
 	int lineWidth = indentInPixels, lineStart = 0, lineCount = 1;
 	for (int i=0; i<allRuns.length - 1; i++) {
 		StyleItem run = allRuns[i];
-		if (tabsInPixels != null && run.tab) {
-			int tabsLength = tabsInPixels.length, j;
+		if (tabs != null && run.tab) {
+			/*
+			 * The stop is resolved entirely in points, the unit setTabs() defined it in, and
+			 * only the resulting position is converted. Accumulating in pixels instead would
+			 * round every step and let the positions drift past the last stop.
+			 */
+			int lineWidthInPoints = DPIUtil.pixelToPoint(lineWidth, zoom);
+			int widthInPoints = 0;
+			boolean stopFound = false;
+			int tabsLength = tabs.length, j;
 			for (j = 0; j < tabsLength; j++) {
-				if (tabsInPixels[j] > lineWidth) {
-					run.width = tabsInPixels[j] - lineWidth;
+				if (tabs[j] > lineWidthInPoints) {
+					widthInPoints = tabs[j] - lineWidthInPoints;
+					stopFound = true;
 					break;
 				}
 			}
 			if (j == tabsLength) {
-				int tabX = tabsInPixels[tabsLength-1];
-				int lastTabWidth = tabsLength > 1 ? tabsInPixels[tabsLength-1] - tabsInPixels[tabsLength-2] : tabsInPixels[0];
+				int tabX = tabs[tabsLength-1];
+				int lastTabWidth = tabsLength > 1 ? tabs[tabsLength-1] - tabs[tabsLength-2] : tabs[0];
 				if (lastTabWidth > 0) {
-					while (tabX <= lineWidth) tabX += lastTabWidth;
-					run.width = tabX - lineWidth;
+					while (tabX <= lineWidthInPoints) tabX += lastTabWidth;
+					widthInPoints = tabX - lineWidthInPoints;
+					stopFound = true;
 				}
 			}
 
@@ -408,18 +418,21 @@ void computeRuns (GC gc) {
 			 * The extra tabs are removed in merge.
 			 */
 			int length = run.length;
-			if (length > 1) {
+			if (length > 1 && stopFound) {
 				int stop = j + length - 1;
 				if (stop < tabsLength) {
-					run.width += tabsInPixels[stop] - tabsInPixels[j];
+					widthInPoints += tabs[stop] - tabs[j];
 				} else {
 					if (j < tabsLength) {
-						run.width += tabsInPixels[tabsLength-1] - tabsInPixels[j];
+						widthInPoints += tabs[tabsLength-1] - tabs[j];
 						length -= (tabsLength - 1) - j;
 					}
-					int lastTabWidth = tabsLength > 1 ? tabsInPixels[tabsLength-1] - tabsInPixels[tabsLength-2] : tabsInPixels[0];
-					run.width += lastTabWidth * (length - 1);
+					int lastTabWidth = tabsLength > 1 ? tabs[tabsLength-1] - tabs[tabsLength-2] : tabs[0];
+					widthInPoints += lastTabWidth * (length - 1);
 				}
+			}
+			if (stopFound) {
+				run.width = DPIUtil.pointToPixel(lineWidthInPoints + widthInPoints, zoom) - lineWidth;
 			}
 		}
 		if (wrapWidth != -1 && lineWidth + run.width > wrapWidthInPixels && !run.tab && !run.lineBreak) {
