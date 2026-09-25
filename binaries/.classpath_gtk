@@ -32,4 +32,5 @@
 	<classpathentry kind="src" path="Eclipse SWT OpenGL/common"/>
 	<classpathentry kind="src" path="Eclipse SWT WebKit/gtk"/>
 	<classpathentry kind="output" path="bin"/>
+	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 </classpath>
