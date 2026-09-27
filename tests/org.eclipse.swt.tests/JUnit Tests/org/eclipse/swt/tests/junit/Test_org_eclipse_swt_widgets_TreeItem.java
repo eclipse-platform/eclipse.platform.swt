@@ -533,6 +533,50 @@ public void test_getBoundsI() {
 	getBoundsID();
 }
 
+/*
+ * @see https://github.com/eclipse-platform/eclipse.platform.swt/issues/2749
+ */
+@Test
+public void test_getBounds_checkStyleWithCustomFont() {
+	Tree tree2 = new Tree(shell, SWT.CHECK);
+	TreeItem treeItem2 = new TreeItem(tree2, SWT.NONE);
+
+	Font font = new Font(treeItem2.getDisplay(), SwtTestUtil.testFontName, 10, SWT.NORMAL);
+	try {
+		treeItem2.setText("hello");
+		treeItem2.setFont(0, font);
+
+		Rectangle bounds = treeItem2.getBounds();
+		assertTrue(bounds.height > 0 && bounds.width > 0);
+	} finally {
+		tree2.dispose();
+		font.dispose();
+	}
+}
+
+/*
+ * @see https://github.com/eclipse-platform/eclipse.platform.swt/issues/2749
+ */
+@Test
+public void test_getBounds_checkStyleWithColumnsAndCustomFont() {
+	Tree tree2 = new Tree(shell, SWT.CHECK);
+	TreeColumn column0 = new TreeColumn(tree2, SWT.LEFT);
+	column0.setWidth(100);
+	TreeItem treeItem2 = new TreeItem(tree2, SWT.NONE);
+
+	Font font = new Font(treeItem2.getDisplay(), SwtTestUtil.testFontName, 10, SWT.NORMAL);
+	try {
+		treeItem2.setText("hello");
+		treeItem2.setFont(0, font);
+
+		Rectangle bounds = treeItem2.getBounds();
+		assertTrue(bounds.height > 0 && bounds.width > 0);
+	} finally {
+		tree2.dispose();
+		font.dispose();
+	}
+}
+
 @Test
 public void test_getExpanded() {
 	assertFalse(treeItem.getExpanded());

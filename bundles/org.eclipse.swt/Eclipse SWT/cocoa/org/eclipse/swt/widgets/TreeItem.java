@@ -448,7 +448,7 @@ public Rectangle getBounds () {
 		titleRect.x += parent.imageBounds.width + Tree.IMAGE_GAP;
 	}
 	Font font = null;
-	if (cellFont != null) font = cellFont[columnIndex];
+	if (cellFont != null) font = cellFont[0];
 	if (font == null) font = this.font;
 	if (font == null) font = parent.font;
 	if (font == null) font = parent.defaultFont ();
