@@ -1040,21 +1040,8 @@ int handleContextMenuRequested(long pView, long pArgs) {
 	// The Event we create here will be mapped to a
 	// MenuDetectEvent used with SWT.MenuDetect eventually, which
 	// uses display-relative DISPLAY coordinates.
-	// Thefore, we
-	// - first, explicitly scale up the the win32 POINT values from edge
-	//   to PIXEL coordinates with the real native zoom value
-	//   independent from the swt.autoScale property:
-	Point pt = new Point( //
-			DPIUtil.scaleUp(win32Point.x, DPIUtil.getNativeDeviceZoom()), //
-			DPIUtil.scaleUp(win32Point.y, DPIUtil.getNativeDeviceZoom()));
-	// - then, scale back down from PIXEL to DISPLAY coordinates, taking
-	//   swt.autoScale property into account
-	//   which is also later considered in Menu#setLocation()
-	pt = new Point( //
-			DPIUtil.scaleDown(pt.x, DPIUtil.getZoomForAutoscaleProperty(browser.getShell().nativeZoom)), //
-			DPIUtil.scaleDown(pt.y, DPIUtil.getZoomForAutoscaleProperty(browser.getShell().nativeZoom)));
-	// - finally, translate the POINT from widget-relative
-	//   to DISPLAY-relative coordinates
+	// Therefore, translate the POINT from widget-relative to DISPLAY-relative coordinates.
+	Point pt = new Point(DPIUtil.autoScaleDown(win32Point.x), DPIUtil.autoScaleDown(win32Point.y));
 	pt = browser.toDisplay(pt.x, pt.y);
 	Event event = new Event();
 	event.x = pt.x;
