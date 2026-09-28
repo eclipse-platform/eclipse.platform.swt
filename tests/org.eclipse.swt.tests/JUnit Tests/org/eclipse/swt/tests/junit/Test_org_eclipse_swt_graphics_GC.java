@@ -248,7 +248,8 @@ public void test_copyAreaLorg_eclipse_swt_graphics_ImageII() {
 }
 
 private int scaleWithDeviceZoom(int value) {
-	return value * DPIUtil.getDeviceZoom() / 100;
+	// round like SWT does, truncating misses the pixel at fractional zoom
+	return pointToPixel(value, DPIUtil.getDeviceZoom());
 }
 
 @Test
@@ -297,7 +298,8 @@ public void test_drawImage_nonAutoScalableGC_bug_2504() throws InterruptedExcept
     gcCopy.copyArea(target, 0, 0);
     gcCopy.dispose();
 
-    ImageData data = target.getImageData();
+    // the canvas is not auto-scaled, so its pixels map 1:1 to the copy at device zoom
+    ImageData data = target.getImageData(DPIUtil.getDeviceZoom());
 
     int bottomRightX = canvasWidth - 1;
     int bottomRightY = canvasHeight - 1;
