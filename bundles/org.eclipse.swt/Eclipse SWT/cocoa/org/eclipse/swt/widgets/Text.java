@@ -338,8 +338,10 @@ public void append (String string) {
 boolean becomeFirstResponder (long id, long sel) {
 	if ((style & SWT.SINGLE) != 0) {
 		if ((state & DISABLED) != 0) return false;
+		display.setSelectedTextAttributes (new NSTextView (view.window ().fieldEditor (true, view)));
 		return true;
 	}
+	display.setSelectedTextAttributes ((NSTextView) view);
 	return super.becomeFirstResponder (id, sel);
 }
 

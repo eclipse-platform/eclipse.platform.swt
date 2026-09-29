@@ -239,6 +239,8 @@ public class Display extends Device implements Executor {
 	double [][] colors;
 	double [] alternateSelectedControlTextColor, selectedControlTextColor;
 	private double [] alternateSelectedControlColor, secondarySelectedControlColor;
+	double [] selectionBackground, selectionForeground;
+	boolean customSelectionColors;
 
 	/* Key Mappings. */
 	static int [] [] KeyTable = {
@@ -3310,6 +3312,9 @@ void initColors () {
 	/* These are set in the getter */
 	alternateSelectedControlColor = null;
 	secondarySelectedControlColor = null;
+
+	if (selectionBackground != null) colors[SWT.COLOR_LIST_SELECTION] = selectionBackground;
+	if (selectionForeground != null) colors[SWT.COLOR_LIST_SELECTION_TEXT] = selectionForeground;
 }
 
 void initFonts () {
@@ -5101,6 +5106,100 @@ void setModalShell (Shell shell) {
 public void setData (Object data) {
 	checkDevice ();
 	this.data = data;
+}
+
+/**
+ * Sets the background color used for selected items and selected text in
+ * all controls of the receiver, or <code>null</code> to use the platform default.
+ * {@link #getSystemColor(int)} returns it for <code>SWT.COLOR_LIST_SELECTION</code>.
+ * <p>
+ * Note: This operation is a hint and has no effect on Windows.
+ * </p>
+ *
+ * @param color the new selection background color, or <code>null</code>
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the color has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @see #setSelectionForeground(Color)
+ * @since 3.136
+ */
+public void setSelectionBackground (Color color) {
+	checkDevice ();
+	if (color != null && color.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	selectionBackground = color != null ? color.handle.clone () : null;
+	updateSelectionColors ();
+}
+
+/**
+ * Sets the foreground color used for selected items and selected text in
+ * all controls of the receiver, or <code>null</code> to use the platform default.
+ * {@link #getSystemColor(int)} returns it for <code>SWT.COLOR_LIST_SELECTION_TEXT</code>.
+ * <p>
+ * Note: This operation is a hint and has no effect on Windows.
+ * </p>
+ *
+ * @param color the new selection foreground color, or <code>null</code>
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the color has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @see #setSelectionBackground(Color)
+ * @since 3.136
+ */
+public void setSelectionForeground (Color color) {
+	checkDevice ();
+	if (color != null && color.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	selectionForeground = color != null ? color.handle.clone () : null;
+	updateSelectionColors ();
+}
+
+void updateSelectionColors () {
+	customSelectionColors = true;
+	initColors ();
+	for (Shell shell : getShells ()) shell.view.setNeedsDisplay (true);
+}
+
+double [] selectedRowBackground (boolean hasFocus) {
+	if (selectionBackground != null) return selectionBackground;
+	return hasFocus ? getAlternateSelectedControlColor () : getSecondarySelectedControlColor ();
+}
+
+double [] selectedRowForeground (boolean hasFocus) {
+	if (selectionForeground != null) return selectionForeground;
+	return (hasFocus || APPEARANCE.Dark == appAppearance) ? alternateSelectedControlTextColor : selectedControlTextColor;
+}
+
+/** Fills the selected rows with the selection background set by the application. */
+boolean highlightSelectedRows (NSTableView tableView) {
+	if (selectionBackground == null) return false;
+	NSColor.colorWithDeviceRed (selectionBackground [0], selectionBackground [1], selectionBackground [2], selectionBackground [3]).setFill ();
+	NSIndexSet selection = tableView.selectedRowIndexes ();
+	int count = (int) selection.count ();
+	long [] rows = new long [count];
+	selection.getIndexes (rows, count, 0);
+	for (long row : rows) NSBezierPath.fillRect (tableView.rectOfRow (row));
+	return true;
+}
+
+void setSelectedTextAttributes (NSTextView textView) {
+	if (!customSelectionColors || textView == null) return;
+	NSMutableDictionary dict = NSMutableDictionary.dictionaryWithCapacity (4);
+	dict.setDictionary (textView.selectedTextAttributes ());
+	double [] bg = selectionBackground, fg = selectionForeground;
+	dict.setObject (bg != null ? NSColor.colorWithDeviceRed (bg [0], bg [1], bg [2], bg [3]) : NSColor.selectedTextBackgroundColor (), OS.NSBackgroundColorAttributeName);
+	dict.setObject (fg != null ? NSColor.colorWithDeviceRed (fg [0], fg [1], fg [2], fg [3]) : NSColor.selectedTextColor (), OS.NSForegroundColorAttributeName);
+	textView.setSelectedTextAttributes (dict);
 }
 
 /**

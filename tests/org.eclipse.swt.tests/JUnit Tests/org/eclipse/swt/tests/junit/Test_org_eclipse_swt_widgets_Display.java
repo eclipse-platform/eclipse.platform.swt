@@ -35,10 +35,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.DeviceData;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
@@ -506,6 +508,26 @@ public void test_getSystemColorI() {
 		for (int colorId : colorIds) {
 			assertNotNull(display.getSystemColor(colorId));
 		}
+	} finally {
+		display.dispose();
+	}
+}
+
+@Test
+@DisabledOnOs(value = org.junit.jupiter.api.condition.OS.WINDOWS, disabledReason = "Selection colors are a no-op on Windows")
+public void test_setSelectionBackgroundAndForeground() {
+	Display display = new Display();
+	try {
+		RGB themeBackground = display.getSystemColor(SWT.COLOR_LIST_SELECTION).getRGB();
+		RGB themeForeground = display.getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT).getRGB();
+		display.setSelectionBackground(new Color(255, 0, 0));
+		display.setSelectionForeground(new Color(0, 0, 255));
+		assertEquals(new RGB(255, 0, 0), display.getSystemColor(SWT.COLOR_LIST_SELECTION).getRGB());
+		assertEquals(new RGB(0, 0, 255), display.getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT).getRGB());
+		display.setSelectionBackground(null);
+		display.setSelectionForeground(null);
+		assertEquals(themeBackground, display.getSystemColor(SWT.COLOR_LIST_SELECTION).getRGB());
+		assertEquals(themeForeground, display.getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT).getRGB());
 	} finally {
 		display.dispose();
 	}

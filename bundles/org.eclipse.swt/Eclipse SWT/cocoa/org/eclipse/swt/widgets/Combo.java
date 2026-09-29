@@ -322,6 +322,9 @@ public void addVerifyListener (VerifyListener listener) {
 @Override
 boolean becomeFirstResponder (long id, long sel) {
 	receivingFocus = true;
+	if ((style & SWT.READ_ONLY) == 0) {
+		display.setSelectedTextAttributes (new NSTextView (view.window ().fieldEditor (true, view)));
+	}
 	boolean result = super.becomeFirstResponder (id, sel);
 	receivingFocus = false;
 	return result;
