@@ -6350,16 +6350,26 @@ boolean showMenu (int x, int y, int detail) {
 		if (menu != null && !menu.isDisposed ()) {
 			if (GTK.GTK4) {
 
+				/*
+				 * Parent the popover to the top handle: GtkTreeView keeps its header buttons'
+				 * CSS nodes under a node of its own, so gtk_widget_set_parent on it fails the
+				 * gtk_css_node_insert_after assertion. The location is relative to the
+				 * event handle, which the click gesture is attached to.
+				 */
+				long menuParent = topHandle ();
+				long eventHandle = eventHandle ();
+				double [] menuX = new double [] {x}, menuY = new double [] {y};
+				if (menuParent != eventHandle) GTK4.gtk_widget_translate_coordinates (eventHandle, menuParent, x, y, menuX, menuY);
 				long temp = 0;
 				if (GTK.gtk_widget_get_parent(menu.handle) != 0) {
 					temp = OS.g_object_ref(menu.handle);
 					GTK.gtk_widget_unparent(menu.handle);
 				}
-				GTK.gtk_widget_set_parent(menu.handle, this.handle);
+				GTK.gtk_widget_set_parent(menu.handle, menuParent);
 				if (temp != 0) OS.g_object_unref(temp);
 
 
-				menu.setLocation(x, y);
+				menu.setLocation((int) menuX [0], (int) menuY [0]);
 				menu.setVisible(true);
 
 				return true;
