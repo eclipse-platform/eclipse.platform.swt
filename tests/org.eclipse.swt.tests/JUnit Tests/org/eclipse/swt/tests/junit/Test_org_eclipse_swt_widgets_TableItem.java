@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -683,6 +684,35 @@ public void test_setImageIndentI() {
 	assertEquals(1, tableItem.getImageIndent());
 	tableItem.setImageIndent(-1);
 	assertEquals(1, tableItem.getImageIndent());
+}
+
+@Test
+public void test_setImage_newColumnDoesNotInheritImageOfDisposedColumn() {
+	new TableColumn(table, SWT.LEFT);
+	TableColumn column = new TableColumn(table, SWT.LEFT);
+	new TableColumn(table, SWT.LEFT);
+	tableItem.setImage(1, images[0]);
+	column.dispose();
+	new TableColumn(table, SWT.LEFT);
+	assertNull(tableItem.getImage(2));
+}
+
+@Test
+public void test_getImage_disposedImageIsNotReplacedByLaterImage() {
+	assumeTrue(SwtTestUtil.isGTK && !SwtTestUtil.isGTK4(), "Only GTK3 holds a reference on the surface of a cell");
+	shell.open();
+	Image disposed = new Image(shell.getDisplay(), 16, 16);
+	tableItem.setImage(disposed);
+	disposed.dispose();
+	new TableItem(table, SWT.NONE).setImage(images[0]);
+	Image later = new Image(shell.getDisplay(), 16, 16);
+	try {
+		new TableItem(table, SWT.NONE).setImage(later);
+		table.update();
+		assertNull(tableItem.getImage());
+	} finally {
+		later.dispose();
+	}
 }
 
 @Test

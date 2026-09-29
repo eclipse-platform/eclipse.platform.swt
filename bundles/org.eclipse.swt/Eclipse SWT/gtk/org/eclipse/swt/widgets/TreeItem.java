@@ -256,6 +256,7 @@ Image _getImage(int index) {
 	if (surfaceHandle[0] == 0) return null;
 
 	int imageIndex = parent.imageList.indexOf(surfaceHandle[0]);
+	if (!GTK.GTK4) Cairo.cairo_surface_destroy(surfaceHandle[0]);
 	if (imageIndex == -1) {
 		return null;
 	} else {

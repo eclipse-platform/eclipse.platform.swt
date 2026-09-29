@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -1015,6 +1016,35 @@ public void test_setImageILorg_eclipse_swt_graphics_Image() {
 
 	images[0].dispose();
 	assertThrows(IllegalArgumentException.class, () -> treeItem.setImage(0, images[0]), "No exception thrown for disposed font");
+}
+
+@Test
+public void test_setImage_newColumnDoesNotInheritImageOfDisposedColumn() {
+	new TreeColumn(tree, SWT.LEFT);
+	TreeColumn column = new TreeColumn(tree, SWT.LEFT);
+	new TreeColumn(tree, SWT.LEFT);
+	treeItem.setImage(1, images[0]);
+	column.dispose();
+	new TreeColumn(tree, SWT.LEFT);
+	assertNull(treeItem.getImage(2));
+}
+
+@Test
+public void test_getImage_disposedImageIsNotReplacedByLaterImage() {
+	assumeTrue(SwtTestUtil.isGTK && !SwtTestUtil.isGTK4(), "Only GTK3 holds a reference on the surface of a cell");
+	shell.open();
+	Image disposed = new Image(shell.getDisplay(), 16, 16);
+	treeItem.setImage(disposed);
+	disposed.dispose();
+	new TreeItem(tree, SWT.NONE).setImage(images[0]);
+	Image later = new Image(shell.getDisplay(), 16, 16);
+	try {
+		new TreeItem(tree, SWT.NONE).setImage(later);
+		tree.update();
+		assertNull(treeItem.getImage());
+	} finally {
+		later.dispose();
+	}
 }
 
 @Test

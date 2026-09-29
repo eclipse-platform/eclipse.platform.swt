@@ -304,7 +304,8 @@ long cellDataProc (long tree_column, long cell, long tree_model, long iter, long
 	if ((style & SWT.VIRTUAL) != 0) {
 		if (!item.cached) {
 			//lastIndexOf = index [0];
-			setData = checkData (item);
+			if (!checkData (item)) return 0;
+			setData = true;
 		}
 		if (item.updated) {
 			updated = true;
@@ -312,19 +313,29 @@ long cellDataProc (long tree_column, long cell, long tree_model, long iter, long
 		}
 	}
 	long [] ptr = new long [1];
-	if (setData) {
-		if (isPixbuf) {
-			ptr [0] = 0;
+	if (isPixbuf) {
+		ptr [0] = 0;
+		/*
+		 * The pixbuf attribute has no device scale, so HiDPI images are drawn from the surface.
+		 * The surface skips GTK's icon effects, so disabled controls and 100% zoom keep the pixbuf.
+		 */
+		if (!GTK.GTK4 && GTK.gtk_widget_get_scale_factor (handle) > 1 && (GTK.gtk_widget_get_state_flags (handle) & GTK.GTK_STATE_FLAG_INSENSITIVE) == 0) {
+			GTK.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_SURFACE, ptr, -1);
+			if (ptr [0] != 0) {
+				OS.g_object_set (cell, OS.surface, ptr [0], 0);
+				Cairo.cairo_surface_destroy (ptr [0]);
+			}
+		} else if (setData) {
 			GTK.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_PIXBUF, ptr, -1);
 			OS.g_object_set (cell, OS.gicon, ptr [0], 0);
 			if (ptr [0] != 0) OS.g_object_unref (ptr [0]);
-		} else {
-			ptr [0] = 0;
-			GTK.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_TEXT, ptr, -1);
-			if (ptr [0] != 0) {
-				OS.g_object_set (cell, OS.text, ptr[0], 0);
-				OS.g_free (ptr[0]);
-			}
+		}
+	} else if (setData) {
+		ptr [0] = 0;
+		GTK.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_TEXT, ptr, -1);
+		if (ptr [0] != 0) {
+			OS.g_object_set (cell, OS.text, ptr[0], 0);
+			OS.g_free (ptr[0]);
 		}
 	}
 	if (customDraw) {
@@ -1168,6 +1179,8 @@ void createRenderers (long columnHandle, int modelIndex, boolean check, int colu
 	}
 	if ((style & SWT.VIRTUAL) != 0 || customDraw || isOwnerDrawn) {
 		GTK.gtk_tree_view_column_set_cell_data_func (columnHandle, textRenderer, display.cellDataProc, handle, 0);
+	}
+	if (!GTK.GTK4 || (style & SWT.VIRTUAL) != 0 || customDraw || isOwnerDrawn) {
 		GTK.gtk_tree_view_column_set_cell_data_func (columnHandle, pixbufRenderer, display.cellDataProc, handle, 0);
 	}
 }
@@ -1277,6 +1290,7 @@ void destroyItem (TreeColumn column) {
 				GTK.gtk_tree_store_set (modelHandle, iter, modelIndex + CELL_FOREGROUND, (long )0, -1);
 				GTK.gtk_tree_store_set (modelHandle, iter, modelIndex + CELL_BACKGROUND, (long )0, -1);
 				GTK.gtk_tree_store_set (modelHandle, iter, modelIndex + CELL_FONT, (long )0, -1);
+				GTK.gtk_tree_store_set (modelHandle, iter, modelIndex + CELL_SURFACE, (long )0, -1);
 
 				Font [] cellFont = item.cellFont;
 				if (cellFont != null) {
@@ -1543,7 +1557,7 @@ long [] getColumnTypes (int columnCount) {
 		types [i + CELL_FOREGROUND] = GDK.GDK_TYPE_RGBA();
 		types [i + CELL_BACKGROUND] = GDK.GDK_TYPE_RGBA();
 		types [i + CELL_FONT] = OS.PANGO_TYPE_FONT_DESCRIPTION ();
-		types [i + CELL_SURFACE] = OS.G_TYPE_LONG();
+		types [i + CELL_SURFACE] = GTK.GTK4 ? OS.G_TYPE_LONG() : display.cairoSurfaceType ();
 	}
 	return types;
 }

@@ -1038,6 +1038,7 @@ typedef enum {
 	g_1type_1class_1peek_1parent_FUNC,
 	g_1type_1class_1ref_FUNC,
 	g_1type_1class_1unref_FUNC,
+	g_1type_1from_1name_FUNC,
 	g_1type_1interface_1peek_1parent_FUNC,
 	g_1type_1is_1a_FUNC,
 	g_1type_1name_FUNC,

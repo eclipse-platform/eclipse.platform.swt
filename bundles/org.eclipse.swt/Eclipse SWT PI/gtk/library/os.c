@@ -12887,6 +12887,22 @@ JNIEXPORT void JNICALL OS_NATIVE(g_1type_1class_1unref)
 }
 #endif
 
+#ifndef NO_g_1type_1from_1name
+JNIEXPORT jlong JNICALL OS_NATIVE(g_1type_1from_1name)
+	(JNIEnv *env, jclass that, jbyteArray arg0)
+{
+	jbyte *lparg0=NULL;
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, g_1type_1from_1name_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	rc = (jlong)g_type_from_name((const gchar *)lparg0);
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, g_1type_1from_1name_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_g_1type_1interface_1peek_1parent
 JNIEXPORT jlong JNICALL OS_NATIVE(g_1type_1interface_1peek_1parent)
 	(JNIEnv *env, jclass that, jlong arg0)

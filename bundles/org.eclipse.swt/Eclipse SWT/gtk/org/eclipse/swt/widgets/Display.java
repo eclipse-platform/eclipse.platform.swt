@@ -393,6 +393,7 @@ public class Display extends Device implements Executor {
 
 	/* Renderer Subclass */
 	static long text_renderer_type, pixbuf_renderer_type, toggle_renderer_type;
+	static long cairo_surface_type;
 	static long text_renderer_info_ptr, pixbuf_renderer_info_ptr, toggle_renderer_info_ptr;
 	static Callback rendererClassInitCallback, rendererRenderCallback, rendererSnapshotCallback;
 	static Callback rendererGetPreferredWidthCallback;
@@ -2164,6 +2165,16 @@ long gtk_cell_renderer_pixbuf_get_type () {
 
 long gtk_cell_renderer_toggle_get_type () {
 	return toggle_renderer_type;
+}
+
+long cairoSurfaceType () {
+	if (cairo_surface_type == 0) {
+		// Initializing the pixbuf renderer class registers the boxed type of its "surface" property
+		long pixbufRendererClass = OS.g_type_class_ref (GTK.GTK_TYPE_CELL_RENDERER_PIXBUF ());
+		cairo_surface_type = OS.g_type_from_name (OS.CairoSurface);
+		OS.g_type_class_unref (pixbufRendererClass);
+	}
+	return cairo_surface_type;
 }
 
 String gtk_css_create_css_color_string (String background, String foreground, int property) {
