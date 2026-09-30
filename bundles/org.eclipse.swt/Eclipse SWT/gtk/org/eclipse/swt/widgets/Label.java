@@ -261,6 +261,9 @@ void createHandle (int index) {
 
 			GTK4.gtk_box_append(handle, labelHandle);
 			GTK4.gtk_box_append(handle, imageHandle);
+			/* Let presses target the box, see eventHandle. */
+			OS.g_object_set(labelHandle, Converter.javaStringToCString("can-target"), false, 0);
+			OS.g_object_set(imageHandle, Converter.javaStringToCString("can-target"), false, 0);
 			gtk_box_set_child_packing(handle, labelHandle, true, true, 0, GTK.GTK_PACK_START);
 			gtk_box_set_child_packing(handle, imageHandle, true, true, 0, GTK.GTK_PACK_START);
 		} else {
@@ -334,6 +337,8 @@ void deregister () {
 
 @Override
 long eventHandle () {
+	/* GTK4 mouse controllers only see presses that target their widget, and the box covers the fixed. */
+	if (GTK.GTK4 && labelHandle != 0) return handle;
 	return fixedHandle;
 }
 
