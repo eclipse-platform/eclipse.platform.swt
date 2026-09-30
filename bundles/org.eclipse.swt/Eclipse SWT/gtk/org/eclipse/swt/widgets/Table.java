@@ -2121,7 +2121,6 @@ long gtk3_button_press_event (long widget, long event) {
 
 @Override
 int gtk_gesture_press_event (long gesture, int n_press, double x, double y, long event) {
-	if (n_press == 1) return  GTK4.GTK_EVENT_SEQUENCE_NONE;
 	int result = super.gtk_gesture_press_event(gesture, n_press, x, y, event);
 
 	// TODO: GTK4 replicate gtk_button_press_event functions
