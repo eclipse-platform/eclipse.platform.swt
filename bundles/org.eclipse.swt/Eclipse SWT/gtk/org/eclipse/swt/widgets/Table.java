@@ -2156,7 +2156,17 @@ long gtk_row_activated (long tree, long path, long column) {
 		defaultSelectionPending = false;
 		return 0;
 	}
-	defaultSelectionPending = true;
+	/*
+	 * Enter, Space and accessibility tools activate the row too, but only the second press of a double-click is
+	 * followed by the GDK_2BUTTON_PRESS that sends the DefaultSelection, see gtk3_button_press_event.
+	 */
+	defaultSelectionPending = false;
+	long eventPtr = GTK3.gtk_get_current_event ();
+	if (eventPtr != 0) {
+		int eventType = GDK.gdk_event_get_event_type (eventPtr);
+		defaultSelectionPending = eventType == GDK.GDK_BUTTON_PRESS || eventType == GDK.GDK_2BUTTON_PRESS;
+		GDK.gdk_event_free (eventPtr);
+	}
 	return 0;
 }
 
