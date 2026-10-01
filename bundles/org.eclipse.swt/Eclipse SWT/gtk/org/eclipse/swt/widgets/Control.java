@@ -62,7 +62,7 @@ public abstract class Control extends Widget implements Drawable {
 	double pointerX, pointerY;
 	long redrawWindow, enableWindow, provider;
 	int drawCount, backgroundAlpha = 255;
-	long dragGesture, zoomGesture, rotateGesture, panGesture;
+	long dragGesture, zoomGesture, rotateGesture;
 	Composite parent;
 	Cursor cursor;
 	Menu menu;
@@ -327,10 +327,6 @@ long focusHandle () {
 }
 
 long fontHandle () {
-	return handle;
-}
-
-long gestureHandle () {
 	return handle;
 }
 
@@ -3029,10 +3025,6 @@ GdkRGBA getBgGdkRGBA () {
 	return getContextBackgroundGdkRGBA ();
 }
 
-GdkRGBA getBaseGdkRGBA () {
-	return getContextBackgroundGdkRGBA ();
-}
-
 /**
  * Returns the receiver's border width in points.
  *
@@ -5679,10 +5671,6 @@ private void setDragGesture() {
 	OS.g_signal_connect(dragGesture, OS.end, gestureEnd.getAddress(), this.handle);
 	return;
 }
-
-//private void setPanGesture () {
-///* TODO: Panning gesture requires a GtkOrientation object. Need to discuss what orientation should be default. */
-//}
 
 private void setRotateGesture() {
 	if (GTK.GTK4) {

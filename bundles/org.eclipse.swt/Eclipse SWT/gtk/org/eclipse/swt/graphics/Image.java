@@ -142,11 +142,6 @@ public final class Image extends Resource implements Drawable {
 	int height = -1;
 
 	/**
-	 * Specifies the default scanline padding.
-	 */
-	static final int DEFAULT_SCANLINE_PAD = 4;
-
-	/**
 	 * ImageFileNameProvider to provide file names at various Zoom levels
 	 */
 	private ImageFileNameProvider imageFileNameProvider;
