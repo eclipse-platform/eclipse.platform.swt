@@ -316,9 +316,13 @@ public PrinterData open() {
 
 	/* Set values of print_settings and page_setup from PrinterData. */
 	String printerName = printerData.name;
-	if (printerName == null && printerData.printToFile) {
-		/* Find the printer name corresponding to the file backend. */
-		long printer = Printer.gtkPrinterFromPrinterData(printerData);
+	if (printerName == null) {
+		/*
+		 * Find the printer name corresponding to the file backend, or the
+		 * default printer. Without a default printer, select the file backend
+		 * so that the dialog does not start without a printer.
+		 */
+		long printer = printerData.printToFile ? Printer.gtkPrinterFromPrinterData(printerData) : Printer.gtkDefaultOrFilePrinter();
 		if (printer != 0) {
 			PrinterData data = Printer.printerDataFromGtkPrinter(printer);
 			printerName = data.name;
@@ -342,8 +346,7 @@ public PrinterData open() {
 			GTK.gtk_print_settings_set_page_ranges(settings, pageRange, 1);
 			break;
 	}
-	if ((printerData.printToFile || Printer.GTK_FILE_BACKEND.equals(printerData.driver)) && printerData.fileName != null) {
-		// TODO: GTK_FILE_BACKEND is not GTK API (see gtk bug 345590)
+	if ((printerData.printToFile || Printer.isFileBackend(printerData.driver)) && printerData.fileName != null) {
 		byte [] uri = Printer.uriFromFilename(printerData.fileName);
 		if (uri != null) {
 			GTK.gtk_print_settings_set(settings, GTK.GTK_PRINT_SETTINGS_OUTPUT_URI, uri);
@@ -392,12 +395,17 @@ public PrinterData open() {
 		oldModal = display.getData (GET_MODAL_DIALOG);
 		display.setData (SET_MODAL_DIALOG, this);
 	}
-	String key = "org.eclipse.swt.internal.gtk.externalEventLoop"; //$NON-NLS-1$
-	display.setData (key, Boolean.TRUE);
-	display.sendPreExternalEventDispatchEvent ();
-	int response = GTK3.gtk_dialog_run (handle);
-	display.setData (key, Boolean.FALSE);
-	display.sendPostExternalEventDispatchEvent ();
+	int response;
+	if (GTK.GTK4) {
+		response = SyncDialogUtil.run (display, handle, false);
+	} else {
+		String key = "org.eclipse.swt.internal.gtk.externalEventLoop"; //$NON-NLS-1$
+		display.setData (key, Boolean.TRUE);
+		display.sendPreExternalEventDispatchEvent ();
+		response = GTK3.gtk_dialog_run (handle);
+		display.setData (key, Boolean.FALSE);
+		display.sendPostExternalEventDispatchEvent ();
+	}
 	if (GTK.gtk_window_get_modal (handle)) {
 		display.setData (SET_MODAL_DIALOG, oldModal);
 	}
@@ -441,13 +449,15 @@ public PrinterData open() {
 					break;
 			}
 
-			data.printToFile = Printer.GTK_FILE_BACKEND.equals(data.driver); // TODO: GTK_FILE_BACKEND is not GTK API (see gtk bug 345590)
+			data.printToFile = Printer.isFileBackend(data.driver);
 			if (data.printToFile) {
 				long address = GTK.gtk_print_settings_get(settings, GTK.GTK_PRINT_SETTINGS_OUTPUT_URI);
-				int length = C.strlen (address);
-				byte [] buffer = new byte [length];
-				C.memmove (buffer, address, length);
-				data.fileName = new String (Converter.mbcsToWcs (buffer));
+				if (address != 0) {
+					int length = C.strlen (address);
+					byte [] buffer = new byte [length];
+					C.memmove (buffer, address, length);
+					data.fileName = new String (Converter.mbcsToWcs (buffer));
+				}
 			}
 
 			data.copyCount = GTK.gtk_print_settings_get_n_copies(settings);
