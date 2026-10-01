@@ -232,7 +232,8 @@ static void restore(byte [] data, long settings, long page_setup) {
 		 * See https://github.com/eclipse-platform/eclipse.platform.swt/issues/847
 		 */
 		if (ppd_name.length > 1) {
-			paper_size = GTK.gtk_paper_size_new_from_ppd(ppd_name, display_name, width, height);
+			/* The size is stored in mm, gtk_paper_size_new_from_ppd expects points */
+			paper_size = GTK.gtk_paper_size_new_from_ppd(ppd_name, display_name, width * 72 / 25.4, height * 72 / 25.4);
 		} else {
 			paper_size = GTK.gtk_paper_size_new_custom(name, display_name, width, height, GTK.GTK_UNIT_MM);
 		}
