@@ -3036,14 +3036,7 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 				}
 				gc.setFont (item.getFont (columnIndex));
 				if ((style & SWT.MIRRORED) != 0) rect.x = getClientWidth () - rect.width - rect.x;
-				if (cr != 0) {
-					GdkRectangle r = new GdkRectangle();
-					GDK.gdk_cairo_get_clip_rectangle(cr, r);
-					gc.setClipping(rect.x, rect.y, rect.width, rect.height);
-				} else {
-					gc.setClipping(rect.x, rect.y, rect.width, rect.height);
-
-				}
+				gc.setClipping(rect.x, rect.y, rect.width, rect.height);
 
 				// SWT.PaintItem/SWT.EraseItem often expect that event.y matches
 				// what 'event.item.getBounds()' returns. The workaround is to
