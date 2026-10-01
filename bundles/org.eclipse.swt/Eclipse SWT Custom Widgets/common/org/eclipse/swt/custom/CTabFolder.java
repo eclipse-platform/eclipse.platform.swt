@@ -13,6 +13,8 @@
  *******************************************************************************/
 package org.eclipse.swt.custom;
 
+import java.util.Arrays;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.events.*;
@@ -2473,25 +2475,8 @@ public void setBackground(Color[] colors, int[] percents, boolean vertical) {
 	}
 
 	// Are these settings the same as before?
-	if ((gradientColors != null) && (colors != null) &&
-		(gradientColors.length == colors.length)) {
-		boolean same = false;
-		for (int i = 0; i < gradientColors.length; i++) {
-			if (gradientColors[i] == null) {
-			same = colors[i] == null;
-			} else {
-			same = gradientColors[i].equals(colors[i]);
-			}
-			if (!same) break;
-		}
-		if (same) {
-			for (int i = 0; i < gradientPercents.length; i++) {
-			same = gradientPercents[i] == percents[i];
-			if (!same) break;
-			}
-		}
-		if (same && this.gradientVertical == vertical) return;
-	}
+	if (colors != null && Arrays.equals(gradientColors, colors) && Arrays.equals(gradientPercents, percents)
+			&& gradientVertical == vertical) return;
 	// Store the new settings
 	if (colors == null) {
 		gradientColors = null;
@@ -2499,14 +2484,8 @@ public void setBackground(Color[] colors, int[] percents, boolean vertical) {
 		gradientVertical = false;
 		setBackground((Color)null);
 	} else {
-		gradientColors = new Color[colors.length];
-		for (int i = 0; i < colors.length; ++i) {
-			gradientColors[i] = colors[i];
-		}
-		gradientPercents = new int[percents.length];
-		for (int i = 0; i < percents.length; ++i) {
-			gradientPercents[i] = percents[i];
-		}
+		gradientColors = colors.clone();
+		gradientPercents = percents.clone();
 		gradientVertical = vertical;
 		super.setBackground(gradientColors[gradientColors.length-1]);
 		updateBkImages(true);
@@ -3464,25 +3443,10 @@ public void setSelectionBackground(Color[] colors, int[] percents, boolean verti
 
 	// Are these settings the same as before?
 	if (selectionBgImage == null) {
-		if ((selectionGradientColors != null) && (colors != null) &&
-			(selectionGradientColors.length == colorsLength)) {
-			boolean same = false;
-			for (int i = 0; i < selectionGradientColors.length; i++) {
-				if (selectionGradientColors[i] == null) {
-					same = colors[i] == null;
-				} else {
-					same = selectionGradientColors[i].equals(colors[i]);
-				}
-				if (!same) break;
-			}
-			if (same) {
-				for (int i = 0; i < selectionGradientPercents.length; i++) {
-					same = selectionGradientPercents[i] == percents[i];
-					if (!same) break;
-				}
-			}
-			if (same && this.selectionGradientVertical == vertical) return;
-		}
+		if (selectionGradientColors != null && colors != null
+				&& Arrays.equals(selectionGradientColors, 0, selectionGradientColors.length, colors, 0, colorsLength)
+				&& Arrays.equals(selectionGradientPercents, percents)
+				&& selectionGradientVertical == vertical) return;
 	} else {
 		selectionBgImage = null;
 	}
@@ -3493,14 +3457,8 @@ public void setSelectionBackground(Color[] colors, int[] percents, boolean verti
 		selectionGradientVertical = false;
 		setSelectionBackground((Color)null);
 	} else {
-		selectionGradientColors = new Color[colorsLength];
-		for (int i = 0; i < colorsLength; ++i) {
-			selectionGradientColors[i] = colors[i];
-		}
-		selectionGradientPercents = new int[percents.length];
-		for (int i = 0; i < percents.length; ++i) {
-			selectionGradientPercents[i] = percents[i];
-		}
+		selectionGradientColors = Arrays.copyOf(colors, colorsLength);
+		selectionGradientPercents = percents.clone();
 		selectionGradientVertical = vertical;
 		setSelectionBackground(selectionGradientColors[selectionGradientColors.length-1]);
 	}
