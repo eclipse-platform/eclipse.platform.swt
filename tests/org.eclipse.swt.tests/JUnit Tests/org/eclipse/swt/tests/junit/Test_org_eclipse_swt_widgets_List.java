@@ -715,6 +715,9 @@ public void test_indexOfLjava_lang_StringI() {
 
 	list.setItems(items);
 	assertEquals(-1, list.indexOf("text3", 4));
+	if (SwtTestUtil.isGTK) {
+		assertEquals(-1, list.indexOf("text2", -1));
+	}
 	assertEquals(2, list.indexOf("text3", 2));
 	assertEquals(1, list.indexOf("text2", 0));
 	assertEquals(1, list.indexOf("text2", 1));

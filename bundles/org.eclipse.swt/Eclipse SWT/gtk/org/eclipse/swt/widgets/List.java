@@ -1050,7 +1050,11 @@ public int indexOf (String string) {
 public int indexOf (String string, int start) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	String [] items = getItems ();
+	return indexOf (getItems (), string, start);
+}
+
+private static int indexOf (String [] items, String string, int start) {
+	if (start < 0 || start >= items.length) return -1;
 	for (int i=start; i<items.length; i++) {
 		if (items [i].equals (string)) return i;
 	}
@@ -1655,11 +1659,12 @@ public void setSelection (String [] items) {
 	int length = items.length;
 	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
 	boolean first = true;
+	String [] listItems = getItems ();
 	for (int i = 0; i < length; i++) {
 		int index = 0;
 		String string = items [i];
 		if (string != null) {
-			while ((index = indexOf (string, index)) != -1) {
+			while ((index = indexOf (listItems, string, index)) != -1) {
 				if ((style & SWT.MULTI) != 0) {
 					if (first) {
 						first = false;
