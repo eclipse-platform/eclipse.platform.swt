@@ -353,7 +353,7 @@ int calculateWidth (long column, long iter) {
 		GTK3.gtk_tree_view_column_cell_get_size(column, null, null, null, width, null);
 	}
 
-	long textRenderer = getTextRenderer(column);
+	long textRenderer = CellRenderers.getTextRenderer (column);
 	int[] xpad = new int[1];
 	if (textRenderer != 0) GTK.gtk_cell_renderer_get_padding(textRenderer, xpad, null);
 
@@ -1654,7 +1654,7 @@ public int getItemHeight () {
 		}
 
 		height = h[0];
-		long textRenderer = getTextRenderer(column);
+		long textRenderer = CellRenderers.getTextRenderer (column);
 		if (textRenderer != 0) GTK.gtk_cell_renderer_get_preferred_height_for_width(textRenderer, handle, 0, h, null);
 		height += h[0];
 		ignoreSize = false;
@@ -1673,7 +1673,7 @@ public int getItemHeight () {
 				GTK3.gtk_tree_view_column_cell_get_size (column, null, null, null, null, h);
 			}
 
-			long textRenderer = getTextRenderer(column);
+			long textRenderer = CellRenderers.getTextRenderer (column);
 			int[] ypad = new int[1];
 			if (textRenderer != 0) GTK.gtk_cell_renderer_get_padding(textRenderer, null, ypad);
 			height = Math.max(height, h[0] + ypad[0]);
@@ -1735,23 +1735,6 @@ public TableItem [] getItems () {
 public boolean getLinesVisible() {
 	checkWidget();
 	return GTK.gtk_tree_view_get_grid_lines(handle) > GTK.GTK_TREE_VIEW_GRID_LINES_NONE;
-}
-
-long getPixbufRenderer (long column) {
-	long list = GTK.gtk_cell_layout_get_cells(column);
-	if (list == 0) return 0;
-	long originalList = list;
-	long pixbufRenderer = 0;
-	while (list != 0) {
-		long renderer = OS.g_list_data (list);
-		if (GTK.GTK_IS_CELL_RENDERER_PIXBUF (renderer)) {
-			pixbufRenderer = renderer;
-			break;
-		}
-		list = OS.g_list_next (list);
-	}
-	OS.g_list_free (originalList);
-	return pixbufRenderer;
 }
 
 /**
@@ -1937,23 +1920,6 @@ public TableColumn getSortColumn () {
 public int getSortDirection () {
 	checkWidget ();
 	return sortDirection;
-}
-
-long getTextRenderer (long column) {
-	long list = GTK.gtk_cell_layout_get_cells(column);
-	if (list == 0) return 0;
-	long originalList = list;
-	long textRenderer = 0;
-	while (list != 0) {
-		long renderer = OS.g_list_data (list);
-		if (GTK.GTK_IS_CELL_RENDERER_TEXT (renderer)) {
-			textRenderer = renderer;
-			break;
-		}
-		list = OS.g_list_next (list);
-	}
-	OS.g_list_free (originalList);
-	return textRenderer;
 }
 
 /**
@@ -3010,7 +2976,7 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 			}
 
 			//send out measure before erase
-			long textRenderer =  getTextRenderer (columnHandle);
+			long textRenderer =  CellRenderers.getTextRenderer (columnHandle);
 			if (textRenderer != 0) gtk_cell_renderer_get_preferred_size (textRenderer, handle, null, null);
 
 
@@ -3113,7 +3079,7 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 		 * GTK4 clips each renderer to its own cell, so the image cell gets the PaintItem of the
 		 * text cell too, and each cell shows its part of what the listener draws.
 		 */
-		long textCell = GTK.GTK4 && GTK.GTK_IS_CELL_RENDERER_PIXBUF (cell) ? getTextRenderer (columnHandle) : cell;
+		long textCell = GTK.GTK4 && GTK.GTK_IS_CELL_RENDERER_PIXBUF (cell) ? CellRenderers.getTextRenderer (columnHandle) : cell;
 		if (GTK.GTK_IS_CELL_RENDERER_TEXT (textCell)) {
 			if (hooks (SWT.PaintItem)) {
 				if (wasSelected) drawState |= SWT.SELECTED;
@@ -3198,7 +3164,7 @@ void resetCustomDraw () {
 		boolean customDraw = columnCount != 0 ? columns [i].customDraw : firstCustomDraw;
 		if (customDraw) {
 			long column = GTK.gtk_tree_view_get_column (handle, i);
-			long textRenderer = getTextRenderer (column);
+			long textRenderer = CellRenderers.getTextRenderer (column);
 			GTK.gtk_tree_view_column_set_cell_data_func (column, textRenderer, 0, 0, 0);
 			if (columnCount != 0) columns [i].customDraw = false;
 		}

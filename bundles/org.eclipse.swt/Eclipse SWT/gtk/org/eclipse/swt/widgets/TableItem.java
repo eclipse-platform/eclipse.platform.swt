@@ -312,8 +312,8 @@ Rectangle getBoundsinPixels () {
 	long parentHandle = parent.handle;
 	long column = GTK.gtk_tree_view_get_column (parentHandle, 0);
 	if (column == 0) return new Rectangle (0, 0, 0, 0);
-	long textRenderer = parent.getTextRenderer (column);
-	long pixbufRenderer = parent.getPixbufRenderer (column);
+	long textRenderer = CellRenderers.getTextRenderer (column);
+	long pixbufRenderer = CellRenderers.getPixbufRenderer (column);
 	if (textRenderer == 0 || pixbufRenderer == 0)  return new Rectangle (0, 0, 0, 0);
 
 	long path = GTK.gtk_tree_model_get_path (parent.modelHandle, handle);
@@ -603,7 +603,7 @@ public Rectangle getImageBounds (int index) {
 		column = GTK.gtk_tree_view_get_column (parentHandle, index);
 	}
 	if (column == 0) return new Rectangle (0, 0, 0, 0);
-	long pixbufRenderer = parent.getPixbufRenderer (column);
+	long pixbufRenderer = CellRenderers.getPixbufRenderer (column);
 	if (pixbufRenderer == 0)  return new Rectangle (0, 0, 0, 0);
 	GdkRectangle rect = new GdkRectangle ();
 	long path = GTK.gtk_tree_model_get_path (parent.modelHandle, handle);
@@ -630,7 +630,7 @@ public Rectangle getImageBounds (int index) {
 		 * position of the textRenderer, to ensure images/widgets/etc. aren't placed over the TableItem's
 		 * text.
 		 */
-		long textRenderer = parent.getTextRenderer (column);
+		long textRenderer = CellRenderers.getTextRenderer (column);
 		if (textRenderer == 0)  return new Rectangle (0, 0, 0, 0);
 		int [] xText = new int [1], wText = new int [1];
 		gtk_tree_view_column_cell_get_position (column, textRenderer, xText, wText);
@@ -743,8 +743,8 @@ public Rectangle getTextBounds (int index) {
 		column = GTK.gtk_tree_view_get_column (parentHandle, index);
 	}
 	if (column == 0) return new Rectangle (0, 0, 0, 0);
-	long textRenderer = parent.getTextRenderer (column);
-	long pixbufRenderer = parent.getPixbufRenderer (column);
+	long textRenderer = CellRenderers.getTextRenderer (column);
+	long pixbufRenderer = CellRenderers.getPixbufRenderer (column);
 	if (textRenderer == 0 || pixbufRenderer == 0)  return new Rectangle (0, 0, 0, 0);
 
 	long path = GTK.gtk_tree_model_get_path (parent.modelHandle, handle);
@@ -889,8 +889,8 @@ public void setBackground (int index, Color color) {
 					column = GTK.gtk_tree_view_get_column (parentHandle, index);
 				}
 				if (column == 0) return;
-				long textRenderer = parent.getTextRenderer (column);
-				long imageRenderer = parent.getPixbufRenderer (column);
+				long textRenderer = CellRenderers.getTextRenderer (column);
+				long imageRenderer = CellRenderers.getPixbufRenderer (column);
 				GTK.gtk_tree_view_column_set_cell_data_func (column, textRenderer, display.cellDataProc, parentHandle, 0);
 				GTK.gtk_tree_view_column_set_cell_data_func (column, imageRenderer, display.cellDataProc, parentHandle, 0);
 			}
@@ -1011,8 +1011,8 @@ public void setFont (int index, Font font) {
 					column = GTK.gtk_tree_view_get_column (parentHandle, index);
 				}
 				if (column == 0) return;
-				long textRenderer = parent.getTextRenderer (column);
-				long imageRenderer = parent.getPixbufRenderer (column);
+				long textRenderer = CellRenderers.getTextRenderer (column);
+				long imageRenderer = CellRenderers.getPixbufRenderer (column);
 				GTK.gtk_tree_view_column_set_cell_data_func (column, textRenderer, display.cellDataProc, parentHandle, 0);
 				GTK.gtk_tree_view_column_set_cell_data_func (column, imageRenderer, display.cellDataProc, parentHandle, 0);
 			}
@@ -1096,8 +1096,8 @@ public void setForeground (int index, Color color){
 					column = GTK.gtk_tree_view_get_column (parentHandle, index);
 				}
 				if (column == 0) return;
-				long textRenderer = parent.getTextRenderer (column);
-				long imageRenderer = parent.getPixbufRenderer (column);
+				long textRenderer = CellRenderers.getTextRenderer (column);
+				long imageRenderer = CellRenderers.getPixbufRenderer (column);
 				GTK.gtk_tree_view_column_set_cell_data_func (column, textRenderer, display.cellDataProc, parentHandle, 0);
 				GTK.gtk_tree_view_column_set_cell_data_func (column, imageRenderer, display.cellDataProc, parentHandle, 0);
 			}
@@ -1179,7 +1179,7 @@ public void setImage(int index, Image image) {
 
 	long parentHandle = parent.handle;
 	long column = GTK.gtk_tree_view_get_column (parentHandle, index);
-	long pixbufRenderer = parent.getPixbufRenderer (column);
+	long pixbufRenderer = CellRenderers.getPixbufRenderer (column);
 	int [] currentWidth = new int [1];
 	int [] currentHeight= new int [1];
 	GTK.gtk_cell_renderer_get_fixed_size (pixbufRenderer, currentWidth, currentHeight);
