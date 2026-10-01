@@ -124,7 +124,7 @@ import org.eclipse.swt.internal.gtk4.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class Shell extends Decorations {
-	long shellHandle, tooltipsHandle, tooltipWindow, group, modalGroup;
+	long shellHandle, tooltipsHandle, group, modalGroup;
 	boolean mapped, moved, resized, opened, fullScreen, showWithParent, modified, center;
 	/**
 	 * On GTK4 an ON_TOP child Shell is backed by a GtkPopover to enable positioning by the client.

@@ -38,11 +38,6 @@ public abstract class Device implements Drawable {
 	 * @since 3.105
 	 */
 	protected static final int CHANGE_SCALEFACTOR = 1;
-	/* Settings callbacks */
-	long gsettingsProc;
-	Callback gsettingsCallback;
-	boolean isConnected = false;
-	long displaySettings; //gsettings Dictionary
 
 	/**
 	 * the handle to the X Display
@@ -1029,13 +1024,6 @@ protected void release () {
 		handler_ids = null;  log_domains = null;
 		logProc = 0;
 	}
-	/* Dispose the settings callback */
-	if (gsettingsCallback != null) {
-		gsettingsCallback.dispose();
-		gsettingsCallback = null;
-	}
-	gsettingsProc = 0;
-
 
 }
 

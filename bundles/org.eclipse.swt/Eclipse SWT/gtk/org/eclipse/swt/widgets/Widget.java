@@ -1144,10 +1144,6 @@ long gtk_text_buffer_insert_text (long widget, long iter, long text, long length
 	return 0;
 }
 
-long gtk_timer () {
-	return 0;
-}
-
 long gtk_toggled (long renderer, long pathStr) {
 	return 0;
 }

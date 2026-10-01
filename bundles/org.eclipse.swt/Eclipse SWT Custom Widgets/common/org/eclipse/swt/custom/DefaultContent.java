@@ -529,28 +529,6 @@ public String getLineDelimiter() {
 	return LineDelimiter;
 }
 /**
- * Returns the line at the given index with delimiters.
- * <p>
- * @param index	the index of the line to return
- * @return the logical line text (i.e., without the gap) with delimiters
- */
-String getFullLine(int index) {
-	int start = lines[index][0];
-	int length = lines[index][1];
-	int end = start + length - 1;
-	if (!gapExists() || (end < gapStart) || (start >= gapEnd)) {
-		// line is before or after the gap
-		return new String(textStore, start, length);
-	} else {
-		// gap is in the specified range, strip out the gap
-		StringBuilder buffer = new StringBuilder();
-		int gapLength = gapEnd - gapStart;
-		buffer.append(textStore, start, gapStart - start);
-		buffer.append(textStore, gapEnd, length - gapLength - (gapStart - start));
-		return buffer.toString();
-	}
-}
-/**
  * Returns the physical line at the given index (i.e., with delimiters and the gap).
  * <p>
  *
