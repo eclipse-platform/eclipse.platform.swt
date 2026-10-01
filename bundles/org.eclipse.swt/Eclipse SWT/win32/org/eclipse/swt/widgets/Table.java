@@ -1559,6 +1559,11 @@ void createHandle () {
 	}
 }
 
+private int getSelectedNotFocusState () {
+	/* DarkMode_Explorer draws the not-focused state as an outline without fill */
+	return display.useDarkModeExplorerTheme ? OS.LISS_SELECTED : OS.LISS_SELECTEDNOTFOCUS;
+}
+
 @Override
 int applyThemeBackground () {
 	/*
@@ -3565,7 +3570,7 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, long lParam, Event
 				}
 				long hTheme = OS.OpenThemeData (handle, Display.TREEVIEW, getAutoscalingZoom());
 				int iStateId = selected ? OS.LISS_SELECTED : OS.LISS_HOT;
-				if (OS.GetFocus () != handle && selected && !drawHot) iStateId = OS.LISS_SELECTEDNOTFOCUS;
+				if (OS.GetFocus () != handle && selected && !drawHot) iStateId = getSelectedNotFocusState ();
 				if (drawDrophilited) iStateId = OS.LISS_SELECTED;
 				OS.DrawThemeBackground (hTheme, hDC, OS.LVP_LISTITEM, iStateId, rect, pClipRect);
 				OS.CloseThemeData (hTheme);

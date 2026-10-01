@@ -496,7 +496,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 						draw = false;
 						long hTheme = OS.OpenThemeData (handle, Display.TREEVIEW, getAutoscalingZoom());
 						int iStateId = selected ? OS.TREIS_SELECTED : OS.TREIS_HOT;
-						if (OS.GetFocus () != handle && selected && !hot) iStateId = OS.TREIS_SELECTEDNOTFOCUS;
+						if (OS.GetFocus () != handle && selected && !hot) iStateId = getSelectedNotFocusState ();
 						OS.DrawThemeBackground (hTheme, hDC, OS.TVP_TREEITEM, iStateId, pRect, pClipRect);
 						OS.CloseThemeData (hTheme);
 					}
@@ -708,7 +708,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 										}
 										long hTheme = OS.OpenThemeData(handle, Display.TREEVIEW, getAutoscalingZoom());
 										int iStateId = selected ? OS.TREIS_SELECTED : OS.TREIS_HOT;
-										if (OS.GetFocus () != handle && selected && !hot) iStateId = OS.TREIS_SELECTEDNOTFOCUS;
+										if (OS.GetFocus () != handle && selected && !hot) iStateId = getSelectedNotFocusState ();
 										OS.DrawThemeBackground (hTheme, hDC, OS.TVP_TREEITEM, iStateId, pRect, backgroundRect);
 										OS.CloseThemeData (hTheme);
 									}
@@ -920,6 +920,11 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 		}
 	}
 	return new LRESULT (OS.CDRF_DODEFAULT);
+}
+
+private int getSelectedNotFocusState () {
+	/* DarkMode_Explorer draws the not-focused state as an outline without fill */
+	return display.useDarkModeExplorerTheme ? OS.TREIS_SELECTED : OS.TREIS_SELECTEDNOTFOCUS;
 }
 
 int getFirstColumnIndex() {
@@ -1137,7 +1142,7 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 						pClipRect.left -= explorerExtraInPixels;
 						long hTheme = OS.OpenThemeData (handle, Display.TREEVIEW, getAutoscalingZoom());
 						int iStateId = selected ? OS.TREIS_SELECTED : OS.TREIS_HOT;
-						if (OS.GetFocus () != handle && selected && !hot) iStateId = OS.TREIS_SELECTEDNOTFOCUS;
+						if (OS.GetFocus () != handle && selected && !hot) iStateId = getSelectedNotFocusState ();
 						OS.DrawThemeBackground (hTheme, hDC, OS.TVP_TREEITEM, iStateId, pRect, pClipRect);
 						OS.CloseThemeData (hTheme);
 					}
