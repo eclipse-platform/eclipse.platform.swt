@@ -1048,7 +1048,7 @@ void releaseWidget () {
 public void dispose () {
 	// Workaround to Bug489751, avoid selecting next node when selected node is disposed.
 	Tree tmpParent = null;
-	if (parent != null && parent.getItemCount() > 0 && parent.getSelectionCount() == 0) {
+	if (parent != null && parent.getSelectionCount() == 0) {
 		tmpParent = parent;
 	}
 	super.dispose();
