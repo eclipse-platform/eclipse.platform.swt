@@ -23,9 +23,11 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.PlatformSpecificExecutionExtension;
 import org.eclipse.swt.internal.win32.OS;
@@ -35,12 +37,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-/** Pins how a multi-column Tree paints a row hovered through native messages, which public API cannot send. */
+/** Pins how a Tree paints hover and selection states, including a hover through native messages public API cannot send. */
 @ExtendWith(PlatformSpecificExecutionExtension.class)
 class TreeWin32Tests {
 
 	private static final int COLUMNS = 3;
 	private static final int COLUMN_WIDTH = 120;
+	private static final String DARK_THEME_KEY = "org.eclipse.swt.internal.win32.useDarkModeExplorerTheme";
+	private static final RGB DARK_BACKGROUND = new RGB(47, 47, 47);
+	private static final RGB DARK_UNFOCUSED_SELECTION = new RGB(63, 63, 63);
 
 	private Display display;
 	private Shell shell;
@@ -58,6 +63,8 @@ class TreeWin32Tests {
 
 	@AfterEach
 	public void tearDown() {
+		// The preferred app mode behind this key is process wide.
+		display.setData(DARK_THEME_KEY, false);
 		shell.dispose();
 		display.dispose();
 	}
@@ -178,6 +185,88 @@ class TreeWin32Tests {
 		return new int[] { first, last };
 	}
 
+	@Test
+	public void test_darkUnfocusedSelectionFillsTheRow() {
+		assumeTrue(OS.IsDarkModeAvailable());
+		display.setData(DARK_THEME_KEY, true);
+		openPaintedTree(SWT.FULL_SELECTION | SWT.MULTI);
+		paintedTree.setBackground(new Color(DARK_BACKGROUND));
+		paintedTree.setSelection(paintedItem);
+		focusTarget.setFocus();
+		assertEquals(DARK_UNFOCUSED_SELECTION, rgbAt(COLUMN_WIDTH - 10));
+		assertEquals(DARK_UNFOCUSED_SELECTION, rgbAt(COLUMN_WIDTH + 10));
+	}
+
+	@Test
+	public void test_darkUnfocusedSelectionFillsTheRowWithEraseItemListener() {
+		assumeTrue(OS.IsDarkModeAvailable());
+		display.setData(DARK_THEME_KEY, true);
+		openPaintedTree(SWT.FULL_SELECTION | SWT.MULTI);
+		paintedTree.addListener(SWT.EraseItem, event -> {});
+		paintedTree.setBackground(new Color(DARK_BACKGROUND));
+		paintedTree.setSelection(paintedItem);
+		focusTarget.setFocus();
+		assertEquals(DARK_UNFOCUSED_SELECTION, rgbAt(COLUMN_WIDTH - 10));
+		assertEquals(DARK_UNFOCUSED_SELECTION, rgbAt(COLUMN_WIDTH + 10));
+	}
+
+	@Test
+	public void test_darkFocusedSelectionIsNotTheUnfocusedFill() {
+		assumeTrue(OS.IsDarkModeAvailable());
+		display.setData(DARK_THEME_KEY, true);
+		openPaintedTree(SWT.FULL_SELECTION | SWT.MULTI);
+		paintedTree.setBackground(new Color(DARK_BACKGROUND));
+		paintedTree.setSelection(paintedItem);
+		assumeTrue(OS.GetFocus() == paintedTree.handle);
+		assertNotEquals(DARK_UNFOCUSED_SELECTION, rgbAt(COLUMN_WIDTH - 10));
+	}
+
+	@Test
+	public void test_darkUnfocusedSelectionShowsOnLightBackground() {
+		assumeTrue(OS.IsDarkModeAvailable());
+		display.setData(DARK_THEME_KEY, true);
+		openPaintedTree(SWT.FULL_SELECTION | SWT.MULTI);
+		paintedTree.setBackground(new Color(255, 255, 255));
+		paintedTree.setSelection(paintedItem);
+		focusTarget.setFocus();
+		RGB fill = new RGB(235, 235, 235);
+		assertEquals(fill, rgbAt(COLUMN_WIDTH - 10));
+		assertEquals(fill, rgbAt(COLUMN_WIDTH + 10));
+	}
+
+	@Test
+	public void test_lightThemeSelectionGetsNoFill() {
+		openPaintedTree(SWT.FULL_SELECTION | SWT.MULTI);
+		paintedTree.setBackground(new Color(DARK_BACKGROUND));
+		paintedTree.setSelection(paintedItem);
+		focusTarget.setFocus();
+		assertNotEquals(DARK_UNFOCUSED_SELECTION, rgbAt(COLUMN_WIDTH - 10));
+	}
+
+	@Test
+	public void test_darkUnfocusedSelectionFillsTreeWithoutColumns() {
+		assumeTrue(OS.IsDarkModeAvailable());
+		display.setData(DARK_THEME_KEY, true);
+		openPaintedTree(SWT.MULTI, 0);
+		paintedTree.setBackground(new Color(DARK_BACKGROUND));
+		paintedItem.setText("text");
+		paintedTree.setSelection(paintedItem);
+		focusTarget.setFocus();
+		assertEquals(DARK_UNFOCUSED_SELECTION, rgbAt(paintedItem.getBounds().x + 1));
+	}
+
+	@Test
+	public void test_themeSwitchAppliesToExistingTree() {
+		assumeTrue(OS.IsDarkModeAvailable());
+		openPaintedTree(SWT.FULL_SELECTION | SWT.MULTI);
+		paintedTree.setSelection(paintedItem);
+		focusTarget.setFocus();
+		display.setData(DARK_THEME_KEY, true);
+		paintedTree.setBackground(new Color(DARK_BACKGROUND));
+		assertEquals(DARK_UNFOCUSED_SELECTION, rgbAt(COLUMN_WIDTH - 10));
+		assertEquals(DARK_UNFOCUSED_SELECTION, rgbAt(COLUMN_WIDTH + 10));
+	}
+
 	private static Set<Integer> allColumns() {
 		Set<Integer> columns = new TreeSet<>();
 		for (int i = 0; i < COLUMNS; i++) {
@@ -188,9 +277,13 @@ class TreeWin32Tests {
 
 	/** Opens a focused tree without an EraseItem listener, because adding one changes how the tree paints. */
 	private void openPaintedTree(int style) {
+		openPaintedTree(style, COLUMNS);
+	}
+
+	private void openPaintedTree(int style, int columns) {
 		paintedTree = new Tree(shell, style);
 		paintedTree.setBounds(0, 30, 4 * COLUMN_WIDTH, 150);
-		for (int i = 0; i < COLUMNS; i++) {
+		for (int i = 0; i < columns; i++) {
 			new TreeColumn(paintedTree, SWT.NONE).setWidth(COLUMN_WIDTH);
 		}
 		for (int i = 0; i < 3; i++) {
@@ -203,6 +296,8 @@ class TreeWin32Tests {
 		while (display.readAndDispatch()) {
 			// process all pending events
 		}
+		// The real pointer may rest on the row.
+		OS.SendMessage(paintedTree.handle, OS.WM_MOUSELEAVE, 0, 0);
 	}
 
 	/** Hovers the item's label with a message, so that the real mouse pointer is not involved. Without FULL_SELECTION only the label counts as the item. */
@@ -224,6 +319,12 @@ class TreeWin32Tests {
 			pixels[i] = data.getPixel(x, bounds.y + i);
 		}
 		return pixels;
+	}
+
+	/** Returns the color of the painted item's row at x, just above the text. */
+	private RGB rgbAt(int x) {
+		ImageData data = captureTree();
+		return data.palette.getRGB(data.getPixel(x, paintedItem.getBounds(0).y + 1));
 	}
 
 	/** Returns the pixels across the whole row, just above the text. */

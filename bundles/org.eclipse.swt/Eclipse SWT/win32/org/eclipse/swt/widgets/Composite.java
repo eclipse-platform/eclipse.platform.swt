@@ -330,6 +330,25 @@ Menu [] findMenus (Control control) {
 	return result;
 }
 
+/** Returns whether the selection is painted with the fill of {@link #getUnfocusedSelectionPixel()}. */
+boolean fillsUnfocusedSelection () {
+	return display.useDarkModeExplorerTheme && !display.getHighContrast () && OS.GetFocus () != handle;
+}
+
+/** Returns the fill of an unfocused selected item, whose DarkMode_Explorer state is nearly invisible. */
+int getUnfocusedSelectionPixel () {
+	Control control = findBackgroundControl ();
+	int background = (control != null ? control : this).getBackgroundPixel ();
+	int brightness = ((background & 0xFF) + ((background >> 8) & 0xFF) + ((background >> 16) & 0xFF)) / 3;
+	int target = brightness < 0x80 ? 0xFF : 0;
+	int pixel = 0;
+	for (int shift = 0; shift <= 16; shift += 8) {
+		int channel = (background >> shift) & 0xFF;
+		pixel |= (channel + (target - channel) * 8 / 100) << shift;
+	}
+	return pixel;
+}
+
 @Override
 void fixChildren (Shell newShell, Shell oldShell, Decorations newDecorations, Decorations oldDecorations, Menu [] menus) {
 	super.fixChildren (newShell, oldShell, newDecorations, oldDecorations, menus);
