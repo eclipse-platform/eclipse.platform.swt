@@ -951,6 +951,27 @@ LRESULT CDDS_SUBITEMPOSTPAINT (NMLVCUSTOMDRAW nmcd, long wParam, long lParam) {
 	return null;
 }
 
+@Override
+boolean fillsUnfocusedSelection () {
+	return (style & SWT.HIDE_SELECTION) == 0 && super.fillsUnfocusedSelection ();
+}
+
+/** Fills an unfocused selected cell over the selection the native table has painted for the row. */
+private boolean fillNativeUnfocusedSelection (NMLVCUSTOMDRAW nmcd, TableItem item, long hDC) {
+	if (!fillsUnfocusedSelection ()) return false;
+	if (!OS.IsWindowVisible (handle) || !OS.IsWindowEnabled (handle)) return false;
+	if (hotIndex == nmcd.dwItemSpec || (nmcd.uItemState & OS.CDIS_DROPHILITED) != 0) return false;
+	if ((style & SWT.FULL_SELECTION) == 0 && nmcd.iSubItem != OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, 0, 0)) return false;
+	LVITEM lvItem = new LVITEM ();
+	lvItem.mask = OS.LVIF_STATE;
+	lvItem.stateMask = OS.LVIS_SELECTED;
+	lvItem.iItem = (int)nmcd.dwItemSpec;
+	if (OS.SendMessage (handle, OS.LVM_GETITEM, 0, lvItem) == 0 || (lvItem.state & OS.LVIS_SELECTED) == 0) return false;
+	RECT rect = item.getBounds ((int)nmcd.dwItemSpec, nmcd.iSubItem, true, true, true, true, hDC);
+	fillBackground (hDC, getUnfocusedSelectionPixel (), rect);
+	return true;
+}
+
 LRESULT CDDS_SUBITEMPREPAINT (NMLVCUSTOMDRAW nmcd, long wParam, long lParam) {
 	long hDC = nmcd.hdc;
 	if (explorerTheme && !ignoreCustomDraw && hooks (SWT.EraseItem) && (nmcd.left != nmcd.right)) {
@@ -994,6 +1015,7 @@ LRESULT CDDS_SUBITEMPREPAINT (NMLVCUSTOMDRAW nmcd, long wParam, long lParam) {
 	int clrTextBk = item.cellBackground != null ? item.cellBackground [nmcd.iSubItem] : -1;
 	if (clrTextBk == -1) clrTextBk = item.background;
 	if (selectionForeground != -1) clrText = selectionForeground;
+	if (!hooks (SWT.EraseItem) && fillNativeUnfocusedSelection (nmcd, item, hDC)) clrTextBk = getUnfocusedSelectionPixel ();
 	/*
 	* Bug in Windows.  When the table has the extended style
 	* LVS_EX_FULLROWSELECT and LVM_SETBKCOLOR is used with
@@ -3561,7 +3583,12 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, long lParam, Event
 				int iStateId = selected ? OS.LISS_SELECTED : OS.LISS_HOT;
 				if (OS.GetFocus () != handle && selected && !drawHot) iStateId = OS.LISS_SELECTEDNOTFOCUS;
 				if (drawDrophilited) iStateId = OS.LISS_SELECTED;
-				OS.DrawThemeBackground (hTheme, hDC, OS.LVP_LISTITEM, iStateId, rect, pClipRect);
+				if (iStateId == OS.LISS_SELECTEDNOTFOCUS && fillsUnfocusedSelection ()) {
+					OS.IntersectRect (rect, rect, pClipRect);
+					fillBackground (hDC, getUnfocusedSelectionPixel (), rect);
+				} else {
+					OS.DrawThemeBackground (hTheme, hDC, OS.LVP_LISTITEM, iStateId, rect, pClipRect);
+				}
 				OS.CloseThemeData (hTheme);
 			}
 		} else {
@@ -6641,7 +6668,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 		case OS.NM_CUSTOMDRAW: {
 			long hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 			if (hdr.hwndFrom == hwndHeader) break;
-			if (!customDraw && findImageControl () == null) {
+			if (!customDraw && findImageControl () == null && !fillsUnfocusedSelection ()) {
 				/*
 				* Feature in Windows.  When the table is disabled, it draws
 				* with a gray background but does not gray the text.  The fix

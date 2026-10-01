@@ -392,8 +392,40 @@ private void drawThemeItemBackground (long hDC, boolean selected, boolean hot, R
 			iStateId = OS.GetFocus () == handle ? OS.TREIS_SELECTED : OS.TREIS_SELECTEDNOTFOCUS;
 		}
 	}
+	if (iStateId == OS.TREIS_SELECTEDNOTFOCUS && fillsUnfocusedSelection ()) {
+		RECT fillRect = new RECT ();
+		OS.IntersectRect (fillRect, rect, clipRect);
+		fillBackground (hDC, getUnfocusedSelectionPixel (), fillRect);
+		OS.CloseThemeData (hTheme);
+		return;
+	}
 	OS.DrawThemeBackground (hTheme, hDC, OS.TVP_TREEITEM, iStateId, rect, clipRect);
 	OS.CloseThemeData (hTheme);
+}
+
+/**
+ * Fills the part of an unfocused selected item that the native tree paints
+ * and stops the native tree from painting its own selection over it.
+ */
+private boolean fillNativeUnfocusedSelection (long hDC, NMTVCUSTOMDRAW nmcd, TreeItem item, int index, RECT clipRect, int clrText, long lParam) {
+	if (!fillsUnfocusedSelection ()) return false;
+	RECT rect = new RECT ();
+	if ((style & SWT.FULL_SELECTION) != 0) {
+		OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
+		if (clipRect != null) OS.IntersectRect (rect, rect, clipRect);
+	} else {
+		int explorerExtraInPixels = DPIUtil.pointToPixel(EXPLORER_EXTRA, getAutoscalingZoom());
+		rect = item.getBounds (index, true, true, false, false, false, hDC);
+		rect.left -= explorerExtraInPixels;
+		rect.right += explorerExtraInPixels;
+	}
+	int pixel = getUnfocusedSelectionPixel ();
+	fillBackground (hDC, pixel, rect);
+	nmcd.uItemState &= ~OS.CDIS_SELECTED;
+	nmcd.clrTextBk = pixel;
+	nmcd.clrText = clrText != -1 ? clrText : getForegroundPixel ();
+	OS.MoveMemory (lParam, nmcd, NMTVCUSTOMDRAW.sizeof);
+	return true;
 }
 
 /** Widens rect to the full row, which is wider than the client area when the columns are. */
@@ -1194,6 +1226,9 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 				if (hot && ignoreDrawHot) nmcd.uItemState &= ~OS.CDIS_HOT;
 				OS.MoveMemory (lParam, nmcd, NMTVCUSTOMDRAW.sizeof);
 			}
+			if ((style & SWT.FULL_SELECTION) != 0 && selected && !ignoreDrawSelection && !(hot && !ignoreDrawHot)) {
+				fillNativeUnfocusedSelection (hDC, nmcd, item, index, clipRect, clrText, lParam);
+			}
 			RECT itemRect = item.getBounds (index, true, true, false, false, false, hDC);
 			OS.SaveDC (hDC);
 			OS.SelectClipRgn (hDC, 0);
@@ -1337,6 +1372,10 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 			OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.left + hdItem.cxy, nmcd.bottom);
 			fillBackground (hDC, clrSortBk, rect);
 		}
+	}
+	if (selected && !hot && OS.IsWindowVisible (handle) && nmcd.left < nmcd.right && nmcd.top < nmcd.bottom
+			&& fillNativeUnfocusedSelection (hDC, nmcd, item, index, clipRect, clrText, lParam)) {
+		result = new LRESULT (OS.CDRF_NEWFONT | OS.CDRF_NOTIFYPOSTPAINT);
 	}
 	OS.SaveDC (hDC);
 	if (clipRect != null) {
@@ -7468,7 +7507,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 			if  (hooks (SWT.MeasureItem)) {
 				if (hwndHeader == 0) createParent ();
 			}
-			if (!customDraw && findImageControl () == null) {
+			if (!customDraw && findImageControl () == null && !fillsUnfocusedSelection ()) {
 				if (sortColumn == null || sortDirection == SWT.NONE) {
 					break;
 				}
