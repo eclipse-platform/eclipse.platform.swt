@@ -1244,8 +1244,17 @@ public void removeAll () {
 	checkWidget();
 	long selection = GTK.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-	GTK.gtk_list_store_clear (modelHandle);
+	clearModel ();
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+}
+
+void clearModel () {
+	// Bug 499850: gtk_list_store_clear is very slow with GTK_SELECTION_MULTIPLE
+	long selectionHandle = GTK.gtk_tree_view_get_selection (handle);
+	boolean changeMode = (style & SWT.MULTI) != 0;
+	if (changeMode) GTK.gtk_tree_selection_set_mode (selectionHandle, GTK.GTK_SELECTION_BROWSE);
+	GTK.gtk_list_store_clear (modelHandle);
+	if (changeMode) GTK.gtk_tree_selection_set_mode (selectionHandle, GTK.GTK_SELECTION_MULTIPLE);
 }
 
 /**
@@ -1511,7 +1520,7 @@ public void setItems (String... items) {
 	}
 	long selection = GTK.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-	GTK.gtk_list_store_clear (modelHandle);
+	clearModel ();
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	long iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
 	if (iter == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
