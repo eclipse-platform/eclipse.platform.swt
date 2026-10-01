@@ -816,13 +816,7 @@ void createColumn (TreeColumn column, int index) {
 		column.handle = columnHandle;
 		column.modelIndex = modelIndex;
 	}
-	if (!searchEnabled ()) {
-		GTK.gtk_tree_view_set_search_column (handle, -1);
-	} else {
-		/* Set the search column whenever the model changes */
-		int firstColumn = columnCount == 0 ? FIRST_COLUMN : columns [0].modelIndex;
-		GTK.gtk_tree_view_set_search_column (handle, firstColumn + CELL_TEXT);
-	}
+	updateSearchColumn ();
 }
 
 @Override
@@ -1299,13 +1293,7 @@ void destroyItem (TreeColumn column) {
 			createRenderers (firstColumn.handle, firstColumn.modelIndex, true, firstColumn.style);
 		}
 	}
-	if (!searchEnabled ()) {
-		GTK.gtk_tree_view_set_search_column (handle, -1);
-	} else {
-		/* Set the search column whenever the model changes */
-		int firstColumn = columnCount == 0 ? FIRST_COLUMN : columns [0].modelIndex;
-		GTK.gtk_tree_view_set_search_column (handle, firstColumn + CELL_TEXT);
-	}
+	updateSearchColumn ();
 }
 
 
@@ -3054,13 +3042,7 @@ public void removeAll () {
 	}
 	items = new TreeItem[4];
 
-	if (!searchEnabled ()) {
-		GTK.gtk_tree_view_set_search_column (handle, -1);
-	} else {
-		/* Set the search column whenever the model changes */
-		int firstColumn = columnCount == 0 ? FIRST_COLUMN : columns [0].modelIndex;
-		GTK.gtk_tree_view_set_search_column (handle, firstColumn + CELL_TEXT);
-	}
+	updateSearchColumn ();
 }
 
 /**
@@ -3505,8 +3487,17 @@ void reskinChildren (int flags) {
 }
 boolean searchEnabled () {
 	/* Disable searching when using VIRTUAL or NO_SEARCH */
-	if ((style & SWT.VIRTUAL) != 0 || (style & SWT.NO_SEARCH) != 0) return false;
-	return true;
+	return (style & (SWT.VIRTUAL | SWT.NO_SEARCH)) == 0;
+}
+
+private void updateSearchColumn () {
+	if (!searchEnabled ()) {
+		GTK.gtk_tree_view_set_search_column (handle, -1);
+	} else {
+		/* Set the search column whenever the model changes */
+		int firstColumn = columnCount == 0 ? FIRST_COLUMN : columns [0].modelIndex;
+		GTK.gtk_tree_view_set_search_column (handle, firstColumn + CELL_TEXT);
+	}
 }
 /**
  * Display a mark indicating the point at which an item will be inserted.
