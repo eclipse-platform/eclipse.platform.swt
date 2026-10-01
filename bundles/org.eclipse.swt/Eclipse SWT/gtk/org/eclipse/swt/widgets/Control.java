@@ -4875,7 +4875,7 @@ void flushQueueOnDnd() {
 }
 
 boolean sendDragEvent (int button, int stateMask, int x, int y, boolean isStateMask) {
-	if (OS.isWayland() && dragDetectionQueue != null) {
+	if (dragDetectionQueue != null && OS.isWayland()) {
 		// Flush events used to detect drag&drop just before sending `DragDetect` event.
 		// This is to maintain the same order of events as on other platforms.
 		flushQueueOnDnd();
@@ -5023,7 +5023,7 @@ boolean sendMouseEvent (int type, int button, int count, int detail, boolean sen
 		 * event, similar to the way the caching logic does it when receiving a
 		 * MouseMove event. See bug 529126.
 		 */
-		if (OS.isWayland() && dragDetectionQueue != null) {
+		if (dragDetectionQueue != null && OS.isWayland()) {
 			/*
 			 * The first event in the queue will always be a MouseDown, as
 			 * the queue is only ever created if a MouseDown event is being cached.
@@ -5043,9 +5043,9 @@ boolean sendMouseEvent (int type, int button, int count, int detail, boolean sen
 		 * hook these events. Without them queued a control with only a DragSource never detects
 		 * the drag (issue #1145).
 		 */
-		boolean waylandDragDetect = OS.isWayland()
-				&& ((type == SWT.MouseDown && button == 1 && (this.state & DRAG_DETECT) != 0 && wantDragDropDetection ())
-						|| dragDetectionQueue != null);
+		boolean waylandDragDetect = ((type == SWT.MouseDown && button == 1 && (this.state & DRAG_DETECT) != 0 && wantDragDropDetection ())
+				|| dragDetectionQueue != null)
+				&& OS.isWayland();
 		if (!waylandDragDetect) return true;
 	}
 	Event event = new Event ();
