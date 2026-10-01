@@ -1055,12 +1055,14 @@ void createItem (TreeItem item, long parentIter, int index) {
 	items [id] = item;
 	modelChanged = true;
 
-	if (parentIter == 0 ) {
+	if (parentIter == 0 && (hooks (SWT.EmptinessChanged) || filters (SWT.EmptinessChanged))) {
 		/*
 		 If this was the first root item fire an EmptinessChanged event.
 		 */
-		int roots = GTK.gtk_tree_model_iter_n_children (modelHandle, 0);
-		if (roots == 1) {
+		long iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
+		boolean onlyRoot = GTK.gtk_tree_model_get_iter_first (modelHandle, iter) && !GTK.gtk_tree_model_iter_next (modelHandle, iter);
+		OS.g_free (iter);
+		if (onlyRoot) {
 			Event event = new Event ();
 			event.detail = 0;
 			sendEvent (SWT.EmptinessChanged, event);
@@ -1316,14 +1318,18 @@ void destroyItem (TreeItem item) {
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	modelChanged = true;
 
-	/*
-	 If this was the last root item fire an EmptinessChanged event.
-	 */
-	int roots = GTK.gtk_tree_model_iter_n_children (modelHandle, 0);
-	if (roots == 0) {
-		Event event = new Event ();
-		event.detail = 1;
-		sendEvent (SWT.EmptinessChanged, event);
+	if (hooks (SWT.EmptinessChanged) || filters (SWT.EmptinessChanged)) {
+		/*
+		 If this was the last root item fire an EmptinessChanged event.
+		 */
+		long iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
+		boolean noRoots = !GTK.gtk_tree_model_get_iter_first (modelHandle, iter);
+		OS.g_free (iter);
+		if (noRoots) {
+			Event event = new Event ();
+			event.detail = 1;
+			sendEvent (SWT.EmptinessChanged, event);
+		}
 	}
 }
 
