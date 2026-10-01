@@ -13,6 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.image;
 
+import java.util.Arrays;
 
 /**
  * JPEGHuffmanTable class actually represents two types of object:
@@ -173,9 +174,7 @@ void initialize() {
 		for (int i = 0; i < 16; i++) {
 			for (int j = 0; j < bits[i]; j++) {
 				if (huffCodeLengthsIndex >= huffCodeLengths.length) {
-					int[] newHuffCodeLengths = new int[huffCodeLengths.length + 50];
-					System.arraycopy(huffCodeLengths, 0, newHuffCodeLengths, 0, huffCodeLengths.length);
-					huffCodeLengths = newHuffCodeLengths;
+					huffCodeLengths = Arrays.copyOf(huffCodeLengths, huffCodeLengths.length + 50);
 				}
 				huffCodeLengths[huffCodeLengthsIndex] = i + 1;
 				huffCodeLengthsIndex++;
@@ -199,9 +198,7 @@ void initialize() {
 		while (p < huffCodeLengthsIndex) {
 			while ((p < huffCodeLengthsIndex) && (huffCodeLengths[p] == si)) {
 				if (huffCodesIndex >= huffCodes.length) {
-					int[] newHuffCodes = new int[huffCodes.length + 50];
-					System.arraycopy(huffCodes, 0, newHuffCodes, 0, huffCodes.length);
-					huffCodes = newHuffCodes;
+					huffCodes = Arrays.copyOf(huffCodes, huffCodes.length + 50);
 				}
 				huffCodes[huffCodesIndex] = code;
 				huffCodesIndex++;

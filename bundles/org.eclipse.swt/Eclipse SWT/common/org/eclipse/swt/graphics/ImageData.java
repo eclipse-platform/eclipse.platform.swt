@@ -552,17 +552,14 @@ static byte[] checkData(byte [] data) {
  */
 @Override
 public Object clone() {
-	byte[] cloneData = new byte[data.length];
-	System.arraycopy(data, 0, cloneData, 0, data.length);
+	byte[] cloneData = data.clone();
 	byte[] cloneMaskData = null;
 	if (maskData != null) {
-		cloneMaskData = new byte[maskData.length];
-		System.arraycopy(maskData, 0, cloneMaskData, 0, maskData.length);
+		cloneMaskData = maskData.clone();
 	}
 	byte[] cloneAlphaData = null;
 	if (alphaData != null) {
-		cloneAlphaData = new byte[alphaData.length];
-		System.arraycopy(alphaData, 0, cloneAlphaData, 0, alphaData.length);
+		cloneAlphaData = alphaData.clone();
 	}
 	return new ImageData(
 		width,

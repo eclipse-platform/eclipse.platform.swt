@@ -13,6 +13,8 @@
  *******************************************************************************/
 package org.eclipse.swt.custom;
 
+import java.util.Arrays;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.events.*;
@@ -1018,9 +1020,7 @@ private String[] splitString(String text) {
 			boolean crlf = (pos > 0) && (text.charAt(pos - 1) == '\r');
 			lines[lines.length - 1] = text.substring(start, pos - (crlf ? 1 : 0));
 			start = pos + 1;
-			String[] newLines = new String[lines.length+1];
-			System.arraycopy(lines, 0, newLines, 0, lines.length);
-			lines = newLines;
+			lines = Arrays.copyOf(lines, lines.length+1);
 		}
 	} while (pos != -1);
 	return lines;
