@@ -15,6 +15,7 @@ package org.eclipse.swt.internal.image;
 
 
 import java.io.*;
+import java.util.Arrays;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -62,9 +63,7 @@ ImageData[] loadFromByteStream() {
 			int [] nextIFDOffset = new int[1];
 			ImageData image = directory.read(nextIFDOffset);
 			offset = nextIFDOffset[0];
-			ImageData[] oldImages = images;
-			images = new ImageData[oldImages.length + 1];
-			System.arraycopy(oldImages, 0, images, 0, oldImages.length);
+			images = Arrays.copyOf(images, images.length + 1);
 			images[images.length - 1] = image;
 		}
 	} catch (IOException e) {

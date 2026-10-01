@@ -59,12 +59,8 @@ public void hook (int eventType, Listener listener) {
 	}
 	index++;
 	if (index == length) {
-		int [] newTypes = new int [length + GROW_SIZE];
-		System.arraycopy (types, 0, newTypes, 0, length);
-		types = newTypes;
-		Listener [] newListeners = new Listener [length + GROW_SIZE];
-		System.arraycopy (listeners, 0, newListeners, 0, length);
-		listeners = newListeners;
+		types = Arrays.copyOf (types, length + GROW_SIZE);
+		listeners = Arrays.copyOf (listeners, length + GROW_SIZE);
 	}
 	types [index] = eventType;
 	listeners [index] = listener;

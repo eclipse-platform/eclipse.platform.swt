@@ -14,6 +14,8 @@
 package org.eclipse.swt.internal.image;
 
 
+import java.util.Arrays;
+
 import org.eclipse.swt.*;
 
 final class JPEGScanHeader extends JPEGVariableSizeSegment {
@@ -58,9 +60,7 @@ void initializeComponentParameters() {
 		int dc = (reference[ofs + 1] & 0xFF) >> 4;
 		int ac = reference[ofs + 1] & 0xF;
 		if (componentParameters.length <= cid) {
-			int[][] newParams = new int[cid + 1][];
-			System.arraycopy(componentParameters, 0, newParams, 0, componentParameters.length);
-			componentParameters = newParams;
+			componentParameters = Arrays.copyOf(componentParameters, cid + 1);
 		}
 		componentParameters[cid] = new int[] { dc, ac };
 	}

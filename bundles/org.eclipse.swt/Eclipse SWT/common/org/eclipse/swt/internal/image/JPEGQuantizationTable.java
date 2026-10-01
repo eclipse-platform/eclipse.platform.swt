@@ -13,6 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.image;
 
+import java.util.Arrays;
 
 final class JPEGQuantizationTable extends JPEGVariableSizeSegment {
 	public static byte[] DefaultLuminanceQTable = {
@@ -47,15 +48,11 @@ public JPEGQuantizationTable(LEDataInputStream byteStream) {
 }
 
 public static JPEGQuantizationTable defaultChrominanceTable() {
-	byte[] data = new byte[DefaultChrominanceQTable.length];
-	System.arraycopy(DefaultChrominanceQTable, 0, data, 0, data.length);
-	return new JPEGQuantizationTable(data);
+	return new JPEGQuantizationTable(DefaultChrominanceQTable.clone());
 }
 
 public static JPEGQuantizationTable defaultLuminanceTable() {
-	byte[] data = new byte[DefaultLuminanceQTable.length];
-	System.arraycopy(DefaultLuminanceQTable, 0, data, 0, data.length);
-	return new JPEGQuantizationTable(data);
+	return new JPEGQuantizationTable(DefaultLuminanceQTable.clone());
 }
 
 public int[] getQuantizationTablesKeys() {
@@ -74,9 +71,7 @@ public int[] getQuantizationTablesKeys() {
 			totalLength -= 129;
 		}
 		if (keysIndex >= keys.length) {
-			int[] newKeys = new int[keys.length + 4];
-			System.arraycopy(keys, 0, newKeys, 0, keys.length);
-			keys = newKeys;
+			keys = Arrays.copyOf(keys, keys.length + 4);
 		}
 		keys[keysIndex] = tq;
 		keysIndex++;
@@ -109,9 +104,7 @@ public int[][] getQuantizationTablesValues() {
 			totalLength -= 129;
 		}
 		if (valuesIndex >= values.length) {
-			int[][] newValues = new int[values.length + 4][];
-			System.arraycopy(values, 0, newValues, 0, values.length);
-			values = newValues;
+			values = Arrays.copyOf(values, values.length + 4);
 		}
 		values[valuesIndex] = qk;
 		valuesIndex++;

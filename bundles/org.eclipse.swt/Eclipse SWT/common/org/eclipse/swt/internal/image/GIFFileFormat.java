@@ -15,6 +15,7 @@ package org.eclipse.swt.internal.image;
 
 
 import java.io.*;
+import java.util.Arrays;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -110,9 +111,7 @@ public final class GIFFileFormat extends StaticImageFileFormat {
 				if (loader.hasListeners()) {
 					loader.notifyListeners(new ImageLoaderEvent(loader, image, 3, true));
 				}
-				ImageData[] oldImages = images;
-				images = new ImageData[oldImages.length + 1];
-				System.arraycopy(oldImages, 0, images, 0, oldImages.length);
+				images = Arrays.copyOf(images, images.length + 1);
 				images[images.length - 1] = image;
 			} else if (id == GIF_EXTENSION_BLOCK_ID) {
 				/* Read the extension block. Currently, only the
@@ -188,10 +187,9 @@ public final class GIFFileFormat extends StaticImageFileFormat {
 			byte[] block = new byte[255];
 			int size = inputStream.read();
 			while ((size > 0) && (inputStream.read(block, 0, size) != -1)) {
-				byte[] oldComment = comment;
-				comment = new byte[oldComment.length + size];
-				System.arraycopy(oldComment, 0, comment, 0, oldComment.length);
-				System.arraycopy(block, 0, comment, oldComment.length, size);
+				int oldLength = comment.length;
+				comment = Arrays.copyOf(comment, oldLength + size);
+				System.arraycopy(block, 0, comment, oldLength, size);
 				size = inputStream.read();
 			}
 			return comment;
@@ -218,10 +216,9 @@ public final class GIFFileFormat extends StaticImageFileFormat {
 			byte[] block = new byte[255];
 			int size = inputStream.read();
 			while ((size > 0) && (inputStream.read(block, 0, size) != -1)) {
-				byte[] oldText = text;
-				text = new byte[oldText.length + size];
-				System.arraycopy(oldText, 0, text, 0, oldText.length);
-				System.arraycopy(block, 0, text, oldText.length, size);
+				int oldLength = text.length;
+				text = Arrays.copyOf(text, oldLength + size);
+				System.arraycopy(block, 0, text, oldLength, size);
 				size = inputStream.read();
 			}
 			return text;
@@ -279,10 +276,9 @@ public final class GIFFileFormat extends StaticImageFileFormat {
 			byte[] block = new byte[255];
 			int size = inputStream.read();
 			while ((size > 0) && (inputStream.read(block, 0, size) != -1)) {
-				byte[] oldData = data;
-				data = new byte[oldData.length + size];
-				System.arraycopy(oldData, 0, data, 0, oldData.length);
-				System.arraycopy(block, 0, data, oldData.length, size);
+				int oldLength = data.length;
+				data = Arrays.copyOf(data, oldLength + size);
+				System.arraycopy(block, 0, data, oldLength, size);
 				size = inputStream.read();
 			}
 			// Look for the NETSCAPE 'repeat count' field for an animated GIF.

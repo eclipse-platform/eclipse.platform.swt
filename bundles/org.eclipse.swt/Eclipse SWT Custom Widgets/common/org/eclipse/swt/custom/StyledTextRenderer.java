@@ -1548,10 +1548,8 @@ void setLineBullet(int startLine, int count, Bullet bullet) {
 	}
 	if (bullet != null) {
 		if (index == bullets.length) {
-			Bullet[] newBulletsList = new Bullet[bullets.length + 1];
-			System.arraycopy(bullets, 0, newBulletsList, 0, bullets.length);
-			newBulletsList[index] = bullet;
-			bullets = newBulletsList;
+			bullets = Arrays.copyOf(bullets, bullets.length + 1);
+			bullets[index] = bullet;
 		}
 		bullet.addIndices(startLine, count);
 	} else {
@@ -1661,9 +1659,7 @@ void setStyleRanges (int[] newRanges, StyleRange[] newStyles) {
 			}
 			if (index == stylesSetCount) {
 				if (stylesSetCount == stylesSet.length) {
-					StyleRange[] tmpStylesSet = new StyleRange[stylesSetCount + 4];
-					System.arraycopy(stylesSet, 0, tmpStylesSet, 0, stylesSetCount);
-					stylesSet = tmpStylesSet;
+					stylesSet = Arrays.copyOf(stylesSet, stylesSetCount + 4);
 				}
 				stylesSet[stylesSetCount++] = newStyle;
 			}
