@@ -1416,28 +1416,33 @@ void reset() {
 void reset(int startLine, int lineCount) {
 	int endLine = startLine + lineCount;
 	if (startLine < 0 || endLine > lineSizes.length) return;
-	SortedSet<Integer> lines = new TreeSet<>();
-	for (int i = startLine; i < endLine; i++) {
-		lines.add(Integer.valueOf(i));
+	if (lineCount <= 0) return;
+	int resetLineCount = 0;
+	for (int i = startLine; i < endLine && i < this.lineCount; i++) {
+		resetLineCount++;
+		getLineSize(i).resetSize();
 	}
-	reset(lines);
+	resetLines(resetLineCount, startLine <= maxWidthLineIndex && maxWidthLineIndex < endLine);
 }
 void reset(Set<Integer> lines) {
 	if (lines == null || lines.isEmpty()) return;
 	int resetLineCount = 0;
 	for (Integer line : lines) {
-		if (line >= 0 || line < lineCount) {
+		if (line >= 0 && line < lineCount) {
 			resetLineCount++;
 			getLineSize(line.intValue()).resetSize();
 		}
 	}
+	resetLines(resetLineCount, lines.contains(Integer.valueOf(maxWidthLineIndex)));
+}
+private void resetLines(int resetLineCount, boolean maxWidthLineReset) {
 	if (linesInAverageLineHeight > resetLineCount) {
 		linesInAverageLineHeight -= resetLineCount;
 	} else {
 		linesInAverageLineHeight = 0;
 		averageLineHeight = 0.0f;
 	}
-	if (lines.contains(Integer.valueOf(maxWidthLineIndex))) {
+	if (maxWidthLineReset) {
 		maxWidth = 0;
 		maxWidthLineIndex = -1;
 		if (resetLineCount != this.lineCount) {
@@ -1790,6 +1795,24 @@ void setStyleRanges (int[] newRanges, StyleRange[] newStyles) {
 		}
 	}
 }
+private void shiftLayout(int i, int delta) {
+	if (0 <= i && i < layouts.length) {
+		int endIndex = i + delta;
+		if (0 <= endIndex && endIndex < layouts.length) {
+			layouts[endIndex] = layouts[i];
+			layouts[i] = null;
+			if (bullets != null && bulletsIndices != null) {
+				bullets[endIndex] = bullets[i];
+				bulletsIndices[endIndex] = bulletsIndices[i];
+				bullets[i] = null;
+			}
+		} else {
+			if (layouts[i] != null) layouts[i].dispose();
+			layouts[i] = null;
+			if (bullets != null && bulletsIndices != null) bullets[i] = null;
+		}
+	}
+}
 void textChanging(TextChangingEvent event) {
 	int start = event.start;
 	int newCharCount = event.newCharCount, replaceCharCount = event.replaceCharCount;
@@ -1844,41 +1867,11 @@ void textChanging(TextChangingEvent event) {
 			}
 			if (delta > 0) {
 				for (int i = layouts.length - 1; i >= layoutEndLine; i--) {
-					if (0 <= i && i < layouts.length) {
-						endIndex = i + delta;
-						if (0 <= endIndex && endIndex < layouts.length) {
-							layouts[endIndex] = layouts[i];
-							layouts[i] = null;
-							if (bullets != null && bulletsIndices != null) {
-								bullets[endIndex] = bullets[i];
-								bulletsIndices[endIndex] = bulletsIndices[i];
-								bullets[i] = null;
-							}
-						} else {
-							if (layouts[i] != null) layouts[i].dispose();
-							layouts[i] = null;
-							if (bullets != null && bulletsIndices != null) bullets[i] = null;
-						}
-					}
+					shiftLayout(i, delta);
 				}
 			} else if (delta < 0) {
 				for (int i = layoutEndLine; i < layouts.length; i++) {
-					if (0 <= i && i < layouts.length) {
-						endIndex = i + delta;
-						if (0 <= endIndex && endIndex < layouts.length) {
-							layouts[endIndex] = layouts[i];
-							layouts[i] = null;
-							if (bullets != null && bulletsIndices != null) {
-								bullets[endIndex] = bullets[i];
-								bulletsIndices[endIndex] = bulletsIndices[i];
-								bullets[i] = null;
-							}
-						} else {
-							if (layouts[i] != null) layouts[i].dispose();
-							layouts[i] = null;
-							if (bullets != null && bulletsIndices != null) bullets[i] = null;
-						}
-					}
+					shiftLayout(i, delta);
 				}
 			}
 		}
