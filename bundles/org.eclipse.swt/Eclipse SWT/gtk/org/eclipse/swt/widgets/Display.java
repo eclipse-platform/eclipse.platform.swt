@@ -1905,11 +1905,13 @@ int getCaretBlinkTime () {
 }
 
 long getClosure (int id) {
-	if (closures [id] != 0) OS.g_closure_unref (closures [id]);
-	closures [id] = OS.g_cclosure_new (closuresProc [id], id, 0);
-	OS.g_closure_ref (closures [id]);
-	OS.g_closure_sink (closures [id]);
-	closuresCount [id] = 0;
+	if (++closuresCount [id] >= 255) {
+		if (closures [id] != 0) OS.g_closure_unref (closures [id]);
+		closures [id] = OS.g_cclosure_new (closuresProc [id], id, 0);
+		OS.g_closure_ref (closures [id]);
+		OS.g_closure_sink (closures [id]);
+		closuresCount [id] = 0;
+	}
 	return closures [id];
 }
 
