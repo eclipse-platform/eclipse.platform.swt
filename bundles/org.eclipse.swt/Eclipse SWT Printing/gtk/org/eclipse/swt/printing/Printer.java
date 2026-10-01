@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -224,7 +224,14 @@ static void restore(byte [] data, long settings, long page_setup) {
 	boolean custom = restoreBoolean("paper_size_is_custom"); //$NON-NLS-1$
 	long paper_size = 0;
 	if (custom) {
-		if (ppd_name.length > 0) {
+		/*
+		 * restoreBytes(..., true) appends the terminator, so an empty PPD name
+		 * is a one-byte array. A payload is present only when length > 1.
+		 * Custom sizes from the print dialog have a NULL PPD name; treating the
+		 * terminator as a name always selected gtk_paper_size_new_from_ppd.
+		 * See https://github.com/eclipse-platform/eclipse.platform.swt/issues/847
+		 */
+		if (ppd_name.length > 1) {
 			paper_size = GTK.gtk_paper_size_new_from_ppd(ppd_name, display_name, width, height);
 		} else {
 			paper_size = GTK.gtk_paper_size_new_custom(name, display_name, width, height, GTK.GTK_UNIT_MM);

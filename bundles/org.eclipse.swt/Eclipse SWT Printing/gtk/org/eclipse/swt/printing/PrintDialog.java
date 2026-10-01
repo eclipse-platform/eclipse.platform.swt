@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -520,9 +520,21 @@ void store(String key, boolean value) {
 }
 
 void storeBytes(String key, long value) {
-	int length = C.strlen (value);
-	byte [] valueBuffer = new byte [length];
-	C.memmove (valueBuffer, value, length);
+	byte [] valueBuffer;
+	if (value == 0) {
+		/*
+		 * gtk_paper_size_get_ppd_name() returns NULL for custom sizes that are
+		 * not backed by a PPD entry. Keep the key and an empty value so the
+		 * following width, height, and custom fields stay aligned. Do not call
+		 * C.strlen or C.memmove on the NULL pointer.
+		 * See https://github.com/eclipse-platform/eclipse.platform.swt/issues/847
+		 */
+		valueBuffer = new byte [0];
+	} else {
+		int length = C.strlen (value);
+		valueBuffer = new byte [length];
+		C.memmove (valueBuffer, value, length);
+	}
 	store(key.getBytes(), valueBuffer);
 }
 
