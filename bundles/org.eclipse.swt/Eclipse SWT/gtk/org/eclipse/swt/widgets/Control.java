@@ -3908,8 +3908,12 @@ long gtk_draw (long widget, long cairo) {
 		}
 	}
 	if ((state & OBSCURED) != 0) return 0;
-	GdkRectangle rect = new GdkRectangle ();
-	GDK.gdk_cairo_get_clip_rectangle (cairo, rect);
+	boolean hooksPaint = hooksPaint ();
+	GdkRectangle rect = null;
+	if (hooksPaint) {
+		rect = new GdkRectangle ();
+		GDK.gdk_cairo_get_clip_rectangle (cairo, rect);
+	}
 	/*
 	 * Modify the drawing of the widget with cairo_clip.
 	 * Doesn't modify input handling at this time.
@@ -3918,7 +3922,7 @@ long gtk_draw (long widget, long cairo) {
 	if (drawRegion) {
 		cairoClipRegion(cairo);
 	}
-	if (!hooksPaint ()) return 0;
+	if (!hooksPaint) return 0;
 	Event event = new Event ();
 	event.count = 1;
 	Rectangle eventBounds = new Rectangle (rect.x, rect.y, rect.width, rect.height);
