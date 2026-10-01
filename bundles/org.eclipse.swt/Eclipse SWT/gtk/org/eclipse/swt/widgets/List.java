@@ -549,7 +549,7 @@ public int getItemHeight () {
 	OS.g_object_unref(layout);
 
 	long column = GTK.gtk_tree_view_get_column(handle, 0);
-	long textRenderer = getTextRenderer(column);
+	long textRenderer = CellRenderers.getTextRenderer (column);
 	int [] ypad = new int[1];
 	if (textRenderer != 0) {
 		GTK.gtk_cell_renderer_get_padding(textRenderer, null, ypad);
@@ -720,23 +720,6 @@ public int [] getSelectionIndices () {
 		return result;
 	}
 	return new int [0];
-}
-
-long getTextRenderer (long column) {
-	long list = GTK.gtk_cell_layout_get_cells(column);
-	if (list == 0) return 0;
-	long originalList = list;
-	long textRenderer = 0;
-	while (list != 0) {
-		long renderer = OS.g_list_data (list);
-		if (GTK.GTK_IS_CELL_RENDERER_TEXT (renderer)) {
-			textRenderer = renderer;
-			break;
-		}
-		list = OS.g_list_next (list);
-	}
-	OS.g_list_free (originalList);
-	return textRenderer;
 }
 
 /**
