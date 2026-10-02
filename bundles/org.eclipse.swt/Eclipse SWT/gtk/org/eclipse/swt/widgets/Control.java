@@ -1694,8 +1694,9 @@ public Point toControl(int x, int y) {
 		origin_x[0] = origin.x;
 		origin_y[0] = origin.y;
 	} else {
-		long window = eventWindow();
-		GDK.gdk_window_get_origin(window, origin_x, origin_y);
+		Point origin = getWindowOrigin();
+		origin_x[0] = origin.x;
+		origin_y[0] = origin.y;
 	}
 
 	x -= origin_x[0];
@@ -1759,8 +1760,9 @@ public Point toDisplay(int x, int y) {
 		origin_x[0] = origin.x;
 		origin_y[0] = origin.y;
 	} else {
-		long window = eventWindow();
-		GDK.gdk_window_get_origin(window, origin_x, origin_y);
+		Point origin = getWindowOrigin();
+		origin_x[0] = origin.x;
+		origin_y[0] = origin.y;
 	}
 
 	if ((style & SWT.MIRRORED) != 0) x = getClientWidth() - x;
@@ -4258,9 +4260,14 @@ long gtk3_motion_notify_event (long widget, long event) {
 @Override
 long gtk3_popup_menu (long widget) {
 	if (!hasFocus()) return 0;
-	int [] x = new int [1], y = new int [1];
-	display.getWindowPointerPosition (0, x, y, null);
-	return showMenu (x [0], y [0], SWT.MENU_KEYBOARD) ? 1 : 0;
+	// showMenu() adds this shell's monitor origin, but the pointer may be over another shell.
+	Point location = display.getCursorLocation ();
+	Point origin = monitorOrigin ();
+	if (origin != null) {
+		location.x -= origin.x;
+		location.y -= origin.y;
+	}
+	return showMenu (location.x, location.y, SWT.MENU_KEYBOARD) ? 1 : 0;
 }
 
 @Override
@@ -6331,6 +6338,12 @@ boolean showMenu (int x, int y) {
 }
 
 boolean showMenu (int x, int y, int detail) {
+	// GTK3 callers pass root coordinates, which on Wayland lack the monitor origin of display coordinates.
+	Point monitorOrigin = monitorOrigin ();
+	if (monitorOrigin != null) {
+		x += monitorOrigin.x;
+		y += monitorOrigin.y;
+	}
 	Event event = new Event ();
 	Rectangle eventRect = new Rectangle (x, y, 0, 0);
 	event.setBounds (eventRect);
@@ -6919,7 +6932,21 @@ Point getWindowOrigin () {
 	long window = eventWindow ();
 	GDK.gdk_window_get_origin (window, x, y);
 
+	Point monitorOrigin = monitorOrigin ();
+	if (monitorOrigin != null) {
+		x [0] += monitorOrigin.x;
+		y [0] += monitorOrigin.y;
+	}
+
 	return new Point (x [0], y [0]);
+}
+
+/** Returns the monitor origin that Wayland display coordinates are anchored to, or <code>null</code>. */
+Point monitorOrigin () {
+	if (GTK.GTK4 || !OS.isWayland ()) return null;
+	// One anchor per shell tree: Shell walks up to the root toplevel, whose monitor is the
+	// space that popup positions are relative to.
+	return getShell ().monitorOrigin ();
 }
 
 /**
