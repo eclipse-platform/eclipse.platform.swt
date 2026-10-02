@@ -4744,6 +4744,58 @@ void setModalShell (Shell shell) {
 }
 
 /**
+ * Sets the background color used for selected items and selected text in
+ * all controls of the receiver, or <code>null</code> to use the platform default.
+ * {@link #getSystemColor(int)} returns it for <code>SWT.COLOR_LIST_SELECTION</code>.
+ * <p>
+ * Note: This operation is a hint and has no effect on Windows.
+ * </p>
+ *
+ * @param color the new selection background color, or <code>null</code>
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the color has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @see #setSelectionForeground(Color)
+ * @since 3.136
+ */
+public void setSelectionBackground (Color color) {
+	checkDevice ();
+	if (color != null && color.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+}
+
+/**
+ * Sets the foreground color used for selected items and selected text in
+ * all controls of the receiver, or <code>null</code> to use the platform default.
+ * {@link #getSystemColor(int)} returns it for <code>SWT.COLOR_LIST_SELECTION_TEXT</code>.
+ * <p>
+ * Note: This operation is a hint and has no effect on Windows.
+ * </p>
+ *
+ * @param color the new selection foreground color, or <code>null</code>
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the color has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @see #setSelectionBackground(Color)
+ * @since 3.136
+ */
+public void setSelectionForeground (Color color) {
+	checkDevice ();
+	if (color != null && color.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+}
+
+/**
  * Sets the synchronizer used by the display to be
  * the argument, which can not be null.
  *

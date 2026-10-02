@@ -338,6 +338,8 @@ public class Display extends Device implements Executor {
 	GdkRGBA COLOR_WIDGET_HIGHLIGHT_SHADOW_RGBA, COLOR_WIDGET_BACKGROUND_RGBA, COLOR_WIDGET_FOREGROUND_RGBA, COLOR_WIDGET_BORDER_RGBA;
 	GdkRGBA COLOR_LIST_FOREGROUND_RGBA, COLOR_LIST_BACKGROUND_RGBA, COLOR_LIST_SELECTION_RGBA, COLOR_LIST_SELECTION_TEXT_RGBA;
 	GdkRGBA COLOR_LIST_SELECTION_INACTIVE_RGBA, COLOR_LIST_SELECTION_TEXT_INACTIVE_RGBA;
+	GdkRGBA selectionBackground, selectionForeground;
+	long selectionCssProvider;
 	GdkRGBA COLOR_INFO_BACKGROUND_RGBA, COLOR_INFO_FOREGROUND_RGBA, COLOR_LINK_FOREGROUND_RGBA;
 	GdkRGBA COLOR_TITLE_FOREGROUND_RGBA, COLOR_TITLE_BACKGROUND_RGBA, COLOR_TITLE_BACKGROUND_GRADIENT_RGBA;
 	GdkRGBA COLOR_TITLE_INACTIVE_FOREGROUND_RGBA, COLOR_TITLE_INACTIVE_BACKGROUND_RGBA, COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT_RGBA;
@@ -3263,6 +3265,15 @@ void initializeSystemColors () {
 	COLOR_TITLE_BACKGROUND_RGBA = COLOR_LIST_SELECTION_RGBA;
 	COLOR_TITLE_BACKGROUND_GRADIENT_RGBA = toGdkRGBA (COLOR_LIST_SELECTION_RGBA, 1.3);
 	COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT_RGBA = toGdkRGBA (COLOR_TITLE_INACTIVE_BACKGROUND_RGBA, 1.3);
+
+	if (selectionBackground != null) {
+		COLOR_LIST_SELECTION_RGBA = copyRGBA (selectionBackground);
+		COLOR_LIST_SELECTION_INACTIVE_RGBA = copyRGBA (selectionBackground);
+	}
+	if (selectionForeground != null) {
+		COLOR_LIST_SELECTION_TEXT_RGBA = copyRGBA (selectionForeground);
+		COLOR_LIST_SELECTION_TEXT_INACTIVE_RGBA = copyRGBA (selectionForeground);
+	}
 }
 
 void initializeSystemColorsWidget(long shellContext) {
@@ -4899,6 +4910,13 @@ void releaseDisplay () {
 			}
 		}
 	}
+
+	if (selectionCssProvider != 0) {
+		// The provider stays registered for the screen, so clear it for later displays
+		loadSelectionCss ("");
+		OS.g_object_unref (selectionCssProvider);
+		selectionCssProvider = 0;
+	}
 }
 
 /**
@@ -5456,6 +5474,92 @@ void setModalShell (Shell shell) {
 	modalShells [index] = shell;
 	Shell [] shells = getShells ();
 	for (int i=0; i<shells.length; i++) shells [i].updateModal ();
+}
+
+/**
+ * Sets the background color used for selected items and selected text in
+ * all controls of the receiver, or <code>null</code> to use the platform default.
+ * {@link #getSystemColor(int)} returns it for <code>SWT.COLOR_LIST_SELECTION</code>.
+ * <p>
+ * Note: This operation is a hint and has no effect on Windows.
+ * </p>
+ *
+ * @param color the new selection background color, or <code>null</code>
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the color has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @see #setSelectionForeground(Color)
+ * @since 3.136
+ */
+public void setSelectionBackground (Color color) {
+	checkDevice ();
+	if (color != null && color.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	selectionBackground = color != null ? copyRGBA (color.handle) : null;
+	updateSelectionColors ();
+}
+
+/**
+ * Sets the foreground color used for selected items and selected text in
+ * all controls of the receiver, or <code>null</code> to use the platform default.
+ * {@link #getSystemColor(int)} returns it for <code>SWT.COLOR_LIST_SELECTION_TEXT</code>.
+ * <p>
+ * Note: This operation is a hint and has no effect on Windows.
+ * </p>
+ *
+ * @param color the new selection foreground color, or <code>null</code>
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the color has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @see #setSelectionBackground(Color)
+ * @since 3.136
+ */
+public void setSelectionForeground (Color color) {
+	checkDevice ();
+	if (color != null && color.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	selectionForeground = color != null ? copyRGBA (color.handle) : null;
+	updateSelectionColors ();
+}
+
+void updateSelectionColors () {
+	initializeSystemColors ();
+	StringBuilder declarations = new StringBuilder ();
+	if (selectionBackground != null) {
+		declarations.append ("background-color: ").append (gtk_rgba_to_css_string (selectionBackground)).append ("; background-image: none; ");
+	}
+	if (selectionForeground != null) {
+		declarations.append ("color: ").append (gtk_rgba_to_css_string (selectionForeground)).append ("; ");
+	}
+	if (selectionCssProvider == 0) {
+		if (declarations.isEmpty ()) return;
+		selectionCssProvider = GTK.gtk_css_provider_new ();
+		// USER priority, so it also wins over the per-widget CSS that SWT installs with APPLICATION priority
+		if (GTK.GTK4) {
+			GTK4.gtk_style_context_add_provider_for_display (GDK.gdk_display_get_default (), selectionCssProvider, GTK.GTK_STYLE_PROVIDER_PRIORITY_USER);
+		} else {
+			GTK3.gtk_style_context_add_provider_for_screen (GDK.gdk_screen_get_default (), selectionCssProvider, GTK.GTK_STYLE_PROVIDER_PRIORITY_USER);
+		}
+	}
+	loadSelectionCss (declarations.isEmpty () ? "" : "selection, treeview.view:selected, calendar:selected {" + declarations + "}");
+}
+
+void loadSelectionCss (String css) {
+	if (GTK.GTK4) {
+		GTK4.gtk_css_provider_load_from_data (selectionCssProvider, Converter.wcsToMbcs (css, true), -1);
+	} else {
+		GTK3.gtk_css_provider_load_from_data (selectionCssProvider, Converter.wcsToMbcs (css, true), -1, null);
+	}
 }
 
 /**
