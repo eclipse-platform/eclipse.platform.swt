@@ -61,4 +61,20 @@ public interface SVGRasterizer {
 	 * </ul>
 	 */
 	public ImageData rasterizeSVG(InputStream stream, int width, int height);
+
+	/**
+	 * Like {@link #rasterizeSVG(InputStream, int)}, resolving {@code currentColor}
+	 * to the given color. The default ignores the color.
+	 */
+	public default ImageData rasterizeSVG(InputStream stream, int zoom, RGB currentColor) {
+		return rasterizeSVG(stream, zoom);
+	}
+
+	/**
+	 * Like {@link #rasterizeSVG(InputStream, int, int)}, resolving
+	 * {@code currentColor} to the given color. The default ignores the color.
+	 */
+	public default ImageData rasterizeSVG(InputStream stream, int width, int height, RGB currentColor) {
+		return rasterizeSVG(stream, width, height);
+	}
 }
