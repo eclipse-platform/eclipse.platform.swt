@@ -504,6 +504,8 @@ public class OS extends C {
 	public static final byte[] spacing = ascii("spacing");
 	public static final byte[] pixbuf = ascii("pixbuf");
 	public static final byte[] gicon = ascii("gicon");
+	public static final byte[] surface = ascii("surface");
+	public static final byte[] CairoSurface = ascii("CairoSurface");
 	public static final byte[] text = ascii("text");
 	public static final byte[] xalign = ascii("xalign");
 	public static final byte[] ypad = ascii("ypad");
@@ -1483,6 +1485,8 @@ public static final native long g_type_class_ref(long g_class);
 public static final native void g_type_class_unref(long g_class);
 /** @param iface cast=(gpointer) */
 public static final native long g_type_interface_peek_parent(long iface);
+/** @param name cast=(const gchar *) */
+public static final native long g_type_from_name(byte[] name);
 /** @param g_type cast=(GType) */
 public static final native long g_type_name(long g_type);
 /**
