@@ -587,6 +587,8 @@ void createWidget () {
 		if (fieldEditor != null && nsSecureTextViewClass != 0 && fieldEditor.isKindOfClass(nsSecureTextViewClass)) {
 			long editorClass = OS.objc_getClass("SWTSecureEditorView");
 			OS.object_setClass(fieldEditor.id, editorClass);
+			/* Force TextKit 1 on the secure field editor too (see Shell.createHandle). */
+			new NSTextView(fieldEditor).layoutManager();
 		}
 	}
 	doubleClick = true;
