@@ -398,6 +398,125 @@ public void test_setItemCountI() {
 }
 
 @Test
+public void test_treeItem_getItemCount_cacheInvalidation() {
+	tree.removeAll();
+	TreeItem root = new TreeItem(tree, SWT.NULL);
+	assertEquals(0, root.getItemCount());
+
+	for (int i = 0; i < 5; i++) {
+		new TreeItem(root, SWT.NULL);
+		assertEquals(i + 1, root.getItemCount());
+	}
+	assertEquals(5, root.getItemCount());
+
+	new TreeItem(root, SWT.NULL, 0);
+	assertEquals(6, root.getItemCount());
+
+	root.getItem(2).dispose();
+	assertEquals(5, root.getItemCount());
+
+	// setItemCount on the subtree grows and shrinks the child list.
+	root.setItemCount(20);
+	assertEquals(20, root.getItemCount());
+	root.setItemCount(3);
+	assertEquals(3, root.getItemCount());
+	root.setItemCount(0);
+	assertEquals(0, root.getItemCount());
+
+	// Adding to a sibling subtree must not corrupt this subtree's cached count.
+	TreeItem second = new TreeItem(tree, SWT.NULL);
+	new TreeItem(root, SWT.NULL);
+	new TreeItem(second, SWT.NULL);
+	new TreeItem(second, SWT.NULL);
+	assertEquals(1, root.getItemCount());
+	assertEquals(2, second.getItemCount());
+
+	// removeAll() must reset cached counts for all items.
+	tree.removeAll();
+	assertEquals(0, tree.getItemCount());
+}
+
+@Test
+public void test_treeItem_getItemCount_virtualRemoveAll_cacheInvalidation() {
+	Tree virtualTree = new Tree(shell, SWT.VIRTUAL);
+	try {
+		TreeItem root = new TreeItem(virtualTree, SWT.NULL);
+		root.setItemCount(5);
+		// Prime the cache without materializing the children.
+		assertEquals(5, root.getItemCount());
+		root.removeAll();
+		assertEquals(0, root.getItemCount());
+	} finally {
+		virtualTree.dispose();
+	}
+}
+
+@Test
+public void test_getItemCount_cacheInvalidation_root() {
+	tree.removeAll();
+	assertEquals(0, tree.getItemCount());
+	TreeItem first = new TreeItem(tree, SWT.NULL);
+	assertEquals(1, tree.getItemCount());
+	new TreeItem(tree, SWT.NULL, 0);
+	assertEquals(2, tree.getItemCount());
+	first.dispose();
+	assertEquals(1, tree.getItemCount());
+	tree.setItemCount(10);
+	assertEquals(10, tree.getItemCount());
+	tree.setItemCount(4);
+	assertEquals(4, tree.getItemCount());
+	tree.getItem(1).dispose();
+	assertEquals(3, tree.getItemCount());
+	tree.removeAll();
+	assertEquals(0, tree.getItemCount());
+}
+
+@Test
+public void test_getItemCount_cacheInvalidation_virtual() {
+	Tree virtualTree = new Tree(shell, SWT.VIRTUAL);
+	try {
+		virtualTree.setItemCount(7);
+		assertEquals(7, virtualTree.getItemCount());
+		virtualTree.setItemCount(3);
+		assertEquals(3, virtualTree.getItemCount());
+		TreeItem item = virtualTree.getItem(0);
+		item.setItemCount(4);
+		assertEquals(4, item.getItemCount());
+		item.setItemCount(2);
+		assertEquals(2, item.getItemCount());
+		item.getItem(0).setItemCount(5);
+		assertEquals(5, item.getItem(0).getItemCount());
+		item.removeAll();
+		assertEquals(0, item.getItemCount());
+		virtualTree.removeAll();
+		assertEquals(0, virtualTree.getItemCount());
+	} finally {
+		virtualTree.dispose();
+	}
+}
+
+@Test
+public void test_getItemCount_cacheInvalidation_disposeSubtreeAndColumns() {
+	tree.removeAll();
+	TreeItem root = new TreeItem(tree, SWT.NULL);
+	TreeItem child = new TreeItem(root, SWT.NULL);
+	new TreeItem(child, SWT.NULL);
+	assertEquals(1, child.getItemCount());
+	child.dispose();
+	assertEquals(0, root.getItemCount());
+	new TreeItem(root, SWT.NULL);
+	assertEquals(1, root.getItemCount());
+	// removing the last column rebuilds the model via copyModel
+	TreeColumn column = new TreeColumn(tree, SWT.NONE);
+	assertEquals(1, root.getItemCount());
+	column.dispose();
+	assertEquals(1, tree.getItemCount());
+	assertEquals(1, root.getItemCount());
+	new TreeItem(root, SWT.NULL);
+	assertEquals(2, root.getItemCount());
+}
+
+@Test
 public void test_setLinesVisibleZ() {
 	assertFalse(tree.getLinesVisible());
 	tree.setLinesVisible(true);

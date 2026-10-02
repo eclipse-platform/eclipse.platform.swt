@@ -98,6 +98,10 @@ public class Tree extends Composite {
 	boolean firstCompute = true;
 	boolean modelChanged;
 	boolean expandAll;
+	/** Bumped on every row insertion or removal to invalidate cached child counts */
+	int structureModCount;
+	private int cachedRootCount = -1;
+	private int cachedRootCountStamp = -1;
 	int drawState, drawFlags;
 	GdkRGBA background, foreground, drawForegroundRGBA;
 	/** The owner of the widget is responsible for drawing */
@@ -756,6 +760,7 @@ void copyModel (long oldModel, int oldStart, long newModel, int newStart, long o
 
 	OS.g_free (value);
 	OS.g_free (iter);
+	structureChanged ();
 }
 
 void createColumn (TreeColumn column, int index) {
@@ -1009,6 +1014,10 @@ void createItem (TreeColumn column, int index) {
 	updateHeaderCSS();
 }
 
+void structureChanged () {
+	structureModCount++;
+}
+
 /**
  * The fastest way to insert many items is documented in {@link TreeItem#TreeItem(org.eclipse.swt.widgets.Tree,int,int)}
  * and {@link TreeItem#setItemCount}
@@ -1048,6 +1057,7 @@ void createItem (TreeItem item, long parentIter, int index) {
 	int id = getId (item.handle, false);
 	items [id] = item;
 	modelChanged = true;
+	structureChanged ();
 
 	if (parentIter == 0 && (hooks (SWT.EmptinessChanged) || filters (SWT.EmptinessChanged))) {
 		/*
@@ -1305,6 +1315,7 @@ void destroyItem (TreeItem item) {
 	GTK.gtk_tree_store_remove (modelHandle, item.handle);
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	modelChanged = true;
+	structureChanged ();
 
 	if (hooks (SWT.EmptinessChanged) || filters (SWT.EmptinessChanged)) {
 		/*
@@ -1841,7 +1852,10 @@ public TreeItem getItem (Point point) {
  */
 public int getItemCount () {
 	checkWidget ();
-	return GTK.gtk_tree_model_iter_n_children (modelHandle, 0);
+	if (cachedRootCountStamp == structureModCount) return cachedRootCount;
+	cachedRootCount = GTK.gtk_tree_model_iter_n_children (modelHandle, 0);
+	cachedRootCountStamp = structureModCount;
+	return cachedRootCount;
 }
 
 /**
@@ -3008,6 +3022,7 @@ void remove (long parentIter, int start, int end) {
 				OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 				GTK.gtk_tree_store_remove (modelHandle, iter);
 				OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+				structureChanged ();
 			}
 		}
 	} finally {
@@ -3039,6 +3054,7 @@ public void removeAll () {
     GTK.gtk_tree_view_set_model (handle, 0);
     GTK.gtk_tree_store_clear (modelHandle);
     GTK.gtk_tree_view_set_model (handle, modelHandle);
+	structureChanged ();
 
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 
@@ -3576,6 +3592,7 @@ void setItemCount (long parentIter, int count) {
 	}
 	if (!isVirtual) setRedraw (true);
 	modelChanged = true;
+	structureChanged ();
 }
 
 /**
