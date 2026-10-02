@@ -16,19 +16,20 @@ Export-Package:
  org.eclipse.swt.dnd,
  org.eclipse.swt.events,
  org.eclipse.swt.graphics,
+ org.eclipse.swt.internal;x-friends:="org.eclipse.ui",
+ org.eclipse.swt.internal.accessibility.gtk;x-internal:=true,
+ org.eclipse.swt.internal.cairo;x-internal:=true,
+ org.eclipse.swt.internal.canvasext;x-friends:="org.eclipse.swt.skia,org.eclipse.swt.skia.tests",
+ org.eclipse.swt.internal.gtk;x-internal:=true,
+ org.eclipse.swt.internal.gtk3;x-internal:=true,
+ org.eclipse.swt.internal.gtk4;x-internal:=true,
+ org.eclipse.swt.internal.image;x-internal:=true,
+ org.eclipse.swt.internal.opengl.glx;x-internal:=true,
  org.eclipse.swt.layout,
  org.eclipse.swt.opengl,
  org.eclipse.swt.printing,
  org.eclipse.swt.program,
- org.eclipse.swt.widgets,
- org.eclipse.swt.internal; x-friends:="org.eclipse.ui",
- org.eclipse.swt.internal.image; x-internal:=true,
- org.eclipse.swt.internal.accessibility.gtk; x-internal:=true,
- org.eclipse.swt.internal.cairo; x-internal:=true,
- org.eclipse.swt.internal.gtk; x-internal:=true,
- org.eclipse.swt.internal.gtk3; x-internal:=true,
- org.eclipse.swt.internal.gtk4; x-internal:=true,
- org.eclipse.swt.internal.opengl.glx; x-internal:=true
+ org.eclipse.swt.widgets
 Eclipse-PlatformFilter: (& (osgi.ws=gtk) (osgi.os=linux) (osgi.arch=ppc64le))
 SWT-WS: gtk
 SWT-OS: linux

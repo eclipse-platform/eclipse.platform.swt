@@ -46,6 +46,61 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="Eclipse SWT/cocoa/org/eclipse/swt/graphics/GC.java" type="org.eclipse.swt.graphics.GC">
+        <filter comment="@noreference is set. But in api tools" id="336658481">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.GC"/>
+                <message_argument value="handle"/>
+            </message_arguments>
+        </filter>
+        <filter id="574619654">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.GC.handle"/>
+                <message_argument value="org.eclipse.swt.internal.cocoa.NSGraphicsContext"/>
+            </message_arguments>
+        </filter>
+        <filter id="574619656">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.GC"/>
+                <message_argument value="handle"/>
+            </message_arguments>
+        </filter>
+        <filter comment="@noreference is set. Bug in api tools" id="627060751">
+            <message_arguments>
+                <message_argument value="NSGraphicsContext"/>
+                <message_argument value="GC"/>
+                <message_argument value="handle"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="Eclipse SWT/cocoa/org/eclipse/swt/widgets/Composite.java" type="org.eclipse.swt.widgets.Composite">
+        <filter id="576778288">
+            <message_arguments>
+                <message_argument value="Scrollable"/>
+                <message_argument value="Composite"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="Eclipse SWT/common/org/eclipse/swt/SWT.java" type="org.eclipse.swt.SWT">
+        <filter comment="SKIA field. Delete this filter and update version." id="336658481">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.SWT"/>
+                <message_argument value="SKIA"/>
+            </message_arguments>
+        </filter>
+        <filter comment="https://github.com/eclipse-platform/eclipse.platform.swt/pull/3127" id="338755678">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.SWT"/>
+                <message_argument value="CHROMIUM"/>
+            </message_arguments>
+        </filter>
+        <filter comment="https://github.com/eclipse-platform/eclipse.platform.swt/pull/3127" id="338755678">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.SWT"/>
+                <message_argument value="SKIA"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="Eclipse SWT/common/org/eclipse/swt/graphics/Point.java" type="org.eclipse.swt.graphics.Point$OfFloat">
         <filter id="338944126">
             <message_arguments>

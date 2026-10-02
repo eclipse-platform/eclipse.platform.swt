@@ -719,6 +719,9 @@ long createGdipBrush(Color color, int alpha) {
 public void draw (GC gc, int x, int y) {
 	checkLayout();
 	drawInPixels(gc, x, y);
+
+
+
 }
 
 /**
@@ -801,6 +804,12 @@ void drawInPixels (GC gc, int xInPoints, int yInPoints) {
 }
 
 void drawInPixels (GC gc, int xInPoints, int yInPoints, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground, int flags) {
+
+	if(gc instanceof GCExtension gcext) {
+		gcext.textLayoutDraw(this, gc,  xInPoints,  yInPoints,  selectionStart,  selectionEnd,  selectionForeground,  selectionBackground,  flags);
+		return;
+	}
+
 	computeRuns(gc);
 	if (gc == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (gc.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -4060,4 +4069,5 @@ int getDefaultTabWidthInPixels(GC gc, long hdc) {
 	OS.SelectObject(hdc, oldFont);
 	return DPIUtil.pixelToPoint(size.cx, getZoom(gc)) == tabs[0] ? size.cx : 0;
 }
+
 }
