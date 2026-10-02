@@ -177,6 +177,7 @@ public class CTabFolder extends Composite {
 	Listener tabControlZoomListener;
 	boolean ignoreTraverse;
 	boolean useDefaultRenderer;
+	boolean paintedBackgroundsPending;
 
 	/* External Listener management */
 	CTabFolder2Listener[] folderListeners = new CTabFolder2Listener[0];
@@ -2149,6 +2150,18 @@ void onPaint(Event event) {
 	gc.setFont(gcFont);
 	gc.setForeground(gcForeground);
 	gc.setBackground(gcBackground);
+
+	if (!useDefaultRenderer && !paintedBackgroundsPending && controls != null) {
+		Rectangle damage = event.getBounds();
+		for (Control control : controls) {
+			// a custom renderer can change its colors with only a redraw
+			if (!control.isDisposed() && damage.intersects(control.getBounds())) {
+				paintedBackgroundsPending = true;
+				getDisplay().asyncExec(this::updatePaintedBackgrounds);
+				break;
+			}
+		}
+	}
 }
 
 void onResize(Event event) {
@@ -3247,6 +3260,8 @@ public void setRenderer(CTabFolderRenderer renderer) {
 	if (useDefaultRenderer) renderer = new CTabFolderRenderer(this);
 	this.renderer = renderer;
 	updateFolder(REDRAW);
+	// the renderer decides what the top right controls get as background
+	updateBkImages(true);
 }
 /**
  * Set the selection to the tab at the specified item.
@@ -4065,7 +4080,8 @@ void updateBkImages(boolean colorChanged) {
 					if (wrapped || gradientColors == null) {
 						bkImageBounds[i]=null;
 						control.setBackgroundImage(null);
-						control.setBackground(getBackground());
+						// a custom renderer may paint anything behind the control
+						control.setBackground(useDefaultRenderer ? getBackground() : getPaintedColor(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2));
 					} else {
 						bounds.width = 10;
 						if (!onBottom) {
@@ -4076,11 +4092,21 @@ void updateBkImages(boolean colorChanged) {
 							bounds.y = -1;
 						}
 						bounds.x = 0;
+						if (bounds.height <= 0) {
+							// drop the cache, so a skipped color change is not lost
+							bkImageBounds[i] = null;
+							continue;
+						}
 						// do not redraw when only translated:
 						if (colorChanged || !bounds.equals(bkImageBounds[i])) {
 							bkImageBounds[i] = bounds;
 							if (controlBkImages[i] != null) controlBkImages[i].dispose();
-							controlBkImages[i] = new Image(control.getDisplay(), (gc, imageWidth, imageHeight) -> renderer.draw(CTabFolderRenderer.PART_BACKGROUND, 0, bounds, gc), bounds.width, bounds.height);
+							controlBkImages[i] = new Image(control.getDisplay(), (gc, imageWidth, imageHeight) -> {
+								// pixels a renderer leaves untouched would stay blank in an image
+								gc.setBackground(getBackground());
+								gc.fillRectangle(0, 0, imageWidth, imageHeight);
+								renderer.draw(CTabFolderRenderer.PART_BACKGROUND, 0, bounds, gc);
+							}, bounds.width, bounds.height);
 							control.setBackground(null);
 							control.setBackgroundImage(controlBkImages[i]);
 						}
@@ -4089,6 +4115,52 @@ void updateBkImages(boolean colorChanged) {
 			}
 		}
 
+	}
+}
+/** Gives the controls with a flat background the color the renderer now paints behind them. */
+void updatePaintedBackgrounds() {
+	paintedBackgroundsPending = false;
+	if (isDisposed() || useDefaultRenderer || hovering || controls == null) return;
+	for (Control control : controls) {
+		if (control.isDisposed() || control.getBackgroundImage() != null) continue;
+		Rectangle bounds = control.getBounds();
+		Color color = getPaintedColor(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
+		if (!color.equals(control.getBackground())) control.setBackground(color);
+	}
+}
+/** Returns the color the folder paints at the given point, as onPaint draws body and header. */
+Color getPaintedColor(int x, int y) {
+	Point size = getSize();
+	if (x < 0 || y < 0 || x >= size.x || y >= size.y) return getBackground();
+	Rectangle bodyRect = new Rectangle(0, 0, size.x, size.y);
+	// a few pixels around the point, translated, so the renderer still gets the full folder bounds
+	Image image = new Image(getDisplay(), (gc, imageWidth, imageHeight) -> {
+		Transform transform = new Transform(gc.getDevice());
+		try {
+			transform.translate(1 - x, 1 - y);
+			gc.setTransform(transform);
+			// in user space, so that a renderer saving and restoring the clipping keeps it
+			gc.setClipping(x - 1, y - 1, imageWidth, imageHeight);
+			gc.setFont(getFont());
+			gc.setForeground(getForeground());
+			// pixels a renderer leaves untouched show the widget background on screen
+			gc.setBackground(getBackground());
+			gc.fillRectangle(x - 1, y - 1, imageWidth, imageHeight);
+			renderer.draw(CTabFolderRenderer.PART_BODY, SWT.BACKGROUND | SWT.FOREGROUND, bodyRect, gc);
+			gc.setFont(getFont());
+			gc.setForeground(getForeground());
+			gc.setBackground(getBackground());
+			renderer.draw(CTabFolderRenderer.PART_HEADER, SWT.BACKGROUND | SWT.FOREGROUND, bodyRect, gc);
+		} finally {
+			transform.dispose();
+		}
+	}, 3, 3);
+	try {
+		// the zoom the folder is shown at, so that the renderer is invoked as on screen
+		ImageData data = image.getImageData(DPIUtil.getZoomForAutoscaleProperty(getShell().getZoom()));
+		return new Color(data.palette.getRGB(data.getPixel(data.width / 2, data.height / 2)));
+	} finally {
+		image.dispose();
 	}
 }
 String _getToolTip(int x, int y) {
