@@ -3454,6 +3454,8 @@ public TaskBar getSystemTaskBar () {
  */
 public Tray getSystemTray () {
 	checkDevice ();
+	/* GTK4 removed GtkStatusIcon, which TrayItem is built on */
+	if (GTK.GTK4) return null;
 	if (tray != null) return tray;
 	return tray = new Tray (this, SWT.NONE);
 }
