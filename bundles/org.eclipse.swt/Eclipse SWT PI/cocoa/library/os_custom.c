@@ -15,6 +15,8 @@
 #include "swt.h"
 #include "os_structs.h"
 #include "os_stats.h"
+#include <mach-o/loader.h>
+#include <crt_externs.h>
 
 #define OS_NATIVE(func) Java_org_eclipse_swt_internal_cocoa_OS_##func
 
@@ -146,6 +148,29 @@ JNIEXPORT jlong JNICALL OS_NATIVE(beginSheetModalForWindow)
 	rc = (jlong)((jlong (*)(jlong, jlong, jlong, void (^)(jlong)))objc_msgSend)(arg0, arg1, arg2, functionToBlock(arg3));
 	
 	OS_NATIVE_EXIT(env, that, beginSheetModalForWindow_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_getMachOSDKVersion
+JNIEXPORT jint JNICALL OS_NATIVE(getMachOSDKVersion)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, getMachOSDKVersion_FUNC);
+	const struct mach_header_64 *header = (const struct mach_header_64 *)_NSGetMachExecuteHeader();
+	const uint8_t *ptr = (const uint8_t *)header + sizeof(struct mach_header_64);
+	for (uint32_t i = 0; i < header->ncmds; i++) {
+		const struct load_command *lc = (const struct load_command *)ptr;
+		if (lc->cmd == LC_BUILD_VERSION) {
+			const struct build_version_command *bv = (const struct build_version_command *)ptr;
+			uint32_t sdk = bv->sdk;
+			rc = (jint)(((sdk >> 16) & 0xff) << 16) | (((sdk >> 8) & 0xff) << 8) | (sdk & 0xff);
+			break;
+		}
+		ptr += lc->cmdsize;
+	}
+	OS_NATIVE_EXIT(env, that, getMachOSDKVersion_FUNC);
 	return rc;
 }
 #endif
