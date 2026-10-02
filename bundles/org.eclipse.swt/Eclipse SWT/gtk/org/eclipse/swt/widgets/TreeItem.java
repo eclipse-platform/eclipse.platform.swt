@@ -45,6 +45,8 @@ public class TreeItem extends Item {
 	Font[] cellFont;
 	String [] strings;
 	boolean cached, grayed, isExpanded, updated, settingData;
+	private int cachedChildCount = -1;
+	private int cachedChildCountStamp = -1;
 	static final int EXPANDER_EXTRA_PADDING = 4;
 
 /**
@@ -749,7 +751,10 @@ public Rectangle getImageBounds (int index) {
 public int getItemCount () {
 	checkWidget();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
-	return GTK.gtk_tree_model_iter_n_children (parent.modelHandle, handle);
+	if (cachedChildCountStamp == parent.structureModCount) return cachedChildCount;
+	cachedChildCount = GTK.gtk_tree_model_iter_n_children (parent.modelHandle, handle);
+	cachedChildCountStamp = parent.structureModCount;
+	return cachedChildCount;
 }
 
 /**
@@ -1086,6 +1091,8 @@ public void removeAll () {
 		}
 	}
 	OS.g_free (iter);
+	// unmaterialized virtual children are removed above without destroyItem ()
+	parent.structureChanged ();
 }
 
 /**
