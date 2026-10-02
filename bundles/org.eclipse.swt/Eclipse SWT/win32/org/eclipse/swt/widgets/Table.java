@@ -7347,14 +7347,10 @@ void handleDPIChange(Event event, float scalingFactor) {
 	setItemHeight(-1);
 
 	for (TableItem item : getItems()) {
-		if (item != null && !item.isDisposed()) {
-			item.notifyListeners(SWT.ZoomChanged, event);
-		}
+		notifyZoomChanged(item, event);
 	}
 	for (TableColumn tableColumn : getColumns()) {
-		if (tableColumn != null && !tableColumn.isDisposed()) {
-			tableColumn.notifyListeners(SWT.ZoomChanged, event);
-		}
+		notifyZoomChanged(tableColumn, event);
 	}
 
 	if (getColumns().length == 0 && scrollWidth != 0) {
