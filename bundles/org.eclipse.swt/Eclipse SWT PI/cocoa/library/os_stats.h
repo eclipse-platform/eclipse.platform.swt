@@ -369,6 +369,7 @@ typedef enum {
 	class_1getMethodImplementation_FUNC,
 	class_1getName_FUNC,
 	class_1getSuperclass_FUNC,
+	getMachOSDKVersion_FUNC,
 	getpid_FUNC,
 	instrumentObjcMessageSends_FUNC,
 	isFlipped_1CALLBACK_FUNC,
