@@ -244,12 +244,10 @@ int[][] indexLines(int offset, int length, int numLines){
 		} else {
 			char ch = textStore[location];
 			if (ch == SWT.CR) {
-				// see if the next character is a LF
-				if (location+1 < textStore.length) {
-					ch = textStore[location+1];
-					if (ch == SWT.LF) {
-						i++;
-					}
+				// a LF behind the gap or outside this range is on a separate line
+				int next = location + 1;
+				if (next < offset + length && (next < gapStart || next >= gapEnd) && textStore[next] == SWT.LF) {
+					i++;
 				}
 				indexedLines = addLineIndex(start, i - start + 1, indexedLines, lineCount);
 				lineCount++;
