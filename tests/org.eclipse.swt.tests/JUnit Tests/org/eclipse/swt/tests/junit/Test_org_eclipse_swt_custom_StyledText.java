@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -4621,6 +4622,25 @@ public void test_setTextLjava_lang_String(){
 	assertEquals("01234567890", text.getText());
 	text.setText("");
 	assertEquals("", text.getText());
+}
+
+@Test
+public void test_setTextRestoresLineHeight() {
+	text.setText("line 1\nline 2");
+	int defaultLineHeight = text.getLineHeight();
+
+	// fallback fonts for these scripts are usually taller than the default font
+	String fallbackText = "नमस्ते こんにちは ༀགྲ་ မြန်မာ สวัสดี";
+	text.setText(fallbackText);
+	text.getTextBounds(0, fallbackText.length() - 1);
+	assumeTrue(text.getLineHeight() > defaultLineHeight, "fallback fonts do not increase the line height on this platform");
+
+	text.setText("line 1\nline 2");
+	assertEquals(defaultLineHeight, text.getLineHeight());
+
+	text.setText(fallbackText);
+	text.getTextBounds(0, fallbackText.length() - 1);
+	assertTrue(text.getLineHeight() > defaultLineHeight);
 }
 
 @Test
