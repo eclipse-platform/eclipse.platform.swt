@@ -6059,6 +6059,63 @@ public void test_replaceTextRange_deleteAdjacentLoneCRAndLF() {
 	assertEquals(1, text.getLineCount());
 }
 
+private void assertLoneCRAndLFLines(String expectedText, int... lineOffsets) {
+	assertEquals(expectedText, text.getText());
+	assertEquals(lineOffsets.length, text.getLineCount());
+	for (int i = 0; i < lineOffsets.length; i++) {
+		assertEquals(lineOffsets[i], text.getOffsetAtLine(i));
+		assertEquals(i, text.getLineAtOffset(lineOffsets[i]));
+	}
+}
+
+@Test
+public void test_replaceTextRange_insertBeforeLoneCRAndLF() {
+	text.setText("q\rY\n");
+	// deleting "Y" makes the lone \r and the lone \n adjacent
+	text.replaceTextRange(2, 1, "");
+	text.replaceTextRange(0, 0, "z");
+	assertLoneCRAndLFLines("zq\r\n", 0, 3, 4);
+}
+
+@Test
+public void test_replaceTextRange_insertBeforeLoneCRAndLFWithGapElsewhere() {
+	text.setText("q\rY\n");
+	text.replaceTextRange(2, 1, "");
+	// move the edit gap to the end, away from the \r and \n
+	text.replaceTextRange(3, 0, "w");
+	text.replaceTextRange(0, 0, "z");
+	assertLoneCRAndLFLines("zq\r\nw", 0, 3, 4);
+}
+
+@Test
+public void test_replaceTextRange_insertMultipleLinesBeforeLoneCRAndLF() {
+	text.setText("q\rY\n");
+	text.replaceTextRange(2, 1, "");
+	text.replaceTextRange(3, 0, "w");
+	text.replaceTextRange(1, 0, "a\nb");
+	assertLoneCRAndLFLines("qa\nb\r\nw", 0, 3, 5, 6);
+}
+
+@Test
+public void test_replaceTextRange_insertBetweenLoneCRAndLF() {
+	text.setText("q\rY\n");
+	text.replaceTextRange(2, 1, "");
+	text.replaceTextRange(3, 0, "w");
+	// the \r and \n stay on separate lines, so the inserted text does not join them
+	text.replaceTextRange(2, 0, "z");
+	assertLoneCRAndLFLines("q\rz\nw", 0, 2, 4);
+}
+
+@Test
+public void test_replaceTextRange_insertLFAfterLoneCR() {
+	text.setText("q\rY\n");
+	text.replaceTextRange(2, 1, "");
+	text.replaceTextRange(3, 0, "w");
+	// an inserted \n is not merged with the preceding lone \r on another line
+	text.replaceTextRange(2, 0, "\n");
+	assertLoneCRAndLFLines("q\r\n\nw", 0, 2, 3, 4);
+}
+
 private Event keyEvent(int key, int type, Widget w) {
 	Event e = new Event();
 	e.keyCode= key;
