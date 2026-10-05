@@ -48,6 +48,8 @@ import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.custom.StyledTextContent;
 import org.eclipse.swt.custom.TextChangeListener;
+import org.eclipse.swt.custom.TextChangedEvent;
+import org.eclipse.swt.custom.TextChangingEvent;
 import org.eclipse.swt.custom.VerifyKeyListener;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.HTMLTransfer;
@@ -5961,6 +5963,80 @@ public void test_replaceTextRange_isInsideCRLF() {
 	text.setText("0\r2\n4");
 	text.replaceTextRange(2, 1, "");
 	text.replaceTextRange(2, 0, "2");
+}
+
+@Test
+public void test_replaceTextRange_adjacentLoneCRAndLF() {
+	String fullText = "abc\n\n\r\rdef\n";
+	text.replaceTextRange(0, text.getCharCount(), fullText);
+	assertEquals(fullText, text.getText());
+	assertEquals(6, text.getLineCount());
+
+	// deleting "def" makes a lone \r and a lone \n adjacent
+	int defOffset = fullText.indexOf("def");
+	text.replaceTextRange(defOffset, 3, "");
+	assertEquals("abc\n\n\r\r\n", text.getText());
+	assertEquals(6, text.getLineCount());
+
+	text.replaceTextRange(0, text.getCharCount(), fullText);
+	assertEquals(fullText, text.getText());
+	assertEquals(6, text.getLineCount());
+}
+
+@Test
+public void test_replaceTextRange_deleteLoneCRBeforeLoneLF() {
+	text.setText("x\rY\n");
+	// deleting "Y" makes the lone \r and the lone \n adjacent
+	text.replaceTextRange(2, 1, "");
+	assertEquals(3, text.getLineCount());
+
+	text.replaceTextRange(1, 1, "");
+	assertEquals("x\n", text.getText());
+	assertEquals(2, text.getLineCount());
+	assertEquals("x", text.getLine(0));
+	assertEquals("", text.getLine(1));
+}
+
+@Test
+public void test_replaceTextRange_deleteBeforeLoneCRAndLF() {
+	text.setText("q\rY\n");
+	// deleting "Y" makes the lone \r and the lone \n adjacent
+	text.replaceTextRange(2, 1, "");
+
+	text.replaceTextRange(0, 1, "");
+	assertEquals("\r\n", text.getText());
+	assertEquals(3, text.getLineCount());
+	assertEquals(0, text.getOffsetAtLine(0));
+	assertEquals(1, text.getOffsetAtLine(1));
+	assertEquals(2, text.getOffsetAtLine(2));
+	assertEquals(1, text.getLineAtOffset(1));
+}
+
+@Test
+public void test_replaceTextRange_deleteAdjacentLoneCRAndLF() {
+	text.setText("q\rY\n");
+	// deleting "Y" makes the lone \r and the lone \n adjacent
+	text.replaceTextRange(2, 1, "");
+	// move the edit gap away from the \r and \n
+	text.replaceTextRange(3, 0, "z");
+	int[] replaceLineCount = new int[1];
+	text.getContent().addTextChangeListener(new TextChangeListener() {
+		@Override
+		public void textChanging(TextChangingEvent event) {
+			replaceLineCount[0] = event.replaceLineCount;
+		}
+		@Override
+		public void textChanged(TextChangedEvent event) {
+		}
+		@Override
+		public void textSet(TextChangedEvent event) {
+		}
+	});
+
+	text.replaceTextRange(1, 2, "");
+	assertEquals(2, replaceLineCount[0]);
+	assertEquals("qz", text.getText());
+	assertEquals(1, text.getLineCount());
 }
 
 private Event keyEvent(int key, int type, Widget w) {
