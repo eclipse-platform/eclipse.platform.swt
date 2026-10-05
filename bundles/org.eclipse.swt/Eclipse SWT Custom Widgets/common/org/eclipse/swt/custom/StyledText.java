@@ -6209,7 +6209,6 @@ void handleTextSet(TextChangedEvent event) {
 	int newCharCount = getCharCount();
 	sendAccessibleTextChanged(0, newCharCount, lastCharCount);
 	lastCharCount = newCharCount;
-	setAlignment();
 }
 /**
  * Called when a traversal key is pressed.
@@ -7839,12 +7838,10 @@ public void replaceTextRange(int start, int length, String text) {
 void reset() {
 	ScrollBar verticalBar = getVerticalBar();
 	ScrollBar horizontalBar = getHorizontalBar();
-	setCaretOffsets(new int[] {0}, SWT.DEFAULT);
 	topIndex = 0;
 	topIndexY = 0;
 	verticalScrollOffset = 0;
 	horizontalScrollOffset = 0;
-	resetSelection();
 	renderer.setContent(content);
 	if (verticalBar != null) {
 		verticalBar.setSelection(0);
@@ -7853,7 +7850,15 @@ void reset() {
 		horizontalBar.setSelection(0);
 	}
 	resetCache(0, 0);
+	int[] oldCaretOffsets = caretOffsets;
+	caretOffsets = new int[] {0};
+	resetSelection();
+	setAlignment();
 	setCaretLocations();
+	// last, so CaretMoved listeners see the state of the new content
+	if (!Arrays.equals(oldCaretOffsets, caretOffsets)) {
+		sendCaretMoved();
+	}
 	super.redraw();
 }
 void resetBidiData() {
@@ -8650,14 +8655,17 @@ void setCaretOffsets(int[] newOffsets, int alignment) {
 	}
 	if (!Arrays.equals(caretOffsets, newOffsets)) {
 		caretOffsets = newOffsets;
-		if (isListening(ST.CaretMoved)) {
-			StyledTextEvent event = new StyledTextEvent(content);
-			event.end = caretOffsets[caretOffsets.length - 1];
-			notifyListeners(ST.CaretMoved, event);
-		}
+		sendCaretMoved();
 	}
 	if (alignment != SWT.DEFAULT) {
 		caretAlignment = alignment;
+	}
+}
+void sendCaretMoved() {
+	if (isListening(ST.CaretMoved)) {
+		StyledTextEvent event = new StyledTextEvent(content);
+		event.end = caretOffsets[caretOffsets.length - 1];
+		notifyListeners(ST.CaretMoved, event);
 	}
 }
 /**
