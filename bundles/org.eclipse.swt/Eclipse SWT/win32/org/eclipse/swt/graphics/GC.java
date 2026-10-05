@@ -1498,7 +1498,7 @@ private void drawIcon(long imageHandle, int srcX, int srcY, int srcWidth, int sr
 			srcWidth == destWidth && srcHeight == destHeight &&
 			srcWidth == iconWidth && srcHeight == iconHeight;
 		if (!drawIcon) {
-			drawBitmapMask(srcIconInfo.hbmColor, srcIconInfo.hbmMask, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple, iconWidth, iconHeight, false);
+			drawBitmapMask(srcIconInfo.hbmColor, srcIconInfo.hbmMask, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple, iconHeight, false);
 		} else if (simple && technology != OS.DT_RASPRINTER) {
 			/* Simple case: no stretching, entire icon */
 			if (offsetX != 0 || offsetY != 0) OS.SetWindowOrgEx(handle, 0, 0, null);
@@ -1820,7 +1820,7 @@ private void drawBitmapTransparentByClipping(long srcHdc, long maskHdc, int srcX
 	OS.DeleteObject(rgn);
 }
 
-private void drawBitmapMask(long srcColor, long srcMask, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, int imgWidth, int imgHeight, boolean offscreen) {
+private void drawBitmapMask(long srcColor, long srcMask, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, int imgHeight, boolean offscreen) {
 	int srcColorY = srcY;
 	if (srcColor == 0) {
 		srcColor = srcMask;
