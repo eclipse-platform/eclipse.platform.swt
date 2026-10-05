@@ -68,6 +68,7 @@ protected void setupBase(TestInfo testInfo) {
 @BeforeEach
 public void setUp() {
 	shell = new Shell();
+	shell.setSize(300, 200);
 }
 
 @RegisterExtension
