@@ -112,7 +112,8 @@ public class SessionManagerDBus {
 		// Allow to disable session manager, for example in case it conflicts with
 		// session manager connection implemented in application itself.
 		boolean isDisabled = System.getProperty("org.eclipse.swt.internal.SessionManagerDBus.disable") != null
-				|| System.getenv("org.eclipse.swt.internal.SessionManagerDBus.disable") != null;
+				|| System.getenv("org.eclipse.swt.internal.SessionManagerDBus.disable") != null
+				|| System.getenv("SWT_SESSIONMANAGER_DBUS_DISABLE") != null;
 		if (isDisabled) return;
 
 		start();
