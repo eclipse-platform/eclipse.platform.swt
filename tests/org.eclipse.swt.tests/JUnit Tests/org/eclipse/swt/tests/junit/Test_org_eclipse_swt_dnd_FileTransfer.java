@@ -20,16 +20,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.RTFTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.dnd.TransferData;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
@@ -38,6 +35,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.OS;
+import org.junit.jupiter.api.io.TempDir;
 
 /**
  * Automated Test Suite for {@link FileTransfer}
@@ -50,7 +48,8 @@ public class Test_org_eclipse_swt_dnd_FileTransfer extends ClipboardBase {
 	 */
 	private FileTransfer fileTransfer;
 
-	private List<Path> tmpFilesToDelete = new ArrayList<>();
+	@TempDir
+	Path tempDir;
 
 	@BeforeEach
 	public void localSetup() {
@@ -64,16 +63,7 @@ public class Test_org_eclipse_swt_dnd_FileTransfer extends ClipboardBase {
 	 * list has real paths suitable to the platform we are running on.
 	 */
 	private String tempFile() throws IOException {
-		Path tempFile = Files.createTempFile("swt-test", "");
-		tmpFilesToDelete.add(tempFile);
-		return tempFile.toString();
-	}
-
-	@AfterEach
-	public void deleteTempFiles() throws IOException {
-		for (Path path : tmpFilesToDelete) {
-			Files.delete(path);
-		}
+		return Files.createTempFile(tempDir, "swt-test", "").toString();
 	}
 
 	private String[] getFileList() throws IOException {

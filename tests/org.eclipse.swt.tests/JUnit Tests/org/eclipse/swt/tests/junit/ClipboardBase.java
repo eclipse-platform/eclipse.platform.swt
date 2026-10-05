@@ -25,9 +25,12 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -36,6 +39,8 @@ import clipboard.ClipboardTest;
 /**
  * Base class for tests that test clipboard and transfer types
  */
+// per-class instance so the remote helper JVM is started once per class
+@TestInstance(Lifecycle.PER_CLASS)
 public class ClipboardBase {
 
 	/**
@@ -150,9 +155,22 @@ public class ClipboardBase {
 	 * clipboard operations work.
 	 */
 	protected void openAndFocusRemote() throws Exception {
-		assertNull(remote);
-		remote = new RemoteClipboard();
-		remote.start();
+		if (remote == null) {
+			RemoteClipboard newRemote = new RemoteClipboard();
+			try {
+				newRemote.start();
+			} catch (Throwable e) {
+				try {
+					newRemote.stop();
+				} catch (Throwable stopFailure) {
+					e.addSuppressed(stopFailure);
+				}
+				throw e;
+			}
+			remote = newRemote;
+		} else {
+			remote.setFocus();
+		}
 
 		/*
 		 * If/when OpenJDK Project Wakefield gets merged then we may need to wait for
@@ -162,22 +180,25 @@ public class ClipboardBase {
 		// remote.waitForButtonPress();
 	}
 
-	@AfterEach
-	public void tearDown() throws Exception {
-		try {
-			if (remote != null) {
-				remote.stop();
-			}
-		} finally {
-			if (clipboard != null) {
-				supportedClipboardIds().forEach(clipboard::clearContents);
-				clipboard.dispose();
-			}
-			if (shell != null) {
-				shell.dispose();
-			}
-			SwtTestUtil.processEvents();
+	@AfterAll
+	public void stopRemote() throws Exception {
+		if (remote != null) {
+			remote.stop();
+			remote = null;
 		}
+	}
+
+	@AfterEach
+	public void tearDown() {
+		if (clipboard != null) {
+			supportedClipboardIds().forEach(clipboard::clearContents);
+			clipboard.dispose();
+		}
+		if (shell != null) {
+			shell.dispose();
+			shell = null;
+		}
+		SwtTestUtil.processEvents();
 	}
 
 	protected String addTrailingNulCharacter(String result) {
