@@ -516,7 +516,6 @@ public class Display extends Device implements Executor {
 	/* Modality */
 	Shell [] modalShells;
 	Dialog modalDialog;
-	static boolean TrimEnabled = false;
 
 	/* Private SWT Window Messages */
 	static final int SWT_GETACCELCOUNT	= OS.WM_APP;
