@@ -6014,4 +6014,63 @@ public void test_bug1610_fixedLineHeightWithChangingToSmallerFont_noException() 
 	font.dispose();
 	gc.dispose();
 }
+
+@Test
+public void test_setText_caretMovedListenerSeesNewContent_lineSpacing() {
+	shell.setSize(400, 600);
+	shell.setLayout(new FillLayout());
+	shell.layout(true, true);
+	shell.setVisible(true);
+	text.setLineSpacing(10);
+	text.setText("a\nb");
+	text.setCaretOffset(2);
+	int[] count = new int[1];
+	text.addListener(ST.CaretMoved, e -> {
+		count[0]++;
+		text.getOffsetAtPoint(new Point(0, 0));
+	});
+	text.setText("line\n".repeat(200));
+	assertEquals(1, count[0]);
+}
+
+@Test
+public void test_setText_caretMovedListenerSeesResetSelection() {
+	text.setText("hello world, this is a long line");
+	text.selectAll();
+	String[] selectionText = new String[1];
+	text.addListener(ST.CaretMoved, e -> selectionText[0] = text.getSelectionText());
+	text.setText("hi");
+	assertEquals("", selectionText[0]);
+	assertEquals(new Point(0, 0), text.getSelection());
+}
+
+@Test
+public void test_setText_caretMovedListenerSeesNewAlignment() {
+	shell.setSize(400, 100);
+	shell.setLayout(new FillLayout());
+	StyledText single = new StyledText(shell, SWT.SINGLE | SWT.CENTER);
+	shell.layout(true, true);
+	single.setText("a");
+	single.setCaretOffset(1);
+	Point[] location = new Point[2];
+	single.addListener(ST.CaretMoved, e -> {
+		location[0] = single.getLocationAtOffset(0);
+		location[1] = single.getCaret().getLocation();
+	});
+	single.setText("a much longer line of text");
+	assertEquals(single.getLocationAtOffset(0), location[0]);
+	assertEquals(single.getCaret().getLocation(), location[1]);
+}
+
+@Test
+public void test_setText_shorterTextInCenteredSingleLine() {
+	shell.setSize(400, 100);
+	shell.setLayout(new FillLayout());
+	StyledText single = new StyledText(shell, SWT.SINGLE | SWT.CENTER);
+	shell.layout(true, true);
+	single.setText("a much longer line of text");
+	single.setCaretOffset(single.getCharCount());
+	single.setText("a");
+	assertEquals(0, single.getCaretOffset());
+}
 }
