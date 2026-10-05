@@ -766,11 +766,7 @@ void enableWidget (boolean enabled) {
 	} else {
 		state |= DISABLED;
 	}
-	if (Display.TrimEnabled) {
-		if (isActive ()) setItemEnabled (OS.SC_CLOSE, enabled);
-	} else {
-		OS.EnableWindow (handle, enabled);
-	}
+	OS.EnableWindow (handle, enabled);
 }
 
 @Override
@@ -2271,11 +2267,7 @@ void unsubclass () {
 }
 
 void updateModal () {
-	if (Display.TrimEnabled) {
-		setItemEnabled (OS.SC_CLOSE, isActive ());
-	} else {
-		OS.EnableWindow (handle, isActive ());
-	}
+	OS.EnableWindow (handle, isActive ());
 }
 
 @Override
@@ -2671,12 +2663,7 @@ LRESULT WM_MOVE (long wParam, long lParam) {
 @Override
 LRESULT WM_NCHITTEST (long wParam, long lParam) {
 	if (!OS.IsWindowEnabled (handle)) return null;
-	if (!isEnabled () || !isActive ()) {
-		if (!Display.TrimEnabled) return new LRESULT (OS.HTNOWHERE);
-		long hittest = callWindowProc (handle, OS.WM_NCHITTEST, wParam, lParam);
-		if (hittest == OS.HTCLIENT || hittest == OS.HTMENU) hittest = OS.HTBORDER;
-		return new LRESULT (hittest);
-	}
+	if (!isEnabled () || !isActive ()) return new LRESULT (OS.HTNOWHERE);
 	if (menuBar != null && !menuBar.getEnabled ()) {
 		long hittest = callWindowProc (handle, OS.WM_NCHITTEST, wParam, lParam);
 		if (hittest == OS.HTMENU) hittest = OS.HTBORDER;
@@ -2732,13 +2719,11 @@ LRESULT WM_SETCURSOR (long wParam, long lParam) {
 	*/
 	int msg = OS.HIWORD (lParam);
 	if (msg == OS.WM_LBUTTONDOWN) {
-		if (!Display.TrimEnabled) {
-			Shell modalShell = display.getModalShell ();
-			if (modalShell != null && !isActive ()) {
-				long hwndModal = modalShell.handle;
-				if (OS.IsWindowEnabled (hwndModal)) {
-					OS.SetActiveWindow (hwndModal);
-				}
+		Shell modalShell = display.getModalShell ();
+		if (modalShell != null && !isActive ()) {
+			long hwndModal = modalShell.handle;
+			if (OS.IsWindowEnabled (hwndModal)) {
+				OS.SetActiveWindow (hwndModal);
 			}
 		}
 		if (!OS.IsWindowEnabled (handle)) {
