@@ -385,6 +385,8 @@ public void test_childControlOverlap() {
 
 	makeCleanEnvironment(SWT.CLOSE);
 	shell.setLayout(new FillLayout());
+	// showChevron() shrinks to 3/4 of the tab widths, so the tabs must first fit uncompressed
+	shell.setSize(640, 480);
 	SwtTestUtil.openShell(shell);
 
 	Label topRightControl = new Label(ctabFolder, SWT.BORDER);

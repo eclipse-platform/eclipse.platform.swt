@@ -296,6 +296,7 @@ public class Test_org_eclipse_swt_dnd_Clipboard extends ClipboardBase {
 
 		tearDownAndStartAgain();
 		shell = new Shell(display);
+		shell.setSize(200, 100);
 		Text text = new Text(shell, SWT.SINGLE);
 		String textBoxHello = getUniqueTestString();
 		text.setText(textBoxHello);
