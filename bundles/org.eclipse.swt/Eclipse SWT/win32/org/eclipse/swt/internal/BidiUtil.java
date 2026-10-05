@@ -33,52 +33,16 @@ public class BidiUtil {
 	// bidi flag
 	static int isBidiPlatform = -1;
 
-	// getRenderInfo flag values
-	public static final int CLASSIN = 1;
-	public static final int LINKBEFORE = 2;
-	public static final int LINKAFTER = 4;
-
 	// variables used for providing a listener mechanism for keyboard language
 	// switching
 	static Map<LONG, Runnable> languageMap = new HashMap<> ();
 	static Map<LONG, LONG> oldProcMap = new HashMap<> ();
 	static Callback callback = new Callback (BidiUtil.class, "windowProc", 4); //$NON-NLS-1$
 
-	// GetCharacterPlacement constants
-	static final int GCP_REORDER = 0x0002;
-	static final int GCP_GLYPHSHAPE = 0x0010;
-	static final int GCP_LIGATE = 0x0020;
-	static final int GCP_CLASSIN = 0x00080000;
-	static final byte GCPCLASS_ARABIC = 2;
-	static final byte GCPCLASS_HEBREW = 2;
-	static final byte GCPCLASS_LOCALNUMBER = 4;
-	static final byte GCPCLASS_LATINNUMBER = 5;
-	static final int GCPGLYPH_LINKBEFORE = 0x8000;
-	static final int GCPGLYPH_LINKAFTER = 0x4000;
-	// ExtTextOut constants
-	static final int ETO_CLIPPED = 0x4;
-	static final int ETO_GLYPH_INDEX = 0x0010;
 	// Windows primary language identifiers
 	static final int LANG_ARABIC = 0x01;
 	static final int LANG_HEBREW = 0x0d;
 	static final int LANG_FARSI = 0x29;
-	// ActivateKeyboard constants
-	static final int HKL_NEXT = 1;
-	static final int HKL_PREV = 0;
-
-	/*
-	 * Public character class constants are the same as Windows
-	 * platform constants.
-	 * Saves conversion of class array in getRenderInfo to arbitrary
-	 * constants for now.
-	 */
-	public static final int CLASS_HEBREW = GCPCLASS_ARABIC;
-	public static final int CLASS_ARABIC = GCPCLASS_HEBREW;
-	public static final int CLASS_LOCALNUMBER = GCPCLASS_LOCALNUMBER;
-	public static final int CLASS_LATINNUMBER = GCPCLASS_LATINNUMBER;
-	public static final int REORDER = GCP_REORDER;
-	public static final int LIGATE = GCP_LIGATE;
-	public static final int GLYPHSHAPE = GCP_GLYPHSHAPE;
 
 /**
  * Adds a language listener. The listener will get notified when the language of
