@@ -49,19 +49,6 @@ class PngIhdrChunk extends PngChunk {
 	int width, height;
 	byte bitDepth, colorType, compressionMethod, filterMethod, interlaceMethod;
 
-PngIhdrChunk(int width, int height, byte bitDepth, byte colorType, byte compressionMethod, byte filterMethod, byte interlaceMethod) {
-	super(IHDR_DATA_LENGTH);
-	setType(TYPE_IHDR);
-	setWidth(width);
-	setHeight(height);
-	setBitDepth(bitDepth);
-	setColorType(colorType);
-	setCompressionMethod(compressionMethod);
-	setFilterMethod(filterMethod);
-	setInterlaceMethod(interlaceMethod);
-	setCRC(computeCRC());
-}
-
 /**
  * Construct a PNGChunk using the reference bytes
  * given.
@@ -91,26 +78,10 @@ int getWidth() {
 }
 
 /**
- * Set the image's width in pixels.
- */
-void setWidth(int value) {
-	setInt32(WIDTH_DATA_OFFSET, value);
-	width = value;
-}
-
-/**
  * Get the image's height in pixels.
  */
 int getHeight() {
 	return height;
-}
-
-/**
- * Set the image's height in pixels.
- */
-void setHeight(int value) {
-	setInt32(HEIGHT_DATA_OFFSET, value);
-	height = value;
 }
 
 /**
@@ -119,15 +90,6 @@ void setHeight(int value) {
  */
 byte getBitDepth() {
 	return bitDepth;
-}
-
-/**
- * Set the image's bit depth.
- * This is limited to the values 1, 2, 4, 8, or 16.
- */
-void setBitDepth(byte value) {
-	reference[BIT_DEPTH_OFFSET] = value;
-	bitDepth = value;
 }
 
 /**
@@ -144,38 +106,6 @@ byte getColorType() {
 }
 
 /**
- * Set the image's color type.
- * This is limited to the values:
- * 0 - Grayscale image.
- * 2 - RGB triple.
- * 3 - Palette.
- * 4 - Grayscale with Alpha channel.
- * 6 - RGB with Alpha channel.
- */
-void setColorType(byte value) {
-	reference[COLOR_TYPE_OFFSET] = value;
-	colorType = value;
-}
-
-/**
- * Set the image's compression method.
- * This value must be 0.
- */
-void setCompressionMethod(byte value) {
-	reference[COMPRESSION_METHOD_OFFSET] = value;
-	compressionMethod = value;
-}
-
-/**
- * Set the image's filter method.
- * This value must be 0.
- */
-void setFilterMethod(byte value) {
-	reference[FILTER_METHOD_OFFSET] = value;
-	filterMethod = value;
-}
-
-/**
  * Get the image's interlace method.
  * This value is limited to:
  * 0 - No interlacing used.
@@ -183,17 +113,6 @@ void setFilterMethod(byte value) {
  */
 byte getInterlaceMethod() {
 	return interlaceMethod;
-}
-
-/**
- * Set the image's interlace method.
- * This value is limited to:
- * 0 - No interlacing used.
- * 1 - Adam7 interlacing used.
- */
-void setInterlaceMethod(byte value) {
-	reference[INTERLACE_METHOD_OFFSET] = value;
-	interlaceMethod = value;
 }
 
 /**
@@ -303,11 +222,6 @@ void contributeToString(StringBuilder buffer) {
 
 boolean getMustHavePalette() {
 	return colorType == COLOR_TYPE_PALETTE;
-}
-
-boolean getCanHavePalette() {
-	return colorType != COLOR_TYPE_GRAYSCALE &&
-		colorType != COLOR_TYPE_GRAYSCALE_WITH_ALPHA;
 }
 
 /**
