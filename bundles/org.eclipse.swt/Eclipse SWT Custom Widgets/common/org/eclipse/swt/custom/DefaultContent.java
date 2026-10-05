@@ -411,48 +411,6 @@ void moveAndResizeGap(int position, int size, int newGapLine) {
  * Returns the number of lines that are in the specified text.
  * <p>
  *
- * @param startOffset the start of the text to lineate
- * @param length the length of the text to lineate
- * @return number of lines
- */
-int lineCount(int startOffset, int length){
-	if (length == 0) {
-		return 0;
-	}
-	int lineCount = 0;
-	int count = 0;
-	int i = startOffset;
-	if (i >= gapStart) {
-		i += gapEnd - gapStart;
-	}
-	while (count < length) {
-		if ((i >= gapStart) && (i < gapEnd)) {
-			// ignore the gap
-		} else {
-			char ch = textStore[i];
-			if (ch == SWT.CR) {
-				// see if the next character is a LF
-				if (i + 1 < textStore.length) {
-					ch = textStore[i+1];
-					if (ch == SWT.LF) {
-						i++;
-						count++;
-					}
-				}
-				lineCount++;
-			} else if (ch == SWT.LF) {
-				lineCount++;
-			}
-			count++;
-		}
-		i++;
-	}
-	return lineCount;
-}
-/**
- * Returns the number of lines that are in the specified text.
- * <p>
- *
  * @param text the text to lineate
  * @return number of lines in the text
  */
@@ -774,7 +732,8 @@ public void replaceTextRange(int start, int replaceLength, String newText){
 	StyledTextEvent event = new StyledTextEvent(this);
 	event.type = ST.TextChanging;
 	event.start = start;
-	event.replaceLineCount = lineCount(start, replaceLength);
+	// a rescan would merge an adjacent lone \r and \n into one delimiter
+	event.replaceLineCount = getLineAtOffset(start + replaceLength) - getLineAtOffset(start);
 	event.text = newText;
 	event.newLineCount = lineCount(newText);
 	event.replaceCharCount = replaceLength;
@@ -831,17 +790,10 @@ void delete(int position, int length, int numLines) {
 	int startLineOffset = getOffsetAtLine(startLine);
 	int endLine = getLineAtOffset(position + length);
 
-	String endText = "";
-	boolean splittingDelimiter = false;
-	if (position + length < getCharCount()) {
-		endText = getTextRange(position + length - 1, 2);
-		if ((endText.charAt(0) == SWT.CR) && (endText.charAt(1) == SWT.LF)) {
-			splittingDelimiter = true;
-		}
-	}
+	// logical end of the last affected line, from the existing line boundaries
+	int endLineEnd = endLine + 1 < lineCount ? getOffsetAtLine(endLine + 1) : getCharCount();
 
 	adjustGap(position + length, -length, startLine);
-	int [][] oldLines = indexLines(position, length + (gapEnd - gapStart), numLines);
 
 	// enlarge the gap - the gap can be enlarged either to the
 	// right or left
@@ -851,29 +803,10 @@ void delete(int position, int length, int numLines) {
 		gapEnd += length;
 	}
 
-	// figure out the length of the new concatenated line, do so by
-	// finding the first line delimiter after position
-	int j = position;
-	boolean eol = false;
-	while (j < textStore.length && !eol) {
-		if (j < gapStart || j >= gapEnd) {
-			char ch = textStore[j];
-			if (isDelimiter(ch)) {
-				if (j + 1 < textStore.length) {
-					if (ch == SWT.CR && (textStore[j+1] == SWT.LF)) {
-						j++;
-					}
-				}
-				eol = true;
-			}
-		}
-		j++;
-	}
-	// update the line where the deletion started
-	lines[startLine][1] = (position - startLineOffset) + (j - position);
-	// figure out the number of lines that have been deleted
-	int numOldLines = oldLines.length - 1;
-	if (splittingDelimiter) numOldLines -= 1;
+	// the start line now ends with the rest of the end line, the gap lies in between
+	lines[startLine][1] = (endLineEnd - length - startLineOffset) + (gapEnd - gapStart);
+	// a rescan would merge an adjacent lone \r and \n into one delimiter
+	int numOldLines = endLine - startLine;
 	// shift up the lines after the last deleted line, no need to update
 	// the offset or length of the lines
 	for (int i = endLine + 1; i < lineCount; i++) {
