@@ -94,27 +94,6 @@ int loadFileHeader(LEDataInputStream byteStream) {
 		SWT.error(SWT.ERROR_INVALID_IMAGE);
 	return numIcons;
 }
-int loadFileHeader(LEDataInputStream byteStream, boolean hasHeader) {
-	int[] fileHeader = new int[3];
-	try {
-		if (hasHeader) {
-			fileHeader[0] = byteStream.readShort();
-			fileHeader[1] = byteStream.readShort();
-		} else {
-			fileHeader[0] = 0;
-			fileHeader[1] = 1;
-		}
-		fileHeader[2] = byteStream.readShort();
-	} catch (IOException e) {
-		SWT.error(SWT.ERROR_IO, e);
-	}
-	if ((fileHeader[0] != 0) || (fileHeader[1] != 1))
-		SWT.error(SWT.ERROR_INVALID_IMAGE);
-	int numIcons = fileHeader[2];
-	if (numIcons <= 0)
-		SWT.error(SWT.ERROR_INVALID_IMAGE);
-	return numIcons;
-}
 @Override
 ImageData[] loadFromByteStream() {
 	int numIcons = loadFileHeader(inputStream);

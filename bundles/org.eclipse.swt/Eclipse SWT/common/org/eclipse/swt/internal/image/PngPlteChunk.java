@@ -21,14 +21,6 @@ class PngPlteChunk extends PngChunk {
 
 	int paletteSize;
 
-PngPlteChunk(PaletteData palette) {
-	super(palette.getRGBs().length * 3);
-	paletteSize = length / 3;
-	setType(TYPE_PLTE);
-	setPaletteData(palette);
-	setCRC(computeCRC());
-}
-
 PngPlteChunk(byte[] reference){
 	super(reference);
 	paletteSize = length / 3;
@@ -67,20 +59,6 @@ PaletteData getPaletteData() {
 }
 
 /**
- * Set the data of a PLTE chunk to the colors
- * stored in the specified PaletteData object.
- */
-void setPaletteData(PaletteData palette) {
-	RGB[] rgbs = palette.getRGBs();
-	for (int i = 0; i < rgbs.length; i++) {
-		int offset = DATA_OFFSET + (i * 3);
-		reference[offset] = (byte) rgbs[i].red;
-		reference[offset + 1] = (byte) rgbs[i].green;
-		reference[offset + 2] = (byte) rgbs[i].blue;
-	}
-}
-
-/**
  * Answer whether the chunk is a valid PLTE chunk.
  */
 @Override
@@ -99,11 +77,6 @@ void validate(PngFileReadState readState, PngIhdrChunk headerChunk) {
 	}
 
 	super.validate(readState, headerChunk);
-
-	// Palettes cannot be included in grayscale images.
-	//
-	// Note: just ignore the palette.
-//	if (!headerChunk.getCanHavePalette()) SWT.error(SWT.ERROR_INVALID_IMAGE);
 
 	// Palette chunks' data fields must be event multiples
 	// of 3. Each 3-byte group represents an RGB value.
