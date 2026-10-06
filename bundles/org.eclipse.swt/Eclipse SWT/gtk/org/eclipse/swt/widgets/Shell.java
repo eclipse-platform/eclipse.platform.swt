@@ -133,6 +133,8 @@ public class Shell extends Decorations {
 	long activateGesture;
 	int oldX, oldY, oldWidth, oldHeight;
 	GeometryInterface geometry;
+	/* GTK3: client-side decoration size from the last allocation, -1 before the first one */
+	int decorationWidth = -1, decorationHeight = -1;
 	Control lastActive;
 	ToolTip [] toolTips;
 	boolean ignoreFocusOut, ignoreFocusIn;
@@ -1965,6 +1967,32 @@ long gtk_size_allocate (long widget, long allocation) {
 		}
 	} else {
 		GTK3.gtk_window_get_size(shellHandle, widthA, heightA);
+		/*
+		 * GTK has just allocated the content box inside the client-side decorations
+		 * (title bar, shadow) and the container border.
+		 */
+		GtkAllocation shellAllocation = new GtkAllocation (), boxAllocation = new GtkAllocation ();
+		GTK.gtk_widget_get_allocation (shellHandle, shellAllocation);
+		GTK.gtk_widget_get_allocation (vboxHandle, boxAllocation);
+		int border = gtk_container_get_border_width_or_margin (shellHandle);
+		int newDecorationWidth = Math.max (0, shellAllocation.width - boxAllocation.width - 2 * border);
+		int newDecorationHeight = Math.max (0, shellAllocation.height - boxAllocation.height - 2 * border);
+		/*
+		 * A full screen window has no decorations. Changing the hint for it would make GTK
+		 * shrink the window itself, and request that size again when leaving full screen.
+		 */
+		long gdkWindow = gtk_widget_get_window (shellHandle);
+		boolean fullScreenState = gdkWindow != 0 && (GDK.gdk_window_get_state (gdkWindow) & GDK.GDK_WINDOW_STATE_FULLSCREEN) != 0;
+		if (!fullScreenState && (newDecorationWidth != decorationWidth || newDecorationHeight != decorationHeight)) {
+			decorationWidth = newDecorationWidth;
+			decorationHeight = newDecorationHeight;
+			if (geometry.getMaxWidth () > 0 || geometry.getMaxHeight () > 0) {
+				/* GTK drops resizes queued during size allocation, set the hint from outside it */
+				display.asyncExec (() -> {
+					if (!isDisposed ()) setMaximumSizeHint ();
+				});
+			}
+		}
 	}
 	width = widthA[0];
 	height = heightA[0];
@@ -2825,11 +2853,23 @@ public void setMinimumSize (int width, int height) {
 		return;
 	}
 
-	int hint = GDK.GDK_HINT_MIN_SIZE;
-	if (geometry.getMaxHeight() > 0 || geometry.getMaxWidth() > 0) {
-		hint = hint | GDK.GDK_HINT_MAX_SIZE;
+	/*
+	 * Set the minimum as a size request on the content box instead of a geometry
+	 * hint. GtkWindow adds its client-side decorations (title bar, shadow) to the
+	 * request and recomputes the minimum hint on every resize. A minimum passed
+	 * in the geometry hint is used as is, without the decorations on Wayland.
+	 */
+	int border = gtk_container_get_border_width_or_margin (shellHandle);
+	int boxWidth = geometry.getMinWidth () > 0 ? Math.max (0, geometry.getMinWidth () - 2 * border) : -1;
+	int boxHeight = geometry.getMinHeight () > 0 ? Math.max (0, geometry.getMinHeight () - 2 * border) : -1;
+	if ((style & SWT.RESIZE) == 0) {
+		/* The box size request also holds the size of a non-resizable shell, see resizeBounds() */
+		int [] requestWidth = new int [1], requestHeight = new int [1];
+		GTK.gtk_widget_get_size_request (vboxHandle, requestWidth, requestHeight);
+		boxWidth = Math.max (boxWidth, requestWidth [0]);
+		boxHeight = Math.max (boxHeight, requestHeight [0]);
 	}
-	GTK3.gtk_window_set_geometry_hints (shellHandle, 0, (GdkGeometry) geometry, hint);
+	GTK.gtk_widget_set_size_request (vboxHandle, boxWidth, boxHeight);
 }
 
 /**
@@ -2884,11 +2924,26 @@ public void setMaximumSize (int width, int height) {
 	}
 	geometry.setMaxWidth(Math.max (width, trimWidth ()) - trimWidth ());
 	geometry.setMaxHeight(Math.max (height, trimHeight ()) - trimHeight ());
-	int hint = GDK.GDK_HINT_MAX_SIZE;
-	if (geometry.getMinWidth() > 0 || geometry.getMinHeight() > 0) {
-		hint = hint | GDK.GDK_HINT_MIN_SIZE;
-	}
-	GTK3.gtk_window_set_geometry_hints (shellHandle, 0, (GdkGeometry) geometry, hint);
+	setMaximumSizeHint ();
+}
+
+/*
+ * GTK3 applies the maximum size hint to the whole window, including the
+ * client-side decorations (title bar, shadow), so they are added to it.
+ * gtk_size_allocate() measures the decoration size, which changes e.g. when
+ * the window is maximized, and calls this again when it changes.
+ * Until the first allocation the decoration size is unknown and no hint is
+ * sent: a hint without it would shrink the window, and GTK does not grow it
+ * back later.
+ */
+private void setMaximumSizeHint () {
+	if (decorationWidth < 0) return;
+	GdkGeometry hints = new GdkGeometry ();
+	int maxWidth = geometry.getMaxWidth (), maxHeight = geometry.getMaxHeight ();
+	hints.max_width = maxWidth > 0 ? (int) Math.min (Integer.MAX_VALUE, (long) maxWidth + decorationWidth) : 0;
+	hints.max_height = maxHeight > 0 ? (int) Math.min (Integer.MAX_VALUE, (long) maxHeight + decorationHeight) : 0;
+	/* The minimum comes from the content box size request, see setMinimumSize() */
+	GTK3.gtk_window_set_geometry_hints (shellHandle, 0, hints, GDK.GDK_HINT_MAX_SIZE);
 }
 
 /**
