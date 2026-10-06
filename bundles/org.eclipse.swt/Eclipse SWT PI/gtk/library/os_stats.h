@@ -146,6 +146,8 @@ typedef enum {
 	gdk_1pixbuf_1save_1to_1bufferv_FUNC,
 	gdk_1pixbuf_1scale_1simple_FUNC,
 	gdk_1popup_1get_1parent_FUNC,
+	gdk_1popup_1get_1position_1x_FUNC,
+	gdk_1popup_1get_1position_1y_FUNC,
 	gdk_1popup_1layout_1new_FUNC,
 	gdk_1popup_1present_FUNC,
 	gdk_1property_1get_FUNC,

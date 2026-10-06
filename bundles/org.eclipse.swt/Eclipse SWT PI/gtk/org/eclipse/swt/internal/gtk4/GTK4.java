@@ -676,6 +676,8 @@ public class GTK4 {
 	/* GtkNative */
 	/** @param self cast=(GtkNative *) */
 	public static final native long gtk_native_get_surface(long self);
+	/** @param self cast=(GtkNative *) */
+	public static final native void gtk_native_get_surface_transform(long self, double[] x, double[] y);
 
 	/* GtkEntry */
 	/**

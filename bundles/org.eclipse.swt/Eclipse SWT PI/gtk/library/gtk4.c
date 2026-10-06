@@ -2252,6 +2252,23 @@ JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1native_1get_1surface)
 }
 #endif
 
+#ifndef NO_gtk_1native_1get_1surface_1transform
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1native_1get_1surface_1transform)
+	(JNIEnv *env, jclass that, jlong arg0, jdoubleArray arg1, jdoubleArray arg2)
+{
+	jdouble *lparg1=NULL;
+	jdouble *lparg2=NULL;
+	GTK4_NATIVE_ENTER(env, that, gtk_1native_1get_1surface_1transform_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetDoubleArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetDoubleArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	gtk_native_get_surface_transform((GtkNative *)arg0, lparg1, lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseDoubleArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseDoubleArrayElements(env, arg1, lparg1, 0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1native_1get_1surface_1transform_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1picture_1new
 JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1picture_1new)
 	(JNIEnv *env, jclass that)

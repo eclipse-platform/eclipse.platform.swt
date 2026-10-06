@@ -1809,17 +1809,14 @@ Point getControlOrigin() {
 	/*
 	 * A popover-backed Shell renders in its own surface positioned (via oldX/oldY) within
 	 * the nearest real top-level window's content. translate_coordinates only yields the
-	 * offset within the popover, so add the placement of each popover-backed ancestor to
-	 * keep display coordinates consistent with that window (e.g. so a sibling popup can be
-	 * laid out next to it via toDisplay, including the javadoc popup parented to the
-	 * content-assist proposal popup).
+	 * offset within the popover, so add its placement to keep display coordinates
+	 * consistent with that window (e.g. so a sibling popup can be laid out next to it via
+	 * toDisplay). oldX/oldY are relative to that window also for a popover nested in
+	 * another one, as all popovers are parented to it, see Shell.positionPopover().
 	 */
-	while (shell.popover) {
+	if (shell.popover) {
 		origin.x += shell.oldX;
 		origin.y += shell.oldY;
-		Shell parentShell = shell.parent != null ? shell.parent.getShell() : null;
-		if (parentShell == null || parentShell == shell) break;
-		shell = parentShell;
 	}
 	return origin;
 }
@@ -6934,13 +6931,10 @@ Point getSurfaceOrigin () {
 	Shell shell = getShell();
 	boolean success = GTK4.gtk_widget_translate_coordinates(widgetHandle, shell.shellHandle, 0, 0, originX, originY);
 	Point origin = success ? new Point((int)originX[0], (int)originY[0]) : new Point(0, 0);
-	/* See getControlOrigin(): account for the placement of each popover-backed ancestor. */
-	while (shell.popover) {
+	/* See getControlOrigin(): account for the placement of a popover-backed shell. */
+	if (shell.popover) {
 		origin.x += shell.oldX;
 		origin.y += shell.oldY;
-		Shell parentShell = shell.parent != null ? shell.parent.getShell() : null;
-		if (parentShell == null || parentShell == shell) break;
-		shell = parentShell;
 	}
 	return origin;
 }
