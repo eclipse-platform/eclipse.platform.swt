@@ -34,6 +34,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -685,6 +686,56 @@ private static boolean reflection_shouldHighlight(CTabFolder partStackTabs) {
 	return shouldHighlightConsoleViewTab;
 }
 
+@Test
+public void test_childControlOverlapAtAnyWidth() {
+	// the folders get explicit bounds
+	shell.setLayout(null);
+	SwtTestUtil.openShell(shell);
+	FontData[] fontData = shell.getFont().getFontData();
+	// the width of the chevron depends on the font
+	for (int fontHeight = 9; fontHeight <= 24; fontHeight += 5) {
+		fontData[0].setHeight(fontHeight);
+		Font font = new Font(shell.getDisplay(), fontData);
+		try {
+			for (int width = 300; width >= 130; width -= 3) {
+				checkNoOverlapOnFirstLayout(SWT.CLOSE, font, width);
+				checkNoOverlapOnFirstLayout(SWT.CLOSE | SWT.SINGLE, font, width);
+			}
+		} finally {
+			font.dispose();
+		}
+	}
+}
+
+/** Uses a new folder so that the chevron is shown for the first time at the given width. */
+private void checkNoOverlapOnFirstLayout(int style, Font font, int width) {
+	CTabFolder folder = new CTabFolder(shell, style);
+	try {
+		folder.setFont(font);
+		for (int i = 1; i <= 5; i++) {
+			new CTabItem(folder, SWT.NONE).setText("Item" + i);
+		}
+		// the selected tab is sized against the chevron
+		folder.setSelection(0);
+		folder.setMinimizeVisible(true);
+		folder.setMaximizeVisible(true);
+		folder.setBounds(0, 0, width, 100);
+		int toolBarWidth = 0;
+		for (Control child : folder.getChildren()) {
+			if (child instanceof ToolBar toolBar && toolBar.isVisible()) {
+				toolBarWidth += toolBar.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
+			}
+		}
+		// the tool bars alone, plus the spacing around them, do not fit into a narrower folder
+		if (width < toolBarWidth + 10) {
+			return;
+		}
+		checkElementOverlap(folder, () -> ", style " + style + ", font height " + font.getFontData()[0].getHeight());
+	} finally {
+		folder.dispose();
+	}
+}
+
 /**
  * Resize shell so that the ctabFolder must show the chevron.
  * <p>
@@ -733,36 +784,40 @@ private ToolItem getChevron(CTabFolder tabFolder) {
 }
 
 private void checkElementOverlap(CTabFolder tabFolder) {
+	checkElementOverlap(tabFolder, () -> "");
+}
+
+private void checkElementOverlap(CTabFolder tabFolder, Supplier<String> context) {
 	Rectangle folderBounds = tabFolder.getBounds();
 	ArrayList<Widget> subControls = new ArrayList<>();
 	subControls.addAll(Arrays.asList(reflection_getChildControls(tabFolder)));
 	subControls.addAll(Arrays.asList(tabFolder.getItems()));
 	for (int i = 0; i < subControls.size(); i++) {
-		Rectangle boundsA = null;
-		if (subControls.get(i) instanceof Control c) {
-			if (!c.isVisible())
-				continue;
-			boundsA = c.getBounds();
-		} else if (subControls.get(i) instanceof CTabItem cTab) {
-			if (!cTab.isShowing())
-				continue;
-			boundsA = cTab.getBounds();
-		}
+		Widget a = subControls.get(i);
+		Rectangle boundsA = getVisibleBounds(a);
+		if (boundsA == null)
+			continue;
 		for (int j = i + 1; j < subControls.size(); j++) {
-			Rectangle boundsB = null;
-			if (subControls.get(j) instanceof Control c) {
-				if (!c.isVisible())
-					continue;
-				boundsB = c.getBounds();
-			} else if (subControls.get(j) instanceof CTabItem cTab) {
-				if (!cTab.isShowing())
-					continue;
-				boundsB = cTab.getBounds();
-			}
-			assertFalse(boundsA.intersects(boundsB));
+			Widget b = subControls.get(j);
+			Rectangle boundsB = getVisibleBounds(b);
+			if (boundsB == null)
+				continue;
+			assertFalse(boundsA.intersects(boundsB),
+					() -> a + " " + boundsA + " overlaps " + b + " " + boundsB + ", folder " + folderBounds + context.get());
 		}
-		assertEquals(folderBounds.intersection(boundsA), boundsA);
+		assertEquals(folderBounds.intersection(boundsA), boundsA,
+				() -> a + " " + boundsA + " exceeds folder " + folderBounds + context.get());
 	}
+}
+
+private static Rectangle getVisibleBounds(Widget widget) {
+	if (widget instanceof Control c) {
+		return c.isVisible() ? c.getBounds() : null;
+	}
+	if (widget instanceof CTabItem item) {
+		return item.isShowing() ? item.getBounds() : null;
+	}
+	return null;
 }
 
 private static Control[] reflection_getChildControls(CTabFolder tabFolder) {

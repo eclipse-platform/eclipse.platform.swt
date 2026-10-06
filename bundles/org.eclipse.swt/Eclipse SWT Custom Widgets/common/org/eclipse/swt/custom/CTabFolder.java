@@ -2943,6 +2943,8 @@ boolean setItemSize(GC gc) {
 		showChevron = chevronVisible && items.length > 1;
 		if (showChevron) {
 			chevron.setVisible(true);
+			// measured below, and the chevron without its image is narrower
+			updateChevronImage(false);
 		}
 		if (selectedIndex != -1) {
 			CTabItem tab = items[selectedIndex];
@@ -2983,6 +2985,7 @@ boolean setItemSize(GC gc) {
 		// full compression required and a chevron
 		showChevron = chevronVisible && items.length > 1;
 		if (showChevron) {
+			updateChevronImage(false);
 			tabAreaWidth -= chevron.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
 			chevron.setVisible(true);
 		}
