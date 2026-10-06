@@ -2291,6 +2291,15 @@ void snapshotBackground (long handle, long snapshot) {
 }
 
 /**
+ * Pushes a mask that the whole widget is drawn through, popped by the caller.
+ *
+ * @return whether a mask was pushed
+ */
+boolean snapshotPushMask (long handle, long snapshot) {
+	return false;
+}
+
+/**
  * Converts an incoming snapshot into a gtk_draw() call, complete with
  * a Cairo context. Used by subclasses to
  * trigger painting at the appropriate point in the snapshot order.

@@ -2564,6 +2564,20 @@ JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1snapshot_1append_1cairo)
 }
 #endif
 
+#ifndef NO_gtk_1snapshot_1append_1color
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1snapshot_1append_1color)
+	(JNIEnv *env, jclass that, jlong arg0, jobject arg1, jlong arg2)
+{
+	GdkRGBA _arg1, *lparg1=NULL;
+	GTK4_NATIVE_ENTER(env, that, gtk_1snapshot_1append_1color_FUNC);
+	if (arg1) if ((lparg1 = getGdkRGBAFields(env, arg1, &_arg1)) == NULL) goto fail;
+	gtk_snapshot_append_color((GtkSnapshot *)arg0, (const GdkRGBA *)lparg1, (const graphene_rect_t *)arg2);
+fail:
+	if (arg1 && lparg1) setGdkRGBAFields(env, arg1, lparg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1snapshot_1append_1color_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1snapshot_1free_1to_1node
 JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1snapshot_1free_1to_1node)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -2585,6 +2599,34 @@ JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1snapshot_1new)
 	rc = (jlong)gtk_snapshot_new();
 	GTK4_NATIVE_EXIT(env, that, gtk_1snapshot_1new_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1snapshot_1pop
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1snapshot_1pop)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1snapshot_1pop_FUNC);
+	gtk_snapshot_pop((GtkSnapshot *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1snapshot_1pop_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1snapshot_1push_1mask
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1snapshot_1push_1mask)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1snapshot_1push_1mask_FUNC);
+/*
+	gtk_snapshot_push_mask((GtkSnapshot *)arg0, arg1);
+*/
+	{
+		GTK4_LOAD_FUNCTION(fp, gtk_snapshot_push_mask)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkSnapshot *, jint))fp)((GtkSnapshot *)arg0, arg1);
+		}
+	}
+	GTK4_NATIVE_EXIT(env, that, gtk_1snapshot_1push_1mask_FUNC);
 }
 #endif
 

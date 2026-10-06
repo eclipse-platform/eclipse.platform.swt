@@ -132,6 +132,7 @@ public class Shell extends Decorations {
 	boolean popover;
 	long activateGesture;
 	int oldX, oldY, oldWidth, oldHeight;
+	long shapedProvider;
 	GeometryInterface geometry;
 	Control lastActive;
 	ToolTip [] toolTips;
@@ -2992,8 +2993,65 @@ public void setRegion (Region region) {
 	} else {
 		originalRegion = null;
 	}
-	super.setRegion (region);
+	if (GTK.GTK4) {
+		setRegionGTK4 (region);
+	} else {
+		super.setRegion (region);
+	}
 	if (regionToDispose != null) regionToDispose.dispose();
+}
+
+/*
+ * GTK4 has no shaped surfaces. Draw the shell through a mask of the region
+ * instead, see snapshotPushMask(), and drop the background, border, rounding
+ * and shadow that GTK draws for the frame and the shell outside of the mask.
+ */
+void setRegionGTK4 (Region region) {
+	this.region = region;
+	if (GTK.GTK_VERSION < OS.VERSION (4, 10, 0)) return;
+	cairoDisposeRegion ();
+	cairoCopyRegion (region);
+	if (shapedProvider == 0) {
+		/* Higher priority than the provider of setBackground() */
+		shapedProvider = GTK.gtk_css_provider_new ();
+		for (long widget : new long [] {GTK.gtk_widget_get_parent (vboxHandle), handle}) {
+			GTK.gtk_style_context_add_provider (GTK.gtk_widget_get_style_context (widget), shapedProvider, GTK.GTK_STYLE_PROVIDER_PRIORITY_USER);
+		}
+		OS.g_object_unref (shapedProvider);
+	}
+	String css = regionHandle != 0 ? "* {background: none; border: none; border-radius: 0; box-shadow: none;}" : "";
+	GTK4.gtk_css_provider_load_from_data (shapedProvider, Converter.wcsToMbcs (css, true), -1);
+	GTK.gtk_widget_queue_draw (handle);
+}
+
+@Override
+boolean snapshotPushMask (long handle, long snapshot) {
+	if (handle != this.handle || regionHandle == 0) return false;
+	int [] nRects = new int [1];
+	long [] rects = new long [1];
+	gdk_region_get_rectangles (regionHandle, rects, nRects);
+	GdkRectangle rectangle = new GdkRectangle ();
+	GdkRGBA opaque = new GdkRGBA ();
+	opaque.alpha = 1;
+	long rect = Graphene.graphene_rect_alloc ();
+	GTK4.gtk_snapshot_push_mask (snapshot, GTK4.GSK_MASK_MODE_ALPHA);
+	for (int i = 0; i < nRects [0]; i++) {
+		OS.memmove (rectangle, rects [0] + (i * GdkRectangle.sizeof), GdkRectangle.sizeof);
+		Graphene.graphene_rect_init (rect, rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+		GTK4.gtk_snapshot_append_color (snapshot, opaque, rect);
+	}
+	if (rects [0] != 0) OS.g_free (rects [0]);
+	/* Ends the mask, the content up to the next pop is drawn through it */
+	GTK4.gtk_snapshot_pop (snapshot);
+	/* Paint the background of setBackground() dropped by shapedProvider */
+	if ((state & BACKGROUND) != 0) {
+		GtkAllocation allocation = new GtkAllocation ();
+		GTK.gtk_widget_get_allocation (handle, allocation);
+		Graphene.graphene_rect_init (rect, 0, 0, allocation.width, allocation.height);
+		GTK4.gtk_snapshot_append_color (snapshot, getBackgroundGdkRGBA (), rect);
+	}
+	Graphene.graphene_rect_free (rect);
+	return true;
 }
 
 //copied from Region:
