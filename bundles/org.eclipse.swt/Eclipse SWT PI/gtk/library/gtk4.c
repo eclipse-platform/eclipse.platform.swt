@@ -2182,6 +2182,16 @@ JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1keyval_1trigger_1new)
 }
 #endif
 
+#ifndef NO_gtk_1label_1set_1max_1width_1chars
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1label_1set_1max_1width_1chars)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1label_1set_1max_1width_1chars_FUNC);
+	gtk_label_set_max_width_chars((GtkLabel *)arg0, (int)arg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1label_1set_1max_1width_1chars_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1label_1set_1wrap
 JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1label_1set_1wrap)
 	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)

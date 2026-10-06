@@ -3395,7 +3395,10 @@ void initializeSystemColorsTooltip() {
 	// Just use temporary label; this is easier then finding the original label
 	long styleContextLabel = GTK.gtk_widget_get_style_context(customLabel);
 	COLOR_INFO_FOREGROUND_RGBA = styleContextGetColor(styleContextLabel, GTK.GTK_STATE_FLAG_NORMAL);
-	COLOR_INFO_BACKGROUND_RGBA = styleContextEstimateBackgroundColor(styleContextLabel, GTK.GTK_STATE_FLAG_NORMAL);
+	// GTK4 style contexts have no parents, the background is on the tooltip window holding the label
+	long backgroundWidget = customLabel;
+	while (GTK.GTK4 && GTK.gtk_widget_get_parent(backgroundWidget) != 0) backgroundWidget = GTK.gtk_widget_get_parent(backgroundWidget);
+	COLOR_INFO_BACKGROUND_RGBA = styleContextEstimateBackgroundColor(GTK.gtk_widget_get_style_context(backgroundWidget), GTK.GTK_STATE_FLAG_NORMAL);
 
 	// Cleanup
 	// customLabel is owned by tooltip and will be destroyed automatically

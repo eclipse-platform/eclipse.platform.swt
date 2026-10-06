@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2025 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -52,6 +52,9 @@ public class ToolTip extends Widget {
 	TrayItem item;
 	int x, y, timerId;
 	long layoutText = 0, layoutMessage = 0;
+	/* GTK4 only: the balloon is a GtkPopover holding these labels */
+	long titleHandle, messageHandle;
+	Listener outsideClickFilter;
 	long provider;
 	int [] borderPolygon;
 	boolean spikeAbove, autohide;
@@ -60,6 +63,7 @@ public class ToolTip extends Widget {
 	static final int PADDING = 5;
 	static final int INSET = 4;
 	static final int TIP_HEIGHT = 20;
+	static final int TIP_INSET = 17;
 	static final int IMAGE_SIZE = 16;
 	static final int DELAY = 8000;
 
@@ -136,19 +140,22 @@ public void addSelectionListener (SelectionListener listener) {
 }
 
 void configure () {
-	/*
-	 * Bug in GTK4: A lot of the functions that SWT uses to configure tooltips
-	 * in this function were removed from GTK4. Due to this, whenever configure()
-	 * gets called it causes a crash. The replacement functions for
-	 * gtk_widget_shape_combine_region has not been found. So for now, allow this
-	 * function to be called without causing the program to crash.
-	 *
-	 * TODO: Find the replacement for all GTK3 functions called here
-	 *
-	 * See Bug 577600
-	 */
-	if(GTK.GTK4) {
-		System.err.println("SWT Error: ToolTip.java: ToolTip with style SWT.BALLOON not supported on GTK 4.");
+	if (GTK.GTK4) {
+		/*
+		 * The balloon is a GtkPopover in the content box of the nearest real top-level
+		 * window, see Shell.positionPopover(). It opens at the start of the rectangle and
+		 * points at its middle, so center it on the location to keep the arrow off the corner.
+		 */
+		Shell root = parent.rootWindowShell ();
+		Point point = getLocation ();
+		double [] x = new double [1], y = new double [1];
+		GTK4.gtk_widget_translate_coordinates (root.shellHandle, root.vboxHandle, point.x, point.y, x, y);
+		int inset = Math.min (TIP_INSET, Math.max (0, (int) x [0]));
+		GdkRectangle rect = new GdkRectangle ();
+		rect.x = (int) x [0] - inset;
+		rect.y = (int) y [0];
+		rect.width = 2 * inset;
+		GTK.gtk_popover_set_pointing_to (handle, rect);
 		return;
 	}
 
@@ -296,7 +303,47 @@ void createHandle (int index) {
 	if ((style & SWT.BALLOON) != 0) {
 		state |= HANDLE;
 		if (GTK.GTK4) {
-			//TODO: GTK4 implementation of ToolTips
+			handle = GTK4.gtk_popover_new ();
+			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+			GTK4.gtk_popover_set_autohide (handle, false);
+			/* Open towards the end of the line from the location, as the GTK3 balloon does */
+			GTK.gtk_widget_set_halign (handle, GTK.GTK_ALIGN_START);
+			long box = GTK.gtk_box_new (GTK.GTK_ORIENTATION_VERTICAL, PADDING);
+			long titleBox = GTK.gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, INSET);
+			String icon = null;
+			switch (style & (SWT.ICON_ERROR | SWT.ICON_INFORMATION | SWT.ICON_WARNING)) {
+				case SWT.ICON_ERROR: icon = "dialog-error"; break;
+				case SWT.ICON_INFORMATION: icon = "dialog-information"; break;
+				case SWT.ICON_WARNING: icon = "dialog-warning"; break;
+			}
+			if (icon != null) {
+				long imageHandle = GTK4.gtk_image_new_from_icon_name (Converter.javaStringToCString (icon));
+				GTK.gtk_image_set_pixel_size (imageHandle, IMAGE_SIZE);
+				GTK4.gtk_box_append (titleBox, imageHandle);
+			}
+			titleHandle = createLabel (titleBox);
+			GTK.gtk_widget_add_css_class (titleHandle, Converter.javaStringToCString ("heading"));
+			GTK.gtk_widget_set_visible (titleBox, false);
+			GTK4.gtk_box_append (box, titleBox);
+			messageHandle = createLabel (box);
+			GTK.gtk_widget_set_visible (messageHandle, false);
+			GTK4.gtk_popover_set_child (handle, box);
+			/*
+			 * Paint the popover with the tool tip colors. Fade it as a whole to the tool tip
+			 * translucency, so that the arrow, which overlaps the frame border, does not show
+			 * twice as dark there. The frame is a child widget that does not see the providers
+			 * of the popover, add it to both.
+			 */
+			Color info = display.getSystemColor (SWT.COLOR_INFO_BACKGROUND);
+			RGB rgb = info.getRGB ();
+			String color = "rgb(" + rgb.red + "," + rgb.green + "," + rgb.blue + ")";
+			String css = "popover.background {opacity: " + info.getAlpha () / 255f + ";}\n"
+				+ "popover.background > arrow, popover.background > contents {background-color: " + color + "; border-color: " + color
+				+ "; color: " + display.gtk_rgba_to_css_string (display.getSystemColor (SWT.COLOR_INFO_FOREGROUND).handle) + ";}";
+			gtk_css_provider_load_from_css (GTK.gtk_widget_get_style_context (handle), css);
+			long contents = GTK.gtk_widget_get_parent (box);
+			GTK.gtk_style_context_add_provider (GTK.gtk_widget_get_style_context (contents), provider, GTK.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+			GTK.gtk_widget_set_parent (handle, parent.rootWindowShell ().vboxHandle);
 		} else {
 			handle = GTK3.gtk_window_new (GTK.GTK_WINDOW_POPUP);
 			Color background = display.getSystemColor (SWT.COLOR_INFO_BACKGROUND);
@@ -307,6 +354,17 @@ void createHandle (int index) {
 			GTK3.gtk_window_set_type_hint (handle, GDK.GDK_WINDOW_TYPE_HINT_TOOLTIP);
 		}
 	}
+}
+
+private long createLabel (long box) {
+	long label = GTK.gtk_label_new (null);
+	GTK4.gtk_label_set_wrap (label, true);
+	GTK4.gtk_label_set_wrap_mode (label, OS.PANGO_WRAP_WORD_CHAR);
+	/* Same width limit as the GTK tool tip window */
+	GTK4.gtk_label_set_max_width_chars (label, 50);
+	GTK.gtk_label_set_xalign (label, 0);
+	GTK4.gtk_box_append (box, label);
+	return label;
 }
 
 void gtk_css_provider_load_from_css (long context, String css) {
@@ -341,7 +399,7 @@ void destroyWidget () {
 	if (topHandle != 0 && (state & HANDLE) != 0) {
 		if ((style & SWT.BALLOON) != 0) {
 			if (GTK.GTK4) {
-				OS.g_object_unref(topHandle);
+				GTK.gtk_widget_unparent(topHandle);
 			} else {
 				GTK3.gtk_widget_destroy(topHandle);
 			}
@@ -381,11 +439,9 @@ Point getLocation () {
 
 	if (x == -1 || y == -1) {
 		if (GTK.GTK4) {
-			double[] px = new double[1], py = new double[1];
-			display.getPointerPosition(px, py);
-
-			x = (int)px[0];
-			y = (int)py[0];
+			Point cursor = display.getCursorLocation ();
+			x = cursor.x;
+			y = cursor.y;
 		} else {
 			int[] px = new int[1], py = new int[1];
 
@@ -513,6 +569,13 @@ long gtk3_button_press_event (long widget, long event) {
 	return 0;
 }
 
+@Override
+int gtk_gesture_press_event (long gesture, int n_press, double x, double y, long event) {
+	sendSelectionEvent (SWT.Selection, null, true);
+	if (!isDisposed ()) setVisible (false);
+	return GTK4.GTK_EVENT_SEQUENCE_CLAIMED;
+}
+
 void drawTooltip (long cairo) {
 	int x = BORDER + PADDING;
 	int y = BORDER + PADDING;
@@ -598,14 +661,13 @@ long gtk_size_allocate (long widget, long allocation) {
 @Override
 void hookEvents () {
 	if ((style & SWT.BALLOON) != 0) {
-		OS.g_signal_connect_closure_by_id (handle, display.signalIds [EXPOSE_EVENT], 0, display.getClosure (EXPOSE_EVENT), true);
-		OS.g_signal_connect_closure_by_id (handle, display.signalIds [EXPOSE_EVENT_INVERSE], 0, display.getClosure (EXPOSE_EVENT_INVERSE), true);
-
 		if (GTK.GTK4) {
 			long clickController = GTK4.gtk_gesture_click_new();
 			GTK4.gtk_widget_add_controller(handle, clickController);
 			OS.g_signal_connect(clickController, OS.pressed, display.gesturePressReleaseProc, GESTURE_PRESSED);
 		} else {
+			OS.g_signal_connect_closure_by_id (handle, display.signalIds [EXPOSE_EVENT], 0, display.getClosure (EXPOSE_EVENT), true);
+			OS.g_signal_connect_closure_by_id (handle, display.signalIds [EXPOSE_EVENT_INVERSE], 0, display.getClosure (EXPOSE_EVENT_INVERSE), true);
 			GTK3.gtk_widget_add_events(handle, GDK.GDK_BUTTON_PRESS_MASK);
 			OS.g_signal_connect_closure(handle, OS.button_press_event, display.getClosure (BUTTON_PRESS_EVENT), false);
 		}
@@ -762,6 +824,11 @@ public void setMessage (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	message = string;
 	if ((style & SWT.BALLOON) == 0) return;
+	if (GTK.GTK4) {
+		GTK.gtk_label_set_text (messageHandle, Converter.javaStringToCString (message));
+		GTK.gtk_widget_set_visible (messageHandle, !message.isEmpty ());
+		return;
+	}
 	if (layoutMessage != 0) OS.g_object_unref (layoutMessage);
 	layoutMessage = 0;
 	if (message.length () != 0) {
@@ -791,6 +858,11 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	text = string;
 	if ((style & SWT.BALLOON) == 0) return;
+	if (GTK.GTK4) {
+		GTK.gtk_label_set_text (titleHandle, Converter.javaStringToCString (text));
+		GTK.gtk_widget_set_visible (GTK.gtk_widget_get_parent (titleHandle), !text.isEmpty ());
+		return;
+	}
 	if (layoutText != 0) OS.g_object_unref (layoutText);
 	layoutText = 0;
 	if (text.length () != 0) {
@@ -836,6 +908,7 @@ public void setVisible (boolean visible) {
 		if ((style & SWT.BALLOON) != 0) {
 			configure ();
 			gtk_widget_show (handle);
+			if (GTK.GTK4) hookOutsideClick (true);
 		} else {
 			long vboxHandle = parent.vboxHandle;
 			StringBuilder string = new StringBuilder (text);
@@ -853,6 +926,7 @@ public void setVisible (boolean visible) {
 		}
 	} else {
 		if ((style & SWT.BALLOON) != 0) {
+			hookOutsideClick (false);
 			gtk_widget_hide (handle);
 		} else {
 			long vboxHandle = parent.vboxHandle;
@@ -862,9 +936,30 @@ public void setVisible (boolean visible) {
 	}
 }
 
+/*
+ * The GTK4 balloon does not grab input, so typing continues in the control it points
+ * at and GTK does not hide it on a click elsewhere. Hide it on any mouse press in the
+ * application or deactivated shell instead. Presses on the balloon are not SWT events.
+ */
+private void hookOutsideClick (boolean hook) {
+	if (hook) {
+		if (outsideClickFilter != null) return;
+		outsideClickFilter = event -> setVisible (false);
+		display.addFilter (SWT.MouseDown, outsideClickFilter);
+		display.addFilter (SWT.Deactivate, outsideClickFilter);
+	} else if (outsideClickFilter != null) {
+		display.removeFilter (SWT.MouseDown, outsideClickFilter);
+		display.removeFilter (SWT.Deactivate, outsideClickFilter);
+		outsideClickFilter = null;
+	}
+}
+
 @Override
 long timerProc (long widget) {
+	/* Returning 0 removes the source, it must not be removed again */
+	timerId = 0;
 	if ((style & SWT.BALLOON) != 0) {
+		hookOutsideClick (false);
 		gtk_widget_hide (handle);
 	}
 	return 0;
