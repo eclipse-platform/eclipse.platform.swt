@@ -5062,12 +5062,16 @@ String debugInfoForIndex(long index) {
 	return s;
 }
 
-void dpiChanged(int newScaleFactor) {
-	DPIUtil.setDeviceZoom (DPIUtil.mapDPIToZoom(getDPI().x * newScaleFactor));
+boolean dpiChanged(int newScaleFactor) {
+	// same formula as Device.getDeviceZoom, so an unchanged scale factor is not a zoom change
+	int nativeZoom = newScaleFactor * 100;
+	if (nativeZoom == DPIUtil.getNativeDeviceZoom()) return false;
+	DPIUtil.setDeviceZoom (nativeZoom);
 	Shell[] shells = getShells();
 	for (int i = 0; i < shells.length; i++) {
 		shells[i].layout(true, true);
 	}
+	return true;
 }
 
 String dumpWidgetTableInfo() {
