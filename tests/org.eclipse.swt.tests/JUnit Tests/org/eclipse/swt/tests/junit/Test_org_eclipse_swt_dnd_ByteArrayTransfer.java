@@ -26,6 +26,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
+import org.eclipse.swt.SWTException;
 import org.eclipse.swt.dnd.ByteArrayTransfer;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.FileTransfer;
@@ -211,6 +212,39 @@ public class Test_org_eclipse_swt_dnd_ByteArrayTransfer extends ClipboardBase {
 		byte[] resultBytes = SwtTestUtil.runOperationInThread(() -> remote.getMyTypeContents());
 		MyType result = deserializeMyType(resultBytes);
 		assertMyTypeEquals(test, result);
+	}
+
+	/** Data that is not a byte[] is invalid even for a supported TransferData. */
+	@Test
+	public void test_javaToNative_nonByteArray_throwsInvalidData() {
+		RawByteArrayTransfer raw = new RawByteArrayTransfer();
+		TransferData supported = raw.getSupportedTypes()[0];
+		assertTrue(raw.isSupportedType(supported));
+		for (Object invalid : new Object[] { getUniqueTestString(), Integer.valueOf(1), new Object(), null }) {
+			SWTException error = assertThrows(SWTException.class, () -> raw.javaToNative(invalid, supported));
+			assertEquals(DND.ERROR_INVALID_DATA, error.code);
+		}
+	}
+
+	/** Exposes the protected javaToNative of ByteArrayTransfer unchanged. */
+	private static class RawByteArrayTransfer extends ByteArrayTransfer {
+		private static final String NAME = "raw_byte_array_type_name";
+		private static final int ID = registerType(NAME);
+
+		@Override
+		public void javaToNative(Object object, TransferData transferData) {
+			super.javaToNative(object, transferData);
+		}
+
+		@Override
+		protected String[] getTypeNames() {
+			return new String[] { NAME };
+		}
+
+		@Override
+		protected int[] getTypeIds() {
+			return new int[] { ID };
+		}
 	}
 
 	// apart from the static, this should be a straight copy/paste of
