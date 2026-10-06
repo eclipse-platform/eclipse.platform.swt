@@ -20,7 +20,8 @@ import org.junit.platform.suite.api.Suite;
 @Suite
 @SelectClasses({
 	Test_GtkConverter.class,
-	Test_GtkMenu.class
+	Test_GtkMenu.class,
+	Test_GtkScaleFactor.class
 })
 
 public class AllGTKTests {
