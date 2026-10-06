@@ -178,6 +178,7 @@ typedef enum {
 	gtk_1image_1set_1from_1paintable_FUNC,
 	gtk_1init_1check_FUNC,
 	gtk_1keyval_1trigger_1new_FUNC,
+	gtk_1label_1set_1max_1width_1chars_FUNC,
 	gtk_1label_1set_1wrap_FUNC,
 	gtk_1label_1set_1wrap_1mode_FUNC,
 	gtk_1menu_1button_1set_1use_1underline_FUNC,

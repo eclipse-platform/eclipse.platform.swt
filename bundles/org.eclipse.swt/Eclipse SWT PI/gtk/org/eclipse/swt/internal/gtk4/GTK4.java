@@ -916,6 +916,11 @@ public class GTK4 {
 	 * @param wrap_mode cast=(PangoWrapMode)
 	 */
 	public static final native void gtk_label_set_wrap_mode(long label, int wrap_mode);
+	/**
+	 * @param label cast=(GtkLabel *)
+	 * @param n_chars cast=(int)
+	 */
+	public static final native void gtk_label_set_max_width_chars(long label, int n_chars);
 
 	/* GtkStyleContext */
 	/**
