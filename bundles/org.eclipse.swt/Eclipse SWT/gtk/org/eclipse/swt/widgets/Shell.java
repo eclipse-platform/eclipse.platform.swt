@@ -2215,8 +2215,8 @@ public boolean print (GC gc) {
 	checkWidget ();
 	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-	// Needs to be implemented on GTK4/Wayland
-	if (!GTK.GTK4 && OS.isX11()) {
+	if (GTK.GTK4) return super.print(gc);
+	if (OS.isX11()) {
 		Rectangle clipping = gc.getClipping();
 		long shellWindow = gtk_widget_get_window(shellHandle);
 		GdkRectangle rect = new GdkRectangle ();
