@@ -1706,6 +1706,7 @@ static long rendererClassInitProc (long g_class, long class_data) {
 void snapshotDrawProc(long handle, long snapshot) {
 	Display display = getCurrent ();
 	Widget widget = display.getWidget (handle);
+	boolean masked = widget != null && widget.snapshotPushMask(handle, snapshot);
 	// Draw background before children so it appears behind them
 	if (widget != null) widget.snapshotBackground(handle, snapshot);
 
@@ -1721,6 +1722,7 @@ void snapshotDrawProc(long handle, long snapshot) {
 
 	// Paint after children (used by leaf controls for overlay/on-top drawing)
 	if (widget != null) widget.snapshotToDrawAfterChildren(handle, snapshot);
+	if (masked) GTK4.gtk_snapshot_pop(snapshot);
 }
 
 static long rendererGetPreferredWidthProc (long cell, long handle, long minimun_size, long natural_size) {

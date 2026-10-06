@@ -21,6 +21,7 @@ import org.eclipse.swt.internal.gtk.*;
 public class GTK4 {
 
 	public static final int GTK_POPOVER_MENU_NESTED = 1 << 0;
+	public static final int GSK_MASK_MODE_ALPHA = 0;
 	public static final int GTK_SIZE_GROUP_HORIZONTAL = 1;
 	public static final int GTK_ACCESSIBLE_ROLE_MENU_ITEM = 36;
 	public static final int GTK_ACCESSIBLE_ROLE_MENU_ITEM_CHECKBOX = 37;
@@ -862,6 +863,21 @@ public class GTK4 {
 	 * @param snapshot cast=(GtkSnapshot *)
 	 */
 	public static final native long gtk_snapshot_free_to_node(long snapshot);
+	/**
+	 * @method flags=dynamic
+	 * @param snapshot cast=(GtkSnapshot *)
+	 */
+	public static final native void gtk_snapshot_push_mask(long snapshot, int mask_mode);
+	/**
+	 * @param snapshot cast=(GtkSnapshot *)
+	 */
+	public static final native void gtk_snapshot_pop(long snapshot);
+	/**
+	 * @param snapshot cast=(GtkSnapshot *)
+	 * @param color cast=(const GdkRGBA *)
+	 * @param bounds cast=(const graphene_rect_t *)
+	 */
+	public static final native void gtk_snapshot_append_color(long snapshot, GdkRGBA color, long bounds);
 
 	/* GtkImage */
 	/**
