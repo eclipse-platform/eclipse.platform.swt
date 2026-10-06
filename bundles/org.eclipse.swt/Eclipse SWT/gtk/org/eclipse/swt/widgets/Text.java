@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2025 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -231,6 +231,8 @@ void createHandle (int index) {
 
 		if (GTK.GTK4) {
 			OS.swt_fixed_add(fixedHandle, handle);
+			/* Clip the entry when it is allocated more than requested, see resizeHandle() */
+			GTK4.gtk_widget_set_overflow(fixedHandle, GTK4.GTK_OVERFLOW_HIDDEN);
 			textHandle = GTK4.gtk_editable_get_delegate(handle);
 			if ((style & SWT.SEARCH) == 0) {
 				bufferHandle = GTK4.gtk_entry_get_buffer(handle);
@@ -2137,6 +2139,22 @@ void register () {
 	super.register ();
 	if (bufferHandle != 0) display.addWidget (bufferHandle, this);
 	if (imContext != 0) display.addWidget (imContext, this);
+}
+
+@Override
+void resizeHandle (int width, int height) {
+	super.resizeHandle (width, height);
+	if (GTK.GTK4 && (style & SWT.SINGLE) != 0) {
+		/*
+		 * GtkEntry hands its allocation minus its border and padding to its GtkText, so a
+		 * width below the entry's minimum gives the GtkText a negative width, which GTK
+		 * warns about. Allocate at least the minimum width; fixedHandle clips the entry to
+		 * the requested width, as its own window does on GTK3.
+		 */
+		int [] minimum = new int [1];
+		GTK4.gtk_widget_measure (handle, GTK.GTK_ORIENTATION_HORIZONTAL, -1, minimum, null, null, null);
+		if (width < minimum [0]) OS.swt_fixed_resize (fixedHandle, handle, minimum [0], height);
+	}
 }
 
 @Override
