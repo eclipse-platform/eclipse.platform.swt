@@ -2792,6 +2792,44 @@ public void setMinimized (boolean minimized) {
 }
 
 /**
+ * Sends the minimum and maximum size to GTK3. GTK3 Wayland expects hints
+ * that include the client-side decorations, so they are added here.
+ */
+void applyGeometryHints (int requestedHint) {
+	int hint = requestedHint;
+	if (geometry.getMinWidth() > 0 || geometry.getMinHeight() > 0) hint |= GDK.GDK_HINT_MIN_SIZE;
+	if (geometry.getMaxWidth() > 0 || geometry.getMaxHeight() > 0) hint |= GDK.GDK_HINT_MAX_SIZE;
+	GdkGeometry hints = new GdkGeometry ();
+	hints.setMinWidth (geometry.getMinWidth());
+	hints.setMinHeight (geometry.getMinHeight());
+	hints.setMaxWidth (geometry.getMaxWidth());
+	hints.setMaxHeight (geometry.getMaxHeight());
+	if (OS.isWayland() && !popover) {
+		/* A wide content request keeps the title bar's own minimum width out of the difference. */
+		int[] oldWidth = new int[1], oldHeight = new int[1];
+		GTK.gtk_widget_get_size_request (vboxHandle, oldWidth, oldHeight);
+		GTK.gtk_widget_set_size_request (vboxHandle, 10000, oldHeight[0]);
+		GtkRequisition window = new GtkRequisition ();
+		GtkRequisition content = new GtkRequisition ();
+		GTK.gtk_widget_get_preferred_size (shellHandle, window, null);
+		GTK.gtk_widget_get_preferred_size (vboxHandle, content, null);
+		GTK.gtk_widget_set_size_request (vboxHandle, oldWidth[0], oldHeight[0]);
+		int extraWidth = Math.max (0, window.width - content.width);
+		int extraHeight = Math.max (0, window.height - content.height);
+		/* Zero values are passed through unchanged, as before. */
+		if (hints.getMinWidth() > 0) hints.setMinWidth (addSaturated (hints.getMinWidth(), extraWidth));
+		if (hints.getMinHeight() > 0) hints.setMinHeight (addSaturated (hints.getMinHeight(), extraHeight));
+		if (hints.getMaxWidth() > 0) hints.setMaxWidth (addSaturated (hints.getMaxWidth(), extraWidth));
+		if (hints.getMaxHeight() > 0) hints.setMaxHeight (addSaturated (hints.getMaxHeight(), extraHeight));
+	}
+	GTK3.gtk_window_set_geometry_hints (shellHandle, 0, hints, hint);
+}
+
+static int addSaturated (int value, int extra) {
+	return (int) Math.min (Integer.MAX_VALUE, (long) value + extra);
+}
+
+/**
  * Sets the receiver's minimum size to the size specified by the arguments.
  * If the new minimum size is larger than the current size of the receiver,
  * the receiver is resized to the new minimum size.
@@ -2825,11 +2863,7 @@ public void setMinimumSize (int width, int height) {
 		return;
 	}
 
-	int hint = GDK.GDK_HINT_MIN_SIZE;
-	if (geometry.getMaxHeight() > 0 || geometry.getMaxWidth() > 0) {
-		hint = hint | GDK.GDK_HINT_MAX_SIZE;
-	}
-	GTK3.gtk_window_set_geometry_hints (shellHandle, 0, (GdkGeometry) geometry, hint);
+	applyGeometryHints (GDK.GDK_HINT_MIN_SIZE);
 }
 
 /**
@@ -2884,11 +2918,7 @@ public void setMaximumSize (int width, int height) {
 	}
 	geometry.setMaxWidth(Math.max (width, trimWidth ()) - trimWidth ());
 	geometry.setMaxHeight(Math.max (height, trimHeight ()) - trimHeight ());
-	int hint = GDK.GDK_HINT_MAX_SIZE;
-	if (geometry.getMinWidth() > 0 || geometry.getMinHeight() > 0) {
-		hint = hint | GDK.GDK_HINT_MIN_SIZE;
-	}
-	GTK3.gtk_window_set_geometry_hints (shellHandle, 0, (GdkGeometry) geometry, hint);
+	applyGeometryHints (GDK.GDK_HINT_MAX_SIZE);
 }
 
 /**
