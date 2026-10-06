@@ -1910,6 +1910,30 @@ JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1popup_1get_1parent)
 }
 #endif
 
+#ifndef NO_gdk_1popup_1get_1position_1x
+JNIEXPORT jint JNICALL GDK_NATIVE(gdk_1popup_1get_1position_1x)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jint rc = 0;
+	GDK_NATIVE_ENTER(env, that, gdk_1popup_1get_1position_1x_FUNC);
+	rc = (jint)gdk_popup_get_position_x((GdkPopup *)arg0);
+	GDK_NATIVE_EXIT(env, that, gdk_1popup_1get_1position_1x_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gdk_1popup_1get_1position_1y
+JNIEXPORT jint JNICALL GDK_NATIVE(gdk_1popup_1get_1position_1y)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jint rc = 0;
+	GDK_NATIVE_ENTER(env, that, gdk_1popup_1get_1position_1y_FUNC);
+	rc = (jint)gdk_popup_get_position_y((GdkPopup *)arg0);
+	GDK_NATIVE_EXIT(env, that, gdk_1popup_1get_1position_1y_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gdk_1popup_1layout_1new
 JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1popup_1layout_1new)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)

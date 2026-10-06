@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2026 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -322,6 +322,8 @@
 
 // No GdkPopup on GTK3
 #define NO_gdk_1popup_1get_1parent
+#define NO_gdk_1popup_1get_1position_1x
+#define NO_gdk_1popup_1get_1position_1y
 #define NO_gdk_1popup_1layout_1new
 #define NO_gdk_1popup_1present
 

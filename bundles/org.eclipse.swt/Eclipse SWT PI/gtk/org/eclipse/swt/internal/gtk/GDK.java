@@ -1202,6 +1202,10 @@ public class GDK extends OS {
 	/* GdkPopup [GTK4 only] */
 	/** @param popup cast=(GdkPopup *) */
 	public static final native long gdk_popup_get_parent(long popup);
+	/** @param popup cast=(GdkPopup *) */
+	public static final native int gdk_popup_get_position_x(long popup);
+	/** @param popup cast=(GdkPopup *) */
+	public static final native int gdk_popup_get_position_y(long popup);
 	/**
 	 * @param popup cast=(GdkPopup *)
 	 * @param layout cast=(GdkPopupLayout *)

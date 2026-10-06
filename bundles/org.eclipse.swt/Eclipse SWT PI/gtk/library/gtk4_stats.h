@@ -184,6 +184,7 @@ typedef enum {
 	gtk_1named_1action_1new_FUNC,
 	gtk_1native_1get_1for_1surface_FUNC,
 	gtk_1native_1get_1surface_FUNC,
+	gtk_1native_1get_1surface_1transform_FUNC,
 	gtk_1picture_1new_FUNC,
 	gtk_1picture_1set_1can_1shrink_FUNC,
 	gtk_1picture_1set_1paintable_FUNC,

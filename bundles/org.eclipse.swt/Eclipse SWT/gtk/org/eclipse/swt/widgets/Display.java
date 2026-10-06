@@ -2011,7 +2011,41 @@ public Point getCursorLocation() {
 	if (GTK.GTK4) {
 		double[] xDouble = new double[1], yDouble = new double[1];
 
-		getPointerPosition(xDouble, yDouble);
+		long surface = gdk_device_get_surface_at_position(xDouble, yDouble);
+		/*
+		 * The position is relative to the surface under the pointer, while display
+		 * coordinates are relative to the nearest real top-level shell. Translate it
+		 * from the surface to the shell, and add the placement of a popover-backed
+		 * shell, as Control.getSurfaceOrigin() does. Other popovers, like a POP_UP
+		 * Menu, have no SWT placement: add the positions of their popup surfaces up
+		 * to the surface of their window instead.
+		 */
+		long nativeHandle = surface != 0 ? GTK4.gtk_native_get_for_surface(surface) : 0;
+		if (getWidget(nativeHandle) instanceof Shell shell) {
+			double[] dx = new double[1], dy = new double[1];
+			GTK4.gtk_native_get_surface_transform(nativeHandle, dx, dy);
+			xDouble[0] -= dx[0];
+			yDouble[0] -= dy[0];
+			if (shell.popover) {
+				xDouble[0] += shell.oldX;
+				yDouble[0] += shell.oldY;
+			}
+		} else if (nativeHandle != 0) {
+			double px = xDouble[0], py = yDouble[0];
+			while (nativeHandle != 0 && GTK4.gtk_widget_get_root(nativeHandle) != nativeHandle) {
+				long popup = GTK4.gtk_native_get_surface(nativeHandle);
+				px += GDK.gdk_popup_get_position_x(popup);
+				py += GDK.gdk_popup_get_position_y(popup);
+				long parent = GDK.gdk_popup_get_parent(popup);
+				nativeHandle = parent != 0 ? GTK4.gtk_native_get_for_surface(parent) : 0;
+			}
+			if (getWidget(nativeHandle) instanceof Shell) {
+				double[] dx = new double[1], dy = new double[1];
+				GTK4.gtk_native_get_surface_transform(nativeHandle, dx, dy);
+				xDouble[0] = px - dx[0];
+				yDouble[0] = py - dy[0];
+			}
+		}
 		x[0] = (int)xDouble[0];
 		y[0] = (int)yDouble[0];
 	} else {
