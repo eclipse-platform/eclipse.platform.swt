@@ -881,7 +881,6 @@ void createHandle (int index) {
 	}
 
 	if (GTK.GTK4) {
-		bindArrowKeyBindings();
 		/*
 		 * GTK renders the drop highlight requested through
 		 * gtk_tree_view_set_drag_dest_row() from the private TreeViewDragInfo struct,
@@ -897,34 +896,6 @@ void createHandle (int index) {
 		GTK4.gtk_tree_view_enable_model_drag_dest(handle, formats, 0);
 		GTK4.gdk_content_formats_unref(formats);
 	}
-}
-
-/**
- * Binds the left and right arrow keys to
- * allow for expanding and collapsing of the
- * tree nodes.
- *
- * Note: This function is to only be called in GTK4.
- * Binding of the arrow keys are also done in GTK3,
- * however it is done through GtkBindingSets in CSS.
- * See Device.init() for more information, specifically,
- * swt_functional_gtk_3_20.css
- */
-void bindArrowKeyBindings() {
-	if (!GTK.GTK4) return;
-
-	int[] keyval = new int[1];
-	GTK.gtk_accelerator_parse(Converter.javaStringToCString("Left"), keyval, null);
-	GTK4.gtk_widget_class_add_binding_signal(GTK.GTK_WIDGET_GET_CLASS(handle), keyval[0], 0,
-			Converter.javaStringToCString("expand-collapse-cursor-row"),
-			Converter.javaStringToCString("(bbb)"),
-			false, false, false);
-
-	GTK.gtk_accelerator_parse(Converter.javaStringToCString("Right"), keyval, null);
-	GTK4.gtk_widget_class_add_binding_signal(GTK.GTK_WIDGET_GET_CLASS(handle), keyval[0], 0,
-			Converter.javaStringToCString("expand-collapse-cursor-row"),
-			Converter.javaStringToCString("(bbb)"),
-			false, true, false);
 }
 
 @Override
@@ -2347,7 +2318,41 @@ boolean gtk4_key_press_event (long controller, int keyval, int keycode, int stat
 			}
 			break;
 	}
-	return super.gtk4_key_press_event(controller, keyval, keycode, state, event);
+	boolean handled = super.gtk4_key_press_event(controller, keyval, keycode, state, event);
+	if (handled || isDisposed ()) return handled;
+	switch (keyval) {
+		case GDK.GDK_Left:
+		case GDK.GDK_Right:
+			/*
+			 * GtkTreeView moves between cells for Left and Right. Expand and collapse the
+			 * cursor row instead when it has children, as on GTK3. Leave the keys of the
+			 * search entry alone.
+			 */
+			if ((state & (GDK.GDK_SHIFT_MASK | GDK.GDK_CONTROL_MASK | GDK.GDK_MOD1_MASK | GDK.GDK_SUPER_MASK | GDK.GDK_META_MASK | GDK.GDK_HYPER_MASK)) == 0 && GTK.gtk_widget_has_focus (handle)) {
+				boolean expand = (keyval == GDK.GDK_Right) != ((style & SWT.RIGHT_TO_LEFT) != 0);
+				return expandCollapseCursorRow (expand);
+			}
+			break;
+	}
+	return false;
+}
+
+boolean expandCollapseCursorRow (boolean expand) {
+	long [] path = new long [1];
+	GTK.gtk_tree_view_get_cursor (handle, path, null);
+	if (path [0] == 0) return false;
+	long iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
+	boolean parent = GTK.gtk_tree_model_get_iter (modelHandle, iter, path [0]) && GTK.gtk_tree_model_iter_n_children (modelHandle, iter) > 0;
+	OS.g_free (iter);
+	if (parent) {
+		if (expand) {
+			GTK.gtk_tree_view_expand_row (handle, path [0], false);
+		} else {
+			GTK.gtk_tree_view_collapse_row (handle, path [0]);
+		}
+	}
+	GTK.gtk_tree_path_free (path [0]);
+	return parent;
 }
 
 @Override
