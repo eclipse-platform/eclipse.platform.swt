@@ -540,9 +540,9 @@ void snapshotBackground (long handle, long snapshot) {
 	/*
 	 * Draw the effective background before children are snapshotted.
 	 *
-	 * SWTFixed widget has no CSS background rule, thus obtain a Cairo
-	 * context from the snapshot and delegate to drawBackground(), which
-	 * paints the background image or color directly via Cairo.
+	 * SWTFixed widget has no CSS background rule, thus append a color node
+	 * for a background color, or obtain a Cairo context from the snapshot
+	 * and delegate to drawBackground() for a background image.
 	 *
 	 * Skip when an explicit background color has been set (state & BACKGROUND):
 	 * GTK4 renders the CSS provider background automatically before calling
@@ -562,10 +562,23 @@ void snapshotBackground (long handle, long snapshot) {
 	int height = (state & ZERO_HEIGHT) != 0 ? 0 : allocation.height;
 	long rect = Graphene.graphene_rect_alloc();
 	Graphene.graphene_rect_init(rect, 0, 0, width, height);
-	long cairo = GTK4.gtk_snapshot_append_cairo(snapshot, rect);
-	if (cairo != 0) {
-		drawBackground(control, 0, cairo, 0, 0, width, height);
-		Cairo.cairo_destroy(cairo);
+	if (control.backgroundImage == null) {
+		/*
+		 * The snapshot of every ancestor runs again when a child is redrawn. A Cairo
+		 * node cannot be diffed, so a new one damages its whole area and makes the
+		 * renderer rasterize and upload it again in every frame. A color node is
+		 * diffed by value, so an unchanged background damages nothing.
+		 */
+		boolean noBackgroundRegion = drawRegion && hooks(SWT.Paint) && cachedNoBackground;
+		if (!noBackgroundRegion) {
+			GTK4.gtk_snapshot_append_color(snapshot, control.getBackgroundGdkRGBA(), rect);
+		}
+	} else {
+		long cairo = GTK4.gtk_snapshot_append_cairo(snapshot, rect);
+		if (cairo != 0) {
+			drawBackground(control, 0, cairo, 0, 0, width, height);
+			Cairo.cairo_destroy(cairo);
+		}
 	}
 	Graphene.graphene_rect_free(rect);
 }
