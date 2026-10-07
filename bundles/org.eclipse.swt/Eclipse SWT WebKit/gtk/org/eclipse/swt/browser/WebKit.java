@@ -596,7 +596,7 @@ long webkit_authenticate (long web_view, long request){
 
 		if (!event.doit) {
 			WebKitGTK.webkit_authentication_request_cancel (request);
-			return 0;
+			return 1;
 		}
 		if (event.user != null && event.password != null) {
 			byte[] userBytes = Converter.wcsToMbcs (event.user, true);
@@ -604,7 +604,7 @@ long webkit_authenticate (long web_view, long request){
 			long credentials = WebKitGTK.webkit_credential_new (userBytes, passwordBytes, WebKitGTK.WEBKIT_CREDENTIAL_PERSISTENCE_NONE);
 			WebKitGTK.webkit_authentication_request_authenticate(request, credentials);
 			WebKitGTK.webkit_credential_free(credentials);
-			return 0;
+			return 1;
 		}
 	}
 	return 0;
