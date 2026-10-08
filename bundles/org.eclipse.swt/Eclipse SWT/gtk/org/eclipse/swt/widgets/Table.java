@@ -781,6 +781,14 @@ void createItem (TableColumn column, int index) {
 					System.arraycopy (cellFont, index, temp, index+1, columnCount-index-1);
 					item.cellFont = temp;
 				}
+				Image [] cellImage = item.cellImage;
+				boolean keepImages = columnCount == 1 && cellImage != null && cellImage.length == columnCount;
+				if (cellImage != null && !keepImages) {
+					Image [] temp = new Image [columnCount];
+					System.arraycopy (cellImage, 0, temp, 0, index);
+					System.arraycopy (cellImage, index, temp, index+1, columnCount-index-1);
+					item.cellImage = temp;
+				}
 				String [] strings = item.strings;
 				doNotModify = columnCount == 1 && strings != null && strings.length == columnCount;
 				if (strings != null && !doNotModify) {
@@ -1104,6 +1112,13 @@ void destroyItem (TableColumn column) {
 						System.arraycopy (cellFont, index + 1, temp, index, columnCount - index);
 						item.cellFont = temp;
 					}
+				}
+				Image [] cellImage = item.cellImage;
+				if (cellImage != null) {
+					Image [] temp = new Image [columnCount];
+					System.arraycopy (cellImage, 0, temp, 0, index);
+					System.arraycopy (cellImage, index + 1, temp, index, columnCount - index);
+					item.cellImage = temp;
 				}
 			}
 		}
@@ -2835,7 +2850,7 @@ void sendMeasureEvent (long cell, long width, long height) {
 			GTK.gtk_cell_renderer_get_preferred_height_for_width (cell, handle, contentWidth[0], contentHeight, null);
 			Image image = item.getImage (columnIndex);
 			int imageWidth = 0;
-			if (image != null) {
+			if (image != null && !image.isDisposed()) {
 				imageWidth = image.getBounds ().width;
 			}
 			contentWidth [0] += imageWidth;
@@ -3091,7 +3106,7 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 				ignoreSize = false;
 				Image image = item.getImage (columnIndex);
 				int imageWidth = 0;
-				if (image != null) {
+				if (image != null && !image.isDisposed()) {
 					imageWidth = image.getBounds ().width;
 				}
 				contentX [0] -= imageWidth;

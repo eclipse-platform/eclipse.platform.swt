@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2025 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -1059,6 +1060,51 @@ public void test_setImageILorg_eclipse_swt_graphics_Image() {
 
 	images[0].dispose();
 	assertThrows(IllegalArgumentException.class, () -> treeItem.setImage(0, images[0]), "No exception thrown for disposed font");
+}
+
+@Test
+public void test_setImage_newColumnDoesNotInheritImageOfDisposedColumn() {
+	new TreeColumn(tree, SWT.LEFT);
+	TreeColumn column = new TreeColumn(tree, SWT.LEFT);
+	new TreeColumn(tree, SWT.LEFT);
+	treeItem.setImage(1, images[0]);
+	column.dispose();
+	new TreeColumn(tree, SWT.LEFT);
+	assertNull(treeItem.getImage(2));
+}
+
+@Test
+public void test_setImage_imagesFollowTheirColumns() {
+	new TreeColumn(tree, SWT.LEFT);
+	TreeColumn column = new TreeColumn(tree, SWT.LEFT);
+	new TreeColumn(tree, SWT.LEFT);
+	// index 2 first, win32 copies the image of the first non-zero index into slot 0
+	treeItem.setImage(2, images[1]);
+	treeItem.setImage(0, images[0]);
+	column.dispose();
+	assertSame(images[0], treeItem.getImage(0));
+	assertSame(images[1], treeItem.getImage(1));
+	new TreeColumn(tree, SWT.LEFT, 0);
+	assertNull(treeItem.getImage(0));
+	assertSame(images[0], treeItem.getImage(1));
+	assertSame(images[1], treeItem.getImage(2));
+}
+
+@Test
+public void test_getImage_disposedImageIsNotReplacedByLaterImage() {
+	shell.open();
+	Image disposed = new Image(shell.getDisplay(), 16, 16);
+	treeItem.setImage(disposed);
+	disposed.dispose();
+	new TreeItem(tree, SWT.NONE).setImage(images[0]);
+	Image later = new Image(shell.getDisplay(), 16, 16);
+	try {
+		new TreeItem(tree, SWT.NONE).setImage(later);
+		tree.update();
+		assertSame(disposed, treeItem.getImage());
+	} finally {
+		later.dispose();
+	}
 }
 
 @Test
