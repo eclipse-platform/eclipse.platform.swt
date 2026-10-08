@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2025 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -16,6 +16,7 @@ package org.eclipse.swt.tests.junit;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -683,6 +684,51 @@ public void test_setImageIndentI() {
 	assertEquals(1, tableItem.getImageIndent());
 	tableItem.setImageIndent(-1);
 	assertEquals(1, tableItem.getImageIndent());
+}
+
+@Test
+public void test_setImage_newColumnDoesNotInheritImageOfDisposedColumn() {
+	new TableColumn(table, SWT.LEFT);
+	TableColumn column = new TableColumn(table, SWT.LEFT);
+	new TableColumn(table, SWT.LEFT);
+	tableItem.setImage(1, images[0]);
+	column.dispose();
+	new TableColumn(table, SWT.LEFT);
+	assertNull(tableItem.getImage(2));
+}
+
+@Test
+public void test_setImage_imagesFollowTheirColumns() {
+	new TableColumn(table, SWT.LEFT);
+	TableColumn column = new TableColumn(table, SWT.LEFT);
+	new TableColumn(table, SWT.LEFT);
+	// index 2 first, win32 copies the image of the first non-zero index into slot 0
+	tableItem.setImage(2, images[1]);
+	tableItem.setImage(0, images[0]);
+	column.dispose();
+	assertSame(images[0], tableItem.getImage(0));
+	assertSame(images[1], tableItem.getImage(1));
+	new TableColumn(table, SWT.LEFT, 0);
+	assertNull(tableItem.getImage(0));
+	assertSame(images[0], tableItem.getImage(1));
+	assertSame(images[1], tableItem.getImage(2));
+}
+
+@Test
+public void test_getImage_disposedImageIsNotReplacedByLaterImage() {
+	shell.open();
+	Image disposed = new Image(shell.getDisplay(), 16, 16);
+	tableItem.setImage(disposed);
+	disposed.dispose();
+	new TableItem(table, SWT.NONE).setImage(images[0]);
+	Image later = new Image(shell.getDisplay(), 16, 16);
+	try {
+		new TableItem(table, SWT.NONE).setImage(later);
+		table.update();
+		assertSame(disposed, tableItem.getImage());
+	} finally {
+		later.dispose();
+	}
 }
 
 @Test
