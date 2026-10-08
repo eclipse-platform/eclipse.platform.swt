@@ -969,6 +969,14 @@ void createItem (TreeColumn column, int index) {
 					System.arraycopy (cellFont, index, temp, index+1, columnCount-index-1);
 					item.cellFont = temp;
 				}
+				Image [] cellImage = item.cellImage;
+				boolean keepImages = columnCount == 1 && cellImage != null && cellImage.length == columnCount;
+				if (cellImage != null && !keepImages) {
+					Image [] temp = new Image [columnCount];
+					System.arraycopy (cellImage, 0, temp, 0, index);
+					System.arraycopy (cellImage, index, temp, index+1, columnCount-index-1);
+					item.cellImage = temp;
+				}
 				String [] strings = item.strings;
 				if (strings != null) {
 					String [] temp = new String [columnCount];
@@ -1265,6 +1273,13 @@ void destroyItem (TreeColumn column) {
 						System.arraycopy (cellFont, index + 1, temp, index, columnCount - index);
 						item.cellFont = temp;
 					}
+				}
+				Image [] cellImage = item.cellImage;
+				if (cellImage != null) {
+					Image [] temp = new Image [columnCount];
+					System.arraycopy (cellImage, 0, temp, 0, index);
+					System.arraycopy (cellImage, index + 1, temp, index, columnCount - index);
+					item.cellImage = temp;
 				}
 			}
 		}
@@ -3372,7 +3387,7 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 				ignoreSize = false;
 				Image image = item.getImage (columnIndex);
 				int imageWidth = 0;
-				if (image != null) {
+				if (image != null && !image.isDisposed()) {
 					imageWidth = image.getBounds ().width;
 				}
 				// Account for the image width on GTK3, see bug 535124.
