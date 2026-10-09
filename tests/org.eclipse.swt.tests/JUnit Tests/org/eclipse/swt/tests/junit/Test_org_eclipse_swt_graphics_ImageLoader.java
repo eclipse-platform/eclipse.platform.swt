@@ -36,6 +36,7 @@ import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.graphics.ImageLoaderEvent;
 import org.eclipse.swt.graphics.ImageLoaderListener;
 import org.eclipse.swt.graphics.PaletteData;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.internal.DPIUtil.ElementAtZoom;
 import org.eclipse.swt.internal.NativeImageLoader;
 import org.eclipse.swt.widgets.Display;
@@ -243,6 +244,26 @@ public void test_loadSingleFrameGifReportedAsAnimation_bug3404() throws IOExcept
 				.element();
 		assertNotNull(imageData, "No ImageData returned at zoom " + zoom);
 		assertTrue(imageData.width > 0 && imageData.height > 0, "ImageData has no pixels at zoom " + zoom);
+	}
+}
+
+/**
+ * Regression test for https://github.com/eclipse-platform/eclipse.platform.swt/issues/3545
+ *
+ * A one pixel wide RGB image has a row stride of 3 bytes when gdk-pixbuf decodes through glycin.
+ */
+@Test
+public void test_loadOnePixelWideRgbPng_bug3545() throws IOException {
+	ImageData imageData;
+	try (InputStream in = getClass().getResourceAsStream("rgb_1x3.png")) {
+		assertNotNull(in, "Test resource rgb_1x3.png not found");
+		imageData = new ImageData(in);
+	}
+	assertEquals(1, imageData.width);
+	assertEquals(3, imageData.height);
+	RGB[] expected = { new RGB(0x00, 0x35, 0x6a), new RGB(0x5b, 0x90, 0xc5), new RGB(0xb6, 0xeb, 0x20) };
+	for (int y = 0; y < expected.length; y++) {
+		assertEquals(expected[y], imageData.palette.getRGB(imageData.getPixel(0, y)), "Wrong pixel in row " + y);
 	}
 }
 
