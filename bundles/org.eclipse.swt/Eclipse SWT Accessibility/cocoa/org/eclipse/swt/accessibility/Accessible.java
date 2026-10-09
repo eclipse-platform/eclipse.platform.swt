@@ -1608,8 +1608,11 @@ public class Accessible {
 		if (accessibleAttributeListenersSize() == 0) return null;
 
 		id stringFragment = getStringForRangeParameterizedAttribute(parameter, childID);
+		if (stringFragment == null) return null;
+		NSString fragment = new NSString(stringFragment);
+		long fragmentLength = fragment.length();
 		NSMutableAttributedString attribString = (NSMutableAttributedString)new NSMutableAttributedString().alloc();
-		attribString.initWithString(new NSString(stringFragment), null);
+		attribString.initWithString(fragment, null);
 		attribString.autorelease();
 
 		// Parameter is an NSRange wrapped in an NSValue.
@@ -1623,13 +1626,16 @@ public class Accessible {
 
 		NSRange attributeRange = new NSRange();
 
-		while (event.offset < range.location + range.length) {
+		// The fragment can be shorter than the requested range, so stop at its end.
+		while (event.offset < range.location + fragmentLength) {
+			int offset = event.offset;
 			for (int i = 0; i < accessibleAttributeListenersSize(); i++) {
 				AccessibleAttributeListener listener = accessibleAttributeListeners.get(i);
 				listener.getTextAttributes(event);
 			}
 
 			if (event.start == -1 && event.end == -1) return stringFragment;
+			if (event.end <= offset) break;
 
 			// The returned attributed string must have zero-based attributes.
 			attributeRange.location = event.start - range.location;
@@ -1642,15 +1648,15 @@ public class Accessible {
 				attributeRange.location = 0;
 			}
 
-			// Likewise, make sure the last attribute set does not run past the end of the requested range.
-			if (attributeRange.location + attributeRange.length > range.length) {
-				attributeRange.length = range.length - attributeRange.location;
+			// Likewise, make sure the last attribute set does not run past the end of the fragment.
+			if (attributeRange.location + attributeRange.length > fragmentLength) {
+				attributeRange.length = fragmentLength - attributeRange.location;
 			}
 
 			// Reset the offset so we pick up the next set of attributes that change.
 			event.offset = event.end;
 
-			if (event.textStyle != null) {
+			if (event.textStyle != null && attributeRange.length > 0) {
 				TextStyle ts = event.textStyle;
 				if (ts.font != null) {
 					NSMutableDictionary fontInfoDict = NSMutableDictionary.dictionaryWithCapacity(4);
@@ -1732,8 +1738,9 @@ public class Accessible {
 			default -> OS.NSTextAlignmentLeft;
 			};
 			paragraphDict.setValue(NSNumber.numberWithInt(osAlignment), NSString.stringWith("AXTextAlignment"));
-			range.location = 0;
-			attribString.addAttribute(NSString.stringWith("AXParagraphStyle"), paragraphDict, range);
+			NSRange paragraphRange = new NSRange();
+			paragraphRange.length = fragmentLength;
+			attribString.addAttribute(NSString.stringWith("AXParagraphStyle"), paragraphDict, paragraphRange);
 		}
 
 		return attribString;
@@ -2543,7 +2550,7 @@ public class Accessible {
 				}
 				String appValue = event2.result;
 				if (appValue != null) {
-					returnValue = NSString.stringWith(appValue.substring(offset, offset + length));
+					returnValue = NSString.stringWith(clampedSubstring(appValue, offset, length));
 				}
 			}
 		}
@@ -2618,7 +2625,7 @@ public class Accessible {
 			String appValue = event.result;
 
 			if (appValue != null) {
-				returnValue = NSString.stringWith(appValue.substring((int)range.location, (int)(range.location + range.length)));
+				returnValue = NSString.stringWith(clampedSubstring(appValue, range.location, range.length));
 			}
 		}
 		return returnValue;
@@ -2733,7 +2740,8 @@ public class Accessible {
 	int lineNumberForOffset (String text, int offset) {
 		int lineNumber = 1;
 		int length = text.length();
-		for (int i = 0; i < offset; i++) {
+		int end = Math.min(offset, length);
+		for (int i = 0; i < end; i++) {
 			switch (text.charAt (i)) {
 				case '\r':
 					if (i + 1 < length) {
@@ -2771,6 +2779,13 @@ public class Accessible {
 		}
 		range.length = count;
 		return range;
+	}
+
+	/** Returns the part of the text covered by the range, which accessibility clients may extend past the end. */
+	static String clampedSubstring(String text, long location, long length) {
+		long start = Math.min(Math.max(location, 0), text.length());
+		long end = start + Math.min(Math.max(length, 0), text.length() - start);
+		return text.substring((int) start, (int) end);
 	}
 
 	/**
