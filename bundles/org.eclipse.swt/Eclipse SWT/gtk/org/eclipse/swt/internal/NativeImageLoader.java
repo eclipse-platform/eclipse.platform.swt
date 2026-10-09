@@ -134,13 +134,11 @@ public class NativeImageLoader {
 				imgDataList.add(imgData);
 			}
 		}
-		ImageData[] imgDataArray = new ImageData[imgDataList.size()];
 		for (int i = 0; i < imgDataList.size(); i++) {
-			imgDataArray[i] = imgDataList.get(i);
 			// Loading completed, notify listeners
 			// listener should only be called when loading interlaced/progressive
 			// PNG/JPG/GIF ?
-			ImageData data = (ImageData) imgDataArray[i].clone();
+			ImageData data = (ImageData) imgDataList.get(i).clone();
 			if (imageLoader.hasListeners()) {
 				if (data.type == SWT.IMAGE_PNG && isInterlacedPNG(data_buffer)) {
 					imageLoader.notifyListeners(new ImageLoaderEvent(imageLoader, data, i, true));
@@ -151,7 +149,7 @@ public class NativeImageLoader {
 		}
 		OS.g_free(buffer_ptr);
 		OS.g_object_unref(loader);
-		return Arrays.stream(imgDataArray).map(data -> new ElementAtZoom<>(data, streamAtZoom.zoom())).toList();
+		return imgDataList.stream().map(data -> new ElementAtZoom<>(data, streamAtZoom.zoom())).toList();
 	}
 
 	public static ImageData load(InputStream streamAtZoom, ImageLoader imageLoader, int width, int height) {
