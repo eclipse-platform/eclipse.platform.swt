@@ -333,9 +333,15 @@ long cellDataProc (long tree_column, long cell, long tree_model, long iter, long
 	if (setData) {
 		if (isPixbuf) {
 			ptr [0] = 0;
-			GTK.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_PIXBUF, ptr, -1);
-			OS.g_object_set (cell, OS.gicon, ptr [0], 0);
-			if (ptr [0] != 0) OS.g_object_unref (ptr [0]);
+			if (useCellSurface ()) {
+				GTK.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_SURFACE, ptr, -1);
+				OS.g_object_set (cell, OS.surface, ptr [0], 0);
+				if (ptr [0] != 0) Cairo.cairo_surface_destroy (ptr [0]);
+			} else {
+				GTK.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_PIXBUF, ptr, -1);
+				OS.g_object_set (cell, OS.gicon, ptr [0], 0);
+				if (ptr [0] != 0) OS.g_object_unref (ptr [0]);
+			}
 		} else {
 			ptr [0] = 0;
 			GTK.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_TEXT, ptr, -1);
@@ -1147,9 +1153,8 @@ void createRenderers (long columnHandle, int modelIndex, boolean check, int colu
 	 * no images. Fix for Bug 469277 & 476419. NOTE: this change has been ported to Tables since Tables/Trees both
 	 * use the same underlying GTK structure.
 	 */
-	GTK.gtk_tree_view_column_add_attribute (columnHandle, pixbufRenderer, OS.pixbuf, modelIndex + CELL_PIXBUF);
+	addPixbufAttributes (columnHandle, pixbufRenderer, modelIndex, useCellSurface ());
 	if (!isOwnerDrawn) {
-		GTK.gtk_tree_view_column_add_attribute (columnHandle, pixbufRenderer, OS.cell_background_rgba, BACKGROUND_COLUMN);
 		GTK.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.cell_background_rgba, BACKGROUND_COLUMN);
 	}
 	GTK.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.text, modelIndex + CELL_TEXT);
@@ -1276,6 +1281,7 @@ void destroyItem (TreeColumn column) {
 				GTK.gtk_tree_store_set (modelHandle, iter, modelIndex + CELL_FOREGROUND, (long )0, -1);
 				GTK.gtk_tree_store_set (modelHandle, iter, modelIndex + CELL_BACKGROUND, (long )0, -1);
 				GTK.gtk_tree_store_set (modelHandle, iter, modelIndex + CELL_FONT, (long )0, -1);
+				GTK.gtk_tree_store_set (modelHandle, iter, modelIndex + CELL_SURFACE, (long )0, -1);
 
 				Font [] cellFont = item.cellFont;
 				if (cellFont != null) {
@@ -1548,7 +1554,7 @@ long [] getColumnTypes (int columnCount) {
 		types [i + CELL_FOREGROUND] = GDK.GDK_TYPE_RGBA();
 		types [i + CELL_BACKGROUND] = GDK.GDK_TYPE_RGBA();
 		types [i + CELL_FONT] = OS.PANGO_TYPE_FONT_DESCRIPTION ();
-		types [i + CELL_SURFACE] = OS.G_TYPE_LONG();
+		types [i + CELL_SURFACE] = GTK.GTK4 ? OS.G_TYPE_LONG() : display.cairoSurfaceType ();
 	}
 	return types;
 }
@@ -1993,6 +1999,57 @@ public boolean getLinesVisible() {
 public TreeItem getParentItem () {
 	checkWidget ();
 	return null;
+}
+
+/**
+ * GtkCellRendererPixbuf treats "pixbuf" as a scale 1 image, so HiDPI cells bind the
+ * device scaled "surface" instead. The surface bypasses GTK's insensitive icon effect.
+ */
+boolean useCellSurface () {
+	return !GTK.GTK4 && GTK.gtk_widget_get_scale_factor (handle) > 1
+		&& (state & DISABLED) == 0;
+}
+
+void addPixbufAttributes (long columnHandle, long pixbufRenderer, int modelIndex, boolean surface) {
+	if (surface) {
+		GTK.gtk_tree_view_column_add_attribute (columnHandle, pixbufRenderer, OS.surface, modelIndex + CELL_SURFACE);
+	} else {
+		GTK.gtk_tree_view_column_add_attribute (columnHandle, pixbufRenderer, OS.pixbuf, modelIndex + CELL_PIXBUF);
+	}
+	if (!isOwnerDrawn) {
+		GTK.gtk_tree_view_column_add_attribute (columnHandle, pixbufRenderer, OS.cell_background_rgba, BACKGROUND_COLUMN);
+	}
+}
+
+void updateCellImageBinding () {
+	if (GTK.GTK4 || handle == 0) return;
+	boolean surface = useCellSurface ();
+	for (int i=0; i<Math.max (1, columnCount); i++) {
+		long columnHandle = columnCount == 0 ? GTK.gtk_tree_view_get_column (handle, 0) : columns [i].handle;
+		long pixbufRenderer = CellRenderers.getPixbufRenderer (columnHandle);
+		if (pixbufRenderer == 0) continue;
+		int modelIndex = columnCount == 0 ? FIRST_COLUMN : columns [i].modelIndex;
+		GTK.gtk_tree_view_column_clear_attributes (columnHandle, pixbufRenderer);
+		// a renderer keeps the image of the last row, so drop it before the other property is bound
+		OS.g_object_set (pixbufRenderer, OS.surface, 0L, 0);
+		OS.g_object_set (pixbufRenderer, OS.pixbuf, 0L, 0);
+		OS.g_object_set (pixbufRenderer, OS.gicon, 0L, 0);
+		addPixbufAttributes (columnHandle, pixbufRenderer, modelIndex, surface);
+	}
+	GTK.gtk_widget_queue_draw (handle);
+}
+
+@Override
+void enableWidget (boolean enabled) {
+	super.enableWidget (enabled);
+	updateCellImageBinding ();
+}
+
+@Override
+long dpiChanged (long object, long arg0) {
+	long result = super.dpiChanged (object, arg0);
+	updateCellImageBinding ();
+	return result;
 }
 
 /**

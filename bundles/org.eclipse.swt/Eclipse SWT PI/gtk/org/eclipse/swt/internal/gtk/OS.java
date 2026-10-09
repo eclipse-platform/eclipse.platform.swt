@@ -504,6 +504,7 @@ public class OS extends C {
 	public static final byte[] spacing = ascii("spacing");
 	public static final byte[] pixbuf = ascii("pixbuf");
 	public static final byte[] gicon = ascii("gicon");
+	public static final byte[] surface = ascii("surface");
 	public static final byte[] text = ascii("text");
 	public static final byte[] xalign = ascii("xalign");
 	public static final byte[] ypad = ascii("ypad");
@@ -954,6 +955,8 @@ public static final native void memmove(XFocusChangeEvent dest, long src, long s
 public static final native int Call (long func, long arg0, int arg1, int arg2);
 public static final native long G_OBJECT_GET_CLASS(long object);
 public static final native long G_OBJECT_TYPE_NAME(long object);
+/** @param pspec cast=(GParamSpec *) */
+public static final native long G_PARAM_SPEC_VALUE_TYPE(long pspec);
 /** @method flags=const */
 public static final native long G_TYPE_INVALID();
 /** @method flags=const */
@@ -1270,6 +1273,11 @@ public static final native void g_log_set_writer_func(long func, long user_data,
 public static final native int g_log_writer_default(int log_level, long fields, long n_fields, long user_data);
 /** @param size cast=(gulong) */
 public static final native long g_malloc(long size);
+/**
+ * @param oclass cast=(GObjectClass *)
+ * @param property_name cast=(const gchar *)
+ */
+public static final native long g_object_class_find_property(long oclass, byte[] property_name);
 /**
  * @param object cast=(GObject *)
  * @param first_property_name cast=(const gchar *),flags=no_out

@@ -8360,6 +8360,16 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1tree_1view_1column_1clear)
 }
 #endif
 
+#ifndef NO_gtk_1tree_1view_1column_1clear_1attributes
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1tree_1view_1column_1clear_1attributes)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK_NATIVE_ENTER(env, that, gtk_1tree_1view_1column_1clear_1attributes_FUNC);
+	gtk_tree_view_column_clear_attributes((GtkTreeViewColumn *)arg0, (GtkCellRenderer *)arg1);
+	GTK_NATIVE_EXIT(env, that, gtk_1tree_1view_1column_1clear_1attributes_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1tree_1view_1column_1get_1button
 JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1tree_1view_1column_1get_1button)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -10189,6 +10199,18 @@ JNIEXPORT jlong JNICALL OS_NATIVE(G_1OBJECT_1TYPE_1NAME)
 	OS_NATIVE_ENTER(env, that, G_1OBJECT_1TYPE_1NAME_FUNC);
 	rc = (jlong)G_OBJECT_TYPE_NAME(arg0);
 	OS_NATIVE_EXIT(env, that, G_1OBJECT_1TYPE_1NAME_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_G_1PARAM_1SPEC_1VALUE_1TYPE
+JNIEXPORT jlong JNICALL OS_NATIVE(G_1PARAM_1SPEC_1VALUE_1TYPE)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, G_1PARAM_1SPEC_1VALUE_1TYPE_FUNC);
+	rc = (jlong)G_PARAM_SPEC_VALUE_TYPE((GParamSpec *)arg0);
+	OS_NATIVE_EXIT(env, that, G_1PARAM_1SPEC_1VALUE_1TYPE_FUNC);
 	return rc;
 }
 #endif
@@ -12131,6 +12153,22 @@ JNIEXPORT void JNICALL OS_NATIVE(g_1menu_1remove)
 	OS_NATIVE_ENTER(env, that, g_1menu_1remove_FUNC);
 	g_menu_remove((GMenu *)arg0, arg1);
 	OS_NATIVE_EXIT(env, that, g_1menu_1remove_FUNC);
+}
+#endif
+
+#ifndef NO_g_1object_1class_1find_1property
+JNIEXPORT jlong JNICALL OS_NATIVE(g_1object_1class_1find_1property)
+	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, g_1object_1class_1find_1property_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jlong)g_object_class_find_property((GObjectClass *)arg0, (const gchar *)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, g_1object_1class_1find_1property_FUNC);
+	return rc;
 }
 #endif
 

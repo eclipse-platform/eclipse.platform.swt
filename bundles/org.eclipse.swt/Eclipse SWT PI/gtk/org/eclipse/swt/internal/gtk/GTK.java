@@ -1978,6 +1978,11 @@ public class GTK extends OS {
 	public static final native void gtk_tree_view_column_cell_set_cell_data(long tree_column, long tree_model, long iter, boolean is_expander, boolean is_expanded);
 	/** @param tree_column cast=(GtkTreeViewColumn *) */
 	public static final native void gtk_tree_view_column_clear(long tree_column);
+	/**
+	 * @param tree_column cast=(GtkTreeViewColumn *)
+	 * @param cell_renderer cast=(GtkCellRenderer *)
+	 */
+	public static final native void gtk_tree_view_column_clear_attributes(long tree_column, long cell_renderer);
 	/** @param column cast=(GtkTreeViewColumn *) */
 	public static final native long gtk_tree_view_column_get_button(long column);
 	/** @param column cast=(GtkTreeViewColumn *) */
