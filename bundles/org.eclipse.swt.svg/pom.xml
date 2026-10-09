@@ -19,7 +19,7 @@
 		<relativePath>../../</relativePath>
 	</parent>
 	<artifactId>org.eclipse.swt.svg</artifactId>
-	<version>3.133.100-SNAPSHOT</version>
+	<version>3.133.200-SNAPSHOT</version>
 	<packaging>eclipse-plugin</packaging>
 	<properties>
 		<tycho.extraClasspathJars>IGNORE</tycho.extraClasspathJars>
