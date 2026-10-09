@@ -6226,4 +6226,74 @@ public void test_setText_shorterTextInCenteredSingleLine() {
 	single.setText("a");
 	assertEquals(0, single.getCaretOffset());
 }
+
+private void keyDown(int keyCode, char character, int stateMask) {
+	Event event = new Event();
+	event.type = SWT.KeyDown;
+	event.keyCode = keyCode;
+	event.character = character;
+	event.stateMask = stateMask;
+	text.notifyListeners(SWT.KeyDown, event);
+}
+
+@Test
+public void test_keyBindingOnNonLatinLayout() {
+	text.setText("abc");
+	text.setKeyBinding('A' | SWT.MOD1, ST.SELECT_ALL);
+	keyDown(0x3061, 'a', SWT.MOD1); // Kana key reporting its Unicode value
+	assertEquals(new Point(0, 3), text.getSelection());
+}
+
+@Test
+public void test_keyCodeBindingWinsOverCharacterOnNonLatinLayout() {
+	text.setText("abc");
+	text.setKeyBinding(0x3061 | SWT.MOD1, ST.LINE_END);
+	text.setKeyBinding('A' | SWT.MOD1, ST.SELECT_ALL);
+	keyDown(0x3061, 'a', SWT.MOD1);
+	assertEquals(new Point(3, 3), text.getSelection());
+}
+
+@Test
+public void test_keyBindingOnKeyReportingU8000() {
+	text.setText("abc");
+	text.setKeyBinding('A' | SWT.MOD1, ST.SELECT_ALL);
+	keyDown(0x8000, 'a', SWT.MOD1); // same value as SWT.ALT_GR
+	assertEquals(new Point(0, 3), text.getSelection());
+}
+
+@Test
+public void test_controlCharacterBindingOnNonLatinLayout() {
+	text.setText("abc");
+	text.setKeyBinding('A' | SWT.CTRL, ST.SELECT_ALL);
+	keyDown(0x3141, (char) 1, SWT.CTRL); // Hangul key reporting its Unicode value
+	assertEquals(new Point(0, 3), text.getSelection());
+}
+
+@Test
+public void test_nonLatinKeyWithoutBindingInsertsCharacter() {
+	text.setText("abc");
+	keyDown(0x3061, '\u3061', 0);
+	assertEquals("\u3061abc", text.getText());
+}
+
+@Test
+public void test_asciiOrSpecialKeyMissDoesNotFallBackToCharacter() {
+	text.setText("abc");
+	text.setKeyBinding('A' | SWT.MOD1, ST.SELECT_ALL);
+	for (int keyCode : new int[] {'x', SWT.F12}) {
+		keyDown(keyCode, 'a', SWT.MOD1);
+		assertEquals(new Point(0, 0), text.getSelection(), "keyCode " + keyCode);
+	}
+}
+
+@Test
+public void test_keyWithoutCharacterDoesNotFallBackToCharacter() {
+	text.setText("abc");
+	text.setKeyBinding(SWT.SHIFT, ST.SELECT_ALL);
+	// modifier keys and a dead acute key
+	for (int keyCode : new int[] {SWT.CTRL, SWT.ALT, SWT.COMMAND, SWT.ALT_GR, 0xB4}) {
+		keyDown(keyCode, (char) 0, SWT.SHIFT);
+		assertEquals(new Point(0, 0), text.getSelection(), "keyCode " + keyCode);
+	}
+}
 }

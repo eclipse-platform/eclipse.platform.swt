@@ -5724,12 +5724,16 @@ void handleHorizontalScroll(Event event) {
  * @param event keyboard event
  */
 void handleKey(Event event) {
-	int action;
+	int action = SWT.NULL;
 	caretAlignment = PREVIOUS_OFFSET_TRAILING;
 	if (event.keyCode != 0) {
 		// special key pressed (e.g., F1)
 		action = getKeyBinding(event.keyCode | event.stateMask);
-	} else {
+	}
+	// Non-Latin layouts (e.g. Japanese Kana) report the native character as keyCode
+	// and the Latin letter as character; modifier and dead keys carry no character.
+	boolean unicodeKeyCode = event.keyCode > SWT.DEL && event.keyCode <= 0xFFFF && event.character != 0;
+	if (action == SWT.NULL && (event.keyCode == 0 || unicodeKeyCode)) {
 		// character key pressed
 		action = getKeyBinding(event.character | event.stateMask);
 		if (action == SWT.NULL) {
