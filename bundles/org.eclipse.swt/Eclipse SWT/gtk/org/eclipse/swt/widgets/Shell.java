@@ -3504,14 +3504,11 @@ int trimHeight () {
 		/*
 		 * On GTK4 Wayland, window decorations are implemented as GTK CSD widgets. The
 		 * title bar (GtkHeaderBar) is part of the GtkWindow and its height must be
-		 * queried dynamically. Use gtk_widget_get_height() if already allocated,
-		 * otherwise gtk_widget_measure() which works even before the window is
-		 * realized/shown.
+		 * queried dynamically. Always measure it: unlike gtk_widget_get_height() this
+		 * includes the margins and matches the height added to the default size.
 		 */
 		long titlebar = GTK4.gtk_window_get_titlebar(shellHandle);
 		if (titlebar != 0) {
-			int height = GTK4.gtk_widget_get_height(titlebar);
-			if (height > 0) return height;
 			int[] naturalHeight = new int[1];
 			GTK4.gtk_widget_measure(titlebar, GTK.GTK_ORIENTATION_VERTICAL, -1, null, naturalHeight, null, null);
 			return naturalHeight[0];

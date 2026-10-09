@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.IOException;
@@ -1100,5 +1101,194 @@ public void test_degenerateSizeDoesNotExpandShell() {
 	popup.dispose();
 	assertTrue(clientArea.height >= 0, "negative client area: " + clientArea);
 	assertTrue(clientArea.height <= 2, "shell expanded to its natural size: " + clientArea);
+}
+
+private Shell openSizedShell(int width, int height) throws InterruptedException {
+	Shell sized = new Shell(shell.getDisplay(), SWT.SHELL_TRIM);
+	boolean opened = false;
+	try {
+		sized.setSize(width, height);
+		sized.open();
+		assertEventuallySize(sized, width, height);
+		opened = true;
+	} finally {
+		if (!opened) {
+			sized.dispose();
+		}
+	}
+	return sized;
+}
+
+private static void assertEventuallySize(Shell sized, int width, int height) throws InterruptedException {
+	Point expected = new Point(width, height);
+	SwtTestUtil.processEvents();
+	SwtTestUtil.processEvents(10000, () -> sized.getSize().equals(expected));
+	assertEquals(expected, sized.getSize());
+}
+
+@Test
+public void test_open_keepsRequestedSize() throws InterruptedException {
+	openSizedShell(400, 300).dispose();
+}
+
+@Test
+public void test_setMinimumSizeII_getMinimumSize() {
+	Shell sized = new Shell(shell.getDisplay(), SWT.SHELL_TRIM);
+	try {
+		sized.setMinimumSize(300, 200);
+		assertEquals(new Point(300, 200), sized.getMinimumSize());
+		sized.setMinimumSize(new Point(250, 150));
+		assertEquals(new Point(250, 150), sized.getMinimumSize());
+	} finally {
+		sized.dispose();
+	}
+}
+
+@Test
+public void test_setMinimumSizeLorg_eclipse_swt_graphics_Point_null() {
+	assertThrows(IllegalArgumentException.class, () -> testShell.setMinimumSize(null));
+}
+
+@Test
+public void test_setMaximumSizeLorg_eclipse_swt_graphics_Point_null() {
+	assertThrows(IllegalArgumentException.class, () -> testShell.setMaximumSize(null));
+}
+
+@Test
+public void test_setMinimumSizeII_clampedToTrim() {
+	assumeFalse(SwtTestUtil.isCocoa, "Cocoa does not clamp the minimum size to the trim");
+	Shell sized = new Shell(shell.getDisplay(), SWT.SHELL_TRIM);
+	try {
+		sized.setMinimumSize(0, 0);
+		Point trimmed = sized.getMinimumSize();
+		assertTrue(trimmed.x > 0 && trimmed.y > 0, "minimum size not clamped to the trim: " + trimmed);
+		if (SwtTestUtil.isGTK) {
+			Rectangle trim = sized.computeTrim(0, 0, 0, 0);
+			assertTrue(trimmed.x >= trim.width && trimmed.y >= trim.height, "minimum size " + trimmed + " smaller than the trim " + trim);
+		}
+		sized.setMinimumSize(1, 1);
+		assertEquals(trimmed, sized.getMinimumSize());
+	} finally {
+		sized.dispose();
+	}
+}
+
+@Test
+public void test_setMaximumSizeII_getMaximumSize() {
+	assumeFalse(SwtTestUtil.isGTK4(), "GTK4 has no maximum window size");
+	Shell sized = new Shell(shell.getDisplay(), SWT.SHELL_TRIM);
+	try {
+		sized.setMaximumSize(700, 600);
+		assertEquals(new Point(700, 600), sized.getMaximumSize());
+		sized.setMaximumSize(new Point(650, 550));
+		assertEquals(new Point(650, 550), sized.getMaximumSize());
+	} finally {
+		sized.dispose();
+	}
+}
+
+@Test
+public void test_setMinimumSizeII_setSizeBelowMinimumIsClamped() throws InterruptedException {
+	Shell sized = openSizedShell(400, 300);
+	try {
+		sized.setMinimumSize(300, 250);
+		sized.setSize(100, 100);
+		assertEventuallySize(sized, 300, 250);
+		sized.setSize(350, 280);
+		assertEventuallySize(sized, 350, 280);
+		sized.setBounds(10, 10, 120, 90);
+		assertEventuallySize(sized, 300, 250);
+	} finally {
+		sized.dispose();
+	}
+}
+
+@Test
+public void test_setMaximumSizeII_setSizeAboveMaximumIsClamped() throws InterruptedException {
+	assumeTrue(SwtTestUtil.isGTK && !SwtTestUtil.isGTK4(), "clamping a programmatic resize to the maximum size is only covered on GTK3");
+	Shell sized = openSizedShell(400, 300);
+	try {
+		sized.setMaximumSize(500, 400);
+		sized.setSize(800, 600);
+		assertEventuallySize(sized, 500, 400);
+		sized.setSize(450, 350);
+		assertEventuallySize(sized, 450, 350);
+		sized.setBounds(10, 10, 700, 550);
+		assertEventuallySize(sized, 500, 400);
+	} finally {
+		sized.dispose();
+	}
+}
+
+@Test
+public void test_setMinimumSizeII_growsOpenShell() throws InterruptedException {
+	Shell sized = openSizedShell(300, 200);
+	try {
+		sized.setMinimumSize(450, 350);
+		assertEventuallySize(sized, 450, 350);
+	} finally {
+		sized.dispose();
+	}
+}
+
+@Test
+public void test_setMaximumSizeII_shrinksOpenShell() throws InterruptedException {
+	assumeFalse(SwtTestUtil.isGTK4(), "GTK4 has no maximum window size");
+	Shell sized = openSizedShell(600, 500);
+	try {
+		sized.setMaximumSize(400, 300);
+		assertEventuallySize(sized, 400, 300);
+	} finally {
+		sized.dispose();
+	}
+}
+
+@Test
+public void test_setMinimumSizeII_resetAllowsSmallerSize() throws InterruptedException {
+	Shell sized = openSizedShell(400, 300);
+	try {
+		sized.setMinimumSize(350, 250);
+		sized.setSize(100, 100);
+		assertEventuallySize(sized, 350, 250);
+		sized.setMinimumSize(0, 0);
+		sized.setSize(200, 150);
+		assertEventuallySize(sized, 200, 150);
+	} finally {
+		sized.dispose();
+	}
+}
+
+@Test
+public void test_setMaximumSizeII_resetAllowsLargerSize() throws InterruptedException {
+	assumeTrue(SwtTestUtil.isGTK && !SwtTestUtil.isGTK4(), "resetting the maximum size with 0 is only covered on GTK3");
+	Shell sized = openSizedShell(400, 300);
+	try {
+		sized.setMaximumSize(450, 350);
+		sized.setSize(600, 500);
+		assertEventuallySize(sized, 450, 350);
+		sized.setMaximumSize(0, 0);
+		sized.setSize(600, 500);
+		assertEventuallySize(sized, 600, 500);
+	} finally {
+		sized.dispose();
+	}
+}
+
+@Test
+public void test_setMinimumSizeII_setMaximumSizeII_bothHold() throws InterruptedException {
+	assumeTrue(SwtTestUtil.isGTK && !SwtTestUtil.isGTK4(), "clamping a programmatic resize to the maximum size is only covered on GTK3");
+	Shell sized = openSizedShell(400, 300);
+	try {
+		sized.setMinimumSize(300, 250);
+		sized.setMaximumSize(500, 400);
+		sized.setSize(100, 100);
+		assertEventuallySize(sized, 300, 250);
+		sized.setSize(800, 600);
+		assertEventuallySize(sized, 500, 400);
+		sized.setSize(400, 300);
+		assertEventuallySize(sized, 400, 300);
+	} finally {
+		sized.dispose();
+	}
 }
 }
