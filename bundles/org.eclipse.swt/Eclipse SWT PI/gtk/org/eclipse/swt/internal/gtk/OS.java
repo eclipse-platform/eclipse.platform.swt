@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2024 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2026 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -2060,16 +2060,25 @@ public static final byte [] getThemeNameBytes() {
 }
 
 /**
- * Hint GTK 3 to natively prefer a dark or light theme.
+ * Hint GTK to natively prefer a dark or light theme.
  * <p>
- * Note: This method gets called from the org.eclipse.e4.ui.swt.gtk fragment.
+ * Note: This method gets called from Display#setDarkThemePreferred.
  * </p>
  *
  * @since 3.104
  */
 	public static final void setDarkThemePreferred(boolean preferred) {
-		g_object_set(GTK.gtk_settings_get_default(), GTK.gtk_application_prefer_dark_theme, preferred, 0);
-		g_object_notify(GTK.gtk_settings_get_default(), GTK.gtk_application_prefer_dark_theme);
+		long settings = GTK.gtk_settings_get_default();
+		if (GTK.GTK_VERSION >= OS.VERSION(4, 20, 0)) {
+			// gtk-application-prefer-dark-theme is deprecated and warns when set
+			g_object_set(settings, GTK.gtk_interface_color_scheme,
+					preferred ? GTK.GTK_INTERFACE_COLOR_SCHEME_DARK : GTK.GTK_INTERFACE_COLOR_SCHEME_LIGHT, 0);
+			// Reload the theme so themes with a separate gtk-dark.css (Yaru, Breeze) switch too
+			g_object_notify(settings, GTK.gtk_theme_name);
+			return;
+		}
+		g_object_set(settings, GTK.gtk_application_prefer_dark_theme, preferred, 0);
+		g_object_notify(settings, GTK.gtk_application_prefer_dark_theme);
 	}
 
 /**
