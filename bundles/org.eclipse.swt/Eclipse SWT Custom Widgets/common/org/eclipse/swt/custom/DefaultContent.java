@@ -28,8 +28,8 @@ class DefaultContent implements StyledTextContent {
 	int gapStart = -1;	// the character position start of the gap
 	int gapEnd = -1;	// the character position after the end of the gap
 	int gapLine = -1;	// the line on which the gap exists, the gap will always be associated with one line
-	int highWatermark = 300;
-	int lowWatermark = 50;
+	final int highWatermark = 300;
+	final int lowWatermark = 50;
 
 	int[][] lines = new int[50][2];	// array of character positions and lengths representing the lines of text
 	int lineCount = 0;	// the number of lines of text
@@ -343,7 +343,6 @@ void insert(int position, String text) {
  * @param newGapLine the line where the gap should be put
  */
 void moveAndResizeGap(int position, int size, int newGapLine) {
-	char[] content = null;
 	int oldSize = gapEnd - gapStart;
 	int newSize;
 	if (size > 0) {
@@ -361,18 +360,7 @@ void moveAndResizeGap(int position, int size, int newGapLine) {
 		}
 	}
 
-	if (newSize < 0) {
-		if (oldSize > 0) {
-			// removing the gap
-			content = new char[textStore.length - oldSize];
-			System.arraycopy(textStore, 0, content, 0, gapStart);
-			System.arraycopy(textStore, gapEnd, content, gapStart, content.length - gapStart);
-			textStore = content;
-		}
-		gapStart = gapEnd = position;
-		return;
-	}
-	content = new char[textStore.length + (newSize - oldSize)];
+	char[] content = new char[textStore.length + (newSize - oldSize)];
 	int newGapStart = position;
 	int newGapEnd = newGapStart + newSize;
 	if (oldSize == 0) {
