@@ -256,17 +256,6 @@ public class NativeImageLoader {
 					}
 				}
 			}
-		} else {
-			for (int y = 0, offset = 0; y < height; y++) {
-				for (int x = 0; x < width; x++, offset += n_channels) {
-					byte r = srcData[offset + 0];
-					byte g = srcData[offset + 1];
-					byte b = srcData[offset + 2];
-					srcData[offset + 0] = r;
-					srcData[offset + 1] = g;
-					srcData[offset + 2] = b;
-				}
-			}
 		}
 		return imgData;
 	}
