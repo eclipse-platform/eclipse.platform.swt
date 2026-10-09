@@ -873,19 +873,21 @@ TCHAR deprocessText (TCHAR text, int start, int end, boolean terminate) {
 }
 
 @Override
+boolean dragDetectBlocks (int x, int y) {
+	int [] start = new int [1], end = new int [1];
+	OS.SendMessage (handle, OS.EM_GETSEL, start, end);
+	if (start [0] == end [0]) return false;
+	long lParam = OS.MAKELPARAM (x, y);
+	int position = OS.LOWORD (OS.SendMessage (handle, OS.EM_CHARFROMPOS, 0, lParam));
+	return start [0] <= position && position < end [0];
+}
+
+@Override
 boolean dragDetect (long hwnd, int x, int y, boolean filter, boolean [] detect, boolean [] consume) {
 	if (filter) {
-		int [] start = new int [1], end = new int [1];
-		OS.SendMessage (handle, OS.EM_GETSEL, start, end);
-		if (start [0] != end [0]) {
-			long lParam = OS.MAKELPARAM (x, y);
-			int position = OS.LOWORD (OS.SendMessage (handle, OS.EM_CHARFROMPOS, 0, lParam));
-			if (start [0] <= position && position < end [0]) {
-				if (super.dragDetect (hwnd, x, y, filter, detect, consume)) {
-					if (consume != null) consume [0] = true;
-					return true;
-				}
-			}
+		if (dragDetectBlocks (x, y) && super.dragDetect (hwnd, x, y, filter, detect, consume)) {
+			if (consume != null) consume [0] = true;
+			return true;
 		}
 		return false;
 	}
