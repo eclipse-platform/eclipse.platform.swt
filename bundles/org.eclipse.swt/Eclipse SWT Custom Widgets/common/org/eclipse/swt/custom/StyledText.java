@@ -1966,6 +1966,37 @@ void doBlockLineVertical(boolean up) {
 		}
 	}
 }
+void doBlockPageVertical(boolean up) {
+	if (blockXLocation == -1) setBlockSelectionOffset(caretOffsets[0], false);
+	int oldY = blockYLocation - getVerticalScrollOffset();
+	int oldLineIndex = getLineIndex(oldY);
+	int oldLineTop = getLinePixel(oldLineIndex);
+	int lineIndex;
+	if (isFixedLineHeight()) {
+		int lines = Math.max(1, clientAreaHeight / renderer.getLineHeight());
+		lineIndex = Math.clamp(oldLineIndex + (up ? -lines : lines), 0, content.getLineCount() - 1);
+	} else {
+		// start from the edge matching the direction so lines of different height can be left again
+		int edgeY = up ? oldLineTop : getLinePixel(oldLineIndex + 1) - 1;
+		int pageHeight = Math.max(renderer.getLineHeight(), clientAreaHeight - topMargin - bottomMargin);
+		lineIndex = getLineIndex(up ? edgeY - pageHeight : edgeY + pageHeight);
+	}
+	int lineTop = getLinePixel(lineIndex);
+	int newY = up ? lineTop : getLinePixel(lineIndex + 1) - 1;
+	int verticalScrollOffset = getVerticalScrollOffset();
+	setTopPixel(verticalScrollOffset + lineTop - oldLineTop);
+	newY -= getVerticalScrollOffset() - verticalScrollOffset;
+	setBlockSelectionLocation(blockXLocation - horizontalScrollOffset, newY, true);
+	// the line coordinates ignore a vertical indent and styles, so check the caret itself
+	int caretY = getPointAtOffset(caretOffsets[0]).y;
+	int caretBottom = caretY + getLineHeight(caretOffsets[0]);
+	int bottom = clientAreaHeight - bottomMargin;
+	if (caretY < topMargin) {
+		scrollVertical(caretY - topMargin, true);
+	} else if (caretBottom > bottom) {
+		scrollVertical(caretBottom - bottom, true);
+	}
+}
 void doBlockLineHorizontal(boolean end) {
 	if (blockXLocation == -1) setBlockSelectionOffset(caretOffsets[0], false);
 	int x = blockXLocation - horizontalScrollOffset;
@@ -7050,7 +7081,11 @@ boolean invokeBlockAction(int action) {
 			doBlockContentStartEnd(true);
 			break;
 		case ST.SELECT_PAGE_UP:
+			doBlockPageVertical(true);
+			return true;
 		case ST.SELECT_PAGE_DOWN:
+			doBlockPageVertical(false);
+			return true;
 		case ST.SELECT_WINDOW_START:
 		case ST.SELECT_WINDOW_END:
 			//blocked actions
