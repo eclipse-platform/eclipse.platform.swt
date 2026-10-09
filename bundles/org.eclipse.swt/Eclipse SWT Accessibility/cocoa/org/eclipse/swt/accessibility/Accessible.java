@@ -497,10 +497,6 @@ public class Accessible {
 		return accessibleTableListeners == null ? 0 : accessibleTableListeners.size();
 	}
 
-	int accessibleHyperlinkListenersSize() {
-		return accessibleHyperlinkListeners == null ? 0 : accessibleHyperlinkListeners.size();
-	}
-
 	int accessibleEditableTextListenersSize() {
 		return accessibleEditableTextListeners == null ? 0 : accessibleEditableTextListeners.size();
 	}
@@ -856,28 +852,22 @@ public class Accessible {
 			return array;
 		} else {
 			// The supported action list depends on the role played by the control.
-			AccessibleControlEvent event = new AccessibleControlEvent(this);
-			event.childID = childID;
-			event.detail = -1;
-			for (int i = 0; i < accessibleControlListenersSize(); i++) {
-				AccessibleControlListener listener = accessibleControlListeners.get(i);
-				listener.getRole(event);
-			}
+			int role = getRoleFor(childID);
 
 			// No accessible listener is overriding the role of the control, so let Cocoa return the default set for the control.
-			if (event.detail == -1) {
+			if (role == -1) {
 				return null;
 			}
 
-			checkRole(event.detail);
+			checkRole(role);
 
 			if ((childID == ACC.CHILDID_SELF) && (actionNames != null)) {
-				return retainedAutoreleased(actionNames);
+				return SWTAccessibleDelegate.retainedAutoreleased(actionNames);
 			}
 
 			NSMutableArray returnValue = NSMutableArray.arrayWithCapacity(5);
 
-			switch (event.detail) {
+			switch (role) {
 				case ACC.ROLE_PUSHBUTTON:
 				case ACC.ROLE_RADIOBUTTON:
 				case ACC.ROLE_CHECKBUTTON:
@@ -893,8 +883,6 @@ public class Accessible {
 					break;
 				case ACC.ROLE_WINDOW:
 				case ACC.ROLE_DIALOG:
-//					TODO
-//					returnValue.addObject(OS.NSAccessibilityRaiseAction);
 					break;
 			}
 
@@ -902,7 +890,7 @@ public class Accessible {
 			if (childID == ACC.CHILDID_SELF) {
 				actionNames = returnValue;
 				actionNames.retain();
-				return retainedAutoreleased(actionNames);
+				return SWTAccessibleDelegate.retainedAutoreleased(actionNames);
 			} else {
 				// Caller must retain if they want to hold on to it.
 				return returnValue;
@@ -952,23 +940,17 @@ public class Accessible {
 	public NSArray internal_accessibilityAttributeNames(int childID) {
 		// The supported attribute set depends on the role played by the control.
 		// We may need to add or remove from the base set as needed.
-		AccessibleControlEvent event = new AccessibleControlEvent(this);
-		event.childID = childID;
-		event.detail = -1;
-		for (int i = 0; i < accessibleControlListenersSize(); i++) {
-			AccessibleControlListener listener = accessibleControlListeners.get(i);
-			listener.getRole(event);
-		}
+		int role = getRoleFor(childID);
 
 		// No accessible listener is overriding the role of the control, so let Cocoa
 		// return the default set for the control.
-		if (event.detail == -1)
+		if (role == -1)
 			return null;
 
-		checkRole(event.detail);
+		checkRole(role);
 
 		// If the attributes haven't changed return the cached list.
-		if (attributeNames != null) return retainedAutoreleased(attributeNames);
+		if (attributeNames != null) return SWTAccessibleDelegate.retainedAutoreleased(attributeNames);
 
 		// Set up the base set of attributes.
 		NSMutableArray returnValue = NSMutableArray.arrayWithCapacity(baseAttributes.length);
@@ -977,14 +959,11 @@ public class Accessible {
 			returnValue.addObject(baseAttributes[i]);
 		}
 
-		switch(event.detail) {
+		switch(role) {
 			case ACC.ROLE_CLIENT_AREA:
 				break;
 			case ACC.ROLE_WINDOW:
 				returnValue.addObject(OS.NSAccessibilityTitleAttribute);
-//				TODO
-//				returnValue.addObject(OS.NSAccessibilityMainAttribute);
-//				returnValue.addObject(OS.NSAccessibilityMinimizedAttribute);
 				break;
 			case ACC.ROLE_MENUBAR:
 				returnValue.addObject(OS.NSAccessibilitySelectedChildrenAttribute);
@@ -1002,24 +981,15 @@ public class Accessible {
 				returnValue.addObject(OS.NSAccessibilityMaxValueAttribute);
 				returnValue.addObject(OS.NSAccessibilityMinValueAttribute);
 				returnValue.addObject(OS.NSAccessibilityValueAttribute);
-				//TODO
-//				returnValue.addObject(OS.NSAccessibilityOrientationAttribute);
-//				returnValue.addObject(OS.NSAccessibilityPreviousContentsAttribute);
-//				returnValue.addObject(OS.NSAccessibilityNextContentsAttribute);
 				break;
 			case ACC.ROLE_TOOLTIP:
 				returnValue.addObject(OS.NSAccessibilityTitleAttribute);
 				break;
 			case ACC.ROLE_SCROLLBAR:
 				returnValue.addObject(OS.NSAccessibilityValueAttribute);
-				//TODO
-//				returnValue.addObject(OS.NSAccessibilityOrientationAttribute);
 				break;
 			case ACC.ROLE_DIALOG:
 				returnValue.addObject(OS.NSAccessibilityTitleAttribute);
-//				TODO
-//				returnValue.addObject(OS.NSAccessibilityMainAttribute);
-//				returnValue.addObject(OS.NSAccessibilityMinimizedAttribute);
 				break;
 			case ACC.ROLE_LABEL:
 				returnValue.addObject(OS.NSAccessibilityEnabledAttribute);
@@ -1126,16 +1096,9 @@ public class Accessible {
 				returnValue.addObject(OS.NSAccessibilityMaxValueAttribute);
 				returnValue.addObject(OS.NSAccessibilityMinValueAttribute);
 				returnValue.addObject(OS.NSAccessibilityValueAttribute);
-				//TODO
-//				returnValue.addObject(OS.NSAccessibilityOrientationAttribute);
-//				increment
-//				decrement
 				break;
 			case ACC.ROLE_LINK:
-				//TODO
 				returnValue.addObject(OS.NSAccessibilityEnabledAttribute);
-//				returnValue.addObject(OS.NSAccessibilityURLAttribute);
-//				visited
 				break;
 			case ACC.ROLE_ALERT:
 				break;
@@ -1196,8 +1159,8 @@ public class Accessible {
 		/*
 		 * Only report back sub-roles when the SWT role maps to a sub-role.
 		 */
-		if (event.detail != -1) {
-			String osRole = roleToOs(event.detail);
+		if (role != -1) {
+			String osRole = roleToOs(role);
 			if (osRole.indexOf(':') == -1)
 				returnValue.removeObject(OS.NSAccessibilitySubroleAttribute);
 		}
@@ -1212,7 +1175,7 @@ public class Accessible {
 		if (childID == ACC.CHILDID_SELF) {
 			attributeNames = returnValue;
 			attributeNames.retain();
-			return retainedAutoreleased(attributeNames);
+			return SWTAccessibleDelegate.retainedAutoreleased(attributeNames);
 		} else {
 			// Caller must retain if necessary.
 			return returnValue;
@@ -1403,15 +1366,9 @@ public class Accessible {
 	 * @noreference This method is not intended to be referenced by clients.
 	 */
 	public boolean internal_accessibilityIsIgnored(int childID) {
-		AccessibleControlEvent event = new AccessibleControlEvent(this);
-		event.childID = childID;
-		event.detail = -1;
-		for (int i = 0; i < accessibleControlListenersSize(); i++) {
-			AccessibleControlListener listener = accessibleControlListeners.get(i);
-			listener.getRole(event);
-		}
+		int role = getRoleFor(childID);
 
-		boolean shouldIgnore = (event.detail == -1);
+		boolean shouldIgnore = (role == -1);
 
 		if (shouldIgnore) {
 			shouldIgnore = getTitleAttribute(childID) == null && getHelpAttribute(childID) == null && getDescriptionAttribute(childID) == null;
@@ -1433,28 +1390,22 @@ public class Accessible {
 	 * @nooverride This method is not intended to be re-implemented or extended by clients.
 	 */
 	public NSArray internal_accessibilityParameterizedAttributeNames(int childID) {
-		AccessibleControlEvent event = new AccessibleControlEvent(this);
-		event.childID = childID;
-		event.detail = -1;
-		for (int i = 0; i < accessibleControlListenersSize(); i++) {
-			AccessibleControlListener listener = accessibleControlListeners.get(i);
-			listener.getRole(event);
-		}
+		int role = getRoleFor(childID);
 
 		// No accessible listener is overriding the role of the control, so let Cocoa
 		// return the default set for the control.
-		if (event.detail == -1)
+		if (role == -1)
 			return null;
 
-		checkRole(event.detail);
+		checkRole(role);
 
 		if ((childID == ACC.CHILDID_SELF) && (parameterizedAttributeNames != null)) {
-			return retainedAutoreleased(parameterizedAttributeNames);
+			return SWTAccessibleDelegate.retainedAutoreleased(parameterizedAttributeNames);
 		}
 
 		NSMutableArray returnValue = NSMutableArray.arrayWithCapacity(4);
 
-		switch(event.detail) {
+		switch(role) {
 			case ACC.ROLE_TEXT:
 			case ACC.ROLE_PARAGRAPH:
 			case ACC.ROLE_HEADING:
@@ -1475,7 +1426,7 @@ public class Accessible {
 		if (childID == ACC.CHILDID_SELF) {
 			parameterizedAttributeNames = returnValue;
 			parameterizedAttributeNames.retain();
-			return retainedAutoreleased(parameterizedAttributeNames);
+			return SWTAccessibleDelegate.retainedAutoreleased(parameterizedAttributeNames);
 		} else {
 			// Caller must retain if they want to keep it.
 			return returnValue;
@@ -1742,37 +1693,30 @@ public class Accessible {
 	id getBoundsForRangeParameterizedAttribute(id parameter, int childID) {
 		if (accessibleTextExtendedListenersSize() == 0) return null;
 
-		id returnValue = null;
 		NSValue parameterObject = new NSValue(parameter.id);
 		NSRange range = parameterObject.rangeValue();
-		NSRect rect = new NSRect();
-		if (accessibleTextExtendedListenersSize() > 0) {
-			AccessibleTextEvent event  = new AccessibleTextEvent(this);
-			event.childID = childID;
-			event.start = (int)range.location;
-			event.end = (int)(range.location + range.length);
-			for (int i = 0; i < accessibleTextExtendedListenersSize(); i++) {
-				AccessibleTextExtendedListener listener = accessibleTextExtendedListeners.get(i);
-				listener.getTextBounds(event);
-			}
-			rect.x = event.x;
-
-			// Flip y coordinate for Cocoa.
-			NSArray screens = NSScreen.screens();
-			if (screens == null) return null;
-
-			NSScreen screen = new NSScreen(screens.objectAtIndex(0));
-			NSRect frame = screen.frame();
-			rect.y = frame.height - event.y - event.height;
-
-			rect.width = event.width;
-			rect.height = event.height;
-			returnValue = NSValue.valueWithRect(rect);
-		} else {
-			//FIXME???
-			//how to implement with old listener
+		AccessibleTextEvent event  = new AccessibleTextEvent(this);
+		event.childID = childID;
+		event.start = (int)range.location;
+		event.end = (int)(range.location + range.length);
+		for (int i = 0; i < accessibleTextExtendedListenersSize(); i++) {
+			AccessibleTextExtendedListener listener = accessibleTextExtendedListeners.get(i);
+			listener.getTextBounds(event);
 		}
-		return returnValue;
+		NSRect rect = new NSRect();
+		rect.x = event.x;
+
+		// Flip y coordinate for Cocoa.
+		NSArray screens = NSScreen.screens();
+		if (screens == null) return null;
+
+		NSScreen screen = new NSScreen(screens.objectAtIndex(0));
+		NSRect frame = screen.frame();
+		rect.y = frame.height - event.y - event.height;
+
+		rect.width = event.width;
+		rect.height = event.height;
+		return NSValue.valueWithRect(rect);
 	}
 
 	id getExpandedAttribute(int childID) {
@@ -1818,9 +1762,6 @@ public class Accessible {
 			}
 			range.location = event.offset;
 			range.length = 1;
-		} else {
-			//FIXME???
-			//how to implement with old listener
 		}
 		returnValue = NSValue.valueWithRange(range);
 		return returnValue;
@@ -1828,15 +1769,9 @@ public class Accessible {
 
 	NSString getRoleAttribute(int childID) {
 		NSString returnValue = null;
-		AccessibleControlEvent event = new AccessibleControlEvent(this);
-		event.childID = childID;
-		event.detail = -1;
-		for (int i = 0; i < accessibleControlListenersSize(); i++) {
-			AccessibleControlListener listener = accessibleControlListeners.get(i);
-			listener.getRole(event);
-		}
-		if (event.detail != -1) {
-			String appRole = roleToOs (event.detail);
+		int role = getRoleFor(childID);
+		if (role != -1) {
+			String appRole = roleToOs (role);
 			int index = appRole.indexOf(':');
 			if (index != -1) appRole = appRole.substring(0, index);
 			returnValue = NSString.stringWith(appRole);
@@ -1847,15 +1782,9 @@ public class Accessible {
 
 	id getSubroleAttribute (int childID) {
 		id returnValue = null;
-		AccessibleControlEvent event = new AccessibleControlEvent(this);
-		event.childID = childID;
-		event.detail = -1;
-		for (int i = 0; i < accessibleControlListenersSize(); i++) {
-			AccessibleControlListener listener = accessibleControlListeners.get(i);
-			listener.getRole(event);
-		}
-		if (event.detail != -1) {
-			String appRole = roleToOs (event.detail);
+		int role = getRoleFor(childID);
+		if (role != -1) {
+			String appRole = roleToOs (role);
 			int index = appRole.indexOf(':');
 			if (index != -1) {
 				appRole = appRole.substring(index + 1);
@@ -1867,18 +1796,12 @@ public class Accessible {
 
 	id getRoleDescriptionAttribute (int childID) {
 		id returnValue = null;
-		AccessibleControlEvent event = new AccessibleControlEvent(this);
-		event.childID = childID;
-		event.detail = -1;
-		for (int i = 0; i < accessibleControlListenersSize(); i++) {
-			AccessibleControlListener listener = accessibleControlListeners.get(i);
-			listener.getRole(event);
-		}
-		if (event.detail != -1) {
-			if (event.detail == ACC.ROLE_TABITEM) {
+		int role = getRoleFor(childID);
+		if (role != -1) {
+			if (role == ACC.ROLE_TABITEM) {
 				returnValue = new NSString(OS.NSAccessibilityRoleDescription (NSString.stringWith("AXTab").id, 0));
 			} else {
-				String appRole = roleToOs (event.detail);
+				String appRole = roleToOs (role);
 				String appSubrole = null;
 				int index = appRole.indexOf(':');
 				if (index != -1) {
@@ -1903,14 +1826,8 @@ public class Accessible {
 		* Feature of the Macintosh.  The text of a Label is returned in its value,
 		* not its title, so ensure that the role is not Label before asking for the title.
 		*/
-		AccessibleControlEvent roleEvent = new AccessibleControlEvent(this);
-		roleEvent.childID = childID;
-		roleEvent.detail = -1;
-		for (int i = 0; i < accessibleControlListenersSize(); i++) {
-			AccessibleControlListener listener = accessibleControlListeners.get(i);
-			listener.getRole(roleEvent);
-		}
-		if (roleEvent.detail != ACC.ROLE_LABEL) {
+		int role = getRoleFor(childID);
+		if (role != ACC.ROLE_LABEL) {
 			AccessibleEvent event = new AccessibleEvent(this);
 			event.childID = childID;
 			event.result = null;
@@ -2483,20 +2400,6 @@ public class Accessible {
 			range.location = event.start;
 			range.length = event.end - event.start;
 			returnValue = NSValue.valueWithRange(range);
-		} else if (accessibleControlListenersSize() > 0) {
-//			AccessibleControlEvent event = new AccessibleControlEvent(this);
-//			event.childID = childID;
-//			event.result = null;
-//			for (int i = 0; i < accessibleControlListenersSize(); i++) {
-//				AccessibleControlListener listener = accessibleControlListeners.get(i);
-//				listener.getValue(event);
-//			}
-//			if (event.result != null) {
-//				NSRange range = rangeForLineNumber (lineNumber, event.result);
-//				if (range.location != -1) {
-//					returnValue = NSValue.valueWithRange(range);
-//				}
-//			}
 		}
 		return returnValue;
 	}
@@ -2673,12 +2576,12 @@ public class Accessible {
 	id getStyleRangeForIndexAttribute (id parameter, int childID) {
 		if (accessibleAttributeListenersSize() == 0) return null;
 
-		// Parameter is an NSRange wrapped in an NSValue.
+		// Parameter is an NSNumber with the character index.
 		NSNumber parameterObject = new NSNumber(parameter.id);
 		int index = parameterObject.intValue();
 
 		AccessibleTextAttributeEvent event = new AccessibleTextAttributeEvent(this);
-		event.offset = (int) index;
+		event.offset = index;
 
 		// Marker values -- if -1 after calling getTextAttributes, no one implemented it.
 		event.start = event.end = -1;
@@ -3120,12 +3023,6 @@ public class Accessible {
 		if (tableDelegate != null) tableDelegate.release();
 	}
 
-	static NSArray retainedAutoreleased(NSArray inObject) {
-		id temp = inObject.retain();
-		id temp2 = new NSObject(temp.id).autorelease();
-		return new NSArray(temp2.id);
-	}
-
 	/**
 	 * Sends a message with event-specific data to accessible clients
 	 * indicating that something has changed within a custom control.
@@ -3443,20 +3340,24 @@ public class Accessible {
 		OS.NSAccessibilityPostNotification(control.view.id, OS.NSAccessibilitySelectedTextChangedNotification.id);
 	}
 
+	int getRoleFor(int childID) {
+		AccessibleControlEvent event = new AccessibleControlEvent(this);
+		event.childID = childID;
+		event.detail = -1;
+		for (int i = 0; i < accessibleControlListenersSize(); i++) {
+			AccessibleControlListener listener = accessibleControlListeners.get(i);
+			listener.getRole(event);
+		}
+		return event.detail;
+	}
+
 	id childIDToOs(int childID) {
 		if (childID == ACC.CHILDID_SELF) {
 			return control.view;
 		}
 
 		/* Check cache for childID, if found, return corresponding osChildID. */
-		SWTAccessibleDelegate childRef = (SWTAccessibleDelegate) childToIdMap.get(Integer.valueOf(childID));
-
-		if (childRef == null) {
-			childRef = new SWTAccessibleDelegate(this, childID);
-			childToIdMap.put(Integer.valueOf(childID), childRef);
-		}
-
-		return childRef;
+		return childToIdMap.computeIfAbsent(childID, key -> new SWTAccessibleDelegate(this, childID));
 	}
 
 	NSString concatStringsAsRole(NSString str1, NSString str2) {

@@ -71,14 +71,4 @@ class Relation {
 		}
 		return result;
 	}
-
-	id getLinkedUIElements() {
-		NSMutableArray result = NSMutableArray.arrayWithCapacity(targets.length);
-		for (int i = 0; i < targets.length; i++) {
-			Accessible target = targets[i];
-			id accessibleElement = target.accessibleHandle(target);
-			result.addObject(accessibleElement);
-		}
-		return result;
-	}
 }
