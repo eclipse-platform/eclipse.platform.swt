@@ -2110,9 +2110,27 @@ LRESULT wmLButtonDown (long hwnd, long wParam, long lParam) {
 	int x = OS.GET_X_LPARAM (lParam);
 	int y = OS.GET_Y_LPARAM (lParam);
 	boolean [] consume = null, detect = null;
-	boolean dragging = false, mouseDown = true;
+	boolean dragging = false, mouseDown = true, mouseDownSent = false, released = false, captureChanged = false;
 	int count = display.getClickCount (SWT.MouseDown, 1, hwnd, lParam);
 	if (count == 1 && (state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect)) {
+		/* DragDetect() blocks until a drag, release or timeout, so deliver the posted MouseDown first */
+		if (hooks (SWT.MouseDown) || filters (SWT.MouseDown)) {
+			display.captureChanged = false;
+			sendMouseEvent (SWT.MouseDown, 1, count, 0, false, hwnd, lParam);
+			display.runDeferredEvents ();
+			if (isDisposed ()) return LRESULT.ZERO;
+			captureChanged = display.captureChanged;
+		}
+		mouseDownSent = true;
+		/* A MouseDown listener may already have run its own drag detection */
+		if (OS.GetKeyState (OS.VK_LBUTTON) < 0) {
+			detect = new boolean [1];
+			consume = new boolean [1];
+			dragging = dragDetect (hwnd, x, y, true, detect, consume);
+			if (isDisposed ()) return LRESULT.ZERO;
+		} else {
+			released = true;
+		}
 		/*
 		* Feature in Windows.  It's possible that the drag
 		* operation will not be started while the mouse is
@@ -2121,16 +2139,15 @@ LRESULT wmLButtonDown (long hwnd, long wParam, long lParam) {
 		* to cancel the drag.  The fix is to query the state
 		* of the mouse and capture the mouse accordingly.
 		*/
-		detect = new boolean [1];
-		consume = new boolean [1];
-		dragging = dragDetect (hwnd, x, y, true, detect, consume);
-		if (isDisposed ()) return LRESULT.ZERO;
 		mouseDown = OS.GetKeyState (OS.VK_LBUTTON) < 0;
 	}
-	display.captureChanged = false;
-	boolean dispatch = sendMouseEvent (SWT.MouseDown, 1, count, 0, false, hwnd, lParam);
+	/* Keep a capture change made by a MouseDown listener */
+	display.captureChanged = captureChanged;
+	boolean dispatch = mouseDownSent || sendMouseEvent (SWT.MouseDown, 1, count, 0, false, hwnd, lParam);
 	if (dispatch && (consume == null || !consume [0])) {
 		result = new LRESULT (callWindowProc (hwnd, OS.WM_LBUTTONDOWN, wParam, lParam));
+		/* A MouseDown listener consumed the release, so complete the native click */
+		if (released && !isDisposed ()) callWindowProc (hwnd, OS.WM_LBUTTONUP, wParam & ~OS.MK_LBUTTON, lParam);
 	} else {
 		result = LRESULT.ZERO;
 	}

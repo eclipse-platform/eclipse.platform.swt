@@ -22,6 +22,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.swt.SWT;
@@ -234,6 +236,50 @@ public void testUrlTransfer() throws InterruptedException {
 
 	drop = testTransferRoundtrip(URLTransfer.getInstance(), drag);
 	assertEquals(drag, drop, "Drop received other data as we dragged.");
+}
+
+/**
+ * MouseDown must be sent while the button is held, not after the drag detection of a DragSource.
+ */
+@Test
+public void testMouseDownNotDelayedByDragSource() throws InterruptedException {
+	DragSource source = new DragSource(shell, DND.DROP_COPY);
+	source.setTransfer(TextTransfer.getInstance());
+	source.addListener(DND.DragSetData, event -> event.data = "x");
+	AtomicLong mouseDownTime = new AtomicLong();
+	AtomicInteger mouseDownCount = new AtomicInteger();
+	shell.addListener(SWT.MouseDown, event -> {
+		mouseDownTime.compareAndSet(0, System.currentTimeMillis());
+		mouseDownCount.incrementAndGet();
+	});
+
+	shell.forceActive();
+	assertTrue(shell.forceFocus(), "Test shell requires input focus.");
+	Display display = shell.getDisplay();
+	Event event = new Event();
+	Point pt = shell.toDisplay(50, 50);
+	event.x = pt.x;
+	event.y = pt.y;
+	event.type = SWT.MouseMove;
+	display.post(event);
+	SwtWin32TestUtil.processEvents(display, 200, null);
+	try {
+		event.button = 1;
+		event.count = 1;
+		event.type = SWT.MouseDown;
+		long start = System.currentTimeMillis();
+		display.post(event);
+		// without moving the mouse, drag detection only ends at its timeout of about 500ms
+		SwtWin32TestUtil.processEvents(display, 1000, () -> mouseDownTime.get() != 0);
+		assertTrue(mouseDownTime.get() != 0, "No MouseDown received.");
+		long delay = mouseDownTime.get() - start;
+		assertTrue(delay < 350, "MouseDown delayed by drag detection: " + delay + "ms");
+	} finally {
+		event.type = SWT.MouseUp;
+		display.post(event);
+		SwtWin32TestUtil.processEvents(display, 200, null);
+	}
+	assertEquals(1, mouseDownCount.get(), "MouseDown must be sent exactly once.");
 }
 
 /**
