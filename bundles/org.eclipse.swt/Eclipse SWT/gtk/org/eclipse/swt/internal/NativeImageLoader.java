@@ -382,7 +382,7 @@ public class NativeImageLoader {
 		byte[] type = Converter.wcsToMbcs(typeStr, true);
 
 		long[] buffer = new long[1];
-		if (type == null || typeStr == "") {
+		if (typeStr.isEmpty()) {
 			OS.g_object_unref(pixbuf);
 			OS.g_free(buffer_ptr);
 			SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT);
