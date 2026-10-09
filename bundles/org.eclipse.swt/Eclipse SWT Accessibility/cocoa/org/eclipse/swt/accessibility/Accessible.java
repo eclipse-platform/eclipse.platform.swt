@@ -924,17 +924,26 @@ public class Accessible {
 	 * @nooverride This method is not intended to be re-implemented or extended by clients.
 	 */
 	public boolean internal_accessibilityIsAttributeSettable(NSString attribute, int childID) {
+		// Compare the pointers first, Cocoa normally passes the constant itself.
+		return isAttributeSettable(attribute, true) || isAttributeSettable(attribute, false);
+	}
+
+	private boolean isAttributeSettable(NSString attribute, boolean identityOnly) {
 		if (accessibleTextExtendedListenersSize() > 0) {
-			if (attribute.isEqualToString(OS.NSAccessibilitySelectedTextRangeAttribute)) return true;
-			if (attribute.isEqualToString(OS.NSAccessibilityVisibleCharacterRangeAttribute)) return true;
+			if (isSameAttribute(attribute, OS.NSAccessibilitySelectedTextRangeAttribute, identityOnly)) return true;
+			if (isSameAttribute(attribute, OS.NSAccessibilityVisibleCharacterRangeAttribute, identityOnly)) return true;
 		}
 		if (accessibleEditableTextListenersSize() > 0) {
-			if (attribute.isEqualToString(OS.NSAccessibilitySelectedTextAttribute)) return true;
+			if (isSameAttribute(attribute, OS.NSAccessibilitySelectedTextAttribute, identityOnly)) return true;
 		}
 		if (accessibleValueListenersSize() > 0) {
-			if (attribute.isEqualToString(OS.NSAccessibilityValueAttribute)) return true;
+			if (isSameAttribute(attribute, OS.NSAccessibilityValueAttribute, identityOnly)) return true;
 		}
 		return false;
+	}
+
+	private static boolean isSameAttribute(NSString attribute, NSString constant, boolean identityOnly) {
+		return identityOnly ? attribute.id == constant.id : attribute.isEqualToString(constant);
 	}
 
 	/**
@@ -1219,6 +1228,57 @@ public class Accessible {
 		}
 	}
 
+	@FunctionalInterface
+	private interface AttributeGetter {
+		id get(Accessible accessible, int childID);
+	}
+
+	private record AttributeEntry(NSString attribute, AttributeGetter getter) {}
+
+	private static final AttributeEntry[] ATTRIBUTE_GETTERS = {
+		new AttributeEntry(OS.NSAccessibilityRoleAttribute, Accessible::getRoleAttribute),
+		new AttributeEntry(OS.NSAccessibilitySubroleAttribute, Accessible::getSubroleAttribute),
+		new AttributeEntry(OS.NSAccessibilityRoleDescriptionAttribute, Accessible::getRoleDescriptionAttribute),
+		new AttributeEntry(OS.NSAccessibilityExpandedAttribute, Accessible::getExpandedAttribute),
+		new AttributeEntry(OS.NSAccessibilityHelpAttribute, Accessible::getHelpAttribute),
+		new AttributeEntry(OS.NSAccessibilityTitleAttribute, Accessible::getTitleAttribute),
+		new AttributeEntry(OS.NSAccessibilityValueAttribute, Accessible::getValueAttribute),
+		new AttributeEntry(OS.NSAccessibilityMaxValueAttribute, Accessible::getMaxValueAttribute),
+		new AttributeEntry(OS.NSAccessibilityMinValueAttribute, Accessible::getMinValueAttribute),
+		new AttributeEntry(OS.NSAccessibilityEnabledAttribute, Accessible::getEnabledAttribute),
+		new AttributeEntry(OS.NSAccessibilityFocusedAttribute, Accessible::getFocusedAttribute),
+		new AttributeEntry(OS.NSAccessibilityParentAttribute, Accessible::getParentAttribute),
+		new AttributeEntry(OS.NSAccessibilityChildrenAttribute, (accessible, childID) -> accessible.getChildrenAttribute(childID, false)),
+		new AttributeEntry(OS.NSAccessibilityVisibleChildrenAttribute, (accessible, childID) -> accessible.getChildrenAttribute(childID, true)),
+		new AttributeEntry(OS.NSAccessibilityContentsAttribute, (accessible, childID) -> accessible.getChildrenAttribute(childID, false)),
+		// FIXME:  There's no specific API just for tabs, which won't include the buttons (if any.)
+		new AttributeEntry(OS.NSAccessibilityTabsAttribute, Accessible::getTabsAttribute),
+		new AttributeEntry(OS.NSAccessibilityWindowAttribute, Accessible::getWindowAttribute),
+		new AttributeEntry(OS.NSAccessibilityTopLevelUIElementAttribute, Accessible::getTopLevelUIElementAttribute),
+		new AttributeEntry(OS.NSAccessibilityPositionAttribute, Accessible::getPositionAttribute),
+		new AttributeEntry(OS.NSAccessibilitySizeAttribute, Accessible::getSizeAttribute),
+		new AttributeEntry(OS.NSAccessibilityDescriptionAttribute, Accessible::getDescriptionAttribute),
+		new AttributeEntry(OS.NSAccessibilityNumberOfCharactersAttribute, Accessible::getNumberOfCharactersAttribute),
+		new AttributeEntry(OS.NSAccessibilitySelectedTextAttribute, Accessible::getSelectedTextAttribute),
+		new AttributeEntry(OS.NSAccessibilitySelectedTextRangeAttribute, Accessible::getSelectedTextRangeAttribute),
+		new AttributeEntry(OS.NSAccessibilityInsertionPointLineNumberAttribute, Accessible::getInsertionPointLineNumberAttribute),
+		new AttributeEntry(OS.NSAccessibilitySelectedTextRangesAttribute, Accessible::getSelectedTextRangesAttribute),
+		new AttributeEntry(OS.NSAccessibilityVisibleCharacterRangeAttribute, Accessible::getVisibleCharacterRangeAttribute),
+		new AttributeEntry(OS.NSAccessibilityServesAsTitleForUIElementsAttribute, Accessible::getServesAsTitleForUIElementsAttribute),
+		new AttributeEntry(OS.NSAccessibilityTitleUIElementAttribute, Accessible::getTitleUIElementAttribute),
+		new AttributeEntry(OS.NSAccessibilityColumnsAttribute, Accessible::getColumnsAttribute),
+		new AttributeEntry(OS.NSAccessibilitySelectedColumnsAttribute, Accessible::getSelectedColumnsAttribute),
+		new AttributeEntry(OS.NSAccessibilityRowsAttribute, Accessible::getRowsAttribute),
+		new AttributeEntry(OS.NSAccessibilitySelectedRowsAttribute, Accessible::getSelectedRowsAttribute),
+		new AttributeEntry(OS.NSAccessibilityVisibleRowsAttribute, Accessible::getVisibleRowsAttribute),
+		new AttributeEntry(OS.NSAccessibilityVisibleColumnsAttribute, Accessible::getVisibleColumnsAttribute),
+		new AttributeEntry(OS.NSAccessibilityHeaderAttribute, Accessible::getHeaderAttribute),
+		new AttributeEntry(OS.NSAccessibilityIndexAttribute, Accessible::getIndexAttribute),
+		new AttributeEntry(OS.NSAccessibilitySelectedAttribute, Accessible::getSelectedAttribute),
+		new AttributeEntry(OS.NSAccessibilityRowIndexRangeAttribute, Accessible::getRowIndexRangeAttribute),
+		new AttributeEntry(OS.NSAccessibilityColumnIndexRangeAttribute, Accessible::getColumnIndexRangeAttribute),
+	};
+
 	/**
 	 * Returns the value for the specified attribute. Return type depends on the attribute
 	 * being queried; see the implementations of the accessor methods for details.
@@ -1233,47 +1293,13 @@ public class Accessible {
 	 * @nooverride This method is not intended to be re-implemented or extended by clients.
 	 */
 	public id internal_accessibilityAttributeValue(NSString attribute, int childID) {
-		if (attribute.isEqualToString(OS.NSAccessibilityRoleAttribute)) return getRoleAttribute(childID);
-		if (attribute.isEqualToString(OS.NSAccessibilitySubroleAttribute)) return getSubroleAttribute(childID);
-		if (attribute.isEqualToString(OS.NSAccessibilityRoleDescriptionAttribute)) return getRoleDescriptionAttribute(childID);
-		if (attribute.isEqualToString(OS.NSAccessibilityExpandedAttribute)) return getExpandedAttribute(childID);
-		if (attribute.isEqualToString(OS.NSAccessibilityHelpAttribute)) return getHelpAttribute(childID);
-		if (attribute.isEqualToString(OS.NSAccessibilityTitleAttribute)) return getTitleAttribute(childID);
-		if (attribute.isEqualToString(OS.NSAccessibilityValueAttribute)) return getValueAttribute(childID);
-		if (attribute.isEqualToString(OS.NSAccessibilityMaxValueAttribute)) return getMaxValueAttribute(childID);
-		if (attribute.isEqualToString(OS.NSAccessibilityMinValueAttribute)) return getMinValueAttribute(childID);
-		if (attribute.isEqualToString(OS.NSAccessibilityEnabledAttribute)) return getEnabledAttribute(childID);
-		if (attribute.isEqualToString(OS.NSAccessibilityFocusedAttribute)) return getFocusedAttribute(childID);
-		if (attribute.isEqualToString(OS.NSAccessibilityParentAttribute)) return getParentAttribute(childID);
-		if (attribute.isEqualToString(OS.NSAccessibilityChildrenAttribute)) return getChildrenAttribute(childID, false);
-		if (attribute.isEqualToString(OS.NSAccessibilityVisibleChildrenAttribute)) return getChildrenAttribute(childID, true);
-		if (attribute.isEqualToString(OS.NSAccessibilityContentsAttribute)) return getChildrenAttribute(childID, false);
-		// FIXME:  There's no specific API just for tabs, which won't include the buttons (if any.)
-		if (attribute.isEqualToString(OS.NSAccessibilityTabsAttribute)) return getTabsAttribute(childID);
-		if (attribute.isEqualToString(OS.NSAccessibilityWindowAttribute)) return getWindowAttribute(childID);
-		if (attribute.isEqualToString(OS.NSAccessibilityTopLevelUIElementAttribute)) return getTopLevelUIElementAttribute(childID);
-		if (attribute.isEqualToString(OS.NSAccessibilityPositionAttribute)) return getPositionAttribute(childID);
-		if (attribute.isEqualToString(OS.NSAccessibilitySizeAttribute)) return getSizeAttribute(childID);
-		if (attribute.isEqualToString(OS.NSAccessibilityDescriptionAttribute)) return getDescriptionAttribute(childID);
-		if (attribute.isEqualToString(OS.NSAccessibilityNumberOfCharactersAttribute)) return getNumberOfCharactersAttribute(childID);
-		if (attribute.isEqualToString(OS.NSAccessibilitySelectedTextAttribute)) return getSelectedTextAttribute(childID);
-		if (attribute.isEqualToString(OS.NSAccessibilitySelectedTextRangeAttribute)) return getSelectedTextRangeAttribute(childID);
-		if (attribute.isEqualToString(OS.NSAccessibilityInsertionPointLineNumberAttribute)) return getInsertionPointLineNumberAttribute(childID);
-		if (attribute.isEqualToString(OS.NSAccessibilitySelectedTextRangesAttribute)) return getSelectedTextRangesAttribute(childID);
-		if (attribute.isEqualToString(OS.NSAccessibilityVisibleCharacterRangeAttribute)) return getVisibleCharacterRangeAttribute(childID);
-		if (attribute.isEqualToString(OS.NSAccessibilityServesAsTitleForUIElementsAttribute)) return getServesAsTitleForUIElementsAttribute(childID);
-		if (attribute.isEqualToString(OS.NSAccessibilityTitleUIElementAttribute)) return getTitleUIElementAttribute(childID);
-		if (attribute.isEqualToString(OS.NSAccessibilityColumnsAttribute)) return getColumnsAttribute(childID);
-		if (attribute.isEqualToString(OS.NSAccessibilitySelectedColumnsAttribute)) return getSelectedColumnsAttribute(childID);
-		if (attribute.isEqualToString(OS.NSAccessibilityRowsAttribute)) return getRowsAttribute(childID);
-		if (attribute.isEqualToString(OS.NSAccessibilitySelectedRowsAttribute)) return getSelectedRowsAttribute(childID);
-		if (attribute.isEqualToString(OS.NSAccessibilityVisibleRowsAttribute)) return getVisibleRowsAttribute(childID);
-		if (attribute.isEqualToString(OS.NSAccessibilityVisibleColumnsAttribute)) return getVisibleColumnsAttribute(childID);
-		if (attribute.isEqualToString(OS.NSAccessibilityHeaderAttribute)) return getHeaderAttribute(childID);
-		if (attribute.isEqualToString(OS.NSAccessibilityIndexAttribute)) return getIndexAttribute(childID);
-		if (attribute.isEqualToString(OS.NSAccessibilitySelectedAttribute)) return getSelectedAttribute(childID);
-		if (attribute.isEqualToString(OS.NSAccessibilityRowIndexRangeAttribute)) return getRowIndexRangeAttribute(childID);
-		if (attribute.isEqualToString(OS.NSAccessibilityColumnIndexRangeAttribute)) return getColumnIndexRangeAttribute(childID);
+		// Compare the pointers first, Cocoa normally passes the constant itself.
+		for (AttributeEntry entry : ATTRIBUTE_GETTERS) {
+			if (attribute.id == entry.attribute().id) return entry.getter().get(this, childID);
+		}
+		for (AttributeEntry entry : ATTRIBUTE_GETTERS) {
+			if (attribute.isEqualToString(entry.attribute())) return entry.getter().get(this, childID);
+		}
 
 		// If this object don't know how to get the value it's up to the control itself to return an attribute value.
 		return null;
