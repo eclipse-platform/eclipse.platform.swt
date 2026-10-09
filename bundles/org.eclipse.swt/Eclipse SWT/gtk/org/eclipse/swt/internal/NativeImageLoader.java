@@ -225,8 +225,18 @@ public class NativeImageLoader {
 		 * width in bytes of the last row to copy raw pixbuf data.
 		 */
 		int lastRowWidth = width * ((n_channels * bits_per_sample + 7) / 8);
-		byte[] srcData = new byte[stride * height];
-		C.memmove(srcData, pixels, stride * (height - 1) + lastRowWidth);
+		// The rowstride is not always 4-byte aligned (e.g. with glycin), but ImageData expects that
+		int bytesPerLine = (lastRowWidth + 3) / 4 * 4;
+		byte[] srcData = new byte[bytesPerLine * height];
+		if (stride == bytesPerLine) {
+			C.memmove(srcData, pixels, stride * (height - 1) + lastRowWidth);
+		} else {
+			byte[] row = new byte[lastRowWidth];
+			for (int y = 0; y < height; y++) {
+				C.memmove(row, pixels + (long) y * stride, lastRowWidth);
+				System.arraycopy(row, 0, srcData, y * bytesPerLine, lastRowWidth);
+			}
+		}
 		/*
 		 * Note: GdkPixbuf only supports 3/4 n_channels and 8 bits_per_sample, This
 		 * means all images are of depth 24 / depth 32. This means loading images will
@@ -236,7 +246,7 @@ public class NativeImageLoader {
 		 * See https://www.eclipse.org/articles/Article-SWT-images/graphics-resources.html#PaletteData
 		 */
 		PaletteData palette = new PaletteData(0xFF0000, 0xFF00, 0xFF);
-		ImageData imgData = new ImageData(width, height, bits_per_sample * n_channels, palette, stride, srcData);
+		ImageData imgData = new ImageData(width, height, bits_per_sample * n_channels, palette, 4, srcData);
 		if (hasAlpha) {
 			byte[] alphaData = imgData.alphaData = new byte[width * height];
 			for (int y = 0, offset = 0, alphaOffset = 0; y < height; y++) {
