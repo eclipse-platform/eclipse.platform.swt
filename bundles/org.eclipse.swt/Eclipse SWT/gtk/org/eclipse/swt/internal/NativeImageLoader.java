@@ -141,7 +141,7 @@ public class NativeImageLoader {
 			// listener should only be called when loading interlaced/progressive
 			// PNG/JPG/GIF ?
 			ImageData data = (ImageData) imgDataArray[i].clone();
-			if (imageLoader.hasListeners() && imgDataArray != null) {
+			if (imageLoader.hasListeners()) {
 				if (data.type == SWT.IMAGE_PNG && isInterlacedPNG(data_buffer)) {
 					imageLoader.notifyListeners(new ImageLoaderEvent(imageLoader, data, i, true));
 				} else if (data.type != SWT.IMAGE_PNG) {
