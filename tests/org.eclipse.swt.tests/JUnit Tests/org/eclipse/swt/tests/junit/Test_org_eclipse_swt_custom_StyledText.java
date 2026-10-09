@@ -5234,6 +5234,191 @@ public void test_tripleClickDoesNotSelectIfDoubleClickIsDisabled() {
 }
 
 @Test
+public void test_blockSelectionPageDownAndUp() {
+	StringBuilder content = new StringBuilder();
+	for (int i = 0; i < 100; i++) {
+		content.append("line").append(i).append("\n");
+	}
+	text.setText(content.toString());
+	text.setSize(200, text.getLineHeight() * 10);
+	text.setBlockSelection(true);
+	text.setCaretOffset(0);
+	int pageLines = text.getClientArea().height / text.getLineHeight();
+
+	text.invokeAction(ST.SELECT_COLUMN_NEXT);
+	text.invokeAction(ST.SELECT_PAGE_DOWN);
+	assertEquals(pageLines, text.getLineAtOffset(text.getCaretOffset()));
+	assertEquals(pageLines, text.getTopIndex());
+	int[] ranges = text.getSelectionRanges();
+	assertEquals(pageLines + 1, ranges.length / 2);
+	assertEquals(0, ranges[0]);
+	for (int i = 1; i < ranges.length; i += 2) {
+		assertEquals(1, ranges[i]);
+	}
+
+	text.invokeAction(ST.SELECT_PAGE_DOWN);
+	assertEquals(2 * pageLines, text.getLineAtOffset(text.getCaretOffset()));
+
+	text.invokeAction(ST.SELECT_PAGE_UP);
+	text.invokeAction(ST.SELECT_PAGE_UP);
+	assertEquals(0, text.getLineAtOffset(text.getCaretOffset()));
+	assertEquals(0, text.getTopIndex());
+}
+
+@Test
+public void test_blockSelectionPageUpReversesPageDownWithVariableLineHeights() {
+	StringBuilder content = new StringBuilder();
+	for (int i = 0; i < 20; i++) {
+		content.append("line").append(i).append("\n");
+	}
+	text.setText(content.toString());
+	int lineHeight = text.getLineHeight();
+	text.setLineVerticalIndent(1, 9 * lineHeight);
+	text.setSize(200, 5 * lineHeight);
+	text.setBlockSelection(true);
+	text.setCaretOffset(0);
+
+	text.invokeAction(ST.SELECT_PAGE_DOWN);
+	assertEquals(1, text.getLineAtOffset(text.getCaretOffset()));
+	// the tall line is taller than a page, so it can only be left from its edge in the direction of paging
+	text.invokeAction(ST.SELECT_PAGE_DOWN);
+	assertEquals(6, text.getLineAtOffset(text.getCaretOffset()));
+	text.invokeAction(ST.SELECT_PAGE_UP);
+	assertEquals(1, text.getLineAtOffset(text.getCaretOffset()));
+	text.invokeAction(ST.SELECT_PAGE_UP);
+	assertEquals(0, text.getLineAtOffset(text.getCaretOffset()));
+	assertEquals(0, text.getTopPixel());
+}
+
+@Test
+public void test_blockSelectionPageDownKeepsTallTargetLineVisible() {
+	StringBuilder content = new StringBuilder();
+	for (int i = 0; i < 20; i++) {
+		content.append("line").append(i).append("\n");
+	}
+	text.setText(content.toString());
+	int lineHeight = text.getLineHeight();
+	text.setLineVerticalIndent(9, 3 * lineHeight);
+	text.setSize(200, 5 * lineHeight);
+	text.setBlockSelection(true);
+	text.setCaretOffset(text.getOffsetAtLine(4));
+
+	text.invokeAction(ST.SELECT_PAGE_DOWN);
+	assertEquals(9, text.getLineAtOffset(text.getCaretOffset()));
+	int caretY = text.getLocationAtOffset(text.getCaretOffset()).y;
+	assertTrue(caretY >= 0 && caretY + lineHeight <= text.getClientArea().height, "Caret not visible at y=" + caretY);
+}
+
+@Test
+public void test_blockSelectionPageUpKeepsTallTargetLineVisible() {
+	StringBuilder content = new StringBuilder();
+	for (int i = 0; i < 20; i++) {
+		content.append("line").append(i).append("\n");
+	}
+	text.setText(content.toString());
+	int lineHeight = text.getLineHeight();
+	text.setLineVerticalIndent(0, 9 * lineHeight);
+	text.setSize(200, 5 * lineHeight);
+	text.setBlockSelection(true);
+	text.setCaretOffset(text.getOffsetAtLine(3));
+	text.setTopPixel(text.getLinePixel(3) + text.getTopPixel());
+
+	text.invokeAction(ST.SELECT_PAGE_UP);
+	text.invokeAction(ST.SELECT_PAGE_UP);
+	assertEquals(0, text.getLineAtOffset(text.getCaretOffset()));
+	int caretY = text.getLocationAtOffset(text.getCaretOffset()).y;
+	assertTrue(caretY >= 0 && caretY + lineHeight <= text.getClientArea().height, "Caret not visible at y=" + caretY);
+}
+
+@Test
+public void test_blockSelectionPageDownKeepsTallStyledCaretVisible() {
+	StringBuilder content = new StringBuilder();
+	for (int i = 0; i < 20; i++) {
+		content.append("line").append(i).append("\n");
+	}
+	text.setText(content.toString());
+	int lineHeight = text.getLineHeight();
+	StyleRange tall = new StyleRange();
+	tall.start = text.getOffsetAtLine(7);
+	tall.length = 1;
+	tall.metrics = new GlyphMetrics(3 * lineHeight, 0, 10);
+	text.setStyleRange(tall);
+	text.setSize(200, 5 * lineHeight);
+	text.setBlockSelection(true);
+	text.setCaretOffset(text.getOffsetAtLine(4));
+
+	text.invokeAction(ST.SELECT_PAGE_DOWN);
+
+	assertEquals(7, text.getLineAtOffset(text.getCaretOffset()));
+	Rectangle caret = text.getCaret().getBounds();
+	assertTrue(caret.y >= 0 && caret.y + caret.height <= text.getClientArea().height, "Caret " + caret + " is clipped.");
+}
+
+@Test
+public void test_blockSelectionPageMatchesPlainPageWithPartialLineInViewport() {
+	StringBuilder content = new StringBuilder();
+	for (int i = 0; i < 100; i++) {
+		content.append("line").append(i).append("\n");
+	}
+	text.setText(content.toString());
+	int lineHeight = text.getLineHeight();
+	text.setSize(200, 10 * lineHeight + lineHeight / 2);
+	int pageLines = text.getClientArea().height / lineHeight;
+	text.setCaretOffset(text.getOffsetAtLine(20));
+	text.invokeAction(ST.PAGE_DOWN);
+	int plainLine = text.getLineAtOffset(text.getCaretOffset());
+	assertEquals(20 + pageLines, plainLine);
+
+	text.setBlockSelection(true);
+	text.setCaretOffset(text.getOffsetAtLine(20));
+	text.invokeAction(ST.SELECT_PAGE_DOWN);
+	assertEquals(plainLine, text.getLineAtOffset(text.getCaretOffset()));
+	text.invokeAction(ST.SELECT_PAGE_UP);
+	assertEquals(20, text.getLineAtOffset(text.getCaretOffset()));
+}
+
+@Test
+public void test_blockSelectionPageDownStopsAtDocumentEndWithMargins() {
+	StringBuilder content = new StringBuilder();
+	for (int i = 0; i < 100; i++) {
+		content.append("line").append(i).append("\n");
+	}
+	text.setText(content.toString());
+	text.setSize(200, text.getLineHeight() * 10);
+	text.setMargins(0, 10, 0, 10);
+	text.setBlockSelection(true);
+	text.setCaretOffset(text.getOffsetAtLine(95));
+	text.setTopPixel(Integer.MAX_VALUE);
+	int maxTopPixel = text.getTopPixel();
+	text.setTopPixel(maxTopPixel - 3 * text.getLineHeight());
+
+	text.invokeAction(ST.SELECT_PAGE_DOWN);
+	assertEquals(maxTopPixel, text.getTopPixel());
+	assertEquals(text.getLineCount() - 1, text.getLineAtOffset(text.getCaretOffset()));
+}
+
+@Test
+public void test_blockSelectionPageUpAndDownDoNotScrollPastDocument() {
+	StringBuilder content = new StringBuilder();
+	for (int i = 0; i < 100; i++) {
+		content.append("line").append(i).append("\n");
+	}
+	text.setText(content.toString());
+	text.setSize(200, text.getLineHeight() * 10);
+	text.setBlockSelection(true);
+	text.setCaretOffset(text.getOffsetAtLine(3));
+	text.invokeAction(ST.SELECT_PAGE_UP);
+	assertEquals(0, text.getTopPixel());
+	assertEquals(0, text.getLineAtOffset(text.getCaretOffset()));
+
+	text.setCaretOffset(text.getOffsetAtLine(95));
+	text.invokeAction(ST.SELECT_PAGE_DOWN);
+	int maxTopPixel = text.getLineCount() * text.getLineHeight() - text.getClientArea().height;
+	assertEquals(maxTopPixel, text.getTopPixel());
+	assertEquals(text.getLineCount() - 1, text.getLineAtOffset(text.getCaretOffset()));
+}
+
+@Test
 public void test_isTextSelectedInBlockSelection() {
 	text.setText(blockSelectionTestText());
 	text.setSize(1000, 1000);
