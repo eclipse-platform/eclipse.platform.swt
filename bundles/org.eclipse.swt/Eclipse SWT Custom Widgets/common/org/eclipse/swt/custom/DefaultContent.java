@@ -739,7 +739,7 @@ public void replaceTextRange(int start, int replaceLength, String newText){
 	sendTextEvent(event);
 
 	// first delete the text to be replaced
-	delete(start, replaceLength, event.replaceLineCount + 1);
+	delete(start, replaceLength);
 	// then insert the new text
 	insert(start, newText);
 	// inform listeners
@@ -779,9 +779,8 @@ public void setText (String text){
  * <p>
  * @param position the position at which the text to delete starts
  * @param length the length of the text to delete
- * @param numLines the number of lines that are being deleted
  */
-void delete(int position, int length, int numLines) {
+void delete(int position, int length) {
 	if (length == 0) return;
 
 	int startLine = getLineAtOffset(position);
