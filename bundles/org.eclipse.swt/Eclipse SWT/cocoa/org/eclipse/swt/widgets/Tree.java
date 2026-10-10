@@ -1053,8 +1053,8 @@ void drawInteriorWithFrame_inView (long id, long sel, NSRect rect, long view) {
 
 	Color selectionBackground = null, selectionForeground = null;
 	if (isSelected && (hooksErase || hooksPaint)) {
-		selectionForeground = Color.cocoa_new(display, (hasFocus || Display.APPEARANCE.Dark == display.appAppearance) ? display.alternateSelectedControlTextColor : display.selectedControlTextColor);
-		selectionBackground = Color.cocoa_new(display, hasFocus ? display.getAlternateSelectedControlColor() : display.getSecondarySelectedControlColor());
+		selectionForeground = Color.cocoa_new(display, display.selectedRowForeground(hasFocus));
+		selectionBackground = Color.cocoa_new(display, display.selectedRowBackground(hasFocus));
 	}
 
 	NSSize contentSize = super.cellSize(id, OS.sel_cellSize);
@@ -1979,6 +1979,7 @@ NSRect headerRectOfColumn (long id, long sel, long column) {
 void highlightSelectionInClipRect(long id, long sel, long rect) {
 	if (hooks (SWT.EraseItem)) return;
 	if ((style & SWT.HIDE_SELECTION) != 0 && !hasFocus()) return;
+	if (display.highlightSelectedRows ((NSTableView) view)) return;
 	NSRect clipRect = new NSRect ();
 	OS.memmove (clipRect, rect, NSRect.sizeof);
 	callSuper (id, sel, clipRect);
@@ -2299,7 +2300,8 @@ void outlineView_willDisplayCell_forTableColumn_item (long id, long sel, long ou
 	NSColor color;
 	if (textCell.isEnabled()) {
 		if (textCell.isHighlighted ()) {
-			color = NSColor.selectedControlTextColor();
+			double [] selectionForeground = display.selectionForeground;
+			color = selectionForeground != null ? NSColor.colorWithDeviceRed (selectionForeground [0], selectionForeground [1], selectionForeground [2], selectionForeground [3]) : NSColor.selectedControlTextColor();
 		} else {
 			Color foreground = item.cellForeground != null ? item.cellForeground [index] : null;
 			if (foreground == null) foreground = item.foreground;
