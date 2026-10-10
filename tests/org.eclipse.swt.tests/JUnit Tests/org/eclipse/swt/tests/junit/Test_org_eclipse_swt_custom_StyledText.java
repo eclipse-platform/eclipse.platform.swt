@@ -71,14 +71,18 @@ import org.eclipse.swt.graphics.GlyphMetrics;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.BidiUtil;
+import org.eclipse.swt.internal.DPIUtil;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.printing.Printer;
 import org.eclipse.swt.widgets.Caret;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ScrollBar;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Widget;
 import org.junit.jupiter.api.BeforeEach;
@@ -6225,5 +6229,64 @@ public void test_setText_shorterTextInCenteredSingleLine() {
 	single.setCaretOffset(single.getCharCount());
 	single.setText("a");
 	assertEquals(0, single.getCaretOffset());
+}
+
+static class ScaleNotifyingStyledText extends StyledText {
+	boolean constructed;
+	private boolean notified;
+
+	ScaleNotifyingStyledText(Composite parent) {
+		super(parent, SWT.NONE);
+		constructed = true;
+	}
+
+	// called from Control.checkBackground, before the StyledText constructor body runs
+	@Override
+	public Shell getShell() {
+		if (!notified) {
+			notified = true;
+			// reflection, since this bundle cannot reference the GTK OS class
+			try {
+				long handle = Widget.class.getField("handle").getLong(this);
+				byte[] property = "scale-factor\0".getBytes();
+				Class.forName("org.eclipse.swt.internal.gtk.OS").getMethod("g_object_notify", long.class, byte[].class).invoke(null, handle, property);
+			} catch (ReflectiveOperationException e) {
+				throw new IllegalStateException(e);
+			}
+		}
+		return super.getShell();
+	}
+}
+
+@Test
+public void test_skinNotSentBeforeConstructionCompletes() {
+	assumeTrue(SwtTestUtil.isGTK, "GTK notifies the scale factor change while the widget is created");
+	shell.setLayout(new FillLayout());
+	int nativeZoom = DPIUtil.getNativeDeviceZoom();
+	boolean[] skinned = {false};
+	boolean[] early = {false};
+	Listener skinListener = e -> {
+		if (e.widget instanceof ScaleNotifyingStyledText styledText) {
+			skinned[0] = true;
+			early[0] |= !styledText.constructed;
+		}
+	};
+	shell.getDisplay().addListener(SWT.Skin, skinListener);
+	try {
+		// makes the notification look like a scale factor change
+		DPIUtil.setDeviceZoom(nativeZoom * 2);
+		int testZoom = DPIUtil.getDeviceZoom();
+		assumeTrue(testZoom / 100 != nativeZoom / 100, "swt.autoScale makes the test zoom indistinguishable from the native zoom");
+		new ScaleNotifyingStyledText(shell);
+		while (shell.getDisplay().readAndDispatch()) {
+			// delivers the queued SWT.Skin
+		}
+		assertTrue(skinned[0], "SWT.Skin event expected");
+		assertFalse(early[0], "SWT.Skin was sent before the StyledText was fully constructed");
+		assertEquals(testZoom, DPIUtil.getDeviceZoom(), "A child must not change the device zoom");
+	} finally {
+		DPIUtil.setDeviceZoom(nativeZoom);
+		shell.getDisplay().removeListener(SWT.Skin, skinListener);
+	}
 }
 }

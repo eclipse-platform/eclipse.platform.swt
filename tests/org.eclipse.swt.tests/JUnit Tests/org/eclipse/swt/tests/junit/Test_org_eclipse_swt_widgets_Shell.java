@@ -27,6 +27,8 @@ import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -39,6 +41,7 @@ import org.eclipse.swt.events.ShellListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.Region;
+import org.eclipse.swt.internal.DPIUtil;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -46,6 +49,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Widget;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -1289,6 +1293,37 @@ public void test_setMinimumSizeII_setMaximumSizeII_bothHold() throws Interrupted
 		assertEventuallySize(sized, 400, 300);
 	} finally {
 		sized.dispose();
+	}
+}
+
+@Test
+@SuppressWarnings("restriction")
+public void test_scaleFactorNotificationChangesZoomOnlyForShell() throws ReflectiveOperationException {
+	assumeTrue(SwtTestUtil.isGTK, "GTK notifies scale factor changes on the shell window");
+	int nativeZoom = DPIUtil.getNativeDeviceZoom();
+	List<Event> events = new ArrayList<>();
+	shell.addListener(SWT.ZoomChanged, events::add);
+	Button child = new Button(shell, SWT.PUSH);
+	try {
+		// makes the notification look like a scale factor change
+		DPIUtil.setDeviceZoom(nativeZoom * 2);
+		int testZoom = DPIUtil.getDeviceZoom();
+		assumeTrue(testZoom / 100 != nativeZoom / 100 && testZoom != DPIUtil.getZoomForAutoscaleProperty(nativeZoom),
+				"swt.autoScale makes the test zoom indistinguishable from the native zoom");
+		// reflection, since this bundle cannot reference the GTK OS class or the shell window handle
+		Field field = Shell.class.getDeclaredField("shellHandle");
+		field.setAccessible(true);
+		long shellHandle = field.getLong(shell);
+		Method notify = Class.forName("org.eclipse.swt.internal.gtk.OS").getMethod("g_object_notify", long.class, byte[].class);
+		notify.invoke(null, Widget.class.getField("handle").getLong(child), "scale-factor\0".getBytes());
+		assertEquals(0, events.size(), "A child must not send SWT.ZoomChanged");
+		assertEquals(testZoom, DPIUtil.getDeviceZoom(), "A child must not change the device zoom");
+		notify.invoke(null, shellHandle, "scale-factor\0".getBytes());
+		assertEquals(1, events.size(), "SWT.ZoomChanged expected");
+		assertNotEquals(testZoom, DPIUtil.getDeviceZoom());
+		assertEquals(DPIUtil.getDeviceZoom(), events.get(0).detail, "Event.detail must be the new zoom");
+	} finally {
+		DPIUtil.setDeviceZoom(nativeZoom);
 	}
 }
 }
