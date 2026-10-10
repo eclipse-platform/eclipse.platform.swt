@@ -60,7 +60,7 @@ import org.eclipse.swt.internal.gtk.*;
  * @see <a href="https://eclipse.dev/eclipse/swt/examples.html">SWT Examples: GraphicsExample, PaintExample</a>
  * @see <a href="https://eclipse.dev/eclipse/swt/">Sample code and further information</a>
  */
-public final class GC extends Resource {
+public sealed class GC extends Resource permits GCExtension {
 	/**
 	 * the handle to the OS device context
 	 * (Warning: This field is platform dependent)
