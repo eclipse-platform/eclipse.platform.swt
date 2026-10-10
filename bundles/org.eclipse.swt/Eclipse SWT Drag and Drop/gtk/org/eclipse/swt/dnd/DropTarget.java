@@ -877,6 +877,14 @@ boolean setEventData(long context, int x, int y, int time, DNDEvent event) {
 	} else {
 		long window = GTK3.gtk_widget_get_window (control.handle);
 		GDK.gdk_window_get_origin(window, origin_x, origin_y);
+		if (OS.isWayland()) {
+			// Display coordinates carry the monitor origin on Wayland, which toControl() removes again.
+			int [] shell_x = new int[1], shell_y = new int[1];
+			GTK3.gtk_window_get_position(GTK3.gtk_widget_get_toplevel(control.handle), shell_x, shell_y);
+			Point shellLocation = control.getShell().getLocation();
+			origin_x[0] += shellLocation.x - shell_x[0];
+			origin_y[0] += shellLocation.y - shell_y[0];
+		}
 	}
 	Point coordinates = new Point(origin_x[0] + x, origin_y[0] + y);
 
