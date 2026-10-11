@@ -149,7 +149,8 @@ jobs:
         '-Dnative=${{ inputs.native }}'
         -DskipNativeTests=true
         -DfailIfNoTests=true
-        -Dtest=ViewportScreenshotRegressionTest
+        -Dtest=ViewportScreenshotRegressionTest,Test_org_eclipse_swt_awt_Java2DCanvas
+        -Dswt.java2d.evidenceDirectory=target/screenshots/java2d
         -Dswt.viewport.screenshotRegression=true
         -Dswt.viewport.screenshots=target/screenshots/viewport
         integration-test
@@ -232,8 +233,96 @@ jobs:
             return sorted(defects)
 
 
+        def check_java2d(output):
+            """Reuse the viewport lane's decoded-pixel and component operators for Java2D."""
+            facts = json.loads((output / 'capture-metadata.json').read_text())
+            require(facts['captureApi'] == 'GC(Display).copyArea', 'Java2D capture API')
+            require(facts['backend'] == 'gtk', 'Java2D unqualified backend')
+            require(facts['scrollbarMode'] == 'SWT.NONE', 'Java2D controlled scrollbar geometry')
+            width, height = facts['pixelSize']
+            require([width, height] == facts['screenBounds'][2:], 'Java2D pixel geometry is not 1:1')
+            require(facts['dpi'][0] > 0 and facts['dpi'][1] > 0, 'Java2D DPI metadata')
+            require(facts['origin'] == [29, 37], 'Java2D pan origin')
+            require(facts['coverBounds'] == [31, 27, 73, 51], 'Java2D overlap bounds')
+            require(facts['rendererCalls'] > 0, 'Java2D no renderer calls')
+            names = ('before', 'panned', 'covered', 'uncovered', 'fresh')
+            seals = {capture['name']: capture['sha256'] for capture in facts['captures']}
+            require(set(seals) == set(names), 'Java2D capture set')
+            images = {}
+            for name in names:
+                path = output / (name + '.png')
+                require(hashlib.sha256(path.read_bytes()).hexdigest() == seals[name], name + ': Java2D hash')
+                images[name] = cv2.imread(str(path), cv2.IMREAD_COLOR)
+
+            def tiles(origin):
+                rows, columns = np.indices((height, width), dtype=np.int64)
+                columns = (columns + origin[0]) // 16
+                rows = (rows + origin[1]) // 16
+                red = 40 + (columns * 37 + rows * 17) % 176
+                green = 35 + (columns * 13 + rows * 41) % 180
+                blue = 45 + (columns * 29 + rows * 23) % 170
+                return np.stack((blue, green, red), axis=2).astype(np.uint8)
+
+            initial, panned = tiles((0, 0)), tiles((29, 37))
+            covered = panned.copy()
+            covered[27:78, 31:104] = (0, 255, 0)
+            expected = {'before': initial, 'panned': panned, 'covered': covered,
+                        'uncovered': panned, 'fresh': panned}
+
+            def validate(frames):
+                for name in names:
+                    actual = frames[name]
+                    require(actual is not None and actual.shape == (height, width, 3), name + ': Java2D cropped frame')
+                    require(int(cv2.absdiff(actual, expected[name]).max()) == 0,
+                            name + ': Java2D stale, blank, shifted, overlap or clip mismatch')
+                    require(cv2.countNonZero(cv2.Canny(actual, 40, 120)) >= 20, name + ': Java2D blank frame')
+                green = cv2.inRange(frames['covered'], (0, 255, 0), (0, 255, 0))
+                count, _, stats, _ = cv2.connectedComponentsWithStats(green, connectivity=8)
+                require(count == 2 and stats[1].tolist() == [31, 27, 73, 51, 3723],
+                        'Java2D overlap component geometry')
+                require(cv2.countNonZero(cv2.cvtColor(cv2.absdiff(frames['before'], frames['panned']), cv2.COLOR_BGR2GRAY)) > 20,
+                        'Java2D pan did not repaint')
+                return True
+
+            validate(images)
+            leaking = images['covered'].copy()
+            leaking[78:84, 104:116] = (0, 255, 0)
+            defects = {'blank': ('fresh', np.zeros_like(images['fresh'])),
+                       'stale': ('fresh', images['before']),
+                       'shifted': ('panned', np.roll(images['panned'], 3, axis=1)),
+                       'cropped': ('panned', images['panned'][:, :-1]),
+                       'missing-overlap': ('covered', images['panned']),
+                       'clip-leak': ('covered', leaking)}
+            controls = output / 'negative-controls'
+            controls.mkdir(exist_ok=True)
+            rejected = []
+            for label, (name, broken) in defects.items():
+                path = controls / (label + '.png')
+                require(cv2.imwrite(str(path), broken), label + ': failed control write')
+                candidate = dict(images)
+                candidate[name] = cv2.imread(str(path), cv2.IMREAD_COLOR)
+                try:
+                    validate(candidate)
+                except AssertionError:
+                    rejected.append(label)
+                else:
+                    raise AssertionError('Java2D validator admitted negative control: ' + label)
+            receipt = {'status': 'PASS', 'opencv': cv2.__version__, 'numpy': np.__version__,
+                       'captureApi': facts['captureApi'], 'screenBounds': facts['screenBounds'],
+                       'dpi': facts['dpi'], 'pixelSize': [width, height], 'captures': seals,
+                       'exactTilePixels': width * height * 5, 'overlapPixels': 3723,
+                       'negativeControlsRejected': sorted(rejected),
+                       'scope': 'GTK3/X11 1:1 screen pixels, pan/cover/uncover/fresh parity'}
+            (output / 'opencv-validation.json').write_text(json.dumps(receipt, indent=2) + '\n')
+            return receipt
+
+
         def main():
             rejected = negative_controls()
+            java2d = check_java2d(Path('target/screenshots/java2d'))
+            java2d_suite = ET.parse('target/surefire-reports/TEST-org.eclipse.swt.tests.junit.Test_org_eclipse_swt_awt_Java2DCanvas.xml').getroot()
+            java2d_counts = {key: int(java2d_suite.get(key, '0')) for key in ('tests', 'failures', 'errors', 'skipped')}
+            require(java2d_counts == {'tests': 11, 'failures': 0, 'errors': 0, 'skipped': 0}, str(java2d_counts))
             report = Path('target/surefire-reports/TEST-org.eclipse.swt.tests.junit.ViewportScreenshotRegressionTest.xml')
             suite = ET.parse(report).getroot()
             counts = {key: int(suite.get(key, '0')) for key in ('tests', 'failures', 'errors', 'skipped')}
@@ -277,7 +366,7 @@ jobs:
             receipt = {'status': 'PASS', 'opencv': cv2.__version__, 'numpy': np.__version__,
                        'junit': counts, 'sceneArtifacts': metrics, 'canary': canary,
                        'scrollChangedPixels': scroll_delta, 'negativeControlsRejected': rejected,
-                       'graphicsLifetime': lifetime, 'manualQaRequired': False, 'scope': 'GTK3/X11 controlled geometry and scene sanity; no cross-platform golden approval'}
+                       'graphicsLifetime': lifetime, 'java2d': java2d, 'java2dJUnit': java2d_counts, 'manualQaRequired': False, 'scope': 'GTK3/X11 controlled geometry and scene sanity; no cross-platform golden approval'}
             (output / 'opencv-validation.json').write_text(json.dumps(receipt, indent=2) + '\n')
             print(json.dumps(receipt, sort_keys=True))
 
@@ -304,9 +393,9 @@ jobs:
         report = pathlib.Path('target/surefire-reports/TEST-org.eclipse.swt.tests.junit.ViewportResourceRegressionTest.xml')
         suite = ET.parse(report).getroot()
         counts = {key: int(suite.get(key, '0')) for key in ('tests', 'failures', 'errors', 'skipped')}
-        assert counts == {'tests': 10, 'failures': 0, 'errors': 0, 'skipped': 0}, counts
+        assert counts == {'tests': 13, 'failures': 0, 'errors': 0, 'skipped': 0}, counts
         evidence = pathlib.Path('target/viewport-resources')
-        expected = [f'{scenario}-{trial}.properties' for scenario in ('cold', 'scroll', 'collapse', 'logical-cold', 'logical-far', 'logical-scroll', 'logical-collapse') for trial in range(3)]
+        expected = [f'{scenario}-{trial}.properties' for scenario in ('cold', 'scroll', 'collapse', 'logical-cold', 'logical-far', 'logical-scroll', 'logical-collapse', 'java2d-cold', 'java2d-scroll', 'java2d-resize-zoom') for trial in range(3)]
         expected += ['native-control-0.properties', 'cpu-control-0.properties', 'native-prefix-control-0.properties']
         assert all((evidence / name).is_file() for name in expected), expected
         PYTHON

@@ -25,6 +25,10 @@ import java.util.List;
 import java.util.concurrent.*;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.awt.Java2DCanvas;
+import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 import org.junit.jupiter.api.*;
@@ -102,6 +106,50 @@ public class ViewportResourceRegressionTest {
 		Properties p = probe ("cpu-control", 0);
 		assertTrue (number (p, "cpuNanos") >= 2_000_000_000L, p.toString ());
 		assertThrows (AssertionError.class, () -> cpuBudget (number (p, "cpuNanos"), 1_000_000_000L));
+	}
+
+	@Test
+	void java2DColdVisibleRasterStaysWithinHeapNativeAndCpuBudgets () throws Exception {
+		qualifyJava2D ("java2d-cold", 1_000_000_000L);
+	}
+
+	@Test
+	void java2DPaintedDistantScrollingStaysWithinMemoryAndCpuBudgets () throws Exception {
+		qualifyJava2D ("java2d-scroll", 8_000_000_000L);
+	}
+
+	@Test
+	void java2DPaintedResizeAndZoomStayWithinMemoryAndCpuBudgets () throws Exception {
+		qualifyJava2D ("java2d-resize-zoom", 8_000_000_000L);
+	}
+
+	private static void qualifyJava2D (String scenario, long cpuLimit) throws Exception {
+		long [] cpu = new long [3];
+		long [] stepCpu = new long [3];
+		int steps = scenario.equals ("java2d-cold") ? 1 : STEPS;
+		for (int trial = 0; trial < cpu.length; trial++) {
+			Properties p = probe (scenario, trial);
+			memoryBudget (p);
+			cpu [trial] = number (p, "cpuNanos");
+			stepCpu [trial] = number (p, "maxStepCpuNanos");
+			assertEquals ("java2d-visible-raster", p.getProperty ("model"));
+			assertEquals (220_000_000, number (p, "logicalWidth"));
+			assertEquals (220_000_000, number (p, "logicalHeight"));
+			assertEquals (steps, number (p, "steps"));
+			assertTrue (number (p, "paintEvents") >= steps, "Each measured step must paint: " + p);
+			assertTrue (number (p, "rendererCalls") >= steps, "Each measured step must render: " + p);
+			assertTrue (number (p, "rasterBoundChecks") >= steps, "Each painted raster must be checked: " + p);
+			assertTrue (number (p, "pinnedChildChecks") >= steps, "Each pinned child must be checked: " + p);
+			assertTrue (number (p, "maxRasterPixels") > 0);
+			assertTrue (number (p, "maxRasterPixels") <= number (p, "maxClientPixels"), p.toString ());
+			assertTrue (number (p, "maxClientPixels") <= 480L * 320, p.toString ());
+		}
+		Arrays.sort (cpu);
+		Arrays.sort (stepCpu);
+		cpuBudget (cpu [1], cpuLimit);
+		if (steps > 1) {
+			assertTrue (stepCpu [1] <= 150_000_000L, "Median maximum Java2D step CPU exceeded 150 ms: " + Arrays.toString (stepCpu));
+		}
 	}
 
 	private static void qualify (String scenario, long cpuLimit) throws Exception {
@@ -273,9 +321,173 @@ public class ViewportResourceRegressionTest {
 		if (!condition) throw new AssertionError (message);
 	}
 
+	/** The Java2D probe shares process accounting but has no Tree/native-row assertions. */
+	private static final class Java2DProbe implements AutoCloseable {
+		private static final int LOGICAL_EXTENT = 220_000_000;
+		private final Shell shell;
+		private final ScrolledComposite scroller;
+		private final Java2DCanvas canvas;
+		private int paints, renders, rasterChecks, pinnedChecks;
+		private long maxRasterPixels, maxClientPixels;
+		private int originX, originY;
+
+		Java2DProbe (Display display) {
+			shell = new Shell (display);
+			shell.setLayout (new FillLayout ());
+			shell.setSize (480, 320);
+			scroller = new ScrolledComposite (shell, SWT.H_SCROLL | SWT.V_SCROLL);
+			canvas = new Java2DCanvas (scroller, SWT.NONE);
+			canvas.setData ("resource-probe-pinned", "preserved");
+			canvas.setRenderer (graphics -> {
+				renders++;
+				java.awt.Rectangle clip = graphics.getClipBounds ();
+				require (clip != null, "Invertible probe transform requires a logical clip");
+				graphics.setColor (java.awt.Color.RED);
+				graphics.fillRect (clip.x, clip.y, clip.width, clip.height);
+				graphics.setColor (java.awt.Color.BLUE);
+				graphics.fillRect (clip.x, clip.y, Math.min (24, clip.width), Math.min (24, clip.height));
+			});
+			canvas.addListener (SWT.Paint, event -> paints++);
+			scroller.setContent (canvas);
+			scroller.setLogicalContentSize (LOGICAL_EXTENT, LOGICAL_EXTENT);
+		}
+
+		void open () {
+			shell.open ();
+			shell.layout (true, true);
+		}
+
+		void step (String scenario, int index) throws InterruptedException {
+			if (scenario.equals ("java2d-resize-zoom")) {
+				boolean large = (index & 1) == 0;
+				shell.setSize (large ? 480 : 360, large ? 320 : 240);
+				shell.layout (true, true);
+				canvas.setViewTransform (java.awt.geom.AffineTransform.getScaleInstance (
+						large ? 1.0 : 1.5, large ? 1.0 : 1.5));
+			}
+			originX = (index & 1) == 0 ? 100_000 : 219_999_000;
+			originY = (index & 1) == 0 ? 150_000 : 219_999_000;
+			scroller.setOrigin (originX, originY);
+			paintAndCheck ();
+		}
+
+		void paintAndCheck () throws InterruptedException {
+			int paintBefore = paints, renderBefore = renders;
+			canvas.redraw ();
+			long deadline = System.nanoTime () + TimeUnit.SECONDS.toNanos (2);
+			do {
+				settle (shell.getDisplay ());
+				if (paints > paintBefore && renders > renderBefore) {
+					checkState ();
+					return;
+				}
+				Thread.sleep (2);
+			} while (System.nanoTime () < deadline);
+			throw new AssertionError ("Java2D viewport did not paint/render within two seconds");
+		}
+
+		void checkState () {
+			Point raster = canvas.getRasterSize ();
+			Rectangle client = canvas.getClientArea ();
+			Rectangle host = scroller.getClientArea ();
+			Point location = canvas.getLocation ();
+			require (raster.x > 0 && raster.y > 0 && raster.x <= client.width && raster.y <= client.height,
+					"Raster must stay bounded by the current visible client");
+			require (client.width <= host.width && client.height <= host.height,
+					"Physical child must stay bounded by its viewport");
+			rasterChecks++;
+			maxRasterPixels = Math.max (maxRasterPixels, (long)raster.x * raster.y);
+			maxClientPixels = Math.max (maxClientPixels, (long)client.width * client.height);
+			require (scroller.getContent () == canvas && canvas.getParent () == scroller
+					&& location.x == 0 && location.y == 0
+					&& "preserved".equals (canvas.getData ("resource-probe-pinned")), "Pinned child identity/state changed");
+			Point origin = canvas.getViewportOrigin (), parentOrigin = scroller.getOrigin ();
+			require (origin.x == originX && origin.y == originY && origin.equals (parentOrigin), "Logical origin changed");
+			Point logical = scroller.getLogicalContentSize ();
+			require (logical.x == LOGICAL_EXTENT && logical.y == LOGICAL_EXTENT, "Logical extent changed");
+			pinnedChecks++;
+		}
+
+		@Override
+		public void close () { shell.dispose (); }
+	}
+
+	private static void probeJava2D (String scenario, Path report) throws Exception {
+		require (Set.of ("java2d-cold", "java2d-scroll", "java2d-resize-zoom").contains (scenario), "Unknown Java2D scenario");
+		Display display = new Display ();
+		try {
+			// Warm class loading and the Java2D/native presentation pipeline outside all samples.
+			for (int warm = 0; warm < 4; warm++) {
+				try (Java2DProbe initial = new Java2DProbe (display)) {
+					initial.shell.setSize (192, 160);
+					initial.open ();
+					initial.paintAndCheck ();
+				}
+			}
+			processCpu (); rss (); heap ();
+			boolean cold = scenario.equals ("java2d-cold");
+			try (Java2DProbe fixture = new Java2DProbe (display)) {
+				if (cold) {
+					require (fixture.canvas.getRasterSize ().equals (new Point (0, 0)), "Cold raster must start unallocated");
+				} else {
+					fixture.open ();
+					for (int warm = 0; warm < 16; warm++) fixture.step (scenario, warm);
+				}
+				long heapBefore = collectedHeap (display), rssBefore = rss (), cpuBefore = processCpu (), wallBefore = System.nanoTime ();
+				long maxStepCpu = 0;
+				int paintBefore = fixture.paints, renderBefore = fixture.renders;
+				int rasterBefore = fixture.rasterChecks, pinnedBefore = fixture.pinnedChecks;
+				int steps = cold ? 1 : STEPS;
+				if (cold) {
+					fixture.open ();
+					fixture.paintAndCheck ();
+				} else {
+					for (int step = 0; step < STEPS; step++) {
+						long stepCpu = processCpu ();
+						fixture.step (scenario, step);
+						maxStepCpu = Math.max (maxStepCpu, processCpu () - stepCpu);
+					}
+				}
+				long cpu = processCpu () - cpuBefore, elapsed = System.nanoTime () - wallBefore;
+				long heapAfter = collectedHeap (display), rssAfter = rss ();
+				fixture.checkState ();
+				Properties result = new Properties ();
+				result.setProperty ("schema", "swt-viewport-resources/3");
+				result.setProperty ("scenario", scenario);
+				result.setProperty ("java", System.getProperty ("java.runtime.version"));
+				result.setProperty ("platform", SWT.getPlatform ());
+				result.setProperty ("model", "java2d-visible-raster");
+				result.setProperty ("scope", "bounded-java2d-painted-logical-viewport");
+				result.setProperty ("steps", Integer.toString (steps));
+				result.setProperty ("heapDeltaBytes", Long.toString (Math.max (0, heapAfter - heapBefore)));
+				result.setProperty ("rssDeltaBytes", Long.toString (Math.max (0, rssAfter - rssBefore)));
+				result.setProperty ("heapBeforeBytes", Long.toString (heapBefore));
+				result.setProperty ("heapAfterBytes", Long.toString (heapAfter));
+				result.setProperty ("rssBeforeBytes", Long.toString (rssBefore));
+				result.setProperty ("rssAfterBytes", Long.toString (rssAfter));
+				result.setProperty ("cpuNanos", Long.toString (cpu));
+				result.setProperty ("maxStepCpuNanos", Long.toString (maxStepCpu));
+				result.setProperty ("elapsedNanos", Long.toString (elapsed));
+				result.setProperty ("paintEvents", Integer.toString (fixture.paints - paintBefore));
+				result.setProperty ("rendererCalls", Integer.toString (fixture.renders - renderBefore));
+				result.setProperty ("rasterBoundChecks", Integer.toString (fixture.rasterChecks - rasterBefore));
+				result.setProperty ("pinnedChildChecks", Integer.toString (fixture.pinnedChecks - pinnedBefore));
+				result.setProperty ("logicalWidth", Integer.toString (Java2DProbe.LOGICAL_EXTENT));
+				result.setProperty ("logicalHeight", Integer.toString (Java2DProbe.LOGICAL_EXTENT));
+				result.setProperty ("maxRasterPixels", Long.toString (fixture.maxRasterPixels));
+				result.setProperty ("maxClientPixels", Long.toString (fixture.maxClientPixels));
+				try (Writer writer = Files.newBufferedWriter (report)) { result.store (writer, "Measured in an isolated warmed JVM; GC and screenshots excluded from CPU sample"); }
+			}
+		} finally { display.dispose (); }
+	}
+
 	/** Standalone child entry point also supports an explicitly unqualified far-index diagnostic. */
 	public static void main (String [] args) throws Exception {
 		String scenario = args [0];
+		if (scenario.startsWith ("java2d-")) {
+			probeJava2D (scenario, Path.of (args [1]));
+			return;
+		}
 		boolean logical = scenario.startsWith ("logical-");
 		System.clearProperty (LOGICAL_MODEL);
 		if (logical) System.setProperty (LOGICAL_MODEL, "true");

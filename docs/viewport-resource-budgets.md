@@ -4,7 +4,7 @@
 `ViewportResourceRegressionTest` measures Java heap, whole-process resident memory (RSS)
 and process CPU separately. Counting Java TreeItem facades cannot establish native-memory bounds.
 The dedicated GTK3/X11 CI job enables `-Dswt.viewport.resourceRegression=true` and requires
-all ten tests to execute without skips on JDK 21 and 25. Other platforms do not silently inherit
+all thirteen tests to execute without skips on JDK 21 and 25. Other platforms do not silently inherit
 Linux evidence.
 
 ## Frozen workload and budgets
@@ -54,7 +54,7 @@ Each retains the original 24 MiB RSS / 8 MiB heap / 150 ms median maximum-step C
 Every positive scenario requires at most 512 rows in the attached native view, sampled after
 count/access changes and during expanded/collapsed/painted states. `residentRows` retains its
 historical facade/frontier diagnostic meaning; `peakNativeViewRows` is the independent JNI view
-measurement. Schema version 2 adds this distinction. The tests require 24 fresh child reports.
+measurement. Schema version 2 adds this distinction. The original Tree tests require 24 fresh child reports; the Java2D extension below adds nine reports (33 total).
 
 ## Scope and unresolved work
 
@@ -115,7 +115,7 @@ paths and three deterministic PNG-write failures, with no retained GC/Image wrap
 positive controls verify that the observer detects retained Image and GC resources. The receipt
 is `target/capture-qualification/graphics-lifetime.properties` and is checked by the OpenCV step.
 SWT tracking is an ownership oracle, not a claim about all native allocations; retain the separate
-24-process-report CPU/RSS/heap gate. No manual QA is required.
+33-process-report CPU/RSS/heap gate. No manual QA is required.
 
 ### GTK clipping-region coordinate parity
 
@@ -141,3 +141,41 @@ pre-transform bounds are a different coordinate space. The test-owned Transform 
 released even if an assertion fails. A separate six-affine regression checks both
 user-space bounds and exact device-region symmetric differences, including holes.
 The native matrix must qualify Windows/Cocoa independently; GTK proof is not enough.
+
+
+## Java2D visible-raster resource qualification
+
+Three additive `Java2DCanvas` scenarios use the same isolated child-process runner,
+full-GC retained-heap measurement, `/proc/self/status` RSS measurement and process CPU
+operators as the Tree gate. Existing Tree scenarios, native-view row assertions, budgets
+and all three negative controls are preserved. Java2D assertions have their own model
+scope and do not reinterpret Tree-native-row measurements.
+
+Each scenario has three fresh JVM trials with the existing `-Xms64m -Xmx256m
+-XX:+UseSerialGC` settings. Java2D class loading, native presentation initialization and
+measurement-provider initialization occur before the sample. Interactive scenarios warm
+16 real painted steps before measuring 96 further painted steps. The logical extent is
+220,000,000 by 220,000,000; the largest shell is 480 by 320 logical pixels.
+
+| Scenario | Frozen workload | Each-trial RSS / retained heap | Median process CPU | Median maximum-step CPU |
+| --- | --- | --- | --- | --- |
+| `java2d-cold` | Allocate and paint the initially absent visible raster | 24 MiB / 8 MiB | 1 second | Cold allocation uses the total-CPU limit |
+| `java2d-scroll` | 96 painted distant logical-origin alternations after 16 warm steps | 24 MiB / 8 MiB | 8 seconds | 150 ms |
+| `java2d-resize-zoom` | 96 painted 480x320 / 360x240 shell-size and 1.0 / 1.5 zoom alternations, with distant logical origins, after 16 warm steps | 24 MiB / 8 MiB | 8 seconds | 150 ms |
+
+Each measured step must receive both an actual SWT Paint event and a Java2D renderer
+callback within two seconds. Every observed raster is checked against its current client
+size; the physical child is checked against the viewport. The same Canvas must remain the
+ScrolledComposite content at `(0, 0)`, with preserved data and exact parent-owned logical
+origin and extent. Reports retain callback/paint/check counts and maximum raster/client
+pixels alongside independent heap, RSS and CPU before/after measurements. Raster dimensions
+are a structural check; they do not replace process-memory measurements.
+
+The nine new reports use `model=java2d-visible-raster` and schema
+`swt-viewport-resources/3`; the existing 24 Tree reports retain their existing schema.
+The JUnit class now has 13 tests and the dedicated gate requires 33 child reports with no
+skips. Screenshots, persisted-image OpenCV checks and graphics-ownership fixtures remain
+outside measured resource intervals. This frozen Java2D rectangle-rendering workload does
+not prove a speedup over another renderer, arbitrary application-painter cost, native
+Win32/Cocoa acceptance, GTK4 acceptance or full-reactor qualification. New scenarios are
+qualification requirements until their actual run receipts are retained.
