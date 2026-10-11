@@ -459,16 +459,38 @@ final class VirtualTreeTopology {
         if (delta == 0) {
             return;
         }
+		if ((long)materializedCount * 4 < parentIds.length
+				&& (parentId == ROOT || contains (parentId))
+				&& tryShiftSparseSiblings (parentId, fromInclusive, delta)) return;
 		boolean changed = false;
 		for (int id = 0; id < parentIds.length; id++) {
 			if (parentIds [id] == parentId && childIndices [id] >= fromInclusive) {
-				childIndices [id] = Math.addExact (childIndices [id], delta);
-				if (!changed) {
-					generation++;
-					changed = true;
-				}
+				changed = shiftSiblingIndex (id, delta, changed);
 			}
 		}
+	}
+
+	private boolean tryShiftSparseSiblings (int parentId, int fromInclusive, int delta) {
+		int first = firstMaterializedChildId (parentId);
+		// Overflow must retain the original id-ordered partial updates.
+		for (int id = first; id >= 0; id = nextSiblingIds [id]) {
+			if (childIndices [id] < fromInclusive) continue;
+			long shifted = (long)childIndices [id] + delta;
+			if (shifted < Integer.MIN_VALUE || shifted > Integer.MAX_VALUE) return false;
+		}
+		boolean changed = false;
+		for (int id = first; id >= 0; id = nextSiblingIds [id]) {
+			if (childIndices [id] >= fromInclusive) {
+				changed = shiftSiblingIndex (id, delta, changed);
+			}
+		}
+		return true;
+	}
+
+	private boolean shiftSiblingIndex (int id, int delta, boolean changed) {
+		childIndices [id] = Math.addExact (childIndices [id], delta);
+		if (!changed) generation++;
+		return true;
 	}
 
 	private void linkSorted (int id) {

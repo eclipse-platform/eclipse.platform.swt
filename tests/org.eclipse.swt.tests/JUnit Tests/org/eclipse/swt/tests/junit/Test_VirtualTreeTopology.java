@@ -175,4 +175,103 @@ public class Test_VirtualTreeTopology {
 			}
 		}
 	}
+
+	private static void collectAlive (Node node, List<Node> alive) {
+		alive.add (node);
+		for (Node child : node.children) collectAlive (child, alive);
+	}
+
+	@Test
+	public void seededSiblingInsertRemovePreservesBranchesAndNativeColumns () throws Exception {
+		for (int seed = 0; seed < 32; seed++) {
+			Random random = new Random (0x5349424cL + seed);
+			List<Node> all = new ArrayList<> ();
+			Node root = model (random, null, -1, 0, all);
+			Object tree = topology (); populate (tree, root);
+			for (int step = 0; step < 128; step++) {
+				List<Node> live = new ArrayList<> (); collectAlive (root, live);
+				Node parent = live.get (random.nextInt (live.size ()));
+				if (parent.count == 0 || random.nextBoolean ()) {
+					int coordinate = random.nextInt (parent.count + 1);
+					Node child = new Node ();
+					child.id = 512 + 7 * step; child.parent = parent; child.coordinate = coordinate;
+					child.count = random.nextInt (4); child.expanded = random.nextBoolean ();
+					child.pinned = random.nextBoolean ();
+					call (tree, "insertCoordinate", parent.id, coordinate, child.id);
+					call (tree, "setChildCount", child.id, child.count);
+					call (tree, "flag", child.id, bit ("EXPANDED"), child.expanded);
+					call (tree, "flag", child.id, bit ("PINNED"), child.pinned);
+					for (Node sibling : parent.children) if (sibling.coordinate >= coordinate) sibling.coordinate++;
+					parent.count++; parent.children.add (child);
+					parent.children.sort (Comparator.comparingInt (n -> n.coordinate)); all.add (child);
+				} else {
+					int coordinate = random.nextInt (parent.count);
+					call (tree, "removeCoordinate", parent.id, coordinate);
+					parent.children.removeIf (child -> child.coordinate == coordinate);
+					for (Node sibling : parent.children) if (sibling.coordinate > coordinate) sibling.coordinate--;
+					parent.count--;
+				}
+				Set<Integer> alive = new HashSet<> ();
+				assertEquals (verify (tree, root, alive), call (tree, "materializedCount"));
+				assertEquals (visible (root), call (tree, "visibleRowCount"));
+				int [] snapshot = (int [])call (tree, "nativeModelSnapshot"); int capacity = snapshot [0];
+				assertEquals (2 + 3 * capacity, snapshot.length);
+				assertEquals (root.count, snapshot [1]);
+				for (Node node : all) if (node.id >= 0) {
+					boolean present = alive.contains (node.id);
+					assertEquals (present, call (tree, "contains", node.id));
+					assertEquals (present ? node.parent.id : Integer.MIN_VALUE, snapshot [2 + node.id]);
+					assertEquals (present ? node.coordinate : -1, snapshot [2 + capacity + node.id]);
+					assertEquals (present ? node.count : -1, snapshot [2 + 2 * capacity + node.id]);
+				}
+			}
+		}
+	}
+
+	@Test
+	public void siblingOverflowRetainsIdOrderedPartialUpdates () throws Exception {
+		Object tree = topology (); call (tree, "setChildCount", -1, Integer.MAX_VALUE);
+		call (tree, "bind", 0, -1, 10);
+		call (tree, "bind", 1, -1, Integer.MAX_VALUE);
+		call (tree, "bind", 2, -1, 5);
+		call (tree, "bind", 63, -1, 30);
+		long generation = (long)call (tree, "generation");
+		assertThrows (ArithmeticException.class, () -> call (tree, "insertCoordinate", -1, 0, 3));
+		assertEquals (11, call (tree, "childIndex", 0));
+		assertEquals (Integer.MAX_VALUE, call (tree, "childIndex", 1));
+		assertEquals (5, call (tree, "childIndex", 2));
+		assertEquals (30, call (tree, "childIndex", 63));
+		assertEquals (false, call (tree, "contains", 3));
+		assertEquals (generation + 1, call (tree, "generation"));
+		assertEquals (Integer.MAX_VALUE, call (tree, "childCount", -1));
+	}
+
+	@Test
+	public void maximumCoordinateReleaseRetainsExistingBoundaryBehavior () throws Exception {
+		Object tree = topology (); call (tree, "setChildCount", -1, Integer.MAX_VALUE);
+		call (tree, "bind", 0, -1, Integer.MAX_VALUE);
+		call (tree, "bind", 1, -1, 0); call (tree, "bind", 63, -1, 100);
+		call (tree, "releaseSubtree", 0);
+		// Preserve the existing boundary behavior; changing it needs a separate contract decision.
+		assertEquals (-1, call (tree, "childIndex", 1));
+		assertEquals (99, call (tree, "childIndex", 63));
+		assertEquals (Integer.MAX_VALUE - 1, call (tree, "childCount", -1));
+	}
+
+	@Test
+	public void shiftGenerationAndUnknownParentFailureAreStable () throws Exception {
+		Object tree = topology (); call (tree, "setChildCount", -1, 8);
+		call (tree, "bind", 63, -1, 7); call (tree, "bind", 1, -1, 3);
+		long generation = (long)call (tree, "generation");
+		call (tree, "insertCoordinate", -1, 2, 2);
+		assertEquals (generation + 3, call (tree, "generation"));
+		assertEquals (4, call (tree, "childIndex", 1)); assertEquals (8, call (tree, "childIndex", 63));
+		int [] snapshot = (int [])call (tree, "nativeModelSnapshot");
+		generation = (long)call (tree, "generation");
+		assertThrows (IllegalArgumentException.class, () -> call (tree, "insertCoordinate", 1000, 0, 3));
+		assertArrayEquals (snapshot, (int [])call (tree, "nativeModelSnapshot"));
+		assertEquals (generation, call (tree, "generation"));
+		call (tree, "removeCoordinate", -1, 2);
+		assertEquals (3, call (tree, "childIndex", 1)); assertEquals (7, call (tree, "childIndex", 63));
+	}
 }
