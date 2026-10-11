@@ -119,6 +119,7 @@ public class ScrolledComposite extends Composite {
 	boolean alwaysShowScroll = false;
 	boolean showFocusedControl = false;
 	boolean showNextFocusedControl = true;
+	Point logicalContentSize;
 	final ViewportRuntime viewportRuntime = new ViewportRuntime ();
 
 /**
@@ -348,6 +349,9 @@ Point syncViewportOriginFromContent () {
 		viewportRuntime.scrollTo (0, 0);
 		return new Point (0, 0);
 	}
+	if (logicalContentSize != null) {
+		return new Point ((int)viewportRuntime.originX (), (int)viewportRuntime.originY ());
+	}
 	Point location = content.getLocation ();
 	int x = -location.x;
 	int y = -location.y;
@@ -362,6 +366,17 @@ void applyViewportOrigin (int x, int y) {
 	}
 	x = Math.max (0, x);
 	y = Math.max (0, y);
+	if (logicalContentSize != null) {
+		Rectangle area = getClientArea ();
+		x = Math.min (x, Math.max (0, logicalContentSize.x - area.width));
+		y = Math.min (y, Math.max (0, logicalContentSize.y - area.height));
+		int dirty = viewportRuntime.scrollTo (x, y);
+		if (!content.getLocation ().equals (new Point (0, 0))) {
+			content.setLocation (0, 0);
+		}
+		if ((dirty & ViewportRuntime.BODY) != 0) content.redraw ();
+		return;
+	}
 	viewportRuntime.scrollTo (x, y);
 	Point location = content.getLocation ();
 	int targetX = -x;
@@ -378,8 +393,12 @@ ViewportRuntime.PixelLayout solveViewportLayout (Rectangle contentRect) {
 	int border = getBorderWidth ();
 	int outerWidth = Math.max (0, size.x - 2 * border);
 	int outerHeight = Math.max (0, size.y - 2 * border);
-	long logicalWidth = expandHorizontal ? minWidth : Math.max (0, contentRect.width);
-	long logicalHeight = expandVertical ? minHeight : Math.max (0, contentRect.height);
+	long logicalWidth = logicalContentSize != null
+			? logicalContentSize.x
+			: expandHorizontal ? minWidth : Math.max (0, contentRect.width);
+	long logicalHeight = logicalContentSize != null
+			? logicalContentSize.y
+			: expandVertical ? minHeight : Math.max (0, contentRect.height);
 	int horizontalPolicy = hBar == null
 			? ViewportRuntime.NEVER
 			: alwaysShowScroll ? ViewportRuntime.ALWAYS : ViewportRuntime.AUTO;
@@ -440,6 +459,69 @@ boolean needVScroll(Rectangle contentRect, boolean hVisible) {
         return true;
     }
 	return false;
+}
+
+/**
+ * Returns the configured logical content size, or {@code null} when this
+ * receiver uses the physical bounds of its content control as the scrollable
+ * extent.
+ * <p>
+ * A logical content size lets a viewport-sized paint surface represent a much
+ * larger scrollable area without allocating or moving a control of that size.
+ * </p>
+ *
+ * @return the logical content size, or {@code null} when physical content
+ *         bounds define the extent
+ *
+ * @since 3.137
+ */
+public Point getLogicalContentSize () {
+	checkWidget ();
+	return logicalContentSize == null
+			? null
+			: new Point (logicalContentSize.x, logicalContentSize.y);
+}
+
+/**
+ * Configures an explicit logical scrollable extent while keeping the content
+ * control physically bounded to the viewport.
+ * <p>
+ * This mode is intended for paint-driven or otherwise virtualized content. The
+ * current logical origin remains available through {@link #getOrigin()}; paint
+ * code can combine that origin with its clipping rectangle to render only the
+ * visible logical region.
+ * </p>
+ *
+ * @param width logical content width in pixels
+ * @param height logical content height in pixels
+ *
+ * @exception IllegalArgumentException if either extent is negative
+ * @since 3.137
+ */
+public void setLogicalContentSize (int width, int height) {
+	checkWidget ();
+	if (width < 0 || height < 0) error (SWT.ERROR_INVALID_ARGUMENT);
+	if (logicalContentSize != null
+			&& logicalContentSize.x == width
+			&& logicalContentSize.y == height) return;
+	logicalContentSize = new Point (width, height);
+	if (content != null && !content.isDisposed ()) content.setLocation (0, 0);
+	layout (false);
+}
+
+/**
+ * Restores the historical ScrolledComposite behavior in which the physical
+ * content bounds define the scrollable extent.
+ *
+ * @since 3.137
+ */
+public void clearLogicalContentSize () {
+	checkWidget ();
+	if (logicalContentSize == null) return;
+	logicalContentSize = null;
+	viewportRuntime.scrollTo (0, 0);
+	if (content != null && !content.isDisposed ()) content.setLocation (0, 0);
+	layout (false);
 }
 
 /**
