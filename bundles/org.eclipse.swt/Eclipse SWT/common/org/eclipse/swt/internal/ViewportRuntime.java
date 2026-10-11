@@ -272,19 +272,25 @@ public final class ViewportRuntime {
 			int offset = 0;
 			if (!allSelected) {
 				for (int i = 0; i < rangeCount; i++) {
-					for (int value = starts [i]; value < ends [i]; value++) {
-						result [offset++] = value;
-					}
+					offset = appendRange (result, offset, starts [i], ends [i]);
 				}
 				return result;
 			}
-			int range = 0;
-			for (int value = 0; value < logicalCount; value++) {
-				while (range < rangeCount && ends [range] <= value) range++;
-				if (range < rangeCount && starts [range] <= value && value < ends [range]) continue;
+			// Excluded ranges are already normalized; enumerate only the selected gaps.
+			int start = 0;
+			for (int range = 0; range < rangeCount; range++) {
+				offset = appendRange (result, offset, start, starts [range]);
+				start = ends [range];
+			}
+			appendRange (result, offset, start, logicalCount);
+			return result;
+		}
+
+		private static int appendRange (int [] result, int offset, int start, int endExclusive) {
+			for (int value = start; value < endExclusive; value++) {
 				result [offset++] = value;
 			}
-			return result;
+			return offset;
 		}
 
 		public void insert (int index, int count) {
