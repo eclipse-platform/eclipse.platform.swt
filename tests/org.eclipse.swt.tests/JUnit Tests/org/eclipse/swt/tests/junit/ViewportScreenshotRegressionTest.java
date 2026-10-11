@@ -95,6 +95,181 @@ public class ViewportScreenshotRegressionTest {
 		assertTrue (Files.size (output.resolve ("viewport-affine-clip-stroke.png")) > 0);
 	}
 
+
+	/**
+	 * Native screenshots for the opt-in ScrolledComposite logical-content mode.
+	 * Unlike the legacy chrome scene, the content Canvas never moves or grows to
+	 * the 220M-pixel logical height. These samples prove current visible pixels,
+	 * logical-origin hit/paint coordinates and bounded row drawing together.
+	 */
+	@Test
+	public void test_logicalScrolledContentSnapshotsAtTenMillionRows () throws Exception {
+		requireScreenCaptureLane ();
+		final int logicalRows = 10_000_000;
+		final int rowHeight = 22;
+		final int logicalHeight = Math.multiplyExact (logicalRows, rowHeight);
+		Path output = Path.of (System.getProperty (OUTPUT, "target/screenshots/viewport"));
+		Files.createDirectories (output);
+
+		shell.setText ("Logical ScrolledComposite viewport snapshot");
+		shell.setLayout (new FillLayout ());
+		shell.setSize (960, 640);
+		Composite root = new Composite (shell, SWT.NONE);
+		root.setLayout (new GridLayout (1, false));
+
+		Canvas header = new Canvas (root, SWT.DOUBLE_BUFFERED | SWT.BORDER);
+		GridData headerData = new GridData (SWT.FILL, SWT.CENTER, true, false);
+		headerData.heightHint = 30;
+		header.setLayoutData (headerData);
+		ScrolledComposite scroller = new ScrolledComposite (
+				root, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
+		scroller.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
+		Canvas body = new Canvas (scroller, SWT.DOUBLE_BUFFERED);
+		scroller.setContent (body);
+		scroller.setLogicalContentSize (1_920, logicalHeight);
+
+		int [] headerOriginX = {0};
+		long [] headerPaints = {0};
+		long [] bodyPaints = {0};
+		int [] firstPaintedRow = {-1};
+		int [] lastPaintedRow = {-1};
+		int [] maximumRowsInOnePaint = {0};
+
+		header.addListener (SWT.Paint, event -> {
+			headerPaints[0]++;
+			for (int column = 0; column < 8; column++) {
+				int x = column * 240 - headerOriginX[0];
+				event.gc.drawRectangle (x, 0, 239, 29);
+				event.gc.drawText ("column " + column, x + 6, 6, true);
+			}
+		});
+		body.addListener (SWT.Paint, event -> {
+			bodyPaints[0]++;
+			Point origin = scroller.getOrigin ();
+			Rectangle clip = event.gc.getClipping ();
+			long first = Math.max (0L, Math.floorDiv ((long)origin.y + clip.y, rowHeight) - 8L);
+			long last = Math.min (logicalRows - 1L,
+					Math.floorDiv ((long)origin.y + clip.y + clip.height + rowHeight - 1,
+							rowHeight) + 8L);
+			if (last < first) return;
+			firstPaintedRow[0] = (int)first;
+			lastPaintedRow[0] = (int)last;
+			maximumRowsInOnePaint[0] = Math.max (
+					maximumRowsInOnePaint[0], (int)(last - first + 1));
+			int firstColumn = Math.max (0, (origin.x + clip.x) / 240 - 1);
+			int lastColumn = Math.min (7, (origin.x + clip.x + clip.width) / 240 + 1);
+			for (long row = first; row <= last; row++) {
+				int y = (int)(row * rowHeight - origin.y);
+				for (int column = firstColumn; column <= lastColumn; column++) {
+					int x = column * 240 - origin.x;
+					event.gc.drawText ("row " + row + " col " + column, x + 6, y + 3, true);
+					event.gc.drawLine (x, y + rowHeight - 1, x + 239, y + rowHeight - 1);
+				}
+			}
+		});
+		shell.open ();
+		drainEvents (150);
+		assertEquals (new Point (1_920, logicalHeight), scroller.getLogicalContentSize ());
+		assertLogicalViewportCanvas (scroller, body);
+		assertTrue (headerPaints[0] > 0 && bodyPaints[0] > 0);
+
+		capture ("logical-viewport-top", root, output,
+				logicalSnapshotSidecar (scroller, body, headerOriginX[0],
+						headerPaints[0], bodyPaints[0],
+						firstPaintedRow[0], lastPaintedRow[0], maximumRowsInOnePaint[0], logicalRows));
+
+		scroller.setOrigin (0, 100_000_000);
+		drainEvents (150);
+		assertEquals (100_000_000, scroller.getOrigin ().y);
+		assertEquals (0, headerOriginX[0], "vertical scrolling must not translate the header");
+		assertLogicalViewportCanvas (scroller, body);
+		assertTrue (firstPaintedRow[0] > 4_500_000,
+				"deep snapshot must paint from the current logical origin, not the old physical origin");
+		capture ("logical-viewport-deep", root, output,
+				logicalSnapshotSidecar (scroller, body, headerOriginX[0],
+						headerPaints[0], bodyPaints[0],
+						firstPaintedRow[0], lastPaintedRow[0], maximumRowsInOnePaint[0], logicalRows));
+
+		scroller.setOrigin (620, 100_000_000);
+		headerOriginX[0] = scroller.getOrigin ().x;
+		header.redraw ();
+		drainEvents (150);
+		assertEquals (new Point (620, 100_000_000), scroller.getOrigin ());
+		assertEquals (scroller.getOrigin ().x, headerOriginX[0]);
+		assertLogicalViewportCanvas (scroller, body);
+		capture ("logical-viewport-horizontal", root, output,
+				logicalSnapshotSidecar (scroller, body, headerOriginX[0],
+						headerPaints[0], bodyPaints[0],
+						firstPaintedRow[0], lastPaintedRow[0], maximumRowsInOnePaint[0], logicalRows));
+
+		shell.setSize (520, 400);
+		shell.layout (true, true);
+		drainEvents (150);
+		assertLogicalViewportCanvas (scroller, body);
+		capture ("logical-viewport-narrow", root, output,
+				logicalSnapshotSidecar (scroller, body, headerOriginX[0],
+						headerPaints[0], bodyPaints[0],
+						firstPaintedRow[0], lastPaintedRow[0], maximumRowsInOnePaint[0], logicalRows));
+
+		assertTrue (maximumRowsInOnePaint[0] <= 80,
+				"10M logical rows must require only visible + overscan draw commands");
+		assertTrue (bodyPaints[0] > 1);
+		for (String name : new String [] {
+				"logical-viewport-top", "logical-viewport-deep",
+				"logical-viewport-horizontal", "logical-viewport-narrow"}) {
+			assertTrue (Files.size (output.resolve (name + "-screen.png")) > 0);
+			assertTrue (Files.size (output.resolve (name + ".png")) > 0);
+			assertTrue (Files.size (output.resolve (name + ".txt")) > 0);
+		}
+		assertScreenImagesDiffer (
+				output.resolve ("logical-viewport-top-screen.png"),
+				output.resolve ("logical-viewport-deep-screen.png"));
+	}
+
+	private static void assertLogicalViewportCanvas (ScrolledComposite scroller, Canvas body) {
+		assertEquals (new Point (0, 0), body.getLocation (),
+				"the logical viewport must never translate the physical Canvas");
+		Rectangle client = scroller.getClientArea ();
+		assertEquals (client.width, body.getSize ().x,
+				"the physical Canvas width must equal the current viewport width");
+		assertEquals (client.height, body.getSize ().y,
+				"the physical Canvas height must equal the current viewport height");
+	}
+
+	private static String logicalSnapshotSidecar (
+			ScrolledComposite scroller, Canvas body, int headerOriginX,
+			long headerPaints, long bodyPaints, int firstRow, int lastRow,
+			int maximumRowsInOnePaint, int logicalRows) {
+		return "logical.rowCount=" + logicalRows + "\n"
+				+ "logical.extent=" + scroller.getLogicalContentSize () + "\n"
+				+ "logical.origin=" + scroller.getOrigin () + "\n"
+				+ "logical.physicalBounds=" + body.getBounds () + "\n"
+				+ "logical.firstPaintedRow=" + firstRow + "\n"
+				+ "logical.lastPaintedRow=" + lastRow + "\n"
+				+ "logical.maximumRowsInOnePaint=" + maximumRowsInOnePaint + "\n"
+				+ "logical.headerOriginX=" + headerOriginX + "\n"
+				+ "logical.headerPaints=" + headerPaints + "\n"
+				+ "logical.bodyPaints=" + bodyPaints + "\n"
+				+ scrollBarText ("h", scroller.getHorizontalBar ())
+				+ scrollBarText ("v", scroller.getVerticalBar ());
+	}
+
+	private static void assertScreenImagesDiffer (Path before, Path after) {
+		ImageData a = new ImageData (before.toString ());
+		ImageData b = new ImageData (after.toString ());
+		int different = 0;
+		int width = Math.min (a.width, b.width);
+		int height = Math.min (a.height, b.height);
+		for (int y = 0; y < height && different < 24; y += 3) {
+			for (int x = 0; x < width && different < 24; x += 3) {
+				if (!a.palette.getRGB (a.getPixel (x, y)).equals (
+						b.palette.getRGB (b.getPixel (x, y)))) different++;
+			}
+		}
+		assertTrue (different >= 24,
+				"persisted screen pixels must change after a distant logical-origin scroll");
+	}
+
 	private Table createTableScene (TabFolder tabs) {
 		TabItem tab = new TabItem (tabs, SWT.NONE);
 		tab.setText ("2M virtual Table");
