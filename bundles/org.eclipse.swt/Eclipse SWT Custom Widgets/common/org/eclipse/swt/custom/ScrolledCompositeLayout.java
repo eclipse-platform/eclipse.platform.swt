@@ -86,6 +86,38 @@ protected void layout(Composite composite, boolean flushCache) {
         vBar.setVisible(viewport.verticalVisible());
     }
 	Rectangle hostRect = sc.getClientArea();
+	GC gc = new GC (sc);
+	if (sc.logicalContentSize != null) {
+		int logicalWidth = sc.logicalContentSize.x;
+		int logicalHeight = sc.logicalContentSize.y;
+		int hSelection = 0;
+		int vSelection = 0;
+		if (hBar != null) {
+			hBar.setMaximum (logicalWidth);
+			hBar.setThumb (Math.min (logicalWidth, hostRect.width));
+			hBar.setIncrement ((int) gc.getFontMetrics ().getAverageCharacterWidth ());
+			hBar.setPageIncrement (hostRect.width);
+			hSelection = Math.min (hBar.getSelection (), Math.max (0, logicalWidth - hostRect.width));
+			hBar.setSelection (hSelection);
+		}
+		if (vBar != null) {
+			vBar.setMaximum (logicalHeight);
+			vBar.setThumb (Math.min (logicalHeight, hostRect.height));
+			vBar.setIncrement (gc.getFontMetrics ().getHeight ());
+			vBar.setPageIncrement (hostRect.height);
+			vSelection = Math.min (vBar.getSelection (), Math.max (0, logicalHeight - hostRect.height));
+			vBar.setSelection (vSelection);
+		}
+		gc.dispose ();
+		contentRect.x = 0;
+		contentRect.y = 0;
+		contentRect.width = hostRect.width;
+		contentRect.height = hostRect.height;
+		sc.content.setBounds (contentRect);
+		sc.viewportRuntime.scrollTo (hSelection, vSelection);
+		inLayout = false;
+		return;
+	}
 	if (sc.expandHorizontal) {
 		contentRect.width = Math.max(sc.minWidth, hostRect.width);
 	}
@@ -93,7 +125,6 @@ protected void layout(Composite composite, boolean flushCache) {
 		contentRect.height = Math.max(sc.minHeight, hostRect.height);
 	}
 
-	GC gc = new GC (sc);
 	if (hBar != null) {
 		hBar.setMaximum (contentRect.width);
 		hBar.setThumb (Math.min (contentRect.width, hostRect.width));

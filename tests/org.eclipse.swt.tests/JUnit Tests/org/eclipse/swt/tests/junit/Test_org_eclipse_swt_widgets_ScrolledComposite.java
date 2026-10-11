@@ -16,12 +16,15 @@ package org.eclipse.swt.tests.junit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -261,6 +264,43 @@ public class Test_org_eclipse_swt_widgets_ScrolledComposite extends Test_org_ecl
 	public void test_setLayout() {
 		// setLayout() has been overwritten for scrollableComposite to not set a layout
 	}
+	@Test
+	public void test_logicalContentSizeKeepsPhysicalContentBounded() {
+		scrolledComposite = new ScrolledComposite(shell, SWT.H_SCROLL | SWT.V_SCROLL);
+		scrolledComposite.setSize(160, 120);
+		Canvas content = new Canvas(scrolledComposite, SWT.NONE);
+		content.setSize(8, 8);
+		scrolledComposite.setContent(content);
+
+		assertNull(scrolledComposite.getLogicalContentSize());
+
+		int logicalHeight = Math.multiplyExact(10_000_000, 22);
+		scrolledComposite.setLogicalContentSize(1_600, logicalHeight);
+		scrolledComposite.layout(false);
+
+		assertEquals(new Point(1_600, logicalHeight), scrolledComposite.getLogicalContentSize());
+		assertTrue(scrolledComposite.getHorizontalBar().getVisible());
+		assertTrue(scrolledComposite.getVerticalBar().getVisible());
+		assertEquals(new Point(0, 0), content.getLocation(),
+				"logical content must remain pinned instead of moving a huge native child");
+
+		Rectangle body = scrolledComposite.getClientArea();
+		assertEquals(body.width, content.getSize().x,
+				"logical paint surface should be bounded to the viewport width");
+		assertEquals(body.height, content.getSize().y,
+				"logical paint surface should be bounded to the viewport height");
+
+		scrolledComposite.setOrigin(800, 100_000_000);
+		assertEquals(new Point(800, 100_000_000), scrolledComposite.getOrigin());
+		assertEquals(new Point(0, 0), content.getLocation(),
+				"scrolling a logical extent must not translate the physical paint surface");
+
+		scrolledComposite.clearLogicalContentSize();
+		assertNull(scrolledComposite.getLogicalContentSize());
+		assertEquals(new Point(0, 0), scrolledComposite.getOrigin(),
+				"returning to legacy physical mode resets the logical origin");
+	}
+
 	@Test
 	public void test_viewportOriginMirrorsLegacyContentMovementAndLayoutStabilizes() {
 		scrolledComposite = new ScrolledComposite(shell, SWT.H_SCROLL | SWT.V_SCROLL);

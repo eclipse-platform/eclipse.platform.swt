@@ -41,7 +41,7 @@ public final class ViewportRewriteStress {
 	private static final int TABLE_ROWS = 2_000_000;
 	private static final int TREE_ROOTS = 500_000;
 	private static final int TREE_CHILDREN = 10_000;
-	private static final int CANVAS_ROWS = 1_000_000;
+	private static final int CANVAS_ROWS = 10_000_000;
 	private static final int ROW_HEIGHT = 22;
 	private static final int OVERSCAN = 8;
 	private static final String SCREENSHOT_DIR_PROPERTY = "swt.viewport.screenshots";
@@ -364,8 +364,9 @@ public final class ViewportRewriteStress {
 
 		Canvas canvas = new Canvas (scroller, SWT.DOUBLE_BUFFERED);
 		int logicalHeight = Math.multiplyExact (CANVAS_ROWS, ROW_HEIGHT);
-		canvas.setSize (1600, logicalHeight);
+		canvas.setSize (1, 1);
 		scroller.setContent (canvas);
+		scroller.setLogicalContentSize (1600, logicalHeight);
 		ScrollBar horizontal = scroller.getHorizontalBar ();
 		if (horizontal != null) {
 			horizontal.addListener (SWT.Selection, event -> {
@@ -388,28 +389,31 @@ public final class ViewportRewriteStress {
 		canvas.addListener (SWT.Paint, event -> {
 			paintEvents.incrementAndGet ();
 			Rectangle clip = event.gc.getClipping ();
-			int firstVisible = Math.max (0, clip.y / ROW_HEIGHT);
+			Point origin = scroller.getOrigin ();
+			int firstVisible = Math.max (0, (origin.y + clip.y) / ROW_HEIGHT);
 			int lastVisible = Math.min (CANVAS_ROWS,
-					(clip.y + clip.height + ROW_HEIGHT - 1) / ROW_HEIGHT);
+					(origin.y + clip.y + clip.height + ROW_HEIGHT - 1) / ROW_HEIGHT);
 			int firstPaint = Math.max (0, firstVisible - OVERSCAN);
 			int lastPaint = Math.min (CANVAS_ROWS, lastVisible + OVERSCAN);
 			paintedRows.addAndGet (lastPaint - firstPaint);
 
 			for (int row = firstPaint; row < lastPaint; row++) {
-				int y = row * ROW_HEIGHT;
+				int y = row * ROW_HEIGHT - origin.y;
 				if (selected (selectionMasks, row)) {
 					event.gc.fillRectangle (0, y, canvas.getClientArea ().width, ROW_HEIGHT);
 				}
-				event.gc.drawText ("logical row " + row, 8, y + 3, true);
-				event.gc.drawLine (0, y + ROW_HEIGHT - 1, 1500, y + ROW_HEIGHT - 1);
+				event.gc.drawText ("logical row " + row, 8 - origin.x, y + 3, true);
+				event.gc.drawLine (-origin.x, y + ROW_HEIGHT - 1,
+						1600 - origin.x, y + ROW_HEIGHT - 1);
 			}
 		});
 
 		canvas.addListener (SWT.MouseDown, event -> {
-			int row = event.y / ROW_HEIGHT;
+			Point origin = scroller.getOrigin ();
+			int row = (origin.y + event.y) / ROW_HEIGHT;
 			if (0 <= row && row < CANVAS_ROWS) {
 				toggle (selectionMasks, row);
-				canvas.redraw (0, row * ROW_HEIGHT, canvas.getClientArea ().width, ROW_HEIGHT, false);
+				canvas.redraw ();
 			}
 		});
 
