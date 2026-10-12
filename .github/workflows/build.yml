@@ -149,7 +149,8 @@ jobs:
         '-Dnative=${{ inputs.native }}'
         -DskipNativeTests=true
         -DfailIfNoTests=true
-        -Dtest=ViewportScreenshotRegressionTest
+        -Dtest=ViewportScreenshotRegressionTest,Test_org_eclipse_swt_awt_Java2DCanvas
+        -Dswt.java2d.evidenceDirectory=target/screenshots/java2d
         -Dswt.viewport.screenshotRegression=true
         -Dswt.viewport.screenshots=target/screenshots/viewport
         integration-test
@@ -162,7 +163,7 @@ jobs:
       run: |
         python3 -m venv target/viewport-vision
         target/viewport-vision/bin/python -m pip install opencv-python-headless==4.12.0.88 numpy==2.2.6
-        target/viewport-vision/bin/python verify_viewport_screenshots.py
+        target/viewport-vision/bin/python verify_viewport_screenshots.py --java2d
 
     - name: Viewport memory and CPU regression
       if: ${{ inputs.viewport_resources && inputs.native == 'gtk.linux.x86_64' }}
