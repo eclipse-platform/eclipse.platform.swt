@@ -39,3 +39,30 @@ sandbox escalation. Target CI must run native widget, vision and resource gates.
 No manual QA or screenshot sign-off is required. No fresh platform pass, complete
 widget/donor distillation or performance improvement is claimed by this receipt.
 Existing Eclipse notices and source licensing are unchanged.
+
+## Current-source successor
+
+[Synexia #10550](https://github.com/hsoliwal/com.synexia/pull/10550), commit
+`829067596dff4bb72705ad4ccfc98e57122340da`, owns the executed successor in
+`synexia-openrewrite-recipes/recipe-crates/swt-viewport-reconciliation-20261012/`.
+Generated source commit `1eb87b687039e8858fb50284d93d7bf12c4e8d58` reconciles
+current master `be5cef162a1b743ecebfefe0bf79b046810e8c10` and the earlier QA
+candidate through an additive two-parent commit.
+
+It preserves all five screenshot tests and thirteen SWT scenes, recovers the
+lost ScrolledComposite compilation/build-identity fixes, and restores the exact
+eleven-row resource viewport without raising its limit. The AGENTS invariant
+requires SWT names; public/protected Java declarations are unchanged.
+
+Java 21 product source compilation passes for GTK (494 files), Win32 (673) and
+Cocoa (634). Eleven existing headless viewport/selection tests pass per build;
+the resource fixture compiles on all three. The task's offline Maven run passes
+three recipe JUnit tests and eighteen Python QA tests, eighteen complete-input
+drift refusals and no-change replay. The generated source matches the compiled
+candidate exactly. PNG unit fixtures are synthetic, not native execution proof.
+
+Fresh widget capture and resource measurement remain blocked locally by missing
+GTK/Xvfb and the rejected installation escalation. CI must execute native JUnit,
+OpenCV and independent CPU/heap/RSS gates. No manual QA is required. This successor
+does not qualify every widget, the full reactor or the absent historical Java2D
+bridge. Preserve the earlier receipt above as dated source history.
