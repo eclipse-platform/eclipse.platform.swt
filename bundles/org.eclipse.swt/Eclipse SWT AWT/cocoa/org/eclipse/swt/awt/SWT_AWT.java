@@ -47,7 +47,13 @@ public class SWT_AWT {
 	/**
 	 * The name of the embedded Frame class. The default class name
 	 * for the platform will be used if <code>null</code>.
+	 *
+	 * @noreference This field is not intended to be referenced by clients.
+	 * @deprecated The class named here is never instantiated: the platform's
+	 *             default embedded Frame class is always used. This field will
+	 *             be removed in a future release.
 	 */
+	@Deprecated(forRemoval = true, since = "2026-12")
 	public static String embeddedFrameClass;
 
 	/**
@@ -61,11 +67,9 @@ public class SWT_AWT {
 	 */
 	static final String RUN_AWT_INVOKE_LATER_KEY = "org.eclipse.swt.internal.runAWTInvokeLater"; //$NON-NLS-1$
 
-	static final String JDK17_FRAME = "sun.lwawt.macosx.CViewEmbeddedFrame";
-
 	static boolean loaded, swingInitialized;
 
-	static native final Object initFrame (long handle, String className);
+	static native final Object initFrame (long handle);
 	static native final void validateWithBounds (Frame frame, int x, int y, int w, int h);
 	static native final void synthesizeWindowActivation (Frame frame, boolean doActivate);
 
@@ -135,10 +139,9 @@ public static Frame new_Frame(final Composite parent) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	final long handle = parent.view.id;
-	final String className = embeddedFrameClass != null ? embeddedFrameClass : JDK17_FRAME;
 	try {
 		if (embeddedFrameClass != null) {
-			Class.forName(className);
+			Class.forName(embeddedFrameClass);
 		}
 		loadLibrary();
 	} catch (ClassNotFoundException cne) {
@@ -158,7 +161,7 @@ public static Frame new_Frame(final Composite parent) {
 		public void run() {
 			if (run) return;
 			run = true;
-				Object obj = initFrame(handle, className);
+				Object obj = initFrame(handle);
 				if (obj == null || !(obj instanceof Frame)) {
 					exception [0] = new Throwable("[Error while creating AWT embedded frame]");
 					SWT.error (SWT.ERROR_UNSPECIFIED, exception[0]);
