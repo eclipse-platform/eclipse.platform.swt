@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """Existing SWT/OpenCV oracle shared by CI and the combined SWT/Nebula runner."""
 # Copyright 2026 Hitesh Soliwal and contributors
+# Modified in 2026 to validate explicit bounded Table scenes, resource probes and native observer control.
 import argparse
 import hashlib
 import json
@@ -92,12 +93,28 @@ def verify_resources(test_root):
     output = test_root / 'target/viewport-resources'
     receipt_path = output / 'resource-validation.json'
     receipt_path.unlink(missing_ok=True)
-    names = set(['additionalCpuWorkIsDetectedIndependentlyOfElapsedTime', 'coldMillionRowsStayWithinHeapNativeAndCpuBudgets', 'collapseExpansionDoesNotAccumulateNativeResidency', 'legacyDistantPrefixIsDetectedByNativeViewBudget', 'logicalColdMillionRowsStayWithinBudgets', 'logicalCollapseExpansionStaysWithinBudgets', 'logicalDistantAccessDoesNotAllocateNativePrefix', 'logicalDistantPaintedScrollingStaysWithinBudgets', 'repeatedPaintedScrollingStaysWithinMemoryAndCpuBudgets', 'touchedNativeAllocationIsDetectedIndependentlyOfJavaHeap'])
+    names = {
+        'additionalCpuWorkIsDetectedIndependentlyOfElapsedTime',
+        'coldMillionRowsStayWithinHeapNativeAndCpuBudgets',
+        'collapseExpansionDoesNotAccumulateNativeResidency',
+        'legacyDistantPrefixIsDetectedByNativeViewBudget',
+        'logicalColdMillionRowsStayWithinBudgets',
+        'logicalCollapseExpansionStaysWithinBudgets',
+        'logicalDistantAccessDoesNotAllocateNativePrefix',
+        'logicalDistantPaintedScrollingStaysWithinBudgets',
+        'repeatedPaintedScrollingStaysWithinMemoryAndCpuBudgets',
+        'touchedNativeAllocationIsDetectedIndependentlyOfJavaHeap',
+        'boundedTableColdMillionRowsStayWithinBudgets',
+        'boundedTableDistantAccessDoesNotAllocateNativePrefix',
+        'boundedTableDistantPaintedScrollingStaysWithinBudgets',
+        'defaultTableFullModelIsDetectedByNativeViewBudget'}
     counts = qualified_suite(test_root / 'target/surefire-reports/TEST-org.eclipse.swt.tests.junit.ViewportResourceRegressionTest.xml',
                              'org.eclipse.swt.tests.junit.ViewportResourceRegressionTest', names)
-    scenarios = ('cold', 'scroll', 'collapse', 'logical-cold', 'logical-far', 'logical-scroll', 'logical-collapse')
+    scenarios = ('cold', 'scroll', 'collapse', 'logical-cold', 'logical-far', 'logical-scroll', 'logical-collapse',
+                 'table-cold', 'table-far', 'table-scroll')
     expected = [(scenario, trial) for scenario in scenarios for trial in range(3)]
-    expected += [(scenario, 0) for scenario in ('native-control', 'cpu-control', 'native-prefix-control')]
+    expected += [(scenario, 0) for scenario in
+                 ('native-control', 'cpu-control', 'native-prefix-control', 'table-native-view-control')]
     hashes = {}
     for scenario, trial in expected:
         path = output / f'{scenario}-{trial}.properties'
@@ -106,14 +123,86 @@ def verify_resources(test_root):
         require(facts.get('schema') == 'swt-viewport-resources/2' and facts.get('scenario') == scenario,
                 'Resource receipt identity: ' + path.name)
         require(facts.get('platform') == 'gtk', 'Resource platform: ' + path.name)
+        table = scenario.startswith('table-')
+        require(facts.get('widget') == ('Table' if table else 'Tree'), 'Resource widget: ' + path.name)
+        model = ('explicit-logical-opt-in' if scenario.startswith('logical-') else
+                 'explicit-bounded-opt-in' if table and scenario != 'table-native-view-control' else 'default')
+        require(facts.get('model') == model, 'Resource model: ' + path.name)
         for key in ('heapDeltaBytes', 'rssDeltaBytes', 'cpuNanos', 'maxStepCpuNanos', 'peakNativeViewRows'):
             require(int(facts[key]) >= 0, 'Invalid resource observation: ' + key)
+        if table:
+            require(int(facts['logicalRows']) == 1_000_000, 'Table logical row count: ' + path.name)
+            require(0 <= int(facts['residentRows']) <= 512, 'Table facade budget: ' + path.name)
+            if scenario == 'table-native-view-control':
+                require(int(facts['peakNativeViewRows']) == 1_000_000 and
+                        int(facts['nativeViewRows']) == 1_000_000,
+                        'Table native observer failed to detect the default full model')
+                require(int(facts['windowSamples']) == 0, 'Default Table control was mislabeled as bounded')
+            else:
+                require(int(facts['windowSamples']) > 0, 'Table viewport was not sampled: ' + path.name)
+                require(0 < int(facts['peakNativeViewRows']) <= 512, 'Table native row budget: ' + path.name)
+                require(0 <= int(facts['peakResidentRows']) <= 512, 'Table peak facade budget: ' + path.name)
+                require(0 <= int(facts['setDataCalls']) <= 512, 'Table callback budget: ' + path.name)
+                top, visible, overscan = (int(facts[key]) for key in ('topIndex', 'visibleRows', 'overscanRows'))
+                require(0 <= top < 1_000_000 and visible >= 0 and overscan > 0, 'Table window geometry: ' + path.name)
+                start = max(0, top - overscan)
+                count = min(1_000_000, top + visible + overscan) - start
+                require(int(facts['paintStart']) == start and
+                        int(facts['paintRowCount']) == count and int(facts['nativeViewRows']) == count,
+                        'Table native window differs from visible plus overscan rows: ' + path.name)
+                if scenario == 'table-scroll':
+                    require(int(facts['steps']) == 96 and int(facts['paintEvents']) >= 96,
+                            'Table scrolling did not paint every measured step')
+                    require(int(facts['scrollbarSteps']) == 48 and int(facts['directScrollSteps']) == 48,
+                            'Both Table logical scrolling entrypoints must be measured')
+                    require(top == 900_000, 'Table did not finish at the distant logical row')
         hashes[path.name] = hashlib.sha256(data).hexdigest()
     receipt = {'status': 'PASS', 'junit': counts, 'resourceArtifacts': hashes,
                'budgetAuthority': 'ViewportResourceRegressionTest (unchanged)', 'manualQaRequired': False}
     receipt_path.write_text(json.dumps(receipt, indent=2) + '\n')
     print(json.dumps(receipt, sort_keys=True))
     return receipt
+
+
+def check_bounded_table_scene(name, facts, pixels):
+    expected = {
+        'bounded-table-top': (0, (64, 96, 128)),
+        'bounded-table-distant': (900_000, (238, 28, 32)),
+        'bounded-table-scrollbar': (100_000, (225, 231, 32)),
+        'bounded-table-narrow': (100_000, (225, 231, 32))}
+    top, rgb = expected[name]
+    require(facts['bounded.widget'] == 'Table' and facts['bounded.model'] == 'explicit-bounded-opt-in',
+            name + ': the screenshot must qualify the explicit bounded Table mode')
+    require(int(facts['bounded.logicalRows']) == 2_000_000, name + ': logical row count')
+    require(int(facts['bounded.topIndex']) == top and int(facts['bounded.hitIndex']) == top,
+            name + ': wrong logical row or native hit translation')
+    extent, body = (int(facts['bounded.' + key]) for key in ('rowExtent', 'bodyExtent'))
+    require(extent > 0 and body > 0, name + ': empty viewport geometry')
+    visible = (body + extent - 1) // extent
+    overscan = int(facts['bounded.overscanRows'])
+    require(overscan > 0 and int(facts['bounded.visibleRows']) == visible, name + ': missing visible/overscan rows')
+    start, end = max(0, top - overscan), min(2_000_000, top + visible + overscan)
+    require(int(facts['bounded.paintStart']) == start and int(facts['bounded.paintEndExclusive']) == end,
+            name + ': incorrect physical window projection')
+    require(int(facts['bounded.nativeRows']) == end - start and 0 < end - start <= 512,
+            name + ': attached native rows do not match the viewport and overscan')
+    for key in ('residentRows', 'setDataCalls'):
+        require(0 <= int(facts['bounded.' + key]) <= 512, name + ': unbounded ' + key)
+    require(int(facts['bounded.paintEvents']) > 0, name + ': the table did not paint')
+    require(int(facts['bounded.selectionCount']) == 4 and facts['bounded.pinnedChecked'] == 'true' and
+            facts['bounded.pinnedIndex'] == '1900000', name + ': logical selection/pinned state changed')
+    require(int(facts['v.maximum']) == 2_000_000 * extent and int(facts['v.selection']) == top * extent and
+            int(facts['v.thumb']) == body, name + ': scrollbar range no longer belongs to the logical model')
+    width, height = (int(facts['bounded.physical' + key]) for key in ('Width', 'Height'))
+    require(0 < width <= 960 and 0 < height <= 640, name + ': physical Table exceeded the viewport')
+    x, y = (int(facts['bounded.marker.' + axis]) for axis in ('x', 'y'))
+    require(0 <= x < width and 0 <= y < height, name + ': native background marker is outside the capture')
+    require(facts['bounded.marker.rgb'] == ','.join(str(value) for value in rgb), name + ': wrong row color label')
+    pixel_x, pixel_y = x * pixels.shape[1] // width, y * pixels.shape[0] // height
+    patch = pixels[max(0, pixel_y - 1):pixel_y + 2, max(0, pixel_x - 1):pixel_x + 2]
+    require(patch.size > 0 and bool(np.all(patch == np.array(rgb[::-1], dtype=np.uint8))),
+            name + ': persisted native screen pixels contain a stale or misplaced logical row')
+    return {'topIndex': top, 'visibleRows': visible, 'overscanRows': overscan, 'nativeRows': end - start}
 
 
 def main(test_root=Path(".")):
@@ -126,7 +215,8 @@ def main(test_root=Path(".")):
     report = test_root / 'target/surefire-reports/TEST-org.eclipse.swt.tests.junit.ViewportScreenshotRegressionTest.xml'
     counts = qualified_suite(report, 'org.eclipse.swt.tests.junit.ViewportScreenshotRegressionTest', {
         'test_viewportScreenshotRegression', 'test_logicalScrolledContentSnapshotsAtTenMillionRows', 'test_swtScreenCaptureTracksVisiblePixels',
-        'test_screenCaptureRejectsInvalidTargets', 'test_capturePathsReleaseGraphicsOnSuccessAndFailure'})
+        'test_screenCaptureRejectsInvalidTargets', 'test_capturePathsReleaseGraphicsOnSuccessAndFailure',
+        'test_boundedTableSnapshotsUseLogicalScrollbarAndOverscan'})
     lifetime = dict(line.split('=', 1) for line in (test_root / 'target/capture-qualification/graphics-lifetime.properties').read_text().splitlines())
     for key, expected in {'capturePaths': '3', 'successfulCaptures': '48', 'writeFailures': '3',
                           'positiveLeakControls': '2', 'retainedGraphicsDelta': '0'}.items():
@@ -135,7 +225,8 @@ def main(test_root=Path(".")):
               'tree-pinned-restored', 'viewport-vertical-scroll', 'viewport-horizontal-scroll',
               'viewport-narrow', 'viewport-wide', 'viewport-affine-clip-stroke',
               'logical-viewport-top', 'logical-viewport-deep',
-              'logical-viewport-horizontal', 'logical-viewport-narrow')
+              'logical-viewport-horizontal', 'logical-viewport-narrow',
+              'bounded-table-top', 'bounded-table-distant', 'bounded-table-scrollbar', 'bounded-table-narrow')
     metrics, images, scene_facts = {}, {}, {}
     for name in scenes:
         facts = dict(line.split('=', 1) for line in (output / (name + '.txt')).read_text().splitlines() if '=' in line)
@@ -193,10 +284,23 @@ def main(test_root=Path(".")):
     narrow_logical = images['logical-viewport-narrow']
     require(narrow_logical.shape[0] < deep.shape[0] and narrow_logical.shape[1] < deep.shape[1],
             'Logical viewport resize capture is stale')
+    bounded = {name: check_bounded_table_scene(name, scene_facts[name], images[name])
+               for name in scenes if name.startswith('bounded-table-')}
+    table_top, table_far, table_bar, table_narrow = (images['bounded-table-' + suffix]
+                                                    for suffix in ('top', 'distant', 'scrollbar', 'narrow'))
+    require(table_top.shape == table_far.shape == table_bar.shape, 'Bounded Table scroll geometry drift')
+    table_distant_delta = cv2.countNonZero(cv2.cvtColor(cv2.absdiff(table_top, table_far), cv2.COLOR_BGR2GRAY))
+    table_scrollbar_delta = cv2.countNonZero(cv2.cvtColor(cv2.absdiff(table_far, table_bar), cv2.COLOR_BGR2GRAY))
+    require(table_distant_delta > 20 and table_scrollbar_delta > 20,
+            'Distant or scrollbar-driven Table screenshots are stale')
+    require(table_narrow.shape[0] < table_bar.shape[0] and table_narrow.shape[1] < table_bar.shape[1],
+            'Bounded Table resize capture is stale')
     receipt = {'status': 'PASS', 'opencv': cv2.__version__, 'numpy': np.__version__,
                'junit': counts, 'sceneArtifacts': metrics, 'canary': canary,
                'scrollChangedPixels': scroll_delta, 'logicalScrollChangedPixels': logical_delta,
                'logicalHorizontalChangedPixels': horizontal_delta, 'negativeControlsRejected': rejected,
+               'boundedTableScenes': bounded, 'boundedTableDistantChangedPixels': table_distant_delta,
+               'boundedTableScrollbarChangedPixels': table_scrollbar_delta,
                'graphicsLifetime': lifetime, 'manualQaRequired': False, 'scope': 'GTK3/X11 controlled geometry and scene sanity; no cross-platform golden approval'}
     (output / 'opencv-validation.json').write_text(json.dumps(receipt, indent=2) + '\n')
     print(json.dumps(receipt, sort_keys=True))
