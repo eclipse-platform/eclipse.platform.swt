@@ -257,3 +257,12 @@ existing capture paths and deterministic output failures while tracking SWT GC/I
 prove the observer detects retained Image/GC controls. This complements, and does not replace,
 the independent process RSS/heap/CPU qualification. Reuse existing SWT geometry and OpenCV
 operators; record algorithm donor-category comparisons without importing unlicensed solutions.
+
+## SWT naming for distilled capabilities
+
+Keep product APIs and generated runtime code in SWT terminology: Canvas, GC,
+Image, Control, Table, Tree, ScrolledComposite, ScrollBar, and their existing
+packages/contracts. Adapt donor ideas into these owners; do not introduce Swing
+widget/facade names or a second toolkit naming layer. Donor names belong in
+provenance. Preserve already-existing interoperability APIs and third-party
+notices; this rule does not authorize renaming or removing compatible APIs.
