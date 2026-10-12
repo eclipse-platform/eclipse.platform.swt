@@ -2492,7 +2492,10 @@ enum {
 static GParamSpec *swt_virtual_table_model_properties[SWT_VIRTUAL_TABLE_MODEL_N_PROPERTIES];
 
 static gboolean swt_virtual_table_model_iter_valid(SwtVirtualTableModel *self, GtkTreeIter *iter) {
-	if (iter == NULL || iter->stamp != self->stamp || iter->user_data == NULL) return FALSE;
+	/* Logical and resident-view models can have the same generation. An iter
+	 * belongs to exactly one model, independent of its stamp and row range. */
+	if (iter == NULL || iter->stamp != self->stamp || iter->user_data == NULL
+			|| iter->user_data2 != self) return FALSE;
 	gint row = GPOINTER_TO_INT(iter->user_data) - 1;
 	return row >= 0 && row < self->item_count;
 }
@@ -2500,7 +2503,7 @@ static gboolean swt_virtual_table_model_iter_valid(SwtVirtualTableModel *self, G
 static void swt_virtual_table_model_set_iter(SwtVirtualTableModel *self, GtkTreeIter *iter, gint row) {
 	iter->stamp = self->stamp;
 	iter->user_data = GINT_TO_POINTER(row + 1);
-	iter->user_data2 = NULL;
+	iter->user_data2 = self;
 	iter->user_data3 = NULL;
 }
 
@@ -2599,7 +2602,8 @@ static void swt_virtual_table_model_set_property(
 	switch (property_id) {
 		case SWT_VIRTUAL_TABLE_MODEL_PROP_ITEM_COUNT:
 			self->item_count = g_value_get_int(value);
-			self->stamp++;
+			/* Avoid signed overflow while retaining GTK's nonzero generation. */
+			self->stamp = self->stamp == G_MAXINT ? 1 : self->stamp + 1;
 			if (self->stamp == 0) self->stamp = 1;
 			break;
 		default:

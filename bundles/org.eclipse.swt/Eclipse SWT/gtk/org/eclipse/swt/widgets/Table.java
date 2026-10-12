@@ -15,10 +15,14 @@
 package org.eclipse.swt.widgets;
 
 
+import java.util.*;
+
 import org.eclipse.swt.*;
+import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.accessibility.gtk.*;
 import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.gtk3.*;
@@ -76,6 +80,21 @@ import org.eclipse.swt.internal.gtk4.*;
  */
 public class Table extends Composite {
 	long modelHandle, checkRenderer;
+	long virtualViewModel, virtualViewAdjustment, verticalAdjustment;
+	long virtualLogicalValueSignal, virtualViewRangeSignal, virtualViewValueSignal;
+	Callback virtualAdjustmentCallback;
+	Map<TableItem, Map<TableColumn, java.lang.ref.WeakReference<Accessible>>> virtualAccessibleCells;
+	Map<TableColumn, Accessible> virtualAccessibleHeaders;
+	Map<Accessible, Long> virtualAccessibleStates;
+	long virtualAccessibleGeneration, virtualModelGeneration, virtualColumnsSignal;
+	int virtualAccessibleFocusId;
+	boolean virtualAccessibleColumnsDirty;
+	Boolean virtualBoundedView;
+	int virtualViewStart, virtualViewCount, virtualRowExtent = 1, virtualBodyExtent;
+	int virtualFocusIndex = -1, virtualAnchorIndex = -1, virtualCallbackDepth;
+	double virtualPixelRemainder;
+	boolean reconcilingVirtualView, virtualViewScheduled, virtualViewChanged;
+	boolean updatingVirtualAdjustment, updatingVirtualGeometry, virtualViewRangeDirty;
 	int itemCount, columnCount, lastIndexOf, sortDirection;
 	int selectionCountOnPress,selectionCountOnRelease;
 	long ignoreCell;
@@ -119,6 +138,8 @@ public class Table extends Composite {
 	static final int CELL_TYPES = CELL_SURFACE + 1;
 	static final byte [] VIRTUAL_MODEL_ITEM_COUNT =
 			Converter.wcsToMbcs ("swt-item-count", true);
+	static final String VIRTUAL_BOUNDED_VIEW_PROPERTY =
+			"org.eclipse.swt.internal.gtk.virtualTableBoundedView";
 
 /**
  * Constructs a new instance of this class given its parent
@@ -210,6 +231,7 @@ void virtualItemChanged (TableItem item) {
     if ((style & SWT.VIRTUAL) == 0 || handle == 0) {
         return;
     }
+	notifyVirtualAccessibleItemStates (item);
 	if (!isVirtualPaintCandidate (item)) {
 		item.markVirtualDirty ();
 		return;
@@ -221,6 +243,10 @@ void updateVirtualViewport () {
     if (virtualViewport == null) {
         return;
     }
+	if (usesBoundedVirtualView ()) {
+		updateVirtualViewportGeometry ();
+		return;
+	}
 	Rectangle client = getClientAreaInPixels ();
 	int rowHeight = Math.max (1, getItemHeight ());
 	int chromeHeight = getHeaderVisible () ? getHeaderHeight () : 0;
@@ -242,7 +268,904 @@ boolean usesVirtualNativeModel () {
 	return (style & SWT.VIRTUAL) != 0 && !GTK.GTK4;
 }
 
+boolean boundedVirtualViewEnabled () {
+	if (!usesVirtualNativeModel ()) return false;
+	if (virtualBoundedView == null) {
+		virtualBoundedView = Boolean.valueOf (System.getProperty (VIRTUAL_BOUNDED_VIEW_PROPERTY, "false"));
+	}
+	return virtualBoundedView.booleanValue ();
+}
+
+boolean usesBoundedVirtualView () {
+	return virtualViewModel != 0;
+}
+
+long viewModel () {
+	return usesBoundedVirtualView () ? virtualViewModel : modelHandle;
+}
+
+int modelIndex (long model, long iter) {
+	long path = GTK.gtk_tree_model_get_path (model, iter);
+	if (path == 0) return -1;
+	try {
+		long indices = GTK.gtk_tree_path_get_indices (path);
+		if (indices == 0) return -1;
+		int [] index = new int [1];
+		C.memmove (index, indices, 4);
+		long logical = index [0] + (model == virtualViewModel ? (long)virtualViewStart : 0);
+		return logical >= 0 && logical < itemCount ? (int)logical : -1;
+	} finally {
+		GTK.gtk_tree_path_free (path);
+	}
+}
+
+long virtualViewPath (int index) {
+	if (index < virtualViewStart || index - virtualViewStart >= virtualViewCount) return 0;
+	long path = GTK.gtk_tree_path_new ();
+	GTK.gtk_tree_path_append_index (path, index - virtualViewStart);
+	return path;
+}
+
+long viewPath (long iter) {
+	if (iter == 0) return 0;
+	if (!usesBoundedVirtualView ()) return GTK.gtk_tree_model_get_path (modelHandle, iter);
+	int index = modelIndex (modelHandle, iter);
+	if (index < 0) index = modelIndex (virtualViewModel, iter);
+	return virtualViewPath (index);
+}
+
+void virtualCellArea (TableItem item, long path, long column, GdkRectangle rect) {
+	GTK.gtk_tree_view_get_cell_area (handle, path, column, rect);
+	if (!usesBoundedVirtualView () || path != 0) return;
+	int index = virtualItems.indexOfIdentity (item);
+	if (index < 0) return;
+	int [] separator = new int [1];
+	GTK3.gtk_widget_style_get (handle, Converter.wcsToMbcs ("vertical-separator", true), separator, 0);
+	double y = (index - (double)virtualViewport.firstVisible ()) * virtualRowExtent
+			- virtualPixelRemainder + separator [0] / 2;
+	rect.y = (int)Math.max (Integer.MIN_VALUE, Math.min (Integer.MAX_VALUE, y));
+	rect.height = Math.max (0, virtualRowExtent - separator [0]);
+}
+
+void updateVirtualViewportGeometry () {
+	if (virtualViewport == null || updatingVirtualGeometry) return;
+	updatingVirtualGeometry = true;
+	try {
+		Rectangle client = getClientAreaInPixels ();
+		int body = Math.max (0, client.height - getHeaderHeight ());
+		if (virtualViewAdjustment != 0) {
+			double page = GTK.gtk_adjustment_get_page_size (virtualViewAdjustment);
+			if (page > 0) body = (int)Math.min (Integer.MAX_VALUE, page);
+		}
+		int extent = Math.max (1, getItemHeight ());
+		if (isDisposed ()) return;
+		if (virtualViewCount > 0 && GTK.gtk_widget_get_realized (handle)) {
+			long path = virtualViewPath (virtualViewStart);
+			try {
+				GdkRectangle rect = new GdkRectangle ();
+				GTK.gtk_tree_view_get_background_area (handle, path, 0, rect);
+				if (rect.height > 0) extent = rect.height;
+			} finally {
+				GTK.gtk_tree_path_free (path);
+			}
+		}
+		virtualRowExtent = extent;
+		virtualPixelRemainder = Math.max (0, Math.min (virtualPixelRemainder, Math.nextDown ((double)extent)));
+		virtualBodyExtent = body;
+		virtualViewport.setUniformGeometry (itemCount, extent, body, virtualViewport.firstVisible ());
+		topIndex = virtualViewport.firstVisible ();
+	} finally {
+		updatingVirtualGeometry = false;
+	}
+}
+
+void scheduleVirtualView () {
+	if (!usesBoundedVirtualView () || virtualViewScheduled || isDisposed ()) return;
+	virtualViewScheduled = true;
+	display.asyncExec (() -> {
+		virtualViewScheduled = false;
+		if (!isDisposed ()) reconcileVirtualView ();
+	});
+}
+
+void updateVirtualLogicalAdjustment () {
+	if (verticalAdjustment == 0 || virtualViewport == null) return;
+	double page = Math.max (0, virtualBodyExtent);
+	double upper = Math.max (page, itemCount * (double)virtualRowExtent);
+	double value = virtualViewport.firstVisible () * (double)virtualRowExtent + virtualPixelRemainder;
+	value = Math.max (0, Math.min (value, upper - page));
+	virtualPixelRemainder = Math.max (0, value - virtualViewport.firstVisible () * (double)virtualRowExtent);
+	boolean previous = updatingVirtualAdjustment;
+	updatingVirtualAdjustment = true;
+	OS.g_signal_handlers_block_matched (verticalAdjustment, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
+	try {
+		GTK.gtk_adjustment_configure (verticalAdjustment, value, 0, upper, virtualRowExtent,
+				Math.max (1, virtualViewport.visibleCount () - 1) * (double)virtualRowExtent, page);
+		long horizontal = GTK.gtk_scrolled_window_get_hadjustment (scrolledHandle);
+		int dirty = viewportLayers.scrollTo (horizontal != 0 ? GTK.gtk_adjustment_get_value (horizontal) : 0, value);
+		if ((dirty & ViewportLayerState.HEADER) != 0) wasScrolled = true;
+	} finally {
+		OS.g_signal_handlers_unblock_matched (verticalAdjustment, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
+		updatingVirtualAdjustment = previous;
+	}
+}
+
+void alignVirtualViewAdjustment () {
+	if (virtualViewAdjustment == 0) return;
+	double value = (virtualViewport.firstVisible () - (double)virtualViewStart) * virtualRowExtent + virtualPixelRemainder;
+	boolean previous = updatingVirtualAdjustment;
+	updatingVirtualAdjustment = true;
+	try {
+		GTK.gtk_adjustment_set_value (virtualViewAdjustment, value);
+		virtualViewRangeDirty = false;
+	} finally {
+		updatingVirtualAdjustment = previous;
+	}
+}
+
+long virtualAdjustmentProc (long adjustment, long kind) {
+	if (kind == 4) {
+		virtualAccessibleColumnsDirty = true;
+		if (!isDisposed ()) scheduleVirtualView ();
+		return 0;
+	}
+	if (isDisposed () || virtualViewport == null || updatingVirtualAdjustment || reconcilingVirtualView) return 0;
+	if (kind == 1) {
+		double pixels = GTK.gtk_adjustment_get_value (verticalAdjustment);
+		int requested = (int)Math.min (Integer.MAX_VALUE, Math.floor (pixels / virtualRowExtent));
+		virtualViewport.setViewport (requested, virtualViewport.visibleCount ());
+		virtualPixelRemainder = virtualViewport.firstVisible () == requested ? pixels - requested * (double)virtualRowExtent : 0;
+		topIndex = virtualViewport.firstVisible ();
+		pendingTopIndex = -1;
+	} else if (kind == 2) {
+		virtualViewRangeDirty = true;
+	} else if (!virtualViewRangeDirty) {
+		int physicalTop = nativeTopIndex ();
+		if (physicalTop >= 0) {
+			virtualPixelRemainder = GTK.gtk_adjustment_get_value (virtualViewAdjustment) % virtualRowExtent;
+			GTK.gtk_adjustment_set_value (verticalAdjustment,
+					(virtualViewStart + (double)physicalTop) * virtualRowExtent + virtualPixelRemainder);
+		}
+	}
+	scheduleVirtualView ();
+	return 0;
+}
+
+void restoreVirtualSelection () {
+	if (!usesBoundedVirtualView () || virtualViewport == null || isDisposed ()) return;
+	long selection = OS.g_object_ref (GTK.gtk_tree_view_get_selection (handle));
+	boolean previousAdjustment = updatingVirtualAdjustment;
+	updatingVirtualAdjustment = true;
+	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	try {
+		long focus = virtualViewPath (virtualFocusIndex);
+		if (focus != 0) {
+			try { GTK.gtk_tree_view_set_cursor (handle, focus, 0, false); }
+			finally { GTK.gtk_tree_path_free (focus); }
+		}
+		if (isDisposed ()) return;
+		GTK.gtk_tree_selection_unselect_all (selection);
+		for (int row = 0; row < virtualViewCount; row++) {
+			int index = virtualViewStart + row;
+			if (!virtualViewport.selection ().isSelected (index)) continue;
+			long iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
+			if (iter == 0) error (SWT.ERROR_NO_HANDLES);
+			try {
+				if (GTK.gtk_tree_model_iter_nth_child (virtualViewModel, iter, 0, row)) GTK.gtk_tree_selection_select_iter (selection, iter);
+			} finally {
+				OS.g_free (iter);
+			}
+			if (isDisposed ()) return;
+		}
+	} finally {
+		OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+		OS.g_object_unref (selection);
+		updatingVirtualAdjustment = previousAdjustment;
+	}
+	/* Setting GTK's cursor can scroll its private adjustment. Selection restores
+	 * are projections of the logical state and must not move that viewport. */
+	alignVirtualViewAdjustment ();
+	notifyVirtualAccessibleSelection ();
+	notifyVirtualAccessibleFocus ();
+}
+
+void reconcileVirtualView () {
+	if (!usesBoundedVirtualView () || virtualViewport == null || reconcilingVirtualView || isDisposed ()) return;
+	if (currentItem != null || virtualCallbackDepth != 0 || updatingVirtualGeometry) {
+		scheduleVirtualView ();
+		return;
+	}
+	updateVirtualViewportGeometry ();
+	if (isDisposed ()) return;
+	int start = virtualViewport.paintStart ();
+	int count = virtualViewport.paintEndExclusive () - start;
+	long generation = virtualModelGeneration;
+	if (!virtualViewChanged && start == virtualViewStart && count == virtualViewCount) {
+		updateVirtualLogicalAdjustment ();
+		alignVirtualViewAdjustment ();
+		notifyVirtualAccessibleModel ();
+		notifyVirtualAccessibleFocus ();
+		notifyVirtualAccessibleStates ();
+		return;
+	}
+	long selection = OS.g_object_ref (GTK.gtk_tree_view_get_selection (handle));
+	reconcilingVirtualView = true;
+	setRedraw (false);
+	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	try {
+		GTK.gtk_tree_view_set_model (handle, 0);
+		if (virtualViewSnapshotChanged (generation, start, count)) return;
+		OS.g_object_set (virtualViewModel, VIRTUAL_MODEL_ITEM_COUNT, count, 0);
+		virtualViewStart = start;
+		virtualViewCount = count;
+		virtualViewChanged = false;
+		GTK.gtk_tree_view_set_model (handle, virtualViewModel);
+		if (virtualViewSnapshotChanged (generation, start, count)) return;
+		restoreVirtualSelection ();
+		if (virtualViewSnapshotChanged (generation, start, count)) return;
+		long path = virtualViewPath (virtualViewport.firstVisible ());
+		if (path != 0) {
+			try { GTK.gtk_tree_view_scroll_to_cell (handle, path, 0, true, 0f, 0f); }
+			finally { GTK.gtk_tree_path_free (path); }
+		}
+		if (virtualViewSnapshotChanged (generation, start, count)) return;
+		updateVirtualLogicalAdjustment ();
+		alignVirtualViewAdjustment ();
+	} finally {
+		OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+		OS.g_object_unref (selection);
+		reconcilingVirtualView = false;
+		if (!isDisposed ()) {
+			setRedraw (true);
+			if (!isDisposed ()) {
+				GTK.gtk_widget_queue_draw (handle);
+				if (virtualViewChanged) scheduleVirtualView ();
+			}
+		}
+	}
+	if (!isDisposed ()) {
+		notifyVirtualAccessibleModel ();
+		notifyVirtualAccessibleFocus ();
+		notifyVirtualAccessibleStates ();
+	}
+}
+
+boolean virtualViewSnapshotChanged (long generation, int start, int count) {
+	if (isDisposed ()) return true;
+	if (generation == virtualModelGeneration && start == virtualViewport.paintStart ()
+			&& count == virtualViewport.paintEndExclusive () - start) return false;
+	virtualViewChanged = true;
+	return true;
+}
+
+void revealVirtualIndex (int index, boolean top) {
+	if (index < 0 || index >= itemCount) return;
+	updateVirtualViewportGeometry ();
+	if (isDisposed ()) return;
+	int first = virtualViewport.firstVisible ();
+	int rows = Math.max (1, virtualViewport.visibleCount ());
+	if (top || index < first) first = index;
+	else if ((long)index >= first + (long)rows) first = index - rows + 1;
+	virtualViewport.setViewport (first, rows);
+	virtualPixelRemainder = 0;
+	topIndex = virtualViewport.firstVisible ();
+	reconcileVirtualView ();
+}
+
+void captureVirtualSelection () {
+	if (!usesBoundedVirtualView () || reconcilingVirtualView) return;
+	int [] nativeState = new int [1];
+	GTK3.gtk_get_current_event_state (nativeState);
+	boolean control = (nativeState [0] & GDK.GDK_CONTROL_MASK) != 0 && (style & SWT.MULTI) != 0;
+	boolean shift = (nativeState [0] & GDK.GDK_SHIFT_MASK) != 0 && (style & SWT.MULTI) != 0;
+	if (!control) virtualViewport.selection ().clear ();
+	int focus = nativeFocusedIndex ();
+	if (focus >= 0) {
+		virtualFocusIndex = focus;
+		if (shift && virtualAnchorIndex >= 0) {
+			virtualViewport.selection ().selectRange (Math.min (virtualAnchorIndex, focus), Math.max (virtualAnchorIndex, focus) + 1);
+		} else {
+			virtualAnchorIndex = focus;
+		}
+	}
+	long selection = GTK.gtk_tree_view_get_selection (handle);
+	for (int row = 0; row < virtualViewCount; row++) {
+		int index = virtualViewStart + row;
+		long path = virtualViewPath (index);
+		try {
+			boolean selected = GTK.gtk_tree_selection_path_is_selected (selection, path);
+			if (!shift || selected) virtualViewport.selection ().setSelected (index, selected);
+		} finally {
+			GTK.gtk_tree_path_free (path);
+		}
+	}
+}
+
+int firstVirtualSelectionIndex () {
+	VirtualSelectionModel selection = virtualViewport.selection ();
+	if (selection.selectedCount () == 0) return -1;
+	if (!selection.complementMode ()) return selection.rangeStart (0);
+	int first = 0;
+	for (int range = 0; range < selection.rangeCount () && selection.rangeStart (range) == first; range++) {
+		first = selection.rangeEndExclusive (range);
+	}
+	return first < itemCount ? first : -1;
+}
+
+void virtualNavigate (int key, int mask) {
+	if (itemCount == 0) return;
+	int index = virtualFocusIndex >= 0 ? virtualFocusIndex : virtualViewport.firstVisible ();
+	int page = Math.max (1, virtualViewport.visibleCount () - 1);
+	int next = switch (key) {
+		case GDK.GDK_Up, GDK.GDK_KP_Up -> Math.max (0, index - 1);
+		case GDK.GDK_Down, GDK.GDK_KP_Down -> Math.min (itemCount - 1, index + 1);
+		case GDK.GDK_Home, GDK.GDK_KP_Home -> 0;
+		case GDK.GDK_End, GDK.GDK_KP_End -> itemCount - 1;
+		case GDK.GDK_Page_Up, GDK.GDK_KP_Page_Up -> Math.max (0, index - page);
+		case GDK.GDK_Page_Down, GDK.GDK_KP_Page_Down -> index + Math.min (itemCount - 1 - index, page);
+		default -> index;
+	};
+	boolean control = (mask & GDK.GDK_CONTROL_MASK) != 0;
+	boolean shift = (mask & GDK.GDK_SHIFT_MASK) != 0 && (style & SWT.MULTI) != 0;
+	if (shift) {
+		if (virtualAnchorIndex < 0) virtualAnchorIndex = index;
+		if (!control) virtualViewport.selection ().clear ();
+		virtualViewport.selection ().selectRange (Math.min (virtualAnchorIndex, next), Math.max (virtualAnchorIndex, next) + 1);
+	} else {
+		virtualAnchorIndex = next;
+		if (!control) {
+			virtualViewport.selection ().clear ();
+			virtualViewport.selection ().setSelected (next, true);
+		}
+	}
+	virtualFocusIndex = next;
+	revealVirtualIndex (next, false);
+	if (isDisposed ()) return;
+	restoreVirtualSelection ();
+	if (!control || shift) {
+		Event event = new Event ();
+		event.item = getItem (next);
+		sendSelectionEvent (SWT.Selection, event, false);
+	}
+}
+
+void disconnectVirtualAdjustments () {
+	if (virtualColumnsSignal != 0) OS.g_signal_handler_disconnect (handle, virtualColumnsSignal);
+	virtualColumnsSignal = 0;
+	if (virtualLogicalValueSignal != 0) OS.g_signal_handler_disconnect (verticalAdjustment, virtualLogicalValueSignal);
+	if (virtualViewRangeSignal != 0) OS.g_signal_handler_disconnect (virtualViewAdjustment, virtualViewRangeSignal);
+	if (virtualViewValueSignal != 0) OS.g_signal_handler_disconnect (virtualViewAdjustment, virtualViewValueSignal);
+	virtualLogicalValueSignal = virtualViewRangeSignal = virtualViewValueSignal = 0;
+	if (virtualAdjustmentCallback != null) virtualAdjustmentCallback.dispose ();
+	virtualAdjustmentCallback = null;
+}
+
+void initializeVirtualAccessible () {
+	if (!usesBoundedVirtualView () || accessible != null) return;
+	virtualAccessibleCells = new WeakHashMap<> ();
+	virtualAccessibleHeaders = new HashMap<> ();
+	virtualAccessibleStates = new WeakHashMap<> ();
+	virtualAccessibleGeneration = -1;
+	virtualAccessibleFocusId = -1;
+	accessible = Accessible.internal_new_Accessible (this, fixedHandle);
+	accessible.internal_setNativeRole (ATK.ATK_ROLE_TABLE);
+	accessible.internal_setManagesDescendants (true);
+	accessible.internal_setTableHeaderRows (1);
+	accessible.internal_setSelectedRowHandler (this::virtualAccessibleSelectedRowAt);
+	accessible.internal_setFocusHandler (this::setFocus);
+	accessible.internal_setSelectionHandlers (() -> { deselectAll (); return true; }, () -> { selectAll (); return true; });
+	accessible.addAccessibleControlListener (new AccessibleControlAdapter () {
+		@Override public void getRole (AccessibleControlEvent event) { event.detail = ACC.ROLE_TABLE; }
+		@Override public void getChildCount (AccessibleControlEvent event) {
+			event.detail = Math.toIntExact ((virtualAccessibleRowCount () + 1L) * virtualAccessibleColumnCount ());
+		}
+		@Override public void getChild (AccessibleControlEvent event) {
+			int index = event.childID == ACC.CHILDID_CHILD_AT_INDEX ? event.detail : event.childID;
+			int columns = virtualAccessibleColumnCount ();
+			if (index < 0 || columns == 0) return;
+			if (index < columns) event.accessible = virtualAccessibleHeader (index);
+			else {
+				int row = index / columns - 1;
+				if (row < virtualAccessibleRowCount ()) event.accessible = virtualAccessibleCell (row, index % columns);
+			}
+		}
+		@Override public void getChildAtPoint (AccessibleControlEvent event) {
+			Point point = toControl (event.x, event.y);
+			long [] path = new long [1], column = new long [1];
+			if (!GTK.gtk_tree_view_get_path_at_pos (handle, point.x, point.y - getHeaderHeight (), path, column, null, null)
+					|| path [0] == 0) { event.childID = ACC.CHILDID_SELF; return; }
+			try {
+				int [] index = new int [1];
+				C.memmove (index, GTK.gtk_tree_path_get_indices (path [0]), 4);
+				int row = logicalIndexForNativeHit (index [0]);
+				if (row >= 0) event.accessible = virtualAccessibleCell (getItem (row), virtualAccessibleColumnFromHandle (column [0]));
+			} finally { GTK.gtk_tree_path_free (path [0]); }
+		}
+		@Override public void getFocus (AccessibleControlEvent event) {
+			TableItem focus = getFocusItem ();
+			if (focus != null) event.accessible = virtualAccessibleCell (focus, 0);
+			else event.childID = ACC.CHILDID_SELF;
+		}
+		@Override public void getState (AccessibleControlEvent event) {
+			event.detail = ACC.STATE_READONLY | ACC.STATE_FOCUSABLE | ((style & SWT.MULTI) != 0 ? ACC.STATE_MULTISELECTABLE : 0);
+			if (!getEnabled ()) event.detail |= ACC.STATE_DISABLED;
+			if (!getVisible ()) event.detail |= ACC.STATE_INVISIBLE | ACC.STATE_OFFSCREEN;
+			if (isFocusControl ()) event.detail |= ACC.STATE_FOCUSED;
+		}
+	});
+	accessible.addAccessibleTableListener (new AccessibleTableAdapter () {
+		@Override public void getRowCount (AccessibleTableEvent event) { event.count = virtualAccessibleRowCount (); }
+		@Override public void getColumnCount (AccessibleTableEvent event) { event.count = virtualAccessibleColumnCount (); }
+		@Override public void getCell (AccessibleTableEvent event) {
+			if (event.row >= 0 && event.row < virtualAccessibleRowCount () && event.column >= 0
+					&& event.column < virtualAccessibleColumnCount ()) event.accessible = virtualAccessibleCell (event.row, event.column);
+		}
+		@Override public void getColumnHeaderCells (AccessibleTableEvent event) {
+			event.accessibles = new Accessible [virtualAccessibleColumnCount ()];
+			for (int column = 0; column < event.accessibles.length; column++) event.accessibles [column] = virtualAccessibleHeader (column);
+		}
+		@Override public void getSelectedRowCount (AccessibleTableEvent event) { event.count = virtualAccessibleSelectionCount (); }
+		@Override public void getSelectedRows (AccessibleTableEvent event) { event.selected = virtualAccessibleSelectedRows (); }
+		@Override public void isRowSelected (AccessibleTableEvent event) {
+			if (event.row < 0 || event.row >= virtualAccessibleRowCount ()) return;
+			event.isSelected = virtualViewport.selection ().isSelected (event.row);
+		}
+		@Override public void selectRow (AccessibleTableEvent event) {
+			if (event.row < 0 || event.row >= virtualAccessibleRowCount ()) return;
+			select (event.row);
+			event.result = ACC.OK;
+		}
+		@Override public void deselectRow (AccessibleTableEvent event) {
+			if (event.row < 0 || event.row >= virtualAccessibleRowCount ()) return;
+			deselect (event.row);
+			event.result = ACC.OK;
+		}
+	});
+}
+
+@Override
+Accessible _getAccessible () {
+	if (usesBoundedVirtualView ()) initializeVirtualAccessible ();
+	return super._getAccessible ();
+}
+
+int virtualAccessibleColumnCount () {
+	int visible = 0;
+	for (int column = 0; column < columnCount; column++) {
+		if (GTK.gtk_tree_view_column_get_visible (columns [column].handle)) visible++;
+	}
+	return columnCount == 0 ? 1 : visible;
+}
+
+int virtualAccessibleRowCount () {
+	/* ATK uses signed int child/row indices. Keep its row/cell range consistent
+	 * while the Java logical model and scrollbar retain the full domain. */
+	int columns = virtualAccessibleColumnCount ();
+	long maximum = columns == 0 ? Integer.MAX_VALUE : (Integer.MAX_VALUE - (long)columns) / columns;
+	return (int)Math.min (itemCount, maximum);
+}
+
+int virtualAccessibleVisualColumn (TableColumn column) {
+	if (column == null) return columnCount == 0 ? 0 : -1;
+	if (column.isDisposed ()) return -1;
+	int visual = 0;
+	for (int index : getColumnOrder ()) {
+		if (!GTK.gtk_tree_view_column_get_visible (columns [index].handle)) continue;
+		if (columns [index] == column) return visual;
+		visual++;
+	}
+	return -1;
+}
+
+int virtualAccessibleChildIndex (TableItem item, TableColumn column) {
+	if (item.isDisposed ()) return -1;
+	int visual = virtualAccessibleVisualColumn (column);
+	long row = virtualItems.indexOfIdentity (item);
+	if (visual < 0 || row < 0 || row >= virtualAccessibleRowCount ()) return -1;
+	return Math.toIntExact ((row + 1) * virtualAccessibleColumnCount () + visual);
+}
+
+int virtualAccessibleModelColumn (int visualColumn) {
+	if (columnCount == 0) return 0;
+	int [] order = getColumnOrder ();
+	int visible = 0;
+	for (int index : order) {
+		if (GTK.gtk_tree_view_column_get_visible (columns [index].handle)) {
+			if (visible++ == visualColumn) return index;
+		}
+	}
+	return 0;
+}
+
+int virtualAccessibleColumnFromHandle (long nativeColumn) {
+	int visible = 0;
+	for (int index : getColumnOrder ()) {
+		if (!GTK.gtk_tree_view_column_get_visible (columns [index].handle)) continue;
+		if (columns [index].handle == nativeColumn) return visible;
+		visible++;
+	}
+	return 0;
+}
+
+Accessible virtualAccessibleHeader (int visualColumn) {
+	pruneVirtualAccessibleColumns ();
+	int modelColumn = virtualAccessibleModelColumn (visualColumn);
+	TableColumn column = columnCount == 0 ? null : columns [modelColumn];
+	Accessible header = virtualAccessibleHeaders.get (column);
+	if (header != null) return header;
+	header = new Accessible (accessible);
+	header.addAccessibleListener (new AccessibleAdapter () {
+		@Override public void getName (AccessibleEvent event) {
+			event.result = column != null && !column.isDisposed () ? column.getText () : "";
+		}
+	});
+	header.addAccessibleControlListener (new AccessibleControlAdapter () {
+		@Override public void getRole (AccessibleControlEvent event) { event.detail = ACC.ROLE_TABLECOLUMNHEADER; }
+		@Override public void getChildCount (AccessibleControlEvent event) { event.detail = 0; }
+		@Override public void getChild (AccessibleControlEvent event) {
+			if (event.childID == ACC.CHILDID_CHILD_INDEX) event.detail = virtualAccessibleVisualColumn (column);
+		}
+		@Override public void getState (AccessibleControlEvent event) {
+			event.detail = ACC.STATE_READONLY | (getHeaderVisible () && getVisible () ? 0 : ACC.STATE_INVISIBLE | ACC.STATE_OFFSCREEN);
+		}
+		@Override public void getLocation (AccessibleControlEvent event) {
+			if (!getHeaderVisible () || virtualAccessibleVisualColumn (column) < 0) {
+				event.x = event.y = Integer.MIN_VALUE;
+				return;
+			}
+			GdkRectangle area = new GdkRectangle ();
+			long nativeColumn = column != null ? column.handle : GTK.gtk_tree_view_get_column (handle, 0);
+			GTK.gtk_tree_view_get_cell_area (handle, 0, nativeColumn, area);
+			Point point = toDisplay (area.x, 0);
+			event.x = point.x;
+			event.y = point.y;
+			event.width = column != null ? column.getWidth () : area.width;
+			event.height = getHeaderHeight ();
+		}
+	});
+	if (column != null) header.addAccessibleActionListener (new AccessibleActionAdapter () {
+		@Override public void getActionCount (AccessibleActionEvent event) { event.count = column.isDisposed () ? 0 : 1; }
+		@Override public void getName (AccessibleActionEvent event) { if (event.index == 0) event.result = "click"; }
+		@Override public void doAction (AccessibleActionEvent event) {
+			if (event.index == 0 && !column.isDisposed () && getEnabled ()) {
+				column.sendSelectionEvent (SWT.Selection);
+				event.result = ACC.OK;
+			}
+		}
+	});
+	virtualAccessibleHeaders.put (column, header);
+	return header;
+}
+
+Accessible virtualAccessibleCell (long row, int visualColumn) {
+	return row >= 0 && row < itemCount ? virtualAccessibleCell (getItem ((int)row), visualColumn) : null;
+}
+
+Accessible virtualAccessibleCell (TableItem item, int visualColumn) {
+	if (item == null || item.isDisposed () || visualColumn < 0 || visualColumn >= virtualAccessibleColumnCount ()) return null;
+	int modelColumn = virtualAccessibleModelColumn (visualColumn);
+	TableColumn column = columnCount == 0 ? null : columns [modelColumn];
+	Map<TableColumn, java.lang.ref.WeakReference<Accessible>> cells = virtualAccessibleCells.computeIfAbsent (item, ignored -> new HashMap<> ());
+	java.lang.ref.WeakReference<Accessible> reference = cells.get (column);
+	Accessible cell = reference != null ? reference.get () : null;
+	if (cell != null) return cell;
+	cell = Accessible.internal_new_AccessibleChild (accessible);
+	cell.internal_setNativeRole (ATK.ATK_ROLE_TABLE_CELL);
+	cell.internal_setNativeStates (() -> virtualAccessibleCheckStates (item));
+	cell.internal_setFocusHandler (() -> {
+		if (item.isDisposed ()) return false;
+		virtualFocusIndex = virtualAnchorIndex = virtualItems.indexOfIdentity (item);
+		revealVirtualIndex (virtualItems.indexOfIdentity (item), false);
+		if (isDisposed () || item.isDisposed ()) return false;
+		restoreVirtualSelection ();
+		boolean focused = setFocus ();
+		notifyVirtualAccessibleFocus ();
+		return focused;
+	});
+	cell.internal_setScrollHandlers (type -> virtualAccessibleScrollTo (item, column, type),
+			point -> virtualAccessibleScrollToPoint (item, column, point));
+	cell.internal_setNodeParent (() -> item.isDisposed () ? null : accessible);
+	cell.addAccessibleListener (new AccessibleAdapter () {
+		@Override public void getName (AccessibleEvent event) {
+			int index = virtualAccessibleItemColumn (column);
+			event.result = !item.isDisposed () && checkData (item) ? item._getText (index) : "";
+		}
+	});
+	cell.addAccessibleControlListener (new AccessibleControlAdapter () {
+		@Override public void getRole (AccessibleControlEvent event) { event.detail = ACC.ROLE_TABLECELL; }
+		@Override public void getChildCount (AccessibleControlEvent event) { event.detail = 0; }
+		@Override public void getChild (AccessibleControlEvent event) {
+			if (event.childID == ACC.CHILDID_CHILD_INDEX) event.detail = virtualAccessibleChildIndex (item, column);
+		}
+		@Override public void getState (AccessibleControlEvent event) {
+			event.detail = ACC.STATE_READONLY | ACC.STATE_SELECTABLE | ACC.STATE_FOCUSABLE;
+			if (item.isDisposed ()) { event.detail |= ACC.STATE_INVISIBLE | ACC.STATE_OFFSCREEN | ACC.STATE_DISABLED; return; }
+			int id = virtualItems.indexOfIdentity (item);
+			if (virtualViewport.selection ().isSelected (id)) event.detail |= ACC.STATE_SELECTED;
+			if (id == virtualFocusIndex && isFocusControl ()) event.detail |= ACC.STATE_FOCUSED;
+			if ((style & SWT.CHECK) != 0 && item.isCheckedState ()) event.detail |= ACC.STATE_CHECKED;
+			long row = id;
+			if (row < 0) event.detail |= ACC.STATE_INVISIBLE | ACC.STATE_OFFSCREEN;
+			else if (!virtualAccessibleRowShowing (row)) event.detail |= ACC.STATE_OFFSCREEN;
+			if (!getEnabled ()) event.detail |= ACC.STATE_DISABLED;
+			if (virtualAccessibleVisualColumn (column) < 0) event.detail |= ACC.STATE_INVISIBLE | ACC.STATE_OFFSCREEN;
+		}
+		@Override public void getLocation (AccessibleControlEvent event) {
+			if (item.isDisposed ()) return;
+			Rectangle bounds = item.getBounds (virtualAccessibleItemColumn (column));
+			long row = virtualItems.indexOfIdentity (item);
+			event.width = bounds.width;
+			event.height = bounds.height;
+			if (!virtualAccessibleRowShowing (row)) {
+				event.x = event.y = Integer.MIN_VALUE;
+			} else {
+				Point screen = toDisplay (bounds.x, bounds.y + getHeaderHeight ());
+				event.x = screen.x;
+				event.y = screen.y;
+			}
+		}
+	});
+	cell.addAccessibleTableCellListener (new AccessibleTableCellAdapter () {
+		@Override public void getColumnIndex (AccessibleTableCellEvent event) { event.index = virtualAccessibleVisualColumn (column); }
+		@Override public void getRowIndex (AccessibleTableCellEvent event) {
+			long row = item.isDisposed () ? -1 : virtualItems.indexOfIdentity (item);
+			event.index = row >= 0 && row < virtualAccessibleRowCount () ? (int)row : -1;
+		}
+		@Override public void getColumnSpan (AccessibleTableCellEvent event) { event.count = 1; }
+		@Override public void getRowSpan (AccessibleTableCellEvent event) { event.count = 1; }
+		@Override public void getTable (AccessibleTableCellEvent event) { event.accessible = accessible; }
+		@Override public void getColumnHeaders (AccessibleTableCellEvent event) {
+			int index = virtualAccessibleVisualColumn (column);
+			event.accessibles = index >= 0 ? new Accessible [] {virtualAccessibleHeader (index)} : new Accessible [0];
+		}
+		@Override public void getRowHeaders (AccessibleTableCellEvent event) { event.accessibles = new Accessible [0]; }
+		@Override public void isSelected (AccessibleTableCellEvent event) {
+			if (item.isDisposed ()) return;
+			int id = virtualItems.indexOfIdentity (item);
+			event.isSelected = virtualViewport.selection ().isSelected (id);
+		}
+	});
+	cell.addAccessibleActionListener (new AccessibleActionAdapter () {
+		@Override public void getActionCount (AccessibleActionEvent event) {
+			event.count = item.isDisposed () ? 0 : 1 + ((style & SWT.CHECK) != 0 ? 1 : 0);
+		}
+		@Override public void getName (AccessibleActionEvent event) {
+			if (event.index == 0) event.result = "activate";
+			else if (event.index == 1 && (style & SWT.CHECK) != 0) event.result = "toggle";
+		}
+		@Override public void doAction (AccessibleActionEvent event) {
+			if (item.isDisposed () || !getEnabled () || !checkData (item)) return;
+			if (event.index == 0) {
+				Event selection = new Event ();
+				selection.item = getItem (virtualItems.indexOfIdentity (item));
+				sendSelectionEvent (SWT.DefaultSelection, selection, false);
+			} else if (event.index == 1 && (style & SWT.CHECK) != 0) {
+				item.setChecked (!item.getChecked ());
+				Event selection = new Event ();
+				selection.item = getItem (virtualItems.indexOfIdentity (item));
+				selection.detail = SWT.CHECK;
+				sendSelectionEvent (SWT.Selection, selection, false);
+
+			} else return;
+			event.result = ACC.OK;
+		}
+	});
+	virtualAccessibleStates.put (cell, virtualAccessibleNativeStates (item, column));
+	cells.put (column, new java.lang.ref.WeakReference<> (cell));
+	return cell;
+}
+
+int virtualAccessibleItemColumn (TableColumn column) {
+	if (column == null || column.isDisposed ()) return 0;
+	for (int index = 0; index < columnCount; index++) if (columns [index] == column) return index;
+	return 0;
+}
+
+int [] virtualAccessibleSelectedRows () {
+	int limit = virtualAccessibleRowCount ();
+	return Arrays.stream (virtualViewport.selection ().toArray ()).filter (row -> row < limit).toArray ();
+}
+
+int virtualAccessibleSelectionCount () {
+	return virtualAccessibleSelectionCount (virtualAccessibleRowCount ());
+}
+
+int virtualAccessibleSelectionCount (long maximum) {
+	VirtualSelectionModel selection = virtualViewport.selection ();
+	int limit = (int)Math.min (itemCount, maximum);
+	long spans = 0;
+	for (int range = 0; range < selection.rangeCount (); range++) {
+		spans += Math.max (0, Math.min (limit, selection.rangeEndExclusive (range)) - selection.rangeStart (range));
+	}
+	return (int)(selection.complementMode () ? limit - spans : spans);
+}
+
+int virtualAccessibleSelectedRowAt (int rank) {
+	if (rank < 0 || rank >= virtualAccessibleSelectionCount ()) return -1;
+	long low = 0, high = virtualAccessibleRowCount () - 1L;
+	while (low < high) {
+		long middle = low + (high - low) / 2;
+		if (virtualAccessibleSelectionCount (middle + 1) > rank) high = middle;
+		else low = middle + 1;
+	}
+	return (int)low;
+}
+
+boolean virtualAccessibleScrollTo (TableItem item, TableColumn column, int type) {
+	if (item.isDisposed () || type < ATK.ATK_SCROLL_TOP_LEFT || type > ATK.ATK_SCROLL_ANYWHERE) return false;
+	revealVirtualIndex (virtualItems.indexOfIdentity (item), false);
+	if (isDisposed () || item.isDisposed ()) return false;
+	long row = virtualItems.indexOfIdentity (item);
+	if (row < 0) return false;
+	if (type == ATK.ATK_SCROLL_TOP_LEFT || type == ATK.ATK_SCROLL_TOP_EDGE) {
+		GTK.gtk_adjustment_set_value (verticalAdjustment, row * (double)virtualRowExtent);
+	} else if (type == ATK.ATK_SCROLL_BOTTOM_RIGHT || type == ATK.ATK_SCROLL_BOTTOM_EDGE) {
+		GTK.gtk_adjustment_set_value (verticalAdjustment, (row + 1) * (double)virtualRowExtent - virtualBodyExtent);
+	}
+	Rectangle bounds = item.getBounds (virtualAccessibleItemColumn (column));
+	long horizontal = GTK.gtk_scrolled_window_get_hadjustment (scrolledHandle);
+	double value = GTK.gtk_adjustment_get_value (horizontal);
+	double page = GTK.gtk_adjustment_get_page_size (horizontal);
+	if (type == ATK.ATK_SCROLL_LEFT_EDGE || type == ATK.ATK_SCROLL_TOP_LEFT) value += bounds.x;
+	else if (type == ATK.ATK_SCROLL_RIGHT_EDGE || type == ATK.ATK_SCROLL_BOTTOM_RIGHT) value += bounds.x + (double)bounds.width - page;
+	else if (bounds.x < 0) value += bounds.x;
+	else if (bounds.x + (double)bounds.width > page) value += bounds.x + (double)bounds.width - page;
+	GTK.gtk_adjustment_set_value (horizontal, value);
+	return true;
+}
+
+boolean virtualAccessibleScrollToPoint (TableItem item, TableColumn column, AccessibleControlEvent point) {
+	if (item.isDisposed ()) return false;
+	Point local;
+	if (point.detail == ATK.ATK_XY_PARENT) local = new Point (point.x, point.y);
+	else {
+		long x = point.x, y = point.y;
+		if (point.detail == ATK.ATK_XY_WINDOW) {
+			int [] originX = new int [1], originY = new int [1];
+			long window = GTK3.gtk_widget_get_window (GTK3.gtk_widget_get_toplevel (handle));
+			if (window != 0) GDK.gdk_window_get_origin (window, originX, originY);
+			x += originX [0];
+			y += originY [0];
+		} else if (point.detail != ATK.ATK_XY_SCREEN) return false;
+		local = toControl ((int)Math.max (Integer.MIN_VALUE, Math.min (Integer.MAX_VALUE, x)),
+				(int)Math.max (Integer.MIN_VALUE, Math.min (Integer.MAX_VALUE, y)));
+	}
+	revealVirtualIndex (virtualItems.indexOfIdentity (item), false);
+	if (isDisposed () || item.isDisposed ()) return false;
+	long row = virtualItems.indexOfIdentity (item);
+	if (row < 0) return false;
+	GTK.gtk_adjustment_set_value (verticalAdjustment, row * (double)virtualRowExtent - (local.y - (double)getHeaderHeight ()));
+	Rectangle bounds = item.getBounds (virtualAccessibleItemColumn (column));
+	long horizontal = GTK.gtk_scrolled_window_get_hadjustment (scrolledHandle);
+	GTK.gtk_adjustment_set_value (horizontal, GTK.gtk_adjustment_get_value (horizontal) + bounds.x - (double)local.x);
+	return true;
+}
+
+void pruneVirtualAccessibleColumns () {
+	if (virtualAccessibleHeaders == null) return;
+	virtualAccessibleHeaders.entrySet ().removeIf (entry -> {
+		TableColumn column = entry.getKey ();
+		boolean obsolete = column == null ? columnCount != 0 : column.isDisposed () || column.parent != this;
+		if (obsolete) entry.getValue ().dispose ();
+		return obsolete;
+	});
+	for (var cells : virtualAccessibleCells.values ()) cells.entrySet ().removeIf (entry -> {
+		TableColumn column = entry.getKey ();
+		boolean obsolete = column == null ? columnCount != 0 : column.isDisposed () || column.parent != this;
+		Accessible cell = entry.getValue ().get ();
+		if (obsolete && cell != null) cell.dispose ();
+		return obsolete || cell == null;
+	});
+}
+
+void releaseVirtualAccessibleItem (TableItem item) {
+	if (virtualAccessibleCells == null) return;
+	Map<TableColumn, java.lang.ref.WeakReference<Accessible>> cells = virtualAccessibleCells.remove (item);
+	if (cells == null) return;
+	for (var reference : cells.values ()) {
+		Accessible cell = reference.get ();
+		if (cell != null) cell.dispose ();
+	}
+}
+
+void notifyVirtualAccessibleFocus () {
+	if (!usesBoundedVirtualView () || accessible == null) return;
+	TableItem item = getFocusItem ();
+	int id = item != null && isFocusControl () ? virtualItems.indexOfIdentity (item) : -1;
+	if (virtualAccessibleFocusId == id) return;
+	virtualAccessibleFocusId = id;
+	accessible.internal_setActiveDescendant (id >= 0 ? virtualAccessibleCell (item, 0) : null);
+}
+
+long virtualAccessibleCheckStates (TableItem item) {
+	if (item.isDisposed () || (style & SWT.CHECK) == 0) return 0;
+	long states = 1L << ATK.ATK_STATE_CHECKABLE;
+	if (item.isCheckedState ()) {
+		states |= 1L << ATK.ATK_STATE_CHECKED;
+		if (item.isGrayedState ()) states |= 1L << ATK.ATK_STATE_INDETERMINATE;
+	}
+	return states;
+}
+
+long virtualAccessibleNativeStates (TableItem item, TableColumn column) {
+	if (item.isDisposed ()) return 1L << ATK.ATK_STATE_DEFUNCT;
+	int id = virtualItems.indexOfIdentity (item);
+	long states = (1L << ATK.ATK_STATE_FOCUSABLE) | (1L << ATK.ATK_STATE_SELECTABLE) | virtualAccessibleCheckStates (item);
+	if (virtualViewport.selection ().isSelected (id)) states |= 1L << ATK.ATK_STATE_SELECTED;
+	if (id == virtualFocusIndex && isFocusControl ()) states |= 1L << ATK.ATK_STATE_FOCUSED;
+
+	long row = id;
+	if (getVisible () && row >= 0 && virtualAccessibleVisualColumn (column) >= 0) {
+		states |= 1L << ATK.ATK_STATE_VISIBLE;
+		if (virtualAccessibleRowShowing (row)) states |= 1L << ATK.ATK_STATE_SHOWING;
+	}
+	if (getEnabled ()) states |= (1L << ATK.ATK_STATE_ENABLED) | (1L << ATK.ATK_STATE_SENSITIVE);
+	return states;
+}
+
+boolean virtualAccessibleRowShowing (long row) {
+	if (row < 0 || row >= itemCount || virtualBodyExtent <= 0) return false;
+	double top = (row - (double)virtualViewport.firstVisible ()) * virtualRowExtent - virtualPixelRemainder;
+	return top < virtualBodyExtent && top + virtualRowExtent > 0;
+}
+
+void notifyVirtualAccessibleItemStates (TableItem item) {
+	if (virtualAccessibleCells == null || isDisposed () || item.isDisposed ()) return;
+	Map<TableColumn, java.lang.ref.WeakReference<Accessible>> cells = virtualAccessibleCells.get (item);
+	if (cells == null) return;
+	for (var entry : cells.entrySet ()) {
+		Accessible cell = entry.getValue ().get ();
+		if (cell == null) continue;
+		long states = virtualAccessibleNativeStates (item, entry.getKey ());
+		Long previous = virtualAccessibleStates.put (cell, states);
+		long changed = previous != null ? previous ^ states : 0;
+		while (changed != 0) {
+			int state = Long.numberOfTrailingZeros (changed);
+			cell.internal_notifyNativeState (state, (states & 1L << state) != 0);
+			changed &= changed - 1;
+		}
+	}
+}
+
+void notifyVirtualAccessibleStates () {
+	if (virtualAccessibleCells == null) return;
+	for (TableItem item : virtualAccessibleCells.keySet ()) notifyVirtualAccessibleItemStates (item);
+}
+
+void notifyVirtualAccessibleSelection () {
+	if (!usesBoundedVirtualView () || accessible == null) return;
+	accessible.selectionChanged ();
+	notifyVirtualAccessibleStates ();
+}
+
+void notifyVirtualAccessibleModel () {
+	if (!usesBoundedVirtualView () || accessible == null) return;
+	long generation = virtualModelGeneration;
+	if (!virtualAccessibleColumnsDirty && virtualAccessibleGeneration == generation) return;
+	virtualAccessibleColumnsDirty = false;
+	virtualAccessibleGeneration = generation;
+	pruneVirtualAccessibleColumns ();
+	OS.g_signal_emit_by_name (GTK3.gtk_widget_get_accessible (fixedHandle), Converter.wcsToMbcs ("model-changed", true));
+	accessible.sendEvent (ACC.EVENT_LOCATION_CHANGED, null);
+}
+
+void releaseVirtualAccessibleChildren () {
+	if (virtualAccessibleCells == null) return;
+	for (var cells : virtualAccessibleCells.values ()) for (var reference : cells.values ()) {
+		Accessible cell = reference.get ();
+		if (cell != null) cell.dispose ();
+	}
+	virtualAccessibleCells.clear ();
+	virtualAccessibleHeaders.clear ();
+	virtualAccessibleStates.clear ();
+}
+
 private int focusedIndex () {
+	if (usesBoundedVirtualView ()) return virtualFocusIndex;
+	return nativeFocusedIndex ();
+}
+
+private int nativeFocusedIndex () {
 	long [] path = new long [1];
 	GTK.gtk_tree_view_get_cursor (handle, path, null);
     if (path [0] == 0) {
@@ -253,7 +1176,7 @@ private int focusedIndex () {
 	if (indices != 0) {
 		int [] value = new int [1];
 		C.memmove (value, indices, 4);
-		index = value [0];
+		index = value [0] + (usesBoundedVirtualView () ? virtualViewStart : 0);
 	}
 	GTK.gtk_tree_path_free (path [0]);
 	return index;
@@ -330,6 +1253,21 @@ void resetVirtualNativeModel (int newCount, int start, int removed, int inserted
 		itemCount = newCount;
 		return;
 	}
+	if (usesBoundedVirtualView ()) {
+		if (removed > 0) virtualViewport.remove (start, removed);
+		if (inserted > 0) virtualViewport.insert (start, inserted);
+		virtualFocusIndex = remapIndex (virtualFocusIndex, start, removed, inserted);
+		virtualAnchorIndex = remapIndex (virtualAnchorIndex, start, removed, inserted);
+		if (virtualFocusIndex < 0 && newCount > 0 && removed > 0) virtualFocusIndex = Math.min (start, newCount - 1);
+		itemCount = newCount;
+		virtualViewport.setLogicalCount (newCount);
+		OS.g_object_set (modelHandle, VIRTUAL_MODEL_ITEM_COUNT, newCount, 0);
+		rebindVirtualItemHandles ();
+		virtualViewChanged = true;
+		virtualModelGeneration++;
+		reconcileVirtualView ();
+		return;
+	}
 	int [] selected = getSelectionIndices ();
 	for (int i = 0; i < selected.length; i++) {
 		selected [i] = remapIndex (selected [i], start, removed, inserted);
@@ -363,9 +1301,22 @@ static int checkStyle (int style) {
 
 @Override
 long cellDataProc (long tree_column, long cell, long tree_model, long iter, long data) {
+	virtualCallbackDepth++;
+	try {
+		return virtualCellDataProc (tree_column, cell, tree_model, iter, data);
+	} finally {
+		virtualCallbackDepth--;
+		if (usesBoundedVirtualView () && virtualViewport != null && (virtualViewChanged
+				|| virtualViewport.paintStart () != virtualViewStart
+				|| virtualViewport.paintEndExclusive () - virtualViewStart != virtualViewCount)) scheduleVirtualView ();
+	}
+}
+
+long virtualCellDataProc (long tree_column, long cell, long tree_model, long iter, long data) {
     if (cell == ignoreCell) {
         return 0;
     }
+	OS.g_object_set_qdata (cell, Display.SWT_OBJECT_INDEX2, 0);
 	long path = GTK.gtk_tree_model_get_path (tree_model, iter);
     if (path == 0) {
         return 0;
@@ -377,13 +1328,13 @@ long cellDataProc (long tree_column, long cell, long tree_model, long iter, long
 		return 0;
 	}
 	C.memmove (index, pathIndices, 4);
-	TableItem item = _getItem (index[0]);
+	if (usesBoundedVirtualView () && tree_model == virtualViewModel) index [0] += virtualViewStart;
 	GTK.gtk_tree_path_free (path);
+	if (index [0] < 0 || index [0] >= itemCount) return 0;
+	TableItem item = _getItem (index[0]);
     if (item == null || item.isDisposed()) {
         return 0;
     }
-	OS.g_object_set_qdata (cell, Display.SWT_OBJECT_INDEX2, item.handle);
-
 	boolean isPixbuf = GTK.GTK_IS_CELL_RENDERER_PIXBUF (cell);
 	boolean isText = GTK.GTK_IS_CELL_RENDERER_TEXT (cell);
 	boolean isToggle = GTK.GTK_IS_CELL_RENDERER_TOGGLE (cell);
@@ -419,6 +1370,7 @@ long cellDataProc (long tree_column, long cell, long tree_model, long iter, long
             return 0;
         }
 	}
+	OS.g_object_set_qdata (cell, Display.SWT_OBJECT_INDEX2, item.handle);
     if ((style & SWT.VIRTUAL) != 0) {
         item.markVirtualPainted();
     }
@@ -534,6 +1486,24 @@ long cellDataProc (long tree_column, long cell, long tree_model, long iter, long
 	return 0;
 }
 
+void clearVirtualRendererItem (long iter) {
+	if (!usesVirtualNativeModel () || handle == 0 || iter == 0) return;
+	for (int columnIndex = 0; columnIndex < Math.max (1, columnCount); columnIndex++) {
+		long column = GTK.gtk_tree_view_get_column (handle, columnIndex);
+		long cells = GTK.gtk_cell_layout_get_cells (column);
+		try {
+			for (long next = cells; next != 0; next = OS.g_list_next (next)) {
+				long cell = OS.g_list_data (next);
+				if (OS.g_object_get_qdata (cell, Display.SWT_OBJECT_INDEX2) == iter) {
+					OS.g_object_set_qdata (cell, Display.SWT_OBJECT_INDEX2, 0);
+				}
+			}
+		} finally {
+			if (cells != 0) OS.g_list_free (cells);
+		}
+	}
+}
+
 boolean checkData (TableItem item) {
     if (item.isCachedState()) {
         return true;
@@ -546,17 +1516,26 @@ boolean checkData (TableItem item) {
 		event.index = indexOf (item);
 		int mask = OS.G_SIGNAL_MATCH_DATA | OS.G_SIGNAL_MATCH_ID;
 		int signal_id = OS.g_signal_lookup (OS.row_changed, GTK.gtk_tree_model_get_type ());
-		OS.g_signal_handlers_block_matched (modelHandle, mask, signal_id, 0, 0, 0, handle);
+		long signalModel = OS.g_object_ref (modelHandle);
+		long signalData = handle;
+		OS.g_signal_handlers_block_matched (signalModel, mask, signal_id, 0, 0, 0, signalData);
+		TableItem previousItem = currentItem;
+		boolean previousSettingData = item.settingData;
 		currentItem = item;
 		item.settingData = true;
-		sendEvent (SWT.SetData, event);
-		item.settingData = false;
-		//widget could be disposed at this point
-		currentItem = null;
+		try {
+			sendEvent (SWT.SetData, event);
+		} finally {
+			item.settingData = previousSettingData;
+			currentItem = previousItem;
+			OS.g_signal_handlers_unblock_matched (signalModel, mask, signal_id, 0, 0, 0, signalData);
+			OS.g_object_unref (signalModel);
+			if (usesBoundedVirtualView () && virtualViewChanged) scheduleVirtualView ();
+		}
+		// The provider may have disposed the widget.
         if (isDisposed()) {
             return false;
         }
-		OS.g_signal_handlers_unblock_matched (modelHandle, mask, signal_id, 0, 0, 0, handle);
         if (item.isDisposed()) {
             return false;
         }
@@ -800,11 +1779,10 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	}
 	Point size = computeNativeSize (handle, wHint, hHint, changed);
 	/*
-	 * In GTK 3, computeNativeSize(..) sometimes just returns the header
-	 * height as height. In that case, calculate the table height based on
-	 * the number of items in the table.
+	 * Preferred content size describes the logical table even when GTK sees
+	 * only its paint window. GTK 3 can also return just the header height.
 	 */
-	if (hHint == SWT.DEFAULT && (size.y == getHeaderHeight()) || size.y == 0) {
+	if (hHint == SWT.DEFAULT && (usesBoundedVirtualView () || size.y == getHeaderHeight ()) || size.y == 0) {
 		long logicalHeight = (long) getItemCount () * getItemHeight () + getHeaderHeight ();
 		size.y = (int) Math.min (Integer.MAX_VALUE, logicalHeight);
 	}
@@ -973,7 +1951,12 @@ void createHandle (int index) {
     if (modelHandle == 0) {
         error(SWT.ERROR_NO_HANDLES);
     }
-	handle = GTK.gtk_tree_view_new_with_model (modelHandle);
+	if (boundedVirtualViewEnabled ()) {
+		long modelType = OS.content_providers_create_gtype ("SwtVirtualTableModel");
+		virtualViewModel = modelType != 0 ? OS.g_object_new (modelType, 0) : 0;
+		if (virtualViewModel == 0) error (SWT.ERROR_NO_HANDLES);
+	}
+	handle = GTK.gtk_tree_view_new_with_model (viewModel ());
     if (handle == 0) {
         error(SWT.ERROR_NO_HANDLES);
     }
@@ -993,6 +1976,13 @@ void createHandle (int index) {
 		GTK3.gtk_container_add(scrolledHandle, handle);
 	}
 
+	if (usesBoundedVirtualView ()) {
+		verticalAdjustment = GTK.gtk_scrolled_window_get_vadjustment (scrolledHandle);
+		virtualViewAdjustment = GTK.gtk_adjustment_new (0, 0, 0, 0, 0, 0);
+		if (virtualViewAdjustment == 0) error (SWT.ERROR_NO_HANDLES);
+		OS.g_object_ref_sink (virtualViewAdjustment);
+		OS.g_object_set (handle, Converter.wcsToMbcs ("vadjustment", true), virtualViewAdjustment, 0);
+	}
 	int mode = (style & SWT.MULTI) != 0 ? GTK.GTK_SELECTION_MULTIPLE : GTK.GTK_SELECTION_BROWSE;
 	long selectionHandle = GTK.gtk_tree_view_get_selection (handle);
 	GTK.gtk_tree_selection_set_mode (selectionHandle, mode);
@@ -1267,6 +2257,7 @@ void createWidget (int index) {
 	columns = new TableColumn [4];
 	itemCount = columnCount = 0;
 	initializeViewportLayers ();
+	initializeVirtualAccessible ();
 	// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,
 	// reset to default font to get the usual behavior
 	setFontDescription(defaultFont().handle);
@@ -1284,12 +2275,14 @@ GdkRGBA defaultBackground () {
 
 @Override
 void deregister () {
+	disconnectVirtualAdjustments ();
 	super.deregister ();
 	display.removeWidget (GTK.gtk_tree_view_get_selection (handle));
     if (checkRenderer != 0) {
         display.removeWidget(checkRenderer);
     }
 	display.removeWidget (modelHandle);
+	if (virtualViewModel != 0) display.removeWidget (virtualViewModel);
 }
 
 /**
@@ -1306,6 +2299,11 @@ void deregister () {
  */
 public void deselect (int index) {
 	checkWidget();
+	if (usesBoundedVirtualView ()) {
+		if (index >= 0 && index < itemCount) virtualViewport.selection ().setSelected (index, false);
+		restoreVirtualSelection ();
+		return;
+	}
     if (index < 0 || index >= itemCount) {
         return;
     }
@@ -1347,6 +2345,12 @@ public void deselect (int index) {
  */
 public void deselect (int start, int end) {
 	checkWidget();
+	if (usesBoundedVirtualView ()) {
+		int first = Math.max (0, start), last = (int)Math.min (itemCount, (long)end + 1);
+		if (first < last) virtualViewport.selection ().deselectRange (first, last);
+		restoreVirtualSelection ();
+		return;
+	}
 	boolean fixColumn = showFirstColumn ();
 	long selection = GTK.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
@@ -1397,6 +2401,12 @@ public void deselect (int start, int end) {
  */
 public void deselect (int [] indices) {
 	checkWidget();
+	if (usesBoundedVirtualView ()) {
+		if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
+		for (int index : indices) if (index >= 0 && index < itemCount) virtualViewport.selection ().setSelected (index, false);
+		restoreVirtualSelection ();
+		return;
+	}
     if (indices == null) {
         error(SWT.ERROR_NULL_ARGUMENT);
     }
@@ -1441,6 +2451,11 @@ public void deselect (int [] indices) {
  */
 public void deselectAll () {
 	checkWidget();
+	if (usesBoundedVirtualView ()) {
+		virtualViewport.selection ().clear ();
+		restoreVirtualSelection ();
+		return;
+	}
 	boolean fixColumn = showFirstColumn ();
 	long selection = GTK.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
@@ -1856,6 +2871,9 @@ GdkRGBA getContextColorGdkRGBA () {
 }
 
 TableItem getFocusItem () {
+	if (usesBoundedVirtualView ()) {
+		return virtualFocusIndex >= 0 && virtualFocusIndex < itemCount ? getItem (virtualFocusIndex) : null;
+	}
 	long [] path = new long [1];
 	GTK.gtk_tree_view_get_cursor (handle, path, null);
     if (path [0] == 0) {
@@ -2088,6 +3106,10 @@ public TableItem getItem (Point point) {
 /* Translate a native hit while GTK is still applying a programmatic virtual scroll.
  * Native hit testing continues to own columns, clipping and row geometry. */
 private int logicalIndexForNativeHit (int nativeIndex) {
+	if (usesBoundedVirtualView ()) {
+		long logical = virtualViewStart + (long)nativeIndex;
+		return nativeIndex >= 0 && nativeIndex < virtualViewCount && logical < itemCount ? (int)logical : -1;
+	}
     if ((style & SWT.VIRTUAL) == 0 || pendingTopIndex < 0) {
         return nativeIndex;
     }
@@ -2153,6 +3175,40 @@ public int getItemCount () {
  */
 public int getItemHeight () {
 	checkWidget ();
+	if (usesBoundedVirtualView ()) {
+		/* Geometry is independent of payload population. In particular, sizing a
+		 * distant window must not ask the semantic model to populate row zero. */
+		if (virtualViewCount > 0 && GTK.gtk_widget_get_realized (handle)) {
+			long path = virtualViewPath (virtualViewStart);
+			try {
+				GdkRectangle area = new GdkRectangle ();
+				GTK.gtk_tree_view_get_background_area (handle, path, 0, area);
+				if (area.height > 0) return area.height;
+			} finally {
+				GTK.gtk_tree_path_free (path);
+			}
+		}
+		int height = 0;
+		boolean previousIgnoreSize = ignoreSize;
+		ignoreSize = true;
+		try {
+			for (int index = 0; index < Math.max (1, columnCount); index++) {
+				long column = GTK.gtk_tree_view_get_column (handle, index);
+				int [] size = new int [1];
+				GTK3.gtk_tree_view_column_cell_get_size (column, null, null, null, null, size);
+				int cellHeight = size [0];
+				long text = getTextRenderer (column);
+				if (text != 0) {
+					GTK.gtk_cell_renderer_get_preferred_height_for_width (text, handle, 0, size, null);
+					cellHeight = Math.max (cellHeight, size [0]);
+				}
+				height = Math.max (height, cellHeight);
+			}
+		} finally {
+			ignoreSize = previousIgnoreSize;
+		}
+		return height;
+	}
 	int height = 0;
 
 	if (itemCount == 0) {
@@ -2291,6 +3347,12 @@ long getPixbufRenderer (long column) {
  */
 public TableItem [] getSelection () {
 	checkWidget();
+	if (usesBoundedVirtualView ()) {
+		int [] indices = virtualViewport.selection ().toArray ();
+		TableItem [] selected = new TableItem [indices.length];
+		for (int i = 0; i < indices.length; i++) selected [i] = getItem (indices [i]);
+		return selected;
+	}
 	long selection = GTK.gtk_tree_view_get_selection (handle);
 	long list = GTK.gtk_tree_selection_get_selected_rows (selection, null);
 	long originalList = list;
@@ -2333,6 +3395,7 @@ public TableItem [] getSelection () {
  */
 public int getSelectionCount () {
 	checkWidget();
+	if (usesBoundedVirtualView ()) return virtualViewport.selection ().selectedCount ();
 	long selection = GTK.gtk_tree_view_get_selection (handle);
 	return GTK.gtk_tree_selection_count_selected_rows (selection);
 }
@@ -2350,6 +3413,7 @@ public int getSelectionCount () {
  */
 public int getSelectionIndex () {
 	checkWidget();
+	if (usesBoundedVirtualView ()) return firstVirtualSelectionIndex ();
 	long selection = GTK.gtk_tree_view_get_selection (handle);
 	long list = GTK.gtk_tree_selection_get_selected_rows (selection, null);
 	long originalList = list;
@@ -2392,6 +3456,7 @@ public int getSelectionIndex () {
  */
 public int [] getSelectionIndices () {
 	checkWidget();
+	if (usesBoundedVirtualView ()) return virtualViewport.selection ().toArray ();
 	long selection = GTK.gtk_tree_view_get_selection (handle);
 	long list = GTK.gtk_tree_selection_get_selected_rows (selection, null);
 	long originalList = list;
@@ -2494,6 +3559,7 @@ long getTextRenderer (long column) {
  */
 public int getTopIndex () {
 	checkWidget();
+	if (usesBoundedVirtualView ()) return virtualViewport.firstVisible ();
 	long vAdjustment = GTK.gtk_scrollable_get_vadjustment(handle);
 	currentAdjustment = GTK.gtk_adjustment_get_value(vAdjustment);
 	int nativeTop = nativeTopIndex ();
@@ -2659,6 +3725,27 @@ long gtk_row_activated (long tree, long path, long column) {
 long gtk3_key_press_event (long widget, long event) {
 	int [] key = new int[1];
 	GDK.gdk_event_get_keyval(event, key);
+	if (usesBoundedVirtualView ()) {
+		int mask = gdk3_event_get_state (event);
+		boolean navigation = switch (key [0]) {
+			case GDK.GDK_Up, GDK.GDK_KP_Up, GDK.GDK_Down, GDK.GDK_KP_Down,
+					GDK.GDK_Home, GDK.GDK_KP_Home, GDK.GDK_End, GDK.GDK_KP_End,
+					GDK.GDK_Page_Up, GDK.GDK_KP_Page_Up, GDK.GDK_Page_Down, GDK.GDK_KP_Page_Down -> true;
+			default -> false;
+		};
+		boolean selectAll = (mask & GDK.GDK_CONTROL_MASK) != 0 && (key [0] == 'a' || key [0] == 'A');
+		if (navigation || selectAll) {
+			long result = super.gtk3_key_press_event (widget, event);
+			if (result != 0 || isDisposed ()) return result;
+			if (navigation) virtualNavigate (key [0], mask);
+			else {
+				if ((mask & GDK.GDK_SHIFT_MASK) != 0) deselectAll (); else selectAll ();
+				TableItem item = getFocusItem ();
+				if (item != null) { Event selected = new Event (); selected.item = item; sendSelectionEvent (SWT.Selection, selected, false); }
+			}
+			return 1;
+		}
+	}
 
 	switch (key[0]) {
 		case GDK.GDK_Return:
@@ -2774,6 +3861,9 @@ long gtk3_button_release_event (long widget, long event) {
 
 @Override
 long gtk_changed (long widget) {
+	captureVirtualSelection ();
+	notifyVirtualAccessibleSelection ();
+	notifyVirtualAccessibleFocus ();
 	TableItem item = getFocusItem ();
 	if (item != null) {
 		Event event = new Event ();
@@ -2797,7 +3887,10 @@ void drawInheritedBackground (long cairo) {
 				gdk_window_get_size (gdkResource, width, height);
 			}
 			int bottom = 0;
-			if (itemCount != 0) {
+			if (usesBoundedVirtualView ()) {
+				double remaining = (itemCount - (double)virtualViewport.firstVisible ()) * virtualRowExtent - virtualPixelRemainder;
+				bottom = (int)Math.max (0, Math.min (height [0], remaining));
+			} else if (itemCount != 0) {
 				long iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
 				GTK.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, itemCount - 1);
 				long path = GTK.gtk_tree_model_get_path (modelHandle, iter);
@@ -2854,7 +3947,7 @@ long gtk3_motion_notify_event (long widget, long event) {
 
 void initializeViewportLayers () {
 	long horizontal = GTK.gtk_scrolled_window_get_hadjustment (scrolledHandle);
-	long vertical = GTK.gtk_scrollable_get_vadjustment (handle);
+	long vertical = usesBoundedVirtualView () ? verticalAdjustment : GTK.gtk_scrollable_get_vadjustment (handle);
 	viewportLayers.initialize (
 			horizontal != 0 ? GTK.gtk_adjustment_get_value (horizontal) : 0,
 			vertical != 0 ? GTK.gtk_adjustment_get_value (vertical) : 0);
@@ -2864,6 +3957,7 @@ void initializeViewportLayers () {
 long gtk_scroll_event (long widget, long eventPtr) {
 	pendingTopIndex = -1;
 	long result = super.gtk_scroll_event(widget, eventPtr);
+	if (usesBoundedVirtualView ()) return result;
 	long horizontal = GTK.gtk_scrolled_window_get_hadjustment (scrolledHandle);
 	long vertical = GTK.gtk_scrollable_get_vadjustment (handle);
 	int dirtyLayers = viewportLayers.scrollTo (
@@ -2893,7 +3987,9 @@ long gtk_toggled (long renderer, long pathStr) {
 	if (indices != 0) {
 		int [] index = new int [1];
 		C.memmove (index, indices, 4);
-		TableItem item = _getItem (index [0]);
+		int logical = logicalIndexForNativeHit (index [0]);
+		if (logical < 0) { GTK.gtk_tree_path_free (path); return 0; }
+		TableItem item = _getItem (logical);
 		toggleItemAndSendEvent(item);
 	}
 	GTK.gtk_tree_path_free (path);
@@ -2944,6 +4040,15 @@ void hideFirstColumn () {
 @Override
 void hookEvents () {
 	super.hookEvents ();
+	if (virtualViewAdjustment != 0) {
+		virtualAdjustmentCallback = new Callback (this, "virtualAdjustmentProc", 2);
+		long proc = virtualAdjustmentCallback.getAddress ();
+		if (proc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+		virtualLogicalValueSignal = Integer.toUnsignedLong (OS.g_signal_connect (verticalAdjustment, OS.value_changed, proc, 1));
+		virtualViewRangeSignal = Integer.toUnsignedLong (OS.g_signal_connect (virtualViewAdjustment, OS.changed, proc, 2));
+		virtualViewValueSignal = Integer.toUnsignedLong (OS.g_signal_connect (virtualViewAdjustment, OS.value_changed, proc, 3));
+		virtualColumnsSignal = Integer.toUnsignedLong (OS.g_signal_connect (handle, Converter.wcsToMbcs ("columns-changed", true), proc, 4));
+	}
 	long selection = GTK.gtk_tree_view_get_selection(handle);
 	OS.g_signal_connect_closure (selection, OS.changed, display.getClosure (CHANGED), false);
 	OS.g_signal_connect_closure (handle, OS.row_activated, display.getClosure (ROW_ACTIVATED), false);
@@ -3050,6 +4155,7 @@ public int indexOf (TableItem item) {
  */
 public boolean isSelected (int index) {
 	checkWidget();
+	if (usesBoundedVirtualView ()) return virtualViewport.selection ().isSelected (index);
 	long selection = GTK.gtk_tree_view_get_selection (handle);
 	byte [] buffer = Converter.wcsToMbcs (Integer.toString (index), true);
 	long path = GTK.gtk_tree_path_new_from_string (buffer);
@@ -3146,10 +4252,12 @@ void register () {
         display.addWidget(checkRenderer, this);
     }
 	display.addWidget (modelHandle, this);
+	if (virtualViewModel != 0) display.addWidget (virtualViewModel, this);
 }
 
 @Override
 void releaseChildren (boolean destroy) {
+	if (usesBoundedVirtualView () && accessible != null) accessible.internal_dispose_Accessible ();
 	for (int i=0; i<materializedItemCount (); i++) {
 		TableItem item = materializedItem (i);
         if (item != null && !item.isDisposed()) {
@@ -3175,6 +4283,11 @@ void releaseChildren (boolean destroy) {
 
 @Override
 void releaseWidget () {
+	releaseVirtualAccessibleChildren ();
+	disconnectVirtualAdjustments ();
+	if (virtualViewModel != 0) OS.g_object_unref (virtualViewModel);
+	if (virtualViewAdjustment != 0) OS.g_object_unref (virtualViewAdjustment);
+	virtualViewModel = virtualViewAdjustment = verticalAdjustment = 0;
 	super.releaseWidget ();
     if (modelHandle != 0) {
         OS.g_object_unref(modelHandle);
@@ -3499,14 +4612,17 @@ void sendMeasureEvent (long cell, long width, long height) {
 		TableItem item = null;
 		boolean isSelected = false;
 		if (iter != 0) {
-			long path = GTK.gtk_tree_model_get_path (modelHandle, iter);
-			int [] buffer = new int [1];
-			C.memmove (buffer, GTK.gtk_tree_path_get_indices (path), 4);
-			int index = buffer [0];
-			item = _getItem (index);
-			long selection = GTK.gtk_tree_view_get_selection (handle);
-			isSelected = GTK.gtk_tree_selection_path_is_selected (selection, path);
-			GTK.gtk_tree_path_free (path);
+			int index = modelIndex (modelHandle, iter);
+			if (index >= 0) {
+				item = _getItem (index);
+				long path = viewPath (iter);
+				try {
+					isSelected = usesBoundedVirtualView () ? virtualViewport.selection ().isSelected (index)
+							: GTK.gtk_tree_selection_path_is_selected (GTK.gtk_tree_view_get_selection (handle), path);
+				} finally {
+					if (path != 0) GTK.gtk_tree_path_free (path);
+				}
+			}
 		}
 		if (item != null) {
 			int columnIndex = 0;
@@ -3545,8 +4661,11 @@ void sendMeasureEvent (long cell, long width, long height) {
             if (isSelected) {
                 event.detail = SWT.SELECTED;
             }
-			sendEvent (SWT.MeasureItem, event);
-			gc.dispose ();
+			try {
+				sendEvent (SWT.MeasureItem, event);
+			} finally {
+				gc.dispose ();
+			}
 			Rectangle rect = event.getBounds ();
 			contentWidth [0] = rect.width - imageWidth;
             if (contentHeight [0] < rect.height) {
@@ -3565,12 +4684,18 @@ void sendMeasureEvent (long cell, long width, long height) {
 
 @Override
 long rendererGetPreferredWidthProc (long cell, long handle, long minimun_size, long natural_size) {
+	virtualCallbackDepth++;
+	try {
 	long g_class = OS.g_type_class_peek_parent (OS.G_OBJECT_GET_CLASS (cell));
 	GtkCellRendererClass klass = new GtkCellRendererClass ();
 	OS.memmove (klass, g_class);
 	OS.call (klass.get_preferred_width, cell, handle, minimun_size, natural_size);
 	sendMeasureEvent (cell, minimun_size, 0);
 	return 0;
+	} finally {
+		virtualCallbackDepth--;
+		if (usesBoundedVirtualView () && virtualViewChanged) scheduleVirtualView ();
+	}
 }
 
 @Override
@@ -3596,16 +4721,22 @@ long rendererRenderProc (long cell, long cr, long widget, long background_area, 
 }
 
 void rendererRender (long cell, long cr, long snapshot, long widget, long background_area, long cell_area, long expose_area, long flags) {
+	virtualCallbackDepth++;
+	try {
+		virtualRendererRender (cell, cr, snapshot, widget, background_area, cell_area, expose_area, flags);
+	} finally {
+		virtualCallbackDepth--;
+		if (usesBoundedVirtualView () && virtualViewChanged) scheduleVirtualView ();
+	}
+}
+
+void virtualRendererRender (long cell, long cr, long snapshot, long widget, long background_area, long cell_area, long expose_area, long flags) {
 	TableItem item = null;
 	boolean wasSelected = false;
 	long iter = OS.g_object_get_qdata (cell, Display.SWT_OBJECT_INDEX2);
 	if (iter != 0) {
-		long path = GTK.gtk_tree_model_get_path (modelHandle, iter);
-		int [] buffer = new int [1];
-		C.memmove (buffer, GTK.gtk_tree_path_get_indices (path), 4);
-		int index = buffer [0];
-		item = _getItem (index);
-		GTK.gtk_tree_path_free (path);
+		int index = modelIndex (modelHandle, iter);
+		if (index >= 0) item = _getItem (index);
 	}
 	long columnHandle = OS.g_object_get_qdata (cell, Display.SWT_OBJECT_INDEX1);
 	int columnIndex = 0;
@@ -3635,9 +4766,9 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 		 */
 		OS.memmove (rendererRect, background_area, GdkRectangle.sizeof);
 
-		long path = GTK.gtk_tree_model_get_path (modelHandle, iter);
+		long path = viewPath (iter);
 		GTK.gtk_tree_view_get_background_area (handle, path, columnHandle, columnRect);
-		GTK.gtk_tree_path_free (path);
+		if (path != 0) GTK.gtk_tree_path_free (path);
 
 		y_offset = columnRect.y - rendererRect.y;
 		columnRect.y -= y_offset;
@@ -3957,6 +5088,14 @@ boolean searchEnabled () {
  */
 public void select (int index) {
 	checkWidget();
+	if (usesBoundedVirtualView ()) {
+		if (index >= 0 && index < itemCount) {
+			if ((style & SWT.SINGLE) != 0) virtualViewport.selection ().clear ();
+			virtualViewport.selection ().setSelected (index, true);
+			restoreVirtualSelection ();
+		}
+		return;
+	}
     if (!(0 <= index && index < itemCount)) {
         return;
     }
@@ -4006,6 +5145,16 @@ public void select (int index) {
  */
 public void select (int start, int end) {
 	checkWidget ();
+	if (usesBoundedVirtualView ()) {
+		if (end < 0 || start > end || ((style & SWT.SINGLE) != 0 && start != end)) return;
+		int first = Math.max (0, start), last = (int)Math.min (itemCount, (long)end + 1);
+		if (first < last) {
+			if ((style & SWT.SINGLE) != 0) virtualViewport.selection ().clear ();
+			virtualViewport.selection ().selectRange (first, last);
+			restoreVirtualSelection ();
+		}
+		return;
+	}
     if (end < 0 || start > end || ((style & SWT.SINGLE) != 0 && start != end)) {
         return;
     }
@@ -4067,6 +5216,17 @@ public void select (int start, int end) {
  */
 public void select (int [] indices) {
 	checkWidget ();
+	if (usesBoundedVirtualView ()) {
+		if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
+		if ((style & SWT.SINGLE) != 0 && indices.length > 1) return;
+		for (int index : indices) {
+			if (index < 0 || index >= itemCount) continue;
+			if ((style & SWT.SINGLE) != 0) virtualViewport.selection ().clear ();
+			virtualViewport.selection ().setSelected (index, true);
+		}
+		restoreVirtualSelection ();
+		return;
+	}
     if (indices == null) {
         error(SWT.ERROR_NULL_ARGUMENT);
     }
@@ -4118,6 +5278,12 @@ public void select (int [] indices) {
  */
 public void selectAll () {
 	checkWidget();
+	if (usesBoundedVirtualView ()) {
+		if ((style & SWT.SINGLE) != 0) return;
+		virtualViewport.selection ().selectAll ();
+		restoreVirtualSelection ();
+		return;
+	}
     if ((style & SWT.SINGLE) != 0) {
         return;
     }
@@ -4132,6 +5298,14 @@ public void selectAll () {
 }
 
 void selectFocusIndex (int index) {
+	if (usesBoundedVirtualView ()) {
+		if (index < 0 || index >= itemCount) return;
+		virtualViewport.selection ().clear ();
+		virtualViewport.selection ().setSelected (index, true);
+		virtualFocusIndex = virtualAnchorIndex = index;
+		restoreVirtualSelection ();
+		return;
+	}
     /*
      * Note that this method both selects and sets the focus to the specified
      * index, so any previous selection in the list will be lost.
@@ -4198,6 +5372,7 @@ void setBackgroundSurface (Image image) {
 @Override
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	int result = super.setBounds (x, y, width, height, move, resize);
+	if (usesBoundedVirtualView ()) scheduleVirtualView ();
 	if (result != 0) {
 		boundsChangedSinceLastDraw = true;
 	}
@@ -4863,6 +6038,10 @@ public void setSelection (TableItem [] items) {
  */
 public void setTopIndex (int index) {
 	checkWidget();
+	if (usesBoundedVirtualView ()) {
+		if (index >= 0 && index < itemCount) revealVirtualIndex (index, true);
+		return;
+	}
     if (!(0 <= index && index < itemCount)) {
         return;
     }
@@ -4976,6 +6155,10 @@ public void showItem (TableItem item) {
 }
 
 void showItem (long iter) {
+	if (usesBoundedVirtualView ()) {
+		revealVirtualIndex (modelIndex (modelHandle, iter), false);
+		return;
+	}
 	long path = GTK.gtk_tree_model_get_path (modelHandle, iter);
 
 	GTK.gtk_tree_view_scroll_to_cell (handle, path, 0, false, 0, 0);
@@ -4996,6 +6179,10 @@ void showItem (long iter) {
  */
 public void showSelection () {
 	checkWidget();
+	if (usesBoundedVirtualView ()) {
+		revealVirtualIndex (firstVirtualSelectionIndex (), false);
+		return;
+	}
 	if (usesVirtualNativeModel ()) {
 		int [] selection = getSelectionIndices ();
         if (selection.length == 0) {

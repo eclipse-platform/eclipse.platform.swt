@@ -564,16 +564,16 @@ Rectangle getBoundsinPixels () {
         return new Rectangle(0, 0, 0, 0);
     }
 
-	long path = GTK.gtk_tree_model_get_path (parent.modelHandle, handle);
+	long path = parent.viewPath (handle);
 	GTK.gtk_widget_realize (parentHandle);
 
 	boolean isExpander = GTK.gtk_tree_model_iter_n_children (parent.modelHandle, handle) > 0;
-	boolean isExpanded = GTK.gtk_tree_view_row_expanded (parentHandle, path);
+	boolean isExpanded = path != 0 && GTK.gtk_tree_view_row_expanded (parentHandle, path);
 	GTK.gtk_tree_view_column_cell_set_cell_data (column, parent.modelHandle, handle, isExpander, isExpanded);
 
 	GdkRectangle rect = new GdkRectangle ();
-	GTK.gtk_tree_view_get_cell_area (parentHandle, path, column, rect);
-	GTK.gtk_tree_path_free (path);
+	parent.virtualCellArea (this, path, column, rect);
+	if (path != 0) GTK.gtk_tree_path_free (path);
     if ((parent.getStyle() & SWT.MIRRORED) != 0) {
         rect.x = parent.getClientWidth() - rect.width - rect.x;
     }
@@ -656,12 +656,12 @@ public Rectangle getBounds (int index) {
     if (column == 0) {
         return new Rectangle(0, 0, 0, 0);
     }
-	long path = GTK.gtk_tree_model_get_path (parent.modelHandle, handle);
+	long path = parent.viewPath (handle);
 	GTK.gtk_widget_realize (parentHandle);
 	GTK.gtk_tree_view_column_cell_set_cell_data (column, parent.modelHandle, handle, false, false);
 	GdkRectangle rect = new GdkRectangle ();
-	GTK.gtk_tree_view_get_cell_area (parentHandle, path, column, rect);
-	GTK.gtk_tree_path_free (path);
+	parent.virtualCellArea (this, path, column, rect);
+	if (path != 0) GTK.gtk_tree_path_free (path);
 	int [] columnWidth = new int [1], columnHeight = new int [1];
 	parent.ignoreSize = true;
 	if (GTK.GTK4) {
@@ -894,10 +894,10 @@ public Rectangle getImageBounds (int index) {
         return new Rectangle(0, 0, 0, 0);
     }
 	GdkRectangle rect = new GdkRectangle ();
-	long path = GTK.gtk_tree_model_get_path (parent.modelHandle, handle);
+	long path = parent.viewPath (handle);
 	GTK.gtk_widget_realize (parentHandle);
-	GTK.gtk_tree_view_get_cell_area (parentHandle, path, column, rect);
-	GTK.gtk_tree_path_free (path);
+	parent.virtualCellArea (this, path, column, rect);
+	if (path != 0) GTK.gtk_tree_path_free (path);
     if ((parent.getStyle() & SWT.MIRRORED) != 0) {
         rect.x = parent.getClientWidth() - rect.width - rect.x;
     }
@@ -1055,16 +1055,16 @@ public Rectangle getTextBounds (int index) {
         return new Rectangle(0, 0, 0, 0);
     }
 
-	long path = GTK.gtk_tree_model_get_path (parent.modelHandle, handle);
+	long path = parent.viewPath (handle);
 	GTK.gtk_widget_realize (parentHandle);
 
 	boolean isExpander = GTK.gtk_tree_model_iter_n_children (parent.modelHandle, handle) > 0;
-	boolean isExpanded = GTK.gtk_tree_view_row_expanded (parentHandle, path);
+	boolean isExpanded = path != 0 && GTK.gtk_tree_view_row_expanded (parentHandle, path);
 	GTK.gtk_tree_view_column_cell_set_cell_data (column, parent.modelHandle, handle, isExpander, isExpanded);
 
 	GdkRectangle rect = new GdkRectangle ();
-	GTK.gtk_tree_view_get_cell_area (parentHandle, path, column, rect);
-	GTK.gtk_tree_path_free (path);
+	parent.virtualCellArea (this, path, column, rect);
+	if (path != 0) GTK.gtk_tree_path_free (path);
     if ((parent.getStyle() & SWT.MIRRORED) != 0) {
         rect.x = parent.getClientWidth() - rect.width - rect.x;
     }
@@ -1115,6 +1115,7 @@ public Rectangle getTextBounds (int index) {
 @Override
 void releaseHandle () {
     if (handle != 0) {
+		if (parent != null) parent.clearVirtualRendererItem (handle);
         OS.g_free(handle);
     }
 	handle = 0;
@@ -1124,6 +1125,7 @@ void releaseHandle () {
 
 @Override
 void releaseWidget () {
+	parent.releaseVirtualAccessibleItem (this);
 	super.releaseWidget ();
 	font = null;
 	cellFont = null;
