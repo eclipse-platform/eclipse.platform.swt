@@ -59,10 +59,9 @@ JNIEXPORT jlong JNICALL SWT_AWT_NATIVE(getAWTHandle)
 
 #ifndef NO_initFrame
 JNIEXPORT jobject JNICALL SWT_AWT_NATIVE(initFrame)
-	(JNIEnv *env, jclass that, jlong handle, jstring className)
+	(JNIEnv *env, jclass that, jlong handle)
 {
 	/* Suppress warnings about unreferenced parameters */
-	(void)className;
 	(void)that;
 
 	jobject object;
