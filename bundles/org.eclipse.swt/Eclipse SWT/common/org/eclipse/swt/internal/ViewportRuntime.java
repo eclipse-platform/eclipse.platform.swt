@@ -145,10 +145,12 @@ public final class ViewportRuntime {
 		}
 
 		public long paintStart () {
+			if (visibleCount == 0) return firstVisible;
 			return Math.max (0L, firstVisible - overscanRows);
 		}
 
 		public long paintEndExclusive () {
+			if (visibleCount == 0) return firstVisible;
 			long visibleEnd = saturatedAdd (firstVisible, visibleCount);
 			return Math.min (logicalCount, saturatedAdd (visibleEnd, overscanRows));
 		}
