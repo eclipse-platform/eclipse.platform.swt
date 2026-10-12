@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.concurrent.*;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 import org.junit.jupiter.api.*;
@@ -35,6 +37,7 @@ public class ViewportResourceRegressionTest {
 	private static final long MIB = 1024L * 1024;
 	private static final String LOGICAL_MODEL = "org.eclipse.swt.internal.gtk.virtualTreeLogicalNativeModel";
 	private static final int STEPS = 96;
+	private static final int COLLAPSE_RESIDENT_ROWS = 11;
 	private static volatile ByteBuffer retainedNativeControl;
 	private static volatile long cpuControl;
 
@@ -114,7 +117,7 @@ public class ViewportResourceRegressionTest {
 			cpu [trial] = number (p, "cpuNanos");
 			stepCpu [trial] = number (p, "maxStepCpuNanos");
 			assertEquals (1_000_000, number (p, "logicalRows"));
-			assertTrue (number (p, "residentRows") <= (scenario.endsWith ("collapse") ? 11 : 512), p.toString ());
+			assertTrue (number (p, "residentRows") <= (scenario.endsWith ("collapse") ? COLLAPSE_RESIDENT_ROWS : 512), p.toString ());
 			assertTrue (number (p, "setDataCalls") <= 512, "Work must follow the visited window: " + p);
 			if (scenario.endsWith ("scroll") || scenario.endsWith ("collapse")) {
 				assertTrue (number (p, "paintEvents") >= STEPS, "Every measured step must be painted: " + p);
@@ -185,6 +188,27 @@ public class ViewportResourceRegressionTest {
 
 	private static long heap () {
 		return ManagementFactory.getMemoryMXBean ().getHeapMemoryUsage ().getUsed ();
+	}
+
+
+	private static void alignCollapseViewport (Shell shell, Tree tree, Display display) {
+		int rowExtent = Math.max (1, tree.getItemHeight ());
+		int targetBody = Math.multiplyExact (COLLAPSE_RESIDENT_ROWS, rowExtent);
+		for (int attempt = 0; attempt < 4; attempt++) {
+			Rectangle client = tree.getClientArea ();
+			int chrome = tree.getHeaderVisible () ? tree.getHeaderHeight () : 0;
+			int body = Math.max (0, client.height - chrome);
+			if (body == targetBody) return;
+			Point shellSize = shell.getSize ();
+			shell.setSize (shellSize.x, Math.max (1, shellSize.y + targetBody - body));
+			settle (display);
+		}
+		Rectangle client = tree.getClientArea ();
+		int chrome = tree.getHeaderVisible () ? tree.getHeaderHeight () : 0;
+		int body = Math.max (0, client.height - chrome);
+		require (body == targetBody,
+				"Collapse resource viewport must equal exactly " + COLLAPSE_RESIDENT_ROWS
+						+ " row extents: body=" + body + " rowExtent=" + rowExtent);
 	}
 
 	private static void settle (Display display) {
@@ -322,6 +346,7 @@ public class ViewportResourceRegressionTest {
 								: new TreeItem [] {tree.getItem (32), tree.getItem (96)};
 					}
 					shell.setSize (480, 320); shell.open (); settle (display);
+					if (collapsing) alignCollapseViewport (shell, tree, display);
 					for (int warm = 0; warm < 16; warm++) {
 						if (collapsing) { parent.setExpanded (true); paint (tree, null, paints); nativeView.sample (tree); parent.setExpanded (false); }
 						else tree.setTopItem (positions [warm & 1]);

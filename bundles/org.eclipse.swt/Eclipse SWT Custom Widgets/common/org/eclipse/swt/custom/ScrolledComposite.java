@@ -500,7 +500,7 @@ public Point getLogicalContentSize () {
  */
 public void setLogicalContentSize (int width, int height) {
 	checkWidget ();
-	if (width < 0 || height < 0) error (SWT.ERROR_INVALID_ARGUMENT);
+	if (width < 0 || height < 0) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	if (logicalContentSize != null
 			&& logicalContentSize.x == width
 			&& logicalContentSize.y == height) return;

@@ -125,7 +125,7 @@ def main(test_root=Path(".")):
     rejected = negative_controls()
     report = test_root / 'target/surefire-reports/TEST-org.eclipse.swt.tests.junit.ViewportScreenshotRegressionTest.xml'
     counts = qualified_suite(report, 'org.eclipse.swt.tests.junit.ViewportScreenshotRegressionTest', {
-        'test_viewportScreenshotRegression', 'test_swtScreenCaptureTracksVisiblePixels',
+        'test_viewportScreenshotRegression', 'test_logicalScrolledContentSnapshotsAtTenMillionRows', 'test_swtScreenCaptureTracksVisiblePixels',
         'test_screenCaptureRejectsInvalidTargets', 'test_capturePathsReleaseGraphicsOnSuccessAndFailure'})
     lifetime = dict(line.split('=', 1) for line in (test_root / 'target/capture-qualification/graphics-lifetime.properties').read_text().splitlines())
     for key, expected in {'capturePaths': '3', 'successfulCaptures': '48', 'writeFailures': '3',
@@ -133,10 +133,13 @@ def main(test_root=Path(".")):
         require(lifetime[key] == expected, 'Graphics resource qualification: ' + key)
     scenes = ('table-checked-selection', 'tree-pinned-expanded', 'tree-pinned-collapsed',
               'tree-pinned-restored', 'viewport-vertical-scroll', 'viewport-horizontal-scroll',
-              'viewport-narrow', 'viewport-wide', 'viewport-affine-clip-stroke')
-    metrics, images = {}, {}
+              'viewport-narrow', 'viewport-wide', 'viewport-affine-clip-stroke',
+              'logical-viewport-top', 'logical-viewport-deep',
+              'logical-viewport-horizontal', 'logical-viewport-narrow')
+    metrics, images, scene_facts = {}, {}, {}
     for name in scenes:
         facts = dict(line.split('=', 1) for line in (output / (name + '.txt')).read_text().splitlines() if '=' in line)
+        scene_facts[name] = facts
         require(facts['capture.api'] == 'SWT.GC(Display).copyArea', name + ': capture API')
         require(facts['capture.coordinateSpace'] == 'display-logical', name + ': coordinates')
         require(facts['capture.backend'] == 'x11', name + ': unqualified backend')
@@ -162,9 +165,38 @@ def main(test_root=Path(".")):
     require(scroll_delta > 20, 'Horizontal scrolling produced a stale frame')
     narrow, wide = images['viewport-narrow'], images['viewport-wide']
     require(narrow.shape[0] < wide.shape[0] and narrow.shape[1] < wide.shape[1], 'Resize capture is stale')
+    logical_scenes = ('logical-viewport-top', 'logical-viewport-deep',
+                      'logical-viewport-horizontal', 'logical-viewport-narrow')
+    for name in logical_scenes:
+        facts = scene_facts[name]
+        require(facts['logical.rowCount'] == '10000000', name + ': logical row count')
+        require('220000000' in facts['logical.extent'], name + ': logical extent')
+        require(int(facts['logical.maximumRowsInOnePaint']) <= 80,
+                name + ': unbounded viewport painting')
+        require(int(facts['logical.bodyPaints']) > 0, name + ': body was not painted')
+    require(scene_facts['logical-viewport-top']['logical.headerOriginX'] == '0',
+            'Initial header projection')
+    require(scene_facts['logical-viewport-deep']['logical.headerOriginX'] == '0',
+            'Vertical scroll moved header projection')
+    require(scene_facts['logical-viewport-horizontal']['logical.headerOriginX'] == '620',
+            'Horizontal scroll did not move header projection')
+    require(int(scene_facts['logical-viewport-deep']['logical.firstPaintedRow']) > 4_500_000,
+            'Deep viewport painted the wrong logical rows')
+    top = images['logical-viewport-top']
+    deep = images['logical-viewport-deep']
+    shifted = images['logical-viewport-horizontal']
+    require(top.shape == deep.shape == shifted.shape, 'Logical viewport geometry drift')
+    logical_delta = cv2.countNonZero(cv2.cvtColor(cv2.absdiff(top, deep), cv2.COLOR_BGR2GRAY))
+    horizontal_delta = cv2.countNonZero(cv2.cvtColor(cv2.absdiff(deep, shifted), cv2.COLOR_BGR2GRAY))
+    require(logical_delta > 20, 'Distant logical viewport screenshot is stale')
+    require(horizontal_delta > 20, 'Logical horizontal viewport screenshot is stale')
+    narrow_logical = images['logical-viewport-narrow']
+    require(narrow_logical.shape[0] < deep.shape[0] and narrow_logical.shape[1] < deep.shape[1],
+            'Logical viewport resize capture is stale')
     receipt = {'status': 'PASS', 'opencv': cv2.__version__, 'numpy': np.__version__,
                'junit': counts, 'sceneArtifacts': metrics, 'canary': canary,
-               'scrollChangedPixels': scroll_delta, 'negativeControlsRejected': rejected,
+               'scrollChangedPixels': scroll_delta, 'logicalScrollChangedPixels': logical_delta,
+               'logicalHorizontalChangedPixels': horizontal_delta, 'negativeControlsRejected': rejected,
                'graphicsLifetime': lifetime, 'manualQaRequired': False, 'scope': 'GTK3/X11 controlled geometry and scene sanity; no cross-platform golden approval'}
     (output / 'opencv-validation.json').write_text(json.dumps(receipt, indent=2) + '\n')
     print(json.dumps(receipt, sort_keys=True))
