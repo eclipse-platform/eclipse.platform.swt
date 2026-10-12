@@ -98,7 +98,7 @@ Each scenario sidecar binds API, screen bounds, logical coordinate space, pixel 
 DPI, backend and both image hashes. Existing optional `<scenario>-native.png` shell captures remain available. The screen-capture canary moves/repaints a colored control
 under a second control and verifies known colors in decoded before/after PNGs.
 
-The dedicated GTK3/X11 lane requires both screenshot tests, nine screen/rendered pairs and
+The dedicated GTK3/X11 lane requires all five screenshot JUnit methods, thirteen screen/rendered pairs and
 two canary PNGs. Other platform/backend support requires its own run; no silent rendering
 fallback qualifies screen capture. Existing heap/RSS/CPU tests and budgets remain unchanged;
 screenshot work runs in the separate screenshot phase. Recipe ownership remains in Synexia:
@@ -108,7 +108,7 @@ OpenCV 4.12.0.88 and NumPy 2.2.6 independently decode the PNGs and verify exact 
 
 ### Capture contracts and graphics lifetime
 
-The automated screenshot lane now requires four JUnit tests. The added boundary test checks
+The automated screenshot lane now requires five JUnit tests. The added boundary test checks
 ancestor clipping, zero size, edge-touching containment, visibility, disposal, null input and
 wrong-thread access. The graphics-lifetime test performs 48 captures through the three existing
 paths and three deterministic PNG-write failures, with no retained GC/Image wrappers. Two
@@ -141,3 +141,27 @@ pre-transform bounds are a different coordinate space. The test-owned Transform 
 released even if an assertion fails. A separate six-affine regression checks both
 user-space bounds and exact device-region symmetric differences, including holes.
 The native matrix must qualify Windows/Cocoa independently; GTK proof is not enough.
+
+### Logical-content snapshot acceptance (10 million rows)
+
+The `ScrolledComposite.setLogicalContentSize(1920, 220000000)` opt-in mode is now
+included in the native GTK3/X11 screenshot suite. Four *additional* scenes capture
+the same fixed Canvas at top, y=100000000, x=620/y=100000000, and after resizing:
+
+- `logical-viewport-top`
+- `logical-viewport-deep`
+- `logical-viewport-horizontal`
+- `logical-viewport-narrow`
+
+The physical Canvas must remain pinned at `(0,0)` and exactly viewport-sized.
+Paint traversal must remain bounded to visible rows plus an eight-row overscan:
+no paint event may issue more than 80 row commands. The header keeps x=0
+during vertical scrolling and follows horizontal origin x=620. Both screen
+and control PNGs must be saved with hash-bound sidecars; OpenCV rejects blank,
+stale, mis-sized or stale-origin frames. The 10M-row model is logical only:
+no 10M-item Java/native object graph is constructed by this test.
+
+This snapshot lane complements rather than replaces the original physical-content
+ScrolledComposite regression. Resource budgets and classic behavior remain unchanged.
+The source-sealed M3 recipe must bind the SWT JUnit and its CI oracle together,
+and the SWT receiver's native GTK3 build remains authoritative.
