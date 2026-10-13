@@ -141,6 +141,7 @@ public class Display extends Device implements Executor {
 	Control [] visChain = new Control [32];
 	final RECT visRect = new RECT (), visClip = new RECT ();
 	final WINDOWPOS visPos = new WINDOWPOS ();
+	final PAINTSTRUCT visPs = new PAINTSTRUCT ();
 	final Runnable visSweepRunnable = () -> VisibilityCatchUp.sweep (this);
 	OcclusionTracker occlusionTracker;
 	static int WindowClassCount;

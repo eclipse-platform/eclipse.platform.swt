@@ -127,14 +127,17 @@ public class VisibilityGateBench {
 
 	public static void main (String [] args) throws Exception {
 		String scenario = args [0], label = args [1];
+		java.io.File auto = new java.io.File (System.getProperty ("bench.dumpRoot", "C:/m3-work-c/visgate/dump/auto"), scenario + "-" + label + "-" + System.currentTimeMillis ());
+		dumpDir = auto.mkdirs () ? auto.getPath () : null;
 		int updates = args.length > 2 ? Integer.parseInt (args [2]) : 100;
 		display = new Display ();
-		/* Off every monitor: no user input can reach the shells and nothing pops over the desktop */
-		Rectangle all = display.getMonitors () [0].getBounds ();
-		for (Monitor m : display.getMonitors ()) {
-			all = all.union (m.getBounds ());
-		}
-		originX = all.x + all.width + 3000;
+		/*
+		 * Bottom-right of the primary monitor, ON_TOP, shown without activation:
+		 * off-monitor windows receive fewer WM_PAINTs and would understate stock work.
+		 */
+		Rectangle area = display.getPrimaryMonitor ().getClientArea ();
+		originX = area.x + area.width - 1200;
+		originY = area.y + area.height - 580;
 		Shell twinShell = shell (620, "twin");
 		Payload twin;
 		Shell shell = shell (40, "gated");
@@ -191,8 +194,10 @@ public class VisibilityGateBench {
 			}
 		}
 		host = shell;
-		shell.open ();
-		twinShell.open ();
+		clickThrough (shell);
+		clickThrough (twinShell);
+		shell.setVisible (true);
+		twinShell.setVisible (true);
 		settle (300);
 		Shell cover = null;
 		if ("minimized".equals (scenario)) {
@@ -203,7 +208,7 @@ public class VisibilityGateBench {
 			Rectangle b = shell.getBounds ();
 			cover.setBounds (b.x - 20, b.y - 20, b.width + 40, b.height + 40);
 			cover.setBackground (display.getSystemColor (SWT.COLOR_DARK_GRAY));
-			cover.open ();
+			cover.setVisible (true);
 			settle (800);
 		}
 
@@ -236,7 +241,8 @@ public class VisibilityGateBench {
 		reset ();
 		long cpu1 = MX.getCurrentThreadCpuTime ();
 		if ("minimized".equals (scenario)) {
-			shell.setMinimized (false);
+			/* Restore without activation so no keystroke of the desktop user lands in the bench */
+			org.eclipse.swt.internal.win32.OS.ShowWindow (shell.handle, org.eclipse.swt.internal.win32.OS.SW_SHOWNOACTIVATE);
 		} else if ("covered".equals (scenario)) {
 			cover.dispose ();
 		} else if (reveal != null) {
@@ -244,9 +250,13 @@ public class VisibilityGateBench {
 		}
 		settle (700);
 		long cpuCatch = MX.getCurrentThreadCpuTime () - cpu1;
+		if (Boolean.getBoolean ("bench.gateDump")) {
+			gateDump ("after-reveal", gated);
+		}
 		int[] cat = snapshot ();
 		String apiShown = gated.api ();
 		/* Raw: what the screen holds after the catch-up. Fresh: after a forced full repaint of both. */
+		int occludedAtCapture = gateField ("visOccludedShells");
 		String raw = printHash (gated.content, "gated-raw");
 		for (Control c : new Control [] {gated.content, twin.content}) {
 			Point size = c.getSize ();
@@ -264,7 +274,7 @@ public class VisibilityGateBench {
 			Long.toString (cpuCatch / 1_000_000),
 			Boolean.toString (apiHidden.equals (twinApi)), Boolean.toString (apiShown.equals (twinApi)), sha (apiHidden).substring (0, 12),
 			Boolean.toString (h1.equals (h2)), Boolean.toString (raw.equals (h1)), h1.substring (0, 16), h2.substring (0, 16),
-			Integer.toString (occludedShells), Integer.toString (upd [4]),
+			Integer.toString (occludedShells), Integer.toString (upd [4]), Integer.toString (occludedAtCapture),
 			System.getProperty ("swt.visibility.gate", "default")));
 		if (!apiShown.equals (twinApi) || (!apiHidden.equals (twinApi) && Boolean.getBoolean ("bench.verbose"))) {
 			System.err.println ("API hidden: " + apiHidden);
@@ -276,14 +286,27 @@ public class VisibilityGateBench {
 		}
 	}
 
-	static int originX;
+	static int originX, originY;
+	static String dumpDir;
 
 	static Shell shell (int x, String title) {
 		Shell s = new Shell (display, SWT.SHELL_TRIM | SWT.ON_TOP);
 		s.setText (title);
 		s.setLayout (new FillLayout ());
-		s.setBounds (originX + x, 40, 560, 560);
+		s.setBounds (originX + x - 40, originY, 560, 560);
 		return s;
+	}
+
+	/**
+	 * Mouse and wheel input pass through the bench shells (WS_EX_LAYERED at alpha 255
+	 * plus WS_EX_TRANSPARENT), so the desktop user cannot scroll or click them.
+	 */
+	static void clickThrough (Shell s) {
+		long h = s.handle;
+		int ex = org.eclipse.swt.internal.win32.OS.GetWindowLong (h, org.eclipse.swt.internal.win32.OS.GWL_EXSTYLE);
+		org.eclipse.swt.internal.win32.OS.SetWindowLong (h, org.eclipse.swt.internal.win32.OS.GWL_EXSTYLE,
+			ex | org.eclipse.swt.internal.win32.OS.WS_EX_LAYERED | org.eclipse.swt.internal.win32.OS.WS_EX_TRANSPARENT);
+		org.eclipse.swt.internal.win32.OS.SetLayeredWindowAttributes (h, 0, (byte) 0xFF, org.eclipse.swt.internal.win32.OS.LWA_ALPHA);
 	}
 
 	static void reset () {
@@ -292,6 +315,29 @@ public class VisibilityGateBench {
 
 	static int [] snapshot () {
 		return new int [] {paints, layouts, measures, setData, gateField ("visDirtyCount")};
+	}
+
+	/** Diagnostic: the gate's deferred list and the payload controls' state bits 25..31. */
+	static void gateDump (String when, Payload p) {
+		try {
+			java.lang.reflect.Field list = Display.class.getDeclaredField ("visDirty");
+			java.lang.reflect.Field count = Display.class.getDeclaredField ("visDirtyCount");
+			java.lang.reflect.Field state = Class.forName ("org.eclipse.swt.widgets.Widget").getDeclaredField ("state");
+			list.setAccessible (true);
+			count.setAccessible (true);
+			state.setAccessible (true);
+			Object [] entries = (Object []) list.get (display);
+			StringBuilder sb = new StringBuilder (when).append (" dirty=").append (count.getInt (display));
+			for (int i = 0; i < count.getInt (display); i++) {
+				sb.append (' ').append (entries [i] == null ? "null" : entries [i].getClass ().getSimpleName () + ":" + Integer.toHexString (state.getInt (entries [i]) >>> 25));
+			}
+			for (Control c : new Control [] {p.content.getShell (), p.content, p.label, p.table, p.text, p.canvas}) {
+				sb.append (" | ").append (c.getClass ().getSimpleName ()).append (':').append (Integer.toHexString (state.getInt (c) >>> 25));
+			}
+			System.err.println (sb);
+		} catch (ReflectiveOperationException e) {
+			System.err.println (when + " gateDump unavailable: " + e);
+		}
 	}
 
 	/** Gate state read reflectively (diagnostic only); -1 on stock classes. */
@@ -337,7 +383,7 @@ public class VisibilityGateBench {
 		gc.dispose ();
 		ImageData data = image.getImageData ();
 		image.dispose ();
-		String dump = System.getProperty ("bench.dump");
+		String dump = System.getProperty ("bench.dump", dumpDir);
 		if (dump != null) {
 			ImageLoader loader = new ImageLoader ();
 			loader.data = new ImageData [] {data};

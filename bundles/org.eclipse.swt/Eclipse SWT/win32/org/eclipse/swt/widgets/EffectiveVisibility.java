@@ -244,12 +244,18 @@ final class EffectiveVisibility {
 		return true;
 	}
 
-	/** WM_PAINT for the receiver's handle. */
+	/**
+	 * WM_PAINT for the receiver's handle. BeginPaint/EndPaint (not ValidateRect)
+	 * so the pending WM_NCPAINT still reaches the themed border code; only the
+	 * client paint is skipped.
+	 */
 	static boolean deferPaintMessage (Control c) {
 		if (!paintGated (c)) {
 			return false;
 		}
-		OS.ValidateRect (c.handle, null);
+		PAINTSTRUCT ps = c.display.visPs;
+		OS.BeginPaint (c.handle, ps);
+		OS.EndPaint (c.handle, ps);
 		VisibilityCatchUp.markDirty (c, DIRTY_PAINT);
 		return true;
 	}

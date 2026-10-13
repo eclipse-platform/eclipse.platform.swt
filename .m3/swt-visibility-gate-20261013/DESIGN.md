@@ -13,17 +13,22 @@ only the damaged rectangle.
 
 | Reason | Source | Cached | Gates |
 |---|---|---|---|
-| WS_VISIBLE chain false (hidden, ancestor hidden, `setRedraw(false)`) | `OS.IsWindowVisible(handle)`, live | no | paint, layout |
+| WS_VISIBLE chain false (hidden, ancestor hidden, `setRedraw(false)`) | `IsWindowVisible(shell)` + `GWL_STYLE & WS_VISIBLE` per node | `OFFSCREEN` bit | paint, layout |
 | Shell minimized | `OS.IsIconic(shell)` | `OFFSCREEN` bit | paint, layout |
 | Zero-size window | `GetWindowRect` | `OFFSCREEN` bit | paint, layout |
 | Fully clipped by any ancestor client area (ScrolledComposite, Composite bounds) | screen-space intersection of `GetWindowRect(c)` with every ancestor's `GetClientRect`+`MapWindowPoints`, stopping at the Shell | `OFFSCREEN` bit | paint, layout |
-| Shell fully covered by opaque windows above it | `OcclusionTracker` background thread | `Shell.OCCLUDED` bit | paint |
-| Shell on another virtual desktop | `IVirtualDesktopManager.IsWindowOnCurrentVirtualDesktop` (existing `COM.VtblCall`) | `Shell.OCCLUDED` bit | paint |
+| Shell fully covered by opaque windows above it | `OcclusionTracker` background thread | `OCCLUDED` bit on the Shell | paint |
+| Shell on another virtual desktop | `IVirtualDesktopManager.IsWindowOnCurrentVirtualDesktop` (existing `COM.VtblCall`) | `OCCLUDED` bit on the Shell | paint |
 
-The WS_VISIBLE chain is checked live because `WM_SETREDRAW` toggles WS_VISIBLE
-without sending a notification. The geometric part is cached; it changes only
-through `WM_WINDOWPOSCHANGED` / `WM_SHOWWINDOW`, which invalidate the cache for
-the receiver's subtree. Occlusion is asynchronous and therefore gates paint only;
+Every reason is cached, so a poll is bit tests only: `(state & (KNOWN|OFFSCREEN))`
+plus, only while some shell is occluded (`display.visOccludedShells > 0`), one
+parent walk to the shell's `OCCLUDED` bit. The cache is cleared for the
+receiver's subtree by `WM_WINDOWPOSCHANGED` (move, size, show, hide, frame),
+`WM_SHOWWINDOW`, `WM_SETREDRAW` (after DefWindowProc ran, because it toggles
+WS_VISIBLE without a notification) and `setParent`. Self-healing: the first
+deferral of a control posts one sweep, and the sweep recomputes every entry
+from the OS before deciding, so a stale bit cannot hold work back past the next
+event-loop turn. Occlusion is asynchronous and therefore gates paint only;
 layout stays synchronous for it.
 
 ### Bit allocation (win32 `Widget.state`, bits 25..31 were free)
@@ -55,7 +60,7 @@ to `NSView.isHiddenOrHasHiddenAncestor` + `visibleRect` and occlusion to
 
 | Work | Gate point | Dirty record | Catch-up |
 |---|---|---|---|
-| `redraw()`, `redraw(x,y,w,h,all)`, internal `redrawInPixels` | `Control.redrawInPixels` | hidden chain: stock drop (Windows repaints on show); other reasons: `DIRTY_PAINT` | one `RedrawWindow(RDW_ERASE|RDW_INVALIDATE|RDW_FRAME|RDW_ALLCHILDREN)` |
+| `redraw()`, `redraw(x,y,w,h,all)`, internal `redrawInPixels` | `Control.redrawInPixels` | `!IsWindowVisible`: stock drop (Windows repaints on show); other reasons: `DIRTY_PAINT` | one `RedrawWindow(RDW_ERASE|RDW_INVALIDATE|RDW_ALLCHILDREN)`; no `RDW_FRAME`: WM_NCPAINT is never gated, and a frame invalidation repainted child borders through the classic 3D path (measured, see section 8) |
 | OS-originated `WM_PAINT` (DWM still paints covered/iconic/clipped windows) | `Control.windowProc` before dispatch | `ValidateRect` + `DIRTY_PAINT` | same |
 | `update()` | `Control.update(boolean)` | none (nothing visible to flush) | n/a |
 | `layout()`, resize-driven layout, `requestLayout` | `Composite.updateLayout` after `findDeferredControl` | `DIRTY_LAYOUT`, LAYOUT_NEEDED kept | `updateLayout(true,true)` once, outermost first |
@@ -63,7 +68,7 @@ to `NSView.isHiddenOrHasHiddenAncestor` + `visibleRect` and occlusion to
 | StyledText/Nebula/List/Combo idle, measure and timer work | consumer calls `org.eclipse.swt.internal.VisibilityGate.defer(control, kinds)` | `DIRTY_MEASURE` / `DIRTY_DATA` | internal event `VisibilityGate.CATCH_UP` with `detail = kinds` |
 
 Catch-up order: every deferral enlists the control once on `Display`
-(`Control[] visDirty`, reused, compacted on sweep). A sweep is posted (one
+(`Control[] visDirty`, reused, compacted on sweep, never appended twice). A sweep is posted (one
 `asyncExec`, never more than one outstanding) on: `WM_SHOWWINDOW`,
 `WM_WINDOWPOSCHANGED` with move/size/show/hide, `WM_ACTIVATE`, `setRedraw(true)`,
 `setVisible(true)`, occlusion change. `setVisible(true)` and `setRedraw(true)`
@@ -78,6 +83,11 @@ window is shown, so the first frame is laid out (Qt `show_recursive` pattern).
   deferred layout of the receiver's ancestors (outermost first, gate bypassed).
   The fast path is one int test (`display.visPendingLayouts == 0`).
 - `computeSize` never depended on deferred layout results and is not gated.
+- A hidden widget that queries its own geometry while it updates pulls its
+  deferred layout through the on-demand path. StyledText calls `getClientArea`
+  on every edit, so in the hidden-tab scenario one layout per update remains
+  (stock: two). The StyledText owner removes it by checking
+  `VisibilityGate.defer(this, MEASURE)` before such work.
 - Timing difference (same as stock `setLayoutDeferred(true)`): `SWT.Resize` /
   `SWT.Move` events of descendants of an offscreen composite are delivered at
   catch-up or at the first geometry query, not inside the original `layout()` call.
