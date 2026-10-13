@@ -87,11 +87,6 @@ final class EffectiveVisibility {
 		}
 
 		@Override
-		protected boolean batch (Control control, int planes, boolean begin) {
-			return begin ? ViewportBatch.begin (control, planes) : ViewportBatch.end (control, planes);
-		}
-
-		@Override
 		protected boolean debounce (Control control, int kind, int delayMs) {
 			return VisibilityDebounce.schedule (control, kind, delayMs);
 		}

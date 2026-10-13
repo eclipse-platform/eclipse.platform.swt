@@ -76,10 +76,6 @@ public final class VisibilityGate {
 			return false;
 		}
 
-		/** Begins or ends a batch on the given planes; false when unsupported. */
-		protected boolean batch (Control control, int planes, boolean begin) {
-			return false;
-		}
 
 		/** Schedules a debounced {@link VisibilityGate#DEBOUNCED} event; false when unsupported. */
 		protected boolean debounce (Control control, int kind, int delayMs) {
@@ -185,72 +181,11 @@ public final class VisibilityGate {
 		return p != null && control != null && !control.isDisposed () && p.debounce (control, kind, delayMs);
 	}
 
-	/** Plane bits of one widget: structure and chrome (frame, headers, layout, child controls). */
-	public static final int PLANE_MAIN = 1;
-	/** The content window that scrolls. */
-	public static final int PLANE_VIEWPORT = 2;
-	/** The native or overlay scrollbars. */
-	public static final int PLANE_SCROLLBARS = 4;
-	/** Operations expected to run at least this long use {@link #runBatch}'s worker and busy cursor ({@code -Dswt.batch.busyMs}). */
-	public static final int BUSY_THRESHOLD_MS = Integer.getInteger ("swt.batch.busyMs", 100).intValue ();
-
-	/**
-	 * Begins a batch scope that freezes only the given planes; the others stay live.
-	 * Nested-safe (per-plane depth). Structural changes freeze {@link #PLANE_MAIN} (layout
-	 * deferred, run once at the end; the viewport keeps scrolling). Bulk data changes
-	 * freeze {@link #PLANE_VIEWPORT} (content damage accumulates, scrollbars stay live, one
-	 * paint at the end, no erase). Never freeze a plane the operation does not touch.
-	 *
-	 * <pre>
-	 * VisibilityGate.beginBatch (table, VisibilityGate.PLANE_VIEWPORT);
-	 * try { ... setItems / sort / filter ... } finally { VisibilityGate.endBatch (table, VisibilityGate.PLANE_VIEWPORT); }
-	 * </pre>
-	 *
-	 * @return false when unsupported (the caller may fall back to setRedraw)
+	/*
+	 * The batch scope (plane mask plus busy cursor) is public SWT API:
+	 * Control.beginBatch(int), Control.endBatch(int), Control.runBatch(int, Runnable, Runnable)
+	 * with SWT.PLANE_MAIN, SWT.PLANE_VIEWPORT and SWT.PLANE_SCROLLBARS.
 	 */
-	public static boolean beginBatch (Control control, int planes) {
-		Port p = port;
-		return p != null && control != null && !control.isDisposed () && p.batch (control, planes & (PLANE_MAIN | PLANE_VIEWPORT | PLANE_SCROLLBARS), true);
-	}
-
-	/** Ends a batch scope; the last end of each plane repaints that plane once. */
-	public static boolean endBatch (Control control, int planes) {
-		Port p = port;
-		return p != null && control != null && !control.isDisposed () && p.batch (control, planes & (PLANE_MAIN | PLANE_VIEWPORT | PLANE_SCROLLBARS), false);
-	}
-
-	/** Viewport-only batch: {@code beginBatch/endBatch (control, PLANE_VIEWPORT)}. */
-	public static boolean suppressViewport (Control control, boolean suppress) {
-		return suppress ? beginBatch (control, PLANE_VIEWPORT) : endBatch (control, PLANE_VIEWPORT);
-	}
-
-	/**
-	 * Long operation in a batch scope. When {@code expectedMs} reaches
-	 * {@link #BUSY_THRESHOLD_MS}, {@code cpuWork} runs on a worker thread while the UI
-	 * thread waits in {@code BusyIndicator.showWhile (Future)}: the busy cursor shows, the
-	 * event loop keeps running, the scrollbars stay live and the frozen planes accumulate.
-	 * {@code uiApply} then runs on the UI thread, and the planes repaint once.
-	 * {@code cpuWork} must not touch widgets.
-	 */
-	public static void runBatch (Control control, int planes, Runnable cpuWork, Runnable uiApply, int expectedMs) {
-		beginBatch (control, planes);
-		try {
-			if (expectedMs >= BUSY_THRESHOLD_MS) {
-				java.util.concurrent.CompletableFuture<Void> work = java.util.concurrent.CompletableFuture.runAsync (cpuWork);
-				org.eclipse.swt.custom.BusyIndicator.showWhile (work);
-				work.join ();
-			} else {
-				cpuWork.run ();
-			}
-			if (uiApply != null && !control.isDisposed ()) {
-				uiApply.run ();
-			}
-		} finally {
-			if (!control.isDisposed ()) {
-				endBatch (control, planes);
-			}
-		}
-	}
 
 	/** Sets the inset and margin rings of a Scrollable (packed with {@link #pack}). */
 	public static void setBoxEdges (Control control, int packedInset, int packedMargin) {

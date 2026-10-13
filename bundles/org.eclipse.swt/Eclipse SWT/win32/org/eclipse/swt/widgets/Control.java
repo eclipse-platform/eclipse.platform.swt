@@ -4105,6 +4105,106 @@ boolean setRadioSelection (boolean value) {
 }
 
 /**
+ * Freezes the given planes of the receiver until the matching call to
+ * <code>endBatch</code>. A frozen plane records what changes instead of
+ * painting or laying it out; the planes that are not named stay live, so the
+ * scroll bars keep tracking and the viewport keeps scrolling while the
+ * structure is rebuilt, and the scroll bars keep tracking while the content
+ * is reloaded.
+ * <p>
+ * The <code>planes</code> argument is a bitwise OR of
+ * <code>SWT.PLANE_MAIN</code> (structure, chrome, layout and child controls),
+ * <code>SWT.PLANE_VIEWPORT</code> (the content that scrolls) and
+ * <code>SWT.PLANE_SCROLLBARS</code>. Freeze only the planes the operation
+ * changes. Calls nest: a plane resumes when its last <code>endBatch</code>
+ * runs, and then lays out once or repaints only what changed, once, without
+ * erasing the background.
+ * </p>
+ * <p>
+ * Unlike <code>setRedraw(false)</code>, a batch never hides the scroll bars
+ * and never ends with a full repaint of the receiver.
+ * </p>
+ *
+ * @param planes the planes to freeze
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see #endBatch(int)
+ * @see #runBatch(int, Runnable, Runnable)
+ * @see #setRedraw(boolean)
+ * @see SWT#PLANE_MAIN
+ * @see SWT#PLANE_VIEWPORT
+ * @see SWT#PLANE_SCROLLBARS
+ *
+ * @since 3.137
+ */
+public void beginBatch (int planes) {
+	checkWidget ();
+	ViewportBatch.begin (this, planes & BatchScope.PLANES);
+}
+
+/**
+ * Resumes the given planes of the receiver, frozen by a matching call to
+ * <code>beginBatch</code>. When the last batch of a plane ends, the plane lays
+ * out once or repaints only what changed, once.
+ *
+ * @param planes the planes to resume
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see #beginBatch(int)
+ *
+ * @since 3.137
+ */
+public void endBatch (int planes) {
+	checkWidget ();
+	ViewportBatch.end (this, planes & BatchScope.PLANES);
+}
+
+/**
+ * Runs a long operation on the receiver. The given planes are frozen, the
+ * <code>background</code> runnable executes on a worker thread while the
+ * user-interface thread keeps dispatching events (the planes that are not
+ * frozen stay live and, after a short delay, every shell shows the busy
+ * cursor), then <code>apply</code> runs on the user-interface thread and the
+ * planes resume.
+ * <p>
+ * The <code>background</code> runnable must not access widgets; it computes
+ * what <code>apply</code> then installs.
+ * </p>
+ *
+ * @param planes the planes to freeze while the operation runs
+ * @param background the work to run off the user-interface thread
+ * @param apply the work to run on the user-interface thread afterwards, or <code>null</code>
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if background is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_FAILED_EXEC - if an exception occurred while running background</li>
+ * </ul>
+ *
+ * @see #beginBatch(int)
+ *
+ * @since 3.137
+ */
+public void runBatch (int planes, Runnable background, Runnable apply) {
+	checkWidget ();
+	if (background == null) {
+		error (SWT.ERROR_NULL_ARGUMENT);
+	}
+	BatchScope.run (this, planes & BatchScope.PLANES, background, apply);
+}
+
+/**
  * If the argument is <code>false</code>, causes subsequent drawing
  * operations in the receiver to be ignored. No drawing of any kind
  * can occur in the receiver until the flag is set to true.

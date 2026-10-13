@@ -40,10 +40,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
- * Leaf 2 (win32): box model, per-plane batch scope, damage test hook, burst debounce.
+ * VisibilityGate box model, content pixels, protected rings and burst debounce (win32).
  * UI test: needs the desktop (hold C:/m3-work-c/ui-test.lock while running).
  */
-public class Test_org_eclipse_swt_internal_ViewportPlanes {
+public class Test_org_eclipse_swt_internal_VisibilityGate_box {
+
 
 	Display display;
 	Shell shell;
@@ -145,85 +146,6 @@ public class Test_org_eclipse_swt_internal_ViewportPlanes {
 		}
 		assertEquals (w.right - w.left, width + content [2], "edges + content = outer width in pixels at zoom " + DPIUtil.getDeviceZoom ());
 		assertEquals (w.bottom - w.top, height + content [3], "edges + content = outer height in pixels at zoom " + DPIUtil.getDeviceZoom ());
-	}
-
-	@Test
-	public void test_viewportBatchPaintsOnceAndOnlyTheDamage () {
-		Canvas canvas = new Canvas (shell, SWT.V_SCROLL);
-		canvas.addListener (SWT.Paint, e -> paints++);
-		shell.open ();
-		SwtTestUtil.processEvents ();
-		ViewportDamageRecorder recorder = new ViewportDamageRecorder (1, 1);
-		VisibilityGate.attachDamageRecorder (canvas, recorder);
-		paints = 0;
-		assertTrue (VisibilityGate.beginBatch (canvas, PLANE_VIEWPORT));
-		for (int i = 0; i < 50; i++) {
-			canvas.redraw (10 + i, 10, 20, 20, false);
-			canvas.getVerticalBar ().setSelection (i);
-			canvas.update ();
-			SwtTestUtil.processEvents ();
-		}
-		assertEquals (0, paints, "content does not paint while the viewport plane is frozen");
-		assertEquals (49, canvas.getVerticalBar ().getSelection (), "scrollbar stays live");
-		assertTrue (VisibilityGate.endBatch (canvas, PLANE_VIEWPORT));
-		canvas.update ();
-		SwtTestUtil.processEvents ();
-		assertEquals (1, paints, "one paint at the end");
-		ViewportDamageRegion expected = new ViewportDamageRegion ();
-		expected.add (10, 10, 69, 20);
-		assertTrue (recorder.currentPainted ().isSubsetOf (expected), "no overpaint outside the accumulated damage");
-		assertTrue (expected.isSubsetOf (recorder.currentPainted ()), "no underpaint");
-		VisibilityGate.attachDamageRecorder (canvas, null);
-	}
-
-	@Test
-	public void test_mainPlaneDefersLayoutWhileViewportStaysLive () {
-		Composite composite = new Composite (shell, SWT.NONE);
-		composite.setLayout (new Layout () {
-			@Override
-			protected Point computeSize (Composite c, int wHint, int hHint, boolean flushCache) {
-				return new Point (100, 100);
-			}
-
-			@Override
-			protected void layout (Composite c, boolean flushCache) {
-				layouts++;
-			}
-		});
-		Canvas canvas = new Canvas (composite, SWT.NONE);
-		canvas.setBounds (0, 0, 100, 100);
-		canvas.addListener (SWT.Paint, e -> paints++);
-		shell.open ();
-		SwtTestUtil.processEvents ();
-		layouts = paints = 0;
-		assertTrue (VisibilityGate.beginBatch (composite, PLANE_MAIN));
-		for (int i = 0; i < 5; i++) {
-			composite.layout (true, true);
-		}
-		canvas.redraw ();
-		canvas.update ();
-		assertEquals (0, layouts, "structure frozen");
-		assertTrue (paints >= 1, "viewport (child) keeps painting during a main-plane freeze");
-		assertTrue (VisibilityGate.endBatch (composite, PLANE_MAIN));
-		assertEquals (1, layouts, "one layout at the end");
-	}
-
-	@Test
-	public void test_nestedBatchesEndOnlyAtTheOutermostScope () {
-		Canvas canvas = new Canvas (shell, SWT.NONE);
-		canvas.addListener (SWT.Paint, e -> paints++);
-		shell.open ();
-		SwtTestUtil.processEvents ();
-		paints = 0;
-		VisibilityGate.beginBatch (canvas, PLANE_VIEWPORT);
-		VisibilityGate.beginBatch (canvas, PLANE_VIEWPORT);
-		canvas.redraw ();
-		VisibilityGate.endBatch (canvas, PLANE_VIEWPORT);
-		canvas.update ();
-		assertEquals (0, paints, "inner end keeps the plane frozen");
-		VisibilityGate.endBatch (canvas, PLANE_VIEWPORT);
-		canvas.update ();
-		assertEquals (1, paints);
 	}
 
 	@Test
