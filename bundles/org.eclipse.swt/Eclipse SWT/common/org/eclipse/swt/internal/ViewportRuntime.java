@@ -261,6 +261,11 @@ public final class ViewportRuntime {
 			rangeCount = 0;
 		}
 
+		/** Inverts every row in O(1): the represented ranges flip meaning. */
+		public void invert () {
+			allSelected = !allSelected;
+		}
+
 		public int selectedCount () {
 			long represented = 0;
 			for (int i = 0; i < rangeCount; i++) represented += ends [i] - starts [i];
@@ -355,8 +360,7 @@ public final class ViewportRuntime {
 
 		private void addRange (int start, int endExclusive) {
 			if (start >= endExclusive) return;
-			int first = 0;
-			while (first < rangeCount && ends [first] < start) first++;
+			int first = firstEndingAtOrAfter (start);
 			int mergedStart = start, mergedEnd = endExclusive;
 			int last = first;
 			while (last < rangeCount && starts [last] <= mergedEnd) {
@@ -375,28 +379,40 @@ public final class ViewportRuntime {
 
 		private void removeRange (int start, int endExclusive) {
 			if (start >= endExclusive || rangeCount == 0) return;
-			int [] nextStarts = new int [Math.max (4, rangeCount * 2)];
-			int [] nextEnds = new int [nextStarts.length];
-			int nextCount = 0;
-			for (int i = 0; i < rangeCount; i++) {
-				int rangeStart = starts [i], rangeEnd = ends [i];
-				if (rangeEnd <= start || rangeStart >= endExclusive) {
-					nextStarts [nextCount] = rangeStart;
-					nextEnds [nextCount++] = rangeEnd;
-					continue;
-				}
-				if (rangeStart < start) {
-					nextStarts [nextCount] = rangeStart;
-					nextEnds [nextCount++] = start;
-				}
-				if (rangeEnd > endExclusive) {
-					nextStarts [nextCount] = endExclusive;
-					nextEnds [nextCount++] = rangeEnd;
-				}
+			int first = firstEndingAtOrAfter (start + 1);
+			if (first == rangeCount || starts [first] >= endExclusive) return;
+			int last = first;
+			while (last < rangeCount && starts [last] < endExclusive) last++;
+			int leftStart = starts [first];
+			int rightEnd = ends [last - 1];
+			boolean left = leftStart < start;
+			boolean right = rightEnd > endExclusive;
+			int pieces = (left ? 1 : 0) + (right ? 1 : 0);
+			int newCount = rangeCount - (last - first) + pieces;
+			ensureCapacity (newCount);
+			System.arraycopy (starts, last, starts, first + pieces, rangeCount - last);
+			System.arraycopy (ends, last, ends, first + pieces, rangeCount - last);
+			int write = first;
+			if (left) {
+				starts [write] = leftStart;
+				ends [write++] = start;
 			}
-			starts = nextStarts;
-			ends = nextEnds;
-			rangeCount = nextCount;
+			if (right) {
+				starts [write] = endExclusive;
+				ends [write] = rightEnd;
+			}
+			rangeCount = newCount;
+		}
+
+		/** First range whose end is at or after <code>position</code> (ranges are sorted and disjoint). */
+		private int firstEndingAtOrAfter (int position) {
+			int low = 0, high = rangeCount;
+			while (low < high) {
+				int mid = (low + high) >>> 1;
+				if (ends [mid] < position) low = mid + 1;
+				else high = mid;
+			}
+			return low;
 		}
 
 		private boolean contains (int index) {

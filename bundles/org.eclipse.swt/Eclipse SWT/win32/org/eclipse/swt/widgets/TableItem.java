@@ -151,7 +151,7 @@ boolean isCheckedState () {
     if ((parent.style & SWT.VIRTUAL) == 0) {
         return checked;
     }
-	return parent.virtualItems.flagOfIdentity (this, VirtualItemState.CHECKED);
+	return parent.virtualRowBit (this, Table.LANE_CHECKED);
 }
 
 void setCheckedState (boolean value) {
@@ -159,14 +159,14 @@ void setCheckedState (boolean value) {
 		checked = value;
 		return;
 	}
-	parent.virtualItems.flagOfIdentity (this, VirtualItemState.CHECKED, value);
+	parent.virtualRowBit (this, Table.LANE_CHECKED, value);
 }
 
 boolean isGrayedState () {
     if ((parent.style & SWT.VIRTUAL) == 0) {
         return grayed;
     }
-	return parent.virtualItems.flagOfIdentity (this, VirtualItemState.GRAYED);
+	return parent.virtualRowBit (this, Table.LANE_GRAYED);
 }
 
 void setGrayedState (boolean value) {
@@ -174,7 +174,7 @@ void setGrayedState (boolean value) {
 		grayed = value;
 		return;
 	}
-	parent.virtualItems.flagOfIdentity (this, VirtualItemState.GRAYED, value);
+	parent.virtualRowBit (this, Table.LANE_GRAYED, value);
 }
 
 void pinVirtualFacade () {
