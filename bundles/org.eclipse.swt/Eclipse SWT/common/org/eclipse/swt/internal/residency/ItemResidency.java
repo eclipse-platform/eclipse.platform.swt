@@ -327,11 +327,11 @@ public final class ItemResidency {
 		fillingSlot = -1;
 		lanes.set (LANE_DATA_REQUESTED, item, false);
 		lanes.set (LANE_DATA_LOADED, item, true);
-		lanes.set (LANE_DIRTY_DATA, item, false);
 		count (lanes.get (LANE_MATERIALIZED, item) ? STAT_RECREATED : STAT_MATERIALIZED);
 		lanes.set (LANE_MATERIALIZED, item, true);
 		setTier (item, inWindow (item) ? TIER_HOT : TIER_WARM);
-		trim ();
+		// No trim here: a read that triggered this fill must still see the value (transient read at
+		// zero residency); the next allocation, viewport change or pressure sample trims.
 	}
 
 	/** SWT {@code clear(index)}: drops payload (caller-set included) so the next access re-requests. */
@@ -359,7 +359,10 @@ public final class ItemResidency {
 			slots.ref (d - 1, true);
 			return d - 1;
 		}
-		if (d < 0) return swapIn (item, -d - 1);
+		if (d < 0) {
+			paintViolation ();
+			return swapIn (item, -d - 1);
+		}
 		if (source == null || lanes.get (LANE_DATA_REQUESTED, item) || filling >= 0) return -1;
 		paintViolation ();
 		requests.request (this, lanes, source, item, item + 1);
@@ -372,6 +375,7 @@ public final class ItemResidency {
 		checkItem (item);
 		tick ();
 		int d = directory.get (item);
+		if (d <= 0) paintViolation ();
 		int s = d > 0 ? d - 1 : d < 0 ? swapIn (item, -d - 1) : allocate (item);
 		slots.ref (s, true);
 		freeRecord (s);
@@ -723,7 +727,6 @@ public final class ItemResidency {
 	}
 
 	private int allocate (int item) {
-		paintViolation ();
 		while (slots.live >= budget && evictOne ()) {
 			// CLOCK sweep until under budget or nothing evictable
 		}

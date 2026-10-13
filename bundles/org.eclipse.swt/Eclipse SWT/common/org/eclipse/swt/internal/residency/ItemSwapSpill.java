@@ -116,6 +116,11 @@ public final class ItemSwapSpill implements ItemResidency.Spill {
 		liveHandles--;
 	}
 
+	/** Highest swap-file offset written, in bytes. */
+	public long fileBytes () {
+		return store.fileBytes ();
+	}
+
 	@Override
 	public void close () {
 		try {

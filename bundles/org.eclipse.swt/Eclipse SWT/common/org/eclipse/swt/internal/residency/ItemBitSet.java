@@ -343,6 +343,11 @@ public final class ItemBitSet {
 			else if (sizes [c] > RUN_MAX) toBitmap (c);
 			return;
 		}
+		if (kinds [c] == ARRAY && b - a <= 16) {
+			int base = keys [c] << 16;
+			for (int v = a; v < b && c < n && keys [c] == key; v++) set (base | v, on);
+			return;
+		}
 		toBitmap (c);
 		int [] w = data [c];
 		int before = bitCount (w, a, b);
@@ -449,7 +454,10 @@ public final class ItemBitSet {
 			position = next (end, limit);
 		}
 		setRange (from, limit, false);
-		for (int i = 0; i < r; i++) setRange (runs [2 * i] + delta, runs [2 * i + 1] + delta, true);
+		for (int i = 0; i < r; i++) {
+			if (runs [2 * i + 1] - runs [2 * i] == 1) set (runs [2 * i] + delta, true);
+			else setRange (runs [2 * i] + delta, runs [2 * i + 1] + delta, true);
+		}
 	}
 
 	public boolean isEmpty () {

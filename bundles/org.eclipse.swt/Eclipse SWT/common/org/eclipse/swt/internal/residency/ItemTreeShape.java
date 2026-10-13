@@ -288,6 +288,10 @@ public final class ItemTreeShape {
 		return n;
 	}
 
+	public int keyCount () {
+		return keyCount;
+	}
+
 	/** Exception-path nodes kept (memory is O(this)). */
 	public int pathNodes () {
 		return paths.size;

@@ -82,7 +82,7 @@ public class Test_ItemResidencyLanes {
 		assertEquals (6, i (e, "nextSet", selected, 5));
 		call (e, "setRange", selected, 10, 20, true);
 		assertEquals (10, i (e, "countRange", selected, 10, 20), "explicit range cuts the pattern");
-		assertEquals (2, i (e, "countRange", selected, 20, 24));
+		assertEquals (1, i (e, "countRange", selected, 20, 24), "pattern resumes with its phase after the cut: only 21");
 		call (e, "setPattern", checked, 500, 600, 4, 0b0101);
 		assertEquals (50, i (e, "countRange", checked, 0, n));
 		call (e, "insert", 501);
