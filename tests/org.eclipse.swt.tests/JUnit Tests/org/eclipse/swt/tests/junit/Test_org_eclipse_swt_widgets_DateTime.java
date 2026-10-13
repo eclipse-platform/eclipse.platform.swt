@@ -14,6 +14,8 @@
 package org.eclipse.swt.tests.junit;
 
 
+import static org.eclipse.swt.tests.junit.SwtTestUtil.JENKINS_DETECT_ENV_VAR;
+import static org.eclipse.swt.tests.junit.SwtTestUtil.JENKINS_DETECT_REGEX;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -25,10 +27,14 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.DateTime;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Text;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
 
 
 /**
@@ -692,6 +698,34 @@ public void test_consistency_EnterSelection () {
 	setUp(SWT.CALENDAR);
 	consistencyEvent(10, 13, 0, 0, ConsistencyUtility.KEY_PRESS);
 }
+/**
+ * https://github.com/eclipse-platform/eclipse.platform.swt/issues/3411 - TAB must
+ * traverse out of a DATE or TIME DateTime instead of cycling through its fields.
+ */
+@Test
+@DisabledIfEnvironmentVariable(named = JENKINS_DETECT_ENV_VAR, matches = JENKINS_DETECT_REGEX, disabledReason = "Display.post tests don't run reliably on Jenkins - see https://github.com/eclipse-platform/eclipse.platform.swt/issues/2571")
+public void test_traverseTabNext() throws InterruptedException {
+	assumeTrue((style & SWT.CALENDAR) == 0, "DATE and TIME only");
+	shell.setLayout(new FillLayout(SWT.VERTICAL));
+	Text next = new Text(shell, SWT.BORDER);
+	shell.pack();
+	SwtTestUtil.openShell(shell);
+	datetime.setFocus();
+	SwtTestUtil.processEvents(3000, datetime::isFocusControl);
+	assumeTrue(datetime.isFocusControl(), "DateTime could not take focus");
+
+	Display display = shell.getDisplay();
+	Event tab = new Event();
+	tab.type = SWT.KeyDown;
+	tab.keyCode = SWT.TAB;
+	tab.character = SWT.TAB;
+	assertTrue(display.post(tab));
+	tab.type = SWT.KeyUp;
+	assertTrue(display.post(tab));
+	SwtTestUtil.processEvents(3000, next::isFocusControl);
+	assertTrue(next.isFocusControl(), "TAB did not traverse out of the DateTime");
+}
+
 @Test
 public void test_consistency_DragDetect () {
 	consistencyEvent(10, 10, 20, 20, ConsistencyUtility.MOUSE_DRAG);

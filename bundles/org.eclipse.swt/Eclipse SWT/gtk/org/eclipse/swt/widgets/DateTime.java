@@ -2086,6 +2086,10 @@ void setText(String dateTimeText) {
 
 @Override
 boolean gtk4_key_press_event(long controller, int keyval, int keycode, int state, long event) {
+	/* TAB and Shift+TAB traverse out of the receiver, like on the other platforms */
+	if (keyval == GDK.GDK_Tab || keyval == GDK.GDK_ISO_Left_Tab) {
+		return super.gtk4_key_press_event(controller, keyval, keycode, state, event);
+	}
 	if (!isReadOnly() && (isTime() || isDate())) {
 		switch (keyval) {
 		case GDK.GDK_Up:
@@ -2096,7 +2100,6 @@ boolean gtk4_key_press_event(long controller, int keyval, int keycode, int state
 		case GDK.GDK_KP_Down:
 			incrementField(-1);
 			break;
-		case GDK.GDK_Tab:
 		case GDK.GDK_Right:
 		case GDK.GDK_KP_Right:
 			selectField(getNextField(currentField));
@@ -2131,10 +2134,13 @@ boolean gtk4_key_press_event(long controller, int keyval, int keycode, int state
 
 @Override
 long gtk3_key_press_event (long widget, long event) {
+	int [] key = new int[1];
+	GDK.gdk_event_get_keyval(event, key);
+	/* TAB and Shift+TAB traverse out of the receiver, like on the other platforms */
+	if (key[0] == GDK.GDK_Tab || key[0] == GDK.GDK_ISO_Left_Tab) {
+		return super.gtk3_key_press_event (widget, event);
+	}
 	if (!isReadOnly () && (isTime () || isDate ())) {
-		int [] key = new int[1];
-		GDK.gdk_event_get_keyval(event, key);
-
 		switch (key[0]) {
 		case GDK.GDK_Up:
 		case GDK.GDK_KP_Up:
@@ -2146,7 +2152,6 @@ long gtk3_key_press_event (long widget, long event) {
 			incrementField(-1);
 			commitData();
 			break;
-		case GDK.GDK_Tab:
 		case GDK.GDK_Right:
 		case GDK.GDK_KP_Right:
 			selectField(getNextField(currentField));
