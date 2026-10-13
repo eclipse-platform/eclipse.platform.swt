@@ -220,7 +220,7 @@ void destroyScrollBar (int type) {
  */
 public Rectangle getClientArea () {
 	checkWidget ();
-	EffectiveVisibility.flushGeometry (this, false);
+	VisibilityCatchUp.flushGeometry (this, false);
 	return Win32DPIUtils.pixelToPoint(getClientAreaInPixels(), getAutoscalingZoom());
 }
 

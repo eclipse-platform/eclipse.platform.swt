@@ -141,7 +141,7 @@ public class Display extends Device implements Executor {
 	Control [] visChain = new Control [32];
 	final RECT visRect = new RECT (), visClip = new RECT ();
 	final WINDOWPOS visPos = new WINDOWPOS ();
-	final Runnable visSweepRunnable = () -> EffectiveVisibility.sweep (this);
+	final Runnable visSweepRunnable = () -> VisibilityCatchUp.sweep (this);
 	OcclusionTracker occlusionTracker;
 	static int WindowClassCount;
 	static final String WindowName = "SWT_Window"; //$NON-NLS-1$
@@ -3203,10 +3203,10 @@ public Point map (Control from, Control to, Point point) {
 void flushVisibilityGeometry (Control from, Control to) {
 	if (visPendingLayouts > 0) {
 		if (from != null && !from.isDisposed ()) {
-			EffectiveVisibility.flushGeometry (from, true);
+			VisibilityCatchUp.flushGeometry (from, true);
 		}
 		if (to != null && !to.isDisposed ()) {
-			EffectiveVisibility.flushGeometry (to, true);
+			VisibilityCatchUp.flushGeometry (to, true);
 		}
 	}
 }

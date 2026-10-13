@@ -1318,7 +1318,7 @@ int getBorderWidthInPixels () {
  */
 public Rectangle getBounds (){
 	checkWidget ();
-	EffectiveVisibility.flushGeometry (this, false);
+	VisibilityCatchUp.flushGeometry (this, false);
 	return Win32DPIUtils.pixelToPoint(getBoundsInPixels (), computeGetBoundsZoom());
 }
 
@@ -1528,7 +1528,7 @@ public Object getLayoutData () {
  */
 public Point getLocation () {
 	checkWidget ();
-	EffectiveVisibility.flushGeometry (this, false);
+	VisibilityCatchUp.flushGeometry (this, false);
 	//For a location the closest point values is okay
 	return Win32DPIUtils.pixelToPointAsLocation(getLocationInPixels(), computeGetBoundsZoom());
 }
@@ -1686,7 +1686,7 @@ public Shell getShell () {
  */
 public Point getSize (){
 	checkWidget ();
-	EffectiveVisibility.flushGeometry (this, false);
+	VisibilityCatchUp.flushGeometry (this, false);
 	return Win32DPIUtils.pixelToPointAsSize(getSizeInPixels (), computeGetBoundsZoom());
 }
 
@@ -2418,7 +2418,7 @@ public boolean print (GC gc) {
     if (gc.isDisposed()) {
         error(SWT.ERROR_INVALID_ARGUMENT);
     }
-	EffectiveVisibility.flushGeometry (this, true);
+	VisibilityCatchUp.flushGeometry (this, true);
 	long topHandle = topHandle ();
 	long hdc = gc.handle;
 	int state = 0;
@@ -4156,7 +4156,7 @@ public void setRedraw (boolean redraw) {
 				int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
 				OS.RedrawWindow (topHandle, null, 0, flags);
 				if (EffectiveVisibility.ENABLED) {
-					EffectiveVisibility.shown (this);
+					VisibilityCatchUp.shown (this);
 				}
 			}
 		}
@@ -4465,7 +4465,7 @@ public void setVisible (boolean visible) {
             return;
         }
 		if (visible && EffectiveVisibility.ENABLED) {
-			EffectiveVisibility.shown (this);
+			VisibilityCatchUp.shown (this);
             if (isDisposed()) {
                 return;
             }
@@ -4529,7 +4529,7 @@ void subclass () {
  */
 public Point toControl (int x, int y) {
 	checkWidget ();
-	EffectiveVisibility.flushGeometry (this, false);
+	VisibilityCatchUp.flushGeometry (this, false);
 	Point displayPointInPixels = getDisplay().translateToDisplayCoordinates(new Point(x, y));
 	final Point controlPointInPixels = toControlInPixels(displayPointInPixels.x, displayPointInPixels.y);
 	return Win32DPIUtils.pixelToPointAsLocation(controlPointInPixels, getAutoscalingZoom());
@@ -4592,7 +4592,7 @@ public Point toControl (Point point) {
  */
 public Point toDisplay (int x, int y) {
 	checkWidget ();
-	EffectiveVisibility.flushGeometry (this, false);
+	VisibilityCatchUp.flushGeometry (this, false);
 	int zoom = getAutoscalingZoom();
 	Point displayPointInPixels = toDisplayInPixels(DPIUtil.pointToPixel(x, zoom), DPIUtil.pointToPixel(y, zoom));
 	return getDisplay().translateFromDisplayCoordinates(displayPointInPixels);
@@ -5346,6 +5346,9 @@ public boolean setParent (Composite parent) {
         return false;
     }
 	this.parent = parent;
+	if (EffectiveVisibility.ENABLED) {
+		EffectiveVisibility.reparented (this);
+	}
 	// If parent changed, zoom level might need to be adjusted
 	int newZoom = parent.nativeZoom;
 	if (newZoom != nativeZoom) {
@@ -5486,10 +5489,20 @@ long windowProc (long hwnd, int msg, long wParam, long lParam) {
 		case OS.WM_SETFOCUS:			result = WM_SETFOCUS (wParam, lParam); break;
 		case OS.WM_SETFONT:				result = WM_SETFONT (wParam, lParam); break;
 		case OS.WM_SETTINGCHANGE:		result = WM_SETTINGCHANGE (wParam, lParam); break;
-		case OS.WM_SETREDRAW:			result = WM_SETREDRAW (wParam, lParam); break;
+		case OS.WM_SETREDRAW:
+			result = WM_SETREDRAW (wParam, lParam);
+			if (EffectiveVisibility.ENABLED && hwnd == handle) {
+				/* WM_SETREDRAW toggles WS_VISIBLE without a notification: refresh the cache after it ran */
+				long code = result != null ? result.value : callWindowProc (hwnd, msg, wParam, lParam);
+				if (!isDisposed ()) {
+					EffectiveVisibility.visibilityToggled (this, wParam != 0);
+				}
+				return code;
+			}
+			break;
 		case OS.WM_SHOWWINDOW:
-			if (EffectiveVisibility.ENABLED && wParam != 0) {
-				EffectiveVisibility.requestSweep (display);
+			if (EffectiveVisibility.ENABLED && (hwnd == handle || hwnd == topHandle ())) {
+				EffectiveVisibility.visibilityToggled (this, wParam != 0);
 			}
 			result = WM_SHOWWINDOW (wParam, lParam); break;
 		case OS.WM_SIZE:				result = WM_SIZE (wParam, lParam); break;

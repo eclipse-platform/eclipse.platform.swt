@@ -1436,7 +1436,7 @@ public void setVisible (boolean visible) {
                 return;
             }
 			if (EffectiveVisibility.ENABLED) {
-				EffectiveVisibility.shown (this);
+				VisibilityCatchUp.shown (this);
                 if (isDisposed()) {
                     return;
                 }
