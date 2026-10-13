@@ -92,6 +92,26 @@ class StyledTextRenderer {
 	final static boolean MERGE_STYLES = true;
 
 	final static int GROW = 32;
+	/**
+	 * Capacity for a growable array that must hold {@code required} elements of
+	 * {@code elementBytes} bytes each, sampled once per capacity miss: twice the
+	 * current capacity while the heap has headroom (the slack stays under a quarter of
+	 * the free headroom), the exact required length under memory pressure.
+	 * Single switch point for the shared SWT growth helper (PackedHeapGrowth port).
+	 */
+	static int grownCapacity(int current, int required, int elementBytes) {
+		if (required <= current) {
+			return current;
+		}
+		long doubled = Math.max((long) required, 2L * current);
+		Runtime runtime = Runtime.getRuntime();
+		long headroom = runtime.maxMemory() - (runtime.totalMemory() - runtime.freeMemory());
+		long slackBytes = (doubled - required) * elementBytes;
+		if (doubled > Integer.MAX_VALUE - 8 || slackBytes > headroom / 4) {
+			return required;
+		}
+		return (int) doubled;
+	}
 	final static int IDLE_TIME = 50;
 	/**
 	 * Documents with more lines than this keep the logical extent estimated and
@@ -234,9 +254,9 @@ int addMerge(int[] mergeRanges, StyleRange[] mergeStyles, int mergeCount, int mo
 	}
 	int grow = mergeCount - (modifyEnd - modifyStart);
 	if (rangeCount + grow >= ranges.length) {
-		int[] tmpRanges = new int[ranges.length + grow + (GROW << 1)];
+		int[] tmpRanges = new int[grownCapacity(ranges.length, ranges.length + grow + (GROW << 1), 4)];
 		System.arraycopy(ranges, 0, tmpRanges, 0, modifyStart);
-		StyleRange[] tmpStyles = new StyleRange[styles.length + (grow >> 1) + GROW];
+		StyleRange[] tmpStyles = new StyleRange[Math.max(styles.length + (grow >> 1) + GROW, tmpRanges.length >> 1)];
 		System.arraycopy(styles, 0, tmpStyles, 0, modifyStart >> 1);
 		if (rangeCount > modifyEnd) {
 			System.arraycopy(ranges, modifyEnd, tmpRanges, modifyStart + mergeCount, rangeCount - modifyEnd);
@@ -285,7 +305,7 @@ int addMerge(StyleRange[] mergeStyles, int mergeCount, int modifyStart, int modi
         endStyle = styles[modifyEnd];
     }
 	if (styleCount + grow >= styles.length) {
-		StyleRange[] tmpStyles = new StyleRange[styles.length + grow + GROW];
+		StyleRange[] tmpStyles = new StyleRange[grownCapacity(styles.length, styles.length + grow + GROW, 4)];
 		System.arraycopy(styles, 0, tmpStyles, 0, modifyStart);
 		if (styleCount > modifyEnd) {
 			System.arraycopy(styles, modifyEnd, tmpStyles, modifyStart + mergeCount, styleCount - modifyEnd);
@@ -558,7 +578,8 @@ private LineDrawInfo makeLineDrawInfo(int lineIndex) {
 }
 
 int drawLines(int startLine, int endLine, int begX, int begY, int endY, GC gc, Color widgetBackground, Color widgetForeground) {
-	final int[] selectionRanges = styledText.getBlockSelection() ? null : styledText.getSelectionRanges();
+	//FLLDCIM: RETAINED - the selection plane reads the widget's packed {start, end} pairs; no copy per paint
+	final int[] selectionRanges = styledText.getBlockSelection() ? null : styledText.selection;
 	// When fixed line metrics is in effect, tall unicode characters
 	// will not always fit line's height. In this case, they will
 	// draw out of line's bounds. To prevent them from being clipped
@@ -615,7 +636,7 @@ int drawLines(int startLine, int endLine, int begX, int begY, int endY, GC gc, C
 }
 
 private void drawLineBackground(LineDrawInfo lineInfo, int paintY, GC gc, Color widgetBackground) {
-	Rectangle client = styledText.getClientArea();
+	int clientWidth = styledText.clientAreaWidth; // the client area starts at 0; no Rectangle per line
 	Color lineBackground = getLineBackground(lineInfo.index, null);
 	StyledTextEvent event = styledText.getLineBackgroundData(lineInfo.offset, lineInfo.text);
     if (event != null && event.lineBackground != null) {
@@ -626,38 +647,47 @@ private void drawLineBackground(LineDrawInfo lineInfo, int paintY, GC gc, Color 
 	if (lineBackground != null) {
 		if (verticalIndent > 0) {
 			gc.setBackground(widgetBackground);
-			gc.fillRectangle(client.x, paintY, client.width, verticalIndent);
+			gc.fillRectangle(0, paintY, clientWidth, verticalIndent);
 		}
 		gc.setBackground(lineBackground);
-		gc.fillRectangle(client.x, paintY + verticalIndent, client.width, lineInfo.height - verticalIndent);
+		gc.fillRectangle(0, paintY + verticalIndent, clientWidth, lineInfo.height - verticalIndent);
 	} else {
 		gc.setBackground(widgetBackground);
-		styledText.drawBackground(gc, client.x, paintY, client.width, lineInfo.height);
+		styledText.drawBackground(gc, 0, paintY, clientWidth, lineInfo.height);
 	}
 }
 
 private void drawLineForeground(LineDrawInfo lineInfo, int paintX, int paintY, GC gc, Color widgetForeground, int[] selectionRanges) {
 	int lineLength = lineInfo.text.length();
 	gc.setForeground(widgetForeground);
-	// selectionRanges are null for block selection
+	// selectionRanges are null for block selection; otherwise packed {start, end} pairs, sorted
 	if (selectionRanges != null) {
-		Point[] selection = intersectingRelativeNonEmptySelections(lineInfo.offset, lineInfo.offset + lineLength, selectionRanges);
-		if (selection.length == 0) {
-			lineInfo.layout.draw(gc, paintX, paintY);
-		} else {
-			Color selectionFg = styledText.getSelectionForeground();
-			Color selectionBg = styledText.getSelectionBackground();
-			final int baseFlags = (styledText.getStyle() & SWT.FULL_SELECTION) != 0 ? SWT.FULL_SELECTION : SWT.DELIMITER_SELECTION;
-			for (Point relativeSelection : selection) {
-				int start = Math.max(0, relativeSelection.x);
-				int end = Math.min(lineLength, relativeSelection.y);
-				int flags = baseFlags;
-				if (relativeSelection.x <= lineLength && lineLength < relativeSelection.y ) {
-					flags |= SWT.LAST_LINE_SELECTION;
-				}
-				// TODO calling draw multiple times here prints line multiple times, overriding some colors
-				lineInfo.layout.draw(gc, paintX, paintY, start, end - 1, selectionFg, selectionBg, flags);
+		boolean selected = false;
+		Color selectionFg = null, selectionBg = null;
+		int baseFlags = 0;
+		for (int i = 0; i < selectionRanges.length; i += 2) {
+			int x = selectionRanges[i] - lineInfo.offset;
+			int y = selectionRanges[i + 1] - lineInfo.offset;
+			if (x == y || x > lineLength || y < 0) {
+				continue; // empty, or not on this line
 			}
+			if (!selected) {
+				selected = true;
+				selectionFg = styledText.getSelectionForeground();
+				selectionBg = styledText.getSelectionBackground();
+				baseFlags = (styledText.getStyle() & SWT.FULL_SELECTION) != 0 ? SWT.FULL_SELECTION : SWT.DELIMITER_SELECTION;
+			}
+			int start = Math.max(0, x);
+			int end = Math.min(lineLength, y);
+			int flags = baseFlags;
+			if (x <= lineLength && lineLength < y) {
+				flags |= SWT.LAST_LINE_SELECTION;
+			}
+			// TODO calling draw multiple times here prints line multiple times, overriding some colors
+			lineInfo.layout.draw(gc, paintX, paintY, start, end - 1, selectionFg, selectionBg, flags);
+		}
+		if (!selected) {
+			lineInfo.layout.draw(gc, paintX, paintY);
 		}
 	} else {
 		lineInfo.layout.draw(gc, paintX, paintY);
@@ -713,19 +743,6 @@ private void drawLineForeground(LineDrawInfo lineInfo, int paintX, int paintY, G
 	}
 }
 
-private Point[] intersectingRelativeNonEmptySelections(int fromOffset, int toOffset, int[] selectionRanges) {
-	int lineLength = toOffset - fromOffset;
-	List<Point> res = new ArrayList<>();
-	for (int i = 0; i < selectionRanges.length; i += 2) {
-		// ranges are assumed to be sorted by start offset, then (positive) length or higher end offset
-		final int x = selectionRanges[i] - fromOffset;
-		final int y = selectionRanges[i] + selectionRanges[i + 1] - fromOffset;
-		if (x != y && x <= lineLength  && y >= 0) {
-			res.add(new Point(x, y));
-		}
-	}
-	return res.toArray(new Point[res.size()]);
-}
 
 int getBaseline() {
 	return ascent;
@@ -2233,13 +2250,13 @@ void textChanging(TextChangingEvent event) {
 		}
 		int delta = newLineCount - replaceLineCount;
 		if (lineCount + delta > lineSizes.length) {
-			LineSizeInfo[] newLineSizes = new LineSizeInfo[lineCount + delta + GROW];
+			LineSizeInfo[] newLineSizes = new LineSizeInfo[grownCapacity(lineSizes.length, lineCount + delta + GROW, 4)];
 			System.arraycopy(lineSizes, 0, newLineSizes, 0, lineCount);
 			lineSizes = newLineSizes;
 		}
 		if (lines != null) {
 			if (lineCount + delta > lines.length) {
-				LineInfo[] newLines = new LineInfo[lineCount + delta + GROW];
+				LineInfo[] newLines = new LineInfo[grownCapacity(lines.length, lineCount + delta + GROW, 4)];
 				System.arraycopy(lines, 0, newLines, 0, lineCount);
 				lines = newLines;
 			}
@@ -2404,10 +2421,10 @@ void updateRanges(int start, int replaceCharCount, int newCharCount) {
 				modifyEnd += 2;
 			} else {
 				if (rangeCount + 2 > ranges.length) {
-					int[] newRanges = new int[ranges.length + (GROW << 1)];
+					int[] newRanges = new int[grownCapacity(ranges.length, ranges.length + (GROW << 1), 4)];
 					System.arraycopy(ranges, 0, newRanges, 0, rangeCount);
 					ranges = newRanges;
-					StyleRange[] newStyles = new StyleRange[styles.length + GROW];
+					StyleRange[] newStyles = new StyleRange[Math.max(styles.length + GROW, ranges.length >> 1)];
 					System.arraycopy(styles, 0, newStyles, 0, styleCount);
 					styles = newStyles;
 				}
@@ -2458,7 +2475,7 @@ void updateRanges(int start, int replaceCharCount, int newCharCount) {
 				modifyEnd++;
 			} else {
 				if (styleCount + 1 > styles.length) {
-					StyleRange[] newStyles = new StyleRange[styles.length + GROW];
+					StyleRange[] newStyles = new StyleRange[grownCapacity(styles.length, styles.length + GROW, 4)];
 					System.arraycopy(styles, 0, newStyles, 0, styleCount);
 					styles = newStyles;
 				}

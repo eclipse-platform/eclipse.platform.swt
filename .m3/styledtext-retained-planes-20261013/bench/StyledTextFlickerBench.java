@@ -32,7 +32,9 @@ import org.eclipse.swt.widgets.Shell;
  * <li>margin frames: a pixel of the four margin bands differs from the margin colour;</li>
  * <li>border frames: a pixel of the border ring differs from the first frame's ring;</li>
  * <li>scroll-bar-edge frames: a pixel of the text column next to the vertical bar differs from the
- * margin colour (the right margin band touches the bar).</li>
+ * margin colour (the right margin band touches the bar);</li>
+ * <li>blit mismatch frames: the text area on screen after the frame differs from a full repaint of
+ * the same state (the scroll copy plus exposed strip must equal painting everything).</li>
  * </ul>
  * Usage: {@code StyledTextFlickerBench <frames> <reportTsv> <label>}. The target is zero for each.
  */
@@ -55,13 +57,14 @@ public final class StyledTextFlickerBench {
 		}
 		text.setText(b.toString());
 		text.setLineBackground(3, 50, display.getSystemColor(SWT.COLOR_INFO_BACKGROUND));
+		text.setCaret(null); // the platform caret blinks: keep it out of the pixel comparisons
 		shell.setBounds(30, 30, 820, 640);
 		shell.open();
 		shell.setActive();
 		settle(display);
 		StringBuilder out = new StringBuilder();
 		if (!Files.exists(report)) {
-			out.append("label\tzoom\tscenario\tframes\tmargin_frames\tborder_frames\tscrollbar_edge_frames\n");
+			out.append("label\tzoom\tscenario\tframes\tmargin_frames\tborder_frames\tscrollbar_edge_frames\tblit_mismatch_frames\n");
 		}
 		int lineHeight = text.getLineHeight();
 		out.append(storm(label, zoom, "scroll-storm", frames, display, text, margin, i -> text.setTopPixel(text.getTopPixel() + ((i & 1) == 0 ? 1 : 2) * lineHeight)));
@@ -79,7 +82,7 @@ public final class StyledTextFlickerBench {
 	}
 
 	static String storm(String label, String zoom, String scenario, int frames, Display display, StyledText text, Color margin, Frame frame) {
-		int marginFrames = 0, borderFrames = 0, edgeFrames = 0;
+		int marginFrames = 0, borderFrames = 0, edgeFrames = 0, blitFrames = 0;
 		int[] ring = null;
 		for (int i = 0; i < frames; i++) {
 			frame.run(i);
@@ -92,6 +95,13 @@ public final class StyledTextFlickerBench {
 			if (r[2] != 0) {
 				edgeFrames++;
 			}
+			ImageData shown = client(display, text);
+			text.redraw();
+			text.update();
+			settle(display);
+			if (!java.util.Arrays.equals(shown.data, client(display, text).data)) {
+				blitFrames++;
+			}
 			int[] currentRing = ring(display, text);
 			if (ring == null) {
 				ring = currentRing;
@@ -100,8 +110,11 @@ public final class StyledTextFlickerBench {
 				ring = currentRing; // count changes frame to frame (a resize may legitimately move the ring)
 			}
 		}
+		if (scenario.startsWith("resize")) {
+			borderFrames = -1; // the ring moves with the size: not comparable frame to frame
+		}
 		return String.join("\t", label, zoom, scenario, Integer.toString(frames), Integer.toString(marginFrames), Integer.toString(borderFrames),
-				Integer.toString(edgeFrames)) + "\n";
+				Integer.toString(edgeFrames), Integer.toString(blitFrames)) + "\n";
 	}
 
 	/** {margin pixels off colour, unused, scroll-bar-edge pixels off colour}, in device pixels of the screen. */
@@ -112,12 +125,12 @@ public final class StyledTextFlickerBench {
 		double scale = data.width / (double) Math.max(1, client.width);
 		int left = (int) Math.floor(text.getLeftMargin() * scale), right = (int) Math.floor(text.getRightMargin() * scale);
 		int top = (int) Math.floor(text.getTopMargin() * scale), bottom = (int) Math.floor(text.getBottomMargin() * scale);
-		int expected = data.palette.getPixel(margin.getRGB());
+		org.eclipse.swt.graphics.RGB expected = margin.getRGB();
 		int off = 0, edge = 0;
 		for (int y = 0; y < data.height; y++) {
 			for (int x = 0; x < data.width; x++) {
 				boolean inMargin = x < left || x >= data.width - right || y < top || y >= data.height - bottom;
-				if (inMargin && data.getPixel(x, y) != expected) {
+				if (inMargin && !data.palette.getRGB(data.getPixel(x, y)).equals(expected)) {
 					off++;
 					if (x >= data.width - right) {
 						edge++;
@@ -126,6 +139,12 @@ public final class StyledTextFlickerBench {
 			}
 		}
 		return new int[] { off, 0, edge };
+	}
+
+	static ImageData client(Display display, StyledText text) {
+		Rectangle client = text.getClientArea();
+		Point origin = text.toDisplay(0, 0);
+		return capture(display, origin.x, origin.y, client.width, client.height);
 	}
 
 	/** The border ring: the trim pixels between the widget bounds and its client area. */
@@ -147,7 +166,8 @@ public final class StyledTextFlickerBench {
 		GC gc = new GC(display);
 		try {
 			gc.copyArea(image, x, y);
-			return image.getImageData();
+			// device pixels at the zoom in effect (getImageData() would rescale to 100% and blend edges)
+			return image.getImageData(Integer.parseInt(System.getProperty("swt.autoScale", "100")));
 		} finally {
 			gc.dispose();
 			image.dispose();
