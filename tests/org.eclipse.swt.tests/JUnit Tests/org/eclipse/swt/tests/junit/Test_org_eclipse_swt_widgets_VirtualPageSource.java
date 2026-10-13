@@ -39,7 +39,9 @@ public class Test_org_eclipse_swt_widgets_VirtualPageSource {
 		display = Display.getDefault ();
 		shell = new Shell (display);
 		shell.setLayout (new FillLayout ());
-		shell.setSize (520, 420);
+		shell.setBounds (300, 200, 520, 420);
+		/* Keep the pointer off the shell so hot-tracking never differs between pixel captures. */
+		display.setCursorLocation (2, 2);
 	}
 
 	@AfterEach
@@ -132,6 +134,34 @@ public class Test_org_eclipse_swt_widgets_VirtualPageSource {
 		Field pinned = Class.forName ("org.eclipse.swt.widgets.VirtualItemState").getDeclaredField ("PINNED");
 		pinned.setAccessible (true);
 		flag.invoke (storage, item, pinned.getLong (null), false);
+	}
+
+	private static ImageData capture (Control control) {
+		Point size = control.getSize ();
+		Image image = new Image (control.getDisplay (), size.x, size.y);
+		GC gc = new GC (image);
+		try {
+			control.print (gc);
+		} finally {
+			gc.dispose ();
+		}
+		ImageData data = image.getImageData ();
+		image.dispose ();
+		return data;
+	}
+
+	/** Differing scanline span of two captures, for failure messages. */
+	private static String diffSpan (ImageData a, ImageData b) {
+		if (a.width != b.width || a.height != b.height) return "size differs";
+		int first = -1, last = -1;
+		for (int y = 0; y < a.height; y++) {
+			int offset = y * a.bytesPerLine;
+			if (!Arrays.equals (a.data, offset, offset + a.bytesPerLine, b.data, offset, offset + b.bytesPerLine)) {
+				if (first < 0) first = y;
+				last = y;
+			}
+		}
+		return first < 0 ? "identical" : "rows y=" + first + ".." + last;
 	}
 
 	private static String pixelHash (Control control) throws Exception {
@@ -230,6 +260,7 @@ public class Test_org_eclipse_swt_widgets_VirtualPageSource {
 		unpin (lazy, probe);
 		unpin (lazy, lazy.getItem (46));
 		String checkedHash = pixelHash (lazy);
+		ImageData checkedImage = capture (lazy);
 		assertNotEquals (before, checkedHash, "check marks are drawn");
 		for (int top = 1_000; top < 600_000; top += 97_000) {
 			lazy.setTopIndex (top);
@@ -240,7 +271,9 @@ public class Test_org_eclipse_swt_widgets_VirtualPageSource {
 		assertTrue (probe.isDisposed (), "unpinned facade released after it scrolled out");
 		lazy.setTopIndex (40);
 		drain (source);
-		assertEquals (checkedHash, pixelHash (lazy), "pixels identical after release and re-creation");
+		ImageData again = capture (lazy);
+		assertEquals (checkedHash, pixelHash (lazy), "pixels identical after release and re-creation: " + diffSpan (checkedImage, again)
+				+ " itemHeight=" + lazy.getItemHeight () + " header=" + lazy.getHeaderHeight () + " top=" + lazy.getTopIndex ());
 		assertTrue (lazy.getItem (45).getChecked ());
 		assertTrue (lazy.getItem (46).getGrayed ());
 		assertTrue (lazy.getItem (46).getChecked ());

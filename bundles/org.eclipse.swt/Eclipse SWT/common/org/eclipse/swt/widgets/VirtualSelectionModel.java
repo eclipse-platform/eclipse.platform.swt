@@ -39,9 +39,13 @@ final class VirtualSelectionModel {
 	private int runCount = -1;
 	private int switches;
 
-	/** Run count above which scattered selections are kept as a bitset (8 bytes/run vs 1 bit/row). */
+	/**
+	 * Run count above which scattered selections are kept as a bitset: the bitset may cost at most
+	 * four times the range form (8 bytes per run against one bit per row), and never fewer than
+	 * {@link #MIN_BITS_RUNS} runs. Measured cut-over: Test_VirtualBitLanes#test_selection10MillionRowsTimingsAndCutover.
+	 */
 	static int bitsCutover (int logicalCount) {
-		return Math.max (MIN_BITS_RUNS, logicalCount >>> 6);
+		return Math.max (MIN_BITS_RUNS, logicalCount >>> 8);
 	}
 
 	boolean bitsMode () {
@@ -112,7 +116,7 @@ final class VirtualSelectionModel {
 		maybeToRanges (endExclusive - start);
 	}
 
-	/** Inverts every row: O(1) in the range form (complement), word-wise in the bitset form. */
+	/** Inverts every row: O(1) in the range form (complement flag), word-wise in the bitset form. */
 	void invert () {
 		int count = logicalCount ();
 		if (bits != null) {
@@ -121,25 +125,7 @@ final class VirtualSelectionModel {
 			runCount = -1;
 			return;
 		}
-		ViewportRuntime.Selection inverted = new ViewportRuntime.Selection ();
-		inverted.setLogicalCount (count);
-		boolean complement = selection.complementMode ();
-		int ranges = selection.rangeCount ();
-		if (complement) {
-			for (int r = 0; r < ranges; r++) inverted.selectRange (selection.rangeStart (r), selection.rangeEndExclusive (r));
-		} else {
-			inverted.selectAll ();
-			for (int r = 0; r < ranges; r++) inverted.deselectRange (selection.rangeStart (r), selection.rangeEndExclusive (r));
-		}
-		selection.clear ();
-		selection.setLogicalCount (0);
-		selection.setLogicalCount (count);
-		if (inverted.complementMode ()) {
-			selection.selectAll ();
-			for (int r = 0; r < inverted.rangeCount (); r++) selection.deselectRange (inverted.rangeStart (r), inverted.rangeEndExclusive (r));
-		} else {
-			for (int r = 0; r < inverted.rangeCount (); r++) selection.selectRange (inverted.rangeStart (r), inverted.rangeEndExclusive (r));
-		}
+		selection.invert ();
 	}
 
 	void clear () {

@@ -547,6 +547,7 @@ void discardVirtualNativeSubtree (long hItem) {
 	boolean oldIgnoreShrink = ignoreShrink;
 	ignoreShrink = true;
 	try {
+		pageCursorParent = PAGE_NO_CURSOR;
 		OS.SendMessage (handle, OS.TVM_DELETEITEM, 0, hItem);
 	} finally {
 		ignoreShrink = oldIgnoreShrink;
@@ -626,8 +627,143 @@ VirtualPageHost pageSourceHost () {
 			if (!(parent instanceof TreeItem item) || item.isDisposed ()) return;
 			virtualFlag (item, VirtualItemState.CHILDREN_LOADING, loading);
 			if (!loading) virtualFlag (item, VirtualItemState.CHILDREN_KNOWN, true);
+			pageAutoExpander (item);
 		}
 	};
+}
+
+/* Sibling cursor of the facade-free paint path: consecutive rows resolve their index in O(1). */
+static final long PAGE_NO_CURSOR = Long.MIN_VALUE;
+long pageCursorParent = PAGE_NO_CURSOR, pageCursorItem;
+int pageCursorIndex;
+/* Native rows that need an expander (cChildren = 1), applied after the paint, once per frame. */
+long [] pageExpanders = new long [8];
+int pageExpanderCount;
+boolean pageExpandersScheduled;
+TVITEM pageTvItem;
+/** Facade-free answers given in paint callbacks (proof counter). */
+int pagePaintAnswers;
+static final int TVIF_CHILDREN = 0x40;
+static final int I_CHILDRENAUTO = -2;
+
+boolean pagePaintNeedsFacade () {
+	return hooks (SWT.MeasureItem) || hooks (SWT.EraseItem) || hooks (SWT.PaintItem);
+}
+
+int pageChildIndex (long hParent, long hItem) {
+	if (hParent == pageCursorParent) {
+		if (hItem == pageCursorItem) return pageCursorIndex;
+		if (OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PREVIOUS, hItem) == pageCursorItem) {
+			pageCursorItem = hItem;
+			return ++pageCursorIndex;
+		}
+		if (OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem) == pageCursorItem) {
+			pageCursorItem = hItem;
+			return --pageCursorIndex;
+		}
+	}
+	int index = nativeChildIndex (hParent == 0 ? OS.TVI_ROOT : hParent, hItem);
+	if (index >= 0) {
+		pageCursorParent = hParent;
+		pageCursorItem = hItem;
+		pageCursorIndex = index;
+	}
+	return index;
+}
+
+/**
+ * Answers TVN_GETDISPINFO for a row without a facade from the block store, as the facade
+ * would: text, no image; an expandable row gets its native expander after the paint. Returns
+ * false when the parent has no facade or a paint listener needs one, so the classic path runs.
+ */
+boolean answerPageNode (NMTVDISPINFO lptvdi, long lParam) {
+	if (pagePaintNeedsFacade ()) return false;
+	long hItem = lptvdi.hItem;
+	long hParent = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, hItem);
+	TreeItem parent = null;
+	if (hParent != 0) {
+		if (pageTvItem == null) pageTvItem = new TVITEM ();
+		TVITEM tvItem = pageTvItem;
+		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
+		tvItem.hItem = hParent;
+		if (OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem) == 0) return false;
+		int parentId = (int)tvItem.lParam;
+		if (parentId < 0 || parentId >= items.length || items [parentId] == null) return false;
+		parent = items [parentId];
+	}
+	int index = pageChildIndex (hParent, hItem);
+	if (index < 0) return false;
+	int column = hwndHeader != 0 ? getFirstColumnIndex () : 0;
+	pageSource.paintRequest = true;
+	String string;
+	boolean expandable;
+	try {
+		string = pageSource.treePaintText (parent, index, column);
+		expandable = string != null && pageSource.treePaintExpandable (parent, index);
+	} finally {
+		pageSource.paintRequest = false;
+	}
+	pagePaintAnswers++;
+	if (string == null) string = pageSource.placeholder ();
+	if ((lptvdi.mask & OS.TVIF_TEXT) != 0 && lptvdi.cchTextMax > 0) {
+		int length = Math.min (string.length () + 1, lptvdi.cchTextMax);
+		char [] buffer = display.tableBuffer;
+		if (buffer == null || buffer.length < length) buffer = display.tableBuffer = new char [Math.max (length, 260)];
+		string.getChars (0, length - 1, buffer, 0);
+		buffer [length - 1] = 0;
+		OS.MoveMemory (lptvdi.pszText, buffer, length * TCHAR.sizeof);
+		lptvdi.cchTextMax = length;
+	}
+	if ((lptvdi.mask & (OS.TVIF_IMAGE | OS.TVIF_SELECTEDIMAGE)) != 0) {
+		lptvdi.iImage = lptvdi.iSelectedImage = OS.I_IMAGENONE;
+	}
+	OS.MoveMemory (lParam, lptvdi, NMTVDISPINFO.sizeof);
+	if (expandable && OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hItem) == 0) queuePageExpander (hItem);
+	return true;
+}
+
+void queuePageExpander (long hItem) {
+	for (int i = 0; i < pageExpanderCount; i++) {
+		if (pageExpanders [i] == hItem) return;
+	}
+	if (pageExpanderCount == pageExpanders.length) {
+		long [] grown = new long [pageExpanders.length * 2];
+		System.arraycopy (pageExpanders, 0, grown, 0, pageExpanderCount);
+		pageExpanders = grown;
+	}
+	pageExpanders [pageExpanderCount++] = hItem;
+	if (pageExpandersScheduled) return;
+	pageExpandersScheduled = true;
+	display.asyncExec (this::applyPageExpanders);
+}
+
+/* After the paint: give each queued expandable row a native expander without inserting children. */
+void applyPageExpanders () {
+	pageExpandersScheduled = false;
+	if (isDisposed ()) return;
+	if (pageTvItem == null) pageTvItem = new TVITEM ();
+	TVITEM tvItem = pageTvItem;
+	for (int i = 0; i < pageExpanderCount; i++) {
+		long hItem = pageExpanders [i];
+		tvItem.mask = OS.TVIF_HANDLE | TVIF_CHILDREN;
+		tvItem.hItem = hItem;
+		if (OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem) == 0 || tvItem.cChildren != 0) continue;
+		if (OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hItem) != 0) continue;
+		tvItem.mask = OS.TVIF_HANDLE | TVIF_CHILDREN;
+		tvItem.cChildren = 1;
+		OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+	}
+	pageExpanderCount = 0;
+}
+
+/* Back to automatic expanders once a node's native children exist. */
+void pageAutoExpander (TreeItem item) {
+	if (pageTvItem == null) pageTvItem = new TVITEM ();
+	TVITEM tvItem = pageTvItem;
+	tvItem.mask = OS.TVIF_HANDLE | TVIF_CHILDREN;
+	tvItem.hItem = item.handle;
+	tvItem.cChildren = I_CHILDRENAUTO;
+	OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
 }
 
 boolean answerLoadingPlaceholder (NMTVDISPINFO lptvdi, long lParam) {
@@ -2923,6 +3059,7 @@ void createItem (TreeItem item, long hParent, long hInsertAfter, long hItem) {
 			tvInsert.stateMask = OS.TVIS_STATEIMAGEMASK;
 		}
 		ignoreCustomDraw = true;
+		pageCursorParent = PAGE_NO_CURSOR;
 		hNewItem = OS.SendMessage (handle, OS.TVM_INSERTITEM, 0, tvInsert);
 		ignoreCustomDraw = false;
         if (hNewItem == 0) {
@@ -3514,6 +3651,7 @@ void destroyItem (TreeItem item, long hItem) {
     }
 
 	shrink = ignoreShrink = true;
+	pageCursorParent = PAGE_NO_CURSOR;
 	OS.SendMessage (handle, OS.TVM_DELETEITEM, 0, hItem);
 	ignoreShrink = false;
 	if (virtualTopology != null && topologyId >= 0 && virtualTopology.contains (topologyId)) {
@@ -5084,6 +5222,7 @@ public void removeAll () {
         OS.DefWindowProc(handle, OS.WM_SETREDRAW, 0, 0);
     }
 	shrink = ignoreShrink = true;
+	pageCursorParent = PAGE_NO_CURSOR;
 	long result = OS.SendMessage (handle, OS.TVM_DELETEITEM, 0, OS.TVI_ROOT);
 	ignoreShrink = false;
 	if (redraw) {
@@ -6066,6 +6205,7 @@ public void setRedraw (boolean redraw) {
 		if (count == 0) {
 			TVINSERTSTRUCT tvInsert = new TVINSERTSTRUCT ();
 			tvInsert.hInsertAfter = OS.TVI_FIRST;
+			pageCursorParent = PAGE_NO_CURSOR;
 			hItem = OS.SendMessage (handle, OS.TVM_INSERTITEM, 0, tvInsert);
 		}
 		OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
@@ -6080,6 +6220,7 @@ public void setRedraw (boolean redraw) {
 	}
 	if (hItem != 0) {
 		ignoreShrink = true;
+		pageCursorParent = PAGE_NO_CURSOR;
 		OS.SendMessage (handle, OS.TVM_DELETEITEM, 0, hItem);
 		ignoreShrink = false;
 	}
@@ -6747,6 +6888,7 @@ void sort (long hParent, boolean all) {
 	cachedFirstItem = cachedIndexItem = 0;
 	itemCount = -1;
 	if (sortDirection == SWT.UP || sortDirection == SWT.NONE) {
+		pageCursorParent = PAGE_NO_CURSOR;
 		OS.SendMessage (handle, OS.TVM_SORTCHILDREN, all ? 1 : 0, hParent);
 	} else {
 		Callback compareCallback = new Callback (this, "CompareFunc", 3);
@@ -6755,6 +6897,7 @@ void sort (long hParent, boolean all) {
 		psort.hParent = hParent;
 		psort.lpfnCompare = lpfnCompare;
 		psort.lParam = sortColumn == null ? 0 : indexOf (sortColumn);
+		pageCursorParent = PAGE_NO_CURSOR;
 		OS.SendMessage (handle, OS.TVM_SORTCHILDRENCB, all ? 1 : 0, psort);
 		compareCallback.dispose ();
 	}
@@ -8822,6 +8965,10 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 				}
 			}
 			if (pageSource != null && id == -1 && answerLoadingPlaceholder (lptvdi, lParam)) {
+				break;
+			}
+			/* A page-source row without a facade is answered from the parent's state and the block store. */
+			if (pageSource != null && id == -1 && !ignoreShrink && answerPageNode (lptvdi, lParam)) {
 				break;
 			}
 			TreeItem item = _getItem (lptvdi.hItem, id);

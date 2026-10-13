@@ -482,6 +482,57 @@ public final class VirtualPageSource {
 		return placeholderText;
 	}
 
+	/**
+	 * Text of a tree row for a paint callback without a facade: the loaded text, or null after
+	 * wanting its block (or its parent's key).
+	 */
+	String treePaintText (TreeItem parent, int index, int column) {
+		int parentKey = parent == null ? ROOT : keyOf (parent);
+		if (parentKey == NO_KEY || index < 0) return null;
+		int slot = cache.find (parentKey, index / blockSize);
+		if (slot < 0 || cache.state (slot) != VirtualBlockStore.LOADED) {
+			want (parentKey, index / blockSize, false);
+			return null;
+		}
+		cache.touch (slot);
+		if (column < 0 || column >= cache.columns ()) return "";
+		String text = cache.text (slot, index - cache.firstRow (slot), column);
+		return text == null ? "" : text;
+	}
+
+	/** Whether a loaded tree row has children (known or UNKNOWN). */
+	boolean treePaintExpandable (TreeItem parent, int index) {
+		int parentKey = parent == null ? ROOT : keyOf (parent);
+		if (parentKey == NO_KEY || index < 0) return false;
+		int slot = cache.find (parentKey, index / blockSize);
+		return slot >= 0 && cache.state (slot) == VirtualBlockStore.LOADED && cache.childHint (slot, index - cache.firstRow (slot)) != 0;
+	}
+
+	/** Text of a top-level row if its block is loaded, else null; never requests anything. */
+	String rowText (int index, int column) {
+		if (index < 0 || column < 0 || column >= cache.columns ()) return null;
+		int slot = cache.find (ROOT, index / blockSize);
+		if (slot < 0 || cache.state (slot) != VirtualBlockStore.LOADED) return null;
+		return cache.text (slot, index - cache.firstRow (slot), column);
+	}
+
+	/**
+	 * Text of a top-level row for a paint callback without a facade: the loaded text (an empty
+	 * cell reads as ""), or null after asking the next frame to plan the window.
+	 */
+	String paintText (int index, int column) {
+		if (index < 0) return null;
+		int slot = cache.find (ROOT, index / blockSize);
+		if (slot < 0 || cache.state (slot) != VirtualBlockStore.LOADED) {
+			scheduleFrame ();
+			return null;
+		}
+		cache.touch (slot);
+		if (column < 0 || column >= cache.columns ()) return "";
+		String text = cache.text (slot, index - cache.firstRow (slot), column);
+		return text == null ? "" : text;
+	}
+
 	private void handleEvent (Event event) {
 		switch (event.type) {
 			case SWT.SetData:
@@ -578,10 +629,21 @@ public final class VirtualPageSource {
 	/* ---------------------------------------------------------------- tree */
 
 	private void expand (TreeItem item) {
+		/*
+		 * A row painted without a facade has only its native expander; reading the count fills
+		 * the new facade through SetData, which inserts the known children or the one
+		 * placeholder child of an UNKNOWN node, as the classic listener would.
+		 */
+		item.getItemCount ();
+		if (item.isDisposed ()) return;
 		int key = keyOf (item);
 		if (key == NO_KEY) return;
 		int node = nodeIndex (item);
-		if (node < 0 || nodeHints [node] != UNKNOWN) return;
+		if (node < 0) return;
+		if (nodeHints [node] != UNKNOWN) {
+			if (hook != null) hook.pageSourceChildrenLoading (item, false);
+			return;
+		}
 		int slot = cache.find (key, 0);
 		if (slot >= 0 && cache.state (slot) == VirtualBlockStore.LOADED && cache.total (slot) >= 0) {
 			applyTotal (node, cache.total (slot));

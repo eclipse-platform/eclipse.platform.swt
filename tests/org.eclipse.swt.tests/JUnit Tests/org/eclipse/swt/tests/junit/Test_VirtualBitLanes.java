@@ -257,6 +257,13 @@ public class Test_VirtualBitLanes {
 			call (model, "setLogicalCount", n);
 			boolean [] oracle = new boolean [n];
 			boolean sawBits = false;
+			/* Scatter first: every third row, more runs than the cut-over, so the bitset form is entered. */
+			for (int i = 0; i < n; i += 3) {
+				call (model, "setSelected", i, true);
+				oracle [i] = true;
+			}
+			sawBits = (boolean) call (model, "bitsMode");
+			assertSelectionSame (oracle, model);
 			for (int op = 0; op < 4_000; op++) {
 				int kind = random.nextInt (100);
 				if (kind < 80) {
