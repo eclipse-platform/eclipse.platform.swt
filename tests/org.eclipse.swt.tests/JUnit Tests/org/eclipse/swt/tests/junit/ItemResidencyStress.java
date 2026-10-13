@@ -11,7 +11,7 @@ import org.eclipse.swt.internal.residency.*;
  * Bounded-heap stress of the item-residency engine (run with -Xmx256m, one JVM per scale):
  * {@code flat N} scrolls a flat list of N items (select-all, check-all, every-3rd pattern, a
  * 200,000-row scroll region with every 10th item caller-owned, scroll-back) and {@code tree}
- * drives a 1,001,001,000-node tree (fan-out 1000/1000/1000). Prints one TSV row of measurements.
+ * drives a tree with the given per-depth fan-outs, for example 1000,1000,1000 (1,001,001,000 nodes). Prints one TSV row of measurements.
  * Swap goes through the ported TieredSwapCache to the Java FileSwapStore.
  */
 public final class ItemResidencyStress {
@@ -82,7 +82,8 @@ public final class ItemResidencyStress {
 	public static void main (String [] args) throws Exception {
 		String kind = args [0];
 		long t0 = System.nanoTime ();
-		String row = kind.equals ("tree") ? tree () : flat (Integer.parseInt (args [1]));
+		String row = kind.equals ("tree") ? tree (Arrays.stream (args [1].split (",")).mapToInt (Integer::parseInt).toArray ())
+				: flat (Integer.parseInt (args [1]));
 		System.out.println (row + "\t" + (System.nanoTime () - t0) / 1_000_000);
 	}
 
@@ -138,8 +139,8 @@ public final class ItemResidencyStress {
 		return measure ("flat", n, e, spill, coldBefore, refires, repro, selected, grayed, source.requests);
 	}
 
-	static String tree () throws Exception {
-		ItemTreeShape shape = new ItemTreeShape (new int [] {1000, 1000, 1000});
+	static String tree (int [] fanout) throws Exception {
+		ItemTreeShape shape = new ItemTreeShape (fanout);
 		int keys = shape.keyCount ();
 		Source source = new Source (Integer.MAX_VALUE);
 		ItemSwapSpill spill = ItemSwapSpill.temporary (8L << 20);
@@ -165,8 +166,9 @@ public final class ItemResidencyStress {
 		int collapsedRows = shape.rowCount ();
 		shape.setExpanded (collapse, true);
 		shape.expandToDepth (0);
-		shape.setExpanded (500, true);
-		shape.setExpanded (shape.childKey (500, 500), true);
+		int root = fanout [0] / 2, child = fanout [1] / 2;
+		shape.setExpanded (root, true);
+		shape.setExpanded (shape.childKey (root, child), true);
 		int pathRows = shape.rowCount ();
 		viewport (e, shape, runs, pathRows - VISIBLE);
 		sample ();

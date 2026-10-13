@@ -352,5 +352,42 @@ void onPaint (GC gc) { residency.beginPaint (); /* paintSlot, slotText, paintLan
 
 ## 17. Verification ledger
 
-Filled from executed runs only; the PR body carries the numbers. NOT_RUN: GTK, Cocoa, GWT compilation,
-RAP, the Synexia JNI SQLite backend, and any widget adoption.
+Executed on win32 x86_64, JDK 21.0.9, from standalone `javac` builds of the engine and tests.
+
+**Tests**
+
+- `Test_ItemResidency` and `Test_ItemResidencyLanes` (junit-platform-console 1.11.4): 20/20 pass.
+  They cover the round trip through DESTROY and through COLD, lanes, patterns at 1B, the `ItemBitSet`
+  differential against `BitSet`, the tree differential on 1,010,100 nodes, SetData negotiation, pressure,
+  telemetry failure, identity, flyweights, the paint path, low-headroom growth and `FileSwapStore`.
+- `Test_ItemResidencyPrint`: 1/1 pass against the SWT 3.135.0 win32 jar. The `Control.print` pixel hash is
+  identical after the DESTROY and COLD round trip, with `materializedDuringPaint` = 0.
+
+**Stress** (`-Xmx256m -XX:+UseSerialGC`, one JVM per row): [`STRESS_RESULTS.tsv`](item-residency/STRESS_RESULTS.tsv).
+
+| Run | Items | Heap after GC | RSS | Lane bytes | Swap out / in | Swap-in p50 / p95 / p99 (us) | SetData re-fires for COLD | Reproduction |
+|---|---:|---:|---:|---:|---|---|---:|---|
+| flat | 1,000,000 | 14.7 MB | 196 MB | 160 KB | 38,031 / 20,033 | 10 / 34 / 111 | 0 | identical |
+| flat | 10,000,000 | 14.9 MB | 225 MB | 179 KB | 38,031 / 20,033 | 10 / 26 / 65 | 0 | identical |
+| flat | 100,000,000 | 15.2 MB | 203 MB | 325 KB | 38,031 / 20,033 | 8 / 19 / 48 | 0 | identical |
+| flat | 1,000,000,000 | 18.9 MB | 196 MB | 1.45 MB | 38,031 / 20,033 | 7 / 16 / 47 | 0 | identical |
+| tree | 1,010,100 | 3.6 MB | 49 MB | 6 KB | 10 / 10 | 58 / 1,212 / 1,212 | 0 | identical |
+| tree | 101,001,000 | 6.7 MB | 50 MB | 79 KB | 10 / 10 | 49 / 1,260 / 1,260 | 0 | identical |
+| tree | 1,001,001,000 | 7.2 MB | 61 MB | 651 KB | 10 / 10 | 45 / 1,107 / 1,107 | 0 | identical |
+
+Flat run, at every scale: select-all, check-all and an every-3rd pattern over all items; viewports at the
+start, middle and end; then a 200,000-row scroll region where every 10th row is caller-edited. That gives
+19,995 rows COLD and 343,006 destroyed. The scroll-back produced 20,014 timed swap-ins.
+
+- Heap after GC stays between 14.7 and 18.9 MB from 1M to 1B items.
+- The swap file is 5.1 MB.
+- `getSelectionCount`-style `countRange` is exact: 1,000,000,000 selected and 333,333,334 every-3rd at 1B.
+
+Tree run, at each scale: `expandToDepth(2)` is O(1); then the middle and end viewports; collapse one node
+(1,001,001,000 to 1,000,000,000 rows at 1B); select-all; check every 3rd (333,667,000, exact).
+Collapse-all except one path leaves 3,000 rows and 2 path nodes. The tree p95 comes from 10 swap-ins only.
+
+RSS includes the 256 MB `-Xms` reservation as touched, so compare heap after GC across scales.
+
+**NOT_RUN:** GTK, Cocoa, GWT compilation, RAP, the Synexia JNI SQLite backend, any widget adoption, and the
+OSGi test bundle (the tests ran on a flat classpath).
