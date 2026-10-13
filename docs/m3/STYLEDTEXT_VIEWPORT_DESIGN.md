@@ -35,6 +35,7 @@ numbers are at the base commit.
 | `StyledText.java:6236-6243` `handleResize` (wrap) | `renderer.reset(0, lineCount)` + `calculateIdle` | document lines (now cheap reset + bounded idle) | covered |
 | `StyledText.java:1278-1300` `computeSize(DEFAULT)` (variable) | `TextLayout` for every line | document lines x layout | open (leaf 3) |
 | `StyledText.java:5031`, `:7001` accessible `getValue` | `getText()` copies the document | document chars, on demand | open (API contract) |
+| `StyledText.java:8340-8347` `sendAccessibleTextChanged` -> Win32 `Accessible.textChanged` (SWT 3.135 `Accessible.java:1558-1582`, `isATRunning()` is always true at `:5265-5273`) | every `setText` asks the accessible text listener for the whole inserted range and the platform keeps it (`textInserted = eventData`, `:1345-1347`): a full document copy per `setText`, retained | document chars | above 1 Mi chars: `ACC.EVENT_VALUE_CHANGED` (the platform's own fallback); AT reads ranges on demand |
 | `StyledText.java:10939-10964` `setText` with `ExtendedModify` | copies the old text for the event | document chars (API contract) | unchanged |
 | `StyledTextRenderer.java:1833`, `:2181-2290` style ranges | document-wide `int[] ranges` / `StyleRange[]`; edits shift every later range | styled ranges | open (leaf 4) |
 | `StyledText.java:3992`, `:3789` Line(Style/Background)Listener | per painted line, on demand | **viewport** | unchanged |

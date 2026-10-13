@@ -111,6 +111,12 @@ public class StyledText extends Canvas {
 	int verticalScrollOffset = 0;		// pixel based
 	int horizontalScrollOffset = 0;		// pixel based
 	final ViewportRuntime viewportRuntime = new ViewportRuntime ();
+	/**
+	 * Text changes larger than this many characters are announced to assistive
+	 * technology as a value change instead of a text event that copies the changed
+	 * text (on Win32 the inserted text is fetched and retained by the event).
+	 */
+	static final int ACCESSIBLE_TEXT_EVENT_LIMIT = 1 << 20;
 	boolean alwaysShowScroll = true;
 	int ignoreResize = 0;
 	int topIndex = 0;					// top visible line
@@ -8392,6 +8398,12 @@ void sendAccessibleTextCaretMoved() {
 }
 void sendAccessibleTextChanged(int start, int newCharCount, int replaceCharCount) {
 	Accessible accessible = getAccessible();
+	if (Math.max(newCharCount, replaceCharCount) > ACCESSIBLE_TEXT_EVENT_LIMIT) {
+		//FLLDCIM: VIEWPORT - an accessibility event never carries an O(document) payload;
+		// assistive technology re-reads the ranges it needs through the accessible text API
+		accessible.sendEvent(ACC.EVENT_VALUE_CHANGED, null);
+		return;
+	}
 	if (replaceCharCount != 0) {
 		accessible.textChanged(ACC.TEXT_DELETE, start, replaceCharCount);
 	}
