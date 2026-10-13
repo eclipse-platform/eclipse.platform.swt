@@ -79,7 +79,7 @@ final class VirtualListModel {
 			if (string == null) throw new IllegalArgumentException ("null item");
 		}
 		width.setAll (newItems);
-		items = newItems.clone ();
+		items = Arrays.copyOf (newItems, newItems.length);
 		count = items.length;
 		planner.selection ().clear ();
 		planner.setLogicalCount (count);

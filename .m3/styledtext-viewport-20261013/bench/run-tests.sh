@@ -15,4 +15,4 @@ mkdir -p "$reports"
 # shellcheck disable=SC2086
 "$JAVA_HOME/bin/java" -ea $jvm -jar "$(w "$JUNIT_STANDALONE")" execute \
 	--class-path="$(w "$classes");$(w "$tests");$(w "$SWT_JAR")" \
-	--reports-dir="$(w "$reports")" --details=summary --disable-banner $selects
+	--reports-dir="$(w "$reports")" --details=${JUNIT_DETAILS:-summary} --disable-banner $selects

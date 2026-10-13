@@ -145,7 +145,10 @@ public String getTextRange(int start, int length) {
 	if (length == 0) {
 		return "";
 	}
-	Objects.checkFromIndexSize(start, length, getCharCount());
+	if (start < 0 || length < 0 || start > getCharCount() - length) {
+		// explicit range check (no Objects.checkFromIndexSize: shared logic stays GWT-transpilable)
+		throw new IndexOutOfBoundsException("start=" + start + " length=" + length + " charCount=" + getCharCount());
+	}
 	Node leaf = root;
 	int offset = start;
 	while (leaf.text == null) {
@@ -533,7 +536,11 @@ static final class Node {
 		this.right = b;
 		this.text = null;
 		this.from = 0;
-		this.length = Math.addExact(a.length, b.length);
+		if (a.length > Integer.MAX_VALUE - b.length) {
+			// explicit bound (GWT does not wrap int arithmetic, so overflow is checked before adding)
+			throw new ArithmeticException("document longer than Integer.MAX_VALUE chars");
+		}
+		this.length = a.length + b.length;
 		this.breaks = a.breaks + b.breaks - (merges(a, b) ? 1 : 0);
 		this.height = Math.max(a.height, b.height) + 1;
 		this.first = a.first;

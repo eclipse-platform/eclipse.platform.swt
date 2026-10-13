@@ -110,7 +110,6 @@ public class StyledText extends Canvas {
 	TextChangeListener textChangeListener;	// listener for TextChanging, TextChanged and TextSet events from StyledTextContent
 	int verticalScrollOffset = 0;		// pixel based
 	int horizontalScrollOffset = 0;		// pixel based
-	final ViewportRuntime viewportRuntime = new ViewportRuntime ();
 	/**
 	 * Text changes larger than this many characters are announced to assistive
 	 * technology as a value change instead of a text event that copies the changed
@@ -731,7 +730,6 @@ public class StyledText extends Canvas {
  */
 public StyledText(Composite parent, int style) {
 	super(parent, checkStyle(style));
-	viewportRuntime.initializeOrigin (0, 0);
 	// set the fg in the OS to ensure that these are the same as StyledText, necessary
 	// for ensuring that the bg/fg the IME box uses is the same as what StyledText uses
 	super.setForeground(getForeground());
@@ -1297,8 +1295,11 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (wHint == SWT.DEFAULT || hHint == SWT.DEFAULT) {
 		Display display = getDisplay();
 		int maxHeight = display.getClientArea().height;
+		boolean estimate = !isFixedLineHeight() && renderer.isViewportMode();
+		int measured = 0;
 		for (int lineIndex = 0; lineIndex < lineCount; lineIndex++) {
 			TextLayout layout = renderer.getTextLayout(lineIndex);
+			measured++;
 			int wrapWidth = layout.getWidth();
             if (wordWrap) {
                 layout.setWidth(wHint == 0 ? 1 : wHint == SWT.DEFAULT ? SWT.DEFAULT : Math.max(1, wHint - leftMargin - rightMargin));
@@ -1308,12 +1309,15 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			width = Math.max(width, rect.width);
 			layout.setWidth(wrapWidth);
 			renderer.disposeTextLayout(layout);
-            if (isFixedLineHeight() && height > maxHeight) {
+            if ((isFixedLineHeight() || estimate) && height > maxHeight) {
                 break;
             }
 		}
 		if (isFixedLineHeight()) {
 			height = lineCount * renderer.getLineHeight();
+		} else if (estimate && measured < lineCount) {
+			//FLLDCIM: VIEWPORT - lay out one display of lines, estimate the rest from their average
+			height = (int) Math.min(Integer.MAX_VALUE, (long) height * lineCount / measured);
 		}
 	}
     // Use default values if no text is defined.
@@ -3601,7 +3605,6 @@ public int getHorizontalIndex() {
  */
 public int getHorizontalPixel() {
 	checkWidget();
-	syncViewportRuntime (false);
 	return horizontalScrollOffset;
 }
 /**
@@ -4079,6 +4082,11 @@ public int getLineIndex(int y) {
     if (y == topIndexY) {
         return topIndex;
     }
+	if (isFarPixels((long) y - topIndexY)) {
+		//FLLDCIM: VIEWPORT - O(1) distant line from the logical extent
+		long line = Math.max(0, topIndex) + Math.floorDiv((long) y - topIndexY, renderer.getEstimatedLineHeight());
+		return (int) Math.max(0, Math.min(content.getLineCount() - 1, line));
+	}
 	int line = topIndex;
 	if (y < topIndexY) {
 		while (y < topIndexY && line > 0) {
@@ -5229,9 +5237,7 @@ public int getTopMargin() {
  */
 public int getTopPixel() {
 	checkWidget();
-	int topPixel = getVerticalScrollOffset();
-	viewportRuntime.scrollTo (horizontalScrollOffset, topPixel);
-	return topPixel;
+	return getVerticalScrollOffset();
 }
 /**
  * Returns the vertical scroll increment.
@@ -5241,19 +5247,14 @@ public int getTopPixel() {
 int getVerticalIncrement() {
 	return renderer.getLineHeight();
 }
-void syncViewportRuntime (boolean resolveVertical) {
-	int vertical = verticalScrollOffset;
-	if (resolveVertical && vertical == -1) {
-		vertical = getVerticalScrollOffset();
-	}
-	double y = vertical == -1 ? viewportRuntime.originY () : vertical;
-	viewportRuntime.scrollTo (horizontalScrollOffset, y);
-}
-
 int getVerticalScrollOffset() {
 	if (verticalScrollOffset == -1 && isEstimatedViewport()) {
 		//FLLDCIM: VIEWPORT - no layout of the lines above the viewport
 		verticalScrollOffset = (int) Math.min(Integer.MAX_VALUE, renderer.getEstimatedOffset(topIndex) - topIndexY);
+	}
+	if (verticalScrollOffset == -1 && isFixedLineHeight() && renderer.isViewportMode()) {
+		//FLLDCIM: VIEWPORT - fixed line height: the offset is uniform, no layout of the lines above
+		verticalScrollOffset = (int) Math.min(Integer.MAX_VALUE, (long) Math.max(0, topIndex) * renderer.getLineHeight() - topIndexY);
 	}
 	if (verticalScrollOffset == -1) {
 		renderer.calculate(0, topIndex);
@@ -6320,7 +6321,6 @@ void handleResize(Event event) {
 			}
 		}
 	}
-	syncViewportRuntime (false);
 	updateCaretVisibility();
 	claimBottomFreeSpace();
 	setAlignment();
@@ -6422,7 +6422,6 @@ void handleTextChanging(TextChangingEvent event) {
 		lastLineBottom += srcY - destY;
 		verticalScrollOffset += destY - srcY;
 		calculateTopIndex(destY - srcY);
-		syncViewportRuntime (false);
 		setScrollBars(true);
 	} else {
 		scrollText(srcY, destY);
@@ -7054,7 +7053,18 @@ void initializeAccessible() {
 		}
 		@Override
 		public void getValue(AccessibleControlEvent e) {
-			e.result = StyledText.this.getText();
+			StyledText st = StyledText.this;
+			if (st.getCharCount() > ACCESSIBLE_TEXT_EVENT_LIMIT) {
+				//FLLDCIM: VIEWPORT - the value of a huge document is its viewport projection;
+				// assistive technology reads other ranges through the accessible text interface
+				int first = Math.max(0, st.getTopIndex());
+				int last = Math.max(first, Math.min(st.getPartialBottomIndex(), st.getLineCount() - 1));
+				int start = st.getOffsetAtLine(first);
+				int end = last + 1 < st.getLineCount() ? st.getOffsetAtLine(last + 1) : st.getCharCount();
+				e.result = st.getTextRange(start, end - start);
+			} else {
+				e.result = st.getText();
+			}
 		}
 	};
 	acc.addAccessibleControlListener(accControlAdapter);
@@ -8181,7 +8191,6 @@ void reset() {
 	topIndexY = 0;
 	verticalScrollOffset = 0;
 	horizontalScrollOffset = 0;
-	viewportRuntime.scrollTo (0, 0);
 	renderer.setContent(content);
 	if (verticalBar != null) {
 		verticalBar.setSelection(0);
@@ -8208,6 +8217,31 @@ void resetBidiData() {
 	keyActionMap.clear();
 	createKeyBindings();
 	super.redraw();
+}
+/**
+ * Resets the line cache for sorted, disjoint inclusive line intervals
+ * {from0, to0, from1, to1, ...}; the cost is bounded by the intervals, not by
+ * one entry per line.
+ */
+void resetCache(int[] intervals) {
+	if (intervals == null || intervals.length == 0) {
+		return;
+	}
+	int maxLineIndex = renderer.maxWidthLineIndex;
+	for (int i = 0; i < intervals.length; i += 2) {
+		renderer.reset(intervals[i], intervals[i + 1] - intervals[i] + 1);
+	}
+	renderer.calculateClientArea();
+	if (lineExists(maxLineIndex)) {
+		renderer.calculate(maxLineIndex, 1);
+	}
+	setScrollBars(true);
+	if (!isFixedLineHeight()) {
+		if (topIndex > intervals[0]) {
+			verticalScrollOffset = -1;
+		}
+		renderer.calculateIdle();
+	}
 }
 void resetCache(SortedSet<Integer> lines) {
     if (lines == null || lines.isEmpty()) {
@@ -8307,7 +8341,6 @@ boolean scrollHorizontal(int pixels, boolean adjustScrollBar) {
 		}
 	}
 	horizontalScrollOffset += pixels;
-	syncViewportRuntime (false);
 	setCaretLocations();
 	return true;
 }
@@ -8361,7 +8394,6 @@ boolean scrollVertical(int pixels, boolean adjustScrollBar) {
 		// re-target the bounded idle measurement at the new viewport
 		renderer.calculateIdle();
 	}
-	syncViewportRuntime (true);
 	setCaretLocations();
 	return true;
 }
@@ -8422,12 +8454,19 @@ void sendAccessibleTextChanged(int start, int newCharCount, int replaceCharCount
 public void selectAll() {
 	checkWidget();
 	if (blockSelection) {
-		renderer.calculate(0, content.getLineCount());
+		boolean viewport = renderer.isViewportMode();
+		if (viewport) {
+			//FLLDCIM: VIEWPORT - the block covers the logical extent; no layout of every line
+			renderer.calculateClientArea();
+		} else {
+			renderer.calculate(0, content.getLineCount());
+		}
 		setScrollBars(false);
 		int verticalScrollOffset = getVerticalScrollOffset();
 		int left = leftMargin - horizontalScrollOffset;
 		int top = topMargin - verticalScrollOffset;
-		int right = renderer.getWidth() - rightMargin - horizontalScrollOffset;
+		int width = viewport ? Integer.MAX_VALUE / 4 : renderer.getWidth();
+		int right = width - rightMargin - horizontalScrollOffset;
 		int bottom = renderer.getHeight() - bottomMargin - verticalScrollOffset;
 		setBlockSelectionLocation(left, top, right, bottom, false);
 		return;
@@ -9760,7 +9799,6 @@ public void setLineVerticalIndent(int lineIndex, int verticalLineIndent) {
 	ScrollBar verticalScrollbar = getVerticalBar();
 	if (lineIndex < initialTopIndex) {
 		verticalScrollOffset += verticalIndentDiff; // just change value, don't actually scroll/redraw
-		syncViewportRuntime (false);
 		if (verticalScrollbar != null) {
 			verticalScrollbar.setSelection(verticalScrollOffset);
 			verticalScrollbar.setMaximum(verticalScrollbar.getMaximum() + verticalIndentDiff);
@@ -9891,7 +9929,10 @@ public void setLineSpacingProvider(StyledTextLineSpacingProvider lineSpacingProv
 			resetCache(0, content.getLineCount());
 		}
 	} else {
-		if (wasFixedLineHeight) {
+		if (wasFixedLineHeight && renderer.isViewportMode()) {
+			//FLLDCIM: VIEWPORT - no per-line provider scan; spacing is measured with the viewport
+			resetCache(0, content.getLineCount());
+		} else if (wasFixedLineHeight) {
 			int firstLine = -1;
 			for (int i = 0; i < content.getLineCount(); i++) {
 				Integer lineSpacing = lineSpacingProvider.getLineSpacing(i);
@@ -10739,16 +10780,11 @@ void setStyleRanges(int start, int length, int[] ranges, StyleRange[] styles, bo
 		renderer.setStyleRanges(ranges, styles);
 	}
 
-	// re-evaluate variable height with all styles (including new ones)
-	hasStyleWithVariableHeight = false;
-	for (StyleRange style : getStyleRanges(false)) {
-		hasStyleWithVariableHeight = style.isVariableHeight();
-        if (hasStyleWithVariableHeight) {
-            break;
-        }
-	}
+	// re-evaluate variable height with all styles (including new ones), without copying the store
+	hasStyleWithVariableHeight = renderer.hasVariableHeightStyle();
 
-	SortedSet<Integer> modifiedLines = computeModifiedLines(formerRanges, formerStyles, ranges, styles);
+	//FLLDCIM: VIEWPORT - modified lines as line intervals, not one boxed Integer per line
+	int[] modifiedLines = computeModifiedLines(formerRanges, formerStyles, ranges, styles);
 	resetCache(modifiedLines);
 	if (reset) {
 		super.redraw();
@@ -10783,7 +10819,7 @@ void setStyleRanges(int start, int length, int[] ranges, StyleRange[] styles, bo
  * @param referenceRanges former ranges, sorted by order and without overlapping, typically returned {@link #getRanges(int, int)}
  * @param newRanges former ranges, sorted by order and without overlapping
  */
-private SortedSet<Integer> computeModifiedLines(int[] referenceRanges, StyleRange[] referenceStyles, int[] newRanges, StyleRange[] newStyles) {
+private int[] computeModifiedLines(int[] referenceRanges, StyleRange[] referenceStyles, int[] newRanges, StyleRange[] newStyles) {
 	if (referenceStyles == null) {
 		referenceStyles = new StyleRange[0];
 	}
@@ -10802,7 +10838,8 @@ private SortedSet<Integer> computeModifiedLines(int[] referenceRanges, StyleRang
 	if (newRanges.length != 2 * newStyles.length) {
 		throw new IllegalArgumentException();
 	}
-	SortedSet<Integer> res = new TreeSet<>();
+	int[] res = new int[8];
+	int intervals = 0;
 	int referenceRangeIndex = 0;
 	int newRangeIndex = 0;
 	StyleRange defaultStyle = new StyleRange();
@@ -10841,15 +10878,22 @@ private SortedSet<Integer> computeModifiedLines(int[] referenceRanges, StyleRang
 		if (!referenceStyleAtCurrentOffset.similarTo(newStyleAtCurrentOffset)) {
 			int fromLine = getLineAtOffset(currentOffset);
 			int toLine = getLineAtOffset(nextMilestoneOffset - 1);
-			for (int line = fromLine; line <= toLine; line++) {
-				res.add(line);
+			if (intervals > 0 && fromLine <= res[2 * intervals - 1] + 1) {
+				res[2 * intervals - 1] = Math.max(res[2 * intervals - 1], toLine);
+			} else {
+				if (2 * intervals + 2 > res.length) {
+					res = Arrays.copyOf(res, res.length * 2);
+				}
+				res[2 * intervals] = fromLine;
+				res[2 * intervals + 1] = toLine;
+				intervals++;
 			}
 			currentOffset = toLine + 1 < getLineCount() ? getOffsetAtLine(toLine + 1) : content.getCharCount();
 		} else {
 			currentOffset = nextMilestoneOffset;
 		}
 	}
-	return res;
+	return Arrays.copyOf(res, 2 * intervals);
 }
 private int[] createRanges(StyleRange[] referenceStyles) {
 	int[] referenceRanges;
@@ -11207,7 +11251,6 @@ public void setWordWrap(boolean wrap) {
 	wordWrap = wrap;
 	resetCache(0, content.getLineCount());
 	horizontalScrollOffset = 0;
-	syncViewportRuntime (false);
 	ScrollBar horizontalBar = getHorizontalBar();
 	if (horizontalBar != null) {
 		horizontalBar.setVisible(!wordWrap);
