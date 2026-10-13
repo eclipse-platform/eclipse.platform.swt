@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test;
  * naive linear-scan oracle written from the documented semantics. No native widget fixtures.
  */
 public class Test_VirtualRowExtents {
-	private static final int AUTO = 0, START = 1, CENTER = 2, END = 3;
+	private static final int AUTO = 0, START = 1, CENTER = 2, END = 3, SMART = 4;
 
 	/** Reflective handle on the package-private owner. */
 	private static final class Extents {
@@ -125,7 +125,11 @@ public class Test_VirtualRowExtents {
 				case START -> t = s;
 				case END -> t = e - v;
 				case CENTER -> t = s + Math.floorDiv(eff(r) - v, 2);
-				default -> t = (s >= cur && e <= cur + v) ? cur : (s < cur ? s : e - v);
+				case SMART -> {
+					boolean revealed = cur >= Math.min(s, e - v) && cur <= Math.max(s, e - v);
+					t = revealed ? cur : s + Math.floorDiv(eff(r) - v, 2);
+				}
+				default -> t = cur < Math.min(s, e - v) ? Math.min(s, e - v) : Math.min(cur, Math.max(s, e - v));
 			}
 			return clamp(t, v);
 		}
@@ -158,7 +162,7 @@ public class Test_VirtualRowExtents {
 		if (n > 0) {
 			int row = rnd.nextInt(n);
 			long cur = rnd.nextInt((int) Math.max(1, total)) ;
-			for (int align : new int[] {AUTO, START, CENTER, END}) {
+			for (int align : new int[] {AUTO, START, CENTER, END, SMART}) {
 				assertEquals(o.scrollFor(row, align, cur, viewport), x.scrollFor(row, align, cur, viewport), ctx + " scroll align " + align);
 			}
 		}
@@ -286,6 +290,25 @@ public class Test_VirtualRowExtents {
 		assertEquals(455, x.scrollFor(50, CENTER, 0, 100));
 		assertEquals(900, x.scrollFor(99, START, 0, 100)); // clamped to the last full page
 		assertEquals(0, x.scrollFor(0, END, 0, 100));
+	}
+
+	@Test
+	public void oversizedRowsAndSmartAlignmentFollowTheDonorRules() {
+		Extents x = new Extents(10);
+		x.reset(20);
+		x.setExtent(5, 300); // row 5 spans [50, 350), viewport 100
+		// oversized row already filling the viewport: AUTO leaves the offset alone
+		assertEquals(120, x.scrollFor(5, AUTO, 120, 100));
+		assertEquals(250, x.scrollFor(5, AUTO, 250, 100));
+		// above its first revealed offset: show its top; below its last: show its bottom
+		assertEquals(50, x.scrollFor(5, AUTO, 0, 100));
+		assertEquals(250, x.scrollFor(5, AUTO, 300, 100));
+		// SMART: revealed keeps the offset, otherwise centers: 50 + (300 - 100) / 2 = 150
+		assertEquals(120, x.scrollFor(5, SMART, 120, 100));
+		assertEquals(150, x.scrollFor(5, SMART, 0, 100));
+		// ordinary rows: row 0 is revealed at offset 0; row 10 (start 390, 10 high) is hidden and centered at 390 - 45
+		assertEquals(0, x.scrollFor(0, SMART, 0, 100));
+		assertEquals(345, x.scrollFor(10, SMART, 0, 100));
 	}
 
 	@Test

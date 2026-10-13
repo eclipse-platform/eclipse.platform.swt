@@ -128,7 +128,7 @@ final class GateWorkload {
 		if (n > 0) {
 			int row = next (n);
 			fold (x.offsetOf (row));
-			for (int align = 0; align < 4; align++) fold (x.scrollOffsetFor (row, align, off < 0 ? 0 : off, next (60)));
+			for (int align = 0; align < 5; align++) fold (x.scrollOffsetFor (row, align, off < 0 ? 0 : off, next (60)));
 		}
 	}
 }

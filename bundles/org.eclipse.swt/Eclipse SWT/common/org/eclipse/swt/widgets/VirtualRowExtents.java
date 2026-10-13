@@ -26,16 +26,20 @@ import java.util.*;
  * measured extent or {@code -1}, and a Fenwick tree in a {@code long} lane over
  * the effective extents. Offsets, row lookup and size changes cost O(log n); an
  * insert, a remove or a new estimate rebuilds the tree in O(n) into the same arrays.
- * The behaviour follows the pattern donors react-window (MIT) and TanStack Virtual
- * (MIT): lazy measurement against an estimate, nearest-row search over cumulative
- * extents, smallest-scroll "auto" alignment, and anchoring when a row above the
- * fold is measured. No source of either is used.</p>
+ * The behaviour follows two pattern donors, read at pinned commits and not copied:
+ * react-window (MIT, f/439cfee: lib/core getOffsetForIndex, getEstimatedSize,
+ * createCachedBounds) for lazy measurement, the start/end/center/auto/smart
+ * alignments and the oversized-row rule; and TanStack Virtual (MIT, f211d3a:
+ * packages/virtual-core getOffsetForIndex and resizeItem) for the scroll-anchoring
+ * rule when a row above the fold is measured. Unlike react-window the estimate is a
+ * constant the caller sets (setEstimate); pass the running average to mimic it.</p>
  */
 final class VirtualRowExtents {
 	static final int ALIGN_AUTO = 0;
 	static final int ALIGN_START = 1;
 	static final int ALIGN_CENTER = 2;
 	static final int ALIGN_END = 3;
+	static final int ALIGN_SMART = 4;
 	private static final int UNMEASURED = -1;
 
 	private int estimate;
@@ -197,8 +201,10 @@ final class VirtualRowExtents {
 
 	/**
 	 * Scroll offset that reveals {@code row}. START puts the row at the top, END at the
-	 * bottom, CENTER in the middle; AUTO is the smallest move (none when the row is fully
-	 * visible). The result is clamped to the scrollable range.
+	 * bottom, CENTER in the middle; AUTO is the smallest move (none when the row is already
+	 * revealed); SMART keeps the offset when the row is revealed and centers it otherwise.
+	 * A row taller than the viewport is revealed while it fills the viewport. The result
+	 * is clamped to the scrollable range.
 	 */
 	long scrollOffsetFor (int row, int align, long current, int viewport) {
 		checkRow (row);
@@ -209,6 +215,8 @@ final class VirtualRowExtents {
 			case ALIGN_END -> end - viewport;
 			case ALIGN_CENTER -> start + Math.floorDiv (effective (row) - viewport, 2);
 			case ALIGN_AUTO -> autoTarget (start, end, current, viewport);
+			case ALIGN_SMART -> isRevealed (start, end, current, viewport) ? current
+					: start + Math.floorDiv (effective (row) - viewport, 2);
 			default -> throw new IllegalArgumentException ("invalid alignment");
 		};
 		return clampOffset (target, viewport);
@@ -233,9 +241,15 @@ final class VirtualRowExtents {
 		return above ? delta : 0;
 	}
 
+	/** Offsets at which the row is revealed lie in [min (start, end - viewport), max (start, end - viewport)]. */
+	private static boolean isRevealed (long start, long end, long current, int viewport) {
+		return current >= Math.min (start, end - viewport) && current <= Math.max (start, end - viewport);
+	}
+
 	private static long autoTarget (long start, long end, long current, int viewport) {
-		if (start >= current && end <= current + viewport) return current;
-		return start < current ? start : end - viewport;
+		long low = Math.min (start, end - viewport);
+		long high = Math.max (start, end - viewport);
+		return current < low ? low : Math.min (current, high);
 	}
 
 	private int effective (int row) {
