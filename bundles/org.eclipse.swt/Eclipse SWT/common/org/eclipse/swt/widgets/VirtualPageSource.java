@@ -768,7 +768,13 @@ public final class VirtualPageSource {
 		nodeHints [node] = total;
 		if (item.isDisposed ()) return;
 		if (hook != null) hook.pageSourceChildrenLoading (item, false);
-		item.setItemCount (total);
+		boolean batch = hook != null && total > hook.pageSourceBatchThreshold () && item.getExpanded ();
+		if (batch) hook.pageSourceBatch (true, item);
+		try {
+			item.setItemCount (total);
+		} finally {
+			if (batch) hook.pageSourceBatch (false, item);
+		}
 	}
 
 	/* ---------------------------------------------------------------- requests */

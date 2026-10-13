@@ -37,4 +37,16 @@ interface VirtualPageHost {
 
 	/** Sets or clears the loading-children mask bit of <code>parent</code>. */
 	void pageSourceChildrenLoading (Item parent, boolean loading);
+
+	/**
+	 * Rows above which a bulk change (a child count arriving for an expanded node) is batched:
+	 * drawing is suspended and, at the end, only the accumulated damage is invalidated.
+	 */
+	default int pageSourceBatchThreshold () {
+		return Integer.MAX_VALUE;
+	}
+
+	/** Starts (<code>parent</code> null) or ends a bulk batch below <code>parent</code>. */
+	default void pageSourceBatch (boolean begin, Item parent) {
+	}
 }

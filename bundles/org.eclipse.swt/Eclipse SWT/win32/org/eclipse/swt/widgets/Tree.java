@@ -634,6 +634,17 @@ VirtualPageHost pageSourceHost () {
 		}
 
 		@Override
+		public int pageSourceBatchThreshold () {
+			return pageBatchThreshold ();
+		}
+
+		@Override
+		public void pageSourceBatch (boolean begin, Item parent) {
+			if (begin) beginPageBatch ();
+			else endPageBatch ((TreeItem) parent);
+		}
+
+		@Override
 		public void pageSourceChildrenLoading (Item parent, boolean loading) {
 			if (!(parent instanceof TreeItem item) || item.isDisposed ()) return;
 			virtualFlag (item, VirtualItemState.CHILDREN_LOADING, loading);
@@ -775,6 +786,45 @@ void pageAutoExpander (TreeItem item) {
 	tvItem.hItem = item.handle;
 	tvItem.cChildren = I_CHILDRENAUTO;
 	OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+}
+
+/*
+ * Bulk batch of the lazy layer: only for changes larger than one screen of rows (the threshold
+ * belongs to the visibility leaf; until its bit lands it is the visible row count). Drawing is
+ * suspended with WM_SETREDRAW through DefWindowProc (no SWT full redraw) and the batch ends by
+ * invalidating only the rows from the parent down to the bottom of the client area.
+ */
+boolean pageBatching;
+/** Bulk batches run and full-client invalidations issued by them (flicker proof counters). */
+int pageBatches, pageBatchFullInvalidations;
+
+int pageBatchThreshold () {
+	int itemHeight = Math.max (1, getItemHeightInPixels ());
+	RECT client = new RECT ();
+	OS.GetClientRect (handle, client);
+	return Math.max (1, (client.bottom - client.top) / itemHeight + 1);
+}
+
+void beginPageBatch () {
+	if (pageBatching || !getDrawing () || !OS.IsWindowVisible (handle)) return;
+	pageBatching = true;
+	OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
+}
+
+void endPageBatch (TreeItem parent) {
+	if (!pageBatching) return;
+	pageBatching = false;
+	pageBatches++;
+	OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
+	RECT client = new RECT ();
+	OS.GetClientRect (handle, client);
+	RECT rect = new RECT ();
+	if (parent != null && !parent.isDisposed () && OS.TreeView_GetItemRect (handle, parent.handle, rect, false)) {
+		client.top = Math.max (client.top, rect.top);
+	} else {
+		pageBatchFullInvalidations++;
+	}
+	if (client.top < client.bottom) OS.InvalidateRect (handle, client, true);
 }
 
 /** Rows invalidated by page-source refreshes (precise damage; proof counter). */
