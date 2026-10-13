@@ -39,6 +39,27 @@ public final class Snapshot {
 		return save(control, dir, name, MAX_WIDTH);
 	}
 
+	/** Save arbitrary image data using the same bounded screenshot policy as a Control snapshot. */
+	public static String save(ImageData data, File dir, String name) {
+		return save(data, dir, name, MAX_WIDTH);
+	}
+
+	/** Save arbitrary image data with an explicit maximum width. */
+	public static String save(ImageData data, File dir, String name, int maxWidth) {
+		if (data == null || data.width <= 0 || data.height <= 0) return "-";
+		dir.mkdirs();
+		File file = new File(dir, name);
+		for (int width = Math.min(maxWidth, data.width); width >= 120; width = width * 3 / 4) {
+			int height = Math.max(1, data.height * width / data.width);
+			ImageData scaled = width == data.width ? data : data.scaledTo(width, height);
+			ImageLoader loader = new ImageLoader();
+			loader.data = new ImageData[] {scaled};
+			loader.save(file.getPath(), SWT.IMAGE_PNG);
+			if (file.length() <= MAX_BYTES) break;
+		}
+		return file.getName();
+	}
+
 	/** Same as {@link #save(Control, File, String)} with an explicit maximum width. */
 	public static String save(Control control, File dir, String name, int maxWidth) {
 		Point size = control.getSize();
