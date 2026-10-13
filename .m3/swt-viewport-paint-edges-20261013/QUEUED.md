@@ -146,3 +146,19 @@ resize, hidden.
   finding: `Control.print` (PrintWindow PW_RENDERFULLCONTENT) intermittently
   returned black client areas and classic borders on stock SWT too; screen
   capture with foreign-window obstruction detection was used instead.
+
+## K. Adaptive M3_BATCH_UPDATES (user: "reserve the trick for large operations, if there are any left")
+
+1. Small operations (below a measured threshold, or inside one frame's
+   visible-and-damaged region): no WM_SETREDRAW; precise damage into #121
+   `ViewportDamageRegion`, one paint next frame.
+2. Large operations (bulk setItems, removeAll, sort, expand-all, more than about
+   one screen of changes, many structural edits): WM_SETREDRAW(FALSE)/(TRUE),
+   then invalidate only the accumulated damage with no RDW_ERASE, no RDW_FRAME,
+   protected rings excluded; never the stock full redraw.
+3. Threshold measured (crossover of batch vs per-change damage paint cost),
+   tunable constant; flicker frames for small and large ops, before/after.
+4. If no SWT-examples operation crosses the threshold with gate + damage
+   coalescing + lazy paths, report that and keep the trick dormant.
+Leaf-1 note: the gate's `setRedraw(true)` catch-up already runs layout once,
+but Control.setRedraw still ends with the stock RDW_ERASE|RDW_FRAME|ALLCHILDREN.
