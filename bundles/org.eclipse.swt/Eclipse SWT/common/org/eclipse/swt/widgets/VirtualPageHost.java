@@ -49,4 +49,8 @@ interface VirtualPageHost {
 	/** Starts (<code>parent</code> null) or ends a bulk batch below <code>parent</code>. */
 	default void pageSourceBatch (boolean begin, Item parent) {
 	}
+
+	/** The queue has drained: run the expensive fits deferred until now (e.g. a column width). */
+	default void pageSourceSettled () {
+	}
 }

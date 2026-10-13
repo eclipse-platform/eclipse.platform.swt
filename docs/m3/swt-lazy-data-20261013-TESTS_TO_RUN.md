@@ -29,3 +29,14 @@ Results already measured (earlier heads, same code paths unless noted):
   3.9-6.2 ms; scattered-selection cut-over table in the PR body.
 - `Test_org_eclipse_swt_widgets_VirtualPageSource`: 13/13 on 95b4e750 (before the debounce,
   swap and paint-materialization tests were added).
+
+Added after RESUME TESTS:
+
+| # | lane | command | expectation | last result |
+|---|---|---|---|---|
+| 13 | busy-indicator API wait | a 300 ms/block source, `getItem (far).getText ()` | `BUSY_WAITS` = 1, result identical | NOT_RUN |
+| 14 | generation tokens | `invalidate ()` while blocks run | `STALE_DROPPED` > 0, no stale text applied | NOT_RUN |
+| 15 | drain-turn budget | 10M slow-source storm | p95 of `recentTurnMicros ()` <= 4000 us, `REPOSTS` counted | NOT_RUN |
+| 16 | showcase matrix with this branch | `run-matrix.sh <jar of after2-classes> ... swt-pr119` | Table/Tree `items_materialized_per_paint` 0 with a page source; classic SetData rows unchanged (see design 5b) | NOT_RUN |
+| 17 | Cocoa placeholder data source | macOS CI legs | `Test_org_eclipse_swt_widgets_Tree` sparse-residency asserts (lines 367, 1444) | NOT_DONE (code not written; macOS only) |
+
