@@ -47,6 +47,7 @@ public class SWT_AWT {
 	 * The name of the embedded Frame class. The default class name
 	 * for the platform will be used if <code>null</code>.
 	 *
+	 * @noreference This field is not intended to be referenced by clients.
 	 * @deprecated The class named here is never instantiated: the platform's
 	 *             default embedded Frame class is always used. This field will
 	 *             be removed in a future release.
