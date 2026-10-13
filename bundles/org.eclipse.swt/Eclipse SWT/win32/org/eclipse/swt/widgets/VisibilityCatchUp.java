@@ -29,7 +29,8 @@ import org.eclipse.swt.internal.win32.*;
  */
 //FLLDCIM: HPCPOP - cold path; runs once per visibility transition, not per update
 final class VisibilityCatchUp {
-	static final int REDRAW_FLAGS = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
+	/** Client areas only: the gate never skips WM_NCPAINT, so frames are current. */
+	static final int REDRAW_FLAGS = OS.RDW_ERASE | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
 
 	private VisibilityCatchUp () {
 	}
@@ -40,7 +41,7 @@ final class VisibilityCatchUp {
 		if ((bits & DIRTY_LAYOUT) != 0 && (old & DIRTY_LAYOUT) == 0) {
 			c.display.visPendingLayouts++;
 		}
-		if ((old & DIRTY_ALL) == 0) {
+		if ((old & DIRTY_ALL) == 0 && !enlisted (c.display, c)) {
 			Display d = c.display;
 			if (d.visDirtyCount == d.visDirty.length) {
 				Control [] grown = new Control [d.visDirtyCount * 2];
@@ -50,6 +51,16 @@ final class VisibilityCatchUp {
 			d.visDirty [d.visDirtyCount++] = c;
 			requestSweep (d);
 		}
+	}
+
+	/** An entry whose bits were cleared outside a sweep stays until compaction; never append it twice. */
+	static boolean enlisted (Display d, Control c) {
+		for (int i = d.visDirtyCount - 1; i >= 0; i--) {
+			if (d.visDirty [i] == c) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	static void clearLayout (Control c) {

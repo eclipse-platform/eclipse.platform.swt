@@ -134,7 +134,7 @@ public class VisibilityGateBench {
 		for (Monitor m : display.getMonitors ()) {
 			all = all.union (m.getBounds ());
 		}
-		originX = all.x + all.width + 400;
+		originX = all.x + all.width + 3000;
 		Shell twinShell = shell (620, "twin");
 		Payload twin;
 		Shell shell = shell (40, "gated");
@@ -217,6 +217,7 @@ public class VisibilityGateBench {
 		settle (200);
 		long cpuUpdate = MX.getCurrentThreadCpuTime () - cpu0, wallUpdate = System.nanoTime () - wall0;
 		int[] upd = snapshot ();
+		int occludedShells = gateField ("visOccludedShells");
 
 		/* Twin receives the same updates while visible */
 		for (int k = 0; k < updates; k++) {
@@ -245,7 +246,15 @@ public class VisibilityGateBench {
 		long cpuCatch = MX.getCurrentThreadCpuTime () - cpu1;
 		int[] cat = snapshot ();
 		String apiShown = gated.api ();
-		String h1 = printHash (gated.content), h2 = printHash (twin.content);
+		/* Raw: what the screen holds after the catch-up. Fresh: after a forced full repaint of both. */
+		String raw = printHash (gated.content, "gated-raw");
+		for (Control c : new Control [] {gated.content, twin.content}) {
+			Point size = c.getSize ();
+			c.redraw (0, 0, size.x, size.y, true);
+			c.update ();
+		}
+		settle (100);
+		String h1 = printHash (gated.content, "gated"), h2 = printHash (twin.content, "twin");
 
 		System.out.println (String.join ("\t", scenario, label, Integer.toString (updates),
 			Integer.toString (upd [0]), Integer.toString (upd [1]), Integer.toString (upd [2]), Integer.toString (upd [3]),
@@ -254,7 +263,8 @@ public class VisibilityGateBench {
 			Integer.toString (cat [0]), Integer.toString (cat [1]), Integer.toString (cat [2]), Integer.toString (cat [3]),
 			Long.toString (cpuCatch / 1_000_000),
 			Boolean.toString (apiHidden.equals (twinApi)), Boolean.toString (apiShown.equals (twinApi)), sha (apiHidden).substring (0, 12),
-			Boolean.toString (h1.equals (h2)), h1.substring (0, 16), h2.substring (0, 16),
+			Boolean.toString (h1.equals (h2)), Boolean.toString (raw.equals (h1)), h1.substring (0, 16), h2.substring (0, 16),
+			Integer.toString (occludedShells), Integer.toString (upd [4]),
 			System.getProperty ("swt.visibility.gate", "default")));
 		if (!apiShown.equals (twinApi) || (!apiHidden.equals (twinApi) && Boolean.getBoolean ("bench.verbose"))) {
 			System.err.println ("API hidden: " + apiHidden);
@@ -281,7 +291,18 @@ public class VisibilityGateBench {
 	}
 
 	static int [] snapshot () {
-		return new int [] {paints, layouts, measures, setData};
+		return new int [] {paints, layouts, measures, setData, gateField ("visDirtyCount")};
+	}
+
+	/** Gate state read reflectively (diagnostic only); -1 on stock classes. */
+	static int gateField (String name) {
+		try {
+			java.lang.reflect.Field f = Display.class.getDeclaredField (name);
+			f.setAccessible (true);
+			return f.getInt (display);
+		} catch (ReflectiveOperationException | RuntimeException e) {
+			return -1;
+		}
 	}
 
 	static void pump () {
@@ -308,7 +329,7 @@ public class VisibilityGateBench {
 		return hex.toString ();
 	}
 
-	static String printHash (Control control) throws Exception {
+	static String printHash (Control control, String name) throws Exception {
 		Point size = control.getSize ();
 		Image image = new Image (display, size.x, size.y);
 		GC gc = new GC (image);
@@ -316,6 +337,12 @@ public class VisibilityGateBench {
 		gc.dispose ();
 		ImageData data = image.getImageData ();
 		image.dispose ();
+		String dump = System.getProperty ("bench.dump");
+		if (dump != null) {
+			ImageLoader loader = new ImageLoader ();
+			loader.data = new ImageData [] {data};
+			loader.save (dump + "/" + name + ".png", SWT.IMAGE_PNG);
+		}
 		MessageDigest md = MessageDigest.getInstance ("SHA-256");
 		md.update (data.data);
 		StringBuilder hex = new StringBuilder ();
