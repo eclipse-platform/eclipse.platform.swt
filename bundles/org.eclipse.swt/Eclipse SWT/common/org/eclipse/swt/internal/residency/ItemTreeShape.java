@@ -10,6 +10,7 @@ package org.eclipse.swt.internal.residency;
 
 import java.util.Arrays;
 
+import org.eclipse.swt.*;
 import org.eclipse.swt.internal.PackedHeapGrowth;
 
 /**
@@ -81,19 +82,20 @@ public final class ItemTreeShape {
 	int ruleDepth;
 	int [] ruleSub;
 	final Path root = new Path ();
+	private int [] chain;
 	final ItemSparseTable paths = new ItemSparseTable ();
 
 	public ItemTreeShape (int [] fanout) {
 		depths = fanout.length;
-		if (depths < 1) throw new IllegalArgumentException ("no roots");
+		if (depths < 1) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 		this.fanout = Arrays.copyOf (fanout, depths);
 		levelStart = new int [depths];
 		levelCount = new int [depths];
 		long start = 0, nodes = 1;
 		for (int d = 0; d < depths; d++) {
-			if (fanout [d] < 0) throw new IllegalArgumentException ("negative fan-out");
+			if (fanout [d] < 0) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 			nodes *= fanout [d];
-			if (start + nodes > Integer.MAX_VALUE) throw new IllegalArgumentException ("key space exceeds int");
+			if (start + nodes > Integer.MAX_VALUE) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 			levelStart [d] = (int) start;
 			levelCount [d] = (int) nodes;
 			start += nodes;
@@ -108,11 +110,11 @@ public final class ItemTreeShape {
 		long below = 0;
 		for (int d = depths - 1; d >= 0; d--) {
 			long s = d < depth && d + 1 < depths ? (long) fanout [d + 1] * (1 + below) : 0;
-			if (s > Integer.MAX_VALUE) throw new IllegalArgumentException ("visible rows exceed int");
+			if (s > Integer.MAX_VALUE) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 			sub [d] = (int) s;
 			below = s;
 		}
-		if ((long) levelCount [0] * (1 + sub [0]) > Integer.MAX_VALUE) throw new IllegalArgumentException ("visible rows exceed int");
+		if ((long) levelCount [0] * (1 + sub [0]) > Integer.MAX_VALUE) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 		ruleDepth = depth;
 		ruleSub = sub;
 		root.size = 0;
@@ -159,7 +161,7 @@ public final class ItemTreeShape {
 	}
 
 	public void setExpanded (int key, boolean expanded) {
-		if (key < 0 || key >= keyCount) throw new IndexOutOfBoundsException ("node " + key);
+		if (key < 0 || key >= keyCount) SWT.error (SWT.ERROR_INVALID_RANGE);
 		boolean rule = depth (key) < ruleDepth && childCount (key) > 0;
 		Path p = (Path) paths.get (key);
 		int state = expanded == rule ? RULE : expanded ? EXPANDED : COLLAPSED;
@@ -206,7 +208,7 @@ public final class ItemTreeShape {
 
 	/** Node key at visible {@code row}. */
 	public int key (int row) {
-		if (row < 0 || row >= rowCount ()) throw new IndexOutOfBoundsException ("row " + row);
+		if (row < 0 || row >= rowCount ()) SWT.error (SWT.ERROR_INVALID_RANGE);
 		int parent = ROOT, d = 0, r = row;
 		while (true) {
 			int unit = 1 + childSub (d);
@@ -252,7 +254,7 @@ public final class ItemTreeShape {
 	/** Visible row of {@code key}, or -1 when an ancestor is collapsed. */
 	public int row (int key) {
 		int d = depth (key);
-		int [] chain = new int [d + 1];
+		if (chain == null) chain = new int [depths];
 		for (int k = key, i = d; i >= 0; i--, k = parent (k)) chain [i] = k;
 		int row = -1, parent = ROOT;
 		for (int i = 0; i <= d; i++) {

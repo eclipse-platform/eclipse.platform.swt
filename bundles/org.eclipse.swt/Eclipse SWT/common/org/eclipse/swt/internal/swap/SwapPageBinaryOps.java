@@ -26,13 +26,13 @@ import java.nio.ByteBuffer;
  * alias contract; use views of one mapping or the Java oracle for that case.</p>
  */
 public interface SwapPageBinaryOps {
-  String id();
+	String id();
 
-  boolean nativeBackend();
+	boolean nativeBackend();
 
-  int copy(ByteBuffer source, ByteBuffer target);
+	int copy(ByteBuffer source, ByteBuffer target);
 
-  int deltaEncodeMonotonicLongs(ByteBuffer sourceLongs, ByteBuffer target);
+	int deltaEncodeMonotonicLongs(ByteBuffer sourceLongs, ByteBuffer target);
 
-  int deltaDecodeMonotonicLongs(ByteBuffer encoded, ByteBuffer targetLongs);
+	int deltaDecodeMonotonicLongs(ByteBuffer encoded, ByteBuffer targetLongs);
 }

@@ -14,6 +14,7 @@ import java.util.*;
 
 import javax.management.*;
 
+import org.eclipse.swt.*;
 import org.eclipse.swt.internal.swap.*;
 
 /**
@@ -64,7 +65,8 @@ public final class ItemSwapPressure implements ItemResidency.Pressure, Notificat
 		try {
 			d = controller.decide ();
 		} catch (IOException e) {
-			throw new UncheckedIOException (e);
+			SWT.error (SWT.ERROR_IO, e);
+			return 0;
 		}
 		if (spill != null) spill.cache.readjust (d.snapshot ());
 		return (int) Math.round (d.effectiveRatio () * 1000.0);

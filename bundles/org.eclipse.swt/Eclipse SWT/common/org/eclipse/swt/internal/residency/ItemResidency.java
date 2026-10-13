@@ -10,6 +10,9 @@ package org.eclipse.swt.internal.residency;
 
 import java.util.Arrays;
 
+import org.eclipse.swt.*;
+import org.eclipse.swt.internal.PackedHeapGrowth;
+
 /**
  * Shared, toolkit-neutral M3 item-residency engine (design: docs/m3/M3_ITEM_RESIDENCY.md). State
  * lives here in sparse lanes and patterns, resident payload slots, a swap tier and parent-owned data
@@ -135,7 +138,7 @@ public final class ItemResidency {
 	DataCodec codec;
 	int sampleEvery = 64, operations, permille = 1000, budget;
 	int windowStart, windowEnd, prefetchRows, hotSize, hotRunCount;
-	int [] hotRuns = new int [8], priority = new int [16];
+	int [] hotRuns = new int [8], priority = new int [16], previousRuns = new int [8];
 	int filling = -1, fillingSlot = -1, hand, painting, materializedDuringPaint;
 	final int [] counters = new int [COUNTERS];
 	final Object [] ring = new Object [4];
@@ -144,8 +147,22 @@ public final class ItemResidency {
 	int editorItem = -1, editorColumn, editorCaret, editorSelectionStart, editorSelectionEnd;
 	String editorText;
 
+	/**
+	 * Constructs a new engine for items with the given number of columns.
+	 *
+	 * @param config the construction flags (<code>RESIDENCY_SWAP</code>, <code>RESIDENCY_DESTROY</code>, <code>IDENTITY_PIN_ALL</code>, <code>IDENTITY_BY_METADATA</code>, <code>PRESSURE_SAMPLED</code>)
+	 * @param columns the number of payload columns, at least 1
+	 * @param hardSlots the hard ceiling of resident payload slots, at least 1
+	 * @param source the data source that answers SetData requests, or <code>null</code>
+	 * @param spill the COLD tier, or <code>null</code> (web: DESTROY only)
+	 * @param pressure the pressure source, or <code>null</code>
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_INVALID_ARGUMENT - if columns or hardSlots is less than 1</li>
+	 * </ul>
+	 */
 	public ItemResidency (int config, int columns, int hardSlots, DataSource source, Spill spill, Pressure pressure) {
-		if (columns < 1 || hardSlots < 1) throw new IllegalArgumentException ("columns and hardSlots must be positive");
+		if (columns < 1 || hardSlots < 1) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 		this.config = config;
 		this.hardSlots = hardSlots;
 		this.source = source;
@@ -155,10 +172,23 @@ public final class ItemResidency {
 		budget = hardSlots;
 	}
 
+	/**
+	 * Returns the counter plus one, saturating at <code>Integer.MAX_VALUE</code>.
+	 *
+	 * @param counter the counter
+	 * @return the incremented counter
+	 */
 	public static int inc (int counter) {
 		return counter == Integer.MAX_VALUE ? counter : counter + 1;
 	}
 
+	/**
+	 * Returns the counter plus a non-negative delta, saturating at <code>Integer.MAX_VALUE</code>.
+	 *
+	 * @param counter the counter
+	 * @param delta the amount to add
+	 * @return the new counter
+	 */
 	public static int add (int counter, int delta) {
 		return counter > Integer.MAX_VALUE - delta ? Integer.MAX_VALUE : counter + delta;
 	}
@@ -180,16 +210,30 @@ public final class ItemResidency {
 
 	// ---- structure ---------------------------------------------------------------------------
 
+	/**
+	 * Returns the number of items.
+	 *
+	 * @return the number of items
+	 */
 	public int count () {
 		return lanes.count;
 	}
 
 	private void checkItem (int item) {
-		if (item < 0 || item >= lanes.count) throw new IndexOutOfBoundsException ("item " + item + " of " + lanes.count);
+		if (item < 0 || item >= lanes.count) SWT.error (SWT.ERROR_INVALID_RANGE);
 	}
 
+	/**
+	 * Sets the number of items. Items at or above the new count lose their payload, lanes, data and pins.
+	 *
+	 * @param items the new number of items
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_INVALID_ARGUMENT - if the count is negative</li>
+	 * </ul>
+	 */
 	public void setCount (int items) {
-		if (items < 0) throw new IllegalArgumentException ("negative count");
+		if (items < 0) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 		requests.cancelAll (this, lanes, source);
 		for (int i = items; i < lanes.count; i++) {
 			dropPayload (i);
@@ -208,8 +252,17 @@ public final class ItemResidency {
 		clampWindow ();
 	}
 
+	/**
+	 * Inserts a default item at the given index; later items, their lanes, payload, pins and data move up by one.
+	 *
+	 * @param index the index of the new item
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of items (inclusive)</li>
+	 * </ul>
+	 */
 	public void insert (int index) {
-		if (index < 0 || index > lanes.count) throw new IndexOutOfBoundsException ("insert " + index);
+		if (index < 0 || index > lanes.count) SWT.error (SWT.ERROR_INVALID_RANGE);
 		requests.cancelAll (this, lanes, source);
 		lanes.insert (index);
 		residencyPins.shift (index, 1, lanes.count - 1, pinScratch);
@@ -222,6 +275,15 @@ public final class ItemResidency {
 		invalidateRing ();
 	}
 
+	/**
+	 * Removes the item at the given index; its pinned proxy is rebound to -1 (disposed).
+	 *
+	 * @param index the index of the item
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_INVALID_RANGE - if the item is not between 0 and the number of items minus 1 (inclusive)</li>
+	 * </ul>
+	 */
 	public void remove (int index) {
 		checkItem (index);
 		requests.cancelAll (this, lanes, source);
@@ -264,32 +326,95 @@ public final class ItemResidency {
 
 	// ---- bit lanes -----------------------------------------------------------------------------
 
+	/**
+	 * Returns the state of one lane of an item.
+	 *
+	 * @param lane the lane (<code>LANE_*</code>)
+	 * @param item the item index
+	 * @return <code>true</code> when the bit is set
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_INVALID_RANGE - if the item is not between 0 and the number of items minus 1 (inclusive)</li>
+	 * </ul>
+	 */
 	public boolean bit (int lane, int item) {
 		checkItem (item);
 		return lanes.get (lane, item);
 	}
 
+	/**
+	 * Sets one user lane of an item. Inside a pattern this records an exception only when the value differs from the rule.
+	 *
+	 * @param lane the lane (<code>LANE_*</code>, not an engine-owned lane)
+	 * @param item the item index
+	 * @param on the new state
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_INVALID_RANGE - if the item is not between 0 and the number of items minus 1 (inclusive)</li>
+	 * </ul>
+	 */
 	public void setBit (int lane, int item, boolean on) {
 		checkItem (item);
 		checkUserLane (lane);
 		lanes.set (lane, item, on);
 	}
 
+	/**
+	 * Sets or clears one user lane over a range of items, cutting any pattern there. Used for select-all and check-all.
+	 *
+	 * @param lane the lane
+	 * @param from the first item (inclusive)
+	 * @param to the last item (exclusive)
+	 * @param on the new state
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_INVALID_RANGE - if the range is not within the items</li>
+	 * </ul>
+	 */
 	public void setRange (int lane, int from, int to, boolean on) {
 		checkUserLane (lane);
-		if (from < 0 || to > lanes.count || from > to) throw new IndexOutOfBoundsException ("range");
+		if (from < 0 || to > lanes.count || from > to) SWT.error (SWT.ERROR_INVALID_RANGE);
 		lanes.setRange (lane, from, to, on);
 	}
 
+	/**
+	 * Returns the number of items whose lane is set in a range (patterns and exceptions included).
+	 *
+	 * @param lane the lane
+	 * @param from the first item (inclusive)
+	 * @param to the last item (exclusive)
+	 * @return the count
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_INVALID_RANGE - if the range is not within the items</li>
+	 * </ul>
+	 */
 	public int countRange (int lane, int from, int to) {
-		if (from < 0 || to > lanes.count || from > to) throw new IndexOutOfBoundsException ("range");
+		if (from < 0 || to > lanes.count || from > to) SWT.error (SWT.ERROR_INVALID_RANGE);
 		return lanes.countRange (lane, from, to);
 	}
 
+	/**
+	 * Returns the first item at or after <code>from</code> whose lane is set.
+	 *
+	 * @param lane the lane
+	 * @param from the first item to test
+	 * @return the item index, or -1 when there is none
+	 */
 	public int nextSet (int lane, int from) {
 		return from < 0 ? lanes.nextSet (lane, 0) : lanes.nextSet (lane, from);
 	}
 
+	/**
+	 * Returns every lane of an item as a mask (bit = lane).
+	 *
+	 * @param item the item index
+	 * @return the lane mask
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_INVALID_RANGE - if the item is not between 0 and the number of items minus 1 (inclusive)</li>
+	 * </ul>
+	 */
 	public int gather (int item) {
 		checkItem (item);
 		return lanes.gather (item);
@@ -302,14 +427,24 @@ public final class ItemResidency {
 	 */
 	public void setPattern (int lane, int start, int end, int stride, int repeatMask) {
 		checkUserLane (lane);
-		if (start < 0 || end > lanes.count || start > end) throw new IndexOutOfBoundsException ("range");
+		if (start < 0 || end > lanes.count || start > end) SWT.error (SWT.ERROR_INVALID_RANGE);
 		lanes.setPattern (lane, start, end, stride, repeatMask);
 	}
 
 	private static void checkUserLane (int lane) {
-		if (lane < 0 || lane >= LANES || (ENGINE_LANES & (1 << lane)) != 0) throw new IllegalArgumentException ("lane " + lane);
+		if (lane < 0 || lane >= LANES || (ENGINE_LANES & (1 << lane)) != 0) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 
+	/**
+	 * Returns the residency tier of an item.
+	 *
+	 * @param item the item index
+	 * @return <code>TIER_DESTROYED</code>, <code>TIER_HOT</code>, <code>TIER_WARM</code> or <code>TIER_COLD</code>
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_INVALID_RANGE - if the item is not between 0 and the number of items minus 1 (inclusive)</li>
+	 * </ul>
+	 */
 	public int tier (int item) {
 		checkItem (item);
 		return (lanes.get (LANE_TIER_LO, item) ? 1 : 0) | (lanes.get (LANE_TIER_HI, item) ? 2 : 0);
@@ -337,15 +472,24 @@ public final class ItemResidency {
 	/** Opens a source-backed write scope for one item (SWT SetData). */
 	public void beginData (int item) {
 		checkItem (item);
-		if (filling >= 0) throw new IllegalStateException ("nested beginData");
+		if (filling >= 0) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 		int d = directory.get (item);
 		int s = d > 0 ? d - 1 : d < 0 ? swapIn (item, -d - 1) : allocate (item);
 		filling = item;
 		fillingSlot = s;
 	}
 
+	/**
+	 * Closes the source-backed write scope opened by <code>beginData</code> and marks the item loaded.
+	 *
+	 * @param item the item index
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_INVALID_ARGUMENT - if no data scope is open for the item</li>
+	 * </ul>
+	 */
 	public void endData (int item) {
-		if (filling != item) throw new IllegalStateException ("endData without beginData");
+		if (filling != item) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 		filling = -1;
 		fillingSlot = -1;
 		lanes.set (LANE_DATA_REQUESTED, item, false);
@@ -367,6 +511,11 @@ public final class ItemResidency {
 		setTier (item, TIER_DESTROYED);
 	}
 
+	/**
+	 * Sets how many rows beyond the overscan the engine requests in the scroll direction.
+	 *
+	 * @param rows the number of rows, negative values mean 0
+	 */
 	public void setPrefetch (int rows) {
 		prefetchRows = rows < 0 ? 0 : rows;
 	}
@@ -411,12 +560,34 @@ public final class ItemResidency {
 		return s;
 	}
 
+	/**
+	 * Returns the text of a cell, paging the item in or requesting its data when needed.
+	 *
+	 * @param item the item index
+	 * @param column the column index
+	 * @return the text, or <code>null</code> when the item has no data yet
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_INVALID_RANGE - if the item or column is not in the valid range</li>
+	 * </ul>
+	 */
 	public String getText (int item, int column) {
 		checkColumn (column);
 		int s = readSlot (item);
 		return s < 0 ? null : slots.slotText [s * slots.columns + column];
 	}
 
+	/**
+	 * Sets the text of a cell. Outside a data scope the payload becomes caller-owned and is never destroyed.
+	 *
+	 * @param item the item index
+	 * @param column the column index
+	 * @param text the new text
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_INVALID_RANGE - if the item or column is not in the valid range</li>
+	 * </ul>
+	 */
 	public void setText (int item, int column, String text) {
 		checkColumn (column);
 		int s = writeSlot (item, false);
@@ -424,12 +595,34 @@ public final class ItemResidency {
 		trim ();
 	}
 
+	/**
+	 * Returns an item payload field (<code>I_*</code>).
+	 *
+	 * @param item the item index
+	 * @param field the field
+	 * @return the value, or 0 when the item has no data yet
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_INVALID_RANGE - if the item or field is not in the valid range</li>
+	 * </ul>
+	 */
 	public int getInt (int item, int field) {
 		checkField (field, ITEM_INTS);
 		int s = readSlot (item);
 		return s < 0 ? 0 : slots.slotInts [s * slots.intStride + field];
 	}
 
+	/**
+	 * Sets an item payload field (<code>I_*</code>).
+	 *
+	 * @param item the item index
+	 * @param field the field
+	 * @param value the new value
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_INVALID_RANGE - if the item or field is not in the valid range</li>
+	 * </ul>
+	 */
 	public void setInt (int item, int field, int value) {
 		checkField (field, ITEM_INTS);
 		slots.slotInts [writeSlot (item, false) * slots.intStride + field] = value;
@@ -443,6 +636,18 @@ public final class ItemResidency {
 		trim ();
 	}
 
+	/**
+	 * Returns a cell payload field (<code>C_*</code>).
+	 *
+	 * @param item the item index
+	 * @param column the column index
+	 * @param field the field
+	 * @return the value, or 0 when the item has no data yet
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_INVALID_RANGE - if the item, column or field is not in the valid range</li>
+	 * </ul>
+	 */
 	public int getCellInt (int item, int column, int field) {
 		checkColumn (column);
 		checkField (field, CELL_INTS);
@@ -450,6 +655,18 @@ public final class ItemResidency {
 		return s < 0 ? 0 : slots.slotInts [s * slots.intStride + ITEM_INTS + column * CELL_INTS + field];
 	}
 
+	/**
+	 * Sets a cell payload field (<code>C_*</code>).
+	 *
+	 * @param item the item index
+	 * @param column the column index
+	 * @param field the field
+	 * @param value the new value
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_INVALID_RANGE - if the item, column or field is not in the valid range</li>
+	 * </ul>
+	 */
 	public void setCellInt (int item, int column, int field, int value) {
 		checkColumn (column);
 		checkField (field, CELL_INTS);
@@ -457,22 +674,42 @@ public final class ItemResidency {
 		trim ();
 	}
 
+	/**
+	 * Returns the opaque payload bytes of an item.
+	 *
+	 * @param item the item index
+	 * @return the bytes, or <code>null</code>
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_INVALID_RANGE - if the item is not between 0 and the number of items minus 1 (inclusive)</li>
+	 * </ul>
+	 */
 	public byte [] getBlob (int item) {
 		int s = readSlot (item);
 		return s < 0 ? null : slots.slotBlob [s];
 	}
 
+	/**
+	 * Sets the opaque payload bytes of an item.
+	 *
+	 * @param item the item index
+	 * @param blob the bytes, or <code>null</code>
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_INVALID_RANGE - if the item is not between 0 and the number of items minus 1 (inclusive)</li>
+	 * </ul>
+	 */
 	public void setBlob (int item, byte [] blob) {
 		slots.slotBlob [writeSlot (item, false)] = blob;
 		trim ();
 	}
 
 	private void checkColumn (int column) {
-		if (column < 0 || column >= slots.columns) throw new IndexOutOfBoundsException ("column " + column);
+		if (column < 0 || column >= slots.columns) SWT.error (SWT.ERROR_INVALID_RANGE);
 	}
 
 	private static void checkField (int field, int limit) {
-		if (field < 0 || field >= limit) throw new IndexOutOfBoundsException ("field " + field);
+		if (field < 0 || field >= limit) SWT.error (SWT.ERROR_INVALID_RANGE);
 	}
 
 	// ---- paint path: reads by slot, zero materialization -----------------------------------------
@@ -486,6 +723,9 @@ public final class ItemResidency {
 		painting++;
 	}
 
+	/**
+	 * Closes a paint scope opened by <code>beginPaint</code>.
+	 */
 	public void endPaint () {
 		if (painting > 0) painting--;
 	}
@@ -497,6 +737,16 @@ public final class ItemResidency {
 		return d > 0 ? d - 1 : -1;
 	}
 
+	/**
+	 * Paint path: returns the lane mask of an item without paging, requesting or allocating.
+	 *
+	 * @param item the item index
+	 * @return the lane mask
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_INVALID_RANGE - if the item is not between 0 and the number of items minus 1 (inclusive)</li>
+	 * </ul>
+	 */
 	public int paintLanes (int item) {
 		checkItem (item);
 		return lanes.gather (item);
@@ -507,14 +757,14 @@ public final class ItemResidency {
 	 * {@code out}, O(set bits) per plain lane. Returns the number of entries written.
 	 */
 	public int paintLanes (int from, int to, int [] out) {
-		if (from < 0 || to > lanes.count || from > to || out.length < to - from) throw new IndexOutOfBoundsException ("range");
+		if (from < 0 || to > lanes.count || from > to || out.length < to - from) SWT.error (SWT.ERROR_INVALID_RANGE);
 		lanes.gather (from, to, out);
 		return to - from;
 	}
 
 	/** Bulk paint read (UI method): resident slot (or -1) of each item of {@code [from, to)}. */
 	public int paintSlots (int from, int to, int [] out) {
-		if (from < 0 || to > lanes.count || from > to || out.length < to - from) throw new IndexOutOfBoundsException ("range");
+		if (from < 0 || to > lanes.count || from > to || out.length < to - from) SWT.error (SWT.ERROR_INVALID_RANGE);
 		for (int i = from; i < to; i++) {
 			int d = directory.get (i);
 			out [i - from] = d > 0 ? d - 1 : -1;
@@ -522,32 +772,87 @@ public final class ItemResidency {
 		return to - from;
 	}
 
+	/**
+	 * Paint path: returns the text of a resident slot.
+	 *
+	 * @param slot the slot from <code>paintSlot</code>
+	 * @param column the column index
+	 * @return the text
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_INVALID_RANGE - if the column is not in the valid range</li>
+	 * </ul>
+	 */
 	public String slotText (int slot, int column) {
 		checkColumn (column);
 		return slots.slotText [slot * slots.columns + column];
 	}
 
+	/**
+	 * Paint path: returns an item payload field of a resident slot.
+	 *
+	 * @param slot the slot from <code>paintSlot</code>
+	 * @param field the field (<code>I_*</code>)
+	 * @return the value
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_INVALID_RANGE - if the field is not in the valid range</li>
+	 * </ul>
+	 */
 	public int slotInt (int slot, int field) {
 		checkField (field, ITEM_INTS);
 		return slots.slotInts [slot * slots.intStride + field];
 	}
 
+	/**
+	 * Paint path: returns a cell payload field of a resident slot.
+	 *
+	 * @param slot the slot from <code>paintSlot</code>
+	 * @param column the column index
+	 * @param field the field (<code>C_*</code>)
+	 * @return the value
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_INVALID_RANGE - if the column or field is not in the valid range</li>
+	 * </ul>
+	 */
 	public int slotCellInt (int slot, int column, int field) {
 		checkColumn (column);
 		checkField (field, CELL_INTS);
 		return slots.slotInts [slot * slots.intStride + ITEM_INTS + column * CELL_INTS + field];
 	}
 
+	/**
+	 * Paint path: returns the opaque payload bytes of a resident slot.
+	 *
+	 * @param slot the slot from <code>paintSlot</code>
+	 * @return the bytes, or <code>null</code>
+	 */
 	public byte [] slotBlob (int slot) {
 		return slots.slotBlob [slot];
 	}
 
+	/**
+	 * Returns how many materializations happened inside paint scopes; correct widgets keep it 0.
+	 *
+	 * @return the count
+	 */
 	public int materializedDuringPaint () {
 		return materializedDuringPaint;
 	}
 
 	// ---- item data lanes (parent-owned, pinned unless a codec accepts the value) ---------------
 
+	/**
+	 * Returns the item data object. It is pinned in the parent's data lane and keeps its identity across DESTROY and recreate.
+	 *
+	 * @param item the item index
+	 * @return the data, or <code>null</code>
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_INVALID_RANGE - if the item is not between 0 and the number of items minus 1 (inclusive)</li>
+	 * </ul>
+	 */
 	public Object getData (int item) {
 		checkItem (item);
 		int d = directory.get (item);
@@ -555,15 +860,39 @@ public final class ItemResidency {
 		return data.get (item);
 	}
 
+	/**
+	 * Sets the item data object in the parent's data lane.
+	 *
+	 * @param item the item index
+	 * @param value the data, or <code>null</code>
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_INVALID_RANGE - if the item is not between 0 and the number of items minus 1 (inclusive)</li>
+	 * </ul>
+	 */
 	public void setData (int item, Object value) {
 		checkItem (item);
 		markDataChanged (item);
 		data.put (item, value);
 	}
 
+	/**
+	 * Returns the keyed item data object.
+	 *
+	 * @param item the item index
+	 * @param key the key
+	 * @return the data, or <code>null</code>
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_INVALID_RANGE - if the item is not between 0 and the number of items minus 1 (inclusive)</li>
+	 * </ul>
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_NULL_ARGUMENT - if the key is null</li>
+	 * </ul>
+	 */
 	public Object getKeyedData (int item, String key) {
 		checkItem (item);
-		if (key == null) throw new IllegalArgumentException ("null key");
+		if (key == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 		int d = directory.get (item);
 		if (d < 0) swapIn (item, -d - 1);
 		Object [] pairs = (Object []) keyed.get (item);
@@ -573,9 +902,23 @@ public final class ItemResidency {
 		return null;
 	}
 
+	/**
+	 * Sets keyed item data; a <code>null</code> value removes the key.
+	 *
+	 * @param item the item index
+	 * @param key the key
+	 * @param value the data, or <code>null</code>
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_INVALID_RANGE - if the item is not between 0 and the number of items minus 1 (inclusive)</li>
+	 * </ul>
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_NULL_ARGUMENT - if the key is null</li>
+	 * </ul>
+	 */
 	public void setKeyedData (int item, String key, Object value) {
 		checkItem (item);
-		if (key == null) throw new IllegalArgumentException ("null key");
+		if (key == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 		markDataChanged (item);
 		keyed.put (item, ItemResidency.withPair ((Object []) keyed.get (item), key, value));
 	}
@@ -609,13 +952,36 @@ public final class ItemResidency {
 		if (d > 0) freeRecord (d - 1);
 	}
 
+	/**
+	 * Registers the codec whose accepted values are immutable and may travel to the COLD tier.
+	 *
+	 * @param codec the codec, or <code>null</code>
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_INVALID_ARGUMENT - if an item has already been swapped out</li>
+	 * </ul>
+	 */
 	public void setDataCodec (DataCodec codec) {
-		if (counters [STAT_SWAP_OUT] != 0) throw new IllegalStateException ("codec must be set before the first swap-out");
+		if (counters [STAT_SWAP_OUT] != 0) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 		this.codec = codec;
 	}
 
 	// ---- editor (parent scalars) -----------------------------------------------------------------
 
+	/**
+	 * Records the in-place editor state in the parent so that it survives scrolling.
+	 *
+	 * @param item the edited item
+	 * @param column the edited column
+	 * @param text the edited text
+	 * @param caret the caret offset
+	 * @param selectionStart the selection start
+	 * @param selectionEnd the selection end
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_INVALID_RANGE - if the item or column is not in the valid range</li>
+	 * </ul>
+	 */
 	public void openEditor (int item, int column, String text, int caret, int selectionStart, int selectionEnd) {
 		checkItem (item);
 		checkColumn (column);
@@ -627,32 +993,65 @@ public final class ItemResidency {
 		editorSelectionEnd = selectionEnd;
 	}
 
+	/**
+	 * Clears the in-place editor state.
+	 */
 	public void closeEditor () {
 		editorItem = -1;
 		editorText = null;
 		editorCaret = editorSelectionStart = editorSelectionEnd = editorColumn = 0;
 	}
 
+	/**
+	 * Returns the item of the open editor.
+	 *
+	 * @return the item index, or -1 when no editor is open
+	 */
 	public int editorItem () {
 		return editorItem;
 	}
 
+	/**
+	 * Returns the column of the open editor.
+	 *
+	 * @return the column index
+	 */
 	public int editorColumn () {
 		return editorColumn;
 	}
 
+	/**
+	 * Returns the edited text of the open editor.
+	 *
+	 * @return the text, or <code>null</code>
+	 */
 	public String editorText () {
 		return editorText;
 	}
 
+	/**
+	 * Returns the caret offset of the open editor.
+	 *
+	 * @return the caret offset
+	 */
 	public int editorCaret () {
 		return editorCaret;
 	}
 
+	/**
+	 * Returns the selection start of the open editor.
+	 *
+	 * @return the selection start
+	 */
 	public int editorSelectionStart () {
 		return editorSelectionStart;
 	}
 
+	/**
+	 * Returns the selection end of the open editor.
+	 *
+	 * @return the selection end
+	 */
 	public int editorSelectionEnd () {
 		return editorSelectionEnd;
 	}
@@ -664,7 +1063,7 @@ public final class ItemResidency {
 	 * priority visible, then overscan in the scroll direction, then prefetch beyond it.
 	 */
 	public void setViewport (int first, int visible, int overscan) {
-		if (first < 0 || visible < 0 || overscan < 0) throw new IllegalArgumentException ("negative viewport");
+		if (first < 0 || visible < 0 || overscan < 0) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 		int n = lanes.count;
 		first = Math.min (first, n);
 		int visibleEnd = visible > n - first ? n : first + visible;
@@ -691,12 +1090,14 @@ public final class ItemResidency {
 	 */
 	public void setViewportRuns (int [] runs, int runCount, int hotRunCount) {
 		int n = lanes.count;
-		if (hotRunCount < 0 || hotRunCount > runCount || 2 * runCount > runs.length) throw new IllegalArgumentException ("run counts");
+		if (hotRunCount < 0 || hotRunCount > runCount || 2 * runCount > runs.length) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 		for (int k = 0; k < runCount; k++) {
-			if (runs [2 * k] < 0 || runs [2 * k] > runs [2 * k + 1] || runs [2 * k + 1] > n) throw new IndexOutOfBoundsException ("run " + k);
+			if (runs [2 * k] < 0 || runs [2 * k] > runs [2 * k + 1] || runs [2 * k + 1] > n) SWT.error (SWT.ERROR_INVALID_RANGE);
 		}
 		int previousCount = this.hotRunCount;
-		int [] previous = Arrays.copyOf (hotRuns, 2 * previousCount);
+		if (previousRuns.length < 2 * previousCount) previousRuns = new int [PackedHeapGrowth.capacity (previousRuns.length, 2 * previousCount, 4)];
+		int [] previous = previousRuns;
+		System.arraycopy (hotRuns, 0, previous, 0, 2 * previousCount);
 		setHotRuns (runs, hotRunCount);
 		for (int k = 0; k < previousCount; k++) {
 			for (int i = previous [2 * k]; i < previous [2 * k + 1] && i < n; i++) {
@@ -736,26 +1137,46 @@ public final class ItemResidency {
 	 * source, a sticky header). Pinned items are never evicted; payload is paged in on first access.
 	 */
 	public void pinResidency (int from, int to) {
-		if (from < 0 || to > lanes.count || from > to) throw new IndexOutOfBoundsException ("range");
+		if (from < 0 || to > lanes.count || from > to) SWT.error (SWT.ERROR_INVALID_RANGE);
 		residencyPins.setRange (from, to, true);
 	}
 
 	/** UI method: releases {@link #pinResidency} and trims back to the budget. */
 	public void unpinResidency (int from, int to) {
-		if (from < 0 || to > lanes.count || from > to) throw new IndexOutOfBoundsException ("range");
+		if (from < 0 || to > lanes.count || from > to) SWT.error (SWT.ERROR_INVALID_RANGE);
 		residencyPins.setRange (from, to, false);
 		trim ();
 	}
 
+	/**
+	 * Returns whether an item is pinned resident by <code>pinResidency</code>.
+	 *
+	 * @param item the item index
+	 * @return <code>true</code> when pinned
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_INVALID_RANGE - if the item is not between 0 and the number of items minus 1 (inclusive)</li>
+	 * </ul>
+	 */
 	public boolean isResidencyPinned (int item) {
 		checkItem (item);
 		return residencyPins.get (item);
 	}
 
+	/**
+	 * Returns the first item of the HOT window.
+	 *
+	 * @return the item index
+	 */
 	public int windowStart () {
 		return windowStart;
 	}
 
+	/**
+	 * Returns the end (exclusive) of the HOT window.
+	 *
+	 * @return the item index
+	 */
 	public int windowEnd () {
 		return windowEnd;
 	}
@@ -928,6 +1349,11 @@ public final class ItemResidency {
 
 	// ---- pressure ------------------------------------------------------------------------------
 
+	/**
+	 * Sets the pressure sampling cadence in operations.
+	 *
+	 * @param operations the number of operations between samples, at least 1
+	 */
 	public void setSampleEvery (int operations) {
 		sampleEvery = operations < 1 ? 1 : operations;
 	}
@@ -984,10 +1410,20 @@ public final class ItemResidency {
 
 	// ---- identity ------------------------------------------------------------------------------
 
+	/**
+	 * Sets the factory that creates and rebinds proxies.
+	 *
+	 * @param factory the factory
+	 */
 	public void setHandleFactory (HandleFactory factory) {
 		this.factory = factory;
 	}
 
+	/**
+	 * Sets the compile-time site metadata that decides when proxies may be recycled.
+	 *
+	 * @param metadata the metadata, or <code>null</code> to pin every proxy
+	 */
 	public void setSiteMetadata (SiteMetadata metadata) {
 		this.metadata = metadata;
 	}
@@ -995,7 +1431,7 @@ public final class ItemResidency {
 	/** Pinned handle: the same object for the life of the item. */
 	public Object handle (int item) {
 		checkItem (item);
-		if (factory == null) throw new IllegalStateException ("no handle factory");
+		if (factory == null) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 		Object h = lanes.get (LANE_PINNED, item) ? pins.get (item) : null;
 		if (h == null) {
 			paintViolation ();
@@ -1054,15 +1490,15 @@ public final class ItemResidency {
 
 		public static Sidecar fromInts (int [] packed) {
 			if (packed == null || packed.length < 3 || packed [0] != MAGIC || packed [1] != VERSION) {
-				throw new IllegalArgumentException ("not an M3IRS01 sidecar");
+				SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 			}
 			int n = packed [2];
-			if (n < 0 || packed.length != 3 + 2 * n) throw new IllegalArgumentException ("sidecar length");
+			if (n < 0 || packed.length != 3 + 2 * n) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 			int [] keys = new int [n], kinds = new int [n];
 			for (int i = 0; i < n; i++) {
 				keys [i] = packed [3 + 2 * i];
 				kinds [i] = packed [4 + 2 * i];
-				if (i > 0 && keys [i] <= keys [i - 1]) throw new IllegalArgumentException ("sidecar keys not strictly sorted");
+				if (i > 0 && keys [i] <= keys [i - 1]) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 			}
 			return new Sidecar (keys, kinds);
 		}
@@ -1082,6 +1518,16 @@ public final class ItemResidency {
 
 	// ---- statistics ------------------------------------------------------------------------------
 
+	/**
+	 * Returns a diagnostic counter or measurement (<code>STAT_*</code>).
+	 *
+	 * @param which the statistic
+	 * @return the value
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_INVALID_ARGUMENT - if the statistic is unknown</li>
+	 * </ul>
+	 */
 	public int stat (int which) {
 		if (which >= 0 && which < COUNTERS) return counters [which];
 		switch (which) {
@@ -1097,10 +1543,13 @@ public final class ItemResidency {
 			case STAT_SLOT_BYTES: return slots.bytes ();
 			case STAT_SLOT_CAPACITY: return slots.capacity;
 			case STAT_MATERIALIZED_DURING_PAINT: return materializedDuringPaint;
-			default: throw new IllegalArgumentException ("stat " + which);
+			default: SWT.error (SWT.ERROR_INVALID_ARGUMENT); return 0;
 		}
 	}
 
+	/**
+	 * Cancels outstanding requests and closes the COLD tier.
+	 */
 	public void dispose () {
 		requests.cancelAll (this, lanes, source);
 		if (spill != null) spill.close ();

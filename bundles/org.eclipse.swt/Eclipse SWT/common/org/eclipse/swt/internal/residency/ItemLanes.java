@@ -10,6 +10,7 @@ package org.eclipse.swt.internal.residency;
 
 import java.util.Arrays;
 
+import org.eclipse.swt.*;
 import org.eclipse.swt.internal.PackedHeapGrowth;
 
 /**
@@ -141,7 +142,7 @@ public final class ItemLanes {
 	 * the range are dropped. O(1) memory regardless of the range length.
 	 */
 	public void setPattern (int lane, int start, int end, int stride, int repeatMask) {
-		if (stride < 1 || stride > 32) throw new IllegalArgumentException ("stride 1..32");
+		if (stride < 1 || stride > 32) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 		if (start >= end) return;
 		cutPatterns (lane, start, end);
 		value [lane].setRange (start, end, false);
