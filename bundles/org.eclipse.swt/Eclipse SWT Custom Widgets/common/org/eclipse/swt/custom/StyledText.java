@@ -123,8 +123,8 @@ public class StyledText extends Canvas {
 	 */
 	static final int DEFER_PAINT = 1, DEFER_LAYOUT = 1 << 1, DEFER_MEASURE = 1 << 2, DEFER_CARET = 1 << 3;
 	static final int DEFER_SETTLING = 1 << 4;
-	/** Internal maintenance in progress: extent reads stay lazy (no settle). */
-	static final int DEFER_MAINTAINING = 1 << 5;
+	/** Wrap-mode bottom free space claim skipped while hidden. */
+	static final int DEFER_BOTTOM = 1 << 5;
 	/** columnX of a deferred caret placement: the caret's x, resolved when the placement settles. */
 	static final int COLUMN_X_UNSET = Integer.MIN_VALUE;
 	int deferredWork;
@@ -1241,7 +1241,7 @@ void claimBottomFreeSpace() {
 		if (newVerticalOffset < getVerticalScrollOffset()) {
 			scrollVertical(newVerticalOffset - getVerticalScrollOffset(), true);
 		}
-	} else if (!defer(DEFER_LAYOUT)) {
+	} else if (!defer(DEFER_BOTTOM)) {
 		int bottomIndex = getPartialBottomIndex();
 		int height = getLinePixel(bottomIndex + 1);
 		if (clientAreaHeight > height) {
@@ -1996,7 +1996,7 @@ void doBlockColumn(boolean next) {
 		showCaret();
 	} else {
 		int width = next ? renderer.averageCharWidth : -renderer.averageCharWidth;
-		int maxWidth = Math.max(clientAreaWidth - rightMargin - leftMargin, renderer.getWidth());
+		int maxWidth = Math.max(clientAreaWidth - rightMargin - leftMargin, contentWidth());
 		x = Math.max(0, Math.min(blockXLocation + width, maxWidth)) - horizontalScrollOffset;
 		setBlockSelectionLocation(x, y, true);
 		Rectangle rect = new Rectangle(x, y, 0, 0);
@@ -2042,7 +2042,7 @@ void doBlockWord(boolean next) {
 		showCaret();
 	} else {
 		int width = (next ? renderer.averageCharWidth : -renderer.averageCharWidth) * 6;
-		int maxWidth = Math.max(clientAreaWidth - rightMargin - leftMargin, renderer.getWidth());
+		int maxWidth = Math.max(clientAreaWidth - rightMargin - leftMargin, contentWidth());
 		x = Math.max(0, Math.min(blockXLocation + width, maxWidth)) - horizontalScrollOffset;
 		setBlockSelectionLocation(x, y, true);
 		Rectangle rect = new Rectangle(x, y, 0, 0);
@@ -2109,7 +2109,7 @@ void doBlockLineHorizontal(boolean end) {
 		setBlockSelectionOffset(offset, true);
 		showCaret();
 	} else {
-		int maxWidth = Math.max(clientAreaWidth - rightMargin - leftMargin, renderer.getWidth());
+		int maxWidth = Math.max(clientAreaWidth - rightMargin - leftMargin, contentWidth());
 		x = (end ? maxWidth : 0) - horizontalScrollOffset;
 		setBlockSelectionLocation(x, y, true);
 		Rectangle rect = new Rectangle(x, y, 0, 0);
@@ -3262,10 +3262,15 @@ boolean defer(int work) {
 	return true;
 }
 /**
- * Settles deferred client-area measurement and the idle pass, synchronously, when
- * a caller reads an extent (renderer read hook): a hidden widget then answers like
- * a visible one whose idle measurement pass has completed.
+ * Content width for a caller-asked horizontal clamp. A deferred extent is settled
+ * synchronously first, so a hidden widget answers like a visible one whose idle
+ * measurement pass has completed.
  */
+int contentWidth() {
+	settleExtent();
+	return renderer.getWidth();
+}
+/** Settles deferred client-area measurement and the idle pass, synchronously. */
 void settleExtent() {
 	int pending = deferredWork & (DEFER_LAYOUT | DEFER_MEASURE);
 	if (pending == 0) {
@@ -3273,31 +3278,21 @@ void settleExtent() {
 	}
 	settle(DEFER_LAYOUT);
 	if ((pending & DEFER_MEASURE) != 0) {
+		boolean outermost = (deferredWork & DEFER_SETTLING) == 0;
 		deferredWork = (deferredWork & ~DEFER_MEASURE) | DEFER_SETTLING;
 		try {
 			renderer.measureIdleNow();
 		} finally {
-			deferredWork &= ~DEFER_SETTLING;
+			if (outermost) {
+				deferredWork &= ~DEFER_SETTLING;
+			}
 		}
 	}
 }
 /** Settles all deferred work once the widget is effectively visible. */
-/** Marks internal maintenance; answers whether this call is the outermost one. */
-boolean beginMaintenance() {
-	if ((deferredWork & DEFER_MAINTAINING) != 0) {
-		return false;
-	}
-	deferredWork |= DEFER_MAINTAINING;
-	return true;
-}
-void endMaintenance(boolean outermost) {
-	if (outermost) {
-		deferredWork &= ~DEFER_MAINTAINING;
-	}
-}
 void settleIfVisible() {
 	if (deferredWork != 0 && isEffectivelyVisible()) {
-		settle(DEFER_LAYOUT | DEFER_CARET | DEFER_MEASURE | DEFER_PAINT);
+		settle(DEFER_LAYOUT | DEFER_BOTTOM | DEFER_CARET | DEFER_MEASURE | DEFER_PAINT);
 	}
 }
 /**
@@ -3310,11 +3305,14 @@ void settle(int work) {
 	if (pending == 0) {
 		return;
 	}
+	boolean outermost = (deferredWork & DEFER_SETTLING) == 0;
 	deferredWork = (deferredWork & ~pending) | DEFER_SETTLING;
 	try {
 		if ((pending & DEFER_LAYOUT) != 0) {
 			measureClientArea(renderer.maxWidthLineIndex);
 			setScrollBars(true);
+		}
+		if ((pending & DEFER_BOTTOM) != 0) {
 			claimBottomFreeSpace();
 		}
 		if ((pending & DEFER_CARET) != 0) {
@@ -3326,7 +3324,9 @@ void settle(int work) {
 			}
 		}
 	} finally {
-		deferredWork &= ~DEFER_SETTLING;
+		if (outermost) {
+			deferredWork &= ~DEFER_SETTLING;
+		}
 	}
 	if ((pending & DEFER_MEASURE) != 0) {
 		renderer.calculateIdle();
@@ -5813,30 +5813,15 @@ void installDefaultContent() {
 	textChangeListener = new TextChangeListener() {
 		@Override
 		public void textChanging(TextChangingEvent event) {
-			boolean outermost = beginMaintenance();
-			try {
-				handleTextChanging(event);
-			} finally {
-				endMaintenance(outermost);
-			}
+			handleTextChanging(event);
 		}
 		@Override
 		public void textChanged(TextChangedEvent event) {
-			boolean outermost = beginMaintenance();
-			try {
-				handleTextChanged(event);
-			} finally {
-				endMaintenance(outermost);
-			}
+			handleTextChanged(event);
 		}
 		@Override
 		public void textSet(TextChangedEvent event) {
-			boolean outermost = beginMaintenance();
-			try {
-				handleTextSet(event);
-			} finally {
-				endMaintenance(outermost);
-			}
+			handleTextSet(event);
 		}
 	};
 	content = createDefaultContent();
@@ -5872,15 +5857,7 @@ void installListeners() {
 			case SWT.MouseUp: handleMouseUp(event); break;
 			case SWT.MouseMove: handleMouseMove(event); break;
 			case SWT.Paint: handlePaint(event); break;
-			case SWT.Resize: {
-				boolean outermost = beginMaintenance();
-				try {
-					handleResize(event);
-				} finally {
-					endMaintenance(outermost);
-				}
-				break;
-			}
+			case SWT.Resize: handleResize(event); break;
 			case SWT.Traverse: handleTraverse(event); break;
 		}
 	};
@@ -6380,7 +6357,7 @@ void handlePaint(Event event) {
     if (event.width == 0 || event.height == 0) {
         return;
     }
-	settle(DEFER_LAYOUT | DEFER_CARET | DEFER_MEASURE | DEFER_PAINT);
+	settle(DEFER_LAYOUT | DEFER_BOTTOM | DEFER_CARET | DEFER_MEASURE | DEFER_PAINT);
     if (clientAreaWidth == 0 || clientAreaHeight == 0) {
         return;
     }
@@ -8978,7 +8955,7 @@ public void setBlockSelectionBounds(int x, int y, int width, int height) {
 	int minY = topMargin;
 	int minX = leftMargin;
 	int maxY = renderer.getHeight() - bottomMargin;
-	int maxX = Math.max(clientAreaWidth, renderer.getWidth()) - rightMargin;
+	int maxX = Math.max(clientAreaWidth, contentWidth()) - rightMargin;
 	int anchorX = Math.max(minX, Math.min(maxX, x)) - horizontalScrollOffset;
 	int anchorY = Math.max(minY, Math.min(maxY, y)) - verticalScrollOffset;
 	int locationX = Math.max(minX, Math.min(maxX, x + width)) - horizontalScrollOffset;
@@ -9551,7 +9528,7 @@ public void setHorizontalIndex(int offset) {
 	// don't use isVisible since width is known even if widget
 	// is temporarily invisible
 	if (clientAreaWidth > 0) {
-		int width = renderer.getWidth();
+		int width = contentWidth();
 		// prevent scrolling if the content fits in the client area.
 		// align end of longest line with right border of client area
 		// if offset is out of range.
@@ -9590,7 +9567,7 @@ public void setHorizontalPixel(int pixel) {
 	// don't use isVisible since width is known even if widget
 	// is temporarily invisible
 	if (clientAreaWidth > 0) {
-		int width = renderer.getWidth();
+		int width = contentWidth();
 		// prevent scrolling if the content fits in the client area.
 		// align end of longest line with right border of client area
 		// if offset is out of range.
@@ -10394,15 +10371,6 @@ void setScrollBar(ScrollBar bar, int clientArea, int maximum, int margin) {
  * @param vertical indicates if the vertical scrollbar also needs to be set
  */
 void setScrollBars(boolean vertical) {
-	// scroll bars are presentation: computing them is maintenance, not a caller read
-	boolean outermost = beginMaintenance();
-	try {
-		updateScrollBars(vertical);
-	} finally {
-		endMaintenance(outermost);
-	}
-}
-void updateScrollBars(boolean vertical) {
 	ignoreResize++;
     if (!isFixedLineHeight() || !alwaysShowScroll) {
         vertical = true;
@@ -10901,14 +10869,6 @@ public void setStyleRanges(int[] ranges, StyleRange[] styles) {
 	}
 }
 void setStyleRanges(int start, int length, int[] ranges, StyleRange[] styles, boolean reset) {
-	boolean outermost = beginMaintenance();
-	try {
-		applyStyleRanges(start, length, ranges, styles, reset);
-	} finally {
-		endMaintenance(outermost);
-	}
-}
-void applyStyleRanges(int start, int length, int[] ranges, StyleRange[] styles, boolean reset) {
 	int charCount = content.getCharCount();
 	if (reset) {
 		start = 0;
@@ -11516,7 +11476,7 @@ boolean showLocation(Rectangle rect, boolean scrollPage) {
 			scrolled = scrollHorizontal(-Math.min(maxScroll, scrollWidth), true);
 		} else if (rect.x + rect.width > (clientAreaWidth - rightMargin)) {
 			int scrollWidth =  Math.max(rect.x + rect.width - (clientAreaWidth - rightMargin), minScroll);
-			int maxScroll = renderer.getWidth() - horizontalScrollOffset - clientAreaWidth;
+			int maxScroll = contentWidth() - horizontalScrollOffset - clientAreaWidth;
 			scrolled = scrollHorizontal(Math.min(maxScroll, scrollWidth), true);
 		}
 	}

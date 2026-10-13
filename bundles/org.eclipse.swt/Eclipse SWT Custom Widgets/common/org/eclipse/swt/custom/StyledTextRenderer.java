@@ -728,19 +728,7 @@ private Point[] intersectingRelativeNonEmptySelections(int fromOffset, int toOff
 int getBaseline() {
 	return ascent;
 }
-/**
- * Visibility law: a caller reading an extent (width, height, estimated or cached
- * line heights) of a widget that deferred measurement while hidden gets it settled
- * first; internal maintenance and settling read lazily.
- */
-private void settleForRead() {
-	if (styledText != null && (styledText.deferredWork & (StyledText.DEFER_LAYOUT | StyledText.DEFER_MEASURE)) != 0
-			&& (styledText.deferredWork & (StyledText.DEFER_SETTLING | StyledText.DEFER_MAINTAINING)) == 0) {
-		styledText.settleExtent();
-	}
-}
 int getCachedLineHeight(int lineIndex) {
-	settleForRead();
 	return getLineHeight(lineIndex, false);
 }
 Font getFont(int style) {
@@ -860,7 +848,6 @@ void syncIdleWindow () {
 	idleEnd = (int) Math.min(lineCount, (long) top + 2L * visible);
 }
 int getHeight () {
-	settleForRead();
 	int defaultLineHeight = getLineHeight();
 	if (styledText.isFixedLineHeight()) {
 		return lineCount * defaultLineHeight + styledText.topMargin + styledText.bottomMargin;
@@ -1713,7 +1700,6 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
  */
 int getEstimatedLineHeight() {
 	//FLLDCIM: VIEWPORT - sparse logical extent; reconciled as lines are measured
-	settleForRead();
 	int defaultLineHeight = getLineHeight();
 	if (linesInAverageLineHeight > 0) {
 		return Math.max(1, Math.round(averageLineHeight));
@@ -1733,7 +1719,6 @@ int getEstimatedHeight(int defaultLineHeight) {
 	return (int) Math.min(Integer.MAX_VALUE, getEstimatedOffset(lineCount));
 }
 int getWidth() {
-	settleForRead();
 	return maxWidth;
 }
 void reset() {

@@ -32,11 +32,11 @@ method changes. StyledText never uses those `state` bits: its dirty bits are its
 | Bit | Mask | Skipped while hidden | Settled by |
 |---|---|---|---|
 | `DEFER_PAINT` | `1` | `internalRedrawRange`, `redrawLines`, `redrawLinesBullet`, `scrollText` (copy area), the redraw geometry in `handleTextChanged`, `handleTextChanging` (changes at or below the top line) and `setStyleRanges` | `super.redraw()` of the whole client area |
-| `DEFER_LAYOUT` | `1 << 1` | client-area pre-measurement (`measureClientArea` in the `resetCache` family, `calculateTopIndex`, `handleResize`, `redraw()`), wrap-mode `claimBottomFreeSpace` | `measureClientArea`, `setScrollBars(true)`, `claimBottomFreeSpace()` |
+| `DEFER_LAYOUT` | `1 << 1` | client-area pre-measurement (`measureClientArea` in the `resetCache` family, `calculateTopIndex`, `handleResize`, `redraw()`) | `measureClientArea`, `setScrollBars(true)` |
 | `DEFER_MEASURE` | `1 << 2` | the idle measurement pass (`calculateIdle`, `calculateIdleWindow`; a queued pass stops at its next slice) | `renderer.calculateIdle()` (the visible window in viewport mode) |
 | `DEFER_CARET` | `1 << 3` | layout for the default caret's placement (`setCaretLocations`, including the constructor's); the remembered column `columnX` becomes `COLUMN_X_UNSET` | `setCaretLocations()`; a column restored after the deferral (line/page navigation) is kept |
 | `DEFER_SETTLING` | `1 << 4` | marks a settle in progress, so the settled work runs | cleared after the settle |
-| `DEFER_MAINTAINING` | `1 << 5` | marks internal maintenance (text change handlers, resize, `setScrollBars`, `setStyleRanges`), whose extent reads stay lazy | cleared when the outermost scope ends |
+| `DEFER_BOTTOM` | `1 << 5` | the variable-height `claimBottomFreeSpace` (it lays out the lines in view to find the bottom) | `claimBottomFreeSpace()` |
 
 Settle points: `handlePaint` (before drawing; the first paint after the widget becomes visible),
 `handleResize` while visible, `getCaret()` (caret only), and `doLineUp`/`doLineDown`/`doPageUp`/`doPageDown`
@@ -50,7 +50,7 @@ offset" while hidden: the pointer cannot be over a widget that is not visible.
 | Caller queries (`getLocationAtOffset`, `getOffsetAtPoint`, `getLinePixel`, `getTextBounds`, ...) | asked by the caller; they measure the lines they need, as before |
 | Scroll requests (`showSelection`, `setSelection(int,int)`, `setSelection(Point)`, `showCaret`) | the scroll position is caller-visible state; they lay out the one or two lines they reveal |
 | Scroll bar values (`setScrollBars`) | O(1) from the extents measured so far (see section 8 for what a hidden widget defers) |
-| Caller reads of an extent (`renderer.getWidth()`, `getHeight()`, `getCachedLineHeight()`, `getEstimatedLineHeight()`: horizontal clamps, the vertical scroll offset, line pixels from estimates, block-selection bounds) | the renderer's read hook `settleForRead()` first settles a deferred extent synchronously (`StyledText.settleExtent()`: client-area measurement, then the idle pass via `renderer.measureIdleNow()`), so the answer equals that of a visible widget whose idle pass has completed. Internal maintenance (the content's text change handlers, resize, scroll bar computation, style application) runs inside a `DEFER_MAINTAINING` scope and reads lazily |
+| Caller-asked horizontal clamps (`setHorizontalIndex`, `setHorizontalPixel`, `showLocation` beyond the right edge, block-selection column moves and bounds) | read the content width through `contentWidth()`, which first settles a deferred extent synchronously (`settleExtent()`: client-area measurement, then the idle pass via `renderer.measureIdleNow()`), so the clamp equals that of a visible widget whose idle pass has completed |
 | Caret placement of a caller-installed caret | the caller holds the `Caret` reference and may read its location directly |
 | `SWT.SINGLE` alignment margin | geometry state of the single line |
 
@@ -83,6 +83,13 @@ Results: section 7, `.m3/styledtext-visibility-gate-20261013/evidence/`.
 Filled from the evidence files (see the README in the evidence folder).
 
 ## 8. Known limits
+
+* A measured line width includes the caret width at the time the line is measured
+  (`calculate`: `leftMargin + rightMargin + getCaretWidth()`), and a measured width is kept until the
+  line is reset. A hidden widget measures later, so the widest-line extent can differ by a change of
+  caret width: observed 742 px (visible throughout) vs 743 px (hidden) for the same line, visible in the
+  block width of `invokeAction(ST.SELECT_ALL)` in block mode. The visibility differential does not
+  compare that operation.
 
 * With a `StyledTextLineSpacingProvider`, SWT gives a spaced line a different height when the idle
   pass measures it with a `TextLayout` (`calculate`) than when `getLineHeight` takes the

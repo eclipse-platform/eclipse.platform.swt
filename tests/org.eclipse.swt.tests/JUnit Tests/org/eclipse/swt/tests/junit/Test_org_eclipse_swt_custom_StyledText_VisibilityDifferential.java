@@ -49,10 +49,14 @@ import org.junit.jupiter.api.TestFactory;
  * SWT gives a line a different height when the idle pass measures it with a
  * TextLayout than when {@code getLineHeight} takes the default-height shortcut, so
  * line pixels depend on the order of measurement, which a hidden widget changes.
+ * Not compared: {@code block:invokeAction:SELECT_ALL}. Its block width is the widest
+ * measured line, and a measured line width includes the caret width at the time it
+ * was measured; the hidden widget measures that line later (742 vs 743 px observed).
  */
 public class Test_org_eclipse_swt_custom_StyledText_VisibilityDifferential {
 	private static final Set<String> NOT_COMPARED = Set.of("setFocus", "autoscroll-down:run", "autoscroll-up:run",
-			"autoscroll-right:run", "autoscroll-left:run", "setLineSpacingProvider", "setLineSpacingProvider-reset");
+			"autoscroll-right:run", "autoscroll-left:run", "setLineSpacingProvider", "setLineSpacingProvider-reset",
+			"block:invokeAction:SELECT_ALL");
 	private static Shell visibleShell;
 	private static Shell hiddenShell;
 	private static StyledText visible;
