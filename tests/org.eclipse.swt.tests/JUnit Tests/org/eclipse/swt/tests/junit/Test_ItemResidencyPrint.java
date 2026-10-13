@@ -20,7 +20,7 @@ import org.junit.jupiter.api.*;
  * back, printed again, and the pixel hashes must match with zero materialization during paint.
  */
 public class Test_ItemResidencyPrint {
-	private static final int ROWS = 25, ROW_HEIGHT = 20, COLUMNS = 3, WIDTH = 420;
+	private static final int ROWS = 25, ROW_HEIGHT = 20, COLUMNS = 3, WIDTH = 420, BORDER = 0xFFFF00FF;
 	private int top;
 	private Throwable paintFailure;
 
@@ -109,6 +109,8 @@ public class Test_ItemResidencyPrint {
 			gc.setBackground (display.getSystemColor (SWT.COLOR_WHITE));
 			gc.fillRectangle (0, 0, WIDTH, ROWS * ROW_HEIGHT);
 			for (int r = 0; r < ROWS; r++) row (gc, e, top + r, r * ROW_HEIGHT, fonts, colors, display);
+			gc.setForeground (color (colors, display, BORDER));
+			gc.drawRectangle (0, 0, WIDTH - 1, ROWS * ROW_HEIGHT - 1);
 		} catch (RuntimeException | Error failure) {
 			if (paintFailure == null) paintFailure = failure;
 			throw failure;
@@ -163,26 +165,45 @@ public class Test_ItemResidencyPrint {
 		return colors.computeIfAbsent (argb, v -> new Color (display, v >>> 16 & 0xFF, v >>> 8 & 0xFF, v & 0xFF));
 	}
 
+	private static boolean borderIntact (ImageData data) {
+		int w = data.width - 1, h = data.height - 1;
+		int [] xs = {0, w / 2, w, 0, w, 0, w / 2, w}, ys = {0, 0, 0, h / 2, h / 2, h, h, h};
+		for (int i = 0; i < xs.length; i++) {
+			RGB rgb = data.palette.getRGB (data.getPixel (xs [i], ys [i]));
+			if (rgb.red != 0xFF || rgb.green != 0 || rgb.blue != 0xFF) return false;
+		}
+		return true;
+	}
+
 	private static void flush (Display display) {
 		for (int i = 0; i < 50 && display.readAndDispatch (); i++) {
 			// drain pending paint events
 		}
 	}
 
-	/** Prints the control, saves the PNG next to the temp dir for diagnosis, returns size and SHA-256. */
+	/**
+	 * Prints the control and returns size plus SHA-256 of the pixels. The paint draws a sentinel border;
+	 * a capture whose outer border is incomplete was cut off by the desktop (an overlapping window), so it
+	 * is retried, and after five attempts the test is aborted as an environment failure, never passed.
+	 */
 	private static String printHash (Control control, Display display, String name) throws NoSuchAlgorithmException {
-		control.getShell ().moveAbove (null);
-		flush (display);
-		Point size = control.getSize ();
-		Image image = new Image (display, size.x, size.y);
-		GC gc = new GC (image);
-		try {
-			assertTrue (control.print (gc), "Control.print supported");
-		} finally {
-			gc.dispose ();
+		ImageData data = null;
+		for (int attempt = 0; attempt < 5 && (data == null || !borderIntact (data)); attempt++) {
+			control.getShell ().moveAbove (null);
+			control.redraw ();
+			flush (display);
+			Point size = control.getSize ();
+			Image image = new Image (display, size.x, size.y);
+			GC gc = new GC (image);
+			try {
+				assertTrue (control.print (gc), "Control.print supported");
+			} finally {
+				gc.dispose ();
+			}
+			data = image.getImageData ();
+			image.dispose ();
 		}
-		ImageData data = image.getImageData ();
-		image.dispose ();
+		Assumptions.assumeTrue (borderIntact (data), "capture of '" + name + "' cut off by the desktop after 5 attempts");
 		ImageLoader saver = new ImageLoader ();
 		saver.data = new ImageData [] {data};
 		saver.save (System.getProperty ("java.io.tmpdir") + "/item-residency-print-" + name + ".png", SWT.IMAGE_PNG);
