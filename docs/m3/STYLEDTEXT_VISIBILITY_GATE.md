@@ -78,9 +78,29 @@ only where it meets it.
 
 Results: section 7, `.m3/styledtext-visibility-gate-20261013/evidence/`.
 
-## 7. Results
+## 7. Results (Win32, JDK 21.0.9, SWT 3.135 natives)
 
-Filled from the evidence files (see the README in the evidence folder).
+`Test_org_eclipse_swt_custom_StyledText_VisibilityGate`, 100 MiB (`evidence/gate-report-100mib.tsv`, 5/5 PASSED):
+
+| Case | Lines | Layouts while hidden | Catch-up layouts | Visible-throughout layouts | Hidden ms (setText + edits) | Visible ms |
+|---|---|---|---|---|---|---|
+| hidden tab, fixed, 100 MiB | 1,859,104 | 0 | 61 | 51 | 121 | 98 |
+| hidden tab, wrap, 100 MiB | 1,859,104 | 0 | 85 | 77 | 32 | 166 |
+| hidden tab, fixed, 2,000 lines | 2,003 | 0 | 61 | 51 | 5 | 86 |
+| hidden tab, wrap, 2,000 lines | 2,003 | 0 | 1,949 (the idle pass, once) | 2,040 | 29 | 1,788 |
+| minimized shell, fixed, 4 MiB | 76,466 | 0 | 81 | n/a | n/a | n/a |
+
+Every case: no idle pass queued while hidden, then state (caret, selection, top index and pixel,
+horizontal pixel, caret location, both scroll bars) and client-area pixels equal to the widget that
+was visible throughout. The "layouts" count is the renderer's `layoutRequests`.
+
+Regression (one JVM, `evidence/suite-tree.log`): 711 tests, 705 passed, 1 assumption abort, 5 failed:
+`test_backspaceAndDelete` (the `Display.post` OS-input flake, also on the base) and 4 pixel-only
+mismatches in the paged-vs-gap `ApiDifferential`. Rerun alone, `ApiDifferential` on this branch gave
+220/221, 220/221 and 221/221; on the leaf 2 classes 221/221 and 220/221, each failure a pixel-only
+mismatch on a different operation, so these are desktop timing flakes, not the gate.
+`Test_org_eclipse_swt_custom_StyledText_VisibilityDifferential`: 184 operations plus the show-and-pixels
+check, all PASSED in the suite run.
 
 ## 8. Known limits
 
