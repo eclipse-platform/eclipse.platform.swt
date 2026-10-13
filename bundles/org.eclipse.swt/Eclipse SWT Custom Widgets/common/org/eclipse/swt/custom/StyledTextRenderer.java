@@ -66,6 +66,8 @@ class StyledTextRenderer {
 	int sizeGeneration;
 	/** Number of line layouts requested (observability for viewport-bound tests and benches). */
 	long layoutRequests;
+	/** Layouts built or rebuilt (cache misses of getTextLayout); hits = layoutRequests - layoutBuilds. */
+	long layoutBuilds;
 	/**
 	 * Idle measurement window [idleStart, idleEnd): visible lines plus one viewport
 	 * of overscan, as packed ints owned by the widget's renderer (no window object).
@@ -1358,6 +1360,7 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
     if (layout == null) {
         layout = new TextLayout(device);
     }
+	layoutBuilds++;
 	String line = content.getLine(lineIndex);
 	int lineOffset = content.getOffsetAtLine(lineIndex);
 	int[] segments = null;
