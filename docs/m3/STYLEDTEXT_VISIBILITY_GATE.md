@@ -31,14 +31,16 @@ method changes. StyledText never uses those `state` bits: its dirty bits are its
 
 | Bit | Mask | Skipped while hidden | Settled by |
 |---|---|---|---|
-| `DEFER_PAINT` | `1` | `internalRedrawRange`, `redrawLines`, `redrawLinesBullet`, `scrollText` (copy area), the redraw geometry in `handleTextChanged` | `super.redraw()` of the whole client area |
-| `DEFER_LAYOUT` | `1 << 1` | client-area pre-measurement (`measureClientArea` in the `resetCache` family, `calculateTopIndex`, `handleResize`, `redraw()`) | `measureClientArea`, `setScrollBars(true)`, `claimBottomFreeSpace()` |
+| `DEFER_PAINT` | `1` | `internalRedrawRange`, `redrawLines`, `redrawLinesBullet`, `scrollText` (copy area), the redraw geometry in `handleTextChanged`, `handleTextChanging` (changes at or below the top line) and `setStyleRanges` | `super.redraw()` of the whole client area |
+| `DEFER_LAYOUT` | `1 << 1` | client-area pre-measurement (`measureClientArea` in the `resetCache` family, `calculateTopIndex`, `handleResize`, `redraw()`), wrap-mode `claimBottomFreeSpace` | `measureClientArea`, `setScrollBars(true)`, `claimBottomFreeSpace()` |
 | `DEFER_MEASURE` | `1 << 2` | the idle measurement pass (`calculateIdle`, `calculateIdleWindow`; a queued pass stops at its next slice) | `renderer.calculateIdle()` (the visible window in viewport mode) |
-| `DEFER_CARET` | `1 << 3` | layout for the default caret's placement (`setCaretLocations`) | `setCaretLocations()` |
+| `DEFER_CARET` | `1 << 3` | layout for the default caret's placement (`setCaretLocations`, including the constructor's); the remembered column `columnX` becomes `COLUMN_X_UNSET` | `setCaretLocations()`; a column restored after the deferral (line/page navigation) is kept |
 | `DEFER_SETTLING` | `1 << 4` | marks a settle in progress, so the settled work runs | cleared after the settle |
 
 Settle points: `handlePaint` (before drawing; the first paint after the widget becomes visible),
-`handleResize` while visible, and `getCaret()`.
+`handleResize` while visible, `getCaret()` (caret only), and `doLineUp`/`doLineDown`/`doPageUp`/`doPageDown`
+(caret only, because they read `columnX`). The link-cursor hit test (`doMouseLinkCursor`) answers "no
+offset" while hidden: the pointer cannot be over a widget that is not visible.
 
 ## 4. What stays eager, and why
 
@@ -79,6 +81,12 @@ Results: section 7, `.m3/styledtext-visibility-gate-20261013/evidence/`.
 Filled from the evidence files (see the README in the evidence folder).
 
 ## 8. Known limits
+
+* `columnX`, the pixel column that line and page navigation keep, is resolved when a deferred caret
+  placement settles. A visible widget keeps the column from the caret's last placement across a style
+  change on the caret's line (`setStyleRanges` saves and restores it); a widget that was hidden through
+  that style change resolves the column with the new style. The two can differ by the width change of
+  the restyled text before the caret, and only for the next vertical move.
 
 * The horizontal extent in viewport mode is the widest line measured so far (leaf 2). A widget that
   was hidden measures only the lines visible when it settles; a widget that was visible throughout

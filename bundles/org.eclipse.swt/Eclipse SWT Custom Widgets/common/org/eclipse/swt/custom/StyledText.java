@@ -123,6 +123,8 @@ public class StyledText extends Canvas {
 	 */
 	static final int DEFER_PAINT = 1, DEFER_LAYOUT = 1 << 1, DEFER_MEASURE = 1 << 2, DEFER_CARET = 1 << 3;
 	static final int DEFER_SETTLING = 1 << 4;
+	/** columnX of a deferred caret placement: the caret's x, resolved when the placement settles. */
+	static final int COLUMN_X_UNSET = Integer.MIN_VALUE;
 	int deferredWork;
 	boolean alwaysShowScroll = true;
 	int ignoreResize = 0;
@@ -2306,6 +2308,7 @@ void doDeleteWordPrevious() {
  * the end of the text if the caret already is on the last line.
  */
 void doLineDown(boolean select) {
+	settle(DEFER_CARET); // columnX is read below
 	int[] newCaretOffsets = new int[caretOffsets.length];
 	int lineCount = content.getLineCount();
 	int[] alignment = new int[1];
@@ -2408,6 +2411,7 @@ void doLineStart() {
  * the beginning of the document if it is already on the first line.
  */
 void doLineUp(boolean select) {
+	settle(DEFER_CARET); // columnX is read below
 	int[] newCaretOffsets = new int[caretOffsets.length];
 	int[] alignment = new int[1];
 	for (int i = 0; i < caretOffsets.length; i++) {
@@ -2652,6 +2656,7 @@ void doPageDown(boolean select, int height) {
     if (isSingleLine()) {
         return;
     }
+	settle(DEFER_CARET); // columnX is read below
 	int oldColumnX = columnX;
 	int oldHScrollOffset = horizontalScrollOffset;
 	if (isFixedLineHeight()) {
@@ -2844,6 +2849,7 @@ void doPageUp(boolean select, int height) {
     if (isSingleLine()) {
         return;
     }
+	settle(DEFER_CARET); // columnX is read below
 	int oldHScrollOffset = horizontalScrollOffset;
 	int oldColumnX = columnX;
 	if (isFixedLineHeight()) {
@@ -3277,7 +3283,12 @@ void settle(int work) {
 			claimBottomFreeSpace();
 		}
 		if ((pending & DEFER_CARET) != 0) {
+			// a column restored after the deferred placement (line/page navigation) is kept
+			int column = columnX;
 			setCaretLocations();
+			if (column != COLUMN_X_UNSET) {
+				columnX = column;
+			}
 		}
 	} finally {
 		deferredWork &= ~DEFER_SETTLING;
@@ -9031,6 +9042,7 @@ void setCaretLocations() {
 	if ((defaultCaret == null || super.getCaret() == defaultCaret) && defer(DEFER_CARET)) {
 		// the default caret (still being created when defaultCaret is null) is reachable
 		// only through getCaret(), which settles it first
+		columnX = COLUMN_X_UNSET;
 		return;
 	}
 	Point[] newCaretPos = Arrays.stream(caretOffsets).mapToObj(this::getPointAtOffset).toArray(Point[]::new);
