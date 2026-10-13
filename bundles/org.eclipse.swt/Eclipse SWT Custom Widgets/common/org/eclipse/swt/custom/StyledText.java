@@ -123,6 +123,8 @@ public class StyledText extends Canvas {
 	 */
 	static final int DEFER_PAINT = 1, DEFER_LAYOUT = 1 << 1, DEFER_MEASURE = 1 << 2, DEFER_CARET = 1 << 3;
 	static final int DEFER_SETTLING = 1 << 4;
+	/** Internal maintenance in progress: extent reads stay lazy (no settle). */
+	static final int DEFER_MAINTAINING = 1 << 5;
 	/** columnX of a deferred caret placement: the caret's x, resolved when the placement settles. */
 	static final int COLUMN_X_UNSET = Integer.MIN_VALUE;
 	int deferredWork;
@@ -3259,7 +3261,40 @@ boolean defer(int work) {
 	deferredWork |= work;
 	return true;
 }
+/**
+ * Settles deferred client-area measurement and the idle pass, synchronously, when
+ * a caller reads an extent (renderer read hook): a hidden widget then answers like
+ * a visible one whose idle measurement pass has completed.
+ */
+void settleExtent() {
+	int pending = deferredWork & (DEFER_LAYOUT | DEFER_MEASURE);
+	if (pending == 0) {
+		return;
+	}
+	settle(DEFER_LAYOUT);
+	if ((pending & DEFER_MEASURE) != 0) {
+		deferredWork = (deferredWork & ~DEFER_MEASURE) | DEFER_SETTLING;
+		try {
+			renderer.measureIdleNow();
+		} finally {
+			deferredWork &= ~DEFER_SETTLING;
+		}
+	}
+}
 /** Settles all deferred work once the widget is effectively visible. */
+/** Marks internal maintenance; answers whether this call is the outermost one. */
+boolean beginMaintenance() {
+	if ((deferredWork & DEFER_MAINTAINING) != 0) {
+		return false;
+	}
+	deferredWork |= DEFER_MAINTAINING;
+	return true;
+}
+void endMaintenance(boolean outermost) {
+	if (outermost) {
+		deferredWork &= ~DEFER_MAINTAINING;
+	}
+}
 void settleIfVisible() {
 	if (deferredWork != 0 && isEffectivelyVisible()) {
 		settle(DEFER_LAYOUT | DEFER_CARET | DEFER_MEASURE | DEFER_PAINT);
@@ -5778,15 +5813,30 @@ void installDefaultContent() {
 	textChangeListener = new TextChangeListener() {
 		@Override
 		public void textChanging(TextChangingEvent event) {
-			handleTextChanging(event);
+			boolean outermost = beginMaintenance();
+			try {
+				handleTextChanging(event);
+			} finally {
+				endMaintenance(outermost);
+			}
 		}
 		@Override
 		public void textChanged(TextChangedEvent event) {
-			handleTextChanged(event);
+			boolean outermost = beginMaintenance();
+			try {
+				handleTextChanged(event);
+			} finally {
+				endMaintenance(outermost);
+			}
 		}
 		@Override
 		public void textSet(TextChangedEvent event) {
-			handleTextSet(event);
+			boolean outermost = beginMaintenance();
+			try {
+				handleTextSet(event);
+			} finally {
+				endMaintenance(outermost);
+			}
 		}
 	};
 	content = createDefaultContent();
@@ -5822,7 +5872,15 @@ void installListeners() {
 			case SWT.MouseUp: handleMouseUp(event); break;
 			case SWT.MouseMove: handleMouseMove(event); break;
 			case SWT.Paint: handlePaint(event); break;
-			case SWT.Resize: handleResize(event); break;
+			case SWT.Resize: {
+				boolean outermost = beginMaintenance();
+				try {
+					handleResize(event);
+				} finally {
+					endMaintenance(outermost);
+				}
+				break;
+			}
 			case SWT.Traverse: handleTraverse(event); break;
 		}
 	};
@@ -10336,6 +10394,15 @@ void setScrollBar(ScrollBar bar, int clientArea, int maximum, int margin) {
  * @param vertical indicates if the vertical scrollbar also needs to be set
  */
 void setScrollBars(boolean vertical) {
+	// scroll bars are presentation: computing them is maintenance, not a caller read
+	boolean outermost = beginMaintenance();
+	try {
+		updateScrollBars(vertical);
+	} finally {
+		endMaintenance(outermost);
+	}
+}
+void updateScrollBars(boolean vertical) {
 	ignoreResize++;
     if (!isFixedLineHeight() || !alwaysShowScroll) {
         vertical = true;
@@ -10834,6 +10901,14 @@ public void setStyleRanges(int[] ranges, StyleRange[] styles) {
 	}
 }
 void setStyleRanges(int start, int length, int[] ranges, StyleRange[] styles, boolean reset) {
+	boolean outermost = beginMaintenance();
+	try {
+		applyStyleRanges(start, length, ranges, styles, reset);
+	} finally {
+		endMaintenance(outermost);
+	}
+}
+void applyStyleRanges(int start, int length, int[] ranges, StyleRange[] styles, boolean reset) {
 	int charCount = content.getCharCount();
 	if (reset) {
 		start = 0;

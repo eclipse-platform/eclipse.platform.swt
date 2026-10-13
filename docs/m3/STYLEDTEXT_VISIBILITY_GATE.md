@@ -36,6 +36,7 @@ method changes. StyledText never uses those `state` bits: its dirty bits are its
 | `DEFER_MEASURE` | `1 << 2` | the idle measurement pass (`calculateIdle`, `calculateIdleWindow`; a queued pass stops at its next slice) | `renderer.calculateIdle()` (the visible window in viewport mode) |
 | `DEFER_CARET` | `1 << 3` | layout for the default caret's placement (`setCaretLocations`, including the constructor's); the remembered column `columnX` becomes `COLUMN_X_UNSET` | `setCaretLocations()`; a column restored after the deferral (line/page navigation) is kept |
 | `DEFER_SETTLING` | `1 << 4` | marks a settle in progress, so the settled work runs | cleared after the settle |
+| `DEFER_MAINTAINING` | `1 << 5` | marks internal maintenance (text change handlers, resize, `setScrollBars`, `setStyleRanges`), whose extent reads stay lazy | cleared when the outermost scope ends |
 
 Settle points: `handlePaint` (before drawing; the first paint after the widget becomes visible),
 `handleResize` while visible, `getCaret()` (caret only), and `doLineUp`/`doLineDown`/`doPageUp`/`doPageDown`
@@ -48,7 +49,8 @@ offset" while hidden: the pointer cannot be over a widget that is not visible.
 |---|---|
 | Caller queries (`getLocationAtOffset`, `getOffsetAtPoint`, `getLinePixel`, `getTextBounds`, ...) | asked by the caller; they measure the lines they need, as before |
 | Scroll requests (`showSelection`, `setSelection(int,int)`, `setSelection(Point)`, `showCaret`) | the scroll position is caller-visible state; they lay out the one or two lines they reveal |
-| Scroll bar values (`setScrollBars`) | O(1) from the cached extents; caller-visible through `getVerticalBar()`/`getHorizontalBar()` |
+| Scroll bar values (`setScrollBars`) | O(1) from the extents measured so far (see section 8 for what a hidden widget defers) |
+| Caller reads of an extent (`renderer.getWidth()`, `getHeight()`, `getCachedLineHeight()`, `getEstimatedLineHeight()`: horizontal clamps, the vertical scroll offset, line pixels from estimates, block-selection bounds) | the renderer's read hook `settleForRead()` first settles a deferred extent synchronously (`StyledText.settleExtent()`: client-area measurement, then the idle pass via `renderer.measureIdleNow()`), so the answer equals that of a visible widget whose idle pass has completed. Internal maintenance (the content's text change handlers, resize, scroll bar computation, style application) runs inside a `DEFER_MAINTAINING` scope and reads lazily |
 | Caret placement of a caller-installed caret | the caller holds the `Caret` reference and may read its location directly |
 | `SWT.SINGLE` alignment margin | geometry state of the single line |
 
@@ -81,6 +83,20 @@ Results: section 7, `.m3/styledtext-visibility-gate-20261013/evidence/`.
 Filled from the evidence files (see the README in the evidence folder).
 
 ## 8. Known limits
+
+* With a `StyledTextLineSpacingProvider`, SWT gives a spaced line a different height when the idle
+  pass measures it with a `TextLayout` (`calculate`) than when `getLineHeight` takes the
+  default-height shortcut (`getLineHeight() + getLineSpacing(i)`), so line pixels depend on the order
+  of measurement. Observed: after `setLineSpacingProvider` (spacing 4 on every 7th line), a hidden
+  widget reports `getLinePixel` 8 px lower for a line below the view than a visible widget whose idle
+  pass completed. The visibility differential does not run this operation; the paged-vs-gap
+  differential of leaf 2 does.
+
+* Scroll bars are presentation. While hidden, their maximum and thumb follow the extent measured so
+  far; they settle when the widget is shown. (A visible widget also completes its horizontal extent
+  asynchronously, in the idle pass.) With `setAlwaysShowScrollBars(false)` the horizontal bar's
+  visibility, and so the client-area height, follows the same deferred extent until the show.
+  `Test_org_eclipse_swt_custom_StyledText_VisibilityDifferential` compares the bars after the show.
 
 * `columnX`, the pixel column that line and page navigation keep, is resolved when a deferred caret
   placement settles. A visible widget keeps the column from the caret's last placement across a style
