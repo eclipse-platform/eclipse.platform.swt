@@ -1,13 +1,11 @@
-/*******************************************************************************
- * Copyright (c) 2026 Contributors to the Eclipse Foundation.
+/*
+ * Copyright 2026 Hitesh Soliwal and contributors
+ * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  *
- * This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License 2.0
- * which accompanies this distribution, and is available at
- * https://www.eclipse.org/legal/epl-2.0/
- *
- * SPDX-License-Identifier: EPL-2.0
- *******************************************************************************/
+ * Dual-licensed by the rights holder's decision of 2026-10-13: you may use this file under the
+ * Eclipse Public License 2.0 (https://www.eclipse.org/legal/epl-2.0/) or the Apache License 2.0
+ * (https://www.apache.org/licenses/LICENSE-2.0).
+ */
 package org.eclipse.swt.internal.residency;
 
 /**

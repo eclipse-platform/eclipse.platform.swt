@@ -1,12 +1,16 @@
 /*
- * Copyright 2026 Synexia <hsoliwal@gmail.com>
- * Licensed under the Apache License, Version 2.0
- * SPDX-License-Identifier: Apache-2.0
+ * Copyright 2026 Hitesh Soliwal and contributors
+ * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
+ *
+ * Dual-licensed by the rights holder's decision of 2026-10-13: you may use this file under the
+ * Eclipse Public License 2.0 (https://www.eclipse.org/legal/epl-2.0/) or the Apache License 2.0
+ * (https://www.apache.org/licenses/LICENSE-2.0).
  *
  * Ported from hsoliwal/com.synexia 46e296ad537c6ecbd62b9783874e8f1714e278a9:
  * synexia-common/src/main/java/com/synexia/common/collections/PackedHeapGrowth.java (#10871),
  * PackedSupport.growArrayCapacity, and the once-per-miss sampling of
- * synexia-mindex/collections/src/main/java/com/synexia/mindex/collections/M3PreGc.java (#10879).
+ * synexia-mindex/collections/src/main/java/com/synexia/mindex/collections/M3PreGc.java (#10879),
+ * originally Apache-2.0 (Copyright 2026 Synexia <hsoliwal@gmail.com>), copied and specialized here.
  * Notice: docs/m3/item-residency/THIRD_PARTY_NOTICES.md.
  */
 package org.eclipse.swt.internal;

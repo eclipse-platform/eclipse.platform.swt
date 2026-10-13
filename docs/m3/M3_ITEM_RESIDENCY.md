@@ -14,6 +14,10 @@ M3jdk21 `m3/docs/m3-item-residency-metadata.md` ([M3jdk21 #826](https://github.c
 
 ## 1. Packages and owners
 
+Licence: the engine files of this leaf (`org.eclipse.swt.internal.residency`, `PackedHeapGrowth`, `FileSwapStore`,
+`SwapPageBinaryOpsSelector`) are `EPL-2.0 OR Apache-2.0` by the rights holder's decision of 2026-10-13
+(see `package-info.java`). The ported Synexia swap files stay Apache-2.0.
+
 The core has no SWT types. Everything below is toolkit-neutral; only a future adapter in
 `org.eclipse.swt.widgets` (owned by the widget agents) knows `TableItem`, `TreeItem` or `SWT.SetData`.
 
@@ -37,9 +41,9 @@ Both new packages are exported `x-internal` in `MANIFEST.MF`.
 - **Reuse route.** A Swing adapter (`TreeModel`, `TableModel`, `ListModel`) reuses the three packages through
   a hash-pinned package-rename recipe into M3jdk21 `java.desktop`, for example `sun.swing.m3.residency`.
   Nothing is hand-copied.
-- **License.** The ported swap owners and `PackedHeapGrowth` are Apache-2.0. The engine files carry EPL-2.0
-  headers. Vendoring the engine into GPLv2+CPE `java.desktop` needs a decision from the user, who is the
-  author: dual-license the core (EPL-2.0 OR Apache-2.0), or keep it SWT-only.
+- **License (decided 2026-10-13).** The engine is dual-licensed `EPL-2.0 OR Apache-2.0`. Swing reuses it as
+  Apache-2.0 code in M3jdk21 `m3/ports/swing-viewport`. Copies into `java.desktop` internals are an explicit
+  relicence to GPLv2+CPE, recorded in M3jdk21 `m3/docs/m3-item-residency-explicit-relicense.md`.
 
 ## 2. The handle
 
@@ -288,6 +292,7 @@ The core (`residency` without the two desktop owners) is web-safe:
 | `ItemResidency.paintLanes(from, to, int[])`, `paintSlots(from, to, int[])` | new | Bulk read of a visible window into a reusable array, with zero materialization. |
 | `setViewport` prefetch run, `setPrefetch` | new | Overscan and prefetch hint in the scroll direction. |
 | HOT runs | new | The visible window is pinned against eviction. |
+| `ItemResidency.pinResidency`, `unpinResidency` | new | Keep an open editor row, a drag source or a sticky header resident outside the viewport. |
 | `ItemLanes.setRange`, `setPattern`, `countRange`, `nextSet` | new | Check-all, select every k-th row, exact selection count, and selection enumeration. |
 | `ItemTreeShape.expandToDepth`, `setExpanded`, `keyRuns` | new | Expand-to-depth as an O(1) rule; row-to-key runs for the viewport. |
 
@@ -388,6 +393,8 @@ Tree run, at each scale: `expandToDepth(2)` is O(1); then the middle and end vie
 Collapse-all except one path leaves 3,000 rows and 2 path nodes. The tree p95 comes from 10 swap-ins only.
 
 RSS includes the 256 MB `-Xms` reservation as touched, so compare heap after GC across scales.
+
+Tests still to run after the interview pause (relicensed headers, pin methods, crate and rename replays) are listed in [`TESTS_TO_RUN.md`](item-residency/TESTS_TO_RUN.md).
 
 **NOT_RUN:** GTK, Cocoa, GWT compilation, RAP, the Synexia JNI SQLite backend, any widget adoption, and the
 OSGi test bundle (the tests ran on a flat classpath).

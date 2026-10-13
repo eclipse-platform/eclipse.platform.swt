@@ -1,13 +1,11 @@
-/*******************************************************************************
- * Copyright (c) 2026 Contributors to the Eclipse Foundation.
+/*
+ * Copyright 2026 Hitesh Soliwal and contributors
+ * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  *
- * This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License 2.0
- * which accompanies this distribution, and is available at
- * https://www.eclipse.org/legal/epl-2.0/
- *
- * SPDX-License-Identifier: EPL-2.0
- *******************************************************************************/
+ * Dual-licensed by the rights holder's decision of 2026-10-13: you may use this file under the
+ * Eclipse Public License 2.0 (https://www.eclipse.org/legal/epl-2.0/) or the Apache License 2.0
+ * (https://www.apache.org/licenses/LICENSE-2.0).
+ */
 package org.eclipse.swt.internal.residency;
 
 import java.util.Arrays;
@@ -108,6 +106,8 @@ public final class ItemResidency {
 	final ItemRequests requests = new ItemRequests ();
 	final ItemSparseTable pins = new ItemSparseTable (), data = new ItemSparseTable (), keyed = new ItemSparseTable ();
 	final int hardSlots;
+	final ItemBitSet residencyPins = new ItemBitSet ();
+	private final int [][] pinScratch = {new int [16]};
 	DataSource source;
 	Spill spill;
 	Pressure pressure;
@@ -183,6 +183,7 @@ public final class ItemResidency {
 		data.truncate (items);
 		keyed.truncate (items);
 		if (editorItem >= items) editorItem = -1;
+		if (items < lanes.count) residencyPins.setRange (items, lanes.count, false);
 		lanes.setCount (items);
 		invalidateRing ();
 		clampWindow ();
@@ -192,6 +193,7 @@ public final class ItemResidency {
 		if (index < 0 || index > lanes.count) throw new IndexOutOfBoundsException ("insert " + index);
 		requests.cancelAll (this, lanes, source);
 		lanes.insert (index);
+		residencyPins.shift (index, 1, lanes.count - 1, pinScratch);
 		directory.insert (index, lanes.count - 1);
 		slots.shiftItems (index, 1);
 		rebindFrom (pins.shift (index, 1));
@@ -210,6 +212,8 @@ public final class ItemResidency {
 		data.put (index, null);
 		keyed.put (index, null);
 		lanes.remove (index);
+		residencyPins.set (index, false);
+		residencyPins.shift (index + 1, -1, lanes.count + 1, pinScratch);
 		directory.remove (index, lanes.count + 1);
 		slots.shiftItems (index + 1, -1);
 		rebindFrom (pins.shift (index + 1, -1));
@@ -708,6 +712,27 @@ public final class ItemResidency {
 		windowEnd = w == 0 ? 0 : hotRuns [2 * w - 1];
 	}
 
+	/**
+	 * UI method: keeps {@code [from, to)} resident beyond the viewport (an open editor row, a drag
+	 * source, a sticky header). Pinned items are never evicted; payload is paged in on first access.
+	 */
+	public void pinResidency (int from, int to) {
+		if (from < 0 || to > lanes.count || from > to) throw new IndexOutOfBoundsException ("range");
+		residencyPins.setRange (from, to, true);
+	}
+
+	/** UI method: releases {@link #pinResidency} and trims back to the budget. */
+	public void unpinResidency (int from, int to) {
+		if (from < 0 || to > lanes.count || from > to) throw new IndexOutOfBoundsException ("range");
+		residencyPins.setRange (from, to, false);
+		trim ();
+	}
+
+	public boolean isResidencyPinned (int item) {
+		checkItem (item);
+		return residencyPins.get (item);
+	}
+
 	public int windowStart () {
 		return windowStart;
 	}
@@ -790,7 +815,7 @@ public final class ItemResidency {
 			int s = hand;
 			hand = hand + 1 >= slots.highWater ? 0 : hand + 1;
 			int item = slots.slotItem [s];
-			if (item < 0 || s == fillingSlot || inWindow (item)) continue;
+			if (item < 0 || s == fillingSlot || inWindow (item) || residencyPins.get (item)) continue;
 			if (slots.ref (s)) {
 				slots.ref (s, false);
 				continue;
