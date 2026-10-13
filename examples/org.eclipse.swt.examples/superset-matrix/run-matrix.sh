@@ -149,6 +149,24 @@ ui_unlock   # the cell loop runs in a subshell; release its family lock here
 gate
 "${JAVA_BIN}java" -Xmx256m -cp "$CP" $MAIN --postprocess "$(wpath "$TSV")" || log "postprocess failed"
 
+# 5b. Independent plan/result completeness. This runs even when OpenCV is
+# disabled for diagnostics. A partial matrix gets INCOMPLETE, never a PASS receipt.
+if [ -n "${MATRIX_PYTHON:-}" ]; then
+  COVERAGE_PY="$MATRIX_PYTHON"
+elif command -v python3 >/dev/null 2>&1; then
+  COVERAGE_PY=python3
+elif command -v python >/dev/null 2>&1; then
+  COVERAGE_PY=python
+else
+  log "Python required for viewport plan/result acceptance"
+  exit 1
+fi
+if [ "${MATRIX_COVERAGE_STRICT:-0}" = "1" ]; then
+  "$COVERAGE_PY" "$HERE/verify-plan-coverage.py" "$OUT" --strict || exit 1
+else
+  "$COVERAGE_PY" "$HERE/verify-plan-coverage.py" "$OUT" || exit 1
+fi
+
 # 6. independent persisted-pixel acceptance.  The Java runner is the producer;
 # OpenCV is a separate observer and must reject stale/blank/forged evidence.
 if [ "${MATRIX_OPENCV:-1}" != "0" ]; then
