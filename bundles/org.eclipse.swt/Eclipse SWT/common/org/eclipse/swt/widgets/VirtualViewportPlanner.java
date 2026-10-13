@@ -29,11 +29,12 @@ final class VirtualViewportPlanner {
 	private int repaintLockDepth;
 	private int generation;
 
+	/** Hybrid selection with the measured cut-over (SWT #119; see {@link VirtualSelectionModel#VirtualSelectionModel()}). */
 	VirtualViewportPlanner () {
 		selection = new VirtualSelectionModel ();
 	}
 
-	/** {@code hybridSelection}: ranges plus bitmap selection containers (see {@link VirtualSelectionModel}). */
+	/** {@code hybridSelection}: ranges plus bitmap selection containers with the eager cut-over, or ranges only (SWT #129). */
 	VirtualViewportPlanner (boolean hybridSelection) {
 		selection = new VirtualSelectionModel (hybridSelection);
 	}
