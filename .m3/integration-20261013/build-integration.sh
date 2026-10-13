@@ -21,7 +21,6 @@
 #   SWT_REPO, NEBULA_REPO  existing clones of hsoliwal/eclipse.platform.swt and hsoliwal/nebula
 #   WT_ROOT                where the integration worktrees live
 #   LOG_DIR                fetch/merge logs
-#   INCLUDE_LIST_COMBO=1   also merge the List/Combo branch (no PR yet, WIP) into SWT
 #   INCLUDE_REPROOF=1      also merge Nebula #149 (optional current-master reproof) last
 #   EXTRA_SWT_PRS / EXTRA_NEBULA_PRS   space-separated PR numbers appended after the lists
 set -euo pipefail
@@ -40,9 +39,8 @@ NEBULA_WT="${WT_ROOT}/nebula-integration"
 RECORD_DIR=".m3/integration-${STAMP}"
 
 # Merge order. Entries are PR numbers; "branch:<name>" merges a pushed branch that has no PR.
-SWT_ORDER=(120 123 121 124 122 119 126 125 127 128)
-NEBULA_ORDER=(151 150 152 153 154 155)
-[ "${INCLUDE_LIST_COMBO:-0}" = 1 ] && SWT_ORDER+=("branch:m3/swt-list-combo-viewport-${STAMP}")
+SWT_ORDER=(120 123 121 124 122 119 126 125 127 128 129 130 131)
+NEBULA_ORDER=(151 150 152 153 154 155 156 157 158)
 [ "${INCLUDE_REPROOF:-0}" = 1 ] && NEBULA_ORDER+=(149)
 read -r -a _xs <<<"${EXTRA_SWT_PRS:-}";    SWT_ORDER+=("${_xs[@]}")
 read -r -a _xn <<<"${EXTRA_NEBULA_PRS:-}"; NEBULA_ORDER+=("${_xn[@]}")
