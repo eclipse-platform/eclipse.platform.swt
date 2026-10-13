@@ -9028,8 +9028,9 @@ public void setBottomMargin (int bottomMargin) {
  * Moves the Caret to the current caret offset.
  */
 void setCaretLocations() {
-	if (super.getCaret() == defaultCaret && defaultCaret != null && defer(DEFER_CARET)) {
-		// the default caret is reachable only through getCaret(), which settles it first
+	if ((defaultCaret == null || super.getCaret() == defaultCaret) && defer(DEFER_CARET)) {
+		// the default caret (still being created when defaultCaret is null) is reachable
+		// only through getCaret(), which settles it first
 		return;
 	}
 	Point[] newCaretPos = Arrays.stream(caretOffsets).mapToObj(this::getPointAtOffset).toArray(Point[]::new);
@@ -10881,7 +10882,9 @@ void setStyleRanges(int start, int length, int[] ranges, StyleRange[] styles, bo
 
 	// This needs to happen before new styles are applied
 	int expectedBottom = 0;
-	if (!isFixedLineHeight() && !reset) {
+	// redraw geometry only; a widget that is not effectively visible records DEFER_PAINT
+	boolean redrawRange = !reset && !defer(DEFER_PAINT);
+	if (!isFixedLineHeight() && redrawRange) {
 		int lineEnd = content.getLineAtOffset(Math.max(end, rangeEnd));
 		int partialTopIndex = getPartialTopIndex();
 		int partialBottomIndex = getPartialBottomIndex();
@@ -10906,7 +10909,7 @@ void setStyleRanges(int start, int length, int[] ranges, StyleRange[] styles, bo
 	resetCache(modifiedLines);
 	if (reset) {
 		super.redraw();
-	} else {
+	} else if (redrawRange) {
 		int lineStart = content.getLineAtOffset(Math.min(start, rangeStart));
 		int lineEnd = content.getLineAtOffset(Math.max(end, rangeEnd));
 		int partialTopIndex = getPartialTopIndex();
