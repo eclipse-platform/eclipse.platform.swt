@@ -28,7 +28,20 @@ if ! mkdir "$LOCK" 2>/dev/null; then
   if [ -n "$owner" ] && kill -0 "$owner" 2>/dev/null; then echo "run-matrix: pid $owner already runs $OUT" >&2; exit 3; fi
 fi
 echo $$ > "$LOCK/pid"
-trap 'rm -rf "$LOCK"' EXIT
+# Desktop lock shared by every agent: one UI run (windows, Control.print, display capture) at a time.
+# Taken per cell and released after it, so other agents interleave between cells.
+UI_LOCK=${UI_LOCK:-/c/m3-work-c/ui-test.lock}
+ui_lock() {
+  until mkdir "$UI_LOCK" 2>/dev/null; do
+    log "ui lock held by $(cat "$UI_LOCK/owner.txt" 2>/dev/null || echo unknown), retry in 30 s"; sleep 30
+  done
+  printf 'superset-matrix pid=%s label=%s since=%s\n' "$$" "$LABEL" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$UI_LOCK/owner.txt"
+}
+ui_unlock() {  # only our own lock
+  grep -q "superset-matrix pid=$$ " "$UI_LOCK/owner.txt" 2>/dev/null && rm -rf "$UI_LOCK"
+}
+trap 'ui_unlock; rm -rf "$LOCK"' EXIT
+trap 'exit 143' TERM INT
 SEP=';'; case "$(uname -s)" in Linux*|Darwin*) SEP=':';; esac
 wpath() { if command -v cygpath >/dev/null; then cygpath -w "$1"; else echo "$1"; fi; }
 log() { echo "$(date +%H:%M:%S) $*" | tee -a "$OUT/run.log"; }
@@ -112,11 +125,13 @@ grep '^PLAN' "$OUT/plan.txt" | while IFS=$'\t' read -r _ concept widget scale xm
   fi
   t=$CELL_TIMEOUT; [ "$scale" -ge 1000000 ] && t=$((CELL_TIMEOUT * 2)); [ "$scale" -ge 100000000 ] && t=$((CELL_TIMEOUT * 3))
   gate
+  ui_lock
   cell="$concept.${widget##*.}.$scale"
   log "run $cell xmx=${xmx}m timeout=${t}s"
   timeout $((t + 20)) "${JAVA_BIN}java" -Xmx${xmx}m -Dsuperset.handleProbe="$PROBE" -cp "$CP" $MAIN \
     --run "$concept" "$widget" "$scale" "$(wpath "$OUT")" "$LABEL" "$t" < /dev/null > "$OUT/logs/$cell.log" 2>&1
   rc=$?
+  ui_unlock
   row=$(grep '^ROW' "$OUT/logs/$cell.log" | tail -1 | cut -f2-)
   if [ -z "$row" ]; then
     why=$(grep -m1 -E 'Exception|Error|SIGSEGV|EXCEPTION_' "$OUT/logs/$cell.log" | tr '\t' ' ' | cut -c1-300)
@@ -156,7 +171,10 @@ log "matrix complete: $(tail -n +2 "$TSV" | cut -f18 | sort | uniq -c | tr '\n' 
 # 7. optional: the showcase tour (every category, concept and widget tab printed), TOUR=1
 if [ -n "${TOUR:-}" ]; then
   gate
+  ui_lock
   timeout 1800 "${JAVA_BIN}java" -Xmx768m -cp "$CP" org.eclipse.swt.examples.superset.SupersetShowcase --tour "$(wpath "$OUT")" \
     < /dev/null > "$OUT/logs/tour.log" 2>&1
-  log "tour rc=$? $(tail -1 "$OUT/logs/tour.log")"
+  rc=$?
+  ui_unlock
+  log "tour rc=$rc $(tail -1 "$OUT/logs/tour.log")"
 fi
