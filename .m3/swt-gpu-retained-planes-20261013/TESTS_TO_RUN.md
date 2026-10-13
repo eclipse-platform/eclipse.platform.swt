@@ -6,8 +6,8 @@ Run them in this order. Run each long one in the background.
 
 | # | Command | What it proves | Status at pause (2026-10-13) |
 | --- | --- | --- | --- |
-| 1 | `sh scripts/rebuild.sh` | Compiles the win32 SWT tree, the Skija backend and the bench classes. | Done on 41977d7e7b. Repeat after any source change. |
-| 2 | `sh scripts/junit.sh` | `Test_org_eclipse_swt_internal_gpu_RetainedPlanes` in off, gdi and skija: packed-int tables, zero-allocation hit path, rect algebra, the facade fallback, and focus on the owning widget with no child window. | v5 passed: 11/11 in each mode. Repeat after the fix-only changes. |
+| 1 | `sh scripts/rebuild.sh` | Compiles the win32 SWT tree, the Skija backend and the bench classes. | **Required first.** The sources changed after the last full build (56b63048ac moved the GPU bit to `Control.retainedBits`; it was compile-checked file by file). |
+| 2 | `sh scripts/junit.sh` | `Test_org_eclipse_swt_internal_gpu_RetainedPlanes` in off, gdi and skija: packed-int tables, zero-allocation hit path, rect algebra, the facade fallback, focus on the owning widget with no child window, tile-cache coverage, and a hidden surface rasterizing 0 px. | v5 passed 11/11 per mode on 41977d7e7b. The 2 new tests (13 in total) are pending. |
 | 3 | `sh scripts/probe-all.sh` | Pixel diffs against stock GDI for the shapes, scroll, overlay and StyledText scenes. Capture mode: display `GC.copyArea`, shell topmost. | v5 done. |
 | 4 | `sh scripts/seam-run.sh results-seams-v6.tsv` | Border, scrollbar, margin and seam pixel changes, plus the #121 recorder's `damagePx`/`paintedPx`/`protectedHitPx` and overpaint, at 100%, 125%, 150% and 200%. Capture mode: window-DC `BitBlt`. | v5 completed only 100% before the pause: all zeros. 125%, 150% and 200% are **pending**. |
 | 5 | `sh scripts/bench-all.sh results-frames-v6.tsv 200 2` | Frame times (canvas, StyledText, 1M-row Table, 1M-node Tree), CPU, allocations, GPU wait and submit, and cache hit rates, on the **RFB frame model**. | **Pending.** The v3 matrix was measured on the earlier tile-composite architecture (06abbe2053). |
@@ -18,3 +18,7 @@ Run them in this order. Run each long one in the background.
 | 10 | `python -B scripts/make-readme.py v6 <run-dir>/README.md`, then `sh scripts/collect-evidence.sh v6` | Writes the README tables and copies the evidence into the fork and the crate. | Pending. |
 
 Hidden and occluded surfaces: `RetainedFrame.effectivelyVisible()` is the single read. A test should minimize the shell during a scroll sequence and assert that `RASTER_PIXELS` and `TILE_RASTER` do not grow until it is restored. To add to JUnit after resume.
+
+Integration notes for the reruns:
+* SWT #124 (visibility gate) uses `Widget.state` bits 25..31; this branch no longer uses `Widget.state`.
+* SWT #123 (StyledText scroll by blit) routes StyledText scrolling through `Canvas.scroll`, so its rows should show the RFB CopyRect path once #123 is on the tested tree.
