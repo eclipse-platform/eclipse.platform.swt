@@ -60,6 +60,10 @@ public abstract class Device implements Drawable {
 	String[] loadedFonts;
 
 	volatile boolean disposed;
+
+	/* Retained GDI paint objects (-Dswt.gpu), owned by the display thread */
+	GdiRetained gdiRetained;
+	Thread gdiRetainedOwner;
 	private Set<ResourceReference> resourcesWithZoomSupport = ConcurrentHashMap.newKeySet();
 
 	/*
@@ -1010,6 +1014,10 @@ void printErrors () {
  * @see #destroy
  */
 protected void release () {
+	if (gdiRetained != null) {
+		gdiRetained.dispose ();
+		gdiRetained = null;
+	}
 	if (gdipToken != null) {
 		if (fontCollection != 0) {
 			Gdip.PrivateFontCollection_delete(fontCollection);
@@ -1024,6 +1032,23 @@ protected void release () {
 	scripts = null;
 	logFonts = null;
 	nFonts = 0;
+}
+
+/**
+ * Returns the retained GDI table when {@code thread} is this display's thread,
+ * creating it on first use; null for printers and other threads.
+ */
+GdiRetained gdiRetainedFor (Thread thread) {
+	if (gdiRetainedOwner == null) {
+		if (!(this instanceof Display display) || Display.findDisplay (thread) != display) return null;
+		gdiRetainedOwner = thread;
+		gdiRetained = new GdiRetained ();
+	}
+	return gdiRetainedOwner == thread ? gdiRetained : null;
+}
+
+GdiRetained gdiRetained () {
+	return gdiRetained;
 }
 
 /**

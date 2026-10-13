@@ -231,6 +231,8 @@ void scrollInPixels (int destX, int destY, int x, int y, int width, int height, 
 		OS.RedrawWindow (handle, sourceRect, 0, flags);
 		OS.OffsetRect (sourceRect, deltaX, deltaY);
 		OS.RedrawWindow (handle, sourceRect, 0, flags);
+	} else if ((retainedBits & GPU_RETAINED) != 0 && retainedFrame != null && retainedFrame.scroll (deltaX, deltaY, sourceRect)) {
+		/* Retained planes: RFB CopyRect on screen, content framebuffer and tiles; only the exposed band is rasterized */
 	} else {
 		int flags = OS.SW_INVALIDATE | OS.SW_ERASE;
 		/*
