@@ -263,6 +263,19 @@ public final class ItemLanes {
 		return mask;
 	}
 
+	/** Lane masks of {@code [from, to)} into {@code out}: plain lanes walk set bits only. */
+	public void gather (int from, int to, int [] out) {
+		Arrays.fill (out, 0, to - from, 0);
+		for (int lane = 0; lane < laneCount; lane++) {
+			int bit = 1 << lane;
+			if (patternCount [lane] == 0) {
+				for (int i = value [lane].next (from, to); i >= 0; i = value [lane].next (i + 1, to)) out [i - from] |= bit;
+			} else {
+				for (int i = from; i < to; i++) if (get (lane, i)) out [i - from] |= bit;
+			}
+		}
+	}
+
 	public void setCount (int items) {
 		if (items < count) {
 			for (int lane = 0; lane < laneCount; lane++) setRange (lane, items, count, false);

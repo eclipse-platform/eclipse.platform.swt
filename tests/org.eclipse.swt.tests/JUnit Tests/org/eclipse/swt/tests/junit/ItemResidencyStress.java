@@ -104,6 +104,7 @@ public final class ItemResidencyStress {
 		e.setRange (ItemResidency.LANE_SELECTED, 0, n, true);
 		e.setRange (ItemResidency.LANE_CHECKED, 0, n, true);
 		e.setPattern (ItemResidency.LANE_GRAYED, 0, n, 3, 0b001);
+		boolean [] edited = new boolean [region];
 		e.setViewport (0, VISIBLE, OVERSCAN);
 		e.setViewport (n / 2, VISIBLE, OVERSCAN);
 		e.setViewport (n - VISIBLE, VISIBLE, OVERSCAN);
@@ -111,7 +112,10 @@ public final class ItemResidencyStress {
 		for (int first = regionStart; first < regionStart + region - VISIBLE; first += VISIBLE) {
 			e.setViewport (first, VISIBLE, OVERSCAN);
 			for (int item = first; item < first + VISIBLE; item++) {
-				if ((item - regionStart) % 10 == 0) e.setText (item, 1, "edited " + item);
+				if ((item - regionStart) % 10 == 0) {
+					e.setText (item, 1, "edited " + item);
+					edited [item - regionStart] = true;
+				}
 			}
 			if ((first & 0xFFFF) < VISIBLE) sample ();
 		}
@@ -127,7 +131,7 @@ public final class ItemResidencyStress {
 			e.setViewport (first, VISIBLE, OVERSCAN);
 		}
 		int refires = 0;
-		for (int r = 0; r < region; r += 10) refires += source.regionRequests [r] - requestsBefore [r];
+		for (int r = 0; r < region; r++) if (edited [r]) refires += source.regionRequests [r] - requestsBefore [r];
 		String [] after = snapshot (e, regionStart, region);
 		boolean repro = Arrays.equals (before, after);
 		int selected = e.countRange (ItemResidency.LANE_SELECTED, 0, n), grayed = e.countRange (ItemResidency.LANE_GRAYED, 0, n);
@@ -156,10 +160,10 @@ public final class ItemResidencyStress {
 		e.setPattern (ItemResidency.LANE_CHECKED, 0, keys, 3, 0b001);
 		int selected = e.countRange (ItemResidency.LANE_SELECTED, 0, keys);
 		int checked = e.countRange (ItemResidency.LANE_CHECKED, 0, keys);
-		int middleKey = shape.key (middle);
-		shape.setExpanded (shape.parent (middleKey), false);
+		int middleKey = shape.key (middle), collapse = shape.parent (middleKey) < 0 ? middleKey : shape.parent (middleKey);
+		shape.setExpanded (collapse, false);
 		int collapsedRows = shape.rowCount ();
-		shape.setExpanded (shape.parent (middleKey), true);
+		shape.setExpanded (collapse, true);
 		shape.expandToDepth (0);
 		shape.setExpanded (500, true);
 		shape.setExpanded (shape.childKey (500, 500), true);
@@ -232,7 +236,7 @@ public final class ItemResidencyStress {
 		try {
 			long pid = ProcessHandle.current ().pid ();
 			Process p = new ProcessBuilder ("powershell", "-NoProfile", "-Command",
-					"$p=Get-Process -Id " + pid + "; \"$($p.WorkingSet64) $($p.PeakWorkingSet64)\"").redirectErrorStream (true).start ();
+					"$p=Get-Process -Id " + pid + "; [string]$p.WorkingSet64 + ' ' + [string]$p.PeakWorkingSet64").redirectErrorStream (true).start ();
 			String out = new String (p.getInputStream ().readAllBytes ()).trim ();
 			p.waitFor ();
 			String [] parts = out.split ("\\s+");

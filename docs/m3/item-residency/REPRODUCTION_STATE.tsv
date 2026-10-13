@@ -18,6 +18,10 @@ dirty-data	lanes[15] LANE_DIRTY_DATA	ItemResidency.lanes (always resident)	Test_
 pinned-identity	lanes[16] LANE_PINNED	ItemResidency.lanes (always resident)	Test_ItemResidency#roundTripReproducesEveryState;Test_ItemResidency#lanesSurviveDestroyExactly
 caller-set (payload ownership)	lanes[19] LANE_CALLER_SET	ItemResidency.lanes (always resident)	Test_ItemResidency#roundTripReproducesEveryState;Test_ItemResidency#lanesSurviveDestroyExactly
 materialized (SetData seen)	lanes[20] LANE_MATERIALIZED	ItemResidency.lanes (always resident)	Test_ItemResidency#roundTripReproducesEveryState;Test_ItemResidency#lanesSurviveDestroyExactly
+data-requested (SetData outstanding)	lanes[21] LANE_DATA_REQUESTED	ItemResidency.lanes (engine-owned)	Test_ItemResidency#setDataIsNegotiatedVisibleOverscanPrefetchAndCancelled
+data-loaded (payload present in HOT/WARM/COLD)	lanes[22] LANE_DATA_LOADED	ItemResidency.lanes (engine-owned)	Test_ItemResidency#setDataIsNegotiatedVisibleOverscanPrefetchAndCancelled;Test_ItemResidency#roundTripReproducesEveryStateThroughSwap
+pattern rule (stride, repeat mask, phase) over any lane	ItemLanes.patterns[lane]	ItemLanes (always resident)	Test_ItemResidencyLanes#patternsAreRulesWithExceptionPrecedenceAndExactCounts
+tree expansion rule and exception paths	ItemTreeShape.ruleDepth + paths	ItemTreeShape (always resident)	Test_ItemResidencyLanes#treeShapeMatchesNaiveTreeOnOneMillionNodes
 resident-tier (2 bits HOT/WARM/COLD/DESTROYED)	lanes[17..18] LANE_TIER_LO/HI	ItemResidency.lanes (always resident)	Test_ItemResidency#tiersFollowViewportAndPressure
 foreground colour (RGBA)	slotInts[I_FOREGROUND]	ItemResidency payload (fill or caller-set; COLD when caller-set)	Test_ItemResidency#roundTripReproducesEveryState;Test_ItemResidency#roundTripReproducesEveryStateThroughSwap;Test_ItemResidencyPrint#printPixelHashIdenticalAfterRoundTrip
 background colour (RGBA)	slotInts[I_BACKGROUND]	ItemResidency payload (fill or caller-set; COLD when caller-set)	Test_ItemResidency#roundTripReproducesEveryState;Test_ItemResidency#roundTripReproducesEveryStateThroughSwap;Test_ItemResidencyPrint#printPixelHashIdenticalAfterRoundTrip
@@ -28,7 +32,6 @@ indent	slotInts[I_INDENT]	ItemResidency payload (fill or caller-set; COLD when c
 level	slotInts[I_LEVEL]	ItemResidency payload (fill or caller-set; COLD when caller-set)	Test_ItemResidency#roundTripReproducesEveryState;Test_ItemResidency#roundTripReproducesEveryStateThroughSwap;Test_ItemResidencyPrint#printPixelHashIdenticalAfterRoundTrip
 tooltip id	slotInts[I_TOOLTIP]	ItemResidency payload (fill or caller-set; COLD when caller-set)	Test_ItemResidency#roundTripReproducesEveryState;Test_ItemResidency#roundTripReproducesEveryStateThroughSwap;Test_ItemResidencyPrint#printPixelHashIdenticalAfterRoundTrip
 accessibility id	slotInts[I_ACCESSIBLE]	ItemResidency payload (fill or caller-set; COLD when caller-set)	Test_ItemResidency#roundTripReproducesEveryState;Test_ItemResidency#roundTripReproducesEveryStateThroughSwap;Test_ItemResidencyPrint#printPixelHashIdenticalAfterRoundTrip
-custom data handle	slotInts[I_DATA]	ItemResidency payload (fill or caller-set; COLD when caller-set)	Test_ItemResidency#roundTripReproducesEveryState;Test_ItemResidency#roundTripReproducesEveryStateThroughSwap;Test_ItemResidencyPrint#printPixelHashIdenticalAfterRoundTrip
 adopter int (row span etc.)	slotInts[I_USER]	ItemResidency payload (fill or caller-set; COLD when caller-set)	Test_ItemResidency#roundTripReproducesEveryState;Test_ItemResidency#roundTripReproducesEveryStateThroughSwap;Test_ItemResidencyPrint#printPixelHashIdenticalAfterRoundTrip
 cell foreground (RGBA)	slotInts[ITEM_INTS + column*CELL_INTS + C_FOREGROUND]	ItemResidency payload per cell	Test_ItemResidency#roundTripReproducesEveryState;Test_ItemResidency#roundTripReproducesEveryStateThroughSwap;Test_ItemResidencyPrint#printPixelHashIdenticalAfterRoundTrip
 cell background (RGBA)	slotInts[ITEM_INTS + column*CELL_INTS + C_BACKGROUND]	ItemResidency payload per cell	Test_ItemResidency#roundTripReproducesEveryState;Test_ItemResidency#roundTripReproducesEveryStateThroughSwap;Test_ItemResidencyPrint#printPixelHashIdenticalAfterRoundTrip
@@ -36,7 +39,8 @@ cell font id	slotInts[ITEM_INTS + column*CELL_INTS + C_FONT]	ItemResidency paylo
 cell image id	slotInts[ITEM_INTS + column*CELL_INTS + C_IMAGE]	ItemResidency payload per cell	Test_ItemResidency#roundTripReproducesEveryState;Test_ItemResidency#roundTripReproducesEveryStateThroughSwap;Test_ItemResidencyPrint#printPixelHashIdenticalAfterRoundTrip
 cell text (column 0 = item text)	slotText[column]	ItemResidency payload per cell	Test_ItemResidency#roundTripReproducesEveryState;Test_ItemResidency#roundTripReproducesEveryStateThroughSwap;Test_ItemResidencyPrint#printPixelHashIdenticalAfterRoundTrip
 opaque payload bytes (thumbnail/image bytes)	slotBlob	ItemResidency payload	Test_ItemResidency#roundTripReproducesEveryState;Test_ItemResidency#roundTripReproducesEveryStateThroughSwap
-custom data object	data[] table + slotInts[I_DATA]	ItemResidency parent data table (caller-owned, never destroyed)	Test_ItemResidency#dataHandleIsNeverDestroyed
+item data lane (setData(Object))	ItemResidency.data (sparse item->Object)	ItemResidency parent lane (pinned; COLD only with a DataCodec)	Test_ItemResidency#dataHandleIsNeverDestroyed;Test_ItemResidency#roundTripReproducesEveryStateThroughSwap
+keyed data lane (setData(String, Object))	ItemResidency.keyed (sparse item->pairs)	ItemResidency parent lane (pinned; COLD only with a DataCodec)	Test_ItemResidency#dataHandleIsNeverDestroyed;Test_ItemResidency#roundTripReproducesEveryStateThroughSwap
 editor open/closed and item	editorItem (<0 = closed)	ItemResidency parent scalar (always resident)	Test_ItemResidency#editorStateSurvivesScroll
 editor column	editorColumn	ItemResidency parent scalar (always resident)	Test_ItemResidency#editorStateSurvivesScroll
 editor edited text	editorText	ItemResidency parent scalar (always resident)	Test_ItemResidency#editorStateSurvivesScroll
@@ -44,4 +48,5 @@ editor caret	editorCaret	ItemResidency parent scalar (always resident)	Test_Item
 editor selection start	editorSelectionStart	ItemResidency parent scalar (always resident)	Test_ItemResidency#editorStateSurvivesScroll
 editor selection end	editorSelectionEnd	ItemResidency parent scalar (always resident)	Test_ItemResidency#editorStateSurvivesScroll
 pinned handle identity	pinKeys[]/pinHandles[]	ItemResidency pin table (always resident)	Test_ItemResidency#pinnedIdentitySurvivesEvictionAndShift
-painted pixels of every state above	Canvas paint from engine getters	Test fixture (no widget adopted yet)	Test_ItemResidencyPrint#printPixelHashIdenticalAfterRoundTrip
+paint reads without materialization	paintSlot/slot*/paintLanes/paintSlots	ItemResidency paint path	Test_ItemResidency#paintPathNeverMaterializes
+painted pixels of every state above	Canvas paint from the paint path	Test fixture (no widget adopted yet)	Test_ItemResidencyPrint#printPixelHashIdenticalAfterRoundTrip

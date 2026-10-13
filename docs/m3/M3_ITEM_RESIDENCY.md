@@ -1,236 +1,329 @@
 # M3 item residency: parent-owned item state, pressure-driven payload tiers
 
-Status: draft design and engine for user review. The engine is adopted by no widget in this leaf.
+Status: draft design and engine for user review. No widget adopts the engine in this leaf.
+
 Governing invariant: Synexia `docs/M3-SCALE/invariants/M3-LAZY-OBJECT-PRESSURE-1.md`
 ([#10889](https://github.com/hsoliwal/com.synexia/pull/10889)). Sibling realizations:
-`M3LazyObjectArray` ([#10891](https://github.com/hsoliwal/com.synexia/pull/10891)) and
-`M3LazyObjectSession` with `M3_LAZY_OBJECT_RESIDENCY.md`
-([#10892](https://github.com/hsoliwal/com.synexia/pull/10892)). This document is the widget-specific
-realization: handles, always-resident bit lanes, the reproduction contract and identity pinning.
-The compile-time half (escape metadata per call site) lives in M3jdk21 `m3/docs/m3-item-residency-metadata.md`.
 
-Owners added by this leaf (package-private, `org.eclipse.swt.widgets`, `Eclipse SWT/common`):
+- `M3LazyObjectArray` ([#10891](https://github.com/hsoliwal/com.synexia/pull/10891));
+- `M3LazyObjectSession` with `M3_LAZY_OBJECT_RESIDENCY.md` ([#10892](https://github.com/hsoliwal/com.synexia/pull/10892)).
 
-| Owner | Purpose | Web (GWT/RAP) |
-|---|---|---|
-| `ItemResidency` | bit lanes, payload slots, tiers, CLOCK eviction, pressure arithmetic, identity | yes (int-only) |
-| `ItemSpillStore` | COLD tier: file-backed spill with power-of-two block free lists | no (desktop only) |
-| `ItemResidencyPressure` | heap / `MemoryPoolMXBean` pressure source | no (desktop only) |
+This document is the widget realization: handles, state lanes and patterns, the reproduction contract,
+SetData negotiation and identity pinning. The compile-time half (escape metadata per call site) is
+M3jdk21 `m3/docs/m3-item-residency-metadata.md` ([M3jdk21 #826](https://github.com/hsoliwal/M3jdk21/pull/826)).
 
-Donor decisions: [`item-residency/FOSS_REUSE_DECISION.tsv`](item-residency/FOSS_REUSE_DECISION.tsv).
-Reproduction coverage: [`item-residency/REPRODUCTION_STATE.tsv`](item-residency/REPRODUCTION_STATE.tsv).
+## 1. Packages and owners
 
-## 1. The handle
+The core has no SWT types. Everything below is toolkit-neutral; only a future adapter in
+`org.eclipse.swt.widgets` (owned by the widget agents) knows `TableItem`, `TreeItem` or `SWT.SetData`.
 
-An Item, node or row object is a thin handle: `parent + item index + generation`. All state lives
-in the parent's packed `int[]` lanes and payload arrays. Calling an Item method mutates the parent's
-bits and arrays; the handle holds no state of its own. "Half the time the user wants just the
-behaviour": a handle obtained only to call `getText()` or `setChecked()` need not exist after the call.
+| Package (`Eclipse SWT/common`) | Owner | Purpose | Web |
+|---|---|---|---|
+| `org.eclipse.swt.internal.residency` | `ItemResidency` | facade: tiers, CLOCK eviction, pressure arithmetic, SetData negotiation, data lanes, paint path, identity | yes |
+| | `ItemBitSet` | sparse bit set: ARRAY / BITMAP / RUN containers per 65536 positions | yes |
+| | `ItemLanes` | 23 state lanes: exceptions, pattern rules, default | yes |
+| | `ItemTreeShape` | lazy tree topology: depth rule, exception paths, row and key mapping | yes |
+| | `ItemSlots`, `ItemDirectory`, `ItemSparseTable`, `ItemRequests` | payload slots and codec, paged item directory, sparse object lanes, request batching | yes |
+| | `ItemSwapSpill`, `ItemSwapPressure` | desktop COLD tier and pressure source over the ported swap owners | no |
+| `org.eclipse.swt.internal.swap` | `TieredSwapCache`, `SwapStore`, `SwapBudgetPlane`, `SwapPressureController`, page ops | ported from Synexia (Apache-2.0) | no |
+| | `FileSwapStore`, `SwapPageBinaryOpsSelector` | Java fail-closed store; page-ops selection | no |
+| `org.eclipse.swt.internal` | `PackedHeapGrowth` | Xmx-aware growth for every growable array | super-source |
 
-## 2. Always-resident bit lanes
+Both new packages are exported `x-internal` in `MANIFEST.MF`.
 
-Hot state is one bit per item per lane. Lanes are never swapped and never destroyed. Only payloads
-(text, images, colours, fonts, data) go to the COLD or DESTROYED tiers. Destroy-and-recreate restores
-every lane bit exactly, because lanes are never part of the payload.
+**Swing, SwingX and AWT reuse.** Yes, this needed a package split. The core moved out of
+`org.eclipse.swt.widgets`, which holds SWT types, into `org.eclipse.swt.internal.residency`, which holds none.
+
+- **Reuse route.** A Swing adapter (`TreeModel`, `TableModel`, `ListModel`) reuses the three packages through
+  a hash-pinned package-rename recipe into M3jdk21 `java.desktop`, for example `sun.swing.m3.residency`.
+  Nothing is hand-copied.
+- **License.** The ported swap owners and `PackedHeapGrowth` are Apache-2.0. The engine files carry EPL-2.0
+  headers. Vendoring the engine into GPLv2+CPE `java.desktop` needs a decision from the user, who is the
+  author: dual-license the core (EPL-2.0 OR Apache-2.0), or keep it SWT-only.
+
+## 2. The handle
+
+An Item, node or row object is a thin handle: `parent + item index + generation`. All state lives in the
+parent's lanes and arrays; calling an Item method mutates the parent's bits and arrays. "Half the time the
+user wants just the behaviour": a handle obtained only to call `getText()` need not outlive the call.
+
+## 3. State: masks, flags and patterns
+
+All state lives only in masks, flags and patterns. Data lives in dynamic arrays and swappable payload lanes.
 
 | Lane | Name | Meaning | Default |
 |---:|---|---|---|
-| 0 | `LANE_EXPANDED` | tree node expanded | 0 |
-| 1 | `LANE_HAS_CHILDREN` | node has children (valid when lane 2 set) | 0 |
-| 2 | `LANE_CHILDREN_KNOWN` | has-children is known (0 = unknown) | 0 |
-| 3 | `LANE_CHILDREN_LOADED` | children materialized from the source | 0 |
-| 4 | `LANE_LOADING_PLACEHOLDER` | a loading placeholder row is shown | 0 |
+| 0 | `LANE_EXPANDED` | expanded (flat widgets; trees use `ItemTreeShape`) | 0 |
+| 1 | `LANE_HAS_CHILDREN` | has children (valid when lane 2 set) | 0 |
+| 2 | `LANE_CHILDREN_KNOWN` | has-children is known | 0 |
+| 3 | `LANE_CHILDREN_LOADED` | children materialized | 0 |
+| 4 | `LANE_LOADING_PLACEHOLDER` | loading placeholder shown | 0 |
 | 5 | `LANE_SELECTED` | selected | 0 |
 | 6 | `LANE_FOCUSED` | focus item | 0 |
-| 7 | `LANE_HOVERED` | hot (mouse-over) item | 0 |
-| 8 | `LANE_DISABLED` | enabled, stored inverted so the zero word is the default | 0 = enabled |
+| 7 | `LANE_HOVERED` | hot item | 0 |
+| 8 | `LANE_DISABLED` | enabled, stored inverted | 0 = enabled |
 | 9 | `LANE_FILTERED_OUT` | filtered-visible, stored inverted | 0 = visible |
-| 10 | `LANE_CHECKED` | check box checked | 0 |
-| 11 | `LANE_GRAYED` | check box grayed | 0 |
-| 12 | `LANE_CHECKABLE` | row shows a check box | 0 |
+| 10 | `LANE_CHECKED` | checked | 0 |
+| 11 | `LANE_GRAYED` | grayed | 0 |
+| 12 | `LANE_CHECKABLE` | shows a check box | 0 |
 | 13 | `LANE_DIRTY_PAINT` | needs repaint | 0 |
-| 14 | `LANE_DIRTY_MEASURE` | needs re-measure (set on recreate) | 0 |
-| 15 | `LANE_DIRTY_DATA` | payload must be refetched (`clear(index)`) | 0 |
-| 16 | `LANE_PINNED` | a pinned handle exists (pinned-identity) | 0 |
-| 17-18 | `LANE_TIER_LO/HI` | resident tier, 2 bits (section 4) | 00 = DESTROYED |
-| 19 | `LANE_CALLER_SET` | payload written by API outside the data-source fill | 0 |
-| 20 | `LANE_MATERIALIZED` | payload was supplied at least once (`VirtualItemState.CACHED`) | 0 |
+| 14 | `LANE_DIRTY_MEASURE` | needs re-measure | 0 |
+| 15 | `LANE_DIRTY_DATA` | user-owned; `invalidate` sets it, the engine never clears it | 0 |
+| 16 | `LANE_PINNED` | a pinned handle exists (engine-owned) | 0 |
+| 17-18 | `LANE_TIER_LO/HI` | resident tier (engine-owned, section 5) | 00 = DESTROYED |
+| 19 | `LANE_CALLER_SET` | payload written outside a fill (engine-owned) | 0 |
+| 20 | `LANE_MATERIALIZED` | payload supplied at least once (engine-owned) | 0 |
+| 21 | `LANE_DATA_REQUESTED` | SetData outstanding (engine-owned) | 0 |
+| 22 | `LANE_DATA_LOADED` | payload in HOT, WARM or COLD (engine-owned) | 0 |
 
-Names follow `VirtualItemState` (`CHECKED`, `GRAYED`, `EXPANDED`, `PINNED`, `DIRTY`, `CHILDREN_*`), so the
-Table/Tree owners map 1:1.
+**Containers.** The design follows RoaringBitmap's container idea (ADAPT, Apache-2.0); the code is original.
+Each lane is an `ItemBitSet` of 65536-item chunks, and each chunk takes one of three forms:
 
-### Layout: one `int[]` per lane, chosen by measurement
+- **ARRAY**: sorted `int` positions for sparse exceptions, at most 4096 of them;
+- **BITMAP**: 2048 `int` words for dense pages;
+- **RUN**: `(start, end)` pairs, used for select-all and check-all.
 
-`int[][] lanes`, word `item >>> 5`, bit `item & 31`. Measured with
-[`bench/LaneLayoutBench.java`](item-residency/bench/LaneLayoutBench.java), 10,000,000 items, 20 lanes,
-JDK 21.0.9, `-Xmx1g`, median of 7 after 3 warm-ups, two JVM runs in opposite layout order
-([`bench/LANE_LAYOUT_BENCH.tsv`](item-residency/bench/LANE_LAYOUT_BENCH.tsv)):
+After a range operation each chunk takes its smallest form. Memory is O(non-default state), not O(items).
+A billion-item lane with nothing set costs nothing, and select-all costs one RUN pair per chunk.
 
-| Layout | Bytes | Range set+clear 8M (ms) | Count 10M (ms) | Gather 20k windows x 64 rows (ms) | 1M random set+get (ms) |
-|---|---:|---|---|---|---|
-| A: `long[]` per lane | 25,000,000 | 0.534 / 0.223 | 0.699 / 0.201 | 66.2 / 135.9 | 1.4 / 10.5 |
-| **B: `int[]` per lane** | 25,000,000 | **0.087 / 0.117** | 0.241 / 0.236 | 90.8 / 87.1 | 5.8 / 15.2 |
-| C: interleaved `int` blocks (stride 20) | 25,000,000 | 4.273 / 2.135 | 1.938 / 1.125 | 27.8 / 32.8 | 51.2 / 20.3 |
-| D: one packed `int` per item | 40,000,000 | 5.558 / 4.624 | 3.067 / 3.562 | 9.4 / 1.8 | 52.7 / 15.0 |
+**Patterns.** A pattern stores a rule, not per-item bits: packed `(start, end, stride, repeatMask, phase)`.
+Item `i` in `[start, end)` is set when bit `(i - start + phase) % stride` of `repeatMask` is set.
 
-Why B: it has the best range operations in both runs (select-all, clear-dirty, filter, count-checked
-run at memory bandwidth), random single-lane access in the A/B class, the same 2.5 bytes per item as A
-and C, and `int` words (GWT emulates `long`). Its cost is the full-row gather: about 70 ns per row, or
-14 microseconds for a 200-row paint. Interleaved blocks (C) gather 3x faster but lose 18-37x on range
-operations; D needs 60% more memory. Caveat recorded: one JVM per run with a shared interface call site,
-so later layouts in each run see a megamorphic site; the B-over-C range result holds in both orders.
+- "Select every 3rd row" is stride 3, mask `0b001`.
+- "Check rows matching a repeating mask" is stride k with that mask.
+- `phase` lets a pattern split or shift on insert and remove without changing any item's state.
+- Lookups and counts are arithmetic.
+- Mutations split a pattern only where items deviate.
 
-## 3. Payload record and parent scalars
+**Precedence** (normative): explicit exception, then pattern, then default.
 
-Payload lives in resident slots (arrays sized by slot capacity, never by item count):
+- An exception is an override bit plus a value bit, both `ItemBitSet`s.
+- Inside a pattern, `setBit` records an exception only when the value differs from the rule.
+- `setRange` cuts the pattern away.
+- `setPattern` drops the exceptions in its range.
 
-| Array | Stride | Fields |
-|---|---|---|
-| `slotInts` | `ITEM_INTS + columns * CELL_INTS` | `I_FOREGROUND`, `I_BACKGROUND` (RGBA `0xAARRGGBB`, 0 = default), `I_FONT`, `I_IMAGE` (widget-table ids, 0 = none), `I_ROW_HEIGHT` (measured, 0 = unmeasured), `I_INDENT`, `I_LEVEL`, `I_TOOLTIP`, `I_ACCESSIBLE` (ids), `I_DATA` (data-table handle), `I_USER` (adopter-defined); per cell `C_FOREGROUND`, `C_BACKGROUND`, `C_FONT`, `C_IMAGE` |
-| `slotText` | `columns` | cell text; column 0 is the item text |
-| `slotBlob` | 1 | opaque bytes (thumbnail or image bytes, adopter-encoded payload) |
-| `slotItem`, `slotRecord` | 1 | owning item; clean spill copy (-1 = none) |
+Example: "select every 3rd row" over 1,000,000,000 items costs one 5-int entry, and `countRange` stays exact.
 
-Parent scalars (always resident): the in-place editor (`editorItem`, `editorColumn`, `editorText`,
-`editorCaret`, `editorSelectionStart`, `editorSelectionEnd`; `editorItem < 0` = closed) and the custom-data
-table (`Object[] data` plus an int free stack). Item-to-payload directory: paged `int[][]` (4096 per page,
-pages allocated on demand and freed when empty); `> 0` = resident slot + 1, `< 0` = -(spill record + 1),
-`0` = none.
+**Layout history.** The first layout was chosen by measurement ([`bench/LANE_LAYOUT_BENCH.tsv`](item-residency/bench/LANE_LAYOUT_BENCH.tsv)):
+one `int[]` per lane beat interleaved words on range operations (0.087-0.117 ms against 2.1-4.3 ms for
+8M items) at equal memory, and `int` words suit GWT.
 
-## 4. Residency tiers
+That dense layout costs O(items), 2.9 GB for 23 lanes at 1B items, so the billion-scale directive replaced
+it with containers. The measured per-lane `int` word survives as the BITMAP chunk format.
 
-Two lane bits per item. Names are those of `TieredSwapCache.Tier` and M3-LAZY-OBJECT-PRESSURE-1, plus
-the user's SWAPPED and DESTROYED:
+## 4. Payload and parent lanes
 
-| Code | Tier | Payload location | Peer equivalent |
+Payload lives in resident slots: arrays sized by slot capacity, never by item count.
+
+- `slotInts`: `I_FOREGROUND`, `I_BACKGROUND` (RGBA, 0 = default), `I_FONT`, `I_IMAGE`, `I_ROW_HEIGHT`,
+  `I_INDENT`, `I_LEVEL`, `I_TOOLTIP`, `I_ACCESSIBLE`, `I_USER`, then per cell `C_FOREGROUND`,
+  `C_BACKGROUND`, `C_FONT`, `C_IMAGE`.
+- `slotText`: cell text.
+- `slotBlob`: opaque bytes.
+
+Parent-owned lanes, indexed by item and always resident:
+
+- **Item data lane** (`setData(Object)`) and **keyed data lane** (`setKeyedData(item, key, value)`).
+  - Values are pinned: never swapped or dropped, and identity is preserved across release and recreate.
+  - Exception: a value accepted by a registered `DataCodec`. Registering one declares the accepted values
+    immutable (the peer `M3LazyObjectArray` immutable-codec rule). Such a value travels with a COLD item's
+    record and comes back equal, not identical.
+- **Editor scalars**: item, column, text, caret, selection start and end.
+- **Pin table**: pinned handles.
+
+`setDerivedInt` writes recomputable values (measured height, indent). They are not caller-owned and are
+recomputed after DESTROY.
+
+## 5. Residency tiers
+
+| Code | Tier | Payload | Peer equivalent |
 |---:|---|---|---|
-| 0 | DESTROYED | nowhere; recreated by `DataSource.fill` (SWT `SetData`) on next access | first miss: factory |
-| 1 | HOT | resident slot, inside viewport + overscan; never evicted | HOT (pinned lease) |
-| 2 | WARM | resident slot outside the window; CLOCK eviction candidate | WARM |
-| 3 | COLD (SWAPPED) | spill record in secondary memory; swapped back in on access | NONRESIDENT + `SwapStore` record |
+| 0 | DESTROYED | none; recreated by SetData on next access | first miss: factory |
+| 1 | HOT | resident slot inside the viewport runs; never evicted | HOT (pinned lease) |
+| 2 | WARM | resident slot outside the window; CLOCK candidate | WARM |
+| 3 | COLD (SWAPPED) | record in the ported `TieredSwapCache` over a `SwapStore` | NONRESIDENT + store record |
 
-Zero is DESTROYED, so the zero word means "never materialized" for 10M fresh items.
+Eviction of a WARM slot uses CLOCK second chance; the window and the slot being filled are skipped.
 
-Eviction of a WARM slot (CLOCK second chance; the hand skips window slots and the slot being filled):
+1. Source-backed payload with `RESIDENCY_DESTROY` is dropped.
+2. Otherwise, with `RESIDENCY_SWAP`, the payload is encoded once into the reusable buffer and written:
+   `TieredSwapCache.put`, then `FileSwapStore`. A clean copy (unchanged since swap-in) is not rewritten.
+3. Otherwise the payload stays resident. Caller-owned payload is never discarded; `STAT_UNEVICTABLE` counts
+   these refusals.
 
-1. Source-backed payload (`LANE_CALLER_SET` = 0) with `RESIDENCY_DESTROY`: drop it (DESTROYED). Recreation
-   re-runs the fill and sets `LANE_DIRTY_MEASURE`.
-2. Otherwise, with `RESIDENCY_SWAP` and a spill: encode into the reusable buffer and write a record
-   (COLD). If the slot still holds a clean copy (`slotRecord >= 0`, payload unchanged since swap-in), the
-   write is skipped.
-3. Otherwise the payload stays resident. Caller-owned payload is never discarded (M3-LAZY-OBJECT-PRESSURE-1);
-   capacity may then exceed the budget, and `STAT_UNEVICTABLE` counts the refusals.
+**Swap backend (desktop).**
 
-Access to a COLD or DESTROYED item from any getter or setter pages it in invisibly. Residency is driven
-by `setViewport(first, visibleCount, overscan)` and by pressure, never by the caller.
+- `ItemSwapSpill` maps engine int handles to immutable store ids. `TieredSwapCache` keeps recently swapped
+  records as WARM bytes, so scroll-back hits memory before disk.
+- The Synexia JNI SQLite store is not ported: its JNI symbols are bound to `com.synexia`, and SWT ships no
+  Synexia native library. The backend fails closed to the Java `FileSwapStore`.
+- An embedder may pass a native page-ops candidate. It is admitted only behind
+  `ParityCheckedSwapPageBinaryOps`, after a self-test.
 
-## 5. Pressure (identical semantics to `SwapPressureController` / `SwapBudgetPlane`)
+**Web:** DESTROY only, no spill.
 
-- Availability ratio in permille: 1000 at heap used <= 70% (`softStart` 0.70), 0 at >= 96% (`hardStop`
-  0.96), linear between. `ItemResidencyPressure` also reads every heap `MemoryPoolMXBean` with a usage
-  threshold and arms collection-usage notifications at `softStart`; the worst signal wins.
-- Shrink is immediate; recovery is rate-limited to +125 permille per sample (`recoveryStep` 0.125).
-- A telemetry exception zeroes optional residency (budget falls to the window), counted in `STAT_TELEMETRY_FAILURES`.
-- Sampled on the first operation and every `sampleEvery` operations after it; the MXBean notification
-  marks the next operation as a sample point.
-- Budget slots = `max(window size, hardSlots * permille / 1000)`, computed without int overflow.
-  The window is the floor: it must stay resident to paint.
+## 6. Pressure and growth
 
-## 6. Reproduction contract (normative)
+`ItemSwapPressure` wraps the ported `SwapPressureController` with unchanged semantics:
 
-Every piece of state that affects how an item looks or behaves must be reconstructible from
-parent-owned packed state plus the data source, so an item scrolled out and destroyed comes back
-identical when scrolled in. Nothing may live only in the transient item object. Classes of state:
+- softStart 0.70 and hardStop 0.96 over heap, cgroup and PSI; worst signal wins;
+- shrink is immediate, recovery is rate-limited to +125 permille;
+- a telemetry failure zeroes optional residency.
 
-| Class | Where | Survives DESTROY because |
-|---|---|---|
-| bit lanes 0-20 | `lanes` | lanes are never evicted |
-| source-backed payload | slot arrays | `DataSource.fill` regenerates it deterministically |
-| caller-owned payload (`LANE_CALLER_SET`) | slot arrays / spill | never destroyed: only COLD |
-| editor state | parent scalars | never evicted |
-| custom data objects | parent data table + `I_DATA` | `setData` is caller-owned, so the item is never destroyed |
-| pinned handles | sorted pin table | identity table is never evicted |
+The same decision readjusts the engine's slot budget and the `TieredSwapCache` byte budget.
+A collection-usage threshold at 70% marks the next operation as a sample point. The budget is
+`max(HOT window size, hardSlots * permille / 1000)`, computed without int overflow. A read that triggers a
+fill still sees its value at zero residency.
 
-[`REPRODUCTION_STATE.tsv`](item-residency/REPRODUCTION_STATE.tsv) lists every state with its lane or array,
-owner and the test that proves its round trip. Widget owners add their rows (for example the native
-`LVITEM` state on win32) and must point each at a test.
-Round-trip test (`Test_ItemResidency`): set every state, force items out (scroll away plus zero pressure,
-DESTROY and SWAP), scroll back, require identical values from every getter. `Test_ItemResidencyPrint` paints
-a `Canvas` from engine state and requires an identical `Control.print` pixel hash before and after.
+Every growable array (bit-set chunks, pattern tables, slot tables, directory spine, pin and data tables,
+swap handle table) grows only through `PackedHeapGrowth.capacity`. It samples Xmx and used heap once per
+capacity miss. Under low headroom it returns the exact length instead of 1.5x slack (tested with a
+simulated sampler).
 
-## 7. Identity
+## 7. SetData negotiation (engine-owned)
 
-- **Pinned:** the handle object stays the same object while any caller may retain it (`==`, fields,
-  collections, map keys, monitors). Pinned handles live in a sorted `int[]`/`Object[]` table keyed by item
-  index; insert/remove re-key them and call `HandleFactory.rebind` so the handle follows its item.
-- **Recyclable:** a small flyweight ring (4 handles) rebound per request with a new generation, used only
-  when `IDENTITY_BY_METADATA` is set and the compile-time sidecar classifies the call site as
-  `SITE_BEHAVIOUR_ONLY`. `isCurrent(handle, item, generation)` detects stale flyweights.
-- **Default is safe:** unknown metadata, `SITE_RETAINS`, `SITE_UNKNOWN`, `IDENTITY_PIN_ALL` or a missing
-  sidecar all pin. An already pinned item always returns its pinned handle.
-- Site key: FNV-1a 32 over the UTF-16 units of `owner.name+desc@bci`, written by the M3 pass. Key
-  collisions merge conservatively (any retaining or unknown site makes the key retaining).
-- Sidecar wire form (`M3IRS01`, big-endian ints): `magic 0x4D334952`, `version 1`, `count`, then sorted
-  `(key, kind)` pairs. `ItemResidency.Sidecar.fromInts(int[])` reads it; file I/O stays with the adopter.
+- The viewport arrives as item runs in priority order: visible, then overscan in the scroll direction,
+  then prefetch beyond it.
+- `ItemRequests` batches each run into contiguous ranges of items that are neither loaded nor requested.
+  It marks `LANE_DATA_REQUESTED` and calls `DataSource.request(owner, from, to)`.
+- Outstanding requests outside every run are cancelled in ranges through `DataSource.cancel`.
+- Writes between `beginData` and `endData` are source-backed; `endData` marks the item loaded.
+- An item restored from HOT, WARM or COLD is loaded and never re-requested. Only DESTROYED re-fires SetData.
+  The 10M stress verifies zero re-fires for COLD items.
 
-## 8. Construction flags
+## 8. Trees at billion scale (`ItemTreeShape`)
 
-The flags are one engine-owned `int config`. They use no `Widget.state` bit (win32 bits 25-31 were catalogued
-free in Synexia #10864 and are claimed by the visibility agent) and no SWT style bit. Adopters keep one
-package-private `int residencyFlags` per widget, passed to the engine constructor; the default comes from
-system property `org.eclipse.swt.m3.itemResidency` (decimal int, default `IDENTITY_PIN_ALL`, which is stock behaviour).
+No parent/child index is materialized. Node keys are arithmetic over per-depth fan-outs from the data
+source: the child `c` of node `k` at depth `d` is `levelStart[d] + (k - levelStart[d-1]) * fanout[d] + c`.
+
+Expansion is stored as a depth rule ("expand to depth N", one int) plus explicit exceptions. Only the
+exception paths are kept, each with sorted child deltas and prefix sums.
+
+Row-to-node mapping descends one level at a time:
+
+- below the first exception of a level: arithmetic;
+- among exceptions: binary search over `childIndex * unit + prefix`.
+
+`setViewportRuns` takes the key runs of the visible rows. Lanes are keyed by node key, so state survives
+collapse and expand.
+
+Scope of this leaf: uniform fan-out per depth. Per-node child counts stay with the Tree owner's
+`VirtualTreeTopology` until they adopt a per-node variant. The topology is verified against a materialized
+tree of 1,010,100 nodes.
+
+## 9. Paint path (normative for adopters)
+
+Widget paint code reads only through:
+
+- `beginPaint()` and `endPaint()`;
+- `paintSlot(item)`, `slotText`, `slotInt`, `slotCellInt`, `slotBlob`;
+- `paintLanes(item)`;
+- the bulk forms `paintLanes(from, to, int[])` and `paintSlots(from, to, int[])`.
+
+These never page in, request data, allocate or create handles. Inside a paint scope, any public getter that
+would materialize increments `materializedDuringPaint`, which must stay 0, and tests assert it.
+
+The rule: if redraw triggers materialization, change the widget, never the engine contract.
+
+## 10. Reproduction contract (normative)
+
+Every piece of state that affects how an item looks or behaves must be reconstructible from parent-owned
+state plus the data source. An item scrolled out and destroyed must come back identical when scrolled in.
+Nothing may live only in the transient item object.
+
+[`REPRODUCTION_STATE.tsv`](item-residency/REPRODUCTION_STATE.tsv) lists each state with its lane or array,
+owner and test. Widget owners add their rows.
+
+Tests:
+
+- `Test_ItemResidency` round trips through DESTROY and through COLD, comparing every getter.
+- `Test_ItemResidencyPrint` paints a `Canvas` through the paint path and compares `Control.print` pixel
+  hashes before and after the round trip.
+
+## 11. Identity
+
+- **Pinned** (default): the handle stays the same object while any caller may retain it. Pins are re-keyed
+  on insert and remove through `HandleFactory.rebind`.
+- **Recyclable**: a 4-handle flyweight ring rebound with a new generation. It is used only with
+  `IDENTITY_BY_METADATA` when the compile-time sidecar classifies the call site `SITE_BEHAVIOUR_ONLY`.
+  `isCurrent(handle, item, generation)` detects stale flyweights.
+- **Default is safe**: unknown sites, retaining sites, `IDENTITY_PIN_ALL` and a missing sidecar all pin.
+- **Site key**: FNV-1a 32 over the UTF-16 units of `owner.name+desc@bci`, with the bytecode offset exact.
+  It is identical in the M3 pass.
+- **Sidecar** `M3IRS01`: `0x4D334952`, `1`, `count`, then sorted `(key, mask << 2 | class)` pairs.
+
+## 12. Construction flags
+
+One engine-owned `int config`. It uses no `Widget.state` bit (win32 bits 25-31 are claimed by the
+visibility agent) and no style bit. Adopters keep one `int residencyFlags` per widget. The default comes
+from system property `org.eclipse.swt.m3.itemResidency` and is `IDENTITY_PIN_ALL`, which is stock behaviour.
 
 | Bit | Flag | Effect |
 |---:|---|---|
-| 0 | `RESIDENCY_SWAP` | caller-owned or non-destroyable payload may go COLD (needs a spill) |
+| 0 | `RESIDENCY_SWAP` | non-destroyable payload may go COLD |
 | 1 | `RESIDENCY_DESTROY` | source-backed payload is dropped and refilled |
-| 2 | `IDENTITY_PIN_ALL` | every handle is pinned (stock SWT identity) |
-| 3 | `IDENTITY_BY_METADATA` | recycle handles at sites the sidecar proves behaviour-only |
-| 4 | `PRESSURE_SAMPLED` | sample the pressure source on the operation cadence |
-| 5-31 | reserved | 0 |
+| 2 | `IDENTITY_PIN_ALL` | every handle pinned |
+| 3 | `IDENTITY_BY_METADATA` | recycle at sites proven behaviour-only |
+| 4 | `PRESSURE_SAMPLED` | sample pressure on the operation cadence |
 
-## 9. Web and GWT safety
+## 13. Web and GWT safety
 
-`ItemResidency` uses only `int`, `int[]`, `String[]`, `Object[]`: no `long` arithmetic, no reliance on
-int overflow (multiplications are split, counters saturate), no `String[].clone()`, no
-`Objects.checkIndex`, no `java.nio`, no `java.lang.management`, no threads. `ItemSpillStore` and
-`ItemResidencyPressure` are desktop-only and are excluded from the web module; the web configuration is
-`RESIDENCY_DESTROY` without a spill, so caller-owned payload stays resident there.
+The core (`residency` without the two desktop owners) is web-safe:
 
-## 10. Scope
+- `int` state and arithmetic only;
+- no reliance on int overflow (the FNV multiply is split so every step is exact in a double);
+- no `clone()`, no `Objects.checkIndex`, no `java.nio`, no `java.lang.management`, no threads.
+
+`PackedHeapGrowth` needs a GWT super-source that returns the geometric capacity. The swap package,
+`ItemSwapSpill` and `ItemSwapPressure` are desktop-only. GWT compilation was NOT_RUN.
+
+## 14. UI-driven additions and port choices
+
+| Structure | Choice | What changed, and the UI reason |
+|---|---|---|
+| `TieredSwapCache`, `SwapStore`, `SwapBudgetPlane`, `SwapPressureController`, page ops | port (package rename) | Two readjust overloads for unported owners removed. No widget-path change was needed, so no upstream PR. |
+| `SwapPageBinaryOpsSelector` | rewrite | No `com.synexia.nativeinterop`: Java oracle by default, native candidate only behind a parity check. |
+| `FileSwapStore` | generated gap | Synexia has no Java `SwapStore`. Ids carry location plus sequence, so the scroll-back path needs no per-record heap index. |
+| `PackedHeapGrowth` | copy and specialize | Any positive row width (packed slot tables), a sampler hook, counters (low-headroom test). |
+| `ItemResidency.paintLanes(from, to, int[])`, `paintSlots(from, to, int[])` | new | Bulk read of a visible window into a reusable array, with zero materialization. |
+| `setViewport` prefetch run, `setPrefetch` | new | Overscan and prefetch hint in the scroll direction. |
+| HOT runs | new | The visible window is pinned against eviction. |
+| `ItemLanes.setRange`, `setPattern`, `countRange`, `nextSet` | new | Check-all, select every k-th row, exact selection count, and selection enumeration. |
+| `ItemTreeShape.expandToDepth`, `setExpanded`, `keyRuns` | new | Expand-to-depth as an O(1) rule; row-to-key runs for the viewport. |
+
+## 15. Scope
 
 | Family | Owner (adopts later) | Mapping |
 |---|---|---|
-| SWT Table, Tree, TabFolder, CTabFolder | Table/Tree laziness agent (win32 `Table.java`, `Tree.java`, `TabFolder.java`, `CTabFolder.java`, `VirtualPageSource`) | `VirtualItemStorage.stateMasks` and `VirtualTreeTopology` flags become lanes; `SetData` becomes `DataSource.fill` |
-| SWT List, Combo, CCombo | List/Combo agent | text lane only; no handles (List has no items) |
-| Nebula grid, xviewer, ctree, combos | Nebula agents | `GridItem` per-cell arrays become payload strides; row spans use `I_USER` |
-| Swing JTree, JTable, JList (M3jdk21 `java.desktop`) | TARGET_OWNED_PORT, GPLv2+CPE; design only | renderers already stamp rows; `TreePath` and selection objects become lanes plus recyclable handles |
-| Other M3jdk APIs | M3 compiler | any `@M3Transient` type uses the same sidecar |
+| SWT Table, Tree, TabFolder, CTabFolder | Table/Tree laziness agent (win32 `Table.java`, `Tree.java`, `TabFolder.java`, `CTabFolder.java`, `VirtualPageSource`) | `VirtualItemStorage` state masks become lanes; `SetData` becomes `DataSource.request` |
+| SWT List, Combo, CCombo | List/Combo agent | text payload and lanes, no handles |
+| Nebula grid, xviewer, ctree, combos | Nebula agents | `GridItem` per-cell arrays become payload strides |
+| Swing JTree, JTable, JList, SwingX, AWT List | Swing/AWT agent (TARGET_OWNED_PORT, GPLv2+CPE) | package-rename recipe of the core, plus a `TreeModel`/`TableModel`/`ListModel` adapter |
+| Other M3jdk APIs | M3 compiler | `@M3Transient` types use the same sidecar |
 
-## 11. Adoption guide
+## 16. Adoption guide
 
-1. Keep public API and behaviour. Add `int residencyFlags` and one `ItemResidency residency` field per widget.
-2. Move each per-item boolean to a lane (`getChecked` reads `residency.bit(LANE_CHECKED, index)`).
-3. Move per-item payload to `setText/getText`, `setInt/getInt`, `setCellInt/getCellInt`, `setBlob/getBlob`.
-4. Route `SWT.SetData` through `DataSource.fill`; writes made inside the fill are source-backed, all other
-   writes are caller-owned.
-5. Call `setViewport` from the scroll and resize paths with the overscan you paint.
-6. Return `handle(index)` from public getters, or `transientHandle(index, siteKey)` where a rewritten
-   call site passes its key.
-7. Add your rows to `REPRODUCTION_STATE.tsv` and extend `Test_ItemResidency`-style round trips to your widget.
+1. Keep the public API and behaviour. Add `int residencyFlags` and one `ItemResidency residency` per widget.
+2. Move per-item booleans to lanes (`getChecked` becomes `residency.bit(LANE_CHECKED, index)`). Use
+   `setRange` and `setPattern` for check-all, select-all and every-k-th.
+3. Move payload to `setText`/`getText`, `setInt`/`getInt`, `setCellInt`/`getCellInt` and `setBlob`/`getBlob`.
+   Move `setData` to the data lanes.
+4. Route `SWT.SetData` through `DataSource.request` with `beginData` and `endData`. Let the engine decide what
+   to request. Never fire SetData from paint.
+5. Call `setViewport` (flat) or `setViewportRuns` (trees, via `ItemTreeShape.keyRuns`) from scroll and resize.
+6. **Paint only through the paint path (section 9)** and assert `materializedDuringPaint() == 0` in tests.
+7. Return `handle(index)` from public getters, or `transientHandle(index, siteKey)` where a rewritten call
+   site passes its key.
+8. Grow every widget-side array through `PackedHeapGrowth.capacity`.
+9. Add your rows to `REPRODUCTION_STATE.tsv` and add a round trip plus a `Control.print` hash test.
 
 ### Worked example: a copy of the GTK Tree residency
 
 Before (SWT fork `a02236c`, `gtk/Tree.java` and `gtk/TreeItem.java`):
 
 ```java
-boolean virtualFlag (TreeItem item, long flag) {
-	if (virtualTopology == null) return false;
-	return virtualTopology.flag (virtualItemId (item), flag);
-}
 boolean checkData (TreeItem item) {
 	if ((style & SWT.VIRTUAL) != 0 && virtualFlag (item, VirtualItemState.CACHED)) return true;
-	...
 	pinVirtualFacade (item);                       // every filled item is pinned
 	virtualFlag (item, VirtualItemState.CACHED, true);
 	Event event = new Event (); event.item = item; ...
@@ -242,22 +335,22 @@ boolean isCheckedState () { return parent.virtualFlag (this, VirtualItemState.CH
 After (illustrative copy, not applied to `Tree.java`):
 
 ```java
+ItemTreeShape shape = new ItemTreeShape (fanoutFromSource ());
+ItemSwapSpill spill = ItemSwapSpill.temporaryOrNull (residencyFlags, 8 << 20); // desktop only
 ItemResidency residency = new ItemResidency (residencyFlags, columnCount (), 4096,
-	(owner, index) -> fireSetData (index),          // SetData = DataSource.fill
-	ItemSpillStore.temporaryOrNull (residencyFlags), // desktop only
-	ItemResidencyPressure.system ());
-boolean checkData (int index) {
-	residency.getText (index, 0);                   // pages in or fills; no pinning
-	return true;
+	(owner, from, to) -> { for (int k = from; k < to; k++) { owner.beginData (k); fireSetData (k); owner.endData (k); } },
+	spill, ItemSwapPressure.system (spill));
+boolean isCheckedState (int key) { return residency.bit (ItemResidency.LANE_CHECKED, key); }
+boolean getExpanded (int key) { return shape.isExpanded (key); }
+TreeItem _getItem (int key) { return (TreeItem) residency.handle (key); }       // pinned on API exposure
+void onScroll (int topRow, int rows) {
+	int n = shape.keyRuns (Math.max (0, topRow - rows / 2), 2 * rows, runs);
+	residency.setViewportRuns (runs, n, n);
 }
-boolean isCheckedState (int index) { return residency.bit (ItemResidency.LANE_CHECKED, index); }
-TreeItem _getItem (int index) { return (TreeItem) residency.handle (index); } // pinned: API exposure
-void onScroll (int top, int visible) { residency.setViewport (top, visible, visible / 2); }
+void onPaint (GC gc) { residency.beginPaint (); /* paintSlot, slotText, paintLanes only */ residency.endPaint (); }
 ```
 
-`virtualTopology` keeps the parent/child shape; `LANE_EXPANDED`, `LANE_HAS_CHILDREN` and
-`LANE_CHILDREN_KNOWN` replace its `EXPANDED`, `HAS_CHILDREN` and `CHILDREN_KNOWN` flags by flat row index.
+## 17. Verification ledger
 
-## 12. Verification ledger
-
-Filled from executed runs only; see the PR body. NOT_RUN: GTK, Cocoa, GWT compilation, RAP.
+Filled from executed runs only; the PR body carries the numbers. NOT_RUN: GTK, Cocoa, GWT compilation,
+RAP, the Synexia JNI SQLite backend, and any widget adoption.

@@ -380,7 +380,7 @@ public final class ItemResidency {
 		slots.ref (s, true);
 		freeRecord (s);
 		if (filling != item && !derived) lanes.set (LANE_CALLER_SET, item, true);
-		if (!lanes.get (LANE_DATA_LOADED, item)) {
+		if (filling != item && !lanes.get (LANE_DATA_LOADED, item)) {
 			lanes.set (LANE_DATA_LOADED, item, true);
 			lanes.set (LANE_MATERIALIZED, item, true);
 			setTier (item, inWindow (item) ? TIER_HOT : TIER_WARM);
@@ -477,6 +477,26 @@ public final class ItemResidency {
 	public int paintLanes (int item) {
 		checkItem (item);
 		return lanes.gather (item);
+	}
+
+	/**
+	 * Bulk paint read (UI method): lane masks of {@code [from, to)} into the caller's reusable
+	 * {@code out}, O(set bits) per plain lane. Returns the number of entries written.
+	 */
+	public int paintLanes (int from, int to, int [] out) {
+		if (from < 0 || to > lanes.count || from > to || out.length < to - from) throw new IndexOutOfBoundsException ("range");
+		lanes.gather (from, to, out);
+		return to - from;
+	}
+
+	/** Bulk paint read (UI method): resident slot (or -1) of each item of {@code [from, to)}. */
+	public int paintSlots (int from, int to, int [] out) {
+		if (from < 0 || to > lanes.count || from > to || out.length < to - from) throw new IndexOutOfBoundsException ("range");
+		for (int i = from; i < to; i++) {
+			int d = directory.get (i);
+			out [i - from] = d > 0 ? d - 1 : -1;
+		}
+		return to - from;
 	}
 
 	public String slotText (int slot, int column) {

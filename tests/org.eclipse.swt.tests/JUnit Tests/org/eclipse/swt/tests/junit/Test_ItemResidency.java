@@ -351,6 +351,13 @@ public class Test_ItemResidency {
 					.append (i (e, "slotCellInt", slot, 1, k ("C_FONT"))).append (i (e, "paintLanes", row));
 		}
 		assertEquals (-1, i (e, "paintSlot", 9000), "paint path never pages in");
+		int [] masks = new int [25], slotsOut = new int [25];
+		assertEquals (25, i (e, "paintLanes", 0, 25, masks));
+		assertEquals (25, i (e, "paintSlots", 0, 25, slotsOut));
+		for (int row = 0; row < 25; row++) {
+			assertEquals (i (e, "paintLanes", row), masks [row], "bulk lane read " + row);
+			assertEquals (i (e, "paintSlot", row), slotsOut [row], "bulk slot read " + row);
+		}
 		call (e, "endPaint");
 		assertEquals (0, i (e, "materializedDuringPaint"));
 		assertTrue (painted.indexOf ("row 24") >= 0);
