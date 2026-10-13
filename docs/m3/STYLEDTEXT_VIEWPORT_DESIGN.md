@@ -223,6 +223,17 @@ underneath it and never owns semantic state (MIndex `MIndexOpenGlPresenter` rule
   transient (caret, selection, block selection). Body content goes to tile textures (or a glyph
   atlas); scrolling is a translate/blit of cached tiles and only newly exposed tiles are
   rasterized; a caret blink or selection change repaints only the transient plane.
+* Concrete GPU half (Synexia Initiative 31, SWT on Skija/Skia): `SkijaGC` keeps the SWT `GC`
+  API while Skia rasterizes (GPU-capable), which is exactly "GPU underneath the real GC". The
+  StyledText renderer side builds on `recipe-crates/swt-skija-text-hotpath-20261013` (text
+  split/mnemonic hot path of `SkijaGC`), `swt-skija-managed-graphics-20261013`,
+  `swt-skija-alpha-plane-20261013` (transient/selection alpha plane),
+  `swt-skija-resource-lifetime-20261013` and `integration/swt-skija-inventory`; damage and
+  replay come from `synexia-m3-recipe` `SwtSkijaDirtyRegionPlanner` (CPU-first conservative
+  damage) and `SwtSkijaViewportCommandReplay` (complete command stream replayed per damage
+  region, region clip outside the recorded save/restore). Readiness and local receipts:
+  `synexia-m3-recipe/recipes/swt-initiative31-skija-readiness-20261012`,
+  `verification/swt-initiative31-skija-20261013` (hosted three-OS execution still pending).
 * What SWT already does: Win32 `StyledText.scroll` -> `ScrollWindowEx` blits the body and
   invalidates only the exposed band; the native `Caret` is a separate OS plane; DWM composites
   the window on the GPU. GTK uses the same scroll/expose model under Cairo; Cocoa under
