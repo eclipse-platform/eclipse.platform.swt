@@ -4,7 +4,7 @@ Status: design plus a first leaf prototype on branch `m3/styledtext-viewport-202
 Base: `hsoliwal/eclipse.platform.swt` master `5094846b2fa693b3889e81d61c1e122d1ed78421`.
 Architecture donor: the frozen SWT/Nebula Grid viewport distillation (Synexia PR #10613,
 receipt `m3/convergence/FINAL_UI_DISTILLATION_CLOSURE_20261012.md` in `hsoliwal/nebula`).
-Donor ledger: `.m3/styledtext-viewport-20261013/FOSS_REUSE_DECISION.tsv` (28 rows).
+Donor ledger: `.m3/styledtext-viewport-20261013/FOSS_REUSE_DECISION.tsv` (32 rows).
 Evidence: `.m3/styledtext-viewport-20261013/` (bench, results, recipe crate, receipts).
 
 ## 1. Problem: inventory of document-proportional work
@@ -127,6 +127,9 @@ Adapted from Synexia `MIndexStyledTextDocument` (Apache-2.0, first-party, develo
 | Synexia `MIndexDeferredUiWork`, `MIndexPageableTreeController`, jsonviewer `MIndexResourceView` | capture / prepare off-thread / publish-if-current | REUSE_CONTRACT (section 5) |
 | Synexia `MIndexSwingGcDisplayList` + `MIndexSwingGcReplayer`, `MIndexOpenGlFrameSequence` | CPU-recorded display lists replayed on the real GC; commit-after-swap | ADAPT_PATTERN (section 5, design only) |
 | TV_5.0 `IViewerUpdater`, `DeferrredTreeViewer` | priority/discard command contract; low-water-mark prefetch | ADAPT_PATTERN |
+| eclipse.platform.ui #2 (lazy virtual TreeViewer delegates bulk traversal to SWT), #7 (selection-scoped expand/collapse) | JFace text layers must delegate to the content/viewport owner, never traverse the document; folding over selected ranges | ADAPT_PATTERN |
+| gef-classic `eae0d113d1` draw2d `DeferredUpdateManager` (empty anchors ignored before damage) | bounded damage: only changed areas repaint; transient-plane repaint | PATTERN |
+| eclipse.platform #2 recipe-first overlay, fork `.m3` crates | the leaf is a hash-pinned recipe crate with fixed point and refusals | REUSE_CONTRACT |
 | IntelliJ, Flowless, RichTextFX, xi, klogg, Eclipse text | see ledger | PATTERN / NO_FIT |
 
 ## 4. Measurements (this Windows host, JDK 21.0.9, SWT 3.135 natives)
@@ -138,7 +141,46 @@ trials; `summarize.py` medians). 80-byte ASCII lines, 1000x800 shell, Consolas 1
 `after` = this branch. Heap figures are what the widget holds in addition to the caller's
 String (the String stays referenced in both runs).
 
-<!-- MEASUREMENTS -->
+Medians of 3 trials per row (`bench/evidence/results-matrix.tsv`; `summary.md` has every column).
+The "after" rows are the final branch; `results-after-v1.tsv` keeps the earlier "after" run made
+before the accessibility payload bound (100 MiB fixed setText 129 ms there vs 60 ms final).
+
+**Open, scroll, memory (100 MiB = 1,310,721 lines)**
+
+| mode | build | setText ms | first paint ms | idle after setText ms | scroll to end ms | UI-thread CPU ms (setText..caret end) | heap retained MiB | heap peak MiB (absolute, incl. caller's 100 MiB String) | process private MiB |
+|---|---|---|---|---|---|---|---|---|---|
+| fixed | before | 599.5 | 13.3 | 1.3 | 10.2 | 562.5 | 397.5 | 660.1 | 1704.8 |
+| fixed | after | **60.1** | 11.4 | 0.04 | 11.6 | **62.5** | **5.9** | **142.8** | **507.0** |
+| wrap | before | 661.0 | 76.0 | **30,031 (timed out, 3/3)** | **165,245** | **184,500** | 397.4 | 1360.3 | 1627.8 |
+| wrap | after | **67.4** | 11.6 | **9.8** | **15.5** | **62.5** | **6.1** | **142.8** | **449.4** |
+
+1 MiB (13,108 lines, below the 65,536-line viewport threshold): setText 42.9 -> 26.4 ms (fixed),
+44.2 -> 38.4 ms (wrap); word wrap keeps the exact whole-document idle pass by design
+(648 vs 686 ms idle), heap retained 5.6 -> 2.1 MiB.
+
+**UI-thread / CPU split (250 scroll frames: 100 page-downs, 50 far jumps, 100 wheel steps)**
+
+| size, mode | build | frame p50 / p95 / max ms | paint p50 / p95 / max ms | longest idle dispatch p95 / max ms | CPU per 64 Ki page: break count (worker) p50 / p95 us | per-page offset materialization (UI, on exposure) p50 / p95 us | index build wall ms (worker CPU ms) |
+|---|---|---|---|---|---|---|---|
+| 100 MiB fixed | before | 7.0 / 16.2 / 38.9 | 2.3 / 5.6 / 19.5 | 0.6 / 0.6 | (monolithic indexLines 167.8 per page-equivalent) | n/a | 268.5 (single thread) |
+| 100 MiB fixed | after | 8.8 / 18.4 / 23.2 | 2.3 / 13.0 / 16.3 | 0.0 / 0.0 | 36.3 / 45.4 | 341.3 / 374.4 | 8.7 (56.4) |
+| 100 MiB wrap | before | 25.2 / 40.9 / 48.8 | 16.8 / 28.3 / 39.1 | **54.3 / 65.6** | (569.9 per page-equivalent) | n/a | 911.8 |
+| 100 MiB wrap | after | **6.6** / **19.1** / 44.1 | **2.9** / **13.2** / 29.4 | **9.7 / 9.7** | 36.3 / 46.8 | 341.7 / 370.3 | 9.8 (60.9) |
+
+Pixels: `Control.print` SHA-256 of the top and end viewports is identical before and after in
+all eight configurations (for example 100 MiB wrap top `72dcb47e2ba8ef8f`, end `f1427050e6dee549`).
+SWT screen captures (`GC(Display).copyArea`) are recorded per run as diagnostics only.
+
+10M-line proof (`StyledTextViewportProofTest`, 10,000,001 lines x 32 chars = 305 MiB, `-Xmx2g`;
+the 1 GiB variant was not run: free physical memory was 0.5-6.5 GB, below the 8 GB rule):
+fixed and wrap both pass. Measured lines per scene top / middle (line 5,000,000) /
+bottom+horizontal / return: fixed 37 / 74 / 110 / 110, wrap 76 / 190 / 265 / 265 (bound 4,096).
+The selection pinned at the middle survives the bottom jump; the wrap return capture is
+pixel-identical to the top capture (`02af2fb9...`). Screen captures of fixed scenes 02-04 are
+identical (`1509ec28...`), i.e. stale or occluded on this shared desktop, and are not claimed;
+control-surface captures differ per scene.
+
+1 GiB measurement: not run (same memory rule).
 
 ## 5. CPU / GPU / UI-thread split
 
@@ -191,21 +233,36 @@ underneath it and never owns semantic state (MIndex `MIndexOpenGlPresenter` rule
   Portable candidate: M3jdk21 #797 m3vcpu WebGPU/Dawn backend as a tile compositor fed by
   CPU-recorded display lists (MIndex `MIndexSwingGcDisplayList` recorded off-thread, replayed
   onto the real GC by `MIndexSwingGcReplayer`; `MIndexOpenGlFrameSequence` commit-after-swap).
-* Decision: not built. The paint numbers in section 4 (paint p95 per frame) show where the
-  frame time goes; GPU work is admitted only if a measurement shows paint, not layout or
-  indexing, dominating the frame budget.
+* Decision: not built. After leaf 1 the 100 MiB scroll frame is 6.6 ms p50 / 19.1 ms p95 of
+  which paint is 2.9 / 13.2 ms (GDI + DWM, `ScrollWindowEx` blit + exposed band); the
+  document-proportional costs that dominated before (165 s scroll-to-end, 54-66 ms idle
+  dispatches, 600 ms setText) were CPU indexing/layout, not rasterization. GPU work is admitted
+  only if a measurement shows paint dominating the frame budget (for example HiDPI, large
+  fonts or many style runs), and then below `GC`.
+* Fast search lanes (Synexia `MINDEX_FASTSEARCH_DONOR_PLAN.md`): SUBSTRING (KMP over pieces,
+  MIndex `findNext`) for find/replace, RANGE_RANK (Fenwick extent) for leaf 2, WINDOW_SCAN for
+  the visible window. StyledText has no find API; the consumer is JFace
+  (`FindReplaceDocumentAdapter` over `IDocument`), so the lane is recorded, not implemented;
+  `SerialAtomReview` was NOT_RUN for this leaf.
 
 ## 6. Proof
 
 * Differential: `Test_org_eclipse_swt_custom_StyledText_PagedContent` (randomized 40 x 60
   edits over a CR/LF-heavy alphabet against `DefaultContent`: text, every line, every offset,
   every event; viewport-mode checks on a 200,001-line document with and without word wrap).
-* Existing StyledText JUnit classes, run headless on Win32 against the patched classes in three
-  modes (before, after with paged default, after with `content=gap`).
+* Existing StyledText JUnit classes run on this Win32 host against the patched classes in three
+  modes: before 291/293 pass, after (paged default) 296/298, after (`content=gap`) 291/293; the
+  one failure in every mode is `test_backspaceAndDelete` (`Display.post` OS input, focus
+  dependent: it failed 2/3 reruns on the base classes and 1/3 on the branch); 1 test aborted by
+  its own assumption in every mode. `test_wrapThenLargeSetTextMeasuresOnlyTheWindow` fails on
+  the classes before its fix (33,338 lines measured) and passes after.
 * `StyledTextViewportProofTest` (opt-in `-Dswt.viewport.styledTextProof=true`): Nebula #140
   style top / middle / bottom+horizontal / return scenes over 10,000,001 lines (~1.0 GiB),
   fixed and wrapped, measured-line bound, pinned selection, `SwtScreenshotCapture` images and
   sidecars.
 * Recipe: `.m3/styledtext-viewport-20261013/recipe` seals the leaf as an
-  `M3HashPinnedJavaSnapshotRecipe` crate (exact postimages, second-run fixed point, drift and
-  missing-source refusal).
+  `M3HashPinnedJavaSnapshotRecipe` crate (`swt-styledtext-viewport-20261013`, 6 targets).
+  Executed with OpenRewrite 8.63.4 (JavaParser + RecipeRun; the module pins 8.90.4, which is not
+  in the offline repository here) and the canonical owner blobs of Synexia develop `5a1ad952`:
+  exact postimages from the base preimages, second-run fixed point, drift refusal and
+  missing-source refusal all PASS (`recipe/receipt.json`).
