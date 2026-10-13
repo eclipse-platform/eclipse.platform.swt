@@ -3557,6 +3557,31 @@ void setBoundsInPixels (int x, int y, int width, int height, int flags) {
 	setBoundsInPixels (x, y, width, height, flags, true);
 }
 
+/**
+ * True when SetWindowPos would not change the window: the same rectangle in parent
+ * client coordinates and no frame or z-order change. Windows sends no WM_SIZE/WM_MOVE
+ * then, so skipping keeps SWT's Resize/Move events identical and saves the syscall and
+ * the WM_WINDOWPOSCHANGING/CHANGED round trip. Mirrored parents are never skipped.
+ */
+boolean boundsUnchanged (long topHandle, int x, int y, int width, int height, int flags) {
+	int skippable = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOZORDER | OS.SWP_NOACTIVATE | OS.SWP_NOCOPYBITS;
+	if ((flags & ~skippable) != 0 || (flags & OS.SWP_NOZORDER) == 0) {
+		return false;
+	}
+	RECT rect = display.boxWindow;
+	if (!OS.GetWindowRect (topHandle, rect)) {
+		return false;
+	}
+	OS.MapWindowPoints (0, parent == null ? 0 : parent.handle, rect, 2);
+	if (rect.right < rect.left) {
+		return false;
+	}
+	if ((flags & OS.SWP_NOMOVE) == 0 && (rect.left != x || rect.top != y)) {
+		return false;
+	}
+	return (flags & OS.SWP_NOSIZE) != 0 || (rect.right - rect.left == width && rect.bottom - rect.top == height);
+}
+
 void setBoundsInPixels (int x, int y, int width, int height, int flags, boolean defer) {
 	if (findImageControl () != null) {
         if (backgroundImage == null) {
@@ -3570,6 +3595,15 @@ void setBoundsInPixels (int x, int y, int width, int height, int flags, boolean 
 		}
 	}
 	long topHandle = topHandle ();
+	//FLLDCIM: HPCPOP - leaf 3 no-op skip; layouts re-set unchanged bounds on every resize frame
+	if (EffectiveVisibility.SKIP_NOOP_BOUNDS) {
+		if (defer && parent != null) {
+			forceResize ();
+		}
+		if (boundsUnchanged (topHandle, x, y, width, height, flags)) {
+			return;
+		}
+	}
 	if (defer && parent != null) {
 		forceResize ();
 		if (parent.lpwp != null) {
