@@ -224,7 +224,7 @@ void updateVirtualViewport () {
 	Rectangle client = getClientAreaInPixels ();
 	int rowHeight = Math.max (1, getItemHeight ());
 	int chromeHeight = getHeaderVisible () ? getHeaderHeight () : 0;
-	int bodyHeight = Math.max (0, client.height - chromeHeight);
+	int bodyHeight = isVisible () && client.width > 0 ? Math.max (0, client.height - chromeHeight) : 0;
 	int first = itemCount == 0 ? 0 : Math.min (getTopIndex (), itemCount - 1);
 	virtualViewport.setUniformGeometry (itemCount, rowHeight, bodyHeight, first);
 }
