@@ -146,7 +146,8 @@ public final class MatrixRunner {
 		phase = "resize";
 		probes.resize(shell, demo);
 		phase = "capture";
-		probes.captures(shell, demo.control());
+		probes.captures(shell, demo.control(), shots,
+				spec.key() + "__" + DemoSpec.scaleLabel(scale) + "_final");
 		memory();
 		hidden(folder, demo);
 		judge(demo);
