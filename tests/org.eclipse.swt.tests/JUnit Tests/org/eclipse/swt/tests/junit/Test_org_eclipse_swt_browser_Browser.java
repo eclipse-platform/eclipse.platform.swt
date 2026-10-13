@@ -891,6 +891,31 @@ public void test_OpenWindowListener_open_ChildPopup() {
 	assertTrue(passed, errMsg);
 }
 
+/**
+ * https://github.com/eclipse-platform/eclipse.platform.swt/issues/3416 - an
+ * OpenWindowListener may answer with the receiver itself. The new window then
+ * opens in the receiver instead of crashing.
+ */
+@Tag("gtk4-todo")
+@Test
+public void test_OpenWindowListener_open_sameBrowser() throws IOException {
+	try (var server = new EchoHttpServer()) {
+		String url = server.getEchoUrl("test_OpenWindowListener_open_sameBrowser");
+		AtomicBoolean opened = new AtomicBoolean(false);
+		browser.addOpenWindowListener(event -> {
+			opened.set(true);
+			event.browser = browser;
+		});
+
+		shell.open();
+		browser.setText("<html><script type='text/javascript'>window.open('" + url + "')</script>"
+				+ "<body>This test opens a new window in the same browser.</body></html>");
+
+		boolean passed = waitForPassCondition(() -> opened.get() && browser.getUrl().startsWith(url));
+		assertTrue(passed, "Test timed out. Opened: " + opened.get() + ", URL: " + browser.getUrl());
+	}
+}
+
 /** Validate event order : Child's visibility should come before progress completed event */
 @Tag("gtk4-todo")
 @Test
