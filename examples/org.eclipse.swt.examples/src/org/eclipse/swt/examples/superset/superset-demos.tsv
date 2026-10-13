@@ -3,7 +3,7 @@ viewport_engine	-	-	PLACEHOLDER	0	-
 variable_row_extents	-	-	PLACEHOLDER	0	-
 lazy_data_source	-	-	PLACEHOLDER	0	-
 table	swt	org.eclipse.swt.widgets.Table	VTABLE	10000000	TableItem
-table	swt	org.eclipse.swt.custom.TableCursor	VTABLE_CURSOR	1000000	Table
+table	swt	org.eclipse.swt.custom.TableCursor	VTABLE_CURSOR	10000000	Table
 table	nebula/compositetable	org.eclipse.nebula.widgets.compositetable.CompositeTable	NCOMPTABLE	10000000	-
 data_grid	nebula/grid	org.eclipse.nebula.widgets.grid.Grid	NGRID	10000000	GridItem,GridColumn,GridToolTip
 table_header	swt	org.eclipse.swt.widgets.TableColumn	COLUMNS	100000	Table,TreeColumn
@@ -14,7 +14,7 @@ grid_grouping_aggregation	-	-	PLACEHOLDER	0	-
 grid_pinning	-	-	PLACEHOLDER	0	-
 grid_export_clipboard	-	-	PLACEHOLDER	0	-
 tree	swt	org.eclipse.swt.widgets.Tree	VTREE	10000000	TreeItem,TreeColumn
-tree	swt	org.eclipse.swt.custom.TreeCursor	VTREE_CURSOR	1000000	Tree
+tree	swt	org.eclipse.swt.custom.TreeCursor	VTREE_CURSOR	10000000	Tree
 tree	nebula/ctree	org.eclipse.nebula.widgets.ctree.CTree	NCTREE	1000000	CTreeItem
 tree	nebula/treemapper	org.eclipse.nebula.widgets.treemapper.TreeMapper	SUPPORT	0	TreeMapperUIConfigProvider,LinkFigure
 tree_table	nebula/xviewer	org.eclipse.nebula.widgets.xviewer.util.internal.FilteredTreeComposite	GENERIC	0	XViewer
@@ -62,7 +62,7 @@ switch_toggle	nebula/opal/switchbutton	org.eclipse.nebula.widgets.opal.switchbut
 switch_toggle	nebula/roundedswitch	org.eclipse.nebula.widgets.roundedswitch.RoundedSwitch	GENERIC	0	-
 segmented_control	nebula/segmentedbar	org.eclipse.nebula.widgets.segmentedbar.SegmentedBar	GENERIC	0	-
 slider	swt	org.eclipse.swt.widgets.Scale	GENERIC	0	-
-slider	swt	org.eclipse.swt.widgets.Slider	GENERIC	0	-
+slider	swt	org.eclipse.swt.widgets.Slider	SLIDER	10000000	ScrollBar
 slider	nebula/nebulaslider	org.eclipse.nebula.widgets.opal.nebulaslider.NebulaSlider	GENERIC	0	-
 slider	nebula/opal/rangeslider	org.eclipse.nebula.widgets.opal.rangeslider.RangeSlider	GENERIC	0	-
 slider	nebula/visualization	org.eclipse.nebula.visualization.widgets.figures.ScaledSliderFigure	NFIGURE	0	-
@@ -123,8 +123,9 @@ layout_container	swt	org.eclipse.swt.custom.ViewForm	GENERIC	0	-
 layout_container	nebula/bidilayout	org.eclipse.nebula.widgets.bidilayout.BidiLayout	GENERIC	0	-
 splitter	swt	org.eclipse.swt.widgets.Sash	GENERIC	0	-
 splitter	swt	org.eclipse.swt.custom.SashForm	GENERIC	0	-
-stack_pages	-	-	PLACEHOLDER	0	-
+stack_pages	swt	org.eclipse.swt.custom.StackLayout	STACK	50	Composite
 scroll_area	swt	org.eclipse.swt.custom.ScrolledComposite	SCROLLED	1000000	ScrollBar,Scrollable
+scroll_area	swt	org.eclipse.swt.custom.ScrolledComposite+children	SCROLLED_CHILDREN	1000	Label
 scroll_affordance	-	-	PLACEHOLDER	0	-
 shell_window	swt	org.eclipse.swt.widgets.Shell	SHELL	0	Decorations
 docking_mdi	-	-	PLACEHOLDER	0	-

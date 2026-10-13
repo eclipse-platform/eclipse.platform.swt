@@ -34,10 +34,10 @@ final class NebulaCompositeTableDemo extends SupersetDemo {
 	/** Header prototype (public: CompositeTable clones children reflectively). */
 	public static final class HeaderComposite extends Composite {
 		public HeaderComposite(Composite parent, int style) {
-			super(parent, style);
+			super(parent, style | SWT.NO_FOCUS);
 			setLayout(new GridLayout(2, true));
-			new Label(this, SWT.NONE).setText("Row");
-			new Label(this, SWT.NONE).setText("Value");
+			new Label(this, SWT.NO_FOCUS).setText("Row");
+			new Label(this, SWT.NO_FOCUS).setText("Value");
 		}
 	}
 
@@ -46,10 +46,10 @@ final class NebulaCompositeTableDemo extends SupersetDemo {
 		final Label key, value;
 
 		public RowComposite(Composite parent, int style) {
-			super(parent, style);
+			super(parent, style | SWT.NO_FOCUS);
 			setLayout(new GridLayout(2, true));
-			key = new Label(this, SWT.NONE);
-			value = new Label(this, SWT.NONE);
+			key = new Label(this, SWT.NO_FOCUS);
+			value = new Label(this, SWT.NO_FOCUS);
 		}
 	}
 

@@ -17,11 +17,18 @@ import java.util.Map;
  * {@code PLAN\tconcept\twidget\tscale\txmx_mb}; cells the runner does not
  * drive print their final {@code ROW} directly (NOT_IMPLEMENTED / NOT_RUN).
  * Heap is sized per kind from a bytes-per-row estimate and capped at 2 GB;
- * scales above a demo's design maximum (non-virtual designs) are NOT_RUN.
+ * scales above a demo's design maximum (non-virtual designs) are NOT_RUN. A
+ * demo whose design maximum is below 1K (StackLayout's 50 panes) runs once
+ * at that fixed scale. Virtual-capable kinds (Table, Tree, List, StyledText)
+ * add 100M and 1B memory-flatness cells under a fixed -Xmx256m; a widget that
+ * is not in viewport mode is expected to fail there, which is its result.
  */
 public final class MatrixPlan {
 
-	public static final int BASE_MB = 256, CAP_MB = 2048;
+	public static final int BASE_MB = 256, CAP_MB = 2048, FLAT_XMX_MB = 256;
+
+	/** Virtual-capable kinds that also run the 100M and 1B memory-flatness cells. */
+	public static final java.util.Set<String> FLAT_KINDS = java.util.Set.of("VTABLE", "VTREE", "LIST", "STYLEDTEXT");
 
 	/** Retained heap bytes per row/item for each kind (estimate, x1.5 margin applied). */
 	private static final Map<String, Integer> BYTES_PER_ROW = Map.ofEntries(Map.entry("VTABLE", 48),
@@ -31,7 +38,8 @@ public final class MatrixPlan {
 			Map.entry("NGRIDCOLS", 800), Map.entry("NGALLERY", 160), Map.entry("NCOMPTABLE", 16),
 			Map.entry("NCTREE", 600), Map.entry("NTABLECOMBO", 200), Map.entry("NCTREECOMBO", 600),
 			Map.entry("NDUALLIST", 300), Map.entry("NPROPTABLE", 800), Map.entry("NXYGRAPH", 96),
-			Map.entry("NINTENSITY", 16), Map.entry("NOSC", 16), Map.entry("NGANTT", 1200), Map.entry("NPRINT", 400));
+			Map.entry("NINTENSITY", 16), Map.entry("NOSC", 16), Map.entry("NGANTT", 1200), Map.entry("NPRINT", 400),
+			Map.entry("SLIDER", 0), Map.entry("SCROLLED_CHILDREN", 2000), Map.entry("STACK", 0));
 
 	private MatrixPlan() {
 	}
@@ -57,7 +65,15 @@ public final class MatrixPlan {
 				System.out.println("PLAN\t" + spec.concept() + "\t" + spec.widgetClass() + "\t0\t" + BASE_MB);
 				continue;
 			}
+			if (spec.maxScale() < DemoSpec.SCALES[0]) {
+				System.out.println("PLAN\t" + spec.concept() + "\t" + spec.widgetClass() + "\t" + spec.maxScale() + "\t" + BASE_MB);
+				continue;
+			}
 			for (int scale : DemoSpec.SCALES) planScale(spec, scale);
+			if (!FLAT_KINDS.contains(spec.kind())) continue;
+			for (int scale : DemoSpec.FLAT_SCALES) {
+				System.out.println("PLAN\t" + spec.concept() + "\t" + spec.widgetClass() + "\t" + scale + "\t" + FLAT_XMX_MB);
+			}
 		}
 	}
 

@@ -28,6 +28,8 @@ public final class Demos {
 			case "STYLEDTEXT" -> new StyledTextDemo(spec, counters);
 			case "CANVAS", "SCROLLED" -> new CanvasDemo(spec, counters);
 			case "TABS" -> new TabsDemo(spec, counters);
+			case "STACK" -> new StackDemo(spec, counters);
+			case "SLIDER", "SCROLLED_CHILDREN" -> new ScrollDemos(spec, counters);
 			case "EXPAND", "TOOLBAR", "COOLBAR", "MENU", "CARET", "TOOLTIP", "SHELL", "DND", "BROWSER", "GLCANVAS" ->
 				new SmallSwtDemo(spec, counters);
 			case "GENERIC", "SUPPORT" -> new GenericDemo(spec, counters);

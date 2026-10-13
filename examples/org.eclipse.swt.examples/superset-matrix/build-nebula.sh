@@ -25,19 +25,26 @@ bundles() {
     | sed 's|/build.properties$||' \
     | grep -vE '\.tests?$|\.examples?$|\.example\.e4$|\.exampleview$|\.snippets$|\.feature$|\.css$|\.documentation|\.site$|\.integration$' | sort
 }
+source_folders() {  # the source.. entry of build.properties (default src/)
+  local f; f=$(awk '/^source\.\.[ \t]*=/{on=1} on{l=l $0; if ($0 !~ /\\$/) on=0} END{print l}' "$1/build.properties" \
+    | sed -e 's/^source\.\.[ \t]*=//' -e 's/\\//g' -e 's/,/ /g' -e 's|/||g')
+  echo "${f:-src}"
+}
 build_one() {
   local dir=$1 name; name=$(basename "$dir")
   [ "$name" = nebulatoolbar ] && name=org.eclipse.nebula.widgets.nebulatoolbar
-  local src="$dir/src"; [ -d "$src" ] || return 2
+  local folders; folders=$(source_folders "$dir")
   local cls="$OUT/work/$name"; rm -rf "$cls"; mkdir -p "$cls"
-  find "$src" -name '*.java' | while IFS= read -r f; do wpath "$f"; done > "$OUT/work/$name.files"
+  : > "$OUT/work/$name.files"
+  for src in $folders; do [ -d "$dir/$src" ] && find "$dir/$src" -name '*.java' | while IFS= read -r f; do wpath "$f"; done >> "$OUT/work/$name.files"; done
   [ -s "$OUT/work/$name.files" ] || return 2
   "$JAVAC" -J-Xmx512m -nowarn -encoding UTF-8 --release 21 -proc:none \
     -cp "$(deps_cp)" -d "$(wpath "$cls")" @"$(wpath "$OUT/work/$name.files")" > "$OUT/logs/$name.log" 2>&1 || return 1
-  (cd "$src" && find . -type f ! -name '*.java' -exec cp --parents {} "$cls" \; 2>/dev/null)
+  for src in $folders; do [ -d "$dir/$src" ] && (cd "$dir/$src" && find . -type f ! -name '*.java' -exec cp --parents {} "$cls" \; 2>/dev/null); done
   (cd "$cls" && "${JAR:-jar}" cf "$(wpath "$OUT/$name.jar")" .) && echo "$name" >> "$OUT/work/built.lst"
 }
-: > "$OUT/work/built.lst"
+: > "$OUT/work/built.lst"   # existing jars count as built unless FORCE=1
+[ -z "${FORCE:-}" ] && for j in "$OUT"/*.jar; do [ -f "$j" ] && basename "$j" .jar >> "$OUT/work/built.lst"; done
 mapfile -t ALL < <(bundles)
 for round in 1 2 3 4; do
   progress=0

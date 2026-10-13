@@ -77,7 +77,9 @@ public abstract class SupersetDemo {
 
 	/** @return the public-API values of the state set by {@link #applyState()} */
 	public String captureState() {
-		return "focus=" + control.isFocusControl();
+		Control focus = control.getDisplay().getFocusControl();
+		while (focus != null && focus != control) focus = focus.getParent();
+		return "focus_within=" + (focus != null);
 	}
 
 	/**

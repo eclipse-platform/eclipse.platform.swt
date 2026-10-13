@@ -16,10 +16,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Control;
 
 /**
@@ -53,17 +51,8 @@ final class UiState {
 
 	/** @return the control's pixels via Control.print, or null when it cannot print */
 	static ImageData print(Control control) {
-		Point size = control.getSize();
-		if (size.x <= 0 || size.y <= 0) return null;
-		Image img = new Image(control.getDisplay(), size.x, size.y);
-		try {
-			GC gc = new GC(img);
-			boolean printed = control.print(gc);
-			gc.dispose();
-			return printed ? img.getImageData() : null;
-		} finally {
-			img.dispose();
-		}
+		CaptureUtil.Capture c = CaptureUtil.printControl(control, false);
+		return c == null ? null : c.data();
 	}
 
 	/**
@@ -86,20 +75,29 @@ final class UiState {
 
 	/** @return CRC32 of the control's printed pixels, or -1 when it cannot print */
 	static long pixelHash(Control control) {
-		Point size = control.getSize();
-		if (size.x <= 0 || size.y <= 0) return -1;
-		Image img = new Image(control.getDisplay(), size.x, size.y);
-		try {
-			GC gc = new GC(img);
-			boolean printed = control.print(gc);
-			gc.dispose();
-			if (!printed) return -1;
-			ImageData data = img.getImageData();
-			CRC32 crc = new CRC32();
-			crc.update(data.data, 0, data.data.length);
-			return crc.getValue();
-		} finally {
-			img.dispose();
+		ImageData data = print(control);
+		if (data == null) return -1;
+		CRC32 crc = new CRC32();
+		crc.update(data.data, 0, data.data.length);
+		return crc.getValue();
+	}
+
+	/** @return pixels that differ between a and b inside the packed {x,y,w,h,...} bands (overlaps counted once) */
+	static long changedInBands(ImageData a, ImageData b, int[] bands) {
+		if (a == null || b == null || a.width != b.width || a.height != b.height) return -1;
+		long n = 0;
+		for (int y = 0; y < a.height; y++) {
+			for (int x = 0; x < a.width; x++) {
+				if (inBands(x, y, bands) && a.getPixel(x, y) != b.getPixel(x, y)) n++;
+			}
 		}
+		return n;
+	}
+
+	private static boolean inBands(int x, int y, int[] bands) {
+		for (int i = 0; i < bands.length; i += 4) {
+			if (x >= bands[i] && y >= bands[i + 1] && x < bands[i] + bands[i + 2] && y < bands[i + 1] + bands[i + 3]) return true;
+		}
+		return false;
 	}
 }

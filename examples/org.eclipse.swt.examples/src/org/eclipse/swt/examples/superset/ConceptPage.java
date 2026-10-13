@@ -15,52 +15,40 @@ import java.util.List;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
 
 /**
- * Page of one catalog concept: the ledger row (owner, status, gap action) and
- * one sub-tab per widget. Widget panes are created on first selection.
+ * Tab folder of one catalog concept: one tab per widget, each tab's control
+ * being the widget itself, created on first selection. The concept's ledger
+ * row is the folder's tooltip and is shown in the showcase info line.
  */
 final class ConceptPage {
 
-	private final Composite page;
+	private final CTabFolder widgets;
 
 	ConceptPage(Composite parent, ConceptInfo concept, List<DemoSpec> demos, ShowcaseState state) {
-		page = new Composite(parent, SWT.NONE);
-		page.setLayout(new GridLayout(1, false));
-		Label ledger = new Label(page, SWT.WRAP);
-		ledger.setText(concept.ledgerLine() + "\nSWT owner: " + concept.swtOwner() + "\nNebula owner: " + concept.nebulaOwner()
-				+ "\nlarge content: " + (concept.large() ? "yes" : "no") + " | priority " + concept.priority());
-		ledger.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-		CTabFolder widgets = new CTabFolder(page, SWT.BOTTOM | SWT.BORDER);
-		widgets.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		widgets = new CTabFolder(parent, SWT.BOTTOM | SWT.BORDER);
+		widgets.setToolTipText(concept.ledgerLine() + "\nSWT owner: " + concept.swtOwner() + "\nNebula owner: "
+				+ concept.nebulaOwner() + "\nlarge content: " + (concept.large() ? "yes" : "no"));
 		for (DemoSpec spec : demos) {
 			CTabItem item = new CTabItem(widgets, SWT.NONE);
 			item.setText(spec.owner() + ": " + spec.simpleName());
-			item.setData(spec);
+			item.setData(new DemoPane(spec, concept));
 		}
-		widgets.addListener(SWT.Selection, e -> open((CTabItem) e.item, concept, state));
+		widgets.addListener(SWT.Selection, e -> open((CTabItem) e.item, state));
 		if (widgets.getItemCount() > 0) {
 			widgets.setSelection(0);
-			open(widgets.getItem(0), concept, state);
+			open(widgets.getItem(0), state);
 		}
 	}
 
-	private static void open(CTabItem item, ConceptInfo concept, ShowcaseState state) {
-		if (item.getControl() != null) {
-			state.visible = (DemoPane) item.getControl();
-			state.visible.resume();
-			return;
-		}
-		DemoPane pane = new DemoPane(item.getParent(), (DemoSpec) item.getData(), concept, state.scale);
-		item.setControl(pane);
-		state.visible = pane;
+	private static void open(CTabItem item, ShowcaseState state) {
+		DemoPane pane = (DemoPane) item.getData();
+		if (item.getControl() == null) item.setControl(pane.create(item.getParent(), state.scale));
+		state.show(pane);
 	}
 
-	Composite page() {
-		return page;
+	CTabFolder page() {
+		return widgets;
 	}
 }

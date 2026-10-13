@@ -25,6 +25,9 @@ public record DemoSpec(String concept, String owner, String widgetClass, String 
 	/** Scales used for large-content demos: rows, lines, points or nodes. */
 	public static final int[] SCALES = {1_000, 100_000, 1_000_000, 10_000_000};
 
+	/** Memory-flatness scales, run under a fixed -Xmx256m for virtual-capable kinds. */
+	public static final int[] FLAT_SCALES = {100_000_000, 1_000_000_000};
+
 	static DemoSpec parse(String line) {
 		String[] f = line.split("\t", -1);
 		return new DemoSpec(f[0], f[1], f[2], f[3], Integer.parseInt(f[4]), f[5]);
@@ -57,6 +60,8 @@ public record DemoSpec(String concept, String owner, String widgetClass, String 
 	/** @return a display label for scale {@code n}: 1K, 100K, 1M, 10M */
 	public static String scaleLabel(int n) {
 		if (n <= 0) return "-";
+		if (n < 1_000) return Integer.toString(n);
+		if (n >= 1_000_000_000) return (n / 1_000_000_000) + "B";
 		if (n >= 1_000_000) return (n / 1_000_000) + "M";
 		return (n / 1_000) + "K";
 	}

@@ -70,7 +70,7 @@ final class StyledTextDemo extends SupersetDemo {
 	public String applyState() {
 		if (rows < 10) return super.applyState();
 		ui = new UiState(styled);
-		styled.setSelection(GeneratedContent.STRIDE + 5, GeneratedContent.STRIDE * 2 + 40);
+		styled.setSelection(styled.getOffsetAtLine(1) + 1, styled.getOffsetAtLine(2) + 1);
 		styled.setLineBackground(3, 1, ui.yellow);
 		styled.setLineAlignment(4, 1, SWT.RIGHT);
 		styled.setLineIndent(5, 1, 24);

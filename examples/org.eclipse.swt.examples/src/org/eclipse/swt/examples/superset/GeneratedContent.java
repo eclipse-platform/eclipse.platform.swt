@@ -27,10 +27,13 @@ final class GeneratedContent implements StyledTextContent {
 	private final char[] line = new char[STRIDE];
 	private TextChangeListener[] listeners = new TextChangeListener[0];
 	private int lines = 1;
+	/** Line stride in chars (text + newline); shrinks so the char count stays an int at 1B lines. */
+	private int stride = STRIDE;
 
 	/** Sets the line count and tells StyledText the whole text changed. */
 	void setLines(int n) {
 		lines = Math.max(1, n);
+		stride = (int) Math.max(2, Math.min(STRIDE, (Integer.MAX_VALUE - 1L) / lines));
 		TextChangedEvent event = new TextChangedEvent(this);
 		for (TextChangeListener l : listeners) l.textSet(event);
 	}
@@ -49,18 +52,18 @@ final class GeneratedContent implements StyledTextContent {
 
 	@Override
 	public int getCharCount() {
-		return lines * STRIDE - 1;
+		return lines * stride - 1;
 	}
 
 	@Override
 	public String getLine(int lineIndex) {
 		text.line(lineIndex, line, 0);
-		return new String(line, 0, RowText.LINE_CHARS);
+		return new String(line, 0, stride - 1);
 	}
 
 	@Override
 	public int getLineAtOffset(int offset) {
-		return Math.min(offset / STRIDE, lines - 1);
+		return Math.min(offset / stride, lines - 1);
 	}
 
 	@Override
@@ -75,7 +78,7 @@ final class GeneratedContent implements StyledTextContent {
 
 	@Override
 	public int getOffsetAtLine(int lineIndex) {
-		return lineIndex * STRIDE;
+		return lineIndex * stride;
 	}
 
 	@Override
@@ -83,13 +86,12 @@ final class GeneratedContent implements StyledTextContent {
 		char[] out = new char[length];
 		int pos = start, end = start + length, cached = -1;
 		while (pos < end) {
-			int ln = pos / STRIDE, col = pos % STRIDE;
+			int ln = pos / stride, col = pos % stride;
 			if (ln != cached) {
 				text.line(ln, line, 0);
-				line[RowText.LINE_CHARS] = '\n';
 				cached = ln;
 			}
-			out[pos - start] = line[col];
+			out[pos - start] = col == stride - 1 ? '\n' : line[col];
 			pos++;
 		}
 		return new String(out);

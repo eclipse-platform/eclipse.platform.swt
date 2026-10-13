@@ -86,7 +86,7 @@ The script builds one jar per bundle with plain javac, in dependency rounds, and
    * Scroll to the end, scroll back, and capture again.
    * `repro_api_equal` and `repro_pixel_equal` are `y` or `n`. The pixel compare is `-` when two captures taken without scrolling already differ (an animated widget) or the control cannot print.
 4. **damage**: the damage area per interaction, as a VNC server would ship it.
-   * The source is each SWT.Paint event's clip rectangle, which is the bounds of the OS update region. This is the interim source until a DamageRecorder hook exists in SWT.
+   * The source is each SWT.Paint event's clip rectangle, which is the bounds of the OS update region. This is the interim source. The `DamageRecorder` in `common/org/eclipse/swt/internal` is being built by peer session com-synexia-d2; this harness switches to it when it lands and builds no recorder of its own.
    * Selection change and caret/hover each run 20 frames at the top. Hover is a synthetic `SWT.MouseMove`, so it applies only to custom-drawn (Canvas) widgets. The caret applies to StyledText.
    * Scroll damage is taken during the sweep.
    * The columns hold `scroll/selection/caret_or_hover`:

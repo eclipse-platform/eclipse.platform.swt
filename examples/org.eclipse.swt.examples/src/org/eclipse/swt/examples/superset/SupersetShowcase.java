@@ -32,7 +32,8 @@ import org.eclipse.swt.widgets.TabItem;
  * catalog, grouped by category, one tab per concept and one sub-tab per widget
  * (SWT core/custom class or Nebula family). Built like ControlExample: a
  * TabFolder of pages, but every page is created on first selection, so a
- * hidden concept does no work. Nebula demos need the Nebula jars on the
+ * hidden concept does no work, and each widget tab's control is the widget
+ * itself (no wrapper composite, no ScrolledComposite around it). Nebula demos need the Nebula jars on the
  * classpath (see superset-matrix/README.md); without them their tabs say so.
  */
 public class SupersetShowcase {
@@ -43,6 +44,8 @@ public class SupersetShowcase {
 	public SupersetShowcase(Composite parent) {
 		parent.setLayout(new GridLayout(1, false));
 		toolbar(parent);
+		state.info = new Label(parent, SWT.NONE);
+		state.info.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		TabFolder categories = new TabFolder(parent, SWT.TOP);
 		categories.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		for (String category : SupersetCatalog.CATEGORIES) {
@@ -51,6 +54,8 @@ public class SupersetShowcase {
 			item.setText(category + " (" + concepts.size() + ")");
 			item.setControl(conceptFolder(categories, concepts));
 		}
+		state.strip = new Label(parent, SWT.NONE);
+		state.strip.setLayoutData(new GridData(SWT.FILL, SWT.BOTTOM, true, false));
 	}
 
 	private void toolbar(Composite parent) {
@@ -91,6 +96,7 @@ public class SupersetShowcase {
 		if (item.getControl() != null) return;
 		ConceptInfo concept = (ConceptInfo) item.getData();
 		item.setControl(new ConceptPage(folder, concept, catalog.demos(concept.concept()), state).page());
+		item.setToolTipText(concept.ledgerLine());
 	}
 
 	public static void main(String[] args) {

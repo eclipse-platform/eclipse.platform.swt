@@ -28,7 +28,7 @@ log() { echo "$(date +%H:%M:%S) $*" | tee -a "$OUT/run.log"; }
 
 free_mb() {  # prints "<free physical MB> <free commit MB>"
   if command -v powershell.exe >/dev/null; then
-    powershell.exe -NoProfile -Command '$o=Get-CimInstance Win32_OperatingSystem; "{0} {1}" -f [int]($o.FreePhysicalMemory/1024),[int]($o.FreeVirtualMemory/1024)' | tr -d '\r'
+    powershell.exe -NoProfile -Command '$o=Get-CimInstance Win32_OperatingSystem; "{0} {1}" -f [int]($o.FreePhysicalMemory/1024),[int]($o.FreeVirtualMemory/1024)' < /dev/null | tr -d '\r'
   else awk '/MemAvailable/{a=int($2/1024)} /CommitLimit/{l=$2} /Committed_AS/{c=$2} END{print a, int((l-c)/1024)}' /proc/meminfo; fi
 }
 gate() {  # memory gate before every JVM: wait until both thresholds hold
@@ -72,7 +72,12 @@ MAIN=org.eclipse.swt.examples.superset.MatrixRunner
 # 3. plan: static rows go straight to the TSV, runnable cells are queued
 gate
 "${JAVA_BIN}java" -Xmx256m -cp "$CP" $MAIN --plan ${FILTER:+"$FILTER"} > "$OUT/plan.txt" 2> "$OUT/logs/plan.err" || { log "plan failed"; cat "$OUT/logs/plan.err"; exit 1; }
-[ -f "$TSV" ] || printf 'concept\twidget_class\tscale\tfirst_paint_ms\tframe_p50\tframe_p95\tframe_max\tmaterialized\tbound\twithin_bound\theap_mb\tprivate_mb\thandles\thidden_paints\thidden_layouts\tscreenshot_top\tscreenshot_end\tresult\trepro_api_equal\trepro_pixel_equal\trepro_states_tested\tdamage_px_per_frame\tdamage_rects_per_frame\tfull_repaints\tnotes\n' > "$TSV"
+[ -f "$TSV" ] || "${JAVA_BIN}java" -Xmx64m -cp "$CP" $MAIN --header > "$TSV"
+NCOL=$(head -1 "$TSV" | awk -F'	' '{print NF}')
+blank_row() {  # concept widget scale result notes -> one row, every metric "-"
+  awk -v OFS='	' -v n="$NCOL" -v c="$1" -v w="$2" -v s="$3" -v r="$4" -v t="$5" \
+    'BEGIN{for(i=1;i<=n;i++)f[i]="-"; f[1]=c; f[2]=w; f[3]=s; f[18]=r; f[n]=t; for(i=1;i<=n;i++) printf "%s%s", f[i], (i<n?OFS:ORS)}'
+}
 grep '^ROW' "$OUT/plan.txt" | cut -f2- | while IFS= read -r row; do
   key=$(printf '%s' "$row" | cut -f1-3)
   grep -qF "$key	" "$TSV" || printf '%s\n' "$row" >> "$TSV"
@@ -82,29 +87,50 @@ log "plan: $(grep -c '^PLAN' "$OUT/plan.txt") cells to run, $(grep -c '^ROW' "$O
 # 4. run each cell in its own JVM, under timeout, after the memory gate
 grep '^PLAN' "$OUT/plan.txt" | while IFS=$'\t' read -r _ concept widget scale xmx; do
   s=$scale; [ "$s" = 0 ] && s=-
-  if grep -qP "^\Q$concept\E\t\Q$widget\E\t$s\t" "$TSV"; then continue; fi   # resume: cell already recorded
-  if [ "$scale" = 10000000 ]; then  # 10M: project private memory from the 1M row
-    p1=$(awk -F'\t' -v c="$concept" -v w="$widget" '$1==c && $2==w && $3=="1000000"{print $12}' "$TSV" | tail -1)
+  if awk -F'\t' -v c="$concept" -v w="$widget" -v s="$s" '$1==c && $2==w && $3==s{f=1} END{exit !f}' "$TSV"; then continue; fi   # resume
+  if [ "$scale" -gt 1000000 ]; then
+    # above 1M: project native (non-heap) private memory linearly from the 1K and 1M rows,
+    # add this cell's -Xmx, and skip the cell when that would not fit in free memory minus 1 GB
+    read -r p0 h0 < <(awk -F'\t' -v c="$concept" -v w="$widget" '$1==c && $2==w && $3=="1000"{print $12, $11}' "$TSV" | tail -1)
+    read -r p1 h1 < <(awk -F'\t' -v c="$concept" -v w="$widget" '$1==c && $2==w && $3=="1000000"{print $12, $11}' "$TSV" | tail -1)
     read -r f _ < <(free_mb)
-    if [ -n "$p1" ] && [ "$p1" != "-" ] && awk -v p="$p1" -v f="$f" 'BEGIN{exit !(p*10 > f-1024)}'; then
-      printf '%s\t%s\t%s\t-\t-\t-\t-\t-\t-\t-\t-\t-\t-\t-\t-\t-\t-\tNOT_RUN\t-\t-\t-\t-\t-\t-\tprojected private memory %.0f MB (10x the 1M run) exceeds free memory %s MB - 1 GB\n' \
-        "$concept" "$widget" "$scale" "$(awk -v p="$p1" 'BEGIN{print p*10}')" "$f" >> "$TSV"
-      continue
+    if [ -n "${p1:-}" ] && [ "$p1" != "-" ] && [ -n "${p0:-}" ] && [ "$p0" != "-" ] && [ "${h1:-}" != "-" ] && [ "${h0:-}" != "-" ]; then
+      proj=$(awk -v a="$p0" -v b="$p1" -v ha="$h0" -v hb="$h1" -v s="$scale" -v x="$xmx" \
+        'BEGIN{d=(b-a)-(hb-ha); if (d<0) d=0; printf "%.0f", a + d * (s/1000000.0) + x}')
+      if [ "$proj" -gt $((f - 1024)) ]; then
+        blank_row "$concept" "$widget" "$scale" NOT_RUN "projected private memory $proj MB (native slope from the 1K and 1M runs plus -Xmx${xmx}m) exceeds free memory $f MB - 1 GB" >> "$TSV"
+        continue
+      fi
     fi
   fi
-  t=$CELL_TIMEOUT; [ "$scale" -ge 1000000 ] && t=$((CELL_TIMEOUT * 2))
+  t=$CELL_TIMEOUT; [ "$scale" -ge 1000000 ] && t=$((CELL_TIMEOUT * 2)); [ "$scale" -ge 100000000 ] && t=$((CELL_TIMEOUT * 3))
   gate
   cell="$concept.${widget##*.}.$scale"
   log "run $cell xmx=${xmx}m timeout=${t}s"
   timeout $((t + 20)) "${JAVA_BIN}java" -Xmx${xmx}m -Dsuperset.handleProbe="$PROBE" -cp "$CP" $MAIN \
-    --run "$concept" "$widget" "$scale" "$(wpath "$OUT")" "$LABEL" "$t" > "$OUT/logs/$cell.log" 2>&1
+    --run "$concept" "$widget" "$scale" "$(wpath "$OUT")" "$LABEL" "$t" < /dev/null > "$OUT/logs/$cell.log" 2>&1
   rc=$?
   row=$(grep '^ROW' "$OUT/logs/$cell.log" | tail -1 | cut -f2-)
   if [ -z "$row" ]; then
     why=$(grep -m1 -E 'Exception|Error|SIGSEGV|EXCEPTION_' "$OUT/logs/$cell.log" | tr '\t' ' ' | cut -c1-300)
-    row=$(printf '%s\t%s\t%s\t-\t-\t-\t-\t-\t-\t-\t-\t-\t-\t-\t-\t-\t-\tFAIL\t-\t-\t-\t-\t-\t-\texit %s (124=timeout); %s' "$concept" "$widget" "$s" "$rc" "${why:-no output}")
+    row=$(blank_row "$concept" "$widget" "$s" FAIL "exit $rc (124=timeout); ${why:-no output}")
   fi
   printf '%s\n' "$row" >> "$TSV"
   log "done $cell rc=$rc $(printf '%s' "$row" | cut -f18)"
 done
+# 5. memory_flatness: heap and private MB at 1M, 100M and 1B plus max/min ratios, on every row of that widget
+awk -F'\t' -v OFS='\t' -v n="$NCOL" '
+  NR==FNR { if (FNR>1 && ($3=="1000000"||$3=="100000000"||$3=="1000000000")) { k=$1 SUBSEP $2; h[k,$3]=$11; p[k,$3]=$12; r[k,$3]=$18; if ($3!="1000000") has[k]=1 } next }
+  FNR==1 { print; next }
+  { k=$1 SUBSEP $2
+    if (has[k]) {
+      s=""; hmin=1e18; hmax=0; pmin=1e18; pmax=0; ok=1
+      split("1000000 100000000 1000000000", sc, " ")
+      for (i=1;i<=3;i++) { c=sc[i]; hv=h[k,c]; pv=p[k,c]
+        lab=(c=="1000000"?"1M":(c=="100000000"?"100M":"1B"))
+        s=s (i>1?" ":"") lab "=" (hv==""?"?":hv) "/" (pv==""?"?":pv) (r[k,c]=="FAIL"?"(FAIL)":(r[k,c]=="NOT_RUN"?"(NOT_RUN)":""))
+        if (hv!="" && hv!="-" && r[k,c]!="FAIL" && r[k,c]!="NOT_RUN") { if (hv+0<hmin)hmin=hv+0; if (hv+0>hmax)hmax=hv+0; if (pv+0<pmin)pmin=pv+0; if (pv+0>pmax)pmax=pv+0 } else ok=0 }
+      ratio = (hmax>0 && hmin>0 && ok) ? sprintf("heap_ratio=%.2f private_ratio=%.2f", hmax/hmin, pmax/pmin) : "ratio=n/a (a scale failed or did not run)"
+      $(n-1) = "heap/private MB " s "; " ratio }
+    print }' "$TSV" "$TSV" > "$TSV.tmp" && mv "$TSV.tmp" "$TSV"
 log "matrix complete: $(tail -n +2 "$TSV" | cut -f18 | sort | uniq -c | tr '\n' ' ')"

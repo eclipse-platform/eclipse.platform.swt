@@ -10,20 +10,40 @@
  *******************************************************************************/
 package org.eclipse.swt.examples.superset;
 
+import org.eclipse.swt.widgets.Label;
+
 /**
- * Showcase-wide state: the selected scale and the demo pane currently in
- * view, which receives "load scale" and "sweep" from the toolbar.
+ * Showcase-wide state: the selected scale, the widget tab in view and the
+ * shared metrics strip, which refreshes every 500 ms only while the widget
+ * in view is visible and stops otherwise (restarted by the next selection).
  */
 final class ShowcaseState {
 
+	private static final int STRIP_MS = 500;
 	int scale = DemoSpec.SCALES[0];
-	DemoPane visible;
+	Label strip;
+	Label info;
+	private DemoPane visible;
+	private boolean ticking;
+
+	void show(DemoPane pane) {
+		visible = pane;
+		if (info != null && !info.isDisposed()) info.setText(pane.info());
+		if (!ticking) tick();
+	}
 
 	void applyScale() {
-		if (visible != null && !visible.isDisposed() && visible.isVisible()) visible.load(scale);
+		if (visible != null && visible.visible()) visible.load(scale);
 	}
 
 	void sweep() {
-		if (visible != null && !visible.isDisposed() && visible.isVisible()) visible.sweep();
+		if (visible != null && visible.visible()) visible.sweep();
+	}
+
+	private void tick() {
+		ticking = strip != null && !strip.isDisposed() && visible != null && visible.visible();
+		if (!ticking) return;
+		strip.setText(visible.strip());
+		strip.getDisplay().timerExec(STRIP_MS, this::tick);
 	}
 }
