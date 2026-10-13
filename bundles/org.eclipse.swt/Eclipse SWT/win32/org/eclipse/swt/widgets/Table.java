@@ -78,6 +78,11 @@ public class Table extends Composite {
 	TableItem [] items;
 	VirtualItemStorage<TableItem> virtualItems;
 	VirtualViewportPlanner virtualViewport;
+	/* Lazy data source (SWT.VIRTUAL only) and the parent-owned per-row bit lanes. */
+	VirtualPageSource pageSource;
+	VirtualBitLanes rowLanes;
+	static final int LANE_CHECKED = 0;
+	static final int LANE_GRAYED = 1;
 	TableColumn [] columns;
 	int columnCount, customCount;
 	ImageList imageList, headerImageList;
@@ -112,6 +117,7 @@ public class Table extends Composite {
 		TableProc = lpWndClass.lpfnWndProc;
 		OS.GetClassInfo (0, HeaderClass, lpWndClass);
 		HeaderProc = lpWndClass.lpfnWndProc;
+		VirtualPageSource.tableHost = Table::pageSourceHost;
 	}
 
 /**
@@ -216,6 +222,7 @@ void _clearItems () {
 	items = null;
 	virtualItems = null;
 	virtualViewport = null;
+	rowLanes = null;
 }
 
 TableItem _getItem (int index) {
@@ -235,6 +242,11 @@ TableItem _getItem (int index, boolean create, int count) {
         }
 		item = new TableItem (this, SWT.NONE, -1, false);
 		virtualItems.put (index, item);
+		/*
+		 * With a page source, paint never creates facades, so a facade created here is for a
+		 * caller's API: fill it now from the source, as the classic paint-time SetData would have.
+		 */
+		if (pageSource != null && !pageSource.paintRequest && currentItem == null) checkData (item, index, false);
 		return item;
 	}
     if (index >= items.length) {
@@ -269,6 +281,7 @@ void _initItems () {
 		virtualItems = null;
 		virtualViewport = null;
 	}
+	rowLanes = null;
 }
 
 /* NOTE: The array has already been grown to have space for the new item */
@@ -276,6 +289,7 @@ void _insertItem (int index, TableItem item, int count) {
 	if ((style & SWT.VIRTUAL) != 0) {
 		virtualItems.insert (index, item);
 		virtualViewport.insert (index, 1);
+		if (rowLanes != null) rowLanes.insert (index, 1);
 		return;
 	}
 	System.arraycopy (items, index, items, index + 1, count - index);
@@ -286,6 +300,7 @@ void _removeItem (int index, int count) {
 	if ((style & SWT.VIRTUAL) != 0) {
 		virtualItems.remove (index);
 		virtualViewport.remove (index, 1);
+		if (rowLanes != null) rowLanes.remove (index, 1);
 		return;
 	}
 	System.arraycopy (items, index + 1, items, index, --count - index);
@@ -297,6 +312,7 @@ void _removeItems (int start, int index, int count) {
 	if ((style & SWT.VIRTUAL) != 0) {
 		virtualItems.removeRange (start, index, item -> {});
 		virtualViewport.remove (start, index - start);
+		if (rowLanes != null) rowLanes.remove (start, index - start);
 		return;
 	}
 	System.arraycopy (items, index, items, start, count - index);
@@ -312,6 +328,7 @@ void _setItemCount (int count, int itemCount) {
             });
         }
 		virtualViewport.setLogicalCount (count);
+		if (rowLanes != null) rowLanes.setLength (count);
 		return;
 	}
 	int length = Math.max (4, (count + 3) / 4 * 4);
@@ -899,8 +916,12 @@ LRESULT CDDS_SUBITEMPREPAINT (NMLVCUSTOMDRAW nmcd, long wParam, long lParam) {
 	*
 	* NOTE: Force the item to be created if it does not exist.
 	*/
-	TableItem item = _getItem ((int)nmcd.dwItemSpec);
-    if (item == null || item.isDisposed()) {
+	boolean pageRow = pageSource != null && !pagePaintNeedsFacade ();
+	TableItem item = _getItem ((int)nmcd.dwItemSpec, !pageRow);
+    if (pageRow && item == null) {
+        /* A page-source row without a facade carries default font and colours. */
+        item = pageDefaultItem ();
+    } else if (item == null || item.isDisposed()) {
         return null;
     }
 	long hFont = item.fontHandle (nmcd.iSubItem);
@@ -987,7 +1008,8 @@ LRESULT CDDS_SUBITEMPREPAINT (NMLVCUSTOMDRAW nmcd, long wParam, long lParam) {
 						}
 					}
 					if (clrSelection != -1) {
-						RECT rect = item.getBounds ((int)nmcd.dwItemSpec, nmcd.iSubItem, true, nmcd.iSubItem != 0, true, false, hDC);
+						TableItem bounds = item == pageDefaultItem ? _getItem ((int)nmcd.dwItemSpec) : item;
+						RECT rect = bounds.getBounds ((int)nmcd.dwItemSpec, nmcd.iSubItem, true, nmcd.iSubItem != 0, true, false, hDC);
 						fillBackground (hDC, clrSelection, rect);
 					}
 				}
@@ -1097,7 +1119,8 @@ boolean checkData (TableItem item, int index, boolean redraw) {
         return true;
     }
 	if (!item.isCachedState ()) {
-		item.pinVirtualFacade ();
+		/* A page source keeps no reference to the facade, so it stays transient. */
+		if (pageSource == null) item.pinVirtualFacade ();
 		item.setCachedState (true);
 		Event event = new Event ();
 		event.item = item;
@@ -1109,6 +1132,8 @@ boolean checkData (TableItem item, int index, boolean redraw) {
         if (isDisposed() || item.isDisposed()) {
             return false;
         }
+		/* A row answered with a placeholder is asked again until its block is loaded. */
+		if (pageSource != null && pageSource.answeredPlaceholder) item.setCachedState (false);
 		if (redraw) {
 			if (!setScrollWidth (item, false)) {
 				item.redraw ();
@@ -1117,6 +1142,246 @@ boolean checkData (TableItem item, int index, boolean redraw) {
 	}
 	return true;
 }
+
+/*
+ * Stand-in carrying the default attributes of a page-source row in custom draw. It is never
+ * registered in the item storage, never handed to application code and created once.
+ */
+TableItem pageDefaultItem;
+
+TableItem pageDefaultItem () {
+	if (pageDefaultItem == null) pageDefaultItem = new TableItem (this, SWT.NONE, -1, false);
+	return pageDefaultItem;
+}
+
+/* Reused display-info struct for the page-source paint path (no app code runs there). */
+NMLVDISPINFO pageDispInfo;
+
+NMLVDISPINFO pageDispInfo () {
+	if (pageDispInfo == null) pageDispInfo = new NMLVDISPINFO ();
+	return pageDispInfo;
+}
+
+/** Paint callbacks that would hand an item to application code need a facade. */
+boolean pagePaintNeedsFacade () {
+	return hooks (SWT.MeasureItem) || hooks (SWT.EraseItem) || hooks (SWT.PaintItem);
+}
+
+/**
+ * Answers LVN_GETDISPINFO for a row without a facade from the block store (text) and the
+ * parent lanes (check state image), as the facade would. Returns false when a facade exists or
+ * is needed, so the classic path runs.
+ */
+boolean answerPageRow (NMLVDISPINFO plvfi, long lParam) {
+	int index = plvfi.iItem;
+	if (index < 0 || virtualItems == null || virtualItems.get (index) != null || pagePaintNeedsFacade ()) return false;
+	pagePaintAnswers++;
+	if ((plvfi.mask & OS.LVIF_TEXT) != 0) {
+		String string = pageSource.paintText (index, plvfi.iSubItem);
+		writeDispText (plvfi, string == null ? pageSource.placeholder () : string);
+	}
+	boolean move = false;
+	if ((plvfi.mask & OS.LVIF_STATE) != 0 && plvfi.iSubItem == 0) {
+		int state = 1;
+		if (rowLanes != null && rowLanes.get (LANE_CHECKED, index)) state++;
+		if (rowLanes != null && rowLanes.get (LANE_GRAYED, index)) state += 2;
+		if (!OS.IsWindowEnabled (handle)) state += 4;
+		plvfi.state = state << 12;
+		plvfi.stateMask = OS.LVIS_STATEIMAGEMASK;
+		move = true;
+	}
+	if ((plvfi.mask & OS.LVIF_INDENT) != 0 && plvfi.iSubItem == 0) {
+		plvfi.iIndent = 0;
+		move = true;
+	}
+	if (move) OS.MoveMemory (lParam, plvfi, NMLVDISPINFO.sizeof);
+	return true;
+}
+
+/** Facade-free answers given in paint callbacks (proof counter). */
+int pagePaintAnswers;
+/** Widest page-source text measured since the last settle (applied when the queue drains). */
+int pageWidest;
+
+/** Writes the text of one LVN_GETDISPINFO answer (shared by the facade and page-source paths). */
+void writeDispText (NMLVDISPINFO plvfi, String string) {
+	if (string == null) return;
+	/*
+	* Bug in Windows.  When pszText points to a zero length
+	* NULL terminated string, Windows correctly draws the
+	* empty string but the cache of the bounds for the item
+	* is not reset.  This means that when the text for the
+	* item is set and then reset to an empty string, the
+	* selection draws using the bounds of the previous text.
+	* The fix is to use a space rather than an empty string
+	* when anything but a tool tip is requested (to avoid
+	* a tool tip that is a single space).
+	*
+	* NOTE: This is only a problem for items in the first
+	* column.  Assigning NULL to other columns stops Windows
+	* from drawing the selection when LVS_EX_FULLROWSELECT
+	* is set.
+	*/
+	int length = Math.min (string.length (), Math.max (0, plvfi.cchTextMax - 1));
+	if (!tipRequested && plvfi.iSubItem == 0 && length == 0) {
+		string = " "; //$NON-NLS-1$
+		length = 1;
+	}
+	if (length > 1 && (state & HAS_AUTO_DIRECTION) != 0) {
+		switch (BidiUtil.resolveTextDirection(string)) {
+			case SWT.LEFT_TO_RIGHT:
+				string = LRE + string;
+				length++;
+				break;
+			case SWT.RIGHT_TO_LEFT:
+				string = RLE + string;
+				length++;
+				break;
+		}
+	}
+	char [] buffer = display.tableBuffer;
+	if (buffer == null || plvfi.cchTextMax > buffer.length) {
+		buffer = display.tableBuffer = new char [plvfi.cchTextMax];
+	}
+	string.getChars (0, length, buffer, 0);
+	if (tipRequested) {
+		/*
+		 * Bug in Windows. The tooltip is only displayed up to
+		 * the first line delimiter. The fix is to remove all
+		 * line delimiter characters.
+		 */
+		int shift = 0;
+		for (int i = 0; i < length; i++) {
+			switch (buffer [i]) {
+				case '\r':
+				case '\n':
+					shift++;
+					break;
+				default:
+                    if (shift != 0) {
+                        buffer [i - shift] = buffer [i];
+                    }
+			}
+		}
+		length -= shift;
+	}
+	buffer [length++] = 0;
+	OS.MoveMemory (plvfi.pszText, buffer, length * 2);
+}
+
+/* Parent-owned per-row bits of a virtual table; they survive the release of the facade. */
+boolean virtualRowBit (TableItem item, int lane) {
+	if (rowLanes == null) return false;
+	int index = virtualItems.indexOfIdentity (item);
+	return index >= 0 && rowLanes.get (lane, index);
+}
+
+void virtualRowBit (TableItem item, int lane, boolean value) {
+	int index = virtualItems.indexOfIdentity (item);
+	if (index < 0) throw new IllegalStateException ("materialized item is not in storage");
+	if (rowLanes == null) {
+		if (!value) return;
+		rowLanes = new VirtualBitLanes (2);
+		rowLanes.setLength (virtualViewport.logicalCount ());
+	}
+	rowLanes.set (lane, index, value);
+}
+
+/*
+ * VirtualPageSource hooks (SetData path). ItemResidency adoption point: _getItem (index, true)
+ * creates the transient facade and releasePageFacades releases it; both become residency
+ * handle/release calls when ItemResidency lands.
+ */
+VirtualPageHost pageSourceHost () {
+	return new VirtualPageHost () {
+		@Override
+		public void pageSourceAttached (VirtualPageSource source) {
+			pageSource = source;
+		}
+
+		@Override
+		public void pageSourceRefresh (Item parent, int start, int end) {
+			refreshPageRows (start, end);
+		}
+
+		@Override
+		public int pageSourceRelease (int keepStart, int keepEnd) {
+			return releasePageFacades (keepStart, keepEnd);
+		}
+
+		@Override
+		public void pageSourceChildrenLoading (Item parent, boolean loading) {
+		}
+
+		@Override
+		public void pageSourceSettled () {
+			if (pageWidest > 0 && !isDisposed ()) {
+				applyPageScrollWidth (pageWidest);
+				pageWidest = 0;
+			}
+		}
+	};
+}
+
+void refreshPageRows (int start, int end) {
+	if (virtualItems == null || isDisposed ()) return;
+	int count = (int)OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+	end = Math.min (end, count - 1);
+	if (start < 0 || start > end) return;
+	if (columnCount == 0 && currentItem == null && getDrawing () && OS.IsWindowVisible (handle)) {
+		int widest = 0;
+		for (int i = start; i <= end; i++) {
+			String text = pageSource.rowText (i, 0);
+			if (text == null || text.isEmpty ()) continue;
+			char [] buffer = display.tableBuffer;
+			if (buffer == null || buffer.length < text.length () + 1) buffer = display.tableBuffer = new char [Math.max (text.length () + 1, 260)];
+			text.getChars (0, text.length (), buffer, 0);
+			buffer [text.length ()] = 0;
+			widest = Math.max (widest, (int)OS.SendMessage (handle, OS.LVM_GETSTRINGWIDTH, 0, buffer));
+		}
+		/* Settle gating: the fit is applied once the source's queue drains (pageSourceSettled). */
+		if (widest > pageWidest) pageWidest = widest;
+	}
+	for (int i = start; i <= end; i++) {
+		TableItem item = virtualItems.get (i);
+		if (item != null && item != currentItem && !item.isDisposed ()) item.setCachedState (false);
+	}
+	if (currentItem == null && getDrawing () && OS.IsWindowVisible (handle)) {
+		OS.SendMessage (handle, OS.LVM_REDRAWITEMS, start, end);
+	}
+}
+
+/* Same arithmetic as setScrollWidth (TableItem, boolean) for a text width without image indent. */
+void applyPageScrollWidth (int textWidth) {
+	int newWidth = textWidth;
+	long hStateList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
+	if (hStateList != 0) {
+		int [] cx = new int [1], cy = new int [1];
+		OS.ImageList_GetIconSize (hStateList, cx, cy);
+		newWidth += cx [0] + INSET;
+	}
+	long hImageList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_SMALL, 0);
+	if (hImageList != 0) {
+		int [] cx = new int [1], cy = new int [1];
+		OS.ImageList_GetIconSize (hImageList, cx, cy);
+		newWidth += cx [0];
+	} else {
+		newWidth++;
+	}
+	newWidth += INSET * 2 + DPIUtil.pointToPixel(VISTA_EXTRA, getAutoscalingZoom());
+	int oldWidth = (int)OS.SendMessage (handle, OS.LVM_GETCOLUMNWIDTH, 0, 0);
+	if (newWidth > oldWidth) setScrollWidth (newWidth);
+}
+
+int releasePageFacades (int keepStart, int keepEnd) {
+	if (virtualItems == null || pageSource == null || currentItem != null || isDisposed ()) return 0;
+	return virtualItems.releaseOutside (keepStart, keepEnd, VirtualItemState.PINNED | VirtualItemState.DIRTY, RELEASE_FACADE);
+}
+
+/* Shared, allocation-free release action for transient facades. */
+static final java.util.function.Consumer<TableItem> RELEASE_FACADE = item -> {
+	if (!item.isDisposed ()) item.release (false);
+};
 
 @Override
 protected void checkSubclass () {
@@ -7019,10 +7284,18 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 		}
 		case OS.LVN_GETDISPINFO: {
 //			if (drawCount != 0 || !OS.IsWindowVisible (handle)) break;
-			NMLVDISPINFO plvfi = new NMLVDISPINFO ();
+			NMLVDISPINFO plvfi = pageSource != null ? pageDispInfo () : new NMLVDISPINFO ();
 			OS.MoveMemory (plvfi, lParam, NMLVDISPINFO.sizeof);
 
 			if (columnVisible != null && !columnVisible [plvfi.iSubItem]) {
+				break;
+			}
+
+			/*
+			* With a page source, a row that has no facade is answered from the parent's
+			* packed state and the block store: paint never creates a TableItem.
+			*/
+			if (pageSource != null && !ignoreShrink && answerPageRow (plvfi, lParam)) {
 				break;
 			}
 
@@ -7080,7 +7353,14 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 			if (!item.isCachedState ()) {
 				if ((style & SWT.VIRTUAL) != 0) {
 					lastIndexOf = plvfi.iItem;
-                    if (!checkData(item, lastIndexOf, false)) {
+                    if (pageSource != null) pageSource.paintRequest = true;
+                    boolean filled;
+                    try {
+                        filled = checkData(item, lastIndexOf, false);
+                    } finally {
+                        if (pageSource != null) pageSource.paintRequest = false;
+                    }
+                    if (!filled) {
                         break;
                     }
 					TableItem newItem = fixScrollWidth ? null : item;
@@ -7088,7 +7368,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 						OS.InvalidateRect (handle, null, true);
 					}
 				}
-				item.setCachedState (true);
+				if (pageSource == null || !pageSource.answeredPlaceholder) item.setCachedState (true);
 			}
             if ((style & SWT.VIRTUAL) != 0) {
                 item.markVirtualPainted();
@@ -7103,69 +7383,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
                         string = strings [plvfi.iSubItem];
                     }
 				}
-				if (string != null) {
-					/*
-					* Bug in Windows.  When pszText points to a zero length
-					* NULL terminated string, Windows correctly draws the
-					* empty string but the cache of the bounds for the item
-					* is not reset.  This means that when the text for the
-					* item is set and then reset to an empty string, the
-					* selection draws using the bounds of the previous text.
-					* The fix is to use a space rather than an empty string
-					* when anything but a tool tip is requested (to avoid
-					* a tool tip that is a single space).
-					*
-					* NOTE: This is only a problem for items in the first
-					* column.  Assigning NULL to other columns stops Windows
-					* from drawing the selection when LVS_EX_FULLROWSELECT
-					* is set.
-					*/
-					int length = Math.min (string.length (), Math.max (0, plvfi.cchTextMax - 1));
-					if (!tipRequested && plvfi.iSubItem == 0 && length == 0) {
-						string = " "; //$NON-NLS-1$
-						length = 1;
-					}
-					if (length > 1 && (state & HAS_AUTO_DIRECTION) != 0) {
-						switch (BidiUtil.resolveTextDirection(string)) {
-							case SWT.LEFT_TO_RIGHT:
-								string = LRE + string;
-								length++;
-								break;
-							case SWT.RIGHT_TO_LEFT:
-								string = RLE + string;
-								length++;
-								break;
-						}
-					}
-					char [] buffer = display.tableBuffer;
-					if (buffer == null || plvfi.cchTextMax > buffer.length) {
-						buffer = display.tableBuffer = new char [plvfi.cchTextMax];
-					}
-					string.getChars (0, length, buffer, 0);
-					if (tipRequested) {
-						/*
-						 * Bug in Windows. The tooltip is only displayed up to
-						 * the first line delimiter. The fix is to remove all
-						 * line delimiter characters.
-						 */
-						int shift = 0;
-						for (int i = 0; i < length; i++) {
-							switch (buffer [i]) {
-								case '\r':
-								case '\n':
-									shift++;
-									break;
-								default:
-                                    if (shift != 0) {
-                                        buffer [i - shift] = buffer [i];
-                                    }
-							}
-						}
-						length -= shift;
-					}
-					buffer [length++] = 0;
-					OS.MoveMemory (plvfi.pszText, buffer, length * 2);
-				}
+				writeDispText (plvfi, string);
 			}
 			boolean move = false;
 			if ((plvfi.mask & OS.LVIF_IMAGE) != 0) {

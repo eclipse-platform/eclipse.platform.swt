@@ -599,6 +599,7 @@ public class OS extends C {
 	public static final int ICON_BIG = 0x1;
 	public static final int ICON_SMALL = 0x0;
 	public static final int I_IMAGECALLBACK = -1;
+	public static final int I_CHILDRENAUTO = -2;
 	public static final int I_IMAGENONE = -2;
 	public static final int IDABORT = 0x3;
 	public static final int IDC_APPSTARTING = 0x7f8a;
@@ -1506,6 +1507,7 @@ public class OS extends C {
 	public static final int TVHT_ONITEMRIGHT = 0x20;
 	public static final int TVHT_ONITEMLABEL = 0x4;
 	public static final int TVHT_ONITEMSTATEICON = 0x40;
+	public static final int TVIF_CHILDREN = 0x40;
 	public static final int TVIF_HANDLE = 0x10;
 	public static final int TVIF_IMAGE = 0x2;
 	public static final int TVIF_INTEGRAL = 0x0080;

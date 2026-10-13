@@ -35,12 +35,18 @@ import org.eclipse.swt.internal.win32.*;
  * </p>
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>TOP, BOTTOM</dd>
+ * <dd>TOP, BOTTOM, VIRTUAL</dd>
  * <dt><b>Events:</b></dt>
- * <dd>Selection</dd>
+ * <dd>Selection, SetData</dd>
  * </dl>
  * <p>
  * Note: Only one of the styles TOP and BOTTOM may be specified.
+ * </p><p>
+ * With the <code>VIRTUAL</code> style the content of a tab is created lazily: the folder sends
+ * <code>SWT.SetData</code> (with <code>event.item</code> the tab item and <code>event.index</code>
+ * its index) the first time the tab becomes the selection while the folder is showing, and the
+ * listener creates the content and calls <code>TabItem#setControl</code>. Without the style the
+ * folder behaves as before.
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
@@ -53,6 +59,9 @@ import org.eclipse.swt.internal.win32.*;
 public class TabFolder extends Composite {
 	TabItem [] items;
 	ImageList imageList;
+	/* SWT.VIRTUAL lazy content: lane 0 bit i is set once SWT.SetData was sent for tab i. */
+	VirtualBitLanes lazyFilled;
+	boolean lazyPending;
 	static final long TabFolderProc;
 	static final TCHAR TabFolderClass = new TCHAR (OS.WC_TABCONTROL, true);
 	boolean createdAsRTL;
@@ -224,6 +233,7 @@ void createItem (TabItem item, int index) {
 	}
 	System.arraycopy (items, index, items, index + 1, count - index);
 	items [index] = item;
+	if (lazyFilled != null) lazyFilled.insert (index, 1);
 
 	/*
 	* Send a selection event when the item that is added becomes
@@ -235,6 +245,7 @@ void createItem (TabItem item, int index) {
 		event.item = items [0];
 		sendSelectionEvent (SWT.Selection, event, true);
 		// the widget could be destroyed at this point
+		if (!isDisposed ()) fillLazyTab (0);
 	}
 }
 
@@ -280,6 +291,7 @@ void destroyItem (TabItem item) {
 	}
 	System.arraycopy (items, index + 1, items, index, --count - index);
 	items [count] = null;
+	if (lazyFilled != null) lazyFilled.remove (index, 1);
 	if (count == 0) {
 		if (imageList != null) {
 			OS.SendMessage (handle, OS.TCM_SETIMAGELIST, 0, 0);
@@ -768,6 +780,8 @@ void setSelection (int index, boolean notify) {
 	OS.SendMessage (handle, OS.TCM_SETCURSEL, index, 0);
 	int newIndex = (int)OS.SendMessage (handle, OS.TCM_GETCURSEL, 0, 0);
 	if (newIndex != -1) {
+		fillLazyTab (newIndex);
+		if (isDisposed ()) return;
 		TabItem item = items [newIndex];
 		Control control = item.control;
 		if (control != null && !control.isDisposed ()) {
@@ -1092,6 +1106,56 @@ LRESULT WM_PARENTNOTIFY (long wParam, long lParam) {
 }
 
 @Override
+LRESULT WM_PAINT (long wParam, long lParam) {
+	if (lazyPending) catchUpLazyTab ();
+	if (isDisposed ()) return LRESULT.ZERO;
+	return super.WM_PAINT (wParam, lParam);
+}
+
+/**
+ * SWT.VIRTUAL: sends SWT.SetData the first time tab <code>index</code> is the selection while
+ * the folder is showing; the listener creates the tab's control and calls setControl. While
+ * the folder is not showing only a pending bit is set, and the first paint catches up once.
+ */
+void fillLazyTab (int index) {
+	if ((style & SWT.VIRTUAL) == 0 || index < 0) return;
+	int count = (int)OS.SendMessage (handle, OS.TCM_GETITEMCOUNT, 0, 0);
+	if (index >= count) return;
+	if (lazyFilled == null) {
+		lazyFilled = new VirtualBitLanes (1);
+		lazyFilled.setLength (count);
+	}
+	if (lazyFilled.get (0, index)) return;
+	if (!lazyContentShowing ()) {
+		lazyPending = true;
+		return;
+	}
+	lazyFilled.set (0, index, true);
+	Event event = new Event ();
+	event.item = items [index];
+	event.index = index;
+	sendEvent (SWT.SetData, event);
+}
+
+void catchUpLazyTab () {
+	lazyPending = false;
+	int index = (int)OS.SendMessage (handle, OS.TCM_GETCURSEL, 0, 0);
+	if (index == -1 || (lazyFilled != null && lazyFilled.get (0, index))) return;
+	fillLazyTab (index);
+	if (isDisposed ()) return;
+	Control control = items [index].control;
+	if (control != null && !control.isDisposed ()) {
+		control.setBoundsInPixels (getClientAreaInPixels ());
+		control.setVisible (true);
+	}
+}
+
+/** Until the effective-visibility bit of the visibility leaf lands, showing is isVisible (). */
+private boolean lazyContentShowing () {
+	return isVisible ();
+}
+
+@Override
 LRESULT WM_SIZE (long wParam, long lParam) {
 	LRESULT result = super.WM_SIZE (wParam, lParam);
     /*
@@ -1180,6 +1244,12 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 			TabItem item = null;
 			int index = (int)OS.SendMessage (handle, OS.TCM_GETCURSEL, 0, 0);
             if (index != -1) {
+                if (code == OS.TCN_SELCHANGE) {
+                    fillLazyTab (index);
+                    if (isDisposed ()) {
+                        return LRESULT.ZERO;
+                    }
+                }
                 item = items [index];
             }
 			if (item != null) {
