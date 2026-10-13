@@ -105,10 +105,13 @@ final class RetainedFrame implements TileGrid.Listener {
 		if (!compositeOnlyCovers (px, py, pw, ph)) damageContent (px, py, pw, ph);
 		compositeOnly.clear ();
 		GpuCounters.inc (GpuCounters.FRAMES);
+		long submit = System.nanoTime ();
 		if (!rasterVisible ()) return false;
 		composite (px, py, pw, ph);
 		int overlayGdi = 0;
 		if ((flags & HAS_OVERLAY) != 0) overlayGdi = overlay (px, py, pw, ph) ? 0 : 1;
+		/* UI-thread time of raster passes + GPU command encoding (composite, replay), excluding the readback fence */
+		if (gpu != null) GpuCounters.add (GpuCounters.GPU_SUBMIT_NANOS, System.nanoTime () - submit);
 		if (gpu != null && !gpuPresent (px, py, pw, ph)) return false;
 		if (overlayGdi != 0) overlayPass (px, py, pw, ph, null);
 		OS.BitBlt (hDC, px, py, pw, ph, bufDC, px, py, OS.SRCCOPY);
@@ -338,7 +341,11 @@ final class RetainedFrame implements TileGrid.Listener {
 			/* after a failed recording, rasterize with GDI for a while before trying the GPU again */
 			if (recordBackoff > 0) recordBackoff--; else recorded = recordContent ();
 		}
-		if (recorded == 0) rasterContentGdi ();
+		if (recorded == 0) {
+			rasterContentGdi ();
+		} else if (!rasterFrameGpu ()) {
+			return false;
+		}
 		long [] visible = grid.visibleBits ();
 		for (int slot = TileGrid.nextSet (visible, 0); slot >= 0; slot = TileGrid.nextSet (visible, slot + 1)) {
 			if (!grid.rasterRect (slot, r)) continue;
@@ -348,6 +355,30 @@ final class RetainedFrame implements TileGrid.Listener {
 		return true;
 	}
 
+	static final boolean DEBUG_OPS = Boolean.getBoolean ("swt.gpu.debugOps");
+	int debugFrames;
+
+	/** Diagnostic only (-Dswt.gpu.debugOps): op-type histogram of a recorded content pass. */
+	void debugOps () {
+		if (debugFrames++ % 50 != 0) return;
+		int [] histogram = new int [32];
+		int [] a = ops.ops ();
+		for (int i = 0; i < ops.size (); i = i + 1 + OpStream.lengthOf (a [i])) histogram [OpStream.opOf (a [i]) & 31]++;
+		System.err.println ("swt.gpu ops=" + ops.size () + " histogram=" + java.util.Arrays.toString (histogram) + " rasterRects=" + raster.count ());
+	}
+
+	/** Replays the recorded content once per raster rectangle into the GPU frame (not once per tile). */
+	boolean rasterFrameGpu () {
+		try {
+			for (int i = 0; i < raster.count (); i++) {
+				if (!gpu.rasterFrame (raster.x0 (i), raster.y0 (i), raster.x1 (i) - raster.x0 (i), raster.y1 (i) - raster.y0 (i), bgArgb, ops)) return false;
+			}
+			return true;
+		} catch (Throwable failure) {
+			return false; // fail closed
+		}
+	}
+
 	/** Records all raster rectangles into {@link #ops}; returns 1 when the stream is replayable. */
 	int recordContent () {
 		ops.reset ();
@@ -355,7 +386,10 @@ final class RetainedFrame implements TileGrid.Listener {
 			ops.clipReset ();
 			paintPass (raster.x0 (i), raster.y0 (i), raster.x1 (i), raster.y1 (i), RetainedPlanes.RETAINED, ops, 0);
 		}
-		if (ops.fail == 0) return 1;
+		if (ops.fail == 0) {
+			if (DEBUG_OPS) debugOps ();
+			return 1;
+		}
 		GpuCounters.inc (GpuCounters.RECORD_FAILS);
 		GpuCounters.set (GpuCounters.RECORD_FAIL_BITS, GpuCounters.get (GpuCounters.RECORD_FAIL_BITS) | ops.fail);
 		recordBackoff = RECORD_BACKOFF_FRAMES;
@@ -380,7 +414,7 @@ final class RetainedFrame implements TileGrid.Listener {
 		try {
 			if (recorded != 0) {
 				GpuCounters.inc (GpuCounters.GPU_RASTER_TILES);
-				return gpu.rasterTile (slot, grid.clientX (slot), grid.clientY (slot), lx, ly, r [2], r [3], bgArgb, ops);
+				return gpu.copyFrameToTile (slot, grid.clientX (slot), grid.clientY (slot), lx, ly, r [2], r [3]);
 			}
 			return gpu.uploadTile (slot, bufBits, bufW * 4, r [0], r [1], lx, ly, r [2], r [3]);
 		} catch (Throwable failure) {

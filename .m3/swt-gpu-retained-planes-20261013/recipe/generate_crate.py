@@ -2,7 +2,7 @@
 
 Usage: python -B generate_crate.py <swt-repo-root> <base-commit> <out-dir>
 
-Targets are every .java file under bundles/ that differs between <base-commit>
+Targets are every .java file under bundles/ and tests/ that differs between <base-commit>
 and the working tree (git diff --name-only plus untracked additions). Writes
 <out-dir>/{manifest.tsv, N.java, pre/N.java.txt, .gitattributes}. Preimages
 are the base commit's repository (LF) bytes; postimages are the working-tree
@@ -24,8 +24,8 @@ def git(repo, *args):
 
 
 def targets(repo, base):
-    changed = git(repo, "diff", "--name-only", base, "--", "bundles").splitlines()
-    added = git(repo, "ls-files", "--others", "--exclude-standard", "--", "bundles").splitlines()
+    changed = git(repo, "diff", "--name-only", base, "--", "bundles", "tests").splitlines()
+    added = git(repo, "ls-files", "--others", "--exclude-standard", "--", "bundles", "tests").splitlines()
     return sorted(p for p in set(changed + added) if p.endswith(".java"))
 
 

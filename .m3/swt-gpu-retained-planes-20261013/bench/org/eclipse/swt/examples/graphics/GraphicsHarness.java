@@ -99,7 +99,7 @@ public class GraphicsHarness {
 		}
 	}
 
-	static void capture (Display display, Control control, File file) throws IOException {
+	static void capture (Display display, Canvas control, File file) throws IOException {
 		Rectangle area = control.getClientArea ();
 		Point origin = control.toDisplay (0, 0);
 		Image image = new Image (display, area.width, area.height);

@@ -19,10 +19,10 @@ package org.eclipse.swt.internal.gpu;
  * cached by int key and released by the implementation's lifetime owner.
  * <p>
  * Threading: all calls happen on the display thread that owns the GL context.
- * Fence rule: {@link Target#present} and {@link Target#swap} complete the GPU
- * work of the frame (flush and submit with CPU sync) before the CPU reads the
- * DIB or GDI touches the window; tiles are never rewritten while a previous
- * frame that samples them is in flight because frames are synchronous.
+ * Fence rule: {@link Target#present} completes the GPU work of the frame
+ * (flush, then a synchronous readback) before the CPU reads the DIB or GDI
+ * touches the window; tiles are never rewritten while a previous frame that
+ * samples them is in flight because frames are synchronous.
  * </p>
  */
 public interface PlaneBackend {
@@ -35,8 +35,10 @@ public interface PlaneBackend {
 		boolean beginFrame (int clientW, int clientH);
 		/** Copies a CPU-rasterized rectangle (32-bit BGRX rows at {@code bits}) into tile {@code slot}. */
 		boolean uploadTile (int slot, long bits, int stride, int srcX, int srcY, int dstX, int dstY, int w, int h);
-		/** Rasterizes {@code ops} on the GPU into tile {@code slot}; ops are in client space, the tile's client origin is given. */
-		boolean rasterTile (int slot, int tileClientX, int tileClientY, int localX, int localY, int w, int h, int background, OpStream ops);
+		/** Replays content {@code ops} (client space) once into the frame, clipped to the client rectangle; {@code background} with alpha 0 means no fill. */
+		boolean rasterFrame (int x, int y, int w, int h, int background, OpStream ops);
+		/** Copies the frame's client rectangle at the tile's local {@code (localX, localY, w, h)} into tile {@code slot} (GPU to GPU). */
+		boolean copyFrameToTile (int slot, int tileClientX, int tileClientY, int localX, int localY, int w, int h);
 		void tileEvicted (int slot);
 		/** Draws tile {@code slot} into the frame with its top-left at client {@code (x, y)}. */
 		void composite (int slot, int x, int y);
@@ -44,8 +46,6 @@ public interface PlaneBackend {
 		boolean replay (OpStream ops, int clipX, int clipY, int clipW, int clipH);
 		/** Completes the frame and reads the rectangle back into a top-down 32-bit DIB. */
 		boolean present (long bits, int stride, int x, int y, int w, int h);
-		/** Completes the frame into the window's own back buffer and swaps; false if unsupported. */
-		boolean swap (long hwnd);
 		long gpuBytes ();
 		void dispose ();
 	}
@@ -55,12 +55,7 @@ public interface PlaneBackend {
 
 	Target createTarget (int tileCapacity);
 
-	/** Defines font {@code id} (GDI LOGFONT data) for text replay. */
-	void defineFont (int id, String face, int heightPx, int weight, int italic);
-
-	boolean isFontDefined (int id);
-
-	/** Blob, font and paint cache counters of the backend, added into {@link GpuCounters}. */
+	/** One-line description of the backend and its cache sizes, for logs and tests. */
 	String describe ();
 
 	void dispose ();

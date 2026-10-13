@@ -106,8 +106,8 @@ public final class SkijaPlaneBackend implements PlaneBackend {
 		return new SkijaTarget (this, tileCapacity);
 	}
 
-	@Override
-	public void defineFont (int id, String face, int heightPx, int weight, int italic) {
+	/** Creates the Skija font of id {@code id} from its {@link FontTable} value; called on first replay. */
+	void defineFont (int id, String face, int heightPx, int weight, int italic) {
 		FontStyle style = new FontStyle (weight, 5, italic != 0 ? FontSlant.ITALIC : FontSlant.UPRIGHT);
 		Typeface typeface = fontMgr.matchFamilyStyle (face, style);
 		Font font = new Font (typeface, heightPx);
@@ -117,11 +117,6 @@ public final class SkijaPlaneBackend implements PlaneBackend {
 		font.setBaselineSnapped (true);
 		fonts [id] = font;
 		GpuCounters.inc (GpuCounters.NATIVE_CREATES);
-	}
-
-	@Override
-	public boolean isFontDefined (int id) {
-		return fonts [id] != null;
 	}
 
 	Font font (int id) {

@@ -23,7 +23,10 @@ public final class GpuCounters {
 	public static final int TILE_EVICT = 16, FRAMES = 17, OVERLAY_FRAMES = 18, FALLBACKS = 19;
 	public static final int RASTER_PIXELS = 20, COMPOSITE_PIXELS = 21, GPU_TILE_BYTES = 22, CPU_TILE_BYTES = 23;
 	public static final int SCROLL_TRANSLATES = 24, GPU_RASTER_TILES = 25, OPS_RECORDED = 26, NATIVE_CREATES = 27;
-	/** Nanoseconds the UI thread waited for GPU completion (readback fence) and spent submitting GPU replay. */
+	/**
+	 * GPU_WAIT_NANOS: UI-thread time inside the readback fence (GPU completion + copy).
+	 * GPU_SUBMIT_NANOS: UI-thread time from raster passes to the end of GPU command encoding.
+	 */
 	public static final int GPU_WAIT_NANOS = 28, GPU_SUBMIT_NANOS = 29;
 	/** Content passes that could not be replayed on the GPU, and the union of their OpStream fail bits. */
 	public static final int RECORD_FAILS = 30, RECORD_FAIL_BITS = 31;

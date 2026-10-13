@@ -32,7 +32,6 @@ final class SkijaTarget implements PlaneBackend.Target {
 	final Pixmap pixmap = new Pixmap ();
 	ImageInfo info;
 	int infoW, infoH;
-	final float [] matrix = {1, 0, 0, 0, 1, 0, 0, 0, 1};
 
 	SkijaTarget (SkijaPlaneBackend backend, int capacity) {
 		this.backend = backend;
@@ -83,16 +82,27 @@ final class SkijaTarget implements PlaneBackend.Target {
 	}
 
 	@Override
-	public boolean rasterTile (int slot, int tileClientX, int tileClientY, int localX, int localY, int w, int h, int background, OpStream ops) {
-		long canvas = tile (slot).getCanvas ()._ptr;
+	public boolean rasterFrame (int x, int y, int w, int h, int background, OpStream ops) {
+		long canvas = frame.getCanvas ()._ptr;
 		int save = Canvas._nSave (canvas);
-		Canvas._nClipRect (canvas, localX, localY, localX + w, localY + h, INTERSECT, false);
+		Canvas._nClipRect (canvas, x, y, x + w, y + h, INTERSECT, false);
 		if ((background >>> 24) != 0) Canvas._nDrawColor (canvas, background, SRC);
-		matrix [2] = -tileClientX;
-		matrix [5] = -tileClientY;
-		Canvas._nConcat (canvas, matrix);
 		try {
 			Replay.run (backend, canvas, ops);
+		} finally {
+			Canvas._nRestoreToCount (canvas, save);
+		}
+		return true;
+	}
+
+	@Override
+	public boolean copyFrameToTile (int slot, int tileClientX, int tileClientY, int localX, int localY, int w, int h) {
+		Surface tile = tile (slot);
+		long canvas = tile.getCanvas ()._ptr;
+		int save = Canvas._nSave (canvas);
+		Canvas._nClipRect (canvas, localX, localY, localX + w, localY + h, INTERSECT, false);
+		try {
+			frame.draw (tile.getCanvas (), -tileClientX, -tileClientY, backend.srcPaint);
 		} finally {
 			Canvas._nRestoreToCount (canvas, save);
 		}
@@ -128,11 +138,6 @@ final class SkijaTarget implements PlaneBackend.Target {
 		backend.context.flush ();
 		pixmap.reset (info (w, h), bits + (long) y * stride + x * 4L, stride);
 		return frame.readPixels (pixmap, x, y);
-	}
-
-	@Override
-	public boolean swap (long hwnd) {
-		return false;
 	}
 
 	@Override

@@ -20,11 +20,31 @@ def rows(path):
     return out
 
 
+def median(values):
+    v = sorted(values)
+    n = len(v)
+    return v[n // 2] if n % 2 else (v[n // 2 - 1] + v[n // 2]) / 2
+
+
+def merge(trials):
+    """Median p50/p95 across trials, max of max, mean of per-frame means; counters from the last trial."""
+    out = dict(trials[-1])
+    for k in ("p50ms", "p95ms"):
+        out[k] = "%.3f" % median([float(t[k]) for t in trials])
+    out["maxms"] = "%.3f" % max(float(t["maxms"]) for t in trials)
+    for k in ("cpuMsMean", "gpuWaitMsMean"):
+        out[k] = "%.3f" % (sum(float(t[k]) for t in trials) / len(trials))
+    out["allocBytesMean"] = str(int(sum(int(t["allocBytesMean"]) for t in trials) / len(trials)))
+    out["trials"] = str(len(trials))
+    return out
+
+
 def frames_table(path):
     data = rows(path)
-    keyed = OrderedDict()
+    grouped = OrderedDict()
     for r in data:
-        keyed.setdefault((r["widget"], r["scenario"]), {})[r["mode"]] = r
+        grouped.setdefault((r["widget"], r["scenario"]), OrderedDict()).setdefault(r["mode"], []).append(r)
+    keyed = OrderedDict((k, {m: merge(t) for m, t in modes.items()}) for k, modes in grouped.items())
     print("| widget | scenario | stock GDI p50 / p95 / max ms | retained GDI p50 / p95 / max ms | Skija GPU p50 / p95 / max ms |")
     print("| --- | --- | --- | --- | --- |")
     for (w, s), modes in keyed.items():

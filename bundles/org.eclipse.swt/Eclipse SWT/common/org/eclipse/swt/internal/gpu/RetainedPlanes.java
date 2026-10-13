@@ -43,8 +43,6 @@ public final class RetainedPlanes {
 
 	/** Mode bits read from {@code -Dswt.gpu}. */
 	public static final int MODE_OFF = 0, MODE_RETAINED = 1, MODE_SKIJA = 2;
-	/** Present into the widget's own HWND with SwapBuffers instead of readback + BitBlt. */
-	public static final int MODE_SWAP = 4;
 
 	/** Platform implementation; null means stock behaviour. */
 	public interface Hook {
@@ -66,7 +64,6 @@ public final class RetainedPlanes {
 			switch (part.trim ()) {
 				case "gdi", "retained" -> mode |= MODE_RETAINED;
 				case "skija" -> mode |= MODE_RETAINED | MODE_SKIJA;
-				case "swap" -> mode |= MODE_SWAP;
 				default -> { }
 			}
 		}
