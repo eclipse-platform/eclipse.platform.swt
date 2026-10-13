@@ -1932,6 +1932,15 @@ boolean sendKeyEvent (int type, int msg, long wParam, long lParam, Event event) 
             }
 			// FALL THROUGH
 		case OS.WM_KEYDOWN:
+			/*
+			* Shift+Del is the legacy Cut shortcut. Instead of dropping it
+			* together with the other modified keys, route it through WM_CUT
+			* so that the cut is verified like any other cut.
+			*/
+			if (msg == OS.WM_KEYDOWN && key == 0x7F && (stateMask & (SWT.ALT | SWT.SHIFT | SWT.CONTROL)) == SWT.SHIFT) {
+				OS.SendMessage (handle, OS.WM_CUT, 0, 0);
+				return false;
+			}
             if ((stateMask & (SWT.ALT | SWT.SHIFT | SWT.CONTROL)) != 0) {
                 return false;
             }

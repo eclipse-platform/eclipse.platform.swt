@@ -19,6 +19,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyListener;
@@ -1589,6 +1593,58 @@ public void test_backspaceAndDelete() throws InterruptedException {
 
 	SwtTestUtil.processEvents(10000, () -> text.getText().length() == 0);
 	assertEquals(0, text.getText().length());
+}
+
+/**
+ * https://github.com/eclipse-platform/eclipse.platform.swt/issues/1468 - Shift+Del
+ * (the legacy Cut shortcut on Windows) must cut the selection even if a Verify
+ * listener is attached, and the cut must be verified.
+ */
+@Tag("clipboard")
+@Test
+@DisabledIfEnvironmentVariable(named = JENKINS_DETECT_ENV_VAR, matches = JENKINS_DETECT_REGEX, disabledReason = "Display.post tests don't run reliably on Jenkins - see https://github.com/eclipse-platform/eclipse.platform.swt/issues/2571")
+public void test_shiftDeleteCutsWithVerifyListener() throws InterruptedException {
+	assumeTrue(SwtTestUtil.isWindows, "Shift+Del is the Windows legacy Cut shortcut");
+	makeCleanEnvironment(true);
+	shell.open();
+	text.setText("Hello World");
+	text.setFocus();
+	SwtTestUtil.processEvents();
+	List<String> verified = new ArrayList<>();
+	boolean[] veto = { true };
+	text.addVerifyListener(e -> {
+		verified.add(e.start + "-" + e.end + ":" + e.text);
+		e.doit = !veto[0];
+	});
+
+	text.setSelection(6, 11);
+	postShiftDelete(text.getDisplay());
+	SwtTestUtil.processEvents(1000, () -> !verified.isEmpty());
+	assertEquals(List.of("6-11:"), verified);
+	assertEquals("Hello World", text.getText());
+
+	verified.clear();
+	veto[0] = false;
+	text.setSelection(6, 11);
+	postShiftDelete(text.getDisplay());
+	SwtTestUtil.processEvents(10000, () -> text.getText().equals("Hello "));
+	assertEquals(List.of("6-11:"), verified);
+	assertEquals("Hello ", text.getText());
+
+	text.setSelection(text.getCharCount());
+	text.paste();
+	assertEquals("Hello World", text.getText());
+}
+
+private void postShiftDelete(Display display) {
+	Widget focus = display.getFocusControl();
+	assertTrue(display.post(keyEvent(SWT.SHIFT, SWT.KeyDown, focus)));
+	try {
+		assertTrue(display.post(keyEvent(SWT.DEL, SWT.KeyDown, focus)));
+		assertTrue(display.post(keyEvent(SWT.DEL, SWT.KeyUp, focus)));
+	} finally {
+		display.post(keyEvent(SWT.SHIFT, SWT.KeyUp, focus));
+	}
 }
 
 private Event keyEvent(int key, int type, Widget w) {
