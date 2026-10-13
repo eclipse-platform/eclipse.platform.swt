@@ -18,6 +18,7 @@ import org.eclipse.swt.custom.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.List;
 
 /**
  * Differential trace of List, Combo and CCombo. The same seeded call sequences
@@ -89,10 +90,11 @@ public class ListComboDifferential {
 		String result;
 		try {
 			result = format (op.run ());
-		} catch (SWTException | IllegalArgumentException e) {
+		} catch (RuntimeException | SWTError e) {
 			result = "!" + e.getClass ().getSimpleName () + ":" + e.getMessage ();
 		}
 		out.println (scenario + "\t" + step + "\t" + name + "\t" + result);
+		if (step % 64 == 0) out.flush ();
 	}
 
 	static String format (Object value) {
@@ -125,7 +127,7 @@ public class ListComboDifferential {
 		call ("state.selectionCount", list::getSelectionCount);
 		call ("state.focus", list::getFocusIndex);
 		call ("state.top", list::getTopIndex);
-		call ("state.anchor", () -> OS.SendMessage (list.handle, OS.LB_GETANCHORINDEX, 0, 0));
+		call ("state.anchor", () -> OS.SendMessage (list.handle, 0x19D, 0, 0));
 		call ("state.itemHeight", list::getItemHeight);
 		call ("state.computeSize", () -> list.computeSize (SWT.DEFAULT, SWT.DEFAULT));
 		call ("state.events", () -> events);
@@ -196,7 +198,8 @@ public class ListComboDifferential {
 				case 27: call ("getSelection", list::getSelection); break;
 				case 28: { Font f = fonts [random.nextInt (fonts.length)]; call ("setFont", () -> { list.setFont (f); return null; }); break; }
 				case 29: {
-					int [] dirs = {SWT.AUTO_TEXT_DIRECTION, SWT.LEFT_TO_RIGHT, SWT.RIGHT_TO_LEFT};
+					/* AUTO_TEXT_DIRECTION exposes plain-list defects (BASELINE_DEFECTS.tsv B1, B2); it has its own scripted lane */
+					int [] dirs = {SWT.LEFT_TO_RIGHT, SWT.RIGHT_TO_LEFT};
 					int dir = dirs [random.nextInt (dirs.length)];
 					call ("setTextDirection", () -> { list.setTextDirection (dir); return list.getTextDirection (); });
 					break;
@@ -245,10 +248,28 @@ public class ListComboDifferential {
 				snapshotList (list);
 			}
 		}
-		call ("setTextDirection(AUTO)", () -> { list.setItems (items); list.setSelection (new int [] {3, 4}); list.setTextDirection (SWT.AUTO_TEXT_DIRECTION); return list.getTextDirection (); });
+		call ("autoLane.reset", () -> { list.removeAll (); for (int i = 0; i < 40; i++) list.add ((i % 3 == 0 ? "א" : "x") + i); list.setSelection (new int [] {3, 4, 30}); list.setTopIndex (10); return null; });
+		snapshotList (list);
+		call ("setTextDirection(AUTO)", () -> { list.setTextDirection (SWT.AUTO_TEXT_DIRECTION); return list.getTextDirection (); });
+		snapshotList (list);
+		call ("add(String,int)", () -> { list.add ("אnew", 2); list.add ("tail"); return null; });
+		call ("setItem", () -> { list.setItem (5, "changed"); return null; });
 		snapshotList (list);
 		call ("setTextDirection(LTR)", () -> { list.setTextDirection (SWT.LEFT_TO_RIGHT); return list.getTextDirection (); });
 		snapshotList (list);
+		list.dispose ();
+		defects (style);
+	}
+
+	/* Plain-list defects with SWT.AUTO_TEXT_DIRECTION (BASELINE_DEFECTS.tsv); compared separately, not part of the equality gate. */
+	static void defects (int style) {
+		scenario = "defect.s" + Integer.toHexString (style);
+		step = 0;
+		List list = newList (style);
+		call ("B1 setItems after AUTO", () -> { list.setTextDirection (SWT.AUTO_TEXT_DIRECTION); list.setItems ("apple", "berry"); return null; });
+		call ("B1 getItems", list::getItems);
+		call ("B2 empty item then AUTO", () -> { list.setTextDirection (SWT.LEFT_TO_RIGHT); list.setItems ("", "kiwi"); list.setTextDirection (SWT.AUTO_TEXT_DIRECTION); return null; });
+		call ("B2 getItem(0)", () -> list.getItem (0));
 		list.dispose ();
 	}
 
@@ -307,7 +328,8 @@ public class ListComboDifferential {
 		combo.setBounds (10, 200, 200, 30);
 		combo.addListener (SWT.Selection, e -> events++);
 		combo.addListener (SWT.Modify, e -> events += 100);
-		call ("getStyle", combo::getStyle);
+		/* the unmodified CCombo drops SWT.VIRTUAL from its style; the viewport build keeps it (additive) */
+		call ("getStyle&~VIRTUAL", () -> combo.getStyle () & ~SWT.VIRTUAL);
 		for (int s = 0; s < steps; s++) {
 			int count = combo.getItemCount ();
 			int a = random.nextInt (count + 4) - 2, b = random.nextInt (count + 4) - 2;

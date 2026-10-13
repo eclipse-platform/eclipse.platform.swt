@@ -2024,33 +2024,13 @@ boolean storeDeleteRange (int start, int end) {
 	return storeDeleteRange (start, end, false);
 }
 
-/*
- * Deletes start..end natively and from the store. The native order matches the
- * plain list: remove(int,int) deletes at start repeatedly, remove(int[])
- * deletes from the highest index down. Large ranges rebuild the native count.
- */
+/* Deletes start..end natively and from the store; see storeNativeCount for the native order. */
 boolean storeDeleteRange (int start, int end, boolean descending) {
 	int removed = end - start + 1;
-	int selection = storeSingleSelection ();
-	if (removed > removeRebuildThreshold) {
-		storeRebuild (itemStore.getItemCount () - removed, start, removed, descending);
-	} else {
-		for (int i = 0; i < removed; i++) {
-			int index = descending ? end - i : start;
-			if (OS.SendMessage (handle, OS.LB_DELETESTRING, index, 0) == OS.LB_ERR) {
-				if (descending) {
-					itemStore.remove (end - i + 1, end);
-				} else {
-					itemStore.remove (start, start + i - 1);
-				}
-				return false;
-			}
-		}
+	if (!storeNativeCount (start, -removed, descending)) {
+		return false;
 	}
 	itemStore.remove (start, end);
-	if (selection >= 0 && (selection < start || selection > end)) {
-		storeRestoreSingle (selection > end ? selection - removed : selection);
-	}
 	if (itemStore.getItemCount () == 0) {
 		storeBits |= STORE_EMPTY_EXTENT_INSET;
 	}
@@ -2101,18 +2081,43 @@ int storeExtent (boolean exact) {
 }
 
 void storeInsert (String string, int index) {
-	int selection = storeSingleSelection ();
-	int result = (int)OS.SendMessage (handle, OS.LB_INSERTSTRING, index, 0);
-	if (result == OS.LB_ERR || result == OS.LB_ERRSPACE) {
+	if (!storeNativeCount (index, 1, false)) {
 		error (SWT.ERROR_ITEM_NOT_ADDED);
 	}
 	itemStore.add (string, index);
-	if (selection >= 0) {
-		storeRestoreSingle (selection >= index ? selection + 1 : selection);
-	}
 	if ((style & SWT.H_SCROLL) != 0) {
 		storeExtent (false);
 	}
+}
+
+/*
+ * Changes the native count by delta rows at start (delta < 0 removes
+ * [start, start - delta)). A single-selection LBS_NODATA list box loses its
+ * count when LB_INSERTSTRING follows LB_SETCOUNT (measured on this host, see
+ * NATIVE_LIMITS.tsv), so SINGLE always goes through LB_SETCOUNT. MULTI keeps a
+ * selection byte per row: small changes use the row messages in the plain
+ * list's order (remove(int,int) deletes at start repeatedly, remove(int[])
+ * from the highest index down), large ones one LB_SETCOUNT and a restore.
+ */
+boolean storeNativeCount (int start, int delta, boolean descending) {
+	int count = itemStore.getItemCount ();
+	int magnitude = delta < 0 ? -delta : delta;
+	if ((style & SWT.SINGLE) != 0 || count == 0 || magnitude > removeRebuildThreshold) {
+		return storeRebuild (count + delta, start, delta);
+	}
+	for (int i = 0; i < magnitude; i++) {
+		int result;
+		if (delta > 0) {
+			result = (int)OS.SendMessage (handle, OS.LB_INSERTSTRING, start + i, 0);
+		} else {
+			result = (int)OS.SendMessage (handle, OS.LB_DELETESTRING, descending ? start + magnitude - 1 - i : start, 0);
+		}
+		if (result == OS.LB_ERR || result == OS.LB_ERRSPACE) {
+			OS.SendMessage (handle, OS.LB_SETCOUNT, count, 0);
+			return false;
+		}
+	}
+	return true;
 }
 
 int measureStoreText (String string) {
@@ -2149,11 +2154,11 @@ int measureStoreText (String string) {
 }
 
 /*
- * Replaces the native count with newCount in one LB_SETCOUNT and restores the
- * selection, caret and anchor that row-by-row deletes of [start, start+removed)
- * would have left. LB_SETCOUNT clears the native selection.
+ * Replaces the native count with one LB_SETCOUNT, which clears the native
+ * selection, and restores the selection, caret, anchor and top index that the
+ * row messages would have left.
  */
-void storeRebuild (int newCount, int start, int removed, boolean descending) {
+boolean storeRebuild (int newCount, int start, int delta) {
 	int caret = (int)OS.SendMessage (handle, OS.LB_GETCARETINDEX, 0, 0);
 	int anchor = (int)OS.SendMessage (handle, OS.LB_GETANCHORINDEX, 0, 0);
 	int top = (int)OS.SendMessage (handle, OS.LB_GETTOPINDEX, 0, 0);
@@ -2166,53 +2171,58 @@ void storeRebuild (int newCount, int start, int removed, boolean descending) {
 			OS.SendMessage (handle, OS.LB_GETSELITEMS, length, selected);
 		}
 	}
-	OS.SendMessage (handle, OS.LB_SETCOUNT, newCount, 0);
+	int result = (int)OS.SendMessage (handle, OS.LB_SETCOUNT, newCount, 0);
+	if (result == OS.LB_ERR || result == OS.LB_ERRSPACE) {
+		return false;
+	}
 	if (newCount == 0) {
-		return;
+		return true;
 	}
 	if (selected != null) {
-		storeSelectShifted (selected, start, removed);
+		storeSelectShifted (selected, start, delta);
 	}
-	if (selection >= 0 && (selection < start || selection >= start + removed)) {
-		OS.SendMessage (handle, OS.LB_SETCURSEL, selection >= start + removed ? selection - removed : selection, 0);
+	if (selection >= 0 && storeShift (selection, start, delta) >= 0) {
+		OS.SendMessage (handle, OS.LB_SETCURSEL, storeShift (selection, start, delta), 0);
 	}
-	if ((style & SWT.MULTI) != 0) {
-		OS.SendMessage (handle, STORE_LB_SETANCHORINDEX, storeShiftAnchor (anchor, start, removed, newCount), 0);
-		OS.SendMessage (handle, OS.LB_SETCARETINDEX, storeShiftCaret (caret, start, removed, newCount, descending), 1);
+	if (anchor >= 0) {
+		OS.SendMessage (handle, STORE_LB_SETANCHORINDEX, storeShiftFocus (anchor, start, delta, newCount), 0);
+	}
+	if (caret >= 0 && (int)OS.SendMessage (handle, OS.LB_GETCARETINDEX, 0, 0) != storeShiftFocus (caret, start, delta, newCount)) {
+		OS.SendMessage (handle, OS.LB_SETCARETINDEX, storeShiftFocus (caret, start, delta, newCount), 1);
 	}
 	OS.SendMessage (handle, OS.LB_SETTOPINDEX, Math.min (top, newCount - 1), 0);
+	return true;
 }
 
-static int storeShiftCaret (int caret, int start, int removed, int newCount, boolean descending) {
-	if (caret >= start + removed) {
-		return caret - removed;
+/* New index of a row after a count change, -1 when the row was removed. */
+static int storeShift (int index, int start, int delta) {
+	if (index < start) {
+		return index;
 	}
-	if (caret >= start) {
-		return Math.min (start, newCount - 1);
+	if (delta >= 0) {
+		return index + delta;
 	}
-	return Math.min (caret, newCount - 1);
+	return index < start - delta ? -1 : index + delta;
 }
 
-static int storeShiftAnchor (int anchor, int start, int removed, int newCount) {
-	if (anchor >= start + removed) {
-		return anchor - removed;
+/* Caret and anchor rows stay on a row: a removed one lands on the first row after the gap. */
+static int storeShiftFocus (int index, int start, int delta, int newCount) {
+	int shifted = storeShift (index, start, delta);
+	if (shifted == -1) {
+		shifted = start;
 	}
-	if (anchor >= start) {
-		return Math.min (start, newCount - 1);
-	}
-	return Math.min (anchor, newCount - 1);
+	return Math.max (0, Math.min (shifted, newCount - 1));
 }
 
-void storeSelectShifted (int [] selected, int start, int removed) {
+void storeSelectShifted (int [] selected, int start, int delta) {
 	int runStart = -1, runEnd = -2;
 	for (int i = 0; i <= selected.length; i++) {
 		int index = -1;
 		if (i < selected.length) {
-			int old = selected [i];
-			if (old >= start && old < start + removed) {
+			index = storeShift (selected [i], start, delta);
+			if (index == -1) {
 				continue;
 			}
-			index = old >= start + removed ? old - removed : old;
 			if (index == runEnd + 1) {
 				runEnd = index;
 				continue;
@@ -2257,28 +2267,28 @@ void storeRemove (int [] descending, int topIndex) {
 	OS.SendMessage (handle, OS.LB_SETTOPINDEX, topIndex - topCount, 0);
 }
 
-void storeRestoreSingle (int selection) {
-	if ((int)OS.SendMessage (handle, OS.LB_GETCURSEL, 0, 0) == selection) {
-		return;
-	}
-	int top = (int)OS.SendMessage (handle, OS.LB_GETTOPINDEX, 0, 0);
-	OS.SendMessage (handle, OS.LB_SETCURSEL, selection, 0);
-	OS.SendMessage (handle, OS.LB_SETTOPINDEX, top, 0);
-}
-
+/*
+ * Moves to a row found by the keyboard search the way the plain list box does
+ * (measured, NATIVE_LIMITS N8): single and extended selection select the row,
+ * multiple selection moves only the caret; the anchor follows. The plain list
+ * box notifies only while it has the focus.
+ */
 void storeSelectFromKeyboard (int index) {
+	boolean changed = true;
 	if ((style & SWT.SINGLE) != 0) {
 		OS.SendMessage (handle, OS.LB_SETCURSEL, index, 0);
 	} else if ((OS.GetWindowLong (handle, OS.GWL_STYLE) & OS.LBS_EXTENDEDSEL) != 0) {
 		OS.SendMessage (handle, OS.LB_SETSEL, 0, -1);
 		OS.SendMessage (handle, OS.LB_SETSEL, 1, index);
-		OS.SendMessage (handle, STORE_LB_SETANCHORINDEX, index, 0);
 		OS.SendMessage (handle, OS.LB_SETCARETINDEX, index, 0);
 	} else {
 		OS.SendMessage (handle, OS.LB_SETCARETINDEX, index, 0);
-		return;
+		changed = false;
 	}
-	sendSelectionEvent (SWT.Selection);
+	OS.SendMessage (handle, STORE_LB_SETANCHORINDEX, index, 0);
+	if (changed && OS.GetFocus () == handle) {
+		sendSelectionEvent (SWT.Selection);
+	}
 }
 
 void storeSetCount (int count, int itemCount) {
@@ -2288,17 +2298,8 @@ void storeSetCount (int count, int itemCount) {
 		}
 		return;
 	}
-	int added = count - itemCount;
-	if (itemCount == 0 || added > removeRebuildThreshold) {
-		storeRebuild (count, count, 0, false);
-	} else {
-		for (int i = 0; i < added; i++) {
-			int result = (int)OS.SendMessage (handle, OS.LB_INSERTSTRING, itemCount + i, 0);
-			if (result == OS.LB_ERR || result == OS.LB_ERRSPACE) {
-				itemStore.setItemCount (itemCount + i);
-				error (SWT.ERROR_ITEM_NOT_ADDED);
-			}
-		}
+	if (!storeNativeCount (itemCount, count - itemCount, false)) {
+		error (SWT.ERROR_ITEM_NOT_ADDED);
 	}
 	itemStore.setItemCount (count);
 	if ((style & SWT.H_SCROLL) != 0) {
