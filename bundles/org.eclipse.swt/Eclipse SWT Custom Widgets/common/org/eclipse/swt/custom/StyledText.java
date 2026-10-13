@@ -128,6 +128,9 @@ public class StyledText extends Canvas {
 	/** columnX of a deferred caret placement: the caret's x, resolved when the placement settles. */
 	static final int COLUMN_X_UNSET = Integer.MIN_VALUE;
 	int deferredWork;
+	/** Paint-frame bits: PAINT_BLITTED = a scroll copy happened since the last paint. */
+	static final int PAINT_BLITTED = 1;
+	int paintBits;
 	boolean alwaysShowScroll = true;
 	int ignoreResize = 0;
 	int topIndex = 0;					// top visible line
@@ -6354,6 +6357,7 @@ void handleMouseUp(Event event) {
  * @param event paint event
  */
 void handlePaint(Event event) {
+	paintBits &= ~PAINT_BLITTED;
     if (event.width == 0 || event.height == 0) {
         return;
     }
@@ -8477,7 +8481,7 @@ boolean scrollHorizontal(int pixels, boolean adjustScrollBar) {
         return false;
     }
 	ScrollBar horizontalBar = getHorizontalBar();
-	if (horizontalBar != null && adjustScrollBar) {
+	if (horizontalBar != null && adjustScrollBar && horizontalBar.getSelection() != horizontalScrollOffset + pixels) {
 		horizontalBar.setSelection(horizontalScrollOffset + pixels);
 	}
 	int scrollHeight = clientAreaHeight - topMargin - bottomMargin;
@@ -8521,7 +8525,7 @@ boolean scrollVertical(int pixels, boolean adjustScrollBar) {
 	}
 	if (verticalScrollOffset != -1) {
 		ScrollBar verticalBar = getVerticalBar();
-		if (verticalBar != null && adjustScrollBar) {
+		if (verticalBar != null && adjustScrollBar && verticalBar.getSelection() != verticalScrollOffset + pixels) {
 			verticalBar.setSelection(verticalScrollOffset + pixels);
 		}
 		int deltaY = 0;
@@ -8545,7 +8549,7 @@ boolean scrollVertical(int pixels, boolean adjustScrollBar) {
 		}
 		verticalScrollOffset += pixels;
 		calculateTopIndex(pixels);
-		super.redraw();
+		blitVertical(pixels, deltaY != 0);
 	} else {
 		calculateTopIndex(pixels);
 		super.redraw();
@@ -8556,6 +8560,31 @@ boolean scrollVertical(int pixels, boolean adjustScrollBar) {
 	}
 	setCaretLocations();
 	return true;
+}
+/**
+ * Scroll as a translate: copies the text area (client minus margins) by
+ * {@code pixels}; the copy area invalidates only the exposed strip, so margins are
+ * never shifted or repainted. One copy per frame: a second scroll before the next
+ * paint invalidates the client area once instead of copying again.
+ */
+void blitVertical(int pixels, boolean copyable) {
+	if (defer(DEFER_PAINT)) {
+		return;
+	}
+	//FLLDCIM: RETAINED - scroll as a translate, exposed strip only
+	if (!copyable || (paintBits & PAINT_BLITTED) != 0) {
+		super.redraw();
+		return;
+	}
+	paintBits |= PAINT_BLITTED;
+	int x = leftMargin, width = clientAreaWidth - leftMargin - rightMargin;
+	if (pixels > 0) {
+		int sourceY = topMargin + pixels;
+		scroll(x, topMargin, x, sourceY, width, clientAreaHeight - sourceY - bottomMargin, false);
+	} else {
+		int destinationY = topMargin - pixels;
+		scroll(x, destinationY, x, topMargin, width, clientAreaHeight - destinationY - bottomMargin, false);
+	}
 }
 void scrollText(int srcY, int destY) {
     if (srcY == destY || defer(DEFER_PAINT)) {
@@ -9083,8 +9112,38 @@ void setCaretLocations() {
 	Point[] newCaretPos = Arrays.stream(caretOffsets).mapToObj(this::getPointAtOffset).toArray(Point[]::new);
 	setCaretLocations(newCaretPos, getCaretDirection());
 }
+/**
+ * Cells {x, y, width, height, ...} of the painted extra carets (carets[1..]); null
+ * when there are none. Packed ints, built only with multiple carets.
+ */
+int[] extraCaretCells() {
+	if (carets == null || carets.length < 2) {
+		return null;
+	}
+	int[] cells = new int[4 * (carets.length - 1)];
+	for (int i = 1; i < carets.length; i++) {
+		Rectangle b = carets[i].getBounds();
+		int j = 4 * (i - 1);
+		cells[j] = b.x;
+		cells[j + 1] = b.y;
+		cells[j + 2] = Math.max(1, b.width) + 1;
+		cells[j + 3] = Math.max(b.height, getLineHeight(caretOffsets[Math.min(i, caretOffsets.length - 1)])) + 1;
+	}
+	return cells;
+}
+/** Repaints the given extra caret cells, or the current ones when {@code cells} is null. */
+void redrawExtraCarets(int[] cells) {
+	int[] c = cells != null ? cells : extraCaretCells();
+	if (c == null) {
+		return;
+	}
+	for (int j = 0; j < c.length; j += 4) {
+		super.redraw(c[j], c[j + 1], c[j + 2], c[j + 3], false);
+	}
+}
 void setCaretLocations(final Point[] locations, int direction) {
 	Caret firstCaret = super.getCaret();
+	int[] extraCaretCells = extraCaretCells();
 	if (firstCaret != null) {
 		if (carets == null || carets.length == 0) {
 			carets = new Caret[] { firstCaret };
@@ -9189,7 +9248,9 @@ void setCaretLocations(final Point[] locations, int direction) {
 			}
 		}
 		updateCaretVisibility();
-		super.redraw();
+		//FLLDCIM: RETAINED - the first caret is the platform caret; only extra carets are painted
+		redrawExtraCarets(extraCaretCells);
+		redrawExtraCarets(null);
 	}
 	columnX = locations[0].x;
 }
@@ -10354,9 +10415,11 @@ public void setRightMargin (int rightMargin) {
 void setScrollBar(ScrollBar bar, int clientArea, int maximum, int margin) {
 	int inactive = 1;
 	if (clientArea < maximum) {
-		bar.setMaximum(maximum - margin);
-		bar.setThumb(clientArea - margin);
-		bar.setPageIncrement(clientArea - margin);
+		int max = maximum - margin, thumb = clientArea - margin;
+		if (bar.getMaximum() != max || bar.getThumb() != thumb || bar.getPageIncrement() != thumb) {
+			//FLLDCIM: RETAINED - one setValues, only when a value changes (no scroll bar repaint otherwise)
+			bar.setValues(bar.getSelection(), bar.getMinimum(), max, thumb, bar.getIncrement(), thumb);
+		}
         if (!alwaysShowScroll) {
             bar.setVisible(true);
         }

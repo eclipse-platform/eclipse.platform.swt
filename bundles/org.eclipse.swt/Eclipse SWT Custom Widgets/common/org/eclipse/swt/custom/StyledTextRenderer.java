@@ -2244,7 +2244,9 @@ void textChanging(TextChangingEvent event) {
 				lines = newLines;
 			}
 		}
-		System.arraycopy(lineSizes, startIndex, lineSizes, endIndex, lineCount - startIndex);
+		if (startIndex != endIndex) {
+			System.arraycopy(lineSizes, startIndex, lineSizes, endIndex, lineCount - startIndex);
+		}
 		for (int i = startLine; i < endIndex; i++) {
 			lineSizes[i] = null;
 		}
@@ -2335,12 +2337,9 @@ void textChanging(TextChangingEvent event) {
 		if (maxWidthLineIndex != -1 && startLine <= maxWidthLineIndex && maxWidthLineIndex <= startLine + replaceLineCount) {
 			maxWidth = 0;
 			maxWidthLineIndex = -1;
-			for (int i = 0; i < lineCount; i++) {
-				LineSizeInfo lineSize = getLineSize(i);
-				if (lineSize.width > maxWidth) {
-					maxWidth = lineSize.width;
-					maxWidthLineIndex = i;
-				}
+			//FLLDCIM: VIEWPORT - no LineSizeInfo per line; viewport mode rebuilds the extent from lines measured next
+			if (!isViewportMode()) {
+				recomputeMaxWidth();
 			}
 		}
 	}

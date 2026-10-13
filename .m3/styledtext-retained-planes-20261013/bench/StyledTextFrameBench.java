@@ -41,6 +41,7 @@ public final class StyledTextFrameBench {
 		int frames = Integer.parseInt(args[1]);
 		Path report = Path.of(args[2]);
 		String label = args[3];
+		java.util.Set<String> only = args.length > 4 ? java.util.Set.of(args[4].split(",")) : null;
 		Display display = new Display();
 		Shell shell = new Shell(display);
 		shell.setLayout(new FillLayout());
@@ -70,17 +71,17 @@ public final class StyledTextFrameBench {
 		text.setTopIndex(lines / 2);
 		settle(display, text);
 		int mid = text.getOffsetAtLine(lines / 2 + 5);
-		out.append(run(label, doc, lines, "scroll", frames, display, text, i -> text.setTopPixel(text.getTopPixel() + 3 * lineHeight), setTextMs));
+		if (only == null || only.contains("scroll")) out.append(run(label, doc, lines, "scroll", frames, display, text, i -> text.setTopPixel(text.getTopPixel() + 3 * lineHeight), setTextMs));
 		text.setTopIndex(lines / 2);
 		settle(display, text);
-		out.append(run(label, doc, lines, "selection-drag", frames, display, text, i -> text.setSelectionRange(mid, 1 + (i * 7) % 1500), setTextMs));
-		out.append(run(label, doc, lines, "caret", frames, display, text,
+		if (only == null || only.contains("selection-drag")) out.append(run(label, doc, lines, "selection-drag", frames, display, text, i -> text.setSelectionRange(mid, 1 + (i * 7) % 1500), setTextMs));
+		if (only == null || only.contains("caret")) out.append(run(label, doc, lines, "caret", frames, display, text,
 				i -> text.invokeAction((i & 7) == 7 ? (((i >> 3) & 1) == 0 ? org.eclipse.swt.custom.ST.LINE_DOWN : org.eclipse.swt.custom.ST.LINE_UP)
 						: org.eclipse.swt.custom.ST.COLUMN_NEXT), setTextMs));
 		text.setCaretOffset(mid);
-		out.append(run(label, doc, lines, "typing", frames, display, text, i -> text.insert(Character.toString((char) ('a' + i % 26))), setTextMs));
-		out.append(run(label, doc, lines, "scroll-storm", frames, display, text, i -> text.setTopPixel(text.getTopPixel() + ((i & 1) == 0 ? 1 : 2) * lineHeight), setTextMs));
-		out.append(run(label, doc, lines, "resize-storm", Math.min(frames, 60), display, text, i -> shell.setSize(900 - (i % 10) * 7, 700 - (i % 10) * 5), setTextMs));
+		if (only == null || only.contains("typing")) out.append(run(label, doc, lines, "typing", frames, display, text, i -> text.insert(Character.toString((char) ('a' + i % 26))), setTextMs));
+		if (only == null || only.contains("scroll-storm")) out.append(run(label, doc, lines, "scroll-storm", frames, display, text, i -> text.setTopPixel(text.getTopPixel() + ((i & 1) == 0 ? 1 : 2) * lineHeight), setTextMs));
+		if (only == null || only.contains("resize-storm")) out.append(run(label, doc, lines, "resize-storm", Math.min(frames, 60), display, text, i -> shell.setSize(900 - (i % 10) * 7, 700 - (i % 10) * 5), setTextMs));
 		Files.writeString(report, out.toString(), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
 		System.out.print(out);
 		shell.dispose();
