@@ -207,8 +207,8 @@ public final class ViewportDamageRegion {
 		if (width <= 0 || height <= 0) return;
 		int left = pixelFloor (x, zoomPercent);
 		int top = pixelFloor (y, zoomPercent);
-		int right = pixelCeil (x + width, zoomPercent);
-		int bottom = pixelCeil (y + height, zoomPercent);
+		int right = pixelCeil ((long) x + width, zoomPercent);
+		int bottom = pixelCeil ((long) y + height, zoomPercent);
 		add (left, top, right - left, bottom - top);
 	}
 
@@ -244,8 +244,12 @@ public final class ViewportDamageRegion {
 
 	/** Device pixel of an end coordinate: {@code ceil (point * zoomPercent / 100)}. */
 	public static int pixelCeil (int point, int zoomPercent) {
+		return pixelCeil ((long) point, zoomPercent);
+	}
+
+	private static int pixelCeil (long point, int zoomPercent) {
 		checkZoom (zoomPercent);
-		return toInt (-floorDiv (-(long) point * zoomPercent, 100));
+		return toInt (-floorDiv (-point * zoomPercent, 100));
 	}
 
 	private static void checkZoom (int zoomPercent) {
