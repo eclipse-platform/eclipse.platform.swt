@@ -1417,7 +1417,7 @@ private static class Webkit2AsyncToSync {
 			int callbackId = ((Number) nameAndId[1]).intValue();
 			Webkit2AsyncReturnObj retObj = CallBackMap.getObj(callbackId);
 
-			// Get GSList of cookies
+			// Get GList of cookies (webkit_cookie_manager_get_cookies_finish() returns a GList, see issue #842)
 			long [] error = new long [1];
 			long cookieList = WebKitGTK.webkit_cookie_manager_get_cookies_finish(cookieManager, result, error);
 			if (error[0] != 0) {
@@ -1428,10 +1428,10 @@ private static class Webkit2AsyncToSync {
 				retObj.returnValue = (String) "";
 			}
 
-			int length = OS.g_slist_length (cookieList);
+			int length = OS.g_list_length (cookieList);
 			long current = cookieList;
 			for (int i = 0; i < length; i++) {
-				long soupCookie = OS.g_slist_data (current);
+				long soupCookie = OS.g_list_data (current);
 				long soupName = WebKitGTK.soup_cookie_get_name(soupCookie);
 				String soupNameStr = Converter.cCharPtrToJavaString(soupName, false);
 				if (soupNameStr != null && soupNameStr.equals(cookieName)) {
@@ -1439,9 +1439,9 @@ private static class Webkit2AsyncToSync {
 					retObj.returnValue = Converter.cCharPtrToJavaString(soupValue, false);
 					break;
 				}
-				current = OS.g_slist_next (current);
+				current = OS.g_list_next (current);
 			}
-			OS.g_slist_free (cookieList);
+			OS.g_list_free (cookieList);
 
 			retObj.callbackFinished = true;
 			Display.getCurrent().wake();

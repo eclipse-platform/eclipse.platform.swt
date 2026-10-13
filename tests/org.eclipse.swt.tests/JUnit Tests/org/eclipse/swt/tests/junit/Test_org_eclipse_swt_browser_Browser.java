@@ -478,6 +478,35 @@ public void test_get_set_Cookies() throws IOException {
 	}
 }
 
+/**
+ * https://github.com/eclipse-platform/eclipse.platform.swt/issues/842 - getCookie()
+ * must release the cookie list it receives from the browser correctly, otherwise
+ * repeated calls corrupt the native heap.
+ */
+@Tag("gtk4-todo")
+@Test
+public void test_getCookie_repeated() throws IOException {
+	try (var server = new EchoHttpServer()) {
+		final AtomicBoolean loaded = new AtomicBoolean(false);
+		browser.addProgressListener(ProgressListener.completedAdapter(event -> loaded.set(true)));
+
+		String url = server.getEchoUrl("test_getCookie_repeated");
+		browser.setUrl(url);
+		shell.open();
+		waitForPassCondition(loaded::get);
+
+		int count = 8;
+		for (int i = 0; i < count; i++) {
+			Browser.setCookie("cookie" + i + "=value" + i, url);
+		}
+		for (int round = 0; round < 10; round++) {
+			for (int i = 0; i < count; i++) {
+				assertEquals("value" + i, Browser.getCookie("cookie" + i, url));
+			}
+		}
+	}
+}
+
 @Override
 @Test
 public void test_getChildren() {
