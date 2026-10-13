@@ -15,6 +15,7 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
@@ -26,12 +27,21 @@ import org.eclipse.swt.internal.win32.*;
  * when a string is selected.  A list may be single or multi select.
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>SINGLE, MULTI, NO_SEARCH</dd>
+ * <dd>SINGLE, MULTI, NO_SEARCH, VIRTUAL</dd>
  * <dt><b>Events:</b></dt>
- * <dd>Selection, DefaultSelection</dd>
+ * <dd>Selection, DefaultSelection, SetData</dd>
  * </dl>
  * <p>
  * Note: Only one of SINGLE and MULTI may be specified.
+ * </p><p>
+ * Style <code>VIRTUAL</code> is used to create a <code>List</code> whose
+ * native control keeps only the item count: item text is held in one
+ * <code>String</code> reference per item and is drawn only for the rows on
+ * screen. Items added with <code>add</code> or <code>setItems</code> behave as
+ * in a plain list; items created by <code>setItemCount</code> or emptied by
+ * <code>clear</code> are requested with an <code>SWT.SetData</code> event
+ * (<code>event.index</code> is the row) when they are first drawn or read, and
+ * the listener answers with <code>setItem(event.index, text)</code>.
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
@@ -47,6 +57,25 @@ public class List extends Scrollable {
 	static final TCHAR ListClass = new TCHAR ("LISTBOX", true);
 	boolean addedUCC = false; // indicates whether Bidi UCC were added; 'state & HAS_AUTO_DIRECTION' isn't a sufficient indicator
 	final ViewportRuntime viewportRuntime = new ViewportRuntime ();
+	/*
+	 * SWT.VIRTUAL (owner-data viewport): the native list box is created with
+	 * LBS_NODATA | LBS_OWNERDRAWFIXED and keeps only the item count and the
+	 * selection; the text lives in itemStore and is painted in WM_DRAWITEM for
+	 * the rows on screen. itemStore is null for a plain list.
+	 */
+	VirtualListModel itemStore;
+	int storeBits, setDataIndex = -1, setDataCount;
+	long measureDC;
+	char [] textBuffer;
+	DRAWITEMSTRUCT drawStruct;
+	RECT drawRect, measureRect;
+	static final int STORE_EMPTY_EXTENT_INSET = 1 << 0, STORE_IN_SET_DATA = 1 << 1;
+	/* x offset of the item text inside the item rectangle, as the plain list box draws it */
+	static final int STORE_TEXT_X = 2;
+	/* the documented LB_SETANCHORINDEX; OS.LB_SETANCHORINDEX is 0xf19c */
+	static final int STORE_LB_SETANCHORINDEX = 0x19c;
+	/* Range removals larger than this rebuild the native count instead of deleting row by row. */
+	static int removeRebuildThreshold = 64;
 	static {
 		WNDCLASS lpWndClass = new WNDCLASS ();
 		OS.GetClassInfo (0, ListClass, lpWndClass);
@@ -85,6 +114,10 @@ public class List extends Scrollable {
 public List (Composite parent, int style) {
 	super (parent, checkStyle (style));
 	viewportRuntime.initializeOrigin (0, 0);
+	if ((this.style & SWT.VIRTUAL) != 0) {
+		itemStore = new VirtualListModel (this::measureStoreText, true);
+		updateStoreItemHeight (OS.SendMessage (handle, OS.WM_GETFONT, 0, 0));
+	}
 }
 /**
  * Adds the argument to the end of the receiver's list.
@@ -109,6 +142,10 @@ public void add (String string) {
     if (string == null) {
         error(SWT.ERROR_NULL_ARGUMENT);
     }
+	if (itemStore != null) {
+		storeInsert (string, itemStore.getItemCount ());
+		return;
+	}
 	TCHAR buffer = new TCHAR (string, true);
 	int result = (int)OS.SendMessage (handle, OS.LB_ADDSTRING, 0, buffer);
     if (result == OS.LB_ERR) {
@@ -155,6 +192,13 @@ public void add (String string, int index) {
     if (index == -1) {
         error(SWT.ERROR_INVALID_RANGE);
     }
+	if (itemStore != null) {
+		if (!(0 <= index && index <= itemStore.getItemCount ())) {
+			error (SWT.ERROR_INVALID_RANGE);
+		}
+		storeInsert (string, index);
+		return;
+	}
 	TCHAR buffer = new TCHAR (string, true);
 	int result = (int)OS.SendMessage (handle, OS.LB_INSERTSTRING, index, buffer);
     if (result == OS.LB_ERRSPACE) {
@@ -241,12 +285,84 @@ static int checkStyle (int style) {
 	return WidgetStylePolicy.LIST_SELECTION.applyAsInt(style);
 }
 
+/**
+ * Clears the item at the given zero-relative index in the receiver.
+ * The text of the item is set to the empty string. If the receiver is
+ * <code>VIRTUAL</code>, the item text is forgotten and requested again
+ * with an <code>SWT.SetData</code> event the next time the item is drawn
+ * or read.
+ *
+ * @param index the index of the item to clear
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the list minus 1 (inclusive)</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SWT#VIRTUAL
+ * @see SWT#SetData
+ *
+ * @since 3.137
+ */
+public void clear (int index) {
+	checkWidget ();
+	if (!(0 <= index && index < getItemCount ())) {
+		error (SWT.ERROR_INVALID_RANGE);
+	}
+	if (itemStore == null) {
+		setItem (index, "");
+		return;
+	}
+	itemStore.clear (index);
+	storeRedrawItem (index);
+	if ((style & SWT.H_SCROLL) != 0) {
+		storeExtent (false);
+	}
+}
+
+/**
+ * Clears all the items in the receiver. The text of each item is set to the
+ * empty string. If the receiver is <code>VIRTUAL</code>, the item texts are
+ * forgotten and requested again with <code>SWT.SetData</code> events the next
+ * time each item is drawn or read.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SWT#VIRTUAL
+ * @see SWT#SetData
+ *
+ * @since 3.137
+ */
+public void clearAll () {
+	checkWidget ();
+	if (itemStore == null) {
+		int count = getItemCount ();
+		for (int i = 0; i < count; i++) {
+			setItem (i, "");
+		}
+		return;
+	}
+	itemStore.clearAll ();
+	OS.InvalidateRect (handle, null, true);
+	if ((style & SWT.H_SCROLL) != 0) {
+		storeExtent (false);
+	}
+}
+
 @Override
 Point computeSizeInPixels (Point hintInPoints, int zoom, boolean changed) {
 	checkWidget ();
 	Point hintInPixels = Win32DPIUtils.pointToPixelAsSufficientlyLargeSize(hintInPoints, zoom);
 	int width = 0, height = 0;
-	if (hintInPoints.x == SWT.DEFAULT) {
+	if (hintInPoints.x == SWT.DEFAULT && itemStore != null) {
+		width = (style & SWT.H_SCROLL) != 0 ? storeExtent (true) - INSET : storeExactWidth ();
+	} else if (hintInPoints.x == SWT.DEFAULT) {
 		if ((style & SWT.H_SCROLL) != 0) {
 			width = (int)OS.SendMessage (handle, OS.LB_GETHORIZONTALEXTENT, 0, 0);
 			width -= INSET;
@@ -281,7 +397,7 @@ Point computeSizeInPixels (Point hintInPoints, int zoom, boolean changed) {
 		}
 	}
 	if (hintInPoints.y == SWT.DEFAULT) {
-		int count = (int)OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
+		int count = itemStore != null ? itemStore.getItemCount () : (int)OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
 		int itemHeight = (int)OS.SendMessage (handle, OS.LB_GETITEMHEIGHT, 0, 0);
 		height = count * itemHeight;
 	}
@@ -494,6 +610,12 @@ public int getFocusIndex () {
  */
 public String getItem (int index) {
 	checkWidget ();
+	if (itemStore != null) {
+		if (!(0 <= index && index < itemStore.getItemCount ())) {
+			error (SWT.ERROR_INVALID_RANGE);
+		}
+		return storeText (index);
+	}
 	int length = (int)OS.SendMessage (handle, OS.LB_GETTEXTLEN, index, 0);
 	if (length != OS.LB_ERR) {
 		char [] buffer = new char [length + 1];
@@ -522,6 +644,9 @@ public String getItem (int index) {
  */
 public int getItemCount () {
 	checkWidget ();
+	if (itemStore != null) {
+		return itemStore.getItemCount ();
+	}
 	int result = (int)OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
     if (result == OS.LB_ERR) {
         error(SWT.ERROR_CANNOT_GET_COUNT);
@@ -573,6 +698,12 @@ public String [] getItems () {
 	checkWidget ();
 	int count = getItemCount ();
 	String [] result = new String [count];
+	if (itemStore != null) {
+		for (int i = 0; i < count; i++) {
+			result [i] = storeText (i);
+		}
+		return result;
+	}
     for (int i = 0; i < count; i++) {
         result [i] = getItem(i);
     }
@@ -773,6 +904,18 @@ public int indexOf (String string, int start) {
     if (string == null) {
         error(SWT.ERROR_NULL_ARGUMENT);
     }
+	if (itemStore != null && string.length () != 0) {
+		int count = itemStore.getItemCount ();
+		if (!(0 <= start && start < count)) {
+			return -1;
+		}
+		for (int i = start; i < count; i++) {
+			if (string.equals (storeText (i))) {
+				return i;
+			}
+		}
+		return -1;
+	}
 
 	/*
 	* Bug in Windows.  For some reason, LB_FINDSTRINGEXACT
@@ -862,6 +1005,10 @@ public void remove (int [] indices) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
 	int topIndex = (int)OS.SendMessage (handle, OS.LB_GETTOPINDEX, 0, 0);
+	if (itemStore != null) {
+		storeRemove (newIndices, topIndex);
+		return;
+	}
 	RECT rect = null;
 	long hDC = 0, oldFont = 0, newFont = 0;
 	int newWidth = 0;
@@ -938,6 +1085,20 @@ public void remove (int [] indices) {
  */
 public void remove (int index) {
 	checkWidget ();
+	if (itemStore != null) {
+		if (!(0 <= index && index < itemStore.getItemCount ())) {
+			error (SWT.ERROR_INVALID_RANGE);
+		}
+		int topIndex = (int)OS.SendMessage (handle, OS.LB_GETTOPINDEX, 0, 0);
+		if (!storeDeleteRange (index, index)) {
+			error (SWT.ERROR_ITEM_NOT_REMOVED);
+		}
+		if (index < topIndex) {
+			topIndex -= 1;
+		}
+		OS.SendMessage (handle, OS.LB_SETTOPINDEX, topIndex, 0);
+		return;
+	}
 	char [] buffer = null;
 	if ((style & SWT.H_SCROLL) != 0) {
 		int length = (int)OS.SendMessage (handle, OS.LB_GETTEXTLEN, index, 0);
@@ -1006,6 +1167,16 @@ public void remove (int start, int end) {
 		return;
 	}
 	int topIndex = (int)OS.SendMessage (handle, OS.LB_GETTOPINDEX, 0, 0);
+	if (itemStore != null) {
+		if (!storeDeleteRange (start, end)) {
+			error (SWT.ERROR_ITEM_NOT_REMOVED);
+		}
+		if (end < topIndex) {
+			topIndex -= end - start + 1;
+		}
+		OS.SendMessage (handle, OS.LB_SETTOPINDEX, topIndex, 0);
+		return;
+	}
 	RECT rect = null;
 	long hDC = 0, oldFont = 0, newFont = 0;
 	int newWidth = 0;
@@ -1098,6 +1269,10 @@ public void remove (String string) {
 public void removeAll () {
 	checkWidget ();
 	OS.SendMessage (handle, OS.LB_RESETCONTENT, 0, 0);
+	if (itemStore != null) {
+		itemStore.removeAll ();
+		storeBits &= ~STORE_EMPTY_EXTENT_INSET;
+	}
 	if ((style & SWT.H_SCROLL) != 0) {
 		OS.SendMessage (handle, OS.LB_SETHORIZONTALEXTENT, 0, 0);
 	}
@@ -1361,6 +1536,11 @@ public void setItem (int index, String string) {
     if (string == null) {
         error(SWT.ERROR_NULL_ARGUMENT);
     }
+	if (itemStore != null && (storeBits & STORE_IN_SET_DATA) != 0 && index == setDataIndex) {
+		/* SetData answer: the row is being materialized, nothing native changes */
+		itemStore.setItem (index, string);
+		return;
+	}
 	int topIndex = getTopIndex ();
 	boolean isSelected = isSelected (index);
 	remove (index);
@@ -1369,6 +1549,44 @@ public void setItem (int index, String string) {
         select(index, false);
     }
 	setTopIndex (topIndex);
+}
+
+/**
+ * Sets the number of items contained in the receiver. Items are removed from
+ * or added at the end. Added items of a <code>VIRTUAL</code> receiver are
+ * requested with an <code>SWT.SetData</code> event when they are first drawn
+ * or read; added items of any other receiver are empty strings.
+ *
+ * @param count the number of items
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SWT#VIRTUAL
+ * @see SWT#SetData
+ *
+ * @since 3.137
+ */
+public void setItemCount (int count) {
+	checkWidget ();
+	count = Math.max (0, count);
+	int itemCount = getItemCount ();
+	if (count == itemCount) {
+		return;
+	}
+	if (itemStore != null) {
+		storeSetCount (count, itemCount);
+		return;
+	}
+	if (count < itemCount) {
+		remove (count, itemCount - 1);
+		return;
+	}
+	for (int i = itemCount; i < count; i++) {
+		add ("");
+	}
 }
 
 /**
@@ -1394,6 +1612,10 @@ public void setItems (String... items) {
         if (item == null) {
             error(SWT.ERROR_INVALID_ARGUMENT);
         }
+	}
+	if (itemStore != null) {
+		storeSetItems (items);
+		return;
 	}
 	long oldProc = OS.GetWindowLongPtr (handle, OS.GWLP_WNDPROC);
 	OS.SetWindowLongPtr (handle, OS.GWLP_WNDPROC, ListProc);
@@ -1461,6 +1683,11 @@ public void setItems (String... items) {
  * Calculates the scroll width depending on the item with the highest width
  */
 void setScrollWidth () {
+	if (itemStore != null) {
+		storeBits |= STORE_EMPTY_EXTENT_INSET;
+		storeExtent (false);
+		return;
+	}
 	int newWidth = 0;
 	RECT rect = new RECT ();
 	long newFont, oldFont = 0;
@@ -1765,6 +1992,449 @@ public void showSelection () {
 	viewportRuntime.scrollTo (0, newTop);
 }
 
+/*
+ * SWT.VIRTUAL owner-data viewport. The native list box (LBS_NODATA) owns the
+ * count, the selection, the caret and the scroll position; itemStore owns the
+ * text and the width lane. Nothing below touches more rows than the caller's
+ * request names, except where the request itself is O(n) (setItems, getItems,
+ * indexOf, an exact computeSize).
+ */
+
+int storeChars (String string, boolean bidiMark) {
+	int length = string.length ();
+	int offset = bidiMark && (state & HAS_AUTO_DIRECTION) != 0 ? 1 : 0;
+	int needed = length + offset + 1;
+	if (textBuffer == null || textBuffer.length < needed) {
+		int grown = textBuffer == null ? 64 : textBuffer.length + Math.min (textBuffer.length, 1 << 16);
+		textBuffer = new char [Math.max (needed, grown)];
+	}
+	if (offset == 1) {
+		int direction = BidiUtil.resolveTextDirection (string);
+		if (direction == SWT.NONE) {
+			direction = (style & SWT.RIGHT_TO_LEFT) != 0 ? SWT.RIGHT_TO_LEFT : SWT.LEFT_TO_RIGHT;
+		}
+		textBuffer [0] = direction == SWT.RIGHT_TO_LEFT ? RLE : LRE;
+	}
+	string.getChars (0, length, textBuffer, offset);
+	textBuffer [offset + length] = 0;
+	return offset + length;
+}
+
+boolean storeDeleteRange (int start, int end) {
+	return storeDeleteRange (start, end, false);
+}
+
+/*
+ * Deletes start..end natively and from the store. The native order matches the
+ * plain list: remove(int,int) deletes at start repeatedly, remove(int[])
+ * deletes from the highest index down. Large ranges rebuild the native count.
+ */
+boolean storeDeleteRange (int start, int end, boolean descending) {
+	int removed = end - start + 1;
+	int selection = storeSingleSelection ();
+	if (removed > removeRebuildThreshold) {
+		storeRebuild (itemStore.getItemCount () - removed, start, removed, descending);
+	} else {
+		for (int i = 0; i < removed; i++) {
+			int index = descending ? end - i : start;
+			if (OS.SendMessage (handle, OS.LB_DELETESTRING, index, 0) == OS.LB_ERR) {
+				if (descending) {
+					itemStore.remove (end - i + 1, end);
+				} else {
+					itemStore.remove (start, start + i - 1);
+				}
+				return false;
+			}
+		}
+	}
+	itemStore.remove (start, end);
+	if (selection >= 0 && (selection < start || selection > end)) {
+		storeRestoreSingle (selection > end ? selection - removed : selection);
+	}
+	if (itemStore.getItemCount () == 0) {
+		storeBits |= STORE_EMPTY_EXTENT_INSET;
+	}
+	if ((style & SWT.H_SCROLL) != 0) {
+		storeExtent (false);
+	}
+	return true;
+}
+
+int storeExactWidth () {
+	if (itemStore.getPendingWidthCount () == 0) {
+		return itemStore.getWidestWidth ();
+	}
+	long hDC = OS.GetDC (handle);
+	long newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0), oldFont = 0;
+	if (newFont != 0) {
+		oldFont = OS.SelectObject (hDC, newFont);
+	}
+	measureDC = hDC;
+	try {
+		return itemStore.getWidestWidth ();
+	} finally {
+		measureDC = 0;
+		if (newFont != 0) {
+			OS.SelectObject (hDC, oldFont);
+		}
+		OS.ReleaseDC (handle, hDC);
+	}
+}
+
+/*
+ * Horizontal extent of a plain list: max item width + INSET, or 0/INSET for an
+ * empty list depending on how it became empty. In SWT.VIRTUAL the native extent
+ * covers the measured rows (painted rows and exact queries), as Table does.
+ */
+int storeExtent (boolean exact) {
+	int count = itemStore.getItemCount ();
+	int extent;
+	if (count == 0) {
+		extent = (storeBits & STORE_EMPTY_EXTENT_INSET) != 0 ? INSET : 0;
+	} else {
+		extent = (exact ? storeExactWidth () : itemStore.getMeasuredWidestWidth ()) + INSET;
+	}
+	if ((style & SWT.H_SCROLL) != 0 && (int)OS.SendMessage (handle, OS.LB_GETHORIZONTALEXTENT, 0, 0) != extent) {
+		OS.SendMessage (handle, OS.LB_SETHORIZONTALEXTENT, extent, 0);
+	}
+	return extent;
+}
+
+void storeInsert (String string, int index) {
+	int selection = storeSingleSelection ();
+	int result = (int)OS.SendMessage (handle, OS.LB_INSERTSTRING, index, 0);
+	if (result == OS.LB_ERR || result == OS.LB_ERRSPACE) {
+		error (SWT.ERROR_ITEM_NOT_ADDED);
+	}
+	itemStore.add (string, index);
+	if (selection >= 0) {
+		storeRestoreSingle (selection >= index ? selection + 1 : selection);
+	}
+	if ((style & SWT.H_SCROLL) != 0) {
+		storeExtent (false);
+	}
+}
+
+int measureStoreText (String string) {
+	int nul = string.indexOf ('\0');
+	if (nul != -1) {
+		string = string.substring (0, nul);
+	}
+	long hDC = measureDC, oldFont = 0, newFont = 0;
+	if (hDC == 0) {
+		hDC = OS.GetDC (handle);
+		newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+		if (newFont != 0) {
+			oldFont = OS.SelectObject (hDC, newFont);
+		}
+	}
+	int length = storeChars (string, false);
+	if (measureRect == null) {
+		measureRect = new RECT ();
+	}
+	RECT rect = measureRect;
+	OS.SetRect (rect, 0, 0, 0, 0);
+	int width = 0;
+	if (length != 0) {
+		OS.DrawText (hDC, textBuffer, length, rect, OS.DT_CALCRECT | OS.DT_SINGLELINE | OS.DT_NOPREFIX);
+		width = rect.right - rect.left;
+	}
+	if (measureDC == 0) {
+		if (newFont != 0) {
+			OS.SelectObject (hDC, oldFont);
+		}
+		OS.ReleaseDC (handle, hDC);
+	}
+	return width;
+}
+
+/*
+ * Replaces the native count with newCount in one LB_SETCOUNT and restores the
+ * selection, caret and anchor that row-by-row deletes of [start, start+removed)
+ * would have left. LB_SETCOUNT clears the native selection.
+ */
+void storeRebuild (int newCount, int start, int removed, boolean descending) {
+	int caret = (int)OS.SendMessage (handle, OS.LB_GETCARETINDEX, 0, 0);
+	int anchor = (int)OS.SendMessage (handle, OS.LB_GETANCHORINDEX, 0, 0);
+	int top = (int)OS.SendMessage (handle, OS.LB_GETTOPINDEX, 0, 0);
+	int selection = storeSingleSelection ();
+	int [] selected = null;
+	if ((style & SWT.MULTI) != 0) {
+		int length = (int)OS.SendMessage (handle, OS.LB_GETSELCOUNT, 0, 0);
+		if (length > 0) {
+			selected = new int [length];
+			OS.SendMessage (handle, OS.LB_GETSELITEMS, length, selected);
+		}
+	}
+	OS.SendMessage (handle, OS.LB_SETCOUNT, newCount, 0);
+	if (newCount == 0) {
+		return;
+	}
+	if (selected != null) {
+		storeSelectShifted (selected, start, removed);
+	}
+	if (selection >= 0 && (selection < start || selection >= start + removed)) {
+		OS.SendMessage (handle, OS.LB_SETCURSEL, selection >= start + removed ? selection - removed : selection, 0);
+	}
+	if ((style & SWT.MULTI) != 0) {
+		OS.SendMessage (handle, STORE_LB_SETANCHORINDEX, storeShiftAnchor (anchor, start, removed, newCount), 0);
+		OS.SendMessage (handle, OS.LB_SETCARETINDEX, storeShiftCaret (caret, start, removed, newCount, descending), 1);
+	}
+	OS.SendMessage (handle, OS.LB_SETTOPINDEX, Math.min (top, newCount - 1), 0);
+}
+
+static int storeShiftCaret (int caret, int start, int removed, int newCount, boolean descending) {
+	if (caret >= start + removed) {
+		return caret - removed;
+	}
+	if (caret >= start) {
+		return Math.min (start, newCount - 1);
+	}
+	return Math.min (caret, newCount - 1);
+}
+
+static int storeShiftAnchor (int anchor, int start, int removed, int newCount) {
+	if (anchor >= start + removed) {
+		return anchor - removed;
+	}
+	if (anchor >= start) {
+		return Math.min (start, newCount - 1);
+	}
+	return Math.min (anchor, newCount - 1);
+}
+
+void storeSelectShifted (int [] selected, int start, int removed) {
+	int runStart = -1, runEnd = -2;
+	for (int i = 0; i <= selected.length; i++) {
+		int index = -1;
+		if (i < selected.length) {
+			int old = selected [i];
+			if (old >= start && old < start + removed) {
+				continue;
+			}
+			index = old >= start + removed ? old - removed : old;
+			if (index == runEnd + 1) {
+				runEnd = index;
+				continue;
+			}
+		}
+		if (runStart >= 0) {
+			if (runStart == runEnd) {
+				OS.SendMessage (handle, OS.LB_SETSEL, 1, runStart);
+			} else {
+				OS.SendMessage (handle, OS.LB_SELITEMRANGEEX, runStart, runEnd);
+			}
+		}
+		runStart = runEnd = index;
+	}
+}
+
+boolean storeRedrawItem (int index) {
+	RECT rect = new RECT ();
+	if (OS.SendMessage (handle, OS.LB_GETITEMRECT, index, rect) == OS.LB_ERR) {
+		return false;
+	}
+	OS.InvalidateRect (handle, rect, true);
+	return true;
+}
+
+void storeRemove (int [] descending, int topIndex) {
+	int topCount = 0, i = 0;
+	while (i < descending.length) {
+		int high = descending [i], low = high;
+		i++;
+		while (i < descending.length && (descending [i] == low || descending [i] == low - 1)) {
+			low = descending [i];
+			i++;
+		}
+		if (!storeDeleteRange (low, high, true)) {
+			error (SWT.ERROR_ITEM_NOT_REMOVED);
+		}
+		if (low < topIndex) {
+			topCount += Math.min (high, topIndex - 1) - low + 1;
+		}
+	}
+	OS.SendMessage (handle, OS.LB_SETTOPINDEX, topIndex - topCount, 0);
+}
+
+void storeRestoreSingle (int selection) {
+	if ((int)OS.SendMessage (handle, OS.LB_GETCURSEL, 0, 0) == selection) {
+		return;
+	}
+	int top = (int)OS.SendMessage (handle, OS.LB_GETTOPINDEX, 0, 0);
+	OS.SendMessage (handle, OS.LB_SETCURSEL, selection, 0);
+	OS.SendMessage (handle, OS.LB_SETTOPINDEX, top, 0);
+}
+
+void storeSelectFromKeyboard (int index) {
+	if ((style & SWT.SINGLE) != 0) {
+		OS.SendMessage (handle, OS.LB_SETCURSEL, index, 0);
+	} else if ((OS.GetWindowLong (handle, OS.GWL_STYLE) & OS.LBS_EXTENDEDSEL) != 0) {
+		OS.SendMessage (handle, OS.LB_SETSEL, 0, -1);
+		OS.SendMessage (handle, OS.LB_SETSEL, 1, index);
+		OS.SendMessage (handle, STORE_LB_SETANCHORINDEX, index, 0);
+		OS.SendMessage (handle, OS.LB_SETCARETINDEX, index, 0);
+	} else {
+		OS.SendMessage (handle, OS.LB_SETCARETINDEX, index, 0);
+		return;
+	}
+	sendSelectionEvent (SWT.Selection);
+}
+
+void storeSetCount (int count, int itemCount) {
+	if (count < itemCount) {
+		if (!storeDeleteRange (count, itemCount - 1)) {
+			error (SWT.ERROR_ITEM_NOT_REMOVED);
+		}
+		return;
+	}
+	int added = count - itemCount;
+	if (itemCount == 0 || added > removeRebuildThreshold) {
+		storeRebuild (count, count, 0, false);
+	} else {
+		for (int i = 0; i < added; i++) {
+			int result = (int)OS.SendMessage (handle, OS.LB_INSERTSTRING, itemCount + i, 0);
+			if (result == OS.LB_ERR || result == OS.LB_ERRSPACE) {
+				itemStore.setItemCount (itemCount + i);
+				error (SWT.ERROR_ITEM_NOT_ADDED);
+			}
+		}
+	}
+	itemStore.setItemCount (count);
+	if ((style & SWT.H_SCROLL) != 0) {
+		storeExtent (false);
+	}
+}
+
+/* Materializes a row: SWT.SetData is sent once per row, never re-entrantly. */
+String storeSetData (int index) {
+	if ((storeBits & STORE_IN_SET_DATA) != 0) {
+		String string = itemStore.getItem (index);
+		return string == null ? "" : string;
+	}
+	Event event = new Event ();
+	event.index = index;
+	storeBits |= STORE_IN_SET_DATA;
+	setDataIndex = index;
+	setDataCount++;
+	try {
+		sendEvent (SWT.SetData, event);
+	} finally {
+		storeBits &= ~STORE_IN_SET_DATA;
+		setDataIndex = -1;
+	}
+	if (isDisposed () || index >= itemStore.getItemCount ()) {
+		return "";
+	}
+	String string = itemStore.getItem (index);
+	if (string == null) {
+		string = "";
+		itemStore.setItem (index, string);
+	}
+	return string;
+}
+
+void storeSetItems (String [] items) {
+	boolean redraw = getDrawing () && OS.IsWindowVisible (handle);
+	if (redraw) {
+		OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
+	}
+	OS.SendMessage (handle, OS.LB_RESETCONTENT, 0, 0);
+	itemStore.setItems (items);
+	int result = (int)OS.SendMessage (handle, OS.LB_SETCOUNT, items.length, 0);
+	storeBits |= STORE_EMPTY_EXTENT_INSET;
+	if (result == OS.LB_ERR || result == OS.LB_ERRSPACE) {
+		itemStore.removeAll ();
+		OS.SendMessage (handle, OS.LB_RESETCONTENT, 0, 0);
+	}
+	if ((style & SWT.H_SCROLL) != 0) {
+		storeExtent (false);
+	}
+	if (redraw) {
+		OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
+	}
+	if (result == OS.LB_ERR || result == OS.LB_ERRSPACE) {
+		error (SWT.ERROR_ITEM_NOT_ADDED);
+	}
+}
+
+int storeSingleSelection () {
+	return (style & SWT.SINGLE) != 0 ? (int)OS.SendMessage (handle, OS.LB_GETCURSEL, 0, 0) : -1;
+}
+
+/* Item text with the plain list's NUL truncation; unmaterialized rows are requested with SWT.SetData. */
+String storeText (int index) {
+	String string = itemStore.getItem (index);
+	if (string == null) {
+		string = storeSetData (index);
+	}
+	int nul = string.indexOf ('\0');
+	return nul == -1 ? string : string.substring (0, nul);
+}
+
+boolean storeTextDirection (int textDirection) {
+	if (textDirection == AUTO_TEXT_DIRECTION) {
+		if ((state & HAS_AUTO_DIRECTION) != 0) {
+			return false;
+		}
+		state |= HAS_AUTO_DIRECTION;
+		OS.InvalidateRect (handle, null, true);
+		return true;
+	}
+	boolean wasAuto = (state & HAS_AUTO_DIRECTION) != 0;
+	state &= ~HAS_AUTO_DIRECTION;
+	if (wasAuto) {
+		OS.InvalidateRect (handle, null, true);
+	}
+	return super.updateTextDirection (textDirection);
+}
+
+/*
+ * Keyboard search of the plain list box (measured on this host): a typed
+ * character moves to the next item, after the caret and wrapping, whose first
+ * character matches ignoring case. Only materialized rows are searched; like
+ * Table answering LVN_ODFINDITEM, a key never triggers SWT.SetData.
+ */
+boolean storeTypeAhead (int key) {
+	if (key < 0x20) {
+		return false;
+	}
+	int count = itemStore.getItemCount ();
+	if (count == 0) {
+		return false;
+	}
+	int caret = (int)OS.SendMessage (handle, OS.LB_GETCARETINDEX, 0, 0);
+	if (caret < -1 || caret >= count) {
+		caret = -1;
+	}
+	char lower = Character.toLowerCase ((char)key), upper = Character.toUpperCase ((char)key);
+	for (int n = 1; n <= count; n++) {
+		int index = n <= count - 1 - caret ? caret + n : n - (count - caret);
+		String string = itemStore.getItem (index);
+		if (string == null || string.isEmpty ()) {
+			continue;
+		}
+		char first = string.charAt (0);
+		if (first != 0 && (Character.toLowerCase (first) == lower || Character.toUpperCase (first) == upper)) {
+			storeSelectFromKeyboard (index);
+			return true;
+		}
+	}
+	return false;
+}
+
+void updateStoreItemHeight (long font) {
+	long hDC = OS.GetDC (handle);
+	long oldFont = font != 0 ? OS.SelectObject (hDC, font) : 0;
+	TEXTMETRIC tm = new TEXTMETRIC ();
+	OS.GetTextMetrics (hDC, tm);
+	if (font != 0) {
+		OS.SelectObject (hDC, oldFont);
+	}
+	OS.ReleaseDC (handle, hDC);
+	OS.SendMessage (handle, OS.LB_SETITEMHEIGHT, 0, tm.tmHeight);
+}
+
 @Override
 void updateMenuLocation (Event event) {
 	Rectangle clientArea = getClientAreaInPixels ();
@@ -1780,7 +2450,11 @@ void updateMenuLocation (Event event) {
         }
 		int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE | OS.DT_NOPREFIX;
 		char [] buffer = new char [64 + 1];
-		int length = (int)OS.SendMessage (handle, OS.LB_GETTEXTLEN, focusIndex, 0);
+		int length = itemStore != null ? OS.LB_ERR : (int)OS.SendMessage (handle, OS.LB_GETTEXTLEN, focusIndex, 0);
+		if (itemStore != null && focusIndex < itemStore.getItemCount ()) {
+			int textLength = storeChars (storeText (focusIndex), true);
+			OS.DrawText (hDC, textBuffer, textLength, rect, flags);
+		}
 		if (length != OS.LB_ERR) {
 			if (length + 1 > buffer.length) {
 				buffer = new char [length + 1];
@@ -1808,6 +2482,9 @@ void updateMenuLocation (Event event) {
 
 @Override
 boolean updateTextDirection (int textDirection) {
+	if (itemStore != null) {
+		return storeTextDirection (textDirection);
+	}
 	if (textDirection == AUTO_TEXT_DIRECTION) {
         /* If auto is already in effect, there's nothing to do. */
         if ((state & HAS_AUTO_DIRECTION) != 0) {
@@ -1859,6 +2536,9 @@ boolean updateTextDirection (int textDirection) {
 @Override
 int widgetStyle () {
 	int bits = super.widgetStyle () | OS.LBS_NOTIFY | OS.LBS_NOINTEGRALHEIGHT;
+	if ((style & SWT.VIRTUAL) != 0) {
+		bits |= OS.LBS_NODATA | OS.LBS_OWNERDRAWFIXED;
+	}
     if ((style & SWT.SINGLE) != 0) {
         return bits;
     }
@@ -1947,7 +2627,29 @@ LRESULT WM_CHAR (long wParam, long lParam) {
 			}
 		}
 	}
+	if (itemStore != null && storeTypeAhead ((int)wParam)) {
+		return LRESULT.ZERO;
+	}
 	return result;
+}
+
+@Override
+LRESULT WM_GETOBJECT (long wParam, long lParam) {
+	/*
+	* An LBS_NODATA list box has no item text for the standard accessible
+	* proxy; name the rows from the item store.
+	*/
+	if (itemStore != null && accessible == null && (int)lParam == OS.OBJID_CLIENT) {
+		getAccessible ().addAccessibleListener (new AccessibleAdapter () {
+			@Override
+			public void getName (AccessibleEvent e) {
+				if (itemStore != null && e.childID >= 0 && e.childID < itemStore.getItemCount ()) {
+					e.result = storeText (e.childID);
+				}
+			}
+		});
+	}
+	return super.WM_GETOBJECT (wParam, lParam);
 }
 
 @Override
@@ -2062,6 +2764,19 @@ LRESULT WM_KEYDOWN (long wParam, long lParam) {
 }
 
 @Override
+LRESULT WM_SETFONT (long wParam, long lParam) {
+	LRESULT result = super.WM_SETFONT (wParam, lParam);
+	if (itemStore == null || result != null) {
+		return result;
+	}
+	/* An owner-draw fixed list box keeps its first item height; follow the font like a plain list box. */
+	long code = callWindowProc (handle, OS.WM_SETFONT, wParam, lParam);
+	updateStoreItemHeight (wParam);
+	itemStore.invalidateWidths ();
+	return new LRESULT (code);
+}
+
+@Override
 LRESULT WM_SETREDRAW (long wParam, long lParam) {
 	LRESULT result = super.WM_SETREDRAW (wParam, lParam);
     if (result != null) {
@@ -2125,6 +2840,74 @@ LRESULT wmCommandChild (long wParam, long lParam) {
 			break;
 	}
 	return super.wmCommandChild (wParam, lParam);
+}
+
+@Override
+LRESULT wmDrawChild (long wParam, long lParam) {
+	if (itemStore == null) {
+		return super.wmDrawChild (wParam, lParam);
+	}
+	if (drawStruct == null) {
+		drawStruct = new DRAWITEMSTRUCT ();
+		drawRect = new RECT ();
+	}
+	DRAWITEMSTRUCT struct = drawStruct;
+	OS.MoveMemory (struct, lParam, DRAWITEMSTRUCT.sizeof);
+	RECT rect = drawRect;
+	OS.SetRect (rect, struct.left, struct.top, struct.right, struct.bottom);
+	long hDC = struct.hDC;
+	int index = struct.itemID;
+	boolean focus = (struct.itemState & OS.ODS_FOCUS) != 0 && (struct.itemState & OS.ODS_NOFOCUSRECT) == 0;
+	if (index < 0 || index >= itemStore.getItemCount ()) {
+		if (focus) {
+			OS.DrawFocusRect (hDC, rect);
+		}
+		return LRESULT.ONE;
+	}
+	String string = storeText (index);
+	if (isDisposed () || index >= itemStore.getItemCount ()) {
+		return LRESULT.ONE;
+	}
+	long newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0), oldFont = 0;
+	if (newFont != 0) {
+		oldFont = OS.SelectObject (hDC, newFont);
+	}
+	if ((style & SWT.H_SCROLL) != 0) {
+		int widest = itemStore.getMeasuredWidestWidth ();
+		measureDC = hDC;
+		itemStore.measureItem (index);
+		measureDC = 0;
+		if (itemStore.getMeasuredWidestWidth () != widest) {
+			storeExtent (false);
+		}
+	}
+	boolean selected = (struct.itemState & OS.ODS_SELECTED) != 0;
+	int oldText = -1, oldBack = -1;
+	if (selected) {
+		oldBack = OS.SetBkColor (hDC, OS.GetSysColor (OS.COLOR_HIGHLIGHT));
+		oldText = OS.SetTextColor (hDC, OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT));
+	} else if ((struct.itemState & OS.ODS_DISABLED) != 0) {
+		oldText = OS.SetTextColor (hDC, OS.GetSysColor (OS.COLOR_GRAYTEXT));
+	}
+	int length = storeChars (string, true);
+	int flags = OS.ETO_OPAQUE | OS.ETO_CLIPPED;
+	if ((OS.GetWindowLong (handle, OS.GWL_EXSTYLE) & OS.WS_EX_RTLREADING) != 0) {
+		flags |= OS.ETO_RTLREADING;
+	}
+	OS.ExtTextOut (hDC, rect.left + STORE_TEXT_X, rect.top, flags, rect, textBuffer, length, null);
+	if (oldText != -1) {
+		OS.SetTextColor (hDC, oldText);
+	}
+	if (oldBack != -1) {
+		OS.SetBkColor (hDC, oldBack);
+	}
+	if (newFont != 0) {
+		OS.SelectObject (hDC, oldFont);
+	}
+	if (focus) {
+		OS.DrawFocusRect (hDC, rect);
+	}
+	return LRESULT.ONE;
 }
 
 @Override
