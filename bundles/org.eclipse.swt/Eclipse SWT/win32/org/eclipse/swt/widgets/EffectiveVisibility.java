@@ -54,6 +54,8 @@ final class EffectiveVisibility {
 	static final boolean ENABLED = !"false".equalsIgnoreCase (System.getProperty ("swt.visibility.gate")); //$NON-NLS-1$ //$NON-NLS-2$
 	/** <code>-Dswt.visibility.occlusion=false</code> disables only the occlusion tracker. */
 	static final boolean OCCLUSION = ENABLED && !"false".equalsIgnoreCase (System.getProperty ("swt.visibility.occlusion")); //$NON-NLS-1$ //$NON-NLS-2$
+	/** Leaf 3: skip SetWindowPos when the bounds do not change; <code>-Dswt.layout.skipNoop=false</code> restores stock. */
+	static final boolean SKIP_NOOP_BOUNDS = !"false".equalsIgnoreCase (System.getProperty ("swt.layout.skipNoop")); //$NON-NLS-1$ //$NON-NLS-2$
 
 	static final VisibilityGate.Port PORT = new VisibilityGate.Port () {
 		@Override
