@@ -139,6 +139,8 @@ public final class OpStream {
 	 * metrics so the GPU glyph run lands where GDI would place it.
 	 */
 	public void text (String text, int start, int length, int fontId, int x, int y, int fgArgb, int bgArgb, int flags, int cellW, int cellH, int ascent) {
+		java.util.Objects.requireNonNull (text);
+		java.util.Objects.checkFromIndexSize (start, length, text.length ());
 		int o = begin (DRAW_TEXT, 12);
 		if (o < 0) return;
 		ops [o] = addRef (text); ops [o + 1] = start; ops [o + 2] = length; ops [o + 3] = fontId;
