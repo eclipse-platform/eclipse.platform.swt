@@ -180,6 +180,25 @@ public class Test_org_eclipse_swt_widgets_List_Viewport {
 	}
 
 	@Test
+	public void bulkChangesFreezeOnlyTheContentArea () {
+		int [] setData = {0};
+		List list = virtualList (SWT.MULTI, setData);
+		shell.open ();
+		String [] items = new String [5000];
+		for (int i = 0; i < items.length; i++) items [i] = "bulk " + i;
+		list.setItems (items);
+		assertEquals (0, ((Integer) field (list, "storeBits")) & (1 << 5), "the content freeze ends with the bulk change");
+		org.eclipse.swt.internal.win32.SCROLLINFO info = new org.eclipse.swt.internal.win32.SCROLLINFO ();
+		info.cbSize = org.eclipse.swt.internal.win32.SCROLLINFO.sizeof;
+		info.fMask = org.eclipse.swt.internal.win32.OS.SIF_RANGE;
+		org.eclipse.swt.internal.win32.OS.GetScrollInfo (list.handle, org.eclipse.swt.internal.win32.OS.SB_VERT, info);
+		assertEquals (items.length - 1, info.nMax, "the scroll bar follows the bulk change");
+		list.remove (100, 4000);
+		assertEquals (0, ((Integer) field (list, "storeBits")) & (1 << 5));
+		assertEquals ("bulk 4001", list.getItem (100));
+	}
+
+	@Test
 	public void plainListKeepsTheNativeStrings () {
 		List list = new List (shell, SWT.MULTI);
 		list.setItems ("a", "b");

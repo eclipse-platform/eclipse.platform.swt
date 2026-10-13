@@ -72,6 +72,14 @@ public class List extends Scrollable {
 	static final int STORE_EMPTY_EXTENT_INSET = 1 << 0, STORE_IN_SET_DATA = 1 << 1, STORE_ADDED_UCC = 1 << 2;
 	static final int STORE_PREFETCH_PENDING = 1 << 3, STORE_SCROLLED_UP = 1 << 4;
 	/*
+	 * Content freeze: while set, WM_DRAWITEM paints nothing and requests no
+	 * SetData, but the list box and its scroll bar keep running (no
+	 * WM_SETREDRAW, which would also freeze the scroll bar). Set around bulk
+	 * count changes and while the thumb is dragged faster than a page per
+	 * message; the thaw invalidates the client area once.
+	 */
+	static final int STORE_CONTENT_FROZEN = 1 << 5, STORE_THUMB_FROZEN = 1 << 6;
+	/*
 	 * SetData negotiation: the visible rows are requested by the native paint;
 	 * after the debounce delay the overscan rows below and above, then one
 	 * prefetch page in the scroll direction, STORE_SETDATA_BATCH rows per step.
@@ -287,6 +295,7 @@ long callWindowProc (long hwnd, int msg, long wParam, long lParam) {
 	}
 	long code;
 	int scrollCode = OS.LOWORD (wParam);
+	int topBefore = itemStore != null && msg == OS.WM_VSCROLL ? (int)OS.SendMessage (handle, OS.LB_GETTOPINDEX, 0, 0) : 0;
 	if (itemStore != null && msg == OS.WM_VSCROLL && (scrollCode == OS.SB_THUMBTRACK || scrollCode == OS.SB_THUMBPOSITION)) {
 		/*
 		* WM_VSCROLL carries a 16-bit thumb position (N16); above 65535 rows
@@ -312,6 +321,7 @@ long callWindowProc (long hwnd, int msg, long wParam, long lParam) {
                     viewportRuntime.scrollTo(0, Math.max(0, top));
                 }
 				if (itemStore != null) {
+					storeThumbFreeze (scrollCode, topBefore, top);
 					storeRequestPrefetch ();
 				}
 			}
@@ -2177,8 +2187,17 @@ void storeInsert (String string, int index) {
  *   state of every row behind it, N5).
  */
 boolean storeNativeCount (int start, int delta, boolean descending) {
-	int count = itemStore.getItemCount ();
 	int magnitude = delta < 0 ? -delta : delta;
+	boolean frozen = magnitude > 1 && storeFreeze ();
+	try {
+		return storeNativeCountFrozen (start, delta, descending, magnitude);
+	} finally {
+		storeThaw (frozen);
+	}
+}
+
+boolean storeNativeCountFrozen (int start, int delta, boolean descending, int magnitude) {
+	int count = itemStore.getItemCount ();
 	if (count == 0 && delta > 0) {
 		return storeSetEmptyCount (delta);
 	}
@@ -2445,6 +2464,27 @@ void storeRemove (int [] descending, int topIndex) {
  * multiple selection moves only the caret; the anchor follows. The plain list
  * box notifies only while it has the focus.
  */
+/*
+ * Fast thumb drag: when one SB_THUMBTRACK moves the top row by more than a
+ * page, the content stays frozen until SB_THUMBPOSITION or SB_ENDSCROLL; the
+ * scroll bar keeps tracking.
+ */
+void storeThumbFreeze (int scrollCode, int topBefore, int topAfter) {
+	if (scrollCode == OS.SB_THUMBTRACK) {
+		int itemHeight = Math.max (1, (int)OS.SendMessage (handle, OS.LB_GETITEMHEIGHT, 0, 0));
+		RECT rect = new RECT ();
+		OS.GetClientRect (handle, rect);
+		int page = Math.max (1, rect.bottom / itemHeight);
+		int moved = topAfter > topBefore ? topAfter - topBefore : topBefore - topAfter;
+		if (moved > page) {
+			storeBits |= STORE_THUMB_FROZEN;
+		}
+	} else if ((storeBits & STORE_THUMB_FROZEN) != 0 && (scrollCode == OS.SB_THUMBPOSITION || scrollCode == OS.SB_ENDSCROLL)) {
+		storeBits &= ~STORE_THUMB_FROZEN;
+		OS.InvalidateRect (handle, null, true);
+	}
+}
+
 /* Debounced request for the overscan and prefetch rows (see STORE_SETDATA_BATCH). */
 void storeRequestPrefetch () {
 	if (itemStore == null || !hooks (SWT.SetData) || display == null || display.isDisposed ()) {
@@ -2463,6 +2503,10 @@ void storeRequestPrefetch () {
 void storePrefetchStep () {
 	storeBits &= ~STORE_PREFETCH_PENDING;
 	if (isDisposed () || itemStore == null || !OS.IsWindowVisible (handle) || (storeBits & STORE_IN_SET_DATA) != 0) {
+		return;
+	}
+	if ((storeBits & (STORE_CONTENT_FROZEN | STORE_THUMB_FROZEN)) != 0) {
+		storeRequestPrefetch ();
 		return;
 	}
 	int count = itemStore.getItemCount ();
@@ -2570,10 +2614,7 @@ String storeSetData (int index) {
 }
 
 void storeSetItems (String [] items) {
-	boolean redraw = getDrawing () && OS.IsWindowVisible (handle);
-	if (redraw) {
-		OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
-	}
+	boolean frozen = storeFreeze ();
 	OS.SendMessage (handle, OS.LB_RESETCONTENT, 0, 0);
 	itemStore.setItems (items);
 	int result = items.length == 0 ? 0 : storeSetEmptyCount (items.length) ? 0 : OS.LB_ERR;
@@ -2585,11 +2626,29 @@ void storeSetItems (String [] items) {
 	if ((style & SWT.H_SCROLL) != 0) {
 		storeExtent (false);
 	}
-	if (redraw) {
-		OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
-	}
+	storeThaw (frozen);
 	if (result == OS.LB_ERR || result == OS.LB_ERRSPACE) {
 		error (SWT.ERROR_ITEM_NOT_ADDED);
+	}
+}
+
+/* Freezes the content area for a bulk change; returns whether this call froze it. */
+boolean storeFreeze () {
+	if ((storeBits & STORE_CONTENT_FROZEN) != 0) {
+		return false;
+	}
+	storeBits |= STORE_CONTENT_FROZEN;
+	return true;
+}
+
+/* Ends a freeze started by this caller and repaints the content once. */
+void storeThaw (boolean frozen) {
+	if (!frozen) {
+		return;
+	}
+	storeBits &= ~STORE_CONTENT_FROZEN;
+	if (getDrawing () && OS.IsWindowVisible (handle)) {
+		OS.InvalidateRect (handle, null, true);
 	}
 }
 
@@ -2633,6 +2692,15 @@ boolean storeTextDirection (int textDirection) {
 }
 
 void storeReAddRows (boolean auto) {
+	boolean frozen = storeFreeze ();
+	try {
+		storeReAddRowsFrozen (auto);
+	} finally {
+		storeThaw (frozen);
+	}
+}
+
+void storeReAddRowsFrozen (boolean auto) {
 	int count = itemStore.getItemCount ();
 	int selection = (int)OS.SendMessage (handle, OS.LB_GETCURSEL, 0, 0);
 	storeBits &= ~STORE_ADDED_UCC;
@@ -3138,6 +3206,9 @@ LRESULT wmCommandChild (long wParam, long lParam) {
 LRESULT wmDrawChild (long wParam, long lParam) {
 	if (itemStore == null) {
 		return super.wmDrawChild (wParam, lParam);
+	}
+	if ((storeBits & (STORE_CONTENT_FROZEN | STORE_THUMB_FROZEN)) != 0) {
+		return LRESULT.ONE;
 	}
 	if (drawStruct == null) {
 		drawStruct = new DRAWITEMSTRUCT ();
