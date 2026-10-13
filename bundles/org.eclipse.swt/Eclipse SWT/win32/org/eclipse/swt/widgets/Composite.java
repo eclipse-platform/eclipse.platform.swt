@@ -17,6 +17,7 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.gpu.*;
 import org.eclipse.swt.internal.win32.*;
 
 /**
@@ -317,6 +318,10 @@ Point computeSizeInPixels (Point hintInPoints, int zoom, boolean changed) {
 void createHandle () {
 	super.createHandle ();
 	state |= CANVAS;
+	/* Retained planes: a mask bit mapped from -Dswt.gpu at creation, never a wrapper control */
+	if (RetainedPlanes.MODE != RetainedPlanes.MODE_OFF && (style & (SWT.TRANSPARENT | SWT.RIGHT_TO_LEFT)) == 0 && !(this instanceof Decorations)) {
+		state |= GPU_RETAINED;
+	}
 	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0 || findThemeControl () == parent) {
 		state |= THEME_BACKGROUND;
 	}
@@ -1622,6 +1627,14 @@ LRESULT WM_PAINT (long wParam, long lParam) {
     if (newBits != oldBits) {
         OS.SetWindowLong(handle, OS.GWL_STYLE, newBits);
     }
+
+	/* Retained planes: paint into the widget's own window from retained tiles */
+	if ((state & GPU_RETAINED) != 0 && (hooks (SWT.Paint) || filters (SWT.Paint)) && RetainedFrame.paint (this)) {
+		if (!isDisposed () && newBits != oldBits) {
+			OS.SetWindowLong (handle, OS.GWL_STYLE, oldBits);
+		}
+		return LRESULT.ZERO;
+	}
 
 	/* Paint the control and the background */
 	PAINTSTRUCT ps = new PAINTSTRUCT ();

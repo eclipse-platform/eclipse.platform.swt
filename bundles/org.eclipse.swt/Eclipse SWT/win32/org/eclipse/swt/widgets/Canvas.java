@@ -231,6 +231,9 @@ void scrollInPixels (int destX, int destY, int x, int y, int width, int height, 
 		OS.RedrawWindow (handle, sourceRect, 0, flags);
 		OS.OffsetRect (sourceRect, deltaX, deltaY);
 		OS.RedrawWindow (handle, sourceRect, 0, flags);
+	} else if ((state & GPU_RETAINED) != 0 && retainedFrame != null) {
+		/* Retained planes: translate the tile grid, rasterize only the exposed band */
+		retainedFrame.scroll (deltaX, deltaY, sourceRect);
 	} else {
 		int flags = OS.SW_INVALIDATE | OS.SW_ERASE;
 		/*

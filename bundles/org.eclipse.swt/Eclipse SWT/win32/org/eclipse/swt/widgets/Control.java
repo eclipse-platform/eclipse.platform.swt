@@ -79,6 +79,8 @@ public abstract class Control extends Widget implements Drawable {
 	Font font;
 	int drawCount, foreground, background, backgroundAlpha = 255;
 	AutoscalingMode autoscalingMode = AutoscalingMode.ENABLED;
+	/* Retained planes frame driver, present only while state has GPU_RETAINED */
+	RetainedFrame retainedFrame;
 
 	/**
 	 * @deprecated use {@link Shell#getZoom(AutoscalingMode)} instead to obtain the zoom of the shell.
@@ -2697,6 +2699,7 @@ public void redraw (int x, int y, int width, int height, boolean all) {
 }
 
 void redrawInPixels (RECT rect, boolean all) {
+	if ((state & GPU_RETAINED) != 0 && retainedFrame != null) retainedFrame.damageRedraw (rect);
     if (!OS.IsWindowVisible(handle)) {
         return;
     }
@@ -2751,6 +2754,10 @@ void releaseParent () {
 @Override
 void releaseWidget () {
 	super.releaseWidget ();
+	if (retainedFrame != null) {
+		retainedFrame.dispose ();
+		retainedFrame = null;
+	}
 	if (toolTipText != null) {
 		setToolTipText (getShell (), null);
 	}

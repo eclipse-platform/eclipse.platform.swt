@@ -121,6 +121,9 @@ public abstract class Widget {
 	/* Child item requires custom draw */
 	static final int CUSTOM_DRAW_ITEM = 1<<24;
 
+	/* Retained planes (-Dswt.gpu): the widget paints through RetainedFrame; the widget is the viewport */
+	static final int GPU_RETAINED = 1<<25;
+
 	/* Default size for widgets */
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT	= 64;

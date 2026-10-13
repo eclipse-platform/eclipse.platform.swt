@@ -17,6 +17,7 @@ import java.util.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.gpu.*;
 import org.eclipse.swt.internal.gdip.*;
 import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.internal.win32.*;
@@ -818,6 +819,7 @@ void drawInPixels (GC gc, int xInPoints, int yInPoints) {
 }
 
 void drawInPixels (GC gc, int xInPoints, int yInPoints, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground, int flags) {
+	if (gc != null && !gc.isDisposed() && gc.data.planeDraw != -1 && GCPlanes.divertUnsupported(gc, OpStream.FAIL_TEXT_LAYOUT)) return;
 	computeRuns(gc);
     if (gc == null) {
         SWT.error(SWT.ERROR_NULL_ARGUMENT);
