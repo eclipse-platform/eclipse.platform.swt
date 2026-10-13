@@ -30,6 +30,14 @@ public final class MatrixPlan {
 	/** Virtual-capable kinds that also run the 100M and 1B memory-flatness cells. */
 	public static final java.util.Set<String> FLAT_KINDS = java.util.Set.of("VTABLE", "VTREE", "LIST", "STYLEDTEXT");
 
+	/**
+	 * Flat-scale kinds whose rows also cost native memory (win32 Tree inserts one
+	 * HTREEITEM per row). Their 100M/1B cells keep the native-memory projection
+	 * gate. The other flat cells are bounded by -Xmx256m and always run, so a
+	 * baseline OOM is recorded as the result instead of being projected away.
+	 */
+	public static final java.util.Set<String> NATIVE_PER_ROW_KINDS = java.util.Set.of("VTREE");
+
 	/** Retained heap bytes per row/item for each kind (estimate, x1.5 margin applied). */
 	private static final Map<String, Integer> BYTES_PER_ROW = Map.ofEntries(Map.entry("VTABLE", 48),
 			Map.entry("VTABLE_CURSOR", 48), Map.entry("VTREE", 64), Map.entry("VTREE_CURSOR", 64),
@@ -72,7 +80,8 @@ public final class MatrixPlan {
 			for (int scale : DemoSpec.SCALES) planScale(spec, scale);
 			if (!FLAT_KINDS.contains(spec.kind())) continue;
 			for (int scale : DemoSpec.FLAT_SCALES) {
-				System.out.println("PLAN\t" + spec.concept() + "\t" + spec.widgetClass() + "\t" + scale + "\t" + FLAT_XMX_MB);
+				System.out.println("PLAN\t" + spec.concept() + "\t" + spec.widgetClass() + "\t" + scale + "\t" + FLAT_XMX_MB + "\t"
+						+ (NATIVE_PER_ROW_KINDS.contains(spec.kind()) ? "native" : "heap"));
 			}
 		}
 	}
