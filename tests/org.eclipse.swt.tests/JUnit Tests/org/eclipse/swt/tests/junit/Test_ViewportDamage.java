@@ -397,6 +397,44 @@ public class Test_ViewportDamage {
 	}
 
 	@Test
+	public void framesAreRingsWithoutGapsOrOverlapsAndNestWithTheBoxModel() {
+		Random random = new Random(0xB0C5L);
+		for (int round = 0; round < 400; round++) {
+			ViewportDamageRegion region = new ViewportDamageRegion(4096);
+			Bitmap oracle = new Bitmap();
+			int x = random.nextInt(10) - 4, y = random.nextInt(10) - 4, w = 10 + random.nextInt(50), h = 10 + random.nextInt(50);
+			int top = random.nextInt(8), right = random.nextInt(8), bottom = random.nextInt(8), left = random.nextInt(8);
+			region.addFrame(x, y, w, h, top, right, bottom, left);
+			if (w - left - right <= 0 || h - top - bottom <= 0) {
+				oracle.add(x, y, w, h);
+			} else {
+				oracle.add(x, y, w, top);
+				oracle.add(x, y + h - bottom, w, bottom);
+				oracle.add(x, y + top, left, h - top - bottom);
+				oracle.add(x + w - right, y + top, right, h - top - bottom);
+			}
+			assertEquals(oracle.count(), region.area(), "ring area, round " + round);
+			assertDisjoint(region);
+		}
+		// outer bounds, border 2, scrollbar track 10 on the right, inset 3, margin 4: nested rings, no gap, no overlap
+		ViewportDamageRegion rings = new ViewportDamageRegion();
+		rings.addFrame(0, 0, 100, 80, 2, 2, 2, 2);
+		rings.addFrame(2, 2, 96, 76, 0, 10, 0, 0);
+		rings.addFrame(2, 2, 86, 76, 3, 3, 3, 3);
+		rings.addFrame(5, 5, 80, 70, 4, 4, 4, 4);
+		long expected = 100L * 80 - 72L * 62;
+		assertEquals(expected, rings.area());
+		assertFalse(rings.covers(10, 10, 70, 55), "the content viewport stays undamaged");
+		assertTrue(rings.covers(0, 0, 100, 2));
+		assertTrue(rings.covers(88, 2, 10, 76), "scrollbar track");
+		ViewportDamageRegion overlay = new ViewportDamageRegion();
+		overlay.addFrame(0, 0, 100, 80, 2, 2, 2, 2);
+		overlay.addFrame(2, 2, 96, 76, 0, 0, 0, 0);
+		assertEquals(100L * 80 - 96L * 76, overlay.area(), "an overlay scrollbar changes no edge");
+		assertThrows(IllegalArgumentException.class, () -> overlay.addFrame(0, 0, 10, 10, -1, 0, 0, 0));
+	}
+
+	@Test
 	public void rfbFeedRejectsMalformedMessages() {
 		ViewportDamageRecorder rec = new ViewportDamageRecorder(10, 10);
 		ByteBuffer wrongType = message(0, 8);
