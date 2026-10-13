@@ -55,6 +55,26 @@ public final class Metrics {
 		return nanos / 1_000_000.0;
 	}
 
+	private static final java.lang.reflect.Method THREAD_ALLOCATED = allocatedMethod();
+
+	private static java.lang.reflect.Method allocatedMethod() {
+		try {
+			return Class.forName("com.sun.management.ThreadMXBean").getMethod("getCurrentThreadAllocatedBytes");
+		} catch (ReflectiveOperationException | RuntimeException e) {
+			return null;
+		}
+	}
+
+	/** @return bytes allocated so far by the calling thread (HotSpot TLAB accounting), or 0 when unavailable */
+	public static long allocatedBytes() {
+		if (THREAD_ALLOCATED == null) return 0;
+		try {
+			return (Long) THREAD_ALLOCATED.invoke(ManagementFactory.getThreadMXBean());
+		} catch (ReflectiveOperationException | RuntimeException e) {
+			return 0;
+		}
+	}
+
 	/** @return used heap in MB after two full collections */
 	public static double heapMb() {
 		Runtime rt = Runtime.getRuntime();

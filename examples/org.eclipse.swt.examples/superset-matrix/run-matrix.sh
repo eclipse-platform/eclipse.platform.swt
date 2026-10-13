@@ -125,19 +125,15 @@ grep '^PLAN' "$OUT/plan.txt" | while IFS=$'\t' read -r _ concept widget scale xm
   printf '%s\n' "$row" >> "$TSV"
   log "done $cell rc=$rc $(printf '%s' "$row" | cut -f18)"
 done
-# 5. memory_flatness: heap and private MB at 1M, 100M and 1B plus max/min ratios, on every row of that widget
-awk -F'\t' -v OFS='\t' -v n="$NCOL" '
-  NR==FNR { if (FNR>1 && ($3=="1000000"||$3=="100000000"||$3=="1000000000")) { k=$1 SUBSEP $2; h[k,$3]=$11; p[k,$3]=$12; r[k,$3]=$18; if ($3!="1000000") has[k]=1 } next }
-  FNR==1 { print; next }
-  { k=$1 SUBSEP $2
-    if (has[k]) {
-      s=""; hmin=1e18; hmax=0; pmin=1e18; pmax=0; ok=1
-      split("1000000 100000000 1000000000", sc, " ")
-      for (i=1;i<=3;i++) { c=sc[i]; hv=h[k,c]; pv=p[k,c]
-        lab=(c=="1000000"?"1M":(c=="100000000"?"100M":"1B"))
-        s=s (i>1?" ":"") lab "=" (hv==""?"?":hv) "/" (pv==""?"?":pv) (r[k,c]=="FAIL"?"(FAIL)":(r[k,c]=="NOT_RUN"?"(NOT_RUN)":""))
-        if (hv!="" && hv!="-" && r[k,c]!="FAIL" && r[k,c]!="NOT_RUN") { if (hv+0<hmin)hmin=hv+0; if (hv+0>hmax)hmax=hv+0; if (pv+0<pmin)pmin=pv+0; if (pv+0>pmax)pmax=pv+0 } else ok=0 }
-      ratio = (hmax>0 && hmin>0 && ok) ? sprintf("heap_ratio=%.2f private_ratio=%.2f", hmax/hmin, pmax/pmin) : "ratio=n/a (a scale failed or did not run)"
-      $(n-1) = "heap/private MB " s "; " ratio }
-    print }' "$TSV" "$TSV" > "$TSV.tmp" && mv "$TSV.tmp" "$TSV"
+# 5. cross-scale columns (size_independence, memory_flatness), computed in Java
+gate
+"${JAVA_BIN}java" -Xmx256m -cp "$CP" $MAIN --postprocess "$(wpath "$TSV")" || log "postprocess failed"
 log "matrix complete: $(tail -n +2 "$TSV" | cut -f18 | sort | uniq -c | tr '\n' ' ')"
+
+# 6. optional: the showcase tour (every category, concept and widget tab printed), TOUR=1
+if [ -n "${TOUR:-}" ]; then
+  gate
+  timeout 1800 "${JAVA_BIN}java" -Xmx768m -cp "$CP" org.eclipse.swt.examples.superset.SupersetShowcase --tour "$(wpath "$OUT")" \
+    < /dev/null > "$OUT/logs/tour.log" 2>&1
+  log "tour rc=$? $(tail -1 "$OUT/logs/tour.log")"
+fi

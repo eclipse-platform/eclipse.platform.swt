@@ -152,6 +152,22 @@ The widget is the TabItem's control itself: there is no wrapper composite and no
 
 Screenshots are `Control.print` into an Image, so a covered window on a shared desktop still captures correctly. They are downscaled to at most 480 px wide PNG and re-saved smaller while over 150 KB.
 
+## Cross-scale columns (`MatrixRunner --postprocess <tsv>`, last step of the script)
+
+* `size_independence`: the visible UI is small, so per-frame work must depend on the viewport only. The largest measured scale (1M, 10M, or 1B where it ran) is compared with the 1K run on these counters:
+  * first-paint materialized;
+  * items and SetData per paint;
+  * painted px per frame for scroll, selection and caret/hover;
+  * layout and measure calls per frame;
+  * allocated bytes per frame (`com.sun.management.ThreadMXBean`, from the `per_frame_*` notes).
+
+  The verdict is `PASS` when every ratio is at most 1.05; otherwise `FAIL`, which is a bug for the widget's owner. The column gives the max ratio and each counter's ratio.
+* `memory_flatness`: see the memory phase.
+
+## Showcase tour (`TOUR=1`)
+
+With `TOUR=1`, the script finally runs `SupersetShowcase --tour <out>`. It selects every category, concept and widget tab the way a user would, prints the shell into `tour/*.png` (800 px wide), and writes `SHOWCASE_TOUR.tsv`, recording for each tab whether it shows a WIDGET, PLACEHOLDER, LAUNCHER or ERROR.
+
 ## Scenario families
 
 * **StackLayout** (after Snippet249): 50 panes of 24 labels. The sweep is pane switching. Notes give `hidden_pane_paints` and `hidden_pane_layouts` (target 0).
@@ -185,4 +201,4 @@ For charts and streams (XYGraph, IntensityGraph, Oscilloscope), the widget keeps
 
 The single source is `MatrixRow.COLUMNS`; print it with `MatrixRunner --header`.
 
-`concept, widget_class, scale, first_paint_ms, frame_p50, frame_p95, frame_max, materialized, bound, within_bound, heap_mb, private_mb, handles, hidden_paints, hidden_layouts, screenshot_top, screenshot_end, result, repro_api_equal, repro_pixel_equal, repro_states_tested, damage_px_per_frame, damage_rects_per_frame, full_repaints, protected_hit_px, layout_calls_per_resize, computesize_calls, resize_frame_p50, resize_frame_p95, scrollbar_toggles, edge_pixel_changes, wrapper_controls, capture_mode, overpaint_px, underpaint_px, items_materialized_per_paint, memory_flatness, notes`
+`concept, widget_class, scale, first_paint_ms, frame_p50, frame_p95, frame_max, materialized, bound, within_bound, heap_mb, private_mb, handles, hidden_paints, hidden_layouts, screenshot_top, screenshot_end, result, repro_api_equal, repro_pixel_equal, repro_states_tested, damage_px_per_frame, damage_rects_per_frame, full_repaints, protected_hit_px, layout_calls_per_resize, computesize_calls, resize_frame_p50, resize_frame_p95, scrollbar_toggles, edge_pixel_changes, wrapper_controls, capture_mode, overpaint_px, underpaint_px, items_materialized_per_paint, size_independence, memory_flatness, notes`

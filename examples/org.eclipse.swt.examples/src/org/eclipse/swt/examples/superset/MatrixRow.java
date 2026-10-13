@@ -31,14 +31,14 @@ public final class MatrixRow {
 			"repro_pixel_equal", "repro_states_tested", "damage_px_per_frame", "damage_rects_per_frame", "full_repaints",
 			"protected_hit_px", "layout_calls_per_resize", "computesize_calls", "resize_frame_p50", "resize_frame_p95",
 			"scrollbar_toggles", "edge_pixel_changes", "wrapper_controls", "capture_mode", "overpaint_px", "underpaint_px", "items_materialized_per_paint",
-			"memory_flatness", "notes"};
+			"size_independence", "memory_flatness", "notes"};
 	public static final int CONCEPT = 0, WIDGET = 1, SCALE = 2, FIRST_PAINT = 3, P50 = 4, P95 = 5, MAX = 6,
 			MATERIALIZED = 7, BOUND = 8, WITHIN = 9, HEAP = 10, PRIVATE = 11, HANDLES = 12, HIDDEN_PAINTS = 13,
 			HIDDEN_LAYOUTS = 14, SHOT_TOP = 15, SHOT_END = 16, RESULT = 17, REPRO_API = 18, REPRO_PIXEL = 19,
 			REPRO_STATES = 20, DAMAGE_PX = 21, DAMAGE_RECTS = 22, FULL_REPAINTS = 23, PROTECTED_HIT = 24,
 			LAYOUT_PER_RESIZE = 25, COMPUTESIZE = 26, RESIZE_P50 = 27, RESIZE_P95 = 28, SCROLLBAR_TOGGLES = 29,
 			EDGE_PIXELS = 30, WRAPPERS = 31, CAPTURE_MODE = 32, OVERPAINT = 33, UNDERPAINT = 34, ITEMS_PER_PAINT = 35,
-			MEMORY_FLATNESS = 36, NOTES = 37;
+			SIZE_INDEPENDENCE = 36, MEMORY_FLATNESS = 37, NOTES = 38;
 
 	private final String[] cols = new String[COLUMNS.length];
 	private final StringBuilder notes = new StringBuilder();

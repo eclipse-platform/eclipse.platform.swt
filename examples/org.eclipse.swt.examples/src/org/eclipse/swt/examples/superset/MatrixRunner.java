@@ -58,9 +58,13 @@ public final class MatrixRunner {
 		this.row = new MatrixRow(spec, scale);
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws java.io.IOException {
 		if (args.length > 0 && "--header".equals(args[0])) {
 			System.out.println(MatrixRow.header());
+			return;
+		}
+		if (args.length > 1 && "--postprocess".equals(args[0])) {
+			MatrixPost.run(java.nio.file.Path.of(args[1]));
 			return;
 		}
 		SupersetCatalog catalog = new SupersetCatalog();
@@ -241,15 +245,19 @@ public final class MatrixRunner {
 		long items0 = census.count(demo.control());
 		int setData0 = counters.get(Counters.MATERIALIZE), paints0 = counters.get(Counters.PAINT);
 		int[] handles0 = Metrics.handles();
+		int layouts0 = counters.get(Counters.LAYOUT), measures0 = counters.get(Counters.MEASURE);
+		long allocated = 0;
 		metrics.reset();
 		probes.discard();
 		for (int f = 1; f <= FRAMES; f++) {
 			int target = f <= half ? (int) ((long) last * f / half) : (int) ((long) last * (FRAMES - f) / half);
+			long a0 = Metrics.allocatedBytes();
 			long t = System.nanoTime();
 			demo.scrollTo(target);
 			demo.control().update();
 			drain();
 			metrics.frame(System.nanoTime() - t);
+			allocated += Metrics.allocatedBytes() - a0;
 			probes.frame(0);
 			if (f % 75 == 25) probes.underpaint(0, demo.control());
 			if (f == half) {
@@ -260,6 +268,9 @@ public final class MatrixRunner {
 		double[] p = metrics.percentiles();
 		row.ms(MatrixRow.P50, p[0]).ms(MatrixRow.P95, p[1]).ms(MatrixRow.MAX, p[2]);
 		if (before >= 0) row.note("sweep_materialized=" + (demo.materialized() - before));
+		row.note(String.format(java.util.Locale.ROOT, "per_frame_alloc_bytes=%.0f per_frame_layouts=%.2f per_frame_measures=%.2f",
+				allocated / (double) FRAMES, (counters.get(Counters.LAYOUT) - layouts0) / (double) FRAMES,
+				(counters.get(Counters.MEASURE) - measures0) / (double) FRAMES));
 		perPaint(census, demo, items0, setData0, paints0, handles0);
 	}
 
