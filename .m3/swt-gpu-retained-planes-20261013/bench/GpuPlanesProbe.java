@@ -29,15 +29,15 @@ public class GpuPlanesProbe {
 		Display display = new Display ();
 		Shell shell = new Shell (display, SWT.NO_TRIM | SWT.ON_TOP);
 		shell.setLayout (null);
-		Canvas canvas = new Canvas (shell, SWT.NONE);
+		Canvas canvas = scene.equals ("styled") ? (Canvas) styled (shell) : new Canvas (shell, SWT.NONE);
 		canvas.setBounds (0, 0, W, H);
-		canvas.setBackground (display.getSystemColor (SWT.COLOR_WHITE));
+		if (!scene.equals ("styled")) canvas.setBackground (display.getSystemColor (SWT.COLOR_WHITE));
 		Font font = new Font (display, "Segoe UI", 10, SWT.NORMAL);
 		Font bold = new Font (display, "Consolas", 11, SWT.BOLD);
 		int [] offset = {0};
 		int [] selection = {40, 120};
 		int [] paints = {0};
-		canvas.addListener (SWT.Paint, e -> {
+		if (!scene.equals ("styled")) canvas.addListener (SWT.Paint, e -> {
 			paints [0]++;
 			paint (e.gc, scene, font, bold, offset [0], selection);
 		});
@@ -61,6 +61,11 @@ public class GpuPlanesProbe {
 				RetainedPlanes.invalidatePlanes (canvas, RetainedPlanes.SELECTION, 0, 0, W, H);
 				settle (display, canvas);
 			}
+		} else if (canvas instanceof org.eclipse.swt.custom.StyledText text) {
+			text.setSelection (text.getOffsetAtLine (3) + 7, text.getOffsetAtLine (9) + 21);
+			settle (display, canvas);
+			text.setTopIndex (2);
+			settle (display, canvas);
 		}
 		Thread.sleep (200);
 		settle (display, canvas);
@@ -73,6 +78,21 @@ public class GpuPlanesProbe {
 		font.dispose ();
 		bold.dispose ();
 		display.dispose ();
+	}
+
+	/** StyledText with styled ranges; the selection spans partial and full runs. */
+	static Control styled (Shell shell) {
+		org.eclipse.swt.custom.StyledText text = new org.eclipse.swt.custom.StyledText (shell, SWT.MULTI | SWT.V_SCROLL);
+		text.setFont (new Font (shell.getDisplay (), "Consolas", 10, SWT.NORMAL));
+		StringBuilder b = new StringBuilder ();
+		for (int i = 0; i < 60; i++) b.append ("line ").append (i).append (": retained glyph runs over Uniscribe shaping, the quick brown fox\n");
+		text.setText (b.toString ());
+		org.eclipse.swt.custom.StyleRange range = new org.eclipse.swt.custom.StyleRange (text.getOffsetAtLine (5), 40, shell.getDisplay ().getSystemColor (SWT.COLOR_DARK_RED), shell.getDisplay ().getSystemColor (SWT.COLOR_YELLOW));
+		text.setStyleRange (range);
+		org.eclipse.swt.custom.StyleRange blue = new org.eclipse.swt.custom.StyleRange (text.getOffsetAtLine (12) + 6, 20, shell.getDisplay ().getSystemColor (SWT.COLOR_BLUE), null);
+		blue.fontStyle = SWT.BOLD;
+		text.setStyleRange (blue);
+		return text;
 	}
 
 	/** Focus, foreground and child-window facts: the GPU path must not add a window or steal focus. */

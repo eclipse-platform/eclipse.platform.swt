@@ -444,6 +444,34 @@ final class RetainedFrame implements TileGrid.Listener {
 		if ((data.retainedMask & GCData.RETAIN_PLANES_USED) != 0) flags |= HAS_OVERLAY;
 	}
 
+	static final int FILL_MASK = PaintKeys.mask (PaintKeys.KIND_FILL, 0, 0, 0, -1, 0, 0, PaintKeys.BACKEND_SKIJA);
+
+	/**
+	 * Control.drawBackground(GC, ...) paints on the HDC directly; inside a retained
+	 * pass it is gated by plane and recorded as a fill (images and themes are not
+	 * replayable). Mirrors {@code Control.drawBackground(long, RECT, int, int, int)}.
+	 */
+	static boolean divertBackground (Control control, GCData data, int x, int y, int width, int height, int pixel) {
+		if ((data.plane & data.planeDraw) == 0) return true;
+		OpStream sink = (OpStream) data.planeSink;
+		if (sink == null) return false;
+		Control background = control.findBackgroundControl ();
+		if (background != null) {
+			if (background.backgroundImage != null) {
+				sink.fail |= OpStream.FAIL_IMAGE;
+				return true;
+			}
+			pixel = background.getBackgroundPixel ();
+		}
+		if (pixel == -1 && (control.state & Widget.THEME_BACKGROUND) != 0 && control.findThemeControl () != null) {
+			sink.fail |= OpStream.FAIL_UNSUPPORTED;
+			return true;
+		}
+		if (pixel == -1) pixel = control.getBackgroundPixel ();
+		sink.rect (OpStream.FILL_RECT, x, y, width, height, PaintKeys.argbFromColorref (pixel, 0xFF), FILL_MASK);
+		return true;
+	}
+
 	/* ---- composite, overlay, present ---- */
 
 	void composite (int px, int py, int pw, int ph) {

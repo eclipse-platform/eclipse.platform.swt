@@ -34,6 +34,8 @@ public final class OpStream {
 	public static final int PLANE = 13;
 	/** Shaped glyph run: fontId, x, baselineY, argb, count, count glyph ids, count advances (platform shaping). */
 	public static final int GLYPH_RUN = 14;
+	/** Nested clip: CLIP_PUSH intersects (x, y, w, h) with the current clip; CLIP_POP restores it. */
+	public static final int CLIP_PUSH = 15, CLIP_POP = 16;
 	/** Flag on DRAW_POLY: the polyline is open (not closed back to its first point). */
 	public static final int OPEN = 0x40;
 
@@ -107,6 +109,16 @@ public final class OpStream {
 		int o = begin (CLIP, 4);
 		if (o < 0) return;
 		ops [o] = x; ops [o + 1] = y; ops [o + 2] = w; ops [o + 3] = h;
+	}
+
+	public void clipPush (int x, int y, int w, int h) {
+		int o = begin (CLIP_PUSH, 4);
+		if (o < 0) return;
+		ops [o] = x; ops [o + 1] = y; ops [o + 2] = w; ops [o + 3] = h;
+	}
+
+	public void clipPop () {
+		begin (CLIP_POP, 0);
 	}
 
 	public void clipReset () {

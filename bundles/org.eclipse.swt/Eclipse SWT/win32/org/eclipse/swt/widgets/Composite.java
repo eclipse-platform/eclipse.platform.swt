@@ -392,6 +392,9 @@ void drawBackgroundInPixels(GC gc, int x, int y, int width, int height, int offs
     if (gc.isDisposed()) {
         error(SWT.ERROR_INVALID_ARGUMENT);
     }
+	/* Retained planes: skipped plane, or record the fill for GPU replay instead of drawing on the HDC */
+	GCData data = gc.getGCData ();
+	if (data.planeDraw != -1 && RetainedFrame.divertBackground (this, data, x, y, width, height, background == -1 ? gc.getBackground ().handle : -1)) return;
 	RECT rect = new RECT ();
 	OS.SetRect (rect, x, y, x + width, y + height);
 	long hDC = gc.handle;

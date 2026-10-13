@@ -71,6 +71,13 @@ final class Replay {
 				case OpStream.DRAW_TEXT:
 					text (backend, canvas, ops, a, o);
 					break;
+				case OpStream.CLIP_PUSH:
+					Canvas._nSave (canvas);
+					Canvas._nClipRect (canvas, a [o], a [o + 1], a [o] + a [o + 2], a [o + 1] + a [o + 3], INTERSECT, false);
+					break;
+				case OpStream.CLIP_POP:
+					Canvas._nRestore (canvas);
+					break;
 				case OpStream.GLYPH_RUN: {
 					long blob = backend.glyphRun (a, o);
 					if (blob != 0) Canvas._nDrawTextBlob (canvas, blob, a [o + 1], a [o + 2], backend.paint (TEXT_MASK, a [o + 3]));
