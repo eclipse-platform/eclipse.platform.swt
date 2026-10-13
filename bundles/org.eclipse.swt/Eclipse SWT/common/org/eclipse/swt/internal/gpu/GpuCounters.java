@@ -23,7 +23,9 @@ public final class GpuCounters {
 	public static final int TILE_EVICT = 16, FRAMES = 17, OVERLAY_FRAMES = 18, FALLBACKS = 19;
 	public static final int RASTER_PIXELS = 20, COMPOSITE_PIXELS = 21, GPU_TILE_BYTES = 22, CPU_TILE_BYTES = 23;
 	public static final int SCROLL_TRANSLATES = 24, GPU_RASTER_TILES = 25, OPS_RECORDED = 26, NATIVE_CREATES = 27;
-	public static final int COUNT = 28;
+	/** Nanoseconds the UI thread waited for GPU completion (readback fence) and spent submitting GPU replay. */
+	public static final int GPU_WAIT_NANOS = 28, GPU_SUBMIT_NANOS = 29;
+	public static final int COUNT = 30;
 
 	public static final String [] NAMES = {
 		"pen.hit", "pen.miss", "brush.hit", "brush.miss",
@@ -33,6 +35,7 @@ public final class GpuCounters {
 		"tile.evict", "frames", "overlayFrames", "fallbacks",
 		"rasterPixels", "compositePixels", "gpuTileBytes", "cpuTileBytes",
 		"scrollTranslates", "gpuRasterTiles", "opsRecorded", "nativeCreates",
+		"gpuWaitNanos", "gpuSubmitNanos",
 	};
 
 	static final long [] VALUES = new long [COUNT];

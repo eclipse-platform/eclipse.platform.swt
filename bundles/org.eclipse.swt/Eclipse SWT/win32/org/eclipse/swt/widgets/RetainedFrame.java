@@ -171,7 +171,13 @@ final class RetainedFrame implements TileGrid.Listener {
 		int sx0 = Math.max (src.left, 0), sy0 = Math.max (src.top, 0), sx1 = Math.min (src.right, cw), sy1 = Math.min (src.bottom, ch);
 		grid.translate (dx, dy);
 		GpuCounters.inc (GpuCounters.SCROLL_TRANSLATES);
-		int n = Rects.subtract (0, 0, cw, ch, sx0, sy0, sx1 - sx0, sy1 - sy0, parts);
+		/* unchanged on screen: client minus (source union destination); exposed: source minus destination */
+		int ux0 = sx0, uy0 = sy0, ux1 = sx1, uy1 = sy1;
+		if ((dx == 0 && sy0 + dy <= sy1 && sy0 <= sy1 + dy) || (dy == 0 && sx0 + dx <= sx1 && sx0 <= sx1 + dx)) {
+			ux0 = Math.min (sx0, sx0 + dx); uy0 = Math.min (sy0, sy0 + dy);
+			ux1 = Math.max (sx1, sx1 + dx); uy1 = Math.max (sy1, sy1 + dy);
+		}
+		int n = Rects.subtract (0, 0, cw, ch, ux0, uy0, ux1 - ux0, uy1 - uy0, parts);
 		for (int i = 0; i < n; i++) grid.damage (parts [i * 4], parts [i * 4 + 1], parts [i * 4 + 2], parts [i * 4 + 3]);
 		n = Rects.subtract (sx0, sy0, sx1 - sx0, sy1 - sy0, sx0 + dx, sy0 + dy, sx1 - sx0, sy1 - sy0, parts);
 		for (int i = 0; i < n; i++) grid.damage (parts [i * 4], parts [i * 4 + 1], parts [i * 4 + 2], parts [i * 4 + 3]);
@@ -465,10 +471,13 @@ final class RetainedFrame implements TileGrid.Listener {
 	}
 
 	boolean gpuPresent (int px, int py, int pw, int ph) {
+		long start = System.nanoTime ();
 		try {
 			return gpu.present (bufBits, bufW * 4, px, py, pw, ph);
 		} catch (Throwable failure) {
 			return false; // fail closed
+		} finally {
+			GpuCounters.add (GpuCounters.GPU_WAIT_NANOS, System.nanoTime () - start);
 		}
 	}
 }
