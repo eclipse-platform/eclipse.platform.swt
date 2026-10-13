@@ -307,6 +307,12 @@ final class MatrixProbes {
 	void captures(Shell shell, Control widget, File shots, String stem) {
 		CaptureUtil.Capture printed = CaptureUtil.printControl(widget, true);
 		CaptureUtil.Capture shown = CaptureUtil.copyDisplay(widget, true);
+		if (shown != null && printed != null && !sameFrame(widget, shown, printed)) {
+			// Another window covers the widget on this shared desktop: the screen pixels are
+			// someone else's content and must never be persisted or published.
+			row.note("display_capture=rejected (widget border differs from print: covered on screen; not persisted)");
+			shown = null;
+		}
 		debug("final", shown, printed);
 		discard();
 		if (printed == null) {
@@ -341,7 +347,7 @@ final class MatrixProbes {
 		}
 		if (shown == null) {
 			row.set(MatrixRow.CAPTURE_MODE, "print");
-			row.note("display_capture=skipped (shell could not be made active)");
+			if (!row.line().contains("display_capture=rejected")) row.note("display_capture=skipped (shell could not be made active)");
 			return;
 		}
 		row.set(MatrixRow.CAPTURE_MODE, "print+display");
