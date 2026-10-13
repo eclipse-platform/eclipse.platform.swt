@@ -3371,7 +3371,11 @@ public void test_setHorizontalIndexI(){
 }
 
 @Test
-public void test_viewportRuntimeMirrorsStyledTextScrollState() throws Exception {
+public void test_viewportOriginLivesInStyledText() throws Exception {
+	// one-widget law: StyledText is the viewport; its origin is its own scroll offsets, not a mirror object
+	for (Field field : StyledText.class.getDeclaredFields()) {
+		assertFalse(field.getType().getName().endsWith("ViewportRuntime"), "no separate viewport object: " + field);
+	}
 	text.setSize(100, 40);
 	text.setText(IntStream.range(0, 40)
 			.mapToObj(i -> "line-" + i + "-abcdefghijklmnopqrstuvwxyz")
@@ -3380,27 +3384,21 @@ public void test_viewportRuntimeMirrorsStyledTextScrollState() throws Exception 
 	text.setHorizontalPixel(23);
 	text.setTopPixel(text.getLineHeight() * 7 + 3);
 
-	Field runtimeField = StyledText.class.getDeclaredField("viewportRuntime");
-	runtimeField.setAccessible(true);
-	Object runtime = runtimeField.get(text);
-	Method originX = runtime.getClass().getMethod("originX");
-	Method originY = runtime.getClass().getMethod("originY");
-
-	assertEquals((double)text.getHorizontalPixel(), (double)originX.invoke(runtime), 0.0,
-			"StyledText horizontal public state must be mirrored into the shared viewport runtime");
-	assertEquals((double)text.getTopPixel(), (double)originY.invoke(runtime), 0.0,
-			"StyledText vertical public state must be mirrored into the shared viewport runtime");
+	Field horizontal = StyledText.class.getDeclaredField("horizontalScrollOffset");
+	horizontal.setAccessible(true);
+	assertEquals(text.getHorizontalPixel(), horizontal.getInt(text),
+			"StyledText horizontal public state is the widget's own origin");
+	assertEquals(text.getLineHeight() * 7 + 3, text.getTopPixel(),
+			"StyledText vertical public state is the widget's own origin");
 
 	text.setWordWrap(true);
 	assertEquals(0, text.getHorizontalPixel());
-	assertEquals(0.0, (double)originX.invoke(runtime), 0.0,
-			"word-wrap reset must update the shared viewport origin");
+	assertEquals(0, horizontal.getInt(text), "word-wrap reset updates the widget origin");
 
 	text.setText("");
 	assertEquals(0, text.getHorizontalPixel());
 	assertEquals(0, text.getTopPixel());
-	assertEquals(0.0, (double)originX.invoke(runtime), 0.0);
-	assertEquals(0.0, (double)originY.invoke(runtime), 0.0);
+	assertEquals(0, horizontal.getInt(text));
 }
 
 @Test
