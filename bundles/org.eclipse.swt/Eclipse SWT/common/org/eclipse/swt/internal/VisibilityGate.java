@@ -33,6 +33,9 @@ import org.eclipse.swt.widgets.*;
  * IMPORTANT: This class is <em>not</em> part of the SWT public API. It is marked
  * public only so that it can be shared within the packages provided by SWT.
  * </p>
+ *
+ * @noreference This class is not intended to be referenced by clients.
+ * @noinstantiate This class is not intended to be instantiated by clients.
  */
 //FLLDCIM: HPCPOP - bit tests only; port installed once by the platform Display
 public final class VisibilityGate {
