@@ -165,6 +165,35 @@ Pixel hashes use `Control.print (GC)` into an image (works off screen, client ar
 The on-screen display capture (`GC.copyArea` over a topmost, active shell, needed for native
 non-client areas) is not used by this leaf's proofs.
 
+## 5b. Additions after the first review (2026-10-13 afternoon)
+
+- **Stacked on SWT #122** (head c978f5d3): `VirtualGrowth` delegates to `PackedHeapGrowth`; the
+  `SWAP` construction flag spills evicted blocks to #122's `FileSwapStore` (`VirtualBlockSpill`)
+  and answers them back without asking the fetcher. Merge #122 first.
+- **Paint never materializes page-source rows**: Table `LVN_GETDISPINFO` and custom draw, Tree
+  `TVN_GETDISPINFO` answer rows without facades from the block store and the parent lanes; a
+  facade is created only for caller API (and filled at creation) or for paint listeners
+  (`MeasureItem`/`EraseItem`/`PaintItem`, which hand items to application code). Classic
+  `SWT.SetData` tables without a page source still materialize one facade per newly painted row
+  (the classic contract hands the application a `TableItem`); removing that needs the
+  flyweight/identity policy of #122 (`IDENTITY_BY_METADATA`) - not done here.
+- **Negotiated SetData** (jsonviewer pattern, improved): block-keyed dedup, generation tokens
+  (`invalidate` bumps; stale results dropped), one self-reposting drain with a 4 ms budget,
+  settle-gated column fit, jump load debounce, direction/velocity prefetch.
+- **Busy indicator**: a caller's API read that waits more than 100 ms waits through
+  `BusyIndicator.showWhile (Future)`; bulk child counts above one screen run inside the bulk
+  batch with the busy cursor.
+- **Bulk batch**: only above one screen of rows (threshold method until the visibility leaf owns
+  it), ended by invalidating only the accumulated damage.
+- **Cocoa lazy children (CI finding, macOS `Test_org_eclipse_swt_widgets_Tree` lines 367/1444)**:
+  `Tree.outlineView_child_ofItem` creates a real `TreeItem` for every row NSOutlineView asks for.
+  The fix is a data source handing NSOutlineView lightweight placeholder objects keyed by
+  (parent, index) and mapped to packed state, materializing a `TreeItem` only when SWT API asks.
+  Every Cocoa data-source and delegate callback resolves items through `display.getWidget (id)`
+  today, so the placeholder must be understood by all of them. NOT_DONE in this branch: it cannot
+  be compiled against AppKit or run on this Windows host; it is listed in TESTS_TO_RUN as a
+  macOS CI item.
+
 ## 6. What is not done (named, not claimed)
 
 - Win32 Table/Tree selection driven by the Java hybrid model (it stays native).
