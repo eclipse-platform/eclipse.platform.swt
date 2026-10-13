@@ -127,7 +127,7 @@ public class Display extends Device implements Executor {
 	Event [] eventQueue;
 	long fds;
 	int allocated_nfds;
-	boolean wake;
+	volatile boolean wake;
 	boolean windowSizeSet;
 	int [] max_priority = new int [1], timeout = new int [1];
 	Callback eventCallback;
@@ -6053,8 +6053,15 @@ public boolean sleep () {
                         timeout [0] = 50;
                     }
 
-					wake = false;
-					OS.Call (poll, fds, nfds, timeout [0]);
+					/*
+					* Do not reset the wake flag before polling. A wake() issued by
+					* another thread just before the poll would otherwise be lost and
+					* sleep() could block until the next timeout. The flag is consumed
+					* when sleep() returns.
+					*/
+					if (!wake) {
+						OS.Call (poll, fds, nfds, timeout [0]);
+					}
 				}
 			}
 			OS.g_main_context_check (context, max_priority [0], fds, nfds);
@@ -6531,8 +6538,9 @@ public void wake () {
 }
 
 void wakeThread () {
-	OS.g_main_context_wakeup (0);
+	/* Publish the flag before waking up the poll so that sleep() observes it */
 	wake = true;
+	OS.g_main_context_wakeup (0);
 }
 
 void enterMotionProc(long controller, double x, double y, long user_data) {
