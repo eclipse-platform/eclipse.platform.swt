@@ -197,4 +197,17 @@ PR #114 reached `master` only as the parentless snapshot `5094846b2f`, without i
 * **verify_viewport_screenshots.py.** The names and scenarios are the union of both sides. Java2D receipts keep their own budget checks. Tree and Table receipts get #114's widget, model and native-window checks. The OpenCV receipt records both the bounded Table scenes and the Java2D results.
 * **AllTests.** Lists both `Test_VirtualBitLanes` and `Test_VirtualNativeTableModel`.
 
-Verification: javac reports 0 errors for win32 (734 sources), GTK (542), Cocoa (684) and the tests. JUnit results are in the stacked PR.
+Verification: javac reports 0 errors for win32 (734 sources), GTK (542), Cocoa (684) and the tests. Test runs on win32:
+* Headless families plus Table, Tree, TableItem, TreeItem, TableColumn and `Test_VirtualNativeTableModel`: 582 tests found, 577 passed, 5 assumption-aborted, 0 failed.
+
+## Win32 virtual Tree native frontier (never opened as a PR)
+
+`m3/swt-win32-tree-native-frontier-20261011` (9 commits, 58% of its lines present) is replayed from `3d57f02361`:
+* A virtual Tree starts each parent with a bounded native frontier of `VIRTUAL_FRONTIER_CHUNK` (256) rows and grows it on demand.
+* `setItemCount` residency is bounded.
+* Indexed root insertion reconstructs only the required prefix.
+* Full child enumeration is preserved.
+
+Pending growth requests are an `int[]` scanned linearly instead of a `HashSet<Integer>` (no boxing).
+
+Verification on win32: 500 tests found, 495 passed, 5 assumption-aborted, 0 failed. The run includes the five Win32 frontier tests and the ten-million-root snapshot test.
