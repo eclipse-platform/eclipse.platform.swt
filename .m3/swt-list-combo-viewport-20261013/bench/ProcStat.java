@@ -46,14 +46,15 @@ final class ProcStat {
 		try {
 			Process process = new ProcessBuilder ("powershell", "-NoProfile", "-NonInteractive", "-EncodedCommand",
 				java.util.Base64.getEncoder ().encodeToString (script.getBytes (StandardCharsets.UTF_16LE)))
-				.redirectErrorStream (true).start ();
+				.redirectError (ProcessBuilder.Redirect.DISCARD).start ();
 			String line;
 			try (BufferedReader reader = new BufferedReader (new InputStreamReader (process.getInputStream (), StandardCharsets.UTF_8))) {
-				String last = null;
+				/* the first line of four integers; PowerShell may add CLIXML progress records */
+				String found = null;
 				while ((line = reader.readLine ()) != null) {
-					if (!line.isBlank ()) last = line.trim ();
+					if (found == null && line.trim ().matches ("[0-9]+ [0-9]+ [0-9]+ [0-9]+")) found = line.trim ();
 				}
-				line = last;
+				line = found;
 			}
 			process.waitFor ();
 			if (line != null) {
