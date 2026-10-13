@@ -259,8 +259,7 @@ final class VirtualListWidth {
 
 	private void ensureCapacity (int needed) {
 		if (needed <= widths.length) return;
-		int grown = Math.max (needed, widths.length + (widths.length >> 1) + 8);
-		widths = Arrays.copyOf (widths, grown);
+		widths = Arrays.copyOf (widths, Math.max (needed, VirtualListModel.growth.applyAsInt (widths.length, needed)));
 	}
 
 	private void checkIndex (int index) {

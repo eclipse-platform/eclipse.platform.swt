@@ -35,6 +35,12 @@ import java.util.function.*;
  * string. One {@code String} reference per item is the only per-item object.</p>
  */
 final class VirtualListModel {
+	/**
+	 * Capacity for a lane of length {@code length} that needs {@code needed} slots.
+	 * Platform code may install a heap-aware policy (exact length under memory
+	 * pressure, doubling otherwise); the default keeps 1.5x growth.
+	 */
+	static IntBinaryOperator growth = (length, needed) -> Math.max (needed, length + (length >> 1) + 8);
 	private final VirtualViewportPlanner planner = new VirtualViewportPlanner ();
 	private final VirtualListWidth width;
 	private final boolean lazy;
@@ -306,6 +312,6 @@ final class VirtualListModel {
 
 	private void ensureCapacity (int needed) {
 		if (needed <= items.length) return;
-		items = Arrays.copyOf (items, Math.max (needed, items.length + (items.length >> 1) + 8));
+		items = Arrays.copyOf (items, Math.max (needed, growth.applyAsInt (items.length, needed)));
 	}
 }

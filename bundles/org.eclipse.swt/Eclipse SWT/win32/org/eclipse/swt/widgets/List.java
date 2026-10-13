@@ -69,17 +69,29 @@ public class List extends Scrollable {
 	char [] textBuffer;
 	DRAWITEMSTRUCT drawStruct;
 	RECT drawRect, measureRect;
-	static final int STORE_EMPTY_EXTENT_INSET = 1 << 0, STORE_IN_SET_DATA = 1 << 1;
+	static final int STORE_EMPTY_EXTENT_INSET = 1 << 0, STORE_IN_SET_DATA = 1 << 1, STORE_ADDED_UCC = 1 << 2;
+	/* text-direction changes re-add rows natively up to this count, like the plain list */
+	static final int STORE_READD_LIMIT = 4096;
 	/* x offset of the item text inside the item rectangle, as the plain list box draws it */
 	static final int STORE_TEXT_X = 2;
 	/* the documented LB_SETANCHORINDEX; OS.LB_SETANCHORINDEX is 0xf19c */
 	static final int STORE_LB_SETANCHORINDEX = 0x19c;
-	/* Range removals larger than this rebuild the native count instead of deleting row by row. */
+	/*
+	 * MULTI count changes use row messages (exact native semantics) while
+	 * rows * count stays under STORE_ROW_MESSAGE_WORK, each row message moving the
+	 * selection state of every row behind it; larger changes rebuild with one
+	 * LB_SETCOUNT. removeRebuildThreshold is the smallest rebuilt change (0 forces
+	 * the rebuild, for the differential tests).
+	 */
 	static int removeRebuildThreshold = 64;
+	static final int STORE_ROW_MESSAGE_WORK = 1 << 26;
+	/* rows up to which the horizontal extent of a VIRTUAL list is kept exact on every change */
+	static final int STORE_EXACT_EXTENT_LIMIT = 4096;
 	static {
 		WNDCLASS lpWndClass = new WNDCLASS ();
 		OS.GetClassInfo (0, ListClass, lpWndClass);
 		ListProc = lpWndClass.lpfnWndProc;
+		VirtualListModel.growth = List::growCapacity;
 	}
 
 /**
@@ -261,7 +273,24 @@ long callWindowProc (long hwnd, int msg, long wParam, long lParam) {
 			break;
 		}
 	}
-	long code = OS.CallWindowProc (ListProc, hwnd, msg, wParam, lParam);
+	long code;
+	int scrollCode = OS.LOWORD (wParam);
+	if (itemStore != null && msg == OS.WM_VSCROLL && (scrollCode == OS.SB_THUMBTRACK || scrollCode == OS.SB_THUMBPOSITION)) {
+		/*
+		* WM_VSCROLL carries a 16-bit thumb position (N16); above 65535 rows
+		* scroll to the 32-bit track position of the scroll bar instead.
+		*/
+		SCROLLINFO info = new SCROLLINFO ();
+		info.cbSize = SCROLLINFO.sizeof;
+		info.fMask = OS.SIF_TRACKPOS;
+		if (OS.GetScrollInfo (handle, OS.SB_VERT, info) && info.nTrackPos > 0xFFFF && (info.nTrackPos & 0xFFFF) == OS.HIWORD (wParam)) {
+			code = OS.SendMessage (handle, OS.LB_SETTOPINDEX, info.nTrackPos, 0) == OS.LB_ERR ? 1 : 0;
+		} else {
+			code = OS.CallWindowProc (ListProc, hwnd, msg, wParam, lParam);
+		}
+	} else {
+		code = OS.CallWindowProc (ListProc, hwnd, msg, wParam, lParam);
+	}
 	switch (msg) {
 		case OS.WM_HSCROLL:
 		case OS.WM_VSCROLL: {
@@ -908,6 +937,9 @@ public int indexOf (String string, int start) {
 		int count = itemStore.getItemCount ();
 		if (!(0 <= start && start < count)) {
 			return -1;
+		}
+		if ((state & HAS_AUTO_DIRECTION) != 0) {
+			storeBits |= STORE_ADDED_UCC;
 		}
 		for (int i = start; i < count; i++) {
 			if (string.equals (storeText (i))) {
@@ -2066,8 +2098,26 @@ int storeExactWidth () {
  * empty list depending on how it became empty. In SWT.VIRTUAL the native extent
  * covers the measured rows (painted rows and exact queries), as Table does.
  */
+/*
+ * The one grow method of the item and width lanes until the shared heap-aware
+ * helper lands (SWT #122, PackedHeapGrowth): the heap is sampled once per
+ * capacity miss; exact length when the headroom is below four times the
+ * doubled growth (8 bytes per slot), doubling otherwise.
+ */
+static int growCapacity (int length, int needed) {
+	Runtime runtime = Runtime.getRuntime ();
+	long headroom = runtime.maxMemory () - (runtime.totalMemory () - runtime.freeMemory ());
+	int doubled = length > (Integer.MAX_VALUE - 8) / 2 ? Integer.MAX_VALUE - 8 : Math.max (length * 2, 16);
+	if (doubled < needed) {
+		return needed;
+	}
+	long extra = (long)(doubled - length) * 8;
+	return headroom < extra * 4 ? needed : doubled;
+}
+
 int storeExtent (boolean exact) {
 	int count = itemStore.getItemCount ();
+	exact |= count <= STORE_EXACT_EXTENT_LIMIT;
 	int extent;
 	if (count == 0) {
 		extent = (storeBits & STORE_EMPTY_EXTENT_INSET) != 0 ? INSET : 0;
@@ -2084,6 +2134,9 @@ void storeInsert (String string, int index) {
 	if (!storeNativeCount (index, 1, false)) {
 		error (SWT.ERROR_ITEM_NOT_ADDED);
 	}
+	if ((state & HAS_AUTO_DIRECTION) != 0) {
+		storeBits |= STORE_ADDED_UCC;
+	}
 	itemStore.add (string, index);
 	if ((style & SWT.H_SCROLL) != 0) {
 		storeExtent (false);
@@ -2092,19 +2145,50 @@ void storeInsert (String string, int index) {
 
 /*
  * Changes the native count by delta rows at start (delta < 0 removes
- * [start, start - delta)). A single-selection LBS_NODATA list box loses its
- * count when LB_INSERTSTRING follows LB_SETCOUNT (measured on this host, see
- * NATIVE_LIMITS.tsv), so SINGLE always goes through LB_SETCOUNT. MULTI keeps a
- * selection byte per row: small changes use the row messages in the plain
- * list's order (remove(int,int) deletes at start repeatedly, remove(int[])
- * from the highest index down), large ones one LB_SETCOUNT and a restore.
+ * [start, start - delta)) so that selection, caret, anchor and top index end
+ * where the plain list box's row messages leave them (calibrated on this host,
+ * NATIVE_LIMITS N13-N15: the caret keeps its row number unless its own row is
+ * deleted, the anchor is dropped when a row at or above it is deleted, the
+ * selection follows its items).
+ * - SINGLE removes with row messages (no per-row native storage, exact).
+ * - SINGLE inserts with row messages, unless the count came from LB_SETCOUNT:
+ *   then the list box loses its count (N7) and one LB_SETCOUNT plus a
+ *   selection restore is used; the caret then follows the selection (D1).
+ * - MULTI uses row messages up to removeRebuildThreshold rows, above that one
+ *   LB_SETCOUNT and a restore (each row message moves the per-row selection
+ *   state of every row behind it, N5).
  */
 boolean storeNativeCount (int start, int delta, boolean descending) {
 	int count = itemStore.getItemCount ();
 	int magnitude = delta < 0 ? -delta : delta;
-	if ((style & SWT.SINGLE) != 0 || count == 0 || magnitude > removeRebuildThreshold) {
-		return storeRebuild (count + delta, start, delta);
+	if (count == 0 && delta > 0) {
+		return storeSetEmptyCount (delta);
 	}
+	if ((style & SWT.SINGLE) != 0 && delta > 0) {
+		return storeSingleInsert (start, delta, count);
+	}
+	if ((style & SWT.SINGLE) != 0 || magnitude <= removeRebuildThreshold
+		|| (removeRebuildThreshold != 0 && magnitude <= STORE_ROW_MESSAGE_WORK / count)) {
+		return storeRowMessages (start, delta, descending, count);
+	}
+	return storeRebuild (count + delta, start, delta, descending);
+}
+
+/*
+ * Sets the count of an empty list box. A single-selection LBS_NODATA list box
+ * whose count came from LB_SETCOUNT alone refuses later LB_INSERTSTRING (N7);
+ * one LB_INSERTSTRING first keeps row inserts working after LB_SETCOUNT.
+ */
+boolean storeSetEmptyCount (int count) {
+	if ((style & SWT.SINGLE) != 0) {
+		OS.SendMessage (handle, OS.LB_INSERTSTRING, 0, 0);
+	}
+	int result = (int)OS.SendMessage (handle, OS.LB_SETCOUNT, count, 0);
+	return result != OS.LB_ERR && result != OS.LB_ERRSPACE;
+}
+
+boolean storeRowMessages (int start, int delta, boolean descending, int count) {
+	int magnitude = delta < 0 ? -delta : delta;
 	for (int i = 0; i < magnitude; i++) {
 		int result;
 		if (delta > 0) {
@@ -2117,6 +2201,39 @@ boolean storeNativeCount (int start, int delta, boolean descending) {
 			return false;
 		}
 	}
+	return true;
+}
+
+boolean storeSingleInsert (int start, int delta, int count) {
+	int selection = (int)OS.SendMessage (handle, OS.LB_GETCURSEL, 0, 0);
+	int caret = (int)OS.SendMessage (handle, OS.LB_GETCARETINDEX, 0, 0);
+	int anchor = (int)OS.SendMessage (handle, OS.LB_GETANCHORINDEX, 0, 0);
+	int top = (int)OS.SendMessage (handle, OS.LB_GETTOPINDEX, 0, 0);
+	if (delta <= removeRebuildThreshold) {
+		boolean inserted = true;
+		for (int i = 0; i < delta && inserted; i++) {
+			int result = (int)OS.SendMessage (handle, OS.LB_INSERTSTRING, start + i, 0);
+			inserted = result != OS.LB_ERR && result != OS.LB_ERRSPACE;
+		}
+		if (inserted && (int)OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0) == count + delta) {
+			return true;
+		}
+	}
+	int result = (int)OS.SendMessage (handle, OS.LB_SETCOUNT, count + delta, 0);
+	if (result == OS.LB_ERR || result == OS.LB_ERRSPACE) {
+		return false;
+	}
+	if (selection >= 0) {
+		OS.SendMessage (handle, OS.LB_SETCURSEL, selection >= start ? selection + delta : selection, 0);
+	} else if (caret > 0) {
+		/* a single-selection list box has no caret message: select the caret row, then clear */
+		OS.SendMessage (handle, OS.LB_SETCURSEL, caret, 0);
+		OS.SendMessage (handle, OS.LB_SETCURSEL, -1, 0);
+	}
+	if (anchor >= 0) {
+		OS.SendMessage (handle, STORE_LB_SETANCHORINDEX, anchor, 0);
+	}
+	OS.SendMessage (handle, OS.LB_SETTOPINDEX, top, 0);
 	return true;
 }
 
@@ -2154,22 +2271,25 @@ int measureStoreText (String string) {
 }
 
 /*
- * Replaces the native count with one LB_SETCOUNT, which clears the native
- * selection, and restores the selection, caret, anchor and top index that the
- * row messages would have left.
+ * MULTI: replaces the native count with one LB_SETCOUNT, which clears the
+ * selection, caret, anchor and top index, and restores them as the row
+ * messages would have left them.
  */
-boolean storeRebuild (int newCount, int start, int delta) {
+boolean storeRebuild (int newCount, int start, int delta, boolean descending) {
+	int count = itemStore.getItemCount ();
 	int caret = (int)OS.SendMessage (handle, OS.LB_GETCARETINDEX, 0, 0);
 	int anchor = (int)OS.SendMessage (handle, OS.LB_GETANCHORINDEX, 0, 0);
 	int top = (int)OS.SendMessage (handle, OS.LB_GETTOPINDEX, 0, 0);
-	int selection = storeSingleSelection ();
 	int [] selected = null;
-	if ((style & SWT.MULTI) != 0) {
-		int length = (int)OS.SendMessage (handle, OS.LB_GETSELCOUNT, 0, 0);
-		if (length > 0) {
-			selected = new int [length];
-			OS.SendMessage (handle, OS.LB_GETSELITEMS, length, selected);
-		}
+	int length = (int)OS.SendMessage (handle, OS.LB_GETSELCOUNT, 0, 0);
+	if (length > 0) {
+		selected = new int [length];
+		OS.SendMessage (handle, OS.LB_GETSELITEMS, length, selected);
+	}
+	int nativeAnchor = storeNativeAnchor (anchor, start, delta);
+	if (nativeAnchor < 0 && anchor >= 0 && count > 0) {
+		/* LB_SETCOUNT keeps the anchor and LB_SETANCHORINDEX refuses -1; deleting row 0 drops it (N14) */
+		OS.SendMessage (handle, OS.LB_DELETESTRING, 0, 0);
 	}
 	int result = (int)OS.SendMessage (handle, OS.LB_SETCOUNT, newCount, 0);
 	if (result == OS.LB_ERR || result == OS.LB_ERRSPACE) {
@@ -2181,16 +2301,16 @@ boolean storeRebuild (int newCount, int start, int delta) {
 	if (selected != null) {
 		storeSelectShifted (selected, start, delta);
 	}
-	if (selection >= 0 && storeShift (selection, start, delta) >= 0) {
-		OS.SendMessage (handle, OS.LB_SETCURSEL, storeShift (selection, start, delta), 0);
-	}
+	anchor = nativeAnchor;
 	if (anchor >= 0) {
-		OS.SendMessage (handle, STORE_LB_SETANCHORINDEX, storeShiftFocus (anchor, start, delta, newCount), 0);
+		OS.SendMessage (handle, STORE_LB_SETANCHORINDEX, anchor, 0);
 	}
-	if (caret >= 0 && (int)OS.SendMessage (handle, OS.LB_GETCARETINDEX, 0, 0) != storeShiftFocus (caret, start, delta, newCount)) {
-		OS.SendMessage (handle, OS.LB_SETCARETINDEX, storeShiftFocus (caret, start, delta, newCount), 1);
+	caret = storeNativeCaret (caret, count, start, delta, descending);
+	if (caret >= 0 && (int)OS.SendMessage (handle, OS.LB_GETCARETINDEX, 0, 0) != caret) {
+		OS.SendMessage (handle, OS.LB_SETCARETINDEX, caret, 1);
 	}
-	OS.SendMessage (handle, OS.LB_SETTOPINDEX, Math.min (top, newCount - 1), 0);
+	/* a row delete resets the plain list box's top row to 0 (N17); inserts keep it */
+	OS.SendMessage (handle, OS.LB_SETTOPINDEX, delta < 0 ? 0 : Math.min (top, newCount - 1), 0);
 	return true;
 }
 
@@ -2205,13 +2325,28 @@ static int storeShift (int index, int start, int delta) {
 	return index < start - delta ? -1 : index + delta;
 }
 
-/* Caret and anchor rows stay on a row: a removed one lands on the first row after the gap. */
-static int storeShiftFocus (int index, int start, int delta, int newCount) {
-	int shifted = storeShift (index, start, delta);
-	if (shifted == -1) {
-		shifted = start;
+/* Caret of the plain list box after the row messages (N13): inserts keep it; a deleted caret row moves it up one; it stays on a row. */
+static int storeNativeCaret (int caret, int count, int start, int delta, boolean descending) {
+	if (caret < 0 || delta >= 0) {
+		return caret;
 	}
-	return Math.max (0, Math.min (shifted, newCount - 1));
+	int removed = -delta;
+	for (int i = 0; i < removed; i++) {
+		int row = descending ? start + removed - 1 - i : start;
+		if (caret == row && caret > 0) {
+			caret--;
+		}
+		count--;
+		if (caret > count - 1) {
+			caret = count - 1;
+		}
+	}
+	return caret;
+}
+
+/* Anchor of the plain list box after the row messages (N14): inserts keep it; deleting a row at or above it drops it. */
+static int storeNativeAnchor (int anchor, int start, int delta) {
+	return delta < 0 && anchor >= start ? -1 : anchor;
 }
 
 void storeSelectShifted (int [] selected, int start, int delta) {
@@ -2229,13 +2364,32 @@ void storeSelectShifted (int [] selected, int start, int delta) {
 			}
 		}
 		if (runStart >= 0) {
-			if (runStart == runEnd) {
-				OS.SendMessage (handle, OS.LB_SETSEL, 1, runStart);
-			} else {
-				OS.SendMessage (handle, OS.LB_SELITEMRANGEEX, runStart, runEnd);
-			}
+			storeSelectRun (runStart, runEnd);
 		}
 		runStart = runEnd = index;
+	}
+}
+
+/*
+ * Selects first..last without moving the caret or the anchor (N15):
+ * LB_SELITEMRANGEEX selects first < last and deselects first == last, so a
+ * single row is selected together with a neighbour that is then deselected
+ * (runs are maximal, so the neighbour is not selected).
+ */
+void storeSelectRun (int first, int last) {
+	if (first != last) {
+		OS.SendMessage (handle, OS.LB_SELITEMRANGEEX, first, last);
+		return;
+	}
+	int count = (int)OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
+	if (first + 1 < count) {
+		OS.SendMessage (handle, OS.LB_SELITEMRANGEEX, first, first + 1);
+		OS.SendMessage (handle, OS.LB_SELITEMRANGEEX, first + 1, first + 1);
+	} else if (first > 0) {
+		OS.SendMessage (handle, OS.LB_SELITEMRANGEEX, first - 1, first);
+		OS.SendMessage (handle, OS.LB_SELITEMRANGEEX, first - 1, first - 1);
+	} else {
+		OS.SendMessage (handle, OS.LB_SETSEL, 1, first);
 	}
 }
 
@@ -2285,7 +2439,9 @@ void storeSelectFromKeyboard (int index) {
 		OS.SendMessage (handle, OS.LB_SETCARETINDEX, index, 0);
 		changed = false;
 	}
-	OS.SendMessage (handle, STORE_LB_SETANCHORINDEX, index, 0);
+	if (changed) {
+		OS.SendMessage (handle, STORE_LB_SETANCHORINDEX, index, 0);
+	}
 	if (changed && OS.GetFocus () == handle) {
 		sendSelectionEvent (SWT.Selection);
 	}
@@ -2342,7 +2498,7 @@ void storeSetItems (String [] items) {
 	}
 	OS.SendMessage (handle, OS.LB_RESETCONTENT, 0, 0);
 	itemStore.setItems (items);
-	int result = (int)OS.SendMessage (handle, OS.LB_SETCOUNT, items.length, 0);
+	int result = items.length == 0 ? 0 : storeSetEmptyCount (items.length) ? 0 : OS.LB_ERR;
 	storeBits |= STORE_EMPTY_EXTENT_INSET;
 	if (result == OS.LB_ERR || result == OS.LB_ERRSPACE) {
 		itemStore.removeAll ();
@@ -2373,21 +2529,65 @@ String storeText (int index) {
 	return nul == -1 ? string : string.substring (0, nul);
 }
 
+/*
+ * Text direction of the plain list: switching to AUTO, or away from AUTO once
+ * a row was inserted under it, deletes and re-inserts every non-empty row from
+ * the last one up, which clears their selection and moves caret, anchor and
+ * top index; the row messages do the same here (exact up to
+ * STORE_READD_LIMIT rows; above it the selection of non-empty rows is cleared
+ * and the caret and top index go to the first row).
+ */
 boolean storeTextDirection (int textDirection) {
 	if (textDirection == AUTO_TEXT_DIRECTION) {
 		if ((state & HAS_AUTO_DIRECTION) != 0) {
 			return false;
 		}
 		state |= HAS_AUTO_DIRECTION;
-		OS.InvalidateRect (handle, null, true);
+		storeReAddRows (true);
 		return true;
 	}
-	boolean wasAuto = (state & HAS_AUTO_DIRECTION) != 0;
 	state &= ~HAS_AUTO_DIRECTION;
-	if (wasAuto) {
-		OS.InvalidateRect (handle, null, true);
+	if ((storeBits & STORE_ADDED_UCC) == 0) {
+		return super.updateTextDirection (textDirection);
 	}
+	storeReAddRows (false);
 	return super.updateTextDirection (textDirection);
+}
+
+void storeReAddRows (boolean auto) {
+	int count = itemStore.getItemCount ();
+	int selection = (int)OS.SendMessage (handle, OS.LB_GETCURSEL, 0, 0);
+	storeBits &= ~STORE_ADDED_UCC;
+	if (count <= STORE_READD_LIMIT) {
+		for (int i = count - 1; i >= 0; i--) {
+			String string = itemStore.getItem (i);
+			if (string == null || string.isEmpty ()) {
+				continue;
+			}
+			OS.SendMessage (handle, OS.LB_DELETESTRING, i, 0);
+			OS.SendMessage (handle, OS.LB_INSERTSTRING, i, 0);
+			if (auto) {
+				storeBits |= STORE_ADDED_UCC;
+			}
+		}
+	} else {
+		for (int i = 0; i < count; i++) {
+			String string = itemStore.getItem (i);
+			if (string != null && !string.isEmpty ()) {
+				if ((style & SWT.MULTI) != 0) {
+					OS.SendMessage (handle, OS.LB_SETSEL, 0, i);
+				}
+				if (auto) {
+					storeBits |= STORE_ADDED_UCC;
+				}
+			}
+		}
+		OS.SendMessage (handle, OS.LB_SETTOPINDEX, 0, 0);
+	}
+	if (selection != OS.LB_ERR) {
+		OS.SendMessage (handle, OS.LB_SETCURSEL, selection, 0);
+	}
+	OS.InvalidateRect (handle, null, true);
 }
 
 /*
@@ -2771,8 +2971,12 @@ LRESULT WM_SETFONT (long wParam, long lParam) {
 		return result;
 	}
 	/* An owner-draw fixed list box keeps its first item height; follow the font like a plain list box. */
+	int top = (int)OS.SendMessage (handle, OS.LB_GETTOPINDEX, 0, 0);
 	long code = callWindowProc (handle, OS.WM_SETFONT, wParam, lParam);
 	updateStoreItemHeight (wParam);
+	if ((int)OS.SendMessage (handle, OS.LB_GETTOPINDEX, 0, 0) != top) {
+		OS.SendMessage (handle, OS.LB_SETTOPINDEX, top, 0);
+	}
 	itemStore.invalidateWidths ();
 	return new LRESULT (code);
 }

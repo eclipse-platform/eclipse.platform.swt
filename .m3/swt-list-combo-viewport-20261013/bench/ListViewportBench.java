@@ -27,7 +27,7 @@ import org.eclipse.swt.widgets.List;
  * Columns: label, items, feed, setItems_ms (or setItemCount_ms), first_paint_ms,
  * scroll_end_ms, drag_p50_ms, drag_p95_ms, drag_max_ms, heap_delta_mb,
  * private_delta_mb, handles_delta, gdi_delta, user_delta, set_data_calls,
- * count_check.
+ * count_check, selectAll_ms, getSelectionCount_ms, getSelectionIndices_ms.
  */
 public class ListViewportBench {
 	public static void main (String [] args) throws Exception {
@@ -74,6 +74,14 @@ public class ListViewportBench {
 		list.update ();
 		drain (display);
 		double [] frames = drag (list, 60);
+		long s0 = System.nanoTime ();
+		list.selectAll ();
+		long s1 = System.nanoTime ();
+		int selected = list.getSelectionCount ();
+		long s2 = System.nanoTime ();
+		int indices = list.getSelectionIndices ().length;
+		long s3 = System.nanoTime ();
+		list.deselectAll ();
 		ProcStat after = ProcStat.sample ();
 		String check = list.getItemCount () == n && ("item " + (n - 1)).equals (list.getItem (n - 1)) ? "ok" : "MISMATCH";
 		Arrays.sort (frames);
@@ -82,7 +90,8 @@ public class ListViewportBench {
 			f (frames [frames.length / 2]), f (frames [(int) Math.ceil (frames.length * 0.95) - 1]), f (frames [frames.length - 1]),
 			mb (after.heapUsed - before.heapUsed), after.privateBytes < 0 || before.privateBytes < 0 ? "NA" : mb (after.privateBytes - before.privateBytes),
 			String.valueOf (after.handles - before.handles), String.valueOf (after.gdi - before.gdi), String.valueOf (after.user - before.user),
-			String.valueOf (setDataCalls [0]), check);
+			String.valueOf (setDataCalls [0]), check + (selected == n && indices == n ? "" : "/SELECTION_MISMATCH"),
+			ms (s1 - s0), ms (s2 - s1), ms (s3 - s2));
 		try (PrintWriter out = new PrintWriter (new OutputStreamWriter (new FileOutputStream (args [3], true), StandardCharsets.UTF_8))) {
 			out.println (row);
 		}

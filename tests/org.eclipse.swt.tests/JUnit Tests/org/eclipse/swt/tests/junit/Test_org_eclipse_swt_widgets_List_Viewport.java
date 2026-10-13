@@ -179,6 +179,57 @@ public class Test_org_eclipse_swt_widgets_List_Viewport {
 	}
 
 	@Test
+	public void scrollRoundTripReproducesStateAndPixels () {
+		for (int style : new int [] {SWT.SINGLE, SWT.MULTI}) {
+			int [] setData = {0};
+			List list = virtualList (style, setData);
+			list.setItemCount (COUNT);
+			shell.open ();
+			list.setTopIndex (1000);
+			if ((style & SWT.MULTI) != 0) {
+				list.setSelection (new int [] {1002, 1005, 1006});
+			} else {
+				list.setSelection (1003);
+			}
+			list.setTopIndex (1000);
+			paint (list);
+			String before = state (list) + " pixels=" + pixelHash (list);
+			int callsBefore = setData [0];
+			list.setTopIndex (COUNT - 1);
+			paint (list);
+			list.setTopIndex (COUNT / 2);
+			paint (list);
+			int callsAway = setData [0];
+			list.setTopIndex (1000);
+			paint (list);
+			String after = state (list) + " pixels=" + pixelHash (list);
+			assertEquals (before, after, "scroll away and back must reproduce API state and pixels");
+			assertTrue (callsAway - callsBefore <= 2 * MATERIALIZED_BOUND, "SetData for two away pages: " + (callsAway - callsBefore));
+			assertEquals (callsAway, setData [0], "returning to materialized rows sends no SetData");
+			list.dispose ();
+		}
+	}
+
+	private static String state (List list) {
+		return "top=" + list.getTopIndex () + " focus=" + list.getFocusIndex () + " selection=" + Arrays.toString (list.getSelectionIndices ())
+			+ " count=" + list.getItemCount () + " item=" + list.getItem (list.getTopIndex ());
+	}
+
+	private String pixelHash (List list) {
+		org.eclipse.swt.graphics.Point size = list.getSize ();
+		org.eclipse.swt.graphics.Image image = new org.eclipse.swt.graphics.Image (display, size.x, size.y);
+		org.eclipse.swt.graphics.GC gc = new org.eclipse.swt.graphics.GC (image);
+		try {
+			list.print (gc);
+		} finally {
+			gc.dispose ();
+		}
+		org.eclipse.swt.graphics.ImageData data = image.getImageData ();
+		image.dispose ();
+		return Integer.toHexString (Arrays.hashCode (data.data));
+	}
+
+	@Test
 	public void accessibleNamesComeFromTheItemStore () throws Exception {
 		int [] setData = {0};
 		List list = virtualList (SWT.SINGLE, setData);

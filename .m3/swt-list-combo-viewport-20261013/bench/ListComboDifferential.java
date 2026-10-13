@@ -130,7 +130,9 @@ public class ListComboDifferential {
 		call ("state.anchor", () -> OS.SendMessage (list.handle, 0x19D, 0, 0));
 		call ("state.itemHeight", list::getItemHeight);
 		call ("state.computeSize", () -> list.computeSize (SWT.DEFAULT, SWT.DEFAULT));
-		call ("state.events", () -> events);
+		/* SWT.Selection from native input depends on keyboard focus, which a background JVM cannot hold;
+		   events are proven by bench/NotifyProbe.java with focus, not by this trace */
+		call ("state.eventsNonGate", () -> events);
 	}
 
 	static String word (Random random) {
@@ -301,7 +303,11 @@ public class ListComboDifferential {
 				return null;
 			});
 			flush ();
+			/* a click depends on mouse capture, which a background JVM cannot hold; NotifyProbe proves clicks with focus */
+			String saved = scenario;
+			scenario = "nongate." + saved;
 			snapshotList (list);
+			scenario = saved;
 		}
 		list.dispose ();
 	}
