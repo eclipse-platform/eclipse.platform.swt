@@ -44,6 +44,7 @@ import org.junit.platform.suite.api.Suite;
 		Test_org_eclipse_swt_custom_StyledText_SingleControl.class, //
 		Test_org_eclipse_swt_custom_StyledText_VisibilityGate.class, //
 		Test_org_eclipse_swt_custom_StyledText_VisibilityDifferential.class, //
+		Test_org_eclipse_swt_custom_StyledText_RoundTrip.class, //
 		Test_org_eclipse_swt_custom_TextChangeListener.class, //
 		Test_org_eclipse_swt_custom_VerifyKeyListener.class, //
 		Test_org_eclipse_swt_widgets_Button.class, //
