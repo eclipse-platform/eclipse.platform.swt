@@ -501,6 +501,35 @@ public class Test_org_eclipse_swt_widgets_VirtualPageSource {
 	}
 
 	@Test
+	public void test_treeBulkChildCountIsBatchedWithPreciseDamageOnly () throws Exception {
+		Tree lazy = new Tree (shell, SWT.VIRTUAL | SWT.BORDER);
+		VirtualPageSource source = treeSource (false, null, null);
+		source.attach (lazy);
+		shell.open ();
+		drain (source);
+		Class<?> os = Class.forName ("org.eclipse.swt.internal.win32.OS");
+		Method send = os.getMethod ("SendMessage", long.class, int.class, long.class, long.class);
+		int tvmExpand = os.getField ("TVM_EXPAND").getInt (null);
+		long expand = os.getField ("TVE_EXPAND").getInt (null);
+		int threshold = (int) Tree.class.getDeclaredMethod ("pageBatchThreshold").invoke (lazy);
+		TreeItem small = lazy.getItem (0);
+		send.invoke (null, (long) field (lazy, "handle"), tvmExpand, expand, (long) field (small, "handle"));
+		drain (source);
+		assertTrue (children (0) <= threshold, "fixture: node 0 is a small operation");
+		assertEquals (0, (int) field (lazy, "pageBatches"), "a small child count is not batched");
+		lazy.setTopItem (lazy.getItem (ROOTS - 1));
+		drain (source);
+		TreeItem large = lazy.getItem (ROOTS - 1);
+		assertTrue (children (ROOTS - 1) > threshold || threshold > children (ROOTS - 1), "fixture");
+		send.invoke (null, (long) field (lazy, "handle"), tvmExpand, expand, (long) field (large, "handle"));
+		drain (source);
+		int batches = (int) field (lazy, "pageBatches");
+		assertEquals (children (ROOTS - 1) > threshold ? 1 : 0, batches, "only an operation larger than one screen is batched");
+		assertEquals (0, (int) field (lazy, "pageBatchFullInvalidations"), "a batch ends with the accumulated damage only");
+		assertEquals (children (ROOTS - 1), large.getItemCount ());
+	}
+
+	@Test
 	public void test_hiddenTableFetchesNothing () {
 		Table lazy = table (shell, 1, 1_000_000);
 		AtomicInteger fetches = new AtomicInteger ();

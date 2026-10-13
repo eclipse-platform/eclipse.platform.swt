@@ -8,7 +8,7 @@ physical >= 4 GB, commit headroom >= 8 GB), `-Xmx2g` or less. Scripts live in
 
 | # | lane | command | expectation | last result |
 |---|---|---|---|---|
-| 0 | compile-check of the changed sources + the #122 owners | `bash scripts/check-compile.sh` | exit 0, no errors | NOT_RUN on 70f76a937b+ (memory gate failed: 317 MB / 2.5 GB free) |
+| 0 | compile-check of the changed sources + the #122 owners | `bash scripts/check-compile.sh` | exit 0, no errors | PASS on d5db98c7 and on the bulk-batch commit (javac -J-Xmx512m, 27 files, 3-9 s) |
 | 1 | incremental build into `after2-classes` | `sh scripts/gated.sh sh scripts/inc-compile2.sh` (add `internal/swap/*.java`, `internal/PackedHeapGrowth.java`, `VirtualBlockSpill.java` to the list) | exit 0 | NOT_RUN on latest |
 | 2 | functional + headless lanes | `sh scripts/junit2.sh after runs/func -- Test_VirtualBitLanes Test_org_eclipse_swt_widgets_VirtualPageSource` | all pass (26 tests incl. the new swap, debounce and paint-materialization tests) | 19/20 on 717242c4 before the debounce isIdle fix (the debounce test failed: `isIdle` ignored the armed timer; fixed, not re-run) |
 | 3 | viewport headless suites before/after | `Test_ViewportRewriteContracts Test_ViewportSelectionEnumeration Test_VirtualListModel Test_ViewportRowWindow Test_VirtualTreeTopology Test_VirtualTreeWindow Test_VirtualRowExtents` on base and after | identical | 54/54 before, 54/54 after (717242c4 classes) |
@@ -20,7 +20,7 @@ physical >= 4 GB, commit headroom >= 8 GB), `-Xmx2g` or less. Scripts live in
 | 9 | examples lane | `sh runs/examples.sh` (ControlExample Table/Tree/TabFolder, CustomControlExample CTabFolder, Snippets 144 151 192 201 202 76 165 266, before vs after) | `EXAMPLES IDENTICAL` | NOT_RUN |
 | 10 | showcase matrix | `run-matrix.sh` of the showcase PR once it lands on master | table/tree/tab_folder rows | NOT_RUN (not on master yet) |
 | 11 | recipe crate | `mvn -B -o -ntp -f synexia-openrewrite-recipes/recipe-crates/swt-lazy-data-20261013/pom.xml verify` after `make_crate.py` regenerates the resources from the final head | 3/3: exact postimages, fixed point, drift and missing-source refusal | NOT_RUN |
-| 12 | flicker | count full-client invalidations and erase frames for small (one block) and large (setItemCount jump, select-all over a screen) operations | lazy layer: 0 full-client invalidations (precise row damage only) | NOT_RUN |
+| 12 | flicker | `test_treeBulkChildCountIsBatchedWithPreciseDamageOnly` + | count full-client invalidations and erase frames for small (one block) and large (setItemCount jump, select-all over a screen) operations | lazy layer: 0 full-client invalidations (precise row damage only) | NOT_RUN |
 
 Results already measured (earlier heads, same code paths unless noted):
 
