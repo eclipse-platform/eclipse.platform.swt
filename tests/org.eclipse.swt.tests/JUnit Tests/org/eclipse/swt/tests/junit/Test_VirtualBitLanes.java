@@ -195,8 +195,8 @@ public class Test_VirtualBitLanes {
 	@Test
 	public void test_blockCacheReservesEvictsLeastRecentAndProtectsCurrentFrame () throws Exception {
 		Object cache = construct ("VirtualBlockCache", new Class<?> [] {int.class, int.class, int.class}, 4, 3, 2);
-		int loaded = staticInt ("VirtualBlockCache", "LOADED");
-		int pending = staticInt ("VirtualBlockCache", "PENDING");
+		int loaded = staticInt ("VirtualBlockStore", "LOADED");
+		int pending = staticInt ("VirtualBlockStore", "PENDING");
 		call (cache, "nextFrame");
 		int a = (int) call (cache, "reserve", -1, 0);
 		int b = (int) call (cache, "reserve", -1, 1);
@@ -221,6 +221,125 @@ public class Test_VirtualBitLanes {
 		assertThrows (IndexOutOfBoundsException.class, () -> call (cache, "text", a, 4, 0));
 		call (cache, "free", a);
 		assertEquals (-1, (int) call (cache, "find", -1, 0));
+	}
+
+	private static Object selection () throws Exception {
+		return construct ("VirtualSelectionModel", new Class<?> [0]);
+	}
+
+	private static void assertSelectionSame (boolean [] oracle, Object model) throws Exception {
+		int count = 0;
+		java.util.List<Integer> selected = new ArrayList<> ();
+		for (int i = 0; i < oracle.length; i++) {
+			assertEquals (oracle [i], call (model, "isSelected", i), "row " + i);
+			if (oracle [i]) {
+				count++;
+				selected.add (i);
+			}
+		}
+		assertEquals (oracle.length, (int) call (model, "logicalCount"));
+		assertEquals (count, (int) call (model, "selectedCount"));
+		int [] array = (int []) call (model, "toArray");
+		assertEquals (selected.size (), array.length);
+		for (int k = 0; k < array.length; k++) assertEquals ((int) selected.get (k), array [k]);
+		int spans = 0;
+		int ranges = (int) call (model, "rangeCount");
+		for (int r = 0; r < ranges; r++) spans += (int) call (model, "rangeEndExclusive", r) - (int) call (model, "rangeStart", r);
+		assertEquals (count, (boolean) call (model, "complementMode") ? oracle.length - spans : spans, "range view");
+	}
+
+	@Test
+	public void test_hybridSelectionDifferentialAcrossRepresentationSwitches () throws Exception {
+		Random random = new Random (99);
+		for (int round = 0; round < 6; round++) {
+			int n = 6_000 + random.nextInt (3_000);
+			Object model = selection ();
+			call (model, "setLogicalCount", n);
+			boolean [] oracle = new boolean [n];
+			boolean sawBits = false;
+			for (int op = 0; op < 4_000; op++) {
+				int kind = random.nextInt (100);
+				if (kind < 80) {
+					int i = random.nextInt (oracle.length);
+					boolean v = random.nextBoolean ();
+					call (model, "setSelected", i, v);
+					oracle [i] = v;
+				} else if (kind < 88) {
+					int a = random.nextInt (oracle.length + 1), b = random.nextInt (oracle.length + 1);
+					int start = Math.min (a, b), end = Math.max (a, b);
+					boolean v = random.nextBoolean ();
+					call (model, v ? "selectRange" : "deselectRange", start, end);
+					for (int i = start; i < end; i++) oracle [i] = v;
+				} else if (kind < 91) {
+					call (model, "invert");
+					for (int i = 0; i < oracle.length; i++) oracle [i] = !oracle [i];
+				} else if (kind < 95) {
+					int i = random.nextInt (oracle.length + 1), c = random.nextInt (40);
+					call (model, "insert", i, c);
+					boolean [] next = new boolean [oracle.length + c];
+					System.arraycopy (oracle, 0, next, 0, i);
+					System.arraycopy (oracle, i, next, i + c, oracle.length - i);
+					oracle = next;
+				} else if (kind < 99) {
+					if (oracle.length == 0) continue;
+					int i = random.nextInt (oracle.length), c = random.nextInt (Math.min (40, oracle.length - i) + 1);
+					call (model, "remove", i, c);
+					boolean [] next = new boolean [oracle.length - c];
+					System.arraycopy (oracle, 0, next, 0, i);
+					System.arraycopy (oracle, i + c, next, i, oracle.length - i - c);
+					oracle = next;
+				} else {
+					call (model, random.nextBoolean () ? "selectAll" : "clear");
+					boolean v = (boolean) call (model, "isSelected", 0);
+					Arrays.fill (oracle, v);
+				}
+				sawBits |= (boolean) call (model, "bitsMode");
+			}
+			assertSelectionSame (oracle, model);
+			assertTrue (sawBits, "scattered selections switched to the bitset form");
+			assertTrue ((int) call (model, "representationSwitches") > 0);
+		}
+	}
+
+	@Test
+	public void test_selection10MillionRowsTimingsAndCutover () throws Exception {
+		int rows = 10_000_000;
+		Object model = selection ();
+		call (model, "setLogicalCount", rows);
+		long t0 = System.nanoTime ();
+		call (model, "selectAll");
+		int all = (int) call (model, "selectedCount");
+		long t1 = System.nanoTime ();
+		call (model, "invert");
+		int none = (int) call (model, "selectedCount");
+		long t2 = System.nanoTime ();
+		call (model, "setSelected", 1_000, true);
+		call (model, "selectRange", 1_000, 7_000_001);
+		int shift = (int) call (model, "selectedCount");
+		long t3 = System.nanoTime ();
+		assertEquals (rows, all);
+		assertEquals (0, none);
+		assertEquals (7_000_001 - 1_000, shift);
+		System.out.printf (Locale.ROOT, "LAZY-METRIC	selection_10M	select_all_ms	%.3f%nLAZY-METRIC	selection_10M	invert_ms	%.3f%nLAZY-METRIC	selection_10M	shift_click_ms	%.3f%n",
+				(t1 - t0) / 1e6, (t2 - t1) / 1e6, (t3 - t2) / 1e6);
+		int cutover = rows >>> 6;
+		for (int k : new int [] {1_000, 10_000, 50_000, cutover, 300_000, 1_000_000}) {
+			Object hybrid = selection ();
+			call (hybrid, "setLogicalCount", rows);
+			Random random = new Random (k);
+			long start = System.nanoTime ();
+			for (int i = 0; i < k; i++) call (hybrid, "setSelected", (int) ((long) i * rows / k) + random.nextInt (Math.max (1, rows / k - 1)) / 2, true);
+			long scatter = System.nanoTime () - start;
+			start = System.nanoTime ();
+			call (hybrid, "invert");
+			long invert = System.nanoTime () - start;
+			start = System.nanoTime ();
+			int [] array = (int []) call (hybrid, "toArray");
+			long enumerate = System.nanoTime () - start;
+			assertEquals (rows - k, array.length);
+			System.out.printf (Locale.ROOT, "LAZY-METRIC	selection_cutover	k=%d	bits=%s	scatter_ms=%.1f	invert_ms=%.3f	toArray_ms=%.1f%n",
+					k, call (hybrid, "bitsMode"), scatter / 1e6, invert / 1e6, enumerate / 1e6);
+		}
 	}
 
 	private static int staticInt (String type, String name) throws Exception {

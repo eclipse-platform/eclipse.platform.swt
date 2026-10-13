@@ -11,10 +11,12 @@
 package org.eclipse.swt.widgets;
 
 /**
- * Package-private hooks a platform <code>Table</code> or <code>Tree</code> implements so a
- * {@link VirtualPageSource} can keep its facades transient. A platform that does not
- * implement it still works through public API only (the source then uses
- * <code>clear</code> and keeps every facade).
+ * Package-private hooks of a platform <code>Table</code> or <code>Tree</code> that let a
+ * {@link VirtualPageSource} keep item facades transient. A platform class registers a factory
+ * for them in its class initializer (<code>VirtualPageSource.tableHost</code> /
+ * <code>treeHost</code>), so no public method is added to the widget. A platform that registers
+ * nothing still works through public API only (the source then uses <code>clear</code> and keeps
+ * every facade).
  */
 interface VirtualPageHost {
 	/** The source now feeds this widget (or <code>null</code> when it detaches). */

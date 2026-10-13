@@ -27,21 +27,11 @@ package org.eclipse.swt.widgets;
  * hand-off and the hand-back go through the owner's lock.</p>
  */
 //FLLDCIM: HPCPOP - per-row lookups are int compares over bounded lanes; no allocation
-final class VirtualBlockCache {
-	static final int EMPTY = 0;
-	static final int PENDING = 1;
-	static final int LOADING = 1 << 1;
-	static final int LOADED = 1 << 2;
-	static final int FAILED = 1 << 3;
-	static final int CANCELLED = 1 << 4;
-	static final int BUSY = PENDING | LOADING;
+final class VirtualBlockCache implements VirtualBlockStore {
 
-	/** Child-count hint of a tree row whose child count has not been fetched. */
-	static final int UNKNOWN = -1;
-
-	final int blockSize;
-	final int columns;
-	final int capacity;
+	private final int blockSize;
+	private final int columns;
+	private final int capacity;
 
 	private final int [] slotParent;
 	private final int [] slotBlock;
@@ -51,6 +41,7 @@ final class VirtualBlockCache {
 	private final String [] cells;
 	private final int [] childHints;
 	private final int [] keys;
+	private final Object [] handles;
 	private int clock;
 	private int lastHit = -1;
 	private int evictions;
@@ -69,6 +60,7 @@ final class VirtualBlockCache {
 		cells = new String [capacity * blockSize * columns];
 		childHints = new int [capacity * blockSize];
 		keys = new int [capacity * blockSize];
+		handles = new Object [capacity * blockSize];
 		for (int i = 0; i < capacity; i++) {
 			slotBlock [i] = -1;
 			slotTotal [i] = UNKNOWN;
@@ -76,7 +68,8 @@ final class VirtualBlockCache {
 	}
 
 	/** Returns the slot holding <code>(parentKey, block)</code> in any non-empty state, or -1. */
-	int find (int parentKey, int block) {
+	@Override
+	public int find (int parentKey, int block) {
 		int hit = lastHit;
 		if (hit >= 0 && slotBlock [hit] == block && slotParent [hit] == parentKey && slotState [hit] != EMPTY) return hit;
 		for (int i = 0; i < capacity; i++) {
@@ -89,7 +82,8 @@ final class VirtualBlockCache {
 	}
 
 	/** Advances the frame clock; blocks touched at or after the returned stamp are protected. */
-	int nextFrame () {
+	@Override
+	public int nextFrame () {
 		if (clock == Integer.MAX_VALUE) rebaseStamps ();
 		return ++clock;
 	}
@@ -98,7 +92,23 @@ final class VirtualBlockCache {
 		return clock;
 	}
 
-	void touch (int slot) {
+	@Override
+	public int blockSize () {
+		return blockSize;
+	}
+
+	@Override
+	public int columns () {
+		return columns;
+	}
+
+	@Override
+	public int capacity () {
+		return capacity;
+	}
+
+	@Override
+	public void touch (int slot) {
 		slotStamp [slot] = clock;
 	}
 
@@ -107,7 +117,8 @@ final class VirtualBlockCache {
 	 * empty slot, otherwise evicts the least recently touched settled block that was not
 	 * touched in the current frame. Returns -1 when every slot is busy or protected.
 	 */
-	int reserve (int parentKey, int block) {
+	@Override
+	public int reserve (int parentKey, int block) {
 		int victim = -1;
 		int victimStamp = 0;
 		for (int i = 0; i < capacity; i++) {
@@ -132,7 +143,8 @@ final class VirtualBlockCache {
 		return victim;
 	}
 
-	void free (int slot) {
+	@Override
+	public void free (int slot) {
 		clearSlot (slot);
 		slotState [slot] = EMPTY;
 		slotBlock [slot] = -1;
@@ -141,7 +153,8 @@ final class VirtualBlockCache {
 
 	/** Drops every settled block of <code>parentKey</code> (all keys when <code>parentKey</code> is
 	 * {@link Integer#MIN_VALUE}); busy slots are left to their owner. Returns the count dropped. */
-	int invalidate (int parentKey) {
+	@Override
+	public int invalidate (int parentKey) {
 		int dropped = 0;
 		for (int i = 0; i < capacity; i++) {
 			int state = slotState [i];
@@ -153,19 +166,23 @@ final class VirtualBlockCache {
 		return dropped;
 	}
 
-	int state (int slot) {
+	@Override
+	public int state (int slot) {
 		return slotState [slot];
 	}
 
-	void state (int slot, int state) {
+	@Override
+	public void state (int slot, int state) {
 		slotState [slot] = state;
 	}
 
-	int parentKey (int slot) {
+	@Override
+	public int parentKey (int slot) {
 		return slotParent [slot];
 	}
 
-	int block (int slot) {
+	@Override
+	public int block (int slot) {
 		return slotBlock [slot];
 	}
 
@@ -173,43 +190,63 @@ final class VirtualBlockCache {
 		return slotStamp [slot];
 	}
 
-	int firstRow (int slot) {
+	@Override
+	public int firstRow (int slot) {
 		return slotBlock [slot] * blockSize;
 	}
 
-	int total (int slot) {
+	@Override
+	public int total (int slot) {
 		return slotTotal [slot];
 	}
 
-	void total (int slot, int total) {
+	@Override
+	public void total (int slot, int total) {
 		slotTotal [slot] = total;
 	}
 
-	String text (int slot, int row, int column) {
+	@Override
+	public String text (int slot, int row, int column) {
 		return cells [cellIndex (slot, row, column)];
 	}
 
-	void text (int slot, int row, int column, String value) {
+	@Override
+	public void text (int slot, int row, int column, String value) {
 		cells [cellIndex (slot, row, column)] = value;
 	}
 
-	int childHint (int slot, int row) {
+	@Override
+	public int childHint (int slot, int row) {
 		return childHints [rowIndex (slot, row)];
 	}
 
-	void childHint (int slot, int row, int hint) {
+	@Override
+	public void childHint (int slot, int row, int hint) {
 		childHints [rowIndex (slot, row)] = hint;
 	}
 
-	int key (int slot, int row) {
+	@Override
+	public int key (int slot, int row) {
 		return keys [rowIndex (slot, row)];
 	}
 
-	void key (int slot, int row, int key) {
+	@Override
+	public void key (int slot, int row, int key) {
 		keys [rowIndex (slot, row)] = key;
 	}
 
-	int count (int stateMask) {
+	@Override
+	public Object data (int slot, int row) {
+		return handles [rowIndex (slot, row)];
+	}
+
+	@Override
+	public void data (int slot, int row, Object data) {
+		handles [rowIndex (slot, row)] = data;
+	}
+
+	@Override
+	public int count (int stateMask) {
 		int count = 0;
 		for (int i = 0; i < capacity; i++) {
 			if ((slotState [i] & stateMask) != 0) count++;
@@ -217,7 +254,8 @@ final class VirtualBlockCache {
 		return count;
 	}
 
-	int evictions () {
+	@Override
+	public int evictions () {
 		return evictions;
 	}
 
@@ -238,6 +276,7 @@ final class VirtualBlockCache {
 		for (int i = 0; i < blockSize; i++) {
 			childHints [rowBase + i] = 0;
 			keys [rowBase + i] = 0;
+			handles [rowBase + i] = null;
 		}
 		slotTotal [slot] = UNKNOWN;
 	}

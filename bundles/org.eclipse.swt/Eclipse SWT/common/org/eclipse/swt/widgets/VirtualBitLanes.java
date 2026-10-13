@@ -87,6 +87,60 @@ final class VirtualBitLanes {
 		return count;
 	}
 
+	/** Number of set bits of a lane in <code>[start, end)</code>. */
+	int count (int lane, int start, int end) {
+		if (start < 0 || end > length || start > end) throw new IndexOutOfBoundsException ();
+		int [] words = lanes [lane];
+		if (words == null || start == end) return 0;
+		int count = 0;
+		int first = start >>> 5;
+		int last = (end - 1) >>> 5;
+		for (int word = first; word <= last && word < words.length; word++) {
+			int bits = words [word];
+			if (word == first) bits &= -1 << (start & 31);
+			if (word == last) bits &= -1 >>> (31 - ((end - 1) & 31));
+			count += Integer.bitCount (bits);
+		}
+		return count;
+	}
+
+	/** Flips <code>[start, end)</code> of a lane word-wise. */
+	void flipRange (int lane, int start, int end) {
+		if (start < 0 || end > length || start > end) throw new IndexOutOfBoundsException ();
+		if (start == end) return;
+		int [] words = ensure (lane, end);
+		int first = start >>> 5;
+		int last = (end - 1) >>> 5;
+		int firstMask = -1 << (start & 31);
+		int lastMask = -1 >>> (31 - ((end - 1) & 31));
+		if (first == last) {
+			words [first] ^= firstMask & lastMask;
+			return;
+		}
+		words [first] ^= firstMask;
+		for (int word = first + 1; word < last; word++) words [word] = ~words [word];
+		words [last] ^= lastMask;
+	}
+
+	/** Index of the first clear bit at or after <code>from</code>, or <code>length ()</code>. */
+	int nextClear (int lane, int from) {
+		if (from < 0) from = 0;
+		if (from >= length) return length;
+		int [] words = lanes [lane];
+		if (words == null) return from;
+		int word = from >>> 5;
+		if (word >= words.length) return from;
+		int bits = ~words [word] & (-1 << (from & 31));
+		while (true) {
+			if (bits != 0) {
+				int index = (word << 5) + Integer.numberOfTrailingZeros (bits);
+				return Math.min (index, length);
+			}
+			if (++word >= words.length) return Math.min (word << 5, length);
+			bits = ~words [word];
+		}
+	}
+
 	/** Index of the first set bit at or after <code>from</code>, or -1. */
 	int nextSet (int lane, int from) {
 		int [] words = lanes [lane];
@@ -140,7 +194,7 @@ final class VirtualBitLanes {
 		int needed = wordsFor (bits);
 		int [] words = lanes [lane];
 		if (words != null && words.length >= needed) return words;
-		int capacity = Math.max (needed, Math.max (4, words == null ? 0 : Math.min (words.length * 2, wordsFor (length))));
+		int capacity = Math.max (needed, Math.min (VirtualGrowth.capacity (words == null ? 0 : words.length, needed, 4), Math.max (needed, wordsFor (length))));
 		int [] grown = new int [capacity];
 		if (words != null) System.arraycopy (words, 0, grown, 0, words.length);
 		lanes [lane] = grown;

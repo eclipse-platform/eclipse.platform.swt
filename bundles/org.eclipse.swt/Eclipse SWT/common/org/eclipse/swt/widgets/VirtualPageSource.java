@@ -61,7 +61,7 @@ public final class VirtualPageSource {
 	/** The parent key of top-level rows. */
 	public static final int ROOT = -1;
 	/** Child-count hint of a tree row that has children whose number is not known yet. */
-	public static final int UNKNOWN = VirtualBlockCache.UNKNOWN;
+	public static final int UNKNOWN = VirtualBlockStore.UNKNOWN;
 
 	/** Counter: blocks reserved and queued. */
 	public static final int REQUESTED = 0;
@@ -162,6 +162,17 @@ public final class VirtualPageSource {
 		}
 
 		/**
+		 * Sets the data handle of a row; it is applied with <code>Item.setData (Object)</code>
+		 * whenever the row's item is filled, so it is reproduced after the item is released.
+		 *
+		 * @param index the row index
+		 * @param data the data, or <code>null</code>
+		 */
+		public void setData (int index, Object data) {
+			source.cache.data (slot, rowOf (index), data);
+		}
+
+		/**
 		 * Sets the child-count hint of a tree row: <code>0</code> for a leaf, a positive count, or
 		 * {@link VirtualPageSource#UNKNOWN} when the node has children whose number is fetched on expand.
 		 *
@@ -213,7 +224,7 @@ public final class VirtualPageSource {
 	private final int blockSize;
 	private final int threadCount;
 	private final Fetcher fetcher;
-	final VirtualBlockCache cache;
+	final VirtualBlockStore cache;
 	private int overscanBlocks = 2;
 	private String placeholderText = "\u2026";
 
@@ -252,6 +263,9 @@ public final class VirtualPageSource {
 	private int refreshSize;
 	private int [] orderBlocks = new int [16];
 	private int orderSize;
+	private int lastPlannedTop = -1;
+	/** A scroll of more than this many blocks per frame is a jump, not a step. */
+	private static final int JUMP_BLOCKS = 8;
 	private TreeItem [] nodeItems = new TreeItem [8];
 	private int [] nodeKeys = new int [8];
 	private int [] nodeHints = new int [8];
@@ -285,7 +299,7 @@ public final class VirtualPageSource {
 		this.flags = flags;
 		this.fetcher = fetcher;
 		this.threadCount = 2;
-		cache = new VirtualBlockCache (blockSize, maxBlocks, columns);
+		cache = newBlockStore (blockSize, maxBlocks, columns);
 		cancelBits = new boolean [maxBlocks];
 		workerTotals = new int [maxBlocks];
 	}
@@ -390,7 +404,7 @@ public final class VirtualPageSource {
 	public boolean isLoaded (int parentKey, int index) {
 		if (index < 0) return false;
 		int slot = cache.find (parentKey, index / blockSize);
-		return slot >= 0 && cache.state (slot) == VirtualBlockCache.LOADED;
+		return slot >= 0 && cache.state (slot) == VirtualBlockStore.LOADED;
 	}
 
 	/**
@@ -402,7 +416,7 @@ public final class VirtualPageSource {
 		synchronized (lock) {
 			if (queueSize != 0 || doneSize != 0 || frameScheduled) return false;
 		}
-		return cache.count (VirtualBlockCache.BUSY) == 0 && wantSize == 0;
+		return cache.count (VirtualBlockStore.BUSY) == 0 && wantSize == 0;
 	}
 
 	/**
@@ -415,13 +429,21 @@ public final class VirtualPageSource {
 	 */
 	public int getCount (int counter) {
 		switch (counter) {
-			case RESIDENT: return cache.count (VirtualBlockCache.LOADED | VirtualBlockCache.FAILED);
-			case IN_FLIGHT: return cache.count (VirtualBlockCache.BUSY);
+			case RESIDENT: return cache.count (VirtualBlockStore.LOADED | VirtualBlockStore.FAILED);
+			case IN_FLIGHT: return cache.count (VirtualBlockStore.BUSY);
 			case EVICTED: return cache.evictions ();
 			default:
 				if (counter < 0 || counter >= counters.length) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 				return counters [counter];
 		}
+	}
+
+	/**
+	 * The one place that chooses the block store. The tiered swap store of SWT #122 replaces the
+	 * in-memory cache here.
+	 */
+	static VirtualBlockStore newBlockStore (int blockSize, int maxBlocks, int columns) {
+		return new VirtualBlockCache (blockSize, maxBlocks, columns);
 	}
 
 	/* ---------------------------------------------------------------- attach */
@@ -482,7 +504,7 @@ public final class VirtualPageSource {
 
 	private void setTableData (TableItem item, int index) {
 		int slot = cache.find (ROOT, index / blockSize);
-		if (slot >= 0 && cache.state (slot) == VirtualBlockCache.LOADED) {
+		if (slot >= 0 && cache.state (slot) == VirtualBlockStore.LOADED) {
 			answeredPlaceholder = false;
 			cache.touch (slot);
 			fillTableItem (item, slot, index - cache.firstRow (slot));
@@ -502,10 +524,12 @@ public final class VirtualPageSource {
 	}
 
 	private void fillTableItem (TableItem item, int slot, int row) {
-		for (int column = 0; column < cache.columns; column++) {
+		for (int column = 0; column < cache.columns (); column++) {
 			String text = cache.text (slot, row, column);
 			item.setText (column, text == null ? "" : text);
 		}
+		Object data = cache.data (slot, row);
+		if (data != null) item.setData (data);
 	}
 
 	private void setTreeData (TreeItem item, int index) {
@@ -517,10 +541,10 @@ public final class VirtualPageSource {
 			return;
 		}
 		int slot = cache.find (parentKey, index / blockSize);
-		if ((slot < 0 || cache.state (slot) != VirtualBlockCache.LOADED) && !paintRequest) {
+		if ((slot < 0 || cache.state (slot) != VirtualBlockStore.LOADED) && !paintRequest) {
 			slot = loadNow (parentKey, index / blockSize);
 		}
-		if (slot < 0 || cache.state (slot) != VirtualBlockCache.LOADED) {
+		if (slot < 0 || cache.state (slot) != VirtualBlockStore.LOADED) {
 			answeredPlaceholder = true;
 			if ((flags & PLACEHOLDER_TEXT) != 0) item.setText (placeholderText);
 			want (parentKey, index / blockSize, false);
@@ -529,10 +553,12 @@ public final class VirtualPageSource {
 		answeredPlaceholder = false;
 		cache.touch (slot);
 		int row = index - cache.firstRow (slot);
-		for (int column = 0; column < cache.columns; column++) {
+		for (int column = 0; column < cache.columns (); column++) {
 			String text = cache.text (slot, row, column);
 			item.setText (column, text == null ? "" : text);
 		}
+		Object data = cache.data (slot, row);
+		if (data != null) item.setData (data);
 		int hint = cache.childHint (slot, row);
 		int key = cache.key (slot, row);
 		int children = hint;
@@ -541,7 +567,7 @@ public final class VirtualPageSource {
 			int first = cache.find (key, 0);
 			if (node >= 0 && nodeKeys [node] == key && nodeHints [node] != UNKNOWN) {
 				children = nodeHints [node];
-			} else if (first >= 0 && cache.state (first) == VirtualBlockCache.LOADED && cache.total (first) >= 0) {
+			} else if (first >= 0 && cache.state (first) == VirtualBlockStore.LOADED && cache.total (first) >= 0) {
 				children = cache.total (first);
 			}
 		}
@@ -557,7 +583,7 @@ public final class VirtualPageSource {
 		int node = nodeIndex (item);
 		if (node < 0 || nodeHints [node] != UNKNOWN) return;
 		int slot = cache.find (key, 0);
-		if (slot >= 0 && cache.state (slot) == VirtualBlockCache.LOADED && cache.total (slot) >= 0) {
+		if (slot >= 0 && cache.state (slot) == VirtualBlockStore.LOADED && cache.total (slot) >= 0) {
 			applyTotal (node, cache.total (slot));
 			return;
 		}
@@ -579,10 +605,10 @@ public final class VirtualPageSource {
 		int index = parent == null ? item.getParent ().indexOf (item) : parent.indexOf (item);
 		if (index < 0) return NO_KEY;
 		int slot = cache.find (parentKey, index / blockSize);
-		if ((slot < 0 || cache.state (slot) != VirtualBlockCache.LOADED) && !paintRequest) {
+		if ((slot < 0 || cache.state (slot) != VirtualBlockStore.LOADED) && !paintRequest) {
 			slot = loadNow (parentKey, index / blockSize);
 		}
-		if (slot < 0 || cache.state (slot) != VirtualBlockCache.LOADED) {
+		if (slot < 0 || cache.state (slot) != VirtualBlockStore.LOADED) {
 			want (parentKey, index / blockSize, false);
 			return NO_KEY;
 		}
@@ -682,8 +708,8 @@ public final class VirtualPageSource {
 	 */
 	private int loadNow (int parentKey, int block) {
 		int slot = cache.find (parentKey, block);
-		if (slot >= 0 && cache.state (slot) == VirtualBlockCache.LOADED) return slot;
-		if (slot >= 0 && cache.state (slot) == VirtualBlockCache.FAILED) {
+		if (slot >= 0 && cache.state (slot) == VirtualBlockStore.LOADED) return slot;
+		if (slot >= 0 && cache.state (slot) == VirtualBlockStore.FAILED) {
 			cache.free (slot);
 			slot = -1;
 		}
@@ -708,7 +734,7 @@ public final class VirtualPageSource {
 			if (!queued) {
 				drainNow ();
 				slot = cache.find (parentKey, block);
-				return slot >= 0 && cache.state (slot) == VirtualBlockCache.LOADED ? slot : -1;
+				return slot >= 0 && cache.state (slot) == VirtualBlockStore.LOADED ? slot : -1;
 			}
 		} else {
 			/* An API read starts a new access epoch so blocks read earlier may be evicted (LRU). */
@@ -721,17 +747,17 @@ public final class VirtualPageSource {
 		Request request = uiRequest;
 		synchronized (lock) {
 			cancelBits [slot] = false;
-			workerTotals [slot] = VirtualBlockCache.UNKNOWN;
+			workerTotals [slot] = VirtualBlockStore.UNKNOWN;
 		}
 		request.slot = slot;
 		request.parentKey = parentKey;
 		request.start = start;
 		request.count = rows;
-		int resultFlags = VirtualBlockCache.LOADED;
+		int resultFlags = VirtualBlockStore.LOADED;
 		try {
 			fetcher.fetch (request);
 		} catch (Exception | LinkageError e) {
-			resultFlags = VirtualBlockCache.FAILED;
+			resultFlags = VirtualBlockStore.FAILED;
 		}
 		request.slot = -1;
 		int total;
@@ -740,7 +766,7 @@ public final class VirtualPageSource {
 		}
 		settle (slot, resultFlags, total);
 		scheduleFrame ();
-		return cache.state (slot) == VirtualBlockCache.LOADED ? slot : -1;
+		return cache.state (slot) == VirtualBlockStore.LOADED ? slot : -1;
 	}
 
 	/** Rows to request for a block; <code>flatCount</code> is the table row count or -1. */
@@ -860,19 +886,19 @@ public final class VirtualPageSource {
 		synchronized (lock) {
 			cancelled = cancelBits [slot];
 			cancelBits [slot] = false;
-			workerTotals [slot] = VirtualBlockCache.UNKNOWN;
+			workerTotals [slot] = VirtualBlockStore.UNKNOWN;
 		}
 		if (cancelled) {
 			cache.free (slot);
 			counters [CANCELLED]++;
 			return;
 		}
-		if ((resultFlags & VirtualBlockCache.FAILED) != 0) {
-			cache.state (slot, VirtualBlockCache.FAILED);
+		if ((resultFlags & VirtualBlockStore.FAILED) != 0) {
+			cache.state (slot, VirtualBlockStore.FAILED);
 			counters [FAILED]++;
 			return;
 		}
-		cache.state (slot, VirtualBlockCache.LOADED);
+		cache.state (slot, VirtualBlockStore.LOADED);
 		cache.total (slot, total);
 		cache.touch (slot);
 		counters [FETCHED]++;
@@ -902,15 +928,35 @@ public final class VirtualPageSource {
 		int first = top / blockSize;
 		int last = Math.max (first, lastRow / blockSize);
 		int lastBlock = (count - 1) / blockSize;
+		/*
+		 * Prefetch by direction and velocity: a step scroll widens the overscan ahead by the
+		 * blocks moved per frame (capped) and narrows it behind; a jump (thumb drag beyond the
+		 * jump threshold) keeps the symmetric overscan, like Paging's jumpThreshold.
+		 */
+		int delta = lastPlannedTop < 0 ? 0 : top - lastPlannedTop;
+		lastPlannedTop = top;
+		int ahead = overscanBlocks, behind = overscanBlocks;
+		int distance = Math.abs (delta);
+		if (overscanBlocks > 0 && distance > 0 && distance <= JUMP_BLOCKS * blockSize) {
+			int velocity = Math.min (overscanBlocks * 2, distance / blockSize + 1);
+			int narrow = Math.max (1, overscanBlocks / 2);
+			if (delta > 0) {
+				ahead = overscanBlocks + velocity;
+				behind = narrow;
+			} else {
+				behind = overscanBlocks + velocity;
+				ahead = narrow;
+			}
+		}
 		orderSize = 0;
 		for (int b = first; b <= last; b++) order (b);
-		for (int d = 1; d <= overscanBlocks; d++) {
-			if (last + d <= lastBlock) order (last + d);
-			if (first - d >= 0) order (first - d);
+		for (int d = 1, n = Math.max (ahead, behind); d <= n; d++) {
+			if (d <= ahead && last + d <= lastBlock) order (last + d);
+			if (d <= behind && first - d >= 0) order (first - d);
 		}
 		for (int i = 0; i < orderSize; i++) wantTableBlock (orderBlocks [i]);
-		int lowBlock = Math.max (0, first - overscanBlocks);
-		int highBlock = Math.min (lastBlock, last + overscanBlocks);
+		int lowBlock = Math.max (0, first - behind);
+		int highBlock = Math.min (lastBlock, last + ahead);
 		cancelOutside (lowBlock, highBlock);
 		enqueueWanted (count);
 		sortQueueByOrder ();
@@ -953,8 +999,8 @@ public final class VirtualPageSource {
 	private void wantTableBlock (int block) {
 		int slot = cache.find (ROOT, block);
 		if (slot >= 0) {
-			if ((cache.state (slot) & VirtualBlockCache.BUSY) == 0) cache.touch (slot);
-			if (cache.state (slot) != VirtualBlockCache.FAILED) return;
+			if ((cache.state (slot) & VirtualBlockStore.BUSY) == 0) cache.touch (slot);
+			if (cache.state (slot) != VirtualBlockStore.FAILED) return;
 			cache.free (slot);
 		}
 		if (wantSize == wantParent.length) {
@@ -972,8 +1018,8 @@ public final class VirtualPageSource {
 		for (int i = 0; i < count; i++) {
 			int slot = cache.find (wantParent [i], wantBlock [i]);
 			if (slot >= 0) {
-				if (cache.state (slot) != VirtualBlockCache.FAILED) {
-					if ((cache.state (slot) & VirtualBlockCache.BUSY) == 0) {
+				if (cache.state (slot) != VirtualBlockStore.FAILED) {
+					if ((cache.state (slot) & VirtualBlockStore.BUSY) == 0) {
 						cache.touch (slot);
 						addRefresh (wantParent [i], wantBlock [i]);
 					}
@@ -1024,7 +1070,7 @@ public final class VirtualPageSource {
 				queueCount [queueSize] = rows;
 				queueSize++;
 				cancelBits [slot] = false;
-				workerTotals [slot] = VirtualBlockCache.UNKNOWN;
+				workerTotals [slot] = VirtualBlockStore.UNKNOWN;
 				lock.notifyAll ();
 			}
 			started++;
@@ -1052,8 +1098,8 @@ public final class VirtualPageSource {
 				kept++;
 			}
 			queueSize = kept;
-			for (int slot = 0; slot < cache.capacity; slot++) {
-				if ((cache.state (slot) & VirtualBlockCache.BUSY) == 0 || cache.parentKey (slot) != ROOT) continue;
+			for (int slot = 0; slot < cache.capacity (); slot++) {
+				if ((cache.state (slot) & VirtualBlockStore.BUSY) == 0 || cache.parentKey (slot) != ROOT) continue;
 				int block = cache.block (slot);
 				if (block < lowBlock || block > highBlock) cancelBits [slot] = true;
 			}
@@ -1076,8 +1122,8 @@ public final class VirtualPageSource {
 				kept++;
 			}
 			queueSize = kept;
-			for (int slot = 0; slot < cache.capacity; slot++) {
-				if ((cache.state (slot) & VirtualBlockCache.BUSY) != 0 && cache.parentKey (slot) == parentKey) cancelBits [slot] = true;
+			for (int slot = 0; slot < cache.capacity (); slot++) {
+				if ((cache.state (slot) & VirtualBlockStore.BUSY) != 0 && cache.parentKey (slot) == parentKey) cancelBits [slot] = true;
 			}
 		}
 		int kept = 0;
@@ -1198,12 +1244,12 @@ public final class VirtualPageSource {
 				System.arraycopy (queueStart, 1, queueStart, 0, queueSize);
 				System.arraycopy (queueCount, 1, queueCount, 0, queueSize);
 			}
-			int resultFlags = VirtualBlockCache.LOADED;
+			int resultFlags = VirtualBlockStore.LOADED;
 			if (!isCancelled (request.slot)) {
 				try {
 					fetcher.fetch (request);
 				} catch (Exception | LinkageError e) {
-					resultFlags = VirtualBlockCache.FAILED;
+					resultFlags = VirtualBlockStore.FAILED;
 				}
 			}
 			boolean schedule;
@@ -1231,14 +1277,15 @@ public final class VirtualPageSource {
 		}
 	}
 
+	/* The one growth path of the source's lanes: Xmx-aware (exact length under pressure). */
 	private static int [] grow (int [] array) {
-		int [] result = new int [array.length * 2];
+		int [] result = new int [VirtualGrowth.capacity (array.length, array.length + 1, 4)];
 		System.arraycopy (array, 0, result, 0, array.length);
 		return result;
 	}
 
 	private static TreeItem [] grow (TreeItem [] array) {
-		TreeItem [] result = new TreeItem [array.length * 2];
+		TreeItem [] result = new TreeItem [VirtualGrowth.capacity (array.length, array.length + 1, 8)];
 		System.arraycopy (array, 0, result, 0, array.length);
 		return result;
 	}

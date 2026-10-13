@@ -282,6 +282,91 @@ public class Test_org_eclipse_swt_widgets_VirtualPageSource {
 	}
 
 	@Test
+	public void test_tableEachRowFetchedOnceAcrossScrollAwayAndBackAndDataReproduced () throws Exception {
+		int rows = 200_000;
+		Table lazy = table (shell, 1, rows);
+		AtomicIntegerArray perRow = new AtomicIntegerArray (rows);
+		Object [] handles = new Object [rows];
+		for (int i = 0; i < 4_000; i++) handles [i] = Integer.valueOf (i * 7);
+		VirtualPageSource source = new VirtualPageSource (64, 48, 1, VirtualPageSource.NONE, request -> {
+			for (int i = request.getStart (), end = i + request.getCount (); i < end; i++) {
+				perRow.incrementAndGet (i);
+				request.setText (i, 0, cell (i, 0));
+				request.setData (i, handles [i]);
+			}
+		});
+		source.setOverscanBlocks (1);
+		source.attach (lazy);
+		shell.open ();
+		drain (source);
+		TableItem first = lazy.getItem (5);
+		Object handle = first.getData ();
+		assertSame (handles [5], handle, "data handle applied from the block");
+		unpin (lazy, first);
+		for (int top : new int [] {300, 900, 1_500, 900, 300, 0}) {
+			lazy.setTopIndex (top);
+			drain (source);
+		}
+		int max = 0;
+		for (int i = 0; i < 1_600; i++) max = Math.max (max, perRow.get (i));
+		assertEquals (1, max, "each row requested from the application once while its block stays resident");
+		assertTrue (first.isDisposed (), "the facade of row 5 was released");
+		assertSame (handle, lazy.getItem (5).getData (), "getData identity preserved after release and re-creation");
+		assertEquals (cell (5, 0), lazy.getItem (5).getText ());
+	}
+
+	@Test
+	public void test_invalidateRefetchesAndKeepFacadesNeverReleases () {
+		int rows = 300_000;
+		Table lazy = table (shell, 1, rows);
+		AtomicInteger fetches = new AtomicInteger ();
+		AtomicInteger epoch = new AtomicInteger ();
+		VirtualPageSource source = new VirtualPageSource (64, 32, 1, VirtualPageSource.KEEP_FACADES | VirtualPageSource.PLACEHOLDER_TEXT, request -> {
+			fetches.incrementAndGet ();
+			for (int i = request.getStart (), end = i + request.getCount (); i < end; i++) request.setText (i, 0, epoch.get () + ":" + i);
+		});
+		source.setPlaceholderText ("loading");
+		source.attach (lazy);
+		shell.open ();
+		drain (source);
+		int top = lazy.getTopIndex ();
+		assertEquals ("0:" + top, lazy.getItem (top).getText ());
+		int before = fetches.get ();
+		epoch.set (1);
+		source.invalidate ();
+		drain (source);
+		assertTrue (fetches.get () > before, "visible blocks fetched again");
+		assertEquals ("1:" + top, lazy.getItem (top).getText (), "rows re-asked after invalidate");
+		for (int t = 1_000; t < 250_000; t += 50_000) {
+			lazy.setTopIndex (t);
+			drain (source);
+		}
+		assertEquals (0, source.getCount (VirtualPageSource.RELEASED), "KEEP_FACADES never releases");
+		assertThrows (IllegalArgumentException.class, () -> source.attach (lazy), "a source feeds one widget");
+		source.detach ();
+		assertEquals ("1:" + top, lazy.getItem (top).getText (), "rows keep their data after detach");
+	}
+
+	@Test
+	public void test_constructorAndAttachArgumentChecks () {
+		assertThrows (IllegalArgumentException.class, () -> new VirtualPageSource (0, 1, 1, 0, r -> { }));
+		assertThrows (IllegalArgumentException.class, () -> new VirtualPageSource (1, 0, 1, 0, r -> { }));
+		assertThrows (IllegalArgumentException.class, () -> new VirtualPageSource (1, 1, 0, 0, r -> { }));
+		assertThrows (IllegalArgumentException.class, () -> new VirtualPageSource (1, 1, 1, 0, null));
+		VirtualPageSource flat = new VirtualPageSource (8, 4, 1, VirtualPageSource.NONE, r -> { });
+		VirtualPageSource tree = new VirtualPageSource (8, 4, 1, VirtualPageSource.TREE, r -> { });
+		assertThrows (IllegalArgumentException.class, () -> flat.attach (new Table (shell, SWT.NONE)), "needs SWT.VIRTUAL");
+		assertThrows (IllegalArgumentException.class, () -> flat.attach (new Tree (shell, SWT.VIRTUAL)), "flat source on a tree");
+		assertThrows (IllegalArgumentException.class, () -> tree.attach (new Table (shell, SWT.VIRTUAL)), "tree source on a table");
+		assertThrows (IllegalArgumentException.class, () -> flat.attach ((Table) null));
+		assertThrows (IllegalArgumentException.class, () -> flat.setOverscanBlocks (-1));
+		assertThrows (IllegalArgumentException.class, () -> flat.setPlaceholderText (null));
+		assertThrows (IllegalArgumentException.class, () -> flat.getCount (99));
+		assertFalse (flat.isLoaded (VirtualPageSource.ROOT, 0));
+		assertTrue (flat.isIdle ());
+	}
+
+	@Test
 	public void test_hiddenTableFetchesNothing () {
 		Table lazy = table (shell, 1, 1_000_000);
 		AtomicInteger fetches = new AtomicInteger ();
@@ -405,6 +490,23 @@ public class Test_org_eclipse_swt_widgets_VirtualPageSource {
 		Object [] itemsDuring = (Object []) field (lazy, "items");
 		long facadesDuring = Arrays.stream (itemsDuring).filter (Objects::nonNull).count ();
 		assertEquals (facadesBefore, facadesDuring, "the loading child is a mask bit, not a TreeItem");
+		long hChild = (long) send.invoke (null, hTree, os.getField ("TVM_GETNEXTITEM").getInt (null), (long) os.getField ("TVGN_CHILD").getInt (null), hItem);
+		assertNotEquals (0L, hChild);
+		Class<?> tvitemType = Class.forName ("org.eclipse.swt.internal.win32.TVITEM");
+		Object tvItem = tvitemType.getConstructor ().newInstance ();
+		long hHeap = (long) os.getMethod ("GetProcessHeap").invoke (null);
+		long buffer = (long) os.getMethod ("HeapAlloc", long.class, int.class, int.class).invoke (null, hHeap, os.getField ("HEAP_ZERO_MEMORY").getInt (null), 256 * 2);
+		tvitemType.getField ("mask").setInt (tvItem, os.getField ("TVIF_TEXT").getInt (null) | os.getField ("TVIF_HANDLE").getInt (null));
+		tvitemType.getField ("hItem").setLong (tvItem, hChild);
+		tvitemType.getField ("pszText").setLong (tvItem, buffer);
+		tvitemType.getField ("cchTextMax").setInt (tvItem, 256);
+		os.getMethod ("SendMessage", long.class, int.class, long.class, tvitemType).invoke (null, hTree, os.getField ("TVM_GETITEM").getInt (null), 0L, tvItem);
+		char [] chars = new char [256];
+		os.getMethod ("MoveMemory", char [].class, long.class, int.class).invoke (null, chars, buffer, 512);
+		os.getMethod ("HeapFree", long.class, int.class, long.class).invoke (null, hHeap, 0, buffer);
+		String loading = new String (chars, 0, Math.max (0, new String (chars).indexOf ('\0')));
+		assertEquals ("\u2026", loading, "the loading child is answered from the parent's mask bit");
+		assertEquals (facadesBefore, Arrays.stream ((Object []) field (lazy, "items")).filter (Objects::nonNull).count (), "reading it creates no TreeItem");
 		gate.countDown ();
 		drain (source);
 		TreeItem oracleNode = oracle.getItem (2);
