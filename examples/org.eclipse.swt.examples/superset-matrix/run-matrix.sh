@@ -128,9 +128,24 @@ done
 # 5. cross-scale columns (size_independence, memory_flatness), computed in Java
 gate
 "${JAVA_BIN}java" -Xmx256m -cp "$CP" $MAIN --postprocess "$(wpath "$TSV")" || log "postprocess failed"
+
+# 6. independent persisted-pixel acceptance.  The Java runner is the producer;
+# OpenCV is a separate observer and must reject stale/blank/forged evidence.
+if [ "${MATRIX_OPENCV:-1}" != "0" ]; then
+  PYTHON_BIN=${MATRIX_PYTHON:-python3}
+  VISION_PY=${MATRIX_OPENCV_PYTHON:-"$OUT/.vision/bin/python"}
+  if [ ! -x "$VISION_PY" ]; then
+    command -v "$PYTHON_BIN" >/dev/null 2>&1 || { log "OpenCV required but Python not found"; exit 1; }
+    "$PYTHON_BIN" -m venv "$OUT/.vision"
+    "$VISION_PY" -m pip install --disable-pip-version-check --quiet       opencv-python-headless==4.12.0.88 numpy==2.2.6
+  fi
+  "$VISION_PY" "$HERE/verify-superset-matrix.py" --selftest
+  "$VISION_PY" "$HERE/verify-superset-matrix.py" "$OUT"
+fi
+
 log "matrix complete: $(tail -n +2 "$TSV" | cut -f18 | sort | uniq -c | tr '\n' ' ')"
 
-# 6. optional: the showcase tour (every category, concept and widget tab printed), TOUR=1
+# 7. optional: the showcase tour (every category, concept and widget tab printed), TOUR=1
 if [ -n "${TOUR:-}" ]; then
   gate
   timeout 1800 "${JAVA_BIN}java" -Xmx768m -cp "$CP" org.eclipse.swt.examples.superset.SupersetShowcase --tour "$(wpath "$OUT")" \
