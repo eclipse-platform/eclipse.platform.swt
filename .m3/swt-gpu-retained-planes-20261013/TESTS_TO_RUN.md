@@ -17,7 +17,7 @@ Run them in this order. Run each long one in the background.
 | 9 | `mvn -B -o -f synexia-openrewrite-recipes/recipe-crates/swt-gpu-retained-planes-20261013/pom.xml verify`, in `C:\m3-work-c\wt\synexia-gpu-planes` | OpenRewrite 8.17.1 SDK: exact postimages, fixed point, refusal of drift and missing sources, on the sealed crate. | **Pending.** It is a JVM run. |
 | 10 | `python -B scripts/make-readme.py v6 <run-dir>/README.md`, then `sh scripts/collect-evidence.sh v6` | Writes the README tables and copies the evidence into the fork and the crate. | Pending. |
 
-Hidden and occluded surfaces: `RetainedFrame.effectivelyVisible()` is the single read. A test should minimize the shell during a scroll sequence and assert that `RASTER_PIXELS` and `TILE_RASTER` do not grow until it is restored. To add to JUnit after resume.
+Hidden and occluded surfaces: `RetainedFrame.effectivelyVisible()` is the single read. JUnit `hiddenSurfaceRastersNothing` minimizes the shell, redraws, and asserts that `RASTER_PIXELS` does not grow until the shell is restored. It was added in 18db579bf0; its run is pending as part of item 2.
 
 Integration notes for the reruns:
 * SWT #124 (visibility gate) uses `Widget.state` bits 25..31; this branch no longer uses `Widget.state`.

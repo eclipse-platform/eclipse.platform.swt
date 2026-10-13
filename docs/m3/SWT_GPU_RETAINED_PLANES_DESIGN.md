@@ -120,6 +120,14 @@ Two changes would let `StyledText` benefit from the retained layer. They are req
 
 `Decorations`/`Shell` and non-CANVAS native controls never get the bit.
 
+## Batches
+
+During a batch (`setRedraw(false)`, so `drawCount > 0` and `WM_SETREDRAW` is off) the viewport is suppressed: no `WM_PAINT` reaches the frame driver, and nothing is rasterized, composited or presented.
+
+* `Control.redraw` still queues content damage in the frame's rectangle list and tile grid: the damage accumulates.
+* Native scrollbars and borders are non-client and keep updating as the batch changes the scroll range.
+* When the batch ends, the accumulated damage is rasterized once.
+
 ## Visibility
 
 `RetainedFrame.effectivelyVisible()` is the single visibility read. It uses `IsWindowVisible` and the shell's `IsIconic` until SWT #124 is merged. After that it becomes `!EffectiveVisibility.paintGated(control) && !EffectiveVisibility.occluded(control)`, which also covers occluded and cloaked shells. A surface that is not visible skips raster, composite and present, and keeps its dirty bits. A surface hidden longer than `swt.gpu.trimMillis` (default 30 s) releases its tiles and back buffer on the next damage.
