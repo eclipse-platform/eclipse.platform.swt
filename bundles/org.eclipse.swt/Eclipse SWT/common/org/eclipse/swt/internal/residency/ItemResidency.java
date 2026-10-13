@@ -209,7 +209,7 @@ public final class ItemResidency {
 	}
 
 	public void insert (int index) {
-		if (index < 0 || index > lanes.count) throw new IndexOutOfBoundsException ("insert " + index);
+		if (index < 0 || index > lanes.count || lanes.count == Integer.MAX_VALUE) throw new IndexOutOfBoundsException ("insert " + index);
 		requests.cancelAll (this, lanes, source);
 		lanes.insert (index);
 		residencyPins.shift (index, 1, lanes.count - 1, pinScratch);
