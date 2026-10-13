@@ -136,9 +136,9 @@ public class VisibilityGateBench {
 		 * off-monitor windows receive fewer WM_PAINTs and would understate stock work.
 		 */
 		Rectangle area = display.getPrimaryMonitor ().getClientArea ();
-		originX = area.x + area.width - 1200;
+		originX = area.x + area.width - 1300;
 		originY = area.y + area.height - 580;
-		Shell twinShell = shell (620, "twin");
+		Shell twinShell = shell (740, "twin");
 		Payload twin;
 		Shell shell = shell (40, "gated");
 		Payload gated;
@@ -187,6 +187,24 @@ public class VisibilityGateBench {
 				twin.content.setBounds (0, 0, 560, 520);
 				twinShell.addListener (SWT.Resize, e -> twin.content.setBounds (0, 0, 560, 520));
 			}
+			case "stack" -> {
+				/* StackLayout sizes every pane on each shell resize; only the top pane is visible */
+				StackLayout stack = new StackLayout ();
+				shell.setLayout (stack);
+				Label top = new Label (shell, SWT.NONE);
+				top.setText ("top pane");
+				gated = new Payload (shell, true);
+				stack.topControl = top;
+				reveal = () -> {
+					stack.topControl = gated.content;
+					shell.layout ();
+				};
+				StackLayout twinStack = new StackLayout ();
+				twinShell.setLayout (twinStack);
+				twin = new Payload (twinShell, false);
+				twinStack.topControl = twin.content;
+				resizeStorm = true;
+			}
 			default -> {
 				gated = new Payload (shell, true);
 				twin = new Payload (twinShell, false);
@@ -217,6 +235,10 @@ public class VisibilityGateBench {
 		long cpu0 = MX.getCurrentThreadCpuTime (), wall0 = System.nanoTime ();
 		for (int k = 0; k < updates; k++) {
 			gated.update (k);
+			if (resizeStorm) {
+				Point sz = shell.getSize ();
+				shell.setSize (sz.x + ((k & 1) == 0 ? 1 : -1), sz.y);
+			}
 			pump ();
 		}
 		settle (200);
@@ -227,6 +249,10 @@ public class VisibilityGateBench {
 		/* Twin receives the same updates while visible */
 		for (int k = 0; k < updates; k++) {
 			twin.update (k);
+			if (resizeStorm) {
+				Point sz = twinShell.getSize ();
+				twinShell.setSize (sz.x + ((k & 1) == 0 ? 1 : -1), sz.y);
+			}
 			pump ();
 		}
 		settle (200);
@@ -290,6 +316,7 @@ public class VisibilityGateBench {
 	}
 
 	static int originX, originY;
+	static boolean resizeStorm;
 	static String dumpDir;
 
 	static Shell shell (int x, String title) {
@@ -389,6 +416,13 @@ public class VisibilityGateBench {
 				}
 			}
 		}
+		/* Windows 11 rounds the shell's bottom corners over a client-filling child: those pixels show the desktop */
+		for (int y = Math.max (0, data.height - 8); y < data.height; y++) {
+			for (int x = 0; x < Math.min (8, data.width); x++) {
+				data.setPixel (x, y, 0);
+				data.setPixel (data.width - 1 - x, y, 0);
+			}
+		}
 		MessageDigest md = MessageDigest.getInstance ("SHA-256");
 		md.update (data.data);
 		StringBuilder hex = new StringBuilder ();
@@ -396,6 +430,25 @@ public class VisibilityGateBench {
 			hex.append (String.format ("%02x", v & 0xff));
 		}
 		return hex.toString ();
+	}
+
+	/** Common visible size: the gated control's part inside every ancestor client area (the twin is cropped to it). */
+	static Point visible;
+
+	static Point visibleSize (Control control) {
+		if (visible != null) {
+			return visible;
+		}
+		Point at = control.toDisplay (0, 0);
+		Point size = control.getSize ();
+		Rectangle r = new Rectangle (at.x, at.y, size.x, size.y);
+		for (Composite p = control.getParent (); p != null; p = p instanceof Shell ? null : p.getParent ()) {
+			Rectangle client = p.getClientArea ();
+			Point origin = p.toDisplay (client.x, client.y);
+			r = r.intersection (new Rectangle (origin.x, origin.y, client.width, client.height));
+		}
+		visible = new Point (Math.max (1, r.width), Math.max (1, r.height));
+		return visible;
 	}
 
 	static String sha (String text) throws Exception {
@@ -408,11 +461,17 @@ public class VisibilityGateBench {
 	}
 
 	static String printHash (Control control, String name) throws Exception {
-		Point size = control.getSize ();
+		/*
+		 * Screen capture of what the user sees (the shells are ON_TOP on the primary
+		 * monitor). Control.print (PrintWindow PW_RENDERFULLCONTENT) returned black
+		 * client areas intermittently in stock and gated runs alike.
+		 */
+		Point size = visibleSize (control);
+		Point at = control.toDisplay (0, 0);
 		Image image = new Image (display, size.x, size.y);
-		GC gc = new GC (image);
-		control.print (gc);
-		gc.dispose ();
+		GC screen = new GC (display);
+		screen.copyArea (image, at.x, at.y);
+		screen.dispose ();
 		ImageData data = image.getImageData ();
 		image.dispose ();
 		CAPTURED.put (name, data);
