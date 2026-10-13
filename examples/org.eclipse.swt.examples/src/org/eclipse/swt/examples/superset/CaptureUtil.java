@@ -84,8 +84,12 @@ public final class CaptureUtil {
 		shell.forceActive();
 		idle(display);
 		if (display.getActiveShell() != shell) return null;
-		Rectangle b = control instanceof Shell ? shell.getBounds()
-				: display.map(control, null, 0, 0, control.getSize().x, control.getSize().y);
+		Rectangle b = control.getBounds();
+		if (!(control instanceof Shell)) {
+			// outer bounds (border included), the same area Control.print draws
+			Point origin = control.getParent().toDisplay(b.x, b.y);
+			b = new Rectangle(origin.x, origin.y, b.width, b.height);
+		}
 		Image img = new Image(display, b.width, b.height);
 		try {
 			GC gc = new GC(display);

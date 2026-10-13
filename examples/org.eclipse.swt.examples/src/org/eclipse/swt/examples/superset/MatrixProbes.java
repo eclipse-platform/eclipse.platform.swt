@@ -37,8 +37,13 @@ final class MatrixProbes {
 	private final Display display;
 	private final MatrixRow row;
 	private final Counters counters;
-	/** damage[scenario] = {px, rects, fullRepaints, protectedHitPx, frames}; 0 scroll, 1 selection, 2 caret/hover */
-	private final long[][] damage = new long[3][5];
+	/**
+	 * damage[scenario] = {px, rects, fullRepaints, protectedHitPx, frames, overpaintPx, underpaintPx,
+	 * underpaintSamples}; scenario 0 scroll, 1 selection, 2 caret/hover
+	 */
+	private final long[][] damage = new long[3][8];
+	private long restDiff = -1;
+	private boolean comparable;
 
 	MatrixProbes(Display display, MatrixRow row, Counters counters) {
 		this.display = display;
@@ -95,12 +100,58 @@ final class MatrixProbes {
 		long[] d = damage[s];
 		for (int i = 0; i < 4; i++) d[i] += f[i];
 		d[4]++;
+		d[5] += Math.max(0, f[4] - f[5]);
 	}
 
 	/** Discards damage recorded since the last frame (paints caused by Control.print). */
 	void discard() {
 		counters.sink().endFrame();
 		counters.resetUnion();
+	}
+
+	/**
+	 * Calibrates the on-screen check: the pixel difference between the display
+	 * capture and the print capture of the widget at rest. Underpaint is only
+	 * measured when that difference is at most 1% of the widget's pixels (on a
+	 * shared desktop another window may cover the shell).
+	 */
+	void calibrate(Control c) {
+		CaptureUtil.Capture shown = CaptureUtil.copyDisplay(c, false);
+		CaptureUtil.Capture printed = CaptureUtil.printControl(c, false);
+		discard();
+		debug("rest", shown, printed);
+		restDiff = shown == null || printed == null ? -1 : CaptureUtil.diffPixels(shown.data(), printed.data());
+		long pixels = (long) c.getSize().x * c.getSize().y;
+		comparable = restDiff >= 0 && restDiff * 100 <= pixels;
+		row.note("underpaint_rest_diff_px=" + restDiff + (comparable ? "" : " (display capture not comparable: underpaint not measured)"));
+	}
+
+	/** With -Dsuperset.debugCapture=dir, writes both captures as PNG for inspection. */
+	private void debug(String tag, CaptureUtil.Capture shown, CaptureUtil.Capture printed) {
+		String dir = System.getProperty("superset.debugCapture");
+		if (dir == null || shown == null || printed == null) return;
+		try {
+			java.nio.file.Files.write(java.nio.file.Path.of(dir, tag + "_display.png"), CaptureUtil.png(shown.data()));
+			java.nio.file.Files.write(java.nio.file.Path.of(dir, tag + "_print.png"), CaptureUtil.png(printed.data()));
+		} catch (java.io.IOException e) {
+			row.note("debug capture write failed: " + e);
+		}
+	}
+
+	/**
+	 * Underpaint sample for scenario s: stale on-screen pixels, i.e. the display
+	 * capture against a fresh print of the same widget, minus the rest difference.
+	 */
+	void underpaint(int s, Control c) {
+		if (!comparable) return;
+		CaptureUtil.Capture shown = CaptureUtil.copyDisplay(c, false);
+		CaptureUtil.Capture printed = CaptureUtil.printControl(c, false);
+		discard();
+		if (shown == null || printed == null) return;
+		long d = CaptureUtil.diffPixels(shown.data(), printed.data());
+		if (d < 0) return;
+		damage[s][6] += Math.max(0, d - restDiff);
+		damage[s][7]++;
 	}
 
 	/** Selection and caret/hover damage, DAMAGE_FRAMES frames each, plus the pixel-diff check. */
@@ -119,6 +170,8 @@ final class MatrixProbes {
 			if (before != null && did) {
 				outside += UiState.changedOutside(before, UiState.print(demo.control()), union);
 				checked++;
+				discard();
+				underpaint(1, demo.control());
 			}
 		}
 		if (checked > 0) row.note("damage_outside_px=" + outside + " (pixel diff, " + checked + " selection frames)");
@@ -129,12 +182,14 @@ final class MatrixProbes {
 			drain();
 			if (did) frame(2);
 			else discard();
+			if (did && f < 3) underpaint(2, demo.control());
 		}
 	}
 
 	void damageColumns() {
 		row.set(MatrixRow.DAMAGE_PX, triple(0, true)).set(MatrixRow.DAMAGE_RECTS, rects());
 		row.set(MatrixRow.FULL_REPAINTS, triple(2, false)).set(MatrixRow.PROTECTED_HIT, triple(3, false));
+		row.set(MatrixRow.OVERPAINT, triple(5, false)).set(MatrixRow.UNDERPAINT, underTriple());
 	}
 
 	private String triple(int slot, boolean perFrame) {
@@ -142,6 +197,15 @@ final class MatrixProbes {
 		for (int s = 0; s < 3; s++) {
 			long[] d = damage[s];
 			b.append(s == 0 ? "" : "/").append(d[4] == 0 ? "-" : Long.toString(perFrame ? d[slot] / d[4] : d[slot]));
+		}
+		return b.toString();
+	}
+
+	private String underTriple() {
+		StringBuilder b = new StringBuilder();
+		for (int s = 0; s < 3; s++) {
+			long[] d = damage[s];
+			b.append(s == 0 ? "" : "/").append(d[4] == 0 || d[7] == 0 ? "-" : Long.toString(d[6] / d[7]));
 		}
 		return b.toString();
 	}
@@ -223,6 +287,7 @@ final class MatrixProbes {
 	void captures(Shell shell, Control widget) {
 		CaptureUtil.Capture printed = CaptureUtil.printControl(widget, true);
 		CaptureUtil.Capture shown = CaptureUtil.copyDisplay(widget, true);
+		debug("final", shown, printed);
 		discard();
 		if (shown == null) {
 			row.set(MatrixRow.CAPTURE_MODE, "print");

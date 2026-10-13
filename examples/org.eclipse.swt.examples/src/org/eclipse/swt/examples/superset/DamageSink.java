@@ -25,10 +25,10 @@ final class DamageSink {
 
 	private static final String RECORDER = "org.eclipse.swt.internal.ViewportDamageRecorder";
 	private final Object recorder;
-	private Method rPaint, rEnd, rFrames, rDamage, rRects, rFull, rHit, rViewport, rProtected, rAdd, rClear;
+	private Method rPaint, rEnd, rFrames, rDamage, rRects, rFull, rHit, rPainted, rVisible, rViewport, rProtected, rAdd, rClear;
 	private int width, height;
 	private int[] bands = new int[0];
-	private long px, hit;
+	private long px, hit, visiblePx;
 	private int rects;
 
 	DamageSink() {
@@ -53,6 +53,8 @@ final class DamageSink {
 		rRects = t.getMethod("damageRects", int.class);
 		rFull = t.getMethod("isFullRepaint", int.class);
 		rHit = t.getMethod("protectedHitPx", int.class);
+		rPainted = t.getMethod("paintedPx", int.class);
+		rVisible = t.getMethod("visiblePaintedPx", int.class);
 		rViewport = t.getMethod("setViewport", int.class, int.class);
 		rProtected = t.getMethod("protectedArea");
 		Class<?> region = rProtected.getReturnType();
@@ -85,6 +87,7 @@ final class DamageSink {
 		px += (long) w * h;
 		rects++;
 		for (int i = 0; i < bands.length; i += 4) hit += overlap(x, y, w, h, bands[i], bands[i + 1], bands[i + 2], bands[i + 3]);
+		visiblePx += overlap(x, y, w, h, 0, 0, width, height);
 	}
 
 	private static long overlap(int x, int y, int w, int h, int bx, int by, int bw, int bh) {
@@ -92,16 +95,17 @@ final class DamageSink {
 		return ow > 0 && oh > 0 ? ow * oh : 0;
 	}
 
-	/** Ends a frame. @return {damagePx, rects, fullRepaint 0/1, protectedHitPx} */
+	/** Ends a frame. @return {damagePx, rects, fullRepaint 0/1, protectedHitPx, paintedPx, visiblePaintedPx} */
 	long[] endFrame() {
 		if (recorder != null) {
 			call(rEnd);
 			int f = (int) Math.min(Integer.MAX_VALUE, (Long) call(rFrames) - 1);
-			return new long[] {(Long) call(rDamage, f), (Integer) call(rRects, f), (Boolean) call(rFull, f) ? 1 : 0, (Long) call(rHit, f)};
+			return new long[] {(Long) call(rDamage, f), (Integer) call(rRects, f), (Boolean) call(rFull, f) ? 1 : 0, (Long) call(rHit, f),
+					(Long) call(rPainted, f), (Long) call(rVisible, f)};
 		}
 		long viewport = (long) width * height;
-		long[] out = {px, rects, viewport > 0 && px * 100 >= viewport * 95 ? 1 : 0, hit};
-		px = hit = 0;
+		long[] out = {px, rects, viewport > 0 && visiblePx * 100 >= viewport * 95 ? 1 : 0, hit, px, visiblePx};
+		px = hit = visiblePx = 0;
 		rects = 0;
 		return out;
 	}

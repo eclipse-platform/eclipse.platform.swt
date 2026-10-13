@@ -133,6 +133,7 @@ public final class MatrixRunner {
 		probes.wrappers(folder, demo);
 		repro(shell, demo);
 		phase = "damage";
+		probes.calibrate(demo.control());
 		probes.interactions(demo);
 		sweep(demo);
 		burst(demo);
@@ -162,7 +163,7 @@ public final class MatrixRunner {
 		shell.open();
 		drain();
 		long created = System.nanoTime();
-		row.note("create_ms=" + Math.round(Metrics.ms(created - t0)));
+		row.note("create_ms=" + Math.round(Metrics.ms(created - t0)) + " zoom=" + shell.getMonitor().getZoom());
 		phase = "first_paint";
 		counters.reset();
 		long t1 = System.nanoTime();
@@ -205,11 +206,17 @@ public final class MatrixRunner {
 		long pix1 = settledHash(demo);
 		boolean stable = pix0 != Long.MIN_VALUE && pix1 != Long.MIN_VALUE;
 		row.set(MatrixRow.REPRO_STATES, states);
+		boolean activationChanged = active != (display.getActiveShell() == shell);
+		if (activationChanged) {
+			// focus follows window activation on a shared desktop: compare the widget state without it
+			api0 = api0.replaceAll("focus_within=(true|false)", "");
+			api1 = api1.replaceAll("focus_within=(true|false)", "");
+		}
 		row.set(MatrixRow.REPRO_API, api0.equals(api1) ? "y" : "n");
 		row.set(MatrixRow.REPRO_PIXEL, pix0 < 0 || pix1 < 0 || !stable ? "-" : pix0 == pix1 ? "y" : "n");
 		if (!stable) row.note("repro_pixels_unsettled: print hash kept changing without input over 6x60 ms (animated or live widget)");
 		if (!api0.equals(api1)) row.note("repro_api_before=" + api0 + " after=" + api1);
-		if (active != (display.getActiveShell() == shell)) row.note("repro_activation_changed");
+		if (activationChanged) row.note("repro_activation_changed (focus excluded from the API compare)");
 		probes.discard();
 	}
 
@@ -239,6 +246,7 @@ public final class MatrixRunner {
 			drain();
 			metrics.frame(System.nanoTime() - t);
 			probes.frame(0);
+			if (f % 75 == 25) probes.underpaint(0, demo.control());
 			if (f == half) {
 				row.set(MatrixRow.SHOT_END, shot(demo, "end"));
 				probes.discard();
@@ -275,6 +283,7 @@ public final class MatrixRunner {
 		phase = "hidden_update";
 		folder.setSelection(1);
 		drain();
+		probes.discard();
 		counters.reset();
 		demo.updateData();
 		long end = System.currentTimeMillis() + HIDDEN_WINDOW_MS;
@@ -283,7 +292,8 @@ public final class MatrixRunner {
 		}
 		row.set(MatrixRow.HIDDEN_PAINTS, counters.get(Counters.PAINT));
 		row.set(MatrixRow.HIDDEN_LAYOUTS, counters.get(Counters.LAYOUT));
-		row.note("hidden_materialize=" + counters.get(Counters.MATERIALIZE) + " hidden_measure=" + counters.get(Counters.MEASURE));
+		row.note("hidden_materialize=" + counters.get(Counters.MATERIALIZE) + " hidden_measure=" + counters.get(Counters.MEASURE)
+				+ " hidden_painted_px=" + counters.sink().endFrame()[4]);
 	}
 
 	private void judge(SupersetDemo demo) {
