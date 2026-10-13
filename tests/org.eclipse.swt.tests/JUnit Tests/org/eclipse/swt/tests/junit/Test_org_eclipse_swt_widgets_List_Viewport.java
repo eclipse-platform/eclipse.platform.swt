@@ -226,6 +226,14 @@ public class Test_org_eclipse_swt_widgets_List_Viewport {
 		}
 		org.eclipse.swt.graphics.ImageData data = image.getImageData ();
 		image.dispose ();
+		/* capture mode: Control.print (WM_PRINT); the owner-drawn rows must be in the image, not a blank client area */
+		java.util.Set<Integer> colors = new java.util.HashSet<> ();
+		for (int y = 0; y < data.height && colors.size () < 3; y++) {
+			for (int x = 0; x < data.width && colors.size () < 3; x++) {
+				colors.add (data.getPixel (x, y));
+			}
+		}
+		assertTrue (colors.size () >= 3, "print rendered the rows (distinct colours: " + colors.size () + ")");
 		return Integer.toHexString (Arrays.hashCode (data.data));
 	}
 
