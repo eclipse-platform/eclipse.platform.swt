@@ -38,13 +38,13 @@ Rules:
 
 | Plane bit | Frozen by | While frozen | At the last `endBatch` |
 |---|---|---|---|
-| `PLANE_MAIN` (structure, chrome, layout, children) | relayout, column/header change, child add/remove, reconfiguration | Composite layout deferred (`setLayoutDeferred`); the viewport keeps scrolling and painting | one layout |
-| `PLANE_VIEWPORT` (content) | setItems, sort, filter, setText, setStyleRanges | WM_PAINT records its update region and paints nothing (BeginPaint/EndPaint with the erase answered as done, so WM_NCPAINT and the native scrollbars stay live); `redraw` records its rectangle | the accumulated damage is invalidated once, no erase, no frame |
-| `PLANE_SCROLLBARS` | rare: scrollbar reconfiguration storms | `SetScrollInfo` updates values without redraw | one frame repaint (RDW_FRAME, no erase) |
+| `SWT.PLANE_MAIN` (structure, chrome, layout, children) | relayout, column/header change, child add/remove, reconfiguration | Composite layout deferred (`setLayoutDeferred`); the viewport keeps scrolling and painting | one layout |
+| `SWT.PLANE_VIEWPORT` (content) | setItems, sort, filter, setText, setStyleRanges | WM_PAINT records its update region and paints nothing (BeginPaint/EndPaint with the erase answered as done, so WM_NCPAINT and the native scrollbars stay live); `redraw` records its rectangle | the accumulated damage is invalidated once, no erase, no frame |
+| `SWT.PLANE_SCROLLBARS` | rare: scrollbar reconfiguration storms | `SetScrollInfo` updates values without redraw | one frame repaint (RDW_FRAME, no erase) |
 
 - Depths are packed, 8 bits per plane per control, so nesting is safe.
 - No WM_SETREDRAW: it hides the whole window, scrollbars included, and the stock `setRedraw (true)` ends with RDW_ERASE|RDW_FRAME|RDW_ALLCHILDREN.
-- **Long operations:** `runBatch (control, planes, cpuWork, uiApply, expectedMs)` runs `cpuWork` on a worker behind `BusyIndicator.showWhile (Future)` when `expectedMs >= BUSY_THRESHOLD_MS` (100, `-Dswt.batch.busyMs`). The busy cursor shows, the event loop and scrollbars stay live, and the frozen planes paint once.
+- **Long operations:** `Control.runBatch (planes, background, apply)` runs `background` on a worker while the UI thread keeps dispatching (the same loop as `BusyIndicator.showWhile (Future)`); after 100 ms (`-Dswt.batch.busyMs`) every shell shows the busy cursor. The viewport and scroll bars stay live, and the frozen planes paint once.
 - **Threshold:** small operations add damage directly; a batch is for large ones. `PlanesBench` (changes 1/5/20/100/1000; direct, stock setRedraw, viewport) measures the crossover.
 
 ## 3. Debounce (item A)
@@ -57,15 +57,22 @@ Rules:
 
 `VisibilityGate.attachDamageRecorder (control, recorder)` feeds the WM_PAINT update region (GetUpdateRgn before BeginPaint) of the control and its descendants into a #121 `ViewportDamageRecorder`, in content-viewport coordinates. It is off unless attached; the WM_PAINT fast path is one int test. Absorbed (frozen-viewport) paints are not recorded as painted. Blit copies come from `Canvas.scroll`, which this leaf does not own; that owner records them.
 
-## 5. Consumer API (internal)
+## 5. API
+
+Public SWT API (`@since 3.137`, `checkWidget`, all three platforms; GTK and Cocoa fall back to `setLayoutDeferred` for the main plane and `setRedraw` for the viewport plane, NOT_RUN):
+
+```java
+public void Control.beginBatch (int planes)   // SWT.PLANE_MAIN | SWT.PLANE_VIEWPORT | SWT.PLANE_SCROLLBARS
+public void Control.endBatch (int planes)
+public void Control.runBatch (int planes, Runnable background, Runnable apply)
+```
+
+Internal (`org.eclipse.swt.internal.VisibilityGate`, not API):
 
 ```java
 boolean VisibilityGate.isOffscreen (Control control, boolean paint)
 boolean VisibilityGate.defer (Control control, int kinds)        // PAINT | LAYOUT | MEASURE | DATA
 int     VisibilityGate.CATCH_UP                                   // event, detail = deferred kinds
-boolean VisibilityGate.beginBatch (Control control, int planes)  // PLANE_MAIN | PLANE_VIEWPORT | PLANE_SCROLLBARS
-boolean VisibilityGate.endBatch (Control control, int planes)
-void    VisibilityGate.runBatch (Control control, int planes, Runnable cpuWork, Runnable uiApply, int expectedMs)
 boolean VisibilityGate.debounce (Control control, int kind, int delayMs)
 int     VisibilityGate.DEBOUNCED                                  // event, detail = ORed kinds
 boolean VisibilityGate.boxEdges (Control control, int [] out16)  // [ring * 4 + side], device pixels
