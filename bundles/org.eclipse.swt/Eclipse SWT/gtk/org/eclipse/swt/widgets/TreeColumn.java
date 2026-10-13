@@ -478,12 +478,7 @@ public void pack () {
 		width = requisition.width;
 	}
 	if ((parent.style & SWT.VIRTUAL) != 0) {
-		for (int i=0; i<parent.items.length; i++) {
-			TreeItem item = parent.items [i];
-			if (item != null && item.cached) {
-				width = Math.max (width, parent.calculateWidth (handle, item.handle, true));
-			}
-		}
+		width = Math.max (width, parent.calculateVirtualColumnWidth (handle));
 	} else {
 		long iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
 		if (GTK.gtk_tree_model_get_iter_first (parent.modelHandle, iter)) {

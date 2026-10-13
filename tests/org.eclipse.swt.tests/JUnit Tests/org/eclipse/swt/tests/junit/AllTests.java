@@ -29,6 +29,7 @@ import org.junit.platform.suite.api.Suite;
 	Test_VirtualTreeTopology.class,
 	Test_VirtualTreeWindow.class,
 	Test_VirtualBitLanes.class,
+	Test_VirtualNativeTableModel.class,
 	ViewportResourceRegressionTest.class,
 	AllNonBrowserTests.class,
 	AllBrowserTests.class

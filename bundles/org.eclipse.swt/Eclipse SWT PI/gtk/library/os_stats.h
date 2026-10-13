@@ -1245,5 +1245,7 @@ typedef enum {
 	swt_1fixed_1restack_FUNC,
 	swt_1scaled_1paintable_1new_FUNC,
 	swt_1set_1lock_1functions_FUNC,
+	swt_1tree_1view_1column_1get_1logical_1cell_1allocation_FUNC,
+	swt_1tree_1view_1column_1new_1for_1viewport_FUNC,
 	ubuntu_1menu_1proxy_1get_FUNC,
 } OS_FUNCS;
