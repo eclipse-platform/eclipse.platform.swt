@@ -136,9 +136,9 @@ public class Test_ItemResidency {
 		assertEquals (k ("TIER_WARM"), i (e, "tier", 3));
 		call (e, "applyPressure", 0);
 		assertEquals (0, i (e, "stat", k ("STAT_PERMILLE")));
-		assertEquals (15, i (e, "stat", k ("STAT_BUDGET")));
+		assertEquals (20, i (e, "stat", k ("STAT_BUDGET")), "budget falls to the HOT window [95, 115)");
 		assertEquals (k ("TIER_DESTROYED"), i (e, "tier", 3));
-		assertEquals (15, i (e, "stat", k ("STAT_RESIDENT")));
+		assertEquals (20, i (e, "stat", k ("STAT_RESIDENT")));
 		call (e, "applyPressure", 1000);
 		assertEquals (125, i (e, "stat", k ("STAT_PERMILLE")), "recovery is rate-limited");
 		call (e, "applyPressure", 1000);
@@ -316,20 +316,23 @@ public class Test_ItemResidency {
 	}
 
 	@Test
-	public void spillStoreRecyclesBlocksAndRoundTrips () {
+	public void fileSwapStoreRecyclesBlocksAndNeverRevivesStaleIds () {
 		Object spill = spill ();
+		Object store = field (spill, "store");
+		long r1 = (Long) call (store, "reserve", 100);
 		byte [] a = new byte [100];
 		Arrays.fill (a, (byte) 7);
-		int r1 = (Integer) call (spill, "write", a, 100);
-		assertEquals (100, i (spill, "length", r1));
-		call (spill, "free", r1);
-		byte [] b = new byte [90];
-		Arrays.fill (b, (byte) 9);
-		int r2 = (Integer) call (spill, "write", b, 90);
-		assertEquals (r1, r2, "freed block class is reused");
-		byte [] back = new byte [90];
-		call (spill, "read", r2, back);
-		assertArrayEquals (b, back);
+		call (store, "write", Map.of (r1, a), null);
+		assertArrayEquals (a, (byte []) call (store, "read", r1));
+		call (store, "write", Map.of (r1, a), null);
+		assertThrows (RuntimeException.class, () -> call (store, "write", Map.of (r1, new byte [100]), null), "conflicting bytes refused");
+		call (store, "release", r1);
+		assertNull (call (store, "read", r1), "released id reads absent");
+		long r2 = (Long) call (store, "reserve", 90);
+		assertNotEquals (r1, r2, "unique id even when the block is recycled");
+		assertEquals (r1 & 0xFFFFFFFFL, r2 & 0xFFFFFFFFL, "same block class reused");
+		assertNull (call (store, "read", r1));
+		assertEquals ("java", call (store, "opsId"), "fail-closed Java page ops without a native candidate");
 		call (spill, "close");
 	}
 }
