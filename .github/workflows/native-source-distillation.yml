@@ -54,6 +54,10 @@ jobs:
         with:
           repository: hsoliwal/com.synexia
           ref: b280abde3cca3f74ed61a4a02a109bbee3273d14
+          # hsoliwal/com.synexia is private: the job GITHUB_TOKEN is scoped to this
+          # repository only and gets "repository not found". A read-only token for
+          # the atomizer repository must be stored as SYNEXIA_READ_TOKEN.
+          token: ${{ secrets.SYNEXIA_READ_TOKEN || github.token }}
           path: target/m3-synexia
           sparse-checkout-cone-mode: false
           sparse-checkout: |

@@ -9,7 +9,30 @@ permissions:
   contents: read
 
 jobs:
+  # The publisher pushes the bot's version-increment commit and comments with
+  # PLATFORM_BOT_PAT. Forks do not carry that secret, so the publisher could only
+  # fail ("Invalid username or token", "Input required and not supplied:
+  # github-token"). The gate itself stays in Pull-Request Checks/check-versions,
+  # which still fails until the increments are committed.
+  bot-pat:
+    runs-on: ubuntu-slim
+    outputs:
+      present: ${{ steps.probe.outputs.present }}
+    steps:
+      - id: probe
+        env:
+          PAT: ${{ secrets.PLATFORM_BOT_PAT }}
+        run: |
+          if [[ -n "$PAT" ]]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=Version check results not published::PLATFORM_BOT_PAT is not configured in ${{ github.repository }}; apply the versions-git-patch artifact of run ${{ github.event.workflow_run.id }} by hand."
+          fi
+
   publish-version-check-results:
+    needs: bot-pat
+    if: needs.bot-pat.outputs.present == 'true'
     uses: eclipse-platform/eclipse.platform.releng.aggregator/.github/workflows/publishVersionCheckResults.yml@master
     with:
       botGithubId: eclipse-platform-bot
