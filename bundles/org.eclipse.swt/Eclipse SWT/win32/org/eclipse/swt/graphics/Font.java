@@ -60,6 +60,9 @@ public final class Font extends Resource {
 	 */
 	private boolean isDestroyed;
 
+	/** Retained-plane font id + 1 (0 = not yet assigned); ids are keyed by LOGFONT value. */
+	int gpuFontId;
+
 	/**
 	 * this field is used to store fontData provided during initialization
 	 */

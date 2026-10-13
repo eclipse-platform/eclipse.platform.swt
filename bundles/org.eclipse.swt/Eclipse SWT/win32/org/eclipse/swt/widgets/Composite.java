@@ -17,6 +17,7 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.gpu.*;
 import org.eclipse.swt.internal.win32.*;
 
 /**
@@ -317,6 +318,10 @@ Point computeSizeInPixels (Point hintInPoints, int zoom, boolean changed) {
 void createHandle () {
 	super.createHandle ();
 	state |= CANVAS;
+	/* Retained planes: a mask bit mapped from -Dswt.gpu at creation, never a wrapper control */
+	if (RetainedPlanes.MODE != RetainedPlanes.MODE_OFF && (style & (SWT.TRANSPARENT | SWT.RIGHT_TO_LEFT)) == 0 && !(this instanceof Decorations)) {
+		retainedBits |= GPU_RETAINED;
+	}
 	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0 || findThemeControl () == parent) {
 		state |= THEME_BACKGROUND;
 	}
@@ -387,6 +392,9 @@ void drawBackgroundInPixels(GC gc, int x, int y, int width, int height, int offs
     if (gc.isDisposed()) {
         error(SWT.ERROR_INVALID_ARGUMENT);
     }
+	/* Retained planes: skipped plane, or record the fill for GPU replay instead of drawing on the HDC */
+	GCData data = gc.getGCData ();
+	if (data.planeDraw != -1 && RetainedFrame.divertBackground (this, data, x, y, width, height, background == -1 ? gc.getBackground ().handle : -1)) return;
 	RECT rect = new RECT ();
 	OS.SetRect (rect, x, y, x + width, y + height);
 	long hDC = gc.handle;
@@ -1633,6 +1641,14 @@ LRESULT WM_PAINT (long wParam, long lParam) {
     if (newBits != oldBits) {
         OS.SetWindowLong(handle, OS.GWL_STYLE, newBits);
     }
+
+	/* Retained planes: paint into the widget's own window from retained tiles */
+	if ((retainedBits & GPU_RETAINED) != 0 && (hooks (SWT.Paint) || filters (SWT.Paint)) && RetainedFrame.paint (this)) {
+		if (!isDisposed () && newBits != oldBits) {
+			OS.SetWindowLong (handle, OS.GWL_STYLE, oldBits);
+		}
+		return LRESULT.ZERO;
+	}
 
 	/* Paint the control and the background */
 	PAINTSTRUCT ps = new PAINTSTRUCT ();

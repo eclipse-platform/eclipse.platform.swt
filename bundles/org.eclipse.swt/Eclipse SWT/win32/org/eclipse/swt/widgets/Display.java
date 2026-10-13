@@ -23,6 +23,7 @@ import java.util.function.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.gpu.*;
 import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.internal.win32.version.*;
@@ -3006,6 +3007,9 @@ public long internal_new_GC (GCData data) {
 protected void init () {
 	// Field initialization happens after super constructor
 	controlByHandle = new HashMap<>();
+	if (RetainedPlanes.MODE != RetainedPlanes.MODE_OFF) {
+		RetainedPlanes.install (RetainedHook.INSTANCE);
+	}
 	this.synchronizer = new Synchronizer (this);
 	if (this.coordinateSystemMapper == null) {
 		this.coordinateSystemMapper = new SingleZoomCoordinateSystemMapper(this);
@@ -4112,6 +4116,27 @@ protected void release () {
 	}
 }
 
+/* Retained planes GPU backend (-Dswt.gpu=skija): 0 untried, 1 ready, 2 unavailable */
+PlaneBackend gpuBackend;
+int gpuBackendState;
+
+/** Shared GPU backend of this display, loaded on first use; null keeps the GDI path. */
+PlaneBackend gpuBackend () {
+	if (gpuBackendState == 0) {
+		gpuBackendState = 2;
+		PlaneBackend backend = PlaneBackend.load (PlaneBackend.SKIJA);
+		try {
+			if (backend != null && backend.init ()) {
+				gpuBackend = backend;
+				gpuBackendState = 1;
+			}
+		} catch (Throwable unavailable) {
+			GpuCounters.inc (GpuCounters.FALLBACKS);
+		}
+	}
+	return gpuBackend;
+}
+
 void releaseDisplay () {
 	if (occlusionTracker != null) {
 		occlusionTracker.stop ();
@@ -4121,6 +4146,13 @@ void releaseDisplay () {
 		visDirty [i] = null;
 	}
 	visDirtyCount = visPendingLayouts = visOccludedShells = 0;
+	if (gpuBackend != null) {
+		try {
+			gpuBackend.dispose ();
+		} catch (Throwable ignored) {
+		}
+		gpuBackend = null;
+	}
 	if (embeddedHwnd != 0) {
 		OS.PostMessage (embeddedHwnd, SWT_DESTROY, 0, 0);
 	}
