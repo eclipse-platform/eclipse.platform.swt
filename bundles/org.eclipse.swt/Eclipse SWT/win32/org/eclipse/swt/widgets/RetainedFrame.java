@@ -237,7 +237,18 @@ final class RetainedFrame implements TileGrid.Listener {
 		/* tiles that held fixed pixels (outside the block) would scroll with content: invalidate them first */
 		int n = Rects.subtract (0, 0, cw, ch, Math.min (sx0, sx0 + dx), Math.min (sy0, sy0 + dy), Math.max (sx1, sx1 + dx) - Math.min (sx0, sx0 + dx), Math.max (sy1, sy1 + dy) - Math.min (sy0, sy0 + dy), parts);
 		if (dx != 0 && dy != 0) n = Rects.subtract (0, 0, cw, ch, sx0, sy0, sx1 - sx0, sy1 - sy0, parts);
-		for (int i = 0; i < n; i++) grid.damage (parts [i * 4], parts [i * 4 + 1], parts [i * 4 + 2], parts [i * 4 + 3]);
+		for (int i = 0; i < n; i++) {
+			/*
+			 * A strip spanning the whole client height (a fixed margin beside a vertical scroll) is
+			 * invalidated for the whole column in content space, so each tile keeps one full-height
+			 * valid rectangle instead of losing rows to the single-rectangle validity rule; likewise
+			 * full-width strips for horizontal scrolls.
+			 */
+			int x = parts [i * 4], y = parts [i * 4 + 1], w = parts [i * 4 + 2], h = parts [i * 4 + 3];
+			if (h == ch) { y = -(1 << 28); h = 1 << 29; }
+			if (w == cw) { x = -(1 << 28); w = 1 << 29; }
+			grid.damage (x, y, w, h);
+		}
 		grid.translate (dx, dy);
 		GpuCounters.inc (GpuCounters.SCROLL_TRANSLATES);
 		int hasOverlay = flags & HAS_OVERLAY;
@@ -245,11 +256,9 @@ final class RetainedFrame implements TileGrid.Listener {
 		for (int i = 0; i < n; i++) {
 			int x = parts [i * 4], y = parts [i * 4 + 1], w = parts [i * 4 + 2], h = parts [i * 4 + 3];
 			/* refill is pixel-exact only at integral zoom; fractional zoom rounds content per position, so raster as stock does */
-			if (control.getAutoscalingZoom () % 100 == 0 && refillFromTiles (x, y, w, h)) {
-				compositeOnly.add (x, y, x + w, y + h);
-			} else {
-				damage.add (x, y, x + w, y + h);
-			}
+			/* the band is known damage, not an external change: its WM_PAINT must not drop off-screen tiles */
+			compositeOnly.add (x, y, x + w, y + h);
+			if (control.getAutoscalingZoom () % 100 != 0 || !refillFromTiles (x, y, w, h)) damage.add (x, y, x + w, y + h);
 		}
 		if (hasOverlay == 0) {
 			/* the screen moves exactly as stock; WM_PAINT then covers only the exposed band */
