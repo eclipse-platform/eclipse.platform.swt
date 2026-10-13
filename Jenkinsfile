@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2021, 2024 Red Hat Inc. and others.
+ * Copyright (c) 2021, 2026 Red Hat Inc. and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -222,8 +222,11 @@ pipeline {
 										if (isUnix()) {
 											sh '''#!/bin/bash -x
 												mkdir libs
-												if [[ ${PLATFORM} == gtk.linux.* ]]; then
+												if [[ ${PLATFORM} == gtk.linux.x86_64 ]]; then
 													sh build.sh -gtk3 checklibs install
+												elif [[ ${PLATFORM} == gtk.linux.* ]]; then
+													# Without -gtk3/-gtk4 both GTK 4 and GTK 3 are built
+													sh build.sh checklibs install
 												elif [[ ${PLATFORM} == gtk4.linux.* ]]; then
 													# We build both 3 + 4, but we only keep libswt-pi4-gtk
 													# We build both to help catch build errors as this
