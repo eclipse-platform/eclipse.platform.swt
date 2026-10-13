@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
+import java.util.concurrent.*;
 import java.util.function.*;
 
 import org.eclipse.swt.*;
@@ -90,6 +91,8 @@ public final class VirtualPageSource {
 	public static final int SWAPPED_OUT = 9;
 	/** Counter: blocks swapped back in instead of fetched ({@link #SWAP}). */
 	public static final int SWAPPED_IN = 10;
+	/** Counter: API reads that waited longer than 100 ms behind the busy indicator. */
+	public static final int BUSY_WAITS = 11;
 
 	/**
 	 * Fetches one block. Called on a worker thread, never on the UI thread; it must not touch
@@ -282,7 +285,12 @@ public final class VirtualPageSource {
 	private int [] nodeKeys = new int [8];
 	private int [] nodeHints = new int [8];
 	private int nodeSize;
-	private final int [] counters = new int [11];
+	private final int [] counters = new int [12];
+	/** A caller's API read waits plainly this long before the busy indicator shows. */
+	static final int BUSY_AFTER_MILLIS = 100;
+	/* Guarded by lock: slots a caller's API read waits for (never cancelled by the window), and their waiters. */
+	private final boolean [] apiWanted;
+	private final CompletableFuture<?> [] waiters;
 	private final VirtualBlockSpill spill;
 	/** Result bit of a block answered from the swap store. */
 	private static final int RESTORED = 1 << 5;
@@ -290,7 +298,6 @@ public final class VirtualPageSource {
 	boolean answeredPlaceholder;
 	/** Set by the host around paint-time SetData; any other SetData is a caller's API read. */
 	boolean paintRequest;
-	private Request uiRequest;
 
 	/**
 	 * Creates a source.
@@ -326,6 +333,8 @@ public final class VirtualPageSource {
 		}
 		cancelBits = new boolean [maxBlocks];
 		workerTotals = new int [maxBlocks];
+		apiWanted = new boolean [maxBlocks];
+		waiters = new CompletableFuture<?> [maxBlocks];
 	}
 
 	/**
@@ -374,6 +383,10 @@ public final class VirtualPageSource {
 		synchronized (lock) {
 			stopped = true;
 			lock.notifyAll ();
+			for (int i = 0; i < waiters.length; i++) {
+				if (waiters [i] != null) waiters [i].cancel (false);
+				waiters [i] = null;
+			}
 		}
 		if (!control.isDisposed ()) {
 			control.removeListener (SWT.SetData, listener);
@@ -771,7 +784,8 @@ public final class VirtualPageSource {
 		boolean batch = hook != null && total > hook.pageSourceBatchThreshold () && item.getExpanded ();
 		if (batch) hook.pageSourceBatch (true, item);
 		try {
-			item.setItemCount (total);
+			if (batch) org.eclipse.swt.custom.BusyIndicator.showWhile (item.getDisplay (), () -> item.setItemCount (total));
+			else item.setItemCount (total);
 		} finally {
 			if (batch) hook.pageSourceBatch (false, item);
 		}
@@ -824,61 +838,85 @@ public final class VirtualPageSource {
 		int start = block * blockSize;
 		int rows = rowsFor (parentKey, start, -1);
 		if (rows <= 0) return -1;
-		if (slot >= 0) {
-			boolean queued;
-			synchronized (lock) {
-				queued = removeQueued (slot);
-				if (!queued) {
-					while (!stopped && !isDone (slot)) {
-						try {
-							lock.wait ();
-						} catch (InterruptedException e) {
-							Thread.currentThread ().interrupt ();
-							return -1;
-						}
-					}
-				}
-			}
-			if (!queued) {
-				drainNow ();
-				slot = cache.find (parentKey, block);
-				return slot >= 0 && cache.state (slot) == VirtualBlockStore.LOADED ? slot : -1;
-			}
-		} else {
+		if (slot < 0) {
 			/* An API read starts a new access epoch so blocks read earlier may be evicted (LRU). */
 			cache.nextFrame ();
 			slot = cache.reserve (parentKey, block);
 			if (slot < 0) return -1;
 			counters [REQUESTED]++;
-		}
-		if (uiRequest == null) uiRequest = new Request (this);
-		Request request = uiRequest;
-		synchronized (lock) {
-			cancelBits [slot] = false;
-			workerTotals [slot] = VirtualBlockStore.UNKNOWN;
-		}
-		request.slot = slot;
-		request.parentKey = parentKey;
-		request.start = start;
-		request.count = rows;
-		int resultFlags = VirtualBlockStore.LOADED;
-		if (restore (request)) {
-			resultFlags |= RESTORED;
+			synchronized (lock) {
+				enqueueFront (slot, parentKey, start, rows);
+				workerTotals [slot] = VirtualBlockStore.UNKNOWN;
+			}
 		} else {
-			try {
-				fetcher.fetch (request);
-			} catch (Exception | LinkageError e) {
-				resultFlags = VirtualBlockStore.FAILED;
+			synchronized (lock) {
+				if (removeQueued (slot)) enqueueFront (slot, parentKey, start, rows);
 			}
 		}
-		request.slot = -1;
-		int total;
 		synchronized (lock) {
-			total = workerTotals [slot];
+			cancelBits [slot] = false;
+			apiWanted [slot] = true;
+			lock.notifyAll ();
 		}
-		settle (slot, resultFlags, total);
-		scheduleFrame ();
-		return cache.state (slot) == VirtualBlockStore.LOADED ? slot : -1;
+		ensureWorkers ();
+		try {
+			awaitSlot (slot);
+		} finally {
+			synchronized (lock) {
+				apiWanted [slot] = false;
+			}
+		}
+		if (host == null || host.isDisposed ()) return -1;
+		drainNow ();
+		slot = cache.find (parentKey, block);
+		return slot >= 0 && cache.state (slot) == VirtualBlockStore.LOADED ? slot : -1;
+	}
+
+	/** Caller holds the lock. */
+	private void enqueueFront (int slot, int parentKey, int start, int rows) {
+		if (queueSize == queueSlot.length) {
+			queueSlot = grow (queueSlot);
+			queueParent = grow (queueParent);
+			queueStart = grow (queueStart);
+			queueCount = grow (queueCount);
+		}
+		System.arraycopy (queueSlot, 0, queueSlot, 1, queueSize);
+		System.arraycopy (queueParent, 0, queueParent, 1, queueSize);
+		System.arraycopy (queueStart, 0, queueStart, 1, queueSize);
+		System.arraycopy (queueCount, 0, queueCount, 1, queueSize);
+		queueSlot [0] = slot;
+		queueParent [0] = parentKey;
+		queueStart [0] = start;
+		queueCount [0] = rows;
+		queueSize++;
+	}
+
+	/**
+	 * Waits for a block a caller's API read needs. Up to {@link #BUSY_AFTER_MILLIS} the UI thread
+	 * waits plainly; a slower source is awaited through
+	 * {@link org.eclipse.swt.custom.BusyIndicator#showWhile(java.util.concurrent.Future)}: the
+	 * busy cursor shows and the event loop stays alive (scroll bars live, frames paint once).
+	 */
+	private void awaitSlot (int slot) {
+		CompletableFuture<Void> future;
+		synchronized (lock) {
+			long deadline = System.currentTimeMillis () + BUSY_AFTER_MILLIS;
+			while (!stopped && !isDone (slot)) {
+				long left = deadline - System.currentTimeMillis ();
+				if (left <= 0) break;
+				try {
+					lock.wait (left);
+				} catch (InterruptedException e) {
+					Thread.currentThread ().interrupt ();
+					return;
+				}
+			}
+			if (stopped || isDone (slot)) return;
+			future = new CompletableFuture<> ();
+			waiters [slot] = future;
+		}
+		counters [BUSY_WAITS]++;
+		org.eclipse.swt.custom.BusyIndicator.showWhile (future);
 	}
 
 	/** Rows to request for a block; <code>flatCount</code> is the table row count or -1. */
@@ -1234,7 +1272,7 @@ public final class VirtualPageSource {
 			for (int i = 0; i < queueSize; i++) {
 				int slot = queueSlot [i];
 				int block = queueStart [i] / blockSize;
-				if (queueParent [i] == ROOT && (block < lowBlock || block > highBlock)) {
+				if (queueParent [i] == ROOT && !apiWanted [slot] && (block < lowBlock || block > highBlock)) {
 					cache.free (slot);
 					counters [CANCELLED]++;
 					continue;
@@ -1249,7 +1287,7 @@ public final class VirtualPageSource {
 			for (int slot = 0; slot < cache.capacity (); slot++) {
 				if ((cache.state (slot) & VirtualBlockStore.BUSY) == 0 || cache.parentKey (slot) != ROOT) continue;
 				int block = cache.block (slot);
-				if (block < lowBlock || block > highBlock) cancelBits [slot] = true;
+				if (!apiWanted [slot] && (block < lowBlock || block > highBlock)) cancelBits [slot] = true;
 			}
 		}
 	}
@@ -1405,6 +1443,7 @@ public final class VirtualPageSource {
 				}
 			}
 			boolean schedule;
+			CompletableFuture<?> waiter;
 			synchronized (lock) {
 				if (stopped) return;
 				if (doneSize == doneSlot.length) {
@@ -1419,7 +1458,10 @@ public final class VirtualPageSource {
 				schedule = !frameScheduled;
 				frameScheduled = true;
 				lock.notifyAll ();
+				waiter = waiters [request.slot];
+				waiters [request.slot] = null;
 			}
+			if (waiter != null) waiter.complete (null);
 			request.slot = -1;
 			if (schedule) {
 				Display d = display;
