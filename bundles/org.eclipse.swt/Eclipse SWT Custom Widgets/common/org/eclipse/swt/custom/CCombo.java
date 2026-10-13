@@ -64,6 +64,8 @@ public class CCombo extends Composite {
 	Font font;
 	/* SWT.VIRTUAL: widest item text in the text font, -1 when an item or the font changed */
 	int itemTextWidth = -1;
+	/* measurements of more items than this show busy */
+	static final int BUSY_ITEMS = 100000;
 	Shell _shell;
 
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.custom."; //$NON-NLS-1$
@@ -541,11 +543,18 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int textWidth = gc.stringExtent (text.getText ()).x;
 	if ((getStyle () & SWT.VIRTUAL) != 0) {
 		if (itemTextWidth < 0) {
-			int widest = 0;
-			for (String item : list.getItems ()) {
-				widest = Math.max (gc.stringExtent (item).x, widest);
+			int [] widest = new int [1];
+			Runnable measure = () -> {
+				for (String item : list.getItems ()) {
+					widest [0] = Math.max (gc.stringExtent (item).x, widest [0]);
+				}
+			};
+			if (list.getItemCount () > BUSY_ITEMS) {
+				BusyIndicator.showWhile (getDisplay (), measure);
+			} else {
+				measure.run ();
 			}
-			itemTextWidth = widest;
+			itemTextWidth = widest [0];
 		}
 		textWidth = Math.max (itemTextWidth, textWidth);
 	} else {

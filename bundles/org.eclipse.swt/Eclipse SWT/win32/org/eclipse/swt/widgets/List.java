@@ -68,7 +68,8 @@ public class List extends Scrollable {
 	long measureDC;
 	char [] textBuffer;
 	DRAWITEMSTRUCT drawStruct;
-	RECT drawRect, measureRect;
+	RECT drawRect, measureRect, scrollRect;
+	SCROLLINFO scrollInfo;
 	static final int STORE_EMPTY_EXTENT_INSET = 1 << 0, STORE_IN_SET_DATA = 1 << 1, STORE_ADDED_UCC = 1 << 2;
 	static final int STORE_PREFETCH_PENDING = 1 << 3, STORE_SCROLLED_UP = 1 << 4;
 	/*
@@ -107,6 +108,8 @@ public class List extends Scrollable {
 	static final int STORE_ROW_MESSAGE_WORK = 1 << 26;
 	/* rows up to which the horizontal extent of a VIRTUAL list is kept exact on every change */
 	static final int STORE_EXACT_EXTENT_LIMIT = 4096;
+	/* measurements of more rows than this show the wait cursor */
+	static final int STORE_BUSY_ROWS = 100000;
 	static {
 		WNDCLASS lpWndClass = new WNDCLASS ();
 		OS.GetClassInfo (0, ListClass, lpWndClass);
@@ -301,8 +304,11 @@ long callWindowProc (long hwnd, int msg, long wParam, long lParam) {
 		* WM_VSCROLL carries a 16-bit thumb position (N16); above 65535 rows
 		* scroll to the 32-bit track position of the scroll bar instead.
 		*/
-		SCROLLINFO info = new SCROLLINFO ();
-		info.cbSize = SCROLLINFO.sizeof;
+		if (scrollInfo == null) {
+			scrollInfo = new SCROLLINFO ();
+			scrollInfo.cbSize = SCROLLINFO.sizeof;
+		}
+		SCROLLINFO info = scrollInfo;
 		info.fMask = OS.SIF_TRACKPOS;
 		if (OS.GetScrollInfo (handle, OS.SB_VERT, info) && info.nTrackPos > 0xFFFF && (info.nTrackPos & 0xFFFF) == OS.HIWORD (wParam)) {
 			code = OS.SendMessage (handle, OS.LB_SETTOPINDEX, info.nTrackPos, 0) == OS.LB_ERR ? 1 : 0;
@@ -2109,11 +2115,16 @@ int storeExactWidth () {
 	if (newFont != 0) {
 		oldFont = OS.SelectObject (hDC, newFont);
 	}
+	/* a long measurement shows busy (the wait cursor) for its duration */
+	long oldCursor = itemStore.getPendingWidthCount () > STORE_BUSY_ROWS ? OS.SetCursor (Cursor.win32_getHandle (display.getSystemCursor (SWT.CURSOR_WAIT), DPIUtil.getZoomForAutoscaleProperty (getShellZoom ()))) : 0;
 	measureDC = hDC;
 	try {
 		return itemStore.getWidestWidth ();
 	} finally {
 		measureDC = 0;
+		if (oldCursor != 0) {
+			OS.SetCursor (oldCursor);
+		}
 		if (newFont != 0) {
 			OS.SelectObject (hDC, oldFont);
 		}
@@ -2472,7 +2483,10 @@ void storeRemove (int [] descending, int topIndex) {
 void storeThumbFreeze (int scrollCode, int topBefore, int topAfter) {
 	if (scrollCode == OS.SB_THUMBTRACK) {
 		int itemHeight = Math.max (1, (int)OS.SendMessage (handle, OS.LB_GETITEMHEIGHT, 0, 0));
-		RECT rect = new RECT ();
+		if (scrollRect == null) {
+			scrollRect = new RECT ();
+		}
+		RECT rect = scrollRect;
 		OS.GetClientRect (handle, rect);
 		int page = Math.max (1, rect.bottom / itemHeight);
 		int moved = topAfter > topBefore ? topAfter - topBefore : topBefore - topAfter;
@@ -2519,7 +2533,10 @@ void storePrefetchStep () {
 		storeLastTop = top;
 	}
 	int itemHeight = Math.max (1, (int)OS.SendMessage (handle, OS.LB_GETITEMHEIGHT, 0, 0));
-	RECT rect = new RECT ();
+	if (scrollRect == null) {
+		scrollRect = new RECT ();
+	}
+	RECT rect = scrollRect;
 	OS.GetClientRect (handle, rect);
 	int visible = Math.max (1, (rect.bottom + itemHeight - 1) / itemHeight);
 	int overscan = VirtualViewportPlanner.DEFAULT_OVERSCAN_ROWS;
