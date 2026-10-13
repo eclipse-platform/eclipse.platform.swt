@@ -49,14 +49,50 @@ class StyledTextRenderer {
 	int tabLength;	//tab length in spaces
 
 	/* Line data */
-	int topIndex = -1;
-	TextLayout[] layouts;
+	/*
+	 * Keyed layout cache: a ring of slots over the line window [slotTop, slotTop + capacity),
+	 * visible lines plus one viewport of overscan above and below; slot = line % capacity, so
+	 * distinct lines of the window never share a slot. A hit needs the slot's line, the key of
+	 * what shapes the line, and a current size of the line. Lines outside the window get an
+	 * uncached layout. Slots reuse their TextLayout; nothing is reallocated while scrolling.
+	 */
+	TextLayout[] slotLayout;
+	int[] slotLine;
+	long[] slotKey;
+	int[] slotBits;
+	Bullet[] slotBullet;
+	int[] slotBulletIndex;
+	int slotTop;
+	/** Scratch for moving slots when an edit changes the line count (reused). */
+	TextLayout[] moveLayout;
+	int[] moveLine, moveBits, moveBulletIndex;
+	long[] moveKey;
+	Bullet[] moveBullet;
+	/** Nesting of layout builds; the slot capacity changes only outside a build. */
+	int layoutDepth;
+	/** Bits of the layout returned last by getTextLayout. */
+	int lastLayoutBits;
+	/** Layout bit: a style of the line has GlyphMetrics (embedded objects to paint). */
+	static final int LAYOUT_OBJECTS = 1;
+	/** Painted lines' layouts and heights when the background is painted before the foreground (reused). */
+	TextLayout[] drawLayouts = new TextLayout[0];
+	int[] drawHeights = new int[0], drawBits = new int[0];
+	/* Style ids: identity-interned stored styles, a snapshot of each and its derived layout style. */
+	StyleRange[] styleSource = new StyleRange[16], styleSnapshot = new StyleRange[16], styleDerived = new StyleRange[16];
+	int styleIdCount = 1;
+	int[] styleIdSlots = new int[32];
+	static final int STYLE_ID_LIMIT = 4096;
+	/* Layout entries of the line being built: style, start, end (reused, no object per entry). */
+	TextStyle[] entryStyle = new TextStyle[16];
+	int[] entryStart = new int[16], entryEnd = new int[16];
 	int lineCount;
 	/**
 	 * Per-line state (sizes, attribute masks, runs and patterns, interned ids):
 	 * parent-owned arrays, no object per line.
 	 */
 	StyledTextLineStore store = new StyledTextLineStore();
+	/** Display client height for the viewport-mode cap; read once, refreshed on Resize (no read per layout). */
+	int displayHeight;
 	/** Height of the line measured last by {@link #calculate(int, int)}, stored or not. */
 	int lastHeight;
 	int maxWidth;
@@ -76,7 +112,8 @@ class StyledTextRenderer {
 
 	/* Bullet */
 	Bullet[] bullets;
-	int[] bulletsIndices;
+	/** Bullets come from a LineGetStyle listener: kept per layout slot, not in {@link #bullets}. */
+	boolean listenerBullets;
 	int[] redrawLines;
 
 	/* Style data */
@@ -119,7 +156,8 @@ class StyledTextRenderer {
 	 * documents keep the exact whole-document measurement.
 	 */
 	final static int VIEWPORT_LINE_THRESHOLD = 1 << 16;
-	final static int CACHE_SIZE = 300;
+	/** Minimum number of layout slots. */
+	final static int MIN_SLOTS = 64;
 
 	final static int BACKGROUND = StyledTextLineStore.BACKGROUND;
 	final static int ALIGNMENT = StyledTextLineStore.ALIGNMENT;
@@ -131,10 +169,6 @@ class StyledTextRenderer {
 	final static int SEGMENT_CHARS = StyledTextLineStore.SEGMENT_CHARS;
 	final static int VERTICAL_INDENT = StyledTextLineStore.VERTICAL_INDENT;
 	final static int UNMEASURED = StyledTextLineStore.UNMEASURED;
-
-	private record LineDrawInfo(int index, TextLayout layout, String text, int offset, int height) {
-
-	}
 
 	static int cap (TextLayout layout, int offset) {
         if (layout == null) {
@@ -399,8 +433,8 @@ void dispose() {
 	styledText = null;
 }
 void disposeTextLayout (TextLayout layout) {
-	if (layouts != null) {
-		for (TextLayout l : layouts) {
+	if (slotLayout != null) {
+		for (TextLayout l : slotLayout) {
             if (l == layout) {
                 return;
             }
@@ -447,15 +481,17 @@ void drawBullet(Bullet bullet, GC gc, int paintX, int paintY, int index, int lin
 }
 
 /**
- * Caches draw-related info that may be expensive to calculate twice when
- * drawing first background and then foreground.
+ * Height of a painted line: the measured height when the line's size is current
+ * (it was measured from the same layout), else the layout's bounds.
  */
-private LineDrawInfo makeLineDrawInfo(int lineIndex) {
-	TextLayout layout = getTextLayout(lineIndex);
-	String text = content.getLine(lineIndex);
-	int offset = content.getOffsetAtLine(lineIndex);
-	int height = layout.getBounds().height;
-	return new LineDrawInfo(lineIndex, layout, text, offset, height);
+private int paintHeight(int lineIndex, TextLayout layout) {
+	if (lineIndex < lineCount && store.width(lineIndex) != UNMEASURED) {
+		int height = store.height(lineIndex);
+		if (height != UNMEASURED) {
+			return height;
+		}
+	}
+	return layout.getBounds().height;
 }
 
 int drawLines(int startLine, int endLine, int begX, int begY, int endY, GC gc, Color widgetBackground, Color widgetForeground) {
@@ -473,57 +509,73 @@ int drawLines(int startLine, int endLine, int begX, int begY, int endY, GC gc, C
 	// still, I'd rather stay safe.
 	final boolean drawBackBeforeFore = (fixedLineMetrics != null);
 
+	//FLLDCIM: NO-OBJECTS - painted lines are ints and reused arrays; no draw-info record per line
 	if (drawBackBeforeFore) {
-		// Cache drawing information
-		final List<LineDrawInfo> drawInfos = new ArrayList<>();
+		int count = 0;
 		int y = begY;
 		for (int iLine = startLine; y < endY && iLine < endLine; iLine++) {
-			LineDrawInfo lineInfo = makeLineDrawInfo(iLine);
-			drawInfos.add(lineInfo);
-			y += lineInfo.height;
+			if (count == drawLayouts.length) {
+				int capacity = Math.max(16, 2 * count);
+				drawLayouts = Arrays.copyOf(drawLayouts, capacity);
+				drawHeights = Arrays.copyOf(drawHeights, capacity);
+				drawBits = Arrays.copyOf(drawBits, capacity);
+			}
+			TextLayout layout = getTextLayout(iLine);
+			drawLayouts[count] = layout;
+			drawBits[count] = lastLayoutBits;
+			drawHeights[count] = paintHeight(iLine, layout);
+			y += drawHeights[count++];
 		}
 
 		// Draw background
 		y = begY;
-		for (LineDrawInfo lineInfo : drawInfos) {
-			drawLineBackground(lineInfo, y, gc, widgetBackground);
-			y += lineInfo.height;
+		for (int i = 0; i < count; i++) {
+			drawLineBackground(startLine + i, drawLayouts[i], drawHeights[i], y, gc, widgetBackground);
+			y += drawHeights[i];
 		}
 
 		// Draw foreground
 		y = begY;
-		for (LineDrawInfo lineInfo : drawInfos) {
-			drawLineForeground(lineInfo, begX, y, gc, widgetForeground, selectionRanges);
-			y += lineInfo.height;
+		for (int i = 0; i < count; i++) {
+			drawLineForeground(startLine + i, drawLayouts[i], drawBits[i], begX, y, gc, widgetForeground, selectionRanges);
+			y += drawHeights[i];
 		}
 
 		// cleanup
-		for (LineDrawInfo lineInfo : drawInfos) {
-			disposeTextLayout(lineInfo.layout);
+		for (int i = 0; i < count; i++) {
+			disposeTextLayout(drawLayouts[i]);
+			drawLayouts[i] = null;
 		}
-
+		store.unmarkLines(startLine, startLine + count, StyledTextLineStore.DIRTY_PAINT);
 		return y - begY;
 	}
 
 	int y = begY;
-	for (int iLine = startLine; y < endY && iLine < endLine; iLine++) {
-		LineDrawInfo lineInfo = makeLineDrawInfo(iLine);
-		drawLineBackground(lineInfo, y, gc, widgetBackground);
-		drawLineForeground(lineInfo, begX, y, gc, widgetForeground, selectionRanges);
-		disposeTextLayout(lineInfo.layout);
-		y += lineInfo.height;
+	int iLine = startLine;
+	for (; y < endY && iLine < endLine; iLine++) {
+		TextLayout layout = getTextLayout(iLine);
+		int bits = lastLayoutBits;
+		int height = paintHeight(iLine, layout);
+		drawLineBackground(iLine, layout, height, y, gc, widgetBackground);
+		drawLineForeground(iLine, layout, bits, begX, y, gc, widgetForeground, selectionRanges);
+		disposeTextLayout(layout);
+		y += height;
 	}
+	store.unmarkLines(startLine, iLine, StyledTextLineStore.DIRTY_PAINT);
 	return y - begY;
 }
 
-private void drawLineBackground(LineDrawInfo lineInfo, int paintY, GC gc, Color widgetBackground) {
+private void drawLineBackground(int lineIndex, TextLayout layout, int lineHeight, int paintY, GC gc, Color widgetBackground) {
 	int clientWidth = styledText.clientAreaWidth; // the client area starts at 0; no Rectangle per line
-	Color lineBackground = getLineBackground(lineInfo.index, null);
-	StyledTextEvent event = styledText.getLineBackgroundData(lineInfo.offset, lineInfo.text);
-    if (event != null && event.lineBackground != null) {
-        lineBackground = event.lineBackground;
-    }
-	int verticalIndent = lineInfo.layout.getVerticalIndent();
+	Color lineBackground = getLineBackground(lineIndex, null);
+	if (styledText.isListening(ST.LineGetBackground)) {
+		// the line text is materialized only for a background listener
+		StyledTextEvent event = styledText.getLineBackgroundData(content.getOffsetAtLine(lineIndex), content.getLine(lineIndex));
+		if (event != null && event.lineBackground != null) {
+			lineBackground = event.lineBackground;
+		}
+	}
+	int verticalIndent = layout.getVerticalIndent();
 
 	if (lineBackground != null) {
 		if (verticalIndent > 0) {
@@ -531,15 +583,16 @@ private void drawLineBackground(LineDrawInfo lineInfo, int paintY, GC gc, Color 
 			gc.fillRectangle(0, paintY, clientWidth, verticalIndent);
 		}
 		gc.setBackground(lineBackground);
-		gc.fillRectangle(0, paintY + verticalIndent, clientWidth, lineInfo.height - verticalIndent);
+		gc.fillRectangle(0, paintY + verticalIndent, clientWidth, lineHeight - verticalIndent);
 	} else {
 		gc.setBackground(widgetBackground);
-		styledText.drawBackground(gc, 0, paintY, clientWidth, lineInfo.height);
+		styledText.drawBackground(gc, 0, paintY, clientWidth, lineHeight);
 	}
 }
 
-private void drawLineForeground(LineDrawInfo lineInfo, int paintX, int paintY, GC gc, Color widgetForeground, int[] selectionRanges) {
-	int lineLength = lineInfo.text.length();
+private void drawLineForeground(int lineIndex, TextLayout layout, int layoutBits, int paintX, int paintY, GC gc, Color widgetForeground, int[] selectionRanges) {
+	int lineLength = layout.getText().length(); // the layout's text has the line's length (no line String)
+	int lineOffset = content.getOffsetAtLine(lineIndex);
 	gc.setForeground(widgetForeground);
 	// selectionRanges are null for block selection; otherwise packed {start, end} pairs, sorted
 	if (selectionRanges != null) {
@@ -547,8 +600,8 @@ private void drawLineForeground(LineDrawInfo lineInfo, int paintX, int paintY, G
 		Color selectionFg = null, selectionBg = null;
 		int baseFlags = 0;
 		for (int i = 0; i < selectionRanges.length; i += 2) {
-			int x = selectionRanges[i] - lineInfo.offset;
-			int y = selectionRanges[i + 1] - lineInfo.offset;
+			int x = selectionRanges[i] - lineOffset;
+			int y = selectionRanges[i + 1] - lineOffset;
 			if (x == y || x > lineLength || y < 0) {
 				continue; // empty, or not on this line
 			}
@@ -565,58 +618,59 @@ private void drawLineForeground(LineDrawInfo lineInfo, int paintX, int paintY, G
 				flags |= SWT.LAST_LINE_SELECTION;
 			}
 			// TODO calling draw multiple times here prints line multiple times, overriding some colors
-			lineInfo.layout.draw(gc, paintX, paintY, start, end - 1, selectionFg, selectionBg, flags);
+			layout.draw(gc, paintX, paintY, start, end - 1, selectionFg, selectionBg, flags);
 		}
 		if (!selected) {
-			lineInfo.layout.draw(gc, paintX, paintY);
+			layout.draw(gc, paintX, paintY);
 		}
 	} else {
-		lineInfo.layout.draw(gc, paintX, paintY);
+		layout.draw(gc, paintX, paintY);
 	}
 
 	// draw objects
 	Bullet bullet = null;
 	int bulletIndex = -1;
-	if (bullets != null) {
-		if (bulletsIndices != null) {
-			int index = lineInfo.index - topIndex;
-			if (0 <= index && index < CACHE_SIZE) {
-				bullet = bullets[index];
-				bulletIndex = bulletsIndices[index];
-			}
-		} else {
-			for (Bullet b : bullets) {
-				bullet = b;
-				bulletIndex = bullet.indexOf(lineInfo.index);
-                if (bulletIndex != -1) {
-                    break;
-                }
-			}
+	if (listenerBullets) {
+		int slot = cachedSlot(lineIndex);
+		if (slot != -1) {
+			bullet = slotBullet[slot];
+			bulletIndex = slotBulletIndex[slot];
+		}
+	} else if (bullets != null) {
+		for (Bullet b : bullets) {
+			bullet = b;
+			bulletIndex = bullet.indexOf(lineIndex);
+            if (bulletIndex != -1) {
+                break;
+            }
 		}
 	}
 	if (bulletIndex != -1 && bullet != null) {
-		FontMetrics metrics = lineInfo.layout.getLineMetrics(0);
+		FontMetrics metrics = layout.getLineMetrics(0);
 		int lineAscent = metrics.getAscent() + metrics.getLeading();
 		if (bullet.type == ST.BULLET_CUSTOM) {
-			bullet.style.start = lineInfo.offset;
+			bullet.style.start = lineOffset;
 			styledText.paintObject(gc, paintX, paintY, lineAscent, metrics.getDescent(), bullet.style, bullet, bulletIndex);
 		} else {
 			drawBullet(bullet, gc, paintX, paintY, bulletIndex, lineAscent, metrics.getDescent());
 		}
 	}
-	TextStyle[] styles = lineInfo.layout.getStyles();
+	if ((layoutBits & LAYOUT_OBJECTS) == 0) {
+		return; // no embedded object on the line: no style array copy
+	}
+	TextStyle[] styles = layout.getStyles();
 	int[] ranges = null;
 	for (int i = 0; i < styles.length; i++) {
 		if (styles[i].metrics != null) {
             if (ranges == null) {
-                ranges = lineInfo.layout.getRanges();
+                ranges = layout.getRanges();
             }
 			int start = ranges[i << 1];
 			int length = ranges[(i << 1) + 1] - start + 1;
-			Point point = lineInfo.layout.getLocation(start, false);
-			FontMetrics metrics = lineInfo.layout.getLineMetrics(lineInfo.layout.getLineIndex(start));
+			Point point = layout.getLocation(start, false);
+			FontMetrics metrics = layout.getLineMetrics(layout.getLineIndex(start));
 			StyleRange style = (StyleRange)((StyleRange)styles[i]).clone();
-			style.start = start + lineInfo.offset;
+			style.start = start + lineOffset;
 			style.length = length;
 			int lineAscent = metrics.getAscent() + metrics.getLeading();
 			styledText.paintObject(gc, point.x + paintX, point.y + paintY, lineAscent, metrics.getDescent(), style, null, 0);
@@ -718,7 +772,10 @@ int viewportHeight () {
 	//FLLDCIM: VISIBILITY - the client area ints from the last Resize; getClientArea() would force deferred window positions
 	int height = styledText.clientAreaHeight;
 	if (isViewportMode()) {
-		height = Math.min(height, styledText.getDisplay().getClientArea().height);
+		if (displayHeight == 0) {
+			displayHeight = styledText.getDisplay().getClientArea().height;
+		}
+		height = Math.min(height, displayHeight);
 	}
 	return height;
 }
@@ -825,7 +882,7 @@ Bullet getLineBullet (int index, Bullet defaultBullet) {
     if (bullets == null) {
         return defaultBullet;
     }
-    if (bulletsIndices != null) {
+    if (listenerBullets) {
         return defaultBullet;
     }
 	for (Bullet bullet : bullets) {
@@ -1096,19 +1153,91 @@ StyleRange[] getStyleRanges(int start, int length, boolean includeRanges) {
 	return newStyles;
 }
 StyleRange getStyleRange(StyleRange style) {
+	return getStyleRange(style, false);
+}
+/**
+ * The layout style of a stored style. With {@code interned}, the derived style
+ * is kept per style id and reused while the stored style is unchanged (compared
+ * with a snapshot), so a layout build creates no StyleRange.
+ */
+StyleRange getStyleRange(StyleRange style, boolean interned) {
     if (style.underline && style.underlineStyle == SWT.UNDERLINE_LINK) {
         hasLinks = true;
     }
     if (style.start == 0 && style.length == 0 && style.fontStyle == SWT.NORMAL) {
         return style;
     }
+	int id = interned ? styleId(style) : 0;
+	if (id != 0 && styleDerived[id] != null && styleSnapshot[id].similarTo(style)) {
+		return styleDerived[id];
+	}
 	StyleRange clone = (StyleRange)style.clone();
 	clone.start = clone.length = 0;
 	clone.fontStyle = SWT.NORMAL;
     if (clone.font == null) {
         clone.font = getFont(style.fontStyle);
     }
+	if (id != 0) {
+		styleDerived[id] = clone;
+		styleSnapshot[id] = (StyleRange)style.clone();
+	}
 	return clone;
+}
+/** Identity-interned int id of a stored style (1-based); the table is cleared past {@link #STYLE_ID_LIMIT}. */
+int styleId(StyleRange style) {
+	int slotMask = styleIdSlots.length - 1;
+	int slot = StyledTextLineStore.mix(System.identityHashCode(style)) & slotMask;
+	while (styleIdSlots[slot] != 0) {
+		if (styleSource[styleIdSlots[slot]] == style) {
+			return styleIdSlots[slot];
+		}
+		slot = (slot + 1) & slotMask;
+	}
+	if (styleIdCount == STYLE_ID_LIMIT) {
+		clearStyleIds();
+		return styleId(style);
+	}
+	int id = styleIdCount++;
+	if (id == styleSource.length) {
+		int capacity = 2 * id;
+		styleSource = Arrays.copyOf(styleSource, capacity);
+		styleSnapshot = Arrays.copyOf(styleSnapshot, capacity);
+		styleDerived = Arrays.copyOf(styleDerived, capacity);
+	}
+	styleSource[id] = style;
+	styleIdSlots[slot] = id;
+	if (2 * styleIdCount > styleIdSlots.length) {
+		int[] slots = new int[2 * styleIdSlots.length];
+		int newMask = slots.length - 1;
+		for (int i = 1; i < styleIdCount; i++) {
+			int s = StyledTextLineStore.mix(System.identityHashCode(styleSource[i])) & newMask;
+			while (slots[s] != 0) {
+				s = (s + 1) & newMask;
+			}
+			slots[s] = i;
+		}
+		styleIdSlots = slots;
+	}
+	return id;
+}
+void clearStyleIds() {
+	Arrays.fill(styleSource, null);
+	Arrays.fill(styleSnapshot, null);
+	Arrays.fill(styleDerived, null);
+	Arrays.fill(styleIdSlots, 0);
+	styleIdCount = 1;
+}
+/** Appends a layout style entry to the reused entry arrays; answers the new count. */
+private int addEntry(int count, TextStyle style, int start, int end) {
+	if (count == entryStyle.length) {
+		entryStyle = Arrays.copyOf(entryStyle, 2 * count);
+		entryStart = Arrays.copyOf(entryStart, 2 * count);
+		entryEnd = Arrays.copyOf(entryEnd, 2 * count);
+	}
+	entryStyle[count] = style;
+	entryStart[count] = start;
+	entryEnd[count] = end;
+	return count + 1;
 }
 TextLayout getTextLayout(int lineIndex) {
 	if (lineSpacingProvider == null) {
@@ -1148,86 +1277,201 @@ TextLayout getTextLayout(int lineIndex) {
 	return layout;
 }
 boolean isSameLineSpacing(int lineIndex, int newLineSpacing) {
-	if (layouts == null) {
+	int slot = cachedSlot(lineIndex);
+	if (slot == -1) {
 		return false;
 	}
-	int layoutIndex = lineIndex - topIndex;
-	if (0 <= layoutIndex && layoutIndex < layouts.length) {
-		TextLayout layout = layouts[layoutIndex];
-		return layout != null && !layout.isDisposed() && layout.getSpacing() == newLineSpacing;
-	}
-	return false;
+	TextLayout layout = slotLayout[slot];
+	return !layout.isDisposed() && layout.getSpacing() == newLineSpacing;
 }
-
-private static final class StyleEntry {
-	public final int start;
-	public final int end;
-	public final TextStyle style;
-
-	public StyleEntry(TextStyle style, int start, int end) {
-		this.style = style;
-		this.start = start;
-		this.end = end;
+/** Slot holding the layout of {@code lineIndex}, or -1. */
+int cachedSlot(int lineIndex) {
+	if (slotLayout == null) {
+		return -1;
+	}
+	int capacity = slotLayout.length;
+	if (lineIndex < slotTop || lineIndex >= slotTop + capacity) {
+		return -1;
+	}
+	int slot = lineIndex % capacity;
+	return slotLine[slot] == lineIndex && slotLayout[slot] != null ? slot : -1;
+}
+/**
+ * Places the slot window at the top line minus one viewport and sizes the ring to
+ * visible lines plus one viewport of overscan above and below (grows at once,
+ * shrinks below half; only outside a layout build).
+ */
+void syncSlots() {
+	int visible = Math.max(1, viewportHeight() / Math.max(1, getLineHeight()) + 1);
+	int needed = Math.max(MIN_SLOTS, 3 * visible);
+	// the outermost getTextLayout is depth 1; a nested build must not drop the outer one's slot
+	if (slotLayout == null || layoutDepth <= 1 && (needed > slotLayout.length || 2 * needed < slotLayout.length)) {
+		disposeSlots();
+		slotLayout = new TextLayout[needed];
+		slotLine = new int[needed];
+		Arrays.fill(slotLine, -1);
+		slotKey = new long[needed];
+		slotBits = new int[needed];
+		slotBullet = new Bullet[needed];
+		slotBulletIndex = new int[needed];
+		moveLayout = new TextLayout[needed];
+		moveLine = new int[needed];
+		moveKey = new long[needed];
+		moveBits = new int[needed];
+		moveBullet = new Bullet[needed];
+		moveBulletIndex = new int[needed];
+	}
+	slotTop = Math.max(0, styledText.topIndex - visible);
+}
+void disposeSlots() {
+	if (slotLayout != null) {
+		for (TextLayout layout : slotLayout) {
+			if (layout != null) {
+				layout.dispose();
+			}
+		}
+		slotLayout = null;
+	}
+}
+/** Hash of what shapes a line besides its text: wrap width, font, tabs, alignment, indents, attributes and style runs. */
+long layoutKey(int lineIndex, int orientation, int width, int lineSpacing) {
+	long key = 0xCBF29CE484222325L;
+	key = mixKey(key, width);
+	key = mixKey(key, orientation);
+	key = mixKey(key, lineSpacing);
+	key = mixKey(key, System.identityHashCode(regularFont));
+	key = mixKey(key, tabWidth);
+	key = mixKey(key, tabLength);
+	key = mixKey(key, System.identityHashCode(styledText.tabs));
+	key = mixKey(key, styledText.alignment);
+	key = mixKey(key, styledText.indent);
+	key = mixKey(key, styledText.wrapIndent);
+	key = mixKey(key, styledText.justify ? 1 : 0);
+	if (store.hasAttributes()) {
+		key = mixKey(key, store.attributeHash(lineIndex));
+	}
+	if (styles != null && styleCount > 0 && !styledText.isListening(ST.LineGetStyle)) {
+		key = mixKey(key, styleRunHash(lineIndex));
+	}
+	return key;
+}
+static long mixKey(long key, long value) {
+	key = (key ^ value) * 0x100000001B3L;
+	return key ^ (key >>> 29);
+}
+/** Hash of the stored style runs touching a line: offsets in the line, lengths and style ids (no copy). */
+int styleRunHash(int lineIndex) {
+	int contentLines = content.getLineCount();
+	if (lineIndex >= contentLines) {
+		return 0; // Bug 520374: no runs for a line past the content
+	}
+	int lineOffset = content.getOffsetAtLine(lineIndex);
+	int lineEnd = lineIndex + 1 < contentLines ? content.getOffsetAtLine(lineIndex + 1) : content.getCharCount();
+	long hash = 0;
+	if (ranges != null) {
+		int rangeCount = styleCount << 1;
+		for (int i = getRangeIndex(lineOffset, -1, rangeCount); i < rangeCount && ranges[i] < lineEnd; i += 2) {
+			hash = mixKey(hash, ranges[i] - lineOffset);
+			hash = mixKey(hash, ranges[i + 1]);
+			hash = mixKey(hash, styleId(styles[i >> 1]));
+		}
+	} else {
+		for (int i = getRangeIndex(lineOffset, -1, styleCount); i < styleCount && styles[i].start < lineEnd; i++) {
+			hash = mixKey(hash, styles[i].start - lineOffset);
+			hash = mixKey(hash, styles[i].length);
+			hash = mixKey(hash, styleId(styles[i]));
+		}
+	}
+	return (int) (hash ^ (hash >>> 32));
+}
+/**
+ * Moves cached layouts for an edit at {@code startLine} that replaces
+ * {@code replaceLineCount} lines by {@code newLineCount}: the replaced lines'
+ * slots are invalidated (their layouts reused later); later lines move by the
+ * delta to their new slots (the former positional shift of the layout array).
+ */
+void shiftLayouts(int startLine, int replaceLineCount, int newLineCount) {
+	if (slotLayout == null) {
+		return;
+	}
+	int capacity = slotLayout.length, delta = newLineCount - replaceLineCount;
+	int startIndex = startLine + replaceLineCount + 1;
+	int moved = 0;
+	for (int slot = 0; slot < capacity; slot++) {
+		int line = slotLine[slot];
+		if (line < startLine) {
+			continue;
+		}
+		if (line < startIndex) {
+			slotLine[slot] = -1;
+			slotBullet[slot] = null;
+		} else if (delta != 0) {
+			moveLayout[moved] = slotLayout[slot];
+			moveLine[moved] = line + delta;
+			moveKey[moved] = slotKey[slot];
+			moveBits[moved] = slotBits[slot];
+			moveBullet[moved] = slotBullet[slot];
+			moveBulletIndex[moved] = slotBulletIndex[slot];
+			moved++;
+			slotLayout[slot] = null;
+			slotLine[slot] = -1;
+			slotBullet[slot] = null;
+		}
+	}
+	for (int i = 0; i < moved; i++) {
+		int line = moveLine[i];
+		if (line >= slotTop && line < slotTop + capacity) {
+			int slot = line % capacity;
+			if (slotLayout[slot] != null) {
+				slotLayout[slot].dispose(); // a stale entry of a line outside the window
+			}
+			slotLayout[slot] = moveLayout[i];
+			slotLine[slot] = line;
+			slotKey[slot] = moveKey[i];
+			slotBits[slot] = moveBits[i];
+			slotBullet[slot] = moveBullet[i];
+			slotBulletIndex[slot] = moveBulletIndex[i];
+		} else {
+			moveLayout[i].dispose();
+		}
+		moveLayout[i] = null;
+		moveBullet[i] = null;
 	}
 }
 
 TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpacing) {
+	layoutDepth++;
+	try {
+		return buildTextLayout(lineIndex, orientation, width, lineSpacing);
+	} finally {
+		layoutDepth--;
+	}
+}
+private TextLayout buildTextLayout(int lineIndex, int orientation, int width, int lineSpacing) {
 	layoutRequests++;
 	TextLayout layout = null;
+	int slot = -1;
+	long key = 0;
 	if (styledText != null) {
-		int topIndex = styledText.topIndex > 0 ? styledText.topIndex - 1 : 0;
-		if (layouts == null || topIndex != this.topIndex) {
-			TextLayout[] newLayouts = new TextLayout[CACHE_SIZE];
-			if (layouts != null) {
-				for (int i = 0; i < layouts.length; i++) {
-					if (layouts[i] != null) {
-						int layoutIndex = (i + this.topIndex) - topIndex;
-						if (0 <= layoutIndex && layoutIndex < newLayouts.length) {
-							newLayouts[layoutIndex] = layouts[i];
-						} else {
-							layouts[i].dispose();
-						}
-					}
+		//FLLDCIM: RETAINED - keyed layout cache over visible + overscan; no array per scroll
+		syncSlots();
+		int capacity = slotLayout.length;
+		if (lineIndex >= slotTop && lineIndex < slotTop + capacity) {
+			slot = lineIndex % capacity;
+			key = layoutKey(lineIndex, orientation, width, lineSpacing);
+			layout = slotLayout[slot];
+			if (layout != null && !layout.isDisposed()) {
+				// Bug 520374: lineIndex can be >= the line count
+				if (slotLine[slot] == lineIndex && slotKey[slot] == key && lineIndex < this.lineCount && store.width(lineIndex) != UNMEASURED) {
+					lastLayoutBits = slotBits[slot];
+					return layout;
 				}
+			} else {
+				layout = slotLayout[slot] = new TextLayout(device);
 			}
-			if (bullets != null && bulletsIndices != null && topIndex != this.topIndex) {
-				int delta = topIndex - this.topIndex;
-				if (delta > 0) {
-					if (delta < bullets.length) {
-						System.arraycopy(bullets, delta, bullets, 0, bullets.length - delta);
-						System.arraycopy(bulletsIndices, delta, bulletsIndices, 0, bulletsIndices.length - delta);
-					}
-					int startIndex = Math.max(0, bullets.length - delta);
-                    for (int i = startIndex; i < bullets.length; i++) {
-                        bullets[i] = null;
-                    }
-				} else {
-					if (-delta < bullets.length) {
-						System.arraycopy(bullets, 0, bullets, -delta, bullets.length + delta);
-						System.arraycopy(bulletsIndices, 0, bulletsIndices, -delta, bulletsIndices.length + delta);
-					}
-					int endIndex = Math.min(bullets.length, -delta);
-                    for (int i = 0; i < endIndex; i++) {
-                        bullets[i] = null;
-                    }
-				}
-			}
-			this.topIndex = topIndex;
-			layouts = newLayouts;
-		}
-		if (layouts != null) {
-			int layoutIndex = lineIndex - topIndex;
-			if (0 <= layoutIndex && layoutIndex < layouts.length) {
-				layout = layouts[layoutIndex];
-				if (layout != null) {
-					// Bug 520374: lineIndex can be >= linesSize.length
-					if(lineIndex < this.lineCount && store.width(lineIndex) != UNMEASURED) {
-						return layout;
-					}
-				} else {
-					layout = layouts[layoutIndex] = new TextLayout(device);
-				}
-			}
+			slotLine[slot] = -1; // published when the build completes
+			slotBullet[slot] = null;
+			slotBulletIndex[slot] = -1;
 		}
 	}
     if (layout == null) {
@@ -1295,14 +1539,13 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 				}
 			}
 		}
-		if (bullets == null || bulletsIndices == null) {
-			bullets = new Bullet[CACHE_SIZE];
-			bulletsIndices = new int[CACHE_SIZE];
+		if (!listenerBullets) {
+			listenerBullets = true;
+			bullets = null;
 		}
-		int index = lineIndex - topIndex;
-		if (0 <= index && index < CACHE_SIZE) {
-			bullets[index] = bullet;
-			bulletsIndices[index] = event.bulletIndex;
+		if (slot != -1) {
+			slotBullet[slot] = bullet;
+			slotBulletIndex[slot] = event.bulletIndex;
 		}
 	} else {
 		if (store.hasAttributes()) {
@@ -1318,9 +1561,9 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 			segmentChars = (char[]) store.getObject(lineIndex, SEGMENT_CHARS, segmentChars);
 			tabs = (int[]) store.getObject(lineIndex, TABSTOPS, tabs);
 		}
-		if (bulletsIndices != null) {
+		if (listenerBullets) {
+			listenerBullets = false;
 			bullets = null;
-			bulletsIndices = null;
 		}
 		if (bullets != null) {
 			for (Bullet b : bullets) {
@@ -1350,7 +1593,10 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 	// The root cause is that TextLayout doesn't return the right value for the bounds when
 	// GlyphMetrics are applied on \t. A better fix could be implemented directly in (all 3)
 	// TextLayout classes.
-	List<StyleEntry> styleEntries = new ArrayList<>();
+	//FLLDCIM: NO-OBJECTS - style entries in reused arrays; stored styles derive once per style id
+	int entries = 0;
+	int layoutBits = 0;
+	boolean internStyles = event == null;
 	int lastOffset = 0;
 	int length = line.length();
 	if (styles != null) {
@@ -1369,9 +1615,9 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
                     break;
                 }
 				if (lastOffset < start) {
-					styleEntries.add(new StyleEntry(null, lastOffset, start - 1));
+					entries = addEntry(entries, null, lastOffset, start - 1);
 				}
-				TextStyle style = getStyleRange(styles[i >> 1]);
+				TextStyle style = getStyleRange(styles[i >> 1], internStyles);
 				int endIndex = Math.max(start, Math.min(length, end + 1));
 				if (style.metrics != null && line.substring(start, endIndex).contains("\t")) {
 					line =
@@ -1379,7 +1625,10 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 						line.substring(start, endIndex).replace('\t', ' ') +
 						(end < line.length() ? line.substring(end + 1, line.length()) : "");
 				}
-				styleEntries.add(new StyleEntry(style, start, end));
+				entries = addEntry(entries, style, start, end);
+				if (style.metrics != null) {
+					layoutBits |= LAYOUT_OBJECTS;
+				}
 				lastOffset = Math.max(lastOffset, end);
 			}
 		} else {
@@ -1396,9 +1645,9 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
                     break;
                 }
 				if (lastOffset < start) {
-					styleEntries.add(new StyleEntry(null, lastOffset, start - 1));
+					entries = addEntry(entries, null, lastOffset, start - 1);
 				}
-				TextStyle style = getStyleRange(styles[i]);
+				TextStyle style = getStyleRange(styles[i], internStyles);
 				int endIndex = Math.max(start, Math.min(length, end + 1));
 				if (style.metrics != null && line.substring(start, endIndex).contains("\t")) {
 					line =
@@ -1406,13 +1655,16 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 						line.substring(start, endIndex).replace('\t', ' ') +
 						(end < line.length() ? line.substring(end + 1, line.length()) : "");
 				}
-				styleEntries.add(new StyleEntry(style, start, end));
+				entries = addEntry(entries, style, start, end);
+				if (style.metrics != null) {
+					layoutBits |= LAYOUT_OBJECTS;
+				}
 				lastOffset = Math.max(lastOffset, end);
 			}
 		}
 	}
     if (lastOffset < length) {
-        styleEntries.add(new StyleEntry(null, lastOffset, length));
+        entries = addEntry(entries, null, lastOffset, length);
     }
 
 	layout.setFont(regularFont);
@@ -1434,8 +1686,9 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 	layout.setJustify(justify);
 	layout.setTextDirection(textDirection);
 	// apply styles, must be done after layout.setText()
-	for (StyleEntry styleEntry : styleEntries) {
-		layout.setStyle(styleEntry.style, styleEntry.start, styleEntry.end);
+	for (int i = 0; i < entries; i++) {
+		layout.setStyle(entryStyle[i], entryStart[i], entryEnd[i]);
+		entryStyle[i] = null;
 	}
 
 	if (styledText != null && styledText.ime != null) {
@@ -1507,6 +1760,12 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 		}
 	}
 
+	if (slot != -1) {
+		slotLine[slot] = lineIndex;
+		slotKey[slot] = key;
+		slotBits[slot] = layoutBits;
+	}
+	lastLayoutBits = layoutBits;
 	if (styledText != null && styledText.isFixedLineHeight()) {
 		int index = -1;
 		int lineCount = layout.getLineCount();
@@ -1522,14 +1781,16 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 			FontMetrics metrics = layout.getLineMetrics(index);
 			ascent = metrics.getAscent() + metrics.getLeading();
 			descent = metrics.getDescent();
-			if (layouts != null) {
-				for (TextLayout l : layouts) {
+			if (slotLayout != null) {
+				for (TextLayout l : slotLayout) {
 					if (l != null && l != layout) {
 						l.setAscent(ascent);
 						l.setDescent(descent);
 					}
 				}
 			}
+			// the sizes measured with the former metrics are no longer the layouts' bounds
+			store.resetAllSizes();
 			styledText.calculateScrollBars();
 			if (styledText.verticalScrollOffset != 0) {
 				int topIndex = styledText.topIndex;
@@ -1582,22 +1843,15 @@ int getWidth() {
 	return maxWidth;
 }
 void reset() {
-	if (layouts != null) {
-		for (TextLayout layout : layouts) {
-            if (layout != null) {
-                layout.dispose();
-            }
-		}
-		layouts = null;
-	}
-	topIndex = -1;
+	disposeSlots();
+	clearStyleIds();
 	stylesSetCount = styleCount = lineCount = 0;
 	ranges = null;
 	styles = null;
 	stylesSet = null;
 	store.reset(0);
 	bullets = null;
-	bulletsIndices = null;
+	listenerBullets = false;
 	redrawLines = null;
 	hasLinks = false;
 }
@@ -1710,6 +1964,7 @@ void setFont(Font font, int tabs) {
             boldItalicFont.dispose();
         }
 		boldFont = italicFont = boldItalicFont = null;
+		clearStyleIds(); // derived styles refer to the fonts just disposed
 		regularFont = font;
 		layout.setText("    ");
 		layout.setFont(font);
@@ -1749,8 +2004,8 @@ void setLineBackground(int startLine, int count, Color background) {
 	store.setObject(startLine, count, BACKGROUND, background);
 }
 void setLineBullet(int startLine, int count, Bullet bullet) {
-	if (bulletsIndices != null) {
-		bulletsIndices = null;
+	if (listenerBullets) {
+		listenerBullets = false;
 		bullets = null;
 	}
 	if (bullets == null) {
@@ -2007,68 +2262,7 @@ void textChanging(TextChangingEvent event) {
 		int delta = newLineCount - replaceLineCount;
 		//FLLDCIM: MASKS - sizes move inside the window; an edit that keeps the line count moves nothing
 		store.shiftSizes(startLine, replaceLineCount, newLineCount);
-		if (layouts != null) {
-			int layoutStartLine = startLine - topIndex;
-			int layoutEndLine = layoutStartLine + replaceLineCount + 1;
-			for (int i = layoutStartLine; i < layoutEndLine; i++) {
-				if (0 <= i && i < layouts.length) {
-                    if (layouts[i] != null) {
-                        layouts[i].dispose();
-                    }
-					layouts[i] = null;
-                    if (bullets != null && bulletsIndices != null) {
-                        bullets[i] = null;
-                    }
-				}
-			}
-			if (delta > 0) {
-				for (int i = layouts.length - 1; i >= layoutEndLine; i--) {
-					if (0 <= i && i < layouts.length) {
-						endIndex = i + delta;
-						if (0 <= endIndex && endIndex < layouts.length) {
-							layouts[endIndex] = layouts[i];
-							layouts[i] = null;
-							if (bullets != null && bulletsIndices != null) {
-								bullets[endIndex] = bullets[i];
-								bulletsIndices[endIndex] = bulletsIndices[i];
-								bullets[i] = null;
-							}
-						} else {
-                            if (layouts[i] != null) {
-                                layouts[i].dispose();
-                            }
-							layouts[i] = null;
-                            if (bullets != null && bulletsIndices != null) {
-                                bullets[i] = null;
-                            }
-						}
-					}
-				}
-			} else if (delta < 0) {
-				for (int i = layoutEndLine; i < layouts.length; i++) {
-					if (0 <= i && i < layouts.length) {
-						endIndex = i + delta;
-						if (0 <= endIndex && endIndex < layouts.length) {
-							layouts[endIndex] = layouts[i];
-							layouts[i] = null;
-							if (bullets != null && bulletsIndices != null) {
-								bullets[endIndex] = bullets[i];
-								bulletsIndices[endIndex] = bulletsIndices[i];
-								bullets[i] = null;
-							}
-						} else {
-                            if (layouts[i] != null) {
-                                layouts[i].dispose();
-                            }
-							layouts[i] = null;
-                            if (bullets != null && bulletsIndices != null) {
-                                bullets[i] = null;
-                            }
-						}
-					}
-				}
-			}
-		}
+		shiftLayouts(startLine, replaceLineCount, newLineCount);
 		if (replaceLineCount != 0 || newLineCount != 0) {
 			int startLineOffset = content.getOffsetAtLine(startLine);
             if (startLineOffset != start) {
@@ -2096,7 +2290,7 @@ void updateBullets(int startLine, int replaceLineCount, int newLineCount, boolea
     if (bullets == null) {
         return;
     }
-    if (bulletsIndices != null) {
+    if (listenerBullets) {
         return;
     }
 	for (Bullet bullet : bullets) {

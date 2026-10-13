@@ -12,6 +12,7 @@ package org.eclipse.swt.custom;
 
 import java.util.*;
 
+import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
 /**
@@ -85,7 +86,9 @@ static int kind(int bit) {
 		case WRAP_INDENT: return 6;
 		case SEGMENT_CHARS: return 7;
 		case VERTICAL_INDENT: return 8;
-		default: throw new IllegalArgumentException();
+		default:
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+			return -1;
 	}
 }
 /** Clears attributes and sizes for a document of {@code lineCount} lines. */
@@ -207,6 +210,14 @@ boolean anyNonZero(int bit) {
 		}
 	}
 	return false;
+}
+/** Hash of every attribute of a line (values and object ids), for the layout key. */
+int attributeHash(int line) {
+	int hash = 0;
+	for (int k = 0; k < KIND_COUNT; k++) {
+		hash = 31 * hash + (find(line, 1 << bitOfKind(k)) ? 31 * found + 1 : 0);
+	}
+	return hash;
 }
 int get(int line, int bit, int defaultValue) {
 	return find(line, bit) ? found : defaultValue;

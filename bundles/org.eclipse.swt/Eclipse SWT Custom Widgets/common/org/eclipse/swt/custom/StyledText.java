@@ -6443,6 +6443,7 @@ void handleResize(Event event) {
 	Rectangle clientArea = getClientArea();
 	clientAreaHeight = clientArea.height;
 	clientAreaWidth = clientArea.width;
+	renderer.displayHeight = 0; // re-read once for the next viewport-mode cap
     if (!alwaysShowScroll && ignoreResize != 0) {
         return;
     }
