@@ -430,6 +430,77 @@ public class Test_org_eclipse_swt_widgets_VirtualPageSource {
 	}
 
 	@Test
+	public void test_swapRestoresEvictedBlocksWithoutAskingTheFetcherAgain () {
+		int rows = 200_000;
+		Table lazy = table (shell, 2, rows);
+		AtomicIntegerArray perRow = new AtomicIntegerArray (rows);
+		VirtualPageSource source = new VirtualPageSource (64, 6, 2, VirtualPageSource.SWAP, request -> {
+			for (int i = request.getStart (), end = i + request.getCount (); i < end; i++) {
+				perRow.incrementAndGet (i);
+				request.setText (i, 0, cell (i, 0));
+				request.setText (i, 1, i % 7 == 0 ? null : cell (i, 1));
+			}
+		});
+		source.setOverscanBlocks (0);
+		source.attach (lazy);
+		shell.open ();
+		drain (source);
+		int [] tops = {0, 5_000, 10_000, 15_000, 20_000, 25_000, 0, 10_000, 20_000};
+		for (int top : tops) {
+			lazy.setTopIndex (top);
+			drain (source);
+			int t = lazy.getTopIndex ();
+			assertEquals (cell (t, 0), lazy.getItem (t).getText (0));
+			assertEquals (t % 7 == 0 ? "" : cell (t, 1), lazy.getItem (t).getText (1));
+		}
+		assertTrue (source.getCount (VirtualPageSource.SWAPPED_OUT) > 0, "evicted blocks were swapped out");
+		assertTrue (source.getCount (VirtualPageSource.SWAPPED_IN) > 0, "scroll-back swapped them in");
+		int max = 0;
+		for (int i = 0; i < 26_000; i++) max = Math.max (max, perRow.get (i));
+		assertEquals (1, max, "no row was asked from the application twice");
+		assertTrue (source.getCount (VirtualPageSource.RESIDENT) <= 6);
+		source.detach ();
+	}
+
+	@Test
+	public void test_tablePaintNeverMaterializesItems () throws Exception {
+		Table lazy = table (shell, 2, 5_000_000);
+		VirtualPageSource source = tableSource (128, 2, null);
+		source.attach (lazy);
+		shell.open ();
+		drain (source);
+		for (int top = 0; top < 4_000_000; top += 333_333) {
+			lazy.setTopIndex (top);
+			drain (source);
+			lazy.redraw ();
+			lazy.update ();
+			assertEquals (0, materialized (lazy), "paint created a TableItem at top " + top);
+		}
+		assertTrue ((int) field (lazy, "pagePaintAnswers") > 0, "rows were answered from packed state");
+	}
+
+	@Test
+	public void test_treePaintNeverMaterializesRowsWithoutApiCalls () throws Exception {
+		Tree lazy = new Tree (shell, SWT.VIRTUAL | SWT.BORDER);
+		VirtualPageSource source = treeSource (true, null, null);
+		source.attach (lazy);
+		shell.open ();
+		drain (source);
+		long facades = Arrays.stream ((Object []) field (lazy, "items")).filter (Objects::nonNull).count ();
+		assertEquals (0, facades, "root rows painted without TreeItems");
+		assertTrue ((int) field (lazy, "pagePaintAnswers") > 0);
+		TreeItem node = lazy.getItem (3);
+		node.setExpanded (true);
+		drain (source);
+		lazy.redraw ();
+		lazy.update ();
+		drain (source);
+		long after = Arrays.stream ((Object []) field (lazy, "items")).filter (Objects::nonNull).count ();
+		assertTrue (after <= 2, "only the API item (and nothing for its painted children): " + after);
+		assertEquals ("n3.0", node.getItem (0).getText ());
+	}
+
+	@Test
 	public void test_hiddenTableFetchesNothing () {
 		Table lazy = table (shell, 1, 1_000_000);
 		AtomicInteger fetches = new AtomicInteger ();

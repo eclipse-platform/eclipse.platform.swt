@@ -256,8 +256,19 @@ TreeItem _getItem (long hItem, int id) {
     if (item != null) {
         bindVirtualTopology(item, false);
     }
+	/*
+	 * With a page source, paint answers rows without facades, so a facade created here outside
+	 * TVN_GETDISPINFO is for a caller's API or an expand: fill it now, as the classic paint-time
+	 * SetData would have (text and child count).
+	 */
+	if (id == -1 && item != null && pageSource != null && !pageDispInfo && currentItem == null) {
+		checkData (item, false);
+	}
 	return item;
 }
+
+/* True while TVN_GETDISPINFO runs: facades created there are filled by that paint request. */
+boolean pageDispInfo;
 
 int virtualItemId (TreeItem item) {
     if (virtualTopology == null || item == null || item.isDisposed()) {
@@ -8998,7 +9009,13 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 			if (pageSource != null && id == -1 && !ignoreShrink && answerPageNode (lptvdi, lParam)) {
 				break;
 			}
-			TreeItem item = _getItem (lptvdi.hItem, id);
+			pageDispInfo = true;
+			TreeItem item;
+			try {
+				item = _getItem (lptvdi.hItem, id);
+			} finally {
+				pageDispInfo = false;
+			}
             /*
             * Feature in Windows.  When a new tree item is inserted
             * using TVM_INSERTITEM, a TVN_GETDISPINFO is sent before
@@ -9098,11 +9115,18 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 			}
 			NMTVCUSTOMDRAW nmcd = new NMTVCUSTOMDRAW ();
 			OS.MoveMemory (nmcd, lParam, NMTVCUSTOMDRAW.sizeof);
-			switch (nmcd.dwDrawStage) {
-				case OS.CDDS_PREPAINT: return CDDS_PREPAINT (nmcd, wParam, lParam);
-				case OS.CDDS_ITEMPREPAINT: return CDDS_ITEMPREPAINT (nmcd, wParam, lParam);
-				case OS.CDDS_ITEMPOSTPAINT: return CDDS_ITEMPOSTPAINT (nmcd, wParam, lParam);
-				case OS.CDDS_POSTPAINT: return CDDS_POSTPAINT (nmcd, wParam, lParam);
+			/* Facades created by custom draw are paint facades, filled by the paint request. */
+			boolean oldPageDispInfo = pageDispInfo;
+			pageDispInfo = true;
+			try {
+				switch (nmcd.dwDrawStage) {
+					case OS.CDDS_PREPAINT: return CDDS_PREPAINT (nmcd, wParam, lParam);
+					case OS.CDDS_ITEMPREPAINT: return CDDS_ITEMPREPAINT (nmcd, wParam, lParam);
+					case OS.CDDS_ITEMPOSTPAINT: return CDDS_ITEMPOSTPAINT (nmcd, wParam, lParam);
+					case OS.CDDS_POSTPAINT: return CDDS_POSTPAINT (nmcd, wParam, lParam);
+				}
+			} finally {
+				pageDispInfo = oldPageDispInfo;
 			}
 			break;
 		}
