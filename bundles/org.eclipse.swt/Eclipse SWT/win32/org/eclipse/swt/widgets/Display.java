@@ -132,6 +132,18 @@ public class Display extends Device implements Executor {
 	long windowProc;
 	int threadId;
 	TCHAR windowClass, windowShadowClass, windowOwnDCClass;
+
+	/* Visibility gate (EffectiveVisibility): deferred-work list and scratch, reused */
+	//FLLDCIM: HPCPOP - visibility gate state; arrays reused, never reallocated per query
+	Control [] visDirty = new Control [16];
+	int visDirtyCount, visPendingLayouts, visBypass, visOccludedShells;
+	boolean visSweepPosted, visSweeping;
+	Control [] visChain = new Control [32];
+	final RECT visRect = new RECT (), visClip = new RECT ();
+	final WINDOWPOS visPos = new WINDOWPOS ();
+	final PAINTSTRUCT visPs = new PAINTSTRUCT ();
+	final Runnable visSweepRunnable = () -> VisibilityCatchUp.sweep (this);
+	OcclusionTracker occlusionTracker;
 	static int WindowClassCount;
 	static final String WindowName = "SWT_Window"; //$NON-NLS-1$
 	static final String WindowShadowName = "SWT_WindowShadow"; //$NON-NLS-1$
@@ -3023,6 +3035,14 @@ protected void init () {
 	/* Remember the current thread id */
 	threadId = OS.GetCurrentThreadId ();
 
+	/* Visibility gate: export the port and start the occlusion tracker */
+	if (EffectiveVisibility.ENABLED) {
+		org.eclipse.swt.internal.VisibilityGate.install (EffectiveVisibility.PORT);
+	}
+	if (EffectiveVisibility.OCCLUSION) {
+		occlusionTracker = OcclusionTracker.start (this);
+	}
+
 	windowClass = new TCHAR (WindowName + WindowClassCount, true);
 	windowShadowClass = new TCHAR (WindowShadowName + WindowClassCount, true);
 	windowOwnDCClass = new TCHAR (WindowOwnDCName + WindowClassCount, true);
@@ -3174,10 +3194,22 @@ boolean isValidThread () {
  */
 public Point map (Control from, Control to, Point point) {
 	checkDevice ();
+	flushVisibilityGeometry (from, to);
     if (point == null) {
         error(SWT.ERROR_NULL_ARGUMENT);
     }
 	return coordinateSystemMapper.map(from, to, point);
+}
+
+void flushVisibilityGeometry (Control from, Control to) {
+	if (visPendingLayouts > 0) {
+		if (from != null && !from.isDisposed ()) {
+			VisibilityCatchUp.flushGeometry (from, true);
+		}
+		if (to != null && !to.isDisposed ()) {
+			VisibilityCatchUp.flushGeometry (to, true);
+		}
+	}
 }
 
 Point mapInPixels (Control from, Control to, Point point) {
@@ -3222,6 +3254,7 @@ Point mapInPixels (Control from, Control to, Point point) {
  */
 public Point map (Control from, Control to, int x, int y) {
 	checkDevice ();
+	flushVisibilityGeometry (from, to);
 	return coordinateSystemMapper.map(from, to, x, y);
 }
 
@@ -3282,6 +3315,7 @@ Point mapInPixels (Control from, Control to, int x, int y) {
  */
 public Rectangle map (Control from, Control to, Rectangle rectangle) {
 	checkDevice ();
+	flushVisibilityGeometry (from, to);
     if (rectangle == null) {
         error(SWT.ERROR_NULL_ARGUMENT);
     }
@@ -3332,6 +3366,7 @@ Rectangle mapInPixels (Control from, Control to, Rectangle rectangle) {
  */
 public Rectangle map (Control from, Control to, int x, int y, int width, int height) {
 	checkDevice ();
+	flushVisibilityGeometry (from, to);
 	return coordinateSystemMapper.map(from, to, x, y, width, height);
 }
 
@@ -4078,6 +4113,14 @@ protected void release () {
 }
 
 void releaseDisplay () {
+	if (occlusionTracker != null) {
+		occlusionTracker.stop ();
+		occlusionTracker = null;
+	}
+	for (int i = 0; i < visDirtyCount; i++) {
+		visDirty [i] = null;
+	}
+	visDirtyCount = visPendingLayouts = visOccludedShells = 0;
 	if (embeddedHwnd != 0) {
 		OS.PostMessage (embeddedHwnd, SWT_DESTROY, 0, 0);
 	}
