@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import static org.eclipse.swt.tests.junit.LazyScaleHarness.*;
+import static org.eclipse.swt.tests.junit.VirtualPageSourceScaleHarness.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.*;
 
@@ -27,7 +27,7 @@ import org.junit.jupiter.api.*;
  * runs on the unmodified widgets ("before") and on the lazy branch. Enabled with
  * -Dswt.lazy.scale=true; metrics go to stdout and -Dswt.lazy.report.
  */
-public class Test_LazyScaleClassic {
+public class Test_org_eclipse_swt_widgets_VirtualPageSource_ScaleClassic {
 	static final int ROWS = 10_000_000;
 	static final int BLOCK = 256;
 	static final int MAX_BLOCKS = 64;

@@ -662,11 +662,12 @@ int pageCursorIndex;
 long [] pageExpanders = new long [8];
 int pageExpanderCount;
 boolean pageExpandersScheduled;
+Runnable pageExpanderRunnable;
+/* Reused rectangles of the precise-damage path. */
+RECT pageClientRect, pageRowRect;
 TVITEM pageTvItem;
 /** Facade-free answers given in paint callbacks (proof counter). */
 int pagePaintAnswers;
-static final int TVIF_CHILDREN = 0x40;
-static final int I_CHILDRENAUTO = -2;
 
 boolean pagePaintNeedsFacade () {
 	return hooks (SWT.MeasureItem) || hooks (SWT.EraseItem) || hooks (SWT.PaintItem);
@@ -756,7 +757,8 @@ void queuePageExpander (long hItem) {
 	pageExpanders [pageExpanderCount++] = hItem;
 	if (pageExpandersScheduled) return;
 	pageExpandersScheduled = true;
-	display.asyncExec (this::applyPageExpanders);
+	if (pageExpanderRunnable == null) pageExpanderRunnable = this::applyPageExpanders;
+	display.asyncExec (pageExpanderRunnable);
 }
 
 /* After the paint: give each queued expandable row a native expander without inserting children. */
@@ -767,11 +769,11 @@ void applyPageExpanders () {
 	TVITEM tvItem = pageTvItem;
 	for (int i = 0; i < pageExpanderCount; i++) {
 		long hItem = pageExpanders [i];
-		tvItem.mask = OS.TVIF_HANDLE | TVIF_CHILDREN;
+		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_CHILDREN;
 		tvItem.hItem = hItem;
 		if (OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem) == 0 || tvItem.cChildren != 0) continue;
 		if (OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hItem) != 0) continue;
-		tvItem.mask = OS.TVIF_HANDLE | TVIF_CHILDREN;
+		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_CHILDREN;
 		tvItem.cChildren = 1;
 		OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
 	}
@@ -782,9 +784,9 @@ void applyPageExpanders () {
 void pageAutoExpander (TreeItem item) {
 	if (pageTvItem == null) pageTvItem = new TVITEM ();
 	TVITEM tvItem = pageTvItem;
-	tvItem.mask = OS.TVIF_HANDLE | TVIF_CHILDREN;
+	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_CHILDREN;
 	tvItem.hItem = item.handle;
-	tvItem.cChildren = I_CHILDRENAUTO;
+	tvItem.cChildren = OS.I_CHILDRENAUTO;
 	OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
 }
 
@@ -836,9 +838,13 @@ int pageRowsInvalidated;
  */
 void invalidatePageRows (TreeItem parent, int start, int end) {
 	long hParent = parent == null ? 0 : parent.handle;
-	RECT client = new RECT ();
+	if (pageClientRect == null) {
+		pageClientRect = new RECT ();
+		pageRowRect = new RECT ();
+	}
+	RECT client = pageClientRect;
 	OS.GetClientRect (handle, client);
-	RECT rect = new RECT ();
+	RECT rect = pageRowRect;
 	long hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0);
 	while (hItem != 0) {
 		if (!OS.TreeView_GetItemRect (handle, hItem, rect, false)) break;

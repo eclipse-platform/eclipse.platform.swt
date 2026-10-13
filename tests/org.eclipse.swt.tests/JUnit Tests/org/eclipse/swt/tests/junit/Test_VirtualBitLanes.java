@@ -218,7 +218,7 @@ public class Test_VirtualBitLanes {
 		assertEquals (a, (int) call (cache, "find", -1, 0));
 		call (cache, "text", a, 3, 1, "x");
 		assertEquals ("x", call (cache, "text", a, 3, 1));
-		assertThrows (IndexOutOfBoundsException.class, () -> call (cache, "text", a, 4, 0));
+		assertThrows (IllegalArgumentException.class, () -> call (cache, "text", a, 4, 0));
 		call (cache, "free", a);
 		assertEquals (-1, (int) call (cache, "find", -1, 0));
 	}

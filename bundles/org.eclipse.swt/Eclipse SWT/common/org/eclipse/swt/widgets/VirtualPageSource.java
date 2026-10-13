@@ -196,7 +196,7 @@ public final class VirtualPageSource {
 		 * @param count the hint
 		 */
 		public void setChildCount (int index, int count) {
-			if (count < UNKNOWN) throw new IllegalArgumentException ("negative child count");
+			if (count < UNKNOWN) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 			source.cache.childHint (slot, rowOf (index), count);
 		}
 
@@ -218,13 +218,13 @@ public final class VirtualPageSource {
 		 * @param total the total row count, zero or more
 		 */
 		public void setTotal (int total) {
-			if (total < 0) throw new IllegalArgumentException ("negative total");
+			if (total < 0) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 			source.setTotalFromWorker (slot, total);
 		}
 
 		private int rowOf (int index) {
 			int row = index - start;
-			if (row < 0 || row >= count) throw new IndexOutOfBoundsException ("row " + index + " outside the block");
+			if (row < 0 || row >= count) SWT.error (SWT.ERROR_INVALID_RANGE);
 			return row;
 		}
 	}
@@ -249,6 +249,10 @@ public final class VirtualPageSource {
 	private Display display;
 	private Listener listener;
 	private final Runnable frameRunnable = this::frame;
+	private final Runnable debounceRunnable = () -> {
+		debounceArmed = false;
+		scheduleFrame ();
+	};
 
 	/* Guarded by lock: the queue, the completions, the cancel bits and the worker state. */
 	private final Object lock = new Object ();
@@ -1223,10 +1227,7 @@ public final class VirtualPageSource {
 		if (left <= 0) return false;
 		if (!debounceArmed) {
 			debounceArmed = true;
-			display.timerExec ((int) left, () -> {
-				debounceArmed = false;
-				scheduleFrame ();
-			});
+			display.timerExec ((int) left, debounceRunnable);
 		}
 		return true;
 	}

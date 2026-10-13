@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
+import org.eclipse.swt.*;
+
 /**
  * Per-row boolean state of a widget kept as bit lanes in the parent: one bitset of
  * <code>int</code> words per lane, indexed by logical row.
@@ -25,7 +27,7 @@ final class VirtualBitLanes {
 	private int length;
 
 	VirtualBitLanes (int laneCount) {
-		if (laneCount < 1) throw new IllegalArgumentException ();
+		if (laneCount < 1) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 		lanes = new int [laneCount][];
 	}
 
@@ -35,7 +37,7 @@ final class VirtualBitLanes {
 
 	/** Sets the logical row count; bits at or beyond it are cleared. */
 	void setLength (int newLength) {
-		if (newLength < 0) throw new IllegalArgumentException ("negative length");
+		if (newLength < 0) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 		if (newLength < length) {
 			for (int lane = 0; lane < lanes.length; lane++) clearBits (lanes [lane], newLength, length);
 		}
@@ -69,7 +71,7 @@ final class VirtualBitLanes {
 
 	/** Sets or clears <code>[start, end)</code> of a lane word-wise. */
 	void setRange (int lane, int start, int end, boolean value) {
-		if (start < 0 || end > length || start > end) throw new IndexOutOfBoundsException ();
+		if (start < 0 || end > length || start > end) SWT.error (SWT.ERROR_INVALID_RANGE);
 		if (start == end) return;
 		if (value) {
 			setBits (ensure (lane, end), start, end);
@@ -89,7 +91,7 @@ final class VirtualBitLanes {
 
 	/** Number of set bits of a lane in <code>[start, end)</code>. */
 	int count (int lane, int start, int end) {
-		if (start < 0 || end > length || start > end) throw new IndexOutOfBoundsException ();
+		if (start < 0 || end > length || start > end) SWT.error (SWT.ERROR_INVALID_RANGE);
 		int [] words = lanes [lane];
 		if (words == null || start == end) return 0;
 		int count = 0;
@@ -106,7 +108,7 @@ final class VirtualBitLanes {
 
 	/** Flips <code>[start, end)</code> of a lane word-wise. */
 	void flipRange (int lane, int start, int end) {
-		if (start < 0 || end > length || start > end) throw new IndexOutOfBoundsException ();
+		if (start < 0 || end > length || start > end) SWT.error (SWT.ERROR_INVALID_RANGE);
 		if (start == end) return;
 		int [] words = ensure (lane, end);
 		int first = start >>> 5;
@@ -161,7 +163,7 @@ final class VirtualBitLanes {
 
 	/** Inserts <code>count</code> clear rows at <code>index</code> in every lane. */
 	void insert (int index, int count) {
-		if (index < 0 || index > length || count < 0 || count > Integer.MAX_VALUE - length) throw new IndexOutOfBoundsException ();
+		if (index < 0 || index > length || count < 0 || count > Integer.MAX_VALUE - length) SWT.error (SWT.ERROR_INVALID_RANGE);
 		if (count == 0) return;
 		int newLength = length + count;
 		for (int lane = 0; lane < lanes.length; lane++) {
@@ -174,7 +176,7 @@ final class VirtualBitLanes {
 
 	/** Removes rows <code>[index, index + count)</code> from every lane. */
 	void remove (int index, int count) {
-		if (index < 0 || count < 0 || index > length - count) throw new IndexOutOfBoundsException ();
+		if (index < 0 || count < 0 || index > length - count) SWT.error (SWT.ERROR_INVALID_RANGE);
 		if (count == 0) return;
 		int newLength = length - count;
 		for (int lane = 0; lane < lanes.length; lane++) {
@@ -187,7 +189,7 @@ final class VirtualBitLanes {
 	}
 
 	private void checkIndex (int index) {
-		if (index < 0 || index >= length) throw new IndexOutOfBoundsException ();
+		if (index < 0 || index >= length) SWT.error (SWT.ERROR_INVALID_RANGE);
 	}
 
 	private int [] ensure (int lane, int bits) {

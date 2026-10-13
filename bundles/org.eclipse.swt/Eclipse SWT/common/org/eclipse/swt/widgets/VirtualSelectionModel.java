@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
+import org.eclipse.swt.*;
+
 import org.eclipse.swt.internal.*;
 
 /**
@@ -61,7 +63,7 @@ final class VirtualSelectionModel {
 	}
 
 	void setLogicalCount (int count) {
-		if (count < 0) throw new IllegalArgumentException ("negative logical count");
+		if (count < 0) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 		if (bits == null) {
 			selection.setLogicalCount (count);
 			return;
@@ -178,14 +180,14 @@ final class VirtualSelectionModel {
 	int rangeStart (int range) {
 		if (bits == null) return selection.rangeStart (range);
 		buildRuns ();
-		if (range < 0 || range >= runCount) throw new IndexOutOfBoundsException ();
+		if (range < 0 || range >= runCount) SWT.error (SWT.ERROR_INVALID_RANGE);
 		return runStarts [range];
 	}
 
 	int rangeEndExclusive (int range) {
 		if (bits == null) return selection.rangeEndExclusive (range);
 		buildRuns ();
-		if (range < 0 || range >= runCount) throw new IndexOutOfBoundsException ();
+		if (range < 0 || range >= runCount) SWT.error (SWT.ERROR_INVALID_RANGE);
 		return runEnds [range];
 	}
 
@@ -262,10 +264,10 @@ final class VirtualSelectionModel {
 	}
 
 	private void checkIndex (int index) {
-		if (index < 0 || index >= bits.length ()) throw new IndexOutOfBoundsException ("index " + index);
+		if (index < 0 || index >= bits.length ()) SWT.error (SWT.ERROR_INVALID_RANGE);
 	}
 
 	private void checkRange (int start, int endExclusive) {
-		if (start < 0 || endExclusive > bits.length () || start > endExclusive) throw new IndexOutOfBoundsException ("range " + start + ".." + endExclusive);
+		if (start < 0 || endExclusive > bits.length () || start > endExclusive) SWT.error (SWT.ERROR_INVALID_RANGE);
 	}
 }

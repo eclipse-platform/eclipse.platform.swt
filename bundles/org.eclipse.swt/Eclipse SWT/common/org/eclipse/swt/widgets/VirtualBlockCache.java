@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
+import org.eclipse.swt.*;
+
 /**
  * Bounded block table behind {@link VirtualPageSource}: a fixed number of slots, each
  * holding one block of <code>blockSize</code> rows of one parent key.
@@ -48,8 +50,8 @@ final class VirtualBlockCache implements VirtualBlockStore {
 	private int evictions;
 
 	VirtualBlockCache (int blockSize, int capacity, int columns) {
-		if (blockSize < 1 || capacity < 1 || columns < 1) throw new IllegalArgumentException ();
-		if (capacity > (Integer.MAX_VALUE / blockSize) / columns) throw new IllegalArgumentException ("cache too large");
+		if (blockSize < 1 || capacity < 1 || columns < 1) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+		if (capacity > (Integer.MAX_VALUE / blockSize) / columns) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 		this.blockSize = blockSize;
 		this.capacity = capacity;
 		this.columns = columns;
@@ -269,12 +271,12 @@ final class VirtualBlockCache implements VirtualBlockStore {
 	}
 
 	private int rowIndex (int slot, int row) {
-		if (slot < 0 || slot >= capacity || row < 0 || row >= blockSize) throw new IndexOutOfBoundsException ();
+		if (slot < 0 || slot >= capacity || row < 0 || row >= blockSize) SWT.error (SWT.ERROR_INVALID_RANGE);
 		return slot * blockSize + row;
 	}
 
 	private int cellIndex (int slot, int row, int column) {
-		if (column < 0 || column >= columns) throw new IndexOutOfBoundsException ();
+		if (column < 0 || column >= columns) SWT.error (SWT.ERROR_INVALID_RANGE);
 		return rowIndex (slot, row) * columns + column;
 	}
 

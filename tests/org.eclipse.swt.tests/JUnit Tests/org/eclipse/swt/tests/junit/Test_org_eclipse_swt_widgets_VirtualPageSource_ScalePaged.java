@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import static org.eclipse.swt.tests.junit.LazyScaleHarness.*;
+import static org.eclipse.swt.tests.junit.VirtualPageSourceScaleHarness.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.*;
 
@@ -24,11 +24,11 @@ import org.eclipse.swt.widgets.*;
 import org.junit.jupiter.api.*;
 
 /**
- * The same scale scenarios as {@link Test_LazyScaleClassic} on the lazy layer: VirtualPageSource
+ * The same scale scenarios as {@link Test_org_eclipse_swt_widgets_VirtualPageSource_ScaleClassic} on the lazy layer: VirtualPageSource
  * (5 ms per block on worker threads) and SWT.VIRTUAL tab folders. Enabled with
  * -Dswt.lazy.scale=true.
  */
-public class Test_LazyScalePaged {
+public class Test_org_eclipse_swt_widgets_VirtualPageSource_ScalePaged {
 	private Display display;
 	private Shell shell;
 	private static final String MODE = "paged";
@@ -60,13 +60,13 @@ public class Test_LazyScalePaged {
 
 	@Test
 	public void table10MillionRowsSlowSource () {
-		int rows = Test_LazyScaleClassic.ROWS;
+		int rows = Test_org_eclipse_swt_widgets_VirtualPageSource_ScaleClassic.ROWS;
 		Table table = new Table (shell, SWT.VIRTUAL | SWT.BORDER | SWT.FULL_SELECTION);
 		table.setHeaderVisible (true);
 		for (int c = 0; c < 2; c++) new TableColumn (table, SWT.NONE).setWidth (200);
 		table.setItemCount (rows);
 		AtomicInteger fetcherCalls = new AtomicInteger ();
-		VirtualPageSource source = new VirtualPageSource (Test_LazyScaleClassic.BLOCK, Test_LazyScaleClassic.MAX_BLOCKS, 2,
+		VirtualPageSource source = new VirtualPageSource (Test_org_eclipse_swt_widgets_VirtualPageSource_ScaleClassic.BLOCK, Test_org_eclipse_swt_widgets_VirtualPageSource_ScaleClassic.MAX_BLOCKS, 2,
 				VirtualPageSource.NONE, request -> {
 					fetcherCalls.incrementAndGet ();
 					Thread.sleep (BLOCK_LATENCY_MS);
@@ -122,7 +122,7 @@ public class Test_LazyScalePaged {
 		report (s, MODE, "blocks_fetched", source.getCount (VirtualPageSource.FETCHED));
 		report (s, MODE, "blocks_cancelled", source.getCount (VirtualPageSource.CANCELLED));
 		report (s, MODE, "fetcher_calls", fetcherCalls.get ());
-		report (s, MODE, "blocks_resident_max", Test_LazyScaleClassic.MAX_BLOCKS);
+		report (s, MODE, "blocks_resident_max", Test_org_eclipse_swt_widgets_VirtualPageSource_ScaleClassic.MAX_BLOCKS);
 		report (s, MODE, "blocks_resident_end", source.getCount (VirtualPageSource.RESIDENT));
 		report (s, MODE, "frames_drained", source.getCount (VirtualPageSource.FRAMES));
 		report (s, MODE, "facades_released", source.getCount (VirtualPageSource.RELEASED));
@@ -131,13 +131,13 @@ public class Test_LazyScalePaged {
 		report (s, MODE, "paint_answers_facade_free", intField (table, "pagePaintAnswers"));
 		report (s, MODE, "heap_delta_mb", String.format (Locale.ROOT, "%.1f", (heapUsedAfterGc () - heapBefore) / 1048576.0));
 		assertEquals ("row " + table.getTopIndex (), table.getItem (table.getTopIndex ()).getText ());
-		assertTrue (source.getCount (VirtualPageSource.RESIDENT) <= Test_LazyScaleClassic.MAX_BLOCKS);
+		assertTrue (source.getCount (VirtualPageSource.RESIDENT) <= Test_org_eclipse_swt_widgets_VirtualPageSource_ScaleClassic.MAX_BLOCKS);
 		assertEquals (0, facadesWhileScrolling, "paint never materializes a TableItem");
 	}
 
 	@Test
 	public void tree1MillionNodes () {
-		int roots = Test_LazyScaleClassic.TREE_ROOTS, children = Test_LazyScaleClassic.TREE_CHILDREN;
+		int roots = Test_org_eclipse_swt_widgets_VirtualPageSource_ScaleClassic.TREE_ROOTS, children = Test_org_eclipse_swt_widgets_VirtualPageSource_ScaleClassic.TREE_CHILDREN;
 		Tree tree = new Tree (shell, SWT.VIRTUAL | SWT.BORDER);
 		AtomicInteger fetcherCalls = new AtomicInteger ();
 		VirtualPageSource source = new VirtualPageSource (64, 64, 1, VirtualPageSource.TREE, request -> {
@@ -161,7 +161,7 @@ public class Test_LazyScalePaged {
 			}
 		});
 		source.attach (tree);
-		Test_LazyScaleClassic runner = new Test_LazyScaleClassic ();
+		Test_org_eclipse_swt_widgets_VirtualPageSource_ScaleClassic runner = new Test_org_eclipse_swt_widgets_VirtualPageSource_ScaleClassic ();
 		runner.useShell (display, shell);
 		runner.runTree (tree, MODE, fetcherCalls::get, () -> waitIdle (source));
 		report ("tree_1M", MODE, "blocks_fetched", source.getCount (VirtualPageSource.FETCHED));

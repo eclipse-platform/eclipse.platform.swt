@@ -25,11 +25,11 @@ import org.eclipse.swt.widgets.*;
  * Shared, classic-API-only measurement harness for the lazy-data scale proofs; it compiles and
  * runs against the unmodified SWT classes ("before") and the lazy ones ("after").
  */
-final class LazyScaleHarness {
+final class VirtualPageSourceScaleHarness {
 	static final double FRAME_BUDGET_MS = 1000.0 / 60.0;
 	static final long BLOCK_LATENCY_MS = 5;
 
-	private LazyScaleHarness () {
+	private VirtualPageSourceScaleHarness () {
 	}
 
 	static boolean enabled () {

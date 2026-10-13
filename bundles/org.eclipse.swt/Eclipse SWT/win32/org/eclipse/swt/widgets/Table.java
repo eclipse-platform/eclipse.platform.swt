@@ -1375,10 +1375,13 @@ void applyPageScrollWidth (int textWidth) {
 
 int releasePageFacades (int keepStart, int keepEnd) {
 	if (virtualItems == null || pageSource == null || currentItem != null || isDisposed ()) return 0;
-	return virtualItems.releaseOutside (keepStart, keepEnd, VirtualItemState.PINNED | VirtualItemState.DIRTY, item -> {
-		if (!item.isDisposed ()) item.release (false);
-	});
+	return virtualItems.releaseOutside (keepStart, keepEnd, VirtualItemState.PINNED | VirtualItemState.DIRTY, RELEASE_FACADE);
 }
+
+/* Shared, allocation-free release action for transient facades. */
+static final java.util.function.Consumer<TableItem> RELEASE_FACADE = item -> {
+	if (!item.isDisposed ()) item.release (false);
+};
 
 @Override
 protected void checkSubclass () {
