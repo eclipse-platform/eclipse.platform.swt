@@ -8,3 +8,8 @@ sh .m3/swt-layout-resize-20261013/scripts/run-leaf3.sh
 - `control`: ControlExample live-resize sweep, 200 frames: Resize, Move and Paint events per frame (x100), frame time p50/p95 (us), final bounds/client-area tree hash (must match stock).
 - `wrap`: ScrolledComposite + wrapping Label, 1 px width sweep across the scrollbar threshold: total vertical-scrollbar toggles, max toggles in one step, oscillating steps (target 0), step time p50/p95.
 - `stack`: StackLayout with 8 panes of 120 buttons, 200 switches: Resize/Move/Paint events per switch (x100), ms per switch p50/p95.
+
+## SWT idiom and platform notes
+
+- `Control.boundsUnchanged` is package-private, win32-only behaviour (the SetWindowPos round trip does not exist on GTK or Cocoa); GTK and Cocoa: NOT_RUN, no change.
+- Kill switch `-Dswt.layout.skipNoop=false`.
