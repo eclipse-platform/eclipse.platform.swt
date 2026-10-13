@@ -1200,6 +1200,8 @@ boolean answerPageRow (NMLVDISPINFO plvfi, long lParam) {
 
 /** Facade-free answers given in paint callbacks (proof counter). */
 int pagePaintAnswers;
+/** Widest page-source text measured since the last settle (applied when the queue drains). */
+int pageWidest;
 
 /** Writes the text of one LVN_GETDISPINFO answer (shared by the facade and page-source paths). */
 void writeDispText (NMLVDISPINFO plvfi, String string) {
@@ -1310,6 +1312,14 @@ VirtualPageHost pageSourceHost () {
 		@Override
 		public void pageSourceChildrenLoading (Item parent, boolean loading) {
 		}
+
+		@Override
+		public void pageSourceSettled () {
+			if (pageWidest > 0 && !isDisposed ()) {
+				applyPageScrollWidth (pageWidest);
+				pageWidest = 0;
+			}
+		}
 	};
 }
 
@@ -1329,7 +1339,8 @@ void refreshPageRows (int start, int end) {
 			buffer [text.length ()] = 0;
 			widest = Math.max (widest, (int)OS.SendMessage (handle, OS.LVM_GETSTRINGWIDTH, 0, buffer));
 		}
-		if (widest > 0) applyPageScrollWidth (widest);
+		/* Settle gating: the fit is applied once the source's queue drains (pageSourceSettled). */
+		if (widest > pageWidest) pageWidest = widest;
 	}
 	for (int i = start; i <= end; i++) {
 		TableItem item = virtualItems.get (i);

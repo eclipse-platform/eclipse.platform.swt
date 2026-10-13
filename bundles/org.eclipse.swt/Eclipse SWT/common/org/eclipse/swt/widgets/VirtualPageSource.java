@@ -93,6 +93,10 @@ public final class VirtualPageSource {
 	public static final int SWAPPED_IN = 10;
 	/** Counter: API reads that waited longer than 100 ms behind the busy indicator. */
 	public static final int BUSY_WAITS = 11;
+	/** Counter: fetched blocks dropped because {@link #invalidate()} bumped the generation while they ran. */
+	public static final int STALE_DROPPED = 12;
+	/** Counter: UI-thread drain turns that reposted because their time budget ran out. */
+	public static final int REPOSTS = 13;
 
 	/**
 	 * Fetches one block. Called on a worker thread, never on the UI thread; it must not touch
@@ -285,7 +289,17 @@ public final class VirtualPageSource {
 	private int [] nodeKeys = new int [8];
 	private int [] nodeHints = new int [8];
 	private int nodeSize;
-	private final int [] counters = new int [12];
+	private final int [] counters = new int [14];
+	/*
+	 * Generation tokens (UI thread): every request carries the generation of its slot; invalidate
+	 * bumps the generation, so a result that was running meanwhile is dropped at hand-off.
+	 */
+	private int generation;
+	private final int [] slotGen;
+	/* Drain-turn time budget and the durations of the last turns, in microseconds (proof). */
+	static final long TURN_BUDGET_NANOS = 4_000_000L;
+	private final int [] turnMicros = new int [256];
+	private int turnCount;
 	/** A caller's API read waits plainly this long before the busy indicator shows. */
 	static final int BUSY_AFTER_MILLIS = 100;
 	/* Guarded by lock: slots a caller's API read waits for (never cancelled by the window), and their waiters. */
@@ -334,6 +348,7 @@ public final class VirtualPageSource {
 		cancelBits = new boolean [maxBlocks];
 		workerTotals = new int [maxBlocks];
 		apiWanted = new boolean [maxBlocks];
+		slotGen = new int [maxBlocks];
 		waiters = new CompletableFuture<?> [maxBlocks];
 	}
 
@@ -407,6 +422,15 @@ public final class VirtualPageSource {
 	 */
 	public void invalidate () {
 		checkThread ();
+		generation++;
+		synchronized (lock) {
+			for (int i = 0; i < queueSize; i++) {
+				cache.free (queueSlot [i]);
+				counters [CANCELLED]++;
+			}
+			queueSize = 0;
+		}
+		wantSize = 0;
 		cache.invalidate (Integer.MIN_VALUE);
 		if (spill != null) spill.invalidate (Integer.MIN_VALUE);
 		addRefresh (ROOT, REFRESH_ALL);
@@ -844,6 +868,7 @@ public final class VirtualPageSource {
 			slot = cache.reserve (parentKey, block);
 			if (slot < 0) return -1;
 			counters [REQUESTED]++;
+			slotGen [slot] = generation;
 			synchronized (lock) {
 				enqueueFront (slot, parentKey, start, rows);
 				workerTotals [slot] = VirtualBlockStore.UNKNOWN;
@@ -1017,6 +1042,7 @@ public final class VirtualPageSource {
 
 	/** One UI-thread frame: drain finished blocks, plan the window, refresh, release. */
 	private void frame () {
+		long turnStart = System.nanoTime ();
 		int done;
 		synchronized (lock) {
 			frameScheduled = false;
@@ -1026,8 +1052,24 @@ public final class VirtualPageSource {
 		if (control == null || control.isDisposed ()) return;
 		counters [FRAMES]++;
 		cache.nextFrame ();
-		for (int i = 0; i < done; i++) settle (uiDoneSlot [i], uiDoneFlags [i], uiDoneTotal [i]);
-		if (!lazyContentShowing (control)) return;
+		int settled = 0;
+		while (settled < done) {
+			settle (uiDoneSlot [settled], uiDoneFlags [settled], uiDoneTotal [settled]);
+			settled++;
+			if (System.nanoTime () - turnStart > TURN_BUDGET_NANOS) break;
+		}
+		if (settled < done) {
+			/* Budget spent: hand the rest back and repost, so input and paint get in between turns. */
+			requeueDone (settled, done);
+			counters [REPOSTS]++;
+			recordTurn (turnStart);
+			scheduleFrame ();
+			return;
+		}
+		if (!lazyContentShowing (control)) {
+			recordTurn (turnStart);
+			return;
+		}
 		if ((flags & TREE) == 0) planTable ((Table) control);
 		else planTree ();
 		applyRefreshes (control);
@@ -1038,6 +1080,42 @@ public final class VirtualPageSource {
 			int overscanRows = overscanBlocks * blockSize;
 			counters [RELEASED] += hook.pageSourceRelease (Math.max (0, top - overscanRows), top + rows + overscanRows);
 		}
+		/* Settle gating: expensive fits run once the queue has drained; otherwise a later turn runs them. */
+		if (hook != null && isIdle ()) hook.pageSourceSettled ();
+		recordTurn (turnStart);
+	}
+
+	/** Puts completions [from, to) of this turn back at the head of the completion list. Caller is the UI thread. */
+	private void requeueDone (int from, int to) {
+		int count = to - from;
+		synchronized (lock) {
+			while (doneSize + count > doneSlot.length) {
+				doneSlot = grow (doneSlot);
+				doneFlags = grow (doneFlags);
+				doneTotal = grow (doneTotal);
+			}
+			System.arraycopy (doneSlot, 0, doneSlot, count, doneSize);
+			System.arraycopy (doneFlags, 0, doneFlags, count, doneSize);
+			System.arraycopy (doneTotal, 0, doneTotal, count, doneSize);
+			System.arraycopy (uiDoneSlot, from, doneSlot, 0, count);
+			System.arraycopy (uiDoneFlags, from, doneFlags, 0, count);
+			System.arraycopy (uiDoneTotal, from, doneTotal, 0, count);
+			doneSize += count;
+		}
+	}
+
+	private void recordTurn (long turnStart) {
+		long micros = (System.nanoTime () - turnStart) / 1000;
+		turnMicros [turnCount & (turnMicros.length - 1)] = (int) Math.min (Integer.MAX_VALUE, micros);
+		turnCount++;
+	}
+
+	/** Durations of the last drain turns in microseconds, oldest first (package proof hook). */
+	int [] recentTurnMicros () {
+		int n = Math.min (turnCount, turnMicros.length);
+		int [] result = new int [n];
+		for (int i = 0; i < n; i++) result [i] = turnMicros [(turnCount - n + i) & (turnMicros.length - 1)];
+		return result;
 	}
 
 	/** Until the effective-visibility bit of the visibility leaf lands, visibility is <code>isVisible</code>. */
@@ -1055,6 +1133,11 @@ public final class VirtualPageSource {
 		if (cancelled) {
 			cache.free (slot);
 			counters [CANCELLED]++;
+			return;
+		}
+		if (slotGen [slot] != generation) {
+			cache.free (slot);
+			counters [STALE_DROPPED]++;
 			return;
 		}
 		if ((resultFlags & VirtualBlockStore.FAILED) != 0) {
@@ -1255,6 +1338,7 @@ public final class VirtualPageSource {
 				queueStart [queueSize] = start;
 				queueCount [queueSize] = rows;
 				queueSize++;
+				slotGen [slot] = generation;
 				cancelBits [slot] = false;
 				workerTotals [slot] = VirtualBlockStore.UNKNOWN;
 				lock.notifyAll ();
