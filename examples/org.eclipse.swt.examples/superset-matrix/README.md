@@ -55,6 +55,48 @@ join -t$'\t' <(tail -n+2 base/VIEWPORT_TEST_MATRIX.tsv | awk -F'\t' '{print $1"|
              <(tail -n+2 pr/VIEWPORT_TEST_MATRIX.tsv   | awk -F'\t' '{print $1"|"$2"|"$3"\t"$4"\t"$6"\t"$8"\t"$18}' | sort)
 ```
 
+## Plan completeness is independent of pixels
+
+The viewport matrix has **two separate acceptance oracles**. The new
+`verify-plan-coverage.py` compares `plan.txt` with `VIEWPORT_TEST_MATRIX.tsv`:
+
+* Every runnable `PLAN` cell must have exactly one result; every static `ROW`
+  must match the planner's declared `NOT_RUN` or `NOT_IMPLEMENTED` outcome.
+* Duplicate, missing, unknown, malformed and unplanned results fail closed.
+* A runnable `FAIL`, `NOT_RUN` or `NOT_IMPLEMENTED` makes the receipt
+  `INCOMPLETE`, not `COMPLETE`. Postprocessed
+  `size_independence=FAIL` also prevents completion even when the originating
+  Java cell reported `PASS`.
+* The receipt records SHA-256 of the plan and matrix; previous receipts are
+  invalidated before every verification. Strict mode raises an error on any
+  incomplete runnable cell.
+
+Run `python verify-plan-coverage.py --selftest` to prove the fail-closed
+admission and refusal cases without SWT or a display. `run-matrix.sh` executes
+this check on every run, **including** `MATRIX_OPENCV=0` diagnostic runs.
+Set `MATRIX_COVERAGE_STRICT=1` for release/native CI acceptance:
+
+```bash
+MATRIX_COVERAGE_STRICT=1 MATRIX_OPENCV=1 \
+  examples/org.eclipse.swt.examples/superset-matrix/run-matrix.sh \
+  <built-swt-jar> <nebula-jars-dir> swt-nebula-native
+```
+
+The independent `verify-superset-matrix.py` continues to check the persisted
+pixel evidence, capture hashes, blank images and stale viewport frames. Neither
+oracle alone proves API equivalence, native rendering, accessibility, JNI, or
+performance on every backend. **A source-only workflow is not a native
+matrix pass.** A baseline OOM or intentionally unsupported design may remain
+recorded as an incomplete executable cell; do not relabel it `PASS`.
+A changed plan should use a fresh run label rather than resuming a stale TSV.
+
+The [Java2s SWT](https://www.java2s.com/Tutorial/Java/0280__SWT/Catalog0280__SWT.html),
+[SWT 2D Graphics](https://www.java2s.com/Tutorial/Java/0300__SWT-2D-Graphics/Catalog0300__SWT-2D-Graphics.html),
+[Swing](https://www.java2s.com/Tutorial/Java/0240__Swing/Catalog0240__Swing.html) and
+[Swing Event](https://www.java2s.com/Tutorial/Java/0260__Swing-Event/Catalog0260__Swing-Event.html)
+catalogs are behavior taxonomies for cross-toolkit coverage, not source-code
+inputs or automatic proof of equivalence.
+
 ### Safety built into the script
 
 * **Memory gate.** Before every JVM, including javac, the script waits until free physical memory is at least `MEM_FREE_MB` (4096) and free commit is at least `COMMIT_FREE_MB` (8192).
