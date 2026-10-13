@@ -1560,6 +1560,30 @@ public void test_wake() {
 	// tested in sleep() method
 }
 
+/**
+ * https://github.com/eclipse-platform/eclipse.platform.swt/issues/3060 - a wake()
+ * issued by another thread must not be lost, even if it happens before the UI
+ * thread enters sleep().
+ */
+@Test
+public void test_wakeBeforeSleepIsNotLost() throws InterruptedException {
+	final Display display = new Display();
+	try {
+		while (display.readAndDispatch()) {}
+		// A pending timer keeps the native poll timeout long, so a lost wake() blocks sleep()
+		display.timerExec(30_000, () -> {});
+		Thread waker = new Thread(display::wake);
+		waker.start();
+		waker.join();
+		long start = System.nanoTime();
+		display.sleep();
+		long elapsedMs = (System.nanoTime() - start) / 1_000_000;
+		assertTrue(elapsedMs < 10_000, "sleep() ignored a preceding wake() and blocked for " + elapsedMs + " ms");
+	} finally {
+		display.dispose();
+	}
+}
+
 /* custom */
 boolean disposeExecRan;
 
