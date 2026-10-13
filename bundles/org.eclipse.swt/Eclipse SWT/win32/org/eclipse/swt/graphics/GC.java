@@ -964,28 +964,6 @@ private void releaseGdipBgBrush() {
 	data.gdipBgBrush = 0;
 }
 
-/* Retained-plane recorder scratch: reused, never allocated per call. */
-private SIZE planeSize;
-private char [] planeChars;
-private RECT planeBox;
-
-RECT clipBoxScratch() {
-	if (planeBox == null) planeBox = new RECT();
-	return planeBox;
-}
-
-SIZE textSizeScratch() {
-	if (planeSize == null) planeSize = new SIZE();
-	return planeSize;
-}
-
-char [] textCharsScratch(String string) {
-	int length = string.length();
-	if (planeChars == null || planeChars.length < length) planeChars = new char [Math.max(64, length)];
-	string.getChars(0, length, planeChars, 0);
-	return planeChars;
-}
-
 void disposeGdip() {
     if (data.gdipPen != 0) {
         Gdip.Pen_delete(data.gdipPen);

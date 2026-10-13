@@ -57,6 +57,8 @@ final class RetainedFrame implements TileGrid.Listener {
 	long clipRgn;
 	PlaneBackend.Target gpu;
 	long lastVisibleNanos;
+	int recordBackoff;
+	static final int RECORD_BACKOFF_FRAMES = 32;
 	static final long TRIM_NANOS = Long.getLong ("swt.gpu.trimMillis", 30_000L) * 1_000_000L;
 
 	RetainedFrame (Composite control) {
@@ -331,7 +333,11 @@ final class RetainedFrame implements TileGrid.Listener {
 			}
 		}
 		if (raster.count () == 0) return true;
-		int recorded = gpu != null && (flags & CONTENT_GDI) == 0 && backgroundReplayable () ? recordContent () : 0;
+		int recorded = 0;
+		if (gpu != null && (flags & CONTENT_GDI) == 0 && backgroundReplayable ()) {
+			/* after a failed recording, rasterize with GDI for a while before trying the GPU again */
+			if (recordBackoff > 0) recordBackoff--; else recorded = recordContent ();
+		}
 		if (recorded == 0) rasterContentGdi ();
 		long [] visible = grid.visibleBits ();
 		for (int slot = TileGrid.nextSet (visible, 0); slot >= 0; slot = TileGrid.nextSet (visible, slot + 1)) {
@@ -350,7 +356,9 @@ final class RetainedFrame implements TileGrid.Listener {
 			paintPass (raster.x0 (i), raster.y0 (i), raster.x1 (i), raster.y1 (i), RetainedPlanes.RETAINED, ops, 0);
 		}
 		if (ops.fail == 0) return 1;
-		flags |= CONTENT_GDI;
+		GpuCounters.inc (GpuCounters.RECORD_FAILS);
+		GpuCounters.set (GpuCounters.RECORD_FAIL_BITS, GpuCounters.get (GpuCounters.RECORD_FAIL_BITS) | ops.fail);
+		recordBackoff = RECORD_BACKOFF_FRAMES;
 		return 0;
 	}
 
@@ -382,8 +390,10 @@ final class RetainedFrame implements TileGrid.Listener {
 
 	boolean backgroundReplayable () {
 		if ((control.style & SWT.NO_BACKGROUND) != 0) {
-			bgReplayable = 0;
-			return false;
+			/* NO_BACKGROUND: no fill; pixels the widget does not paint keep the tile's previous content, as on GDI */
+			bgArgb = 0;
+			bgReplayable = 1;
+			return true;
 		}
 		Control background = control.findBackgroundControl ();
 		int pixel = -1;

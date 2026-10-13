@@ -64,14 +64,15 @@ public class FrameBench {
 		boolean focus = display.getFocusControl () == control;
 		Arrays.sort (wall);
 		if (args.length > 3) {
-			System.out.println ("mode\twidget\tscenario\tframes\tp50ms\tp95ms\tmaxms\tcpuMsMean\tallocBytesMean\tgpuWaitMsMean\tpenHit%\tbrushHit%\tfontHit%\tpaintHit%\tblobHit%\ttileReused\ttileRaster\tgpuRasterTiles\tfallbacks\tgpuBytes\tcpuTileBytes\tfocus");
+			System.out.println ("mode\twidget\tscenario\tframes\tp50ms\tp95ms\tmaxms\tcpuMsMean\tallocBytesMean\tgpuWaitMsMean\tpenHit%\tbrushHit%\tfontHit%\tpaintHit%\tblobHit%\ttileReused\ttileRaster\tgpuRasterTiles\tfallbacks\tgpuBytes\tcpuTileBytes\trecordFails\tfailBits\topsRecorded\tnativeCreates\tfocus");
 		}
 		System.out.println (String.join ("\t", System.getProperty ("swt.gpu", "off"), widget, scenario, "" + frames,
 			f (wall [frames / 2]), f (wall [(int) (frames * 0.95)]), f (wall [frames - 1]),
 			f (cpu / 1e6 / frames), "" + alloc / frames, f (d [GpuCounters.GPU_WAIT_NANOS] / 1e6 / frames),
 			rate (d, GpuCounters.PEN_HIT), rate (d, GpuCounters.BRUSH_HIT), rate (d, GpuCounters.FONT_HIT), rate (d, GpuCounters.PAINT_HIT), rate (d, GpuCounters.BLOB_HIT),
 			"" + d [GpuCounters.TILE_REUSED], "" + d [GpuCounters.TILE_RASTER], "" + d [GpuCounters.GPU_RASTER_TILES], "" + after [GpuCounters.FALLBACKS],
-			"" + after [GpuCounters.GPU_TILE_BYTES], "" + after [GpuCounters.CPU_TILE_BYTES], "" + focus));
+			"" + after [GpuCounters.GPU_TILE_BYTES], "" + after [GpuCounters.CPU_TILE_BYTES],
+			"" + d [GpuCounters.RECORD_FAILS], "" + after [GpuCounters.RECORD_FAIL_BITS], "" + d [GpuCounters.OPS_RECORDED], "" + d [GpuCounters.NATIVE_CREATES], "" + focus));
 		display.dispose ();
 	}
 
@@ -149,6 +150,8 @@ public class FrameBench {
 		GC gc = e.gc;
 		Display d = e.display;
 		int first = Math.max (0, (state [0] + e.y) / 19), last = (state [0] + e.y + e.height) / 19;
+		/* plane-aware client: skip body work in an overlay-only pass */
+		if ((RetainedPlanes.drawnPlanes (gc) & RetainedPlanes.BODY) == 0) last = first - 1;
 		for (int line = first; line <= last; line++) {
 			int y = line * 19 - state [0];
 			gc.setForeground (d.getSystemColor (line % 5 == 0 ? SWT.COLOR_DARK_BLUE : SWT.COLOR_BLACK));

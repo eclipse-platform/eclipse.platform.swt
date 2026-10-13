@@ -25,7 +25,9 @@ public final class GpuCounters {
 	public static final int SCROLL_TRANSLATES = 24, GPU_RASTER_TILES = 25, OPS_RECORDED = 26, NATIVE_CREATES = 27;
 	/** Nanoseconds the UI thread waited for GPU completion (readback fence) and spent submitting GPU replay. */
 	public static final int GPU_WAIT_NANOS = 28, GPU_SUBMIT_NANOS = 29;
-	public static final int COUNT = 30;
+	/** Content passes that could not be replayed on the GPU, and the union of their OpStream fail bits. */
+	public static final int RECORD_FAILS = 30, RECORD_FAIL_BITS = 31;
+	public static final int COUNT = 32;
 
 	public static final String [] NAMES = {
 		"pen.hit", "pen.miss", "brush.hit", "brush.miss",
@@ -35,7 +37,7 @@ public final class GpuCounters {
 		"tile.evict", "frames", "overlayFrames", "fallbacks",
 		"rasterPixels", "compositePixels", "gpuTileBytes", "cpuTileBytes",
 		"scrollTranslates", "gpuRasterTiles", "opsRecorded", "nativeCreates",
-		"gpuWaitNanos", "gpuSubmitNanos",
+		"gpuWaitNanos", "gpuSubmitNanos", "recordFails", "recordFailBits",
 	};
 
 	static final long [] VALUES = new long [COUNT];

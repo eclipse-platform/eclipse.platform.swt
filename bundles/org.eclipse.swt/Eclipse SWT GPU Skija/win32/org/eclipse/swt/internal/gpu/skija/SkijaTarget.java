@@ -87,7 +87,7 @@ final class SkijaTarget implements PlaneBackend.Target {
 		long canvas = tile (slot).getCanvas ()._ptr;
 		int save = Canvas._nSave (canvas);
 		Canvas._nClipRect (canvas, localX, localY, localX + w, localY + h, INTERSECT, false);
-		Canvas._nDrawColor (canvas, background, SRC);
+		if ((background >>> 24) != 0) Canvas._nDrawColor (canvas, background, SRC);
 		matrix [2] = -tileClientX;
 		matrix [5] = -tileClientY;
 		Canvas._nConcat (canvas, matrix);

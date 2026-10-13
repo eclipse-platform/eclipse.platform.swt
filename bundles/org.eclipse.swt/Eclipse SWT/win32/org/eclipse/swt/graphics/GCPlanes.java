@@ -33,6 +33,11 @@ final class GCPlanes {
 	static final int TRANSFORMED = 1 << 8, XOR = 1 << 9;
 	static final int TEXT_OPAQUE = 1;
 
+	/* Recorder scratch, reused across GCs: recording runs only in retained passes on the display thread. */
+	private static final SIZE SIZE_SCRATCH = new SIZE ();
+	private static final RECT RECT_SCRATCH = new RECT ();
+	private static char [] charScratch = new char [256];
+
 	private GCPlanes () {
 	}
 
@@ -117,7 +122,7 @@ final class GCPlanes {
 			sink.clipReset ();
 			return;
 		}
-		RECT box = gc.clipBoxScratch ();
+		RECT box = RECT_SCRATCH;
 		int kind = OS.GetRgnBox (hRgn, box);
 		if (kind == 2 /* SIMPLEREGION */) {
 			sink.clip (box.left, box.top, box.right - box.left, box.bottom - box.top);
@@ -188,10 +193,11 @@ final class GCPlanes {
 	}
 
 	private static int textWidth (GC gc, String string) {
-		SIZE size = gc.textSizeScratch ();
-		char [] chars = gc.textCharsScratch (string);
-		OS.GetTextExtentPoint32 (gc.handle, chars, string.length (), size);
-		return size.cx;
+		int length = string.length ();
+		if (charScratch.length < length) charScratch = new char [Integer.highestOneBit (length) << 1];
+		string.getChars (0, length, charScratch, 0);
+		OS.GetTextExtentPoint32 (gc.handle, charScratch, length, SIZE_SCRATCH);
+		return SIZE_SCRATCH.cx;
 	}
 
 	/** Int id of the GC's font in {@link FontTable}, or -1 when it cannot be replayed. */
