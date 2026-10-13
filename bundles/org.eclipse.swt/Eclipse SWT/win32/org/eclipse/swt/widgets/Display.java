@@ -142,6 +142,27 @@ public class Display extends Device implements Executor {
 	final RECT visRect = new RECT (), visClip = new RECT ();
 	final WINDOWPOS visPos = new WINDOWPOS ();
 	final PAINTSTRUCT visPs = new PAINTSTRUCT ();
+
+	/* Leaf 2: box model scratch, damage test hook, per-plane batch scope, burst debounce */
+	//FLLDCIM: HPCPOP - reusable arrays; WM_PAINT/redraw fast paths are int tests (damageHooks, batchViewports)
+	final RECT boxWindow = new RECT (), boxClient = new RECT ();
+	Control [] damageControls = new Control [4];
+	org.eclipse.swt.internal.ViewportDamageRecorder [] damageRecorders = new org.eclipse.swt.internal.ViewportDamageRecorder [4];
+	int damageHooks;
+	long damageRgn, batchRgn;
+	int [] damageData = new int [64];
+	final int [] damageContent = new int [4];
+	Control [] batchControls = new Control [4];
+	int [] batchDepths = new int [4], batchFlags = new int [4];
+	org.eclipse.swt.internal.ViewportDamageRegion [] batchDamage = new org.eclipse.swt.internal.ViewportDamageRegion [4];
+	int batchCount, batchViewports, batchScrollbars;
+	Control batchAbsorbing;
+	Control [] debounceControls = new Control [4];
+	int [] debounceDeadline = new int [4], debounceStart = new int [4], debounceKinds = new int [4];
+	int debounceCount, debounceArmedFor;
+	boolean debounceArmed;
+	final long debounceEpoch = System.nanoTime ();
+	final Runnable debounceTick = () -> VisibilityDebounce.tick (this);
 	final Runnable visSweepRunnable = () -> VisibilityCatchUp.sweep (this);
 	OcclusionTracker occlusionTracker;
 	static int WindowClassCount;
@@ -3036,9 +3057,8 @@ protected void init () {
 	threadId = OS.GetCurrentThreadId ();
 
 	/* Visibility gate: export the port and start the occlusion tracker */
-	if (EffectiveVisibility.ENABLED) {
-		org.eclipse.swt.internal.VisibilityGate.install (EffectiveVisibility.PORT);
-	}
+	/* The port also carries the box model, batch planes and debounce; gate queries honour the kill switch */
+	org.eclipse.swt.internal.VisibilityGate.install (EffectiveVisibility.PORT);
 	if (EffectiveVisibility.OCCLUSION) {
 		occlusionTracker = OcclusionTracker.start (this);
 	}
@@ -4113,6 +4133,9 @@ protected void release () {
 }
 
 void releaseDisplay () {
+	ViewportDamageHook.release (this);
+	ViewportBatch.release (this);
+	VisibilityDebounce.release (this);
 	if (occlusionTracker != null) {
 		occlusionTracker.stop ();
 		occlusionTracker = null;

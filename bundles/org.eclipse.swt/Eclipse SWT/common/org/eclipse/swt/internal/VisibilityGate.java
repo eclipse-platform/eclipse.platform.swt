@@ -54,11 +54,46 @@ public final class VisibilityGate {
 	 */
 	public static final int CATCH_UP = 0x5647;
 
+	/** Box-model rings, outside in: border, scrollbar track, inset (padding), margin (content margin). */
+	public static final int BORDER = 0, TRACK = 1, INSET = 2, MARGIN = 3;
+	/** Sides inside one ring; ring {@code r} side {@code s} is element {@code r * 4 + s} of a box array. */
+	public static final int TOP = 0, RIGHT = 1, BOTTOM = 2, LEFT = 3;
+	/** Length of a box array: four rings of four sides, device pixels. */
+	public static final int BOX_LENGTH = 16;
+
 	/**
 	 * Platform port. Implemented by the platform <code>widgets</code> package,
 	 * which owns the widget state bits.
 	 */
 	public static abstract class Port {
+		/** Fills {@code out [ring * 4 + side]} in device pixels; false when the platform has no box model. */
+		protected boolean boxEdges (Control control, int [] out) {
+			return false;
+		}
+
+		/** Content viewport in client device pixels {x, y, width, height}; false when unsupported. */
+		protected boolean contentPixels (Control control, int [] out) {
+			return false;
+		}
+
+		/** Begins or ends a batch on the given planes; false when unsupported. */
+		protected boolean batch (Control control, int planes, boolean begin) {
+			return false;
+		}
+
+		/** Schedules a debounced {@link VisibilityGate#DEBOUNCED} event; false when unsupported. */
+		protected boolean debounce (Control control, int kind, int delayMs) {
+			return false;
+		}
+
+		/** Stores the inset and margin rings (packed with {@link VisibilityGate#pack}). */
+		protected void setBoxEdges (Control control, int packedInset, int packedMargin) {
+		}
+
+		/** Routes the control's WM_PAINT update regions (and blit copies) to the recorder; null detaches. */
+		protected void attachDamageRecorder (Control control, ViewportDamageRecorder recorder) {
+		}
+
 		/**
 		 * @param control the control, not disposed
 		 * @param paint <code>true</code> to include reasons that gate painting
@@ -77,6 +112,198 @@ public final class VisibilityGate {
 	}
 
 	private static Port port;
+
+	/**
+	 * Packs four edges of one ring into an int, 8 bits per side (0..255 device pixels,
+	 * clamped). Bit operations only, so the value is identical in Java and GWT.
+	 */
+	public static int pack (int top, int right, int bottom, int left) {
+		return clampEdge (top) | (clampEdge (right) << 8) | (clampEdge (bottom) << 16) | (clampEdge (left) << 24);
+	}
+
+	/** One side of a packed ring. */
+	public static int unpack (int packed, int side) {
+		return (packed >>> (side << 3)) & 0xFF;
+	}
+
+	private static int clampEdge (int edge) {
+		return edge < 0 ? 0 : (edge > 0xFF ? 0xFF : edge);
+	}
+
+	/**
+	 * The control's box model, outside in: {@link #BORDER}, {@link #TRACK} (native
+	 * scrollbar non-client area), {@link #INSET}, {@link #MARGIN}; the content viewport
+	 * is what remains. One computation feeds the client area, the scrollbar rectangles,
+	 * blit clips and the protected damage set.
+	 *
+	 * @param control the control
+	 * @param out at least {@link #BOX_LENGTH} ints, filled with device pixels
+	 * @return false when unsupported (no port, disposed, not a Scrollable)
+	 */
+	public static boolean boxEdges (Control control, int [] out) {
+		Port p = port;
+		return p != null && control != null && out != null && out.length >= BOX_LENGTH && !control.isDisposed () && p.boxEdges (control, out);
+	}
+
+	/**
+	 * The content viewport in client device pixels, <code>out = {x, y, width, height}</code>:
+	 * the client rect minus INSET and MARGIN. Pixel-exact at every zoom (the public
+	 * <code>getClientArea</code> is in points and rounds; at 200% an odd pixel width loses
+	 * one pixel), so margin rings drawn from these numbers meet the edges exactly.
+	 *
+	 * @return false when unsupported
+	 */
+	public static boolean contentPixels (Control control, int [] out) {
+		Port p = port;
+		return p != null && control != null && out != null && out.length >= 4 && !control.isDisposed () && p.contentPixels (control, out);
+	}
+
+	/**
+	 * Internal event type sent when a debounced burst settles; <code>event.detail</code>
+	 * holds the OR of the kinds requested during the burst.
+	 */
+	public static final int DEBOUNCED = 0x5648;
+	/** Default debounce delay: about one frame. */
+	public static final int DEBOUNCE_FRAME_MS = 16;
+	/** Cap on the total delay of one burst, however long events keep arriving. */
+	public static final int DEBOUNCE_MAX_MS = 100;
+
+	/**
+	 * Time debounce for bursty non-input work (data-change storms, SetData completions,
+	 * model refreshes, the exact layout after a live resize). Input-driven work (scroll,
+	 * wheel, drag, typing) must be coalesced per frame instead, never time-debounced.
+	 * Each call extends the burst by <code>delayMs</code> (default one frame), never past
+	 * {@link #DEBOUNCE_MAX_MS} after the burst's first call; when it settles the control
+	 * receives one {@link #DEBOUNCED} event. Allocation-free per call.
+	 *
+	 * @param kind owner-defined bits ORed into <code>event.detail</code>
+	 * @param delayMs quiet time that ends the burst; values &lt;= 0 mean one frame
+	 * @return false when unsupported (the caller does the work now)
+	 */
+	public static boolean debounce (Control control, int kind, int delayMs) {
+		Port p = port;
+		return p != null && control != null && !control.isDisposed () && p.debounce (control, kind, delayMs);
+	}
+
+	/** Plane bits of one widget: structure and chrome (frame, headers, layout, child controls). */
+	public static final int PLANE_MAIN = 1;
+	/** The content window that scrolls. */
+	public static final int PLANE_VIEWPORT = 2;
+	/** The native or overlay scrollbars. */
+	public static final int PLANE_SCROLLBARS = 4;
+	/** Operations expected to run at least this long use {@link #runBatch}'s worker and busy cursor ({@code -Dswt.batch.busyMs}). */
+	public static final int BUSY_THRESHOLD_MS = Integer.getInteger ("swt.batch.busyMs", 100).intValue ();
+
+	/**
+	 * Begins a batch scope that freezes only the given planes; the others stay live.
+	 * Nested-safe (per-plane depth). Structural changes freeze {@link #PLANE_MAIN} (layout
+	 * deferred, run once at the end; the viewport keeps scrolling). Bulk data changes
+	 * freeze {@link #PLANE_VIEWPORT} (content damage accumulates, scrollbars stay live, one
+	 * paint at the end, no erase). Never freeze a plane the operation does not touch.
+	 *
+	 * <pre>
+	 * VisibilityGate.beginBatch (table, VisibilityGate.PLANE_VIEWPORT);
+	 * try { ... setItems / sort / filter ... } finally { VisibilityGate.endBatch (table, VisibilityGate.PLANE_VIEWPORT); }
+	 * </pre>
+	 *
+	 * @return false when unsupported (the caller may fall back to setRedraw)
+	 */
+	public static boolean beginBatch (Control control, int planes) {
+		Port p = port;
+		return p != null && control != null && !control.isDisposed () && p.batch (control, planes & (PLANE_MAIN | PLANE_VIEWPORT | PLANE_SCROLLBARS), true);
+	}
+
+	/** Ends a batch scope; the last end of each plane repaints that plane once. */
+	public static boolean endBatch (Control control, int planes) {
+		Port p = port;
+		return p != null && control != null && !control.isDisposed () && p.batch (control, planes & (PLANE_MAIN | PLANE_VIEWPORT | PLANE_SCROLLBARS), false);
+	}
+
+	/** Viewport-only batch: {@code beginBatch/endBatch (control, PLANE_VIEWPORT)}. */
+	public static boolean suppressViewport (Control control, boolean suppress) {
+		return suppress ? beginBatch (control, PLANE_VIEWPORT) : endBatch (control, PLANE_VIEWPORT);
+	}
+
+	/**
+	 * Long operation in a batch scope. When {@code expectedMs} reaches
+	 * {@link #BUSY_THRESHOLD_MS}, {@code cpuWork} runs on a worker thread while the UI
+	 * thread waits in {@code BusyIndicator.showWhile (Future)}: the busy cursor shows, the
+	 * event loop keeps running, the scrollbars stay live and the frozen planes accumulate.
+	 * {@code uiApply} then runs on the UI thread, and the planes repaint once.
+	 * {@code cpuWork} must not touch widgets.
+	 */
+	public static void runBatch (Control control, int planes, Runnable cpuWork, Runnable uiApply, int expectedMs) {
+		beginBatch (control, planes);
+		try {
+			if (expectedMs >= BUSY_THRESHOLD_MS) {
+				java.util.concurrent.CompletableFuture<Void> work = java.util.concurrent.CompletableFuture.runAsync (cpuWork);
+				org.eclipse.swt.custom.BusyIndicator.showWhile (work);
+				work.join ();
+			} else {
+				cpuWork.run ();
+			}
+			if (uiApply != null && !control.isDisposed ()) {
+				uiApply.run ();
+			}
+		} finally {
+			if (!control.isDisposed ()) {
+				endBatch (control, planes);
+			}
+		}
+	}
+
+	/** Sets the inset and margin rings of a Scrollable (packed with {@link #pack}). */
+	public static void setBoxEdges (Control control, int packedInset, int packedMargin) {
+		Port p = port;
+		if (p != null && control != null && !control.isDisposed ()) {
+			p.setBoxEdges (control, packedInset, packedMargin);
+		}
+	}
+
+	/**
+	 * Adds the protected rings (border, track, inset, margin) to a region, outside in, in
+	 * content-viewport coordinates: the viewport starts at (0, 0) and the rings lie at
+	 * negative coordinates and beyond its width and height. Content damage must never
+	 * touch this set.
+	 *
+	 * @return false when the box model is unavailable
+	 */
+	public static boolean protectBox (Control control, ViewportDamageRegion region, int viewportWidth, int viewportHeight) {
+		int [] box = new int [BOX_LENGTH];
+		if (region == null || !boxEdges (control, box)) {
+			return false;
+		}
+		int x = 0, y = 0, w = viewportWidth, h = viewportHeight;
+		for (int ring = MARGIN; ring >= BORDER; ring--) {
+			x -= box [ring * 4 + LEFT];
+			y -= box [ring * 4 + TOP];
+			w += box [ring * 4 + LEFT] + box [ring * 4 + RIGHT];
+			h += box [ring * 4 + TOP] + box [ring * 4 + BOTTOM];
+		}
+		for (int ring = BORDER; ring <= MARGIN; ring++) {
+			int top = box [ring * 4 + TOP], right = box [ring * 4 + RIGHT], bottom = box [ring * 4 + BOTTOM], left = box [ring * 4 + LEFT];
+			region.addFrame (x, y, w, h, top, right, bottom, left);
+			x += left;
+			y += top;
+			w -= left + right;
+			h -= top + bottom;
+		}
+		return true;
+	}
+
+	/**
+	 * Test hook: records every WM_PAINT update region of the control (and of its
+	 * descendants, mapped into its content viewport) as painted damage, so tests can
+	 * isolate exactly which pixels each frame repainted. Off unless attached.
+	 *
+	 * @param recorder the recorder, or null to detach
+	 */
+	public static void attachDamageRecorder (Control control, ViewportDamageRecorder recorder) {
+		Port p = port;
+		if (p != null && control != null && !control.isDisposed ()) {
+			p.attachDamageRecorder (control, recorder);
+		}
+	}
 
 	private VisibilityGate () {
 	}

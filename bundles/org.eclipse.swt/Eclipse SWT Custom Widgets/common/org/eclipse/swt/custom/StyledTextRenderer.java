@@ -59,8 +59,18 @@ class StyledTextRenderer {
 	float averageLineHeight;
 	int linesInAverageLineHeight;
 	boolean idleRunning;
-	/** Visible lines plus one viewport of overscan; the only lines measured in idle time for large documents. */
-	final ViewportRuntime.RowWindow idleWindow = new ViewportRuntime.RowWindow();
+	/**
+	 * Generation of the line size cache: a whole-document reset bumps it in O(1);
+	 * a LineSizeInfo from an older generation reads as "needs measurement".
+	 */
+	int sizeGeneration;
+	/** Number of line layouts requested (observability for viewport-bound tests and benches). */
+	long layoutRequests;
+	/**
+	 * Idle measurement window [idleStart, idleEnd): visible lines plus one viewport
+	 * of overscan, as packed ints owned by the widget's renderer (no window object).
+	 */
+	int idleStart, idleEnd;
 
 	/* Bullet */
 	Bullet[] bullets;
@@ -106,6 +116,8 @@ class StyledTextRenderer {
 		/* Line size */
 		int height;
 		int width;
+		/* cache generation this size belongs to */
+		int generation;
 
 		public LineSizeInfo() {
 			resetSize();
@@ -331,15 +343,25 @@ void calculate(int startLine, int lineCount) {
 	}
 }
 LineSizeInfo getLineSize(int i) {
-	if (lineSizes[i] == null) {
-		lineSizes[i] = new LineSizeInfo();
+	LineSizeInfo line = lineSizes[i];
+	if (line == null) {
+		line = lineSizes[i] = new LineSizeInfo();
+		line.generation = sizeGeneration;
+	} else if (line.generation != sizeGeneration) {
+		line.resetSize();
+		line.generation = sizeGeneration;
 	}
-	return lineSizes[i];
+	return line;
+}
+/** The current-generation size of line i, or null when the line is unmeasured (never allocates). */
+LineSizeInfo peekLineSize(int i) {
+	LineSizeInfo line = lineSizes[i];
+	return line != null && line.generation == sizeGeneration ? line : null;
 }
 void calculateClientArea () {
 	int index = Math.max (0, styledText.getTopIndex());
 	int lineCount = content.getLineCount();
-	int height = styledText.getClientArea().height;
+	int height = viewportHeight();
 	int y = 0;
 	/*
 	 * There exists a possibility of ArrayIndexOutOfBounds Exception in
@@ -729,13 +751,17 @@ FontData[] getFontData(int style) {
 	}
 	return fontDatas;
 }
+/**
+ * Viewport mode: the widget's SWT.VIRTUAL style bit, or a document above
+ * VIEWPORT_LINE_THRESHOLD lines. Tested as a mask, no mode object.
+ */
 boolean isViewportMode() {
-	return lineCount > VIEWPORT_LINE_THRESHOLD;
+	return lineCount > VIEWPORT_LINE_THRESHOLD || (styledText != null && (styledText.getStyle() & SWT.VIRTUAL) != 0);
 }
 /**
  * Measures only the visible lines plus one viewport of overscan
- * ({@link ViewportRuntime.RowWindow}), in IDLE_TIME slices, then publishes the
- * reconciled scroll extent. Re-armed when the top index moves.
+ * ([idleStart, idleEnd)), in IDLE_TIME slices, then publishes the reconciled
+ * scroll extent. Re-targeted when the top index moves.
  */
 void calculateIdleWindow () {
 	//FLLDCIM: VIEWPORT - visible + bounded overscan work only
@@ -749,10 +775,10 @@ void calculateIdleWindow () {
 			// the window follows the current top index, so a scroll re-targets pending work
 			syncIdleWindow();
 			long start = System.currentTimeMillis();
-			int end = (int) Math.min(lineCount, idleWindow.paintEndExclusive());
+			int end = Math.min(lineCount, idleEnd);
 			int i;
-			for (i = (int) idleWindow.paintStart(); i < end; i++) {
-				LineSizeInfo line = lineSizes[i];
+			for (i = idleStart; i < end; i++) {
+				LineSizeInfo line = peekLineSize(i);
 				if (line == null || line.needsRecalculateSize()) {
 					calculate(i, 1);
 					if (System.currentTimeMillis() - start > IDLE_TIME) {
@@ -775,11 +801,25 @@ void calculateIdleWindow () {
 	idleRunning = true;
 	styledText.getDisplay().asyncExec(runnable);
 }
+/**
+ * Height of the area whose lines are pre-measured: the client area, capped in
+ * viewport mode by the display height (a control sized to its whole preferred
+ * height must not pre-measure lines that no screen can show; paint still lays
+ * out whatever it paints).
+ */
+int viewportHeight () {
+	int height = styledText.getClientArea().height;
+	if (isViewportMode()) {
+		height = Math.min(height, styledText.getDisplay().getClientArea().height);
+	}
+	return height;
+}
 void syncIdleWindow () {
-	int visible = Math.max(1, styledText.getClientArea().height / Math.max(1, getLineHeight()) + 1);
-	idleWindow.setLogicalCount(lineCount);
-	idleWindow.setOverscanRows(visible);
-	idleWindow.setViewport(Math.max(0, Math.min(styledText.topIndex, lineCount - 1)), visible);
+	// same arithmetic as ViewportRuntime.RowWindow (paintStart/paintEndExclusive), inline on ints
+	int visible = Math.max(1, viewportHeight() / Math.max(1, getLineHeight()) + 1);
+	int top = Math.max(0, Math.min(styledText.topIndex, lineCount - 1));
+	idleStart = Math.max(0, top - visible);
+	idleEnd = (int) Math.min(lineCount, (long) top + 2L * visible);
 }
 int getHeight () {
 	int defaultLineHeight = getLineHeight();
@@ -890,7 +930,7 @@ int getLineHeight(int lineIndex) {
 	return getLineHeight(lineIndex, true);
 }
 int getLineHeight(int lineIndex, boolean exact) {
-	LineSizeInfo line = lineSizes[lineIndex];
+	LineSizeInfo line = peekLineSize(lineIndex);
 	if (line == null || line.needsRecalculateHeight()) {
 		// here we are in "variable line height", the call of calculate which uses TextLayout is very slow
 		// so use the average line height of all calculated lines when many heights are needed e.g. for scrolling.
@@ -1231,6 +1271,7 @@ private static final class StyleEntry {
 }
 
 TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpacing) {
+	layoutRequests++;
 	TextLayout layout = null;
 	if (styledText != null) {
 		int topIndex = styledText.topIndex > 0 ? styledText.topIndex - 1 : 0;
@@ -1683,13 +1724,18 @@ void reset(int startLine, int lineCount) {
 	if (lineCount == 0) {
 		return;
 	}
-	//FLLDCIM: VIEWPORT - range reset in place; null means "needs measurement" (see getLineSize)
-	Arrays.fill(lineSizes, startLine, endLine, null);
+	//FLLDCIM: VIEWPORT - a whole-document reset is O(1) (generation); a range reset clears in place
+	if (startLine == 0 && endLine >= this.lineCount) {
+		sizeGeneration++;
+	} else {
+		Arrays.fill(lineSizes, startLine, endLine, null);
+	}
 	discountAverage(lineCount);
 	if (startLine <= maxWidthLineIndex && maxWidthLineIndex < endLine) {
 		maxWidth = 0;
 		maxWidthLineIndex = -1;
-		if (lineCount != this.lineCount) {
+		if (lineCount != this.lineCount && !isViewportMode()) {
+			// viewport mode: the width extent is rebuilt from the lines measured next
 			recomputeMaxWidth();
 		}
 	}
@@ -1704,7 +1750,7 @@ private void discountAverage(int resetLineCount) {
 }
 private void recomputeMaxWidth() {
 	for (int i = 0; i < this.lineCount; i++) {
-		LineSizeInfo lineSize = lineSizes[i];
+		LineSizeInfo lineSize = peekLineSize(i);
 		if (lineSize != null && lineSize.width > maxWidth) {
 			maxWidth = lineSize.width;
 			maxWidthLineIndex = i;
@@ -1719,7 +1765,7 @@ void reset(Set<Integer> lines) {
 	for (Integer line : lines) {
 		if (line >= 0 || line < lineCount) {
 			resetLineCount++;
-			LineSizeInfo lineSize = lineSizes[line.intValue()];
+			LineSizeInfo lineSize = peekLineSize(line.intValue());
 			if (lineSize != null) {
 				lineSize.resetSize();
 			}
@@ -1729,10 +1775,23 @@ void reset(Set<Integer> lines) {
 	if (lines.contains(Integer.valueOf(maxWidthLineIndex))) {
 		maxWidth = 0;
 		maxWidthLineIndex = -1;
-		if (resetLineCount != this.lineCount) {
+		if (resetLineCount != this.lineCount && !isViewportMode()) {
 			recomputeMaxWidth();
 		}
 	}
+}
+/** Whether any style range changes line height; scans the store without copying it. */
+boolean hasVariableHeightStyle() {
+	if (styles == null) {
+		return false;
+	}
+	int count = styleCount;
+	for (int i = 0; i < count; i++) {
+		if (styles[i] != null && styles[i].isVariableHeight()) {
+			return true;
+		}
+	}
+	return false;
 }
 void setContent(StyledTextContent content) {
 	reset();

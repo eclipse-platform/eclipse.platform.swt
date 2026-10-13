@@ -778,6 +778,10 @@ boolean SetScrollInfo (long hwnd, int flags, SCROLLINFO info, boolean fRedraw) {
     if (!visible || (state & DISABLED) != 0) {
         fRedraw = false;
     }
+	/* Scrollbar plane frozen by a batch scope: update values, repaint the frame once at the end */
+	if (fRedraw && display.batchScrollbars > 0 && ViewportBatch.scrollbarsFrozen (parent)) {
+		fRedraw = false;
+	}
 	boolean result = OS.SetScrollInfo (hwnd, flags, info, fRedraw);
 
 	/*

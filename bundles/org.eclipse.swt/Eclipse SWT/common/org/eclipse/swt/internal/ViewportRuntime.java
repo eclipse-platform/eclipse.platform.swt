@@ -342,11 +342,11 @@ public final class ViewportRuntime {
 		}
 
 		public int rangeStart (int range) {
-			return starts [Objects.checkIndex (range, rangeCount)];
+			return starts [rangeIndex (range)];
 		}
 
 		public int rangeEndExclusive (int range) {
-			return ends [Objects.checkIndex (range, rangeCount)];
+			return ends [rangeIndex (range)];
 		}
 
 		public boolean complementMode () {
@@ -423,6 +423,13 @@ public final class ViewportRuntime {
 			starts = Arrays.copyOf (other.starts, other.starts.length);
 			ends = Arrays.copyOf (other.ends, other.ends.length);
 			rangeCount = other.rangeCount;
+		}
+
+		private int rangeIndex (int range) {
+			if (range < 0 || range >= rangeCount) {
+				throw new IndexOutOfBoundsException ("Index " + range + " out of bounds for length " + rangeCount);
+			}
+			return range;
 		}
 
 		private void checkIndex (int index) {
