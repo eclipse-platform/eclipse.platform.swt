@@ -18,7 +18,7 @@ import org.eclipse.swt.widgets.*;
  * <ul>
  * <li>{@code direct}: no batch, one redraw per change (what small operations should do);</li>
  * <li>{@code setredraw}: stock batch, setRedraw (false) ... setRedraw (true);</li>
- * <li>{@code viewport}: VisibilityGate.beginBatch (PLANE_VIEWPORT) ... endBatch (reflective, gated build only).</li>
+ * <li>{@code viewport}: Control.beginBatch (SWT.PLANE_VIEWPORT) ... endBatch (reflective, leaf-2 build only).</li>
  * </ul>
  * Prints: changes, mode, paint events, painted px (sum of Paint event rects), distinct on-screen
  * scrollbar thumb positions observed during the operation (screen capture of the scrollbar
@@ -67,11 +67,10 @@ public class PlanesBench {
 		settle (display, 300);
 
 		java.lang.reflect.Method begin = null, end = null;
-		int viewportPlane = 2;
+		int viewportPlane = 1 << 1; /* SWT.PLANE_VIEWPORT, absent from stock SWT */
 		if ("viewport".equals (mode)) {
-			Class<?> gate = Class.forName ("org.eclipse.swt.internal.VisibilityGate");
-			begin = gate.getMethod ("beginBatch", Control.class, int.class);
-			end = gate.getMethod ("endBatch", Control.class, int.class);
+			begin = Control.class.getMethod ("beginBatch", int.class);
+			end = Control.class.getMethod ("endBatch", int.class);
 		}
 		Rectangle client = grid.getClientArea ();
 		Point column = grid.toDisplay (client.width, 0);
@@ -84,7 +83,7 @@ public class PlanesBench {
 		if ("setredraw".equals (mode)) {
 			grid.setRedraw (false);
 		} else if (begin != null) {
-			begin.invoke (null, grid, viewportPlane);
+			begin.invoke (grid, viewportPlane);
 		}
 		for (int k = 0; k < changes; k++) {
 			int row = (k * 7) % 20;
@@ -101,7 +100,7 @@ public class PlanesBench {
 		if ("setredraw".equals (mode)) {
 			grid.setRedraw (true);
 		} else if (end != null) {
-			end.invoke (null, grid, viewportPlane);
+			end.invoke (grid, viewportPlane);
 		}
 		grid.update ();
 		long opMs = (System.nanoTime () - t0) / 1_000_000L, cpuMs = (mx.getCurrentThreadCpuTime () - cpu0) / 1_000_000L;

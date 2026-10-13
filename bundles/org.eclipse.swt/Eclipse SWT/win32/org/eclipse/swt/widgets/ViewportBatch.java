@@ -10,8 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
-import static org.eclipse.swt.internal.VisibilityGate.*;
-
+import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 
@@ -19,16 +18,16 @@ import org.eclipse.swt.internal.win32.*;
  * Per-plane batch scope. Each plane of one widget freezes independently and an
  * operation freezes only the plane it changes; the others stay live.
  * <ul>
- * <li>{@link org.eclipse.swt.internal.VisibilityGate#PLANE_MAIN}: structure and
+ * <li>{@link SWT#PLANE_MAIN}: structure and
  * chrome. A Composite defers its layout (<code>setLayoutDeferred</code>) and
  * runs it once at the end; its viewport keeps scrolling and painting.</li>
- * <li>{@link org.eclipse.swt.internal.VisibilityGate#PLANE_VIEWPORT}: content.
+ * <li>{@link SWT#PLANE_VIEWPORT}: content.
  * WM_PAINT of the control's client area records its update region and paints
  * nothing (BeginPaint/EndPaint with the background erase answered as done, so
  * WM_NCPAINT and the native scrollbars stay live); <code>redraw</code> records
  * its rectangle. The end invalidates the recorded damage once, no erase, no
  * frame.</li>
- * <li>{@link org.eclipse.swt.internal.VisibilityGate#PLANE_SCROLLBARS}: native
+ * <li>{@link SWT#PLANE_SCROLLBARS}: native
  * scrollbars update their values without redraw; the end repaints the frame
  * once (RDW_FRAME, no erase).</li>
  * </ul>
@@ -45,7 +44,7 @@ final class ViewportBatch {
 	}
 
 	static int shift (int plane) {
-		return plane == PLANE_MAIN ? 0 : plane == PLANE_VIEWPORT ? 8 : 16;
+		return plane == SWT.PLANE_MAIN ? 0 : plane == SWT.PLANE_VIEWPORT ? 8 : 16;
 	}
 
 	static int depth (int packed, int plane) {
@@ -102,7 +101,7 @@ final class ViewportBatch {
 	static boolean begin (Control c, int planes) {
 		Display d = c.display;
 		int index = entry (d, c);
-		for (int plane = PLANE_MAIN; plane <= PLANE_SCROLLBARS; plane <<= 1) {
+		for (int plane = SWT.PLANE_MAIN; plane <= SWT.PLANE_SCROLLBARS; plane <<= 1) {
 			if ((planes & plane) == 0) {
 				continue;
 			}
@@ -128,7 +127,7 @@ final class ViewportBatch {
 		if (index < 0) {
 			return true;
 		}
-		for (int plane = PLANE_MAIN; plane <= PLANE_SCROLLBARS; plane <<= 1) {
+		for (int plane = SWT.PLANE_MAIN; plane <= SWT.PLANE_SCROLLBARS; plane <<= 1) {
 			if ((planes & plane) == 0 || depth (d.batchDepths [index], plane) == 0) {
 				continue;
 			}
@@ -142,10 +141,10 @@ final class ViewportBatch {
 		}
 		index = indexOf (d, c);
 		if (index >= 0 && (d.batchDepths [index] == 0 || c.isDisposed ())) {
-			if (depth (d.batchDepths [index], PLANE_VIEWPORT) > 0) {
+			if (depth (d.batchDepths [index], SWT.PLANE_VIEWPORT) > 0) {
 				d.batchViewports--;
 			}
-			if (depth (d.batchDepths [index], PLANE_SCROLLBARS) > 0) {
+			if (depth (d.batchDepths [index], SWT.PLANE_SCROLLBARS) > 0) {
 				d.batchScrollbars--;
 			}
 			remove (d, index);
@@ -155,12 +154,12 @@ final class ViewportBatch {
 
 	static void enter (Display d, int index, Control c, int plane) {
 		switch (plane) {
-			case PLANE_MAIN -> {
+			case SWT.PLANE_MAIN -> {
 				if (c instanceof Composite composite) {
 					composite.setLayoutDeferred (true);
 				}
 			}
-			case PLANE_VIEWPORT -> {
+			case SWT.PLANE_VIEWPORT -> {
 				if (d.batchDamage [index] == null) {
 					d.batchDamage [index] = new ViewportDamageRegion ();
 				}
@@ -174,12 +173,12 @@ final class ViewportBatch {
 
 	static void leave (Display d, int index, Control c, int plane) {
 		switch (plane) {
-			case PLANE_MAIN -> {
+			case SWT.PLANE_MAIN -> {
 				if (c instanceof Composite composite) {
 					composite.setLayoutDeferred (false);
 				}
 			}
-			case PLANE_VIEWPORT -> {
+			case SWT.PLANE_VIEWPORT -> {
 				d.batchViewports--;
 				flushViewport (c, d.batchDamage [index], (d.batchFlags [index] & FLAG_ALL_CHILDREN) != 0);
 			}
@@ -211,7 +210,7 @@ final class ViewportBatch {
 	static ViewportDamageRegion viewportDamage (Control c) {
 		Display d = c.display;
 		int index = indexOf (d, c);
-		return index >= 0 && depth (d.batchDepths [index], PLANE_VIEWPORT) > 0 ? d.batchDamage [index] : null;
+		return index >= 0 && depth (d.batchDepths [index], SWT.PLANE_VIEWPORT) > 0 ? d.batchDamage [index] : null;
 	}
 
 	/** WM_PAINT of a control whose viewport is frozen: record the update region, paint only the frame. */
@@ -273,7 +272,7 @@ final class ViewportBatch {
 	static boolean scrollbarsFrozen (Control c) {
 		Display d = c.display;
 		int index = indexOf (d, c);
-		return index >= 0 && depth (d.batchDepths [index], PLANE_SCROLLBARS) > 0;
+		return index >= 0 && depth (d.batchDepths [index], SWT.PLANE_SCROLLBARS) > 0;
 	}
 
 	/** Display.release. */
