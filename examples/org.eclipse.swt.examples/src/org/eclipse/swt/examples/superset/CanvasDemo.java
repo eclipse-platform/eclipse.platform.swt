@@ -99,6 +99,11 @@ final class CanvasDemo extends SupersetDemo {
 	}
 
 	@Override
+	public boolean paintCountsAsMaterialization() {
+		return false;
+	}
+
+	@Override
 	public int visibleRows() {
 		Control viewport = scrolled != null ? scrolled : canvas;
 		return Math.max(1, (viewport.getSize().y + ROW - 1) / ROW);

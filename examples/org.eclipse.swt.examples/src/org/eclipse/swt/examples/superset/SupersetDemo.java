@@ -59,6 +59,15 @@ public abstract class SupersetDemo {
 		return 1;
 	}
 
+	/**
+	 * @return true when the MATERIALIZE counter means materialization (SetData,
+	 *         item objects, line layouts); false when it counts rows a paint
+	 *         merely draws (a custom Canvas), which is painting, not materializing
+	 */
+	public boolean paintCountsAsMaterialization() {
+		return true;
+	}
+
 	/** @return rows/items/lines created so far */
 	public int materialized() {
 		return spec.largeContent() ? counters.get(Counters.MATERIALIZE) : 1;

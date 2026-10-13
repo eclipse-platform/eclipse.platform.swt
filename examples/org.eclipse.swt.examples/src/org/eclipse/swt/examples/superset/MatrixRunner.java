@@ -285,7 +285,7 @@ public final class MatrixRunner {
 		long items1 = census.count(demo.control());
 		int[] handles1 = Metrics.handles();
 		String items = items0 < 0 || items1 < 0 ? "-" : String.format(java.util.Locale.ROOT, "%.2f", (items1 - items0) / (double) paints);
-		String setData = spec.largeContent() && demo.materialized() >= 0
+		String setData = spec.largeContent() && demo.materialized() >= 0 && demo.paintCountsAsMaterialization()
 				? String.format(java.util.Locale.ROOT, "%.2f", (counters.get(Counters.MATERIALIZE) - setData0) / (double) paints) : "-";
 		String handles = handles0[1] < 0 || handles1[1] < 0 ? "-"
 				: String.format(java.util.Locale.ROOT, "%.2f", (handles1[1] + handles1[2] - handles0[1] - handles0[2]) / (double) paints);
@@ -306,8 +306,9 @@ public final class MatrixRunner {
 		}
 		long items1 = census.count(demo.control());
 		int setData = counters.get(Counters.MATERIALIZE) - setData0;
-		row.note("redraw_storm: items=" + (items0 < 0 ? "-" : Long.toString(items1 - items0)) + " setdata_or_lines=" + (demo.materialized() < 0 ? "-" : Integer.toString(setData)));
-		if ((items0 >= 0 && items1 > items0) || (spec.largeContent() && demo.materialized() >= 0 && setData > 0)) {
+		boolean counts = demo.materialized() >= 0 && demo.paintCountsAsMaterialization();
+		row.note("redraw_storm: items=" + (items0 < 0 ? "-" : Long.toString(items1 - items0)) + " setdata_or_lines=" + (counts ? Integer.toString(setData) : "-"));
+		if ((items0 >= 0 && items1 > items0) || (spec.largeContent() && counts && setData > 0)) {
 			row.note("FLAG redraw_materializes (owner: change the widget)");
 		}
 		probes.discard();
