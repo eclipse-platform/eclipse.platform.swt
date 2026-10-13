@@ -160,3 +160,29 @@ The 11 batch failures were resolved or classified:
 ## Build
 
 `C:/m3-superset/build-swt.sh` reproduces the jar `org.eclipse.swt.win32.win32.x86_64-m3-20261013.2.jar`: the classes of this tree, plus the official 3.135.0 native libraries renamed to the fork's library version. The jar carries `META-INF/m3/MAPPING.tsv` (class, source path, source blob, origin) and `META-INF/m3/LEDGER.tsv`. The manifest adds `M3-Build`, `M3-Source-Branch`, `M3-Source-Commit`, `M3-Natives`, `M3-Mapping` and `M3-Ledger`.
+
+## Upstream sync of PR #111 (stacked on the consolidation)
+
+PR #111 merged upstream Eclipse SWT `f87da9a863..687c8a2f8b` as ancestry only. Its 17 upstream commits are cherry-picked with `-x`, so each keeps its upstream author and origin line.
+
+| Upstream commit | Result | Resolution |
+|---|---|---|
+| a4bc054ce9 [GTK] Keep the Image of each Tree and Table cell for getImage() | applied | Native path takes upstream's `cellImage[]`. The virtual native model keeps `virtualImages`. Column insert in Table and Tree shifts `cellImage` inside M3's materialized-item loop. `setImage` keeps `setCachedState (true)`. |
+| 406fbb0304 Remove unused numLines parameter from DefaultContent.delete | applied | signature taken, M3 formatting kept |
+| 19cc7189be [GTK] Remove the obsolete Shell geometry abstraction | applied | clean |
+| 8f4fe7a6f5 [Cocoa] Reject non byte[] data in ByteArrayTransfer.javaToNative | applied | clean |
+| 5dee807c35 [GTK4] Set gtk-interface-color-scheme | applied | clean |
+| ca720bdb30 Prevent CTabFolder chevron and min/max toolbars from overlapping | applied | upstream's refactored overlap test taken |
+| 610dd379f2 Add tests for Shell minimum and maximum size | applied | GTK4 `trimHeight()` always measures the header bar (upstream fix) |
+| c08b7dd40c Use a small default size for test shells | applied | clean |
+| 3ea419e5a1 [StyledText] Remove unused styles-only mode | **skipped** | dead-code removal only (`COMPACT_STYLES`/`MERGE_STYLES` are constant `true`); its 9 hunks collide with the part B renderer rewrite; no behaviour is lost |
+| f24d4eb72f [StyledText] Remove unreachable gap removal from DefaultContent | applied | clean |
+| ab0e32a04d, 7daa37bbda, 33459eb055, 18fe3cdcc7 [GTK] NativeImageLoader cleanups | applied | clean |
+| 539aeb0b17 [GTK] Don't detach model in Tree.removeAll() | applied | Upstream's `clearingModel` guard replaces M3's detach workaround, which caused the broken redraw. The guard is combined with M3's `virtualCallbackDepth` bookkeeping. Upstream's `structureChanged()` call is dropped because the M3 tree model has no such hook. |
+| 7c30c9506b Run the Cocoa test bundle on JUnit 5 | applied | clean |
+| 687c8a2f8b [GTK] Fix loading 1 pixel wide RGB images with glycin | applied | clean |
+
+Verification of the sync:
+* javac reports 0 errors for win32 (734 sources), GTK (542), Cocoa (684) and the tests.
+* JUnit: 929 tests found, 914 passed, 9 assumption-aborted.
+* The 5 batch failures (StyledText bug551335, setStyleRanges_render, backspaceAndDelete; Text Shift+Del, backspaceAndDelete) post keys or read screen pixels, and each passes on its first isolated run.
