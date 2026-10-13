@@ -20,8 +20,9 @@ import org.junit.jupiter.api.*;
  * back, printed again, and the pixel hashes must match with zero materialization during paint.
  */
 public class Test_ItemResidencyPrint {
-	private static final int ROWS = 25, ROW_HEIGHT = 20, COLUMNS = 3, WIDTH = 420;
+	private static final int ROWS = 25, ROW_HEIGHT = 20, COLUMNS = 3, WIDTH = 420, BORDER = 0xFFFF00FF;
 	private int top;
+	private Throwable paintFailure;
 
 	/** Synchronous source: text per cell, a foreground colour and a cell font per row. */
 	private static final ItemResidency.DataSource SOURCE = (e, from, to) -> {
@@ -37,8 +38,9 @@ public class Test_ItemResidencyPrint {
 	@Test
 	public void printPixelHashIdenticalAfterRoundTrip () throws Exception {
 		Display display = Display.getDefault ();
-		Shell shell = new Shell (display);
-		shell.setSize (WIDTH + 40, ROWS * ROW_HEIGHT + 80);
+		Shell shell = new Shell (display, SWT.NO_TRIM | SWT.ON_TOP);
+		Rectangle area = display.getPrimaryMonitor ().getClientArea ();
+		shell.setBounds (area.x, area.y, WIDTH, ROWS * ROW_HEIGHT);
 		Canvas canvas = new Canvas (shell, SWT.NONE);
 		canvas.setBounds (0, 0, WIDTH, ROWS * ROW_HEIGHT);
 		ItemSwapSpill spill = ItemSwapSpill.temporary (1L << 20);
@@ -51,14 +53,16 @@ public class Test_ItemResidencyPrint {
 			setStates (e);
 			canvas.addPaintListener (event -> paint (event.gc, e, fonts, colors, display));
 			shell.open ();
+			shell.moveAbove (null);
 			flush (display);
-			String before = printHash (canvas, display);
+			String before = printHash (canvas, display, "before");
+			if (paintFailure != null) throw new AssertionError ("paint failed", paintFailure);
 			top = 50_000;
 			e.setViewport (top, ROWS, 5);
 			e.applyPressure (0);
 			canvas.redraw ();
 			flush (display);
-			assertNotEquals (before, printHash (canvas, display), "a different page paints differently");
+			assertNotEquals (before, printHash (canvas, display, "away"), "a different page paints differently");
 			for (int item = 0; item < ROWS; item++) {
 				int tier = e.tier (item);
 				assertTrue (tier == ItemResidency.TIER_DESTROYED || tier == ItemResidency.TIER_COLD, "row " + item + " left residency");
@@ -68,7 +72,7 @@ public class Test_ItemResidencyPrint {
 			e.setViewport (0, ROWS, 5);
 			canvas.redraw ();
 			flush (display);
-			assertEquals (before, printHash (canvas, display), "Control.print pixels identical after DESTROY/COLD round trip");
+			assertEquals (before, printHash (canvas, display, "after"), "Control.print pixels identical after DESTROY/COLD round trip");
 			assertEquals (0, e.materializedDuringPaint (), "paint never materializes");
 			assertTrue (e.stat (ItemResidency.STAT_SWAP_IN) > 0 && e.stat (ItemResidency.STAT_RECREATED) > 0);
 		} finally {
@@ -105,6 +109,11 @@ public class Test_ItemResidencyPrint {
 			gc.setBackground (display.getSystemColor (SWT.COLOR_WHITE));
 			gc.fillRectangle (0, 0, WIDTH, ROWS * ROW_HEIGHT);
 			for (int r = 0; r < ROWS; r++) row (gc, e, top + r, r * ROW_HEIGHT, fonts, colors, display);
+			gc.setForeground (color (colors, display, BORDER));
+			gc.drawRectangle (0, 0, WIDTH - 1, ROWS * ROW_HEIGHT - 1);
+		} catch (RuntimeException | Error failure) {
+			if (paintFailure == null) paintFailure = failure;
+			throw failure;
 		} finally {
 			e.endPaint ();
 		}
@@ -156,23 +165,48 @@ public class Test_ItemResidencyPrint {
 		return colors.computeIfAbsent (argb, v -> new Color (display, v >>> 16 & 0xFF, v >>> 8 & 0xFF, v & 0xFF));
 	}
 
+	private static boolean borderIntact (ImageData data) {
+		int w = data.width - 1, h = data.height - 1;
+		int [] xs = {0, w / 2, w, 0, w, 0, w / 2, w}, ys = {0, 0, 0, h / 2, h / 2, h, h, h};
+		for (int i = 0; i < xs.length; i++) {
+			RGB rgb = data.palette.getRGB (data.getPixel (xs [i], ys [i]));
+			if (rgb.red != 0xFF || rgb.green != 0 || rgb.blue != 0xFF) return false;
+		}
+		return true;
+	}
+
 	private static void flush (Display display) {
 		for (int i = 0; i < 50 && display.readAndDispatch (); i++) {
 			// drain pending paint events
 		}
 	}
 
-	private static String printHash (Control control, Display display) throws NoSuchAlgorithmException {
-		Point size = control.getSize ();
-		Image image = new Image (display, size.x, size.y);
-		GC gc = new GC (image);
-		try {
-			assertTrue (control.print (gc), "Control.print supported");
-		} finally {
-			gc.dispose ();
+	/**
+	 * Prints the control and returns size plus SHA-256 of the pixels. The paint draws a sentinel border;
+	 * a capture whose outer border is incomplete was cut off by the desktop (an overlapping window), so it
+	 * is retried, and after five attempts the test is aborted as an environment failure, never passed.
+	 */
+	private static String printHash (Control control, Display display, String name) throws NoSuchAlgorithmException {
+		ImageData data = null;
+		for (int attempt = 0; attempt < 5 && (data == null || !borderIntact (data)); attempt++) {
+			control.getShell ().moveAbove (null);
+			control.redraw ();
+			flush (display);
+			Point size = control.getSize ();
+			Image image = new Image (display, size.x, size.y);
+			GC gc = new GC (image);
+			try {
+				assertTrue (control.print (gc), "Control.print supported");
+			} finally {
+				gc.dispose ();
+			}
+			data = image.getImageData ();
+			image.dispose ();
 		}
-		ImageData data = image.getImageData ();
-		image.dispose ();
+		Assumptions.assumeTrue (borderIntact (data), "capture of '" + name + "' cut off by the desktop after 5 attempts");
+		ImageLoader saver = new ImageLoader ();
+		saver.data = new ImageData [] {data};
+		saver.save (System.getProperty ("java.io.tmpdir") + "/item-residency-print-" + name + ".png", SWT.IMAGE_PNG);
 		MessageDigest sha = MessageDigest.getInstance ("SHA-256");
 		sha.update (data.data);
 		return data.width + "x" + data.height + ":" + HexFormat.of ().formatHex (sha.digest ());

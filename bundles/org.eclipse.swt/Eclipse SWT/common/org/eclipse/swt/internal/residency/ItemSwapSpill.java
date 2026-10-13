@@ -11,6 +11,7 @@ package org.eclipse.swt.internal.residency;
 import java.io.*;
 import java.util.*;
 
+import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.swap.*;
 
@@ -72,18 +73,18 @@ public final class ItemSwapSpill implements ItemResidency.Spill {
 	@Override
 	public int write (byte [] data, int length) {
 		byte [] record = Arrays.copyOf (data, length);
-		long id;
+		long id = -1;
 		try {
 			id = store.reserve (length);
 			cache.put (id, record);
 		} catch (IOException e) {
-			throw new UncheckedIOException (e);
+			SWT.error (SWT.ERROR_IO, e);
 		}
 		int handle;
 		if (freeCount > 0) {
 			handle = freeHandles [--freeCount];
 		} else {
-			if (handles == Integer.MAX_VALUE) throw new IllegalStateException ("swap handle space exhausted");
+			if (handles == Integer.MAX_VALUE) SWT.error (SWT.ERROR_NO_HANDLES);
 			if (handles == ids.length) ids = Arrays.copyOf (ids, PackedHeapGrowth.capacity (ids.length, handles + 1, 8));
 			handle = handles++;
 		}
@@ -97,7 +98,8 @@ public final class ItemSwapSpill implements ItemResidency.Spill {
 		try (TieredSwapCache<byte []>.Lease lease = cache.acquire (ids [record])) {
 			return lease.value ();
 		} catch (IOException e) {
-			throw new UncheckedIOException (e);
+			SWT.error (SWT.ERROR_IO, e);
+			return null;
 		}
 	}
 
@@ -106,7 +108,7 @@ public final class ItemSwapSpill implements ItemResidency.Spill {
 		try {
 			store.release (ids [record]);
 		} catch (IOException e) {
-			throw new UncheckedIOException (e);
+			SWT.error (SWT.ERROR_IO, e);
 		}
 		ids [record] = -1;
 		if (freeCount == freeHandles.length) freeHandles = Arrays.copyOf (freeHandles, PackedHeapGrowth.capacity (freeHandles.length, freeCount + 1, 4));
@@ -124,7 +126,7 @@ public final class ItemSwapSpill implements ItemResidency.Spill {
 		try {
 			cache.close ();
 		} catch (IOException e) {
-			throw new UncheckedIOException (e);
+			SWT.error (SWT.ERROR_IO, e);
 		}
 	}
 }

@@ -10,6 +10,7 @@ package org.eclipse.swt.internal.residency;
 
 import java.util.Arrays;
 
+import org.eclipse.swt.*;
 import org.eclipse.swt.internal.PackedHeapGrowth;
 
 /**
@@ -107,7 +108,7 @@ public final class ItemSlots {
 	/** Decodes the payload part of {@code buf[0, len)} into slot {@code s}; {@link #pos} ends after it. */
 	public void decode (int s) {
 		pos = 0;
-		if (getInt () != intStride) throw new IllegalStateException ("spill record stride mismatch");
+		if (getInt () != intStride) SWT.error (SWT.ERROR_IO);
 		for (int i = s * intStride, end = i + intStride; i < end; i++) {
 			slotInts [i] = getInt ();
 		}
