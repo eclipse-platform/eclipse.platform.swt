@@ -13,6 +13,7 @@ package org.eclipse.swt.tests.junit;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -128,6 +129,37 @@ public class Test_org_eclipse_swt_custom_StyledText_PagedContent {
 			paged.replaceTextRange(offset, 5, "");
 			assertEquals(text, paged.getText());
 		}
+	}
+
+	@Test
+	public void test_wrapThenLargeSetTextMeasuresOnlyTheWindow() throws ReflectiveOperationException {
+		StringBuilder builder = new StringBuilder();
+		for (int i = 0; i < 200_000; i++) {
+			builder.append(i).append(" wrapped viewport line").append('\n');
+		}
+		shell.open();
+		paged.setWordWrap(true); // queues a whole-document idle pass for the empty document
+		paged.setText(builder.toString());
+		long deadline = System.currentTimeMillis() + 3000;
+		while (System.currentTimeMillis() < deadline && shell.getDisplay().readAndDispatch()) {
+			// let idle measurement run
+		}
+		assertTrue(measuredLines(paged) <= 4096, "measured lines " + measuredLines(paged));
+	}
+
+	private static int measuredLines(StyledText styledText) throws ReflectiveOperationException {
+		Field rendererField = StyledText.class.getDeclaredField("renderer");
+		rendererField.setAccessible(true);
+		Object renderer = rendererField.get(styledText);
+		Field sizesField = renderer.getClass().getDeclaredField("lineSizes");
+		sizesField.setAccessible(true);
+		int measured = 0;
+		for (Object size : (Object[]) sizesField.get(renderer)) {
+			if (size != null) {
+				measured++;
+			}
+		}
+		return measured;
 	}
 
 	@Test

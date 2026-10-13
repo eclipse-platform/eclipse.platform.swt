@@ -365,6 +365,13 @@ void calculateIdle () {
             if (styledText == null) {
                 return;
             }
+			if (isViewportMode()) {
+				// the content grew past the threshold after this pass was queued
+				// (e.g. setWordWrap followed by setText): measure the window only
+				idleRunning = false;
+				calculateIdleWindow();
+				return;
+			}
 			int i;
 			long start = System.currentTimeMillis();
 			for (i = 0; i < lineCount; i++) {
