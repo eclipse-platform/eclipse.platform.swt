@@ -189,15 +189,41 @@ public class Test_org_eclipse_swt_internal_VisibilityGate {
 		assertFalse (VisibilityGate.isOffscreen (gated, true));
 		ImageData a = captureRightColumn (gated), b = captureRightColumn (twin);
 		assertEquals (b.width, a.width);
-		int differing = 0;
-		for (int y = 0; y < a.height; y++) {
-			for (int x = 0; x < a.width; x++) {
-				if (a.getPixel (x, y) != b.getPixel (x, y)) {
-					differing++;
-				}
+		assertEquals (b.height, a.height);
+		/* Track colour = the twin column's most frequent pixel; the thumb may differ (Windows 11 animates it). */
+		java.util.Map<Integer, Integer> histogram = new java.util.HashMap<> ();
+		for (int y = 0; y < b.height; y++) {
+			for (int x = 0; x < b.width; x++) {
+				histogram.merge (b.getPixel (x, y), 1, Integer::sum);
 			}
 		}
-		assertEquals (0, differing, "scrollbar column pixels differ from the never-clipped twin");
+		int track = histogram.entrySet ().stream ().max (java.util.Map.Entry.comparingByValue ()).get ().getKey ();
+		int trackPixels = 0, whiteStripColumns = 0;
+		for (int x = 0; x < a.width; x++) {
+			boolean gatedWhite = true, twinWhite = true;
+			for (int y = 0; y < a.height; y++) {
+				if (a.getPixel (x, y) == track) {
+					trackPixels++;
+				}
+				gatedWhite &= a.palette.getRGB (a.getPixel (x, y)).equals (new org.eclipse.swt.graphics.RGB (255, 255, 255));
+				twinWhite &= b.palette.getRGB (b.getPixel (x, y)).equals (new org.eclipse.swt.graphics.RGB (255, 255, 255));
+			}
+			if (gatedWhite && !twinWhite) {
+				whiteStripColumns++;
+			}
+		}
+		if (trackPixels * 10 < a.width * a.height * 8 || whiteStripColumns != 0) {
+			save (a, "gated-column");
+			save (b, "twin-column");
+		}
+		assertEquals (0, whiteStripColumns, "white strip in the scrollbar column");
+		assertTrue (trackPixels * 10 >= a.width * a.height * 8, "scrollbar track painted on at least 80% of the column, was " + trackPixels + " of " + a.width * a.height);
+	}
+
+	static void save (ImageData data, String name) {
+		org.eclipse.swt.graphics.ImageLoader loader = new org.eclipse.swt.graphics.ImageLoader ();
+		loader.data = new ImageData [] {data};
+		loader.save (new java.io.File (System.getProperty ("java.io.tmpdir"), "swt-visibility-gate-" + name + ".png").getPath (), SWT.IMAGE_PNG);
 	}
 
 	/** Screen pixels of the control's vertical scrollbar column (non-client, right of the client area). */

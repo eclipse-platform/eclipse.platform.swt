@@ -149,3 +149,28 @@ UI thread CPU (ThreadMXBean). Before = origin/master classes, after = gate
 classes, plus after with `-Dswt.visibility.gate=false`. Parity: `Control.print`
 SHA-256 of the gated control after it becomes visible vs a twin that was never
 hidden, and equality of `getBounds`/`getClientArea`/`getItemCount`/`getText`.
+
+## 8. Findings while proving (win32, this host)
+
+- Windows already withholds WM_PAINT from children of a minimized shell and
+  from child windows fully clipped by an ancestor; stock paint counts there are
+  0. The gate's win in those scenarios is layout (deferred) and the catch-up
+  guarantee, not paint.
+- DWM keeps painting windows that are fully covered: stock covered shell paints
+  and fills Table rows (SetData) on every update. The occlusion tracker removes
+  that work.
+- Off-monitor windows receive fewer WM_PAINTs; the bench therefore runs on the
+  primary monitor, ON_TOP, click-through (WS_EX_LAYERED|WS_EX_TRANSPARENT) and
+  non-activating, so desktop input cannot reach it.
+- `Control.print` (PrintWindow with PW_RENDERFULLCONTENT) intermittently
+  returned black client areas and the classic 3D edge for themed CANVAS borders,
+  on stock and gated builds alike. Parity is measured on screen pixels
+  (`GC(display).copyArea`) cropped to the gated control's visible area, with a
+  second hash that masks BORDER rings and the 8 px rounded shell corners.
+- Two gate defects found and fixed by the parity check: catch-up with
+  `RDW_FRAME` and a paint gate using `ValidateRect` both let the classic
+  non-client edge replace SWT's themed border; the catch-up now invalidates
+  client areas only and the gate runs BeginPaint/EndPaint so WM_NCPAINT still
+  reaches `Composite.wmNCPaint`.
+- The deferred list must not hold duplicates: the on-demand flush clears
+  DIRTY_LAYOUT outside a sweep, and the next deferral re-enlisted the control.

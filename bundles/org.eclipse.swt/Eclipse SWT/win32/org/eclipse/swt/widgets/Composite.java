@@ -1436,6 +1436,13 @@ void updateLayout (boolean resize, boolean all) {
 	if (EffectiveVisibility.ENABLED && EffectiveVisibility.deferLayout (this)) {
 		return;
 	}
+	/*
+	* A layout deferred while hidden can outlive its Layout: setLayout (null)
+	* before the catch-up leaves LAYOUT_NEEDED without a layout to run.
+	*/
+	if (layout == null) {
+		state &= ~(LAYOUT_NEEDED | LAYOUT_CHANGED);
+	}
 	if ((state & LAYOUT_NEEDED) != 0) {
 		boolean changed = (state & LAYOUT_CHANGED) != 0;
 		state &= ~(LAYOUT_NEEDED | LAYOUT_CHANGED);

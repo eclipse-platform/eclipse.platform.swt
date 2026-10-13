@@ -283,6 +283,7 @@ public class VisibilityGateBench {
 		String apiShown = gated.api ();
 		/* Raw: what the screen holds after the catch-up. Fresh: after a forced full repaint of both. */
 		int occludedAtCapture = gateField ("visOccludedShells");
+		int foreign = foreignWindowsOver (shell) + foreignWindowsOver (twinShell);
 		String raw = printHash (gated.content, "gated-raw");
 		for (Control c : new Control [] {gated.content, twin.content}) {
 			Point size = c.getSize ();
@@ -303,7 +304,7 @@ public class VisibilityGateBench {
 			Boolean.toString (apiHidden.equals (twinApi)), Boolean.toString (apiShown.equals (twinApi)), sha (apiHidden).substring (0, 12),
 			Boolean.toString (h1.equals (h2)), Boolean.toString (raw.equals (h1)), h1.substring (0, 16), h2.substring (0, 16),
 			Integer.toString (occludedShells), Integer.toString (upd [4]), Integer.toString (occludedAtCapture),
-			Boolean.toString (m1.equals (m2)), Boolean.toString (m0.equals (m1)),
+			Boolean.toString (m1.equals (m2)), Boolean.toString (m0.equals (m1)), Integer.toString (foreign),
 			System.getProperty ("swt.visibility.gate", "default")));
 		if (!apiShown.equals (twinApi) || (!apiHidden.equals (twinApi) && Boolean.getBoolean ("bench.verbose"))) {
 			System.err.println ("API hidden: " + apiHidden);
@@ -337,6 +338,28 @@ public class VisibilityGateBench {
 		org.eclipse.swt.internal.win32.OS.SetWindowLong (h, org.eclipse.swt.internal.win32.OS.GWL_EXSTYLE,
 			ex | org.eclipse.swt.internal.win32.OS.WS_EX_LAYERED | org.eclipse.swt.internal.win32.OS.WS_EX_TRANSPARENT);
 		org.eclipse.swt.internal.win32.OS.SetLayeredWindowAttributes (h, 0, (byte) 0xFF, org.eclipse.swt.internal.win32.OS.LWA_ALPHA);
+	}
+
+	/** Visible top-level windows of other threads above the shell in z-order that intersect it (screen captures are then obstructed). */
+	static int foreignWindowsOver (Shell s) {
+		org.eclipse.swt.internal.win32.RECT mine = new org.eclipse.swt.internal.win32.RECT (), other = new org.eclipse.swt.internal.win32.RECT ();
+		org.eclipse.swt.internal.win32.OS.GetWindowRect (s.handle, mine);
+		int [] pid = new int [1];
+		int self = org.eclipse.swt.internal.win32.OS.GetWindowThreadProcessId (s.handle, pid);
+		int count = 0;
+		long h = org.eclipse.swt.internal.win32.OS.GetWindow (org.eclipse.swt.internal.win32.OS.GetDesktopWindow (), org.eclipse.swt.internal.win32.OS.GW_CHILD);
+		while (h != 0 && h != s.handle) {
+			if (org.eclipse.swt.internal.win32.OS.IsWindowVisible (h) && !org.eclipse.swt.internal.win32.OS.IsIconic (h)
+					&& org.eclipse.swt.internal.win32.OS.GetWindowThreadProcessId (h, pid) != self
+					&& (org.eclipse.swt.internal.win32.OS.GetWindowLong (h, org.eclipse.swt.internal.win32.OS.GWL_EXSTYLE) & org.eclipse.swt.internal.win32.OS.WS_EX_TRANSPARENT) == 0) {
+				org.eclipse.swt.internal.win32.OS.GetWindowRect (h, other);
+				if (other.left < mine.right && other.right > mine.left && other.top < mine.bottom && other.bottom > mine.top) {
+					count++;
+				}
+			}
+			h = org.eclipse.swt.internal.win32.OS.GetWindow (h, org.eclipse.swt.internal.win32.OS.GW_HWNDNEXT);
+		}
+		return count;
 	}
 
 	static void reset () {
