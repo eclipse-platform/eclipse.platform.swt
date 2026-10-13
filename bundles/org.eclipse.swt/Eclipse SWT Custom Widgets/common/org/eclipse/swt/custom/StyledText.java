@@ -1121,6 +1121,14 @@ void calculateTopIndex(int delta) {
 				topIndex = content.getLineCount() - 1;
 			}
 		}
+	} else if (isFarPixels(delta)) {
+		//FLLDCIM: VIEWPORT - distant jump maps the logical extent proportionally (O(1))
+		int estimated = renderer.getEstimatedLineHeight();
+		int lineCount = content.getLineCount();
+		long viewportTop = Math.max(0, renderer.getEstimatedOffset(Math.max(0, topIndex)) - topIndexY + delta);
+		int line = (int) Math.min(lineCount - 1, (viewportTop + estimated - 1) / estimated);
+		topIndex = line;
+		topIndexY = (int) Math.max(0, (long) line * estimated - viewportTop);
 	} else {
 		int lineCount = content.getLineCount();
 		if (delta >= 0) {
@@ -1449,7 +1457,7 @@ public boolean getAlwaysShowScrollBars() {
 	return alwaysShowScroll;
 }
 int getAvailableHeightAbove(int height) {
-	int maxHeight = verticalScrollOffset;
+	int maxHeight = isEstimatedViewport() ? getVerticalScrollOffset() : verticalScrollOffset;
 	if (maxHeight == -1) {
 		int lineIndex = topIndex - 1;
 		maxHeight = -topIndexY;
@@ -1473,6 +1481,12 @@ private boolean lineExists(int lineNumber) {
 	return lineNumber >= 0 && lineNumber < lineCount;
 }
 int getAvailableHeightBellow(int height) {
+	if (isFarPixels(height)) {
+		//FLLDCIM: VIEWPORT - available extent below from the logical extent, no layout walk
+		long viewportBottom = renderer.getEstimatedOffset(Math.max(0, topIndex)) - topIndexY + clientAreaHeight - topMargin - bottomMargin;
+		long below = renderer.getEstimatedOffset(content.getLineCount()) - viewportBottom;
+		return (int) Math.max(0, Math.min(height, below));
+	}
 	int partialBottomIndex = getPartialBottomIndex();
 	int topY = getLinePixel(partialBottomIndex);
 	int lineHeight = renderer.getLineHeight(partialBottomIndex);
@@ -4015,6 +4029,13 @@ public int getLinePixel(int lineIndex) {
     if (lineIndex == topIndex) {
         return topIndexY + topMargin;
     }
+	if (isEstimatedViewport()) {
+		long distance = renderer.getEstimatedOffset(lineIndex) - renderer.getEstimatedOffset(Math.max(0, topIndex));
+		if (isFarPixels(distance)) {
+			//FLLDCIM: VIEWPORT - O(1) distant line position from the logical extent
+			return (int) Math.max(Integer.MIN_VALUE, Math.min(Integer.MAX_VALUE, distance + topIndexY + topMargin));
+		}
+	}
 	int height = topIndexY;
 	if (lineIndex > topIndex) {
 		for (int i = Math.max(topIndex, 0); i < Math.min(lineIndex, lineCount); i++) {
@@ -5224,6 +5245,10 @@ void syncViewportRuntime (boolean resolveVertical) {
 }
 
 int getVerticalScrollOffset() {
+	if (verticalScrollOffset == -1 && isEstimatedViewport()) {
+		//FLLDCIM: VIEWPORT - no layout of the lines above the viewport
+		verticalScrollOffset = (int) Math.min(Integer.MAX_VALUE, renderer.getEstimatedOffset(topIndex) - topIndexY);
+	}
 	if (verticalScrollOffset == -1) {
 		renderer.calculate(0, topIndex);
 		int height = 0;
@@ -5234,6 +5259,17 @@ int getVerticalScrollOffset() {
 		verticalScrollOffset = height;
 	}
 	return verticalScrollOffset;
+}
+/**
+ * Variable line height with a document above the renderer's viewport
+ * threshold: distant geometry uses estimated line heights (logical extent),
+ * the viewport and its overscan use measured heights.
+ */
+boolean isEstimatedViewport() {
+	return !isFixedLineHeight() && renderer.isViewportMode();
+}
+boolean isFarPixels(long pixels) {
+	return isEstimatedViewport() && Math.abs(pixels) > 8L * Math.max(clientAreaHeight, renderer.getLineHeight());
 }
 int getVisualLineIndex(TextLayout layout, int offsetInLine) {
 	int lineIndex = layout.getLineIndex(offsetInLine);
@@ -5640,8 +5676,21 @@ void installDefaultContent() {
 			handleTextSet(event);
 		}
 	};
-	content = new DefaultContent();
+	content = createDefaultContent();
 	content.addTextChangeListener(textChangeListener);
+}
+/**
+ * Returns the content model installed by default. The paged content keeps the
+ * logical extent independent of the materialized line offsets;
+ * <code>-Dorg.eclipse.swt.custom.StyledText.content=gap</code> restores the
+ * gap-buffer content.
+ */
+static StyledTextContent createDefaultContent() {
+	//FLLDCIM: VIEWPORT - facade identity: same public API, paged default content
+	if ("gap".equals(System.getProperty("org.eclipse.swt.custom.StyledText.content"))) {
+		return new DefaultContent();
+	}
+	return new PagedContent();
 }
 /**
  * Adds event listeners
@@ -8301,6 +8350,10 @@ boolean scrollVertical(int pixels, boolean adjustScrollBar) {
 	} else {
 		calculateTopIndex(pixels);
 		super.redraw();
+	}
+	if (isEstimatedViewport()) {
+		// re-target the bounded idle measurement at the new viewport
+		renderer.calculateIdle();
 	}
 	syncViewportRuntime (true);
 	setCaretLocations();

@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.widgets.*;
 
 /**
@@ -58,6 +59,8 @@ class StyledTextRenderer {
 	float averageLineHeight;
 	int linesInAverageLineHeight;
 	boolean idleRunning;
+	/** Visible lines plus one viewport of overscan; the only lines measured in idle time for large documents. */
+	final ViewportRuntime.RowWindow idleWindow = new ViewportRuntime.RowWindow();
 
 	/* Bullet */
 	Bullet[] bullets;
@@ -78,6 +81,12 @@ class StyledTextRenderer {
 
 	final static int GROW = 32;
 	final static int IDLE_TIME = 50;
+	/**
+	 * Documents with more lines than this keep the logical extent estimated and
+	 * measure only the visible window plus overscan (viewport mode). Smaller
+	 * documents keep the exact whole-document measurement.
+	 */
+	final static int VIEWPORT_LINE_THRESHOLD = 1 << 16;
 	final static int CACHE_SIZE = 300;
 
 	final static int BACKGROUND = 1 << 0;
@@ -346,6 +355,10 @@ void calculateIdle () {
     if (idleRunning) {
         return;
     }
+	if (isViewportMode()) {
+		calculateIdleWindow();
+		return;
+	}
 	Runnable runnable = new Runnable() {
 		@Override
 		public void run() {
@@ -709,10 +722,65 @@ FontData[] getFontData(int style) {
 	}
 	return fontDatas;
 }
+boolean isViewportMode() {
+	return lineCount > VIEWPORT_LINE_THRESHOLD;
+}
+/**
+ * Measures only the visible lines plus one viewport of overscan
+ * ({@link ViewportRuntime.RowWindow}), in IDLE_TIME slices, then publishes the
+ * reconciled scroll extent. Re-armed when the top index moves.
+ */
+void calculateIdleWindow () {
+	//FLLDCIM: VIEWPORT - visible + bounded overscan work only
+	Runnable runnable = new Runnable() {
+		@Override
+		public void run() {
+			if (styledText == null || styledText.isDisposed()) {
+				idleRunning = false;
+				return;
+			}
+			// the window follows the current top index, so a scroll re-targets pending work
+			syncIdleWindow();
+			long start = System.currentTimeMillis();
+			int end = (int) Math.min(lineCount, idleWindow.paintEndExclusive());
+			int i;
+			for (i = (int) idleWindow.paintStart(); i < end; i++) {
+				LineSizeInfo line = lineSizes[i];
+				if (line == null || line.needsRecalculateSize()) {
+					calculate(i, 1);
+					if (System.currentTimeMillis() - start > IDLE_TIME) {
+						break;
+					}
+				}
+			}
+			if (i < end) {
+				styledText.getDisplay().asyncExec(this);
+			} else {
+				idleRunning = false;
+				styledText.setScrollBars(true);
+				ScrollBar bar = styledText.getVerticalBar();
+				if (bar != null) {
+					bar.setSelection(styledText.getVerticalScrollOffset());
+				}
+			}
+		}
+	};
+	idleRunning = true;
+	styledText.getDisplay().asyncExec(runnable);
+}
+void syncIdleWindow () {
+	int visible = Math.max(1, styledText.getClientArea().height / Math.max(1, getLineHeight()) + 1);
+	idleWindow.setLogicalCount(lineCount);
+	idleWindow.setOverscanRows(visible);
+	idleWindow.setViewport(Math.max(0, Math.min(styledText.topIndex, lineCount - 1)), visible);
+}
 int getHeight () {
 	int defaultLineHeight = getLineHeight();
 	if (styledText.isFixedLineHeight()) {
 		return lineCount * defaultLineHeight + styledText.topMargin + styledText.bottomMargin;
+	}
+	if (isViewportMode()) {
+		return getEstimatedHeight(defaultLineHeight) + styledText.topMargin + styledText.bottomMargin;
 	}
 	int totalHeight = 0;
 	int width = styledText.getWrapWidth();
@@ -815,17 +883,20 @@ int getLineHeight(int lineIndex) {
 	return getLineHeight(lineIndex, true);
 }
 int getLineHeight(int lineIndex, boolean exact) {
-	LineSizeInfo line = getLineSize(lineIndex);
-	if (line.needsRecalculateHeight()) {
+	LineSizeInfo line = lineSizes[lineIndex];
+	if (line == null || line.needsRecalculateHeight()) {
 		// here we are in "variable line height", the call of calculate which uses TextLayout is very slow
 		// so use the average line height of all calculated lines when many heights are needed e.g. for scrolling.
 		if (isVariableHeight(lineIndex)) {
 			if (exact) {
 				calculate(lineIndex, 1);
+				line = getLineSize(lineIndex);
 			} else {
+				// an estimate does not materialize a LineSizeInfo
 				return Math.round(averageLineHeight);
 			}
 		} else {
+			line = getLineSize(lineIndex);
 			line.height = getLineHeight() + getLineSpacing(lineIndex) + getLineVerticalIndent(lineIndex);
 		}
 	}
@@ -1548,6 +1619,31 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 	}
 	return layout;
 }
+/**
+ * Estimated height of one line in viewport mode: the measured average line
+ * height, or the wrap estimate from the average line length while nothing is
+ * measured yet. Logical offsets of unmeasured regions are line * estimate.
+ */
+int getEstimatedLineHeight() {
+	//FLLDCIM: VIEWPORT - sparse logical extent; reconciled as lines are measured
+	int defaultLineHeight = getLineHeight();
+	if (linesInAverageLineHeight > 0) {
+		return Math.max(1, Math.round(averageLineHeight));
+	}
+	int width = styledText.getWrapWidth();
+	if (width > 0 && lineCount > 0) {
+		long averageChars = content.getCharCount() / lineCount;
+		return (int) Math.min(Integer.MAX_VALUE, (averageChars * averageCharWidth / width + 1) * defaultLineHeight);
+	}
+	return Math.max(1, defaultLineHeight);
+}
+long getEstimatedOffset(int lineIndex) {
+	return (long) lineIndex * getEstimatedLineHeight();
+}
+/** O(1) logical extent for large variable-height documents. */
+int getEstimatedHeight(int defaultLineHeight) {
+	return (int) Math.min(Integer.MAX_VALUE, getEstimatedOffset(lineCount));
+}
 int getWidth() {
 	return maxWidth;
 }
@@ -1577,11 +1673,36 @@ void reset(int startLine, int lineCount) {
     if (startLine < 0 || endLine > lineSizes.length) {
         return;
     }
-	SortedSet<Integer> lines = new TreeSet<>();
-	for (int i = startLine; i < endLine; i++) {
-		lines.add(Integer.valueOf(i));
+	if (lineCount == 0) {
+		return;
 	}
-	reset(lines);
+	//FLLDCIM: VIEWPORT - range reset in place; null means "needs measurement" (see getLineSize)
+	Arrays.fill(lineSizes, startLine, endLine, null);
+	discountAverage(lineCount);
+	if (startLine <= maxWidthLineIndex && maxWidthLineIndex < endLine) {
+		maxWidth = 0;
+		maxWidthLineIndex = -1;
+		if (lineCount != this.lineCount) {
+			recomputeMaxWidth();
+		}
+	}
+}
+private void discountAverage(int resetLineCount) {
+	if (linesInAverageLineHeight > resetLineCount) {
+		linesInAverageLineHeight -= resetLineCount;
+	} else {
+		linesInAverageLineHeight = 0;
+		averageLineHeight = 0.0f;
+	}
+}
+private void recomputeMaxWidth() {
+	for (int i = 0; i < this.lineCount; i++) {
+		LineSizeInfo lineSize = lineSizes[i];
+		if (lineSize != null && lineSize.width > maxWidth) {
+			maxWidth = lineSize.width;
+			maxWidthLineIndex = i;
+		}
+	}
 }
 void reset(Set<Integer> lines) {
     if (lines == null || lines.isEmpty()) {
@@ -1591,26 +1712,18 @@ void reset(Set<Integer> lines) {
 	for (Integer line : lines) {
 		if (line >= 0 || line < lineCount) {
 			resetLineCount++;
-			getLineSize(line.intValue()).resetSize();
+			LineSizeInfo lineSize = lineSizes[line.intValue()];
+			if (lineSize != null) {
+				lineSize.resetSize();
+			}
 		}
 	}
-	if (linesInAverageLineHeight > resetLineCount) {
-		linesInAverageLineHeight -= resetLineCount;
-	} else {
-		linesInAverageLineHeight = 0;
-		averageLineHeight = 0.0f;
-	}
+	discountAverage(resetLineCount);
 	if (lines.contains(Integer.valueOf(maxWidthLineIndex))) {
 		maxWidth = 0;
 		maxWidthLineIndex = -1;
 		if (resetLineCount != this.lineCount) {
-			for (int i = 0; i < this.lineCount; i++) {
-				LineSizeInfo lineSize = getLineSize(i);
-				if (lineSize.width > maxWidth) {
-					maxWidth = lineSize.width;
-					maxWidthLineIndex = i;
-				}
-			}
+			recomputeMaxWidth();
 		}
 	}
 }
