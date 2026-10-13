@@ -1318,6 +1318,7 @@ int getBorderWidthInPixels () {
  */
 public Rectangle getBounds (){
 	checkWidget ();
+	EffectiveVisibility.flushGeometry (this, false);
 	return Win32DPIUtils.pixelToPoint(getBoundsInPixels (), computeGetBoundsZoom());
 }
 
@@ -1527,6 +1528,7 @@ public Object getLayoutData () {
  */
 public Point getLocation () {
 	checkWidget ();
+	EffectiveVisibility.flushGeometry (this, false);
 	//For a location the closest point values is okay
 	return Win32DPIUtils.pixelToPointAsLocation(getLocationInPixels(), computeGetBoundsZoom());
 }
@@ -1684,6 +1686,7 @@ public Shell getShell () {
  */
 public Point getSize (){
 	checkWidget ();
+	EffectiveVisibility.flushGeometry (this, false);
 	return Win32DPIUtils.pixelToPointAsSize(getSizeInPixels (), computeGetBoundsZoom());
 }
 
@@ -2415,6 +2418,7 @@ public boolean print (GC gc) {
     if (gc.isDisposed()) {
         error(SWT.ERROR_INVALID_ARGUMENT);
     }
+	EffectiveVisibility.flushGeometry (this, true);
 	long topHandle = topHandle ();
 	long hdc = gc.handle;
 	int state = 0;
@@ -2700,6 +2704,10 @@ void redrawInPixels (RECT rect, boolean all) {
     if (!OS.IsWindowVisible(handle)) {
         return;
     }
+	//FLLDCIM: HPCPOP - visibility gate; offscreen redraws become one DIRTY_PAINT bit
+	if (EffectiveVisibility.ENABLED && EffectiveVisibility.deferRedraw (this)) {
+		return;
+	}
 	/*
 	 * For many years, it also used RDW_FRAME here for no apparent reason.
 	 * This caused Bug 565613, and also is a performance issue. Should the
@@ -2751,6 +2759,7 @@ void releaseParent () {
 @Override
 void releaseWidget () {
 	super.releaseWidget ();
+	EffectiveVisibility.release (this);
 	if (toolTipText != null) {
 		setToolTipText (getShell (), null);
 	}
@@ -4146,6 +4155,9 @@ public void setRedraw (boolean redraw) {
 			} else {
 				int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
 				OS.RedrawWindow (topHandle, null, 0, flags);
+				if (EffectiveVisibility.ENABLED) {
+					EffectiveVisibility.shown (this);
+				}
 			}
 		}
 	} else {
@@ -4452,6 +4464,12 @@ public void setVisible (boolean visible) {
         if (isDisposed()) {
             return;
         }
+		if (visible && EffectiveVisibility.ENABLED) {
+			EffectiveVisibility.shown (this);
+            if (isDisposed()) {
+                return;
+            }
+		}
 	}
 	if (!visible) {
 		sendEvent (SWT.Hide);
@@ -4511,6 +4529,7 @@ void subclass () {
  */
 public Point toControl (int x, int y) {
 	checkWidget ();
+	EffectiveVisibility.flushGeometry (this, false);
 	Point displayPointInPixels = getDisplay().translateToDisplayCoordinates(new Point(x, y));
 	final Point controlPointInPixels = toControlInPixels(displayPointInPixels.x, displayPointInPixels.y);
 	return Win32DPIUtils.pixelToPointAsLocation(controlPointInPixels, getAutoscalingZoom());
@@ -4573,6 +4592,7 @@ public Point toControl (Point point) {
  */
 public Point toDisplay (int x, int y) {
 	checkWidget ();
+	EffectiveVisibility.flushGeometry (this, false);
 	int zoom = getAutoscalingZoom();
 	Point displayPointInPixels = toDisplayInPixels(DPIUtil.pointToPixel(x, zoom), DPIUtil.pointToPixel(y, zoom));
 	return getDisplay().translateFromDisplayCoordinates(displayPointInPixels);
@@ -5444,7 +5464,11 @@ long windowProc (long hwnd, int msg, long wParam, long lParam) {
 		case OS.WM_NCLBUTTONDOWN:		result = WM_NCLBUTTONDOWN (wParam, lParam); break;
 		case OS.WM_NCPAINT:				result = WM_NCPAINT (wParam, lParam); break;
 		case OS.WM_NOTIFY:				result = WM_NOTIFY (wParam, lParam); break;
-		case OS.WM_PAINT:				result = WM_PAINT (wParam, lParam); break;
+		case OS.WM_PAINT:
+			if (EffectiveVisibility.ENABLED && hwnd == handle && EffectiveVisibility.deferPaintMessage (this)) {
+				return 0;
+			}
+			result = WM_PAINT (wParam, lParam); break;
 		case OS.WM_ENTERMENULOOP:		result = WM_ENTERMENULOOP (wParam, lParam); break;
 		case OS.WM_EXITMENULOOP:		result = WM_EXITMENULOOP (wParam, lParam); break;
 		case OS.WM_ENTERSIZEMOVE:		result = WM_ENTERSIZEMOVE (wParam, lParam); break;
@@ -5463,7 +5487,11 @@ long windowProc (long hwnd, int msg, long wParam, long lParam) {
 		case OS.WM_SETFONT:				result = WM_SETFONT (wParam, lParam); break;
 		case OS.WM_SETTINGCHANGE:		result = WM_SETTINGCHANGE (wParam, lParam); break;
 		case OS.WM_SETREDRAW:			result = WM_SETREDRAW (wParam, lParam); break;
-		case OS.WM_SHOWWINDOW:			result = WM_SHOWWINDOW (wParam, lParam); break;
+		case OS.WM_SHOWWINDOW:
+			if (EffectiveVisibility.ENABLED && wParam != 0) {
+				EffectiveVisibility.requestSweep (display);
+			}
+			result = WM_SHOWWINDOW (wParam, lParam); break;
 		case OS.WM_SIZE:				result = WM_SIZE (wParam, lParam); break;
 		case OS.WM_SYSCHAR:				result = WM_SYSCHAR (wParam, lParam); break;
 		case OS.WM_SYSCOLORCHANGE:		result = WM_SYSCOLORCHANGE (wParam, lParam); break;
@@ -5477,7 +5505,11 @@ long windowProc (long hwnd, int msg, long wParam, long lParam) {
 		case OS.WM_UNINITMENUPOPUP:		result = WM_UNINITMENUPOPUP (wParam, lParam); break;
 		case OS.WM_UPDATEUISTATE:		result = WM_UPDATEUISTATE (wParam, lParam); break;
 		case OS.WM_VSCROLL:				result = WM_VSCROLL (wParam, lParam); break;
-		case OS.WM_WINDOWPOSCHANGED:	result = WM_WINDOWPOSCHANGED (wParam, lParam); break;
+		case OS.WM_WINDOWPOSCHANGED:
+			if (EffectiveVisibility.ENABLED && (hwnd == handle || hwnd == topHandle ())) {
+				EffectiveVisibility.windowPosChanged (this, lParam);
+			}
+			result = WM_WINDOWPOSCHANGED (wParam, lParam); break;
 		case OS.WM_WINDOWPOSCHANGING:	result = WM_WINDOWPOSCHANGING (wParam, lParam); break;
 		case OS.WM_XBUTTONDBLCLK:		result = WM_XBUTTONDBLCLK (wParam, lParam); break;
 		case OS.WM_XBUTTONDOWN:			result = WM_XBUTTONDOWN (wParam, lParam); break;

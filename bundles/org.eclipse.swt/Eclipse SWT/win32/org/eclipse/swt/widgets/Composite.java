@@ -1432,6 +1432,10 @@ void updateLayout (boolean resize, boolean all) {
 		parent.state |= LAYOUT_CHILD;
 		return;
 	}
+	//FLLDCIM: HPCPOP - visibility gate; hidden composites keep LAYOUT_NEEDED and catch up once
+	if (EffectiveVisibility.ENABLED && EffectiveVisibility.deferLayout (this)) {
+		return;
+	}
 	if ((state & LAYOUT_NEEDED) != 0) {
 		boolean changed = (state & LAYOUT_CHANGED) != 0;
 		state &= ~(LAYOUT_NEEDED | LAYOUT_CHANGED);

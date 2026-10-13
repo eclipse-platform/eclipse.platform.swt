@@ -1435,6 +1435,12 @@ public void setVisible (boolean visible) {
             if (isDisposed()) {
                 return;
             }
+			if (EffectiveVisibility.ENABLED) {
+				EffectiveVisibility.shown (this);
+                if (isDisposed()) {
+                    return;
+                }
+			}
 			opened = true;
 			if (!moved) {
 				moved = true;
