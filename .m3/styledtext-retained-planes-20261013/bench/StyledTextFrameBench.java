@@ -55,10 +55,18 @@ public final class StyledTextFrameBench {
 		});
 		shell.setBounds(40, 40, 900, 700);
 		shell.open();
+		long used0 = usedHeap();
+		String documentText = document(doc);
+		long textChars = documentText.length();
 		long t0 = System.nanoTime();
-		text.setText(document(doc));
+		text.setText(documentText);
 		long setTextMs = (System.nanoTime() - t0) / 1_000_000;
+		documentText = null;
 		settle(display, text);
+		long heapDelta = usedHeap() - used0;
+		System.out.println("heap " + doc + ": " + heapDelta + " bytes retained after setText for " + text.getLineCount() + " lines = "
+				+ fmt((double) heapDelta / text.getLineCount()) + " bytes/line (text " + fmt((double) textChars / text.getLineCount())
+				+ " chars/line, Latin-1 String bytes)");
 		clientW = text.getClientArea().width;
 		clientH = text.getClientArea().height;
 		int lines = text.getLineCount();
@@ -122,6 +130,14 @@ public final class StyledTextFrameBench {
 				fmt((double) req / frames), fmt((double) built / frames), Long.toString(alloc / frames),
 				req == 0 ? "n/a" : fmt(1.0 - (double) built / req), fmt((double) (paints - paints0) / frames),
 				Long.toString((paintedPixels - px0) / frames), Long.toString(fullPaints - full0), Long.toString(setTextMs)) + "\n";
+	}
+
+	static long usedHeap() {
+		for (int i = 0; i < 3; i++) {
+			System.gc();
+		}
+		Runtime r = Runtime.getRuntime();
+		return r.totalMemory() - r.freeMemory();
 	}
 
 	static String fmt(double v) {

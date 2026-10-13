@@ -19,7 +19,14 @@ Branch `m3/styledtext-retained-planes-20261013`, stacked on the visibility gate
 
 ## 2. Inventory before this leaf (gate head `b07f472fb7`)
 
-Filled from the CPU inventory and the frame bench (section 6).
+| Site | Cost before |
+|---|---|
+| `scrollVertical` | `super.redraw()` of the whole client area on every scroll (horizontal scroll already copied) |
+| `setCaretLocations(Point[], int)` | `super.redraw()` of the whole widget on every caret placement, so caret moves and selection drags repainted everything |
+| `setScrollBar` | `setMaximum`, `setThumb`, `setPageIncrement` (three native updates) on every call, changed or not |
+| `StyledTextRenderer.textChanging` | tail memmove of the size array on every edit; editing the widest line walked every line with `getLineSize`, allocating one `LineSizeInfo` per line (766 of about 1,000 JFR samples of a 10M-line typing run) |
+| `Point[] selection` | one `Point` object per range; `drawLines` copied the ranges (`getSelectionRanges`) per paint and built a `Point` list per line |
+| `drawLineBackground` | `getClientArea()` (a `Rectangle` and a native call) per painted line |
 
 ## 3. Design
 
@@ -40,9 +47,84 @@ paint that covers the whole client area while a strip or nothing changed).
 
 Bytes per line at 10M lines and bytes for 100K multi-selection ranges: section 6.
 
-## 6. Results
+## 6. Results (part A; Win32, JDK 21.0.9; `evidence/frame-bench.tsv`)
 
-Pending.
+Structural metrics are deterministic; frame times on this shared, busy host vary run to run by up to
+3x and are reported but not claimed as improvements.
+
+| Document, scenario | Full repaints (200 frames) before -> after | Painted px per frame | Layouts requested per frame | Bytes allocated per frame | p50 / p95 ms before -> after |
+|---|---|---|---|---|---|
+| 100 MiB, scroll | 200 -> 0 | 558,348 -> 39,015 | 47 -> 8 | 61,085 -> 24,390 | 29.1 / 48.0 -> 25.4 / 43.3 |
+| 100 MiB, selection drag | 200 -> 0 | 558,348 -> 168,637 | 46.0 -> 16.0 | 33,064 -> 17,530 | 13.2 / 22.5 -> 11.5 / 22.1 |
+| 100 MiB, caret | 200 -> 0 | 558,348 -> 0 | 46.0 -> 3.0 | 30,097 -> 1,558 | 11.7 / 30.9 -> 2.8 / 5.1 |
+| 100 MiB, typing | 0 -> 0 | 13,005 -> 13,005 | 2 -> 2 | 11,694 -> 11,543 | 44.3 / 70.4 -> 11.6 / 21.8 (step 1 run); 31.0 / 48.6 (final run) |
+| 100 MiB, scroll storm | 200 -> 0 | 558,348 -> 19,507 | 44 -> 3.5 | 41,816 -> 18,131 | 34.2 / 54.6 -> 43.8 / 60.4 |
+| 10M lines, scroll | 200 -> 0 | 558,348 -> 39,015 | 47 -> 8 | 55,876 -> 22,883 | 14.5 / 41.6 -> 35.4 / 50.8 |
+| 10M lines, selection drag | 200 -> 0 | 558,348 -> 414,273 | 46.0 -> 34.9 | 35,326 -> 32,952 | 18.6 / 30.8 -> 9.1 / 19.7 |
+| 10M lines, caret | 200 -> 0 | 558,348 -> 1,040 | 45.9 -> 3.0 | 28,815 -> 2,029 | 22.4 / 59.5 -> 1.9 / 28.9 |
+| 10M lines, typing | 0 -> 0 | 0 -> 0 | 0 -> 0 | 5,363 -> 4,468 | 42.8 / 72.7 -> 12.8 / 24.9 (step 1 run); 21.8 / 34.4 (final run) |
+| 10M lines, scroll storm | 200 -> 0 | 558,348 -> 19,507 | 44 -> 2.5 | 39,008 -> 15,416 | 51.2 / 77.5 -> 41.7 / 63.2 |
+
+Resize storms are unchanged (6 full repaints in 60 resizes: a resize exposes new area).
+
+### Regression
+
+StyledText suite in one JVM (existing classes, PagedContent, SingleControl, ApiDifferential, VisibilityGate,
+VisibilityDifferential, RoundTrip): 713 tests, 708 passed, 1 assumption abort, 4 failed:
+`test_backspaceAndDelete` (the `Display.post` flake, also on the base) and 3 pixel-only paged-vs-gap
+mismatches in `ApiDifferential`, a different operation each run (also seen on the gate and leaf 2 classes).
+The dumped images of one (`removeLineBackgroundListener`) differ only in whether the line-background
+listener's colour is present on the "5 " lines in one of the two widgets: a harness timing flake, the same
+code renders both. `Test_org_eclipse_swt_custom_StyledText_RoundTrip` (fixed and wrapped) and the
+hidden-vs-visible differential (185) passed.
+
+### Selection memory (100K multi-selection ranges, 64-bit JVM, compressed references)
+
+| Store | Before | After |
+|---|---|---|
+| ranges | `Point[]`: 16 + 100,000 x 4 = 400,016 bytes, plus 100,000 `Point` objects x 24 bytes = 2,400,000 bytes; 2,800,016 bytes (28 bytes per range) | `int[]` pairs: 16 + 200,000 x 4 = 800,016 bytes (8 bytes per range) |
+| anchors, caret offsets | `int[]` each: 400,016 bytes | unchanged |
+| per-range carets | one `Caret` per range (`carets[]`) | unchanged in part A; part B paints extra carets from ints |
+
+### Inset report (the window in the user's screenshot)
+
+The window was `StyledTextFlickerBench` (this leaf's bench): a `Shell` with `FillLayout` holding one
+`StyledText(MULTI | V_SCROLL | H_SCROLL | BORDER)`; margins 9, 7, 11, 5 points in magenta on purpose,
+200,000 lines. Control tree (`evidence/control-tree.txt`): `Shell` -> `StyledText` (V_SCROLL H_SCROLL
+BORDER), no wrapper, no child controls; the StyledText owns its scroll bars.
+
+`StyledTextBoxModelProbe` (`evidence/boxmodel.tsv`, `evidence/png/`) captures the same widget with
+`Control.print` at 100 %, 125 %, 150 % and 200 % and scans the middle row and column in device pixels
+(lead = border, ring widths, tail = scroll bar track plus border):
+
+| Zoom | Row: border, left ring, right ring, bar + border | Column: border, top ring, bottom ring, bar + border | Capture hash (this branch = `gap` content = base SWT) |
+|---|---|---|---|
+| 100 % | 2, 9, 11, 19 | 2, 7, 5, 19 | `25c7d89d50d55eb5` |
+| 125 % | 2, 11, 14, 19 | 2, 9, 6, 19 | `4fb1c9ff16ea828c` |
+| 150 % | 2, 14, 17, 19 | 2, 11, 7, 19 | `61481d04309f69f4` |
+| 200 % | 2, 18, 21, 19 | 2, 14, 9, 19 | `c7971b552e78209d` |
+
+* The ring is flush with the border and with the scroll bar tracks at every zoom (no gap): the
+  client area ends where the native bars begin, and the ring is painted inside the client area.
+* The captures are byte-identical for this branch, the `gap` content and the unmodified SWT
+  StyledText from the SWT 3.135 jar at every zoom: nothing in the screenshot is a regression of ours.
+* Item 1 (thin white vertical track, tiny thumb): the Windows 11 native scroll bar in the non-client
+  area; 200,000 lines make the thumb its minimum size.
+* Item 2 (horizontal bar spanning beyond the ring): Win32 places both bars outside the client
+  rectangle; the bar runs under the vertical bar's column by design of the native layout.
+* Item 3 (last line under the bottom band): the bottom band is painted after the lines and covers the
+  partial line exactly at the text-viewport edge; band pixels are all margin colour in every capture.
+* Item 4 (left band narrower): the bench configures 9 / 7 / 11 / 5 points. At fractional zoom the band
+  widths follow the GC point-to-pixel rounding of each rectangle (125 %: 11.25 -> 11, 8.75 -> 9,
+  13.75 -> 14, 6.25 -> 6). At 200 % the right and bottom bands measure 21 and 9 instead of 22 and 10:
+  the client area in device pixels is odd, `getClientArea()` reports it in rounded points, and the
+  margin rectangles are placed from that rounded size. Owner: `Scrollable.getClientArea` and the
+  point-to-pixel conversion in GC (the visibility agent's box model and the graphics owner), not
+  StyledText.
+* On-screen captures (`GC(display).copyArea`, shell `ON_TOP` and active) on this shared desktop are
+  not reproducible run to run (other windows and composition timing): the same build gave 1 and 94
+  margin frames in two runs of the same storm. `evidence/flicker-screen.tsv` is kept for a quiet
+  desktop; the print-based numbers above are the evidence.
 
 ## 7. Steps (part A, this branch)
 
