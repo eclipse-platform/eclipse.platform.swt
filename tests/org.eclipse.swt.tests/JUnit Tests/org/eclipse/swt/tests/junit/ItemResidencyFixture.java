@@ -6,11 +6,11 @@ import java.lang.reflect.*;
 import java.util.*;
 
 /**
- * Reflective fixture for the package-private {@code org.eclipse.swt.widgets.ItemResidency} owners,
+ * Reflective fixture for the internal {@code org.eclipse.swt.internal.residency} owners,
  * like the other viewport contract tests. Engine methods have unique (name, arity) pairs.
  */
 final class ItemResidencyFixture {
-	static final String PACKAGE = "org.eclipse.swt.widgets.";
+	static final String PACKAGE = "org.eclipse.swt.internal.residency.";
 	static final Class<?> ENGINE = type ("ItemResidency");
 
 	private ItemResidencyFixture () {
@@ -108,8 +108,42 @@ final class ItemResidencyFixture {
 		}
 	}
 
+	/** Desktop COLD tier: ported TieredSwapCache over the Java FileSwapStore. */
 	static Object spill () {
-		return callStatic (type ("ItemSpillStore"), "temporary");
+		return callStatic (type ("ItemSwapSpill"), "temporary", 1L << 20);
+	}
+
+	static Object field (Object target, String name) {
+		for (Class<?> c = target.getClass (); c != null; c = c.getSuperclass ()) {
+			try {
+				Field f = c.getDeclaredField (name);
+				f.setAccessible (true);
+				return f.get (target);
+			} catch (NoSuchFieldException e) {
+				// try the superclass
+			} catch (IllegalAccessException e) {
+				throw new IllegalStateException (e);
+			}
+		}
+		throw new IllegalArgumentException (name);
+	}
+
+	static Object newInstance (String simple, Object... args) {
+		try {
+			for (Constructor<?> c : type (simple).getDeclaredConstructors ()) {
+				if (c.getParameterCount () == args.length) {
+					c.setAccessible (true);
+					return c.newInstance (args);
+				}
+			}
+		} catch (InvocationTargetException e) {
+			Throwable cause = e.getCause ();
+			if (cause instanceof RuntimeException) throw (RuntimeException) cause;
+			throw new IllegalStateException (cause);
+		} catch (ReflectiveOperationException e) {
+			throw new IllegalStateException (e);
+		}
+		throw new IllegalArgumentException (simple + "/" + args.length);
 	}
 
 	/** Deterministic synchronous source: fills text, colours, height and a cell font per item. */

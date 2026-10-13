@@ -8,7 +8,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package org.eclipse.swt.widgets;
+package org.eclipse.swt.internal.residency;
 
 import java.util.Arrays;
 
@@ -19,12 +19,12 @@ import org.eclipse.swt.internal.PackedHeapGrowth;
  * item data, keyed data). Parent-owned and always resident; keys follow their items across
  * insert and remove, so a value keeps its identity for the life of its item.
  */
-final class ItemSparseTable {
+public final class ItemSparseTable {
 	int [] keys = new int [8];
 	Object [] values = new Object [8];
 	int size;
 
-	int find (int item) {
+	public int find (int item) {
 		int lo = 0, hi = size - 1;
 		while (lo <= hi) {
 			int mid = (lo + hi) >>> 1;
@@ -36,13 +36,13 @@ final class ItemSparseTable {
 		return -(lo + 1);
 	}
 
-	Object get (int item) {
+	public Object get (int item) {
 		int i = find (item);
 		return i < 0 ? null : values [i];
 	}
 
 	/** Stores {@code value}; null removes. Returns the previous value. */
-	Object put (int item, Object value) {
+	public Object put (int item, Object value) {
 		int i = find (item);
 		if (i >= 0) {
 			Object old = values [i];
@@ -73,7 +73,7 @@ final class ItemSparseTable {
 	}
 
 	/** Adds {@code delta} to every key at or above {@code from}; returns the first moved position. */
-	int shift (int from, int delta) {
+	public int shift (int from, int delta) {
 		int i = find (from);
 		if (i < 0) i = -i - 1;
 		for (int j = i; j < size; j++) {
@@ -83,7 +83,7 @@ final class ItemSparseTable {
 	}
 
 	/** Drops every key at or above {@code from}; returns how many were dropped. */
-	int truncate (int from) {
+	public int truncate (int from) {
 		int i = find (from);
 		if (i < 0) i = -i - 1;
 		int dropped = size - i;

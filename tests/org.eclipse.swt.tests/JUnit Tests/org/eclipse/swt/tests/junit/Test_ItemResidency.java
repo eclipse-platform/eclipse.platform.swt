@@ -335,4 +335,29 @@ public class Test_ItemResidency {
 		assertEquals ("java", call (store, "opsId"), "fail-closed Java page ops without a native candidate");
 		call (spill, "close");
 	}
+
+	@Test
+	public void paintPathNeverMaterializes () {
+		Model model = new Model (N, false);
+		Object e = destroyEngine (model);
+		call (e, "setHandleFactory", handleFactory (new ArrayList<> ()));
+		call (e, "setViewport", 0, 20, 5);
+		call (e, "beginPaint");
+		StringBuilder painted = new StringBuilder ();
+		for (int row = 0; row < 25; row++) {
+			int slot = i (e, "paintSlot", row);
+			assertTrue (slot >= 0, "window rows are resident before paint");
+			painted.append (call (e, "slotText", slot, 0)).append (i (e, "slotInt", slot, k ("I_FOREGROUND")))
+					.append (i (e, "slotCellInt", slot, 1, k ("C_FONT"))).append (i (e, "paintLanes", row));
+		}
+		assertEquals (-1, i (e, "paintSlot", 9000), "paint path never pages in");
+		call (e, "endPaint");
+		assertEquals (0, i (e, "materializedDuringPaint"));
+		assertTrue (painted.indexOf ("row 24") >= 0);
+		call (e, "beginPaint");
+		call (e, "getText", 9000, 0);
+		call (e, "handle", 3);
+		call (e, "endPaint");
+		assertEquals (2, i (e, "stat", k ("STAT_MATERIALIZED_DURING_PAINT")), "public getters during paint are detected");
+	}
 }

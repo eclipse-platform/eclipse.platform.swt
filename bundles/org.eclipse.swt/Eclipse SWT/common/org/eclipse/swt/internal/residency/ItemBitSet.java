@@ -8,7 +8,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package org.eclipse.swt.widgets;
+package org.eclipse.swt.internal.residency;
 
 import java.util.Arrays;
 
@@ -20,9 +20,9 @@ import org.eclipse.swt.internal.PackedHeapGrowth;
  * sparse positions, a RUN list (long runs such as select-all) or a BITMAP (dense pages). Memory
  * is O(set state), not O(positions). {@code int} only (GWT).
  */
-final class ItemBitSet {
-	static final int ARRAY = 0, BITMAP = 1, RUN = 2;
-	static final int CHUNK = 1 << 16, ARRAY_MAX = 4096, RUN_MAX = 2048, BITMAP_WORDS = CHUNK / 32;
+public final class ItemBitSet {
+	public static final int ARRAY = 0, BITMAP = 1, RUN = 2;
+	public static final int CHUNK = 1 << 16, ARRAY_MAX = 4096, RUN_MAX = 2048, BITMAP_WORDS = CHUNK / 32;
 
 	int [] keys = new int [0], kinds = new int [0], sizes = new int [0];
 	int [][] data = new int [0][];
@@ -253,12 +253,12 @@ final class ItemBitSet {
 
 	// ---- set operations ---------------------------------------------------------------------------
 
-	boolean get (int position) {
+	public boolean get (int position) {
 		int c = find (position >>> 16);
 		return c >= 0 && contains (c, position & 0xFFFF);
 	}
 
-	void set (int position, boolean on) {
+	public void set (int position, boolean on) {
 		int key = position >>> 16, v = position & 0xFFFF;
 		int c = find (key);
 		if (c < 0) {
@@ -305,7 +305,7 @@ final class ItemBitSet {
 	}
 
 	/** Sets or clears {@code [from, to)}; clearing visits only existing containers. */
-	void setRange (int from, int to, boolean on) {
+	public void setRange (int from, int to, boolean on) {
 		if (from >= to) return;
 		int first = from >>> 16, last = (to - 1) >>> 16;
 		if (!on) {
@@ -351,7 +351,7 @@ final class ItemBitSet {
 		optimize (c);
 	}
 
-	int count (int from, int to) {
+	public int count (int from, int to) {
 		if (from >= to) return 0;
 		int first = from >>> 16, last = (to - 1) >>> 16, total = 0;
 		int c = find (first);
@@ -375,7 +375,7 @@ final class ItemBitSet {
 	}
 
 	/** First set position at or after {@code from} and below {@code limit}, or -1. */
-	int next (int from, int limit) {
+	public int next (int from, int limit) {
 		if (from < 0 || from >= limit) return -1;
 		int key = from >>> 16;
 		int c = find (key);
@@ -408,7 +408,7 @@ final class ItemBitSet {
 	}
 
 	/** End (exclusive) of the set run that contains {@code position}; {@code position} when clear. */
-	int runEnd (int position, int limit) {
+	public int runEnd (int position, int limit) {
 		int end = position;
 		while (end < limit) {
 			int c = find (end >>> 16);
@@ -437,7 +437,7 @@ final class ItemBitSet {
 	}
 
 	/** Moves every set position at or after {@code from} by {@code delta}; cost O(runs after from). */
-	void shift (int from, int delta, int limit, int [][] scratch) {
+	public void shift (int from, int delta, int limit, int [][] scratch) {
 		int r = 0, position = next (from, limit);
 		int [] runs = scratch [0];
 		while (position >= 0) {
@@ -452,12 +452,12 @@ final class ItemBitSet {
 		for (int i = 0; i < r; i++) setRange (runs [2 * i] + delta, runs [2 * i + 1] + delta, true);
 	}
 
-	boolean isEmpty () {
+	public boolean isEmpty () {
 		return n == 0;
 	}
 
 	/** Heap bytes of containers and chunk tables (object headers estimated at 16 bytes). */
-	int bytes () {
+	public int bytes () {
 		int total = 16 + keys.length * 16;
 		for (int c = 0; c < n; c++) total += 16 + data [c].length * 4;
 		return total;

@@ -8,7 +8,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package org.eclipse.swt.widgets;
+package org.eclipse.swt.internal.residency;
 
 import java.util.Arrays;
 
@@ -27,11 +27,11 @@ import org.eclipse.swt.internal.PackedHeapGrowth;
  * <p>Scope of this leaf: uniform fan-out per depth. Sources with per-node child counts keep the
  * existing {@code VirtualTreeTopology} until the Tree owner adopts a per-node variant.</p>
  */
-final class ItemTreeShape {
-	static final int RULE = 0, EXPANDED = 1, COLLAPSED = 2, ROOT = -1;
+public final class ItemTreeShape {
+	public static final int RULE = 0, EXPANDED = 1, COLLAPSED = 2, ROOT = -1;
 
 	/** Exception-path node: explicit state plus sorted (child index, subtree delta) entries. */
-	static final class Path {
+	public static final class Path {
 		int state;
 		int [] child = new int [2], delta = new int [2], prefix = new int [3];
 		int size;
@@ -85,7 +85,7 @@ final class ItemTreeShape {
 	final Path root = new Path ();
 	final ItemSparseTable paths = new ItemSparseTable ();
 
-	ItemTreeShape (int [] fanout) {
+	public ItemTreeShape (int [] fanout) {
 		depths = fanout.length;
 		if (depths < 1) throw new IllegalArgumentException ("no roots");
 		this.fanout = Arrays.copyOf (fanout, depths);
@@ -105,7 +105,7 @@ final class ItemTreeShape {
 	}
 
 	/** Rule: nodes at depth below {@code depth} are expanded; clears every exception (O(1) memory). */
-	void expandToDepth (int depth) {
+	public void expandToDepth (int depth) {
 		int [] sub = new int [depths];
 		long below = 0;
 		for (int d = depths - 1; d >= 0; d--) {
@@ -122,34 +122,34 @@ final class ItemTreeShape {
 		paths.truncate (0);
 	}
 
-	int depth (int key) {
+	public int depth (int key) {
 		int d = depths - 1;
 		while (d > 0 && levelStart [d] > key) d--;
 		return d;
 	}
 
-	int parent (int key) {
+	public int parent (int key) {
 		int d = depth (key);
 		return d == 0 ? ROOT : levelStart [d - 1] + (key - levelStart [d]) / fanout [d];
 	}
 
-	int childIndex (int key) {
+	public int childIndex (int key) {
 		int d = depth (key);
 		return d == 0 ? key : (key - levelStart [d]) % fanout [d];
 	}
 
-	int childKey (int parent, int c) {
+	public int childKey (int parent, int c) {
 		if (parent == ROOT) return c;
 		int d = depth (parent) + 1;
 		return levelStart [d] + (parent - levelStart [d - 1]) * fanout [d] + c;
 	}
 
-	int childCount (int key) {
+	public int childCount (int key) {
 		int d = key == ROOT ? -1 : depth (key);
 		return d + 1 < depths ? fanout [d + 1] : 0;
 	}
 
-	boolean isExpanded (int key) {
+	public boolean isExpanded (int key) {
 		Path p = (Path) paths.get (key);
 		if (p != null && p.state != RULE) return p.state == EXPANDED;
 		return depth (key) < ruleDepth && childCount (key) > 0;
@@ -160,7 +160,7 @@ final class ItemTreeShape {
 		return d < depths ? ruleSub [d] : 0;
 	}
 
-	void setExpanded (int key, boolean expanded) {
+	public void setExpanded (int key, boolean expanded) {
 		if (key < 0 || key >= keyCount) throw new IndexOutOfBoundsException ("node " + key);
 		boolean rule = depth (key) < ruleDepth && childCount (key) > 0;
 		Path p = (Path) paths.get (key);
@@ -202,12 +202,12 @@ final class ItemTreeShape {
 		}
 	}
 
-	int rowCount () {
+	public int rowCount () {
 		return levelCount [0] * (1 + ruleSub [0]) + root.total ();
 	}
 
 	/** Node key at visible {@code row}. */
-	int key (int row) {
+	public int key (int row) {
 		if (row < 0 || row >= rowCount ()) throw new IndexOutOfBoundsException ("row " + row);
 		int parent = ROOT, d = 0, r = row;
 		while (true) {
@@ -252,7 +252,7 @@ final class ItemTreeShape {
 	}
 
 	/** Visible row of {@code key}, or -1 when an ancestor is collapsed. */
-	int row (int key) {
+	public int row (int key) {
 		int d = depth (key);
 		int [] chain = new int [d + 1];
 		for (int k = key, i = d; i >= 0; i--, k = parent (k)) chain [i] = k;
@@ -273,7 +273,7 @@ final class ItemTreeShape {
 	}
 
 	/** Merges the keys of rows {@code [first, first + rows)} into runs; returns the run count. */
-	int keyRuns (int first, int rows, int [] out) {
+	public int keyRuns (int first, int rows, int [] out) {
 		int n = 0, end = Math.min (rowCount (), first + rows);
 		for (int row = first; row < end; row++) {
 			int k = key (row);
@@ -289,7 +289,7 @@ final class ItemTreeShape {
 	}
 
 	/** Exception-path nodes kept (memory is O(this)). */
-	int pathNodes () {
+	public int pathNodes () {
 		return paths.size;
 	}
 }

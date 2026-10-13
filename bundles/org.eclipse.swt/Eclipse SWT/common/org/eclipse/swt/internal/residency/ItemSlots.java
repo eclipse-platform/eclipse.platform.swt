@@ -8,7 +8,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package org.eclipse.swt.widgets;
+package org.eclipse.swt.internal.residency;
 
 import java.util.Arrays;
 
@@ -22,7 +22,7 @@ import org.eclipse.swt.internal.PackedHeapGrowth;
  * string ({@code int length}, -1 = null, then 2 bytes per unit), the blob ({@code int length},
  * -1 = null, then bytes), then the caller-data section written by {@link ItemResidency}.</p>
  */
-final class ItemSlots {
+public final class ItemSlots {
 	final int columns, intStride;
 	int capacity, highWater, live;
 	int [] slotItem, slotRecord, slotInts, refBits, freeSlots;
@@ -33,7 +33,7 @@ final class ItemSlots {
 	int len, pos;
 	private char [] chars = new char [64];
 
-	ItemSlots (int columns, int itemInts, int cellInts) {
+	public ItemSlots (int columns, int itemInts, int cellInts) {
 		this.columns = columns;
 		intStride = itemInts + columns * cellInts;
 		resize (16);
@@ -52,7 +52,7 @@ final class ItemSlots {
 		capacity = next;
 	}
 
-	int allocate (int item) {
+	public int allocate (int item) {
 		int s;
 		if (freeCount > 0) {
 			s = freeSlots [--freeCount];
@@ -67,7 +67,7 @@ final class ItemSlots {
 		return s;
 	}
 
-	void release (int s) {
+	public void release (int s) {
 		Arrays.fill (slotInts, s * intStride, (s + 1) * intStride, 0);
 		Arrays.fill (slotText, s * columns, (s + 1) * columns, null);
 		slotBlob [s] = null;
@@ -78,23 +78,23 @@ final class ItemSlots {
 		live--;
 	}
 
-	boolean ref (int s) {
+	public boolean ref (int s) {
 		return (refBits [s >>> 5] & (1 << s)) != 0;
 	}
 
-	void ref (int s, boolean on) {
+	public void ref (int s, boolean on) {
 		int i = s >>> 5;
 		refBits [i] = on ? refBits [i] | (1 << s) : refBits [i] & ~(1 << s);
 	}
 
 	/** Adds {@code delta} to every resident item at or above {@code from}. */
-	void shiftItems (int from, int delta) {
+	public void shiftItems (int from, int delta) {
 		for (int s = 0; s < highWater; s++) {
 			if (slotItem [s] >= from) slotItem [s] += delta;
 		}
 	}
 
-	void encode (int s) {
+	public void encode (int s) {
 		len = 0;
 		putInt (intStride);
 		for (int i = s * intStride, end = i + intStride; i < end; i++) {
@@ -107,7 +107,7 @@ final class ItemSlots {
 	}
 
 	/** Decodes the payload part of {@code buf[0, len)} into slot {@code s}; {@link #pos} ends after it. */
-	void decode (int s) {
+	public void decode (int s) {
 		pos = 0;
 		if (getInt () != intStride) throw new IllegalStateException ("spill record stride mismatch");
 		for (int i = s * intStride, end = i + intStride; i < end; i++) {
@@ -119,11 +119,11 @@ final class ItemSlots {
 		slotBlob [s] = getBytes ();
 	}
 
-	void ensureBuffer (int n) {
+	public void ensureBuffer (int n) {
 		if (n > buf.length) buf = Arrays.copyOf (buf, PackedHeapGrowth.capacity (buf.length, n, 1));
 	}
 
-	void putInt (int v) {
+	public void putInt (int v) {
 		ensureBuffer (len + 4);
 		buf [len] = (byte) (v >>> 24);
 		buf [len + 1] = (byte) (v >>> 16);
@@ -132,7 +132,7 @@ final class ItemSlots {
 		len += 4;
 	}
 
-	void putString (String s) {
+	public void putString (String s) {
 		if (s == null) {
 			putInt (-1);
 			return;
@@ -147,7 +147,7 @@ final class ItemSlots {
 		}
 	}
 
-	void putBytes (byte [] b) {
+	public void putBytes (byte [] b) {
 		if (b == null) {
 			putInt (-1);
 			return;
@@ -158,14 +158,14 @@ final class ItemSlots {
 		len += b.length;
 	}
 
-	int getInt () {
+	public int getInt () {
 		int v = ((buf [pos] & 0xFF) << 24) | ((buf [pos + 1] & 0xFF) << 16)
 				| ((buf [pos + 2] & 0xFF) << 8) | (buf [pos + 3] & 0xFF);
 		pos += 4;
 		return v;
 	}
 
-	String getString () {
+	public String getString () {
 		int n = getInt ();
 		if (n < 0) return null;
 		if (n > chars.length) chars = new char [PackedHeapGrowth.capacity (chars.length, n, 2)];
@@ -175,7 +175,7 @@ final class ItemSlots {
 		return new String (chars, 0, n);
 	}
 
-	byte [] getBytes () {
+	public byte [] getBytes () {
 		int n = getInt ();
 		if (n < 0) return null;
 		byte [] b = new byte [n];
@@ -184,7 +184,7 @@ final class ItemSlots {
 		return b;
 	}
 
-	int bytes () {
+	public int bytes () {
 		return capacity * (4 * (4 + intStride) + 4 * (columns + 1)) + refBits.length * 4;
 	}
 }

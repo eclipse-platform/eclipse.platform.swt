@@ -8,7 +8,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package org.eclipse.swt.widgets;
+package org.eclipse.swt.internal.residency;
 
 import java.util.Arrays;
 
@@ -19,20 +19,20 @@ import org.eclipse.swt.internal.PackedHeapGrowth;
  * A page exists only while it holds a non-zero entry. Entry {@code > 0} is a resident slot + 1,
  * {@code < 0} is -(spill record + 1), {@code 0} is no payload.
  */
-final class ItemDirectory {
-	static final int SHIFT = 12, SIZE = 1 << SHIFT, MASK = SIZE - 1;
+public final class ItemDirectory {
+	public static final int SHIFT = 12, SIZE = 1 << SHIFT, MASK = SIZE - 1;
 
 	int [][] pages = new int [4][];
 	int [] used = new int [4];
 	int pageCount;
 
-	int get (int item) {
+	public int get (int item) {
 		int p = item >>> SHIFT;
 		if (p >= pages.length || pages [p] == null) return 0;
 		return pages [p] [item & MASK];
 	}
 
-	void put (int item, int value) {
+	public void put (int item, int value) {
 		int p = item >>> SHIFT;
 		ensurePages (p + 1);
 		int [] page = pages [p];
@@ -46,7 +46,7 @@ final class ItemDirectory {
 	}
 
 	/** Moves entries {@code [index, count)} up by one; the entry at {@code index} becomes 0. */
-	void insert (int index, int count) {
+	public void insert (int index, int count) {
 		int ip = index >>> SHIFT, lp = count >>> SHIFT;
 		ensurePages (lp + 1);
 		for (int p = lp; p >= ip; p--) {
@@ -65,7 +65,7 @@ final class ItemDirectory {
 	}
 
 	/** Moves entries {@code (index, count)} down by one; the entry at {@code index} is dropped. */
-	void remove (int index, int count) {
+	public void remove (int index, int count) {
 		int ip = index >>> SHIFT, lp = (count - 1) >>> SHIFT;
 		for (int p = ip; p <= lp && p < pages.length; p++) {
 			int start = p == ip ? index & MASK : 0;
@@ -107,7 +107,7 @@ final class ItemDirectory {
 	}
 
 	/** Heap bytes of allocated pages (directory spine excluded). */
-	int bytes () {
+	public int bytes () {
 		return pageCount * SIZE * 4;
 	}
 }

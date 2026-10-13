@@ -8,7 +8,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package org.eclipse.swt.widgets;
+package org.eclipse.swt.internal.residency;
 
 import java.io.*;
 import java.lang.management.*;
@@ -26,7 +26,7 @@ import org.eclipse.swt.internal.swap.*;
  * {@link #urgent()} through the {@link MemoryMXBean} notification, so the next engine operation
  * samples immediately. Excluded from the web (GWT/RAP) build.
  */
-final class ItemSwapPressure implements ItemResidency.Pressure, NotificationListener {
+public final class ItemSwapPressure implements ItemResidency.Pressure, NotificationListener {
 	final SwapPressureController controller;
 	private final ItemSwapSpill spill;
 	private final MemoryMXBean memory = ManagementFactory.getMemoryMXBean ();
@@ -34,13 +34,13 @@ final class ItemSwapPressure implements ItemResidency.Pressure, NotificationList
 	private volatile boolean urgent;
 	volatile int notifications;
 
-	ItemSwapPressure (SwapPressureController controller, ItemSwapSpill spill) {
+	public ItemSwapPressure (SwapPressureController controller, ItemSwapSpill spill) {
 		this.controller = Objects.requireNonNull (controller, "controller");
 		this.spill = spill;
 	}
 
 	/** System controller over the spill's hard cache budget (or a unit budget without a spill). */
-	static ItemSwapPressure system (ItemSwapSpill spill) {
+	public static ItemSwapPressure system (ItemSwapSpill spill) {
 		TieredSwapCache.Budget hard = spill != null ? spill.budget : new TieredSwapCache.Budget (1, 1, 0);
 		SwapBudgetPlane plane = new SwapBudgetPlane (hard, 1, ItemResidency.SOFT_START / 1000.0, ItemResidency.HARD_STOP / 1000.0);
 		ItemSwapPressure p = new ItemSwapPressure (SwapPressureController.system (plane), spill);
@@ -88,7 +88,7 @@ final class ItemSwapPressure implements ItemResidency.Pressure, NotificationList
 	}
 
 	/** Removes the listener and disarms the thresholds this source armed. */
-	void close () {
+	public void close () {
 		if (memory instanceof NotificationEmitter) {
 			try {
 				((NotificationEmitter) memory).removeNotificationListener (this);

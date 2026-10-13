@@ -8,7 +8,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package org.eclipse.swt.widgets;
+package org.eclipse.swt.internal.residency;
 
 /**
  * SetData negotiation of {@link ItemResidency}: the engine, not the caller, decides which items
@@ -17,13 +17,13 @@ package org.eclipse.swt.widgets;
  * Outstanding requests outside every run are cancelled in ranges. An item restored from HOT, WARM
  * or COLD is loaded and is never requested again; only a DESTROYED item is requested again.
  */
-final class ItemRequests {
+public final class ItemRequests {
 	int rangesRequested, itemsRequested, rangesCancelled, itemsCancelled;
 	private int [] keep = new int [16];
 	private int keepCount;
 
 	/** Cancels every outstanding request outside {@code runs[0, 2*runCount)}. */
-	void cancelOutside (ItemResidency owner, ItemLanes lanes, ItemResidency.DataSource source, int [] runs, int runCount) {
+	public void cancelOutside (ItemResidency owner, ItemLanes lanes, ItemResidency.DataSource source, int [] runs, int runCount) {
 		sortKeep (runs, runCount);
 		int i = lanes.nextSet (ItemResidency.LANE_DATA_REQUESTED, 0);
 		while (i >= 0) {
@@ -41,7 +41,7 @@ final class ItemRequests {
 	}
 
 	/** Cancels every outstanding request (structural change). */
-	void cancelAll (ItemResidency owner, ItemLanes lanes, ItemResidency.DataSource source) {
+	public void cancelAll (ItemResidency owner, ItemLanes lanes, ItemResidency.DataSource source) {
 		cancelOutside (owner, lanes, source, keep, 0);
 	}
 
@@ -80,7 +80,7 @@ final class ItemRequests {
 	}
 
 	/** Requests every run of unloaded, unrequested items in {@code [from, to)}. */
-	void request (ItemResidency owner, ItemLanes lanes, ItemResidency.DataSource source, int from, int to) {
+	public void request (ItemResidency owner, ItemLanes lanes, ItemResidency.DataSource source, int from, int to) {
 		int i = from;
 		while (i < to) {
 			if (needs (lanes, i)) {
@@ -102,7 +102,7 @@ final class ItemRequests {
 	}
 
 	/** Cancels what left the viewport, then requests the runs in priority order. */
-	void negotiate (ItemResidency owner, ItemLanes lanes, ItemResidency.DataSource source, int [] runs, int runCount) {
+	public void negotiate (ItemResidency owner, ItemLanes lanes, ItemResidency.DataSource source, int [] runs, int runCount) {
 		cancelOutside (owner, lanes, source, runs, runCount);
 		if (source == null) return;
 		for (int r = 0; r < runCount; r++) {

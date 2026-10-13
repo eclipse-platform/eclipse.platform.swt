@@ -8,7 +8,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package org.eclipse.swt.widgets;
+package org.eclipse.swt.internal.residency;
 
 import java.util.Arrays;
 
@@ -27,8 +27,8 @@ import org.eclipse.swt.internal.PackedHeapGrowth;
  * Pattern regions are disjoint; a mutation splits patterns only where items deviate. Memory is
  * O(exceptions + patterns + non-default runs), not O(items). {@code int} only (GWT).
  */
-final class ItemLanes {
-	static final int P_START = 0, P_END = 1, P_STRIDE = 2, P_MASK = 3, P_PHASE = 4, P = 5;
+public final class ItemLanes {
+	public static final int P_START = 0, P_END = 1, P_STRIDE = 2, P_MASK = 3, P_PHASE = 4, P = 5;
 
 	final int laneCount;
 	final ItemBitSet [] value, override;
@@ -37,7 +37,7 @@ final class ItemLanes {
 	int count;
 	private final int [][] scratch = {new int [16]};
 
-	ItemLanes (int laneCount) {
+	public ItemLanes (int laneCount) {
 		this.laneCount = laneCount;
 		value = new ItemBitSet [laneCount];
 		override = new ItemBitSet [laneCount];
@@ -52,7 +52,7 @@ final class ItemLanes {
 	// ---- pattern arithmetic ---------------------------------------------------------------------
 
 	/** Index of the pattern covering {@code item}, or -1. */
-	int pattern (int lane, int item) {
+	public int pattern (int lane, int item) {
 		int [] p = patterns [lane];
 		int lo = 0, hi = patternCount [lane] - 1;
 		while (lo <= hi) {
@@ -142,7 +142,7 @@ final class ItemLanes {
 	 * Applies a rule to {@code [start, end)}: state becomes the pattern; exceptions and value bits in
 	 * the range are dropped. O(1) memory regardless of the range length.
 	 */
-	void setPattern (int lane, int start, int end, int stride, int repeatMask) {
+	public void setPattern (int lane, int start, int end, int stride, int repeatMask) {
 		if (stride < 1 || stride > 32) throw new IllegalArgumentException ("stride 1..32");
 		if (start >= end) return;
 		cutPatterns (lane, start, end);
@@ -163,7 +163,7 @@ final class ItemLanes {
 
 	// ---- lane operations --------------------------------------------------------------------------
 
-	boolean get (int lane, int item) {
+	public boolean get (int lane, int item) {
 		if (patternCount [lane] == 0) return value [lane].get (item);
 		int k = pattern (lane, item);
 		if (k < 0) return value [lane].get (item);
@@ -171,7 +171,7 @@ final class ItemLanes {
 		return o != null && o.get (item) ? value [lane].get (item) : patternBit (patterns [lane], k, item);
 	}
 
-	void set (int lane, int item, boolean on) {
+	public void set (int lane, int item, boolean on) {
 		int k = patternCount [lane] == 0 ? -1 : pattern (lane, item);
 		if (k < 0) {
 			value [lane].set (item, on);
@@ -188,13 +188,13 @@ final class ItemLanes {
 	}
 
 	/** Sets or clears {@code [from, to)} explicitly; patterns there are cut away. */
-	void setRange (int lane, int from, int to, boolean on) {
+	public void setRange (int lane, int from, int to, boolean on) {
 		if (from >= to) return;
 		cutPatterns (lane, from, to);
 		value [lane].setRange (from, to, on);
 	}
 
-	int countRange (int lane, int from, int to) {
+	public int countRange (int lane, int from, int to) {
 		if (from >= to) return 0;
 		if (patternCount [lane] == 0) return value [lane].count (from, to);
 		int [] p = patterns [lane];
@@ -227,7 +227,7 @@ final class ItemLanes {
 	}
 
 	/** First set item at or after {@code from}, or -1. */
-	int nextSet (int lane, int from) {
+	public int nextSet (int lane, int from) {
 		if (from < 0 || from >= count) return -1;
 		int explicit = value [lane].next (from, count);
 		if (patternCount [lane] == 0) return explicit;
@@ -255,7 +255,7 @@ final class ItemLanes {
 	}
 
 	/** All lanes of one item as a mask (bit = lane). */
-	int gather (int item) {
+	public int gather (int item) {
 		int mask = 0;
 		for (int lane = 0; lane < laneCount; lane++) {
 			if (get (lane, item)) mask |= 1 << lane;
@@ -263,7 +263,7 @@ final class ItemLanes {
 		return mask;
 	}
 
-	void setCount (int items) {
+	public void setCount (int items) {
 		if (items < count) {
 			for (int lane = 0; lane < laneCount; lane++) setRange (lane, items, count, false);
 		}
@@ -271,7 +271,7 @@ final class ItemLanes {
 	}
 
 	/** Opens a default (0) item at {@code index} in every lane; later items move up by one. */
-	void insert (int index) {
+	public void insert (int index) {
 		for (int lane = 0; lane < laneCount; lane++) {
 			splitAt (lane, index);
 			shiftPatterns (lane, index, 1);
@@ -282,7 +282,7 @@ final class ItemLanes {
 	}
 
 	/** Closes {@code index} in every lane; later items move down by one keeping their state. */
-	void remove (int index) {
+	public void remove (int index) {
 		for (int lane = 0; lane < laneCount; lane++) {
 			splitAt (lane, index);
 			splitAt (lane, index + 1);
@@ -320,7 +320,7 @@ final class ItemLanes {
 	}
 
 	/** Heap bytes of value, exception and pattern storage (headers estimated). */
-	int bytes () {
+	public int bytes () {
 		int total = 0;
 		for (int lane = 0; lane < laneCount; lane++) {
 			total += value [lane].bytes () + patterns [lane].length * 4 + 16;

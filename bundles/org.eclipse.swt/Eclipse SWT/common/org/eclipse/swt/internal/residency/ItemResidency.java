@@ -8,7 +8,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package org.eclipse.swt.widgets;
+package org.eclipse.swt.internal.residency;
 
 import java.util.Arrays;
 
@@ -24,49 +24,50 @@ import java.util.Arrays;
  * pluggable; their desktop implementations live in {@link ItemSpillStore} and
  * {@link ItemResidencyPressure}.</p>
  */
-final class ItemResidency {
+public final class ItemResidency {
 	// Construction flags: one engine-owned int (no Widget.state bit, no SWT style bit).
-	static final int RESIDENCY_SWAP = 1, RESIDENCY_DESTROY = 1 << 1, IDENTITY_PIN_ALL = 1 << 2,
+	public static final int RESIDENCY_SWAP = 1, RESIDENCY_DESTROY = 1 << 1, IDENTITY_PIN_ALL = 1 << 2,
 			IDENTITY_BY_METADATA = 1 << 3, PRESSURE_SAMPLED = 1 << 4;
 
 	// Always-resident bit lanes.
-	static final int LANE_EXPANDED = 0, LANE_HAS_CHILDREN = 1, LANE_CHILDREN_KNOWN = 2,
+	public static final int LANE_EXPANDED = 0, LANE_HAS_CHILDREN = 1, LANE_CHILDREN_KNOWN = 2,
 			LANE_CHILDREN_LOADED = 3, LANE_LOADING_PLACEHOLDER = 4, LANE_SELECTED = 5, LANE_FOCUSED = 6,
 			LANE_HOVERED = 7, LANE_DISABLED = 8, LANE_FILTERED_OUT = 9, LANE_CHECKED = 10, LANE_GRAYED = 11,
 			LANE_CHECKABLE = 12, LANE_DIRTY_PAINT = 13, LANE_DIRTY_MEASURE = 14, LANE_DIRTY_DATA = 15,
 			LANE_PINNED = 16, LANE_TIER_LO = 17, LANE_TIER_HI = 18, LANE_CALLER_SET = 19,
 			LANE_MATERIALIZED = 20, LANE_DATA_REQUESTED = 21, LANE_DATA_LOADED = 22, LANES = 23;
 	/** Lanes only the engine writes. */
-	static final int ENGINE_LANES = 1 << LANE_PINNED | 1 << LANE_TIER_LO | 1 << LANE_TIER_HI
+	public static final int ENGINE_LANES = 1 << LANE_PINNED | 1 << LANE_TIER_LO | 1 << LANE_TIER_HI
 			| 1 << LANE_CALLER_SET | 1 << LANE_MATERIALIZED | 1 << LANE_DATA_REQUESTED | 1 << LANE_DATA_LOADED;
 
-	static final int TIER_DESTROYED = 0, TIER_HOT = 1, TIER_WARM = 2, TIER_COLD = 3;
+	public static final int TIER_DESTROYED = 0, TIER_HOT = 1, TIER_WARM = 2, TIER_COLD = 3;
 
 	// Payload ints per item, then per cell.
-	static final int I_FOREGROUND = 0, I_BACKGROUND = 1, I_FONT = 2, I_IMAGE = 3, I_ROW_HEIGHT = 4,
+	public static final int I_FOREGROUND = 0, I_BACKGROUND = 1, I_FONT = 2, I_IMAGE = 3, I_ROW_HEIGHT = 4,
 			I_INDENT = 5, I_LEVEL = 6, I_TOOLTIP = 7, I_ACCESSIBLE = 8, I_USER = 9, ITEM_INTS = 10;
-	static final int C_FOREGROUND = 0, C_BACKGROUND = 1, C_FONT = 2, C_IMAGE = 3, CELL_INTS = 4;
+	public static final int C_FOREGROUND = 0, C_BACKGROUND = 1, C_FONT = 2, C_IMAGE = 3, CELL_INTS = 4;
 
-	static final int SITE_UNKNOWN = 0, SITE_BEHAVIOUR_ONLY = 1, SITE_RETAINS = 2;
+	public static final int SITE_UNKNOWN = 0, SITE_BEHAVIOUR_ONLY = 1, SITE_RETAINS = 2;
 
-	static final int STAT_MATERIALIZED = 0, STAT_RECREATED = 1, STAT_SWAP_OUT = 2, STAT_SWAP_OUT_WRITES = 3,
+	public static final int STAT_MATERIALIZED = 0, STAT_RECREATED = 1, STAT_SWAP_OUT = 2, STAT_SWAP_OUT_WRITES = 3,
 			STAT_SWAP_IN = 4, STAT_DESTROYED = 5, STAT_UNEVICTABLE = 6, STAT_PRESSURE_SAMPLES = 7,
 			STAT_TELEMETRY_FAILURES = 8, STAT_PINNED = 9, STAT_RECYCLED = 10, STAT_DATA_SWAPPED = 11,
 			STAT_DATA_RESTORED = 12, COUNTERS = 13, STAT_RESIDENT = 20, STAT_BUDGET = 21, STAT_PERMILLE = 22,
 			STAT_REQUEST_RANGES = 23, STAT_REQUEST_ITEMS = 24, STAT_CANCEL_RANGES = 25, STAT_CANCEL_ITEMS = 26,
-			STAT_LANE_BYTES = 27, STAT_DIRECTORY_BYTES = 28, STAT_SLOT_BYTES = 29, STAT_SLOT_CAPACITY = 30;
+			STAT_LANE_BYTES = 27, STAT_DIRECTORY_BYTES = 28, STAT_SLOT_BYTES = 29, STAT_SLOT_CAPACITY = 30,
+			STAT_MATERIALIZED_DURING_PAINT = 31;
 
-	static final int SOFT_START = 700, HARD_STOP = 960, RECOVERY_STEP = 125;
+	public static final int SOFT_START = 700, HARD_STOP = 960, RECOVERY_STEP = 125;
 
 	/** Supplies payload in ranges; writes between beginData/endData are source-backed. */
-	interface DataSource {
+	public interface DataSource {
 		void request (ItemResidency owner, int from, int to);
 		default void cancel (ItemResidency owner, int from, int to) {
 		}
 	}
 
 	/** COLD tier storage (desktop: {@link ItemSwapSpill} over the ported TieredSwapCache; web: none). */
-	interface Spill {
+	public interface Spill {
 		int write (byte [] data, int length);
 		/** The record's exact bytes; the engine only reads them. */
 		byte [] read (int record);
@@ -75,7 +76,7 @@ final class ItemResidency {
 	}
 
 	/** Availability in permille (1000 = no pressure); throwing means telemetry failure. */
-	interface Pressure {
+	public interface Pressure {
 		int availablePermille ();
 		default boolean urgent () {
 			return false;
@@ -83,18 +84,18 @@ final class ItemResidency {
 	}
 
 	/** Creates and rebinds thin handles; item -1 means disposed. Generation 0 is a pinned handle. */
-	interface HandleFactory {
+	public interface HandleFactory {
 		Object create (int item, int generation);
 		void rebind (Object handle, int item, int generation);
 	}
 
 	/** Compile-time site metadata: low 2 bits are the SITE_* class, higher bits the escape mask. */
-	interface SiteMetadata {
+	public interface SiteMetadata {
 		int classify (int siteKey);
 	}
 
 	/** Immutable-value codec: registering it declares accepted values immutable and swappable. */
-	interface DataCodec {
+	public interface DataCodec {
 		boolean accepts (Object value);
 		byte [] encode (Object value);
 		Object decode (byte [] bytes);
@@ -116,7 +117,7 @@ final class ItemResidency {
 	int sampleEvery = 64, operations, permille = 1000, budget;
 	int windowStart, windowEnd, prefetchRows, hotSize, hotRunCount;
 	int [] hotRuns = new int [8], priority = new int [16];
-	int filling = -1, fillingSlot = -1, hand;
+	int filling = -1, fillingSlot = -1, hand, painting, materializedDuringPaint;
 	final int [] counters = new int [COUNTERS];
 	final Object [] ring = new Object [4];
 	final int [] ringItem = new int [4], ringGeneration = new int [4];
@@ -124,7 +125,7 @@ final class ItemResidency {
 	int editorItem = -1, editorColumn, editorCaret, editorSelectionStart, editorSelectionEnd;
 	String editorText;
 
-	ItemResidency (int config, int columns, int hardSlots, DataSource source, Spill spill, Pressure pressure) {
+	public ItemResidency (int config, int columns, int hardSlots, DataSource source, Spill spill, Pressure pressure) {
 		if (columns < 1 || hardSlots < 1) throw new IllegalArgumentException ("columns and hardSlots must be positive");
 		this.config = config;
 		this.hardSlots = hardSlots;
@@ -135,11 +136,11 @@ final class ItemResidency {
 		budget = hardSlots;
 	}
 
-	static int inc (int counter) {
+	public static int inc (int counter) {
 		return counter == Integer.MAX_VALUE ? counter : counter + 1;
 	}
 
-	static int add (int counter, int delta) {
+	public static int add (int counter, int delta) {
 		return counter > Integer.MAX_VALUE - delta ? Integer.MAX_VALUE : counter + delta;
 	}
 
@@ -148,7 +149,7 @@ final class ItemResidency {
 	}
 
 	/** FNV-1a 32 of {@code owner.name+desc@bci}; multiplication split so every step is exact in a double. */
-	static int siteKey (String owner, String name, String desc, int bci) {
+	public static int siteKey (String owner, String name, String desc, int bci) {
 		String s = owner + '.' + name + desc + '@' + bci;
 		int h = 0x811C9DC5;
 		for (int i = 0; i < s.length (); i++) {
@@ -160,7 +161,7 @@ final class ItemResidency {
 
 	// ---- structure ---------------------------------------------------------------------------
 
-	int count () {
+	public int count () {
 		return lanes.count;
 	}
 
@@ -168,7 +169,7 @@ final class ItemResidency {
 		if (item < 0 || item >= lanes.count) throw new IndexOutOfBoundsException ("item " + item + " of " + lanes.count);
 	}
 
-	void setCount (int items) {
+	public void setCount (int items) {
 		if (items < 0) throw new IllegalArgumentException ("negative count");
 		requests.cancelAll (this, lanes, source);
 		for (int i = items; i < lanes.count; i++) {
@@ -187,7 +188,7 @@ final class ItemResidency {
 		clampWindow ();
 	}
 
-	void insert (int index) {
+	public void insert (int index) {
 		if (index < 0 || index > lanes.count) throw new IndexOutOfBoundsException ("insert " + index);
 		requests.cancelAll (this, lanes, source);
 		lanes.insert (index);
@@ -200,7 +201,7 @@ final class ItemResidency {
 		invalidateRing ();
 	}
 
-	void remove (int index) {
+	public void remove (int index) {
 		checkItem (index);
 		requests.cancelAll (this, lanes, source);
 		dropPayload (index);
@@ -240,33 +241,33 @@ final class ItemResidency {
 
 	// ---- bit lanes -----------------------------------------------------------------------------
 
-	boolean bit (int lane, int item) {
+	public boolean bit (int lane, int item) {
 		checkItem (item);
 		return lanes.get (lane, item);
 	}
 
-	void setBit (int lane, int item, boolean on) {
+	public void setBit (int lane, int item, boolean on) {
 		checkItem (item);
 		checkUserLane (lane);
 		lanes.set (lane, item, on);
 	}
 
-	void setRange (int lane, int from, int to, boolean on) {
+	public void setRange (int lane, int from, int to, boolean on) {
 		checkUserLane (lane);
 		if (from < 0 || to > lanes.count || from > to) throw new IndexOutOfBoundsException ("range");
 		lanes.setRange (lane, from, to, on);
 	}
 
-	int countRange (int lane, int from, int to) {
+	public int countRange (int lane, int from, int to) {
 		if (from < 0 || to > lanes.count || from > to) throw new IndexOutOfBoundsException ("range");
 		return lanes.countRange (lane, from, to);
 	}
 
-	int nextSet (int lane, int from) {
+	public int nextSet (int lane, int from) {
 		return from < 0 ? lanes.nextSet (lane, 0) : lanes.nextSet (lane, from);
 	}
 
-	int gather (int item) {
+	public int gather (int item) {
 		checkItem (item);
 		return lanes.gather (item);
 	}
@@ -276,7 +277,7 @@ final class ItemResidency {
 	 * {@code (i - start) % stride} of {@code repeatMask} is set. O(1) memory for any range; explicit
 	 * exceptions win over patterns, patterns win over the default.
 	 */
-	void setPattern (int lane, int start, int end, int stride, int repeatMask) {
+	public void setPattern (int lane, int start, int end, int stride, int repeatMask) {
 		checkUserLane (lane);
 		if (start < 0 || end > lanes.count || start > end) throw new IndexOutOfBoundsException ("range");
 		lanes.setPattern (lane, start, end, stride, repeatMask);
@@ -286,7 +287,7 @@ final class ItemResidency {
 		if (lane < 0 || lane >= LANES || (ENGINE_LANES & (1 << lane)) != 0) throw new IllegalArgumentException ("lane " + lane);
 	}
 
-	int tier (int item) {
+	public int tier (int item) {
 		checkItem (item);
 		return (lanes.get (LANE_TIER_LO, item) ? 1 : 0) | (lanes.get (LANE_TIER_HI, item) ? 2 : 0);
 	}
@@ -311,7 +312,7 @@ final class ItemResidency {
 	// ---- SetData negotiation ---------------------------------------------------------------------
 
 	/** Opens a source-backed write scope for one item (SWT SetData). */
-	void beginData (int item) {
+	public void beginData (int item) {
 		checkItem (item);
 		if (filling >= 0) throw new IllegalStateException ("nested beginData");
 		int d = directory.get (item);
@@ -320,7 +321,7 @@ final class ItemResidency {
 		fillingSlot = s;
 	}
 
-	void endData (int item) {
+	public void endData (int item) {
 		if (filling != item) throw new IllegalStateException ("endData without beginData");
 		filling = -1;
 		fillingSlot = -1;
@@ -334,7 +335,7 @@ final class ItemResidency {
 	}
 
 	/** SWT {@code clear(index)}: drops payload (caller-set included) so the next access re-requests. */
-	void invalidate (int item) {
+	public void invalidate (int item) {
 		checkItem (item);
 		dropPayload (item);
 		lanes.set (LANE_CALLER_SET, item, false);
@@ -343,7 +344,7 @@ final class ItemResidency {
 		setTier (item, TIER_DESTROYED);
 	}
 
-	void setPrefetch (int rows) {
+	public void setPrefetch (int rows) {
 		prefetchRows = rows < 0 ? 0 : rows;
 	}
 
@@ -360,6 +361,7 @@ final class ItemResidency {
 		}
 		if (d < 0) return swapIn (item, -d - 1);
 		if (source == null || lanes.get (LANE_DATA_REQUESTED, item) || filling >= 0) return -1;
+		paintViolation ();
 		requests.request (this, lanes, source, item, item + 1);
 		d = directory.get (item);
 		return d > 0 ? d - 1 : -1;
@@ -382,58 +384,58 @@ final class ItemResidency {
 		return s;
 	}
 
-	String getText (int item, int column) {
+	public String getText (int item, int column) {
 		checkColumn (column);
 		int s = readSlot (item);
 		return s < 0 ? null : slots.slotText [s * slots.columns + column];
 	}
 
-	void setText (int item, int column, String text) {
+	public void setText (int item, int column, String text) {
 		checkColumn (column);
 		int s = writeSlot (item, false);
 		slots.slotText [s * slots.columns + column] = text;
 		trim ();
 	}
 
-	int getInt (int item, int field) {
+	public int getInt (int item, int field) {
 		checkField (field, ITEM_INTS);
 		int s = readSlot (item);
 		return s < 0 ? 0 : slots.slotInts [s * slots.intStride + field];
 	}
 
-	void setInt (int item, int field, int value) {
+	public void setInt (int item, int field, int value) {
 		checkField (field, ITEM_INTS);
 		slots.slotInts [writeSlot (item, false) * slots.intStride + field] = value;
 		trim ();
 	}
 
 	/** Derived write (measured height, indent): not caller-owned, recomputed by the adopter after DESTROY. */
-	void setDerivedInt (int item, int field, int value) {
+	public void setDerivedInt (int item, int field, int value) {
 		checkField (field, ITEM_INTS);
 		slots.slotInts [writeSlot (item, true) * slots.intStride + field] = value;
 		trim ();
 	}
 
-	int getCellInt (int item, int column, int field) {
+	public int getCellInt (int item, int column, int field) {
 		checkColumn (column);
 		checkField (field, CELL_INTS);
 		int s = readSlot (item);
 		return s < 0 ? 0 : slots.slotInts [s * slots.intStride + ITEM_INTS + column * CELL_INTS + field];
 	}
 
-	void setCellInt (int item, int column, int field, int value) {
+	public void setCellInt (int item, int column, int field, int value) {
 		checkColumn (column);
 		checkField (field, CELL_INTS);
 		slots.slotInts [writeSlot (item, false) * slots.intStride + ITEM_INTS + column * CELL_INTS + field] = value;
 		trim ();
 	}
 
-	byte [] getBlob (int item) {
+	public byte [] getBlob (int item) {
 		int s = readSlot (item);
 		return s < 0 ? null : slots.slotBlob [s];
 	}
 
-	void setBlob (int item, byte [] blob) {
+	public void setBlob (int item, byte [] blob) {
 		slots.slotBlob [writeSlot (item, false)] = blob;
 		trim ();
 	}
@@ -446,22 +448,73 @@ final class ItemResidency {
 		if (field < 0 || field >= limit) throw new IndexOutOfBoundsException ("field " + field);
 	}
 
+	// ---- paint path: reads by slot, zero materialization -----------------------------------------
+
+	/**
+	 * Opens a paint scope. Widget paint code reads only through {@link #paintSlot}, the
+	 * {@code slot*} readers and {@link #paintLanes}; any allocation, page-in, SetData request or
+	 * handle creation inside the scope increments {@code materializedDuringPaint}, which must stay 0.
+	 */
+	public void beginPaint () {
+		painting++;
+	}
+
+	public void endPaint () {
+		if (painting > 0) painting--;
+	}
+
+	/** Resident slot of {@code item}, or -1; no paging, no request, no recency update. */
+	public int paintSlot (int item) {
+		checkItem (item);
+		int d = directory.get (item);
+		return d > 0 ? d - 1 : -1;
+	}
+
+	public int paintLanes (int item) {
+		checkItem (item);
+		return lanes.gather (item);
+	}
+
+	public String slotText (int slot, int column) {
+		checkColumn (column);
+		return slots.slotText [slot * slots.columns + column];
+	}
+
+	public int slotInt (int slot, int field) {
+		checkField (field, ITEM_INTS);
+		return slots.slotInts [slot * slots.intStride + field];
+	}
+
+	public int slotCellInt (int slot, int column, int field) {
+		checkColumn (column);
+		checkField (field, CELL_INTS);
+		return slots.slotInts [slot * slots.intStride + ITEM_INTS + column * CELL_INTS + field];
+	}
+
+	public byte [] slotBlob (int slot) {
+		return slots.slotBlob [slot];
+	}
+
+	public int materializedDuringPaint () {
+		return materializedDuringPaint;
+	}
+
 	// ---- item data lanes (parent-owned, pinned unless a codec accepts the value) ---------------
 
-	Object getData (int item) {
+	public Object getData (int item) {
 		checkItem (item);
 		int d = directory.get (item);
 		if (d < 0) swapIn (item, -d - 1);
 		return data.get (item);
 	}
 
-	void setData (int item, Object value) {
+	public void setData (int item, Object value) {
 		checkItem (item);
 		markDataChanged (item);
 		data.put (item, value);
 	}
 
-	Object getKeyedData (int item, String key) {
+	public Object getKeyedData (int item, String key) {
 		checkItem (item);
 		if (key == null) throw new IllegalArgumentException ("null key");
 		int d = directory.get (item);
@@ -473,7 +526,7 @@ final class ItemResidency {
 		return null;
 	}
 
-	void setKeyedData (int item, String key, Object value) {
+	public void setKeyedData (int item, String key, Object value) {
 		checkItem (item);
 		if (key == null) throw new IllegalArgumentException ("null key");
 		markDataChanged (item);
@@ -481,7 +534,7 @@ final class ItemResidency {
 	}
 
 	/** Returns a new pair array with {@code key} set ({@code value} null removes); null when empty. */
-	static Object [] withPair (Object [] pairs, String key, Object value) {
+	public static Object [] withPair (Object [] pairs, String key, Object value) {
 		int n = pairs == null ? 0 : pairs.length, at = -1;
 		for (int i = 0; i < n; i += 2) {
 			if (key.equals (pairs [i])) at = i;
@@ -509,14 +562,14 @@ final class ItemResidency {
 		if (d > 0) freeRecord (d - 1);
 	}
 
-	void setDataCodec (DataCodec codec) {
+	public void setDataCodec (DataCodec codec) {
 		if (counters [STAT_SWAP_OUT] != 0) throw new IllegalStateException ("codec must be set before the first swap-out");
 		this.codec = codec;
 	}
 
 	// ---- editor (parent scalars) -----------------------------------------------------------------
 
-	void openEditor (int item, int column, String text, int caret, int selectionStart, int selectionEnd) {
+	public void openEditor (int item, int column, String text, int caret, int selectionStart, int selectionEnd) {
 		checkItem (item);
 		checkColumn (column);
 		editorItem = item;
@@ -527,33 +580,33 @@ final class ItemResidency {
 		editorSelectionEnd = selectionEnd;
 	}
 
-	void closeEditor () {
+	public void closeEditor () {
 		editorItem = -1;
 		editorText = null;
 		editorCaret = editorSelectionStart = editorSelectionEnd = editorColumn = 0;
 	}
 
-	int editorItem () {
+	public int editorItem () {
 		return editorItem;
 	}
 
-	int editorColumn () {
+	public int editorColumn () {
 		return editorColumn;
 	}
 
-	String editorText () {
+	public String editorText () {
 		return editorText;
 	}
 
-	int editorCaret () {
+	public int editorCaret () {
 		return editorCaret;
 	}
 
-	int editorSelectionStart () {
+	public int editorSelectionStart () {
 		return editorSelectionStart;
 	}
 
-	int editorSelectionEnd () {
+	public int editorSelectionEnd () {
 		return editorSelectionEnd;
 	}
 
@@ -563,7 +616,7 @@ final class ItemResidency {
 	 * Flat residency driver: HOT window {@code [first - overscan, first + visible + overscan)};
 	 * priority visible, then overscan in the scroll direction, then prefetch beyond it.
 	 */
-	void setViewport (int first, int visible, int overscan) {
+	public void setViewport (int first, int visible, int overscan) {
 		if (first < 0 || visible < 0 || overscan < 0) throw new IllegalArgumentException ("negative viewport");
 		int n = lanes.count;
 		first = Math.min (first, n);
@@ -589,7 +642,7 @@ final class ItemResidency {
 	 * (visible, overscan, prefetch); the first {@code hotRunCount} form the HOT window, the rest are
 	 * prefetch (requested, WARM, evictable). Outstanding requests outside every run are cancelled.
 	 */
-	void setViewportRuns (int [] runs, int runCount, int hotRunCount) {
+	public void setViewportRuns (int [] runs, int runCount, int hotRunCount) {
 		int n = lanes.count;
 		if (hotRunCount < 0 || hotRunCount > runCount || 2 * runCount > runs.length) throw new IllegalArgumentException ("run counts");
 		for (int k = 0; k < runCount; k++) {
@@ -631,11 +684,11 @@ final class ItemResidency {
 		windowEnd = w == 0 ? 0 : hotRuns [2 * w - 1];
 	}
 
-	int windowStart () {
+	public int windowStart () {
 		return windowStart;
 	}
 
-	int windowEnd () {
+	public int windowEnd () {
 		return windowEnd;
 	}
 
@@ -665,7 +718,12 @@ final class ItemResidency {
 		setHotRuns (Arrays.copyOf (hotRuns, 2 * w), w);
 	}
 
+	private void paintViolation () {
+		if (painting > 0) materializedDuringPaint = inc (materializedDuringPaint);
+	}
+
 	private int allocate (int item) {
+		paintViolation ();
 		while (slots.live >= budget && evictOne ()) {
 			// CLOCK sweep until under budget or nothing evictable
 		}
@@ -803,7 +861,7 @@ final class ItemResidency {
 
 	// ---- pressure ------------------------------------------------------------------------------
 
-	void setSampleEvery (int operations) {
+	public void setSampleEvery (int operations) {
 		sampleEvery = operations < 1 ? 1 : operations;
 	}
 
@@ -817,7 +875,7 @@ final class ItemResidency {
 	}
 
 	/** Samples the source; a telemetry exception zeroes optional residency. */
-	int samplePressure () {
+	public int samplePressure () {
 		int raw;
 		try {
 			raw = pressure == null ? 1000 : pressure.availablePermille ();
@@ -831,7 +889,7 @@ final class ItemResidency {
 	}
 
 	/** Shrink is immediate; recovery is rate-limited to {@link #RECOVERY_STEP} per sample. */
-	void applyPressure (int rawPermille) {
+	public void applyPressure (int rawPermille) {
 		int raw = rawPermille < 0 ? 0 : rawPermille > 1000 ? 1000 : rawPermille;
 		permille = raw < permille ? raw : Math.min (raw, permille + RECOVERY_STEP);
 		updateBudget ();
@@ -839,7 +897,7 @@ final class ItemResidency {
 	}
 
 	/** Heap-ratio permille with {@link #SOFT_START} and {@link #HARD_STOP} (SwapBudgetPlane semantics). */
-	static int permilleOfUsed (int usedPermille) {
+	public static int permilleOfUsed (int usedPermille) {
 		if (usedPermille <= SOFT_START) return 1000;
 		if (usedPermille >= HARD_STOP) return 0;
 		return (HARD_STOP - usedPermille) * 1000 / (HARD_STOP - SOFT_START);
@@ -851,7 +909,7 @@ final class ItemResidency {
 	}
 
 	/** Evicts down to the budget (never the window, never caller-owned payload without a spill). */
-	void trim () {
+	public void trim () {
 		while (slots.live > budget && evictOne ()) {
 			// CLOCK sweep
 		}
@@ -859,20 +917,21 @@ final class ItemResidency {
 
 	// ---- identity ------------------------------------------------------------------------------
 
-	void setHandleFactory (HandleFactory factory) {
+	public void setHandleFactory (HandleFactory factory) {
 		this.factory = factory;
 	}
 
-	void setSiteMetadata (SiteMetadata metadata) {
+	public void setSiteMetadata (SiteMetadata metadata) {
 		this.metadata = metadata;
 	}
 
 	/** Pinned handle: the same object for the life of the item. */
-	Object handle (int item) {
+	public Object handle (int item) {
 		checkItem (item);
 		if (factory == null) throw new IllegalStateException ("no handle factory");
 		Object h = lanes.get (LANE_PINNED, item) ? pins.get (item) : null;
 		if (h == null) {
+			paintViolation ();
 			h = factory.create (item, 0);
 			pins.put (item, h);
 			lanes.set (LANE_PINNED, item, true);
@@ -882,12 +941,13 @@ final class ItemResidency {
 	}
 
 	/** Recyclable flyweight only at sites proven behaviour-only; otherwise the pinned handle. */
-	Object transientHandle (int item, int siteKey) {
+	public Object transientHandle (int item, int siteKey) {
 		checkItem (item);
 		if ((config & IDENTITY_BY_METADATA) == 0 || (config & IDENTITY_PIN_ALL) != 0 || metadata == null
 				|| lanes.get (LANE_PINNED, item) || (metadata.classify (siteKey) & 3) != SITE_BEHAVIOUR_ONLY) {
 			return handle (item);
 		}
+		paintViolation ();
 		int k = ringNext;
 		ringNext = (k + 1) & 3;
 		generation = generation == Integer.MAX_VALUE ? 1 : generation + 1;
@@ -900,7 +960,7 @@ final class ItemResidency {
 	}
 
 	/** True when {@code handle} still denotes {@code item} at {@code generation}. */
-	boolean isCurrent (Object handle, int item, int generation) {
+	public boolean isCurrent (Object handle, int item, int generation) {
 		if (item < 0 || item >= lanes.count) return false;
 		if (generation == 0) return lanes.get (LANE_PINNED, item) && pins.get (item) == handle;
 		for (int k = 0; k < ring.length; k++) {
@@ -916,7 +976,7 @@ final class ItemResidency {
 	}
 
 	/** Sorted (key, kind) sidecar of the M3 reference-metadata pass, wire form M3IRS01. */
-	static final class Sidecar implements SiteMetadata {
+	public static final class Sidecar implements SiteMetadata {
 		static final int MAGIC = 0x4D334952, VERSION = 1;
 		final int [] keys, kinds;
 
@@ -925,7 +985,7 @@ final class ItemResidency {
 			this.kinds = kinds;
 		}
 
-		static Sidecar fromInts (int [] packed) {
+		public static Sidecar fromInts (int [] packed) {
 			if (packed == null || packed.length < 3 || packed [0] != MAGIC || packed [1] != VERSION) {
 				throw new IllegalArgumentException ("not an M3IRS01 sidecar");
 			}
@@ -955,7 +1015,7 @@ final class ItemResidency {
 
 	// ---- statistics ------------------------------------------------------------------------------
 
-	int stat (int which) {
+	public int stat (int which) {
 		if (which >= 0 && which < COUNTERS) return counters [which];
 		switch (which) {
 			case STAT_RESIDENT: return slots.live;
@@ -969,11 +1029,12 @@ final class ItemResidency {
 			case STAT_DIRECTORY_BYTES: return directory.bytes ();
 			case STAT_SLOT_BYTES: return slots.bytes ();
 			case STAT_SLOT_CAPACITY: return slots.capacity;
+			case STAT_MATERIALIZED_DURING_PAINT: return materializedDuringPaint;
 			default: throw new IllegalArgumentException ("stat " + which);
 		}
 	}
 
-	void dispose () {
+	public void dispose () {
 		requests.cancelAll (this, lanes, source);
 		if (spill != null) spill.close ();
 		spill = null;

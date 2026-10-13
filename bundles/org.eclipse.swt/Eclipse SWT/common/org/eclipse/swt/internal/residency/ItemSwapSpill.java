@@ -8,7 +8,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package org.eclipse.swt.widgets;
+package org.eclipse.swt.internal.residency;
 
 import java.io.*;
 import java.util.*;
@@ -23,7 +23,7 @@ import org.eclipse.swt.internal.swap.*;
  * handles; each maps to one immutable store id. Excluded from the web (GWT/RAP) build, where the
  * engine runs DESTROY-only.
  */
-final class ItemSwapSpill implements ItemResidency.Spill {
+public final class ItemSwapSpill implements ItemResidency.Spill {
 	private static final TieredSwapCache.Codec<byte []> BYTES = new TieredSwapCache.Codec<> () {
 		@Override
 		public byte [] encode (byte [] value) {
@@ -49,20 +49,20 @@ final class ItemSwapSpill implements ItemResidency.Spill {
 	private int handles, freeCount;
 	int liveHandles;
 
-	ItemSwapSpill (FileSwapStore store, TieredSwapCache.Budget budget) {
+	public ItemSwapSpill (FileSwapStore store, TieredSwapCache.Budget budget) {
 		this.store = store;
 		this.budget = budget;
 		cache = new TieredSwapCache<> (store, BYTES, budget, TieredSwapCache.Policy.LRU, true);
 	}
 
 	/** Temporary store with a byte-residency budget of {@code cacheBytes} for swapped payload. */
-	static ItemSwapSpill temporary (long cacheBytes) throws IOException {
+	public static ItemSwapSpill temporary (long cacheBytes) throws IOException {
 		long bytes = Math.max (4096L, cacheBytes);
 		return new ItemSwapSpill (FileSwapStore.temporary (), new TieredSwapCache.Budget (bytes, 1 << 16, bytes / 4));
 	}
 
 	/** {@link #temporary(long)} when the flags ask for SWAP, else null (web or DESTROY-only). */
-	static ItemSwapSpill temporaryOrNull (int flags, long cacheBytes) {
+	public static ItemSwapSpill temporaryOrNull (int flags, long cacheBytes) {
 		if ((flags & ItemResidency.RESIDENCY_SWAP) == 0) return null;
 		try {
 			return temporary (cacheBytes);
