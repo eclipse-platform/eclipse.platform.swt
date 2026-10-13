@@ -212,6 +212,30 @@ public final class ViewportDamageRegion {
 		add (left, top, right - left, bottom - top);
 	}
 
+	/**
+	 * Damages the ring between an outer rectangle and the rectangle inset by the given edges, in
+	 * pixels: a border, a scrollbar track, an inset or a margin. The four strips are disjoint by
+	 * construction, so nested rings added one after the other leave no gap and no overlap. An edge
+	 * of 0 adds nothing on that side (an overlay scrollbar has no edge). If the edges meet or cross,
+	 * the whole outer rectangle is the ring.
+	 */
+	public void addFrame (int x, int y, int width, int height, int top, int right, int bottom, int left) {
+		if (top < 0 || right < 0 || bottom < 0 || left < 0) throw new IllegalArgumentException ("negative edge");
+		if (width <= 0 || height <= 0) return;
+		checkRange (x, y, width, height);
+		checkRange (0, 0, top + bottom, left + right);
+		long innerWidth = (long) width - left - right;
+		long innerHeight = (long) height - top - bottom;
+		if (innerWidth <= 0 || innerHeight <= 0) {
+			add (x, y, width, height);
+			return;
+		}
+		add (x, y, width, top);
+		add (x, y + top + (int) innerHeight, width, bottom);
+		add (x, y + top, left, (int) innerHeight);
+		add (x + left + (int) innerWidth, y + top, right, (int) innerHeight);
+	}
+
 	/** Device pixel of a start coordinate: {@code floor (point * zoomPercent / 100)}. */
 	public static int pixelFloor (int point, int zoomPercent) {
 		checkZoom (zoomPercent);
