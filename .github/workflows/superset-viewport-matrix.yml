@@ -1,0 +1,56 @@
+name: Superset Viewport Matrix Source Gate
+
+on:
+  pull_request:
+    paths:
+      - 'examples/org.eclipse.swt.examples/src/org/eclipse/swt/examples/superset/**'
+      - 'examples/org.eclipse.swt.examples/superset-matrix/**'
+      - '.github/workflows/superset-viewport-matrix.yml'
+  push:
+    branches:
+      - m3/superset-viewport-showcase-20261013
+    paths:
+      - 'examples/org.eclipse.swt.examples/src/org/eclipse/swt/examples/superset/**'
+      - 'examples/org.eclipse.swt.examples/superset-matrix/**'
+      - '.github/workflows/superset-viewport-matrix.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-and-opencv:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@ff7abcd0c3c05ccf6adc123a8cd1fd4fb30fb493
+      - uses: actions/setup-java@de5a937a1dc73fbc1a67d7d1aa4bebc1082f3190
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+
+      - name: Resolve published SWT compile baseline
+        run: |
+          mvn --batch-mode --no-transfer-progress dependency:get             -Dartifact=org.eclipse.platform:org.eclipse.swt.gtk.linux.x86_64:3.135.0
+          echo "SWT_JAR=$HOME/.m2/repository/org/eclipse/platform/org.eclipse.swt.gtk.linux.x86_64/3.135.0/org.eclipse.swt.gtk.linux.x86_64-3.135.0.jar" >> "$GITHUB_ENV"
+
+      - name: Compile Superset showcase exactly like run-matrix
+        run: |
+          test -s "$SWT_JAR"
+          mkdir -p /tmp/superset-classes
+          find examples/org.eclipse.swt.examples/src/org/eclipse/swt/examples/superset -name '*.java' -print0             | xargs -0 javac -J-Xmx512m -nowarn -encoding UTF-8 --release 21                 -cp "$SWT_JAR" -d /tmp/superset-classes
+
+      - name: Syntax-check launchers and observer
+        run: |
+          bash -n examples/org.eclipse.swt.examples/superset-matrix/run-matrix.sh
+          bash -n examples/org.eclipse.swt.examples/superset-matrix/build-nebula.sh
+          python -m py_compile examples/org.eclipse.swt.examples/superset-matrix/verify-superset-matrix.py
+
+      - name: OpenCV fail-closed observer self-test
+        run: |
+          python -m pip install --disable-pip-version-check --quiet             opencv-python-headless==4.12.0.88 numpy==2.2.6
+          python examples/org.eclipse.swt.examples/superset-matrix/verify-superset-matrix.py --selftest

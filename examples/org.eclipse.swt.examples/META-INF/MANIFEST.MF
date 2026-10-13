@@ -20,6 +20,7 @@ Export-Package: org.eclipse.swt.examples.accessibility,
  org.eclipse.swt.examples.javaviewer,
  org.eclipse.swt.examples.layoutexample,
  org.eclipse.swt.examples.paint,
+ org.eclipse.swt.examples.superset,
  org.eclipse.swt.examples.texteditor
 Require-Bundle: org.eclipse.swt
 Bundle-ActivationPolicy: lazy
