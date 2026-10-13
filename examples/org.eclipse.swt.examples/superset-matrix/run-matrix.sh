@@ -29,7 +29,7 @@ if ! mkdir "$LOCK" 2>/dev/null; then
 fi
 echo $$ > "$LOCK/pid"
 # Desktop lock shared by every agent: one UI run (windows, Control.print, display capture) at a time.
-# Taken per cell and released after it, so other agents interleave between cells.
+# Held per widget family (concept) and released between families, so other agents can interleave.
 UI_LOCK=${UI_LOCK:-/c/m3-work-c/ui-test.lock}
 ui_lock() {
   until mkdir "$UI_LOCK" 2>/dev/null; do
@@ -124,14 +124,18 @@ grep '^PLAN' "$OUT/plan.txt" | while IFS=$'\t' read -r _ concept widget scale xm
     fi
   fi
   t=$CELL_TIMEOUT; [ "$scale" -ge 1000000 ] && t=$((CELL_TIMEOUT * 2)); [ "$scale" -ge 100000000 ] && t=$((CELL_TIMEOUT * 3))
+  if [ "$concept" != "${family:-}" ]; then  # new family: let other agents in, then take the lock again
+    ui_unlock
+    gate
+    ui_lock
+    family=$concept
+  fi
   gate
-  ui_lock
   cell="$concept.${widget##*.}.$scale"
   log "run $cell xmx=${xmx}m timeout=${t}s"
   timeout $((t + 20)) "${JAVA_BIN}java" -Xmx${xmx}m -Dsuperset.handleProbe="$PROBE" -cp "$CP" $MAIN \
     --run "$concept" "$widget" "$scale" "$(wpath "$OUT")" "$LABEL" "$t" < /dev/null > "$OUT/logs/$cell.log" 2>&1
   rc=$?
-  ui_unlock
   row=$(grep '^ROW' "$OUT/logs/$cell.log" | tail -1 | cut -f2-)
   if [ -z "$row" ]; then
     why=$(grep -m1 -E 'Exception|Error|SIGSEGV|EXCEPTION_' "$OUT/logs/$cell.log" | tr '\t' ' ' | cut -c1-300)
@@ -140,6 +144,7 @@ grep '^PLAN' "$OUT/plan.txt" | while IFS=$'\t' read -r _ concept widget scale xm
   printf '%s\n' "$row" >> "$TSV"
   log "done $cell rc=$rc $(printf '%s' "$row" | cut -f18)"
 done
+ui_unlock   # the cell loop runs in a subshell; release its family lock here
 # 5. cross-scale columns (size_independence, memory_flatness), computed in Java
 gate
 "${JAVA_BIN}java" -Xmx256m -cp "$CP" $MAIN --postprocess "$(wpath "$TSV")" || log "postprocess failed"
