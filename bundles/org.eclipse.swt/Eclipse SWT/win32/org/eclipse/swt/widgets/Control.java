@@ -2700,12 +2700,32 @@ public void redraw (int x, int y, int width, int height, boolean all) {
 	redrawInPixels(rect, all);
 }
 
+/**
+ * Single adapter between WM_PAINT and the leaf-2 planes: a frozen viewport
+ * absorbs the paint (damage recorded, frame painted), and an attached damage
+ * recorder (test hook) receives the update region of a real paint.
+ *
+ * @return true when the paint was absorbed
+ */
+private boolean paintPlanes (long hwnd) {
+	if (display.batchViewports > 0 && ViewportBatch.absorbPaint (this)) {
+		return true;
+	}
+	if (display.damageHooks > 0) {
+		ViewportDamageHook.paint (this, hwnd);
+	}
+	return false;
+}
+
 void redrawInPixels (RECT rect, boolean all) {
     if (!OS.IsWindowVisible(handle)) {
         return;
     }
 	//FLLDCIM: HPCPOP - visibility gate; offscreen redraws become one DIRTY_PAINT bit
 	if (EffectiveVisibility.ENABLED && EffectiveVisibility.deferRedraw (this)) {
+		return;
+	}
+	if (display.batchViewports > 0 && ViewportBatch.captureRedraw (this, rect, all)) {
 		return;
 	}
 	/*
@@ -5427,7 +5447,11 @@ long windowProc (long hwnd, int msg, long wParam, long lParam) {
 		case OS.WM_DRAWITEM:			result = WM_DRAWITEM (wParam, lParam); break;
 		case OS.WM_ENDSESSION:			result = WM_ENDSESSION (wParam, lParam); break;
 		case OS.WM_ENTERIDLE:			result = WM_ENTERIDLE (wParam, lParam); break;
-		case OS.WM_ERASEBKGND:			result = WM_ERASEBKGND (wParam, lParam); break;
+		case OS.WM_ERASEBKGND:
+			if (display.batchAbsorbing == this) {
+				return 1;
+			}
+			result = WM_ERASEBKGND (wParam, lParam); break;
 		case OS.WM_GESTURE:				result = WM_GESTURE (wParam, lParam); break;
 		case OS.WM_GETDLGCODE:			result = WM_GETDLGCODE (wParam, lParam); break;
 		case OS.WM_GETFONT:				result = WM_GETFONT (wParam, lParam); break;
@@ -5469,6 +5493,9 @@ long windowProc (long hwnd, int msg, long wParam, long lParam) {
 		case OS.WM_NOTIFY:				result = WM_NOTIFY (wParam, lParam); break;
 		case OS.WM_PAINT:
 			if (EffectiveVisibility.ENABLED && hwnd == handle && EffectiveVisibility.deferPaintMessage (this)) {
+				return 0;
+			}
+			if (hwnd == handle && (display.batchViewports > 0 || display.damageHooks > 0) && paintPlanes (hwnd)) {
 				return 0;
 			}
 			result = WM_PAINT (wParam, lParam); break;
